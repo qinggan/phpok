@@ -1,0 +1,23 @@
+<!-- inc:head_open -->
+<script type="text/javascript">
+function phpok_input(val)
+{
+	var obj = $.dialog.opener;
+	obj.$("#{$id}").val(val);
+	$.dialog.close();
+}
+</script>
+
+<ul class="piclist">
+	<!-- foreach($rslist AS $key=>$value) -->
+	<li id="attr_{$value.id}" onclick="phpok_input('{$value.filename}')">
+		<div class="pic"><img src="{$value.ico}" width="80px" height="80px" border="0" alt="{$value.title}" /></div>
+	</li>
+	<!-- /foreach -->
+</ul>
+<div class="clear"></div>
+<div class="table"><!-- inc:pagelist --></div>
+
+<!-- inc:open_search_swfupload -->
+
+<!-- inc:foot_open -->

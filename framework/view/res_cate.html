@@ -1,0 +1,71 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('res.js')}"></script>
+<div class="tips">
+	<!-- include tpl=res_btn -->
+	您当前的位置：
+	<a href="{echo admin_url('res')}">资源管理</a>
+	&raquo; 资源分类
+</div>
+
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="id">ID</th>
+	<th>分类名称</th>
+	<th>根目录</th>
+	<th>存储方式</th>
+	<th>&nbsp;</th>
+	<th>&nbsp;</th>
+	<th>删除</th>
+</tr>
+<tr>
+	<td class="center">添加</td>
+	<td class="center"><input type="text" id="title_0" class="width120" /></td>
+	<td class="center"><input type="text" id="root_0" class="width120" /></td>
+	<td class="center">
+		<select id="folder_0">
+			<option value="">不创建文件夹</option>
+			<option value="Ym/d/">年月/日/</option>
+			<option value="Y/m/d/">年/月/日/</option>
+			<option value="Ymd/">年月日/</option>
+			<option value="Y/m/">年/月/</option>
+			<option value="Y/">年/</option>
+		</select>
+	</td>
+	<td><input type="button" value="添加" class="btn" onclick="cate_add()" /></td>
+	<td class="center" colspan="2">&nbsp;</td>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr{if $rslist_id.num%2 == ""} class="list"{/if}>
+	<td class="center">{$value.id}</td>
+	<td class="center"><input type="text" id="title_{$value.id}" value="{$value.title}" class="width120" /></td>
+	<td class="center"><input type="text" id="root_{$value.id}" value="{$value.root}" class="width120" /></td>
+	<td class="center">
+		<select id="folder_{$value.id}">
+			<option value="">不创建文件夹</option>
+			<option value="Ym/d/"{if $value.folder == 'Ym/d/'} selected{/if}>年月/日/</option>
+			<option value="Y/m/d/"{if $value.folder == 'Y/m/d/'} selected{/if}>年/月/日/</option>
+			<option value="Ymd/"{if $value.folder == 'Ymd/'} selected{/if}>年月日/</option>
+			<option value="Y/m/"{if $value.folder == 'Y/m/'} selected{/if}>年/月/</option>
+			<option value="Y/"{if $value.folder == 'Y/'} selected{/if}>年/</option>
+		</select>
+	</td>
+	<td><input type="button" value="更新" class="btn" onclick="cate_update({$value.id})" /></td>
+	<td class="center">
+		<!-- if $value.is_default -->
+		<span class="red">默认存储</span>
+		<!-- else -->
+		<input type="button" value="设为默认" class="button" onclick="cate_default({$value.id})" />
+		<!-- /if -->
+	</td>
+	<td class="center"><input type="button" value="删除" class="btn"{if $value.is_default} disabled{else} onclick="cate_delete({$value.id})"{/if} /></td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<div class="tips">
+	<span class="red">根目录</span>：即网站程序目录！可以指定文件夹存储，如果文件夹不存在，系统会尝试创建。仅支持：字母、数字、下划线、中划线及斜杠<br />
+	如果您的空间不支持自定义创建根目录，请将存储方式设置为：<span class="darkblue">不创建文件夹</span>，然后指定一个可写入的文件夹为根目录即可<br />未指定根目录时，系统将使用 res/ 文件夹作为根目录
+</div>
+
+<!-- inc:foot -->

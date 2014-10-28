@@ -1,0 +1,28 @@
+<div class="pfw mbottom10">
+	<h3>联系我们</h3>
+	<ul class="contact">
+		<!-- if $config.contactus.fullname -->
+		<li>联系人：{$config.contactus.fullname}</li>
+		<!-- /if -->
+		<!-- if $config.contactus.tel -->
+		<li>电话：{$config.contactus.tel}</li>
+		<!-- /if -->
+		<!-- if $config.contactus.address -->
+		<li>地址：{$config.contactus.address}</li>
+		<!-- /if -->
+		<!-- if $config.contactus.zipcode -->
+		<li>邮编：{$config.contactus.zipcode}</li>
+		<!-- /if -->
+		<!-- if $config.contactus.email -->
+		<li>E-mail：{$config.contactus.email}</li>
+		<!-- /if -->
+		<!-- if $config.contactus.qq -->
+		<!-- php:$tqq = explode(',',$config.contactus.qq) -->
+		<li>
+			<!-- loop from=$tqq key=$key value=$value -->
+			<a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={$value}&site=qq&menu=yes"><img border="0" src="http://wpa.qq.com/pa?p=2:{$value}:51" alt="点击这里给我发消息" title="点击这里给我发消息"/></a>
+			<!-- /loop -->
+		</li>
+		<!-- /if -->
+	</ul>
+</div>

@@ -1,0 +1,30 @@
+<!-- include tpl=head title=$keywords -->
+<script type="text/javascript">
+function search_check()
+{
+	var k = $("#search_keywords").val();
+	if(!k)
+	{
+		alert("关键字不能为空");
+		return false;
+	}
+	return true;
+}
+</script>
+<div class="main">
+	<div class="left"><!-- include tpl=block_contactus --></div>
+	<div class="right">
+		<div class="pfw mbottom10">
+			<h3>站内搜索</h3>
+			<div style="padding:10px;">
+			<form method="post" action="{url ctrl=search/}" onsubmit="return search_check()">
+			<input type="text" name="keywords" id="search_keywords" style="width:500px;height:26px;line-height:26px;" />
+			<br />
+			<input type="submit" value="搜索" />
+			</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>
+<!-- include tpl=foot -->

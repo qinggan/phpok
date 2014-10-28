@@ -1,0 +1,157 @@
+<!-- include tpl=head_open -->
+<div class="table">
+	<div class="title">
+		订单编号：
+		<span class="red">{$rs.sn}</span>
+		<span><input type="button" value="点这里前台查看" onclick="window.open('{$sys.url}{$sys.www_file}?{$sys.ctrl_id}=order&{$sys.func_id}=info&sn={$rs.sn}&passwd={$rs.passwd}')" class="button" /></span>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		订单金额：
+		<span class="red">{func price_format $rs.price $rs.currency_id $rs.currency_id}</span>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		下单时间：
+		<span class="darkblue">{func time_format $rs.addtime}</span>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		订单状态：
+		<span>
+			<!-- if $rs.status == 'NOTCHECKED' --><span class="red">未审核</span><!-- else -->{$statuslist[$rs.status]}<!-- /if -->，
+			<!-- if $rs.pay_status == 'NOTPAID' --><span class="red">未付款</span><!-- else -->{$statuslist[$rs.pay_status]}<!-- /if -->
+		</span>
+	</div>
+</div>
+
+<!-- loop from=$rs.extlist key=$key value=$value -->
+<div class="table">
+	<div class="title">
+		{$value.title}：
+		<span class="darkblue">{$value.content}</span>
+	</div>
+</div>
+<!-- /loop -->
+
+<div class="tips">收货地址信息</div>
+<div class="table">
+	<div class="title">
+		收货地址：
+		<span class="darkblue">
+			{$shipping.country}
+			{$shipping.province}
+			<!-- if strpos($shipping.city,'市辖') === false -->
+			{$shipping.city}
+			<!-- /if -->
+			<!-- if strpos($shipping.county,'市辖') === false -->
+			{$shipping.county}
+			<!-- /if -->
+			{$shipping.address}
+			<!-- if $shipping.zipcode -->
+			（邮编：{$shipping.zipcode}）
+			<!-- /if -->
+		</span>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		收货人：
+		<span class="darkblue"><strong>{$shipping.fullname}</strong>（{$shipping.gender ? '先生' : '女士'}）</span>
+	</div>
+</div>
+<!-- if $shipping.tel -->
+<div class="table">
+	<div class="title">
+		联系电话：
+		<span class="darkblue">{$shipping.tel}</span>
+	</div>
+</div>
+<!-- /if -->
+<!-- if $shipping.mobile -->
+<div class="table">
+	<div class="title">
+		联系手机：
+		<span class="darkblue">{$shipping.mobile}</span>
+	</div>
+</div>
+<!-- /if -->
+<div class="table">
+	<div class="title">
+		Email：
+		<span class="darkblue">{$shipping.email}</span>
+	</div>
+</div>
+<!-- if $billing -->
+<div class="tips">账单地址信息</div>
+<div class="table">
+	<div class="title">
+		账单地址：
+		<span class="darkblue">
+			{$billing.country}
+			{$billing.province}
+			<!-- if strpos($billing.city,'市辖') === false -->
+			{$billing.city}
+			<!-- /if -->
+			<!-- if strpos($billing.county,'市辖') === false -->
+			{$billing.county}
+			<!-- /if -->
+			{$billing.address}
+			<!-- if $billing.zipcode -->
+			（邮编：{$billing.zipcode}）
+			<!-- /if -->
+		</span>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		姓名：
+		<span class="darkblue"><strong>{$billing.fullname}</strong>（{$billing.gender ? '先生' : '女士'}）</span>
+	</div>
+</div>
+<!-- if $billing.tel -->
+<div class="table">
+	<div class="title">
+		联系电话：
+		<span class="darkblue">{$billing.tel}</span>
+	</div>
+</div>
+<!-- /if -->
+<!-- if $billing.mobile -->
+<div class="table">
+	<div class="title">
+		联系手机：
+		<span class="darkblue">{$billing.mobile}</span>
+	</div>
+</div>
+<!-- /if -->
+<!-- if $billing.email -->
+<div class="table">
+	<div class="title">
+		Email：
+		<span class="darkblue">{$billing.email}</span>
+	</div>
+</div>
+<!-- /if -->
+
+<!-- /if -->
+
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th class="lft">&nbsp;产品名称</th>
+	<th class="lft">&nbsp;单价</th>
+	<th>数量</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td>{$value.title}</td>
+	<td>{func price_format $value.price $rs.currency_id $rs.currency_id}</td>
+	<td align="center">{$value.qty}</td>
+</tr>
+<!-- /loop -->
+</table>
+<br />
+<!-- include tpl=foot_open -->

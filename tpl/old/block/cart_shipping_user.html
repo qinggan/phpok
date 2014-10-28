@@ -1,0 +1,25 @@
+<!-- 会员购物车收货地址相关操作 -->
+<table width="100%">
+<!-- loop from=$address.shipping.list key=$key value=$value id=shipping_id -->
+<tr>
+	<td width="30px" align="right"><input type="radio" name="shipping_id" id="shipping_id_{$value.id}" value="{$value.id}" {if $value.is_default} checked{/if} /></td>
+	<td><label for="shipping_id_{$value.id}">{$value.province}{$value.city}{$value.county}{$value.town}{$value.address}，</label></td>
+	<td align="right"><a href="{url ctrl=address func=edit_open id=$value.id/}" title="修改地址信息">编辑</a></td>
+</tr>
+<tr id="shipping_id_edit_{$value.id}"><td></td></tr>
+<!-- /loop -->
+<tr id="shipping_add">
+	<td width="30px" align="right"><input type="radio" name="shipping_id" id="shipping_id_0" value="0" onclick="shipping_add()" /></td>
+	<td><label for="shipping_id_0">添加</label></td>
+	<td>&nbsp;</td>
+</tr>
+</table>
+<script type="text/javascript">
+var is_add = "{$address.shipping.list ? 0 :1}";
+$(document).ready(function(){
+	if(is_add == '1')
+	{
+		$('#shipping_add').hide();
+	}
+});
+</script>

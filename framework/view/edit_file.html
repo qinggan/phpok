@@ -1,0 +1,105 @@
+<!-- inc:head_open -->
+<style type="text/css">body{overflow:hidden;margin:2px 0 0 2px;}</style>
+<script type="text/javascript" src="{func add_js ueditor/dialogs/internal.js}"></script>
+<script type="text/javascript">
+//提交多个附件
+function save_files()
+{
+	var vals = $.input.checkbox_join("filelist");
+	if(!vals)
+	{
+		alert("请选择要插入附件");
+		return false;
+	}
+	var list = vals.split(",");
+	var htm = "";
+	for(var i in list)
+	{
+		var id = list[i];
+		var title = $("#title_"+id).val();
+		if(!title)
+		{
+			title = $("#filename_"+id).val();
+			if(!title)
+			{
+				continue;
+			}
+		}
+		htm += '<p>[download:'+id+']'+title+'[/download]</p>'+"\n";
+	}
+	editor.execCommand('inserthtml',htm);
+	dialog.close();
+}
+dialog.onok = save_files;
+</script>
+<div class="tips">
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<form method="post" action="{echo admin_url('uedit','file')}">
+	<td style="padding-top:3px;"><input type="text" id="keywords" name="keywords" value="{$keywords}" placeholder="填写要搜索的关键字" /></td>
+	<td style="padding-left:5px;"><select id="cate_id" name="cate_id">
+			<option value="0">选择分类…</option>
+			<!-- $catelist AS $key=>$value -->
+			<option value="{$value.id}"{if $value.id == $cate_id} selected="selected"{/if}>{$value.title}</option>
+			<!-- end -->
+		</select>
+	</td>
+	<td style="padding-left:5px;"><select id="type" name="type">
+			<option value="">附件类型…</option>
+			<!-- $typelist AS $key=>$value -->
+			<option value="{$key}"{if $key == $type} selected="selected"{/if}>{$value.name}</option>
+			<!-- end -->
+		</select>
+	</td>
+	<td>&nbsp;</td>
+	<td><input type="submit" value="搜索" class="button" /></td>
+	</form>
+</tr>
+</table>
+</div>
+
+<div class="list" id="filelist">
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th width="30px" height="30px">ID</th>
+	<th class="lft">附件名称</th>
+	<th width="30px" height="30px">ID</th>
+	<th class="lft">附件名称</th>
+</tr>
+
+<tr>
+	<!-- loop from=$rslist key=$key value=$value -->
+	<td class="center"><input type="checkbox" value="{$value.id}" id="file_{$value.id}" /><input type="hidden" id="title_{$value.id}" value="{$value.title}" /><input type="hidden" id="filename_{$value.id}" value="{$value.filename}" /></td>
+	<td class="lft" title="文件大小：{func phpok_filesize $value.filename}&#10;上传时间：{func date "Y-m-d H:i" $value.addtime}&#10;附件类型：{$value.ext}"><label for="file_{$value.id}">{func phpok_cut $value.title 30 …}</label>
+	</td>
+	<!-- if $rslist_id.num % 2 == '' && $rslist_id.num != $rslist_id.total --></tr><tr><!-- /if -->
+	<!-- /loop -->
+</tr>
+</table>
+</div>
+<div class="table">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<td>
+		<table>
+		<tr>
+			<td><input type="button" value="全选" class="btn" onclick="$.input.checkbox_all('filelist')" /></td>
+			<td><input type="button" value="全不选" class="btn" onclick="$.input.checkbox_none('filelist')" /></td>
+			<td><input type="button" value="反选" class="btn" onclick="$.input.checkbox_anti('filelist')" /></td>
+		</tr>
+		</table>
+	</td>
+	<td align="right">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><!-- inc:pagelist --></td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+</div>
+
+<!-- include tpl=edit_swfupload file_type_desc=$type_rs.name file_type=$type_rs.swfupload top_tips="上传成功后，请选择要插入的附件" -->
+
+<!-- inc:foot_open -->

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<list>查看</list>
+<gset>组设置</gset>
+<add>添加</add>
+<modify>修改</modify>
+<delete>删除</delete>
+<config>配置</config>
+<pl>批处理</pl>
+<install>安装</install>
+<uninstall>卸载</uninstall>
+<set>设置</set>
+<status>启用/禁用</status>
+<site>站点</site>
+<domain>域名</domain>
+<filelist>文件管理</filelist>

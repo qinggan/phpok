@@ -1,0 +1,33 @@
+<!-- php:$title = $rs['title'].' - '.$page_rs['title'] -->
+<!-- include tpl=head title=$title -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#top_menu li a").each(function(i){
+		if($(this).text() == '{$page_rs.title}')
+		{
+			$(this).parent().addClass('selected');
+		}
+		else
+		{
+			$(this).parent().removeClass('selected');
+		}
+	});
+});
+</script>
+<div class="body">
+	<div class="left">
+		<!-- include tpl=block_catelist -->
+		<!-- include tpl=block_contactus -->
+	</div>
+	<div class="right">
+		<div class="pfw mbottom10">
+			<h3>{$rs.title}</h3>
+			<!-- loop from=$rs.pictures key=$key value=$value -->
+			<div style="padding:5px;text-align:center;"><img src="{$value.gd.auto}" alt="{$value.title}" width="700px" /></div>
+			<!-- /loop -->
+			<div class="about">{$rs.content}</div>
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>
+<!-- include tpl=foot -->

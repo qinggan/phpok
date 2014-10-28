@@ -1,0 +1,40 @@
+<!-- include tpl=head title=标签管理 -->
+<div class="tips">
+	<!-- if $popedom.add -->
+	<div class="action"><a href="{url ctrl=tag func=set/}">添加新标签</a></div>
+	<!-- /if -->
+	您当前的位置：
+	<a href="{url ctrl=tag/}">标签管理</a>
+	&raquo; 标签列表
+</div>
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="lft" style="text-indent:12px;">名称</th>
+	<th>目标链接</th>
+	<th>查看次数</th>
+	<th class="action">操作</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td style="text-indent:12px;height:22px;">
+		{$value.title}
+		<span calss='gray i'>{$value.urlid}</span>
+	</td>
+	<td class="center">{$value.url ? $value.url : '内置'}</td>
+	<td class="center">{$value.hits}</td>
+	<td class="center">
+		<!-- if $dlist[$value['id']] -->
+		{func implode $dlist[$value['id']] /}		
+		<!-- /if -->
+	</td>
+	<td>
+		<!-- if $popedom.delete && !$value.is_default -->
+		<a class="icon delete end" onclick="site_delete('{$value.id}','{$value.title}')" title="删除"></a>
+		<!-- /if -->
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<!-- inc:foot -->

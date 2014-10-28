@@ -1,0 +1,63 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{func include_js plugin.js}"></script>
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('plugin')}">插件中心</a>
+	&raquo; 配置插件 <span class="red">{$rs.title}</span>
+</div>
+
+<form method="post" action="{echo admin_url('plugin','save')}">
+<input type="hidden" id="id" name="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		插件名称：
+		<span class="note">设置插件的名称，您可以使用您熟悉的语言来设置！</span>
+	</div>
+	<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
+</div>
+
+<div class="table">
+	<div class="title">
+		备注：
+		<span class="note">简要说明此插件是做什么的！</span>
+	</div>
+	<div class="content"><input type="text" id="note" name="note" class="long" value="{$rs.note}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		开发者：
+		<span class="note">填写插件开发者信息，可以是姓名或邮箱或官方网站</span>
+	</div>
+	<div class="content">
+		<input type="text" id="author" name="author" class="long" value="{$rs.author}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		插件版本：
+		<span class="note">设置插件版本，此项请尽量不要手工插件，用于检测插件是否需要升级</span>
+	</div>
+	<div class="content">
+		<input type="text" id="version" name="version" class="default" value="{$rs.version}" />
+	</div>
+</div>
+{$plugin_html}
+
+<div class="table">
+	<div class="title">
+		排序：
+		<span class="note">自定义插件排序，值越小越往前靠，最大不超过255</span>
+	</div>
+	<div class="content">
+		<input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis ? $rs.taxis : 255}" />
+	</div>
+</div>
+
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit" />
+	</div>
+</div>
+</form>
+
+<!-- inc:foot -->

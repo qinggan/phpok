@@ -1,0 +1,125 @@
+/***********************************************************
+	Filename: form.css
+	Note	: 自定义表单常用样式
+	Version : 4.0
+	Web		: www.phpok.com
+	Author  : qinggan <qinggan@188.com>
+	Update  : 2013年10月19日
+***********************************************************/
+/* 自定义表单图片选择后生成的列表 */
+table.ext_upload{
+	cellmargin:0;
+	cellspacing:0;
+	border:0;
+	border-collapse:collapse;
+	border-spacing:0;
+}
+table.ext_upload th,table.ext_upload td{
+	padding:0;
+	margin:0;
+	border:0;
+}
+table.ext_upload td.ext_img{
+	width:100px;
+	text-align:center;
+}
+table.ext_upload td.ext_img img{
+	width:80px;
+	height:80px;
+	border:0;
+	margin:0;
+	padding:0;
+}
+table.ext_upload td.ext_res{
+	padding:0;
+	margin:0;
+	border:0;
+}
+table.ext_upload td.ext_res div.res_title{
+	border:0;
+	margin:0 0 5px 0;
+	padding:0;
+}
+table.ext_upload td.ext_res div.res_title input.ext_input{
+	width:350px;
+	border:1px solid #E5E5E5;
+	height:25px;
+	line-height:25px;
+	font-size:16px;
+	font-weight:normal;
+}
+table.ext_upload td.ext_res div.res_note{
+	border:0;
+	margin:0 0 5px 0;
+	padding:0;
+}
+table.ext_upload td.ext_res div.ext_note .ext_textarea{
+	width:350px;
+	height:40px;
+	border:1px solid #E5E5E5;
+	line-height:20px;
+	font-size:14px;
+	font-weight:normal;
+}
+table.ext_upload td.ext_res div.ext_action input.ext_btn{
+	border:1px solid #ACACAC;
+	margin:0 0 0 3px;
+	padding:1px 6px;
+	text-align:center;
+	background:#ECECEC url("../images/btn_bg.jpg") center center repeat-x;
+	color:#000;
+}
+table.ext_upload td.ext_res div.ext_action input.ext_submit{
+	border:1px solid #ACACAC;
+	margin:0 0 0 3px;
+	padding:1px 6px;
+	text-align:center;
+	background:#ECECEC url("../images/btn_bg2.jpg") center center repeat-x;
+	color:#000;
+}
+table.ext_upload td.ext_res div.ext_action input.ext_taxis{
+	border:1px solid #E5E5E5;
+	height:25px;
+	line-height:25px;
+	font-size:16px;
+	font-weight:normal;
+	width:50px;
+	text-align:center;
+}
+
+table.ext_upload input.submit,input.button,input.btn,input.ext_btn{
+	border:1px solid #ACACAC;
+	margin:0 0 0 5px;
+	height:23px;
+	padding:0 6px;
+	line-height:23px;
+	text-align:center;
+	background:#ECECEC url("../images/btn_bg.jpg") center center repeat-x;
+	color:#000;
+}
+table.ext_upload input.submit{color:darkred;font-weight:bold;}
+table.ext_upload input.submit:hover,input.button:hover,input.btn:hover,input.ext_btn:hover{border-color:#7EB4EA;background:#E3F0FC;}
+
+
+/* 自定义表单中的普通文本框 */
+table.ext_text{
+	cellmargin:0;
+	cellspacing:0;
+	border:0;
+	border-collapse:collapse;
+	border-spacing:0;
+}
+table.ext_text th,table.ext_text td{
+	padding:0;
+	margin:0;
+	border:0;
+}
+
+/* 自定义复选框涉及到的UL LI Lable 等样式 */
+ul.ext_checkbox{list-style:none;margin:0;padding:0;}
+ul.ext_checkbox li{float:left;padding-right:5px;line-height:25px;}
+ul.ext_checkbox li label input{width:auto;height:auto;padding-right:3px;}
+
+ul.ext_radio{list-style:none;margin:0;padding:0;}
+ul.ext_radio li{float:left;padding-right:5px;line-height:25px;}
+ul.ext_radio li label input{width:auto;height:auto;padding-right:3px;}

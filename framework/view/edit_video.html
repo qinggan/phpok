@@ -1,0 +1,94 @@
+<!-- inc:head_open -->
+<style type="text/css">body{overflow:hidden;margin:2px 0 0 2px;}</style>
+<script type="text/javascript" src="{func add_js ueditor/dialogs/internal.js}"></script>
+<script type="text/javascript">
+function save_video(filename,ext,fileid)
+{
+	//清空全部样式
+	$(".list tr").removeClass('on');
+	//增加被选中的样式
+	$("#video_"+fileid).addClass("on");
+	$("#video_file").val(filename);
+	$("#video_ext").val(ext);
+	$("#video_id").val(fileid);
+	return true;
+}
+dialog.onok = function(){
+	var id = $("#video_id").val();
+	var ext = $("#video_ext").val();
+	var file = $("#video_file").val();
+	if(!id || !ext || !file)
+	{
+		$.dialog.alert("影音文件有异常，请检查");
+		return false;
+	}
+	//网络上常见的视频格式
+	if(ext == "flv" || ext == "mp4")
+	{
+		var htm = '<p style="text-align:center"><embed type="application/x-shockwave-flash" class="edui-faked-video" pluginspage="http://www.macromedia.com/go/getflashplayer" src="'+webroot+'js/vcastr.swf?xml={vcastr}{channel}{item}{source}'+webroot+file+'{/source}{duration}{/duration}{title}{/title}{/item}{/channel}{config}{isAutoPlay}false{/isAutoPlay}{isLoadBegin}false{/isLoadBegin}{/config}{plugIns}{beginEndImagePlugIn}{url}'+webroot+'js/image.swf{/url}{source}{/source}{type}beginend{/type}{scaletype}exactFil{/scaletype}{/beginEndImagePlugIn}{/plugIns}{/vcastr}" width="400" height="300" wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true"/></p>';
+	}
+	else if(ext == "swf")
+	{
+		var htm = '<p style="text-align:center"><embed type="application/x-shockwave-flash" class="edui-faked-video" pluginspage="http://www.macromedia.com/go/getflashplayer" src="'+webroot+file+'" width="400" height="300" wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true"/></p>';
+	}
+	else if(ext == 'rm' || ext == 'rmvb' || ext == 'ram' || ext == 'ra')
+	{
+		var htm = '<p style="text-align:center"><embed type="audio/x-pn-realaudio-plugin" class="edui-faked-video" src="'+webroot+file+'" width="400" height="300" wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true"/></p>'
+	}
+	else
+	{
+		var htm = '<p style="text-align:center"><embed type="application/x-mplayer2" class="edui-faked-video" src="'+webroot+file+'" width="400" height="300" wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true"/></p>'
+	}
+	editor.execCommand('inserthtml',htm);
+	dialog.close();
+};
+</script>
+<div class="tips">
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<form method="post" action="{echo admin_url('uedit','video')}">
+	<td>&nbsp; 关键字：</td>
+	<td><input type="text" id="keywords" name="keywords" value="{$keywords}" /></td>
+	<td>&nbsp; 分类：</td>
+	<td><select id="cate_id" name="cate_id">
+			<option value="0">不限</option>
+			<!-- $catelist AS $key=>$value -->
+			<option value="{$value.id}"{if $value.id == $cate_id} selected="selected"{/if}>{$value.title}</option>
+			<!-- end -->
+		</select>
+	</td>
+	<td>&nbsp;</td>
+	<td><input type="submit" value="搜索" class="search" /></td>
+	</form>
+</tr>
+</table>
+</div>
+<input type="hidden" id="video_file" value="" />
+<input type="hidden" id="video_ext" value="" />
+<input type="hidden" id="video_id" value="" />
+<div class="list" id="filelist">
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th width="30px" height="30px">&nbsp;</th>
+	<th class="lft">影音文件名称</th>
+	<th class="w90 lft" style="padding-left:5px;">大小</th>
+</tr>
+
+<!-- loop from=$rslist key=$key value=$value -->
+<tr id="video_{$value.id}" class="out">
+	<td><input type="radio" name="video" id="file_{$value.id}" value="{$value.id}" onclick="save_video('{$value.filename}','{$value.ext}','{$value.id}')" /></td>
+	<td class="lft"><label for="file_{$value.id}">
+		{echo phpok_cut($value['title'],40,'…')}
+		<span class="gray i">({func date "Y-m-d H:i" $value.addtime})</span>
+	</label></td>
+	<td><label for="file_{$value.id}">{func phpok_filesize $value.filename}</label></td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<div class="table"><!-- inc:pagelist --></div>
+
+<!-- php:$top_tips = '上传影音文件' -->
+<!-- include tpl=edit_swfupload top_tips=$top_tips -->
+
+<!-- inc:foot_open -->

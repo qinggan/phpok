@@ -1,0 +1,52 @@
+<!-- include tpl=head title=购物车 -->
+<script type="text/javascript">
+function gotoproduct()
+{
+	var url = "{url id=product/}";
+	direct(url);
+}
+function checkout()
+{
+	var url = "{url ctrl=cart func=checkout/}";
+	direct(url);
+}
+</script>
+<div class="main">
+	<div class="table_lc">
+	<table width="100%" cellpadding>
+	<tr>
+		<th>图片</th>
+		<th class="lft">产品信息</th>
+		<th>价格</th>
+		<th>购买数量</th>
+		<th>操作</th>
+	</tr>
+	<!-- loop from=$rslist key=$key value=$value -->
+	<tr>
+		<td class="center"><a href="{$value.url}" title="{$value.title}" target="_blank"><img src="{$value.thumb.gd.thumb}" width="100px" border="0" alt="{$value.title}" /></a></td>
+		<td>
+			<h3 id="title_{$value.id}">{$value.title}</h3>
+			<div>售价：{func price_format $value.price $value.currency_id}</div>
+		</td>
+		<td class="center price">{func price_format $value.price*$value.qty $value.currency_id}</td>
+		<td class="center">
+			<input type="text" class="qty" name="qty_{$value.id}" id="qty_{$value.id}" value="{$value.qty}" />
+			<input type="button" value="修改" onclick="$.cart.update({$value.id})" />
+		</td>
+		<td class="center">
+			<input type="button" value=" 删除 " onclick="$.cart.del({$value.id})" />
+		</td>
+	</tr>
+	<!-- /loop -->
+	</table>
+	</div>
+	<div class="space"></div>
+	<table width="100%">
+	<tr>
+		<td><img src="images/gotopro.gif" border="0" alt="继续购物" onclick="gotoproduct()" class="hand" /></td>
+		<td align="right"><img src="images/checkout.gif" border="0" alt="去结算" class="hand" onclick="checkout()" /></td>
+	</tr>
+	</table>
+	<div class="space"></div>
+</div>
+<!-- include tpl=foot -->

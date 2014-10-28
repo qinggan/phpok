@@ -1,0 +1,55 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function check()
+{
+	var title = $("#title").val();
+	if(!title)
+	{
+		alert("留言主题不能为空");
+		return false;
+	}
+	var email = $("#email").val();
+	if(!email)
+	{
+		alert("邮箱不能为空");
+		return false;
+	}
+	var content = $("#content").val();
+	if(!content)
+	{
+		alert("内容不能为空");
+		return false;
+	}
+	return true;
+}
+</script>
+<h1>{$page_rs.title}</h1>
+<div class="content">
+	<table>
+	<form method="post" action="{echo web_url('post','save')}&id={$id}" onsubmit="return check()">
+	<input type="hidden" name="_back" value="{echo web_url('post')}&id={$id}" />
+	<tr>
+		<td align="right">主题：</td>
+		<td><input type="text" name="title" id="title" size="30" /></td>
+	</tr>
+	<tr>
+		<td align="right">昵称：</td>
+		<td><input type="text" name="nickname" id="nickname" value="游客" /></td>
+	</tr>
+	<tr>
+		<td align="right">邮箱：</td>
+		<td><input type="text" name="email" id="email" /></td>
+	</tr>
+	<tr>
+		<td align="right" valign="top">留言内容：</td>
+		<td><textarea name="content" id="content" style="width:500px;height:100px;"></textarea></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" value=" 提交留言 " /></td>
+	</tr>
+	
+	</form>
+	</table>
+</div>
+<!-- include tpl=foot -->

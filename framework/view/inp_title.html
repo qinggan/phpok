@@ -1,0 +1,140 @@
+<!-- inc:head_open -->
+<input type="hidden" name="val" id="val" value="" />
+<script type="text/javascript">
+var input_id = "#{$input}";
+var multi = {$multi ? "1" : "0"};
+function show_list()
+{
+	var cid = $("#val").val();
+	if(cid == "undefined" || cid == "0" || cid == "")
+	{
+		$("#val").val("");
+		$("#selected_list").hide();
+		$.dialog.data("title_data_{$input}","");
+	}
+	$("tr[name=list]").show();
+	var url = get_url("inp")+"&type=title&content="+$.str.encode(cid);
+	var rs = json_ajax(url);
+	if(rs.status == "ok")
+	{
+		var lst = rs.content;
+		var c = '<table width="100%" cellpadding="0" cellspacing="0" class="list">';
+		c += '<tr>';
+		c += '<th>主题</th>';
+		if(multi == 1)
+		{
+			c += '<th class="w60">删除</th>';
+		}
+		c += '</tr>';
+		for(var i in lst)
+		{
+			c += '<tr>';
+			c += '<td>['+lst[i]['id']+']'+lst[i]['title']+'</td>';
+			if(multi == 1)
+			{
+				c += '<td class="center"><div class="phpok-btn" onclick="delete_input(\''+lst[i]['id']+'\')"><span class="b"><span class="c">&nbsp;</span><span class="d">删除</span></span></div></td>';
+			}
+			c += '</tr>';
+			var t = "#list_"+lst[i]['id'];
+			$(t).hide();
+		}
+		c += "</table>";
+		$("#selected_list").html(c).show();
+		$.dialog.data("title_data_{$input}",cid);
+	}
+	else
+	{
+		$("#selected_list").hide();
+		$.dialog.data("title_data_{$input}","");
+	}
+}
+function add_input(val)
+{
+	if(multi)
+	{
+		var old_c = $("#val").val();
+		if(old_c)
+		{
+			var c = old_c + ","+val;
+		}
+		else
+		{
+			var c = val;
+		}
+		//格式化
+		var lst = c.split(",");
+		lst = $.unique(lst);
+		var c = lst.join(",");
+		$("#val").val(c);
+	}
+	else
+	{
+		$("#val").val(val);
+	}
+	show_list();
+}
+function delete_input(val)
+{
+	if(multi)
+	{
+		var old_c = $("#val").val();
+		if(!old_c)
+		{
+			return true;
+		}
+		var lst = old_c.split(",");
+		var n_list = new Array();
+		var m=0;
+		for(var i=0;i<lst.length;i++)
+		{
+			if(lst[i] != val)
+			{
+				n_list[m] = lst[i];
+				m++;
+			}
+		}
+		if(n_list.length<1)
+		{
+			$("#val").val("");
+		}
+		else
+		{
+			var str = n_list.join(",");
+			$("#val").val(str);
+		}
+	}
+	else
+	{
+		$("#val").val("");
+	}
+	show_list();
+}
+$(document).ready(function(){
+	var new_c = parent.$(input_id).val();
+	$("#val").val(new_c);
+	show_list();
+});
+</script>
+<div id="selected_list" class="list hide"></div>
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>主题</th>
+	<th class='w60'>操作</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr id="list_{$value.id}" name="list">
+	<td>[{$value.id}]{$value.title}</td>
+	<td class="center">
+		<!-- if $multi -->
+		<div class="phpok-btn" onclick="add_input('{$value.id}')"><span class="b"><span class="c">&nbsp;</span><span class="d">添加</span></span></div>
+		<!-- else -->
+		<div class="phpok-btn" onclick="add_input('{$value.id}')"><span class="b"><span class="c">&nbsp;</span><span class="d">选择</span></span></div>
+		<!-- /if -->
+	</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<div class="table"><!-- include tpl=pagelist --></div>
+<!-- inc:foot_open -->

@@ -1,0 +1,58 @@
+<!-- include tpl=head title="货币及汇率管理" -->
+<script type="text/javascript" src="{func add_js currency.js}"></script>
+<div class="tips">
+	<!-- if $popedom.add -->
+	<div class="action"><a href="{echo admin_url('currency','set')}">添加货币</a></div>
+	<!-- /if -->
+	您当前的位置：
+	<a href="{echo admin_url('currency')}">货币管理</a>
+	&raquo; 已添加货币信息
+</div>
+
+<div class="list">
+<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<tr>
+	<th width="50px">&nbsp;</th>
+	<th width="35px">状态</th>
+	<th width="100px">编号</th>
+	<th style="text-align:left;">名称</th>
+	<th width="150px">汇率</th>
+	<th width="150px" style="text-align:left;">显示效果</th>
+	<th width="60px">排序</th>
+	<th width="65px">操作</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td align="center"><input type="checkbox" name="ids[]" id="id_{$value.id}" value="{$value.id}" /></td>
+	<td><span class="status{$value.status}" id="status_{$value.id}"{if $popedom.status} onclick="phpok_status({$value.id},'{func admin_url currency status}')"{else} style="cursor: default;"{/if} value="{$value.status}"></span></td>
+	<td align="center"><label for="id_{$value.id}">{$value.code}</label></td>
+	<td><label for="id_{$value.id}">{$value.title}</label></td>
+	<td align="center">{$value.val}</td>
+	<td class="darkblue">{$value.symbol_left} {func rand 10 99}.{func rand 10 99} {$value.symbol_right}</td>
+	<td class="center"><input type="text" id="taxis_{$value.id}" name="taxis[]" class="short center" value="{$value.taxis}" tabindex="{$rslist_id.num}" /></td>
+	<td>
+		<!-- if $popedom.modify -->
+		<a class="icon edit" href="{func admin_url currency set}&id={$value.id}" title="修改"></a>
+		<!-- /if -->
+		<!-- if $popedom.delete -->
+		<a class="icon delete end" onclick="currency_del('{$value.id}','{$value.title}')" title="删除"></a>
+		<!-- /if -->
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<td>
+		<ul class="layout">
+			<li><input type="button" value="全选" class="btn" onclick="$.input.checkbox_all()" /></li>
+			<li><input type="button" value="全不选" class="btn" onclick="$.input.checkbox_none()" /></li>
+			<li><input type="button" value="反选" class="btn" onclick="$.input.checkbox_anti()" /></li>
+			<li><input type="button" value="排序" class="submit" onclick="set_sort()" /></li>
+		</ul>
+	</td>
+</tr>
+</table>
+
+<!-- include tpl=foot -->

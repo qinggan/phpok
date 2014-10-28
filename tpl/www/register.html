@@ -1,0 +1,119 @@
+<!-- include tpl=head menutitle=网站首页 title=会员注册 -->
+<script type="text/javascript">
+var open_vcode = '{$sys.is_vcode && function_exists("imagecreate") ? 1 : 0}';
+$(document).ready(function(){
+	$("#register-form").submit(function(){
+		if(!$('#is_ok').attr('checked'))
+		{
+			alert('注册前请先同意本站协议');
+			return false;
+		}
+		$(this).ajaxSubmit({
+			type:'post',
+			url: api_url('register','save'),
+			dataType:'json',
+			success: function(rs){
+				if(rs.status == 'ok')
+				{
+					alert("恭喜您注册成功");
+					var back = $("#_back").val();
+					if(!back || back == 'undefined' || back == window.location.href) back = webroot;
+					$.phpok.go(back);
+				}
+				else
+				{
+					if(!rs.content) rs.content = '注册失败';
+					alert(rs.content);
+					if(open_vcode == '1')
+					{
+						$("#_chkcode").val('');
+						$("#update_vcode").phpok_vcode();
+					}
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+//更新会员组
+function update_group(gid)
+{
+	$.phpok.go(get_url('register','','group_id='+gid));
+}
+</script>
+
+<div class="login-reg">
+	<dl class="box">
+		<dt>注册</dt>
+		<form method="post" id="register-form">
+		<!-- if $grouplist -->
+		<dd>
+			<label>会员组：</label>
+			<select name="group_id" onchange="update_group(this.value)">
+			<!-- loop from=$grouplist key=$key value=$value -->
+			<option value="{$value.id}"{if $group_id == $value.id} selected{/if}>{$value.title}</option>
+			<!-- /loop -->
+			</select>
+			<div class="clear"></div>
+		</dd>
+		<!-- /if -->
+		<!-- if $group_rs.register_status && $group_rs.register_status != 1 -->
+		<dd>
+			<label>验证串：</label>
+			<input class="input" type="text" name="_code" value="{$code}" readonly style="color:#CCC" />
+			<div class="clear"></div>
+		</dd>
+		<!-- /if -->
+		<dd>
+			<label>账号：</label>
+			<input class="input" type="text" name="user" value="{$account}" />
+			<div class="clear"></div>
+		</dd>
+		<dd>
+			<label>密码：</label>
+			<input class="input" type="password" name="newpass" />
+			<div class="clear"></div>
+		</dd>
+		<dd>
+			<label>确认密码：</label>
+			<input class="input" type="password" name="chkpass" />
+			<div class="clear"></div>
+		</dd>
+		<dd>
+			<label>Email：</label>
+			<input class="input" type="text" name="email" value="{$email}" />
+			<div class="clear"></div>
+		</dd>
+		<dd>
+			<label>手机或电话：</label>
+			<input class="input" type="text" name="mobile" />
+			<div class="clear"></div>
+		</dd>
+		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+		<dd>
+			<label>验证码：</label>
+			<input class="vcode"  type="text" id="_chkcode" name="_chkcode" />
+			<img src="" border="0" align="absmiddle" id="update_vcode" class="hand" />
+			<div class="clear"></div>
+		</dd>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#update_vcode").phpok_vcode();
+			//更新点击时操作
+			$("#update_vcode").click(function(){
+				$(this).phpok_vcode();
+			});
+		});
+		</script>
+		<!-- /if -->
+		<dd>
+			<label class="agreement"><input type="checkbox" name="is_ok" id="is_ok" checked /> 我已阅读并完全同意阅读注册协议</label>
+		</dd>
+		<dd class="submit"><input class="button blue" type="submit" value="注册会员" name=""></dd>
+		</form>
+	</dl>
+	<dl class="box"><!-- include tpl=block_protocol --></dl>
+	<div class="clear"></div>
+</div>
+<!-- include tpl=foot -->

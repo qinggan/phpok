@@ -1,0 +1,54 @@
+<!-- if $_ptype -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#{$_rs.identifier}_add_line").click(function(){
+		var td_count = ($("#{$_rs.identifier}_tbl tr:eq(0) th")).length - 1;
+		var html = '<tr>';
+		for(var i=0;i<td_count;i++)
+		{
+			html += '<td><input type="text" name="{$_rs.identifier}_body[]" style="width:{$_rs.p_width}px;" class="short" /></td>';
+		}
+		html += '<td><input type="button" value="删除" onclick="$(this).parent().parent().remove()" class="btn" /></td>'
+		html += '</tr>';
+		var tr_count = $("#{$_rs.identifier}_tbl tr").length - 2;
+		$(html).insertAfter($("#{$_rs.identifier}_tbl tr:eq("+tr_count+")"));
+	});
+});
+</script>
+<div class="param">
+<table class="list" style="border:1px solid #ccc;" cellpadding="0" cellspacing="1" id="{$_rs.identifier}_tbl">
+<!-- loop from=$_rslist key=$key value=$value -->
+<!-- if $_rslist_id.num == 1 -->
+<tr>
+	<!-- loop from=$_pname key=$k value=$v -->
+	<th><label><input type="checkbox" name="{$_rs.identifier}_title_{$k}"{if $value[$k]} checked{/if}>{$v}</label></th>
+	<!-- /loop -->
+	<th>操作</th>
+</tr>
+<!-- else -->
+<tr>
+	<!-- loop from=$_pname key=$k value=$v -->
+	<td><input type="text" name="{$_rs.identifier}_body[]" style="width:{$_rs.p_width}px;" value="{$value[$k]}" /></td>
+	<!-- /loop -->
+	<td><input type="button" value="删除" onclick="$(this).parent().parent().remove()" class="btn" /></td>
+</tr>
+<!-- /if -->
+<!-- /loop -->
+<tr>
+	<td colspan="{echo count($_pname)+1}"><input type="button" value="添加一行" id="{$_rs.identifier}_add_line" class="btn" /></td>
+</tr>
+</table>
+</div>
+<!-- else -->
+<div class="param">
+<table class="list" style="border:1px solid #ccc;" cellpadding="0" cellspacing="1" id="{$_rs.identifier}_tbl">
+<!-- loop from=$_pname key=$key value=$value -->
+<tr>
+	<td><label><input type="checkbox" name="{$_rs.identifier}_title_{$key}" {if $_rslist[0][$key]} checked{/if} />{$value}</label></td>
+	<td><input type="text" name="{$_rs.identifier}_body[]" style="width:{$_rs.p_width}px;" value="{$_rslist[1][$key]}" /></td>
+</tr>
+<!-- /loop -->
+</table>
+
+</div>
+<!-- /if -->

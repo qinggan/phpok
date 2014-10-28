@@ -1,0 +1,117 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{func include_js list.js}"></script>
+<!-- if $project_list -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#project li").mouseover(function(){
+		$(this).addClass("hover");
+	}).mouseout(function(){
+		$(this).removeClass("hover");
+	}).click(function(){
+		var url = $(this).attr("href");
+		if(url)
+		{
+			direct(url);
+		}
+		else
+		{
+			alert("未指定动作！");
+			return false;
+		}
+	});
+});
+</script>
+<div class="tips">
+	<span class="red">{$rs.title}</span> 子项信息，请点击进入修改
+</div>
+<ul class="project" id="project">
+	<!-- loop from=$project_list key=$key value=$value -->
+	<li id="project_{$value.id}" title="{$value.title}" status="{$value.status}" href="{echo admin_url('list','action')}&id={$value.id}">
+		<div class="project" href="{echo admin_url('list','action')}&id={$value.id}">
+			<div class="img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" /></div>
+			<div class="txt" id="txt_{$value.id}">{$value.nick_title ? $value.nick_title : $value.title}</div>
+		</div>
+	</li>
+	<!-- /loop -->
+</ul>
+<div class="clear"></div>
+<!-- /if -->
+
+<!-- if $popedom.set || $session.admin_rs.if_system -->
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('list')}">内容管理</a>
+	<!-- if $pid -->
+		<!-- loop from=$plist key=$key value=$value id=plist_id -->
+		&raquo; <a href="{echo admin_url('list','action')}&id={$value.id}" title="{$value.title}">{$value.title}</a>		
+		<!-- /loop -->
+	<!-- /if -->
+	&raquo; 编辑页面属性
+</div>
+
+<!-- if $rs.admin_note -->
+<div class="tips">{$rs.admin_note}</div>
+<!-- /if -->
+
+<ul class="group">
+	<li class="on" onclick="$.admin.group(this)" name="main">基本设置</li>
+	<li onclick="$.admin.group(this)" name="seo">SEO优化</li>
+</ul>
+
+<form method="post" id="{$ext_module}" action="{echo admin_url('list','save')}" onsubmit="return project_check();">
+<input type="hidden" id="id" name="id" value="{$id}" />
+<div id="main_setting">
+	<div class="table">
+		<div class="title">
+			名称：
+			<span class="note">设置名称</span>
+		</div>
+		<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
+	</div>
+	<!-- php:$extlist = get_phpok_ext("project-".$id) -->
+	<div id="project_edit">
+	{$extlist.content.content}
+	</div>
+</div>
+<div id="seo_setting" class="hide">
+	<div class="table">
+		<div class="title">
+			SEO标题：
+			<span class="note">设置此标题后，网站Title将会替代默认定义的，不能超过85个汉字</span>
+		</div>
+		<div class="content">
+			<input type="text" id="seo_title" name="seo_title" class="long" value="{$rs.seo_title}" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			SEO关键字：
+			<span class="note">多个关键字用英文逗号或英文竖线隔开</span>
+		</div>
+		<div class="content">
+			<input type="text" id="seo_keywords" name="seo_keywords" class="long" value="{$rs.seo_keywords}" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			SEO描述：
+			<span class="note">简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字</span>
+		</div>
+		<div class="content">
+			<textarea name="seo_desc" id="seo_desc" class="long">{$rs.seo_desc}</textarea>
+		</div>
+	</div>
+</div>
+
+<div class="table">
+	<div class="content">
+		<br />
+		<input type="submit" value="提 交" class="submit" />
+		<br />
+	</div>
+</div>
+</form>
+
+<!-- /if -->
+
+<!-- inc:foot -->

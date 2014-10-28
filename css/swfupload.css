@@ -1,0 +1,19 @@
+/***********************************************************
+	Filename: css/swfupload.css
+	Note	: SWFUpload上传涉及到的样式
+	Version : 4.0
+	Web		: www.phpok.com
+	Author  : qinggan <qinggan@188.com>
+	Update  : 2013年10月17日
+***********************************************************/
+/* swfupload 上传涉及到的样式效果 */
+.swfupload_progress{padding:1px;}
+.progressWrapper {overflow: hidden;}
+.progressContainer {margin: 5px;padding: 4px;border: solid 1px #E8E8E8;background-color: #F7F7F7;overflow: hidden;}
+.progressName {font-size: 8pt;font-weight: 700;color: #555;height: 14px;text-align: left;white-space: nowrap;overflow: hidden;}
+.progressBarInProgress,.progressBarComplete,.progressBarError{font-size: 0;width: 0%;height: 2px;background-color: blue;margin-top: 2px;}
+.progressBarComplete {width: 100%;background-color: green;visibility: hidden;}
+.progressBarError {width: 100%;background-color: red;visibility: hidden;}
+.progressBarStatus {margin-top: 2px;width: 337px;font-size: 7pt;text-align: left;white-space: nowrap;}
+a.progressCancel {font-size: 0;display: block;height: 14px;width: 14px;background-image: url("../images/swf_c_btn.gif");background-repeat: no-repeat;background-position: -14px 0px;float: right;}
+a.progressCancel:hover {background-position: 0px 0px;}

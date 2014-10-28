@@ -1,0 +1,93 @@
+<!-- php:$title = ($cate_rs && $cate_rs.id != $page_rs.cate) ? '发布主题 - '.$cate_rs.title.' - '.$page_rs.title : '发布主题 - '.$page_rs.title -->
+<!-- include tpl=head title=$title menutitle=$page_rs.title -->
+<!-- if $page_rs.banner -->
+<div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
+<!-- /if -->
+<div class="wrap mb10">
+	<div class="bbsdetail">
+		<dl>
+			<dt><img src="{$rs.user_id.avatar ? $rs.user_id.avatar : 'images/avatar_huge.gif'}" border="0" alt="{$rs.user_id.user ? $rs.user_id.user : '访客'}" />{$rs.user_id.user ? $rs.user_id.user : '访客'}</dt>
+			<dd>
+				<div class="Remarks">
+					<div class="postmessage">
+						<h3>{$rs.title}</h3>
+						{$rs.content}
+					</div>
+					<div class="moddiv">楼主</div>
+				</div>
+				<div class="bgshuxing">
+					发帖时间：<b>{func time_format $rs.dateline}</b> | 查看数：<b>{$rs.hits}</b>
+					<!-- if $rs.replydate -->
+					| 最后回复时间：<b>{func time_format $rs.replydate}</b>
+					<!-- /if -->
+				</div>
+			</dd>
+		</dl>
+		<!-- php:$list = phpok_reply($rs.id,5) -->
+		<!-- loop from=$list.list key=$key value=$value id=listId -->
+		<dl>
+			<dt><img src="{$value.uid.avatar ? $value.uid.avatar : 'images/avatar_huge.gif'}" alt="{$value.uid.user ? $value.uid.user : '访客'}" /></dt>
+			<dd>
+				<div class="Remarks">
+					<div class="postmessage">{$value.content}</div>
+					<div class="moddiv"><span class="nickname">{$value.uid.user ? $value.uid.user :'游客'}</span>发表于{func time_format $value.addtime}</div>
+				</div>
+			</dd>
+		</dl>
+		<!-- /loop -->
+		<!-- if $list.total > 5 -->
+		<!-- php:$pagelist = phpok_page($rs.url,$list.total,$list.pageid,$list.psize,"always=1") -->
+		<div class="Pages">
+			<ul>
+				<!-- loop from=$pagelist key=$key value=$value -->
+				<li{if $value.status} class="current"{/if}><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
+				<!-- /loop -->
+			</ul>
+		</div>
+		<!-- /if -->
+		<!-- if $session.user_id -->
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#comment_post").submit(function(){
+				$(this).ajaxSubmit({
+					'url':api_url('comment','save','id={$rs.id}'),
+					'type':'post',
+					'dataType':'json',
+					'success':function(rs){
+						if(rs.status != 'ok')
+						{
+							alert(rs.content);
+							return false;
+						}
+						else
+						{
+							alert('您的回复已成功提交');
+							$.phpok.reload();
+							return true;
+						}
+					}
+				});
+				return false;
+			});
+		});
+		</script>
+		<dl>
+			<dt><img src="{$session.user_rs.avatar ? $session.user_rs.avatar : 'images/avatar_huge.gif'}" alt="{$session.user_name}" /></dt>
+			<dd>
+				<div class="Remarks">
+					<form method="post" id="comment_post">
+					<textarea name="comment" id="comment" class="textarea"></textarea>
+					<input name="" type="submit" class="bbsbtn hover" value="提交" />
+					</form>
+				</div>
+			</dd>
+		</dl>
+		<!-- /if -->
+		
+		<div class="bbspage">
+			<a href="javascript:history.go(-1);void(0);" class="bbspagebtn hover">返回上一页</a>
+			<a href="{url ctrl=post/}&id={$page_rs.identifier}&cateid={$cate_rs.id}" class="bbspagebtn hover">发布新帖</a>
+		</div>
+	</div>
+</div>
+<!-- include tpl=foot -->

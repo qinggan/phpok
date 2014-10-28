@@ -1,0 +1,174 @@
+<!-- include tpl=head title=附件管理 -->
+<link rel="stylesheet" type="text/css" href="js/webuploader/webuploader.css" />
+<script type="text/javascript" src="js/webuploader/webuploader.min.js"></script>
+<script type="text/javascript" src="{func include_js res.js}"></script>
+<div class="tips">
+	<!-- include tpl=res_btn -->
+	您当前的位置：<a href="{$home_url}">资源管理</a>
+	&raquo; 管理附件：<span class="b">{$rs.title}</span>
+</div>
+<div style="display:none;" id="myfilename"></div>
+<form method="post" action="{url ctrl=res func=setok/}" onsubmit="return res_setok();">
+<input type="hidden" id="id" name="id" value="{$rs.id}" />
+<div class="table">
+	<div class="title">
+		附件名称：
+		<span class="note">设置附件的名称，以方便管理</span>
+	</div>
+	<div class="content">
+		<input type="text" id="title" name="title" class="default" value="{$rs.title}" />
+		<input type="button" value="下载" onclick="download_it('{$rs.id}')" class="btn" />
+		<input type="button" value="预览" onclick="preview_attr('{$rs.id}')" class="btn" />
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		附件分类：
+		<span class="note">此操作不会移动图片信息</span>
+	</div>
+	<div class="content">
+		<select id="cate_id" name="cate_id">
+			<!-- loop from=$catelist key=$key value=$value -->
+			<option value="{$value.id}" {if $rs.cate_id == $value.id} selected{/if}>{$value.title}</option>
+			<!-- /loop -->
+		</select>
+	</div>
+</div>
+
+
+<div class="table">
+	<div class="title">
+		覆盖上传文件：
+		<span class="note">使用此功能将直接覆盖上传原来附件信息，请慎用，仅限上传 <span class="red b">{$rs.ext}</span> 附件</span>
+	</div>
+	<div class="content">
+		<table>
+		<tr>
+			<td valign="top"><div id="upload_picker"></div></td>
+			<td>&nbsp;</td>
+			<td valign="top"><input id="upload_submit" type="button" class="submit" value="开始上传" /></td>
+			<td>&nbsp;</td>
+			<td id="div_status"></td>
+		</tr>
+		</table>
+	</div>
+</div>
+
+<div class="table">
+	<div class="content" id="upload_progress"></div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	obj_upload = new $.phpok_upload({
+		"multi"							: false,
+		"id"							: "upload",
+		"pick"							: "#upload_picker",
+		"swf"							: "js/webuploader/upload.swf",
+		"server"						: "{url ctrl=upload func=replace oldid=$rs.id/}",
+		"filetypes"						: "{$rs.ext}",
+		"cateid"						: $("#cate_id").val(),
+		"formData"						:{'{func session_name}':'{func session_id}'},
+		"success"						:function(){
+			window.location.reload();
+		}
+	});
+});
+
+</script>
+<!-- if $rs.ext == "jpg" || $rs.ext == "gif" || $rs.ext == "png" -->
+<div class="table">
+	<div class="title">
+		附件后台缩略图：
+		<span class="note">此图仅限后台使用，可以人工裁图</span>
+	</div>
+	<div class="content">
+		<table>
+		<tr>
+			<td><img src="{$rs.ico}" border="0" width="80px" /></td>
+			<td>&nbsp;</td>
+			<td>
+				<div class="mb3"><input type="button" value="重新生成" onclick="recreate('{$rs.id}','')" class="button" /></div>
+				<div><input type="button" value="预览" onclick="$.dialog.open('{$rs.ico}',{title:'缩略图',lock:true})" class="button" /></div>
+			</td>
+		</tr>
+		</table>
+	</div>
+</div>
+<!-- /if -->
+
+<div class="table">
+	<div class="title">
+		附件上传时间：
+		<span class="note">不支持修改，上传后自动生成</span>
+	</div>
+	<div class="content">
+		<input type="text" id="addtime" name="addtime" value="{echo date('Y-m-d H:i:s',$rs[addtime])}" disabled />
+	</div>
+</div>
+
+<!-- if $rs.attr && $rs.attr.width && $rs.attr.height -->
+<div class="table">
+	<div class="title">
+		附件宽高：
+		<span class="note">此参数不允许人工修改，系统自动读取</span>
+	</div>
+	<div class="content">
+		<input type="text" disabled name="attr[width]" value="{$rs.attr.width}" class="short" /> &#215; <input type="text" disabled name="attr[height]" value="{$rs.attr.height}" class="short" />
+	</div>
+</div>
+<!-- /if -->
+
+<div class="table">
+	<div class="title">
+		附件说明：
+		<span class="note">如需对此附件进行说明，可在这里编写</span>
+	</div>
+	<div class="content"><textarea name="note" id="note" style="width:600px;height:100px;">{$rs.note}</textarea></div>
+</div>
+<!-- if $show_ext -->
+<div class="table">
+	<div class="title">
+		扩展附件：
+		<span class="note">下列图片是附件在上传时根据GD库配置自动生成，您可以重新裁剪或重新生成</span>
+	</div>
+	<div class="content">
+		<table>
+		<!-- loop from=$rs.gd key=$key value=$value id=rs_gd -->
+		<tr>
+			<td><img src="{$value.filename}" border="0" height="{$value.height > 120 ? 120 : $value.height}px" /></td>
+			<td>
+				<div class="mb3"><input type="button" value="重新生成" onclick="recreate('{$rs.id}','{$value.gd}')" class="button" /></div>
+				<div><input type="button" value="预览" onclick="$.dialog.open('{$value.filename}',{title:'图片方案：{$value.gd}',lock:true})" class="button" /></div>
+			</td>
+			<td>&nbsp;</td>
+			<td>
+				<div class="mb3">宽：{$value.width}px</div>
+				<div class="mb3">高：{$value.height}px</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		<!-- loop from=$gdlist key=$key value=$value id=gdlist_i -->
+		<tr>
+			<td align="center" height="100px">缺少方案：{$key}</td>
+			<td>
+				<div class="mb3"><input type="button" value="创建" onclick="recreate('{$rs.id}','{$value.identifier}')" class="button" /></div>
+			</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+</div>
+
+<!-- /if -->
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit" />
+	</div>
+</div>
+
+</form>
+<!-- inc:foot -->

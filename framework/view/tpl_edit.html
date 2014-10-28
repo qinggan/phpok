@@ -1,0 +1,40 @@
+<!-- include tpl=head_open -->
+<link rel="stylesheet" href="js/codemirror/codemirror.css">
+<script type="text/javascript" src="js/codemirror/codemirror.js"></script>
+<style type="text/css">
+.CodeMirror{border:1px solid #ccc;}
+.CodeMirror-scroll{width:675px;height:360px;}
+</style>
+<div class="tips">
+	在线编辑请确定文件有写入权限，
+	风格：<span class="red">{$rs.title}</span>，
+	文件：<span class="red">{$folder}{$title}</span>
+</div>
+
+<form method="post" action="{func admin_url tpl edit_save}&id={$id}&folder={func rawurlencode $folder}&title={func rawurlencode $title}">
+<div style="margin-top:3px;">
+	<table cellpadding="0" cellspacing="0" style="width:auto;height:auto;border:0;" border="0">
+	<tr>
+		<td><textarea id="content" name="content">{$content}</textarea></td>
+	</tr>
+	</table>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit" />
+	</div>
+</div>
+</form>
+<script type="text/javascript">
+$(document).ready(function(){
+	var delay;
+	var code_editor_{$rs.identifier} = CodeMirror.fromTextArea(document.getElementById("content"),{
+		lineNumbers		: true,
+		matchBrackets	: true,
+		lineWrapping	: true,
+		indentWithTabs	: true,
+		indentUnit		: 4
+	});
+});
+</script>
+<!-- include tpl=foot_open -->

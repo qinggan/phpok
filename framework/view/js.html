@@ -1,0 +1,49 @@
+var basefile = "{$basefile}";
+var ctrl_id = "{$ctrl_id}";
+var func_id = "{$func_id}";
+var webroot = "{$d_url}";
+var apifile = "{$api_file}";
+
+function get_url(ctrl,func,ext)
+{
+	var url = webroot + basefile + "?" + ctrl_id + "=" + ctrl;
+	if(func && func != "undefined")
+	{
+		url += "&" + func_id + "=" + func;
+	}
+	if(ext && ext != "undefined")
+	{
+		url += "&"+ext;
+	}
+	return url;
+}
+
+function js_url(filename)
+{
+	var url = webroot + basefile + "?" + ctrl_id + "=ajax&filename=" + filename;
+	return url;
+}
+
+function api_url(file,action,ext)
+{
+	var url = webroot + apifile + "?{$ctrl_id}="+file;
+	if(action && action != "undefined")
+	{
+		url += "&{$func_id}="+action;
+	}
+	if(ext && ext != "undefined")
+	{
+		url += "&"+ext;
+	}
+	return url;
+}
+
+
+//返回后台首页
+function go_home()
+{
+	var url = get_url('index');
+	window.location.href = url;
+}
+
+{$ext_js}

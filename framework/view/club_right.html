@@ -1,0 +1,45 @@
+	<div class="Sider_right">
+		<div class="blue_box">
+			<div class="Sider_box">
+				<h3 class="title">{$page_rs.title}</h3>
+				<ul class="About">
+					<!-- php:$list = phpok("about-club") -->
+					<!-- loop from=$list key=$key value=$value -->
+					<li><a{if $value.id == $cate_rs.id} class="choose"{/if} href="{if $value.link}{$value.link}{else}index.php?id={$page_rs.identifier}&cate={$value.identifier}{/if}"{if $value.link} target="{$value.target}"{/if}>{$value.title}</a></li>
+					<!-- /loop -->
+					<!-- php:unset($list) -->
+				</ul>
+			</div>
+		</div>
+		<script type="text/javascript" src="index.php?app=tj&id=4"></script>
+
+             <div class="Rbox club_right">
+            	<h3>推荐信息</h3>
+                <ul class="club_side">
+                 	<!-- php:$list = phpok("vouch","param=".$page_rs[id]) -->
+                	<!-- loop from=$list key=$key value=$value -->
+                	<li><span></span><a href="index.php?id={$value.identifier}" title="{$value.title}">{func phpok_cut $value.title 28 …}</a></li>
+                	<!-- /loop -->
+                	<!-- php:unset($list) -->
+                </ul>
+      </div>
+      <div class="Rbox club_right">
+            	<h4>热门信息</h4>
+                <ul class="club_side">
+                 	<!-- php:$list = phpok("hot","param=".$page_rs[id]) -->
+                	<!-- loop from=$list key=$key value=$value -->
+                	<li><span></span><a href="index.php?id={$value.identifier}" title="{$value.title}">{func phpok_cut $value.title 28 …}</a></li>
+                	<!-- /loop -->
+                	<!-- php:unset($list) -->
+                </ul>
+      </div>
+            <div class="Rbox">
+            	<p><img src="images/kefu.jpg" /></p>
+                <h3 style="color:#eb6100;">客服中心</h3>
+                <ul class="kefu">
+                	<li><a href="#">投诉与建议</a></li>
+                    <li><a href="#">业务咨询</a></li>
+                    <li><a href="#">政策咨询</a></li>
+                </ul>
+            </div>
+  </div>

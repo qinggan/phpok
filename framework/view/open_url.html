@@ -1,0 +1,65 @@
+<!-- inc:head_open -->
+<script type="text/javascript">
+function select_input(val)
+{
+	var obj = $.dialog.opener;
+	if(val == "index")
+	{
+		obj.$("#{$id}").val("index.php");
+		obj.$("#{$id}_default").val("index.php");
+		obj.$("#{$id}_rewrite").val("index.html");
+	}
+	else
+	{
+		obj.$("#{$id},#{$id}_default").val("index.php?id="+val);
+		obj.$("#{$id}_rewrite").val(val+".html");
+	}
+	$.dialog.close();
+}
+function select_post(val)
+{
+	var obj = $.dialog.opener;
+	obj.$("#{$id},#{$id}_default").val("index.php?{$app->config.ctrl_id}=post&id="+val);
+	obj.$("#{$id}_rewrite").val("post/"+val+".html");
+	$.dialog.close();
+}
+</script>
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th class="id" height="30px">ID</th>
+	<th class="title">项目名称</th>
+	<th class="w60">分类</th>
+	<th class="w60">内容</th>
+	<th class='w60'>操作</th>
+	<th class='w60'>表单</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td style="text-align: left;height:33px;">&nbsp;{$value.space}{$value.title}<span class="gray"> / {$value.identifier}</span></td>
+	<td class="center">
+		<!-- if $value.cate -->
+		<a href="{echo admin_url('open','url')}&pid={$value.id}&type=cate&id={$id}">进入</a>
+		<!-- else -->
+		-
+		<!-- /if -->
+	</td>
+	<td class="center">
+		<!-- if $value.module -->
+		<a href="{echo admin_url('open','url')}&pid={$value.id}&type=list&id={$id}">进入</a>
+		<!-- else -->
+		-
+		<!-- /if -->
+	</td>
+	<td>
+		<input type="button" value="提交" class="btn" onclick="select_input('{$value.identifier}')" />
+	</td>
+	<td>
+		<input type="button" value="表单" class="btn" onclick="select_post('{$value.identifier}')" />
+	</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<!-- inc:foot_open -->

@@ -1,0 +1,48 @@
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs.content}" />
+<div class="_e_upload">
+	<div class="_select">
+		<table>
+		<tr>
+			<td><div id="{$_rs.identifier}_picker"></div></td>
+			<td><button id="{$_rs.identifier}_submit" type="button" class="button">开始上传</button></td>
+			<td><button id="select_res_{$_rs.identifier}" class="button" type="button">选择{$_rs.upload_type.name}</button></td>
+			<td id="{$_rs.identifier}_sort" style="display:none"><button id="select_res_{$_rs.identifier}" onclick="obj_{$_rs.identifier}.sort()" class="button" type="button">排序</button></td>
+		</tr>
+		</table>
+	</div>
+	<div class="_progress" id="{$_rs.identifier}_progress"></div>
+	<div class="_list" id="{$_rs.identifier}_list"></div>
+</div>
+<script type="text/javascript">
+var obj_{$_rs.identifier};
+$(document).ready(function(){
+	obj_{$_rs.identifier} = new $.phpok_upload({
+		"multi"							: {$_rs.is_multiple ? 'true' : 'false'},
+		"id"							: "{$_rs.identifier}",
+		"pick"							: "#{$_rs.identifier}_picker",
+		"swf"							: "js/webupload/upload.swf",
+		"server"						: "{url ctrl=upload func=save/}",
+		"filetypes"						: "{$_rs.upload_type.ext}",
+		"cateid"						: "{$_rs.cate_id}",
+		"formData"						:{'{func session_name}':'{func session_id}'}
+	});
+	obj_{$_rs.identifier}.preview_res();
+
+	$("#select_res_{$_rs.identifier}").click(function(){
+		var url = "{url ctrl=open func=input type=$_rs.upload_type.id id=$_rs.identifier tpl=open_image2/}";
+		url += "&is_multiple={$_rs.is_multiple ? 1 : 0}";
+		var c = $("#{$_rs.identifier}").val();
+		$.dialog.data('{$_rs.identifier}',c);
+		$.dialog.open(url,{
+			title: "{$_rs.upload_type.name}管理器",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			ok: function(){
+				obj_{$_rs.identifier}.preview_res();
+			}
+		});
+	});
+});
+</script>
+

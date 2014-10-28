@@ -1,0 +1,172 @@
+<!-- php:$extlist = get_phpok_ext($ext_module,$ext_idstring) -->
+<!-- inc:head -->
+<script type="text/javascript" src="{func include_js cate.js}"></script>
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('cate')}">栏目管理</a>
+	<!-- if $id -->
+	&raquo; 编辑分类信息
+	<!-- else -->
+	&raquo; 添加新分类（添加字段前建议先保存数据，每添加完一个字段系统会自动刷新）
+	<!-- /if -->
+</div>
+<ul class="group">
+	<li class="on" onclick="$.admin.group(this)" name="main" title="分类基本信息">基本设置</li>
+	<li onclick="$.admin.group(this)" name="admin" title="分类的一些其他属性">分类属性</li>
+	<li onclick="$.admin.group(this)" name="seo" title="分类SEO信息设置">SEO优化</li>
+</ul>
+
+<form method="post" id="{$ext_module}" action="{echo admin_url('cate','save')}" onsubmit="return cate_check();">
+<input type="hidden" id="id" name="id" value="{$id}" />
+<div id="main_setting">
+<div class="table">
+	<div class="title">
+		分类名称：
+		<span class="note">即在前台使用的名称信息</span></span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input type="text" id="title" name="title" class="default" value="{$rs.title}" /></td>
+			<td><div id="title_note"></div></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		标识：
+		<span class="note">限<span class="red">字母、数字、下划线或中划线且必须是字母开头</span></span>
+	</div>
+	<div class="content">
+		<input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		上级分类：
+		<span class="note">请选择上一级分类信息</span>
+	</div>
+	<div class="content">
+		<select name="parent_id" id="parent_id" class="p_cate">
+			<option value="0">设置为根分类</option>
+			<!-- foreach($parentlist AS $key=>$value) -->
+			<option value="{$value.id}"{if($value.id == $parent_id)} selected{/if}>{$value._space}{$value.title}</option>
+			<!-- end -->
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		排序：
+		<span class="note">值越小越往前靠，最小值为0，最大值为255</span>
+	</div>
+	<div class="content"><input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis ? $rs.taxis : 255}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		状态：
+		<span class="note"></span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label for="status_0"><input type="radio" name="status" id="status_0" value="0"{if $id && !$rs[status]} checked{/if} />不使用</label></td>
+			<td><label for="status_1"><input type="radio" name="status" id="status_1" value="1"{if !$id || $rs[status]} checked{/if} />使用</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+{$extlist.content.content}
+</div>
+
+<div class="hide" id="seo_setting">
+	<div class="table">
+		<div class="title">
+			SEO标题：
+			<span class="note">设置此标题后，网站Title将会替代默认定义的，不能超过85个汉字</span>
+		</div>
+		<div class="content">
+			<input type="text" id="seo_title" name="seo_title" class="long" value="{$rs.seo_title}" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			SEO关键字：
+			<span class="note">多个关键字用英文逗号或英文竖线隔开</span>
+		</div>
+		<div class="content">
+			<input type="text" id="seo_keywords" name="seo_keywords" class="long" value="{$rs.seo_keywords}" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			SEO描述：
+			<span class="note">简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字</span>
+		</div>
+		<div class="content">
+			<textarea name="seo_desc" id="seo_desc" class="long">{$rs.seo_desc}</textarea>
+		</div>
+	</div>
+</div>
+<div id="admin_setting" class="hide">
+	<div class="table">
+		<div class="title">
+			默认主题数：
+			<span class="note">启用此项将替换项目中的设置</span>
+		</div>
+		<div class="content">
+			<input type="text" id="psize" name="psize" value="{$rs.psize}" class="short" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			列表模板：
+			<span class="note">此处设置自定义模板，将替代项目中的模板设置</span>
+		</div>
+		<div class="content">
+			<input type="text" id="tpl_list" name="tpl_list" class="default" value="{$rs.tpl_list}" />
+			<input type="button" value="选择" onclick="phpok_tpl_open('tpl_list')" class="btn" />
+			<input type="button" value="清空" onclick="$('#tpl_list').val('');" class="btn" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			内容模板：
+			<span class="note">同上</span>
+		</div>
+		<div class="content">
+			<input type="text" id="tpl_content" name="tpl_content" class="default" value="{$rs.tpl_content}" />
+			<input type="button" value="选择" onclick="phpok_tpl_open('tpl_content')" class="btn" />
+			<input type="button" value="清空" onclick="$('#tpl_content').val('');" class="btn" />
+		</div>
+	</div>
+</div>
+
+<div class="table">
+	<div class="content">
+		<br />
+		<input type="submit" value="提 交" class="submit" />
+		<br />
+	</div>
+</div>
+</form>
+
+<script type="text/javascript">
+var use_ext = "{$popedom.ext ? 1 : 0}";
+$(document).ready(function(){
+	//检测是否有自动保存的表单
+	autofill("{$ext_module}");
+	//通过Ajax加载自定义表单选项
+	if(use_ext == "1")
+	{
+		ext_fields("{$ext_module}","{$extlist.content.words}",1,"cate");
+	}
+	else
+	{
+		$(".title a.icon").hide();
+	}
+});
+</script>
+
+<!-- inc:foot -->

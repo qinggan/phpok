@@ -1,0 +1,90 @@
+<!-- include tpl=head -->
+<div id="focus" class="banner">
+	<!-- php:$list = phpok("picplayer") -->
+	<div class="btn">
+		<!-- loop from=$list key=$key value=$value -->
+		<span>{$list_id.num}</span>
+		<!-- /loop -->
+	</div>
+	<ul>
+		<!-- loop from=$list key=$key value=$value -->
+		<li><a href="{$value.link}" target="{$value.target}"><img src="{$value.pic.filename}" alt="{$value.title}" width="1000px" height="180px" /></a></li>
+		<!-- /loop -->
+		<!-- php:unset($list) -->
+	</ul>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#focus').slide({mainCell:'ul',autoPlay:true,titCell:'.btn span',effect:"leftLoop"});
+});
+</script>
+
+<div class="body">
+	<div class="left">
+		<div class="pfw mbottom10">
+			<h3>最新资讯</h3>
+			<ul class="arclist">
+				<!-- php:$list = phpok('news') -->
+				<!-- loop from=$list key=$key value=$value -->
+				<li{if $list_id.num == $list_id.total} class="end"{/if}><a href="{$value.url}" title="{$value.title}">{func phpok_cut $value.title 38 …}</a></li>
+				<!-- /loop -->
+			</ul>
+		</div>
+		<div class="pfw mbottom10">
+			<h3>产品分类</h3>
+			<ul class="catelist">
+				<!-- php:$list = phpok('products_cate') -->
+				<!-- loop from=$list.sublist key=$key value=$value -->
+				<li{if $list_id.num == $list_id.total} class="end"{/if}><a href="{$value.url}" title="{$value.title}">{func phpok_cut $value.title 38 …}</a></li>
+				<!-- /loop -->
+			</ul>
+			<div class="clear"></div>
+		</div>
+		<!-- include tpl=block_contactus -->
+	</div>
+	<div class="right">
+		<!-- php:$info = phpok("aboutus") -->
+		<div class="pfw mbottom10">
+			<h3>{$info.title}<a href="{$info.url}" title="{$info.title}" class="more">more &raquo;</a></h3>
+			<div class="about">
+				<!-- if $info.thumb -->
+				<a href="{$info.url}" title="{$info.title}"><img src="{$info.thumb.gd.auto}" alt="{$info.title}" class="img" /></a>
+				<!-- /if -->
+				{$info.note}
+			</div>
+			<div class="clear"></div>
+		</div>
+		<!-- php:$list = phpok('photo') -->
+		<div class="pfw mbottom10">
+			<h3>{$list.project.title}<a href="{$list.project.url}" title="{$list.project.title}" class="more">more &raquo;</a></h3>
+			<div class="products">
+			<ul>
+				<!-- loop from=$list.rslist key=$key value=$value -->
+				<li>
+					<div class="pic"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" border="0" alt="{$value.title}" /></a></div>
+					<div class="txt"><a href="{$value.url}" title="{$value.title}">{func phpok_cut $value.title 14 …}</a></div>
+				</li>
+				<!-- /loop -->
+			</ul>
+			</div>
+			<script type="text/javascript">
+			$(document).ready(function(){
+				$(".products").slide({mainCell:"ul",autoPage:true,effect:"leftMarquee",autoPlay:true,vis:4,interTime:50});
+			});
+			</script>
+		</div>
+		
+	</div>
+	<div class="clear"></div>
+	<!-- php:$list = phpok('link') -->
+	<div class="pfw mbottom10">
+		<h3>{$list.project.title}</h3>
+		<ul class="link">
+			<!-- loop from=$list.rslist key=$key value=$value -->
+			<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}">{$value.title}</a></li>
+			<!-- /loop -->
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<!-- inc:foot -->

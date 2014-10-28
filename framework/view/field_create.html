@@ -1,0 +1,160 @@
+<!-- inc:head_open -->
+<!-- 
+	弹出窗口创建字段功能，自定义目标存储
+	特别说明：创建的字段自动存储到目标，不会在字段管理体现
+	提交使用了jquery.ajaxSubmit功能，请确认相应的JS有加载
+ -->
+<script type="text/javascript">
+function field_form_opt(val,eid)
+{
+	if(!val || val == "undefined")
+	{
+		$("#form_type_ext").html('').hide();
+		return false;
+	}
+	var url = get_url("form","config") + "&id="+$.str.encode(val);
+	if(eid && eid != "undefined")
+	{
+		url += "&eid="+eid;
+	}
+	url += "&etype=fields";
+	var html = get_ajax(url);
+	if(html && html != 'exit')
+	{
+		$("#form_type_ext").html(html).show();
+	}
+}
+
+$(document).ready(function(){
+	$('#form_save').submit(function(){
+		$(this).ajaxSubmit({
+			'url':'{$saveUrl}',
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok')
+				{
+					$.dialog.alert('字段创建成功',function(){
+						parent.$.phpok.reload();
+					});
+				}
+				else
+				{
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<form method="post" id="form_save">
+<div class="table">
+	<div class="title">
+		名称/标识：
+		<span class="note">名称会在表单中体现，标识限：<span class="darkblue b">字母、数字及下划线，且必须以字母开头</span></span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input type="text" id="title" name="title" value="{$rs.title}" placeholder="名称" /></td>
+			<td>&nbsp;/&nbsp;</td>
+			<td><input type="text" id="identifier" name="identifier" value="{$rs.identifier}" placeholder="标识" /></td>
+		</tr>
+		</table>
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		字段备注：
+		<span class="note">填写表单时，指定这个项目的注意事项</span></span>
+	</div>
+	<div class="content"><input type="text" id="note" name="note" class="long" value="{$rs.note}" /></div>
+</div>
+
+<div class="table">
+	<div class="title">
+		字段类型 / 表单类型：
+		<span class="note">请慎重选项此项，一般创建后不要修改。</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td>
+				<select name="field_type" id="field_type">
+					<option value="">请选择字段类型…</option>
+					<!-- loop from=$fields key=$key value=$value -->
+					<option value="{$key}"{if $rs.field_type == $key} selected{/if}>{$value}</option>
+					<!-- /loop -->
+				</select>
+			</td>
+			<td>&nbsp;/&nbsp;</td>
+			<td>
+				<select name="form_type" id="form_type" onchange="field_form_opt(this.value,'{$id}')">
+					<option value="">请选择表单类型…</option>
+					<!-- loop from=$forms key=$key value=$value -->
+					<option value="{$key}"{if $key == $rs.form_type} selected{/if}>{$value}</option>
+					<!-- /loop -->
+				</select>
+			</td>
+		</tr>
+		</table>
+	</div>
+</div>
+
+<div id="form_type_ext" style="display:none;"></div>
+<input type="hidden" name="form_style" id="form_style" value="{$rs.form_style}" />
+
+<div class="table">
+	<div class="title">
+		表单默认值：
+		<span class="note">设置表单默认值，如果表单中有多个值，请用英文逗号隔开</span>
+	</div>
+	<div class="content"><input type="text" id="content" name="content" class="long" value="{$rs.content}" /></div>
+</div>
+
+
+<div class="table">
+	<div class="title">
+		接收数据格式化：
+		<span class="note">设置文本常见格式，如HTML，整型，浮点型等</span>
+	</div>
+	<div class="content">
+		<select name="format" id="format">
+			<!-- loop from=$formats key=$key value=$value id=format_list_id -->
+			<option value="{$key}"{if $rs.format == $key} selected{/if}>{$value}</option>			
+			<!-- /loop -->
+		</select>
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		排序：
+		<span class="note">值越小越往前靠，可选范围：1-255</span>
+	</div>
+	<div class="content">
+		<input type="text" name="taxis" id="taxis" value="{$rs.taxis ? $rs.taxis : 255}" />
+	</div>
+</div>
+
+<div class="table">
+	<div class="content">
+		<br />
+		<input type="submit" value="提 交" class="submit" />
+		<br />
+	</div>
+</div>
+</form>
+
+<!-- if $id -->
+<script type="text/javascript">
+$(document).ready(function(){
+	field_form_opt("{$rs.form_type}","{$id}");
+});
+</script>
+<!-- /if -->
+
+<!-- inc:foot_open -->

@@ -1,0 +1,165 @@
+<!-- inc:head -->
+<script type="text/javascript">
+function to_del(id)
+{
+	if(!id)
+	{
+		$.dialog.alert("操作非法");
+		return false;
+	}
+	var q = confirm("确定要删除此会员组吗？删除后是不能恢复的");
+	if(q != 0)
+	{
+		var url = get_url("usergroup","ajax_del") + "&id="+id;
+		var msg = get_ajax(url);
+		if(!msg) msg = "error: 操作非法";
+		if(msg == "ok")
+		{
+			$.phpok.reload();
+		}
+		else
+		{
+			$.dialog.alert(msg);
+			return false;
+		}
+	}
+}
+
+function to_modify(id)
+{
+	var url = get_url("usergroup","set","id="+id);
+	$.phpok.go(url);
+}
+
+function set_default(id,title)
+{
+	$.dialog.confirm("确定要将组 <span class='red'>"+title+"</span> 设置为会员默认组吗?<br />设置成功后，新注册会员将自定使用此组功能",function(){
+		var url = get_url("usergroup","default")+"&id="+id;
+		var rs = get_ajax(url);
+		if(rs == "ok")
+		{
+			direct(window.location.href);
+		}
+		else
+		{
+			$.dialog.alert(rs);
+			return false;
+		}
+	});
+}
+function set_guest(id,title)
+{
+	$.dialog.confirm("确定要将组 <span class='red'>"+title+"</span> 设置为游客组吗?<br />设置成功后，来访者将调用此组权限信息",function(){
+		var url = get_url("usergroup","guest")+"&id="+id;
+		var rs = get_ajax(url);
+		if(rs == "ok")
+		{
+			direct(window.location.href);
+		}
+		else
+		{
+			$.dialog.alert(rs);
+			return false;
+		}
+	});
+}
+function set_status(id)
+{
+	var val = $("#status_"+id).val();
+	if(val == 1)
+	{
+		$.dialog.confirm("确定要禁用此会员组信息吗?<br />禁用后，该组会员不能登录，请慎用",function(){
+			var url = get_url("usergroup","status")+"&id="+id+"&status=0";
+			var rs = get_ajax(url);
+			if(rs == "ok")
+			{
+				direct(window.location.href);
+			}
+			else
+			{
+				$.dialog.alert(rs);
+				return false;
+			}
+		});
+	}
+	else
+	{
+		var url = get_url("usergroup","status")+"&id="+id+"&status=1";
+		var rs = get_ajax(url);
+		if(rs == "ok")
+		{
+			direct(window.location.href);
+		}
+		else
+		{
+			$.dialog.alert(rs);
+			return false;
+		}
+	}
+}
+</script>
+<div class="tips">
+	<div class="action"><a href="{echo admin_url('usergroup','set')}" title="">添加新会员组</a></div>
+	&raquo; 会员组
+</div>
+
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th width="50px">组ID</th>
+	<th width="30">&nbsp;</th>
+	<th class="lft" >组名称</th>
+	<th>默认组</th>
+	<th>游客组</th>
+	<th width="50px">排序</th>
+	<th width="200px">操作</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr>
+	<td align='center' class="tc_left" height="30px">{$value.id}</td>
+	<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="set_status({$value.id})"{else}style="cursor: default;"{/if} value="{$value.status}"></span></td>
+	<td align='left' class="tc_right">&nbsp;{$value.title}<!-- if $value.is_open --><span class="darkblue i"> (开放选择)</span><!-- /if --></td>
+	<td align="center">
+		<!-- if $value.is_default -->
+		<span class="red">默认会员组</span>
+		<!-- else -->
+			<!-- if $value.is_guest -->
+			-
+			<!-- else -->
+				<!-- if $session.admin_rs.if_system -->
+				<input type="button" value="设为默认" onclick="set_default('{$value.id}','{$value.title}')" class="button" />
+				<!-- else -->
+				-
+				<!-- /if -->
+			<!-- /if -->
+		<!-- /if -->
+	</td>
+	<td align="center">
+		<!-- if $value.is_guest -->
+		<span class="darkblue">游客组</span>
+		<!-- else -->
+			<!-- if $value.is_default -->
+			-
+			<!-- else -->
+				<!-- if $session.admin_rs.if_system -->
+				<input type="button" value="设为游客组" onclick="set_guest('{$value.id}','{$value.title}')" class="button" />
+				<!-- else -->
+				-
+				<!-- /if -->
+			<!-- /if -->
+		<!-- /if -->
+	</td>
+	<td align="center">{$value.taxis}</td>
+	<td align="center" class="tc_right">
+		<!-- if $popedom.modify -->
+		<input type="button" value="编辑" class="btn" onclick="to_modify('{:$value[id]}')" />
+		<!-- /if -->
+		<!-- if $popedom.delete -->
+		<input type="button" value="删除" class="btn" onclick="to_del('{:$value[id]}')" />
+		<!-- /if -->
+	</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<!-- inc:foot -->

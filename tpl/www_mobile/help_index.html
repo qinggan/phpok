@@ -1,0 +1,20 @@
+<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
+
+<div data-role="navbar" style="margin-top:-3px;">
+	<ul>
+		<!-- catelist pid=$page_rs.id -->
+		<!-- loop from=$list.sublist key=$key value=$value -->
+		<li><a href="{$value.url}"{if $cate_rs.id == $value.id} class="ui-btn-active"{/if}>{$value.title}</a></li>
+		<!-- /loop -->
+	</ul>
+</div>
+
+
+<div role="main" class="ui-content">
+	<div class="ui-body ui-body-a ui-corner-all">
+		<h3>{$page_rs.title}</h3>
+		<div class="content">{$page_rs.content}</div>
+	</div>
+</div>
+
+<!-- include tpl=foot -->

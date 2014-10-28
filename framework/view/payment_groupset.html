@@ -1,0 +1,95 @@
+<!-- include tpl=head -->
+<div class="tips clearfix">
+	您当前位置：<a href="{url ctrl=payment/}" title="支付管理">支付管理</a>
+	&raquo; <a href="{url ctrl=payment/}" title="方案列表">方案列表</a>
+	&raquo; <!-- if $id -->编辑支付方案<!-- else -->添加支付方案<!-- /if -->
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	top.$.desktop.title('{$id ? "编辑" : "添加"}支付方案');
+	var tip = "您的支付组信息{$id ? '编辑' : '添加'}成功";
+	$("#post_save").submit(function(){
+		if(!$("#title").val())
+		{
+			alert('设置支付组名称');
+			return false;
+		}
+		$(this).ajaxSubmit({
+			'url':get_url('payment','groupsave'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok')
+				{
+					alert(tip);
+					$.phpok.go(get_url('payment'));
+				}
+				else
+				{
+					alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<form method="post" id="post_save">
+<!-- if $id -->
+<input type="hidden" name="id" id="id" value="{$id}" />
+<!-- /if -->
+<div class="table">
+	<div class="title">
+		组名称：
+		<span class="note">设置支付组的名称，请根据您的站点语言来编写相应的组名称</span>
+	</div>
+	<div class="content">
+		<input type="text" id="title" name="title" class="default" value="{$rs.title}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		组状态：
+		<span class="note">禁用组后，其组下列的支付方案将不生效</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label><input type="radio" name="status" value="1"{if $rs.status} checked{/if} />启用</label></td>
+			<td><label><input type="radio" name="status" value="0"{if !$rs.status} checked{/if} />禁用</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		排序：
+		<span class="note">范围控制在0-255，值越小越往前排，默认为255</span>
+	</div>
+	<div class="content">
+		<input type="text" id="taxis" name="taxis" class="short" value="{$id ? $rs.taxis : 255}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		默认组：
+		<span class="note">启用默认组功能后，其他其将显示为可选类型</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label><input type="radio" name="is_default" value="1"{if $rs.is_default} checked{/if} />启用</label></td>
+			<td><label><input type="radio" name="is_default" value="0"{if !$rs.is_default} checked{/if} />禁用</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot -->

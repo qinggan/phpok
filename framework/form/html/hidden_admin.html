@@ -1,0 +1,28 @@
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_hidden,get_id" />
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<td><select id="form_hidden" name="form_hidden">
+		<option value="fixed">固定值</option>
+		<option value="var"{if $rs.form_hidden == "var"} selected="selected"{/if}>参数传值</option>
+	</select></td>
+	<td>&nbsp;</td>
+	<td id="get_id_html"{if $rs.form_hidden != "var"} style="display:none;"{/if}>
+		变量名：<input type="text" id="get_id" name="get_id" class="select" value="{$rs.get_id}" />
+	</td>
+</tr>
+</table>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#form_hidden").change(function(){
+		var val = $(this).val();
+		if(val == "var")
+		{
+			$("#get_id_html").show();
+		}
+		else
+		{
+			$("#get_id_html").hide();
+		}
+	});
+});
+</script>

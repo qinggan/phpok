@@ -1,0 +1,80 @@
+<!-- inc:head -->
+<script type="text/javascript">
+function site_delete(id,title)
+{
+	$.dialog.confirm("确定要删除网站 <span class='red i'>"+title+"</span> 信息吗?<br />删除后相关网站信息都将删除，请慎用！",function(){
+		//删除网站操作
+		var url = get_url("site","delete")+"&id="+id;
+		var rs = json_ajax(url);
+		if(rs.status == "ok")
+		{
+			$.dialog.alert(rs.content,function(){
+				window.location.reload();
+			});
+		}
+		else
+		{
+			$.dialog.alert(rs.content);
+		}
+	});
+}
+function site_default(id,title)
+{
+	$.dialog.confirm("确定要设置网站 <span class='red i'>"+title+"</span> 为默认网站吗?",function(){
+		//删除网站操作
+		var url = get_url("site","default")+"&id="+id;
+		var rs = json_ajax(url);
+		if(rs.status == "ok")
+		{
+			$.dialog.alert(rs.content,function(){
+				window.location.reload();
+			});
+		}
+		else
+		{
+			$.dialog.alert(rs.content);
+		}
+	});
+}
+</script>
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('site')}">多站点维护</a>
+	&raquo; 站点列表
+</div>
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="lft" style="text-indent:12px;">名称</th>
+	<th>目录</th>
+	<th>域名</th>
+	<th class="action">操作</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr>
+	<td style="text-indent:12px;height:22px;">
+		{$value.title}
+		<!-- if $value.is_default -->
+		<span calss='darkblue i'>默认站点</span>
+		<!-- else -->
+			<!-- if $popedom.default -->
+			<input type='button' value='设为默认' onclick="site_default('{$value.id}','{$value.title}')" />
+			<!-- /if -->
+		<!-- /if -->
+	</td>
+	<td class="center">{$value.dir}</td>
+	<td class="center">
+		<!-- if $dlist[$value['id']] -->
+		{func implode $dlist[$value['id']] /}		
+		<!-- /if -->
+	</td>
+	<td>
+		<!-- if $popedom.delete && !$value.is_default -->
+		<a class="icon delete end" onclick="site_delete('{$value.id}','{$value.title}')" title="删除"></a>
+		<!-- /if -->
+	</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<!-- inc:foot -->

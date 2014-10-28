@@ -1,0 +1,173 @@
+<!-- include tpl=head menutitle=网站首页 -->
+<div class="home_banner">
+	<!-- php:$list = phpok('picplayer') -->
+	<ul class="pro_ul">
+		<!-- loop from=$list key=$key value=$value -->
+		<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{$value.pic.filename}" width="980" alt="{$value.title}" /></a></li>
+		<!-- /loop -->
+	</ul>
+	<ul class="page_ul">
+		<!-- loop from=$list key=$key value=$value -->
+		<li></li>
+		<!-- /loop -->
+	</ul>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$(".home_banner").slide({
+		'titCell':'.page_ul li',
+		'mainCell':'.pro_ul',
+		'autoPlay':true
+	});
+});
+</script>
+<div class="wrap">
+	<div class="home_left">
+		<!-- php:$list = phpok('news') -->
+		<div class="m_box">
+			<div class="m_t">
+				<p class="name">{$list.project.title}</p>
+				<span class="name_en">{$list.project.entitle}</span>
+				<a href="{$list.project.url}" class="more" title="阅读更多{$list.project.title}">更多</a>
+				<div class="cl"></div>
+			</div>
+			<ul class="home_news">
+				<!-- loop from=$list.rslist key=$key value=$value -->
+				<li><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
+				<!-- /loop -->
+			</ul>
+		</div>
+
+		<!-- php:$list = phpok('products_cate') -->
+		<div class="m_box">
+			<div class="m_t">
+				<p class="name">产品分类</p>
+				<span class="name_en">Categories</span>
+				<a href="{$list.project.url}" class="more">more</a>
+				<div class="cl"></div>
+			</div>
+			<!-- loop from=$list.tree key=$key value=$value -->
+			<dl class="sort">
+				<dt><a href="{$value.url}">{$value.title}</a></dt>
+				<dd>
+					<!-- loop from=$value.sublist key=$k value=$v -->
+					<a href="{$v.url}">{$v.title}</a>
+					<!-- /loop -->
+				</dd>
+			</dl>
+			<!-- /loop -->
+		 </div>
+		
+		<div class="m_box">
+			<div class="m_t">
+				<p class="name">最新下载</p>
+				<span class="name_en">Downloads</span>
+				<a href="{url id=download-center/}" class="more">more</a>
+				<div class="cl"></div>
+			</div>
+			<ul class="home_news">
+				<!-- php:$list = phpok('xiazaizhongxin') -->
+				<!-- loop from=$list key=$key value=$value -->
+				<li><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
+				<!-- /loop -->
+			</ul>
+		</div>
+		<div class="m_box">
+			<div class="m_t">
+				<p class="name">联系我们</p>
+				<span class="name_en">Contact</span>
+				<div class="cl"></div>
+			</div>
+			<div class="home_contact">
+				<!-- if $config.contactus.company --><h3>{$config.contactus.company}</h3><!-- /if -->
+				<!-- if $config.contactus.address --><div>地址：{$config.contactus.address}</div><!-- /if -->
+				<!-- if $config.contactus.email --><div>Email：{$config.contactus.email}</div><!-- /if -->
+				<!-- if $config.contactus.zipcode --><div>邮编：{$config.contactus.zipcode}</div><!-- /if -->
+				<!-- if $config.contactus.tel --><div>电话：{$config.contactus.tel}</div><!-- /if -->
+				<!-- if $config.contactus.fullname --><div>联系人：{$config.contactus.fullname}</div><!-- /if -->
+			</div>
+		</div>
+	</div>
+	
+	
+	<div class="home_right">
+		<!-- if $page_rs -->
+		<div class="m_box">
+			<div class="m_t">
+				<p class="name">{$page_rs.subtitle}</p>
+				<span class="name_en">{$page_rs.entitle}</span>
+				<!-- if $page_rs.url && $page_rs.link -->
+				<a href="{$page_rs.url}" class="more">更多</a>
+				<!-- /if -->
+				<div class="cl"></div>
+			</div>
+			<div class="home_about">
+				<img src="{$page_rs.pic}" width="129" height="133" />
+				<p>{$page_rs.note}</p>
+			</div>
+		</div>
+		<!-- /if -->
+	  
+		<div class="atlas" id="photoslist">
+			<!-- php:$list = phpok('tujixiangce') -->
+			<div class="atlas_t">
+				<p class="name">{$list.project.title}</p> <span class="name_en">{$list.project.entitle}</span>
+				<div class="tabs">
+					<a href="javascript:void(0);" class="next"></a>
+					<a href="javascript:void(0);" class="prev"></a>
+				</div>
+			</div>
+			<div class="events">
+				<ul>
+				<!-- loop from=$list.rslist key=$key value=$value -->
+				<li><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" width="133" height="151" alt="{$value.title}" /></a></li>
+				<!-- /loop -->
+				</ul>
+			</div>
+		</div>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#photoslist").slide({
+				'mainCell':'.events ul',
+				'effect':"leftLoop",
+				'autoPlay':true,
+				'vis':5
+			});
+		});
+		</script>
+
+		<div class="atlas">
+			<div class="atlas_t">
+				<p class="name">最新产品</p><span class="name_en">New products</span>
+				<div class="tabs"><a href="{url id=product/}" class="more">MORE</a></div>
+			</div>
+			<ul class="home_list">
+				<!-- php:$list = phpok('new_products') -->
+				<!-- loop from=$list.rslist key=$key value=$value -->
+				<li>
+			 		<p class="img159px"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" width="159" height="183" alt="{$value.title}" /></a></p>
+					<p class="l_name">{$value.title}</p>
+					<p class="l_price">价格：<span>{func price_format $value.price $value.currency_id}</span></p>
+					<p><a href="javascript:$.cart.add('{$value.id}',1);void(0);"><img src="images/buy-btn.jpg" width="157" height="33" /></a></p>
+				</li>
+				<!-- /loop -->
+			</ul>
+		</div>
+	</div>
+	<div class="cl"></div>
+</div>
+
+<div class="cooper">
+	<!-- php:$list = phpok('link') -->
+	<div class="cooper_t">
+		<p class="name">{$list.project.title}</p><span class="name_en">{$list.project.entitle}</span>
+		<a href="{url ctrl=post id=$list.project.identifier/}" class="more">+ 申请友情链接</a>
+		<div class="cl"></div>
+	</div>
+	<div class="home_link">
+		<!-- loop from=$list.rslist key=$key value=$value -->
+		<a href="{$value.link}" target="{$value.target}" title="{$value.title}">{$value.title}</a>
+		<!-- /loop -->
+	</div>
+</div>
+<!-- include tpl=foot -->

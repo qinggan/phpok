@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<varchar>字符串</varchar>
+<int>整型</int>
+<float>浮点型</float>
+<date>日期</date>
+<datetime>日期时间</datetime>
+<longtext>长文本</longtext>
+<longblob>二进制信息</longblob>

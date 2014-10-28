@@ -1,0 +1,13 @@
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="root_cate" />
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<td>
+		<select id="root_cate" name="root_cate">
+		<option value="">选择根分类，此项不能为空</option>
+		<!-- loop from=$catelist key=$key value=$value id=catelist_id -->
+		<option value="{$value.id}"{if $value.id == $rs.root_cate} selected{/if}>{$value.title}</option>
+		<!-- /loop -->
+		</select>
+	</td>
+</tr>
+</table>

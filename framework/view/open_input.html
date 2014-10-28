@@ -1,0 +1,30 @@
+<!-- inc:head_open -->
+<script type="text/javascript">
+function phpok_input(val)
+{
+	var obj = art.dialog.opener;
+	obj.$("#{$id}").val(val);
+	$.dialog.close();
+}
+</script>
+<div class="list">
+<table class="list" width="100%">
+<tr>
+	<th>名称</th>
+	<th class="lft">文件地址</th>
+	<th>添加时间</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr class="hand" onclick="phpok_input('{$value.filename}')">
+	<td>{$value.title}</td>
+	<td>{$value.filename}</td>
+	<td>{echo date("Y-m-d",$value[addtime])}</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<div class="table"><!-- inc:pagelist --></div>
+
+<!-- inc:open_search_swfupload -->
+
+<!-- inc:foot_open -->

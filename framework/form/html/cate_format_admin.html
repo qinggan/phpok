@@ -1,0 +1,11 @@
+<table cellpadding="0" cellspacing="0" style="width:auto;height:auto;">
+<tr>
+	<td><select name="{$rs.identifier}" id="{$rs.identifier}" style="{$rs.form_style}">
+	<option value="">请选择…</option>
+	<!-- foreach($rslist AS $key=>$value) -->
+	<option value="{$value.id}"{if($value.id == $rs.content)} selected{/if}>{$value.title}</option>
+	<!-- end -->
+	</select>		
+	</td>
+</tr>
+</table>

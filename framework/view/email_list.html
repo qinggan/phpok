@@ -1,0 +1,51 @@
+<!-- inc:head -->
+<script type="text/javascript">
+function mail_delete(id,title)
+{
+	$.dialog.confirm("确定要删除标识 <span class='red'>"+title+"</span> 的邮件模板吗?<br />删除后不能正常发送邮件通知",function(){
+		var url = get_url("email","del")+"&id="+id;
+		var rs = get_ajax(url);
+		if(rs == "ok")
+		{
+			direct(window.location.href);
+		}
+		else
+		{
+			$.dialog.alert(rs);
+			return false;
+		}
+	});
+}
+</script>
+<div class="tips">
+	<!-- if $popedom.add -->
+	<div class="action"><a href="{echo admin_url('email','set')}">添加</a></div>
+	<!-- /if -->
+	您当前的位置：
+	<a href="{echo admin_url('email')}">邮件内容模板管理</a>
+	&raquo; 列表
+</div>
+<div class="list">
+	<table width="100%" cellpadding="0" cellspacing="0">
+	<tr>
+		<th class="id">ID</th>
+		<th class="lft">邮件头</th>
+		<th width="150px">标识</th>
+		<th width="50px">操作</th>
+	</tr>
+	<!-- foreach($rslist AS $key=>$value) -->
+	<tr title="{$value.note}">
+		<td align="center">{$value.id}</td>
+		<td>{$value.title}<!-- if $value.note --><span class="gray i"> ({$value.note})</span><!-- /if --></td>
+		<td align="center">{$value.identifier}</td>
+		<td>
+			<!-- if $popedom.modify --><a class="icon edit" href="{echo admin_url('email','set')}&id={$value.id}" title="修改"></a><!-- /if -->
+			<!-- if $popedom.delete --><a class="icon delete end" onclick="mail_delete('{$value.id}','{$value.identifier}')" title="删除"></a><!-- /if -->
+		</td>
+	</tr>
+	<!-- /foreach -->
+	</table>
+</div>
+<div class="table"><!-- inc:pagelist --></div>
+
+<!-- inc:foot -->

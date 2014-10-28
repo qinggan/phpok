@@ -1,0 +1,57 @@
+<!-- include tpl=head menutitle=网站首页 title=取回密码 -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#getpass-form').submit(function(){
+		$(this).ajaxSubmit({
+			url:api_url('login','getpass'),
+			type:'post',
+			dataType:'json',
+			success:function(rs){
+				if(rs.status == 'ok')
+				{
+					alert("请登录您的邮箱取得相关信息，以便进行下一步操作");
+					$.phpok.go(webroot);
+				}
+				else
+				{
+					if(!rs.content) rs.content = '获取失败，请联系管理员。';
+					alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="login-reg">
+	<dl class="box">
+		<dt>取回密码</dt>
+		<form method="post" id="getpass-form">
+		<dd><label>邮箱：</label><input class="input" type="text" name="email" /><div class="clear"></div></dd>
+		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+		<dd><label>验证码：</label><input class="vcode"  type="text" name="_chkcode" id="_chkcode" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" /><div class="clear"></div></dd>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#vcode").phpok_vcode();
+			$("#vcode").click(function(){
+				$(this).phpok_vcode();
+			});
+		});
+		</script>
+		<!-- /if -->
+		<dd class="submit"><input class="button blue" type="submit" value="取回密码" name=""></dd>
+		</form>
+	</dl>
+	<dl class="box note">
+		<dt>说明</dt>
+		<dd>请输入邮箱，系统将以邮件形式通知到您更换密码步骤</dd>
+		<!-- if $config.contactus.tel -->
+		<dd>我站客服电话：<span class="red">{$config.contactus.tel}</span></dd>
+		<!-- /if -->
+		<dd>已注册用户，请点这里<a href="{url ctrl=login/}" title="登录">登录</a></dd>
+		<dd>您还不是我们的会员，请点这里<a href="{url ctrl=register/}" title="注册会员">注册</a></dd>
+	</dl>
+	<div class="clear"></div>
+</div>
+<!-- include tpl=foot -->

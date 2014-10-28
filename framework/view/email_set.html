@@ -1,0 +1,79 @@
+<!-- include tpl=head -->
+<script type="text/javascript" src="{func include_js}"></script>
+<script type="text/javascript">
+function check_save()
+{
+	var title = $("#title").val();
+	if(!title)
+	{
+		$.dialog.alert("主题不能为空");
+		return false;
+	}
+	var content = UE.getEditor('content').getContentTxt();
+	if(!content)
+	{
+		$.dialog.alert("邮件内容不能空");
+		return false;
+	}
+	var identifier = $("#identifier").val();
+	if(!identifier)
+	{
+		$.dialog.alert("标识不能为空");
+		return false;
+	}
+	var url = get_url("email","check") + "&identifier="+$.str.encode(identifier);
+	var id = $("#id").val();
+	if(id && id != "undefined" && id != "0")
+	{
+		url += "&id="+id;
+	}
+	var rs = get_ajax(url);
+	if(rs != "ok")
+	{
+		$.dialog.alert(rs);
+		return false;
+	}
+	$("#submit").attr("disabled",true);
+	return true;
+}
+</script>
+<div class="tips">
+	<div class="action"><a href="{echo admin_url('email')}">返回列表</a></div>
+	您当前的位置：
+	<a href="{echo admin_url('email')}">邮件内容模板管理</a>
+	&raquo; <!-- if $id -->编辑<!-- else -->添加<!-- /if -->
+</div>
+<form method="post" action="{echo admin_url('email','setok')}" onsubmit="return check_save()">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		邮件主题：
+		<span class="note">支持PHPOK模板变量</span>
+	</div>
+	<div class="content">
+		<input type="text" id="title" name="title" class="long" value="{$rs.title}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		邮件内容：
+		<span class="note">支持PHPOK模板变量</span>
+	</div>
+	<div class="content">{$edit_content}</div>
+</div>
+<div class="table">
+	<div class="title">
+		标识：
+		<span class="note">该标识用于实现前台邮件通知的调用</span>
+	</div>
+	<div class="content">
+		<input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" />
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit" id="submit" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot -->

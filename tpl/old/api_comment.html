@@ -1,0 +1,19 @@
+<ul>
+	<!-- loop from=$rslist key=$key value=$value -->
+	<li>
+		<table width="100%">
+		<tr>
+			<td width="40px" align="center"><img src="{$value.uid.avatar ? $value.uid.avatar : 'images/user_default.png'}" class="avatar" alt="{$value.uid.user}"></td>
+			<td>{$value.content} <span class="gray i">（发表于{func time_format $value.addtime}）</span>
+				<!-- if $value.adm_content -->
+				<fieldset>
+					<legend>管理员回复</legend>
+					{$value.adm_content}
+				</fieldset>
+				<!-- /if -->
+			</td>
+		</tr>
+		</table>
+	</li>
+	<!-- /loop -->
+</ul>

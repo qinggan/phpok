@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<title>授权管理工具</title>
+<desc>实现授权功能模块管理，可在线生成相应的授权文件，适用于PHPOK程序授权管理</desc>
+<version>1.0</version>
+<author>phpok.com</author>

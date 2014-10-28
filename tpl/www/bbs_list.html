@@ -1,0 +1,37 @@
+<!-- php:$title = ($cate_rs && $cate_rs.id != $page_rs.cate) ? $cate_rs.title.' - '.$page_rs.title : $page_rs.title -->
+<!-- include tpl=head title=$title menutitle=$page_rs.title -->
+<!-- if $page_rs.banner -->
+<div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
+<!-- /if -->
+<!-- include file=php/bbs_list.php -->
+
+<div class="wrap mb10">
+	<div class="bbsbox table_lc" style="border:0;">
+		<table width="100%" cellspacing="0" cellpadding="0">
+		<tr>
+			<th>标题</th>
+			<th>发帖人</th>
+			<th class="width84">查看次数</th>
+			<th class="width95">最后操作时间</th>
+		</tr>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr>
+			<td class="width715"><em class="bbs-icon {$value._icon}"></em><a href="{$value.url}">{$value.title}</a></td>
+			<td class="width84">{$value._author}</td>
+			<td class="width84">{$value.hits}</td>
+			<td class="width95">{$value._lastdate}</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+	<table width="100%">
+	<tr>
+		<td valign="top">
+			<div style="margin-top:8px"><a href="{if $session.user_id}{url ctrl=post id=$page_rs.identifier cateid=$cate_rs.id/}{else}javascript:alert('游客不支持发贴，请先登录');void(0);{/if}" title="发新贴"><img src="images/bbs_post.png" alt="发新贴" /></a></div>
+		</td>
+		<td align="right" valign="top"><!-- include tpl=block_pagelist style="border-top:0;" --></td>
+	</tr>
+	</table>
+</div>
+
+<!-- include tpl=foot -->

@@ -1,0 +1,20 @@
+<div class="news">
+	<!-- php:$list = phpok("news") -->
+	<div class="box_top"><div class="box_right">
+		<table>
+		<tr>
+			<td><h3>{$list.project.title}</h3></td>
+			<td class="more"><a href="{$list.project.url}" title="{$list.project.title}">more</a></td>
+		</tr>
+		</table>
+	</div></div>
+	<div class="box_middle">
+		<ul class="list">
+			<!-- loop from=$list.rslist key=$key value=$value -->
+			<li><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+	<div class="box_bottom"><div class="box_right"></div></div>
+	<!-- php:unset($list) -->
+</div>

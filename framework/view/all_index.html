@@ -1,0 +1,70 @@
+<!-- inc:head -->
+<script type="text/javascript">
+$(document).ready(function(){
+	//判断浏览器版本
+	var mouse = false;
+	if($.browser.msie && parseInt($.browser.version, 10) < 7)
+	{
+		mouse = true;
+	}
+	$("#project li").each(function(i){
+		//判断
+		if(mouse)
+		{
+			$(this).mouseover(function(){
+				$(this).addClass("hover");
+			}).mouseout(function(){
+				$(this).removeClass("hover");
+			});
+		}
+		$(this).click(function(){
+			var url = $(this).attr("href");
+			if(url)
+			{
+				direct(url);
+			}
+			else
+			{
+				alert("未指定动作！");
+				return false;
+			}
+		});
+	});
+});
+</script>
+<div class="tips clearfix">
+	<!-- if $popedom.gset -->
+	<div class="action"><a href="{echo admin_url('all','gset')}">添加</a></div>
+	<!-- /if -->
+	您当前的位置：全局维护，调试代码 <span class="red">{</span>debug $config<span class="red">}</span>，此处信息更新后，需要手动清空缓存后才能生效
+</div>
+<ul class="project" id="project">
+	<!-- if $popedom.site -->
+	<li title="配置网站信息，包括网址域名，布全局关键字等" href="{echo admin_url('all','setting')}">
+		<div class="img"><img src="images/ico/setting.png" class="ie6png"/></div>
+		<div class="txt">网站信息</div>
+	</li>
+	<!-- /if -->
+	<!-- if $popedom.domain -->
+	<li title="网站可以绑定的域名" href="{echo admin_url('all','domain')}">
+		<div class="img"><img src="images/ico/alias.png" class="ie6png" /></div>
+		<div class="txt">网站域名</div>
+	</li>
+	<!-- /if -->
+	<!-- if $rs.email_server && $rs.email_account && $rs.email_pass -->
+	<li title="测试Email邮件发送" href="{echo admin_url('all','email')}">
+		<div class="img"><img src="images/ico/email.png" class="ie6png" /></div>
+		<div class="txt">测试邮件</div>
+	</li>
+	<!-- /if -->
+	<!-- if $popedom.gset || $popedom.set -->
+	<!-- foreach($rslist AS $key=>$value) -->
+	<li title="{$value.title}" href="{echo admin_url('all','set')}&id={$value.id}">
+		<div class="img"><img src="{$value.ico}" class="ie6png" /></div>
+		<div class="txt">{$value.title}</div>
+	</li>
+	<!-- /foreach -->
+	<!-- /if -->
+</ul>
+<div class="clear"></div>
+<!-- inc:foot -->

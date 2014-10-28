@@ -1,0 +1,68 @@
+<!-- include tpl=head_open _type=abs-file  -->
+<script type="text/javascript">
+var is_more = {$is_multiple ? 'true' : 'false'};
+function phpok_input(val)
+{
+	$(".piclist li").removeClass("hover");
+	var obj = $.dialog.opener;
+	obj.obj_{$id}.open_action(val);
+	var content = obj.$("#{$id}").val();
+	if(content)
+	{
+		var list = content.split(",");
+		for(var i in list)
+		{
+			$("#attr_"+list[i]).addClass("hover");
+		}
+	}
+	if(is_more == false)
+	{
+		$.dialog.close();
+	}
+}
+</script>
+<!-- if $type == "image" || $type == "picture" -->
+<ul class="piclist">
+	<!-- foreach($rslist AS $key=>$value) -->
+	<li id="attr_{$value.id}" onclick="phpok_input('{$value.id}')" title="附件名称：{$value.title}&#13;上传时间：{echo date('Y-m-d H:i',$value['addtime'])}&#13;附件地址：{$value.filename}">
+		<div class="pic"><img src="{$value.ico}" width="80px" height="80px" border="0" alt="{$value.title}" /></div>
+	</li>
+	<!-- /foreach -->
+</ul>
+<div class="clear"></div>
+<!-- else -->
+<div class="list">
+<table class="list" width="100%">
+<tr>
+	<th>名称</th>
+	<th class="lft">文件地址</th>
+	<th>添加时间</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr class="hand" onclick="phpok_input('{$value.id}')">
+	<td>{$value.title}</td>
+	<td>{$value.filename}</td>
+	<td>{echo date("Y-m-d",$value[addtime])}</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<!-- /if -->
+
+<div class="table"><!-- include tpl=pagelist _type=abs-file --></div>
+<script type="text/javascript">
+$(document).ready(function(){
+	var content = parent.$("#{$id}").val();
+	if(content)
+	{
+		var list = content.split(",");
+		for(var i in list)
+		{
+			$("#attr_"+list[i]).addClass("hover");
+		}
+	}
+});
+</script>
+<!-- include tpl=open_search_swfupload _type=abs-file -->
+
+<!-- include tpl=foot_open _type=abs-file -->

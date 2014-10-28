@@ -1,0 +1,91 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#plaction_submit").submit(function(){
+		//提交表单
+		var startid = $("#startid").val();
+		var endid = $("#endid").val();
+		if(startid && endid)
+		{
+			if(parseInt(endid) < parseInt(startid))
+			{
+				$.dialog.alert('结束ID必须大于开始ID');
+				return false;
+			}
+		}
+		if(!$('#plaction').val())
+		{
+			$.dialog.alert('未指定要执行的动作');
+			return false;
+		}
+		$(this).ajaxSubmit({
+			'url':get_url('list','plaction_submit'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok')
+				{
+					$.dialog.alert('批处理已执行完成','','succeed');
+				}
+				else
+				{
+					$.dialog.alert(rs.content,'','error');
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="tips clearfix">
+	您当前的位置：<a href="{url ctrl=list/}" title="内容管理">内容管理</a>
+	&raquo; <a href="{url ctrl=list func=action id=$page_rs.id/}">{$page_rs.title}</a>
+	&raquo; 数据批处理
+</div>
+<form method="post" id="plaction_submit">
+<input type="hidden" name="pid" value="{$page_rs.id}" />
+<div class="table">
+	<div class="title">
+		开始ID：
+		<span class="note">即{$page_rs.alias_title ? $page_rs.alias_title : '主题'}的开始ID，值要小于结束ID</span>
+	</div>
+	<div class="content">
+		<input type="text" id="startid" name="startid" class="default" value="" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		结束ID：
+		<span class="note">即{$page_rs.alias_title ? $page_rs.alias_title : '主题'}的结束ID，值要大于开始ID</span>
+	</div>
+	<div class="content">
+		<input type="text" id="endid" name="endid" class="default" value="" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		执行动作：
+		<span class="note">即要执行的批处理功能</span>
+	</div>
+	<div class="content">
+		<select name="plaction" id="plaction">
+			<option value="">请选择……</option>
+			<option value="hidden">批量隐藏</option>
+			<option value="show">批量显示</option>
+			<option value="status">批量审核</option>
+			<option value="unstatus">批量未审核</option>
+			<!-- if $popedom.delete -->
+			<option value="delete">批量删除</option>
+			<!-- /if -->
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="开始执行" class="submit" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot -->

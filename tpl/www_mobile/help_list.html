@@ -1,0 +1,22 @@
+<!-- php:$title = $page_rs.cate != $cate_rs.id ? $cate_rs.title.' - '.$page_rs.title : $page_rs.title -->
+<!-- include tpl=head title=$title menutitle=$page_rs.title -->
+<div data-role="navbar" style="margin-top:5px;">
+	<ul>
+		<!-- catelist pid=$page_rs.id -->
+		<!-- loop from=$list.sublist key=$key value=$value -->
+		<li><a href="{$value.url}"{if $cate_rs.id == $value.id} class="ui-btn-active"{/if} data-ajax="false">{$value.title}</a></li>
+		<!-- /loop -->
+	</ul>
+</div>
+
+<div class="main">
+<ul data-role="listview" data-inset="true" data-divider-theme="a">
+	<li data-role="list-divider">{$cate_rs.title}</li>
+	<!-- arclist psize=100 pid=$page_rs.id cateid=$cate_rs.id -->
+	<!-- loop from=$list key=$key value=$value -->
+	<li><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
+	<!-- /loop -->
+</ul>
+</div>
+
+<!-- include tpl=foot -->

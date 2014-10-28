@@ -1,0 +1,66 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('project.js')}"></script>
+<div class="tips">
+	<!-- if $popedom.set -->
+	<div class="action"><a href="{echo admin_url('project','set')}">添加根项目</a></div>
+	<!-- /if -->
+	您当前的位置：
+	<a href="{echo admin_url('project')}">项目管理</a>
+	&raquo; 项目列表
+</div>
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="w33">&nbsp;</th>
+	<th class="id">ID</th>
+	<th class="w33">&nbsp;</th>
+	<th class="lft">项目名称</th>
+	<th class="lft">标识串</th>
+	<th class="lft">模块</th>
+	<th class="w80">排序</th>
+	<th class="w99 lft">操作</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr>
+	<td class="center"><input type="checkbox" value="{$value.id}" name="id_{$value.id}" id="id_{$value.id}" checked /></td>
+	<td class="center gray">{$value.id}</td>
+	<td class="center"><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="set_status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
+	<td><label for="id_{$value.id}">{$value.space}{$value.title}<!-- if $value.nick_title --><span class="gray i"> ({$value.nick_title})</span><!-- /if --><!-- if $value.hidden --><span class="red i">（隐藏）</span><!-- /if --></label></td>
+	<td>{$value.identifier}</td>
+	<td>{$value.project_module_title ? $value.project_module_title : '-'}</td>
+	<td class="center"><input type="text" id="taxis_{$value.id}" class="cate_taxis" value="{$value.taxis}" tabindex="{$rslist_id.num}" /></td>
+	<td>
+		<!-- if $popedom.set -->
+		<!-- if $value.parent_id -->
+		<a class="icon space"></a>
+		<!-- else -->
+		<a class="icon add" href="{echo admin_url('project','set')}&pid={$value.id}" title="添加子项"></a>
+		<!-- /if -->
+		<a class="icon edit" href="{echo admin_url('project','set')}&id={$value.id}" title="修改"></a>
+		<a class="icon field" href="{echo admin_url('project','content')}&id={$value.id}" title="内容及字段"></a>
+		<a class="icon delete end" onclick="project_delete('{$value.id}','{$value.title}')" title="删除"></a>
+		<!-- /if -->
+	</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<!-- if($rslist) -->
+<div>
+<table>
+<tr>
+	<td colspan="4">
+		<div style="margin-top:5px;">
+		<input type="button" value="全选" class="btn" onclick="$.input.checkbox_all()" />
+		<input type="button" value="全不选" class="btn" onclick="$.input.checkbox_none()" />
+		<input type="button" value="反选" class="btn" onclick="$.input.checkbox_anti()" />
+		&nbsp; &raquo; &nbsp;
+		<input type="button" value="更新排序" class="btn" onclick="page_sort()" />
+		</div>
+	</td>
+</tr>
+</table>
+</div>
+<!-- /if -->
+
+<!-- inc:foot -->

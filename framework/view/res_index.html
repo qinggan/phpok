@@ -1,0 +1,115 @@
+<!-- include tpl=head title=附件管理 -->
+<script type="text/javascript" src="{echo add_js('res.js')}"></script>
+<script type="text/javascript" src="js/laydate/laydate.js"></script>
+<div class="tips">
+	<!-- include tpl=res_btn -->
+	您当前的位置：资源管理
+</div>
+<div class="tips" id="adv_search">
+	<form method="post" action="{echo admin_url('res')}">
+	<table width="100%">
+	<tr>
+		<td width="50%">
+			<div class="table">
+				<div class="title">
+					关键字：
+					<span class="note">填写附件名称关键字</span>
+				</div>
+				<div class="content"><input type="text" id="keywords" name="keywords" class="long" value="{$keywords}" /></div>
+			</div>
+		</td>
+		<td>
+			<div class="table">
+				<div class="title">
+					附件分类：
+				</div>
+				<div class="content">
+					<select id="cate_id" name="cate_id">
+						<option value="0">不限</option>
+						<!-- $catelist AS $key=>$value -->
+						<option value="{$value.id}"{if $cate_id == $value.id} selected{/if}>{$value.title}</option>
+						<!-- /if -->
+					</select>
+				</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div class="table">
+				<div class="title">
+					时间范围：
+					<span class="note">左侧是开始时间，右边是结束时间</span>
+				</div>
+				<div class="content">
+					<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td><input type="text" id="start_date" name="start_date" value="{$start_date}" placeholder="开始时间" onfocus="laydate()" /></td>
+						<td>&nbsp; - &nbsp;</td>
+						<td><input type="text" id="stop_date" name="stop_date" value="{$stop_date}" placeholder="结束时间" onfocus="laydate()" /></td>
+					</tr>
+					</table>
+				</div>
+			</div>
+			
+		</td>
+		<td>
+			<div class="table">
+				<div class="content">
+					<input type="submit" value="开始搜索" class="submit" />
+				</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<div class="table">
+				<div class="title">
+					附件类型：
+					<span class="note">勾选要搜索的附件类型，如果有未列出来的附件类型，请在编辑框中输入，多种附件类型用逗号隔开</span>
+				</div>
+				<div class="content">
+					<table>
+					<tr>
+						<td><label><input type="checkbox" id="type_jpg" name="ext[]" value="jpg"{if $ext && in_array('jpg',$ext)} checked{/if} /> JPG</label></td>
+						<td><label><input type="checkbox" id="type_gif" name="ext[]" value="gif"{if $ext && in_array('gif',$ext)} checked{/if} /> GIF</label></td>
+						<td><label><input type="checkbox" id="type_png" name="ext[]" value="png"{if $ext && in_array('png',$ext)} checked{/if} /> PNG</label></td>
+						<td><label><input type="checkbox" id="type_rar" name="ext[]" value="rar"{if $ext && in_array('rar',$ext)} checked{/if} /> RAR</label></td>
+						<td><label><input type="checkbox" id="type_zip" name="ext[]" value="zip"{if $ext && in_array('zip',$ext)} checked{/if} /> ZIP</label></td>
+						<td><label><input type="checkbox" id="type_flv" name="ext[]" value="flv"{if $ext && in_array('flv',$ext)} checked{/if} /> FLV</label></td>
+						<td><label><input type="checkbox" id="type_swf" name="ext[]" value="swf"{if $ext && in_array('swf',$ext)} checked{/if} /> SWF</label></td>
+						<td><label><input type="checkbox" id="type_mp3" name="ext[]" value="mp3"{if $ext && in_array('mp3',$ext)} checked{/if} /> MP3</label></td>
+					</tr>
+					<tr>
+						<td>&nbsp;  &nbsp; 其他：</td>
+						<td colspan="7"><input type="text" id="myext" name="myext" value="{$myext}" class="long" /></td>
+					</tr>
+					</table>
+				</div>
+			</div>
+		</td>
+	</tr>
+	</table>
+	</form>
+</div>
+
+<ul class="attrlist clearfix" id="attrlist">
+	<!-- foreach($rslist AS $key=>$value) -->
+	<li id="attr_{$value.id}" class="clearfix">
+		<div class="pic"><a href="javascript:preview_attr('{$value.id}');void(0);" title="点击预览"><img src="{$value.ico}" width="80px" height="80px" border="0" alt="{$value.title}" /></a></div>
+		<div class="txt">
+			<div class="ipt"><input type="text" id="title_{$value.id}" name="title_{$value.id}" class="attr" value="{$value.title}" /></div>
+			<div class="ipt">
+				<input type="button" value="改名" onclick="attr_title('{$value.id}')" class="res_btn" />
+				<input type="button" value="管理" onclick="attr_manage('{$value.id}')" class="res_btn" />
+				<input type="button" value="删除" onclick="attr_delete('{$value.id}')" class="res_btn" />
+			</div>
+			<div class="ipt">时间：{echo date("Y-m-d H:i:s",$value[addtime])}</div>
+		</div>
+	</li>
+	<!-- /foreach -->
+</ul>
+<div class="clear"></div>
+<div class="table"><!-- inc:pagelist --></div>
+
+<!-- inc:foot -->

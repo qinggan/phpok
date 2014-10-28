@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<title>天气插件接口</title>
+<desc>实现天气插件自动查询，支持IP自动定位</desc>
+<author>phpok.com</author>
+<version>1.0</version>

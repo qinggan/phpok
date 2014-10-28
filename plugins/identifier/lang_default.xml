@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<api>
+	<youdao_no_info>没有指定翻译内容</youdao_no_info>
+	<youdao_get_error>获取数据异常</youdao_get_error>
+</api>
+<youdao>
+	<20>要翻译的文本过长</20>
+	<30>无法进行有效的翻译</30>
+	<40>不支持的语言类型</40>
+	<50>无效的Key</50>
+	<60>未知错误</60>
+</youdao>

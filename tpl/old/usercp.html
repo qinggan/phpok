@@ -1,0 +1,22 @@
+<!-- include tpl=head title=个人中心 -->
+<div class="cp">
+	<div class="left"><!-- include tpl=block_usercp --></div>
+	<div class="right">
+		<div class="pfw mbottom10">
+			<h3>会员中心</h3>
+			<div class="cp_avatar">
+				<img src="{$session.user_rs.avatar ? $session.user_rs.avatar : 'images/user_default.png'}">
+			</div>
+			<div class="cp_info">
+				<ul>
+					<li><strong>账号：</strong>{$session.user_rs.user}</li>
+					<li><strong>邮箱：</strong>{$session.user_rs.email}</li>
+				</ul>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>
+
+<!-- include tpl=foot -->

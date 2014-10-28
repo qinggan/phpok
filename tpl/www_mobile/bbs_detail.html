@@ -1,0 +1,34 @@
+<!-- include tpl=head title=$rs.title menutitle=$page_rs.title -->
+
+<div role="main" class="ui-content">
+	<div class="ui-body ui-body-a ui-corner-all">
+		<h3>{$rs.title}</h3>
+		<div class="content">{$rs.content}</div>
+	</div>
+
+<!-- php:$reply = phpok_reply($rs.id,10) -->
+<!-- if $reply -->
+	<!-- loop from=$reply.list key=$key value=$value -->
+		<div class="ui-body ui-body-a ui-corner-all" style="margin-top:5px;">
+			<h4>{$value.uid ? $value.uid.user : '游客'} 于 {func time_format $value.addtime} 发表回复</h4>
+			<div class="content">{$value.content}</div>
+			<!-- if $value.adm_content -->
+			<fieldset>
+				<legend>管理员回复</legend>
+				{$value.adm_content}
+			</fieldset>
+			<!-- /if -->
+		</div>
+	<!-- /loop -->
+	<!-- php:$pagelist = phpok_page($rs.url,$reply.total,$reply.pageid,$reply.psize,"prev=上一页&next=下一页&half=0&always=1") -->
+	<div style="margin-top:5px;text-align:center;">
+		<div data-role="controlgroup" data-type="horizontal" data-mini="true">
+			<!-- loop from=$pagelist key=$key value=$value -->
+			<a href="{$value.url}" class="ui-btn ui-corner-all">{$value.title}</a>
+			<!-- /loop -->
+		</div>
+	</div>
+<!-- /if -->
+</div>
+
+<!-- include tpl=foot -->

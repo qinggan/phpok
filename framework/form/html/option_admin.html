@@ -1,0 +1,23 @@
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="option_list" />
+<div class="table">
+	<div class="title">
+		请选择值列表：
+		<span class="note"></span>
+	</div>
+	<div class="content">
+		
+	</div>
+</div>
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<td><select name="option_list" id="option_list">
+			<option value="">请选择值列表</option>
+			<optgroup label="选项">
+				<!-- foreach($opt_list AS $key=>$value) -->
+				<option value="opt:{$value.id}"{if $rs.option_list == "opt:".$value[id]} selected{/if}>{$value.title}</option>
+				<!-- /foreach -->
+			</optgroup>
+		</select>
+	</td>
+</tr>
+</table>

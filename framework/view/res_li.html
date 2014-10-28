@@ -1,0 +1,15 @@
+<li id="attr_{$rs.id}">
+	<div class="pic"><img src="{$rs.ico}" width="80px" height="80px" border="0" alt="{$rs.title}" /></div>
+	<div class="txt">
+		<div class="ipt"><input type="text" id="title_{$rs.id}" name="title_{$rs.id}" class="attr" value="{$rs.title}" /></div>
+		<div class="ipt">时间：{echo date("Y-m-d H:i:s",$rs[addtime])}</div>
+		<div class="ipt">类型：{$rs.ext}</div>
+		<div class="ipt">目录：{$rs.folder}</div>
+	</div>
+	<div class="btn">
+		<div class="ipt"><input type="button" value="改名" onclick="attr_title('{$rs.id}')" class="btn" /></div>
+		<div class="ipt"><input type="button" value="管理" onclick="attr_manage('{$rs.id}')" class="btn" /></div>
+		<div class="ipt"><input type="button" value="删除" onclick="attr_delete('{$rs.id}')" class="btn" /></div>
+	</div>
+	<div class="clear"></div>
+</li>

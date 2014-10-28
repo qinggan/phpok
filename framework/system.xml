@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<text>文本框</text>
+	<password>密码框</password>
+	<radio>单选框</radio>
+	<checkbox>复选框</checkbox>
+	<select>下拉菜单</select>
+	<textarea>文本区</textarea>
+	<editor>编辑器</editor>
+	<code_editor>代码编辑器</code_editor>
+	<upload>附件</upload>
+	<title>主题</title>
+	<user>会员</user>
+	<url>网址</url>
+	<param>规格参数</param>
+</form>
+<field>
+	<varchar>字符串</varchar>
+	<int>整型</int>
+	<float>浮点型</float>
+	<date>日期</date>
+	<datetime>日期时间</datetime>
+	<longtext>长文本</longtext>
+	<longblob>二进制信息</longblob>
+</field>
+<format>
+	<safe>普通文本（HTML实体）</safe>
+	<text>普通文本（无HTML）</text>
+	<html>安全HTML</html>
+	<html_js>HTML文本（支持JS，iFrame等）</html_js>
+	<int>整数（仅支持数字及负号）</int>
+	<float>浮点型（支持小数点，数字及负号）</float>
+	<time>时间戳（将输入的信息转化成10位数字）</time>
+</format>
+<orderstatus>
+	<NOTCHECKED>未审核</NOTCHECKED>
+	<CHECKED>已审核</CHECKED>
+	<NOTPAID>未付款</NOTPAID>
+	<PAID>已付款</PAID>
+</orderstatus>

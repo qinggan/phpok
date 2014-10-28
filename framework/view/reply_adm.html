@@ -1,0 +1,41 @@
+<!-- php:$edit_content = form_edit('content',$rs.adm_content,'editor','width=680&height=300') -->
+<!-- include tpl=head_open -->
+<script type="text/javascript" src="{func include_js}"></script>
+<div class="help">
+	<div class="title red">
+		{$title_rs.title}
+		<span class="darkblue i">（发布时间：{echo date("Y-m-d H:i:s",$title_rs.dateline)}）</span>
+	</div>
+	<!-- if $title_rs.content -->
+	<div class="content">{func phpok_cut $title_rs.content 255 …}</div>
+	<!-- /if -->
+</div>
+<!-- if $rs -->
+<div class="help">
+	<div class="content">
+		<span class="red">评论内容：</span>{$rs.content}
+		<span class="darkblue i">（评论时间：{echo date("Y-m-d H:i:s",$rs.addtime)}）</span>
+	</div>
+</div>
+<!-- /if -->
+<script type="text/javascript">
+function check_save()
+{
+	var c = edit_content.getContent();
+	if(!c)
+	{
+		$.dialog.alert("内容不能为空");
+		return false;
+	}
+	return true;
+}
+</script>
+<form method="post" action="{func admin_url reply adm_save}&id={$id}" onsubmit="return check_save()">
+<div style="margin:3px auto;">{$edit_content}</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit" />
+	</div>
+</div>
+</form>
+<!-- inc:foot_open -->

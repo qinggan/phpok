@@ -1,0 +1,419 @@
+html{margin:0;padding:0;}
+body {font-size:12px;font-family:"Microsoft Yahei", "宋体", "Tahoma", "Arial";margin:0 auto;}
+a {text-decoration: none;color:#000;}
+a:hover {text-decoration:underline;}
+h1{margin:0;padding:0;}
+img{border:0 none;}
+form{margin:0;padding:0}
+.clear {clear:both;height:0;line-height:0;display: block;visibility:hidden;content:".";overflow:hidden;}
+.pl5 {padding-left:5px;}
+.red {color:red;}
+.red a{color:red;}
+.gray{color:gray}
+.i{font-style:italic;}
+.fsize16 {font-size:16px;}
+.hand {cursor: pointer;}
+.mtop10, .mg10 {margin-top:10px}
+.mbottom10{margin-bottom:10px;}
+.margin0{margin:0;}
+.pd0 {padding:0;}
+.price{font-weight:bold;color:red;}
+.space{height:10px;content:"&nbsp;";line-height:0;overflow:hidden;clear:both;}
+
+
+.head {margin:0 auto;position:relative;width:1000px;}
+.head:after {content:".";display:block;visibility: hidden;clear:both;height:0;width:0;}
+.head .logo {float:left;}
+.head .search {position:absolute;bottom:5px;right:0;}
+.head .user {float:right;margin:0;list-style:none;padding:0;}
+.head .user li {float:left;line-height:24px;}
+.head .user li.cart_num{padding:0 10px 0 20px;background:url('../images/cart.png') left center no-repeat;}
+.head .user li.cart_num span{color:red;}
+
+/* 导航菜单 */
+div.menu {background:#0082C3 url("../images/menubg.png") repeat-x left top;height:42px;line-height:42px;width:1000px;margin:0 auto;}
+div.menu ul {margin:0;list-style:none;padding:0;}
+div.menu ul:after {clear:both;height:0;display: block;visibility:hidden;content:".";}
+div.menu ul li {float:left;width:100px;text-align:center;position:relative;}
+div.menu ul li a {display:block;color:#fff;width:100%;height:42px;line-height:42px;font-weight:bold;}
+div.menu ul li a:hover{background:#1194DB url('../images/menubg.png') 0 -52px repeat-x;text-decoration:none;}
+div.menu ul li.selected a{background:#1194DB url("../images/menubg.png") 0 -104px repeat-x;}
+div.menu ul li.selected a:hover{background:#1194DB url("../images/menubg.png") 0 -52px repeat-x;text-decoration:none;}
+div.menu ul li ol {list-style:none;padding:0;margin:0;display:none;position:absolute;background:#003366;z-index:3;}
+div.menu ul li:hover ol {display:block;}
+div.menu ul li ol li {display: block;line-height:50px;}
+div.menu ul li ol li a {color:#FFF}
+div.menu ul li.selected ol li a {color:#FFF;background:none;}
+
+/* 图片轮播涉及到的样式 */
+.banner {width:1000px;height:180px;overflow:hidden;position:relative;z-index:2;margin:0 auto;}
+.banner ul {height:180px;position:absolute;list-style:none;padding:0;margin:0;}
+.banner ul li {float:left;width:1000px;height:180px;overflow:hidden;position:relative;background:#000;}
+.banner ul li div {position:absolute;overflow:hidden;}
+.banner .btn {position:absolute;height:30px;padding:0px 10px;right:0;bottom:0;text-align:right;z-index:3;}
+.banner .btn span {display:block;width:20px;height:20px;line-height:20px;margin:0 0 0 5px;cursor:pointer;background:#fff;overflow:hidden;float:left;border:1px solid #004B8F;text-align:center;}
+.banner .btn span.on {background:#0071B9;color:#fff;}
+.banner .preNext {width:45px;height:100px;position:absolute;top:93px;background:url("../images/sprite.png") no-repeat 0 0;cursor:pointer;z-index:3;}
+.banner .prev {	left:0;}
+.banner .next {right:0;background-position:right top;}
+div.box_top {background:url("../images/box.png") top left repeat-x;height:32px;overflow:hidden;}
+div.box_top div.box_right {
+	background:url("../images/box_right.png") top right no-repeat;
+	line-height:32px;
+	height:32px;
+	overflow:hidden;
+	padding:0 10px;
+}
+div.box_top div.box_right table {
+	width:100%;
+	height:100%;
+	border-collapse:collapse;
+	border-spacing:0;
+}
+div.box_top div.box_right table td {
+	padding:0;
+}
+div.box_top div.box_right table td.more {
+	text-align:right;
+}
+div.box_top h3 {
+	font-size:14px;
+	margin:0;
+	padding:0;
+	background:url("../images/h3_title.png") left center no-repeat;
+	padding-left:20px;
+}
+div.box_middle {
+	border-left:1px solid #E6E6E6;
+	border-right:1px solid #E6E6E6;
+	padding:0 10px;
+	margin:0;
+}
+div.box_middle p {
+	line-height:170%;
+	margin:0;
+	padding:3px 0;
+}
+div.box_bottom {
+	background:url("../images/box.png") bottom left repeat-x;
+}
+div.box_bottom div.box_right {
+	background:url("../images/box_right.png") bottom right no-repeat;
+	height:6px;
+	overflow:hidden;
+	padding:0 10px;
+	content:"&nbsp;"
+}
+ul.list {
+	list-style:none;
+	margin:0;
+	padding:0
+}
+ul.list li {
+	background:url("../images/dian.gif") left center no-repeat;
+	padding:0 0 0 10px;
+	line-height:24px;
+	height:24px;
+	overflow:hidden;
+}
+ul.list li span {
+	display:block;
+	float:right;
+	line-height:24px;
+}
+ul.list li span.hits {
+	width:50px;
+	text-align:center;
+}
+/* 登录模块 */
+ ul.login {
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+ul.login li {
+	padding:5px auto 3px 10px;
+	display:block;
+	margin:5px;
+}
+ul.login li.input {
+	border:1px solid #ccc;
+}
+ul.login li.input input {
+	width:150px;
+	border:0;
+	outline:none;
+}
+div.body {margin:10px auto;width:1000px;}
+div.body:after {clear:both;content:".";display: block;visibility:hidden;height:0;}
+div.body .left {float:left;width:260px;}
+div.body .right {float:right;width:730px;}
+
+/* PHPOK 通用布局页面 */
+div.main{margin:10px auto;width:1000px;position:relative;}
+div.main div.left{float:left;width:260px;position:relative;}
+div.main div.right{float:right;width:730px;position:relative;}
+div.main div.clear{content:'.';height:0;line-height:0;clear:both;display:block;visibility:hidden;}
+
+/* 页脚处理 */
+.foot {margin:0 auto;color:#000;padding:10px auto 0 auto;width:1000px;}
+.foot p {line-height:180%;margin:0;padding:0;}
+
+/* 会员注册页 */
+.main_reg {width:1000px;margin:10px auto;}
+.main_reg:after {display: block;visibility: hidden;clear:both;content:".";height:0;}
+.main_reg .left {width:650px;float:left;}
+.main_reg .right {width:270px;float:right;}
+.main_reg ul.register {list-style:none;margin:0;padding:10px}
+.main_reg ul.register li {height:40px;line-height:40px;display:block}
+.main_reg ul.register li:after {clear:both;display: block;visibility: hidden;content:".";}
+.main_reg ul.register li input.input {width:180px;height:26px;line-height:26px;}
+.main_reg ul.register li input.vcode {width:90px;margin:0;padding:0;height:26px;line-height:26px;}
+.main_reg ul.register li .reg_title{float:left;text-align:right;width:110px;line-height:40px;}
+.main_reg ul.register li.ext input[type=text]{height:26px;line-height:26px;}
+
+/* 自定义模块涉及到的样式 */
+.table {margin:0 auto;	width:99%;clear:both;padding:3px;}
+.table .l {float:left;width:20%;text-align:right;padding:3px 1px;}
+.table .r {float:left;text-align:left;padding:3px 1px;width:68%;}
+.table input.input {width:300px;height:26px;line-height:26px;}
+.table input[type=text]{height:26px;line-height:26px;}
+
+
+
+
+
+/* 按钮通用样式 */
+input.button{
+	border:1px solid #ACACAC;
+	margin:0;
+	padding:1px 6px;
+	text-align:center;
+	background:#ECECEC url("../images/btn_bg.jpg") center center repeat-x;
+	color:#000;
+	outline:none;
+}
+input.button_hover{
+	border-color:#7EB4EA;
+	background:#E3F0FC;
+}
+input.submit{
+	border:1px solid #C6382A;
+	margin:0;
+	padding:1px 6px;
+	text-align:center;
+	background:#ECECEC url("../images/btn_bg2.jpg") top center repeat-x;
+	color:#FFF;
+}
+input.submit_hover{
+	background-position:bottom center;
+	border-color:#DC4B3A;
+}
+
+/* 会员个人中心涉及到的CSS，这里的布局基本上以cp_为前缀 */
+div.cp{margin:10px auto;width:1000px;}
+div.cp .left{width:200px;float:left;}
+div.cp .right{width:790px;float:right;}
+div.cp .cp_avatar{float:left;width:150px;padding:25px;}
+div.cp .cp_avatar img{width:150px;height:150px;border:0;}
+div.cp .cp_info{float:right;width:555px;overflow:hidden;}
+div.cp .cp_info ul{list-style:none;margin:0;padding:10px;}
+div.cp .cp_info ul li{line-height:170%;}
+div.cp .cp_info ul li:after{clear:both;content:'&nbsp;';height:0;line-height:0;display: block;visibility:hidden;}
+div.cp .cp_info ul li strong{text-align:right;float:left;display:block;width:100px;}
+
+ul.usercp{list-style:none;margin:0;padding:10px;}
+ul.usercp li{background:url("../images/arrow_usercp.png") left center no-repeat;line-height:26px;height:26px;margin:0 10px;padding:0 0 0 20px;}
+ul.usercp li.mypost_title{background:url('../images/mypost.png') left center no-repeat;}
+ul.usercp li.mypost{background:none;height:auto;padding:0 0 0 10px;}
+ul.usercp li.mypost ul{list-style:none;margin:0;padding:0;}
+
+.artlist{margin:0;padding:0}
+.artlist ul{margin:0;padding:5px 0 0 0;list-style:none;}
+.artlist ul li{height:26px;line-height:26px;}
+.artlist ul li span.date{display:block;float:right;height:22px;line-height:26px;}
+.artlist ul li span.date2{display:block;float:left;height:22px;line-height:26px;width:80px;margin:0 10px 0 20px;color:#990000;font-weight:bold;}
+.artlist ul li span.arrow{float:left;background:url("../images/arrow.png") left center no-repeat;width:16px;height:26px;}
+.artlist ul li a{height:26px;line-height:26px;display: block;padding:0 10px 0 10px;}
+.artlist ul li a:hover{background:#EFEFEF;}
+.miniBanner{margin:10px auto;width:980px;height:120px;overflow:hidden;background:url("../images/banner.jpg") center center no-repeat;}
+.miniBanner a{display: block;width:100%;height:120px;}
+
+ul.procate{list-style:none;margin:0;padding:5px;}
+ul.procate li{float:left;width:40%;background:url("../images/category.png") left center no-repeat;height:30px;line-height:30px;padding-left:18px;}
+.news{float:left;width:350px;overflow:hidden;}
+
+
+/* 列表分页 */
+.pagelist{margin:5px auto 0 auto;padding:5px 0; text-align:center;}
+.pagelist a{padding:3px 8px; margin:0 2px; border:1px solid #dddddd; color:#666;font-weight:bold;}
+.pagelist a:hover{color:#3388d8;}
+.pagelist a.hover,.pagelist a.on{color:#3388d8;background:#eee;}
+
+/* 内容分页 */
+.content-page{border-top:1px solid #dae9f8;margin-top:7px;padding-top:5px;margin-bottom:5px;}
+.content-page a{display:block;padding:1px 10px;border:1px solid #dddddd;margin-right:5px;color:#666;font-weight:bold;}
+.content-page a.now{background:#eee;color:#3388d8;}
+.content-page a:hover{color:#3388d8;}
+
+.comment_post{padding:10px;}
+.comment_post textarea{border:1px solid #ccc;width:100%;height:70px;line-height:160%;}
+.comment_post .no_popedom{padding:20px;text-align:center;}
+.comment_post .no_popedom a{font-size:16px;font-weight:bold;color:#000;}
+
+/* 产品详细信息页 */
+.pinfo{padding:10px;}
+.pinfo h1{padding:10px;font-size:18px;}
+.pinfo .pleft{float:left;width:410px;position:relative;}
+.pinfo .pleft ul {height:300px;position:absolute;list-style:none;padding:0;margin:0;}
+.pinfo .pleft ul li {float:left;width:400px;height:300px;overflow:hidden;position:relative;background:#000;}
+.pinfo .pleft ul li div {position:absolute;overflow:hidden;}
+.pinfo .pleft .btn {position:absolute;height:15px;padding:0px;bottom:0;text-align:right;z-index:3;}
+.pinfo .pleft .btn span {display:block;width:10px;height:10px;margin:0 0 0 5px;cursor:pointer;background:#fff;overflow:hidden;float:left;border:1px solid #004B8F;text-align:center;}
+.pinfo .pleft .btn span.on {background:#0071B9;color:#fff;}
+
+.pinfo .pright{float:right;width:270px;overflow:hidden;}
+.pinfo .pright .pline{padding:5px auto;line-height:170%;font-size:16px;height:40px;}
+.pinfo .pright .pline:after{clear:both;height:0;content:'.';display:block;visibility: hidden;}
+
+
+fieldset.adm-reply{border:1px solid #ccc;font-size:14px;line-height:170%;margin:0 10px 10px 10px;}
+fieldset.adm-reply p{margin:0;padding:0;font-size:14px;line-height:170%;}
+fieldset.adm-reply legend{color:red;}
+
+/* 表格线条配置，该样式暂时在购物车，订单里被使用到 */
+div.table_lc{background:#ccc;}
+div.table_lc h3{margin:0;padding:0;line-height:160%;font-size:14px;}
+div.table_lc table{border-spacing:1px;width:100%;}
+div.table_lc th{padding:5px;background:#efefef;}
+div.table_lc th.lft{text-align:left;}
+div.table_lc td{padding:5px;background:#fff;}
+div.table_lc td.center{text-align:center;}
+div.table_lc input.qty{text-align:center;width:45px;}
+
+/* 购物车里涉及到的样式 */
+div.address{float:left;width:495px;overflow:hidden;}
+
+/* 付款页面 */
+div.payment{padding:10px;}
+div.payment h4{font-size:14px;color:#666;}
+div.payment ul{list-style:none;}
+div.paymenbtn{padding:10px;}
+input.paybtn{background:url('../images/pay-btn.jpg') no-repeat;width:118px;height:37px;border:0;padding:0;margin:0;}
+
+tr.darkbg td{background:#CC9999}
+
+/* 订单列表信息 */
+div.orderlist{}
+table.orderlist{border-collapse:collapse;border-spacing:0;}
+table.orderlist th,table.orderlist td{padding:0;cursor:default;}
+table.orderlist th{background:#dddddd;height:30px;}
+table.orderlist th.o-price{text-align:left;padding-left:4px;width:100px;}
+table.orderlist th.o-status{text-align:left;padding-left:4px;}
+table.orderlist td.o-date{text-align:center;height:30px;}
+table.orderlist td.o-sn{text-align:center;}
+table.orderlist td.o-qty{text-align:center;}
+table.orderlist td.o-price{padding-left:4px;color:darkred;}
+table.orderlist td.o-status{padding-left:4px;color:darkblue;}
+table.orderlist tr.o-dark{background:#F1F1F1;}
+table.orderlist tr.o-dark-over{background:#00478A;color:#fff;}
+table.orderlist tr.o-dark-over a,table.orderlist tr.o-dark-over td{color:#fff;}
+
+table.orderlist tr.o-white{background:#ffffff;}
+table.orderlist tr.o-white-over{background:#006DB6;color:#fff;}
+table.orderlist tr.o-white-over a,table.orderlist tr.o-white-over td{background:#006DB6;color:#fff;}
+
+/* 面包屑 */
+div.lead {
+	position:relative;
+	border:1px solid #e4e4e4;
+	border-radius:5px;
+	/*box-shadow:2px 2px 3px #e4e4e4;*/
+	background:#fafbfc;
+	margin-bottom:10px;
+	color:#003300;
+	height:30px;
+	line-height:30px;
+	padding-left:10px;
+}
+div.lead a{color:#003300;}
+div.lead a:hover{color:#003300}
+
+/* 通用框架可选线条布局 */
+div.noborder{border:0}
+div.pfw{position:relative;border:1px solid #e4e4e4;border-radius:5px;box-shadow:2px 2px 3px #e4e4e4}
+div.pfw h3{height:30px;line-height:30px;font-size:14px;margin:0;padding:0 0 0 10px;background:#fafbfc;border-bottom:1px solid #e4e4e4;border-radius:5px 5px 0 0}
+div.pfw h3 .more{display:block;float:right;height:30px;line-height:30px;padding-right:8px;font-weight:normal;font-size:12px;}
+
+	/* 文章列表 */
+	ul.arclist{padding:5px 10px;list-style:none;margin:0;}
+	ul.arclist li{border-bottom:1px dashed #efefef;height:26px;line-height:26px;overflow:hidden;}
+	ul.arclist li.end{border-bottom:0;}
+	ul.arclist li a:hover{color:red;}
+	ul.arclist li span.date{display:block;float:right;height:26px;line-height:26px;}
+
+	/* 新闻详细页样式 */
+	div.info{padding:10px;}
+	div.info h1{text-align:center;font-size:18px;height:40px;line-height:40px;}
+	div.info .date{text-align:center;font-size:12px;color:#7E7E7E;height:26px;line-height:26px;border-bottom:1px solid #eee;margin-bottom:10px;}
+	div.info .date span{color:#203AB9}
+	div.info .content{line-height:170%;font-size:14px;word-wrap:break-word;}
+	div.info .content p{line-height:170%;font-size:14px;}
+	div.info .np{border-top:1px solid #eee;margin:5px;line-height:26px;}
+	div.info .np .next{color:#ccc;}
+	div.info .np .prev{color:#ccc;}
+	div.info .np a{color:#003300}
+	div.info .np strong{color:#003300}
+
+
+	/*分类列表*/
+	ul.catelist{list-style:none;margin:0 0 0 15px;padding:5px;}
+	ul.catelist li{float:left;width:40%;background:url("../images/category.png") left center no-repeat;height:30px;line-height:30px;text-indent:25px;}
+
+	/* 联系方式 */
+	ul.contact {margin:0;padding:10px 0 5px 10px;list-style:none;}
+	ul.contact li {list-style:none;margin:0;padding:0 0 0 6px;clear:both;line-height:22px;}
+
+	/* 友情链接 */
+	ul.link{margin:0;padding:0 5px;list-style:none;}
+	ul.link li{float:left;margin:5px;line-height:22px;}
+
+
+	/* 关于我们 */
+	div.about{margin:10px;}
+	div.about .img{border:0;float:left;margin:0 10px 10px 0;width:200px;}
+
+	/* 首页产品 */
+	.products {padding:5px;}
+	.products ul {overflow:hidden;list-style:none;margin:0;padding:0;}
+	.products ul li {margin:0 2px;float:left;overflow:hidden;text-align:center;width:175px;}
+	.products ul li .pic img {width:165px;display:block;padding:1px;border:1px solid #ccc;}
+	.products ul li .pic a:hover img {border-color:#999;}
+	.products ul li .title {line-height:24px;}
+
+	/* 新闻列表左侧子分类 */
+	ul.subcate{list-style:none;margin:0;padding:10px;}
+	ul.subcate li{background:url("../images/arrow2.png") left center no-repeat;line-height:26px;height:26px;margin:0 10px;padding:0 0 0 20px;}
+
+	/* 评论相关样式 */
+	.comment{position;relative;}
+	.comment ul{list-style:none;margin:0;padding:0;}
+	.comment ul li{margin:0;border-bottom:1px solid #ececec;}
+	.comment ul li.row_1{background:#fafbfc;}
+	.comment .avatar{width:50px;background:#fff;vertical-align: top;}
+	.comment .avatar img{width:40px;border:1px solid #ececec;padding:1px;margin:3px;}
+	.comment .body{padding:5px;}
+	.comment .body .r_title{border-bottom:1px dashed #efefef;height:26px;line-height:26px;}
+	.comment .body .nickname{color:darkred;padding-right:10px;}
+	.comment .body .r_content{line-height:160%;padding:5px;}
+	.comment fieldset{margin:0 0 5px 0;padding:10px 15px;border:1px solid gray;}
+	.comment legend{color:red;}
+	.comment .pagelist{text-align:right;margin-right:7px;}
+
+	.comment_add .not_popedom{padding:10px 20px;text-align:center;}
+	.comment_add .not_popedom a{font-size:14px;font-weight:bold;}
+	.comment_add .avatar{width:50px;background:#fff;vertical-align: top;}
+	.comment_add .avatar img{width:40px;border:1px solid #ececec;padding:1px;margin:3px;}
+	.comment_add .body{padding:5px;}
+	.comment_add .body textarea{width:660px;height:60px;max-width:660px;min-width:660px;}
+	.comment_add .body .note{float:right;color:darkred;}

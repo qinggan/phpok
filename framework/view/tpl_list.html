@@ -1,0 +1,207 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function folder_rename(id,folder,title)
+{
+	var notice = "将文件夹：<span class='red'>"+title+"</span> 改名为：（仅支持字母、数字、下划线）";
+	to_rename(id,folder,title,notice);
+}
+
+function add_folder(id,folder)
+{
+	$.dialog.prompt("请填写要创建的文件夹名称，<span class='red'>仅支持数字，字母及下划线</span>：",function(val){
+		if(!val || val == "undefined")
+		{
+			$.dialog.alert("文件夹名称不能为空");
+			return false;
+		}
+		var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&type=folder&title="+$.str.encode(val);
+		var url = get_url("tpl","create",url_ext);
+		var rs = json_ajax(url);
+		if(!rs || rs.status != "ok")
+		{
+			if(!rs.content) rs.content="创建失败";
+			$.dialog.alert(rs.content);
+		}
+		else
+		{
+			$.phpok.reload();
+		}
+	});
+}
+
+function add_file(id,folder)
+{
+	$.dialog.prompt("填写要模板文件名（含扩展名<span class='red'><strong>{$rs.ext}</strong></span>）<br /><span class='red'>仅持数字，字母，下划线及点</span>：",function(val){
+		if(!val || val == "undefined")
+		{
+			$.dialog.alert("文件名称不能为空");
+			return false;
+		}
+		var ext = "{$rs.ext}";
+		if(!ext)
+		{
+			$.dialog.alert("未指定扩展名");
+			return false;
+		}
+		var extlen = -(ext.length);
+		var val_t = val.substr(extlen);
+		if(val_t != ext)
+		{
+			$.dialog.alert("文件扩展名不能为空");
+			return false;
+		}
+		var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&type=file&title="+$.str.encode(val);
+		var url = get_url("tpl","create",url_ext);
+		var rs = json_ajax(url);
+		if(!rs || rs.status != "ok")
+		{
+			if(!rs.content) rs.content="创建失败";
+			$.dialog.alert(rs.content);
+		}
+		else
+		{
+			$.phpok.reload();
+		}
+	});
+}
+
+
+function file_rename(id,folder,title)
+{
+	var notice = "将文件：<span class='red'>"+title+"</span> 改名为：<br />仅支持字母、数字、下划线和点，<span class='red'>注意扩展名必须填写</span> ";
+	to_rename(id,folder,title,notice);
+}
+
+function to_rename(id,folder,title,notice)
+{
+	$.dialog.prompt(notice,function(val){
+		if(!val || val == undefined) val = title;
+		if(val == title)
+		{
+			$.dialog.alert("新旧名称一样");
+			return false;
+		}
+		var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&old="+$.str.encode(title)+"&title="+$.str.encode(val);
+		var url = get_url("tpl","rename",url_ext);
+		var rs = json_ajax(url);
+		if(!rs || rs.status != "ok")
+		{
+			if(!rs.content) rs.content="改名失败";
+			$.dialog.alert(rs.content);
+		}
+		else
+		{
+			$.phpok.reload();
+		}
+	},title);
+}
+
+function to_delete(id,folder,title)
+{
+	$.dialog.confirm("确定要删除文件（夹）：<span class='red'>"+title+"</span> 吗?删除后是不能恢复的！",function(){
+		if(!title)
+		{
+			$.dialog.alert("操作异常！");
+			return false;
+		}
+		var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title);
+		var url = get_url("tpl","delfile",url_ext);
+		var rs = json_ajax(url);
+		if(!rs || rs.status != "ok")
+		{
+			if(!rs.content) rs.content = "删除失败";
+			$.dialog.alert(rs.content);
+			return false;
+		}
+		else
+		{
+			$.phpok.reload();
+		}
+	});
+}
+
+function to_view(url)
+{
+	var html = '<img src="'+url+'" border="0" />';
+	$.dialog({
+		title: '预览图片',
+		lock: true,
+		content:html,
+		width: '400px',
+		height: '300px',
+		resize: true
+	});
+}
+
+function to_download(id,folder,title)
+{
+	var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title);
+	var url = get_url("tpl","download",url_ext);
+	direct(url);
+}
+
+function to_edit(id,folder,title)
+{
+	var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title);
+	var url = get_url("tpl","edit",url_ext);
+	$.dialog.open(url,{
+		"title":"编辑文件："+title,
+		"resize": true,
+		"lock": true,
+		"width":"700px",
+		"height":"441px",
+		"drag":false
+	});
+}
+</script>
+<div class="tips">
+	<div class="action"><a href="{func admin_url tpl}">返回风格方案</a></div>
+	<div class="action"><a href="javascript:add_folder('{$id}','{$folder}')">创建文件夹</a></div>
+	<div class="action"><a href="javascript:add_file('{$id}','{$folder}')">创建模板文件</a></div>
+	风格：<span class="red">{$rs.title}</span>，
+	当前路径：<span class="red">{$folder}</span>
+	<!-- if $folder != "/" -->
+	，<a href="{echo admin_url('tpl','list')}&id={$id}" title="返回根目录">点此返回根目录</a>
+	<!-- /if -->
+</div>
+<div class="list">
+<table class="list" width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th width="40px">类型</th>
+	<th>名称</th>
+	<th>时间</th>
+	<th>&nbsp;</th>
+</tr>
+<!-- loop from=$dirlist key=$key value=$value -->
+<tr>
+	<td align="center"><img src="images/filetype/dir.gif" border="0" alt="文件夹：{$value.title}"></td>
+	<td class="lft" colspan="2">{$value.title}</td>
+	<td align="right">
+		<input type="button" value="改名" onclick="folder_rename('{$id}','{$folder}','{$value.title}')" class="btn" />
+		<input type="button" value="进入" onclick="direct('{$value.url}')" class="btn" />
+		<input type="button" value="删除" class="btn" onclick="to_delete('{$id}','{$folder}','{$value.title}')" />
+	</td>
+</tr>
+<!-- /loop -->
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td align="center"><img src="images/filetype/{$value.type}.gif" border="0" alt="文件：{$value.title}"></td>
+	<td class="lft">{$value.title}</td>
+	<td align="center" class="gray">{$value.date}</td>
+	<td align="right">
+		<input type="button" value="改名" onclick="file_rename('{$id}','{$folder}','{$value.title}')" class="btn" />
+		<!-- if in_array($value.type,$edit_array) -->
+		<input type="button" value="编辑" onclick="to_edit('{$id}','{$folder}','{$value.title}')" class="btn" />
+		<!-- elseif in_array($value.type,$pic_array) -->
+		<input type="button" value="查看" onclick="to_view('tpl/{$rs.folder}{$folder}{$value.title}')" class="btn" />
+		<!-- else -->
+		<input type="button" value="下载" onclick="to_download('{$id}','{$folder}','{$value.title}')" class="btn" />
+		<!-- /if -->
+		<input type="button" value="删除" onclick="to_delete('{$id}','{$folder}','{$value.title}')" class="btn" />
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<div class="tips">要实线在线编辑和上传功能，请确保 <span class="red">tpl/{$rs.folder}{$folder}</span> 下的文件有写入权限</div>
+<!-- include tpl=foot -->

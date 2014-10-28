@@ -1,0 +1,84 @@
+<!-- php:$edit_content = form_edit('content',$rs.content,'editor','width=680&height=300') -->
+<!-- include tpl=head_open -->
+<script type="text/javascript" src="{func include_js}"></script>
+<div class="help">
+	<div class="title red">
+		{$title_rs.title}
+		<span class="darkblue i">（发布时间：{echo date("Y-m-d H:i:s",$title_rs.dateline)}）</span>
+	</div>
+	<!-- if $title_rs.content -->
+	<div class="content">{func phpok_cut $title_rs.content 255 …}</div>
+	<!-- /if -->
+</div>
+<script type="text/javascript">
+function check_save()
+{
+	var c = edit_content.getContent();
+	if(!c)
+	{
+		$.dialog.alert("内容不能为空");
+		return false;
+	}
+	return true;
+}
+</script>
+<form method="post" action="{func admin_url reply edit_save}&id={$id}" onsubmit="return check_save()">
+<div class="table">
+	<div class="title">
+		评论星级：
+		<span class="note">设置该评论的星级数，默认为3星</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="1">
+		<tr>
+			<td><input type="radio" name="star" id="star_1" value="1"{if $rs.star == 1} checked{/if}></td>
+			<td><label for="star_1">一星</label></td>
+			<td>&nbsp;</td>
+			<td><input type="radio" name="star" id="star_2" value="2"{if $rs.star == 2} checked{/if}></td>
+			<td><label for="star_2">二星</label></td>
+			<td>&nbsp;</td>
+			<td><input type="radio" name="star" id="star_3" value="3"{if $rs.star == 3} checked{/if}></td>
+			<td><label for="star_3">三星</label></td>
+			<td>&nbsp;</td>
+			<td><input type="radio" name="star" id="star_4" value="4"{if $rs.star == 4} checked{/if}></td>
+			<td><label for="star_4">四星</label></td>
+			<td>&nbsp;</td>
+			<td><input type="radio" name="star" id="star_5" value="5"{if $rs.star == 5} checked{/if}></td>
+			<td><label for="star_5">五星</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		评论内容：
+		<span class="note">一般情况不用修改。</span>
+	</div>
+	<div class="content">{$edit_content}</div>
+</div>
+<!-- if $popedom.status -->
+<div class="table">
+	<div class="title">
+		审核：
+		<span class="note"></span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="1">
+		<tr>
+			<td><input type="radio" name="status" id="status_0" value="0"{if !$rs.status} checked{/if}></td>
+			<td><label for="status_0" class="red">未审核</label></td>
+			<td>&nbsp;</td>
+			<td><input type="radio" name="status" id="status_1" value="1"{if $rs.status} checked{/if}></td>
+			<td><label for="status_1">已审核</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<!-- /if -->
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit" />
+	</div>
+</div>
+</form>
+<!-- inc:foot_open -->

@@ -1,0 +1,71 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('all.js')}"></script>
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('all')}">全局维护</a>
+	<!-- if $id -->
+	&raquo; 编辑全局参数
+	<!-- else -->
+	&raquo; 添加全局
+	<!-- /if -->
+</div>
+<form method="post" action="{echo admin_url('all','gset_save')}" onsubmit="return g_ext_check();">
+<input type="hidden" id="id" name="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		名称：
+		<span class="note">用于后台阅读，尽量简短，建议不超过5个汉字</span></span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input type="text" id="title" name="title" class="default" value="{$rs.title}" /></td>
+			<td><div id="title_note"></div></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		标识：
+		<span class="note">限<span class="red">字母、数字、下划线或中划线，且必须是字母开头</span></span>
+	</div>
+	<div class="content"><input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" /></div>
+</div>
+
+<div class="table">
+	<div class="title">
+		图标：
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<!-- loop from=$icolist key=$key value=$value -->
+			<li><label title="{func basename $value}">
+				<table>
+				<tr>
+					<td><input type="radio" name="ico" value="{$value}"{if $rs.ico == $value} checked{/if} /></td>
+					<td><img src="{$value}" alt="{func basename $value}" /></td>
+				</tr>
+				</table>
+			</label></li>
+			<!-- /loop -->
+			<div class="clear"></div>
+		</ul>
+	</div>
+</div>
+
+
+
+<div class="table">
+	<div class="content">
+		<br />
+		<input type="submit" value="提 交" class="submit" />
+		&nbsp; &nbsp;
+		<!-- if $id && !$rs.is_system -->
+		<input type="button" value="删 除" class="btn" onclick="ext_g_delete({$id})"/>
+		<!-- /if -->
+		<br />
+	</div>
+</div>
+</form>
+<!-- inc:foot -->

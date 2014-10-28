@@ -1,0 +1,79 @@
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#comment_post").submit(function(){
+		$(this).ajaxSubmit({
+			'url':api_url('comment','save','id={$rs.id}'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status != 'ok')
+				{
+					alert(rs.content);
+					return false;
+				}
+				else
+				{
+					alert('您的评论已成功提交');
+					$.phpok.reload();
+					return true;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="comment">
+	<h4 class="title">评论：{$rs.title}</h4>
+	<!-- php:$list = phpok_reply($rs.id,5) -->
+	<!-- loop from=$list.list key=$key value=$value id=listId -->
+	<dl>
+		<dt><img src="{$value.uid.avatar ? $value.uid.avatar : 'images/avatar_huge.gif'}" alt="{$value.uid.user ? $value.uid.user : '访客'}" /></dt>
+		<dd>
+			<div class="Remarks">
+				<span class="icon icon-left-arrow"></span>
+				<div class="postmessage">{$value.content}</div>
+				<div class="moddiv"><span class="nickname">{$value.uid.user ? $value.uid.user :'游客'}</span>发表于{func time_format $value.addtime}</div>
+			</div>
+		</dd>
+	</dl>
+	<!-- /loop -->
+	<!-- if $list.total > 5 -->
+		<!-- php:$pagelist = phpok_page($rs.url,$list.total,$list.pageid,$list.psize,"always=1") -->
+		<div class="Pages">
+			<ul>
+				<!-- loop from=$pagelist key=$key value=$value -->
+				<li{if $value.status} class="current"{/if}><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
+				<!-- /loop -->
+			</ul>
+		</div>
+	<!-- /if -->
+	<!-- if $session.user_id -->
+	<dl>
+		<dt><img src="{$session.user_rs.avatar ? $session.user_rs.avatar : 'images/avatar_huge.gif'}" alt="{$session.user_name}" /></dt>
+		<dd>
+			<div class="Remarks">
+				<span class="icon icon-left-arrow"></span>
+				<form method="post" id="comment_post">
+				<textarea name="comment" id="comment" class="textarea"></textarea>
+				<input name="" type="submit" class="bbsbtn hover" value="提交" />
+				</form>
+			</div>
+		</dd>
+	</dl>
+	<!-- else -->
+	<dl>
+		<dt><img src="images/avatar_huge.gif" alt="游客" /></dt>
+		<dd>
+			<div class="Remarks">
+				<span class="icon icon-left-arrow"></span>
+				<div class="not_popedom">
+					您没有评论权限，请先
+					<a href="{url ctrl=login _back=$rs.url/}" title="登录">登录</a> 或 
+					<a href="{url ctrl=register _back=$rs.url/}" title="注册">注册</a>
+				</div>
+			</div>
+		</dd>
+	</dl>
+	<!-- /if -->
+</div>

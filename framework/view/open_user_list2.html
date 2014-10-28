@@ -1,0 +1,20 @@
+<!-- inc:head_open -->
+<script type="text/javascript">
+$(document).ready(function(){
+	var obj = $.dialog.opener;
+	$("#user_layout li").click(function(){
+		var val = $(this).attr("data");
+		obj.$("#{$id}").val(val);
+		$.dialog.close();
+	});
+});
+</script>
+<div class="list">
+<ul class="layout" id="user_layout">
+	<!-- loop from=$rslist key=$key value=$value -->
+	<li data="{$value.user}" class="hand" style="height:20px;border:1px solid #ccc;padding:1px 5px;">{$value.user}</li>
+	<!-- /loop -->
+</ul>
+</div>
+<!-- if($pagelist) --><div class="table">{:$pagelist}</div><!-- end -->
+<!-- inc:foot_open -->

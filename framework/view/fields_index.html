@@ -1,0 +1,57 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('fields.js')}"></script>
+<div class="tips">
+	<!-- if $popedom.add -->
+	<div class="action"><a href="{echo admin_url('fields','set')}">添加新字段</a></div>
+	<!-- /if -->
+	您当前的位置：
+	<a href="{echo admin_url('fields')}">字段属性管理</a>
+	&raquo; 字段列表
+	&nbsp; 筛选：
+	<select onchange="fields_goto(this.value)">
+	<option value="">全部</option>
+	<!-- loop from=$arealist key=$key value=$value -->
+	<option value="{$key}"{if $key == $type} selected{/if}>{$value}</option>
+	<!-- /loop -->
+	</select>
+</div>
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="lft" style="text-indent:12px;">名称</th>
+	<th>字段名</th>
+	<th>字段类型</th>
+	<th>表单类型</th>
+	<th class="action">操作</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr title="{$value.note}">
+	<td style="text-indent:12px;height:22px;">
+		{$value.title}
+		<!-- php:$t = $value['area'] ? explode(",",$value['area']) : array() -->
+		<!-- if $value.area -->
+		<span class="gray size10">&raquo;
+			<!-- php:$t = explode(",",$value['area']) -->
+			<!-- loop from=$t key=$k value=$v -->
+				<!-- if $t_id.num>1 -->/<!-- /if -->
+				{$arealist[$v]}
+			<!-- /loop -->
+		</span>
+		<!-- /if -->
+	</td>
+	<td class="center">{$value.identifier}</td>
+	<td class="center">{$value.field_type_name}</td>
+	<td class="center">{$value.form_type_name}</td>
+	<td>
+		<!-- if $popedom.modify -->
+		<a class="icon edit" href="{echo admin_url('fields','set')}&id={$value.id}" title="修改"></a>
+		<!-- /if -->
+		<!-- if $popedom.delete -->
+		<a class="icon delete end" onclick="field_del('{$value.id}','{$value.title}')" title="删除"></a>
+		<!-- /if -->
+	</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<!-- inc:foot -->

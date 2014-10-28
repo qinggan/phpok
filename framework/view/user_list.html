@@ -1,0 +1,66 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('user.js')}"></script>
+<div class="tips">
+	<table width="100%" cellpadding="0" cellspacing="0" height="100%">
+	<tr>
+		<td>&raquo; 会员列表</td>
+		<td>
+			<table>
+			<tr>
+				<form method="post" action="{echo admin_url('user')}">
+				<td><input type="text" id="keywords" name="keywords" value="{$keywords}" /></td>
+				<td><input type="submit" value="搜索" class="submit" /></td>
+				</form>
+			</tr>
+			</table>
+		</td>
+		<td align="right"><div class="action"><a href="{echo admin_url('user','set')}">添加会员</a></div></div>
+	</tr>
+	</table>
+</div>
+
+<div class="list">
+<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<tr>
+	<th width="50px">ID</th>
+	<th width="35px">&nbsp;</th>
+	<th width="35px"></th>
+	<!-- loop from=$arealist key=$key value=$value -->
+	<th style="text-align:left">{$value}</th>
+	<!-- /loop -->
+	<th width="130px">注册时间</th>
+	<th width="65px">操作</th>
+</tr>
+<!-- $rslist AS $key=>$value -->
+<tr>
+	<td align="center">{$value.id}</td>
+	<td><span id="status_{$value.id}" onclick="set_status({$value.id})" class="status{$value.status}" value="{$value.status}"></span></td>
+	<td align="center"><img src="{$value.avatar ? $value.avatar : 'images/user_default.png'}" border="0" width="24px" height="24px" /></td>
+	<!-- loop from=$arealist key=$k value=$v -->
+	<td align="left">
+		<!-- if is_array($value[$k]) -->
+			<!-- if $value[$k]['_admin']['type'] == 'pic' -->
+			<img src='{$value[$k]["_admin"]["info"]}' border="0" width="28px" height="28px" />
+			<!-- else -->
+			{$value[$k]['_admin']['info']}			
+			<!-- /if -->
+		<!-- else -->
+			<!-- if $k == 'group_id' -->
+			{$grouplist[$value[$k]][title]}
+			<!-- else -->
+			{$value[$k]}
+			<!-- /if -->
+		<!-- /if -->
+	</td>
+	<!-- /loop -->
+	<td>{echo date('Y-m-d H:i',$value['regtime'])}</td>
+	<td>
+		<a href="{echo admin_url('user','set')}&id={$value.id}" class="icon edit" title="编辑"></a>
+		<a href="javascript:del({$value.id},'{$value.user}');void(0);" class="icon delete" title="删除"></a>
+	</td>
+</tr>
+<!-- end -->
+</table>
+</div>
+<!-- if $pagelist --><div class="table"><!-- include tpl=pagelist --></div><!-- /if -->
+<!-- inc:foot -->

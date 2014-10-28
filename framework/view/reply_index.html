@@ -1,0 +1,70 @@
+<!-- include tpl=head title=评论管理 -->
+
+<script type="text/javascript">
+function subsearch()
+{
+	var url = get_url("reply");
+	var status = $("#status").val();
+	if(status>0)
+	{
+		url += "&status="+status;
+	}
+	var keywords = $("#keywords").val();
+	if(keywords)
+	{
+		url += "&keywords="+$.str.encode(keywords);
+	}
+	direct(url);
+}
+function to_view(id)
+{
+	var url = get_url("reply","list","tid="+id);
+	direct(url);
+}
+</script>
+<div class="tips" id="tips">
+	<table cellpadding="0" cellspacing="0" height="100%" width="100%">
+	<tr>
+		<td>您当前的位置：<a href="{func admin_url reply}" title="内容管理">评论管理</a></td>
+		<td align="right">
+			搜索：
+			<select name="status" id="status">
+				<option value="0">全部</option>
+				<option value="1"{if $status == 1} selected{/if}>已审核</option>
+				<option value="2"{if $status && $status != 1} selected{/if}>未审核</option>
+			</select>
+			<input type="text" name="keywords" id="keywords" value="{$keywords}" style="margin-top:3px;" />
+			<input type="button" value="搜索" class="btn" onclick="subsearch();" />
+		</td>
+		<td>&nbsp;</td>
+	</tr>
+	</table>
+</div>
+
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th width="20px">&nbsp;</th>
+	<th class="lft">主题</th>
+	<th>未审核</th>
+	<th>已审核</th>
+	<th>最后回复时间</th>
+	<th>操作</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center"><input type="checkbox" name="ids[]" id="id_{$value.id}" value="{$value.id}" checked /></td>
+	<td>{$value.title}</td>
+	<td class="red center">{$value.uncheck}</td>
+	<td class="center">{$value.checked}</td>
+	<td class="center">{func date Y年m月d日H时i分 $value.replydate}</td>
+	<td class="center">
+		<input type="button" value="查看" class="btn" onclick="to_view({$value.id})" />
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<!-- if $pagelist --><div class="table"><!-- include tpl=pagelist --></div><!-- /if -->
+
+<!-- include tpl=foot -->

@@ -1,0 +1,92 @@
+<!-- include tpl=head title="会员登录" -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#login_post_form').submit(function(){
+		$(this).ajaxSubmit({
+			url:api_url('login'),
+			type:'post',
+			dataType:'json',
+			success:function(rs){
+				if(rs.status == 'ok')
+				{
+					var back = $("#_back").val();
+					if(!back || back == 'undefined' || back == window.location.href) back = webroot;
+					$.phpok.go(back);
+				}
+				else
+				{
+					if(!rs.content) rs.content = '登录失败';
+					alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="main_reg">
+<div class="pfw mbottom10">
+	<h3>会员登录</h3>
+	<div class="content">
+		<div class="left">
+			<form method="post" id="login_post_form">
+			<input type="hidden" name="_spam" value="{$session.login_spam_code}" />
+			<input type="hidden" id="_back" value="{$_back}" />
+			<ul class="register">
+				<li>
+					<div class="reg_title">账号：</div>
+					<input type="text" name="user" id="user" class="input" />
+					<span class="red pl5 fsize16">*</span> 请填写会员账号，不能为空
+				</li>
+				<li>
+					<div class="reg_title">密码：</div>
+					<input type="password" name="pass" id="pass" class="input" />
+					<span class="red pl5 fsize16">*</span> 会员密码不能为空
+				</li>
+				<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+				<li>
+					<div class="reg_title">验证码：</div>
+					<table cellpadding="0" cellspacing="0" width="180px">
+					<tr>
+						<td><input type="text" name="_chkcode" id="_chkcode" class="vcode" /></td>
+						<td align="right"><img src="" border="0" align="absmiddle" id="update_vcode" class="hand"></td>
+					</tr>
+					</table>
+				</li>
+				<script type="text/javascript">
+				$(document).ready(function(){
+					$("#update_vcode").phpok_vcode();
+					//更新点击时操作
+					$("#update_vcode").click(function(){
+						$(this).phpok_vcode();
+					});
+				});
+				</script>
+				<!-- /if -->
+				<li>
+					<div class="reg_title">&nbsp;</div>
+					<input type="submit" name="submit" id="reg_submit" class="input" value="会员登录" />
+				</li>
+			</ul>
+			</form>
+		</div>
+		<div class="right">
+			<div style="margin:20px auto;">
+			<table>
+			<tr>
+				<td><img src="images/register.png" border="0" /></td>
+				<td>还不是会员?<br /><a href="{func site_url register}" title="会员注册">点这里注册</a></td>
+			</tr>
+			<tr>
+				<td><img src="images/getpass.png" border="0" /></td>
+				<td>忘记密码?<br /><a href="{url ctrl=login func=getpass/}" title="取回密码">点这里取回密码</a></td>
+			</tr>
+			</table>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+</div>
+<!-- include tpl=foot -->

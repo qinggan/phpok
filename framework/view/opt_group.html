@@ -1,0 +1,42 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('opt.js')}"></script>
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('opt')}">选项维护</a>
+	&raquo; 选项组维护（维护扩展表单的多项选择属性，包括复选框，单选框，下拉菜单等）
+</div>
+
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="id">ID</th>
+	<th>名称</th>
+	<th>删除</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td>
+		<input type="text" id="title_{$value.id}" value="{$value.title}" class="default" />
+		<!-- if $popedom.set -->
+		<input type="button" value="更新" class="btn" onclick="update_opt_group({$value.id})" />
+		<!-- /if -->
+		<input type="button" value="内容" class="btn" onclick="opt_list({$value.id})" />
+	</td>
+	<td class="center"><!-- if $popedom.set --><input type="button" value="删除" class="btn" onclick="delete_opt_group({$value.id})" /><!-- /if --></td>
+</tr>
+<!-- /foreach -->
+<!-- if $popedom.set -->
+<tr>
+	<td class="center">添加</td>
+	<td>
+		<input type="text" id="title_0" class="default" />
+		<input type="button" value="添加" class="btn" onclick="add_opt_group()" />
+	</td>
+	<td>&nbsp;</td>
+</tr>
+<!-- /if -->
+</table>
+</div>
+
+<!-- inc:foot -->

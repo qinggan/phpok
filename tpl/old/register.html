@@ -1,0 +1,146 @@
+<!-- include tpl=head title="会员注册" -->
+<script type="text/javascript">
+var open_vcode = '{$sys.is_vcode && function_exists("imagecreate") ? 1 : 0}';
+$(document).ready(function(){
+	$("#form_register").submit(function(){
+		if(!$('#is_ok').attr('checked'))
+		{
+			alert('注册前请先同意本站协议');
+			return false;
+		}
+		$(this).ajaxSubmit({
+			type:'post',
+			url: api_url('register','save'),
+			dataType:'json',
+			success: function(rs){
+				if(rs.status == 'ok')
+				{
+					alert("恭喜您注册成功");
+					var back = $("#_back").val();
+					if(!back || back == 'undefined' || back == window.location.href) back = webroot;
+					$.phpok.go(back);
+				}
+				else
+				{
+					if(!rs.content) rs.content = '注册失败';
+					alert(rs.content);
+					if(open_vcode == '1')
+					{
+						$("#_chkcode").val('');
+						$("#update_vcode").phpok_vcode();
+					}
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+//更新会员组
+function update_group(gid)
+{
+	var url = get_url('register','','group_id='+gid);
+	$.phpok.go(url);
+}
+</script>
+<div class="main_reg">
+	<div class="pfw mbottom10">
+		<h3>会员注册</h3>
+		<div class="left">
+			<form method="post" id="form_register">
+			<input type="hidden" name="_spam" value="{$session.register_spam_code}" alt="随机串，防止恶意注册" />
+			<input type="hidden" id="_back" value="{$_back}" alt="返回网址信息" />
+			<!-- if !$group_rs.register_status || $group_rs.register_status != 1 -->
+			<input type="hidden" id="_code" name="_code" value="{$code}" alt="邀请码" />
+			<!-- /if -->
+			<ul class="register">
+				<!-- if $grouplist -->
+				<li>
+					<div class="reg_title">会员组：</div>
+					<select name="group_id" id="group_id" onchange="update_group(this.value)">
+					<!-- loop from=$grouplist key=$key value=$value -->
+					<option value="{$value.id}"{if $group_id == $value.id} selected{/if}>{$value.title}</option>
+					<!-- /loop -->
+					</select>
+				</li>
+				<!-- /if -->
+				<li>
+					<div class="reg_title">账号：</div>
+					<input type="text" name="user" id="user" class="input" value="{$account}" />
+					<span class="red pl5 fsize16">*</span> 请填写会员账号，不能为空，建议使用邮箱作为账号
+				</li>
+				<li>
+					<div class="reg_title">密码：</div>
+					<input type="password" name="newpass" id="newpass" class="input" />
+					<span class="red pl5 fsize16">*</span> 会员密码不能为空
+				</li>
+				<li>
+					<div class="reg_title">确认密码：</div>
+					<input type="password" name="chkpass" id="chkpass" class="input" />
+					<span class="red pl5 fsize16">*</span> 请再填写一次密码
+				</li>
+				<li>
+					<div class="reg_title">Email：</div>
+					<input type="text" name="email" id="email" class="input" />
+					<span class="red pl5 fsize16">*</span> 邮箱必填，已存在邮箱不能重复注册
+				</li>
+				<li>
+					<div class="reg_title">手机或电话：</div>
+					<input type="text" name="mobile" id="mobile" class="input" />
+					<span class="red pl5 fsize16">&nbsp;</span> 填写手机号或您的座机电话
+				</li>
+				<!-- loop from=$extlist key=$key value=$value -->
+				<li class="ext">
+					<div class="reg_title">{$value.title}：</div>
+					{$value.html}
+				</li>
+				<!-- /loop -->
+				<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+				<li>
+					<div class="reg_title">验证码：</div>
+					<table cellpadding="0" cellspacing="0" width="180px">
+					<tr>
+						<td><input type="text" name="_chkcode" id="_chkcode" class="vcode" /></td>
+						<td align="right"><img src="" border="0" align="absmiddle" id="update_vcode" class="hand"></td>
+					</tr>
+					</table>
+				</li>
+				<script type="text/javascript">
+				$(document).ready(function(){
+					$("#update_vcode").phpok_vcode();
+					//更新点击时操作
+					$("#update_vcode").click(function(){
+						$(this).phpok_vcode();
+					});
+				});
+				</script>
+				<!-- /if -->
+				<li>
+					<div class="reg_title">&nbsp;</div>
+					<label for="is_ok"><input type="checkbox" name="is_ok" id="is_ok" value="1" />我已阅读并完全同意</label> <a href="{url id=agreement/}" target="_blank">阅读注册协议</a>
+				</li>
+				<li>
+					<div class="reg_title">&nbsp;</div>
+					<input type="submit" name="submit" id="reg_submit" class="input" value="注册会员" />
+				</li>
+			</ul>
+			</form>
+		</div>
+		<div class="right">
+			<div style="margin:50px auto;">
+			<table>
+			<tr>
+				<td><img src="images/user_login.png" border="0" /></td>
+				<td>已注册会员<br /><a href="{func site_url login}" title="会员登录">点这里登录</a></td>
+			</tr>
+			<tr>
+				<td><img src="images/getpass.png" border="0" /></td>
+				<td>忘记密码?<br /><a href="{url ctrl=login func=getpass/}" title="取回密码">点这里取回密码</a></td>
+			</tr>
+			</table>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+<!-- include tpl=foot -->

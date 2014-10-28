@@ -1,0 +1,196 @@
+<!-- include tpl=head title="填写并核对验证信息 - 购物车" -->
+<script type="text/javascript" src="{$_js}/pcas.js"></script>
+<script type="text/javascript">
+var user_id = "{$session.user_id}";
+$(document).ready(function(){
+	$("#saveorder").submit(function(){
+		//通过Ajax提交订单，客户端检查订单信息是否完整
+		$(this).ajaxSubmit({
+			'url':api_url('order','create'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				//订单不成功的说明
+				if(rs.status != 'ok')
+				{
+					if(!rs.content) rs.content = '订单创建失败';
+					alert(rs.content);
+					return false;
+				}
+				else
+				{
+					//订单创建成功后，跳转到订单详细页信息，执行支付操作
+					var urlext = 'sn='+$.str.encode(rs.content.sn);
+					if(!user_id)
+					{
+						urlext += '&passwd='+$.str.encode(rs.content.passwd);
+					}
+					var url = get_url('order','info',urlext);
+					direct(url);
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="main">
+	<form method="post" id="saveorder">
+	<input type="hidden" name="order_spam" id="order_spam" value="{$session.order_spam}" />
+	<div class="pfw mbottom10">
+		<h3>地址</h3>
+		<div style="float:left;width:475px;">
+			<input type="hidden" name="s-id" id="s-id" value="{$shipping.id}" />
+			<!-- if $config.biz_billing --><h4 style="padding-left:10px;">收货地址</h4><!-- /if -->
+			<table width="100%">
+			<tr>
+				<td width="80px" align="right">姓名：</td>
+				<td><input type="text" name="s-fullname" id="s-fullname" value="{$shipping.fullname}" /></td>
+			</tr>
+			<tr>
+				<td align="right">性别：</td>
+				<td>
+					<table>
+					<tr>
+						<td><label><input type="radio" name="s-gender" value="0"{if !$shipping.gender} checked{/if} /> 女</label></td>
+						<td><label><input type="radio" name="s-gender" value="1"{if $shipping.gender} checked{/if} /> 男</label></td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td align="right">地址：</td>
+				<td>
+					<table cellpadding="0" cellspacing="0">
+						<tr>
+							<input type="hidden" name="s-country" id="s-country" value="中国" />
+							<td><select name="s-province"></select></td>
+							<td style="padding-left:3px;"><select name="s-city"></select></td>
+							<td style="padding-left:3px;"><select name="s-county"></select></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td align="right">&nbsp;</td>
+				<td><input type="text" name="s-address" id="s-address" value="{$shipping.address}" style="width:300px;" /></td>
+			</tr>
+			<tr>
+				<td align="right">邮编：</td>
+				<td><input type="text" name="s-zipcode" id="s-zipcode" value="{$shipping.zipcode}" /></td>
+			</tr>
+			<tr>
+				<td align="right">手机：</td>
+				<td><input type="text" name="s-mobile" id="s-mobile" value="{$shipping.mobile}" /> <span class="gray i">示例：158185xxxxx</span></td>
+			</tr>
+			<tr>
+				<td align="right">电话：</td>
+				<td><input type="text" name="s-tel" id="s-tel" value="{$shipping.tel}" /> <span class="gray i">电话或手机至少得填写一个</span></td>
+			</tr>
+			<tr>
+				<td align="right">Email：</td>
+				<td><input type="text" name="s-email" id="s-email" value="{$shipping.email ? $shipping.email : $session.user_rs.email}" /> <span class="gray i">请正确填写，以保证系统正常通知</span></td>
+			</tr>
+			</table>
+		</div>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			new PCAS("s-province={$shipping.province}","s-city={$shipping.city}","s-county={$shipping.county}");
+		});
+		</script>
+		<!-- if $config.biz_billing -->
+		<input type="hidden" name="b-id" id="b-id" value="{$billing.id}" />
+		<div style="float:right;width:475px;">
+			<h4 style="padding-left:10px;">账单地址</h4>
+			<table width="100%">
+			<tr>
+				<td width="80px" align="right">姓名：</td>
+				<td><input type="text" name="b-fullname" id="b-fullname" value="{$billing.fullname}" /></td>
+			</tr>
+			<tr>
+				<td align="right">性别：</td>
+				<td>
+					<table>
+					<tr>
+						<td><label><input type="radio" name="b-gender" value="0"{if !$billing.gender} checked{/if} /> 女</label></td>
+						<td><label><input type="radio" name="b-gender" value="1"{if $billing.gender} checked{/if} /> 男</label></td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td align="right">地址：</td>
+				<td>
+					<table cellpadding="0" cellspacing="0">
+						<tr>
+							<input type="hidden" name="b-country" id="b-country" value="中国" />
+							<td><select name="b-province"></select></td>
+							<td style="padding-left:3px;"><select name="b-city"></select></td>
+							<td style="padding-left:3px;"><select name="b-county"></select></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td align="right">&nbsp;</td>
+				<td><input type="text" name="b-address" id="b-address" value="{$billing.address}" style="width:300px;" /></td>
+			</tr>
+			<tr>
+				<td align="right">邮编：</td>
+				<td><input type="text" name="b-zipcode" id="b-zipcode" value="{$billing.zipcode}" /></td>
+			</tr>
+			<tr>
+				<td align="right">手机：</td>
+				<td><input type="text" name="b-mobile" id="b-mobile" value="{$billing.mobile}" /> <span class="gray i">示例：158185xxxxx</span></td>
+			</tr>
+			<tr>
+				<td align="right">电话：</td>
+				<td><input type="text" name="b-tel" id="b-tel" value="{$billing.tel}" /> <span class="gray i">电话或手机至少得填写一个</span></td>
+			</tr>
+			</table>
+		</div>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			new PCAS("b-province={$billing.province}","b-city={$billing.city}","b-county={$billing.county}");
+		});
+		</script>
+		<!-- /if -->
+		<div class="clear"></div>
+	</div>
+	<div class="table_lc">
+	<table width="100%" cellpadding>
+	<tr>
+		<th>图片</th>
+		<th class="lft">产品信息</th>
+		<th>购买数量</th>
+		<th>价格</th>
+	</tr>
+	<!-- loop from=$rslist key=$key value=$value -->
+	<tr>
+		<td class="center"><a href="{$value.url}" title="{$value.title}" target="_blank"><img src="{$value.thumb.gd.thumb}" width="100px" border="0" alt="{$value.title}" /></a></td>
+		<td>
+			<h3 id="title_{$value.id}">{$value.title}</h3>
+			<div>售价：{func price_format $value.price $value.currency_id}</div>
+		</td>
+		<td class="center">{$value.qty}</td>
+		<td class="center price">{func price_format $value.price*$value.qty $value.currency_id}</td>
+	</tr>
+	<!-- /loop -->
+	<tr>
+		<td align="right" colspan="4">总价：<span class="price">{$price}</span></td>
+	</tr>
+	</table>
+	</div>
+	<div class="space"></div>
+	<div style="border-bottom:1px solid #ccc;">
+		<table width="100%">
+		<tr>
+			<td align="left"><a href="{url id=cart/}" title="返回购物车"><img src="images/goto_cart.jpg" border="0" alt="返回购物车" /></a></td>
+			<td align="right"><input type="image" src="images/submit_order.jpg" alt="提交定单" title="提交定单" style="border:0;" /></td>
+		</tr>
+		</table>
+	</div>
+	<div class="clear"></div>
+	</form>
+</div>
+<!-- include tpl=foot -->

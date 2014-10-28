@@ -1,0 +1,64 @@
+<!-- include tpl=head menutitle=网站首页 title=会员登录 -->
+<script type="text/javascript">
+var open_vcode = '{$sys.is_vcode && function_exists("imagecreate") ? 1 : 0}';
+$(document).ready(function(){
+	$('#login-form').submit(function(){
+		$(this).ajaxSubmit({
+			url:api_url('login'),
+			type:'post',
+			dataType:'json',
+			success:function(rs){
+				if(rs.status == 'ok')
+				{
+					var back = $("#_back").val();
+					if(!back || back == 'undefined' || back == window.location.href) back = webroot;
+					$.phpok.go(back);
+				}
+				else
+				{
+					if(!rs.content) rs.content = '登录失败';
+					alert(rs.content);
+					if(open_vcode == '1')
+					{
+						$("#_chkcode").val('');
+						$("#vcode").phpok_vcode();
+					}
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="login-reg">
+	<dl class="box">
+		<dt>登录</dt>
+		<form method="post" id="login-form">
+		<input type="hidden" id="_back" value="{$_back}" />
+		<dd><label>账号：</label><input class="input" type="text" name="user" /><div class="clear"></div></dd>
+		<dd><label>密码：</label><input class="input" type="password" name="pass" /><div class="clear"></div></dd>
+		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+		<dd><label>验证码：</label><input class="vcode"  type="text" name="_chkcode" id="_chkcode" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" /><div class="clear"></div></dd>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#vcode").phpok_vcode();
+			$("#vcode").click(function(){
+				$(this).phpok_vcode();
+			});
+		});
+		</script>
+		<!-- /if -->
+		<dd class="submit"><input class="button blue" type="submit" value="登录" name=""></dd>
+		</form>
+	</dl>
+	<dl class="box note">
+		<dt>说明</dt>
+		<dd>如果您忘记密码，您可以点这里<a href="{url ctrl=login func=getpass/}" title="找回密码功能">找回密码？</a></dd>
+		<dd>您还不是我们的会员，请点这里<a href="{url ctrl=register/}" title="注册会员">注册</a></dd>
+		<dd>&nbsp;</dd>
+		<dd>&nbsp;</dd>
+	</dl>
+	<div class="clear"></div>
+</div>
+<!-- include tpl=foot -->

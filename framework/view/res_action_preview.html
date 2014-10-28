@@ -1,0 +1,33 @@
+<!-- inc:head_open -->
+<!-- if $type == "picture" -->
+	<div style="margin-top:3px;"><img src="{$rs.filename}" onload="javascript:if(this.width>600)this.width=600;"></div>
+	<!-- foreach($rs.gd AS $key=>$value) -->
+	<div style="margin-top:3px;"><img src="{$value.filename}" onload="javascript:if(this.width>600)this.width=600;"></div>
+	<!-- /foreach -->
+<!-- elseif $type == "video" -->
+	<div id="video" style="position:relative;z-index: 100;width:600px;height:400px;"><div id="a1">
+		<p style="text-align:center"><embed type="application/x-shockwave-flash" class="edui-faked-video" pluginspage="http://www.macromedia.com/go/getflashplayer" src="js/vcastr.swf?xml={vcastr}{channel}{item}{source}../../{$rs.filename}{/source}{duration}{/duration}{title}{/title}{/item}{/channel}{config}{isAutoPlay}false{/isAutoPlay}{isLoadBegin}false{/isLoadBegin}{/config}{plugIns}{beginEndImagePlugIn}{url}js/image.swf{/url}{source}{/source}{type}beginend{/type}{scaletype}exactFil{/scaletype}{/beginEndImagePlugIn}{/plugIns}{/vcastr}" width="400px" height="300px" wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true"/></p>
+	</div></div>
+<!-- else -->
+<div class="table">
+	<div class="title">
+		附件名称：
+		<span class="note">{$rs.title}</span>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		文件路径：
+		<span class="note">{$rs.filename}，<a href="{echo admin_url('res_action','download')}&id={$rs.id}" title="下载附件">点这里下载</a></span>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		上传时间：
+		<span class="note">{echo date("Y-m-d",$rs[addtime])}</span>
+	</div>
+</div>
+<!-- /if -->
+
+
+<!-- inc:foot_open -->

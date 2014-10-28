@@ -1,0 +1,40 @@
+<div class="foot">
+	<div class="copyright">
+		<!-- php:$list = phpok('footnav') -->
+		<!-- loop from=$list key=$key value=$value -->
+		<a href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a>
+		<!-- if $list_id.num == $list_id.total --><br /><!-- else --> | <!-- /if -->
+		<!-- /loop -->
+		{$config.copyright.content}
+	</div>
+</div>
+<!-- php:$list = phpok('kefu') -->
+<!-- if $list.project && $list.rslist -->
+<div id="right-float-box" class="im_floatonline">
+	<div class="float-box-content">
+		<div class="toptitle">{$list.project.title}</div>
+		<div class="addlist">
+			<ul>
+				<!-- loop from=$list.rslist key=$key value=$value -->
+				<li>{$value.title}<br>{$value.code}</li>
+				<!-- /loop -->
+				<!-- if $list.project.barcode -->
+				<li><img src="{$list.project.barcode.filename}" width="80px" alt="{$list.project.title}" /></li>
+				<!-- /if -->
+			</ul>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+if($.browser.msie && parseInt($.browser.version, 10) < 7)
+{
+	$(document).ready(function(){
+		 $(window).scroll(function(){
+			 $("#right-float-box").css({top:$(this).scrollTop()+$(this).height()-500});
+		 });
+	});
+}
+</script>
+<!-- /if -->
+</body>
+</html>

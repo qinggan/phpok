@@ -1,0 +1,66 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{func add_js sysmenu.js}"></script>
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('system')}">核心配置</a>
+	&raquo; 后台菜单列表
+</div>
+<div class="list2">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="id">&nbsp;</th>
+	<th width="30px">&nbsp;</th>
+	<th class="lft">名称</th>
+	<th>排序</th>
+	<th class="action">操作</th>
+</tr>
+<!-- run:$tab_i = 0; -->
+<!-- foreach($rslist AS $key=>$value) -->
+<!-- run:$tab_i++ -->
+	<tr class="list">
+		<td class="id"><input type="checkbox" value="{$value.id}" name="id_{$value.id}" id="id_{$value.id}" /></td>
+		<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="set_status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
+		<td><label for="id_{$value.id}">{$value.title}<!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></label></td>
+		<td class="center"><input type="text" id="taxis_{$value.id}" class="short center" value="{$value.taxis}" tabindex="{$tab_i}" /></td>
+		<td>
+			<!-- if $popedom.modify --><a class="icon edit" href="{echo admin_url('system','set')}&id={$value.id}" title="修改"></a><!-- /if -->
+			<!-- if $popedom.add --><a class="icon add" href="{echo admin_url('system','set')}&pid={$value.id}" title="添加子项目"></a><!-- /if -->
+		</td>
+	</tr>
+	<!-- foreach($value.sublist AS $k=>$v) -->
+	<!-- run:$tab_i++ -->
+	<tr>
+		<td>&nbsp;</td>
+		<td colspan="2">
+			<table width="100%">
+			<tr>
+				<td style="width:30px"><input type="checkbox" value="{$v.id}" name="id_{$v.id}" id="id_{$v.id}" /></td>
+				<td style="width:30px"><span class="status{$v.status}" id="status_{$v.id}" {if $popedom.status}onclick="set_status({$v.id})"{else} style="cursor:default"{/if} value="{$v.status}"></span></td>
+				<td><label for="id_{$v.id}">{$v.title}<!-- if $v.icon --><span class="gray i">（快捷显示）</span><!-- /if --></label></td>
+			</tr>
+			</table>
+		</td>
+		<td class="center"><input type="text" id="taxis_{$v.id}" class="short center" value="{$v.taxis}" tabindex="{$tab_i}" /></td>
+		<td>
+			<!-- if $popedom.modify --><a class="icon edit" href="{echo admin_url('system','set')}&id={$v.id}" title="修改"></a><!-- /if -->
+			<!-- if $popedom.delete --><a class="icon delete" href="javascript:delete_sysmenu('{$v.id}','{$v.title}');void(0);" title="删除"></a><!-- /if -->
+		</td>
+	</tr>
+	<!-- /foreach -->
+<!-- /foreach -->
+<!-- if($rslist) -->
+<tr>
+	<td colspan="5">
+		<div style="margin-top:5px;">
+		<input type="button" value="全选" class="btn" onclick="$.input.checkbox_all()" />
+		<input type="button" value="全不选" class="btn" onclick="$.input.checkbox_none()" />
+		<input type="button" value="反选" class="btn" onclick="$.input.checkbox_anti()" />
+		&nbsp; &raquo; &nbsp;
+		<input type="button" value="更新排序" class="btn" onclick="taxis('{echo admin_url('system','taxis')}','255')" />
+		</div>
+	</td>
+</tr>
+<!-- /if -->
+</table>
+</div>
+<!-- inc:foot -->

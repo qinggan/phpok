@@ -1,0 +1,108 @@
+<!-- inc:head_open -->
+<div class="tips">设置要导出的字段</div>
+<form method="post" action="{echo admin_url('plugin','ajax')}&id={$rs.id}&pid={$pid}&exec=export_data">
+<div class="list">
+<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<tr>
+	<th>名称</th>
+	<th>名称</th>
+	<th>名称</th>
+	<th>名称</th>
+</tr>
+<tr>
+	<td class="lft"><label for="ext_title"><input type="checkbox" name="ext[]" id="ext_title" value="title" checked /> 主题</label></td>
+	<td class="lft"><label for="ext_dateline"><input type="checkbox" name="ext[]" id="ext_dateline" value="dateline" checked /> 添加时间</label></td>
+	<td class="lft"><label for="ext_tag"><input type="checkbox" name="ext[]" id="ext_tag" value="tag" /> 标签</label></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td class="lft"><label for="ext_seo_title"><input type="checkbox" name="ext[]" id="ext_seo_title" value="seo_title" /> SEO主题</label></td>
+	<td class="lft"><label for="ext_seo_keywords"><input type="checkbox" name="ext[]" id="ext_seo_keywords" value="seo_keywords" /> SEO关键字</label></td>
+	<td class="lft"><label for="ext_seo_desc"><input type="checkbox" name="ext[]" id="ext_seo_desc" value="seo_desc" /> SEO描述</label></td>
+	<td class="lft"><label for="ext_url"><input type="checkbox" name="ext[]" id="ext_url" value="url" /> 网址</label></td>
+</tr>
+<tr>
+	<!-- loop from=$extlist key=$key value=$value -->
+	<td class="lft"><label for="ext_{$value.identifier}"><input type="checkbox" name="ext[]" id="ext_{$value.identifier}" value="{$value.identifier}" checked /> {$value.title}</label></td>
+		<!-- if $extlist_id[num] % 4 == '' -->
+		</tr><tr>		
+		<!-- /if -->
+	<!-- /loop -->
+
+</tr>
+</table>
+</div>
+<div class="tips mt3">导出设置</div>
+<!-- if $catelist -->
+<div class="table">
+	<div class="title">
+		目标分类：
+		<span class="note">请置要导出的分类</span>
+	</div>
+	<div class="content">
+		<select id="cate_id" name="cate_id">
+		<option value="0">全部分类</option>
+		<!-- loop from=$catelist key=$key value=$value -->
+		<option value="{$value.id}">{$value.space}{$value.title}</option>
+		<!-- /loop -->
+		</select>
+	</div>
+</div>
+<!-- /if -->
+<div class="table">
+	<div class="title">
+		状态：
+		<span class="note">设置数据导出的数据状态</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label for="status_0"><input type="radio" name="status" id="status_0" value="0" /> 未审核</label></td>
+			<td><label for="status_1"><input type="radio" name="status" id="status_1" value="1"checked /> 已审核</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		隐藏：
+		<span class="note">设置数据导出前的属性</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label for="hidden_0"><input type="radio" name="hidden" id="hidden_0" value="0" checked /> 显示</label></td>
+			<td><label for="hidden_1"><input type="radio" name="hidden" id="hidden_1" value="1" /> 隐藏</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		开始值：
+		<span class="note">设置符合条件的开始值，不清楚设请为0</span>
+	</div>
+	<div class="content">
+		<input type="text" id="offset" name="offset" value="0" class="short" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		导出数量：
+		<span class="note">设置要导出的数量，不清楚请设为：0</span>
+	</div>
+	<div class="content">
+		<input type="text" id="psize" name="psize" class="short" value="0" />
+	</div>
+</div>
+<br />
+<div class="table">
+	<div class="content">
+		<input type="submit" value="开始导出" class="submit" />
+		<span class="gray i">&nbsp;当您点击“开始导出”时，请耐心等候……</span>
+	</div>
+</div>
+</form>
+<br />
+
+<!-- inc:foot_open -->

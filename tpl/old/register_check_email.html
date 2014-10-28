@@ -1,0 +1,76 @@
+<!-- include tpl=head title='填写邮箱取得注册资格' -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#register_form_submit').submit(function(){
+		$(this).ajaxSubmit({
+			'url':api_url('email','register'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok')
+				{
+					alert("请登录您的邮箱获取注册资格");
+					$.phpok.go(webroot);
+				}
+				else
+				{
+					if(!rs.content) rs.content = '验证失败';
+					alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="body">
+<div class="main_reg">
+	<div class="box_top"><div class="box_right">
+		<table>
+		<tr>
+			<td><h3>您的常用邮箱</h3></td>
+			<td class="more"></td>
+		</tr>
+		</table>
+	</div></div>
+	<div class="box_middle">
+		<form method="post" id="register_form_submit">
+		<input type="hidden" name="group_id" value="{$group_id}" />
+		<input type="hidden" name="_spam" value="{$session.register_spam_code}" alt="随机串，防止恶意注册" />
+		<ul class="register">
+			<li>
+				<div class="reg_title">邮箱：</div>
+				<input type="text" name="email" id="email" class="input" />
+			</li>
+			<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+			<li>
+				<div class="reg_title">验证码：</div>
+				<table cellpadding="0" cellspacing="0" width="180px">
+				<tr>
+					<td><input type="text" name="_chkcode" id="_chkcode" class="vcode" /></td>
+					<td align="right"><img src="" border="0" align="absmiddle" id="update_vcode" class="hand"></td>
+				</tr>
+				</table>
+			</li>
+			<script type="text/javascript">
+			$(document).ready(function(){
+				$("#update_vcode").phpok_vcode();
+				//更新点击时操作
+				$("#update_vcode").click(function(){
+					$(this).phpok_vcode();
+				});
+			});
+			</script>
+			<!-- /if -->
+			<li>
+				<div class="reg_title">&nbsp;</div>
+				<input type="submit" name="submit" id="reg_submit" class="input" value="获取注册资格" />
+			</li>
+		</form>
+		</ul>
+	</div>
+	<div class="box_bottom"><div class="box_right"></div></div>
+</div>
+</div>
+<!-- include tpl=foot -->

@@ -1,0 +1,101 @@
+<!-- include tpl=head title="货币及汇率管理" -->
+<script type="text/javascript" src="{func add_js currency.js}"></script>
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('currency')}">货币管理</a>
+	&raquo; <!-- if $id -->编辑<!-- else -->添加<!-- /if -->货币信息
+</div>
+<form method="post" action="{func admin_url currency setok}" onsubmit="return check_save()">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		名称：
+		<span class="note">该项主要用于后台管理，您可以使用您习惯的语言来编写</span>
+	</div>
+	<div class="content">
+		<input type="text" id="title" name="title" class="long" value="{$rs.title}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		标识：
+		<span class="note">设置货币的标识，国际标准为三个大写的字母</span>
+	</div>
+	<div class="content">
+		<input type="text" id="code" name="code" class="default" value="{$rs.code}" />
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		汇率：
+		<span class="note">设置该货币的汇率，一般情况是以美元为1.00000的变化，不熟悉的朋友请登录官网查看帮助</span>
+	</div>
+	<div class="content">
+		<input type="text" id="val" name="val" class="default" value="{$rs.val}" />
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		货币显示格式化：
+		<span class="note">设置货币的左侧和右侧显示信息</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input type="text" id="symbol_left" name="symbol_left" class="short" value="{$rs.symbol_left}" style="text-align:right;" /></td>
+			<td>&nbsp;{func rand 10 99}.{func rand 10 99}&nbsp;</td>
+			<td><input type="text" id="symbol_right" name="symbol_right" class="short" value="{$rs.symbol_right}" style="text-align: left;" /></td>
+		</tr>
+		</table>
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		状态：
+		<span class="note">暂停使用现有货币策略，请选择禁用，返之为使用</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label><input type="radio" name="status" value="1"{if $rs.status} checked{end} /> 使用</label></td>
+			<td><label><input type="radio" name="status" value="0"{if !$rs.status} checked{end} /> 禁用</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		是否显示：
+		<span class="note">启用隐藏功能后，前台将不会显示给用户让用户选择</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label><input type="radio" name="hidden" value="1"{if $rs.hidden} checked{end} /> 隐藏</label></td>
+			<td><label><input type="radio" name="hidden" value="0"{if !$rs.hidden} checked{end} /> 显示</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		排序：
+		<span class="note">值越小越往前排，最大为255，最小为1</span>
+	</div>
+	<div class="content">
+		<input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis ? $rs.taxis : 255}" />
+	</div>
+</div>
+
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot -->

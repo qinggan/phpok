@@ -1,0 +1,13 @@
+<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
+
+<div class="main">
+<ul data-role="listview" data-inset="true" data-divider-theme="a">
+	<li data-role="list-divider">{$page_rs.title}</li>
+	<!-- catelist pid=$page_rs.id catelist_ext=1 -->
+	<!-- loop from=$list.sublist key=$key value=$value -->
+	<li><a href="{$value.url}" title="{$value.title}">{$value.title}<span class="ui-li-count"><!-- php:$total = phpok('_total','pid='.$page_rs.id.'&cateid='.$value.id) -->{$total}</span></a></li>
+	<!-- /loop -->
+</ul>
+</div>
+
+<!-- include tpl=foot -->

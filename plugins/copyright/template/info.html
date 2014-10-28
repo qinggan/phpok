@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="expires" content="wed, 26 feb 1997 08:21:57 gmt"> 
+	<title>授权证书</title>
+	<meta name="author" content="phpok.com" />
+	<style type="text/css">
+	.itable {
+		border: 1px solid #666666;
+		border-collapse: collapse;
+		empty-cells: hide;
+		margin: 10px 0 20px;
+	}
+	.itable td{padding:5px;}
+	</style>
+	<script type="text/javascript">
+	function wprint()
+	{
+		document.getElementById("dy").style.display = 'none';
+		window.print();
+	}
+	</script>
+</head>
+<body>
+<div style="border:1px solid #DDD;padding:20px;width:700px;margin:0 auto;">
+	<h2 style="color:#E80003;font-size:24px;padding:8px 0;text-align:center;">PHPOK企业系统授权证书</h2>
+	<p><b>PHPOK企业系统</b>是情感网络工作室开发的一套基于LGPL协议授权的开源系统（您可以在不支付任何费用的前提下自由使用本系统，但请保留程序版权说明）。您已购买本站（去版权）授权功能，以下是站点授权信息：</p>
+	<table width="100%" cellspacing="0" cellpadding="0" class="itable" border="1">
+	<tbody><tr>
+		<td width="34%" align="right"> 站点域名</td>
+		<td width="66%">{$rs.domain}</td>
+	</tr>
+	<tr>
+		<td align="right">授权时间</td>
+		<td>{func date Y-m-d $rs.regdate}</td>
+	</tr>
+	<tr>
+		<td align="right">授权类型</td>
+		<td>{$rs.version}<span style="color:gray;font-size:10px;">（<!-- if $rs.type == 'PBIZ' -->个人授权<!-- elseif $rs.type == 'CBIZ' -->企业授权<!-- else -->开源授权<!-- /if -->）</span></td>
+	</tr>
+	<tr>
+		<td align="right">是否去除版权</td>
+		<td>是</td>
+	</tr>
+	<tr>
+		<td align="right">程序使用期限</td>
+		<td>无限制</td>
+	</tr>
+	</tbody></table>
+	<div style="color:#666;font-size:12px;font-weight:bold;">说明：</div>
+	<ul style="color: rgb(102, 102, 102);">
+	　　<li>本证书由我公司制作并颁发，任何其他个人、组织和机构均无权颁发PHPOK企业网站系统授权证书。</li>
+	    <li>本授权书仅说明所授权的站点使用的程序为PHPOK企业程序，并依据其相关授权类型拥我公司提供的相对应授权类型的技术服务。</li>
+		<li>本证书不得用于非法目的，我公司不承担任何由此而发生或可能发生之法律责任。</li>
+		<li>所授权站点仅表明其建站程序为我公司开发，我公司不承担任何因为站点内容而涉及或者可能涉及的任何法律责任。</li>
+		<li>当本证书持有、出具、展示或以其它任何形式使用时，即表明本证书之持有人或接触人已审读、理解并同意以上各条款之规定。</li>
+	</ul>
+	<div style="color: rgb(102, 102, 102);position:relative;height:150px;padding-top:15px;">
+		<div style="position:absolute;right:50px;top:20px;z-index:2;text-align:right;">出具授权书单位：情感网络开发工作室</div>
+		<div style="position:absolute;right:10px;top:0px;z-index:3"><img src="plugins/copyright/img/seal.gif"></div>
+	</div>
+</div>
+<div align="center"><input type="button" value="打印" onclick="wprint()" id="dy" /></div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{func include_js project.js}"></script>
+
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('project')}">项目管理</a>
+	&raquo; 项目内容编辑及字段扩展
+</div>
+
+<form method="post" id="{$ext_module}" action="{echo admin_url('project','content_save')}" onsubmit="return project_content_check();">
+<input type="hidden" id="id" name="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		名称：
+		<span class="note">设置名称，该名称将在网站前台导航中使用</span>
+	</div>
+	<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
+</div>
+
+{$extlist.content.content}
+
+
+
+<div class="table">
+	<div class="content">
+		<br />
+		<input type="submit" value="提 交" class="submit" />
+		<br />
+	</div>
+</div>
+</form>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	ext_fields("{$ext_module}","{$extlist.content.words}","1","project");
+});
+</script>
+<!-- inc:foot -->

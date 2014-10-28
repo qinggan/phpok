@@ -1,0 +1,38 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('call.js')}"></script>
+<div class="tips">
+	<!-- if $popedom.add -->
+	<div class="action"><a href="{echo admin_url('call','set')}">添加调用</a></div>
+	<!-- /if -->
+	您当前的位置：<a href="{echo admin_url('call')}" title="调用列表">调用列表</a>
+</div>
+<div class="list">
+<table class="list" width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="w50">ID</th>
+	<th>名称</th>
+	<th class="w150 lft">参数变量</th>
+	<th class="w60">操作</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td>{$value.title}
+		<span class="gray i">（{$phpok_type_list[$value.type_id]}）</span>
+	</td>
+	<td>{$value.identifier}</td>
+	<td>
+		<!-- if $popedom.modify -->
+		<a class="icon edit" href="{echo admin_url('call','set')}&id={$value.id}" title="修改"></a>
+		<!-- /if -->
+		<!-- if $popedom.delete -->
+		<a class="icon delete end" onclick="call_del('{$value.id}','{$value.title}')" title="删除"></a>
+		<!-- /if -->
+	</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<div class="table"><!-- inc:pagelist --></div>
+
+<!-- inc:foot -->

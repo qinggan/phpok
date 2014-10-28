@@ -1,0 +1,49 @@
+<!-- php:$title = $cate_parent_rs ? $cate_rs['title'].' - '.$cate_parent_rs['title'].' - '.$page_rs['title'] : $cate_rs['title'].' - '.$page_rs['title'] -->
+<!-- include tpl=head title=$title -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#top_menu li a").each(function(i){
+		if($(this).text() == '{$page_rs.title}')
+		{
+			$(this).parent().addClass('selected');
+		}
+		else
+		{
+			$(this).parent().removeClass('selected');
+		}
+	});
+});
+</script>
+<div class="body">
+	<div class="lead">
+		<a href="{$sys.url}" title="{$config.title}">首页</a>
+		→ <a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a>
+		→ <a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a>
+	</div>
+	<div class="left">
+		<!-- include tpl=block_catelist -->
+		<!-- include tpl=block_contactus -->
+	</div>
+	<div class="right">
+		<!-- loop from=$rslist key=$key value=$value -->
+		<!-- if $value.thumb -->
+		<div class="pfw mbottom10">
+			<h3>{$value.title}<a href="{$value.url}" title="{$value.title}" class="more">查看明细&raquo;</a></h3>
+			<div style="padding:10px;">
+			<table width="100%">
+			<tr>
+				<td width="160px" align="center"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" width="150px" alt="{$value.title}" /></a></td>
+				<td valign="top">{func phpok_cut $value.content 200 …}</td>
+				<td width="100px" align="center" class="red">{func price_format $value.price $value.currency_id}</td>
+				<td width="50px" align="center"><img src="images/cart_add.png" title="加入购物车" class='hand' onclick="$.cart.add({$value.id})"/></td>
+			</tr>
+			</table>
+			</div>
+		</div>
+		<!-- /if -->
+		<!-- /loop -->
+		<!-- include tpl=block_pagelist -->
+	</div>
+	<div class="clear"></div>
+</div>
+<!-- include tpl=foot -->

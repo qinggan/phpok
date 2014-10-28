@@ -1,0 +1,11 @@
+<table cellpadding="0" cellspacing="0" style="width:auto;height:auto;border:0" border="0">
+<tr>
+	<!-- foreach($rslist AS $key=>$value) -->
+	<td><label for="{$rs.identifier}_{$key}"><input type="checkbox" id="{$rs.identifier}_{$key}" name="{$rs.identifier}[]" value="{$value.val}"{if $value && $rs.content && in_array($value.val,$rs.content)} checked{/if} />{$value.title}</label></td>
+	<td>&nbsp;</td>
+	<!-- if $rs.check_count && $rslist_id.num % $rs.check_count == '' -->
+	</tr><tr>
+	<!-- /if -->
+	<!-- /foreach -->
+</tr>
+</table>

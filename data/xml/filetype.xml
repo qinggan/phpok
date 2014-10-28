@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<picture>
+	<swfupload>*.jpg;*.gif;*.png</swfupload>
+	<ext>jpg,gif,png</ext>
+	<name>图片</name>
+	<minetypes>images/*</minetypes>
+	<gd>1</gd>
+</picture>
+<zip>
+	<swfupload>*.rar;*.zip;*.tgz;*.tar;*.gz;*.7z</swfupload>
+	<ext>rar,zip,tgz,tar,gz,7z</ext>
+	<name>压缩文件</name>
+	<minetypes>application/zip,application/x-tar,application/x-rar-compressed,application/x-7z-compressed</minetypes>
+	<gd>0</gd>
+</zip>
+<txt>
+	<swfupload>*.txt</swfupload>
+	<ext>txt</ext>
+	<name>文本</name>
+	<minetypes>text/plain</minetypes>
+	<gd>0</gd>
+</txt>
+<document>
+	<swfupload>*.doc;*.xls;*.pdf;*.docx;*.xlsx</swfupload>
+	<ext>doc,xls,pdf,docx,xlsx</ext>
+	<name>办公文档</name>
+	<minetypes>application/msword,application/vnd.ms-excel,application/pdf</minetypes>
+	<gd>0</gd>
+</document>
+<video>
+	<swfupload>*.flv;*.swf;*.mp4;*.mp3</swfupload>
+	<ext>flv,swf,mp4,mp3</ext>
+	<name>视频</name>
+	<minetypes>audio/*</minetypes>
+	<gd>0</gd>
+</video>
+<update>
+	<swfupload>*.zip</swfupload>
+	<ext>zip</ext>
+	<name>升级ZIP包</name>
+	<minetypes>application/zip</minetypes>
+	<gd>0</gd>
+</update>
+<chinapay>
+	<swfupload>*.key</swfupload>
+	<ext>key</ext>
+	<name>银行认证文件</name>
+	<gd>0</gd>
+</chinapay>

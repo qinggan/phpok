@@ -1,0 +1,84 @@
+<!-- include tpl=head title="取回密码" -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#login_post_form').submit(function(){
+		$(this).ajaxSubmit({
+			url:api_url('login','getpass'),
+			type:'post',
+			dataType:'json',
+			success:function(rs){
+				if(rs.status == 'ok')
+				{
+					alert("请登录您的邮箱取得相关信息，以便进行下一步操作");
+					$.phpok.go(webroot);
+				}
+				else
+				{
+					if(!rs.content) rs.content = '获取失败，请联系管理员。';
+					alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="main_reg">
+	<div class="box_top" style="margin-top:10px;"><div class="box_right"><h3>取回密码</h3></div></div>
+	<div class="box_middle">
+		<div class="left">
+			<form method="post" id="login_post_form">
+			<input type="hidden" name="_spam" value="{$session.getpass_spam_code}" />
+			<ul class="register">
+				<li>
+					<div class="reg_title">邮箱：</div>
+					<input type="text" name="email" id="email" class="input" />
+					<span class="red pl5 fsize16">*</span> 请填写您注册时填写的邮箱
+				</li>
+				<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+				<li>
+					<div class="reg_title">验证码：</div>
+					<table cellpadding="0" cellspacing="0" width="180px">
+					<tr>
+						<td><input type="text" name="_chkcode" id="_chkcode" class="vcode" /></td>
+						<td align="right"><img src="" border="0" align="absmiddle" id="update_vcode" class="hand"></td>
+					</tr>
+					</table>
+				</li>
+				<script type="text/javascript">
+				$(document).ready(function(){
+					$("#update_vcode").phpok_vcode();
+					//更新点击时操作
+					$("#update_vcode").click(function(){
+						$(this).phpok_vcode();
+					});
+				});
+				</script>
+				<!-- /if -->
+				<li>
+					<div class="reg_title">&nbsp;</div>
+					<input type="submit" name="submit" id="reg_submit" class="input" value=" 提交 " />
+				</li>
+			</ul>
+			</form>
+		</div>
+		<div class="right">
+			<div style="margin:10px auto;">
+			<table>
+			<tr>
+				<td><img src="images/register.png" border="0" /></td>
+				<td>还不是会员?<br /><a href="{url ctrl=register _back=index.php/}" title="会员注册">点这里注册</a></td>
+			</tr>
+			<tr>
+				<td><img src="images/user_login.png" border="0" /></td>
+				<td>已经是会员了<br /><a href="{url ctrl=login _back=index.php/}" title="会员登录">点这里登录</a></td>
+			</tr>
+			</table>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="box_bottom"><div class="box_right"></div></div>
+</div>
+<!-- include tpl=foot -->

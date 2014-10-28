@@ -1,0 +1,31 @@
+<div class="box_top"><div class="box_right">
+	<table>
+	<tr>
+		<td><h3>会员功能面板</h3></td>
+		<td class="more"></td>
+	</tr>
+	</table>
+</div></div>
+<div class="box_middle">
+	<ul class="usercp">
+		<li{if $sys.ctrl == 'usercp' && $sys.func == 'index'} class="red"{/if}><a href="{url ctrl=usercp/}" title="个人中心">个人中心</a></li>
+		<li{if $sys.func == 'info'} class="red"{/if}><a href="{url ctrl=usercp func=info/}" title="修改资料">修改资料</a></li>
+		<li{if $sys.func == 'passwd'} class="red"{/if}><a href="{url ctrl=usercp func=passwd/}" title="修改密码">修改密码</a></li>
+		<li{if $sys.ctrl == 'order'} class="red"{/if}><a href="{url ctrl=order/}" title="订单中心">订单中心</a></li>
+		<li{if $sys.func == 'address'} class="red"{/if}><a href="{url ctrl=usercp func=address/}" title="收货地址">收货地址</a></li>
+		<!-- php:$list = usercp_project() -->
+		<!-- if $list -->
+		<li class="mypost_title">我发布的信息</li>
+		<li class="mypost">
+			<ul>
+				<!-- loop from=$list key=$key value=$value -->
+				<li{if $sys.func == 'list' && $id == $value.identifier} class="red"{/if}><a href="{url ctrl=usercp func=list id=$value.identifier/}" title="{$value.title}">{$value.title}</a></li>
+				<!-- /loop -->
+			</ul>
+		</li>
+		<!-- /if -->
+		<li><a href="javascript:$.phpok_www.logout('{$session.user_name}');void(0);" title="会员退出">会员退出</a></li>
+	</ul>
+	<div class="clear"></div>
+</div>
+<div class="box_bottom"><div class="box_right"></div></div>

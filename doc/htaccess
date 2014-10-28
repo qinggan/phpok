@@ -1,0 +1,12 @@
+RewriteEngine  on
+
+#设置目录，根目录设为/，子目录为/phpok/（phpok为目录名）
+RewriteBase /phpok/
+
+RewriteRule ^index\.html$												index.php [L]
+
+#下载模块伪静态页
+RewriteRule ^(download)\.html$											index.php?c=$1{QUERY_STRING} [L]
+RewriteRule ^(order|cart)\/([a-z0-9A-Z\_\-]+)\.html$					index.php?c=$1&f=$2&%{QUERY_STRING} [L]
+RewriteRule ^([a-z0-9A-Z\_\-]+)\/([a-z0-9A-Z\_\-]+)\.html$				index.php?id=$1&cate=$2&%{QUERY_STRING} [L]
+RewriteRule ^([a-z0-9A-Z\_\-]+)\.html$									index.php?id=$1&%{QUERY_STRING} [L]

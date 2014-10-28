@@ -1,0 +1,7 @@
+<dl class="sub_nav">
+	<dt>{$page_rs.title}</dt>
+	<!-- catelist pid=$page_rs.id cateid=$page_rs.cate -->
+	<!-- loop from=$list.sublist key=$key value=$value -->
+	<dd{if $cate_rs.id == $value.id} class="on"{/if}><a href="{$value.url}" title="{$value.title}">{$value.title}</a></dd>
+	<!-- /loop -->
+</dl>

@@ -1,0 +1,42 @@
+/***********************************************************
+	Filename: css/style.css
+	Note	: 手机板风格样式
+	Version : 4.0
+	Web		: www.phpok.com
+	Author  : qinggan <qinggan@188.com>
+	Update  : 2014年1月2日
+***********************************************************/
+ @charset"utf-8";
+ * {margin:0;padding:0}
+html, body {color:#666;height:100%;line-height:23px;font-size:14px;font-family:"微软雅黑","宋体","Tahoma","Arial"}
+img {border:0}
+a {text-decoration:none;color:#3164cd}
+em {font-style:normal}
+.clear{clear:both;height:0;display: block;visibility:hidden;content:"."}
+.darkred{color:darkred;}
+.hand{cursor:pointer;}
+
+.btn-blue{border:0;margin:0;padding:0 20px;height:30px;line-height:30px;background:darkblue;color:#fff;font-size:14px;}
+.btn-blue:hover{background:#0000CC;}
+
+.main{margin:5px;}
+
+ul.pictures{list-style:none;margin:0;padding:0;}
+ul.pictures li{margin-top:5px;width:50%;text-align:center;float:left;}
+ul.pictures li img{width:172px;height:129px;}
+
+.content{overflow:hidden;}
+.content blockquote{margin:5px 10px 5px 30px;}
+.content ul{margin-left:30px;}
+
+div.admreply{border:1px solid #ccc;margin:10px auto 5px auto;padding:5px;}
+
+.banner{width:100%;height:180px;overflow:hidden;position:relative;margin:0 auto 5px auto;}
+.banner .pro_ul{margin:0;padding:0;list-style:none;}
+.banner .pro_ul li{text-align:center;}
+.banner .page_ul{ width:100%; position:absolute; top:160px; text-align:center;list-style:none;}
+.banner .page_ul li{ width:45px; height:12px; background:#000; display:inline-block;zoom:1; margin:0 2px; cursor:pointer;opacity:0.6;}
+.banner .page_ul .on{ background:#3375b9;}
+
+
+.foot{text-align:center;font-size:14px;font-weight:normal;padding:5px;}

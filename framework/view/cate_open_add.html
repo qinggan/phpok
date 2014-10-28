@@ -1,0 +1,66 @@
+<!-- include tpl=head_open -->
+<script type="text/javascript">
+function save_cate_open()
+{
+	var obj = $.dialog.opener;
+	var url = get_url("cate","open_save");
+	var title = $("#title").val();
+	if(!title || title == "undefined")
+	{
+		$.dialog.alert("分类名称不能为空");
+		return false;
+	}
+	url += "&title="+$.str.encode(title);
+	var identifier = $("#identifier").val();
+	if(!identifier)
+	{
+		$.dialog.alert("标识不能为空");
+		return false;
+	}
+	url += "&identifier="+$.str.encode(identifier);
+	var rs = json_ajax(url);
+	if(!rs || rs.status != "ok")
+	{
+		if(!rs.content) rs.content = "添加失败";
+		$.dialog.alert(rs.content);
+		return false;
+	}
+	obj.refresh_catelist();
+	alert("分类添加成功");
+	$.dialog.close();
+	return false;
+}
+</script>
+<form method="post" action="javascript:void(0);" onsubmit="return save_cate_open();">
+<div class="table">
+	<div class="title">
+		分类名称：
+		<span class="note">即在前台使用的名称信息</span></span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input type="text" id="title" name="title" class="default" value="{$rs.title}" /></td>
+			<td><div id="title_note"></div></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		标识：
+		<span class="note">限<span class="red">字母、数字、下划线或中划线且必须是字母开头</span></span>
+	</div>
+	<div class="content">
+		<input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" />
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<br />
+		<input type="submit" value="提 交" class="submit" />
+		<br />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_open -->

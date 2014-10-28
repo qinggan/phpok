@@ -1,0 +1,27 @@
+<!-- inc:head_open -->
+<script type="text/javascript">
+function update_ok(val)
+{
+	var all = $.input.checkbox_join();
+	$.dialog.data("{$id}",all);
+}
+</script>
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th width="40">&nbsp;</th>
+	<th class="lft">字段名</th>
+	<th class="lft">名称</th>
+	<th class="lft">备注</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr>
+	<td><input type="checkbox" id="field_{$value.id}" value="{$value.identifier}:{$value.field_type}" onclick="update_ok()" />
+	<td><label for="field_{$value.id}">{$value.identifier}</label></td>
+	<td><label for="field_{$value.id}">{$value.title}</label></td>
+	<td>{$value.note}</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<!-- inc:foot_open -->

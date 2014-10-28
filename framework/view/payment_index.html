@@ -1,0 +1,56 @@
+<!-- include tpl=head title=支付管理 -->
+<script type="text/javascript" src="{func include_js payment.js}"></script>
+<div class="tips clearfix">
+	您当前位置：<a href="{url ctrl=payment/}" title="支付管理">支付管理</a> &raquo; <a href="{url ctrl=payment/}" title="方案列表">方案列表</a>
+	<div class="action"><a href="{url ctrl=payment func=groupset /}">创建组</a></div>
+</div>
+<div class="hide" id="payment_select_info">
+<select id="code">
+	<!-- loop from=$codelist key=$key value=$value -->
+	<option value="{$value.id}">{$value.title}</option>
+	<!-- /loop -->
+</select>
+</div>
+<div class="list2">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="lft">&nbsp;名称</th>
+	<th class="lft"><div style="padding-left:10px;">操作</div></th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr class="list">
+	<td>{$value.title}<!-- if !$value.status --><span class="gray i">（停用）</span><!-- /if --></td>
+	<td>
+		<!-- if $popedom.groupedit -->
+		<input type="button" value="编辑" onclick="group_edit('{$value.id}')" class="btn" />
+		<!-- /if -->
+		<!-- if $popedom.groupdelete -->
+		<input type="button" value="删除" onclick="group_delete('{$value.id}','{$value.title}')" class="btn" />
+		<!-- /if -->
+		<!-- if $popedom.add -->
+		<input type="button" value="添加支付方案" onclick="payment_add('{$value.id}')" class="btn" />
+		<!-- /if -->
+	</td>
+</tr>
+	<!-- loop from=$value.paylist key=$k value=$v -->
+	<tr>
+		<td><div style="padding-left:24px;">{$v.title}<!-- if !$v.status --><span class="gray i">（停用）</span><!-- /if --></div></td>
+		<td>
+			<!-- if $popedom.edit -->
+			<input type="button" value="编辑" onclick="payment_edit('{$v.id}')" class="btn" />
+			<!-- /if -->
+			<!-- if $popedom.delete -->
+			<input type="button" value="删除" onclick="payment_delete('{$v.id}','{$v.title}')" class="btn" />
+			<!-- /if -->
+		</td>
+	</tr>	
+	<!-- /loop -->
+<!-- /loop -->
+</table>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	top.$.desktop.title('支付方案列表');
+});
+</script>
+<!-- include tpl=foot -->

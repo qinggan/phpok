@@ -1,0 +1,24 @@
+<div class="float_fields" id="float_fields">
+	<h3>扩展字段</h3>
+	<ul>
+		<!-- $rslist AS $key=>$value -->
+		<li onclick="ext_add('{$value.id}','{$module}')" title="标识：{$value.identifier}">{$value.title}</li>
+		<!-- /foreach -->
+	</ul>
+	<div class="float_page">
+		<!-- $pagelist AS $key=>$value -->
+		<a href="javascript:ext_fields('{$module}','{$words}','{$value.id}','{$type}');void(0);"{if $value.id == $pageid} class="over"{/if}>{$value.title}</a>
+		<!-- /foreach -->
+		<a href="javascript:ext_add('','{$module}')" title="创建字段" class="add"><img src="images/add2.png" width="16px" border="0" /></a>
+	</div>
+</div>
+<script type="text/javascript">
+if($.browser.msie && parseInt($.browser.version, 10) < 7)
+{
+	$(document).ready(function(){
+		 $(window).scroll(function(){
+			 $("#float_fields").css({top:$(this).scrollTop()+$(this).height()-200});
+		 });
+	});
+}
+</script>

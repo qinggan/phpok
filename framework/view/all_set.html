@@ -1,0 +1,41 @@
+<!-- php:$extlist = get_phpok_ext($ext_module,$ext_idstring) -->
+<!-- inc:head -->
+<script type="text/javascript" src="{func include_js all.js}"></script>
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('all')}">全局维护</a>
+	&raquo; {$rs.title} 
+	<!-- if $popedom.gset -->
+	【<a href="{echo admin_url('all','gset')}&id={$id}">维护设置</a>】
+	<!-- /if -->
+</div>
+<form method="post" id="{$ext_module}" action="{echo admin_url('all','ext_save')}">
+<input type="hidden" id="id" name="id" value="{$id}" />
+
+{$extlist.content.content}
+
+<div class="table">
+	<div class="content">
+		<br />
+		<input type="submit" value="提 交" class="submit" />
+		<br />
+	</div>
+</div>
+</form>
+
+<!-- if $popedom.ext -->
+<script type="text/javascript">
+$(document).ready(function(){
+	autofill("{$ext_module}");
+	ext_fields("{$ext_module}","{$extlist.content.words}","1","all");
+});
+</script>
+<!-- else -->
+<script type="text/javascript">
+$(document).ready(function(){
+	autofill("{$ext_module}");
+	$(".title a.icon").hide();
+});
+</script>
+<!-- /if -->
+<!-- inc:foot -->

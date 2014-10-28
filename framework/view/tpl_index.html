@@ -1,0 +1,78 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function to_filelist(id)
+{
+	if(!id)
+	{
+		$.dialog.alert("操作非法");
+		return false;
+	}
+	var url = get_url("tpl","list")+"&id="+id;
+	direct(url);
+}
+
+function to_edit(id)
+{
+	if(!id)
+	{
+		$.dialog.alert("操作非法");
+		return false;
+	}
+	var url = get_url("tpl","set")+"&id="+id;
+	direct(url);
+}
+
+function to_delete(id,title)
+{
+	$.dialog.confirm("确定要删除：<span class='red'>"+title+"</span> 吗?<br />删除后请手动删除相应目录下的文件及文件夹信息",function(){
+		var url = get_url("tpl","delete")+"&id="+id;
+		var rs = json_ajax(url);
+		if(!rs || rs.status != "ok")
+		{
+			if(!rs.content) rs.content = "删除失败";
+			$.dialog.alert(rs.content);
+			return false;
+		}
+		//刷新
+		$.phpok.refresh();
+	});
+}
+</script>
+
+<div class="tips">
+	<!-- if $popedom.set -->
+	<div class="action"><a href="{func admin_url tpl set}">添加风格</a></div>
+	<!-- /if -->
+	&raquo; 风格方案管理（风格管理支持多站点运行，手机版请在此风格文件夹名称上输入_mobile）
+</div>
+<div class="list">
+	<table width="100%" cellpadding="0" cellspacing="0" class="list">
+	<tr>
+		<th>ID</th>
+		<th>名称</th>
+		<th>目录</th>
+		<th>文件夹改写</th>
+		<th>&nbsp;</th>
+	</tr>
+	<!-- loop from=$rslist key=$key value=$value -->
+	<tr>
+		<td align="center">{$value.id}</td>
+		<td>{$value.title}<!-- if $value.author --> <span class="gray i">（{$value.author}）</span><!-- /if --></td>
+		<td align="center">tpl/{$value.folder}/</td>
+		<td align="center">{$value.folder_change ? $value.folder_change : '空'}</td>
+		<td align="right">
+			<!-- if $popedom.filelist -->
+			<input type="button" value="文件管理" onclick="to_filelist({$value.id})" class="btn" />
+			<!-- /if -->
+			<!-- if $popedom.set -->
+			<input type="button" value="编辑" onclick="to_edit({$value.id})" class="btn" />
+			<!-- /if -->
+			<!-- if $popedom.delete -->
+			<input type="button" value="删除" onclick="to_delete({$value.id},'{$value.title}')" class="btn" />
+			<!-- /if -->
+		</td>
+	</tr>
+	<!-- /loop -->
+	</table>
+</div>
+<!-- include tpl=foot -->

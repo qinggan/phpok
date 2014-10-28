@@ -1,0 +1,213 @@
+<!-- include tpl=head title="评论管理" -->
+<div class="tips" id="tips">
+	<!-- if $session.last_page_url -->
+	<div class="action"><a href="{$session.last_page_url}" title="返回上一级">返回上一级</a></div>
+	<!-- /if -->
+	您当前的位置：<a href="{func admin_url reply}" title="内容管理">评论管理</a>
+	&raquo; 评论信息
+</div>
+
+<div class="help">
+	<div class="title red">
+		{$rs.title}
+		<span class="darkblue i">（发布时间：{echo date("Y-m-d H:i:s",$rs.dateline)}）</span>
+	</div>
+	<!-- if $rs.content -->
+	<div class="content">{func phpok_cut $rs.content 255 …}</div>
+	<!-- /if -->
+</div>
+
+<script type="text/javascript">
+function comment_reply(id)
+{
+	if($("#comment_reply_"+id).is(":hidden"))
+	{
+		$("#comment_reply_"+id).show();
+		$("#show_hide_c_"+id).val("隐藏评论的回复");
+	}
+	else
+	{
+		$("#comment_reply_"+id).hide();
+		$("#show_hide_c_"+id).val("显示评论的回复");
+	}
+}
+function to_status(id,status)
+{
+	var url = get_url("reply","status","id="+id+"&status="+status);
+	if(status == 0)
+	{
+		$.dialog.confirm("确定要关闭这条评论吗，关闭后前台是不会显示的",function(){
+			var rs = json_ajax(url);
+			if(rs.status == "ok")
+			{
+				direct(window.location.href);
+			}
+			else
+			{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		});
+	}
+	else
+	{
+		var rs = json_ajax(url);
+		if(rs.status == "ok")
+		{
+			direct(window.location.href);
+		}
+		else
+		{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	}
+}
+function to_delete(id)
+{
+	$.dialog.confirm("确定要删除ID为：<strong class='red'>"+id+"</strong> 的评论吗?删除后是不能恢复的！<br />如果此评论有回复将一起被删除",function(){
+		var url = get_url("reply","delete","id="+id);
+		var rs = json_ajax(url);
+		if(rs.status == "ok")
+		{
+			direct(window.location.href);
+		}
+		else
+		{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+function to_edit(id)
+{
+	var url = get_url("reply","edit","id="+id);
+	$.dialog.open(url,{
+		title:"编辑评论ID："+id+" 内容信息，修改后请手动刷新"
+		, width:"970px"
+		, height:"90%"
+		, resize:false
+		, lock:true
+	});
+}
+function to_reply(id)
+{
+	var url = get_url("reply","adm","id="+id);
+	$.dialog.open(url,{
+		title:"回复ID："+id+" 评论信息，修改后请手动刷新"
+		, width:"970px"
+		, height:"90%"
+		, resize:false
+		, lock:true
+	});
+}
+</script>
+
+<!-- loop from=$rslist key=$key value=$value -->
+<div class="comment">
+	<div class="content cate_{$rslist_id.index%9}" id="tmp_{$value.id}">
+		<span class="red b">ID：{$value.id} </span><span class="darkblue">评论内容：</span>{$value.content}
+		<!-- if $value.adm_content -->
+		<fieldset class="adm-reply">
+			<legend>管理员回复时间：{func date Y-m-d $value.adm_time}</legend>
+			{$value.adm_content}
+		</fieldset>
+		<!-- /if -->
+	</div>
+	<table width="100%">
+	<tr>
+		<td>
+			发布人：
+			<!-- if $value.uid && is_array($value.uid) -->
+			<span class="darkblue b">{$value.uid.user}</span>
+			<!-- else -->
+			游客
+			<!-- /if -->
+			，IP：{$value.ip}
+			，发布时间：{echo date("Y-m-d H:i:s",$value.addtime)}
+			，星级：{$value.star}星
+		</td>
+		<td align="right">
+			<!-- if $value.sublist -->
+			<input type="button" value="显示评论的回复" class="btn" id="show_hide_c_{$value.id}" onclick="comment_reply({$value.id})" />
+			<!-- /if -->
+			<!-- if $popedom.status -->
+				<!-- if $value.status -->
+				<input type="button" value="已审核" onclick="to_status({$value.id},0)" class="btn" />
+				<!-- else -->
+				<input type="button" value="未审核" class="btn" onclick="to_status({$value.id},1)" style="color:red;" />
+				<!-- /if -->
+			<!-- /if -->
+			<!-- if $popedom.reply -->
+			<input type="button" value="管理员回复" onclick="to_reply({$value.id})" class="btn" />
+			<!-- /if -->
+			<!-- if $popedom.modify -->
+			<input type="button" value="修改" onclick="to_edit({$value.id})" class="btn" />
+			<!-- /if -->
+			<!-- if $popedom.delete -->
+			<input type="button" value="删除" onclick="to_delete({$value.id})" class="btn" />
+			<!-- /if -->
+		</td>
+	</tr>
+	</table>
+</div>
+<!-- if $value.sublist -->
+<fieldset class="sub_comment hide" id="comment_reply_{$value.id}">
+	<legend>针对该评论的回复</legend>
+	<!-- loop from=$value.sublist key=$kk value=$vv -->
+		<div class="comment">
+			<div class="content cate_{$value_sublist_id.index%9}" id="tmp_{$vv.id}">
+				<span class="darkblue b">ID：{$vv.id} 内容：</span>{func nl2br $vv.content}
+				<!-- if $vv.adm_content -->
+				<fieldset class="adm-reply">
+					<legend>管理员回复时间：{func date Y-m-d $vv.adm_time}</legend>
+					{$vv.adm_content}
+				</fieldset>
+				<!-- /if -->
+			</div>
+			<table width="100%">
+			<tr>
+				<td>
+					发布人：
+					<!-- if $vv.uid && is_array($vv.uid) -->
+					<span class="darkblue b">{$vv.user}</span>
+					<!-- else -->
+					游客
+					<!-- /if -->
+					，IP：{$vv.ip}
+					，发布时间：{echo date("Y-m-d H:i:s",$vv.addtime)}
+					，星级：{$vv.star}星
+				</td>
+				<td align="right">
+					<!-- if $popedom.status -->
+						<!-- if $vv.status -->
+						<input type="button" value="已审核" onclick="to_status({$vv.id},0)" class="btn" />
+						<!-- else -->
+						<input type="button" value="未审核" class="btn" onclick="to_status({$vv.id},1)" style="color:red;" />
+						<!-- /if -->
+					<!-- /if -->
+					<!-- if $popedom.reply -->
+					<input type="button" value="管理员回复" onclick="to_reply({$vv.id})" class="btn" />
+					<!-- /if -->
+					<!-- if $popedom.modify -->
+					<input type="button" value="修改" onclick="to_edit({$vv.id})" class="btn" />
+					<!-- /if -->
+					<!-- if $popedom.delete -->
+					<input type="button" value="删除" onclick="to_delete({$vv.id})" class="btn" />
+					<!-- /if -->
+				</td>
+			</tr>
+			</table>
+		</div>
+	<!-- /loop -->
+</fieldset>
+<!-- /if -->
+<!-- /loop -->
+
+
+<!-- if $pagelist -->
+<div class="table"><!-- inc:pagelist --></div>
+<!-- /if -->
+
+
+<!-- inc:foot -->

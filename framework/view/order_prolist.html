@@ -1,0 +1,37 @@
+<!-- include tpl=head_open -->
+<script type="text/javascript">
+var tid = '{$id}';
+function add_pro(id)
+{
+	parent.load_product(tid,id);
+	$.dialog.close();
+}
+</script>
+<div class="tips">
+	<table>
+	<tr>
+		<form method="post" action="{$formurl}">
+		<td><input type="text" id="keywords" name="keywords" value="{$keywords}" placeholder="请输入产品关键字" /></td>
+		<td><input type="submit" value="搜索" class="button" /></td>
+		</form>
+	</tr>
+	</table>
+</div>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>产品名称</th>
+	<th width="120px" class="lft">&nbsp;价格</th>
+	<th width="130px">添加时间</th>
+	<th width="60px">操作</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td>{$value.title}</td>
+	<td>{func price_format $value.price $value.currency_id $currency_id}</td>
+	<td>{func date "Y-m-d H:i" $value.dateline}</td>
+	<td><input type="button" value="添加" onclick="add_pro({$value.id})" /></td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- if $pagelist --><div class="table"><!-- include tpl=pagelist --></div><!-- /if -->
+<!-- include tpl=foot_open -->

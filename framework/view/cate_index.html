@@ -1,0 +1,76 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('cate.js')}"></script>
+<div class="tips clearfix">
+	<!-- if $popedom.add -->
+	<div class="action"><a href="{echo admin_url('cate','set')}">添加根分类</a></div>
+	<!-- /if -->
+	您当前的位置：
+	<a href="{echo admin_url('fields')}">栏目管理</a>
+	&raquo; 栏目列表
+</div>
+<div class="cate_list clearfix">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="id">ID</th>
+	<th class="id">&nbsp;</th>
+	<th class="title">分类名称</th>
+	<th>排序</th>
+	<th class="action">操作</th>
+</tr>
+<!-- run:$tab_i = 0; -->
+<!-- foreach($rslist AS $key=>$value) -->
+<!-- run:$tab_i++ -->
+<tr{if $key%2 == ""} class="list"{/if}>
+	<td class="center gray">{$value.id}</td>
+	<td class="center"><input type="checkbox" value="{$value.id}" name="id_{$value.id}" id="id_{$value.id}" checked /></td>
+	<td>
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<!-- for($i=1;$i<$value[_layer];$i++) -->
+			<td class="cate_line">&nbsp;</td>
+			<!-- /for -->
+			<!-- if $value[_layer]>0 -->
+				<td class="cate_middle">&nbsp;</td>
+			<!-- /if -->
+			<td><label for="id_{$value.id}">{$value.title}<span class="gray i">（{$value.identifier}）</span></label></td>
+			<!-- if !$value[status] -->
+			<td><span class="red i">未审核</span></td>			
+			<!-- /if -->
+		</tr>
+		</table>
+	</td>
+	<td class="center"><input type="text" id="taxis_{$value.id}" class="cate_taxis" value="{$value.taxis}" tabindex="{$tab_i}" /></td>
+	<td>
+		<!-- if $popedom.add && $value.popedom.add -->
+		<a class="icon add" href="{echo admin_url('cate','set')}&parent_id={$value.id}" title="添加子栏目"></a>
+		<!-- /if -->
+		<!-- if $popedom.modify && $value.popedom.edit -->
+		<a class="icon edit" href="{echo admin_url('cate','set')}&id={$value.id}" title="修改"></a>
+		<!-- /if -->
+		<!-- if $popedom.delete && $value.popedom.delete -->
+		<a class="icon delete end" onclick="cate_delete('{$value.id}','{$value.title}')" title="删除"></a>
+		<!-- /if -->
+	</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<!-- if($rslist) -->
+<div>
+<table>
+<tr>
+	<td colspan="4">
+		<div style="margin-top:5px;">
+		<input type="button" value="全选" class="btn" onclick="$.input.checkbox_all()" />
+		<input type="button" value="全不选" class="btn" onclick="$.input.checkbox_none()" />
+		<input type="button" value="反选" class="btn" onclick="$.input.checkbox_anti()" />
+		&nbsp; &raquo; &nbsp;
+		<input type="button" value="更新排序" class="btn" onclick="taxis('{echo admin_url('cate','taxis')}','255')" />
+		</div>
+	</td>
+</tr>
+</table>
+</div>
+<!-- /if -->
+
+<!-- inc:foot -->

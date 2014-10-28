@@ -1,0 +1,37 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('list.js')}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#project li").mouseover(function(){
+		$(this).addClass("hover");
+	}).mouseout(function(){
+		$(this).removeClass("hover");
+	}).click(function(){
+		var url = $(this).attr("href");
+		if(url)
+		{
+			direct(url);
+		}
+		else
+		{
+			alert("未指定动作！");
+			return false;
+		}
+	});
+});
+</script>
+<div class="tips">
+	点击图标可直接进入内容管理！
+</div>
+<ul class="project" id="project">
+	<!-- foreach($rslist AS $key=>$value) -->
+	<li id="project_{$value.id}" title="{$value.title}" status="{$value.status}" href="{echo admin_url('list','action')}&id={$value.id}">
+		<div class="project" href="{echo admin_url('list','action')}&id={$value.id}">
+			<div class="img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" /></div>
+			<div class="txt" id="txt_{$value.id}">{$value.nick_title ? $value.nick_title : $value.title}</div>
+		</div>
+	</li>
+	<!-- /foreach -->
+</ul>
+<div class="clear"></div>
+<!-- inc:foot -->

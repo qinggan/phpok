@@ -1,0 +1,48 @@
+<!-- include tpl=head title="配置升级服务环境 - 程序升级" -->
+<div class="tips">
+	您当前位置：
+	<a href="{url ctrl=update/}" title="程序升级">程序升级</a>
+	&raquo; 配置升级服务环境
+</div>
+<form method="post" action="{url ctrl=update func=save/}">
+<div class="table">
+	<div class="title">
+		升级：
+		<span class="note">只有启用升级后才能实现在线升级，如果您不需要此功能，请禁用</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label><input type="radio" name="status" value="1"{if $rs.status} checked{/if} /> 启用</label></td>
+			<td>&nbsp; &nbsp;</td>
+			<td><label><input type="radio" name="status" value="0"{if !$rs.status} checked{/if} /> 禁用</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		升级服务器：
+		<span class="note">设置升级服务器信息</span>
+	</div>
+	<div class="content">
+		<input type="text" id="server" name="server" class="long" value="{$rs.server}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		自动检测周期：
+		<span class="note">设置为0，表示不自动检测，设置大于0表示每隔几天进行一次检测，建议设置为30天检测一次</span>
+	</div>
+	<div class="content">
+		<input type="text" id="date" name="date" class="short" value="{$rs.date}" />
+	</div>
+</div>
+<br />
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot -->

@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Expires" content="wed, 26 feb 1997 08:21:57 GMT" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title><!-- if $config.title -->{$config.title} - <!-- /if -->后台管理</title>
+	<link href="css/admin-index.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="css/window.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="css/artdialog.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="css/icomoon.css?version={$version}" />
+	<script type="text/javascript" src="{url ctrl=js ext=admin.index/}"></script>
+</head>
+
+<body>
+<div class="header">
+	<div class="logo"><a href="{$sys.admin_file}?_noCache={func rand 10000 99999}" title="{$config.title}"><img src="{$config.adm_logo29 ? $config.adm_logo29 : 'images/logo.jpg'}" alt="{$config.title}" /></a></div>
+    <div class="head_user head_tool" onclick="javascript:phpok_admin_logout();void(0);" title="管理员退出"><img class="head_user_img" src="images/logout.png" alt="管理员退出" /></div>
+    <div class="head_tool head_list" id="top-menu-icon">
+    	<a href="javascript:;" class="head_list_link" id="top-menu-a" title="功能菜单"></a>
+        <div class="header-tc-content" id="top-menu">
+            <span class="header-tc-ct-bg"></span>
+            <ul class="first_ul">
+	            <!-- loop from=$menulist key=$key value=$value -->
+                <li{if $menulist_id.num == $menulist_id.total} class="laster_line"{/if} name="subtree">
+                	<a href="javascript:void(0);" >{$value.title}</a>
+                    <div class="second_ul" style="display:none;">
+                    	<span class="arrow_right"></span>
+                        <ul>
+                        	<!-- loop from=$value.sublist key=$k value=$v id=sub_id -->
+                        	<li{if $sub_id.num == $sub_id.total} class="laster_line"{/if}><a href="javascript:$.win('{$v.title}','{$v.url}')">{$v.title}</a></li>
+                        	<!-- /loop -->
+                        </ul>
+                    </div>
+                </li>
+	            <!-- /loop -->
+            </ul>
+        </div>
+    </div>
+<div class="head_tool head_desktop">
+    	<a href="javascript:$.desktop.tohome();void(0);" class="head_desktop_link" title="显示桌面"></a>
+    </div>
+<div class="head_tool head_config">
+    	<a href="javascript:phpok_admin_control();void(0);" class="head_config_link" title="修改个人信息"></a>
+    </div>
+    
+    <div class="head_web">
+	    <span class="clear_cache" onclick="phpok_admin_clear()">清空缓存</span>
+	    <span class="gohome"><a href="{$sys.www_file}?siteId={$session.admin_site_id}" target="_blank" title="访问前台网站">访问网站</a></span>
+    	<span class="leftspan">网站：</span>
+        <select class="web_select" name="top_site_id" id="top_site_id" onchange="goto_site(this.value,{$session.admin_site_id})">
+	      <!-- loop from=$sitelist key=$key value=$value -->
+	      <option value="{$value.id}"{if $value.id == $session.admin_site_id} selected{/if}>{$value.title}</option>
+	      <!-- /loop -->
+        </select>
+        <!-- if $session.admin_rs.if_system -->
+        <a href="javascript:add_site();void(0);" class="web_add" title="添加新站点"></a>
+        <!-- /if -->
+        <ul class="head_tab" id="phpok-taskbar"></ul>
+    </div>
+</div>
+
+<div class="content"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td valign="top" width="240px;">
+    <div class="c_left">
+    	<ul>
+    		<!-- loop from=$menulist key=$key value=$value -->
+    		<!-- loop from=$value.sublist key=$k value=$v id=sub_id -->
+    		<!-- if $v.icon -->
+    		<li><a href="javascript:$.win('{$v.title}','{$v.url}');void(0);"><span class="icon-{$v.icon}"></span>{$v.title}</a>
+		    </li>
+    		<!-- /if -->
+    		<!-- /loop -->
+    		<!-- /loop -->
+        </ul>
+    </div>
+    </td>
+    <td valign="top"><div class="index_main">
+   	  <div class="sub_box" id="all_setting"{if !$all_info} style="display:none;"{/if}>{$all_info}</div>
+      <div class="sub_box" id="list_setting"{if !$list_setting} style="display:none;"{/if}>{$list_setting}</div>
+    </div></td>
+    <td valign="top" style="width:195px">
+   	  <div class="float_wrap">
+            <div class="time">
+                <p class="date">{func date Y年m月d日 $app->time}</p>
+                <p class="week">{$weekend}</p>
+                <p class="hour" id="desktop_hour"></p>
+            </div>
+            <dl class="index_chat" id="pendding_info" style="display:none;">
+            	<dt><span><img src="images/icon_news.png" class="ie6png" /></span>消息通知</dt>
+            </dl>
+        </div>
+    </td>
+  </tr>
+</table>
+
+	
+    
+    
+    
+    <div class="clear"></div>
+</div>
+
+<div class="foot">
+	<div class="foot_left">
+		<!-- if $app->license_powered -->
+		Powered by <a href="http://www.phpok.com" target="_blank">phpok.com</a>,
+		<!-- /if -->
+		CopyRight &copy; {$license_site} {func license_date}, All Right Reserved.
+	</div>
+	<div class="foot_right">{$license}，版本：{$version}</div>
+</div>
+<script type="text/javascript">
+function pendding_info()
+{
+	var url = get_url('index','pendding');
+	$.ajax({
+		'url':url,
+		'cache':false,
+		'async':true,
+		'dataType':'json',
+		'success': function(rs){
+			if(rs.status == "ok")
+			{
+				var html = '<dt><span><img src="images/icon_news.png" class="ie6png" /></span>消息通知</dt>';
+				var list = rs.content;
+				for(var key in list)
+				{
+					html += '<dd>';
+					html += '<a href="javascript:$.win(\''+list[key]['title']+'\',\''+list[key]['url']+'\');void(0);">';
+					html += list[key]['title']+'（<span>'+list[key]['total']+'</span>）</a></dd>';
+				}
+				$("#pendding_info").html(html).show();
+			}
+			else
+			{
+				var html = '<dt><span><img src="images/icon_news.png" class="ie6png" /></span>消息通知</dt>';
+				html += '<dd style="text-align:center;line-height:30px;">'+rs.content+'</dd>';
+				$("#pendding_info").html(html).show();
+			}
+		}
+	});
+	//每隔三分钟进行一次检测
+	window.setTimeout("pendding_info()", 180000);
+}
+$(document).ready(function(){
+	pendding_info();
+	//自定义右键
+	var r_menu = [[{
+		'text':'刷新网页',
+		'func':function(){
+			$.phpok.reload();
+		}
+	},{
+    	'text': "清空缓存",
+    	'func': function() {phpok_admin_clear();}    
+	},{
+		'text':'修改我的信息',
+		'func':function(){phpok_admin_control();}
+	},{
+		'text': "显示桌面",
+    	'func': function() {$.desktop.tohome();}    
+	}],[{
+		'text':'关于PHPOK',
+		'func':function(){
+			$.dialog({
+				'title':'关于PHPOK',
+				'lock':true,
+				'drag':false,
+				'fixed':true,
+				'content':'PHPOK企业站系统采用PHP+MySQL架构，基于LGPL协议开源并且免费。<br />本程序支持分类，项目，站点信息，模块等数据自定义<br />程序无任何内置广告代码<br />在使用过程序中，有任何问题，均可以登录 <a href="http://www.phpok.com/help.html" target="_blank" class="red">www.phpok.com/help.html</a> 查阅<br />如果您认可并打算捐助我们，点这里查看我们的收款账号：<a href="http://www.phpok.com/pay.html" target="_blank"style="color:red;">www.phpok.com/pay.html</a>'
+			});
+		}
+	}]];
+	$(window).smartMenu(r_menu,{'textLimit':8});
+});
+</script>
+
+</body>
+</html>

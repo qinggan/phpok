@@ -1,0 +1,12 @@
+<text>文本框</text>
+<password>密码框</password>
+<radio>单选框</radio>
+<checkbox>复选框</checkbox>
+<select>下拉菜单</select>
+<textarea>文本区</textarea>
+<editor>编辑器</editor>
+<code_editor>代码编辑器</code_editor>
+<upload>附件</upload>
+<title>主题</title>
+<user>会员</user>
+<url>网址</url>

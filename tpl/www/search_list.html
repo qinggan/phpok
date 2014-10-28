@@ -1,0 +1,33 @@
+<!-- include tpl=head title=搜索结果 -->
+<div class="wrap mb10">
+	<div class="page_left">
+		<!-- include tpl=block_contactus -->
+	</div>
+	<div class="page_right">
+		<div class="page_right_title">
+			<span class="breadcrumbs">
+				您现在的位置：
+				<a href="{$sys.url}" title="{$config.title}">首页</a>
+				<span class="arrow">&nbsp;</span> <a href="{ctrl url=search keywords=$keywords/}" title="搜索关键字：{$keywords}">搜索结果：<span class="red">{$keywords}</span></a>
+			</span>
+			搜索结果
+		</div>
+		<ul class="news_list">
+			<!-- loop from=$rslist key=$key value=$value -->
+			<li>
+				<!-- if $value.thumb -->
+				<span class="n-img"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.title}" /></a></span>
+				<!-- /if -->
+				<h3><a href="{$value.url}" title="{$value.title}">{$value.title}</a></h3>
+				<div class="n-txt">
+					{$value.note ? phpok_cut($value.note,225,'…') : phpok_cut($value.content,225,'…')}
+					<span class="more">[<a href="{$value.url}" title="查看{$value.title}详细信息">查看更多</a>]</span>
+				</div>
+			</li>
+			<!-- /loop -->
+		</ul>
+		<!-- include tpl=block_pagelist -->
+	</div>
+	<div class="cl"></div>
+</div>
+<!-- include tpl=foot -->

@@ -1,0 +1,31 @@
+<!-- include tpl=head title=ZIP离线包升级 -->
+<div class="tips clearfix">
+	您当前的位置：<a href="{url ctrl=update/}" title="程序升级">程序升级</a>
+	&raquo; ZIP离线包升级 <span class="red">请确保 data/update 可写，程序将会尝试将文件解压到这个目录下</span>
+</div>
+<script type="text/javascript">
+function check_zip()
+{
+	var zipfile = $("#zipfile").val();
+	if(!zipfile)
+	{
+		$.dialog.alert('未指定ZIP文件');
+		return false;
+	}
+	return true;
+}
+</script>
+<form method="post" action="{url ctrl=update func=unzip/}" onsubmit="return check_zip()">
+<div class="table">
+	<div class="content">
+		<table cellspacing="0">
+			<tr>
+				<td valign="top">选对要升级的附件：</td>
+				<td valign="top">{$upload_html.html}</td>
+				<td valign="top"><input type="submit" value="开始升级" class="submit" /></td>
+			</tr>
+		</table>
+	</div>
+</div>
+</form>
+<!-- include tpl=foot -->

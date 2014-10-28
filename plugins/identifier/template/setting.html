@@ -1,0 +1,42 @@
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#is_youdao").click(function(){
+		if($(this).attr("checked") == true || $(this).attr("checked") == "checked")
+		{
+			$("#youdao_setting").show();
+		}
+		else
+		{
+			$("#youdao_setting").hide();
+		}
+	});
+});
+</script>
+<div class="table">
+	<table cellspacing="0" cellpadding="0">
+	<tr>
+		<td>要启用哪些标识串生成类型：</td>
+		<td><label><input type="checkbox" name="is_youdao"{if $rs.param.is_youdao} checked{/if} id="is_youdao" />有道翻译</label></td>
+		<td>&nbsp; &nbsp;</td>
+		<td><label><input type="checkbox" name="is_pingyin"{if $rs.param.is_pingyin} checked{/if} />拼音</label></td>
+		<td>&nbsp; &nbsp;</td>
+		<td><label><input type="checkbox" name="is_py"{if $rs.param.is_py} checked{/if} />简拼</label></td>
+	</tr>
+	</table>
+</div>
+<div id="youdao_setting"{if !$rs.param.is_youdao} class="hide"{/if}>
+<div class="table">
+	<div class="title">
+		有道翻译KEY-FROM：
+		<span class="note">设置有道翻译的API接口</span>
+	</div>
+	<div class="content"><input type="text" id="keyfrom" name="keyfrom" class="long" value="{$rs.param.keyfrom}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		有道翻译KEY：
+		<span class="note">设置有道翻译的API接口</span>
+	</div>
+	<div class="content"><input type="text" id="keyid" name="keyid" class="long" value="{$rs.param.keyid}" /></div>
+</div>
+</div>

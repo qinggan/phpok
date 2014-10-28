@@ -1,0 +1,31 @@
+<!-- include tpl=head title=$page_rs.title menutitle=$parent_rs.title -->
+<!-- if $parent_rs.banner -->
+<div class="page_banner"><img src="{$parent_rs.banner.filename}" width="980" alt="{$page_rs.title}" /></div>
+<!-- /if -->
+
+<div class="wrap mb10">
+	<div class="page_left">
+		<dl class="sub_nav">
+			<dt>{$parent_rs.title}</dt>
+			<!-- sublist pid=$parent_rs.id -->
+			<!-- loop from=$list key=$key value=$value -->
+			<dd{if $page_rs.id == $value.id} class="on"{/if}><a href="{$value.url}" title="{$value.title}">{$value.title}</a></dd>
+			<!-- /loop -->
+		</dl>
+		<!-- include tpl=block_contactus -->
+	</div>
+	<div class="page_right">
+		<div class="page_right_title">
+			<span class="breadcrumbs">
+				您现在的位置：
+				<a href="{$sys.url}" title="{$config.title}">首页</a>
+				<span class="arrow">&nbsp;</span> {$parent_rs.title}
+				<span class="arrow">&nbsp;</span> <a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a>
+			</span>
+			{$page_rs.title}				
+		</div>
+		<div class="paragraph">{$page_rs.content}</div>
+	</div>
+	<div class="cl"></div>
+</div>
+<!-- include tpl=foot -->

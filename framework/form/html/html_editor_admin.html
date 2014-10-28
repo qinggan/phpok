@@ -1,0 +1,12 @@
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_edit,is_code:checkbox" />
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<td><select name="form_edit" id="form_edit">
+			<option value="full"{if $rs.form_edit == "full"} selected{/if}>完整编辑器</option>
+			<option value="simple"{if $rs.form_edit == "simple"} selected{/if}>简约编辑器</option>
+		</select>
+	</td>
+	<td>&nbsp;</td>
+	<td><label for="is_code"><input type="checkbox" name="is_code" id="is_code"{if $rs.is_code} checked{/if}> 显示源码</label></td>
+</tr>
+</table>

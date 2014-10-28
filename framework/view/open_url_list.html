@@ -1,0 +1,46 @@
+<!-- inc:head_open -->
+<script type="text/javascript">
+function select_input(val)
+{
+	var obj = $.dialog.opener;
+	obj.$("#{$id},#{$id}_default").val("index.php?id="+val);
+	obj.$("#{$id}_rewrite").val(val+".html");
+	$.dialog.close();
+}
+function go_back()
+{
+	$.phpok.go('{url ctrl=open func=url id=$id /}');
+}
+</script>
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th class="id">ID</th>
+	<th class="title">主题名称</th>
+	<th style='width:80px;'>操作</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr>
+	<td class="center" height="25px">{$value.id}</td>
+	<td style="text-align: left;padding-left:10px;">{$value.title}</td>
+	<td>
+		<a href="javascript:select_input('{$value.identifier ? $value.identifier : $value.id}');void(0)">提交</a>
+	</td>
+</tr>
+	<!-- loop from=$value.sonlist key=$kk value=$vv -->
+	<tr>
+		<td class="center">{$vv.id}</td>
+		<td style="text-align: left;padding-left:10px;">
+			&nbsp; &nbsp; ├─ {$vv.title}
+		</td>
+		<td>
+			<a href="javascript:select_input('{$vv.identifier ? $vv.identifier : $vv.id}');void(0)">提交</a>
+		</td>
+	</tr>
+	<!-- /foreach -->		
+<!-- /foreach -->
+</table>
+</div>
+<!-- include tpl=pagelist -->
+<div align="center" style="margin:10px;"><input type="button" value="返回" class="btn" onclick="go_back()" /></div>
+<!-- inc:foot_open -->

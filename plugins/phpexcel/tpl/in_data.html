@@ -1,0 +1,144 @@
+<!-- inc:head_open -->
+<script type="text/javascript" src="{func include_js}"></script>
+<div class="tips">选择Excel文件（仅显示最新上传的30个Excel文档，建议您使用上传功能）</div>
+<script type="text/javascript">
+function select_file(file_id)
+{
+	var url = get_url("plugin","ajax")+"&id={$rs.id}&exec=data_import&pid={$pid}";
+	if(!file_id)
+	{
+		$.dialog.alert("未指定Excel附件ID");
+		return false;
+	}
+	url += "&file="+file_id;
+	direct(url);
+}
+function preview_res_phpexcel()
+{
+	direct(window.location.href);
+}
+</script>
+<div class="table">
+<table width="100%">
+<tr>
+	<td>
+		<table>
+		<tr>	
+			<td><select id="phpexcel_cateid">
+			<!-- loop from=$catelist key=$key value=$value id=catelist_id -->
+			<option value="{$value.id}"{if $value.is_default} selected{/if}>{$value.title}</option>
+			<!-- /loop -->
+			</select></td>
+			<td><div style="margin-top:4px;"><div id="phpexcel_spanButtonPlaceHolder"></div></div></td>
+			<td><input id="phpexcel_btnSubmit" type="button" class="submit" value="开始上传" onclick="phpexcel_swfupload_submit();" /></td>
+			<td><input id="phpexcel_btnCancel" type="button" class="button" value="取消上传" onclick="phpexcel_swfu.cancelQueue();" disabled="disabled" /></td>
+			<td id="phpexcel_div_status" class="hide"></td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td coslapn="99"><div id="phpexcel_progress"></div></td>
+</tr>
+</table>
+</div>
+<script type="text/javascript">
+//单个文件上传成功后触发的函数
+function phpexcel_swfupload_success(file,serverData)
+{
+	//客户端关闭显示
+	var progress = new FileProgress(file, this.customSettings.progressTarget);
+	progress.setComplete();
+	progress.setStatus("上传完成！");
+	progress.toggleCancel(false);
+	preview_res_phpexcel();
+}
+
+//上传完成后操作
+function phpexcel_swfupload_complete(file)
+{
+	if (this.getStats().files_queued === 0)
+	{
+		document.getElementById(this.customSettings.cancelButtonId).disabled = true;
+	}
+}
+
+//文件选择完毕后动作
+function phpexcel_swfupload_file_dialog_complete(numFilesSelected, numFilesQueued)
+{
+	if (numFilesSelected > 0)
+	{
+		document.getElementById(this.customSettings.cancelButtonId).disabled = false;
+	}
+}
+
+//统计总进度
+function phpexcel_swfupload_queue_complete(numFilesUploaded)
+{
+	$("#phpexcel_div_status").html("已上传文件数量："+numFilesUploaded+"");
+}
+
+//开始上传
+function phpexcel_swfupload_submit()
+{
+	var cate_id = $("#phpexcel_cateid").val();
+	if(cate_id)
+	{
+		phpexcel_swfu.addPostParam("cateid",cate_id);
+	}
+	phpexcel_swfu.addPostParam("{func session_name}","{func session_id}");
+	phpexcel_swfu.startUpload();
+}
+
+$(document).ready(function(){
+	var phpexcel_setting = {
+		"flash_url"						: "js/swfupload/swfupload.swf",
+		"upload_url"					: "{echo admin_url('upload')}",
+		"post_params"					: {},
+		"file_size_limit"				: "{echo get_cfg_var('upload_max_filesize')}B",	
+		"file_types"					: "*.xls;*.xlsx",	
+		"file_types_description"		: "Excel文件",	
+		"file_upload_limit"				: "0",
+		"file_queue_limit"				: "0",
+		"button_window_mode"			: "transparent",
+		"custom_settings"				: {
+			"progressTarget"	: "phpexcel_progress",
+			"cancelButtonId"	: "phpexcel_btnCancel"
+		},
+		"debug"							: false,	
+		"button_image_url"				: "images/swfupload.png",	
+		"button_placeholder_id"			: "phpexcel_spanButtonPlaceHolder",	
+		"button_width"					: "92",	
+		"button_height"					: "23",
+		"button_action"					: SWFUpload.BUTTON_ACTION.SELECT_FILE,
+		"file_queued_handler"			: fileQueued,
+		"file_queue_error_handler"		: fileQueueError,	
+		"file_dialog_complete_handler"	: phpexcel_swfupload_file_dialog_complete,	
+		"upload_start_handler"			: uploadStart,	
+		"upload_progress_handler"		: uploadProgress,	
+		"upload_error_handler"			: uploadError,	
+		"upload_success_handler"		: phpexcel_swfupload_success,	
+		"upload_complete_handler"		: phpexcel_swfupload_complete,	
+		"queue_complete_handler"		: phpexcel_swfupload_queue_complete	
+	};
+	phpexcel_swfu = new SWFUpload(phpexcel_setting);
+});
+</script>
+<div class="list">
+<table class="list" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+	<th>附件名称</th>
+	<th>上传时间</th>
+	<th style="width:90px">操作</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td height="33px" align="center">{$value.title}</td>
+	<td align="center">{func date "Y-m-d H:i:s" $value.addtime}</td>
+	<td align="center"><input type="button" value="选择" class="btn" onclick="select_file('{$value.id}')" /></td>
+</tr>
+<!-- /loop -->
+</table>
+
+</div>
+<!-- inc:foot_open -->

@@ -1,0 +1,12 @@
+<div class="title">
+	分类：
+	<span class="note">请绑定分类，默认绑定根分类信息</span>
+</div>
+<div class="content">
+	<select id="cateid" name="cateid">
+	<option value="{$cate_rs.id}"{if $val && in_array($cate_rs.id,$val)} selected{/if}>{$cate_rs.title}</option>
+	<!-- loop from=$catelist key=$key value=$value -->
+	<option value="{$value.id}"{if $val && in_array($value.id,$val)} selected{/if}>&nbsp; &nbsp; {$value._space}{$value.title}</option>
+	<!-- /loop -->
+	</select>
+</div>

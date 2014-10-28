@@ -1,0 +1,14 @@
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="is_multiple" />
+<div class="table">
+	<div class="title">
+		属性：
+		<span class="note"></span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="is_multiple"{if $rs.is_multiple} checked{/if} value="1" /> 多选</label></li>
+			<li><label><input type="radio" name="is_multiple"{if !$rs.is_multiple} checked{/if} value="0" /> 单选</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>

@@ -1,0 +1,87 @@
+<!-- inc:head_open -->
+<div class="tips">匹配字段信息，<a href="{echo admin_url('plugin','ajax')}&id={$rs.id}&pid={$pid}&exec=in_data" title="">点此返回重新选择</a>，所有导入均不导入第一行，第一行为标识行</div>
+<!-- if $use_price -->
+<div class="tips" style="margin-top:3px">当前模块支持价格组导入，在excel中请设置好价格组，第一排中同一组的价格为：t1，第二组价格为：t2，以此类推，可使用数据类型有：价格,价格标题,价格数量，<a href="plugins/phpexcel/template.xls" target="_blank">点此下载Excel价格设置模板</a></div>
+<!-- /if -->
+<form method="post" action="{echo admin_url('plugin','ajax')}&id={$rs.id}&pid={$pid}&exec=import_end&file={$file}">
+<div class="list">
+<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<tr>
+	<th align="right"><div style="padding:2px 5px;">Excel字段</div></th>
+	<th align="left"><div style="padding:2px 5px;">内容字段</div></th>
+	<th style="display:none">唯一性 <input type="radio" name="is_only" id="is_only" value="0" checked /></th>
+</tr>
+<!-- loop from=$idlist key=$key value=$value -->
+<tr>
+	<td height="33px" align="right"><div style="padding:2px 5px;">{$value} &raquo; {$key}</div></td>
+	<td>
+		<div style="padding:2px 5px;">
+			<select name="link[{$key}]" id="link_{$key}">
+			<option value="">请选择</option>
+			<!-- loop from=$flist key=$k value=$v -->
+			<option value="{$k}"{if $v == $value} selected{/if}>{$v}</option>
+			<!-- /loop -->
+			</select>
+		</div>
+	</td>
+	<td class="center" style="display:none"><input type="radio" name="is_only" id="is_only_{$key}" value="{$key}" /></td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<div class="tips mt3">存储设置</div>
+<!-- if $catelist -->
+<div class="table">
+	<div class="title">
+		目标分类：
+		<span class="note">请置要存储的分类</span>
+	</div>
+	<div class="content">
+		<select id="cate_id" name="cate_id">
+		<option value="0">不选择</option>
+		<!-- loop from=$catelist key=$key value=$value -->
+		<option value="{$value.id}">{$value.space}{$value.title}</option>
+		<!-- /loop -->
+		</select>
+	</div>
+</div>
+<!-- /if -->
+<div class="table">
+	<div class="title">
+		状态：
+		<span class="note">设置数据导入是否实时生效，建议选择“未审核”</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label for="status_0"><input type="radio" name="status" id="status_0" value="0" checked /> 未审核</label></td>
+			<td><label for="status_1"><input type="radio" name="status" id="status_1" value="1" /> 已审核</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		隐藏：
+		<span class="note">建议设为显示</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label for="hidden_0"><input type="radio" name="hidden" id="hidden_0" value="0" checked /> 显示</label></td>
+			<td><label for="hidden_1"><input type="radio" name="hidden" id="hidden_1" value="1" /> 隐藏</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<br />
+<div class="table">
+	<div class="content">
+		<input type="submit" value="开始导入" class="submit" />
+		<span class="gray i">&nbsp;当您点击“开始导入”时，请耐心等候……</span>
+	</div>
+</div>
+</form>
+<br />
+
+<!-- inc:foot_open -->

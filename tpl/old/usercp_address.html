@@ -1,0 +1,184 @@
+<!-- include tpl=head title="收货地址 - 个人中心" -->
+<script type="text/javascript" src="{func add_js pcas.js}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	//提交表单信息
+	$("#shipping_submit").submit(function(){
+		$(this).ajaxSubmit({
+			type:'post',
+			url: api_url('usercp','address','type=shipping'),
+			dataType:'json',
+			success: function(rs){
+				if(rs.status == 'ok')
+				{
+					alert("收货地址更新成功");
+					window.location.reload();
+				}
+				else
+				{
+					if(!rs.content) rs.content = '收货地址更新失败';
+					alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+	$("#billing_submit").submit(function(){
+		$(this).ajaxSubmit({
+			type:'post',
+			url: api_url('usercp','address','type=billing'),
+			dataType:'json',
+			success: function(rs){
+				if(rs.status == 'ok')
+				{
+					alert("账单地址更新成功");
+					window.location.reload();
+				}
+				else
+				{
+					if(!rs.content) rs.content = '账单地址更新失败';
+					alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="cp">
+	<div class="left"><!-- include tpl=block_usercp --></div>
+	<div class="right">
+		<div class="pfw mbottom10">
+			<h3>收货地址</h3>
+			<form method="post" id="shipping_submit">
+			<input type="hidden" name="id" value="{$shipping.id}" />
+			<table width="100%">
+			<tr>
+				<td width="80px" align="right">姓名：</td>
+				<td><input type="text" name="fullname" value="{$shipping.fullname}" /></td>
+			</tr>
+			<tr>
+				<td align="right">性别：</td>
+				<td>
+					<table>
+					<tr>
+						<td><label><input type="radio" name="gender" value="0"{if !$shipping.gender} checked{/if} /> 女</label></td>
+						<td><label><input type="radio" name="gender" value="1"{if $shipping.gender} checked{/if} /> 男</label></td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td align="right">地址：</td>
+				<td>
+					<table cellpadding="0" cellspacing="0">
+					<tr>
+						<input type="hidden" name="country" value="中国" />
+						<td><select name="province" id="s-province"></select></td>
+						<td style="padding-left:3px;"><select name="city" id="s-city"></select></td>
+						<td style="padding-left:3px;"><select name="county" id="s-county"></select></td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td align="right">&nbsp;</td>
+				<td><input type="text" name="address" value="{$shipping.address}" style="width:300px;" /></td>
+			</tr>
+			<tr>
+				<td align="right">邮编：</td>
+				<td><input type="text" name="zipcode" value="{$shipping.zipcode}" /></td>
+			</tr>
+			<tr>
+				<td align="right">手机：</td>
+				<td><input type="text" name="mobile" value="{$shipping.mobile}" /> <span class="gray i">示例：158185xxxxx</span></td>
+			</tr>
+			<tr>
+				<td align="right">电话：</td>
+				<td><input type="text" name="tel" value="{$shipping.tel}" /> <span class="gray i">电话或手机至少得填写一个</span></td>
+			</tr>
+			<tr>
+				<td align="right">Email：</td>
+				<td><input type="text" name="email" value="{$shipping.email ? $shipping.email : $session.user_rs.email}" /> <span class="gray i">请正确填写，以保证系统正常通知</span></td>
+			</tr>
+			<tr>
+				<td align="right">&nbsp;</td>
+				<td><input type="submit" value=" 修改收货地址 " /></td>
+			</tr>
+			</table>
+			</form>
+			<script type="text/javascript">
+			$(document).ready(function(){
+				new PCAS("s-province={$shipping.province},请选择","s-city={$shipping.city},请选择","s-county={$shipping.county},请选择");
+			});
+			</script>
+		</div>
+		<!-- if $config.biz_billing || $billing -->
+		<div class="pfw mbottom10">
+			<h3>账单地址</h3>
+			<form method="post" id="billing_submit">
+			<input type="hidden" name="id" value="{$billing.id}" />
+			<table width="100%">
+			<tr>
+				<td width="80px" align="right">姓名：</td>
+				<td><input type="text" name="fullname" value="{$billing.fullname}" /></td>
+			</tr>
+			<tr>
+				<td align="right">性别：</td>
+				<td>
+					<table>
+					<tr>
+						<td><label><input type="radio" name="gender" value="0"{if !$billing.gender} checked{/if} /> 女</label></td>
+						<td><label><input type="radio" name="gender" value="1"{if $billing.gender} checked{/if} /> 男</label></td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td align="right">地址：</td>
+				<td>
+					<table cellpadding="0" cellspacing="0">
+						<tr>
+							<input type="hidden" name="country" value="中国" />
+							<td><select name="province" id="b-province"></select></td>
+							<td style="padding-left:3px;"><select name="city" id="b-city"></select></td>
+							<td style="padding-left:3px;"><select name="county" id="b-county"></select></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td align="right">&nbsp;</td>
+				<td><input type="text" name="address" value="{$billing.address}" style="width:300px;" /></td>
+			</tr>
+			<tr>
+				<td align="right">邮编：</td>
+				<td><input type="text" name="zipcode" value="{$billing.zipcode}" /></td>
+			</tr>
+			<tr>
+				<td align="right">手机：</td>
+				<td><input type="text" name="mobile" value="{$billing.mobile}" /> <span class="gray i">示例：158185xxxxx</span></td>
+			</tr>
+			<tr>
+				<td align="right">电话：</td>
+				<td><input type="text" name="tel" value="{$billing.tel}" /> <span class="gray i">电话或手机至少得填写一个</span></td>
+			</tr>
+			<tr>
+				<td align="right">&nbsp;</td>
+				<td><input type="submit" value=" 修改账单地址 " /></td>
+			</tr>
+			</table>
+			<script type="text/javascript">
+			$(document).ready(function(){
+				new PCAS("b-province={$billing.province},请选择","b-city={$billing.city},请选择","b-county={$billing.county},请选择");
+			});
+			</script>
+			</form>
+		</div>
+		<!-- /if -->
+	</div>
+</div>
+
+<!-- include tpl=foot -->

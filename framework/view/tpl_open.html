@@ -1,0 +1,51 @@
+<!-- inc:head_open -->
+<script type="text/javascript">
+function phpok_input(val)
+{
+	var obj = $.dialog.opener;
+	obj.$("#{$id}").val(val);
+	$.dialog.close();
+}
+</script>
+<div class="tips">
+	站点：<span class="red">{$site_rs[title]}</span>，
+	风格：<span class="red">{$rs.title}</span>，
+	当前路径：<span class="red">{$folder}</span>
+	<!-- if $folder != "/" -->
+	，<a href="{echo admin_url('tpl','open')}&id={$id}" title="返回根目录">点此返回根目录</a>
+	<!-- /if -->
+</div>
+<div class="list">
+<table class="list" width="100%">
+<tr>
+	<th width="40px">类型</th>
+	<th>名称</th>
+	<th width="150px">时间</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+	<!-- if $value.tplid -->
+	<tr class="hand" onclick="phpok_input('{$value.tplid}')">
+		<td><img src="images/filetype/html.gif" border="0" alt="文件：{$value.title}"></td>
+		<td class="lft">{$value.title}</td>
+		<td>{$value.date}</td>
+	</tr>
+	<!-- else -->
+		<!-- if $value.type == "dir" && $value.url -->
+		<tr class="hand" onclick="direct('{$value.url}')">
+			<td><img src="images/filetype/dir.gif" border="0" alt="文件夹：{$value.title}"></td>
+			<td class="lft">{$value.title}</td>
+			<td>{$value.date}</td>
+		</tr>
+		<!-- else -->
+		<tr class="hand" onclick="$.dialog.alert('名称：{$value.title}<br />路径：{$value.filename}<br />日期：{$value.date}')">
+			<td><img src="images/filetype/{$value.type}.gif" border="0" alt="文件夹：{$value.title}"></td>
+			<td class="lft">{$value.title}</td>
+			<td>{$value.date}</td>
+		</tr>
+		<!-- /if -->
+	<!-- /if -->
+<!-- /foreach -->
+</table>
+</div>
+
+<!-- inc:foot_open -->

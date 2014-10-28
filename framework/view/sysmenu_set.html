@@ -1,0 +1,130 @@
+<!-- include tpl=head title=核心设置 -->
+<script type="text/javascript" src="{echo add_js('sysmenu.js')}"></script>
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('system')}">核心配置</a>
+	<!-- if $id -->
+	&raquo; 编辑应用
+	<!-- else -->
+	&raquo; 添加应用
+	<!-- /if -->
+</div>
+<form method="post" id="ext_post" action="{echo admin_url('system','save')}">
+<input type="hidden" id="id" name="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		名称：
+		<span class="note">设置应用的名称，该名称将在后台左侧/头部显示</span>
+	</div>
+	<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
+</div>
+<!-- if $parent_list -->
+<div class="table">
+	<div class="title">
+		上级项目：
+		<span class="note">设置上级项目</span>
+	</div>
+	<div class="content">
+		<select name="parent_id" id="parent_id">
+			<!-- foreach($parent_list AS $key=>$value) -->
+			<option value="{$value.id}"{if $value.id == $pid} selected="selected"{/if}>{$value.title}</option>
+			<!-- /foreach -->
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		快捷图标：
+		<span class="note">启用快捷图标后，将在桌面显示相应的快捷链接</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li style="width:180px;"><label title="不使用">
+				<table>
+				<tr>
+					<td><input type="radio" name="icon" value=""{if !$rs.icon} checked{/if}/></td>
+					<td>空</td>
+				</tr>
+				</table>
+			</label></li>
+			<!-- loop from=$iconlist key=$key value=$value -->
+			<li style="width:180px;"><label title="{func basename $value}">
+				<table>
+				<tr>
+					<td><input type="radio" name="icon" value="{$value}"{if $rs.icon == $value} checked{/if}/></td>
+					<td><i class="icon-{$value}" style="font-size:16px;"></i> {$value}</td>
+				</tr>
+				</table>
+			</label></li>
+			<!-- /loop -->
+			<div class="clear"></div>
+		</ul>
+	</div>
+</div>
+<!-- /if -->
+
+<!-- if $pid && $dirlist && !$id -->
+<div class="table">
+	<div class="title">
+		控制层：
+		<span class="note">不熟请设为：<span class="red">list_control.php</span>，一经设定不允许修改</span>
+	</div>
+	<div class="content">
+		<select name="appfile" id="appfile">
+			<!-- foreach($dirlist AS $key=>$value) -->
+			<option value="{$value.id}"{if $value.id == $rs.appfile} selected="selected"{/if}>{$value.title}</option>
+			<!-- /foreach -->
+		</select>
+	</div>
+</div>
+<!-- /if -->
+<div class="table">
+	<div class="title">
+		排序：
+		<span class="note">自定义排序，值越小越往前靠</span>
+	</div>
+	<div class="content"><input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis}" /></div>
+</div>
+<!-- if $session.admin_rs.if_system -->
+	<div class="table">
+		<div class="title">
+			配置权限：
+			<span class="note">
+				此项用于二次扩展开发时使用，不熟悉的朋友请查看 <a href="http://www.phpok.com" target="_blank">phpok.com</a> 官网说明
+				<input type="button" value="添加" class="btn" onclick="add_trtd()" />
+			</span>
+		</div>
+		<div class="content">
+			<div class="list">
+			<table id="popedom" cellpadding="0" cellspacing="1" style="border:1px solid #ccc;width:auto;">
+			<tr>
+				<th width="72">删</th>
+				<th width="200">名称</th>
+				<th width="160">标识</td>
+				<th width="90">排序</td>
+			</tr>
+			<!-- loop from=$popedom_list key=$key value=$value -->
+			<tr id="popedom_{$value.id}">
+				<td align="center"><input type="button" value="删除" class="btn" onclick="popedom_del('{$value.id}')" /></td>
+				<td align="center"><input type="text" name="popedom_title_{$value.id}" value="{$value.title}" style="width:180px" /></td>
+				<td align="center"><input type="text" name="popedom_identifier_{$value.id}" value="{$value.identifier}" style="width:140px" /></td>
+				<td align="center"><input type="text" name="popedom_taxis_{$value.id}" value="{$value.taxis}" class="short" /></td>
+			</tr>
+			<!-- /loop -->
+			</table>
+			</div>
+		</div>
+	</div>
+<!-- /if -->
+
+
+<div class="table">
+	<div class="content">
+		<br />
+		<input type="submit" value="提 交" class="submit" />
+		<br />
+	</div>
+</div>
+</form>
+
+<!-- inc:foot -->

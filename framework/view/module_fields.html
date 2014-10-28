@@ -1,0 +1,69 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('module.js')}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#title").blur(function(){check_title(false)});
+});
+</script>
+
+<div class="tips">
+	<div class="action"><a href="{url ctrl=module func=field_create mid=$id/}" title="添加字段">添加字段</a></div>
+	<div class="action"><a href="{url ctrl=module/}" title="返回模块管理">返回模块管理</a></div>
+	您当前的位置：
+	<a href="{echo admin_url('module')}">模块管理</a>
+	&raquo; {$rs.title}
+	&raquo; 字段管理器
+</div>
+
+<!-- if $used_list -->
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="lft">&nbsp;字段名</th>
+	<th class="lft">名称</th>
+	<th class="lft">备注</th>
+	<th class="lft">排序</th>
+	<th class="lft w60">操作</th>
+</tr>
+<!-- foreach($used_list AS $key=>$value) -->
+<tr{if $used_list_id.num%2 == ""} class="list"{/if}>
+	<td>{$value.identifier}</td>
+	<td>{$value.title}</td>
+	<td>{$value.note}</td>
+	<td>{$value.taxis}</td>
+	<td>
+		<a class="icon edit" onclick="module_field_edit('{$value.id}')" title="修改"></a>
+		<a class="icon delete end" onclick="module_field_del('{$value.id}','{$value.title}')" title="删除"></a>
+	</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<!-- /if -->
+<!-- if $fields_list -->
+<div class="tips">
+	<div class="action"><a href="javascript:top.$.win('字段维护','{url ctrl=fields func=set/}')" title="创建常用字段">创建常用字段</a></div>
+	常见字段快速添加</div>
+<div class="list2">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="id">ID</th>
+	<th class="lft" style="width:130px">&nbsp;字段名</th>
+	<th class="lft" style="width:150px">&nbsp;名称</th>
+	<th class="lft">&nbsp;备注</th>
+	<th class="lft w30">添加</th>
+</tr>
+<!-- foreach($fields_list AS $key=>$value) -->
+<tr{if $fields_list_id.num%2 == ""} class="list"{/if} title="{$value.note}">
+	<td class="center">{$value.id}</td>
+	<td><label for="field_{$value.id}">{$value.identifier}</label></td>
+	<td><input type="text" id="field_title_{$value.id}" name="field_title_{$value.id}" value="{$value.title}" style="width:150px" /></td>
+	<td><input type="text" id="field_note_{$value.id}" name="field_note_{$value.id}" value="{$value.note}" style="width:430px" /></td>
+	<td><a class="icon add" onclick="module_field_add('{$id}','{$value.id}')" title="添加：{$value.identifier}"></a></td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<!-- /if -->
+
+<!-- inc:foot -->

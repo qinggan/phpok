@@ -1,0 +1,70 @@
+.webuploader-container {
+	position: relative;
+}
+.webuploader-element-invisible {
+	position: absolute !important;
+	clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+    clip: rect(1px,1px,1px,1px);
+}
+.webuploader-pick {
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+	background:#eee url('upload.png') left top no-repeat;
+	height:23px;
+	width:92px;
+	text-align: center;
+	overflow: hidden;
+}
+.webuploader-pick-hover {
+	background:#eee url('upload.png') left -46px no-repeat;
+}
+
+.webuploader-pick-disable {
+	opacity: 0.6;
+	pointer-events:none;
+}
+
+/* PHPOK后台附件上传样式 */
+
+.phpok-upfile-list{
+	border:solid 1px #E8E8E8;
+	background:#F7F7F7;
+	position:relative;
+	margin-bottom:3px;
+}
+
+.phpok-upfile-list .title{
+	padding:3px 8px;
+	margin:0;
+	font-size:12px;
+	color:#000;
+}
+
+.phpok-upfile-list .state{
+	padding:3px 8px;
+	font-style:italic;
+	color:#333300;
+}
+
+.phpok-upfile-list .cancel{
+	background:url('delete.png') right top no-repeat;
+	width:16px;
+	height:16px;
+	top:10px;
+	right:10px;
+	position:absolute;
+	cursor:pointer;
+}
+.phpok-upfile-list .progress{
+	height:10px;
+	margin:0 8px;
+	overflow:hidden;
+}
+.phpok-upfile-list .progress span{
+	width:1px;
+	height:5px;
+	border:0;
+	border-top:2px solid blue;
+	display:block;
+}

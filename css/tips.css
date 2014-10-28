@@ -1,0 +1,26 @@
+body{font-size:12px;font-family:"Microsoft Yahei","宋体","Tahoma","Arial"}
+.body{margin:100px auto auto auto;width:550px;border:1px solid #8F8F8F;}
+.body .tips{height:70px;}
+.body .tips .title{margin-left:70px;font-weight:bold;height:20px;padding-top:15px;}
+.body .tips .note{margin-left:70px;height:30px;}
+.body .tips .txt{margin-left:70px;padding-top:10px;line-height:25px;font-weight:bold;}
+.body .notice{background:url("../images/notice.jpg") 20px center no-repeat;}
+.body .ok{background:url("../images/success.jpg") 20px center no-repeat;}
+.body .error{background:url("../images/error.jpg") 20px center no-repeat;}
+.debug_time{width:550px;margin:2px auto;}
+
+.red{color:red;}
+
+input.btn{
+	background:url("../images/button.png") 0 -124px no-repeat;
+	width:74px;
+	height:31px;
+	border:0;
+	margin:0;
+	padding:0;
+	line-height:27px;
+	text-align:center;
+}
+
+.foot{width:550px;margin:2px auto;padding:7px 5px;font-family:"Tahoma","Arial";line-height:22px;height:40px;color:#929292;}
+.foot a{color:#929292;}

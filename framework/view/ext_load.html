@@ -1,0 +1,17 @@
+<!-- foreach($extlist AS $key=>$value) -->
+<div class="table">
+	<div class="title">
+		<table>
+		<tr>
+			<td>{$value.title}<span class="darkblue">[{$value.identifier}]</span>：</td>
+			<td><span class="note">{$value.note}</span></td>
+			<!-- if $show_edit -->
+			<td><a class="icon edit" onclick="ext_edit('{$value.id}','{$module}')" title="编辑"></a></td>
+			<!-- /if -->
+			<td><a class="icon delete" onclick="ext_delete('{$value.id}','{$module}','{$value.title}')" title="删除"></a></td>
+		</tr>
+		</table>
+	</div>
+	<div class="content">{$value.html}{if $value.form_type == "hidden"}<span class="gray i">隐藏字段，仅显示提示</span>{/if}</div>
+</div>
+<!-- /foreach -->

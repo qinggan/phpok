@@ -1,0 +1,58 @@
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#comment_post").submit(function(){
+		$.phpok_www.comment('comment','{$rs.id}');
+		return false;
+	});
+});
+</script>
+<div class="pfw mbottom10">
+	<h3>关于<span class="red">“{$rs.title}”</span>的评论</h3>
+	<div class="comment">
+		<!-- php:$list = phpok_reply($rs.id,15) -->
+		<ul>
+			<!-- loop from=$list.list key=$key value=$value id=listId -->
+			<li id="reply_{$value.id}" class='row_{$listId.num%2 == "" ? 1 : 0}'>
+			<table width="100%" cellpadding="0" cellspacing="0">
+			<tr>
+				<td class='avatar'><img src="{$value.uid.avatar ? $value.uid.avatar : 'images/user_default.png'}" align="absmiddle" alt="{$value.uid.user}" title="{$value.uid.user}"/></td>
+				<td class='body'>
+					<div class='r_title'>
+						<span class="nickname">{$value.uid.user}</span>发表于{func time_format $value.addtime}
+					</div>
+					<div class='r_content'>{$value.content}</div>
+				</td>
+			</tr>
+			</table>
+			</li>
+			<!-- /loop -->
+		</ul>
+		<!-- php:$pagelist = phpok_page($rs.url,$list.total,$list.pageid,$list.psize,"always=1") -->
+		<div class="pagelist">
+			<!-- loop from=$pagelist key=$key value=$value -->
+			<a{if $value.status} class="on"{/if} href="{$value.url}">{$value.title}</a>
+			<!-- /loop -->
+		</div>
+	</div>
+	<div class="comment_add">
+		<!-- if $session.user_id -->
+		<form method="post" id="comment_post">
+		<input type="hidden" name="tid" id="tid" value="{$rs.id}" />
+		<input type="hidden" id="comment_spam" value="{func spamcode}">
+		<table width="100%" cellpadding="0" cellspacing="0">
+		<tr>
+			<td class='avatar'><img src="{$session.user_rs.avatar ? $session.user_rs.avatar : 'images/user_default.png'}" align="absmiddle" alt="{$value.uid.user}" title="{$value.uid.user}"/></td>
+			<td class="body">
+				<div><textarea id="comment"></textarea></div>
+				<div><input type="submit" value=" 提交我的评论 " /><span class="note">尊重他人，文明评论。</span></div>
+			</td>
+		</tr>
+		</table>
+		</form>
+		<!-- else -->
+		<div class="not_popedom">您没有评论权限，请先
+			<a href="{url ctrl=login _back=$rs.url/}" title="登录">登录</a> 或 <a href="{url ctrl=register _back=$rs.url/}" title="注册">注册</a>
+		</div>
+		<!-- /if -->
+	</div>
+</div>

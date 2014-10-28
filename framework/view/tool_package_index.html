@@ -1,0 +1,83 @@
+<!-- include tpl=head title=合并JS或CSS文件 -->
+<script type="text/javascript">
+function get_file()
+{
+	var folder = $("#folder").val();
+	if(!folder)
+	{
+		$.dialog.alert("未指定目录");
+		return false;
+	}
+	var url = get_url('tool_package','filelist','folder='+folder);
+	//$.dialog.alert("URL:"+url);
+	//return false;
+	var rs = json_ajax(url);
+	if(rs.status != 'ok')
+	{
+		$.dialog.alert(rs.content);
+		return false;
+	}
+	$("#content").val(rs.content);
+	return true;
+}
+function check_mini()
+{
+	var content = $("#content").val();
+	if(!content)
+	{
+		$.dialog.alert('未指定要合并的文件名');
+		return false;
+	}
+	var name = $("#name").val();
+	if(!name)
+	{
+		$.dialog.alert('合并后的名称未设置');
+		return false;
+	}
+	var ext = name.substr(-3,3);
+	if(ext != 'css' && ext != '.js')
+	{
+		$.dialog.alert("命名不规范，名称需要包含后缀：.css 或是 .js");
+		return false;
+	}
+	return true;
+}
+</script>
+<div class="tips">合并JS或CSS文件，此功能仅限于合并，不支持压缩，不支持去除备注！仅仅只是合并。合并顺序从上到下</div>
+<form method="post" action="{url ctrl=tool_package func=mini /}" onsubmit="return check_mini()">
+
+<div class="table">
+	<div class="title">
+		目录：
+		<span class="note">仅限站内使用，通过指定目录获取文件列表，路径为网站根目录下的子目录，如 js/ 只支持一级目录</span>
+	</div>
+	<div class="content">
+		<input type="text" id="folder" name="folder" class="default" />
+		<input type="button" value="取得文件" onclick="get_file()" class="btn" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		要合并文件：
+		<span class="note">站外请包含 http://，站内请填写网站根目录下的文件地址，一行一个文件</span>
+	</div>
+	<div class="content">
+		<textarea name="content" id="content" class="long" style="height:180px;"></textarea>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		合并后的文件名：
+		<span class="note">请填写合并后的文件名称，只支持小写，包含 js 或是 css，示例：demo.css 或 demo.js</span>
+	</div>
+	<div class="content">
+		<input type="text" id="name" name="name" class="default" value="" />
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot -->

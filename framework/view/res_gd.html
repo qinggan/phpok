@@ -1,0 +1,45 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('res.js')}"></script>
+<div class="tips">
+	<!-- include tpl=res_btn -->
+	您当前的位置：<a href="{echo admin_url('res')}">资源管理</a>
+	&raquo; <a href="{echo admin_url('res','gd')}">GD方案</a>
+</div>
+
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th class="id">ID</th>
+	<th>标识串</th>
+	<th>宽 &#215; 高（单位px）</th>
+	<th>生成方式</th>
+	<th>编辑器支持</th>
+	<th class="status">水印</th>
+	<th class="action">操作</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td class="center">{$value.identifier}</td>
+	<td class="center">{$value.width ? $value.width : '不限'} x {$value.height ? $value.height : '不限'}</td>
+	<td class="center">{$value.cut_type ? '裁剪法' : '缩放法'}</td>
+	<td class="center">
+		<!-- if $value.editor -->
+		<input type="button" value="默认" class="btn red" disabled />
+		<!-- else -->
+		<input type="button" value="设为默认" class="btn" onclick="gd_editor('{$value.id}')" />
+		<!-- /if -->
+	</td>
+	<td class="center">{$value.mark_picture ? '有' : '无'}</td>
+	<td>
+		<a class="icon edit" href="{echo admin_url('res','gd_set')}&id={$value.id}" title="修改"></a>
+		<a class="icon delete end" onclick="gd_delete('{$value.id}','{$value.identifier}')" title="删除"></a>
+	</td>
+</tr>
+<!-- /foreach -->
+<tr>
+	<td colspan="7" height="30"><input type="button" value="添加方案" class="button" onclick="$.phpok.go('{url ctrl=res func=gd_set/}')" /></td>
+</tr>
+</table>
+</div>
+<!-- inc:foot -->

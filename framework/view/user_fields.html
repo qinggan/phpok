@@ -1,0 +1,70 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('userfields.js')}"></script>
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('user','fields')}">会员字段管理</a>
+</div>
+
+
+
+
+<!-- if $used_list -->
+	<div class="list">
+	<table width="100%" cellpadding="0" cellspacing="0">
+	<tr>
+		<th class="lft">字段名</th>
+		<th class="lft">名称</th>
+		<th class="lft">备注</th>
+		<th class="lft">排序</th>
+		<th>操作</th>
+	</tr>
+	<!-- foreach($used_list AS $key=>$value) -->
+	<tr{if $used_list_id.num%2 == ""} class="list"{/if}>
+		<td>{$value.identifier}</td>
+		<td>{$value.title}</td>
+		<td>{$value.note}</td>
+		<td>{$value.taxis}</td>
+		<td>
+			<!-- if $popedom.set -->
+			<a class="icon edit" onclick="user_field_edit('{$value.id}')" title="修改"></a>
+			<a class="icon delete end" onclick="user_field_del('{$value.id}','{$value.title}')" title="删除"></a>
+			<!-- /if -->
+		</td>
+	</tr>
+	<!-- /foreach -->
+	</table>
+	</div>
+<!-- /if -->
+<!-- if $fields_list -->
+<form method="post" id="module_add" action="{echo admin_url('user','fields_save')}">
+	<div class="tips">选择要添加的字段</div>
+	<div class="list">
+	<table width="100%" cellpadding="0" cellspacing="0">
+	<tr>
+		<th class="id">&nbsp;</th>
+		<th class="lft" style="width:130px">&nbsp;字段名</th>
+		<th class="lft" style="width:150px">&nbsp;名称</th>
+		<th class="lft">&nbsp;备注</th>
+	</tr>
+	<!-- foreach($fields_list AS $key=>$value) -->
+	<tr{if $fields_list_id.num%2 == ""} class="list"{/if} title="{$value.note}">
+		<td><input type="checkbox" value="{$value.id}" name="add_field[]" id="field_{$value.id}" /></td>
+		<td><label for="field_{$value.id}">{$value.identifier}</label></td>
+		<td><input type="text" id="field_title_{$value.id}" name="field_title_{$value.id}" value="{$value.title}" style="width:150px" /></td>
+		<td><input type="text" id="field_note_{$value.id}" name="field_note_{$value.id}" value="{$value.note}" style="width:430px" /></td>
+	</tr>
+	<!-- /foreach -->
+	</table>
+	</div>
+
+	<div class="table">
+		<div class="content">
+			<br />
+			<input type="submit" value="提 交" class="submit" />
+			<br />
+		</div>
+	</div>
+</form>
+<!-- /if -->
+
+<!-- inc:foot -->

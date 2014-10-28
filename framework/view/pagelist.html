@@ -1,0 +1,20 @@
+<!-- if $pagelist -->
+<div class="pagelist">
+	<ul>
+		<!-- $pagelist AS $key=>$value -->
+			<!-- if $value.type != 'opt' -->
+			<li><!-- if $value.url --><a href="{$value.url}"{if $value.status} class="current"{/if}>{$value.title}</a><!-- else --><a>{$value.title}</a><!-- /if --></li>
+			<!-- /if -->
+			<!-- if $value.type == 'opt' -->
+			<li>
+				<select onchange="direct('{$value.url}'+this.value)">
+					<!-- $value.title AS $k=>$v -->
+					<option value="{$v.value}"{if $v.status} selected{/if}>{$v.title}</option>
+					<!-- end -->
+				</select>
+			</li>
+			<!-- /if -->
+		<!-- end -->
+	</ul>
+</div>
+<!-- /if -->

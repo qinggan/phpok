@@ -1,0 +1,219 @@
+<!-- 文本表单项 -->
+<!-- if $Info.form_btn == 'date' -->
+<input type="text" id="{$Info.identifier}" class="inp inp_{$Info.identifier}" name="{$Info.identifier}" style="{$Info.form_style}" value="{$Info.content}" />
+<input type="button" value="日期" class="btn btn_{$Info.identifier}" onclick="laydate({elem:'#{$Info.identifier}'})" />
+<input type="button" value="清除" class="btn btn_{$Info.identifier}" onclick="$('#{$Info.identifier}').val('');" />
+<!-- elseif $Info.form_btn == "datetime" -->
+<input type="text" id="{$Info.identifier}" class="inp inp_{$Info.identifier}" name="{$Info.identifier}" style="{$Info.form_style}" value="{$Info.content}" />
+<input type="button" value="日期时间" class="btn btn_{$Info.identifier}" onclick="laydate({elem:'#{$Info.identifier}',istime:true,format: 'YYYY-MM-DD hh:mm:ss'})" />
+<input type="button" value="清除" class="btn btn_{$Info.identifier}" onclick="$('#{$Info.identifier}').val('');" />
+<!-- elseif $Info.form_btn == "file" -->
+<input type="text" id="{$Info.identifier}" class="inp inp_{$Info.identifier}" name="{$Info.identifier}" style="{$Info.form_style}" value="{$Info.content}" />
+<input type="button" value="文件" class="btn btn_{$Info.identifier}" id="_btn_{$Info.identifier}" />
+<input type="button" value="下载" class="btn btn_{$Info.identifier}" id="_btn2_{$Info.identifier}" />
+<input type="button" value="清除" class="btn btn_{$Info.identifier}" onclick="$('#{$Info.identifier}').val('');" />
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#_btn_{$Info.identifier}").click(function(){
+		var url = get_url("open","input") + "&id={$Info.identifier}";
+		$.dialog.open(url,{
+			title: "附件管理器",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			win_min:false,
+			win_max:false,
+			resize: false
+		});
+	});
+
+	$("#_btn2_{$Info.identifier}").click(function(){
+		var url = get_url("res_action","download");
+		var file = $("#{$Info.identifier}").val();
+		if(!file)
+		{
+			$.dialog.alert("没有可下载的附件");
+			return false;
+		}
+		url += "&file="+$.str.encode(file);
+		window.open(url);
+	});
+});
+</script>
+<!-- elseif $Info.form_btn == "image" -->
+<input type="text" id="{$Info.identifier}" class="inp inp_{$Info.identifier}" name="{$Info.identifier}" style="{$Info.form_style}" value="{$Info.content}" />
+<input type="button" value="选择图片" class="btn btn_{$Info.identifier}" id="_btn_{$Info.identifier}" />
+<input type="button" value="预览" class="btn btn_{$Info.identifier}" id="_btn2_{$Info.identifier}" />
+<input type="button" value="清除" class="btn btn_{$Info.identifier}" onclick="$('#{$Info.identifier}').val('');" />
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#_btn_{$Info.identifier}").click(function(){
+		var url = get_url("open","input") + "&id={$Info.identifier}&type=image";
+		$.dialog.open(url,{
+			title: "图片管理器",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			win_min:false,
+			win_max:false,
+			resize: false
+		});
+	});
+
+	$("#_btn2_{$Info.identifier}").click(function(){
+		var url = get_url("res_action","view");
+		var file = $("#{$Info.identifier}").val();
+		if(!file)
+		{
+			$.dialog.alert("没有指定图片");
+			return false;
+		}
+		url += "&file="+$.str.encode(file);
+		$.dialog.open(url,{
+			title: '预览图片',
+			lock: true,
+			width: '700px',
+			height: '70%',
+			win_min:false,
+			win_max:false,
+			resize: false,
+			ok: function(){}
+		});
+	});
+});
+</script>
+<!-- elseif $Info.form_btn == "video" -->
+<input type="text" id="{$Info.identifier}" class="inp inp_{$Info.identifier}" name="{$Info.identifier}" style="{$Info.form_style}" value="{$Info.content}" />
+<input type="button" value="选择视频" class="btn btn_{$Info.identifier}" id="_btn_{$Info.identifier}" />
+<input type="button" value="预览" class="btn btn_{$Info.identifier}" id="_btn2_{$Info.identifier}" />
+<input type="button" value="清除" class="btn btn_{$Info.identifier}" onclick="$('#{$Info.identifier}').val('');" />
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#_btn_{$Info.identifier}").click(function(){
+		var url = get_url("open","input") + "&id={$Info.identifier}&type=video";
+		$.dialog.open(url,{
+			title: "视频管理器",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			win_min:false,
+			win_max:false,
+			resize: false
+		});
+	});
+
+	$("#_btn2_{$Info.identifier}").click(function(){
+		var url = get_url("res_action","video");
+		var file = $("#{$Info.identifier}").val();
+		if(!file)
+		{
+			$.dialog.alert("没有指定视频");
+			return false;
+		}
+		url += "&file="+$.str.encode(file);
+		$.dialog.open(url,{
+			title: '试播',
+			lock: true,
+			width: '700px',
+			height: '430px',
+			win_min:false,
+			win_max:false,
+			resize: false,
+			ok: function(){}
+		});
+	});
+});
+</script>
+<!-- elseif $Info.form_btn == "url" -->
+<input type="text" id="{$Info.identifier}" class="inp inp_{$Info.identifier}" name="{$Info.identifier}" style="{$Info.form_style}" value="{$Info.content}" />
+<input type="button" value="首页" class="btn btn_{$Info.identifier}" id="_btn_{$Info.identifier}" />
+<input type="button" value="网址库" class="btn btn_{$Info.identifier}" id="_btn2_{$Info.identifier}" />
+<input type="button" value="访问" class="btn btn_{$Info.identifier}" id="_btn3_{$Info.identifier}" />
+<input type="button" value="清除" class="btn btn_{$Info.identifier}" onclick="$('#{$Info.identifier}').val('');" />
+<script type="text/javascript">
+$(document).ready(function(){
+	//点击首页时
+	$("#_btn_{$Info.identifier}").click(function(){
+		$("#{$Info.identifier}").val('index.php');
+	});
+	//点击网址库时弹出窗口进行选择
+	$("#_btn2_{$Info.identifier}").click(function(){
+		var url = get_url("open","url") + "&id={$Info.identifier}";
+		$.dialog.open(url,{
+			title: "网址管理器",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			win_min:false,
+			win_max:false,
+			resize: false
+		});
+	});
+	//访问填写的地址
+	$("#_btn3_{$Info.identifier}").click(function(){
+		var url = $("#{$Info.identifier}").val();
+		if(!url || url == "http://" || url == "https://")
+		{
+			$.dialog.alert("未指定网址");
+			return false;
+		}
+		window.open(url);
+	});
+});
+</script>
+<!-- elseif $Info.form_btn == "user" -->
+<input type="text" id="{$Info.identifier}" class="inp inp_{$Info.identifier}" name="{$Info.identifier}" style="{$Info.form_style}" value="{$Info.content}" />
+<input type="button" value="会员库" class="btn btn_{$Info.identifier}" id="_btn_{$Info.identifier}" />
+<input type="button" value="清除" class="btn btn_{$Info.identifier}" onclick="$('#{$Info.identifier}').val('');" />
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#_btn_{$Info.identifier}").click(function(){
+		var url = get_url("open","user2") + "&id={$Info.identifier}";
+		$.dialog.open(url,{
+			title: "会员列表",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			resize: false
+		});
+	});
+});
+</script>
+<!-- elseif $Info.form_btn == 'color' -->
+<input type="text" id="{$Info.identifier}" class="inp inp_{$Info.identifier} color {pickerClosable:true,pickerPosition:'right',required:false}" name="{$Info.identifier}" style="{$Info.form_style}" value="{$Info.content}" />
+<!-- else -->
+<input type="text" id="{$Info.identifier}" class="inp inp_{$Info.identifier}" name="{$Info.identifier}" style="{$Info.form_style}" value="{$Info.content}" />
+<!-- /if -->
+<!-- if $Info.ext_quick_words -->
+<script type="text/javascript">
+function _obj_quick_insert_{$Info.identifier}(val)
+{
+	var linkid = "{$Info.ext_quick_type}";
+	if(linkid == 'none')
+	{
+		$("#{$Info.identifier}").val(val);
+	}
+	else
+	{
+		var tmp = $("#{$Info.identifier}").val();
+		if(tmp)
+		{
+			tmp = tmp + "" +linkid + ""+val;
+		}
+		else
+		{
+			tmp = val;
+		}
+		$("#{$Info.identifier}").val(tmp);
+	}
+}
+</script>
+	<!-- if !$info.form_btn -->
+	<input type="button" value="清除" class="btn btn_{$Info.identifier}" onclick="$('#{$Info.identifier}').val('');" />
+	<!-- /if -->
+<div style="padding-top:5px;">
+	<!-- loop from=$Info.ext_quick_words key=$key value=$value -->
+	<!-- if $key -->，<!-- /if --><span style="cursor:pointer;" onclick="_obj_quick_insert_{$Info.identifier}('{$value}')">{$value}</span>
+	<!-- /loop -->
+</div>
+<!-- /if -->

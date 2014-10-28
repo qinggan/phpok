@@ -1,0 +1,27 @@
+<!-- php:$title = $cate_rs.title.' - '.$page_rs.title --><!-- include tpl=head title=$title menutitle=$page_rs.title -->
+<div class="body">
+	<div class="lead">
+		<a href="{$sys.url}" title="{$config.title}">首页</a>
+		→ <a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a>
+		→ <a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a>
+	</div>
+	<div class="left">
+		<!-- include tpl=block_catelist -->
+		<!-- include tpl=block_contactus -->
+	</div>
+	<div class="right">
+		<div class="pfw mbottom10">
+			<h3>{$cate_rs.title}</h3>
+			<ul class="arclist">
+				<!-- loop from=$rslist key=$key value=$value -->
+				<li{if $rslist_id.num == $rslist_id.total} class="end"{/if}>
+					<a href="{$value.url}" title="{$value.title}"><span class="date">{func date Y-m-d $value.dateline}</span>{$value.title}</a>
+				</li>
+				<!-- /loop -->
+			</ul>
+		</div>
+		<!-- include tpl=block_pagelist -->
+	</div>
+	<div class="clear"></div>
+</div>
+<!-- include tpl=foot -->

@@ -1,0 +1,12 @@
+<select name="type_id" id="type_id" onchange="update_type_id(this.value)">
+	<option value="project_me"{if $val == "project_me"} selected{/if}>项目自身信息</option>
+	<option value="project_son"{if $val == "project_son"} selected{/if}>子项信息</option>
+	<option value="project_same"{if $val == "project_same"} selected{/if}>同一级列表</option>
+	<option value="project_fields"{if $val == 'project_fields'} selected{/if}>项目字段列表</option>	
+	<option value="cate_me"{if $val == "cate_me"} selected{/if}>分类自身信息</option>
+	<option value="cate_son"{if $val == "cate_son"} selected{/if}>子分类列表</option>
+	<option value="cate_same"{if $val == "cate_same"} selected{/if}>同级分类列表</option>
+	<option value="title_me"{if $val == "title_me"} selected{/if}>主题信息</option>
+	<option value="title_son"{if $val == "title_son"} selected{/if}>子主题列表</option>
+	<option value="title_list"{if $val == "title_list"} selected{/if}>主题列表</option>
+</select>

@@ -1,0 +1,6 @@
+<!-- php:$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"prev=上一页&next=下一页&last=最后一页&home=首页&always=1") -->
+<div class="pagelist">
+	<!-- loop from=$pagelist key=$key value=$value -->
+	<a{if $value.status} class="hover"{/if} href="{$value.url}">{$value.title}</a>
+	<!-- /loop -->
+</div>

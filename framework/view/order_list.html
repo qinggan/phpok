@@ -1,0 +1,75 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{func add_js order.js}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$(".status").each(function(){
+		if($(this).text() == '未审核')
+		{
+			$(this).addClass('darkblue');
+		}
+	});
+	$(".pay_status").each(function(){
+		if($(this).text() == '未付款')
+		{
+			$(this).addClass('red');
+		}
+	});
+});
+</script>
+<div class="tips">
+	<table width="100%" cellpadding="0" cellspacing="0" height="100%">
+	<tr>
+		<td>&raquo; 订单列表</td>
+		<td>
+			<table>
+			<tr>
+				<form method="post" action="{func admin_url order}">
+				<td><input type="text" id="keywords" name="keywords" value="{$keywords}" /></td>
+				<td><input type="submit" value="搜索" class="submit" /></td>
+				</form>
+			</tr>
+			</table>
+		</td>
+		<td align="right"><div class="action"><a href="{func admin_url order set}">创建新订单</a></div></div>
+	</tr>
+	</table>
+</div>
+
+<div class="list2">
+<table width="100%" class="list2" cellpadding="0" cellspacing="0">
+<tr>
+	<th width="70px">ID</th>
+	<th class="lft">&nbsp;编号</th>
+	<th class="lft">&nbsp;金额</th>
+	<th>状态</th>
+	<th>付款</th>
+	<th width="130px">创建时间</th>
+	<th>操作</th>
+</tr>
+<!-- $rslist AS $key=>$value -->
+<tr {if $rslist_id.num % 2 == ''} class="list"{/if}>
+	<td align="center"{if $value.pay_status == 'PAID'} rowspan="2"{/if}>{$value.id}</td>
+	<td>{$value.sn}</td>
+	<td>{func price_format $value.price $value.currency_id $value.currency_id}</td>
+	<td align="center" class="status">{$value.status}</td>
+	<td align="center" class="pay_status">{$value.pay_status}</td>
+	<td align="center">{func date "Y-m-d H:i" $value.addtime}</td>
+	<td align="center"{if $value.pay_status == 'PAID'} rowspan="2"{/if}>
+		<input type="button" value="查看" onclick="order_info({$value.id},'{$value.sn}')" />
+		<input type="button" value="编辑"{if $popedom.modify} onclick="order_edit({$value.id})"{else} onclick="$.dialog.alert('您没有权限执行此操作');"{/if} class="btn" />
+		<input type="button" value="删除" onclick="order_delete({$value.id},'{$value.sn}')" class="btn" />
+	</td>
+</tr>
+<!-- if $value.pay_status == 'PAID' -->
+<tr {if $rslist_id.num % 2 == ''} class="list"{/if}>
+	<td colspan="5">
+		<!-- loop from=$value.extlist key=$k value=$v id=ext_id -->{if $ext_id.num != 1}，{/if} {$v}<!-- /loop -->
+	</td>
+</tr>
+<!-- /if -->
+<!-- end -->
+</table>
+</div>
+<!-- if $pagelist --><div class="table"><!-- include tpl=pagelist --></div><!-- /if -->
+
+<!-- inc:foot -->

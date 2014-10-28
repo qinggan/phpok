@@ -1,0 +1,61 @@
+<!-- php:$title = $rs.title.' - '.$cate_rs.title.' - '.$page_rs.title -->
+<!-- include tpl=head title=$title menutitle=$page_rs.title -->
+<!-- if $page_rs.banner -->
+<div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
+<!-- /if -->
+
+<div class="wrap mb10">
+	<div class="page_left">
+		<!-- include tpl=block_catelist -->
+		<!-- include tpl=block_contactus -->
+	</div>
+	<div class="page_right">
+		<div class="page_right_title">
+			<span class="breadcrumbs">
+				您现在的位置：
+				<a href="{$sys.url}" title="{$config.title}">首页</a>
+				<span class="arrow">&nbsp;</span> <a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a>
+				<!-- if $cate_rs.id != $page_rs.cate -->
+				<span class="arrow">&nbsp;</span> <a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a>
+				<!-- /if -->
+			</span>
+			{$page_rs.cate == $cate_rs.id ? $page_rs.title : $cate_rs.title}
+		</div>
+		<div class="detail_main">
+			<div class="softAbs">
+				<div class="soft_img"><img src="{$rs.thumb.gd.auto}" alt="{$rs.title}" width="320px" height="240px" /></div>
+				<div class="info">
+					<div class="title">{$rs.title}</div>
+					<!-- if $rs.fsize -->
+					<div class="attr"><span>软件大小：</span>{$rs.fsize}</div>
+					<!-- /if -->
+					<!-- if $rs.version -->
+					<div class="attr"><span>软件版本：</span>{$rs.version}</div>
+					<!-- /if -->
+					<!-- if $rs.platform -->
+					<div class="attr"><span>支持平台：</span>{$rs.platform}</div>
+					<!-- /if -->
+					<!-- if $rs.devlang -->
+					<div class="attr"><span>运行环境：</span>{$rs.devlang}</div>
+					<!-- /if -->
+					<!-- if $rs.copyright -->
+					<div class="attr"><span>授权方式：</span>{$rs.copyright.title}</div>
+					<!-- /if -->
+					<!-- if $rs.author -->
+					<div class="attr"><span>开发作者：</span>{$rs.author}<!-- if $rs.website --> <a href="{$rs.website}" target="_blank" class="red" title="访问{$rs.author}">访问官网</a><!-- /if --></div>
+					<!-- /if -->
+					<p>
+						<input type="button" class="downbtn" value="点击下载" onclick="$.phpok.go('{url ctrl=download id=$rs.file.id /}')" />
+					</p>
+				</div>
+				<div class="cl"></div>
+			</div>
+			<div>
+				<p class="infoTitle">软件介绍</p>
+				<div class="message" style="margin-left:24px;">{$rs.content}</div>
+			</div>
+		</div>
+	</div>
+	<div class="cl"></div>
+</div>
+<!-- include tpl=foot -->

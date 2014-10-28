@@ -1,0 +1,68 @@
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="option_list,put_order,ext_select" />
+<div class="table">
+	<div class="title">
+		单选属性列表：
+		<span class="note">请选择单选的来源</span>
+	</div>
+	<div class="content">
+		<table>
+		<tr>
+			<td><select name="option_list" id="option_list">
+					<option value="">请选择……</option>
+					<optgroup label="表单">
+						<!-- foreach($opt_list AS $key=>$value) -->
+						<option value="opt:{$value.id}"{if $rs.option_list == "opt:".$value.id} selected{/if}>{$value.title}</option>
+						<!-- /foreach -->
+					</optgroup>
+					<!-- if $project_list -->
+					<optgroup label="子项">
+						<!-- loop from=$project_list key=$key value=$value -->
+						<option value="project:{$value.id}"{if $rs.option_list == "project:".$value.id} selected{/if}>{$value.title}</option>
+						<!-- /loop -->
+					</optgroup>					
+					<!-- /if -->
+					<!-- if $title_list -->
+					<optgroup label="主题">
+						<!-- loop from=$title_list key=$key value=$value -->
+						<option value="title:{$value.id}"{if $rs.option_list == "title:".$value.id} selected{/if}>{$value.title}</option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- /if -->
+					<!-- if $catelist -->
+					<optgroup label="分类">
+						<!-- loop from=$catelist key=$key value=$value -->
+						<option value="cate:{$value.id}"{if $rs.option_list == "cate:".$value.id} selected{/if}>{$value.title}</option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- /if -->
+				</select>
+			</td>
+		</tr>
+		</table>		
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		单选内容：
+		<span class="note">仅限于单选属性列表为空的情况下有效，这里一行一个值，复杂操作请到表单选项里维护</span>
+	</div>
+	<div class="content">
+		<textarea name="ext_select" style="width:620px;height:180px;">{$rs.ext_select}</textarea>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		排列方式：
+		<span class="note"></span>
+	</div>
+	<div class="content">
+		<table>
+		<tr>
+			<td><label><input type="radio" name="put_order" value="0"{if !$rs.put_order} checked {/if} /> 横向排列</label></td>
+			<td>&nbsp; &nbsp;</td>
+			<td><label><input type="radio" name="put_order" value="1"{if $rs.put_order} checked {/if} /> 纵向排列</label></td>
+			<td></td>
+		</tr>
+		</table>
+	</div>
+</div>

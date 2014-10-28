@@ -1,0 +1,104 @@
+<!-- php:$title = ($cate_rs && $cate_rs.id != $page_rs.cate) ? '发布主题 - '.$cate_rs.title.' - '.$page_rs.title : '发布主题 - '.$page_rs.title -->
+<!-- include tpl=head title=$title menutitle=$page_rs.title -->
+<!-- if $page_rs.banner -->
+<div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
+<!-- /if -->
+<script type="text/javascript">
+$(document).ready(function(){
+	var is_vcode = '<!-- if $sys.is_vcode && function_exists("imagecreate") -->true<!-- else -->false<!-- /if -->';
+	$("#post_submit").submit(function(){
+		var title = $("#title").val();
+		if(!title)
+		{
+			alert('新贴主题不能为空');
+			return false;
+		}
+		if(is_vcode == 'true')
+		{
+			var chkcode = $("#_chkcode").val();
+			if(!chkcode)
+			{
+				alert('验证码不能为空');
+				$("#_vcode").phpok_vcode();
+				return false;
+			}
+		}
+		var content = UE.getEditor('content').getContentTxt();
+		if(!content)
+		{
+			alert('内容不能为空');
+			return false;
+		}
+		$(this).ajaxSubmit({
+			'url':api_url('post','save'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok')
+				{
+					alert('您的信息已发布，感谢您的提交');
+					$.phpok.go("{$_back}");
+				}
+				else
+				{
+					alert(rs.content);
+					$("#_vcode").phpok_vcode();
+					$("#_chkcode").val('');
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="wrap mb10">
+	<div class="bbsbox">
+		<div class="bbstitle">
+			<span class="width715">发布新帖</span>
+		</div>
+		<form method="post" id="post_submit">
+		<input type="hidden" name="id" value="{$page_rs.identifier}" />
+		<input type="hidden" name="cate_id" value="{$cate_rs.id}" />
+		<div class="publish">
+			<table>
+			<tr>
+				<td class="l_title" valign="top">主题：</td>
+				<td class="td"><input name="title" id="title" type="text" class="r_input" /></td>
+			</tr>
+			<!-- loop from=$extlist key=$key value=$value -->
+			<tr>
+				<td class="l_title" valign="top">{$value.title}：</td>
+				<td class="td">{$value.html}</td>
+			</tr>
+			<!-- /loop -->
+			<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+			<tr>
+				<td class="l_title" valign="top">验证码：</td>
+				<td class="td">
+					<input class="vcode"  type="text" name="_chkcode" id="_chkcode" />
+					<img src="" border="0" align="absmiddle" id="_vcode" class="hand" />
+					<script type="text/javascript">
+					$(document).ready(function(){
+						$("#_vcode").phpok_vcode();
+						$("#_vcode").click(function(){
+							$(this).phpok_vcode();
+						});
+					});
+					</script>
+				</td>
+			</tr>
+			<!-- /if -->
+			<tr>
+				<td>&nbsp;</td>
+				<td><input name="" type="submit" class="bbsbtn" value="发布" /> &nbsp;
+					<a href="{url ctrl=$page_rs.identifier func=$cate_rs.identifier/}" title="返回列表">返回列表</a>
+				</td>
+			</tr>
+			</table>
+		</div>
+		</form>
+	</div>
+</div>
+
+<!-- include tpl=foot -->

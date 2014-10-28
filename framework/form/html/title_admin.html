@@ -1,0 +1,29 @@
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="optlist_id,is_multiple" />
+<!-- php:$optlist_id = ($rs['optlist_id'] && is_array($rs['optlist_id'])) ? $rs['optlist_id'] : array() -->
+<div class="table">
+	<div class="title">
+		选择关联的主题项目：
+		<span class="note"></span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<!-- loop from=$opt_list key=$key value=$value -->
+			<li><label><input type="checkbox" name="optlist_id[]"{if in_array($value.id,$optlist_id)} checked{/if} value="{$value.id}" />{$value.title}</label></li>
+			<!-- /loop -->
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		主题属性：
+		<span class="note"></span>
+	</div>
+	<div class="content">
+		<ul class="layout clearfix">
+			<li><label><input type="radio" name="is_multiple"{if $rs.is_multiple} checked{/if} value="1" /> 多选</label></li>
+			<li><label><input type="radio" name="is_multiple"{if !$rs.is_multiple} checked{/if} value="0" /> 单选</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>

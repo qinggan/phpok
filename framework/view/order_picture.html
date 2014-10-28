@@ -1,0 +1,22 @@
+<!-- inc:head_open -->
+<script type="text/javascript">
+function phpok_input(id,ico)
+{
+	parent.$("#pro_thumb_{$id}").val(id);
+	parent.$("#pro_thumb_view_{$id}").html('<img src="'+ico+'" border="0" width="80px" height="80px" onclick="update_pic(\'{$id}\')" style="cursor:pointer;" />');
+	$.dialog.close();
+}
+</script>
+<ul class="piclist">
+	<!-- foreach($rslist AS $key=>$value) -->
+	<li id="attr_{$value.id}" onclick="phpok_input('{$value.id}','{$value.ico}')">
+		<div class="pic"><img src="{$value.ico}" width="80px" height="80px" border="0" alt="{$value.title}" /></div>
+	</li>
+	<!-- /foreach -->
+</ul>
+<div class="clear"></div>
+<div class="table"><!-- inc:pagelist --></div>
+
+<!-- inc:open_search_swfupload -->
+
+<!-- inc:foot_open -->

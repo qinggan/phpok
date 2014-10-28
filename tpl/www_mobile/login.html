@@ -1,0 +1,65 @@
+<!-- include tpl=head title=会员登录 -->
+<script type="text/javascript" src="{url ctrl=js func=ext js=global.www.js,jquery.form.min.js /}"></script>
+<style type="text/css">
+ul.login {list-style:none;margin:0;padding:10px}
+ul.login li {height:40px;line-height:40px;clear:both;}
+ul.login li input.input {width:180px;height:26px;line-height:26px;}
+ul.login li input.vcode {width:90px;margin:0;padding:0;height:26px;line-height:26px;}
+ul.login li .reg_title{float:left;text-align:right;width:110px;line-height:40px;}
+ul.login li.ext input[type=text]{height:26px;line-height:26px;}
+</style>
+<script type="text/javascript">
+var is_code = false;
+$(document).ready(function(){
+	$("#login_post_form").submit(function(){
+		var url = api_url('login','','_spam={$session.login_spam_code}');
+		url += "&"+$(this).formSerialize();
+		var rs = json_ajax(url);
+		if(rs.status == 'ok')
+		{
+			alert("您成功登录");
+			direct("{$sys.url}");
+		}
+		else
+		{
+			alert(rs.content);
+			return false;
+		}
+	});
+});
+</script>
+<form method="post" id="login_post_form">
+<ul class="login">
+	<li>
+		<input type="text" name="user" id="user" class="input" placeholder="会员账号" />
+	</li>
+	<li>
+		<input type="password" name="pass" id="pass" class="input" placeholder="会员密码" />
+	</li>
+	<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+	<li>
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td>验证码：</td>
+			<td><input type="text" name="_chkcode" id="_chkcode" class="vcode" /></td>
+			<td align="right" style="padding-left:10px;"><img src="" border="0" align="absmiddle" id="update_vcode" class="hand"></td>
+		</tr>
+		</table>
+	</li>
+	<script type="text/javascript">
+	is_code = true;
+	$(document).ready(function(){
+		$("#update_vcode").phpok_vcode("{func session_name}={func session_id}");
+		//更新点击时操作
+		$("#update_vcode").click(function(){
+			$(this).phpok_vcode("{func session_name}={func session_id}");
+		});
+	});
+	</script>
+	<!-- /if -->
+	<li style="padding-top:10px;">
+		<input type="submit" name="submit" id="reg_submit" class="btn-blue" value="会员登录" />
+	</li>
+</ul>
+</form>
+<!-- include tpl=foot -->

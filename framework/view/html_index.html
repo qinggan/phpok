@@ -1,0 +1,161 @@
+<!-- include tpl=head title=静态页生成 -->
+<style type="text/css">
+.bline{border-bottom:1px solid #ccc;margin-bottom:3px;padding:3px auto;}
+</style>
+<script type="text/javascript">
+function create_html(id)
+{
+	
+	if(!id || id == 'undefined')
+	{
+		var i = 0;
+		var id_array = new Array();
+		$("input[name=ids]").each(function(){
+			if($(this).attr("checked") == true || $(this).attr("checked") == "checked")
+			{
+				id_array[i] = $(this).val();
+				i++;
+			}
+		});
+		id = id_array.join(",");
+		id_array = null;
+	}
+	//通知对象
+	var $notice = $("#create_status");
+	$notice.append('<div class="bline">检测要生成的静态页信息并更新相关缓存信息…</div>');
+	if(!id || id == 'undefined')
+	{
+		$notice.append('<div class="red">未指定要生成静态页的项目！</div>');
+		return false;
+	}
+	var list = id.split(',');
+	//更新网址
+	var url = get_url('html','count','ids='+$.str.encode(id));
+	for(var i in list)
+	{
+		var t = list[i];
+		var types = $.input.checkbox_join('types_'+t);
+		if(types)
+		{
+			url += "&types_"+t+"="+$.str.encode(types);
+		}
+	}
+	$.ajax({
+		'url':url,
+		'dataType':'json',
+		'cache':false,
+		'success':function(rs){
+			if(rs.status != 'ok')
+			{
+				$notice.append('<div class="red">'+rs.content+'</div>');
+				return false;
+			}
+			else
+			{
+				$notice.append('<div class="bline">已更新缓存，检测到有：<span class="red b">'+rs.content+'</span> 个静态页要生成，请耐心等候…')
+				_create_html(0);
+			}
+		}
+	});
+}
+function _create_html(startid)
+{
+	var $notice = $("#create_status");
+	var url = get_url('html','create','startid='+startid);
+	$.ajax({
+		'url':url,
+		'dataType':'json',
+		'cache':false,
+		'success':function(rs){
+			//当更新数据超过50条时，执行清零操作
+			if($notice.find('.bline').length>50)
+			{
+				$notice.html('');
+			}
+			if(rs.status != 'ok')
+			{
+				$notice.append('<div class="red">'+rs.content+'</div>');
+				$notice.append('<div>更新停止，请检查！</div>');
+				$notice.scrollTop($notice.height());
+				return false;
+			}
+			if(!rs.content.info)
+			{
+				rs.content.info = '已成功更新HTML';
+			}
+			$notice.append('<div class="bline">'+rs.content.info+'</div>');
+			if(rs.content.startid)
+			{
+				window.setTimeout(function(){
+					_create_html(rs.content.startid);
+				}, 500);
+			}
+			else
+			{
+				$notice.append('<div>更新HTML完成！</div>');
+			}
+			$notice.scrollTop($notice.height());
+		}
+	});
+}
+</script>
+<div class="tips clearfix">
+	系统已引入静态页功能，目前仅支持生成静态页有的：网站首页，项目列表页，详细页等几乎不带交互式功能的页面
+</div>
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="w33">&nbsp;</th>
+	<th class="id">ID</th>
+	<th class="lft">项目名称</th>
+	<th class="lft">标识串</th>
+	<th class="lft">类型</th>
+	<th class="w99">操作</th>
+</tr>
+<tr>
+	<td class="center" id="title_index" data="网站首页"><input type="checkbox" value="index" name="ids" id="id_index" checked /></td>
+	<td class="center gray">&nbsp;</td>
+	<td><label for="id_index">网站首页</label></td>
+	<td><span class="gray">系统首页</span></td>
+	<td>-</td>
+	<td class="center"><input type="button" value="更新首页" class="button" onclick="create_html('index')" /></td>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center" id="title_{$value.id}" data="{$value.title}"><input type="checkbox" value="{$value.id}" name="ids" id="id_{$value.id}" checked /></td>
+	<td class="center gray">{$value.id}</td>
+	<td><label for="id_{$value.id}">{$value.space}{$value.title}<!-- if $value.nick_title --><span class="gray i"> ({$value.nick_title})</span><!-- /if --><!-- if $value.hidden --><span class="red i">（隐藏）</span><!-- /if --></label></td>
+	<td>{$value.identifier}</td>
+	<td id="types_{$value.id}">
+		<ul class="layout">
+			<!-- loop from=$types key=$k value=$v -->
+			<!-- if in_array($k,$value._type) -->
+			<li><label><input type="checkbox" value="{$k}" checked /> {$v}</label></li>
+			<!-- /if -->
+			<!-- /loop -->
+			<div class="clear"></div>
+		</ul>
+	</td>
+	<td class="center"><input type="button" value="更新HTML" class="button" onclick="create_html('{$value.id}')" /></td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="button" value="批量更新选中项" class="submit" onclick="create_html()" />
+		<div style="border:1px solid #cccccc;padding:5px;margin:10px 10px 5px 3px;">
+		<table width="100%" cellpadding="0" cellspacing="0">
+		<tr>
+			<td valign="top" width="80" style="border-right:1px solid #ccc;">
+				<div>更新进度：</div>
+				<div><input type="button" value="清空" onclick="$('#create_status').html('');" /></div>
+			</td>
+			<td><div id="create_status" style="padding-left:10px;line-height:26px;height:300px;overflow-y:scroll;"></div></td>
+		</tr>
+		</table>
+		</div>
+	</div>
+</div>
+
+<!-- include tpl=foot -->

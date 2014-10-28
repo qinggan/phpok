@@ -1,0 +1,60 @@
+<div class="address">
+	<!-- php:$address = phpok_address(true) -->
+	<!-- if $address.shipping -->
+	<div class="box_top"><div class="box_right">
+		<table>
+		<tr>
+			<td><h3>送货地址</h3></td>
+			<td class="more"></td>
+		</tr>
+		</table>
+	</div></div>
+	<div class="box_middle">
+		<table width="100%">
+		<!-- loop from=$address.shipping key=$key value=$value -->
+		<tr>
+			<td width="80px" align="right">{$value.title}：</td>
+			<td>{$value.html}</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+	<div class="box_bottom mbottom10"><div class="box_right"></div></div>
+	<!-- /if -->
+	<!-- if $address.billing -->
+	<div class="box_top"><div class="box_right">
+		<table>
+		<tr>
+			<td><h3>账单地址</h3></td>
+			<td class="more"></td>
+		</tr>
+		</table>
+	</div></div>
+	<div class="box_middle">
+		<table width="100%">
+		<!-- loop from=$address.billing key=$key value=$value -->
+		<tr>
+			<td width="80px" align="right">{$value.title}：</td>
+			<td>{$value.html}</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+	<div class="box_bottom mbottom10"><div class="box_right"></div></div>
+	<!-- /if -->
+</div>
+<div class="payment">
+	<div class="box_top"><div class="box_right">
+		<table>
+		<tr>
+			<td><h3>付款</h3></td>
+			<td class="more"></td>
+		</tr>
+		</table>
+	</div></div>
+	<div class="box_middle">
+		//
+	</div>
+	<div class="box_bottom"><div class="box_right"></div></div>
+</div>
+<div class="clear"></div>

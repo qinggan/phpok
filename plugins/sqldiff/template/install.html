@@ -1,0 +1,20 @@
+<div class="table">
+	<div class="title">
+		名称：
+		<span class="note">设置一个名称，该名称将会在导航栏左侧显示</span>
+	</div>
+	<div class="content">
+		<input type="text" id="manage_title" name="manage_title" class="default" value="{$rs.param.manage_title}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		所属父级栏目：
+		<select id="root_id" name="root_id">
+		<!-- loop from=$top_menu_list key=$key value=$value -->
+		<option value="{$value.id}"{if $value.id == $rs.param.root_id} selected{/if}>{$value.title}</option>
+		<!-- /loop -->
+		</select>
+		<span class="note"></span>
+	</div>
+</div>

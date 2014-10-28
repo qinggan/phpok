@@ -1,0 +1,36 @@
+<!-- include tpl=head title=我要付款 -->
+<div class="main">
+	<div class="pfw mbottom10">
+		<h3>我要支付</h3>
+		<div class="payment">
+			<form method="post" action="{url ctrl=payment func=submit sn=$rs.sn passwd=$rs.passwd/}" target="_blank">
+			
+			<!-- loop from=$rslist key=$key value=$value -->
+			<!-- if $value.paylist -->
+			<h4>{$value.title}</h4>
+			<ul>
+				<!-- loop from=$value.paylist key=$k value=$v -->
+				<li><label><input name="payment" type="radio" value="{$v.id}" />{$v.title}</label>
+				</li>
+				<!-- /loop -->
+			</ul>
+			<!-- /if -->
+			<!-- /loop -->
+			<div class="paymenbtn">
+				<table width="100%">
+				<tr>
+					<td><input type="submit" value="" class="paybtn" /></td>
+					<td align="right"><a href="{url ctrl=order func=info sn=$rs.sn passwd=$rs.passwd/}" title="">返回查看订单信息</a></td>
+				</tr>
+				</table>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("input[name=payment]").eq(0).attr("checked",true);
+});
+</script>
+<!-- include tpl=foot -->

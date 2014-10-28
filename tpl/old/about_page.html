@@ -1,0 +1,24 @@
+<!-- php:$title = $page_rs.title.' - '.$parent_rs.title -->
+<!-- include tpl=head title=$title menutitle=$parent_rs.title -->
+<div class="body">
+	<div class="left">
+		<div class="pfw mbottom10">
+			<h3>{$parent_rs.title}</h3>
+			<ul class="subcate">
+				<!-- sublist pid=$parent_rs.id -->
+				<!-- loop from=$list key=$key value=$value -->
+				<li{if $page_rs.id == $value.id} class="red"{/if}><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
+				<!-- /loop -->
+			</ul>
+		</div>
+		<!-- include tpl=block_contactus -->
+	</div>
+	<div class="right">
+		<div class="pfw mbottom10">
+			<h3>{$page_rs.title}</h3>
+			<div class="about">{$page_rs.content}</div>
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>
+<!-- include tpl=foot -->

@@ -1,0 +1,28 @@
+<!-- include tpl=head_open -->
+<form method="post" id="module_add" action="{echo admin_url('module','layout_save')}">
+<input type="hidden" id="id" name="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		后台字段布局：
+		<span class="note">在这里设置要显示的字段属性</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label for="layout_hits"><input type="checkbox" name="layout[]" id="layout_hits" value="hits"{if in_array("hits",$layout)} checked{/if} />查看次数</label></li>
+			<li><label for="layout_dateline"><input type="checkbox" name="layout[]" id="layout_dateline" value="dateline"{if in_array("dateline",$layout)} checked{/if} />发布时间</label></li>
+			<!-- loop from=$used_list key=$key value=$value -->
+			<li><label for="layout_{$value.identifier}"><input type="checkbox" name="layout[]" id="layout_{$value.identifier}" value="{$value.identifier}"{if in_array($value[identifier],$layout)} checked{/if} />{$value.title}</label></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<br />
+		<input type="submit" value="提 交" class="submit" />
+		<br />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot_open -->

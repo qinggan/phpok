@@ -1,0 +1,144 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function set_folder(val)
+{
+	var str = $("#folder_change").val();
+	if(!str || str == "undefined")
+	{
+		$("#folder_change").val(val);
+		return true;
+	}
+	if(str == val)
+	{
+		$("#folder_change").val("");
+		return true;
+	}
+	var list = str.split(",");
+	if($.inArray(val,list) > 0)
+	{
+		var nlist = new Array();
+		var m = 0;
+		for(var i in list)
+		{
+			if(list[i] != val)
+			{
+				nlist[m] = list[i];
+				m++;
+			}
+		}
+		str = nlist.join(",");
+		$("#folder_change").val(str);
+		return true;
+	}
+	str += ","+val;
+	$("#folder_change").val(str);
+	return true;	
+}
+function check_save()
+{
+	var title = $("#title").val();
+	if(!title)
+	{
+		$.dialog.alert("名称不能为空");
+		return false;
+	}
+	var folder = $("#folder").val();
+	if(!folder)
+	{
+		$.dialog.alert("文件夹不能为空");
+		return false;
+	}
+	var ext = $("#ext").val();
+	if(!ext)
+	{
+		$.dialog.alert("后缀不允许为空");
+		return false;
+	}
+	return true;
+}
+</script>
+<div class="tips">
+	<div class="action"><a href="{func admin_url tpl}">返回风格列表</a></div>
+	&raquo; {$id ? '编辑' : '添加新'}风格信息
+</div>
+
+<form method="post" action="{func admin_url tpl save}" onsubmit="return check_save()">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		风格方案名称：
+		<span class="note">设置风格的名称，支持各种语言，此名称仅用于管理</span>
+	</div>
+	<div class="content">
+		<input type="text" id="title" name="title" class="long" value="{$rs.title}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		风格开发人员：
+		<span class="note">设置风格的开发人员名称，团体请填写团体名称，尊重设计师及其劳动果实</span>
+	</div>
+	<div class="content">
+		<input type="text" id="author" name="author" class="default" value="{$rs.author}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		文件夹：
+		<span class="note">请风格根目录tpl/下创建相应的文件夹名称（文件夹<span class="red">名称支持字母，数字及下划线</span>）</span>
+	</div>
+	<div class="content">
+		<input type="text" id="folder" name="folder" class="default" value="{$rs.folder}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		刷新参数：
+		<span class="note">设置是否自动判断刷新和是否使用强制刷新</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label><input type="checkbox" name="refresh_auto" id="refresh_auto" {if $rs.refresh_auto} checked{/if} /> 自动刷新</label></td>
+			<td>&nbsp; &nbsp;</td>
+			<td><label><input type="checkbox" name="refresh" id="refresh" {if $rs.refresh} checked{/if} /> 强制刷新</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		目录改写：
+		<span class="note">多个目录用英文逗号隔开，点按钮添加再点一次删除（Linux下大小写有区分）</span>
+	</div>
+	<div class="content">
+		<div><input type="text" id="folder_change" name="folder_change" class="long" value="{$rs.folder_change}" /></div>
+		<div style="margin-top:5px;">
+			<input type="button" value="CSS" onclick="set_folder('css')" class="btn" />
+			<input type="button" value="Style" onclick="set_folder('style')" class="btn" />
+			<input type="button" value="Js" onclick="set_folder('js')" class="btn" />
+			<input type="button" value="JavaScript" onclick="set_folder('javascript')" class="btn" />
+			<input type="button" value="Script" onclick="set_folder('script')" class="btn" />
+			<input type="button" value="Images" onclick="set_folder('images')" class="btn" />
+			<input type="button" value="Image" onclick="set_folder('image')" class="btn" />
+			<input type="button" value="清空" onclick="$('#folder_change').val('');" class="btn" />
+		</div>
+		
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		模板后缀名：
+		<span class="note">推荐您使用php作为模板后缀名，可以防止别人下载模板，为空使用html</span>
+	</div>
+	<div class="content">
+		<input type="text" id="ext" name="ext" class="default" value="{$rs.ext}" />
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot -->

@@ -1,0 +1,76 @@
+<!-- include tpl=head title='获取验证码' -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#register_form_submit').submit(function(){
+		$(this).ajaxSubmit({
+			'url':api_url('register','code'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok')
+				{
+					$.phpok.go(rs.content);
+				}
+				else
+				{
+					if(!rs.content) rs.content = '验证失败';
+					alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+//更新会员组
+function update_group(gid)
+{
+	$.phpok.go(get_url('register','','group_id='+gid));
+}
+</script>
+<div class="login-reg">
+	<dl class="box">
+		<dt>填写邀请码，进入注册</dt>
+		<form method="post" id="register_form_submit">
+		<!-- if $grouplist -->
+		<dd>
+			<label>会员组：</label>
+			<select name="group_id" id="group_id" onchange="update_group(this.value)">
+				<!-- loop from=$grouplist key=$key value=$value -->
+				<option value="{$value.id}"{if $value.id == $group_id} selected{/if}>{$value.title}</option>
+				<!-- /loop -->
+			</select>
+			<div class="clear"></div>
+		</dd>
+		<!-- else -->
+		<input type="hidden" name="group_id" value="{$group_id}" />
+		<!-- /if -->
+		<dd>
+			<label>邀请码：</label>
+			<input class="input" type="text" name="_code" id="_code" />
+			<div class="clear"></div>
+		</dd>
+		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+		<dd>
+			<label>验证码：</label>
+			<input class="vcode"  type="text" id="_chkcode" name="_chkcode" />
+			<img src="" border="0" align="absmiddle" id="update_vcode" class="hand" />
+			<div class="clear"></div>
+		</dd>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#update_vcode").phpok_vcode();
+			//更新点击时操作
+			$("#update_vcode").click(function(){
+				$(this).phpok_vcode();
+			});
+		});
+		</script>
+		<!-- /if -->
+		<dd class="submit"><input class="button blue" type="submit" value="获取注册资格" name=""></dd>
+		</form>
+	</dl>
+	<dl class="box"><!-- include tpl=block_protocol --></dl>
+	<div class="clear"></div>
+</div>
+<!-- include tpl=foot -->

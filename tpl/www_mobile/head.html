@@ -1,0 +1,25 @@
+<!-- head title=$title css="css/style.css,css/jquery.mobile-1.4.0.min.css" js="js/mobile.js,js/global.js" close=false html5=true -->
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+</head>
+<body>
+<div data-role="page" id="page">
+<div data-role="header">
+	<h1>{$title ? $title : $config.title}</h1>
+	<!-- if $sys.ctrl != 'index' -->
+	<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-icon-back ui-btn-icon-left ui-btn-icon-notext">返回</a>
+	<!-- else -->
+	<a href="#" onclick="$.phpok.go('{$sys.url}')" class="ui-btn ui-corner-all ui-shadow ui-icon-home ui-btn-icon-left ui-btn-icon-notext">首页</a>
+	<!-- /if -->
+	<!-- if $session.user_id -->
+	<a href="#" onclick="logout()" class="ui-btn ui-corner-all ui-shadow ui-icon-action ui-btn-icon-left ui-btn-icon-notext">退出</a>
+	<!-- /if -->
+	<div data-role="navbar">
+	<ul>
+		<!-- php:$list = phpok('menu_mobile') -->
+		<!-- loop from=$list key=$key value=$value -->
+		<li><a href="{$value.url}" target="{$value.target}" title="{$value.title}"{if $menutitle == $value.title} class="ui-btn-active"{/if}>{$value.title}</a></li>
+		<!-- /loop -->
+	</ul>
+	</div>
+</div>

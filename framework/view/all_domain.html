@@ -1,0 +1,42 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{echo add_js('all.js')}"></script>
+<div class="tips">
+	您当前的位置：
+	<a href="{echo admin_url('all')}">全局维护</a>
+	&raquo; 网站域名
+</div>
+
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="id">ID</th>
+	<th>域名</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr{if $rslist_id.num%2 == ""} class="list"{/if}>
+	<td class="center">{$value.id}</td>
+	<td>
+		<!-- if $value.id == $rs.domain_id -->
+		<input type="text" id="domain_{$value.id}" value="{$value.domain}" class="default" disabled />
+		<span class="red"> 主域名，请到【<a href="{echo admin_url('all','setting')}">网站信息</a>】更换域名</span>
+		<!-- else -->
+		<input type="text" id="domain_{$value.id}" value="{$value.domain}" class="default" />
+		<input type="button" value="更新" class="btn" onclick="domain_update({$value.id})" />
+		<input type="button" value="设主域名" class="btn" onclick="domain_default({$value.id})" />
+		<input type="button" value="删除" class="btn" onclick="domain_delete({$value.id})" />
+		<!-- end -->
+	</td>
+</tr>
+<!-- /foreach -->
+<tr>
+	<td class="center">添加</td>
+	<td>
+		<input type="text" id="domain_0" class="default" />
+		<input type="button" value="添加" class="btn" onclick="domain_add()" />
+	</td>
+</tr>
+</table>
+</div>
+
+
+<!-- inc:foot -->

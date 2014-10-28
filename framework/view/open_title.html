@@ -1,0 +1,28 @@
+<!-- inc:head_open -->
+<script type="text/javascript">
+function select_input(val)
+{
+	parent.$("#{$id}").val(val);
+	$.dialog.close();
+}
+</script>
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th class="id" height="30px">ID</th>
+	<th>主题</th>
+	<th class='w60'>操作</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td style="text-align: left;height:33px;">&nbsp;{$value.title}</td>
+	<td>
+		<input type="button" value="提交" class="btn" onclick="select_input('{$value.title}')" />
+	</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<div class="table"><!-- include tpl=pagelist --></div>
+<!-- inc:foot_open -->

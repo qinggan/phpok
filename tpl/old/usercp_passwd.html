@@ -1,0 +1,55 @@
+<!-- include tpl=head title="修改个人密码 - 个人中心" -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#userinfo_password").submit(function(){
+		$(this).ajaxSubmit({
+			'type':'post',
+			'dataType':'json',
+			'url':api_url('usercp','passwd'),
+			'success':function(rs){
+				if(rs.status == 'ok')
+				{
+					alert("您的密码更新成功");
+					$.phpok.reload();
+				}
+				else
+				{
+					if(!rs.content) rs.content = '密码修改失败';
+					alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="cp">
+	<div class="left"><!-- include tpl=block_usercp --></div>
+	<div class="right">
+		<div class="pfw mbottom10">
+			<h3>密码修改</h3>
+			<form method="post" id="userinfo_password">
+			<div class="table">
+				<div class="l"><span class="red">*</span> 旧密码：</div>
+				<input type="password" name="oldpass" id="oldpass" value="" class="input" />
+			</div>
+			<div class="table">
+				<div class="l"><span class="red">*</span> 新密码：</div>
+				<input type="password" name="newpass" id="newpass" value="" class="input" />
+			</div>
+			<div class="table">
+				<div class="l"><span class="red">*</span> 确认新密码：</div>
+				<input type="password" name="chkpass" id="chkpass" value="" class="input" />
+			</div>
+
+			<div class="table">
+				<div class="l">&nbsp;</div>
+				<input type="submit" id="phpok_submit" value="提 交" class="but01">
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- include tpl=foot -->

@@ -1,0 +1,31 @@
+<!-- head css=css/tips.css title=友情提示 -->
+<!-- if !$url -->
+<style type="text/css">
+.body .tips .txt{margin-left:70px;padding-top:10px;line-height:50px;font-weight:bold;}
+</style>
+<!-- /if -->
+<body>
+<div class="body">
+	<div class="tips {$type}">
+		<!-- if($url) -->
+		<div class="title">{$tips}</div>
+		<div class="note"><a href="{$url}">系统将在 <span class="red">{$time}秒</span> 后跳转，手动跳转请点这里</a></div>
+		<!-- else -->
+		<div class="txt">{$tips}</div>
+		<!-- /if -->
+	</div>
+</div>
+<!-- if($url) -->
+	<script type="text/javascript">
+	var url = "{$url}";
+	var mtime = {$time} * 1000;
+	function refresh()
+	{
+		url = url.replace(/&amp;/g,"&");
+		window.location.href = url;
+	}
+	window.setTimeout("refresh()",mtime);
+	</script>
+<!-- /if -->
+</body>
+</html>
