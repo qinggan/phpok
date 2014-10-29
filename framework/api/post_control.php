@@ -132,8 +132,6 @@ class post_control extends phpok_control
 		if($tid)
 		{
 			$this->model('list')->update_ext($tmplist,$project_rs['module'],$tid);
-			//清空缓存
-			$this->cache->clear();
 			$this->json(P_Lang('内容编辑成功'),true);
 		}
 		$this->model('list')->save_ext($tmplist,$project_rs["module"]);
@@ -175,7 +173,6 @@ class post_control extends phpok_control
 				$this->lib('email')->send_admin($title,$content,$email);
 			}
 		}
-		$this->cache->clear();
 		$this->json(true);
 	}
 }

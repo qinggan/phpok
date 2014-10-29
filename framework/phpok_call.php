@@ -24,13 +24,6 @@ class phpok_call extends phpok_control
 		$cacheId = '';
 		$content = '';
 		if($rs && is_string($rs)) parse_str($rs,$rs);
-		//判断是否启用缓存，启用后直读缓存信息
-		if($GLOBALS['app']->cache->status())
-		{
-			$cacheId = $GLOBALS['app']->cache->key(array('id'=>$id,'rs'=>$rs),$this->site['id'],"call");
-			$content = $GLOBALS['app']->cache->read($cacheId);
-		}
-		if($content) return $content;
 		//判断是内置参数还是调用数据中心的数据
 		if(substr($id,0,1) != '_')
 		{
@@ -71,9 +64,7 @@ class phpok_call extends phpok_control
 			if(!$id || !in_array($id,$list)) return false;
 			$call_rs = array_merge($rs,array('type_id'=>$id));
 		}
-		$content = $this->load_call($call_rs);
-		if($content && $cacheId) $GLOBALS['app']->cache->write($cacheId,$content);
-		return $content;
+		return $this->load_call($call_rs);
 	}
 
 	function load_call($rs)

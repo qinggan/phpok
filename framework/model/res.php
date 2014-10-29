@@ -150,7 +150,7 @@ class res_model extends phpok_model
 
 	function delete_gd_id($id,$root_dir="/")
 	{
-		phpok_delete_cache("res");
+		
 		$sql = "SELECT * FROM ".$this->db->prefix."res_ext WHERE gd_id='".$id."'";
 		$rslist = $this->db->get_all($sql);
 		if($rslist)
@@ -192,7 +192,7 @@ class res_model extends phpok_model
 	# 删除资源
 	function delete($id)
 	{
-		phpok_delete_cache("res");
+		
 		$rs = $this->get_one($id);
 		if(!$rs) return false;
 		if(file_exists($rs["filename"]) && is_file($rs["filename"]))
@@ -238,7 +238,7 @@ class res_model extends phpok_model
 	# 删除扩展图片方案
 	function ext_delete($id)
 	{
-		phpok_delete_cache("res");
+		
 		$sql = "SELECT * FROM ".$this->db->prefix."res_ext WHERE res_id='".$id."'";
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist) return false;
@@ -290,7 +290,7 @@ class res_model extends phpok_model
 	function cate_default_set($id)
 	{
 		if(!$id) return false;
-		phpok_delete_cache("res");
+		
 		$sql = "UPDATE ".$this->db->prefix."res_cate SET is_default='0' WHERE is_default='1'";
 		$this->db->query($sql);
 		$sql = "UPDATE ".$this->db->prefix."res_cate SET is_default='1' WHERE id='".$id."'";
@@ -302,7 +302,7 @@ class res_model extends phpok_model
 	function cate_save($data,$id=0)
 	{
 		if(!$data || !is_array($data)) return false;
-		phpok_delete_cache("res");
+		
 		if($id)
 		{
 			return $this->db->update_array($data,"res_cate",array("id"=>$id));
@@ -316,7 +316,7 @@ class res_model extends phpok_model
 	# 删除图片附件分类
 	function cate_delete($id,$default_id=0)
 	{
-		phpok_delete_cache("res");
+		
 		$sql = "DELETE FROM ".$this->db->prefix."res_cate WHERE id='".$id."'";
 		$this->db->query($sql);
 		if($default_id)
@@ -331,7 +331,7 @@ class res_model extends phpok_model
 	function update_title($title,$id)
 	{
 		if(!$id || !$title) return false;
-		phpok_delete_cache("res");
+		
 		$sql = "UPDATE ".$this->db->prefix."res SET title='".$title."' WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
@@ -340,7 +340,6 @@ class res_model extends phpok_model
 	function update_note($note,$id)
 	{
 		if(!$id) return false;
-		phpok_delete_cache("res");
 		$sql = "UPDATE ".$this->db->prefix."res SET note='".$note."' WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
@@ -361,7 +360,6 @@ class res_model extends phpok_model
 	function pl_delete($id)
 	{
 		if(!$id) return false;
-		phpok_delete_cache("res");
 		$sql = "DELETE FROM ".$this->db->prefix."res WHERE id IN(".$id.")";
 		$this->db->query($sql);
 		$sql = "DELETE FROM ".$this->db->prefix."res_ext WHERE res_id IN(".$id.") ";

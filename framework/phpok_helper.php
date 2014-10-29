@@ -678,16 +678,6 @@ function phpok_res_type($type="")
 	}
 }
 
-//删除指定的缓存文件
-function phpok_delete_cache($ext="")
-{
-	$GLOBALS['app']->cache->status(true);
-	$GLOBALS['app']->cache->delete_keywords(0,$ext);
-	return true;
-}
-
-
-
 //PHPOK会员登录
 function phpok_user_login($id,$pass="")
 {
@@ -752,15 +742,7 @@ function phpok_ext_list($mid,$tid=0)
 //取得表单选项信息
 function phpok_opt($id,$ext="")
 {
-	global $app;
-	$GLOBALS['app']->model("opt");
-	$cacheId = $GLOBALS['app']->cache->key($id."_".$ext,$GLOBALS['app']->config_site["id"],"opt");
-	$content = $GLOBALS['app']->cache->read($cacheId);
-	if($content)
-	{
-		return $content;
-	}
-	$group_rs = $GLOBALS['app']->opt_model->group_one($id);
+	$group_rs = $GLOBALS['app']->model("opt")->group_one($id);
 	if(!$group_rs)
 	{
 		return false;
@@ -769,7 +751,7 @@ function phpok_opt($id,$ext="")
 	if($ext)
 	{
 		$ext_condition = "group_id='".$group_rs["id"]."' AND val='".$ext."'";
-		$ext_rs = $GLOBALS['app']->opt_model->opt_one_condition($ext_condition);
+		$ext_rs = $GLOBALS['app']->model("opt")->opt_one_condition($ext_condition);
 		if($ext_rs)
 		{
 			$condition .= " AND parent_id='".$ext_rs["id"]."'";
@@ -779,9 +761,8 @@ function phpok_opt($id,$ext="")
 	{
 		$condition .= " AND parent_id='0'";
 	}
-	$all = $GLOBALS['app']->opt_model->opt_all($condition);
+	$all = $GLOBALS['app']->model("opt")->opt_all($condition);
 	if(!$all) return false;
-	$GLOBALS['app']->cache->write($cacheId,$all);
 	return $all;
 }
 

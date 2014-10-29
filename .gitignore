@@ -1,1 +1,10 @@
 .svn
+tpl_www
+cache
+session
+tpl_admin
+tpl_html
+/data/cache
+/data/tpl_admin
+/data/session
+/data/tpl_www

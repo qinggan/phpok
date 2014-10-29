@@ -169,7 +169,6 @@ class all_control extends phpok_control
 		$array['html_content_type'] = $this->get('html_content_type');
 		$array['biz_etpl'] = $this->get('biz_etpl');
 		$this->model('site')->save($array,$_SESSION['admin_site_id']);
-		phpok_delete_cache('site');
 		//判断是否要更新伪静态页
 		$url_type = $this->get('url_type');
 		if($url_type == 'rewrite')

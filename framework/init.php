@@ -226,14 +226,21 @@ run_memory();
 
 function debug_time()
 {
-	global $app;
-	$app->lib("file");
-	$count = $app->file_lib->read_count;
-	$count += $app->cache->count();
+	//global $app;
+	//$app->lib("file");
+	$count = $GLOBALS['app']->lib('file')->read_count;
 	$time = run_time(true);
 	$memory = run_memory(true);
-	$string = "运行 ".$time." 秒，用内存 ".$memory."，数据库 ".$app->db->query_count." 次，用时 ".$app->db->query_times." 秒";
-	$string.= "，文件读写 ".$count." 次 ";
+	$sql_db_count = $GLOBALS['app']->db->conn_count();
+	$sql_db_time = $GLOBALS['app']->db->conn_times();
+	$sql_cache_count = $GLOBALS['app']->db->cache_count();
+	$sql_cache_time = $GLOBALS['app']->db->cache_time();
+	$string  = "运行 ".$time." 秒，数据库执行 ".$sql_db_count." 次，耗时 ".$sql_db_time." 秒";
+	$string .= "，缓存执行 ".$sql_cache_count." 次，耗时 ".$sql_cache_time." 秒";
+	if($count > 0)
+	{
+		$string .= "，文件执行 ".$count." 次";
+	}
 	return $string;
 }
 
@@ -457,9 +464,6 @@ class _init_phpok
 				}
 			}
 		}
-		$cacheId = $this->cache->key($domain,"","site");
-		if($this->is_mobile) $cacheId = $this->cache->key($domain,"","site,mobile");
-		$site_rs = $this->cache->read($cacheId);
 		if(!$site_rs)
 		{
 			$site_rs = $this->model("site")->get_one_from_domain($domain);
@@ -468,40 +472,38 @@ class _init_phpok
 			$ext_list = $this->site_model->site_config($site_rs["id"]);
 			if($ext_list) $site_rs = array_merge($ext_list,$site_rs);
 			//读取模板扩展
-			if($site_rs["tpl_id"])
+		}
+		if($site_rs["tpl_id"])
+		{
+			$rs = $this->model("tpl")->get_one($site_rs["tpl_id"]);
+			if($rs)
 			{
-				$this->model("tpl");
-				$rs = $this->tpl_model->get_one($site_rs["tpl_id"]);
-				if($rs)
+				$tpl_rs = array();
+				$tpl_rs["id"] = $rs["id"];
+				$tpl_rs["dir_tpl"] = $rs["folder"] ? "tpl/".$rs["folder"]."/" : "tpl/www/";
+				$tpl_rs["dir_cache"] = $this->dir_root."data/tpl_www/";
+				$tpl_rs["dir_php"] = $this->dir_root;
+				$tpl_rs["dir_root"] = $this->dir_root;
+				if($rs["folder_change"])
 				{
-					$tpl_rs = array();
-					$tpl_rs["id"] = $rs["id"];
-					$tpl_rs["dir_tpl"] = $rs["folder"] ? "tpl/".$rs["folder"]."/" : "tpl/www/";
-					$tpl_rs["dir_cache"] = $this->dir_root."data/tpl_www/";
-					$tpl_rs["dir_php"] = $this->dir_root;
-					$tpl_rs["dir_root"] = $this->dir_root;
-					if($rs["folder_change"])
-					{
-						$tpl_rs["path_change"] = $rs["folder_change"];
-					}
-					$tpl_rs["refresh_auto"] = $rs["refresh_auto"] ? true : false;
-					$tpl_rs["refresh"] = $rs["refresh"] ? true : false;
-					$tpl_rs["tpl_ext"] = $rs["ext"] ? $rs["ext"] : "html";
-					//针对手机版的配置
-					if($this->is_mobile)
-					{
-						$tpl_rs["id"] = $rs["id"]."_mobile";
-						$tplfolder = $rs["folder"] ? $rs["folder"]."_mobile" : "www_mobile";
-						if(!file_exists($this->dir_root."tpl/".$tplfolder))
-						{
-							$tplfolder = $rs["folder"] ? $rs["folder"] : "www";
-						}
-						$tpl_rs["dir_tpl"] = "tpl/".$tplfolder;
-					}
-					$site_rs["tpl_id"] = $tpl_rs;
+					$tpl_rs["path_change"] = $rs["folder_change"];
 				}
+				$tpl_rs["refresh_auto"] = $rs["refresh_auto"] ? true : false;
+				$tpl_rs["refresh"] = $rs["refresh"] ? true : false;
+				$tpl_rs["tpl_ext"] = $rs["ext"] ? $rs["ext"] : "html";
+				//针对手机版的配置
+				if($this->is_mobile)
+				{
+					$tpl_rs["id"] = $rs["id"]."_mobile";
+					$tplfolder = $rs["folder"] ? $rs["folder"]."_mobile" : "www_mobile";
+					if(!file_exists($this->dir_root."tpl/".$tplfolder))
+					{
+						$tplfolder = $rs["folder"] ? $rs["folder"] : "www";
+					}
+					$tpl_rs["dir_tpl"] = "tpl/".$tplfolder;
+				}
+				$site_rs["tpl_id"] = $tpl_rs;
 			}
-			if($cacheId) $this->cache->write($cacheId,$site_rs);
 		}
 		$this->site = $site_rs;
 	}
@@ -716,11 +718,6 @@ class _init_phpok
 			if($func) $url .= $this->config["func_id"]."=".$func."&";
 			if($ext) $url .= $ext;
 			if(substr($url,-1) == "&" || substr($url,-1) == "?") $url = substr($url,0,-1);
-			if($this->config['xdebug'])
-			{
-				$url .= "&XDEBUG_PROFILE";
-			}
-			//$url .= "&_noCache=0.".rand(10000,999999);
 			return $url;
 		}
 		$url = $this->url;
@@ -749,10 +746,6 @@ class _init_phpok
 				if(substr($ext,0,1) == "&") $ext = substr($ext,1);
 				$url .= "&".$ext;
 			}
-			if($this->config['xdebug'])
-			{
-				$url .= "&XDEBUG_PROFILE";
-			}
 			return $url;
 		}
 		$url .= "?id=".$ctrl;
@@ -764,10 +757,6 @@ class _init_phpok
 		{
 			if(substr($ext,0,1) == "&") $ext = substr($ext,1);
 			$url .= "&".$ext;
-		}
-		if($this->config['xdebug'])
-		{
-			$url .= "&XDEBUG_PROFILE";
 		}
 		return $url;
 	}

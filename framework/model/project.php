@@ -194,7 +194,6 @@ class project_model extends phpok_model
 	function save($data,$id=0)
 	{
 		if(!$data || !is_array($data)) return false;
-		phpok_delete_cache("project");
 		if(!$id)
 		{
 			return $this->db->insert_array($data,"project");
@@ -209,7 +208,6 @@ class project_model extends phpok_model
 	# 设置状态
 	function status($id,$status=0)
 	{
-		phpok_delete_cache("project");
 		$sql = "UPDATE ".$this->db->prefix."project SET status='".$status."' WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
@@ -249,8 +247,6 @@ class project_model extends phpok_model
 		//删除项目信息
 		$sql = "DELETE FROM ".$this->db->prefix."project WHERE id='".$id."'";
 		$this->db->query($sql);
-		//删除缓存信息
-		phpok_delete_cache("project");
 	}
 
 	//检测模块是否被项目调用
@@ -268,7 +264,6 @@ class project_model extends phpok_model
 
 	function update_taxis($id,$taxis="0")
 	{
-		phpok_delete_cache("project");
 		$sql = "UPDATE ".$this->db->prefix."project SET taxis='".$taxis."' WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}

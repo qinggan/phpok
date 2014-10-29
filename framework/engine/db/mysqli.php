@@ -1,238 +1,399 @@
 <?php
-#==================================================================================================
-#	Filename: {phpok}/engine/db/db_mysqli.php
-#	Note	: 连接数据库类，MySQLi版
-#	Version : 4.0
-#	Author  : qinggan
-#	Update  : 2013年5月21日
-#==================================================================================================
-
-#[类库sql]
+/*****************************************************************************************
+	文件： {phpok}/engine/db/mysqli.php
+	备注： MySQL与Cache类集成，后续phpok内核文件之一
+	版本： 4.x
+	网站： www.phpok.com
+	作者： qinggan <qinggan@188.com>
+	时间： 2014年10月29日 09时49分
+*****************************************************************************************/
 class db_mysqli
 {
-	var $query_count = 0;
-	var $host;
-	var $user;
-	var $pass;
-	var $data;
-	var $conn;
-	var $result;
-	var $prefix = "qinggan_";
-	//返回结果集类型，默认是数字+字符
-	var $rs_type = MYSQLI_ASSOC;
-	var $query_times = 0;#[查询时间]
-	var $conn_times = 0;#[连接数据库时间]
-	var $unbuffered = false;
-	//定义查询列表
-	var $querylist;
-	var $debug = false;
+	//统计执行次数及时间
+	public $stat_info;
+	//数据表前缀，很多地方上被直接调用，用public
+	public $prefix = 'qinggan_';
+	//是否启用调试
+	public $debug = false;
+	private $config_db = array('host'=>'localhost','user'=>'root','pass'=>'','data'=>'','port'=>3306);
+	private $config_cache = array('type'=>'file','folder'=>'cache/','time'=>3600,'server'=>'localhost','port'=>11211);
+	private $conn;
+	private $type = MYSQLI_ASSOC;
+	private $query; //执行对象
+	private $cache;//缓存对象
+	private $cache_keyid;
+	private $cache_prikey = 'phpok_prikey';//缓存的主字段
+	private $time;
 
-	#[构造函数]
-	function __construct($config=array())
+	public function __construct($config=array())
 	{
-		$this->host = $config['host'] ? $config['host'] : 'localhost';
-		$this->port = $config['port'] ? $config['port'] : '3306';
-		$this->user = $config['user'] ? $config['user'] : 'root';
-		$this->pass = $config['pass'] ? $config['pass'] : '';
-		$this->data = $config['data'] ? $config['data'] : '';
+		$this->time = time();
+		//初始化调试
 		$this->debug = $config["debug"] ? $config["debug"] : false;
+		//初始化数据表前缀
 		$this->prefix = $config['prefix'] ? $config['prefix'] : 'qinggan_';
-		if($this->data)
-		{
-			$ifconnect = $this->connect($this->data);
-			if(!$ifconnect)
-			{
-				$this->conn = false;
-				return false;
-			}
-		}
+		//初始化统计计数
+		$this->_stat_info();
+		//初始化数据库配置
+		$this->_config_db($config);
+		//初始化缓存引挈
+		$this->_config_cache($config);
 		return true;
 	}
 
-	#[兼容PHP4]
-	function db_mysqli($config=array())
+	//连接数据库
+	public function connect_db($data='')
 	{
-		return $this->__construct($config);
+		//增加计时器
+		$this->timer('sql');
+		if(!$data)
+		{
+			$data = $this->config_db['data'];
+		}
+		$host = $this->config_db['host'];
+		$user = $this->config_db['user'];
+		$pass = $this->config_db['pass'];
+		$port = $this->config_db['port'];
+		$socket = $this->config_db['socket'];
+		$this->conn = new mysqli($host,$user,$pass,'',$port,$socket);
+		if($this->conn->connect_error)
+		{
+			$this->debug('数据库连接失败，错误ID：'.$this->conn->connect_errno.'，错误信息：'.$this->conn->connect_error);
+		}
+		if($this->conn->error)
+		{
+			$this->debug();
+		}
+		if(!$this->conn || !is_object($this->conn))
+		{
+			$this->debug('数据库连接请求失败');
+		}
+		$this->conn->query("SET NAMES 'utf8'");
+		$this->conn->query("SET sql_mode=''");
+		$this->timer('sql');
+		$this->select_db($data);
+		//$this->counter('sql',2); //计数器;
+		return true;
 	}
-
-	#[连接数据库]
-	function connect($database="")
+	//更换数据库选择
+	public function select_db($data="")
 	{
-		$start_time = $this->time_used();
-		if(!$this->port) $this->port = "3306";
-		$this->conn = @mysqli_connect($this->host,$this->user,$this->pass,"",$this->port) or false;
-		if(!$this->conn)
+		$this->timer('sql');
+		$this->conn->select_db($data);
+		if($this->conn->error)
 		{
-			return false;
+			$this->debug();
 		}
-		$version = $this->get_version();
-		if($version>"4.1")
-		{
-			mysqli_query($this->conn,"SET NAMES 'utf8'");
-			if($version>"5.0.1")
-			{
-				mysqli_query($this->conn,"SET sql_mode=''");
-			}
-		}
-		$end_time = $this->time_used();
-		$this->conn_times += round($end_time - $start_time,5);#[连接数据库的时间]
-		$ifok = $this->select_db($database);
-		return $ifok ? true : false;
-	}
-
-	function select_db($data="")
-	{
-		$database = $data ? $data : $this->data;
-		if(!$database)
-		{
-			return false;
-		}
-		$this->data = $database;
-		$start_time = $this->time_used();
-		$ifok = mysqli_select_db($this->conn,$database);
-		if(!$ifok)
-		{
-			return false;
-		}
-		$end_time = $this->time_used();
-		$this->conn_times += round($end_time - $start_time,5);#[连接数据库的时间]
+		$this->timer('sql');
 		return true;
 	}
 
-	#[关闭数据库连接，当您使用持续连接时该功能失效]
-	function close()
+	//关闭数据库连接
+	public function __destruct()
 	{
-		if(is_resource($this->conn))
-		{
-			return mysqli_close($this->conn);
-		}
-		else
+		//关闭数据库连接
+		$this->_cache_keysave();
+		$this->conn->close();
+	}
+
+	//连接缓存
+	public function connect_cache()
+	{
+		if(!$this->config_cache['status'])
 		{
 			return true;
 		}
+		if($this->config_cache['type'] == 'memcache')
+		{
+			$this->timer('memcache');
+			$this->cache = new Memcache;
+			if(!$this->cache->connect($this->config_cache['server'], $this->config_cache['port']))
+			{
+				return false;
+			}
+			$this->timer('memcache');
+		}
+		else
+		{
+			$this->cache = new stdClass;
+		}
+		$this->cache->phpok_keylist = $this->cache_get($this->cache_prikey);
+		return true;
 	}
 
-	function __destruct()
+	//定义基本的变量信息
+	public function set($name,$value)
 	{
-		return $this->close();
-	}
-
-	function set($name,$value)
-	{
-		if($name == "rs_type")
+		if($name == "rs_type" || name == 'type')
 		{
 			$value = strtolower($value) == "num" ? MYSQLI_NUM : MYSQLI_ASSOC;
+			$this->type = $value;
 		}
-		$this->$name = $value;
+		else
+		{
+			$this->$name = $value;
+		}
 	}
 
-	function query($sql)
+	public function query($sql)
 	{
-		if(!is_resource($this->conn))
+		if(!$this->conn || !is_object($this->conn))
 		{
 			$this->connect();
 		}
 		else
 		{
-			 if(!mysql_ping($this->conn))
+			if(!$this->conn->ping())
 			{
-				 $this->close();
-				 $this->connect();
+				$this->conn->close();
+				$this->connect();
 			}
 		}
-		if($this->debug)
+		$this->timer('sql');
+		$this->query = $this->conn->query($sql);
+		$this->counter('sql');
+		//清除缓存
+		if(!preg_match('/^SELECT/isU',$sql))
 		{
-			$sqlkey = md5($sql);
-			if($this->querylist)
-			{
-				$qlist = array_keys($this->querylist);
-				if(in_array($sqlkey,$qlist))
-				{
-					$count = $this->querylist[$sqlkey]["count"] + 1;
-					$this->querylist[$sqlkey] = array("sql"=>$sql,"count"=>$count);
-				}else{
-					$this->querylist[$sqlkey] = array("sql"=>$sql,"count"=>1);
-				}
-			}
-			else{
-				$this->querylist[$sqlkey] = array("sql"=>$sql,"count"=>1);
-			}
+			$this->_cache_clear($sql);
 		}
-		$start_time = $this->time_used();
-		$func = $this->unbuffered && function_exists("mysqli_multi_query") ? "mysqli_multi_query" : "mysqli_query";
-		$this->result = @$func($this->conn,$sql);
-		$this->query_count++;
-		$end_time = $this->time_used();
-		$this->query_times += round($end_time - $start_time,5);#[查询时间]
-		if(!$this->result)
+		$this->timer('sql');
+		if(!$this->query)
 		{
 			return false;
 		}
-		return $this->result;
+		return $this->query;
 	}
 
-	function get_all($sql="",$primary="")
+	//生成cache_id;
+	public function cache_id($sql)
 	{
-		$result = $sql ? $this->query($sql) : $this->result;
-		if(!$result)
+		$keyid = 'phpok_'.md5($sql);
+		preg_match_all('/(FROM|JOIN|UPDATE|INTO)\s+([a-zA-Z0-9\_\.]+)(\s|\()+/isU',$sql,$list);
+		$tbl = $list[2] ? $list[2] : array();
+		$this->cache->phpok_keylist[$keyid] = $tbl;
+		return $keyid;
+	}
+
+	//读缓存信息
+	public function cache_get($id)
+	{
+		if(!$this->config_cache['status'])
 		{
 			return false;
 		}
-		$start_time = $this->time_used();
-		$rs = array();
-		$is_rs = false;
-		while($rows = mysqli_fetch_array($result,$this->rs_type))
+		if($this->config_cache['type'] == 'memcache')
 		{
-			if($primary && $rows[$primary])
+			$this->counter('memcache');
+			$this->timer('memcache');
+			$info = $this->cache->get($id);
+			$this->timer('memcache');
+			if(!$info)
 			{
-				$rs[$rows[$primary]] = $rows;
+				return false;
 			}
-			else
-			{
-				$rs[] = $rows;
-			}
-			$is_rs = true;
-		}
-		$end_time = $this->time_used();
-		$this->query_times += round($end_time - $start_time,5);#[查询时间]
-		return ($is_rs ? $rs : false);
-	}
-
-	function get_one($sql="")
-	{
-		$start_time = $this->time_used();
-		$result = $sql ? $this->query($sql) : $this->result;
-		if(!$result)
-		{
-			return false;
-		}
-		$rows = mysqli_fetch_array($result,$this->rs_type);
-		$end_time = $this->time_used();
-		$this->query_times += round($end_time - $start_time,5);#[查询时间]
-		return $rows;
-	}
-
-	function insert_id($sql="")
-	{
-		if($sql)
-		{
-			$rs = $this->get_one($sql);
-			return $rs;
 		}
 		else
 		{
-			return mysqli_insert_id($this->conn);
+			if(!is_file($this->config_cache['folder'].$id.'.php'))
+			{
+				return false;
+			}
+			//判断最后修改时间，超时直接返回
+			if((filemtime($this->config_cache['folder'].$id.'.php') + $this->config_cache['time']) < $this->time)
+			{
+				return false;
+			}
+			$this->timer('file');
+			$this->counter('file');
+			$info = file_get_contents($this->config_cache['folder'].$id.'.php');
+			$this->timer('file');
+			if(!$info)
+			{
+				return false;
+			}
+			$info = substr($info,15);
 		}
+		return unserialize($info);
 	}
 
-	function insert($sql)
+	public function cache_clear()
 	{
-		$this->result = $this->query($sql);
-		$id = $this->insert_id();
-		return $id;
+		if(!$this->config_cache['status'])
+		{
+			return false;
+		}
+		if($this->config_cache['type'] == 'memcache')
+		{
+			$this->timer('memcache');
+			$this->counter('memcache');
+			$this->cache->flush();
+			$this->timer('memcache');
+		}
+		else
+		{
+			$this->timer('file');
+			$this->counter('file');
+			$handle = opendir($this->config_cache['folder']);
+			$array = array();
+			while(false !== ($myfile = readdir($handle)))
+			{
+				if($myfile != "." && $myfile != ".." && is_file($this->config_cache['folder'].$myfile))
+				{
+					@unlink($this->config_cache['folder'].$myfile);
+				}
+			}
+			closedir($handle);
+			$this->timer('file');
+		}
+		return true;
 	}
 
-	function all_array($table,$condition="",$orderby="")
+	//存储缓存
+	public function cache_save($id='',$data='')
+	{
+		if(!$this->config_cache['status'] || !$id)
+		{
+			return false;
+		}
+		if(!$data)
+		{
+			$data = array("__phpok_empty"=>1);
+		}
+		$data = serialize($data);
+		if($this->config_cache['type'] == 'memcache')
+		{
+			$this->timer('memcache');
+			$this->counter('memcache');
+			$this->cache->set($id,$data,MEMCACHE_COMPRESSED,$this->config_cache['time']);
+			$this->timer('memcache');
+		}
+		else
+		{
+			$this->timer('file');
+			$this->counter('file');
+			file_put_contents($this->config_cache['folder'].$id.'.php','<?php exit();?>'.$data);
+			$this->timer('file');
+		}
+		return true;
+	}
+
+	//删除缓存
+	public function cache_delete($id)
+	{
+		if(!$this->config_cache['status'] || !$id)
+		{
+			return false;
+		}
+		if($this->config_cache['type'] == 'memcache')
+		{
+			$this->timer('memcache');
+			$this->counter('memcache');
+			$this->cache->delete($id);
+			$this->timer('memcache');
+			return true;
+		}
+		//删除文件
+		$this->timer('file');
+		$this->counter('file');
+		@unlink($this->config_cache['folder'].$id.'.php');
+		$this->timer('file');
+		return true;
+	}
+	
+	public function get_all($sql,$primary="")
+	{
+		//如果存在缓存，优先读缓存
+		$keyid = $this->cache_id($sql);
+		$rs = $this->cache_get($keyid);
+		if($rs)
+		{
+			if($rs['__phpok_empty'])
+			{
+				return false;
+			}
+			if(!$primary)
+			{
+				return $rs;
+			}
+			$list = false;
+			foreach($rs as $key=>$value)
+			{
+				$list[$value[$primary]] = $value;
+			}
+			return $list;
+		}
+		$this->query($sql);
+		if(!$this->query || !is_object($this->query))
+		{
+			return false;
+		}
+		$this->timer('sql');
+		$rs = false;
+		while($rows = $this->query->fetch_array($this->type))
+		{
+			$rs[] = $rows;
+		}
+		$this->timer('sql');
+		$this->cache_save($keyid,$rs);
+		if($primary && $rs)
+		{
+			$list = array();
+			foreach($rs as $key=>$value)
+			{
+				$list[$value[$primary]] = $value;
+			}
+			return $list;
+		}
+		return $rs;
+	}
+
+	//取得单独数据
+	public function get_one($sql="")
+	{
+		if(!$sql)
+		{
+			return false;
+		}
+		$keyid = $this->cache_id($sql);
+		$rs = $this->cache_get($keyid);
+		if($rs)
+		{
+			if($rs['__phpok_empty'])
+			{
+				return false;
+			}
+			return $rs;
+		}
+		$this->query($sql);
+		if(!$this->query || !is_object($this->query))
+		{
+			return false;
+		}
+		$this->timer('sql');
+		$rs = $this->query->fetch_array($this->type);
+		if($rs)
+		{
+			$this->cache_save($keyid,$rs);
+		}
+		$this->timer('sql');
+		return $rs;
+	}
+
+	//返回最后插入的ID
+	public function insert_id()
+	{
+		return $this->conn->insert_id;
+	}
+
+	//执行写入SQL
+	public function insert($sql)
+	{
+		$this->query($sql);
+		return $this->insert_id();
+	}
+
+	public function all_array($table,$condition="",$orderby="")
 	{
 		if(!$table)
 		{
@@ -253,11 +414,10 @@ class db_mysqli
 		{
 			$sql .= " ORDER BY ".$orderby;
 		}
-		$rslist = $this->get_all($sql);
-		return $rslist;
+		return $this->get_all($sql);
 	}
 
-	function one_array($table,$condition="")
+	public function one_array($table,$condition="")
 	{
 		if(!$table)
 		{
@@ -274,12 +434,11 @@ class db_mysqli
 			}
 			$sql .= " WHERE ".implode(" AND ",$sql_fields);
 		}
-		$rslist = $this->get_one($sql);
-		return $rslist;
+		return $this->get_one($sql);
 	}
 
 	//将数组写入数据中
-	function insert_array($data,$table,$insert_type="insert")
+	public function insert_array($data,$table,$insert_type="insert")
 	{
 		if(!$table || !is_array($data) || !$data)
 		{
@@ -306,7 +465,7 @@ class db_mysqli
 	}
 
 	//更新数据
-	function update_array($data,$table,$condition)
+	public function update_array($data,$table,$condition)
 	{
 		if(!$data || !$table || !$condition || !is_array($data) || !is_array($condition))
 		{
@@ -329,32 +488,31 @@ class db_mysqli
 		return $this->query($sql);
 	}
 
-	function count($sql="")
+	public function count($sql="")
 	{
 		if($sql)
 		{
-			$this->rs_type = MYSQLI_NUM;
-			$this->query($sql);
-			$rs = $this->get_one();
-			$this->rs_type = MYSQLI_ASSOC;
+			$this->type = MYSQLI_NUM;
+			$rs = $this->get_one($sql);
+			$this->type = MYSQLI_ASSOC;
 			return $rs[0];
 		}
 		else
 		{
-			return mysqli_num_rows($this->result);
+			return $this->query->num_rows;
 		}
 	}
 
-	function num_fields($sql="")
+	public function num_fields($sql="")
 	{
 		if($sql)
 		{
 			$this->query($sql);
 		}
-		return mysqli_num_fields($this->result);
+		return $this->query->field_count;
 	}
 
-	function list_fields($table)
+	public function list_fields($table)
 	{
 		$rs = $this->get_all("SHOW COLUMNS FROM ".$table);
 		if(!$rs)
@@ -369,7 +527,7 @@ class db_mysqli
 	}
 
 	//取得明细的字段管理
-	function list_fields_more($tbl)
+	public function list_fields_more($tbl)
 	{
 		$rs = $this->get_all("SHOW COLUMNS FROM ".$tbl);
 		if(!$rs)
@@ -388,8 +546,8 @@ class db_mysqli
 		return $rslist;
 	}
 
-	#[显示表名]
-	function list_tables()
+	//显示表明细
+	public function list_tables()
 	{
 		$list = $this->get_all("SHOW TABLES");
 		if(!$list)
@@ -405,46 +563,47 @@ class db_mysqli
 		return $rslist;
 	}
 
-	function table_name($table_list,$i)
+	//显示表名
+	public function table_name($table_list,$i)
 	{
 		return $table_list[$i];
 	}
 
-	function escape_string($char)
+	public function escape_string($char)
 	{
 		if(!$char)
 		{
 			return false;
 		}
-		return mysqli_escape_string($this->conn,$char);
+		return $this->conn->escape_string($char);
 	}
 
-	function get_version()
+	//数据库查询时间
+	public function conn_times()
 	{
-		return mysqli_get_server_info($this->conn);
+		return $this->stat_info['sql']['time'];
 	}
 
-	function time_used()
+	//数据库查询次数
+	public function conn_count()
 	{
-		$time = explode(" ",microtime());
-		$used_time = $time[0] + $time[1];
-		return $used_time;
+		return $this->stat_info['sql']['count'];
 	}
 
-	//Mysql的查询时间
-	function conn_times()
+	//读取缓存运行时间
+	public function cache_time()
 	{
-		return $this->conn_times + $this->query_times;
+		return round(($this->stat_info['file']['time'] + $this->stat_info['memcache']['time']),5);
 	}
 
-	//MySQL查询资料
-	function conn_count()
+	//缓存运行次数
+	public function cache_count()
 	{
-		return $this->query_count;
+		return round(($this->stat_info['file']['count'] + $this->stat_info['memcache']['count']));
 	}
 
 	# PHPOK中常用的简洁高效的SQL生成查询，仅适合单表查询
-	function phpok_one($tbl,$condition="",$fields="*")
+	public function phpok_one($tbl,$condition="",$fields="*")
 	{
 		$sql = "SELECT ".$fields." FROM ".$this->db->prefix.$tbl;
 		if($condition)
@@ -454,28 +613,186 @@ class db_mysqli
 		return $this->get_one($sql);
 	}
 
-	function debug()
+
+	public function conn_status()
 	{
-		if(!$this->querylist || !is_array($this->querylist) || count($this->querylist) < 1)
+		if(!$this->conn) return false;
+		return true;
+	}
+
+	private function _ascii($str='')
+	{
+		if(!$str) return false;
+		$str = iconv("UTF-8", "UTF-16BE", $str);
+		$output = "";
+		for ($i = 0; $i < strlen($str); $i++,$i++)
+		{
+			$code = ord($str{$i}) * 256 + ord($str{$i + 1});
+			if ($code < 128)
+			{
+				$output .= chr($code);
+			}
+			else if($code != 65279)
+			{
+				$output .= "&#".$code.";";
+			}
+		}
+		return $output;
+	}
+
+
+	//初始化统计
+	private function _stat_info()
+	{
+		//初始化统计
+		$this->stat_info['sql'] = array('time'=>0,'count'=>0);
+		$this->stat_info['file'] = array('time'=>0,'count'=>0);
+		$this->stat_info['memcache'] = array('time'=>0,'count'=>0);
+	}
+	
+	//初始化缓存
+	private function _config_cache($config)
+	{
+		$this->cache_prikey = md5(serialize($config));
+		if(!isset($config['cache']))
+		{
+			$this->config_cache['status'] = false;
+			return true;
+		}
+		$this->config_cache['status'] = isset($config['cache']['status']) ? $config['cache']['status'] : false;
+		if(!$this->config_cache['status'])
+		{
+			return true;
+		}
+		$this->config_cache['type'] = isset($config['cache']['type']) ? $config['cache']['type'] : 'file';
+		$this->config_cache['folder'] = isset($config['cache']['folder']) ? $config['cache']['folder'] : 'cache/';
+		$this->config_cache['server'] = isset($config['cache']['server']) ? $config['cache']['server'] : 'localhost';
+		$this->config_cache['port'] = isset($config['cache']['port']) ? $config['cache']['port'] : 11211;
+		$this->config_cache['time'] = isset($config['cache']['time']) ? $config['cache']['time'] : 36000;
+		//判断类型，如果不符合条件，则使用file类型
+		if(!in_array($this->config_cache['type'],array('file','memcache')))
+		{
+			$this->config_cache['type'] = 'file';
+		}
+		//当环境不支持memcache时，返回file做缓存
+		if($this->config_cache['type'] == 'memcache' && !class_exists('Memcache'))
+		{
+			$this->config_cache['type'] = 'file';
+		}
+		//检测Memcache服务器连接
+		if($this->config_cache['type'] == 'memcache' && !$this->connect_cache())
+		{
+			$this->config_cache['type'] = 'file';
+		}
+		if($this->config_cache['type'] == 'file')
+		{
+			if(!is_dir($this->config_cache['folder']) || !is_writeable($this->config_cache['folder']))
+			{
+				$this->config_cache['status'] = false;
+			}
+			if($this->config_cache['status'])
+			{
+				$this->connect_cache();
+			}
+		}
+		return true;
+	}
+	
+	//初始化数据库
+	private function _config_db($config)
+	{
+		$this->config_db['host'] = $config['host'] ? $config['host'] : 'localhost';
+		$this->config_db['port'] = $config['port'] ? $config['port'] : '3306';
+		$this->config_db['user'] = $config['user'] ? $config['user'] : 'root';
+		$this->config_db['pass'] = $config['pass'] ? $config['pass'] : '';
+		$this->config_db['data'] = $config['data'] ? $config['data'] : '';
+		$this->config_db['socket'] = isset($config['socket']) ? $config['socket'] : '';
+		if($this->config_db['data'])
+		{
+			$this->connect_db($this->config_db['data']);
+		}
+	}
+	//内部计时器
+	//id仅支持三种参数，sql，file和memcache
+	private function timer($id='')
+	{
+		if(!$id)
 		{
 			return false;
 		}
-		$html = '<table cellpadding="0" cellspacing="0" width="100%" bgcolor="#CECECE"><tr><td>';
-		$html.= '<table cellpadding="1" cellspacing="1" width="100%">';
-		$html.= '<tr><th bgcolor="#EFEFEF" height="30px">SQL</th><th bgcolor="#EFEFEF" width="80px">查询</th></tr>';
-		foreach($this->querylist AS $key=>$value)
+		$time = explode(" ",microtime());
+		$time = $time[0] + $time[1];
+		if($this->stat_info[$id] && isset($this->stat_info[$id]['tmp']))
 		{
-			$html .= '<tr><td bgcolor="#FFFFFF"><div style="padding:3px;color:#6E6E6E;">'.$value['sql'].'</div></td>';
-			$html .= '<td align="center" bgcolor="#FFFFFF"><div style="padding:3px;color:#000000;">'.$value["count"].'</div></td></tr>';
+			$time = round(($this->stat_info[$id]['time'] + ($time - $this->stat_info[$id]['tmp'])),5);
+			$this->stat_info[$id]['time'] = $time;
+			unset($this->stat_info[$id]['tmp']);
 		}
-		$html.= "</table>";
-		$html.= "</td></tr></table>";
-		return $html;
+		else
+		{
+			$this->stat_info[$id]['tmp'] = $time;
+		}
 	}
 
-	function conn_status()
+	//计数器
+	private function counter($id='',$val=1)
 	{
-		if(!$this->conn) return false;
+		if(!$id)
+		{
+			return false;
+		}
+		$this->stat_info[$id]['count'] += $val;
+	}
+
+	//输入Debug错误
+	private function debug($info='')
+	{
+		if(!$info && $this->conn && $this->conn->error)
+		{
+			$info = '数据请求失败，错误ID：'.$this->conn->errno."，错误信息是：".$this->conn->error;
+		}
+		if($info)
+		{
+			exit($this->_ascii($info));
+		}
+		return true;
+	}
+
+	//更新缓存
+	private function _cache_clear($sql)
+	{
+		if(!$this->cache->phpok_keylist)
+		{
+			return true;
+		}
+		$cacheid = $this->cache_id($sql);
+		$tbllist = $this->cache->phpok_keylist[$cacheid];
+		if(!$tbllist)
+		{
+			return false;
+		}
+		foreach($this->cache->phpok_keylist as $key=>$value)
+		{
+			if(!$value || !is_array($value))
+			{
+				continue;
+			}
+			$tmp = array_intersect($tbllist,$value);
+			if($tmp && count($tmp)>0)
+			{
+				$this->cache_delete($key);
+			}
+		}
+		return true;
+	}
+
+	private function _cache_keysave()
+	{
+		if(!$this->config_cache['status'])
+		{
+			return false;
+		}
+		$this->cache_save($this->cache_prikey,$this->cache->phpok_keylist);
 		return true;
 	}
 }

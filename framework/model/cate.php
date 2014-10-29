@@ -128,7 +128,6 @@ class cate_model extends phpok_model
 	//存储分类信息
 	function save($data,$id=0)
 	{
-		phpok_delete_cache("cate");
 		if(!$data || !is_array($data)) return false;
 		if($id)
 		{
@@ -206,7 +205,6 @@ class cate_model extends phpok_model
 	# 更新排序
 	function update_taxis($id,$taxis=255)
 	{
-		phpok_delete_cache("cate");
 		$sql = "UPDATE ".$this->db->prefix."cate SET taxis='".$taxis."' WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
@@ -229,8 +227,6 @@ class cate_model extends phpok_model
 			$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id IN(".implode(',',$idlist).")";
 			$this->db->query($sql);
 		}
-		//删除缓存操作
-		phpok_delete_cache("cate");
 		return true;
 	}
 

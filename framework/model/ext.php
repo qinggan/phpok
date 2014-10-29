@@ -27,7 +27,6 @@ class ext_model extends phpok_model
 	function ext_save($data,$id=0)
 	{
 		if(!$data || !is_array($data)) return false;
-		phpok_delete_cache("cate,project,all,ext,extc");
 		if($id)
 		{
 			return $this->db->update_array($data,"ext",array("id"=>$id));
@@ -41,7 +40,6 @@ class ext_model extends phpok_model
 	function extc_save($content,$id)
 	{
 		if(!$id) return false;
-		phpok_delete_cache("cate,project,all,ext,extc");
 		$sql = "REPLACE INTO ".$this->db->prefix."extc(id,content) VALUES('".$id."','".$content."')";
 		return $this->db->query($sql);
 	}
@@ -50,7 +48,6 @@ class ext_model extends phpok_model
 	function content_save($content,$id)
 	{
 		if(!$id || !$content) return false;
-		phpok_delete_cache("cate,project,all,ext,extc");
 		$sql = "REPLACE INTO ".$this->db->prefix."extc(id,content) VALUES('".$id."','".$content."')";
 		return $this->db->query($sql);
 	}
@@ -84,7 +81,6 @@ class ext_model extends phpok_model
 	# 删除字段内容
 	function ext_delete($id,$module)
 	{
-		phpok_delete_cache("cate,project,all,ext,extc");
 		$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id='".$id."'";
 		$this->db->query($sql);
 		$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$id."'";
@@ -127,7 +123,6 @@ class ext_model extends phpok_model
 	function save($data,$id=0)
 	{
 		if(!$data || !is_array($data)) return false;
-		phpok_delete_cache("cate,project,all,ext,extc");
 		if($id)
 		{
 			return $this->db->update_array($data,"ext",array("id"=>$id));
@@ -141,7 +136,6 @@ class ext_model extends phpok_model
 	//删除表单
 	function del($module)
 	{
-		phpok_delete_cache("cate,project,all,ext,extc");
 		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='".$module."'";
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist) return true;

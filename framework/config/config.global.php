@@ -70,7 +70,7 @@ $config["engine"]["session"]["db_table"] = $config["db"]["prefix"]."session";
 
 // Cache引挈
 $config["engine"]["cache"]["file"] = "default";
-$config["engine"]["cache"]["status"] = true;
+$config["engine"]["cache"]["status"] = false;
 $config["engine"]["cache"]["timeout"] = 3600;
 $config["engine"]["cache"]["folder"] = ROOT."data/cache/";//在Memcache缓存中，此项用于存储KEY
 $config["engine"]["cache"]["server"] = "localhost"; //Memcache缓存服务器

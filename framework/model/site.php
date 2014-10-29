@@ -103,7 +103,7 @@ class site_model extends phpok_model
 	function domain_update($domain,$id)
 	{
 		if(!$domain || !$id) return false;
-		phpok_delete_cache("site");
+		
 		$sql = "UPDATE ".$this->db->prefix."site_domain SET domain='".$domain."' WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
@@ -112,7 +112,7 @@ class site_model extends phpok_model
 	function domain_add($domain,$site_id)
 	{
 		if(!$domain || !$site_id) return false;
-		phpok_delete_cache("site");
+		
 		$sql = "INSERT INTO ".$this->db->prefix."site_domain(site_id,domain) VALUES('".$site_id."','".$domain."')";
 		return $this->db->insert($sql);
 	}
@@ -127,7 +127,7 @@ class site_model extends phpok_model
 	# 删除域名
 	function domain_delete($id)
 	{
-		phpok_delete_cache("site");
+		
 		$sql = "DELETE FROM ".$this->db->prefix."site_domain WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
@@ -161,7 +161,7 @@ class site_model extends phpok_model
 	function all_save($data,$id=0)
 	{
 		if(!$data || !is_array($data)) return false;
-		phpok_delete_cache("site");
+		
 		if($id)
 		{
 			return $this->db->update_array($data,"all",array("id"=>$id));
@@ -197,7 +197,7 @@ class site_model extends phpok_model
 			$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id IN(".$ids.")";
 			$this->db->query($sql);
 		}
-		phpok_delete_cache("site");
+		
 		return true;
 	}
 
@@ -252,7 +252,6 @@ class site_model extends phpok_model
 		$sql = "DELETE FROM ".$this->db->prefix."site WHERE id='".$id."'";
 		$this->db->query($sql);
 		//清空缓存操作
-		phpok_delete_cache('site,call,phpok');
 		return true;
 	}
 

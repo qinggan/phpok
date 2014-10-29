@@ -163,8 +163,6 @@ class list_model extends phpok_model
 	function save($data,$id=0)
 	{
 		if(!$data || !is_array($data) || count($data) < 1) return false;
-		global $app;
-		$this->cache->delete_keywords("","list,ext");
 		if($id)
 		{
 			return $this->db->update_array($data,"list",array("id"=>$id));

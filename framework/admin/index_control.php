@@ -228,26 +228,11 @@ class index_control extends phpok_control
 
 	function clear_f()
 	{
-		$this->lib('file')->rm($this->dir_root."data/cache/");
+		//$this->lib('file')->rm($this->dir_root."data/cache/");
 		$this->lib('file')->rm($this->dir_root."data/tpl_www/");
 		$this->lib('file')->rm($this->dir_root."data/tpl_admin/");
 		$this->lib('file')->rm($this->dir_root."data/tpl_html/");
-		$list = $this->lib("file")->ls($this->dir_phpok."config/");
-		if(!$list) $list = array();
-		include($this->dir_phpok."config/config.global.php");
-		foreach($list AS $key=>$value)
-		{
-			$tmp = basename($value);
-			if($tmp != 'config.global.php' && $tmp != 'config_admin.php')
-			{
-				include($value);
-				if($config['engine'] && $config['engine']['cache'])
-				{
-					$this->cache->config($config['engine']['cache']);
-					$this->cache->clear();
-				}
-			}
-		}
+		$this->db->cache_clear();
 		json_exit("缓存清空完成",true);
 	}
 

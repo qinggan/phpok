@@ -13,28 +13,15 @@ class ext_lib
 	var $app;
 	//连接数据库类
 	var $db;
-	//连接缓存类引挈
-	var $cache_lib;
 	function __construct()
 	{
 		//
-	}
-
-	//禁用缓存
-	function cache_status($status=false)
-	{
-		global $app;
-		$GLOBALS['app']->cache->status($status);
 	}
 
 	function title_list($id)
 	{
 		$id = $this->safe_format($id);
 		if(!$id) return false;
-		global $app;
-		$cacheId = $GLOBALS['app']->cache->key($id,"","list,ext");
-		$rslist = $GLOBALS['app']->cache->read($cacheId);
-		if($rslist) return $rslist;
 		$sql = "SELECT l.*,id.phpok identifier FROM ".$GLOBALS['app']->db->prefix."list l ";
 		$sql.= "JOIN ".$GLOBALS['app']->db->prefix."id id ON(l.id=id.id AND id.type_id='content' AND l.site_id=id.site_id) ";
 		$sql.= "WHERE l.id IN(".$id.") ORDER BY SUBSTRING_INDEX('".$id."',l.id,1)";
@@ -91,7 +78,6 @@ class ext_lib
 		}
 		if($rslist && count($rslist)>0)
 		{
-			$GLOBALS['app']->cache->write($cacheId,$rslist);
 			return $rslist;
 		}
 		return false;
@@ -285,26 +271,18 @@ class ext_lib
 	
 	function opt_info($id,$gid,$parent_id=0)
 	{
-		if(!$gid || !$id) return false;
-		$parent_id = intval($parent_id);
-		if(!$GLOBALS["app"]->cache_data["opt"] || !$GLOBALS["app"]->cache_data["opt"][$gid])
+		if(!$gid || !$id)
 		{
-			if($GLOBALS["app"]->cache->status())
-			{
-				$cacheId = $GLOBALS["app"]->cache->key("opt_".$gid,"","opt");
-				$opt_list = $GLOBALS["app"]->cache->read($cacheId);
-			}
-			if(!$opt_list)
-			{
-				$opt_list = $GLOBALS["app"]->model("opt")->opt_all("group_id=".$gid);
-				if(!$opt_list) return false;
-				if($cacheId) $GLOBALS["app"]->cache->write($cacheId,$opt_list);
-			}
-			$GLOBALS['app']->cache_data['opt'][$gid] = $opt_list;
+			return false;
 		}
-		if(!$GLOBALS['app']->cache_data['opt'][$gid]) return false;
+		$parent_id = intval($parent_id);
+		$opt_list = $GLOBALS["app"]->model("opt")->opt_all("group_id=".$gid);
+		if(!$opt_list)
+		{
+			return false;
+		}
 		$rs = false;
-		foreach($GLOBALS['app']->cache_data['opt'][$gid] AS $key=>$value)
+		foreach($opt_list AS $key=>$value)
 		{
 			if($value["val"] == $id && $value["parent_id"] == $parent_id)
 			{
@@ -679,17 +657,6 @@ class ext_lib
 	function module_fields($mid)
 	{
 		if(!$mid) return false;
-		if($GLOBALS['app']->cache_data['mfields'] && $GLOBALS['app']->cache_data['mfields'][$mid])
-		{
-			return $GLOBALS['app']->cache_data['mfields'][$mid];
-		}
-		$cacheId = $GLOBALS['app']->cache->key("module_fields_".$mid,"","module_fields");
-		$mlist = $GLOBALS['app']->cache->read($cacheId);
-		if($mlist)
-		{
-			$GLOBALS['app']->cache_data["mfields"][$mid] = $mlist;
-			return $mlist;
-		}
 		$list = $GLOBALS['app']->model("module")->fields_all($mid,"identifier");
 		if($list)
 		{
@@ -698,8 +665,6 @@ class ext_lib
 				if($value["ext"]) $value["ext"] = unserialize($value["ext"]);
 				$list[$key] = $value;
 			}
-			$GLOBALS['app']->cache_data["mfields"][$mid] = $list;
-			if($cacheId) $GLOBALS['app']->cache->write($cacheId,$list);
 			return $list;
 		}
 		return false;
@@ -708,13 +673,8 @@ class ext_lib
 	//读取会员扩展模板字段内容信息
 	function user_fields()
 	{
-		global $app;
-		$cacheId = $GLOBALS['app']->cache->key("user","","user,fields");
-		$rslist = $GLOBALS['app']->cache->read($cacheId);
-		if($rslist) return $rslist;
 		$sql = "SELECT * FROM ".$GLOBALS['app']->db->prefix."user_fields ORDER BY taxis ASC,id DESC";
 		$rslist = $GLOBALS['app']->db->get_all($sql);
-		$GLOBALS['app']->cache->write($cacheId,$rslist);
 		return $rslist;
 	}
 

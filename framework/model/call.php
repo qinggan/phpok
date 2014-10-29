@@ -99,8 +99,6 @@ class call_model extends phpok_model
 	function save($data,$id=0)
 	{
 		if(!$data || !is_array($data)) return false;
-		//删除缓存文件
-		phpok_delete_cache("call");
 		if($id)
 		{
 			return $this->db->update_array($data,"phpok",array("id"=>$id));
@@ -119,7 +117,6 @@ class call_model extends phpok_model
 
 	function del($id)
 	{
-		phpok_delete_cache("call");
 		$sql = "DELETE FROM ".$this->db->prefix."phpok WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}

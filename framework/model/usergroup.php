@@ -105,7 +105,6 @@ class usergroup_model extends phpok_model
 		if(!$id) return false;
 		$sql = "UPDATE ".$this->db->prefix."user_group SET status='".$status."' WHERE id='".$id."'";
 		$this->db->query($sql);
-		phpok_delete_cache("group");
 		return true;
 	}
 }
