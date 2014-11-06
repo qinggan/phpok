@@ -13,7 +13,7 @@ phpok
     tpl_www
 
 2. 修改数据库配置文件 config.php
-3. 手工导入install/install.sql
+3. 手工导入install/phpok.sql
 
 感谢
 ===
