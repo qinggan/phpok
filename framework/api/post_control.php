@@ -41,7 +41,7 @@ class post_control extends phpok_control
 			unset($_SESSION['vcode_api']);
 		}
 		//判断ID参数是否传过来
-		$id = $this->get('id');
+		$id = $this->get('id','system');
 		if(!$id)
 		{
 			$this->json(P_Lang('未绑定相应的项目'));

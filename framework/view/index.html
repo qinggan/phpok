@@ -47,7 +47,9 @@
     </div>
     
     <div class="head_web">
+	   <!-- if $sys.debug -->
 	    <span class="clear_cache" onclick="phpok_admin_clear()">清空缓存</span>
+	   <!-- /if -->
 	    <span class="gohome"><a href="{$sys.www_file}?siteId={$session.admin_site_id}" target="_blank" title="访问前台网站">访问网站</a></span>
     	<span class="leftspan">网站：</span>
         <select class="web_select" name="top_site_id" id="top_site_id" onchange="goto_site(this.value,{$session.admin_site_id})">
@@ -110,6 +112,9 @@
 		Powered by <a href="http://www.phpok.com" target="_blank">phpok.com</a>,
 		<!-- /if -->
 		CopyRight &copy; {$license_site} {func license_date}, All Right Reserved.
+		<!-- if $sys.debug -->
+		<br />{func debug_time 1 1 1 1}
+		<!-- /if -->
 	</div>
 	<div class="foot_right">{$license}，版本：{$version}</div>
 </div>

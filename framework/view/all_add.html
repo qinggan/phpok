@@ -16,7 +16,7 @@ function add_site_save()
 		return false;
 	}
 	url += "&title="+$.str.encode(title)+"&domain="+$.str.encode(domain);
-	var rs = $.phpok.go(url);
+	var rs = $.phpok.json(url);
 	if(rs.status == "ok")
 	{
 		$.dialog.alert(rs.content,function(){

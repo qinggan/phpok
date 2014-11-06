@@ -162,6 +162,8 @@ class uedit_control extends phpok_control
 	//读取所有主题
 	function info_f()
 	{
+		//指定分类对应的站点ID
+		$this->model("cate")->siteid($this->site['id']);
 		$pageurl = $this->url("uedit","info");
 		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid) $pageid = 1;
@@ -183,9 +185,9 @@ class uedit_control extends phpok_control
 				$cate_id = $this->get('cate_id','int');
 				if($cate_id && $p_rs['cate'])
 				{
-					$cate_rs = $this->model('cate')->get_one($cate_id);
+					$cate_rs = $this->model("cate")->get_one($cate_id);
 					$catelist = array($cate_rs);
-					$this->model('cate')->get_sublist($catelist,$cate_id);
+					$this->model("cate")->sublist($catelist,$cate_id);
 					$cate_id_list = array();
 					foreach($catelist AS $key=>$value)
 					{
@@ -232,10 +234,10 @@ class uedit_control extends phpok_control
 		$rs = $this->model('project')->get_one($id);
 		if($rs['cate'])
 		{
-			$catelist = $this->model('cate')->get_all($rs["site_id"],0,$rs["cate"]);
+			$catelist = $this->model("cate")->get_all($rs["site_id"],$rs["cate"]);
 			if($catelist)
 			{
-				$catelist = $this->model('cate')->cate_option_list($catelist);
+				$catelist = $this->model("cate")->cate_option_list($catelist);
 				$this->json($catelist,true);
 			}
 		}

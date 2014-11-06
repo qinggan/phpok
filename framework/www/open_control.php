@@ -141,15 +141,13 @@ class open_control extends phpok_control
 			}
 			if($type == "cate" && $p_rs["cate"])
 			{
-				$this->model("cate");
-				$catelist = $this->model('cate')->get_all($p_rs["site_id"],1,$p_rs["cate"]);
+				$catelist = $this->model("cate")->get_all($p_rs['site_id'],$p_rs['cate']);
 				$this->assign("rslist",$catelist);
 				$this->assign("p_rs",$p_rs);
 				$this->view("open_url_cate");
 			}
 			else
 			{
-				$this->model("list");
 				$pageid = $this->get($this->config["pageid"],"int");
 				$psize = $this->config["psize"];
 				if(!$psize) $psize = 20;

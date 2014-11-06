@@ -58,5 +58,11 @@ class usergroup_model extends phpok_model
 		}
 		return $groupid;
 	}
+
+	function get_default()
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user_group WHERE is_default=1 AND status=1";
+		return $this->db->get_one($sql);
+	}
 }
 ?>

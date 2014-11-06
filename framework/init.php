@@ -224,7 +224,7 @@ function run_memory($is_end=false)
 run_time();
 run_memory();
 
-function debug_time()
+function debug_time($memory_ctrl=1,$sql_ctrl=1,$file_ctrl=0,$cache_ctrl=0)
 {
 	//global $app;
 	//$app->lib("file");
@@ -235,11 +235,22 @@ function debug_time()
 	$sql_db_time = $GLOBALS['app']->db->conn_times();
 	$sql_cache_count = $GLOBALS['app']->db->cache_count();
 	$sql_cache_time = $GLOBALS['app']->db->cache_time();
-	$string  = "运行 ".$time." 秒，数据库执行 ".$sql_db_count." 次，耗时 ".$sql_db_time." 秒";
-	$string .= "，缓存执行 ".$sql_cache_count." 次，耗时 ".$sql_cache_time." 秒";
-	if($count > 0)
+	$string  = "运行 ".$time." 秒";
+	if($memory_ctrl && $memory_ctrl != 'false')
+	{
+		$string .= "，内存使用 ".$memory;
+	}
+	if($sql_ctrl && $sql_ctrl != 'false')
+	{
+		$string .= "，数据库执行 ".$sql_db_count." 次，耗时 ".$sql_db_time." 秒";
+	}
+	if($file_ctrl && $count>0 && $file_ctrl != 'false')
 	{
 		$string .= "，文件执行 ".$count." 次";
+	}
+	if($cache_ctrl && $cache_ctrl != 'false')
+	{
+		$string .= "，缓存执行 ".$sql_cache_count." 次，耗时 ".$sql_cache_time." 秒";
 	}
 	return $string;
 }
@@ -694,11 +705,6 @@ class _init_phpok
 		$this->system_time = $this->time;
 		$this->config = $config;
 		$this->url = $this->root_url();
-		//header("Last-Modified: ".gmdate("D, d M Y H:i:s",($this->time-3600*24*80))." GMT");
-		//header("Cache-Control: no-cache, no-store, must-revalidate");
-		//header("Cache-Control: post-check=0, pre-check=0", false);
-		//header("Pramga: no-cache"); 
-		//header("Expires: -1");
 	}
 
 	//自定义网址生成器
@@ -878,8 +884,8 @@ class _init_phpok
 		//格式化处理内容
 		switch ($type)
 		{
-			case 'safe':$msg = str_replace(array("\\","'",'"',"<",">"),array("&#92;","&#39;","&quot;","&lt;","&gt;"),$msg);	break;
-			case 'system':$msg = !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u",$msg) ? false : $msg;	break;
+			case 'safe':$msg = str_replace(array("\\","'",'"',"<",">"," "),array("&#92;","&#39;","&quot;","&lt;","&gt;","&nbsp;"),$msg);break;
+			case 'system':$msg = !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u",$msg) ? false : $msg;break;
 			case 'id':$msg = !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u",$msg) ? false : $msg;break;
 			case 'checkbox':$msg = strtolower($msg) == 'on' ? 1 : $this->format($msg,'safe');break;
 			case 'int':$msg = intval($msg);break;
@@ -890,7 +896,10 @@ class _init_phpok
 			case 'html':$msg = $this->safe_html($msg);break;
 			case 'func':$msg = function_exists($ext) ? $ext($msg) : false;break;
 		}
-		if($msg) $msg = addslashes($msg);
+		if($msg)
+		{
+			$msg = addslashes($msg);
+		}
 		return $msg;
 	}
 

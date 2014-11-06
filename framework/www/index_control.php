@@ -15,7 +15,6 @@ class index_control extends phpok_control
 		parent::control();
 		$this->model("id");
 		$this->model("project");
-		$this->model("cate");
 		$this->model("list");
 		$this->lib("ext");
 	}

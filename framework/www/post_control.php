@@ -50,7 +50,8 @@ class post_control extends phpok_control
 		if($project_rs['cate'])
 		{
 			$catelist = array();
-			$this->model('cate')->get_sublist($catelist,$project_rs['cate']);
+			$cate_all = $this->model("cate")->cate_all($project_rs['site_id']);
+			$this->model("cate")->sublist($catelist,$project_rs['cate'],$cate_all);
 			$this->assign("catelist",$catelist);
 		}
 		$cateid = $this->get("cateid","int");
@@ -148,7 +149,8 @@ class post_control extends phpok_control
 		if($project_rs['cate'])
 		{
 			$catelist = array();
-			$this->model('cate')->get_sublist($catelist,$project_rs['cate']);
+			$cate_all = $this->model("cate")->cate_all($project_rs['site_id']);
+			$this->model("cate")->sublist($catelist,$project_rs['cate'],$cate_all);
 			$this->assign("catelist",$catelist);
 		}
 		
@@ -156,11 +158,11 @@ class post_control extends phpok_control
 		$cateid = $this->get("cateid","int");
 		if($cate)
 		{
-			$cate_rs = $this->model('cate')->get_one($cate,"identifier");
+			$cate_rs = $this->model("cate")->get_one($cate,"identifier",$project_rs['site_id']);
 		}
 		if(!$cate_rs && $cateid)
 		{
-			$cate_rs = $this->model('cate')->get_one($cateid,"id");
+			$cate_rs = $this->model("cate")->get_one($cateid,"id",$project_rs['site_id']);
 		}
 		$this->assign("cate_rs",$cate_rs);
 		//扩展字段

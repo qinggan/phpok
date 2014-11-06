@@ -13,11 +13,11 @@ class db_mysql
 	public $stat_info;
 	//数据表前缀，很多地方上被直接调用，用public
 	public $prefix = 'qinggan_';
+	public $conn;
 	//是否启用调试
 	public $debug = false;
 	private $config_db = array('host'=>'localhost','user'=>'root','pass'=>'','data'=>'','port'=>3306);
 	private $config_cache = array('type'=>'file','folder'=>'cache/','time'=>3600,'server'=>'localhost','port'=>11211);
-	private $conn;
 	private $type = MYSQL_ASSOC;
 	private $query; //执行对象
 	private $cache;//缓存对象
@@ -69,7 +69,6 @@ class db_mysql
 		mysql_query("SET sql_mode=''",$this->conn);
 		$this->timer('sql');
 		$this->select_db($data);
-		//$this->counter('sql',2); //计数器;
 		return true;
 	}
 	//更换数据库选择
@@ -245,13 +244,9 @@ class db_mysql
 	//存储缓存
 	public function cache_save($id='',$data='')
 	{
-		if(!$this->config_cache['status'] || !$id)
+		if(!$this->config_cache['status'] || !$id || !$data)
 		{
 			return false;
-		}
-		if(!$data)
-		{
-			$data = array("__phpok_empty"=>1);
 		}
 		$data = serialize($data);
 		if($this->config_cache['type'] == 'memcache')
@@ -301,10 +296,6 @@ class db_mysql
 		$rs = $this->cache_get($keyid);
 		if($rs)
 		{
-			if($rs['__phpok_empty'])
-			{
-				return false;
-			}
 			if(!$primary)
 			{
 				return $rs;
@@ -352,10 +343,6 @@ class db_mysql
 		$rs = $this->cache_get($keyid);
 		if($rs)
 		{
-			if($rs['__phpok_empty'])
-			{
-				return false;
-			}
 			return $rs;
 		}
 		$this->query($sql);
@@ -548,7 +535,7 @@ class db_mysql
 			return false;
 		}
 		$rslist = array();
-		$id = 'Tables_in_'.$this->data;
+		$id = 'Tables_in_'.$this->config_db['data'];
 		foreach($list AS $key=>$value)
 		{
 			$rslist[] = $value[$id];

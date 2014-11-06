@@ -91,9 +91,11 @@ class data_model extends phpok_model
 		}
 		if($rs['cateid'])
 		{
+			//取得站点下的所有分类
+			$cate_all = $GLOBALS['app']->model('cate')->cate_all($rs['site_id']);
 			//读取这个分类下的所有子分类信息
 			$array = array($rs['cateid']);
-			$this->_cate_id($array,$rs['cateid']);
+			$this->_cate_id($array,$rs['cateid'],$cate_all);
 			$sql .= "AND l.cate_id IN(".implode(",",$array).") ";
 		}
 		//绑定某个会员
@@ -886,7 +888,8 @@ class data_model extends phpok_model
 			$rs['cateid'] = $tmp['id'];
 		}
 		$list = array();
-		$this->cate_sublist($list,$rs['cateid'],$rs['cate_ext'],$rs['project']);
+		$cate_all = $GLOBALS['app']->model('cate')->cate_all($rs['site_id']);
+		$this->cate_sublist($list,$rs['cateid'],$cate_all,$rs['project']);
 		return $list;
 	}
 	
@@ -911,7 +914,8 @@ class data_model extends phpok_model
 			if($tmp['type'] == 'cate') $rs['cateid'] = $tmp['id'];
 		}
 		$list = array();
-		$this->cate_sublist($list,$project_rs['cate'],$rs['catelist_ext'],$project_rs['identifier']);
+		$cate_all = $GLOBALS['app']->model('cate')->cate_all($rs['site_id']);
+		$this->cate_sublist($list,$project_rs['cate'],$cate_all,$project_rs['identifier']);
 		if(!$list || !is_array($list) || count($list)<1) return false;
 		//格式化分类
 		$array = array('all'=>$list,'project'=>$project_rs);
@@ -1025,26 +1029,26 @@ class data_model extends phpok_model
 
 	}
 	//读取当前分类的子分类
-	private function cate_sublist(&$list,$parent_id=0,$is_ext=false,$identifier='')
+	private function cate_sublist(&$list,$parent_id=0,$rslist='',$identifier='')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE parent_id='".$parent_id."' AND status=1 ORDER BY taxis ASC,id DESC";
-		$rslist = $this->db->get_all($sql);
 		if($rslist)
 		{
-			foreach($rslist AS $key=>$value)
+			foreach($rslist as $key=>$value)
 			{
-				//扩展项信息
-				if($is_ext)
+				if($value['parent_id'] == $parent_id)
 				{
-					$ext = $this->ext_all('cate-'.$value['id']);
-					if($ext) $value = array_merge($ext,$value);
+					if($identifier)
+					{
+						$value['url'] = $GLOBALS['app']->url($identifier,$value['identifier']);
+					}
+					if($value['_url'])
+					{
+						$value['url'] = $value['_url'];
+						unset($value['_url']);
+					}
+					$list[$value['id']] = $value;
+					$this->cate_sublist($list,$value['id'],$rslist,$identifier);
 				}
-				if($identifier)
-				{
-					$value['url'] = $GLOBALS['app']->url($identifier,$value['identifier']);
-				}
-				$list[$value['id']] = $value;
-				$this->cate_sublist($list,$value['id'],$is_ext,$identifier);
 			}
 		}
 	}
@@ -1125,8 +1129,6 @@ class data_model extends phpok_model
 		{
 			$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".$id;
 			$rs = $this->db->get_one($sql);
-			//if(!$this->cdata['project'])
-			//echo $id.'---'.$rs;
 			$this->cdata['project'][$id] = $rs;
 		}
 		if(!$rs) return false;
@@ -1165,20 +1167,56 @@ class data_model extends phpok_model
 	//通过标识串获取内容信息
 	private function _id($identifier,$site_id=0)
 	{
-		$site_id = $site_id ? '0,'.$site_id : '0';
-		//在项目中检测
-		$sql = "SELECT id FROM ".$this->db->prefix."project WHERE identifier='".$identifier."' AND site_id IN(".$site_id.")";
-		$check_rs = $this->db->get_one($sql);
-		if($check_rs) return array("id"=>$check_rs['id'],'type'=>'project');
-		//在分类中检测
-		$sql = "SELECT id FROM ".$this->db->prefix."cate WHERE identifier='".$identifier."' AND site_id IN(".$site_id.")";
-		$check_rs = $this->db->get_one($sql);
-		if($check_rs) return array("id"=>$check_rs['id'],'type'=>'cate');
-		//在内容里检测
-		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE identifier='".$identifier."' AND site_id IN(".$site_id.")";
-		$check_rs = $this->db->get_one($sql);
-		if($check_rs) return array("id"=>$check_rs['id'],'type'=>'content');
+		$rslist = $this->_id_all($site_id);
+		if($rslist[$identifier])
+		{
+			return $rslist[$identifier];
+		}
 		return false;
+	}
+
+	//读取全部ID
+	private function _id_all($site_id=0)
+	{
+		$rslist = false;
+		$site_id = intval($site_id);
+		$site_id = $site_id ? '0,'.$site_id : '0';
+		$sql = "SELECT id,identifier FROM ".$this->db->prefix."project WHERE site_id IN(".$site_id.")";
+		$tmplist = $this->db->get_all($sql);
+		if($tmplist)
+		{
+			foreach($tmplist as $key=>$value)
+			{
+				$rslist[$value['identifier']] = array('id'=>$value['id'],'type'=>'project');
+			}
+		}
+		//读分类
+		$sql = "SELECT id,identifier FROM ".$this->db->prefix."cate WHERE site_id IN(".$site_id.")";
+		$tmplist = $this->db->get_all($sql);
+		if($tmplist)
+		{
+			foreach($tmplist as $key=>$value)
+			{
+				if(!$rslist[$value['identifier']])
+				{
+					$rslist[$value['identifier']] = array('id'=>$value['id'],'type'=>'cate');
+				}
+			}
+		}
+		//读主题
+		$sql = "SELECT id,identifier FROM ".$this->db->prefix."list WHERE identifier!='' AND site_id IN(".$site_id.")";
+		$tmplist = $this->db->get_all($sql);
+		if($tmplist)
+		{
+			foreach($tmplist as $key=>$value)
+			{
+				if(!$rslist[$value['identifier']])
+				{
+					$rslist[$value['identifier']] = array('id'=>$value['id'],'type'=>'content');
+				}
+			}
+		}
+		return $rslist;
 	}
 
 	//获取项目，分类的扩展信息
@@ -1226,16 +1264,17 @@ class data_model extends phpok_model
 	}
 
 	//读取分类下的子分类id
-	private function _cate_id(&$array,$parent_id=0)
+	private function _cate_id(&$array,$parent_id=0,$rslist='')
 	{
-		$sql = "SELECT id FROM ".$this->db->prefix."cate WHERE parent_id='".$parent_id."'";
-		$rslist = $this->db->get_all($sql);
-		if($rslist)
+		if($rslist && is_array($rslist))
 		{
-			foreach($rslist AS $key=>$value)
+			foreach($rslist as $key=>$value)
 			{
-				$array[] = $value['id'];
-				$this->_cate_id($array,$value['id']);
+				if($value['parent_id'] == $parent_id)
+				{
+					$array[] = $value['id'];
+					$this->_cate_id($array,$value['id'],$rslist);
+				}
 			}
 		}
 	}

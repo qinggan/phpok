@@ -9,8 +9,7 @@
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 
-$config["debug"] = true; //启用调试
-$config['xdebug'] = false; //启用Xdebug调试
+$config["debug"] = false; //启用调试
 $config["gzip"] = true;//启用压缩
 $config["ctrl_id"] = "c";//取得控制器的ID
 $config["func_id"] = "f";//取得应用方法的ID
@@ -27,7 +26,9 @@ $config["autoload_lib"] = "trans,file";//自动加载的Lib信息
 $config['waitingtime'] = 30; //两次评论的等待时间，单位为秒，未设置时使用默认时间
 $config['expiretime'] = 600; //超时时间，为空使用600
 //保留词，在前端，存在这些变量时，直接走ctrl_id模式，而不走id模式
-$config["reserved"] = "cart,content,download,login,logout,open,order,payment,plugin,post,project,register,search,ueditor,upload,usercp,user,ajax,js,inp";
+$config["reserved"]  = "cart,content,download,login,logout,open,order";
+$config['reserved'] .= ",payment,plugin,post,project,register,search";
+$config['reserved'] .= ",ueditor,upload,usercp,user,ajax,js,inp";
 
 //管理员配置信息
 $config['admin']["is_login"] = false; //会员登录验证
@@ -48,13 +49,9 @@ $config['mobile']['default'] = false; //默认为手机版，为方便开发人�
 $config['mobile']['includejs'] = "jquery.touchslide.js"; //手机版自动加载的JS
 $config['mobile']['excludejs'] = "jquery.superslide.js"; //手机版要去除加载的JS
 
-//JS-MD5加密类，ArtDialog弹出窗
 //PHPOK公共JS加载类
 //jQuery表单插件，支持ajaxSubmit提交
-//$config['autoload_js']  = "jquery.md5.js,jquery.artdialog.js,jquery.artdialog_ext.js";
-$config['autoload_js']  = "jquery.md5.js";
-$config['autoload_js'] .= ',jquery.phpok.js,global.js';
-$config["autoload_js"] .= ",jquery.form.min.js,jquery.json.min.js";
+$config['autoload_js']  = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.min.js,jquery.json.min.js";
 
 
 # SESSION存储方式
@@ -67,12 +64,3 @@ $config["engine"]["session"]["db_user"] = $config["db"]["user"];
 $config["engine"]["session"]["db_pass"] = $config["db"]["pass"];
 $config["engine"]["session"]["db_data"] = $config["db"]["data"];
 $config["engine"]["session"]["db_table"] = $config["db"]["prefix"]."session";
-
-// Cache引挈
-$config["engine"]["cache"]["file"] = "default";
-$config["engine"]["cache"]["status"] = false;
-$config["engine"]["cache"]["timeout"] = 3600;
-$config["engine"]["cache"]["folder"] = ROOT."data/cache/";//在Memcache缓存中，此项用于存储KEY
-$config["engine"]["cache"]["server"] = "localhost"; //Memcache缓存服务器
-$config["engine"]["cache"]["port"] = "11211"; //Memcache缓存端口
-$config["engine"]["cache"]["prefix"] = "phpok_";//缓存Key前缀，防止生成的Key重复
