@@ -68,6 +68,7 @@ class tpl_control extends phpok_control
 		$array = array("title"=>$title,"folder"=>$folder,"ext"=>$ext);
 		$array["folder_change"] = $this->get("folder_change");
 		$array["author"] = $this->get("author");
+		$array['phpfolder'] = $this->get('phpfolder');
 		$array["refresh_auto"] = $this->get("refresh_auto","checkbox");
 		$array["refresh"] = $this->get("refresh","checkbox");
 		$this->model('tpl')->save($array,$id);

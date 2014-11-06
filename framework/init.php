@@ -493,7 +493,7 @@ class _init_phpok
 				$tpl_rs["id"] = $rs["id"];
 				$tpl_rs["dir_tpl"] = $rs["folder"] ? "tpl/".$rs["folder"]."/" : "tpl/www/";
 				$tpl_rs["dir_cache"] = $this->dir_root."data/tpl_www/";
-				$tpl_rs["dir_php"] = $this->dir_root;
+				$tpl_rs["dir_php"] = $rs['phpfolder'] ? $this->dir_root.$rs['phpfolder'].'/' : $this->dir_root;
 				$tpl_rs["dir_root"] = $this->dir_root;
 				if($rs["folder_change"])
 				{

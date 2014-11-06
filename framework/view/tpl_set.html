@@ -62,7 +62,7 @@ function check_save()
 	&raquo; {$id ? '编辑' : '添加新'}风格信息
 </div>
 
-<form method="post" action="{func admin_url tpl save}" onsubmit="return check_save()">
+<form method="post" action="{url ctrl=tpl func=save/}" onsubmit="return check_save()">
 <input type="hidden" name="id" id="id" value="{$id}" />
 <div class="table">
 	<div class="title">
@@ -124,6 +124,15 @@ function check_save()
 			<input type="button" value="清空" onclick="$('#folder_change').val('');" class="btn" />
 		</div>
 		
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		PHP文件目录：
+		<span class="note">指定可执行PHP的文件目录，在模板中使用<span class="red">&lt;!-- include file=PHP文件名 --&gt;</span></span>
+	</div>
+	<div class="content">
+		<input type="text" id="phpfolder" name="phpfolder" class="default" value="{$rs.phpfolder}" />
 	</div>
 </div>
 <div class="table">

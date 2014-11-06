@@ -21,3 +21,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_tag` (
   `tag_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'TAG标签ID',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='内容中的Tag管理器';
+
+
+-- 模板风格里增加指定 php 文件
+ALTER TABLE `qinggan_tpl`  ADD `phpfolder` VARCHAR(200) NOT NULL COMMENT 'PHP执行文件目录' ;
