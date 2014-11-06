@@ -137,21 +137,5 @@ class register_control extends phpok_control
 		$this->assign("extlist",$extlist);
 		$this->view("register");
 	}
-
-	//验证账号是否为空
-	function check_f()
-	{
-		$user = $this->get("user");
-		if(!$user) json_exit("会员账号不能为空");
-		$chk_rs = $this->model('user')->chk_name($user);
-		if($chk_rs)
-		{
-			json_exit("会员账号已存在");
-		}
-		else
-		{
-			json_exit("检测通过",true);
-		}
-	}
 }
 ?>

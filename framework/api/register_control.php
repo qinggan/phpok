@@ -15,11 +15,6 @@ class register_control extends phpok_control
 		parent::control();
 	}
 
-	function index_f()
-	{
-		//echo "<pre>".print_r($_SESSION,true)."</pre>";
-	}
-
 	//检测会员是否存在
 	function check_user_f()
 	{
@@ -27,6 +22,15 @@ class register_control extends phpok_control
 		if(!$user)
 		{
 			$this->json(P_Lang('账号不能为空'));
+		}
+		//检测账号是否符合要求
+		$safelist = array("'",'"','/','\\',';','.',')','(');
+		foreach($safelist as $key=>$value)
+		{
+			if(strpos($user,$value) !== false)
+			{
+				$this->json(P_Lang('会员账号不允许包含字符串：'.$value.'，请检查'));
+			}
 		}
 		$rs = $this->model('user')->chk_name($user);
 		if($rs)
@@ -60,11 +64,25 @@ class register_control extends phpok_control
 		}
 		//检测会员账号
 		$user = $this->get("user");
+		if(!$user)
+		{
+			$this->json('账号不能为空');
+		}
+		//检测账号是否符合要求
+		$safelist = array("'",'"','/','\\',';','.',')','(');
+		foreach($safelist as $key=>$value)
+		{
+			if(strpos($user,$value) !== false)
+			{
+				$this->json(P_Lang('会员账号不允许包含字符串：'.$value.'，请检查'));
+			}
+		}
 		$chk = $this->model('user')->chk_name($user);
 		if($chk)
 		{
 			$this->json(P_Lang('会员账号已经存在，请选择其他账号'));
 		}
+		
 
 		//检测密码是否符合要求
 		$newpass = $this->get('newpass');

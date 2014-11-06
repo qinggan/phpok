@@ -12,11 +12,6 @@ $(document).ready(function(){
 		$(this).removeClass('o-white-over');
 	});
 });
-function infoit(id)
-{
-	url = get_url('order','info','id='+id);
-	direct(url);
-}
 </script>
 <div class="cp">
 	<div class="left"><!-- include tpl=block_usercp --></div>
@@ -48,7 +43,7 @@ function infoit(id)
 					<!-- /if -->
 				</td>
 				<td align="center">
-					<input type="button" value=" 查看 " onclick="infoit('{$value.id}')" />
+					<input type="button" value=" 查看 " onclick="$.phpok.go('{url ctrl=order func=info id=$value.id/}')" />
 				</td>
 			</tr>
 			<!-- /loop -->

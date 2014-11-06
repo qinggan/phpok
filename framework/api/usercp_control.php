@@ -42,30 +42,32 @@ class usercp_control extends phpok_control
 	//存储个人数据
 	function info_f()
 	{
-		//会员头像
+		//获取会员组信息
+		$group_rs = $this->model('usergroup')->group_rs($this->u_id);
+		if(!$group_rs)
+		{
+			$this->json(P_Lang('会员组不存在'));
+		}
 		$avatar = $this->get("avatar");
-		//更新Email
 		$email = $this->get("email");
-		if(!$email) $this->json(1038);
-		if(!phpok_check_email($email)) $this->json(1039);
+		if(!$email)
+		{
+			$this->json(P_Lang('未指定邮箱'));
+		}
+		if(!phpok_check_email($email))
+		{
+			$this->json(P_Lang('邮箱不合法'));
+		}
 		//检测Email是否已被使用
 		$uid = $this->model('user')->uid_from_email($email,$this->u_id);
-		if($uid) $this->json(1042);
+		if($uid)
+		{
+			$this->json(P_Lang('邮箱已被使用'));
+		}
 		//更新手机号
 		$mobile = $this->get('mobile');
 		$array = array('avatar'=>$avatar,'email'=>$email,'mobile'=>$mobile);
 		$this->model('user')->save($array,$this->u_id);
-		//获取会员组信息
-		$group_id = $_SESSION['user_rs']['group_id'];
-		if(!$group_id)
-		{
-			//取得默认会员组
-			$group_rs = $this->model('usergroup')->get_default();
-			if(!$group_rs || !$group_rs["status"]) $this->json(1010);
-			$group_id = $group_rs["id"];
-		}
-		$group_rs = $this->model('usergroup')->get_one($group_id);
-		if(!$group_rs || !$group_rs["status"]) $this->json(1011);
 		//读取扩展属性，并更新存储
 		$condition = 'is_edit=1';
 		if($group_rs['fields'])

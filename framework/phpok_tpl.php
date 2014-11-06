@@ -431,10 +431,6 @@ class phpok_tpl
 		$string = "";
 		foreach($rs AS $key=>$value)
 		{
-			if($key == '_type')
-			{
-				continue;
-			}
 			if($key != "tpl" && $key != "file")
 			{
 				if(substr($value,0,1) != '$') $value = '"'.$value.'"';
@@ -443,18 +439,19 @@ class phpok_tpl
 			}
 		}
 		# 当存在file参数量
-		if($rs["file"] && file_exists($this->dir_php.$rs["file"]))
+		if($rs['file'])
 		{
-			$string .= '<?php include("'.$this->dir_php.$rs["file"].'");?>';
+			if(strtolower(substr($rs['file'],-4)) != '.php')
+			{
+				$rs['file'] .= '.php';
+			}
+			if(is_file($this->dir_php.$rs['file']))
+			{
+				$string .= '<?php include("'.$this->dir_php.$rs["file"].'");?>';
+			}
 		}
 		if($rs["tpl"])
 		{
-			if($rs['_type'] == 'abs-file')
-			{
-				$tpl = $GLOBALS['app']->dir_phpok.'view/'.$rs['tpl'].'.html';
-				$string .= '<?php $this->output("'.$tpl.'","abs-file"); ?>';
-				return $string;
-			}
 			$string .= '<?php $this->output("'.$rs["tpl"].'","file"); ?>';
 		}
 		return $string;

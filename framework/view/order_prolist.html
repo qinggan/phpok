@@ -3,7 +3,8 @@
 var tid = '{$id}';
 function add_pro(id)
 {
-	parent.load_product(tid,id);
+	var obj = $.dialog.opener;
+	obj.load_product(tid,id);
 	$.dialog.close();
 }
 </script>

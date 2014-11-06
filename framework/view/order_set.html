@@ -34,6 +34,19 @@ $("#ordersave").submit(function(){
 	return false;
 });
 });
+function update_price()
+{
+	var val = 0;
+	$("input[class=price]").each(function(){
+		var t = $(this).val();
+		t = parseFloat(t);
+		if(t>0)
+		{
+			val = val + t;
+		}
+	});
+	$("#price").val(val.toString());
+}
 </script>
 <div class="tips">
 	<a href="{func admin_url order}" title="订单管理">订单管理</a>
@@ -87,6 +100,7 @@ $(document).ready(function(){
 		<option value="{$value.id}"{if $rs.currency_id == $value.id} selected{/if}>{$value.title}（标识：{$value.code}，汇率：{$value.val}）</option>
 		<!-- /loop -->
 		</select>
+		<input type="button" value="根据产品计算价格" onclick="update_price()" class="btn" />
 	</div>
 </div>
 
@@ -143,7 +157,7 @@ $(document).ready(function(){
 	<td>
 		<table>
 			<tr>
-				<td><input type="text" name="pro_title[]" id="pro_title_{$rslist_id.num}" class="long" value="{$value.title}" /></td>
+				<td><input type="text" name="pro_title[]" id="pro_title_{$value.id}" class="long" value="{$value.title}" /></td>
 			</tr>
 			<tr>
 				<td><input type="text" name="pro_price[]" class="price" id="pro_price_{$rslist_id.num}" value="{$value.price}" /> <input type="button" value="选择产品" onclick="pro_select('{$rslist_id.num}')" class="btn" /></td>
@@ -317,6 +331,7 @@ $(document).ready(function(){
 	</div>
 	<div class="content">
 		<input type="text" id="pay_price" name="pay_price" value="{$rs.pay_price}" />
+		<input type="button" value="读订单金额" onclick="$('#pay_price').val($('#price').val());" class="btn" />
 	</div>
 </div>
 <div class="table">

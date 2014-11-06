@@ -39,7 +39,10 @@ class api_control extends phpok_control
 	{
 		$this->json(P_Lang('此接口有安全问题，暂停使用！'));
 		$id = $this->get('id');
-		if(!$id) $this->json('未指定数据调用中心ID');
+		if(!$id)
+		{
+			$this->json('未指定数据调用中心ID');
+		}
 		$param = $this->get('param');
 		if($param)
 		{
