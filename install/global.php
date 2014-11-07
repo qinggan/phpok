@@ -65,22 +65,9 @@ function format_sql($sql)
 	foreach($ret as $query) {
 		$query = trim($query);
 		if($query) {
-			if(substr($query, 0, 12) == 'CREATE TABLE') {
-				//$name = preg_replace("/CREATE TABLE ([a-z0-9_]+) .*/is", "\\1", $query);
-				//echo '创建表：'.$name.' ... <font color="#0000EE">'.$lang['succeed'].'</font><br>';
-				$db->query(create_table($query));
-			} else {
-				$db->query($query);
-			}
+			$db->query($query);
 		}
 	}
-}
-
-function create_table($sql)
-{
-	global $db;
-	$sql_version = $db->get_version();
-	return preg_replace("/^\s*(CREATE TABLE\s+.+\s+\(.+?\)).*$/isU", "\\1", $sql).($sql_version > '4.1' ? " ENGINE=MyISAM DEFAULT CHARSET=utf8" : " TYPE=MYISAM");
 }
 
 function root_url()

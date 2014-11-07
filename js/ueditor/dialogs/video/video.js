@@ -292,7 +292,9 @@
 	        e_html = ' pluginspage="http://www.macromedia.com/go/getflashplayer"';
 	        if(ext == 'flv' || ext == 'mp4')
 	        {
-		        e_url = editor.options.UEDITOR_HOME_URL+'../vcastr.swf?xml={vcastr}{channel}{item}{source}'+conUrl+'{/source}{duration}{/duration}{title}{/title}{/item}{/channel}{config}{isAutoPlay}false{/isAutoPlay}{isLoadBegin}false{/isLoadBegin}{/config}{plugIns}{beginEndImagePlugIn}{url}'+editor.options.UEDITOR_HOME_URL+'../image.swf{/url}{source}{/source}{type}beginend{/type}{scaletype}exactFil{/scaletype}{/beginEndImagePlugIn}{/plugIns}{/vcastr}'
+		        //e_url = 'js/vcastr.swf?vcastr_file='+conUrl;
+		        //e_url = editor.options.UEDITOR_HOME_URL+'../vcastr.swf?xml={vcastr}{channel}{item}{source}'+conUrl+'{/source}{duration}{/duration}{title}{/title}{/item}{/channel}{config}{isAutoPlay}false{/isAutoPlay}{isLoadBegin}false{/isLoadBegin}{/config}{plugIns}{beginEndImagePlugIn}{url}'+editor.options.UEDITOR_HOME_URL+'../image.swf{/url}{source}{/source}{type}beginend{/type}{scaletype}exactFil{/scaletype}{/beginEndImagePlugIn}{/plugIns}{/vcastr}'
+		        e_url = editor.options.UEDITOR_HOME_URL+'../vcastr.swf?xml={vcastr}{channel}{item}{source}'+editor.options.UEDITOR_HOME_URL+'../../'+conUrl+'{/source}{duration}{/duration}{title}{/title}{/item}{/channel}{config}{isAutoPlay}false{/isAutoPlay}{isLoadBegin}false{/isLoadBegin}{/config}{plugIns}{beginEndImagePlugIn}{url}'+editor.options.UEDITOR_HOME_URL+'../image.swf{/url}{source}{/source}{type}beginend{/type}{scaletype}exactFil{/scaletype}{/beginEndImagePlugIn}{/plugIns}{/vcastr}'
 	        }
         }
         if(ext == 'rm' || ext == 'rmvb' || ext == 'ram' || ext == 'ra')
@@ -301,7 +303,7 @@
 		}
 
         $G("preview").innerHTML = '<div class="previewMsg"><span>'+lang.urlError+'</span></div>'+
-        '<embed class="previewVideo" type="'+e_type+'"'+e_html+' src="' + e_url + '" width="420" height="280" wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true" ></embed>';
+        '<embed class="previewVideo" type="'+e_type+'"'+e_html+' src="' + e_url + '" width="420" height="280" wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true" base="/" ></embed>';
     }
 
 

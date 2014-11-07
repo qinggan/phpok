@@ -596,8 +596,11 @@ class list_control extends phpok_control
 		$array = array();
 		$array["title"] = $title;
 		$array["parent_id"] = $parent_id;
-		$dateline = $this->get("dateline");
-		$dateline = $dateline ? strtotime($dateline) : $this->system_time;
+		$dateline = $this->get("dateline","time");
+		if(!$dateline)
+		{
+			$dateline = $this->time;
+		}
 		$array["dateline"] = $dateline;
 		if($this->popedom["status"])
 		{

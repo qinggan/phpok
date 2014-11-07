@@ -323,9 +323,9 @@ class data_model extends phpok_model
 		}
 		if($rs['cateid'])
 		{
-			//读取这个分类下的所有子分类信息
+			$cate_all = $GLOBALS['app']->model('cate')->cate_all($rs['site_id']);
 			$array = array($rs['cateid']);
-			$this->_cate_id($array,$rs['cateid']);
+			$this->_cate_id($array,$rs['cateid'],$cate_all);
 			$sql .= "AND l.cate_id IN(".implode(",",$array).") ";
 		}
 		//绑定某个会员

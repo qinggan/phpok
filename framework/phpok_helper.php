@@ -1262,6 +1262,18 @@ function phpok_ubb($Text,$nl2br=true)
 			$Text = str_replace($value,$string,$Text);
 		}
 	}
+	//格式化视频链接地址，主要是格式化FLV格式的转换
+	$list = false;
+	preg_match_all("/<embed(.+)src=[\"|'](.+\.flv)[\"|'](.*)>/isU",$Text,$list);
+	if($list && $list[2] && $list[0])
+	{
+		foreach($list[2] as $key=>$value)
+		{
+			$tmpurl = 'js/vcastr.swf?xml={vcastr}{channel}{item}{source}../'.$value.'{/source}{duration}{/duration}{title}{/title}{/item}{/channel}{config}{isAutoPlay}false{/isAutoPlay}{isLoadBegin}false{/isLoadBegin}{/config}{plugIns}{beginEndImagePlugIn}{url}js/image.swf{/url}{source}{/source}{type}beginend{/type}{scaletype}exactFil{/scaletype}{/beginEndImagePlugIn}{/plugIns}{/vcastr}';
+			$string = '<embed'.$list[1][$key].' src="'.$tmpurl.'"'.$list[3][$key].'>';
+			$Text = str_replace($list[0][$key],$string,$Text);
+		}
+	}
 	return $Text;
 }
 
