@@ -51,23 +51,13 @@ class ueditor_control extends phpok_control
 		}
 		$rooturl = $this->root_url();
 		$config['imagePathFormat'] = $folder;
-		//$config['imageUrlPrefix'] = $rooturl;
-		$config['imageUrlPrefix'] = '';
 		$config['scrawlPathFormat'] = $folder;
-		$config['scrawUrlPrefix'] = $rooturl;
 		$config['snapscreenPathFormat'] = $folder;
-		$config['snapscreenUrlPrefix'] = $rooturl;
 		$tmp = array('localhost','127.0.0.1','img.baidu.com',$_SERVER['SERVER_NAME']);
 		$config['catcherLocalDomain'] = array_unique($tmp);
 		$config['catcherPathFormat'] = $folder;
-		$config['catcherUrlPrefix'] = $rooturl;
 		$config['videoPathFormat'] = $folder;
-		//$config['videoUrlPrefix'] = $rooturl;
-		$config['videoUrlPrefix'] = '';
 		$config['filePathFormat'] = $folder;
-		$config['fileUrlPrefix'] = $rooturl;
-		$config['imageManagerUrlPrefix'] = $rooturl;
-		$config['videoManagerUrlPrefix'] = '';
 		$config['fileManagerUrlPrefix'] = $rooturl;
 		$config['cateid'] = $cate_rs['id'];
 		foreach($config as $key=>$value)
@@ -277,7 +267,7 @@ class ueditor_control extends phpok_control
 		$piclist = array();
 		foreach($rslist as $key=>$value)
 		{
-			$tmp = array('url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime'],'title'=>$value['title']);
+			$tmp = array('id'=>$value['id'],'url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime'],'original'=>$value['title']);
 			$piclist[] = $tmp;
 		}
 		$data = array('list'=>$piclist,'start'=>$offset,'size'=>$psize);

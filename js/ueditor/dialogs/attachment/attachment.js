@@ -556,6 +556,7 @@
                 link = data.url;
                 list.push({
                     title: data.original || link.substr(link.lastIndexOf('/') + 1),
+                    id:data.id,
                     url: prefix + link
                 });
             }
@@ -682,7 +683,8 @@
                             };
                         })(preview));
                         preview.width = 113;
-                        preview.setAttribute('src', urlPrefix + list[i].url + (list[i].url.indexOf('?') == -1 ? '?noCache=':'&noCache=') + (+new Date()).toString(36) );
+                        
+                        preview.setAttribute('src', urlPrefix + list[i].ico + (list[i].ico.indexOf('?') == -1 ? '?noCache=':'&noCache=') + (+new Date()).toString(36) );
                     } else {
                         var ic = document.createElement('i'),
                             textSpan = document.createElement('span');
@@ -700,6 +702,7 @@
                     if (list[i].original) {
                         item.setAttribute('data-title', list[i].original);
                     }
+                    item.setAttribute('data-id',list[i].id);
 
                     item.appendChild(preview);
                     item.appendChild(icon);
@@ -742,6 +745,7 @@
                     var title = lis[i].getAttribute('data-title') || url.substr(url.lastIndexOf('/') + 1);
                     list.push({
                         title: title,
+                        id : lis[i].getAttribute('data-id'),
                         url: url
                     });
                 }

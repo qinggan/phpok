@@ -574,3 +574,7 @@ table.orderlist tr.o-white-over a,table.orderlist tr.o-white-over td{background:
 
 table.form{cellspacing:2px;}
 table.form td{padding:3px;}
+
+
+/* PHPOK程序内部格式化下载涉及到的样式 */
+a.download{background:url('../images/icon_download.png') left center no-repeat;padding-left:18px;}

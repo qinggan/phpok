@@ -1203,31 +1203,28 @@ function phpok_ubb($Text,$nl2br=true)
 	$Text=preg_replace("/\[b\](.+?)\[\/b\]/is","<b>\\1</b>",$Text);
 	$Text=preg_replace("/\[quote\](.+?)\[\/quote\]/is","<blockquote><div style='border:1px solid silver;background:#EFFFDF;color:#393939;padding:5px' >\\1</div></blockquote>", $Text);
 	//UBB下载格式化
-	preg_match_all("/\[download[:|：]*([0-9]*)\](.*)\[\/download\]/isU",$Text,$list);
+	preg_match_all("/\[download[:|：|=]*([0-9]*)\](.*)\[\/download\]/isU",$Text,$list);
 	if($list && count($list)>0)
 	{
 		$dlist = '';
 		foreach($list[0] AS $key=>$value)
 		{
 			$tmpid = $list[1][$key] ? $list[1][$key] : intval($list[2][$key]);
-			if($tmpid)
+			if(!$tmpid)
 			{
-				$dlist[] = array('string'=>$value,'id'=>$tmpid,'title'=>$list[2][$key]);
+				continue;
 			}
-		}
-		if($dlist)
-		{
-			foreach($dlist AS $key=>$value)
+			if($list[2][$key] && intval($list[2][$key]) == $tmpid)
 			{
-				if(!$value['title'] || $value['title'] == $value['id'])
+				$resinfo = $GLOBALS['app']->model('res')->get_one($tmpid);
+				if(!$resinfo)
 				{
-					$rs = $this->model('res')->get_one($value['id']);
-					$value['title'] = $rs['title'];
+					continue;
 				}
-				//格式化链接
-				$string = '<a href="'.$GLOBALS['app']->url('download','','id='.$value['id']).'" title="'.strip_tags($value['title']).'" target="_blank">'.$value['title'].'</a>';
-				$Text = str_replace($value['string'],$string,$Text);
+				$list[2][$key] = $resinfo['title'];
 			}
+			$string = '<a class="download" href="'.$GLOBALS['app']->url('download','','id='.$tmpid).'" title="'.strip_tags($list[2][$key]).'">'.$list[2][$key].'</a>';
+			$Text = str_replace($value,$string,$Text);
 		}
 	}
 	$list = '';
@@ -1237,16 +1234,17 @@ function phpok_ubb($Text,$nl2br=true)
 	{
 		foreach($list[0] AS $key=>$value)
 		{
-			$tmpid = $list[1][$key];
-			if($tmpid)
+			if(!$list[1][$key])
 			{
-				$rs = $GLOBALS['app']->model('res')->get_one($tmpid);
-				if($rs)
-				{
-					$string = '<a href="'.$GLOBALS['app']->url('download','','id='.$rs['id']).'" title="'.$rs['title'].'" target="_blank">'.$rs['title'].'</a>';
-					$Text = str_replace($value,$string,$Text);
-				}
+				continue;
 			}
+			$rs = $GLOBALS['app']->model('res')->get_one($list[1][$key]);
+			if(!$rs)
+			{
+				continue;
+			}
+			$string = '<a href="'.$GLOBALS['app']->url('download','','id='.$rs['id']).'" title="'.$rs['title'].'">'.$rs['title'].'</a>';
+			$Text = str_replace($value,$string,$Text);
 		}
 	}
 	//格式化主题列表
