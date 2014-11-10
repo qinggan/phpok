@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: 2014-11-06 15:02:23
+-- Generation Time: 2014-11-10 10:03:51
 -- 服务器版本： 5.5.20
 -- PHP Version: 5.3.27
 
@@ -44,14 +44,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_address` (
   `gender` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0女1男',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员地址库' AUTO_INCREMENT=3 ;
-
---
--- 转存表中的数据 `qinggan_address`
---
-
-INSERT INTO `qinggan_address` (`id`, `user_id`, `country`, `province`, `city`, `county`, `address`, `zipcode`, `type_id`, `mobile`, `tel`, `email`, `fullname`, `is_default`, `gender`) VALUES
-(1, 3, '中国', '广东省', '深圳市', '宝安区', '民治塘水围新村三区67栋A806', '518000', 'shipping', '15818533971', '', 'admin@phpok.com', '苏相锟', 0, 1),
-(2, 3, '中国', '福建省', '泉州市', '丰泽区', 'dfasdfasdf', '518000', 'billing', '15818533971', '', '', 'seika', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -127,54 +119,11 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart` (
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示游客',
   `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车' AUTO_INCREMENT=67 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车' AUTO_INCREMENT=1 ;
 
 --
 -- 转存表中的数据 `qinggan_cart`
 --
-
-INSERT INTO `qinggan_cart` (`id`, `session_id`, `user_id`, `addtime`) VALUES
-(1, 'q206adph2ce2erk7r2hl63tah5', 0, 1405733445),
-(2, 'bqfsv9vur38apqc0sarpl7ntm0', 0, 1405773665),
-(3, 'e4gtah38o5b699n5lfrmctr1n3', 0, 1405907880),
-(4, 'grjslsvq7uo22ldqppej4e9jh7', 0, 1406036324),
-(6, 'bf83ss1ugnjt8bts5ta24bi232', 0, 1406787733),
-(7, 'c45astk0sdod26qec0kmlrb8u5', 0, 1406871814),
-(8, 'pug0vscg6e0mbplqnq2k3vs0t6', 0, 1407218837),
-(9, 'okpl07aji8aont0tmhckagvn07', 0, 1407327910),
-(10, 'v9t3het95sd1bbrlkls18q8t82', 0, 1407329313),
-(20, 'bjkepg87evd799qg1aierpr1a4', 0, 1408519254),
-(40, 'ge93i4vn47m33la46lgifhctc6', 10, 1412971758),
-(22, '09k5hoikr9aqnsbpunricl3gc6', 0, 1410835616),
-(23, 'kve0g1604e5tvj4qgm9ks4si56', 0, 1410850878),
-(24, 'prterjmcc3sjboicqt4nf5du42', 0, 1410956698),
-(25, 'ocb3831u2611ej71l7dp5d7cs3', 0, 1411024599),
-(26, '9e8ln0vsf43merdh12t6uqi6p4', 0, 1411277363),
-(27, '8o84tk9ui6nfo1ik78n571kk85', 0, 1411799901),
-(28, 'o54it3il7edcbsdvpcuk848am4', 0, 1412129055),
-(34, 'buju5njr411ck6neaq0vp6dis2', 0, 1412726117),
-(35, 'ub2slaimf0isnkmrp6uejbset3', 0, 1412728639),
-(42, 'cu2mqmj45tgjnk337cqg9niur6', 0, 1413166212),
-(39, 't10qo6vqppuoh6546tl6n3mdn6', 0, 1412825785),
-(47, 'm6rn3623g8bomkchs6t5vors83', 0, 1413287243),
-(48, '584cealegpm7npqol1qppv1e40', 0, 1413290414),
-(49, '28c1kmcagup9hbei59f7udh9b0', 0, 1413344377),
-(50, 'k42oljvi9lhkb6ip2m1i7l6t23', 0, 1413388975),
-(51, '4krpv0c0dvh3047rlufph44mc3', 0, 1413716350),
-(52, 'vsbrp6b2ubn4r51edj9q0elin7', 0, 1413783858),
-(53, 'aog091uccid0sk8d07jtqkidu3', 0, 1413785254),
-(54, 'inq73ji8sqbes9fk6oufdc5p93', 0, 1413788554),
-(55, 'akab4ie1jgdueffbbdcl5861d2', 0, 1413948677),
-(56, 'eepsjtha564t347mrjiavqrl93', 0, 1414078796),
-(58, '5nl6afnt4big23685jj88h0h17', 0, 1414213869),
-(59, 'fnlg4qsf0bdi8se0clsbev9v23', 0, 1414297656),
-(60, '3hu2ent7jm1oddvdt502fkqog3', 102656, 1414575621),
-(61, 'otbnb53vat2per6cmgk04null7', 0, 1414587198),
-(62, 'h82vp273dckvn1koa69voa1ed0', 0, 1414652611),
-(63, 'isq6pl05l8ada9be7k2s6j2nl7', 0, 1414674312),
-(64, '00g5siffev8slgps9ghogogf17', 0, 1414842433),
-(65, 'l7gm0el0n21u1fnab0m0h30343', 0, 1415173322),
-(66, '3ua49d1mc854trcn2b205tbhf1', 3, 1415243158);
 
 -- --------------------------------------------------------
 
@@ -191,19 +140,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart_product` (
   `qty` int(11) NOT NULL DEFAULT '0' COMMENT '产品数量',
   `ext` text NOT NULL COMMENT '扩展属性',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车里的产品信息' AUTO_INCREMENT=15 ;
-
---
--- 转存表中的数据 `qinggan_cart_product`
---
-
-INSERT INTO `qinggan_cart_product` (`id`, `cart_id`, `tid`, `title`, `price`, `qty`, `ext`) VALUES
-(1, 7, 1253, '潮男加厚男士休闲雪花修身牛仔裤子男式小脚裤', 8.2, 1, ''),
-(2, 9, 1253, '潮男加厚男士休闲雪花修身牛仔裤子男式小脚裤', 8.2, 1, ''),
-(3, 10, 1253, '潮男加厚男士休闲雪花修身牛仔裤子男式小脚裤', 8.2, 6, ''),
-(8, 22, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', 799, 11, ''),
-(9, 22, 1253, '新款男人时尚长袖格子衬衫', 158, 1, ''),
-(10, 24, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', 799, 5, '');
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车里的产品信息' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -646,9 +583,9 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (1342, 0, 155, 68, 144, 1, '悬崖上的环卫工', 1413169968, 0, 1, 0, 22, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (1333, 0, 0, 67, 153, 1, 'demo', 1412977072, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (1334, 0, 204, 66, 152, 1, '测试', 1413063267, 0, 1, 0, 3, '', '', '', '', '', '', 0, 3, '', '0.0000', 0),
-(1336, 0, 204, 66, 152, 1, '测试图片功能', 1413064520, 0, 1, 0, 6, '', '', '', '', '', '', 0, 3, '', '0.0000', 0),
+(1336, 0, 204, 66, 152, 1, '测试图片功能', 1413064520, 0, 1, 0, 7, '', '', '', '', '', '', 0, 3, '', '0.0000', 0),
 (1332, 0, 0, 67, 153, 1, 'aIkrtvvzw81412976415', 1412976415, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
-(1344, 0, 68, 22, 43, 1, '测试', 1413772420, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
+(1344, 0, 68, 22, 43, 1, '测试视频', 1415263868, 0, 1, 0, 51, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (1348, 0, 204, 66, 152, 1, '测试权限功能', 1414120852, 0, 1, 0, 7, '', '', '', '', '', '', 1414121403, 3, '', '0.0000', 0);
 
 -- --------------------------------------------------------
@@ -704,7 +641,7 @@ INSERT INTO `qinggan_list_22` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`
 (758, 1, 43, 8, '543', '<p style="margin-bottom: 29px; font-size: 16px; line-height: 28px; font-family: 宋体, Arial, sans-serif; text-indent: 2em; ">昨天，中国民用航空局和国家发改委发布通知称，对旅客运输票价实行政府指导价的国内航线，均取消票价下浮幅度限制。与此同时，国内不设打折下限的航线又新增31条。</p><p style="margin-bottom: 29px; font-size: 16px; line-height: 28px; font-family: 宋体, Arial, sans-serif; text-indent: 2em; ">据民航业内人士介绍，根据2004年出台的《民航国内<a class="a-tips-Article-QQ" href="http://stockhtm.finance.qq.com/astock/ggcx/ATSG.OQ.htm" target="_blank" style="text-decoration: none; outline: none; color: rgb(0, 0, 0); border-bottom-width: 1px; border-bottom-style: dotted; border-bottom-color: rgb(83, 109, 166); ">航空运输</a>价格改革方案》，省、自治区内，及直辖市与相邻省、自治区、直辖市之间的短途航线，已经与其他替代运输方式形成竞争的，实行市场调节价，不规定票价浮动幅度。除上述施行市场调节价的航线外，民航国内航空旅客运输票价实行浮动幅度管理，票价上浮幅度最高不得超过基准价的25%。</p><p style="margin-bottom: 29px; font-size: 16px; line-height: 28px; font-family: 宋体, Arial, sans-serif; text-indent: 2em; ">昨天发布的通知规定，对部分与地面主要交通运输方式形成竞争，且由两家(含)以上航空公司共同经营的国内航线，旅客运输票价由实行政府指导价改为市场调节价。航空公司可根据市场供求情况自主确定票价水平的航线新增31条。实行市场调节价的国内航线目录由民航局和国家发改委规定，于每年一季度调整公布。航空公司在上述范围内制定或调整旅客运输票价时，应至少提前7日向社会公布，并通过航空价格信息系统抄报民航局、发改委。上述业内人士分析，此次由政府指导价转为市场调节价的31条航线，大多是与京广、京沪等高铁存在竞争，取消浮动幅度限制，有利于提高民航的竞争力。</p>', ''),
 (759, 1, 43, 68, '', '<p align="center" style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; "></p><div class="mbArticleSharePic        " r="1" style="margin: 0px auto; padding: 0px; position: relative; z-index: 10; width: 500px; "><img alt="阿里TV系统升级 将增加安全监控功能" src="res/201311/07/85032f7e7ba3cfd7_37.jpg" style="border: 0px; " /></div><p></p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; "><strong>腾讯科技讯</strong>（范蓉）11月7日消息，阿里TV系统将于本月进行升级，增加家庭安全监控功能。同时，阿里在今年“双11”期间，将采用100万台天猫魔盒免费送的方式，加速阿里TV系统在终端的普及。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">尽管阿里TV系统已经将电商与TV结合，但阿里并不满足于这一现状。“电视处于客厅的重要位置，阿里一直欲加强自身砝码，安全监控就是其中之一。”阿里一位内部人士表示。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">据透露，阿里TV系统将提供的安全监控功能，主要通过系统应用、摄像头及智能手机之间的软硬结合来实现。用户只需在智能电视上增设一个摄像头，同时在手机中安装阿里TV助手，就可在任意场所，通过手机屏幕看到家中实时传送过来的画面。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">业内人士认为，阿里不仅将电视定位为PC、手机、平板之外的第四个屏幕选择，还希望将电视提升到智能家居的大概念中。“加入安全监控功能的阿里TV系统，将使电视在家庭中扮演更加重要的监护设备角色。”</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">据悉，安全监控功能将是阿里TV系统11月份更新的重头戏。未来阿里TV系统还会增加云存储功能，让用户可随时查询、回放家庭生活片段。</p>', ''),
 (1269, 1, 43, 68, '544', '<p>Google发布了Chrome 33，其中一项新变化是从Chrome://flags移除了Instant Extended API。结果在官方论坛用户吵翻了天，因为移除Instant Extended API影响了新标签页，引发用户强烈抗议，许多用户认为改动后的新标签页无比丑陋。</p><p>Google自我辩解说，Chrome://flags本来就是展示的 实验性功能，是不被官方正式支持的，是随时会被移除或改动的。Google开发者向抱怨的用户推荐三个扩展替代被移除的Instant Extended API：Replace New Tab，Modern New Tab Page，和iChrome。</p><p><img src="res/201410/08/auto_666.jpg" alt="auto_666.jpg"/></p>', 'Google发布了Chrome 33，其中一项新变化是从Chrome://flags移除了Instant Extended API。结果在官方论坛用户吵翻了天，因为移除Instant Extended API影响了新标签页，引发用户强烈抗议，许多用户认为改动后的新标签页无比丑陋。'),
-(1344, 1, 43, 68, '', '<h3 style="margin-top: 0px; margin-bottom: 0px; margin-left: 47px;"><span style="font-family:;">1.1.1.&nbsp;</span><span style="font-family:;">省市县信息接口</span></h3><p style="margin-top: 0px; margin-bottom: 0px; margin-left: 28px;"><span style="font-family:;">参数：<span style="font-family: Times New Roman;">c=area&amp;f=index</span></span><span style="font-family:;">&amp;callback={$callback}</span></p><p style="text-indent: 28px; margin-top: 0px; margin-bottom: 0px; margin-left: 28px;"><span style="font-family:;">$callback<span style="font-family: 宋体;">，回调</span><span style="font-family: Times New Roman;">JS</span><span style="font-family: 宋体;">参数，实现跨域</span><span style="font-family: Times New Roman;">jsonp</span><span style="font-family: 宋体;">调用，此项可以为空</span></span></p><p style="margin-top: 0px; margin-bottom: 0px; margin-left: 28px;"><span style="font-family:;">返回：</span></p><p style="text-indent: 0px; margin-top: 0px; margin-bottom: 0px; margin-left: 28px;"><img width="108" height="243" src="data:image/png;base64,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"/><span style="font-family:;">&nbsp;</span></p><p></p>', '');
+(1344, 1, 43, 68, '', '<p>[title:1336]测试图片功能[/title]</p><p>[title:1332]aIkrtvvzw81412976415[/title]</p><p>[download=687]退休矿工自家宅院掘地六米挖出地下居室[/download]</p><p>[download=686]悬崖上的环卫工03[/download]</p><p><br/></p>', '');
 
 -- --------------------------------------------------------
 
@@ -1223,18 +1160,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order` (
   `pay_end` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1支付已审核并已结束0表示正在进行中',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ordersn` (`sn`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单中心' AUTO_INCREMENT=17 ;
-
---
--- 转存表中的数据 `qinggan_order`
---
-
-INSERT INTO `qinggan_order` (`id`, `sn`, `user_id`, `addtime`, `qty`, `price`, `currency_id`, `status`, `endtime`, `passwd`, `ext`, `note`, `pay_id`, `pay_title`, `pay_date`, `pay_status`, `pay_price`, `pay_currency`, `pay_currency_code`, `pay_currency_rate`, `pay_end`) VALUES
-(12, 'P20140807001', 3, 1407415985, 2, '16.4000', 1, '审核中', 0, 'f002bff95a02d6ae4a3413464f762ebc', '', '', 0, '', 0, '', '', 0, '', '0.00000000', 0),
-(13, 'P20140807002', 3, 1407416872, 6, '49.2000', 1, '审核中', 0, '87eae43bb669f950fc60319c09838143', '', '', 0, '', 0, '', '', 0, '', '0.00000000', 0),
-(14, 'P20140807003', 3, 1407417388, 3, '24.6000', 1, '审核中', 0, 'c978e019d75ca6540bc2df13d5e23ad6', '', '', 0, '', 0, '', '', 0, '', '0.00000000', 0),
-(15, 'P20140810001', 3, 1407644988, 2, '16.4000', 1, '审核中', 0, 'ad7f8211a76803055fde946cdba59f5a', '', '', 0, '', 0, '', '', 0, '', '0.00000000', 0),
-(16, 'P20141013001', 3, 1413177982, 1, '957.0000', 1, '审核中', 0, 'd651e1cd45b6f7fc95ef0e460968cada', '', '', 1, '支付宝快捷支付', 1415256840, '已付款', '957', 1, 'CNY', '6.16989994', 1);
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单中心' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1258,20 +1184,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_address` (
   `fullname` varchar(100) NOT NULL COMMENT '联系人姓名',
   `gender` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0女1男',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单地址库' AUTO_INCREMENT=20 ;
-
---
--- 转存表中的数据 `qinggan_order_address`
---
-
-INSERT INTO `qinggan_order_address` (`id`, `order_id`, `country`, `province`, `city`, `county`, `address`, `zipcode`, `type_id`, `mobile`, `tel`, `email`, `fullname`, `gender`) VALUES
-(13, 12, '中国', '广东省', '深圳市', '宝安区', '民治塘水围新村三区67栋A806', '518000', 'shipping', '15818533971', '', 'admin@phpok.com', '苏相锟', 1),
-(14, 12, '中国', '福建省', '泉州市', '丰泽区', 'dfasdfasdf', '518000', 'billing', '15818533971', '', '', 'seika', 0),
-(15, 13, '中国', '广东省', '深圳市', '宝安区', '民治塘水围新村三区67栋A806', '518000', 'shipping', '15818533971', '', 'admin@phpok.com', '苏相锟', 1),
-(16, 14, '中国', '广东省', '深圳市', '宝安区', '民治塘水围新村三区67栋A806', '518000', 'shipping', '15818533971', '', 'admin@phpok.com', '苏相锟', 1),
-(17, 15, '中国', '广东省', '深圳市', '宝安区', '民治塘水围新村三区67栋A806', '518000', 'shipping', '15818533971', '', 'admin@phpok.com', '苏相锟', 1),
-(18, 16, '中国', '广东省', '深圳市', '宝安区', '民治塘水围新村三区67栋A806', '518000', 'shipping', '15818533971', '', 'admin@phpok.com', '苏相锟', 1),
-(19, 16, '中国', '福建省', '泉州市', '丰泽区', 'dfasdfasdf', '518000', 'billing', '15818533971', '', '', 'seika', 0);
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单地址库' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1289,19 +1202,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_product` (
   `thumb` int(11) NOT NULL COMMENT '产品图片ID',
   `ext` text NOT NULL COMMENT '产品扩展属性',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单的产品信息' AUTO_INCREMENT=18 ;
-
---
--- 转存表中的数据 `qinggan_order_product`
---
-
-INSERT INTO `qinggan_order_product` (`id`, `order_id`, `tid`, `title`, `price`, `qty`, `thumb`, `ext`) VALUES
-(11, 12, 1253, '潮男加厚男士休闲雪花修身牛仔裤子男式小脚裤', '8.2000', 2, 544, ''),
-(12, 13, 1253, '潮男加厚男士休闲雪花修身牛仔裤子男式小脚裤', '8.2000', 6, 544, ''),
-(13, 14, 1253, '潮男加厚男士休闲雪花修身牛仔裤子男式小脚裤', '8.2000', 3, 544, ''),
-(14, 15, 1253, '潮男加厚男士休闲雪花修身牛仔裤子男式小脚裤', '8.2000', 2, 544, ''),
-(17, 16, 1253, '新款男人时尚长袖格子衬衫', '158.0000', 1, 634, ''),
-(16, 16, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', '799.0000', 1, 636, '');
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单的产品信息' AUTO_INCREMENT=20 ;
 
 -- --------------------------------------------------------
 
@@ -1422,8 +1323,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_plugins` (
 --
 
 INSERT INTO `qinggan_plugins` (`id`, `title`, `author`, `version`, `status`, `taxis`, `note`, `param`) VALUES
-('identifier', '标识串自动生成工具', 'phpok.com', '1.0', 1, 10, '可实现以 title 的表单数据', 'a:5:{s:9:"is_youdao";i:1;s:7:"keyfrom";s:9:"phpok-com";s:5:"keyid";s:9:"108499576";s:10:"is_pingyin";i:1;s:5:"is_py";i:1;}'),
-('sqldiff', '数据库比较工具', 'phpok.com', '1.0', 1, 255, '用于比较两个不同的数据库表结构的不同', 'a:3:{s:10:"sysmenu_id";i:56;s:12:"manage_title";s:15:"数据库比较";s:7:"root_id";s:1:"5";}');
+('identifier', '标识串自动生成工具', 'phpok.com', '1.0', 1, 10, '可实现以 title 的表单数据', 'a:5:{s:9:"is_youdao";i:1;s:7:"keyfrom";s:9:"phpok-com";s:5:"keyid";s:9:"108499576";s:10:"is_pingyin";i:1;s:5:"is_py";i:1;}');
 
 -- --------------------------------------------------------
 
@@ -2257,7 +2157,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_res` (
   `download` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '下载次数',
   PRIMARY KEY (`id`),
   KEY `ext` (`ext`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='资源ID' AUTO_INCREMENT=701 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='资源ID' AUTO_INCREMENT=711 ;
 
 --
 -- 转存表中的数据 `qinggan_res`
@@ -2285,7 +2185,7 @@ INSERT INTO `qinggan_res` (`id`, `cate_id`, `folder`, `name`, `ext`, `filename`,
 (683, 1, 'res/201410/13/', '00bc5d4674b7a14c.jpg', 'jpg', 'res/201410/13/00bc5d4674b7a14c.jpg', 'res/201410/13/_683.jpg', 1413169947, '毕首金老师的体育教具', 'a:2:{s:5:"width";i:760;s:6:"height";i:455;}', '云南省昆明市白汉场中心小学毕首金老师耗费30年，用课余时间手工制作8000余件，106种体育教具。高跷、大板鞋、踢踢球、橄榄球、保龄球、大弹弓都由废旧材料制作而成。', '', 0, 0),
 (684, 1, 'res/201410/13/', '333d91b566a24693.jpg', 'jpg', 'res/201410/13/333d91b566a24693.jpg', 'res/201410/13/_684.jpg', 1413170104, '悬崖上的环卫工01', 'a:2:{s:5:"width";i:760;s:6:"height";i:509;}', '国庆长假，攀悬崖捡垃圾的“蜘蛛侠”又被“看见”了一次。人们感叹清洁工不易的同时，不得不面对一个现实——蜘蛛侠之所以被塑造，是因为人间处处有不公；清洁工之所以攀悬崖，是因为景区处处有垃圾。', '', 0, 0),
 (686, 1, 'res/201410/13/', '02fb392d19e61f1d.jpg', 'jpg', 'res/201410/13/02fb392d19e61f1d.jpg', 'res/201410/13/_686.jpg', 1413170285, '悬崖上的环卫工03', 'a:2:{s:5:"width";i:760;s:6:"height";i:742;}', '“飞檐走壁”的环卫工通常并非年轻人。48岁的康仲军在泰山环卫工里算是“年轻人”了。“太年轻的人压根不愿意干清洁工，年纪大的人干起来太危险，只能我来了。”踩在悬崖边捡垃圾是康仲军的日常工作。康仲军说，工作时被游客的垃圾砸到是常事，曾经还有游客差点把燃着的烟头扔到他脖子上。节假日里，泰山每天产生8吨垃圾，一个环卫工人每天要捡拾游客随意丢弃的垃圾10大袋。', '', 0, 0),
-(687, 1, 'res/201410/13/', 'fffb0a13f8abd14a.jpg', 'jpg', 'res/201410/13/fffb0a13f8abd14a.jpg', 'res/201410/13/_687.jpg', 1413170984, '退休矿工自家宅院掘地六米挖出地下居室', 'a:2:{s:5:"width";i:760;s:6:"height";i:507;}', '郑州市退休矿工陈新年，在自家宅院掘地六米挖出50平米地下居室。陈新年称他的设计能抵抗8级地震，供人居住没有任何问题。陈新年称他挖地下居室的原因很简单——原来的房间太拥挤，商品房又太贵，就利用自己当矿工时的技术给家里挖一间房。', '', 0, 0),
+(687, 1, 'res/201410/13/', 'fffb0a13f8abd14a.jpg', 'jpg', 'res/201410/13/fffb0a13f8abd14a.jpg', 'res/201410/13/_687.jpg', 1413170984, '退休矿工自家宅院掘地六米挖出地下居室', 'a:2:{s:5:"width";i:760;s:6:"height";i:507;}', '郑州市退休矿工陈新年，在自家宅院掘地六米挖出50平米地下居室。陈新年称他的设计能抵抗8级地震，供人居住没有任何问题。陈新年称他挖地下居室的原因很简单——原来的房间太拥挤，商品房又太贵，就利用自己当矿工时的技术给家里挖一间房。', '', 0, 1),
 (700, 1, 'res/201411/06/', 'a50b479341925654', 'jpg', 'res/201411/06/a50b479341925654.jpg', 'res/201411/06/_700.jpg', 1415255292, 'logo200', 'a:2:{s:5:"width";i:200;s:6:"height";i:200;}', '', '3ua49d1mc854trcn2b205tbhf1', 3, 0);
 
 -- --------------------------------------------------------
@@ -2465,15 +2365,14 @@ CREATE TABLE IF NOT EXISTS `qinggan_site` (
   `html_content_type` varchar(255) NOT NULL DEFAULT 'empty' COMMENT 'HTML生成规则',
   `biz_etpl` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='网站管理' AUTO_INCREMENT=19 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='网站管理' AUTO_INCREMENT=2 ;
 
 --
 -- 转存表中的数据 `qinggan_site`
 --
 
 INSERT INTO `qinggan_site` (`id`, `domain_id`, `title`, `dir`, `status`, `content`, `is_default`, `tpl_id`, `url_type`, `logo`, `meta`, `currency_id`, `register_status`, `register_close`, `login_status`, `login_close`, `adm_logo29`, `adm_logo180`, `lang`, `api`, `email_charset`, `email_server`, `email_port`, `email_ssl`, `email_account`, `email_pass`, `email_name`, `email`, `seo_title`, `seo_keywords`, `seo_desc`, `biz_sn`, `biz_payment`, `biz_billing`, `upload_guest`, `upload_user`, `html_root_dir`, `html_content_type`, `biz_etpl`) VALUES
-(1, 1, 'PHPOK企业网站', '/phpok/', 1, '网站正在建设中！', 1, 1, 'default', 'res/201409/01/27a6e141c3d265ae.jpg', '', 1, 1, '本系统暂停新会员注册，给您带来不便还请见谅，如需会员服务请联系QQ：40782502', 1, '本系统暂停会员登录，给您带来不便还请见谅！', '', '', '', 0, 'utf-8', 'smtp.qq.com', '25', 0, 'admin@phpok.com', '', '网站管理员', 'admin@phpok.com', '网站建设|企业网站建设|PHPOK网站建设|PHPOK企业网站建设', '网站建设,企业网站建设,PHPOK网站建设,PHPOK企业网站建设', '高效的企业网站建设系统，可实现高定制化的企业网站电商系统，实现企业网站到电子商务企业网站。定制功能更高，操作更简单！', 'prefix[P]-year-month-date-number', 0, 1, 0, 1, 'html/', 'Ym/', 'order_admin'),
-(18, 20, '测试站点添加', '/', 0, '', 0, 0, 'default', '', '', 0, 0, '', 0, '', '', '', '', 0, 'utf-8', '', '', 0, '', '', '', '', '', '', '', '', 0, 0, 0, 0, 'html/', 'empty', '');
+(1, 1, 'PHPOK企业网站', '/phpok/', 1, '网站正在建设中！', 1, 1, 'default', 'res/201409/01/27a6e141c3d265ae.jpg', '', 1, 1, '本系统暂停新会员注册，给您带来不便还请见谅，如需会员服务请联系QQ：40782502', 1, '本系统暂停会员登录，给您带来不便还请见谅！', '', '', '', 0, 'utf-8', 'smtp.qq.com', '25', 0, 'admin@phpok.com', '', '网站管理员', 'admin@phpok.com', '网站建设|企业网站建设|PHPOK网站建设|PHPOK企业网站建设', '网站建设,企业网站建设,PHPOK网站建设,PHPOK企业网站建设', '高效的企业网站建设系统，可实现高定制化的企业网站电商系统，实现企业网站到电子商务企业网站。定制功能更高，操作更简单！', 'prefix[P]-year-month-date-number', 0, 1, 0, 1, 'html/', 'Ym/', 'order_admin');
 
 -- --------------------------------------------------------
 
@@ -2487,15 +2386,14 @@ CREATE TABLE IF NOT EXISTS `qinggan_site_domain` (
   `domain` varchar(255) NOT NULL COMMENT '域名信息',
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='网站指定的域名' AUTO_INCREMENT=21 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='网站指定的域名' AUTO_INCREMENT=2 ;
 
 --
 -- 转存表中的数据 `qinggan_site_domain`
 --
 
 INSERT INTO `qinggan_site_domain` (`id`, `site_id`, `domain`) VALUES
-(1, 1, 'localhost'),
-(20, 18, 'demo');
+(1, 1, 'localhost');
 
 -- --------------------------------------------------------
 
@@ -2567,8 +2465,7 @@ INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, 
 (45, 4, '程序升级', 1, 'update', 30, '', '', '', 0, 1, 'earth'),
 (2, 0, '订单', 1, 'order', 20, '', '', '', 0, 0, ''),
 (52, 2, '付款方案', 1, 'payment', 20, '', '', '', 0, 1, ''),
-(55, 1, '生成静态页', 0, 'html', 150, '', '', '', 0, 1, 'screen'),
-(56, 5, '数据库比较', 1, 'plugin', 255, 'exec', '', 'id=sqldiff&exec=manage', 0, 1, '');
+(55, 1, '生成静态页', 0, 'html', 150, '', '', '', 0, 1, 'screen');
 
 -- --------------------------------------------------------
 
@@ -2600,15 +2497,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_temp` (
   `content` longtext NOT NULL,
   PRIMARY KEY (`id`),
   KEY `tbl` (`tbl`,`admin_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='临时表单存储器' AUTO_INCREMENT=30 ;
-
---
--- 转存表中的数据 `qinggan_temp`
---
-
-INSERT INTO `qinggan_temp` (`id`, `tbl`, `admin_id`, `content`) VALUES
-(2, 'cate-7', 1, 'a:12:{s:2:"id";s:1:"7";s:5:"title";s:12:"新闻资讯";s:10:"identifier";s:11:"information";s:9:"parent_id";s:1:"0";s:5:"taxis";s:2:"10";s:6:"status";s:1:"1";s:9:"seo_title";s:0:"";s:12:"seo_keywords";s:0:"";s:8:"seo_desc";s:0:"";s:5:"psize";s:1:"0";s:8:"tpl_list";s:0:"";s:11:"tpl_content";s:0:"";}'),
-(5, 'all-35', 1, 'a:1:{s:2:"id";s:2:"35";}');
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='临时表单存储器' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2654,16 +2543,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_user` (
   `code` varchar(255) NOT NULL COMMENT '验证串，可用于取回密码',
   `avatar` varchar(255) NOT NULL COMMENT '会员头像',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员管理' AUTO_INCREMENT=12 ;
-
---
--- 转存表中的数据 `qinggan_user`
---
-
-INSERT INTO `qinggan_user` (`id`, `group_id`, `user`, `pass`, `status`, `regtime`, `email`, `mobile`, `code`, `avatar`) VALUES
-(3, 2, 'admin', '62b32b970271868ba82e832e010c66be:74', 1, 1389672572, 'admin@admin.com', '158185xxxxx', '0JKWkNEf9Z1410314178', 'res/201411/06/a50b479341925654.jpg'),
-(5, 2, 'demo', '549d1d6b175c1552f25dafb32d0aa8eb:f8', 1, 1410312581, 'admin@demo.com', '123456789', 'LeKiHwsrb41410312772', ''),
-(10, 2, 'suxiangkun', 'bed47b98d9244e2ff8f18c58b72a2074:32', 1, 1412976442, 'suxiangkun@126.com', '', '', '');
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员管理' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2678,17 +2558,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_ext` (
   `content` longtext NOT NULL COMMENT '内容',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员扩展字段';
-
---
--- 转存表中的数据 `qinggan_user_ext`
---
-
-INSERT INTO `qinggan_user_ext` (`id`, `fullname`, `gender`, `content`) VALUES
-(21, '', '', ''),
-(10, '', '', ''),
-(23, '苏相锟', '', ''),
-(3, 'seika', '1', ''),
-(5, '', '', '');
 
 -- --------------------------------------------------------
 

@@ -156,9 +156,9 @@ class user_control extends phpok_control
 		{
 			$array["status"] = $this->get("status","int");
 		}
-		$regtime = $this->get("regtime");
-		if(!$regtime) $regtime = date("Y-m-d H:i:s",$this->system_time);
-		$array["regtime"] = strtotime($regtime);
+		$regtime = $this->get("regtime","time");
+		if(!$regtime) $regtime = $this->time;
+		$array["regtime"] = $regtime;
 		//存储扩展表信息
 		$insert_id = $this->model('user')->save($array,$id);
 		//读取扩展字段
