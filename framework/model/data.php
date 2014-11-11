@@ -1316,17 +1316,17 @@ class data_model extends phpok_model
 		{
 			foreach($flist AS $key=>$value)
 			{
-				$ext = array();
-				if($value['ext'] && is_string($value['ext']))
+				$ext = $value['ext'];
+				if($ext && is_string($ext))
 				{
-					$ext = unserialize($value['ext']);
+					$ext = unserialize($ext);
 				}
 				//格式化附件信息
 				if($value['form_type'] == "upload" && $rs[$value['identifier']] && $reslist && is_array($reslist))
 				{
 					if($ext['is_multiple'])
 					{
-						$res = "";
+						$res = false;
 						$tmp = explode(',',$rs[$value['identifier']]);
 						foreach($tmp AS $k=>$v)
 						{

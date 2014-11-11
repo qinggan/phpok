@@ -65,6 +65,10 @@ class index_control extends phpok_control
 			}
 		}
 		$popedom = $_SESSION["admin_rs"]["if_system"] ? array("all") : $_SESSION["admin_popedom"];
+		if(!$popedom)
+		{
+			$popedom = array();
+		}
 		$menulist = $this->model('sysmenu')->get_all($_SESSION["admin_site_id"],1);
 		if(!$menulist)
 		{
@@ -84,6 +88,11 @@ class index_control extends phpok_control
 			{
 				if(!in_array($v['appfile'],$ftmp) && !$_SESSION['admin_rs']['if_system'] && $popedom_m[$v['id']])
 				{
+					if(!$popedom_m || !$popedom_m[$v['id']] || !is_array($popedom_m[$v['id']]) || count($popedom_m[$v["id"]])<1)
+					{
+						unset($value["sublist"][$k]);
+						continue;
+					}
 					$tmp = array_intersect($popedom,$popedom_m[$v["id"]]);
 					if(!$tmp)
 					{
