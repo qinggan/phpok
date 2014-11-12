@@ -26,7 +26,7 @@ class post_control extends phpok_control
 	function index_f()
 	{
 		$id = $this->get("id");
-		$pid = $this->get('pid');
+		$pid = $this->get('pid','int');
 		if(!$id && !$pid)
 		{
 			error(P_Lang('未指定项目'),'','error');

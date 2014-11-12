@@ -103,7 +103,7 @@ class open_control extends phpok_control
 			$pageurl .= "&start_date=".strtolower($start_date);
 			$this->assign("start_date",$start_date);
 		}
-		$stop_date = $this->get("stop_date");
+		$stop_date = $this->get("stop_date",'html');
 		if($stop_date)
 		{
 			$condition .= " AND addtime<=".strtotime($stop_date)." ";

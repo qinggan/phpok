@@ -866,10 +866,21 @@ class _init_phpok
 		{
 			foreach($msg AS $key=>$value)
 			{
+				$key2 = $this->format($key,"system");
+				if(!$key2)
+				{
+					unset($msg[$key]);
+					continue;
+				}
 				$msg[$key] = $this->format($value,$type,$ext);
 			}
-			return $msg;
+			if($msg && count($msg)>0)
+			{
+				return $msg;
+			}
+			return false;
 		}
+		//echo "<pre>".print_r($msg,true)."</pre>";
 		//如果返回的是html
 		if($type == 'html_js' || ($type == 'html' && $ext))
 		{
@@ -884,7 +895,7 @@ class _init_phpok
 		//格式化处理内容
 		switch ($type)
 		{
-			case 'safe':$msg = str_replace(array("\\","'",'"',"<",">"," "),array("&#92;","&#39;","&quot;","&lt;","&gt;","&nbsp;"),$msg);break;
+			case 'safe':$msg = str_replace(array("\\","'",'"',"<",">"),array("&#92;","&#39;","&quot;","&lt;","&gt;"),$msg);break;
 			case 'system':$msg = !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u",$msg) ? false : $msg;break;
 			case 'id':$msg = !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u",$msg) ? false : $msg;break;
 			case 'checkbox':$msg = strtolower($msg) == 'on' ? 1 : $this->format($msg,'safe');break;

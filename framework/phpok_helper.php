@@ -250,8 +250,7 @@ function ext_value($rs)
 	}
 	elseif($rs["format"] == "time")
 	{
-		$val = $GLOBALS['app']->get($rs["identifier"]);
-		if($val) $val = strtotime($val);
+		$val = $GLOBALS['app']->get($rs["identifier"],'time');
 	}
 	elseif($rs["format"] == "text")
 	{

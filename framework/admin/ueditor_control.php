@@ -51,6 +51,7 @@ class ueditor_control extends phpok_control
 		}
 		$rooturl = $this->root_url();
 		$config['imagePathFormat'] = $folder;
+		$config['imageManagerUrlPrefix'] = $rooturl;
 		$config['scrawlPathFormat'] = $folder;
 		$config['snapscreenPathFormat'] = $folder;
 		$tmp = array('localhost','127.0.0.1','img.baidu.com',$_SERVER['SERVER_NAME']);
@@ -294,7 +295,7 @@ class ueditor_control extends phpok_control
 		$piclist = array();
 		foreach($rslist as $key=>$value)
 		{
-			$tmp = array('url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime']);
+			$tmp = array('url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime'],'title'=>$value['title']);
 			$piclist[] = $tmp;
 		}
 		$data = array('list'=>$piclist,'start'=>$offset,'size'=>$psize);
@@ -312,7 +313,7 @@ class ueditor_control extends phpok_control
 		{
 			$this->_stop('文件上传失败');
 		}
-		$data = array('title'=>$rs['title'],'url'=>$rs['filename'],'original'=>$rs['title']);
+		$data = array('id'=>$rs['id'],'title'=>$rs['title'],'url'=>$rs['filename'],'original'=>$rs['title']);
 		$this->_stop(true,$data);
 	}
 	//视频上传

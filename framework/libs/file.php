@@ -83,6 +83,10 @@ class file_lib
 	#[这一步操作一定要小心，在程序中最好严格一些，不然有可能将整个目录删掉！]
 	function rm($file,$type="file")
 	{
+		if(!file_exists($file))
+		{
+			return false;
+		}
 		$array = $this->_dir_list($file);
 		if(is_array($array))
 		{
@@ -92,7 +96,7 @@ class file_lib
 				{
 					if(is_dir($value))
 					{
-						$this->rm($value);
+						$this->rm($value,$type);
 					}
 					else
 					{
@@ -163,33 +167,43 @@ class file_lib
 		return true;
 	}
 
-	#[复制操作]
+	//复制操作
 	function cp($old,$new,$recover=true)
 	{
-		if(substr($new,-1) == "/")
+		if(is_file($old))
 		{
-			$this->make($new,"dir");
-		}
-		else
-		{
-			$this->make($new,"file");
-		}
-		if(is_file($new))
-		{
-			if($recover)
+			//如果目标是文件夹
+			if(substr($new,-1) == '/')
 			{
-				unlink($new);
+				$this->make($new,'dir');
+				$basename = basename($old);
+				if(file_exists($new.$basename) && !$recover)
+				{
+					return false;
+				}
+				copy($old,$new.$basename);
+				return true;
 			}
-			else
+			//如果目标是文件
+			if(file_exists($new) && !$recover)
 			{
 				return false;
 			}
+			copy($old,$new);
+			return true;
 		}
-		else
+		//复制目录
+		$basename = basename($old);
+		$this->make($new.$basename,'dir');
+		//复制目录下的内容
+		$dlist = $this->ls($old);
+		if($dlist && count($dlist)>0)
 		{
-			$new = $new.basename($old);
+			foreach($dlist as $key=>$value)
+			{
+				$this->cp($value,$new.$basename.'/',$recover);
+			}
 		}
-		copy($old,$new);
 		return true;
 	}
 

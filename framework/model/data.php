@@ -1127,7 +1127,7 @@ class data_model extends phpok_model
 		}
 		else
 		{
-			$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".$id;
+			$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".intval($id);
 			$rs = $this->db->get_one($sql);
 			$this->cdata['project'][$id] = $rs;
 		}
