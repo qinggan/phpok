@@ -204,16 +204,13 @@ class module_model extends phpok_model
 	function delete($id)
 	{
 		if(!$id) return false;
-		$this->db->query($sql);
+		//$this->db->query($sql);
 		//删除表
 		if($this->chk_tbl_exists($id))
 		{
 			$sql = "DROP TABLE ".$this->db->prefix."list_".$id;
 			$this->db->query($sql);
 		}
-		//删除不用的标识
-		$sql = "DELETE FROM ".$this->db->prefix."id WHERE type_id='content' AND id IN(SELECT id FROM ".$this->db->prefix."list WHERE module_id=".$id.")";
-		$this->db->query($sql);
 		//删除不用的主题
 		$sql = "DELETE FROM ".$this->db->prefix."list WHERE module_id='".$id."'";
 		$this->db->query($sql);

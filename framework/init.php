@@ -866,11 +866,14 @@ class _init_phpok
 		{
 			foreach($msg AS $key=>$value)
 			{
-				$key2 = $this->format($key,"system");
-				if(!$key2)
+				if(!is_numeric($key))
 				{
-					unset($msg[$key]);
-					continue;
+					$key2 = $this->format($key,"system");
+					if($key2 == '')
+					{
+						unset($msg[$key]);
+						continue;
+					}
 				}
 				$msg[$key] = $this->format($value,$type,$ext);
 			}
