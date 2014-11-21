@@ -473,6 +473,8 @@ class _init_phpok
 					header("Location:http://".$domain_rs['domain'].$site_rs['dir']);
 					exit;
 				}
+				$ext_list = $this->site_model->site_config($site_rs["id"]);
+				if($ext_list) $site_rs = array_merge($ext_list,$site_rs);
 			}
 		}
 		if(!$site_rs)

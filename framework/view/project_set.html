@@ -230,7 +230,7 @@
 			<span class="note">设置好默认排序，有利于网站的管理（前后台一致）</span>
 		</div>
 		<div class="content">
-			<input type="text" id="orderby" name="orderby" class="long" value="{$rs.orderby ? $rs.orderby : 'l.sort DESC,l.dateline DESC,l.id DESC'}" />
+			<input type="text" id="orderby" name="orderby" class="long" value="{$rs.orderby ? $rs.orderby : 'l.sort ASC,l.dateline DESC,l.id DESC'}" />
 			<input type="button" value="清空" class="btn" onclick="$('#orderby').val('')" />
 			
 			<ul class="btnlist">

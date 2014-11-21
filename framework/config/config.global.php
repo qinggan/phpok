@@ -55,7 +55,7 @@ $config['autoload_js']  = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.m
 
 
 # SESSION存储方式
-$config["engine"]["session"]["file"] = "default";
+$config["engine"]["session"]["file"] = "file";
 $config["engine"]["session"]["id"] = "PHPSESSION";
 $config["engine"]["session"]["timeout"] = 3600;
 $config["engine"]["session"]["path"] = ROOT."data/session/";
