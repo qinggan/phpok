@@ -472,9 +472,9 @@ class db_mysql
 	{
 		if($sql)
 		{
-			$this->type = MYSQLI_NUM;
+			$this->type = MYSQL_NUM;
 			$rs = $this->get_one($sql);
-			$this->type = MYSQLI_ASSOC;
+			$this->type = MYSQL_ASSOC;
 			return $rs[0];
 		}
 		else
