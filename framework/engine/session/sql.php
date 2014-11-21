@@ -32,7 +32,7 @@ class session_sql
 		$sid = $config["session_id"];
 		$this->sid = $sid;
 		$session_id = isset($_POST[$sid]) ? $_POST[$sid] : (isset($_GET[$sid]) ? $_GET[$sid] : "");
-		if($session_id)
+		if($session_id && preg_match("/^[a-z0-9A-Z\_\-]+$/u",$session_id))
 		{
 			session_id($session_id);
 			$this->sessid = $session_id;
