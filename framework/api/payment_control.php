@@ -65,7 +65,7 @@ class payment_control extends phpok_control
 		$burl = $this->url("order",'info','id='.$rs['id']);
 		if(!$_SESSION['user_id'])
 		{
-			$burl = $this->url("order","checkpass","sn=".$rs['sn']);
+			$burl = $this->url("order","info","sn=".$rs['sn']."&passwd=".$rs['passwd']);
 		}
 		$burl = $this->config['www_file'].substr($burl,strlen($this->config['api_file']));
 		if($rs['pay_end'])
