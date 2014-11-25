@@ -1,0 +1,63 @@
+<!-- inc:head -->
+<script type="text/javascript" src="{func include_js all.js}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#email_test').submit(function(){
+		$(this).ajaxSubmit({
+			'type':'post',
+			'dataType':'json',
+			'url':api_url('email'),
+			'success':function(rs){
+				if(rs.status == 'ok')
+				{
+					var email = $('#email').val();
+					$.dialog.alert('邮件已发送到指定邮箱：'+email,function(){
+						$.dialog.close();
+					},'succeed');
+				}
+				else
+				{
+					if(!rs.content) rs.content = '邮件发送失败';
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<form method="post" id="email_test">
+<div class="table">
+	<div class="title">
+		目标邮箱：
+		<span class="note">即收件人邮箱</span></span>
+	</div>
+	<div class="content">
+		<input type="text" id="email" name="email" class="long" value="{$email}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		邮件主题：
+		<span class="note">填写邮件的主题，为空将读取内容的前面50字符（即25个汉字）</span></span>
+	</div>
+	<div class="content"><input type="text" id="title" name="title" class="long" value="{$title}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		邮件内容：
+		<span class="note">测试的邮件，支持HTML！</span></span>
+	</div>
+	<div class="content">{$content}</div>
+</div>
+
+<div class="table">
+	<div class="content">
+		<br />
+		<input type="submit" value="提 交" class="submit" />
+		<br />
+	</div>
+</div>
+</form>
+<!-- inc:foot_open -->
