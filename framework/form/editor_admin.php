@@ -32,7 +32,7 @@ class editor_form
 	function format($rs)
 	{
 		$this->cssjs();
-		if(!$rs["width"] || $rs["width"] < 900) $rs["width"] = "900";
+		if(!$rs["width"] || $rs["width"] < 800) $rs["width"] = "800";
 		//格式化样式
 		$style = array();
 		if($rs['form_style'])
