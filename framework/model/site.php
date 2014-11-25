@@ -42,7 +42,7 @@ class site_model extends phpok_model
 		if(!$id) return false;
 		$sql = "UPDATE ".$this->db->prefix."site SET is_default=0";
 		$this->db->query($sql);
-		$sql = "UPDATE ".$this->db->prefix."site SET is_default=1 WHERE id=".$id;
+		$sql = "UPDATE ".$this->db->prefix."site SET is_default=1 WHERE id=".intval($id);
 		$this->db->query($sql);
 		return true;
 	}

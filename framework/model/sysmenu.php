@@ -37,7 +37,7 @@ class sysmenu_model extends phpok_model
 	{
 		# 当未指定子菜单时，直接获取父栏目信息
 		$parent_id = intval($parent_id);
-		$sql = "SELECT * FROM ".$this->db->prefix."sysmenu WHERE parent_id=".$parent_id." ";
+		$sql = "SELECT * FROM ".$this->db->prefix."sysmenu WHERE parent_id=".intval($parent_id)." ";
 		if($status)
 		{
 			$sql .= " AND status=1 ";

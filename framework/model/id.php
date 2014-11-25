@@ -37,17 +37,17 @@ class id_model extends phpok_model
 		//在项目中检测
 		$sql = "SELECT id FROM ".$this->db->prefix."project WHERE identifier='".$identifier."' ";
 		$sql.= "AND site_id IN(".$site_id.") ";
-		if($id) $sql .= " AND id !=".$id;
+		if($id) $sql .= " AND id !=".intval($id);
 		$check_rs = $this->db->get_one($sql);
 		if($check_rs) return true;
 		//在分类中检测
 		$sql = "SELECT id FROM ".$this->db->prefix."cate WHERE identifier='".$identifier."' AND site_id IN(".$site_id.")";
-		if($id) $sql .= " AND id !=".$id;
+		if($id) $sql .= " AND id !=".intval($id);
 		$check_rs = $this->db->get_one($sql);
 		if($check_rs) return true;
 		//在内容里检测
 		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE identifier='".$identifier."' AND site_id IN(".$site_id.")";
-		if($id) $sql .= " AND id !=".$id;
+		if($id) $sql .= " AND id !=".intval($id);
 		$check_rs = $this->db->get_one($sql);
 		if($check_rs) return true;
 		return false;

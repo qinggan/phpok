@@ -140,11 +140,11 @@ class order_model extends phpok_model
 	//删除订单操作
 	function delete($id)
 	{
-		$sql = "DELETE FROM ".$this->db->prefix."order WHERE id=".$id;
+		$sql = "DELETE FROM ".$this->db->prefix."order WHERE id=".intval($id);
 		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."order_address WHERE order_id=".$id;
+		$sql = "DELETE FROM ".$this->db->prefix."order_address WHERE order_id=".intval($id);
 		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."order_product WHERE order_id=".$id;
+		$sql = "DELETE FROM ".$this->db->prefix."order_product WHERE order_id=".intval($id);
 		$this->db->query($sql);
 		return true;
 	}

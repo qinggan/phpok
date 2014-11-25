@@ -256,7 +256,7 @@ class cate_model extends phpok_model
 	function catelist_sonlist($cid,$ext=true,$status=1)
 	{
 		if(!$cid) return false;
-		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE parent_id=".$cid." ";
+		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE parent_id=".intval($cid)." ";
 		if($status) $sql .= ' AND status=1 ';
 		$sql.= " ORDER BY taxis ASC,id DESC ";
 		$rslist = $this->db->get_all($sql,"id");

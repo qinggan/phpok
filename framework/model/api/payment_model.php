@@ -17,7 +17,7 @@ class payment_model extends phpok_model
 
 	function get_one($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."payment WHERE id=".$id;
+		$sql = "SELECT * FROM ".$this->db->prefix."payment WHERE id=".intval($id);
 		$rs = $this->db->get_one($sql);
 		if(!$rs)
 		{

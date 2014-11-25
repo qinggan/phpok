@@ -61,13 +61,13 @@ class data_model extends phpok_model
 		$sql = "SELECT ".$field." FROM ".$this->db->prefix."list l ";
 		$sql.= "JOIN ".$this->db->prefix."list_".$project_rs['module']." ext ";
 		$sql.= "ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
-		$sql.= "WHERE l.project_id=".$rs['pid']." AND l.site_id=".$this->site['id']." ";
+		$sql.= "WHERE l.project_id=".intval($rs['pid'])." AND l.site_id=".intval($this->site['id'])." ";
 		$sql.= " AND l.hidden=0 ";
 		if(!$rs['not_status'])
 		{
 			if($_SESSION['user_id'])
 			{
-				$sql .= " AND (l.status=1 OR (l.user_id=".$_SESSION['user_id']." AND l.status=0)) ";
+				$sql .= " AND (l.status=1 OR (l.user_id=".intval($_SESSION['user_id'])." AND l.status=0)) ";
 			}
 			else
 			{
@@ -304,7 +304,7 @@ class data_model extends phpok_model
 		if(!$project_rs['module']) return false;
 		$sql = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
 		$sql.= "JOIN ".$this->db->prefix."list_".$project_rs['module']." ext ON(l.id=ext.id AND l.site_id=ext.site_id) ";
-		$sql.= "WHERE l.project_id=".$rs['pid']." AND l.site_id=".$this->site['id']." ";
+		$sql.= "WHERE l.project_id=".intval($rs['pid'])." AND l.site_id=".intval($this->site['id'])." ";
 		$sql.= " AND l.hidden=0 ";
 		if(!$rs['not_status']) $sql .= " AND l.status=1 ";
 		//不包含主题
@@ -595,7 +595,7 @@ class data_model extends phpok_model
 			return $this->cdata['res'][$id];
 		}
 		//通过数据库读取数据
-		$sql = "SELECT * FROM ".$this->db->prefix."res WHERE id=".$id;
+		$sql = "SELECT * FROM ".$this->db->prefix."res WHERE id=".intval($id);
 		$rs = $this->db->get_one($sql);
 		if(!$rs)
 		{
@@ -603,7 +603,7 @@ class data_model extends phpok_model
 		}
 		$sql = "SELECT ext.res_id,ext.filename,gd.identifier FROM ".$this->db->prefix."res_ext ext ";
 		$sql.= "JOIN ".$this->db->prefix."gd gd ON(ext.gd_id=gd.id) ";
-		$sql.= "WHERE ext.res_id=".$id;
+		$sql.= "WHERE ext.res_id=".intval($id);
 		$extlist = $this->db->get_all($sql);
 		if($extlist)
 		{
@@ -1006,7 +1006,7 @@ class data_model extends phpok_model
 			$rs['pid'] = $tmp['id'];
 		}
 		if(!$rs['pid']) return false;
-		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE parent_id=".$rs['pid']." AND status=1 ";
+		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE parent_id=".intval($rs['pid'])." AND status=1 ";
 		$sql.= "AND hidden=0 ";
 		$sql.= "ORDER BY taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql);

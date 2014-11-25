@@ -135,27 +135,27 @@ class payment_model extends phpok_model
 		$condition = $site_id ? 'site_id IN(0,'.$site_id.')' : 'site_id=0';
 		$sql = "UPDATE ".$this->db->prefix."payment_group SET is_default=0 WHERE ".$condition;
 		$this->db->query($sql);
-		$sql = "UPDATE ".$this->db->prefix."payment_group SET is_default=1 WHERE id=".$id;
+		$sql = "UPDATE ".$this->db->prefix."payment_group SET is_default=1 WHERE id=".intval($id);
 		return $this->db->query($sql);
 	}
 
 	//取得单个支付组
 	function group_one($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."payment_group WHERE id=".$id;
+		$sql = "SELECT * FROM ".$this->db->prefix."payment_group WHERE id=".intval($id);
 		return $this->db->get_one($sql);
 	}
 
 	//删除支付组
 	function group_delete($id)
 	{
-		$sql = "DELETE FROM ".$this->db->prefix."payment_group WHERE id=".$id;
+		$sql = "DELETE FROM ".$this->db->prefix."payment_group WHERE id=".intval($id);
 		return $this->db->query($sql);
 	}
 	//取得单个支付方式
 	function get_one($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."payment WHERE id=".$id;
+		$sql = "SELECT * FROM ".$this->db->prefix."payment WHERE id=".intval($id);
 		return $this->db->get_one($sql);
 	}
 

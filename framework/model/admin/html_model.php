@@ -18,13 +18,13 @@ class html_model extends phpok_model
 	//获取模板信息
 	function get_tpl($siteid,$mobile=false)
 	{
-		$sql = "SELECT tpl_id FROM ".$this->db->prefix."site WHERE id=".$siteid." AND status=1";
+		$sql = "SELECT tpl_id FROM ".$this->db->prefix."site WHERE id=".intval($siteid)." AND status=1";
 		$rs = $this->db->get_one($sql);
 		if(!$rs || !$rs['tpl_id'])
 		{
 			return false;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."tpl WHERE id=".$rs['tpl_id'];
+		$sql = "SELECT * FROM ".$this->db->prefix."tpl WHERE id=".intval($rs['tpl_id']);
 		return $this->db->get_one($sql);
 	}
 
@@ -71,8 +71,8 @@ class html_model extends phpok_model
 	//取得指定项目下的模块主题数
 	function get_subject_total($pid=0,$mid=0,$site_id=0,$cateid='')
 	{
-		$sql = "SELECT count(id) FROM ".$this->db->prefix."list WHERE site_id=".$site_id." ";
-		$sql.= " AND project_id=".$pid." AND module_id=".$mid." AND status=1 ";
+		$sql = "SELECT count(id) FROM ".$this->db->prefix."list WHERE site_id=".intval($site_id)." ";
+		$sql.= " AND project_id=".intval($pid)." AND module_id=".intval($mid)." AND status=1 ";
 		if($cateid)
 		{
 			$sql.= " AND cate_id IN(".$cateid.") ";
@@ -91,8 +91,8 @@ class html_model extends phpok_model
 
 	function title_list($site_id=0,$pid=0,$mid=0)
 	{
-		$sql = "SELECT id,title,dateline FROM ".$this->db->prefix."list WHERE site_id=".$site_id." AND ";
-		$sql.= "project_id=".$pid." AND module_id=".$mid." AND status=1 ";
+		$sql = "SELECT id,title,dateline FROM ".$this->db->prefix."list WHERE site_id=".intval($site_id)." AND ";
+		$sql.= "project_id=".intval($pid)." AND module_id=".intval($mid)." AND status=1 ";
 		return $this->db->get_all($sql,'id');
 	}
 	
@@ -113,7 +113,7 @@ class html_model extends phpok_model
 
 	function project($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".$id." AND status=1";
+		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".intval($id)." AND status=1";
 		return $this->db->get_one($sql);
 	}
 }

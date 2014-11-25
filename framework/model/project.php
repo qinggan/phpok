@@ -19,7 +19,7 @@ class project_model extends phpok_model
 	function simple_project_from_identifier($identifier="",$site_id=0)
 	{
 		if(!$identifier || !$site_id) return false;
-		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE site_id=".$site_id." AND status=1 ";
+		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE site_id=".intval($site_id)." AND status=1 ";
 		$sql.= "AND identifier='".$identifier."' LIMIT 1";
 		return $this->db->get_one($sql);
 	}
@@ -27,8 +27,8 @@ class project_model extends phpok_model
 	//取得项目信息
 	function get_one($id,$ext=true)
 	{
-		if(!$id) return false;
-		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".$id;
+		if(!$id || !intval($id)) return false;
+		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".intval($id);
 		$rs = $this->db->get_one($sql);
 		if(!$rs) return false;
 		if($ext)
@@ -42,7 +42,7 @@ class project_model extends phpok_model
 	//通过identifier获取项目信息
 	function identifier_one($id,$site_id=0,$ext=true)
 	{
-		$site_id = $site_id ? '0,'.$site_id : '0';
+		$site_id = $site_id ? '0,'.intval($site_id) : '0';
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE identifier='".$id."' AND site_id IN(".$site_id.")";
 		$rs = $this->db->get_one($sql);
 		if(!$rs) return false;
@@ -61,7 +61,7 @@ class project_model extends phpok_model
 
 	function project_all($site_id=0,$pri="id",$condition="")
 	{
-		$site_id = $site_id ? '0,'.$site_id : '0';
+		$site_id = $site_id ? '0,'.intval($site_id) : '0';
 		$sql = "SELECT * FROM ".$this->db->prefix."project p WHERE site_id IN(".$site_id.")";
 		if($condition)
 		{
@@ -73,7 +73,7 @@ class project_model extends phpok_model
 	//取得当前分类下的父级分类信息，无父级分类则调用当前分类
 	function get_parent($id)
 	{
-		$sql = "SELECT id,parent_id FROM ".$this->db->prefix."project WHERE id='".$id."'";
+		$sql = "SELECT id,parent_id FROM ".$this->db->prefix."project WHERE id='".intval($id)."'";
 		$rs = $this->db->get_one($sql);
 		if(!$rs) return false;
 		if(!$rs["parent_id"])
@@ -227,7 +227,7 @@ class project_model extends phpok_model
 		//删除模块下的内容信息
 		if($rs['module'])
 		{
-			$sql = "DELETE FROM ".$this->db->prefix."list_".$rs['module']." WHERE project_id=".$id;
+			$sql = "DELETE FROM ".$this->db->prefix."list_".$rs['module']." WHERE project_id=".intval($id);
 			$this->db->query($sql);
 		}
 		//删除项目中的内容信息
@@ -272,7 +272,7 @@ class project_model extends phpok_model
 	function project_sonlist($pid=0)
 	{
 		$pid = intval($pid);
-		$sql = "SELECT * FROM ".$ths->db->prefix."project WHERE parent_id=".$pid." AND status=1 ";
+		$sql = "SELECT * FROM ".$ths->db->prefix."project WHERE parent_id=".intval($pid)." AND status=1 ";
 		$sql.= "ORDER BY taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql,"id");
 		if(!$rslist) return false;

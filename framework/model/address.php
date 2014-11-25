@@ -20,7 +20,7 @@ class address_model extends phpok_model
 	//type，类型，仅支持shipping和billing两种
 	function address_list($user_id,$type='shipping')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."address WHERE user_id=".$user_id." AND type_id='".$type."' ORDER BY id DESC LIMIT 30";
+		$sql = "SELECT * FROM ".$this->db->prefix."address WHERE user_id=".intval($user_id)." AND type_id='".$type."' ORDER BY id DESC LIMIT 30";
 		return $this->db->get_all($sql);
 	}
 

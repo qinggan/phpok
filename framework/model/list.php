@@ -196,7 +196,7 @@ class list_model extends phpok_model
 		}
 		foreach($rslist AS $key=>$value)
 		{
-			$sql = "DELETE FROM ".$this->db->prefix."reply WHERE tid=".$value['id'];
+			$sql = "DELETE FROM ".$this->db->prefix."reply WHERE tid=".intval($value['id']);
 			$this->db->query($sql);
 			if(!$mid && $value['module_id'])
 			{
@@ -344,10 +344,10 @@ class list_model extends phpok_model
 		$rs = $this->db->get_one($sql);
 		if(!$rs) return false;
 		//
-		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id=".$id." AND status=1";
+		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id=".intval($id)." AND status=1";
 		$rs = $this->db->get_one($sql);
 		if(!$rs) return false;
-		$sql = "SELECT orderby FROM ".$this->db->prefix."project WHERE id=".$rs['project_id']." AND status=1";
+		$sql = "SELECT orderby FROM ".$this->db->prefix."project WHERE id=".intval($rs['project_id'])." AND status=1";
 		$o_rs = $this->db->get_one($sql);
 		$orderby = $o_rs['orderby'] ? $o_rs['orderby'] : 'l.sort DESC,l.dateline DESC,l.id DESC';
 	}
