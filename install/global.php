@@ -15,10 +15,9 @@ function G($id,$system=true)
 {
 	$msg = isset($_POST[$id]) ? $_POST[$id] : (isset($_GET[$id]) ? $_GET[$id] : "");
 	if($msg == '') return false;
-	$msg = strtolower($msg);
 	if($system)
 	{
-		if(!preg_match('/^[a-z][a-z0-9\_\-]+$/u',$msg))
+		if(!preg_match('/^[a-zA-Z][a-zA-Z0-9\_\-]+$/u',$msg))
 		{
 			error('参数不正确，请检查','','error');
 		}
