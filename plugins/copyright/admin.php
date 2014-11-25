@@ -54,7 +54,7 @@ class admin_copyright extends phpok_plugin
 			$sql.= " ORDER BY regdate DESC, id DESC LIMIT ".$offset.",".$psize;
 			$rslist = $this->db->get_all($sql);
 			$this->assign('rslist',$rslist);
-			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=[total]/[psize]&always=1");
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=(total)/(psize)&always=1");
 			$this->assign('pagelist',$pagelist);
 		}
 		echo $this->plugin_tpl('manage.html');
