@@ -1,5 +1,10 @@
 <!-- inc:head -->
 <script type="text/javascript" src="{func include_js list.js}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	top.$.desktop.title('{$rs.title}');
+});
+</script>
 <!-- if $project_list -->
 <script type="text/javascript">
 $(document).ready(function(){

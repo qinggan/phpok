@@ -128,7 +128,7 @@ class project_control extends phpok_control
 		//获取扩展字段信息
 		$ext = $this->get("ext");
 		$tag = $this->get("tag");
-		$uid = $this->get('uid');
+		$uid = $this->get('uid','int');
 		//判断该项目是否启用封面
 		if($rs["tpl_index"] && (!$cateid || $cateid == $cate_root) && !$keywords && !$ext && !$tag && !$uid)
 		{
