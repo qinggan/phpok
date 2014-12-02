@@ -17,6 +17,7 @@ class usercp_control extends phpok_control
 	{
 		parent::control();
 		$token = $this->get('token');
+		$token = ''; //因为Token机制在phpok里实现还不完善，之前的安装程序对密钥生成有异常，导致失败，故这里暂时停止基于密钥的验证
 		if($token)
 		{
 			$info = $this->lib('token')->decode($token);

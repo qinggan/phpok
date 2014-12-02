@@ -425,6 +425,7 @@ class data_model extends phpok_model
 				{
 					$rs[$value['identifier']] = $tmp;
 				}
+				
 				$rs[$value['identifier']] = phpok_ubb($rs[$value['identifier']],false);
 			}
 			//针对网址进行格式化
@@ -1248,6 +1249,11 @@ class data_model extends phpok_model
 					$v = intval($v);
 					if($v) $res[] = $v;
 				}
+			}
+			elseif($value['form_type'] == 'editor' && $value['content'])
+			{
+				$value['content'] = str_replace('[:page:]','',$value['content']);
+				$value['content'] = phpok_ubb($value['content'],false);
 			}
 			$rslist[$key] = $value;
 		}

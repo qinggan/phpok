@@ -347,7 +347,7 @@ class user_control extends phpok_control
 		$note = $this->get("note");
 		$form_type = $this->get("form_type");
 		$form_style = $this->get("form_style","html");
-		$content = $this->get("content","html");
+		$content = $this->get("content");
 		$format = $this->get("format");
 		$taxis = $this->get("taxis","int");
 		$ext_form_id = $this->get("ext_form_id");

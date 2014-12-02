@@ -169,7 +169,7 @@ class db_mysqli
 	//生成cache_id;
 	public function cache_id($sql)
 	{
-		$keyid = 'phpok_'.md5($sql);
+		$keyid = 'ok_'.substr(md5($this->config_db['host'].$this->config_db['user'].$this->config_db['pass'].$this->config_db['data'].$this->config_db['port'].$this->config_db['socket'].$this->prefix),0,5).substr(md5($sql),9,24);
 		preg_match_all('/(FROM|JOIN|UPDATE|INTO)\s+([a-zA-Z0-9\_\.]+)(\s|\()+/isU',$sql,$list);
 		$tbl = $list[2] ? $list[2] : array();
 		$this->cache->phpok_keylist[$keyid] = $tbl;

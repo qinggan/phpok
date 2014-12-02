@@ -201,9 +201,9 @@ class call_control extends phpok_control
 		//$this->phpok_autoload();
 		$identifier = strtolower($identifier);
 		//字符串是否符合条件
-		if(!preg_match("/^[a-z][a-z0-9\_]+$/u",$identifier))
+		if(!preg_match("/^[a-z][a-z0-9\_\-]+$/u",$identifier))
 		{
-			return "字段标识不符合系统要求，限小写字母、数字及下划线且必须是小写字母开头";
+			return "字段标识不符合系统要求，限小写字母、数字、中划线及下划线且必须是小写字母开头";
 		}
 		$rs = $this->model('call')->chk_identifier($identifier);
 		if($rs)
