@@ -168,7 +168,7 @@ elseif(G("step") == "saveconfig")
 	$content = preg_replace('/\$config\["db"\]\["data"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["db"]["data"] = "'.$dbconfig['data'].'";',$content);
 	$content = preg_replace('/\$config\["db"\]\["prefix"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["db"]["prefix"] = "'.$dbconfig['prefix'].'";',$content);
 	$tmpcode = str_rand(rand(10,20));
-	$content = preg_replace('/\$config\[[\'|"]spam\_key[\'|"]\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["spam_key"] = "'.$tmpcode.'";',$content);
+	$content = preg_replace('/\$config\["spam\_key"\]\s*=\s*[\'|"].*[\'|"];/isU','$config["spam_key"] = "'.$tmpcode.'";',$content);
 	file_put_contents(ROOT."config.php",$content);
 	//存储管理员信息
 	include(ROOT."framework/libs/file.php");

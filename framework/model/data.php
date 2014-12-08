@@ -384,7 +384,7 @@ class data_model extends phpok_model
 	//取得单篇文章信息
 	public function arc($param)
 	{
-		$tmpid = $param['id'] ? $param['id'] : ($param['phpok'] ? $param['phpok'] : $param['title_id']);
+		$tmpid = $param['phpok'] ? $param['phpok'] : ($param['title_id'] ? $param['title_id'] : $param['id']);
 		if(!$tmpid)
 		{
 			return false;

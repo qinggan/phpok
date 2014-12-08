@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: 2014-11-10 10:03:51
+-- Generation Time: 2014-12-02 16:27:12
 -- 服务器版本： 5.5.20
 -- PHP Version: 5.3.27
 
@@ -63,13 +63,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_adm` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='管理员信息' AUTO_INCREMENT=8 ;
 
---
--- 转存表中的数据 `qinggan_adm`
---
-
-INSERT INTO `qinggan_adm` (`id`, `account`, `pass`, `email`, `status`, `if_system`, `vpass`, `category`) VALUES
-(1, 'admin', 'e0ae361b631ce089a16f4a4c8cc8d033:5a', 'qinggan@188.com', 1, 1, '', '');
-
 -- --------------------------------------------------------
 
 --
@@ -121,10 +114,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车' AUTO_INCREMENT=1 ;
 
---
--- 转存表中的数据 `qinggan_cart`
---
-
 -- --------------------------------------------------------
 
 --
@@ -141,6 +130,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart_product` (
   `ext` text NOT NULL COMMENT '扩展属性',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车里的产品信息' AUTO_INCREMENT=1 ;
+
 
 -- --------------------------------------------------------
 
@@ -525,7 +515,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_list` (
   `currency_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '货币ID，对应currency表',
   PRIMARY KEY (`id`),
   KEY `project_id` (`project_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='内容主表' AUTO_INCREMENT=1354 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='内容主表' AUTO_INCREMENT=1356 ;
 
 --
 -- 转存表中的数据 `qinggan_list`
@@ -629,6 +619,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_22` (
   `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
   `content` longtext NOT NULL COMMENT '内容',
   `note` longtext NOT NULL COMMENT '摘要',
+  `relates` varchar(255) NOT NULL DEFAULT '' COMMENT '关联主题',
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`,`project_id`,`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文章资讯';
@@ -637,11 +628,11 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_22` (
 -- 转存表中的数据 `qinggan_list_22`
 --
 
-INSERT INTO `qinggan_list_22` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `content`, `note`) VALUES
-(758, 1, 43, 8, '543', '<p style="margin-bottom: 29px; font-size: 16px; line-height: 28px; font-family: 宋体, Arial, sans-serif; text-indent: 2em; ">昨天，中国民用航空局和国家发改委发布通知称，对旅客运输票价实行政府指导价的国内航线，均取消票价下浮幅度限制。与此同时，国内不设打折下限的航线又新增31条。</p><p style="margin-bottom: 29px; font-size: 16px; line-height: 28px; font-family: 宋体, Arial, sans-serif; text-indent: 2em; ">据民航业内人士介绍，根据2004年出台的《民航国内<a class="a-tips-Article-QQ" href="http://stockhtm.finance.qq.com/astock/ggcx/ATSG.OQ.htm" target="_blank" style="text-decoration: none; outline: none; color: rgb(0, 0, 0); border-bottom-width: 1px; border-bottom-style: dotted; border-bottom-color: rgb(83, 109, 166); ">航空运输</a>价格改革方案》，省、自治区内，及直辖市与相邻省、自治区、直辖市之间的短途航线，已经与其他替代运输方式形成竞争的，实行市场调节价，不规定票价浮动幅度。除上述施行市场调节价的航线外，民航国内航空旅客运输票价实行浮动幅度管理，票价上浮幅度最高不得超过基准价的25%。</p><p style="margin-bottom: 29px; font-size: 16px; line-height: 28px; font-family: 宋体, Arial, sans-serif; text-indent: 2em; ">昨天发布的通知规定，对部分与地面主要交通运输方式形成竞争，且由两家(含)以上航空公司共同经营的国内航线，旅客运输票价由实行政府指导价改为市场调节价。航空公司可根据市场供求情况自主确定票价水平的航线新增31条。实行市场调节价的国内航线目录由民航局和国家发改委规定，于每年一季度调整公布。航空公司在上述范围内制定或调整旅客运输票价时，应至少提前7日向社会公布，并通过航空价格信息系统抄报民航局、发改委。上述业内人士分析，此次由政府指导价转为市场调节价的31条航线，大多是与京广、京沪等高铁存在竞争，取消浮动幅度限制，有利于提高民航的竞争力。</p>', ''),
-(759, 1, 43, 68, '', '<p align="center" style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; "></p><div class="mbArticleSharePic        " r="1" style="margin: 0px auto; padding: 0px; position: relative; z-index: 10; width: 500px; "><img alt="阿里TV系统升级 将增加安全监控功能" src="res/201311/07/85032f7e7ba3cfd7_37.jpg" style="border: 0px; " /></div><p></p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; "><strong>腾讯科技讯</strong>（范蓉）11月7日消息，阿里TV系统将于本月进行升级，增加家庭安全监控功能。同时，阿里在今年“双11”期间，将采用100万台天猫魔盒免费送的方式，加速阿里TV系统在终端的普及。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">尽管阿里TV系统已经将电商与TV结合，但阿里并不满足于这一现状。“电视处于客厅的重要位置，阿里一直欲加强自身砝码，安全监控就是其中之一。”阿里一位内部人士表示。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">据透露，阿里TV系统将提供的安全监控功能，主要通过系统应用、摄像头及智能手机之间的软硬结合来实现。用户只需在智能电视上增设一个摄像头，同时在手机中安装阿里TV助手，就可在任意场所，通过手机屏幕看到家中实时传送过来的画面。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">业内人士认为，阿里不仅将电视定位为PC、手机、平板之外的第四个屏幕选择，还希望将电视提升到智能家居的大概念中。“加入安全监控功能的阿里TV系统，将使电视在家庭中扮演更加重要的监护设备角色。”</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">据悉，安全监控功能将是阿里TV系统11月份更新的重头戏。未来阿里TV系统还会增加云存储功能，让用户可随时查询、回放家庭生活片段。</p>', ''),
-(1269, 1, 43, 68, '544', '<p>Google发布了Chrome 33，其中一项新变化是从Chrome://flags移除了Instant Extended API。结果在官方论坛用户吵翻了天，因为移除Instant Extended API影响了新标签页，引发用户强烈抗议，许多用户认为改动后的新标签页无比丑陋。</p><p>Google自我辩解说，Chrome://flags本来就是展示的 实验性功能，是不被官方正式支持的，是随时会被移除或改动的。Google开发者向抱怨的用户推荐三个扩展替代被移除的Instant Extended API：Replace New Tab，Modern New Tab Page，和iChrome。</p><p><img src="res/201410/08/auto_666.jpg" alt="auto_666.jpg"/></p>', 'Google发布了Chrome 33，其中一项新变化是从Chrome://flags移除了Instant Extended API。结果在官方论坛用户吵翻了天，因为移除Instant Extended API影响了新标签页，引发用户强烈抗议，许多用户认为改动后的新标签页无比丑陋。'),
-(1344, 1, 43, 68, '', '<p>[title:1336]测试图片功能[/title]</p><p>[title:1332]aIkrtvvzw81412976415[/title]</p><p>[download=687]退休矿工自家宅院掘地六米挖出地下居室[/download]</p><p>[download=686]悬崖上的环卫工03[/download]</p><p><br/></p>', '');
+INSERT INTO `qinggan_list_22` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `content`, `note`, `relates`) VALUES
+(758, 1, 43, 8, '543', '<p style="margin-bottom: 29px; font-size: 16px; line-height: 28px; font-family: 宋体, Arial, sans-serif; text-indent: 2em; ">昨天，中国民用航空局和国家发改委发布通知称，对旅客运输票价实行政府指导价的国内航线，均取消票价下浮幅度限制。与此同时，国内不设打折下限的航线又新增31条。</p><p style="margin-bottom: 29px; font-size: 16px; line-height: 28px; font-family: 宋体, Arial, sans-serif; text-indent: 2em; ">据民航业内人士介绍，根据2004年出台的《民航国内<a class="a-tips-Article-QQ" href="http://stockhtm.finance.qq.com/astock/ggcx/ATSG.OQ.htm" target="_blank" style="text-decoration: none; outline: none; color: rgb(0, 0, 0); border-bottom-width: 1px; border-bottom-style: dotted; border-bottom-color: rgb(83, 109, 166); ">航空运输</a>价格改革方案》，省、自治区内，及直辖市与相邻省、自治区、直辖市之间的短途航线，已经与其他替代运输方式形成竞争的，实行市场调节价，不规定票价浮动幅度。除上述施行市场调节价的航线外，民航国内航空旅客运输票价实行浮动幅度管理，票价上浮幅度最高不得超过基准价的25%。</p><p style="margin-bottom: 29px; font-size: 16px; line-height: 28px; font-family: 宋体, Arial, sans-serif; text-indent: 2em; ">昨天发布的通知规定，对部分与地面主要交通运输方式形成竞争，且由两家(含)以上航空公司共同经营的国内航线，旅客运输票价由实行政府指导价改为市场调节价。航空公司可根据市场供求情况自主确定票价水平的航线新增31条。实行市场调节价的国内航线目录由民航局和国家发改委规定，于每年一季度调整公布。航空公司在上述范围内制定或调整旅客运输票价时，应至少提前7日向社会公布，并通过航空价格信息系统抄报民航局、发改委。上述业内人士分析，此次由政府指导价转为市场调节价的31条航线，大多是与京广、京沪等高铁存在竞争，取消浮动幅度限制，有利于提高民航的竞争力。</p>', '', ''),
+(759, 1, 43, 68, '', '<p align="center" style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; "></p><div class="mbArticleSharePic        " r="1" style="margin: 0px auto; padding: 0px; position: relative; z-index: 10; width: 500px; "><img alt="阿里TV系统升级 将增加安全监控功能" src="res/201311/07/85032f7e7ba3cfd7_37.jpg" style="border: 0px; " /></div><p></p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; "><strong>腾讯科技讯</strong>（范蓉）11月7日消息，阿里TV系统将于本月进行升级，增加家庭安全监控功能。同时，阿里在今年“双11”期间，将采用100万台天猫魔盒免费送的方式，加速阿里TV系统在终端的普及。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">尽管阿里TV系统已经将电商与TV结合，但阿里并不满足于这一现状。“电视处于客厅的重要位置，阿里一直欲加强自身砝码，安全监控就是其中之一。”阿里一位内部人士表示。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">据透露，阿里TV系统将提供的安全监控功能，主要通过系统应用、摄像头及智能手机之间的软硬结合来实现。用户只需在智能电视上增设一个摄像头，同时在手机中安装阿里TV助手，就可在任意场所，通过手机屏幕看到家中实时传送过来的画面。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">业内人士认为，阿里不仅将电视定位为PC、手机、平板之外的第四个屏幕选择，还希望将电视提升到智能家居的大概念中。“加入安全监控功能的阿里TV系统，将使电视在家庭中扮演更加重要的监护设备角色。”</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">据悉，安全监控功能将是阿里TV系统11月份更新的重头戏。未来阿里TV系统还会增加云存储功能，让用户可随时查询、回放家庭生活片段。</p>', '', ''),
+(1269, 1, 43, 68, '544', '<p>Google发布了Chrome 33，其中一项新变化是从Chrome://flags移除了Instant Extended API。结果在官方论坛用户吵翻了天，因为移除Instant Extended API影响了新标签页，引发用户强烈抗议，许多用户认为改动后的新标签页无比丑陋。</p><p>Google自我辩解说，Chrome://flags本来就是展示的 实验性功能，是不被官方正式支持的，是随时会被移除或改动的。Google开发者向抱怨的用户推荐三个扩展替代被移除的Instant Extended API：Replace New Tab，Modern New Tab Page，和iChrome。</p><p><img src="res/201410/08/auto_666.jpg" alt="auto_666.jpg"/></p>', 'Google发布了Chrome 33，其中一项新变化是从Chrome://flags移除了Instant Extended API。结果在官方论坛用户吵翻了天，因为移除Instant Extended API影响了新标签页，引发用户强烈抗议，许多用户认为改动后的新标签页无比丑陋。', ''),
+(1344, 1, 43, 68, '', '<p>[title:1336]测试图片功能[/title]</p><p>[title:1332]aIkrtvvzw81412976415[/title]</p><p>[download=687]退休矿工自家宅院掘地六米挖出地下居室[/download]</p><p>[download=686]悬崖上的环卫工03[/download]</p><p><br/></p>', '', '759,1269');
 
 -- --------------------------------------------------------
 
@@ -1011,7 +1002,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_module_fields` (
   `is_front` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0前端不可用1前端可用',
   PRIMARY KEY (`id`),
   KEY `module_id` (`module_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='字段管理器' AUTO_INCREMENT=245 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='字段管理器' AUTO_INCREMENT=246 ;
 
 --
 -- 转存表中的数据 `qinggan_module_fields`
@@ -1020,7 +1011,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_module_fields` (
 INSERT INTO `qinggan_module_fields` (`id`, `module_id`, `title`, `identifier`, `field_type`, `note`, `form_type`, `form_style`, `format`, `content`, `taxis`, `ext`, `is_front`) VALUES
 (92, 21, '链接', 'link', 'longtext', '', 'text', '', 'safe', '', 90, 'a:2:{s:8:"form_btn";s:3:"url";s:5:"width";s:3:"500";}', 0),
 (82, 22, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 30, 'a:3:{s:11:"upload_type";s:7:"picture";s:7:"cate_id";s:1:"1";s:11:"is_multiple";b:0;}', 0),
-(83, 22, '内容', 'content', 'longtext', '', 'editor', '', 'html_js', '', 255, 'a:12:{s:5:"width";s:3:"800";s:6:"height";s:3:"360";s:7:"is_code";i:0;s:9:"btn_image";i:1;s:9:"btn_video";i:1;s:8:"btn_file";i:1;s:8:"btn_page";i:1;s:8:"btn_info";i:1;s:7:"is_read";i:0;s:5:"etype";b:0;s:7:"btn_tpl";i:1;s:7:"btn_map";i:1;}', 0),
+(83, 22, '内容', 'content', 'longtext', '', 'editor', '', 'html_js', '', 255, 'a:11:{s:5:"width";s:3:"800";s:6:"height";s:3:"360";s:7:"is_code";i:0;s:9:"btn_image";i:1;s:9:"btn_video";i:1;s:8:"btn_file";i:1;s:8:"btn_page";i:1;s:8:"btn_info";i:1;s:7:"is_read";i:0;s:5:"etype";s:4:"full";s:7:"btn_map";i:1;}', 0),
 (84, 23, '链接', 'link', 'longtext', '设置导航链接', 'url', '', 'safe', '', 90, 'a:1:{s:5:"width";s:3:"500";}', 0),
 (85, 23, '链接方式', 'target', 'varchar', '设置是否在新窗口打开', 'radio', '', 'safe', '_self', 100, 'a:1:{s:11:"option_list";s:5:"opt:6";}', 0),
 (87, 24, '缩略图', 'thumb', 'varchar', '主要应用于列表及首页调用中使用', 'upload', '', 'safe', '', 30, 'a:3:{s:11:"upload_type";s:7:"picture";s:7:"cate_id";s:1:"1";s:11:"is_multiple";b:0;}', 0),
@@ -1056,7 +1047,8 @@ INSERT INTO `qinggan_module_fields` (`id`, `module_id`, `title`, `identifier`, `
 (238, 66, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 30, 'a:3:{s:11:"upload_type";s:7:"picture";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";}', 1),
 (239, 68, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 30, 'a:3:{s:11:"upload_type";s:7:"picture";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";}', 0),
 (240, 68, '图片', 'pictures', 'varchar', '支持多图', 'upload', '', 'safe', '', 50, 'a:3:{s:11:"upload_type";s:7:"picture";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";}', 0),
-(244, 61, '联系人电话', 'tel', 'varchar', '填写联系人电话，以方便与人取得联系', 'text', 'height:22px;line-height:22px;padding:3px;border:1px solid #ccc;', 'safe', '', 110, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"280";s:15:"ext_quick_words";b:0;s:14:"ext_quick_type";b:0;}', 1);
+(244, 61, '联系人电话', 'tel', 'varchar', '填写联系人电话，以方便与人取得联系', 'text', 'height:22px;line-height:22px;padding:3px;border:1px solid #ccc;', 'safe', '', 110, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"280";s:15:"ext_quick_words";b:0;s:14:"ext_quick_type";b:0;}', 1),
+(245, 22, '关联主题', 'relates', 'varchar', '测试关联', 'title', '', 'safe', '', 255, 'a:2:{s:10:"optlist_id";a:1:{i:0;s:2:"43";}s:11:"is_multiple";s:1:"1";}', 0);
 
 -- --------------------------------------------------------
 
@@ -1186,6 +1178,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_address` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单地址库' AUTO_INCREMENT=1 ;
 
+
 -- --------------------------------------------------------
 
 --
@@ -1202,7 +1195,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_product` (
   `thumb` int(11) NOT NULL COMMENT '产品图片ID',
   `ext` text NOT NULL COMMENT '产品扩展属性',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单的产品信息' AUTO_INCREMENT=20 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单的产品信息' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1317,13 +1310,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_plugins` (
   `param` text NOT NULL COMMENT '参数',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='插件管理器';
-
---
--- 转存表中的数据 `qinggan_plugins`
---
-
-INSERT INTO `qinggan_plugins` (`id`, `title`, `author`, `version`, `status`, `taxis`, `note`, `param`) VALUES
-('identifier', '标识串自动生成工具', 'phpok.com', '1.0', 1, 10, '可实现以 title 的表单数据', 'a:5:{s:9:"is_youdao";i:1;s:7:"keyfrom";s:9:"phpok-com";s:5:"keyid";s:9:"108499576";s:10:"is_pingyin";i:1;s:5:"is_py";i:1;}');
 
 -- --------------------------------------------------------
 
@@ -2157,7 +2143,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_res` (
   `download` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '下载次数',
   PRIMARY KEY (`id`),
   KEY `ext` (`ext`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='资源ID' AUTO_INCREMENT=711 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='资源ID' AUTO_INCREMENT=716 ;
 
 --
 -- 转存表中的数据 `qinggan_res`
@@ -2365,14 +2351,15 @@ CREATE TABLE IF NOT EXISTS `qinggan_site` (
   `html_content_type` varchar(255) NOT NULL DEFAULT 'empty' COMMENT 'HTML生成规则',
   `biz_etpl` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='网站管理' AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='网站管理' AUTO_INCREMENT=19 ;
 
 --
 -- 转存表中的数据 `qinggan_site`
 --
 
 INSERT INTO `qinggan_site` (`id`, `domain_id`, `title`, `dir`, `status`, `content`, `is_default`, `tpl_id`, `url_type`, `logo`, `meta`, `currency_id`, `register_status`, `register_close`, `login_status`, `login_close`, `adm_logo29`, `adm_logo180`, `lang`, `api`, `email_charset`, `email_server`, `email_port`, `email_ssl`, `email_account`, `email_pass`, `email_name`, `email`, `seo_title`, `seo_keywords`, `seo_desc`, `biz_sn`, `biz_payment`, `biz_billing`, `upload_guest`, `upload_user`, `html_root_dir`, `html_content_type`, `biz_etpl`) VALUES
-(1, 1, 'PHPOK企业网站', '/phpok/', 1, '网站正在建设中！', 1, 1, 'default', 'res/201409/01/27a6e141c3d265ae.jpg', '', 1, 1, '本系统暂停新会员注册，给您带来不便还请见谅，如需会员服务请联系QQ：40782502', 1, '本系统暂停会员登录，给您带来不便还请见谅！', '', '', '', 0, 'utf-8', 'smtp.qq.com', '25', 0, 'admin@phpok.com', '', '网站管理员', 'admin@phpok.com', '网站建设|企业网站建设|PHPOK网站建设|PHPOK企业网站建设', '网站建设,企业网站建设,PHPOK网站建设,PHPOK企业网站建设', '高效的企业网站建设系统，可实现高定制化的企业网站电商系统，实现企业网站到电子商务企业网站。定制功能更高，操作更简单！', 'prefix[P]-year-month-date-number', 0, 1, 0, 1, 'html/', 'Ym/', 'order_admin');
+(1, 1, 'PHPOK企业网站', '/', 1, '网站正在建设中！', 1, 1, 'default', 'res/201409/01/27a6e141c3d265ae.jpg', '', 1, 1, '本系统暂停新会员注册，给您带来不便还请见谅，如需会员服务请联系QQ：40782502', 1, '本系统暂停会员登录，给您带来不便还请见谅！', '', '', '', 0, 'utf-8', 'smtp.qq.com', '25', 0, 'admin@phpok.com', 'www.phpok.com', '网站管理员', 'admin@phpok.com', '网站建设|企业网站建设|PHPOK网站建设|PHPOK企业网站建设', '网站建设,企业网站建设,PHPOK网站建设,PHPOK企业网站建设', '高效的企业网站建设系统，可实现高定制化的企业网站电商系统，实现企业网站到电子商务企业网站。定制功能更高，操作更简单！', 'prefix[P]-year-month-date-number', 0, 1, 0, 1, 'html/', 'Ym/', 'order_admin'),
+(18, 20, '测试站点添加', '/', 0, '', 0, 0, 'default', '', '', 0, 0, '', 0, '', '', '', '', 0, 'utf-8', '', '', 0, '', '', '', '', '', '', '', '', 0, 0, 0, 0, 'html/', 'empty', '');
 
 -- --------------------------------------------------------
 
@@ -2386,14 +2373,15 @@ CREATE TABLE IF NOT EXISTS `qinggan_site_domain` (
   `domain` varchar(255) NOT NULL COMMENT '域名信息',
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='网站指定的域名' AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='网站指定的域名' AUTO_INCREMENT=21 ;
 
 --
 -- 转存表中的数据 `qinggan_site_domain`
 --
 
 INSERT INTO `qinggan_site_domain` (`id`, `site_id`, `domain`) VALUES
-(1, 1, 'localhost');
+(1, 1, 'phpok'),
+(20, 18, 'demo');
 
 -- --------------------------------------------------------
 
@@ -2444,7 +2432,7 @@ INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, 
 (7, 4, '字段维护', 1, 'fields', 55, '', '', '', 0, 0, ''),
 (8, 1, '模块管理', 1, 'module', 53, '', '', '', 0, 0, ''),
 (9, 1, '核心配置', 1, 'system', 57, '', '', '', 1, 0, ''),
-(13, 3, '会员列表', 1, 'user', 31, '', '', '', 0, 0, ''),
+(13, 3, '会员列表', 1, 'user', 31, '', '', '', 0, 0, 'user'),
 (14, 3, '会员组', 1, 'usergroup', 33, '', '', '', 0, 0, 'users'),
 (25, 3, '会员字段', 1, 'user', 255, 'fields', '', '', 0, 0, ''),
 (16, 4, '插件', 1, 'plugin', 70, '', '', '', 0, 0, 'powercord'),
@@ -2465,7 +2453,8 @@ INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, 
 (45, 4, '程序升级', 1, 'update', 30, '', '', '', 0, 1, 'earth'),
 (2, 0, '订单', 1, 'order', 20, '', '', '', 0, 0, ''),
 (52, 2, '付款方案', 1, 'payment', 20, '', '', '', 0, 1, ''),
-(55, 1, '生成静态页', 0, 'html', 150, '', '', '', 0, 1, 'screen');
+(55, 1, '生成静态页', 0, 'html', 150, '', '', '', 0, 1, 'screen'),
+(56, 5, '数据库比较', 1, 'plugin', 255, 'exec', '', 'id=sqldiff&exec=manage', 0, 1, '');
 
 -- --------------------------------------------------------
 
@@ -2543,7 +2532,16 @@ CREATE TABLE IF NOT EXISTS `qinggan_user` (
   `code` varchar(255) NOT NULL COMMENT '验证串，可用于取回密码',
   `avatar` varchar(255) NOT NULL COMMENT '会员头像',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员管理' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员管理' AUTO_INCREMENT=12 ;
+
+--
+-- 转存表中的数据 `qinggan_user`
+--
+
+INSERT INTO `qinggan_user` (`id`, `group_id`, `user`, `pass`, `status`, `regtime`, `email`, `mobile`, `code`, `avatar`) VALUES
+(3, 2, 'admin', '62b32b970271868ba82e832e010c66be:74', 1, 1389672572, 'admin@admin.com', '158185xxxxx', '0JKWkNEf9Z1410314178', 'res/201411/06/a50b479341925654.jpg'),
+(5, 2, 'demo', '549d1d6b175c1552f25dafb32d0aa8eb:f8', 1, 1410312581, 'admin@demo.com', '123456789', 'LeKiHwsrb41410312772', ''),
+(10, 2, 'suxiangkun', 'bed47b98d9244e2ff8f18c58b72a2074:32', 1, 1412976442, 'suxiangkun@126.com', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -2558,6 +2556,17 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_ext` (
   `content` longtext NOT NULL COMMENT '内容',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员扩展字段';
+
+--
+-- 转存表中的数据 `qinggan_user_ext`
+--
+
+INSERT INTO `qinggan_user_ext` (`id`, `fullname`, `gender`, `content`) VALUES
+(21, '', '', ''),
+(10, '', '', ''),
+(23, '苏相锟', '', ''),
+(3, 'seika', '1', ''),
+(5, '', '', '');
 
 -- --------------------------------------------------------
 
