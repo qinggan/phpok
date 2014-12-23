@@ -74,10 +74,27 @@ class db_mysql
 	//更换数据库选择
 	public function select_db($data="")
 	{
+		$this->check_connect();
 		$this->timer('sql');
 		mysql_select_db($data,$this->conn) or die($this->debug());
 		$this->timer('sql');
 		return true;
+	}
+
+	private function check_connect()
+	{
+		if(!$this->conn || !is_resource($this->conn))
+		{
+			$this->connect_db();
+		}
+		else
+		{
+			if(!mysql_ping($this->conn))
+			{
+				mysql_close($this->conn);
+				$this->connect_db();
+			}
+		}
 	}
 
 	//关闭数据库连接
@@ -129,18 +146,7 @@ class db_mysql
 
 	public function query($sql)
 	{
-		if(!$this->conn || !is_resource($this->conn))
-		{
-			$this->connect();
-		}
-		else
-		{
-			if(!mysql_ping($this->conn))
-			{
-				mysql_close($this->conn);
-				$this->connect();
-			}
-		}
+		$this->check_connect();
 		$this->timer('sql');
 		$this->query = mysql_query($sql,$this->conn);
 		$this->counter('sql');
@@ -150,7 +156,7 @@ class db_mysql
 			$this->_cache_clear($sql);
 		}
 		$this->timer('sql');
-		if(!$this->query || !is_resource($this->query))
+		if(!$this->query)
 		{
 			return false;
 		}

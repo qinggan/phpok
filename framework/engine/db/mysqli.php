@@ -79,6 +79,7 @@ class db_mysqli
 	//更换数据库选择
 	public function select_db($data="")
 	{
+		$this->check_connect();
 		$this->timer('sql');
 		$this->conn->select_db($data);
 		if($this->conn->error)
@@ -87,6 +88,22 @@ class db_mysqli
 		}
 		$this->timer('sql');
 		return true;
+	}
+
+	private function check_connect()
+	{
+		if(!$this->conn || !is_object($this->conn))
+		{
+			$this->connect_db();
+		}
+		else
+		{
+			if(!$this->conn->ping())
+			{
+				$this->conn->close();
+				$this->connect_db();
+			}
+		}
 	}
 
 	//关闭数据库连接
@@ -138,18 +155,7 @@ class db_mysqli
 
 	public function query($sql)
 	{
-		if(!$this->conn || !is_object($this->conn))
-		{
-			$this->connect();
-		}
-		else
-		{
-			if(!$this->conn->ping())
-			{
-				$this->conn->close();
-				$this->connect();
-			}
-		}
+		$this->check_connect();
 		$this->timer('sql');
 		$this->query = $this->conn->query($sql);
 		$this->counter('sql');
