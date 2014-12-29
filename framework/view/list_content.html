@@ -7,7 +7,41 @@ $(document).ready(function(){
 </script>
 <!-- if $project_list -->
 <script type="text/javascript">
+function pendding_info()
+{
+	var url = get_url('index','pendding_sublist');
+	$.ajax({
+		'url':url,
+		'cache':false,
+		'async':true,
+		'dataType':'json',
+		'success': function(rs){
+			if(rs.status == "ok")
+			{
+				var list = rs.content;
+				var html = '<em class="toptip">{total}</em>';
+				var total = 0;
+				for(var key in list)
+				{
+					$("li[id=project_"+list[key]['id']+"] em").remove();
+					$("li[id=project_"+list[key]['id']+"]").append(html.replace('{total}',list[key]['total']));
+				}
+				//每隔一分钟检测一次
+				window.setTimeout("pendding_info()", 60000);
+			}
+			else
+			{
+				//移除提示
+				$("em.toptip").remove();
+				//每隔三分钟进行一次检测
+				window.setTimeout("pendding_info()", 180000);
+			}
+		}
+	});
+}
+
 $(document).ready(function(){
+	pendding_info();
 	$("#project li").mouseover(function(){
 		$(this).addClass("hover");
 	}).mouseout(function(){
@@ -16,7 +50,7 @@ $(document).ready(function(){
 		var url = $(this).attr("href");
 		if(url)
 		{
-			direct(url);
+			$.phpok.go(url);
 		}
 		else
 		{
@@ -81,22 +115,21 @@ function list_content_search()
 }
 </script>
 <div class="tips">
-	您当前的位置：<a href="{echo admin_url('list')}" title="内容管理">内容管理</a>
+	您当前的位置：内容管理
 	<!-- loop from=$plist key=$key value=$value id=plist_id -->
-	&raquo; <a href="{echo admin_url('list','action')}&id={$value.id}" title="{$value.title}">{$value.title}</a>
+	&raquo; <a href="{url ctrl=list func=action id=$value.id/}" title="{$value.title}">{$value.nick_title ? $value.nick_title : $value.title}</a>
 	<!-- /loop -->
 	<!-- if $show_parent_catelist -->
 	&raquo; <a href="{url ctrl=list func=action id=$pid cateid=$show_parent_catelist/}">{$parent_cate_rs.title}</a>
 	<!-- /if -->
-	&raquo; 内容管理
 	<!-- if $keywords -->
 	&raquo; <span class="red">{$keywords}</span>
 	<!-- /if -->
 	<!-- if $popedom.set || $session.admin_rs.if_system -->
-	<div class="action"><a href="{echo admin_url('list','set')}&id={$pid}">编辑项目</a></div>
+	<div class="action"><a href="{url ctrl=list func=set id=$pid/}">编辑项目</a></div>
 	<!-- /if -->
 	<!-- if $popedom.add -->
-	<div class="action"><a href="{echo admin_url('list','edit')}&pid={$pid}">添加内容</a></div>
+	<div class="action"><a href="{url ctrl=list func=edit pid=$pid/}">添加内容</a></div>
 	<!-- /if -->
 	<div class="action"><a href="javascript:list_content_search();void(0);">搜索</a></div>
 	<span id="AP_ACTION_HTML" title="插件节点，后台内容列表管理栏面包屑"></span>

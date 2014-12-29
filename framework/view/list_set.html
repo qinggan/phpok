@@ -1,8 +1,47 @@
 <!-- inc:head -->
 <script type="text/javascript" src="{func include_js list.js}"></script>
-<!-- if $project_list -->
 <script type="text/javascript">
 $(document).ready(function(){
+	top.$.desktop.title('{$rs.title}');
+});
+</script>
+<!-- if $project_list -->
+<script type="text/javascript">
+function pendding_info()
+{
+	var url = get_url('index','pendding_sublist');
+	$.ajax({
+		'url':url,
+		'cache':false,
+		'async':true,
+		'dataType':'json',
+		'success': function(rs){
+			if(rs.status == "ok")
+			{
+				var list = rs.content;
+				var html = '<em class="toptip">{total}</em>';
+				var total = 0;
+				for(var key in list)
+				{
+					$("li[id=project_"+list[key]['id']+"] em").remove();
+					$("li[id=project_"+list[key]['id']+"]").append(html.replace('{total}',list[key]['total']));
+				}
+				//每隔一分钟检测一次
+				window.setTimeout("pendding_info()", 60000);
+			}
+			else
+			{
+				//移除提示
+				$("em.toptip").remove();
+				//每隔三分钟进行一次检测
+				window.setTimeout("pendding_info()", 180000);
+			}
+		}
+	});
+}
+
+$(document).ready(function(){
+	pendding_info();
 	$("#project li").mouseover(function(){
 		$(this).addClass("hover");
 	}).mouseout(function(){

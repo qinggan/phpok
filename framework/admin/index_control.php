@@ -264,17 +264,92 @@ class index_control extends phpok_control
 	//获取待处理信息
 	function pendding_f()
 	{
-		$rslist = show_pending_info();
-		if(!$rslist)
+		$list = false;
+		//读取未操作的主题
+		$rslist = $this->model('list')->pending_info($_SESSION['admin_site_id']);
+		if($rslist)
 		{
-			$this->json('暂无消息');
+			foreach($rslist AS $key=>$value)
+			{
+				if(!$value['parent_id'])
+				{
+					$url = $this->url("list","action","id=".$value["pid"]);
+					$list['project_'.$value['pid']] = array("title"=>$value["title"],"total"=>$value["total"],"url"=>$url,'id'=>$value['pid']);
+				}
+			}
+			//合并子项目提示
+			foreach($rslist as $key=>$value)
+			{
+				if(!$value['total'] || !$value['parent_id'])
+				{
+					continue;
+				}
+				if($list['project_'.$value['parent_id']])
+				{
+					$list['project_'.$value['parent_id']]['total'] += $value['total'];
+				}
+				else
+				{
+					$url = $this->url("list","action","id=".$value["pid"]);
+					$list['project_'.$value['parent_id']] = array("title"=>$value["title"],"total"=>$value["total"],"url"=>$url,'id'=>$value['parent_id']);
+				}
+			}
+			if($list)
+			{
+				foreach($list as $key=>$value)
+				{
+					if(!$value['total'])
+					{
+						unset($list[$key]);
+					}
+				}
+			}
 		}
-		$this->json($rslist,true);
+		//读取未审核的会员信息
+		$condition = "u.status=0";
+		$user_total = $this->model('user')->get_count($condition);
+		if($user_total > 0)
+		{
+			$url = $this->url("user","","status=3");
+			$list['ctrl_user'] = array("title"=>"会员列表","total"=>$user_total,"url"=>$url,'id'=>'user');
+		}
+		//读取未审核的回复信息
+		$condition = "status=0";
+		$reply_total = $this->model('reply')->get_total($condition);
+		if($reply_total>0)
+		{
+			$url = $this->url("reply","","status=3");
+			$list['ctrl_reply'] = array("title"=>"评论管理","total"=>$reply_total,"url"=>$url,'id'=>'reply');
+		}
+		if(!$list)
+		{
+			$this->json('没有消息');
+		}
+		$this->json($list,true);
 	}
 
-	function project_f()
+	//子项待处理项
+	function pendding_sublist_f()
 	{
-		//
+		$list = false;
+		//读取未操作的主题
+		$rslist = $this->model('list')->pending_info($_SESSION['admin_site_id']);
+		if($rslist)
+		{
+			foreach($rslist AS $key=>$value)
+			{
+				if($value['parent_id'])
+				{
+					$url = $this->url("list","action","id=".$value["pid"]);
+					$list['project_'.$value['pid']] = array("title"=>$value["title"],"total"=>$value["total"],"url"=>$url,'id'=>$value['pid']);
+				}
+			}
+		}
+		if(!$list)
+		{
+			$this->json('没有消息');
+		}
+		$this->json($list,true);
 	}
 }
 ?>

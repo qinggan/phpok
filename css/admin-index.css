@@ -19,8 +19,8 @@ p{word-wrap:break-word}
 .foot_left a{color:#D2D2D2;}
 .foot_right{ float:right; padding-right:20px; text-align:right; color:#2a5ba7; font-size:14px;}
 
-.header{ width:100%; height:80px; background:#203854;  position:fixed;z-index: 1300;}
-.logo{ width:223px; height:64px; float:left; margin:10px 0 0 20px; }
+.header{ width:100%; height:45px; background:#203854;  position:fixed;z-index: 1300;}
+.logo{ width:223px; height:45px; float:left;}
 
 .head_tool{ width:28px; margin:7px 0 0 10px; float:right; height:28px; cursor:pointer; background:url(../images/ibx_header2.png) no-repeat; position:relative;}
 .head_user{  float:right; margin:7px 20px 0 10px; position:relative; cursor:pointer; background-position:bottom right; z-index:7;}
@@ -75,16 +75,17 @@ p{word-wrap:break-word}
 .head_tab li{ float:left; margin-left:10px; cursor:pointer; border-radius:3px 3px 0 0; background:#2a4567; border:1px solid #182c44; padding:0 15px; line-height:26px; border-bottom:0; color:#e0e0e0;}
 .head_tab li.on{background:#3030a2;}
 
-.content{ width:100%; padding:95px 0 10px 0; background:#eeedeb;}
-.c_left{ width:200px; margin-left:20px; overflow:hidden; float:left;}
+.content{ width:100%; padding:55px 0 10px 0; background:#eeedeb;}
+.c_left{ width:200px; margin-left:10px; overflow:hidden; float:left;}
 .c_left li{ height:35px; border-bottom:1px solid #395e8d; background:#2a4567;}
 .c_left li a{ display:block; height:35px; line-height:35px; color:#fff; white-space:nowrap; overflow:hidden;}
 .c_left li a span{ width:22px; height:22px; float:left; margin:9px 1px 0 14px;  _margin:9px 1px 0 5px;display:block;font-size:16px;}
 .c_left li a span img{ width:22px; height:22px;}
 .c_left li a:hover{ color:#fff; background:#152233; text-decoration:none;}
+.c_left li em{margin-top:10px;margin-right:10px;}
 
 .c_right{ margin-left:240px;}
-.float_wrap{ width:155px; float:right; margin-right:20px; }
+.float_wrap{ width:155px; float:right; margin-right:10px; }
 .float_wrap .time{  height:125px; background:#86abc7; padding:20px 10px 10px; margin-bottom:15px;}
 .float_wrap .time .date{ font-size:16px; color:#fff; line-height:32px; }
 .float_wrap .time .week{ font-size:20px; color:#fff; line-height:35px;}
@@ -98,19 +99,20 @@ p{word-wrap:break-word}
 .index_chat dd a span{ color:#ff0000;}
 .index_chat dd a:hover{ background:#3f6e93; color:#fff; text-decoration:none; }
 
-.index_main{ overflow:hidden;}
-.sub_box{ background:#fff; border:1px solid #dddddd; padding:15px; margin-bottom:20px;}
+.index_main{ overflow:hidden;margin-right:10px;}
+.sub_box{ background:#fff; border:1px solid #dddddd; padding:15px; margin-bottom:10px;}
 .sub_box .title{ height:40px; border-bottom:1px solid #dddddd; margin-bottom:5px; }
 .sub_box .maintain{ padding:0 5px; height:38px; line-height:38px; border-bottom:3px solid #e16700; color:#e16700; font-size:20px;display:inline-block;}
 .sub_box .management{ padding:0 5px; height:38px; line-height:38px; border-bottom:3px solid #1e5696; color:#1e5696; font-size:20px;display:inline-block;}
 .sub_box .box_item{ overflow:hidden;}
-.sub_box .box_item li{ width:100px; height:100px; float:left; margin:15px 5px 0;}
+.sub_box .box_item li{ width:100px; height:100px; float:left; margin:0px 5px 0;position:relative;}
 .sub_box .box_item li:hover{ background:url(../images/item_bg.jpg) no-repeat;}
 .sub_box .box_item li .top_img{ width:48px; height:48px; padding:15px 26px 8px; display:block;}
 .sub_box .box_item li .name{ width:98px; font-size:14px; color:#333px; display:block; text-align:center;}
 .sub_box .box_item li a:hover{ text-decoration:none;}
 .sub_box .box_item .plus{ width:98px; height:98px; border:1px dashed #cacaca; background: url(../images/plus.png) center center no-repeat; cursor:pointer;}
 .sub_box .box_item .plus:hover{ background: url(../images/plus.png) center center no-repeat #f9f9f9 !important;}
+.sub_box .box_item a em{position:absolute;right:5px;top:5px;}
 
 .sub_box .refresh{ background:url(../images/refresh.jpg) no-repeat left center; padding-left:20px; font-size:14px; color:#555; line-height:20px; display:block; float:right; margin:12px 5px 0 0;}
 .sub_box .refresh:hover{ color:#e77718;}
@@ -233,6 +235,10 @@ p{word-wrap:break-word}
 .pages .current a{ border:1px solid #1796f9; background:#1796f9; color:#fff;}
 .pages .infor{ float:left; line-height:26px;}
 .pages .infor em{color: #056dae;font-style: normal;}
+
+
+/* 封面页提示 */
+em.toptip{float:right;display:block;min-width:16px;height:16px;border-radius:8px;background:red;color:#fff;text-align:center;line-height:16px;font-style:normal;}
 
 /*留言*/
 .comment-focus {width:100%;padding: 10px 0 ;overflow: hidden;}

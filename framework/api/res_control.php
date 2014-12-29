@@ -61,7 +61,7 @@ class res_control extends phpok_control
 		}
 		else
 		{
-			if($_SESSION['session_id'] != $this->sesson->sessid()) $this->json('您没有权限删除这个附件信息');
+			if($_SESSION['session_id'] != $this->session->sessid()) $this->json('您没有权限删除这个附件信息');
 		}
 		//删除附件信息
 		$this->model('res')->delete($id);
@@ -85,7 +85,7 @@ class res_control extends phpok_control
 			}
 			else
 			{
-				if($_SESSION['session_id'] != $this->sesson->sessid()) $this->json('您没有权限删除这个附件信息');
+				if($_SESSION['session_id'] != $this->session->sessid()) $this->json('您没有权限删除这个附件信息');
 			}
 		}
 		$title = $this->get("title");

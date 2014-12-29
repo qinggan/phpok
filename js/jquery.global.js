@@ -699,12 +699,12 @@
 			'title':title,
 			'lock':false,
 			'taskbar':'top',
-			'exheight':80,
-			'exwidth':240,
+			'exheight':45,
+			'exwidth':220,
 			'height':height,
 			'move':true,
-			'win_max':false,
-			'win_min':false,
+			'win_max':true,
+			'win_min':true,
 			'is_max':true
 		}
 		var opt = $.extend({},defaults, opts);

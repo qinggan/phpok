@@ -426,7 +426,7 @@ class list_model extends phpok_model
 
 	function pending_info($site_id=0)
 	{
-		$sql = "SELECT count(l.id) total,p.title,p.id pid FROM ".$this->db->prefix."list l ";
+		$sql = "SELECT count(l.id) total,p.title,p.id pid,p.parent_id FROM ".$this->db->prefix."list l ";
 		$sql.= "JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
 		$sql.= " WHERE l.status!=1 AND l.site_id='".$site_id."' AND p.status=1";
 		$sql.= " GROUP BY l.project_id ORDER BY p.taxis ASC,p.id DESC ";
