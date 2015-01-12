@@ -14,7 +14,8 @@ class form_model extends phpok_model
 	function __construct()
 	{
 		parent::model();
-		$this->info = xml_to_array(file_get_contents($this->dir_phpok.'system.xml'));
+		$this->info = $this->lib('xml')->read($this->dir_phpok.'system.xml');
+		//$this->info = xml_to_array(file_get_contents($this->dir_phpok.'system.xml'));
 	}
 
 	function form_all()

@@ -10,7 +10,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class sql_control extends phpok_control
 {
-	public $popedom;
+	private $popedom;
 	function __construct()
 	{
 		parent::control();
@@ -22,179 +22,215 @@ class sql_control extends phpok_control
 	{
 		if(!$this->popedom["list"])
 		{
-			error("你没有查看权限",$this->url('index'),'error');
+			error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
 		}
 		//读取全部数据库表
 		$rslist = $this->model('sql')->tbl_all();
+		$total_size = 0;
+		if($rslist)
+		{
+			foreach($rslist as $key=>$value)
+			{
+				$length = $value['Avg_row_length'] + $value['Data_length'] + $value['Index_length'] + $value['Data_free'];
+				$value['length'] = $this->lib('common')->num_format($length);
+				$value['free'] = $value['Data_free'] ? $this->lib('common')->num_format($value['Data_free']) : 0;
+				$total_size += $length;
+				$rslist[$key] = $value;
+			}
+		}
 		$this->assign("rslist",$rslist);
 		$this->view("sql_index");
 	}
 
 	function optimize_f()
 	{
-		sys_popedom("phpoksql:set","tpl");
-		$id = $this->trans_lib->safe("id");
+		if(!$this->popedom['optimize'])
+		{
+			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+		}
+		$id = $this->get('id');
 		if(!$id)
 		{
-			error("没有指定要优化的数据表！",site_url("phpoksql"));
+			error(P_Lang('未选定要操作的数据表'),$this->url('sql'),'error');
 		}
-		$idlist = sys_id_list($id);
-		foreach($idlist AS $key=>$value)
+		$idlist = explode(",",$id);
+		foreach($idlist as $key=>$value)
 		{
-			$this->sql_m->optimize($value);
+			if(!preg_match("/^[a-z0-9A-Z\_\-]+$/u",$value))
+			{
+				continue;
+			}
+			$this->model('sql')->optimize($value);
 		}
-		error("指定数据表信息已优化完成！",site_url("phpoksql"));
+		error(P_Lang('数据表优化成功'),$this->url("sql"),'ok');
 	}
 
 	function repair_f()
 	{
-		sys_popedom("phpoksql:set","tpl");
-		$id = $this->trans_lib->safe("id");
+		if(!$this->popedom['repair'])
+		{
+			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+		}
+		$id = $this->get('id');
 		if(!$id)
 		{
-			error("没有指定要修复的数据表！",site_url("phpoksql"));
+			error(P_Lang('未选定要操作的数据表'),$this->url('sql'),'error');
 		}
-		$idlist = sys_id_list($id);
-		foreach($idlist AS $key=>$value)
+		$idlist = explode(",",$id);
+		foreach($idlist as $key=>$value)
 		{
-			$this->sql_m->repair($value);
+			if(!preg_match("/^[a-z0-9A-Z\_\-]+$/u",$value))
+			{
+				continue;
+			}
+			$this->model('sql')->repair($value);
 		}
-		error("指定数据表信息已修复完成！",site_url("phpoksql"));
+		error(P_Lang('数据表信修复成功'),$this->url("sql"),'ok');
 	}
 
-	function backup_f()
+	public function backup_f()
 	{
-		sys_popedom("phpoksql:set","tpl");
-		$id = $this->trans_lib->safe("id");
+		if(!$this->popedom['create'])
+		{
+			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+		}
+		$id = $this->get('id');
 		if(!$id || $id == "all")
 		{
-			$tbl_list = $this->sql_m->get_all();
+			$tbl_list = $this->model('sql')->tbl_all();
 			$idlist = array();
 			foreach($tbl_list AS $key=>$value)
 			{
 				$idlist[] = $value["Name"];
 			}
-			$tourl = site_url("phpoksql,backup")."id=all";
+			$url = $this->url('sql','backup','id=all');
 		}
 		else
 		{
-			$idlist = sys_id_list($id);
-			$tourl = site_url("phpoksql,backup")."id=".rawurlencode($id);
+			$url = $this->url("sql","backup","id=".rawurlencode($id));
+			$idlist = explode(",",$id);
 		}
-		//备份的文件名，如果为空，则表示未创建表结构
-		$backfilename = $this->trans_lib->safe("backfilename");
+		$backfilename = $this->get('backfilename');
 		if(!$backfilename)
 		{
-			$sql_prefix = $this->sql_m->sql_prefix();//数据表前缀
-			//创建备份文件名称
-			$backfilename = "sql_".date("YmdHis",$this->system_time)."_".$_SESSION["admin_id"];
-			//生成表名，获取表结构
+			$sql_prefix = $this->model('sql')->sql_prefix();
+			$backfilename = "sql".$this->time;
+			$url .= "&backfilename=".$backfilename;
+			//更新数据表结构
 			$html = "";
-			foreach($idlist AS $key=>$value)
+			foreach($idlist as $key=>$value)
 			{
-				//禁止session表恢复操作
-				if($value != $sql_prefix."session")
+				if(!preg_match("/^[a-z0-9A-Z\_\-]+$/u",$value))
 				{
-					$html .= "DROP TABLE IF EXISTS ".$value.";\n";
-					$html .= $this->sql_m->show_create_table($value);
-					$html .= ";\n\n";
+					continue;
 				}
-			}
-			//判断是否包含 管理员表，如果包含，则同时更新管理员数据
-			if(in_array($sql_prefix."admin",$idlist))
-			{
-				$rslist = $this->sql_m->getsql($sql_prefix."admin",0,"all");
-				if($rslist)
+				$html .= "DROP TABLE IF EXISTS ".$value.";\n";
+				$html .= $this->model('sql')->show_create_table($value);
+				$html .= ";\n\n";
+				if($value == $sql_prefix.'adm')
 				{
-					foreach($rslist AS $key=>$value)
+					$rslist = $this->model('sql')->getsql($sql_prefix."admin",0,"all");
+					if($rslist)
 					{
-						$html .= "INSERT INTO ".$sql_prefix."admin VALUES('".implode("','",$value)."');\n";
+						foreach($rslist AS $k=>$v)
+						{
+							$html .= "INSERT INTO ".$sql_prefix."admin VALUES('".implode("','",$v)."');\n";
+						}
 					}
 				}
 			}
-			$this->file_lib->vi($html,ROOT_DATA.$backfilename.".php");//存储数据
-			$tourl .= "&backfilename=".rawurlencode($backfilename);//已创建表
-			//初始化临昨表数据
-			$this->file_lib->vi("#PHPOK Full 数据备份\n\n",ROOT_DATA.$backfilename."_tmpdata.php");
-			error("表结构信息备份完毕，请稍候，正在执行下一步！",$tourl);
+			$this->lib('file')->vi($html,$this->dir_root.'data/'.$backfilename.".php");//存储数据
+			$this->lib('file')->vi("-- PHPOK4 Full 数据备份\n\n",$this->dir_root.'data/'.$backfilename."_tmpdata.php");
+			error(P_Lang('表结构备份成功，正在执行下一步'),$url,'ok');
 		}
-		$tourl .= "&backfilename=".rawurlencode($backfilename);
-		$startid = $this->trans_lib->int("startid");
-		//判断startid是否存在
+		$url .= "&backfilename=".$backfilename;
+		$startid = $this->get("startid","int");
 		if(($startid + 1)> count($idlist))
 		{
-			error("数据备份完毕！系统将返回已备份列表中",site_url('phpoksql,baklist'));
+			$this->lib('file')->rm($this->dir_root.'data/'.$backfilename.'_tmpdata.php');
+			error(P_Lang('数据备份成功'),$this->url('sql','backlist'),'ok');
 		}
+		$pageid = $this->get("pageid",'int');
+		$dataid = $this->get("dataid",'int');
 		$table = $idlist[$startid];//指定表
 		//判断如果是管理员表，则跳到下一步
-		if($table == $sql_prefix."admin")
+		if($table == $sql_prefix."adm" || $table == $sql_prefix."session")
 		{
-			$pageid = $this->trans_lib->int("pageid");
-			$dataid = $this->trans_lib->int("dataid");
-			$tourl .= "&startid=".($startid+1)."&pageid=".$pageid."&dataid=".$dataid;
-			error("数据表 ".$table." 已备份完成！正在进行下一步操作，请稍候！",$tourl);
+			$url .= "&startid=".($startid+1)."&pageid=".$pageid."&dataid=".$dataid;
+			error(P_Lang('数据表{table}已备份完成！正在进行下一步操作，请稍候！',array('table'=>' <span class="red">'.$table.'</span> ')),$url);
 		}
-		//如果是session表，自动进入下一步操作
-		if($table == $sql_prefix."session")
+		$psize = 100;
+		$total = $this->model('sql')->table_count($table);
+		if($total<1)
 		{
-			$pageid = $this->trans_lib->int("pageid");
-			$dataid = $this->trans_lib->int("dataid");
-			$tourl .= "&startid=".($startid+1)."&pageid=".$pageid."&dataid=".$dataid;
-			error("数据表 ".$table." 无需备份数据！正在进行下一步操作，请稍候！",$tourl);
+			$url .= "&startid=".($startid+1)."&pageid=".$pageid."&dataid=".$dataid;
+			error(P_Lang('数据表{table}已备份完成！正在进行下一步操作，请稍候！',array('table'=>' <span class="red">'.$table.'</span> ')),$url);
 		}
-		//每次只备份1000条数据
-		$msg = "";
-		$oldmsg = "";
-		if(file_exists(ROOT_DATA.$backfilename."_tmpdata.php"))
-		{
-			$oldmsg = $this->file_lib->cat(ROOT_DATA.$backfilename."_tmpdata.php");
-		}
-		$psize = 100;//每次查询最多读取次数
-		$total = $this->sql_m->table_count($table);//取得当前表的总记录数
 		if($psize >= $total)
 		{
-			$rslist = $this->sql_m->getsql($table,0,"all");
-			if($rslist)
+			$rslist = $this->model('sql')->getsql($table,0,'all');
+			if(!$rslist)
 			{
-				$msg .= "\n#table : ".$table." , backup time ".date("Y-m-d H:i:s",$this->system_time)."\n";
-				foreach($rslist AS $key=>$value)
-				{
-					$tmp_value = array();
-					foreach($value AS $k=>$v)
-					{
-						$v = $this->sql_m->escape_string($v);
-						$tmp_value[$k] = $v;
-					}
-					$msg .= "INSERT INTO ".$table." VALUES('".implode("','",$tmp_value)."');\n";
-				}
+				$rslist = array();
 			}
+			$msg = "\n-- table : ".$table." , backup time ".date("Y-m-d H:i:s",$this->time)."\n";
+			$msg.= "INSERT INTO ".$table." VALUES";
+			$i=0;
+			foreach($rslist as $key=>$value)
+			{
+				$tmp_value = array();
+				foreach($value AS $k=>$v)
+				{
+					$v = $this->model('sql')->escape($v);
+					$tmp_value[$k] = $v;
+				}
+				if($i)
+				{
+					$msg .= ",\n";
+				}
+				$msg .= "('".implode("','",$tmp_value)."')";
+				$i++;
+			}
+			$msg .= ";\n";
 			$new_startid = $startid + 1;
 			$pageid = 0;
 		}
 		else
 		{
-			$pageid = $this->trans_lib->int("pageid");
-			if($pageid<1) $pageid = 1;
+			$msg = '';
+			$pageid = $this->get('pageid','int');
+			if($pageid<1)
+			{
+				$pageid = 1;
+			}
 			if($pageid<2)
 			{
-				$msg .= "\n#table : ".$table." , backup time ".date("Y-m-d H:i:s",$this->system_time)."\n";
+				$msg .= "\n-- table : ".$table." , backup time ".date("Y-m-d H:i:s",$this->time)."\n";
 			}
-			$offset = ($pageid-1)*$psize;
+			$offset = ($pageid-1) * $psize;
 			if($offset < $total)
 			{
-				$rslist = $this->sql_m->getsql($table,$offset,$psize);
+				$rslist = $this->model('sql')->getsql($table,$offset,$psize);
 				if($rslist)
 				{
+					$msg.= "INSERT INTO ".$table." VALUES";
+					$i=0;
 					foreach($rslist AS $key=>$value)
 					{
 						$tmp_value = array();
 						foreach($value AS $k=>$v)
 						{
-							$v = $this->sql_m->escape_string($v);
+							$v = $this->model('sql')->escape($v);
 							$tmp_value[$k] = $v;
 						}
-						$msg .= "INSERT INTO ".$table." VALUES('".implode("','",$tmp_value)."');\n";
+						if($i)
+						{
+							$msg .= ",\n";
+						}
+						$msg .= "('".implode("','",$tmp_value)."')";
+						$i++;
 					}
+					$msg .= ";\n";
 					$new_startid = $startid;
 					$pageid = $pageid + 1;
 				}
@@ -210,252 +246,205 @@ class sql_control extends phpok_control
 				$pageid = 0;
 			}
 		}
-		$tourl .= "&startid=".$new_startid."&pageid=".$pageid;
-		//存储数据的文件Id
-		$dataid = $this->trans_lib->int("dataid");
-		//计算数据长度
-		//$msg = $oldmsg.$msg;
-		//$msg = $oldmsg . addslashes($msg);
-		$msg = addslashes($oldmsg . $msg);
-		if(strlen($msg)>=(1024*1000))
+		$url .= "&startid=".$new_startid."&pageid=".$pageid;
+		$fsize = 0;
+		if(!file_exists($this->dir_root.'data/'.$backfilename.'_tmpdata.php'))
 		{
-			//如果文件存在，则自动加一
-			if(file_exists(ROOT_DATA.$backfilename."_data_".$dataid.".php"))
-			{
-				$dataid++;
-			}
-			$this->file_lib->vi($msg,ROOT_DATA.$backfilename."_data_".$dataid.".php");//存储数据
-			unset($msg,$oldmsg);
-			//再重新创建临时文件
-			$new_dataid = $dataid+1;
-			//判断是否已经结束了
-			if($idlist[$new_startid])
-			{
-				$this->file_lib->vi("#PHPOK Full 数据备份\n\n",ROOT_DATA.$backfilename."_tmpdata.php");
-				error("正在备份数据，当前第 ".($dataid+1)." 个文件！",$tourl."&dataid=".$new_dataid);
-			}
-			else
-			{
-				$this->file_lib->rm(ROOT_DATA.$backfilename."_tmpdata.php");
-				error("数据表备份操作成功，请稍候，正在进入下一步！",site_url("phpoksql,baklist"));
-			}
+			$tmpinfo = "\n-- Create time:".date("Y-m-d H:i:s",$this->time)."\n";
+			$this->lib('file')->vi($tmpinfo,$this->dir_root.'data/'.$backfilename.'_tmpdata.php','file');
 		}
-		else
+		$this->lib('file')->vi(addslashes($msg),$this->dir_root.'data/'.$backfilename.'_tmpdata.php','','ab');
+		$fsize = filesize($this->dir_root.'data/'.$backfilename.'_tmpdata.php');
+		$update_dataid = false;
+		if($fsize >= 2097152 || !$idlist[$new_startid])
 		{
-			if(!$idlist[$new_startid])
-			{
-				if(file_exists(ROOT_DATA.$backfilename."_data_".$dataid.".php"))
-				{
-					$dataid++;
-				}
-				$this->file_lib->vi($msg,ROOT_DATA.$backfilename."_data_".$dataid.".php");//存储数据
-				$this->file_lib->rm(ROOT_DATA.$backfilename."_tmpdata.php");//删除临时文件
-				error("数据表备份操作成功，请稍候，正在进入下一步！",site_url("phpoksql,baklist"));
-			}
-			else
-			{
-				//如果数据没有超过系统限制，则
-				$this->file_lib->vi($msg,ROOT_DATA.$backfilename."_tmpdata.php");
-				$new_dataid = $dataid;
-				error("正在备份数据，当前第 ".($dataid+1)." 个文件！",$tourl."&dataid=".$new_dataid);
-			}
+			$update_dataid = true;
+			$newfile = $this->dir_root.'data/'.$backfilename.'_'.intval($dataid).'.php';
+			$this->lib('file')->mv($this->dir_root.'data/'.$backfilename.'_tmpdata.php',$newfile);
 		}
+		if($update_dataid)
+		{
+			$url .= "&dataid=".(intval($dataid)+1);
+		}
+		if(!$idlist[$new_startid])
+		{
+			error(P_Lang('数据备份成功'),$this->url('sql','backlist'),'ok');
+		}
+		error(P_Lang('正在备份数据，当前第{pageid}个文件，正在备{table}相关数据',array('pageid'=>' <span class="red">'.($dataid+1).'</span> ','table'=>' <span class="red">'.$idlist[$startid].'</span> ')),$url,'ok');
 	}
 
-	function baklist_f()
+	function backlist_f()
 	{
-		sys_popedom("phpoksql:list","tpl");
-		$ifact = sys_popedom("phpoksql:set");
-		$this->tpl->assign("set_popedom",$ifact);//执行操作
-		$this->load_model("admin");
-		$this->admin_m->psize = 999;//设置管理员999个
-		$admin_tmplist = $this->admin_m->get_list(0);
-		$adminlist = array();
-		foreach($admin_tmplist AS $key=>$value)
+		if(!$this->popedom['list'])
 		{
-			$adminlist[$value["id"]] = $value["name"];
+			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
 		}
-		unset($admin_tmplist);
-		$filelist = $this->file_lib->ls(ROOT_DATA);
+		$filelist = $this->lib('file')->ls($this->dir_root.'data/');
 		if(!$filelist)
 		{
-			error("没有取得相应数据！",site_url("phpoksql"));
+			error(P_Lang('空数据，请检查目录：{root}data/',array('root'=>$this->dir_root)),$this->url("sql"));
 		}
 		$tmplist = array();
 		$i=0;
 		foreach($filelist AS $key=>$value)
 		{
 			$bv = basename($value);
-			if(substr($bv,0,4) == "sql_")
+			if(substr($bv,0,3) == "sql" && strlen($bv) == 17 && substr($bv,-4) == '.php')
 			{
-				$tmp = explode("_",substr($bv,0,-4));
-				$tmplist[$i] = array();
-				$tmplist[$i]["filename"] = $value;
-				$tmplist[$i]["basename"] = substr($bv,0,-4);
-				$tmplist[$i]["tmptime"] = $tmp[1];
-				$tmplist[$i]["postdate"] = substr($tmp[1],0,4)."-".substr($tmp[1],4,2)."-".substr($tmp[1],6,2)." ".substr($tmp[1],8,2).":".substr($tmp[1],10,2).":".substr($tmp[1],12,2);
-				$tmplist[$i]["admin"] = $adminlist[$tmp[2]];
-				$tmplist[$i]["type"] = $tmp[3] ? "data" : "sql";
-				if($tmp[3] == "tmpdata")
-				{
-					$tmplist[$i]["type"] = "tmpdata";
-				}
+				$tmplist[$i] = array('filename'=>$bv,'time'=>date("Y-m-d H:i:s",substr($bv,3,10)),'size'=>filesize($value),'id'=>substr($bv,3,10));
 				$i++;
 			}
-		}
-		if(!$tmplist || count($tmplist)<1)
-		{
-			error("没有检测到备份文件！",site_url("phpoksql"));
-		}
-		$yclist = $rslist = array();
-		foreach($tmplist AS $key=>$value)
-		{
-			if($value["type"] == "sql")
+			if(!is_file($value) || substr($bv,0,3) != 'sql' || strpos($bv,'_') === false || substr($bv,-4) != '.php')
 			{
-				$filesize = filesize($value["filename"]);
-				foreach($tmplist AS $k=>$v)
+				unset($filelist[$key]);
+			}
+		}
+		if(!$tmplist)
+		{
+			error(P_Lang('没有相备份数据'),$this->url('sql'));
+		}
+		foreach($tmplist as $key=>$value)
+		{
+			foreach($filelist as $k=>$v)
+			{
+				$tmp = basename($v);
+				if(substr($tmp,0,13) == 'sql'.$value['id'])
 				{
-					if($v["type"] == "data" && $v["tmptime"] == $value["tmptime"] && $v["admin"] == $value["admin"])
-					{
-						$filesize += filesize($v["filename"]);
-					}
+					$value['size'] += filesize($v);
 				}
-				$value["psize"] = $filesize;
-				$rslist[] = $value;
 			}
-			elseif($value["type"] == "tmpdata")
-			{
-				$value["psize"] = filesize($value["filename"]);
-				$yclist[] = $value;
-			}
+			$tmplist[$key] = $value;
 		}
-		$this->tpl->assign("rslist",$rslist);
-		$this->tpl->display("sql_list.html");
+		foreach($tmplist as $key=>$value)
+		{
+			$value['size_str'] = $this->lib('common')->num_format($value['size']);
+			$tmplist[$key] = $value;
+		}
+		$this->tpl->assign("rslist",$tmplist);
+		$this->view("sql_list");
 	}
 
-	function del_f()
+	function delete_f()
 	{
-		sys_popedom("phpoksql:set","tpl");
-		$id = $this->trans_lib->safe("id");
+		if(!$this->popedom['delete'])
+		{
+			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+		}
+		$id = $this->get('id');
 		if(!$id)
 		{
-			error("没有指定备份文件！",site_url("phpoksql,baklist"));
+			error(P_Lang('没有指定备份文件'),$this->url('sql','backlist'),'error');
 		}
-		$filelist = $this->file_lib->ls(ROOT_DATA);
+		$filelist = $this->lib('file')->ls($this->dir_root.'data/');
 		if(!$filelist)
 		{
-			error("没有取得相应数据！",site_url("phpoksql,baklist"));
+			error(P_Lang('空数据，请检查目录：{root}data/',array('root'=>$this->dir_root)),$this->url("sql"));
 		}
 		$idlen = strlen($id);
 		foreach($filelist AS $key=>$value)
 		{
 			$bv = basename($value);
-			if(substr($bv,0,$idlen) == $id)
+			if(substr($bv,0,13) == 'sql'.$id)
 			{
-				$this->file_lib->rm($value);
+				$this->lib('file')->rm($value);
 			}
 		}
-		error("备份文件 ".$id." 删除操作成功！",site_url("phpoksql,baklist"));
+		error(P_Lang('备份文件删除成功'),$this->url('sql','backlist'),'ok');
 	}
 
 	function recover_f()
 	{
-		sys_popedom("phpoksql:set","tpl");
-		$id = $this->trans_lib->safe("id");
+		if(!$this->popedom['recover'])
+		{
+			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+		}
+		$id = $this->get('id');
 		if(!$id)
 		{
-			error("没有指定备份文件！",site_url("phpoksql,baklist"));
+			error(P_Lang('没有指定备份文件'),$this->url('sql','backlist'),'error');
 		}
-		if(!file_exists(ROOT_DATA.$id.".php"))
+		$backfile = $this->dir_root.'data/sql'.$id.'.php';
+		if(!file_exists($backfile))
 		{
-			error("备份文件丢失，请检查！",site_url("phpoksql,baklist"));
+			error(P_Lang('备份文件不存在'),$this->url('sql','backlist'),'error');
 		}
-		//恢复表结构数据
-		$msg = $this->file_lib->cat(ROOT_DATA.$id.".php");
+		$session = $_SESSION;
+		$msg = $this->lib('file')->cat($backfile);
 		$this->format_sql($msg);
-		error("表结构数据已经修复，正在恢复数据！请稍候！",site_url("phpoksql,recover_data")."id=".rawurlencode($id)."&startid=0");
-	}
-
-	function recover_session_f()
-	{
-		sys_popedom("phpoksql:set","tpl");
-		$this->sql_m->recover_session();
-		error("SESSION表已还原！",site_url("phpoksql,baklist"));
+		//判断管理员是否存在
+		$admin_rs = $this->model('admin')->get_one($session['admin_id'],'id');
+		if(!$admin_rs || $admin_rs['account'] != $session['admin_account'])
+		{
+			//写入当前登录的管理员信息
+			if(!$admin_rs)
+			{
+				$this->model('sql')->update_adm($session['admin_rs'],$session['admin_id']);
+			}
+			else
+			{
+				$this->model('sql')->update_adm($session['admin_rs']);
+			}
+		}
+		//更新相应的SESSION信息，防止被退出
+		$_SESSION = $session;
+		error(P_Lang('表结构数据修复成功，正在修复内容数据，请稍候！'),$this->url('sql','recover_data','id='.$id."&startid=0"),'ok');
 	}
 
 	function recover_data_f()
 	{
-		sys_popedom("phpoksql:set","tpl");
-		$id = $this->trans_lib->safe("id");
+		if(!$this->popedom['recover'])
+		{
+			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+		}
+		$id = $this->get('id');
 		if(!$id)
 		{
-			error("没有指定备份文件！",site_url("phpoksql,baklist"));
+			error(P_Lang('没有指定备份文件'),$this->url('sql','backlist'),'error');
 		}
-		$filelist = $this->file_lib->ls(ROOT_DATA);
-		if(!$filelist)
+		$startid = $this->get('startid','int');
+		$backfile = $this->dir_root.'data/sql'.$id.'_'.$startid.'.php';
+		if(!file_exists($backfile))
 		{
-			error("没有取得相应数据！",site_url("phpoksql,baklist"));
+			error(P_Lang('数据恢复完成'),$this->url('sql','backlist'),'ok');
 		}
-		$idlen = strlen($id."_data_");
-		$rslist = array();
-		foreach($filelist AS $key=>$value)
-		{
-			$bv = basename($value);
-			if(substr($bv,0,$idlen) == $id."_data_")
-			{
-				$rslist[] = $value;
-			}
-		}
-		if(!$rslist || count($rslist)<1)
-		{
-			error("数据文件丢失，请检查！",site_url("phpoksql,baklist"));
-		}
-		$startid = $this->trans_lib->int("startid");
-		if(!$rslist[$startid])
-		{
-			error("数据信息已恢复完成！建议您清空缓存后退出再重新登录！",site_url("phpoksql,baklist"));
-		}
-		$file = $rslist[$startid];
-		//恢复表结构数据
-		$msg = $this->file_lib->cat($file);
+		$msg = $this->lib('file')->cat($backfile);
 		$this->format_sql($msg);
 		$new_startid = $startid + 1;
-		if(!$rslist[$new_startid])
+		$newfile = $this->dir_root.'data/sql'.$id.'_'.$new_startid.'.php';
+		if(!file_exists($newfile))
 		{
-			error("数据信息已恢复完成！建议您清空缓存后退出再重新登录！",site_url("phpoksql,baklist"));
+			error(P_Lang('数据恢复完成'),$this->url('sql','backlist'),'ok');
 		}
-		error("正在恢复数据，请稍候！",site_url("phpoksql,recover_data")."id=".rawurlencode($id)."&startid=".$new_startid);
+		error(P_Lang("正在恢复数据，正在恢复第{pageid}个文件，请稍候…",array('pageid'=>' <span class="red">'.($startid+1).'</span>')),$this->url('sql','recover_data','id='.$id.'&startid='.$new_startid),'ok');
 	}
 
 	function format_sql($sql)
 	{
 		$sql = str_replace("\r","\n",$sql);
-		$ret = array();
-		$num = 0;
-		foreach(explode(";\n", trim($sql)) as $query)
+		$list = explode(";\n",trim($sql));
+		foreach($list as $key=>$value)
 		{
-			$queries = explode("\n", trim($query));
-			foreach($queries as $query)
+			if(!$value || !trim($value))
 			{
-				$ret[$num] .= $query[0] == '#' || $query[0].$query[1] == '--' ? '' : $query;
+				continue;
 			}
-			$num++;
-		}
-		unset($sql);
-
-		foreach($ret as $query)
-		{
-			$query = trim($query);
-			if($query)
+			$vlist = explode("\n",trim($value));
+			$tmpsql = '';
+			foreach($vlist as $k=>$v)
 			{
-				if(substr($query, 0, 12) == 'CREATE TABLE')
+				if(!$v || !trim($v))
 				{
-					$this->sql_m->query_create($query);
+					continue;
 				}
-				else
+				$v = trim($v);
+				if(substr($v,0,1) != '#' && substr($v,0,2) != '--')
 				{
-					$this->sql_m->query($query);
+					$tmpsql .= $v;
 				}
+			}
+			if($tmpsql)
+			{
+				$this->model('sql')->query($tmpsql);
 			}
 		}
 	}

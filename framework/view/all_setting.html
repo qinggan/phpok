@@ -1,6 +1,11 @@
 <!-- php:$code_editor_info = form_edit('meta',$rs.meta,'code_editor','width=650&height=200') -->
 <!-- include tpl=head title=网站信息设置 -->
 <script type="text/javascript" src="{func include_js all.js}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	top.$.desktop.title('网站信息');
+});
+</script>
 <div class="tips clearfix">
 	您当前的位置：
 	<a href="{echo admin_url('all')}">全局维护</a>

@@ -219,6 +219,14 @@ class phpok_tpl
 		return '<?php echo "<pre>".print_r($'.$info.',true)."</pre>";?>';
 	}
 
+	function lang_replace($info)
+	{
+		if(!$info || !is_array($info) || !$info[1] || !trim($info[1])) return '';
+		$info = $info[1];
+		$info = stripslashes(trim($info));
+		return '<?php echo P_Lang('.$info.');?>';
+	}
+
 	//正则替换
 	function html_to_php($content,$path_format=true)
 	{
@@ -242,6 +250,8 @@ class phpok_tpl
 		$content = preg_replace('/<!--\s*php\s*-->/isU','<?php',$content);
 		$content = preg_replace('/<!--\s*\/\s*php\s*-->/isU','?>',$content);
 		$content = preg_replace_callback('/\{debug\s+\$(.+)\}/isU',array($this,'html_debug'),$content);
+		//语言包替换
+		$content = preg_replace_callback('/\{lang\s*(.+)\}/isU',array($this,'lang_replace'),$content);
 		//内置标签替换
 		$content = preg_replace_callback('/(\{|<!--\s*)(arclist|arc|subcate|catelist|cate|project|sublist|parent|plist|fields|user|userlist)[:]*([\w\$]*)\s+(.+)(\}|\s*-->)/isU',array($this,'data_php'),$content);
 		$content = preg_replace_callback('/(\{|<!--\s*)\/(arclist|arc|catelist|cateinfo|subcate|project|sublist)[:]*([a-zA-Z\_0-9\$]*)(\}|\s*-->)/isU',array($this,'undata_php'),$content);

@@ -6,15 +6,62 @@
 <meta http-equiv="Expires" content="wed, 26 feb 1997 08:21:57 gmt" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Cache-Control" content="no-cache" />
-<title>管理员登录</title>
-<link href="css/login.css" rel="stylesheet" type="text/css" />
-<link href="css/artdialog.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="{url ctrl=js ext=admin.login/}"></script>
+<title>{lang管理员登录}</title>
+<link href="css/css.php?file={func rawurlencode login.css,artdialog.css}" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="{url ctrl=js /}"></script>
 <script type="text/javascript">
+function login_code(appid)
+{
+	var src_url = api_url("vcode","","id="+appid);
+	$("#src_code").attr("src",src_url);
+}
+
+//验证并登录
+function admlogin()
+{
+	var username = $("#username").val();
+	if(!username)
+	{
+		$.dialog.alert("{lang管理员账号不能为空}",false,'error');
+		return false;
+	}
+	//密码验证
+	var pass = $("#password").val();
+	if(!pass)
+	{
+		$.dialog.alert("{lang密码不能为空}",false,'error');
+		return false;
+	}
+	var url = get_url('login','check','user='+$.str.encode(username)+"&pass="+$.str.encode(pass));
+	var vcode = $("#code_id").val();
+	if(vcode)
+	{
+		url += "&_code="+$.str.encode(vcode);
+	}
+	var rs = $.phpok.json(url);
+	if(rs.status != 'ok')
+	{
+		$.dialog.alert(rs.content,function(){
+			$("#code_id").val('');
+			login_code('{$sys.app_id}');
+		},'error');
+		return false;
+	}
+	else
+	{
+		url = get_url('index');
+		$.phpok.go(url);
+	}
+	return false;
+}
+function update_lang(val)
+{
+	url = "{url ctrl=login/}&langid="+val;
+	$.phpok.go(url);
+}
+
+//防止被嵌套
 if (self.location != top.location) top.location = self.location;
-$(document).ready(function(){
-	login_code("{$sys.app_id}");
-});
 </script>
 </head>
 <body>
@@ -28,38 +75,36 @@ $(document).ready(function(){
 		<form method="post" id="adminlogin" onsubmit="return admlogin()">
 		<table width="360" border="0" align="center" cellpadding="0" cellspacing="0">
 		<tr>
-			<td height="30">管理员账号 </td>
-			<td colspan="2">&nbsp;</td>
+			<td height="30">{lang管理员账号}</td>
+			<td colspan="2">{lang语言}</td>
 		</tr>
 		<tr>
 			<td height="40"><input name="username" type="text" class="user user_bg1" id="username" tabindex="1" /></td>
-			<td colspan="2">&nbsp;</td>
+			<td colspan="2">
+				<select name="langid" id="langid" onchange="update_lang(this.value)" style="padding:3px;border:1px solid #7ea3b8;line-height:27px;height:27px;">
+					<!-- loop from=$langlist key=$key value=$value -->
+					<option value="{$key}"{if $key == $langid} selected{/if}>{$value}</option>
+					<!-- /loop -->
+				</select>
+			</td>
 		</tr>
-		<!-- if $vcode -->
 			<tr>
-				<td width="209" height="30">管理员密码</td>
-				<td colspan="2">验证码</td>
+				<td width="209" height="30">{lang管理员密码}</td>
+				<td colspan="2"><!-- if $vcode -->{lang验证码}<!-- /if --></td>
 			</tr>
 			<tr>
 				<td height="40"><input name="password" id="password" type="password" class="user user_bg2" tabindex="2" /></td>
+				<!-- if $vcode -->
 				<td width="72"><input name="code_id" type="text" class="user user_bg3" id="code_id" tabindex="3" /></td>
-				<td width="79"><img src="images/blank.gif" border="0" align="absmiddle" style="cursor:pointer;" onclick="login_code('{$sys.app_id}')" id="src_code"></td>
+				<td width="79"><img src="images/blank.gif" border="0" align="absmiddle" style="cursor:pointer;" onclick="login_code('{$sys.app_id}')" id="src_code"><script type="text/javascript">$(document).ready(function(){login_code("{$sys.app_id}");});</script></td>
+				<!-- /if -->
 			</tr>
-		<!-- else -->
-			<tr>
-				<td width="209" height="30" colspan="3">管理员密码</td>
-			</tr>
-			<tr>
-				<td height="40"><input name="password" id="password" type="password" class="user user_bg2" /></td>
-			</tr>
-		<!-- /if -->
 		<tr>
-			<td height="50" colspan="3" valign="bottom"><input type="image" src="images/but.png" /></td>
+			<td height="50" colspan="3"><input type="submit" value="{lang认证登录}" class="but" /></td>
 		</tr>
 		<tr>
-			<td height="30" colspan="3">推荐使用：Chrome / Firefox / IE8-11 访问本系统</td>
+			<td height="30" colspan="3">{lang"推荐使用：傲游/谷歌/火狐/IE9-12等浏览器访问本系统"}</td>
 		</tr>
-		
 		</table>
 		</form>
 	</div>

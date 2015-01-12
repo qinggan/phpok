@@ -531,7 +531,7 @@ class update_control extends phpok_control
 		}
 		if(is_file($this->dir_root.'data/update.xml'))
 		{
-			$info = xml_to_array(file_get_contents($this->dir_root.'data/update.xml'));
+			$info = $this->lib('xml')->read($this->dir_root.'data/update.xml');
 			$info = $info['phpok'];
 			$info['time'] = $info['time'] ? strtotime($info['time']) : 0;
 		}
@@ -551,7 +551,7 @@ class update_control extends phpok_control
 		{
 			return $this->json('检测异常，请登录官网查询补丁更新',false,false);
 		}
-		$rs = xml_to_array($info);
+		$rs = $this->lib('xml')->read($info,false);
 		$rs = $rs['info'];
 		if(!$rs['status'])
 		{

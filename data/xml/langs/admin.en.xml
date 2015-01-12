@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<options>Options</options>
+	<rows>Rows</rows>
+	<size>Size</size>
+	<select-all>All</select-all>
+	<select-none>None</select-none>
+	<select-anti>Invert</select-anti>
+	<update-time>Update time</update-time>
+	<login-account>Account</login-account>
+	<login-language>Language</login-language>
+	<login-password>Password</login-password>
+	<login-vcode>Verification</login-vcode>
+	<login-vouch>Recommended: Maxthon / Google / Firefox / IE9-12</login-vouch>
+	<login-title>Administrator Login</login-title>
+	<login-submit>Login</login-submit>
+	<login-error-account>Account can not be empty.</login-error-account>
+	<login-error-password>Password can not be empty.</login-error-password>
+	<login-error-logind>You have successfully logged in.</login-error-logind>
+	<login-error-vcode-empty>Verification code can not be empty.</login-error-vcode-empty>
+	<login-error-vcode>Verification code is incorrect.</login-error-vcode>
+	<login-error-admin-notin>The administrator does not exist.</login-error-admin-notin>
+	<login-error-password-not>Administrator password is incorrect.</login-error-password-not>
+	<login-error-lock>Account is locked, please contact administrator.</login-error-lock>
+	<login-error-popedom>Permissions are not setting, please contact the administrator to set</login-error-popedom>
+	<global-lead-title>Navigation: </global-lead-title>
+	<sql-title>Database Management</sql-title>
+	<sql-select>Please select the data table</sql-select>
+	<sql-confirm-backup>Are you sure backup? If not selected, it will backup all.</sql-confirm-backup>
+	<sql-table>Tables</sql-table>
+	<sql-engine>Engine</sql-engine>
+	<sql-charset>Charset</sql-charset>
+	<sql-free>Free</sql-free>
+	<sql-not-popedom>Permission is forbidden, contact administrator to open permissions</sql-not-popedom>
+	<sql-not-table>No selected data table</sql-not-table>
+	<sql-optizime-ok>Tables optimization success</sql-optizime-ok>
+	<sql-repair-ok>Tables repair success</sql-repair-ok>
+	<sql-table-backup-ok>Data sheet has been successfully backup, performing the next step</sql-table-backup-ok>
+	<sql-backup-ok>Backup is successful</sql-backup-ok>
+	<sql-backup-ok-table>{table} is backup, waiting for next action.</sql-backup-ok-table>
+	<sql-select-free>Select free</sql-select-free>
+	<sql-backup-ing>Being backed up data, Current {pageid} files, data table is {table}</sql-backup-ing>
+	<sql-optizime>Optizime</sql-optizime>
+	<sql-repair>Repair</sql-repair>
+	<sql-backup>Backup</sql-backup>
+</root>

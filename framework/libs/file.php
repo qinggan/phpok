@@ -54,7 +54,10 @@ class file_lib
 		}
 		else
 		{
-			$content = "<?php die('forbidden'); ?>\n".$content;
+			if(strtolower($type) == 'wb' || strtolower($type) == 'w')
+			{
+				$content = "<?php die('forbidden'); ?>\n".$content;
+			}
 		}
 		$this->_write($content,$file,$type);
 		return true;

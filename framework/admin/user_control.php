@@ -43,9 +43,7 @@ class user_control extends phpok_control
 		$this->assign("total",$count);
 		$this->assign("rslist",$rslist);
 		$this->assign("pagelist",$pagelist);
-		
-		$xmlfile = $this->dir_root.'data/xml/admin_user.xml';
-		$list = xml_to_array(file_get_contents($xmlfile));
+		$list = $this->lib('xml')->read($this->dir_root.'data/xml/admin_user.xml');
 		$this->assign("arealist",$list);
 
 		$grouplist = $this->model('usergroup')->get_all("","id");

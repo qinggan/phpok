@@ -16,7 +16,7 @@ class db_mysql
 	public $conn;
 	//是否启用调试
 	public $debug = false;
-	private $config_db = array('host'=>'localhost','user'=>'root','pass'=>'','data'=>'','port'=>3306);
+	public $config_db = array('host'=>'localhost','user'=>'root','pass'=>'','data'=>'','port'=>3306);
 	private $config_cache = array('type'=>'file','folder'=>'cache/','time'=>3600,'server'=>'localhost','port'=>11211);
 	private $type = MYSQL_ASSOC;
 	private $query; //执行对象
@@ -28,15 +28,10 @@ class db_mysql
 	public function __construct($config=array())
 	{
 		$this->time = time();
-		//初始化调试
 		$this->debug = $config["debug"] ? $config["debug"] : false;
-		//初始化数据表前缀
 		$this->prefix = $config['prefix'] ? $config['prefix'] : 'qinggan_';
-		//初始化统计计数
 		$this->_stat_info();
-		//初始化数据库配置
 		$this->_config_db($config);
-		//初始化缓存引挈
 		$this->_config_cache($config);
 		return true;
 	}
@@ -50,17 +45,12 @@ class db_mysql
 		{
 			$data = $this->config_db['data'];
 		}
-		$host = $this->config_db['host'];
-		$user = $this->config_db['user'];
-		$pass = $this->config_db['pass'];
-		$port = $this->config_db['port'];
-		$socket = $this->config_db['socket'];
-		$linkhost = $host.":".$port;
-		if($socket)
+		$linkhost = $this->config_db['host'].":".($this->config_db['port'] ? $this->config_db['port'] : '3306');
+		if($this->config_db['socket'])
 		{
-			$linkhost .= ":".$socket;
+			$linkhost .= ":".$this->config_db['socket'];
 		}
-		$this->conn = mysql_connect($linkhost,$user,$pass,true,MYSQL_CLIENT_COMPRESS);
+		$this->conn = mysql_connect($linkhost,$this->config_db['user'],$this->config_db['pass'],true,MYSQL_CLIENT_COMPRESS);
 		if(!$this->conn || !is_resource($this->conn))
 		{
 			$this->debug('数据库连接失败，错误ID：'.mysql_errno().'，错误信息：'.mysql_error());
@@ -133,7 +123,7 @@ class db_mysql
 	//定义基本的变量信息
 	public function set($name,$value)
 	{
-		if($name == "rs_type" || name == 'type')
+		if($name == "rs_type" || $name == 'type')
 		{
 			$value = strtolower($value) == "num" ? MYSQL_NUM : MYSQL_ASSOC;
 			$this->type = $value;
@@ -151,7 +141,7 @@ class db_mysql
 		$this->query = mysql_query($sql,$this->conn);
 		$this->counter('sql');
 		//清除缓存
-		if(!preg_match('/^SELECT/isU',$sql))
+		if(!preg_match('/^SELECT/isU',trim($sql)))
 		{
 			$this->_cache_clear($sql);
 		}
@@ -297,35 +287,47 @@ class db_mysql
 	
 	public function get_all($sql,$primary="")
 	{
-		//如果存在缓存，优先读缓存
-		$keyid = $this->cache_id($sql);
-		$rs = $this->cache_get($keyid);
-		if($rs)
+		if(!$sql || !trim($sql))
 		{
-			if(!$primary)
+			return false;
+		}
+		$sql = trim($sql);
+		$cache_status = false;
+		if(preg_match('/^SELECT/isU',$sql))
+		{
+			$keyid = $this->cache_id($sql);
+			$rs = $this->cache_get($keyid);
+			if($rs)
 			{
-				return $rs;
+				if(!$primary)
+				{
+					return $rs;
+				}
+				$list = false;
+				foreach($rs as $key=>$value)
+				{
+					$list[$value[$primary]] = $value;
+				}
+				return $list;
 			}
-			$list = false;
-			foreach($rs as $key=>$value)
-			{
-				$list[$value[$primary]] = $value;
-			}
-			return $list;
+			$cache_status = true;
 		}
 		$this->query($sql);
 		if(!$this->query || !is_resource($this->query))
 		{
 			return false;
 		}
-		$rs = false;
 		$this->timer('sql');
+		$rs = false;
 		while($rows = mysql_fetch_array($this->query,$this->type))
 		{
 			$rs[] = $rows;
 		}
 		$this->timer('sql');
-		$this->cache_save($keyid,$rs);
+		if($cache_status && $keyid)
+		{
+			$this->cache_save($keyid,$rs);
+		}
 		if($primary && $rs)
 		{
 			$list = array();
@@ -341,15 +343,21 @@ class db_mysql
 	//取得单独数据
 	public function get_one($sql="")
 	{
-		if(!$sql)
+		if(!$sql || !trim($sql))
 		{
 			return false;
 		}
-		$keyid = $this->cache_id($sql);
-		$rs = $this->cache_get($keyid);
-		if($rs)
+		$sql = trim($sql);
+		$cache_status = false;
+		if(preg_match('/^SELECT/isU',$sql))
 		{
-			return $rs;
+			$keyid = $this->cache_id($sql);
+			$rs = $this->cache_get($keyid);
+			if($rs)
+			{
+				return $rs;
+			}
+			$cache_status = true;
 		}
 		$this->query($sql);
 		if(!$this->query || !is_resource($this->query))
@@ -358,7 +366,7 @@ class db_mysql
 		}
 		$this->timer('sql');
 		$rs = mysql_fetch_array($this->query,$this->type);
-		if($rs)
+		if($rs && $cache_status && $keyid)
 		{
 			$this->cache_save($keyid,$rs);
 		}

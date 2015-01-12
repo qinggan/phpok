@@ -1,0 +1,41 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function sql_recover(id)
+{
+	$.dialog.confirm('{lang确定要恢复到这个备份}',function(){
+		var url = get_url('sql','recover','id='+id);
+		$.phpok.go(url);
+	});
+}
+function sql_delete(id)
+{
+	$.dialog.confirm('{lang确定要删除这个备份吗？删除后就不能恢复了}',function(){
+		var url = get_url('sql','delete','id='+id);
+		$.phpok.go(url);
+	});
+}
+</script>
+<div class="tips clearfix">
+	{lang您当前的位置：}<a href="{url ctrl=sql/}" title="{lang数据库管理}">{lang数据库管理}</a>
+	&raquo; {lang已备份列表}
+</div>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th class="lft">&nbsp;{lang备份文件}</th>
+	<th class="lft">&nbsp;{lang大小}</th>
+	<th>{lang备份时间}</th>
+	<th class="lft">&nbsp; {lang操作}</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td>{$value.filename}</td>
+	<td>{$value.size_str}</td>
+	<td align="center">{$value.time}</td>
+	<td><input type="button" value="恢复这个备份" onclick="sql_recover('{$value.id}')" class="btn" />
+		<input type="button" value="删除" onclick="sql_delete('{$value.id}')" class="btn" />
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+
+<!-- include tpl=foot -->

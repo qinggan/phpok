@@ -667,7 +667,8 @@ class data_model extends phpok_model
 	private function _list_info($id)
 	{
 		//读取内容
-		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id='".$id."' OR identifier='".$id."'";
+		$sql  = "SELECT * FROM ".$this->db->prefix."list WHERE ";
+		$sql .= is_numeric($id) ? " id='".$id."' " : " identifier='".$id."' ";
 		$sql .= " AND site_id='".$this->site['id']."' AND status=1";
 		$rs = $this->db->get_one($sql);
 		if(!$rs)

@@ -232,5 +232,38 @@ class common_lib
 		}
 		return $rand_str;
 	}
+
+	//字节数格式化为带单位的数据，默认保留两位小数
+	public function num_format($a,$ext=2,$min_kb=true)
+	{
+		if(!$a || $a == 0)
+		{
+			return false;
+		}
+		if($a <= 1024)
+		{
+			if($min_kb)
+			{
+				$a = "1 KB";
+			}
+			else
+			{
+				return $a." B";
+			}
+		}
+		elseif($a>1024 && $a<(1024*1024))
+		{
+			$a = round(($a/1024),$ext)." KB";
+		}
+		elseif($a>=(1024*1024) && $a<(1024*1024*1024))
+		{
+			$a = round(($a/(1024*1024)),$ext)." MB";
+		}
+		else
+		{
+			$a = round(($a/(1024*1024*1024)),$ext)." GB";
+		}
+		return $a;
+	}
 }
 ?>

@@ -49,9 +49,9 @@ class fields_control extends phpok_control
 			}
 		}
 		$this->assign("rslist",$rslist);
-		$xmlfile = $this->dir_root.'data/xml/fields_area.xml';
-		$list = xml_to_array(file_get_contents($xmlfile));
-		$this->assign("arealist",$list);
+		//读取字段使用范围
+		$arealist = $this->lib('xml')->read($this->dir_root.'data/xml/fields_area.xml');
+		$this->assign("arealist",$arealist);
 		$this->view("fields_index");
 	}
 
@@ -84,9 +84,8 @@ class fields_control extends phpok_control
 		$opt_list = $this->model('opt')->group_all();
 		$this->assign("opt_list",$opt_list);
 		//取得复选框
-		$xmlfile = $this->dir_root.'data/xml/fields_area.xml';
-		$list = xml_to_array(file_get_contents($xmlfile));
-		$this->assign("arealist",$list);
+		$arealist = $this->lib('xml')->read($this->dir_root.'data/xml/fields_area.xml');
+		$this->assign("arealist",$arealist);
 		$this->assign("area",$area);
 		$this->view("fields_set");
 	}
@@ -99,9 +98,8 @@ class fields_control extends phpok_control
 		$opt_list = $this->model('opt')->group_all();
 		$this->assign("opt_list",$opt_list);
 		//取得复选框
-		$xmlfile = $this->dir_root.'data/xml/fields_area.xml';
-		$list = xml_to_array(file_get_contents($xmlfile));
-		$this->assign("arealist",$list);
+		$arealist = $this->lib('xml')->read($this->dir_root.'data/xml/fields_area.xml');
+		$this->assign("arealist",$arealist);
 		$this->assign("area",$area);
 		$this->view("fields_set_open");
 	}

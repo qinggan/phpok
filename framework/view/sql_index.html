@@ -1,6 +1,95 @@
-<!-- include tpl=head title=数据库管理工具 -->
+<!-- include tpl=head -->
 <div class="tips clearfix">
-	您当前的位置：<a href="{url ctrl=sql/}" title="数据库管理">数据库管理</a>
+	{lang您当前的位置：}<a href="{url ctrl=sql/}" title="{lang数据库管理}">{lang数据库管理}</a>
+	<div class="action"><a href="{url ctrl=sql func=backlist/}">{lang已备份列表}</a></div>
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+	top.$.desktop.title('{lang数据库管理}');
+});
+function select_free()
+{
+	$.input.checkbox_none();
+	$("input[sign=free]").attr("checked",true);
+	return true;
+}
+function optimize_sql()
+{
+	var id = $.input.checkbox_join();
+	if(!id)
+	{
+		$.dialog.alert("{lang请选择数据表}");
+		return false;
+	}
+	var url = "{url ctrl=sql func=optimize/}&id="+$.str.encode(id);
+	$.phpok.go(url);
+}
 
+function repair_sql()
+{
+	var id = $.input.checkbox_join();
+	if(!id)
+	{
+		$.dialog.alert("{lang请选择数据表}");
+		return false;
+	}
+	var url = "{url ctrl=sql func=repair/}&id="+$.str.encode(id);
+	$.phpok.go(url);
+}
+
+function backup_sql()
+{
+	$.dialog.confirm("{lang确定要执行备份操作吗？未选定表将备份全部！}",function(){
+		var id = $.input.checkbox_join();
+		if(!id)
+		{
+			id = 'all';
+		}
+		var url = "{url ctrl=sql func=backup/}&id="+$.str.encode(id);
+		$.phpok.go(url);
+	});
+}
+</script>
+
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th class="id">{lang选项}</th>
+	<th>{lang表名}</th>
+	<th>{lang引挈}</th>
+	<th>{lang字符集}</th>
+	<th class="lft">&nbsp;{lang记录数}</th>
+	<th class="lft">&nbsp;{lang大小}</th>
+	<th>{lang更新时间}</th>
+	<th class="lft">&nbsp;{lang碎片}</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td align="center"><input type="checkbox" id="tbl_{$value.Name}" name="tbl[]" {if $value.free} sign="free"{/if} value="{$value.Name}" /></td>
+	<td><label for="tbl_{$value.Name}">{$value.Name}<!-- if $value.Comment --><span class="gray i">（{$value.Comment}）</span><!-- /if --></label></td>
+	<td align="center">{$value.Engine}</td>
+	<td align="center">{$value.Collation}</td>
+	<td>{$value.Rows}</td>
+	<td>{$value.length}</td>
+	<td align="center">{$value.Update_time ? $value.Update_time : $value.Create_time}</td>
+	<td{if $value.free} style="background:red;"{/if}>{$value.free}</td>
+</tr>
+<!-- /loop -->
+<tr>
+	<td colspan="8">
+		<input type="button" value="{lang全选}" onclick="$.input.checkbox_all()" class="btn" />
+		<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none()" class="btn" />
+		<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti()" class="btn" />
+		<input type="button" value="{lang只选择有碎片}" onclick="select_free()" class="btn" />
+		<!-- if $popedom.optimize -->
+		<input type="button" value="{lang优化}" onclick="optimize_sql()" class="submit" />
+		<!-- /if -->
+		<!-- if $popedom.repair -->
+		<input type="button" value="{lang修复}" onclick="repair_sql()" class="submit" />
+		<!-- /if -->
+		<!-- if $popedom.create -->
+		<input type="button" value="{lang备份}" onclick="backup_sql()" class="submit" />
+		<!-- /if -->
+	</td>
+</tr>
+</table>
 <!-- include tpl=foot -->

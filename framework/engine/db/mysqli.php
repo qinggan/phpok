@@ -16,28 +16,22 @@ class db_mysqli
 	public $conn;
 	//是否启用调试
 	public $debug = false;
-	private $config_db = array('host'=>'localhost','user'=>'root','pass'=>'','data'=>'','port'=>3306);
+	public $config_db = array('host'=>'localhost','user'=>'root','pass'=>'','data'=>'','port'=>3306);
 	private $config_cache = array('type'=>'file','folder'=>'cache/','time'=>3600,'server'=>'localhost','port'=>11211);
 	private $type = MYSQLI_ASSOC;
 	private $query; //执行对象
 	private $cache;//缓存对象
 	private $cache_keyid;
 	private $cache_prikey = 'phpok_prikey';//缓存的主字段
-	private $cache_list; //当前已加载的缓存，防止可以免去多次数读取
 	private $time;
 
 	public function __construct($config=array())
 	{
 		$this->time = time();
-		//初始化调试
 		$this->debug = $config["debug"] ? $config["debug"] : false;
-		//初始化数据表前缀
 		$this->prefix = $config['prefix'] ? $config['prefix'] : 'qinggan_';
-		//初始化统计计数
 		$this->_stat_info();
-		//初始化数据库配置
 		$this->_config_db($config);
-		//初始化缓存引挈
 		$this->_config_cache($config);
 		return true;
 	}
@@ -51,12 +45,7 @@ class db_mysqli
 		{
 			$data = $this->config_db['data'];
 		}
-		$host = $this->config_db['host'];
-		$user = $this->config_db['user'];
-		$pass = $this->config_db['pass'];
-		$port = $this->config_db['port'];
-		$socket = $this->config_db['socket'];
-		$this->conn = new mysqli($host,$user,$pass,'',$port,$socket);
+		$this->conn = new mysqli($this->config_db['host'],$this->config_db['user'],$this->config_db['pass'],'',$this->config_db['port'],$this->config_db['socket']);
 		if($this->conn->connect_error)
 		{
 			$this->debug('数据库连接失败，错误ID：'.$this->conn->connect_errno.'，错误信息：'.$this->conn->connect_error);
@@ -73,7 +62,6 @@ class db_mysqli
 		$this->conn->query("SET sql_mode=''");
 		$this->timer('sql');
 		$this->select_db($data);
-		//$this->counter('sql',2); //计数器;
 		return true;
 	}
 	//更换数据库选择
@@ -142,7 +130,7 @@ class db_mysqli
 	//定义基本的变量信息
 	public function set($name,$value)
 	{
-		if($name == "rs_type" || name == 'type')
+		if($name == "rs_type" || $name == 'type')
 		{
 			$value = strtolower($value) == "num" ? MYSQLI_NUM : MYSQLI_ASSOC;
 			$this->type = $value;
@@ -160,7 +148,7 @@ class db_mysqli
 		$this->query = $this->conn->query($sql);
 		$this->counter('sql');
 		//清除缓存
-		if(!preg_match('/^SELECT/isU',$sql))
+		if(!preg_match('/^SELECT/isU',trim($sql)))
 		{
 			$this->_cache_clear($sql);
 		}
@@ -306,21 +294,30 @@ class db_mysqli
 	
 	public function get_all($sql,$primary="")
 	{
-		//如果存在缓存，优先读缓存
-		$keyid = $this->cache_id($sql);
-		$rs = $this->cache_get($keyid);
-		if($rs)
+		if(!$sql || !trim($sql))
 		{
-			if(!$primary)
+			return false;
+		}
+		$sql = trim($sql);
+		$cache_status = false;
+		if(preg_match('/^SELECT/isU',$sql))
+		{
+			$keyid = $this->cache_id($sql);
+			$rs = $this->cache_get($keyid);
+			if($rs)
 			{
-				return $rs;
+				if(!$primary)
+				{
+					return $rs;
+				}
+				$list = false;
+				foreach($rs as $key=>$value)
+				{
+					$list[$value[$primary]] = $value;
+				}
+				return $list;
 			}
-			$list = false;
-			foreach($rs as $key=>$value)
-			{
-				$list[$value[$primary]] = $value;
-			}
-			return $list;
+			$cache_status = true;
 		}
 		$this->query($sql);
 		if(!$this->query || !is_object($this->query))
@@ -334,7 +331,10 @@ class db_mysqli
 			$rs[] = $rows;
 		}
 		$this->timer('sql');
-		$this->cache_save($keyid,$rs);
+		if($cache_status && $keyid)
+		{
+			$this->cache_save($keyid,$rs);
+		}
 		if($primary && $rs)
 		{
 			$list = array();
@@ -350,15 +350,21 @@ class db_mysqli
 	//取得单独数据
 	public function get_one($sql="")
 	{
-		if(!$sql)
+		if(!$sql || !trim($sql))
 		{
 			return false;
 		}
-		$keyid = $this->cache_id($sql);
-		$rs = $this->cache_get($keyid);
-		if($rs)
+		$sql = trim($sql);
+		$cache_status = false;
+		if(preg_match('/^SELECT/isU',$sql))
 		{
-			return $rs;
+			$keyid = $this->cache_id($sql);
+			$rs = $this->cache_get($keyid);
+			if($rs)
+			{
+				return $rs;
+			}
+			$cache_status = true;
 		}
 		$this->query($sql);
 		if(!$this->query || !is_object($this->query))
@@ -367,7 +373,7 @@ class db_mysqli
 		}
 		$this->timer('sql');
 		$rs = $this->query->fetch_array($this->type);
-		if($rs)
+		if($rs && $cache_status && $keyid)
 		{
 			$this->cache_save($keyid,$rs);
 		}
@@ -742,9 +748,11 @@ class db_mysqli
 	//输入Debug错误
 	private function debug($info='')
 	{
-		if(!$info && $this->conn && $this->conn->error)
+		$errno = $this->conn->errno;
+		$error = $this->conn->error;
+		if(!$info && $this->conn && $error)
 		{
-			$info = '数据请求失败，错误ID：'.$this->conn->errno."，错误信息是：".$this->conn->error;
+			$info = '数据请求失败，错误ID：'.$errno."，错误信息是：".$error;
 		}
 		if($info)
 		{

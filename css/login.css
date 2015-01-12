@@ -8,7 +8,8 @@ body{ background:#ededed; margin:0; padding:0; font-size:14px; font-family:"Micr
 .user_bg1{ background:url("../images/user01.jpg") left no-repeat #fff;}
 .user_bg2{ background:url("../images/user02.jpg") left no-repeat #fff;}
 .user_bg3{ width:64px; padding:0 0 0 2px;text-transform:uppercase;}
-.but{ width:145px; height:27px; line-height:25px;border:1px solid #7ea3b8;margin-left:35px;background:#E3E3E3;}
+.but{ width:137px; height:35px;margin-left:35px; line-height:35px;border:0;background:#E3E3E3;font-size:14px;font-weight:bold;background:url('../images/btnbg.png') left center no-repeat;font-family:"Microsoft Yahei";color:#fff;}
+input.but:hover{color:#FAFAFA;}
 .lang{height:21px;border:1px solid #7ea3b8;}
 form{margin:0;padding:0}
 

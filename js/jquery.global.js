@@ -693,7 +693,17 @@
 			$("#"+open_id).click();
 			return false;
 		}
-		var height = parseInt(($(window).height() - 80) * 0.8);
+		var max = $('body').width() - 770;
+		var this_max = 90;
+		$("ul.head_tab li").each(function(i){
+			this_max += parseInt($(this).outerWidth(true));
+		});
+		if(max <= this_max)
+		{
+			$.dialog.alert('您弹出的窗口太多了，请先关闭几个没有用的窗口');
+			return false;
+		}
+		var height = parseInt(($(window).height() - 45) * 0.8);
 		var defaults = {
 			'iframe':url,
 			'title':title,

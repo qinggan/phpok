@@ -14,151 +14,19 @@ header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 header("Last-Modified: Mon, 26 Jul 1997 05:00:00  GMT"); 
 header("Cache-control: no-cache,no-store,must-revalidate,max-age=3"); 
 header("Pramga: no-cache"); 
-//将数组存为XML
-function array_to_xml(&$xml,$rs,$ext="")
-{
-	if(is_array($rs))
-	{
-		foreach($rs AS $key=>$value)
-		{
-			if(is_array($value))
-			{
-				$ext .= "	";
-				$xml .= "<".$key.">\n";
-				array_to_xml($xml,$value,$ext);
-				$xml .= "</".$key.">\n";
-			}
-			else
-			{
-				$xml .= $ext."<".$key.">".$value."</".$key.">\n";
-			}
-		}
-	}
-}
 
-//将XML转成数组
 //xml纯内容
 function xml_to_array($xml)
 {
-	$reg = "/<([a-zA-Z0-9\_\-]+)([^>]*?)>([\\x00-\\xFF]*?)<\\/\\1>/";
-	if(preg_match_all($reg, $xml, $matches))
+	if(isset($GLOBALS['app']))
 	{
-		$count = count($matches[0]);
-		$arr = array();
-		for($i = 0; $i < $count; $i++)
-		{
-			$key = $matches[1][$i];
-			$ext = $matches[2][$i];
-			$val = xml_to_array( $matches[3][$i] );  // 递归
-			if(array_key_exists($key, $arr))
-			{
-				if(is_array($arr[$key]))
-				{
-					if(!array_key_exists(0,$arr[$key]))
-					{
-						$arr[$key] = array($arr[$key]);
-					}
-				}else{
-					$arr[$key] = array($arr[$key]);
-				}
-				if(!$val && $ext && trim($ext))
-				{
-					$ext = trim($ext);
-					preg_match_all("/([0-9a-zA-Z\_]+)\=[\"|'](.+)[\"|']/isU",$ext,$extlist);
-					if($extlist[1])
-					{
-						$tmplist = array();
-						foreach($extlist[1] AS $kk=>$vv)
-						{
-							$tmplist[$vv] = $extlist[2][$kk];
-						}
-						$arr[$key][] = $tmplist;
-					}
-					else
-					{
-						$arr[$key][] = $val;
-					}
-				}
-				else
-				{
-					if($ext && trim($ext))
-					{
-						$ext = trim($ext);
-						preg_match_all("/([0-9a-zA-Z\_]+)\=[\"|'](.+)[\"|']/isU",$ext,$extlist);
-						if($extlist[1])
-						{
-							$tmplist = array();
-							foreach($extlist[1] AS $kk=>$vv)
-							{
-								$tmplist[$vv] = $extlist[2][$kk];
-							}
-							$arr[$key][] = array("id"=>$tmplist,"val"=>$val);
-						}
-						else
-						{
-							$arr[$key][] = $val;
-						}
-					}
-					else
-					{
-						$arr[$key][] = $val;
-					}
-				}
-			}else{
-				if($val && !is_array($val))
-				{
-					$val = preg_replace('/\{html:(.+)\}/isU','<\\1>',$val);
-					$val = preg_replace('/\{\/(.+):html\}/isU','</\\1>',$val);
-				}
-				if(!$val && $ext && trim($ext))
-				{
-					$ext = trim($ext);
-					preg_match_all("/([0-9a-zA-Z\_]+)\=[\"|'](.+)[\"|']/isU",$ext,$extlist);
-					if($extlist[1])
-					{
-						$tmplist = array();
-						foreach($extlist[1] AS $kk=>$vv)
-						{
-							$tmplist[$vv] = $extlist[2][$kk];
-						}
-						$arr[$key] = $tmplist;
-					}
-					else
-					{
-						$arry[$key] = $val;
-					}
-				}
-				else
-				{
-					if($ext && trim($ext))
-					{
-						$ext = trim($ext);
-						preg_match_all("/([0-9a-zA-Z\_]+)\=[\"|'](.+)[\"|']/isU",$ext,$extlist);
-						if($extlist[1])
-						{
-							$tmplist = array();
-							foreach($extlist[1] AS $kk=>$vv)
-							{
-								$tmplist[$vv] = $extlist[2][$kk];
-							}
-							$arr[$key]["id"] = $tmplist;
-							$arr[$key]["val"] = $val;
-						}
-						else
-						{
-							$arr[$key] = $val;
-						}
-					}
-					else
-					{
-						$arr[$key] = $val;
-					}
-				}
-			}
-		}
-		return $arr;
-	}else{
-		return $xml;
+		return $GLOBALS['app']->lib('xml')->read($xml,false);
+	}
+	else
+	{
+		include_once(FRAMEWORK.'libs/xml.php');
+		$obj = new xml_lib();
+		return $obj->read($xml,false);
 	}
 }
 
@@ -332,17 +200,57 @@ class _init_phpok
 		$this->assign("sys",$this->config);
 		//针对网站进行SEO优化
 		$this->phpok_seo($this->site);
-		
 		$this->assign("config",$this->site);
 		//加载语言包，如果有使用的话
-		if($this->site['lang'] && is_file($this->dir_root."data/xml/langs/".$this->site['lang'].".xml"))
+		if($this->site['lang'])
 		{
-			$this->lang = xml_to_array(file_get_contents($this->dir_root."data/xml/langs/".$this->site['lang'].".xml"));
-			foreach($this->lang AS $key=>$value)
+			$this->language($this->site['lang']);
+		}
+		else
+		{
+			$session_langid = isset($_SESSION[$this->app_id."_lang_id"]) ? $_SESSION[$this->app_id."_lang_id"] : 'default';
+			$this->language($session_langid);
+		}
+	}
+
+	function language($langid='default')
+	{
+		//装载默认的语言包
+		$langfile = $this->dir_root."data/xml/langs/".$this->app_id.".default.xml";
+		if(!is_file($langfile))
+		{
+			$langfile = $this->dir_root."data/xml/langs/default.xml";
+		}
+		$default_list = $this->lib('xml')->read($langfile);
+		if(!$default_list)
+		{
+			return false;
+		}
+		if($langid && $langid != 'default' && $langid != 'cn')
+		{
+			$langfile = $this->dir_root."data/xml/langs/".$this->app_id.".".$langid.".xml";
+			$langlist = $this->lib('xml')->read($langfile);
+			if($langlist)
 			{
-				$this->lang[$key] = phpok_ubb($value);
+				$langs = false;
+				foreach($langlist as $key=>$value)
+				{
+					if($default_list[$key])
+					{
+						$langs[$default_list[$key]] = $value;
+					}
+				}
+				$this->lang = $langs;
 			}
-			$this->assign("lang",$this->lang[$this->app_id]);
+		}
+		else
+		{
+			$langs = false;
+			foreach($default_list as $key=>$value)
+			{
+				$langs[$value] = $value;
+			}
+			$this->lang = $langs;
 		}
 	}
 
@@ -848,7 +756,17 @@ class _init_phpok
 	function get($id,$type="safe",$ext="")
 	{
 		$val = isset($_POST[$id]) ? $_POST[$id] : (isset($_GET[$id]) ? $_GET[$id] : "");
-		if($val == '') return false;
+		if($val == '')
+		{
+			if($type == 'int' || $type == 'intval' || $type == 'float' || $type == 'floatval')
+			{
+				return 0;
+			}
+			else
+			{
+				return '';
+			}
+		}
 		//判断内容是否有转义，所有未转义的数据都直接转义
 		$addslashes = false;
 		if(function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()) $addslashes = true;
@@ -863,7 +781,7 @@ class _init_phpok
 	//当type为func属性时，表示ext直接执行函数
 	function format($msg,$type="safe",$ext="")
 	{
-		if($msg == "") return false;
+		if($msg == "") return '';
 		if(is_array($msg))
 		{
 			foreach($msg AS $key=>$value)
@@ -1518,22 +1436,34 @@ function phpok_head_css()
 	return $html;
 }
 //核心函数，语言包
-function P_Lang($info)
+function P_Lang($info,$replace='')
 {
 	if(!$info)
 	{
 		return false;
 	}
-	if(!$GLOBALS['app']->lang)
+	if(!$replace)
 	{
+		$replace = array();
+	}
+	if(!isset($GLOBALS['app']->lang[$info]))
+	{
+		foreach($replace as $key=>$value)
+		{
+			$info = str_replace('{'.$key.'}',$value,$info);
+			$info = str_replace('['.$key.']',$value,$info);
+		}
 		return $info;
 	}
-	$keyid = array_search($info,$GLOBALS['app']->lang);
-	if(!$keyid)
+	if($GLOBALS['app']->lang[$info])
 	{
-		return $info;
+		$info = $GLOBALS['app']->lang[$info];
+		foreach($replace as $key=>$value)
+		{
+			$info = str_replace('{'.$key.'}',$value,$info);
+		}
 	}
-	return $GLOBALS['app']->lang[$keyid];
+	return $info;
 }
 
 //核心函数，增加CSS

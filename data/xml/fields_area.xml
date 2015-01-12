@@ -1,10 +1,12 @@
-<?xml version="1.0"?>
-<all>网站参数</all>
-<cate>分类</cate>
-<module>模块</module>
-<project>项目</project>
-<user>会员</user>
-<usergroup>会员组</usergroup>
-<cart>购物车</cart>
-<order>订单</order>
-<pay>付款</pay>
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<all>网站参数</all>
+	<cate>分类</cate>
+	<module>模块</module>
+	<project>项目</project>
+	<user>会员</user>
+	<usergroup>会员组</usergroup>
+	<cart>购物车</cart>
+	<order>订单</order>
+	<pay>付款</pay>
+</root>

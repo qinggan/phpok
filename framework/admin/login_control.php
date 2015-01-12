@@ -22,12 +22,27 @@ class login_control extends phpok_control
 	{
 		if($_SESSION['admin_id'])
 		{
-			error('您已成功登录',$this->url('index'),'ok');
+			error(P_Lang('您已成功登录'),$this->url('index'),'ok');
 		}
 		$vcode = $this->config["is_vcode"] && function_exists("imagecreate") ? true : false;
 		$this->assign("vcode",$vcode);
 		$login = $this->config['admin_tpl_login'] ? $this->config['admin_tpl_login'] : 'login';
-		if(!$this->tpl->check_exists($login)) $login = 'login';
+		if(!$this->tpl->check_exists($login))
+		{
+			$login = 'login';
+		}
+		//读取语言包
+		$langlist = $this->lib('xml')->read($this->dir_root.'data/xml/langs.xml');
+		$this->assign('langlist',$langlist);
+		//判断默认语言
+		$langid = $this->get('langid');
+		if(!$langid)
+		{
+			$langid = isset($_SESSION['admin_lang_id']) ? $_SESSION['admin_lang_id'] : 'cn';
+		}
+		$_SESSION['admin_lang_id'] = $langid;
+		$this->assign('langid',$langid);
+		$GLOBALS['app']->language($langid);
 		$this->view($login);
 	}
 
