@@ -10,21 +10,105 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class string_lib
 {
-	function __construct()
+	private $use_mb_substr = false;
+	public function __construct()
 	{
-		//
+		if(function_exists('mb_substr') && function_exists('mb_internal_encoding'))
+		{
+			mb_internal_encoding("UTF-8");
+			$this->use_mb_substr = true;
+		}
+	}
+
+	private function _substr($string,$length=255)
+	{
+		return mb_substr($string,0,$length);
+		
+	}
+
+	public function cut($string,$length=0,$dot='',$html=false)
+	{
+		if(!$length)
+		{
+			return $string;
+		}
+		$str = $string;
+		$string = strip_tags(trim($string));
+		$string = str_replace("&nbsp;"," ",$string);
+		if(strlen($string) <= $length)
+		{
+			return $html ? $str : $string;
+		}
+		$info = $this->use_mb_substr ? $this->_substr($string,$length) : $this->_cut($string,$length);
+		if(!$html)
+		{
+			return $info.$dot;
+		}
+		//组成HTML样式
+		$starts = $ends = $starts_str = false;
+		preg_match_all('/<\w+[^>]*>/isU',$str,$starts,PREG_OFFSET_CAPTURE);
+		preg_match_all('/<\/\w+>/isU',$str,$ends,PREG_OFFSET_CAPTURE);
+		if(!$starts || ($starts && !$starts[0]))
+		{
+			return str_replace(" ","&nbsp;",$info).$dot;
+		}
+		$lst = $use = false;
+		foreach($starts[0] as $key=>$value)
+		{
+			if($value[1] >= $length)
+			{
+				break;
+			}
+			$info = substr($info,0,$value[1]).$value[0].substr($info,$value[1]);
+			$length += strlen($value[0]);
+			if($ends && $ends[0][$key])
+			{
+				//检测标签是否符合要求
+				$chk = str_replace(array('/','>'),'',$ends[0][$key][0]);
+				if(substr($value[0],0,strlen($chk)) == $chk)
+				{
+					$info = substr($info,0,$ends[0][$key][1]).$ends[0][$key][0].substr($info,$ends[0][$key][1]);
+					$length += strlen($ends[0][$key][0]);
+					$use[$key] = $ends[0][$key];
+				}
+				else
+				{
+					$lst[] = $value[0];
+				}
+			}
+			else
+			{
+				$lst[] = $value[0];
+			}
+		}
+		if($ends && $lst)
+		{
+			foreach($ends[0] as $key=>$value)
+			{
+				//检测是否已经使用过了
+				if($use && $use[$key])
+				{
+					continue;
+				}
+				$chk = str_replace(array('/','>'),'',$value[0]);
+				foreach($lst as $k=>$v)
+				{
+					if(substr($v,0,strlen($chk)) == $chk)
+					{
+						$info = substr($info,0,$value[1]).$value[0].substr($info,$value[1]);
+						$length += strlen($value[0]);
+						$use[$key] = $value;
+						unset($lst[$k]);
+					}
+				}
+			}
+		}
+		return $info.$dot;
 	}
 
 	//字符串截取
-	function cut($string, $length=255,$dot = "")
+	private function _cut($string,$length=0)
 	{
-		//去除HTML和PHP代码
-		$string = strip_tags(trim($string));
-		$string = str_replace("&nbsp;"," ",$string);
-		$string = preg_replace("/(\x20{2,})/"," ",$string);# 去除多余空格，只保留一个空格
-		if(!$length) $length = 255;
-		if(strlen($string) <= $length) return $string;
-
 		$wordscut = "";
 		//utf8编码
 		$n = 0;
@@ -75,15 +159,9 @@ class string_lib
 			}
 			if ($noc >= $length) break;
 		}
-
 		if ($noc > $length) $n -= $tn;
 		$wordscut = substr($string, 0, $n);
-		if($wordscut != $string)
-		{
-			$string = $wordscut.$dot;
-		}
-		$string = $wordscut.$dot;
-		return trim($string);
+		return $wordscut;
 	}
 
 	/**
@@ -91,7 +169,7 @@ class string_lib
 	 * @param $str
 	 * @return array
 	 */
-	function StringToArray($str)
+	public function to_array($str)
 	{
 		$result = array();
 		$len = strlen($str);

@@ -1,24 +1,23 @@
 <?php
 /*****************************************************************************************
-	文件： {phpok}/engine/db/mysqli.php
-	备注： MySQL与Cache类集成，后续phpok内核文件之一
+	文件： pdo_mysql.php
+	备注： PDO连接MySQL操作类
 	版本： 4.x
 	网站： www.phpok.com
 	作者： qinggan <qinggan@188.com>
-	时间： 2014年10月29日 09时49分
+	时间： 2015年01月13日 22时17分
 *****************************************************************************************/
-class db_mysqli
+if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+class db_pdo_mysql
 {
-	//统计执行次数及时间
 	public $stat_info;
-	//数据表前缀，很多地方上被直接调用，用public
 	public $prefix = 'qinggan_';
 	public $conn;
 	//是否启用调试
 	public $debug = false;
 	public $config_db = array('host'=>'localhost','user'=>'root','pass'=>'','data'=>'','port'=>3306);
 	private $config_cache = array('type'=>'file','folder'=>'cache/','time'=>3600,'server'=>'localhost','port'=>11211);
-	private $type = MYSQLI_ASSOC;
+	private $type = PDO::FETCH_ASSOC;
 	private $query; //执行对象
 	private $cache;//缓存对象
 	private $cache_keyid;
@@ -36,6 +35,20 @@ class db_mysqli
 		return true;
 	}
 
+	private function _dsn($data)
+	{
+		if(!$data)
+		{
+			$data = $this->config_db['data'];
+		}
+		$dsn = 'mysql:host='.$this->config_db['host'].';dbname='.$data.';port='.$this->config_db['port'];
+		if($this->config_db['socket'])
+		{
+			$dsn .= ';unix_socket='.$this->config_db['socket'];
+		}
+		return $dsn;
+	}
+
 	//连接数据库
 	public function connect_db($data='')
 	{
@@ -45,39 +58,27 @@ class db_mysqli
 		{
 			$data = $this->config_db['data'];
 		}
-		$this->conn = new mysqli($this->config_db['host'],$this->config_db['user'],$this->config_db['pass'],'',$this->config_db['port'],$this->config_db['socket']);
-		if($this->conn->connect_error)
-		{
-			$this->debug('数据库连接失败，错误ID：'.$this->conn->connect_errno.'，错误信息：'.$this->conn->connect_error);
+		$dsn = $this->_dsn($data);
+		try{
+			$this->conn = new PDO($dsn,$this->config_db['user'],$this->config_db['pass']);
+		} catch(PDOException $e){
+			$this->debug('数据库连接失败，错误信息：'.$e->getMessage());
 		}
-		if($this->conn->error)
-		{
-			$this->debug();
-		}
-		if(!$this->conn || !is_object($this->conn))
-		{
-			$this->debug('数据库连接请求失败');
-		}
-		$this->conn->query("SET NAMES 'utf8'");
-		$this->conn->query("SET sql_mode=''");
-		$this->timer('sql');
-		$this->select_db($data);
-		return true;
-	}
-	//更换数据库选择
-	public function select_db($data="")
-	{
-		$this->check_connect();
-		$this->timer('sql');
-		$this->conn->select_db($data);
-		if($this->conn->error)
-		{
-			$this->debug();
-		}
+		$this->conn->exec("SET NAMES 'utf8'");
+		$this->conn->exec("SET sql_mode=''");
+		$this->conn->setAttribute(PDO::ATTR_CASE,PDO::CASE_NATURAL);
 		$this->timer('sql');
 		return true;
 	}
 
+	//重新选择数据库
+	public function select_db($data="")
+	{
+		$this->conn = null;
+		return $this->connect_db($data);
+	}
+
+	//检测连接
 	private function check_connect()
 	{
 		if(!$this->conn || !is_object($this->conn))
@@ -86,9 +87,9 @@ class db_mysqli
 		}
 		else
 		{
-			if(!$this->conn->ping())
+			if(!$this->_ping())
 			{
-				$this->conn->close();
+				$this->conn = null;
 				$this->connect_db();
 			}
 		}
@@ -97,9 +98,8 @@ class db_mysqli
 	//关闭数据库连接
 	public function __destruct()
 	{
-		//关闭数据库连接
 		$this->_cache_keysave();
-		$this->conn->close();
+		$this->conn = null;
 	}
 
 	//连接缓存
@@ -132,7 +132,7 @@ class db_mysqli
 	{
 		if($name == "rs_type" || $name == 'type')
 		{
-			$value = strtolower($value) == "num" ? MYSQLI_NUM : MYSQLI_ASSOC;
+			$value = strtolower($value) == "num" ? PDO::FETCH_NUM : PDO::FETCH_ASSOC;
 			$this->type = $value;
 		}
 		else
@@ -141,13 +141,13 @@ class db_mysqli
 		}
 	}
 
+	//执行SQL
 	public function query($sql)
 	{
 		$this->check_connect();
 		$this->timer('sql');
 		$this->query = $this->conn->query($sql);
 		$this->counter('sql');
-		//清除缓存
 		if(!preg_match('/^SELECT/isU',trim($sql)))
 		{
 			$this->_cache_clear($sql);
@@ -291,7 +291,7 @@ class db_mysqli
 		$this->timer('file');
 		return true;
 	}
-	
+
 	public function get_all($sql,$primary="")
 	{
 		if(!$sql || !trim($sql))
@@ -325,11 +325,7 @@ class db_mysqli
 			return false;
 		}
 		$this->timer('sql');
-		$rs = false;
-		while($rows = $this->query->fetch_array($this->type))
-		{
-			$rs[] = $rows;
-		}
+		$rs = $this->query->fetchAll($this->type);
 		$this->timer('sql');
 		if($cache_status && $keyid)
 		{
@@ -347,7 +343,6 @@ class db_mysqli
 		return $rs;
 	}
 
-	//取得单独数据
 	public function get_one($sql="")
 	{
 		if(!$sql || !trim($sql))
@@ -372,7 +367,7 @@ class db_mysqli
 			return false;
 		}
 		$this->timer('sql');
-		$rs = $this->query->fetch_array($this->type);
+		$rs = $this->query->fetch($this->type);
 		if($rs && $cache_status && $keyid)
 		{
 			$this->cache_save($keyid,$rs);
@@ -384,13 +379,16 @@ class db_mysqli
 	//返回最后插入的ID
 	public function insert_id()
 	{
-		return $this->conn->insert_id;
+		return $this->conn->lastInsertId();
 	}
 
 	//执行写入SQL
 	public function insert($sql)
 	{
-		$this->query($sql);
+		$this->timer('sql');
+		$this->counter('sql');
+		$this->conn->exec($sql);
+		$this->timer('sql');
 		return $this->insert_id();
 	}
 
@@ -500,7 +498,7 @@ class db_mysqli
 		}
 		else
 		{
-			return $this->query->num_rows;
+			return $this->query->rowCount();
 		}
 	}
 
@@ -510,7 +508,7 @@ class db_mysqli
 		{
 			$this->query($sql);
 		}
-		return $this->query->field_count;
+		return $this->query->columnCount();
 	}
 
 	public function list_fields($table)
@@ -576,7 +574,7 @@ class db_mysqli
 		{
 			return false;
 		}
-		return $this->conn->escape_string($char);
+		return $this->conn->quote($char);
 	}
 
 	//数据库查询时间
@@ -748,8 +746,8 @@ class db_mysqli
 	//输入Debug错误
 	private function debug($info='')
 	{
-		$errno = $this->conn->errno;
-		$error = $this->conn->error;
+		$errno = $this->conn->errorCode();
+		$error = $this->conn->errorInfo();
 		if(!$info && $this->conn && $error)
 		{
 			$info = '数据请求失败，错误ID：'.$errno."，错误信息是：".$error;
@@ -798,5 +796,17 @@ class db_mysqli
 		$this->cache_save($this->cache_prikey,$this->cache->phpok_keylist);
 		return true;
 	}
+
+	//PDO MySQL不支持mysql ping功能，暂时用这种方法来实现
+	private function _ping()
+	{
+		$status = $this->conn->getAttribute(PDO::ATTR_SERVER_INFO);
+		if($status == 'MySQL server has gone away')
+		{
+			return false;
+		}
+		return true;
+	}
+
 }
 ?>

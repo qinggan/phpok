@@ -486,9 +486,9 @@ class db_mysql
 	{
 		if($sql)
 		{
-			$this->type = MYSQL_NUM;
+			$this->set('type','num');
 			$rs = $this->get_one($sql);
-			$this->type = MYSQL_ASSOC;
+			$this->set('type','assoc');
 			return $rs[0];
 		}
 		else
