@@ -40,7 +40,7 @@ $(document).ready(function(){
 	<!-- /loop -->
 	<!-- if $list.total > 5 -->
 		<!-- php:$pagelist = phpok_page($rs.url,$list.total,$list.pageid,$list.psize,"always=1") -->
-		<div class="Pages">
+		<div class="pages">
 			<ul>
 				<!-- loop from=$pagelist key=$key value=$value -->
 				<li{if $value.status} class="current"{/if}><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>

@@ -625,7 +625,7 @@ class list_control extends phpok_control
  		}
 		if($array["tag"])
 		{
-			$array["tag"] = str_replace(array("　","，",",","｜","|","、","/","\\","／","＼","+","＋","-","－","_","＿")," ",$array["tag"]);
+			$array["tag"] = str_replace(array("　","，",",","｜","|","、","/","\\","／","＼","+","＋","-","－","_","＿","—")," ",$array["tag"]);
 			$array["tag"] = preg_replace("/(\x20{2,})/"," ",$array["tag"]);
 		}
 		$array["project_id"] = $p_rs['id'];
@@ -647,6 +647,8 @@ class list_control extends phpok_control
  		{
 	 		error("存储数据失败，请检查",$error_url,"error");
  		}
+ 		//更新Tag标签
+ 		$this->model('tag')->update_tag($array['tag'],$id,$_SESSION['admin_site_id']);
  		if($p_rs["module"])
  		{
 	 		$ext_list = $this->model('module')->fields_all($p_rs["module"]);

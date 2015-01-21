@@ -41,6 +41,7 @@ function save_tag(id)
 			html += '<td class="center"><select id="tag_target_'+rs.content+'">';
 			html += '<option value="0">{lang当前窗口}</option><option value="1"'+(target_val == '1' ? ' selected' : '')+'>{lang新窗口}</option></select></td>';
 			html += '<td class="center">0</td>';
+			html += '<td class="center">0</td>';
 			html +='<td><input type="submit" value="{lang修改}" class="btn" />';
 			html +='<input type="button" value="{lang删除}" onclick="delete_it('+rs.content+')" class="btn" /></td></form></tr>';
 			$("#add_top").after(html);
@@ -85,6 +86,7 @@ function delete_it(id)
 	<th class="lft">自定义网址</th>
 	<th width="95">是否新窗口</th>
 	<th width="90">主题数</th>
+	<th width="90">点击数</th>
 	<th class="action">操作</th>
 </tr>
 <tr id="add_top">
@@ -98,6 +100,7 @@ function delete_it(id)
 			<option value="1">新窗口</option>
 		</select>
 	</td>
+	<td class="center">0</td>
 	<td class="center">0</td>
 	<td>
 		<input type="submit" value="添加" class="btn" />
@@ -117,6 +120,7 @@ function delete_it(id)
 		</select>
 	</td>
 	<td class="center">{$value.count ? $value.count : 0}</td>
+	<td class="center">{$value.hits ? $value.hits : 0}</td>
 	<td>
 		<input type="submit" value="修改" class="btn" /> <input type="button" value="删除" onclick="delete_it('{$value.id}')" class="btn" />
 	</td>
@@ -135,6 +139,7 @@ function delete_it(id)
 			<option value="1">新窗口</option>
 		</select>
 	</td>
+	<td class="center">0</td>
 	<td class="center">0</td>
 	<td>
 		<input type="submit" value="添加" class="btn" />

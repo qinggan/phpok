@@ -16,7 +16,7 @@ p{word-wrap:break-word}
 .wrap{ width:980px; margin:0 auto;}
 .hand{cursor:pointer;}
 .red{color:red;}
-
+.tag{color:#000;text-decoration:underline;}
 /* 公共页头样式 */
 .head{ width:980px;margin:0 auto 10px;}
 .head .head_right{float:right;}

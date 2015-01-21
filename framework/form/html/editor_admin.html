@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="width,height,is_code:checkbox,btn_image:checkbox,btn_video:checkbox,btn_file:checkbox,btn_page:checkbox,btn_info:checkbox,is_read:checkbox,etype,btn_page:checkbox,btn_map:checkbox,btn_info:checkbox" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="width,height,is_code:checkbox,btn_image:checkbox,btn_video:checkbox,btn_file:checkbox,btn_page:checkbox,btn_info:checkbox,is_read:checkbox,etype,btn_page:checkbox,btn_map:checkbox,btn_info:checkbox,inc_tag:checkbox" />
 <div class="table">
 	<div class="title">
 		编辑器宽高设置：
@@ -33,6 +33,7 @@
 		<ul class="layout">
 			<li><label><input type="checkbox" name="is_code" id="is_code"{if $rs.is_code} checked{/if}>显示源码</label></li>
 			<li><label><input type="checkbox" name="is_read" id="is_read"{if $rs.is_read} checked{/if}>只读</label></li>
+			<li><label><input type="checkbox" name="inc_tag" id="inc_tag"{if $rs.inc_tag} checked{/if}>Tag标签信息格式化到内容</label></li>
 		</ul>
 		<div class="clear"></div>
 	</div>

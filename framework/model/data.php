@@ -415,6 +415,10 @@ class data_model extends phpok_model
 			//针对编辑器内容的格式化
 			if($value['form_type'] == 'editor')
 			{
+				if($value['ext']['inc_tag'])
+				{
+					$rs[$value['identifier']] = $this->_tag_format($rs[$value['identifier']],$rs['id']);
+				}
 				$tmp = $this->info_page($rs[$value['identifier']],$param['pageid']);
 				if($tmp && is_array($tmp))
 				{
@@ -427,6 +431,7 @@ class data_model extends phpok_model
 				}
 				
 				$rs[$value['identifier']] = phpok_ubb($rs[$value['identifier']],false);
+				//格式化关键字
 			}
 			//针对网址进行格式化
 			elseif($value['form_type'] == 'url' && $rs[$value['identifier']])
@@ -447,7 +452,48 @@ class data_model extends phpok_model
 			$url_id = $rs['identifier'] ? $rs['identifier'] : $rs['id'];
 			$rs['url'] = $this->url($url_id);
 		}
+		$rs['tag'] = $this->tag_list($rs['id']);
 		return $rs;
+	}
+
+	private function _tag_format($content,$id)
+	{
+		if(!$content || !$id)
+		{
+			return false;
+		}
+		$taglist = $this->tag_list($id);
+		if(!$taglist)
+		{
+			return $content;
+		}
+		foreach($taglist as $key=>$value)
+		{
+			$content = str_replace($value['title'],$value['html'],$content);
+		}
+		return $content;
+	}
+
+	//根据主题，得到Tag列表
+	public function tag_list($id)
+	{
+		$sql = "SELECT t.title,t.url,t.target FROM ".$this->db->prefix."tag_stat s ";
+		$sql.= "JOIN ".$this->db->prefix."tag t ON(s.tag_id=t.id AND t.site_id='".$this->site['id']."') ";
+		$sql.= "WHERE s.title_id='".$id."'";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist)
+		{
+			return false;
+		}
+		foreach($rslist as $key=>$value)
+		{
+			$value['target'] = $value['target'] ? '_blank' : '_self';
+			$url = $this->url('tag','','title='.rawurlencode($value['title']));
+			$rslist[$key]['html'] = '<a href="'.$url.'" title="'.$title.'" target="'.$value['target'].'" class="tag">'.$value['title'].'</a>';
+			$rslist[$key]['target'] = $value['target'];
+			$rslist[$key]['url'] = $url;
+		}
+		return $rslist;
 	}
 
 	//格式化扩展字段信息

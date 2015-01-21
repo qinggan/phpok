@@ -90,8 +90,12 @@ class content_control extends phpok_control
 		{
 			error('未配置模板：'.$tpl.'，请配置相应的内容显示模板','','error');
 		}
+		//关闭缓存
+		$this->db->cache_close();
 		//增加点击
 		$this->model('list')->add_hits($rs["id"]);
+		//开启缓存
+		$this->db->cache_open();
 		//执行SEO优化
 		$this->phpok_seo($rs);
 		unset($rs['project_id']);

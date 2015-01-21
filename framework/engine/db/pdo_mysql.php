@@ -71,6 +71,18 @@ class db_pdo_mysql
 		return true;
 	}
 
+	//关闭缓存
+	public function cache_close()
+	{
+		$this->config_cache['status'] = false;
+	}
+
+	//开启缓存
+	public function cache_open()
+	{
+		$this->config_cache['status'] = true;
+	}
+
 	//重新选择数据库
 	public function select_db($data="")
 	{

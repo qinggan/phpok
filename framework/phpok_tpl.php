@@ -5,7 +5,7 @@
 	Version : 4.0
 	Web		: www.phpok.com
 	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-10-19 10:27
+	Update  : 2015年01月21日 20时27分
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class phpok_tpl
@@ -165,7 +165,7 @@ class phpok_tpl
 
 
 	//显示HTML信息
-	function display($tpl,$type="file",$path_format=true)
+	public function display($tpl,$type="file",$path_format=true)
 	{
 		$this->output($tpl,$type,$path_format);
 		exit;
@@ -219,12 +219,12 @@ class phpok_tpl
 		return '<?php echo "<pre>".print_r($'.$info.',true)."</pre>";?>';
 	}
 
-	function lang_replace($info)
+	private function lang_replace($info)
 	{
 		if(!$info || !is_array($info) || !$info[1] || !trim($info[1])) return '';
 		$info = $info[1];
-		//$to_list = $this->str_to_list($info);
-		//echo "<pre>".print_r($to_list,true)."</pre>";
+		if(substr($info,0,1) == '"' || substr($info,0,1) == "'") $info = substr($info,1);
+		if(substr($info,-1) == '"' || substr($info,-1) == "'") $info = substr($info,0,-1);
 		$info = stripslashes(trim($info));
 		return '<?php echo P_Lang("'.$info.'");?>';
 	}

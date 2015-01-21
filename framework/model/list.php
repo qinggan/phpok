@@ -189,23 +189,33 @@ class list_model extends phpok_model
 	function pl_delete($condition='',$mid=0)
 	{
 		$sql = "SELECT id,module_id FROM ".$this->db->prefix."list WHERE ".$condition;
-		$rslist = $this->db->get_all($sql);
+		$rslist = $this->db->get_all($sql,'id');
 		if(!$rslist)
 		{
 			return false;
 		}
+		$id_list = array_keys($rslist);
+		$ids = implode(",",$id_list);
+		//删除全部回复
+		$sql = "DELETE FROM ".$this->db->prefix."reply WHERE tid IN(".$ids.")";
+		$this->db->query($sql);
+		//删除关键字记录
+		$sql = "DELETE FROM ".$this->db->prefix."tag_stat WHERE title_id IN(".$ids.")";
+		$this->db->query($sql);
+		//
 		foreach($rslist AS $key=>$value)
 		{
-			$sql = "DELETE FROM ".$this->db->prefix."reply WHERE tid=".intval($value['id']);
-			$this->db->query($sql);
 			if(!$mid && $value['module_id'])
 			{
 				$mid = $value['module_id'];
 			}
 		}
-		$sql = "DELETE FROM ".$this->db->prefix."list_".$mid." WHERE ".$condition;
-		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."list WHERE ".$condition;
+		if($mid)
+		{
+			$sql = "DELETE FROM ".$this->db->prefix."list_".$mid." WHERE id IN(".$ids.")";
+			$this->db->query($sql);
+		}
+		$sql = "DELETE FROM ".$this->db->prefix."list WHERE id IN(".$ids.")";
 		$this->db->query($sql);
 		return true;
 	}
@@ -226,6 +236,9 @@ class list_model extends phpok_model
 		$this->db->query($sql);
 		//删除相关的回复信息
 		$sql = "DELETE FROM ".$this->db->prefix."reply WHERE tid='".$id."'";
+		$this->db->query($sql);
+		//删除Tag相关
+		$sql = "DELETE FROM ".$this->db->prefix."tag_stat WHERE title_id='".$id."'";
 		$this->db->query($sql);
 		return true;
 	}
