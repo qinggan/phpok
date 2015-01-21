@@ -1,27 +1,28 @@
-ALTER TABLE `qinggan_adm`  ADD `category` LONGTEXT NOT NULL COMMENT '可操作的分类ID，系统管理员无效' ;
+-- 更新时间：2015年01月22日 01时38分
+DROP TABLE IF EXISTS `qinggan_tag`;
+CREATE TABLE IF NOT EXISTS `qinggan_tag` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '站点ID',
+  `title` varchar(255) NOT NULL COMMENT '名称',
+  `url` varchar(255) NOT NULL COMMENT '关键字网址',
+  `target` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0原窗口打开，1新窗口打开',
+  `hits` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '点击次数',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='关键字管理器' AUTO_INCREMENT=18 ;
 
--- 删除会员组扩展字段
+-- --------------------------------------------------------
 
-ALTER TABLE `qinggan_user_group`
-  DROP `read_popedom`,
-  DROP `post_popedom`,
-  DROP `reply_status`,
-  DROP `post_status`;
+--
+-- 表的结构 `qinggan_tag_stat`
+--
 
-ALTER TABLE `qinggan_user_group`  ADD `popedom` LONGTEXT NOT NULL COMMENT '前端权限' ;
-
-
-ALTER TABLE `qinggan_module_fields`  ADD `is_front` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0前端不可用1前端可用' ;
-
-ALTER TABLE `qinggan_adm`  ADD `vpass` VARCHAR(50) NOT NULL COMMENT '二次密码验证' ;
-
-CREATE TABLE IF NOT EXISTS `qinggan_list_tag` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
+DROP TABLE IF EXISTS `qinggan_tag_stat`;
+CREATE TABLE IF NOT EXISTS `qinggan_tag_stat` (
   `title_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
   `tag_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'TAG标签ID',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='内容中的Tag管理器';
+  PRIMARY KEY (`title_id`,`tag_id`),
+  KEY `title_id` (`title_id`),
+  KEY `tag_id` (`tag_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Tag主题统计';
 
-
--- 模板风格里增加指定 php 文件
-ALTER TABLE `qinggan_tpl`  ADD `phpfolder` VARCHAR(200) NOT NULL COMMENT 'PHP执行文件目录' ;
+DROP TABLE IF EXISTS `qinggan_list_tag`;
