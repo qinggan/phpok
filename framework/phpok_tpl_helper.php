@@ -199,10 +199,11 @@ function phpok_url($rs)
 {
 	if(!$rs) return false;
 	if(is_string($rs)) parse_str($rs,$rs);
-	$ctrl = $func = $id = "";
+	$ctrl = $func = $id = $appid = "";
 	if($rs["ctrl"]) $ctrl = $rs["ctrl"];
 	if($rs["func"]) $func = $rs["func"];
 	if($rs["id"]) $id = $rs["id"];
+	if($rs['appid']) $appid = $rs['appid'];
 	if(!$ctrl && !$id) return false;
 	if(!$ctrl)
 	{
@@ -212,7 +213,7 @@ function phpok_url($rs)
 	$tmp = array();
 	foreach($rs AS $key=>$value)
 	{
-		if(!in_array($key,array("ctrl","id","func")))
+		if(!in_array($key,array("ctrl","id","func",'appid')))
 		{
 			if($key == '_nocache' && $value != 'false' && $value != '0')
 			{
@@ -229,7 +230,7 @@ function phpok_url($rs)
 		$tmp[] = "id=".rawurlencode($rs["id"]);
 	}
 	$string = ($tmp && count($tmp)>0) ? implode("&",$tmp) : "";
-	return $GLOBALS['app']->url($ctrl,$func,$string);
+	return $GLOBALS['app']->url($ctrl,$func,$string,$appid);
 }
 
 //读取会员拥有发布的权限信息

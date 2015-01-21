@@ -42,9 +42,7 @@
 	<div class="head_tool head_desktop"><a href="javascript:$.desktop.tohome();void(0);" class="head_desktop_link" title="显示桌面"></a></div>
 	<div class="head_tool head_config"><a href="javascript:phpok_admin_control();void(0);" class="head_config_link" title="修改个人信息"></a></div>
 	<div class="head_web">
-		<!-- if $sys.debug -->
 		<span class="clear_cache" onclick="phpok_admin_clear()">清空缓存</span>
-		<!-- /if -->
 		<span class="gohome"><a href="{$sys.www_file}?siteId={$session.admin_site_id}" target="_blank" title="访问前台网站">访问网站</a></span>
 		<span class="leftspan">网站：</span>
 		<select class="web_select" name="top_site_id" id="top_site_id" onchange="goto_site(this.value,{$session.admin_site_id})">

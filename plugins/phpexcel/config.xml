@@ -1,5 +1,7 @@
 <?xml version="1.0" ?>
-<title>PHPExcel导入导出</title>
-<desc>支持将Excel里的数据导入或将网站导出到excel里</desc>
-<author>phpok.com</author>
-<version>1.0</version>
+<root>
+	<title>PHPExcel导入导出</title>
+	<desc>支持将Excel里的数据导入或将网站导出到excel里</desc>
+	<author>phpok.com</author>
+	<version>1.0</version>
+</root>

@@ -358,7 +358,7 @@ class tpl_control extends phpok_control
 			$rslist = array();
 			foreach($tpl_list AS $key=>$value)
 			{
-				$bname = $this->is_utf8($value) ? basename($value) : basename($this->charset($value));
+				$bname = $this->lib('string')->to_utf8(basename($value));
 				$type = is_dir($value) ? "dir" : "file";
 				$url = $type == "dir" ? $myurl."&folder=".rawurlencode($folder.$bname."/")."&id=".$id : "";
 				$date = date("Y-m-d H:i:s",filemtime($value));

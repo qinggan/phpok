@@ -279,6 +279,7 @@ class ueditor_control extends phpok_control
 				continue;
 			}
 			//迁移附件到数据库中
+			$tmp_title = $tmp_title ? $this->lib('string')->to_utf8($tmp_title) : $new_filename;
 			$array = array();
 			$array["cate_id"] = $cate_rs["id"];
 			$array["folder"] = $cate_rs['folder'];
@@ -286,11 +287,7 @@ class ueditor_control extends phpok_control
 			$array["ext"] = $ext;
 			$array["filename"] = $cate_rs['folder'].$new_filename.".".$ext;
 			$array["addtime"] = $this->time;
-			if($tmp_title && !$this->is_utf8($tmp_title))
-			{
-				$tmp_title = $this->charset($tmp_title,"GBK","UTF-8");
-			}
-			$array["title"] = $tmp_title ? str_replace(".".$ext,"",$tmp_title) : $new_filename;
+			$array["title"] = str_replace(".".$ext,"",$tmp_title);
 			if(in_array($ext,$arraylist))
 			{
 				$img_ext = getimagesize($newfile);
@@ -392,6 +389,7 @@ class ueditor_control extends phpok_control
 			return $rs;
 		}
 		# 将图片移到新目录
+		$rs['title'] = $this->lib('string')->to_utf8($rs['title']);
 		$array = array();
 		$array["cate_id"] = $cate_rs["id"];
 		$array["folder"] = $cate_rs['folder'];
@@ -399,7 +397,6 @@ class ueditor_control extends phpok_control
 		$array["ext"] = $rs["ext"];
 		$array["filename"] = $cate_rs['folder'].$basename;
 		$array["addtime"] = $this->time;
-		if($this->is_utf8($rs["title"])) $rs["title"] = $this->charset($rs["title"],"GBK","UTF-8");
 		$array["title"] = str_replace(".".$rs["ext"],"",$rs["title"]);
 		$arraylist = array("jpg","gif","png","jpeg");
 		if(in_array($rs["ext"],$arraylist))

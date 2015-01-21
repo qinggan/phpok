@@ -223,8 +223,10 @@ class phpok_tpl
 	{
 		if(!$info || !is_array($info) || !$info[1] || !trim($info[1])) return '';
 		$info = $info[1];
+		//$to_list = $this->str_to_list($info);
+		//echo "<pre>".print_r($to_list,true)."</pre>";
 		$info = stripslashes(trim($info));
-		return '<?php echo P_Lang('.$info.');?>';
+		return '<?php echo P_Lang("'.$info.'");?>';
 	}
 
 	//正则替换

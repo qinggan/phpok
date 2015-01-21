@@ -316,6 +316,7 @@ class ueditor_control extends phpok_control
 			$rs["error"] = "图片迁移失败";
 			return $rs;
 		}
+		$rs['title'] = $this->lib('string')->to_utf8($rs['title']);
 		$array = array();
 		$array["cate_id"] = $cateid;
 		$array["folder"] = $folder;
@@ -323,10 +324,6 @@ class ueditor_control extends phpok_control
 		$array["ext"] = $rs["ext"];
 		$array["filename"] = $folder.$basename;
 		$array["addtime"] = $this->time;
-		if(!$this->is_utf8($rs["title"]))
-		{
-			$rs["title"] = $this->charset($rs["title"],"GBK","UTF-8");
-		}
 		$array["title"] = str_replace(".".$rs["ext"],"",$rs["title"]);
 		$arraylist = array("jpg","gif","png","jpeg");
 		if(in_array($rs["ext"],$arraylist))

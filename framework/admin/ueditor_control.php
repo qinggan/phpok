@@ -160,9 +160,9 @@ class ueditor_control extends phpok_control
 			$array["ext"] = $ext;
 			$array["filename"] = $folder.$new_filename.".".$ext;
 			$array["addtime"] = $this->time;
-			if($tmp_title && !$this->is_utf8($tmp_title))
+			if($tmp_title)
 			{
-				$tmp_title = $this->charset($tmp_title,"GBK","UTF-8");
+				$this->lib('string')->to_utf8($tmp_title);
 			}
 			$array["title"] = $tmp_title ? str_replace(".".$ext,"",$tmp_title) : str_replace(".".$ext,"",$new_filename);
 			if(in_array($ext,$arraylist))
@@ -458,6 +458,7 @@ class ueditor_control extends phpok_control
 			$rs["error"] = "图片迁移失败";
 			return $rs;
 		}
+		$rs['title'] = $this->lib('string')->to_utf8($rs['title']);
 		$array = array();
 		$array["cate_id"] = $cateid;
 		$array["folder"] = $folder;
@@ -465,10 +466,6 @@ class ueditor_control extends phpok_control
 		$array["ext"] = $rs["ext"];
 		$array["filename"] = $folder.$basename;
 		$array["addtime"] = $this->time;
-		if(!$this->is_utf8($rs["title"]))
-		{
-			$rs["title"] = $this->charset($rs["title"],"GBK","UTF-8");
-		}
 		$array["title"] = str_replace(".".$rs["ext"],"",$rs["title"]);
 		$arraylist = array("jpg","gif","png","jpeg");
 		if(in_array($rs["ext"],$arraylist))

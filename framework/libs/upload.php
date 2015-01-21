@@ -126,10 +126,7 @@ class upload_lib
 		{
 			$title = $file_info['title'];
 			if(!$title) $title = $filename;
-			if(!$GLOBALS['app']->is_utf8($title))
-			{
-				$title = $GLOBALS['app']->charset($title,'GBK','UTF-8');
-			}
+			$title = $GLOBALS['app']->lib('string')->to_utf8($title);
 			$title = strtolower($title);
 			$title = str_replace('.'.$filetype,'',$title);
 			$title = $GLOBALS['app']->format($title);

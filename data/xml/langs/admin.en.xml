@@ -31,7 +31,7 @@
 	<sql-engine>Engine</sql-engine>
 	<sql-charset>Charset</sql-charset>
 	<sql-free>Free</sql-free>
-	<sql-not-popedom>Permission is forbidden, contact administrator to open permissions</sql-not-popedom>
+	<not-popedom>Permission is forbidden, contact administrator to open permissions</not-popedom>
 	<sql-not-table>No selected data table</sql-not-table>
 	<sql-optizime-ok>Tables optimization success</sql-optizime-ok>
 	<sql-repair-ok>Tables repair success</sql-repair-ok>

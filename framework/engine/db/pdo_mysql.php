@@ -389,6 +389,10 @@ class db_pdo_mysql
 		$this->counter('sql');
 		$this->conn->exec($sql);
 		$this->timer('sql');
+		if(!preg_match('/^SELECT/isU',trim($sql)))
+		{
+			$this->_cache_clear($sql);
+		}
 		return $this->insert_id();
 	}
 

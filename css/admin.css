@@ -300,7 +300,7 @@ ul.admin_panel li.hover{background-position:0 -93px;}
 
 .list{margin:5px 3px 0 0;}
 .list th{padding:0;border-bottom:2px solid #E5E5E5;height:25px;background:#D1D1D1;}
-.list th.lft{text-align:left;}
+.list th.lft{text-align:left;text-indent:5px;}
 .list tr.list{background:#F3F3F3}
 .list tr:nth-child(2n+1){background:#F1F1F1}
 .list td{padding:3px;}

@@ -1,40 +1,148 @@
 <!-- include tpl=head title=标签管理 -->
+<script type="text/javascript">
+function save_tag(id)
+{
+	var url = "{url ctrl=tag func=save/}";
+	if(id != 'top' && id != 'bottom')
+	{
+		url += "&id="+id;
+	}
+	var title = $("#tag_title_"+id).val();
+	if(!title)
+	{
+		$.dialog.alert('{lang关键字名称不能为空}');
+		return false;
+	}
+	url += "&title="+$.str.encode(title);
+	var tag_url = $("#tag_url_"+id).val();
+	if(tag_url)
+	{
+		url += "&url="+$.str.encode(tag_url);
+	}
+	var target_val = $("#tag_target_"+id).val();
+	url += "&target="+target_val;
+	var rs = $.phpok.json(url);
+	if(rs.status != 'ok')
+	{
+		$.dialog.alert(rs.content);
+		return false;
+	}
+	else
+	{
+		var tip = '{lang编辑关键字成功}';
+		if(id == 'top' || id == 'bottom')
+		{
+			$("#tag_title_"+id+",#tag_url_"+id).val('');
+			$("#tag_target_"+id).val('0');
+			var html = '<tr id="edit_'+rs.content+'"><form method="post" onsubmit="return save_tag('+rs.content+')">';
+			html += '<td class="center">'+rs.content+'</td>';
+			html += '<td><input type="text" id="tag_title_'+rs.content+'" value="'+title+'" style="width:150px" /></td>';
+			html += '<td><input type="text" id="tag_url_'+rs.content+'" value="'+tag_url+'" style="width:300px" /></td>';
+			html += '<td class="center"><select id="tag_target_'+rs.content+'">';
+			html += '<option value="0">{lang当前窗口}</option><option value="1"'+(target_val == '1' ? ' selected' : '')+'>{lang新窗口}</option></select></td>';
+			html += '<td class="center">0</td>';
+			html +='<td><input type="submit" value="{lang修改}" class="btn" />';
+			html +='<input type="button" value="{lang删除}" onclick="delete_it('+rs.content+')" class="btn" /></td></form></tr>';
+			$("#add_top").after(html);
+			tip = '{lang添加关键字成功}';
+		}
+		$.dialog.tips(tip);
+		//$.dialog.alert(tip,function(){},'succeed');
+		return false;
+	}
+}
+
+function delete_it(id)
+{
+	var title = $("#tag_title_"+id).val();
+	$.dialog.confirm('确定要删除关键字：<span class="red">'+title+"</span> 吗？删除后是不能恢复的",function(){
+		var url = "{url ctrl=tag func=delete/}&id="+id;
+		var rs = $.phpok.json(url);
+		if(rs.status == 'ok')
+		{
+			$.dialog.tips('删除成功');
+			$("#edit_"+id).remove();
+			return true;
+		}
+		else
+		{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+</script>
 <div class="tips">
-	<!-- if $popedom.add -->
-	<div class="action"><a href="{url ctrl=tag func=set/}">添加新标签</a></div>
-	<!-- /if -->
-	您当前的位置：
-	<a href="{url ctrl=tag/}">标签管理</a>
-	&raquo; 标签列表
+	{lang您当前的位置：}
+	<a href="{url ctrl=tag/}">{lang标签管理}</a>
+	&raquo; {lang标签列表}
 </div>
 <div class="list">
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
-	<th class="lft" style="text-indent:12px;">名称</th>
-	<th>目标链接</th>
-	<th>查看次数</th>
+	<th class="id">ID</th>
+	<th class="lft" width="160">名称</th>
+	<th class="lft">自定义网址</th>
+	<th width="95">是否新窗口</th>
+	<th width="90">主题数</th>
 	<th class="action">操作</th>
 </tr>
-<!-- loop from=$rslist key=$key value=$value -->
-<tr>
-	<td style="text-indent:12px;height:22px;">
-		{$value.title}
-		<span calss='gray i'>{$value.urlid}</span>
-	</td>
-	<td class="center">{$value.url ? $value.url : '内置'}</td>
-	<td class="center">{$value.hits}</td>
+<tr id="add_top">
+	<form method="post" onsubmit="return save_tag('top')">
+	<td class="center">添加</td>
+	<td><input type="text" id="tag_title_top" placeholder="填写关键字名称" style="width:150px" /></td>
+	<td><input type="text" id="tag_url_top" placeholder="自定义链接地址，可以为空" style="width:300px" /></td>
 	<td class="center">
-		<!-- if $dlist[$value['id']] -->
-		{func implode $dlist[$value['id']] /}		
-		<!-- /if -->
+		<select id="tag_target_top">
+			<option value="0">当前窗口</option>
+			<option value="1">新窗口</option>
+		</select>
 	</td>
+	<td class="center">0</td>
 	<td>
-		<!-- if $popedom.delete && !$value.is_default -->
-		<a class="icon delete end" onclick="site_delete('{$value.id}','{$value.title}')" title="删除"></a>
-		<!-- /if -->
+		<input type="submit" value="添加" class="btn" />
 	</td>
+	</form>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr id="edit_{$value.id}">
+	<form method="post" onsubmit="return save_tag('{$value.id}')">
+	<td class="center">{$value.id}</td>
+	<td><input type="text" id="tag_title_{$value.id}" value="{$value.title}" style="width:150px" /></td>
+	<td><input type="text" id="tag_url_{$value.id}" value="{$value.url}" style="width:300px" /></td>
+	<td class="center">
+		<select id="tag_target_{$value.id}">
+			<option value="0">当前窗口</option>
+			<option value="1"{if $value.target} selected{/if}>新窗口</option>
+		</select>
+	</td>
+	<td class="center">{$value.count ? $value.count : 0}</td>
+	<td>
+		<input type="submit" value="修改" class="btn" /> <input type="button" value="删除" onclick="delete_it('{$value.id}')" class="btn" />
+	</td>
+	</form>
 </tr>
 <!-- /loop -->
+<!-- if $rslist && count($rslist)>=15 -->
+<tr id="add_bottom">
+	<form method="post" onsubmit="return save_tag('bottom')">
+	<td class="center">添加</td>
+	<td><input type="text" id="tag_title_bottom" placeholder="填写关键字名称" style="width:150px" /></td>
+	<td><input type="text" id="tag_url_bottom" placeholder="自定义链接地址，可以为空" style="width:300px" /></td>
+	<td class="center">
+		<select id="tag_target_bottom">
+			<option value="0">当前窗口</option>
+			<option value="1">新窗口</option>
+		</select>
+	</td>
+	<td class="center">0</td>
+	<td>
+		<input type="submit" value="添加" class="btn" />
+	</td>
+	</form>
+</tr>
+<!-- /if -->
 </table>
 </div>
+<!-- include tpl=pagelist -->
 <!-- inc:foot -->

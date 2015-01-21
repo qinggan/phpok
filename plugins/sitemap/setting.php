@@ -1,14 +1,14 @@
 <?php
 /*****************************************************************************************
-	文件： plugins/sitemap/install.php
-	备注： 站长Sitemap地图
+	文件： plugins/sitemap/setting.php
+	备注： 站长Sitemap地图设置
 	版本： 4.x
 	网站： www.phpok.com
 	作者： qinggan <qinggan@188.com>
 	时间： 2014年6月2日
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class install_sitemap extends phpok_plugin
+class setting_sitemap extends phpok_plugin
 {
 	public $me;
 	function __construct()

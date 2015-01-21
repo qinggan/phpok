@@ -827,7 +827,7 @@ class _init_phpok
 			case 'float':$msg = floatval($msg);break;
 			case 'floatval':$msg = floatval($msg);break;
 			case 'time':$msg = strtotime($msg);break;
-			case 'html':$msg = $this->safe_html($msg);break;
+			case 'html':$msg = $this->lib('string')->safe_html($msg,$this->url);break;
 			case 'func':$msg = function_exists($ext) ? $ext($msg) : false;break;
 		}
 		if($msg)
@@ -842,19 +842,7 @@ class _init_phpok
 	//过滤iframe,script,link等信息
 	function safe_html($info)
 	{
-		if(!$info)
-		{
-			return false;
-		}
-		$tmp = "/<([a-zA-Z0-9]+)(.*)(on[abort|beforeonload|blur|change|click|contextmenu|dblclick|drag|dragend|dragenter|dragleave|dragstart|drop|error|focus|keydown|keypress|keyup|load|message|mousedown|mousemove|mouseover|mouseout|mouseup|mousewheel|reset|resize|scroll|select|submit|unload]+)=(.+)>/isU";
-		$info = preg_replace($tmp,"<\\1\\2\\4>",$info);
-		//$info = preg_replace("/<([a-zA-Z0-9]+)(.*)([onabort|onbeforeonload|onblur|onchange|onclick|oncontextmenu|ondblclick|ondrag|ondragend|ondragenter|ondragleave|ondragover|ondragstart|ondrop|onerror|onfocus|onkeydown|onkeypress|onkeyup|onload|onmessage|onmousedown|onmousemove|onmouseover|onmouseout|onmouseup|onmousewheel|onreset|onresize|onscroll|onselect|onsubmit|onunload]+)\s*=\s*(.+)>/isU","<\\1\\3>",$info);
-		$tmp = array("/<script(.*)<\/script>/isU","/<frame(.*)>/isU","/<\/fram(.*)>/isU","/<iframe(.*)>/isU","/<\/ifram(.*)>/isU","/<style(.*)<\/style>/isU","/<link(.*)>/isU","/<\/link>/isU");
-		$info = preg_replace($tmp,'',$info);
-		$array = array("src='".$this->url,'src="'.$this->url,"src=".$this->url);
-		$new = array("src='",'src="',"src=");
-		$info = str_replace($array,$new,$info);
-		return $info;
+		return $this->lib('string')->safe_html($info);
 	}
 
 	//转义字符串数据，此函数仅限get使用
@@ -920,36 +908,6 @@ class _init_phpok
 		$html.= '</body>'."\n";
 		$html.= '</html>';
 		exit($html);
-	}
-
-	# 判断是否是UTF8
-	function is_utf8($string)
-	{
-		if(function_exists('mb_detect_encoding'))
-		{
-			$e=mb_detect_encoding($string, array('UTF-8','GBK'));
-			return $e == 'UTF-8' ? true : false;
-		}
-		return preg_match("/^([".chr(228)."-".chr(233)."]{1}[".chr(128)."-".chr(191)."]{1}[".chr(128)."-".chr(191)."]{1}){1}/",$word) == true || preg_match("/([".chr(228)."-".chr(233)."]{1}[".chr(128)."-".chr(191)."]{1}[".chr(128)."-".chr(191)."]{1}){1}$/",$word) == true || preg_match("/([".chr(228)."-".chr(233)."]{1}[".chr(128)."-".chr(191)."]{1}[".chr(128)."-".chr(191)."]{1}){2,}/",$string) == true ? true : false;
-	}
-
-	//字符串转换
-	function charset($msg,$from_charset="GBK",$to_charset="UTF-8")
-	{
-		if(!$msg) return false;
-		if(!function_exists("iconv")) return $msg;
-		if(is_array($msg))
-		{
-			foreach($msg AS $key=>$value)
-			{
-				$msg[$key] = $this->charset($value,$from_charset,$to_charset);
-			}
-		}
-		else
-		{
-			$msg = iconv($from_charset,$to_charset,$msg);
-		}
-		return $msg;
 	}
 
 	//执行应用

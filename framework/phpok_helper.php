@@ -372,12 +372,7 @@ function phpok_img_local($content)
 			$array["ext"] = $ext;
 			$array["filename"] = $folder.$filename;
 			$array["addtime"] = $GLOBALS['app']->system_time;
-			$array["title"] = basename($value);
-			if($GLOBALS['app']->is_utf8($array["title"]))
-			{
-				$array["title"] = $GLOBALS['app']->charset($array["title"],"GBK","UTF-8");
-			}
-			$array["title"] = str_replace(".".$ext,"",$array["title"]);
+			$array["title"] = str_replace(".".$ext,"",$GLOBALS['app']->lib('string')->to_utf8(basename($value)));
 			$img_ext = getimagesize($save_folder.$filename);
 			$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
 			$array["attr"] = serialize($my_ext);

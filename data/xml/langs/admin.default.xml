@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+	<edit>修改</edit>
+	<delete>删除</delete>
 	<options>选项</options>
 	<rows>记录数</rows>
 	<size>大小</size>
@@ -31,7 +33,9 @@
 	<sql-engine>引挈</sql-engine>
 	<sql-charset>字符集</sql-charset>
 	<sql-free>碎片</sql-free>
-	<sql-not-popedom>无权限，请联系超级管理员开放权限</sql-not-popedom>
+	<not-popedom>无权限，请联系超级管理员开放权限</not-popedom>
+	<not-id>未指定ID</not-id>
+	<not-data>数据不存在，请检查</not-data>
 	<sql-not-table>未选定要操作的数据表</sql-not-table>
 	<sql-optizime-ok>数据表优化成功</sql-optizime-ok>
 	<sql-repair-ok>数据表信修复成功！</sql-repair-ok>
@@ -50,4 +54,20 @@
 	<sql-recover-not-id>没有指定备份文件</sql-recover-not-id>
 	<sql-recover-not-exists>备份文件不存在</sql-recover-not-exists>
 	<sql-recover-table-ok>表结构数据修复成功，正在修复内容数据，请稍候！</sql-recover-table-ok>
+	<plugin-title-empty>插件名称不能为空</plugin-title-empty>
+	<plugin-setting-ok>插件{title}配置成功</plugin-setting-ok>
+	<plugin-install-error>插件安装失败，请检查</plugin-install-error>
+	<plugin-install-ok>插件{title}配置成功</plugin-install-ok>
+	<plugin-uninstall-ok>插件卸载成功</plugin-uninstall-ok>
+	<plugin-exec-not-appid>插件应用文件{appid}不存在</plugin-exec-not-appid>
+	<plugin-exec-not-method>方法{method}不存在</plugin-exec-not-method>
+	<tag-not-title>关键字名称不能为空</tag-not-title>
+	<tag-exists-title>关键字已存在，请检查</tag-exists-title>
+	<tag-add-error>添加失败，请检查</tag-add-error>
+	<tag-edit-ok>编辑关键字成功</tag-edit-ok>
+	<tag-option-0>当前窗口</tag-option-0>
+	<tag-option-1>新窗口</tag-option-1>
+	<tag-add-ok>添加关键字成功</tag-add-ok>
+	<tag-manage-title>标签管理</tag-manage-title>
+	<tag-manage-list>标签列表</tag-manage-list>
 </root>

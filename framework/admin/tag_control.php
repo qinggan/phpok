@@ -10,13 +10,20 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class tag_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
+		$this->popedom = appfile_popedom("tag");
+		$this->assign("popedom",$this->popedom);
+		$this->model('tag')->site_id($_SESSION['admin_site_id']);
 	}
 
-	function index_f()
+	public function index_f()
 	{
+		if(!$this->popedom["list"])
+		{
+			error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+		}
 		$pageurl = $this->url('tag');
 		//获取当前系统拥有Tag数
 		$keywords = $this->get('keywords');
@@ -25,12 +32,6 @@ class tag_control extends phpok_control
 		{
 			$condition .= " AND title LIKE '%".$keywords."%' ";
 			$pageurl .= "&title=".rawurlencode($keywords);
-		}
-		$status = $this->get('status','int');
-		if($status)
-		{
-			$condition .= $status == 1 ? ' AND status=1' : " AND status=0";
-			$pageurl .= "&status=".rawurlencode($status);
 		}
 		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
 		$pageid = $this->get($this->config['pageid'],'int');
@@ -48,6 +49,57 @@ class tag_control extends phpok_control
 			$this->assign('pagelist',$pagelist);
 		}
 		$this->view('tag_index');
+	}
+
+	public function save_f()
+	{
+		$id = $this->get('id','int');
+		$popedom = $id ? 'modify' : 'add';
+		if(!$this->popedom[$popedom])
+		{
+			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+		}
+		$title = $this->get('title');
+		if(!$title)
+		{
+			$this->json(P_Lang('关键字名称不能为空'));
+		}
+		$chk = $this->model('tag')->chk_title($title,$id);
+		if($chk)
+		{
+			$this->json(P_Lang('关键字已存在，请检查'));
+		}
+		$data = array('title'=>$title,'url'=>$this->get('url'),'target'=>$this->get('target','int'));
+		$data['site_id'] = $_SESSION['admin_site_id'];
+		if($id)
+		{
+			$this->model('tag')->save($data,$id);
+			$this->json(true);
+		}
+		else
+		{
+			$insert_id = $this->model('tag')->save($data);
+			if(!$insert_id)
+			{
+				$this->json(P_Lang('添加失败，请检查'));
+			}
+			$this->json($insert_id,true);
+		}
+	}
+
+	public function delete_f()
+	{
+		if(!$this->popedom['delete'])
+		{
+			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+		}
+		$id = $this->get('id','int');
+		if(!$id)
+		{
+			$this->json(P_Lang('未指定ID'));
+		}
+		$this->model('tag')->delete($id);
+		$this->json(true);
 	}
 }
 
