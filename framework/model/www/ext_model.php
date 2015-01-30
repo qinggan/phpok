@@ -102,9 +102,9 @@ class ext_model extends phpok_model
 			$reslist = $this->db->get_all($sql,'id');
 			if($reslist)
 			{
-				$sql = "SELECT ext.res_id,ext.gd_id,ext.filename,gd.identifier ".$this->db->prefix."res_ext ext ";
+				$sql = "SELECT ext.res_id,ext.gd_id,ext.filename,gd.identifier FROM ".$this->db->prefix."res_ext ext ";
 				$sql.= "LEFT JOIN ".$this->db->prefix."gd gd ON(ext.gd_id=gd.id) ";
-				$sql.= "WHERE res.res_id IN(".$ids.")";
+				$sql.= "WHERE ext.res_id IN(".$ids.")";
 				$elist = $this->db->get_all($sql);
 				if($elist)
 				{

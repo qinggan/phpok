@@ -37,8 +37,8 @@ class user_control extends phpok_control
 			$page_url.="&keywords=".rawurlencode($keywords);
 		}
 		$offset = ($pageid-1) * $psize;
-		$rslist = $this->model('user')->get_list($condition,$offet,$psize);
-		$count = $this->model('user')->get_count($keywords);
+		$rslist = $this->model('user')->get_list($condition,$offset,$psize);
+		$count = $this->model('user')->get_count($condition);
 		$pagelist = phpok_page($page_url,$count,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=数量：(total)/(psize)，页码：(num)/(total_page)&always=1");
 		$this->assign("total",$count);
 		$this->assign("rslist",$rslist);

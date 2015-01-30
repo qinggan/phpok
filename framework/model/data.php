@@ -10,11 +10,15 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class data_model extends phpok_model
 {
-	//缓存数据
-	private $cdata;
-	function __construct()
+	public function __construct()
 	{
 		parent::model();
+	}
+
+
+	public function __destruct()
+	{
+		//
 	}
 
 	//取得文章列表
@@ -27,14 +31,26 @@ class data_model extends phpok_model
 			if(!$tmp || $tmp['type'] != 'project') return false;
 			$rs['pid'] = $tmp['id'];
 		}
-		if(!$rs['pid']) return false;
+		if(!$rs['pid'])
+		{
+			unset($rs);
+			return false;
+		}
 		//取得项目信息
 		$project_ext = $rs['in_project'] == 2 ? true : false;
 		$project_rs = $this->_project($rs['pid'],$project_ext);
-		if(!$project_rs) return false;
+		if(!$project_rs)
+		{
+			unset($rs,$project_ext);
+			return false;
+		}
 		if(!$project_rs['url']) $project_rs['url'] = $GLOBALS['app']->url($project_rs['identifier']);
 		//判断是否有绑定模块，没有绑定模块，跳过
-		if(!$project_rs['module']) return false;
+		if(!$project_rs['module'])
+		{
+			unset($rs,$project_ext,$project_rs);
+			return false;
+		}
 		//取得扩展字段信息
 		$flist = $this->module_field($project_rs['module']);
 		$field = 'l.*';
@@ -116,20 +132,27 @@ class data_model extends phpok_model
 		if($rs['tag'])
 		{
 			$list = explode(",",$rs['tag']);
-			$tid_sql = "SELECT DISTINCT l.tid FROM qinggan_tag_list l JOIN qinggan_tag t ON(l.id=t.id) ";
-			$tag_condition = '';
+			$tid_sql = "SELECT s.tid FROM qinggan_tag_stat s JOIN qinggan_tag t ON(s.tag_id=t.id) ";
+			$tag_condition = false;
 			foreach($list AS $key=>$value)
 			{
-				$tag_condition [] = " t.title='".$value."'";
+				if($value && trim($value))
+				{
+					$tag_condition [] = " t.title='".trim($value)."'";
+				}
 			}
-			$tid_sql.= "WHERE (".implode(" OR ",$condition).") ";
-			$condition .= " AND l.id IN(".$tid_sql.")";
+			if($tag_condition)
+			{
+				$tid_sql.= "WHERE (".implode(" OR ",$tag_condition).") ";
+				$condition .= " AND l.id IN(".$tid_sql.")";
+			}
+			unset($tid_sql,$tag_condition,$list);
 		}
 		//关键字
 		if($rs['keywords'])
 		{
 			$list = explode(",",$rs['keywords']);
-			$condition = '';
+			$condition = false;
 			foreach($list AS $key=>$value)
 			{
 				$condition [] = " l.seo_title LIKE '%".$value."%'";
@@ -139,6 +162,7 @@ class data_model extends phpok_model
 				$condition [] = " l.tag LIKE '%".$value."%'";
 			}
 			$sql.= "AND (".implode(" OR ",$condition).") ";
+			unset($condition,$list);
 		}
 		//必须的字段
 		if($rs['fields_need'])
@@ -148,6 +172,7 @@ class data_model extends phpok_model
 			{
 				$sql .= " AND ".$value." != '' AND ".$value." != '0' AND ".$value." is NOT NULL ";
 			}
+			unset($list);
 		}
 		//自定义SQL扩展
 		if($rs['sqlext'])
@@ -159,12 +184,12 @@ class data_model extends phpok_model
 		{
 			foreach($rs['ext'] AS $key=>$value)
 			{
-				$sql .= " AND ext.".$key."='".$value."'";
+				$sql .= " AND ext.".$key."='".$value."' ";
 			}
 		}
 		$orderby = $rs['orderby'] ? $rs['orderby'] : $project_rs['orderby'];
 		if(!$orderby) $orderby = 'l.sort DESC,l.dateline DESC,l.id DESC ';
-		$sql.= 'ORDER BY '.$orderby.' ';
+		$sql.= ' ORDER BY '.$orderby.' ';
 		//非列表模式，强制只读取一条
 		if(!$rs['is_list']) $rs['psize'] = 1;
 		//
@@ -176,6 +201,7 @@ class data_model extends phpok_model
 		//当数据获取为空时，如果包含项目信息，将返回项目信息并返回空列表
 		if(!$rslist && !$rs['in_project'] && !$rs['in_cate'])
 		{
+			unset($rs,$sql,$orderby);
 			return false;
 		}
 		//如果内容存在
@@ -258,11 +284,13 @@ class data_model extends phpok_model
 					}
 				}
 				$rslist = $list;
+				unset($list);
 			}
 		}
 		if(!$rs['in_cate'] && !$rs['in_project'] && $rslist)
 		{
 			if(!$rs['is_list']) return current($rslist);
+			unset($rs);
 			return $rslist;
 		}
 		//如果包含项目
@@ -284,7 +312,8 @@ class data_model extends phpok_model
 		{
 			$array['rslist'] = $rslist;
 		}
-		return $array;		
+		unset($rslist,$rs);
+		return $array;	
 	}
 
 	//取得文章总数
@@ -297,11 +326,19 @@ class data_model extends phpok_model
 			if(!$tmp || $tmp['type'] != 'project') return false;
 			$rs['pid'] = $tmp['id'];
 		}
-		if(!$rs['pid']) return false;
+		if(!$rs['pid'])
+		{
+			unset($rs);
+			return false;
+		}
 		//取得项目信息
 		$project_rs = $this->_project($rs['pid'],false);
 		//判断是否有绑定模块，没有绑定模块，跳过
-		if(!$project_rs['module']) return false;
+		if(!$project_rs['module'])
+		{
+			unset($project_rs,$rs);
+			return false;
+		}
 		$sql = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
 		$sql.= "JOIN ".$this->db->prefix."list_".$project_rs['module']." ext ON(l.id=ext.id AND l.site_id=ext.site_id) ";
 		$sql.= "WHERE l.project_id=".intval($rs['pid'])." AND l.site_id=".intval($this->site['id'])." ";
@@ -327,6 +364,7 @@ class data_model extends phpok_model
 			$array = array($rs['cateid']);
 			$this->_cate_id($array,$rs['cateid'],$cate_all);
 			$sql .= "AND l.cate_id IN(".implode(",",$array).") ";
+			unset($array,$cate_all);
 		}
 		//绑定某个会员
 		if($rs['user_id'])
@@ -342,13 +380,17 @@ class data_model extends phpok_model
 		{
 			$list = explode(",",$rs['tag']);
 			$tid_sql = "SELECT DISTINCT l.tid FROM qinggan_tag_list l JOIN qinggan_tag t ON(l.id=t.id) ";
-			$tag_condition = '';
+			$tag_condition = false;
 			foreach($list AS $key=>$value)
 			{
 				$tag_condition [] = " t.title='".$value."'";
 			}
-			$tid_sql.= "WHERE (".implode(" OR ",$condition).") ";
-			$condition .= " AND l.id IN(".$tid_sql.")";
+			if($tag_condition)
+			{
+				$tid_sql.= "WHERE (".implode(" OR ",$tag_condition).") ";
+				$condition .= " AND l.id IN(".$tid_sql.")";
+			}
+			unset($list,$tid_sql,$tag_condition);
 		}
 		//关键字
 		if($rs['keywords'])
@@ -364,6 +406,7 @@ class data_model extends phpok_model
 				$condition [] = " l.tag LIKE '%".$value."%'";
 			}
 			$sql.= "AND (".implode(" OR ",$condition).") ";
+			unset($condition,$list);
 		}
 		//必须的字段
 		if($rs['fields_need'])
@@ -387,11 +430,13 @@ class data_model extends phpok_model
 		$tmpid = $param['phpok'] ? $param['phpok'] : ($param['title_id'] ? $param['title_id'] : $param['id']);
 		if(!$tmpid)
 		{
+			unset($param);
 			return false;
 		}
 		$rs = $this->_list_info($tmpid);
 		if(!$rs)
 		{
+			unset($param,$tmpid);
 			return false;
 		}
 		//无绑定模块时直接返回结果
@@ -471,6 +516,7 @@ class data_model extends phpok_model
 		{
 			$content = str_replace($value['title'],$value['html'],$content);
 		}
+		unset($taglist,$id);
 		return $content;
 	}
 
@@ -483,6 +529,7 @@ class data_model extends phpok_model
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist)
 		{
+			unset($sql);
 			return false;
 		}
 		foreach($rslist as $key=>$value)
@@ -524,6 +571,7 @@ class data_model extends phpok_model
 		$not_format = array('text','password','textarea','code_editor','editor');
 		if(in_array($rs['form_type'],$not_format))
 		{
+			unset($not_format,$rs);
 			return $content;
 		}
 		//单选
@@ -540,6 +588,7 @@ class data_model extends phpok_model
 			{
 				$list[$value] = $this->_format_optlist($rs,$value);
 			}
+			unset($content,$rs);
 			return $list;
 		}
 		//下拉，多选
@@ -551,6 +600,7 @@ class data_model extends phpok_model
 			{
 				$list[$value] = $this->_format_optlist($rs,$value);
 			}
+			unset($content,$rs);
 			return $list;
 		}
 		//下拉，单选
@@ -571,6 +621,7 @@ class data_model extends phpok_model
 					$list[$value] = $tmp;
 				}
 			}
+			unset($content,$rs);
 			return $list;
 		}
 		//附件，单图
@@ -581,6 +632,7 @@ class data_model extends phpok_model
 			{
 				return false;
 			}
+			unset($rs);
 			return $this->_res_info($content);
 		}
 		//主题，单个
@@ -591,6 +643,7 @@ class data_model extends phpok_model
 			{
 				return false;
 			}
+			unset($rs);
 			return $this->_list_info($content);
 		}
 		//主题，多个
@@ -606,6 +659,7 @@ class data_model extends phpok_model
 					$list[$value] = $tmp;
 				}
 			}
+			unset($content,$rs);
 			return $list;
 		}
 		if($rs['form_type'] == 'user' && $rs['ext']['is_multiple'])
@@ -620,13 +674,16 @@ class data_model extends phpok_model
 					$list[$value] = $tmp;
 				}
 			}
+			unset($content,$rs);
 			return $list;
 		}
 		if($rs['form_type'] == 'user' && !$rs['ext']['is_multiple'])
 		{
 			$content = intval($content);
+			unset($rs);
 			return $this->_user_info($content);
 		}
+		unset($rs);
 		return $content;
 	}
 
@@ -635,11 +692,6 @@ class data_model extends phpok_model
 		if(!$id)
 		{
 			return false;
-		}
-		//如果存在缓存中
-		if($this->cdata['res'][$id])
-		{
-			return $this->cdata['res'][$id];
 		}
 		//通过数据库读取数据
 		$sql = "SELECT * FROM ".$this->db->prefix."res WHERE id=".intval($id);
@@ -658,9 +710,9 @@ class data_model extends phpok_model
 			{
 				$rs['gd'][$value['identifier']] = $value['filename'];
 			}
+			unset($extlist);
 		}
-		//存储到缓存中
-		$this->cdata['res'][$id] = $rs;
+		unset($sql);
 		return $rs;
 	}
 
@@ -1169,21 +1221,20 @@ class data_model extends phpok_model
 	//取得项目信息
 	public function _project($id,$ext=false)
 	{
-		if($this->cdata['project'][$id])
+		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".intval($id);
+		$rs = $this->db->get_one($sql);
+		if(!$rs)
 		{
-			$rs = $this->cdata['project'][$id];
+			return false;
 		}
-		else
-		{
-			$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".intval($id);
-			$rs = $this->db->get_one($sql);
-			$this->cdata['project'][$id] = $rs;
-		}
-		if(!$rs) return false;
 		if($ext)
 		{
 			$ext = $this->ext_all('project-'.$id);
-			if($ext) $rs = array_merge($ext,$rs);
+			if($ext)
+			{
+				$rs = array_merge($ext,$rs);
+				unset($ext);
+			}
 		}
 		return $rs;
 	}
@@ -1274,7 +1325,11 @@ class data_model extends phpok_model
 		$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(ext.id=c.id) ";
 		$sql.= "WHERE ext.module='".$id."'";
 		$rslist = $this->db->get_all($sql,'identifier');
-		if(!$rslist) return false;
+		if(!$rslist)
+		{
+			unset($sql);
+			return false;
+		}
 		$res = '';
 		foreach($rslist AS $key=>$value)
 		{
@@ -1313,6 +1368,7 @@ class data_model extends phpok_model
 		}
 		if($res && is_array($res)) $res = $this->_res_info2($res);
 		$rslist = $this->_format($rslist,$flist,$res);
+		unset($flist,$res);
 		return $rslist;
 	}
 
@@ -1357,6 +1413,7 @@ class data_model extends phpok_model
 			{
 				$reslist[$value["res_id"]]["gd"][$value['identifier']] = $value['filename'];
 			}
+			unset($extlist);
 		}
 		return $reslist;
 	}
@@ -1394,6 +1451,7 @@ class data_model extends phpok_model
 					}
 				}
 			}
+			unset($flist);
 		}
 		//格式化分类信息
 		if($rs['cate_id'] && $catelist && $catelist[$rs['cate_id']]) $rs['cate_id'] = $catelist[$rs['cate_id']];

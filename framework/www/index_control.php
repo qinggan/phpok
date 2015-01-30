@@ -13,10 +13,6 @@ class index_control extends phpok_control
 	function __construct()
 	{
 		parent::control();
-		$this->model("id");
-		$this->model("project");
-		$this->model("list");
-		$this->lib("ext");
 	}
 
 	// 网站首页
@@ -38,6 +34,7 @@ class index_control extends phpok_control
 			$this->phpok_seo($page_rs);
 			$this->assign("page_rs",$page_rs);
 			if($page_rs["tpl_index"] && $this->tpl->check_exists($page_rs["tpl_index"])) $tplfile = $page_rs["tpl_index"];
+			unset($page_rs);
 		}
 		$this->view($tplfile);
 	}
@@ -54,8 +51,8 @@ class index_control extends phpok_control
 		$title = $rs["title"] ? $rs['title'] : basename($rs['filename']);
 		$title = str_replace(".".$rs["ext"],"",$title);
 		ob_end_clean();
-		header("Date: ".gmdate("D, d M Y H:i:s", $this->system_time)." GMT");
-		header("Last-Modified: ".gmdate("D, d M Y H:i:s", $this->system_time)." GMT");
+		header("Date: ".gmdate("D, d M Y H:i:s", $this->time)." GMT");
+		header("Last-Modified: ".gmdate("D, d M Y H:i:s", $this->time)." GMT");
 		header("Content-Encoding: none");
 		header("Content-Disposition: attachment; filename=".rawurlencode($title.".".$rs["ext"]));
 		header("Content-Length: ".$filesize);

@@ -120,6 +120,7 @@ function debug_time($memory_ctrl=1,$sql_ctrl=1,$file_ctrl=0,$cache_ctrl=0)
 	{
 		$string .= "，缓存执行 ".$sql_cache_count." 次，耗时 ".$sql_cache_time." 秒";
 	}
+	unset($count,$time,$memory,$sql_db_count,$sql_db_time,$sql_cache_count,$sql_cache_time);
 	return $string;
 }
 
@@ -127,49 +128,47 @@ function debug_time($memory_ctrl=1,$sql_ctrl=1,$file_ctrl=0,$cache_ctrl=0)
 class _init_phpok
 {
 	//应用ID
-	var $app_id = "www";
+	public $app_id = "www";
 	//网站根目录
-	var $dir_root = "./";
+	public $dir_root = "./";
 	//框架目录
-	var $dir_phpok = "phpok/";
+	public $dir_phpok = "phpok/";
 	//引挈库
-	var $engine;
+	public $engine;
 	//应用
-	var $obj;
-	var $obj_list;
+	public $obj;
+	//public $obj_list;
 	//配置信息
-	var $config;
+	public $config;
 	//版本
-	var $version = "4.0";
+	public $version = "4.0";
 	//当前时间
-	var $time;
+	public $time;
 	//网址
-	var $url;
+	public $url;
 	//缓存信息（任意接口都可以通过获取该缓存信息）
-	var $cache_data;
+	public $cache_data;
 	//授权相关信息
-	var $license = "LGPL";
-	var $license_code = "ED988858BCB1903A529C762DBA51DD40";
-	var $license_date = "2012-10-29";
-	var $license_name = "phpok";
-	var $license_site = "phpok.com";
-	var $license_powered = true;
+	public $license = "LGPL";
+	public $license_code = "ED988858BCB1903A529C762DBA51DD40";
+	public $license_date = "2012-10-29";
+	public $license_name = "phpok";
+	public $license_site = "phpok.com";
+	public $license_powered = true;
 
 	//是否是手机端，如果使用手机端可能会改写网址
-	var $is_mobile = false;
+	public $is_mobile = false;
 
 	//定义插件
-	var $plugin = '';
-
-	var $this_method_list;
+	public $plugin = '';
 
 	//定义css列表和js列表
-	var $csslist;
-	var $jslist;
+	public $csslist;
+	public $jslist;
 
-	function __construct()
+	public function __construct()
 	{
-		$this->this_method_list = get_class_methods($this);
+		
 		ini_set("magic_quotes_runtime",0);
 		$this->init_constant();
 		$this->init_config();
@@ -184,7 +183,7 @@ class _init_phpok
 		$this->init_engine();
 	}
 
-	function init_assign()
+	private function init_assign()
 	{
 		//取得当前页网址
 		$url = $this->url;
@@ -213,7 +212,7 @@ class _init_phpok
 		}
 	}
 
-	function language($langid='default')
+	public function language($langid='default')
 	{
 		//装载默认的语言包
 		$langfile = $this->dir_root."data/xml/langs/".$this->app_id.".default.xml";
@@ -241,6 +240,7 @@ class _init_phpok
 					}
 				}
 				$this->lang = $langs;
+				unset($langs,$langlist,$default_list);
 			}
 		}
 		else
@@ -251,6 +251,7 @@ class _init_phpok
 				$langs[$value] = $value;
 			}
 			$this->lang = $langs;
+			unset($langs,$default_list);
 		}
 	}
 
@@ -272,7 +273,7 @@ class _init_phpok
 		return phpok_ubb($Text,$nl2br);
 	}
 
-	function init_autoload()
+	public function init_autoload()
 	{
 		if($this->config["autoload_model"])
 		{
@@ -293,7 +294,7 @@ class _init_phpok
 	}
 
 	# 加载视图引挈
-	function init_view()
+	public function init_view()
 	{
 		$file = $this->dir_phpok."phpok_tpl.php";
 		if(!is_file($file))
@@ -312,6 +313,7 @@ class _init_phpok
 			$tpl_rs["refresh_auto"] = true;
 			$tpl_rs["tpl_ext"] = "html";
 			$this->tpl = new phpok_tpl($tpl_rs);
+			unset($tpl_rs);
 		}
 		else
 		{
@@ -327,7 +329,7 @@ class _init_phpok
 	}
 
 	//手机判断
-	function is_mobile()
+	public function is_mobile()
 	{
 		if(isset($_SERVER['HTTP_X_WAP_PROFILE']))
 		{
@@ -346,12 +348,13 @@ class _init_phpok
 		$regex_match.= ")/i";
 		if(preg_match($regex_match,strtolower($_SERVER['HTTP_USER_AGENT'])))
 		{
+			unset($regex_match);
 			return true;
 		}
 		return false;
 	}
 
-	function init_site()
+	public function init_site()
 	{
 		if($this->app_id == "admin")
 		{
@@ -365,6 +368,7 @@ class _init_phpok
 			}
 			if(!$site_rs) $site_rs = array('title'=>'PHPOK企业建站系统');
 			$this->site = $site_rs;
+			unset($site_rs);
 			return true;
 		}
 		$siteId = $this->get("siteId","int");
@@ -378,11 +382,16 @@ class _init_phpok
 				$domain_rs = $this->model('site')->domain_one($site_rs['domain_id']);
 				if($domain_rs && $domain_rs['domain'] != $domain)
 				{
+					unset($site_rs);
 					header("Location:http://".$domain_rs['domain'].$site_rs['dir']);
 					exit;
 				}
 				$ext_list = $this->site_model->site_config($site_rs["id"]);
-				if($ext_list) $site_rs = array_merge($ext_list,$site_rs);
+				if($ext_list)
+				{
+					$site_rs = array_merge($ext_list,$site_rs);
+					unset($ext_list);
+				}
 			}
 		}
 		if(!$site_rs)
@@ -391,7 +400,11 @@ class _init_phpok
 			if(!$site_rs) $site_rs = $this->site_model->get_one_default();
 			if(!$site_rs) $this->error("无法获取网站信息，请检查！");
 			$ext_list = $this->site_model->site_config($site_rs["id"]);
-			if($ext_list) $site_rs = array_merge($ext_list,$site_rs);
+			if($ext_list)
+			{
+				$site_rs = array_merge($ext_list,$site_rs);
+				unset($ext_list);
+			}
 			//读取模板扩展
 		}
 		if($site_rs["tpl_id"])
@@ -424,16 +437,21 @@ class _init_phpok
 					$tpl_rs["dir_tpl"] = "tpl/".$tplfolder;
 				}
 				$site_rs["tpl_id"] = $tpl_rs;
+				unset($tpl_rs);
 			}
 		}
 		$this->site = $site_rs;
+		unset($site_rs);
 	}
 
 	//装载插件
-	function init_plugin()
+	public function init_plugin()
 	{
 		$rslist = $this->model('plugin')->get_all();
-		if(!$rslist) return $rslist;
+		if(!$rslist)
+		{
+			return false;
+		}
 		foreach($rslist AS $key=>$value)
 		{
 			if($value['param']) $value['param'] = unserialize($value['param']);
@@ -448,18 +466,18 @@ class _init_phpok
 		}
 	}
 	
-	function lib($class,$ext_folder="")
+	public function lib($class,$ext_folder="")
 	{
 		return $this->load($class,"lib",$ext_folder);
 	}
 
-	function model($class,$ext_folder="")
+	public function model($class,$ext_folder="")
 	{
 		return $this->load($class,"model",$ext_folder);
 	}
 
 	//运行插件
-	function plugin($ap,$param="")
+	public function plugin($ap,$param="")
 	{
 		if(!$ap) return false;
 		$ap = str_replace("-","_",$ap);//替换节点的中划线为下划线
@@ -475,20 +493,20 @@ class _init_phpok
 	}
 
 	//加载HTML插件节点
-	function plugin_html_ap($name)
+	public function plugin_html_ap($name)
 	{
 		$ap = 'html-'.$this->ctrl.'-'.$this->func.'-'.$name;
 		$this->plugin($ap);
 	}
 
-	function load($class,$type="lib",$ext_folder="")
+	private function load($class,$type="lib",$ext_folder="")
 	{
 		if(!$class)
 		{
 			return false;
 		}
 		$tmp = $class.'_'.$type;
-		if($this->obj_list && is_array($this->obj_list) && in_array($tmp,$this->obj_list))
+		if($this->$tmp && is_object($this->$tmp))
 		{
 			return $this->$tmp;
 		}
@@ -525,7 +543,6 @@ class _init_phpok
 		}
 		include($file);
 		$name = $class.'_model';
-		$this->obj_list[] = $name;
 		$this->$name = new $name();
 		return $this->$name;
 	}
@@ -548,13 +565,12 @@ class _init_phpok
 		}
 		include($file);
 		$name = $class.'_lib';
-		$this->obj_list[] = $name;
 		$this->$name = new $name();
 		return $this->$name;
 	}
 	
 	//装载资源引挈
-	function init_engine()
+	private function init_engine()
 	{
 		if(!$this->config["db"] && !$this->config["engine"])
 		{
@@ -579,7 +595,7 @@ class _init_phpok
 	}
 
 	//读取网站参数配置
-	function init_config()
+	private function init_config()
 	{
 		//根目录下的config，一般该文件是来用配置全局网站需要用到的信息
 		$file = $this->dir_root."config.php";
@@ -615,10 +631,11 @@ class _init_phpok
 		$this->system_time = $this->time;
 		$this->config = $config;
 		$this->url = $this->root_url();
+		unset($config);
 	}
 
 	//自定义网址生成器
-	function url($ctrl="",$func="",$ext="",$appid='',$baseurl=false)
+	final public function url($ctrl="",$func="",$ext="",$appid='',$baseurl=false)
 	{
 		if(!$appid) $appid = $this->app_id;
 		if($appid  == "admin" || $appid == 'api')
@@ -677,7 +694,7 @@ class _init_phpok
 		return $url;
 	}
 
-	function root_url()
+	final public function root_url()
 	{
 		$http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
 		$port = $_SERVER["SERVER_PORT"];
@@ -706,6 +723,7 @@ class _init_phpok
 					}
 				}
 			}
+			unset($array,$count);
 		}
 		$myurl .= "/";
 		$myurl = str_replace("//","/",$myurl);
@@ -713,7 +731,7 @@ class _init_phpok
 	}
 	
 	//配置网站全局常量
-	function init_constant()
+	private function init_constant()
 	{
 		//配置网站根目录
 		if(!defined("ROOT")) define("ROOT",str_replace("\\","/",dirname(__FILE__))."/../");
@@ -750,10 +768,13 @@ class _init_phpok
 	}
 
 	//注销
-	function __destruct(){}
+	public function __destruct()
+	{
+		unset($this->lang);
+	}
 
 	//通过post或get取得数据，并格式化成自己需要的
-	function get($id,$type="safe",$ext="")
+	final public function get($id,$type="safe",$ext="")
 	{
 		$val = isset($_POST[$id]) ? $_POST[$id] : (isset($_GET[$id]) ? $_GET[$id] : "");
 		if($val == '')
@@ -779,7 +800,7 @@ class _init_phpok
 	//type，类型，支持：safe，text，html，html_js，func，int，float，system
 	//ext，扩展，当type为html时，ext存在表示支持js，不存在表示不支持js
 	//当type为func属性时，表示ext直接执行函数
-	function format($msg,$type="safe",$ext="")
+	final public function format($msg,$type="safe",$ext="")
 	{
 		if($msg == "") return '';
 		if(is_array($msg))
@@ -840,13 +861,13 @@ class _init_phpok
 	//安全的HTML信息
 	//主要是过滤HTML中的on****各种属性
 	//过滤iframe,script,link等信息
-	function safe_html($info)
+	public function safe_html($info)
 	{
 		return $this->lib('string')->safe_html($info);
 	}
 
 	//转义字符串数据，此函数仅限get使用
-	function _addslashes($val)
+	private function _addslashes($val)
 	{
 		if(is_array($val))
 		{
@@ -862,17 +883,17 @@ class _init_phpok
 		return $val;
 	}
 
-	function assign($var,$val)
+	final public function assign($var,$val)
 	{
 		$this->tpl->assign($var,$val);
 	}
 
-	function unassign($var)
+	final public function unassign($var)
 	{
 		$this->tpl->unassign($var);
 	}
 
-	function view($file,$type="file",$path_format=true)
+	final public function view($file,$type="file",$path_format=true)
 	{
 		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-after');
 		header("Content-type: text/html; charset=utf-8");
@@ -883,18 +904,18 @@ class _init_phpok
 		$this->tpl->display($file,$type,$path_format);
 	}
 
-	function fetch($file,$type="file",$path_format=true)
+	final public function fetch($file,$type="file",$path_format=true)
 	{
 		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-after');
 		return $this->tpl->fetch($file,$type,$path_format);
 	}
 
-	function get_url()
+	final public function get_url()
 	{
 		return $this->url;
 	}
 	//导常抛出
-	function error($content="")
+	final public function error($content="")
 	{
 		if(!$content) $content = "异常请检查";
 		$html = '<!DOCTYPE html>'."\n";
@@ -911,13 +932,13 @@ class _init_phpok
 	}
 
 	//执行应用
-	function action()
+	final public function action()
 	{
 		$this->init_assign();
 		//装载插件
 		$this->init_plugin();
 		$func_name = "action_".$this->app_id;
-		if(in_array($func_name,$this->this_method_list))
+		if(in_array($func_name,get_class_methods($this)))
 		{
 			$this->$func_name();
 			exit;
@@ -927,7 +948,7 @@ class _init_phpok
 		exit;
 	}
 
-	function action_api()
+	final public function action_api()
 	{
 		$ctrl = $this->get($this->config["ctrl_id"],"system");
 		$func = $this->get($this->config["func_id"],"system");
@@ -937,7 +958,7 @@ class _init_phpok
 	}
 
 	//前端参数获取
-	function action_www()
+	final public function action_www()
 	{
 		//前端ID的获取问题
 		$id = $this->get('id');
@@ -975,7 +996,7 @@ class _init_phpok
 	}
 
 	//仅限管理员的操作
-	function action_admin()
+	final public function action_admin()
 	{
 		$ctrl = $this->get($this->config["ctrl_id"],"system");
 		$func = $this->get($this->config["func_id"],"system");
@@ -984,7 +1005,7 @@ class _init_phpok
 		$this->_action($ctrl,$func);
 	}
 
-	function _action($ctrl='index',$func='index')
+	private function _action($ctrl='index',$func='index')
 	{
 		//如果App_id非指定的三种，强制初始化
 		if(!in_array($this->app_id,array('api','www','admin')))
@@ -1040,9 +1061,8 @@ class _init_phpok
 		$this->ctrl = $ctrl;
 		$this->func = $func;
 		$cls = new $app_name();
-		$list = get_class_methods($cls);
 		$func_name = $func."_f";
-		if(!in_array($func_name,$list))
+		if(!in_array($func_name,get_class_methods($cls)))
 		{
 			$this->error("文件：".$ctrl."_control.php 不存在方法：".$func_name."！");
 		}
@@ -1057,6 +1077,7 @@ class _init_phpok
 					$value();
 				}
 			}
+			unset($list);
 		}
 		$this->config['ctrl'] = $ctrl;
 		$this->config['func'] = $func;
@@ -1085,6 +1106,7 @@ class _init_phpok
 		$rs = array('status'=>$status_info);
 		if($content != '') $rs['content'] = $content;
 		$info = $this->lib('json')->encode($rs);
+		unset($rs);
 		if($exit) exit($info);
 		return $info;
 	}
@@ -1119,9 +1141,10 @@ class _init_phpok
 		}
 		$this->site['seo'] = $seo;
 		$this->assign("seo",$seo);
+		unset($seo);
 	}
 
-	function ascii($str='')
+	final public function ascii($str='')
 	{
 		if(!$str) return false;
 		$str = iconv("UTF-8", "UTF-16BE", $str);
@@ -1151,28 +1174,6 @@ class _init_phpok
 	function addcss($url='')
 	{
 		$this->csslist[] = $url;
-	}
-
-	//增加默认存储，这个缓存每次读取都会重新生成，不存在过期时效
-	function cache_set($id,$content='')
-	{
-		if($id == '' || $content == '')
-		{
-			return false;
-		}
-		$id = 'phpok_'.substr(md5($id),9,16);
-		$this->phpok_cache[$id] = $content;
-	}
-
-	//读取缓存
-	function cache_get($id)
-	{
-		$id = 'phpok_'.substr(md5($id),9,16);
-		if($this->phpok_cache[$id])
-		{
-			return $this->phpok_cache[$id];
-		}
-		return false;
 	}
 }
 

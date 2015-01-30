@@ -34,11 +34,13 @@ class phpok_call extends phpok_control
 			$call_rs = $GLOBALS['app']->model('call')->one($id,$this->site['id']);
 			if(!$call_rs)
 			{
+				unset($rs);
 				return false;
 			}
 			if($rs && is_array($rs))
 			{
 				$call_rs = array_merge($call_rs,$rs);
+				unset($rs);
 			}
 		}
 		else
@@ -67,6 +69,7 @@ class phpok_call extends phpok_control
 				return false;
 			}
 			$call_rs = array_merge($rs,array('type_id'=>$id));
+			unset($rs);
 		}
 		$func = '_'.$call_rs['type_id'];
 		if(!in_array($func,$this->mlist))

@@ -222,7 +222,7 @@ class open_control extends phpok_control
 		$offset = ($pageid - 1) * $psize;
 		$rslist = $this->model('user')->get_list($condition,$offset,$psize);
 		$count = $this->model('user')->get_count($condition);
-		$pagelist = phpok_page($page_url,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=2&add=(total)/(psize)，页(num)/(total_page)&always=1");
+		$pagelist = phpok_page($page_url,$count,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=2&add=(total)/(psize)，页(num)/(total_page)&always=1");
 		$this->assign("total",$count);
 		$this->assign("rslist",$rslist);
 		$this->assign("id",$id);
@@ -238,8 +238,7 @@ class open_control extends phpok_control
 		if(!$id) $id = "user";
 		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid) $pageid = 1;
-		$psize = $this->config["psize"];
-		if(!$psize) $psize = 30;
+		$psize = 39;
 		$keywords = $this->get("keywords");
 		$page_url = $this->url("open","user2","id=".$id);
 		$condition = "1=1";
@@ -252,7 +251,7 @@ class open_control extends phpok_control
 		$offset = ($pageid - 1) * $psize;
 		$rslist = $this->model('user')->get_list($condition,$offset,$psize);
 		$count = $this->model('user')->get_count($condition);
-		$pagelist = phpok_page($page_url,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=2&add=(total)/(psize)，页(num)/(total_page)&always=1");
+		$pagelist = phpok_page($page_url,$count,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=2&add=(total)/(psize)，页(num)/(total_page)&always=1");
 		$this->assign("total",$count);
 		$this->assign("rslist",$rslist);
 		$this->assign("id",$id);

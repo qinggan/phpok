@@ -1,20 +1,51 @@
 <!-- inc:head_open -->
 <script type="text/javascript">
-$(document).ready(function(){
+function submit_user(val)
+{
 	var obj = $.dialog.opener;
-	$("#user_layout li").click(function(){
-		var val = $(this).attr("data");
-		obj.$("#{$id}").val(val);
-		$.dialog.close();
-	});
-});
+	obj.$("#{$id}").val(val);
+	$.dialog.close();
+}
+function submit_search()
+{
+	var k = $("#keywords").val();
+	if(!k)
+	{
+		$.dialog.alert("关键字不能为空");
+		return false;
+	}
+	var url = "{url ctrl=open func=user2 id=$id/}&keywords="+$.str.encode(k);
+	$.phpok.go(url);
+	return false;
+}
 </script>
-<div class="list">
-<ul class="layout" id="user_layout">
-	<!-- loop from=$rslist key=$key value=$value -->
-	<li data="{$value.user}" class="hand" style="height:20px;border:1px solid #ccc;padding:1px 5px;">{$value.user}</li>
-	<!-- /loop -->
-</ul>
+<div class="tips">
+	<form method="post" action="{url ctrl=open func=user2 id=$id/}" onsubmit="return submit_search()">
+	查找会员：（请输入关键字）
+	<input type="text" id="keywords" name="keywords" value="{$keywords}" />
+	<input type="submit" value="提交" class="submit" />
+	</form>
+	<div class="clear"></div>
 </div>
-<!-- if($pagelist) --><div class="table">{:$pagelist}</div><!-- end -->
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th width="50px">ID</th>
+	<th class="lft">账号</th>
+	<th width="65px">操作</th>
+	<th width="50px">ID</th>
+	<th class="lft">账号</th>
+	<th width="65px">操作</th>
+	<th width="50px">ID</th>
+	<th class="lft">账号</th>
+	<th width="65px">操作</th>
+</tr>
+<tr>
+	<!-- loop from=$rslist key=$key value=$value -->
+	<td class="center">{$value.id}</td>
+	<td>{$value.user}</td>
+	<td class="center"><input type="button" value="提交" onclick="submit_user('{$value.user}')" class="btn" /></td>
+	<!-- if $rslist_id.num%3 == '' && $rslist_id.num != $rslist_id.total --></tr><tr><!-- /if -->
+	<!-- /loop -->
+</table>
+<!-- include tpl=pagelist -->
 <!-- inc:foot_open -->

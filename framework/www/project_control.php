@@ -42,6 +42,7 @@ class project_control extends phpok_control
 		$this->model('popedom')->siteid($this->site['id']);
 		if(!$this->model('popedom')->check($pid,$this->user_groupid,'read'))
 		{
+			unset($tmp);
 			error(P_Lang('您没有阅读权限，请联系网站管理员'),'','error');
 		}
 		$rs = $this->call->phpok('_project',array('pid'=>$pid,'project_ext'=>true));
@@ -63,6 +64,11 @@ class project_control extends phpok_control
 		if($rs["module"])
 		{
 			$this->load_module($rs,$parent_rs);
+			unset($rs);
+			if($parent_rs)
+			{
+				unset($parent_rs);
+			}
 			exit;
 		}
 		$tpl = $rs["tpl_index"] ? $rs["tpl_index"] : ($rs["tpl_list"] ? $rs["tpl_list"] : $rs["tpl_content"]);
@@ -103,6 +109,7 @@ class project_control extends phpok_control
 		$m_rs = $this->model('module')->get_one($rs["module"]);
 		if(!$m_rs || $m_rs["status"] != 1)
 		{
+			unset($rs,$parent_rs);
 			error("模块不存在或未启用","","error");
 		}
 		$this->assign("m_rs",$m_rs);
@@ -175,14 +182,15 @@ class project_control extends phpok_control
 		{
 			$dt['tag'] = $tag;
 			$pageurl .= "tag=".rawurlencode($tag)."&";
-			//$condition .= " AND FIND_IN_SET('".$tag."',l.tag)>0 ";
 			$this->assign("tag",$tag);
+			unset($tag);
 		}
 		if($keywords)
 		{
 			$dt['keywords'] = $keywords;
 			$pageurl .= "keywords=".rawurlencode($keywords)."&";
 			$this->assign("keywords",$keywords);
+			unset($keywords);
 		}
 		if($ext && is_array($ext))
 		{
@@ -197,18 +205,19 @@ class project_control extends phpok_control
 			}
 			if($c) $dt['sqlext'] = implode(" AND ",$c);
 			$this->assign('ext',$ext);
+			unset($ext);
 		}
 		if($uid)
 		{
 			$pageurl .= "uid=".$uid."&";
 			$dt['user_id'] = $uid;
+			unset($uid);
 		}
 		if(substr($pageurl,-1) == "&" || substr($pageurl,-1) == "?")
 		{
 			$pageurl = substr($pageurl,0,-1);
 		}
-		$pagename = $this->config["pageid"] ? $this->config["pageid"] : "pageid";
-		$pageid = $this->get($pagename,"int");
+		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid) $pageid = 1;
 		$offset = ($pageid-1) * $psize;
 		$dt['offset'] = $offset;
@@ -217,6 +226,7 @@ class project_control extends phpok_control
 		$dt['is_list'] = 1;
 		$total = $this->call->phpok('_total',$dt);
 		$rslist = $this->call->phpok('_arclist',$dt);
+		unset($dt);
 		$this->assign("pageid",$pageid);
 		$this->assign("psize",$psize);
 		$this->assign("pageurl",$pageurl);
@@ -237,8 +247,8 @@ class project_control extends phpok_control
 				header("Location:".$url);
 				exit;
 			}
+			unset($rslist,$total,$pageurl,$psize,$pageid,$rs,$parent_rs);
 			error('未配置模板：'.$tplfile.'，请配置相应的模板','','error');
-			//$tplfile = "index";
 		}
 		//判断是否是xml
 		$xml = $this->get('xml','int');
@@ -248,6 +258,7 @@ class project_control extends phpok_control
 			header('Content-Type: text/xml;');
 			echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
 		}
+		unset($rslist,$total,$pageurl,$psize,$pageid,$rs,$parent_rs);
 		$this->view($tplfile);
 		exit;
 	}
