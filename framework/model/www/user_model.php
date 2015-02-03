@@ -6,12 +6,12 @@
 	Author  : qinggan
 	Update  : 2013年5月4日
 ***********************************************************/
-class user_model extends phpok_model
+class user_model extends user_model_base
 {
 	var $psize = 20;
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	function get_one($id)

@@ -8,7 +8,7 @@
 	Update  : 2012-10-15 18:05
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class project_model extends phpok_model
+class project_model_base extends phpok_model
 {
 	function __construct()
 	{
@@ -315,5 +315,7 @@ class project_model extends phpok_model
 		$sql.= "ORDER BY taxis ASC,id DESC";
 		return $this->db->get_all($sql);
 	}
+
+	//取得项目Tag信息
 }
 ?>

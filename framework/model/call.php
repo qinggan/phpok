@@ -8,7 +8,7 @@
 	Update  : 2013-04-18 02:24
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class call_model extends phpok_model
+class call_model_base extends phpok_model
 {
 	//site_id，为网站ID
 	var $site_id = 0;

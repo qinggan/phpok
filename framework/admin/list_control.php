@@ -203,7 +203,16 @@ class list_control extends phpok_control
 		$array["seo_title"] = $this->get("seo_title");
 		$array["seo_keywords"] = $this->get("seo_keywords");
 		$array["seo_desc"] = $this->get("seo_desc");
+		$array['tag'] = $this->get('tag');
 		$this->model('project')->save($array,$id);
+		if($array['tag'])
+		{
+			$this->model('tag')->update_tag($array['tag'],'p'.$id,$_SESSION['admin_site_id']);
+		}
+		else
+		{
+			$this->model('tag')->stat_delete('p'.$id,"title_id");
+		}
 		ext_save("project-".$id);
 		$this->model('temp')->clean("project-".$id,$_SESSION["admin_id"]);
 		$ok_url = $this->url("list","action","id=".$id);

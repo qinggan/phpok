@@ -8,7 +8,7 @@
 	Update  : 2013-03-12 17:34
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class form_model extends phpok_model
+class form_model_base extends phpok_model
 {
 	public $info = "";
 	function __construct()

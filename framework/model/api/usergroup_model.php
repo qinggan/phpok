@@ -8,11 +8,11 @@
 	时间： 2014年10月24日 11时11分
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class usergroup_model extends phpok_model
+class usergroup_model extends usergroup_model_base
 {
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	//取得会员组ID

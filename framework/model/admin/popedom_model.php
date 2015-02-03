@@ -8,11 +8,11 @@
 	Update  : 2013年7月30日
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class popedom_model extends phpok_model
+class popedom_model extends popedom_model_base
 {
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	function delete($id)

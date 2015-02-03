@@ -8,7 +8,7 @@
 	Update  : 2012-12-08 10:19
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class plugin_model extends phpok_model
+class plugin_model_base extends phpok_model
 {
 	function __construct()
 	{

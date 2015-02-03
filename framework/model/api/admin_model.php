@@ -8,11 +8,11 @@
 	时间： 2014年6月3日
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class admin_model extends phpok_model
+class admin_model extends admin_model_base
 {
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	function get_mail($ifsystem=0)

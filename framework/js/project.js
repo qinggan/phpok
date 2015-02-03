@@ -202,10 +202,13 @@ function set_post_status()
 	if(status)
 	{
 		$("#email_set_post_status").show();
+		$("li[name=f_post]").show();
 	}
 	else
 	{
 		$("#email_set_post_status").hide();
+		$("li[name=f_post]").find('input').attr("checked",false);
+		$("li[name=f_post]").hide();
 	}
 }
 
@@ -215,9 +218,12 @@ function set_comment_status()
 	if(status)
 	{
 		$("#email_set_comment_status").show();
+		$("li[name=f_reply]").show();
 	}
 	else
 	{
 		$("#email_set_comment_status").hide();
+		$("li[name=f_reply]").find('input').attr("checked",false);
+		$("li[name=f_reply]").hide();
 	}
 }

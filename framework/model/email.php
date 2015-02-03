@@ -6,7 +6,7 @@
 	Author  : qinggan
 	Update  : 2013年06月30日 23时42分
 ***********************************************************/
-class email_model extends phpok_model
+class email_model_base extends phpok_model
 {
 	function __construct()
 	{

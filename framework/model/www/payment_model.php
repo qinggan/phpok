@@ -8,11 +8,11 @@
 	时间： 2014年5月2日
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class payment_model extends phpok_model
+class payment_model extends payment_model_base
 {
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	function get_all($site_id=0)

@@ -8,7 +8,7 @@
 	Update  : 2012-12-27 13:09
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class res_model extends phpok_model
+class res_model_base extends phpok_model
 {
 	var $img_type_list;
 	function __construct()

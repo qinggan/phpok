@@ -106,11 +106,6 @@ class admin_control extends phpok_control
 			$this->assign("sitelist",$sitelist);
 		}
 		$this->assign("glist",$glist);
-		//分类列表
-		$catelist = $this->model('cate')->get_all($_SESSION["admin_site_id"]);
-		$catelist = $this->model('cate')->cate_option_list($catelist);
-		$this->assign("catelist",$catelist);
-		$this->assign('category',$category);
 		$this->view("admin_set");
 	}
 
@@ -252,12 +247,6 @@ class admin_control extends phpok_control
 			$if_system = 0;
 		}
 		$array["if_system"] = $if_system;
-		if(!$array['if_system'])
-		{
-			$category = $this->get('category');
-			//自定义分类权限
-			$array['category'] = $category ? implode(',',$category) :'';
-		}
 		if($id)
 		{
 			$st = $this->model('admin')->save($array,$id);

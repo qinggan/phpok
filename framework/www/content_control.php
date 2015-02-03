@@ -94,6 +94,7 @@ class content_control extends phpok_control
 		$this->db->cache_close();
 		//增加点击
 		$this->model('list')->add_hits($rs["id"]);
+		$rs['hits'] = $this->model('list')->get_hits($rs['id']);
 		//开启缓存
 		$this->db->cache_open();
 		//执行SEO优化

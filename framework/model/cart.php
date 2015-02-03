@@ -8,7 +8,7 @@
 	Update  : 2013年11月11日
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class cart_model extends phpok_model
+class cart_model_base extends phpok_model
 {
 	function __construct()
 	{

@@ -6,11 +6,11 @@
 	Author  : qinggan
 	Update  : 2013年5月4日
 ***********************************************************/
-class user_model extends phpok_model
+class user_model extends user_model_base
 {
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	//检测账号是否冲突

@@ -148,6 +148,7 @@ class all_control extends phpok_control
 		$array["adm_logo180"] = $this->get("adm_logo180");
 		$array["lang"] = $this->get("lang");
 		$array['api'] = $this->get('api','int');
+		$array['api_code'] = $this->get("api_code");
 		$array["email_server"] = $this->get("email_server");
 		$array["email_port"] = $this->get("email_port",'int');
 		$array["email_ssl"] = $this->get("email_ssl",'int');

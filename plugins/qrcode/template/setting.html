@@ -1,0 +1,91 @@
+<div class="tips">
+	二维码图片访问地址：<span class="red">{func api_url plugin exec id=qrcode&content=内容 true/}</span><br />
+	<div class="clear"></div>
+</div>
+<div class="table">
+	<div class="title">
+		二维码宽高：
+		<span class="note">建议您选择150px</span>
+	</div>
+	<div class="content">
+		<select name="wh">
+			<option value="1"{if $rs.param.wh == 1} selected{/if}>30px</option>
+			<option value="2"{if $rs.param.wh == 2} selected{/if}>60px</option>
+			<option value="3"{if $rs.param.wh == 3} selected{/if}>90px</option>
+			<option value="4"{if $rs.param.wh == 4} selected{/if}>120px</option>
+			<option value="5"{if $rs.param.wh == 5} selected{/if}>150px</option>
+			<option value="6"{if $rs.param.wh == 6} selected{/if}>180px</option>
+			<option value="7"{if $rs.param.wh == 7} selected{/if}>210px</option>
+			<option value="8"{if $rs.param.wh == 8} selected{/if}>240px</option>
+			<option value="9"{if $rs.param.wh == 9} selected{/if}>270px</option>
+			<option value="10"{if $rs.param.wh == 10} selected{/if}>300px</option>
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		LOGO图片
+		<span class="note">规格为正方型，居中，推荐宽高为50，为空表示不加入</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input type="text" id="logo" name="logo" class="default" value="{$rs.param.logo}" /></td>
+			<td><input type="button" value="选择" onclick="phpok_pic('logo')" class="btn" /></td>
+			<td><input type="button" value="预览" onclick="phpok_pic_view('logo')" class="btn" /></td>
+			<td><input type="button" value="清空" onclick="$('#logo').val('');" class="btn" /></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+function show_testing()
+{
+	var c = $("#testinfo").val();
+	if(!c)
+	{
+		$.dialog.alert('请输入要测试的文本');
+		return false;
+	}
+	var url = "{func api_url plugin exec id=qrcode true/}&content="+$.str.encode(c);
+	window.open(url);
+}
+function clear_cache()
+{
+	var url = "{url ctrl=plugin func=exec id=qrcode exec=clear/}";
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok')
+	{
+		$.dialog.alert('二维码缓存清空完成');
+		return false;
+	}
+	else
+	{
+		$.dialog.alert(rs.content);
+		return false;
+	}
+}
+</script>
+<div class="table">
+	<div class="title">
+		测试效果：
+		<span class="note">请输入要测试的文本内容！支持网址，中文等信息</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input type="text" id="testinfo" name="testinfo" class="default" value="" /></td>
+			<td><input type="button" value="测试" onclick="show_testing()" class="btn" /></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		插件工具：
+		<span class="note"></span>
+	</div>
+	<div class="content">
+		<input type="button" value="清空二维码缓存" onclick="clear_cache()" class="btn" />
+	</div>
+</div>

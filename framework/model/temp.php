@@ -8,7 +8,7 @@
 	Update  : 2012-12-10 00:04
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class temp_model extends phpok_model
+class temp_model_base extends phpok_model
 {
 	function __construct()
 	{

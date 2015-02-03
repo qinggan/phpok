@@ -15,7 +15,7 @@ class token_lib
 	private $keya;
 	private $keyb;
 	private $time;
-	private $expiry = 1800;
+	private $expiry = 3600;
 	
 	public function __construct()
 	{
@@ -25,20 +25,33 @@ class token_lib
 		$this->time = $GLOBALS['app']->time;
 	}
 
+	public function keyid($keyid='')
+	{
+		if(!$keyid)
+		{
+			return $this->keyid;
+		}
+		$this->keyid = strtolower(md5($keyid));
+		return $this->keyid;
+	}
+
 	//创建一个KEY-ID
 	private function _keyid()
 	{
-		if($GLOBALS['app']->config['spam_key'])
+		if(!$GLOBALS['app']->site || !$GLOBALS['app']->site['api_code'])
 		{
-			$keyid = $GLOBALS['app']->config['spam_key'];
-			return strtolower(md5($keyid));
+			return false;
 		}
-		return strtolower(md5($_SERVER['SERVER_NAME']));
+		return strtolower(md5($GLOBALS['app']->site['api_code']));
 	}
 
 	//加密数据
 	function encode($string)
 	{
+		if(!$this->keyid)
+		{
+			return false;
+		}
 		$string = serialize($string);
 		$string = sprintf('%010d',($this->expiry + $this->time)).substr(md5($string.$this->keyb), 0, 16).$string;
 		$keyc = substr(md5(microtime().rand(1000,9999)), -$this->keyc_length);
@@ -51,6 +64,10 @@ class token_lib
 	//解密
 	function decode($string)
 	{
+		if(!$this->keyid)
+		{
+			return false;
+		}
 		$keyc = substr($string, 0, $this->keyc_length);
 		$string = base64_decode(substr($string, $this->keyc_length));
 		$cryptkey = $this->keya.md5($this->keya.$keyc);
@@ -64,7 +81,7 @@ class token_lib
 		return false;
 	}
 
-	function core($string,$cryptkey)
+	private function core($string,$cryptkey)
 	{
 		$key_length = strlen($cryptkey);
 		$string_length = strlen($string);

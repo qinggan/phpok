@@ -19,6 +19,7 @@ class upload_control extends phpok_control
 		$token = $this->get('token');
 		if($token)
 		{
+			$this->lib('token')->keyid($this->site['api_code']);
 			$info = $this->lib('token')->decode($token);
 			if(!$info || !$info['user_id'] || !$info['user_name'])
 			{

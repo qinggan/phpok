@@ -8,11 +8,11 @@
 	时间： 2015年01月05日 10时46分
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class sql_model extends phpok_model
+class sql_model extends sql_model_base
 {
 	public function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	//读取全部表信息

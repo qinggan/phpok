@@ -28,7 +28,7 @@ class api_copyright extends phpok_plugin
 		}
 		$rs = $this->db->get_one($sql);
 		if($rs) $this->json('域名已存在');
-		$this->json(true,true);
+		$this->json(true);
 	}
 }
 ?>

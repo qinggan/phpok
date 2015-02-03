@@ -8,12 +8,12 @@
 	时间： 2014年11月05日 10时57分
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class ext_model extends phpok_model
+class ext_model extends ext_model_base
 {
 	private $url_type = 'default';
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	//读取分类下的全部扩展
@@ -46,7 +46,7 @@ class ext_model extends phpok_model
 			}
 			if($value['form_type'] == 'editor')
 			{
-				$value['content'] = phpok_ubb($value['content'],false);
+				$value['content'] = $this->lib('ubb')->to_html($value['content'],false);
 			}
 			$tmplist[$value['module']][$value['identifier']] = $value['content'];
 		}

@@ -288,7 +288,7 @@
 
 <div class="table">
 	<div class="title">
-		可配权限：
+		后台权限：
 		<span class="note">权限可选项可登录官网查阅帮助手册，
 			<a href="javascript:$.input.checkbox_all('mylayout');void(0);" class='n'>全选</a>
 			<a href="javascript:$.input.checkbox_none('mylayout');void(0);" class='n'>全不选</a>
@@ -301,6 +301,39 @@
 			<li><label><input type="checkbox" name="_popedom[]" value="{$vv.id}"{if $popedom_list2 && in_array($vv.identifier,$popedom_list2)} checked{/if} /> {$vv.title}</label></li>
 			<!-- /loop -->
 		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		前台权限：
+		<span class="note">设置前台用户组可操作的权限</span>
+	</div>
+	<div class="content">
+		<div class="list" style="">
+		<table cellpadding="0" cellspacing="0" style="padding:1px;border:1px solid #ccc;">
+		<!-- loop from=$grouplist key=$key value=$value -->
+		<tr id="group_{$value.id}">
+			<td><div style="text-indent:5px;">{$value.space}{$value.title}</div></td>
+			<td width="180px" align="center">
+				<input type="button" value="全选" onclick="$.input.checkbox_all('group_{$value.id}')" />
+				<input type="button" value="全不选" onclick="$.input.checkbox_none('group_{$value.id}')" />
+				<input type="button" value="反选" onclick="$.input.checkbox_anti('group_{$value.id}')" />
+			</td>
+			<td>
+				<ul class="layout">
+					<li><label><input type="checkbox" name="p_read_{$value.id}"{if $value.popedom.read} checked{/if} /> 阅读</label></li>
+					<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><label><input type="checkbox" name="p_post_{$value.id}"{if $value.popedom.post} checked{/if} /> 发布</label></li>
+					<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><label><input type="checkbox" name="p_post1_{$value.id}"{if $value.popedom.post1} checked{/if} /> 发布免审核</label></li>
+					<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><label><input type="checkbox" name="p_reply_{$value.id}"{if $value.popedom.reply} checked{/if} /> 回复</label></li>
+					<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><label><input type="checkbox" name="p_reply1_{$value.id}"{if $value.popedom.reply1} checked{/if} /> 回复免审核</label></li>
+				</ul>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		</div>
 	</div>
 </div>
 
@@ -409,6 +442,15 @@
 	</div>
 	<div class="content">
 		<textarea name="seo_desc" id="seo_desc" class="long">{$rs.seo_desc}</textarea>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		Tag标签：
+		<span class="note">多个标签用英文空格隔开，最多不能超过10个词</span>
+	</div>
+	<div class="content">
+		<input type="text" id="tag" name="tag" class="long" value="{$rs.tag}" />
 	</div>
 </div>
 </div>

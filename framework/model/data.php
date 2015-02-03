@@ -8,7 +8,7 @@
 	Update  : 2013年11月9日
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class data_model extends phpok_model
+class data_model_base extends phpok_model
 {
 	public function __construct()
 	{
@@ -252,7 +252,8 @@ class data_model extends phpok_model
 				//绑定链接
 				if(!$value['url'])
 				{
-					$value['url'] = msgurl(($value['identifier'] ? $value['identifier'] : $value['id']));
+					$value['url'] = msgurl($value['id']);
+					//$value['url'] = msgurl(($value['identifier'] ? $value['identifier'] : $value['id']));
 				}
 				$rslist[$key] = $value;
 			}
@@ -475,7 +476,7 @@ class data_model extends phpok_model
 					$rs[$value['identifier']] = $tmp;
 				}
 				
-				$rs[$value['identifier']] = phpok_ubb($rs[$value['identifier']],false);
+				$rs[$value['identifier']] = $this->lib('ubb')->to_html($rs[$value['identifier']],false);
 				//格式化关键字
 			}
 			//针对网址进行格式化
@@ -945,7 +946,7 @@ class data_model extends phpok_model
 		if(!$cate_rs) return false;
 		if($rs['cate_ext'])
 		{
-			$ext = $this->ext_all('cate-'.$cate_rs['id']);
+			$ext = $this->ext_all('cate-'.$cate_rs['id'],$cate_rs);
 			if($ext) $cate_rs = array_merge($ext,$cate_rs);
 		}
 		if(!$cate_rs['url'])
@@ -971,7 +972,7 @@ class data_model extends phpok_model
 		if(!$cate_rs) return false;
 		if($rs['cate_ext'])
 		{
-			$ext = $this->ext_all('cate-'.$cate_rs['id']);
+			$ext = $this->ext_all('cate-'.$cate_rs['id'],$cate_rs);
 			if($ext) $cate_rs = array_merge($ext,$cate_rs);
 		}
 		return $cate_rs;
@@ -1115,7 +1116,7 @@ class data_model extends phpok_model
 		{
 			foreach($rslist AS $key=>$value)
 			{
-				$ext_rs = $this->ext_all('project-'.$value['id']);
+				$ext_rs = $this->ext_all('project-'.$value['id'],$value);
 				if($ext_rs) $value = array_merge($ext_rs,$value);
 				$rslist[$key] = $value;
 			}
@@ -1229,7 +1230,7 @@ class data_model extends phpok_model
 		}
 		if($ext)
 		{
-			$ext = $this->ext_all('project-'.$id);
+			$ext = $this->ext_all('project-'.$id,$rs);
 			if($ext)
 			{
 				$rs = array_merge($ext,$rs);
@@ -1319,7 +1320,7 @@ class data_model extends phpok_model
 	}
 
 	//获取项目，分类的扩展信息
-	public function ext_all($id)
+	public function ext_all($id,$baseinfo='')
 	{
 		$sql = "SELECT ext.ext,ext.identifier,ext.form_type,c.content FROM ".$this->db->prefix."ext ext ";
 		$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(ext.id=c.id) ";
@@ -1331,6 +1332,7 @@ class data_model extends phpok_model
 			return false;
 		}
 		$res = '';
+		$type = substr($id,0,4) == "cate" ? 'c' : 'p';
 		foreach($rslist AS $key=>$value)
 		{
 			//当内容表单为网址时
@@ -1354,8 +1356,16 @@ class data_model extends phpok_model
 			}
 			elseif($value['form_type'] == 'editor' && $value['content'])
 			{
+				if($value['ext'])
+				{
+					$value['ext'] = unserialize($value['ext']);
+				}
+				if($value['ext'] && $value['ext']['inc_tag'])
+				{
+					$value['content'] = $this->_tag_format($value['content'],$type.$baseinfo['id']);
+				}
 				$value['content'] = str_replace('[:page:]','',$value['content']);
-				$value['content'] = phpok_ubb($value['content'],false);
+				$value['content'] = $this->lib('ubb')->to_html($value['content'],false);
 			}
 			$rslist[$key] = $value;
 		}

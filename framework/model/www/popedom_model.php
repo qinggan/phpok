@@ -8,12 +8,12 @@
 	时间： 2014年10月6日
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class popedom_model extends phpok_model
+class popedom_model extends popedom_model_base
 {
 	private $siteid;
 	public function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	//设置站点ID

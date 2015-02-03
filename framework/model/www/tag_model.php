@@ -8,12 +8,12 @@
 	时间： 2015年01月22日 01时04分
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class tag_model extends phpok_model
+class tag_model extends tag_model_base
 {
 	private $site_id = 0;
 	public function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	public function site_id($site_id=0)
@@ -40,9 +40,9 @@ class tag_model extends phpok_model
 
 	public function id_list($tag_id,$offset=0,$psize=30)
 	{
-		$sql = "SELECT l.id FROM ".$this->db->prefix."tag_stat s ";
-		$sql.= "JOIN ".$this->db->prefix."list l ON(s.title_id=l.id) WHERE l.status=1 AND s.tag_id='".$tag_id."' ";
-		$sql.= " ORDER BY l.sort DESC,l.dateline DESC,l.id DESC LIMIT ".intval($offset).",".intval($psize);
+		$sql = "SELECT title_id as id FROM ".$this->db->prefix."tag_stat WHERE tag_id='".$tag_id."' ";
+		//$sql.= "JOIN ".$this->db->prefix."list l ON(s.title_id=l.id) WHERE l.status=1 AND s.tag_id='".$tag_id."' ";
+		$sql.= " ORDER BY title_id DESC LIMIT ".intval($offset).",".intval($psize);
 		return $this->db->get_all($sql);
 	}
 

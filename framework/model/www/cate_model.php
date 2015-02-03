@@ -8,12 +8,12 @@
 	时间： 2014年11月05日 10时47分
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class cate_model extends phpok_model
+class cate_model extends cate_model_base
 {
 	private $siteid = 0;
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	//站点ID的两种写法
@@ -152,6 +152,23 @@ class cate_model extends phpok_model
 			$rslist[$key] = $value;
 		}
 		return $rslist;
+	}
+
+	public function get_root_id($id)
+	{
+		$rs = $this->get_one($id);
+		if(!$rs)
+		{
+			return false;
+		}
+		if(!$rs['parent_id'])
+		{
+			return $rs['id'];
+		}
+		else
+		{
+			return $this->get_root_id($rs['parent_id']);
+		}
 	}
 	
 }

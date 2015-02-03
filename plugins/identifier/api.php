@@ -101,7 +101,7 @@ class api_identifier extends phpok_plugin
 		{
 			$trans->isFrist = true;
 		}
-		$title = $this->charset($title,'UTF-8','GBK');
+		$title = $this->lib('string')->charset($title,'UTF-8','GBK');
 		$info = $trans->ChineseToPinyin($title);
 		$info = strtolower($info);
 		$info = $this->return_safe($info);

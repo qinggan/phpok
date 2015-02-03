@@ -267,33 +267,7 @@ class _init_phpok
 		return $info;
 	}
 
-	//UBB代码格式化
-	public function ubb($Text,$nl2br=true) 
-	{
-		return phpok_ubb($Text,$nl2br);
-	}
-
-	public function init_autoload()
-	{
-		if($this->config["autoload_model"])
-		{
-			$list = explode(",",$this->config["autoload_model"]);
-			foreach($list AS $key=>$value)
-			{
-				$this->load($value,"model");
-			}
-		}
-		if($this->config["autoload_lib"])
-		{
-			$list = explode(",",$this->config["autoload_lib"]);
-			foreach($list AS $key=>$value)
-			{
-				$this->load($value,"lib");
-			}
-		}
-	}
-
-	# 加载视图引挈
+	//加载视图引挈
 	public function init_view()
 	{
 		$file = $this->dir_phpok."phpok_tpl.php";
@@ -302,6 +276,8 @@ class _init_phpok
 			$this->error("视图引挈文件：".basename($file)." 不存在！");
 		}
 		include_once($file);
+		$this->model('url')->ctrl_id($this->config['ctrl_id']);
+		$this->model('url')->func_id($this->config['func_id']);
 		if($this->app_id == "admin")
 		{
 			$tpl_rs = array();
@@ -320,6 +296,21 @@ class _init_phpok
 			if(!$this->site["tpl_id"] || ($this->site["tpl_id"] && !is_array($this->site["tpl_id"])))
 			{
 				$this->error("未指定模板文件");
+			}
+			$this->model('url')->base_url($this->url);
+			$this->model('url')->set_type($this->site['url_type']);
+			$this->model('url')->protected_ctrl($this->config['reserved']);
+			//初始化伪静态中需要的东西
+			if($this->site['url_type'] == 'rewrite')
+			{
+				$this->model('url')->site_id($this->site['id']);
+				$this->model('rewrite')->site_id($this->site['id']);
+				$this->model('url')->id_list();
+				$this->model('url')->cate_list();
+				$this->model('url')->project_list();
+				$this->model('url')->rules($this->model('rewrite')->get_all());
+				$this->model('url')->type_ids($this->model('rewrite')->type_ids());
+				$this->model('url')->page_id($this->config['pageid']);
 			}
 			$this->tpl = new phpok_tpl($this->site["tpl_id"]);
 			include_once($this->dir_phpok."phpok_call.php");
@@ -386,7 +377,7 @@ class _init_phpok
 					header("Location:http://".$domain_rs['domain'].$site_rs['dir']);
 					exit;
 				}
-				$ext_list = $this->site_model->site_config($site_rs["id"]);
+				$ext_list = $this->model('site')->site_config($site_rs["id"]);
 				if($ext_list)
 				{
 					$site_rs = array_merge($ext_list,$site_rs);
@@ -397,9 +388,9 @@ class _init_phpok
 		if(!$site_rs)
 		{
 			$site_rs = $this->model("site")->get_one_from_domain($domain);
-			if(!$site_rs) $site_rs = $this->site_model->get_one_default();
+			if(!$site_rs) $site_rs = $this->model('site')->get_one_default();
 			if(!$site_rs) $this->error("无法获取网站信息，请检查！");
-			$ext_list = $this->site_model->site_config($site_rs["id"]);
+			$ext_list = $this->model('site')->site_config($site_rs["id"]);
 			if($ext_list)
 			{
 				$site_rs = array_merge($ext_list,$site_rs);
@@ -468,12 +459,62 @@ class _init_phpok
 	
 	public function lib($class,$ext_folder="")
 	{
-		return $this->load($class,"lib",$ext_folder);
+		$tmp = $class.'_lib';
+		if($this->$tmp && is_object($this->$tmp))
+		{
+			return $this->$tmp;
+		}
+		$file = $this->dir_phpok.'libs/';
+		if($folder && $folder != '/')
+		{
+			$file .= $folder;
+			if(substr($folder,-1) != '/')
+			{
+				$file .= '/';
+			}
+		}
+		$file .= $class.'.php';
+		if(!is_file($file))
+		{
+			return false;
+		}
+		include($file);
+		$this->$tmp = new $tmp();
+		return $this->$tmp;
 	}
 
-	public function model($class,$ext_folder="")
+	public function model($name)
 	{
-		return $this->load($class,"model",$ext_folder);
+		$class_name = $name."_model";
+		$class_base = $name."_model_base";
+		//扩展类存在，读扩展类
+		if($this->$class_name && is_object($this->$class_name))
+		{
+			return $this->$class_name;
+		}
+		//扩展类不存在，只有基类，则读基类
+		if($this->$class_base && is_object($this->$class_base))
+		{
+			return $this->$class_base;
+		}
+		$basefile = $this->dir_phpok.'model/'.$name.'.php';
+		if(!is_file($basefile))
+		{
+			$this->error("基础类：".$name." 不存在，请检查");
+		}
+		include($basefile);
+		$extfile = $this->dir_phpok.'model/'.$this->app_id.'/'.$name.'_model.php';
+		if(is_file($extfile))
+		{
+			include($extfile);
+			$this->$class_name = new $class_name();
+			return $this->$class_name;
+		}
+		else
+		{
+			$this->$class_base = new $class_base();
+			return $this->$class_base;
+		}
 	}
 
 	//运行插件
@@ -499,76 +540,6 @@ class _init_phpok
 		$this->plugin($ap);
 	}
 
-	private function load($class,$type="lib",$ext_folder="")
-	{
-		if(!$class)
-		{
-			return false;
-		}
-		$tmp = $class.'_'.$type;
-		if($this->$tmp && is_object($this->$tmp))
-		{
-			return $this->$tmp;
-		}
-		if($type == 'model')
-		{
-			return $this->_load_model($class,$ext_folder);
-		}
-		return $this->_load_lib($class,$ext_folder);
-	}
-
-	//仅限内部使用的加载Model信息
-	private function _load_model($class,$folder='')
-	{
-		$file = $this->dir_phpok.'model/'.$this->app_id.'/';
-		if($folder && $folder != '/')
-		{
-			$file .= $folder;
-			if(substr($folder,-1) != '/') $file .= '/';
-		}
-		$file .= $class.'_model.php';
-		if(!is_file($file))
-		{
-			$file = $this->dir_phpok.'model/';
-			if($folder && $folder != '/')
-			{
-				$file .= $folder;
-				if(substr($folder,-1) != '/') $file .= '/';
-			}
-			$file .= $class.'.php';
-		}
-		if(!is_file($file))
-		{
-			return false;
-		}
-		include($file);
-		$name = $class.'_model';
-		$this->$name = new $name();
-		return $this->$name;
-	}
-
-	private function _load_lib($class,$folder='')
-	{
-		$file = $this->dir_phpok.'libs/';
-		if($folder && $folder != '/')
-		{
-			$file .= $folder;
-			if(substr($folder,-1) != '/')
-			{
-				$file .= '/';
-			}
-		}
-		$file .= $class.'.php';
-		if(!is_file($file))
-		{
-			return false;
-		}
-		include($file);
-		$name = $class.'_lib';
-		$this->$name = new $name();
-		return $this->$name;
-	}
-	
 	//装载资源引挈
 	private function init_engine()
 	{
@@ -637,61 +608,20 @@ class _init_phpok
 	//自定义网址生成器
 	final public function url($ctrl="",$func="",$ext="",$appid='',$baseurl=false)
 	{
-		if(!$appid) $appid = $this->app_id;
+		if(!$appid)
+		{
+			$appid = $this->app_id;
+		}
+		$this->model('url')->app_file($this->config[$appid.'_file']);
 		if($appid  == "admin" || $appid == 'api')
 		{
-			$url = $this->config[$appid.'_file'];
 			if($baseurl)
 			{
-				$url = $this->url.$url;
+				$this->model('url')->base_url($this->url);
 			}
-			if(!$ctrl && !$func && !$ext) return $url;
-			if($ctrl || $func || $ext) $url .= "?";
-			if($ctrl) $url .= $this->config["ctrl_id"]."=".$ctrl."&";
-			if($func) $url .= $this->config["func_id"]."=".$func."&";
-			if($ext) $url .= $ext;
-			if(substr($url,-1) == "&" || substr($url,-1) == "?") $url = substr($url,0,-1);
-			return $url;
+			return $this->model('url')->url($ctrl,$func,$ext);
 		}
-		$url = $this->url;
-		//伪静态页
-		$reserved = $this->config['reserved'] ? explode(',',$this->config['reserved']) : array('js','ajax','inp');
-		if($this->site["url_type"] == "rewrite" && !in_array($ctrl,$reserved))
-		{
-			$url .= $ctrl;
-			if($func) $url .= "/".$func;
-			$url .= ".html";
-			if($ext)
-			{
-				$url .="?".$ext;
-			}
-			return $url;
-		}
-		if(!$ctrl) return $url;
-		$url .= $this->config['www_file'];
-		//判断ctrl在
-		if(in_array($ctrl,$reserved))
-		{
-			$url .= "?".$this->config["ctrl_id"]."=".$ctrl;
-			if($func) $url .= "&".$this->config["func_id"]."=".$func;
-			if($ext && $ext != "&")
-			{
-				if(substr($ext,0,1) == "&") $ext = substr($ext,1);
-				$url .= "&".$ext;
-			}
-			return $url;
-		}
-		$url .= "?id=".$ctrl;
-		if($func && $func != "&")
-		{
-			$url .= substr($func,0,1) == "&" ? $func : '&cate='.$func;
-		}
-		if($ext && $ext != "&")
-		{
-			if(substr($ext,0,1) == "&") $ext = substr($ext,1);
-			$url .= "&".$ext;
-		}
-		return $url;
+		return $this->model('url')->url($ctrl,$func,$ext);
 	}
 
 	final public function root_url()
@@ -1199,7 +1129,7 @@ class _init_auto
 			if($lst[1] == 'model')
 			{
 				$GLOBALS['app']->model($lst[0]);
-				 call_user_func_array(array($GLOBALS['app'],$method),$param);
+				call_user_func_array(array($GLOBALS['app'],$method),$param);
 			}
 			elseif($lst[1] == 'lib')
 			{
@@ -1267,7 +1197,7 @@ class phpok_plugin extends _init_auto
 			$langs = xml_to_array(file_get_contents($this->dir_root.'plugins/'.$id.'/langs/'.$this->site['lang'].'.xml'));
 			if($langs && is_array($langs))
 			{
-				$langs = phpok_ubb($langs);
+				$langs = $this->lib('ubb')->to_html($langs);
 				if($GLOBALS['app']->lang)
 				{
 					$GLOBALS['app']->lang = array_merge($langs,$GLOBALS['app']->lang);
@@ -1361,7 +1291,6 @@ unset($_ENV, $_SERVER['MIBDIRS'],$_SERVER['MYSQL_HOME'],$_SERVER['OPENSSL_CONF']
 
 $app = new _init_phpok();
 include_once($app->dir_phpok."phpok_helper.php");
-$app->init_autoload();
 $app->init_site();
 $app->init_view();
 function init_app()

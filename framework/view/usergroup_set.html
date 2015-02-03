@@ -109,10 +109,16 @@ function to_submit()
 			<td>
 				<ul class="layout">
 					<li><label><input type="checkbox" name="popedom[]" data="read" value="read:{$value.id}"{if $popedom_users && in_array('read:'.$value.id,$popedom_users)} checked{/if} /> 阅读</label></li>
-					<li><label><input type="checkbox" name="popedom[]" value="post:{$value.id}"{if $popedom_users && in_array('post:'.$value.id,$popedom_users)} checked{/if} /> 发布</label></li>
-					<li><label><input type="checkbox" name="popedom[]" value="reply:{$value.id}"{if $popedom_users && in_array('reply:'.$value.id,$popedom_users)} checked{/if} /> 回复</label></li>
-					<li><label><input type="checkbox" name="popedom[]" value="post1:{$value.id}"{if $popedom_users && in_array('post1:'.$value.id,$popedom_users)} checked{/if} /> 免审核(发布)</label></li>
-					<li><label><input type="checkbox" name="popedom[]" value="reply1:{$value.id}"{if $popedom_users && in_array('reply1:'.$value.id,$popedom_users)} checked{/if} /> 免审核(回复)</label></li>
+					<!-- if $value.module -->
+						<!-- if $value.post_status -->
+						<li><label><input type="checkbox" name="popedom[]" value="post:{$value.id}"{if $popedom_users && in_array('post:'.$value.id,$popedom_users)} checked{/if} /> 发布</label></li>
+						<li><label><input type="checkbox" name="popedom[]" value="post1:{$value.id}"{if $popedom_users && in_array('post1:'.$value.id,$popedom_users)} checked{/if} /> 发布免审核</label></li>
+						<!-- /if -->
+						<!-- if $value.comment_status -->
+						<li><label><input type="checkbox" name="popedom[]" value="reply:{$value.id}"{if $popedom_users && in_array('reply:'.$value.id,$popedom_users)} checked{/if} /> 回复</label></li>
+						<li><label><input type="checkbox" name="popedom[]" value="reply1:{$value.id}"{if $popedom_users && in_array('reply1:'.$value.id,$popedom_users)} checked{/if} /> 回复免审核</label></li>
+						<!-- /if -->
+					<!-- /if -->
 				</ul>
 			</td>
 		</tr>

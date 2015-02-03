@@ -8,7 +8,7 @@
 	Update  : 2012-12-06 10:09
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class cate_model extends phpok_model
+class cate_model_base extends phpok_model
 {
 	function __construct()
 	{

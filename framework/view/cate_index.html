@@ -12,16 +12,18 @@
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
 	<th class="id">ID</th>
-	<th class="id">&nbsp;</th>
+	<th width="30">&nbsp;</th>
+	<th width="30">&nbsp;</th>
 	<th class="title">分类名称</th>
 	<th>排序</th>
-	<th class="action">操作</th>
+	<th class="lft">操作</th>
 </tr>
 <!-- run:$tab_i = 0; -->
 <!-- foreach($rslist AS $key=>$value) -->
 <!-- run:$tab_i++ -->
 <tr{if $key%2 == ""} class="list"{/if}>
 	<td class="center gray">{$value.id}</td>
+	<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="phpok_status({$value.id},'{url ctrl=cate func=status/}')"{else} style="cursor: default;"{/if} value="{$value.status}"></span></td>
 	<td class="center"><input type="checkbox" value="{$value.id}" name="id_{$value.id}" id="id_{$value.id}" checked /></td>
 	<td>
 		<table cellpadding="0" cellspacing="0">
@@ -33,22 +35,19 @@
 				<td class="cate_middle">&nbsp;</td>
 			<!-- /if -->
 			<td><label for="id_{$value.id}">{$value.title}<span class="gray i">（{$value.identifier}）</span></label></td>
-			<!-- if !$value[status] -->
-			<td><span class="red i">未审核</span></td>			
-			<!-- /if -->
 		</tr>
 		</table>
 	</td>
 	<td class="center"><input type="text" id="taxis_{$value.id}" class="cate_taxis" value="{$value.taxis}" tabindex="{$tab_i}" /></td>
 	<td>
-		<!-- if $popedom.add && $value.popedom.add -->
-		<a class="icon add" href="{echo admin_url('cate','set')}&parent_id={$value.id}" title="添加子栏目"></a>
+		<!-- if $popedom.add -->
+		<input type="button" value="添加子分类" onclick="$.phpok.go('{url ctrl=cate func=set parent_id=$value.id/}')" class="btn" />
 		<!-- /if -->
-		<!-- if $popedom.modify && $value.popedom.edit -->
-		<a class="icon edit" href="{echo admin_url('cate','set')}&id={$value.id}" title="修改"></a>
+		<!-- if $popedom.modify -->
+		<input type="button" value="修改" onclick="$.phpok.go('{url ctrl=cate func=set id=$value.id/}')" class="btn" />
 		<!-- /if -->
-		<!-- if $popedom.delete && $value.popedom.delete -->
-		<a class="icon delete end" onclick="cate_delete('{$value.id}','{$value.title}')" title="删除"></a>
+		<!-- if $popedom.delete -->
+		<input type="button" value="删除" onclick="cate_delete('{$value.id}','{$value.title}')" class="btn" />
 		<!-- /if -->
 	</td>
 </tr>

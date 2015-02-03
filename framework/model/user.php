@@ -6,7 +6,7 @@
 	Author  : qinggan
 	Update  : 2013年5月4日
 ***********************************************************/
-class user_model extends phpok_model
+class user_model_base extends phpok_model
 {
 	var $psize = 20;
 	function __construct()

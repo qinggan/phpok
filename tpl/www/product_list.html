@@ -40,7 +40,7 @@
 			<ul>
 				<!-- loop from=$rslist key=$key value=$value -->
 				<li{if $rslist_id.num == $rslist_id.total || $rslist_id.num + 1 == $rslist_id.total} class="laster"{/if}>
-					<span class="pro_img"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" width="150" height="200" alt="{$value.title}" /></a></span>
+					<span class="pro_img"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb ? $value.thumb.gd.thumb : 'images/default.jpg'}" width="150" height="200" alt="{$value.title}" /></a></span>
 					<dl class="p_prop">
 						<dt><a href="{$value.url}" title="{$value.title}">{$value.title}</a></dt>
 						<dd>添加时间：{func date Y-m-d $value.dateline}</dd>

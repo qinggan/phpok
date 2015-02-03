@@ -267,54 +267,11 @@ function check_save()
 	</div>
 </div>
 
-<div class="table">
-	<div class="title">
-		分类权限：
-		<span class="note">设置分类权限需要相匹配的项目权限才支持</span>
-	</div>
-	<div class="content">
-		<div class="list" id="cate_popedom_set" style="border:1px solid #ccc;">
-		<table cellpadding="0" cellspacing="0" width="100%" style="padding:1px;">
-		<tr>
-			<th class="lft">&nbsp;自定义分类权限</th>
-			<th align="right" colspan="2">
-				<input type="button" value="全部可读取" onclick="to_use_all()" />
-				<input type="button" value="全选" onclick="$.input.checkbox_all('cate_popedom_set')" />
-				<input type="button" value="全不选" onclick="$.input.checkbox_none('cate_popedom_set')" />
-				<input type="button" value="反选" onclick="$.input.checkbox_anti('cate_popedom_set')" />
-			</th>
-		</tr>
-			<!-- loop from=$catelist key=$k value=$v -->
-			<tr id="category_{$v.id}">
-				<td><div style="text-indent:5px;">{$v._space}{$v.title}</div></td>
-				<td width="180px" align="center">
-					<input type="button" value="全选" onclick="$.input.checkbox_all('category_{$v.id}')" />
-					<input type="button" value="全不选" onclick="$.input.checkbox_none('category_{$v.id}')" />
-					<input type="button" value="反选" onclick="$.input.checkbox_anti('category_{$v.id}')" />
-				</td>
-				<td>
-					<ul class="layout">
-						<li><label><input type="checkbox" data="category_use" name="category[]" value="read:{$v.id}"{if in_array('read:'.$v.id,$category)} checked{/if} /> 读取</label></li>
-						<li><label><input type="checkbox" name="category[]" value="edit:{$v.id}"{if in_array('edit:'.$v.id,$category)} checked{/if} /> 编辑</label></li>
-						<li><label><input type="checkbox" name="category[]" value="status:{$v.id}"{if in_array('status:'.$v.id,$category)} checked{/if} /> 审核</label></li>
-						<li><label><input type="checkbox" name="category[]" value="delete:{$v.id}"{if in_array('delete:'.$v.id,$category)} checked{/if} /> 删除</label></li>
-						<li><label><input type="checkbox" name="category[]" value="add:{$v.id}"{if in_array('add:'.$v.id,$category)} checked{/if} /> 加子类</label></li>
-						<li><label><input type="checkbox" name="category[]" value="ext:{$v.id}"{if in_array('ext:'.$v.id,$category)} checked{/if} /> 扩展维护</label></li>
-					</ul>
-				</td>
-			</tr>
-			<!-- /loop -->
-		</table>
-		</div>
-	</div>
-</div>
-
-
 </div>
 
 <div class="table">
 	<div class="content">
-		<input type="submit" value="提 交" class="submit" />
+		<input type="submit" value="提 交" class="submit2" />
 	</div>
 </div>
 </form>

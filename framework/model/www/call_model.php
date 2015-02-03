@@ -8,11 +8,11 @@
 	时间： 2014年11月05日 13时58分
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class call_model extends phpok_model
+class call_model extends call_model_base
 {
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	//取得单个配置参数

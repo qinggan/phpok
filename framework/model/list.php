@@ -8,7 +8,7 @@
 	Update  : 2013-04-15 02:17
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class list_model extends phpok_model
+class list_model_base extends phpok_model
 {
 	function __construct()
 	{
@@ -247,6 +247,13 @@ class list_model extends phpok_model
 	{
 		$sql = "UPDATE ".$this->db->prefix."list SET hits=hits+1 WHERE id='".$id."'";
 		return $this->db->query($sql);
+	}
+
+	public function get_hits($id)
+	{
+		$sql = "SELECT hits FROM ".$this->db->prefix."list WHERE id='".$id."'";
+		$rs = $this->db->get_one($sql);
+		return $rs['hits'];
 	}
 
 	function update_status($id,$status=0)

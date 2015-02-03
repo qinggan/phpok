@@ -5,6 +5,16 @@
 $(document).ready(function(){
 	top.$.desktop.title('网站信息');
 });
+function rand_click()
+{
+	var $chars = 'ABCDEFGHIJKMNOPQRSTUVWXYZabcdefghijkmnopqrstuwxyz0123456789!@#%-_*';
+	var maxPos = $chars.length;
+	var pwd = '';
+	for (i = 0; i < 16; i++) {
+		pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+	}
+	$("#api_code").val(pwd);
+}
 </script>
 <div class="tips clearfix">
 	您当前的位置：
@@ -72,6 +82,16 @@ $(document).ready(function(){
 			<td><input type="button" value="清空" onclick="$('#logo').val('');" class="btn" /></td>
 		</tr>
 		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		API验证串：
+		<span class="note">用于数据加密通迅时使用，建议定期更改</span>
+	</div>
+	<div class="content">
+		<input type="text" id="api_code" name="api_code" class="default" value="{$rs.api_code}" />
+		<input type="button" value="随机生成" onclick="rand_click()" class="btn" />
 	</div>
 </div>
 <div class="table">

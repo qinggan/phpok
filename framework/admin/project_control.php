@@ -102,6 +102,37 @@ class project_control extends phpok_control
 		}
 		//$ico_input = form_edit('ico',$rs['ico'],'text','form_btn=image&width=500');
 		$this->assign('icolist',$icolist);
+		$grouplist = $this->model('usergroup')->get_all("status=1");
+		if($grouplist)
+		{
+			foreach($grouplist as $key=>$value)
+			{
+				$tmp_popedom = array('read'=>false,'post'=>false,'reply'=>false,'post1'=>false,'reply1'=>false);
+				$tmp = $value['popedom'] ? unserialize($value['popedom']) : false;
+				if($tmp && $tmp[$_SESSION['admin_site_id']])
+				{
+					$tmp = $tmp[$_SESSION['admin_site_id']];
+					$tmp = explode(",",$tmp);
+					foreach($tmp_popedom as $k=>$v)
+					{
+						if($id && in_array($k.':'.$id,$tmp))
+						{
+							$tmp_popedom[$k] = true;
+						}
+						else
+						{
+							if(!$id && $k == 'read')
+							{
+								$tmp_popedom[$k] = true;
+							}
+						}
+					}
+				}
+				$value['popedom'] = $tmp_popedom;
+				$grouplist[$key] = $value;
+			}
+		}
+		$this->assign('grouplist',$grouplist);
 		$this->view("project_set");
 	}
 
@@ -127,11 +158,14 @@ class project_control extends phpok_control
 	//取得模块的扩展字段
 	function mfields_f()
 	{
-		if(!$this->popedom["set"]) json_exit("你没有权限");
-		$id = $this->get("id");
+		if(!$this->popedom['set'])
+		{
+			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+		}
+		$id = $this->get('id','int');
 		if(!$id)
 		{
-			json_exit("未指定模块ID");
+			$this->json(P_Lang('未指定ID'));
 		}
 		$rslist = $this->model('module')->fields_all($id);
 		if(!$rslist) $this->json('',true);
@@ -144,7 +178,7 @@ class project_control extends phpok_control
 				$list[] = array("id"=>$value["id"],"identifier"=>$value["identifier"],"title"=>$value["title"]);
 			}
 		}
-		json_exit($list,true);
+		$this->json($list,true);
 	}
 
 	function save_f()
@@ -215,7 +249,7 @@ class project_control extends phpok_control
 		$array['etpl_comment_admin'] = $this->get('etpl_comment_admin');
 		$array['etpl_comment_user'] = $this->get('etpl_comment_user');
 		$array['is_attr'] = $this->get('is_attr','checkbox');
-		
+		$array['tag'] = $this->get('tag');
 		$ok_url = $this->url("project");
 		$c_rs = $this->model('sysmenu')->get_one_condition("appfile='list' AND parent_id>0");
 		$gid = $c_rs["id"];
@@ -264,6 +298,9 @@ class project_control extends phpok_control
 					}
 				}
 			}
+			//配置前端权限
+			$this->_save_user_group($id);
+			$this->_save_tag($id);
 			error("编辑成功",$ok_url,"ok");
 		}
 		else
@@ -295,7 +332,72 @@ class project_control extends phpok_control
 					}
 				}
 			}
+			$this->_save_user_group($id);
+			$this->_save_tag($id);
 			error("添加成功",$ok_url,"ok");
+		}
+	}
+
+	private function _save_tag($id)
+	{
+		$rs = $this->model('project')->get_one($id,false);
+		if($rs['tag'])
+		{
+			$this->model('tag')->update_tag($rs['tag'],'p'.$id,$_SESSION['admin_site_id']);
+		}
+		else
+		{
+			$this->model('tag')->stat_delete('p'.$id,"title_id");
+		}
+		return true;
+	}
+
+	private function _save_user_group($id)
+	{
+		$grouplist = $this->model('usergroup')->get_all("status=1");
+		if(!$grouplist)
+		{
+			return false;
+		}
+		$tmp_popedom = array('read','post','reply','post1','reply1');
+		foreach($grouplist as $key=>$value)
+		{
+			$tmp = false;
+			$plist = $value['popedom'] ? unserialize($value['popedom']) : false;
+			if($plist && $plist[$_SESSION['admin_site_id']])
+			{
+				$tmp = $plist[$_SESSION['admin_site_id']];
+				$tmp = explode(",",$tmp);
+			}
+			foreach($tmp_popedom as $k=>$v)
+			{
+				$checked = $this->get("p_".$v."_".$value['id'],'checkbox');
+				if($checked)
+				{
+					$tmp[] = $v.":".$id;
+				}
+				else
+				{
+					foreach($tmp as $kk=>$vv)
+					{
+						if($vv == $v.":".$id)
+						{
+							unset($tmp[$kk]);
+						}
+					}
+				}
+			}
+			if($tmp)
+			{
+				$tmp = array_unique($tmp);
+				$tmp = implode(",",$tmp);
+				$plist[$_SESSION['admin_site_id']] = $tmp;
+			}
+			else
+			{
+				$plist[$_SESSION['admin_site_id']] = array();
+			}
+			$this->model('usergroup')->save(array('popedom'=>serialize($plist)),$value['id']);
 		}
 	}
 
@@ -347,36 +449,44 @@ class project_control extends phpok_control
 	//删除项目操作
 	function delete_f()
 	{
-		if(!$this->popedom["set"]) json_exit("你没有权限");
-		$id = $this->get("id","int");
+		if(!$this->popedom['set'])
+		{
+			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+		}
+		$id = $this->get('id','int');
 		if(!$id)
 		{
-			json_exit("未指定ID");
+			$this->json(P_Lang('未指定ID'));
 		}
 		//判断是否有子项目
 		$list = $this->model('project')->get_son($id);
 		if($list)
 		{
-			json_exit("已存在子项目，请先进入删除子项目");
+			$this->json("已存在子项目，请先进入删除子项目");
 		}
 		$rs = $this->model('project')->get_one($id,false);
 		if(!$rs) $this->json('项目信息不存在');
 		$this->model('project')->delete_project($id);
+		//删除关键词记录
+		$this->model('tag')->stat_delete('p'.$id,"title_id");
 		$this->json("删除成功",true);		
 	}
 
 	# 设置页面状态
 	function status_f()
 	{
-		if(!$this->popedom["set"]) error_exit("你没有权限");
-		$id = $this->get("id","int");
+		if(!$this->popedom['set'])
+		{
+			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+		}
+		$id = $this->get('id','int');
 		if(!$id)
 		{
-			json_exit("未指定ID");
+			$this->json(P_Lang('未指定ID'));
 		}
 		$status = $this->get("status","int");
 		$this->model('project')->status($id,$status);
-		json_exit("设置成功",true);
+		$this->json("设置成功",true);
 	}
 
 	function sort_f()
@@ -384,7 +494,7 @@ class project_control extends phpok_control
 		$sort = $this->get('sort');
 		if(!$sort || !is_array($sort))
 		{
-			json_exit("更新排序失败");
+			$this->json("更新排序失败");
 		}
 		foreach($sort AS $key=>$value)
 		{
@@ -392,14 +502,14 @@ class project_control extends phpok_control
 			$value = intval($value);
 			$this->model('project')->update_taxis($key,$value);
 		}
-		json_exit("更新排序成功",true);
+		$this->json("更新排序成功",true);
 	}
 
 	//取得根分类
 	function rootcate_f()
 	{
 		$catelist = $this->model('cate')->root_catelist($_SESSION['admin_site_id']);
-		json_exit($catelist,true);
+		$this->json($catelist,true);
 	}
 }
 ?>

@@ -6,7 +6,7 @@
 	Author  : qinggan
 	Update  : 2011-03-14
 ***********************************************************/
-class usergroup_model extends phpok_model
+class usergroup_model_base extends phpok_model
 {
 	function __construct()
 	{

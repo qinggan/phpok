@@ -1,0 +1,69 @@
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#rewrite_submit").submit(function(){
+		$(this).ajaxSubmit({
+			'url':"{url ctrl=rewrite func=save/}",
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok')
+				{
+					$.dialog.alert('操作成功',function(){
+						$.phpok.reload();
+					},'succeed');
+				}
+				else
+				{
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<form method="post" id="rewrite_submit">
+<!-- if $id -->
+<input type="hidden" name="id" id="id" value="{$rs.id}" />
+<!-- else -->
+<div class="table">
+	<div class="title">
+		请选择要设置的规则：
+		<span class="note"></span>
+	</div>
+	<div class="content">
+		<select name="id" id="id" onchange="update_urltype()">
+			<option value="">请选择要定制的规则</option>
+			<!-- loop from=$optlist key=$key value=$value -->
+			<option value="{$key}">{$value}</option>
+			<!-- /loop -->
+		</select>
+	</div>
+</div>
+<!-- /if -->
+<div class="table">
+	<div class="title">
+		网址规则：
+		<span class="note">手动设置网址规则</span>
+	</div>
+	<div class="content">
+		<input type="text" id="urltype" name="urltype" class="long" value="{$rs.urltype}" />
+		<input type="button" value="清空" onclick="$('#urltype').val('')" class="btn" />
+		<div style="padding:5px 0;">
+			<span class="hand red" onclick="insert_type()">{规则ID}</span>
+			<span class="hand" onclick="insert_input('{project_root}/')">{父项目}</span>
+			<span class="hand" onclick="insert_input('{project}/')">{项目}</span>
+			<span class="hand" onclick="insert_input('{cate_root}/')">{根分类}</span>
+			<span class="hand" onclick="insert_input('{cate}/')">{分类}</span>
+			<span class="hand" onclick="insert_input('{identifier}/')">{主题标识|ID}</span>
+			<span class="hand" onclick="insert_input('.html')">{后缀HTML}</span>
+		</div>
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit2" />
+	</div>
+</div>
+</form>

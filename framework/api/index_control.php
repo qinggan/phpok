@@ -17,11 +17,58 @@ class index_control extends phpok_control
 
 	function index_f()
 	{
-		echo '111';
+		if(!$this->site['api_code'])
+		{
+			$this->json(P_Lang("系统未启用接口功能"));
+		}
+		$this->json(true);
 	}
 
-	function vcode_f()
+	function phpok_f()
 	{
-		//
+		if(!$this->site['api_code'])
+		{
+			$this->json(P_Lang("系统未启用接口功能"));
+		}
+		$token = $this->get("token");
+		if(!$token)
+		{
+			$this->json(P_Lang("接口数据异常"));
+		}
+		$this->lib('token')->keyid($this->site['api_code']);
+		$info = $this->lib('token')->decode($token);
+		if(!$info)
+		{
+			$this->json(P_Lang('信息为空'));
+		}
+		$id = $info['id'];
+		if(!$id)
+		{
+			$this->json(P_Lang('未指定数据调用中心ID'));
+		}
+		$param = $info['param'];
+		if($param)
+		{
+			if(is_string($param))
+			{
+				$pm = array();
+				parse_str($param,$pm);
+				$param = $pm;
+				unset($pm);
+			}
+		}
+		$list = $this->call->phpok($id,$param);
+		if(!$list)
+		{
+			$this->json(P_Lang("没有获取到数据"));
+		}
+		$tpl = $this->get("tpl");
+		if($tpl && $this->tpl->check_exists($tpl))
+		{
+			$this->assign("rslist",$list);
+			$info = $this->fetch($tpl);
+			$this->json($info,true);
+		}
+		$this->json($list,true);
 	}
 }

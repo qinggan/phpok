@@ -8,13 +8,13 @@
 	时间： 2014年5月25日
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class tag_model extends phpok_model
+class tag_model extends tag_model_base
 {
 	private $popedom;
 	private $site_id = 0;
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	public function site_id($site_id=0)
@@ -144,7 +144,7 @@ class tag_model extends phpok_model
 		return true;
 	}
 
-	private function string_to_array($string)
+	public function string_to_array($string)
 	{
 		if(!$string || !trim($string))
 		{

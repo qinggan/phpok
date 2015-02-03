@@ -19,6 +19,13 @@ function phpok($id,$ext="")
 	return $GLOBALS['app']->call->phpok($id,$ext);
 }
 
+function token($data)
+{
+	$keyid = $GLOBALS['app']->site['api_code'];
+	$GLOBALS['app']->lib('token')->keyid($keyid);
+	return $GLOBALS['app']->lib('token')->encode($data);
+}
+
 //同上，此函数跳过后台数据调用中心，直接获取数据信息
 function phpok_load($type,$ext="")
 {

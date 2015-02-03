@@ -117,7 +117,7 @@ class form_lib
 		//如果是编辑器
 		if($rs['form_type'] == 'editor')
 		{
-			return phpok_ubb($val);
+			return $GLOBALS['app']->lib('ubb')->to_html($val);
 		}
 		//如果是单选框
 		if($rs['form_type'] == 'radio')

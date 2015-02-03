@@ -8,11 +8,11 @@
 	Update  : 2013年12月8日
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class order_model extends phpok_model
+class order_model extends order_model_base
 {
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
 	//取得订单列表
