@@ -12,8 +12,7 @@ class textarea_form
 {
 	function __construct()
 	{
-		global $app;
-		$this->app = $app;
+		//
 	}
 
 	function format($rs)

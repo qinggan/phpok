@@ -87,7 +87,7 @@ class url_model extends url_model_base
 
 	public function url_rewrite($ctrl='index',$func='index',$ext='')
 	{
-		$this->rule_id = in_array($ctrl,$this->type_ids) ? $ctrl : (is_numeric($ctrl) ? 'content' : 'project');
+		$this->rule_id = ($this->type_ids && in_array($ctrl,$this->type_ids)) ? $ctrl : (is_numeric($ctrl) ? 'content' : 'project');
 		if($this->rule_list && $this->rule_list[$this->rule_id])
 		{
 			$this->set_rule($this->rule_list[$this->rule_id]['urltype']);

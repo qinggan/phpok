@@ -388,7 +388,6 @@ function appfile_popedom($string,$project_id=0)
 //string，权限ID，用于处理
 function system_popedom($string,$return_type="")
 {
-	global $app;
 	if($_SESSION["admin_rs"]["if_system"])
 	{
 		return true;
@@ -413,7 +412,6 @@ function system_popedom($string,$return_type="")
 		}
 	}
 	$string = str_replace(array(",","|","/",">"),":",$string);
-	$app->model("popedom");
 	$list = explode(":",$string);
 	$type = $list[0];
 	$identify = $list[1];

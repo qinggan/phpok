@@ -30,7 +30,7 @@ class opt_control extends phpok_control
 		{
 			exit("未定义变量");
 		}
-		$rslist = $this->opt_model->opt_all("group_id=".$group_id);
+		$rslist = $this->model('opt')->opt_all("group_id=".$group_id);
 		if(!$rslist)
 		{
 			exit("没有内容选项");

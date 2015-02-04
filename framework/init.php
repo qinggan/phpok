@@ -94,8 +94,6 @@ run_memory();
 
 function debug_time($memory_ctrl=1,$sql_ctrl=1,$file_ctrl=0,$cache_ctrl=0)
 {
-	//global $app;
-	//$app->lib("file");
 	$count = $GLOBALS['app']->lib('file')->read_count;
 	$time = run_time(true);
 	$memory = run_memory(true);
@@ -308,8 +306,11 @@ class _init_phpok
 				$this->model('url')->id_list();
 				$this->model('url')->cate_list();
 				$this->model('url')->project_list();
-				$this->model('url')->rules($this->model('rewrite')->get_all());
-				$this->model('url')->type_ids($this->model('rewrite')->type_ids());
+				if($this->config['user_rewrite'])
+				{
+					$this->model('url')->rules($this->model('rewrite')->get_all());
+					$this->model('url')->type_ids($this->model('rewrite')->type_ids());
+				}
 				$this->model('url')->page_id($this->config['pageid']);
 			}
 			$this->tpl = new phpok_tpl($this->site["tpl_id"]);
@@ -555,8 +556,13 @@ class _init_phpok
 		//$engine_file_list = "";
 		foreach($this->config["engine"] AS $key=>$value)
 		{
+			$basefile = $this->dir_phpok.'engine/'.$key.'.php';
+			if(is_file($basefile))
+			{
+				include($basefile);
+			}
 			$file = $this->dir_phpok."engine/".$key."/".$value["file"].".php";
-			if(file_exists($file))
+			if(is_file($file))
 			{
 				include($file);
 				$var = $key."_".$value["file"];

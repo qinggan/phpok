@@ -8,31 +8,25 @@
 	时间： 2015年01月13日 22时17分
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class db_pdo_mysql
+class db_pdo_mysql extends db
 {
-	public $stat_info;
 	public $prefix = 'qinggan_';
 	public $conn;
 	//是否启用调试
 	public $debug = false;
 	public $config_db = array('host'=>'localhost','user'=>'root','pass'=>'','data'=>'','port'=>3306);
-	private $config_cache = array('type'=>'file','folder'=>'cache/','time'=>3600,'server'=>'localhost','port'=>11211);
 	private $type = PDO::FETCH_ASSOC;
 	private $query; //执行对象
-	private $cache;//缓存对象
-	private $cache_keyid;
-	private $cache_prikey = 'phpok_prikey';//缓存的主字段
-	private $time;
+	private $time_use = 0;
+	private $time_tmp = 0;
+	private $count;
 
 	public function __construct($config=array())
 	{
-		$this->time = time();
+		parent::__construct($config);
 		$this->debug = $config["debug"] ? $config["debug"] : false;
 		$this->prefix = $config['prefix'] ? $config['prefix'] : 'qinggan_';
-		$this->_stat_info();
 		$this->_config_db($config);
-		$this->_config_cache($config);
-		return true;
 	}
 
 	private function _dsn($data)
@@ -53,7 +47,7 @@ class db_pdo_mysql
 	public function connect_db($data='')
 	{
 		//增加计时器
-		$this->timer('sql');
+		$this->_time();
 		if(!$data)
 		{
 			$data = $this->config_db['data'];
@@ -67,20 +61,9 @@ class db_pdo_mysql
 		$this->conn->exec("SET NAMES 'utf8'");
 		$this->conn->exec("SET sql_mode=''");
 		$this->conn->setAttribute(PDO::ATTR_CASE,PDO::CASE_NATURAL);
-		$this->timer('sql');
+		$this->conn->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY,true);
+		$this->_time();
 		return true;
-	}
-
-	//关闭缓存
-	public function cache_close()
-	{
-		$this->config_cache['status'] = false;
-	}
-
-	//开启缓存
-	public function cache_open()
-	{
-		$this->config_cache['status'] = true;
 	}
 
 	//重新选择数据库
@@ -110,33 +93,8 @@ class db_pdo_mysql
 	//关闭数据库连接
 	public function __destruct()
 	{
-		$this->_cache_keysave();
+		parent::__destruct();
 		$this->conn = null;
-	}
-
-	//连接缓存
-	public function connect_cache()
-	{
-		if(!$this->config_cache['status'])
-		{
-			return true;
-		}
-		if($this->config_cache['type'] == 'memcache')
-		{
-			$this->timer('memcache');
-			$this->cache = new Memcache;
-			if(!$this->cache->connect($this->config_cache['server'], $this->config_cache['port']))
-			{
-				return false;
-			}
-			$this->timer('memcache');
-		}
-		else
-		{
-			$this->cache = new stdClass;
-		}
-		$this->cache->phpok_keylist = $this->cache_get($this->cache_prikey);
-		return true;
 	}
 
 	//定义基本的变量信息
@@ -157,151 +115,19 @@ class db_pdo_mysql
 	public function query($sql)
 	{
 		$this->check_connect();
-		$this->timer('sql');
+		$this->_time();
 		$this->query = $this->conn->query($sql);
-		$this->counter('sql');
+		$this->_count();
 		if(!preg_match('/^SELECT/isU',trim($sql)))
 		{
-			$this->_cache_clear($sql);
+			$this->cache_clear($sql);
 		}
-		$this->timer('sql');
+		$this->_time();
 		if(!$this->query)
 		{
 			return false;
 		}
 		return $this->query;
-	}
-
-	//生成cache_id;
-	public function cache_id($sql)
-	{
-		$keyid = 'ok_'.substr(md5($this->config_db['host'].$this->config_db['user'].$this->config_db['pass'].$this->config_db['data'].$this->config_db['port'].$this->config_db['socket'].$this->prefix),0,5).substr(md5($sql),9,24);
-		preg_match_all('/(FROM|JOIN|UPDATE|INTO)\s+([a-zA-Z0-9\_\.]+)(\s|\()+/isU',$sql,$list);
-		$tbl = $list[2] ? $list[2] : array();
-		$this->cache->phpok_keylist[$keyid] = $tbl;
-		return $keyid;
-	}
-
-	//读缓存信息
-	public function cache_get($id)
-	{
-		if(!$this->config_cache['status'])
-		{
-			return false;
-		}
-		if($this->config_cache['type'] == 'memcache')
-		{
-			$this->counter('memcache');
-			$this->timer('memcache');
-			$info = $this->cache->get($id);
-			$this->timer('memcache');
-			if(!$info)
-			{
-				return false;
-			}
-		}
-		else
-		{
-			if(!is_file($this->config_cache['folder'].$id.'.php'))
-			{
-				return false;
-			}
-			//判断最后修改时间，超时直接返回
-			if((filemtime($this->config_cache['folder'].$id.'.php') + $this->config_cache['time']) < $this->time)
-			{
-				return false;
-			}
-			$this->timer('file');
-			$this->counter('file');
-			$info = file_get_contents($this->config_cache['folder'].$id.'.php');
-			$this->timer('file');
-			if(!$info)
-			{
-				return false;
-			}
-			$info = substr($info,15);
-		}
-		return unserialize($info);
-	}
-
-	public function cache_clear()
-	{
-		if(!$this->config_cache['status'])
-		{
-			return false;
-		}
-		if($this->config_cache['type'] == 'memcache')
-		{
-			$this->timer('memcache');
-			$this->counter('memcache');
-			$this->cache->flush();
-			$this->timer('memcache');
-		}
-		else
-		{
-			$this->timer('file');
-			$this->counter('file');
-			$handle = opendir($this->config_cache['folder']);
-			$array = array();
-			while(false !== ($myfile = readdir($handle)))
-			{
-				if($myfile != "." && $myfile != ".." && is_file($this->config_cache['folder'].$myfile))
-				{
-					@unlink($this->config_cache['folder'].$myfile);
-				}
-			}
-			closedir($handle);
-			$this->timer('file');
-		}
-		return true;
-	}
-
-	//存储缓存
-	public function cache_save($id='',$data='')
-	{
-		if(!$this->config_cache['status'] || !$id || !$data)
-		{
-			return false;
-		}
-		$data = serialize($data);
-		if($this->config_cache['type'] == 'memcache')
-		{
-			$this->timer('memcache');
-			$this->counter('memcache');
-			$this->cache->set($id,$data,MEMCACHE_COMPRESSED,$this->config_cache['time']);
-			$this->timer('memcache');
-		}
-		else
-		{
-			$this->timer('file');
-			$this->counter('file');
-			file_put_contents($this->config_cache['folder'].$id.'.php','<?php exit();?>'.$data);
-			$this->timer('file');
-		}
-		return true;
-	}
-
-	//删除缓存
-	public function cache_delete($id)
-	{
-		if(!$this->config_cache['status'] || !$id)
-		{
-			return false;
-		}
-		if($this->config_cache['type'] == 'memcache')
-		{
-			$this->timer('memcache');
-			$this->counter('memcache');
-			$this->cache->delete($id);
-			$this->timer('memcache');
-			return true;
-		}
-		//删除文件
-		$this->timer('file');
-		$this->counter('file');
-		@unlink($this->config_cache['folder'].$id.'.php');
-		$this->timer('file');
-		return true;
 	}
 
 	public function get_all($sql,$primary="")
@@ -336,9 +162,10 @@ class db_pdo_mysql
 		{
 			return false;
 		}
-		$this->timer('sql');
+		$this->_time();
 		$rs = $this->query->fetchAll($this->type);
-		$this->timer('sql');
+		$this->_time();
+		unset($this->query);
 		if($cache_status && $keyid)
 		{
 			$this->cache_save($keyid,$rs);
@@ -378,13 +205,14 @@ class db_pdo_mysql
 		{
 			return false;
 		}
-		$this->timer('sql');
+		$this->_time();
 		$rs = $this->query->fetch($this->type);
+		unset($this->query);
+		$this->_time();
 		if($rs && $cache_status && $keyid)
 		{
 			$this->cache_save($keyid,$rs);
 		}
-		$this->timer('sql');
 		return $rs;
 	}
 
@@ -397,13 +225,13 @@ class db_pdo_mysql
 	//执行写入SQL
 	public function insert($sql)
 	{
-		$this->timer('sql');
-		$this->counter('sql');
+		$this->_time();
+		$this->_count();
 		$this->conn->exec($sql);
-		$this->timer('sql');
+		$this->_time();
 		if(!preg_match('/^SELECT/isU',trim($sql)))
 		{
-			$this->_cache_clear($sql);
+			$this->cache_clear($sql);
 		}
 		return $this->insert_id();
 	}
@@ -596,28 +424,16 @@ class db_pdo_mysql
 	//数据库查询时间
 	public function conn_times()
 	{
-		return $this->stat_info['sql']['time'];
+		return $this->time_use;
 	}
 
 	//数据库查询次数
 	public function conn_count()
 	{
-		return $this->stat_info['sql']['count'];
+		return $this->count;
 	}
 
-	//读取缓存运行时间
-	public function cache_time()
-	{
-		return round(($this->stat_info['file']['time'] + $this->stat_info['memcache']['time']),5);
-	}
-
-	//缓存运行次数
-	public function cache_count()
-	{
-		return round(($this->stat_info['file']['count'] + $this->stat_info['memcache']['count']));
-	}
-
-	# PHPOK中常用的简洁高效的SQL生成查询，仅适合单表查询
+	//PHPOK中常用的简洁高效的SQL生成查询，仅适合单表查询
 	public function phpok_one($tbl,$condition="",$fields="*")
 	{
 		$sql = "SELECT ".$fields." FROM ".$this->db->prefix.$tbl;
@@ -635,84 +451,6 @@ class db_pdo_mysql
 		return true;
 	}
 
-	private function _ascii($str='')
-	{
-		if(!$str) return false;
-		$str = iconv("UTF-8", "UTF-16BE", $str);
-		$output = "";
-		for ($i = 0; $i < strlen($str); $i++,$i++)
-		{
-			$code = ord($str{$i}) * 256 + ord($str{$i + 1});
-			if ($code < 128)
-			{
-				$output .= chr($code);
-			}
-			else if($code != 65279)
-			{
-				$output .= "&#".$code.";";
-			}
-		}
-		return $output;
-	}
-
-
-	//初始化统计
-	private function _stat_info()
-	{
-		//初始化统计
-		$this->stat_info['sql'] = array('time'=>0,'count'=>0);
-		$this->stat_info['file'] = array('time'=>0,'count'=>0);
-		$this->stat_info['memcache'] = array('time'=>0,'count'=>0);
-	}
-	
-	//初始化缓存
-	private function _config_cache($config)
-	{
-		$this->cache_prikey = md5(serialize($config));
-		if(!isset($config['cache']))
-		{
-			$this->config_cache['status'] = false;
-			return true;
-		}
-		$this->config_cache['status'] = isset($config['cache']['status']) ? $config['cache']['status'] : false;
-		if(!$this->config_cache['status'])
-		{
-			return true;
-		}
-		$this->config_cache['type'] = isset($config['cache']['type']) ? $config['cache']['type'] : 'file';
-		$this->config_cache['folder'] = isset($config['cache']['folder']) ? $config['cache']['folder'] : 'cache/';
-		$this->config_cache['server'] = isset($config['cache']['server']) ? $config['cache']['server'] : 'localhost';
-		$this->config_cache['port'] = isset($config['cache']['port']) ? $config['cache']['port'] : 11211;
-		$this->config_cache['time'] = isset($config['cache']['time']) ? $config['cache']['time'] : 36000;
-		//判断类型，如果不符合条件，则使用file类型
-		if(!in_array($this->config_cache['type'],array('file','memcache')))
-		{
-			$this->config_cache['type'] = 'file';
-		}
-		//当环境不支持memcache时，返回file做缓存
-		if($this->config_cache['type'] == 'memcache' && !class_exists('Memcache'))
-		{
-			$this->config_cache['type'] = 'file';
-		}
-		//检测Memcache服务器连接
-		if($this->config_cache['type'] == 'memcache' && !$this->connect_cache())
-		{
-			$this->config_cache['type'] = 'file';
-		}
-		if($this->config_cache['type'] == 'file')
-		{
-			if(!is_dir($this->config_cache['folder']) || !is_writeable($this->config_cache['folder']))
-			{
-				$this->config_cache['status'] = false;
-			}
-			if($this->config_cache['status'])
-			{
-				$this->connect_cache();
-			}
-		}
-		return true;
-	}
-	
 	//初始化数据库
 	private function _config_db($config)
 	{
@@ -727,36 +465,26 @@ class db_pdo_mysql
 			$this->connect_db($this->config_db['data']);
 		}
 	}
-	//内部计时器
-	//id仅支持三种参数，sql，file和memcache
-	private function timer($id='')
+
+	//缓存运行计时器
+	private function _time()
 	{
-		if(!$id)
+		$time = microtime(true);
+		if($this->time_tmp)
 		{
-			return false;
-		}
-		$time = explode(" ",microtime());
-		$time = $time[0] + $time[1];
-		if($this->stat_info[$id] && isset($this->stat_info[$id]['tmp']))
-		{
-			$time = round(($this->stat_info[$id]['time'] + ($time - $this->stat_info[$id]['tmp'])),5);
-			$this->stat_info[$id]['time'] = $time;
-			unset($this->stat_info[$id]['tmp']);
+			$this->time_use = round(($this->time_use + ($time - $this->time_tmp)),5);
+			$this->time_tmp = 0;
 		}
 		else
 		{
-			$this->stat_info[$id]['tmp'] = $time;
+			$this->time_tmp = $time;
 		}
 	}
 
 	//计数器
-	private function counter($id='',$val=1)
+	private function _count($val=1)
 	{
-		if(!$id)
-		{
-			return false;
-		}
-		$this->stat_info[$id]['count'] += $val;
+		$this->count += $val;
 	}
 
 	//输入Debug错误
@@ -772,44 +500,6 @@ class db_pdo_mysql
 		{
 			exit($this->_ascii($info));
 		}
-		return true;
-	}
-
-	//更新缓存
-	private function _cache_clear($sql)
-	{
-		if(!$this->cache->phpok_keylist)
-		{
-			return true;
-		}
-		$cacheid = $this->cache_id($sql);
-		$tbllist = $this->cache->phpok_keylist[$cacheid];
-		if(!$tbllist)
-		{
-			return false;
-		}
-		foreach($this->cache->phpok_keylist as $key=>$value)
-		{
-			if(!$value || !is_array($value))
-			{
-				continue;
-			}
-			$tmp = array_intersect($tbllist,$value);
-			if($tmp && count($tmp)>0)
-			{
-				$this->cache_delete($key);
-			}
-		}
-		return true;
-	}
-
-	private function _cache_keysave()
-	{
-		if(!$this->config_cache['status'])
-		{
-			return false;
-		}
-		$this->cache_save($this->cache_prikey,$this->cache->phpok_keylist);
 		return true;
 	}
 

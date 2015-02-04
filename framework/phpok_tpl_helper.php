@@ -95,9 +95,7 @@ function phpok_plugin()
 function phpok_image_rs($img_id)
 {
 	if(!$img_id) return false;
-	global $app;
-	$app->model("res");
-	return $app->res_model->get_one($img_id);
+	return $GLOBALS['app']->model('res')->get_one($img_id);
 }
 
 //显示评论信息

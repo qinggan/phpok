@@ -21,10 +21,8 @@ $config["psize"] = 30;//每页显示数量
 $config["pageid"] = "pageid";//分页ID
 $config["timezone"] = "Asia/Shanghai";//时区调节，仅限PHP5以上支持
 $config["timetuning"] = "0";//时间调节
-$config["autoload_model"] = "";//自动加载的Model类信息
-$config["autoload_lib"] = "trans,file";//自动加载的Lib信息
-$config['waitingtime'] = 30; //两次评论的等待时间，单位为秒，未设置时使用默认时间
-$config['expiretime'] = 600; //超时时间，为空使用600
+$config['user_rewrite'] = false;
+
 //保留词，在前端，存在这些变量时，直接走ctrl_id模式，而不走id模式
 $config["reserved"]  = "cart,content,download,login,logout,open,order";
 $config['reserved'] .= ",payment,plugin,post,project,register,search";

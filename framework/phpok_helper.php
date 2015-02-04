@@ -675,9 +675,7 @@ function phpok_res_type($type="")
 //PHPOK会员登录
 function phpok_user_login($id,$pass="")
 {
-	global $app;
-	$GLOBALS['app']->model("user");
-	$rs = $GLOBALS['app']->user_model->get_one($id);
+	$rs = $GLOBALS['app']->model('user')->get_one($id);
 	if(!$rs || !$rs["status"]) return $GLOBALS['app']->lang['global'][5001];
 	if($pass && !password_check($pass,$rs["pass"])) return $GLOBALS['app']->lang['global'][5002];
 	$_SESSION["user_id"] = $id;
@@ -691,9 +689,7 @@ function phpok_user_login($id,$pass="")
 //取得扩展表里的信息
 function phpok_ext_info($module,$extc=true)
 {
-	global $app;
-	$GLOBALS['app']->model("ext");
-	$rslist = $GLOBALS['app']->ext_model->ext_all($module,true);
+	$rslist = $GLOBALS['app']->model('ext')->ext_all($module,true);
 	if(!$rslist) return false;
 	$rs = array();
 	foreach($rslist AS $key=>$value)
@@ -707,13 +703,12 @@ function phpok_ext_info($module,$extc=true)
 function phpok_ext_list($mid,$tid=0)
 {
 	if(!$mid || !$tid) return false;
-	global $app;
 	$GLOBALS['app']->model("module");
-	$rslist = $GLOBALS['app']->module_model->fields_all($mid,"identifier");
+	$rslist = $GLOBALS['app']->model('module')->fields_all($mid,"identifier");
 	if(!$rslist) return false;
 	$idlist = array_keys($rslist);
 	$GLOBALS['app']->model("list");
-	$infolist = $GLOBALS['app']->list_model->get_ext_list($mid,$tid);
+	$infolist = $GLOBALS['app']->model('list')->get_ext_list($mid,$tid);
 	if(!$infolist) $infolist = array();
 	foreach($idlist AS $key=>$value)
 	{
@@ -758,16 +753,6 @@ function phpok_opt($id,$ext="")
 	$all = $GLOBALS['app']->model("opt")->opt_all($condition);
 	if(!$all) return false;
 	return $all;
-}
-
-//删除核心缓存文件
-function syscache_delete($id)
-{
-	$app = init_app();
-	$GLOBALS['app']->lib("file");
-	$file = $GLOBALS['app']->dir_root."data/cache/".$id.".php";
-	$GLOBALS['app']->file_lib->rm($file);
-	return true;
 }
 
 function phpok_decode($string,$id="")
@@ -1105,57 +1090,6 @@ function opt_rslist($type='default',$group_id=0,$info='')
 	return false;
 }
 
-
-//生成防灌水的随机码
-function spamcode($str='')
-{
-	$time = $GLOBALS['app']->time;
-	$url = $GLOBALS['app']->url;
-	if(!$url)
-	{
-		$url = $GLOBALS['app']->root_url();
-	}
-	$str = $GLOBALS['app']->root_url();
-	if(!$str)
-	{
-		$str = isset($_GET) ? $_GET : (isset($_POST) ? $_POST : '');
-		if(!$str)
-		{
-			$str = $GLOBALS['app']->time();
-		}
-	}
-	if(is_array($str)) $str = serialize($str);
-	$code = substr(md5($str),9,16);
-	//判断验证码是否存在
-	$spamcode = 'spam_'.$code;
-	if(!$_SESSION['spam'])
-	{
-		$_SESSION['spam'] = array();
-	}
-	if(!$_SESSION['spam'][$spamcode])
-	{
-		$_SESSION['spam'][$spamcode] = $GLOBALS['app']->time;
-	}
-	else
-	{
-		$waitingtime = $GLOBALS['app']->config['waitingtime'] ? $GLOBALS['app']->config['waitingtime'] : 30;
-		$chktime = $_SESSION['spam'][$spamcode] + $waitingtime;
-		if($chktime <= $GLOBALS['app']->time)
-		{
-			$_SESSION['spam'][$spamcode] = $GLOBALS['app']->time;
-		}
-	}
-	//删除一些超时session信息，以减少session数据太大
-	$expiretime = $GLOBALS['app']->config['expiretime'] ? $GLOBALS['app']->config['expiretime'] : 600;
-	foreach($_SESSION['spam'] AS $key=>$value)
-	{
-		if(($value + $expiretime) < $GLOBALS['app']->time)
-		{
-			unset($_SESSION['spam'][$key]);
-		}
-	}
-	return $code;
-}
 
 function add_js($js)
 {

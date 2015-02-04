@@ -20,8 +20,12 @@
 	<td>{$value.title}</td>
 	<td>{$value.urltype}</td>
 	<td>
+		<!-- if $popedom.set -->
 		<input type="button" value="修改" class="btn" onclick="edit_it('{$value.id}','{$value.title}')" />
+		<!-- /if -->
+		<!-- if $popedom.delete -->
 		<input type="button" value="删除" onclick="delete_it('{$value.id}','{$value.title}')" class="btn" />
+		<!-- /if -->
 	</td>
 </tr>
 <!-- /loop -->

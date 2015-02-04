@@ -25,22 +25,6 @@ class rewrite_model_base extends phpok_model
 	{
 		$optlist = array('project'=>'项目网址');
 		$optlist['content'] = "详细页网址";
-		//$optlist['cart'] = '购物车';
-		//$optlist['checkout'] = "订单确认";
-		//$optlist['download'] = "附件下载";
-		//$optlist['login'] = "登录";
-		//$optlist['logout'] = "登出";
-		//$optlist['order'] = "订单信息";
-		//$optlist['payment'] = "付款";
-		//$optlist['plugin'] = "插件";
-		//$optlist['post'] = "发布";
-		//$optlist['register'] = "注册";
-		//$optlist['search'] = "搜索";
-		//$optlist['tag'] = "标签";
-		//$optlist['ueditor'] = "编辑器";
-		//$optlist['upload'] = "上传";
-		//$optlist['usercp'] = "个人中心";
-		//$optlist['user'] = "会员";
 		return $optlist;
 	}
 

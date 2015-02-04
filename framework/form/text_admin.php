@@ -12,8 +12,7 @@ class text_form
 {
 	function __construct()
 	{
-		global $app;
-		$GLOBALS['app'] = $app;
+		//
 	}
 
 	//扩属属性配置

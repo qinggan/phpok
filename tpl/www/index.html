@@ -33,7 +33,7 @@ $(document).ready(function(){
 			</div>
 			<ul class="home_news">
 				<!-- loop from=$list.rslist key=$key value=$value -->
-				<li><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
+				<li><a href="{$value.url}" title="{$value.title}">{$value.title}</a><!-- if $value.dateline + 10 * 24 * 3600 > $sys.time --> <img src="images/new.gif" /><!-- /if --></li>
 				<!-- /loop -->
 			</ul>
 		</div>

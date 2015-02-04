@@ -192,7 +192,7 @@ class page_lib
 				$list[$phpok_i]["title"] = $this->next_str;
 				$list[$phpok_i]["status"] = 0;
 				$list[$phpok_i]["type"] = "next";
-				if($mynum = $total_page)
+				if($this->num >= $total_page)
 				{
 					$list[$phpok_i]['nolink'] = true;
 				}

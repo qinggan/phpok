@@ -34,12 +34,10 @@ class opt_model_base extends phpok_model
 	{
 		if(!$id)
 		{
-			syscache_delete("opt");
 			return $this->db->insert_array(array("title"=>$title),"opt_group");
 		}
 		else
 		{
-			syscache_delete("opt");
 			return $this->db->update_array(array("title"=>$title),"opt_group",array("id"=>$id));
 		}
 	}
@@ -52,7 +50,6 @@ class opt_model_base extends phpok_model
 		$this->db->query($sql);
 		$sql = "DELETE FROM ".$this->db->prefix."opt WHERE group_id='".$id."'";
 		$this->db->query($sql);
-		syscache_delete("opt");
 		return true;
 	}
 
@@ -114,7 +111,6 @@ class opt_model_base extends phpok_model
 	# 存储写入的值
 	function opt_save($data,$id=0)
 	{
-		syscache_delete("opt");
 		if(!$id)
 		{
 			return $this->db->insert_array($data,"opt");
@@ -129,7 +125,6 @@ class opt_model_base extends phpok_model
 	function opt_del($id)
 	{
 		if(!$id) return false;
-		syscache_delete("opt");
 		$sql = "DELETE FROM ".$this->db->prefix."opt WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
