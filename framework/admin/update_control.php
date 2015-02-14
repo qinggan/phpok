@@ -27,7 +27,6 @@ class update_control extends phpok_control
 		}
 		//判断您的空间是否支持FTP
 		$update = array('online'=>true,'zip'=>true);
-		$update['ftp'] = function_exists('ftp_login') ? true : false;
 		$setfile = $this->dir_root.'data/update.php';
 		$uconfig = array();
 		if(is_file($setfile))

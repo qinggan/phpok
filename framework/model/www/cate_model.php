@@ -48,11 +48,11 @@ class cate_model extends cate_model_base
 	}
 
 	//前端读取分类，带格式化
-	public function get_all($siteid=0,$parent_id=0)
+	public function get_all($site_id=0,$status=0,$pid=0)
 	{
 		$cate_all = $this->cate_all($siteid);
 		$tmplist = array();
-		$this->_format($tmplist,$cate_all,$parent_id);
+		$this->_format($tmplist,$cate_all,$pid);
 	}
 
 	//格式化分类数组
@@ -82,7 +82,7 @@ class cate_model extends cate_model_base
 	}
 
 	//前端中涉及到的缓存
-	public function cate_all($siteid=0)
+	public function cate_all($site_id=0,$status=0)
 	{
 		$siteid = intval($siteid);
 		if(!$siteid)

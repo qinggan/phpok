@@ -4,7 +4,9 @@
 <div class="main">
 	<ul class="pictures">
 		<!-- loop from=$rslist key=$key value=$value -->
-		<li><a href="{$value.url}"><img src="{$value.thumb.gd.download}" alt="{$value.title}" border="0" /></a></li>
+		<!-- if $value.thumb -->
+		<li><a href="{$value.url}"><img src="{$value.thumb.gd.mobile}" alt="{$value.title}" border="0" /></a></li>
+		<!-- /if -->
 		<!-- /loop -->
 	</ul>
 	<div class="clear"></div>

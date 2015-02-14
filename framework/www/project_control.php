@@ -224,14 +224,13 @@ class project_control extends phpok_control
 		$dt['psize'] = $psize;
 		$dt['in_text'] = 1;
 		$dt['is_list'] = 1;
-		$total = $this->call->phpok('_total',$dt);
-		$rslist = $this->call->phpok('_arclist',$dt);
+		$info = $this->call->phpok('_arclist',$dt);
 		unset($dt);
 		$this->assign("pageid",$pageid);
 		$this->assign("psize",$psize);
 		$this->assign("pageurl",$pageurl);
-		$this->assign("total",$total);
-		$this->assign("rslist",$rslist);
+		$this->assign("total",$info['total']);
+		$this->assign("rslist",$info['rslist']);
 		if(!$tplfile && $parent_rs)
 		{
 			$tplfile = $parent_rs['tpl_list'] ? $parent_rs['tpl_list'] : $parent_rs['identifier'].'_list';
@@ -239,9 +238,9 @@ class project_control extends phpok_control
 		if(!$tplfile) $tplfile = $rs["identifier"]."_list";
 		if(!$this->tpl->check_exists($tplfile))
 		{
-			if($rs["tpl_content"] && $rslist)
+			if($rs["tpl_content"] && $info['rslist'])
 			{
-				reset($rslist);
+				reset($rslist['rslist']);
 				$rs = current($rslist);
 				$url = $rs['identifier'] ? $this->url($rs['identifier']) : $this->url($rs['id']);
 				header("Location:".$url);

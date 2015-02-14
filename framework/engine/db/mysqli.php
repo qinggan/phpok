@@ -19,7 +19,7 @@ class db_mysqli extends db
 	private $query; //执行对象
 	private $time_use = 0;
 	private $time_tmp = 0;
-	private $count;
+	private $count = 0;
 
 	public function __construct($config=array())
 	{
@@ -91,9 +91,10 @@ class db_mysqli extends db
 	//关闭数据库连接
 	public function __destruct()
 	{
-		//关闭数据库连接
 		parent::__destruct();
 		$this->conn->close();
+		$this->query = null;
+		unset($this->conn);
 	}
 
 	//定义基本的变量信息
@@ -112,12 +113,17 @@ class db_mysqli extends db
 
 	public function query($sql)
 	{
+		if(!$sql || !trim($sql))
+		{
+			return false;
+		}
+		$sql = trim($sql);
 		$this->check_connect();
 		$this->_time();
 		$this->query = $this->conn->query($sql);
 		$this->_count();
-		//清除缓存
-		if(!preg_match('/^SELECT/isU',trim($sql)))
+		$this->_time();
+		if(preg_match($this->preg_sql,$sql))
 		{
 			$this->cache_clear($sql);
 		}
@@ -127,7 +133,7 @@ class db_mysqli extends db
 		}
 		return $this->query;
 	}
-	
+
 	public function get_all($sql,$primary="")
 	{
 		if(!$sql || !trim($sql))
@@ -136,12 +142,16 @@ class db_mysqli extends db
 		}
 		$sql = trim($sql);
 		$cache_status = false;
-		if(preg_match('/^SELECT/isU',$sql))
+		if(!preg_match($this->preg_sql,$sql))
 		{
 			$keyid = $this->cache_id($sql);
 			$rs = $this->cache_get($keyid);
 			if($rs)
 			{
+				if(is_bool($rs))
+				{
+					return false;
+				}
 				if(!$primary)
 				{
 					return $rs;
@@ -167,7 +177,6 @@ class db_mysqli extends db
 			$rs[] = $rows;
 		}
 		$this->query->free_result();
-		unset($this->query);
 		$this->_time();
 		if($cache_status && $keyid)
 		{
@@ -185,7 +194,6 @@ class db_mysqli extends db
 		return $rs;
 	}
 
-	//取得单独数据
 	public function get_one($sql="")
 	{
 		if(!$sql || !trim($sql))
@@ -194,12 +202,16 @@ class db_mysqli extends db
 		}
 		$sql = trim($sql);
 		$cache_status = false;
-		if(preg_match('/^SELECT/isU',$sql))
+		if(!preg_match($this->preg_sql,$sql))
 		{
 			$keyid = $this->cache_id($sql);
 			$rs = $this->cache_get($keyid);
 			if($rs)
 			{
+				if(is_bool($rs))
+				{
+					return false;
+				}
 				return $rs;
 			}
 			$cache_status = true;
@@ -212,7 +224,6 @@ class db_mysqli extends db
 		$this->_time();
 		$rs = $this->query->fetch_array($this->type);
 		$this->query->free_result();
-		unset($this->query);
 		$this->_time();
 		if($cache_status && $keyid)
 		{
@@ -241,20 +252,7 @@ class db_mysqli extends db
 			return false;
 		}
 		$table = $this->prefix.$table;
-		$sql = "SELECT * FROM ".$table;
-		if($condition && is_array($condition) && count($condition)>0)
-		{
-			$sql_fields = array();
-			foreach($condition AS $key=>$value)
-			{
-				$sql_fields[] = "`".$key."`='".$value."' ";
-			}
-			$sql .= " WHERE ".implode(" AND ",$sql_fields);
-		}
-		if($orderby)
-		{
-			$sql .= " ORDER BY ".$orderby;
-		}
+		$sql = $this->_select_array($table,$condition,$orderby);
 		return $this->get_all($sql);
 	}
 
@@ -265,16 +263,7 @@ class db_mysqli extends db
 			return false;
 		}
 		$table = $this->prefix.$table;
-		$sql = "SELECT * FROM ".$table;
-		if($condition && is_array($condition) && count($condition)>0)
-		{
-			$sql_fields = array();
-			foreach($condition AS $key=>$value)
-			{
-				$sql_fields[] = "`".$key."`='".$value."' ";
-			}
-			$sql .= " WHERE ".implode(" AND ",$sql_fields);
-		}
+		$sql = $this->_select_array($table,$condition);
 		return $this->get_one($sql);
 	}
 
@@ -286,22 +275,7 @@ class db_mysqli extends db
 			return false;
 		}
 		$table = $this->prefix.$table;//自动增加表前缀
-		if($insert_type == "insert")
-		{
-			$sql = "INSERT INTO ".$table;
-		}
-		else
-		{
-			$sql = "REPLACE INTO ".$table;
-		}
-		$sql_fields = array();
-		$sql_val = array();
-		foreach($data AS $key=>$value)
-		{
-			$sql_fields[] = "`".$key."`";
-			$sql_val[] = "'".$value."'";
-		}
-		$sql.= "(".(implode(",",$sql_fields)).") VALUES(".(implode(",",$sql_val)).")";
+		$sql = $this->_insert_array($data,$table,$insert_type);
 		return $this->insert($sql);
 	}
 
@@ -313,19 +287,7 @@ class db_mysqli extends db
 			return false;
 		}
 		$table = $this->prefix.$table;//自动增加表前缀
-		$sql = "UPDATE ".$table." SET ";
-		$sql_fields = array();
-		foreach($data AS $key=>$value)
-		{
-			$sql_fields[] = "`".$key."`='".$value."'";
-		}
-		$sql.= implode(",",$sql_fields);
-		$sql_fields = array();
-		foreach($condition AS $key=>$value)
-		{
-			$sql_fields[] = "`".$key."`='".$value."' ";
-		}
-		$sql .= " WHERE ".implode(" AND ",$sql_fields);
+		$sql = $this->_update_array($data,$table,$condition);
 		return $this->query($sql);
 	}
 
@@ -442,7 +404,6 @@ class db_mysqli extends db
 		return $this->get_one($sql);
 	}
 
-
 	public function conn_status()
 	{
 		if(!$this->conn) return false;
@@ -463,6 +424,7 @@ class db_mysqli extends db
 			$this->connect_db($this->config_db['data']);
 		}
 	}
+
 	//缓存运行计时器
 	private function _time()
 	{

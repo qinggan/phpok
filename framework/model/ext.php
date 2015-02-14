@@ -57,21 +57,28 @@ class ext_model_base extends phpok_model
 	# show_content，是否读取内容，默认true
 	function ext_all($module,$show_content=true)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE module='".$module."' ORDER BY taxis ASC";
-		$rslist = $this->db->get_all($sql,'id');
-		if(!$rslist) return false;
+		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE module='".$module."' ORDER BY taxis ASC,id DESC";
 		if($show_content)
 		{
-			$id_list = array_keys($rslist);
-			$id_string = implode(",",$id_list);
-			$sql = "SELECT * FROM ".$this->db->prefix."extc WHERE id IN(".$id_string.") ";
-			$content_list = $this->db->get_all($sql,"id");
+			$sql = "SELECT e.*,c.content content_val FROM ".$this->db->prefix."ext e ";
+			$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(e.id=c.id) ";
+			$sql.= "WHERE e.module='".$module."' ";
+			$sql.= "ORDER BY e.taxis asc,id DESC";
+		}
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist)
+		{
+			return false;
+		}
+		if($show_content)
+		{
 			foreach($rslist AS $key=>$value)
 			{
-				if($content_list[$key])
+				if($value['content_val'])
 				{
-					$value["content"] = $content_list[$key]["content"];
+					$value["content"] = $value['content_val'];
 				}
+				unset($value['content_val']);
 				$rslist[$key] = $value;
 			}
 		}

@@ -234,7 +234,7 @@ class uedit_control extends phpok_control
 		$rs = $this->model('project')->get_one($id);
 		if($rs['cate'])
 		{
-			$catelist = $this->model("cate")->get_all($rs["site_id"],$rs["cate"]);
+			$catelist = $this->model("cate")->get_all($rs["site_id"],1,$rs["cate"]);
 			if($catelist)
 			{
 				$catelist = $this->model("cate")->cate_option_list($catelist);

@@ -31,7 +31,7 @@
 	<div class="nav">
 	<ul>
 		<!-- php:$list = phpok('menu') -->
-		<!-- loop from=$list key=$key value=$value -->
+		<!-- loop from=$list.rslist key=$key value=$value id=list_id -->
 		<li{if $menutitle == $value.title} class="current"{/if}>
 			<a{if $list_id.num == 1} class="first"{/if}{if $list_id.num == $list_id.total} class="last"{/if} href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a>
 			<!-- if $value.sonlist -->

@@ -24,7 +24,7 @@ class chinapay_notice
 	function submit()
 	{
 		$chinapay = new chinapay_lib();
-		$debug = $this->payment['param']['env'] == 1 ? false : true;
+		$debug = $this->payment['param']['env'] == 'start' ? false : true;
 		$chinapay->set_debug($debug);
 		$chinapay->set_pid($this->payment['param']['pid']);
 		$chinapay->set_pri_key($this->payment['param']['prikey']);

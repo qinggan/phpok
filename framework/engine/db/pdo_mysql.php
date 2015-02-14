@@ -19,7 +19,7 @@ class db_pdo_mysql extends db
 	private $query; //执行对象
 	private $time_use = 0;
 	private $time_tmp = 0;
-	private $count;
+	private $count = 0;
 
 	public function __construct($config=array())
 	{
@@ -27,20 +27,6 @@ class db_pdo_mysql extends db
 		$this->debug = $config["debug"] ? $config["debug"] : false;
 		$this->prefix = $config['prefix'] ? $config['prefix'] : 'qinggan_';
 		$this->_config_db($config);
-	}
-
-	private function _dsn($data)
-	{
-		if(!$data)
-		{
-			$data = $this->config_db['data'];
-		}
-		$dsn = 'mysql:host='.$this->config_db['host'].';dbname='.$data.';port='.$this->config_db['port'];
-		if($this->config_db['socket'])
-		{
-			$dsn .= ';unix_socket='.$this->config_db['socket'];
-		}
-		return $dsn;
 	}
 
 	//连接数据库
@@ -52,7 +38,11 @@ class db_pdo_mysql extends db
 		{
 			$data = $this->config_db['data'];
 		}
-		$dsn = $this->_dsn($data);
+		$dsn = 'mysql:host='.$this->config_db['host'].';dbname='.$data.';port='.$this->config_db['port'];
+		if($this->config_db['socket'])
+		{
+			$dsn .= ';unix_socket='.$this->config_db['socket'];
+		}
 		try{
 			$this->conn = new PDO($dsn,$this->config_db['user'],$this->config_db['pass']);
 		} catch(PDOException $e){
@@ -80,21 +70,15 @@ class db_pdo_mysql extends db
 		{
 			$this->connect_db();
 		}
-		else
-		{
-			if(!$this->_ping())
-			{
-				$this->conn = null;
-				$this->connect_db();
-			}
-		}
+		return true;
 	}
 
 	//关闭数据库连接
 	public function __destruct()
 	{
 		parent::__destruct();
-		$this->conn = null;
+		$this->query = null;
+		unset($this->conn);
 	}
 
 	//定义基本的变量信息
@@ -111,18 +95,22 @@ class db_pdo_mysql extends db
 		}
 	}
 
-	//执行SQL
 	public function query($sql)
 	{
+		if(!$sql || !trim($sql))
+		{
+			return false;
+		}
+		$sql = trim($sql);
 		$this->check_connect();
 		$this->_time();
 		$this->query = $this->conn->query($sql);
 		$this->_count();
-		if(!preg_match('/^SELECT/isU',trim($sql)))
+		$this->_time();
+		if(preg_match($this->preg_sql,$sql))
 		{
 			$this->cache_clear($sql);
 		}
-		$this->_time();
 		if(!$this->query)
 		{
 			return false;
@@ -138,12 +126,16 @@ class db_pdo_mysql extends db
 		}
 		$sql = trim($sql);
 		$cache_status = false;
-		if(preg_match('/^SELECT/isU',$sql))
+		if(!preg_match($this->preg_sql,$sql))
 		{
 			$keyid = $this->cache_id($sql);
 			$rs = $this->cache_get($keyid);
 			if($rs)
 			{
+				if(is_bool($rs))
+				{
+					return false;
+				}
 				if(!$primary)
 				{
 					return $rs;
@@ -165,7 +157,6 @@ class db_pdo_mysql extends db
 		$this->_time();
 		$rs = $this->query->fetchAll($this->type);
 		$this->_time();
-		unset($this->query);
 		if($cache_status && $keyid)
 		{
 			$this->cache_save($keyid,$rs);
@@ -190,12 +181,16 @@ class db_pdo_mysql extends db
 		}
 		$sql = trim($sql);
 		$cache_status = false;
-		if(preg_match('/^SELECT/isU',$sql))
+		if(!preg_match($this->preg_sql,$sql))
 		{
 			$keyid = $this->cache_id($sql);
 			$rs = $this->cache_get($keyid);
 			if($rs)
 			{
+				if(is_bool($rs))
+				{
+					return false;
+				}
 				return $rs;
 			}
 			$cache_status = true;
@@ -207,7 +202,6 @@ class db_pdo_mysql extends db
 		}
 		$this->_time();
 		$rs = $this->query->fetch($this->type);
-		unset($this->query);
 		$this->_time();
 		if($rs && $cache_status && $keyid)
 		{
@@ -225,14 +219,7 @@ class db_pdo_mysql extends db
 	//执行写入SQL
 	public function insert($sql)
 	{
-		$this->_time();
-		$this->_count();
-		$this->conn->exec($sql);
-		$this->_time();
-		if(!preg_match('/^SELECT/isU',trim($sql)))
-		{
-			$this->cache_clear($sql);
-		}
+		$this->query($sql);
 		return $this->insert_id();
 	}
 
@@ -243,20 +230,7 @@ class db_pdo_mysql extends db
 			return false;
 		}
 		$table = $this->prefix.$table;
-		$sql = "SELECT * FROM ".$table;
-		if($condition && is_array($condition) && count($condition)>0)
-		{
-			$sql_fields = array();
-			foreach($condition AS $key=>$value)
-			{
-				$sql_fields[] = "`".$key."`='".$value."' ";
-			}
-			$sql .= " WHERE ".implode(" AND ",$sql_fields);
-		}
-		if($orderby)
-		{
-			$sql .= " ORDER BY ".$orderby;
-		}
+		$sql = $this->_select_array($table,$condition,$orderby);
 		return $this->get_all($sql);
 	}
 
@@ -267,16 +241,7 @@ class db_pdo_mysql extends db
 			return false;
 		}
 		$table = $this->prefix.$table;
-		$sql = "SELECT * FROM ".$table;
-		if($condition && is_array($condition) && count($condition)>0)
-		{
-			$sql_fields = array();
-			foreach($condition AS $key=>$value)
-			{
-				$sql_fields[] = "`".$key."`='".$value."' ";
-			}
-			$sql .= " WHERE ".implode(" AND ",$sql_fields);
-		}
+		$sql = $this->_select_array($table,$condition);
 		return $this->get_one($sql);
 	}
 
@@ -288,22 +253,7 @@ class db_pdo_mysql extends db
 			return false;
 		}
 		$table = $this->prefix.$table;//自动增加表前缀
-		if($insert_type == "insert")
-		{
-			$sql = "INSERT INTO ".$table;
-		}
-		else
-		{
-			$sql = "REPLACE INTO ".$table;
-		}
-		$sql_fields = array();
-		$sql_val = array();
-		foreach($data AS $key=>$value)
-		{
-			$sql_fields[] = "`".$key."`";
-			$sql_val[] = "'".$value."'";
-		}
-		$sql.= "(".(implode(",",$sql_fields)).") VALUES(".(implode(",",$sql_val)).")";
+		$sql = $this->_insert_array($data,$table,$insert_type);
 		return $this->insert($sql);
 	}
 
@@ -315,19 +265,7 @@ class db_pdo_mysql extends db
 			return false;
 		}
 		$table = $this->prefix.$table;//自动增加表前缀
-		$sql = "UPDATE ".$table." SET ";
-		$sql_fields = array();
-		foreach($data AS $key=>$value)
-		{
-			$sql_fields[] = "`".$key."`='".$value."'";
-		}
-		$sql.= implode(",",$sql_fields);
-		$sql_fields = array();
-		foreach($condition AS $key=>$value)
-		{
-			$sql_fields[] = "`".$key."`='".$value."' ";
-		}
-		$sql .= " WHERE ".implode(" AND ",$sql_fields);
+		$sql = $this->_update_array($data,$table,$condition);
 		return $this->query($sql);
 	}
 
@@ -502,17 +440,5 @@ class db_pdo_mysql extends db
 		}
 		return true;
 	}
-
-	//PDO MySQL不支持mysql ping功能，暂时用这种方法来实现
-	private function _ping()
-	{
-		$status = $this->conn->getAttribute(PDO::ATTR_SERVER_INFO);
-		if($status == 'MySQL server has gone away')
-		{
-			return false;
-		}
-		return true;
-	}
-
 }
 ?>

@@ -40,13 +40,6 @@ class index_control extends phpok_control
 		$this->assign('license_site',$license_site);
 		$this->assign("license",$code);
 		$this->assign("version",$this->version);
-		//判断是否升级
-		$uconfig = array('status'=>0);
-		if(is_file($this->dir_root.'data/update.php'))
-		{
-			include($this->dir_root.'data/update.php');
-		}
-		$this->assgin('update',$uconfig);
 		//获取站点列表
 		$sitelist = $this->model('site')->get_all_site();
 		$this->assign('sitelist',$sitelist);
@@ -131,9 +124,6 @@ class index_control extends phpok_control
 			$menulist[$key] = $value;
 		}
 		$this->assign('menulist',$menulist);
-		//星期
-		$array = array('星期日','星期一','星期二','星期三','星期四','星期五','星期六');
-		$this->assign('weekend',$array[date('w',$this->time)]);
 		//判断是否有全局
 		$all_info = $this->all_info();
 		if($all_info)

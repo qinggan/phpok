@@ -86,5 +86,58 @@ class upload_form
 		$rs["content_list"] = $res; //附件列表
 		return $rs;
 	}
+
+	//显示附件信息
+	public function show($rs,$info='')
+	{
+		if(!$info)
+		{
+			$info = $rs['content'];
+		}
+		if(!$info)
+		{
+			return false;
+		}
+		//读出附件信息
+		$condition = "id IN(".$info.")";
+		$rslist = $GLOBALS['app']->model('res')->get_list($condition,0,999,true);
+		if(!$rslist)
+		{
+			return false;
+		}
+		$list = false;
+		foreach($rslist as $key=>$value)
+		{
+			if($value['gd'])
+			{
+				$tmp = false;
+				foreach($value['gd'] as $k=>$v)
+				{
+					$tmp[$k] = $v['filename'];
+				}
+				$value['gd'] = $tmp;
+			}
+			unset($value['attr']);
+			$list[$value['id']] = $value;
+		}
+		$rslist = $list;
+		unset($list);
+		$multiple = false;
+		if($rs['ext'])
+		{
+			$ext = is_string($rs['ext']) ? unserialize($rs['ext']) : $rs['ext'];
+			$multiple = $ext['is_multiple'] ? true : false;
+		}
+		if($multiple)
+		{
+			return $rslist;
+		}
+		else
+		{
+			$id = explode(",",$info);
+			$id = $id[0];
+			return $rslist[$id];
+		}
+	}
 }
 ?>

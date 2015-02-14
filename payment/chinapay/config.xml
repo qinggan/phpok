@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<title>中国银联（Chinapay）支付接口引挈</title>
-<code>
-	<prikey>
-		<title>密钥文件地址</title>
-		<note>基于程序根目录下而言，为空使用 payment/chinapay/merprk_商户号.key，检测不到将会报错</note>
-		<type>text</type>
-		<typebtn>file</typebtn>
-	</prikey>
-	<pubkey>
-		<title>公钥文件地址</title>
-		<note>基于程序根目录下而言，为空使用 payment/chinapay/pgpubk.key，检测不到将会报错</note>
-		<type>text</type>
-		<typebtn>file</typebtn>
-	</pubkey>
-	<pid>
-		<title>商户号</title>
-		<note>固定15位数字长度</note>
-		<type>text</type>
-	</pid>
-	<env>
-		<title>应用环境</title>
-		<note>配置程序是否正式使用还只是测试环境</note>
-		<type>radio</type>
-		<option>
-			<1>正式使用</1>
-			<2>测试调试</2>
-		</option>
-		<default>1</default>
-	</env>
-</code>
+<root>
+	<title>中国银联（Chinapay）支付接口引挈</title>
+	<code>
+		<prikey>
+			<title>密钥文件地址</title>
+			<note>基于程序根目录下而言，为空使用 payment/chinapay/merprk_商户号.key，检测不到将会报错</note>
+			<type>text</type>
+			<typebtn>file</typebtn>
+		</prikey>
+		<pubkey>
+			<title>公钥文件地址</title>
+			<note>基于程序根目录下而言，为空使用 payment/chinapay/pgpubk.key，检测不到将会报错</note>
+			<type>text</type>
+			<typebtn>file</typebtn>
+		</pubkey>
+		<pid>
+			<title>商户号</title>
+			<note>固定15位数字长度</note>
+			<type>text</type>
+		</pid>
+		<env>
+			<title>应用环境</title>
+			<note>配置程序是否正式使用还只是测试环境</note>
+			<type>radio</type>
+			<option>
+				<start>正式使用</start>
+				<stop>测试调试</stop>
+			</option>
+			<default>start</default>
+		</env>
+	</code>
+</root>

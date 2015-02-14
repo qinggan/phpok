@@ -11,7 +11,7 @@ define("PHPOK_SET",true);
 //定义根目录
 define("INSTALL_DIR",str_replace("\\","/",dirname(__FILE__))."/");
 define("ROOT",INSTALL_DIR."../");
-
+include(ROOT."framework/engine/db.php");
 include_once(INSTALL_DIR."global.php");
 
 if(is_file(ROOT."data/install.lock"))
@@ -167,8 +167,6 @@ elseif(G("step") == "saveconfig")
 	$content = preg_replace('/\$config\["db"\]\["pass"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["db"]["pass"] = "'.$dbconfig['pass'].'";',$content);
 	$content = preg_replace('/\$config\["db"\]\["data"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["db"]["data"] = "'.$dbconfig['data'].'";',$content);
 	$content = preg_replace('/\$config\["db"\]\["prefix"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["db"]["prefix"] = "'.$dbconfig['prefix'].'";',$content);
-	$tmpcode = str_rand(rand(10,20));
-	$content = preg_replace('/\$config\["spam\_key"\]\s*=\s*[\'|"].*[\'|"];/isU','$config["spam_key"] = "'.$tmpcode.'";',$content);
 	file_put_contents(ROOT."config.php",$content);
 	//存储管理员信息
 	include(ROOT."framework/libs/file.php");
@@ -239,7 +237,8 @@ elseif(G("step") == "ajax_initdata")
 		$data['seo_keywords'] = '企业建站,PHPOK企业站,网站建设';
 		$data['seo_desc'] = '高效的企业网站建设系统，可实现高定制化的企业网站电商系统，实现企业网站到电子商务企业网站。';
 		$data['biz_sn'] = 'prefix[P]-year-month-date-number';
-		$data['upload_guest'] = 1;
+		$data['currency_id'] = 1;
+		$data['upload_guest'] = 0;
 		$data['upload_user'] = 1;
 		$db->insert_array($data,'site');
 	}

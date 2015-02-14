@@ -1,8 +1,7 @@
 <!-- inc:head -->
 <script type="text/javascript" src="{func include_js list.js}"></script>
 <div class="tips">
-	您当前的位置：
-	<a href="{echo admin_url('list')}">内容管理</a>
+	您当前的位置：内容管理
 	<!-- if $pid -->
 		<!-- loop from=$plist key=$key value=$value id=plist_id -->
 		&raquo; <a href="{echo admin_url('list','action')}&id={$value.id}" title="{$value.title}">{$value.title}</a>

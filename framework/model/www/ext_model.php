@@ -11,30 +11,31 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class ext_model extends ext_model_base
 {
 	private $url_type = 'default';
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 	}
 
 	//读取分类下的全部扩展
-	function cate()
+	public function cate()
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE module LIKE 'cate-%' ORDER BY taxis ASC,id DESC";
+		$sql = "SELECT e.*,c.content content_val FROM ".$this->db->prefix."ext e ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(e.id=c.id) ";
+		$sql.= "WHERE e.module='cate-%' ";
+		$sql.= "ORDER BY e.taxis asc,id DESC";
 		$rslist = $this->db->get_all($sql,'id');
 		if(!$rslist)
 		{
 			return false;
 		}
-		//读取分类扩展对应的值
-		$ids = array_keys($rslist);
-		$sql = "SELECT * FROM ".$this->db->prefix."extc WHERE id IN(".implode(",",$ids).")";
-		$clist = $this->db->get_all($sql);
-		if($clist)
+		foreach($rslist AS $key=>$value)
 		{
-			foreach($clist as $key=>$value)
+			if($value['content_val'])
 			{
-				$rslist[$value['id']]['content'] = $value['content'];
+				$value["content"] = $value['content_val'];
 			}
+			unset($value['content_val']);
+			$rslist[$key] = $value;
 		}
 		$rslist = $this->_format($rslist);
 		$tmplist = false;

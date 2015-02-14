@@ -102,5 +102,36 @@ class upload_form
 		$GLOBALS['app']->unassign("_rs");
 		return $content;
 	}
+
+	//附件操作
+	public function show($rs,$info='')
+	{
+		if($info)
+		{
+			$rs['content'] = $info;
+		}
+		if(!$rs || !$rs["content"])
+		{
+			return false;
+		}
+		if($rs['ext'] && is_string($rs['ext']))
+		{
+			$rs['ext'] = unserialize($rs['ext']);
+		}
+		if($rs['ext'] && $rs["ext"]["is_multiple"])
+		{
+			$list = $GLOBALS['app']->lib('ext')->res_list($rs["content"]);
+			if(!$list) return false;
+			$_admin = array("id"=>$rs["content"],"type"=>"pic");
+			$tmp = current($list);
+			$_admin["info"] = $tmp["ico"];
+			return array("info"=>$list,"_admin"=>$_admin);
+		}
+		$list = $GLOBALS['app']->lib('ext')->res_info($rs["content"]);
+		if(!$list) return false;
+		$_admin = array("id"=>$rs["content"],"type"=>"pic","info"=>$list["ico"]);
+		$list["_admin"] = $_admin;
+		return $list;
+	}
 }
 ?>

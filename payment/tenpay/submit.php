@@ -69,6 +69,7 @@ class tenpay_submit
 		$tenpay->param("sign_key_index", "1");    	  //密钥序号
 
 		//业务可选参数
+		$ptype = $this->param['param']['ptype'] == 'create_direct_pay_by_user' ? 1 : 2;
 		$tenpay->param("attach", $this->order['passwd']);      //附件数据，原样返回就可以了
 		$tenpay->param("product_fee", "");        	  //商品手续费用
 		$tenpay->param("transport_fee", "0");      	  //物流费用
@@ -76,7 +77,7 @@ class tenpay_submit
 		$tenpay->param("time_expire", "");             //订单失效时间
 		$tenpay->param("buyer_id", "");                //买方财付通帐号
 		$tenpay->param("goods_tag", "");               //商品标记
-		$tenpay->param("trade_mode",$this->param['param']['ptype']);      //交易模式（1.即时到帐模式，2.中介担保模式，3.后台选择（卖家进入支付中心列表选择））
+		$tenpay->param("trade_mode",$ptype);      //交易模式（1.即时到帐模式，2.中介担保模式，3.后台选择（卖家进入支付中心列表选择））
 		$tenpay->param("transport_desc","");              //物流说明
 		$tenpay->param("trans_type","1");              //交易类型
 		$tenpay->param("agentid","");                  //平台ID

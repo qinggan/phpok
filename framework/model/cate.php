@@ -38,6 +38,25 @@ class cate_model_base extends phpok_model
 		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
+
+	//取得当前分类
+	public function cate_one($id,$site_id=0)
+	{
+		if($site_id)
+		{
+			$rslist = $this->cate_all($site_id,true);
+			if($rslist[$id])
+			{
+				return $rslist[$id];
+			}
+			return false;
+		}
+		else
+		{
+			$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE id='".$id."' AND status=1";
+			return $this->db->get_one($sql);
+		}
+	}
 	
 	//取得全部分类信息
 	function get_all($site_id=0,$status=0,$pid=0)
@@ -283,6 +302,21 @@ class cate_model_base extends phpok_model
 			if($tmp) $rslist[$key] = array_merge($tmp,$value);
 		}
 		return $rslist;
+	}
+
+	public function cate_ids(&$array,$parent_id=0,$rslist='')
+	{
+		if($rslist && is_array($rslist))
+		{
+			foreach($rslist as $key=>$value)
+			{
+				if($value['parent_id'] == $parent_id)
+				{
+					$array[] = $value['id'];
+					$this->cate_ids($array,$value['id'],$rslist);
+				}
+			}
+		}
 	}
 }
 ?>

@@ -378,7 +378,7 @@ class project_control extends phpok_control
 				}
 				else
 				{
-					foreach($tmp as $kk=>$vv)
+					foreach((array)$tmp as $kk=>$vv)
 					{
 						if($vv == $v.":".$id)
 						{

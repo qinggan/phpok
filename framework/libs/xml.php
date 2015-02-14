@@ -13,7 +13,8 @@ class xml_lib
 	private $xmlfunc = 'phpok';
 	function __construct()
 	{
-		$this->xmlfunc = function_exists('simplexml_load_file') ? 'simplexml' : 'phpok';
+		$this->xmlfunc = function_exists('simplexml_load_file') && function_exists('simplexml_load_string') ? 'simplexml' : 'phpok';
+		//$this->xmlfunc = 'phpok';
 	}
 
 	//读取XML操作
@@ -30,7 +31,7 @@ class xml_lib
 	//通过SimpleXML读取XML信息
 	private function read_simplexml($info,$isfile=true)
 	{
-		$xml = $isfile ? simplexml_load_file($info) : new SimpleXMLElement($info);
+		$xml = $isfile ? simplexml_load_file($info) : simplexml_load_string($info);
 		return $this->simplexml_obj_to_array($xml);
 	}
 

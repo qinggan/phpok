@@ -10,15 +10,9 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class tag_model extends tag_model_base
 {
-	private $site_id = 0;
 	public function __construct()
 	{
 		parent::__construct();
-	}
-
-	public function site_id($site_id=0)
-	{
-		$this->site_id = $site_id;
 	}
 
 	public function get_one($id,$field='id',$site_id=0)

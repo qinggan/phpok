@@ -14,16 +14,10 @@ class url_model_base extends phpok_model
 	protected $ctrl_id = "c";
 	protected $func_id = "f";
 	protected $phpfile = 'index.php';
-	protected $site_id = 0;
 	protected $page_id = 'pageid';
 	public function __construct()
 	{
 		parent::model();
-	}
-
-	public function site_id($id=0)
-	{
-		$this->site_id = $id;
 	}
 
 	public function page_id($pageid)

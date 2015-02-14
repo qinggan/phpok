@@ -12,7 +12,7 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 header("Content-type: text/html; charset=utf-8");
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
 header("Last-Modified: Mon, 26 Jul 1997 05:00:00  GMT"); 
-header("Cache-control: no-cache,no-store,must-revalidate,max-age=3"); 
+header("Cache-control: no-cache,no-store,must-revalidate,max-age=1"); 
 header("Pramga: no-cache"); 
 
 //xml纯内容
@@ -94,7 +94,6 @@ run_memory();
 
 function debug_time($memory_ctrl=1,$sql_ctrl=1,$file_ctrl=0,$cache_ctrl=0)
 {
-	$count = $GLOBALS['app']->lib('file')->read_count;
 	$time = run_time(true);
 	$memory = run_memory(true);
 	$sql_db_count = $GLOBALS['app']->db->conn_count();
@@ -303,18 +302,18 @@ class _init_phpok
 			{
 				$this->model('url')->site_id($this->site['id']);
 				$this->model('rewrite')->site_id($this->site['id']);
-				$this->model('url')->id_list();
-				$this->model('url')->cate_list();
-				$this->model('url')->project_list();
 				if($this->config['user_rewrite'])
 				{
+					$this->model('url')->id_list();
+					$this->model('url')->cate_list();
+					$this->model('url')->project_list();
 					$this->model('url')->rules($this->model('rewrite')->get_all());
 					$this->model('url')->type_ids($this->model('rewrite')->type_ids());
 				}
 				$this->model('url')->page_id($this->config['pageid']);
 			}
 			$this->tpl = new phpok_tpl($this->site["tpl_id"]);
-			include_once($this->dir_phpok."phpok_call.php");
+			include($this->dir_phpok."phpok_call.php");
 			$this->call = new phpok_call();
 		}
 		include_once($this->dir_phpok."phpok_tpl_helper.php");
@@ -374,9 +373,8 @@ class _init_phpok
 				$domain_rs = $this->model('site')->domain_one($site_rs['domain_id']);
 				if($domain_rs && $domain_rs['domain'] != $domain)
 				{
-					unset($site_rs);
-					header("Location:http://".$domain_rs['domain'].$site_rs['dir']);
-					exit;
+					$url = 'http://'.$domain_rs['domain'].$site_rs['dir'];
+					$this->_location($url);
 				}
 				$ext_list = $this->model('site')->site_config($site_rs["id"]);
 				if($ext_list)
@@ -925,8 +923,7 @@ class _init_phpok
 		{
 			$root_dir = ($this->site['html_root_dir'] && $this->site['html_root_dir'] != '/') ? $this->site['html_root_dir'] : '';
 			$url = $this->url.$root_dir.'index.html';
-			header("Location:".$url);
-			exit;
+			$this->_location($url);
 		}
 		$this->_action($ctrl,$func);
 	}
@@ -938,7 +935,33 @@ class _init_phpok
 		$func = $this->get($this->config["func_id"],"system");
 		if(!$ctrl) $ctrl = "index";
 		if(!$func) $func = "index";
+		if($_SERVER['HTTP_REFERER'] && $ctrl != 'login')
+		{
+			$info = parse_url($_SERVER['HTTP_REFERER']);
+			$chk = parse_url($this->url);
+			if($info['host'] != $chk['host'])
+			{
+				$ctrl='login';
+				session_destroy();
+			}
+		}
+		if($_SESSION['admin_id'])
+		{
+			$this->lib('form')->appid('admin');
+		}
 		$this->_action($ctrl,$func);
+	}
+
+	private function _location($url)
+	{
+		ob_end_clean();
+		header("Content-type: text/html; charset=utf-8");
+		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
+		header("Last-Modified: Mon, 26 Jul 1997 05:00:00  GMT"); 
+		header("Cache-control: no-cache,no-store,must-revalidate,max-age=0"); 
+		header("Pramga: no-cache");
+		header("Location:".$url);
+		exit;
 	}
 
 	private function _action($ctrl='index',$func='index')
@@ -948,34 +971,20 @@ class _init_phpok
 		{
 			$this->app_id = 'www';
 		}
-		$reserved = array('js');
-		if($this->config[$this->app_id]['reserved'])
-		{
-			$reserved = explode(',',$this->config[$this->app_id][reserved]);
-		}
-		$reserved = array_merge($reserved,array('login','js','ajax','inp'));
-		$reserved = array_unique($reserved);
+		$reserved = array('login','js','ajax','inp');
 		$is_login = $this->config[$this->app_id]['is_login'] ? true : false;
 		$is_admin = $this->config[$this->app_id]['is_admin'] ? true : false;
-		if($is_admin && !$_SESSION['admin_id'])
+		if($is_admin && !$_SESSION['admin_id'] && !in_array($ctrl,$reserved))
 		{
-			if(!in_array($ctrl,$reserved))
-			{
-				$ctrl = 'login';
-				$go_url = $this->url($ctrl);
-				header("Location:".$go_url);
-				exit;
-			}
+			$ctrl = 'login';
+			$go_url = $this->url($ctrl);
+			$this->_location($go_url);
 		}
-		if($is_login && !$_SESSION['user_id'])
+		if($is_login && !$_SESSION['user_id'] && !in_array($ctrl,$reserved))
 		{
-			if(!in_array($ctrl,$reserved))
-			{
-				$ctrl = 'login';
-				$go_url = $this->url($ctrl);
-				header("Location:".$go_url);
-				exit;
-			}
+			$ctrl = 'login';
+			$go_url = $this->url($ctrl);
+			$this->_location($go_url);
 		}
 		$dir_root = $this->dir_phpok.$this->app_id.'/';
 		if($ctrl == 'js' || $ctrl == 'ajax' || $ctrl == "inp")
@@ -1021,7 +1030,7 @@ class _init_phpok
 		$this->assign('sys',$this->config);
 		//节点触发器
 		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-before');
-		if($this->app_id == 'www' && !$this->site['status'])
+		if($this->app_id == 'www' && !$this->site['status'] && !$_SESSION['admin_id'])
 		{
 			$this->error($this->site["content"]);
 		}
@@ -1184,9 +1193,23 @@ class phpok_control extends _init_auto
 class phpok_model extends _init_auto
 {
 	//继承control信息
+	public $site_id = 0;
 	public function model()
 	{
 		parent::__construct();
+		if($this->app_id == 'admin' && $_SESSION['admin_site_id'])
+		{
+			$this->site_id = $_SESSION['admin_site_id'];
+		}
+		if($this->app_id != 'admin' && $this->site['id'])
+		{
+			$this->site_id = $this->site['id'];
+		}
+	}
+
+	public function site_id($site_id=0)
+	{
+		$this->site_id = $site_id;
 	}
 }
 

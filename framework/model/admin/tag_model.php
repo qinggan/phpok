@@ -11,15 +11,9 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class tag_model extends tag_model_base
 {
 	private $popedom;
-	private $site_id = 0;
 	function __construct()
 	{
 		parent::__construct();
-	}
-
-	public function site_id($site_id=0)
-	{
-		$this->site_id = $site_id;
 	}
 
 	public function get_one($id,$field='id',$site_id=0)
@@ -43,7 +37,7 @@ class tag_model extends tag_model_base
 		{
 			$sql .= " AND ".$condition;
 		}
-		$sql.= " ORDER BY id DESC LIMIT ".$offset.",".$psize;
+		$sql.= " ORDER BY is_global DESC,id DESC LIMIT ".$offset.",".$psize;
 		$rslist = $this->db->get_all($sql,'id');
 		if(!$rslist)
 		{

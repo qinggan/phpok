@@ -19,10 +19,10 @@ class plugin_control extends phpok_control
 	{
 		//判断是否有插件ID
 		$id = $this->get('id','system');
-		if(!$id) $this->json(1017);
+		if(!$id) $this->json(P_Lang('未指定插件ID'));
 		//判断插件是否存在
 		$rs = $this->model('plugin')->get_one($id);
-		if(!$rs || !$rs['status']) $this->json(1018);
+		if(!$rs || !$rs['status']) $this->json(P_Lang("插件未启用或不存在"));
 		//判断插件文件是否存在
 		if(!is_file($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php')) $this->json(1019);
 		//装载插件

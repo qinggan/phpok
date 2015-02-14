@@ -1,7 +1,7 @@
 <?php
 /***********************************************************
 	Filename: {phpok}/phpok_call.php
-	Note	: PHPOKµ÷ÓÃÖĞĞÄÀà
+	Note	: PHPOKè°ƒç”¨ä¸­å¿ƒç±»
 	Version : 4.0
 	Web		: www.phpok.com
 	Author  : qinggan <qinggan@188.com>
@@ -15,9 +15,16 @@ class phpok_call extends phpok_control
 	{
 		parent::control();
 		$this->mlist = get_class_methods($this);
+		$this->model('project')->site_id($this->site['id']);
+		$this->lib('form')->appid('www');
 	}
 
-	//Ö´ĞĞÊı¾İµ÷ÓÃ
+	public function __destruct()
+	{
+		unset($this->mlist);
+	}
+
+	//æ‰§è¡Œæ•°æ®è°ƒç”¨
 	public function phpok($id,$rs="")
 	{
 		if(!$id)
@@ -28,10 +35,14 @@ class phpok_call extends phpok_control
 		{
 			parse_str($rs,$rs);
 		}
-		//ÅĞ¶ÏÊÇÄÚÖÃ²ÎÊı»¹ÊÇµ÷ÓÃÊı¾İÖĞĞÄµÄÊı¾İ
+		if(!$rs['site'])
+		{
+			$rs['site'] = $this->site['id'];
+		}
+		//åˆ¤æ–­æ˜¯å†…ç½®å‚æ•°è¿˜æ˜¯è°ƒç”¨æ•°æ®ä¸­å¿ƒçš„æ•°æ®
 		if(substr($id,0,1) != '_')
 		{
-			$call_rs = $GLOBALS['app']->model('call')->one($id,$this->site['id']);
+			$call_rs = $this->model('call')->one($id,$rs['site']);
 			if(!$call_rs)
 			{
 				unset($rs);
@@ -46,7 +57,7 @@ class phpok_call extends phpok_control
 		else
 		{
 			if(!$rs || !is_array($rs)) return false;
-			//Î´Ö¸¶¨Õ¾µãIDÊ±£¬Ö±¶ÁÕ¾µãid
+			//æœªæŒ‡å®šç«™ç‚¹IDæ—¶ï¼Œç›´è¯»ç«™ç‚¹id
 			if(!$rs['site_id'])
 			{
 				$rs['site_id'] = $this->site['id'];
@@ -59,7 +70,7 @@ class phpok_call extends phpok_control
 			$list[] = 'cate_id';
 			$list[] = 'subcate';
 			$id = substr($id,1);
-			//Èç¹ûÊÇarclist£¬ÇÒÎ´¶¨Òåis_listÊôĞÔ£¬ÔòÄ¬ÈÏÆôÓÃ´ËÊôĞÔ
+			//å¦‚æœæ˜¯arclistï¼Œä¸”æœªå®šä¹‰is_listå±æ€§ï¼Œåˆ™é»˜è®¤å¯ç”¨æ­¤å±æ€§
 			if($id == "arclist")
 			{
 				$rs["is_list"] = $rs["is_list"] == 'false' ? 0 : 1;
@@ -79,68 +90,921 @@ class phpok_call extends phpok_control
 		return $this->$func($call_rs);
 	}
 
-	//¶ÁÈ¡ÎÄÕÂÁĞ±í
-	function _arclist($rs)
+	//è¯»å–æ–‡ç« åˆ—è¡¨
+	private function _arclist($rs)
 	{
-		return $GLOBALS['app']->model('data')->arclist($rs);
+		if(!$rs['pid'] && !$rs['phpok'])
+		{
+			return false;
+		}
+		$cache_tbl = $this->_cache_tbl('arclist');
+		$cache_id = $this->db->cache_id(serialize($rs),$cache_tbl);
+		$cache_info = $this->db->cache_get($cache_id);
+		if($cache_info && !is_bool($cache_info))
+		{
+			return $cache_info;
+		}
+		if(!$rs['pid'])
+		{
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site']);
+			if(!$tmp || $tmp['type'] != 'project')
+			{
+				unset($tmp,$rs);
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+			unset($tmp);
+		}
+		if(!$rs['pid'])
+		{
+			unset($rs);
+			return false;
+		}
+		$project = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
+		if(!$project || !$project['status'] || !$project['module'])
+		{
+			return false;
+		}
+		$array = array();
+		$array['project'] = $project;
+		if($project['cate'] || $rs['cateid'])
+		{
+			$cateid = $rs['cateid'] ? $rs['cateid'] : $project['cate'];
+			$cate = $this->_cate(array("pid"=>$rs['pid'],"cateid"=>$cateid,'site'=>$rs['site']));
+			if($cate)
+			{
+				$array['cate'] = $cate;
+			}
+		}
+		$flist = $this->model('module')->fields_all($project['module']);
+		$field = 'l.*';
+		$nlist = false;
+		if($flist)
+		{
+			foreach($flist as $key=>$value)
+			{
+				$field .= ",ext.".$value['identifier'];
+				$nlist[$value['identifier']] = $value;
+			}
+		}
+		$condition = $this->_arc_condition($rs);
+		$orderby = $rs['orderby'] ? $rs['orderby'] : $project['orderby'];
+		if(!$rs['is_list']) $rs['psize'] = 1;
+		$offset = $rs['offset'] ? intval($rs['offset']) : 0;
+		$psize = $rs['is_list'] ? intval($rs['psize']) : 1;
+		$rslist = $this->model('list')->arc_all($project['module'],$field,$condition,$offset,$psize,$orderby);
+		if($rslist)
+		{
+			foreach($rslist AS $key=>$value)
+			{
+				if($nlist && is_array($nlist))
+				{
+					foreach($nlist AS $k=>$v)
+					{
+						$myval = $this->lib('form')->show($v,$value[$k]);
+						if($v['form_type'] == 'url' && $value[$k])
+						{
+							$tmp = unserialize($value[$k]);
+							$link = $this->site['url_type'] == 'rewrite' ? $tmp['rewrite'] : $tmp['default'];
+							if(!$link) $link = $tmp['default'];
+							if(!$value['url'] && $k != 'url' && $link) $value['url'] = $link;
+						}
+						$value[$k] = $myval;
+					}
+				}
+				if(!$value['url'])
+				{
+					$tmpid = $value['identifier'] ? $value['identifier'] : $value['id'];
+					$value['url'] = $this->config['user_rewrite'] ? $this->url($value['id']) : $this->url($tmpid);
+				}
+				$rslist[$key] = $value;
+			}
+			if($rs['in_sub'] && strtolower($rs['in_sub']) != 'false')
+			{
+				$list = false;
+				foreach($rslist AS $key=>$value)
+				{
+					if(!$value['parent_id'])
+					{
+						$value['sonlist'] = '';
+						foreach($rslist AS $k=>$v)
+						{
+							if($v['parent_id'] == $value['id'])
+							{
+								$value['sonlist'][] = $v;
+							}
+						}
+						$list[] = $value;
+					}
+				}
+				$rslist = $list;
+				unset($list);
+			}
+			if(!$rs['is_list'])
+			{
+				$array['rs'] = current($rslist);
+			}
+			else
+			{
+				$array['rslist'] = $rslist;
+			}
+		}
+		$array['total'] = $this->model('list')->arc_count($project['module'],$condition);
+		unset($rslist,$project);
+		if($cache_id)
+		{
+			$this->db->cache_save($cache_id,$array);
+		}
+		return $array;	
+	}
+
+	private function _arc_condition($rs)
+	{
+		$condition  = " l.site_id='".$rs['site']."' AND l.hidden=0 ";
+		if($rs['pid'])
+		{
+			$condition .= " AND l.project_id=".intval($rs['pid'])." ";
+		}
+		if(!$rs['not_status'])
+		{
+			if($_SESSION['user_id'])
+			{
+				$condition .= " AND (l.status=1 OR (l.user_id=".intval($_SESSION['user_id'])." AND l.status=0)) ";
+			}
+			else
+			{
+				$condition .= " AND l.status=1 ";
+			}
+		}
+		if($rs['notin'])
+		{
+			$condition .= " AND l.id NOT IN(".$rs['notin'].") ";
+		}
+		if(!$rs['in_sub'] || $rs['in_sub'] == 'false')
+		{
+			$condition .= " AND l.parent_id=0 ";
+		}
+		if($rs['cate'])
+		{
+			$tmp = $this->_id($rs['cate'],$this->site['id']);
+			if($tmp['type'] == 'cate') $rs['cateid'] = $tmp['id'];
+		}
+		if($rs['cateid'])
+		{
+			$cate_all = $this->model('cate')->cate_all($rs['site']);
+			$array = array($rs['cateid']);
+			$this->model('cate')->cate_ids($array,$rs['cateid'],$cate_all);
+			$condition .= " AND l.cate_id IN(".implode(",",$array).") ";
+			unset($cate_all,$array);
+		}
+		//ç»‘å®šæŸä¸ªä¼šå‘˜
+		if($rs['user_id'])
+		{
+			if(is_array($rs['user_id'])) $rs['user_id'] = implode(",",$rs['user_id']);
+			$condition .= strpos($rs['user_id'],",") === false ? " AND l.user_id='".$rs['user_id']."'" : " AND l.user_id IN(".$rs['user_id'].")";
+		}
+		if($rs['attr'])
+		{
+			$sql.= " AND l.attr LIKE '%".$rs['attr']."%' ";
+		}
+		if($rs['idin'])
+		{
+			$sql .= " AND l.id IN(".$rs['idin'].") ";
+		}
+		if($rs['tag'])
+		{
+			$list = explode(",",$rs['tag']);
+			$tag_condition = false;
+			foreach($list AS $key=>$value)
+			{
+				if($value && trim($value))
+				{
+					$tag_condition [] = " l.tag LIKE '%".trim($value)."%'";
+				}
+			}
+			if($tag_condition)
+			{
+				$condition .= " AND (".implode(" OR ",$tag_condition).")";
+			}
+			unset($tid_sql,$tag_condition,$list);
+		}
+		if($rs['keywords'])
+		{
+			$list = explode(",",$rs['keywords']);
+			$k_condition = false;
+			foreach($list AS $key=>$value)
+			{
+				$k_condition [] = " l.seo_title LIKE '%".$value."%'";
+				$k_condition [] = " l.seo_keywords LIKE '%".$value."%'";
+				$k_condition [] = " l.seo_desc LIKE '%".$value."%'";
+				$k_condition [] = " l.title LIKE '%".$value."%'";
+				$k_condition [] = " l.tag LIKE '%".$value."%'";
+			}
+			$condition .= "AND (".implode(" OR ",$k_condition).") ";
+			unset($k_condition,$list);
+		}
+		if($rs['fields_need'])
+		{
+			$list = explode(",",$rs['fields_need']);
+			foreach($list AS $key=>$value)
+			{
+				$condition .= " AND ".$value." != '' AND ".$value." != '0' AND ".$value." is NOT NULL ";
+			}
+			unset($list);
+		}
+		if($rs['sqlext'])
+		{
+			$condition .= " AND ".$rs['sqlext'];
+		}
+		if($rs['ext'] && is_array($rs['ext']))
+		{
+			foreach($rs['ext'] AS $key=>$value)
+			{
+				$condition .= " AND ext.".$key."='".$value."' ";
+			}
+		}
+		unset($rs);
+		return $condition;
+	}
+
+	//æ ¼å¼åŒ–æ‰©å±•æ•°æ®
+	private function _format_ext_all($rslist)
+	{
+		$res = '';
+		foreach($rslist AS $key=>$value)
+		{
+			if($value['form_type'] == 'url' && $value['content'])
+			{
+				$value['content'] = unserialize($value['content']);
+				$url = $this->site['url_type'] == 'rewrite' ? $value['content']['rewrite'] : $value['content']['default'];
+				if(!$url) $url = $value['content']['default'];
+				$value['content'] = $url;
+				//ç»‘å®šæ‰©å±•è‡ªå®šä¹‰url
+				if(!$rslist['url']) $rslist['url'] = array('form_type'=>'text','content'=>$url);
+			}
+			elseif($value['form_type'] == 'upload' && $value['content'])
+			{
+				$tmp = explode(',',$value['content']);
+				foreach($tmp AS $k=>$v)
+				{
+					$v = intval($v);
+					if($v) $res[] = $v;
+				}
+			}
+			elseif($value['form_type'] == 'editor' && $value['content'])
+			{
+				if($value['ext'])
+				{
+					$value['ext'] = unserialize($value['ext']);
+				}
+				if($value['ext'] && $value['ext']['inc_tag'])
+				{
+					$value['content'] = $this->_tag_format($value['content'],$type.$baseinfo['id']);
+				}
+				$value['content'] = str_replace('[:page:]','',$value['content']);
+				$value['content'] = $this->lib('ubb')->to_html($value['content'],false);
+			}
+			$rslist[$key] = $value;
+		}
+		//æ ¼å¼åŒ–å†…å®¹æ•°æ®ï¼Œå¹¶åˆå¹¶é™„ä»¶æ•°æ®
+		$flist = "";
+		foreach($rslist AS $key=>$value)
+		{
+			$flist[$key] = $value;
+			$rslist[$key] = $value['content'];
+		}
+		if($res && is_array($res)) $res = $this->_res_info2($res);
+		$rslist = $this->_format($rslist,$flist,$res);
+		unset($flist,$res);
+		return $rslist;
 	}
 
 	function _total($rs)
 	{
-		return $GLOBALS['app']->model('data')->total($rs);
+		if(!$rs['pid'] && !$rs['phpok'])
+		{
+			unset($rs);
+			return false;
+		}
+		if(!$rs['pid'])
+		{
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site']);
+			if(!$tmp || $tmp['type'] != 'project')
+			{
+				unset($tmp,$rs);
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+			unset($tmp);
+		}
+		if(!$rs['pid'])
+		{
+			unset($rs);
+			return false;
+		}
+		$project = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
+		if(!$project || !$project['status'] || !$project['module'])
+		{
+			return false;
+		}
+		$condition = $this->_arc_condition($rs);
+		return $this->model('list')->arc_count($project['module'],$condition);
 	}
 
-	//¶ÁÈ¡µ¥ÆªÎÄÕÂ
-	function _arc($rs)
+	//è¯»å–å•ç¯‡æ–‡ç« 
+	private function _arc($param)
 	{
-		return $GLOBALS['app']->model('data')->arc($rs);
+		$tmpid = $param['phpok'] ? $param['phpok'] : ($param['title_id'] ? $param['title_id'] : $param['id']);
+		if(!$tmpid)
+		{
+			return false;
+		}
+		$arc = $this->model('content')->get_one($tmpid);
+		if(!$arc)
+		{
+			return false;
+		}
+		$arc['tag'] = $this->model('tag')->tag_list($arc['id'],$rs['site']);
+		if(!$arc['module_id'])
+		{
+			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
+			$arc['url'] = $this->url($url_id);
+			return $arc;
+		}
+		$flist = $this->model('module')->fields_all($arc['module_id']);
+		if(!$flist)
+		{
+			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
+			$arc['url'] = $this->url($url_id);
+			return $arc;
+		}
+		//æ ¼å¼åŒ–æ‰©å±•å†…å®¹
+		foreach($flist AS $key=>$value)
+		{
+			$arc[$value['identifier']] = $this->lib('form')->show($value,$arc[$value['identifier']]);
+			if($value['form_type'] == 'url' && $arc[$value['identifier']] && $value['identifier'] != 'url')
+			{
+				if(!$arc['url'])
+				{
+					$arc['url'] = $arc[$value['identifier']];
+				}
+			}
+			//é’ˆå¯¹ç¼–è¾‘å™¨å†…å®¹çš„æ ¼å¼åŒ–
+			if($value['form_type'] == 'editor')
+			{
+				if(is_array($arc[$value['identifier']]))
+				{
+					$arc[$value['identifier'].'_pagelist'] = $arc[$value['identifier']]['pagelist'];
+					$arc[$value['identifier']] = $arc[$value['identifier']]['content'];
+				}
+			}
+		}
+		//å¦‚æœæœªç»‘å®šç½‘å€
+		if(!$arc['url'])
+		{
+			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
+			$arc['url'] = $this->url($url_id);
+		}
+		return $arc;
 	}
 
-	//È¡µÃÏîÄ¿ĞÅÏ¢
-	function _project($rs)
+	//å–å¾—é¡¹ç›®ä¿¡æ¯
+	private function _project($rs)
 	{
-		return $GLOBALS['app']->model('data')->project($rs);
+		if(!$rs['pid'] && !$rs['phpok'])
+		{
+			return false;
+		}
+		$cache_tbl = $this->_cache_tbl('project');
+		$cache_id = $this->db->cache_id(serialize($rs),$cache_tbl);
+		$cache_info = $this->db->cache_get($cache_id);
+		if($cache_info && !is_bool($cache_info))
+		{
+			return $cache_info;
+		}
+		if(!$rs['pid'])
+		{
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site']);
+			if(!$tmp || $tmp['type'] != 'project')
+			{
+				unset($tmp,$rs);
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+			unset($tmp);
+		}
+		if(!$rs['pid'])
+		{
+			return false;
+		}
+		$project = $this->model('project')->project_one($rs['site'],$rs['pid']);
+		if(!$project || !$project['status'])
+		{
+			unset($rs);
+			return false;
+		}
+		$project_tmp = $this->model('ext')->ext_all('project-'.$rs['pid'],true);
+		//æ ¼å¼åŒ–æ‰©å±•å†…å®¹
+		if($project_tmp)
+		{
+			foreach($project_tmp as $key=>$value)
+			{
+				$project_ext[$value['identifier']] = $this->lib('form')->show($value);
+				if($value['form_type'] == 'url' && !$project['url'] && $value['content'])
+				{
+					$project['url'] = $project_ext[$value['identifier']];
+				}
+			}
+			$project = array_merge($project_ext,$project);
+			unset($project_ext,$project_tmp);
+		}
+		unset($rs);
+		if($cache_id)
+		{
+			$this->db->cache_save($cache_id,$project);
+		}
+		return $project;
 	}
 
-	//¶ÁÈ¡·ÖÀàÊ÷
-	function _catelist($rs)
+	//è¯»å–åˆ†ç±»æ ‘
+	private function _catelist($rs)
 	{
-		return $GLOBALS['app']->model('data')->catelist($rs);
+		if(!$rs['pid'] && !$rs['phpok'])
+		{
+			return false;
+		}
+		$cache_tbl = $this->_cache_tbl('catelist');
+		$cache_id = $this->db->cache_id(serialize($rs),$cache_tbl);
+		$cache_info = $this->db->cache_get($cache_id);
+		if($cache_info && !is_bool($cache_info))
+		{
+			return $cache_info;
+		}
+		if(!$rs['pid'])
+		{
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site']);
+			if(!$tmp || $tmp['type'] != 'project')
+			{
+				unset($tmp,$rs);
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+			unset($tmp);
+		}
+		if(!$rs['pid'])
+		{
+			return false;
+		}
+		$project_rs = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
+		if(!$project_rs || !$project_rs['status'] || !$project_rs['cate'])
+		{
+			return false;
+		}
+		if($rs['cate'])
+		{
+			$tmp = $this->model('id')->id($rs['cate'],$rs['site']);
+			if($tmp && $tmp['type'] == 'cate')
+			{
+				$rs['cateid'] = $tmp['id'];
+			}
+		}
+		if(!$rs['cateid'])
+		{
+			$rs['cateid'] = $project_rs['cate'];
+		}
+		$list = array();
+		$cate_all = $this->model('cate')->cate_all($rs['site']);
+		if(!$cate_all)
+		{
+			return false;
+		}
+		foreach($cate_all as $k=>$v)
+		{
+			$cate_tmp = $this->model('ext')->ext_all('cate-'.$v['id'],true);
+			if($cate_tmp)
+			{
+				foreach($cate_tmp as $key=>$value)
+				{
+					$cate_ext[$value['identifier']] = $this->lib('form')->show($value);
+					if($value['form_type'] == 'url' && $value['content'])
+					{
+						$value['content'] = unserialize($value['content']);
+						$v['url'] = $value['content']['default'];
+						if($this->site['url_type'] == 'rewrite' && $value['content']['rewrite'])
+						{
+							$v['url'] = $value['content']['rewrite'];
+						}
+					}
+				}
+				$v = array_merge($cate_ext,$v);
+				unset($cate_ext,$cate_tmp);
+			}
+			$cate_all[$k] = $v;
+		}
+		$this->model('data')->cate_sublist($list,$project_rs['cate'],$cate_all,$project_rs['identifier']);
+		if(!$list || !is_array($list) || count($list)<1)
+		{
+			return false;
+		}
+		//æ ¼å¼åŒ–åˆ†ç±»
+		$array = array('all'=>$list,'project'=>$project_rs);
+		$array['cate'] = $this->cate(array('pid'=>$project_rs['id'],'cateid'=>$rs['cateid'],"site"=>$rs['site']));
+		//è¯»å­åˆ†ç±»
+		foreach($list AS $key=>$value)
+		{
+			if($value['parent_id'] == $rs['cateid'])
+			{
+				$array['sublist'][$value['id']] = $value;
+			}
+		}
+		//å–å¾—åˆ†ç±»æ ‘
+		$tree = array();
+		foreach($list as $key=>$value)
+		{
+			if($value['parent_id'] == $rs['cateid'])
+			{
+				$tree[$value['id']] = $value;
+				$this->model('data')->_tree($tree[$value['id']]['sublist'],$list,$value['id']);
+			}
+		}
+		$array['tree'] = $tree;
+		if($cache_id)
+		{
+			$this->db->cache_save($cache_id,$array);
+		}
+		return $array;
 	}
 
-	//¶ÁÈ¡µ±Ç°·ÖÀàĞÅÏ¢
-	function _cate($rs)
+	//è¯»å–å½“å‰åˆ†ç±»ä¿¡æ¯
+	private function _cate($rs)
 	{
-		return $GLOBALS['app']->model('data')->cate($rs);
+		if(!$rs['cateid'] && !$rs['phpok'] && !$rs['cate'])
+		{
+			return false;
+		}
+		$cache_tbl = $this->_cache_tbl('cate');
+		$cache_id = $this->db->cache_id(serialize($rs),$cache_tbl);
+		$cache_info = $this->db->cache_get($cache_id);
+		if($cache_info && !is_bool($cache_info))
+		{
+			return $cache_info;
+		}
+		if(!$rs['cateid'])
+		{
+			$identifier = $rs['cate'] ? $rs['cate'] : $rs['phpok'];
+			$tmp = $this->model('id')->id($identifier,$rs['site']);
+			if(!$tmp || $tmp['type'] != 'cate')
+			{
+				unset($tmp,$rs);
+				return false;
+			}
+			$rs['cateid'] = $tmp['id'];
+			unset($tmp,$identifier);
+		}
+		$cate = $this->model('cate')->cate_one($rs['cateid'],$rs['site']);
+		if(!$cate)
+		{
+			unset($rs);
+			return false;
+		}
+		//å¢åŠ æ‰©å±•åˆ†ç±»
+		$cate_tmp = $this->model('ext')->ext_all('cate-'.$rs['cateid'],true);
+		//æ ¼å¼åŒ–æ‰©å±•å†…å®¹
+		if($cate_tmp)
+		{
+			foreach($cate_tmp as $key=>$value)
+			{
+				$cate_ext[$value['identifier']] = $this->lib('form')->show($value);
+				if($value['form_type'] == 'url' && $value['content'])
+				{
+					$value['content'] = unserialize($value['content']);
+					$cate['url'] = $value['content']['default'];
+					if($this->site['url_type'] == 'rewrite' && $value['content']['rewrite'])
+					{
+						$cate['url'] = $value['content']['default'];
+					}
+				}
+			}
+			$cate = array_merge($cate_ext,$cate);
+			unset($cate_ext,$cate_tmp);
+		}
+		if($cate['url'])
+		{
+			return $cate;
+		}
+		if(!$rs['pid'] && $rs['phpok'])
+		{
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site']);
+			if(!$tmp || $tmp['type'] != 'project')
+			{
+				unset($tmp,$rs);
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+			unset($tmp);
+		}
+		$project = false;
+		if(!$rs['pid'])
+		{
+			return $cate;
+		}
+		$project = $this->model('project')->project_one($rs['site'],$rs['pid']);
+		$cate['url'] = $this->url($project['identifier'],$cate['identifier']);
+		if($cache_id)
+		{
+			$this->db->cache_save($cache_id,$cate);
+		}
+		return $cate;
 	}
 
-	function _cate_id($rs)
+	private function _cate_id($rs)
 	{
-		return $GLOBALS['app']->model('data')->cate_id($rs);
+		return $this->_cate($rs);
 	}
 
-	//È¡µÃÏîÄ¿À©Õ¹×Ö¶Î
-	function _fields($rs)
+	//å–å¾—é¡¹ç›®æ‰©å±•å­—æ®µ
+	private function _fields($rs)
 	{
-		return $GLOBALS['app']->model('data')->fields($rs);
+		if(!$rs['pid'] && !$rs['phpok'])
+		{
+			return false;
+		}
+		if(!$rs['pid'])
+		{
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site']);
+			if(!$tmp || $tmp['type'] != 'project')
+			{
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+		}
+		if(!$rs['pid'])
+		{
+			return false;
+		}
+		$project_rs = $this->model('project')->project_one($rs['site'],$rs['pid']);
+		if(!$project_rs || !$project_rs['module'] || !$project_rs['status'])
+		{
+			return false;
+		}
+		$array = false;
+		if($rs['in_title'])
+		{
+			$tmp_id = $rs['prefix'].'title';
+			$tmp_title = $project_rs['alias_title'] ? $project_rs['alias_title'] : 'ä¸»é¢˜';
+			$array['title'] = array('id'=>0,"module_id"=>$project_rs['module'],'title'=>$tmp_title,'identifier'=>$tmp_id,'field_type'=>'varchar','form_type'=>'text','format'=>'safe','taxis'=>1,'width'=>'300','content'=>$rs['info']['title']);
+		}
+		$flist = $this->model('module')->fields_all($project_rs['module']);
+		if($flist)
+		{
+			foreach($flist AS $key=>$value)
+			{
+				if($value['ext'])
+				{
+					$value['ext'] = unserialize($value['ext']);
+				}
+				if(!$value['is_front'])
+				{
+					continue;
+				}
+				if($rs['prefix'])
+				{
+					$value["identifier"] = $rs['prefix'].$value['identifier'];
+				}
+				if($rs['info'][$value['identifier']])
+				{
+					$value['content'] = $rs['info'][$value['identifier']];
+				}
+				$array[$key] = $value;
+			}
+		}
+		if(!$array)
+		{
+			return false;
+		}
+		//åˆ¤æ–­æ˜¯å¦æ ¼å¼åŒ–
+		if($rs['fields_format'])
+		{
+			foreach($array AS $key=>$value)
+			{
+				if($value['ext'])
+				{
+					$ext = is_string($value['ext']) ? unserialize($value['ext']) : $value['ext'];
+					unset($value['ext']);
+					$value = array_merge($ext,$value);
+				}
+				$array[$key] = $this->lib('form')->format($value);
+			}
+		}
+		return $array;
 	}
 
-	//È¡µÃÉÏÒ»¼¶ÏîÄ¿
+	//å–å¾—ä¸Šä¸€çº§é¡¹ç›®
 	function _parent($rs)
 	{
-		return $GLOBALS['app']->model('data')->_project_parent($rs);
+		if(!$rs['pid'] && !$rs['phpok'])
+		{
+			return false;
+		}
+		if(!$rs['pid'])
+		{
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site']);
+			if(!$tmp || $tmp['type'] != 'project')
+			{
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+		}
+		if(!$rs['pid'])
+		{
+			return false;
+		}
+		$project = $this->_project($rs);
+		if(!$project || !$project['status'] || !$project['parent_id'])
+		{
+			return false;
+		}
+		$rs['pid'] = $project['parent_id'];
+		$project = $this->_project($rs);
+		if(!$project || !$project['status'] || !$project['parent_id'])
+		{
+			return false;
+		}
+		return $project;
 	}
 
-	//¶ÁÈ¡µ±Ç°ÏîÄ¿ÏÂµÄ×ÓÏîÄ¿£¬Ö§³Ö¶à¼¶
+	//è¯»å–å½“å‰é¡¹ç›®ä¸‹çš„å­é¡¹ç›®ï¼Œæ”¯æŒå¤šçº§
 	function _sublist($rs)
 	{
-		return $GLOBALS['app']->model('data')->sublist($rs);
+		if(!$rs['pid'] && !$rs['phpok'])
+		{
+			return false;
+		}
+		$cache_tbl = $this->_cache_tbl('sublist');
+		$cache_id = $this->db->cache_id(serialize($rs),$cache_tbl);
+		$cache_info = $this->db->cache_get($cache_id);
+		if($cache_info && !is_bool($cache_info))
+		{
+			return $cache_info;
+		}
+		if(!$rs['pid'])
+		{
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site']);
+			if(!$tmp || $tmp['type'] != 'project')
+			{
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+		}
+		if(!$rs['pid'])
+		{
+			return false;
+		}
+		$rslist = $this->model('project')->get_all($rs['site'],$rs['pid'],'p.status=1','id');
+		if(!$rslist)
+		{
+			return false;
+		}
+		$list = false;
+		foreach($rslist AS $key=>$value)
+		{
+			$ext_rs = $this->model('ext')->ext_all('project-'.$value['id'],true);
+			if($ext_rs)
+			{
+				$project_ext = false;
+				foreach($ext_rs as $k=>$v)
+				{
+					$project_ext[$v['identifier']] = $this->lib('form')->show($v);
+					if($v['form_type'] == 'url' && $v['content'])
+					{
+						$v['content'] = unserialize($v['content']);
+						$value['url'] = $v['content']['default'];
+						if($this->site['url_type'] == 'rewrite' && $v['content']['rewrite'])
+						{
+							$value['url'] = $v['content']['rewrite'];
+						}
+					}
+				}
+				if($project_ext)
+				{
+					$value = array_merge($project_ext,$value);
+				}
+			}
+			$list[$value['id']] = $value;
+		}
+		unset($rslist);
+		foreach($list AS $key=>$value)
+		{
+			if(!$value['url']) $value['url'] = $this->url($value['identifier']);
+			$list[$key] = $value;
+ 		}
+ 		if($cache_id)
+		{
+			$this->db->cache_save($cache_id,$list);
+		}
+ 		return $list;
 	}
 
-	//¶ÁÈ¡µ±Ç°·ÖÀàÏÂµÄ×Ó·ÖÀà
+	//è¯»å–å½“å‰åˆ†ç±»ä¸‹çš„å­åˆ†ç±»
 	function _subcate($rs)
 	{
-		return $GLOBALS['app']->model('data')->subcate($rs);
+		if(!$rs['cateid'] && !$rs['phpok'] && !$rs['cate'])
+		{
+			return false;
+		}
+		$cache_tbl = $this->_cache_tbl('catelist');
+		$cache_id = $this->db->cache_id(serialize($rs),$cache_tbl);
+		$cache_info = $this->db->cache_get($cache_id);
+		if($cache_info && !is_bool($cache_info))
+		{
+			return $cache_info;
+		}
+		if(!$rs['cateid'])
+		{
+			$identifier = $rs['cate'] ? $rs['cate'] : $rs['phpok'];
+			$tmp = $this->model('id')->id($identifier,$rs['site']);
+			if(!$tmp || $tmp['type'] != 'cate')
+			{
+				return false;
+			}
+			$rs['cateid'] = $tmp['id'];
+			unset($tmp,$identifier);
+		}
+		$cate_all = $this->model('cate')->cate_all($rs['site']);
+		if(!$cate_all)
+		{
+			return false;
+		}
+		$list = false;
+		foreach($cate_all as $k=>$v)
+		{
+			if($v['parent_id'] != $rs['cateid'])
+			{
+				continue;
+			}
+			$cate_tmp = $this->model('ext')->ext_all('cate-'.$v['id'],true);
+			if($cate_tmp)
+			{
+				foreach($cate_tmp as $key=>$value)
+				{
+					$cate_ext[$value['identifier']] = $this->lib('form')->show($value);
+					if($value['form_type'] == 'url' && $value['content'])
+					{
+						$value['content'] = unserialize($value['content']);
+						$v['url'] = $value['content']['default'];
+						if($this->site['url_type'] == 'rewrite' && $value['content']['rewrite'])
+						{
+							$v['url'] = $value['content']['rewrite'];
+						}
+					}
+				}
+				$v = array_merge($cate_ext,$v);
+				unset($cate_ext,$cate_tmp);
+			}
+			$list[$k] = $v;
+		}
+		if($cache_id)
+		{
+			$this->db->cache_save($cache_id,$array);
+		}
+		return $list;
+	}
+
+	private function _cache_tbl($type)
+	{
+		$cache_tbl = array();
+		if(in_array($type,array('arc','arclist','total')))
+		{
+			$cache_tbl[] = $this->db->prefix."list";
+			$cache_tbl[] = $this->db->prefix."module";
+			$cache_tbl[] = $this->db->prefix."module_fields";
+		}
+		if($type == 'project')
+		{
+			$cache_tbl[] = $this->db->prefix."project";
+			$cache_tbl[] = $this->db->prefix."ext";
+			$cache_tbl[] = $this->db->prefix."extc";
+			return $cache_tbl;
+		}
+		if(in_array($type,array('arc','arclist','cate','catelist','sublist','total')))
+		{
+			$cache_tbl[] = $this->db->prefix."cate";
+			$cache_tbl[] = $this->db->prefix."project";
+			$cache_tbl[] = $this->db->prefix."ext";
+			$cache_tbl[] = $this->db->prefix."extc";
+			$cache_tbl[] = $this->db->prefix."tag";
+			$cache_tbl[] = $this->db->prefix."tag_stat";
+		}
+		if(in_array($type,array('user','user_group')))
+		{
+			$cache_tbl[] = $this->db->prefix."user";
+			$cache_tbl[] = $this->db->prefix."user_ext";
+			$cache_tbl[] = $this->db->prefix."user_fields";
+			$cache_tbl[] = $this->db->prefix."user_group";
+		}
+		$cache_tbl[] = $this->db->prefix."res";
+		$cache_tbl[] = $this->db->prefix."res_cate";
+		return $cache_tbl;
 	}
 }
 ?>

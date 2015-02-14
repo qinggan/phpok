@@ -220,29 +220,6 @@ class list_model_base extends phpok_model
 		return true;
 	}
 
-	function delete($id,$mid=0)
-	{
-		if(!$mid)
-		{
-			$sql = "SELECT module_id FROM ".$this->db->prefix."list WHERE id='".$id."'";
-			$rs = $this->db->get_one($sql);
-			$mid = $rs['module_id'];
-		}
-		//删除扩展主题信息
-		$sql = "DELETE FROM ".$this->db->prefix."list_".$mid." WHERE id='".$id."'";
-		$this->db->query($sql);
-		//
-		$sql = "DELETE FROM ".$this->db->prefix."list WHERE id='".$id."'";
-		$this->db->query($sql);
-		//删除相关的回复信息
-		$sql = "DELETE FROM ".$this->db->prefix."reply WHERE tid='".$id."'";
-		$this->db->query($sql);
-		//删除Tag相关
-		$sql = "DELETE FROM ".$this->db->prefix."tag_stat WHERE title_id='".$id."'";
-		$this->db->query($sql);
-		return true;
-	}
-
 	function add_hits($id)
 	{
 		$sql = "UPDATE ".$this->db->prefix."list SET hits=hits+1 WHERE id='".$id."'";
@@ -256,17 +233,6 @@ class list_model_base extends phpok_model
 		return $rs['hits'];
 	}
 
-	function update_status($id,$status=0)
-	{
-		$sql = "UPDATE ".$this->db->prefix."list SET status='".$status."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	function update_sort($id,$sort=0)
-	{
-		$sql = "UPDATE ".$this->db->prefix."list SET sort='".$sort."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
 
 	//检测主表中的唯一性
 	function main_only_check($field,$val,$site_id=0,$project_id=0,$mid=0)
@@ -325,7 +291,7 @@ class list_model_base extends phpok_model
 			$sql .= " AND l.site_id='".$site_id."' ";
 		}
 		$sql .= " AND l.id>".$id." ";
-		$sql .= " ORDER BY l.sort ASC,l.dateline ASC,l.id ASC LIMIT 1";
+		$sql .= " ORDER BY l.sort DESC,l.dateline ASC,l.id ASC LIMIT 1";
 		return $this->db->get_one($sql);
 	}
 
@@ -481,6 +447,38 @@ class list_model_base extends phpok_model
 		$ext_rs = $this->get_ext($rs["module_id"],$rs["id"]);
 		if($ext_rs) $rs = array_merge($ext_rs,$rs);
 		return $rs;
+	}
+
+	public function arc_all($mid,$field='*',$condition='',$offset=0,$psize=0,$orderby='')
+	{
+		$sql  = " SELECT ".$field." FROM ".$this->db->prefix."list l ";
+		$sql .= " JOIN ".$this->db->prefix."list_".$mid." ext ";
+		$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
+		if($condition)
+		{
+			$sql .= " WHERE ".$condition." ";
+		}
+		if($orderby)
+		{
+			$sql .= " ORDER BY ".$orderby." ";
+		}
+		if($psize)
+		{
+			$sql .= " LIMIT ".intval($offset).",".$psize;
+		}
+		return $this->db->get_all($sql);
+	}
+
+	public function arc_count($mid,$condition='')
+	{
+		$sql = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
+		$sql .= " JOIN ".$this->db->prefix."list_".$mid." ext ";
+		$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
+		if($condition)
+		{
+			$sql .= " WHERE ".$condition." ";
+		}
+		return $this->db->count($sql);
 	}
 }
 ?>

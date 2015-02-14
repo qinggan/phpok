@@ -25,8 +25,4 @@ $config['db']['cache']['folder'] = ROOT.'data/cache/';
 $config['db']['cache']['server'] = 'localhost';
 $config['db']['cache']['port'] = 11211;
 $config['db']['cache']['time'] = 86400; //Memcache限制不能超过30天，我们建议设置86400，一天
-
-//安全密钥生成
-//生成公钥时需配合此密钥进行验证
-$config['spam_key'] = 'AdC@!#!3f-0=';
 ?>

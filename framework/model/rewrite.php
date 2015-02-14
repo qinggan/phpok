@@ -10,15 +10,9 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class rewrite_model_base extends phpok_model
 {
-	protected $site_id = 0;
 	public function __construct()
 	{
 		parent::model();
-	}
-
-	public function site_id($id)
-	{
-		$this->site_id = $id;
 	}
 
 	public function type_all()

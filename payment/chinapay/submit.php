@@ -48,7 +48,7 @@ class chinapay_submit
         $currency_id = $this->param['currency'] ? $this->param['currency']['id'] : $this->order['currency_id'];
         $total_fee = price_format_val($this->order['price'],$this->order['currency_id'],$currency_id);
         $show_url = $GLOBALS['app']->url('order','info','sn='.$this->order['sn'].'&passwd='.$this->order['passwd']);
-        $debug = $this->param['param']['env'] == 1 ? false : true;
+        $debug = $this->param['param']['env'] == 'start' ? false : true;
         //初始化
         $chinapay = new chinapay_lib($this->dir_root);
         $chinapay->set_debug($debug);

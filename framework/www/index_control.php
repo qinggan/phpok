@@ -18,48 +18,21 @@ class index_control extends phpok_control
 	// 网站首页
 	function index_f()
 	{
-		//下载附件
-		$dfile = $this->get("dfile");
-		if($dfile)
-		{
-			$this->download($dfile);
-			exit;
-		}
-		$tmp = $this->model('data')->id('index',$this->site['id']);
+		$tmp = $this->model('id')->id('index',$this->site['id']);
 		$tplfile = 'index';
 		if($tmp)
 		{
 			$pid = $tmp['id'];
-			$page_rs = $this->call->phpok('_project',array('pid'=>$pid,'project_ext'=>true));
+			$page_rs = $this->call->phpok('_project',array('pid'=>$pid));
 			$this->phpok_seo($page_rs);
 			$this->assign("page_rs",$page_rs);
-			if($page_rs["tpl_index"] && $this->tpl->check_exists($page_rs["tpl_index"])) $tplfile = $page_rs["tpl_index"];
+			if($page_rs["tpl_index"] && $this->tpl->check_exists($page_rs["tpl_index"]))
+			{
+				$tplfile = $page_rs["tpl_index"];
+			}
 			unset($page_rs);
 		}
 		$this->view($tplfile);
-	}
-
-	function download($dfile)
-	{
-		if(!$dfile) error("未指定附件地址信息");
-		$rs = $this->model("res")->get_one_filename($dfile,false);
-		if(!$rs || !$rs["filename"] || !is_file($this->dir_root.$rs["filename"]))
-		{
-			error("附件不存在","","error");
-		}
-		$filesize = filesize($this->dir_root.$rs["filename"]);
-		$title = $rs["title"] ? $rs['title'] : basename($rs['filename']);
-		$title = str_replace(".".$rs["ext"],"",$title);
-		ob_end_clean();
-		header("Date: ".gmdate("D, d M Y H:i:s", $this->time)." GMT");
-		header("Last-Modified: ".gmdate("D, d M Y H:i:s", $this->time)." GMT");
-		header("Content-Encoding: none");
-		header("Content-Disposition: attachment; filename=".rawurlencode($title.".".$rs["ext"]));
-		header("Content-Length: ".$filesize);
-		header("Accept-Ranges: bytes");
-		readfile($this->dir_root.$rs['filename']);
-		flush();
-		ob_flush();
 	}
 }
 ?>

@@ -95,12 +95,8 @@ class user_control extends phpok_control
 		//会员组
 		$grouplist = $this->model('usergroup')->get_all();
 		$this->assign("grouplist",$grouplist);
-		if($rs)
-		{
-			$this->assign("rs",$rs);
-			$this->assign("id",$id);
-		}
-
+		$this->assign("rs",$rs);
+		$this->assign("id",$id);
 		$this->view("user_add");
 	}
 

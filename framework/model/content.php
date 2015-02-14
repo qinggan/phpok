@@ -18,16 +18,25 @@ class content_model_base extends phpok_model
 	//取得单个主题信息
 	function get_one($id)
 	{
-		$sql = "SELECT l.*,id.phpok identifier FROM ".$this->db->prefix."list l ";
-		$sql.= "JOIN ".$this->db->prefix."id id ON(l.id=id.id AND id.type_id='content' AND l.site_id=id.site_id) ";
-		$sql.= "WHERE l.id='".$id."' AND l.status=1";
+		$sql  = "SELECT * FROM ".$this->db->prefix."list WHERE status=1 AND ";
+		$sql .= is_numeric($id) ? " id='".$id."' " : " identifier='".$id."' ";
 		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
-		$extlist = $this->ext_list($rs["module_id"],$id);
-		if($extlist && $extlist[$id])
+		if(!$rs)
 		{
-			$rs = array_merge($extlist[$id],$rs);
+			return false;
 		}
+		//读取扩展
+		
+		if($rs['module_id'])
+		{
+			$sql = "SELECT * FROM ".$this->db->prefix."list_".$rs['module_id']." WHERE id='".$rs['id']."'";
+			$ext_rs = $this->db->get_one($sql);
+			if($ext_rs)
+			{
+				$rs = array_merge($ext_rs,$rs);
+			}
+		}
+		
 		return $rs;
 	}
 

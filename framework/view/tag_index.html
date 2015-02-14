@@ -21,6 +21,21 @@ function save_tag(id)
 	}
 	var target_val = $("#tag_target_"+id).val();
 	url += "&target="+target_val;
+	var is_global = $("#tag_isg_"+id).val();
+	if(is_global)
+	{
+		url += "&is_global="+is_global;
+	}
+	var replace_count = $("#tag_replace_"+id).val();
+	if(replace_count && parseInt(replace_count,10)>0)
+	{
+		url += "&replace_count="+replace_count;
+	}
+	var alt = $("#tag_alt_"+id).val();
+	if(alt)
+	{
+		url += "&alt="+$.str.encode(alt);
+	}
 	var rs = $.phpok.json(url);
 	if(rs.status != 'ok')
 	{
@@ -32,23 +47,15 @@ function save_tag(id)
 		var tip = '{lang编辑关键字成功}';
 		if(id == 'top' || id == 'bottom')
 		{
-			$("#tag_title_"+id+",#tag_url_"+id).val('');
-			$("#tag_target_"+id).val('0');
-			var html = '<tr id="edit_'+rs.content+'"><form method="post" onsubmit="return save_tag('+rs.content+')">';
-			html += '<td class="center">'+rs.content+'</td>';
-			html += '<td><input type="text" id="tag_title_'+rs.content+'" value="'+title+'" style="width:150px" /></td>';
-			html += '<td><input type="text" id="tag_url_'+rs.content+'" value="'+tag_url+'" style="width:300px" /></td>';
-			html += '<td class="center"><select id="tag_target_'+rs.content+'">';
-			html += '<option value="0">{lang当前窗口}</option><option value="1"'+(target_val == '1' ? ' selected' : '')+'>{lang新窗口}</option></select></td>';
-			html += '<td class="center">0</td>';
-			html += '<td class="center">0</td>';
-			html +='<td><input type="submit" value="{lang修改}" class="btn" />';
-			html +='<input type="button" value="{lang删除}" onclick="delete_it('+rs.content+')" class="btn" /></td></form></tr>';
-			$("#add_top").after(html);
 			tip = '{lang添加关键字成功}';
+			$.dialog.alert(tip,function(){
+				$.phpok.reload();
+			},'succeed');
 		}
-		$.dialog.tips(tip);
-		//$.dialog.alert(tip,function(){},'succeed');
+		else
+		{
+			$.dialog.tips(tip);
+		}
 		return false;
 	}
 }
@@ -83,8 +90,11 @@ function delete_it(id)
 <tr>
 	<th class="id">ID</th>
 	<th class="lft" width="160">名称</th>
+	<th class="lft" width="160">链接提示文字</th>
 	<th class="lft">自定义网址</th>
 	<th width="95">是否新窗口</th>
+	<th width="95">全局性</th>
+	<th width="70">替换次数</th>
 	<th width="90">主题数</th>
 	<th width="90">点击数</th>
 	<th class="action">操作</th>
@@ -93,6 +103,7 @@ function delete_it(id)
 	<form method="post" onsubmit="return save_tag('top')">
 	<td class="center">添加</td>
 	<td><input type="text" id="tag_title_top" placeholder="填写关键字名称" style="width:150px" /></td>
+	<td><input type="text" id="tag_alt_top" placeholder="链接提示文字" style="width:150px" /></td>
 	<td><input type="text" id="tag_url_top" placeholder="自定义链接地址，可以为空" style="width:300px" /></td>
 	<td class="center">
 		<select id="tag_target_top">
@@ -100,6 +111,13 @@ function delete_it(id)
 			<option value="1">新窗口</option>
 		</select>
 	</td>
+	<td class="center">
+		<select id="tag_isg_top">
+			<option value="0">非全局</option>
+			<option value="1">全局可用</option>
+		</select>
+	</td>
+	<td class="center"><input type="text" id="tag_replace_top" value="3" class="short center" /></td>
 	<td class="center">0</td>
 	<td class="center">0</td>
 	<td>
@@ -112,6 +130,7 @@ function delete_it(id)
 	<form method="post" onsubmit="return save_tag('{$value.id}')">
 	<td class="center">{$value.id}</td>
 	<td><input type="text" id="tag_title_{$value.id}" value="{$value.title}" style="width:150px" /></td>
+	<td><input type="text" id="tag_alt_{$value.id}" value="{$value.alt}" style="width:150px" /></td>
 	<td><input type="text" id="tag_url_{$value.id}" value="{$value.url}" style="width:300px" /></td>
 	<td class="center">
 		<select id="tag_target_{$value.id}">
@@ -119,6 +138,13 @@ function delete_it(id)
 			<option value="1"{if $value.target} selected{/if}>新窗口</option>
 		</select>
 	</td>
+	<td class="center">
+		<select id="tag_isg_{$value.id}">
+			<option value="0">非全局</option>
+			<option value="1"{if $value.is_global} selected{/if}>全局可用</option>
+		</select>
+	</td>
+	<td class="center"><input type="text" id="tag_replace_{$value.id}" value="{$value.replace_count}" class="short center" /></td>
 	<td class="center">{$value.count ? $value.count : 0}</td>
 	<td class="center">{$value.hits ? $value.hits : 0}</td>
 	<td>
@@ -127,11 +153,12 @@ function delete_it(id)
 	</form>
 </tr>
 <!-- /loop -->
-<!-- if $rslist && count($rslist)>=15 -->
+<!-- if $rslist && count($rslist)>=1 -->
 <tr id="add_bottom">
 	<form method="post" onsubmit="return save_tag('bottom')">
 	<td class="center">添加</td>
 	<td><input type="text" id="tag_title_bottom" placeholder="填写关键字名称" style="width:150px" /></td>
+	<td><input type="text" id="tag_alt_bottom" placeholder="链接提示文字" style="width:150px" /></td>
 	<td><input type="text" id="tag_url_bottom" placeholder="自定义链接地址，可以为空" style="width:300px" /></td>
 	<td class="center">
 		<select id="tag_target_bottom">
@@ -139,6 +166,13 @@ function delete_it(id)
 			<option value="1">新窗口</option>
 		</select>
 	</td>
+	<td class="center">
+		<select id="tag_isg_bottom">
+			<option value="0">非全局</option>
+			<option value="1">全局可用</option>
+		</select>
+	</td>
+	<td class="center"><input type="text" id="tag_replace_bottom" value="3" class="short center" /></td>
 	<td class="center">0</td>
 	<td class="center">0</td>
 	<td>

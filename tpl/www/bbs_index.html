@@ -12,7 +12,7 @@
 		<div class="info">
 			<table width="100%">
 			<tr>
-				<td class="thumb"><img src="{$value.thumb.filename ? $value.thumb.filename : 'images/bbs.png'}"></td>
+				<td class="thumb"><img src="{$value.thumb ? $value.thumb.filename : 'images/bbs.png'}"></td>
 				<td class="note">
 					<!-- if $value.note -->{func nl2br $value.note}<!-- else -->暂无摘要<!-- /if -->
 				</td>

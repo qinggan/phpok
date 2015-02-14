@@ -70,4 +70,16 @@
 	<tag-add-ok>添加关键字成功</tag-add-ok>
 	<tag-manage-title>标签管理</tag-manage-title>
 	<tag-manage-list>标签列表</tag-manage-list>
+	<admin-not-modify-me>您不能操作自己的信息</admin-not-modify-me>
+	<admin-not-modify-system>非系统管理员不能编辑系统管理员信息</admin-not-modify-system>
+	<admin-not-system>没有系统管理员，请检查</admin-not-system>
+	<admin-min-system-one>至少需要有一位可登录的系统管理员，请检查！</admin-min-system-one>
+	<admin-account-empty>账号不能为空</admin-account-empty>
+	<admin-account-exists>账号已存在</admin-account-exists>
+	<admin-pass-min-long>密码长度不能少于4位</admin-pass-min-long>
+	<admin-update-error>管理员信息更新失败，请检查</admin-update-error>
+	<admin-insert-error>管理员信息添加失败，请检查</admin-insert-error>
+	<admin-update-ok>管理员信息编辑成功</admin-update-ok>
+	<admin-insert-ok>管理员账号添加成功</admin-insert-ok>
+	<admin-update-status-error>更新状态失败</admin-update-status-error>
 </root>

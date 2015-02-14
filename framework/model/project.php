@@ -59,15 +59,34 @@ class project_model_base extends phpok_model
 		return $this->get_one($id,true);
 	}
 
-	function project_all($site_id=0,$pri="id",$condition="")
+	public function project_all($site_id=0,$pri="id",$condition="")
 	{
-		$site_id = $site_id ? '0,'.intval($site_id) : '0';
-		$sql = "SELECT * FROM ".$this->db->prefix."project p WHERE site_id IN(".$site_id.")";
+		$site_id = intval($site_id);
+		$sql = "SELECT * FROM ".$this->db->prefix."project p WHERE site_id=".$site_id." ";
 		if($condition)
 		{
 			$sql .= " AND ".$condition;
 		}
 		return $this->db->get_all($sql,$pri);
+	}
+
+	//取得单项
+	public function project_one($site_id,$id)
+	{
+		if(!$id)
+		{
+			return false;
+		}
+		if(!$site_id)
+		{
+			$site_id = $this->site_id;
+		}
+		$list = $this->project_all($site_id,'id');
+		if(!$list || !$list[$id])
+		{
+			return false;
+		}
+		return $list[$id];
 	}
 
 	//取得当前分类下的父级分类信息，无父级分类则调用当前分类
@@ -190,63 +209,12 @@ class project_model_base extends phpok_model
 		return $list;
 	}
 
-	# 存储核心菜单
-	function save($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		if(!$id)
-		{
-			return $this->db->insert_array($data,"project");
-		}
-		else
-		{
-			$this->db->update_array($data,"project",array("id"=>$id));
-			return true;
-		}
-	}
-
-	# 设置状态
-	function status($id,$status=0)
-	{
-		$sql = "UPDATE ".$this->db->prefix."project SET status='".$status."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
 
 	//子项目
 	function get_son($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE parent_id='".$id."'";
 		return $this->db->get_all($sql);
-	}
-
-	//删除项目
-	function delete_project($id)
-	{
-		$rs = $this->get_one($id,false);
-		//删除模块下的内容信息
-		if($rs['module'])
-		{
-			$sql = "DELETE FROM ".$this->db->prefix."list_".$rs['module']." WHERE project_id=".intval($id);
-			$this->db->query($sql);
-		}
-		//删除项目中的内容信息
-		$sql = "DELETE FROM ".$this->db->prefix."list WHERE project_id='".$id."'";
-		$this->db->query($sql);
-		//删除项目中的扩展信息
-		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='project-".$id."'";
-		$extlist = $this->db->get_all($sql);
-		if($extlist)
-		{
-			foreach($extlist AS $key=>$value)
-			{
-				$this->db->query("DELETE FROM ".$this->db->prefix."extc WHERE id='".$value['id']."'");
-			}
-			$this->db->query("DELETE FROM ".$this->db->prefix."ext WHERE module='project-".$id."'");
-		}
-		//删除项目信息
-		$sql = "DELETE FROM ".$this->db->prefix."project WHERE id='".$id."'";
-		$this->db->query($sql);
 	}
 
 	//检测模块是否被项目调用
@@ -260,12 +228,6 @@ class project_model_base extends phpok_model
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE cate='".$cate_id."'";
 		return $this->db->get_one($sql);
-	}
-
-	function update_taxis($id,$taxis="0")
-	{
-		$sql = "UPDATE ".$this->db->prefix."project SET taxis='".$taxis."' WHERE id='".$id."'";
-		return $this->db->query($sql);
 	}
 
 	//取得子项目信息
@@ -315,7 +277,5 @@ class project_model_base extends phpok_model
 		$sql.= "ORDER BY taxis ASC,id DESC";
 		return $this->db->get_all($sql);
 	}
-
-	//取得项目Tag信息
 }
 ?>

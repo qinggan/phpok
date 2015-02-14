@@ -37,7 +37,10 @@ class usergroup_control extends phpok_control
 			if($rs['popedom']);
 			{
 				$rs['popedom'] = unserialize($rs['popedom']);
-				$popedom_users = explode(",",$rs['popedom'][$_SESSION['admin_site_id']]);
+				if($rs['popedom'][$_SESSION['admin_site_id']])
+				{
+					$popedom_users = explode(",",$rs['popedom'][$_SESSION['admin_site_id']]);
+				}
 			}
 			$this->assign("rs",$rs);
 			$this->assign('id',$id);

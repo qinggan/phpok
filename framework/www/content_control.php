@@ -48,7 +48,7 @@ class content_control extends phpok_control
 		{
 			error("内容不存在",$this->url,'notice',5);
 		}
-		$project_rs = $this->call->phpok('_project',array('pid'=>$rs['project_id']['id'],'project_ext'=>true));
+		$project_rs = $this->call->phpok('_project',array('pid'=>$rs['project_id']));
 		if(!$this->model('popedom')->check($project_rs['id'],$this->user_groupid,'read'))
 		{
 			error(P_Lang('您没有阅读权限，请联系网站管理员'),'','error');
@@ -68,7 +68,7 @@ class content_control extends phpok_control
 		//如果存在分类
 		if($rs['cate_id'])
 		{
-			$cate_rs = $rs['cate_id'];
+			$cate_rs = $this->call->phpok('_cate',array("pid"=>$rs['project_id'],'cateid'=>$rs['cate_id']));
 			$this->assign("cate_rs",$cate_rs);
 			//父级分类
 			if($cate_rs['parent_id'] && $cate_rs['parent_id'] != $project_rs['cate'])

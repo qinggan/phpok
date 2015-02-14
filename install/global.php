@@ -109,6 +109,7 @@ function connect_db($type="tpl",$url="")
 {
 	include(ROOT."config.php");
 	$dbconfig = $config['db'];
+	$dbconfig['cache']['status'] = false;
 	$db_name = "db_".$dbconfig['file'];
 	$cls_sql_file = ROOT."framework/engine/db/".$dbconfig['file'].".php";
 	if(!is_file($cls_sql_file))

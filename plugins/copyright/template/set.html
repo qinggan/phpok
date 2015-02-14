@@ -28,7 +28,7 @@ function check_domain()
 	var tid = $("#tid").val();
 	if(tid)
 	{
-		ext += "tid="+tid;
+		ext += "&tid="+tid;
 	}
 	var url = api_plugin_url('copyright','domain',ext);
 	var rs = json_ajax(url);

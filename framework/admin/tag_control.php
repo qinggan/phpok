@@ -71,6 +71,9 @@ class tag_control extends phpok_control
 		}
 		$data = array('title'=>$title,'url'=>$this->get('url'),'target'=>$this->get('target','int'));
 		$data['site_id'] = $_SESSION['admin_site_id'];
+		$data['alt'] = $this->get('alt');
+		$data['is_global'] = $this->get('is_global','int');
+		$data['replace_count'] = $this->get('replace_count','int');
 		if($id)
 		{
 			$this->model('tag')->save($data,$id);
@@ -83,7 +86,7 @@ class tag_control extends phpok_control
 			{
 				$this->json(P_Lang('添加失败，请检查'));
 			}
-			$this->json($insert_id,true);
+			$this->json(true);
 		}
 	}
 

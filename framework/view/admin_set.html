@@ -198,7 +198,7 @@ function check_save()
 			</th>
 		</tr>
 			<!-- loop from=$value.sublist key=$k value=$v -->
-			<!-- if $v.appfile != 'list' -->
+			<!-- if $v.appfile != 'list' && $v.appfile != 'admin' -->
 			<tr id="mlist_{$v.id}">
 				<td><div style="text-indent:24px;">{$v.title}</div></td>
 				<td width="180px" align="center">
@@ -212,9 +212,6 @@ function check_save()
 						<!-- loop from=$glist[$v['id']] key=$kk value=$vv -->
 						<li><label><input type="checkbox" name="popedom[]" value="{$vv.id}"{if $plist && in_array($vv.id,$plist)} checked{/if} /> {$vv.title}</label></li>
 						<!-- /loop -->
-						<!-- if $v.appfile == 'admin' -->
-						<li class="red i">此权限请慎用，风险大</li>
-						<!-- /if -->
 					</ul>
 					<!-- /if -->
 				</td>
