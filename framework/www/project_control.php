@@ -45,60 +45,94 @@ class project_control extends phpok_control
 			unset($tmp);
 			error(P_Lang('您没有阅读权限，请联系网站管理员'),'','error');
 		}
-		$rs = $this->call->phpok('_project',array('pid'=>$pid,'project_ext'=>true));
-		if(!$rs)
+		//读取项目信息
+		$project = $this->model('project')->project_one($this->site['id'],$pid);
+		if(!$project || !$project['status'])
 		{
-			error("项目不存在或操作异常或项目未启用",$this->url('index'),"error");
+			error(P_Lang('项目不存在或操作异常或项目未启用'),$this->url('index'),"error");
 		}
-		$this->phpok_seo($rs);
-		$this->assign("page_rs",$rs);
-		if($rs['parent_id'])
+		$project_tmp = $this->model('ext')->ext_all('project-'.$project['id'],true);
+		if($project_tmp)
 		{
-			$parent_rs = $this->call->phpok('_project','pid='.$rs['parent_id'].'&project_ext=1');
+			foreach($project_tmp as $key=>$value)
+			{
+				$project_ext[$value['identifier']] = $this->lib('form')->show($value);
+				if($value['form_type'] == 'url' && !$project['url'] && $value['content'])
+				{
+					$project['url'] = $project_ext[$value['identifier']];
+				}
+			}
+			$project = array_merge($project_ext,$project);
+			unset($project_ext,$project_tmp);
+		}
+		if(!$project['url'])
+		{
+			$project['url'] = $this->url($project['identifier']);
+		}
+		$this->phpok_seo($project);
+		$this->assign("page_rs",$project);
+		if($project['parent_id'])
+		{
+			$parent_rs = $this->model('project')->project_one($this->site['id'],$project['parent_id']);
 			if(!$parent_rs || !$parent_rs['status'])
 			{
-				error("父级项目未启用",$this->url,'notice',10);
+				error(P_Lang('父级项目不存在或未启用'),$this->url('index'),'error');
+			}
+			$project_tmp = $this->model('ext')->ext_all('project-'.$parent_rs['id'],true);
+			if($project_tmp)
+			{
+				foreach($project_tmp as $key=>$value)
+				{
+					$project_ext[$value['identifier']] = $this->lib('form')->show($value);
+					if($value['form_type'] == 'url' && !$project['url'] && $value['content'])
+					{
+						$parent_rs['url'] = $project_ext[$value['identifier']];
+					}
+				}
+				$parent_rs = array_merge($project_ext,$parent_rs);
+				unset($project_ext,$project_tmp);
+			}
+			if(!$parent_rs['url'])
+			{
+				$parent_rs['url'] = $this->url($parent_rs['identifier']);
 			}
 			$this->assign("parent_rs",$parent_rs);
 		}
-		if($rs["module"])
+		if($project["module"])
 		{
-			$this->load_module($rs,$parent_rs);
-			unset($rs);
+			$this->load_module($project,$parent_rs);
+			unset($project);
 			if($parent_rs)
 			{
 				unset($parent_rs);
 			}
 			exit;
 		}
-		$tpl = $rs["tpl_index"] ? $rs["tpl_index"] : ($rs["tpl_list"] ? $rs["tpl_list"] : $rs["tpl_content"]);
-		if(!$tpl && $rs["parent_id"] && $parent_rs)
+		$tpl = $project["tpl_index"] ? $project["tpl_index"] : ($project["tpl_list"] ? $project["tpl_list"] : $project["tpl_content"]);
+		if(!$tpl && $project["parent_id"] && $parent_rs)
 		{
 			//如果父级栏目有设置了模板页
 			$tpl = $parent_rs["tpl_index"] ? $parent_rs["tpl_index"] : ($parent_rs["tpl_list"] ? $parent_rs["tpl_list"] : $parent_rs["tpl_content"]);
 			if(!$tpl)
 			{
-				$tpl = $parent_rs["identifier"]."_page";
-				if(!$this->tpl->check_exists($tpl))
+				$tpl = $project['identifier'].'_page';
+				if(!$this->tpl->check($tpl))
 				{
-					$tpl = '';
+					$tpl = $parent_rs["identifier"]."_page";
+					if(!$this->tpl->check($tpl))
+					{
+						error(P_Lang('模板文件缺少，请检查'));
+					}
 				}
 			}
 		}
-		if(!$tpl) $tpl = $rs["identifier"]."_page";
-		//判断是否是xml
-		$xml = $this->get('xml','int');
-		if($xml) $tpl .= '_xml';
-		
-		if(!$this->tpl->check_exists($tpl))
+		if(!$tpl)
 		{
-			error('未配置模板：'.$tpl.'，请配置相应的模板','','error');
-		}
-		//如果是xml
-		if($xml)
-		{
-			header('Content-Type: text/xml;');
-			echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+			$tpl = $project["identifier"]."_page";
+			if(!$this->tpl->check($tpl))
+			{
+				error(P_Lang('模板文件缺少，请检查'));
+			}
 		}
 		$this->view($tpl);
 	}

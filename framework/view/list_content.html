@@ -205,7 +205,8 @@ function list_content_search()
 		<th class="lft">{$value}</th>
 		<!-- /if -->
 	<!-- /loop -->
-	<th style="width:90px">排序</th>
+	<th style="width:80px">排序</th>
+	<th style="width:30px">&nbsp;</th>
 	<th style="width:{$rs.subtopics ? '90px' : '60px'}">操作</th>
 </tr>
 <!-- php:$tmp_m = 0 -->
@@ -265,7 +266,8 @@ function list_content_search()
 			<!-- /if -->
 		<!-- /if -->
 	<!-- /loop -->
-	<td class="center"><input type="text" id="sort_{$value.id}" name="sort[]" class="short center" value="{$value.sort}" tabindex="{$tmp_m}" /></td>
+	<td class="center"><input type="text" class="short center" value="{$value.sort}" tabindex="{$tmp_m}" onblur="update_taxis(this.value,'{$value.id}')" /></td>
+	<td class="center"><span id="taxis_{$value.id}"></span></td>
 	<td>
 		<!-- if $rs.subtopics && !$value[parent_id] && $popedom.add -->
 		<a class="icon add" href="{echo admin_url('list','edit')}&parent_id={$value.id}&pid={$value.project_id}" title="添加子主题"></a>
@@ -332,7 +334,8 @@ function list_content_search()
 				<!-- /if -->
 			<!-- /if -->
 		<!-- /loop -->
-		<td class="center"><input type="text" id="sort_{$vv.id}" name="sort[]" class="short center" value="{$vv.sort}" tabindex="{$tmp_m}" /></td>
+		<td class="center"><input type="text" class="short center" value="{$vv.sort}" tabindex="{$tmp_m}" onblur="update_taxis(this.value,'{$vv.id}')" /></td>
+		<td class="center"><span id="taxis_{$vv.id}"></span></td>
 		<td>
 			<a class="icon space"></a>
 			<!-- if $popedom.modify -->
@@ -387,7 +390,6 @@ function list_content_search()
 					<!-- if $popedom.delete -->
 					<option value="delete">批量删除</option>
 					<!-- /if -->
-					<option value="sort">批量排序</option>
 				</optgroup>
 				</select></li>
 			<li id="plugin_button"><input type="button" value="执行操作" onclick="list_action_exec()" class="submit" /></li>

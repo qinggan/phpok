@@ -70,28 +70,34 @@ function phpok_btn_clear(btn,id)
 }
 
 //添加自定义字段
-function ext_add(id,module)
+function ext_add(module)
 {
-	if(!id || id == 0)
-	{
-		//虚弹出窗口编辑或创建字段
-		var url = get_url("fields","set1");
-		if(module && module != "undefined")
-		{
-			url += "&module="+module;
-		}
-		$.dialog.open(url,{
-			"title":"字段创建",
-			"width":"730px",
-			"height":"580px",
-			"resize": false,
-			"lock": true
-		});
-		return false;
-	}
+	var url = get_url('ext','create','id='+$.str.encode(module));
+	$.dialog.open(url,{
+		'title':'创建扩展字段',
+		'width':'750px',
+		'height':'580px',
+		'resize':false,
+		'lock':true,
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal': '提交配置'
+	});
+	return true;
+}
+
+function ext_add2(id,module)
+{
 	var url = get_url("ext","add") + "&module="+module+"&id="+id;
-	var rs = json_ajax(url);
-	if(rs.status == "ok")
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok')
 	{
 		autosave(module,module,auto_refresh);
 	}
@@ -102,61 +108,23 @@ function ext_add(id,module)
 	}
 }
 
-//创建新的字段
-
-//读取浮动字段选择器
-//module，是字段选择器ID
-//words，已经使用的字段ID
-function ext_fields(module,words,pageid,type)
-{
-	var url = get_url("ext","float") + "&module="+module+"&words="+$.str.encode(words);
-	if(!pageid || pageid == "undefined")
-	{
-		pageid = "1";
-	}
-	url += "&pageid="+pageid;
-	if(type && type != "undefined")
-	{
-		url += "&type="+type;
-	}
-	$.ajax({
-		"url" : url,
-		"async" : true,
-		"dataType" : 'html',
-		'cache' : false,
-		'success' : function(content){
-			if($("#float_fields").length>0)
-			{
-				$("#float_fields").remove();
-			}
-			$(".main").append(content);
-			$(window).scroll(function(){
-				 $("#float_fields").css({top:$(this).scrollTop()+40});
-			});
-		}
-	});
-}
-
 function ext_delete(id,module,title)
 {
-	var qc = confirm("确定要删除扩展字段："+title+" 吗？删除后是不能恢复的！");
-	if(qc == "0")
-	{
-		return false;
-	}
-	url = get_url("ext","delete");
-	url += "&module="+$.str.encode(module);
-	url += "&id="+id;
-	var rs = json_ajax(url);
-	if(rs.status == "ok")
-	{
-		autosave(module,module,auto_refresh);
-	}
-	else
-	{
-		alert(rs.content);
-		return false;
-	}
+	$.dialog.confirm('确定要删除扩展字段：<span class="red">'+title+'</span> 吗？删除后是不能恢复的！',function(){
+		var url = get_url('ext','delete');
+		url += "&module="+$.str.encode(module);
+		url += "&id="+id;
+		var rs = $.phpok.json(url);
+		if(rs.status == 'ok')
+		{
+			autosave(module,module,auto_refresh);
+		}
+		else
+		{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
 }
 
 //编辑字段
@@ -164,7 +132,6 @@ function ext_edit(id,module)
 {
 	var url = get_url("ext","edit") + "&id="+id;
 	url += "&module="+$.str.encode(module);
-	url = $.phpok.nocache(url);
 	$.dialog.open(url,{
 		"title" : "编辑扩展字段属性",
 		"width" : "700px",
@@ -173,8 +140,15 @@ function ext_edit(id,module)
 		"win_max":false,
 		"resize" : false,
 		"lock" : true,
-		'close'	: function(){
-			$.phpok.reload();
+		'okVal': '提交',
+		'ok': function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
 		}
 	});
 }

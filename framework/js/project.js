@@ -121,6 +121,33 @@ function page_sort()
 	}
 }
 
+function update_taxis(val,id)
+{
+	$.ajax({
+		'url':get_url('project','sort','sort['+id+']='+val),
+		'dataType':'json',
+		'cache':false,
+		'async':true,
+		'beforeSend': function (XMLHttpRequest){
+			XMLHttpRequest.setRequestHeader("request_type","ajax");
+		},
+		'success':function(rs){
+			if(rs.status == 'ok')
+			{
+				$("#taxis_"+id).addClass('status1');
+				window.setTimeout(function(){
+					$("#taxis_"+id).removeClass('status1');
+				}, 1000);
+			}
+			else
+			{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
+}
+
 function show_module(val)
 {
 	if(val && val != "0")

@@ -146,12 +146,25 @@ class project_control extends phpok_control
 		$this->assign("rs",$rs);
 		$ext_module = "project-".$id;
 		$this->assign("ext_module",$ext_module);
-		$forbid = array("id","identifier");
-		$forbid_list = $this->model('ext')->fields("project,id");
-		$forbid = array_merge($forbid,$forbid_list);
-		$forbid = array_unique($forbid);
-		$extlist = get_phpok_ext($ext_module,implode(",",$forbid));
-		$this->assign('extlist',$extlist);
+		$extlist = $this->model('ext')->ext_all($ext_module);
+		if($extlist)
+		{
+			$tmp = false;
+			foreach($extlist AS $key=>$value)
+			{
+				if($value["ext"])
+				{
+					$ext = unserialize($value["ext"]);
+					foreach($ext AS $k=>$v)
+					{
+						$value[$k] = $v;
+					}
+				}
+				$tmp[] = $this->lib('form')->format($value);
+				$this->lib('form')->cssjs($value);
+			}
+			$this->assign('extlist',$tmp);
+		}
 		$this->view("project_content");
 	}
 

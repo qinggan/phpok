@@ -32,7 +32,7 @@ class user_model extends user_model_base
 	}
 
 	//获取会员信息
-	function get_one($id,$format=true)
+	function get_one($id)
 	{
 		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
@@ -42,17 +42,14 @@ class user_model extends user_model_base
 		{
 			return false;
 		}
-		if($format)
+		$flist = $this->fields_all();
+		if(!$flist)
 		{
-			$flist = $this->fields_all();
-			if(!$flist)
-			{
-				return $rs;
-			}
-			foreach($flist AS $key=>$value)
-			{
-				$rs[$value["identifier"]] = $this->lib("ext")->content_format($value,$rs[$value["identifier"]]);
-			}
+			return $rs;
+		}
+		foreach($flist AS $key=>$value)
+		{
+			$rs[$value["identifier"]] = $this->lib("ext")->content_format($value,$rs[$value["identifier"]]);
 		}
 		return $rs;
 	}

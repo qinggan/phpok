@@ -458,7 +458,7 @@ function ext_save($myid,$is_add=false,$save_id="")
 				}
 				$array["ext"] = serialize($tmp);
 			}
-			$insert_id = $GLOBALS['app']->model("ext")->ext_save($array);
+			$insert_id = $GLOBALS['app']->model("ext")->save($array);
 			$GLOBALS['app']->model("ext")->extc_save($val,$insert_id);
 		}
 		$_SESSION[$myid] = "";

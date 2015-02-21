@@ -23,35 +23,6 @@ class ext_model_base extends phpok_model
 		return ($this->db->get_one($sql) ? true : false);
 	}
 
-	# 存储扩展字段配置信息
-	function ext_save($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"ext",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"ext");
-		}
-	}
-
-	function extc_save($content,$id)
-	{
-		if(!$id) return false;
-		$sql = "REPLACE INTO ".$this->db->prefix."extc(id,content) VALUES('".$id."','".$content."')";
-		return $this->db->query($sql);
-	}
-
-	# 存储扩展字段内容存储
-	function content_save($content,$id)
-	{
-		if(!$id || !$content) return false;
-		$sql = "REPLACE INTO ".$this->db->prefix."extc(id,content) VALUES('".$id."','".$content."')";
-		return $this->db->query($sql);
-	}
-
 	# 读取模块下的字段内容
 	# module，模块名称
 	# show_content，是否读取内容，默认true
@@ -85,15 +56,7 @@ class ext_model_base extends phpok_model
 		return $rslist;
 	}
 
-	# 删除字段内容
-	function ext_delete($id,$module)
-	{
-		$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id='".$id."'";
-		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$id."'";
-		$this->db->query($sql);
-		return true;
-	}
+	
 
 	# 取得数据库下的字段
 	# tbl 指定数据表名，多个数据表用英文逗号隔开
@@ -126,34 +89,6 @@ class ext_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
-	//存储表单
-	function save($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"ext",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"ext");
-		}
-	}
-
-	//删除表单
-	function del($module)
-	{
-		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='".$module."'";
-		$rslist = $this->db->get_all($sql);
-		if(!$rslist) return true;
-		foreach($rslist AS $key=>$value)
-		{
-			$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$value["id"]."'";
-			$this->db->query($sql);
-		}
-		$sql = "DELETE FROM ".$this->db->prefix."ext WHERE module='".$module."'";
-		return $this->db->query($sql);
-	}
 
 	//取得所有扩展选项信息
 	function get_all($id,$mult = false)

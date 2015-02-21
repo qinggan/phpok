@@ -10,7 +10,7 @@
 
 /* 后台全局样式 */
 html{font-size:12px;font-family:"Microsoft Yahei","宋体","Arial","Tahoma";margin:0;padding:0;}
-body{margin:3px;padding:0;}
+body{margin:3px;padding:0;overflow-y:scroll;_margin:0; _height:100%;}
 img{border:0 none;margin:0;padding:0;}
 a{text-decoration:none;color:#000;}
 a:hover{text-decoration:underline;color:darkblue;}
@@ -380,6 +380,19 @@ input.submit2 {
 }
 input.submit2:hover{
 	background-position:0 -31px;
+}
+
+input.button2{
+	margin:0;
+	padding:5px 10px 6px 10px;
+	background:#F3F3F3;
+	border:1px solid #D9D9D9;
+	font-weight:bold;
+	cursor:default;
+}
+input.button2:hover{
+	background:#F1F1F1;
+	border-color:#C6C6C6;
 }
 
 /* 常用Table表单 */
@@ -870,3 +883,5 @@ button.aui_state_highlight:active { border-color:#1c6a9e; filter: progid:DXImage
 .aui_state_noTitle .aui_close { top:0; right:0; width:18px; height:18px; line-height:18px; text-align:center; text-indent:0; font-size:18px; text-decoration:none; color:#214FA3; background:none; filter:!important; }
 .aui_state_noTitle .aui_close:hover, .aui_state_noTitle .aui_close:active { text-decoration:none; color:#900; }
 .aui_state_noTitle .aui_dialog { box-shadow: none; }
+
+

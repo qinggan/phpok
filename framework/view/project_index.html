@@ -18,6 +18,7 @@
 	<th class="lft">标识串</th>
 	<th class="lft">模块</th>
 	<th class="w80">排序</th>
+	<th width="30">&nbsp;</th>
 	<th class="w99 lft">操作</th>
 </tr>
 <!-- foreach($rslist AS $key=>$value) -->
@@ -28,7 +29,8 @@
 	<td><label for="id_{$value.id}">{$value.space}{$value.title}<!-- if $value.nick_title --><span class="gray i"> ({$value.nick_title})</span><!-- /if --><!-- if $value.hidden --><span class="red i">（隐藏）</span><!-- /if --></label></td>
 	<td>{$value.identifier}</td>
 	<td>{$value.project_module_title ? $value.project_module_title : '-'}</td>
-	<td class="center"><input type="text" id="taxis_{$value.id}" class="cate_taxis" value="{$value.taxis}" tabindex="{$rslist_id.num}" /></td>
+	<td class="center"><input type="text" class="cate_taxis" value="{$value.taxis}" tabindex="{$rslist_id.num}" onblur="update_taxis(this.value,'{$value.id}')" /></td>
+	<td><span id="taxis_{$value.id}"></span></td>
 	<td>
 		<!-- if $popedom.set -->
 		<!-- if $value.parent_id -->
@@ -45,22 +47,5 @@
 <!-- /foreach -->
 </table>
 </div>
-<!-- if($rslist) -->
-<div>
-<table>
-<tr>
-	<td colspan="4">
-		<div style="margin-top:5px;">
-		<input type="button" value="全选" class="btn" onclick="$.input.checkbox_all()" />
-		<input type="button" value="全不选" class="btn" onclick="$.input.checkbox_none()" />
-		<input type="button" value="反选" class="btn" onclick="$.input.checkbox_anti()" />
-		&nbsp; &raquo; &nbsp;
-		<input type="button" value="更新排序" class="btn" onclick="page_sort()" />
-		</div>
-	</td>
-</tr>
-</table>
-</div>
-<!-- /if -->
 
 <!-- inc:foot -->

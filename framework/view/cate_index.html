@@ -1,5 +1,6 @@
 <!-- inc:head -->
 <script type="text/javascript" src="{echo add_js('cate.js')}"></script>
+
 <div class="tips clearfix">
 	<!-- if $popedom.add -->
 	<div class="action"><a href="{echo admin_url('cate','set')}">添加根分类</a></div>
@@ -13,9 +14,9 @@
 <tr>
 	<th class="id">ID</th>
 	<th width="30">&nbsp;</th>
-	<th width="30">&nbsp;</th>
 	<th class="title">分类名称</th>
-	<th>排序</th>
+	<th width="80">排序</th>
+	<th width="30">&nbsp;</th>
 	<th class="lft">操作</th>
 </tr>
 <!-- run:$tab_i = 0; -->
@@ -24,7 +25,6 @@
 <tr{if $key%2 == ""} class="list"{/if}>
 	<td class="center gray">{$value.id}</td>
 	<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="phpok_status({$value.id},'{url ctrl=cate func=status/}')"{else} style="cursor: default;"{/if} value="{$value.status}"></span></td>
-	<td class="center"><input type="checkbox" value="{$value.id}" name="id_{$value.id}" id="id_{$value.id}" checked /></td>
 	<td>
 		<table cellpadding="0" cellspacing="0">
 		<tr>
@@ -38,7 +38,8 @@
 		</tr>
 		</table>
 	</td>
-	<td class="center"><input type="text" id="taxis_{$value.id}" class="cate_taxis" value="{$value.taxis}" tabindex="{$tab_i}" /></td>
+	<td class="center"><input type="text" class="cate_taxis" value="{$value.taxis}" tabindex="{$tab_i}" onblur="update_taxis(this.value,'{$value.id}')" /></td>
+	<td><span id="taxis_{$value.id}"></span></td>
 	<td>
 		<!-- if $popedom.add -->
 		<input type="button" value="添加子分类" onclick="$.phpok.go('{url ctrl=cate func=set parent_id=$value.id/}')" class="btn" />
@@ -54,22 +55,4 @@
 <!-- /foreach -->
 </table>
 </div>
-<!-- if($rslist) -->
-<div>
-<table>
-<tr>
-	<td colspan="4">
-		<div style="margin-top:5px;">
-		<input type="button" value="全选" class="btn" onclick="$.input.checkbox_all()" />
-		<input type="button" value="全不选" class="btn" onclick="$.input.checkbox_none()" />
-		<input type="button" value="反选" class="btn" onclick="$.input.checkbox_anti()" />
-		&nbsp; &raquo; &nbsp;
-		<input type="button" value="更新排序" class="btn" onclick="taxis('{echo admin_url('cate','taxis')}','255')" />
-		</div>
-	</td>
-</tr>
-</table>
-</div>
-<!-- /if -->
-
 <!-- inc:foot -->

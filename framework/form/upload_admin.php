@@ -25,10 +25,8 @@ class upload_form
 
 	function config()
 	{
-		
 		$type_list = $GLOBALS['app']->model('res')->type_list();
 		$GLOBALS['app']->assign("type_list",$type_list);
-		//取得附件分类
 		$cate_list = $GLOBALS['app']->model('res')->cate_all();
 		$GLOBALS['app']->assign("cate_list",$cate_list);
 		$html = $GLOBALS['app']->dir_phpok."form/html/upload_admin.html";

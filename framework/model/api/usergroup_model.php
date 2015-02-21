@@ -87,7 +87,7 @@ class usergroup_model extends usergroup_model_base
 		return $this->one($gid);
 	}
 
-	function get_default()
+	function get_default($status=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."user_group WHERE is_default=1 AND status=1";
 		return $this->db->get_one($sql);

@@ -18,7 +18,7 @@ class cart_control extends phpok_control
 		$this->cart_id = $this->model('cart')->cart_id($this->session->sessid(),$_SESSION['user_id']);
 	}
 
-	function index_f()
+	public function index_f()
 	{
 		//取得购物车产品列表
 		$rslist = $this->model('cart')->get_all($this->cart_id);
@@ -37,9 +37,8 @@ class cart_control extends phpok_control
 		$this->view("cart_index");
 	}
 
-	function checkout_f()
+	public function checkout_f()
 	{
-		//echo "<pre>".print_r($this->site,true)."</pre>";
 		$rslist = $this->model('cart')->get_all($this->cart_id);
 		if(!$rslist)
 		{
@@ -56,7 +55,7 @@ class cart_control extends phpok_control
 		$this->assign('price',$price);
 		$this->assign("rslist",$rslist);
 		//获取地址库信息
-		$shipping = $billing = '';
+		$shipping = $billing = array();
 		if($_SESSION['user_id'])
 		{
 			//判断是否有收货地址

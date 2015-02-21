@@ -42,22 +42,18 @@ class form_control extends phpok_control
 		{
 			if($etype == "fields")
 			{
-				$this->model("fields");
 				$rs = $this->model('fields')->get_one($eid);
 			}
 			elseif($etype == "module")
 			{
-				$this->model("module");
 				$rs = $this->model('module')->field_one($eid);
 			}
 			elseif($etype == "user")
 			{
-				$this->model("user");
 				$rs = $this->model('user')->field_one($eid);
 			}
 			else
 			{
-				$this->model("ext");
 				$rs = $this->model('ext')->get_one($eid);
 			}
 			if($rs["ext"])

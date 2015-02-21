@@ -54,7 +54,7 @@ class url_model extends url_model_base
 		$this->protected_id = $info;
 	}
 
-	public function url($ctrl,$func,$ext)
+	public function url($ctrl='index',$func='index',$ext='')
 	{
 		if($this->urltype == 'default')
 		{

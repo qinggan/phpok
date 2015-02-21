@@ -36,7 +36,7 @@ input[type=text],input[type=password]{
 }
 
 input.select{margin:0;padding:0;border:1px solid #9FAFBB;height:22px;width:70px;}
-select{margin:0;padding:0;border:1px solid #9FAFBB;}
+select{margin:0;padding:3px;border:1px solid #9FAFBB;}
 
 textarea.long{width:500px;height:100px;}
 textarea.default{width:350px;height:40px;}

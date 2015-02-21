@@ -35,7 +35,7 @@ class phpok_call extends phpok_control
 		{
 			parse_str($rs,$rs);
 		}
-		if(!$rs['site'])
+		if(!isset($rs['site']) || (isset($rs['site']) && !$rs['site']))
 		{
 			$rs['site'] = $this->site['id'];
 		}
@@ -69,6 +69,8 @@ class phpok_call extends phpok_control
 			$list[] = 'total';
 			$list[] = 'cate_id';
 			$list[] = 'subcate';
+			$list[] = 'res';
+			$list[] = 'reslist';
 			$id = substr($id,1);
 			//如果是arclist，且未定义is_list属性，则默认启用此属性
 			if($id == "arclist")
@@ -134,6 +136,7 @@ class phpok_call extends phpok_control
 			if($cate)
 			{
 				$array['cate'] = $cate;
+				$rs['cateid'] = $cateid;
 			}
 		}
 		$flist = $this->model('module')->fields_all($project['module']);
@@ -151,7 +154,7 @@ class phpok_call extends phpok_control
 		$orderby = $rs['orderby'] ? $rs['orderby'] : $project['orderby'];
 		if(!$rs['is_list']) $rs['psize'] = 1;
 		$offset = $rs['offset'] ? intval($rs['offset']) : 0;
-		$psize = $rs['is_list'] ? intval($rs['psize']) : 1;
+		$psize = ($rs['is_list'] && $rs['is_list'] != 'false') ? intval($rs['psize']) : 1;
 		$rslist = $this->model('list')->arc_all($project['module'],$field,$condition,$offset,$psize,$orderby);
 		if($rslist)
 		{
@@ -200,7 +203,7 @@ class phpok_call extends phpok_control
 				$rslist = $list;
 				unset($list);
 			}
-			if(!$rs['is_list'])
+			if(!$rs['is_list'] || $rs['is_list'] == 'false')
 			{
 				$array['rs'] = current($rslist);
 			}
@@ -441,6 +444,11 @@ class phpok_call extends phpok_control
 		//格式化扩展内容
 		foreach($flist AS $key=>$value)
 		{
+			//指定分类
+			if($value['form_type'] == 'editor')
+			{
+				$value['pageid'] = intval($param['pageid']);
+			}
 			$arc[$value['identifier']] = $this->lib('form')->show($value,$arc[$value['identifier']]);
 			if($value['form_type'] == 'url' && $arc[$value['identifier']] && $value['identifier'] != 'url')
 			{
@@ -519,6 +527,10 @@ class phpok_call extends phpok_control
 			unset($project_ext,$project_tmp);
 		}
 		unset($rs);
+		if(!$project['url'])
+		{
+			$project['url'] = $this->url($project['identifier']);
+		}
 		if($cache_id)
 		{
 			$this->db->cache_save($cache_id,$project);
@@ -906,7 +918,7 @@ class phpok_call extends phpok_control
 	}
 
 	//读取当前分类下的子分类
-	function _subcate($rs)
+	private function _subcate($rs)
 	{
 		if(!$rs['cateid'] && !$rs['phpok'] && !$rs['cate'])
 		{
@@ -970,40 +982,75 @@ class phpok_call extends phpok_control
 		return $list;
 	}
 
+	//读取附件信息
+	private function _res($rs)
+	{
+		if(!$rs['fileid'] && !$rs['phpok'])
+		{
+			return false;
+		}
+		if(!$rs['fileid']) $rs['fileid'] = $rs['phpok'];
+		return $this->model('res')->get_one(intval($rs['fileid']),true);
+	}
+
+	//读取附件列表
+	private function _reslist($rs)
+	{
+		if(!$rs['fileids'] && !$rs['phpok'])
+		{
+			return false;
+		}
+		if(!$rs['fileids']) $rs['fileids'] = $rs['phpok'];
+		if(is_array($rs['fileids']))
+		{
+			$rs['fileids'] = implode(",",$rs['fileids']);
+		}
+		$list = explode(",",$rs['fileids']);
+		$ids = false;
+		foreach($list as $key=>$value)
+		{
+			if($value && intval($value))
+			{
+				$ids[] = intval($value);
+			}
+		}
+		$condition = " id IN(".implode(",",$ids).") ";
+		return $this->model('res')->get_list($condition,0,999,true);
+	}
+	
 	private function _cache_tbl($type)
 	{
-		$cache_tbl = array();
+		$prefix = $this->db->prefix;
+		$cache_tbl = array($prefix.'tag',$prefix.'tag_stat',$prefix.'res',$prefix.'res_ext',$prefix.'ext',$prefix.'extc');
 		if(in_array($type,array('arc','arclist','total')))
 		{
-			$cache_tbl[] = $this->db->prefix."list";
-			$cache_tbl[] = $this->db->prefix."module";
-			$cache_tbl[] = $this->db->prefix."module_fields";
-		}
-		if($type == 'project')
-		{
-			$cache_tbl[] = $this->db->prefix."project";
-			$cache_tbl[] = $this->db->prefix."ext";
-			$cache_tbl[] = $this->db->prefix."extc";
+			$cache_tbl[] = $prefix.'list';
+			$cache_tbl[] = $prefix.'project';
+			$cache_tbl[] = $prefix.'cate';
+			$cache_tbl[] = $prefix.'user';
+			$cache_tbl[] = $prefix.'user_ext';
+			$cache_tbl[] = $prefix.'module';
+			$cache_tbl[] = $prefix.'module_fields';
 			return $cache_tbl;
 		}
-		if(in_array($type,array('arc','arclist','cate','catelist','sublist','total')))
+		if($type == 'project' || $type == 'sublist' || $type == 'parent')
 		{
-			$cache_tbl[] = $this->db->prefix."cate";
-			$cache_tbl[] = $this->db->prefix."project";
-			$cache_tbl[] = $this->db->prefix."ext";
-			$cache_tbl[] = $this->db->prefix."extc";
-			$cache_tbl[] = $this->db->prefix."tag";
-			$cache_tbl[] = $this->db->prefix."tag_stat";
+			$cache_tbl[] = $prefix."project";
+			return $cache_tbl;
+		}
+		if($type == 'catelist' || $type == 'cate')
+		{
+			$cache_tbl[] = $prefix."project";
+			$cache_tbl[] = $prefix."cate";
+			return $cache_tbl;
 		}
 		if(in_array($type,array('user','user_group')))
 		{
-			$cache_tbl[] = $this->db->prefix."user";
-			$cache_tbl[] = $this->db->prefix."user_ext";
-			$cache_tbl[] = $this->db->prefix."user_fields";
-			$cache_tbl[] = $this->db->prefix."user_group";
+			$cache_tbl[] = $prefix."user";
+			$cache_tbl[] = $prefix."user_ext";
+			$cache_tbl[] = $prefix."user_fields";
+			$cache_tbl[] = $prefix."user_group";
 		}
-		$cache_tbl[] = $this->db->prefix."res";
-		$cache_tbl[] = $this->db->prefix."res_cate";
 		return $cache_tbl;
 	}
 }

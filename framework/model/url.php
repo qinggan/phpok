@@ -57,7 +57,7 @@ class url_model_base extends phpok_model
 		{
 			$url .= $this->ctrl_id.'='.$ctrl.'&';
 		}
-		if($func != 'index')
+		if($func && $func != 'index')
 		{
 			$url .= $this->func_id.'='.$func.'&';
 		}

@@ -15,7 +15,7 @@ class payment_model extends payment_model_base
 		parent::__construct();
 	}
 
-	function get_all($site_id=0)
+	function get_all($site_id=0,$status=0)
 	{
 		$condition = $site_id ? "site_id IN(0,".$site_id.")" : "site_id=0";
 		$sql = "SELECT * FROM ".$this->db->prefix."payment_group WHERE ".$condition." ";

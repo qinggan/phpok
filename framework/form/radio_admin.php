@@ -67,13 +67,36 @@ class radio_form
 		{
 			$rs['content'] = $rs['content']['val'];
 		}
-		$GLOBALS['app']->assign("rs",$rs);
-		$GLOBALS['app']->assign("rslist",$rslist);
-		$file = $GLOBALS['app']->dir_phpok."form/html/radio_form_admin.html";
-		$content = $GLOBALS['app']->fetch($file,'abs-file');
-		$GLOBALS['app']->unassign("rs");
-		$GLOBALS['app']->unassign("rslist");
-		return $content;
+		$html = '<table cellpadding="0" cellspacing="0" class="inp inp_radio inp_radio_'.$rs['identifier'].'">';
+		if($rs['put_order'])
+		{
+			foreach($rslist as $key=>$value)
+			{
+				$html .= '<tr>';
+				$html .= '<td><lable><input type="radio" name="'.$rs['identifier'].'" value="'.$value['val'].'"';
+				if($rs['content'] == $value['val'])
+				{
+					$html .= ' checked';
+				}
+				$html .= ' /> '.$value['title'].'</label></td>';
+				$html .= '</tr>';
+			}
+		}
+		else
+		{
+			$html .= '<tr>';
+			foreach($rslist as $key=>$value)
+			{
+				$html .= '<td><lable><input type="radio" name="'.$rs['identifier'].'" value="'.$value['val'].'"';
+				if($rs['content'] == $value['val'])
+				{
+					$html .= ' checked';
+				}
+				$html .= ' /> '.$value['title'].'</label></td>';
+			}
+			$html .= '</tr>';
+		}
+		$html .= '</table>';
+		return $html;
 	}
-
 }

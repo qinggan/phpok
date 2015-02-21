@@ -47,5 +47,23 @@ class url_form
 		$GLOBALS['app']->unassign("_rs");
 		return $content;
 	}
+
+	public function show($rs,$val='')
+	{
+		if(!$rs)
+		{
+			return false;
+		}
+		if(!$val)
+		{
+			$val = $rs['content'];
+		}
+		if(!$val)
+		{
+			return false;
+		}
+		$val = unserialize($val);
+		return $val['default'];
+	}
 }
 ?>

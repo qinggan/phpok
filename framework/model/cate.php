@@ -71,10 +71,9 @@ class cate_model_base extends phpok_model
 	}
 
 	//取得全部的分类信息（不格式化）
-	function cate_all($site_id=0,$status=0)
+	public function cate_all($site_id=0,$status=0)
 	{
-		$site_id = $site_id ? '0,'.$site_id : '0';
-		$sql = " SELECT * FROM ".$this->db->prefix."cate WHERE site_id IN(".$site_id.") ";
+		$sql = " SELECT * FROM ".$this->db->prefix."cate WHERE site_id='".$site_id."'";
 		if($status) $sql .= " AND status='1' ";
 		$sql .= " ORDER BY taxis ASC,id DESC ";
 		return $this->db->get_all($sql,'id');

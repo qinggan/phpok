@@ -1,5 +1,4 @@
-<!-- php:$extlist = get_phpok_ext($ext_module,$ext_idstring) -->
-<!-- inc:head -->
+<!-- include tpl=head -->
 <script type="text/javascript" src="{func include_js cate.js}"></script>
 <div class="tips">
 	您当前的位置：
@@ -15,7 +14,6 @@
 	<li onclick="$.admin.group(this)" name="admin" title="分类的一些其他属性">分类属性</li>
 	<li onclick="$.admin.group(this)" name="seo" title="分类SEO信息设置">SEO优化</li>
 </ul>
-
 <form method="post" id="{$ext_module}" action="{echo admin_url('cate','save')}" onsubmit="return cate_check();">
 <input type="hidden" id="id" name="id" value="{$id}" />
 <div id="main_setting">
@@ -77,7 +75,51 @@
 		</table>
 	</div>
 </div>
-{$extlist.content.content}
+<!-- loop from=$extlist key=$key value=$value -->
+<div class="table">
+	<div class="title">
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+			<td height="25">{$value.title}<span class="darkblue">[{$value.identifier}]</span>：</td>
+			<td><span class="note">{$value.note}</span></td>
+			<!-- if $popedom.ext -->
+			<!-- if $ext_module != 'add-cate' -->
+			<td><a class="icon edit" onclick="ext_edit('{$value.identifier}','{$ext_module}')"></a></td>
+			<!-- /if -->
+			<td><a class="icon delete" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')"></a></td>
+			<!-- /if -->
+		</tr>
+		</table>
+	</div>
+	<div class="content">{$value.html}</div>
+</div>
+<!-- /loop -->
+
+<!-- if $popedom.ext -->
+<div class="table">
+	<div class="content">
+		<span id="_quick_insert"></span>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$.ajax({
+				'url':"{url ctrl=ext func=select type=cate module=$ext_module/}",
+				'dataType':'html',
+				'cache':false,
+				'async':true,
+				'beforeSend': function (XMLHttpRequest){
+					XMLHttpRequest.setRequestHeader("request_type","html");
+				},
+				'success':function(rs){
+					$("#_quick_insert").html(rs);
+				}
+			});
+		});
+		</script>
+		<input type="button" value="标准创建扩展字段" onclick="ext_add('{$ext_module}')" class="button2" />
+	</div>
+</div>
+<!-- /if -->
+
 </div>
 
 <div class="hide" id="seo_setting">
@@ -155,27 +197,9 @@
 <div class="table">
 	<div class="content">
 		<br />
-		<input type="submit" value="提 交" class="submit" />
-		<br />
+		<input type="submit" value="提 交" class="submit2" />
 	</div>
 </div>
 </form>
-
-<script type="text/javascript">
-var use_ext = "{$popedom.ext ? 1 : 0}";
-$(document).ready(function(){
-	//检测是否有自动保存的表单
-	autofill("{$ext_module}");
-	//通过Ajax加载自定义表单选项
-	if(use_ext == "1")
-	{
-		ext_fields("{$ext_module}","{$extlist.content.words}",1,"cate");
-	}
-	else
-	{
-		$(".title a.icon").hide();
-	}
-});
-</script>
 
 <!-- inc:foot -->

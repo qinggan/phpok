@@ -935,14 +935,26 @@ class _init_phpok
 		$func = $this->get($this->config["func_id"],"system");
 		if(!$ctrl) $ctrl = "index";
 		if(!$func) $func = "index";
-		if($_SERVER['HTTP_REFERER'] && $ctrl != 'login')
+		if($ctrl != 'login')
 		{
-			$info = parse_url($_SERVER['HTTP_REFERER']);
-			$chk = parse_url($this->url);
-			if($info['host'] != $chk['host'])
+			if(!$_SERVER['HTTP_REFERER'])
 			{
 				$ctrl='login';
+				$func = 'index';
 				session_destroy();
+				$this->_location($this->url('login'));
+			}
+			else
+			{
+				$info = parse_url($_SERVER['HTTP_REFERER']);
+				$chk = parse_url($this->url);
+				if($info['host'] != $chk['host'])
+				{
+					$ctrl = 'login';
+					$func = 'index';
+					session_destroy();
+					$this->_location($this->url('login'));
+				}
 			}
 		}
 		if($_SESSION['admin_id'])
@@ -955,12 +967,14 @@ class _init_phpok
 	private function _location($url)
 	{
 		ob_end_clean();
+		ob_start();
 		header("Content-type: text/html; charset=utf-8");
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
 		header("Last-Modified: Mon, 26 Jul 1997 05:00:00  GMT"); 
 		header("Cache-control: no-cache,no-store,must-revalidate,max-age=0"); 
 		header("Pramga: no-cache");
 		header("Location:".$url);
+		ob_end_flush();
 		exit;
 	}
 

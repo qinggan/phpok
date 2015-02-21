@@ -17,7 +17,49 @@
 	<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
 </div>
 
-{$extlist.content.content}
+<!-- loop from=$extlist key=$key value=$value -->
+<div class="table">
+	<div class="title">
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+			<td height="25">{$value.title}<span class="darkblue">[{$value.identifier}]</span>：</td>
+			<td><span class="note">{$value.note}</span></td>
+			<!-- if $popedom.ext -->
+			<td><a class="icon edit" onclick="ext_edit('{$value.identifier}','{$ext_module}')"></a></td>
+			<td><a class="icon delete" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')"></a></td>
+			<!-- /if -->
+		</tr>
+		</table>
+	</div>
+	<div class="content">{$value.html}</div>
+</div>
+<!-- /loop -->
+
+
+<!-- if $popedom.ext -->
+<div class="table">
+	<div class="content">
+		<span id="_quick_insert"></span>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$.ajax({
+				'url':"{url ctrl=ext func=select type=project module=$ext_module/}",
+				'dataType':'html',
+				'cache':false,
+				'async':true,
+				'beforeSend': function (XMLHttpRequest){
+					XMLHttpRequest.setRequestHeader("request_type","html");
+				},
+				'success':function(rs){
+					$("#_quick_insert").html(rs);
+				}
+			});
+		});
+		</script>
+		<input type="button" value="标准创建扩展字段" onclick="ext_add('{$ext_module}')" class="button2" />
+	</div>
+</div>
+<!-- /if -->
 
 
 
@@ -30,9 +72,4 @@
 </div>
 </form>
 
-<script type="text/javascript">
-$(document).ready(function(){
-	ext_fields("{$ext_module}","{$extlist.content.words}","1","project");
-});
-</script>
 <!-- inc:foot -->

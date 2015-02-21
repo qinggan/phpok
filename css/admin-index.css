@@ -1,7 +1,7 @@
 @charset "utf-8";
 /* CSS Document */
 body,ol,ul,h1,h2,h3,h4,h5,h6,p,th,td,dl,dd,form,fieldset,legend,input,textarea,select{margin:0;padding:0}
-body{font:12px  "微软雅黑","宋体","Arial Narrow",HELVETICA;background:#f9f9f9;-webkit-text-size-adjust:100%}
+body{font:12px  "微软雅黑","宋体","Arial Narrow",HELVETICA;background:#f9f9f9;-webkit-text-size-adjust:100%;overflow-y:scroll;_margin:0; _height:100%;}
 a{color:#014;text-decoration:none}
 a:hover{color:#cd0200;text-decoration:underline}
 em{font-style:normal}

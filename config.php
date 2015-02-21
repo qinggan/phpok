@@ -10,7 +10,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 // 连接数据库引挈，当前配置仅适用于小站点使用
 $config["db"]["file"] = "mysqli";
-$config["db"]["host"] = "localhost";
+$config["db"]["host"] = "127.0.0.1";
 $config["db"]["port"] = "3306";
 $config["db"]["user"] = "root";
 $config["db"]["pass"] = "root";

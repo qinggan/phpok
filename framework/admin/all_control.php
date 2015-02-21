@@ -448,8 +448,25 @@ class all_control extends phpok_control
 		//配置自定义扩展字段
 		$ext_module = "all-".$id;
 		$this->assign("ext_module",$ext_module);
-		$forbid_list = $this->model('ext')->fields("id");
-		$this->assign("ext_idstring",implode(",",$forbid_list));
+		$extlist = $this->model('ext')->ext_all($ext_module);
+		if($extlist)
+		{
+			$tmp = false;
+			foreach($extlist AS $key=>$value)
+			{
+				if($value["ext"])
+				{
+					$ext = unserialize($value["ext"]);
+					foreach($ext AS $k=>$v)
+					{
+						$value[$k] = $v;
+					}
+				}
+				$tmp[] = $this->lib('form')->format($value);
+				$this->lib('form')->cssjs($value);
+			}
+			$this->assign('extlist',$tmp);
+		}
 		$this->view("all_set");
 	}
 

@@ -10,27 +10,15 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class cate_model extends cate_model_base
 {
-	private $siteid = 0;
 	function __construct()
 	{
 		parent::__construct();
 	}
 
-	//站点ID的两种写法
-	public function siteid($id)
-	{
-		$this->siteid = intval($id);
-	}
-
-	public function site_id($id)
-	{
-		return $this->siteid($id);
-	}
-
 	//读取当前分类信息
-	public function get_one($id,$type='id',$siteid=0)
+	public function get_one($id,$field="id")
 	{
-		$cate_all = $this->cate_all($siteid);
+		$cate_all = $this->cate_all($this->site_id);
 		if(!$cate_all)
 		{
 			return false;
@@ -87,10 +75,9 @@ class cate_model extends cate_model_base
 		$siteid = intval($siteid);
 		if(!$siteid)
 		{
-			$siteid = $this->siteid;
+			$siteid = $this->site_id;
 		}
-		$siteid = $siteid ? $siteid.',0' : '0';
-		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE site_id IN(".$siteid.") AND status=1 ORDER BY taxis ASC,id DESC";
+		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE site_id='".$siteid."' AND status=1 ORDER BY taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql,'id');
 		if(!$rslist)
 		{

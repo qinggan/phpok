@@ -47,6 +47,7 @@ class cate_control extends phpok_control
 			$parent_id = $rs["parent_id"];
 			$this->assign("parent_id",$parent_id);
 			$ext_module = "cate-".$id;
+			$extlist = $this->model('ext')->ext_all($ext_module);
 		}
 		else
 		{
@@ -54,16 +55,29 @@ class cate_control extends phpok_control
 			{
 				error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('cate'),'error');
 			}
-			$ext_module = "add-cate";
-			$ext_id = $_SESSION[$ext_module."-ext-id"];
 			$this->assign("parent_id",$parent_id);
+			$ext_module = "add-cate";
+			$extlist = $_SESSION['admin-'.$ext_module];
+		}
+		if($extlist)
+		{
+			$tmp = false;
+			foreach($extlist AS $key=>$value)
+			{
+				if($value["ext"])
+				{
+					$ext = unserialize($value["ext"]);
+					foreach($ext AS $k=>$v)
+					{
+						$value[$k] = $v;
+					}
+				}
+				$tmp[] = $this->lib('form')->format($value);
+				$this->lib('form')->cssjs($value);
+			}
+			$this->assign('extlist',$tmp);
 		}
 		$this->assign("ext_module",$ext_module);
-		$forbid = array("id","identifier");
-		$forbid_list = $this->model('ext')->fields("cate,id");
-		$forbid = array_merge($forbid,$forbid_list);
-		$forbid = array_unique($forbid);
-		$this->assign("ext_idstring",implode(",",$forbid));
 
 		# 取得根分类列表
 		$parentlist = $this->model('cate')->get_all($_SESSION["admin_site_id"]);
@@ -331,6 +345,18 @@ class cate_control extends phpok_control
 			$this->model('cate')->update_taxis($key,$value);
 		}
 		$this->json("数据排序更新成功！",true);
+	}
+
+	public function ajax_taxis_f()
+	{
+		$id = $this->get('id','int');
+		$taxis = $this->get('taxis','int');
+		if(!$id)
+		{
+			$this->json(P_Lang('未指定ID'));
+		}
+		$this->model('cate')->update_taxis($id,$taxis);
+		$this->json(true);
 	}
 }
 ?>
