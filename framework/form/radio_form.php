@@ -20,26 +20,20 @@ class radio_form extends _init_auto
 		$opt_list = $this->model('opt')->group_all();
 		$this->assign('opt_list',$opt_list);
 		$rslist = $this->model('project')->get_all_project($_SESSION['admin_site_id']);
-		if($rslist)
-		{
+		if($rslist){
 			$p_list = $m_list = array();
-			foreach($rslist AS $key=>$value)
-			{
-				if(!$value["parent_id"])
-				{
+			foreach($rslist AS $key=>$value){
+				if(!$value["parent_id"]){
 					$p_list[] = $value;
 				}
-				if($value["module"])
-				{
+				if($value["module"]){
 					$m_list[] = $value;
 				}
 			}
-			if($p_list && count($p_list)>0)
-			{
+			if($p_list && count($p_list)>0){
 				$this->assign("project_list",$p_list);
 			}
-			if($m_list && count($m_list)>0)
-			{
+			if($m_list && count($m_list)>0){
 				$this->assign("title_list",$m_list);
 			}
 		}
@@ -96,13 +90,13 @@ class radio_form extends _init_auto
 			}
 			return false;
 		}else{
-			if($opt['type'] == 'project'){
+			if($opt[0] == 'project'){
 				return $this->call->phpok('_project',array('pid'=>$rs['content']));
 			}
-			if($opt['type'] == 'cate'){
+			if($opt[0] == 'cate'){
 				return $this->call->phpok('_cate',array('cateid'=>$rs['content']));
 			}
-			if($opt['type'] == 'title'){
+			if($opt[0] == 'title'){
 				return $this->call->phpok('_arc',array('title_id'=>$rs['content']));
 			}
 			return $rs['content'];

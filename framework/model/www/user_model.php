@@ -14,23 +14,6 @@ class user_model extends user_model_base
 		parent::__construct();
 	}
 
-	function get_one($id)
-	{
-		if(!$id) return false;
-		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
-		$sql.= " WHERE u.id='".$id."'";
-		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
-		$flist = $this->fields_all();
-		if(!$flist) return $rs;
-		foreach($flist AS $key=>$value)
-		{
-			$rs[$value["identifier"]] = $GLOBALS['app']->lib("ext")->content_format($value,$rs[$value["identifier"]]);
-		}
-		return $rs;
-	}
-
 	//读取会员列表数据
 	function get_list($condition="",$offset=0,$psize=30)
 	{

@@ -31,29 +31,6 @@ class user_model extends user_model_base
 		return $this->db->get_one($sql);
 	}
 
-	//获取会员信息
-	function get_one($id)
-	{
-		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
-		$sql.= " WHERE u.id='".$id."'";
-		$rs = $this->db->get_one($sql);
-		if(!$rs)
-		{
-			return false;
-		}
-		$flist = $this->fields_all();
-		if(!$flist)
-		{
-			return $rs;
-		}
-		foreach($flist AS $key=>$value)
-		{
-			$rs[$value["identifier"]] = $this->lib("ext")->content_format($value,$rs[$value["identifier"]]);
-		}
-		return $rs;
-	}
-
 	//更新会员验证串
 	function update_code($code,$id)
 	{

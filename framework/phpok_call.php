@@ -1168,5 +1168,14 @@ class phpok_call extends phpok_control
 		}
 		return $cache_tbl;
 	}
+
+	private function _user($rs)
+	{
+		if(!$rs['phpok'] && !$rs['user_id']){
+			return false;
+		}
+		$user_id = $rs['user_id'] ? $rs['user_id'] : $rs['phpok'];
+		return $this->model('user')->get_one($user_id);
+	}
 }
 ?>

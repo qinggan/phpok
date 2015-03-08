@@ -8,31 +8,36 @@
 ***********************************************************/
 class user_model_base extends phpok_model
 {
-	var $psize = 20;
-	function __construct()
+	public $psize = 20;
+	public function __construct()
 	{
 		parent::model();
 	}
 
-	function get_one($id)
+	public function get_one($id)
 	{
-		if(!$id) return false;
+		if(!$id){
+			return false;
+		}
 		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
 		$sql.= " WHERE u.id='".$id."'";
 		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
+		if(!$rs){
+			return false;
+		}
 		$flist = $this->fields_all();
-		if(!$flist) return $rs;
-		foreach($flist AS $key=>$value)
-		{
+		if(!$flist){
+			return $rs;
+		}
+		foreach($flist AS $key=>$value){
 			$rs[$value["identifier"]] = $GLOBALS['app']->lib("ext")->content_format($value,$rs[$value["identifier"]]);
 		}
 		return $rs;
 	}
 
 	//读取会员列表数据
-	function get_list($condition="",$offset=0,$psize=30)
+	public function get_list($condition="",$offset=0,$psize=30)
 	{
 		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
@@ -70,7 +75,7 @@ class user_model_base extends phpok_model
 
 
 	//取得总数量
-	function get_count($condition="")
+	public function get_count($condition="")
 	{
 		$sql = "SELECT count(u.id) FROM ".$this->db->prefix."user u ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
@@ -82,7 +87,7 @@ class user_model_base extends phpok_model
 	}
 
 	//存储会员数据
-	function save($data,$id=0)
+	public function save($data,$id=0)
 	{
 		if($id)
 		{

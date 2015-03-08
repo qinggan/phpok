@@ -86,6 +86,9 @@ class upload_form extends _init_auto
 		if(!$rs || !$rs['content']){
 			return false;
 		}
+		if($rs['ext'] && is_string($rs['ext'])){
+			$rs['ext'] = unserialize($rs['ext']);
+		}
 		$condition = "id IN(".$rs['content'].")";
 		$rslist = $GLOBALS['app']->model('res')->get_list($condition,0,999,true);
 		if(!$rslist){
