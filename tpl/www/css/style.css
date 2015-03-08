@@ -40,9 +40,9 @@ p{word-wrap:break-word}
 
 /* 首页Banner 样式 */
 
-.home_banner{ height:350px; position:relative;width:980px;margin:0 auto 10px;}
-.home_banner .pro_ul{ width:980px; height:350px;list-style:none;}
-.home_banner .page_ul{ width:980px; position:absolute; top:320px; text-align:center;list-style:none;}
+.home_banner{ height:180px; position:relative;width:980px;margin:0 auto 10px;}
+.home_banner .pro_ul{ width:980px; height:180px;list-style:none;}
+.home_banner .page_ul{ width:980px; position:absolute; top:160px; text-align:center;list-style:none;}
 .home_banner .page_ul li{ width:45px; height:12px; background:#000; display:inline-block; +display:inline; zoom:1; margin:0 2px; cursor:pointer; filter:alpha(opacity=60);opacity:0.6;}
 .home_banner .page_ul .on{ background:#3375b9;}
 

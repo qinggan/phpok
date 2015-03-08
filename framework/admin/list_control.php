@@ -204,6 +204,21 @@ class list_control extends phpok_control
 			$this->model('project')->get_parentlist($plist,$rs["parent_id"]);
 			krsort($plist);
 		}
+		$extlist = $this->model('ext')->ext_all('project-'.$id);
+		if($extlist){
+			$tmp = false;
+			foreach($extlist AS $key=>$value){
+				if($value["ext"]){
+					$ext = unserialize($value["ext"]);
+					foreach($ext AS $k=>$v){
+						$value[$k] = $v;
+					}
+				}
+				$tmp[] = $this->lib('form')->format($value);
+				$this->lib('form')->cssjs($value);
+			}
+			$this->assign('extlist',$tmp);
+		}
 		$this->assign("plist",$plist);
 		$this->view("list_set");
 	}

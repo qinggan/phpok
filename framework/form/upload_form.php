@@ -34,9 +34,9 @@ class upload_form extends _init_auto
 	public function phpok_format($rs,$appid="admin")
 	{
 		if($appid == 'admin'){
-			$this->_format_admin($rs);
+			return $this->_format_admin($rs);
 		}else{
-			$this->_format_default($rs);
+			return $this->_format_default($rs);
 		}
 	}
 
