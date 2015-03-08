@@ -285,6 +285,8 @@ class _init_phpok
 			$tpl_rs["dir_root"] = $this->dir_root;
 			$tpl_rs["refresh_auto"] = true;
 			$tpl_rs["tpl_ext"] = "html";
+			//定制语言模板ID
+			$tpl_rs['langid'] = isset($_SESSION['admin_lang_id']) ? $_SESSION['admin_lang_id'] : 'default';
 			$this->tpl = new phpok_tpl($tpl_rs);
 			unset($tpl_rs);
 		}
@@ -426,6 +428,7 @@ class _init_phpok
 					}
 					$tpl_rs["dir_tpl"] = "tpl/".$tplfolder;
 				}
+				$tpl_rs['langid'] = isset($_SESSION[$this->app_id.'_lang_id']) ? $_SESSION[$this->app_id.'_lang_id'] : 'default';
 				$site_rs["tpl_id"] = $tpl_rs;
 				unset($tpl_rs);
 			}
@@ -784,6 +787,7 @@ class _init_phpok
 			case 'time':$msg = strtotime($msg);break;
 			case 'html':$msg = $this->lib('string')->safe_html($msg,$this->url);break;
 			case 'func':$msg = function_exists($ext) ? $ext($msg) : false;break;
+			case 'text':$msg = strip_tags($msg);break;
 		}
 		if($msg)
 		{
@@ -964,7 +968,7 @@ class _init_phpok
 		$this->_action($ctrl,$func);
 	}
 
-	private function _location($url)
+	public function _location($url)
 	{
 		ob_end_clean();
 		ob_start();

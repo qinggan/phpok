@@ -268,11 +268,11 @@ class phpok_call extends phpok_control
 		}
 		if($rs['attr'])
 		{
-			$sql.= " AND l.attr LIKE '%".$rs['attr']."%' ";
+			$condition.= " AND l.attr LIKE '%".$rs['attr']."%' ";
 		}
 		if($rs['idin'])
 		{
-			$sql .= " AND l.id IN(".$rs['idin'].") ";
+			$condition .= " AND l.id IN(".$rs['idin'].") ";
 		}
 		if($rs['tag'])
 		{
@@ -427,13 +427,14 @@ class phpok_call extends phpok_control
 		{
 			return false;
 		}
-		$arc['tag'] = $this->model('tag')->tag_list($arc['id'],$rs['site']);
 		if(!$arc['module_id'])
 		{
 			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
 			$arc['url'] = $this->url($url_id);
 			return $arc;
 		}
+		//读取这个主题可能涉及到的Tag
+		$arc['tag'] = $this->model('tag')->tag_list($arc['id'],'list');
 		$flist = $this->model('module')->fields_all($arc['module_id']);
 		if(!$flist)
 		{
@@ -441,6 +442,7 @@ class phpok_call extends phpok_control
 			$arc['url'] = $this->url($url_id);
 			return $arc;
 		}
+		$taglist = array('tag'=>$arc['tag'],'list'=>array('title'=>$arc['title']));
 		//格式化扩展内容
 		foreach($flist AS $key=>$value)
 		{
@@ -465,7 +467,20 @@ class phpok_call extends phpok_control
 					$arc[$value['identifier'].'_pagelist'] = $arc[$value['identifier']]['pagelist'];
 					$arc[$value['identifier']] = $arc[$value['identifier']]['content'];
 				}
+				if($value['ext'])
+				{
+					$ext = unserialize($value['ext']);
+					if($ext['inc_tag'] && $arc['tag'])
+					{
+						$taglist['list'][$value['identifier']] = $arc[$value['identifier']];
+						$arc[$value['identifier']] = $this->tag_format($arc['tag'],$arc[$value['identifier']]);
+					}
+				}
 			}
+		}
+		if($arc['tag'])
+		{
+			$arc['tag'] = $this->tag_filter($taglist,$arc['id'],'list');
 		}
 		//如果未绑定网址
 		if(!$arc['url'])
@@ -474,6 +489,82 @@ class phpok_call extends phpok_control
 			$arc['url'] = $this->url($url_id);
 		}
 		return $arc;
+	}
+
+	private function tag_format($tag,$content)
+	{
+		if(!$tag || !$content || !is_array($tag) || !is_string($content))
+		{
+			return false;
+		}
+		foreach($tag as $key=>$value)
+		{
+			//将已存在的网址内容提取出来
+			preg_match_all('/<a.*>.*<\/a>/isU',$content,$matches);
+			if($matches && $matches[0])
+			{
+				$matches[0] = array_unique($matches[0]);
+				foreach($matches[0] as $k=>$v)
+				{
+					$string = '~/~/~'.md5($v).'~\~\~';
+					$content = str_replace($v,$string,$content);
+				}
+			}
+			$replace_count = $value['replace_count'] ? $value['replace_count'] : 3;
+			$content = preg_replace('`'.preg_quote($value['title'],'`').'`isU',$value['html'],$content,$replace_count);
+			if($matches && $matches[0])
+			{
+				foreach($matches[0] as $k=>$v)
+				{
+					$string = '~/~/~'.md5($v).'~\~\~';
+					$content = str_replace($string,$v,$content);
+				}
+			}
+		}
+		return $content;
+	}
+
+	//动态统计Tag，以更新Tag记录
+	private function tag_filter($taglist,$id=0,$type='list')
+	{
+		if(!$taglist || !$taglist['list'] || !$taglist['tag'])
+		{
+			return false;
+		}
+		$tag = $tag_keys = false;
+		foreach($taglist['tag'] as $key=>$value)
+		{
+			$tag[$value['title']] = $value;
+			$tag_keys[] = $value['title'];
+		}
+		$list = false;
+		foreach($taglist['list'] as $key=>$value)
+		{
+			foreach($tag_keys as $k=>$v)
+			{
+				if(stripos($value,$v) !== false)
+				{
+					$list[$v] = $tag[$v];
+				}
+			}
+		}
+		if(!$list)
+		{
+			return false;
+		}
+		if(!$id)
+		{
+			return $list;
+		}
+		$title_id = $type == 'cate' ? 'c'.$id : ($type == 'project' ? 'p'.$id : $id);
+		foreach($list as $key=>$value)
+		{
+			if($value['title_id'] != $title_id)
+			{
+				$this->model('tag')->stat_save($value['id'],$title_id);
+			}
+		}
+		return $list;
 	}
 
 	//取得项目信息
@@ -512,6 +603,8 @@ class phpok_call extends phpok_control
 			return false;
 		}
 		$project_tmp = $this->model('ext')->ext_all('project-'.$rs['pid'],true);
+		$project['tag'] = $this->model('tag')->tag_list($project['id'],'project',$project['site_id']);
+		$taglist = array('tag'=>$project['tag'],'list'=>array('title'=>$project['title']));
 		//格式化扩展内容
 		if($project_tmp)
 		{
@@ -522,6 +615,24 @@ class phpok_call extends phpok_control
 				{
 					$project['url'] = $project_ext[$value['identifier']];
 				}
+				//针对编辑器内容的格式化
+				if($value['form_type'] == 'editor')
+				{
+					if(is_array($project_ext[$value['identifier']]))
+					{
+						$project_ext[$value['identifier'].'_pagelist'] = $project_ext[$value['identifier']]['pagelist'];
+						$project_ext[$value['identifier']] = $project_ext[$value['identifier']]['content'];
+					}
+					if($value['ext'])
+					{
+						$ext = unserialize($value['ext']);
+						if($ext['inc_tag'] && $project['tag'])
+						{
+							$taglist['list'][$value['identifier']] = $project_ext[$value['identifier']];
+							$project_ext[$value['identifier']] = $this->tag_format($project['tag'],$project_ext[$value['identifier']]);
+						}
+					}
+				}
 			}
 			$project = array_merge($project_ext,$project);
 			unset($project_ext,$project_tmp);
@@ -530,6 +641,10 @@ class phpok_call extends phpok_control
 		if(!$project['url'])
 		{
 			$project['url'] = $this->url($project['identifier']);
+		}
+		if($project['tag'])
+		{
+			$project['tag'] = $this->tag_filter($taglist,$project['id'],'project');
 		}
 		if($cache_id)
 		{
@@ -620,7 +735,7 @@ class phpok_call extends phpok_control
 		}
 		//格式化分类
 		$array = array('all'=>$list,'project'=>$project_rs);
-		$array['cate'] = $this->cate(array('pid'=>$project_rs['id'],'cateid'=>$rs['cateid'],"site"=>$rs['site']));
+		$array['cate'] = $this->_cate(array('pid'=>$project_rs['id'],'cateid'=>$rs['cateid'],"site"=>$rs['site']));
 		//读子分类
 		foreach($list AS $key=>$value)
 		{

@@ -25,7 +25,7 @@ class project_model_base extends phpok_model
 	}
 
 	//取得项目信息
-	function get_one($id,$ext=true)
+	public function get_one($id,$ext=true)
 	{
 		if(!$id || !intval($id)) return false;
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".intval($id);

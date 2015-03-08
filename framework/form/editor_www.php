@@ -66,22 +66,22 @@ class editor_form
 		if(!$content) return false;
 		if(!$rs['pageid']) $rs['pageid'] = 1;
 		$lst = explode('[:page:]',$content);
+		$total = count($lst);
+		if($total<=1)
+		{
+			return $GLOBALS['app']->lib('ubb')->to_html($content);
+		}
 		$t = $rs['pageid']-1;
 		if($lst[$t])
 		{
-			$total = count($lst);
-			if($total>1)
+			$array = array();
+			for($i=0;$i<$total;$i++)
 			{
-				$array = array();
-				for($i=0;$i<$total;$i++)
-				{
-					$array[$i] = $i+1;
-				}
+				$array[$i] = $i+1;
 			}
 			$lst[$t] = $GLOBALS['app']->lib('ubb')->to_html($lst[$t]);
 			return array('pagelist'=>$array,'content'=>$lst[$t]);
 		}
-		$lst[0] = $GLOBALS['app']->lib('ubb')->to_html($lst[0]);
-		return $lst[0];
+		return $GLOBALS['app']->lib('ubb')->to_html($lst[0]);
 	}
 }

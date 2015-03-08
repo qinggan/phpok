@@ -107,10 +107,19 @@ $(document).ready(function(){
 		</div>
 		<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
 	</div>
-	<!-- php:$extlist = get_phpok_ext("project-".$id) -->
-	<div id="project_edit">
-	{$extlist.content.content}
+	<!-- loop from=$extlist key=$key value=$value -->
+	<div class="table">
+		<div class="title">
+			<table cellspacing="0" cellpadding="0">
+			<tr>
+				<td height="25">{$value.title}<span class="darkblue">[{$value.identifier}]</span>：</td>
+				<td><span class="note">{$value.note}</span></td>
+			</tr>
+			</table>
+		</div>
+		<div class="content">{$value.html}</div>
 	</div>
+	<!-- /loop -->
 </div>
 <div id="seo_setting" class="hide">
 	<div class="table">

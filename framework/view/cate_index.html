@@ -16,7 +16,7 @@
 	<th width="30">&nbsp;</th>
 	<th class="title">分类名称</th>
 	<th width="80">排序</th>
-	<th width="30">&nbsp;</th>
+	<th width="50">&nbsp;</th>
 	<th class="lft">操作</th>
 </tr>
 <!-- run:$tab_i = 0; -->
@@ -38,8 +38,8 @@
 		</tr>
 		</table>
 	</td>
-	<td class="center"><input type="text" class="cate_taxis" value="{$value.taxis}" tabindex="{$tab_i}" onblur="update_taxis(this.value,'{$value.id}')" /></td>
-	<td><span id="taxis_{$value.id}"></span></td>
+	<td class="center"><input type="text" id="taxis_{$value.id}" class="cate_taxis" value="{$value.taxis}" tabindex="{$tab_i}" onfocus="show_submit('{$value.id}')" onblur="hide_element('{$value.id}')" /></td>
+	<td id="taxis_submit_{$value.id}">&nbsp;</td>
 	<td>
 		<!-- if $popedom.add -->
 		<input type="button" value="添加子分类" onclick="$.phpok.go('{url ctrl=cate func=set parent_id=$value.id/}')" class="btn" />

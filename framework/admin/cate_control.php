@@ -192,7 +192,7 @@ class cate_control extends phpok_control
 			$id = $this->model('cate')->save($array);
 			if(!$id) error("分类添加失败，请检查！",$error_url);
 			//更新扩展表单信息
-			ext_save("add-cate-ext-id",true,"cate-".$id);
+			ext_save("admin-add-cate",true,"cate-".$id);
 			//清空临时表
 			$this->model('temp')->clean("add-cate",$_SESSION["admin_id"]);
 		}

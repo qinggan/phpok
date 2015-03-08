@@ -1,0 +1,5 @@
+<ul class="inp inp_radio{if $_rs.put_order}1{/if} inp_radio_{$_rs.identifier}">
+	<!-- loop from=$_rslist key=$key value=$value -->
+	<li><label><input type="radio" name="{$_rs.identifier}" value="{$value.val}"{if $_rs.content == $value.val} checked{/if} />{$value.title}</label></li>
+	<!-- /loop -->
+</ul>

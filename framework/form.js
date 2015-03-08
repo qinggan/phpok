@@ -130,7 +130,7 @@ function ext_delete(id,module,title)
 //编辑字段
 function ext_edit(id,module)
 {
-	var url = get_url("ext","edit") + "&id="+id;
+	var url = get_url("ext","edit",'id='+id);
 	url += "&module="+$.str.encode(module);
 	$.dialog.open(url,{
 		"title" : "编辑扩展字段属性",

@@ -79,12 +79,13 @@ class search_control extends phpok_control
 		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
 		$offset = ($pageid-1) * $psize;
 		$idlist = $this->model('search')->id_list($condition,$offset,$psize);
+		
 		if($idlist)
 		{
 			$rslist = array();
 			foreach($idlist AS $key=>$value)
 			{
-				$info = $this->model('data')->arc(array("id"=>$value['id']));
+				$info = $this->call->phpok('_arc',array('title_id'=>$value['id']));
 				if($info)
 				{
 					$info['_title'] = str_replace($klist,$kwlist,$info['title']);

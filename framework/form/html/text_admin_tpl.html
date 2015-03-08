@@ -1,0 +1,219 @@
+<!-- 文本表单项 -->
+<!-- if $_rs.form_btn == 'date' -->
+<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
+<input type="button" value="日期" class="btn btn_{$_rs.identifier}" onclick="laydate({elem:'#{$_rs.identifier}'})" />
+<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
+<!-- elseif $_rs.form_btn == "datetime" -->
+<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
+<input type="button" value="日期时间" class="btn btn_{$_rs.identifier}" onclick="laydate({elem:'#{$_rs.identifier}',istime:true,format: 'YYYY-MM-DD hh:mm:ss'})" />
+<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
+<!-- elseif $_rs.form_btn == "file" -->
+<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
+<input type="button" value="文件" class="btn btn_{$_rs.identifier}" id="_btn_{$_rs.identifier}" />
+<input type="button" value="下载" class="btn btn_{$_rs.identifier}" id="_btn2_{$_rs.identifier}" />
+<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#_btn_{$_rs.identifier}").click(function(){
+		var url = get_url("open","input") + "&id={$_rs.identifier}";
+		$.dialog.open(url,{
+			title: "附件管理器",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			win_min:false,
+			win_max:false,
+			resize: false
+		});
+	});
+
+	$("#_btn2_{$_rs.identifier}").click(function(){
+		var url = get_url("res_action","download");
+		var file = $("#{$_rs.identifier}").val();
+		if(!file)
+		{
+			$.dialog.alert("没有可下载的附件");
+			return false;
+		}
+		url += "&file="+$.str.encode(file);
+		window.open(url);
+	});
+});
+</script>
+<!-- elseif $_rs.form_btn == "image" -->
+<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
+<input type="button" value="选择图片" class="btn btn_{$_rs.identifier}" id="_btn_{$_rs.identifier}" />
+<input type="button" value="预览" class="btn btn_{$_rs.identifier}" id="_btn2_{$_rs.identifier}" />
+<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#_btn_{$_rs.identifier}").click(function(){
+		var url = get_url("open","input") + "&id={$_rs.identifier}&type=image";
+		$.dialog.open(url,{
+			title: "图片管理器",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			win_min:false,
+			win_max:false,
+			resize: false
+		});
+	});
+
+	$("#_btn2_{$_rs.identifier}").click(function(){
+		var url = get_url("res_action","view");
+		var file = $("#{$_rs.identifier}").val();
+		if(!file)
+		{
+			$.dialog.alert("没有指定图片");
+			return false;
+		}
+		url += "&file="+$.str.encode(file);
+		$.dialog.open(url,{
+			title: '预览图片',
+			lock: true,
+			width: '700px',
+			height: '70%',
+			win_min:false,
+			win_max:false,
+			resize: false,
+			ok: function(){}
+		});
+	});
+});
+</script>
+<!-- elseif $_rs.form_btn == "video" -->
+<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
+<input type="button" value="选择视频" class="btn btn_{$_rs.identifier}" id="_btn_{$_rs.identifier}" />
+<input type="button" value="预览" class="btn btn_{$_rs.identifier}" id="_btn2_{$_rs.identifier}" />
+<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#_btn_{$_rs.identifier}").click(function(){
+		var url = get_url("open","input") + "&id={$_rs.identifier}&type=video";
+		$.dialog.open(url,{
+			title: "视频管理器",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			win_min:false,
+			win_max:false,
+			resize: false
+		});
+	});
+
+	$("#_btn2_{$_rs.identifier}").click(function(){
+		var url = get_url("res_action","video");
+		var file = $("#{$_rs.identifier}").val();
+		if(!file)
+		{
+			$.dialog.alert("没有指定视频");
+			return false;
+		}
+		url += "&file="+$.str.encode(file);
+		$.dialog.open(url,{
+			title: '试播',
+			lock: true,
+			width: '700px',
+			height: '430px',
+			win_min:false,
+			win_max:false,
+			resize: false,
+			ok: function(){}
+		});
+	});
+});
+</script>
+<!-- elseif $_rs.form_btn == "url" -->
+<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
+<input type="button" value="首页" class="btn btn_{$_rs.identifier}" id="_btn_{$_rs.identifier}" />
+<input type="button" value="网址库" class="btn btn_{$_rs.identifier}" id="_btn2_{$_rs.identifier}" />
+<input type="button" value="访问" class="btn btn_{$_rs.identifier}" id="_btn3_{$_rs.identifier}" />
+<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
+<script type="text/javascript">
+$(document).ready(function(){
+	//点击首页时
+	$("#_btn_{$_rs.identifier}").click(function(){
+		$("#{$_rs.identifier}").val('index.php');
+	});
+	//点击网址库时弹出窗口进行选择
+	$("#_btn2_{$_rs.identifier}").click(function(){
+		var url = get_url("open","url") + "&id={$_rs.identifier}";
+		$.dialog.open(url,{
+			title: "网址管理器",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			win_min:false,
+			win_max:false,
+			resize: false
+		});
+	});
+	//访问填写的地址
+	$("#_btn3_{$_rs.identifier}").click(function(){
+		var url = $("#{$_rs.identifier}").val();
+		if(!url || url == "http://" || url == "https://")
+		{
+			$.dialog.alert("未指定网址");
+			return false;
+		}
+		window.open(url);
+	});
+});
+</script>
+<!-- elseif $_rs.form_btn == "user" -->
+<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
+<input type="button" value="会员库" class="btn btn_{$_rs.identifier}" id="_btn_{$_rs.identifier}" />
+<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#_btn_{$_rs.identifier}").click(function(){
+		var url = get_url("open","user2") + "&id={$_rs.identifier}";
+		$.dialog.open(url,{
+			title: "会员列表",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			resize: false
+		});
+	});
+});
+</script>
+<!-- elseif $_rs.form_btn == 'color' -->
+<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier} color {pickerClosable:true,pickerPosition:'right',required:false}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
+<!-- else -->
+<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
+<!-- /if -->
+<!-- if $_rs.ext_quick_words -->
+<script type="text/javascript">
+function _obj_quick_insert_{$_rs.identifier}(val)
+{
+	var linkid = "{$_rs.ext_quick_type}";
+	if(linkid == 'none')
+	{
+		$("#{$_rs.identifier}").val(val);
+	}
+	else
+	{
+		var tmp = $("#{$_rs.identifier}").val();
+		if(tmp)
+		{
+			tmp = tmp + "" +linkid + ""+val;
+		}
+		else
+		{
+			tmp = val;
+		}
+		$("#{$_rs.identifier}").val(tmp);
+	}
+}
+</script>
+	<!-- if !$_rs.form_btn -->
+	<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
+	<!-- /if -->
+<div style="padding-top:5px;">
+	<!-- loop from=$_rs.ext_quick_words key=$key value=$value -->
+	<!-- if $key -->，<!-- /if --><span style="cursor:pointer;" onclick="_obj_quick_insert_{$_rs.identifier}('{$value}')">{$value}</span>
+	<!-- /loop -->
+</div>
+<!-- /if -->

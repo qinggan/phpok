@@ -62,8 +62,8 @@
 			</script>
 			<div class="info">
 				<p class="title">{$rs.title}</p>
-				<!-- loop from=$rs.spec_single.title key=$key value=$value -->
-				<p>{$value}：{$rs.spec_single.content[$key]}</p>
+				<!-- loop from=$rs.spec_single key=$key value=$value -->
+				<p>{$key}：{$value}</p>
 				<!-- /loop -->
 				<p>查看次数：{$rs.hits}</p>
 				<p>添加时间：{func date Y-m-d $rs.dateline}</p>
@@ -83,18 +83,41 @@
 			<ul class="pro_title">
 				<li class="current">商品介绍</li>
 				<li>规格参数</li>
+				<!-- if $rs.qingdian -->
 				<li>包装清单</li>
+				<!-- /if -->
 				<li>售后保障</li>
 				<!-- if $page_rs.comment_status --><li>商品评价</li><!-- /if -->
 			</ul>
 			<div class="pro_txt">
 				<div class="content">{$rs.content}</div>
 				<div class="content">
-					<!-- loop from=$rs.spec_single.title key=$key value=$value -->
-					<p>{$value}：{$rs.spec_single.content[$key]}</p>
+					<!-- loop from=$rs.spec_single key=$key value=$value -->
+					<p>{$key}：{$value}</p>
 					<!-- /loop -->
+					<!-- if $rs.attr_demo -->
+					<!-- loop from=$rs.attr_demo key=$key value=$value -->
+					<h3 align="center" class="attr">{$value.title}</h3>
+					<table class="attr">
+					<tr>
+						<!-- loop from=$value.attrs.title key=$k value=$v -->
+						<th>{$v}</th>
+						<!-- /loop -->
+					</tr>
+					<!-- loop from=$value.attrs.content key=$k value=$v -->
+					<tr>
+						<!-- loop from=$v key=$kk value=$vv -->
+						<td>{$vv}</td>
+						<!-- /loop -->
+					</tr>
+					<!-- /loop -->
+					</table>
+					<!-- /loop -->
+					<!-- /if -->
 				</div>
-				<div class="content">{func nl2br $rs.qingdian}</div>
+				<!-- if $rs.qingdian -->
+				<div class="content">{$rs.qingdian}</div>
+				<!-- /if -->
 				<div class="content"><!-- php:$t = phpok('after-sale-protection') -->{$t.content}</div>
 				<!-- if $page_rs.comment_status --><div class="content"><!-- include tpl=block_comment --></div><!-- /if -->
 			</div>

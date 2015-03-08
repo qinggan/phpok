@@ -15,31 +15,17 @@ class form_control extends phpok_control
 		parent::control();
 	}
 
-	function config_f()
+	public function config_f()
 	{
 		$id = $this->get("id");
 		if(!$id)
 		{
 			exit("未指定ID");
 		}
-		$idfile = $this->dir_phpok."form/".$id."_".$this->app_id.".php";
-		if(!file_exists($idfile))
-		{
-			exit("文件：".$idfile." 不存在");
-		}
-		include_once($idfile);
-		$name = $id."_form";
-		$form = new $name();
-		$list = get_class_methods($form);
-		if(!in_array("config",$list))
-		{
-			exit("方法：config 不存在");
-		}
 		$eid = $this->get("eid","int");
 		$etype = $this->get("etype");
 		if(!$etype) $etype = "ext";
-		if($eid)
-		{
+		if($eid) {
 			if($etype == "fields")
 			{
 				$rs = $this->model('fields')->get_one($eid);
@@ -66,7 +52,7 @@ class form_control extends phpok_control
 			}
 			$this->assign("rs",$rs);
 		}
-		$form->config();
+		$this->lib('form')->config($id);
 	}
 }
 ?>

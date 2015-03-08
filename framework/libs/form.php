@@ -35,6 +35,14 @@ class form_lib
 		{
 			return $this->$class_name;
 		}
+		//新版写法
+		$newfile = $this->dir_form.$class_name.'.php';
+		if(is_file($newfile)){
+			include($newfile);
+			$this->$class_name = new $class_name();
+			return $this->$class_name;
+		}
+		//旧版写法，将慢慢放弃
 		$file = $this->dir_form.$name.'_'.$this->appid.'.php';
 		if(!is_file($file))
 		{
@@ -58,6 +66,25 @@ class form_lib
 		return $this->cls($rs['form_type']);
 	}
 
+	public function config($id){
+		$obj = $this->cls($id);
+		if(!$obj){
+			return false;
+		}
+		$mlist = get_class_methods($obj);
+		if(in_array('phpok_config',$mlist))
+		{
+			$obj->phpok_config();
+			exit;
+		}
+		if(in_array('config',$mlist))
+		{
+			$obj->config();
+			exit;
+		}
+		exit(P_Lang('文件异常'));
+	}
+
 	//格式化表单信息
 	public function format($rs)
 	{
@@ -67,14 +94,18 @@ class form_lib
 			return $rs;
 		}
 		$mlist = get_class_methods($obj);
+		if(in_array('phpok_format',$mlist))
+		{
+			$info = $obj->phpok_format($rs,$this->appid);
+			$rs['html'] = $info;
+			return $rs;
+		}
 		if(in_array('format',$mlist))
 		{
 			$info = $obj->format($rs);
 			$rs['html'] = $info;
-			unset($obj,$info,$mlist);
 			return $rs;
 		}
-		unset($obj,$mlist);
 		return $rs;
 	}
 
@@ -87,33 +118,33 @@ class form_lib
 			return false;
 		}
 		$mlist = get_class_methods($obj);
-		if(in_array('get',$mlist))
-		{
+		if(in_array('phpok_get',$mlist)){
+			return $obj->phpok_get($rs,$this->appid);
+		}
+		if(in_array('get',$mlist)){
 			return $obj->get($rs);
 		}
-		unset($obj,$mlist);
-		return false;
+		return $GLOBALS['app']->get($rs['identifier'],$rs['format']);
 	}
 
 	//输出内容信息
 	public function show($rs,$value='')
 	{
-		if(!$rs)
-		{
+		if(!$rs){
 			return $value;
 		}
-		if($value == '')
-		{
-			$value = $rs['content'];
+		if($value){
+			$rs['content'] = $value;
 		}
 		$obj = $this->_obj($rs);
-		if(!$obj)
-		{
+		if(!$obj){
 			return $value;
 		}
 		$mlist = get_class_methods($obj);
-		if(in_array('show',$mlist))
-		{
+		if(in_array('phpok_show',$mlist)){
+			return $obj->phpok_show($rs,$this->appid);
+		}
+		if(in_array('show',$mlist)){
 			if(!$value) $value = $rs['content'];
 			return $obj->show($rs,$value);
 		}

@@ -95,20 +95,6 @@
 	</div>
 	<div class="table">
 		<div class="title">
-			长文本：
-			<span class="note">设置是否读取长文本内容，建议列表不使用</span>
-		</div>
-		<div class="content">
-			<table>
-			<tr>
-				<td><label><input type="radio" name="in_text" value="0"{if !$rs.in_text} checked{/if} /> 禁用</label></td>
-				<td><label><input type="radio" name="in_text" value="1"{if $rs.in_text} checked{/if} /> 启用</label></td>
-			</tr>
-			</table>
-		</div>
-	</div>
-	<div class="table">
-		<div class="title">
 			子主题：
 			<span class="note">是否同时读取子主题信息</span>
 		</div>
@@ -117,36 +103,6 @@
 			<tr>
 				<td><label><input type="radio" name="in_sub" value="0"{if !$rs.in_sub} checked{/if} /> 禁用</label></td>
 				<td><label><input type="radio" name="in_sub" value="1"{if $rs.in_sub} checked{/if} /> 启用</label></td>
-			</tr>
-			</table>
-		</div>
-	</div>
-	<div class="table">
-		<div class="title">
-			包含项目：
-			<span class="note">是否包含项目基本信息</span>
-		</div>
-		<div class="content">
-			<table>
-			<tr>
-				<td><label><input type="radio" name="in_project" value="0"{if !$rs.in_project} checked{/if} /> 禁用</label></td>
-				<td><label><input type="radio" name="in_project" value="1"{if $rs.in_project == 1} checked{/if} /> 简单启用</label></td>
-				<td><label><input type="radio" name="in_project" value="2"{if $rs.in_project == 2} checked{/if} /> 高级启用（支持项目的扩展内容）</label></td>
-			</tr>
-			</table>
-		</div>
-	</div>
-	<div class="table">
-		<div class="title">
-			包含分类：
-			<span class="note">是否包含分类信息</span>
-		</div>
-		<div class="content">
-			<table>
-			<tr>
-				<td><label><input type="radio" name="in_cate" value="0"{if !$rs.in_project} checked{/if} /> 禁用</label></td>
-				<td><label><input type="radio" name="in_cate" value="1"{if $rs.in_cate == 1} checked{/if} /> 简单启用</label></td>
-				<td><label><input type="radio" name="in_cate" value="2"{if $rs.in_cate == 2} checked{/if} /> 高级启用（支持项目的扩展内容）</label></td>
 			</tr>
 			</table>
 		</div>
@@ -218,88 +174,6 @@
 		<div class="content">
 			<input type="text" id="cate" name="cate" class="default" value="{$rs.cate}" />
 			<input type="button" value="清空" onclick="$('#cate').val('')" class="button" />
-		</div>
-	</div>
-	<div class="table">
-		<div class="title">
-			自定义信息：
-			<span class="note">读取分类信息时是否同时读取相应的自定义内容数据</span>
-		</div>
-		<div class="content">
-			<table>
-			<tr>
-				<td><label><input type="radio" name="cate_ext" value="0"{if !$rs.cate_ext} checked{/if} /> 禁用</label></td>
-				<td><label><input type="radio" name="cate_ext" value="1"{if $rs.cate_ext} checked{/if} /> 启用</label></td>
-			</tr>
-			</table>
-		</div>
-	</div>
-</div>
-
-<div class="hide" id="catelist_info">
-	<div class="table">
-		<div class="title">
-			自定义信息：
-			<span class="note">读取数据是否同时读取相应的自定义内容数据</span>
-		</div>
-		<div class="content">
-			<table>
-			<tr>
-				<td><label><input type="radio" name="catelist_ext" value="0"{if !$rs.catelist_ext} checked{/if} /> 禁用</label></td>
-				<td><label><input type="radio" name="catelist_ext" value="1"{if $rs.catelist_ext} checked{/if} /> 启用</label></td>
-			</tr>
-			</table>
-		</div>
-	</div>
-</div>
-
-<div class="hide" id="project_info">
-	<div class="table">
-		<div class="title">
-			自定义信息：
-			<span class="note">读取数据是否同时读取相应的自定义内容数据</span>
-		</div>
-		<div class="content">
-			<table>
-			<tr>
-				<td><label><input type="radio" name="project_ext" value="0"{if !$rs.project_ext} checked{/if} /> 禁用</label></td>
-				<td><label><input type="radio" name="project_ext" value="1"{if $rs.project_ext} checked{/if} /> 启用</label></td>
-			</tr>
-			</table>
-		</div>
-	</div>
-</div>
-
-<div class="hide" id="sublist_info">
-	<div class="table">
-		<div class="title">
-			自定义信息：
-			<span class="note">读取数据是否同时读取相应的自定义内容数据</span>
-		</div>
-		<div class="content">
-			<table>
-			<tr>
-				<td><label><input type="radio" name="sublist_ext" value="0"{if !$rs.sublist_ext} checked{/if} /> 禁用</label></td>
-				<td><label><input type="radio" name="sublist_ext" value="1"{if $rs.sublist_ext} checked{/if} /> 启用</label></td>
-			</tr>
-			</table>
-		</div>
-	</div>
-</div>
-
-<div class="hide" id="parent_info">
-	<div class="table">
-		<div class="title">
-			自定义信息：
-			<span class="note">读取数据是否同时读取相应的自定义内容数据</span>
-		</div>
-		<div class="content">
-			<table>
-			<tr>
-				<td><label><input type="radio" name="parent_ext" value="0"{if !$rs.parent_ext} checked{/if} /> 禁用</label></td>
-				<td><label><input type="radio" name="parent_ext" value="1"{if $rs.parent_ext} checked{/if} /> 启用</label></td>
-			</tr>
-			</table>
 		</div>
 	</div>
 </div>

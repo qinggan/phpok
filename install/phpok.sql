@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- 主机: localhost:3306
--- 生成日期: 2015 年 02 月 17 日 16:15
+-- 生成日期: 2015 年 02 月 25 日 13:15
 -- 服务器版本: 5.5.40
--- PHP 版本: 5.4.33
+-- PHP 版本: 5.3.29
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart` (
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示游客',
   `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车' AUTO_INCREMENT=9 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车' AUTO_INCREMENT=17 ;
 
 --
 -- 转存表中的数据 `qinggan_cart`
@@ -140,7 +140,13 @@ INSERT INTO `qinggan_cart` (`id`, `session_id`, `user_id`, `addtime`) VALUES
 (4, 'a05mbtocrpr4ks24av814gk7h3', 0, 1423456532),
 (5, '4kgtd1o7i7vdl1o8l2frnpjum5', 0, 1423644746),
 (6, 'dn6mpggd0j1b86alue5a8aaqf1', 0, 1424092886),
-(8, '8jrbteoquq65qblrp1vi68sc27', 12, 1424160670);
+(14, 'leggjn0isdt98kknouqap6lke0', 12, 1424510109),
+(9, 'd312uk8ucf5jv7ptvkrsoddj76', 0, 1424329909),
+(10, 'iattre2b4ktfn0ug02agosp237', 0, 1424395761),
+(11, 'pq2saqh869cuat1brs38n1g8f7', 0, 1424481909),
+(12, 'h8bcngeo1po72dh3mpu0o5fha7', 0, 1424499484),
+(15, 'l1foeceibj5vu2lfghapolrsq7', 0, 1424740120),
+(16, 'p78s039sjidgqqlcsdvitrq6s3', 0, 1424823487);
 
 -- --------------------------------------------------------
 
@@ -158,13 +164,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart_product` (
   `ext` text NOT NULL COMMENT '扩展属性',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车里的产品信息' AUTO_INCREMENT=3 ;
-
---
--- 转存表中的数据 `qinggan_cart_product`
---
-
-INSERT INTO `qinggan_cart_product` (`id`, `cart_id`, `tid`, `title`, `price`, `qty`, `ext`) VALUES
-(2, 8, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', 799, 1, '');
 
 -- --------------------------------------------------------
 
@@ -208,7 +207,7 @@ INSERT INTO `qinggan_cate` (`id`, `site_id`, `parent_id`, `status`, `title`, `ta
 (156, 1, 154, 1, '型男靓女', 20, '', '', 0, '', '', '', 'xingnanliangnv', ''),
 (157, 1, 72, 1, 'T恤', 10, '', '', 0, '', '', '', 't-shirt', ''),
 (158, 1, 72, 1, 'polo衫', 20, '', '', 0, '', '', '', 'polo-shirt', ''),
-(168, 1, 72, 1, '衬衫', 30, '', '', 0, '', '', '', 'shirt', ''),
+(168, 1, 72, 1, '衬衫', 15, '', '', 0, '', '', '', 'shirt', ''),
 (180, 1, 72, 1, '潮牌', 160, '', '', 0, '', '', '', 'chaopai', ''),
 (192, 1, 152, 1, '戒指', 90, '', '', 0, '', '', '', 'jiezhi', ''),
 (193, 1, 152, 1, '耳饰', 100, '', '', 0, '', '', '', 'ershi', ''),
@@ -297,7 +296,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_ext` (
   `ext` text NOT NULL COMMENT '扩展内容',
   PRIMARY KEY (`id`),
   KEY `module` (`module`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='字段管理器' AUTO_INCREMENT=248 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='字段管理器' AUTO_INCREMENT=259 ;
 
 --
 -- 转存表中的数据 `qinggan_ext`
@@ -339,8 +338,7 @@ INSERT INTO `qinggan_ext` (`id`, `module`, `title`, `identifier`, `field_type`, 
 (240, 'cate-205', '摘要', 'note', 'longtext', '简要文字描述', 'textarea', '', 'safe', '', 20, 'a:2:{s:5:"width";s:3:"600";s:6:"height";s:2:"80";}'),
 (241, 'cate-206', '摘要', 'note', 'longtext', '简要文字描述', 'textarea', '', 'safe', '', 20, 'a:2:{s:5:"width";s:3:"600";s:6:"height";s:2:"80";}'),
 (244, 'project-144', '英文标题', 'entitle', 'varchar', '设置与主题名称相对应的英文标题', 'text', '', 'safe', '', 255, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"500";s:15:"ext_quick_words";b:0;s:14:"ext_quick_type";b:0;}'),
-(246, 'project-142', '英文标题', 'entitle', 'varchar', '设置与主题名称相对应的英文标题', 'text', '', 'safe', '', 255, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"500";s:15:"ext_quick_words";b:0;s:14:"ext_quick_type";b:0;}'),
-(247, 'cate-70', '摘要', 'note', 'longtext', '简要文字描述', 'textarea', '', 'safe', '', 20, 'a:2:{s:5:"width";s:3:"600";s:6:"height";s:2:"80";}');
+(246, 'project-142', '英文标题', 'entitle', 'varchar', '设置与主题名称相对应的英文标题', 'text', '', 'safe', '', 255, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"500";s:15:"ext_quick_words";b:0;s:14:"ext_quick_type";b:0;}');
 
 -- --------------------------------------------------------
 
@@ -389,8 +387,7 @@ INSERT INTO `qinggan_extc` (`id`, `content`) VALUES
 (240, '围绕我公司提供的产品进行讨论\r\n广开言路，我公司会虚心接纳，完善产品'),
 (241, '吐吐糟，发发牢骚，八卦精神无处不在\r\n笑一笑，十年少，在这个快节奏的时代里，这里还有一片净土供您休息\r\n不是我不爱，只是世界变化快^o^'),
 (244, 'Photos'),
-(246, 'Links'),
-(247, '');
+(246, 'Links');
 
 -- --------------------------------------------------------
 
@@ -518,7 +515,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_list` (
   `currency_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '货币ID，对应currency表',
   PRIMARY KEY (`id`),
   KEY `project_id` (`project_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='内容主表' AUTO_INCREMENT=1367 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='内容主表' AUTO_INCREMENT=1368 ;
 
 --
 -- 转存表中的数据 `qinggan_list`
@@ -534,9 +531,9 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (719, 712, 0, 23, 42, 1, '联系我们', 1383355984, 23, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (1277, 0, 0, 21, 41, 1, '选择PHPOK，企业更专业', 1394008434, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (755, 712, 0, 23, 42, 1, '工作环境', 1383640450, 24, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
-(1306, 0, 191, 24, 45, 1, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', 1410443859, 0, 1, 0, 106, '', '', '', '', '', '', 0, 0, '', '799.0000', 1),
+(1306, 0, 191, 24, 45, 1, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', 1410443859, 0, 1, 0, 107, '', '', '', '', '', '', 0, 0, '', '799.0000', 1),
 (758, 0, 8, 22, 43, 1, '31条航线机票取消打折下限 多与京沪京广高铁竞争', 1383806674, 0, 1, 0, 16, '', '', '', '', '', '', 1399239499, 0, '', '0.0000', 0),
-(759, 0, 68, 22, 43, 1, '阿里TV系统升级 将增加安全监控功能', 1383806741, 0, 1, 0, 7, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
+(759, 0, 68, 22, 43, 1, '阿里TV系统升级 将增加安全监控功能', 1383806741, 0, 1, 0, 30, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (760, 713, 0, 23, 42, 1, '公司新闻', 1383815715, 10, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (761, 713, 0, 23, 42, 1, '行业新闻', 1383815736, 20, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (1258, 0, 0, 46, 96, 1, '测试的留言', 1392376101, 0, 1, 0, 0, '', '', '', '', '', '', 0, 3, '', '0.0000', 0),
@@ -552,8 +549,8 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (1266, 0, 0, 61, 142, 1, '中国站长', 1393321365, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (1267, 0, 0, 61, 142, 1, '落伍者', 1393321391, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (1268, 0, 0, 61, 142, 1, '源码之家', 1393321413, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
-(1269, 0, 68, 22, 43, 1, 'Chrome 33 新变化引发用户强烈抗议', 1393332440, 0, 1, 0, 265, '', '', '', '', 'Chrome 强烈抗议', '', 1410437460, 0, 'chrome-33-new-change-user-strong-protest', '0.0000', 0),
-(1341, 0, 155, 68, 144, 1, '无奈的发明家', 1413169790, 0, 1, 0, 7, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
+(1269, 0, 68, 22, 43, 1, 'Chrome 33 新变化引发用户强烈抗议', 1393332440, 0, 1, 0, 267, '', '', '', '', 'Chrome 强烈抗议', '', 1410437460, 0, 'chrome-33-new-change-user-strong-protest', '0.0000', 0),
+(1341, 0, 155, 68, 144, 1, '无奈的发明家', 1413169790, 0, 1, 0, 8, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (1278, 0, 0, 21, 41, 1, '开源精神，开创未来', 1394008456, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (1279, 0, 0, 46, 96, 1, '测试留言', 1396947239, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (1285, 0, 0, 46, 96, 1, '测试留言', 1399239571, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
@@ -573,11 +570,9 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (1311, 0, 204, 66, 152, 1, '测试论坛功能', 1412391521, 0, 1, 0, 1, '', '', '', '', '', '', 0, 3, '', '0.0000', 0),
 (1342, 0, 155, 68, 144, 1, '悬崖上的环卫工', 1413169968, 0, 1, 0, 25, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
 (1334, 0, 204, 66, 152, 1, '测试', 1413063267, 0, 1, 0, 3, '', '', '', '', '', '', 0, 3, '', '0.0000', 0),
-(1336, 0, 204, 66, 152, 1, '测试图片功能', 1413064520, 0, 1, 0, 15, '', '', '', '', '', '', 0, 3, '', '0.0000', 0),
-(1344, 0, 68, 22, 43, 1, '测试视频', 1415263868, 0, 1, 0, 56, '', '', '', '', '', '', 0, 0, '', '0.0000', 0),
-(1348, 0, 204, 66, 152, 1, '测试权限功能', 1414120852, 0, 1, 0, 11, '', '', '', '', '', '', 1414121403, 3, '', '0.0000', 0),
-(1356, 0, 205, 66, 152, 1, '测试下代码', 1421412599, 0, 1, 0, 2, '', '', '', '', '', '', 0, 3, '', '0.0000', 0),
-(1357, 0, 68, 22, 43, 1, '网吧的春天', 1423012886, 0, 1, 0, 7, '', '', '', '', '', '', 0, 0, '', '0.0000', 0);
+(1336, 0, 204, 66, 152, 1, '测试图片功能', 1413064520, 0, 1, 0, 19, '', '', '', '', '', '', 0, 3, '', '0.0000', 0),
+(1348, 0, 204, 66, 152, 1, '测试权限功能', 1414120852, 0, 1, 0, 15, '', '', '', '', '', '', 1414121403, 3, '', '0.0000', 0),
+(1356, 0, 205, 66, 152, 1, '测试下代码', 1421412599, 0, 1, 0, 2, '', '', '', '', '', '', 0, 3, '', '0.0000', 0);
 
 -- --------------------------------------------------------
 
@@ -630,10 +625,8 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_22` (
 
 INSERT INTO `qinggan_list_22` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `content`, `note`) VALUES
 (758, 1, 43, 8, '543', '<p style="margin-bottom: 29px; font-size: 16px; line-height: 28px; font-family: 宋体, Arial, sans-serif; text-indent: 2em; ">昨天，中国民用航空局和国家发改委发布通知称，对旅客运输票价实行政府指导价的国内航线，均取消票价下浮幅度限制。与此同时，国内不设打折下限的航线又新增31条。</p><p style="margin-bottom: 29px; font-size: 16px; line-height: 28px; font-family: 宋体, Arial, sans-serif; text-indent: 2em; ">据民航业内人士介绍，根据2004年出台的《民航国内<a class="a-tips-Article-QQ" href="http://stockhtm.finance.qq.com/astock/ggcx/ATSG.OQ.htm" target="_blank" style="text-decoration: none; outline: none; color: rgb(0, 0, 0); border-bottom-width: 1px; border-bottom-style: dotted; border-bottom-color: rgb(83, 109, 166); ">航空运输</a>价格改革方案》，省、自治区内，及直辖市与相邻省、自治区、直辖市之间的短途航线，已经与其他替代运输方式形成竞争的，实行市场调节价，不规定票价浮动幅度。除上述施行市场调节价的航线外，民航国内航空旅客运输票价实行浮动幅度管理，票价上浮幅度最高不得超过基准价的25%。</p><p style="margin-bottom: 29px; font-size: 16px; line-height: 28px; font-family: 宋体, Arial, sans-serif; text-indent: 2em; ">昨天发布的通知规定，对部分与地面主要交通运输方式形成竞争，且由两家(含)以上航空公司共同经营的国内航线，旅客运输票价由实行政府指导价改为市场调节价。航空公司可根据市场供求情况自主确定票价水平的航线新增31条。实行市场调节价的国内航线目录由民航局和国家发改委规定，于每年一季度调整公布。航空公司在上述范围内制定或调整旅客运输票价时，应至少提前7日向社会公布，并通过航空价格信息系统抄报民航局、发改委。上述业内人士分析，此次由政府指导价转为市场调节价的31条航线，大多是与京广、京沪等高铁存在竞争，取消浮动幅度限制，有利于提高民航的竞争力。</p>', ''),
-(759, 1, 43, 68, '', '<p align="center" style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; "></p><div class="mbArticleSharePic        " r="1" style="margin: 0px auto; padding: 0px; position: relative; z-index: 10; width: 500px; "><img alt="阿里TV系统升级 将增加安全监控功能" src="res/201311/07/85032f7e7ba3cfd7_37.jpg" style="border: 0px; " /></div><p></p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; "><strong>腾讯科技讯</strong>（范蓉）11月7日消息，阿里TV系统将于本月进行升级，增加家庭安全监控功能。同时，阿里在今年“双11”期间，将采用100万台天猫魔盒免费送的方式，加速阿里TV系统在终端的普及。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">尽管阿里TV系统已经将电商与TV结合，但阿里并不满足于这一现状。“电视处于客厅的重要位置，阿里一直欲加强自身砝码，安全监控就是其中之一。”阿里一位内部人士表示。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">据透露，阿里TV系统将提供的安全监控功能，主要通过系统应用、摄像头及智能手机之间的软硬结合来实现。用户只需在智能电视上增设一个摄像头，同时在手机中安装阿里TV助手，就可在任意场所，通过手机屏幕看到家中实时传送过来的画面。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">业内人士认为，阿里不仅将电视定位为PC、手机、平板之外的第四个屏幕选择，还希望将电视提升到智能家居的大概念中。“加入安全监控功能的阿里TV系统，将使电视在家庭中扮演更加重要的监护设备角色。”</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">据悉，安全监控功能将是阿里TV系统11月份更新的重头戏。未来阿里TV系统还会增加云存储功能，让用户可随时查询、回放家庭生活片段。</p>', ''),
-(1269, 1, 43, 68, '544', '<p>Google发布了Chrome 33，其中一项新变化是从Chrome://flags移除了Instant Extended API。结果在官方论坛用户吵翻了天，因为移除Instant Extended API影响了新标签页，引发用户强烈抗议，许多用户认为改动后的新标签页无比丑陋。</p><p>Google自我辩解说，Chrome://flags本来就是展示的 实验性功能，是不被官方正式支持的，是随时会被移除或改动的。Google开发者向抱怨的用户推荐三个扩展替代被移除的Instant Extended API：Replace New Tab，Modern New Tab Page，和iChrome。</p><p><img src="res/201410/08/auto_666.jpg" alt="auto_666.jpg"/></p>', 'Google发布了Chrome 33，其中一项新变化是从Chrome://flags移除了Instant Extended API。结果在官方论坛用户吵翻了天，因为移除Instant Extended API影响了新标签页，引发用户强烈抗议，许多用户认为改动后的新标签页无比丑陋。'),
-(1344, 1, 43, 68, '', '<p>[title:1336]测试图片功能[/title]</p><p>[title:1332]aIkrtvvzw81412976415[/title]</p><p>[download=687]退休矿工自家宅院掘地六米挖出地下居室[/download]</p><p>[download=686]悬崖上的环卫工03[/download]</p><p><br/></p>', ''),
-(1357, 1, 43, 68, '721', '<p></p><p style="text-align: center;"><img src="res/201502/04/auto_721.jpg"/></p><p>随着移动互联网、智能设备的普及，网吧这几年的日子可是不太好过。不过，随着 VR 的兴起，网吧可能再迎春天。</p><p>Nick Lee 就想与时俱进，在波士顿 Kenmore 广场开一家“ 虚拟现实网吧”，提供饮料、小吃和虚拟现实的各类游戏装备。2014 年 6 月在 Kickstarter 和 Indiegogo 上同时发起了众筹，想分别筹 2.5 万美元和 5 万美元，希望在 2014 年底在大学附近开一家网吧，配备 Oculus Rift 和 Omni 跑步机等设备。不过，最终共计筹到了 400 美元。（不得不说，他们众筹的页面实在是太将就太朴素了，我也不想给钱。）今天偶然打开官网，发现已经“黑”掉了。</p><p>现在，VR 还处在早期，主要关注者还是发烧友和开发者，对普通用户来说还太早了。“ 不成功 ” 再所难免。</p><p>但与 PC 早期类似，设备和上网都比较贵，用户还需要教育，需要网吧和其他的线下渠一起来科普。以 Oculus 为例，现阶段一台 Oculus Rift 的售价是 350 美元，但真正到手的价格往往至少是在 2300 元以上。此外，还需要有一台可以跑的动 Oculus 的 PC。这还不算，要想真正用上，还需要经过复杂的调试和设置。对于普通消费者来说，这些都是痛点。据说，现在已经有国内的头显厂商打算尝试类似的想法了。</p>', '随着移动互联网、智能设备的普及，网吧这几年的日子可是不太好过。不过，随着 VR 的兴起，网吧可能再迎春天。');
+(759, 1, 43, 68, '721', '<p style="text-align:center;margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体;"><img src="res/201502/04/auto_721.jpg" alt="auto_721.jpg"/></p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; "><strong>腾讯科技讯</strong>（范蓉）11月7日消息，阿里TV系统将于本月进行升级，增加家庭安全监控功能。同时，阿里在今年“双11”期间，将采用100万台天猫魔盒免费送的方式，加速阿里TV系统在终端的普及。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">尽管阿里TV系统已经将电商与TV结合，但阿里并不满足于这一现状。“电视处于客厅的重要位置，阿里一直欲加强自身砝码，安全监控就是其中之一。”阿里一位内部人士表示。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">据透露，阿里TV系统将提供的安全监控功能，主要通过系统应用、摄像头及智能手机之间的软硬结合来实现。用户只需在智能电视上增设一个摄像头，同时在手机中安装阿里TV助手，就可在任意场所，通过手机屏幕看到家中实时传送过来的画面。</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">业内人士认为，阿里不仅将电视定位为PC、手机、平板之外的第四个屏幕选择，还希望将电视提升到智能家居的大概念中。“加入安全监控功能的阿里TV系统，将使电视在家庭中扮演更加重要的监护设备角色。”</p><p style="margin-top: 20px; margin-right: auto; margin-left: auto; padding-top: 5px; padding-bottom: 5px; line-height: 26px; font-size: 16px; color: rgb(51, 51, 51); font-family: 微软雅黑, Tahoma, Verdana, 宋体; text-indent: 2em; ">据悉，安全监控功能将是阿里TV系统11月份更新的重头戏。未来阿里TV系统还会增加云存储功能，让用户可随时查询、回放家庭生活片段。</p>', ''),
+(1269, 1, 43, 68, '544', '<p>Google发布了Chrome 33，其中一项新变化是从Chrome://flags移除了Instant Extended API。结果在官方论坛用户吵翻了天，因为移除Instant Extended API影响了新标签页，引发用户强烈抗议，许多用户认为改动后的新标签页无比丑陋。</p><p>Google自我辩解说，Chrome://flags本来就是展示的 实验性功能，是不被官方正式支持的，是随时会被移除或改动的。Google开发者向抱怨的用户推荐三个扩展替代被移除的Instant Extended API：Replace New Tab，Modern New Tab Page，和iChrome。</p><p><img src="res/201410/08/auto_666.jpg" alt="auto_666.jpg"/></p>', 'Google发布了Chrome 33，其中一项新变化是从Chrome://flags移除了Instant Extended API。结果在官方论坛用户吵翻了天，因为移除Instant Extended API影响了新标签页，引发用户强烈抗议，许多用户认为改动后的新标签页无比丑陋。');
 
 -- --------------------------------------------------------
 
@@ -909,7 +902,14 @@ CREATE TABLE IF NOT EXISTS `qinggan_log` (
   `action` varchar(100) NOT NULL COMMENT '方法',
   `app_id` varchar(100) NOT NULL COMMENT '应用ID',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='日志表' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='日志表' AUTO_INCREMENT=2 ;
+
+--
+-- 转存表中的数据 `qinggan_log`
+--
+
+INSERT INTO `qinggan_log` (`id`, `title`, `addtime`, `app`, `action`, `app_id`) VALUES
+(1, 'Array\n(\n    [title] => demo2\n    [note] => \n    [form_type] => textarea\n    [form_style] => \n    [content] => \n    [format] => safe\n    [taxis] => 255\n    [ext] => a:2:{s:5:"width";s:0:"";s:6:"height";s:0:"";}\n)\n', 1424412616, 'ext', 'save', 'admin');
 
 -- --------------------------------------------------------
 
@@ -1114,14 +1114,15 @@ CREATE TABLE IF NOT EXISTS `qinggan_order` (
   `pay_end` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1支付已审核并已结束0表示正在进行中',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ordersn` (`sn`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单中心' AUTO_INCREMENT=22 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单中心' AUTO_INCREMENT=23 ;
 
 --
 -- 转存表中的数据 `qinggan_order`
 --
 
 INSERT INTO `qinggan_order` (`id`, `sn`, `user_id`, `addtime`, `qty`, `price`, `currency_id`, `status`, `endtime`, `passwd`, `ext`, `note`, `pay_id`, `pay_title`, `pay_date`, `pay_status`, `pay_price`, `pay_currency`, `pay_currency_code`, `pay_currency_rate`, `pay_end`) VALUES
-(21, 'P20150217001', 12, 1424156172, 1, '799.0000', 1, '审核中', 0, '02772f698cddbeb0d25c242b651a1130', '', '', 1, '支付宝快捷支付', 1424156261, '正在支付', '799.00', 1, 'CNY', '6.16989994', 0);
+(21, 'P20150217001', 12, 1424156172, 1, '799.0000', 1, '审核中', 0, '02772f698cddbeb0d25c242b651a1130', '', '', 1, '支付宝快捷支付', 1424156261, '正在支付', '799.00', 1, 'CNY', '6.16989994', 0),
+(22, 'P20150221001', 12, 1424510108, 1, '799.0000', 1, '审核中', 0, '377312d821db775e938990aba85c4ba6', '', '', 0, '', 0, '', '', 0, '', '0.00000000', 0);
 
 -- --------------------------------------------------------
 
@@ -1145,7 +1146,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_address` (
   `fullname` varchar(100) NOT NULL COMMENT '联系人姓名',
   `gender` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0女1男',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单地址库' AUTO_INCREMENT=30 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单地址库' AUTO_INCREMENT=32 ;
 
 --
 -- 转存表中的数据 `qinggan_order_address`
@@ -1153,7 +1154,9 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_address` (
 
 INSERT INTO `qinggan_order_address` (`id`, `order_id`, `country`, `province`, `city`, `county`, `address`, `zipcode`, `type_id`, `mobile`, `tel`, `email`, `fullname`, `gender`) VALUES
 (28, 21, '中国', '广东省', '深圳市', '宝安区', '龙华新区001', '518000', 'shipping', '15818533971', '', 'admin@phpok.com', '苏相锟', 1),
-(29, 21, '中国', '北京市', '(市辖区)', '东城区', '龙华新区001', '518000', 'billing', '15818533971', '', '', '苏相锟', 0);
+(29, 21, '中国', '北京市', '(市辖区)', '东城区', '龙华新区001', '518000', 'billing', '15818533971', '', '', '苏相锟', 0),
+(30, 22, '中国', '广东省', '深圳市', '宝安区', '龙华新区001', '518000', 'shipping', '15818533971', '', 'admin@phpok.com', '苏相锟', 1),
+(31, 22, '中国', '北京市', '(市辖区)', '东城区', '龙华新区001', '518000', 'billing', '15818533971', '', '', '苏相锟', 0);
 
 -- --------------------------------------------------------
 
@@ -1171,14 +1174,15 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_product` (
   `thumb` int(11) NOT NULL COMMENT '产品图片ID',
   `ext` text NOT NULL COMMENT '产品扩展属性',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单的产品信息' AUTO_INCREMENT=23 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单的产品信息' AUTO_INCREMENT=24 ;
 
 --
 -- 转存表中的数据 `qinggan_order_product`
 --
 
 INSERT INTO `qinggan_order_product` (`id`, `order_id`, `tid`, `title`, `price`, `qty`, `thumb`, `ext`) VALUES
-(22, 21, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', '799.0000', 1, 636, '');
+(22, 21, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', '799.0000', 1, 636, ''),
+(23, 22, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', '799.0000', 1, 636, '');
 
 -- --------------------------------------------------------
 
@@ -1320,7 +1324,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_popedom` (
   `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序',
   PRIMARY KEY (`id`),
   KEY `gid` (`gid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='权限明细' AUTO_INCREMENT=704 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='权限明细' AUTO_INCREMENT=705 ;
 
 --
 -- 转存表中的数据 `qinggan_popedom`
@@ -2007,7 +2011,8 @@ INSERT INTO `qinggan_popedom` (`id`, `gid`, `pid`, `title`, `identifier`, `taxis
 (700, 18, 0, '状态', 'status', 50),
 (701, 59, 0, '查看', 'list', 10),
 (702, 59, 0, '设置', 'set', 20),
-(703, 59, 0, '删除', 'delete', 30);
+(703, 59, 0, '删除', 'delete', 30),
+(704, 27, 0, '扩展', 'ext', 30);
 
 -- --------------------------------------------------------
 
@@ -2065,10 +2070,10 @@ CREATE TABLE IF NOT EXISTS `qinggan_project` (
 INSERT INTO `qinggan_project` (`id`, `parent_id`, `site_id`, `module`, `cate`, `title`, `nick_title`, `taxis`, `status`, `tpl_index`, `tpl_list`, `tpl_content`, `ico`, `orderby`, `alias_title`, `alias_note`, `psize`, `uid`, `identifier`, `seo_title`, `seo_keywords`, `seo_desc`, `subtopics`, `is_search`, `is_tag`, `is_biz`, `currency_id`, `admin_note`, `hidden`, `post_status`, `comment_status`, `post_tpl`, `etpl_admin`, `etpl_user`, `etpl_comment_admin`, `etpl_comment_user`, `is_attr`, `tag`) VALUES
 (41, 0, 1, 21, 0, '图片播放器', '', 20, 1, '', '', '', 'images/ico/picplayer.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'picture-player', '', '', '', 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, ''),
 (42, 0, 1, 23, 0, '导航菜单', '', 30, 1, '', '', '', 'images/ico/menu.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '导航名称', '', 30, 0, 'menu', '', '', '', 1, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 1, ''),
-(43, 0, 1, 22, 7, '新闻中心', '', 10, 1, '', '', '', 'images/ico/article.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '新闻主题', '', 10, 0, 'news', '', '', '', 0, 1, 0, 0, 0, '', 0, 0, 1, '', '', '', '', '', 1, '新闻 资讯'),
-(87, 0, 1, 0, 0, '关于我们', '', 10, 1, '', '', '', 'images/ico/about.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'about', '', '', '', 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, ''),
+(43, 0, 1, 22, 7, '新闻中心', '', 10, 1, '', '', '', 'images/ico/article.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '新闻主题', '', 10, 0, 'news', '', '', '', 0, 1, 0, 0, 0, '', 0, 0, 1, '', '', '', '', '', 1, ''),
+(87, 0, 1, 0, 0, '关于我们', '', 15, 1, '', '', '', 'images/ico/about.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'about', '', '', '', 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, ''),
 (45, 0, 1, 24, 70, '产品展示', '', 50, 1, '', '', '', 'images/ico/product.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '产品名称', '', 5, 0, 'product', '', '', '', 0, 1, 0, 1, 1, '', 0, 0, 0, '', '', '', '', '', 0, ''),
-(90, 87, 1, 0, 0, '公司简介', '', 10, 1, '', '', '', 'images/ico/company.png', '', '', '', 30, 0, 'about-us', '', '', '', 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '企业 phpok'),
+(90, 87, 1, 0, 0, '公司简介', '', 10, 1, '', '', '', 'images/ico/company.png', '', '', '', 30, 0, 'about-us', '', '', '', 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, ''),
 (146, 87, 1, 0, 0, '发展历程', '', 20, 1, '', '', '', 'images/ico/time.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'development-course', '', '', '', 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, ''),
 (92, 87, 1, 0, 0, '联系我们', '', 30, 1, '', '', '', 'images/ico/email.png', '', '', '', 30, 0, 'contact-us', '', '', '', 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, ''),
 (93, 87, 1, 0, 0, '工作环境', '', 40, 1, '', '', '', 'images/ico/extension.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'work', '', '', '', 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, ''),
@@ -2105,7 +2110,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_reply` (
   `adm_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '回复时间',
   PRIMARY KEY (`id`),
   KEY `tid` (`tid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='主题评论表' AUTO_INCREMENT=21 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='主题评论表' AUTO_INCREMENT=23 ;
 
 --
 -- 转存表中的数据 `qinggan_reply`
@@ -2177,8 +2182,8 @@ INSERT INTO `qinggan_res` (`id`, `cate_id`, `folder`, `name`, `ext`, `filename`,
 (685, 1, 'res/201410/13/', 'd3d47ae3f1bb1e96.jpg', 'jpg', 'res/201410/13/d3d47ae3f1bb1e96.jpg', 'res/201410/13/_685.jpg', 1413170208, '悬崖上的环卫工02', 'a:2:{s:5:"width";i:769;s:6:"height";i:493;}', '1999年，中国启动了首个国庆长假。每年，各大景区迎来旅游人潮，也迎来了“垃圾大潮”。彭文才就是在其后一年上岗，成为一名“高山环卫工”。峨眉金顶海拔3000多米，他每年下崖80多次，一干就是14年。每年国庆 ，彭文才和金顶区域的其他21位同事都在满负荷工作。长假时，峨眉山的垃圾会被统一收集起来，长假过后再运下山处理，每天四车垃圾，需要一周时间才能运完。需要谈起愿望，彭文才说：“就是希望以后不需要再下崖了。”', '', 0, 0),
 (683, 1, 'res/201410/13/', '00bc5d4674b7a14c.jpg', 'jpg', 'res/201410/13/00bc5d4674b7a14c.jpg', 'res/201410/13/_683.jpg', 1413169947, '毕首金老师的体育教具', 'a:2:{s:5:"width";i:760;s:6:"height";i:455;}', '云南省昆明市白汉场中心小学毕首金老师耗费30年，用课余时间手工制作8000余件，106种体育教具。高跷、大板鞋、踢踢球、橄榄球、保龄球、大弹弓都由废旧材料制作而成。', '', 0, 0),
 (684, 1, 'res/201410/13/', '333d91b566a24693.jpg', 'jpg', 'res/201410/13/333d91b566a24693.jpg', 'res/201410/13/_684.jpg', 1413170104, '悬崖上的环卫工01', 'a:2:{s:5:"width";i:760;s:6:"height";i:509;}', '国庆长假，攀悬崖捡垃圾的“蜘蛛侠”又被“看见”了一次。人们感叹清洁工不易的同时，不得不面对一个现实——蜘蛛侠之所以被塑造，是因为人间处处有不公；清洁工之所以攀悬崖，是因为景区处处有垃圾。', '', 0, 0),
-(686, 1, 'res/201410/13/', '02fb392d19e61f1d.jpg', 'jpg', 'res/201410/13/02fb392d19e61f1d.jpg', 'res/201410/13/_686.jpg', 1413170285, '悬崖上的环卫工03', 'a:2:{s:5:"width";i:760;s:6:"height";i:742;}', '“飞檐走壁”的环卫工通常并非年轻人。48岁的康仲军在泰山环卫工里算是“年轻人”了。“太年轻的人压根不愿意干清洁工，年纪大的人干起来太危险，只能我来了。”踩在悬崖边捡垃圾是康仲军的日常工作。康仲军说，工作时被游客的垃圾砸到是常事，曾经还有游客差点把燃着的烟头扔到他脖子上。节假日里，泰山每天产生8吨垃圾，一个环卫工人每天要捡拾游客随意丢弃的垃圾10大袋。', '', 0, 1),
-(687, 1, 'res/201410/13/', 'fffb0a13f8abd14a.jpg', 'jpg', 'res/201410/13/fffb0a13f8abd14a.jpg', 'res/201410/13/_687.jpg', 1413170984, '退休矿工自家宅院掘地六米挖出地下居室', 'a:2:{s:5:"width";i:760;s:6:"height";i:507;}', '郑州市退休矿工陈新年，在自家宅院掘地六米挖出50平米地下居室。陈新年称他的设计能抵抗8级地震，供人居住没有任何问题。陈新年称他挖地下居室的原因很简单——原来的房间太拥挤，商品房又太贵，就利用自己当矿工时的技术给家里挖一间房。', '', 0, 2),
+(686, 1, 'res/201410/13/', '02fb392d19e61f1d.jpg', 'jpg', 'res/201410/13/02fb392d19e61f1d.jpg', 'res/201410/13/_686.jpg', 1413170285, '悬崖上的环卫工03', 'a:2:{s:5:"width";i:760;s:6:"height";i:742;}', '“飞檐走壁”的环卫工通常并非年轻人。48岁的康仲军在泰山环卫工里算是“年轻人”了。“太年轻的人压根不愿意干清洁工，年纪大的人干起来太危险，只能我来了。”踩在悬崖边捡垃圾是康仲军的日常工作。康仲军说，工作时被游客的垃圾砸到是常事，曾经还有游客差点把燃着的烟头扔到他脖子上。节假日里，泰山每天产生8吨垃圾，一个环卫工人每天要捡拾游客随意丢弃的垃圾10大袋。', '', 0, 2),
+(687, 1, 'res/201410/13/', 'fffb0a13f8abd14a.jpg', 'jpg', 'res/201410/13/fffb0a13f8abd14a.jpg', 'res/201410/13/_687.jpg', 1413170984, '退休矿工自家宅院掘地六米挖出地下居室', 'a:2:{s:5:"width";i:760;s:6:"height";i:507;}', '郑州市退休矿工陈新年，在自家宅院掘地六米挖出50平米地下居室。陈新年称他的设计能抵抗8级地震，供人居住没有任何问题。陈新年称他挖地下居室的原因很简单——原来的房间太拥挤，商品房又太贵，就利用自己当矿工时的技术给家里挖一间房。', '', 0, 3),
 (700, 1, 'res/201411/06/', 'a50b479341925654', 'jpg', 'res/201411/06/a50b479341925654.jpg', 'res/201411/06/_700.jpg', 1415255292, 'logo200', 'a:2:{s:5:"width";i:200;s:6:"height";i:200;}', '', '3ua49d1mc854trcn2b205tbhf1', 3, 0),
 (721, 1, 'res/201502/04/', '2e03d8cbd4bd052f_38_0.jpg', 'jpg', 'res/201502/04/2e03d8cbd4bd052f_38_0.jpg', 'res/201502/04/_721.jpg', 1423013135, '1422928796557', 'a:2:{s:5:"width";i:447;s:6:"height";i:335;}', '', '5erev8s0fdqqpnekg0ih95i480', 0, 0),
 (723, 1, 'res/201502/17/', 'ec965d3da64edb9c', 'png', 'res/201502/17/ec965d3da64edb9c.png', 'res/201502/17/_723.png', 1424155994, '300', 'a:2:{s:5:"width";i:300;s:6:"height";i:300;}', '', '8jrbteoquq65qblrp1vi68sc27', 12, 0);
@@ -2500,7 +2505,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_tag` (
   `is_global` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否全局状态1是0否',
   `replace_count` tinyint(4) NOT NULL DEFAULT '3' COMMENT '替换次数',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='关键字管理器' AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='关键字管理器' AUTO_INCREMENT=10 ;
 
 --
 -- 转存表中的数据 `qinggan_tag`
@@ -2510,7 +2515,12 @@ INSERT INTO `qinggan_tag` (`id`, `site_id`, `title`, `url`, `target`, `hits`, `a
 (1, 1, '新闻', '', 0, 0, '', 1, 1),
 (2, 1, '资讯', '', 0, 0, '', 0, 2),
 (3, 1, 'Chrome', '', 0, 0, '', 0, 3),
-(4, 1, '强烈抗议', '', 0, 0, '', 0, 3);
+(4, 1, '强烈抗议', '', 0, 0, '', 0, 3),
+(5, 1, '网吧', '', 0, 0, '', 0, 3),
+(6, 1, '监控', '', 0, 4, '', 1, 2),
+(7, 1, '企业', '', 0, 1, '', 1, 3),
+(8, 1, 'phpok', '', 0, 0, '', 0, 3),
+(9, 1, 'phpok企业', '', 0, 2, '', 1, 3);
 
 -- --------------------------------------------------------
 
@@ -2533,8 +2543,10 @@ CREATE TABLE IF NOT EXISTS `qinggan_tag_stat` (
 INSERT INTO `qinggan_tag_stat` (`title_id`, `tag_id`) VALUES
 ('1269', 3),
 ('1269', 4),
+('759', 6),
 ('p43', 1),
-('p43', 2);
+('p90', 7),
+('p90', 9);
 
 -- --------------------------------------------------------
 
@@ -2549,14 +2561,19 @@ CREATE TABLE IF NOT EXISTS `qinggan_temp` (
   `content` longtext NOT NULL,
   PRIMARY KEY (`id`),
   KEY `tbl` (`tbl`,`admin_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='临时表单存储器' AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='临时表单存储器' AUTO_INCREMENT=8 ;
 
 --
 -- 转存表中的数据 `qinggan_temp`
 --
 
 INSERT INTO `qinggan_temp` (`id`, `tbl`, `admin_id`, `content`) VALUES
-(1, 'add-cate', 1, 'a:14:{s:2:"id";s:0:"";s:5:"title";s:0:"";s:10:"identifier";s:0:"";s:9:"parent_id";s:1:"0";s:5:"taxis";s:3:"255";s:6:"status";s:1:"1";s:8:"fullname";s:0:"";s:9:"seo_title";s:0:"";s:12:"seo_keywords";s:0:"";s:8:"seo_desc";s:0:"";s:3:"tag";s:0:"";s:5:"psize";s:0:"";s:8:"tpl_list";s:0:"";s:11:"tpl_content";s:0:"";}');
+(1, 'cate-72', 1, 'a:14:{s:2:"id";s:2:"72";s:5:"title";s:6:"男装";s:10:"identifier";s:9:"nanzhuang";s:9:"parent_id";s:2:"70";s:5:"taxis";s:2:"10";s:6:"status";s:1:"1";s:7:"demo898";s:0:"";s:9:"seo_title";s:0:"";s:12:"seo_keywords";s:0:"";s:8:"seo_desc";s:0:"";s:3:"tag";s:0:"";s:5:"psize";s:1:"0";s:8:"tpl_list";s:0:"";s:11:"tpl_content";s:0:"";}'),
+(2, 'cate-157', 1, 'a:14:{s:2:"id";s:3:"157";s:5:"title";s:4:"T恤";s:10:"identifier";s:7:"t-shirt";s:9:"parent_id";s:2:"72";s:5:"taxis";s:2:"10";s:6:"status";s:1:"1";s:2:"f7";s:0:"";s:9:"seo_title";s:0:"";s:12:"seo_keywords";s:0:"";s:8:"seo_desc";s:0:"";s:3:"tag";s:0:"";s:5:"psize";s:1:"0";s:8:"tpl_list";s:0:"";s:11:"tpl_content";s:0:"";}'),
+(5, 'cate-70', 1, 'a:14:{s:2:"id";s:2:"70";s:5:"title";s:12:"产品分类";s:10:"identifier";s:13:"chanpinfenlei";s:9:"parent_id";s:1:"0";s:5:"taxis";s:2:"20";s:6:"status";s:1:"1";s:5:"thumb";s:0:"";s:9:"seo_title";s:0:"";s:12:"seo_keywords";s:0:"";s:8:"seo_desc";s:0:"";s:3:"tag";s:0:"";s:5:"psize";s:1:"0";s:8:"tpl_list";s:0:"";s:11:"tpl_content";s:0:"";}'),
+(4, 'add-cate', 1, 'a:14:{s:2:"id";s:0:"";s:5:"title";s:0:"";s:10:"identifier";s:0:"";s:9:"parent_id";s:1:"0";s:5:"taxis";s:3:"255";s:6:"status";s:1:"1";s:5:"baidu";s:0:"";s:9:"seo_title";s:0:"";s:12:"seo_keywords";s:0:"";s:8:"seo_desc";s:0:"";s:3:"tag";s:0:"";s:5:"psize";s:0:"";s:8:"tpl_list";s:0:"";s:11:"tpl_content";s:0:"";}'),
+(6, 'all-9', 1, 'a:8:{s:2:"id";s:1:"9";s:7:"company";s:33:"深圳市锟铻科技有限公司";s:8:"fullname";s:3:"XXX";s:7:"address";s:53:"广东深圳市罗湖区东盛路辐照中心7栋3楼";s:7:"zipcode";s:6:"518000";s:3:"tel";s:11:"158185XXXXX";s:5:"email";s:16:"admin@domain.com";s:4:"link";a:2:{i:0;s:0:"";i:1;s:0:"";}}'),
+(7, 'project-149', 1, 'a:8:{s:2:"id";s:3:"149";s:5:"title";s:15:"首页自定义";s:8:"fullname";s:0:"";s:8:"subtitle";s:12:"公司简介";s:7:"entitle";s:5:"Intro";s:4:"link";a:2:{i:0;s:21:"index.php?id=about-us";i:1;s:13:"about-us.html";}s:3:"pic";s:34:"res/201411/06/a50b479341925654.jpg";s:4:"note";s:957:"<p style="text-indent: 2em; text-align: left;">PHPOK企业程序（简称程序）是锟铻科技有限公司（前身为情感工作室）开发的一套实用性强，定制灵活的企业网站建设系统，基于PHP+MySQL架构，可运行于Linux、Windows、MacOSX、Solaris等各种平台上。</p><p style="text-indent: 2em; text-align: left;">程序采用MVC模式开发，支持各种自定义：分类，项目，模块，站点信息等等，您甚至可以基于这些自定义选项来编写相应的插件以实现各个项目的勾连。</p><p style="text-indent: 2em; text-align: left;">程序最新版本已内置了这些常用的项目：单页面（适用于公司简介），新闻资讯，下载中心，图片展示，在线商城，留言本，迷你小论坛及基础会员功能。您随时可以在后台禁用这些项目甚至是删除之。简约，实用，够用，好用，是我们一直都在努力追求的目标。</p>";}');
 
 -- --------------------------------------------------------
 

@@ -1,4 +1,4 @@
-<!-- php:$title= $cate_rs.id==$page_rs.cate ? $page_rs.title : $cate_rs.title.' - '.$page_rs.title -->
+<!-- php:$title= $cate_rs ? $cate_rs.title.' - '.$page_rs.title : $page_rs.title -->
 <!-- include tpl=head title=$title menutitle=$page_rs.title -->
 <!-- if $page_rs.banner -->
 <div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$page_rs.title}" /></div>

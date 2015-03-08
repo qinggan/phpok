@@ -103,6 +103,10 @@ class list_control extends phpok_control
 		{
 			$this->assign("project_list",$son_list);
 		}
+		if(!$rs['tag'])
+		{
+			$rs['tag'] = $this->model('tag')->get_tags('p'.$rs['id']);
+		}
 		$this->assign("rs",$rs);
 		$this->assign("id",$id);
 		$this->assign("pid",$id);
@@ -151,6 +155,25 @@ class list_control extends phpok_control
 		else
 		{
 			$show_edit = true;
+			$extlist = $this->model('ext')->ext_all('project-'.$id);
+			if($extlist)
+			{
+				$tmp = false;
+				foreach($extlist AS $key=>$value)
+				{
+					if($value["ext"])
+					{
+						$ext = unserialize($value["ext"]);
+						foreach($ext AS $k=>$v)
+						{
+							$value[$k] = $v;
+						}
+					}
+					$tmp[] = $this->lib('form')->format($value);
+					$this->lib('form')->cssjs($value);
+				}
+				$this->assign('extlist',$tmp);
+			}
 			$this->view("list_set");
 		}
 	}

@@ -168,8 +168,9 @@ p{word-wrap:break-word}
 .news_detail{ overflow:hidden; padding-top:10px;}
 .news-extra-area {color: #A9A9A9;text-align: center; line-height:24px; border-bottom:1px dashed #ccc; margin:0 5px 30px;}
 .news_detail h2{ text-align:center; font-size:16px; overflow:hidden; margin-bottom:10px;}
-.news_detail .d_txt{ margin-bottom:10px; line-height:22px;}
-.news_detail .d_txt p{ margin-bottom:10px; text-indent:24px;}
+.news_detail .d_txt{ margin-bottom:10px; line-height:22px;font-size:14px;color:#000;}
+.news_detail .d_txt p{ margin-bottom:10px;}
+.news_detail .d_txt img{max-width:700px;}
 .news_detail .d_page{ border-top:1px solid #ccc; line-height:24px;}
 .news_detail .d_page a{ color:#333;}
 .news_detail .d_page a:hover{ color:#00C;}
@@ -226,7 +227,10 @@ p{word-wrap:break-word}
 
 .pro_detail .pro_txt{ overflow:hidden; padding:0 5px;}
 .pro_detail .pro_txt p{ margin-bottom:10px; line-height:22px;}
-
+.pro_detail h3.attr{line-height:33px;height:33px;text-align:center;margin-top:10px;}
+.pro_detail table.attr{border:1px solid #ccc;border-collapse:collapse;width:100%;}
+.pro_detail table.attr th{background:#eee;border:1px solid #ccc;text-align:left;padding:5px 10px;}
+.pro_detail table.attr td{border:1px solid #ccc;padding:5px 10px;}
 
 .detail_main{ padding:0 0 10px;}
 .detail_main .infoTitle{font-size:14px; font-weight:bold; height:56px; line-height:62px; }

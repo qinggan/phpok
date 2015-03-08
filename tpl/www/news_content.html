@@ -26,8 +26,15 @@
 			<div class="news-extra-area">
 				发布日期：<span>{func date Y年m月d日 $rs.dateline}</span>&nbsp;&nbsp;&nbsp;
 				浏览次数：<span id="lblVisits">{$rs.hits}</span>
+				<!-- if $rs.tag -->
+				&nbsp;&nbsp;&nbsp;关键字：
+					<!-- loop from=$rs.tag key=$key value=$value -->
+					<a href="{$value.url}" title="{$value.alt}" target="{$value.target}">{$value.title}</a>
+					<!-- /loop -->
+				<!-- /if -->
 			</div>
 			<div class="d_txt">{$rs.content}</div>
+			
 			<div class="d_page">
 				<p>上一主题：
 					<!-- php:$prev = phpok_prev($rs) -->

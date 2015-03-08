@@ -76,7 +76,7 @@ class phpok_tpl
 			unset($this->tpl_value[$var]);
 			return true;
 		}
-		foreach($var as $key=>$value)
+		foreach((array)$var as $key=>$value)
 		{
 			if($this->tpl_value[$key])
 			{

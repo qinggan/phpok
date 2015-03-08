@@ -10,7 +10,6 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class project_control extends phpok_control
 {
-	var $cache_list;
 	var $user_groupid;
 	function __construct()
 	{
@@ -30,84 +29,42 @@ class project_control extends phpok_control
 		$id = $this->get("id");
 		if(!$id)
 		{
-			error("操作异常！","","error");
+			error(P_Lang('未指ID'),"","error");
 		}
-		$tmp = $this->model('data')->id($id,$this->site['id']);
+		$tmp = $this->model('id')->id($id,$this->site['id']);
 		if(!$tmp || $tmp['type'] != 'project')
 		{
-			error("项目不存在",$this->url,'error',10);
+			error(P_Lang('项目不存在'),$this->url,'error',10);
 		}
 		$pid = $tmp['id'];
-		//判断是否有阅读权限
-		$this->model('popedom')->siteid($this->site['id']);
 		if(!$this->model('popedom')->check($pid,$this->user_groupid,'read'))
 		{
-			unset($tmp);
 			error(P_Lang('您没有阅读权限，请联系网站管理员'),'','error');
 		}
-		//读取项目信息
-		$project = $this->model('project')->project_one($this->site['id'],$pid);
-		if(!$project || !$project['status'])
-		{
-			error(P_Lang('项目不存在或操作异常或项目未启用'),$this->url('index'),"error");
-		}
-		$project_tmp = $this->model('ext')->ext_all('project-'.$project['id'],true);
-		if($project_tmp)
-		{
-			foreach($project_tmp as $key=>$value)
-			{
-				$project_ext[$value['identifier']] = $this->lib('form')->show($value);
-				if($value['form_type'] == 'url' && !$project['url'] && $value['content'])
-				{
-					$project['url'] = $project_ext[$value['identifier']];
-				}
-			}
-			$project = array_merge($project_ext,$project);
-			unset($project_ext,$project_tmp);
-		}
-		if(!$project['url'])
-		{
-			$project['url'] = $this->url($project['identifier']);
-		}
+		$project = $this->call->phpok('_project',array('pid'=>$pid));
 		$this->phpok_seo($project);
 		$this->assign("page_rs",$project);
 		if($project['parent_id'])
 		{
-			$parent_rs = $this->model('project')->project_one($this->site['id'],$project['parent_id']);
+			$parent_rs = $this->call->phpok('_project',array('pid'=>$project['parent_id']));
 			if(!$parent_rs || !$parent_rs['status'])
 			{
 				error(P_Lang('父级项目不存在或未启用'),$this->url('index'),'error');
-			}
-			$project_tmp = $this->model('ext')->ext_all('project-'.$parent_rs['id'],true);
-			if($project_tmp)
-			{
-				foreach($project_tmp as $key=>$value)
-				{
-					$project_ext[$value['identifier']] = $this->lib('form')->show($value);
-					if($value['form_type'] == 'url' && !$project['url'] && $value['content'])
-					{
-						$parent_rs['url'] = $project_ext[$value['identifier']];
-					}
-				}
-				$parent_rs = array_merge($project_ext,$parent_rs);
-				unset($project_ext,$project_tmp);
-			}
-			if(!$parent_rs['url'])
-			{
-				$parent_rs['url'] = $this->url($parent_rs['identifier']);
 			}
 			$this->assign("parent_rs",$parent_rs);
 		}
 		if($project["module"])
 		{
 			$this->load_module($project,$parent_rs);
-			unset($project);
-			if($parent_rs)
-			{
-				unset($parent_rs);
-			}
-			exit;
 		}
+		else
+		{
+			$this->load_me($project,$parent_rs);
+		}
+	}
+
+	private function load_me($project,$parent_rs='')
+	{
 		$tpl = $project["tpl_index"] ? $project["tpl_index"] : ($project["tpl_list"] ? $project["tpl_list"] : $project["tpl_content"]);
 		if(!$tpl && $project["parent_id"] && $parent_rs)
 		{
@@ -138,13 +95,12 @@ class project_control extends phpok_control
 	}
 
 	//项目支持模型
-	function load_module($rs,$parent_rs='')
+	private function load_module($rs,$parent_rs='')
 	{
 		$m_rs = $this->model('module')->get_one($rs["module"]);
 		if(!$m_rs || $m_rs["status"] != 1)
 		{
-			unset($rs,$parent_rs);
-			error("模块不存在或未启用","","error");
+			error(P_Lang('模块不存在或未启用'),"","error");
 		}
 		$this->assign("m_rs",$m_rs);
 		$cate_root = $rs["cate"];
@@ -154,70 +110,83 @@ class project_control extends phpok_control
 			$cate = $this->get("cate");
 			if($cate)
 			{
-				$cate_rs = $this->call->phpok('_cate','pid='.$rs['id']."&cate=".$cate."&cate_ext=1");
-				if($cate_rs)
+				$cate_rs = $this->call->phpok('_cate',array('pid'=>$rs['id'],'cate'=>$cate));
+				if($cate_rs && $cate_rs['id'] != $rs['cate'])
 				{
 					$cateid = $cate_rs['id'];
+					$this->assign('cate_rs',$cate_rs);
 				}
 			}
-			//兼容旧版的写法
-			if(!$cateid) $cateid = $this->get("cid");
-			if(!$cateid) $cateid = $this->get("cateid");
 		}
-		//获取关键字
 		$keywords = $this->get("keywords");
-		//获取扩展字段信息
 		$ext = $this->get("ext");
 		$tag = $this->get("tag");
 		$uid = $this->get('uid','int');
 		//判断该项目是否启用封面
-		if($rs["tpl_index"] && (!$cateid || $cateid == $cate_root) && !$keywords && !$ext && !$tag && !$uid)
+		if($rs["tpl_index"] && !$cateid && !$keywords && !$ext && !$tag && !$uid && $this->tpl->check($rs['tpl_index']))
 		{
-			if(!$this->tpl->check_exists($rs["tpl_index"]))
-			{
-				$rs["tpl_index"] = $rs["identifier"]."_index";
-			}
 			$this->view($rs["tpl_index"]);
 			exit;
 		}
 		//读取列表信息
 		$tplfile = $rs["tpl_list"];
-		$psize = $rs["psize"];
-		if(!$psize) $psize = $this->config["psize"] ? $this->config["psize"] : 30;
-		if($cateid || $cate_root)
-		{
-			if(!$cateid) $cateid = $cate_root;
-			$cate_rs = $this->call->phpok('_cate','pid='.$rs['id'].'&cateid='.$cateid.'&cate_ext=1');
-			if($cate_rs)
-			{
-				$this->assign("cate_rs",$cate_rs);
-				if($cate_rs["tpl_list"] && $cate_rs["id"] != $cate_root) $tplfile = $cate_rs["tpl_list"];
-				if($cate_rs["psize"] && $cate_rs["id"] != $cate_root) $psize = $cate_rs["psize"];
-			}
-		}
+		$psize = $rs["psize"] ? $rs['psize'] : $this->config['psize'];
 		$pageurl = $this->url($rs['identifier']);
+		if($cate_root)
+		{
+			if($cateid && $cateid != $cate_root)
+			{
+				$cate_rs = $this->call->phpok('_cate',array('pid'=>$rs['id'],'cateid'=>$cateid));
+				if(!$cate_rs || !$cate_rs['status'])
+				{
+					error(P_Lang('分类已停用，请联系管理员'),'','error');
+				}
+				$this->assign('cate_rs',$cate_rs);
+				$this->phpok_seo($cate_rs);
+				if($cate_rs['tpl_list'] && $this->tpl->check($cate_rs['tpl_list']))
+				{
+					$tplfile = $cate_rs['tpl_list'];
+				}
+				if($cate_rs['psize'])
+				{
+					$psize = $cate_rs['psize'];
+				}
+				$pageurl = $this->url($rs['identifier'],$cate_rs['identifier']);
+				if($cate_rs['parent_id'] && $cate_rs['parent_id'] != $cate_root)
+				{
+					$cate_parent_rs = $this->call->phpok('_cate',array('pid'=>$rs['id'],'cateid'=>$cate_rs['parent_id']));
+					if(!$cate_parent_rs || !$cate_parent_rs['status'])
+					{
+						error(P_Lang('父级分类已停用，请联系管理员'),'','error');
+					}
+					$this->assign('cate_parent_rs',$cate_parent_rs);
+					if(!$tplfile && $cate_parent_rs['tpl_list'] && $this->tpl->check($cate_parent_rs['tpl_list']))
+					{
+						$tplfile = $cate_parent_rs['tpl_list'];
+					}
+				}
+			}
+			$cate_root_rs = $this->call->phpok('_cate',array('pid'=>$rs['id'],'cateid'=>$cate_root));
+			if(!$cate_root_rs || !$cate_root_rs['status'])
+			{
+				error(P_Lang('项目所绑定的根分类已停用，请联系管理员'),'','error');
+			}
+			$this->assign('cate_root',$cate_root_rs);
+			unset($cate_root_rs);
+		}
 		$dt = array('pid'=>$rs['id']);
+		if($cateid)
+		{
+			$dt['cateid'] = $cateid;
+		}
 		//读取列表信息
 		$condition = "l.project_id=".$rs["id"]." AND l.module_id=".$rs["module"];
-		if($cate_rs)
-		{
-			$dt['cateid'] = $cate_rs['id'];
-			if($cate_rs['parent_id'] != $project_rs['cate'])
-			{
-				$cate_parent_rs = $this->call->phpok('_cate','pid='.$rs['id'].'&cateid='.$cate_rs['parent_id'].'&cate_ext=1');
-				$this->assign('cate_parent_rs',$cate_parent_rs);
-			}
-			//优化某个分类下的关键字
-			$this->phpok_seo($cate_rs);
-			$pageurl = $this->url($rs['identifier'],$cate_rs['identifier']);
-		}
 		if($tag || $keywords || $ext) $pageurl .= $this->site["url_type"] == "rewrite" ? "?" : "&";
 		if($tag)
 		{
 			$dt['tag'] = $tag;
 			$pageurl .= "tag=".rawurlencode($tag)."&";
 			$this->assign("tag",$tag);
-			unset($tag);
 		}
 		if($keywords)
 		{
@@ -237,9 +206,11 @@ class project_control extends phpok_control
 					$pageurl .= "ext[".$key."]=".rawurlencode($value)."&";
 				}
 			}
-			if($c) $dt['sqlext'] = implode(" AND ",$c);
+			if($c)
+			{
+				$dt['sqlext'] = implode(" AND ",$c);
+			}
 			$this->assign('ext',$ext);
-			unset($ext);
 		}
 		if($uid)
 		{
@@ -256,7 +227,6 @@ class project_control extends phpok_control
 		$offset = ($pageid-1) * $psize;
 		$dt['offset'] = $offset;
 		$dt['psize'] = $psize;
-		$dt['in_text'] = 1;
 		$dt['is_list'] = 1;
 		$info = $this->call->phpok('_arclist',$dt);
 		unset($dt);
@@ -267,33 +237,25 @@ class project_control extends phpok_control
 		$this->assign("rslist",$info['rslist']);
 		if(!$tplfile && $parent_rs)
 		{
-			$tplfile = $parent_rs['tpl_list'] ? $parent_rs['tpl_list'] : $parent_rs['identifier'].'_list';
+			$tplfile = $parent_rs['tpl_list'] ? $parent_rs['tpl_list'] : $rs['identifier'].'_list';
 		}
-		if(!$tplfile) $tplfile = $rs["identifier"]."_list";
-		if(!$this->tpl->check_exists($tplfile))
+		if(!$tplfile)
+		{
+			$tplfile = $rs["identifier"]."_list";
+		}
+		if(!$this->tpl->check($tplfile))
 		{
 			if($rs["tpl_content"] && $info['rslist'])
 			{
-				reset($rslist['rslist']);
-				$rs = current($rslist);
+				reset($info['rslist']);
+				$rs = current($info['rslist']);
 				$url = $rs['identifier'] ? $this->url($rs['identifier']) : $this->url($rs['id']);
-				header("Location:".$url);
-				exit;
+				$this->_location($url);
 			}
-			unset($rslist,$total,$pageurl,$psize,$pageid,$rs,$parent_rs);
 			error('未配置模板：'.$tplfile.'，请配置相应的模板','','error');
-		}
-		//判断是否是xml
-		$xml = $this->get('xml','int');
-		if($xml)
-		{
-			 $tplfile .= '_xml';
-			header('Content-Type: text/xml;');
-			echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
 		}
 		unset($rslist,$total,$pageurl,$psize,$pageid,$rs,$parent_rs);
 		$this->view($tplfile);
-		exit;
 	}
 }
 ?>

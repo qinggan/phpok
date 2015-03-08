@@ -430,10 +430,11 @@ function ext_save($myid,$is_add=false,$save_id="")
 	$GLOBALS['app']->model("fields");
 	if($is_add)
 	{
-		$idstring = $_SESSION[$myid];
-		if(!$idstring) return false;
-		$tmplist = $GLOBALS['app']->model("fields")->get_list($idstring);
-		if(!$tmplist) return false;
+		$tmplist = $_SESSION[$myid];
+		if(!$tmplist)
+		{
+			return false;
+		}
 		foreach($tmplist AS $key=>$value)
 		{
 			$val = ext_value($value);
@@ -448,10 +449,10 @@ function ext_save($myid,$is_add=false,$save_id="")
 			$array["format"] = $value["format"];
 			$array["content"] = $value["content"];
 			$array["taxis"] = $value["taxis"];
-			$array["ext"] = "";
+			$array["ext"] = $value["ext"];
 			if($value["ext"] && $value["content"] && $val)
 			{
-				$tmp = unserialize($value["ext"]);
+				$tmp = is_string($value['ext']) ? unserialize($value["ext"]) : $value['ext'];
 				if($value["form_type"] == "password")
 				{
 					$val = ext_password_format($val,$value["content"],$tmp["password_type"]);

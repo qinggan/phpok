@@ -54,12 +54,11 @@ class tag_control extends phpok_control
 			if(substr($value['id'],0,1) == 'p')
 			{
 				$tmp = substr($value['id'],1);
-				$rslist[] = $this->model('data')->project(array('pid'=>$tmp,'project_ext'=>true));
+				$rslist[] = $this->call->phpok('_project',array('pid'=>$tmp));
 			}
 			elseif(substr($value['id'],0,1) == 'c')
 			{
 				$tmp = substr($value['id'],1);
-				echo $tmp;
 				$cate_rs = $this->model('cate')->get_one($tmp,$this->site['id']);
 				if($cate_rs['parent_id'])
 				{
@@ -70,11 +69,11 @@ class tag_control extends phpok_control
 					$root_cate_id = $cate_rs['id'];
 				}
 				$project_info = $this->model('project')->get_one_condition("cate='".$root_cate_id."' AND status=1");
-				$rslist[] = $this->model('data')->cate(array('pid'=>$project_info['id'],'cate_id'=>$tmp,"cate_ext"=>true));
+				$rslist[] = $this->call->phpok('_cate',array('pid'=>$project_info['id'],'cateid'=>$tmp));
 			}
 			else
 			{
-				$rslist[] = $this->model('data')->arc(array("id"=>$value['id']));
+				$rslist[] = $this->call->phpok('_arc',array('title_id'=>$value['id']));
 			}
 		}
 		$this->assign("rslist",$rslist);

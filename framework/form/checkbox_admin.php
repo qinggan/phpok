@@ -10,12 +10,12 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class checkbox_form
 {
-	function __construct()
+	public function __construct()
 	{
 		//
 	}
 
-	function config()
+	public function config()
 	{
 		$opt_list = $GLOBALS['app']->model('opt')->group_all();
 		$GLOBALS['app']->assign("opt_list",$opt_list);

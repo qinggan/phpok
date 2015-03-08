@@ -102,12 +102,6 @@ class tag_model extends tag_model_base
 		return $this->db->query($sql);
 	}
 
-	public function stat_save($tag_id,$title_id)
-	{
-		$sql = "REPLACE INTO ".$this->db->prefix."tag_stat(title_id,tag_id) VALUES('".$title_id."','".$tag_id."')";
-		return $this->db->query($sql);
-	}
-
 	//批量更新Tag及Tag里的统计
 	public function update_tag($data,$list_id,$site_id=0)
 	{
@@ -152,6 +146,24 @@ class tag_model extends tag_model_base
 		$string = str_replace($str_list," ",$string);
 		$string = preg_replace("/(\x20{2,})/"," ",$string);
 		return explode(" ",$string);
+	}
+
+	public function get_tags($id)
+	{
+		$sql = "SELECT t.title FROM ".$this->db->prefix."tag_stat s ";
+		$sql.= " JOIN ".$this->db->prefix."tag t ON(s.tag_id=t.id) ";
+		$sql.= " WHERE s.title_id='".$id."'";
+		$rs = $this->db->get_all($sql);
+		if(!$rs)
+		{
+			return false;
+		}
+		$list = array();
+		foreach($rs as $key=>$value)
+		{
+			$list[] = $value['title'];
+		}
+		return implode(" ",$list);
 	}
 
 }

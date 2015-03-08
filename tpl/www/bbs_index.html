@@ -1,5 +1,4 @@
-<!-- php:$title = ($cate_rs && $cate_rs.id != $page_rs.cate) ? $cate_rs.title.' - '.$page_rs.title : $page_rs.title -->
-<!-- include tpl=head title=$title menutitle=$page_rs.title -->
+<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
 <!-- if $page_rs.banner -->
 <div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
 <!-- /if -->
@@ -22,7 +21,7 @@
 				</td>
 				<td class="last">
 					<!-- arclist pid=$page_rs.id cateid=$value.id psize=3 -->
-					<!-- loop from=$list key=$k value=$v -->
+					<!-- loop from=$list.rslist key=$k value=$v -->
 					<div><a href="{$v.url}" title="{$v.title}">{func phpok_cut $v.title 70 …}</a>
 					<!-- /loop -->
 					<!-- if !$list -->无主题<!-- /if -->

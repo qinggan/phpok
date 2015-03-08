@@ -74,8 +74,22 @@ function cate_delete(id,title)
 	});
 }
 
-function update_taxis(val,id)
+function show_submit(id)
 {
+	var html = '<input type="button" class="button" value="提交" onclick="update_taxis('+id+')" />';
+	$("#taxis_submit_"+id).html(html);
+}
+
+function hide_element(id)
+{
+	window.setTimeout(function(){
+		$("#taxis_submit_"+id).html('&nbsp;');
+	}, 5000);
+}
+
+function update_taxis(id)
+{
+	val = $("#taxis_"+id).val();
 	$.ajax({
 		'url':get_url('cate','ajax_taxis','id='+id+'&taxis='+val),
 		'dataType':'json',
@@ -87,9 +101,9 @@ function update_taxis(val,id)
 		'success':function(rs){
 			if(rs.status == 'ok')
 			{
-				$("#taxis_"+id).addClass('status1');
+				$("#taxis_submit_"+id).html('<span class="status1"></status1>');
 				window.setTimeout(function(){
-					$("#taxis_"+id).removeClass('status1');
+					$("#taxis_submit_"+id).html('&nbsp;');
 				}, 1000);
 			}
 			else
