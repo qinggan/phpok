@@ -36,17 +36,6 @@ class site_model_base extends phpok_model
 		return $this->get_one($rs["id"]);
 	}
 
-	//设置站点为默认
-	function set_default($id)
-	{
-		if(!$id) return false;
-		$sql = "UPDATE ".$this->db->prefix."site SET is_default=0";
-		$this->db->query($sql);
-		$sql = "UPDATE ".$this->db->prefix."site SET is_default=1 WHERE id=".intval($id);
-		$this->db->query($sql);
-		return true;
-	}
-
 	# 根据域名取网站信息
 	function get_one_from_domain($domain)
 	{
@@ -67,20 +56,6 @@ class site_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
-	# 存储网站信息
-	function save($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"site",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"site");
-		}
-	}
-
 	# 取得域名列表
 	function domain_list($site_id=0)
 	{
@@ -99,37 +74,11 @@ class site_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
-	# 更新网站域名
-	function domain_update($domain,$id)
-	{
-		if(!$domain || !$id) return false;
-		
-		$sql = "UPDATE ".$this->db->prefix."site_domain SET domain='".$domain."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	# 添加新的域名
-	function domain_add($domain,$site_id)
-	{
-		if(!$domain || !$site_id) return false;
-		
-		$sql = "INSERT INTO ".$this->db->prefix."site_domain(site_id,domain) VALUES('".$site_id."','".$domain."')";
-		return $this->db->insert($sql);
-	}
-
 	# 取得域名信息
 	function domain_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."site_domain WHERE id='".$id."'";
 		return $this->db->get_one($sql);
-	}
-
-	# 删除域名
-	function domain_delete($id)
-	{
-		
-		$sql = "DELETE FROM ".$this->db->prefix."site_domain WHERE id='".$id."'";
-		return $this->db->query($sql);
 	}
 
 	# 取得扩展全局字段
@@ -157,48 +106,13 @@ class site_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
-	# 存储扩展配置
-	function all_save($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		
-		if($id)
-		{
-			return $this->db->update_array($data,"all",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"all");
-		}
-	}
+	
 
 	# 读取扩展配置
 	function all_list($site_id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."all WHERE site_id='".$site_id."'";
 		return $this->db->get_all($sql);
-	}
-
-
-	# 删除扩展
-	function ext_delete($id)
-	{
-		if(!$id) return false;
-		$sql = "DELETE FROM ".$this->db->prefix."all WHERE id='".$id."'";
-		$this->db->query($sql);
-		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='all-".$id."'";
-		$rslist = $this->db->get_all($sql,"id");
-		if($rslist)
-		{
-			$id_array = array_keys($rslist);
-			$ids = implode(",",$id_array);
-			$sql = "DELETE FROM ".$this->db->prefix."ext_c WHERE id IN(".$ids.")";
-			$this->db->query($sql);
-			$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id IN(".$ids.")";
-			$this->db->query($sql);
-		}
-		
-		return true;
 	}
 
 	# 取得网站下的所有扩展配置
@@ -231,29 +145,5 @@ class site_model_base extends phpok_model
 		}
 		return $info;
 	}
-
-	function site_delete($id)
-	{
-		//读取所有的表
-		$rslist = $this->db->list_tables();
-		if($rslist)
-		{
-			foreach($rslist AS $key=>$value)
-			{
-				$flist = $this->db->list_fields($value);
-				if($flist && in_array("site_id",$flist))
-				{
-					$sql = "DELETE FROM ".$value." WHERE site_id='".$id."'";
-					$this->db->query($sql);
-				}
-			}
-		}
-		//删除主表信息
-		$sql = "DELETE FROM ".$this->db->prefix."site WHERE id='".$id."'";
-		$this->db->query($sql);
-		//清空缓存操作
-		return true;
-	}
-
 }
 ?>

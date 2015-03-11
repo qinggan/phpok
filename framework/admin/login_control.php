@@ -32,7 +32,7 @@ class login_control extends phpok_control
 			$login = 'login';
 		}
 		//读取语言包
-		$langlist = $this->lib('xml')->read($this->dir_root.'data/xml/langs.xml');
+		$langlist = $this->model('lang')->get_list();
 		$this->assign('langlist',$langlist);
 		//判断默认语言
 		$langid = $this->get('langid');
@@ -49,61 +49,57 @@ class login_control extends phpok_control
 	//验证登录
 	function check_f()
 	{
-		if($_SESSION['admin_id'])
-		{
+		if($_SESSION['admin_id']){
 			$this->json(P_Lang('您已成功登录，无需再次验证'));
 		}
 		$user = $this->get('user');
-		if(!$user)
-		{
+		if(!$user){
 			$this->json(P_Lang('管理员账号不能为空'));
 		}
 		$pass = $this->get('pass');
-		if(!$pass)
-		{
+		if(!$pass){
 			$this->json(P_Lang('密码不能为空'));
 		}
 		//验证码检测
-		if($this->config['is_vcode'] && function_exists('imagecreate'))
-		{
+		if($this->config['is_vcode'] && function_exists('imagecreate')){
 			$code = $this->get("_code");
-			if(!$code)
-			{
+			if(!$code){
 				$this->json(P_Lang('验证码不能为空'));
 			}
 			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode_admin'])
-			{
+			if($code != $_SESSION['vcode_admin']){
 				$this->json(P_Lang('验证码填写不正确'));
 			}
 		}
 		$rs = $this->model('admin')->get_one_from_name($user);
-		if(!$rs)
-		{
+		if(!$rs){
 			$this->json(P_Lang('管理员信息不存在'));
 		}
-		if(!password_check($pass,$rs["pass"]))
-		{
+		if(!password_check($pass,$rs["pass"])){
 			$this->json(P_Lang('管理员密码输入不正确'));
 		}
-		if(!$rs["status"])
-		{
+		if(!$rs["status"]){
 			$this->json(P_Lang("管理员账号已被锁定，请联系超管！"));
 		}
 		//获取管理员的权限
-		if(!$rs["if_system"])
-		{
+		if(!$rs["if_system"]){
 			$popedom_list = $this->model('admin')->get_popedom_list($rs["id"]);
-			if(!$popedom_list)
-			{
+			if(!$popedom_list){
 				$this->json(P_Lang('你的管理权限未设置好，请联系超级管理员进行设置'));
 			}
 			$_SESSION["admin_popedom"] = $popedom_list;
+			//非系统管理员，判断都有哪些站点权限
+			$site_id = $this->model('popedom')->get_site_id($popedom_list);
+			if(!$site_id){
+				$this->json(P_Lang('你的管理权限未设置好，请联系超级管理员进行设置'));
+			}
+			$_SESSION["admin_site_id"] = $site_id;
+		}else{
+			$_SESSION["admin_site_id"] = $this->site['id'];
 		}
 		$_SESSION["admin_id"] = $rs["id"];
 		$_SESSION["admin_account"] = $rs["account"];
 		$_SESSION["admin_rs"] = $rs;
-		$_SESSION["admin_site_id"] = $this->site['id'];
 		unset($_SESSION['vcode_admin']);
 		$this->json(true);
 	}

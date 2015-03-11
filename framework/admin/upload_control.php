@@ -38,7 +38,6 @@ class upload_control extends phpok_control
 	//基础上传
 	function upload_base($input_name='upfile',$cateid=0)
 	{
-		//上传类型
 		$typelist = $this->model('res')->type_list();
 		if($typelist)
 		{

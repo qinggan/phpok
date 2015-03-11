@@ -351,17 +351,13 @@ class _init_phpok
 	{
 		if($this->app_id == "admin")
 		{
-			if($_SESSION['admin_site_id'])
-			{
+			if($_SESSION['admin_site_id']){
 				$site_rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
-			}
-			else
-			{
+			}else{
 				$site_rs = $this->model("site")->get_one_default();
 			}
 			if(!$site_rs) $site_rs = array('title'=>'PHPOK企业建站系统');
 			$this->site = $site_rs;
-			unset($site_rs);
 			return true;
 		}
 		$siteId = $this->get("siteId","int");

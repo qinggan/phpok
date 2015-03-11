@@ -17,29 +17,12 @@ class lang_model_base extends phpok_model
 
 	function get_list()
 	{
-		$langlist = array("en"=>"English","cn"=>"简体中文","big5"=>"繁体中文");
+		$langlist = array("cn"=>"简体中文");
 		if(is_file($this->dir_root."data/xml/langs.xml"))
 		{
-			$langlist = xml_to_array(file_get_contents($this->dir_root."data/xml/langs.xml"));
+			$langlist = $this->lib('xml')->read($this->dir_root.'data/xml/langs.xml');
 		}
-		//DIR LIST语言包列表
-		$list = $GLOBALS['app']->lib('file')->ls($this->dir_root."data/xml/langs/");
-		if(!$list) return false;
-		$rslist = "";
-		foreach($list AS $key=>$value)
-		{
-			$value = basename($value);
-			$value = substr($value,0,-4);
-			if($langlist[$value])
-			{
-				$rslist[$value] = $langlist[$value];
-			}
-			else
-			{
-				$rslist[$value] = strtoupper($value);
-			}
-		}
-		return $rslist;
+		return $langlist;
 	}
 }
 ?>

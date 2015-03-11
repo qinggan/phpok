@@ -17,24 +17,20 @@ class index_control extends phpok_control
 
 	function index_f()
 	{
-		if(!$this->license_code) $this->license = "LGPL";
+		if(!$this->license_code){
+			$this->license = "LGPL";
+		}
 		$license = strtoupper($this->license);
 		$code = '';
-		if($license == "PBIZ" && $this->license_code && $this->license_name)
-		{
+		if($license == "PBIZ" && $this->license_code && $this->license_name){
 			$code = '<span style="color:darkblue;">个人（'.$this->license_name.'）商业授权</span>';
-		}
-		elseif($license == "CBIZ" && $this->license_code && $this->license_name)
-		{
+		}elseif($license == "CBIZ" && $this->license_code && $this->license_name){
 			$code = '<span style="color:darkblue;">企业（'.$this->license_name.'）商业授权</span>';
-		}
-		else
-		{
+		}else{
 			$code = "<span class='red'>LGPL开源授权</span>";
 		}
 		$license_site = $this->license_site;
-		if(substr($license_site,0,1) == '.')
-		{
+		if(substr($license_site,0,1) == '.'){
 			$license_site = substr($license_site,1);
 		}
 		$this->assign('license_site',$license_site);
@@ -42,6 +38,17 @@ class index_control extends phpok_control
 		$this->assign("version",$this->version);
 		//获取站点列表
 		$sitelist = $this->model('site')->get_all_site();
+		if(!$_SESSION['admin_rs']['if_system']){
+			foreach($sitelist as $key=>$value){
+				$chk_popedom = $this->model('popedom')->site_popedom($value['id'],$_SESSION['admin_id']);
+				if(!$chk_popedom){
+					unset($sitelist[$key]);
+				}
+			}
+			if(!$sitelist){
+				error('没有找到相关权限，请联系管理员');
+			}
+		}
 		$this->assign('sitelist',$sitelist);
 		//读取全部应用及模块
 		$plist = $this->model('popedom')->get_all('',false,false);
