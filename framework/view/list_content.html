@@ -175,12 +175,10 @@ function list_content_search()
 <!-- if $catelist -->
 <ul class="list_cate clearfix">
 	<!-- loop from=$catelist key=$key value=$value -->
-	<!-- if $cate_popedom == 'all' || $cate_popedom[$value[id]] -->
 	<li>
 		<div class="cate cate_{$catelist_id.num%9}"><a href="{echo admin_url('list','action')}&id={$pid}&cateid={$value.id}">{$value.title}</a></div>
 		<div class="cate_add cate_{$catelist_id.num%9}"><a href="{echo admin_url('list','edit')}&pid={$pid}&cateid={$value.id}" title="添加《{$value.title}》下的 【{$rs.title}】"><img src="images/cate_add.png" border="0" alt="" /></a></div>
 	</li>
-	<!-- /if -->
 	<!-- /loop -->
 </ul>
 <div class="clear"></div>

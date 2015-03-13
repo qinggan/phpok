@@ -79,7 +79,7 @@ class param_form extends _init_auto
 			return false;
 		}
 		$info = $rs['content'] ? unserialize($rs['content']) : false;
-		if(!$info){
+		if(!$info || !$info['title']){
 			return false;
 		}
 		if($appid == 'admin'){
@@ -97,6 +97,9 @@ class param_form extends _init_auto
 				return $info;
 			}else{
 				$list = array();
+				if(!$info['title']){
+					$info['title'] = array();
+				}
 				foreach($info['title'] as $key=>$value){
 					$list[$value] = $info['content'][$key];
 				}

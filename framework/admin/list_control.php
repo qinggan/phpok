@@ -347,8 +347,6 @@ class list_control extends phpok_control
 		$condition = "l.site_id='".$site_id."' AND l.project_id='".$pid."' AND l.parent_id='0' ";
 		$pageurl = $this->url("list","action","id=".$pid);
 		$cateid = $this->get("cateid","int");
-		$cate_popedom = $_SESSION['admin_rs']['if_system'] ? 'all' : $this->model('admin')->cate_popedom($_SESSION['admin_id']);
-		$this->assign('cate_popedom',$cate_popedom);
 		if($cateid)
 		{
 			$cate_rs = $this->model('cate')->get_one($cateid);
@@ -358,17 +356,7 @@ class list_control extends phpok_control
 			
 			foreach($catelist AS $key=>$value)
 			{
-				if($cate_popedom != 'all' && $cate_popedom[$value['id']]['read'])
-				{
-					$cate_id_list[] = $value["id"];
-				}
-				else
-				{
-					if($cate_popedom == 'all')
-					{
-			  			$cate_id_list[] = $value["id"];
-					}
-				}
+				$cate_id_list[] = $value["id"];
 			}
 			$cate_idstring = implode(",",$cate_id_list);
 			$condition .= " AND l.cate_id IN(".$cate_idstring.")";
@@ -385,10 +373,7 @@ class list_control extends phpok_control
 				$cate_id_list = array();
 				foreach($catelist AS $key=>$value)
 				{
-					if($cate_popedom && $cate_popedom[$value['id']]['read'])
-					{
-						$cate_id_list[] = $value["id"];
-					}
+					$cate_id_list[] = $value["id"];
 				}
 				$cate_idstring = implode(",",$cate_id_list);
 				$condition .= " AND l.cate_id IN(".$cate_idstring.")";
@@ -582,8 +567,6 @@ class list_control extends phpok_control
 
 		//增加JS和CSS
 		$this->addjs('js/laydate/laydate.js');
-		$cate_popedom = $_SESSION['admin_rs']['if_system'] ? 'all' : $this->model('admin')->cate_popedom($_SESSION['admin_id']);
-		$this->assign('cate_popedom',$cate_popedom);
 		$this->view("list_edit");
 	}
 
@@ -696,8 +679,7 @@ class list_control extends phpok_control
  		}
  		//更新Tag标签
  		$this->model('tag')->update_tag($array['tag'],$id,$_SESSION['admin_site_id']);
- 		if($p_rs["module"])
- 		{
+ 		if($p_rs["module"]){
 	 		$ext_list = $this->model('module')->fields_all($p_rs["module"]);
 	 		$tmplist = array();
 	 		$tmplist["id"] = $id;
@@ -705,23 +687,11 @@ class list_control extends phpok_control
 	 		$tmplist["project_id"] = $pid;
 	 		$tmplist["cate_id"] = $cate_id;
 	 		if(!$ext_list) $ext_list = array();
-			foreach($ext_list AS $key=>$value)
-			{
-				$val = ext_value($value);
-				if($value["ext"])
-				{
-					$ext = unserialize($value["ext"]);
-					foreach($ext AS $k=>$v)
-					{
-						$value[$k] = $v;
-					}
+			foreach($ext_list AS $key=>$value){
+				if($rs[$value['identifier']]){
+					$value['content'] = $rs[$value['identifier']];
 				}
-				if($value["form_type"] == "password")
-				{
-					$content = $rs[$value["identifier"]] ? $rs[$value["identifier"]] : $value["content"];
-					$val = ext_password_format($val,$content,$value["password_type"]);
-				}
-				$tmplist[$value["identifier"]] = $val;
+				$tmplist[$value["identifier"]] = $this->lib('form')->get($value);
 			}
 			$this->model('list')->save_ext($tmplist,$p_rs["module"]);
 		}

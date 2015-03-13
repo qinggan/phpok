@@ -41,9 +41,7 @@
 						<select name="cate_id" id="cate_id">
 							<option value="0">默认分类</option>
 							<!-- loop from=$catelist key=$key value=$value -->
-							<!-- if $cate_popedom == 'all' || $cate_popedom[$value[id]] -->
 							<option value="{$value.id}"{if $value.id == $rs.cate_id} selected{/if}>{$value._space}{$value.title}</option>
-							<!-- /if -->
 							<!-- /loop -->
 						</select>
 					</td>
