@@ -315,6 +315,16 @@ function preview_attr(id)
 	});
 }
 
+function update_select()
+{
+	var val = $("#list_action_val").val();
+	if(val.substr(0,5) == 'attr:'){
+		$("#attr_set_li").show();
+	}else{
+		$("#attr_set_li").hide();
+	}
+}
+
 function list_action_exec()
 {
 	var ids = $.input.checkbox_join();
@@ -349,23 +359,20 @@ function list_action_exec()
 	else
 	{
 		var tmp = val.split(':');
-		if(tmp[1] && (tmp[0] == "add" || tmp[0] == "delete"))
-		{
-			var url = get_url("list","attr_set")+"&ids="+$.str.encode(ids)+"&val="+tmp[1]+"&type="+tmp[0];
-			
-		}
-		else
-		{
+		if(tmp[1] && tmp[0] == 'attr'){
+			var type = $("#attr_set_val").val();
+			url = get_url('list','attr_set','ids='+$.str.encode(ids)+'&val='+tmp[1]+'&type='+type);
+		}else{
 			var url = get_url('list',"move_cate")+"&ids="+$.str.encode(ids)+"&cate_id="+val;
 		}
 	}
-	var rs = json_ajax(url);
-	if(!rs || rs.status != "ok")
-	{
-		if(!rs.content) rs.content = "操作失败";
+	$.dialog.tips('正在执行操作，请稍候…');
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok'){
+		$.phpok.reload();
+	}else{
 		$.dialog.alert(rs.content);
 		return false;
 	}
-	window.location.reload();
 }
 

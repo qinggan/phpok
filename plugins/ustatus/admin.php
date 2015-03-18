@@ -37,7 +37,7 @@ class admin_ustatus extends phpok_plugin
 		$this->tpl->assign('email',$rs['email']);
 		$title = $this->tpl->fetch($this->me['param']["title"],"content");
 		$content = $this->tpl->fetch($this->me['param']["content"],"content");
-		$content = form_edit('content',$content,'editor','height=300&btn_image=1&etype=simple&width=700');
+		$content = form_edit('content',$content,'editor','height=260&btn_image=1&etype=simple&width=700');
 		$this->tpl->assign('content',$content);
 		$this->tpl->assign('title',$title);
 		//$this->lib('email')->send_admin($title,$content,$email);

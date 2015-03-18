@@ -22,7 +22,7 @@
 				<span class="arrow">&nbsp;</span> <a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a>
 				<!-- /if -->
 			</span>
-			{$page_rs.cate == $cate_rs.id ? $page_rs.title : $cate_rs.title}
+			{$cate_rs ? $cate_rs.title : $page_rs.title}
 		</div>
 		<div class="photo_detail">
 			<h1>{$rs.title}</h1>

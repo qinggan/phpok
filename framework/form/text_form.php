@@ -107,8 +107,7 @@ class text_form extends _init_auto
 
 	private function _format_default($rs)
 	{
-		if($rs['format'] == 'time')
-		{
+		if($rs['format'] == 'time'){
 			$format = $rs['form_btn'] == "datetime" ? "Y-m-d H:i" : "Y-m-d";
 			$time = $rs['content'] ? $rs['content'] : $this->time;
 			$rs['content'] = date($format,$time);

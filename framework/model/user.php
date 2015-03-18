@@ -31,7 +31,7 @@ class user_model_base extends phpok_model
 			return $rs;
 		}
 		foreach($flist AS $key=>$value){
-			$rs[$value['identifier']] = $this->lib('form')->format($value,$rs[$value['identifier']]);
+			$rs[$value['identifier']] = $this->lib('form')->show($value,$rs[$value['identifier']]);
 		}
 		return $rs;
 	}
@@ -62,7 +62,7 @@ class user_model_base extends phpok_model
 		}
 		foreach($rslist AS $key=>$value){
 			foreach($flist AS $k=>$v){
-				$value[$v['identifier']] = $this->lib('form')->format($v,$value[$v['identifier']]);
+				$value[$v['identifier']] = $this->lib('form')->show($v,$value[$v['identifier']]);
 			}
 			$rslist[$key] = $value;
 		}
@@ -86,7 +86,7 @@ class user_model_base extends phpok_model
 	//检测账号是否冲突
 	function chk_name($name,$id=0)
 	{
-		$sql = "SELECT id FROM ".$this->db->prefix."user WHERE user='".$name."' ";
+		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE user='".$name."' ";
 		if($id)
 		{
 			$sql.= " AND id!='".$id."' ";

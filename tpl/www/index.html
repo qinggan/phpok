@@ -23,7 +23,7 @@ $(document).ready(function(){
 </script>
 <div class="wrap">
 	<div class="home_left">
-		<!-- php:$list = phpok('news') -->
+		<!-- php:$list = phpok('news','fields=note') -->
 		<div class="m_box">
 			<div class="m_t">
 				<p class="name">{$list.project.title}</p>
@@ -109,7 +109,7 @@ $(document).ready(function(){
 		<!-- /if -->
 	  
 		<div class="atlas" id="photoslist">
-			<!-- php:$list = phpok('tujixiangce') -->
+			<!-- php:$list = phpok('tujixiangce','fields=thumb') -->
 			<div class="atlas_t">
 				<p class="name">{$list.project.title}</p> <span class="name_en">{$list.project.entitle}</span>
 				<div class="tabs">
@@ -142,7 +142,7 @@ $(document).ready(function(){
 				<div class="tabs"><a href="{url id=product/}" class="more">MORE</a></div>
 			</div>
 			<ul class="home_list">
-				<!-- php:$list = phpok('new_products') -->
+				<!-- php:$list = phpok('new_products','fields=thumb') -->
 				<!-- loop from=$list.rslist key=$key value=$value -->
 				<li>
 			 		<p class="img159px"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" width="159" height="183" alt="{$value.title}" /></a></p>

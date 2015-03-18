@@ -75,11 +75,11 @@ class param_form extends _init_auto
 
 	public function phpok_show($rs,$appid="admin")
 	{
-		if(!$rs){
+		if(!$rs || !$rs['content']){
 			return false;
 		}
-		$info = $rs['content'] ? unserialize($rs['content']) : false;
-		if(!$info || !$info['title']){
+		$info = is_string($rs['content']) ? unserialize($rs['content']) : $rs['content'];
+		if(!$info || !$info['title'] || !is_array($info['title'])){
 			return false;
 		}
 		if($appid == 'admin'){

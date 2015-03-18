@@ -8,18 +8,14 @@
 <div data-role="page" id="page">
 <div data-role="header">
 	<h1>{$title ? $title : $config.title}</h1>
+	<a href="{$sys.url}" data-ajax="false" class="ui-btn ui-corner-all ui-shadow ui-icon-home ui-btn-icon-left ui-btn-icon-notext">首页</a>
 	<!-- if $sys.ctrl != 'index' -->
-	<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-icon-back ui-btn-icon-left ui-btn-icon-notext">返回</a>
-	<!-- else -->
-	<a href="#" onclick="$.phpok.go('{$sys.url}')" class="ui-btn ui-corner-all ui-shadow ui-icon-home ui-btn-icon-left ui-btn-icon-notext">首页</a>
-	<!-- /if -->
-	<!-- if $session.user_id -->
-	<a href="#" onclick="logout()" class="ui-btn ui-corner-all ui-shadow ui-icon-action ui-btn-icon-left ui-btn-icon-notext">退出</a>
+	<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-icon-back ui-btn-icon-left ui-btn-icon-notext">退出</a>
 	<!-- /if -->
 	<div data-role="navbar">
 	<ul>
 		<!-- php:$list = phpok('menu_mobile') -->
-		<!-- loop from=$list key=$key value=$value -->
+		<!-- loop from=$list.rslist key=$key value=$value -->
 		<li><a href="{$value.url}" target="{$value.target}" title="{$value.title}"{if $menutitle == $value.title} class="ui-btn-active"{/if}>{$value.title}</a></li>
 		<!-- /loop -->
 	</ul>

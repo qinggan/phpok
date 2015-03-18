@@ -21,7 +21,9 @@
 	</script>
 	<!-- else -->
 	<select id="{$_rs.identifier}" name="{$_rs.identifier}">
-		<option value="">……</option>
+		<!-- if $_rs.empty_val -->
+		<option value="">{$_rs.empty_val}</option>
+		<!-- /if -->
 		<!-- php:$_rs.content = is_array($_rs.content) ? $_rs.content.id : $_rs.content -->
 		<!-- foreach($_rslist AS $key=>$value) -->
 		<option value="{$value.val}"{if $value.val == $_rs.content} selected{/if}>{$value.title}</option>

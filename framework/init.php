@@ -18,12 +18,9 @@ header("Pramga: no-cache");
 //xml纯内容
 function xml_to_array($xml)
 {
-	if(isset($GLOBALS['app']))
-	{
+	if(isset($GLOBALS['app'])){
 		return $GLOBALS['app']->lib('xml')->read($xml,false);
-	}
-	else
-	{
+	}else{
 		include_once(FRAMEWORK.'libs/xml.php');
 		$obj = new xml_lib();
 		return $obj->read($xml,false);
@@ -34,55 +31,38 @@ function xml_to_array($xml)
 //计算执行的时间
 function run_time($is_end=false)
 {
-	$time = explode(" ",microtime());
-	if(!$is_end)
-	{
-		if(defined("SYS_TIME_START"))
-		{
+	if(!$is_end){
+		if(defined("SYS_TIME_START")){
 			return false;
 		}
-		define("SYS_TIME_START",($time[0] + $time[1]));
-	}
-	else
-	{
-		if(!defined("SYS_TIME_START"))
-		{
+		define("SYS_TIME_START",microtime(true));
+	}else{
+		if(!defined("SYS_TIME_START")){
 			return false;
 		}
-		$time = $time[0] + $time[1] - SYS_TIME_START;
-		return round($time,5);
+		return round((microtime(true) - SYS_TIME_START),5);
 	}
 }
 
 //登记内存
 function run_memory($is_end=false)
 {
-	if(!$is_end)
-	{
-		if(defined("SYS_MEMORY_START") || !function_exists("memory_get_usage"))
-		{
+	if(!$is_end){
+		if(defined("SYS_MEMORY_START") || !function_exists("memory_get_usage")){
 			return false;
 		}
 		define("SYS_MEMORY_START",memory_get_usage());
-	}
-	else
-	{
-		if(!defined("SYS_MEMORY_START"))
-		{
+	}else{
+		if(!defined("SYS_MEMORY_START")){
 			return false;
 		}
 		$memory = memory_get_usage() - SYS_MEMORY_START;
 		//格式化大小
-		if($memory <= 1024)
-		{
+		if($memory <= 1024){
 			$memory = "1 KB";
-		}
-		elseif($memory>1024 && $memory<(1024*1024))
-		{
+		}elseif($memory>1024 && $memory<(1024*1024)){
 			$memory = round(($memory/1024),2)." KB";
-		}
-		else
-		{
+		}else{
 			$memory = round(($memory/(1024*1024)),2)." MB";
 		}
 		return $memory;
@@ -361,7 +341,7 @@ class _init_phpok
 			return true;
 		}
 		$siteId = $this->get("siteId","int");
-		$domain = strtolower($_SERVER["SERVER_NAME"]);
+		$domain = strtolower($_SERVER[$this->config['get_domain_method']]);
 		$site_rs = false;
 		if($siteId)
 		{
@@ -583,26 +563,24 @@ class _init_phpok
 		//判断是否有使用Debug
 		$config["debug"] ? error_reporting(E_ALL ^ E_NOTICE) : error_reporting(0);
 		//判断是否使用gzip功能
-		if(ini_get('zlib.output_compression'))
-		{
+		if(ini_get('zlib.output_compression')){
 			ob_start();
-		}
-		else
-		{
+		}else{
 			($config["gzip"] && function_exists("ob_gzhandler")) ? ob_start("ob_gzhandler") : ob_start();
 		}
 		//调节时差
-		if($config["timezone"] && function_exists("date_default_timezone_set"))
-		{
+		if($config["timezone"] && function_exists("date_default_timezone_set")){
 			date_default_timezone_set($config["timezone"]);
 		}
 		//调节时间误差，支持到秒
 		$this->time = time();
-		if($config["timetuning"])
-		{
+		if($config["timetuning"]){
 			$this->time = $this->time + $config["timetuning"];
 		}
 		$this->system_time = $this->time;
+		if(!$config['get_domain_method']){
+			$config['get_domain_method'] = 'SERVER_NAME';
+		}
 		$this->config = $config;
 		$this->url = $this->root_url();
 		unset($config);
@@ -631,7 +609,7 @@ class _init_phpok
 	{
 		$http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
 		$port = $_SERVER["SERVER_PORT"];
-		$myurl = $_SERVER["SERVER_NAME"];
+		$myurl = $_SERVER[$this->config['get_domain_method']];
 		if($port != "80" && $port != "443")
 		{
 			$myurl .= ":".$port;
@@ -698,12 +676,6 @@ class _init_phpok
 			if(defined("LICENSE_NAME")) $this->license_name = LICENSE_NAME;
 			if(defined("LICENSE_POWERED")) $this->license_powered = LICENSE_POWERED;
 		}
-	}
-
-	//注销
-	public function __destruct()
-	{
-		unset($this->lang);
 	}
 
 	//通过post或get取得数据，并格式化成自己需要的
@@ -935,21 +907,16 @@ class _init_phpok
 		$func = $this->get($this->config["func_id"],"system");
 		if(!$ctrl) $ctrl = "index";
 		if(!$func) $func = "index";
-		if($ctrl != 'login')
-		{
-			if(!$_SERVER['HTTP_REFERER'])
-			{
+		if($ctrl != 'login'){
+			if(!$_SERVER['HTTP_REFERER']){
 				$ctrl='login';
 				$func = 'index';
 				session_destroy();
 				$this->_location($this->url('login'));
-			}
-			else
-			{
+			}else{
 				$info = parse_url($_SERVER['HTTP_REFERER']);
 				$chk = parse_url($this->url);
-				if($info['host'] != $chk['host'])
-				{
+				if($info['host'] != $chk['host']){
 					$ctrl = 'login';
 					$func = 'index';
 					session_destroy();
@@ -957,8 +924,7 @@ class _init_phpok
 				}
 			}
 		}
-		if($_SESSION['admin_id'])
-		{
+		if($_SESSION['admin_id']){
 			$this->lib('form')->appid('admin');
 		}
 		$this->_action($ctrl,$func);
@@ -1075,25 +1041,16 @@ class _init_phpok
 	{
 		if(!$rs || !is_array($rs)) return false;
 		$seo = $this->site['seo'] ? $this->site["seo"] : array();
-		foreach($rs AS $key=>$value)
-		{
-			if(substr($key,0,3) == "seo" && $value && is_string($value))
-			{
+		foreach($rs AS $key=>$value){
+			if(substr($key,0,3) == "seo" && $value && is_string($value)){
 				$subkey = substr($key,4);
-				if($subkey == "kw" || $subkey == "keywords" || $subkey == "keyword")
-				{
+				if($subkey == "kw" || $subkey == "keywords" || $subkey == "keyword"){
 					$seo["keywords"] = $value;
-				}
-				elseif($subkey == "desc" || $subkey == "description")
-				{
+				}elseif($subkey == "desc" || $subkey == "description"){
 					$seo["description"] = $value;
-				}
-				elseif($subkey == "title")
-				{
+				}elseif($subkey == "title"){
 					$seo["title"] = $value;
-				}
-				else
-				{
+				}else{
 					$seo[$subkey] = $value;
 				}
 			}

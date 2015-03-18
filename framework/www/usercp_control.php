@@ -13,13 +13,11 @@ class usercp_control extends phpok_control
 	function __construct()
 	{
 		parent::control();
-		if(!$_SESSION["user_id"])
-		{
+		if(!$_SESSION["user_id"]){
 			error("未登录会员不能执行此操作",$this->url,"error");
 		}
 		$this->group_rs = $this->model('usergroup')->group_rs($_SESSION['user_id']);
-		if(!$this->group_rs)
-		{
+		if(!$this->group_rs){
 			error(P_Lang('您的账号有异常：无法获取相应的会员组信息，请联系管理员'),'',"error");
 		}
 	}
@@ -39,34 +37,31 @@ class usercp_control extends phpok_control
 		$group_rs = $this->group_rs;
 		//读取扩展属性
 		$condition = 'is_edit=1';
-		if($group_rs['fields'])
-		{
+		if($group_rs['fields']){
 			$tmp = explode(",",$group_rs['fields']);
 			$condition .= " AND identifier IN('".(implode("','",$tmp))."')";
 		}
 		$ext_list = $this->model('user')->fields_all($condition,"id");
-		$extlist = "";
-		foreach(($ext_list ? $ext_list : array()) AS $key=>$value)
-		{
-			if($value["ext"])
-			{
-				$ext = unserialize($value["ext"]);
-				foreach($ext AS $k=>$v)
-				{
-					$value[$k] = $v;
+		if($ext_list){
+			$tmp_f = $group_rs['fields'] ? explode(",",$group_rs['fields']) : 'all';
+			$extlist = array();
+			foreach($ext_list as $key=>$value){
+				if($value["ext"]){
+					$ext = unserialize($value["ext"]);
+					foreach($ext AS $k=>$v){
+						$value[$k] = $v;
+					}
+				}
+				$idlist[] = strtolower($value["identifier"]);
+				if($rs[$value["identifier"]]){
+					$value["content"] = $rs[$value["identifier"]];
+				}
+				if($tmp_f == 'all' || (is_array($tmp_f) && in_array($value['identifier'],$tmp_f))){
+					$extlist[] = $this->lib('form')->format($value);
 				}
 			}
-			$idlist[] = strtolower($value["identifier"]);
-			if($rs[$value["identifier"]])
-			{
-				$value["content"] = $rs[$value["identifier"]];
-			}
-			if(!$group_rs['fields'] ||($group_rs['fields'] && in_array($value['identifier'],explode(',',$group_rs['fields']))))
-			{
-				$extlist[] = $this->lib('form')->format($value);
-			}
+			$this->assign("extlist",$extlist);
 		}
-		$this->assign("extlist",$extlist);
 		$this->assign("rs",$rs);
 		$this->assign("group_rs",$group_rs);
 		$this->view("usercp_info");

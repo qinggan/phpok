@@ -37,7 +37,7 @@ class select_form extends _init_auto
 				$this->assign("title_list",$m_list);
 			}
 		}
-		$catelist = $this->model("cate")->root_catelist($site_id);
+		$catelist = $this->model("cate")->root_catelist($_SESSION["admin_site_id"]);
 		$this->assign("catelist",$catelist);
 		$this->view($this->dir_phpok.'form/html/select_admin.html','abs-file');
 	}
@@ -49,7 +49,7 @@ class select_form extends _init_auto
 		$rslist = opt_rslist($opt_list[0],$opt_list[1],$rs['ext_select']);
 		$opt_list = explode(":",$rs["option_list"]);
 		$group_id = $opt_list[1];
-		if($rs["is_multiple"]){
+		if($rs["is_multiple"] && $rs['content']){
 			$content = array();
 			if($rs["content"]['info'] && is_array($rs['content']['info'])){
 				foreach($rs['content']['info'] AS $key=>$value){
@@ -60,7 +60,7 @@ class select_form extends _init_auto
 				$rs['content'] = unserialize($rs['content']);
 			}
 		}else{
-			if(is_array($rs['content'])){
+			if(is_array($rs['content']) && $rs['content']){
 				$rs['content'] = $rs['content']['val'];
 			}
 		}
@@ -73,6 +73,9 @@ class select_form extends _init_auto
 				$is_step = true;
 				break;
 			}
+		}
+		if((!$rs['content'] || !is_array($rs['content'])) && $rs['is_multiple']){
+			$rs['content'] = array();
 		}
 		$this->assign("_is_step",$is_step);
 		$this->assign('_group_id',$group_id);

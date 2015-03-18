@@ -33,7 +33,7 @@ class user_form extends _init_auto
 		}
 		$this->assign('_rs_content',$content);
 		$this->assign('_rs',$rs);
-		return $this->fetch($this->dir_phpok.'form/html/user_admin_tpl.html');
+		return $this->fetch($this->dir_phpok.'form/html/user_admin_tpl.html','abs-file');
 	}
 
 	public function phpok_get($rs,$appid="admin")

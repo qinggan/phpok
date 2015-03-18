@@ -61,8 +61,7 @@ class usercp_control extends phpok_control
 		}
 		//检测Email是否已被使用
 		$uid = $this->model('user')->uid_from_email($email,$this->u_id);
-		if($uid)
-		{
+		if($uid){
 			$this->json(P_Lang('邮箱已被使用'));
 		}
 		//更新手机号
@@ -71,27 +70,24 @@ class usercp_control extends phpok_control
 		$this->model('user')->save($array,$this->u_id);
 		//读取扩展属性，并更新存储
 		$condition = 'is_edit=1';
-		if($group_rs['fields'])
-		{
+		if($group_rs['fields']){
 			$tmp = explode(",",$group_rs['fields']);
 			$condition .= " AND identifier IN('".(implode("','",$tmp))."')";
 		}
 		$ext_list = $this->model('user')->fields_all($condition,"id");
-		$ext = "";
-		foreach(($ext_list ? $ext_list : array()) AS $key=>$value)
-		{
-			$ext[$value['identifier']] = ext_value($value);
+		if($ext_list){
+			$ext = "";
+			foreach($ext_list as $key=>$value){
+				$ext[$value['identifier']] = $this->lib('form')->get($value);
+			}
+			if($ext){
+				$this->model('user')->update_ext($ext,$this->u_id);
+			}
 		}
-		if($ext && is_array($ext))
-		{
-			$this->model('user')->update_ext($ext,$this->u_id);
-		}
-		//非接口接入则更新相应的session信息
-		if(!$this->is_client)
-		{
+		if(!$this->is_client){
 			$this->model('user')->update_session($this->u_id);
 		}
-		$this->json('ok',true);
+		$this->json(true);
 	}
 
 	//更新会员头像

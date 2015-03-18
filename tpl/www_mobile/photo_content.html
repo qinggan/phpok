@@ -15,7 +15,9 @@ ul.pics li .txt{text-align:left;overflow:hidden;padding:3px;border:1px solid #ee
 				<!-- loop from=$rs.pictures key=$key value=$value -->
 				<li>
 					<div class="img"><img src="{$value.gd.mobile}" border="0" alt="{$value.title}" /></div>
+					<!-- if $value.note -->
 					<div class="txt">{$value.note}</div>
+					<!-- /if -->
 				</li>
 				<!-- /loop -->
 			</ul>

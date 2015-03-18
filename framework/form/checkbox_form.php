@@ -92,12 +92,18 @@ class checkbox_form extends _init_auto
 				$ext = $rs['ext'];
 			}
 		}
-		$info = $this->get($rs['identifier'],$rs['form']);
+		$info = $this->get($rs['identifier'],$rs['format']);
+		if(!$info){
+			return false;
+		}
 		return serialize($info);
 	}
 
 	public function phpok_show($rs,$appid="admin")
 	{
+		if(!$rs || $rs['content']){
+			return false;
+		}
 		$ext = array();
 		if($rs['ext']){
 			if(is_string($rs['ext'])){
@@ -109,8 +115,12 @@ class checkbox_form extends _init_auto
 		if(!$ext["option_list"]){
 			$ext['option_list'] = 'default:0';
 		}
+		$opt = explode(":",$ext['option_list']);
+		$info = unserialize($rs['content']);
+		if(!$info || !is_array($info)){
+			return false;
+		}
 		if($appid == 'admin'){
-			$info = unserialize($rs['content']);
 			$list = array();
 			foreach($info as $key=>$value){
 				$tmp = $this->opt_rs($value,$opt[0],$opt[1]);
@@ -118,9 +128,8 @@ class checkbox_form extends _init_auto
 					$list[] = $tmp['title'];
 				}
 			}
-			return implode('<br />',$list);
+			return implode('/',$list);
 		}else{
-			$info = unserialize($rs['content']);
 			$list = array();
 			foreach($info as $key=>$value){
 				$tmp = $value;

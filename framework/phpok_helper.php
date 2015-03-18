@@ -777,144 +777,110 @@ function phpok_decode($string,$id="")
 //WEB前台通用模板，如果您的程序比较复杂，请自己写Head
 function tpl_head($array=array())
 {
-	if($array['html5'] == 'true')
-	{
+	if($array['html5'] == 'true'){
 		$html  = '<!DOCTYPE html>'."\n";
-		$html .= '<html>'."\n";
+		if($array['manifest']){
+			$html .= '<html manifest="'.$GLOBALS['app']->url.'data/'.$array['manifest'].'.manifest">'."\n";
+		}else{
+			$html .= '<html>'."\n";
+		}
 		$html .= '<head>'."\n\t".'<meta charset="utf-8" />'."\n\t";
-	}
-	else
-	{
+	}else{
 		$html  = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 		$html .= '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 		$html .= '<head>'."\n\t".'<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'."\n\t";
 	}
+	$html .= '<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">'."\n\t";
 	$html .= '<meta http-equiv="Pragma" content="no-cache" />'."\n\t";
 	$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate,max-age=3" />'."\n\t";
 	$html .= '<meta http-equiv="Expires" content="Mon, 26 Jul 1997 05:00:00 GMT" />'."\n\t";
-	//$html .= '<meta http-equiv="Expires" content="0">'."\n\t";
+	$html .= '<meta name="renderer" content="webkit">'."\n\t";
+	$html .= '<meta name="author" content="phpok,admin@phpok.com" />'."\n\t";
+	$html .= '<meta name="license" content="'.$GLOBALS['app']->license.'" />'."\n\t";
+	if($seo['keywords']){
+		$html .= '<meta name="keywords" content="'.$seo['keywords'].'" />'."\n\t";
+	}
+	if($seo['description']){
+		$html .= '<meta name="description" content="'.$seo['description'].'" />'."\n\t";
+	}
+	if($GLOBALS['app']->site['meta']){
+		$GLOBALS['app']->site['meta'] = trim(str_replace(array("\t","\r"),"",$GLOBALS['app']->site['meta']));
+		if($GLOBALS['app']->site['meta']){
+			$t = explode("\n",$GLOBALS['app']->site['meta']);
+			foreach($t AS $key=>$value){
+				$html .= $value."\n\t";
+			}
+		}
+	}
 	$html .= '<title>';
-	if($array['title'])
-	{
+	if($array['title']){
 		$html .= $array['title'].' - ';
 	}
 	$html .= $GLOBALS['app']->site['title'];
 	$seo = $GLOBALS['app']->tpl->tpl_value['seo'];
-	if($seo['title'])
-	{
+	if($seo['title']){
 		$html .= ' - '.$seo['title'];
 	}
 	$html .= '</title>'."\n\t";
 	$html .= '<base href="'.$GLOBALS['app']->url.'" />'."\n\t";
-	$html .= '<meta http-equiv="X-UA-Compatible" content="edge" />'."\n\t";
-	if($GLOBALS['app']->license == 'LGPL')
-	{
-		$html .= '<meta name="author" content="phpok.com" />'."\n\t";
-		$html .= '<meta http-equiv="phpok-license" content="LGPL" />'."\n\t";
-	}
-	else
-	{
-		$html .= '<meta http-equiv="license" content="'.$GLOBALS['app']->license.'" />'."\n\t";
-		$html .= '<meta http-equiv="license-date" content="'.$GLOBALS['app']->license_date.'" />'."\n\t";
-		$html .= '<meta http-equiv="license-domain" content="'.$GLOBALS['app']->license_site.'" />'."\n\t";
-	}
-	if($seo['keywords'])
-	{
-		$html .= '<meta name="keywords" content="'.$seo['keywords'].'" />';
-		$html .= "\n\t";
-	}
-	if($seo['description'])
-	{
-		$html .= '<meta name="description" content="'.$seo['description'].'" />';
-		$html .= "\n\t";
-	}
-	if($GLOBALS['app']->site['meta'])
-	{
-		$t = explode("\n",$GLOBALS['app']->site['meta']);
-		foreach($t AS $key=>$value)
-		{
-			$html .= $value."\n\t";
-		}
-	}
 	$jsurl = $GLOBALS['app']->url.$GLOBALS['app']->config["www_file"]."?".$GLOBALS['app']->config['ctrl_id']."=js";
 	//包含JS
 	$include_js = $GLOBALS['app']->is_mobile ? $GLOBALS['app']->config['mobile']['includejs'] : '';
-	if($array['extjs'])
-	{
+	if($array['extjs']){
 		$include_js = $include_js ? $include_js.','.$array['extjs'] : $array['extjs'];
 	}
-	if($array['includejs'])
-	{
+	if($array['includejs']){
 		$include_js = $include_js ? $include_js.','.$array['includejs'] : $array['includejs'];
 	}
-	if($include_js)
-	{
+	if($array['incjs']){
+		$include_js = $include_js ? $include_js.','.$array['incjs'] : $array['incjs'];
+	}
+	if($include_js){
 		$jsurl .= "&ext=".rawurlencode($include_js);
 	}
 	$exclude_js = $GLOBALS['app']->is_mobile ? $GLOBALS['app']->config['mobile']['excludejs'] : '';
-	if($array['excludejs'])
-	{
+	if($array['excludejs']){
 		$exclude_js = $exclude_js ? $exclude_js.','.$array['excludejs'] : $array['excludejs'];
-		
 	}
-	if($exclude_js)
-	{
+	if($exclude_js){
 		$jsurl .= "&_ext=".rawurlencode($exclude_js);
 	}
 	$html .= '<script type="text/javascript" src="'.$jsurl.'" charset="utf-8"></script>';
-	//加载css
-	if($array["css"])
-	{
-		$array['css'] = explode(",",$array['css']);
-		$cssfile = "";
-		foreach((is_array($array['css']) ? $array['css'] : array()) AS $key=>$value)
-		{
+	if($array["css"]){
+		$tmp = explode(",",$array['css']);
+		foreach($tmp AS $key=>$value){
 			$value = trim($value);
-			if(!$value) continue;
-			if(is_file($GLOBALS['app']->dir_root.$value))
-			{
+			if($value){
+				if(is_file($GLOBALS['app']->dir_root.$value)){
 				$html .= "\n\t".'<link rel="stylesheet" type="text/css" href="'.$GLOBALS['app']->url.$value.'" />';
-			}
-			else
-			{
-				$value = basename($value);
-				if(is_file($GLOBALS['app']->dir_root."css/".$value))
-				{
-					$html .= "\n\t".'<link rel="stylesheet" type="text/css" href="'.$GLOBALS['app']->url."css/".$value.'" />';
+				}else{
+					$value = basename($value);
+					if(is_file($GLOBALS['app']->dir_root."css/".$value)){
+						$html .= "\n\t".'<link rel="stylesheet" type="text/css" href="'.$GLOBALS['app']->url."css/".$value.'" />';
+					}
 				}
 			}
 		}
 	}
 	$html .= phpok_head_css();
-	//加载js
-	if($array['js'])
-	{
-		$array['js'] = explode(",",$array['js']);
-		$cssfile = "";
-		foreach((is_array($array['js']) ? $array['js'] : array()) AS $key=>$value)
-		{
+	if($array['js']){
+		$tmp = explode(",",$array['js']);
+		foreach($tmp AS $key=>$value){
 			$value = trim($value);
-			if(!$value) continue;
-			if(is_file($GLOBALS['app']->dir_root.$value))
-			{
-				$html .= "\n\t".'<script type="text/javascript" src="'.$GLOBALS['app']->url.$value.'" charset="UTF-8"></script>';
-			}
-			else
-			{
-				if(is_file($GLOBALS['app']->dir_root."css/".$value))
-				{
-					$html .= "\n\t".'<script type="text/javascript" src="'.$GLOBALS['app']->url."js/".$value.'" charset="UTF-8"></script>';
+			if($value){
+				if(is_file($GLOBALS['app']->dir_root.$value)){
+					$html .= "\n\t".'<script type="text/javascript" src="'.$GLOBALS['app']->url.$value.'" charset="UTF-8"></script>';
+				}else{
+					if(is_file($GLOBALS['app']->dir_root."js/".$value)){
+						$html .= "\n\t".'<script type="text/javascript" src="'.$GLOBALS['app']->url."js/".$value.'" charset="UTF-8"></script>';
+					}
 				}
 			}
 		}
 	}
 	$html .= phpok_head_js();
-	//加载其他参数
-	$html .= $GLOBALS['app']->site['meta'];
-	if($array["ext"]) $html .= $array["ext"];
-	if(!$array['close'] || $array["close"] != 'false')
-	{
-		$html .= $array['symbol']."\n".'</head>';
+	if(!$array['close'] || $array["close"] != 'false'){
+		$html .= "\n".'</head>';
 	}
 	$html .= "\n";
 	return $html;	

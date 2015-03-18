@@ -25,32 +25,28 @@ class js_control extends phpok_control
 		$ext = $this->get("ext");
 		$_ext = $this->get('_ext');
 		$autoload_js = $this->config["autoload_js"];
-		if($autoload_js)
-		{
+		if($autoload_js){
 			$ext = $ext ? $ext.",".$autoload_js : $autoload_js;
 		}
-		if(!$ext)
-		{
+		if(!$ext && !$_ext){
 			exit;
 		}
 		$list = explode(",",$ext);
 		$list = array_unique($list);
 		$forbid_ext = $_ext ? explode(",",$_ext) : array();
-		foreach($list AS $key=>$value)
-		{
+		foreach($list AS $key=>$value){
 			$value = trim($value);
-			if(!$value)
-			{
+			if(!$value){
 				continue;
 			}
-			if($value && in_array($value,$forbid_ext))
-			{
+			if($value && in_array($value,$forbid_ext)){
 				continue;
 			}
-			if($value && strtolower(substr($value,-3)) != '.js') $value .= '.js';
+			if($value && strtolower(substr($value,-3)) != '.js'){
+				$value .= '.js';
+			}
 			$jsfile = is_file($this->dir_root."js/".$value) ? $this->dir_root."js/".$value : $this->dir_phpok."js/".$value;
-			if($value && is_file($jsfile) && $value != "jquery.js")
-			{
+			if($value && is_file($jsfile) && $value != "jquery.js"){
 				echo $this->lib('file')->cat($jsfile);
 				echo "\n";
 			}

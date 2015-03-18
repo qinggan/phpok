@@ -40,8 +40,7 @@ class email_lib
 		$this->smtp_reply = $GLOBALS['app']->site["email"] ? $GLOBALS['app']->site["email"] : $GLOBALS['app']->site["email"];
 		$this->smtp_admin = $GLOBALS['app']->site["email"];
 		$this->smtp_fromname = $GLOBALS['app']->site["email_name"];
-		if(!$this->smtp_fromname)
-		{
+		if(!$this->smtp_fromname){
 			$tmp = strstr($this->smtp_admin,'@');
 			$this->smtp_fromname = str_replace($tmp,'',$this->smtp_admin);
 		}
@@ -54,8 +53,7 @@ class email_lib
 
 	function setting($var,$val)
 	{
-		if($var && $val)
-		{
+		if($var && $val){
 			$this->$var = $val;
 		}
 	}
@@ -64,33 +62,27 @@ class email_lib
 	//
 	function send_admin($title,$content,$account)
 	{
-		if(!$title || !$content || !$account || !is_array($account))
-		{
+		if(!$title || !$content || !$account || !is_array($account)){
 			return false;
 		}
-		if(!$this->smtp_server || !$this->smtp_user || !$this->smtp_pass)
-		{
+		if(!$this->smtp_server || !$this->smtp_user || !$this->smtp_pass){
 			return false;
 		}
 		$this->smtp();
-		if($this->obj->CharSet != "utf8")
-		{
-			$title = $GLOBALS['app']->charset($title,"UTF-8","GBK");
-			$content = $GLOBALS['app']->charset($content,"UTF-8","GBK");
-			$this->obj->FromName = $GLOBALS['app']->charset($this->obj->FromName,"UTF-8","GBK");
+		if($this->obj->CharSet != "utf8"){
+			$title = $GLOBALS['app']->lib('string')->charset($title,"UTF-8","GBK");
+			$content = $GLOBALS['app']->lib('string')->charset($content,"UTF-8","GBK");
+			$this->obj->FromName = $GLOBALS['app']->lib('string')->charset($this->obj->FromName,"UTF-8","GBK");
 		}
 		$this->obj->Subject = $title;
 		$this->obj->MsgHTML($content);
-		foreach($account as $key=>$value)
-		{
+		foreach($account as $key=>$value){
 			//如果管理员邮箱和要发送的邮箱是一样的
-			if($this->smtp_admin == $value['email'])
-			{
+			if($this->smtp_admin == $value['email']){
 				continue;
 			}
-			if(!$this->obj->CharSet != 'utf8')
-			{
-				$value['account'] = $GLOBALS['app']->charset($value['account'],'UTF-8','GBK');
+			if(!$this->obj->CharSet != 'utf8'){
+				$value['account'] = $GLOBALS['app']->lib('string')->charset($value['account'],'UTF-8','GBK');
 			}
 			$this->obj->AddAddress($value['email'],$value['account']);
 		}
@@ -109,8 +101,7 @@ class email_lib
 		$this->obj->Password = trim($this->smtp_pass);
 		$this->obj->Host = trim($this->smtp_server);
 		$this->obj->Port = $this->smtp_port;
-		if($this->smtp_ssl)
-		{
+		if($this->smtp_ssl){
 			$this->obj->SMTPSecure = 'ssl';
 		}
 		$this->obj->LE = "\r\n";
@@ -123,40 +114,31 @@ class email_lib
 	//连接到email环境中
 	function send_mail($sendto,$subject,$content,$user_name="")
 	{
-		if(!$subject || !$content || !$sendto)
-		{
+		if(!$subject || !$content || !$sendto){
 			return false;
 		}
-		if(!$this->smtp_server || !$this->smtp_user || !$this->smtp_pass)
-		{
+		if(!$this->smtp_server || !$this->smtp_user || !$this->smtp_pass){
 			return false;
 		}
 		$this->smtp();
-		if($this->obj->CharSet != "utf8")
-		{
-			$subject = $GLOBALS['app']->charset($subject,"UTF-8","GBK");
-			$content = $GLOBALS['app']->charset($content,"UTF-8","GBK");
-			$this->obj->FromName = $GLOBALS['app']->charset($this->obj->FromName,"UTF-8","GBK");
+		if($this->obj->CharSet != "utf8"){
+			$subject = $GLOBALS['app']->lib('string')->charset($subject,"UTF-8","GBK");
+			$content = $GLOBALS['app']->lib('string')->charset($content,"UTF-8","GBK");
+			$this->obj->FromName = $GLOBALS['app']->lib('string')->charset($this->obj->FromName,"UTF-8","GBK");
 		}
 		$this->obj->Subject = $subject;
 		$this->obj->MsgHTML($content);
 		$sendto_array = explode(";",$sendto);
-		if(count($sendto_array)<2)
-		{
-			if(!$user_name)
-			{
+		if(count($sendto_array)<2){
+			if(!$user_name){
 				$user_name = str_replace(strstr($sendto,"@"),"",$sendto);
 			}
-			if($this->obj->CharSet != "utf8")
-			{
-				 $user_name = $GLOBALS['app']->charset($user_name,"UTF-8","GBK");
+			if($this->obj->CharSet != "utf8"){
+				 $user_name = $GLOBALS['app']->lib('string')->charset($user_name,"UTF-8","GBK");
 			}
 			$this->obj->AddAddress($sendto,$user_name);
-		}
-		else
-		{
-			foreach($sendto_array AS $key=>$value)
-			{
+		}else{
+			foreach($sendto_array AS $key=>$value){
 				$v_name = str_replace(strstr($value,"@"),"",$value);
 				$this->obj->AddAddress($value,$v_name);
 			}

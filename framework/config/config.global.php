@@ -41,8 +41,8 @@ $config['api']['is_login'] = false;
 $config['api']['is_admin'] = false;
 
 //手机端配置
-$config['mobile']['autocheck'] = true; //自动检测手机端，启用后，检测出手机端将读取手机端网页
-$config['mobile']['status'] = true; //手机端开始，此项不开启的话，将不使用手机
+$config['mobile']['autocheck'] = false; //自动检测手机端，启用后，检测出手机端将读取手机端网页
+$config['mobile']['status'] = false; //手机端开始，此项不开启的话，将不使用手机
 $config['mobile']['default'] = false; //默认为手机版，为方便开发人员调式，设置为默认后，在网页上也会展示手机版
 $config['mobile']['includejs'] = "jquery.touchslide.js"; //手机版自动加载的JS
 $config['mobile']['excludejs'] = "jquery.superslide.js"; //手机版要去除加载的JS
@@ -62,3 +62,6 @@ $config["engine"]["session"]["db_user"] = $config["db"]["user"];
 $config["engine"]["session"]["db_pass"] = $config["db"]["pass"];
 $config["engine"]["session"]["db_data"] = $config["db"]["data"];
 $config["engine"]["session"]["db_table"] = $config["db"]["prefix"]."session";
+
+//Nginx对SERVER_NAME支持不好，如果您使用Nginx，且使用多站点，建议您改成：HTTP_HOST
+$config['get_domain_method'] = 'SERVER_NAME';

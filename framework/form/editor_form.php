@@ -17,7 +17,7 @@ class editor_form extends _init_auto
 
 	public function phpok_config()
 	{
-		$this->view($this->dir_phpok.'form/html/ueditor_admin.html');
+		$this->view($this->dir_phpok.'form/html/editor_admin.html','abs-file');
 	}
 
 	public function phpok_format($rs,$appid="admin")
@@ -26,7 +26,7 @@ class editor_form extends _init_auto
 		$this->addjs('js/ueditor/ueditor.all.min.js');
 		$this->addjs('js/ueditor/lang/zh-cn/zh-cn.js');
 		if($appid == 'admin'){
-			$rs['width'] = '970';
+			$rs['width'] = intval($rs['width'])<500 ? '970' : $rs['width'];
 		}
 		$style = array();
 		if($rs['form_style']){
@@ -62,9 +62,9 @@ class editor_form extends _init_auto
 				$save_path = '["默认分类"]';
 			}
 			$this->assign("_save_path",$save_path);
-			$file = $this->dir_phpok.'form/html/ueditor_admin_tpl.html';
+			$file = $this->dir_phpok.'form/html/editor_admin_tpl.html';
 		}else{
-			$file = $this->dir_phpok.'form/html/ueditor_www_tpl.html';
+			$file = $this->dir_phpok.'form/html/editor_www_tpl.html';
 		}
 		return $this->fetch($file,'abs-file');
 	}

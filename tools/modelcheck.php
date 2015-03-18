@@ -8,9 +8,9 @@
 	时间： 2015年02月17日 14时59分
 *****************************************************************************************/
 error_reporting(E_ALL ^ E_NOTICE);
-$dir1 = "framework/model/";
-$dir2 = 'framework/model/admin/';
-include_once('framework/libs/file.php');
+$dir1 = "../framework/model/";
+$dir2 = '../framework/model/admin/';
+include_once('../framework/libs/file.php');
 $file_obj = new file_lib();
 function get_funclist($dir)
 {

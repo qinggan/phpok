@@ -357,25 +357,18 @@ function list_content_search()
 			<li><input type="button" value="全选" class="btn" onclick="$.input.checkbox_all()" /></li>
 			<li><input type="button" value="全不选" class="btn" onclick="$.input.checkbox_none()" /></li>
 			<li><input type="button" value="反选" class="btn" onclick="$.input.checkbox_anti()" /></li>
-			<li><select id="list_action_val" style="width:200px;margin-top:0px;padding:1px;">
+			<li><select id="list_action_val" style="width:200px;margin-top:0px;" onchange="update_select()">
 				<option value="">选择要执行的动作…</option>
 				<!-- if $opt_catelist -->
 				<optgroup label="移动分类">
 					<!-- loop from=$opt_catelist key=$key value=$value -->
-					<!-- if $cate_popedom == 'all' || $cate_popedom[$value[id]] -->
 					<option value="{$value.id}"{if $value.id == $rs.cate_id} selected{/if}>{$value._space}{$value.title}</option>
-					<!-- /if -->
 					<!-- /loop -->
 				</optgroup>
 				<!-- /if -->
-				<optgroup label="添加属性">
+				<optgroup label="{$rs.alias_title ? $rs.alias_title : '主题'}属性">
 					<!-- loop from=$attrlist key=$key value=$value -->
-					<option value="add:{$key}">{$value}</option>
-					<!-- /loop -->
-				</optgroup>
-				<optgroup label="移除属性">
-					<!-- loop from=$attrlist key=$key value=$value -->
-					<option value="delete:{$key}">{$value}</option>
+					<option value="attr:{$key}">{$value} {$key}</option>
 					<!-- /loop -->
 				</optgroup>
 				<optgroup label="其他">
@@ -390,6 +383,12 @@ function list_content_search()
 					<!-- /if -->
 				</optgroup>
 				</select></li>
+			<li id="attr_set_li" class="hide">
+				<select name="attr_set_val" style="margin-top:0px;" id="attr_set_val">
+					<option value="add">添加</option>
+					<option value="delete">移除</option>
+				</select>
+			</li>
 			<li id="plugin_button"><input type="button" value="执行操作" onclick="list_action_exec()" class="submit" /></li>
 			<li><input type="button" value="批处理" onclick="direct('{url ctrl=list func=plaction id=$pid/}')" class="btn" /></li>
 		</ul>
