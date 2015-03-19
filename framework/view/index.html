@@ -175,6 +175,11 @@ $(document).ready(function(){
 		}
 	}]];
 	$(window).smartMenu(r_menu,{'textLimit':8});
+	$(document).keydown(function(e){
+		if (e.keyCode == 8){
+			return false;
+		}
+	});
 });
 </script>
 

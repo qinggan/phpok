@@ -47,6 +47,19 @@ $(document).ready(function(){
 		}
 	}]];
 	$(window).smartMenu(r_menu);
+	$(document).keydown(function(e){
+		var target = e.target;
+		var tag = e.target.tagName.toUpperCase();
+		if ((tag == 'INPUT' && !$(target).attr("readonly")) || (tag == 'TEXTAREA' && !$(target).attr("readonly"))) {
+			if ((target.type.toUpperCase() == "RADIO") || (target.type.toUpperCase() == "CHECKBOX")) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	});
 });
 </script>
 </body>
