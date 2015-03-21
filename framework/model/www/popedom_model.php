@@ -15,6 +15,12 @@ class popedom_model extends popedom_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	//判断是否有阅读权限
 	//pid，为项目ID
 	//groupid，为会员组ID

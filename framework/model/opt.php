@@ -15,6 +15,12 @@ class opt_model_base extends phpok_model
 		parent::model();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	# 取得全部的选项组
 	function group_all()
 	{

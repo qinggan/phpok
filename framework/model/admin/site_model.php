@@ -15,6 +15,12 @@ class site_model extends site_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	public function save($data,$id=0)
 	{
 		if(!$data || !is_array($data)){

@@ -946,33 +946,6 @@ function phpok_check_email($email)
 	return $GLOBALS['app']->lib('common')->email_check($email);
 }
 
-//汉字转拼音
-function chinese2pingyin($title)
-{
-	if(!$title) return false;
-	$GLOBALS['app']->lib("pingyin")->path = $GLOBALS['app']->dir_phpok."libs/pingyin.qdb";
-	$py = iconv("UTF-8","GBK",$title);
- 	$py = $GLOBALS['app']->lib("pingyin")->ChineseToPinyin($py);
- 	if(!$py) return false;
- 	$py = strtolower($py);
- 	$safe_string = "abcdefghijklmnopqrstuvwxyz0123456789-_";
-	$str_array = str_split($py);
-	$safe_array = str_split($safe_string);
-	$string = "";
-	foreach($str_array AS $key=>$value)
-	{
-		if(in_array($value,$safe_array))
-		{
-			$string .= $value;
-		}
-		else
-		{
-			$string .= "-";
-		}
-	}
-	return $string;
-}
-
 function user_group($gid)
 {
 	return $GLOBALS['app']->model('usergroup')->get_one($gid);

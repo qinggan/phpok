@@ -38,12 +38,6 @@ class phpok_tpl
 		if($this->dir_cache && substr($this->dir_cache,-1) != "/") $this->dir_cache .= "/";
 	}
 
-	//析构函数，注销变量信息
-	public function __destruct()
-	{
-		unset($this->tpl_value);
-	}
-
 	public function assign($var,$val="")
 	{
 		if(!$var || (is_array($var) && $val))

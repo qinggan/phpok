@@ -20,6 +20,12 @@ class url_model_base extends phpok_model
 		parent::model();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	public function page_id($pageid)
 	{
 		$this->page_id = $pageid;

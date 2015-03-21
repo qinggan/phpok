@@ -16,6 +16,12 @@ class popedom_model extends popedom_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	//设置站点ID
 	public function siteid($siteid)
 	{

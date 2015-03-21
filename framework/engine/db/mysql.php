@@ -86,8 +86,7 @@ class db_mysql extends db
 	{
 		parent::__destruct();
 		mysql_close($this->conn);
-		$this->query = null;
-		unset($this->conn);
+		unset($this);
 	}
 
 	//定义基本的变量信息

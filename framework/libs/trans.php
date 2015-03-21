@@ -31,17 +31,6 @@ class trans_lib
 		$this->style_clear = array("","","");
 	}
 
-	#[兼容PHP4]
-	function trans_lib()
-	{
-		$this->__construct();
-	}
-
-	function __destruct()
-	{
-		return true;
-	}
-
 	//设置全局状态
 	function setting($script=false,$iframe=false,$style=false)
 	{

@@ -15,6 +15,12 @@ class tag_model_base extends phpok_model
 		parent::model();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	//根据指定主题下的可能用到的Tag
 	//id，指的是主题id
 	//type，仅支持list,cate,project,site四种类型，分类是主题，分类，项目及站点全局

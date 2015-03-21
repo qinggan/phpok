@@ -111,7 +111,7 @@ class session_sql
 	function __destruct()
 	{
 		$this->gc();
-		return true;
+		unset($this);
 	}
 
 	function sid()

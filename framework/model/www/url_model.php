@@ -26,6 +26,12 @@ class url_model extends url_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	public function set_type($type='default')
 	{
 		if(!in_array($type,array('default','rewrite')))

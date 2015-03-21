@@ -15,6 +15,12 @@ class admin_model extends admin_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	function get_mail($ifsystem=0)
 	{
 		$sql = "SELECT id,account,email FROM ".$this->db->prefix."adm WHERE email !='' AND status=1";

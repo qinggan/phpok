@@ -15,6 +15,12 @@ class temp_model_base extends phpok_model
 		parent::model();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	# 存储内容
 	function save($data,$id=0)
 	{

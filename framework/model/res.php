@@ -17,6 +17,12 @@ class res_model_base extends phpok_model
 		$this->img_type_list = array("jpg","gif","png","jpeg");
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	# 取得资源信息
 	function get_one($id,$is_ext=false)
 	{

@@ -15,6 +15,12 @@ class popedom_model extends popedom_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	function delete($id)
 	{
 		if(!$id) return false;

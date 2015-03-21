@@ -15,6 +15,12 @@ class admin_model_base extends phpok_model
 		parent::model();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	# 通过管理员账号取得管理员信息
 	function get_one_from_name($username)
 	{

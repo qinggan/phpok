@@ -29,7 +29,11 @@ class XDB_R
 
 	// for PHP5
 	function __construct() {}
-	function __destruct() { $this->Close(); }
+	function __destruct()
+	{
+		$this->Close();
+		unset($this);
+	}
 
 	// Open the database: read
 	function Open($fpath)

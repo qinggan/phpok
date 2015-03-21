@@ -93,8 +93,7 @@ class db_mysqli extends db
 	{
 		parent::__destruct();
 		$this->conn->close();
-		$this->query = null;
-		unset($this->conn);
+		unset($this);
 	}
 
 	//定义基本的变量信息

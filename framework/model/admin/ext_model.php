@@ -15,6 +15,12 @@ class ext_model extends ext_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	//添加验证
 	public function check_identifier_add($identifier,$type='')
 	{

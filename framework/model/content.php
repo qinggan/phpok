@@ -15,6 +15,12 @@ class content_model_base extends phpok_model
 		parent::model();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	//取得单个主题信息
 	function get_one($id)
 	{

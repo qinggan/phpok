@@ -66,7 +66,7 @@ class db
 		{
 			$this->cache->close();
 		}
-		unset($this->cache,$this->config,$this->cache_prikey,$this->cache_keylist);
+		unset($this);
 	}
 
 	//关闭缓存

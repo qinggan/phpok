@@ -15,6 +15,12 @@ class call_model extends call_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	//取得单个配置参数
 	public function one($id,$siteid=0,$type='identifier')
 	{

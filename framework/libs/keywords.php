@@ -122,7 +122,11 @@ class keywords_lib
 		$this->__construct($charset);
 	}
 
-	function __destruct() { $this->close(); }
+	function __destruct()
+	{
+		$this->close();
+		unset($this);
+	}
 
 	// ÉèÖÃ×Ö·û¼¯(ztab)
 	function set_charset($charset = 'gbk')

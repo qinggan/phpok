@@ -15,6 +15,12 @@ class opt_model extends opt_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	public function group_del($id)
 	{
 		if(!$id) return false;

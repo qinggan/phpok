@@ -15,6 +15,12 @@ class list_model extends list_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	public function delete($id,$mid=0)
 	{
 		if(!$mid)

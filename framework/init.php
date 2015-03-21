@@ -498,13 +498,15 @@ class _init_phpok
 	//运行插件
 	public function plugin($ap,$param="")
 	{
-		if(!$ap) return false;
+		if(!$ap){
+			return false;
+		}
 		$ap = str_replace("-","_",$ap);//替换节点的中划线为下划线
-		if(!$this->plugin || count($this->plugin)<1 || !is_array($this->plugin)) return false;
-		foreach($this->plugin AS $key=>$value)
-		{
-			if(in_array($ap,$value['method']))
-			{
+		if(!$this->plugin || count($this->plugin)<1 || !is_array($this->plugin)){
+			return false;
+		}
+		foreach($this->plugin AS $key=>$value){
+			if(in_array($ap,$value['method'])){
 				$value['obj']->$ap($param);
 			}
 		}

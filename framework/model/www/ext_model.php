@@ -16,6 +16,12 @@ class ext_model extends ext_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	//读取分类下的全部扩展
 	public function cate()
 	{

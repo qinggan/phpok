@@ -15,6 +15,12 @@ class address_model_base extends phpok_model
 		parent::model();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	//取得指定会员的地址库列表
 	//user_id，会员id
 	//type，类型，仅支持shipping和billing两种

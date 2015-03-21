@@ -15,6 +15,12 @@ class html_model extends html_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	//获取模板信息
 	function get_tpl($siteid,$mobile=false)
 	{

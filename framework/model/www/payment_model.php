@@ -15,6 +15,12 @@ class payment_model extends payment_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	function get_all($site_id=0,$status=0)
 	{
 		$condition = $site_id ? "site_id IN(0,".$site_id.")" : "site_id=0";

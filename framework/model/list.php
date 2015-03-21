@@ -15,6 +15,12 @@ class list_model_base extends phpok_model
 		parent::model();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	function ext_fields($mid,$prefix="ext")
 	{
 		$sql = "SELECT identifier FROM ".$this->db->prefix."module_fields WHERE module_id='".$mid."'";

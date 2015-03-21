@@ -15,6 +15,12 @@ class usergroup_model extends usergroup_model_base
 		parent::__construct();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
+
 	//取得会员组ID
 	//uid，会员ID
 	function group_id($uid=0)
