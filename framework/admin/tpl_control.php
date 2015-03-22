@@ -14,9 +14,6 @@ class tpl_control extends phpok_control
 	function __construct()
 	{
 		parent::control();
-		$this->model("site");
-		$this->model("tpl");
-		$this->lib("file");
 		$this->popedom = appfile_popedom("tpl");
 		$this->assign("popedom",$this->popedom);
 	}
@@ -183,7 +180,6 @@ class tpl_control extends phpok_control
 		{
 			json_exit("新文件（夹）已经存在，请重新改名");
 		}
-		$this->lib("file");
 		$this->lib('file')->mv($file,$newfile);
 		json_exit("改名成功",true);
 	}
@@ -207,7 +203,6 @@ class tpl_control extends phpok_control
 		{
 			json_exit("要创建的文件（夹）名称已经存在，请检查");
 		}
-		$this->lib("file");
 		if($type == "folder")
 		{
 			$this->lib('file')->make($file,"dir");
@@ -266,7 +261,6 @@ class tpl_control extends phpok_control
 		{
 			json_exit("文件（夹）不存在");
 		}
-		$this->lib("file");
 		if(is_dir($file))
 		{
 			$this->lib('file')->rm($file,"folder");
@@ -295,7 +289,6 @@ class tpl_control extends phpok_control
 		{
 			json_exit("文件（夹）不存在");
 		}
-		$this->lib("file");
 		$content = $this->lib('file')->cat($file);
 		$this->assign("content",$content);
 		$this->assign("id",$id);
@@ -323,7 +316,6 @@ class tpl_control extends phpok_control
 			error_open("文件不存在");
 		}
 		$content = $this->get("content","html_js");
-		$this->lib("file");
 		$this->lib('file')->vim($content,$file);
 		error_open("模板代码编码成功，请关闭弹出窗口","ok",'<input type="button" onclick="$.dialog.close();" value="关闭" class="btn" />');
 	}

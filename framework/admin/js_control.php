@@ -92,35 +92,5 @@ class js_control extends phpok_control
 			echo $ext_js;
 		}
 	}
-
-	function pingyin_f()
-	{
-		$this->lib("pingyin");
- 		$this->lib('pingyin')->path = $this->dir_phpok."dict/pingyin.qdb";
- 		$title = $this->get("title");
- 		$py = iconv("UTF-8","GBK",$title);
-	 	$py = $this->lib('pingyin')->ChineseToPinyin($py);
-	 	if(!$py)
-	 	{
-		 	exit("error");
-	 	}
-	 	$py = strtolower($py);
-	 	$safe_string = "abcdefghijklmnopqrstuvwxyz0123456789-_";
-		$str_array = str_split($py);
-		$safe_array = str_split($safe_string);
-		$string = "";
-		foreach($str_array AS $key=>$value)
-		{
-			if(in_array($value,$safe_array))
-			{
-				$string .= $value;
-			}
-			else
-			{
-				$string .= "-";
-			}
-		}
-		exit($string);
-	}
 }
 ?>

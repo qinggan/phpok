@@ -31,6 +31,16 @@ class phpok_call extends phpok_control
 		if(!isset($rs['site']) || (isset($rs['site']) && !$rs['site'])){
 			$rs['site'] = $this->site['id'];
 		}
+		$siteinfo = $this->model('site')->get_one($rs['site']);
+		if(!$siteinfo){
+			return false;
+		}
+		if($rs['site'] != $this->site['id']){
+			$baseurl = 'http://'.$siteinfo['domain'].$siteinfo['dir'];
+		}else{
+			$baseurl = $this->url;
+		}
+		$this->model('url')->base_url($baseurl);
 		//判断是内置参数还是调用数据中心的数据
 		if(substr($id,0,1) != '_'){
 			$call_rs = $this->model('call')->one($id,$rs['site']);

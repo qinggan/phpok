@@ -141,7 +141,6 @@ class open_control extends phpok_control
 			}
 			if($type == "cate" && $p_rs["cate"])
 			{
-				$this->model("cate");
 				$catelist = $this->model('cate')->get_all($p_rs["site_id"],1,$p_rs["cate"]);
 				$this->assign("rslist",$catelist);
 				$this->assign("p_rs",$p_rs);
@@ -149,7 +148,6 @@ class open_control extends phpok_control
 			}
 			else
 			{
-				$this->model("list");
 				$pageid = $this->get($this->config["pageid"],"int");
 				$psize = $this->config["psize"];
 				if(!$psize) $psize = 20;
@@ -201,7 +199,6 @@ class open_control extends phpok_control
 	//读取会员列表
 	function user_f()
 	{
-		$this->model("user");
 		$id = $this->get("id");
 		if(!$id) $id = "user";
 		$pageid = $this->get($this->config["pageid"],"int");
@@ -233,7 +230,6 @@ class open_control extends phpok_control
 
 	function user2_f()
 	{
-		$this->model("user");
 		$id = $this->get("id");
 		if(!$id) $id = "user";
 		$pageid = $this->get($this->config["pageid"],"int");

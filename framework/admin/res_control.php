@@ -14,8 +14,6 @@ class res_control extends phpok_control
 	function __construct()
 	{
 		parent::control();
-		$this->model("res");
-		$this->model("gd");
 		$this->popedom = appfile_popedom("res");
 		$this->assign("popedom",$this->popedom);
 		//$this->lib('form')->cssjs();
@@ -423,7 +421,6 @@ class res_control extends phpok_control
 		{
 			json_exit("附件类型：".$rs["ext"]." 不支持创建缩略图");
 		}
-		$this->lib("gd");
 		if($gd)
 		{
 			$gd_rs = $this->model('gd')->get_one($gd,"identifier");
@@ -510,8 +507,6 @@ class res_control extends phpok_control
 			{
 				json_exit("没有此图片方案，请检查");
 			}
-			$this->lib("gd");
-			# 生成新的图片方案
 			$this->lib('gd')->gd($new,$id,$gd_rs);
 			# 更新存储
 			$array = array();
@@ -724,7 +719,6 @@ class res_control extends phpok_control
 		{
 			error_open("未指定要操作的附件","error");
 		}
-		$this->lib("gd");
 		$psize = 1;
 		$pageid = $this->get("pageid","int");
 		$pageid = intval($pageid);

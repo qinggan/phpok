@@ -78,25 +78,20 @@ class cate_model extends cate_model_base
 	//前端中涉及到的缓存
 	public function cate_all($site_id=0,$status=0)
 	{
-		$siteid = intval($siteid);
-		if(!$siteid)
-		{
+		$siteid = intval($site_id);
+		if(!$siteid){
 			$siteid = $this->site_id;
 		}
 		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE site_id='".$siteid."' AND status=1 ORDER BY taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql,'id');
-		if(!$rslist)
-		{
+		if(!$rslist){
 			return false;
 		}
 		$extlist = $GLOBALS['app']->model('ext')->cate();
-		if($extlist)
-		{
-			foreach($rslist as $key=>$value)
-			{
+		if($extlist){
+			foreach($rslist as $key=>$value){
 				$tmpid = 'cate-'.$value['id'];
-				if($extlist[$tmpid])
-				{
+				if($extlist[$tmpid]){
 					$value = array_merge($value,$extlist[$tmpid]);
 				}
 				$rslist[$key] = $value;

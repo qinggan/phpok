@@ -199,7 +199,6 @@ class open_control extends phpok_control
 	//读取会员列表
 	function user_f()
 	{
-		$this->model("user");
 		$id = $this->get("id");
 		if(!$id) $id = "user";
 		$pageid = $this->get($this->config["pageid"],"int");
@@ -231,7 +230,6 @@ class open_control extends phpok_control
 
 	function user2_f()
 	{
-		$this->model("user");
 		$id = $this->get("id");
 		if(!$id) $id = "user";
 		$pageid = $this->get($this->config["pageid"],"int");

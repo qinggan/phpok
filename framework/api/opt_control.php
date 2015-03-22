@@ -18,7 +18,6 @@ class opt_control extends phpok_control
 	//获取
 	function index_f()
 	{
-		$this->model("opt");
 		$val = $this->get("val");
 		$group_id = $this->get("group_id",'int');
 		if(!$group_id)

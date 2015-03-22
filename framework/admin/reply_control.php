@@ -127,7 +127,6 @@ class reply_control extends phpok_control
 				if($uidlist && count($uidlist)>0)
 				{
 					$uidlist = array_unique($uidlist);
-					$this->model("user");
 					$ulist = $this->model('user')->get_all_from_uid(implode(",",$uidlist),'id');
 					if(!$ulist) $ulist = array();
 					foreach($rslist AS $key=>$value)

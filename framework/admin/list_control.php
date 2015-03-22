@@ -32,8 +32,6 @@ class list_control extends phpok_control
 		//读取全部模型
 		if(!$_SESSION["admin_rs"]["if_system"])
 		{
-			$this->model("popedom");
-			$this->model("sysmenu");
 			if(!$_SESSION["admin_popedom"])
 			{
 				error("该管理员未配置权限，请检查");

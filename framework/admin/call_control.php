@@ -93,7 +93,6 @@ class call_control extends phpok_control
 		$site_id = $_SESSION["admin_site_id"];
 		$rslist = $this->model('project')->get_all_project($site_id);
 		$this->assign("rslist",$rslist);
-		$this->model("list");
 		$attrlist = $this->model('list')->attr_list();
 		$this->assign("attrlist",$attrlist);
 		$this->view("phpok_set");
@@ -299,7 +298,6 @@ class call_control extends phpok_control
 			json_exit("无数据或未设置模块");
 		}
 		$mid = $rs["module"];
-		$this->model("module");
 		$rslist = $this->model('module')->fields_all($mid);
 		if(!$rslist)
 		{
