@@ -360,12 +360,15 @@ class order_control extends phpok_control
 	function save_f()
 	{
 		$id = $this->get('id','int');
-		if(!$id)
-		{
-			if(!$this->popedom['add']) $this->json(P_Lang('您没有创建订单权限'));
+		if(!$id){
+			if(!$this->popedom['add']){
+				$this->json(P_Lang('您没有创建订单权限'));
+			}
 			$this->add_save();
 		}
-		if(!$this->popedom['modify']) $this->json(P_Lang('您没有编辑订单权限'));
+		if(!$this->popedom['modify']){
+			$this->json(P_Lang('您没有编辑订单权限'));
+		}
 		$this->modify_save($id);
 	}
 
@@ -373,76 +376,67 @@ class order_control extends phpok_control
 	function modify_save($id)
 	{
 		$main = array();
-		//判断订单密码
 		$passwd = $this->get('passwd');
-		if(!$passwd) $this->json('订单密码不能为空');
-		//判断订单密码是否合法
-		if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$passwd)) $this->json("订单密码不合要求，限字母、数字、下划线及中划线");
+		if(!$passwd){
+			$this->json(P_Lang('订单密码不能为空'));
+		}
+		if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$passwd)){
+			$this->json(P_Lang('订单密码不合要求，限字母、数字、下划线及中划线'));
+		}
 		$main['passwd'] = $passwd;
-		//存储订单操作
 		$main['price'] = $this->get('price','float');
 		$main['currency_id'] = $this->get('currency_id','int');
 		$main['user_id'] = $this->get('user_id','int');
-		$pay_end = $this->get('pay_end','int');
-		if($pay_end)
-		{
+		$main['pay_price'] = $this->get('pay_price','float');
+		if(!$main['pay_price']){
+			$main['pay_price'] = $main['price'];
+		}
+		$main['pay_status'] = $this->get('pay_status');
+		$main['pay_end'] = $this->get('pay_end','int');
+		$main['pay_date'] = 0;
+		if($main['pay_end']){
 			$main['pay_id'] = $this->get('pay_id','int');
-			if($main['pay_id'])
-			{
+			if($main['pay_id']){
 				$payment_rs = $this->model('payment')->get_one($main['pay_id']);
-				if($payment_rs && $payment_rs['currency'])
-				{
+				if($payment_rs && $payment_rs['currency']){
 					$main['pay_title'] = $payment_rs['title'];
 					$currency_rs = $this->model('currency')->get_one($payment_rs['currency'],'code');
-					if($currency_rs)
-					{
+					if($currency_rs){
 						$main['pay_currency'] = $currency_rs['id'];
 						$main['pay_currency_code'] = $currency_rs['code'];
 						$main['pay_currency_rate'] = $currency_rs['val'];
 					}
 				}
-				$main['pay_price'] = $this->get('pay_price','float');
-				if(!$main['pay_price'])
-				{
-					$main['pay_price'] = $total_price;
-				}
 				$pay_date = $this->get('pay_date');
-				if(!$pay_date)
-				{
-					$pay_date = date("Y-m-d H:i",$this->time);
-				}
-				$main['pay_date'] = strtotime($pay_date);
-				$main['pay_status'] = $this->get('pay_status');
+				$main['pay_date'] = $pay_date ? strtotime($pay_date) : $this->time;
+			}else{
+				$main['pay_currency'] = '0';
+				$main['pay_currency_code'] = 'CNY';
+				$main['pay_currency_rate'] = '1.0';
 			}
-			$main['pay_end'] = 1;
-		}
-		else
-		{
-			$main['pay_end'] = 0;
 		}
 		$main['note'] = $this->get('note');
+		$main['status'] = $this->get('status');
 		$this->model('order')->save($main,$id);
-		//取得产品信息
 		$prolist = $this->get('pro_id');
 		$pro_title = $this->get('pro_title');
 		$pro_thumb = $this->get('pro_thumb');
 		$pro_tid = $this->get('pro_tid');
 		$pro_price = $this->get('pro_price');
 		$pro_qty = $this->get('pro_qty');
-		if(!$prolist || !is_array($prolist)) $this->json('产品信息为空，订单异常，请添加产品或删除订单信息');
-		foreach($prolist AS $key=>$value)
-		{
-			//如果产品名称为空，同跳过
+		if(!$prolist || !is_array($prolist)){
+			$this->json(P_Lang('产品信息为空，订单异常，请添加产品或删除订单信息'));
+		}
+		foreach($prolist AS $key=>$value){
 			$tmp_title = $pro_title[$key];
-			if(!$tmp_title || !trim($tmp_title)) continue;
-			//产品数量
+			if(!$tmp_title || !trim($tmp_title)){
+				continue;
+			}
 			$tmp_qty = intval($pro_qty[$key]);
 			if(!$tmp_qty) $tmp_qty = 1;
 			$total_qty += $tmp_qty;
-			//产品价格
 			$tmp_price = floatval($pro_price[$key]);
 			$total_price += $tmp_price;
-			//合并成为数组
 			$array = array(
 				'tid'=>intval($pro_tid[$key]),
 				'title'=>$tmp_title,
@@ -451,63 +445,58 @@ class order_control extends phpok_control
 				'thumb'=>intval($pro_thumb[$key]),
 				'order_id'=>$id
 			);
-			if($value && $value != 'add')
-			{
+			if($value && $value != 'add'){
 				$this->model('order')->save_product($array,$value);
-			}
-			else
-			{
+			}else{
 				$this->model('order')->save_product($array);
 			}
 		}
 		//存储收货地址
 		$shipping = $this->address('s');
-		if($shipping)
-		{
+		if($shipping){
 			$shipping['order_id'] = $id;
 			$sid = $this->get('s-id','int');
 			$this->model('order')->save_address($shipping,$sid);
 		}
 		$billing = $this->address('b');
-		if($billing['fullname'])
-		{
+		if($billing['fullname']){
 			$billing['order_id'] = $id;
 			$bid = $this->get('b-id','int');
 			$this->model('order')->save_address($billing,$bid);
 		}
-		$this->json('订单信息编辑成功',true);
+		$this->json(true);
 	}
 
 	//添加存储信息
 	function add_save()
 	{
 		$main = array();
-		//判断是否是订单编号
 		$sn = $this->get('sn');
-		if(!$sn) $this->json('订单编号不能为空');
-		//判断订单编号是否合法
-		if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$sn)) $this->json("订单编号不合要求，限字母、数字、下划线及中划线");
-		//判断订单编号是否已被使用
+		if(!$sn){
+			$this->json('订单编号不能为空');
+		}
+		if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$sn)){
+			$this->json("订单编号不合要求，限字母、数字、下划线及中划线");
+		}
 		$rs = $this->model('order')->get_one_from_sn($sn);
-		if($rs) $this->json('订单编号已被使用，请换个编号');
-
+		if($rs){
+			$this->json('订单编号已被使用，请换个编号');
+		}
 		$main['sn'] = $sn;
-
-		//判断订单密码
 		$passwd = $this->get('passwd');
-		if(!$passwd) $this->json('订单密码不能为空');
-		//判断订单密码是否合法
-		if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$passwd)) $this->json("订单密码不合要求，限字母、数字、下划线及中划线");
+		if(!$passwd){
+			$this->json('订单密码不能为空');
+		}
+		if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$passwd)){
+			$this->json("订单密码不合要求，限字母、数字、下划线及中划线");
+		}
 		$main['passwd'] = $passwd;
-
-		//取得产品信息
 		$prolist = $this->get('pro_id');
 		$pro_title = $this->get('pro_title');
 		$pro_thumb = $this->get('pro_thumb');
 		$pro_tid = $this->get('pro_tid');
 		$pro_price = $this->get('pro_price');
 		$pro_qty = $this->get('pro_qty');
-		//
 		if(!$prolist || !is_array($prolist)) $this->json('订单未创建相应的产品信息');
 		$plist = '';
 		$total_price = 0;
@@ -535,19 +524,15 @@ class order_control extends phpok_control
 			$plist[] = $array;
 		}
 		if(!$plist) $this->json('产品信息为空');
-		//判断收货地址信息
 		$shipping = $this->address('s');
-		//判断是否需要取得账号单
 		$site_rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
 		$billing = false;
-		if($site_rs['biz_billing'])
-		{
+		if($site_rs['biz_billing']){
 			$billing = $this->address('b');
 		}
 		//存储订单操作
 		$main['price'] = $this->get('price','float');
-		if(!$main['price'])
-		{
+		if(!$main['price']){
 			$main['price'] = $total_price;
 		}
 		$main['currency_id'] = $this->get('currency_id','int');
@@ -555,61 +540,44 @@ class order_control extends phpok_control
 		$main['addtime'] = $this->time;
 		$main['qty'] = $total_qty;
 		$main['status'] = $this->get('status');
-		$pay_end = $this->get('pay_end','int');
-		if($pay_end)
-		{
-			$main['pay_id'] = $this->get('pay_id','int');
-			if($main['pay_id'])
-			{
-				$payment_rs = $this->model('payment')->get_one($main['pay_id']);
-				if($payment_rs && $payment_rs['currency'])
-				{
-					$main['pay_title'] = $payment_rs['title'];
-					$currency_rs = $this->model('currency')->get_one($payment_rs['currency'],'code');
-					if($currency_rs)
-					{
-						$main['pay_currency'] = $currency_rs['id'];
-						$main['pay_currency_code'] = $currency_rs['code'];
-						$main['pay_currency_rate'] = $currency_rs['val'];
-					}
+		$main['pay_end'] = $this->get('pay_end','int');
+		$main['pay_id'] = $this->get('pay_id','int');
+		if($main['pay_id']){
+			$payment_rs = $this->model('payment')->get_one($main['pay_id']);
+			if($payment_rs && $payment_rs['currency']){
+				$main['pay_title'] = $payment_rs['title'];
+				$currency_rs = $this->model('currency')->get_one($payment_rs['currency'],'code');
+				if($currency_rs){
+					$main['pay_currency'] = $currency_rs['id'];
+					$main['pay_currency_code'] = $currency_rs['code'];
+					$main['pay_currency_rate'] = $currency_rs['val'];
 				}
-				$main['pay_price'] = $this->get('pay_price','float');
-				if(!$main['pay_price'])
-				{
-					$main['pay_price'] = $total_price;
-				}
-				$pay_date = $this->get('pay_date');
-				if(!$pay_date)
-				{
-					$pay_date = date("Y-m-d H:i",$this->time);
-				}
-				$main['pay_date'] = strtotime($pay_date);
-				$main['pay_status'] = $this->get('pay_status');
 			}
-			$main['pay_end'] = 1;
 		}
-		else
-		{
-			$main['pay_end'] = 0;
+		$main['pay_price'] = $this->get('pay_price','float');
+		if(!$main['pay_price']){
+			$main['pay_price'] = $main['price'];
 		}
+		$pay_date = $this->get('pay_date');
+		if(!$pay_date){
+			$pay_date = date("Y-m-d H:i",$this->time);
+		}
+		$main['pay_date'] = strtotime($pay_date);
+		$main['pay_status'] = $this->get('pay_status');
 		$main['note'] = $this->get('note');
 		$order_id = $this->model('order')->save($main);
-		if(!$order_id) $this->json('订单创建失败，写入数据库出错');
-		//存储商品信息
-		foreach($plist AS $key=>$value)
-		{
+		if(!$order_id){
+			$this->json('订单创建失败，写入数据库出错');
+		}
+		foreach($plist AS $key=>$value){
 			$value['order_id'] = $order_id;
 			$this->model('order')->save_product($value);
 		}
-		//存储地址库信息
-		if($shipping)
-		{
+		if($shipping){
 			$shipping['order_id'] = $order_id;
 			$this->model('order')->save_address($shipping);
 		}
-		//存储账单地址
-		if($billing)
-		{
+		if($billing){
 			$billing['order_id'] = $order_id;
 			$this->model('order')->save_address($billing);
 		}

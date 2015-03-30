@@ -797,6 +797,7 @@ function tpl_head($array=array())
 	$html .= '<meta name="renderer" content="webkit">'."\n\t";
 	$html .= '<meta name="author" content="phpok,admin@phpok.com" />'."\n\t";
 	$html .= '<meta name="license" content="'.$GLOBALS['app']->license.'" />'."\n\t";
+	$seo = $GLOBALS['app']->site['seo'];
 	if($seo['keywords']){
 		$html .= '<meta name="keywords" content="'.$seo['keywords'].'" />'."\n\t";
 	}

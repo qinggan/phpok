@@ -108,7 +108,7 @@ class order_control extends phpok_control
 		//判断是否有邮件通知
 		$this->email_notice($array);
 		//返回订单信息
-		$rs = array('sn'=>$sn,'passwd'=>$array['passwd']);
+		$rs = array('sn'=>$sn,'passwd'=>$array['passwd'],'id'=>$oid);
 		$this->json($rs,true);
 	}
 

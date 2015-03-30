@@ -45,7 +45,6 @@ class order_control extends phpok_control
 	function info_f()
 	{
 		$rs = $this->auth_check();
-		//订单状态
 		$status_list = $this->model('order')->status_list();
 		$rs['status_info'] = ($status_list && $status_list[$rs['status']]) ? $status_list[$rs['status']] : $rs['status'];
 		$rs['pay_status_info'] = ($status_list && $status_list[$rs['pay_status']]) ? $status_list[$rs['pay_status']] : $rs['pay_status'];
@@ -56,62 +55,50 @@ class order_control extends phpok_control
 		$this->assign('billing',$address['billing']);
 		//订单下的产品列表
 		$rslist = $this->model('order')->product_list($rs['id']);
-		if($rslist)
-		{
+		if($rslist){
 			$thumb = '';
-			foreach($rslist AS $key=>$value)
-			{
+			foreach($rslist AS $key=>$value){
 				if($value['thumb']) $thumb[] = $value['thumb'];
 			}
-			if($thumb && count($thumb)>0)
-			{
+			if($thumb && count($thumb)>0){
 				$tlist = $this->model('data')->res_info($thumb,true);
-				if($tlist)
-				{
-					foreach($rslist AS $key=>$value)
-					{
-						if($value['thumb']) $value['thumb'] = $tlist[$value['thumb']];
+				if($tlist){
+					foreach($rslist AS $key=>$value){
+						if($value['thumb']){
+							$value['thumb'] = $tlist[$value['thumb']];
+						}
 						$rslist[$key] = $value;
 					}
 				}
 			}
 		}
 		$this->assign('rslist',$rslist);
-
-		//取得付款方式
-		if(!$rs['pay_date'])
-		{
-			$paylist = $this->model('payment')->get_all($this->site['id'],1);
-			$this->assign("paylist",$paylist);
-		}
-		else
-		{
+		if($rs['pay_end']){
 			$payment = $this->model('payment')->get_one($rs['pay_id']);
 			$this->assign('payment',$payment);
+		}else{
+			$paylist = $this->model('payment')->get_all($this->site['id'],1);
+			$this->assign("paylist",$paylist);
+			if($_SESSION['user_id']){
+				$payment_url = $this->url('payment','submit','id='.$rs['id']);
+			}else{
+				$payment_url = $this->url('payment','submit','sn='.$rs['sn'].'&passwd='.$rs['passwd']);
+			}
+			$this->assign('payment_url',$payment_url);
 		}
-
 		$this->view('order_info');
-	}
-
-	//提交支付
-	function payment_f()
-	{
-		$rs = $this->auth_check();
-		$this->assign('rs',$rs);
-		$rslist = $this->model('payment')->get_all($this->site['id']);
-		$this->assign('rslist',$rslist);
-		$this->view("order_payment");
 	}
 	
 	function auth_check()
 	{
 		$sn = $this->get('sn');
 		$back = $this->get('back');
-		if(!$back) $back = $_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : $this->url;
+		if(!$back){
+			$back = $_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : $this->url;
+		}
 		//判断订单是否存在
 		if($sn) $rs = $this->model('order')->get_one_from_sn($sn);
-		if(!$rs)
-		{
+		if(!$rs){
 			$id = $this->get('id','int');
 			if(!$id) error("无法获取订单信息，请检查！",$back,'error');
 			$rs = $this->model('order')->get_one($id);
@@ -120,11 +107,15 @@ class order_control extends phpok_control
 		$passwd = $this->get('passwd');
 		if(!$passwd)
 		{
-			if(!$_SESSION['user_id'] || $_SESSION['user_id'] != $rs['user_id']) error('您没有权限查看此订单',$back,'error');
+			if(!$_SESSION['user_id'] || $_SESSION['user_id'] != $rs['user_id']){
+				error(P_Lang('您没有权限查看此订单'),$back,'error');
+			}
 		}
 		else
 		{
-			if($passwd != $rs['passwd']) error('您没有权限维护订单：'.$rs['sn'],$back,'error');
+			if($passwd != $rs['passwd']){
+				error(P_Lang('您没有权限查看此订单'),$back,'error');
+			}
 		}
 		return $rs;
 	}

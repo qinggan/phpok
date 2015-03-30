@@ -161,8 +161,31 @@ $(document).ready(function(){
 	</table>
 	</div>
 	<div class="clear"></div>
-	<!-- if !$rs.pay_end -->
-	<div style="padding:10px;text-align:center;"><a href="{url ctrl=order func=payment sn=$rs.sn passwd=$rs.passwd/}" title="立即付款"><img src="images/payment.jpg" alt="立即付款" border="0" /></a></div>
+	<!-- if !$rs.pay_end && $paylist -->
+	<div class="pfw mbottom10">
+		<h3>我要支付</h3>
+		<div class="payment">
+			<form method="post" action="{$payment_url}">
+			<!-- loop from=$paylist key=$key value=$value -->
+			<!-- if $value.paylist -->
+			<h4>{$value.title}</h4>
+			<ul>
+				<!-- loop from=$value.paylist key=$k value=$v -->
+				<li><label><input name="payment" type="radio" value="{$v.id}"{if $v.id == $config.biz_payment} checked{/if} />{$v.title}</label></li>
+				<!-- /loop -->
+			</ul>
+			<!-- /if -->
+			<!-- /loop -->
+			<div class="paymenbtn">
+				<table width="100%">
+				<tr>
+					<td><input type="submit" value="" class="paybtn" /></td>
+				</tr>
+				</table>
+			</div>
+			</form>
+		</div>
+	</div>
 	<!-- /if -->
 </div>
 <!-- include tpl=foot -->

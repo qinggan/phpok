@@ -37,18 +37,16 @@ class alipay_submit
 	//创建订单
 	function submit()
 	{
-		//异步通知，不支持带参数的url
         $notify_url = $this->baseurl."payment/alipay/notify_url.php";
-        $return_url = api_url('payment','notice','id='.$this->order['id'],true);
-        //货币类型ID
+        if($_SESSION['user_id']){
+	        $return_url = $GLOBALS['app']->url('payment','notice','id='.$this->order['id'],'www',true);
+	        $show_url = $GLOBALS['app']->url('order','info','id='.$this->order['id'],'www',true);
+        }else{
+	        $return_url = $GLOBALS['app']->url('payment','notice','sn='.$this->order['sn'].'&passwd='.$this->order['passwd'],'www',true);
+	        $show_url = $GLOBALS['app']->url('order','info','sn='.$this->order['sn'].'&passwd='.$this->order['passwd']);
+        }
         $currency_id = $this->param['currency'] ? $this->param['currency']['id'] : $this->order['currency_id'];
         $total_fee = price_format_val($this->order['price'],$this->order['currency_id'],$currency_id);
-        //订单展示地址
-        $show_url = $GLOBALS['app']->url('order','info','sn='.$this->order['sn'].'&passwd='.$this->order['passwd']);
-
-		/************************************************************/
-
-		//构造要请求的参数数组，无需改动
 		$parameter = array(
 				"service" => $this->param['param']['ptype'],
 				"partner" => trim($this->param['param']['pid']),
@@ -57,23 +55,19 @@ class alipay_submit
 				"return_url"	=> $return_url,
 				"seller_email"	=> $this->param['param']['email'],
 				"out_trade_no"	=> $this->order['sn'],
-				"subject"	=> 'SN:'.$this->order['sn'],
-				"body"	=> 'SN:'.$this->order['sn'],
+				"subject"	=> '订单号:'.$this->order['sn'],
+				"body"	=> '订单号:'.$this->order['sn'],
 				"show_url"	=> $show_url,
 				"_input_charset"	=> 'utf-8'
 		);
-		//标准双接口支付
-		if($this->param['param']['ptype'] != 'create_direct_pay_by_user')
-		{
+		if($this->param['param']['ptype'] != 'create_direct_pay_by_user'){
 			$parameter['price'] = $total_fee;
 			$parameter['quantity'] = '1';
 			$parameter['logistics_fee'] = '0.00';
 			$parameter['logistics_type'] = 'EXPRESS';
 			$parameter['logistics_payment'] = 'SELLER_PAY';
-			//读取订单地址
 			$address = $GLOBALS['app']->model('order')->address_shipping($this->order['id']);
-			if(!$address)
-			{
+			if(!$address){
 				$address = array('province'=>'未知','city'=>'未知','county'=>'未知');
 				$address['address'] = '未知';
 				$address['mobile'] = '13000000000';
@@ -86,9 +80,7 @@ class alipay_submit
 			$parameter['receive_zip'] = $address['zipcode'];
 			$parameter['receive_phone'] = $address['tel'];
 			$parameter['receive_mobile'] = $address['mobile'];
-		}
-		else
-		{
+		}else{
 			$parameter['total_fee'] = $total_fee;
 			$parameter['anti_phishing_key'] = '';
 			$parameter['exter_invoke_ip'] = phpok_ip();

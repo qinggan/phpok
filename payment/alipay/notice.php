@@ -13,31 +13,33 @@ class alipay_notice
 	var $paydir;
 	var $order;
 	var $payment;
-	function __construct($order,$payment)
+	public function __construct($order,$param)
 	{
-		$this->paydir = $GLOBALS['app']->dir_root.'payment/alipay/';
+		$this->param = $param;
 		$this->order = $order;
-		$this->payment = $payment;
+		$this->paydir = $GLOBALS['app']->dir_root.'payment/alipay/';
+		$this->baseurl = $GLOBALS['app']->url;
 		include_once($this->paydir."lib/alipay_notify.class.php");
 	}
 
 	//获取订单信息
-	function submit()
+	public function submit()
 	{
-		$sn = $GLOBALS['app']->get('out_trade_no');
-		//注销系统三个变量
 		unset($_GET[$GLOBALS['app']->config['ctrl_id']],$_GET[$GLOBALS['app']->config['func_id']]);
-		unset($_GET['id']);
+		if($_SESSION['user_id']){
+			unset($_GET['id']);
+		}else{
+			unset($_GET['sn'],$_GET['passwd']);
+		}
 		//合作身份者id，以2088开头的16位纯数字
-		$alipay_config = array('partner'=>$this->payment['param']['pid'],'key'=>$this->payment['param']['key']);
+		$alipay_config = array('partner'=>$this->param['param']['pid'],'key'=>$this->param['param']['key']);
 		$alipay_config['sign_type'] ='MD5';
 		$alipay_config['input_charset']= 'utf-8';
 		$alipay_config['cacert']    = $this->paydir.'cacert.pem';
 		$alipay_config['transport']    = 'http';
 		$alipayNotify = new AlipayNotify($alipay_config);
 		$verify_result = $alipayNotify->verify($_GET);
-		if(!$verify_result)
-		{
+		if(!$verify_result){
 			error(P_Lang('订单验证不通过，请联系管理员确认'),$GLOBALS['app']->url,'error');
 		}
 		//附款日期

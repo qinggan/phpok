@@ -122,6 +122,9 @@ class select_form extends _init_auto
 		if($appid == 'admin'){
 			if($ext['is_multiple']){
 				$info = unserialize($rs['content']);
+				if(!$info){
+					return false;
+				}
 				$list = array();
 				foreach($info as $key=>$value){
 					$tmp = $this->opt_rs($value,$opt[0],$opt[1]);

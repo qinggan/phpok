@@ -1,11 +1,11 @@
 <?php
 /*****************************************************************************************
-	文件： payment/tenpay/notify.php
+	文件： payment/paypal/notify.php
 	备注： 订单异步通知处理
 	版本： 4.x
 	网站： www.phpok.com
 	作者： qinggan <qinggan@188.com>
-	时间： 2014年5月2日
+	时间： 2015年03月25日 10时43分
 *****************************************************************************************/
 error_reporting(E_ALL ^ E_NOTICE);
 $root_dir = str_replace("\\","/",dirname(__FILE__))."/../../";
@@ -42,7 +42,7 @@ function root_url()
 	return $http_type.$myurl.'../../';
 }
 include_once($root_dir.'framework/libs/html.php');
-$url = root_url()."index.php?c=payment&f=notify&sn=".rawurlencode($_POST['priv1']);
+$url = root_url()."index.php?c=payment&f=notify&sn=".rawurlencode($_POST['invoice']);
 foreach($_POST AS $key=>$value){
 	$url .= "&".$key."=".rawurlencode($value);
 }

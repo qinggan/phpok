@@ -89,7 +89,6 @@ class html_lib
 		//判断是否有启用代理
 		if($this->is_proxy && $this->proxy_service)
 		{
-			//curl_setopt($curl,CURLOPT_HTTPPROXYTUNNEL,true);
 			curl_setopt($curl,CURLOPT_PROXY,$this->proxy_service);
 			if($this->proxy_user || $this->proxy_pass)
 			{
@@ -127,8 +126,6 @@ class html_lib
         $content = curl_exec($curl);
         if (curl_errno($curl) != 0)
         {
-			//echo '<pre>';
-			//var_dump(curl_error($curl));
             return false;
         }
         $separator = '/\r\n\r\n|\n\n|\r\r/';

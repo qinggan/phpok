@@ -44,12 +44,17 @@ class chinapay_submit
 	function submit()
 	{
         $notify_url = $this->baseurl."payment/chinpay/notify_url.php";
+         if($_SESSION['user_id']){
+	        $return_url = $GLOBALS['app']->url('payment','notice','id='.$this->order['id'],'www',true);
+	        $show_url = $GLOBALS['app']->url('order','info','id='.$this->order['id'],'www',true);
+        }else{
+	        $return_url = $GLOBALS['app']->url('payment','notice','sn='.$this->order['sn'].'&passwd='.$this->order['passwd'],'www',true);
+	        $show_url = $GLOBALS['app']->url('order','info','sn='.$this->order['sn'].'&passwd='.$this->order['passwd']);
+        }
         $return_url = api_url('payment','notice','id='.$this->order['id'],true);
         $currency_id = $this->param['currency'] ? $this->param['currency']['id'] : $this->order['currency_id'];
         $total_fee = price_format_val($this->order['price'],$this->order['currency_id'],$currency_id);
-        $show_url = $GLOBALS['app']->url('order','info','sn='.$this->order['sn'].'&passwd='.$this->order['passwd']);
         $debug = $this->param['param']['env'] == 'start' ? false : true;
-        //初始化
         $chinapay = new chinapay_lib($this->dir_root);
         $chinapay->set_debug($debug);
         $chinapay->set_pid($this->param['param']['pid']);

@@ -33,12 +33,15 @@ class tenpay_submit
 		$tenpay->set_url('https://gw.tenpay.com/gateway/pay.htm');
 		$notify_url = $this->baseurl."payment/tenpay/notify_url.php";
         //同步通知网址
+         if($_SESSION['user_id']){
+	        $return_url = $GLOBALS['app']->url('payment','notice','id='.$this->order['id'],'www',true);
+        }else{
+	        $return_url = $GLOBALS['app']->url('payment','notice','sn='.$this->order['sn'].'&passwd='.$this->order['passwd'],'www',true);
+        }
         $return_url = api_url('payment','notice','id='.$this->order['id'],true);
         //付款金额
 		$currency_id = $this->param['currency'] ? $this->param['currency']['id'] : $this->order['currency_id'];
 		$total_fee = price_format_val($this->order['price'],$this->order['currency_id'],$currency_id);
-        //商品展示地址
-        $show_url = $GLOBALS['app']->url('order','info','id='.$this->order['id']);
 		/************************************************************/
 		//商户编号
 		$desc = 'SN:'.$this->order['sn'];

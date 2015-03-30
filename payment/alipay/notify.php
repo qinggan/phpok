@@ -13,31 +13,27 @@ class alipay_notify
 	var $paydir;
 	var $order;
 	var $payment;
-	function __construct($order,$payment)
+	public function __construct($order,$param)
 	{
+		$this->param = $param;
 		$this->order = $order;
-		$this->payment = $payment;
-		$this->paydir = $GLOBALS['app']->dir_root."payment/alipay/";
+		$this->paydir = $GLOBALS['app']->dir_root.'payment/alipay/';
+		$this->baseurl = $GLOBALS['app']->url;
 		include_once($this->paydir."lib/alipay_notify.class.php");
 	}
 
-	function submit()
+	public function submit()
 	{
-		$ctrl_id = $GLOBALS['app']->config['ctrl_id'];
-		$func_id = $GLOBALS['app']->config['func_id'];
-		unset($_GET[$ctrl_id],$_GET[$func_id],$_GET['sn']);
-		//合作身份者id，以2088开头的16位纯数字
-		$alipay_config = array('partner'=>$this->payment['param']['pid'],'key'=>$this->payment['param']['key']);
+		unset($_GET[$GLOBALS['app']->config['ctrl_id']],$_GET[$GLOBALS['app']->config['func_id']],$_GET['sn']);
+		$alipay_config = array('partner'=>$this->param['param']['pid'],'key'=>$this->param['param']['key']);
 		$alipay_config['sign_type'] ='MD5';
 		$alipay_config['input_charset']= 'utf-8';
 		$alipay_config['cacert']    = $this->paydir.'cacert.pem';
 		$alipay_config['transport']    = 'http';
-		
 		$alipayNotify = new AlipayNotify($alipay_config);
 		$verify_result = $alipayNotify->verify($_GET);
-		if(!$verify_result)
-		{
-			phpok_log('异步通知验证不通过');
+		if(!$verify_result){
+			phpok_log(P_Lang('异步通知：支付宝验证不通过'));
 			exit('fail');
 		}
 		//附款日期
@@ -47,8 +43,7 @@ class alipay_notify
 		$price = $GLOBALS['app']->get('total_fee','float');
 		$trade_status = $GLOBALS['app']->get('trade_status');
 		$tmp = array('WAIT_SELLER_SEND_GOODS','WAIT_BUYER_CONFIRM_GOODS','TRADE_FINISHED','TRADE_SUCCESS');
-		if(in_array($trade_status,$tmp))
-		{
+		if(in_array($trade_status,$tmp)){
 			$array = array('pay_status'=>"付款完成",'pay_date'=>$pay_date,'pay_price'=>$price,'pay_end'=>1);
 			$array['status'] = '付款完成';
 			//更新扩展数据
@@ -64,8 +59,7 @@ class alipay_notify
 			$array['ext'] = serialize($alipay);
 			$GLOBALS['app']->model('order')->save($array,$rs['id']);
 		}
-		echo 'success';
-		exit;
+		exit('success');
 	}
 }
 ?>

@@ -9,7 +9,6 @@
 var lock = false;
 function start_update()
 {
-	//锁定开始按钮
 	$("#start_id").attr("disabled",true).val('正在升级……');
 	ok_start();
 }
@@ -26,20 +25,16 @@ function ok_start()
 			update_load_file(name);
 		}
 	});
-	if(is_end)
-	{
+	if(is_end){
 		//升级成功后，更新日志，防止重复升级
 		var url = get_url('update','success');
-		var rs = json_ajax(url);
-		if(rs.status == 'ok')
-		{
+		var rs = $.phpok.json(url);
+		if(rs.status == 'ok'){
 			//弹出升级成功提示
 			$.dialog.alert('升级成功',function(){
 				top.$.phpok.reload();
 			});
-		}
-		else
-		{
+		}else{
 			$.dialog.alert(rs.content);
 			return false;
 		}
@@ -55,12 +50,9 @@ function update_load_file(name)
 		'async'		: true,
 		'dataType'	: 'json',
 		'success'	: function(rs){
-			if(rs.status == 'ok')
-			{
+			if(rs.status == 'ok'){
 				$("#my_"+name).html('&#8730;').css("color","blue");
-			}
-			else
-			{
+			}else{
 				$("#my_"+name).html('&#215;').css("color","red");
 			}
 			lock = false;

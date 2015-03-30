@@ -909,7 +909,7 @@ class _init_phpok
 		$func = $this->get($this->config["func_id"],"system");
 		if(!$ctrl) $ctrl = "index";
 		if(!$func) $func = "index";
-		if($ctrl != 'login'){
+		if($ctrl != 'login' && !$this->config['develop']){
 			if(!$_SERVER['HTTP_REFERER']){
 				$ctrl='login';
 				$func = 'index';

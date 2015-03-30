@@ -198,16 +198,16 @@ function load_product(num,id)
 	var url = get_url('order','product','id='+id);
 	var currency_id = $("#currency_id").val();
 	url += '&currency_id='+currency_id;
-	var rs = json_ajax(url);
-	if(rs.status != 'ok')
-	{
-		if(!rs.content) rs.content = '产品信息获取失败';
+	var rs = $.phpok.json(url);
+	if(rs.status != 'ok'){
+		if(!rs.content){
+			rs.content = '产品信息获取失败';
+		}
 		$.dialog.alert(rs.content);
 		return false;
 	}
 	$("#pro_tid_"+num).val(id);
-	if(rs.content.thumb)
-	{
+	if(rs.content.thumb){
 		$("#pro_thumb_"+num).val(rs.content.thumb.id);
 		$("#pro_thumb_view_"+num).html('<img src="'+rs.content.thumb.ico+'" border="0" width="80px" height="80px" onclick="update_pic(\''+num+'\')" style="cursor:pointer;" />');
 	}

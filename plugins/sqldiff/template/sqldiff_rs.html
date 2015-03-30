@@ -31,7 +31,7 @@
 				<td class="error" colspan="5">{$v.error}</td>
 			</tr>
 			<!-- else -->
-			<tr{if $value.error[$k]} class="error"{/if}>
+			<tr>
 				<td>{$v.field}</td>
 				<td>{$v.type}</td>
 				<td>{$v.null != '' ? $v.null : '&nbsp;'}</td>
@@ -66,7 +66,7 @@
 				<td class="error" colspan="5">{$v.error}</td>
 			</tr>
 			<!-- else -->
-			<tr{if $value.error[$k]} class="error"{/if}>
+			<tr>
 				<td>{$v.field}</td>
 				<td>{$v.type}</td>
 				<td>{$v.null != '' ? $v.null : '&nbsp;'}</td>

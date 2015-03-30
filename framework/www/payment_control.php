@@ -10,30 +10,35 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class payment_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 	}
 
 	//提交支付
-	function submit_f()
+	public function submit_f()
 	{
-		$rs = $this->auth_check();
-		$error_url = $this->url('order','info','sn='.$rs['sn'].'&passwd='.$rs['passwd']);
-		if($rs['pay_end'])
-		{
+		$chk = $this->auth_check();
+		$rs = $chk['rs'];
+		$error_url = $chk['error_url'];
+		unset($chk);
+		if($rs['pay_end']){
 			error(P_Lang('该订单已结束，不能再执行付款操作'),$error_url,'error');
 		}
 		$payment = $this->get('payment','int');
-		if(!$payment)
-		{
+		if(!$payment){
 			error(P_Lang('未指定付款方式'),$error_url,"error");
 		}
 		$payment_rs = $this->model('payment')->get_one($payment);
+		if(!$payment_rs){
+			error(P_Lang('支付方式不存在'),$error_url,'error');
+		}
+		if(!$payment_rs['status']){
+			error(P_Lang('支付方式未启用'),$error_url,'error');
+		}
 		//进入支付页
 		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/submit.php';
-		if(!is_file($file))
-		{
+		if(!is_file($file)){
 			error(P_Lang('支付接口异常，请检查'),$error_url,'error');
 		}
 		include_once($file);
@@ -45,14 +50,11 @@ class payment_control extends phpok_control
 		$price = price_format_val($rs['price'],$rs['currency_id'],$currency);
 		$data['pay_price'] = $price;
 		$data['pay_currency'] = $currency;
-		if($currency)
-		{
+		if($currency){
 			$currency_rs = $this->model('currency')->get_one($currency);
 			$currency_code = $currency_rs['code'];
 			$pay_currency_rate = $currency_rs['val'];
-		}
-		else
-		{
+		}else{
 			$currency_code = 'CNY';
 			$currency_rate = '1.00000000';
 		}
@@ -65,34 +67,111 @@ class payment_control extends phpok_control
 		$payment->submit();
 	}
 
-	//权限验证
-	function auth_check()
+	//同步通知处理方案
+	public function notice_f()
 	{
-		$sn = $this->get('sn');
-		$back = $this->get('back');
-		if(!$back) $back = $_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : $this->url;
-		//判断订单是否存在
-		if($sn) $rs = $this->model('order')->get_one_from_sn($sn,$_SESSION['user_id']);
-		if(!$rs)
-		{
-			$id = $this->get('id','int');
-			if(!$id) error("无法获取订单信息，请检查！",$back,'error');
-			$rs = $this->model('order')->get_one($id);
-			if(!$rs) error("订单信息不存在，请检查！",$back,'error');
+		$chk = $this->auth_check();
+		$rs = $chk['rs'];
+		$url = $chk['error_url'];
+		unset($chk);
+		if($rs['pay_end']){
+			error(P_Lang('您的订单付款成功，请稍候…'),$url,'ok');
 		}
-		//判断是否有维护订单权限
-		if($_SESSION['user_id'])
-		{
-			if($rs['user_id'] != $_SESSION['user_id']) error('您没有权限维护此订单：'.$rs['sn'],$back,'error');
+		if(!$rs['pay_id']){
+			error(P_Lang('未指定支付方式'),$url,'ok');
 		}
-		else
-		{
-			$passwd = $this->get('passwd');
-			if($passwd != $rs['passwd']) error('您没有权限维护此订单：'.$rs['sn'],$back,'error');
+		$payment_rs = $this->model('payment')->get_one($rs['pay_id']);
+		if(!$payment_rs){
+			error(P_Lang('付款方式不存在'),$url,'error');
 		}
-		return $rs;
+		if(!$payment_rs['status']){
+			error(P_Lang('付款方式未启用'),$url,'error');
+		}
+		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/notice.php';
+		if(!is_file($file)){
+			error(P_Lang('支付接口异常，请检查'),$url,'error');
+		}
+		include_once($file);
+		$name = $payment_rs['code'].'_notice';
+		$cls = new $name($rs,$payment_rs);
+		$cls->submit();
+		error(P_Lang('您的订单付款成功，请稍候…'),$url,'ok');
 	}
 
+	//异步通知方案
+	//考虑到异步通知存在读不到$_SESSION问题，使用sn和pass组合
+	public function notify_f()
+	{
+		$sn = $this->get('sn');
+		if(!$sn){
+			phpok_log(P_Lang('异步通知：订单信息不完整'));
+			exit('error');
+		}
+		$rs = $this->model('order')->get_one_from_sn($sn);
+		if(!$rs){
+			phpok_log(P_Lang('异步通知：订单信息不存在'));
+			exit('error');
+		}
+		if($rs['pay_end']){
+			exit('success');
+		}
+		if(!$rs['pay_id']){
+			phpok_log(P_Lang('异步通知：未指定支付方式'));
+			exit('error');
+		}
+		$payment_rs = $this->model('payment')->get_one($rs['pay_id']);
+		if(!$payment_rs){
+			phpok_log(P_Lang('异步通知：付款方式不存在'));
+			exit('error');
+		}
+		if(!$payment_rs['status']){
+			phpok_log(P_Lang('异步通知：付款方式未启用'));
+			exit('error');
+		}
+		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/notify.php';
+		if(!is_file($file)){
+			phpok_log(P_Lang('异步通知：异步通知文件不存在'));
+			exit('error');
+		}
+		include_once($file);
+		$name = $payment_rs['code'].'_notify';
+		$cls = new $name($rs,$payment_rs);
+		$cls->submit();
+		exit('success');
+	}
+
+	private function auth_check()
+	{
+		if($_SESSION['user_id']){
+			$id = $this->get('id','int');
+			if(!$id){
+				error(P_Lang('订单ID为空'),$this->url('order'),'error');
+			}
+			$rs = $this->model('order')->get_one($id);
+			if(!$rs){
+				error(P_Lang('订单信息不存在'),$this->url('order'),'error');
+			}
+			if($rs['user_id'] != $_SESSION['user_id']){
+				error(P_Lang('您没有权限为此订单执行支付'),$this->url('order'),'error');
+			}
+			$error_url = $this->url('order','info','id='.$id);
+		}else{
+			$sn = $this->get('sn');
+			$passwd = $this->get('passwd');
+			if(!$sn || !$passwd){
+				error(P_Lang('订单信息不完整，请检查'),$this->url('index'),'error');
+			}
+			$rs = $this->model('order')->get_one_from_sn($sn);
+			if(!$rs){
+				error(P_Lang('订单信息不存在'),$this->url('index'),'error');
+			}
+			if($rs['passwd'] != $passwd){
+				error(P_Lang('验证不通过'),$this->url('index'),'error');
+			}
+			$error_url = $this->url('order','info','sn='.$sn.'&passwd='.$passwd);
+		}
+		return array('rs'=>$rs,'error_url'=>$error_url);
+	}
 }
 
 ?>

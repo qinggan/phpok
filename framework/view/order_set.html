@@ -11,19 +11,17 @@ $("#ordersave").submit(function(){
 		'dataType':'json',
 		'success':function(rs){
 			//订单状态为否时
-			if(rs.status != 'ok')
-			{
-				if(!rs.content) rs.content = '提交失败';
+			if(rs.status != 'ok'){
+				if(!rs.content){
+					rs.content = '提交失败';
+				}
 				$.dialog.alert(rs.content);
 				return false;
 			}
 			//订单操作成功的提示
-			if(is_id)
-			{
+			if(is_id && is_id != '0'){
 				$.dialog.alert('订单：<span class="red">{$rs.sn}</span> 编辑成功');
-			}
-			else
-			{
+			}else{
 				var sn = $("#sn").val();
 				$.dialog.alert("订单创建成功，编号是：<span class='red'>"+sn+"</span>",function(){
 					$.phpok.reload();
@@ -112,8 +110,8 @@ $(document).ready(function(){
 	<div class="content">
 		<table cellpadding="0" cellspacing="0">
 		<tr>
-			<td><label><input type="radio" name="pay_end" value="0"{if !$rs.pay_status} checked{/if} />进行中</label></td>
-			<td><label><input type="radio" name="pay_end" value="1"{if $rs.pay_status} checked{/if} />已完成</label></td>
+			<td><label><input type="radio" name="pay_end" value="0"{if !$rs.pay_end} checked{/if} />进行中</label></td>
+			<td><label><input type="radio" name="pay_end" value="1"{if $rs.pay_end} checked{/if} />已完成</label></td>
 			<td>&nbsp; &nbsp; 状态说明：</td>
 			<td><input type="text" id="status" name="status" value="{$rs.status}" /></td>
 			<td style="padding-left:10px;">
@@ -153,11 +151,11 @@ $(document).ready(function(){
 	<input type="hidden" name="pro_id[]" value="{$value.id}" />
 	<input type="hidden" name="pro_tid[]" value="{$value.tid}" class="p_proid" id="pro_tid_{$rslist_id.num}" />
 	<input type="hidden" name="pro_thumb[]" value="{$value.thumb.id}" id="pro_thumb_{$rslist_id.num}" />
-	<td widtha="90px" align="center" id="pro_thumb_view_{$rslist_id.num}"><img src="{$value.thumb.ico}" style="cursor:pointer;" onclick="update_pic('{$rslist_id.num}')" width="80px" height="80px" border="0" /></td>
+	<td widtha="90px" align="center" id="pro_thumb_view_{$rslist_id.num}"><img src="{$value.thumb ? $value.thumb : 'images/picture_default.png'}" style="cursor:pointer;" onclick="update_pic('{$rslist_id.num}')" width="80px" height="80px" border="0" /></td>
 	<td>
 		<table>
 			<tr>
-				<td><input type="text" name="pro_title[]" id="pro_title_{$value.id}" class="long" value="{$value.title}" /></td>
+				<td><input type="text" name="pro_title[]" id="pro_title_{$rslist_id.num}" class="long" value="{$value.title}" /></td>
 			</tr>
 			<tr>
 				<td><input type="text" name="pro_price[]" class="price" id="pro_price_{$rslist_id.num}" value="{$value.price}" /> <input type="button" value="选择产品" onclick="pro_select('{$rslist_id.num}')" class="btn" /></td>
