@@ -131,6 +131,22 @@ class index_control extends phpok_control
 			$menulist[$key] = $value;
 		}
 		$this->assign('menulist',$menulist);
+		
+		if($menulist){
+			$iconlist = false;
+			foreach($menulist as $key=>$value){
+				if($value['sublist']){
+					foreach($value['sublist'] as $k=>$v){
+						if($v['icon']){
+							$iconlist[] = $v;
+						}
+					}
+				}
+			}
+			if($iconlist){
+				$this->assign('iconlist',$iconlist);
+			}
+		}
 		//判断是否有全局
 		$all_info = $this->all_info();
 		if($all_info)

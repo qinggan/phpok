@@ -174,7 +174,7 @@ class update_control extends phpok_control
 					continue;
 				}
 			}
-			if(is_file($value)){
+			if(is_file($value) && $tmp != 'table.sql'){
 				$this->lib('file')->mv($value,$this->dir_root.$tmp);
 				continue;
 			}
@@ -219,24 +219,7 @@ class update_control extends phpok_control
 		//更新配置文件
 		foreach($cfile AS $key=>$value){
 			$base = basename($value);
-			if(is_file($this->dir_phpok.'config/'.$base)){
-				//更新配置文件信息
-				$config = array();
-				include_once($value);
-				include_once($this->dir_phpok.'config/'.$base);
-				$html = '/***********************************************************'."\n";
-				$html.= "\t".'文件：{phpok}/config/'.$base."\n";
-				$html.= "\t".'备注：配置文件'."\n";
-				$html.= "\t".'版本：4.x'."\n";
-				$html.= "\t".'网站：www.phpok.com'."\n";
-				$html.= "\t".'作者：qinggan <qinggan@188.com>'."\n";
-				$html.= "\t".'更新：'.date("Y-m-d H:i",$this->time)."\n";
-				$html.= '***********************************************************/'."\n";
-				$html.= 'if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}'."\n";
-				$this->lib('file')->vi($config,$this->dir_phpok.'config/'.$base,'config','wb',$html);
-			}else{
-				$this->lib('file')->mv($value,$this->dir_phpok.'config/'.$base);
-			}
+			$this->lib('file')->mv($value,$this->dir_phpok.'config/'.$base);
 		}
 		$this->lib('file')->rm($this->dir_root.'data/update/');
 		$list = $this->lib('file')->ls($this->dir_root.'data/update/');
@@ -331,7 +314,7 @@ class update_control extends phpok_control
 		}
 		//删除临时表操作
 		foreach($list as $key=>$value){
-			if(substr($value,0,$length) == $prefix){
+			if(substr($value,0,$nlength) == $prefix){
 				$sql = "DROP TABLE ".$value;
 				$this->db->query($sql);
 			}
@@ -368,6 +351,9 @@ class update_control extends phpok_control
 			$html.= '?>';
 			file_put_contents($this->dir_root.'version.php',$html);
 		}
+		$this->lib('file')->rm($this->dir_root.'data/tpl_admin/');
+		$this->lib('file')->rm($this->dir_root.'data/tpl_www/');
+		$this->lib('file')->rm($this->dir_root.'data/cache/');
 		return true;
 	}
 
@@ -397,7 +383,7 @@ class update_control extends phpok_control
 			if(!$info['content']) $info['content'] = '升级失败';
 			$this->json($info['content']);
 		}
-		$this->json(true);
+		$this->json('ok',true);
 	}
 
 	private function sql_run($sql='')

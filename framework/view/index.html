@@ -60,29 +60,24 @@
 
 <div class="content"><table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr>
+	<!-- if $iconlist -->
 	<td valign="top" width="220px">
 	<div class="c_left">
 		<ul>
-			<!-- loop from=$menulist key=$key value=$value -->
-			<!-- loop from=$value.sublist key=$k value=$v id=sub_id -->
-			<!-- if $v.icon -->
+			<!-- loop from=$iconlist key=$k value=$v -->
 			<li appfile="{$v.appfile}"><a href="javascript:$.win('{$v.title}','{$v.url}');void(0);"><span class="icon-{$v.icon}"></span>{$v.title}</a></li>
-			<!-- /if -->
-			<!-- /loop -->
 			<!-- /loop -->
 		</ul>
 	</div>
 	</td>
-	<td valign="top"><div class="index_main">
+	<!-- /if -->
+	<td valign="top"><div class="index_main"{if !$iconlist} style="margin-left:10px"{/if}>
 		<div class="sub_box" id="all_setting"{if !$all_info} style="display:none;"{/if}>{$all_info}</div>
 		<div class="sub_box" id="list_setting"{if !$list_setting} style="display:none;"{/if}>{$list_setting}</div>
 	</div></td>
 </tr>
 </table>
 
-	
-	
-	
 	<!-- plugin body -->
 	<div class="clear"></div>
 </div>

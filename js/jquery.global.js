@@ -704,13 +704,17 @@
 			return false;
 		}
 		var height = parseInt(($(window).height() - 45) * 0.8);
+		var exwidth = $('.c_left').parent().width();
+		if(!exwidth || exwidth == 'null' || exwidth == null){
+			exwidth = 0;
+		}
 		var defaults = {
 			'iframe':url,
 			'title':title,
 			'lock':false,
 			'taskbar':'top',
 			'exheight':45,
-			'exwidth':220,
+			'exwidth':exwidth,
 			'height':height,
 			'move':true,
 			'win_max':true,
