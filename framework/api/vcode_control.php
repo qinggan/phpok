@@ -10,17 +10,24 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class vcode_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 	}
 
-	function index_f()
+	public function index_f()
 	{
 		$info = $this->lib("vcode")->word();
 		$appid = $this->get("id");
-		if(!$appid) $appid = $this->app_id;
-		$_SESSION["vcode_".$appid] = md5(strtolower($info));
+		if(!$appid){
+			$appid = $this->app_id;
+		}
+		if($appid == 'admin'){
+			$_SESSION["vcode_".$appid] = md5(strtolower($info));
+		}else{
+			$_SESSION["vcode"] = md5(strtolower($info));
+			$_SESSION["vcode_".$appid] = md5(strtolower($info));
+		}
 		$this->lib("vcode")->create();
 	}
 }

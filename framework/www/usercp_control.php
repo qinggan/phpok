@@ -10,11 +10,11 @@ class usercp_control extends phpok_control
 {
 	var $group_rs;
 	var $user_rs;
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 		if(!$_SESSION["user_id"]){
-			error("未登录会员不能执行此操作",$this->url,"error");
+			error(P_Lang('未登录会员不能执行此操作'),$this->url,"error");
 		}
 		$this->group_rs = $this->model('usergroup')->group_rs($_SESSION['user_id']);
 		if(!$this->group_rs){
@@ -23,7 +23,7 @@ class usercp_control extends phpok_control
 	}
 
 	//会员个人中心
-	function index_f()
+	public function index_f()
 	{
 		$rs = $this->model("user")->get_one($_SESSION['user_id']);
 		$this->assign('rs',$rs);
@@ -31,7 +31,7 @@ class usercp_control extends phpok_control
 	}
 
 	//修改个人资料
-	function info_f()
+	public function info_f()
 	{
 		$rs = $this->model("user")->get_one($_SESSION['user_id']);
 		$group_rs = $this->group_rs;
@@ -68,27 +68,25 @@ class usercp_control extends phpok_control
 	}
 
 	//修改密码
-	function passwd_f()
+	public function passwd_f()
 	{
 		$this->view("usercp_passwd");
 	}
 
-	//我的评论
-
 	//获取项目列表
-	function list_f()
+	public function list_f()
 	{
 		$id = $this->get("id");
-		if(!$id) error("未指定项目",$this->url('usercp'),'notice',10);
-		//判断是否有这个权限
-		if(!$this->group_rs['post_popedom'] || $this->group_rs['post_popedom'] == 'none')
-		{
-			error("您没有这个权限功能",$this->url('usercp'),'error',10);
+		if(!$id){
+			error(P_Lang('未指定项目'),$this->url('usercp'),'notice',10);
 		}
 		$pid = $this->model('id')->project_id($id,$this->site['id']);
-		if(!$pid)
-		{
+		if(!$pid){
 			error('项目信息不存在',$this->url('usercp'),'error');
+		}
+		//判断是否有这个权限
+		if(!$this->model('popedom')->check($pid,$this->user_groupid,'post')){
+			error(P_Lang('您没有这个权限功能，请联系网站管理员'),$this->url('usercp'),'error');
 		}
 		$project_rs = $this->model('project')->get_one($pid);
 		if(!$project_rs || !$project_rs['status'])

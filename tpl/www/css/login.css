@@ -1,0 +1,22 @@
+/***********************************************************
+	文件：css/login.css
+	备注：会员登录页涉及到的CSS
+	版本：4.0
+	网站：www.phpok.com
+	作者：qinggan <qinggan@188.com>
+	日期：2015年04月02日 13时41分
+***********************************************************/
+body{margin:0;padding:0;font:14px/1.5em "Microsoft Yahei","宋体","Tahoma","Arial"}
+a{color:#666;text-decoration:none}
+a:hover{color:#00F;text-decoration:underline}
+
+div.box{margin-top:100px;}
+div.box dd{margin-bottom:5px;line-height:26px;}
+div.box label{float:left;margin-right:5px;text-align:right; width:110px; line-height:26px;}
+div.box .input{border: 1px solid #CCCCCC; line-height: 20px; padding:3px;width: 220px;}
+div.box .vcode{border: 1px solid #CCCCCC; line-height: 20px; padding:3px;width:130px;text-transform:uppercase;margin-right:3px;}
+div.box dd.submit{ padding-left: 115px; padding-top:10px;}
+
+.button {display: inline-block;zoom: 1;vertical-align: baseline;margin: 0 2px;outline: none;cursor: pointer;text-align: center;text-decoration: none;font-size: 14px;line-height: 100%;padding: .4em 1.5em .55em;border: none;border-radius: 2px;color: #fff;background: #A7A9AA;}
+.button.blue {background: #007ead;}
+.button.blue:hover {background:#3375b9;}

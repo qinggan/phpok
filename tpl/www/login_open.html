@@ -1,0 +1,53 @@
+<!-- head title=$title css="css/login.css,artdialog.css" extjs="jquery.artdialog.js" html5=true -->
+<body>
+<script type="text/javascript">
+var open_vcode = '{$sys.is_vcode && function_exists("imagecreate") ? 1 : 0}';
+$(document).ready(function(){
+	$('#login-form').submit(function(){
+		$(this).ajaxSubmit({
+			url:api_url('login','save'),
+			type:'post',
+			dataType:'json',
+			success:function(rs){
+				if(rs.status == 'ok'){
+					$.dialog.alert('您已成功登录',function(){
+						top.$.phpok.reload();
+					},'succeed');
+				}else{
+					if(!rs.content){
+						rs.content = '登录失败';
+					}
+					$.dialog.alert(rs.content,function(){
+						if(open_vcode == '1'){
+							$("#_chkcode").val('');
+							$("#vcode").phpok_vcode();
+						}
+					},'error');
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="box">
+	<form method="post" id="login-form">
+		<dd><label>账号：</label><input class="input" type="text" name="user" /><div class="clear"></div></dd>
+		<dd><label>密码：</label><input class="input" type="password" name="pass" /><div class="clear"></div></dd>
+		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+		<dd><label>验证码：</label><input class="vcode"  type="text" name="_chkcode" id="_chkcode" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" /><div class="clear"></div></dd>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#vcode").phpok_vcode();
+			$("#vcode").click(function(){
+				$(this).phpok_vcode();
+			});
+		});
+		</script>
+		<!-- /if -->
+		<dd class="submit"><input class="button blue" type="submit" value="登录" name=""></dd>
+	</form>
+</div>
+</body>
+</html>

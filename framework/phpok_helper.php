@@ -9,26 +9,22 @@
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 
-//字符串截取，一个汉字等同于两个字母，去除HTML版
 function phpok_cut($string,$length=255,$dot="")
 {
 	return $GLOBALS['app']->lib("string")->cut($string,$length,$dot);
 }
 
-//取得Get或是Post的数据
 function G($id)
 {
 	return $GLOBALS['app']->get($id);
 }
 
-//取得随机字符串
 function str_rand($length=10)//随机字符，参数是长度
 {
 	if(!$length) return false;
 	return $GLOBALS['app']->lib('common')->str_rand($length);
 }
 
-# 后台网址格式化，此函数仅限后台使用，在前台请使用phpok_url，支持静态化
 function admin_url($ctrl,$func="",$ext="")
 {
 	return $GLOBALS['app']->url($ctrl,$func,$ext);
@@ -41,58 +37,21 @@ function admin_url($ctrl,$func="",$ext="")
 //root，是否包含网站域名
 function api_url($ctrl,$func="",$ext="",$root=false)
 {
-	$url = '';
-	if($root) $url .= $GLOBALS['app']->url;
-	$url .= $GLOBALS['app']->config['api_file'];
-	$url .= '?'.$GLOBALS['app']->config['ctrl_id']."=".rawurlencode($ctrl);
-	if($func && $func != 'index')
-	{
-		$url .= '&'.$GLOBALS['app']->config['func_id'].'='.rawurlencode($func);
+	$url = $root ? $GLOBALS['app']->url : '';
+	$url .= $GLOBALS['app']->config['api_file'].'?';
+	if($ctrl && $ctrl != 'index'){
+		$url .= $GLOBALS['app']->config['ctrl_id']."=".rawurlencode($ctrl).'&';
 	}
-	if($ext)
-	{
-		if(substr($ext,0,1) != '&') $ext = '&'.$ext;
+	if($func && $func != 'index'){
+		$url .= $GLOBALS['app']->config['func_id'].'='.rawurlencode($func).'&';
+	}
+	if($ext){
 		$url .= $ext;
 	}
 	$url = str_replace('&amp;','&',$url);
-	return $url;
-}
-
-function msg_url($id,$ext="")
-{
-	return msgurl($id,$ext);
-}
-
-function msgurl($id,$ext="")
-{
-	return $GLOBALS['app']->url($id,"",$ext);
-}
-
-
-function web_url($ctrl,$func="",$ext="")
-{
-	if($ctrl == "list") $ctrl = "project";
-	if($ctrl == "msg") $ctrl = "content";
-	return $GLOBALS['app']->url($ctrl,$func,$ext);
-}
-
-function content_url($id,$ext)
-{
-	return $GLOBALS['app']->url("content",$id,$ext);
-}
-
-function site_url($ctrl,$func="",$ext="")
-{
-	if($ctrl == "list") $ctrl = "project";
-	if($ctrl == "msg") $ctrl = "content";
-	return web_url($ctrl,$func,$ext);
-}
-
-function jsurl($ext="")
-{
-	$url = $GLOBALS['app']->url.$GLOBALS['app']->config['www_file']."?";
-	$url.= $GLOBALS['app']->config['ctrl_id']."=js&";
-	if($ext) $url .= $ext;
+	if(substr($url,-1) == '&'){
+		$url = sub_str($url,0,-1);
+	}
 	return $url;
 }
 
@@ -673,18 +632,28 @@ function phpok_res_type($type="")
 	}
 }
 
-//PHPOK会员登录
-function phpok_user_login($id,$pass="")
+function phpok_user_login($id,$pass="",$field='id')
 {
-	$rs = $GLOBALS['app']->model('user')->get_one($id);
-	if(!$rs || !$rs["status"]) return $GLOBALS['app']->lang['global'][5001];
-	if($pass && !password_check($pass,$rs["pass"])) return $GLOBALS['app']->lang['global'][5002];
+	if(!$id){
+		return P_Lang('未指定会员账号或Email或手机号或ID号');
+	}
+	$rs = $GLOBALS['app']->model('user')->get_one($id,$field);
+	if(!$rs){
+		return P_Lang('会员信息不存在');
+	}
+	if(!$rs["status"]){
+		return P_Lang('会员账号未审核');
+	}
+	if($rs['status'] == '2'){
+		return P_Lang('会员账号被锁定，请联系管理员');
+	}
+	if($pass && !password_check($pass,$rs["pass"])){
+		return P_Lang('会员账号验证不通过，密码不正确');
+	}
 	$_SESSION["user_id"] = $id;
-	$_SESSION["user_rs"] = $rs;
+	$_SESSION["user_gid"] = $rs['group_id'];
 	$_SESSION["user_name"] = $rs["user"];
-	//更新购物车属性
-	//$GLOBALS['app']->model('cart')->cart_id(session_id(),$id);
-	return "ok";
+	return 'ok';
 }
 
 //取得扩展表里的信息
@@ -1037,6 +1006,18 @@ function add_js($js)
 	return $GLOBALS['app']->url("js","ext","js=".rawurlencode($js));
 }
 
-// 兼容老版本写法，下面的这些写法将会在5.x版本中消除
-function sys_cutstring($string,$length=255,$dot=""){return phpok_cut($string,$length,$dot);}
+function phpok_call_api_url($phpok,$param='',$tpl='')
+{
+	if(!$phpok || !$GLOBALS['app']->site['api_code']){
+		return false;
+	}
+	$ext = $tpl ? 'tpl='.rawurlencode($tpl) : '';
+	$info = array('id'=>$phpok,'param'=>$param);
+	$token = $GLOBALS['app']->lib('token')->encode($info);
+	if($ext){
+		$ext .= "&";
+	}
+	$ext .= "token=".rawurlencode($token);
+	return api_url('index','phpok',$ext,true);
+}
 ?>

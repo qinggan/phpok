@@ -1107,41 +1107,26 @@ class _init_auto
 	//魔术方法之方法重载
 	public function __call($method,$param)
 	{
-		if(method_exists($GLOBALS['app'],$method))
-		{
+		if(method_exists($GLOBALS['app'],$method)){
 			return call_user_func_array(array($GLOBALS['app'],$method),$param);
-		}
-		else
-		{
+		}else{
 			$lst = explode("_",$method);
-			if($lst[1] == 'model')
-			{
+			if($lst[1] == 'model'){
 				$GLOBALS['app']->model($lst[0]);
 				call_user_func_array(array($GLOBALS['app'],$method),$param);
-			}
-			elseif($lst[1] == 'lib')
-			{
+			}elseif($lst[1] == 'lib'){
 				$GLOBALS['app']->lib($lst[0]);
 				return call_user_func_array(array($GLOBALS['app'],$method),$param);
 			}
 		}
 	}
 
-	//5.3.0版以后的使用方法，这是调用静态方法重载的魔术方法
-	public static function __callStatic($name, $arguments) 
-    {
-		return $this->__call($name,$arguments);
-    }
-
 	public function __get($id)
 	{
 		$lst = explode("_",$id);
-		if($lst[1] == "model")
-		{
+		if($lst[1] == "model"){
 			return $GLOBALS['app']->model($lst[0]);
-		}
-		elseif($lst[1] == "lib")
-		{
+		}elseif($lst[1] == "lib"){
 			return $GLOBALS['app']->lib($lst[0]);
 		}
 		return $GLOBALS['app']->$id;

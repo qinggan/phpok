@@ -1,5 +1,4 @@
 <!-- include tpl=head title="填写并核对验证信息 - 购物车" -->
-<script type="text/javascript" src="{#js#}/pcas.js"></script>
 <script type="text/javascript">
 var user_id = "{$session.user_id}";
 $(document).ready(function(){
@@ -37,125 +36,98 @@ $(document).ready(function(){
 <div class="main">
 	<form method="post" id="saveorder">
 	<div class="pfw mbottom10 check_address">
-		<h3>地址</h3>
-		<div style="float:left;width:475px;">
+		<h3>收货地址</h3>
+		<div>
 			<input type="hidden" name="s-id" id="s-id" value="{$shipping.id}" />
-			<!-- if $config.biz_billing --><h4 style="padding-left:10px;">收货地址</h4><!-- /if -->
 			<table width="100%">
 			<tr>
-				<td width="80px" align="right">姓名：</td>
-				<td><input type="text" name="s-fullname" id="s-fullname" value="{$shipping.fullname}" /></td>
-			</tr>
-			<tr>
-				<td align="right">性别：</td>
+				<td width="80" align="right"><span class="red">*</span> 姓名：</td>
+				<td width="400"><input type="text" name="s-fullname" id="s-fullname" value="{$shipping.fullname}" /></td>
+				<td width="90" align="right"><span class="red">*</span> 性别：</td>
 				<td>
-					<table>
-					<tr>
-						<td><label><input type="radio" name="s-gender" value="0"{if !$shipping.gender} checked{/if} /> 女</label></td>
-						<td><label><input type="radio" name="s-gender" value="1"{if $shipping.gender} checked{/if} /> 男</label></td>
-					</tr>
-					</table>
+					<label style="margin-right:10px;"><input type="radio" name="s-gender" value="0"{if !$shipping.gender} checked{/if} /> 女</label>
+					<label><input type="radio" name="s-gender" value="1"{if $shipping.gender} checked{/if} /> 男</label>
 				</td>
 			</tr>
 			<tr>
-				<td align="right">地址：</td>
-				<td>
-					<table cellpadding="0" cellspacing="0">
-						<tr>
-							<input type="hidden" name="s-country" id="s-country" value="中国" />
-							<td><select name="s-province"></select></td>
-							<td style="padding-left:3px;"><select name="s-city"></select></td>
-							<td style="padding-left:3px;"><select name="s-county"></select></td>
-						</tr>
-					</table>
-				</td>
+				<td align="right"><span class="red">*</span> 国家：</td>
+				<td><input type="text" name="s-country" id="s-country" value="{$shipping.country ? $shipping.country: '中国'}" /></td>
+				<td align="right"><span class="red">*</span> 省份：</td>
+				<td><input type="text" name="s-province" id="s-province" value="{$shipping.province}" /></td>
 			</tr>
 			<tr>
-				<td align="right">&nbsp;</td>
+				<td align="right"><span class="red">*</span> 城市：</td>
+				<td><input type="text" name="s-city" id="s-city" value="{$shipping.city}" /></td>
+				<td align="right">县/区：</td>
+				<td><input type="text" name="s-county" id="s-county" value="{$shipping.county}" /></td>
+			</tr>
+			<tr>
+				<td align="right"><span class="red">*</span> 地址：</td>
 				<td><input type="text" name="s-address" id="s-address" value="{$shipping.address}" style="width:300px;" /></td>
-			</tr>
-			<tr>
-				<td align="right">邮编：</td>
+				<td align="right"><span class="red">*</span> 邮编：</td>
 				<td><input type="text" name="s-zipcode" id="s-zipcode" value="{$shipping.zipcode}" /></td>
 			</tr>
 			<tr>
-				<td align="right">手机：</td>
+				<td align="right"><span class="red">*</span> 手机：</td>
 				<td><input type="text" name="s-mobile" id="s-mobile" value="{$shipping.mobile}" /> <span class="gray i">示例：158185xxxxx</span></td>
-			</tr>
-			<tr>
 				<td align="right">电话：</td>
 				<td><input type="text" name="s-tel" id="s-tel" value="{$shipping.tel}" /> <span class="gray i">电话或手机至少得填写一个</span></td>
 			</tr>
 			<tr>
-				<td align="right">Email：</td>
-				<td><input type="text" name="s-email" id="s-email" value="{$shipping.email ? $shipping.email : $session.user_rs.email}" /> <span class="gray i">请正确填写，以保证系统正常通知</span></td>
+				<td align="right"><span class="red">*</span> Email：</td>
+				<td colspan="3"><input type="text" name="s-email" id="s-email" value="{$shipping.email ? $shipping.email : $session.user_rs.email}" /> <span class="gray i">请正确填写，以保证系统正常通知</span></td>
 			</tr>
 			</table>
 		</div>
-		<script type="text/javascript">
-		$(document).ready(function(){
-			new PCAS("s-province={$shipping.province}","s-city={$shipping.city}","s-county={$shipping.county}");
-		});
-		</script>
-		<!-- if $config.biz_billing -->
+	</div>
+	<!-- if $config.biz_billing -->
+	<div class="pfw mbottom10 check_address">
+		<h3>账单地址</h3>
 		<input type="hidden" name="b-id" id="b-id" value="{$billing.id}" />
-		<div style="float:right;width:475px;">
-			<h4 style="padding-left:10px;">账单地址</h4>
+		<div>
 			<table width="100%">
 			<tr>
-				<td width="80px" align="right">姓名：</td>
-				<td><input type="text" name="b-fullname" id="b-fullname" value="{$billing.fullname}" /></td>
-			</tr>
-			<tr>
-				<td align="right">性别：</td>
+				<td width="80px" align="right"><span class="red">*</span> 姓名：</td>
+				<td width="400"><input type="text" name="b-fullname" id="b-fullname" value="{$billing.fullname}" /></td>
+				<td width="90" align="right">性别：</td>
 				<td>
-					<table>
-					<tr>
-						<td><label><input type="radio" name="b-gender" value="0"{if !$billing.gender} checked{/if} /> 女</label></td>
-						<td><label><input type="radio" name="b-gender" value="1"{if $billing.gender} checked{/if} /> 男</label></td>
-					</tr>
-					</table>
+					<label style="margin-right:10px;"><input type="radio" name="b-gender" value="0"{if !$billing.gender} checked{/if} /> 女</label>
+					<label><input type="radio" name="b-gender" value="1"{if $billing.gender} checked{/if} /> 男</label>
 				</td>
 			</tr>
 			<tr>
-				<td align="right">地址：</td>
-				<td>
-					<table cellpadding="0" cellspacing="0">
-						<tr>
-							<input type="hidden" name="b-country" id="b-country" value="中国" />
-							<td><select name="b-province"></select></td>
-							<td style="padding-left:3px;"><select name="b-city"></select></td>
-							<td style="padding-left:3px;"><select name="b-county"></select></td>
-						</tr>
-					</table>
-				</td>
+				<td align="right"><span class="red">*</span> 国家：</td>
+				<td><input type="text" name="b-country" id="b-country" value="{$billing.country ? $billing.country: '中国'}" /></td>
+				<td align="right"><span class="red">*</span> 省份：</td>
+				<td><input type="text" name="b-province" id="b-province" value="{$billing.province}" /></td>
 			</tr>
 			<tr>
-				<td align="right">&nbsp;</td>
+				<td align="right"><span class="red">*</span> 城市：</td>
+				<td><input type="text" name="b-city" id="b-city" value="{$billing.city}" /></td>
+				<td align="right">县/区：</td>
+				<td><input type="text" name="b-county" id="b-county" value="{$billing.county}" /></td>
+			</tr>
+			<tr>
+				<td align="right"><span class="red">*</span> 地址：</td>
 				<td><input type="text" name="b-address" id="b-address" value="{$billing.address}" style="width:300px;" /></td>
-			</tr>
-			<tr>
 				<td align="right">邮编：</td>
 				<td><input type="text" name="b-zipcode" id="b-zipcode" value="{$billing.zipcode}" /></td>
 			</tr>
 			<tr>
-				<td align="right">手机：</td>
+				<td align="right"><span class="red">*</span> 手机：</td>
 				<td><input type="text" name="b-mobile" id="b-mobile" value="{$billing.mobile}" /> <span class="gray i">示例：158185xxxxx</span></td>
-			</tr>
-			<tr>
 				<td align="right">电话：</td>
 				<td><input type="text" name="b-tel" id="b-tel" value="{$billing.tel}" /> <span class="gray i">电话或手机至少得填写一个</span></td>
 			</tr>
+			<tr>
+				<td align="right"><span class="red">*</span> Email：</td>
+				<td colspan="3"><input type="text" name="b-email" id="b-email" value="{$billing.email ? $billing.email : $billing.user_rs.email}" /> <span class="gray i">请正确填写，以保证系统正常通知</span></td>
+			</tr>
 			</table>
 		</div>
-		<script type="text/javascript">
-		$(document).ready(function(){
-			new PCAS("b-province={$billing.province}","b-city={$billing.city}","b-county={$billing.county}");
-		});
-		</script>
-		<!-- /if -->
 		<div class="clear"></div>
 	</div>
+	<!-- /if -->
 	<div class="table_lc" style="margin-top:10px;">
 	<table width="100%" cellpadding>
 	<tr>

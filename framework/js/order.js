@@ -230,42 +230,18 @@ function update_pic(tid)
 	});
 }
 
-//取得地址库
-function get_shipping()
+function such_as_shipping()
 {
-	order_get_address('shipping');
-}
-
-function get_billing()
-{
-	order_get_address('billing');
-}
-
-function order_get_address(type)
-{
-	var user_id = $("#user_id").val();
-	if(!user_id)
-	{
-		$.dialog.alert("未指定会员，不能执行此操作");
-		return false;
-	}
-	var url = api_url('user','address','type='+type+"&uid="+user_id);
-	var rs = json_ajax(url);
-	if(rs.status != 'ok')
-	{
-		if(!rs.content) rs.content = '获取失败';
-		$.dialog.alert(rs.content);
-		return false;
-	}
-	var user = rs.content;
-	var ext = type == 'shipping' ? 's-' : 'b-';
-	$("#"+ext+"fullname").val(user.fullname);
-	$("#"+ext+"gender[value='"+user.gender+"']").attr("checked",true);
-	$("#"+ext+"address").val(user.address);
-	$("#"+ext+"zipcode").val(user.zipcode);
-	$("#"+ext+"tel").val(user.tel);
-	$("#"+ext+"mobile").val(user.mobile);
-	$("#"+ext+"email").val(user.email);
-	//更新地址库
-	new PCAS(ext+"province",ext+"city",ext+"county",user.province,user.city,user.county);
+	$("#b-fullname").val($("#s-fullname").val());
+	$("#b-country").val($("#s-country").val());
+	$("#b-province").val($("#s-province").val());
+	$("#b-city").val($("#s-city").val());
+	$("#b-county").val($("#s-county").val());
+	$("#b-address").val($("#s-address").val());
+	$("#b-zipcode").val($("#s-zipcode").val());
+	$("#b-tel").val($("#s-tel").val());
+	$("#b-mobile").val($("#s-mobile").val());
+	$("#b-email").val($("#s-email").val());
+	var gender = $("input[name=s-gender]:checked").val();
+	$("input[name=b-gender][value="+gender+"]").attr("checked",true);
 }

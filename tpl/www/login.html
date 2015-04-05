@@ -1,40 +1,32 @@
 <!-- include tpl=head menutitle=网站首页 title=会员登录 -->
 <script type="text/javascript">
 var open_vcode = '{$sys.is_vcode && function_exists("imagecreate") ? 1 : 0}';
-$(document).ready(function(){
-	$('#login-form').submit(function(){
-		$(this).ajaxSubmit({
-			url:api_url('login'),
-			type:'post',
-			dataType:'json',
-			success:function(rs){
-				if(rs.status == 'ok')
-				{
-					var back = $("#_back").val();
-					if(!back || back == 'undefined' || back == window.location.href) back = webroot;
-					$.phpok.go(back);
-				}
-				else
-				{
-					if(!rs.content) rs.content = '登录失败';
-					alert(rs.content);
-					if(open_vcode == '1')
-					{
-						$("#_chkcode").val('');
-						$("#vcode").phpok_vcode();
-					}
-					return false;
-				}
-			}
-		});
+function check_input()
+{
+	var user = $("input[name=user]").val();
+	if(!user){
+		$.dialog.alert('账号不能为空','','error');
 		return false;
-	});
-});
+	}
+	var pass = $("input[name=pass]").val();
+	if(!pass){
+		$.dialog.alert('密码不能为空','','error');
+		return false;
+	}
+	if(open_vcode == '1'){
+		var chkcode = $("#_chkcode").val();
+		if(!chkcode){
+			$.dialog.alert('验证码不能为空','','error');
+			return false;
+		}
+	}
+	return true;
+}
 </script>
 <div class="login-reg">
 	<dl class="box">
 		<dt>登录</dt>
-		<form method="post" id="login-form">
+		<form method="post" id="login-form" onsubmit="return check_input()" action="{url ctrl=login func=ok/}">
 		<input type="hidden" id="_back" value="{$_back}" />
 		<dd><label>账号：</label><input class="input" type="text" name="user" /><div class="clear"></div></dd>
 		<dd><label>密码：</label><input class="input" type="password" name="pass" /><div class="clear"></div></dd>

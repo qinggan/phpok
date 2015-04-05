@@ -1,5 +1,5 @@
 <!-- php:$title = $id ? '编辑订单' : '添加新订单' --><!-- include tpl=head title=$title -->
-<script type="text/javascript" src="{func add_js order.js,pcas.js}"></script>
+<script type="text/javascript" src="{func add_js order.js}"></script>
 <script type="text/javascript" src="js/laydate/laydate.js"></script>
 <script type="text/javascript">
 var is_id = '{$id}';
@@ -151,7 +151,7 @@ $(document).ready(function(){
 	<input type="hidden" name="pro_id[]" value="{$value.id}" />
 	<input type="hidden" name="pro_tid[]" value="{$value.tid}" class="p_proid" id="pro_tid_{$rslist_id.num}" />
 	<input type="hidden" name="pro_thumb[]" value="{$value.thumb.id}" id="pro_thumb_{$rslist_id.num}" />
-	<td widtha="90px" align="center" id="pro_thumb_view_{$rslist_id.num}"><img src="{$value.thumb ? $value.thumb : 'images/picture_default.png'}" style="cursor:pointer;" onclick="update_pic('{$rslist_id.num}')" width="80px" height="80px" border="0" /></td>
+	<td widtha="90px" align="center" id="pro_thumb_view_{$rslist_id.num}"><img src="{$value.thumb ? $value.thumb.ico : 'images/picture_default.png'}" style="cursor:pointer;" onclick="update_pic('{$rslist_id.num}')" width="80px" height="80px" border="0" /></td>
 	<td>
 		<table>
 			<tr>
@@ -184,23 +184,39 @@ $(document).ready(function(){
 <div class="table">
 	<table>
 	<tr>
-		<td width="130px" align="right">地址：</td>
-		<td><select name="s-country"><option value="中国">中国</option></select></td>
-		<td><select name="s-province"></select></td>
-		<td><select name="s-city"></select></td>
-		<td><select name="s-county"></select></td>
+		<td width="130px" align="right">{lang国家：}</td>
+		<td><input type="text" id="s-country" name="s-country" value="{$shipping.country}" class="default" /></td>
 	</tr>
 	</table>
-	<script type="text/javascript">
-	$(document).ready(function(){
-		new PCAS("s-province={$shipping.province}","s-city={$shipping.city}","s-county={$shipping.county}");
-	});
-	</script>
 </div>
 <div class="table">
 	<table>
 	<tr>
-		<td width="130px" align="right">&nbsp;</td>
+		<td width="130px" align="right">{lang省/州：}</td>
+		<td><input type="text" id="s-province" name="s-province" value="{$shipping.province}" class="default" /></td>
+	</tr>
+	</table>
+</div>
+<div class="table">
+	<table>
+	<tr>
+		<td width="130px" align="right">{lang城市：}</td>
+		<td><input type="text" id="s-city" name="s-city" value="{$shipping.city}" class="default" /></td>
+	</tr>
+	</table>
+</div>
+<div class="table">
+	<table>
+	<tr>		
+		<td width="130px" align="right">{lang镇/区：}</td>
+		<td><input type="text" id="s-county" name="s-county" value="{$shipping.county}" class="default" /></td>
+	</tr>
+	</table>
+</div>
+<div class="table">
+	<table>
+	<tr>
+		<td width="130px" align="right">{lang地址：}</td>
 		<td><input type="text" id="s-address" name="s-address" class="long" value="{$shipping.address}" /></td>
 	</tr>
 	</table>	
@@ -236,7 +252,7 @@ $(document).ready(function(){
 	<tr>
 		<td width="130px" align="right">Email：</td>
 		<td><input type="text" id="s-email" name="s-email" value="{$shipping.email}" class="default" /></td>
-		<td class="gray i">邮箱，可用于手工客户订单状态</td>
+		<td class="gray i">邮箱，可用于接收客户订单状态</td>
 	</tr>
 	</table>	
 </div>
@@ -244,8 +260,8 @@ $(document).ready(function(){
 <div class="tips">
 	<table width="100%">
 	<tr>
-		<td>账单地址，用于接收该笔订单的收据，发票等信息，一般填写您付款的信用卡地址信息，适用于外贸及给朋友送礼物时接收这一类信息</td>
-		<td align="right"><!-- <input type="button" value="获取会员地址" onclick="get_billing()" class="btn" /> --></td>
+		<td>账单地址，用于接收该笔订单的收据，发票等信息，适用于外贸及给朋友送礼物时接收这一类信息</td>
+		<td align="right"><input type="button" value="与收货地址一样" onclick="such_as_shipping()" class="btn" /></td>
 	</tr>
 	</table>
 </div>
@@ -264,23 +280,39 @@ $(document).ready(function(){
 <div class="table">
 	<table>
 	<tr>
-		<td width="130px" align="right">地址：</td>
-		<td><select name="b-country"><option value="中国">中国</option></select></td>
-		<td><select name="b-province"></select></td>
-		<td><select name="b-city"></select></td>
-		<td><select name="b-county"></select></td>
+		<td width="130px" align="right">{lang国家：}</td>
+		<td><input type="text" id="b-country" name="b-country" value="{$billing.country}" class="default" /></td>
 	</tr>
 	</table>
-	<script type="text/javascript">
-	$(document).ready(function(){
-		new PCAS("b-province={$billing.province}","b-city={$billing.city}","b-county={$billing.county}");
-	});
-	</script>
 </div>
 <div class="table">
 	<table>
 	<tr>
-		<td width="130px" align="right">&nbsp;</td>
+		<td width="130px" align="right">{lang省/州：}</td>
+		<td><input type="text" id="b-province" name="b-province" value="{$billing.province}" class="default" /></td>
+	</tr>
+	</table>
+</div>
+<div class="table">
+	<table>
+	<tr>
+		<td width="130px" align="right">{lang城市：}</td>
+		<td><input type="text" id="b-city" name="b-city" value="{$billing.city}" class="default" /></td>
+	</tr>
+	</table>
+</div>
+<div class="table">
+	<table>
+	<tr>		
+		<td width="130px" align="right">{lang镇/区：}</td>
+		<td><input type="text" id="b-county" name="b-county" value="{$billing.county}" class="default" /></td>
+	</tr>
+	</table>
+</div>
+<div class="table">
+	<table>
+	<tr>
+		<td width="130px" align="right">{lang地址：}</td>
 		<td><input type="text" id="b-address" name="b-address" class="long" value="{$billing.address}" /></td>
 	</tr>
 	</table>	
@@ -316,7 +348,7 @@ $(document).ready(function(){
 	<tr>
 		<td width="130px" align="right">Email：</td>
 		<td><input type="text" id="b-email" name="b-email" value="{$billing.email}" class="default" /></td>
-		<td class="gray i">邮箱，可用于手工客户订单状态</td>
+		<td class="gray i">邮箱，可用于接收客户订单状态</td>
 	</tr>
 	</table>	
 </div>

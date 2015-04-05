@@ -32,8 +32,8 @@ $(document).ready(function(){
 		<dd><label>邮箱：</label><input class="input" type="text" name="email" value="{$user.email}" readonly /><div class="clear"></div></dd>
 		<dd><label>账号：</label><input class="input" type="text" name="user" value="{$user.user}" readonly /><div class="clear"></div></dd>
 		<dd><label>验证串：</label><input class="input" type="text" name="code" value="{$user.code}" readonly /><div class="clear"></div></dd>
-		<dd><label>新密码：</label><input class="input" type="text" name="newpass" value="" /><div class="clear"></div></dd>
-		<dd><label>确认密码：</label><input class="input" type="text" name="chkpass" value="" /><div class="clear"></div></dd>
+		<dd><label>新密码：</label><input class="input" type="password" name="newpass" value="" /><div class="clear"></div></dd>
+		<dd><label>确认密码：</label><input class="input" type="password" name="chkpass" value="" /><div class="clear"></div></dd>
 		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
 		<dd><label>验证码：</label><input class="vcode"  type="text" name="_chkcode" id="_chkcode" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" /><div class="clear"></div></dd>
 		<script type="text/javascript">
@@ -45,7 +45,7 @@ $(document).ready(function(){
 		});
 		</script>
 		<!-- /if -->
-		<dd class="submit"><input class="login" type="submit" value="" name=""></dd>
+		<dd class="submit"><input type="submit" value="修改密码" name="" class="button blue"></dd>
 		</form>
 	</dl>
 	<dl class="box note">

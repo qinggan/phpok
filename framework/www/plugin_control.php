@@ -15,32 +15,38 @@ class plugin_control extends phpok_control
 		parent::control();
 	}
 
-	function index_f()
+	public function index_f()
 	{
 		$this->exec_f();
 	}
 
-	//执行JS
-	function exec_f()
+	public function exec_f()
 	{
-		$id = $this->get("id");
-		if(!$id) $this->json(1002);
+		$id = $this->get('id','system');
+		if(!$id){
+			error(P_Lang('未指定要执行的插件'));
+		}
 		$rs = $this->model('plugin')->get_one($id);
-		if(!$rs) json_exit(1001);
-		if($rs['param']) $rs['param'] = unserialize($rs['param']);
-		if(!is_file($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php')) $this->json(1008);
+		if(!$rs || !$rs['status']){
+			error(P_Lang('插件不存在或未启用'));
+		}
+		if(!is_file($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php')){
+			error(P_Lang('插件文件：{file}不存在',array('file'=>'<span class="red">plugins/'.$id.'/'.$this->app_id.'.php</span>')));
+		}
 		include_once($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php');
 		$name = $this->app_id.'_'.$id;
 		$cls = new $name();
-		$methods = get_class_methods($cls);
-		$exec = $this->get("exec");
+		$mlist = get_class_methods($cls);
+		$exec = $this->get('exec','system');
 		if(!$exec) $exec = 'index';
-		if(!$methods || !in_array($exec,$methods)) $this->json(1009);
+		if(!$mlist || !in_array($exec,$mlist)){
+			error('执行方法：'.$exec.' 不存在！');
+		}
 		$this->assign('plugin_rs',$rs);
-		$cls->$exec($rs);
+		$cls->$exec();
 	}
 
-	function ajax_f()
+	public function ajax_f()
 	{
 		$this->exec_f();
 	}

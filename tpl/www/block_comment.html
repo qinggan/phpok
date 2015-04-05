@@ -69,7 +69,7 @@ $(document).ready(function(){
 				<span class="icon icon-left-arrow"></span>
 				<div class="not_popedom">
 					您没有评论权限，请先
-					<a href="{url ctrl=login _back=$rs.url/}" title="登录">登录</a> 或 
+					<a href="javascript:$.user.login('会员登录');void(0);" title="登录">登录</a> 或 
 					<a href="{url ctrl=register _back=$rs.url/}" title="注册">注册</a>
 				</div>
 			</div>

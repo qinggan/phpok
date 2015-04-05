@@ -61,6 +61,7 @@ function update_load_file(name)
 		'success'	: function(rs){
 			if(rs.status == 'ok'){
 				$("#my_"+name).html('&#8730;').css("color","blue");
+				lock = false;
 				ok_start();
 			}else{
 				$("#my_"+name).html('&#215;').css("color","red");

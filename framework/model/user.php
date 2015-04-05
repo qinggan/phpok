@@ -20,14 +20,14 @@ class user_model_base extends phpok_model
 		unset($this);
 	}
 
-	public function get_one($id)
+	public function get_one($id,$field='id')
 	{
 		if(!$id){
 			return false;
 		}
 		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
-		$sql.= " WHERE u.id='".$id."'";
+		$sql.= " WHERE u.".$field."='".$id."'";
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;

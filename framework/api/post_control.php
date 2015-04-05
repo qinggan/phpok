@@ -34,11 +34,11 @@ class post_control extends phpok_control
 				$this->json(P_Lang('验证码不能为空'));
 			}
 			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode_api'])
+			if($code != $_SESSION['vcode'])
 			{
 				$this->json(P_Lang('验证码填写不正确'));
 			}
-			unset($_SESSION['vcode_api']);
+			unset($_SESSION['vcode']);
 		}
 		//判断ID参数是否传过来
 		$id = $this->get('id','system');

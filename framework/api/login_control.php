@@ -15,62 +15,60 @@ class login_control extends phpok_control
 		parent::control();
 	}
 
-	//会员登录
-	function index_f()
+	public function save_f()
 	{
-		//判断是否是会员
-		if($_SESSION['user_id'])
-		{
+		if($_SESSION['user_id']){
 			$this->json(P_Lang('您已是本站会员，不需要再次登录'));
 		}
-		//判断是否启用验证码功能
-		if($this->config['is_vcode'] && function_exists('imagecreate'))
-		{
+		if($this->config['is_vcode'] && function_exists('imagecreate')){
 			$code = $this->get('_chkcode');
-			if(!$code)
-			{
+			if(!$code){
 				$this->json(P_Lang('验证码不能为空'));
 			}
 			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode_api'])
-			{
+			if($code != $_SESSION['vcode']){
 				$this->json(P_Lang('验证码填写不正确'));
 			}
-			unset($_SESSION['vcode_api']);
+			unset($_SESSION['vcode']);
 		}
-		//获取登录信息
 		$user = $this->get("user");
-		if(!$user)
-		{
-			$this->json(P_Lang('会员账号不能为空'));
+		if(!$user){
+			$this->json(P_Lang('账号不能为空'));
 		}
 		$pass = $this->get("pass");
-		if(!$pass)
-		{
+		if(!$pass){
 			$this->json(P_Lang('会员密码不能为空'));
 		}
-		$chk = $this->model('user')->chk_name($user);
-		if(!$chk)
-		{
-			$this->json(P_Lang('会员账号不存在'));
+		//多种登录方式
+		$user_rs = $this->model('user')->get_one($user,'user');
+		if(!$user_rs){
+			$user_rs = $this->model('user')->get_one($user,'email');
+			if(!$user_rs){
+				$user_rs = $this->model('user')->get_one($user,'mobile');
+				if(!$user_rs){
+					$this->json(P_Lang('会员信息不存在'));
+				}
+			}
 		}
-		if(!$chk['status'])
-		{
-			$this->json(P_Lang('会员账号审核中，暂时不能登录'));
+		if(!$user_rs['status']){
+			$this->json(P_Lang('会员审核中，暂时不能登录'));
 		}
-		if($chk['status'] == '2')
-		{
-			$this->json(P_Lang('会员账号被管理员锁定，请联系管理员解锁'));
+		if($user_rs['status'] == '2'){
+			$this->json(P_Lang('会员被管理员锁定，请联系管理员解锁'));
 		}
-		if(!password_check($pass,$chk["pass"]))
-		{
+		if(!password_check($pass,$user_rs["pass"])){
 			$this->json(P_Lang('登录密码不正确'));
 		}
-		$rs = $this->model('user')->get_one($chk['id']);
-		$_SESSION["user_id"] = $rs['id'];
-		$_SESSION["user_rs"] = $rs;
-		$_SESSION["user_name"] = $rs["user"];
-		$this->json('ok',true);
+		$_SESSION["user_id"] = $user_rs['id'];
+		$_SESSION["user_gid"] = $user_rs['group_id'];
+		$_SESSION["user_name"] = $user_rs["user"];
+		$this->json(true);
+	}
+
+	//会员登录
+	function index_f()
+	{
+		$this->save_f();
 	}
 
 	//请求取回密码功能
@@ -90,11 +88,11 @@ class login_control extends phpok_control
 				$this->json(P_Lang('验证码不能为空'));
 			}
 			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode_api'])
+			if($code != $_SESSION['vcode'])
 			{
 				$this->json(P_Lang('验证码填写不正确'));
 			}
-			unset($_SESSION['vcode_api']);
+			unset($_SESSION['vcode']);
 		}
 		$email = $this->get('email');
 		if(!$email)
@@ -158,11 +156,11 @@ class login_control extends phpok_control
 				$this->json(P_Lang('验证码不能为空'));
 			}
 			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode_api'])
+			if($code != $_SESSION['vcode'])
 			{
 				$this->json(P_Lang('验证码填写不正确'));
 			}
-			unset($_SESSION['vcode_api']);
+			unset($_SESSION['vcode']);
 		}
 		$code = $this->get('code');
 		if(!$code)

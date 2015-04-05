@@ -23,7 +23,8 @@ if(!function_exists("phpok_next"))
 		$rs = $GLOBALS['app']->model('list')->get_next($rs['id'],$rs["cate_id"],$rs["project_id"],$rs["module_id"],$rs["site_id"]);
 		if($rs)
 		{
-			$rs['url'] = msgurl($rs['identifier'] ? $rs['identifier'] : $rs['id']);
+			$idname = $rs['identifier'] ? $rs['identifier'] : $rs['id'];
+			$rs['url'] = $GLOBALS['app']->url($idname);
 		}
 		return $rs;
 	}
@@ -43,7 +44,8 @@ if(!function_exists("phpok_prev"))
 		$rs = $GLOBALS['app']->model('list')->get_prev($rs['id'],$rs["cate_id"],$rs["project_id"],$rs["module_id"],$rs["site_id"]);
 		if($rs)
 		{
-			$rs['url'] = msgurl($rs['identifier'] ? $rs['identifier'] : $rs['id']);
+			$idname = $rs['identifier'] ? $rs['identifier'] : $rs['id'];
+			$rs['url'] = $GLOBALS['app']->url($idname);
 		}
 		return $rs;
 	}

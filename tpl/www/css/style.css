@@ -253,7 +253,7 @@ p{word-wrap:break-word}
 
 
 /* 小图标 16*16 */
-.icon {width: 16px; height: 16px; display: -moz-inline-stack; display: inline-block; *display:inline; /* IE7 */ zoom:1; /* IE系列*/ overflow: hidden; vertical-align: middle; _vertical-align: middle; _margin-left: 1px;  *margin-left: 1px; background:url(../images/icon.gif) no-repeat; pointer: normal;}
+.icon {width: 16px; height: 16px; display: -moz-inline-stack; display: inline-block; *display:inline; /* IE7 */ zoom:1; /* IE系列*/ overflow: hidden; vertical-align: middle; _vertical-align: middle; _margin-left: 1px;  *margin-left: 1px;pointer: normal;}
 /* 可以用于<a> <span> */
 
 /* 第一行 */
@@ -524,7 +524,7 @@ div.mbottom10{margin-bottom:10px;}
 
 .check_address h4{font-size:14px;color:#666;line-height:300%;}
 .check_address td{padding:3px;}
-.check_address td input[type=text]{border:1px solid #ccc;height:26px;line-height:26px;}
+.check_address td input[type=text]{border:1px solid #ccc;height:26px;line-height:26px;min-width:200px;}
 
 
 
