@@ -30,12 +30,10 @@ class tag_model_base extends phpok_model
 		if(!$id){
 			return false;
 		}
-		if($type == 'list')
-		{
+		if($type == 'list'){
 			$rslist = $this->get_record_from_stat($id);
-			if($rslist)
-			{
-				return $rslist;
+			if($rslist){
+				return $this->tag_array_html($rslist);
 			}
 			$sql = "SELECT parent_id,cate_id,module_id,project_id,site_id FROM ".$this->db->prefix."list WHERE id='".$id."' AND status=1";
 			$rs = $this->db->get_one($sql);
@@ -57,14 +55,10 @@ class tag_model_base extends phpok_model
 					}
 				}
 			}
-		}
-		elseif($type == 'cate')
-		{
+		}elseif($type == 'cate'){
 			$rslist = false;
 			$this->get_tag_from_cate($rslist,$id);
-		}
-		elseif($type == 'project')
-		{
+		}elseif($type == 'project'){
 			$rslist = $this->get_record_from_stat('p'.$id);
 			if(!$rslist){
 				$parent_id = $this->_parent_project($id);
@@ -73,18 +67,20 @@ class tag_model_base extends phpok_model
 				}
 			}
 		}
-		if(!$rslist)
-		{
-			if(!$site_id)
-			{
+		if(!$rslist){
+			if(!$site_id){
 				$site_id = $this->site_id;
 			}
 			$rslist = $this->get_global_tag($site_id);
 		}
-		if(!$rslist)
-		{
+		if(!$rslist){
 			return false;
 		}
+		return $this->tag_array_html($rslist);
+	}
+
+	private function tag_array_html($rslist)
+	{
 		foreach($rslist as $key=>$value)
 		{
 			$value['target'] = $value['target'] ? '_blank' : '_self';

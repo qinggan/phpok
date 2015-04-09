@@ -366,11 +366,13 @@ function list_content_search()
 					<!-- /loop -->
 				</optgroup>
 				<!-- /if -->
+				<!-- if $rs.is_attr -->
 				<optgroup label="{$rs.alias_title ? $rs.alias_title : '主题'}属性">
 					<!-- loop from=$attrlist key=$key value=$value -->
 					<option value="attr:{$key}">{$value} {$key}</option>
 					<!-- /loop -->
 				</optgroup>
+				<!-- /if -->
 				<optgroup label="其他">
 					<!-- if $popedom.status -->
 					<option value="status">批量审核</option>

@@ -153,6 +153,24 @@ $(document).ready(function(){
 				<!-- /loop -->
 			</ul>
 		</div>
+		<div class="h_news">
+			<!-- php:$list = phpok('news_catelist') -->
+			<!-- loop from=$list.sublist key=$key value=$value id=list_id -->
+			<div class="plate">
+				<div class="plate_title">
+					<span class="ch_name">{$value.title}</span>
+					<a href="{$value.url}" class="plate_more">更多</a>
+				</div>
+				<dl class="plate_main">
+					<!-- php:$arclist = phpok('titlelist','cateid='.$value.id.'&fields=id') -->
+					<!-- loop from=$arclist.rslist key=$k value=$v -->
+					<dd><span>{func date Y-m $v.dateline}</span><a href="{$v.url}">{$v.title}</a></dd>
+					<!-- /loop -->
+				</dl>
+			</div>
+			<!-- if $list_id.num % 2 == '' --><div class="clear"></div><!-- /if -->
+			<!-- /loop -->
+		</div>
 	</div>
 	<div class="cl"></div>
 </div>

@@ -582,3 +582,18 @@ table.form td{padding:3px;}
 
 /* PHPOK程序内部格式化下载涉及到的样式 */
 a.download{background:url('../images/icon_download.png') left center no-repeat;padding-left:18px;}
+
+
+.h_news{ border:1px solid #ccc; overflow:hidden; margin-bottom:20px; }
+.h_news .plate{ width:330px; float:left; padding:0 0 0 13px; margin-bottom:10px;}
+.h_news .plate_title{ height:30px;  overflow:hidden; margin-bottom:15px;  border-bottom:1px solid #ccc;}
+.h_news .plate_title .ch_name{ color:#2257a3; float:left; margin-right:5px; font-size:16px; line-height:30px;}
+.h_news .plate_title .en_name{ color:#585858; float:left; margin-right:5px; font-size:14px; padding-top:5px; line-height:25px; height:25px;}
+.h_news .plate_title .plate_more{ float:right; background:url("../images/more.jpg") left center no-repeat; padding-left:13px; line-height:30px; }
+.h_news .plate_main{ overflow:hidden;}
+.h_news .plate_main dt{ width:330px; height:156px; overflow:hidden; margin-bottom:10px;}
+.h_news .plate_main dt img{ width:330px; height:156px; }
+.h_news .plate_main dd{ overflow:hidden; height:26px; border-bottom:1px dashed #d2d2d2; line-height:26px;}
+.h_news .plate_main dd a{ background:url("../images/arrow-right.png") left center no-repeat; padding-left:12px; color:#172c45; width:260px;height:26px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis; display:block;float:left;}
+.h_news .plate_main dd a:hover{ color:#1f5aa5; text-decoration:none; line-height:26px;}
+.h_news .plate_main dd span{ float:right;}

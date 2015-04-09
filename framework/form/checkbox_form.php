@@ -101,7 +101,7 @@ class checkbox_form extends _init_auto
 
 	public function phpok_show($rs,$appid="admin")
 	{
-		if(!$rs || $rs['content']){
+		if(!$rs || !$rs['content']){
 			return false;
 		}
 		$ext = array();
