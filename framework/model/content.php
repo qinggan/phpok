@@ -24,7 +24,7 @@ class content_model_base extends phpok_model
 	//取得单个主题信息
 	function get_one($id)
 	{
-		$sql  = "SELECT * FROM ".$this->db->prefix."list WHERE status=1 AND ";
+		$sql  = "SELECT * FROM ".$this->db->prefix."list WHERE status=1 AND site_id='".$this->site_id."' AND ";
 		$sql .= is_numeric($id) ? " id='".$id."' " : " identifier='".$id."' ";
 		$rs = $this->db->get_one($sql);
 		if(!$rs)

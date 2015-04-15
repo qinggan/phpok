@@ -27,13 +27,12 @@ class content_control extends phpok_control
 	{
 		$id = $this->get("id");
 		if(!$id) error("操作异常！","","error");
-		$dt = array('site_id'=>$this->site['id']);
+		$dt = array('site'=>$this->site['id']);
 		if(intval($id) && $id == intval($id)){
 			$dt['title_id'] = $id;
 		}else{
 			$dt['phpok'] = $id;
 		}
-		$dt['site'] = $this->site['id'];
 		$page = $this->config['pageid'] ? $this->config['pageid'] : 'pageid';
 		$pageid = $this->get($page,'int');
 		if(!$pageid){

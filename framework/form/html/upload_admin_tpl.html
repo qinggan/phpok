@@ -6,7 +6,10 @@
 			<td><div id="{$_rs.identifier}_picker"></div></td>
 			<td><button id="{$_rs.identifier}_submit" type="button" class="button">开始上传</button></td>
 			<td><button id="select_res_{$_rs.identifier}" class="button" type="button">选择{$_rs.upload_type.name}</button></td>
-			<td id="{$_rs.identifier}_sort" style="display:none"><button id="select_res_{$_rs.identifier}" onclick="obj_{$_rs.identifier}.sort()" class="button" type="button">排序</button></td>
+			<td id="{$_rs.identifier}_sort" style="display:none">
+				<button onclick="obj_{$_rs.identifier}.sort()" class="button" type="button">排序</button>
+				<button onclick="obj_{$_rs.identifier}.sort_title()" class="button" type="button">自然排序</button>
+			</td>
 		</tr>
 		</table>
 	</div>

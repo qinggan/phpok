@@ -35,7 +35,9 @@
 				<!-- loop from=$rs.pictures key=$key value=$value -->
 				<li>
 					<div class="img"><img src="{$value.gd.auto}" border="0" alt="{$value.title}" /></div>
+					<!-- if $value.note -->
 					<div class="content">{$value.note}</div>
+					<!-- /if -->
 				</li>
 				<!-- /loop -->
 			</ul>

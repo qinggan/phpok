@@ -162,69 +162,56 @@ class _init_phpok
 
 	private function init_assign()
 	{
-		//取得当前页网址
 		$url = $this->url;
 		$afile = $this->config[$this->app_id.'_file'];
-		if(!$afile) $afile = 'index.php';
+		if(!$afile){
+			$afile = 'index.php';
+		}
 		$url .= $afile;
-		if($_SERVER['QUERY_STRING']) $url .= "?".$_SERVER['QUERY_STRING'];
+		if($_SERVER['QUERY_STRING']){
+			$url .= "?".$_SERVER['QUERY_STRING'];
+		}
 		$this->site["url"] = $url;
 		$this->config["url"] = $this->url;
 		$this->config['app_id'] = $this->app_id;
 		$this->config['time'] = $this->time;
-		//核心变量赋值
 		$this->assign("sys",$this->config);
-		//针对网站进行SEO优化
 		$this->phpok_seo($this->site);
 		$this->assign("config",$this->site);
-		//加载语言包，如果有使用的话
-		if($this->site['lang'])
-		{
-			$this->language($this->site['lang']);
+		if($this->app_id == 'admin'){
+			$session_langid = (isset($_SESSION['admin_lang_id']) && $_SESSION['admin_lang_id']) ? $_SESSION['admin_lang_id'] : 'default';
+		}else{
+			$session_langid = isset($this->site['lang']) ? $this->site['lang'] : 'default';
 		}
-		else
-		{
-			$session_langid = isset($_SESSION[$this->app_id."_lang_id"]) ? $_SESSION[$this->app_id."_lang_id"] : 'default';
-			$this->language($session_langid);
-		}
+		$this->language($session_langid);
 	}
 
 	public function language($langid='default')
 	{
-		//装载默认的语言包
 		$langfile = $this->dir_root."data/xml/langs/".$this->app_id.".default.xml";
-		if(!is_file($langfile))
-		{
+		if(!is_file($langfile)){
 			$langfile = $this->dir_root."data/xml/langs/default.xml";
 		}
 		$default_list = $this->lib('xml')->read($langfile);
-		if(!$default_list)
-		{
+		if(!$default_list){
 			return false;
 		}
-		if($langid && $langid != 'default' && $langid != 'cn')
-		{
+		if($langid && $langid != 'default' && $langid != 'cn'){
 			$langfile = $this->dir_root."data/xml/langs/".$this->app_id.".".$langid.".xml";
 			$langlist = $this->lib('xml')->read($langfile);
-			if($langlist)
-			{
+			if($langlist){
 				$langs = false;
-				foreach($langlist as $key=>$value)
-				{
-					if($default_list[$key])
-					{
+				foreach($langlist as $key=>$value){
+					if($default_list[$key]){
 						$langs[$default_list[$key]] = $value;
 					}
 				}
 				$this->lang = $langs;
 				unset($langs,$langlist,$default_list);
 			}
-		}
-		else
-		{
+		}else{
 			$langs = false;
-			foreach($default_list as $key=>$value)
-			{
+			foreach($default_list as $key=>$value){
 				$langs[$value] = $value;
 			}
 			$this->lang = $langs;
@@ -1155,12 +1142,10 @@ class phpok_model extends _init_auto
 	public function model()
 	{
 		parent::__construct();
-		if($this->app_id == 'admin' && $_SESSION['admin_site_id'])
-		{
+		if($this->app_id == 'admin' && $_SESSION['admin_site_id']){
 			$this->site_id = $_SESSION['admin_site_id'];
 		}
-		if($this->app_id != 'admin' && $this->site['id'])
-		{
+		if($this->app_id != 'admin' && $this->site['id']){
 			$this->site_id = $this->site['id'];
 		}
 	}
@@ -1168,6 +1153,11 @@ class phpok_model extends _init_auto
 	public function site_id($site_id=0)
 	{
 		$this->site_id = $site_id;
+	}
+
+	public function __destruct()
+	{
+		unset($this);
 	}
 }
 

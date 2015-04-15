@@ -19,38 +19,6 @@ function add_site()
 	});
 }
 
-//服务器计时
-function date_time()
-{
-	var d = new Date();
-	var hours = d.getHours();   
-	var minutes = d.getMinutes();
-	var seconds = d.getSeconds();
-	var myseconds = 60 - seconds;
-	var string = '';
-	if(hours < 10)
-	{
-		string += '0'+hours;
-	}
-	else
-	{
-		string += hours;
-	}
-	string += ":";
-	if(minutes < 10)
-	{
-		string += '0'+minutes;
-	}
-	else
-	{
-		string += minutes;
-	}
-	$("#desktop_hour").html(string);
-	window.setTimeout("date_time()", myseconds * 1000);
-}
-
-
-
 $(document).ready(function(){
 	//判断是否显示
 	$(window).click(function(e){
@@ -80,6 +48,4 @@ $(document).ready(function(){
 		$(".second_ul").hide();
 		$(".second_ul",this).show();
 	});
-	//初始化时间
-	date_time();
 });

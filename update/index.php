@@ -8,140 +8,122 @@
 ***********************************************************/
 error_reporting(E_ALL ^ E_NOTICE);
 define("ROOT",str_replace("\\","/",dirname(__FILE__))."/");
-
 //PHPOK升级类
 class phpok_update
 {
 	public $version;
-	public $lastest;
+	//public $lastest;
 	public $id = 0;
 	public $dir_root;
-	//初始化信息
-	function __construct()
+	public function __construct()
 	{
 		$this->id = $this->get('type','int');
 		$this->version = $this->get('version');
-		if(!$this->version)
-		{
+		if(!$this->version){
 			$this->encode('版本参数不能为空');
 		}
-		$this->dir_root = defined('ROOT') ? ROOT : str_replace("\\","/",dirname(__FILE__))."/";
-		if(!is_file($this->dir_root.'data/version.txt'))
-		{
-			$this->encode('升级服务器配置不完整，未配置服务器最新版本');
-		}
-		$this->lastest = file_get_contents($this->dir_root.'data/version.txt');
+		$this->version = trim($this->version);
 	}
 
 	//执行动作
-	function action()
+	public function action()
 	{
 		$array = array(0=>'xml',1=>'check',2=>'file',3=>'version',4=>'ziplist',5=>'zipdown');
 		$name = $array[$this->id];
-		if($name)
-		{
+		if($name){
 			$this->$name();
-		}
-		else
-		{
+		}else{
 			$this->encode('动作不存在，请检查');
 		}
 	}
 
 	//返回最新版本
-	function version()
+	public function version($is_xml=true)
 	{
-		$this->encode($this->lastest,true);
-	}
-
-	//
-	function ziplist()
-	{
-		$vlist = explode(".",$this->version);
-		$last = explode('.',$this->lastest);
+		$vlist = explode(".",trim($this->version));
+		$old = $vlist[0].$vlist[1].str_pad($vlist[2],3,'0',STR_PAD_LEFT);
 		$rslist = array();
-		$old = $vlist[0].$vlist[1].str_pad($vlist[2],2,'0',STR_PAD_LEFT);
-		$new = $last[0].$last[1].str_pad($last[2],2,'0',STR_PAD_LEFT);
-		if($old>=$new)
-		{
-			$this->encode('您当前是最新版本，不需要再升级');
+		$this->ls($rslist,'',$this->dir_root.'zip/');
+		if(count($rslist)<1){
+			$this->encode($this->version,true);
 		}
-		$rslist = array();
-		for($i=$old;$i<=$new;$i++)
-		{
-			$file = 'zip/'.$i.'.zip';
-			if(is_file($this->dir_root.$file))
-			{
-				$rslist[$i] = array('id'=>$i,'time'=>filemtime($file),'size'=>filesize($file),'type'=>'zip');
+		$list = false;
+		$max = $old;
+		foreach($rslist as $key=>$value){
+			$value = trim(basename($value));
+			if(!$value){
+				continue;
+			}
+			$version = str_replace('.zip','',$value);
+			if($version<=$max){
+				continue;
+			}
+			if($version>$max){
+				$max = $version;
 			}
 		}
-		if(!$rslist || count($rslist)<1)
-		{
+		$version = substr($max,0,1).'.'.substr($max,1,1).'.'.str_pad(substr($max,2),3,'0',STR_PAD_LEFT);
+		if(!$is_xml){
+			return $version;
+		}
+		$this->encode($version,true);
+	}
+
+	public function ziplist()
+	{
+		$vlist = explode(".",$this->version);
+		$old = $vlist[0].$vlist[1].str_pad($vlist[2],3,'0',STR_PAD_LEFT);
+		$rslist = array();
+		$this->ls($rslist,'',$this->dir_root.'zip/');
+		if(count($rslist)<1){
 			$this->encode('没有找到升级包');
 		}
-		$this->encode($rslist,true);
+		$list = false;
+		foreach($rslist as $key=>$value){
+			$value = trim(basename($value));
+			if(!$value){
+				continue;
+			}
+			$version = str_replace('.zip','',$value);
+			if($version<=$old){
+				continue;
+			}
+			if(!$list){
+				$list = array();
+			}
+			$list[$version] = array('id'=>$version,'time'=>filemtime($this->dir_root.'zip/'.$value),'size'=>filesize($this->dir_root.'zip/'.$value),'type'=>'zip');
+		}
+		if(!$list){
+			$this->encode('没有找到升级包');
+		}
+		ksort($list);
+		$this->encode($list,true);
 	}
 
 	public function xml()
 	{
-		$action = $this->check(false);
-		if(!$action) $this->encode('版本检测不通过，不能取得相应的XML文件');
-		
-		//读取升级包文件
-		$list = array();
-		$this->ls($list,'',$this->dir_root.'data/'.$this->lastest);
-		$delete = '';
-		foreach($list AS $key=>$value)
-		{
-			if($value == '/delete.txt')
-			{
-				$delete = file($this->dir_root.'data/'.$this->lastest.'/delete.txt');
-				unset($list[$key]);
-			}
-		}
-		$rs = $list ? array('change'=>$list) : array();
-		if($delete)
-		{
-			$rs['delete'] = $delete;
-		}
-		$this->encode($rs,true);
+		$this->encode('服务器升级，仅支持ZIP升级');
 	}
 
 	public function file()
 	{
-		//将升级包文件单独下载
-		$file = $this->get('file');
-		if(!$file) $this->encode('未指定要下载的文件');
-		$file = str_replace('..','',$file);
-		if(!$file) $this->encode('未指定要下载的文件');
-		if(substr($file,0,1) == '/') $file = substr($file,1);
-		if(is_dir($this->dir_root.'data/'.$this->lastest.'/'.$file))
-		{
-			$this->encode('dir',true);
-		}
-		else
-		{
-			if(!is_file($this->dir_root.'data/'.$this->lastest.'/'.$file))
-			{
-				$this->encode('文件不存在');
-			}
-			$content = file_get_contents($this->dir_root.'data/'.$this->lastest.'/'.$file);
-			if($content) $content = base64_encode($content);
-			$this->encode($content,true);
-		}
+		$this->encode('服务器升级，仅支持ZIP升级');
 	}
 
 	public function zipdown()
 	{
 		$file = $this->get('file');
 		$file = intval($file);
-		if(!$file) $this->encode('未指定要下载的文件');
-		if(!is_file($this->dir_root.'zip/'.$file.'.zip'))
-		{
+		if(!$file){
+			$this->encode('未指定要下载的文件');
+		}
+		if(!is_file($this->dir_root.'zip/'.$file.'.zip')){
 			$this->encode('文件不存在');
 		}
 		$content = file_get_contents($this->dir_root.'zip/'.$file.'.zip');
-		if($content) $content = base64_encode($content);
+		if($content){
+			$content = base64_encode($content);
+		}
 		$this->encode($content,true);
 	}
 
@@ -149,41 +131,32 @@ class phpok_update
 	public function check($isxml=true)
 	{
 		$vlist = explode('.',$this->version);
-		$slist = explode('.',$this->lastest);
-		if($vlist[0] == $slist[0] && $vlist[1] == $slist[1] && $vlist[2] == $slist[2])
-		{
-			if(!$isxml) return false;
+		$lastest = $this->version(false);
+		$slist = explode('.',$lastest);
+		if($vlist[0] <= $slist[0] && $vlist[1] <= $slist[1] && $vlist[2] <= $slist[2]){
+			if(!$isxml){
+				return false;
+			}
 			$this->encode('您当前是最新版本，不需要再升级');
 		}
-		//返回要升级的内容
-		if(!is_dir(ROOT.'data/'.$this->lastest))
-		{
-			if(!$isxml) return false;
-			$this->encode('升级包还未配置好，请耐心等候');
+		if(!$isxml){
+			return true;
 		}
-		if(!$isxml) return true;
-		$this->encode('有升级包，请点这里升级',true);
+		$this->encode('检测到升级包',true);
 	}
 
 	public function get($id,$type='safe')
 	{
 		$msg = isset($_GET[$id]) ? $_GET[$id] : '';
 		if($msg == '') return false;
-		if($type == 'safe')
-		{
+		if($type == 'safe'){
 			$msg = str_replace(array("\\","'",'"',"<",">"," "),array("&#92;","&#39;","&quot;","&lt;","&gt;","&nbsp;"),$msg);
 			return $msg;
-		}
-		elseif($type == 'int' || $type == 'intval')
-		{
+		}elseif($type == 'int' || $type == 'intval'){
 			return intval($msg);
-		}
-		elseif($type == 'float' || $type == 'floatval')
-		{
+		}elseif($type == 'float' || $type == 'floatval'){
 			return floatval($msg);
-		}
-		elseif($type == 'version')
-		{
+		}elseif($type == 'version'){
 			$msg = preg_match("/^[0-9][0-9\.]*$/u",$msg) ? $msg : false;
 			return $msg;
 		}

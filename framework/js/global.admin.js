@@ -219,13 +219,10 @@ function phpok_admin_logout()
 function phpok_admin_clear()
 {
 	var url = get_url("index","clear");
-	var rs = json_ajax(url);
-	if(rs.status == "ok")
-	{
+	var rs = $.phpok.json(url);
+	if(rs.status == "ok"){
 		$.dialog.alert("缓存清空完成");
-	}
-	else
-	{
+	}else{
 		$.dialog.alert(rs.content);
 	}
 }

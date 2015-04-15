@@ -109,7 +109,16 @@ class upload_form extends _init_auto
 			return false;
 		}
 		if($rs['ext'] && $rs['ext']['is_multiple']){
-			return $list;
+			$tmp = explode(',',$rs['content']);
+			$rslist = array();
+			foreach($tmp as $key=>$value){
+				$value = trim($value);
+				if(!$value || ($value && !$list[$value])){
+					continue;
+				}
+				$rslist[$value] = $list[$value];
+			}
+			return $rslist;
 		}else{
 			$ids = explode(",",$rs['content']);
 			$id = $ids[0];

@@ -600,19 +600,35 @@ function phpok_edit_type(id)
 			});
 			t = t.sort(function(a,b){return parseInt(a['id'])>parseInt(b['id']) ? 1 : -1});
 			var list = new Array();
-			for(var i in t)
-			{
+			for(var i in t){
 				list[i] = t[i]['data'];
 			}
 			var val = list.join(",");
 			$(this.id).val(val);
-			if(this.opts.preview && this.opts.preview != 'undefined')
-			{
-				(this.opts.preview)(content);
+			if(this.opts.preview && this.opts.preview != 'undefined'){
+				(this.opts.preview)(val);
+			}else{
+				this.preview_res(val);
 			}
-			else
-			{
-				this.preview_res(content);
+		};
+		this.sort_title = function(){
+			var t = [];
+			$("#"+this.opts.id+"_list ._title input").each(function(i){
+				var val = $(this).val();
+				var data = $(this).attr("data");
+				t.push({"id":val,"data":data});
+			});
+			t = t.sort(function(a,b){return a['id']>b['id'] ? 1 : -1});
+			var list = new Array();
+			for(var i in t){
+				list[i] = t[i]['data'];
+			}
+			var val = list.join(",");
+			$(this.id).val(val);
+			if(this.opts.preview && this.opts.preview != 'undefined'){
+				(this.opts.preview)(val);
+			}else{
+				this.preview_res(val);
 			}
 		};
 		//获取列表
@@ -649,7 +665,7 @@ function phpok_edit_type(id)
 					html += '<div class="'+cls+'"><table><tr>';
 					html += '<td class="img"><img src="'+info.ico+'" width="100px" height="100px" /></td>';
 					html += '<td valign="top">';
-					html += '<div class="_title" style="width:450px;margin-bottom:5px;"><input type="text" id="'+this.opts.id+'_title_'+info.id+'" value="'+info.title+'" class="_input" placeholder="名称"></div>';
+					html += '<div class="_title" style="width:450px;margin-bottom:5px;"><input type="text" id="'+this.opts.id+'_title_'+info.id+'" value="'+info.title+'" class="_input" placeholder="名称" data="'+info.id+'"></div>';
 					html += '<div class="_note" style="width:450px;margin-bottom:5px;"><textarea id="'+this.opts.id+'_content_'+info.id+'" class="_textarea" placeholder="备注">'+info.note+'</textarea></div>';
 					html += '<div class="ext_action" style="width:450px;">';
 					html += '<button type="button" class="_btn" onclick="obj_'+this.opts.id+'.update_res('+info.id+')">更新附件信息</button>';

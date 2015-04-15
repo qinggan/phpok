@@ -50,7 +50,7 @@ function api_url($ctrl,$func="",$ext="",$root=false)
 	}
 	$url = str_replace('&amp;','&',$url);
 	if(substr($url,-1) == '&'){
-		$url = sub_str($url,0,-1);
+		$url = substr($url,0,-1);
 	}
 	return $url;
 }

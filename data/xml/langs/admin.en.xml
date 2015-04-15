@@ -43,4 +43,31 @@
 	<sql-optizime>Optizime</sql-optizime>
 	<sql-repair>Repair</sql-repair>
 	<sql-backup>Backup</sql-backup>
+	<index-admin-logout>Logout</index-admin-logout>
+	<index-start-menu>Start Menu</index-start-menu>
+	<index-show-desktop>Desktop</index-show-desktop>
+	<index-adminer-setting>Adminer Control</index-adminer-setting>
+	<index-clear-cache>Clear Cache</index-clear-cache>
+	<index-go-index>Homepage</index-go-index>
+	<index-site-prefix>Site:</index-site-prefix>
+	<index-site-add>Add Site</index-site-add>
+	<index-version-tip>, Version:</index-version-tip>
+	<index-refresh>Refresh</index-refresh>
+	<index-setting-me>Adminer Control</index-setting-me>
+	<index-about-phpok>About PHPOK</index-about-phpok>
+	<index-copyright-lgpl>LGPL</index-copyright-lgpl>
+	<index-copyright-person>Person({license})Biz License</index-copyright-person>
+	<index-copyright-company>Company({license})Biz License</index-copyright-company>
+	<index-site-not>Not popedom, Please contact Administrator.</index-site-not>
+	<index-site-1>Please select the site to be maintained</index-site-1>
+	<index-site-2>Site does not exist</index-site-2>
+	<index-site-go>You are going to site:{sitename},waiting...</index-site-go>
+	<index-site-tip1>Users</index-site-tip1>
+	<index-site-pl>Comments</index-site-pl>
+	<index-site-no-message>No Message</index-site-no-message>
+	<index-title>Manage</index-title>
+	<index-all-1>Setting site info.</index-all-1>
+	<index-all-2>Site Info</index-all-2>
+	<index-all-3>Domain</index-all-3>
+	<index-all-4>Domain</index-all-4>
 </root>

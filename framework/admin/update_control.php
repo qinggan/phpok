@@ -468,6 +468,7 @@ class update_control extends phpok_control
 		if($urlext){
 			$url.="&".$urlext;
 		}
+		$this->lib('html')->setting('timeout',900);
 		$info = $this->lib('html')->get_content($url);
 		if(!$info){
 			return $this->json('检测异常，请登录官网查询补丁更新',false,false);

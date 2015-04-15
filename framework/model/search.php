@@ -36,8 +36,7 @@ class search_model_base extends phpok_model
 	function id_list($condition="",$offset=0,$psize=30)
 	{
 		$sql .= "SELECT l.id FROM ".$this->db->prefix."list l WHERE l.status=1 AND l.hidden=0 ";
-		if($condition)
-		{
+		if($condition){
 			$sql.= " AND ".$condition;
 		}
 		$sql.= " ORDER BY l.sort DESC,l.dateline DESC,l.id DESC LIMIT ".intval($offset).",".intval($psize);
