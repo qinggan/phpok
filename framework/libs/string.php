@@ -28,73 +28,54 @@ class string_lib
 	//html，是否保留HTML样式
 	public function cut($string,$length=0,$dot='',$html=false)
 	{
-		if(!$length || !trim($string))
-		{
+		if(!$length || !trim($string)){
 			return $string;
 		}
 		$str = $string;
 		$string = strip_tags(trim($string));
 		$string = str_replace("&nbsp;"," ",$string);
-		if(strlen($string) <= $length)
-		{
+		if(strlen($string) <= $length){
 			return $html ? $str : $string;
 		}
-		$info = $this->cut_type ? $this->_substr($string,$length) : $this->_cut($string,$length);
-		if(!$html)
-		{
-			return $info.$dot;
+		$info = $this->cut_type ? $this->_substr($string,$length,$dot) : $this->_cut($string,$length,$dot);
+		if(!$html){
+			return $info;
 		}
 		//组成HTML样式
 		$starts = $ends = $starts_str = false;
 		preg_match_all('/<\w+[^>]*>/isU',$str,$starts,PREG_OFFSET_CAPTURE);
 		preg_match_all('/<\/\w+>/isU',$str,$ends,PREG_OFFSET_CAPTURE);
-		if(!$starts || ($starts && !$starts[0]))
-		{
-			return str_replace(" ","&nbsp;",$info).$dot;
+		if(!$starts || ($starts && !$starts[0])){
+			return str_replace(" ","&nbsp;",$info);
 		}
 		$lst = $use = false;
-		foreach($starts[0] as $key=>$value)
-		{
-			if($value[1] >= $length)
-			{
+		foreach($starts[0] as $key=>$value){
+			if($value[1] >= $length){
 				break;
 			}
 			$info = substr($info,0,$value[1]).$value[0].substr($info,$value[1]);
 			$length += strlen($value[0]);
-			if($ends && $ends[0][$key])
-			{
-				//检测标签是否符合要求
+			if($ends && $ends[0][$key]){
 				$chk = str_replace(array('/','>'),'',$ends[0][$key][0]);
-				if(substr($value[0],0,strlen($chk)) == $chk)
-				{
+				if(substr($value[0],0,strlen($chk)) == $chk){
 					$info = substr($info,0,$ends[0][$key][1]).$ends[0][$key][0].substr($info,$ends[0][$key][1]);
 					$length += strlen($ends[0][$key][0]);
 					$use[$key] = $ends[0][$key];
-				}
-				else
-				{
+				}else{
 					$lst[] = $value[0];
 				}
-			}
-			else
-			{
+			}else{
 				$lst[] = $value[0];
 			}
 		}
-		if($ends && $lst)
-		{
-			foreach($ends[0] as $key=>$value)
-			{
-				//检测是否已经使用过了
-				if($use && $use[$key])
-				{
+		if($ends && $lst){
+			foreach($ends[0] as $key=>$value){
+				if($use && $use[$key]){
 					continue;
 				}
 				$chk = str_replace(array('/','>'),'',$value[0]);
-				foreach($lst as $k=>$v)
-				{
-					if(substr($v,0,strlen($chk)) == $chk)
-					{
+				foreach($lst as $k=>$v){
+					if(substr($v,0,strlen($chk)) == $chk){
 						$info = substr($info,0,$value[1]).$value[0].substr($info,$value[1]);
 						$length += strlen($value[0]);
 						$use[$key] = $value;
@@ -103,7 +84,7 @@ class string_lib
 				}
 			}
 		}
-		return $info.$dot;
+		return $info;
 	}
 
 	//把字符串转成数组，支持汉字，只能是utf-8格式的，返回数组
@@ -255,72 +236,88 @@ class string_lib
 		return $info[0];
 	}
 
-	private function _substr($string,$length=255)
+	private function _substr($sourcestr,$cutlength=255,$dot='')
 	{
-		return mb_substr($string,0,$length);
-		
+		$returnstr = '';
+		$i = 0;
+		$n = 0;
+		$str_length = strlen($sourcestr);
+		$mb_str_length = mb_strlen($sourcestr,'utf-8');
+		while(($n < $cutlength) && ($i <= $str_length)){
+			$temp_str = substr($sourcestr,$i,1);
+			$ascnum = ord($temp_str);
+			if($ascnum >= 224){
+				$returnstr = $returnstr.substr($sourcestr,$i,3);
+				$i = $i + 3;
+				$n++;
+			}elseif($ascnum >= 192){
+				$returnstr = $returnstr.substr($sourcestr,$i,2);
+				$i = $i + 2;
+				$n++;
+			}elseif(($ascnum >= 65) && ($ascnum <= 90)){
+				$returnstr = $returnstr.substr($sourcestr,$i,1);
+				$i = $i + 1;
+				$n = $n + 0.5;
+			}else{
+				$returnstr = $returnstr.substr($sourcestr,$i,1);
+				$i = $i + 1;
+				$n = $n + 0.5;
+			}
+		}
+		if ($mb_str_length > $cutlength){
+			$returnstr = $returnstr . $dot;
+		}
+		return $returnstr; 
 	}
 
 	//旧版字符串截取
-	private function _cut($string,$length=0)
+	private function _cut($string,$length=0,$dot='')
 	{
 		$wordscut = "";
-		//utf8编码
 		$n = 0;
 		$tn = 0;
 		$noc = 0;
-		while ($n < strlen($string))
-		{
+		while ($n < strlen($string)){
 			$t = ord($string[$n]);
-			if ($t == 9 || $t == 10 || (32 <= $t && $t <= 126))
-			{
+			if ($t == 9 || $t == 10 || (32 <= $t && $t <= 126)){
 				$tn = 1;
 				$n++;
-				$noc++;
-			}
-			elseif (194 <= $t && $t <= 223)
-			{
+				$noc = $noc + 0.5;
+			}elseif (194 <= $t && $t <= 223){
 				$tn = 2;
 				$n += 2;
-				//$noc += 2;
 				$noc++;
-			}
-			elseif (224 <= $t && $t < 239)
-			{
+			}elseif (224 <= $t && $t < 239){
 				$tn = 3;
 				$n += 3;
-				//$noc += 2;
 				$noc++;
-			}
-			elseif (240 <= $t && $t <= 247)
-			{
+			}elseif (240 <= $t && $t <= 247){
 				$tn = 4;
 				$n += 4;
-				//$noc += 2;
 				$noc++;
-			}
-			elseif (248 <= $t && $t <= 251)
-			{
+			}elseif (248 <= $t && $t <= 251){
 				$tn = 5;
 				$n += 5;
-				//$noc += 2;
 				$noc++;
-			}
-			elseif ($t == 252 || $t == 253)
-			{
+			}elseif ($t == 252 || $t == 253){
 				$tn = 6;
 				$n += 6;
-				//$noc += 2;
 				$noc++;
-			}
-			else
-			{
+			}else{
 				$n++;
+				$noc = $noc + 0.5;
 			}
-			if ($noc >= $length) break;
+			if ($noc >= $length){
+				break;
+			}
 		}
-		if ($noc > $length) $n -= $tn;
+		if ($noc > $length){
+			$n -= $tn;
+		}
 		$wordscut = substr($string, 0, $n);
+		if($wordscut != $string){
+			return $wordscut.$dot;
+		}
 		return $wordscut;
 	}
 

@@ -1,0 +1,71 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang您当前的位置：}<a href="{url ctrl=gd/}" title="{lang图片方案}">{lang图片方案}</a>
+	&raquo; {lang列表}
+	<div class="action"><a href="{url ctrl=gd func=set/}">{lang添加方案}</a></div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+function gd_editor(id)
+{
+	var url = get_url("gd","editor") + "&id="+id;
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
+		}
+	});
+}
+function gd_delete(id,identifier)
+{
+	$.dialog.confirm('{lang确定要删除这个图片方案吗？}<span class="red">'+identifier+'</span>',function(){
+		var url = '{url ctrl=gd func=delete/}&id='+id;
+		$.phpok.json(url,function(rs){
+			if(rs.status == 'ok'){
+				$.dialog.alert('{lang图片方案删除成功}',function(){
+					$.phpok.reload();
+				});
+			}else{
+				$.dialog.alert(rs.content);
+			}
+		})
+	});
+}
+</script>
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th class="id">ID</th>
+	<th>{lang标识串}</th>
+	<th>{lang宽} &#215; {lang高}</th>
+	<th>{lang生成方式}</th>
+	<th>{lang编辑器支持}</th>
+	<th class="status">{lang水印}</th>
+	<th class="action">{lang操作}</th>
+</tr>
+<!-- foreach($rslist AS $key=>$value) -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td class="center">{$value.identifier}</td>
+	<td class="center">{$value.width} x {$value.height}</td>
+	<td class="center">{$value.cut_type ? P_Lang('裁剪法') : P_Lang('缩放法')}</td>
+	<td class="center">
+		<!-- if $value.editor -->
+		<span class="red">{lang默认}</span>
+		<!-- else -->
+		<input type="button" value="{lang设为默认}" class="btn" onclick="gd_editor('{$value.id}')" />
+		<!-- /if -->
+	</td>
+	<td class="center"><!-- if $value.mark_picture --><span class="darkblue">{lang有}</span><!-- else -->{lang无}<!-- /if --></td>
+	<td>
+		<div class="button-group">
+		<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=gd func=set id=$value.id/}')" class="phpok-btn" /><!-- /if -->
+		<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="gd_delete('{$value.id}','{$value.identifier}')" class="phpok-btn" /><!-- /if -->
+		</div>
+	</td>
+</tr>
+<!-- /foreach -->
+</table>
+</div>
+<!-- inc:foot -->

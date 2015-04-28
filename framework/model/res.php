@@ -156,7 +156,6 @@ class res_model_base extends phpok_model
 
 	function delete_gd_id($id,$root_dir="/")
 	{
-		
 		$sql = "SELECT * FROM ".$this->db->prefix."res_ext WHERE gd_id='".$id."'";
 		$rslist = $this->db->get_all($sql);
 		if($rslist)
@@ -225,12 +224,9 @@ class res_model_base extends phpok_model
 	function save($data,$id=0)
 	{
 		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
+		if($id){
 			return $this->db->update_array($data,"res",array("id"=>$id));
-		}
-		else
-		{
+		}else{
 			return $this->db->insert_array($data,"res");
 		}
 	}

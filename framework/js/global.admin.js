@@ -143,20 +143,16 @@ function autofill(type)
 //弹出图片选择窗口
 function phpok_pic(id)
 {
-	if(!id || id == "undefined")
-	{
+	if(!id || id == "undefined"){
 		$.dialog.alert("未指定ID");
 		return false;
 	}
-	var url = get_url("open","input") + "&type=picture&id="+id;
+	var url = get_url("open","input",'id='+id);
 	$.dialog.open(url,{
 		title: "图片管理器",
 		lock : true,
-		width: "80%",
-		height: "70%",
-		win_min:false,
-		win_max:false,
-		resize: false
+		width: "650px",
+		height: "450px"
 	});
 }
 
@@ -164,12 +160,9 @@ function phpok_pic(id)
 function phpok_pic_view(id)
 {
 	var url = $("#"+id).val();
-	if(!url || url == "undefined")
-	{
+	if(!url || url == "undefined"){
 		$.dialog.alert("图片不存在，请在表单中填写图片地址");
-	}
-	else
-	{
+	}else{
 		top.$.dialog({
 			'title':'预览',
 			'content':'<img src="'+url+'" border="0" />',

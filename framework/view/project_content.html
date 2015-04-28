@@ -1,18 +1,35 @@
-<!-- inc:head -->
-<script type="text/javascript" src="{func include_js project.js}"></script>
-
+<!-- include tpl=head -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#{$ext_module}").submit(function(){
+		$(this).ajaxSubmit({
+			'url':"{url ctrl=project func=content_save/}",
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					$.dialog.tips("{lang数据保存成功}");
+				}else{
+					$.dialog.alert(rs.content);
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
 <div class="tips">
-	您当前的位置：
-	<a href="{echo admin_url('project')}">项目管理</a>
-	&raquo; 项目内容编辑及字段扩展
+	{lang您当前的位置：}
+	<a href="{echo admin_url('project')}">{lang项目管理}</a>
+	&raquo; {lang项目内容编辑及字段扩展}
 </div>
 
-<form method="post" id="{$ext_module}" action="{echo admin_url('project','content_save')}" onsubmit="return project_content_check();">
+<form method="post" id="{$ext_module}">
 <input type="hidden" id="id" name="id" value="{$id}" />
 <div class="table">
 	<div class="title">
-		名称：
-		<span class="note">设置名称，该名称将在网站前台导航中使用</span>
+		{lang名称：}
+		<span class="note">{lang设置名称，该名称将在网站前台导航中使用}</span>
 	</div>
 	<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
 </div>
@@ -56,7 +73,7 @@
 			});
 		});
 		</script>
-		<input type="button" value="标准创建扩展字段" onclick="ext_add('{$ext_module}')" class="button2" />
+		<input type="button" value="{lang标准创建扩展字段}" onclick="ext_add('{$ext_module}')" class="button2" />
 	</div>
 </div>
 <!-- /if -->
@@ -66,10 +83,9 @@
 <div class="table">
 	<div class="content">
 		<br />
-		<input type="submit" value="提 交" class="submit" />
+		<input type="submit" value="{lang提交}" class="submit2" />
 		<br />
 	</div>
 </div>
 </form>
-
-<!-- inc:foot -->
+<!-- include tpl=foot -->

@@ -385,17 +385,12 @@ function ext_password_format($val,$content,$type)
 # 存储扩展字段
 function ext_save($myid,$is_add=false,$save_id="")
 {
-	$GLOBALS['app']->model("ext");
-	$GLOBALS['app']->model("fields");
-	if($is_add)
-	{
+	if($is_add){
 		$tmplist = $_SESSION[$myid];
-		if(!$tmplist)
-		{
+		if(!$tmplist){
 			return false;
 		}
-		foreach($tmplist AS $key=>$value)
-		{
+		foreach($tmplist AS $key=>$value){
 			$val = ext_value($value);
 			$array = array();
 			$array["module"] = $save_id ? $save_id : $myid;
@@ -409,11 +404,9 @@ function ext_save($myid,$is_add=false,$save_id="")
 			$array["content"] = $value["content"];
 			$array["taxis"] = $value["taxis"];
 			$array["ext"] = $value["ext"];
-			if($value["ext"] && $value["content"] && $val)
-			{
+			if($value["ext"] && $value["content"] && $val){
 				$tmp = is_string($value['ext']) ? unserialize($value["ext"]) : $value['ext'];
-				if($value["form_type"] == "password")
-				{
+				if($value["form_type"] == "password"){
 					$val = ext_password_format($val,$value["content"],$tmp["password_type"]);
 				}
 				$array["ext"] = serialize($tmp);
@@ -422,19 +415,17 @@ function ext_save($myid,$is_add=false,$save_id="")
 			$GLOBALS['app']->model("ext")->extc_save($val,$insert_id);
 		}
 		$_SESSION[$myid] = "";
-	}
-	else
-	{
+	}else{
 		$tmplist = $GLOBALS['app']->model("ext")->ext_all($myid);
-		if(!$tmplist) return false;
+		if(!$tmplist){
+			return false;
+		}
 		foreach($tmplist AS $key=>$value)
 		{
 			$val = ext_value($value);
-			if($value["form_type"] == "password")
-			{
+			if($value["form_type"] == "password"){
 				$tmp = $value["ext"] ? unserialize($value["ext"]) : "";
-				if(!$tmp)
-				{
+				if(!$tmp){
 					$tmp = array();
 					$tmp["password_type"] = "default";
 				}
@@ -786,11 +777,11 @@ function tpl_head($array=array())
 	if($array['title']){
 		$html .= $array['title'].' - ';
 	}
-	$html .= $GLOBALS['app']->site['title'];
 	$seo = $GLOBALS['app']->tpl->tpl_value['seo'];
 	if($seo['title']){
-		$html .= ' - '.$seo['title'];
+		$html .= $seo['title'].' - ';
 	}
+	$html .= $GLOBALS['app']->site['title'];
 	$html .= '</title>'."\n\t";
 	$html .= '<base href="'.$GLOBALS['app']->url.'" />'."\n\t";
 	$jsurl = $GLOBALS['app']->url.$GLOBALS['app']->config["www_file"]."?".$GLOBALS['app']->config['ctrl_id']."=js";

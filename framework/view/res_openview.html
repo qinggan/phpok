@@ -1,0 +1,38 @@
+<!-- inc:head_open -->
+<!-- if $ispic -->
+<style type="text/css">
+.img{max-width:650px}
+</style>
+<div style="margin-top:3px;"><img src="{$rs.filename}" onload="javascript:if(this.width>650)this.width=650;"></div>
+<!-- else -->
+<div class="list">
+<table>
+<tr>
+	<td>附件名称：</td>
+	<td>{$rs.title}</td>
+</tr>
+<tr>
+	<td>上传时间：</td>
+	<td>{func date "Y-m-d H:i:s" $rs.addtime}</td>
+</tr>
+<tr>
+	<td>存储目录：</td>
+	<td>{$rs.folder}</td>
+</tr>
+<tr>
+	<td>文件名：</td>
+	<td>{$rs.name}</td>
+</tr>
+<tr>
+	<td>下载次数：</td>
+	<td>{$rs.download}</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td><input type="button" value=" 点这里下载 " onclick="window.open('{$rs.filename}')" /></td>
+</tr>
+</table>
+</div>
+<!-- /if -->
+
+<!-- inc:foot_open -->

@@ -41,6 +41,57 @@ function update_group(gid)
 {
 	$.phpok.go(get_url('register','','group_id='+gid));
 }
+var maxtime = 60;
+var mobile_send_lock = false;
+var win_time_out;
+function update_send_sms_loading()
+{
+	maxtime--;
+	if(maxtime < 1){
+		$("#mobile_send_status").val('发送手机验证码');
+		mobile_send_lock = false;
+		maxtime = 60;
+		window.clearInterval(win_time_out);
+		return true;
+	}
+	var tips = "验证码已发送("+maxtime+")";
+	$("#mobile_send_status").val(tips);
+}
+
+function send_sms()
+{
+	if(mobile_send_lock){
+		$.dialog.alert('验证码已发送，请一分钟后再执行');
+		return false;
+	}
+	var url = api_plugin_url('duanxincm','sendsms');
+	var mobile = $("#mobile").val();
+	if(!mobile){
+		$.dialog.alert('手机号不能为空');
+		return false;
+	}
+	url += "&mobile="+mobile;
+	$.dialog.tips("正在执行中，请稍候…");
+	update_send_sms_loading();
+	$.ajax({
+		'url':url,
+		'dataType':'json',
+		'cache':false,
+		'async':true,
+		'beforeSend': function (XMLHttpRequest){
+			XMLHttpRequest.setRequestHeader("request_type","ajax");
+		},
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				maxtime = 60;
+				mobile_send_lock = true;
+				win_time_out = setInterval("update_send_sms_loading()",1000);
+			}else{
+				$.dialog.alert(rs.content);
+			}
+		}
+	});
+}
 </script>
 
 <div class="login-reg">
@@ -86,8 +137,18 @@ function update_group(gid)
 			<div class="clear"></div>
 		</dd>
 		<dd>
-			<label>手机或电话：</label>
-			<input class="input" type="text" name="mobile" />
+			<label>手机：</label>
+			<input class="input" type="text" name="mobile" id="mobile" />
+			<div class="clear"></div>
+		</dd>
+		<dd>
+			<label>&nbsp;</label>
+			<input type="button" value="发送手机验证码" onclick="send_sms()" class="button blue" id="mobile_send_status" />
+			<div class="clear"></div>
+		</dd>
+		<dd>
+			<label>手机验证码：</label>
+			<input class="input" type="text" name="mcode" />
 			<div class="clear"></div>
 		</dd>
 		<!-- if $sys.is_vcode && function_exists("imagecreate") -->

@@ -1,183 +1,82 @@
-<!-- include tpl=head title=附件资源管理 -->
-<link rel="stylesheet" type="text/css" href="js/webuploader/webuploader.css" />
-<script type="text/javascript" src="js/webuploader/webuploader.min.js"></script>
-<script type="text/javascript" src="{func include_js res.js}"></script>
-<div class="tips">
-	<!-- include tpl=res_btn -->
-	您当前的位置：
-	<a href="{url ctrl=res/}">资源管理</a>
-	&raquo; 添加资源
-</div>
-
-<div class="table">
-	<div class="title">
-		附件分类：
-		<span class="note">请选择附件分类</span>
-	</div>
-	<div class="content">
-		<select id="cate_id" name="cate_id">
-			<!-- loop from=$catelist key=$key value=$value -->
-			<option value="{$value.id}" {if $value.is_default} selected{/if}>{$value.title}</option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		附件类型：
-		<span class="note">请选择要上传的附件类型</span>
-	</div>
-	<div class="content">
-		<select id="attr" name="attr" onchange="attr_change()">
-			<!-- loop from=$attr_list key=$key value=$value -->
-			<option value="{$value.ext}">{$value.name}（{$value.swfupload}）</option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		选择要上传的文件：
-		<span class="note">单个文件上传不能超过：<span class="red">{func get_cfg_var upload_max_filesize}</span></span>
-	</div>
-	<div class="content">
-		<table>
-		<tr>
-			<td><div id="picker" class="">&nbsp;</div></td>
-			<td><button type="button" class="button" id="start_upload">开始上传</button></td>
-		</tr>
-		</table>
-	</div>
-</div>
-
-<div class="table">
-	<div class="content" id="progress"></div>
-</div>
+<!-- include tpl=head -->
 <script type="text/javascript">
+var obj_upload = {};
+var obj = art.dialog.opener;
 $(document).ready(function(){
-	//可能有pedding, ready, uploading, confirm, done.
-	var upload_state = 'pedding';
-	//上传总进度条
-	var uploader = WebUploader.create({
-		swf: 'js/webuploader/uploader.swf',
-		server: get_url('upload','save'),
-		pick: '#picker',
-		formData:{'{func session_name}':'{func session_id}'},
-		resize: false,
-		disableGlobalDnd:true,
-		fileVal:'upfile'
-	});
-	//加入队列前判断附件类型，不符合要求则不允许添加
-	uploader.on('beforeFileQueued',function(file){
-		var val = ($("#attr").val()).toLowerCase();
-		var lst = val.split(',');
-		if($.inArray((file.ext).toLowerCase(),lst) < 0)
-		{
-			$.alert('不支持 '+file.ext+' 类型附件上传');
-			return false;
+	cate_change();
+});
+function cate_change()
+{
+	val = $("#cate_id").val();
+	if(!val){
+		$.dialog.alert('请选择要存储的目标分类');
+		return false;
+	}
+	var data = $("#cate_id option[value="+val+"]").attr('data');
+	var catename = $("#cate_id option[value="+val+"]").attr('catename');
+	obj_upload = new $.admin_upload({
+		"multiple"	: 'true',
+		"id" : "upload",
+		'pick':{'id':'#upload_picker','multiple':true},
+		'resize':false,
+		"swf" : "js/webuploader/uploader.swf",
+		"server": "{url ctrl=upload func=save/}",
+		"filetypes" : "{$rs.ext}",
+		'accept' : {'title':catename,'extensions':data},
+		"formData" :{'{func session_name}':'{func session_id}','cateid':val},
+		'fileVal':'upfile',
+		'auto':false,
+		"success":function(){
+			return true;
 		}
 	});
-	//执行添加队列
-	uploader.on('fileQueued', function( file ) {
-		$("#progress").append('<div id="phpok-upfile-' + file.id + '" class="phpok-upfile-list">' +
-			'<div class="title">' + file.name + '（<span class="status">等待上传…</span>）</div>' +
-			'<div class="progress"><span>&nbsp;</span></div>' +
-			'<div class="cancel" id="phpok-upfile-cancel-'+file.id+'"></div>' + 
-		'</div>' );
-		//增加等待动作
-		upload_state = 'ready';
-		//增加删除动作文件
-		$("#phpok-upfile-"+file.id+" .cancel").click(function(){
-			//移除附件
-			uploader.removeFile(file,true);
-			//删除样式
-			$("#phpok-upfile-"+file.id).remove();
+	obj_upload.uploader.on('uploadFinished',function(){
+		$.dialog.alert('附件上传成功',function(){
+			obj.$.phpok.reload();
 		});
 	});
-	//开始上传
-	uploader.on('startUpload',function(){
-		//
-	});
-	uploader.on('uploadProgress',function(file,percent){
-		var $li = $('#phpok-upfile-'+file.id),
-        $percent = $li.find('.progress span');
-        var width = $li.find('.progress').width();
-        $percent.css( 'width', parseInt(width * percent, 10) + 'px' );
-        $li.find('span.status').html('正在上传…');
-	});
-	uploader.on('uploadBeforeSend',function(block,data){
-		var cateid = $("#cate_id").val();
-		data.cateid = cateid;
-	});
-	uploader.on('uploadSuccess',function(file,data){
-		if(data.status != 'ok')
-		{
-			if(!data.content) data.content = '上传异常';
-			$('#phpok-upfile-'+file.id).find('span.status').html('上传错误：<span style="color:red">'+data.content+'</span>');
-		}
-		else
-		{
-			$('#phpok-upfile-'+file.id).find('span.status').html('上传成功');
-			var html = '<li id="attr_'+data.content.id+'">';
-			html += '<div class="pic"><a href="javascript:preview_attr(\''+data.content.id+'\');void(0);" title="点击预览"><img src="'+data.content.ico+'" width="80px" height="80px" border="0" /></a></div>';
-			html += '<div class="txt">';
-			html += '<div class="ipt"><input type="text" id="title_'+data.content.id+'" name="title_'+data.content.id+'" class="attr" value="'+data.content.title+'"></div>';
-			html += '<div class="ipt"><input type="button" value="改名" onclick="attr_title(\''+data.content.id+'\')" class="res_btn">';
-			html += '<input type="button" value="管理" onclick="attr_manage(\''+data.content.id+'\')" class="res_btn">';
-			html += '<input type="button" value="删除" onclick="attr_delete(\''+data.content.id+'\')" class="res_btn">';
-			html += '</div><div class="ipt">时间：'+data.content.uploadtime+'</div>';
-			html += '</div></li>';
-			$("ul#attrlist").append(html);
-		}
-	});
-	uploader.on('uploadError',function(file,reason){
-		$('#phpok-upfile-'+file.id).find('span.status').html('上传错误：<span style="color:red">'+reason+'</span>');
-	});
-	//上传完成，无论失败与否，3秒后删除
-	uploader.on('uploadComplete',function(file){
-		$("#phpok-upfile-"+file.id).hide(1000,function(){
-			$(this).remove();
-		})
-	});
-	//上传请求
-	uploader.on('uploadAccept',function(file,data){
-		//
-	});
-	//上传异常时，触发这个信息
-	uploader.on('error',function(string){
-		alert(string);
-		return false;
-	});
-	//提交上传
-	$("#start_upload").click(function(){
-		//如果
-		if($(this).hasClass('disabled'))
-		{
-			return false;
-		}
-		var f = $(".phpok-upfile-list").length;
-		if(f<1)
-		{
-			$.alert('请选择要上传的文件');
-			return false;
-		}
-		if(upload_state == 'ready' || upload_state == 'paused')
-		{
-			uploader.upload();
-		}
-		else
-		{
-			uploader.stop();
-		}
-	});
-});
-</script>
-<div class="tips">
-	已上传附件列表
-</div>
-<ul id="attrlist" class="attrlist">
+}
+function save()
+{
 	
-</ul>
-<div class="clear"></div>
-<!-- inc:foot -->
+	var f = $("#upload_progress .phpok-upfile-list").length;
+	if(f<1){
+		$.dialog.alert('请选择要上传的文件');
+		return false;
+	}
+	obj_upload.uploader.upload();
+	return false;
+}
+function cancel()
+{
+	return obj_upload.uploader.stop();
+}
+</script>
+
+<div class="table">
+	<div class="title">
+		{lang附件分类：}
+		<span class="note">{lang请选择要上传的附件分类}</span>
+	</div>
+	<div class="content">
+		<select id="cate_id" name="cate_id" onchange="cate_change()">
+			<!-- loop from=$catelist key=$key value=$value -->
+			<option value="{$value.id}"{if $value.is_default} selected{/if} data="{$value.filetypes}" catename="{$value.title}">
+			{$value.title}<!-- if $value.typeinfos --> / {lang支持上传格式：}{$value.typeinfos}<!-- /if --></option>
+			<!-- /loop -->
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang选择要上传的文件：}
+		<span class="note">{lang单个文件上传不能超过：}<span class="red">{func get_cfg_var upload_max_filesize}</span></span>
+	</div>
+	<div class="content"><div id="upload_picker" class=""></div></div>
+</div>
+
+<div class="table">
+	<div class="content" id="upload_progress"></div>
+</div>
+
+<!-- include tpl=foot_open -->

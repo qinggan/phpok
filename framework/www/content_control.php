@@ -49,6 +49,7 @@ class content_control extends phpok_control
 			error(P_Lang('您没有阅读权限，请联系网站管理员'),'','error');
 		}
 		$this->assign("page_rs",$project_rs);
+		$tpl = $project_rs['tpl_content'];
 		//父级项目信息
 		if($project_rs['parent_id']){
 			$pt['pid'] = $project_rs['parent_id'];
@@ -60,32 +61,50 @@ class content_control extends phpok_control
 			$this->phpok_seo($parent_rs);
 		}
 		$this->phpok_seo($project_rs);
-		//如果存在分类
 		if($rs['cate_id']){
-			$cate_rs = $this->call->phpok('_cate',array("pid"=>$rs['project_id'],'cateid'=>$rs['cate_id']));
-			$this->assign("cate_rs",$cate_rs);
-			//父级分类
-			if($cate_rs['parent_id'] && $cate_rs['parent_id'] != $project_rs['cate']){
-				$dt = array('site_id'=>$rs['site_id'],'pid'=>$project_rs['id'],'cateid'=>$rs['parent_id'],'cate_ext'=>1);
-				$cate_parent_rs = $this->call->phpok("_cate",$dt);
-				$this->assign("cate_parent_rs",$cate_parent_rs);
-				$this->phpok_seo($cate_parent_rs);
+			$cate_root = $project_rs['cate'];
+			$cate_root_rs = $this->call->phpok('_cate',array('pid'=>$project_rs['id'],'cateid'=>$cate_root));
+			if(!$cate_root_rs){
+				error(P_Lang('根分类信息不存在'),$this->url,'notice',5);
 			}
+			if(!$cate_root_rs['status']){
+				error(P_Lang('根分类未启用'),$this->url,'notice',10);
+			}
+			$this->assign('cate_root_rs',$cate_root_rs);
+			$this->phpok_seo($cate_root_rs);
+			if($cate_root_rs['tpl_content']){
+				$tpl = $cate_root_rs['tpl_content'];
+			}
+			//分类信息
+			$cate_rs = $this->call->phpok('_cate',array("pid"=>$project_rs['project_id'],'cateid'=>$rs['cate_id']));
+			if(!$cate_rs){
+				error(P_Lang('分类信息不存在'),$this->url,'notice',5);
+			}
+			if(!$cate_rs['status']){
+				error(P_Lang('分类未启用'),$this->url,'notice',10);
+			}
+			if($cate_rs['parent_id']){
+				$cate_parent_rs = $this->call->phpok('_cate',array('pid'=>$project_rs['id'],'cateid'=>$cate_rs['parent_id']));
+				if(!$cate_parent_rs){
+					error(P_Lang('父级分类信息不存在'),$this->url,'notice',5);
+				}
+				if(!$cate_root_rs['status']){
+					error(P_Lang('父级分类未启用'),$this->url,'notice',10);
+				}
+				$this->assign('cate_parent_rs',$cate_parent_rs);
+				$this->phpok_seo($cate_parent_rs);
+				if($cate_parent_rs['tpl_content']){
+					$tpl = $cate_parent_rs['tpl_content'];
+				}
+			}
+			$this->assign("cate_rs",$cate_rs);
 			$this->phpok_seo($cate_rs);
+			if($cate_rs['tpl_content']){
+				$tpl = $cate_rs['tpl_content'];
+			}
 		}
-		//获取模板配置
-		$tpl = $rs['tpl'];
-		if(!$tpl && $cate_rs['tpl_content']){
-			$tpl = $cate_rs['tpl_content'];
-		}
-		if(!$tpl && $cate_parent_rs['tpl_content']){
-			$tpl = $cate_parent_rs['tpl_content'];
-		}
-		if(!$tpl && $project_rs['tpl_content']){
-			$tpl = $project_rs['tpl_content'];
-		}
-		if(!$tpl && $parent_rs['tpl_content']){
-			$tpl = $parent_rs['tpl_content'];
+		if($rs['tpl']){
+			$tpl = $rs['tpl'];
 		}
 		if(!$tpl){
 			$tpl = $project_rs['identifier'].'_content';
@@ -93,20 +112,11 @@ class content_control extends phpok_control
 		if(!$this->tpl->check_exists($tpl)){
 			error(P_Lang('未配置模板，请检查'),'','error');
 		}
-		//增加点击，此项需要临时关闭缓存
 		$this->db->cache_close();
 		$this->model('list')->add_hits($rs["id"]);
 		$rs['hits'] = $this->model('list')->get_hits($rs['id']);
 		$this->db->cache_open();
-		//执行SEO优化
 		$this->phpok_seo($rs);
-		unset($rs['project_id']);
-		$rs['project_id'] = $project_rs['id'];
-		if($rs['cate_id'] && $cate_rs)
-		{
-			unset($rs['cate_id']);
-			$rs['cate_id'] = $cate_rs['id'];
-		}
 		$this->assign("rs",$rs);
 		$this->view($tpl);
 	}

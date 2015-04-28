@@ -370,48 +370,42 @@ function phpok_edit_type(id)
 	$.phpok_upload = function(opts){
 		var self = this;
 		var defaults = {
-			multi:false, //是否多附件
-			id:'upload',
-			swf:'js/webuploader/uploader.swf',
-			server:'index.php',
-			pick:'#picker',
-			resize: false,
-			disableGlobalDnd:true,
-			fileVal:'upfile',
-			filetypes:'jpg,png,gif,jpeg',
-			cateid:0
+			'multi':false, //是否多附件
+			'id':'upload',
+			'swf':'js/webuploader/uploader.swf',
+			'server':'index.php',
+			'pick':'#picker',
+			'resize': false,
+			'disableGlobalDnd':true,
+			'fileVal':'upfile',
+			'filetypes':'jpg,png,gif,jpeg',
+			'runtimeOrder':'flash,html5',
+			'cateid':0,
+			'accept':{'title':'图片(*.jpg, *.gif, *.png)','extensions':'jpg,png,gif'}
 		};
+		opts.accept = {'title':opts.typeDesc,'extensions':opts.filetypes};
 		this.opts = $.extend({},defaults,opts);
-		if(!this.opts.multi)
-		{
-			this.opts.pick = {'id':this.opts.pick,'multi':false};
-		}
-		else
-		{
-			this.opts.pick = {'id':this.opts.pick,'multi':true};
+		if(this.opts.multi){
+			this.opts.pick = this.opts.pick;
+		}else{
+			this.opts.pick = {'id':this.opts.pick,'multiple':false};
 		}
 		this.id = "#"+this.opts.id;
 		this.update_status = 'ready';
 		//添加动作
 		this.open_action = function(val){
 			var content = $(this.id).val();
-			if(opts.multi)
-			{
+			if(opts.multi){
 				content = (content && content != "undefined") ? content + ","+val : val;
 				var lst = $.unique(content.split(","));
 				content = lst.join(',');
-			}
-			else
-			{
+			}else{
 				content = val;
 			}
 			$(this.id).val(content);
-			if(this.opts.preview && this.opts.preview != 'undefined')
-			{
+			if(this.opts.preview && this.opts.preview != 'undefined'){
 				(this.opts.preview)(content);
-			}
-			else
-			{
+			}else{
 				this.preview_res(content);
 			}
 		};
@@ -419,31 +413,25 @@ function phpok_edit_type(id)
 			this.opts.cateid = val;
 		};
 		this.uploader = WebUploader.create(this.opts);
-		//加入队列前判断附件类型，不符合要求则不允许添加
 		this.uploader.on('beforeFileQueued',function(file){
 			var val = (self.opts.filetypes).toLowerCase();
 			var lst = val.split(',');
-			if($.inArray((file.ext).toLowerCase(),lst) < 0)
-			{
-				alert('不支持 '+file.ext+' 类型附件上传');
+			if($.inArray((file.ext).toLowerCase(),lst) < 0){
+				$.dialog.alert('不支持 <span class="red">'+file.ext+'</span> 类型附件上传');
 				return false;
 			}
 		});
 		//执行添加队列
 		this.uploader.on('fileQueued', function( file ) {
-			if(self.opts.progress && self.opts.progress != 'undefined')
-			{
+			if(self.opts.progress && self.opts.progress != 'undefined'){
 				(self.opts.progress)(file);
-			}
-			else
-			{
+			}else{
 				$(self.id+"_progress").append('<div id="phpok-upfile-' + file.id + '" class="phpok-upfile-list">' +
 					'<div class="title">' + file.name + '（<span class="status">等待上传…</span>）</div>' +
 					'<div class="progress"><span>&nbsp;</span></div>' +
 					'<div class="cancel" id="phpok-upfile-cancel-'+file.id+'"></div>' + 
 				'</div>' );
 			}
-			
 			self.upload_state = 'ready';
 			$("#phpok-upfile-"+file.id+" .cancel").click(function(){
 				self.uploader.removeFile(file,true);
@@ -461,20 +449,15 @@ function phpok_edit_type(id)
 			data.cateid = self.opts.cateid;
 		});
 		this.uploader.on('uploadSuccess',function(file,data){
-			if(data.status != 'ok')
-			{
+			if(data.status != 'ok'){
 				if(!data.content) data.content = '上传异常';
-				//$('#phpok-upfile-'+file.id).find('span.status').html('上传错误：<span style="color:red">'+data.content+'</span>');
-				alert(data.content);
+				$.dialog.alert(data.content);
 				return false;
 			}
 			$('#phpok-upfile-'+file.id).find('span.status').html('上传成功');
-			if(self.opts.success && self.opts.success != 'undefined')
-			{
+			if(self.opts.success && self.opts.success != 'undefined'){
 				(self.opts.success)(file,data);
-			}
-			else
-			{
+			}else{
 				self.open_action(data.content.id);
 			}
 		});
@@ -646,18 +629,19 @@ function phpok_edit_type(id)
 				}
 			}
 			var url = api_url("res","idlist") + "&id="+$.str.encode(id);
-			var rs = json_ajax(url);
-			if(rs.status == "ok")
-			{
+			var optsid = this.opts.id;
+			$.phpok.json(url,function(rs){
+				if(rs.status != 'ok'){
+					$.dialog.alert(rs.content);
+					return false;
+				}
 				var list = rs.content;
 				var total = count(list);
 				var html = '<div class="_elist">';
 				var t = 1;
 				var tmp = id.split(",");
-				for(var i in tmp)
-				{
-					if(!list[tmp[i]] || list[tmp[i]] == 'undefined' || !list[tmp[i]]['ico'])
-					{
+				for(var i in tmp){
+					if(!list[tmp[i]] || list[tmp[i]] == 'undefined' || !list[tmp[i]]['ico']){
 						continue;
 					}
 					var info = list[tmp[i]];
@@ -665,33 +649,25 @@ function phpok_edit_type(id)
 					html += '<div class="'+cls+'"><table><tr>';
 					html += '<td class="img"><img src="'+info.ico+'" width="100px" height="100px" /></td>';
 					html += '<td valign="top">';
-					html += '<div class="_title" style="width:450px;margin-bottom:5px;"><input type="text" id="'+this.opts.id+'_title_'+info.id+'" value="'+info.title+'" class="_input" placeholder="名称" data="'+info.id+'"></div>';
-					html += '<div class="_note" style="width:450px;margin-bottom:5px;"><textarea id="'+this.opts.id+'_content_'+info.id+'" class="_textarea" placeholder="备注">'+info.note+'</textarea></div>';
+					html += '<div class="_title" style="width:450px;margin-bottom:5px;"><input type="text" id="'+optsid+'_title_'+info.id+'" value="'+info.title+'" class="_input" placeholder="名称" data="'+info.id+'"></div>';
+					html += '<div class="_note" style="width:450px;margin-bottom:5px;"><textarea id="'+optsid+'_content_'+info.id+'" class="_textarea" placeholder="备注">'+info.note+'</textarea></div>';
 					html += '<div class="ext_action" style="width:450px;">';
-					html += '<button type="button" class="_btn" onclick="obj_'+this.opts.id+'.update_res('+info.id+')">更新附件信息</button>';
-					html += '<button type="button" class="_btn" onclick="obj_'+this.opts.id+'.preview('+info.id+')">预览</button>';
-					html += '<button type="button" class="_btn" onclick="obj_'+this.opts.id+'.del_res('+info.id+')">删除</button>';
-					if(total > 1)
-					{
-						html += '<input type="text" class="_taxis '+this.opts.id+'_taxis" value="'+t+'" data="'+info.id+'" />';
+					html += '<button type="button" class="_btn" onclick="obj_'+optsid+'.update_res('+info.id+')">更新附件信息</button>';
+					html += '<button type="button" class="_btn" onclick="obj_'+optsid+'.preview('+info.id+')">预览</button>';
+					html += '<button type="button" class="_btn" onclick="obj_'+optsid+'.del_res('+info.id+')">删除</button>';
+					if(total > 1){
+						html += '<input type="text" class="_taxis '+optsid+'_taxis" value="'+t+'" data="'+info.id+'" />';
 					}
 					html += '</div></td>';
 					html += '</tr></table></div>';
 					t++;
 				}
 				html += '</div>';
-				$(this.id+"_list").html(html).show();
-				if(total>1)
-				{
+				$(self.id+"_list").html(html).show();
+				if(total>1){
 					$(this.id+"_sort").show();
 				}
-			}
-			else
-			{
-				$(this.id+"_list").hide(1000,function(){
-					$(this).html('');
-				});
-			}
+			});
 		}
 	};
 })(jQuery);

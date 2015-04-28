@@ -172,7 +172,7 @@ class register_control extends phpok_control
 		$this->model('user')->save_ext($ext);
 		if($array['status'])
 		{
-			$rs = $thsi->model('user')->get_one($uid);
+			$rs = $this->model('user')->get_one($uid);
 			$_SESSION["user_id"] = $rs['id'];
 			$_SESSION["user_rs"] = $rs;
 			$_SESSION["user_name"] = $rs["user"];

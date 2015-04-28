@@ -1,31 +1,57 @@
 <!-- inc:head -->
 <script type="text/javascript" src="{func include_js project.js}"></script>
 <div class="tips">
-	您当前的位置：
-	<a href="{echo admin_url('project')}">项目管理</a>
-	&raquo; <!-- if $id -->编辑页面<!-- else -->添加页面<!-- end -->
+	{lang您当前的位置：}
+	<a href="{url ctrl=project/}">{lang项目管理}</a>
+	&raquo; <!-- if $id -->{lang编辑项目}<!-- else -->{lang添加项目}<!-- end -->
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#{$ext_module}").submit(function(){
+		$(this).ajaxSubmit({
+			'url':"{url ctrl=project func=save/}",
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					if($("#id").val()){
+						$.dialog.tips("{lang项目信息编辑成功}");
+					}else{
+						$.dialog.alert('{lang项目信息创建成功}',function(){
+							$.phpok.go('{url ctrl=project/}');
+						},'succeed');
+					}
+				}else{
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
 <ul class="group">
-	<li class="on" onclick="$.admin.group(this)" name="main">基本</li>
-	<li onclick="$.admin.group(this)" name="admin">扩展</li>
-	<li onclick="$.admin.group(this)" name="seo">SEO优化</li>
+	<li class="on" onclick="$.admin.group(this)" name="main">{lang基本}</li>
+	<li onclick="$.admin.group(this)" name="admin">{lang扩展}</li>
+	<li onclick="$.admin.group(this)" name="seo">{langSEO优化}</li>
 </ul>
 
-<form method="post" id="{$ext_module}" action="{echo admin_url('project','save')}" onsubmit="return project_check();">
+<form method="post" id="{$ext_module}">
 <input type="hidden" id="id" name="id" value="{$id}" />
 <div id="main_setting">
 <div class="table">
 	<div class="title">
-		名称：
-		<span class="note">设置名称，该名称将在网站前台导航中使用</span>
+		{lang名称：}
+		<span class="note">{lang设置名称，该名称将在网站前台导航中使用}</span>
 	</div>
 	<div class="content"><input type="text" id="title" name="title" class="default" value="{$rs.title}" /></div>
 </div>
 
 <div class="table">
 	<div class="title">
-		项目别名：
-		<span class="note">此别名功能仅限在后台使用，用于显示在按钮上，一般不要超过6个汉字</span>
+		{lang项目别名：}
+		<span class="note">{lang此别名功能仅限在后台使用，用于显示在按钮上，一般不要超过6个汉字}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="nick_title" name="nick_title" class="default" value="{$rs.nick_title}" />
@@ -34,16 +60,16 @@
 
 <div class="table">
 	<div class="title">
-		排序：
-		<span class="note">自定义排序，值越小越往前靠</span>
+		{lang排序：}
+		<span class="note">{lang自定义排序，值越小越往前靠}</span>
 	</div>
 	<div class="content"><input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis ? $rs.taxis : '255'}" /></div>
 </div>
 
 <div class="table">
 	<div class="title">
-		项目属性：
-		<span class="note">设置项目的一些功能，如停用，隐藏，打勾表示启用这个功能</span>
+		{lang项目属性：}
+		<span class="note">{lang设置项目的一些功能，如停用，隐藏，打勾表示启用这个功能}</span>
 	</div>
 	<div class="content">
 		<table cellpadding="0" cellspacing="0">
@@ -57,12 +83,12 @@
 
 <div class="table">
 	<div class="title">
-		父栏目：
-		<span class="note">实现父子栏目可以实现数据交叉使用</span>
+		{lang父栏目：}
+		<span class="note">{lang实现父子栏目可以实现数据交叉使用}</span>
 	</div>
 	<div class="content">
 		<select id="parent_id" name="parent_id">
-		<option value="0">设为父栏目</option>
+		<option value="0">{lang设为父栏目}</option>
 		<!-- loop from=$parent_list key=$key value=$value -->
 		<!-- if $rs.id != $value.id -->
 		<option value="{$value.id}"{if $rs.parent_id == $value.id} selected{/if}>{$value.title}</option>
@@ -73,8 +99,8 @@
 </div>
 <div class="table">
 	<div class="title">
-		标识：
-		<span class="note">限<span class="red">字母、数字、下划线或中划线且必须是字母开头</span>，设置为<span class="red">index</span>时表示为首页专用</span>
+		{lang标识：}
+		<span class="note">{lang限}<span class="red">{lang字母、数字、下划线或中划线且必须是字母开头，}</span>{lang首页专用请设置为}<span class="red">index</span></span>
 	</div>
 	<div class="content">
 		<input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" />
@@ -83,12 +109,12 @@
 
 <div class="table">
 	<div class="title">
-		绑定模块：
-		<span class="note">实现类似新闻，产品等多条项目信息，绑定成功后建议不要修改，以防止数据混乱！</span>
+		{lang绑定模块：}
+		<span class="note">{lang实现类似新闻，产品等多条项目信息，绑定成功后建议不要修改，以防止数据混乱！}</span>
 	</div>
 	<div class="content">
 		<select id="module" name="module" onchange="show_module(this.value)">
-		<option value="0">不关联模块</option>
+		<option value="0">{lang不关联模块}</option>
 		<!-- loop from=$module_list key=$key value=$value id=module_list_id -->
 		<option value="{$value.id}"{if $value.id == $rs.module} selected{/if}>{$value.title}</option>
 		<!-- /loop -->
@@ -99,8 +125,8 @@
 <div id="module_set" class="hidden">
 	<div class="table">
 		<div class="title">
-			主题别名：
-			<span class="note">在使用模块时，会有一个必填选项，即主题，您可在这里设置别名</span>
+			{lang主题别名：}
+			<span class="note">{lang在使用模块时，会有一个必填选项，即主题，您可在这里设置别名}</span>
 		</div>
 		<div class="content">
 			<input type="text" id="alias_title" name="alias_title" class="default" value="{$rs.alias_title}" />
@@ -109,8 +135,8 @@
 
 	<div class="table">
 		<div class="title">
-			主题备注：
-			<span class="note">同上</span>
+			{lang主题备注：}
+			<span class="note">{lang同上}</span>
 		</div>
 		<div class="content">
 			<input type="text" id="alias_note" name="alias_note" class="long" value="{$rs.alias_note}" />
@@ -119,19 +145,19 @@
 
 	<div class="table">
 		<div class="title">
-			扩展项：
-			<span class="note">请根据实际情况设置相应的扩展项，勾选表示启用</span>
+			{lang扩展项：}
+			<span class="note">{lang请根据实际情况设置相应的扩展项，勾选表示启用}</span>
 		</div>
 		<div class="content">
 			<table cellpadding="0" cellspacing="0">
 			<tr>
-				<td><label><input type="checkbox" name="is_attr" id="is_attr"{if $rs.is_attr} checked{/if} />主题属性</label></td>
-				<td><label><input type="checkbox" name="is_biz" id="is_biz"{if $rs.is_biz} checked{/if} onclick="set_biz()" />电子商务</label></td>
-				<td><label><input type="checkbox" name="is_search"{if $rs.is_search} checked{/if} />搜索</label></td>
-				<td><label><input type="checkbox" name="is_tag"{if $rs.is_tag} checked{/if} />标签</label></td>
-				<td><label><input type="checkbox" name="subtopics"{if $rs.subtopics} checked{/if} />下级主题</label></td>
-				<td><label><input type="checkbox" name="post_status" id="post_status"{if $rs.post_status} checked{/if} onclick="set_post_status()" />发布</label></td>
-				<td><label><input type="checkbox" name="comment_status" id="comment_status"{if $rs.comment_status} checked{/if} onclick="set_comment_status()" />评论</label></td>
+				<td><label><input type="checkbox" name="is_attr" id="is_attr"{if $rs.is_attr} checked{/if} />{lang主题属性}</label></td>
+				<td><label><input type="checkbox" name="is_biz" id="is_biz"{if $rs.is_biz} checked{/if} onclick="set_biz()" />{lang电子商务}</label></td>
+				<td><label><input type="checkbox" name="is_search"{if $rs.is_search} checked{/if} />{lang搜索}</label></td>
+				<td><label><input type="checkbox" name="is_tag"{if $rs.is_tag} checked{/if} />{lang标签}</label></td>
+				<td><label><input type="checkbox" name="subtopics"{if $rs.subtopics} checked{/if} />{lang下级主题}</label></td>
+				<td><label><input type="checkbox" name="post_status" id="post_status"{if $rs.post_status} checked{/if} onclick="set_post_status()" />{lang发布}</label></td>
+				<td><label><input type="checkbox" name="comment_status" id="comment_status"{if $rs.comment_status} checked{/if} onclick="set_comment_status()" />{lang评论}</label></td>
 			</tr>
 			</table>
 		</div>
@@ -139,14 +165,14 @@
 
 	<div class="table" id="use_biz_setting"{if !$rs.is_biz} style="display:none"{/if}>
 		<div class="title">
-			货币默认类型：
-			<span class="note">此项主要是方便后台管理员添加产品时，默认使用的货币</span>
+			{lang货币默认类型：}
+			<span class="note">{lang此项主要是方便后台管理员添加产品时，默认使用的货币}</span>
 		</div>
 		<div class="content">
 			<select name="currency_id" id="currency_id">
-				<option value="">请选择……</option>
+				<option value="">{lang请选择……}</option>
 				<!-- loop from=$currency_list key=$key value=$value -->
-				<option value="{$value.id}"{if $rs[currency_id] == $value.id} selected{/if}>{$value.title}（标识：{$value.code}，汇率：{$value.val}）</option>
+				<option value="{$value.id}"{if $rs[currency_id] == $value.id} selected{/if}>{$value.title}/{lang标识：}{$value.code}/{lang汇率：}{$value.val}</option>
 				<!-- /loop -->
 			</select>
 		</div>
@@ -155,28 +181,28 @@
 	<div id="email_set_post_status"{if !$rs.post_status} style="display:none"{/if}>
 	<div class="table">
 		<div class="title">
-			发布通知管理员邮件模板：
-			<span class="note">仅限启用：前台发布 后有效</span>
+			{lang发布通知管理员邮件模板：}
+			<span class="note">{lang仅限启用：前台发布 后有效}</span>
 		</div>
 		<div class="content">
 			<select name="etpl_admin">
-				<option value="">不通知管理员</option>
+				<option value="">{lang不通知管理员}</option>
 				<!-- loop from=$emailtpl key=$key value=$value -->
-				<option value="{$value.identifier}"{if $rs.etpl_admin == $value.identifier} selected{/if}>通知管理员模板：{$value.title}</option>
+				<option value="{$value.identifier}"{if $rs.etpl_admin == $value.identifier} selected{/if}>{lang通知管理员模板：}{$value.title}</option>
 				<!-- /loop -->
 			</select>
 		</div>
 	</div>
 	<div class="table">
 		<div class="title">
-			发布通知会员邮件模板：
-			<span class="note">仅限启用：发布 且已登录会员 后有效</span>
+			{lang发布通知会员邮件模板：}
+			<span class="note">{lang仅限启用：发布且已登录会员后有效}</span>
 		</div>
 		<div class="content">
 			<select name="etpl_user">
-				<option value="">不通知会员</option>
+				<option value="">{lang不通知会员}</option>
 				<!-- loop from=$emailtpl key=$key value=$value -->
-				<option value="{$value.identifier}"{if $rs.etpl_user == $value.identifier} selected{/if}>通知会员模板：{$value.title}</option>
+				<option value="{$value.identifier}"{if $rs.etpl_user == $value.identifier} selected{/if}>{lang通知会员模板：}{$value.title}</option>
 				<!-- /loop -->
 			</select>
 		</div>
@@ -186,28 +212,28 @@
 	<div id="email_set_comment_status"{if !$rs.comment_status} style="display:none"{/if}>
 	<div class="table">
 		<div class="title">
-			评论通知管理员邮件模板：
-			<span class="note">仅限启用：评论 后有效</span>
+			{lang评论通知管理员邮件模板：}
+			<span class="note">{lang仅限启用：评论后有效}</span>
 		</div>
 		<div class="content">
 			<select name="etpl_comment_admin">
-				<option value="">不通知管理员</option>
+				<option value="">{lang不通知管理员}</option>
 				<!-- loop from=$emailtpl key=$key value=$value -->
-				<option value="{$value.identifier}"{if $rs.etpl_comment_admin == $value.identifier} selected{/if}>通知管理员模板：{$value.title}</option>
+				<option value="{$value.identifier}"{if $rs.etpl_comment_admin == $value.identifier} selected{/if}>{lang通知管理员模板：}{$value.title}</option>
 				<!-- /loop -->
 			</select>
 		</div>
 	</div>
 	<div class="table">
 		<div class="title">
-			评论通知会员邮件模板：
-			<span class="note">仅限启用：评论且已登录会员有效</span>
+			{lang评论通知会员邮件模板：}
+			<span class="note">{lang仅限启用：评论且已登录会员有效}</span>
 		</div>
 		<div class="content">
 			<select name="etpl_comment_user">
-				<option value="">不通知会员</option>
+				<option value="">{lang不通知会员}</option>
 				<!-- loop from=$emailtpl key=$key value=$value -->
-				<option value="{$value.identifier}"{if $rs.etpl_comment_user == $value.identifier} selected{/if}>通知会员模板：{$value.title}</option>
+				<option value="{$value.identifier}"{if $rs.etpl_comment_user == $value.identifier} selected{/if}>{lang通知会员模板：}{$value.title}</option>
 				<!-- /loop -->
 			</select>
 		</div>
@@ -216,8 +242,8 @@
 
 	<div class="table">
 		<div class="title">
-			默认主题数：
-			<span class="note">设置每页默认的主题数量</span>
+			{lang默认主题数：}
+			<span class="note">{lang设置每页默认的主题数量}</span>
 		</div>
 		<div class="content">
 			<input type="text" id="psize" name="psize" value="{$rs.psize ? $rs.psize : 30}" class="short" />
@@ -226,19 +252,19 @@
 
 	<div class="table">
 		<div class="title">
-			数据排序：
-			<span class="note">设置好默认排序，有利于网站的管理（前后台一致）</span>
+			{lang数据排序：}
+			<span class="note">{lang设置好默认排序，有利于网站的管理（前后台一致）}</span>
 		</div>
 		<div class="content">
 			<input type="text" id="orderby" name="orderby" class="long" value="{$rs.orderby ? $rs.orderby : 'l.sort ASC,l.dateline DESC,l.id DESC'}" />
-			<input type="button" value="清空" class="btn" onclick="$('#orderby').val('')" />
+			<input type="button" value="{lang清空}" class="btn" onclick="$('#orderby').val('')" />
 			
 			<ul class="btnlist">
-				<li><input type="button" value="点击" onclick="phpok_admin_orderby('orderby','l.hits')" /></li>
-				<li><input type="button" value="时间" onclick="phpok_admin_orderby('orderby','l.dateline')" /></li>
-				<li><input type="button" value="回复时间" onclick="phpok_admin_orderby('orderby','l.replydate')" /></li>
+				<li><input type="button" value="{lang点击}" onclick="phpok_admin_orderby('orderby','l.hits')" /></li>
+				<li><input type="button" value="{lang时间}" onclick="phpok_admin_orderby('orderby','l.dateline')" /></li>
+				<li><input type="button" value="{lang回复时间}" onclick="phpok_admin_orderby('orderby','l.replydate')" /></li>
 				<li><input type="button" value="ID" onclick="phpok_admin_orderby('orderby','l.id')" /></li>
-				<li><input type="button" value="人工" onclick="phpok_admin_orderby('orderby','l.sort')" /></li>
+				<li><input type="button" value="{lang人工}" onclick="phpok_admin_orderby('orderby','l.sort')" /></li>
 				<span id="tmp_orderby_btn">
 				</span>
 			</ul>
@@ -257,7 +283,7 @@
 			,success:function(rs){
 				if(rs.status == "ok")
 				{
-					var info = '<option value="0">不关联分类</option>';
+					var info = '<option value="0">{lang不关联分类}</option>';
 					var lst = rs.content;
 					for(var i in lst)
 					{
@@ -271,28 +297,28 @@
 	</script>
 	<div class="table">
 		<div class="title">
-			关联根分类：
-			<span class="note">启用此项后，添加内容时，需要选对相对应的分类，且不能为空</span>
+			{lang关联根分类：}
+			<span class="note">{lang启用此项后，添加内容时，需要选对相对应的分类，且不能为空}</span>
 		</div>
 		<div class="content">
 			<select id="cate" name="cate">
-			<option value="0">不关联分类</option>
+			<option value="0">{lang不关联分类}</option>
 			<!-- loop from=$catelist key=$key value=$value id=catelist_id -->
 			<option value="{$value.id}"{if $value.id == $rs.cate} selected{/if}>{$value.title}</option>
 			<!-- /loop -->
 			</select>
-			<input type="button" value="添加根分类" onclick="cate_add()" />
+			<input type="button" value="{lang添加根分类}" onclick="cate_add(this.value)" />
 		</div>
 	</div>
 </div>
 
 <div class="table">
 	<div class="title">
-		后台权限：
-		<span class="note">权限可选项可登录官网查阅帮助手册，
-			<a href="javascript:$.input.checkbox_all('mylayout');void(0);" class='n'>全选</a>
-			<a href="javascript:$.input.checkbox_none('mylayout');void(0);" class='n'>全不选</a>
-			<a href="javascript:$.input.checkbox_anti('mylayout');void(0);" class='n'>反选</a>
+		{lang后台权限：}
+		<span class="note">{lang权限可选项可登录官网查阅帮助手册，}
+			<a href="javascript:$.input.checkbox_all('mylayout');void(0);" class='n'>{lang全选}</a>
+			<a href="javascript:$.input.checkbox_none('mylayout');void(0);" class='n'>{lang全不选}</a>
+			<a href="javascript:$.input.checkbox_anti('mylayout');void(0);" class='n'>{lang反选}</a>
 		</span>
 	</div>
 	<div class="content">
@@ -307,8 +333,8 @@
 
 <div class="table">
 	<div class="title">
-		前台权限：
-		<span class="note">设置前台用户组可操作的权限</span>
+		{lang前台权限：}
+		<span class="note">{lang设置前台用户组可操作的权限}</span>
 	</div>
 	<div class="content">
 		<div class="list" style="">
@@ -317,17 +343,17 @@
 		<tr id="group_{$value.id}">
 			<td><div style="text-indent:5px;">{$value.space}{$value.title}</div></td>
 			<td width="180px" align="center">
-				<input type="button" value="全选" onclick="$.input.checkbox_all('group_{$value.id}')" />
-				<input type="button" value="全不选" onclick="$.input.checkbox_none('group_{$value.id}')" />
-				<input type="button" value="反选" onclick="$.input.checkbox_anti('group_{$value.id}')" />
+				<input type="button" value="{lang全选}" onclick="$.input.checkbox_all('group_{$value.id}')" />
+				<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none('group_{$value.id}')" />
+				<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti('group_{$value.id}')" />
 			</td>
 			<td>
 				<ul class="layout">
-					<li><label><input type="checkbox" name="p_read_{$value.id}"{if $value.popedom.read} checked{/if} /> 阅读</label></li>
-					<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><label><input type="checkbox" name="p_post_{$value.id}"{if $value.popedom.post} checked{/if} /> 发布</label></li>
-					<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><label><input type="checkbox" name="p_post1_{$value.id}"{if $value.popedom.post1} checked{/if} /> 发布免审核</label></li>
-					<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><label><input type="checkbox" name="p_reply_{$value.id}"{if $value.popedom.reply} checked{/if} /> 回复</label></li>
-					<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><label><input type="checkbox" name="p_reply1_{$value.id}"{if $value.popedom.reply1} checked{/if} /> 回复免审核</label></li>
+					<li><label><input type="checkbox" name="p_read_{$value.id}"{if $value.popedom.read} checked{/if} /> {lang阅读}</label></li>
+					<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><label><input type="checkbox" name="p_post_{$value.id}"{if $value.popedom.post} checked{/if} /> {lang发布}</label></li>
+					<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><label><input type="checkbox" name="p_post1_{$value.id}"{if $value.popedom.post1} checked{/if} /> {lang发布免审核}</label></li>
+					<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><label><input type="checkbox" name="p_reply_{$value.id}"{if $value.popedom.reply} checked{/if} /> {lang回复}</label></li>
+					<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><label><input type="checkbox" name="p_reply1_{$value.id}"{if $value.popedom.reply1} checked{/if} /> {lang回复免审核}</label></li>
 				</ul>
 			</td>
 		</tr>
@@ -342,53 +368,53 @@
 
 <div class="table">
 	<div class="title">
-		封面模板：
-		<span class="note">设定此模板将启用封面功能，不启用留空，不绑定模块时，此项不能为空</span>
+		{lang封面模板：}
+		<span class="note">{lang设定此模板将启用封面功能，不启用留空，不绑定模块时，此项不能为空}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="tpl_index" name="tpl_index" class="default" value="{$rs.tpl_index}" />
-		<input type="button" value="选择" onclick="phpok_tpl_open('tpl_index')" class="btn" />
-		<input type="button" value="清空" onclick="$('#tpl_index').val('');" class="btn" />
+		<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_index')" class="btn" />
+		<input type="button" value="{lang清空}" onclick="$('#tpl_index').val('');" class="btn" />
 	</div>
 </div>
 <div class="table">
 	<div class="title">
-		列表模板：
-		<span class="note">仅限于绑定模块后才能生效</span>
+		{lang列表模板：}
+		<span class="note">{lang仅限于绑定模块后才能生效}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="tpl_list" name="tpl_list" class="default" value="{$rs.tpl_list}" />
-		<input type="button" value="选择" onclick="phpok_tpl_open('tpl_list')" class="btn" />
-		<input type="button" value="清空" onclick="$('#tpl_list').val('');" class="btn" />
+		<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_list')" class="btn" />
+		<input type="button" value="{lang清空}" onclick="$('#tpl_list').val('');" class="btn" />
 	</div>
 </div>
 <div class="table">
 	<div class="title">
-		内容模板：
-		<span class="note">仅限于绑定模块后才能生效</span>
+		{lang内容模板：}
+		<span class="note">{lang仅限于绑定模块后才能生效}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="tpl_content" name="tpl_content" class="default" value="{$rs.tpl_content}" />
-		<input type="button" value="选择" onclick="phpok_tpl_open('tpl_content')" class="btn" />
-		<input type="button" value="清空" onclick="$('#tpl_content').val('');" class="btn" />
+		<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_content')" class="btn" />
+		<input type="button" value="{lang清空}" onclick="$('#tpl_content').val('');" class="btn" />
 	</div>
 </div>
 <div class="table">
 	<div class="title">
-		发布模板：
-		<span class="note">仅限于绑定模块且启用发布功能后有效</span>
+		{lang发布模板：}
+		<span class="note">{lang仅限于绑定模块且启用发布功能后有效}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="post_tpl" name="post_tpl" class="default" value="{$rs.post_tpl}" />
-		<input type="button" value="选择" onclick="phpok_tpl_open('post_tpl')" class="btn" />
-		<input type="button" value="清空" onclick="$('#post_tpl').val('');" class="btn" />
+		<input type="button" value="{lang选择}" onclick="phpok_tpl_open('post_tpl')" class="btn" />
+		<input type="button" value="{lang清空}" onclick="$('#post_tpl').val('');" class="btn" />
 	</div>
 </div>
 
 <div class="table">
 	<div class="title">
-		图标：
-		<span class="note">请选择一个直观的图标，大小为：48x48，建议使用PNG格式</span>
+		{lang图标：}
+		<span class="note">{lang请选择一个直观的图标，大小为：48x48，建议使用PNG格式}</span>
 	</div>
 	<div class="content">
 		<ul class="layout">
@@ -409,8 +435,8 @@
 
 <div class="table">
 	<div class="title">
-		后台备注说明：
-		<span class="note">将显示在内容管理布局区那里，用于提示编辑人员注意事项</span>
+		{lang后台备注说明：}
+		<span class="note">{lang将显示在内容管理布局区那里，用于提示编辑人员注意事项}</span>
 	</div>
 	<div class="content">{$note_content}</div>
 </div>
@@ -419,8 +445,8 @@
 <div id="seo_setting" class="hide">
 <div class="table">
 	<div class="title">
-		SEO标题：
-		<span class="note">设置此标题后，网站Title将会替代默认定义的，不能超过85个汉字</span>
+		{langSEO标题：}
+		<span class="note">{lang设置此标题后，网站Title将会替代默认定义的，不能超过85个汉字}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="seo_title" name="seo_title" class="long" value="{$rs.seo_title}" />
@@ -428,8 +454,8 @@
 </div>
 <div class="table">
 	<div class="title">
-		SEO关键字：
-		<span class="note">多个关键字用英文逗号或英文竖线隔开</span>
+		{langSEO关键字：}
+		<span class="note">{lang多个关键字用英文逗号或英文竖线隔开}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="seo_keywords" name="seo_keywords" class="long" value="{$rs.seo_keywords}" />
@@ -437,8 +463,8 @@
 </div>
 <div class="table">
 	<div class="title">
-		SEO描述：
-		<span class="note">简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字</span>
+		{langSEO描述：}
+		<span class="note">{lang简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字}</span>
 	</div>
 	<div class="content">
 		<textarea name="seo_desc" id="seo_desc" class="long">{$rs.seo_desc}</textarea>
@@ -446,8 +472,8 @@
 </div>
 <div class="table">
 	<div class="title">
-		Tag标签：
-		<span class="note">多个标签用英文空格隔开，最多不能超过10个词</span>
+		{langTag标签：}
+		<span class="note">{lang多个标签用英文空格隔开，最多不能超过10个词}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="tag" name="tag" class="long" value="{$rs.tag}" />
@@ -458,7 +484,7 @@
 <div class="table">
 	<div class="content">
 		<br />
-		<input type="submit" value="提 交" class="submit" />
+		<input type="submit" value="{lang提 交}" class="submit2" />
 		<br />
 	</div>
 </div>
@@ -467,9 +493,6 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-	//检测是否有自动保存的表单
-	//autofill("{$ext_module}");
-	//通过Ajax加载自定义表单选项
 	var mid = $("#module").val();
 	show_module(mid);
 });

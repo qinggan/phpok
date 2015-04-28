@@ -19,5 +19,5 @@ $config["autoload_func"] = "";
 
 $config["is_vcode"] = true;
 
-//保留单词，配置此项后，这些id=参数将直接走app文件而不走数据库进行判断
-//仅限APP_ID为www时有效
+$config["gzip"] = true;//启用压缩
+

@@ -15,7 +15,6 @@ class form_model_base extends phpok_model
 	{
 		parent::model();
 		$this->info = $this->lib('xml')->read($this->dir_phpok.'system.xml');
-		//$this->info = xml_to_array(file_get_contents($this->dir_phpok.'system.xml'));
 	}
 
 	public function __destruct()
@@ -50,6 +49,14 @@ class form_model_base extends phpok_model
 			return $this->info['field'];
 		}
 		return false;
+	}
+
+	//读取表单下的子项目信息
+	public function project_sublist($pid)
+	{
+		$sql = "SELECT id as val,title FROM ".$this->db->prefix."project WHERE parent_id=".intval($pid)." AND status=1 ";
+		$sql.= "ORDER BY taxis ASC,id DESC";
+		return $this->db->get_all($sql);
 	}
 }
 ?>

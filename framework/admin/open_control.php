@@ -10,67 +10,164 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class open_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
+		$keytype_list = array(
+			'id'=>"ID",
+			'title'=>P_Lang('名称'),
+			'name'=>P_Lang('文件名'),
+			'ext'=>P_Lang('附件扩展名'),
+			'start_date'=>P_Lang('开始时间'),
+			'stop_date'=>P_Lang('结束时间')
+		);
+		$this->assign('keytype_list',$keytype_list);
 	}
+
+	//附件资源选择器
+	public function upload_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			error(P_Lang('未指定表单ID'));
+		}
+		$this->assign('id',$id);
+		$multiple = $this->get('multiple','int');
+		$this->assign('multiple',$multiple);
+		$pageurl = $this->url('open','upload','id='.$id.'&multiple='.$multiple);
+		$this->assign('formurl',$pageurl);
+		$catelist = $this->model('res')->cate_all();
+		$this->assign("catelist",$catelist);
+		$pageid = $this->get($this->config["pageid"],"int");
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->config['psize'];
+		$offset = ($pageid - 1) * $psize;
+		$condition = "1=1";
+		$selected = $this->get('selected');
+		if($selected){
+			$pageurl .= '&selected='.rawurlencode($selected);
+			$olist = explode(",",$selected);
+			foreach($olist as $key=>$value){
+				if(!$value || !intval($value)){
+					unset($olist[$key]);
+				}
+			}
+			$condition .= " AND id NOT IN(".implode(",",$olist).")";
+		}
+		$keywords = $this->get("keywords");
+		$keytype = $this->get('keytype');
+		if(!$keytype){
+			$keytype = 'title';
+		}
+		if($keywords){
+			if($keytype == 'title' || $keytype == 'name'){
+				$condition .= " AND ".$keytype." LIKE '%".$keywords."%' ";
+			}elseif($keytype == 'id'){
+				$condition .= " AND id='".$keywords."' ";
+			}elseif($keytype == 'ext'){
+				$keywords = str_replace(",",' ',$keywords);
+				$extlist = explode(" ",$keywords);
+				$extlist = array_unique($extlist);
+				$ext_string = implode("','",$extlist);
+			}elseif($keytype == 'start_date'){
+				$condition .= " AND addtime>=".strtotime($keywords)." ";
+			}elseif($keytype == 'stop_date'){
+				$condition .= " AND addtime<=".strtotime($keywords)." ";
+			}
+			$pageurl .= "&keywords=".rawurlencode($keywords).'&keytype='.$keytype;
+			$this->assign("keywords",$keywords);
+		}
+		$this->assign("keytype",$keytype);
+		
+		$cate_id = $this->get("cate_id","int");
+		if($cate_id){
+			$condition .= " AND cate_id='".$cate_id."' ";
+			$pageurl .= "&cate_id=".$cate_id;
+			$this->assign("cate_id",$cate_id);
+		}
+		$rslist = $this->model('res')->get_list($condition,$offset,$psize);
+		$this->assign("rslist",$rslist);
+		$total = $this->model('res')->get_count($condition);
+		$this->assign("total",$total);
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=3&add=第 (num) 页，共 (total_page) 页&always=1");
+		$this->assign("pagelist",$pagelist);
+		$this->assign("pageurl",$pageurl);
+		$this->view('open_upload');
+	}
+	
 
 	// 附件选择器
 	function input_f()
 	{
 		$id = $this->get("id");
-		if(!$id) $id = "content";
-		# 附件分类
+		if(!$id){
+			$id = "content";
+		}
+		$this->assign('id',$id);
 		$catelist = $this->model('res')->cate_all();
+		if($catelist){
+			foreach($catelist as $key=>$value){
+				$types = explode(",",$value['filetypes']);
+				$tmp = array();
+				foreach($types as $k=>$v){
+					$tmp[] = "*.".$v;
+				}
+				$value['typeinfos'] = implode(" , ",$tmp);
+				$catelist[$key] = $value;
+			}
+		}
 		$this->assign("catelist",$catelist);
-		# 取得附件类型
-		$config = $this->model('res')->type_list("type");
-		$this->assign("attr_list",$config);
-		$pageurl = admin_url("open","input") ."&id=".$id;
-		$type = $this->get("type");
-		$type_s = $type;
-		if($type == "image" || $type == "picture")
-		{
-			$type_s = "picture";
-			$ext = strtolower($config["picture"]["ext"]);
-			$tplfile = "open_image";
+		$pageurl = $this->url('open','input','id='.$id);
+		$pageid = $this->get($this->config["pageid"],"int");
+		if(!$pageid){
+			$pageid = 1;
 		}
-		elseif($type == "video")
-		{
-			$ext = strtolower($config["video"]["ext"]);
-			$tplfile = "open_input";
+		$psize = $this->config['psize'];
+		$offset = ($pageid - 1) * $psize;
+		$condition = "1=1";
+		$keywords = $this->get("keywords");
+		$keytype = $this->get('keytype');
+		if(!$keytype){
+			$keytype = 'title';
 		}
-		else
-		{
-			if($config[$type])
-			{
-				$ext = $config[$type]["ext"];
+		if($keywords){
+			if($keytype == 'title' || $keytype == 'name'){
+				$condition .= " AND ".$keytype." LIKE '%".$keywords."%' ";
+			}elseif($keytype == 'id'){
+				$condition .= " AND id='".$keywords."' ";
+			}elseif($keytype == 'ext'){
+				$keywords = str_replace(",",' ',$keywords);
+				$extlist = explode(" ",$keywords);
+				$extlist = array_unique($extlist);
+				$ext_string = implode("','",$extlist);
+			}elseif($keytype == 'start_date'){
+				$condition .= " AND addtime>=".strtotime($keywords)." ";
+			}elseif($keytype == 'stop_date'){
+				$condition .= " AND addtime<=".strtotime($keywords)." ";
 			}
-			else
-			{
-				$ext = $this->get("ext");
-			}
-			$tplfile = "open_input";
+			$pageurl .= "&keywords=".rawurlencode($keywords).'&keytype='.$keytype;
+			$this->assign("keywords",$keywords);
 		}
-		$tpl = $this->get("tpl");
-		if($tpl)
-		{
-			$tplfile = $tpl;
-			$pageurl .= "&tpl=".rawurlencode($tpl);
-			$this->assign('tplfile',$tpl);
+		$this->assign("keytype",$keytype);
+		
+		$cate_id = $this->get("cate_id","int");
+		if($cate_id){
+			$condition .= " AND cate_id='".$cate_id."' ";
+			$pageurl .= "&cate_id=".$cate_id;
+			$this->assign("cate_id",$cate_id);
 		}
-		$is_multiple = $this->get("is_multiple","int");
-		if($is_multiple)
-		{
-			$this->assign("is_multiple",$is_multiple);
-			$pageurl .= "&is_multiple=1";
-		}
-		$pageurl .= "&type=".$type;
-		$this->assign("type",$type);
-		$this->assign("type_s",$type_s);	
-		$this->get_list($pageurl,$ext);
-		$this->assign("id",$id);
-		$this->view($tplfile);
+		$rslist = $this->model('res')->get_list($condition,$offset,$psize);
+		$this->assign("rslist",$rslist);
+		$total = $this->model('res')->get_count($condition);
+		$this->assign("total",$total);
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=3&add=第 (num) 页，共 (total_page) 页&always=1");
+		$this->assign("pagelist",$pagelist);
+		$this->assign("pageurl",$pageurl);
+		$this->lib('form')->cssjs(array('form_type'=>'upload'));
+		$this->addjs('js/webuploader/admin.upload.js');
+		$this->view('open_input');
 	}
 
 	function get_list($pageurl,$ext="")
@@ -85,7 +182,7 @@ class open_control extends phpok_control
 		$keywords = $this->get("keywords");
 		if($keywords)
 		{
-			$condition .= " AND (title LIKE '%".$keywords."%' OR name LIKE '%".$keywords."%') ";
+			$condition .= " AND (title LIKE '%".$keywords."%' OR name LIKE '%".$keywords."%' OR id LIKE '%".$keywords."%') ";
 			$pageurl .= "&keywords=".rawurlencode($keywords);
 			$this->assign("keywords",$keywords);
 		}

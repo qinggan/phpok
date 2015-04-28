@@ -403,7 +403,7 @@ class _init_phpok
 	//装载插件
 	public function init_plugin()
 	{
-		$rslist = $this->model('plugin')->get_all();
+		$rslist = $this->model('plugin')->get_all(1);
 		if(!$rslist)
 		{
 			return false;
@@ -540,28 +540,25 @@ class _init_phpok
 	//读取网站参数配置
 	private function init_config()
 	{
-		//根目录下的config，一般该文件是来用配置全局网站需要用到的信息
-		$file = $this->dir_root."config.php";
-		if(is_file($file)) include($file);
-		//全站全局参数
-		$file = $this->dir_phpok."config/config.global.php";
-		if(is_file($file)) include($file);
-		//配置文档下的config，这里就可以针对各个应用进行配置了
-		$file = $this->dir_phpok."config/config_".$this->app_id.".php";
-		if(is_file($file)) include($file);
-		//判断是否有使用Debug
+		if(is_file($this->dir_phpok."config/config.global.php")){
+			include($this->dir_phpok."config/config.global.php");
+		}
+		if(is_file($this->dir_phpok."config/config_".$this->app_id.".php")){
+			include($this->dir_phpok."config/config_".$this->app_id.".php");
+		}
+		if(is_file($this->dir_root."config.php")){
+			include($this->dir_root."config.php");
+		}
 		$config["debug"] ? error_reporting(E_ALL ^ E_NOTICE) : error_reporting(0);
-		//判断是否使用gzip功能
-		if(ini_get('zlib.output_compression')){
+		/*if(ini_get('zlib.output_compression')){
 			ob_start();
 		}else{
 			($config["gzip"] && function_exists("ob_gzhandler")) ? ob_start("ob_gzhandler") : ob_start();
-		}
-		//调节时差
+		}*/
+		ob_start();
 		if($config["timezone"] && function_exists("date_default_timezone_set")){
 			date_default_timezone_set($config["timezone"]);
 		}
-		//调节时间误差，支持到秒
 		$this->time = time();
 		if($config["timetuning"]){
 			$this->time = $this->time + $config["timetuning"];

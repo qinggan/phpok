@@ -19,22 +19,17 @@
 			window.location.href = url;
 		},
 		ajax:function(url,obj,async){
-			if(!url)
-			{
+			if(!url){
 				return false;
 			}
-			url = this.nocache(url);
-			if(!obj || obj == 'undefined')
-			{
+			if(!obj || obj == 'undefined'){
 				return $.ajax({'url':url,cache:false,async:false,dataType:"html"}).responseText;
-			}
-			else
-			{
-				var is_async = (!async || async == 'undefined') ? false : true;
+			}else{
+				async = (!async || async == 'undefined') ? false : true;
 				$.ajax({
 					'url':url,
 					'cache':false,
-					'async':is_async,
+					'async':async,
 					'dataType':'html',
 					'success':function(rs){
 						(obj)(rs);
@@ -43,23 +38,18 @@
 			}
 		},
 		json:function(url,obj,async){
-			if(!url)
-			{
+			if(!url){
 				return false;
 			}
-			url = this.nocache(url);
-			if(!obj || obj == 'undefined')
-			{
+			if(!obj || obj == 'undefined'){
 				var info = $.ajax({'url':url,cache:false,async:false,dataType:"html"}).responseText;
 				return $.parseJSON(info);
-			}
-			else
-			{
-				var is_async = (!async || async == 'undefined') ? false : true;
+			}else{
+				async = (!async || async == 'undefined') ? false : true;
 				$.ajax({
 					'url':url,
 					'cache':false,
-					'async':is_async,
+					'async':async,
 					'dataType':'json',
 					'success':function(rs){
 						(obj)(rs);
@@ -69,12 +59,9 @@
 		},
 		nocache: function(url){
 			url = url.replace(/&amp;/g,'&');
-			if(url.indexOf('_noCache') != -1)
-			{
+			if(url.indexOf('_noCache') != -1){
 				url = url.replace(/\_noCache=[0-9\.]+/,'_noCache='+Math.random());
-			}
-			else
-			{
+			}else{
 				url += url.indexOf('?') != -1 ? '&' : '?';
 				url += '_noCache='+Math.random();
 			}

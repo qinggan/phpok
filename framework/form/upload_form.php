@@ -23,10 +23,19 @@ class upload_form extends _init_auto
 
 	public function phpok_config()
 	{
-		$type_list = $this->model('res')->type_list();
-		$cate_list = $this->model('res')->cate_all();
-		$this->assign("cate_list",$cate_list);
-		$this->assign("type_list",$type_list);
+		$catelist = $this->model('rescate')->get_all();
+		if($catelist){
+			foreach($catelist as $key=>$value){
+				$types = explode(",",$value['filetypes']);
+				$tmp = array();
+				foreach($types as $k=>$v){
+					$tmp[] = "*.".$v;
+				}
+				$value['filetypes'] = implode(" , ",$tmp);
+				$catelist[$key] = $value;
+			}
+		}
+		$this->assign("catelist",$catelist);
 		$html = $this->dir_phpok."form/html/upload_admin.html";
 		$this->view($html,"abs-file",false);
 	}
@@ -128,6 +137,7 @@ class upload_form extends _init_auto
 
 	private function _format_admin($rs)
 	{
+		$this->addjs('js/webuploader/admin.upload.js');
 		if($rs["content"]){
 			if(is_string($rs["content"])){
 				$res = $this->model('res')->get_list_from_id($rs['content']);
@@ -148,25 +158,24 @@ class upload_form extends _init_auto
 		}else{
 			$rs["content_list"] = array(); //附件列表
 		}
-		$type_list = $this->model('res')->type_list();
-		$type_id = $rs["upload_type"];
-		if($rs["upload_type"] && $type_list[$rs["upload_type"]]){
-			$rs["upload_type"] = $type_list[$rs["upload_type"]];
-		}else{
-			$str_array = array();
-			foreach($type_list AS $key=>$value){
-				$str_array[] = $value["ext"];
+		//上传类型
+		$upload_type = array('title'=>'图片','ext'=>'jpg,gif,png','maxsize'=>'512000','swfupload'=>'*.jpg,*.png,*.gif');
+		$ext = $rs['ext'] ? unserialize($rs['ext']) : array();
+		if($ext['cate_id']){
+			$cateinfo = $this->model('rescate')->get_one($ext['cate_id']);
+			if($cateinfo){
+				$upload_type = array('title'=>($cateinfo['typeinfo'] ? $cateinfo['typeinfo'] : $cateinfo['title']));
+				$upload_type['ext'] = $cateinfo['filetypes'] ? $cateinfo['filetypes'] : 'jpg,png,gif';
+				$upload_type['maxsize'] = $cateinfo['filemax'] * 1024;
+				$upload_type['id'] = $ext['cate_id'];
+				$tmp = array();
+				foreach(explode(",",$upload_type['ext']) as $key=>$value){
+					$tmp[] = "*.".$value;
+				}
+				$upload_type['swfupload'] = implode(", ",$tmp);
 			}
-			$str = implode(',',$str_array);
-			$swfupload = array();
-			$str_array = explode(",",$str);
-			foreach($str_array AS $key=>$value){
-				$swfupload[] = "*.".$value;
-			}
-			$swfupload = implode(";",$swfupload);
-			$rs["upload_type"] = array("id"=>"file","title"=>"附件","ext"=>$str,"swfupload"=>$swfuploads);
 		}
-		$rs["upload_type"]["id"] = $type_id;
+		$rs['upload_type'] = $upload_type;
 		$this->assign("_rs",$rs);
 		return $this->fetch($this->dir_phpok.'form/html/upload_admin_tpl.html','abs-file',false);
 	}

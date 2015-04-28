@@ -54,15 +54,15 @@ $config['autoload_js']  = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.m
 
 
 # SESSION存储方式
-$config["engine"]["session"]["file"] = "file";
+$config["engine"]["session"]["file"] = "default";
 $config["engine"]["session"]["id"] = "PHPSESSION";
 $config["engine"]["session"]["timeout"] = 3600;
-$config["engine"]["session"]["path"] = ROOT."data/session/";
+//$config["engine"]["session"]["path"] = ROOT."data/session/";
 //当SESSION存储方式为数据库时，执行此配置
-$config["engine"]["session"]["db_user"] = $config["db"]["user"];
-$config["engine"]["session"]["db_pass"] = $config["db"]["pass"];
-$config["engine"]["session"]["db_data"] = $config["db"]["data"];
-$config["engine"]["session"]["db_table"] = $config["db"]["prefix"]."session";
+//$config["engine"]["session"]["db_user"] = 'root';
+//$config["engine"]["session"]["db_pass"] = '';
+//$config["engine"]["session"]["db_data"] = 'phpok';
+//$config["engine"]["session"]["db_table"] = "qinggan_session";
 
 //Nginx对SERVER_NAME支持不好，如果您使用Nginx，且使用多站点，建议您改成：HTTP_HOST
 $config['get_domain_method'] = 'SERVER_NAME';

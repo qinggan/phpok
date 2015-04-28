@@ -65,19 +65,16 @@ class project_model extends project_model_base
 	//删除项目操作
 	public function delete_project($id)
 	{
-		if(!$id || !intval($id))
-		{
+		if(!$id || !intval($id)){
 			return false;
 		}
 		$id = intval($id);
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".$id;
 		$rs = $this->db->get_one($sql);
-		if(!$rs)
-		{
+		if(!$rs){
 			return false;
 		}
-		if($rs['module'])
-		{
+		if($rs['module']){
 			$sql = "DELETE FROM ".$this->db->prefix."list_".$rs['module']." WHERE project_id=".$id;
 			$this->db->query($sql);
 		}
@@ -85,16 +82,23 @@ class project_model extends project_model_base
 		$this->db->query($sql);
 		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='project-".$id."'";
 		$extlist = $this->db->get_all($sql);
-		if($extlist)
-		{
-			foreach($extlist AS $key=>$value)
-			{
+		if($extlist){
+			foreach($extlist AS $key=>$value){
 				$this->db->query("DELETE FROM ".$this->db->prefix."extc WHERE id='".$value['id']."'");
 			}
 			$this->db->query("DELETE FROM ".$this->db->prefix."ext WHERE module='project-".$id."'");
 		}
 		$sql = "DELETE FROM ".$this->db->prefix."project WHERE id='".$id."'";
 		$this->db->query($sql);
+		//删除后台权限配置
+		$sql = "SELECT id FROM ".$this->db->prefix."popedom WHERE pid='".$id."'";
+		$tmplist = $this->db->get_all($sql);
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$this->db->query("DELETE FROM ".$this->db->prefix."adm_popedom WHERE pid='".$value['id']."'");
+			}
+			$this->db->query("DELETE FROM ".$this->db->prefix."popedom WHERE pid='".$id."'");
+		}
 		return true;
 	}
 }

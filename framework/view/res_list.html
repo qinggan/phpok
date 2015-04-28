@@ -1,8 +1,38 @@
-<!-- include tpl=head title=附件管理 -->
-<script type="text/javascript" src="{echo add_js('res.js')}"></script>
+<!-- include tpl=head -->
+<script type="text/javascript">
+function pl_update()
+{
+	var id = $.input.checkbox_join("mylist");
+	if(!id || id == "undefined"){
+		$.dialog.alert("未指定要操作的附件");
+		return true;
+	}
+	var url = get_url("res","update_pl") + "&id="+$.str.encode(id);
+	top.$.win('附件批量更新中，请不要关掉这个页面',url,{'is_max':true,'win_max':false,'width':600,'height':400});
+}
+function pl_delete()
+{
+	var id = $.input.checkbox_join("mylist");
+	if(!id || id == "undefined"){
+		$.dialog.alert("未指定要操作的附件");
+		return false;
+	}
+	$.dialog.confirm("确定要删除选中的复件吗？删除后是不可恢复的",function(){
+		var url = get_url("res","delete_pl") + "&id="+$.str.encode(id);
+		$.phpok.json(url,function(rs){
+			if(rs.status == 'ok'){
+				$.dialog.alert('{lang批量删除附件操作成功}',function(){
+					$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+			}
+		})
+	});
+}
+</script>
 <script type="text/javascript" src="js/laydate/laydate.js"></script>
 <div class="tips">
-	<!-- include tpl=res_btn -->
 	您当前的位置：<a href="{echo admin_url('res')}" title="资源管理">资源管理</a> &raquo; <a href="{echo admin_url('res','pl')}" title="批处理">批处理</a>
 </div>
 <div class="tips" id="adv_search">

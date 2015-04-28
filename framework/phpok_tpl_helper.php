@@ -8,15 +8,12 @@
 	Update  : 2012-11-07 20:27
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-
-
-//该函数可实现数据自定义调用
-//id，即标识串，在后台数据调用中心设置
-//ext，扩展属性，可替换默认的扩展属性，支持数组及字符串，字符串格式为：cateid=1&project=test，以&分格隔
-//notin，即不包含的ID，适用于读文章列表时要排除的ID
 function phpok($id,$ext="")
 {
-	return $GLOBALS['app']->call->phpok($id,$ext);
+	if($GLOBALS['app']->call){
+		return $GLOBALS['app']->call->phpok($id,$ext);
+	}
+	return true;
 }
 
 function token($data)
@@ -36,36 +33,54 @@ function phpok_load($type,$ext="")
 //home=首页&prev=上一页&next=下一页&last=尾页&half=5&opt=1&add={total}/{psize}
 function phpok_page($url,$total,$num=0,$psize=20,$param="")
 {
-	if(!$url || !$total) return false;
-	if($param)
-	{
+	if(!$url || !$total){
+		return false;
+	}
+	if($param){
 		parse_str($param,$list);
-		if(!$list) $list = array();
-		foreach($list AS $key=>$value)
-		{
-			if(substr($value,0,1) == ';' && substr($value,-1) == ';') $value = "&".substr($value,1);
-			if($key == 'home' && $value) $GLOBALS['app']->lib('page')->home_str($value);
-			if($key == 'prev' && $value) $GLOBALS['app']->lib('page')->prev_str($value);
-			if($key == 'next' && $value) $GLOBALS['app']->lib('page')->next_str($value);
-			if($key == 'last' && $value) $GLOBALS['app']->lib('page')->last_str($value);
-			if($key == 'half' && $value !='') $GLOBALS['app']->lib('page')->half($value);
-			if($key == 'opt' && $value) $GLOBALS['app']->lib('page')->opt_str($value);
-			if($key == 'add' && $value) $GLOBALS['app']->lib('page')->add_up($value);
-			if($key == 'always' && $value) $GLOBALS['app']->lib('page')->always($value);
+		if(!$list){
+			$list = array();
+		}
+		foreach($list AS $key=>$value){
+			if(substr($value,0,1) == ';' && substr($value,-1) == ';'){
+				$value = "&".substr($value,1);
+			}
+			if($key == 'home' && $value){
+				$GLOBALS['app']->lib('page')->home_str($value);
+			}
+			if($key == 'prev' && $value){
+				$GLOBALS['app']->lib('page')->prev_str($value);
+			}
+			if($key == 'next' && $value){
+				$GLOBALS['app']->lib('page')->next_str($value);
+			}
+			if($key == 'last' && $value){
+				$GLOBALS['app']->lib('page')->last_str($value);
+			}
+			if($key == 'half' && $value !=''){
+				$GLOBALS['app']->lib('page')->half($value);
+			}
+			if($key == 'opt' && $value){
+				$GLOBALS['app']->lib('page')->opt_str($value);
+			}
+			if($key == 'add' && $value){
+				$GLOBALS['app']->lib('page')->add_up($value);
+			}
+			if($key == 'always' && $value){
+				$GLOBALS['app']->lib('page')->always($value);
+			}
 		}
 	}
-	if($num<1) $num = 1;
-	$pagelist = $GLOBALS['app']->lib('page')->page($url,$total,$num,$psize);
-	return $pagelist;
+	if($num<1){
+		$num = 1;
+	}
+	return $GLOBALS['app']->lib('page')->page($url,$total,$num,$psize);
 }
 
-# 后台调用插件
 function phpok_plugin()
 {
-	//取得全部插件
 	$rslist = $GLOBALS['app']->model('plugin')->get_all(1);
-	if(!$rslist)
-	{
+	if(!$rslist){
 		return false;
 	}
 	$id = $GLOBALS['app']->app_id;
@@ -75,16 +90,16 @@ function phpok_plugin()
 	//装载插件
 	foreach($rslist AS $key=>$value)
 	{
-		if(is_file($GLOBALS['app']->dir_root.'plugins/'.$key.'/'.$id.'.php'))
-		{
-			if($value['param']) $value['param'] = unserialize($value['param']);
-			include_once($GLOBALS['app']->dir_root.'plugins/'.$key.'/'.$id.'.php');
+		if(is_file($GLOBALS['app']->dir_root.'plugins/'.$key.'/'.$id.'.php')){
+			if($value['param']){
+				$value['param'] = unserialize($value['param']);
+			}
+			include($GLOBALS['app']->dir_root.'plugins/'.$key.'/'.$id.'.php');
 			$name = $id.'_'.$key;
 			$cls = new $name();
 			$func_name = $ctrl.'_'.$func;
 			$mlist = get_class_methods($cls);
-			if($mlist && in_array($func_name,$mlist))
-			{
+			if($mlist && in_array($func_name,$mlist)){
 				echo $cls->$func_name($value);
 			}
 		}
@@ -159,44 +174,7 @@ function phpok_reply($id,$psize=10,$orderby="ASC",$vouch=false)
 
 function phpok_ip()
 {
-	$cip = (isset($_SERVER['HTTP_CLIENT_IP']) AND $_SERVER['HTTP_CLIENT_IP'] != "") ? $_SERVER['HTTP_CLIENT_IP'] : FALSE;
-	$rip = (isset($_SERVER['REMOTE_ADDR']) AND $_SERVER['REMOTE_ADDR'] != "") ? $_SERVER['REMOTE_ADDR'] : FALSE;
-	$fip = (isset($_SERVER['HTTP_X_FORWARDED_FOR']) AND $_SERVER['HTTP_X_FORWARDED_FOR'] != "") ? $_SERVER['HTTP_X_FORWARDED_FOR'] : FALSE;
-	$ip = "0.0.0.0";
-	if($cip && $rip)
-	{
-		$ip = $cip;
-	}
-	elseif($rip)
-	{
-		$ip = $rip;
-	}
-	elseif($cip)
-	{
-		$ip = $cip;
-	}
-	elseif($fip)
-	{
-		$ip = $fip;
-	}
-
-	if (strstr($ip, ','))
-	{
-		$x = explode(',', $ip);
-		$ip = end($x);
-	}
-
-	if ( ! preg_match( "/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/", $ip))
-	{
-		$ip = '0.0.0.0';
-	}
-	return $ip;
-}
-
-//网址，驼峰写法
-function phpokUrl($rs)
-{
-	return phpok_url($rs);
+	return $GLOBALS['app']->lib('common')->ip();
 }
 
 //网址，下划线分割字符法

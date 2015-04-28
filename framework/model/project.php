@@ -239,8 +239,7 @@ class project_model_base extends phpok_model
 	//取得子项目信息
 	function project_sonlist($pid=0)
 	{
-		$pid = intval($pid);
-		$sql = "SELECT * FROM ".$ths->db->prefix."project WHERE parent_id=".intval($pid)." AND status=1 ";
+		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE parent_id=".intval($pid)." AND status=1 ";
 		$sql.= "ORDER BY taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql,"id");
 		if(!$rslist) return false;
