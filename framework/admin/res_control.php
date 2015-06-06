@@ -25,10 +25,21 @@ class res_control extends phpok_control
 		if(!$pageid){
 			$pageid = 1;
 		}
-		$psize = $this->config['psize'];
+		$psize = 150;
 		$pageurl = $this->url('res');
 		$offset = ($pageid - 1) * $psize;
 		$catelist = $this->model('res')->cate_all();
+		if($catelist){
+			foreach($catelist as $key=>$value){
+				$types = explode(",",$value['filetypes']);
+				$tmp = array();
+				foreach($types as $k=>$v){
+					$tmp[] = "*.".$v;
+				}
+				$value['typeinfos'] = implode(" , ",$tmp);
+				$catelist[$key] = $value;
+			}
+		}
 		$this->assign("catelist",$catelist);
 		$condition = "1=1";
 		$tmp_c = $this->condition($condition,$pageurl);
@@ -258,6 +269,9 @@ class res_control extends phpok_control
 		if(!$rs){
 			return false;
 		}
+		if($rs['ico'] && substr($rs['ico'],0,7) != 'images/' && is_file($rs['ico'])){
+			$this->lib('file')->rm($this->dir_root.$rs['ico']);
+		}
 		$this->model('res')->ext_delete($id);
 		if($rs['cate_id']){
 			$cate_rs = $this->model('rescate')->get_one($rs['cate_id']);
@@ -331,6 +345,28 @@ class res_control extends phpok_control
 				$this->model('res')->delete($tmp);
 			}
 		}
+		$this->json(true);
+	}
+
+	public function movecate_f()
+	{
+		$id = $this->get('id');
+		$newcate = $this->get('newcate','int');
+		if(!$id){
+			$this->json(P_Lang('未指定附件ID'));
+		}
+		if(!$newcate){
+			$this->json(P_Lang('未指定新的附件分类'));
+		}
+		$list = explode(',',$id);
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				unset($list[$key]);
+			}
+		}
+		$id = implode(",",$list);
+		$this->model('res')->update_cate($id,$newcate);
 		$this->json(true);
 	}
 }

@@ -47,12 +47,10 @@ class db
 		}
 		if($this->config['type'] == 'file')
 		{
-			if(!is_dir($this->config['folder']) || !is_writeable($this->config['folder']))
-			{
+			if(!is_dir($this->config['folder']) || !is_writeable($this->config['folder'])){
 				$this->status = false;
 			}
-			if($this->status)
-			{
+			if($this->status){
 				$this->connect_cache();
 			}
 		}
@@ -246,29 +244,30 @@ class db
 		return $this->cache_count;
 	}
 
+	private function debug($info)
+	{
+		$file = ROOT.'data/db_debug.txt';
+		$handle = fopen($file,'ab');
+		fwrite($handle,$info."\n");
+		fclose($handle);
+	}
+
 	final public function cache_clear($sql='')
 	{
-		if(!$this->status)
-		{
+		if(!$this->status){
 			return false;
 		}
-		if($sql)
-		{
+		if($sql){
 			return $this->_cache_clear($sql);
 		}
 		$this->_time_cache();
 		$this->_count_cache();
-		if($this->config['type'] == 'memcache')
-		{
+		if($this->config['type'] == 'memcache'){
 			$this->cache->flush();
-		}
-		else
-		{
+		}else{
 			$handle = opendir($this->config['folder']);
-			while(false !== ($myfile = readdir($handle)))
-			{
-				if($myfile != "." && $myfile != ".." && is_file($this->config['folder'].$myfile))
-				{
+			while(false !== ($myfile = readdir($handle))){
+				if($myfile != "." && $myfile != ".." && is_file($this->config['folder'].$myfile)){
 					@unlink($this->config['folder'].$myfile);
 				}
 			}
@@ -281,25 +280,20 @@ class db
 	//更新缓存
 	private function _cache_clear($sql)
 	{
-		if(!$this->cache_keylist)
-		{
+		if(!$this->cache_keylist){
 			return true;
 		}
 		$cacheid = $this->cache_id($sql);
 		$tbllist = $this->cache_keylist[$cacheid];
-		if(!$tbllist)
-		{
+		if(!$tbllist){
 			return false;
 		}
-		foreach($this->cache_keylist as $key=>$value)
-		{
-			if(!$value || !is_array($value))
-			{
+		foreach($this->cache_keylist as $key=>$value){
+			if(!$value || !is_array($value)){
 				continue;
 			}
 			$tmp = array_intersect($tbllist,$value);
-			if($tmp && count($tmp)>0)
-			{
+			if($tmp && count($tmp)>0){
 				$this->cache_delete($key);
 			}
 		}

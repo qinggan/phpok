@@ -26,7 +26,7 @@ function download_it(id)
 }
 </script>
 
-<form method="post" id="editopen">
+<form method="post" id="editopen" onsubmit="return false;">
 <input type="hidden" id="id" name="id" value="{$rs.id}" />
 <div class="table">
 	<div class="title">
@@ -100,15 +100,6 @@ $(document).ready(function(){
 		<span class="note">如需对此附件进行说明，可在这里编写</span>
 	</div>
 	<div class="content">{$content}</div>
-</div>
-<div class="table">
-	<div class="content">
-		<input type="submit" value="提 交" class="submit2" />
-		<!-- if $backurl -->
-		&nbsp; &nbsp;
-		<input type="button" value="取消修改，返回" onclick="$.phpok.go('{$backurl}')" class="phpok-btn" />
-		<!-- /if -->
-	</div>
 </div>
 
 </form>

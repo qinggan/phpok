@@ -896,9 +896,18 @@ function license_date()
 //PHPOK日志存储，可用于调试
 function phpok_log($info='')
 {
-	if(!$info) $info = '执行 {phpok}/'.$GLOBALS['app']->app_id.'/'.$GLOBALS['app']->ctrl.'_control.php 方法：'.$GLOBALS['app']->func.'_f';
-	$sql = "INSERT INTO ".$GLOBALS['app']->db->prefix."log(`title`,`addtime`,`app`,`action`,`app_id`) VALUES('".$info."','".$GLOBALS['app']->time."','".$GLOBALS['app']->ctrl."','".$GLOBALS['app']->func."','".$GLOBALS['app']->app_id."')";
-	$GLOBALS['app']->db->query($sql);
+	if(!$info){
+		$info = '执行 {phpok}/'.$GLOBALS['app']->app_id.'/'.$GLOBALS['app']->ctrl.'_control.php 方法：'.$GLOBALS['app']->func.'_f';
+	}
+	$info = trim($info);
+	$date = date("Ymd",$GLOBALS['app']->time);
+	if(!file_exists($GLOBALS['app']->dir_root.'data/log'.$date.'.php')){
+		file_put_contents($GLOBALS['app']->dir_root.'data/log'.$date.'.php',"<?php exit();?>\n");
+	}
+	$handle = fopen($GLOBALS['app']->dir_root.'data/log'.$date.'.php','ab');
+	$info = $info.'|'.date("H:i:s",$GLOBALS['app']->time).'|'.$GLOBALS['app']->ctrl.'|'.$GLOBALS['app']->func.'|'.$GLOBALS['app']->app_id."\n";
+	fwrite($handle,$info);
+	fclose($handle);
 }
 
 //邮箱合法性验证

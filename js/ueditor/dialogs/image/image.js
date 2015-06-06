@@ -360,7 +360,7 @@
                     extensions: acceptExtensions,
                     mimeTypes: 'image/*'
                 },
-                swf: '../../third-party/webuploader/Uploader.swf',
+                swf: '../../../webuploader/uploader.swf',
                 server: actionUrl,
                 fileVal: editor.getOpt('imageFieldName'),
                 duplicate: true,
@@ -750,6 +750,7 @@
             var file, i, status, readyFile = 0, files = this.uploader.getFiles();
             for (i = 0; file = files[i++]; ) {
                 status = file.getStatus();
+                //console.log('状态：'+status);
                 if (status == 'queued' || status == 'uploading' || status == 'progress') readyFile++;
             }
             return readyFile;

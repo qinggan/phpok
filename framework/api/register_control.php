@@ -155,9 +155,6 @@ class register_control extends phpok_control
 		{
 			$this->json(P_Lang('注册失败，数据写入失败，请联系管理员'));
 		}
-		//增加一个记录，减少用户刷新式注册
-		$_SESSION['register_count'] = $_SESSION['register_count'] ? $_SESSION['register_count'] + 1 : 1;
-
 		//更新会员表扩展字段内容
 		$extlist = $this->model('user')->fields_all();
 		$ext = array();

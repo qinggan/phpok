@@ -403,23 +403,27 @@ p{word-wrap:break-word}
 .book .mess .vcode{border: 1px solid #CCCCCC; line-height: 20px; padding:2px;width:130px;text-transform:uppercase;margin-right:1px;margin-top:3px;}
 
 /* 相册图集 */
-.photo_list{ overflow:hidden; margin-bottom:10px;}
-.photo_list li{ width:140px;  padding:0 6px 10px; height:186px; float:left;}
-.photo_list li img{ width:140px; height:160px;}
-.photo_list li p{ line-height:22px; padding:2px; text-align:center;}
+.photolist{ overflow:hidden; margin-bottom:10px;}
+.photolist li{padding:5px; float:left;border:1px solid #ccc;border-radius:5px;margin:5px 9px;box-shadow:1px 1px 5px 0px #ccc;}
+.photolist li img{border-radius:5px 5px 0 0;width:160px;}
+.photolist li p{ line-height:22px; padding:2px; text-align:center;overflow:hidden;height:22px;}
 
-.photo_detail{ overflow:hidden; padding-top:10px;}
-.photo_detail .date-hits {color: #A9A9A9;text-align: center; line-height:24px; border-bottom:1px dashed #ccc; margin:0 5px 30px;}
-.photo_detail h1{ text-align:center; font-size:18px; overflow:hidden; margin-bottom:10px;}
-.photo_detail ul.pictures{list-style:none;text-align:center;margin:0;padding:0;width:760px;}
-.photo_detail ul.pictures li{text-align:center;margin-bottom:15px;}
-.photo_detail ul.pictures li .img{width:760px;text-align:center;overflow:hidden;}
-.photo_detail ul.pictures li .txt{text-align:center;overflow:hidden;padding-top:10px;}
+.photo{ overflow:hidden; padding-top:10px;}
+.photo .date-hits {color: #A9A9A9;text-align: center; line-height:24px; border-bottom:1px dashed #ccc; margin:0 5px 10px;}
+.photo h1{ text-align:center; font-size:18px; overflow:hidden; margin-bottom:10px;}
+.photo ul.pictures{list-style:none;text-align:center;margin:0;padding:0;width:760px;}
+.photo ul.pictures li{text-align:center;margin-bottom:15px;}
+.photo ul.pictures li .img{width:760px;text-align:center;overflow:hidden;}
+.photo ul.pictures li .img img{max-width:760px;border-radius:5px;background:url('../images/loading.gif') center center no-repeat;}
+.photo ul.pictures li .txt{text-align:center;overflow:hidden;padding-top:10px;}
 
-.photo_detail .content{ margin:5px 0 10px 0; line-height:180%;text-align:left;border:1px solid #ccc;padding:5px;font-size:14px;background:#EFEFEF;}
-.photo_detail .prev-next{ border-top:1px solid #ccc; line-height:24px;}
-.photo_detail .prev-next a{ color:#333;}
-.photo_detail .prev-next a:hover{ color:#00C;}
+.photo .content{ margin:5px 0 10px 0; line-height:180%;text-align:left;border:1px solid #ccc;padding:5px;font-size:14px;background:#EFEFEF;}
+.photo .d_txt{ margin-bottom:10px; line-height:22px;font-size:14px;color:#000;}
+.photo .prev-next{ border-top:1px solid #ccc; line-height:24px;}
+.photo .prev-next a{ color:#333;}
+.photo .prev-next a:hover{ color:#00C;}
+.photo .pn{text-align:center;padding:10px;}
+.photo .pn a{font-size:14px;color:red;}
 
 
 /* 下载中心 */
@@ -597,3 +601,20 @@ a.download{background:url('../images/icon_download.png') left center no-repeat;p
 .h_news .plate_main dd a{ background:url("../images/arrow-right.png") left center no-repeat; padding-left:12px; color:#172c45; width:260px;height:26px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis; display:block;float:left;}
 .h_news .plate_main dd a:hover{ color:#1f5aa5; text-decoration:none; line-height:26px;}
 .h_news .plate_main dd span{ float:right;}
+
+
+.box{border:1px solid #ccc;border-radius:5px;margin:5px 0px;box-shadow:1px 1px 3px 0px #ccc;}
+.box .title{font-size:16px;font-weight:bold;height:30px;line-height:30px;border-bottom:1px solid #ccc;margin:0;padding:0;padding:0 10px;background:#efefef;border-radius:5px 5px 0 0;}
+.box .more{float:right;line-height:30px;}
+.box .pn{float:right;line-height:30px;}
+.box .pn .next{float:left;display: block;width: 18px;height: 18px; background: url('../images/next.png') no-repeat;overflow: hidden;margin:6px 6px 0 0;cursor: pointer;}
+.box .pn .prev{float:left;display: block;width: 18px;height: 18px;background: url('../images/prev.png') no-repeat;overflow: hidden;margin:6px 6px 0 0;cursor: pointer;}
+
+.box .en{font-style:italic;font-size:12px;padding-left:10px;}
+
+
+.imglist{ overflow:hidden;margin:0;padding:0;}
+.imglist li{padding:5px 5px 0 5px; float:left;margin:5px 10px;}
+.imglist li img{border-radius:5px;box-shadow:1px 1px 5px 0px #ccc;}
+.imglist li .tit{ line-height:22px; padding:2px; text-align:center;overflow:hidden;height:22px;}
+.imglist:after{clear:both;height:0;line-height:0;content:' ';display:block;visibility:hidden;}

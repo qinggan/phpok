@@ -386,7 +386,7 @@ class list_model_base extends phpok_model
 	function title_list($pid=0)
 	{
 		if(!$pid) return false;
-		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE project_id IN(".$pid.") AND status='1' ORDER BY sort DESC,dateline DESC,id DESC";
+		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE project_id IN(".$pid.") AND status='1' ORDER BY sort ASC,dateline DESC,id DESC";
 		return $this->db->get_all($sql);
 	}
 

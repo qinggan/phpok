@@ -1,7 +1,37 @@
 <!-- include tpl=head -->
 <script type="text/javascript" src="js/laydate/laydate.js"></script>
 <script type="text/javascript">
-//删除附件信息
+function pl_update()
+{
+	var id = $.input.checkbox_join(".checkbox input[type=checkbox]");
+	if(!id || id == "undefined"){
+		$.dialog.alert("{lang未指定要操作的附件}");
+		return true;
+	}
+	var url = get_url("res","update_pl") + "&id="+$.str.encode(id);
+	top.$.win('{lang附件批量更新中，请不要关掉这个页面}',url,{'is_max':true,'win_max':false,'width':600,'height':400});
+}
+function pl_delete()
+{
+	var id = $.input.checkbox_join(".checkbox input[type=checkbox]");
+	if(!id || id == "undefined"){
+		$.dialog.alert("{lang未指定要操作的附件}");
+		return false;
+	}
+	$.dialog.confirm("{lang确定要删除选中的附件吗？删除后是不可恢复的}",function(){
+		var url = get_url("res","delete_pl") + "&id="+$.str.encode(id);
+		$.phpok.json(url,function(rs){
+			if(rs.status == 'ok'){
+				$.dialog.alert('{lang批量删除附件操作成功}',function(){
+					$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+			}
+		})
+	});
+}
+
 function file_delete(id)
 {
 	$.dialog.confirm('{lang确定要删除此附件吗？删除后不能恢复}<br />附件ID：<span class="red">'+id+'</span>',function(){
@@ -19,7 +49,7 @@ function file_delete(id)
 function preview_attr(id)
 {
 	$.dialog.open(get_url('upload','preview','id='+id),{
-		'title':'预览附件信息',
+		'title':'{lang预览附件信息}',
 		'width':'700px',
 		'height':'400px',
 		'lock':true,
@@ -30,7 +60,7 @@ function preview_attr(id)
 function modify(id)
 {
 	$.dialog.open(get_url('res','set','id='+id),{
-		'title':'编辑附件信息',
+		'title':'{lang编辑附件信息}',
 		'width':'700px',
 		'height':'400px',
 		'lock':true,
@@ -38,7 +68,7 @@ function modify(id)
 		'ok':function(){
 			var iframe = this.iframe.contentWindow;
 			if (!iframe.document.body) {
-				alert('iframe还没加载完毕呢');
+				alert('{langiframe还没加载完毕呢}');
 				return false;
 			};
 			iframe.save();
@@ -58,18 +88,18 @@ function add_file()
 		'ok':function(){
 			var iframe = this.iframe.contentWindow;
 			if (!iframe.document.body) {
-				alert('iframe还没加载完毕呢');
+				alert('{langiframe还没加载完毕呢}');
 				return false;
 			};
 			iframe.save();
 			return false;
 		},
-		'okVal':'执行附件上传',
-		'cancelVal':'取消上传并关闭',
+		'okVal':'{lang执行附件上传}',
+		'cancelVal':'{lang取消上传并关闭}',
 		'cancel':function(){
 			var iframe = this.iframe.contentWindow;
 			if (!iframe.document.body) {
-				alert('iframe还没加载完毕呢');
+				alert('{langiframe还没加载完毕呢}');
 				return false;
 			};
 			iframe.cancel();
@@ -79,33 +109,72 @@ function add_file()
 }
 function update_pl_pictures()
 {
-	var qc = confirm('确定要全部更新图片吗？执行此操作占用时间很长，程序会新开桌面，请不要关闭这个页面');
-	if(qc == '0')
-	{
+	$.dialog.confirm('{lang确定要全部更新图片吗？执行此操作占用时间很长，程序会新开桌面，请不要关闭这个页面}',function(){
+		var url = get_url("res","update_pl") + "&id=all";
+		top.$.win('{lang附件批量更新中}',url,{'is_max':true,'win_max':false,'width':600,'height':400});
+	});
+}
+function action_search()
+{
+	if($("#adv_search").is(":hidden")){
+		$("#adv_search").show();
+	}else{
+		$("#adv_search").hide();
+	}
+}
+function move_cate()
+{
+	var id = $.input.checkbox_join(".checkbox input[type=checkbox]");
+	if(!id || id == "undefined"){
+		$.dialog.alert("{lang未指定要操作的附件}");
 		return false;
 	}
-	var url = get_url("res","update_pl") + "&id=all";
-	top.$.win('附件批量更新中',url,{'is_max':true,'win_max':false,'width':600,'height':400});
+	$.dialog({
+		'title':'{lang移动分类，请选择目标移动分类}',
+		'content':document.getElementById('move_cate_html'),
+		'lock':true,
+		'width':'500px',
+		'height':'100px',
+		'cancel':function(){},
+		'cancelVal':'取消移动',
+		'okVal':'执行',
+		'ok':function(){
+			var newcate = $("input[name=newcate]:checked").val();
+			var url = "{url ctrl=res func=movecate/}&id="+$.str.encode(id)+"&newcate="+newcate;
+			$.phpok.json(url,function(){
+				$.input.checkbox_none('.checkbox input[type=checkbox]');
+				return $.dialog.alert('分类移动成功');
+			})
+		}
+	});
 }
 </script>
 <div class="tips">
-	<!-- if $popedom.pl -->
-	<div class="action"><a href="{url ctrl=res func=pl/}">批处理</a></div>
-	<div class="action"><a href="javascript:update_pl_pictures();void(0);">图片全部更新</a></div>
-	<!-- /if -->
-	<div class="action"><a href="javascript:add_file();void(0)">添加资源</a></div>
+	<div class="action"><a href="javascript:update_pl_pictures();void(0);">{lang图片全部更新}</a></div>
+	<div class="action"><a href="javascript:add_file();void(0)">{lang添加资源}</a></div>
+	<div class="action"><a href="javascript:action_search();void(0);">{lang搜索}</a></div>
 	{lang您当前的位置：}{lang资源管理} &raquo; {lang列表}
 	<div class="clear"></div>
 </div>
-<div class="tips" id="adv_search">
+<div id="move_cate_html" class="hide">
+<table>
+<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+<tr>
+	<td><input type="radio" name="newcate" id="newcate_{$value.id}" value="{$value.id}"{if $tmpid.num == 1} checked{/if} /></td>
+	<td><label for="newcate_{$value.id}">{$value.title}<!-- if $value.typeinfos --> <span class="gray i">支持类型：{$value.typeinfos}</span><!-- /if --></label></td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<div class="tips" id="adv_search" style="display:none;">
 	<form method="post" action="{echo admin_url('res')}">
 	<table width="100%">
 	<tr>
 		<td width="50%">
 			<div class="table">
 				<div class="title">
-					关键字：
-					<span class="note">填写附件名称关键字</span>
+					{lang关键字：}
+					<span class="note">{lang填写附件名称关键字}</span>
 				</div>
 				<div class="content"><input type="text" id="keywords" name="keywords" class="long" value="{$keywords}" /></div>
 			</div>
@@ -113,11 +182,11 @@ function update_pl_pictures()
 		<td>
 			<div class="table">
 				<div class="title">
-					附件分类：
+					{lang附件分类：}
 				</div>
 				<div class="content">
 					<select id="cate_id" name="cate_id">
-						<option value="0">不限</option>
+						<option value="0">{lang不限}</option>
 						<!-- $catelist AS $key=>$value -->
 						<option value="{$value.id}"{if $cate_id == $value.id} selected{/if}>{$value.title}</option>
 						<!-- /if -->
@@ -130,15 +199,15 @@ function update_pl_pictures()
 		<td>
 			<div class="table">
 				<div class="title">
-					时间范围：
-					<span class="note">左侧是开始时间，右边是结束时间</span>
+					{lang时间范围：}
+					<span class="note">{lang左侧是开始时间，右边是结束时间}</span>
 				</div>
 				<div class="content">
 					<table cellpadding="0" cellspacing="0">
 					<tr>
-						<td><input type="text" id="start_date" name="start_date" value="{$start_date}" placeholder="开始时间" onfocus="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" /></td>
+						<td><input type="text" id="start_date" name="start_date" value="{$start_date}" placeholder="{lang开始时间}" onfocus="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" /></td>
 						<td>&nbsp; - &nbsp;</td>
-						<td><input type="text" id="stop_date" name="stop_date" value="{$stop_date}" placeholder="结束时间" onfocus="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" /></td>
+						<td><input type="text" id="stop_date" name="stop_date" value="{$stop_date}" placeholder="{lang结束时间}" onfocus="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" /></td>
 					</tr>
 					</table>
 				</div>
@@ -157,8 +226,8 @@ function update_pl_pictures()
 		<td colspan="2">
 			<div class="table">
 				<div class="title">
-					附件类型：
-					<span class="note">勾选要搜索的附件类型，如果有未列出来的附件类型，请在编辑框中输入，多种附件类型用逗号隔开</span>
+					{lang附件类型：}
+					<span class="note">{lang勾选要搜索的附件类型，如果有未列出来的附件类型，请在编辑框中输入，多种附件类型用逗号隔开}</span>
 				</div>
 				<div class="content">
 					<table>
@@ -173,7 +242,7 @@ function update_pl_pictures()
 						<td><label><input type="checkbox" id="type_mp3" name="ext[]" value="mp3"{if $ext && in_array('mp3',$ext)} checked{/if} /> MP3</label></td>
 					</tr>
 					<tr>
-						<td>&nbsp;  &nbsp; 其他：</td>
+						<td>&nbsp;  &nbsp; {lang其他：}</td>
 						<td colspan="7"><input type="text" id="myext" name="myext" value="{$myext}" class="long" /></td>
 					</tr>
 					</table>
@@ -185,22 +254,44 @@ function update_pl_pictures()
 	</form>
 </div>
 <style type="text/css">
-.thumb{float:left;width:144px;margin:3px 5px;padding:1px;border:1px solid #ccc;border-radius:3px;position:relative;}
+.thumb{float:left;width:144px;margin:3px 5px;padding:1px;border:1px solid #ccc;border-radius:3px;position:relative;z-index:1;}
+.thumb div.checkbox{position:absolute;left:2px;top:2px;z-index:2;}
 </style>
 
-<ul class="attrlist clearfix" id="attrlist">
+<ul class="attrlist clearfix" id="attr2list">
 	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-	<div class="thumb" name="_elist">
-		<div style="text-align:center;"><img src="{$value.ico}" width="100" height="100" /></div>
+	<div class="thumb">
+		<div class="checkbox"><input type="checkbox" name="attrid[]" id="attrid_{$value.id}" value="{$value.id}" /></div>
+		<label for="attrid_{$value.id}"><div style="text-align:center;"><img src="{$value.ico}" width="100" height="100" /></div></label>
 		<div class="file-action" style="text-align:center;"><div class="button-group">
-			<input type="button" value="修改" class="phpok-btn" onclick="modify('{$value.id}')" />
-			<input type="button" value="预览" class="phpok-btn" onclick="preview_attr('{$value.id}')" />
-			<input type="button" value="删除" class="phpok-btn" onclick="file_delete('{$value.id}')" /></div>
+			<input type="button" value="{lang修改}" class="phpok-btn" onclick="modify('{$value.id}')" />
+			<input type="button" value="{lang预览}" class="phpok-btn" onclick="preview_attr('{$value.id}')" />
+			<input type="button" value="{lang删除}" class="phpok-btn" onclick="file_delete('{$value.id}')" /></div>
 		</div></div>
 	</div>
 	<!-- /loop -->
 	<div class="clear"></div>
 </ul>
-<div class="table"><!-- include tpl=pagelist --></div>
+
+<div class="table">
+<table width="100%">
+<tr>
+	<td>
+		<div class="button-group">
+			<input type="button" value="{lang全选}" onclick="$.input.checkbox_all('.checkbox input[type=checkbox]')" class="phpok-btn" />
+			<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none('.checkbox input[type=checkbox]')" class="phpok-btn" />
+			<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti('.checkbox input[type=checkbox]')" class="phpok-btn" />
+		</div>
+		<div class="button-group">
+			<input type="button" value="{lang移动分类}" onclick="move_cate()" class="phpok-btn" />
+			<input type="button" value="{lang更新图片}" onclick="pl_update()" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="pl_delete()" class="phpok-btn" />
+		</div>
+	</td>
+	<td align="right"><!-- include tpl=pagelist --></td>
+</tr>
+</table>
+
+</div>
 
 <!-- include tpl=foot -->

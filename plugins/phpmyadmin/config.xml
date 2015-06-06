@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>数据库集成管理</title>
+	<desc>方便集成MySQL管理工具PHPMyAdmin</desc>
+	<author>phpok.com</author>
+	<version>1.0</version>
+</root>

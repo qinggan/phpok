@@ -26,7 +26,7 @@ class editor_form extends _init_auto
 		$this->addjs('js/ueditor/ueditor.all.min.js');
 		$this->addjs('js/ueditor/lang/zh-cn/zh-cn.js');
 		if($appid == 'admin'){
-			$rs['width'] = intval($rs['width'])<500 ? '970' : $rs['width'];
+			$rs['width'] = '100%';
 		}
 		$style = array();
 		if($rs['form_style']){
@@ -39,7 +39,7 @@ class editor_form extends _init_auto
 			}
 		}
 		if($rs['width']){
-			$style["width"] = $rs['width'].'px';
+			$style["width"] = ($rs['width'] && $rs['width'] != '100%') ? $rs['width'].'px' : $rs['width'];
 		}
 		if($rs['height']){
 			$style["height"] = $rs['height'].'px';

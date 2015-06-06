@@ -40,28 +40,36 @@ class id_model_base extends phpok_model
 	{
 		$site_id = $site_id ? '0,'.$site_id : '0';
 		//在项目中检测
-		$sql = "SELECT id FROM ".$this->db->prefix."project WHERE identifier='".$identifier."' ";
+		$sql = "SELECT id FROM ".$this->db->prefix."project WHERE LOWER(identifier)='".strtolower($identifier)."' ";
 		$sql.= "AND site_id IN(".$site_id.") ";
-		if($id) $sql .= " AND id !=".intval($id);
+		if($id){
+			$sql .= " AND id !=".intval($id);
+		}
 		$check_rs = $this->db->get_one($sql);
-		if($check_rs) return true;
+		if($check_rs){
+			return true;
+		}
 		//在分类中检测
-		$sql = "SELECT id FROM ".$this->db->prefix."cate WHERE identifier='".$identifier."' AND site_id IN(".$site_id.")";
+		$sql = "SELECT id FROM ".$this->db->prefix."cate WHERE LOWER(identifier)='".strtolower($identifier)."' AND site_id IN(".$site_id.")";
 		if($id) $sql .= " AND id !=".intval($id);
 		$check_rs = $this->db->get_one($sql);
-		if($check_rs) return true;
+		if($check_rs){
+			return true;
+		}
 		//在内容里检测
-		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE identifier='".$identifier."' AND site_id IN(".$site_id.")";
+		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE LOWER(identifier)='".strtolower($identifier)."' AND site_id IN(".$site_id.")";
 		if($id) $sql .= " AND id !=".intval($id);
 		$check_rs = $this->db->get_one($sql);
-		if($check_rs) return true;
+		if($check_rs){
+			return true;
+		}
 		return false;
 	}
 
 	function project_id($identifier,$site_id=0)
 	{
 		$site_id = $site_id ? '0,'.$site_id : '0';
-		$sql = "SELECT id FROM ".$this->db->prefix."project WHERE identifier='".$identifier."' ";
+		$sql = "SELECT id FROM ".$this->db->prefix."project WHERE LOWER(identifier)='".strtolower($identifier)."' ";
 		$sql.= "AND site_id IN(".$site_id.") ";
 		$rs = $this->db->get_one($sql);
 		if(!$rs) return false;
@@ -69,11 +77,10 @@ class id_model_base extends phpok_model
 	}
 
 	//取得id
-	public function id($identifier,$site_id=0)
+	public function id($identifier,$site_id=0,$status=false)
 	{
-		$rslist = $this->id_all($site_id);
-		if($rslist[$identifier])
-		{
+		$rslist = $this->id_all($site_id,$status);
+		if($rslist[$identifier]){
 			return $rslist[$identifier];
 		}
 		return false;
@@ -85,22 +92,19 @@ class id_model_base extends phpok_model
 		$sql_1 = "SELECT concat('p',id) AS id,identifier FROM ".$this->db->prefix."project WHERE site_id='".$site_id."'";
 		$sql_2 = "SELECT concat('c',id) AS id,identifier FROM ".$this->db->prefix."cate WHERE site_id='".$site_id."'";
 		$sql_3 = "SELECT concat('t',id) AS id,identifier FROM ".$this->db->prefix."list WHERE site_id='".$site_id."' AND identifier!=''";
-		if($status)
-		{
+		if($status){
 			$sql_1 .= " AND status=1";
 			$sql_2 .= " AND status=1";
 			$sql_3 .= " AND status=1";
 		}
 		$sql = "(".$sql_1.") UNION (".$sql_2.") UNION (".$sql_3.")";
 		$tmplist = $this->db->get_all($sql);
-		if(!$tmplist)
-		{
+		if(!$tmplist){
 			return false;
 		}
 		$rslist = array();
 		$tlist = array('t'=>'content','p'=>'project','c'=>'cate');
-		foreach($tmplist as $key=>$value)
-		{
+		foreach($tmplist as $key=>$value){
 			$tmp = substr($value['id'],0,1);
 			$id = substr($value['id'],1);
 			$rslist[$value['identifier']] = array('id'=>$id,'type'=>$tlist[$tmp]);

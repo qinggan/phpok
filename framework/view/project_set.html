@@ -1,11 +1,77 @@
-<!-- inc:head -->
-<script type="text/javascript" src="{func include_js project.js}"></script>
-<div class="tips">
-	{lang您当前的位置：}
-	<a href="{url ctrl=project/}">{lang项目管理}</a>
-	&raquo; <!-- if $id -->{lang编辑项目}<!-- else -->{lang添加项目}<!-- end -->
-</div>
+<!-- include tpl=head -->
 <script type="text/javascript">
+function show_module(val)
+{
+	if(val && val != "0"){
+		$("#tmp_orderby_btn").html("");
+		$("#module_set").show();
+		var url = get_url("project","mfields") + "&id="+val;
+		rs = json_ajax(url);
+		if(rs.status == "ok"){
+			var lst = rs.content;
+			var c = '';
+			for(var i in lst){
+				c += '<li><input type="button" value="'+lst[i].title+'" onclick="phpok_admin_orderby(\'orderby\',\'ext.'+lst[i].identifier+'\')"/></li>';
+			}
+			$("#tmp_orderby_btn").html(c);
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	}else{
+		$("#module_set").hide();
+	}
+}
+
+function cate_add(title)
+{
+	var url = get_url('cate',"add");
+	$.dialog.open(url,{
+		"title":title,
+		"width":"700px",
+		"height":"300px",
+		"lock":true,
+		"win_max":false,
+		"win_min":false,
+		'move':false
+	});
+}
+
+function set_biz()
+{
+	var status = $("#is_biz").attr('checked');
+	if(status){
+		$("#use_biz_setting").show();
+	}else{
+		$("#use_biz_setting").hide();
+	}
+}
+
+function set_post_status()
+{
+	var status = $("#post_status").attr('checked');
+	if(status){
+		$("#email_set_post_status").show();
+		$("li[name=f_post]").show();
+	}else{
+		$("#email_set_post_status").hide();
+		$("li[name=f_post]").find('input').attr("checked",false);
+		$("li[name=f_post]").hide();
+	}
+}
+
+function set_comment_status()
+{
+	var status = $("#comment_status").attr('checked');
+	if(status){
+		$("#email_set_comment_status").show();
+		$("li[name=f_reply]").show();
+	}else{
+		$("#email_set_comment_status").hide();
+		$("li[name=f_reply]").find('input').attr("checked",false);
+		$("li[name=f_reply]").hide();
+	}
+}
 $(document).ready(function(){
 	$("#{$ext_module}").submit(function(){
 		$(this).ajaxSubmit({
@@ -15,7 +81,7 @@ $(document).ready(function(){
 			'success':function(rs){
 				if(rs.status == 'ok'){
 					if($("#id").val()){
-						$.dialog.tips("{lang项目信息编辑成功}");
+						$.dialog.alert("{lang项目信息编辑成功}");
 					}else{
 						$.dialog.alert('{lang项目信息创建成功}',function(){
 							$.phpok.go('{url ctrl=project/}');
@@ -31,6 +97,11 @@ $(document).ready(function(){
 	});
 });
 </script>
+<div class="tips">
+	{lang您当前的位置：}
+	<a href="{url ctrl=project/}">{lang项目管理}</a>
+	&raquo; <!-- if $id -->{lang编辑项目}<!-- else -->{lang添加项目}<!-- end -->
+</div>
 <ul class="group">
 	<li class="on" onclick="$.admin.group(this)" name="main">{lang基本}</li>
 	<li onclick="$.admin.group(this)" name="admin">{lang扩展}</li>
@@ -149,17 +220,19 @@ $(document).ready(function(){
 			<span class="note">{lang请根据实际情况设置相应的扩展项，勾选表示启用}</span>
 		</div>
 		<div class="content">
-			<table cellpadding="0" cellspacing="0">
-			<tr>
-				<td><label><input type="checkbox" name="is_attr" id="is_attr"{if $rs.is_attr} checked{/if} />{lang主题属性}</label></td>
-				<td><label><input type="checkbox" name="is_biz" id="is_biz"{if $rs.is_biz} checked{/if} onclick="set_biz()" />{lang电子商务}</label></td>
-				<td><label><input type="checkbox" name="is_search"{if $rs.is_search} checked{/if} />{lang搜索}</label></td>
-				<td><label><input type="checkbox" name="is_tag"{if $rs.is_tag} checked{/if} />{lang标签}</label></td>
-				<td><label><input type="checkbox" name="subtopics"{if $rs.subtopics} checked{/if} />{lang下级主题}</label></td>
-				<td><label><input type="checkbox" name="post_status" id="post_status"{if $rs.post_status} checked{/if} onclick="set_post_status()" />{lang发布}</label></td>
-				<td><label><input type="checkbox" name="comment_status" id="comment_status"{if $rs.comment_status} checked{/if} onclick="set_comment_status()" />{lang评论}</label></td>
-			</tr>
-			</table>
+		<ul class="layout">
+			<li><label><input type="checkbox" name="is_attr" id="is_attr"{if $rs.is_attr} checked{/if} />{lang主题属性}</label></li>
+			<li><label><input type="checkbox" name="is_biz" id="is_biz"{if $rs.is_biz} checked{/if} onclick="set_biz()" />{lang电子商务}</label></li>
+			<li><label><input type="checkbox" name="is_search"{if $rs.is_search} checked{/if} />{lang搜索}</label></li>
+			<li><label><input type="checkbox" name="is_tag"{if $rs.is_tag} checked{/if} />{lang标签}</label></li>
+			<li><label><input type="checkbox" name="subtopics"{if $rs.subtopics} checked{/if} />{lang下级主题}</label></li>
+			<li><label><input type="checkbox" name="post_status" id="post_status"{if $rs.post_status} checked{/if} onclick="set_post_status()" />{lang发布}</label></li>
+			<li><label><input type="checkbox" name="comment_status" id="comment_status"{if $rs.comment_status} checked{/if} onclick="set_comment_status()" />{lang评论}</label></li>
+			<li><label><input type="checkbox" name="is_userid" id="is_userid"{if $rs.is_userid} checked{/if} />{lang绑定会员}</label></li>
+			<li><label><input type="checkbox" name="is_tpl_content" id="is_tpl_content"{if $rs.is_tpl_content} checked{/if} />{lang自定义内容模板}</label></li>
+			<li><label><input type="checkbox" name="is_seo" id="is_seo"{if $rs.is_seo} checked{/if} />{lang自定义SEO}</label></li>
+			<li><label><input type="checkbox" name="is_identifier" id="is_identifier"{if $rs.is_identifier} checked{/if} />{lang自定义标识}</label></li>
+		</ul>
 		</div>
 	</div>
 

@@ -122,8 +122,7 @@ class db_mysqli extends db
 		$this->query = $this->conn->query($sql);
 		$this->_count();
 		$this->_time();
-		if(preg_match($this->preg_sql,$sql))
-		{
+		if(preg_match($this->preg_sql,$sql)){
 			$this->cache_clear($sql);
 		}
 		if(!$this->query)

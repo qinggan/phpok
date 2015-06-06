@@ -500,5 +500,11 @@ class res_model_base extends phpok_model
 		}
 		return true;
 	}
+
+	public function update_cate($id,$newcate)
+	{
+		$sql = "UPDATE ".$this->db->prefix."res SET cate_id='".$newcate."' WHERE id IN(".$id.")";
+		return $this->db->query($sql);
+	}
 }
 ?>

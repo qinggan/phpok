@@ -130,6 +130,9 @@ class phpok_tpl
 		$this->output($tpl,$type,$path_format);
 		$msg = ob_get_contents();
 		ob_end_clean();
+		if($GLOBALS['app']->config['xdebug'] && function_exists('xdebug_stop_trace')){
+			xdebug_stop_trace();
+		}
 		return $msg;
 	}
 
@@ -162,6 +165,9 @@ class phpok_tpl
 	public function display($tpl,$type="file",$path_format=true)
 	{
 		$this->output($tpl,$type,$path_format);
+		if($GLOBALS['app']->config['xdebug'] && function_exists('xdebug_start_trace')){
+			xdebug_stop_trace();
+		}
 		exit;
 	}
 

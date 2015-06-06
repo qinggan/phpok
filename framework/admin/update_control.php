@@ -154,6 +154,9 @@ class update_control extends phpok_control
 				$delfile = $value;
 				continue;
 			}
+			if($tmp == 'run.php'){
+				continue;
+			}
 			if(substr($tmp,-3) == 'sql' && $tmp != 'table.sql'){
 				$sqlfile[] = $value;
 				continue;
@@ -166,7 +169,6 @@ class update_control extends phpok_control
 				$tmp1 = substr($tmp,10);
 				if(is_file($value)){
 					$this->lib('file')->mv($value,$this->dir_phpok.$tmp1);
-					phpok_log($value.'---'.$this->dir_phpok.$tmp1);
 					continue;
 				}
 				if(is_dir($value) && !is_dir($this->dir_phpok.$tmp1)){
@@ -220,6 +222,10 @@ class update_control extends phpok_control
 		foreach($cfile AS $key=>$value){
 			$base = basename($value);
 			$this->lib('file')->mv($value,$this->dir_phpok.'config/'.$base);
+		}
+		//运行PHP文件，以实现高级的PHP更新操作
+		if(file_exists($this->dir_root."data/update/run.php")){
+			include($this->dir_root.'data/update/run.php');
 		}
 		$this->lib('file')->rm($this->dir_root.'data/update/');
 		$list = $this->lib('file')->ls($this->dir_root.'data/update/');

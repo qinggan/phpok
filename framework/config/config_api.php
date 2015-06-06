@@ -10,8 +10,6 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 
 
-//$config["autoload_js"] .= ",jquery.touchslide.js";
-
 $config["autoload_func"] = "";
 
 $config["is_vcode"] = true;

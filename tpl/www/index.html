@@ -108,30 +108,31 @@ $(document).ready(function(){
 		</div>
 		<!-- /if -->
 	  
-		<div class="atlas" id="photoslist">
+		<div class="box" id="photoslist">
 			<!-- php:$list = phpok('tujixiangce','fields=thumb') -->
-			<div class="atlas_t">
-				<p class="name">{$list.project.title}</p> <span class="name_en">{$list.project.entitle}</span>
-				<div class="tabs">
-					<a href="javascript:void(0);" class="next"></a>
-					<a href="javascript:void(0);" class="prev"></a>
+			<h2 class="title">
+				{$list.project.title}<!-- if $list.project.entitle --><span class="en">{$list.project.entitle}</span><!-- /if -->
+				<div class="pn">
+					<span class="prev"></span>
+					<span class="next"></span>
 				</div>
-			</div>
-			<div class="events">
-				<ul>
+			</h2>
+			<ul class="imglist">
 				<!-- loop from=$list.rslist key=$key value=$value -->
-				<li><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" width="133" height="151" alt="{$value.title}" /></a></li>
+				<li>
+					<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.title}" /></a>
+					<div class="tit"><a href="{$value.url}" title="{$value.title}">{func phpok_cut $value.title 15 …}</a></div>
+				</li>
 				<!-- /loop -->
-				</ul>
-			</div>
+			</ul>
 		</div>
 		<script type="text/javascript">
 		$(document).ready(function(){
 			$("#photoslist").slide({
-				'mainCell':'.events ul',
+				'mainCell':'ul.imglist',
 				'effect':"leftLoop",
 				'autoPlay':true,
-				'vis':5
+				'vis':3
 			});
 		});
 		</script>

@@ -229,6 +229,10 @@ class project_control extends phpok_control
 		$array['etpl_comment_admin'] = $this->get('etpl_comment_admin');
 		$array['etpl_comment_user'] = $this->get('etpl_comment_user');
 		$array['is_attr'] = $this->get('is_attr','checkbox');
+		$array['is_userid'] = $this->get('is_userid','checkbox');
+		$array['is_tpl_content'] = $this->get('is_tpl_content','checkbox');
+		$array['is_seo'] = $this->get('is_seo','checkbox');
+		$array['is_identifier'] = $this->get('is_identifier','checkbox');
 		$array['tag'] = $this->get('tag');
 		$ok_url = $this->url("project");
 		$c_rs = $this->model('sysmenu')->get_one_condition("appfile='list' AND parent_id>0");

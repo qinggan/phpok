@@ -9,9 +9,10 @@
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 
-$config["debug"] = true; //启用调试
+$config["debug"] = false; //启用调试
+$config['xdebug'] = false;//启用Xdebug
 $config["gzip"] = true;//启用压缩
-$config['develop'] = true;//开发状态
+$config['develop'] = false;//开发状态
 $config["ctrl_id"] = "c";//取得控制器的ID
 $config["func_id"] = "f";//取得应用方法的ID
 $config["admin_file"] = "admin.php";//后台入口

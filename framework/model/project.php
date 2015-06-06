@@ -69,8 +69,7 @@ class project_model_base extends phpok_model
 	{
 		$site_id = intval($site_id);
 		$sql = "SELECT * FROM ".$this->db->prefix."project p WHERE site_id=".$site_id." ";
-		if($condition)
-		{
+		if($condition){
 			$sql .= " AND ".$condition;
 		}
 		return $this->db->get_all($sql,$pri);

@@ -76,21 +76,32 @@
 ;(function($){
 
 	$.input = {
+		obj: function(id){
+			if(id && id != 'undefined'){
+				if(id.match(/^[a-zA-Z0-9\-\_]{1,}$/)){
+					id = '#'+id+" input[type=checkbox]";
+				}
+				var t = $(id);
+			}else{
+				var t = $('input[type=checkbox]');
+			}
+			return t;
+		},
 		//全选，调用方法：$.input.checkbox_all(id);
 		checkbox_all: function(id){
-			var t = id && id != "undefined" ? $("#"+id+" input[type=checkbox]") : $("input[type=checkbox]");
+			var t = this.obj(id);
 			t.each(function(){$(this).attr("checked",true);});
 			t = null;
 		},
 		//全不选，调用方法：$.input.checkbox_none(id);
 		checkbox_none: function(id){
-			var t = id && id != "undefined" ? $("#"+id+" input[type=checkbox]") : $("input[type=checkbox]");
+			var t = this.obj(id);
 			t.each(function(){$(this).attr("checked",false);});
 			t = null;
 		},
 		//每次选5个（total默认值为5） $.input.checkbox_not_all(id,5);
 		checkbox_not_all: function(id,total){
-			var t = id && id != "undefined" ? $("#"+id+" input[type=checkbox]") : $("input[type=checkbox]");
+			var t = this.obj(id);
 			var num = 0;
 			if(!total || parseInt(total)<5) total = 5;
 			t.each(function(){
@@ -104,7 +115,7 @@
 		},
 		//反选，调用方法：$.input.checkbox_anti(id);
 		checkbox_anti: function(id){
-			var t = id && id != "undefined" ? $("#"+id+" input[type=checkbox]") : $("input[type=checkbox]");
+			var t = this.obj(id);
 			t.each(function(i){
 				if($(this).attr("checked") == true || $(this).attr("checked") == "checked"){
 					$(this).attr("checked",false);
@@ -117,19 +128,24 @@
 
 		//合并复选框值信息，以英文逗号隔开
 		checkbox_join: function(id,type){
-			var cv = id && id != "undefined" ? $("#"+id+" input[type=checkbox]") : $("input[type=checkbox]");
+			var cv = this.obj(id);
 			var idarray = new Array();
 			var m = 0;
 			cv.each(function()
 			{
-				if(type == "all"){idarray[m] = $(this).val();m++;}
-				else if(type == "unchecked")
-				{
-					if($(this).attr("checked") == false){idarray[m] = $(this).val();m++;}
-				}
-				else
-				{
-					if($(this).attr("checked") == true || $(this).attr("checked") == "checked"){idarray[m] = $(this).val();m++;}
+				if(type == "all"){
+					idarray[m] = $(this).val();
+					m++;
+				}else if(type == "unchecked"){
+					if($(this).attr("checked") == false){
+						idarray[m] = $(this).val();
+						m++;
+					}
+				}else{
+					if($(this).attr("checked") == true || $(this).attr("checked") == "checked"){
+						idarray[m] = $(this).val();
+						m++;
+					}
 				}
 			});
 			var tid = idarray.join(",");

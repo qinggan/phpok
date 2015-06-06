@@ -121,22 +121,22 @@ class string_lib
 	//将HTML安全格式化
 	public function safe_html($content,$clear_url='')
 	{
-		$content = preg_replace_callback('/<(.+)>/isU',array($this,'_clean_xss_on'),$content);
-		//清除带src和href里的信息
-		$content = preg_replace_callback("/<(.*)(src|href)\s*=(\"|')(.+)(\\3)(.*)>/isU",array($this,'_clean_xss_script'),$content);
-		//清除src传递没有引号的数据
-		$content = preg_replace_callback("/<(.*)(src|href)\s*=([^\s>]+)([\s|\/|>])/isU",array($this,'_clean_xss_script2'),$content);
-		//清除script,applet,style,title,iframe等不安全信息
+		$content = $this->xss_clean($content);
 		$content = preg_replace("/<(^[script|applet|style|title|iframe|frame|frameset|link]+).*>[.\n\t\r]*<\/\\1>/isU",'',$content);
 		$content = preg_replace("/<\/?link.*?>/isU","",$content);
-		//清除meta信息
 		$content = preg_replace('/<meta(.+)>/isU','',$content);
-		if($clear_url)
-		{
-			$content = str_replace(array("src='".$clear_url,'src="'.$clear_url,"src=".$clear_url),array("src='",'src="',"src="),$content);
-			return $content;
+		if($clear_url){
+			return $this->clear_url($content,$clear_url);
 		}
 		return $content;
+	}
+
+	public function clear_url($content='',$url='')
+	{
+		if(!$content || !$url){
+			return $content;
+		}
+		return str_replace(array("src='".$url,'src="'.$url,"src=".$url),array("src='",'src="',"src="),$content);
 	}
 
 	//判断字符是否是utf8
@@ -178,64 +178,28 @@ class string_lib
 		}
 		return $msg;
 	}
+
+	public function xss_clean($data)
+	{
+		$data = str_replace(array('&amp;', '&lt;', '&gt;'), array('&amp;amp;', '&amp;lt;', '&amp;gt;'), $data);
+		$data = preg_replace('/(&#*\w+)[\x00-\x20]+;/u', '$1;', $data);
+		$data = preg_replace('/(&#x*[0-9A-F]+);*/iu', '$1;', $data);
+		$data = html_entity_decode($data, ENT_COMPAT, 'UTF-8');
+		$data = preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $data);
+		$data = preg_replace('#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([`\'"]*)[\x00-\x20]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2nojavascript...', $data);
+		$data = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*v[\x00-\x20]*b[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2novbscript...', $data);
+		$data = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*-moz-binding[\x00-\x20]*:#u', '$1=$2nomozbinding...', $data);
+		$data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?expression[\x00-\x20]*\([^>]*+>#i', '$1>', $data);
+		$data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?behaviour[\x00-\x20]*\([^>]*+>#i', '$1>', $data);
+		$data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:*[^>]*+>#iu', '$1>', $data);
+		$data = preg_replace('#</*\w+:\w[^>]*+>#i', '', $data);
+		do {
+			$old_data = $data;
+			$data = preg_replace('#</*(?:applet|b(?:ase|gsound|link)|embed|iframe|frame(?:set)?|i(?:frame|layer)|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|title|xml)[^>]*+>#i', '', $data);
+		} while ($old_data !== $data);
+		return $data;
+	}
 	
-	private function _clean_xss_on($info)
-	{
-		if(!$info || !$info[1] || !trim($info[1]))
-		{
-			return false;
-		}
-		$info = $info[1];
-		$info = str_replace(array("\n","\t","\r"),'',$info);
-		if(!$info)
-		{
-			return false;
-		}
-		//清除on等动作属性（带引号）
-		$preg = "/on([a-zA-Z]+)\s*=(\"|')+(.*)(\\2)+/isU";
-		$info = preg_replace($preg,'',$info);
-		//清除on等动作属性（不带引号，不支持空格）
-		$preg = "/on([a-zA-Z]+)\s*=([^\s>]+)[\s|\/|>]+/isU";
-		$info = preg_replace($preg,'',$info);
-		return '<'.$info.'>';
-	}
-
-	private function _clean_xss_script($info)
-	{
-		if(!$info)
-		{
-			return false;
-		}
-		if(!$info[4] || !trim($info[4]))
-		{
-			return $info[0];
-		}
-		$tmp = strtolower($info[4]);
-		if(substr($tmp,0,8) == 'vbscript' || substr($tmp,0,10) == 'javascript')
-		{
-			return '<'.$info[1].$info[2].'="javascript:void(0);" '.trim($info[6]).'>';
-		}
-		return $info[0];
-	}
-
-	private function _clean_xss_script2($info)
-	{
-		if(!$info)
-		{
-			return false;
-		}
-		if(!$info[3] || !trim($info[3]))
-		{
-			return $info[0];
-		}
-		$tmp = strtolower($info[3]);
-		if(substr($tmp,0,8) == 'vbscript' || substr($tmp,0,10) == 'javascript')
-		{
-			return '<'.$info[1].$info[2].'="javascript:void(0);"'.$info[4];
-		}
-		return $info[0];
-	}
-
 	private function _substr($sourcestr,$cutlength=255,$dot='')
 	{
 		$returnstr = '';

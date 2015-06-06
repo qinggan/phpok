@@ -41,6 +41,9 @@ class list_model extends list_model_base
 		//删除Tag相关
 		$sql = "DELETE FROM ".$this->db->prefix."tag_stat WHERE title_id='".$id."'";
 		$this->db->query($sql);
+		//删除扩展分类
+		$sql = "DELETE ".$this->db->prefix."list_cate WHERE id='".$id."'";
+		$this->db->query($sql);
 		return true;
 	}
 
@@ -54,6 +57,42 @@ class list_model extends list_model_base
 	{
 		$sql = "UPDATE ".$this->db->prefix."list SET sort='".$sort."' WHERE id='".$id."'";
 		return $this->db->query($sql);
+	}
+
+	//存储扩展分类
+	public function save_ext_cate($id,$catelist)
+	{
+		if(!$id || !$catelist){
+			return false;
+		}
+		if(is_string($catelist)){
+			$catelist = explode(",",$catelist);
+		}
+		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id='".$id."'";
+		$this->db->query($sql);
+		$sql = "INSERT INTO ".$this->db->prefix."list_cate(id,cate_id) VALUES ";
+		foreach($catelist as $key=>$value){
+			if($key>0){
+				$sql .= ",";
+			}
+			$sql .= "('".$id."','".$value."')";
+		}
+		$this->db->query($sql);
+		return true;
+	}
+
+	public function ext_catelist($id)
+	{
+		$sql = "SELECT cate_id FROM ".$this->db->prefix."list_cate WHERE id='".$id."'";
+		$list = $this->db->get_all($sql);
+		if(!$list){
+			return false;
+		}
+		$rslist = array();
+		foreach($list as $key=>$value){
+			$rslist[] = $value['cate_id'];
+		}
+		return $rslist;
 	}
 }
 

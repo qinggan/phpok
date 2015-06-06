@@ -29,6 +29,7 @@ function delete_rescate(id,title)
 	<th>ID</th>
 	<th class="lft">名称</th>
 	<th class="lft">目录</th>
+	<th class="lft">附件类型</th>
 	<th>是否默认</th>
 	<th class="lft">GD方案</th>
 	<th class="lft" width="120">操作</th>
@@ -38,6 +39,7 @@ function delete_rescate(id,title)
 	<td align="center">{$value.id}</td>
 	<td>{$value.title}</td>
 	<td>{$value.root}{$rs.folder}</td>
+	<td>{$value.filetypes}</td>
 	<td align="center"><!-- if $value.is_default --><span class="darkblue">{lang是}</span><!-- else -->{lang否}<!-- /if --></td>
 	<td>
 		<!-- if $value.gdall -->

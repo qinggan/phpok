@@ -19,34 +19,7 @@ function project_check()
 	return true;
 }
 
-function edit_check()
-{
-	var id = $("#id").val();
-	var title = $("#title").val();
-	if(title) title = $.trim(title);
-	if(!title)
-	{
-		$.dialog.alert("主题不能为空");
-		return false;
-	}
-	var identifier = $("#identifier").val();
-	if(identifier) identifier = $.trim(identifier);
-	if(identifier)
-	{
-		var url = get_url("list","identifier")+"&sign="+$.str.encode(identifier);
-		if(id)
-		{
-			url += "&id="+id;
-		}
-		var rs = json_ajax(url);
-		if(rs.status != "ok")
-		{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	}	
-	return true;
-}
+
 
 function content_del(id)
 {

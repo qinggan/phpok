@@ -49,12 +49,10 @@ class url_model extends url_model_base
 	//保护字段
 	public function protected_ctrl($info)
 	{
-		if(!$info)
-		{
+		if(!$info){
 			$info = array("js",'ajax','inp');
 		}
-		if(is_string($info))
-		{
+		if(is_string($info)){
 			$info = explode(",",$info);
 		}
 		$this->protected_id = $info;
@@ -71,8 +69,7 @@ class url_model extends url_model_base
 
 	public function url_default($ctrl='index',$func='index',$ext='')
 	{
-		if(in_array($ctrl,$this->protected_id))
-		{
+		if(in_array($ctrl,$this->protected_id)){
 			return $this->url_ctrl($ctrl,$func,$ext);
 		}
 		$url = $this->base_url.$this->phpfile."?id=".$ctrl;
@@ -93,7 +90,20 @@ class url_model extends url_model_base
 
 	public function url_rewrite($ctrl='index',$func='index',$ext='')
 	{
-		$this->rule_id = ($this->type_ids && in_array($ctrl,$this->type_ids)) ? $ctrl : (is_numeric($ctrl) ? 'content' : 'project');
+		if(($this->type_ids && in_array($ctrl,$this->type_ids)) || ($this->protected_id && in_array($ctrl,$this->protected_id))){
+			$this->rule_id = $ctrl;
+		}else{
+			if(is_numeric($ctrl)){
+				$this->rule_id = 'content';
+			}else{
+				$this->id_list('identifier');
+				if($this->ilist[$ctrl]){
+					$this->rule_id = 'content';
+				}else{
+					$this->rule_id = 'project';
+				}
+			}
+		}
 		if($this->rule_list && $this->rule_list[$this->rule_id])
 		{
 			$this->set_rule($this->rule_list[$this->rule_id]['urltype']);
@@ -252,11 +262,11 @@ class url_model extends url_model_base
 		$this->rule_list = $rslist;
 	}
 
-	public function id_list()
+	public function id_list($pri='id')
 	{
 		$sql = "SELECT id,project_id,cate_id,identifier FROM ".$this->db->prefix."list WHERE ";
 		$sql.= "site_id='".$this->site_id."' AND status=1 AND identifier!=''";
-		$this->ilist = $this->db->get_all($sql,"id");
+		$this->ilist = $this->db->get_all($sql,$pri);
 	}
 
 	public function cate_list()
@@ -281,8 +291,7 @@ class url_model extends url_model_base
 			$url .= $ctrl;
 			if($func) $url .= "/".$func;
 			$url .= ".html";
-			if($ext)
-			{
+			if($ext){
 				$url .="?".$ext;
 			}
 			return $url;

@@ -24,6 +24,19 @@ function set_status(id,obj)
 		}
 	});
 }
+function delete_sysmenu(id,title)
+{
+	$.dialog.confirm("确定要删除导航：<span class='red'>"+title+"</span>，删除后是不能恢复的！",function(){
+		var url = get_url('system','delete','id='+id);
+		var rs = json_ajax(url);
+		if(rs.status != 'ok')
+		{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+		window.location.reload();
+	});
+}
 function update_taxis(val,id)
 {
 	$.ajax({
@@ -101,7 +114,7 @@ $(document).ready(function(){
 		<td>
 			<div class="button-group">
 				<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=system func=set id=$v.id/}')" class="phpok-btn" /><!-- /if -->
-				<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="delete_sysmenu('{$value.id}','{$value.title}')" class="phpok-btn" /><!-- /if -->
+				<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="delete_sysmenu('{$v.id}','{$v.title}')" class="phpok-btn" /><!-- /if -->
 			</div>
 		</td>
 	</tr>

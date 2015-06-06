@@ -29,7 +29,7 @@ class project_control extends phpok_control
 		if(!$id){
 			error(P_Lang('未指ID'),"","error");
 		}
-		$tmp = $this->model('id')->id($id,$this->site['id']);
+		$tmp = $this->model('id')->id($id,$this->site['id'],true);
 		if(!$tmp || $tmp['type'] != 'project'){
 			error(P_Lang('项目不存在'),$this->url,'error',10);
 		}
@@ -104,8 +104,11 @@ class project_control extends phpok_control
 		$tag = $this->get("tag");
 		$uid = $this->get('uid','int');
 		$attr = $this->get('attr');
+		//价格，支持价格区间
+		$price = $this->get('price','float');
+		$sort = $this->get('sort');
 		//判断该项目是否启用封面
-		if($rs["tpl_index"] && !$cateid && !$keywords && !$ext && !$tag && !$uid && !$attr && $this->tpl->check($rs['tpl_index'])){
+		if($rs["tpl_index"] && !$cateid && !$keywords && !$ext && !$tag && !$uid && !$attr && !$price && !$sort && $this->tpl->check($rs['tpl_index'])){
 			$this->view($rs["tpl_index"]);
 			exit;
 		}
@@ -178,9 +181,41 @@ class project_control extends phpok_control
 			}
 			$this->assign('ext',$ext);
 		}
+		//价格区间
+		if($price){
+			if(!is_array($price)){
+				$price = array('min'=>$price);
+			}
+			$condition = '';
+			if($price['min']){
+				$condition .= "l.price>='".$price['min']."'";
+				$pageurl .= '&price[min]='.rawurlencode($price['min']);
+			}
+			if($price['max']){
+				if($condition){
+					$condition .= " AND ";
+				}
+				$condition .= "l.price<='".$price['max']."'";
+				$pageurl .= '&price[max]='.rawurlencode($price['max']);
+			}
+			if($condition){
+				if($dt['sqlext']){
+					$dt['sqlext'] .= " AND ".$condition;
+				}else{
+					$dt['sqlext'] = $condition;
+				}
+				$this->assign('price',$price);
+			}
+		}
 		if($uid){
 			$pageurl .= "uid=".$uid."&";
 			$dt['user_id'] = $uid;
+		}
+		//自定义排序
+		if($sort){
+			$dt['orderby'] = $sort;
+			$pageurl .= '&sort='.rawurlencode($sort);
+			$this->assign('sort',$sort);
 		}
 		if(substr($pageurl,-1) == "&" || substr($pageurl,-1) == "?"){
 			$pageurl = substr($pageurl,0,-1);

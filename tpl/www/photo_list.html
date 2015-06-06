@@ -21,11 +21,11 @@
 			</span>
 			{$cate_rs ? $cate_rs.title : $page_rs.title}
 		</div>
-		<ul class="photo_list">
+		<ul class="photolist">
 			<!-- loop from=$rslist key=$key value=$value -->
 			<li>
-				<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.thumb.title}" /></a>
-				<p><a href="{$value.url}" title="{$value.title}">{$value.title}</a></p>
+				<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.thumb.title}" class="img" /></a>
+				<p><a href="{$value.url}" title="{$value.title}">{func phpok_cut $value.title 12 …}</a></p>
 			</li>
 			<!-- /loop -->
 		</ul>

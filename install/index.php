@@ -14,6 +14,7 @@ define("ROOT",INSTALL_DIR."../");
 include(ROOT."framework/engine/db.php");
 include_once(INSTALL_DIR."global.php");
 
+
 if(is_file(ROOT."data/install.lock"))
 {
 	error("您已安装过PHPOK4，要重新安装请删除data/install.lock文件");

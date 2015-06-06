@@ -26,27 +26,9 @@ function ok_start()
 		}
 	});
 	if(is_end){
-		//升级成功后，更新日志，防止重复升级
-		var url = get_url('update','success');
-		$.ajax({
-			'url':url,
-			'dataType':'json',
-			'cache':false,
-			'async':true,
-			'beforeSend': function (XMLHttpRequest){
-				XMLHttpRequest.setRequestHeader("request_type","ajax");
-			},
-			'success':function(rs){
-				if(rs.status == 'ok'){
-					$.dialog.alert('升级成功',function(){
-						top.window.location.href = "{$sys.admin_file}";
-					});
-				}else{
-					$.dialog.alert(rs.content);
-					return false;
-				}
-			}
-		});
+		$.dialog.alert('升级成功',function(){
+			top.window.location.reload();
+		},'succeed');
 	}
 }
 function update_load_file(name)

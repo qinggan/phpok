@@ -145,7 +145,6 @@ class _init_phpok
 
 	public function __construct()
 	{
-		
 		ini_set("magic_quotes_runtime",0);
 		$this->init_constant();
 		$this->init_config();
@@ -291,12 +290,10 @@ class _init_phpok
 	//手机判断
 	public function is_mobile()
 	{
-		if(isset($_SERVER['HTTP_X_WAP_PROFILE']))
-		{
+		if(isset($_SERVER['HTTP_X_WAP_PROFILE'])){
 			return true;
 		}
-		if(isset($_SERVER['HTTP_PROFILE']))
-		{
+		if(isset($_SERVER['HTTP_PROFILE'])){
 			return true;
 		}
 		$regex_match = "/(nokia|iphone|android|motorola|^mot\-|softbank|foma|docomo|kddi|up\.browser|up\.link|";
@@ -306,8 +303,7 @@ class _init_phpok
 		$regex_match.= "iemobile|^spice|^bird|^zte\-|longcos|pantech|gionee|^sie\-|portalmmm|";
 		$regex_match.= "jig\s browser|hiptop|^ucweb|^benq|haier|^lct|opera\s*mobi|opera\*mini|320x320|240x320|176x220";
 		$regex_match.= ")/i";
-		if(preg_match($regex_match,strtolower($_SERVER['HTTP_USER_AGENT'])))
-		{
+		if(preg_match($regex_match,strtolower($_SERVER['HTTP_USER_AGENT']))){
 			unset($regex_match);
 			return true;
 		}
@@ -316,84 +312,69 @@ class _init_phpok
 
 	public function init_site()
 	{
-		if($this->app_id == "admin")
-		{
+		if($this->app_id == "admin"){
 			if($_SESSION['admin_site_id']){
 				$site_rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
 			}else{
 				$site_rs = $this->model("site")->get_one_default();
 			}
-			if(!$site_rs) $site_rs = array('title'=>'PHPOK企业建站系统');
+			if(!$site_rs){
+				$site_rs = array('title'=>'PHPOK.Com');
+			}
 			$this->site = $site_rs;
 			return true;
 		}
 		$siteId = $this->get("siteId","int");
 		$domain = strtolower($_SERVER[$this->config['get_domain_method']]);
 		$site_rs = false;
-		if($siteId)
-		{
+		if($siteId){
 			$site_rs = $this->model('site')->get_one($siteId);
-			if($site_rs)
-			{
-				$domain_rs = $this->model('site')->domain_one($site_rs['domain_id']);
-				if($domain_rs && $domain_rs['domain'] != $domain)
-				{
-					$url = 'http://'.$domain_rs['domain'].$site_rs['dir'];
-					$this->_location($url);
-				}
-				$ext_list = $this->model('site')->site_config($site_rs["id"]);
-				if($ext_list)
-				{
-					$site_rs = array_merge($ext_list,$site_rs);
-					unset($ext_list);
-				}
+			if($site_rs && $site_rs['domain'] && $site_rs['domain'] != $domain){
+				$url = 'http://'.$site_rs['domain'].$site_rs['dir'];
+				$this->_location($url);
 			}
 		}
-		if(!$site_rs)
-		{
+		if(!$site_rs){
 			$site_rs = $this->model("site")->get_one_from_domain($domain);
-			if(!$site_rs) $site_rs = $this->model('site')->get_one_default();
-			if(!$site_rs) $this->error("无法获取网站信息，请检查！");
-			$ext_list = $this->model('site')->site_config($site_rs["id"]);
-			if($ext_list)
-			{
-				$site_rs = array_merge($ext_list,$site_rs);
-				unset($ext_list);
+			if(!$site_rs){
+				$site_rs = $this->model('site')->get_one_default();
+				if(!$site_rs){
+					$this->error("无法获取网站信息，请检查！");
+				}
 			}
-			//读取模板扩展
 		}
-		if($site_rs["tpl_id"])
-		{
+		$ext_list = $this->model('site')->site_config($site_rs["id"]);
+		if($ext_list){
+			$site_rs = array_merge($ext_list,$site_rs);
+			unset($ext_list);
+		}
+		if($site_rs["tpl_id"]){
 			$rs = $this->model("tpl")->get_one($site_rs["tpl_id"]);
-			if($rs)
-			{
+			if($rs){
 				$tpl_rs = array();
 				$tpl_rs["id"] = $rs["id"];
 				$tpl_rs["dir_tpl"] = $rs["folder"] ? "tpl/".$rs["folder"]."/" : "tpl/www/";
 				$tpl_rs["dir_cache"] = $this->dir_root."data/tpl_www/";
 				$tpl_rs["dir_php"] = $rs['phpfolder'] ? $this->dir_root.$rs['phpfolder'].'/' : $this->dir_root;
 				$tpl_rs["dir_root"] = $this->dir_root;
-				if($rs["folder_change"])
-				{
+				if($rs["folder_change"]){
 					$tpl_rs["path_change"] = $rs["folder_change"];
 				}
 				$tpl_rs["refresh_auto"] = $rs["refresh_auto"] ? true : false;
 				$tpl_rs["refresh"] = $rs["refresh"] ? true : false;
 				$tpl_rs["tpl_ext"] = $rs["ext"] ? $rs["ext"] : "html";
 				//针对手机版的配置
-				if($this->is_mobile)
-				{
+				if($this->is_mobile){
 					$tpl_rs["id"] = $rs["id"]."_mobile";
 					$tplfolder = $rs["folder"] ? $rs["folder"]."_mobile" : "www_mobile";
-					if(!file_exists($this->dir_root."tpl/".$tplfolder))
-					{
+					if(!file_exists($this->dir_root."tpl/".$tplfolder)){
 						$tplfolder = $rs["folder"] ? $rs["folder"] : "www";
 					}
 					$tpl_rs["dir_tpl"] = "tpl/".$tplfolder;
 				}
 				$tpl_rs['langid'] = isset($_SESSION[$this->app_id.'_lang_id']) ? $_SESSION[$this->app_id.'_lang_id'] : 'default';
 				$site_rs["tpl_id"] = $tpl_rs;
-				unset($tpl_rs);
+				unset($tpl_rs,$rs);
 			}
 		}
 		$this->site = $site_rs;
@@ -404,8 +385,7 @@ class _init_phpok
 	public function init_plugin()
 	{
 		$rslist = $this->model('plugin')->get_all(1);
-		if(!$rslist)
-		{
+		if(!$rslist){
 			return false;
 		}
 		foreach($rslist AS $key=>$value)
@@ -550,12 +530,14 @@ class _init_phpok
 			include($this->dir_root."config.php");
 		}
 		$config["debug"] ? error_reporting(E_ALL ^ E_NOTICE) : error_reporting(0);
-		/*if(ini_get('zlib.output_compression')){
+		if($config['xdebug'] && function_exists('xdebug_start_trace')){
+			xdebug_start_trace('trace');
+		}
+		if(ini_get('zlib.output_compression')){
 			ob_start();
 		}else{
 			($config["gzip"] && function_exists("ob_gzhandler")) ? ob_start("ob_gzhandler") : ob_start();
-		}*/
-		ob_start();
+		}
 		if($config["timezone"] && function_exists("date_default_timezone_set")){
 			date_default_timezone_set($config["timezone"]);
 		}
@@ -668,21 +650,21 @@ class _init_phpok
 	final public function get($id,$type="safe",$ext="")
 	{
 		$val = isset($_POST[$id]) ? $_POST[$id] : (isset($_GET[$id]) ? $_GET[$id] : "");
-		if($val == '')
-		{
-			if($type == 'int' || $type == 'intval' || $type == 'float' || $type == 'floatval')
-			{
+		if($val == ''){
+			if($type == 'int' || $type == 'intval' || $type == 'float' || $type == 'floatval'){
 				return 0;
-			}
-			else
-			{
+			}else{
 				return '';
 			}
 		}
 		//判断内容是否有转义，所有未转义的数据都直接转义
 		$addslashes = false;
-		if(function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()) $addslashes = true;
-		if(!$addslashes) $val = $this->_addslashes($val);
+		if(function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()){
+			$addslashes = true;
+		}
+		if(!$addslashes){
+			$val = $this->_addslashes($val);
+		}
 		return $this->format($val,$type,$ext);
 	}
 
@@ -693,37 +675,29 @@ class _init_phpok
 	//当type为func属性时，表示ext直接执行函数
 	final public function format($msg,$type="safe",$ext="")
 	{
-		if($msg == "") return '';
-		if(is_array($msg))
-		{
-			foreach($msg AS $key=>$value)
-			{
-				if(!is_numeric($key))
-				{
+		if($msg == ""){
+			return '';
+		}
+		if(is_array($msg)){
+			foreach($msg AS $key=>$value){
+				if(!is_numeric($key)){
 					$key2 = $this->format($key,"system");
-					if($key2 == '')
-					{
+					if($key2 == ''){
 						unset($msg[$key]);
 						continue;
 					}
 				}
 				$msg[$key] = $this->format($value,$type,$ext);
 			}
-			if($msg && count($msg)>0)
-			{
+			if($msg && count($msg)>0){
 				return $msg;
 			}
 			return false;
 		}
-		//echo "<pre>".print_r($msg,true)."</pre>";
-		//如果返回的是html
-		if($type == 'html_js' || ($type == 'html' && $ext))
-		{
-			//去除编辑器里的绝对网址
+		if($type == 'html_js' || ($type == 'html' && $ext)){
 			$msg = stripslashes($msg);
-			$array = array("src='".$this->url,'src="'.$this->url,"src=".$this->url);
-			$new = array("src='",'src="',"src=");
-			$msg = str_replace($array,$new,$msg);
+			$msg = $this->lib('string')->xss_clean($msg);
+			$msg = $this->lib('string')->clear_url($msg,$this->url);
 			return addslashes($msg);
 		}
 		$msg = stripslashes($msg);
@@ -743,8 +717,7 @@ class _init_phpok
 			case 'func':$msg = function_exists($ext) ? $ext($msg) : false;break;
 			case 'text':$msg = strip_tags($msg);break;
 		}
-		if($msg)
-		{
+		if($msg){
 			$msg = addslashes($msg);
 		}
 		return $msg;
@@ -758,18 +731,13 @@ class _init_phpok
 		return $this->lib('string')->safe_html($info);
 	}
 
-	//转义字符串数据，此函数仅限get使用
 	private function _addslashes($val)
 	{
-		if(is_array($val))
-		{
-			foreach($val AS $key=>$value)
-			{
+		if(is_array($val)){
+			foreach($val AS $key=>$value){
 				$val[$key] = $this->_addslashes($value);
 			}
-		}
-		else
-		{
+		}else{
 			$val = addslashes($val);
 		}
 		return $val;
@@ -820,6 +788,9 @@ class _init_phpok
 		$html.= $content."\n";
 		$html.= '</body>'."\n";
 		$html.= '</html>';
+		if($this->config['xdebug'] && function_exists('xdebug_stop_trace')){
+			xdebug_stop_trace();
+		}
 		exit($html);
 	}
 
@@ -830,8 +801,7 @@ class _init_phpok
 		//装载插件
 		$this->init_plugin();
 		$func_name = "action_".$this->app_id;
-		if(in_array($func_name,get_class_methods($this)))
-		{
+		if(in_array($func_name,get_class_methods($this))){
 			$this->$func_name();
 			exit;
 		}
@@ -927,6 +897,9 @@ class _init_phpok
 		header("Pramga: no-cache");
 		header("Location:".$url);
 		ob_end_flush();
+		if($this->config['xdebug'] && function_exists('xdebug_stop_trace')){
+			xdebug_stop_trace();
+		}
 		exit;
 	}
 
@@ -1011,6 +984,9 @@ class _init_phpok
 		if($content && is_bool($content))
 		{
 			$rs = array('status'=>'ok');
+			if($this->config['xdebug'] && function_exists('xdebug_stop_trace')){
+				xdebug_stop_trace();
+			}
 			exit($this->lib('json')->encode($rs));
 		}
 		$status_info = $status ? 'ok' : 'error';
@@ -1018,7 +994,12 @@ class _init_phpok
 		if($content != '') $rs['content'] = $content;
 		$info = $this->lib('json')->encode($rs);
 		unset($rs);
-		if($exit) exit($info);
+		if($exit){
+			if($this->config['xdebug'] && function_exists('xdebug_stop_trace')){
+				xdebug_stop_trace();
+			}
+			exit($info);
+		}
 		return $info;
 	}
 

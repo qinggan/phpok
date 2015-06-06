@@ -76,7 +76,7 @@ class content_control extends phpok_control
 				$tpl = $cate_root_rs['tpl_content'];
 			}
 			//分类信息
-			$cate_rs = $this->call->phpok('_cate',array("pid"=>$project_rs['project_id'],'cateid'=>$rs['cate_id']));
+			$cate_rs = $this->call->phpok('_cate',array("pid"=>$project_rs['id'],'cateid'=>$rs['cate_id']));
 			if(!$cate_rs){
 				error(P_Lang('分类信息不存在'),$this->url,'notice',5);
 			}

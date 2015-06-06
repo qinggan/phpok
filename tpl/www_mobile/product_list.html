@@ -1,0 +1,28 @@
+<!-- php:$title = $cate_rs ? $cate_rs.title.' - '.$page_rs.title : $page_rs.title -->
+<!-- include tpl=head title=$title menutitle=$page_rs.title -->
+
+<div class="main">
+	<ul class="pictures">
+		<!-- loop from=$rslist key=$key value=$value -->
+		<!-- if $value.thumb -->
+		<li><a href="{$value.url}"><img src="{$value.thumb.gd.mobile}" alt="{$value.title}" border="0" /></a></li>
+		<!-- /if -->
+		<!-- /loop -->
+	</ul>
+	<div class="clear"></div>
+	<!-- include tpl=pagelist -->
+</div>
+
+
+<div data-role="footer">
+<div data-role="navbar">
+	<ul>
+		<!-- catelist pid=$page_rs.id -->
+		<!-- loop from=$list.sublist key=$key value=$value -->
+		<li><a href="{$value.url}"{if $cate_rs.id == $value.id} class="ui-btn-active"{/if}>{$value.title}</a></li>
+		<!-- /loop -->
+	</ul>
+</div>
+</div>
+
+<!-- include tpl=foot -->

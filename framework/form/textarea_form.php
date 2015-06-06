@@ -23,7 +23,8 @@ class textarea_form extends _init_auto
 	public function phpok_format($rs,$appid="admin")
 	{
 		if($appid == 'admin'){
-			$width = $rs['width']>500 ? $rs['width'].'px' : '905px';
+			//$width = $rs['width']>500 ? $rs['width'].'px' : '905px';
+			$width = '100%';
 			$height = intval($rs['height']) ? intval($rs['height']) : '100';
 			$html .= '<textarea name="'.$rs["identifier"].'" id="'.$rs["identifier"].'" phpok_id="textarea" ';
 			$html .= 'style="'.$rs["form_style"].';width:'.$width.';height:'.$height.'px"';

@@ -66,10 +66,12 @@
 			}
 			$('#phpok-upfile-'+file.id).find('span.status').html('上传成功');
 			var tmp = $.dialog.data('upload-'+self.opts.id);
-			if(self.multiple == 'true'){
+			if(self.opts.multiple == 'true'){
 				var val = $(self.id).val();
 				if(val){
 					val += ","+data.content.id;
+				}else{
+					val = data.content.id;
 				}
 				$(self.id).val(val);
 				if(tmp){

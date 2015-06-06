@@ -120,16 +120,14 @@ class cate_control extends phpok_control
 		$title = $this->get("title");
 		$identifier = $this->get("identifier");
 		if(!$title || !$identifier) $this->json("信息不完整");
-		$identifier = strtolower($identifier);
+		$identifier2 = strtolower($identifier);
 		//字符串是否符合条件
-		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$identifier))
-		{
-			$this->json("标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头！");
+		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$identifier2)){
+			$this->json(P_Lang('标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头！'));
 		}
-		$check = $this->model('id')->check_id($identifier,$_SESSION["admin_site_id"]);
-		if($check)
-		{
-			$this->json("标识已被使用");
+		$check = $this->model('id')->check_id($identifier2,$_SESSION["admin_site_id"]);
+		if($check){
+			$this->json(P_Lang('标识已被使用'));
 		}
 		$array = array();
 		$array["site_id"] = $_SESSION["admin_site_id"];
@@ -161,18 +159,17 @@ class cate_control extends phpok_control
 		$identifier = $this->get("identifier");
 		$error_url = $this->url("cate","set");
 		if($id) $error_url .= "&id=".$id;
-		if(!$identifier)
-		{
+		if(!$identifier){
 			error("标识不能为空！",$error_url,"error");
 		}
-		$identifier = strtolower($identifier);
+		$identifier2 = strtolower($identifier);
 		//字符串是否符合条件
-		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$identifier))
+		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$identifier2))
 		{
 			error("标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头！",$error_url,"error");
 		}
 		//检测标识串是否被使用了
-		$check = $this->model('id')->check_id($identifier,$_SESSION["admin_site_id"],$id);
+		$check = $this->model('id')->check_id($identifier2,$_SESSION["admin_site_id"],$id);
 		if($check) error("标识已被使用！",$error_url,"error");
 		$array = array('title'=>$title,'identifier'=>$identifier);
 		$array['parent_id'] = $this->get("parent_id","int");

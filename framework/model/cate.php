@@ -149,20 +149,6 @@ class cate_model_base extends phpok_model
 		}
 	}
 
-	//存储分类信息
-	function save($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"cate",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"cate");
-		}
-	}
-
 	//取得子分类信息
 	function get_son_id_list($id,$status=0)
 	{
@@ -322,6 +308,14 @@ class cate_model_base extends phpok_model
 				}
 			}
 		}
+	}
+
+	//读取主题下绑定的扩展分类信息
+	public function ext_catelist($id)
+	{
+		$sql = "SELECT c.* FROM ".$this->db->prefix."list_cate lc JOIN ".$this->db->prefix."cate c ON(lc.cate_id=c.id) ";
+		$sql.= "WHERE lc.id='".$id."' AND c.status=1 ORDER BY c.taxis ASC,c.id DESC";
+		return $this->db->get_all($sql,'id');
 	}
 }
 ?>
