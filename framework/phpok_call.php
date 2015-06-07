@@ -76,7 +76,11 @@ class phpok_call extends phpok_control
 			$list = $this->_phpok_sys_func();
 			$id = substr($id,1);
 			if($id == "arclist"){
-				$rs["is_list"] = $rs["is_list"] == 'false' ? false : true;
+				if(($rs['is_list'] && $rs['is_list'] != 'false') || $rs['is_list'] == true || $rs['is_list'] == 1 || !$rs['is_list']){
+					$rs['is_list'] = true;
+				}else{
+					$rs['is_list'] = false;
+				}
 			}
 			if(!$id || !in_array($id,$list)){
 				return false;
@@ -232,12 +236,14 @@ class phpok_call extends phpok_control
 		if($rs['pid']){
 			$condition .= " AND l.project_id=".intval($rs['pid'])." ";
 		}
-		if(!$rs['not_status']){
+		if($rs['not_status']){
 			if($_SESSION['user_id']){
 				$condition .= " AND (l.status=1 OR (l.user_id=".intval($_SESSION['user_id'])." AND l.status=0)) ";
 			}else{
 				$condition .= " AND l.status=1 ";
 			}
+		}else{
+			$condition .= " AND l.status=1 ";
 		}
 		if($rs['notin']){
 			$condition .= " AND l.id NOT IN(".$rs['notin'].") ";

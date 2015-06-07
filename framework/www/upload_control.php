@@ -33,12 +33,10 @@ class upload_control extends phpok_control
 	//设置权限，防止非法人员上传
 	private function popedom()
 	{
-		if(!$this->site['upload_guest'] && !$_SESSION['user_id'])
-		{
+		if(!$this->site['upload_guest'] && !$_SESSION['user_id']){
 			$this->json(P_Lang('系统已禁止游客上传，请联系管理员'));
 		}
-		if(!$this->site['upload_user'] && $_SESSION['user_id'])
-		{
+		if(!$this->site['upload_user'] && $_SESSION['user_id']){
 			$this->json(P_Lang('系统已禁止会员上传，请联系管理员'));
 		}
 		return true;
@@ -174,5 +172,154 @@ class upload_control extends phpok_control
 		$rs = $this->model('res')->get_one($id);
 		$this->json($rs,true);
 	}
+
+	public function thumbshow_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
+		$list = explode(",",$id);
+		$newlist = array();
+		foreach($list AS $key=>$value){
+			$value = intval($value);
+			if($value){
+				$newlist[] = $value;
+			}
+		}
+		$id = implode(",",$newlist);
+		if(!$id){
+			$this->json(P_Lang('请传递正确的附件ID'));
+		}
+		$rslist = $this->model("res")->get_list_from_id($id);
+		if($rslist){
+			//排序
+			$reslist = array();
+			foreach($newlist as $key=>$value){
+				if($rslist[$value]){
+					$reslist[] = $rslist[$value];
+				}
+			}
+			$this->json($reslist,true);
+		}
+		$this->json("附件信息获取失败，可能已经删除，请检查");
+	}
+
+	public function editopen_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('res')->get_one($id);
+		if(!$rs){
+			error(P_Lang('数据不存在'));
+		}
+		if($_SESSION['user_id']){
+			if($_SESSION['user_id'] != $rs['user_id']){
+				error(P_Lang('您没有权限修改此附件信息'));
+			}
+		}else{
+			if(!$rs['session_id']){
+				error(P_Lang('您没有权限修改此附件信息'));
+			}
+			if($_SESSION['session_id'] != $rs['session_id']){
+				error(P_Lang('您没有权限修改此附件信息'));
+			}
+		}
+		$note = form_edit('note',$rs['note'],'editor','width=650&height=250&etype=simple');
+		$this->assign('rs',$rs);
+		$this->assign('note',$note);
+		$this->view($this->dir_phpok."open/res_editopen.html",'abs-file',false);
+	}
+
+	public function editopen_save_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('res')->get_one($id);
+		if(!$rs){
+			$this->json(P_Lang('数据不存在'));
+		}
+		if($_SESSION['user_id']){
+			if($_SESSION['user_id'] != $rs['user_id']){
+				$this->json(P_Lang('您没有权限修改此附件信息'));
+			}
+		}else{
+			if(!$rs['session_id']){
+				$this->json(P_Lang('您没有权限修改此附件信息'));
+			}
+			if($_SESSION['session_id'] != $rs['session_id']){
+				$this->json(P_Lang('您没有权限修改此附件信息'));
+			}
+		}
+		$title = $this->get('title');
+		if(!$title){
+			$this->json(P_Lang('附件标题不能为空'));
+		}
+		$note = $this->get('note','html');
+		$this->model('res')->save(array('title'=>$title,'note'=>$note),$id);
+		$this->json(true);
+	}
+
+	public function preview_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('res')->get_one($id);
+		if(!$rs){
+			error(P_Lang('数据不存在'));
+		}
+		if($_SESSION['user_id']){
+			if($_SESSION['user_id'] != $rs['user_id']){
+				error(P_Lang('您没有权限修改此附件信息'));
+			}
+		}else{
+			if(!$rs['session_id']){
+				error(P_Lang('您没有权限修改此附件信息'));
+			}
+			if($_SESSION['session_id'] != $rs['session_id']){
+				error(P_Lang('您没有权限修改此附件信息'));
+			}
+		}
+		$arraylist = array('jpg','png','gif','jpeg');
+		if($rs['ext'] && in_array($rs['ext'],$arraylist)){
+			$this->assign('ispic',true);
+		}
+		$this->assign('rs',$rs);
+		$this->view($this->dir_phpok."open/res_openview.html",'abs-file',false);
+	}
+
+	public function delete_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('res')->get_one($id);
+		if(!$rs){
+			$this->json(P_Lang('附件信息不存在'));
+		}
+		if($_SESSION['user_id']){
+			if($_SESSION['user_id'] != $rs['user_id']){
+				$this->json(P_Lang('您没有权限删除此附件信息'));
+			}
+		}else{
+			if(!$rs['session_id']){
+				$this->json(P_Lang('您没有权限删除此附件信息'));
+			}
+			if($_SESSION['session_id'] != $rs['session_id']){
+				$this->json(P_Lang('您没有权限删除此附件信息'));
+			}
+		}
+		//执行删除操作
+		$this->model('res')->delete($id);
+		$this->json(true);
+	}
+
 }
 ?>

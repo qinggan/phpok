@@ -1,139 +1,156 @@
-<link rel="stylesheet" type="text/css" href="{#js#}/webuploader/webuploader.css" />
-<script type="text/javascript" src="{#js#}/webuploader/webuploader.min.js"></script>
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs.content}" />
+<input type="hidden" id="{$_rs.identifier}_status" value="" />
 <style type="text/css">
-/*上传相关样式*/
-._e_upload{margin:0;padding:0;overflow:hidden;}
-._e_upload:after{visibility:hidden;display:block;font-size:0;clear:both;height:0;line-height:0;margin:0;padding:0;}
-._e_upload .button{background:#E9E9E9;border:1px solid #ACACAC;height:23px;padding:0 6px;border-radius:0;color:#000;font-size:12px;font-family:"Microsoft Yahei","宋体","Tahoma","Arial"}
-._e_upload ._list{margin-top:6px;}
-._e_upload ._progress{}
-._e_upload ._select table{
-	width:100%;
-	height:auto;
-	border:0;
-	border-collapse:collapse;
-	border-spacing:0;
-}
-._e_upload ._select table td{padding:0;margin:0;border:0;padding-right:4px;}
-._e_upload ._elist .img{width:120px;text-align:center;}
-._e_upload ._elist ._line{border-bottom:1px solid #ccc;margin-bottom:3px;}
-._e_upload ._elist ._line_end{border:0;}
-._e_upload ._elist ._textarea{border:1px solid #ccc;width:450px;height:60px;}
-._e_upload ._elist ._input{border:1px solid #ccc;width:454px;}
-.webuploader_upload_list
-{
-	border:solid 1px #ACACAC;
-	background:#F7F7F7;
+.{$_rs.identifier}_thumb{float:left;width:144px;margin:3px 5px;padding:1px;border:1px solid #ccc;border-radius:3px;position:relative;}
+.{$_rs.identifier}_thumb img{padding:2px;}
+.{$_rs.identifier}_thumb .sort{position:absolute;right:5px;top:5px;}
+.{$_rs.identifier}_thumb .sort input.taxis{width:40px;border:1px solid #ccc;border-radius:3px;height:22px;text-align:center;padding:3px;}
+.phpok-btn{
 	position:relative;
-	height:21px;
-}
-.webuploader_upload_list .status
-{
-	vertical-align:baseline;
-	padding-left:5px;
-}
-.webuploader_upload_list .progress
-{
-	vertical-align:baseline;
-}
-</style>
-<script type="text/javascript">
-//附件上传成功后触发事件
-function webuploader_view_{$_rs.id}(id)
-{
-	//隐藏排序
-	$("#{$_rs.identifier}_sort").hide();
-	if(!id || id == 'undefined')
-	{
-		id = $("#{$_rs.identifier}").val();
-		if(!id || id == 'undefined')
-		{
-			$("#{$_rs.identifier}_list").hide().html();
-			return false;
-		}
-	}
-	var url = api_url("res","idlist") + "&id="+$.str.encode(id);
-	var rs = $.phpok.json(url);
-	if(rs.status != 'ok')
-	{
-		$("#{$_rs.identifier}_list").hide().html();
-		return false;
-	}
-	var list = rs.content;
-	var total = count(list);
-	var html = '<div class="_elist">';
-	var t = 1;
-	var tmp = id.split(",");
-	for(var i in tmp)
-	{
-		if(!list[tmp[i]] || list[tmp[i]] == 'undefined' || !list[tmp[i]]['ico'])
-		{
-			continue;
-		}
-		var info = list[tmp[i]];
-		var cls = t == total ? "_line_end" : "_line";
-		html += '<div class="'+cls+'"><table><tr>';
-		html += '<td class="img"><img src="'+info.ico+'" width="100px" height="100px" /></td>';
-		html += '<td valign="top">';
-		html += '<div class="_title" style="width:450px;margin-bottom:5px;"><input type="text" id="{$_rs.identifier}_title_'+info.id+'" value="'+info.title+'" class="_input" placeholder="名称"></div>';
-		html += '<div class="_note" style="width:450px;margin-bottom:5px;"><textarea id="{$_rs.identifier}_content_'+info.id+'" class="_textarea" placeholder="备注">'+info.note+'</textarea></div>';
-		html += '<div class="ext_action" style="width:450px;">';
-		html += '<button type="button" class="_btn" onclick="obj_{$_rs.identifier}.update_res('+info.id+')">更新附件信息</button>';
-		html += '<button type="button" class="_btn" onclick="obj_{$_rs.identifier}.del_res('+info.id+')">删除</button>';
-		if(total > 1)
-		{
-			html += '<input type="text" class="_taxis" value="'+t+'" data="'+info.id+'" />';
-		}
-		html += '</div></td>';
-		html += '</tr></table></div>';
-		t++;
-	}
-	html += '</div>';
-	$("#{$_rs.identifier}_list").html(html).show();
-	if(total>1)
-	{
-		$("#{$_rs.identifier}_sort").show();
-	}
+	overflow:visible;
+	display:inline-block;
+	padding:0.2em 0.6em;
+	border:1px solid #d4d4d4;
+	margin:0;
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0 #fff;
+	font:14px/normal "Microsoft Yahei","宋体","Arial",sans-serif;
+	color:#333;
+	white-space:nowrap;
+	cursor:pointer;
+	outline:none;
+	background-color:#ececec;
+	background-image:-webkit-gradient(linear,0 0,0 100%,from(#f4f4f4),to(#ececec));
+	background-image:-moz-linear-gradient(#f4f4f4,#ececec);
+	background-image:-ms-linear-gradient(#f4f4f4,#ececec);
+	background-image:-o-linear-gradient(#f4f4f4,#ececec);
+	background-image:linear-gradient(#f4f4f4,#ececec);
+	-moz-background-clip:padding;
+	background-clip:padding-box;
+	border-radius:3px;
+	zoom:1;
+	*display:inline
 }
 
-function webuploader_progress_{$_rs.id}(file)
-{
-	var html = '<div id="phpok-upfile-' + file.id + '" class="phpok-upfile-list webuploader_upload_list">' +
-					'<table><tr><td class="status">等待上传' + file.name + '…</td>' +
-					'<td width="20" id="phpok-upfile-cancel-'+file.id+'" class="hand"><img src="{#images#}/page_delete.png" border="0" /></td></tr><tr><td colspan="2" class="progress"><span>&nbsp;</span></td></tr></table>' + 
-				'</div>';
-	$("#{$_rs.identifier}_progress").append(html);
+.phpok-btn:hover,
+.phpok-btn:focus,
+.phpok-btn:active,
+.phpok-btn.active {
+	border-color: #3072b3;
+	border-bottom-color: #2a65a0;
+	text-decoration: none;
+	text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
+	color: #fff;
+	background-color: #3c8dde;
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#599bdc), to(#3072b3));
+	background-image: -moz-linear-gradient(#599bdc, #3072b3);
+	background-image: -o-linear-gradient(#599bdc, #3072b3);
+	background-image: linear-gradient(#599bdc, #3072b3);
 }
-</script>
-<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs.content}" />
+
+.phpok-btn:active,
+.phpok-btn.active {
+	border-color: #2a65a0;
+	border-bottom-color: #3884cd;
+	background-color: #3072b3;
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#3072b3), to(#599bdc));
+	background-image: -moz-linear-gradient(#3072b3, #599bdc);
+	background-image: -ms-linear-gradient(#3072b3, #599bdc);
+	background-image: -o-linear-gradient(#3072b3, #599bdc);
+	background-image: linear-gradient(#3072b3, #599bdc);
+}
+
+.phpok-btn::-moz-focus-inner {padding: 0;border: 0;}
+
+.button-group {
+    display: inline-block;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    /* IE hacks */
+    zoom: 1;
+    *display: inline;
+}
+
+.phpok-btn + .phpok-btn,
+.phpok-btn + .button-group,
+.button-group + .phpok-btn,
+.button-group + .button-group {
+    margin-left: 15px;
+}
+
+.button-group li {
+    float: left;
+    padding: 0;
+    margin: 0;
+}
+
+.button-group .phpok-btn {
+    float: left;
+    margin-left: -1px;
+}
+
+.button-group > .phpok-btn:not(:first-child):not(:last-child),
+.button-group li:not(:first-child):not(:last-child) .phpok-btn {
+    border-radius: 0;
+}
+
+.button-group > .phpok-btn:first-child,
+.button-group li:first-child .phpok-btn {
+    margin-left: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.button-group > .phpok-btn:last-child,
+.button-group li:last-child > .phpok-btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+</style>
 <div class="_e_upload">
 	<div class="_select">
 		<table>
 		<tr>
-			<td width="96px" valign="top"><div id="{$_rs.identifier}_picker"></div></td>
-			<td width="70px" valign="top"><button id="{$_rs.identifier}_submit" type="button" class="button">开始上传</button></td>
-			<td valign="top" id="{$_rs.identifier}_sort" style="display:none"><button id="select_res_{$_rs.identifier}" onclick="obj_{$_rs.identifier}.sort()" class="button" type="button">排序</button></td>
-			<td valign="top"><div class="_progress" id="{$_rs.identifier}_progress"></div></td>
+			<td><div id="{$_rs.identifier}_picker"></div></td>
+			<!-- if !$_rs.upload_auto -->
+			<td><button id="{$_rs.identifier}_submit" type="button" class="button">{lang开始上传}</button></td>
+			<!-- /if -->
+			<td id="{$_rs.identifier}_sort" style="display:none">
+				<button onclick="obj_{$_rs.identifier}.sort()" class="button" type="button">{lang排序}</button>
+				<button onclick="obj_{$_rs.identifier}.sort('title')" class="button" type="button">{lang自然排序}</button>
+			</td>
+			<td><div class="gray i" style="line-height:180%;">&nbsp;{lang支持格式有：}{$_rs.upload_type.swfupload}</div></td>
 		</tr>
 		</table>
 	</div>
+	<div class="_progress" id="{$_rs.identifier}_progress"></div>
 	<div class="_list" id="{$_rs.identifier}_list"></div>
+	<div class="clear"></div>
 </div>
 <script type="text/javascript">
 var obj_{$_rs.identifier};
 $(document).ready(function(){
-	obj_{$_rs.identifier} = new $.phpok_upload({
-		"multi"							: {$_rs.is_multiple ? 'true' : 'false'},
-		"id"							: "{$_rs.identifier}",
-		"pick"							: "#{$_rs.identifier}_picker",
-		"swf"							: "{#js#}/webuploader/uploader.swf",
-		"server"						: "{url ctrl=upload func=save/}",
-		"filetypes"						: "{$_rs.upload_type.ext}",
-		"cateid"						: "{$_rs.cate_id}",
-		"formData"						:{'{func session_name}':'{func session_id}'},
-		'preview'						:function(){webuploader_view_{$_rs.id}();},
-		'progress'						:function(file){webuploader_progress_{$_rs.id}(file);}
+	//清空本地存储，防止异常删除
+	$.dialog.data('upload-{$_rs.identifier}','');
+	obj_{$_rs.identifier} = new $.admin_upload({
+		'id':'{$_rs.identifier}',
+		'swf':'{#js#}/webuploader/uploader.swf',
+		'server':'{url ctrl=upload func=save cateid=$_rs.cate_id/}',
+		'pick':{'id':'#{$_rs.identifier}_picker','multiple':{$_rs.is_multiple ? 'true' : 'false'}},
+		'resize':false,
+		'multiple':"{$_rs.is_multiple ? 'true' : 'false'}",
+		"formData":{'{func session_name}':'{func session_id}'},
+		'fileVal':'upfile',
+		'disableGlobalDnd':true,
+		'compress':false,
+		'auto':{$_rs.upload_auto ? 'true' : 'false'},
+		'accept':{'title':'{$_rs.upload_type.title}({$_rs.upload_type.swfupload})','extensions':'{$_rs.upload_type.ext}'},
+		'fileSingleSizeLimit':'{$_rs.upload_type.maxsize}'
 	});
-	webuploader_view_{$_rs.id}();
+	obj_{$_rs.identifier}.showhtml();
 });
 </script>
+

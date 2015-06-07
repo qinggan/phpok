@@ -11,20 +11,19 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class post_control extends phpok_control
 {
 	private $user_groupid;
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 		$this->model('popedom')->siteid($this->site['id']);
 		$groupid = $this->model('usergroup')->group_id($_SESSION['user_id']);
-		if(!$groupid)
-		{
+		if(!$groupid){
 			$this->json(P_Lang('无法获取前端用户组信息'));
 		}
 		$this->user_groupid = $groupid;
 	}
 
 
-	function save_f()
+	public function save_f()
 	{
 		if($this->config['is_vcode'] && function_exists('imagecreate'))
 		{
@@ -78,22 +77,31 @@ class post_control extends phpok_control
 		$array["site_id"] = $project_rs["site_id"];
 		$array["cate_id"] = $this->get("cate_id","int");
 		$array['user_id'] = $_SESSION['user_id'] ? $_SESSION['user_id'] : 0;
-		if($tid)
-		{
+		if($tid){
 			$get_result = $this->model('list')->save($array,$tid);
-			if(!$get_result)
-			{
+			if(!$get_result){
 				$this->json(P_Lang('编辑失败，请联系管理员'));
 			}
-		}
-		else
-		{
+			if($array["cate_id"]){
+		 		$ext_cate = $this->get('ext_cate_id');
+		 		if(!$ext_cate){
+			 		$ext_cate = array($array["cate_id"]);
+		 		}
+		 		$this->model('list')->save_ext_cate($tid,$ext_cate);
+	 		}
+		}else{
 			$array["dateline"] = $this->time;
 			$insert_id = $this->model('list')->save($array);
-			if(!$insert_id)
-			{
+			if(!$insert_id){
 				$this->json(P_Lang('添加失败，请联系管理'));
 			}
+			if($array["cate_id"]){
+		 		$ext_cate = $this->get('ext_cate_id');
+		 		if(!$ext_cate){
+			 		$ext_cate = array($array["cate_id"]);
+		 		}
+		 		$this->model('list')->save_ext_cate($insert_id,$ext_cate);
+	 		}
 		}
 		$ext_list = $this->model('module')->fields_all($project_rs["module"]);
 		if(!$ext_list)
@@ -173,6 +181,36 @@ class post_control extends phpok_control
 				$this->lib('email')->send_admin($title,$content,$email);
 			}
 		}
+		$this->json(true);
+	}
+
+	public function delete_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定主题ID'));
+		}
+		$rs = $this->model('list')->get_one($id,false);
+		if(!$rs){
+			$this->json(P_Lang('主题信息不存在'));
+		}
+		if($rs['user_id'] != $_SESSION['user_id']){
+			$this->json(P_Lang('您没有权限删除这个主题'));
+		}
+		$elist = $this->model('module')->fields_all($rs["module_id"]);
+		if($elist){
+			foreach($elist as $key=>$value){
+				if($value['form_type'] == 'upload' && $rs[$value['identifier']]){
+					$list = $this->model('res')->get_list_from_id($rs[$value['identifier']]);
+					foreach($list as $k=>$v){
+						if($v['user_id'] == $_SESSION['user_id']){
+							$this->model('res')->delete($v['id']);
+						}
+					}
+				}
+			}
+		}
+		$this->model('list')->delete($id,$rs['module_id']);
 		$this->json(true);
 	}
 }

@@ -219,11 +219,32 @@ function phpok_url($rs)
 //读取会员拥有发布的权限信息
 function usercp_project()
 {
-	if(!$_SESSION['user_id'] || !$_SESSION['user_rs']['group_id']) return false;
-	$group_rs = $GLOBALS['app']->model('usergroup')->get_one($_SESSION['user_rs']['group_id']);
-	if(!$group_rs || !$group_rs['status'] || !$group_rs['post_popedom'] || $group_rs['post_popedom'] == 'none') return false;
-	return $GLOBALS['app']->model('project')->plist($group_rs['post_popedom'],1);
+	if(!$_SESSION['user_id'] || !$_SESSION['user_gid']){
+		return false;
+	}
+	$group_rs = $GLOBALS['app']->model('usergroup')->get_one($_SESSION['user_gid']);
+	$popedom = $group_rs['popedom'] ? unserialize($group_rs['popedom']) : array();
+	$site_id = $GLOBALS['app']->site['id'];
+	if(!$popedom || ($popedom && !$popedom[$site_id])){
+		return false;
+	}
+	$popedom = explode(",",$popedom[$site_id]);
+	$plist = false;
+	foreach($popedom as $key=>$value){
+		if(substr($value,0,5) == 'post:'){
+			if(!$plist){
+				$plist = array();
+			}
+			$plist[] = str_replace('post:','',trim($value));
+		}
+	}
+	if(!$plist){
+		return false;
+	}
+	$pids = implode(",",$plist);
+	return $GLOBALS['app']->model('project')->plist($pids,true);
 }
+
 //读取会员信息，如果有ID，则读取该ID数组信息
 function usercp_info($field="")
 {

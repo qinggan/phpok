@@ -27,44 +27,35 @@ class post_control extends phpok_control
 	{
 		$id = $this->get("id");
 		$pid = $this->get('pid','int');
-		if(!$id && !$pid)
-		{
+		if(!$id && !$pid){
 			error(P_Lang('未指定项目'),'','error');
 		}
 		$project_rs = $this->call->phpok('_project',array("phpok"=>$id,'pid'=>$pid));
-		if(!$project_rs || !$project_rs['module'])
-		{
+		if(!$project_rs || !$project_rs['module']){
 			error(P_Lang("项目不符合要求"),'','error');
 		}
-		if(!$project_rs['post_status'])
-		{
+		if(!$project_rs['post_status']){
 			error(P_Lang('项目未启用发布功能，联系管理员启用此功能'),'','error');
 		}
 		$project_rs['url'] = $this->url('post',$project_rs['identifier']);
 		$this->assign("page_rs",$project_rs);
-		if(!$this->model('popedom')->check($project_rs['id'],$this->user_groupid,'post'))
-		{
+		if(!$this->model('popedom')->check($project_rs['id'],$this->user_groupid,'post')){
 			error(P_Lang('您没有发布权限，请联系网站管理员'),'','error');
 		}
 		//绑定分类信息
-		if($project_rs['cate'])
-		{
+		if($project_rs['cate']){
 			$catelist = array();
 			$cate_all = $this->model("cate")->cate_all($project_rs['site_id']);
 			$this->model("cate")->sublist($catelist,$project_rs['cate'],$cate_all);
 			$this->assign("catelist",$catelist);
 		}
 		$cateid = $this->get("cateid","int");
-		if($cateid)
-		{
+		if($cateid){
 			$cate_rs = $this->model('data')->cate(array('pid'=>$project_rs['id'],'cateid'=>$cateid,'cate_ext'=>true));
 			$this->assign("cate_rs",$cate_rs);
-		}
-		else
-		{
+		}else{
 			$cate = $this->get('cate');
-			if($cate)
-			{
+			if($cate){
 				$cate_rs = $this->model('data')->cate(array('pid'=>$project_rs['id'],'cate'=>$cate,'cate_ext'=>true));
 				$this->assign("cate_rs",$cate_rs);
 			}
@@ -73,17 +64,13 @@ class post_control extends phpok_control
 		//扩展字段
 		$ext_list = $this->model('module')->fields_all($project_rs["module"],"identifier");
 		$extlist = array();
-		foreach(($ext_list ? $ext_list : array()) AS $key=>$value)
-		{
-			if(!$value['is_front'])
-			{
+		foreach(($ext_list ? $ext_list : array()) AS $key=>$value){
+			if(!$value['is_front']){
 				continue;
 			}
-			if($value["ext"])
-			{
+			if($value["ext"]){
 				$ext = unserialize($value["ext"]);
-				foreach($ext AS $k=>$v)
-				{
+				foreach($ext AS $k=>$v){
 					$value[$k] = $v;
 				}
 			}
@@ -91,15 +78,13 @@ class post_control extends phpok_control
 		}
 		$this->assign("extlist",$extlist);
 		$tpl = $project_rs['post_tpl'] ? $project_rs['post_tpl'] : $project_rs['identifier'].'_post';
-		if(!$this->tpl->check_exists($tpl))
-		{
+		if(!$this->tpl->check_exists($tpl)){
 			error('未配置发布模板，联系管理员进行配置');
 		}
 		//返回上一级网址
 		$_back = $this->get("_back");
 		if(!$_back) $_back = $_SERVER["HTTP_REFERER"];
-		if(!$_back)
-		{
+		if(!$_back){
 			$_back = $this->url($project_rs['identifier'],$cate_rs['identifier']);
 		}
 		$this->assign('_back',$_back);

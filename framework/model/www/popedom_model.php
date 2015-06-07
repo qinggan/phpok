@@ -27,12 +27,10 @@ class popedom_model extends popedom_model_base
 	public function check($pid,$groupid=0,$type='read')
 	{
 		$popedom = $this->_popedom_list($groupid);
-		if(!$popedom)
-		{
+		if(!$popedom){
 			return false;
 		}
-		if(in_array($type.':'.$pid,$popedom))
-		{
+		if(in_array($type.':'.$pid,$popedom)){
 			return true;
 		}
 		return false;
@@ -42,13 +40,11 @@ class popedom_model extends popedom_model_base
 	{
 		$sql = "SELECT popedom FROM ".$this->db->prefix."user_group WHERE id='".$groupid."' AND status=1";
 		$rs = $this->db->get_one($sql);
-		if(!$rs || !$rs['popedom'])
-		{
+		if(!$rs || !$rs['popedom']){
 			return false;
 		}
 		$popedom = unserialize($rs['popedom']);
-		if(!$popedom[$this->site_id])
-		{
+		if(!$popedom[$this->site_id]){
 			return false;
 		}
 		return explode(",",$popedom[$this->site_id]);

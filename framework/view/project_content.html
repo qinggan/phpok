@@ -8,7 +8,7 @@ $(document).ready(function(){
 			'dataType':'json',
 			'success':function(rs){
 				if(rs.status == 'ok'){
-					$.dialog.tips("{lang数据保存成功}");
+					$.dialog.alert("{lang数据保存成功}",function(){$.phpok.reload();},'succeed');
 				}else{
 					$.dialog.alert(rs.content);
 				}

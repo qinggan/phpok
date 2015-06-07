@@ -277,7 +277,9 @@ class project_model_base extends phpok_model
 	function plist($id,$status=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id IN(".$id.") ";
-		if($status) $sql.= "AND p.status=1 ";
+		if($status){
+			$sql.= "AND status=1 ";
+		}
 		$sql.= "ORDER BY taxis ASC,id DESC";
 		return $this->db->get_all($sql);
 	}

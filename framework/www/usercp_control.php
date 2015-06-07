@@ -76,6 +76,7 @@ class usercp_control extends phpok_control
 	//获取项目列表
 	public function list_f()
 	{
+		error_reporting(E_ALL ^ E_NOTICE);
 		$id = $this->get("id");
 		if(!$id){
 			error(P_Lang('未指定项目'),$this->url('usercp'),'notice',10);
@@ -84,21 +85,18 @@ class usercp_control extends phpok_control
 		if(!$pid){
 			error('项目信息不存在',$this->url('usercp'),'error');
 		}
-		//判断是否有这个权限
-		if(!$this->model('popedom')->check($pid,$this->user_groupid,'post')){
+		if(!$this->model('popedom')->check($pid,$this->group_rs['id'],'post')){
 			error(P_Lang('您没有这个权限功能，请联系网站管理员'),$this->url('usercp'),'error');
 		}
 		$project_rs = $this->model('project')->get_one($pid);
-		if(!$project_rs || !$project_rs['status'])
-		{
-			error('项目不存在或未启用',$this->url('usercp'),'error');
+		if(!$project_rs || !$project_rs['status']){
+			error(P_Lang('项目不存在或未启用'),$this->url('usercp'),'error');
 		}
 		$tplfile = 'usercp_'.$id;
 		$tplfile.= $project_rs['module'] ? '_list' : '_page';
 		//非列表项目直接指定
 		$this->assign("page_rs",$project_rs);
-		if(!$project_rs['module'])
-		{
+		if(!$project_rs['module']){
 			$this->view($tplfile);
 			exit;
 		}
@@ -108,44 +106,36 @@ class usercp_control extends phpok_control
 		$pageid = $this->get($this->config['pageid'],'int');
 		if(!$pageid) $pageid = 1;
 		$psize = $project_rs['psize'] ? $project_rs['psize'] : $this->config['psize'];
-		if(!$psize) $psize = 20;
+		if(!$psize){
+			$psize = 20;
+		}
 		$offset = ($pageid-1) * $psize;
 		$tpl = $this->get('tpl');
-		if($tpl)
-		{
+		if($tpl){
 			$pageurl .= "&tpl=".rawurlencode($tpl);
 			$tplfile = $tpl;
 		}
-		//查询条件
-		$condition = " l.project_id='".$pid."' AND l.user_id='".$_SESSION["user_id"]."' ";
-		$condition.= " AND l.module_id='".$project_rs["module"]."' ";
+		$dt['psize'] = $psize;
+		$dt['offset'] = $offset;
 		$keywords = $this->get('keywords');
-		if($keywords)
-		{
+		if($keywords){
 			$dt['keywords'] = $keywords;
 			$pageurl .= "&keywords=".$keywords;
 			$this->assign("keywords",$keywords);
-			//$condition .= " AND l.title LIKE '%".$keywords."%'";
 		}
 		$dt['not_status'] = 1;
-		//取得内容总数
-		$total = $this->model('data')->total($dt);
-		if($total>0)
-		{
-			$dt['offset'] = $offset;
-			$dt['psize'] = $psize;
-			$dt['in_text'] = 0;
-			$dt['is_list'] = 1;
-			//$rslist = $this->model('list')->get_list($project_rs['module'],$condition,$offset,$psize,"",$project_rs["orderby"]);
-			$rslist = $this->model('data')->arclist($dt);
-			//$rslist = $this->call->phpok("_arclist",$dt);
+		$dt['is_list'] = true;
+		$list = $this->call->phpok('_arclist',$dt);
+		if($list['total']){
 			$this->assign("pageid",$pageid);
 			$this->assign("psize",$psize);
 			$this->assign("pageurl",$pageurl);
-			$this->assign("total",$total);
-			$this->assign("rslist",$rslist);
+			$this->assign("total",$list['total']);
+			$this->assign("rslist",$list['rslist']);
 		}
-		if(!$this->tpl->check_exists($tplfile)) $tplfile = "usercp_list";
+		if(!$this->tpl->check_exists($tplfile)){
+			$tplfile = "usercp_list";
+		}
 		$this->view($tplfile);
 	}
 

@@ -12,9 +12,8 @@ var edit_config_{$_rs.id} = {
 		'justifyleft', 'justifycenter', 'justifyright', '|',
 		'removeformat', 'autotypeset', 'blockquote', '|',
 		'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', '|',
-		'horizontal', 'date', 'time',  '|',
-		'inserttable', 'link', 'unlink','|',
-		'insertimage',
+		'horizontal','inserttable', 'link', 'unlink','|',
+		{if $_rs.btn_image}'insertimage',{/if}
 		{if $_rs.btn_map}'map',{/if}
 		{if $_rs.btn_video}'insertvideo',{/if}
 		{if $_rs.btn_file}'attachment',{/if}
@@ -23,7 +22,7 @@ var edit_config_{$_rs.id} = {
 	//扩展字段
 	,'labelMap':{'phpokvideo':'影音库','phpokfile':'附件库','phpokinfo':'主题库'}
     //初始化宽度
-    ,'initialFrameWidth':'730'
+    ,'initialFrameWidth':'{$_rs.width}'
     //允许使用DIV
     ,'allowDivTransTop': false
     //初始化高度

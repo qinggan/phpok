@@ -182,26 +182,47 @@ class upload_form extends _init_auto
 
 	private function _format_default($rs)
 	{
-		$rs = $this->_content_list($rs);
-		$type_list = $this->model('res')->type_list();
-		$type_id = $rs["upload_type"];
-		if($rs["upload_type"] && $type_list[$rs["upload_type"]]){
-			$rs["upload_type"] = $type_list[$rs["upload_type"]];
+		$this->cssjs();
+		$this->addjs('js/webuploader/admin.upload.js');
+		if($rs["content"]){
+			if(is_string($rs["content"])){
+				$res = $this->model('res')->get_list_from_id($rs['content']);
+			}else{
+				$is_list = $rs["content"]["id"] ? false : true;
+				$res = array();
+				if($is_list){
+					foreach($rs["content"]["info"] AS $key=>$value){
+						$res[$value["id"]] = $value;
+					}
+				}else{
+					$res[$rs["content"]["id"]] = $rs["content"];
+				}
+				$id_list = array_keys($res);
+				$rs["content"] = implode(",",$id_list);
+			}
+			$rs["content_list"] = $res; //附件列表
 		}else{
-			$str_array = array();
-			foreach($type_list AS $key=>$value){
-				$str_array[] = $value["ext"];
-			}
-			$str = implode(',',$str_array);
-			$swfupload = array();
-			$str_array = explode(",",$str);
-			foreach($str_array AS $key=>$value){
-				$swfupload[] = "*.".$value;
-			}
-			$swfupload = implode(";",$swfupload);
-			$rs["upload_type"] = array("id"=>"file","title"=>"附件","ext"=>$str,"swfupload"=>$swfupload);
+			$rs["content_list"] = array(); //附件列表
 		}
-		$rs["upload_type"]["id"] = $type_id;
+
+		//上传类型
+		$upload_type = array('title'=>'图片','ext'=>'jpg,gif,png','maxsize'=>'512000','swfupload'=>'*.jpg,*.png,*.gif');
+		$ext = $rs['ext'] ? unserialize($rs['ext']) : array();
+		if($ext['cate_id']){
+			$cateinfo = $this->model('rescate')->get_one($ext['cate_id']);
+			if($cateinfo){
+				$upload_type = array('title'=>($cateinfo['typeinfo'] ? $cateinfo['typeinfo'] : $cateinfo['title']));
+				$upload_type['ext'] = $cateinfo['filetypes'] ? $cateinfo['filetypes'] : 'jpg,png,gif';
+				$upload_type['maxsize'] = $cateinfo['filemax'] * 1024;
+				$upload_type['id'] = $ext['cate_id'];
+				$tmp = array();
+				foreach(explode(",",$upload_type['ext']) as $key=>$value){
+					$tmp[] = "*.".$value;
+				}
+				$upload_type['swfupload'] = implode(", ",$tmp);
+			}
+		}
+		$rs['upload_type'] = $upload_type;
 		$this->assign("_rs",$rs);
 		return $this->fetch($this->dir_phpok.'form/html/upload_www_tpl.html','abs-file',false);
 	}
