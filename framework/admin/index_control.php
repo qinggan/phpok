@@ -131,6 +131,9 @@ class index_control extends phpok_control
 		if($list_setting){
 			$this->assign('list_setting',$list_setting);
 		}
+		//读取语言包
+		$langlist = $this->model('lang')->get_list();
+		$this->assign('langlist',$langlist);
 		$this->view("index");
 	}
 

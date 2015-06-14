@@ -58,7 +58,7 @@ class paypal_submit
 		echo 'document.getElementById("paypalform").submit();'."\n";
 		echo 'return true;'."\n";
 		echo '}'."\n";
-		//echo 'go_paypal();'."\n";
+		echo 'go_paypal();'."\n";
 		echo '</script>'."\n";
 		echo "\n".'</body>'."\n</html>";
 		exit;

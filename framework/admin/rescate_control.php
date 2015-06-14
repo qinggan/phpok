@@ -21,7 +21,7 @@ class rescate_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('无权限，请联系系统管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$rslist = $this->model('rescate')->get_all();
 		$this->assign('rslist',$rslist);
@@ -33,12 +33,12 @@ class rescate_control extends phpok_control
 		$id = $this->get('id','int');
 		if(!$id){
 			if(!$this->popedom["add"]){
-				error(P_Lang('无权限，请联系系统管理员开放权限'),$this->url('rescate'),'error');
+				error(P_Lang('您没有权限执行此操作'),$this->url('rescate'),'error');
 			}
 			$rs = array();
 		}else{
 			if(!$this->popedom["modify"]){
-				error(P_Lang('无权限，请联系系统管理员开放权限'),$this->url('rescate'),'error');
+				error(P_Lang('您没有权限执行此操作'),$this->url('rescate'),'error');
 			}
 			$rs = $this->model('rescate')->get_one($id);
 			$this->assign('id',$id);
@@ -55,11 +55,11 @@ class rescate_control extends phpok_control
 		$id = $this->get('id','int');
 		if(!$id){
 			if(!$this->popedom['add']){
-				$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+				$this->json(P_Lang('您没有权限执行此操作'));
 			}
 		}else{
 			if(!$this->popedom['modify']){
-				$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+				$this->json(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		$title = $this->get('title');
@@ -125,7 +125,7 @@ class rescate_control extends phpok_control
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
-			$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){

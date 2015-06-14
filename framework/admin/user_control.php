@@ -22,7 +22,9 @@ class user_control extends phpok_control
 	//会员列表
 	function index_f()
 	{
-		if(!$this->popedom["list"]) error("你没有查看权限");
+		if(!$this->popedom["list"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid) $pageid = 1;
 		$psize = $this->config["psize"];
@@ -39,7 +41,9 @@ class user_control extends phpok_control
 		$offset = ($pageid-1) * $psize;
 		$rslist = $this->model('user')->get_list($condition,$offset,$psize);
 		$count = $this->model('user')->get_count($condition);
-		$pagelist = phpok_page($page_url,$count,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=数量：(total)/(psize)，页码：(num)/(total_page)&always=1");
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
+		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 		$this->assign("total",$count);
 		$this->assign("rslist",$rslist);
 		$this->assign("pagelist",$pagelist);
@@ -62,12 +66,16 @@ class user_control extends phpok_control
 		$id = $this->get("id","int");
 		if($id)
 		{
-			if(!$this->popedom["modify"]) error("你没有修改权限");
+			if(!$this->popedom["modify"]){
+				error(P_Lang('您没有权限执行此操作'),'','error');
+			}
 			$rs = $this->model('user')->get_one($id);
 		}
 		else
 		{
-			if(!$this->popedom["add"]) error("你没有添加权限");
+			if(!$this->popedom["add"]){
+				error(P_Lang('您没有权限执行此操作'),'','error');
+			}
 		}
 		//创建扩展字段的表单
 		//读取扩展属性
@@ -106,14 +114,14 @@ class user_control extends phpok_control
 		$user = $this->get("user");
 		if(!$user)
 		{
-			json_exit("会员账号不允许为空");
+			$this->json(P_Lang('会员账号不允许为空'));
 		}
 		$rs_name = $this->model('user')->chk_name($user,$id);
 		if($rs_name)
 		{
-			json_exit("会员账号已经存在");
+			$this->json(P_Lang('会员账号已经存在'));
 		}
-		json_exit("验证通过",true);
+		$this->json(P_Lang('验证通过'),true);
 	}
 
 	//存储信息
@@ -137,13 +145,9 @@ class user_control extends phpok_control
 				$array["pass"] = password_create("123456");
 			}
 		}
-		if($id)
-		{
-			if(!$this->popedom["modify"]) error("你没有修改权限");
-		}
-		else
-		{
-			if(!$this->popedom["add"]) error("你没有添加权限");
+		$popedom_id = $id ? 'modify' : 'add';
+		if(!$this->popedom[$popedom_id]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$array["group_id"] = $this->get("group_id","int");
 		if($this->popedom["status"])
@@ -178,17 +182,17 @@ class user_control extends phpok_control
 			$tmplist[$value["identifier"]] = $val;
 		}
 		$this->model('user')->save_ext($tmplist);
-		$note = $id ? "会员编辑成功" : "新会员添加成功";
+		$note = $id ? P_Lang('会员编辑成功') : P_Lang('新会员添加成功');
 		error($note,$this->url("user"),"ok");
 	}
 
 	function ajax_status_f()
 	{
-		if(!$this->popedom["status"]) exit("你没有启用/禁用权限");
+		if(!$this->popedom["status"]) exit(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
 		if(!$id)
 		{
-			exit("error:没有指定ID");
+			exit(P_Lang('没有指定ID'));
 		}
 		$rs = $this->model('user')->get_one($id);
 		$status = $rs["status"] ? 0 : 1;
@@ -198,11 +202,10 @@ class user_control extends phpok_control
 
 	function ajax_del_f()
 	{
-		if(!$this->popedom["delete"]) exit("error:你没有删除权限");
+		if(!$this->popedom["delete"]) exit(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
-		if(!$id)
-		{
-			exit("error:没有指定ID");
+		if(!$id){
+			exit(P_Lang('未指定ID'));
 		}
 		$this->model('user')->del($id);
 		exit("ok");
@@ -224,7 +227,9 @@ class user_control extends phpok_control
 	function fields_f()
 	{
 		$this->fields_auto();
-		if(!$this->popedom["list"]) error("你没有查看权限");
+		if(!$this->popedom["list"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		// 取得现有全部字段
 		$condition = "area LIKE '%user%'";
 		$used_list = $this->model('user')->fields_all("","identifier");
@@ -275,7 +280,7 @@ class user_control extends phpok_control
 	function fields_save_f()
 	{
 		$this->fields_auto();
-		if(!$this->popedom["set"]) error("你没有权限");
+		if(!$this->popedom["set"]) error(P_Lang('您没有权限执行此操作'));
 		$id_list = isset($_POST["add_field"]) ? $_POST["add_field"] : "";
 		if($id_list && is_array($id_list))
 		{
@@ -309,18 +314,18 @@ class user_control extends phpok_control
 				$this->model('user')->create_fields($value);
 			}
 		}
-		error("会员自定义字段配置成功",$this->url("user","fields"));
+		error(P_Lang('会员自定义字段配置成功'),$this->url("user","fields"));
 	}
 
 	
 	function field_edit_f()
 	{
 		$this->fields_auto();
-		if(!$this->popedom["set"]) error_open("你没有权限");
+		if(!$this->popedom["set"]) error_open(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
 		if(!$id)
 		{
-			error_open("未指定ID");
+			error_open(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('user')->field_one($id);
 		$this->assign("rs",$rs);
@@ -331,11 +336,11 @@ class user_control extends phpok_control
 	function field_edit_save_f()
 	{
 		$this->fields_auto();
-		if(!$this->popedom["set"]) error_open("你没有权限");
+		if(!$this->popedom["set"]) error_open(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
 		if(!$id)
 		{
-			error_open("未指定ID");
+			error_open(P_Lang('未指定ID'));
 		}
 		$title = $this->get("title");
 		$note = $this->get("note");
@@ -375,21 +380,21 @@ class user_control extends phpok_control
 		$array["ext"] = ($ext && count($ext)>0) ? serialize($ext) : "";
 		$array["is_edit"] = $this->get("is_edit","int");
 		$this->model('user')->fields_save($array,$id);
-		$html = '<input type="button" value=" 确定 " class="submit" onclick="$.dialog.close();" />';
-		error_open("自定义字段信息配置成功！","ok",$html);
+		$html = '<input type="button" value=" '.P_Lang('确定').' " class="submit" onclick="$.dialog.close();" />';
+		error_open(P_Lang('自定义字段信息配置成功'),"ok",$html);
 	}
 	//删除字段
 	function field_delete_f()
 	{
 		$this->fields_auto();
-		if(!$this->popedom["set"]) json_exit("你没有权限");
+		if(!$this->popedom["set"]) $this->json(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
 		if(!$id)
 		{
-			json_exit("未指定要删除的字段！");
+			$this->json(P_Lang('未指定要删除的字段'));
 		}
 		$this->model('user')->field_delete($id);
-		json_exit("删除成功！",true);
+		$this->json(P_Lang('删除成功'),true);
 	}
 }
 ?>

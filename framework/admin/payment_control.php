@@ -22,9 +22,8 @@ class payment_control extends phpok_control
 	//读取所有可用的支付接口
 	function index_f()
 	{
-		if(!$this->popedom['list'])
-		{
-			error(P_Lang('您没有查看权限'),$this->url('index'),'error');
+		if(!$this->popedom["list"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		//取得符合要求的全部组
 		$rslist = $this->model('payment')->group_all($_SESSION['admin_site_id']);
@@ -46,21 +45,16 @@ class payment_control extends phpok_control
 	function groupset_f()
 	{
 		$id = $this->get('id','int');
-		if($id)
-		{
-			if(!$this->popedom['groupedit'])
-			{
-				$this->error(P_Lang('你没有编辑支付组权限'));
+		if($id){
+			if(!$this->popedom["groupedit"]){
+				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
 			$rs = $this->model('payment')->group_one($id);
 			$this->assign('rs',$rs);
 			$this->assign('id',$id);
-		}
-		else
-		{
-			if(!$this->popedom['groupadd'])
-			{
-				$this->error(P_Lang('你没有添加支付组权限'));
+		}else{
+			if(!$this->popedom["groupadd"]){
+				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
 		}
 		$this->view('payment_groupset');
@@ -70,24 +64,14 @@ class payment_control extends phpok_control
 	function groupsave_f()
 	{
 		$id = $this->get('id','int');
-		if($id)
-		{
-			if(!$this->popedom['groupedit'])
-			{
-				$this->json(P_Lang('你没有编辑支付组权限'));
-			}
-		}
-		else
-		{
-			if(!$this->popedom['groupadd'])
-			{
-				$this->json(P_Lang('你没有添加支付组权限'));
-			}
+		$popedom_id = $id ? 'groupedit' : 'groupadd';
+		if(!$this->popedom[$popedom_id]){
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$title = $this->get('title');
 		if(!$title)
 		{
-			$this->json(P_Lang('支付组名称不能为空'));
+			$this->json(P_Lang('名称不能为空'));
 		}
 		$data = array('site_id'=>$_SESSION['admin_site_id'],'title'=>$title);
 		$data['taxis'] = $this->get('taxis','int');
@@ -95,8 +79,8 @@ class payment_control extends phpok_control
 		$insert = $this->model('payment')->groupsave($data,$id);
 		if(!$insert)
 		{
-			$tip = $id ? '支付组编辑失败' : '支付组添加失败';
-			$this->json(P_Lang($tip));
+			$tip = $id ? P_Lang('编辑失败') : P_Lang('添加失败');
+			$this->json($tip);
 		}
 		if($id)
 		{
@@ -114,22 +98,19 @@ class payment_control extends phpok_control
 	//删除所有支付组
 	function groupdel_f()
 	{
-		if(!$this->popedom['groupdelete'])
-		{
-			$this->json(P_Lang('你没有删除支付组权限'));
+		if(!$this->popedom['groupdelete']){
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
-		if(!$id)
-		{
-			$this->json(P_Lang('未指定要删除的支付组'));
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
 		}
 		$rslist = $this->model('payment')->get_all("gid='".$id."'");
-		if($rslist)
-		{
-			$this->json(P_Lang('支付组下已存在支付方案，请先迁移'));
+		if($rslist){
+			$this->json(P_Lang('已存在支付方案，请先移除'));
 		}
 		$this->model('payment')->group_delete($id);
-		$this->json(P_Lang('支付组别已删除成功'),true);
+		$this->json(P_Lang('删除成功'),true);
 	}
 	
 	function set_f()
@@ -151,7 +132,7 @@ class payment_control extends phpok_control
 		}
 		if(!$code)
 		{
-			error(P_Lang('未指定支付接口引挈'),$this->url('payment'),'error');
+			error(P_Lang('未指定支付接口'),$this->url('payment'),'error');
 		}
 		$this->assign('gid',$gid);
 		$this->assign('code',$code);
@@ -186,7 +167,7 @@ class payment_control extends phpok_control
 		}
 		if(!$code)
 		{
-			error(P_Lang('未指定支付接口引挈'),$this->url('payment'),'error');
+			error(P_Lang('未指定支付接口'),$this->url('payment'),'error');
 		}
 		$error_url = $id ? $this->url('payment','set','id='.$id) : $this->url('payment','set','gid='.$gid."&code=".$code);
 		$codeinfo = $this->model('payment')->code_one($code);
@@ -230,20 +211,18 @@ class payment_control extends phpok_control
 			$data['param'] = serialize($ext);
 		}
 		$this->model('payment')->save($data,$id);
-		$tip = $id ? '编辑支付操作成功' : '添加支付操作成功';
-		error(P_Lang($tip),$this->url('payment'),'ok');
+		$tip = $id ? P_Lang('编辑成功') : P_Lang('添加成功');
+		error($tip,$this->url('payment'),'ok');
 	}
 
 	function delete_f()
 	{
-		if(!$this->popedom['delete'])
-		{
-			$this->json(P_Lang('您没有删除权限'));
+		if(!$this->popedom['delete']){
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
-		if(!$id)
-		{
-			$this->json(P_Lang('未指定要删除的支付方案'));
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
 		}
 		$this->model('payment')->delete($id);
 		$this->json(P_Lang('删除成功'),true);

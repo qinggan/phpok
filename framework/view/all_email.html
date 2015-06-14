@@ -6,18 +6,18 @@ $(document).ready(function(){
 		$(this).ajaxSubmit({
 			'type':'post',
 			'dataType':'json',
-			'url':api_url('email'),
+			'url':api_url('email','','_langid={$session.admin_lang_id}'),
 			'success':function(rs){
 				if(rs.status == 'ok')
 				{
 					var email = $('#email').val();
-					$.dialog.alert('邮件已发送到指定邮箱：'+email,function(){
+					$.dialog.alert('{lang邮件已发送到指定邮箱：}'+email,function(){
 						$.phpok.reload();
 					},'succeed');
 				}
 				else
 				{
-					if(!rs.content) rs.content = '邮件发送失败';
+					if(!rs.content) rs.content = '{lang邮件发送失败}';
 					$.dialog.alert(rs.content);
 					return false;
 				}
@@ -28,15 +28,15 @@ $(document).ready(function(){
 });
 </script>
 <div class="tips">
-	您当前的位置：
-	<a href="{echo admin_url('all')}">全局维护</a>
-	&raquo; 在线发送邮件
+	{lang您当前的位置：}
+	<a href="{echo admin_url('all')}">{lang全局维护}</a>
+	&raquo; {lang在线发送邮件}
 </div>
 <form method="post" id="email_test">
 <div class="table">
 	<div class="title">
-		目标邮箱：
-		<span class="note">即收件人邮箱</span></span>
+		{lang目标邮箱：}
+		<span class="note">{lang即收件人邮箱}</span></span>
 	</div>
 	<div class="content">
 		<input type="text" id="email" name="email" class="long" value="" />
@@ -44,15 +44,15 @@ $(document).ready(function(){
 </div>
 <div class="table">
 	<div class="title">
-		邮件主题：
-		<span class="note">填写邮件的主题，为空将读取内容的前面50字符（即25个汉字）</span></span>
+		{lang邮件主题：}
+		<span class="note">{lang填写邮件的主题，不能为空}</span></span>
 	</div>
 	<div class="content"><input type="text" id="title" name="title" class="long" value="" /></div>
 </div>
 <div class="table">
 	<div class="title">
-		邮件内容：
-		<span class="note">测试的邮件，支持HTML！</span></span>
+		{lang邮件内容：}
+		<span class="note">{lang填写要发送的邮件内容}</span></span>
 	</div>
 	<div class="content">{$content}</div>
 </div>
@@ -60,7 +60,7 @@ $(document).ready(function(){
 <div class="table">
 	<div class="content">
 		<br />
-		<input type="submit" value="提 交" class="submit" />
+		<input type="submit" value="{lang提交}" class="submit2" />
 		<br />
 	</div>
 </div>

@@ -18,8 +18,12 @@ class logout_control extends phpok_control
 	function index_f()
 	{
 		$admin_name = $_SESSION["admin_account"];
-		session_destroy();
-		error("管理员 <span class='red'>".$admin_name."</span> 成功退出",$this->url("login"),"ok");
+		foreach($_SESSION as $key=>$value){
+			if(substr($key,0,5) == 'admin' && $key != 'admin_lang_id'){
+				unset($_SESSION[$key]);
+			}
+		}
+		error(P_Lang('管理员{admin_name}成功退出',array('admin_name'=>'<span class="red">'.$admin_name.'</span>')),$this->url('login'),'ok');
 	}
 }
 ?>

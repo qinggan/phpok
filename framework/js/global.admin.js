@@ -144,12 +144,12 @@ function autofill(type)
 function phpok_pic(id)
 {
 	if(!id || id == "undefined"){
-		$.dialog.alert("未指定ID");
+		$.dialog.alert(p_lang('未指定ID'));
 		return false;
 	}
 	var url = get_url("open","input",'id='+id);
 	$.dialog.open(url,{
-		title: "图片管理器",
+		title: p_lang('图片管理器'),
 		lock : true,
 		width: "650px",
 		height: "450px"
@@ -188,36 +188,16 @@ function phpok_tpl_open(id)
 	});
 }
 
-function phpok_admin_control()
-{
-	var url = get_url("me","setting");
-	$.dialog.open(url,{
-		"title":"修改管理员信息",
-		"width":600,
-		"height":400,
-		"lock":true,
-		'move':false,
-		'is_max':false
-	});
-}
 
-function phpok_admin_logout()
+function p_lang(str)
 {
-	$.dialog.confirm("确定要退出吗？",function(){
-		var url = get_url("logout");
-		$.phpok.go(url);
-	});
-}
-
-function phpok_admin_clear()
-{
-	var url = get_url("index","clear");
-	var rs = $.phpok.json(url);
-	if(rs.status == "ok"){
-		$.dialog.alert("缓存清空完成");
-	}else{
-		$.dialog.alert(rs.content);
+	if(!str || str == 'undefined'){
+		return false;
 	}
+	if(lang && lang[str]){
+		return lang[str];
+	}
+	return str;
 }
 
 

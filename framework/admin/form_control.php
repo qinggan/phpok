@@ -20,7 +20,7 @@ class form_control extends phpok_control
 		$id = $this->get("id");
 		if(!$id)
 		{
-			exit("未指定ID");
+			exit(P_Lang('未指定ID'));
 		}
 		$eid = $this->get("eid","int");
 		$etype = $this->get("etype");

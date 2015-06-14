@@ -447,55 +447,81 @@ class res_model_base extends phpok_model
 		return $rslist;
 	}
 
-	//更新附件属性
-	function gd_update($id)
+	public function gd_update($id)
 	{
-		if(!$id) return false;
+		if(!$id){
+			return false;
+		}
 		$rs = $this->get_one($id);
-		if(!$rs) return false;
-		//更新后台缩略图
+		if(!$rs){
+			return false;
+		}
+		if($rs['cate_id']){
+			$cate_rs = $this->model('rescate')->get_one($rs['cate_id']);
+		}
+		if(!$cate_rs){
+			$cate_rs = $this->model('rescate')->get_default();
+			if(!$cate_rs){
+				return false;
+			}
+			$sql = "UPDATE ".$this->db->prefix."res SET cate_id='".$cate_rs['id']."' WHERE id='".$id."'";
+			$this->db->query($sql);
+		}
 		$arraylist = array("jpg","gif","png","jpeg");
-		$main = array();
-		if(in_array($rs["ext"],$arraylist))
-		{
-			$ico = $GLOBALS['app']->lib('gd')->thumb($this->dir_root.$rs["filename"],$id);
-			if(!$ico)
-			{
-				$ico = "images/filetype-large/".$rs["ext"].".jpg";
-				if(!is_file($this->dir_root.$ico)) $ico = "images/filetype-large/unknown.jpg";
-			}
-			else
-			{
-				$ico = $rs["folder"].$ico;
-			}
-			$main["ico"] = $ico;
-		}
-		else
-		{
+		if(!in_array($rs['ext'],$arraylist)){
 			$ico = "images/filetype-large/".$rs["ext"].".jpg";
-			if(!is_file($this->dir_root.$ico)) $ico = "images/filetype-large/unknown.jpg";
-			$main["ico"] = $ico;
+			if(!is_file($this->dir_root.$ico)){
+				$ico = "images/filetype-large/unknown.jpg";
+			}
+			$sql = "UPDATE ".$this->db->prefix."res SET ico='".$ico."' WHERE id='".$id."'";
+			$this->db->query($sql);
+			return true;
 		}
-		$this->save($main,$id);
-		//更新扩展附件ID
+		$ico = '';
+		if($cate_rs['ico']){
+			$ico = $this->lib('gd')->thumb($this->dir_root.$rs['filename'],$id);
+		}
+		if(!$ico){
+			$ico = "images/filetype-large/".$rs["ext"].".jpg";
+			if(!file_exists($ico)){
+				$ico = "images/filetype-large/unknown.jpg";
+			}
+		}
+		$sql = "UPDATE ".$this->db->prefix."res SET ico='".$ico."' WHERE id='".$id."'";
+		$this->db->query($sql);
 		$this->ext_delete($id);
-		//当附件不符合条件时，自动返回成功
-		if(!in_array($rs["ext"],$arraylist)) return true;
-		//获取站点可用更新属性
-		$gdlist = $GLOBALS['app']->model('gd')->get_all();
-		if(!$gdlist) $gdlist = array();
-		//更新符合GD库的图片信息
-		foreach($gdlist AS $key=>$value)
-		{
+		$gdlist = $this->model('gd')->get_all('id');
+		if(!$gdlist){
+			return true;
+		}
+		if(!$cate_rs['gdall'] && !$cate_rs['gdtypes']){
+			return true;
+		}
+		if(!$cate_rs['gdall'] && $cate_rs['gdtypes']){
+			$tmp = explode(",",$cate_rs['gdtypes']);
+			$tmplist = false;
+			foreach($tmp as $key=>$value){
+				if($gdlist[$value]){
+					if(!$tmplist){
+						$tmplist = array();
+					}
+					$tmplist[$value] = $gdlist[$value];
+				}
+			}
+			if(!$tmplist){
+				return true;
+			}
+			$gdlist = $tmplist;
+		}
+		foreach($gdlist AS $key=>$value){
 			$array = array();
 			$array["res_id"] = $rs['id'];
 			$array["gd_id"] = $value["id"];
 			$array["filetime"] = $this->time;
-			$gd_tmp = $GLOBALS['app']->lib('gd')->gd($this->dir_root.$rs["filename"],$id,$value);
-			if($gd_tmp)
-			{
+			$gd_tmp = $this->lib('gd')->gd($this->dir_root.$rs["filename"],$id,$value);
+			if($gd_tmp){
 				$array["filename"] = $rs["folder"].$gd_tmp;
-				$this->save_ext($array);
+				$this->db->insert_array($array,"res_ext","replace");
 			}
 		}
 		return true;

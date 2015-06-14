@@ -21,7 +21,7 @@ class project_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('无权限，请联系系统管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$site_id = $_SESSION["admin_site_id"];
 		$rslist = $this->model('project')->get_all_project($site_id);
@@ -32,7 +32,7 @@ class project_control extends phpok_control
 	public function set_f()
 	{
 		if(!$this->popedom["set"]){
-			error(P_Lang('无权限，请联系系统管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$site_id = $_SESSION["admin_site_id"];
 		$id = $this->get("id","int");
@@ -118,7 +118,7 @@ class project_control extends phpok_control
 	function content_f()
 	{
 		if(!$this->popedom["set"]){
-			error(P_Lang('无权限，请联系系统管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$id = $this->get("id","int");
 		if(!$id){
@@ -151,7 +151,7 @@ class project_control extends phpok_control
 	function mfields_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
@@ -172,7 +172,7 @@ class project_control extends phpok_control
 	function save_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		$site_id = $_SESSION["admin_site_id"];
@@ -185,7 +185,7 @@ class project_control extends phpok_control
 		$tpl_content = $this->get("tpl_content");
 		$taxis = $this->get("taxis","int");
 		if(!$title){
-			$this->json(P_Lang('项目名称不能为空'));
+			$this->json(P_Lang('名称不能为空'));
 		}
 		$check_rs = $this->check_identifier($identifier,$id,$site_id);
 		if($check_rs != "ok"){
@@ -241,7 +241,7 @@ class project_control extends phpok_control
 		if($id){
 			$action = $this->model('project')->save($array,$id);
 			if(!$action){
-				$this->json(P_Lang('数据更新失败，请联系管理员'));
+				$this->json(P_Lang('编辑失败'));
 			}
 			$rs = $this->model('project')->get_one($id);
 			$popedom = $this->get("_popedom","int");
@@ -274,7 +274,7 @@ class project_control extends phpok_control
 		}else{
 			$id = $this->model('project')->save($array);
 			if(!$id){
-				$this->json(P_Lang('项目添加失败，请联系管理员'));
+				$this->json(P_Lang('添加失败'));
 			}
 			$popedom = $this->get("_popedom","int");
 			if($popedom && is_array($popedom)){
@@ -350,7 +350,7 @@ class project_control extends phpok_control
 	function content_save_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
@@ -358,7 +358,7 @@ class project_control extends phpok_control
 		}
 		$title = $this->get("title");
 		if(!$title){
-			$this->json(P_Lang('项目名称不能为空'));
+			$this->json(P_Lang('名称不能为空'));
 		}
 		$array = array("title"=>$title);
 		$this->model('project')->save($array,$id);
@@ -374,7 +374,7 @@ class project_control extends phpok_control
 		$sign = strtolower($sign);
 		//字符串是否符合条件
 		if(!preg_match("/[a-z][a-z0-9\_\-\.]+/",$sign)){
-			return P_Lang("标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头！");
+			return P_Lang("标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头");
 		}
 		if(!$site_id){
 			$site_id = $_SESSION["admin_site_id"];
@@ -390,7 +390,7 @@ class project_control extends phpok_control
 	function delete_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
@@ -399,7 +399,7 @@ class project_control extends phpok_control
 		//判断是否有子项目
 		$list = $this->model('project')->get_son($id);
 		if($list){
-			$this->json(P_Lang('已存在子项目，请先进入删除子项目'));
+			$this->json(P_Lang('已存在子项目，请移除子项目'));
 		}
 		$rs = $this->model('project')->get_one($id,false);
 		if(!$rs){
@@ -414,7 +414,7 @@ class project_control extends phpok_control
 	function status_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
@@ -450,7 +450,7 @@ class project_control extends phpok_control
 	public function copy_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id');
 		if(!$id){

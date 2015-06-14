@@ -2,6 +2,15 @@
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$.cart.total();
+		$.phpok.json(api_url('login','status'),function(data){
+			if(data.status == 'ok'){
+				var logout = "javascript:$.user.logout('"+data.content.user_name+"');void(0)";
+				var html = ' | <a href="{url ctrl=usercp/}">个人中心</a> | <a href="'+logout+'">退出</a>';
+			}else{
+				var html = ' | <a href="{url ctrl=login/}">登录</a> | <a href="{url ctrl=register/}">注册</a>';
+			}
+			$("#top_html_user_login").html(html);
+		});
 	});
 	</script>
 </head>
@@ -11,17 +20,8 @@
 	<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" /></a></div>
 	<div class="head_right">
 		<div class="top_nav">
-			<a href="{url ctrl=cart/}" title="购物车">购物车 <span class="red">(<span id="head_cart_num">0</span>)</span></a> | 
-			<a href="{$sys.url}/phpinc/shortcut.php?url={func rawurlencode $sys.url}&title={func rawurlencode $config.title}" target="_blank">保存到桌面</a> |
-			<a href="javascript:void(0);" onclick="set_home(this,'{$sys.url}')">设为首页</a> |
-			<a href="javascript:add_fav('{$config.title}','{$sys.url}')">收藏本页</a> |
-			<!-- if $session.user_id -->
-			<a href="{url ctrl=usercp/}">个人中心</a> | 
-			<a href="javascript:$.user.logout('{$session.user_name}');void(0)">退出</a>
-			<!-- else -->
-			<a href="{url ctrl=login/}">登录</a> | 
-			<a href="{url ctrl=register/}">注册</a>
-			<!-- /if -->
+			<a href="{url ctrl=cart/}" title="购物车">购物车 <span class="red">(<span id="head_cart_num">0</span>)</span></a>
+			<span id="top_html_user_login"></span>
 		</div>
 		<div class="search">
 			<form method="post" action="{url ctrl=search/}" onsubmit="return top_search();">

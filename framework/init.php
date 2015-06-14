@@ -80,24 +80,25 @@ function debug_time($memory_ctrl=1,$sql_ctrl=1,$file_ctrl=0,$cache_ctrl=0)
 	$sql_db_time = $GLOBALS['app']->db->conn_times();
 	$sql_cache_count = $GLOBALS['app']->db->cache_count();
 	$sql_cache_time = $GLOBALS['app']->db->cache_time();
-	$string  = "运行 ".$time." 秒";
+	$string  = P_Lang('运行{seconds_total}秒',array('seconds_total'=>$time));
+	//$string  = "运行 ".$time." 秒";
 	if($memory_ctrl && $memory_ctrl != 'false')
 	{
-		$string .= "，内存使用 ".$memory;
+		$string .= P_Lang('，内存使用{memory_total}',array('memory_total'=>$memory));
 	}
 	if($sql_ctrl && $sql_ctrl != 'false')
 	{
-		$string .= "，数据库执行 ".$sql_db_count." 次，耗时 ".$sql_db_time." 秒";
+		$string .= P_Lang('，数据库执行{sql_count}次，耗时{sql_time}秒',array('sql_count'=>$sql_db_count,'sql_time'=>$sql_db_time));
+		//$string .= "，数据库执行 ".$sql_db_count." 次，耗时 ".$sql_db_time." 秒";
 	}
 	if($file_ctrl && $count>0 && $file_ctrl != 'false')
 	{
-		$string .= "，文件执行 ".$count." 次";
+		$string .= P_Lang('，文件执行{file_count}次',array('file_count'=>$count));
 	}
 	if($cache_ctrl && $cache_ctrl != 'false')
 	{
-		$string .= "，缓存执行 ".$sql_cache_count." 次，耗时 ".$sql_cache_time." 秒";
+		$string .= P_Lang('，缓存执行{cache_count}次，耗时{cache_time}秒',array('cache_count'=>$sql_cache_count,'cache_time'=>$sql_cache_time));
 	}
-	unset($count,$time,$memory,$sql_db_count,$sql_db_time,$sql_cache_count,$sql_cache_time);
 	return $string;
 }
 
@@ -143,6 +144,12 @@ class _init_phpok
 	public $csslist;
 	public $jslist;
 
+	//读语言包方式
+	public $lang;
+	public $langid;
+	public $js_langlist;
+	public $language_status = 'gettext';
+
 	public function __construct()
 	{
 		ini_set("magic_quotes_runtime",0);
@@ -177,44 +184,50 @@ class _init_phpok
 		$this->assign("sys",$this->config);
 		$this->phpok_seo($this->site);
 		$this->assign("config",$this->site);
+		$langid = $this->get("_langid");
 		if($this->app_id == 'admin'){
-			$session_langid = (isset($_SESSION['admin_lang_id']) && $_SESSION['admin_lang_id']) ? $_SESSION['admin_lang_id'] : 'default';
+			if(!$langid){
+				$langid = (isset($_SESSION['admin_lang_id']) && $_SESSION['admin_lang_id']) ? $_SESSION['admin_lang_id'] : 'default';
+			}
+			$_SESSION['admin_lang_id'] = $langid;
 		}else{
-			$session_langid = isset($this->site['lang']) ? $this->site['lang'] : 'default';
+			if(!$langid){
+				$langid = isset($this->site['lang']) ? $this->site['lang'] : 'default';
+			}
 		}
-		$this->language($session_langid);
+		$this->langid = $langid;
+		$this->language($langid);
 	}
 
 	public function language($langid='default')
 	{
-		$langfile = $this->dir_root."data/xml/langs/".$this->app_id.".default.xml";
-		if(!is_file($langfile)){
-			$langfile = $this->dir_root."data/xml/langs/default.xml";
-		}
-		$default_list = $this->lib('xml')->read($langfile);
-		if(!$default_list){
-			return false;
-		}
-		if($langid && $langid != 'default' && $langid != 'cn'){
-			$langfile = $this->dir_root."data/xml/langs/".$this->app_id.".".$langid.".xml";
-			$langlist = $this->lib('xml')->read($langfile);
-			if($langlist){
-				$langs = false;
-				foreach($langlist as $key=>$value){
-					if($default_list[$key]){
-						$langs[$default_list[$key]] = $value;
-					}
-				}
-				$this->lang = $langs;
-				unset($langs,$langlist,$default_list);
+		if(!function_exists('gettext')){
+			$this->language_status = 'user';
+			$mofile = $this->dir_root.'langs/'.$langid.'/LC_MESSAGES/'.$this->app_id.'.mo';
+			if(!is_readable($mofile)){
+				return false;
 			}
+			include($this->dir_phpok.'libs/pomo/mo.php');
+			$this->lang = new NOOP_Translations;
+			$mo = new MO();
+			if (!$mo->import_from_file($mofile)){
+				return false;
+			}
+			$mo->merge_with($this->lang);
+			$this->lang = &$mo;
 		}else{
-			$langs = false;
-			foreach($default_list as $key=>$value){
-				$langs[$value] = $value;
+			$this->language_status = 'gettext';
+			if($langid != 'default' && $langid != 'cn'){
+				putenv('LANG='.$langid);
+				setlocale(LC_ALL,$langid);
+				bindtextdomain($this->app_id,$this->dir_root.'langs');
+				textdomain($this->app_id);
+			}else{
+				putenv('LANG=zh_CN');
+				setlocale(LC_ALL,'zh_CN');
+				bindtextdomain($this->app_id,$this->dir_root.'langs');
+				textdomain($this->app_id);
 			}
-			$this->lang = $langs;
-			unset($langs,$default_list);
 		}
 	}
 
@@ -241,8 +254,7 @@ class _init_phpok
 		include_once($file);
 		$this->model('url')->ctrl_id($this->config['ctrl_id']);
 		$this->model('url')->func_id($this->config['func_id']);
-		if($this->app_id == "admin")
-		{
+		if($this->app_id == "admin"){
 			$tpl_rs = array();
 			$tpl_rs["id"] = "1";
 			$tpl_rs["dir_tpl"] = substr($this->dir_phpok,strlen($this->dir_root))."/view/";
@@ -255,23 +267,18 @@ class _init_phpok
 			$tpl_rs['langid'] = isset($_SESSION['admin_lang_id']) ? $_SESSION['admin_lang_id'] : 'default';
 			$this->tpl = new phpok_tpl($tpl_rs);
 			unset($tpl_rs);
-		}
-		else
-		{
-			if(!$this->site["tpl_id"] || ($this->site["tpl_id"] && !is_array($this->site["tpl_id"])))
-			{
+		}else{
+			if(!$this->site["tpl_id"] || ($this->site["tpl_id"] && !is_array($this->site["tpl_id"]))){
 				$this->error("未指定模板文件");
 			}
 			$this->model('url')->base_url($this->url);
 			$this->model('url')->set_type($this->site['url_type']);
 			$this->model('url')->protected_ctrl($this->config['reserved']);
 			//初始化伪静态中需要的东西
-			if($this->site['url_type'] == 'rewrite')
-			{
+			if($this->site['url_type'] == 'rewrite'){
 				$this->model('url')->site_id($this->site['id']);
 				$this->model('rewrite')->site_id($this->site['id']);
-				if($this->config['user_rewrite'])
-				{
+				if($this->config['user_rewrite']){
 					$this->model('url')->id_list();
 					$this->model('url')->cate_list();
 					$this->model('url')->project_list();
@@ -329,9 +336,13 @@ class _init_phpok
 		$site_rs = false;
 		if($siteId){
 			$site_rs = $this->model('site')->get_one($siteId);
-			if($site_rs && $site_rs['domain'] && $site_rs['domain'] != $domain){
-				$url = 'http://'.$site_rs['domain'].$site_rs['dir'];
-				$this->_location($url);
+			if($site_rs && $site_rs['domain']){
+				$tmp = explode(':',$site_rs['domain']);
+				$tmp_domain = $tmp[0];
+				if($tmp_domain != $domain){
+					$url = 'http://'.$site_rs['domain'].$site_rs['dir'];
+					$this->_location($url);
+				}
 			}
 		}
 		if(!$site_rs){
@@ -530,9 +541,6 @@ class _init_phpok
 			include($this->dir_root."config.php");
 		}
 		$config["debug"] ? error_reporting(E_ALL ^ E_NOTICE) : error_reporting(0);
-		if($config['xdebug'] && function_exists('xdebug_start_trace')){
-			xdebug_start_trace('trace');
-		}
 		if(ini_get('zlib.output_compression')){
 			ob_start();
 		}else{
@@ -578,8 +586,7 @@ class _init_phpok
 		$http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
 		$port = $_SERVER["SERVER_PORT"];
 		$myurl = $_SERVER[$this->config['get_domain_method']];
-		if($port != "80" && $port != "443")
-		{
+		if($port != "80" && $port != "443"){
 			$myurl .= ":".$port;
 		}
 		$docu = $_SERVER["PHP_SELF"];
@@ -788,9 +795,6 @@ class _init_phpok
 		$html.= $content."\n";
 		$html.= '</body>'."\n";
 		$html.= '</html>';
-		if($this->config['xdebug'] && function_exists('xdebug_stop_trace')){
-			xdebug_stop_trace();
-		}
 		exit($html);
 	}
 
@@ -841,17 +845,28 @@ class _init_phpok
 			}
 		}
 		//如果没有Ctrl，将读取 index 控制器
-		if(!$ctrl) 
-		if(!$ctrl) $ctrl = 'index';
+		if(!$ctrl){
+			$ctrl = 'index';
+		}
 		//如果没有Func,将使用 index 
-		if(!$func) $func = $this->get($this->config["func_id"],"system");
-		if(!$func) $func = 'index';
-		//针对静态页网站进行跳转
-		if($this->site['url_type'] == 'html' && $this->app_id == 'www' && $ctrl == 'index')
-		{
-			$root_dir = ($this->site['html_root_dir'] && $this->site['html_root_dir'] != '/') ? $this->site['html_root_dir'] : '';
-			$url = $this->url.$root_dir.'index.html';
-			$this->_location($url);
+		if(!$func){
+			$func = $this->get($this->config["func_id"],"system");
+		}
+		if(!$func){
+			$func = 'index';
+		}
+		if($this->site['url_type'] == 'html' && $this->app_id == 'www'){
+			$is_create = (isset($_GET['_html']) && $_GET['_html']) ? true : false;
+			if($is_create){
+				$this->_action($ctrl,$func);
+				exit;
+			}else{
+				if($ctrl == 'index'){
+					$root_dir = ($this->site['html_root_dir'] && $this->site['html_root_dir'] != '/') ? $this->site['html_root_dir'] : '';
+					$url = $this->url.$root_dir.'index.html';
+					$this->_location($url);
+				}
+			}
 		}
 		$this->_action($ctrl,$func);
 	}
@@ -897,9 +912,6 @@ class _init_phpok
 		header("Pramga: no-cache");
 		header("Location:".$url);
 		ob_end_flush();
-		if($this->config['xdebug'] && function_exists('xdebug_stop_trace')){
-			xdebug_stop_trace();
-		}
 		exit;
 	}
 
@@ -980,13 +992,14 @@ class _init_phpok
 	final public function json($content,$status=false,$exit=true,$format=true)
 	{
 		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-after');
+		if(!$content && is_bool($content)){
+			$rs = array('status'=>'error');
+			exit($this->lib('json')->encode($rs));
+		}
 		//当content内容为true 且为布尔类型，直接返回正确通知结果
 		if($content && is_bool($content))
 		{
 			$rs = array('status'=>'ok');
-			if($this->config['xdebug'] && function_exists('xdebug_stop_trace')){
-				xdebug_stop_trace();
-			}
 			exit($this->lib('json')->encode($rs));
 		}
 		$status_info = $status ? 'ok' : 'error';
@@ -995,9 +1008,6 @@ class _init_phpok
 		$info = $this->lib('json')->encode($rs);
 		unset($rs);
 		if($exit){
-			if($this->config['xdebug'] && function_exists('xdebug_stop_trace')){
-				xdebug_stop_trace();
-			}
 			exit($info);
 		}
 		return $info;
@@ -1117,14 +1127,18 @@ class phpok_model extends _init_auto
 {
 	//继承control信息
 	public $site_id = 0;
-	public function model()
+	public function model($id='')
 	{
-		parent::__construct();
-		if($this->app_id == 'admin' && $_SESSION['admin_site_id']){
-			$this->site_id = $_SESSION['admin_site_id'];
-		}
-		if($this->app_id != 'admin' && $this->site['id']){
-			$this->site_id = $this->site['id'];
+		if(!$id){
+			parent::__construct();
+			if($this->app_id == 'admin' && $_SESSION['admin_site_id']){
+				$this->site_id = $_SESSION['admin_site_id'];
+			}
+			if($this->app_id != 'admin' && $this->site['id']){
+				$this->site_id = $this->site['id'];
+			}
+		}else{
+			return $GLOBALS['app']->model($id);
 		}
 	}
 
@@ -1281,30 +1295,25 @@ function phpok_head_css()
 //核心函数，语言包
 function P_Lang($info,$replace='')
 {
-	if(!$info)
-	{
+	if(!$info){
 		return false;
 	}
-	if(!$replace)
-	{
-		$replace = array();
+	if($GLOBALS['app']->language_status == 'user'){
+		if($GLOBALS['app']->lang){
+			$info = $GLOBALS['app']->lang->translate($info);
+		}
+	}else{
+		$info = gettext($info);
 	}
-	if(!isset($GLOBALS['app']->lang[$info]))
-	{
-		foreach($replace as $key=>$value)
-		{
+	if($replace && is_string($replace)){
+		$replace  = unserialize($replace);
+	}
+	if($replace && is_array($replace)){
+		foreach($replace as $key=>$value){
 			$info = str_replace('{'.$key.'}',$value,$info);
 			$info = str_replace('['.$key.']',$value,$info);
 		}
 		return $info;
-	}
-	if($GLOBALS['app']->lang[$info])
-	{
-		$info = $GLOBALS['app']->lang[$info];
-		foreach($replace as $key=>$value)
-		{
-			$info = str_replace('{'.$key.'}',$value,$info);
-		}
 	}
 	return $info;
 }

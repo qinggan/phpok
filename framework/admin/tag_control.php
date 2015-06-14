@@ -22,7 +22,7 @@ class tag_control extends phpok_control
 	{
 		if(!$this->popedom["list"])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$pageurl = $this->url('tag');
 		//获取当前系统拥有Tag数
@@ -44,7 +44,9 @@ class tag_control extends phpok_control
 		if($total>0)
 		{
 			$rslist = $this->model('tag')->get_list($condition,$offset,$psize);
-			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=(total)/(psize)&always=1");
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 			$this->assign("rslist",$rslist);
 			$this->assign('pagelist',$pagelist);
 		}
@@ -57,7 +59,7 @@ class tag_control extends phpok_control
 		$popedom = $id ? 'modify' : 'add';
 		if(!$this->popedom[$popedom])
 		{
-			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$title = $this->get('title');
 		if(!$title)
@@ -94,7 +96,7 @@ class tag_control extends phpok_control
 	{
 		if(!$this->popedom['delete'])
 		{
-			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id)

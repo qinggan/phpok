@@ -34,8 +34,8 @@ $(document).ready(function(){
 <input type="hidden" id="id" name="id" value="{$id}" />
 <div class="table">
 	<div class="title">
-		标识：
-		<span class="note">标识必须是唯一的，添加后不能修改</span>
+		{lang标识：}
+		<span class="note">{lang标识必须是唯一的，添加后不能修改}</span>
 	</div>
 	<div class="content"><input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}"{if $id} disabled{/if} /></div>
 </div>

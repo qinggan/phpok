@@ -11,13 +11,50 @@ function add_site()
 {
 	var url = get_url('all','add');
 	$.dialog.open(url,{
-		'title': '添加站点'
+		'title': p_lang('添加站点')
 		,'lock': true
 		,'width': '500px'
 		,'height': '300px'
 		,'resize': false
 	});
 }
+
+function phpok_admin_control()
+{
+	var url = get_url("me","setting");
+	$.dialog.open(url,{
+		"title":p_lang('修改管理员信息'),
+		"width":600,
+		"height":400,
+		"lock":true,
+		'move':false,
+		'is_max':false
+	});
+}
+
+
+function update_select_lang(val)
+	{
+		var url = get_url("index",'','_langid='+val);
+		$.phpok.go(url);
+	}
+	function phpok_admin_logout()
+	{
+		$.dialog.confirm(p_lang('确定要退出吗？'),function(){
+			var url = get_url("logout");
+			$.phpok.go(url);
+		});
+	}
+	function phpok_admin_clear()
+	{
+		var url = get_url("index","clear");
+		var rs = $.phpok.json(url);
+		if(rs.status == "ok"){
+			$.dialog.alert(p_lang('缓存清空完成'));
+		}else{
+			$.dialog.alert(rs.content);
+		}
+	}
 
 $(document).ready(function(){
 	//判断是否显示

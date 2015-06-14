@@ -94,28 +94,30 @@ class phpok_tpl
 	//	abs-file，带后缀的绝对路径
 	public function output($tpl,$type="file",$path_format=true)
 	{
-		if(!$tpl) $this->error("模板信息为空！");
+		if(!$tpl){
+			$this->error(P_Lang('模板信息为空'));
+		}
 		$comp_id = $this->comp_id($tpl,$type);
-		if(!$comp_id) $this->error("没有指定模板源！");
-		# 编译模板信息
+		if(!$comp_id){
+			$this->error(P_Lang('没有指定模板源'));
+		}
 		$this->compiling($comp_id,$tpl,$type,$path_format);
 		$this->assign("session",$_SESSION);
 		$this->assign("get",$_GET);
 		$this->assign("post",$_POST);
 		$this->assign("cookie",$_COOKIE);
-		if($this->path_change)
-		{
+		if($this->path_change){
 			$tmp_path_list = explode(",",$this->path_change);
 			$tmp_path_list = array_unique($tmp_path_list);
-			foreach($tmp_path_list AS $key=>$value)
-			{
+			foreach($tmp_path_list AS $key=>$value){
 				$value = trim($value);
-				if(!$value) continue;
+				if($value == ''){
+					continue;
+				}
 				$this->assign("_".$value,$value);
 			}
 		}
-		if(!$this->tpl_value || !is_array($this->tpl_value))
-		{
+		if(!$this->tpl_value || !is_array($this->tpl_value)){
 			$this->tpl_value = array();
 		}
 		$varlist = (is_array($GLOBALS))?array_merge($GLOBALS,$this->tpl_value):$this->tpl_value;
@@ -130,9 +132,6 @@ class phpok_tpl
 		$this->output($tpl,$type,$path_format);
 		$msg = ob_get_contents();
 		ob_end_clean();
-		if($GLOBALS['app']->config['xdebug'] && function_exists('xdebug_stop_trace')){
-			xdebug_stop_trace();
-		}
 		return $msg;
 	}
 
@@ -140,19 +139,14 @@ class phpok_tpl
 	public function comp_id($tpl,$type="file")
 	{
 		$string = $this->tpl_id."_";
-		if($type == "file" || $type == "file-ext")
-		{
+		if($type == "file" || $type == "file-ext"){
 			$tpl = strtolower($tpl);
 			$tpl = str_replace("/","_folder_",$tpl);
 			$string .= $tpl;
-		}
-		elseif($type == "abs-file")
-		{
+		}elseif($type == "abs-file"){
 			$string .= substr(md5($tpl),9,16);
 			$string .= "_abs";
-		}
-		else
-		{
+		}else{
 			$string .= substr(md5($tpl),9,16);
 			$string .= "_c";
 		}
@@ -165,9 +159,6 @@ class phpok_tpl
 	public function display($tpl,$type="file",$path_format=true)
 	{
 		$this->output($tpl,$type,$path_format);
-		if($GLOBALS['app']->config['xdebug'] && function_exists('xdebug_start_trace')){
-			xdebug_stop_trace();
-		}
 		exit;
 	}
 
@@ -179,35 +170,40 @@ class phpok_tpl
 	{
 		//判断是否刷新
 		$is_refresh = false;
-		if(!file_exists($this->dir_cache.$compiling_id) || $this->refresh) $is_refresh = true;
-		if($type !="file" && $type != "file-ext" && $type != "abs-file") $is_refresh = true; #当模板不是使用文件时，则强制刷新，因为无法判断模板的时间
-		if(!$is_refresh && ($type == "file" || $type == "file-ext" || $type == "abs-file"))
-		{
-			if($type == "file")
-			{
+		if(!file_exists($this->dir_cache.$compiling_id) || $this->refresh){
+			$is_refresh = true;
+		}
+		if($type !="file" && $type != "file-ext" && $type != "abs-file"){
+			$is_refresh = true;
+		}
+		if(!$is_refresh && ($type == "file" || $type == "file-ext" || $type == "abs-file")){
+			if($type == "file"){
 				$tplfile = $this->dir_root.$this->dir_tpl.$tpl.".".$this->tpl_ext;
-			}
-			elseif($type == "file-ext")
-			{
+				if(!file_exists($tplfile) && basename($this->dir_tpl) != 'www'){
+					$tplfile = $this->dir_root.'tpl/www/'.$tpl.'.html';
+				}
+			}elseif($type == "file-ext"){
 				$tplfile = $this->dir_root.$this->dir_tpl.$tpl;
-			}
-			else
-			{
+				if(!file_exists($tplfile) && basename($this->dir_tpl) != 'www'){
+					$tplfile = $this->dir_root.'tpl/www/'.$tpl;
+				}
+			}else{
 				$tplfile = $tpl;
 			}
-			if(!file_exists($tplfile))
-			{
-				$this->error("模板文件：".basename($tplfile)." 不存在！");
+			if($this->refresh_auto){
+				if(!file_exists($tplfile)){
+					$this->error(P_Lang('模板文件[tplfile]不存在',array('tplfile'=>basename($tpl))));
+				}
+				if(filemtime($tplfile) > filemtime($this->dir_cache.$compiling_id)){
+					$is_refresh = true;
+				}
 			}
-			if($this->refresh_auto && filemtime($tplfile) > filemtime($this->dir_cache.$compiling_id)) $is_refresh = true;
 		}
-		if(!$is_refresh)
-		{
+		if(!$is_refresh){
 			return true;
 		}
 		$html_content = $this->get_content($tpl,$type);
-		if($html_content)
-		{
+		if($html_content){
 			$php_content = $this->html_to_php($html_content,$path_format);
 			file_put_contents($this->dir_cache.$compiling_id,$this->html_head.$php_content);
 		}
@@ -228,10 +224,37 @@ class phpok_tpl
 	{
 		if(!$info || !is_array($info) || !$info[1] || !trim($info[1])) return '';
 		$info = $info[1];
-		if(substr($info,0,1) == '"' || substr($info,0,1) == "'") $info = substr($info,1);
-		if(substr($info,-1) == '"' || substr($info,-1) == "'") $info = substr($info,0,-1);
-		$info = stripslashes(trim($info));
-		return '<?php echo P_Lang("'.$info.'");?>';
+		$info = trim(str_replace(array("'",'"'),'',$info));
+		$lst = explode("|",$info);
+		$param = false;
+		if($lst[1]){
+			$tmp = explode(",",$lst[1]);
+			foreach($tmp as $key=>$value){
+				$tmp2 = explode(":",$value);
+				if(!$param){
+					$param = array();
+				}
+				if(substr($tmp2[1],0,1) == '$'){
+					$tmp2[1] = '\'.'.$tmp2[1].'.\'';
+				}
+				$param[$tmp2[0]] = '<span style="color:red">'.$tmp2[1].'</span>';
+			}
+		}
+		if($param){
+			$string = "array(";
+			$i=0;
+			foreach($param as $key=>$value){
+				if($i>0){
+					$string .= ",";
+				}
+				$string .= "'".$key."'=>'".$value."'";
+				$i++;
+			}
+			$string .= ")";
+			return '<?php echo P_Lang("'.stripslashes($lst[0]).'",'.$string.');?>';
+		}else{
+			return '<?php echo P_Lang("'.stripslashes($info).'");?>';
+		}
 	}
 
 	//正则替换

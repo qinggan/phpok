@@ -22,7 +22,7 @@ class sql_control extends phpok_control
 	{
 		if(!$this->popedom["list"])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		//读取全部数据库表
 		$rslist = $this->model('sql')->tbl_all();
@@ -46,7 +46,7 @@ class sql_control extends phpok_control
 	{
 		if(!$this->popedom['optimize'])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
 		}
 		$id = $this->get('id');
 		if(!$id)
@@ -69,7 +69,7 @@ class sql_control extends phpok_control
 	{
 		if(!$this->popedom['repair'])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
 		}
 		$id = $this->get('id');
 		if(!$id)
@@ -92,7 +92,7 @@ class sql_control extends phpok_control
 	{
 		if(!$this->popedom['create'])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
 		}
 		$id = $this->get('id');
 		if(!$id || $id == "all")
@@ -277,7 +277,7 @@ class sql_control extends phpok_control
 	{
 		if(!$this->popedom['list'])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
 		}
 		$filelist = $this->lib('file')->ls($this->dir_root.'data/');
 		if(!$filelist)
@@ -328,7 +328,7 @@ class sql_control extends phpok_control
 	{
 		if(!$this->popedom['delete'])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
 		}
 		$id = $this->get('id');
 		if(!$id)
@@ -356,7 +356,7 @@ class sql_control extends phpok_control
 	{
 		if(!$this->popedom['recover'])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
 		}
 		$id = $this->get('id');
 		if(!$id)
@@ -394,7 +394,7 @@ class sql_control extends phpok_control
 	{
 		if(!$this->popedom['recover'])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),$this->url('sql'),'error');
+			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
 		}
 		$id = $this->get('id');
 		if(!$id)

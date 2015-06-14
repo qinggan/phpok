@@ -40,7 +40,7 @@ class post_control extends phpok_control
 		$project_rs['url'] = $this->url('post',$project_rs['identifier']);
 		$this->assign("page_rs",$project_rs);
 		if(!$this->model('popedom')->check($project_rs['id'],$this->user_groupid,'post')){
-			error(P_Lang('您没有发布权限，请联系网站管理员'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		//绑定分类信息
 		if($project_rs['cate']){

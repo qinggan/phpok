@@ -899,6 +899,9 @@ function phpok_log($info='')
 	if(!$info){
 		$info = '执行 {phpok}/'.$GLOBALS['app']->app_id.'/'.$GLOBALS['app']->ctrl.'_control.php 方法：'.$GLOBALS['app']->func.'_f';
 	}
+	if(is_array($info) || is_object($info)){
+		$info = serialize($info);
+	}
 	$info = trim($info);
 	$date = date("Ymd",$GLOBALS['app']->time);
 	if(!file_exists($GLOBALS['app']->dir_root.'data/log'.$date.'.php')){

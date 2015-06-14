@@ -89,6 +89,11 @@ class email_lib
 		return $this->obj->Send();
 	}
 
+	function error()
+	{
+		return $this->obj->ErrorInfo;
+	}
+
 	function smtp()
 	{
 		$this->obj = new PHPMailer();

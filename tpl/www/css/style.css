@@ -534,6 +534,7 @@ div.mbottom10{margin-bottom:10px;}
 
 /* 会员个人中心涉及到的CSS，这里的布局基本上以cp_为前缀 */
 div.cp{margin:10px auto;width:1000px;}
+div.cp:after{content:'.',display:block;height:0;line-height:0;overflow:hidden;visibility:hidden;}
 div.cp .left{width:200px;float:left;}
 div.cp .right{width:790px;float:right;}
 div.cp .cp_avatar{float:left;width:150px;padding:25px;}

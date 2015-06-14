@@ -21,7 +21,7 @@ class gd_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('无权限，请联系系统管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$rslist = $this->model('gd')->get_all();
 		$this->assign("rslist",$rslist);
@@ -33,7 +33,7 @@ class gd_control extends phpok_control
 		$id = $this->get("id","int");
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('无权限，请联系系统管理员开放权限'),$this->url('gd'),'error');
+				error(P_Lang('您没有权限执行此操作'),$this->url('gd'),'error');
 			}
 			$rs = $this->model('gd')->get_one($id);
 			if($rs["mark_picture"] && !file_exists($rs["mark_picture"])){
@@ -43,7 +43,7 @@ class gd_control extends phpok_control
 			$this->assign("rs",$rs);
 		} else {
 			if(!$this->popedom["add"]){
-				error(P_Lang('无权限，请联系系统管理员开放权限'),$this->url('gd'),'error');
+				error(P_Lang('您没有权限执行此操作'),$this->url('gd'),'error');
 			}
 		}
 		$this->view("gd_set");
@@ -55,7 +55,7 @@ class gd_control extends phpok_control
 		$array = array();
 		if(!$id){
 			if(!$this->popedom['add']){
-				$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+				$this->json(P_Lang('您没有权限执行此操作'));
 			}
 			$identifier = $this->get("identifier");
 			if(!$identifier){
@@ -72,7 +72,7 @@ class gd_control extends phpok_control
 			$array["identifier"] = $identifier;
 		}else{
 			if(!$this->popedom['modify']){
-				$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+				$this->json(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		$array["width"] = $this->get("width","int");
@@ -90,7 +90,7 @@ class gd_control extends phpok_control
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
-			$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
@@ -103,7 +103,7 @@ class gd_control extends phpok_control
 	public function editor_f()
 	{
 		if(!$this->popedom['modify']){
-			$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){

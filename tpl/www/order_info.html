@@ -1,25 +1,4 @@
 <!-- php:$title = '订单信息：'.$rs.sn --><!-- include tpl=head title=$title -->
-<script type="text/javascript">
-function payment()
-{
-	//附款网址
-	var url = "{if $session.user_id}{url ctrl=payment id=$rs.id/}{else}{url ctrl=payment sn=$rs.sn passwd=$rs.passwd/}{/if}";
-	var payment = $("input[name=payment]:checked").val();
-	var tip = '点击确定后将会跳转到支付页执行支付\n您在支付成功后，请耐心等待页面返回，以保证付款成功操作';
-	if(payment)
-	{
-		url += "&payment="+payment;
-		var pay_title = $("input[name=payment]:checked").attr('alt');
-		tip = '您确定要使用 【'+pay_title+'】 支付该订单吗?\n点击确定将会跳转到支付页执行支付\n您在支付成功后，请耐心等待页面返回，以保证付款成功操作';
-	}
-	var qc = confirm(tip);
-	if(qc == '0')
-	{
-		return false;
-	}
-	$.phpok.go(url);
-}
-</script>
 <!-- if $rs.pay_status == 'PAID' -->
 <script type="text/javascript">
 function show_ext(rs)
@@ -27,8 +6,7 @@ function show_ext(rs)
 	if(rs.status != 'ok') return false;
 	var lst = rs.content;
 	var html = '';
-	for(var i in lst)
-	{
+	for(var i in lst){
 		html += '<tr><td align="right">'+lst[i]['title']+'：</td><td>'+lst[i]['content']+'</td></tr>';
 	}
 	$("#paid_time").after(html);
@@ -162,29 +140,28 @@ $(document).ready(function(){
 	</div>
 	<div class="clear"></div>
 	<!-- if !$rs.pay_end && $paylist -->
+	<form method="post" action="{$payment_url}">
+	<!-- loop from=$paylist key=$key value=$value -->
+	<!-- if $value.paylist -->
 	<div class="pfw mbottom10">
-		<h3>我要支付</h3>
+		<h3>{$value.title}</h3>
 		<div class="payment">
-			<form method="post" action="{$payment_url}">
-			<!-- loop from=$paylist key=$key value=$value -->
-			<!-- if $value.paylist -->
-			<h4>{$value.title}</h4>
 			<ul>
 				<!-- loop from=$value.paylist key=$k value=$v -->
 				<li><label><input name="payment" type="radio" value="{$v.id}"{if $v.id == $config.biz_payment} checked{/if} />{$v.title}</label></li>
 				<!-- /loop -->
 			</ul>
-			<!-- /if -->
-			<!-- /loop -->
-			<div class="paymenbtn">
-				<table width="100%">
-				<tr>
-					<td><input type="submit" value="" class="paybtn" /></td>
-				</tr>
-				</table>
-			</div>
-			</form>
 		</div>
+		<!-- /if -->
+		<!-- /loop -->
+	</div>
+	</form>
+	<div class="paymenbtn">
+		<table width="100%">
+		<tr>
+			<td><input type="submit" value="" class="paybtn" /></td>
+		</tr>
+		</table>
 	</div>
 	<!-- /if -->
 </div>

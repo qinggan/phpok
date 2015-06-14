@@ -91,7 +91,9 @@ class open_control extends phpok_control
 		$this->assign("rslist",$rslist);
 		$total = $this->model('res')->get_count($condition);
 		$this->assign("total",$total);
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=3&add=第 (num) 页，共 (total_page) 页&always=1");
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
+		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 		$this->assign("pagelist",$pagelist);
 		$this->assign("pageurl",$pageurl);
 		$this->view('open_upload');
@@ -162,7 +164,9 @@ class open_control extends phpok_control
 		$this->assign("rslist",$rslist);
 		$total = $this->model('res')->get_count($condition);
 		$this->assign("total",$total);
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=3&add=第 (num) 页，共 (total_page) 页&always=1");
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
+		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 		$this->assign("pagelist",$pagelist);
 		$this->assign("pageurl",$pageurl);
 		$this->lib('form')->cssjs(array('form_type'=>'upload'));
@@ -217,7 +221,9 @@ class open_control extends phpok_control
 		$this->assign("rslist",$rslist);
 		$total = $this->model('res')->get_count($condition);
 		$this->assign("total",$total);
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=3&add=第 (num) 页，共 (total_page) 页&always=1");
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
+		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 		$this->assign("pagelist",$pagelist);
 	}
 
@@ -228,23 +234,18 @@ class open_control extends phpok_control
 		if(!$id) $id = "content";
 		$this->assign("id",$id);
 		$pid = $this->get("pid");
-		if($pid)
-		{
+		if($pid){
 			$p_rs = $this->model('project')->get_one($pid);
 			$type = $this->get("type");
-			if(!$p_rs)
-			{
-				error_open("项目不存在");
+			if(!$p_rs){
+				error_open(P_Lang('项目不存在'));
 			}
-			if($type == "cate" && $p_rs["cate"])
-			{
+			if($type == "cate" && $p_rs["cate"]){
 				$catelist = $this->model('cate')->get_all($p_rs["site_id"],1,$p_rs["cate"]);
 				$this->assign("rslist",$catelist);
 				$this->assign("p_rs",$p_rs);
 				$this->view("open_url_cate");
-			}
-			else
-			{
+			}else{
 				$pageid = $this->get($this->config["pageid"],"int");
 				$psize = $this->config["psize"];
 				if(!$psize) $psize = 20;
@@ -253,38 +254,34 @@ class open_control extends phpok_control
 				$pageurl = $this->url("open","url","pid=".$pid."&type=list&id=".$id);
 				$condition = "l.site_id='".$p_rs["site_id"]."' AND l.project_id='".$pid."' AND l.parent_id='0' ";
 				$keywords = $this->get("keywords");
-				if($keywords)
-				{
+				if($keywords){
 					$condition .= " AND l.title LIKE '%".$keywords."%' ";
 					$pageurl .= "&keywords=".rawurlencode($keywords);
 					$this->assign("keywords",$keywords);
 				}
 				$rslist = $this->model('list')->get_list($p_rs["module"],$condition,$offset,$psize,$p_rs["orderby"]);
-				if($rslist)
-				{
+				if($rslist){
 					$sub_idlist = array_keys($rslist);
 					$sub_idstring = implode(",",$sub_idlist);
 					$con_sub = "l.site_id='".$p_rs["site_id"]."' AND l.project_id='".$pid."' AND l.parent_id IN(".$sub_idstring.") ";
 					$sublist = $this->model('list')->get_list($p_rs["module"],$con_sub,0,0,$p_rs["orderby"]);
-					if($sublist)
-					{
-						foreach($sublist AS $key=>$value)
-						{
+					if($sublist){
+						foreach($sublist AS $key=>$value){
 							$rslist[$value["parent_id"]]["sonlist"][$value["id"]] = $value;
 						}
 					}
 				}
 				//读子主题
 				$total = $this->model('list')->get_total($p_rs["module"],$condition);
-				$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&opt=第(num)页&add=(total)/(psize)&always=1");
+				$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
+				$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+				$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 				$this->assign("pagelist",$pagelist);
 				$this->assign("p_rs",$p_rs);
 				$this->assign("rslist",$rslist);
 				$this->view("open_url_list");				
 			}
-		}
-		else
-		{
+		}else{
 			$condition = " p.status='1' ";
 			$rslist = $this->model('project')->get_all_project($_SESSION["admin_site_id"],$condition);
 			$this->assign("rslist",$rslist);
@@ -316,7 +313,9 @@ class open_control extends phpok_control
 		$offset = ($pageid - 1) * $psize;
 		$rslist = $this->model('user')->get_list($condition,$offset,$psize);
 		$count = $this->model('user')->get_count($condition);
-		$pagelist = phpok_page($page_url,$count,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=2&add=(total)/(psize)，页(num)/(total_page)&always=1");
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=2';
+		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 		$this->assign("total",$count);
 		$this->assign("rslist",$rslist);
 		$this->assign("id",$id);
@@ -344,7 +343,9 @@ class open_control extends phpok_control
 		$offset = ($pageid - 1) * $psize;
 		$rslist = $this->model('user')->get_list($condition,$offset,$psize);
 		$count = $this->model('user')->get_count($condition);
-		$pagelist = phpok_page($page_url,$count,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=2&add=(total)/(psize)，页(num)/(total_page)&always=1");
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=2';
+		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 		$this->assign("total",$count);
 		$this->assign("rslist",$rslist);
 		$this->assign("id",$id);

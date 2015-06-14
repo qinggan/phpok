@@ -23,18 +23,15 @@ function field_form_opt(val,eid)
 $(document).ready(function(){
 	$('#form_save').submit(function(){
 		$(this).ajaxSubmit({
-			'url':api_url('module','field_addok','mid={$mid}'),
+			'url':get_url('module','field_addok','mid={$mid}'),
 			'type':'post',
 			'dataType':'json',
 			'success':function(rs){
-				if(rs.status == 'ok')
-				{
-					$.dialog.alert('字段创建成功',function(){
+				if(rs.status == 'ok'){
+					$.dialog.alert('{lang字段创建成功}',function(){
 						$.phpok.go(get_url('module','fields','id={$mid}'));
 					});
-				}
-				else
-				{
+				}else{
 					$.dialog.alert(rs.content);
 					return false;
 				}

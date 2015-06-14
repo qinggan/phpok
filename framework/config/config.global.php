@@ -10,7 +10,6 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 
 $config["debug"] = false; //启用调试
-$config['xdebug'] = false;//启用Xdebug
 $config["gzip"] = true;//启用压缩
 $config['develop'] = false;//开发状态
 $config["ctrl_id"] = "c";//取得控制器的ID

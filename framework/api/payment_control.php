@@ -10,36 +10,28 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class payment_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 	}
 
 	//异步通知
-	function notify_f()
+	public function notify_f()
 	{
 		$sn = $this->get('sn');
-		if(!$sn)
-		{
-			phpok_log("法获取订单信息，请检查");
+		if(!$sn){
 			exit('fail');
 		}
 		$rs = $this->model('order')->get_one_from_sn($sn);
-		if(!$rs)
-		{
-			phpok_log('错误，没有该产品信息');
+		if(!$rs){
 			exit('fail');
 		}
 		$payment_rs = $this->model('payment')->get_one($rs['pay_id']);
-		if(!$payment_rs)
-		{
-			phpok_log('异常，无法获取支付方式');
+		if(!$payment_rs){
 			exit('fail');
 		}
 		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/notify.php';
-		if(!is_file($file))
-		{
-			phpok_log('支付接口异常，请检查');
+		if(!file_exists($file)){
 			exit('fail');
 		}
 		include_once($file);
@@ -48,38 +40,30 @@ class payment_control extends phpok_control
 		$cls->submit();
 	}
 
-	//同步通知
-	function notice_f()
+	public function notice_f()
 	{
 		$id = $this->get('id','int');
-		if(!$id)
-		{
-			error(P_Lang("无法获取订单信息，请检查！"),$this->url,'error');
+		if(!$id){
+			error(P_Lang("无法获取订单信息"),$this->url,'error');
 		}
 		$rs = $this->model('order')->get_one($id);
-		if(!$rs)
-		{
-			error(P_Lang('错误，没有该产品信息'),$this->url,'error');
+		if(!$rs){
+			error(P_Lang('订单信息为空'),$this->url,'error');
 		}
-		//查看订单信息
 		$burl = $this->url("order",'info','id='.$rs['id']);
-		if(!$_SESSION['user_id'])
-		{
+		if(!$_SESSION['user_id']){
 			$burl = $this->url("order","info","sn=".$rs['sn']."&passwd=".$rs['passwd']);
 		}
 		$burl = $this->config['www_file'].substr($burl,strlen($this->config['api_file']));
-		if($rs['pay_end'])
-		{
+		if($rs['pay_end']){
 			error(P_Lang('您的订单付款成功，请稍候，系统将引导您查看订单信息'),$burl,'ok');
 		}
 		$payment_rs = $this->model('payment')->get_one($rs['pay_id']);
-		if(!$payment_rs)
-		{
-			error(P_Lang('付款方案有异常'),$this->url,'error');
+		if(!$payment_rs){
+			error(P_Lang('付款方案不存在'),$this->url,'error');
 		}
 		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/notice.php';
-		if(!is_file($file))
-		{
+		if(!is_file($file)){
 			error(P_Lang('支付接口异常，请检查'),$this->url,'error');
 		}
 		include_once($file);
@@ -90,7 +74,7 @@ class payment_control extends phpok_control
 	}
 
 	//权限验证
-	function auth_check()
+	private function auth_check()
 	{
 		$sn = $this->get('sn');
 		$back = $this->get('back');

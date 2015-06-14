@@ -35,14 +35,13 @@ class login_control extends phpok_control
 		$langlist = $this->model('lang')->get_list();
 		$this->assign('langlist',$langlist);
 		//判断默认语言
-		$langid = $this->get('langid');
-		if(!$langid)
-		{
-			$langid = isset($_SESSION['admin_lang_id']) ? $_SESSION['admin_lang_id'] : 'cn';
-		}
-		$_SESSION['admin_lang_id'] = $langid;
-		$this->assign('langid',$langid);
-		$GLOBALS['app']->language($langid);
+		//$langid = $this->get('langid');
+		//if(!$langid){
+		//	$langid = isset($_SESSION['admin_lang_id']) ? $_SESSION['admin_lang_id'] : 'cn';
+		//}
+		//$_SESSION['admin_lang_id'] = $langid;
+		$this->assign('langid',$_SESSION['admin_lang_id']);
+		//$this->language($langid);
 		$this->view($login);
 	}
 

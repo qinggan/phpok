@@ -26,12 +26,12 @@
 			<ul class="first_ul">
 				<!-- loop from=$menulist key=$key value=$value -->
 				<li{if $menulist_id.num == $menulist_id.total} class="laster_line"{/if} name="subtree">
-					<a href="javascript:void(0);" >{$value.title}</a>
+					<a href="javascript:void(0);" >{func P_Lang $value.title}</a>
 					<div class="second_ul" style="display:none;">
 						<span class="arrow_right"></span>
 						<ul>
 							<!-- loop from=$value.sublist key=$k value=$v id=sub_id -->
-							<li{if $sub_id.num == $sub_id.total} class="laster_line"{/if}><a href="javascript:$.win('{$v.title}','{$v.url}')">{$v.title}</a></li>
+							<li{if $sub_id.num == $sub_id.total} class="laster_line"{/if}><a href="javascript:$.win('{func P_Lang $v.title}','{$v.url}')">{func P_Lang $v.title}</a></li>
 							<!-- /loop -->
 						</ul>
 					</div>
@@ -65,7 +65,7 @@
 	<div class="c_left">
 		<ul>
 			<!-- loop from=$iconlist key=$k value=$v -->
-			<li appfile="{$v.appfile}"><a href="javascript:$.win('{$v.title}','{$v.url}');void(0);"><span class="icon-{$v.icon}"></span>{$v.title}</a></li>
+			<li appfile="{$v.appfile}"><a href="javascript:$.win('{func P_Lang $v.title}','{$v.url}');void(0);"><span class="icon-{$v.icon}"></span>{func P_Lang $v.title}</a></li>
 			<!-- /loop -->
 		</ul>
 	</div>
@@ -74,10 +74,18 @@
 	<td valign="top"><div class="index_main"{if !$iconlist} style="margin-left:10px"{/if}>
 		<div class="sub_box" id="all_setting"{if !$all_info} style="display:none;"{/if}>{$all_info}</div>
 		<div class="sub_box" id="list_setting"{if !$list_setting} style="display:none;"{/if}>{$list_setting}</div>
+		<div style="float:right;">{lang语言}
+			<select onchange="update_select_lang(this.value)" style="padding:3px;">
+				<!-- loop from=$langlist key=$key value=$value id=$tmpid -->
+				<option value="{$key}"{if $key == $session.admin_lang_id} selected{/if}>{$value}</option>
+				<!-- /loop -->
+			</select>
+		</div>
+		<div class="clear"></div>
 	</div></td>
 </tr>
-</table>
 
+</table>
 	<!-- plugin body -->
 	<div class="clear"></div>
 </div>

@@ -1,0 +1,580 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2015-06-14 10:19+0800\n"
+"PO-Revision-Date: 2015-06-14 10:43+0800\n"
+"Last-Translator: phpok <admin@phpok.com>\n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.1\n"
+"X-Poedit-Basepath: ..\\..\\..\\framework\\api\\\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: P_Lang\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: cart_control.php:24
+msgid "购物车编号异常"
+msgstr "Shopping cart ID error."
+
+#: cart_control.php:32 cart_control.php:70 cart_control.php:92
+msgid "未指定产品ID"
+msgstr "Product ID Not specified"
+
+#: cart_control.php:37
+msgid "产品信息不存在"
+msgstr "Information does not exist"
+
+#: cart_control.php:74 cart_control.php:96
+msgid "产品不存在"
+msgstr "Product does not exist"
+
+#: cart_control.php:77 cart_control.php:99 post_control.php:51
+#: post_control.php:173
+msgid "您没有权限执行此操作"
+msgstr "You do not have permission to perform this action"
+
+#: comment_control.php:21 post_control.php:20
+msgid "无法获取前端用户组信息"
+msgstr "Cannot get the usergroup information"
+
+#: comment_control.php:31 comment_control.php:127
+msgid "未指定主题"
+msgstr "Topic Not specified"
+
+#: comment_control.php:41
+msgid "暂无评论信息"
+msgstr "No comment"
+
+#: comment_control.php:120
+msgid "非会员禁止使用评论功能"
+msgstr "Non-members cannot comment"
+
+#: comment_control.php:132
+msgid "未启用评论功能"
+msgstr "The comments is not enabled"
+
+#: comment_control.php:137
+msgid "评论内容不能为空"
+msgstr "Content cannot be empty"
+
+#: email_control.php:22
+msgid "Email不能为空"
+msgstr "Email is empty."
+
+#: email_control.php:27
+msgid "邮件内容不能为空"
+msgstr "Content cannot be empty"
+
+#: email_control.php:33
+msgid "SMTP未配置好"
+msgstr "SMTP is not configured"
+
+#: email_control.php:53
+msgid "您已经是会员，不能执行这个操作"
+msgstr "You are already a member, you cannot perform this operation"
+
+#: email_control.php:63
+msgid "会员组不存在或未启用"
+msgstr "Member group does not exist or is not enabled"
+
+#: email_control.php:67
+msgid "会员组ID不存在"
+msgstr "Member group ID does not exist"
+
+#: email_control.php:71
+msgid "会员组不支持邮箱注册认证"
+msgstr "Member groups do not support mailbox register certification"
+
+#: email_control.php:74
+msgid "未绑定相应的注册项目"
+msgstr "Unbound the appropriate registry entries"
+
+#: email_control.php:78
+msgid "未绑定相应的模块"
+msgstr "The module is not bound"
+
+#: email_control.php:82
+msgid "通知邮箱模板不存在"
+msgstr "Email template does not exist"
+
+#: email_control.php:86 login_control.php:102
+msgid "邮箱不存在"
+msgstr "Email does not exists"
+
+#: email_control.php:89 login_control.php:98
+msgid "邮箱验证不通过"
+msgstr "Email validation does not pass"
+
+#: email_control.php:93 usercp_control.php:55
+msgid "邮箱已被使用"
+msgstr "Email has been used"
+
+#: email_control.php:102
+msgid "数据存储失败，请联系管理员"
+msgstr "Save error, please contact administrator"
+
+#: index_control.php:21 index_control.php:29
+msgid "系统未启用接口功能"
+msgstr "api is not enabled."
+
+#: index_control.php:33
+msgid "接口数据异常"
+msgstr "Interface is error"
+
+#: index_control.php:38
+msgid "信息为空"
+msgstr "Message is empty"
+
+#: index_control.php:42
+msgid "未指定数据调用中心ID"
+msgstr "Data call ID is not specified"
+
+#: index_control.php:55
+msgid "没有获取到数据"
+msgstr "No Data Recieved."
+
+#: login_control.php:21
+msgid "您已是本站会员，不需要再次登录"
+msgstr "You are a member, you do not need to log in again"
+
+#: login_control.php:26 login_control.php:85 login_control.php:145
+#: post_control.php:31 register_control.php:46 register_control.php:174
+msgid "验证码不能为空"
+msgstr "Captcha can't be empty"
+
+#: login_control.php:30 login_control.php:89 login_control.php:149
+#: post_control.php:35 register_control.php:50 register_control.php:178
+msgid "验证码填写不正确"
+msgstr "Captcha is not correctly"
+
+#: login_control.php:36 register_control.php:22 register_control.php:57
+msgid "账号不能为空"
+msgstr "Account cannot be empty"
+
+#: login_control.php:40
+msgid "会员密码不能为空"
+msgstr "Password can't be empty"
+
+#: login_control.php:49
+msgid "会员信息不存在"
+msgstr "Member information does not exist."
+
+#: login_control.php:54
+msgid "会员审核中，暂时不能登录"
+msgstr "Member of audit, temporarily unable to login"
+
+#: login_control.php:57
+msgid "会员被管理员锁定，请联系管理员解锁"
+msgstr "Member is locked by administrator, please contact your administrator to unlock"
+
+#: login_control.php:60
+msgid "登录密码不正确"
+msgstr "Password is incorrect"
+
+#: login_control.php:79 login_control.php:139 register_control.php:41
+#: register_control.php:169
+msgid "您已是本站会员，不能执行这个操作"
+msgstr "You are a member, you cannot perform this operation"
+
+#: login_control.php:95 login_control.php:180 register_control.php:82
+msgid "邮箱不能为空"
+msgstr "Email cannot be empty"
+
+#: login_control.php:105 login_control.php:170
+msgid "会员账号审核中，暂时不能使用取回密码功能"
+msgstr "Member ID verification, cannot use the password recovery feature"
+
+#: login_control.php:108 login_control.php:173
+msgid "会员账号被管理员锁定，不能使用取回密码功能，请联系管理员"
+msgstr "Member ID is locked by administrator, you cannot use the password recovery feature, please contact your administrator"
+
+#: login_control.php:111
+msgid "邮箱取回密码功能未启用，请联系我们的客服"
+msgstr "Retrieve Password feature is not enabled, please contact our customer service"
+
+#: login_control.php:118
+msgid "邮件模板为空，请配置邮件模板"
+msgstr "Email Template does not exist, please contact administrator to configure it."
+
+#: login_control.php:155
+msgid "确认码不能为空"
+msgstr "Code cannot be empty."
+
+#: login_control.php:159
+msgid "验证串已过期或无效"
+msgstr "Validation has expired or is invalid"
+
+#: login_control.php:163
+msgid "会员账号不能为空"
+msgstr "Member ID cannot be null"
+
+#: login_control.php:167
+msgid "会员账号不存在"
+msgstr "Member information does not exist."
+
+#: login_control.php:176
+msgid "验证串不一致"
+msgstr "Validation string of inconsistent"
+
+#: login_control.php:183
+msgid "邮箱与账号不匹配"
+msgstr "Mailbox and account does not match"
+
+#: login_control.php:187 register_control.php:71
+msgid "密码不能为空"
+msgstr "Passwords can't be empty"
+
+#: login_control.php:191 register_control.php:75
+msgid "确认密码不能为空"
+msgstr "Confirm password can not be empty"
+
+#: login_control.php:194 register_control.php:78
+msgid "两次输入的密码不一致"
+msgstr "The two passwords do not match"
+
+#: opt_control.php:24
+msgid "没有指定选项组"
+msgstr "Does not specify the option group"
+
+#: opt_control.php:28
+msgid "未定义变量"
+msgstr "Undefined variables"
+
+#: opt_control.php:32
+msgid "没有内容选项"
+msgstr "No content option"
+
+#: opt_control.php:92
+msgid "请选择…"
+msgstr "Please select ..."
+
+#: order_control.php:23
+msgid "您的购物车里没有产品"
+msgstr "No products in your shopping cart"
+
+#: order_control.php:40
+msgid "审核中"
+msgstr "Audit"
+
+#: order_control.php:44
+msgid "订单创建失败"
+msgstr "Order creation failed"
+
+#: order_control.php:121 order_control.php:201 usercp_control.php:148
+msgid "姓名不能为空"
+msgstr "Name cannot be empty"
+
+#: order_control.php:126 order_control.php:206
+msgid "国家不能为空"
+msgstr "Country cannot be empty"
+
+#: order_control.php:130 order_control.php:210
+msgid "请选择您所在省份信息"
+msgstr "Please select your province"
+
+#: order_control.php:136
+msgid "请填写送货地址信息，要求尽可能详实"
+msgstr "Please fill in the shipping address information, as far as possible the detailed"
+
+#: order_control.php:140 order_control.php:220 usercp_control.php:167
+msgid "邮编不能为空"
+msgstr "Zip code cannot be empty"
+
+#: order_control.php:145 order_control.php:225
+msgid "至少要求填写一个联系方式：电话或手机"
+msgstr "Asked to fill in at least one contact telephone or cell phone"
+
+#: order_control.php:148 order_control.php:228
+msgid "电话填写不正确，请填写规范，如：0755-123456789"
+msgstr "Phone is not filled out correctly, please fill out the specifications, such as: 0755-123456789"
+
+#: order_control.php:151 order_control.php:231
+msgid "手机填写不正确，请填写规范，如：158185xxxxx"
+msgstr "Cell phone is not filled out correctly, please fill out the specifications, such as: 158185xxxxx"
+
+#: order_control.php:155
+msgid "Email不能为空，系统会发送订单状态到这个邮箱上"
+msgstr "Email cannot be empty, the system on the order status will be sent to this address"
+
+#: order_control.php:158
+msgid "Email不符合要求，请正确填写"
+msgstr "Email does not meet the requirements, please fill in the correct"
+
+#: order_control.php:175
+msgid "登记地址信息出错"
+msgstr "Registered address information error"
+
+#: payment_control.php:47
+msgid "无法获取订单信息"
+msgstr "Unable to get order information."
+
+#: payment_control.php:51
+msgid "订单信息为空"
+msgstr "Order information is empty"
+
+#: payment_control.php:59 payment_control.php:73
+msgid "您的订单付款成功，请稍候，系统将引导您查看订单信息"
+msgstr "Successful payment, please wait, it will guide you to view order information"
+
+#: payment_control.php:63
+msgid "付款方案不存在"
+msgstr "Payment proposal does not exist"
+
+#: payment_control.php:67
+msgid "支付接口异常，请检查"
+msgstr "Exception payment interface, please check"
+
+#: plugin_control.php:22 plugin_control.php:49 res_control.php:24
+#: res_control.php:49 res_control.php:72
+msgid "未指定ID"
+msgstr "ID is not specified"
+
+#: plugin_control.php:26
+msgid "插件未启用或不存在"
+msgstr "Plug-in is not enabled, or does not exist"
+
+#: plugin_control.php:29 plugin_control.php:54
+msgid "插件应用{appid}.php不存在"
+msgstr "Plugin {appid}.php does not exist"
+
+#: plugin_control.php:40 plugin_control.php:65
+msgid "插件方法{method}不存在"
+msgstr "Method ({method}) Does not exist"
+
+#: post_control.php:41
+msgid "未绑定相应的项目"
+msgstr "Projects that are not bound"
+
+#: post_control.php:45
+msgid "项目信息不存在或未启用"
+msgstr "Project information does not exist or is not enabled"
+
+#: post_control.php:48
+msgid "此项目没有表单功能"
+msgstr "This project does not have the form."
+
+#: post_control.php:56
+msgid "主题"
+msgstr "Title"
+
+#: post_control.php:57
+msgid "不能为空"
+msgstr "cannot be empty"
+
+#: post_control.php:70
+msgid "编辑失败，请联系管理员"
+msgstr "Edit failed, please contact administrator"
+
+#: post_control.php:83
+msgid "添加失败，请联系管理"
+msgstr "Add failed, please contact administrator"
+
+#: post_control.php:122
+msgid "内容编辑成功"
+msgstr "Edited successfully"
+
+#: post_control.php:166
+msgid "未指定主题ID"
+msgstr "Do not specify a topic ID"
+
+#: post_control.php:170
+msgid "主题信息不存在"
+msgstr "Topic information do not exist"
+
+#: register_control.php:27 register_control.php:62
+msgid "会员账号不允许包含字符串："
+msgstr "Member account is not allowed:"
+
+#: register_control.php:32 register_control.php:67
+msgid "会员账号已存用"
+msgstr "Member ID already exists"
+
+#: register_control.php:34
+msgid "账号可以使用"
+msgstr "Account is ok"
+
+#: register_control.php:85 usercp_control.php:51
+msgid "邮箱不合法"
+msgstr "Mailbox is not lawful"
+
+#: register_control.php:89
+msgid "该邮箱已被注册"
+msgstr "This email has already been registered"
+
+#: register_control.php:106 register_control.php:111 register_control.php:114
+#: register_control.php:196
+msgid "注册失败，网站未开放注册权限"
+msgstr "Failed to register, the site is not open registry permissions"
+
+#: register_control.php:121
+msgid "注册失败，请联系管理员"
+msgstr "Registration failed, please contact administrator"
+
+#: register_control.php:137 register_control.php:161
+msgid "注册成功，已自动登录，请稍候…"
+msgstr "Registered, automatic login, please wait ..."
+
+#: register_control.php:140 register_control.php:144 register_control.php:148
+#: register_control.php:163
+msgid "注册成功，等待管理员验证"
+msgstr "Register, waiting for administrator authentication"
+
+#: register_control.php:184
+msgid "邀请码不能为空"
+msgstr "Invitation code cannot be empty"
+
+#: register_control.php:201
+msgid "该组不需要启用邀请码功能"
+msgstr "The group does not need invitation code feature is enabled"
+
+#: register_control.php:204
+msgid "未分配相应的验证组功能"
+msgstr "Not assigned to a validation group functions"
+
+#: register_control.php:208
+msgid "验证库未绑定相应的模块"
+msgstr "Verify the module library is not bound"
+
+#: register_control.php:212
+msgid "邀请码不存在"
+msgstr "Invitation code does not exist"
+
+#: register_control.php:215
+msgid "邀请码已被使用"
+msgstr "Invitation code bas been used"
+
+#: register_control.php:218
+msgid "邀请码未启用，您可以联系管理员启用"
+msgstr "Invitation code is not enabled, you may contact the administrator to enable"
+
+#: res_control.php:36
+msgid "附件ID不正确"
+msgstr "Annex ID incorrect"
+
+#: res_control.php:53 res_control.php:77
+msgid "附件不存在"
+msgstr "Attachment does not exist"
+
+#: res_control.php:65
+msgid "删除成功"
+msgstr "Deleted successfully"
+
+#: res_control.php:91
+msgid "名称不能为空"
+msgstr "Name cannot be empty"
+
+#: res_control.php:96
+msgid "附件信息更新成功"
+msgstr "Attachment information was successfully updated"
+
+#: upload_control.php:24 usercp_control.php:24 usercp_control.php:31
+msgid "您还没有登录，请先登录或注册"
+msgstr "You are not logged in, please login or register"
+
+#: upload_control.php:43
+msgid "你没有上传权限"
+msgstr "You don't have permission"
+
+#: upload_control.php:47
+msgid "游客没有上传权限"
+msgstr "Visitors do not have upload permission"
+
+#: upload_control.php:57
+msgid "未配置附件存储方式"
+msgstr "Do not configure attachment storage"
+
+#: upload_control.php:65
+msgid "附件上传失败"
+msgstr "Attachment upload failed"
+
+#: upload_control.php:92
+msgid "图片存储失败"
+msgstr "Picture storage failed"
+
+#: usercp_control.php:43
+msgid "会员组不存在"
+msgstr "Member group does not exist"
+
+#: usercp_control.php:48
+msgid "未指定邮箱"
+msgstr "Do not specify a mailbox"
+
+#: usercp_control.php:86
+msgid "头像图片地址不能为空"
+msgstr "Picture address cannot be empty"
+
+#: usercp_control.php:91
+msgid "头像图片仅支持jpg,gif,png,jpeg"
+msgstr "Picture support only jpg,gif,PNG,JPEG"
+
+#: usercp_control.php:94
+msgid "头像文件不存在"
+msgstr "Avatar file does not exist"
+
+#: usercp_control.php:105
+msgid "旧密码不能为空"
+msgstr "Old passwords can't be empty"
+
+#: usercp_control.php:110
+msgid "新密码不能为空"
+msgstr "New passwords can't be empty"
+
+#: usercp_control.php:113
+msgid "新旧密码不一致"
+msgstr "The old and new passwords do not match"
+
+#: usercp_control.php:117
+msgid "旧密码输入错误"
+msgstr "Incorrect old password"
+
+#: usercp_control.php:120
+msgid "新旧密码不能一样"
+msgstr "The old and the new password cannot be the same"
+
+#: usercp_control.php:138
+msgid "地址信息不存在"
+msgstr "Address information does not exist"
+
+#: usercp_control.php:141
+msgid "地址信息与账号不匹配"
+msgstr "Address information does not match account"
+
+#: usercp_control.php:157
+msgid "请选择收件人省份信息"
+msgstr "Please choose the recipient provinces information"
+
+#: usercp_control.php:163
+msgid "请填写地址信息，要求尽可能详细"
+msgstr "Please fill in the address information requirements as detailed"
+
+#: usercp_control.php:172
+msgid "请填写联系电话或手机号"
+msgstr "Please fill out the contact phone number or cell phone number"
+
+#: usercp_control.php:177
+msgid "电话填写不正确，请规范填写，如：0755-123456789 或 400123456"
+msgstr "Phone is not filled out correctly, please fill in the specifications, such as: 0755-123456789 or 400123456"
+
+#: usercp_control.php:183
+msgid "手机填写不正确，请规范填写，要求以13，15，17，18开头的11位数字 或 400 电话"
+msgstr "Cell phone is not filled out correctly, please fill in the specifications, require 11 digit number beginning with 13,15,17,18 or 400 phone"
+
+#: usercp_control.php:188
+msgid "地址类型不匹配"
+msgstr "Does not match the address type"
+
+#: usercp_control.php:191
+msgid "地址信息更新成功"
+msgstr "Address information updated successfully"
+
+#: usercp_control.php:195
+msgid "地址信息创建存储失败"
+msgstr "Address information failed to create storage"
+
+#: usercp_control.php:197
+msgid "地址信息创建成功"
+msgstr "Address information is created successfully"

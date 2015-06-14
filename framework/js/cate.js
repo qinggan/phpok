@@ -55,36 +55,16 @@ function cate_check()
 	return true;
 }
 
-//删除分类
-function cate_delete(id,title)
-{
-	$.dialog.confirm("确定要删除分类：<span class='red'>"+title+"</span> 吗？删除后相关联的主题会失效！",function(){
-		var url = get_url("cate","delete");
-		url += "&id="+id;
-		var rs = json_ajax(url);
-		if(rs.status == "ok")
-		{
-			$.phpok.reload();
-		}
-		else
-		{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	});
-}
-
 function show_submit(id)
 {
-	var html = '<input type="button" class="button" value="提交" onclick="update_taxis('+id+')" />';
-	$("#taxis_submit_"+id).html(html);
+	//var html = '<input type="button" class="phpok-btn" value="提交" onclick="update_taxis('+id+')" />';
+	//$("#taxis_submit_"+id).html(html);
 }
 
 function hide_element(id)
 {
-	window.setTimeout(function(){
-		$("#taxis_submit_"+id).html('&nbsp;');
-	}, 5000);
+	update_taxis(id);
+	//$("#taxis_submit_"+id).html('&nbsp;');
 }
 
 function update_taxis(id)

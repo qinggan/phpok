@@ -32,5 +32,4 @@ $config['mobile']['default'] = false; //默认为手机版，为方便开发人�
 
 $config['develop'] = true; //开发模式，正常运行的网站请设为false，可防止CRSF注入
 $config['debug'] = true;
-$config['xdebug'] = false;
 ?>

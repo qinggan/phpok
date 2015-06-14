@@ -20,9 +20,8 @@ class order_control extends phpok_control
 	//显示订单列表
 	function index_f()
 	{
-		if(!$this->popedom["list"])
-		{
-			error(P_Lang("你没有查看权限"),$this->url('index'));
+		if(!$this->popedom["list"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$pageid = $this->get($this->config['pageid'],'int');
 		if(!$pageid) $pageid = 1;
@@ -113,7 +112,9 @@ class order_control extends phpok_control
 			}
 			$this->assign('rslist',$rslist);
 			$this->assign('total',$total);
-			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=数量：(total)/(psize)，页码：(num)/(total_page)&always=1");
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 			$this->assign('pagelist',$pagelist);
 		}
 		//订单状态列表
@@ -126,31 +127,33 @@ class order_control extends phpok_control
 	function delete_f()
 	{
 		$id = $this->get('id');
-		if(!$this->popedom["delete"]) $this->json("您没有删除权限");
+		if(!$this->popedom['delete']){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
 		//删除订单
-		if(!$id) $this->json('未指定订单ID号');
+		if(!$id) $this->json(P_Lang('未指定订单ID号'));
 		$this->model('order')->delete($id);
-		$this->json('删除成功',true);
+		$this->json(P_Lang('删除成功'),true);
 	}
 
 	//更新订单状态
 	function status_f()
 	{
 		$id = $this->get('id');
-		if(!$this->popedom['status']) $this->json('您没有权限审核订单');
+		if(!$this->popedom['status']) $this->json(P_Lang('您没有权限执行此操作'));
 		$array = array('status'=>'CHECKED');
 		$this->model('order')->save($array,$id);
-		$this->json('审核成功',true);
+		$this->json(P_Lang('审核成功'),true);
 	}
 
 	//查看订单信息
 	function info_f()
 	{
 		$id = $this->get('id','int');
-		if(!$id) error_open('未指定ID');
+		if(!$id) error_open(P_Lang('未指定ID'));
 		
 		$rs = $this->model('order')->get_one($id);
-		if(!$rs) error_open('订单信息不存在');
+		if(!$rs) error_open(P_Lang('订单信息不存在'));
 		if($rs['pay_id'])
 		{
 			//取得付款方式
@@ -183,11 +186,11 @@ class order_control extends phpok_control
 		$id = $this->get('id','int');
 		if(!$id)
 		{
-			if(!$this->popedom['add']) error('您没有创建订单的权限',$this->url('order'),'error');
+			if(!$this->popedom['add']) error(P_Lang('您没有权限执行此操作'),$this->url('order'),'error');
 		}
 		else
 		{
-			if(!$this->popedom['modify']) error('您没有修改订单的权限',$this->url('order'),'error');
+			if(!$this->popedom['modify']) error(P_Lang('您没有权限执行此操作'),$this->url('order'),'error');
 			$rs = $this->model('order')->get_one($id);
 			$this->assign('rs',$rs);
 			//读取产品列表
@@ -228,10 +231,10 @@ class order_control extends phpok_control
 	function product_delete_f()
 	{
 		$id = $this->get('id','int');
-		if(!$id) $this->json('未指定产品ID');
-		if(!$this->popedom['modify']) $this->json('您没有编辑订单权限！');
+		if(!$id) $this->json(P_Lang('未指定产品ID'));
+		if(!$this->popedom['modify']) $this->json(P_Lang('您没有权限执行此操作'));
 		$this->model('order')->product_delete($id);
-		$this->json('删除成功',true);
+		$this->json(P_Lang('删除成功'),true);
 	}
 
 	//选择商品
@@ -245,7 +248,7 @@ class order_control extends phpok_control
 		$project = $this->model('project')->project_all($_SESSION['admin_site_id'],'id','is_biz != 0');
 		if(!$project)
 		{
-			error_open('您的站点没有启用电子商务功能项目');
+			error_open(P_Lang('您的站点没有启用电子商务功能项目'));
 		}
 		$condition = "l.site_id IN(0,".$_SESSION['admin_site_id'].") AND l.status=1";
 		$idlist = array_keys($project);
@@ -281,10 +284,12 @@ class order_control extends phpok_control
 		$total = $this->model('list')->get_all_total($condition);
 		if($total<1)
 		{
-			error_open('没有产品信息');
+			error_open(P_Lang('没有产品信息'));
 		}
 		$rslist = $this->model('list')->get_all($condition,$offset,$psize);
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=(total)/(psize)&always=1");
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 		$this->assign('pagelist',$pagelist);
 		$this->assign('rslist',$rslist);
 		$this->assign('id',$id);
@@ -295,10 +300,10 @@ class order_control extends phpok_control
 	function product_f()
 	{
 		$id = $this->get('id','int');
-		if(!$id) $this->json('未指定产品ID');
+		if(!$id) $this->json(P_Lang('未指定产品ID'));
 
 		$rs = $this->model('list')->get_one($id);
-		if(!$rs) $this->json('产品信息不存在');
+		if(!$rs) $this->json(P_Lang('产品信息不存在'));
 		$currency_id = $this->get("currency_id",'int');
 		$rs['price'] = price_format_val($rs['price'],$rs['currency_id'],$currency_id);
 		$this->json($rs,true);
@@ -335,7 +340,9 @@ class order_control extends phpok_control
 			$rslist = $this->model('res')->get_list($condition,$offset,$psize,false);
 			$this->assign("rslist",$rslist);
 			$this->assign("pageurl",$pageurl);
-			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=4&add=(total)/(psize)&always=1");
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=4';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 			$this->assign("pagelist",$pagelist);
 		}
 		$this->assign("formurl",$formurl);
@@ -345,7 +352,7 @@ class order_control extends phpok_control
 		$this->assign("catelist",$catelist);
 		$config = $this->model('res')->type_list();
 		$file_type = "*.*";
-		$file_type_desc = "文件";
+		$file_type_desc = P_Lang('文件');
 		if($type && $config['picture'])
 		{
 			$file_type = $config[$type]["type"];
@@ -362,12 +369,12 @@ class order_control extends phpok_control
 		$id = $this->get('id','int');
 		if(!$id){
 			if(!$this->popedom['add']){
-				$this->json(P_Lang('您没有创建订单权限'));
+				$this->json(P_Lang('您没有权限执行此操作'));
 			}
 			$this->add_save();
 		}
 		if(!$this->popedom['modify']){
-			$this->json(P_Lang('您没有编辑订单权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$this->modify_save($id);
 	}
@@ -473,22 +480,22 @@ class order_control extends phpok_control
 		$main = array();
 		$sn = $this->get('sn');
 		if(!$sn){
-			$this->json('订单编号不能为空');
+			$this->json(P_Lang('订单编号不能为空'));
 		}
 		if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$sn)){
-			$this->json("订单编号不合要求，限字母、数字、下划线及中划线");
+			$this->json(P_Lang('订单编号不合要求，限字母、数字、下划线及中划线'));
 		}
 		$rs = $this->model('order')->get_one_from_sn($sn);
 		if($rs){
-			$this->json('订单编号已被使用，请换个编号');
+			$this->json(P_Lang('订单编号已被使用，请换个编号'));
 		}
 		$main['sn'] = $sn;
 		$passwd = $this->get('passwd');
 		if(!$passwd){
-			$this->json('订单密码不能为空');
+			$this->json(P_Lang('订单密码不能为空'));
 		}
 		if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$passwd)){
-			$this->json("订单密码不合要求，限字母、数字、下划线及中划线");
+			$this->json(P_Lang('订单密码不合要求，限字母、数字、下划线及中划线'));
 		}
 		$main['passwd'] = $passwd;
 		$prolist = $this->get('pro_id');
@@ -497,7 +504,7 @@ class order_control extends phpok_control
 		$pro_tid = $this->get('pro_tid');
 		$pro_price = $this->get('pro_price');
 		$pro_qty = $this->get('pro_qty');
-		if(!$prolist || !is_array($prolist)) $this->json('订单未创建相应的产品信息');
+		if(!$prolist || !is_array($prolist)) $this->json(P_Lang('订单未创建相应的产品信息'));
 		$plist = '';
 		$total_price = 0;
 		$total_qty = 0;
@@ -523,7 +530,7 @@ class order_control extends phpok_control
 			);
 			$plist[] = $array;
 		}
-		if(!$plist) $this->json('产品信息为空');
+		if(!$plist) $this->json(P_Lang('产品信息为空'));
 		$shipping = $this->address('s');
 		$site_rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
 		$billing = false;
@@ -567,7 +574,7 @@ class order_control extends phpok_control
 		$main['note'] = $this->get('note');
 		$order_id = $this->model('order')->save($main);
 		if(!$order_id){
-			$this->json('订单创建失败，写入数据库出错');
+			$this->json(P_Lang('订单创建失败，写入数据库出错'));
 		}
 		foreach($plist AS $key=>$value){
 			$value['order_id'] = $order_id;
@@ -581,7 +588,7 @@ class order_control extends phpok_control
 			$billing['order_id'] = $order_id;
 			$this->model('order')->save_address($billing);
 		}
-		$this->json("订单创建成功",true);
+		$this->json(P_Lang('订单创建成功'),true);
 	}
 
 	//地址库

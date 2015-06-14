@@ -66,8 +66,8 @@ class me_control extends phpok_control
 		}
 		else
 		{
-			$html = '<input type="button" value=" 确定 " class="submit" onclick="$.dialog.close();" />';
-			error_open("密码修改成功，请下次登录后使用新密码登录！","ok",$html);
+			$html = '<input type="button" value=" '.P_Lang('确定').' " class="submit" onclick="$.dialog.close();" />';
+			error_open(P_Lang('密码修改成功，请下次登录后使用新密码登录！'),"ok",$html);
 		}
 	}
 }

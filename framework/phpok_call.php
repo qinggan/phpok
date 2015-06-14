@@ -233,6 +233,8 @@ class phpok_call extends phpok_control
 	private function _arc_condition($rs)
 	{
 		$condition  = " l.site_id='".$rs['site']."' AND l.hidden=0 ";
+		//计划任务时发布文章
+		$condition .= " AND l.dateline<='".strtotime(date("Y-m-d H:00:00",$this->time))."' ";
 		if($rs['pid']){
 			$condition .= " AND l.project_id=".intval($rs['pid'])." ";
 		}

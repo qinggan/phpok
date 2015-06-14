@@ -23,7 +23,7 @@ class rewrite_control extends phpok_control
 	{
 		if(!$this->popedom["list"])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$optlist = $this->model('rewrite')->type_all();
 		$rslist = $this->model('rewrite')->get_all();
@@ -52,7 +52,7 @@ class rewrite_control extends phpok_control
 	{
 		if(!$this->popedom['set'])
 		{
-			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id');
 		if($id)
@@ -85,7 +85,7 @@ class rewrite_control extends phpok_control
 	{
 		if(!$this->popedom['set'])
 		{
-			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id');
 		if(!$id)
@@ -106,7 +106,7 @@ class rewrite_control extends phpok_control
 	{
 		if(!$this->popedom['set'])
 		{
-			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id');
 		if(!$id)

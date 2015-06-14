@@ -23,7 +23,9 @@ class system_control extends phpok_control
 	# 核心配置列表页，这里显示全部，不分页
 	function index_f()
 	{
-		if(!$this->popedom["list"]) error("你没有查看权限");
+		if(!$this->popedom["list"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$rslist = $this->model('sysmenu')->get_all($_SESSION["admin_site_id"]);
 		$this->assign("rslist",$rslist);
 		$this->view("sysmenu_index");
@@ -34,19 +36,20 @@ class system_control extends phpok_control
 	{
 		$id = $this->get("id","int");
 		$pid = $this->get("pid","int");
-		if($id)
-		{
-			if(!$this->popedom["modify"]) error("你没有编辑权限");
+		if($id){
+			if(!$this->popedom["modify"]){
+				error(P_Lang('您没有权限执行此操作'),'','error');
+			}
 			$rs = $this->model('sysmenu')->get_one($id);
 			$this->assign("id",$id);
 			$this->assign("rs",$rs);
 			$pid = $rs["parent_id"];
 			$popedom_list = $this->model('popedom')->get_list($id);
 			$this->assign("popedom_list",$popedom_list);
-		}
-		else
-		{
-			if(!$this->popedom["add"]) error("你没有添加权限");
+		}else{
+			if(!$this->popedom["add"]){
+				error(P_Lang('您没有权限执行此操作'),'','error');
+			}
 		}
 		if($pid)
 		{
@@ -79,20 +82,16 @@ class system_control extends phpok_control
 	function save_f()
 	{
 		$id = $this->get("id","int");
-		if($id)
-		{
-			if(!$this->popedom["modify"]) error("你没有编辑权限");
-		}
-		else
-		{
-			if(!$this->popedom["add"]) error("你没有添加权限");
+		$popedom_id = $id ? 'modify' : 'add';
+		if(!$this->popedom[$popedom_id]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$error_url = admin_url("system","set");
 		if($id) $error_url .= "&id=".$id;
 		$title = $this->get("title");
 		if(!$title)
 		{
-			error("名称不能为空！",$error_url,"error");
+			error(P_Lang('名称不能为空'),$error_url,"error");
 		}
 		$array = array();
 		$array["title"] = $title;
@@ -102,12 +101,12 @@ class system_control extends phpok_control
 			$parent_id = $this->get("parent_id","int");
 			if(!$parent_id)
 			{
-				error("未指定上一级项目！",$error_url);
+				error(P_Lang('未指定上一级项目'),$error_url);
 			}
 			$appfile = $this->get("appfile");
 			if(!$appfile)
 			{
-				error("未指定控制层！",$error_url);
+				error(P_Lang('未指定控制层'),$error_url);
 			}
 			$array["parent_id"] = $parent_id;
 			$array["appfile"] = $appfile;
@@ -120,7 +119,7 @@ class system_control extends phpok_control
 			$rs = $this->model('sysmenu')->get_one($id);
 			if(!$rs)
 			{
-				error("获取数据失败，请检查！",$error_url,"error");
+				error(P_Lang('获取数据失败，请检查'),$error_url,"error");
 			}
 			if($rs["parent_id"])
 			{
@@ -138,7 +137,7 @@ class system_control extends phpok_control
 		//更新权限属性
 		if(!$id)
 		{
-			error("项目添加成功，但相应的权限字段没有更新成功",$this->url("system"),"ok");
+			error(P_Lang('项目添加成功，但相应的权限字段没有更新成功'),$this->url("system"),"ok");
 		}
 		//判断是否有属性
 		$rs = $this->model('sysmenu')->get_one($id);
@@ -189,32 +188,32 @@ class system_control extends phpok_control
 				}
 			}
 		}
-		error("项目添加/更新成功！",$this->url("system"),"ok");
+		error(P_Lang('项目添加/更新成功'),$this->url("system"),"ok");
 	}
 
 	//更新状态
 	function status_f()
 	{
-		if(!$this->popedom["status"]) json_exit("你没有启用/禁用权限");
+		if(!$this->popedom["status"]) $this->json(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
 		if(!$id)
 		{
-			json_exit("没有指定ID！");
+			$this->json(P_Lang('没有指定ID'));
 		}
 		$rs = $this->model('sysmenu')->get_one($id);
 		if($rs["if_system"])
 		{
-			json_exit("系统栏目不支持执行此操作！");
+			$this->json(P_Lang('系统栏目不支持执行此操作'));
 		}
 		$status = $rs["status"] ? 0 : 1;
 		$action = $this->model('sysmenu')->update_status($id,$status);
 		if(!$action)
 		{
-			json_exit("操作失败，请检查SQL语句！");
+			$this->json(P_Lang('操作失败，请检查SQL语句'));
 		}
 		else
 		{
-			json_exit($status,true);
+			$this->json($status,true);
 		}
 	}
 
@@ -224,13 +223,13 @@ class system_control extends phpok_control
 		$taxis = $this->lib('trans')->safe("taxis");
 		if(!$taxis || !is_array($taxis))
 		{
-			json_exit("没有指定要更新的排序！");
+			$this->json(P_Lang('没有指定要更新的排序'));
 		}
 		foreach($taxis AS $key=>$value)
 		{
 			$this->model('sysmenu')->update_taxis($key,$value);
 		}
-		json_exit("数据排序更新成功！",true);
+		$this->json(P_Lang('数据排序更新成功'),true);
 	}
 
 	//删除权限配置
@@ -239,43 +238,38 @@ class system_control extends phpok_control
 		$id = $this->get("id","int");
 		if(!$id)
 		{
-			json_exit("未指定ID");
+			$this->json(P_Lang('未指定ID'));
 		}
 		//判断是否是系统管理
 		if(!$_SESSION["admin_rs"]["if_system"])
 		{
-			json_exit("您不是开发管理员，不能执行此操作");
+			$this->json(P_Lang('您不是开发管理员，不能执行此操作'));
 		}
 		$this->model('popedom')->delete($id);
-		json_exit("删除成功",true);
+		$this->json(P_Lang('删除成功'),true);
 	}
 
 	function delete_f()
 	{
 		$id = $this->get('id','int');
-		if(!$id)
-		{
-			$this->json("未指定ID");
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
 		}
-		if(!$this->popedom['delete'])
-		{
-			$this->json('您没有删除权限');
+		if(!$this->popedom['delete']){
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$rs = $this->model('sysmenu')->get_one($id);
-		if(!$rs)
-		{
-			$this->json('导航菜单不存在');
+		if(!$rs){
+			$this->json(P_Lang('数据记录不存在'));
 		}
-		if(!$rs['parent_id'])
-		{
-			$this->json('根导航不允许删除');
+		if(!$rs['parent_id']){
+			$this->json(P_Lang('根导航不允许删除'));
 		}
-		if($rs['if_system'])
-		{
-			$this->json('核心导航操作不允许删除');
+		if($rs['if_system']){
+			$this->json(P_Lang('核心导航操作不允许删除'));
 		}
 		$this->model('sysmenu')->delete($id);
-		$this->json('删除成功',true);
+		$this->json(P_Lang('删除成功'),true);
 	}
 }
 ?>

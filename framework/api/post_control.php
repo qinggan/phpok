@@ -25,50 +25,37 @@ class post_control extends phpok_control
 
 	public function save_f()
 	{
-		if($this->config['is_vcode'] && function_exists('imagecreate'))
-		{
+		if($this->config['is_vcode'] && function_exists('imagecreate')){
 			$code = $this->get('_chkcode');
-			if(!$code)
-			{
+			if(!$code){
 				$this->json(P_Lang('验证码不能为空'));
 			}
 			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode'])
-			{
+			if($code != $_SESSION['vcode']){
 				$this->json(P_Lang('验证码填写不正确'));
 			}
 			unset($_SESSION['vcode']);
 		}
-		//判断ID参数是否传过来
 		$id = $this->get('id','system');
-		if(!$id)
-		{
+		if(!$id){
 			$this->json(P_Lang('未绑定相应的项目'));
 		}
-		//判断项目是否存在
 		$project_rs = $this->call->phpok('_project','phpok='.$id);
-		if(!$project_rs || !$project_rs['status'])
-		{
+		if(!$project_rs || !$project_rs['status']){
 			$this->json(P_Lang('项目信息不存在或未启用'));
 		}
-		//判断是否有表单功能
-		if(!$project_rs['module'])
-		{
+		if(!$project_rs['module']){
 			$this->json(P_Lang('此项目没有表单功能'));
 		}
-		if(!$this->model('popedom')->check($project_rs['id'],$this->user_groupid,'post'))
-		{
-			$this->json(P_Lang('您没有发布权限，请联系网站管理员'));
+		if(!$this->model('popedom')->check($project_rs['id'],$this->user_groupid,'post')){
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
-		
 		$array = array();
 		$array["title"] = $this->get("title");
-		if(!$array['title'])
-		{
-			$tip = $project_rs['alias_title'] ? $project_rs['alias_title'] : '主题';
+		if(!$array['title']){
+			$tip = $project_rs['alias_title'] ? $project_rs['alias_title'] : P_Lang('主题');
 			$this->json($tip.' '.P_Lang("不能为空"));
 		}
-		//如果是编辑操作
 		$tid = $this->get('tid','int');
 		$array["status"] = $this->model('popedom')->val($project_rs['id'],$this->user_groupid,'post1');
 		$array["hidden"] = 0;
@@ -104,52 +91,41 @@ class post_control extends phpok_control
 	 		}
 		}
 		$ext_list = $this->model('module')->fields_all($project_rs["module"]);
-		if(!$ext_list)
-		{
+		if(!$ext_list){
 			$ext_list = array();
 		}
 		$tmplist = false;
-		if(!$tid)
-		{
+		if(!$tid){
 			$tmplist["id"] = $insert_id;
 		}
 		$tmplist["site_id"] = $project_rs["site_id"];
 		$tmplist["project_id"] = $project_rs["id"];
 		$tmplist["cate_id"] = $array["cate_id"];
-		foreach($ext_list AS $key=>$value)
-		{
+		foreach($ext_list AS $key=>$value){
 			$val = ext_value($value);
-			if($value["ext"])
-			{
+			if($value["ext"]){
 				$ext = unserialize($value["ext"]);
-				foreach($ext AS $k=>$v)
-				{
+				foreach($ext AS $k=>$v){
 					$value[$k] = $v;
 				}
 			}
-			if($value["form_type"] == "password")
-			{
+			if($value["form_type"] == "password"){
 				$content = $rs[$value["identifier"]] ? $rs[$value["identifier"]] : $value["content"];
 				$val = ext_password_format($val,$content,$value["password_type"]);
 			}
-			if($val)
-			{
+			if($val){
 				$tmplist[$value["identifier"]] = $val;
 			}
 		}
-		if($tid)
-		{
+		if($tid){
 			$this->model('list')->update_ext($tmplist,$project_rs['module'],$tid);
 			$this->json(P_Lang('内容编辑成功'),true);
 		}
 		$this->model('list')->save_ext($tmplist,$project_rs["module"]);
-		//邮件通知管理员
-		if($project_rs['etpl_admin'])
-		{
+		if($project_rs['etpl_admin']){
 			$email_rs = $this->model('email')->get_identifier($project_rs['etpl_admin'],$this->site['id']);
 			$email = $this->model('admin')->get_mail();
-			if($email_rs && $email)
-			{
+			if($email_rs && $email){
 				$tmp = array_merge($tmplist,$array);
 				$tmp['id'] = $insert_id;
 				$this->assign('rs',$tmp);
@@ -160,17 +136,16 @@ class post_control extends phpok_control
 				$this->lib('email')->send_admin($title,$content,$email);
 			}
 		}
-		//通知普通会员
-		if($project_rs['etpl_user'])
-		{
+		if($project_rs['etpl_user']){
 			$email_rs = $this->model('email')->get_identifier($project_rs['etpl_admin'],$this->site['id']);
 			$email = $this->get('email');
-			if(!$email && $_SESSION['user_id'])
-			{
-				$email = $_SESSION['user_rs']['email'];
+			if(!$email && $_SESSION['user_id']){
+				$user_rs = $this->model('user')->get_one($_SESSION['user_id']);
+				if($user_rs){
+					$email = $user_rs['email'];
+				}
 			}
-			if($email && $email_rs)
-			{
+			if($email && $email_rs){
 				$tmp = array_merge($tmplist,$array);
 				$tmp['id'] = $insert_id;
 				$this->assign('rs',$tmp);
@@ -195,7 +170,7 @@ class post_control extends phpok_control
 			$this->json(P_Lang('主题信息不存在'));
 		}
 		if($rs['user_id'] != $_SESSION['user_id']){
-			$this->json(P_Lang('您没有权限删除这个主题'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$elist = $this->model('module')->fields_all($rs["module_id"]);
 		if($elist){

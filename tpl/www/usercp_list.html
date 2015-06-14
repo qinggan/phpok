@@ -1,0 +1,28 @@
+<!-- php:$title = $page_rs.title.' - 会员中心' -->
+<!-- include tpl=head title=$title menutitle=会员中心 -->
+<div class="cp">
+	<div class="left"><!-- include tpl=block_usercp --></div>
+	<div class="right">
+		<table>
+		<tr>
+			<th>ID</th>
+			<th>{$page_rs.alias_title ? $page_rs.alias_title : '主题'}</th>
+			<th>发布时间</th>
+			<th>查看次数</th>
+			<th>操作</th>
+		</tr>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.id}</td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+	<div class='clear'></div>
+</div>
+
+
+<!-- include tpl=foot -->

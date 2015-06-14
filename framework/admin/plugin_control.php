@@ -23,7 +23,7 @@ class plugin_control extends phpok_control
 	{
 		if(!$this->popedom["list"])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$rslist = $this->model('plugin')->get_all();
 		$this->assign("rslist",$rslist);
@@ -45,7 +45,7 @@ class plugin_control extends phpok_control
 	{
 		if(!$this->popedom["config"])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$id = $this->get("id");
 		if(!$id)
@@ -79,7 +79,7 @@ class plugin_control extends phpok_control
 	{
 		if(!$this->popedom["config"])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$id = $this->get("id");
 		if(!$id)
@@ -89,7 +89,7 @@ class plugin_control extends phpok_control
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs)
 		{
-			error(P_Lang('数据不存在，请检查'),$this->url('plugin'),'error');
+			error(P_Lang('数据记录不存在'),$this->url('plugin'),'error');
 		}
 		$title = $this->get('title');
 		if(!$title)
@@ -113,7 +113,7 @@ class plugin_control extends phpok_control
 				$cls->save();
 			}
 		}
-		error(P_Lang('插件{title}配置成功',array('title'=>' <span class="red">'.$rs['title'].'</span> ')),$this->url("plugin"),'ok');
+		error(P_Lang('{title}设置成功',array('title'=>' <span class="red">'.$rs['title'].'</span> ')),$this->url("plugin"),'ok');
 	}
 
 	//安装插件
@@ -121,7 +121,7 @@ class plugin_control extends phpok_control
 	{
 		if(!$this->popedom["install"])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$id = $this->get("id");
 		if(!$id)
@@ -153,7 +153,7 @@ class plugin_control extends phpok_control
 	{
 		if(!$this->popedom["install"])
 		{
-			error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$id = $this->get("id");
 		if(!$id)
@@ -172,9 +172,8 @@ class plugin_control extends phpok_control
 		$array = array('id'=>$id,'title'=>$title,'note'=>$note,'status'=>0,'author'=>$author,'taxis'=>$taxis,'version'=>$version);
 		//存储安装数据
 		$id = $this->model('plugin')->install_save($array);
-		if(!$id)
-		{
-			error(P_Lang('插件安装失败，请检查'),$this->url('plugin','install','id='.$id),'error');
+		if(!$id){
+			error(P_Lang('插件安装失败'),$this->url('plugin','install','id='.$id),'error');
 		}
 		//判断是否有
 		$xmlrs = $this->model('plugin')->get_xml($id);
@@ -189,7 +188,7 @@ class plugin_control extends phpok_control
 				$cls->save();
 			}
 		}
-		error(P_Lang('插件{title}安装成功',array('title'=>' <span class="red">'.$title.'</span> ')),$this->url("plugin"),'ok');
+		error(P_Lang('{title}安装成功',array('title'=>' <span class="red">'.$title.'</span> ')),$this->url("plugin"),'ok');
 	}
 
 	//卸载插件
@@ -197,7 +196,7 @@ class plugin_control extends phpok_control
 	{
 		if(!$this->popedom["install"])
 		{
-			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id");
 		if(!$id)
@@ -207,7 +206,7 @@ class plugin_control extends phpok_control
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs)
 		{
-			$this->json(P_Lang('数据不存在，请检查'));
+			$this->json(P_Lang('数据记录不存在'));
 		}
 		if(is_file($this->dir_root.'plugins/'.$id.'/uninstall.php'))
 		{
@@ -229,7 +228,7 @@ class plugin_control extends phpok_control
 	{
 		if(!$this->popedom["install"])
 		{
-			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id");
 		if(!$id)
@@ -239,7 +238,7 @@ class plugin_control extends phpok_control
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs)
 		{
-			$this->json(P_Lang('数据不存在，请检查'));
+			$this->json(P_Lang('数据记录不存在'));
 		}
 		$status = $rs["status"] ? 0 : 1;
 		$this->model('plugin')->update_status($id,$status);
@@ -262,19 +261,16 @@ class plugin_control extends phpok_control
 	function exec_f()
 	{
 		$id = $this->get("id");
-		if(!$id)
-		{
+		if(!$id){
 			$this->json(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('plugin')->get_one($id);
-		if(!$rs)
-		{
-			$this->json(P_Lang('数据不存在，请检查'));
+		if(!$rs){
+			$this->json(P_Lang('数据记录不存在'));
 		}
 		if($rs['param']) $rs['param'] = unserialize($rs['param']);
-		if(!is_file($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php'))
-		{
-			$this->json(P_Lang('插件应用文件{appid}不存在',array('appid'=>' <span class="red">'.$this->app_id.'.php</span> ')));
+		if(!is_file($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php')){
+			$this->json(P_Lang('插件文件{appid}不存在',array('appid'=>' <span class="red">'.$this->app_id.'.php</span> ')));
 		}
 		include_once($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php');
 		$name = $this->app_id.'_'.$id;

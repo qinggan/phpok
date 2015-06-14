@@ -116,7 +116,7 @@ function phpok_sys_menu()
 
 	if(!$menulist || count($menulist) < 1 || !is_array($menulist))
 	{
-		$GLOBALS['app']->error("导航菜单异常：无法获取后台导航菜单，请检查表：".$GLOBALS['app']->db->prefix."sysmenu！");
+		$GLOBALS['app']->error(P_Lang('导航菜单异常：无法获取后台导航菜单，请检查表qinggan_sysmenu'));
 	}
 
 	$top_list = array();
@@ -266,7 +266,7 @@ function show_pending_info()
 	if($reply_total>0)
 	{
 		$url = $GLOBALS['app']->url("reply","","status=3");
-		$list[] = array("title"=>"未审核评论","total"=>$reply_total,"url"=>$url);
+		$list[] = array("title"=>P_Lang('未审核评论'),"total"=>$reply_total,"url"=>$url);
 	}
 	return $list;
 }
@@ -305,7 +305,7 @@ function get_phpok_ext($module,$words="id,identifier")
 {
 	if(!$module)
 	{
-		return array_return("未指定模块");
+		return array_return(P_Lang('未指定模块'));
 	}
 	if(substr($module,0,3) == "add")
 	{
@@ -396,15 +396,15 @@ function system_popedom($string,$return_type="")
 	{
 		if($return_type == "tips" || $return_type == "tpl" || $return_type == "tip")
 		{
-			error("您没有权限执行此操作","","error");
+			error(P_Lang('您没有权限执行此操作'),"","error");
 		}
 		elseif($return_type == "json")
 		{
-			json_exit("您没有权限执行此操作");
+			$GLOBALS['app']->json(P_Lang('您没有权限执行此操作'));
 		}
 		elseif($return_type == "ajax")
 		{
-			exit("您没有权限执行此操作");
+			exit(P_Lang('您没有权限执行此操作'));
 		}
 		else
 		{
@@ -420,15 +420,15 @@ function system_popedom($string,$return_type="")
 	{
 		if($return_type == "tips" || $return_type == "tpl" || $return_type == "tip")
 		{
-			error("您没有权限执行此操作","","error");
+			error(P_Lang('您没有权限执行此操作'),"","error");
 		}
 		elseif($return_type == "json")
 		{
-			json_exit("您没有权限执行此操作");
+			$GLOBALS['app']->json(P_Lang('您没有权限执行此操作'));
 		}
 		elseif($return_type == "ajax")
 		{
-			exit("您没有权限执行此操作");
+			exit(P_Lang('您没有权限执行此操作'));
 		}
 		else
 		{

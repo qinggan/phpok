@@ -71,10 +71,13 @@ function check_save()
 		}
 	}
 }
+$(document).ready(function(){
+	top.$.desktop.title('{if $id}{lang编辑管理员}{else}{lang添加管理员}{/if}');
+});
 </script>
 <div class="tips">
 	{lang您当前的位置：}<a href="{func admin_url admin}" title="{lang管理员列表}">{lang管理员列表}</a>
-	&raquo; <!-- if $id -->{lang编辑}<!-- else -->{lang添加新}<!-- /if -->{lang管理员}
+	&raquo; <!-- if $id -->{lang编辑管理员}<!-- else -->{lang添加管理员}<!-- /if -->
 </div>
 <form method="post" action="{func admin_url admin save}" onsubmit="return check_save();">
 <input type="hidden" name="id" id="id" value="{$id}" />
@@ -190,7 +193,7 @@ function check_save()
 		<div class="list" id="mlist_{$value.id}" style="border:1px solid #ccc;">
 		<table cellpadding="0" cellspacing="0" width="100%" style="padding:1px;">
 		<tr>
-			<th class="lft" width="130px">&nbsp; {$value.title}</th>
+			<th class="lft" width="130px">&nbsp; {func P_Lang $value.title}</th>
 			<th colspan="2" align="right">
 				<input type="button" value="{lang全选}" onclick="$.input.checkbox_all('mlist_{$value.id}')" />
 				<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none('mlist_{$value.id}')" />
@@ -200,7 +203,7 @@ function check_save()
 			<!-- loop from=$value.sublist key=$k value=$v -->
 			<!-- if $v.appfile != 'list' && $v.appfile != 'admin' -->
 			<tr id="mlist_{$v.id}">
-				<td><div style="text-indent:24px;">{$v.title}</div></td>
+				<td><div style="text-indent:24px;">{func P_Lang $v.title}</div></td>
 				<td width="180px" align="center">
 					<input type="button" value="{lang全选}" onclick="$.input.checkbox_all('mlist_{$v.id}')" />
 					<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none('mlist_{$v.id}')" />
@@ -210,7 +213,7 @@ function check_save()
 					<!-- if $glist[$v['id']] -->
 					<ul class="layout">
 						<!-- loop from=$glist[$v['id']] key=$kk value=$vv -->
-						<li><label><input type="checkbox" name="popedom[]" value="{$vv.id}"{if $plist && in_array($vv.id,$plist)} checked{/if} /> {$vv.title}</label></li>
+						<li><label><input type="checkbox" name="popedom[]" value="{$vv.id}"{if $plist && in_array($vv.id,$plist)} checked{/if} /> {func P_Lang $vv.title}</label></li>
 						<!-- /loop -->
 					</ul>
 					<!-- /if -->
@@ -252,7 +255,7 @@ function check_save()
 				<td>
 					<ul class="layout">
 						<!-- loop from=$v._popedom key=$kk value=$vv -->
-						<li><label><input type="checkbox" name="popedom[]" value="{$vv.id}"{if $plist && in_array($vv.id,$plist)} checked{/if} /> {$vv.title}</label></li>
+						<li><label><input type="checkbox" name="popedom[]" value="{$vv.id}"{if $plist && in_array($vv.id,$plist)} checked{/if} /> {func P_Lang $vv.title}</label></li>
 						<!-- /loop -->
 					</ul>
 				</td>

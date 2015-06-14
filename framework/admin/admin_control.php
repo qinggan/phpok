@@ -21,7 +21,7 @@ class admin_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid) $pageid = 1;
@@ -38,7 +38,9 @@ class admin_control extends phpok_control
 		$rslist = $this->model('admin')->get_list($condition,$offset,$psize);
 		$total = $this->model('admin')->get_total($condition);
 		if($total > $psize){
-			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=(total)/(psize)&always=1");
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 			$this->assign("pagelist",$pagelist);
 		}
 		$this->assign("rslist",$rslist);
@@ -52,7 +54,7 @@ class admin_control extends phpok_control
 		$plist = array();
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
 			if($id == $_SESSION["admin_id"]){
 				error(P_Lang('您不能操作自己的信息'),$this->url("admin"),"error");
@@ -60,7 +62,7 @@ class admin_control extends phpok_control
 			$this->assign("id",$id);
 			$rs = $this->model('admin')->get_one($id);
 			if($rs["if_system"] && !$_SESSION["admin_rs"]["if_system"]){
-				error(P_Lang("非系统管理员不能编辑系统管理员信息"),$this->url("admin"),"error");
+				error(P_Lang("非系统管理员不能执行此项"),$this->url("admin"),"error");
 			}
 			$this->assign("rs",$rs);
 			if(!$rs["if_system"]){
@@ -69,7 +71,7 @@ class admin_control extends phpok_control
 			$category = $rs['category'] ? explode(",",$rs['category']) : array('all');
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
 			$category = array('all');
 		}
@@ -127,7 +129,7 @@ class admin_control extends phpok_control
 			}
 		}
 		if(!$if_system){
-			return P_Lang('至少需要有一位可登录的系统管理员，请检查！');
+			return P_Lang('无系统管理员');
 		}
 		return "ok";
 	}
@@ -136,7 +138,7 @@ class admin_control extends phpok_control
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
-			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
@@ -147,7 +149,7 @@ class admin_control extends phpok_control
 			$this->json($exit);
 		}
 		$this->model('admin')->delete($id);
-		$this->json("ok",true);
+		$this->json(true);
 	}
 
 	//检测账号是否存在
@@ -183,11 +185,11 @@ class admin_control extends phpok_control
 		}
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('无权限，请联系超级管理员开放权限'),'','error');
+				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
 		}
 		$account = $this->get("account");
@@ -248,7 +250,7 @@ class admin_control extends phpok_control
 	public function status_f()
 	{
 		if(!$this->popedom['status']){
-			$this->json(P_Lang('无权限，请联系超级管理员开放权限'));
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){

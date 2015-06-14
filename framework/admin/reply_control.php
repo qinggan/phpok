@@ -21,9 +21,8 @@ class reply_control extends phpok_control
 	//取得网站全部评论
 	function index_f()
 	{
-		if(!$this->popedom["list"])
-		{
-			error("您没有权限查看评论信息");
+		if(!$this->popedom["list"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$pageurl = $this->url("reply");
 		$status = $this->get("status","int");
@@ -54,7 +53,9 @@ class reply_control extends phpok_control
 			$this->assign("rslist",$rslist);
 			if($total>$psize)
 			{
-				$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=(total)/(psize)&always=1");
+				$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+				$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+				$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 				$this->assign("pagelist",$pagelist);
 			}
 		}
@@ -66,15 +67,12 @@ class reply_control extends phpok_control
 	function list_f()
 	{
 		$goback = $_SESSION["last_page_url"] ? $_SESSION["last_page_url"] : ($_SERVER["HTTP_REFERER"] ? $_SERVER["HTTP_REFERER"] : $this->url("reply"));
-		if(!$this->popedom["list"])
-		{
-			error("您没有权限查看评论信息");
+		if(!$this->popedom["list"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$tid = $this->get("tid","int");
-		if(!$tid)
-		{
-			
-			error('未指定留言信息',$goback,"error");
+		if(!$tid){
+			error(P_Lang('未指定ID'),$goback,"error");
 		}
 		$rs = $this->model('list')->get_one($tid);
 		$this->assign("rs",$rs);
@@ -153,7 +151,9 @@ class reply_control extends phpok_control
 			$this->assign("rslist",$rslist);
 			if($total>$psize)
 			{
-				$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=(total)/(psize)&always=1");
+				$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+				$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+				$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 				$this->assign("pagelist",$pagelist);
 			}
 		}
@@ -163,35 +163,40 @@ class reply_control extends phpok_control
 
 	function status_f()
 	{
-		if(!$this->popedom["status"]) json_exit("您没有审核权限");
+		if(!$this->popedom['status']){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
-		if(!$id) json_exit("未指定ID");
+		if(!$id) $this->json(P_Lang('未指定ID'));
 		$status = $this->get("status","int");
 		$status = $status ? 1 : 0;
 		$array = array("status"=>$status);
 		$this->model('reply')->save($array,$id);
-		json_exit("OK",true);
+		$this->json("OK",true);
 	}
 
 	//删除回复
 	function delete_f()
 	{
-		if(!$this->popedom["delete"]) json_exit("您没有删除权限");
+		if(!$this->popedom['delete']){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
-		if(!$id) json_exit("未指定ID");
+		if(!$id) $this->json(P_Lang('未指定ID'));
 		$this->model('reply')->delete($id);
-		json_exit("OK",true);
+		$this->json("OK",true);
 	}
 
 	function edit_f()
 	{
-		if(!$this->popedom["modify"]) error_open("您没有修改权限");
+		if(!$this->popedom["modify"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$id = $this->get("id","int");
-		if(!$id) error_open("未指定ID");
+		if(!$id) error_open(P_Lang('未指定ID'));
 		$rs = $this->model('reply')->get_one($id);
-		if(!$rs)
-		{
-			error_open("评论内容不存在");
+		if(!$rs){
+			error_open(P_Lang('数据记录不存在'));
 		}
 		$this->assign("id",$id);
 		$this->assign("rs",$rs);
@@ -202,9 +207,11 @@ class reply_control extends phpok_control
 
 	function edit_save_f()
 	{
-		if(!$this->popedom["modify"]) error_open("您没有修改权限");
+		if(!$this->popedom["modify"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$id = $this->get("id","int");
-		if(!$id) error_open("未指定ID");
+		if(!$id) error_open(P_Lang('未指定ID'));
 		$array = array();
 		$array["star"] = $this->get("star","int");
 		$array["content"] = $this->get("content",'html');
@@ -213,22 +220,23 @@ class reply_control extends phpok_control
 			$array["status"] = $this->get("status","int");
 		}
 		$this->model('reply')->save($array,$id);
-		$html = '系统会在 <span class="red">2秒</span>后关闭窗口，<a href="javascript:parent.window.location.href=parent.window.location.href;void(0);">您可以点这里关闭窗口</a>';
+		$html = P_Lang('系统会在2秒后关闭窗口，').'<a href="javascript:parent.window.location.href=parent.window.location.href;void(0);">'.P_Lang('您可以点这里关闭窗口').'</a>';
 		$html.= '<script type="text/javascript">'."\n";
 		$html.= 'window.setTimeout(\'top.window.location.href=top.window.location.href\',2000)'."\n";
 		$html.= "\n".'</script>';
-		error_open("评论信息更新成功","ok",$html);
+		error_open(P_Lang('评论信息更新成功'),"ok",$html);
 	}
 
 	function adm_f()
 	{
-		if(!$this->popedom["modify"]) error_open("您没有修改权限");
+		if(!$this->popedom["modify"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$id = $this->get("id","int");
-		if(!$id) error_open("未指定ID");
+		if(!$id) error_open(P_Lang('未指定ID'));
 		$rs = $this->model('reply')->get_one($id);
-		if(!$rs)
-		{
-			error_open("评论内容不存在");
+		if(!$rs){
+			error_open(P_Lang('数据记录不存在'));
 		}
 		$this->assign("id",$id);
 		$this->assign("rs",$rs);
@@ -239,18 +247,20 @@ class reply_control extends phpok_control
 
 	function adm_save_f()
 	{
-		if(!$this->popedom["reply"]) error_open("您没有回复权限");
+		if(!$this->popedom["reply"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$id = $this->get("id","int");
-		if(!$id) error_open("未指定ID");
+		if(!$id) error_open(P_Lang('未指定ID'));
 		$array = array();
 		$array["adm_content"] = $this->get("content","html",false);
 		$array["adm_time"] = $this->system_time;
 		$this->model('reply')->save($array,$id);
-		$html = '系统会在 <span class="red">2秒</span>后关闭窗口，<a href="javascript:parent.window.location.href=parent.window.location.href;void(0);">您可以点这里关闭窗口</a>';
+		$html = P_Lang('系统会在2秒后关闭窗口，').'<a href="javascript:parent.window.location.href=parent.window.location.href;void(0);">'.P_Lang('您可以点这里关闭窗口').'</a>';
 		$html.= '<script type="text/javascript">'."\n";
 		$html.= 'window.setTimeout(\'top.window.location.href=top.window.location.href\',2000)'."\n";
 		$html.= "\n".'</script>';
-		error_open("管理员信息回复成功","ok",$html);
+		error_open(P_Lang('回复成功'),"ok",$html);
 	}
 	
 }

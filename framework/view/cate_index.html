@@ -1,23 +1,39 @@
 <!-- inc:head -->
 <script type="text/javascript" src="{echo add_js('cate.js')}"></script>
+<script type="text/javascript">
+function cate_delete(id)
+{
+	$.dialog.confirm("{lang确定要删除此分类吗？}",function(){
+		var url = get_url("cate","delete");
+		url += "&id="+id;
+		var rs = $.phpok.json(url);
+		if(rs.status == "ok"){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
 
+</script>
 <div class="tips clearfix">
 	<!-- if $popedom.add -->
-	<div class="action"><a href="{echo admin_url('cate','set')}">添加根分类</a></div>
+	<div class="action"><a href="{echo admin_url('cate','set')}">{lang添加根分类}</a></div>
 	<!-- /if -->
-	您当前的位置：
-	<a href="{echo admin_url('fields')}">栏目管理</a>
-	&raquo; 栏目列表
+	{lang您当前的位置：}
+	<a href="{echo admin_url('fields')}">{lang栏目管理}</a>
+	&raquo; {lang栏目列表}
 </div>
 <div class="cate_list clearfix">
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
 	<th class="id">ID</th>
 	<th width="30">&nbsp;</th>
-	<th class="title">分类名称</th>
-	<th width="80">排序</th>
+	<th class="title">{lang分类名称}</th>
+	<th width="80">{lang排序}</th>
 	<th width="50">&nbsp;</th>
-	<th class="lft">操作</th>
+	<th class="lft">{lang操作}</th>
 </tr>
 <!-- run:$tab_i = 0; -->
 <!-- foreach($rslist AS $key=>$value) -->
@@ -38,18 +54,21 @@
 		</tr>
 		</table>
 	</td>
-	<td class="center"><input type="text" id="taxis_{$value.id}" class="cate_taxis" value="{$value.taxis}" tabindex="{$tab_i}" onfocus="show_submit('{$value.id}')" onblur="hide_element('{$value.id}')" /></td>
+	<td class="center"><input type="text" id="taxis_{$value.id}" class="cate_taxis" value="{$value.taxis}" tabindex="{$tab_i}" onblur="update_taxis('{$value.id}')" /></td>
 	<td id="taxis_submit_{$value.id}">&nbsp;</td>
 	<td>
-		<!-- if $popedom.add -->
-		<input type="button" value="添加子分类" onclick="$.phpok.go('{url ctrl=cate func=set parent_id=$value.id/}')" class="btn" />
-		<!-- /if -->
-		<!-- if $popedom.modify -->
-		<input type="button" value="修改" onclick="$.phpok.go('{url ctrl=cate func=set id=$value.id/}')" class="btn" />
-		<!-- /if -->
-		<!-- if $popedom.delete -->
-		<input type="button" value="删除" onclick="cate_delete('{$value.id}','{$value.title}')" class="btn" />
-		<!-- /if -->
+		<div class="button-group">
+			<!-- if $popedom.add -->
+			<input type="button" value="{lang添加子分类}" onclick="$.phpok.go('{url ctrl=cate func=set parent_id=$value.id/}')" class="phpok-btn" />
+			<!-- /if -->
+			<!-- if $popedom.modify -->
+			<input type="button" value="{lang修改}" onclick="$.phpok.go('{url ctrl=cate func=set id=$value.id/}')" class="phpok-btn" />
+			<!-- /if -->
+			<!-- if $popedom.delete -->
+			<input type="button" value="{lang删除}" onclick="cate_delete('{$value.id}')" class="phpok-btn" />
+			<!-- /if -->
+		</div>
+		
 	</td>
 </tr>
 <!-- /foreach -->

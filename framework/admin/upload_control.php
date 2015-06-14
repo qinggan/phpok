@@ -224,7 +224,7 @@ class upload_control extends phpok_control
 			}
 			$this->json($reslist,true);
 		}
-		$this->json("附件信息获取失败，可能已经删除，请检查");
+		$this->json(P_Lang('附件信息获取失败，可能已经删除，请检查'));
 	}
 
 	public function editopen_f()

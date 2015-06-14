@@ -1,0 +1,4315 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2015-06-13 11:12+0800\n"
+"PO-Revision-Date: 2015-06-13 11:13+0800\n"
+"Last-Translator: phpok <admin@phpok.com>\n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.1\n"
+"X-Poedit-Basepath: ..\\..\\..\\\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: P_Lang\n"
+"X-Poedit-SearchPath-0: framework\\admin\n"
+"X-Poedit-SearchPath-1: langs\n"
+
+#: framework\admin/admin_control.php:24 framework\admin/admin_control.php:57
+#: framework\admin/admin_control.php:74 framework\admin/admin_control.php:141
+#: framework\admin/admin_control.php:188 framework\admin/admin_control.php:192
+#: framework\admin/admin_control.php:253 framework\admin/all_control.php:24
+#: framework\admin/all_control.php:36 framework\admin/all_control.php:70
+#: framework\admin/all_control.php:209 framework\admin/all_control.php:221
+#: framework\admin/all_control.php:260 framework\admin/all_control.php:286
+#: framework\admin/all_control.php:310 framework\admin/all_control.php:330
+#: framework\admin/all_control.php:387 framework\admin/all_control.php:422
+#: framework\admin/all_control.php:440 framework\admin/all_control.php:457
+#: framework\admin/all_control.php:465 framework\admin/call_control.php:47
+#: framework\admin/call_control.php:79 framework\admin/call_control.php:91
+#: framework\admin/call_control.php:223 framework\admin/call_control.php:234
+#: framework\admin/call_control.php:269 framework\admin/cate_control.php:24
+#: framework\admin/cate_control.php:38 framework\admin/cate_control.php:49
+#: framework\admin/cate_control.php:80 framework\admin/cate_control.php:88
+#: framework\admin/cate_control.php:103 framework\admin/cate_control.php:138
+#: framework\admin/cate_control.php:223 framework\admin/cate_control.php:245
+#: framework\admin/currency_control.php:22
+#: framework\admin/currency_control.php:34
+#: framework\admin/currency_control.php:49
+#: framework\admin/currency_control.php:79
+#: framework\admin/currency_control.php:102
+#: framework\admin/email_control.php:22 framework\admin/email_control.php:52
+#: framework\admin/email_control.php:59 framework\admin/email_control.php:88
+#: framework\admin/fields_control.php:33 framework\admin/fields_control.php:68
+#: framework\admin/fields_control.php:86
+#: framework\admin/fields_control.php:103
+#: framework\admin/fields_control.php:124
+#: framework\admin/fields_control.php:133
+#: framework\admin/fields_control.php:194
+#: framework\admin/fields_control.php:301 framework\admin/gd_control.php:24
+#: framework\admin/gd_control.php:36 framework\admin/gd_control.php:46
+#: framework\admin/gd_control.php:58 framework\admin/gd_control.php:75
+#: framework\admin/gd_control.php:93 framework\admin/gd_control.php:106
+#: framework\admin/global.func.php:399 framework\admin/global.func.php:403
+#: framework\admin/global.func.php:407 framework\admin/global.func.php:423
+#: framework\admin/global.func.php:427 framework\admin/global.func.php:431
+#: framework\admin/list_control.php:72 framework\admin/list_control.php:159
+#: framework\admin/list_control.php:202 framework\admin/list_control.php:419
+#: framework\admin/list_control.php:512 framework\admin/list_control.php:516
+#: framework\admin/list_control.php:641 framework\admin/list_control.php:691
+#: framework\admin/list_control.php:817 framework\admin/list_control.php:854
+#: framework\admin/list_control.php:869 framework\admin/list_control.php:874
+#: framework\admin/module_control.php:31 framework\admin/module_control.php:40
+#: framework\admin/module_control.php:98
+#: framework\admin/module_control.php:145
+#: framework\admin/module_control.php:185
+#: framework\admin/module_control.php:234
+#: framework\admin/module_control.php:309
+#: framework\admin/module_control.php:323
+#: framework\admin/module_control.php:338
+#: framework\admin/module_control.php:379
+#: framework\admin/module_control.php:395 framework\admin/opt_control.php:25
+#: framework\admin/opt_control.php:35 framework\admin/opt_control.php:49
+#: framework\admin/opt_control.php:63 framework\admin/opt_control.php:126
+#: framework\admin/opt_control.php:156 framework\admin/opt_control.php:188
+#: framework\admin/order_control.php:24 framework\admin/order_control.php:131
+#: framework\admin/order_control.php:143 framework\admin/order_control.php:189
+#: framework\admin/order_control.php:193 framework\admin/order_control.php:235
+#: framework\admin/order_control.php:372 framework\admin/order_control.php:377
+#: framework\admin/payment_control.php:26
+#: framework\admin/payment_control.php:50
+#: framework\admin/payment_control.php:57
+#: framework\admin/payment_control.php:69
+#: framework\admin/payment_control.php:102
+#: framework\admin/payment_control.php:221
+#: framework\admin/plugin_control.php:26 framework\admin/plugin_control.php:48
+#: framework\admin/plugin_control.php:82
+#: framework\admin/plugin_control.php:124
+#: framework\admin/plugin_control.php:156
+#: framework\admin/plugin_control.php:199
+#: framework\admin/plugin_control.php:231
+#: framework\admin/project_control.php:24
+#: framework\admin/project_control.php:35
+#: framework\admin/project_control.php:121
+#: framework\admin/project_control.php:154
+#: framework\admin/project_control.php:175
+#: framework\admin/project_control.php:353
+#: framework\admin/project_control.php:393
+#: framework\admin/project_control.php:417
+#: framework\admin/project_control.php:453
+#: framework\admin/reply_control.php:25 framework\admin/reply_control.php:71
+#: framework\admin/reply_control.php:167 framework\admin/reply_control.php:182
+#: framework\admin/reply_control.php:193 framework\admin/reply_control.php:211
+#: framework\admin/reply_control.php:233 framework\admin/reply_control.php:251
+#: framework\admin/res_control.php:143 framework\admin/res_control.php:234
+#: framework\admin/res_control.php:340 framework\admin/rescate_control.php:24
+#: framework\admin/rescate_control.php:36
+#: framework\admin/rescate_control.php:41
+#: framework\admin/rescate_control.php:58
+#: framework\admin/rescate_control.php:62
+#: framework\admin/rescate_control.php:128
+#: framework\admin/rewrite_control.php:26
+#: framework\admin/rewrite_control.php:55
+#: framework\admin/rewrite_control.php:88
+#: framework\admin/rewrite_control.php:109 framework\admin/site_control.php:23
+#: framework\admin/site_control.php:44 framework\admin/site_control.php:64
+#: framework\admin/sql_control.php:25 framework\admin/sql_control.php:49
+#: framework\admin/sql_control.php:72 framework\admin/sql_control.php:95
+#: framework\admin/sql_control.php:280 framework\admin/sql_control.php:331
+#: framework\admin/sql_control.php:359 framework\admin/sql_control.php:397
+#: framework\admin/system_control.php:27 framework\admin/system_control.php:41
+#: framework\admin/system_control.php:51 framework\admin/system_control.php:87
+#: framework\admin/system_control.php:197
+#: framework\admin/system_control.php:259 framework\admin/tag_control.php:25
+#: framework\admin/tag_control.php:62 framework\admin/tag_control.php:99
+#: framework\admin/tpl_control.php:25 framework\admin/tpl_control.php:36
+#: framework\admin/tpl_control.php:51 framework\admin/tpl_control.php:85
+#: framework\admin/tpl_control.php:97 framework\admin/tpl_control.php:165
+#: framework\admin/tpl_control.php:196 framework\admin/tpl_control.php:226
+#: framework\admin/tpl_control.php:256 framework\admin/tpl_control.php:284
+#: framework\admin/tpl_control.php:310 framework\admin/update_control.php:23
+#: framework\admin/update_control.php:73 framework\admin/user_control.php:26
+#: framework\admin/user_control.php:70 framework\admin/user_control.php:77
+#: framework\admin/user_control.php:150 framework\admin/user_control.php:191
+#: framework\admin/user_control.php:205 framework\admin/user_control.php:231
+#: framework\admin/user_control.php:283 framework\admin/user_control.php:324
+#: framework\admin/user_control.php:339 framework\admin/user_control.php:390
+#: framework\admin/usergroup_control.php:23
+#: framework\admin/usergroup_control.php:38
+#: framework\admin/usergroup_control.php:56
+#: framework\admin/usergroup_control.php:112
+#: framework\admin/usergroup_control.php:125
+#: framework\admin/usergroup_control.php:174
+#: framework\admin/usergroup_control.php:196
+#: framework\admin/usergroup_control.php:209
+#: framework\admin/usergroup_control.php:229
+msgid "您没有权限执行此操作"
+msgstr "You do not have permission to perform this action"
+
+#: framework\admin/admin_control.php:41 framework\admin/call_control.php:64
+#: framework\admin/email_control.php:38 framework\admin/list_control.php:379
+#: framework\admin/open_control.php:94 framework\admin/open_control.php:167
+#: framework\admin/open_control.php:224 framework\admin/open_control.php:276
+#: framework\admin/open_control.php:316 framework\admin/open_control.php:346
+#: framework\admin/opt_control.php:113 framework\admin/order_control.php:115
+#: framework\admin/order_control.php:290 framework\admin/order_control.php:343
+#: framework\admin/reply_control.php:56 framework\admin/reply_control.php:154
+#: framework\admin/res_control.php:52 framework\admin/res_control.php:161
+#: framework\admin/tag_control.php:47 framework\admin/ueditor_control.php:419
+#: framework\admin/user_control.php:44
+msgid "首页"
+msgstr "Home"
+
+#: framework\admin/admin_control.php:41 framework\admin/call_control.php:64
+#: framework\admin/email_control.php:38 framework\admin/list_control.php:379
+#: framework\admin/open_control.php:94 framework\admin/open_control.php:167
+#: framework\admin/open_control.php:224 framework\admin/open_control.php:276
+#: framework\admin/open_control.php:316 framework\admin/open_control.php:346
+#: framework\admin/opt_control.php:113 framework\admin/order_control.php:115
+#: framework\admin/order_control.php:290 framework\admin/order_control.php:343
+#: framework\admin/reply_control.php:56 framework\admin/reply_control.php:154
+#: framework\admin/res_control.php:52 framework\admin/res_control.php:161
+#: framework\admin/tag_control.php:47 framework\admin/ueditor_control.php:419
+#: framework\admin/user_control.php:44
+msgid "上一页"
+msgstr "Prev"
+
+#: framework\admin/admin_control.php:41 framework\admin/call_control.php:64
+#: framework\admin/email_control.php:38 framework\admin/list_control.php:379
+#: framework\admin/open_control.php:94 framework\admin/open_control.php:167
+#: framework\admin/open_control.php:224 framework\admin/open_control.php:276
+#: framework\admin/open_control.php:316 framework\admin/open_control.php:346
+#: framework\admin/opt_control.php:113 framework\admin/order_control.php:115
+#: framework\admin/order_control.php:290 framework\admin/order_control.php:343
+#: framework\admin/reply_control.php:56 framework\admin/reply_control.php:154
+#: framework\admin/res_control.php:52 framework\admin/res_control.php:161
+#: framework\admin/tag_control.php:47 framework\admin/ueditor_control.php:419
+#: framework\admin/user_control.php:44
+msgid "下一页"
+msgstr "Next"
+
+#: framework\admin/admin_control.php:41 framework\admin/call_control.php:64
+#: framework\admin/email_control.php:38 framework\admin/list_control.php:379
+#: framework\admin/open_control.php:94 framework\admin/open_control.php:167
+#: framework\admin/open_control.php:224 framework\admin/open_control.php:276
+#: framework\admin/open_control.php:316 framework\admin/open_control.php:346
+#: framework\admin/opt_control.php:113 framework\admin/order_control.php:115
+#: framework\admin/order_control.php:290 framework\admin/order_control.php:343
+#: framework\admin/reply_control.php:56 framework\admin/reply_control.php:154
+#: framework\admin/res_control.php:52 framework\admin/res_control.php:161
+#: framework\admin/tag_control.php:47 framework\admin/ueditor_control.php:419
+#: framework\admin/user_control.php:44
+msgid "尾页"
+msgstr "Last"
+
+#: framework\admin/admin_control.php:42 framework\admin/call_control.php:65
+#: framework\admin/email_control.php:39 framework\admin/list_control.php:380
+#: framework\admin/open_control.php:95 framework\admin/open_control.php:168
+#: framework\admin/open_control.php:225 framework\admin/open_control.php:277
+#: framework\admin/open_control.php:317 framework\admin/open_control.php:347
+#: framework\admin/opt_control.php:114 framework\admin/order_control.php:116
+#: framework\admin/order_control.php:291 framework\admin/order_control.php:344
+#: framework\admin/reply_control.php:57 framework\admin/reply_control.php:155
+#: framework\admin/res_control.php:53 framework\admin/res_control.php:162
+#: framework\admin/tag_control.php:48 framework\admin/ueditor_control.php:420
+#: framework\admin/user_control.php:45
+msgid "数量："
+msgstr "Total:"
+
+#: framework\admin/admin_control.php:42 framework\admin/call_control.php:65
+#: framework\admin/email_control.php:39 framework\admin/list_control.php:380
+#: framework\admin/open_control.php:95 framework\admin/open_control.php:168
+#: framework\admin/open_control.php:225 framework\admin/open_control.php:277
+#: framework\admin/open_control.php:317 framework\admin/open_control.php:347
+#: framework\admin/opt_control.php:114 framework\admin/order_control.php:116
+#: framework\admin/order_control.php:291 framework\admin/order_control.php:344
+#: framework\admin/reply_control.php:57 framework\admin/reply_control.php:155
+#: framework\admin/res_control.php:53 framework\admin/res_control.php:162
+#: framework\admin/tag_control.php:48 framework\admin/ueditor_control.php:420
+#: framework\admin/user_control.php:45
+msgid "，"
+msgstr ","
+
+#: framework\admin/admin_control.php:42 framework\admin/call_control.php:65
+#: framework\admin/email_control.php:39 framework\admin/list_control.php:380
+#: framework\admin/open_control.php:95 framework\admin/open_control.php:168
+#: framework\admin/open_control.php:225 framework\admin/open_control.php:277
+#: framework\admin/open_control.php:317 framework\admin/open_control.php:347
+#: framework\admin/opt_control.php:114 framework\admin/order_control.php:116
+#: framework\admin/order_control.php:291 framework\admin/order_control.php:344
+#: framework\admin/reply_control.php:57 framework\admin/reply_control.php:155
+#: framework\admin/res_control.php:53 framework\admin/res_control.php:162
+#: framework\admin/tag_control.php:48 framework\admin/ueditor_control.php:420
+#: framework\admin/user_control.php:45
+msgid "页码："
+msgstr "Page:"
+
+#: framework\admin/admin_control.php:60 framework\admin/admin_control.php:184
+#: framework\admin/admin_control.php:260
+msgid "您不能操作自己的信息"
+msgstr "You can not edit your information"
+
+#: framework\admin/admin_control.php:65
+msgid "非系统管理员不能执行此项"
+msgstr "Non-system administrators can not perform this"
+
+#: framework\admin/admin_control.php:123
+msgid "没有系统管理员，请检查"
+msgstr "Not system administrator, please check"
+
+#: framework\admin/admin_control.php:132
+msgid "无系统管理员"
+msgstr "No system administrator"
+
+#: framework\admin/admin_control.php:145 framework\admin/admin_control.php:257
+#: framework\admin/all_control.php:391 framework\admin/all_control.php:426
+#: framework\admin/all_control.php:444 framework\admin/call_control.php:162
+#: framework\admin/call_control.php:178 framework\admin/call_control.php:273
+#: framework\admin/cate_control.php:92 framework\admin/cate_control.php:227
+#: framework\admin/cate_control.php:306
+#: framework\admin/currency_control.php:76
+#: framework\admin/email_control.php:91 framework\admin/ext_control.php:26
+#: framework\admin/ext_control.php:37 framework\admin/ext_control.php:133
+#: framework\admin/ext_control.php:176 framework\admin/ext_control.php:228
+#: framework\admin/form_control.php:23 framework\admin/gd_control.php:97
+#: framework\admin/gd_control.php:110 framework\admin/list_control.php:68
+#: framework\admin/list_control.php:683 framework\admin/list_control.php:813
+#: framework\admin/module_control.php:383
+#: framework\admin/module_control.php:399
+#: framework\admin/order_control.php:153
+#: framework\admin/payment_control.php:106
+#: framework\admin/payment_control.php:225
+#: framework\admin/plugin_control.php:53 framework\admin/plugin_control.php:87
+#: framework\admin/plugin_control.php:129
+#: framework\admin/plugin_control.php:161
+#: framework\admin/plugin_control.php:204
+#: framework\admin/plugin_control.php:236
+#: framework\admin/plugin_control.php:265
+#: framework\admin/project_control.php:125
+#: framework\admin/project_control.php:158
+#: framework\admin/project_control.php:357
+#: framework\admin/project_control.php:397
+#: framework\admin/project_control.php:421
+#: framework\admin/reply_control.php:75 framework\admin/reply_control.php:170
+#: framework\admin/reply_control.php:185 framework\admin/reply_control.php:196
+#: framework\admin/reply_control.php:214 framework\admin/reply_control.php:236
+#: framework\admin/reply_control.php:254
+#: framework\admin/res_action_control.php:24
+#: framework\admin/res_action_control.php:84
+#: framework\admin/res_control.php:86 framework\admin/res_control.php:344
+#: framework\admin/res_control.php:362 framework\admin/rescate_control.php:132
+#: framework\admin/rewrite_control.php:93
+#: framework\admin/rewrite_control.php:114 framework\admin/site_control.php:47
+#: framework\admin/system_control.php:241
+#: framework\admin/system_control.php:256 framework\admin/tag_control.php:104
+#: framework\admin/tpl_control.php:88 framework\admin/tpl_control.php:312
+#: framework\admin/upload_control.php:202
+#: framework\admin/upload_control.php:234
+#: framework\admin/upload_control.php:247
+#: framework\admin/upload_control.php:262
+#: framework\admin/upload_control.php:277 framework\admin/user_control.php:208
+#: framework\admin/user_control.php:328 framework\admin/user_control.php:343
+#: framework\admin/usergroup_control.php:177
+#: framework\admin/usergroup_control.php:200
+#: framework\admin/usergroup_control.php:213
+#: framework\admin/usergroup_control.php:233
+msgid "未指定ID"
+msgstr "ID is not specified"
+
+#: framework\admin/admin_control.php:170 framework\admin/admin_control.php:197
+msgid "账号不能为空"
+msgstr "Account cannot be empty"
+
+#: framework\admin/admin_control.php:174
+msgid "账号已存在"
+msgstr "Account already exists"
+
+#: framework\admin/admin_control.php:207 framework\admin/login_control.php:60
+#: langs/lang2.php:386
+msgid "密码不能为空"
+msgstr "Passwords can't be empty"
+
+#: framework\admin/admin_control.php:211
+msgid "密码长度不能少于4位"
+msgstr "Password length must not be less than 4"
+
+#: framework\admin/admin_control.php:228
+msgid "管理员信息更新失败，请检查"
+msgstr "Administrator information update fails, please check."
+
+#: framework\admin/admin_control.php:234
+msgid "管理员信息添加失败，请检查"
+msgstr "Add the administrator fails, check"
+
+#: framework\admin/admin_control.php:245
+msgid "管理员信息编辑成功"
+msgstr "Administrator information edited successfully"
+
+#: framework\admin/admin_control.php:245
+msgid "管理员账号添加成功"
+msgstr "Administrator account successfully added"
+
+#: framework\admin/admin_control.php:266
+msgid "更新状态失败"
+msgstr "Updated Failed"
+
+#: framework\admin/all_control.php:75 framework\admin/all_control.php:469
+msgid "网站标题不能为空"
+msgstr "Site title cannot be empty"
+
+#: framework\admin/all_control.php:95
+msgid "网站信息不存在"
+msgstr "Website information does not exist"
+
+#: framework\admin/all_control.php:108 framework\admin/all_control.php:111
+#: framework\admin/all_control.php:492
+msgid "域名填写不规范"
+msgstr "Fill in the domain name is not standardized"
+
+#: framework\admin/all_control.php:117 framework\admin/all_control.php:499
+msgid "域名已被使用，请更换"
+msgstr "Domain name is already in use, please replace"
+
+#: framework\admin/all_control.php:170
+msgid "网站信息更新完成"
+msgstr "The website information update is complete"
+
+#: framework\admin/all_control.php:179 framework\admin/all_control.php:225
+#: langs/lang2.php:74
+msgid "域名不能为空"
+msgstr "Account cannot be empty"
+
+#: framework\admin/all_control.php:182
+msgid "域名填写不规范，不能含有http://或https://"
+msgstr ""
+"Fill in the domain name is not standardized, can not contain http: // or "
+"https: //"
+
+#: framework\admin/all_control.php:185
+msgid "域名不符合规范，不能有 / 符号"
+msgstr "Domain does not meet specifications, can not have / symbol"
+
+#: framework\admin/all_control.php:190 framework\admin/all_control.php:199
+msgid "域名已经被使用"
+msgstr "The domain name is already being used"
+
+#: framework\admin/all_control.php:194
+msgid "域名已经存在"
+msgstr "Domain already exists"
+
+#: framework\admin/all_control.php:235 framework\admin/all_control.php:238
+#: framework\admin/all_control.php:495
+msgid "域名不符合规范"
+msgstr "Domain does not meet specifications"
+
+#: framework\admin/all_control.php:245 framework\admin/all_control.php:250
+msgid "域名已存在，请检查"
+msgstr "Domain name already exists, please check"
+
+#: framework\admin/all_control.php:264 framework\admin/all_control.php:290
+msgid "未指定域名ID"
+msgstr "The domain ID is not specified"
+
+#: framework\admin/all_control.php:268 framework\admin/all_control.php:294
+msgid "域名信息不存在"
+msgstr "Domain information does not exist"
+
+#: framework\admin/all_control.php:271 framework\admin/all_control.php:297
+msgid "域名配置与网站不一致，请联系管理员"
+msgstr ""
+"Domain configuration are inconsistent with the site, please contact the "
+"administrator"
+
+#: framework\admin/all_control.php:275
+msgid "此域名已经是主域名了，不用再设置"
+msgstr "This domain is already the main domain name, and no longer set"
+
+#: framework\admin/all_control.php:301
+msgid "此域名是主域名，不能删除"
+msgstr "This domain is the primary domain name can not be removed"
+
+#: framework\admin/all_control.php:350
+msgid "扩展组配置成功"
+msgstr "Extended Group Configuration success"
+
+#: framework\admin/all_control.php:396 framework\admin/all_control.php:430
+msgid "全局配置不存在"
+msgstr "Global configuration does not exist"
+
+#: framework\admin/all_control.php:434
+msgid "扩展全局内容设置成功"
+msgstr "Extended Global Content successfully set"
+
+#: framework\admin/all_control.php:448
+msgid "系统模块不允许删除"
+msgstr "System module can not be removed"
+
+#: framework\admin/all_control.php:451
+msgid "全局配置删除成功"
+msgstr "Global Configuration deleted successfully"
+
+#: framework\admin/all_control.php:517 langs/lang2.php:75
+msgid "创建失败"
+msgstr "The creation of failure."
+
+#: framework\admin/all_control.php:524
+msgid "创建网站完成，您可以切换到新网站中进行栏目配置"
+msgstr ""
+"Create a site is complete, you can switch to the new site be configured "
+"columns"
+
+#: framework\admin/auto_control.php:25
+msgid "没有自动存储的表单数据"
+msgstr "No automatic storage of form data"
+
+#: framework\admin/auto_control.php:38
+msgid "数据存储成功"
+msgstr "Data storage success"
+
+#: framework\admin/call_control.php:20
+msgid "文章列表"
+msgstr "Post List"
+
+#: framework\admin/call_control.php:21
+msgid "文章内容"
+msgstr "Article"
+
+#: framework\admin/call_control.php:22
+msgid "分类信息"
+msgstr "Category"
+
+#: framework\admin/call_control.php:23
+msgid "分类树"
+msgstr "Category Tree"
+
+#: framework\admin/call_control.php:24
+msgid "项目信息"
+msgstr "Project Info"
+
+#: framework\admin/call_control.php:25
+msgid "子项目信息"
+msgstr "sub-Project Info"
+
+#: framework\admin/call_control.php:26
+msgid "上级项目"
+msgstr "Parent Project"
+
+#: framework\admin/call_control.php:27
+msgid "字段及表单"
+msgstr "Fields and Forms"
+
+#: framework\admin/call_control.php:107 framework\admin/call_control.php:284
+#: framework\admin/list_control.php:198 framework\admin/list_control.php:837
+#: framework\admin/project_control.php:457
+msgid "未指定项目ID"
+msgstr "Project ID Not specified"
+
+#: framework\admin/call_control.php:117
+msgid "无分类"
+msgstr "No category"
+
+#: framework\admin/call_control.php:166 framework\admin/call_control.php:182
+msgid "未绑定模块"
+msgstr "Unbound module"
+
+#: framework\admin/call_control.php:194 framework\admin/email_control.php:103
+#: framework\admin/ext_control.php:75 framework\admin/ext_control.php:90
+msgid "未指定标识串"
+msgstr "Identification string is not specified"
+
+#: framework\admin/call_control.php:198
+msgid ""
+"字段标识不符合系统要求，限小写字母、数字、中划线及下划线且必须是小写字母开头"
+msgstr ""
+"Field identification system does not meet the requirements, limit lowercase "
+"letters, numbers, underlined and underlined and must be lowercase letter"
+
+#: framework\admin/call_control.php:202
+msgid "字符串已被使用"
+msgstr "Strings have been used"
+
+#: framework\admin/call_control.php:240
+msgid "备注不能为空"
+msgstr "Notes can not be empty"
+
+#: framework\admin/call_control.php:263
+msgid "数据调用中心配置成功"
+msgstr "Data call center configuration successfully"
+
+#: framework\admin/call_control.php:276 framework\admin/cate_control.php:239
+#: framework\admin/module_control.php:316
+#: framework\admin/order_control.php:136 framework\admin/order_control.php:237
+#: framework\admin/payment_control.php:113
+#: framework\admin/payment_control.php:228
+#: framework\admin/system_control.php:249
+#: framework\admin/system_control.php:272 framework\admin/tpl_control.php:90
+#: framework\admin/tpl_control.php:278 framework\admin/user_control.php:397
+msgid "删除成功"
+msgstr "Deleted successfully"
+
+#: framework\admin/call_control.php:288
+msgid "无数据或未设置模块"
+msgstr "No data or not settings module"
+
+#: framework\admin/call_control.php:293
+msgid "没有自定义字段"
+msgstr "No custom fields"
+
+#: framework\admin/cate_control.php:111 framework\admin/cate_control.php:149
+#: framework\admin/cate_control.php:280 framework\admin/list_control.php:236
+#: framework\admin/project_control.php:377
+msgid "标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头"
+msgstr ""
+"Identity does not meet the system requirements, limit letters, numbers and "
+"underscores (underlined) and must start with a letter"
+
+#: framework\admin/cate_control.php:115 framework\admin/cate_control.php:153
+msgid "标识已被使用"
+msgstr "Identifier has been used"
+
+#: framework\admin/cate_control.php:129
+msgid "分类添加失败，请检查！"
+msgstr "Classification add fails, check!"
+
+#: framework\admin/cate_control.php:131
+msgid "分类添加成功"
+msgstr "Category is added successfully"
+
+#: framework\admin/cate_control.php:145 framework\admin/gd_control.php:62
+msgid "标识不能为空"
+msgstr "Identifier cannot be empty"
+
+#: framework\admin/cate_control.php:170
+msgid "分类添加失败，请检查"
+msgstr "Classification add fails, check!"
+
+#: framework\admin/cate_control.php:184
+msgid "不允许将分类迁移至此分类下的子分类"
+msgstr ""
+"The child is not allowed to migrate to this classification categories "
+"Category"
+
+#: framework\admin/cate_control.php:189
+msgid "分类更新失败"
+msgstr "Category update failed"
+
+#: framework\admin/cate_control.php:195
+msgid "分类信息配置成功"
+msgstr "Classified information is successfully configured"
+
+#: framework\admin/cate_control.php:231
+msgid "存在子栏目，不能直接删除，请先删除相应的子栏目"
+msgstr "Can not be deleted, delete the corresponding sub-sections"
+
+#: framework\admin/cate_control.php:235
+msgid "分类使用中，请先删除"
+msgstr "Classification in use, please remove"
+
+#: framework\admin/cate_control.php:249
+msgid "未指定要删除的ID"
+msgstr "Not specified ID to be deleted"
+
+#: framework\admin/cate_control.php:268
+msgid "扩展字段删除成功"
+msgstr "Extended field deleted successfully"
+
+#: framework\admin/cate_control.php:276 framework\admin/list_control.php:231
+#: framework\admin/project_control.php:372
+msgid "标识串不能为空"
+msgstr "Identifier cannot be empty"
+
+#: framework\admin/cate_control.php:284
+msgid "标识已被使用，请检查"
+msgstr "Identifier has been used"
+
+#: framework\admin/cate_control.php:293 framework\admin/fields_control.php:289
+#: framework\admin/module_control.php:368
+#: framework\admin/system_control.php:226
+msgid "没有指定要更新的排序"
+msgstr "No specifies that you want to update order"
+
+#: framework\admin/cate_control.php:298 framework\admin/fields_control.php:295
+#: framework\admin/module_control.php:374
+#: framework\admin/system_control.php:232
+msgid "数据排序更新成功"
+msgstr "Your changes have been saved successfully."
+
+#: framework\admin/currency_control.php:63
+msgid "名称不允许为空"
+msgstr "Name is not allowed to be empty"
+
+#: framework\admin/currency_control.php:66
+msgid "编码不允许为空"
+msgstr "Coding does not allow empty"
+
+#: framework\admin/currency_control.php:69
+msgid "货币设置操作成功"
+msgstr "Currency settings operation successful"
+
+#: framework\admin/currency_control.php:89
+#: framework\admin/list_control.php:716
+#: framework\admin/project_control.php:432
+msgid "更新排序失败"
+msgstr "Failed to update the sorting"
+
+#: framework\admin/currency_control.php:96
+#: framework\admin/list_control.php:722
+msgid "更新排序成功"
+msgstr "Update sort successfully"
+
+#: framework\admin/currency_control.php:106
+msgid "未指定要操作的ID"
+msgstr "Not specifies that the operation ID"
+
+#: framework\admin/email_control.php:79
+msgid "信息填写不完整"
+msgstr "Incomplete information"
+
+#: framework\admin/email_control.php:82
+msgid "邮件内容创建/修改成功，请稍候……"
+msgstr "Message content created/modified successfully, please wait ... ..."
+
+#: framework\admin/email_control.php:107 framework\admin/ext_control.php:96
+msgid "标识串已被使用"
+msgstr "Identifier has been used"
+
+#: framework\admin/ext_control.php:43
+msgid "未指定标题"
+msgstr "Title is not specified"
+
+#: framework\admin/ext_control.php:48
+msgid "未选择配置表单类型"
+msgstr "Configure the form type is not selected"
+
+#: framework\admin/ext_control.php:78 framework\admin/ext_control.php:93
+msgid "验证码不符合验证要求，请检查"
+msgstr "Captcha code is not correct. Try again"
+
+#: framework\admin/ext_control.php:136 framework\admin/ext_control.php:179
+msgid "未指哪个模型要添加扩展字段"
+msgstr "Not which model you want to add extended fields"
+
+#: framework\admin/ext_control.php:140
+msgid "没有相关字段内容"
+msgstr "No relevant field contents"
+
+#: framework\admin/ext_control.php:145
+msgid "字段已被使用，不能再使用"
+msgstr "Field has already been used, can no longer be used"
+
+#: framework\admin/ext_control.php:153
+msgid "字段标识已被使用"
+msgstr "Identifier has been used"
+
+#: framework\admin/ext_control.php:196 framework\admin/ext_control.php:232
+#: framework\admin/global.func.php:308
+msgid "未指定模块"
+msgstr "Unbound module"
+
+#: framework\admin/ext_control.php:244
+msgid "自定义字段不存在！"
+msgstr "Custom field does not exist!"
+
+#: framework\admin/fields_control.php:183
+msgid "字段更新成功"
+msgstr "Fields updated successfully"
+
+#: framework\admin/fields_control.php:187
+#: framework\admin/fields_control.php:262
+msgid "字段创建成功"
+msgstr "Create success"
+
+#: framework\admin/fields_control.php:201
+#: framework\admin/fields_control.php:270
+msgid "字段标识不能为空"
+msgstr "Identifier cannot be empty"
+
+#: framework\admin/fields_control.php:207
+#: framework\admin/fields_control.php:275
+msgid "字段标识不符合系统要求，限字母、数字及下划线且必须是字母开头"
+msgstr ""
+"Identity does not meet the system requirements, limit letters, numbers and "
+"underscores (underlined) and must start with a letter"
+
+#: framework\admin/fields_control.php:212
+#: framework\admin/fields_control.php:280
+msgid "字段标识已经存在"
+msgstr "Field ID already exists"
+
+#: framework\admin/fields_control.php:258
+#: framework\admin/reply_control.php:223 framework\admin/reply_control.php:259
+msgid "系统会在2秒后关闭窗口，"
+msgstr "System will shut down after 2 seconds the window,"
+
+#: framework\admin/fields_control.php:258
+#: framework\admin/reply_control.php:223 framework\admin/reply_control.php:259
+msgid "您可以点这里关闭窗口"
+msgstr "You can click here to close the window"
+
+#: framework\admin/fields_control.php:306
+msgid "未指定字段ID"
+msgstr "ID is not specified"
+
+#: framework\admin/fields_control.php:309
+msgid "字段删除成功"
+msgstr "Field deleted successfully"
+
+#: framework\admin/gd_control.php:66
+msgid "标识不符合系统要求，限字母、数字及下划线且必须是字母开头"
+msgstr ""
+"Identity does not meet the system requirements, limit letters, numbers and "
+"underscores (underlined) and must start with a letter"
+
+#: framework\admin/gd_control.php:70
+msgid "标识已经存在"
+msgstr "Identifier already exists"
+
+#: framework\admin/global.func.php:119
+msgid "导航菜单异常：无法获取后台导航菜单，请检查表qinggan_sysmenu"
+msgstr ""
+"Navigation exception: failed to get the navigation menu in the background, "
+"check table qinggan_sysmenu"
+
+#: framework\admin/global.func.php:269
+msgid "未审核评论"
+msgstr "Pending Questions"
+
+#: framework\admin/html_control.php:28
+msgid "未启用静态页功能，此项不能使用"
+msgstr "Static pages feature is not enabled, this cannot be used"
+
+#: framework\admin/html_control.php:36 framework\admin/html_control.php:594
+msgid "没有模板文件，请检查"
+msgstr "No template file, check"
+
+#: framework\admin/html_control.php:38 framework\admin/html_control.php:81
+msgid "封面"
+msgstr "Thumbnail"
+
+#: framework\admin/html_control.php:38 framework\admin/html_control.php:77
+#: langs/lang2.php:248 langs/lang2.php:588 langs/lang2.php:660
+msgid "列表"
+msgstr "List"
+
+#: framework\admin/html_control.php:38 langs/lang.php:19
+msgid "内容"
+msgstr "Content"
+
+#: framework\admin/html_control.php:38
+msgid "项目单页"
+msgstr "Project Info"
+
+#: framework\admin/html_control.php:73
+msgid "详细"
+msgstr "Details"
+
+#: framework\admin/html_control.php:102
+msgid "项目（独立单页）"
+msgstr "Projects (single page)"
+
+#: framework\admin/html_control.php:117
+msgid "未检测到生成的缓存文件"
+msgstr "Not found cache file"
+
+#: framework\admin/html_control.php:122
+msgid "没有找到相关参数"
+msgstr "Not found parameters"
+
+#: framework\admin/html_control.php:140 framework\admin/html_control.php:204
+#: framework\admin/html_control.php:230
+msgid "栏目不存在或未启用-列表"
+msgstr "Column does not exist or is not enabled-the list"
+
+#: framework\admin/html_control.php:146 framework\admin/html_control.php:173
+#: framework\admin/html_control.php:210 framework\admin/html_control.php:251
+#: framework\admin/html_control.php:304
+msgid "获取内容失败"
+msgstr "Failed to get content"
+
+#: framework\admin/html_control.php:166
+msgid "内容不存在或未启用"
+msgstr "Content does not exist or is not enabled"
+
+#: framework\admin/html_control.php:194 framework\admin/html_control.php:220
+#: framework\admin/html_control.php:283 langs/lang2.php:87
+msgid "更新"
+msgstr "Updates"
+
+#: framework\admin/html_control.php:194 framework\admin/html_control.php:220
+#: framework\admin/html_control.php:283
+msgid "完成，"
+msgstr "Finish, "
+
+#: framework\admin/html_control.php:194 framework\admin/html_control.php:220
+#: framework\admin/html_control.php:283
+msgid "点这里访问"
+msgstr "Click here to access"
+
+#: framework\admin/html_control.php:246
+msgid "栏目下没有信息，不支持生成静态页"
+msgstr "Under no information, does not support the generation of static pages"
+
+#: framework\admin/html_control.php:282
+msgid " - 列表"
+msgstr " - List"
+
+#: framework\admin/html_control.php:291
+msgid "更新结束"
+msgstr "Update end"
+
+#: framework\admin/html_control.php:314
+msgid "首页更新完成，"
+msgstr "Home updates complete, "
+
+#: framework\admin/html_control.php:314
+msgid "点这里访问站点首页"
+msgstr "Click here to access the site Home"
+
+#: framework\admin/html_control.php:324
+msgid "未指定要生成页面的类型"
+msgstr "To generate a page type is not specified"
+
+#: framework\admin/html_control.php:388
+msgid "要生成的网页数量少于1，请检查"
+msgstr "The number of pages to be generated less than 1, please check"
+
+#: framework\admin/html_control.php:582
+msgid "未配置风格模板，请先到网站信息配置站点风格"
+msgstr ""
+"Do not configure style template, please go to the website information to "
+"configure site style"
+
+#: framework\admin/html_control.php:588
+msgid "模板风格目录不存在，请检查"
+msgstr "Template style directory does not exist, please check the"
+
+#: framework\admin/index_control.php:24
+msgid "LGPL开源授权"
+msgstr "LGPL open source licensing"
+
+#: framework\admin/index_control.php:26
+msgid "个人（{license}）商业授权"
+msgstr "Individual ({license}) commercial license"
+
+#: framework\admin/index_control.php:28
+msgid "企业（{license}）商业授权"
+msgstr "Enterprise ({license}) commercial license"
+
+#: framework\admin/index_control.php:46
+msgid "没有找到相关权限，请联系管理员"
+msgstr ""
+"Did not find the relevant permissions, please contact your administrator"
+
+#: framework\admin/index_control.php:224
+msgid "请选择要维护的站点"
+msgstr "Please select the site to maintain"
+
+#: framework\admin/index_control.php:228 framework\admin/site_control.php:49
+#: framework\admin/site_control.php:69
+msgid "站点信息不存在"
+msgstr "Site information does not exist"
+
+#: framework\admin/index_control.php:231
+msgid "您正在切换到网站：{sitename}，请稍候…"
+msgstr "You're switching to site: {sitename}, please wait ..."
+
+#: framework\admin/index_control.php:273 langs/lang.php:33
+msgid "会员列表"
+msgstr "Users"
+
+#: framework\admin/index_control.php:280 langs/lang.php:27
+msgid "评论管理"
+msgstr "Comments"
+
+#: framework\admin/index_control.php:283 framework\admin/index_control.php:301
+msgid "没有消息"
+msgstr "No message"
+
+#: framework\admin/list_control.php:35
+msgid "该管理员未配置权限，请检查"
+msgstr "The administrator does not configure permissions, please check"
+
+#: framework\admin/list_control.php:40
+msgid "数据获取异常，请检查"
+msgstr "Gets the exception data"
+
+#: framework\admin/list_control.php:45
+msgid "未配置站点内容权限，请检查"
+msgstr "Do not configure the site content permissions, please check."
+
+#: framework\admin/list_control.php:76 framework\admin/list_control.php:164
+#: framework\admin/list_control.php:822 framework\admin/list_control.php:843
+#: framework\admin/project_control.php:406
+msgid "项目信息不存在"
+msgstr "Project does not exist"
+
+#: framework\admin/list_control.php:155
+msgid "操作有错误"
+msgstr "Operation error"
+
+#: framework\admin/list_control.php:206 framework\admin/payment_control.php:74
+#: framework\admin/project_control.php:188
+#: framework\admin/project_control.php:361
+#: framework\admin/system_control.php:94 framework\admin/tpl_control.php:59
+msgid "名称不能为空"
+msgstr "Title cannot be empty"
+
+#: framework\admin/list_control.php:225 langs/lang2.php:438
+msgid "项目信息编辑成功"
+msgstr "Project information edited success"
+
+#: framework\admin/list_control.php:243
+#: framework\admin/project_control.php:384
+msgid "标识符已被使用"
+msgstr "Identifier has been used"
+
+#: framework\admin/list_control.php:260 framework\admin/user_control.php:124
+msgid "验证通过"
+msgstr "Verified by success"
+
+#: framework\admin/list_control.php:268
+msgid "项目信息不能为空"
+msgstr "Project information can not be empty"
+
+#: framework\admin/list_control.php:275
+msgid "数据异常"
+msgstr "Data exception"
+
+#: framework\admin/list_control.php:287
+msgid "查看次数"
+msgstr "views"
+
+#: framework\admin/list_control.php:289
+msgid "发布时间"
+msgstr "Posted"
+
+#: framework\admin/list_control.php:291
+msgid "会员账号"
+msgstr "Account"
+
+#: framework\admin/list_control.php:396 framework\admin/list_control.php:414
+#: framework\admin/list_control.php:423
+msgid "操作异常"
+msgstr "Operation error"
+
+#: framework\admin/list_control.php:496 framework\admin/list_control.php:507
+#: framework\admin/list_control.php:521
+msgid "操作异常，无法取得项目信息"
+msgstr "Abnormal operations, unable to get project information"
+
+#: framework\admin/list_control.php:526
+msgid "内容的主题不能为空"
+msgstr "Content of the subject cannot be empty"
+
+#: framework\admin/list_control.php:532
+msgid "主分类不能为空"
+msgstr "Main category cannot be empty"
+
+#: framework\admin/list_control.php:596
+msgid "存储数据失败，请检查"
+msgstr "Failed to store the data, please check"
+
+#: framework\admin/list_control.php:633
+msgid "没有指定主题ID"
+msgstr "Do not specify a topic ID"
+
+#: framework\admin/list_control.php:648
+msgid "主题删除成功"
+msgstr "Title deleted successfully!"
+
+#: framework\admin/list_control.php:656 framework\admin/module_control.php:342
+#: framework\admin/system_control.php:201 framework\admin/user_control.php:195
+msgid "没有指定ID"
+msgstr "Do not specify ID"
+
+#: framework\admin/list_control.php:668 framework\admin/module_control.php:354
+#: framework\admin/system_control.php:212
+msgid "操作失败，请检查SQL语句"
+msgstr "Operation fails, please check"
+
+#: framework\admin/list_control.php:708 langs/lang2.php:419
+msgid "操作成功"
+msgstr "Successful operation"
+
+#: framework\admin/list_control.php:731 framework\admin/list_control.php:759
+msgid "参数传递不完整"
+msgstr "Parameter passing is not complete"
+
+#: framework\admin/list_control.php:748 framework\admin/list_control.php:805
+msgid "更新成功"
+msgstr "Update Success"
+
+#: framework\admin/list_control.php:826 framework\admin/list_control.php:847
+msgid "未绑定模块，不能使用此功能"
+msgstr "Unbound modules, you cannot use this feature"
+
+#: framework\admin/list_control.php:864
+msgid "批量删除操作成功"
+msgstr "Bulk delete operation succeeded"
+
+#: framework\admin/list_control.php:886
+msgid "批处理操作成功"
+msgstr "Batch operation is successful"
+
+#: framework\admin/login_control.php:25
+msgid "您已成功登录"
+msgstr "You are currently logged in"
+
+#: framework\admin/login_control.php:52
+msgid "您已成功登录，无需再次验证"
+msgstr "You have successfully logged on, no need to verify"
+
+#: framework\admin/login_control.php:56 langs/lang2.php:18 langs/lang2.php:385
+msgid "管理员账号不能为空"
+msgstr "Administrator account can not be empty"
+
+#: framework\admin/login_control.php:66
+msgid "验证码不能为空"
+msgstr "Captcha can't be empty"
+
+#: framework\admin/login_control.php:70
+msgid "验证码填写不正确"
+msgstr "Captcha not filled out correctly"
+
+#: framework\admin/login_control.php:75
+msgid "管理员信息不存在"
+msgstr "Administrator information does not exist"
+
+#: framework\admin/login_control.php:78
+msgid "管理员密码输入不正确"
+msgstr "Administrator passwords are entered incorrectly"
+
+#: framework\admin/login_control.php:81
+msgid "管理员账号已被锁定，请联系超管！"
+msgstr "Administrator account is locked, please contact ultra tube!"
+
+#: framework\admin/login_control.php:87 framework\admin/login_control.php:93
+msgid "你的管理权限未设置好，请联系超级管理员进行设置"
+msgstr ""
+"Your administrative permissions are not set up, contact the Super "
+"Administrator settings"
+
+#: framework\admin/logout_control.php:26
+msgid "管理员{admin_name}成功退出"
+msgstr "Admin {admin_name} successful logout"
+
+#: framework\admin/me_control.php:30
+msgid "管理员密码验证不能为空"
+msgstr "Administrator password cannot be empty"
+
+#: framework\admin/me_control.php:35
+msgid "管理员密码不正确"
+msgstr "The administrator password is not correct"
+
+#: framework\admin/me_control.php:46
+msgid "管理员账号已经存在，请重新设置"
+msgstr "Administrator account already exists, you can reset the"
+
+#: framework\admin/me_control.php:57
+msgid "两次输入的新密码不一致"
+msgstr "Two new password and confirmed new password do not match"
+
+#: framework\admin/me_control.php:65
+msgid "您的信息已更新成功，请重新登录"
+msgstr "Your information has been updated successfully, please log in again"
+
+#: framework\admin/me_control.php:69 framework\admin/user_control.php:383
+msgid "确定"
+msgstr "Submit"
+
+#: framework\admin/me_control.php:70
+msgid "密码修改成功，请下次登录后使用新密码登录！"
+msgstr ""
+"Password successfully changed, and next time you log in with your new "
+"password, please login!"
+
+#: framework\admin/module_control.php:54 framework\admin/module_control.php:82
+#: framework\admin/tpl_control.php:326 langs/lang2.php:160 langs/lang2.php:172
+#: langs/lang2.php:177
+msgid "关闭"
+msgstr "Close"
+
+#: framework\admin/module_control.php:55 framework\admin/module_control.php:83
+#: framework\admin/module_control.php:100
+#: framework\admin/module_control.php:292
+msgid "未指定模块ID"
+msgstr "Do not specify a module ID"
+
+#: framework\admin/module_control.php:93
+msgid "后台列表布局设置成功"
+msgstr "layout set successfully"
+
+#: framework\admin/module_control.php:102
+msgid "模块信息不存在"
+msgstr "Module information does not exist"
+
+#: framework\admin/module_control.php:104
+msgid "(复制)"
+msgstr "(Copy)"
+
+#: framework\admin/module_control.php:108
+msgid "模块复制失败，请检查"
+msgstr "Failed to copy the module"
+
+#: framework\admin/module_control.php:129
+#: framework\admin/module_control.php:272
+msgid "模块创建表失败，请检查"
+msgstr "Module failed to create the table"
+
+#: framework\admin/module_control.php:139
+msgid "模块复制成功"
+msgstr "Copied successfully"
+
+#: framework\admin/module_control.php:155
+msgid "模块名称不能为空"
+msgstr "Module names cannot be empty"
+
+#: framework\admin/module_control.php:171
+msgid "数据存储失败，请检查"
+msgstr "Failed to store the data, please check"
+
+#: framework\admin/module_control.php:179
+msgid "模块数据添加/更新成功"
+msgstr "Data add/update successful"
+
+#: framework\admin/module_control.php:187
+msgid "未指定模型"
+msgstr "Do not specify a module"
+
+#: framework\admin/module_control.php:236
+msgid "未指定模型ID"
+msgstr "Do not specify a module ID"
+
+#: framework\admin/module_control.php:238
+msgid "未指定要添加的字段ID"
+msgstr "Do not specify a field that you want to add ID"
+
+#: framework\admin/module_control.php:240
+msgid "模型不存在"
+msgstr "Model does not exist"
+
+#: framework\admin/module_control.php:243
+msgid "字段不存在"
+msgstr "Field does not exist"
+
+#: framework\admin/module_control.php:283
+msgid "字段添加成功"
+msgstr "Fields added successfully"
+
+#: framework\admin/module_control.php:313 framework\admin/user_control.php:394
+msgid "未指定要删除的字段"
+msgstr "Does not specify a field that you want to delete"
+
+#: framework\admin/module_control.php:326
+msgid "未指定要删除的模块"
+msgstr "Do not specify a module you want to remove"
+
+#: framework\admin/module_control.php:328
+msgid "模块不存在"
+msgstr "Module does not exist"
+
+#: framework\admin/module_control.php:329
+msgid "模块使用中，请先停用模块信息"
+msgstr "Module in use, please deactivate the module information"
+
+#: framework\admin/module_control.php:332
+msgid "模块删除成功"
+msgstr "Module deleted successfully"
+
+#: framework\admin/module_control.php:441 framework\admin/user_control.php:384
+msgid "自定义字段信息配置成功"
+msgstr "Custom field information is configured successfully"
+
+#: framework\admin/open_control.php:18 langs/lang2.php:724
+msgid "名称"
+msgstr "Name"
+
+#: framework\admin/open_control.php:19
+msgid "文件名"
+msgstr "File name"
+
+#: framework\admin/open_control.php:20
+msgid "附件扩展名"
+msgstr "Extensions"
+
+#: framework\admin/open_control.php:21 langs/lang2.php:595
+msgid "开始时间"
+msgstr "StartTime"
+
+#: framework\admin/open_control.php:22 langs/lang2.php:596
+msgid "结束时间"
+msgstr "End Time"
+
+#: framework\admin/open_control.php:32
+msgid "未指定表单ID"
+msgstr "Does not specify a form ID"
+
+#: framework\admin/open_control.php:241
+#: framework\admin/project_control.php:461
+msgid "项目不存在"
+msgstr "Project does not exist"
+
+#: framework\admin/opt_control.php:39
+msgid "没有指定选项组"
+msgstr "Does not specify the option group"
+
+#: framework\admin/opt_control.php:53 framework\admin/opt_control.php:67
+#: framework\admin/opt_control.php:130
+msgid "未指定选项组"
+msgstr "Option group is not specified"
+
+#: framework\admin/opt_control.php:73
+msgid "操作异常，请检查"
+msgstr "Abnormal operation, please check"
+
+#: framework\admin/opt_control.php:139 framework\admin/opt_control.php:173
+msgid "显示或值不能为空"
+msgstr "Display or values ​​can not be empty"
+
+#: framework\admin/opt_control.php:145
+msgid "值已存在不允许重复创建"
+msgstr "Value already exists does not allow duplicates to create"
+
+#: framework\admin/opt_control.php:160 framework\admin/opt_control.php:192
+msgid "未指定要编辑的ID"
+msgstr "You want to edit is not specified ID"
+
+#: framework\admin/opt_control.php:165 framework\admin/opt_control.php:197
+msgid "没有此项内容"
+msgstr "No of Featured Content"
+
+#: framework\admin/opt_control.php:178
+msgid "值已存在不允许重复"
+msgstr "Value already exists does not allow duplicates to create"
+
+#: framework\admin/order_control.php:134
+msgid "未指定订单ID号"
+msgstr "Do not specify an order ID number"
+
+#: framework\admin/order_control.php:146
+msgid "审核成功"
+msgstr "Audit success"
+
+#: framework\admin/order_control.php:156
+msgid "订单信息不存在"
+msgstr "Ordering information does not exist"
+
+#: framework\admin/order_control.php:234 framework\admin/order_control.php:303
+msgid "未指定产品ID"
+msgstr "Do not specify a product ID"
+
+#: framework\admin/order_control.php:251
+msgid "您的站点没有启用电子商务功能项目"
+msgstr "E-commerce functionality is not enabled for your site project"
+
+#: framework\admin/order_control.php:287
+msgid "没有产品信息"
+msgstr "No product information"
+
+#: framework\admin/order_control.php:306
+msgid "产品信息不存在"
+msgstr "Product information does not exist"
+
+#: framework\admin/order_control.php:355
+msgid "文件"
+msgstr "File"
+
+#: framework\admin/order_control.php:388 framework\admin/order_control.php:495
+msgid "订单密码不能为空"
+msgstr "Orders password can not be empty"
+
+#: framework\admin/order_control.php:391 framework\admin/order_control.php:498
+msgid "订单密码不合要求，限字母、数字、下划线及中划线"
+msgstr ""
+"Orders a password is not required, only letters, numbers, underscores and "
+"dashes"
+
+#: framework\admin/order_control.php:435
+msgid "产品信息为空，订单异常，请添加产品或删除订单信息"
+msgstr ""
+"Product information is empty, abnormal orders, add or delete orders product "
+"information"
+
+#: framework\admin/order_control.php:483
+msgid "订单编号不能为空"
+msgstr "Order number cannot be null"
+
+#: framework\admin/order_control.php:486
+msgid "订单编号不合要求，限字母、数字、下划线及中划线"
+msgstr ""
+"Order number is not required, only letters, numbers, underscores and dashes"
+
+#: framework\admin/order_control.php:490
+msgid "订单编号已被使用，请换个编号"
+msgstr "The order number is already in use, please change a number"
+
+#: framework\admin/order_control.php:507
+msgid "订单未创建相应的产品信息"
+msgstr "Order without creating the corresponding product information"
+
+#: framework\admin/order_control.php:533
+msgid "产品信息为空"
+msgstr "Product info is null"
+
+#: framework\admin/order_control.php:577
+msgid "订单创建失败，写入数据库出错"
+msgstr "Order creation fails, an error occurred writing to the database"
+
+#: framework\admin/order_control.php:591
+msgid "订单创建成功"
+msgstr "Order created successfully"
+
+#: framework\admin/payment_control.php:82
+#: framework\admin/project_control.php:244
+msgid "编辑失败"
+msgstr "Edit Failed"
+
+#: framework\admin/payment_control.php:82
+#: framework\admin/project_control.php:277
+msgid "添加失败"
+msgstr "Add failed"
+
+#: framework\admin/payment_control.php:110
+msgid "已存在支付方案，请先移除"
+msgstr "Payment scheme already exists, please remove"
+
+#: framework\admin/payment_control.php:135
+#: framework\admin/payment_control.php:170
+msgid "未指定支付接口"
+msgstr "Not specified payment interface"
+
+#: framework\admin/payment_control.php:166
+msgid "未指定支付组"
+msgstr "Payment group is not specified"
+
+#: framework\admin/payment_control.php:177
+msgid "支付名称不能为空"
+msgstr "Payment name can not be empty"
+
+#: framework\admin/payment_control.php:214
+msgid "编辑成功"
+msgstr "Edited successfully"
+
+#: framework\admin/payment_control.php:214
+msgid "添加成功"
+msgstr "Added successfully"
+
+#: framework\admin/plugin_control.php:92
+#: framework\admin/plugin_control.php:209
+#: framework\admin/plugin_control.php:241
+#: framework\admin/plugin_control.php:269
+#: framework\admin/reply_control.php:199 framework\admin/reply_control.php:239
+#: framework\admin/system_control.php:263
+#: framework\admin/usergroup_control.php:181
+#: framework\admin/usergroup_control.php:217
+msgid "数据记录不存在"
+msgstr "Data record does not exist"
+
+#: framework\admin/plugin_control.php:97
+#: framework\admin/plugin_control.php:166
+msgid "插件名称不能为空"
+msgstr "Plug-in name cannot be empty"
+
+#: framework\admin/plugin_control.php:116
+msgid "{title}设置成功"
+msgstr "{title} is configured successfully"
+
+#: framework\admin/plugin_control.php:176
+msgid "插件安装失败"
+msgstr "Plugin install failed."
+
+#: framework\admin/plugin_control.php:191
+msgid "{title}安装成功"
+msgstr "{title} is configured successfully"
+
+#: framework\admin/plugin_control.php:223
+msgid "插件卸载成功"
+msgstr "Plugin successfully uninstalled"
+
+#: framework\admin/plugin_control.php:273
+msgid "插件文件{appid}不存在"
+msgstr "File ({appid}) is not exists"
+
+#: framework\admin/plugin_control.php:283
+msgid "方法{method}不存在"
+msgstr "Method ({method}) Does not exist"
+
+#: framework\admin/project_control.php:402
+msgid "已存在子项目，请移除子项目"
+msgstr "Subprojects already exists, please remove it first."
+
+#: framework\admin/project_control.php:510
+msgid "复制项目失败"
+msgstr "Failed to copy project"
+
+#: framework\admin/reply_control.php:227
+msgid "评论信息更新成功"
+msgstr "Comments updated successfully"
+
+#: framework\admin/reply_control.php:263
+msgid "回复成功"
+msgstr "Reply to success"
+
+#: framework\admin/res_action_control.php:34
+#: framework\admin/res_action_control.php:63
+#: framework\admin/res_action_control.php:98
+msgid "未指定附件"
+msgstr "Not specified attachments"
+
+#: framework\admin/res_action_control.php:42
+#: framework\admin/res_control.php:91 framework\admin/res_control.php:119
+#: framework\admin/update_control.php:119
+msgid "附件不存在"
+msgstr "Attachment does not exist"
+
+#: framework\admin/res_control.php:109
+msgid "未指定附件名"
+msgstr ""
+
+#: framework\admin/res_control.php:114 framework\admin/upload_control.php:281
+msgid "附件信息不存在"
+msgstr ""
+
+#: framework\admin/res_control.php:124
+msgid "远程附件不允许下载，请直接打开"
+msgstr ""
+
+#: framework\admin/res_control.php:238 langs/lang2.php:566 langs/lang2.php:568
+#: langs/lang2.php:581
+msgid "未指定要操作的附件"
+msgstr ""
+
+#: framework\admin/res_control.php:248 framework\admin/res_control.php:256
+msgid "附件信息更新完毕，共更新数量：{pageid}，点击右上角关闭窗口^_^"
+msgstr ""
+
+#: framework\admin/res_control.php:260
+msgid "附件更新中，当前ID：{pageid} 不存在附件"
+msgstr ""
+
+#: framework\admin/res_control.php:265
+msgid "附件更新中，当前已更新数量：{total}"
+msgstr ""
+
+#: framework\admin/res_control.php:365
+msgid "未指定新的附件分类"
+msgstr ""
+
+#: framework\admin/rescate_control.php:67
+msgid "附件分类名称不能为空"
+msgstr ""
+
+#: framework\admin/rescate_control.php:71
+msgid "附件存储目录不能为空"
+msgstr ""
+
+#: framework\admin/rescate_control.php:74
+msgid "不支持使用/作为根目录"
+msgstr ""
+
+#: framework\admin/rescate_control.php:77
+msgid "文件夹不符合系统要求，只支持：小写字母、数字、下划线及斜杠"
+msgstr ""
+
+#: framework\admin/rescate_control.php:87
+msgid "附件类型不能为空"
+msgstr ""
+
+#: framework\admin/rescate_control.php:97
+msgid "附件类型设置不正确，仅限字母，数字及英文点符号"
+msgstr ""
+
+#: framework\admin/rescate_control.php:103
+msgid "附件类型说明不能为空"
+msgstr ""
+
+#: framework\admin/rescate_control.php:136
+msgid "默认附件分类不支持删除"
+msgstr ""
+
+#: framework\admin/rewrite_control.php:98
+msgid "未指定网址格式"
+msgstr ""
+
+#: framework\admin/site_control.php:50
+msgid "默认站点不支持删除操作"
+msgstr ""
+
+#: framework\admin/site_control.php:58
+msgid "网站删除成功"
+msgstr ""
+
+#: framework\admin/site_control.php:67
+msgid "未指定站点信息"
+msgstr ""
+
+#: framework\admin/site_control.php:70
+msgid "默认站点不支持此操作"
+msgstr ""
+
+#: framework\admin/site_control.php:72
+msgid "默认站点设置成功"
+msgstr ""
+
+#: framework\admin/sql_control.php:54 framework\admin/sql_control.php:77
+msgid "未选定要操作的数据表"
+msgstr ""
+
+#: framework\admin/sql_control.php:65
+msgid "数据表优化成功"
+msgstr ""
+
+#: framework\admin/sql_control.php:88
+msgid "数据表信修复成功"
+msgstr ""
+
+#: framework\admin/sql_control.php:144
+msgid "表结构备份成功，正在执行下一步"
+msgstr ""
+
+#: framework\admin/sql_control.php:151 framework\admin/sql_control.php:271
+msgid "数据备份成功"
+msgstr ""
+
+#: framework\admin/sql_control.php:160 framework\admin/sql_control.php:167
+msgid "数据表{table}已备份完成！正在进行下一步操作，请稍候！"
+msgstr ""
+
+#: framework\admin/sql_control.php:273
+msgid "正在备份数据，当前第{pageid}个文件，正在备{table}相关数据"
+msgstr ""
+
+#: framework\admin/sql_control.php:285 framework\admin/sql_control.php:341
+msgid "空数据，请检查目录：{root}data/"
+msgstr ""
+
+#: framework\admin/sql_control.php:304
+msgid "没有相备份数据"
+msgstr ""
+
+#: framework\admin/sql_control.php:336 framework\admin/sql_control.php:364
+#: framework\admin/sql_control.php:402
+msgid "没有指定备份文件"
+msgstr ""
+
+#: framework\admin/sql_control.php:352
+msgid "备份文件删除成功"
+msgstr ""
+
+#: framework\admin/sql_control.php:369
+msgid "备份文件不存在"
+msgstr ""
+
+#: framework\admin/sql_control.php:390
+msgid "表结构数据修复成功，正在修复内容数据，请稍候！"
+msgstr ""
+
+#: framework\admin/sql_control.php:408 framework\admin/sql_control.php:416
+msgid "数据恢复完成"
+msgstr ""
+
+#: framework\admin/sql_control.php:418
+msgid "正在恢复数据，正在恢复第{pageid}个文件，请稍候…"
+msgstr ""
+
+#: framework\admin/system_control.php:104
+msgid "未指定上一级项目"
+msgstr ""
+
+#: framework\admin/system_control.php:109
+msgid "未指定控制层"
+msgstr ""
+
+#: framework\admin/system_control.php:122
+msgid "获取数据失败，请检查"
+msgstr ""
+
+#: framework\admin/system_control.php:140
+msgid "项目添加成功，但相应的权限字段没有更新成功"
+msgstr ""
+
+#: framework\admin/system_control.php:191
+msgid "项目添加/更新成功"
+msgstr ""
+
+#: framework\admin/system_control.php:206
+msgid "系统栏目不支持执行此操作"
+msgstr ""
+
+#: framework\admin/system_control.php:246
+msgid "您不是开发管理员，不能执行此操作"
+msgstr ""
+
+#: framework\admin/system_control.php:266
+msgid "根导航不允许删除"
+msgstr ""
+
+#: framework\admin/system_control.php:269
+msgid "核心导航操作不允许删除"
+msgstr ""
+
+#: framework\admin/tag_control.php:67 langs/lang2.php:729
+msgid "关键字名称不能为空"
+msgstr ""
+
+#: framework\admin/tag_control.php:72
+msgid "关键字已存在，请检查"
+msgstr ""
+
+#: framework\admin/tag_control.php:89
+msgid "添加失败，请检查"
+msgstr ""
+
+#: framework\admin/tpl_control.php:64
+msgid "文件夹目录名不能为空"
+msgstr ""
+
+#: framework\admin/tpl_control.php:69
+msgid "后缀不允许为空"
+msgstr ""
+
+#: framework\admin/tpl_control.php:78
+msgid "风格方案配置成功"
+msgstr ""
+
+#: framework\admin/tpl_control.php:100 framework\admin/tpl_control.php:167
+#: framework\admin/tpl_control.php:198 framework\admin/tpl_control.php:228
+#: framework\admin/tpl_control.php:258 framework\admin/tpl_control.php:286
+msgid "未指定风格ID"
+msgstr ""
+
+#: framework\admin/tpl_control.php:102 framework\admin/tpl_control.php:169
+#: framework\admin/tpl_control.php:200 framework\admin/tpl_control.php:230
+#: framework\admin/tpl_control.php:260 framework\admin/tpl_control.php:288
+#: framework\admin/tpl_control.php:314
+msgid "风格信息不存在"
+msgstr ""
+
+#: framework\admin/tpl_control.php:105
+msgid "风格目录不存在，或未指定风格目录，请检查"
+msgstr ""
+
+#: framework\admin/tpl_control.php:170 framework\admin/tpl_control.php:201
+#: framework\admin/tpl_control.php:231 framework\admin/tpl_control.php:261
+#: framework\admin/tpl_control.php:289 framework\admin/tpl_control.php:315
+msgid "未设置风格文件夹"
+msgstr ""
+
+#: framework\admin/tpl_control.php:177
+msgid "新旧名称一样，不需要执行改名操作"
+msgstr ""
+
+#: framework\admin/tpl_control.php:182 framework\admin/tpl_control.php:238
+#: framework\admin/tpl_control.php:268 framework\admin/tpl_control.php:296
+msgid "文件（夹）不存在"
+msgstr ""
+
+#: framework\admin/tpl_control.php:187
+msgid "新文件（夹）已经存在，请重新改名"
+msgstr ""
+
+#: framework\admin/tpl_control.php:190
+msgid "改名成功"
+msgstr ""
+
+#: framework\admin/tpl_control.php:210
+msgid "要创建的文件（夹）名称已经存在，请检查"
+msgstr ""
+
+#: framework\admin/tpl_control.php:220
+msgid "文件（夹）创建成功"
+msgstr ""
+
+#: framework\admin/tpl_control.php:322
+msgid "文件不存在"
+msgstr ""
+
+#: framework\admin/tpl_control.php:326
+msgid "模板代码编码成功，请关闭弹出窗口"
+msgstr ""
+
+#: framework\admin/tpl_control.php:340
+msgid "站点尚未设置默认风格，请先设置好"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:90
+msgid "未指定请求方式"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:95
+msgid "请求参数不正确"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:109
+msgid "没有图片信息"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:144
+msgid "附件获取失败"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:152
+msgid "附件写入失败"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:180
+msgid "附件存储失败"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:197
+#: framework\admin/ueditor_control.php:210
+msgid "没有可用的附件"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:246
+msgid "视频内容为空"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:266
+msgid "附件内容为空"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:293
+msgid "图片数据内容为空"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:314
+msgid "文件上传失败"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:328
+msgid "视频上传失败"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:341
+msgid "上传失败："
+msgstr ""
+
+#: framework\admin/ueditor_control.php:460
+#: framework\admin/upload_control.php:76
+msgid "图片迁移失败"
+msgstr ""
+
+#: framework\admin/ueditor_control.php:487
+#: framework\admin/upload_control.php:97
+msgid "图片存储失败"
+msgstr ""
+
+#: framework\admin/update_control.php:66
+msgid "升级环境配置成功"
+msgstr ""
+
+#: framework\admin/update_control.php:78
+msgid "没有找到升级包信息"
+msgstr ""
+
+#: framework\admin/update_control.php:81
+msgid "没有符合您要求的升级包"
+msgstr ""
+
+#: framework\admin/update_control.php:115
+msgid "未指定附件文件"
+msgstr ""
+
+#: framework\admin/update_control.php:127
+#: framework\admin/update_control.php:240
+msgid "升级成功"
+msgstr ""
+
+#: framework\admin/update_control.php:136
+msgid "没有升级文件内容"
+msgstr ""
+
+#: framework\admin/update_control.php:368
+msgid "升级失败，未指定文件"
+msgstr ""
+
+#: framework\admin/update_control.php:377
+msgid "升级失败，升级包内容为空"
+msgstr ""
+
+#: framework\admin/update_control.php:422
+msgid "程序更新成功"
+msgstr ""
+
+#: framework\admin/update_control.php:445
+msgid "跳过检测"
+msgstr ""
+
+#: framework\admin/update_control.php:451
+#: framework\admin/update_control.php:459
+msgid "未配置升级服务器"
+msgstr ""
+
+#: framework\admin/update_control.php:456
+msgid "在线升级功能未启用"
+msgstr ""
+
+#: framework\admin/update_control.php:476
+msgid "检测异常，请登录官网查询补丁更新"
+msgstr ""
+
+#: framework\admin/upload_control.php:49
+msgid "未指定分类或附件分类不存在"
+msgstr ""
+
+#: framework\admin/upload_control.php:111
+msgid "没有指定要替换的附件"
+msgstr ""
+
+#: framework\admin/upload_control.php:115
+msgid "资源不存在"
+msgstr ""
+
+#: framework\admin/upload_control.php:119
+msgid "附件上传失败"
+msgstr ""
+
+#: framework\admin/upload_control.php:214
+msgid "请传递正确的附件ID"
+msgstr ""
+
+#: framework\admin/upload_control.php:227
+msgid "附件信息获取失败，可能已经删除，请检查"
+msgstr ""
+
+#: framework\admin/upload_control.php:251
+msgid "附件标题不能为空"
+msgstr ""
+
+#: framework\admin/upload_control.php:284
+msgid "非系统管理员不能删除其他管理员上传的附件"
+msgstr ""
+
+#: framework\admin/user_control.php:117
+msgid "会员账号不允许为空"
+msgstr ""
+
+#: framework\admin/user_control.php:122
+msgid "会员账号已经存在"
+msgstr ""
+
+#: framework\admin/user_control.php:185
+msgid "会员编辑成功"
+msgstr ""
+
+#: framework\admin/user_control.php:185
+msgid "新会员添加成功"
+msgstr ""
+
+#: framework\admin/user_control.php:317
+msgid "会员自定义字段配置成功"
+msgstr ""
+
+#: framework\admin/usergroup_control.php:129
+msgid "组名称不允许为空"
+msgstr ""
+
+#: framework\admin/usergroup_control.php:169
+msgid "会员组信息添加/存储成功"
+msgstr ""
+
+#: framework\admin/usergroup_control.php:184
+msgid "默认会员组不能删除"
+msgstr ""
+
+#: framework\admin/usergroup_control.php:187
+msgid "默认游客组不能删除"
+msgstr ""
+
+#: framework\admin/usergroup_control.php:220
+msgid "默认会员组不能设为游客组"
+msgstr ""
+
+#: framework\admin/usergroup_control.php:238
+msgid "会员组信息不存在"
+msgstr ""
+
+#: langs/lang.php:11
+msgid "查看"
+msgstr "View"
+
+#: langs/lang.php:12 langs/lang2.php:90 langs/lang2.php:91
+msgid "添加"
+msgstr "Add"
+
+#: langs/lang.php:13 langs/lang2.php:243 langs/lang2.php:600
+msgid "修改"
+msgstr "Modify"
+
+#: langs/lang.php:14 langs/lang2.php:530
+msgid "回复"
+msgstr "Reply"
+
+#: langs/lang.php:15
+msgid "审核"
+msgstr "Status"
+
+#: langs/lang.php:16
+msgid "启用/禁用"
+msgstr "Enable/disable"
+
+#: langs/lang.php:17 langs/lang2.php:434 langs/lang2.php:445
+msgid "扩展"
+msgstr "Extend"
+
+#: langs/lang.php:18
+msgid "配置"
+msgstr "Config"
+
+#: langs/lang.php:20
+msgid "订单"
+msgstr "Order"
+
+#: langs/lang.php:21
+msgid "会员"
+msgstr "User"
+
+#: langs/lang.php:22
+msgid "工具"
+msgstr "Tool"
+
+#: langs/lang.php:23
+msgid "设置"
+msgstr "Setting"
+
+#: langs/lang.php:24 langs/lang2.php:348
+msgid "全局内容"
+msgstr "Global"
+
+#: langs/lang.php:25
+msgid "分类管理"
+msgstr "Category"
+
+#: langs/lang.php:26
+msgid "数据调用"
+msgstr "Data call"
+
+#: langs/lang.php:28 langs/lang2.php:587
+msgid "资源管理"
+msgstr "Resource"
+
+#: langs/lang.php:29
+msgid "Tag标签管理"
+msgstr "Tag labeling"
+
+#: langs/lang.php:30
+msgid "订单管理"
+msgstr "Orders"
+
+#: langs/lang.php:31
+msgid "付款方案"
+msgstr "Payment Settings"
+
+#: langs/lang.php:32
+msgid "货币及汇率"
+msgstr "Currency and Rates"
+
+#: langs/lang.php:34
+msgid "会员组"
+msgstr "Member group"
+
+#: langs/lang.php:35
+msgid "会员字段"
+msgstr "Member field"
+
+#: langs/lang.php:36
+msgid "程序升级"
+msgstr "Upgrades"
+
+#: langs/lang.php:37
+msgid "字段维护"
+msgstr "Field"
+
+#: langs/lang.php:38
+msgid "插件"
+msgstr "Add-ons"
+
+#: langs/lang.php:39 langs/lang2.php:411 langs/lang2.php:424
+#: langs/lang2.php:441
+msgid "项目管理"
+msgstr "Project"
+
+#: langs/lang.php:40
+msgid "模块管理"
+msgstr "Module"
+
+#: langs/lang.php:41
+msgid "表单选项"
+msgstr "Form options"
+
+#: langs/lang.php:42
+msgid "邮件通知模板"
+msgstr "Email templates"
+
+#: langs/lang.php:43 langs/lang2.php:706
+msgid "核心配置"
+msgstr "Core config"
+
+#: langs/lang.php:44
+msgid "风格管理"
+msgstr "Style"
+
+#: langs/lang.php:45
+msgid "伪静态页规则"
+msgstr "Rewrite"
+
+#: langs/lang.php:46
+msgid "站点管理"
+msgstr "Site manage"
+
+#: langs/lang.php:47 langs/lang2.php:662 langs/lang2.php:663
+#: langs/lang2.php:665 langs/lang2.php:687 langs/lang2.php:688
+msgid "数据库管理"
+msgstr "Database"
+
+#: langs/lang.php:48
+msgid "生成静态页"
+msgstr "Make html"
+
+#: langs/lang.php:49 langs/lang2.php:610 langs/lang2.php:623
+#: langs/lang2.php:624
+msgid "附件分类管理"
+msgstr "File category"
+
+#: langs/lang.php:50
+msgid "GD图片方案"
+msgstr "GD program"
+
+#: langs/lang2.php:2
+msgid "确定要删除管理员"
+msgstr "Are you sure you want to delete administrator?"
+
+#: langs/lang2.php:3
+msgid "吗?"
+msgstr "?"
+
+#: langs/lang2.php:4
+msgid "管理员维护"
+msgstr "Administrators"
+
+#: langs/lang2.php:5 langs/lang2.php:23 langs/lang2.php:28
+msgid "添加管理员"
+msgstr "Add an administrator"
+
+#: langs/lang2.php:6 langs/lang2.php:24 langs/lang2.php:81 langs/lang2.php:94
+#: langs/lang2.php:105 langs/lang2.php:236 langs/lang2.php:245
+#: langs/lang2.php:265 langs/lang2.php:353 langs/lang2.php:410
+#: langs/lang2.php:423 langs/lang2.php:440 langs/lang2.php:586
+#: langs/lang2.php:609 langs/lang2.php:622 langs/lang2.php:658
+#: langs/lang2.php:661 langs/lang2.php:686 langs/lang2.php:705
+#: langs/lang2.php:732
+msgid "您当前的位置："
+msgstr "Breadcrumbs: "
+
+#: langs/lang2.php:7 langs/lang2.php:8 langs/lang2.php:25 langs/lang2.php:26
+msgid "管理员列表"
+msgstr "Administrators list"
+
+#: langs/lang2.php:9
+msgid "ID"
+msgstr "id"
+
+#: langs/lang2.php:10
+msgid "状态"
+msgstr "Status"
+
+#: langs/lang2.php:11
+msgid "账号"
+msgstr "Account"
+
+#: langs/lang2.php:12
+msgid "邮箱"
+msgstr "Email"
+
+#: langs/lang2.php:13 langs/lang2.php:241 langs/lang2.php:258
+#: langs/lang2.php:430 langs/lang2.php:693
+msgid "操作"
+msgstr "Action"
+
+#: langs/lang2.php:14
+msgid "（系统管理员）"
+msgstr "(System)"
+
+#: langs/lang2.php:15 langs/lang2.php:263 langs/lang2.php:433
+#: langs/lang2.php:618 langs/lang2.php:697 langs/lang2.php:703
+msgid "编辑"
+msgstr "Edit"
+
+#: langs/lang2.php:16 langs/lang2.php:89 langs/lang2.php:244
+#: langs/lang2.php:264 langs/lang2.php:436 langs/lang2.php:602
+#: langs/lang2.php:608 langs/lang2.php:619 langs/lang2.php:704
+#: langs/lang2.php:727
+msgid "删除"
+msgstr "Delete"
+
+#: langs/lang2.php:17
+msgid "系统管理员或您自己不能删除"
+msgstr "System administrator or yourself cannot delete."
+
+#: langs/lang2.php:19
+msgid "密码不能为空或密码长度太短"
+msgstr "Password cannot be empty or the password length is too short"
+
+#: langs/lang2.php:20
+msgid "账号："
+msgstr "Account: "
+
+#: langs/lang2.php:21
+msgid "不是系统管理员，请配置好权限！"
+msgstr "Not a system administrator, permission configurations, please!"
+
+#: langs/lang2.php:22 langs/lang2.php:27
+msgid "编辑管理员"
+msgstr "Edit administrator"
+
+#: langs/lang2.php:29
+msgid "管理员账号："
+msgstr "Account: "
+
+#: langs/lang2.php:30
+msgid "请填写管理员的账号，建议使用"
+msgstr "Fill in the account is recommended"
+
+#: langs/lang2.php:31
+msgid "英文单词，中文或数字"
+msgstr "English words, Chinese or digital"
+
+#: langs/lang2.php:32
+msgid "管理员密码："
+msgstr "Password: "
+
+#: langs/lang2.php:33
+msgid "不修改密码请留空，"
+msgstr "Leave this field blank unless you would like to change your password."
+
+#: langs/lang2.php:34
+msgid "密码长不能少于4位数，建议使用"
+msgstr "Password length should be at least 4 digits, it is recommended"
+
+#: langs/lang2.php:35
+msgid "数字，字母及下划线"
+msgstr "Numbers, letters and underscores"
+
+#: langs/lang2.php:36
+msgid "等"
+msgstr "."
+
+#: langs/lang2.php:37
+msgid "管理员邮箱："
+msgstr "Email: "
+
+#: langs/lang2.php:38
+msgid "此邮箱可用于接收网站通知信息，请不要和SMTP配置的邮箱一致"
+msgstr ""
+"This mail can be used to receive notification of the website information, "
+"please do not mailbox and SMTP configuration"
+
+#: langs/lang2.php:39 langs/lang2.php:43 langs/lang2.php:364
+msgid "状态："
+msgstr "State: "
+
+#: langs/lang2.php:40
+msgid "设置该管理员是否启用！"
+msgstr "Sets whether the administrator enabled!"
+
+#: langs/lang2.php:41 langs/lang2.php:45 langs/lang2.php:227
+#: langs/lang2.php:231 langs/lang2.php:657
+msgid "禁用"
+msgstr "Disable"
+
+#: langs/lang2.php:42 langs/lang2.php:46 langs/lang2.php:228
+#: langs/lang2.php:232 langs/lang2.php:656
+msgid "启用"
+msgstr "Enable"
+
+#: langs/lang2.php:44
+msgid "您没有权限设置管理员状态"
+msgstr "You do not have permissions to set the Administrator status"
+
+#: langs/lang2.php:47 langs/lang2.php:52
+msgid "管理员级别："
+msgstr "Level: "
+
+#: langs/lang2.php:48 langs/lang2.php:50
+msgid "系统管理员"
+msgstr "System"
+
+#: langs/lang2.php:49
+msgid "是最高级别管理也是开发管理员，可管理整个平台所有功能"
+msgstr ""
+" is the highest level of management and development administrator, manages "
+"the whole platform all features"
+
+#: langs/lang2.php:51 langs/lang2.php:54
+msgid "普通管理员"
+msgstr "General"
+
+#: langs/lang2.php:53
+msgid "您只能添加普通管理员信息"
+msgstr "You can only add General Administrator information"
+
+#: langs/lang2.php:55
+msgid "功能权限分配："
+msgstr "Permissions: "
+
+#: langs/lang2.php:56
+msgid "分配系统后台各个功能的权限"
+msgstr "Distribution system functional permissions"
+
+#: langs/lang2.php:57 langs/lang2.php:60 langs/lang2.php:66 langs/lang2.php:69
+#: langs/lang2.php:519 langs/lang2.php:524 langs/lang2.php:603
+#: langs/lang2.php:677
+msgid "全选"
+msgstr "All"
+
+#: langs/lang2.php:58 langs/lang2.php:61 langs/lang2.php:67 langs/lang2.php:70
+#: langs/lang2.php:520 langs/lang2.php:525 langs/lang2.php:604
+#: langs/lang2.php:678
+msgid "全不选"
+msgstr "None"
+
+#: langs/lang2.php:59 langs/lang2.php:62 langs/lang2.php:68 langs/lang2.php:71
+#: langs/lang2.php:521 langs/lang2.php:526 langs/lang2.php:605
+#: langs/lang2.php:679
+msgid "反选"
+msgstr "Reverse"
+
+#: langs/lang2.php:63
+msgid "内容配置："
+msgstr "Content configuration:"
+
+#: langs/lang2.php:64
+msgid "设置网站的内容里的权限"
+msgstr "Setting permissions for Web site content"
+
+#: langs/lang2.php:65
+msgid "（子项权限请同时启用父项的查看权限）"
+msgstr ""
+"(Subkeys permissions please also enable viewing permissions from the parent)"
+
+#: langs/lang2.php:72 langs/lang2.php:80 langs/lang2.php:103
+#: langs/lang2.php:233 langs/lang2.php:416
+msgid "提交"
+msgstr "Submit"
+
+#: langs/lang2.php:73
+msgid "网站名称不能为空"
+msgstr "Site name can not be empty"
+
+#: langs/lang2.php:76 langs/lang2.php:120
+msgid "网站名称："
+msgstr "Site name:"
+
+#: langs/lang2.php:77
+msgid "设置网站的名称"
+msgstr "Set the site name"
+
+#: langs/lang2.php:78
+msgid "网站主域名："
+msgstr "Domain: "
+
+#: langs/lang2.php:79
+msgid "设置访问此网站的域名，此项不能为空"
+msgstr "Set this site domain, this can not be empty"
+
+#: langs/lang2.php:82 langs/lang2.php:95 langs/lang2.php:106
+msgid "全局维护"
+msgstr "Global setting"
+
+#: langs/lang2.php:83 langs/lang2.php:341 langs/lang2.php:342
+#: langs/lang2.php:343
+msgid "网站域名"
+msgstr "Domain"
+
+#: langs/lang2.php:84
+msgid "域名"
+msgstr "Domain"
+
+#: langs/lang2.php:85
+msgid "主域名管理："
+msgstr "Primary domain: "
+
+#: langs/lang2.php:86 langs/lang2.php:104 langs/lang2.php:337
+#: langs/lang2.php:338 langs/lang2.php:339
+msgid "网站信息"
+msgstr "Website"
+
+#: langs/lang2.php:88
+msgid "设主域名"
+msgstr "Set Primary Domain"
+
+#: langs/lang2.php:92
+msgid "邮件已发送到指定邮箱："
+msgstr ""
+
+#: langs/lang2.php:93
+msgid "邮件发送失败"
+msgstr ""
+
+#: langs/lang2.php:96
+msgid "在线发送邮件"
+msgstr "Emailing"
+
+#: langs/lang2.php:97
+msgid "目标邮箱："
+msgstr "Email: "
+
+#: langs/lang2.php:98
+msgid "即收件人邮箱"
+msgstr "The recipient's mailbox"
+
+#: langs/lang2.php:99
+msgid "邮件主题："
+msgstr "Subject: "
+
+#: langs/lang2.php:100
+msgid "填写邮件的主题，不能为空"
+msgstr "Title can not be empty"
+
+#: langs/lang2.php:101
+msgid "邮件内容："
+msgstr "Content: "
+
+#: langs/lang2.php:102
+msgid "填写要发送的邮件内容"
+msgstr "Fill in the message content"
+
+#: langs/lang2.php:107
+msgid "编辑网站信息"
+msgstr "Edit Web site information"
+
+#: langs/lang2.php:108
+msgid "网站基本信息"
+msgstr "Basic"
+
+#: langs/lang2.php:109
+msgid "基本设置"
+msgstr "Basic settings"
+
+#: langs/lang2.php:110
+msgid "开关网站，设置风格，语言等功能"
+msgstr "Switch site, set the style, language functions"
+
+#: langs/lang2.php:111
+msgid "扩展信息"
+msgstr "Extend"
+
+#: langs/lang2.php:112
+msgid "全站SEO信息设置"
+msgstr "Information site-wide SEO settings"
+
+#: langs/lang2.php:113 langs/lang2.php:376 langs/lang2.php:446
+msgid "SEO优化"
+msgstr "SEO optimization"
+
+#: langs/lang2.php:114
+msgid "邮件发送模块设置"
+msgstr "Mail Sent Message:"
+
+#: langs/lang2.php:115
+msgid "SMTP设置"
+msgstr "SMTP settings"
+
+#: langs/lang2.php:116
+msgid "启用电子商务功能"
+msgstr "E-commerce features are enabled"
+
+#: langs/lang2.php:117 langs/lang2.php:472
+msgid "电子商务"
+msgstr "E-commerce"
+
+#: langs/lang2.php:118
+msgid "配置游客和会员的上传属性"
+msgstr "Configure upload properties for visitors and members"
+
+#: langs/lang2.php:119
+msgid "上传配置"
+msgstr "Upload"
+
+#: langs/lang2.php:121
+msgid "即在前台使用的名称信息"
+msgstr "The name used in the foreground information"
+
+#: langs/lang2.php:122
+msgid "域名："
+msgstr "Domain: "
+
+#: langs/lang2.php:123
+msgid "网站域名，不用填写http://，也不能填写 / 结束符"
+msgstr ""
+"Web site domain names, without having to fill in http:// or fill / terminator"
+
+#: langs/lang2.php:124
+msgid "安装目录"
+msgstr "Installation folder:"
+
+#: langs/lang2.php:125
+msgid "根目录请用 /，其他目录请写目录名且要求以 / 结束，如：/phpok/"
+msgstr ""
+"Root directory/other directory please write the directory names which end "
+"with a/, for example:/phpok/"
+
+#: langs/lang2.php:126
+msgid "网站LOGO"
+msgstr "Site logo"
+
+#: langs/lang2.php:127
+msgid "绑定网站的LOGO信息"
+msgstr "Binding Web LOGO information"
+
+#: langs/lang2.php:128 langs/lang2.php:181 langs/lang2.php:186
+#: langs/lang2.php:283 langs/lang2.php:534 langs/lang2.php:538
+#: langs/lang2.php:542 langs/lang2.php:546
+msgid "选择"
+msgstr "Choice"
+
+#: langs/lang2.php:129 langs/lang2.php:182 langs/lang2.php:187
+#: langs/lang2.php:284 langs/lang2.php:601
+msgid "预览"
+msgstr "Preview"
+
+#: langs/lang2.php:130 langs/lang2.php:183 langs/lang2.php:188
+#: langs/lang2.php:285 langs/lang2.php:507 langs/lang2.php:535
+#: langs/lang2.php:539 langs/lang2.php:543 langs/lang2.php:547
+msgid "清空"
+msgstr "Clear"
+
+#: langs/lang2.php:131
+msgid "API验证串："
+msgstr "API validation strings:"
+
+#: langs/lang2.php:132
+msgid "用于数据加密通迅时使用，建议定期更改"
+msgstr ""
+"Used for data encryption used when communication, it is recommended that "
+"periodic changes"
+
+#: langs/lang2.php:133
+msgid "随机生成"
+msgstr "Random"
+
+#: langs/lang2.php:134
+msgid "网页扩展说明："
+msgstr "Page extension description:"
+
+#: langs/lang2.php:135
+msgid "添加页头信息，如添加google验证，百度验证等，支持HTML"
+msgstr ""
+"Add page header information, such as adding Google verification, "
+"verification of Baidu, support HTML"
+
+#: langs/lang2.php:136
+msgid "默认，动态网址"
+msgstr "By default, dynamic URLs"
+
+#: langs/lang2.php:137 langs/lang2.php:140 langs/lang2.php:143
+msgid "示例："
+msgstr "Samples:"
+
+#: langs/lang2.php:138 langs/lang2.php:141
+msgid "标识或数字ID"
+msgstr "(Identifier or digital ID)"
+
+#: langs/lang2.php:139
+msgid "伪静态页"
+msgstr "Rewrite"
+
+#: langs/lang2.php:142
+msgid "静态页"
+msgstr "Html"
+
+#: langs/lang2.php:144
+msgid "静态页根目会设置："
+msgstr "Static pages root sets:"
+
+#: langs/lang2.php:145
+msgid ""
+"此项请谨慎设置，一经设置后请不要修改，会影响新网页的生成，慎用根目录，建议设"
+"置为html/"
+msgstr ""
+"This caution settings, do not modify the latter by setting will affect the "
+"generation of new pages, caution root directory, it is recommended to html/"
+
+#: langs/lang2.php:146
+msgid "静态页详细页生成规则："
+msgstr "Static page generation rules detail page:"
+
+#: langs/lang2.php:147
+msgid "仅限详细页生成规格，仅限未设置自定义标识"
+msgstr ""
+"Only detailed page generation specification, only a custom identity is not "
+"set"
+
+#: langs/lang2.php:148
+msgid "年月/日/"
+msgstr "YearMonth/Day/"
+
+#: langs/lang2.php:149
+msgid "年月日/"
+msgstr "YearMonthDay/"
+
+#: langs/lang2.php:150
+msgid "年月/"
+msgstr "YearMonth/"
+
+#: langs/lang2.php:151
+msgid "年/月/日/"
+msgstr "Year/Month/Day/"
+
+#: langs/lang2.php:152 langs/lang2.php:377 langs/lang2.php:552
+msgid "SEO标题："
+msgstr "SEO Title:"
+
+#: langs/lang2.php:153
+msgid "针对HTML里的Title属性进行优化，建议使用英文竖线分割开来，不超过80字"
+msgstr ""
+"Optimized for HTML in the Title attribute, we recommended to use vertical "
+"split apart, no more than 80 words"
+
+#: langs/lang2.php:154 langs/lang2.php:379 langs/lang2.php:554
+msgid "SEO关键字："
+msgstr "SEO Keyword:"
+
+#: langs/lang2.php:155
+msgid "简单明了用几个词来描述您的网站，多个词用英文逗号隔开"
+msgstr ""
+"Simple few words to describe your site, multiple words separated by commas"
+
+#: langs/lang2.php:156
+msgid "SEO摘要："
+msgstr "SEO summary:"
+
+#: langs/lang2.php:157
+msgid "针对您的网站，简单描述其作用，目标群体，未来方向等信息，建议不超过100字"
+msgstr ""
+"For your site, a brief description of their role, the target groups, the "
+"future direction and other information, recommends no more than 100 words"
+
+#: langs/lang2.php:158
+msgid "网站状态："
+msgstr "State: "
+
+#: langs/lang2.php:159
+msgid "要停止此网站运行，请在这里关闭"
+msgstr "To stop this site running, here Close"
+
+#: langs/lang2.php:161 langs/lang2.php:171 langs/lang2.php:176
+msgid "开启"
+msgstr "Open"
+
+#: langs/lang2.php:162
+msgid "网站关闭说明："
+msgstr "Website Close Description:"
+
+#: langs/lang2.php:163
+msgid "简单说明关闭网站的通知信息"
+msgstr "Brief Description of the site notice Close"
+
+#: langs/lang2.php:164
+msgid "默认风格："
+msgstr "Default Style:"
+
+#: langs/lang2.php:165
+msgid "指定网站要使用的默认风格，注意，风格不区分语言和站点，请仔细选择"
+msgstr ""
+"The default style specified Web site to be used, attention, language and "
+"style does not distinguish between sites, carefully choose"
+
+#: langs/lang2.php:166
+msgid "未安装风格包，请先安装"
+msgstr "Style package is not installed, please install"
+
+#: langs/lang2.php:167
+msgid "默认语言："
+msgstr "Default language:"
+
+#: langs/lang2.php:168
+msgid "未设置语言包时，将调用系统默认语言包"
+msgstr ""
+"Language Pack is not set, the system will call the default language pack"
+
+#: langs/lang2.php:169
+msgid "注册："
+msgstr "Registration:"
+
+#: langs/lang2.php:170
+msgid "关闭注册功能请在这里设置"
+msgstr "Close this function, please set here"
+
+#: langs/lang2.php:173 langs/lang2.php:178
+msgid "原因："
+msgstr "Cause:"
+
+#: langs/lang2.php:174
+msgid "登录："
+msgstr "Login:"
+
+#: langs/lang2.php:175
+msgid "关闭登录功能请在这里设置"
+msgstr "Close Please login feature set here"
+
+#: langs/lang2.php:179
+msgid "后台LOGO"
+msgstr "Background LOGO"
+
+#: langs/lang2.php:180
+msgid "显示在后台管理左上方的LOGO，高度限制在45px"
+msgstr ""
+"Display Manager in the background of the upper left LOGO, height "
+"restrictions in 45px"
+
+#: langs/lang2.php:184
+msgid "后台登录LOGO"
+msgstr "Login Logo"
+
+#: langs/lang2.php:185
+msgid "显示在居中登录框上，建议使用PNG透明图片，高度限制在180px"
+msgstr ""
+"Is displayed on the login box is centered, we recommend using a transparent "
+"PNG image, the height limit 180px"
+
+#: langs/lang2.php:189
+msgid "SMTP服务器："
+msgstr "SMTP server:"
+
+#: langs/lang2.php:190
+msgid "个人推荐国内用户使用：QQ或网易的邮箱"
+msgstr "Personal recommendation domestic users: QQ or NetEase mailbox"
+
+#: langs/lang2.php:191
+msgid "邮件服务器端口："
+msgstr "Mail server port:"
+
+#: langs/lang2.php:192
+msgid "未设置使用25为端口"
+msgstr "25 is not set to use port"
+
+#: langs/lang2.php:193
+msgid "是否启用SSL功能："
+msgstr "Whether to enable SSL features:"
+
+#: langs/lang2.php:194
+msgid "如果您使用Gmail邮箱，请选择“是”"
+msgstr "If you use Gmail mailbox, select \"Yes\""
+
+#: langs/lang2.php:195 langs/lang2.php:614 langs/lang2.php:641
+msgid "是"
+msgstr "Yes"
+
+#: langs/lang2.php:196 langs/lang2.php:615 langs/lang2.php:640
+msgid "否"
+msgstr "No"
+
+#: langs/lang2.php:197
+msgid "SMTP账号："
+msgstr "SMTP account:"
+
+#: langs/lang2.php:198
+msgid "用于认证发送邮件"
+msgstr "E-mail is used for authentication"
+
+#: langs/lang2.php:199
+msgid "SMTP密码："
+msgstr "SMTP Password:"
+
+#: langs/lang2.php:200
+msgid "发件人姓名："
+msgstr "Your name:"
+
+#: langs/lang2.php:201
+msgid "设置发件人姓名，未设置将使用邮箱@之前的信息作为发件人姓名"
+msgstr ""
+"Setting the sender's name, is not set to use the mailbox information before "
+"the @ as the sender's name"
+
+#: langs/lang2.php:202
+msgid "邮箱："
+msgstr "Your email address:"
+
+#: langs/lang2.php:203
+msgid "设置发件人的邮箱，即你的邮箱，该邮箱也用于接收邮件"
+msgstr ""
+"Setting the sender's mailbox, that your mailbox, the mailbox is also used to "
+"receive mail"
+
+#: langs/lang2.php:204
+msgid "邮件编码："
+msgstr "Mail Charset:"
+
+#: langs/lang2.php:205
+msgid "设置你的邮件标题和内容的编码，国内用户推荐使用GBK，Gmail邮箱使用UTF-8"
+msgstr ""
+"Set your email title and content encoding, domestic users recommend the use "
+"GBK, Gmail mailbox using UTF-8"
+
+#: langs/lang2.php:206
+msgid "订单号生成规则："
+msgstr "Order number generation rules:"
+
+#: langs/lang2.php:207
+msgid "支持以下常用选项（年-月-日-时-分-秒-随机数-序号-时间戳）"
+msgstr ""
+"Supports the following common options (year - month - day - when - minutes - "
+"seconds - a random number - serial number - timestamp)"
+
+#: langs/lang2.php:208
+msgid "电商货币："
+msgstr "Currency:"
+
+#: langs/lang2.php:209
+msgid ""
+"若您的网站启用电子商务功能，请开启前台默认货币设置，注意，前台不支持货币符号"
+"选择"
+msgstr ""
+"If your website to enable e-commerce features, open reception default "
+"currency setting, note that the reception is not supported currency symbol "
+"selector"
+
+#: langs/lang2.php:210 langs/lang2.php:215 langs/lang2.php:715
+msgid "不使用"
+msgstr "Do not use"
+
+#: langs/lang2.php:211 langs/lang2.php:273 langs/lang2.php:359
+#: langs/lang2.php:458 langs/lang2.php:485
+msgid "标识："
+msgstr "Identifier: "
+
+#: langs/lang2.php:212 langs/lang2.php:486
+msgid "汇率："
+msgstr "Rates"
+
+#: langs/lang2.php:213
+msgid "信用卡账单地址："
+msgstr "Billing Address"
+
+#: langs/lang2.php:214
+msgid "即Billing Address，要求提供往往是为了验证信用卡使用者是否为持有者本人"
+msgstr ""
+"That Billing Address, often require the user to verify whether the credit "
+"card holders themselves"
+
+#: langs/lang2.php:216
+msgid "使用"
+msgstr "Use"
+
+#: langs/lang2.php:217
+msgid "默认支付方式："
+msgstr "Payment method:"
+
+#: langs/lang2.php:218
+msgid "结算订单后会自动绑定支付方式，当然，客户可以自行更换其他支付方式"
+msgstr ""
+"After the settlement of payment orders will be automatically bound, of "
+"course, customers can replace other payment methods"
+
+#: langs/lang2.php:219
+msgid "不指定"
+msgstr "Not specified"
+
+#: langs/lang2.php:220
+msgid "订单通知模板："
+msgstr "Email templates"
+
+#: langs/lang2.php:221
+msgid "限已启用邮件通知并设置模板，此功能方才有效，此项仅用于通知"
+msgstr ""
+"Limit has been enabled and set up e-mail notification template, this feature "
+"is just valid, this is only for notification"
+
+#: langs/lang2.php:222
+msgid "管理员"
+msgstr "Administrator"
+
+#: langs/lang2.php:223 langs/lang2.php:489 langs/lang2.php:497
+msgid "不通知管理员"
+msgstr "Do not notify administrators"
+
+#: langs/lang2.php:224
+msgid "管理员模板："
+msgstr "Administrator Template:"
+
+#: langs/lang2.php:225
+msgid "游客上传权限："
+msgstr "Visitors permission to upload:"
+
+#: langs/lang2.php:226
+msgid ""
+"启用上传权限后，游客仅可以上传JPG，GIF，PNG，JPEG，ZIP，RAR这几种类型的附件"
+msgstr ""
+"Upload permissions enabled, visitors can only upload JPG, GIF, PNG, JPEG, "
+"ZIP, RAR several types of attachments"
+
+#: langs/lang2.php:229
+msgid "会员上传权限："
+msgstr "Members to upload permissions:"
+
+#: langs/lang2.php:230
+msgid ""
+"支持类型有：JPG，GIF，PNG，JPEG，ZIP，RAR，PPT，PPTX，TXT，RTF，CSV，XLS，"
+"XLSX，DOC，DOCX，WPS"
+msgstr ""
+"Hold types are: JPG, GIF, PNG, JPEG, ZIP, RAR, PPT, PPTX, TXT, RTF, CSV, "
+"XLS, XLSX, DOC, DOCX, WPS"
+
+#: langs/lang2.php:234
+msgid "确定要删除此分类吗？"
+msgstr "Sure you want to delete this category?"
+
+#: langs/lang2.php:235 langs/lang2.php:516
+msgid "添加根分类"
+msgstr "Add Category"
+
+#: langs/lang2.php:237
+msgid "栏目管理"
+msgstr "Category Manage"
+
+#: langs/lang2.php:238
+msgid "栏目列表"
+msgstr "List"
+
+#: langs/lang2.php:239
+msgid "分类名称"
+msgstr "Name"
+
+#: langs/lang2.php:240 langs/lang2.php:429 langs/lang2.php:726
+msgid "排序"
+msgstr "Sort"
+
+#: langs/lang2.php:242
+msgid "添加子分类"
+msgstr "Add Subcategory"
+
+#: langs/lang2.php:246 langs/lang2.php:247 langs/lang2.php:266
+#: langs/lang2.php:267
+msgid "图片方案"
+msgstr "GD program"
+
+#: langs/lang2.php:249 langs/lang2.php:269
+msgid "添加方案"
+msgstr "Add scenario"
+
+#: langs/lang2.php:250
+msgid "确定要删除这个图片方案吗？"
+msgstr "Are you sure you want to delete this?"
+
+#: langs/lang2.php:251
+msgid "图片方案删除成功"
+msgstr "It deleted successfully!"
+
+#: langs/lang2.php:252 langs/lang2.php:427
+msgid "标识串"
+msgstr "Identifying"
+
+#: langs/lang2.php:253
+msgid "宽"
+msgstr "Width"
+
+#: langs/lang2.php:254
+msgid "高"
+msgstr "High"
+
+#: langs/lang2.php:255
+msgid "生成方式"
+msgstr "Generation"
+
+#: langs/lang2.php:256
+msgid "编辑器支持"
+msgstr "Editor support"
+
+#: langs/lang2.php:257
+msgid "水印"
+msgstr "Watermark"
+
+#: langs/lang2.php:259
+msgid "默认"
+msgstr "Default"
+
+#: langs/lang2.php:260
+msgid "设为默认"
+msgstr "Set as default"
+
+#: langs/lang2.php:261
+msgid "有"
+msgstr "Yes"
+
+#: langs/lang2.php:262
+msgid "无"
+msgstr "No"
+
+#: langs/lang2.php:268
+msgid "编辑方案"
+msgstr "Edit Scenario"
+
+#: langs/lang2.php:270
+msgid "返回方案列表"
+msgstr "Return"
+
+#: langs/lang2.php:271
+msgid "方案编辑成功"
+msgstr "Edit the success"
+
+#: langs/lang2.php:272
+msgid "方案创建成功"
+msgstr "Create success"
+
+#: langs/lang2.php:274
+msgid "标识必须是唯一的，添加后不能修改"
+msgstr "Identifier must be unique and can not be modified to add"
+
+#: langs/lang2.php:275
+msgid "宽度："
+msgstr "Width:"
+
+#: langs/lang2.php:276
+msgid "设置宽度，仅支持数字，不限请设为０"
+msgstr "Set the width, only support digital, limited Set to 0"
+
+#: langs/lang2.php:277
+msgid "px，请只填写数字！"
+msgstr "px, please fill in only number!"
+
+#: langs/lang2.php:278
+msgid "高度："
+msgstr "Height:"
+
+#: langs/lang2.php:279 langs/lang2.php:468
+msgid "同上"
+msgstr "Ditto"
+
+#: langs/lang2.php:280
+msgid "px，同上"
+msgstr "px, same as parent"
+
+#: langs/lang2.php:281
+msgid "水印："
+msgstr "Watermark:"
+
+#: langs/lang2.php:282
+msgid "设置水印图片，这里推荐使用PNG透明水印"
+msgstr "The watermark image, watermark is recommended to use transparent PNG"
+
+#: langs/lang2.php:286
+msgid "水印位置："
+msgstr "Position: "
+
+#: langs/lang2.php:287
+msgid "设置水印图片要放置的位置，推荐"
+msgstr "Set location watermark image to be placed, it is recommended"
+
+#: langs/lang2.php:288 langs/lang2.php:297
+msgid "右下角"
+msgstr "Bottom Right"
+
+#: langs/lang2.php:289
+msgid "左上角"
+msgstr "Top Left"
+
+#: langs/lang2.php:290
+msgid "中上"
+msgstr "Top Center"
+
+#: langs/lang2.php:291
+msgid "右上角"
+msgstr "Top Right"
+
+#: langs/lang2.php:292
+msgid "左中"
+msgstr "Middle Left"
+
+#: langs/lang2.php:293
+msgid "中间"
+msgstr "Center"
+
+#: langs/lang2.php:294
+msgid "右中"
+msgstr "Middle Right"
+
+#: langs/lang2.php:295
+msgid "左下角"
+msgstr "Bottom Left"
+
+#: langs/lang2.php:296
+msgid "中下"
+msgstr "Bottom Center"
+
+#: langs/lang2.php:298
+msgid "透明度："
+msgstr "Transparency:"
+
+#: langs/lang2.php:299
+msgid "仅JPG水印有效，建议设为65"
+msgstr "JPG watermark only effective, they are recommended to 65"
+
+#: langs/lang2.php:300
+msgid "完全透明"
+msgstr "Full transparency"
+
+#: langs/lang2.php:301
+msgid "（半透明）"
+msgstr "(Translucent)"
+
+#: langs/lang2.php:302
+msgid "不透明"
+msgstr "Opaque"
+
+#: langs/lang2.php:303
+msgid "图片质量："
+msgstr "Quality:"
+
+#: langs/lang2.php:304
+msgid "一般来说，设置为："
+msgstr "In general, to:"
+
+#: langs/lang2.php:305 langs/lang2.php:308
+msgid "高质量"
+msgstr "High Quality"
+
+#: langs/lang2.php:306
+msgid "即可，仅JPG图片有效"
+msgstr ", only valid JPG picture"
+
+#: langs/lang2.php:307
+msgid "较小文件"
+msgstr "Smaller file"
+
+#: langs/lang2.php:309
+msgid "百分百精度"
+msgstr "Hundred percent accuracy"
+
+#: langs/lang2.php:310
+msgid "图片生成方式："
+msgstr "Image generation method:"
+
+#: langs/lang2.php:311
+msgid "建议大图用缩放法，小图用裁剪法"
+msgstr ""
+"We recommend bigger by scaling method, a small map with the cutting method"
+
+#: langs/lang2.php:312
+msgid "缩放法"
+msgstr "Zoom law"
+
+#: langs/lang2.php:313
+msgid "裁剪法"
+msgstr "Crop law"
+
+#: langs/lang2.php:314
+msgid "背景颜色："
+msgstr "Background Color :"
+
+#: langs/lang2.php:315
+msgid "即填充色，默认为白色"
+msgstr "That fill color, the default is white"
+
+#: langs/lang2.php:316 langs/lang2.php:383 langs/lang2.php:560
+#: langs/lang2.php:728
+msgid "提 交"
+msgstr "Submit"
+
+#: langs/lang2.php:317
+msgid "后台管理"
+msgstr "Dashboard"
+
+#: langs/lang2.php:318 langs/lang2.php:319
+msgid "管理员退出"
+msgstr "Logout"
+
+#: langs/lang2.php:320
+msgid "功能菜单"
+msgstr "Menu"
+
+#: langs/lang2.php:321 langs/lang2.php:333
+msgid "显示桌面"
+msgstr "Show Desktop"
+
+#: langs/lang2.php:322
+msgid "修改个人信息"
+msgstr "Personal Information"
+
+#: langs/lang2.php:323 langs/lang2.php:331
+msgid "清空缓存"
+msgstr "Clear Cache"
+
+#: langs/lang2.php:324 langs/lang2.php:325
+msgid "访问网站"
+msgstr "Visit Website"
+
+#: langs/lang2.php:326
+msgid "网站："
+msgstr "Website:"
+
+#: langs/lang2.php:327
+msgid "添加新站点"
+msgstr "Add new site"
+
+#: langs/lang2.php:328 langs/lang2.php:388
+msgid "语言"
+msgstr "Language"
+
+#: langs/lang2.php:329
+msgid "，版本："
+msgstr ", Version:"
+
+#: langs/lang2.php:330
+msgid "刷新网页"
+msgstr "Refresh"
+
+#: langs/lang2.php:332
+msgid "修改我的信息"
+msgstr "Change my info"
+
+#: langs/lang2.php:334 langs/lang2.php:335
+msgid "关于PHPOK"
+msgstr "About PHPOK"
+
+#: langs/lang2.php:336
+msgid "配置网站信息，包括网址域名，布全局关键字等"
+msgstr ""
+"Configure site information, including Web site domain name, keywords, and so "
+"the overall fabric"
+
+#: langs/lang2.php:340
+msgid "网站可以绑定的域名"
+msgstr "Binding"
+
+#: langs/lang2.php:344 langs/lang2.php:346
+msgid "在线发邮件"
+msgstr "Online E-mail"
+
+#: langs/lang2.php:345 langs/lang2.php:347
+msgid "发邮件"
+msgstr "Email"
+
+#: langs/lang2.php:349 langs/lang2.php:354
+msgid "内容管理"
+msgstr "Content"
+
+#: langs/lang2.php:350
+msgid "当前分类已设置为主分类，扩展分类不支持取消"
+msgstr ""
+"The current classification has been set as the primary classification, "
+"extended class does not support the removal"
+
+#: langs/lang2.php:351
+msgid "内容信息修改成功"
+msgstr "Contents information changed successfully"
+
+#: langs/lang2.php:352
+msgid "内容添加操作成功，请选择继续添加或返回列表"
+msgstr ""
+
+#: langs/lang2.php:355
+msgid "父主题："
+msgstr ""
+
+#: langs/lang2.php:356
+msgid "编辑内容"
+msgstr ""
+
+#: langs/lang2.php:357
+msgid "添加内容"
+msgstr ""
+
+#: langs/lang2.php:358
+msgid "属性："
+msgstr ""
+
+#: langs/lang2.php:360 langs/lang2.php:459
+msgid "限"
+msgstr ""
+
+#: langs/lang2.php:361 langs/lang2.php:460
+msgid "字母、数字、下划线或中划线且必须是字母开头，"
+msgstr ""
+
+#: langs/lang2.php:362
+msgid "适用于网址优化"
+msgstr ""
+
+#: langs/lang2.php:363
+msgid "其他属性"
+msgstr ""
+
+#: langs/lang2.php:365
+msgid "未审核"
+msgstr ""
+
+#: langs/lang2.php:366
+msgid "已审核"
+msgstr ""
+
+#: langs/lang2.php:367
+msgid "是否隐藏："
+msgstr ""
+
+#: langs/lang2.php:368 langs/lang2.php:700
+msgid "显示"
+msgstr ""
+
+#: langs/lang2.php:369 langs/lang2.php:701
+msgid "隐藏"
+msgstr ""
+
+#: langs/lang2.php:370
+msgid "发布时间："
+msgstr ""
+
+#: langs/lang2.php:371
+msgid "阅读量："
+msgstr ""
+
+#: langs/lang2.php:372 langs/lang2.php:451 langs/lang2.php:719
+msgid "排序："
+msgstr ""
+
+#: langs/lang2.php:373 langs/lang2.php:479
+msgid "自定义内容模板"
+msgstr ""
+
+#: langs/lang2.php:374
+msgid "为空将使用"
+msgstr ""
+
+#: langs/lang2.php:375 langs/lang2.php:478
+msgid "绑定会员"
+msgstr ""
+
+#: langs/lang2.php:378
+msgid "设置此标题后，网站Title将会替代默认定义的，不能超过50个汉字"
+msgstr ""
+
+#: langs/lang2.php:380
+msgid "多个关键字用英文逗号隔开，为空将使用默认"
+msgstr ""
+
+#: langs/lang2.php:381 langs/lang2.php:556
+msgid "SEO描述："
+msgstr ""
+
+#: langs/lang2.php:382 langs/lang2.php:557
+msgid "简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字"
+msgstr ""
+
+#: langs/lang2.php:384
+msgid "管理员登录"
+msgstr "Administration Login"
+
+#: langs/lang2.php:387
+msgid "管理员账号"
+msgstr "Account"
+
+#: langs/lang2.php:389
+msgid "管理员密码"
+msgstr "Password"
+
+#: langs/lang2.php:390
+msgid "验证码"
+msgstr "Captcha"
+
+#: langs/lang2.php:391
+msgid "认证登录"
+msgstr "Submit"
+
+#: langs/lang2.php:392
+msgid "推荐使用：傲游/谷歌/火狐/IE9-12等浏览器访问本系统"
+msgstr "Recommended: Maxthon / Google / Firefox / IE9-12"
+
+#: langs/lang2.php:393 langs/lang2.php:398 langs/lang2.php:473
+#: langs/lang2.php:585
+msgid "搜索"
+msgstr ""
+
+#: langs/lang2.php:394
+msgid "附件上传："
+msgstr ""
+
+#: langs/lang2.php:395 langs/lang2.php:562
+msgid "请选择要上传的附件分类"
+msgstr ""
+
+#: langs/lang2.php:396
+msgid "上传的文件上传不能超过："
+msgstr ""
+
+#: langs/lang2.php:397 langs/lang2.php:563
+msgid "支持上传格式："
+msgstr ""
+
+#: langs/lang2.php:399 langs/lang2.php:404
+msgid "国家："
+msgstr ""
+
+#: langs/lang2.php:400 langs/lang2.php:405
+msgid "省/州："
+msgstr ""
+
+#: langs/lang2.php:401 langs/lang2.php:406
+msgid "城市："
+msgstr ""
+
+#: langs/lang2.php:402 langs/lang2.php:407
+msgid "镇/区："
+msgstr ""
+
+#: langs/lang2.php:403 langs/lang2.php:408
+msgid "地址："
+msgstr ""
+
+#: langs/lang2.php:409
+msgid "数据保存成功"
+msgstr ""
+
+#: langs/lang2.php:412
+msgid "项目内容编辑及字段扩展"
+msgstr ""
+
+#: langs/lang2.php:413 langs/lang2.php:447 langs/lang2.php:709
+msgid "名称："
+msgstr ""
+
+#: langs/lang2.php:414 langs/lang2.php:448
+msgid "设置名称，该名称将在网站前台导航中使用"
+msgstr ""
+
+#: langs/lang2.php:415
+msgid "标准创建扩展字段"
+msgstr ""
+
+#: langs/lang2.php:417
+msgid "确定要删除此项目吗？删除会将相关内容一起删除"
+msgstr ""
+
+#: langs/lang2.php:418
+msgid "正在执行删除请求…"
+msgstr ""
+
+#: langs/lang2.php:420
+msgid "确定要复制此项目"
+msgstr ""
+
+#: langs/lang2.php:421 langs/lang2.php:694
+msgid "请填写新的排序："
+msgstr ""
+
+#: langs/lang2.php:422 langs/lang2.php:443
+msgid "添加项目"
+msgstr ""
+
+#: langs/lang2.php:425
+msgid "项目列表"
+msgstr ""
+
+#: langs/lang2.php:426
+msgid "项目名称"
+msgstr ""
+
+#: langs/lang2.php:428
+msgid "模块"
+msgstr ""
+
+#: langs/lang2.php:431
+msgid "（隐藏）"
+msgstr ""
+
+#: langs/lang2.php:432 langs/lang2.php:696 langs/lang2.php:702
+msgid "点击调整排序"
+msgstr ""
+
+#: langs/lang2.php:435
+msgid "复制"
+msgstr ""
+
+#: langs/lang2.php:437 langs/lang2.php:698
+msgid "添加子项"
+msgstr ""
+
+#: langs/lang2.php:439
+msgid "项目信息创建成功"
+msgstr ""
+
+#: langs/lang2.php:442
+msgid "编辑项目"
+msgstr ""
+
+#: langs/lang2.php:444
+msgid "基本"
+msgstr ""
+
+#: langs/lang2.php:449
+msgid "项目别名："
+msgstr ""
+
+#: langs/lang2.php:450
+msgid "此别名功能仅限在后台使用，用于显示在按钮上，一般不要超过6个汉字"
+msgstr ""
+
+#: langs/lang2.php:452 langs/lang2.php:720
+msgid "自定义排序，值越小越往前靠"
+msgstr ""
+
+#: langs/lang2.php:453
+msgid "项目属性："
+msgstr ""
+
+#: langs/lang2.php:454
+msgid "设置项目的一些功能，如停用，隐藏，打勾表示启用这个功能"
+msgstr ""
+
+#: langs/lang2.php:455
+msgid "父栏目："
+msgstr ""
+
+#: langs/lang2.php:456
+msgid "实现父子栏目可以实现数据交叉使用"
+msgstr ""
+
+#: langs/lang2.php:457
+msgid "设为父栏目"
+msgstr ""
+
+#: langs/lang2.php:461
+msgid "首页专用请设置为"
+msgstr ""
+
+#: langs/lang2.php:462
+msgid "绑定模块："
+msgstr ""
+
+#: langs/lang2.php:463
+msgid ""
+"实现类似新闻，产品等多条项目信息，绑定成功后建议不要修改，以防止数据混乱！"
+msgstr ""
+
+#: langs/lang2.php:464
+msgid "不关联模块"
+msgstr ""
+
+#: langs/lang2.php:465
+msgid "主题别名："
+msgstr ""
+
+#: langs/lang2.php:466
+msgid "在使用模块时，会有一个必填选项，即主题，您可在这里设置别名"
+msgstr ""
+
+#: langs/lang2.php:467
+msgid "主题备注："
+msgstr ""
+
+#: langs/lang2.php:469
+msgid "扩展项："
+msgstr ""
+
+#: langs/lang2.php:470
+msgid "请根据实际情况设置相应的扩展项，勾选表示启用"
+msgstr ""
+
+#: langs/lang2.php:471
+msgid "主题属性"
+msgstr ""
+
+#: langs/lang2.php:474
+msgid "标签"
+msgstr ""
+
+#: langs/lang2.php:475
+msgid "下级主题"
+msgstr ""
+
+#: langs/lang2.php:476 langs/lang2.php:528
+msgid "发布"
+msgstr ""
+
+#: langs/lang2.php:477
+msgid "评论"
+msgstr ""
+
+#: langs/lang2.php:480
+msgid "自定义SEO"
+msgstr ""
+
+#: langs/lang2.php:481
+msgid "自定义标识"
+msgstr ""
+
+#: langs/lang2.php:482
+msgid "货币默认类型："
+msgstr ""
+
+#: langs/lang2.php:483
+msgid "此项主要是方便后台管理员添加产品时，默认使用的货币"
+msgstr ""
+
+#: langs/lang2.php:484
+msgid "请选择……"
+msgstr ""
+
+#: langs/lang2.php:487
+msgid "发布通知管理员邮件模板："
+msgstr ""
+
+#: langs/lang2.php:488
+msgid "仅限启用：前台发布 后有效"
+msgstr ""
+
+#: langs/lang2.php:490 langs/lang2.php:498
+msgid "通知管理员模板："
+msgstr ""
+
+#: langs/lang2.php:491
+msgid "发布通知会员邮件模板："
+msgstr ""
+
+#: langs/lang2.php:492
+msgid "仅限启用：发布且已登录会员后有效"
+msgstr ""
+
+#: langs/lang2.php:493 langs/lang2.php:501
+msgid "不通知会员"
+msgstr ""
+
+#: langs/lang2.php:494 langs/lang2.php:502
+msgid "通知会员模板："
+msgstr ""
+
+#: langs/lang2.php:495
+msgid "评论通知管理员邮件模板："
+msgstr ""
+
+#: langs/lang2.php:496
+msgid "仅限启用：评论后有效"
+msgstr ""
+
+#: langs/lang2.php:499
+msgid "评论通知会员邮件模板："
+msgstr ""
+
+#: langs/lang2.php:500
+msgid "仅限启用：评论且已登录会员有效"
+msgstr ""
+
+#: langs/lang2.php:503
+msgid "默认主题数："
+msgstr ""
+
+#: langs/lang2.php:504
+msgid "设置每页默认的主题数量"
+msgstr ""
+
+#: langs/lang2.php:505
+msgid "数据排序："
+msgstr ""
+
+#: langs/lang2.php:506
+msgid "设置好默认排序，有利于网站的管理（前后台一致）"
+msgstr ""
+
+#: langs/lang2.php:508
+msgid "点击"
+msgstr ""
+
+#: langs/lang2.php:509
+msgid "时间"
+msgstr ""
+
+#: langs/lang2.php:510
+msgid "回复时间"
+msgstr ""
+
+#: langs/lang2.php:511
+msgid "人工"
+msgstr ""
+
+#: langs/lang2.php:512 langs/lang2.php:515
+msgid "不关联分类"
+msgstr ""
+
+#: langs/lang2.php:513
+msgid "关联根分类："
+msgstr ""
+
+#: langs/lang2.php:514
+msgid "启用此项后，添加内容时，需要选对相对应的分类，且不能为空"
+msgstr ""
+
+#: langs/lang2.php:517
+msgid "后台权限："
+msgstr ""
+
+#: langs/lang2.php:518
+msgid "权限可选项可登录官网查阅帮助手册，"
+msgstr ""
+
+#: langs/lang2.php:522
+msgid "前台权限："
+msgstr ""
+
+#: langs/lang2.php:523
+msgid "设置前台用户组可操作的权限"
+msgstr ""
+
+#: langs/lang2.php:527
+msgid "阅读"
+msgstr ""
+
+#: langs/lang2.php:529
+msgid "发布免审核"
+msgstr ""
+
+#: langs/lang2.php:531
+msgid "回复免审核"
+msgstr ""
+
+#: langs/lang2.php:532
+msgid "封面模板："
+msgstr ""
+
+#: langs/lang2.php:533
+msgid "设定此模板将启用封面功能，不启用留空，不绑定模块时，此项不能为空"
+msgstr ""
+
+#: langs/lang2.php:536
+msgid "列表模板："
+msgstr ""
+
+#: langs/lang2.php:537 langs/lang2.php:541
+msgid "仅限于绑定模块后才能生效"
+msgstr ""
+
+#: langs/lang2.php:540
+msgid "内容模板："
+msgstr ""
+
+#: langs/lang2.php:544
+msgid "发布模板："
+msgstr ""
+
+#: langs/lang2.php:545
+msgid "仅限于绑定模块且启用发布功能后有效"
+msgstr ""
+
+#: langs/lang2.php:548
+msgid "图标："
+msgstr ""
+
+#: langs/lang2.php:549
+msgid "请选择一个直观的图标，大小为：48x48，建议使用PNG格式"
+msgstr ""
+
+#: langs/lang2.php:550
+msgid "后台备注说明："
+msgstr ""
+
+#: langs/lang2.php:551
+msgid "将显示在内容管理布局区那里，用于提示编辑人员注意事项"
+msgstr ""
+
+#: langs/lang2.php:553
+msgid "设置此标题后，网站Title将会替代默认定义的，不能超过85个汉字"
+msgstr ""
+
+#: langs/lang2.php:555
+msgid "多个关键字用英文逗号或英文竖线隔开"
+msgstr ""
+
+#: langs/lang2.php:558
+msgid "Tag标签："
+msgstr ""
+
+#: langs/lang2.php:559
+msgid "多个标签用英文空格隔开，最多不能超过10个词"
+msgstr ""
+
+#: langs/lang2.php:561 langs/lang2.php:591
+msgid "附件分类："
+msgstr ""
+
+#: langs/lang2.php:564
+msgid "选择要上传的文件："
+msgstr ""
+
+#: langs/lang2.php:565
+msgid "单个文件上传不能超过："
+msgstr ""
+
+#: langs/lang2.php:567
+msgid "附件批量更新中，请不要关掉这个页面"
+msgstr ""
+
+#: langs/lang2.php:569
+msgid "确定要删除选中的附件吗？删除后是不可恢复的"
+msgstr ""
+
+#: langs/lang2.php:570
+msgid "批量删除附件操作成功"
+msgstr ""
+
+#: langs/lang2.php:571
+msgid "确定要删除此附件吗？删除后不能恢复"
+msgstr ""
+
+#: langs/lang2.php:572
+msgid "预览附件信息"
+msgstr ""
+
+#: langs/lang2.php:573
+msgid "编辑附件信息"
+msgstr ""
+
+#: langs/lang2.php:574 langs/lang2.php:575 langs/lang2.php:578
+msgid "iframe还没加载完毕呢"
+msgstr ""
+
+#: langs/lang2.php:576
+msgid "执行附件上传"
+msgstr ""
+
+#: langs/lang2.php:577
+msgid "取消上传并关闭"
+msgstr ""
+
+#: langs/lang2.php:579
+msgid ""
+"确定要全部更新图片吗？执行此操作占用时间很长，程序会新开桌面，请不要关闭这个"
+"页面"
+msgstr ""
+
+#: langs/lang2.php:580
+msgid "附件批量更新中"
+msgstr ""
+
+#: langs/lang2.php:582
+msgid "移动分类，请选择目标移动分类"
+msgstr ""
+
+#: langs/lang2.php:583
+msgid "图片全部更新"
+msgstr ""
+
+#: langs/lang2.php:584
+msgid "添加资源"
+msgstr ""
+
+#: langs/lang2.php:589
+msgid "关键字："
+msgstr ""
+
+#: langs/lang2.php:590
+msgid "填写附件名称关键字"
+msgstr ""
+
+#: langs/lang2.php:592
+msgid "不限"
+msgstr ""
+
+#: langs/lang2.php:593
+msgid "时间范围："
+msgstr ""
+
+#: langs/lang2.php:594
+msgid "左侧是开始时间，右边是结束时间"
+msgstr ""
+
+#: langs/lang2.php:597
+msgid "附件类型："
+msgstr ""
+
+#: langs/lang2.php:598
+msgid ""
+"勾选要搜索的附件类型，如果有未列出来的附件类型，请在编辑框中输入，多种附件类"
+"型用逗号隔开"
+msgstr ""
+
+#: langs/lang2.php:599
+msgid "其他："
+msgstr ""
+
+#: langs/lang2.php:606
+msgid "移动分类"
+msgstr ""
+
+#: langs/lang2.php:607
+msgid "更新图片"
+msgstr ""
+
+#: langs/lang2.php:611
+msgid "资源分类管理"
+msgstr ""
+
+#: langs/lang2.php:612
+msgid "资源分类列表"
+msgstr ""
+
+#: langs/lang2.php:613
+msgid "创建资源分类"
+msgstr ""
+
+#: langs/lang2.php:616
+msgid "全部"
+msgstr ""
+
+#: langs/lang2.php:617 langs/lang2.php:716
+msgid "空"
+msgstr ""
+
+#: langs/lang2.php:620
+msgid "附件分类编辑成功"
+msgstr ""
+
+#: langs/lang2.php:621
+msgid "附件分类添加成功"
+msgstr ""
+
+#: langs/lang2.php:625
+msgid "编辑附件分类"
+msgstr ""
+
+#: langs/lang2.php:626
+msgid "添加附件分类"
+msgstr ""
+
+#: langs/lang2.php:627
+msgid "分类名称："
+msgstr ""
+
+#: langs/lang2.php:628
+msgid "请设置附件分类名称，如图片库，影音库等，以方便管理"
+msgstr ""
+
+#: langs/lang2.php:629
+msgid "存储目录："
+msgstr ""
+
+#: langs/lang2.php:630
+msgid "相对于程序的根目而设，建议设置在res/之下的目录"
+msgstr ""
+
+#: langs/lang2.php:631
+msgid "创建子文件夹方式："
+msgstr ""
+
+#: langs/lang2.php:632
+msgid "设置是否创建子文件夹"
+msgstr ""
+
+#: langs/lang2.php:633
+msgid "年月/日/，示例："
+msgstr ""
+
+#: langs/lang2.php:634
+msgid "年/月/日/，示例："
+msgstr ""
+
+#: langs/lang2.php:635
+msgid "年月日/，示例："
+msgstr ""
+
+#: langs/lang2.php:636
+msgid "年/月/，示例："
+msgstr ""
+
+#: langs/lang2.php:637
+msgid "年/，示例："
+msgstr ""
+
+#: langs/lang2.php:638
+msgid "是否默认使用："
+msgstr ""
+
+#: langs/lang2.php:639
+msgid ""
+"当前端或未指定附件分类时，将使用这个默认来读取。整个附件分类管理中仅限支持一"
+"个"
+msgstr ""
+
+#: langs/lang2.php:642
+msgid "支持的附件类型："
+msgstr ""
+
+#: langs/lang2.php:643
+msgid "多种附件类型用英文逗号隔开，如jpg,gif,png，以此类推"
+msgstr ""
+
+#: langs/lang2.php:644
+msgid "类型说明："
+msgstr ""
+
+#: langs/lang2.php:645
+msgid ""
+"描述上传的附件类型信息，如jpg,gif,png，可以描述为图片文件，rar,zip等可以描述"
+"为压缩文件"
+msgstr ""
+
+#: langs/lang2.php:646
+msgid "上传大小限制："
+msgstr ""
+
+#: langs/lang2.php:647
+msgid "设置该分类下能上传的文件大小，只需填写数值，不能超过PHP系统限制的："
+msgstr ""
+
+#: langs/lang2.php:648
+msgid "图片方案生成定制："
+msgstr ""
+
+#: langs/lang2.php:649
+msgid "即上传到该分类下的图片，是否使用GD配置生成特定的图片规格"
+msgstr ""
+
+#: langs/lang2.php:650
+msgid "全部使用"
+msgstr ""
+
+#: langs/lang2.php:651
+msgid "自定义使用"
+msgstr ""
+
+#: langs/lang2.php:652
+msgid "自定义要生成的GD方案："
+msgstr ""
+
+#: langs/lang2.php:653
+msgid "全部不选表示不使用GD方案"
+msgstr ""
+
+#: langs/lang2.php:654
+msgid "后台缩略图："
+msgstr ""
+
+#: langs/lang2.php:655
+msgid "即上传后，自动生成一张后台缩略图，方便后台预览，禁用后将直接使用原图"
+msgstr ""
+
+#: langs/lang2.php:659
+msgid "伪静态网址规则管理"
+msgstr ""
+
+#: langs/lang2.php:664 langs/lang2.php:689
+msgid "已备份列表"
+msgstr ""
+
+#: langs/lang2.php:666 langs/lang2.php:667
+msgid "请选择数据表"
+msgstr ""
+
+#: langs/lang2.php:668
+msgid "确定要执行备份操作吗？未选定表将备份全部！"
+msgstr ""
+
+#: langs/lang2.php:669
+msgid "选项"
+msgstr ""
+
+#: langs/lang2.php:670
+msgid "表名"
+msgstr ""
+
+#: langs/lang2.php:671
+msgid "引挈"
+msgstr ""
+
+#: langs/lang2.php:672
+msgid "字符集"
+msgstr ""
+
+#: langs/lang2.php:673
+msgid "记录数"
+msgstr ""
+
+#: langs/lang2.php:674 langs/lang2.php:691
+msgid "大小"
+msgstr ""
+
+#: langs/lang2.php:675
+msgid "更新时间"
+msgstr ""
+
+#: langs/lang2.php:676
+msgid "碎片"
+msgstr ""
+
+#: langs/lang2.php:680
+msgid "只选择有碎片"
+msgstr ""
+
+#: langs/lang2.php:681
+msgid "优化"
+msgstr ""
+
+#: langs/lang2.php:682
+msgid "修复"
+msgstr ""
+
+#: langs/lang2.php:683
+msgid "备份"
+msgstr ""
+
+#: langs/lang2.php:684
+msgid "确定要恢复到这个备份"
+msgstr ""
+
+#: langs/lang2.php:685
+msgid "确定要删除这个备份吗？删除后就不能恢复了"
+msgstr ""
+
+#: langs/lang2.php:690
+msgid "备份文件"
+msgstr ""
+
+#: langs/lang2.php:692
+msgid "备份时间"
+msgstr ""
+
+#: langs/lang2.php:695 langs/lang2.php:699
+msgid "您没有权限执行此功能"
+msgstr ""
+
+#: langs/lang2.php:707
+msgid "编辑应用"
+msgstr ""
+
+#: langs/lang2.php:708
+msgid "添加应用"
+msgstr ""
+
+#: langs/lang2.php:710
+msgid "设置应用的名称，该名称将在后台左侧/头部显示"
+msgstr ""
+
+#: langs/lang2.php:711
+msgid "上级项目："
+msgstr ""
+
+#: langs/lang2.php:712
+msgid "设置上级项目"
+msgstr ""
+
+#: langs/lang2.php:713
+msgid "快捷图标："
+msgstr ""
+
+#: langs/lang2.php:714
+msgid "启用快捷图标后，将在桌面显示相应的快捷链接"
+msgstr ""
+
+#: langs/lang2.php:717
+msgid "控制层："
+msgstr ""
+
+#: langs/lang2.php:718
+msgid "一经设定不允许修改，不熟请设为："
+msgstr ""
+
+#: langs/lang2.php:721
+msgid "配置权限："
+msgstr ""
+
+#: langs/lang2.php:722
+msgid "此项用于二次扩展开发时使用，对各个功能的权限分配，不熟悉请阅读官网帮助"
+msgstr ""
+
+#: langs/lang2.php:723
+msgid "删"
+msgstr ""
+
+#: langs/lang2.php:725
+msgid "标识"
+msgstr ""
+
+#: langs/lang2.php:730
+msgid "编辑关键字成功"
+msgstr ""
+
+#: langs/lang2.php:731
+msgid "添加关键字成功"
+msgstr ""
+
+#: langs/lang2.php:733
+msgid "标签管理"
+msgstr ""
+
+#: langs/lang2.php:734
+msgid "标签列表"
+msgstr ""
+
+#: langs/lang2.php:735
+msgid "系统将在[time]秒后跳转，手动跳转请点这里"
+msgstr "The page will be re-directed in [time] seconds. please click here."
+
+#~ msgid "运行{seconds_total}秒"
+#~ msgstr "Processed in {seconds_total} second(s)"
+
+#~ msgid "，内存使用{memory_total}"
+#~ msgstr ", Memory {memory_total}"
+
+#~ msgid "，数据库执行{sql_count}次，耗时{sql_time}秒"
+#~ msgstr ", {sql_count} queries,  {sql_time} second(s)"
+
+#~ msgid "，文件执行{file_count}次"
+#~ msgstr ", {file_count} File(s)"
+
+#~ msgid "，缓存执行{cache_count}次，耗时{cache_time}秒"
+#~ msgstr ", {cache_count} cache(s), {cache_time} second(s)"
+
+#~ msgid "消息"
+#~ msgstr "Message"
+
+#~ msgid "取消"
+#~ msgstr "Cancel"
+
+#~ msgid "您没有权限来执行此操作"
+#~ msgstr "You do not have permission to perform this operation"
+
+#~ msgid "您没有查看权限"
+#~ msgstr "You do not have permission to view"
+
+#~ msgid "您没有编辑订单权限"
+#~ msgstr "You do not have permission to edit order"
+
+#~ msgid "你没有维护权限"
+#~ msgstr "You did not maintain permissions"
+
+#~ msgid "您没有权限审核订单"
+#~ msgstr "You do not have permissions to review orders"
+
+#~ msgid "您没有创建订单权限"
+#~ msgstr "You do not have permission to create order"
+
+#~ msgid "你没有权限"
+#~ msgstr "You don't have permission"
+
+#~ msgid "未指定要操作的主题"
+#~ msgstr "Unspecified action topic"
+
+#~ msgid "您没有相应的权限"
+#~ msgstr "You do not have the appropriate permissions"
+
+#~ msgid "您没有此权限"
+#~ msgstr "You do not have this permission"
+
+#~ msgid "你没有配置项目权限"
+#~ msgstr "You are not configuring the project permissions"
+
+#~ msgid "您没有删除权限"
+#~ msgstr "You do not have delete permissions"
+
+#~ msgid "操作非法，没有指定ID"
+#~ msgstr "Illegal operation that do not specify an ID"
+
+#~ msgid "您没有删除此项权限"
+#~ msgstr "You do not have permission to delete this workflow."
+
+#~ msgid "您没有启用/禁用操作权限"
+#~ msgstr "You do not have permissions to perform this action."
+
+#~ msgid "无权限，请联系系统管理员开放权限"
+#~ msgstr ""
+#~ "No permissions, please contact your system administrator to open the "
+#~ "permissions"
+
+#~ msgid "你没有删除扩展权限"
+#~ msgstr "You do not have delete permissions"
+
+#~ msgid "您没有此项查看权限"
+#~ msgstr "You don't have permission to do that."
+
+#~ msgid "您没有此项修改权限"
+#~ msgstr "You do not have modify permissions"
+
+#~ msgid "您没有此项添加权限"
+#~ msgstr "You do not have this permission"
+
+#~ msgid "您没有添加分类权限"
+#~ msgstr "You do not have permission to add classification"
+
+#~ msgid "你没有删除权限"
+#~ msgstr "You do not have delete permissions"
+
+#~ msgid "没有指定要删除的邮件"
+#~ msgstr "Does not specify that you want to delete a message"
+
+#~ msgid "未指定要删除ID"
+#~ msgstr "Not id"
+
+#~ msgid "你没有编辑权限"
+#~ msgstr "You do not have permission to edit"
+
+#~ msgid "你没有添加权限"
+#~ msgstr "You do not have permission to add"
+
+#~ msgid "你没有添加网站权限"
+#~ msgstr "You do not have permission to add sites"
+
+#~ msgid "您没有权限添加站点功能"
+#~ msgstr "You do not have permission to add site features"
+
+#~ msgid "你没有删除全局配置权限"
+#~ msgstr "You do not have permission to delete the global configuration"
+
+#~ msgid "你没有全局配置权限"
+#~ msgstr "You do not have permission globally"
+
+#~ msgid "你没有编辑内容权限"
+#~ msgstr "You do not have permission to edit content"
+
+#~ msgid "你没有设置域名权限"
+#~ msgstr "You do not have permission to set up the domain name"
+
+#~ msgid "你没有设置网站信息权限"
+#~ msgstr "You do not have permission to set up site information"
+
+#~ msgid "你没有查看权限"
+#~ msgstr "You do not have permission to view"
+
+#~ msgid "权限不足，不能执行此操作"
+#~ msgstr "No permission to perform this action"
+
+#~ msgid "无权限，请联系超级管理员开放权限"
+#~ msgstr ""
+#~ "No permissions, open please contact the Super Administrator permissions"
+
+#~ msgid "插件{title}配置成功"
+#~ msgstr "{title} is configured successfully"
+
+#~ msgid "你没有编辑支付组权限"
+#~ msgstr "You don't edit the paid group permissions"
+
+#~ msgid "你没有添加支付组权限"
+#~ msgstr "You don't add a paid group permissions"
+
+#~ msgid "支付组名称不能为空"
+#~ msgstr "Group name cannot be empty."
+
+#~ msgid "支付组编辑失败"
+#~ msgstr "Group to pay edited failure"
+
+#~ msgid "P_Lang"
+#~ msgstr "P_Lang"
+
+#~ msgid "您没有创建订单的权限"
+#~ msgstr "You do not have permission to create order"
+
+#~ msgid "您没有修改订单的权限"
+#~ msgstr "You do not have permission to modify orders"
+
+#~ msgid ""
+#~ "持类型有：JPG，GIF，PNG，JPEG，ZIP，RAR，PPT，PPTX，TXT，RTF，CSV，XLS，"
+#~ "XLSX，DOC，DOCX，WPS"
+#~ msgstr ""
+#~ "Hold types are: JPG, GIF, PNG, JPEG, ZIP, RAR, PPT, PPTX, TXT, RTF, CSV, "
+#~ "XLS, XLSX, DOC, DOCX, WPS"
+
+#~ msgid "年月/日"
+#~ msgstr "Year-Month/Day"
+
+#~ msgid "添加站点"
+#~ msgstr "Add a site"
+
+#~ msgid "修改管理员信息"
+#~ msgstr "Edit Administrator"
+
+#~ msgid "添加新"
+#~ msgstr "Add a new"

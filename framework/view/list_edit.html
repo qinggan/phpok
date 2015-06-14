@@ -236,8 +236,38 @@ $(document).ready(function(){
 		</script>
 	</div>
 	<!-- /if -->
+	<script type="text/javascript">
+	function show_dateline()
+	{
+		laydate({
+			elem:"#dateline",
+			istime: true,
+			format: 'YYYY-MM-DD hh:mm:ss',
+			fixed:true,
+			choose: function(dates){
+				var date = new Date(dates);
+				var time = date.getTime();
+				date = new Date(time+3600000);
+				var month = date.getMonth()+1;
+				if(month<10){
+					month = '0'+month;
+				}
+				var d = date.getDate();
+				if(d<10){
+					d = '0'+d;
+				}
+				var hour = date.getHours();
+				if(hour<10){
+					hour = '0'+hour;
+				}
+				var string = date.getFullYear()+"年"+month+'月'+d+'日'+hour+'整';
+				$("#postdatetime").html(string);
+	        }
+		});
+	}
+	</script>
 	<div class="pfw mb10">
-		<h3>{lang属性}</h3>
+		<h3>{lang其他属性}</h3>
 		<table width="100%">
 		<tr>
 			<td align="right">{lang状态：}</td>
@@ -259,7 +289,17 @@ $(document).ready(function(){
 		</tr>
 		<tr>
 			<td align="right">{lang发布时间：}</td>
-			<td><input type="text" id="dateline" name="dateline" class="default" value="{if $rs.dateline}{func date 'Y-m-d H:i:s' $rs.dateline}{else}{func date 'Y-m-d H:i:s' $app->time}{/if}" onfocus="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss','fixed':true})" /></td>
+			<td><input type="text" id="dateline" name="dateline" class="default" value="{if $rs.dateline}{func date 'Y-m-d H:i:s' $rs.dateline}{else}{func date 'Y-m-d H:i:s' $sys.time}{/if}" onfocus="show_dateline()" /></td>
+		</tr>
+		<tr>
+			<td colspan="2" class="gray i">发布时间大于当前时将不会直接显示，文章将于：
+			<span class="red" id="postdatetime">
+				<!-- if $rs.dateline -->
+				{func date Y年m月d日H点整 $rs.dateline+3600}
+				<!-- else -->
+				{func date Y年m月d日H点整 $sys.time+3600}
+				<!-- /if -->
+			</span>发布到网站上</td>
 		</tr>
 		<tr>
 			<td align="right">{lang阅读量：}</td>

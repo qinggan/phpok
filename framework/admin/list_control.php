@@ -69,7 +69,7 @@ class list_control extends phpok_control
 		}
 		$this->popedom_auto($id);
 		if(!$this->popedom["list"]){
-			error(P_Lang('无权限，请联系系统管理员开放权限'),'','error');
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$rs = $this->model('project')->get_one($id);
 		if(!$rs){
@@ -152,16 +152,16 @@ class list_control extends phpok_control
 		$id = $this->get("id");
 		if(!$id)
 		{
-			error("操作有错误！",$this->url("list"),"error");
+			error(P_Lang('操作有错误'),$this->url("list"),"error");
 		}
 		$this->popedom_auto($id);
-		//echo "<pre>";
-		//print_r($this->popedom);
-		if(!$this->popedom["set"]) error("你没有配置项目权限");
+		if(!$this->popedom["set"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$rs = $this->model('project')->get_one($id);
 		if(!$rs)
 		{
-			error("项目信息不存在",$this->url("list"),"error");
+			error(P_Lang('项目信息不存在'),$this->url("list"),"error");
 		}
 		$this->assign("rs",$rs);
 		$this->assign("id",$id);
@@ -195,13 +195,15 @@ class list_control extends phpok_control
 	{
 		$id = $this->get("id","int");
 		if(!$id){
-			error("未指定项目ID",$this->url('list'),"error");
+			error(P_Lang('未指定项目ID'),$this->url('list'),"error");
 		}
 		$this->popedom_auto($id);
-		if(!$this->popedom["set"]) error("你没有配置项目权限");
+		if(!$this->popedom["set"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$title = $this->get("title");
 		if(!$title){
-			error("名称不能为空",$this->url("list","action","id=".$id),"error");
+			error(P_Lang('名称不能为空'),$this->url("list","action","id=".$id),"error");
 		}
 		$array = array("title"=>$title);
 		$array["seo_title"] = $this->get("seo_title");
@@ -220,7 +222,7 @@ class list_control extends phpok_control
 		ext_save("project-".$id);
 		$this->model('temp')->clean("project-".$id,$_SESSION["admin_id"]);
 		$ok_url = $this->url("list","action","id=".$id);
-		error("项目信息编辑成功",$ok_url,"ok");
+		error(P_Lang('项目信息编辑成功'),$ok_url,"ok");
 	}
 
 	function check_identifier($sign,$id=0,$site_id=0)
@@ -231,7 +233,7 @@ class list_control extends phpok_control
 		$sign = strtolower($sign);
 		//字符串是否符合条件
 		if(!preg_match("/[a-z][a-z0-9\_\-\.]+/",$sign)){
-			return P_Lang('标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头！');
+			return P_Lang('标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头');
 		}
 		if(!$site_id){
 			$site_id = $_SESSION["admin_site_id"];
@@ -251,11 +253,11 @@ class list_control extends phpok_control
 		$check_rs = $this->check_identifier($sign,$id);
 		if($check_rs != "ok")
 		{
-			json_exit($check_rs);
+			$this->json($check_rs);
 		}
 		else
 		{
-			json_exit("验证通过",true);
+			$this->json(P_Lang('验证通过'),true);
 		}
 	}
 
@@ -282,11 +284,11 @@ class list_control extends phpok_control
 		$layout_list = array();
 		foreach($layout AS $key=>$value){
 			if($value == "hits"){
-				$layout_list[$value] = "查看次数";
+				$layout_list[$value] = P_Lang('查看次数');
 			}elseif($value == "dateline"){
-				$layout_list[$value] = "发布时间";
+				$layout_list[$value] = P_Lang('发布时间');
 			}elseif($value == 'user_id'){
-				$layout_list['user_id'] = '会员账号';
+				$layout_list['user_id'] = P_Lang('会员账号');
 			}else{
 				$layout_list[$value] = $m_list[$value]["title"];
 			}
@@ -374,7 +376,9 @@ class list_control extends phpok_control
 				}
 			}
 			unset($sublist,$sub_idstring,$sub_idlist);
-			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=(total)/(psize)&always=1");
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 			$this->assign("pagelist",$pagelist);
 			$this->assign("rslist",$rslist);
 		}
@@ -407,17 +411,12 @@ class list_control extends phpok_control
 			}
 		}
 		if(!$pid){
-			error("操作异常",$this->url("list"),"error");
+			error(P_Lang('操作异常'),$this->url("list"),"error");
 		}
 		$this->popedom_auto($pid);
-		if($id){
-			if(!$this->popedom["modify"]){
-				error(P_Lang('你没有编辑权限'));
-			}
-		}else{
-			if(!$this->popedom["add"]){
-				error(P_Lang('你没有添加权限'));
-			}
+		$popedom_id = $id ? 'modify' : 'add';
+		if(!$this->popedom[$popedom_id]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$p_rs = $this->model('project')->get_one($pid);
 		if(!$p_rs){
@@ -510,11 +509,11 @@ class list_control extends phpok_control
 		$this->popedom_auto($pid);
 		if($id){
 			if(!$this->popedom['modify']){
-				$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+				$this->json(P_Lang('您没有权限执行此操作'));
 			}
 		}else{
 			if(!$this->popedom['add']){
-				$this->json(P_Lang('无权限，请联系系统管理员开放权限'));
+				$this->json(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		$p_rs = $this->model('project')->get_one($pid);
@@ -631,23 +630,22 @@ class list_control extends phpok_control
 		$id = $this->get("id");
 		if(!$id)
 		{
-			json_exit("没有指定主题ID");
+			$this->json(P_Lang('没有指定主题ID'));
 		}
 		$idlist = explode(",",$id);
 		$chk_id = intval($idlist[0]);
 		$rs = $this->model('list')->get_one($chk_id);
 		$pid = $rs["project_id"];
 		$this->popedom_auto($pid);
-		if(!$this->popedom["delete"])
-		{
-			json_exit("您没有删除权限");
+		if(!$this->popedom['delete']){
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		foreach($idlist AS $key=>$value)
 		{
 			$value = intval($value);
 			$this->model('list')->delete($value);
 		}
-		json_exit("主题删除成功",true);
+		$this->json(P_Lang('主题删除成功'),true);
 	}
 
 	function content_status_f()
@@ -655,25 +653,25 @@ class list_control extends phpok_control
 		$id = $this->get("id","int");
 		if(!$id)
 		{
-			json_exit("没有指定ID！");
+			$this->json(P_Lang('没有指定ID'));
 		}
 		$rs = $this->model('list')->get_one($id);
 		$this->popedom_auto($rs['project_id']);
 		if(!$this->popedom["status"])
 		{
-			json_exit("您没有启用/禁用权限");
+			$this->json("您没有启用/禁用权限");
 		}
 		$status = $rs["status"] ? 0 : 1;
 		$action = $this->model('list')->update_status($id,$status);
 		if(!$action)
 		{
-			json_exit("操作失败，请检查SQL语句！");
+			$this->json(P_Lang('操作失败，请检查SQL语句'));
 		}
 		else
 		{
 			//执行插件接入点
 			$this->plugin("ap-list-status",$id);
-			json_exit($status,true);
+			$this->json($status,true);
 		}
 	}
 
@@ -681,40 +679,29 @@ class list_control extends phpok_control
 	function execute_f()
 	{
 		$ids = $this->get('ids');
-		if(!$ids)
-		{
-			$this->json(P_Lang('未指定要操作的主题'));
+		if(!$ids){
+			$this->json(P_Lang('未指定ID'));
 		}
 		$title = $this->get('title');
 		$list = explode(',',$ids);
 		$tmp1 = $list[0];
 		$rs = $this->model('list')->get_one($tmp1);
 		$this->popedom_auto($rs['project_id']);
-		if(!$this->popedom["status"])
-		{
-			$this->json(P_Lang("您没有相应的权限"));
+		if(!$this->popedom['status']){
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
-		foreach($list AS $key=>$value)
-		{
+		foreach($list AS $key=>$value){
 			$value = intval($value);
-			if(!$value)
-			{
+			if(!$value){
 				continue;
 			}
-			if($title == 'status')
-			{
+			if($title == 'status'){
 				$this->model('list')->update_status($value,1);
-			}
-			elseif($title == 'unstatus')
-			{
+			}elseif($title == 'unstatus'){
 				$this->model('list')->update_status($value,0);
-			}
-			elseif($title == 'hidden')
-			{
+			}elseif($title == 'hidden'){
 				$this->model('list')->save(array('hidden'=>1),$value);
-			}
-			elseif($title == 'show')
-			{
+			}elseif($title == 'show'){
 				$this->model('list')->save(array('hidden'=>0),$value);
 			}
 		}
@@ -726,13 +713,13 @@ class list_control extends phpok_control
 		$sort = $this->get('sort');
 		if(!$sort || !is_array($sort))
 		{
-			json_exit("更新排序失败");
+			$this->json(P_Lang('更新排序失败'));
 		}
 		foreach($sort AS $key=>$value)
 		{
 			$this->model('list')->update_sort($key,$value);
 		}
-		json_exit("更新排序成功",true);
+		$this->json(P_Lang('更新排序成功'),true);
 	}
 
 	function move_cate_f()
@@ -741,7 +728,7 @@ class list_control extends phpok_control
 		$cate_id = $this->get("cate_id");
 		if(!$cate_id || !$ids)
 		{
-			json_exit("参数传递不完整");
+			$this->json(P_Lang('参数传递不完整'));
 		}
 		$list = explode(",",$ids);
 		foreach($list AS $key=>$value)
@@ -758,7 +745,7 @@ class list_control extends phpok_control
 				}
 			}
 		}
-		json_exit("更新成功",true);
+		$this->json(P_Lang('更新成功'),true);
 	}
 
 	//设置属性
@@ -769,7 +756,7 @@ class list_control extends phpok_control
 		$type = $this->get("type");
 		if(!$val || !$ids || !$type)
 		{
-			json_exit("参数传递不完整");
+			$this->json(P_Lang('参数传递不完整'));
 		}
 		if($type != "add" && $type != "delete") $type = "add";
 		$list = explode(",",$ids);
@@ -815,21 +802,19 @@ class list_control extends phpok_control
 			$array = array("attr"=>$attr);
 			$this->model('list')->save($array,$value);
 		}
-		json_exit("更新成功",true);
+		$this->json(P_Lang('更新成功'),true);
 	}
 
 	//更多批处理功能
 	function plaction_f()
 	{
 		$id = $this->get('id');
-		if(!$id)
-		{
-			error(P_Lang('未指定项目ID'),$this->url('list'),'error');
+		if(!$id){
+			error(P_Lang('未指定ID'),$this->url('list'),'error');
 		}
 		$this->popedom_auto($id);
-		if(!$this->popedom["list"])
-		{
-			error(P_Lang("你没有查看权限"));
+		if(!$this->popedom["list"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$project_rs = $this->model('project')->get_one($id);
 		if(!$project_rs)
@@ -864,48 +849,37 @@ class list_control extends phpok_control
 		$startid = $this->get('startid','int');
 		$endid = $this->get('endid','int');
 		$plaction = $this->get('plaction');
-		if($plaction == 'delete')
-		{
-			if(!$this->popedom['delete'])
-			{
-				$this->json(P_Lang('您没有此权限'));
+		if($plaction == 'delete'){
+			if(!$this->popedom['delete']){
+				$this->json(P_Lang('您没有权限执行此操作'));
 			}
 			$condition = "project_id=".$pid." ";
-			if($startid)
-			{
+			if($startid){
 				$condition .= "AND id>=".$startid." ";
 			}
-			if($endid)
-			{
+			if($endid){
 				$condition .= "AND id<=".$endid." ";
 			}
 			$this->model('list')->pl_delete($condition,$project_rs['module']);
 			$this->json(P_Lang('批量删除操作成功'),true);
 		}
 		$sql = "UPDATE ".$this->db->prefix."list SET ";
-		if($plaction == 'status' || $plaction == 'unstatus')
-		{
-			if(!$this->popedom['status'])
-			{
-				$this->json(P_Lang('您没有此权限'));
+		if($plaction == 'status' || $plaction == 'unstatus'){
+			if(!$this->popedom['status']){
+				$this->json(P_Lang('您没有权限执行此操作'));
 			}
 			$sql .= " status=".($plaction == 'status' ? '1' : '0')." ";
-		}
-		elseif($plaction == 'hidden' || $plaction == 'show')
-		{
-			if(!$this->popedom['list'])
-			{
-				$this->json(P_Lang('您没有此权限'));
+		}elseif($plaction == 'hidden' || $plaction == 'show'){
+			if(!$this->popedom['list']){
+				$this->json(P_Lang('您没有权限执行此操作'));
 			}
 			$sql .= " hidden=".($plaction == 'hidden' ? '1' : '0')." ";
 		}
 		$sql.= " WHERE project_id='".$pid."' ";
-		if($startid)
-		{
+		if($startid){
 			$sql .= "AND id>=".$startid." ";
 		}
-		if($endid)
-		{
+		if($endid){
 			$sql .= "AND id<=".$endid." ";
 		}
 		$this->db->query($sql);

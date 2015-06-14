@@ -38,6 +38,9 @@ function admin_edit(id)
 	var url = get_url("admin","set") + '&id='+id;
 	direct(url);
 }
+$(document).ready(function(){
+	top.$.desktop.title('{lang管理员维护}');
+});
 </script>
 <div class="tips clearfix">
 	<!-- if $popedom.add --><div class="action"><a href="{echo admin_url('admin','set')}">{lang添加管理员}</a></div><!-- /if -->
