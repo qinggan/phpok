@@ -98,20 +98,20 @@ class ueditor_control extends phpok_control
 		$action = $this->get('action');
 		if(!$action)
 		{
-			$this->_stop('未指定请求方式');
+			$this->_stop(P_Lang('未指定请求方式'));
 		}
 		$action_array = array('config','uploadimage','uploadvideo','uploadfile','listimage','listfile','listvideo','catchimage');
 		if(!in_array($action,$action_array))
 		{
-			$this->_stop('请求参数不正确');
+			$this->_stop(P_Lang('请求参数不正确'));
 		}
 		if(!$this->site['upload_guest'] && !$_SESSION['user_id'])
 		{
-			$this->_stop(P_Lang('系统已禁止游客上传，请联系管理员'));
+			$this->_stop(P_Lang(P_Lang('系统已禁止游客上传，请联系管理员')));
 		}
 		if(!$this->site['upload_user'] && $_SESSION['user_id'])
 		{
-			$this->_stop(P_Lang('系统已禁止会员上传，请联系管理员'));
+			$this->_stop(P_Lang(P_Lang('系统已禁止会员上传，请联系管理员')));
 		}
 		$action_name = 'u_'.$action;
 		$this->$action_name();
@@ -120,7 +120,7 @@ class ueditor_control extends phpok_control
 	//图片本地化
 	private function u_catchimage()
 	{
-		$this->_stop('前端禁用图片本地化');
+		$this->_stop(P_Lang('前端禁用图片本地化'));
 	}
 
 	//读取视频列表
@@ -144,7 +144,7 @@ class ueditor_control extends phpok_control
 		$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize,false);
 		if(!$rslist)
 		{
-			$this->_stop('视频内容为空');
+			$this->_stop(P_Lang('视频内容为空'));
 		}
 		$piclist = array();
 		foreach($rslist as $key=>$value)
@@ -172,7 +172,7 @@ class ueditor_control extends phpok_control
 		$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize,false);
 		if(!$rslist)
 		{
-			$this->_stop('附件内容为空');
+			$this->_stop(P_Lang('附件内容为空'));
 		}
 		$piclist = array();
 		foreach($rslist as $key=>$value)
@@ -207,7 +207,7 @@ class ueditor_control extends phpok_control
 		$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize,$is_gd);
 		if(!$rslist)
 		{
-			$this->_stop('图片数据内容为空');
+			$this->_stop(P_Lang('图片数据内容为空'));
 		}
 		$piclist = array();
 		foreach($rslist as $key=>$value)
@@ -242,7 +242,7 @@ class ueditor_control extends phpok_control
 		$rs = $this->upload_base($input_name,$folder,$config['cateid']);
 		if(!$rs || $rs['status'] != 'ok')
 		{
-			$this->_stop('视频上传失败');
+			$this->_stop(P_Lang('视频上传失败'));
 		}
 		$data = array('title'=>$rs['title'],'url'=>$rs['filename'],'original'=>$rs['title']);
 		$this->_stop(true,$data);
@@ -257,7 +257,7 @@ class ueditor_control extends phpok_control
 		$rs = $this->upload_base($input_name,$folder,$config['cateid']);
 		if(!$rs || $rs['status'] != 'ok')
 		{
-			$this->_stop('图片上传失败');
+			$this->_stop(P_Lang('图片上传失败'));
 		}
 		$gd_rs = $this->model('gd')->get_editor_default();
 		if($gd_rs)
@@ -313,7 +313,7 @@ class ueditor_control extends phpok_control
 			$this->lib('file')->rm($rs["filename"]);
 			$rs = array();
 			$rs["status"] = "error";
-			$rs["error"] = "图片迁移失败";
+			$rs["error"] = P_Lang('图片迁移失败');
 			return $rs;
 		}
 		$rs['title'] = $this->lib('string')->to_utf8($rs['title']);
@@ -344,7 +344,7 @@ class ueditor_control extends phpok_control
 			$this->lib('file')->rm($save_folder.$basename);
 			$rs = array();
 			$rs["status"] = "error";
-			$rs["error"] = "图片存储失败";
+			$rs["error"] = P_Lang('图片存储失败');
 			return $rs;
 		}
 		$this->model('res')->gd_update($id);

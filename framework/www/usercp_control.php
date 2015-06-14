@@ -76,14 +76,13 @@ class usercp_control extends phpok_control
 	//获取项目列表
 	public function list_f()
 	{
-		error_reporting(E_ALL ^ E_NOTICE);
 		$id = $this->get("id");
 		if(!$id){
 			error(P_Lang('未指定项目'),$this->url('usercp'),'notice',10);
 		}
 		$pid = $this->model('id')->project_id($id,$this->site['id']);
 		if(!$pid){
-			error('项目信息不存在',$this->url('usercp'),'error');
+			error(P_Lang('项目信息不存在'),$this->url('usercp'),'error');
 		}
 		if(!$this->model('popedom')->check($pid,$this->group_rs['id'],'post')){
 			error(P_Lang('您没有这个权限功能，请联系网站管理员'),$this->url('usercp'),'error');

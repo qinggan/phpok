@@ -19,12 +19,15 @@ class order_control extends phpok_control
 	function index_f()
 	{
 		$backurl = $this->url('order');
-		if(!$_SESSION['user_id']) error('您还不是会员，请先登录',$this->url('login','','_back='.rawurlencode($backurl)));
-		//读取会员下的订单列表
+		if(!$_SESSION['user_id']){
+			error(P_Lang('您还不是会员，请先登录'),$this->url('login','','_back='.rawurlencode($backurl)));
+		}
 		$psize = $this->config['psize'] ? $this->config['psize'] : 20;
 		$pageid = $this->config['pageid'] ? $this->config['pageid'] : 'pageid';
 		$pageid = $this->get($pageid,'int');
-		if(!$pageid) $pageid = 1;
+		if(!$pageid){
+			$pageid = 1;
+		}
 		$offset = ($pageid-1) * $psize;
 		$condition = "user_id='".$_SESSION['user_id']."'";
 		$this->assign('pageid',$pageid);
@@ -33,8 +36,7 @@ class order_control extends phpok_control
 		$total = $this->model('order')->get_count($condition);
 		$this->assign('total',$total);
 		$this->assign('psize',$psize);
-		if($total)
-		{
+		if($total){
 			$rslist = $this->model('order')->get_list($condition,$offset,$psize);
 			$this->assign('rslist',$rslist);
 		}
@@ -100,9 +102,13 @@ class order_control extends phpok_control
 		if($sn) $rs = $this->model('order')->get_one_from_sn($sn);
 		if(!$rs){
 			$id = $this->get('id','int');
-			if(!$id) error("无法获取订单信息，请检查！",$back,'error');
+			if(!$id){
+				error(P_Lang('无法获取订单信息'),$back,'error');
+			}
 			$rs = $this->model('order')->get_one($id);
-			if(!$rs) error("订单信息不存在，请检查！",$back,'error');
+			if(!$rs){
+				error(P_Lang('订单信息不存在'),$back,'error');
+			}
 		}
 		$passwd = $this->get('passwd');
 		if(!$passwd)

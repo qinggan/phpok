@@ -19,7 +19,7 @@ class logout_control extends phpok_control
 	{
 		$nickname = $_SESSION["user_name"];
 		unset($_SESSION['user_id'],$_SESSION['user_name'],$_SESSION['user_gid']);
-		error(P_Lang('会员{user}成功退出',array('user'=>'<span class="red"> '.$nickname.' </span>')),$this->url('index'),'ok');
+		error(P_Lang('会员{user}成功退出',array('user'=>'<span class="red"> '.$nickname.' </span>')),$this->url,'ok');
 	}
 }
 ?>

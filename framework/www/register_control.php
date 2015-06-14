@@ -72,12 +72,12 @@ class register_control extends phpok_control
 		{
 			if(!$group_rs['tbl_id'])
 			{
-				error("未绑定验证项目",$this->url,'error');
+				error(P_Lang('未绑定验证项目'),$this->url,'error');
 			}
 			$p_rs = $this->model("project")->get_one($group_rs["tbl_id"],false);
 			if(!$p_rs['module'])
 			{
-				error("绑定的项目中没有关联模块",$this->url,'error');
+				error(P_Lang('绑定的项目中没有关联模块'),$this->url,'error');
 			}
 			$code = $this->get('_code');
 			if(!$code)

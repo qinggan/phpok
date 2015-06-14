@@ -115,19 +115,16 @@ class login_control extends phpok_control
 	{
 		$_SESSION['repass_spam_code'] = str_rand(10);
 		$code = $this->get('_code');
-		if(!$code)
-		{
-			error($this->lang[$this->app_id][1004],'','error');
+		if(!$code){
+			error(P_Lang('验证码不能为空'),'','error');
 		}
 		$time = intval(substr($code,-10));
-		if(($this->time - $time) > (24*60*60))
-		{
-			error($this->lang[$this->app_id][1005],$this->url('login','getpass'),'error',10);
+		if(($this->time - $time) > (24*60*60)){
+			error(P_Lang('验证码超时过期，请重新获取'),$this->url('login','getpass'),'error',10);
 		}
 		$uid = $this->model('user')->uid_from_chkcode($code);
-		if(!$uid)
-		{
-			error($this->lang[$this->app_id][1006],$this->url('login','getpass'),'error',10);
+		if(!$uid){
+			error(P_Lang('验证码不存在'),$this->url('login','getpass'),'error',10);
 		}
 		$user = $this->model('user')->get_one($uid);
 		$this->assign("user",$user);

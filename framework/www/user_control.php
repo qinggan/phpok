@@ -18,13 +18,11 @@ class user_control extends phpok_control
 	function index_f()
 	{
 		$uid = $this->get("uid");
-		if(!$uid)
-		{
-			error("未指定会员信息");
+		if(!$uid){
+			error(P_Lang('未指定会员信息'));
 		}
-		if($uid == $_SESSION["user_id"])
-		{
-			header("Location:".$this->url."usercp/list.html?id=article");
+		if($uid == $_SESSION["user_id"]){
+			header("Location:".$this->url('usercp'));
 			exit;
 		}
 		$user_rs = $this->model('user')->get_one($uid);

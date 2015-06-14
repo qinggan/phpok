@@ -17,38 +17,59 @@ class plugin_control extends phpok_control
 
 	public function index_f()
 	{
-		$this->exec_f();
-	}
-
-	public function exec_f()
-	{
 		$id = $this->get('id','system');
 		if(!$id){
-			error(P_Lang('未指定要执行的插件'));
+			$this->json(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs || !$rs['status']){
-			error(P_Lang('插件不存在或未启用'));
+			$this->json(P_Lang("插件未启用或不存在"));
 		}
-		if(!is_file($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php')){
-			error(P_Lang('插件文件：{file}不存在',array('file'=>'<span class="red">plugins/'.$id.'/'.$this->app_id.'.php</span>')));
+		if(!file_exists($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php')){
+			$this->json(P_Lang('插件应用{appid}.php不存在',array('appid'=>$this->app_id)));
 		}
 		include_once($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php');
 		$name = $this->app_id.'_'.$id;
 		$cls = new $name();
 		$mlist = get_class_methods($cls);
 		$exec = $this->get('exec','system');
-		if(!$exec) $exec = 'index';
-		if(!$mlist || !in_array($exec,$mlist)){
-			error('执行方法：'.$exec.' 不存在！');
+		if(!$exec){
+			$exec = 'index';
 		}
-		$this->assign('plugin_rs',$rs);
+		if(!$mlist || !in_array($exec,$mlist)){
+			$this->json(P_Lang('插件方法{method}不存在',array('method'=>$exec)));
+		}
+		$cls->$exec();
+	}
+
+	public function exec_f()
+	{
+		$id = $this->get('id','system');
+		if(!$id){
+			error(P_Lang('未指定ID'),'','error');
+		}
+		$rs = $this->model('plugin')->get_one($id);
+		if(!$rs || !$rs['status']) error('插件不存在或未启用');
+		if(!file_exists($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php')){
+			error(P_Lang('插件应用{appid}.php不存在',array('appid'=>$this->app_id)),'','error');
+		}
+		include_once($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php');
+		$name = $this->app_id.'_'.$id;
+		$cls = new $name();
+		$mlist = get_class_methods($cls);
+		$exec = $this->get('exec','system');
+		if(!$exec){
+			$exec = 'index';
+		}
+		if(!$mlist || !in_array($exec,$mlist)){
+			error(P_Lang('插件方法{method}不存在',array('method'=>$exec)));
+		}
 		$cls->$exec();
 	}
 
 	public function ajax_f()
 	{
-		$this->exec_f();
+		$this->index_f();
 	}
 }
 ?>

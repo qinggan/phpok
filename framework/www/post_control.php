@@ -17,7 +17,7 @@ class post_control extends phpok_control
 		$groupid = $this->model('usergroup')->group_id($_SESSION['user_id']);
 		if(!$groupid)
 		{
-			error(P_Lang('无法获取前端用户组信息，请检查'),'','error');
+			error(P_Lang('无法获取前端用户组信息'),'','error');
 		}
 		$this->user_groupid = $groupid;
 	}
@@ -79,7 +79,7 @@ class post_control extends phpok_control
 		$this->assign("extlist",$extlist);
 		$tpl = $project_rs['post_tpl'] ? $project_rs['post_tpl'] : $project_rs['identifier'].'_post';
 		if(!$this->tpl->check_exists($tpl)){
-			error('未配置发布模板，联系管理员进行配置');
+			error(P_Lang('未配置发布模板，联系管理员进行配置'));
 		}
 		//返回上一级网址
 		$_back = $this->get("_back");
@@ -96,7 +96,7 @@ class post_control extends phpok_control
 	{
 		if(!$_SESSION['user_id'])
 		{
-			error('非会员不能操作此信息',$this->url,'error',10);
+			error(P_Lang('非会员不能操作此信息'),$this->url,'error',10);
 		}
 		$_back = $this->get("_back");
 		if(!$_back)
@@ -106,26 +106,25 @@ class post_control extends phpok_control
 		$id = $this->get('id','int');
 		if(!$id)
 		{
-			error('未指定ID',$_back,'error');
+			error(P_Lang('未指定ID'),$_back,'error');
 		}
 		$this->assign('id',$id);
 		$rs = $this->model('data')->arc(array('id'=>$id));
 		if(!$rs)
 		{
-			error('内容信息不存在',$_back,'error');
+			error(P_Lang('内容信息不存在'),$_back,'error');
 		}
 		if($rs['user_id'] != $_SESSION['user_id'])
 		{
-			error('您没有修改此内容权限',$_back,'error');
+			error(P_Lang('您没有修改此内容权限'),$_back,'error');
 		}
 		
 
 		//获取项目信息
 		$project_rs = $this->model('data')->project(array('pid'=>$rs['project_id']));
-		//$project_rs = $this->call->phpok('_project',array("pid"=>$rs['project_id']));
 		if(!$project_rs || !$project_rs['module'])
 		{
-			error("项目不符合要求！",$_back,'error',10);
+			error(P_Lang('项目不符合要求'),$_back,'error',10);
 		}
 		$project_rs['url'] = $this->url('post','edit','id='.$id);
 		$this->assign("page_rs",$project_rs);
@@ -202,8 +201,8 @@ class post_control extends phpok_control
 		$title = $this->get("title");
 		if(!$title)
 		{
-			$note = $p_rs["alias_title"] ? $p_rs["alias_title"] : "主题";
-			error($note."不能为空",$_back,"error");
+			$note = $p_rs["alias_title"] ? $p_rs["alias_title"] : P_Lang('主题');
+			error($note.P_Lang('不能为空'),$_back,"error");
 		}
 		$array = array();
 		$array["title"] = $title;
@@ -217,7 +216,7 @@ class post_control extends phpok_control
 		$insert_id = $this->model('list')->save($array);
 		if(!$insert_id)
 		{
-			error("数据存储失败，请联系管理",$_back,"error");
+			error(P_Lang('数据存储失败，请联系管理'),$_back,"error");
 		}
  		$ext_list = $this->model('module')->fields_all($p_rs["module"]);
  		$tmplist = array();
@@ -256,7 +255,7 @@ class post_control extends phpok_control
  		$i_array["type_id"] = "content";
  		$this->model("id");
  		$this->model('id')->save($i_array);
-		error("数据存储成功，请等待管理员审核！",$_back,"ok");
+		error(P_Lang('数据存储成功，请等待管理员审核'),$_back,"ok");
 	}
 
 	function ajax_save_f()
@@ -265,15 +264,15 @@ class post_control extends phpok_control
 		$chk_rs = $this->check($id);
 		if($chk_rs["status"] != "ok")
 		{
-			json_exit($chk_rs["info"]);
+			$this->json($chk_rs["info"]);
 		}
 		$p_rs = $chk_rs["info"];
 		$m_rs = $this->model('module')->get_one($p_rs["module"]);
 		$title = $this->get("title");
 		if(!$title)
 		{
-			$note = $p_rs["alias_title"] ? $p_rs["alias_title"] : "主题";
-			json_exit($note."不能为空");
+			$note = $p_rs["alias_title"] ? $p_rs["alias_title"] : P_Lang('主题');
+			$this->json($note.P_Lang('不能为空'));
 		}
 		//唯一性验证
 		$_chk = $this->get("_chk");
@@ -287,12 +286,12 @@ class post_control extends phpok_control
 			else
 			{
 				$tmp = $this->get($_chk);
-				if(!$tmp) json_exit("验证不通过，必填项目不能为空");
+				if(!$tmp) $this->json(P_Lang('验证不通过，必填项目不能为空'));
 				$sql = "SELECT id FROM ".$this->db->prefix."list_".$p_rs["module"]." WHERE project_id='".$p_rs['id']."' ";
 				$sql.= "AND site_id='".$p_rs['site_id']."' AND ".$_chk."='".$tmp."' LIMIT 1";
 			}
 			$chk = $this->db->get_one($sql);
-			if($chk) json_exit("验证不通过，信息已存在");
+			if($chk) $this->json(P_Lang('验证不通过，信息已存在'));
 		}
 		$array = array();
 		$array["title"] = $title;
@@ -306,7 +305,7 @@ class post_control extends phpok_control
 		$insert_id = $this->model('list')->save($array);
 		if(!$insert_id)
 		{
-			json_exit("数据存储失败，请联系管理");
+			$this->json(P_Lang('数据存储失败，请联系管理'));
 		}
 		$ext_list = $this->model('module')->fields_all($p_rs["module"]);
 		$tmplist = array();
@@ -344,17 +343,17 @@ class post_control extends phpok_control
 		$i_array["phpok"] = $identifier;
 		$i_array["type_id"] = "content";
 		$this->model('id')->save($i_array);
-		json_exit("添加成功",true);
+		$this->json(P_Lang('添加成功'),true);
 	}
 	
 	function check($id,$frame=false,$check_tpl=true)
 	{
-		if(!$id) return array("status"=>"error","info"=>'未指定ID信息');
+		if(!$id) return array("status"=>"error","info"=>P_Lang('未指定ID'));
 		$pid = array_search($id,$this->cache_data['id_list']);
-		if(!$pid) return array("status"=>"error","info"=>'项目信息不存在');
+		if(!$pid) return array("status"=>"error","info"=>P_Lang('项目信息不存在'));
 		$rs = $this->call->project_me(array("param"=>$pid));
-		if(!$rs) return array("status"=>"error","info"=>'项目信息不存在或未启用');
-		if(!$rs['module']) return array("status"=>"error","info"=>'此项目没有表单功能');
+		if(!$rs) return array("status"=>"error","info"=>P_Lang('项目信息不存在或未启用'));
+		if(!$rs['module']) return array("status"=>"error","info"=>P_Lang('此项目没有表单功能'));
 		return array("status"=>"ok","info"=>$rs);
 	}
 }

@@ -17,7 +17,7 @@ class content_control extends phpok_control
 		$this->model('popedom')->siteid($this->site['id']);
 		$groupid = $this->model('usergroup')->group_id($_SESSION['user_id']);
 		if(!$groupid){
-			error(P_Lang('无法获取前端用户组信息，请检查'),'','error');
+			error(P_Lang('无法获取前端用户组信息'),'','error');
 		}
 		$this->user_groupid = $groupid;
 	}
@@ -26,7 +26,9 @@ class content_control extends phpok_control
 	function index_f()
 	{
 		$id = $this->get("id");
-		if(!$id) error("操作异常！","","error");
+		if(!$id){
+			error(P_Lang('未指定ID'),"","error");
+		}
 		$dt = array('site'=>$this->site['id']);
 		if(intval($id) && $id == intval($id)){
 			$dt['title_id'] = $id;
@@ -46,7 +48,7 @@ class content_control extends phpok_control
 		}
 		$project_rs = $this->call->phpok('_project',array('pid'=>$rs['project_id']));
 		if(!$this->model('popedom')->check($project_rs['id'],$this->user_groupid,'read')){
-			error(P_Lang('您没有阅读权限，请联系网站管理员'),'','error');
+			error(P_Lang('您没有阅读此文章权限'),'','error');
 		}
 		$this->assign("page_rs",$project_rs);
 		$tpl = $project_rs['tpl_content'];
@@ -110,7 +112,7 @@ class content_control extends phpok_control
 			$tpl = $project_rs['identifier'].'_content';
 		}
 		if(!$this->tpl->check_exists($tpl)){
-			error(P_Lang('未配置模板，请检查'),'','error');
+			error(P_Lang('未配置模板'),'','error');
 		}
 		$this->db->cache_close();
 		$this->model('list')->add_hits($rs["id"]);

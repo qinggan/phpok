@@ -126,7 +126,7 @@ class upload_control extends phpok_control
 			$this->lib('file')->rm($save_folder.$basename);
 			$rs = array();
 			$rs["status"] = "error";
-			$rs["error"] = "图片存储失败";
+			$rs["error"] = P_Lang('图片存储失败');
 			return $rs;
 		}
 		$this->model('res')->gd_update($id);
@@ -142,17 +142,17 @@ class upload_control extends phpok_control
 		$id = $this->get("oldid",'int');
 		if(!$id)
 		{
-			$this->json('没有指定要替换的附件');
+			$this->json(P_Lang('没有指定要替换的附件'));
 		}
 		$old_rs = $this->model('res')->get_one($id);
 		if(!$old_rs)
 		{
-			$this->json("资源不存在");
+			$this->json(P_Lang('资源不存在'));
 		}
 		$rs = $this->lib('upload')->upload('upfile');
 		if($rs["status"] != "ok")
 		{
-			$this->json('附件上传失败');
+			$this->json(P_Lang('附件上传失败'));
 		}
 		$arraylist = array("jpg","gif","png","jpeg");
 		$my_ext = array();
@@ -202,7 +202,7 @@ class upload_control extends phpok_control
 			}
 			$this->json($reslist,true);
 		}
-		$this->json("附件信息获取失败，可能已经删除，请检查");
+		$this->json(P_Lang('附件信息获取失败，可能已经删除'));
 	}
 
 	public function editopen_f()

@@ -39,7 +39,7 @@ class payment_control extends phpok_control
 		//进入支付页
 		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/submit.php';
 		if(!is_file($file)){
-			error(P_Lang('支付接口异常，请检查'),$error_url,'error');
+			error(P_Lang('支付接口异常'),$error_url,'error');
 		}
 		include_once($file);
 		//更新定单支付信息
@@ -89,7 +89,7 @@ class payment_control extends phpok_control
 		}
 		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/notice.php';
 		if(!is_file($file)){
-			error(P_Lang('支付接口异常，请检查'),$url,'error');
+			error(P_Lang('支付接口异常'),$url,'error');
 		}
 		include_once($file);
 		$name = $payment_rs['code'].'_notice';
@@ -104,33 +104,27 @@ class payment_control extends phpok_control
 	{
 		$sn = $this->get('sn');
 		if(!$sn){
-			phpok_log(P_Lang('异步通知：订单信息不完整'));
 			exit('error');
 		}
 		$rs = $this->model('order')->get_one_from_sn($sn);
 		if(!$rs){
-			phpok_log(P_Lang('异步通知：订单信息不存在'));
 			exit('error');
 		}
 		if($rs['pay_end']){
 			exit('success');
 		}
 		if(!$rs['pay_id']){
-			phpok_log(P_Lang('异步通知：未指定支付方式'));
 			exit('error');
 		}
 		$payment_rs = $this->model('payment')->get_one($rs['pay_id']);
 		if(!$payment_rs){
-			phpok_log(P_Lang('异步通知：付款方式不存在'));
 			exit('error');
 		}
 		if(!$payment_rs['status']){
-			phpok_log(P_Lang('异步通知：付款方式未启用'));
 			exit('error');
 		}
 		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/notify.php';
 		if(!is_file($file)){
-			phpok_log(P_Lang('异步通知：异步通知文件不存在'));
 			exit('error');
 		}
 		include_once($file);

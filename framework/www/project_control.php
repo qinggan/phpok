@@ -17,7 +17,7 @@ class project_control extends phpok_control
 		//判断是否有读权限
 		$groupid = $this->model('usergroup')->group_id($_SESSION['user_id']);
 		if(!$groupid){
-			error(P_Lang('无法获取前端用户组信息，请检查'),'','error');
+			error(P_Lang('无法获取前端用户组信息'),'','error');
 		}
 		$this->user_groupid = $groupid;
 	}
@@ -65,7 +65,7 @@ class project_control extends phpok_control
 				if(!$this->tpl->check($tpl)){
 					$tpl = $parent_rs["identifier"]."_page";
 					if(!$this->tpl->check($tpl)){
-						error(P_Lang('模板文件缺少，请检查'));
+						error(P_Lang('模板文件缺少'));
 					}
 				}
 			}
@@ -73,7 +73,7 @@ class project_control extends phpok_control
 		if(!$tpl){
 			$tpl = $project["identifier"]."_page";
 			if(!$this->tpl->check($tpl)){
-				error(P_Lang('模板文件缺少，请检查'));
+				error(P_Lang('模板文件缺少'));
 			}
 		}
 		$this->view($tpl);
@@ -249,7 +249,7 @@ class project_control extends phpok_control
 				$url = $rs['identifier'] ? $this->url($rs['identifier']) : $this->url($rs['id']);
 				$this->_location($url);
 			}
-			error('未配置模板：'.$tplfile.'，请配置相应的模板','','error');
+			error(P_Lang('未配置模板{tplfile}，请配置相应的模板',array('tplfile'=>$tplfile)),'','error');
 		}
 		unset($rslist,$total,$pageurl,$psize,$pageid,$rs,$parent_rs);
 		$this->view($tplfile);
