@@ -52,5 +52,13 @@ class user_model extends user_model_base
 		if(!$rs) return false;
 		return $rs['id'];
 	}
+
+	//更新会员头像
+	function update_avatar($file,$uid)
+	{
+		$sql = "UPDATE ".$this->db->prefix."user SET avatar='".$file."' WHERE id='".$uid."'";
+		return $this->db->query($sql);
+	}
+
 }
 ?>

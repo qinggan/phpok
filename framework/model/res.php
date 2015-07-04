@@ -350,8 +350,7 @@ class res_model_base extends phpok_model
 	function type_list()
 	{
 		$xmlfile = $this->dir_root."data/xml/filetype.xml";
-		if(!is_file($xmlfile))
-		{
+		if(!file_exists($xmlfile)){
 			$array = array("picture"=>array("name"=>"图片","swfupload"=>"*.jpg;*.png;*.gif;*.jpeg","ext"=>"jpg,png,gif,jpeg","gd"=>1));
 			return $array;
 		}
@@ -480,6 +479,9 @@ class res_model_base extends phpok_model
 		$ico = '';
 		if($cate_rs['ico']){
 			$ico = $this->lib('gd')->thumb($this->dir_root.$rs['filename'],$id);
+			if($ico){
+				$ico = $rs['folder'].$ico;
+			}
 		}
 		if(!$ico){
 			$ico = "images/filetype-large/".$rs["ext"].".jpg";

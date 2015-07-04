@@ -750,7 +750,7 @@ function tpl_head($array=array())
 		$html .= '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 		$html .= '<head>'."\n\t".'<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'."\n\t";
 	}
-	$html .= '<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">'."\n\t";
+	$html .= '<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />'."\n\t";
 	$html .= '<meta http-equiv="Pragma" content="no-cache" />'."\n\t";
 	$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate,max-age=3" />'."\n\t";
 	$html .= '<meta http-equiv="Expires" content="Mon, 26 Jul 1997 05:00:00 GMT" />'."\n\t";

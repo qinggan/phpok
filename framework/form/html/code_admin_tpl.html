@@ -15,7 +15,10 @@ $(document).ready(function(){
 		matchBrackets	: true,
 		lineWrapping	: true,
 		indentWithTabs	: true,
-		indentUnit		: 4
+		indentUnit		: 4,
+		onChange		: function(n){
+			$("#{$_rs.identifier}").val(code_editor_{$_rs.identifier}.getValue());
+		}
 	});
 });
 </script>

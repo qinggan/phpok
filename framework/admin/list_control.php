@@ -742,6 +742,8 @@ class list_control extends phpok_control
 					$array = array("cate_id"=>$cate_id);
 					$this->model('list')->save($array,$value);
 					$this->model('list')->update_ext($array,$mid,$value);
+					$ext_cate = array($cate_id);
+					$this->model('list')->save_ext_cate($value,$ext_cate);
 				}
 			}
 		}

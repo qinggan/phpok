@@ -173,8 +173,8 @@ class project_control extends phpok_control
 			foreach($ext AS $key=>$value){
 				if($key && $value){
 					$c[] = $_ext ? "ext.".$key."='".$value."'" : "ext.".$key." LIKE '%".$value."%'";
-					$pageurl .= "ext[".$key."]=".rawurlencode($value)."&";
 				}
+				$pageurl .= "ext[".$key."]=".rawurlencode($value)."&";
 			}
 			if($c){
 				$dt['sqlext'] = implode(" AND ",$c);

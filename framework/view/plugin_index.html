@@ -10,6 +10,7 @@
 	<th width="10px">&nbsp;</th>
 	<th width="30px">状态</th>
 	<th>名称</th>
+	<th width="40px">排序</th>
 	<th width="160px">操作</th>
 </tr>
 <!-- loop from=$rslist key=$key value=$value -->
@@ -19,6 +20,7 @@
 		<span class="status{$value.status}" id="status_{$key}" {if $popedom.status}onclick="phpok_status('{$key}','{func admin_url plugin status}')"{else} style="cursor: default;"{/if} value="{$value.status}"></span>
 	</td>
 	<td>{$value.title} <!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></td>
+	<td class="center">{$value.taxis}</td>
 	<td class="center">
 		<!-- if $popedom.uninstall -->
 		<input type="button" value="卸载" class="btn" onclick="plugin_uninstall('{$key}','{$value.title}')" />

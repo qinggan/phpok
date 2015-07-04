@@ -78,8 +78,13 @@ class project_model extends project_model_base
 			$sql = "DELETE FROM ".$this->db->prefix."list_".$rs['module']." WHERE project_id=".$id;
 			$this->db->query($sql);
 		}
+		//删除主题的扩展分类
+		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
+		$this->db->query($sql);
+		//删除主题
 		$sql = "DELETE FROM ".$this->db->prefix."list WHERE project_id=".$id;
 		$this->db->query($sql);
+		//删除项目扩展
 		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='project-".$id."'";
 		$extlist = $this->db->get_all($sql);
 		if($extlist){

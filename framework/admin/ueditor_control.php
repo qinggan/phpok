@@ -15,38 +15,35 @@ class ueditor_control extends phpok_control
 		parent::control();
 	}
 
-	function load_config()
+	private function load_config()
 	{
 		$config = $this->lib('file')->cat($this->dir_root.'data/config.json');
 		$config = preg_replace("/\/\*[\s\S]+?\*\//","",$config);
 		$config = $this->lib('json')->decode($config);
 		$config['imageCompressEnable'] = false;
-		//获取默认存储路径
-		$cate_rs = $this->model('res')->cate_one();
-		if(!$cate_rs || $cate_rs['root'] == '/' || !$cate_rs['root'])
-		{
+		$cate_rs = $this->model('rescate')->get_one();
+		if(!$cate_rs || $cate_rs['root'] == '/' || !$cate_rs['root']){
 			$cate_rs["id"] = 0;
 			$cate_rs["root"] = "res/";
 			$cate_rs["folder"] = "/";
 		}
 		$folder = $cate_rs["root"];
-		if($cate_rs["folder"] && $cate_rs["folder"] != "/")
-		{
+		if($cate_rs["folder"] && $cate_rs["folder"] != "/"){
 			$folder .= date($cate_rs["folder"],$this->time);
 		}
-		if(!file_exists($folder))
-		{
+		if(!file_exists($folder)){
 			$this->lib('file')->make($folder);
 		}
-		//如果还是没有检测到文件夹，则回到默认目录
-		if(!file_exists($folder))
-		{
+		if(!file_exists($folder)){
 			$folder = $cate_rs['root'];
 		}
-		if(substr($folder,-1) != "/") $folder .= "/";
-		if(substr($folder,0,1) == "/") $folder = substr($folder,1);
-		if($folder)
-		{
+		if(substr($folder,-1) != "/"){
+			$folder .= "/";
+		}
+		if(substr($folder,0,1) == "/"){
+			$folder = substr($folder,1);
+		}
+		if($folder){
 			$folder = str_replace("//","/",$folder);
 		}
 		$rooturl = $this->root_url();
@@ -61,10 +58,8 @@ class ueditor_control extends phpok_control
 		$config['filePathFormat'] = $folder;
 		$config['fileManagerUrlPrefix'] = $rooturl;
 		$config['cateid'] = $cate_rs['id'];
-		foreach($config as $key=>$value)
-		{
-			if(substr($key,0,5) == 'scraw')
-			{
+		foreach($config as $key=>$value){
+			if(substr($key,0,5) == 'scraw'){
 				unset($config[$key]);
 			}
 		}
@@ -74,8 +69,7 @@ class ueditor_control extends phpok_control
 	//停止运行
 	private function _stop($info,$data='')
 	{
-		if(!$data)
-		{
+		if(!$data){
 			$data = array();
 		}
 		$data['state'] = ($info && !is_bool($info)) ? $info : 'SUCCESS';
@@ -85,13 +79,11 @@ class ueditor_control extends phpok_control
 	public function index_f()
 	{
 		$action = $this->get('action');
-		if(!$action)
-		{
+		if(!$action){
 			$this->_stop(P_Lang('未指定请求方式'));
 		}
 		$action_array = array('config','uploadimage','uploadvideo','uploadfile','listimage','listfile','listvideo','catchimage');
-		if(!in_array($action,$action_array))
-		{
+		if(!in_array($action,$action_array)){
 			$this->_stop(P_Lang('请求参数不正确'));
 		}
 		$action_name = 'u_'.$action;
@@ -104,8 +96,7 @@ class ueditor_control extends phpok_control
 		$config = $this->load_config();
 		$folder = $config['catcherPathFormat'];
 		$imgUrls = $this->get($config['catcherFieldName']);
-		if(!$imgUrls)
-		{
+		if(!$imgUrls){
 			$this->_stop(P_Lang('没有图片信息'));
 		}
 		set_time_limit(0);
@@ -113,22 +104,16 @@ class ueditor_control extends phpok_control
 		$arraylist = array("jpg","gif","png","jpeg");
 		$rslist = array();
 		$oldlist = array();
-		foreach($imgUrls AS $key=>$imgUrl)
-		{
+		foreach($imgUrls AS $key=>$imgUrl){
 			$imgUrl = str_replace( "&amp;" , "&" , $imgUrl);
-			//如果获取的图片信息是data类型，则自动存储为png格式
-			if(strtolower(substr($imgUrl,0,10)) == 'data:image')
-			{
+			if(strtolower(substr($imgUrl,0,10)) == 'data:image'){
 				$tmp = explode(",",$imgUrl);
 				$content = base64_decode(substr($imgUrl,strlen($tmp[0])));
 				$tmp_title = $this->time."_".$key;
 				$new_filename = $tmp_title;
 				$ext = 'png';
-			}
-			else
-			{
-				if(strpos($imgUrl,"http")!==0)
-				{
+			}else{
+				if(strpos($imgUrl,"http")!==0){
 					array_push($rslist,array('state'=>'附件获取失败'));
 					continue;
 				}
@@ -139,16 +124,14 @@ class ueditor_control extends phpok_control
 				$ext = substr($fileType,1);
 				if(!$ext) $ext = "png";
 			}
-            if(!$content)
-            {
+            if(!$content){
 	            array_push($rslist,array('state'=>P_Lang('附件获取失败')));
                 continue;
             }
             $save_folder = $this->dir_root.$folder;
 			$newfile = $save_folder.$new_filename.".".$ext;
 			$this->lib('file')->save_pic($content,$newfile);
-			if(!is_file($newfile))
-			{
+			if(!is_file($newfile)){
 				array_push($rslist,array('state'=>P_Lang('附件写入失败')));
 				continue;
 			}
@@ -160,22 +143,18 @@ class ueditor_control extends phpok_control
 			$array["ext"] = $ext;
 			$array["filename"] = $folder.$new_filename.".".$ext;
 			$array["addtime"] = $this->time;
-			if($tmp_title)
-			{
+			if($tmp_title){
 				$this->lib('string')->to_utf8($tmp_title);
 			}
 			$array["title"] = $tmp_title ? str_replace(".".$ext,"",$tmp_title) : str_replace(".".$ext,"",$new_filename);
-			if(in_array($ext,$arraylist))
-			{
+			if(in_array($ext,$arraylist)){
 				$img_ext = getimagesize($newfile);
 				$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
 				$array["attr"] = serialize($my_ext);
 			}
-			$array["session_id"] = $this->session->sessid();
-			//存储图片信息
+			$array["admin_id"] = $_SESSION['admin_id'];
 			$id = $this->model('res')->save($array);
-			if(!$id)
-			{
+			if(!$id){
 				$this->lib('file')->rm($this->dir_root.$array['filename']);
 				array_push($rslist,array('state'=>P_Lang('附件存储失败')));
                 continue;
@@ -185,39 +164,31 @@ class ueditor_control extends phpok_control
 			array_push( $rslist , array('id'=>$id) );
 		}
 		$idlist = array();
-		foreach($rslist as $key=>$value)
-		{
-			if($value['id'])
-			{
+		foreach($rslist as $key=>$value){
+			if($value['id']){
 				$idlist[] = $value['id'];
 			}
 		}
-		if(!$idlist || count($idlist)<1)
-		{
+		if(!$idlist || count($idlist)<1){
 			$this->_stop(P_Lang('没有可用的附件'));
 		}
 		$condition = "res.id IN(".implode(",",$idlist).")";
 		$is_gd = false;
 		$gd_rs = $this->model('gd')->get_editor_default();
-		if($gd_rs)
-		{
+		if($gd_rs){
 			$condition .= " AND e.gd_id='".$gd_rs["id"]."' ";
 			$is_gd = true;
 		}
 		$piclist = $this->model('res')->edit_pic_list($condition,0,999,$is_gd);
-		if(!$piclist)
-		{
+		if(!$piclist){
 			$this->_stop(P_Lang('没有可用的附件'));
 		}
 		$plist = array();
-		foreach($piclist as $key=>$value)
-		{
+		foreach($piclist as $key=>$value){
 			$plist[$value['id']] = $value;
 		}
-		foreach($rslist as $key=>$value)
-		{
-			if($value['id'] && $plist[$value['id']])
-			{
+		foreach($rslist as $key=>$value){
+			if($value['id'] && $plist[$value['id']]){
 				$tmp = array();
 				$tmp['title'] = $plist[$value['id']]['title'];
 				$tmp['original'] = $plist[$value['id']]['title'];
@@ -241,13 +212,11 @@ class ueditor_control extends phpok_control
 		$type = str_replace(".","",$type);
 		$condition = "res.ext IN('".str_replace('|',"','",$type)."')";
 		$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize,false);
-		if(!$rslist)
-		{
+		if(!$rslist){
 			$this->_stop(P_Lang('视频内容为空'));
 		}
 		$piclist = array();
-		foreach($rslist as $key=>$value)
-		{
+		foreach($rslist as $key=>$value){
 			$tmp = array('url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime'],'title'=>$value['title']);
 			$piclist[] = $tmp;
 		}
@@ -282,19 +251,16 @@ class ueditor_control extends phpok_control
 		$condition = "res.ext IN ('gif','jpg','png','jpeg') ";
 		$is_gd = false;
 		$gd_rs = $this->model('gd')->get_editor_default();
-		if($gd_rs)
-		{
+		if($gd_rs){
 			$condition .= " AND e.gd_id='".$gd_rs["id"]."' ";
 			$is_gd = true;
 		}
 		$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize,$is_gd);
-		if(!$rslist)
-		{
+		if(!$rslist){
 			$this->_stop(P_Lang('图片数据内容为空'));
 		}
 		$piclist = array();
-		foreach($rslist as $key=>$value)
-		{
+		foreach($rslist as $key=>$value){
 			$tmp = array('url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime'],'title'=>$value['title']);
 			$piclist[] = $tmp;
 		}
@@ -309,8 +275,7 @@ class ueditor_control extends phpok_control
 		$folder = $config['filePathFormat'];
 		$input_name = $config['fileFieldName'];
 		$rs = $this->upload_base($input_name,$folder,$config['cateid']);
-		if(!$rs || $rs['status'] != 'ok')
-		{
+		if(!$rs || $rs['status'] != 'ok'){
 			$this->_stop(P_Lang('文件上传失败'));
 		}
 		$data = array('id'=>$rs['id'],'title'=>$rs['title'],'url'=>$rs['filename'],'original'=>$rs['title']);
@@ -323,8 +288,7 @@ class ueditor_control extends phpok_control
 		$folder = $config['videoPathFormat'];
 		$input_name = $config['videoFieldName'];
 		$rs = $this->upload_base($input_name,$folder,$config['cateid']);
-		if(!$rs || $rs['status'] != 'ok')
-		{
+		if(!$rs || $rs['status'] != 'ok'){
 			$this->_stop(P_Lang('视频上传失败'));
 		}
 		$data = array('title'=>$rs['title'],'url'=>$rs['filename'],'original'=>$rs['title']);
@@ -426,38 +390,33 @@ class ueditor_control extends phpok_control
 	}
 	
 	//基础上传
-	function upload_base($input_name='upfile',$folder='res/',$cateid=0)
+	private function upload_base($input_name='upfile',$folder='res/',$cateid=0)
 	{
 		//上传类型
 		$typelist = $this->model('res')->type_list();
-		if($typelist)
-		{
+		if($typelist){
 			$ext = array();
-			foreach($typelist as $key=>$value)
-			{
+			foreach($typelist as $key=>$value){
 				$ext[] = $value['ext'];
 			}
 			$ext = implode(",",$ext);
 			$this->lib('upload')->set_type($ext);
 		}
 		$rs = $this->lib('upload')->upload($input_name);
-		if($rs["status"] != "ok")
-		{
+		if($rs["status"] != "ok"){
 			return $rs;
 		}
 		//存储目录
 		$basename = basename($rs["filename"]);
 		$save_folder = $this->dir_root.$folder;
-		if($save_folder.$basename != $rs["filename"])
-		{
+		if($save_folder.$basename != $rs["filename"]){
 			$this->lib('file')->mv($rs["filename"],$save_folder.$basename);
 		}
-		if(!file_exists($save_folder.$basename))
-		{
+		if(!file_exists($save_folder.$basename)){
 			$this->lib('file')->rm($rs["filename"]);
 			$rs = array();
 			$rs["status"] = "error";
-			$rs["error"] = P_Lang('图片迁移失败');
+			$rs["error"] = P_Lang('附件迁移失败');
 			return $rs;
 		}
 		$rs['title'] = $this->lib('string')->to_utf8($rs['title']);
@@ -470,21 +429,19 @@ class ueditor_control extends phpok_control
 		$array["addtime"] = $this->time;
 		$array["title"] = str_replace(".".$rs["ext"],"",$rs["title"]);
 		$arraylist = array("jpg","gif","png","jpeg");
-		if(in_array($rs["ext"],$arraylist))
-		{
+		if(in_array($rs["ext"],$arraylist)){
 			$img_ext = getimagesize($save_folder.$basename);
 			$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
 			$array["attr"] = serialize($my_ext);
 		}
-		$array["session_id"] = $this->session->sessid();
+		$array["admin_id"] = $_SESSION['admin_id'];
 		//存储图片信息
 		$id = $this->model('res')->save($array);
-		if(!$id)
-		{
+		if(!$id){
 			$this->lib('file')->rm($save_folder.$basename);
 			$rs = array();
 			$rs["status"] = "error";
-			$rs["error"] = P_Lang('图片存储失败');
+			$rs["error"] = P_Lang('存储失败');
 			return $rs;
 		}
 		$this->model('res')->gd_update($id);

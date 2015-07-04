@@ -3,18 +3,18 @@
 <div class="tips">
 	<table width="100%" cellpadding="0" cellspacing="0" height="100%">
 	<tr>
-		<td>&raquo; 会员列表</td>
+		<td>&raquo; {lang会员列表}</td>
 		<td>
 			<table>
 			<tr>
 				<form method="post" action="{echo admin_url('user')}">
 				<td><input type="text" id="keywords" name="keywords" value="{$keywords}" /></td>
-				<td><input type="submit" value="搜索" class="submit" /></td>
+				<td><input type="submit" value="{lang搜索}" class="submit" /></td>
 				</form>
 			</tr>
 			</table>
 		</td>
-		<td align="right"><div class="action"><a href="{echo admin_url('user','set')}">添加会员</a></div></div>
+		<td align="right"><div class="action"><a href="{echo admin_url('user','set')}">{lang添加会员}</a></div></div>
 	</tr>
 	</table>
 </div>
@@ -26,10 +26,10 @@
 	<th width="35px">&nbsp;</th>
 	<th width="35px"></th>
 	<!-- loop from=$arealist key=$key value=$value -->
-	<th style="text-align:left">{$value}</th>
+	<th style="text-align:left">{func P_Lang $value}</th>
 	<!-- /loop -->
-	<th width="130px">注册时间</th>
-	<th width="65px">操作</th>
+	<th width="130px">{lang注册时间}</th>
+	<th width="65px">{lang操作}</th>
 </tr>
 <!-- $rslist AS $key=>$value -->
 <tr>

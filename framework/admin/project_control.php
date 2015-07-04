@@ -233,6 +233,7 @@ class project_control extends phpok_control
 		$array['is_tpl_content'] = $this->get('is_tpl_content','checkbox');
 		$array['is_seo'] = $this->get('is_seo','checkbox');
 		$array['is_identifier'] = $this->get('is_identifier','checkbox');
+		$array['is_appoint'] = $this->get('is_appoint','checkbox');
 		$array['tag'] = $this->get('tag');
 		$ok_url = $this->url("project");
 		$c_rs = $this->model('sysmenu')->get_one_condition("appfile='list' AND parent_id>0");

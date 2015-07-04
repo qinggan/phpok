@@ -298,39 +298,57 @@ function update_select()
 	}
 }
 
+function set_admin_id(id)
+{
+	var url = get_url('workflow','title','id='+id);
+	$.dialog.open(url,{
+		'title':p_lang('指派管理员维护'),
+		'lock':true,
+		'width':'500px',
+		'height':'300px',
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert(p_lang('iframe还没加载完毕呢'));
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'cancel':function(){
+			return true;
+		}
+	});
+}
+
 function list_action_exec()
 {
 	var ids = $.input.checkbox_join();
-	if(!ids)
-	{
-		$.dialog.alert("未指定要操作的主题");
+	if(!ids){
+		$.dialog.alert(p_lang('未指定要操作的主题'));
 		return false;
 	}
 	var val = $("#list_action_val").val();
-	if(!val || val == '')
-	{
-		$.dialog.alert('未指定要操作的动作','','error');
+	if(!val || val == ''){
+		$.dialog.alert(p_lang('未指定要操作的动作'),'','error');
 		return false;
 	}
-	//执行批量删除
-	if(val == 'delete')
-	{
+	if(val == 'appoint'){
+		set_admin_id(ids);
+		return false;
+	}
+	if(val == 'delete'){
 		set_delete();
 		return false;
 	}
-	//执行批量排序
-	if(val == 'sort')
-	{
+	if(val == 'sort'){
 		set_sort();
 		return false;
 	}
 	//执行批量审核通过
-	if(val == 'status' || val == 'unstatus' || val == 'show' || val == 'hidden')
-	{
+	if(val == 'status' || val == 'unstatus' || val == 'show' || val == 'hidden'){
 		var url = get_url('list','execute','ids='+$.str.encode(ids)+"&title="+val);
-	}
-	else
-	{
+	}else{
 		var tmp = val.split(':');
 		if(tmp[1] && tmp[0] == 'attr'){
 			var type = $("#attr_set_val").val();

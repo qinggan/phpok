@@ -80,13 +80,10 @@ $(document).ready(function(){
 			'dataType':'json',
 			'success':function(rs){
 				if(rs.status == 'ok'){
-					if($("#id").val()){
-						$.dialog.alert("{lang项目信息编辑成功}");
-					}else{
-						$.dialog.alert('{lang项目信息创建成功}',function(){
-							$.phpok.go('{url ctrl=project/}');
-						},'succeed');
-					}
+					var tip = $("#id").val() ? '{lang项目信息编辑成功}' : '{lang项目信息创建成功}';
+					$.dialog.alert(tip,function(){
+						$.phpok.go('{url ctrl=project/}');
+					},'succeed');
 				}else{
 					$.dialog.alert(rs.content);
 					return false;
@@ -220,19 +217,68 @@ $(document).ready(function(){
 			<span class="note">{lang请根据实际情况设置相应的扩展项，勾选表示启用}</span>
 		</div>
 		<div class="content">
-		<ul class="layout">
-			<li><label><input type="checkbox" name="is_attr" id="is_attr"{if $rs.is_attr} checked{/if} />{lang主题属性}</label></li>
-			<li><label><input type="checkbox" name="is_biz" id="is_biz"{if $rs.is_biz} checked{/if} onclick="set_biz()" />{lang电子商务}</label></li>
-			<li><label><input type="checkbox" name="is_search"{if $rs.is_search} checked{/if} />{lang搜索}</label></li>
-			<li><label><input type="checkbox" name="is_tag"{if $rs.is_tag} checked{/if} />{lang标签}</label></li>
-			<li><label><input type="checkbox" name="subtopics"{if $rs.subtopics} checked{/if} />{lang下级主题}</label></li>
-			<li><label><input type="checkbox" name="post_status" id="post_status"{if $rs.post_status} checked{/if} onclick="set_post_status()" />{lang发布}</label></li>
-			<li><label><input type="checkbox" name="comment_status" id="comment_status"{if $rs.comment_status} checked{/if} onclick="set_comment_status()" />{lang评论}</label></li>
-			<li><label><input type="checkbox" name="is_userid" id="is_userid"{if $rs.is_userid} checked{/if} />{lang绑定会员}</label></li>
-			<li><label><input type="checkbox" name="is_tpl_content" id="is_tpl_content"{if $rs.is_tpl_content} checked{/if} />{lang自定义内容模板}</label></li>
-			<li><label><input type="checkbox" name="is_seo" id="is_seo"{if $rs.is_seo} checked{/if} />{lang自定义SEO}</label></li>
-			<li><label><input type="checkbox" name="is_identifier" id="is_identifier"{if $rs.is_identifier} checked{/if} />{lang自定义标识}</label></li>
-		</ul>
+		<table class="list" cellspacing="0" style="padding:1px;border:1px solid #ccc;">
+		<tr>
+			<td><input type="checkbox" name="is_attr" id="is_attr"{if $rs.is_attr} checked{/if} /></td>
+			<td><label for="is_attr">{lang主题属性}</label></td>
+			<td class="gray i">{lang相当于给主题增加标签，如精华，推荐，热荐等}</td>
+		</tr>
+		<tr>
+			<td><input type="checkbox" name="is_biz" id="is_biz"{if $rs.is_biz} checked{/if} onclick="set_biz()" /></td>
+			<td><label for="is_biz">{lang电子商务}</label></td>
+			<td class="gray i">{lang启用此项，该主题将支持交易功能}</td>
+		</tr>
+		<tr>
+			<td><input type="checkbox" name="is_search" id="is_search"{if $rs.is_search} checked{/if} /></td>
+			<td><label for="is_search">{lang搜索}</label></td>
+			<td class="gray i">{lang勾选此项后，该项目在前台将支持搜索}</td>
+		</tr>
+		<tr>
+			<td><input type="checkbox" name="is_tag" id="is_tag"{if $rs.is_tag} checked{/if} /></td>
+			<td><label for="is_tag">{lang标签}</label></td>
+			<td class="gray i">{lang允许用户自定义标签内容，以方便网站优化}</td>
+		</tr>
+		<tr>
+			<td><input type="checkbox" name="subtopics" id="subtopics"{if $rs.subtopics} checked{/if} /></td>
+			<td><label for="subtopics">{lang下级主题}</label></td>
+			<td class="gray i">{lang启用此项，主题将支持二级，多用于二级导航}</td>
+		</tr>
+		<tr>
+			<td><input type="checkbox" name="post_status" id="post_status"{if $rs.post_status} checked{/if} onclick="set_post_status()" /></td>
+			<td><label for="post_status">{lang发布}</label></td>
+			<td class="gray i">{lang勾选此项，被授权的用户可以在前台有发布权限}</td>
+		</tr>
+		<tr>
+			<td><input type="checkbox" name="comment_status" id="comment_status"{if $rs.comment_status} checked{/if} onclick="set_comment_status()" /></td>
+			<td><label for="comment_status">{lang评论}</label></td>
+			<td class="gray i">{lang即回复功能，勾选后被授权的用户将支持回复，静态页无效}</td>
+		</tr>
+		<tr>
+			<td><input type="checkbox" name="is_userid" id="is_userid"{if $rs.is_userid} checked{/if} /></td>
+			<td><label for="is_userid">{lang绑定会员}</label></td>
+			<td class="gray i">{lang允许主题绑定相应的会员，会员在个人中心可以编辑相关主题，要求启用发布功能后，编辑才有效}</td>
+		</tr>
+		<tr>
+			<td><input type="checkbox" name="is_tpl_content" id="is_tpl_content"{if $rs.is_tpl_content} checked{/if} /></td>
+			<td><label for="is_tpl_content">{lang自定义模板}</label></td>
+			<td class="gray i">{lang后台添加主题后允许绑定模板，此项仅限后台管理员操作}</td>
+		</tr>
+		<tr>
+			<td><input type="checkbox" name="is_seo" id="is_seo"{if $rs.is_seo} checked{/if} /></td>
+			<td><label for="is_seo">{lang自定义SEO}</label></td>
+			<td class="gray i">{lang允许管理员针对主题自定义相关的SEO信息}</td>
+		</tr>
+		<tr>
+			<td><input type="checkbox" name="is_identifier" id="is_identifier"{if $rs.is_identifier} checked{/if} /></td>
+			<td><label for="is_identifier">{lang自定义标识}</label></td>
+			<td class="gray i">{lang启用此项后，允许管理员针对添加的主题设定一个标识，更便于用户记住及SEO优化}</td>
+		</tr>
+		<tr>
+			<td><input type="checkbox" name="is_appoint" id="is_appoint"{if $rs.is_appoint} checked{/if} /></td>
+			<td><label for="is_appoint">{lang指定维护}</label></td>
+			<td class="gray i">{lang此项用于指定的主题可以授权给其他管理员维护，即使被授权的管理员没有内容维护权限}</td>
+		</tr>
+		</table>
 		</div>
 	</div>
 

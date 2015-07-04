@@ -10,19 +10,18 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class upload_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 	}
 
 	//附件上传
-	function save_f()
+	public function save_f()
 	{
 		$this->popedom();
 		$cateid = $this->get('cateid','int');
 		$rs = $this->upload_base('upfile',$cateid);
-		if(!$rs || $rs['status'] != 'ok')
-		{
+		if(!$rs || $rs['status'] != 'ok'){
 			$this->json($rs['error']);
 		}
 		unset($rs['status']);
@@ -46,58 +45,41 @@ class upload_control extends phpok_control
 	//基础上传
 	function upload_base($input_name='upfile',$cateid=0)
 	{
-		//上传类型
-		$typelist = $this->model('res')->type_list();
-		if($typelist)
-		{
-			$ext = array();
-			foreach($typelist as $key=>$value)
-			{
-				$ext[] = $value['ext'];
-			}
-			$ext = implode(",",$ext);
-			$this->lib('upload')->set_type($ext);
+		if($cateid){
+			$cate_rs = $this->model('rescate')->get_one($cateid);
 		}
+		if(!$cate_rs){
+			$cate_rs = $this->model('rescate')->get_default();
+		}
+		if(!$cate_rs){
+			return array('status'=>'error','error'=>P_Lang('未指定分类或附件分类不存在'));
+		}
+		if(!$cate_rs['filetypes']){
+			$cate_rs['filetypes'] = 'jpg,png,gif,rar,zip';
+		}
+		$this->lib('upload')->set_type($cate_rs['filetypes']);
 		$rs = $this->lib('upload')->upload($input_name);
-		if($rs["status"] != "ok")
-		{
+		if($rs["status"] != "ok"){
 			return $rs;
-		}
-		$cate_rs = $this->model('res')->cate_one($cateid);
-		if(!$cate_rs || $cate_rs['root'] == '/' || !$cate_rs['root'])
-		{
-			$cate_rs["id"] = 0;
-			$cate_rs["root"] = "res/";
-			$cate_rs["folder"] = "/";
 		}
 		$folder = $cate_rs["root"];
-		if($cate_rs["folder"] && $cate_rs["folder"] != "/")
-		{
+		if($cate_rs["folder"] && $cate_rs["folder"] != "/"){
 			$folder .= date($cate_rs["folder"],$this->time);
 		}
-		if(!file_exists($folder))
-		{
+		if(!file_exists($folder)){
 			$this->lib('file')->make($folder);
 		}
-		//如果还是没有检测到文件夹，则回到默认目录
-		if(!file_exists($folder))
-		{
+		if(!file_exists($folder)){
 			$folder = $cate_rs['root'];
 		}
-		//存储目录
 		$basename = basename($rs["filename"]);
 		$save_folder = $this->dir_root.$folder;
-		if($save_folder.$basename != $rs["filename"])
-		{
+		if($save_folder.$basename != $rs["filename"]){
 			$this->lib('file')->mv($rs["filename"],$save_folder.$basename);
 		}
-		if(!file_exists($save_folder.$basename))
-		{
+		if(!file_exists($save_folder.$basename)){
 			$this->lib('file')->rm($rs["filename"]);
-			$rs = array();
-			$rs["status"] = "error";
-			$rs["error"] = "图片迁移失败";
-			return $rs;
+			return array('status'=>'error','error'=>P_Lang('图片迁移失败'));
 		}
 		$rs['title'] = $this->lib('string')->to_utf8($rs['title']);
 		$array = array();
@@ -107,27 +89,22 @@ class upload_control extends phpok_control
 		$array["ext"] = $rs["ext"];
 		$array["filename"] = $folder.$basename;
 		$array["addtime"] = $this->time;
-		$array["title"] = str_replace(".".$rs["ext"],"",$rs["title"]);
-		if($_SESSION['user_id'])
-		{
+		$array["title"] = $rs['title'];
+		$array["title"] = str_replace(".".$rs["ext"],"",$array["title"]);
+		if($_SESSION['user_id']){
 			$array['user_id'] = $_SESSION['user_id'];
 		}
+		$array['session_id'] = $this->session->sessid();
 		$arraylist = array("jpg","gif","png","jpeg");
-		if(in_array($rs["ext"],$arraylist))
-		{
+		if(in_array($rs["ext"],$arraylist)){
 			$img_ext = getimagesize($save_folder.$basename);
 			$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
 			$array["attr"] = serialize($my_ext);
 		}
-		//存储图片信息
 		$id = $this->model('res')->save($array);
-		if(!$id)
-		{
+		if(!$id){
 			$this->lib('file')->rm($save_folder.$basename);
-			$rs = array();
-			$rs["status"] = "error";
-			$rs["error"] = P_Lang('图片存储失败');
-			return $rs;
+			return array('status'=>'error','error'=>P_Lang('图片存储失败'));
 		}
 		$this->model('res')->gd_update($id);
 		$rs = $this->model('res')->get_one($id);
@@ -136,7 +113,7 @@ class upload_control extends phpok_control
 	}
 
 	//附件上传替换
-	function replace_f()
+	public function replace_f()
 	{
 		$this->popedom();
 		$id = $this->get("oldid",'int');
@@ -145,8 +122,7 @@ class upload_control extends phpok_control
 			$this->json(P_Lang('没有指定要替换的附件'));
 		}
 		$old_rs = $this->model('res')->get_one($id);
-		if(!$old_rs)
-		{
+		if(!$old_rs){
 			$this->json(P_Lang('资源不存在'));
 		}
 		$rs = $this->lib('upload')->upload('upfile');
@@ -193,7 +169,6 @@ class upload_control extends phpok_control
 		}
 		$rslist = $this->model("res")->get_list_from_id($id);
 		if($rslist){
-			//排序
 			$reslist = array();
 			foreach($newlist as $key=>$value){
 				if($rslist[$value]){
@@ -215,18 +190,7 @@ class upload_control extends phpok_control
 		if(!$rs){
 			error(P_Lang('数据不存在'));
 		}
-		if($_SESSION['user_id']){
-			if($_SESSION['user_id'] != $rs['user_id']){
-				error(P_Lang('您没有权限修改此附件信息'));
-			}
-		}else{
-			if(!$rs['session_id']){
-				error(P_Lang('您没有权限修改此附件信息'));
-			}
-			if($_SESSION['session_id'] != $rs['session_id']){
-				error(P_Lang('您没有权限修改此附件信息'));
-			}
-		}
+		$this->popedom_action($rs['session_id'],$rs['user_id']);
 		$note = form_edit('note',$rs['note'],'editor','width=650&height=250&etype=simple');
 		$this->assign('rs',$rs);
 		$this->assign('note',$note);
@@ -243,18 +207,7 @@ class upload_control extends phpok_control
 		if(!$rs){
 			$this->json(P_Lang('数据不存在'));
 		}
-		if($_SESSION['user_id']){
-			if($_SESSION['user_id'] != $rs['user_id']){
-				$this->json(P_Lang('您没有权限修改此附件信息'));
-			}
-		}else{
-			if(!$rs['session_id']){
-				$this->json(P_Lang('您没有权限修改此附件信息'));
-			}
-			if($_SESSION['session_id'] != $rs['session_id']){
-				$this->json(P_Lang('您没有权限修改此附件信息'));
-			}
-		}
+		$this->popedom_action($rs['session_id'],$rs['user_id']);
 		$title = $this->get('title');
 		if(!$title){
 			$this->json(P_Lang('附件标题不能为空'));
@@ -275,15 +228,15 @@ class upload_control extends phpok_control
 			error(P_Lang('数据不存在'));
 		}
 		if($_SESSION['user_id']){
-			if($_SESSION['user_id'] != $rs['user_id']){
-				error(P_Lang('您没有权限修改此附件信息'));
+			if($_SESSION['user_id'] != $rs['user_id'] && $rs['session_id'] != $this->session->sessid()){
+				error(P_Lang('您没有权限查看此附件信息'));
 			}
 		}else{
 			if(!$rs['session_id']){
-				error(P_Lang('您没有权限修改此附件信息'));
+				error(P_Lang('您没有权限查看此附件信息'));
 			}
-			if($_SESSION['session_id'] != $rs['session_id']){
-				error(P_Lang('您没有权限修改此附件信息'));
+			if($rs['session_id'] != $this->session->sessid()){
+				error(P_Lang('您没有权限查看此附件信息'));
 			}
 		}
 		$arraylist = array('jpg','png','gif','jpeg');
@@ -304,22 +257,27 @@ class upload_control extends phpok_control
 		if(!$rs){
 			$this->json(P_Lang('附件信息不存在'));
 		}
-		if($_SESSION['user_id']){
-			if($_SESSION['user_id'] != $rs['user_id']){
-				$this->json(P_Lang('您没有权限删除此附件信息'));
-			}
-		}else{
-			if(!$rs['session_id']){
-				$this->json(P_Lang('您没有权限删除此附件信息'));
-			}
-			if($_SESSION['session_id'] != $rs['session_id']){
-				$this->json(P_Lang('您没有权限删除此附件信息'));
-			}
-		}
-		//执行删除操作
+		$this->popedom_action($rs['session_id'],$rs['user_id']);
 		$this->model('res')->delete($id);
 		$this->json(true);
 	}
 
+	private function popedom_action($sessid='',$uid=0)
+	{
+		if($_SESSION['user_id']){
+			if($uid && $uid == $_SESSION['user_id']){
+				return true;
+			}
+			if($sessid && $sessid == $this->session->sessid()){
+				return true;
+			}
+		}else{
+			if($sessid && $sessid == $this->session->sessid()){
+				return true;
+			}
+		}
+		$info = P_Lang('没有权限操作');
+		$this->json($info);
+	}
 }
 ?>

@@ -80,7 +80,7 @@ $(document).ready(function(){
 	&raquo; {lang项目列表}
 </div>
 <div class="list">
-<table width="100%" cellpadding="0" cellspacing="0">
+<table width="100%" cellspacing="0" cellpadding="0">
 <tr>
 	<th class="id">ID</th>
 	<th class="w33">&nbsp;</th>
@@ -89,12 +89,12 @@ $(document).ready(function(){
 	<th class="lft">{lang模块}</th>
 	<th width="65">{lang排序}</th>
 	<!-- if $popedom.set -->
-	<th class="lft" width="270">{lang操作}</th>
+	<th class="lft" width="130">{lang操作}</th>
 	<!-- /if -->
 </tr>
 <!-- foreach($rslist AS $key=>$value) -->
 <tr>
-	<td class="center gray">{$value.id}</td>
+	<td class="center gray" height="24px">{$value.id}</td>
 	<td class="center"><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="set_status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
 	<td><label for="id_{$value.id}">{$value.space}{$value.title}<!-- if $value.nick_title --><span class="gray i"> ({$value.nick_title})</span><!-- /if --><!-- if $value.hidden --><span class="red i">{lang（隐藏）}</span><!-- /if --></label></td>
 	<td>{$value.identifier}</td>
@@ -102,15 +102,15 @@ $(document).ready(function(){
 	<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 	<!-- if $popedom.set -->
 	<td>
-		<div class="button-group">
-		<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=project func=set id=$value.id/}')" class="phpok-btn" />
-		<input type="button" value="{lang扩展}" onclick="$.phpok.go('{url ctrl=project func=content id=$value.id/}')" class="phpok-btn" />
-		<input type="button" value="{lang复制}" onclick="project_copy('{$value.id}','{$value.title}')" class="phpok-btn" />
-		<input type="button" value="{lang删除}" onclick="project_delete('{$value.id}','{$value.title}')" class="phpok-btn" />
 		<!-- if !$value.parent_id -->
-		<input type="button" value="{lang添加子项}" onclick="$.phpok.go('{url ctrl=project func=set pid=$value.id/}')" class="phpok-btn" />
+		<a href="{url ctrl=project func=set pid=$value.id/}" class="ico add" title="{lang添加子项}"></a>
+		<!-- else -->
+		<a class="ico space"></a>
 		<!-- /if -->
-		</div>
+		<a href="{url ctrl=project func=set id=$value.id/}" class="ico edit" title="{lang编辑}"></a>
+		<a href="{url ctrl=project func=set id=$value.id/}" class="ico key" title="{lang扩展}"></a>
+		<a href="javascript:project_copy('{$value.id}','{$value.title}');void(0);" class="ico copy" title="{lang复制}"></a>
+		<a href="javascript:project_delete('{$value.id}','{$value.title}');void(0);" class="ico delete" title="{lang删除}"></a>
 	</td>
 	<!-- /if -->
 </tr>

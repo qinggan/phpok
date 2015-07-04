@@ -102,7 +102,7 @@ class rescate_control extends phpok_control
 		if(!$typeinfo){
 			$this->json(P_Lang('附件类型说明不能为空'));
 		}
-		$maxinfo = str_replace(array('K','M','KB','MB','GB','G'),'',get_cfg_var('upload_max_filesize')) * 1000;
+		$maxinfo = str_replace(array('K','M','KB','MB','GB','G'),'',get_cfg_var('upload_max_filesize')) * 1024;
 		$filemax = $this->get('filemax','int');
 		if(!$filemax || ($filemax && $filemax>$maxinfo)){
 			$filemax = $maxinfo;

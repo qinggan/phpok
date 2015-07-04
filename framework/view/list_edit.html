@@ -27,7 +27,7 @@ $(document).keypress(function(e){
 $(document).ready(function(){
 	$("#_listedit").submit(function(){
 		var id = $("#id").val();
-		var pcate = parseInt("{$p_rs.cate}");;
+		var pcate = parseInt("{$p_rs.cate}");
 		$(this).ajaxSubmit({
 			'url':'{url ctrl=list func=ok /}',
 			'type':'post',
@@ -45,13 +45,12 @@ $(document).ready(function(){
 						},'succeed');
 					}else{
 						$.dialog({
-							'title':'操作提示',
 							'icon':'succeed',
 							'content':'{lang内容添加操作成功，请选择继续添加或返回列表}',
 							'ok':function(){$.phpok.reload();},
-							'okVal':'继续添加',
+							'okVal':'{lang继续添加}',
 							'cancel':function(){$.phpok.go(url);},
-							'cancelVal':'返回列表',
+							'cancelVal':'{lang返回列表}',
 							'lock':true
 						});
 					}
@@ -246,8 +245,6 @@ $(document).ready(function(){
 			fixed:true,
 			choose: function(dates){
 				var date = new Date(dates);
-				var time = date.getTime();
-				date = new Date(time+3600000);
 				var month = date.getMonth()+1;
 				if(month<10){
 					month = '0'+month;
@@ -295,9 +292,9 @@ $(document).ready(function(){
 			<td colspan="2" class="gray i">发布时间大于当前时将不会直接显示，文章将于：
 			<span class="red" id="postdatetime">
 				<!-- if $rs.dateline -->
-				{func date Y年m月d日H点整 $rs.dateline+3600}
+				{func date Y年m月d日H点整 $rs.dateline}
 				<!-- else -->
-				{func date Y年m月d日H点整 $sys.time+3600}
+				{func date Y年m月d日H点整 $sys.time}
 				<!-- /if -->
 			</span>发布到网站上</td>
 		</tr>
@@ -386,6 +383,11 @@ function win_resize()
 		var main1_width = width - 320;
 		$(".main1").css('width',main1_width+"px").css('float','left');
 		$(".main2").css('width','300px').css('float','right');
+		var h = $(".main2").height();
+		var d_h = $(window).height() - 30;
+		if(h < d_h){
+			$('.main2').css('position','fixed').css('top','30px').css('right','0px');
+		}
 	}else{
 		$(".main1,.main2").css('width',width+"px").css("float",'none');
 	}

@@ -214,6 +214,9 @@ class update_control extends phpok_control
 				continue;
 			}
 			$info = trim(file_get_contents($value));
+			if($this->db->prefix != 'qinggan_'){
+				$info = str_replace('qinggan_',$prefix,$info);
+			}
 			if($info){
 				$this->sql_run($info);
 			}

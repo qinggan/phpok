@@ -234,7 +234,7 @@ class phpok_call extends phpok_control
 	{
 		$condition  = " l.site_id='".$rs['site']."' AND l.hidden=0 ";
 		//计划任务时发布文章
-		$condition .= " AND l.dateline<='".strtotime(date("Y-m-d H:00:00",$this->time))."' ";
+		$condition .= " AND l.dateline<='".strtotime(date("Y-m-d H:00:00",($this->time+3600)))."' ";
 		if($rs['pid']){
 			$condition .= " AND l.project_id=".intval($rs['pid'])." ";
 		}
@@ -1012,6 +1012,25 @@ class phpok_call extends phpok_control
 		}
 		$user_id = $rs['user_id'] ? $rs['user_id'] : $rs['phpok'];
 		return $this->model('user')->get_one($user_id);
+	}
+
+	private function _userlist($rs,$cache_id='')
+	{
+		$condition = 'u.status=1 ';
+		if($rs['is_avatar'] && $rs['is_avatar'] != 'false' && $rs['is_avatar'] != '0'){
+			$condition .= " AND u.avatar !='' ";
+		}
+		if($rs['group_id']){
+			$condition .= " AND u.group_id='".$rs['group_id']."'";
+		}
+		$psize = ($rs['psize'] && intval($rs['psize'])) ? $rs['psize'] : 20;
+		$offset = $rs['pageid'] ? (($rs['pageid'] - 1)* $psize) : 0;
+		$data = array('total'=>0);
+		$data['total'] = $this->model('user')->get_count($condition);
+		if($data['total']>0){
+			$data['rslist'] = $this->model('user')->get_list($condition,$offset,$psize);
+		}
+		return $data;
 	}
 }
 ?>

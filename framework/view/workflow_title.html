@@ -1,0 +1,43 @@
+<!-- include tpl=head_open -->
+<table class="list" width="100%">
+<tr>
+	<th>ID</th>
+	<th class="lft">&nbsp;主题</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<tr>
+	<td>{$value.id}</td>
+	<td>{$value.title}</td>
+</tr>
+<!-- /loop -->
+</table>
+<script type="text/javascript">
+function save()
+{
+	var url = get_url('workflow','addok');
+}
+</script>
+<hr />
+<input type="hidden" name="ids" id="ids" value="{$ids}" />
+<div class="table">
+	<div class="title">
+		将上述内容指定管理员维护
+		<span class="note"></span>
+	</div>
+	<div class="content">
+		<select id="admin_id" name="admin_id">
+		<option value="">请选择管理员</option>
+		<!-- loop from=$alist key=$key value=$value id=$tmpid -->
+		<option value="{$value.id}">{$value.account}<!-- if $value.fullname -->（{$value.fullname}）<!-- /if --></option>
+		<!-- /loop -->
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		备注
+		<span class="note">简单说明下要通知什么内容，不超过80字</span>
+	</div>
+	<div class="content"><textarea name="note" id="note" style="width:450px;height:40px;"></textarea></div>
+</div>
+<!-- include tpl=foot_open -->

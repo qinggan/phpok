@@ -47,8 +47,11 @@ class rescate_model_base extends phpok_model
 		return $rslist;
 	}
 
-	public function get_one($id)
+	public function get_one($id='')
 	{
+		if(!$id){
+			return $this->get_default();
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."res_cate WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}

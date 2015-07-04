@@ -366,32 +366,6 @@ class list_model_base extends phpok_model
 		$orderby = $o_rs['orderby'] ? $o_rs['orderby'] : 'l.sort DESC,l.dateline DESC,l.id DESC';
 	}
 
-	//复制一个主题
-	function copy_id($id)
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id='".$id."'";
-		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
-		unset($rs["id"]);
-		$insert_id = $this->db->insert_array($rs,"list");
-		if(!$insert_id)
-		{
-			return false;
-		}
-		if($rs["module_id"])
-		{
-			$m_id = $rs["module_id"];
-			//检测扩展内容是否存在
-			$sql = "SELECT * FROM ".$this->db->prefix."list_".$m_id." WHERE id='".$id."'";
-			$ext_rs = $this->db->get_one($sql);
-			if($ext_rs)
-			{
-				$ext_rs["id"] = $insert_id;
-				$this->save_ext($ext_rs,$m_id);
-			}
-		}
-		return true;
-	}
 
 	function attr_list()
 	{
