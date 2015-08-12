@@ -88,6 +88,12 @@ class login_control extends phpok_control
 		$_SESSION["user_id"] = $user_rs['id'];
 		$_SESSION["user_gid"] = $user_rs['group_id'];
 		$_SESSION["user_name"] = $user_rs["user"];
+		$_SESSION["user_date"] = $user_rs["post_date"];
+		$_SESSION["user_pdip"] = $user_rs["pdip"];
+		$_SESSION["user_lasttime"] = $user_rs["lasttime"];
+		$_SESSION["user_lastip"] = $user_rs["lastip"];
+		//登记财富日志
+		$this->model('wealth')->wealth_autosave($user_rs['id'],P_Lang('会员登录'));
 		error(P_Lang('会员登录成功'),$_back,'ok');
 	}
 

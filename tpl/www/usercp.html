@@ -11,6 +11,9 @@
 				<ul>
 					<li><strong>账号：</strong>{$rs.user}</li>
 					<li><strong>邮箱：</strong>{$rs.email}</li>
+					<!-- loop from=$user.wealth key=$key value=$value id=$tmpid -->
+					<li><strong>{$value.title}：</strong>{$value.val}{$value.unit}</li>
+					<!-- /loop -->
 				</ul>
 			</div>
 			<div class="clear"></div>

@@ -15,7 +15,6 @@ class api_duanxincm extends phpok_plugin
 	{
 		parent::plugin();
 		$this->me = $this->plugin_info();
-		$this->tpl->assign('plugin',$this->me);
 	}
 
 	public function sendsms()
@@ -23,6 +22,10 @@ class api_duanxincm extends phpok_plugin
 		$mobile = $this->get('mobile');
 		if(!$mobile){
 			$this->json('手机号不能为空');
+		}
+		$chk = $this->model('user')->user_mobile($mobile);
+		if($chk){
+			$this->json('手机号已注册');
 		}
 		$chk = $this->lib('common')->tel_check($mobile,'mobile');
 		if(!$chk){
@@ -47,7 +50,7 @@ class api_duanxincm extends phpok_plugin
 		if(!$action){
 			$this->json('验证短信存储失败，请再尝试一遍');
 		}
-		$content = "注册验证码【".$code."】，请在5分钟内填写";
+		$content = "您的验证码:".$code."，在5分钟内输入有效，请勿将此验证短信转发给他人";
 		//发送短信
 		$url = $this->me['param']['cm_server'] ? $this->me['param']['cm_server'] : "http://api.duanxin.cm/";
 		$data = array(
@@ -62,7 +65,6 @@ class api_duanxincm extends phpok_plugin
 		foreach($data as $key=>$value){
 			$url .= $key.'='.rawurlencode($value).'&';
 		}
-		phpok_log($url);
 		$info = $this->lib('html')->get_content($url);
 		if($info != '100'){
 			$sql = "DELETE FROM ".$this->db->prefix."plugin_duanxincm WHERE id='".$action."'";
@@ -72,8 +74,65 @@ class api_duanxincm extends phpok_plugin
 		$this->json(true);
 	}
 
-	//验证
+	//注册保存前验证
 	public function ap_register_save_before()
+	{
+		$this->sms_check();
+		return true;
+	}
+
+	//注册完成后执行
+	public function ap_register_save_after()
+	{
+		$this->sms_update();
+		//如果会员是未审核状态，直接通过审核
+		if(!$_SESSION['user_id']){
+			$user = $this->get('user');
+			$rs = $this->model('user')->get_one($user,'user');
+			if(!$rs){
+				return true;
+			}
+			//会员账号直接通过审核
+			if(!$rs['status']){
+				$this->model('user')->set_status($rs['id'],1);
+			}
+			//登录
+			$_SESSION["user_id"] = $rs['id'];
+			$_SESSION["user_gid"] = $rs['group_id'];
+			$_SESSION["user_name"] = $rs["user"];
+		}
+		return true;
+	}
+
+	public function ap_usercp_mobile_before()
+	{
+		$pass = $this->get('pass');
+		if(!$pass){
+			$this->json(P_Lang('密码不能为空'));
+		}
+		$newmobile = $this->get("mobile");
+		if(!$newmobile){
+			$this->json(P_Lang('新手机号码不能为空'));
+		}
+		$user = $this->model('user')->get_one($_SESSION['user_id']);
+		if($user['mobile'] == $newmobile){
+			$this->json(P_Lang('新旧手机号码不能一样'));
+		}
+		$uid = $this->model('user')->uid_from_mobile($newmobile,$_SESSION['user_id']);
+		if($uid){
+			$this->json(P_Lang('手机号码已被使用'));
+		}
+		$this->sms_check();
+		return true;
+	}
+
+	public function ap_usercp_mobile_after()
+	{
+		$this->sms_update();
+		return true;
+	}
+
+	private function sms_check()
 	{
 		$tmpid = $this->me['param']['cm_check_code'];
 		if(!$tmpid){
@@ -103,7 +162,7 @@ class api_duanxincm extends phpok_plugin
 		return true;
 	}
 
-	public function ap_register_save_after()
+	private function sms_update()
 	{
 		$tmpid = $this->me['param']['cm_check_code'];
 		if(!$tmpid){

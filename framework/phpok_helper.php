@@ -169,13 +169,10 @@ function password_check($pass,$password)
 {
 	if(!$password || !$pass) return false;
 	$list = explode(":",$password);
-	if($list[1])
-	{
+	if($list[1]){
 		$chkpass = strlen($pass) != 32 ? md5($pass.$list[1]) : $pass;
 		return $chkpass == $list[0] ? true : false;
-	}
-	else
-	{
+	}else{
 		$chkpass = strlen($pass) != 32 ? md5($pass) : $pass;
 		return $chkpass == $password ? true : false;
 	}
@@ -784,6 +781,23 @@ function tpl_head($array=array())
 	$html .= $GLOBALS['app']->site['title'];
 	$html .= '</title>'."\n\t";
 	$html .= '<base href="'.$GLOBALS['app']->url.'" />'."\n\t";
+	if($array["css"]){
+		$tmp = explode(",",$array['css']);
+		foreach($tmp AS $key=>$value){
+			$value = trim($value);
+			if($value){
+				if(is_file($GLOBALS['app']->dir_root.$value)){
+				$html .= '<link rel="stylesheet" type="text/css" href="'.$GLOBALS['app']->url.$value.'" />';
+				}else{
+					$value = basename($value);
+					if(is_file($GLOBALS['app']->dir_root."css/".$value)){
+						$html .= "\n\t".'<link rel="stylesheet" type="text/css" href="'.$GLOBALS['app']->url."css/".$value.'" />'."\n\t";
+					}
+				}
+			}
+		}
+	}
+	$html .= phpok_head_css();
 	$jsurl = $GLOBALS['app']->url.$GLOBALS['app']->config["www_file"]."?".$GLOBALS['app']->config['ctrl_id']."=js";
 	//包含JS
 	$include_js = $GLOBALS['app']->is_mobile ? $GLOBALS['app']->config['mobile']['includejs'] : '';
@@ -807,33 +821,16 @@ function tpl_head($array=array())
 		$jsurl .= "&_ext=".rawurlencode($exclude_js);
 	}
 	$html .= '<script type="text/javascript" src="'.$jsurl.'" charset="utf-8"></script>';
-	if($array["css"]){
-		$tmp = explode(",",$array['css']);
-		foreach($tmp AS $key=>$value){
-			$value = trim($value);
-			if($value){
-				if(is_file($GLOBALS['app']->dir_root.$value)){
-				$html .= "\n\t".'<link rel="stylesheet" type="text/css" href="'.$GLOBALS['app']->url.$value.'" />';
-				}else{
-					$value = basename($value);
-					if(is_file($GLOBALS['app']->dir_root."css/".$value)){
-						$html .= "\n\t".'<link rel="stylesheet" type="text/css" href="'.$GLOBALS['app']->url."css/".$value.'" />';
-					}
-				}
-			}
-		}
-	}
-	$html .= phpok_head_css();
 	if($array['js']){
 		$tmp = explode(",",$array['js']);
 		foreach($tmp AS $key=>$value){
 			$value = trim($value);
 			if($value){
 				if(is_file($GLOBALS['app']->dir_root.$value)){
-					$html .= "\n\t".'<script type="text/javascript" src="'.$GLOBALS['app']->url.$value.'" charset="UTF-8"></script>';
+					$html .= "\n\t".'<script type="text/javascript" src="'.$GLOBALS['app']->url.$value.'" charset="utf-8"></script>';
 				}else{
 					if(is_file($GLOBALS['app']->dir_root."js/".$value)){
-						$html .= "\n\t".'<script type="text/javascript" src="'.$GLOBALS['app']->url."js/".$value.'" charset="UTF-8"></script>';
+						$html .= "\n\t".'<script type="text/javascript" src="'.$GLOBALS['app']->url."js/".$value.'" charset="utf-8"></script>';
 					}
 				}
 			}
@@ -841,6 +838,8 @@ function tpl_head($array=array())
 	}
 	$html .= phpok_head_js();
 	if(!$array['close'] || $array["close"] != 'false'){
+		//增加插件节点
+		$html .= $GLOBALS['app']->plugin_html_ap("phpokhead");
 		$html .= "\n".'</head>';
 	}
 	$html .= "\n";
@@ -850,14 +849,37 @@ function tpl_head($array=array())
 //表单生成器
 function form_edit($id,$content="",$type="text",$attr="",$return='echo')
 {
-	if(!$id) return false;
-	$array = array("identifier"=>$id,"form_type"=>$type,"content"=>$content);
-	if($attr)
-	{
+	if(!$id){
+		return false;
+	}
+	$array = array("id"=>$id,"identifier"=>$id,"form_type"=>$type,"content"=>$content);
+	if($attr){
 		parse_str($attr,$list);
 		if($list) $array = array_merge($list,$array);
 	}
 	$rs = $GLOBALS['app']->lib('form')->format($array);
+	if($return == 'array') return $rs;
+	return $rs['html'];
+}
+
+//基于字段管理生成表单项
+//
+function form_fields($identifer='',$id='',$content='',$return='')
+{
+	if(!$identifer){
+		return false;
+	}
+	if(!$id){
+		$id = $identifer;
+	}
+	$rs = $GLOBALS['app']->model('fields')->get_one($identifer,'identifier');
+	if(!$rs){
+		return false;
+	}
+	$rs['identifier'] = $id;
+	$rs['content'] = $content;
+	
+	$rs = $GLOBALS['app']->lib('form')->format($rs);
 	if($return == 'array') return $rs;
 	return $rs['html'];
 }
@@ -871,11 +893,9 @@ function form_edit($id,$content="",$type="text",$attr="",$return='echo')
 function form_html($type='text',$id='phpok',$attr='',$content='')
 {
 	$array = array("identifier"=>$id,"form_type"=>$type,"content"=>$content);
-	if($attr && is_string($attr))
-	{
+	if($attr && is_string($attr)){
 		parse_str($attr,$list);
-		if($list)
-		{
+		if($list){
 			$array = array_merge($list,$array);
 		}
 	}

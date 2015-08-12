@@ -43,8 +43,9 @@ $(document).ready(function(){
 		'disableGlobalDnd':true,
 		'compress':false,
 		'auto':{$_rs.upload_auto ? 'true' : 'false'},
+		'sendAsBinary':{$_rs._upload_binary ? 'true' : 'false'},
 		'accept':{'title':'{$_rs.upload_type.title}({$_rs.upload_type.swfupload})','extensions':'{$_rs.upload_type.ext}'},
-		'fileSingleSizeLimit':'{$_rs.upload_type.maxsize}'
+		'fileSingleSizeLimit':'{$_rs.upload_type.maxsize*100}'
 	});
 	obj_{$_rs.identifier}.showhtml();
 	$("#select_res_{$_rs.identifier}").click(function(){

@@ -1,71 +1,27 @@
-<link rel="stylesheet" type="text/css" href="{echo 'js'}/webuploader/webuploader.css" />
-<script type="text/javascript" src="{echo 'js'}/webuploader/webuploader.min.js"></script>
-<div class="tips">搜索</div>
-<div>
-	<table>
-	<tr>
-		<form method="post" action="{echo admin_url('open','input')}">
-		<input type="hidden" name="type" id="type" value="{$type}">
-		<input type="hidden" id="id" name="id" value="{$id}" />
-		<input type="hidden" name="tpl" value="{$tplfile}" />
-		<input type="hidden" name="is_multiple" value="{$is_multiple}" />
-		<td>关键字：</td>
-		<td><input type="text" id="keywords" name="keywords" value="{$keywords}" /></td>
-		<td>&nbsp; 分类：</td>
-		<td><select id="cate_id" name="cate_id">
-				<option value="0">不限</option>
-				<!-- $catelist AS $key=>$value -->
-				<option value="{$value.id}"{if $value.id == $cate_id} selected="selected"{/if}>{$value.title}</option>
-				<!-- end -->
-			</select>
-		</td>
-		<td><input type="submit" value="搜索" class="search" /></td>
-		</form>
-	</tr>
-	</table>
-</div>
-<div class="tips">上传</div>
+<link rel="stylesheet" type="text/css" href="js/webuploader/webuploader.css" charset="utf-8" />
+<script type="text/javascript" src="js/webuploader/webuploader.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/webuploader/admin.upload.js" charset="utf-8"></script>
+<!-- php:$catelist = $app->model('res')->cate_all(); -->
+
+<div class="tips">附件上传</div>
+<div style="padding:10px;margin:5px;">
 <div class="table">
 	<div class="title">
-		附件分类：
-		<span class="note">请选择附件分类</span>
-	</div>
-	<div class="content">
-		<select id="attr_cate_id" name="cate_id" onchange="update_cate_id(this.value)">
-			<!-- loop from=$catelist key=$key value=$value -->
-			<option value="{$value.id}" {if $value.is_default} selected{/if}>{$value.title}</option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
-
-
-<div class="table"{if $type_s} style="display:none;"{/if}>
-	<div class="title">
-		附件类型：
-		<span class="note">请选择要上传的附件类型</span>
-	</div>
-	<div class="content">
-		<select id="attr" name="attr" onchange="attr_change()">
-			<!-- loop from=$attr_list key=$key value=$value -->
-			<option value="{$value.ext}"{if $key == $type_s} selected{/if}>{$value.title}（{$value.swfupload}）</option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		选择要上传的文件：
-		<span class="note">单个文件上传不能超过：<span class="red">{func get_cfg_var upload_max_filesize}</span></span>
+		{lang附件上传：}
+		<span class="note">{lang请选择要上传的附件分类}{lang上传的文件上传不能超过：}<span class="red">{func get_cfg_var upload_max_filesize}</span></span>
 	</div>
 	<div class="content">
 		<table>
 		<tr>
-			<td valign="top"><div id="upload_picker"></div></td>
-			<td>&nbsp;</td>
-			<td valign="top"><input id="upload_submit" type="button" class="submit" value="开始上传" /></td>
-			<td>&nbsp;</td>
+			<td>
+				<select id="add_cate_id" onchange="cate_change()">
+					<!-- loop from=$catelist key=$key value=$value -->
+					<option value="{$value.id}"{if $value.is_default} selected{/if} data="{$value.filetypes}" catename="{$value.title}">
+					{$value.title}<!-- if $value.filetypes --> / {lang支持上传格式：}{$value.filetypes}<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</td>
+			<td><div id="upload_picker" class=""></div></td>
 		</tr>
 		</table>
 	</div>
@@ -74,25 +30,38 @@
 <div class="table">
 	<div class="content" id="upload_progress"></div>
 </div>
+</div>
 <script type="text/javascript">
-function update_cate_id(val)
-{
-	obj_upload.cateid(val);
-}
+var obj_upload = {};
 $(document).ready(function(){
-	obj_upload = new $.phpok_upload({
-		"multi"							: false,
-		"id"							: "upload",
-		"pick"							: "#upload_picker",
-		"swf"							: "js/webuploader/upload.swf",
-		"server"						: "{url ctrl=upload func=save/}",
-		"filetypes"						: "{$attr_list[$type_s][ext]}",
-		"formData"						:{'{func session_name}':'{func session_id}'},
-		"success"						:function(){
-			window.location.reload();
+	cate_change();
+});
+function cate_change()
+{
+	val = $("#add_cate_id").val();
+	if(!val){
+		$.dialog.alert('请选择要存储的目标分类');
+		return false;
+	}
+	var data = $("#add_cate_id option[value="+val+"]").attr('data');
+	var catename = $("#add_cate_id option[value="+val+"]").attr('catename');
+	obj_upload = new $.admin_upload({
+		"multiple"	: 'false',
+		"id" : "upload",
+		'pick':{'id':'#upload_picker','multiple':false},
+		'resize':false,
+		"swf" : "js/webuploader/uploader.swf",
+		"server": "{url ctrl=upload func=save/}",
+		"filetypes" : "{$rs.ext}",
+		'accept' : {'title':catename,'extensions':data},
+		"formData" :{'{func session_name}':'{func session_id}','cateid':val},
+		'fileVal':'upfile',
+		'auto':true,
+		"success":function(){
+			$.dialog.alert('附件上传成功',function(){
+				$.phpok.reload();
+			});
 		}
 	});
-	var cateid = $("#attr_cate_id").val();
-	update_cate_id(cateid);
-});
+}
 </script>

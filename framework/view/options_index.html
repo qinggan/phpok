@@ -1,0 +1,94 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}产品属性管理
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+function add_it()
+{
+	var url = get_url('options','save');
+	var title = $("#title_0").val();
+	if(!title){
+		$.dialog.alert('名称不能为空');
+		return false
+	}
+	url += "&title="+$.str.encode(title);
+	var taxis = $("#taxis_0").val();
+	if(taxis){
+		url += "&taxis="+taxis;
+	}
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+function update_it(id)
+{
+	var url = get_url('options','save','id='+id);
+	var title = $("#title_"+id).val();
+	if(!title){
+		$.dialog.alert('名称不能为空');
+		return false
+	}
+	url += "&title="+$.str.encode(title);
+	var taxis = $("#taxis_"+id).val();
+	if(taxis){
+		url += "&taxis="+taxis;
+	}
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+function delete_it(id)
+{
+	var t = $("#title_"+id).val();
+	$.dialog.confirm('确定要删除产品属性：<span class="red">'+t+'</span> 吗？删除后，产品已使用此属性相关信息也会删除',function(){
+		var rs = $.phpok.json(get_url('options','delete','id='+id));
+		if(rs.status == 'ok'){
+			$.dialog.alert('删除成功',function(){
+				$.phpok.reload();
+			},'succeed');
+		}else{
+			$.dialog.alert(rs.content);
+		}
+	});
+}
+</script>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>ID</th>
+	<th class="lft">名称</th>
+	<th width="80">排序</th>
+	<th></th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td><input type="text" id="title_{$value.id}" value="{$value.title}" class="default" /></td>
+	<td class="center"><input type="text" id="taxis_{$value.id}" value="{$value.taxis}" class="short" /></td>
+	<td>
+		<div class="button-group">
+			<input type="button" value="{lang编辑}" onclick="update_it('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="{lang内容}" onclick="$.phpok.go('{url ctrl=options func=list id=$value.id/}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="phpok-btn" />
+		</div>
+	</td>
+</tr>
+<!-- /loop -->
+<tr>
+	<td class="center">添加</td>
+	<td><input type="text" id="title_0" value="" class="default" /></td>
+	<td class="center"><input type="text" id="taxis_0" value="{$taxis}" class="short" /></td>
+	<td><input type="button" value="{lang添加}" onclick="add_it()" class="phpok-btn" /></td>
+</tr>
+</table>
+<!-- include tpl=foot -->

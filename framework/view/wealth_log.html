@@ -1,0 +1,17 @@
+<!-- include tpl=head_open -->
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th class="lft" width="140">时间</th>
+	<th width="100">{$rs.title}</th>
+	<th>备注</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center">{func date "Y-m-d H:i" $value.dateline}</td>
+	<td class="center">{$value.val}{$rs.unit}</td>
+	<td height="22">{$value.note}</td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- include tpl=pagelist -->
+<!-- include tpl=foot_open -->

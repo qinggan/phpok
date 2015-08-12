@@ -282,7 +282,8 @@ $(document).ready(function(){
 		</div>
 	</div>
 
-	<div class="table" id="use_biz_setting"{if !$rs.is_biz} style="display:none"{/if}>
+	<div id="use_biz_setting"{if !$rs.is_biz} style="display:none"{/if}>
+	<div class="table">
 		<div class="title">
 			{lang货币默认类型：}
 			<span class="note">{lang此项主要是方便后台管理员添加产品时，默认使用的货币}</span>
@@ -295,6 +296,34 @@ $(document).ready(function(){
 				<!-- /loop -->
 			</select>
 		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			自定义产品属性：
+			<span class="note">启用此项后，将允许设定可选产品的一些属性，如颜色，款式，支持价格浮动</span>
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<li><label><input type="radio" name="biz_attr" value="0"{if !$rs.biz_attr} checked{/if} />不使用</label></li>
+				<li><label><input type="radio" name="biz_attr" value="1"{if $rs.biz_attr} checked{/if} />使用</label></li>
+			</ul>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			运费模板：
+			<span class="note">是否设置运费功能，如需要请启用</span>
+		</div>
+		<div class="content">
+			<select name="freight">
+				<option value="0">不使用运费</option>
+				<!-- loop from=$freight key=$key value=$value id=$tmpid -->
+				<option value="{$value.id}"{if $rs.freight == $value.id} selected{/if}>{$value.title}</option>
+				<!-- /loop -->
+			</select>
+		</div>
+	</div>
 	</div>
 
 	<div id="email_set_post_status"{if !$rs.post_status} style="display:none"{/if}>
@@ -377,7 +406,6 @@ $(document).ready(function(){
 		<div class="content">
 			<input type="text" id="orderby" name="orderby" class="long" value="{$rs.orderby ? $rs.orderby : 'l.sort ASC,l.dateline DESC,l.id DESC'}" />
 			<input type="button" value="{lang清空}" class="btn" onclick="$('#orderby').val('')" />
-			
 			<ul class="btnlist">
 				<li><input type="button" value="{lang点击}" onclick="phpok_admin_orderby('orderby','l.hits')" /></li>
 				<li><input type="button" value="{lang时间}" onclick="phpok_admin_orderby('orderby','l.dateline')" /></li>
@@ -413,6 +441,14 @@ $(document).ready(function(){
 			}
 		});
 	}
+	function update_show_select(val)
+	{
+		if(val && val != 'undefined' && val != '0'){
+			$("#cate_multiple_set").show();
+		}else{
+			$("#cate_multiple_set").hide();
+		}
+	}
 	</script>
 	<div class="table">
 		<div class="title">
@@ -420,13 +456,27 @@ $(document).ready(function(){
 			<span class="note">{lang启用此项后，添加内容时，需要选对相对应的分类，且不能为空}</span>
 		</div>
 		<div class="content">
-			<select id="cate" name="cate">
+			<select id="cate" name="cate" onchange="update_show_select(this.value)">
 			<option value="0">{lang不关联分类}</option>
 			<!-- loop from=$catelist key=$key value=$value id=catelist_id -->
 			<option value="{$value.id}"{if $value.id == $rs.cate} selected{/if}>{$value.title}</option>
 			<!-- /loop -->
 			</select>
 			<input type="button" value="{lang添加根分类}" onclick="cate_add(this.value)" />
+		</div>
+	</div>
+	<div class="table" id="cate_multiple_set"{if !$rs.cate} style="display:none"{/if}>
+		<div class="title">
+			{lang分类选项：}
+			<span class="note">请设置分类是否支持多选</span>
+		</div>
+		<div class="content">
+			<table>
+			<tr>
+				<td><label><input type="radio" name="cate_multiple" value="0"{if !$rs.cate_multiple} checked{/if} />单选</label></td>
+				<td><label><input type="radio" name="cate_multiple" value="1"{if $rs.cate_multiple} checked{/if} />多选</label></td>
+			</tr>
+			</table>
 		</div>
 	</div>
 </div>

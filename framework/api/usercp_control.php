@@ -36,27 +36,12 @@ class usercp_control extends phpok_control
 	}
 
 	//存储个人数据
-	function info_f()
+	public function info_f()
 	{
 		$group_rs = $this->model('usergroup')->group_rs($this->u_id);
 		if(!$group_rs){
 			$this->json(P_Lang('会员组不存在'));
 		}
-		$avatar = $this->get("avatar");
-		$email = $this->get("email");
-		if(!$email){
-			$this->json(P_Lang('未指定邮箱'));
-		}
-		if(!phpok_check_email($email)){
-			$this->json(P_Lang('邮箱不合法'));
-		}
-		$uid = $this->model('user')->uid_from_email($email,$this->u_id);
-		if($uid){
-			$this->json(P_Lang('邮箱已被使用'));
-		}
-		$mobile = $this->get('mobile');
-		$array = array('avatar'=>$avatar,'email'=>$email,'mobile'=>$mobile);
-		$this->model('user')->save($array,$this->u_id);
 		$condition = 'is_edit=1';
 		if($group_rs['fields']){
 			$tmp = explode(",",$group_rs['fields']);
@@ -109,10 +94,13 @@ class usercp_control extends phpok_control
 		if(!$newpass || !$chkpass){
 			$this->json(P_Lang('新密码不能为空'));
 		}
+		if(strlen($newpass) < 6){
+			$this->json(P_Lang('密码不符合要求'));
+		}
 		if($newpass != $chkpass){
 			$this->json(P_Lang('新旧密码不一致'));
 		}
-		$user = $this->model('user')->get_one($this->u_id,false);
+		$user = $this->model('user')->get_one($this->u_id);
 		if(!password_check($oldpass,$user["pass"])){
 			$this->json(P_Lang('旧密码输入错误'));
 		}
@@ -122,6 +110,103 @@ class usercp_control extends phpok_control
 		$password = password_create($newpass);
 		$this->model('user')->update_password($password,$this->u_id);
 		if(!$this->is_client){
+			$this->model('user')->update_session($this->u_id);
+		}
+		$this->json(true);
+	}
+
+	//更新会员手机
+	function mobile_f()
+	{
+		$pass = $this->get('pass');
+		if(!$pass){
+			$this->json(P_Lang('密码不能为空'));
+		}
+		$newmobile = $this->get("mobile");
+		if(!$newmobile){
+			$this->json(P_Lang('新手机号码不能为空'));
+		}
+		$user = $this->model('user')->get_one($this->u_id);
+		//密码验证
+		if(!password_check($pass,$user['pass'])){
+			$this->json(P_Lang('密码填写错误'));
+		}
+		if($user['mobile'] == $newmobile){
+			$this->json(P_Lang('新旧手机号码不能一样'));
+		}
+		$uid = $this->model('user')->uid_from_mobile($newmobile,$this->u_id);
+		if($uid){
+			$this->json(P_Lang('手机号码已被使用'));
+		}
+		$this->model('user')->update_mobile($newmobile,$this->u_id);
+		if(!$this->is_client){
+			$this->model('user')->update_session($this->u_id);
+		}
+		$this->json(true);
+	}
+
+	//更新会员邮箱
+	function email_f()
+	{
+		$pass = $this->get('pass');
+		if(!$pass){
+			$this->json(P_Lang('密码不能为空'));
+		}
+		$email = $this->get("email");
+		if(!$email){
+			$this->json(P_Lang('新邮箱不能为空'));
+		}
+		//判断邮箱是否合法
+		$chk = $this->lib('common')->email_check($email);
+		if(!$chk){
+			$this->json(P_Lang('邮箱格式不正确，请重新填写'));
+		}
+		$user = $this->model('user')->get_one($this->u_id);
+		if($user['email'] == $email){
+			$this->json(P_Lang('新旧邮箱不能一样'));
+		}
+		$chk = $this->model('user')->uid_from_email($email,$this->u_id);
+		if($chk){
+			$this->json(P_Lang('邮箱已被使用，请更换其他邮箱'));
+		}
+		//判断是否有验证码
+		$chkcode = 0;
+		if($this->site['email_server'] && $this->site['email_account'] && $this->site['email_pass'] && $this->site['email']){
+			$m_code = $this->get("m_code");
+			if(!$m_code){
+				$this->json(P_Lang('验证码不能为空'));
+			}
+			$m_code = strtolower($m_code);
+			if(!$user['code'] || ($user['code'] && $user['code'] != $m_code)){
+				$this->json(P_Lang('验证码填写不正确'));
+			}
+			$chkcode = 1;
+		}
+		$array = array('email'=>$email,'email_chk'=>$chkcode,'code'=>'');
+		$this->model('user')->save($array,$this->u_id);
+		if(!$this->is_client){
+			$this->model('user')->update_session($this->u_id);
+		}
+		$this->json(true);
+	}
+
+	//更新发票信息
+	function invoice_f()
+	{
+		$invoice_type = $this->get("invoice_type");
+		if(!$invoice_type)
+		{
+			$this->json(P_Lang('发票类型不能为空'));
+		}
+		$this->model('user')->update_invoice_type($invoice_type,$this->u_id);
+		$invoice_title = $this->get("invoice_title");
+		if(!$invoice_title)
+		{
+			$this->json(P_Lang('发票抬头不能为空'));
+		}
+		$this->model('user')->update_invoice_title($invoice_title,$this->u_id);
+		if(!$this->is_client)
+		{
 			$this->model('user')->update_session($this->u_id);
 		}
 		$this->json(true);
@@ -195,6 +280,121 @@ class usercp_control extends phpok_control
 			$this->json(P_Lang('地址信息创建存储失败'));
 		}
 		$this->json(P_Lang('地址信息创建成功'),true);
+	}
+
+	public function address_default_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('user')->address_one($id);
+		if($rs['user_id'] != $this->u_id){
+			$this->json(P_Lang('您没有权限操作此地址信息'));
+		}
+		$this->model('user')->address_default($id);
+		$this->json(true);
+	}
+
+	public function address_setting_f()
+	{
+		$id = $this->get('id','int');
+		$country = $this->get('country');
+		if(!$country){
+			$country = '中国';
+		}
+		$province = $this->get('pca_p');
+		$city = $this->get('pca_c');
+		$county = $this->get('pca_a');
+		$array = array('user_id'=>$this->u_id,'country'=>$country,'province'=>$province,'city'=>$city,'county'=>$county);
+		$array['fullname'] = $this->get('fullname');
+		if(!$array['fullname']){
+			$this->json(P_Lang('收件人姓名不能为空'));
+		}
+		$array['address'] = $this->get('address');
+		$array['mobile'] = $this->get('mobile');
+		$array['tel'] = $this->get('tel');
+		if(!$array['mobile'] && !$array['tel']){
+			$this->json(P_Lang('手机或固定电话必须有填写一项'));
+		}
+		if($array['mobile']){
+			if(!$this->lib('common')->tel_check($array['mobile'],'mobile')){
+				$this->json(P_Lang('手机号格式不对，请填写11位数字'));
+			}
+		}
+		if($array['tel']){
+			if(!$this->lib('common')->tel_check($array['tel'],'tel')){
+				$this->json(P_Lang('电话格式不对'));
+			}
+		}
+		$array['email'] = $this->get('email');
+		if($array['email']){
+			if(!$this->lib('common')->email_check($array['email'])){
+				$this->json(P_Lang('邮箱格式不对'));
+			}
+		}
+		$this->model('user')->address_save($array,$id);
+		$this->json(true);
+	}
+
+	public function address_delete_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('user')->address_one($id);
+		if($rs['user_id'] != $this->u_id){
+			$this->json(P_Lang('您没有权限操作此地址信息'));
+		}
+		$this->model('user')->address_delete($id);
+		$this->json(true);
+	}
+
+	public function invoice_setting_f()
+	{
+		$id = $this->get('id','int');
+		$type = $this->get('type');
+		$title = $this->get('title');
+		if(!$title){
+			$title = P_Lang('个人发票');
+		}
+		$content = $this->get('content');
+		if(!$content){
+			$content = P_Lang('明细');
+		}
+		$note = $this->get('note');
+		$array = array('user_id'=>$this->u_id,'type'=>$type,'title'=>$title,'content'=>$content,'note'=>$note);
+		$this->model('user')->invoice_save($array,$id);
+		$this->json(true);
+	}
+
+	public function invoice_default_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('user')->invoice_one($id);
+		if($rs['user_id'] != $this->u_id){
+			$this->json(P_Lang('您没有权限操作此信息'));
+		}
+		$this->model('user')->invoice_default($id);
+		$this->json(true);
+	}
+
+	public function invoice_delete_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('user')->invoice_one($id);
+		if($rs['user_id'] != $this->u_id){
+			$this->json(P_Lang('您没有权限操作此地址信息'));
+		}
+		$this->model('user')->invoice_delete($id);
+		$this->json(true);
 	}
 }
 ?>

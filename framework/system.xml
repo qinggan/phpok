@@ -14,6 +14,7 @@
 		<user>会员</user>
 		<url>网址</url>
 		<param>规格参数</param>
+		<pca>省市县联动</pca>
 	</form>
 	<field>
 		<varchar>字符串</varchar>

@@ -1,0 +1,14 @@
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="savetype" />
+<div class="table">
+	<div class="title">
+		保存方式
+		<span class="note">请选择单字段保存还是多字段保存</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="savetype" value="0"{if !$rs.savetype} checked{/if} />单字段保存</label></li>
+			<li><label><input type="radio" name="savetype" value="1"{if $rs.savetype} checked{/if} />多字段保存</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>

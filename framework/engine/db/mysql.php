@@ -34,13 +34,11 @@ class db_mysql extends db
 	{
 		//增加计时器
 		$this->_time();
-		if(!$data)
-		{
+		if(!$data){
 			$data = $this->config_db['data'];
 		}
 		$linkhost = $this->config_db['host'].":".($this->config_db['port'] ? $this->config_db['port'] : '3306');
-		if($this->config_db['socket'])
-		{
+		if($this->config_db['socket']){
 			$linkhost .= ":".$this->config_db['socket'];
 		}
 		$this->conn = mysql_connect($linkhost,$this->config_db['user'],$this->config_db['pass'],true,MYSQL_CLIENT_COMPRESS);
@@ -403,17 +401,23 @@ class db_mysql extends db
 		return true;
 	}
 
-	//初始化数据库
 	private function _config_db($config)
 	{
+		//修正高版本连接数据库慢的Bug
+		if (!defined('PHP_VERSION_ID')){
+			$version =  explode ('.',PHP_VERSION);
+			define('PHP_VERSION_ID',($version[0]*10000 + $version[1]*100 + $version[2]));
+		}
+		if($config['host'] == 'localhost' && PHP_VERSION_ID >= 50300){
+			$config['host'] = '127.0.0.1';
+		}
 		$this->config_db['host'] = $config['host'] ? $config['host'] : 'localhost';
 		$this->config_db['port'] = $config['port'] ? $config['port'] : '3306';
 		$this->config_db['user'] = $config['user'] ? $config['user'] : 'root';
 		$this->config_db['pass'] = $config['pass'] ? $config['pass'] : '';
 		$this->config_db['data'] = $config['data'] ? $config['data'] : '';
 		$this->config_db['socket'] = isset($config['socket']) ? $config['socket'] : '';
-		if($this->config_db['data'])
-		{
+		if($this->config_db['data']){
 			$this->connect_db($this->config_db['data']);
 		}
 	}

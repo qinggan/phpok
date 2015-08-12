@@ -13,7 +13,7 @@ class order_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
-		$this->cart_id = $this->model('cart')->cart_id($this->session->sessid(),$_SESSION['user_id']);
+		$this->cart_id = $this->model('cart')->cart_id($this->session->sessid(),$_SESSION['user_id'],$_SESSION['user_rs']['invoice_type'],$_SESSION['user_rs']['invoice_title']);
 	}
 	
 	public function create_f()
@@ -22,23 +22,45 @@ class order_control extends phpok_control
 		if(!$rslist){
 			$this->json(P_Lang("您的购物车里没有产品"));
 		}
-		$totalprice = 0;
-		$qty = 0;
+		$totalprice = $qty = $weight = $volume = 0;
 		foreach($rslist AS $key=>$value){
+			$weight += $value['weight'] * $value['qty'];
 			$totalprice += price_format_val($value['price'] * $value['qty'],$value['currency_id'],$this->site['currency_id']);
 			$qty += $value['qty'];
 		}
-		$shipping = $this->shipping();
-		$billing = $this->billing();
 		$sn = $this->create_sn();
+		$allprice = round(($_SESSION['cart']['totalprice']+$_SESSION['cart']['freight_price']),2);
 		$array['sn'] = $sn;
 		$array['user_id'] = $_SESSION['user_id'];
 		$array['addtime'] = $this->time;
 		$array['qty'] = $qty;
-		$array['price'] = $totalprice;
+		$array['price'] = $allprice;
 		$array['currency_id'] = $this->site['currency_id'];
 		$array['status'] = P_Lang('审核中');
 		$array['passwd'] = md5(str_rand(10));
+		$array['product_price'] = $_SESSION['cart']['totalprice'];
+		$array['freight_price'] = $_SESSION['cart']['freight_price'];
+		$array['pay_price'] = $allprice;
+		$array['pay_currency'] = $this->site['currency_id'];
+		if($_SESSION['cart']['address_id'] == 'email'){
+			$array['email'] = $this->get('email');
+			if(!$array['email']){
+				$this->json(P_Lang('Email地址不能为空'));
+			}
+			if(!$this->lib('common')->email_check($email)){
+				$this->json(P_Lang('Email地址不合法'));
+			}
+		}else{
+			$address = $this->model('user')->address_one($_SESSION['cart']['address_id']);
+			if(!$address || $address['user_id'] != $_SESSION['user_id']){
+				$this->json(P_Lang('地址信息异常，与用户不匹配'));
+			}
+			$array['email'] = $address['email'];
+			if(!$array['email']){
+				$array['email'] = $this->user['email'];
+			}
+		}
+		$array['note'] = $this->get('note');
 		$oid = $this->model('order')->save($array);
 		if(!$oid){
 			$this->json(P_Lang('订单创建失败'));
@@ -48,43 +70,48 @@ class order_control extends phpok_control
 			$tmp['title'] = $value['title'];
 			$tmp['price'] = price_format_val($value['price'],$value['currency_id'],$this->site['currency_id']);
 			$tmp['qty'] = $value['qty'];
-			$tmp['thumb'] = $value['thumb'] ? $value['thumb']['id'] : 0;
-			$tmp['ext'] = $value['ext'] ? serialize(unserialize($value['ext'])) : '';
+			$tmp['weight'] = $value['weight'];
+			$tmp['volume'] = $value['volume'];
+			$tmp['thumb'] = $value['thumb'] ? $value['thumb']['filename'] : 0;
+			if($value['ext'] && $value['attrlist']){
+				$tmpext = array();
+				$ext = explode(",",$value['ext']);
+				foreach($value['attrlist'] as $k=>$v){
+					foreach($v['rslist'] as $kk=>$vv){
+						if(in_array($vv['id'],$ext)){
+							$value['_attrlist'][] = array();
+							$tmp1 = array('title'=>$v['title'],'content'=>$vv['title'],'price'=>$vv['price'],'weight'=>$vv['weight']);
+							$tmp1['volume'] = $vv['volume'];
+							$tmpext[] = $tmp1;
+						}
+					}
+				}
+				if($tmpext && count($tmpext)>0){
+					$tmp['ext'] = serialize($tmpext);
+				}
+			}
 			$this->model('order')->save_product($tmp);
 		}
-		if($shipping){
-			$tmp = array('order_id'=>$oid,'type_id'=>'shipping');
-			$tmp['country'] = $shipping['country'];
-			$tmp['province'] = $shipping['province'];
-			$tmp['city'] = $shipping['city'];
-			$tmp['county'] = $shipping['county'];
-			$tmp['address'] = $shipping['address'];
-			$tmp['zipcode'] = $shipping['zipcode'];
-			$tmp['mobile'] = $shipping['mobile'];
-			$tmp['tel'] = $shipping['tel'];
-			$tmp['email'] = $shipping['email'];
-			$tmp['fullname'] = $shipping['fullname'];
-			$tmp['gender'] = $shipping['gender'];
+		if($address){
+			$tmp = array('order_id'=>$oid);
+			$tmp['country'] = $address['country'];
+			$tmp['province'] = $address['province'];
+			$tmp['city'] = $address['city'];
+			$tmp['county'] = $address['county'];
+			$tmp['address'] = $address['address'];
+			$tmp['mobile'] = $address['mobile'];
+			$tmp['tel'] = $address['tel'];
+			$tmp['email'] = $address['email'];
+			$tmp['fullname'] = $address['fullname'];
 			$this->model('order')->save_address($tmp);
 		}
-		if($billing){
-			$tmp = array('order_id'=>$oid,'type_id'=>'billing');
-			$tmp['country'] = $billing['country'];
-			$tmp['province'] = $billing['province'];
-			$tmp['city'] = $billing['city'];
-			$tmp['county'] = $billing['county'];
-			$tmp['address'] = $billing['address'];
-			$tmp['zipcode'] = $billing['zipcode'];
-			$tmp['mobile'] = $billing['mobile'];
-			$tmp['tel'] = $billing['tel'];
-			$tmp['email'] = $billing['email'];
-			$tmp['fullname'] = $billing['fullname'];
-			$tmp['gender'] = $billing['gender'];
-			$this->model('order')->save_address($tmp);
+		if($_SESSION['cart']['invoice_id'] != 'no'){
+			$invoice = $this->model('user')->invoice_one($_SESSION['cart']['invoice_id']);
+			$tmp = array('order_id'=>$oid,'type'=>$invoice['type'],'title'=>$invoice['title'],'content'=>$invoice['content']);
+			$this->model('order')->save_invoice($tmp);
 		}
 		$this->model('cart')->delete($this->cart_id);
-		$this->save_shipping($shipping);
-		$this->save_billing($billing);
+		unset($_SESSION['cart']);
 		$this->email_notice($array);
 		$rs = array('sn'=>$sn,'passwd'=>$array['passwd'],'id'=>$oid);
 		$this->json($rs,true);
@@ -229,6 +256,13 @@ class order_control extends phpok_control
 		}
 		if($billing['mobile'] && !$this->isTel($billing['mobile'],'mobile')){
 			$this->json(P_Lang('手机填写不正确，请填写规范，如：158185xxxxx'));
+		}
+		$billing['email'] = $this->get('b-email');
+		if(!$billing['email']){
+			$this->json(P_Lang('Email不能为空，系统会发送订单状态到这个邮箱上'));
+		}
+		if(!preg_match('/^[A-Za-z0-9-_.+%]+@[A-Za-z0-9-.]+\.[A-Za-z]{2,4}$/',$billing['email'])){
+			$this->json(P_Lang('Email不符合要求，请正确填写'));
 		}
 		return $billing;
 	}

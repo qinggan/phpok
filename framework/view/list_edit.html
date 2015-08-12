@@ -92,6 +92,14 @@ $(document).ready(function(){
 		<!-- /loop -->
 	</ul>
 	<!-- /if -->
+	<!-- if $p_rs.cate && !$p_rs.cate_multiple -->
+	<select name="cate_id" id="cate_id" style="width:99%;padding:3px;">
+		<option value="">请选择…</option>
+		<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+		<option value="{$value.id}"{if $value.id == $rs.cate_id} selected{/if}>{$value._space}{$value.title}</option>
+		<!-- /loop -->
+	</select>
+	<!-- /if -->
 	<!-- if $p_rs.is_identifier -->
 	<div class="table">
 		<div class="title">
@@ -103,6 +111,141 @@ $(document).ready(function(){
 		</div>
 	</div>
 	<!-- /if -->
+	<!-- if $p_rs.biz_attr -->
+	<script type="text/javascript">
+	function biz_attr_reload()
+	{
+		$("#biz_attr_options").html('<div style="background:#fff;padding:30px;text-align:center;"><img src="images/loading.gif" /></div>');
+		biz_attr_loading();
+	}
+	function biz_attr_loading()
+	{
+		var tid = "{$id}";
+		var url = get_url('list','options_html','tid='+tid);
+		$.phpok.json(url,function(rs){
+			if(rs.status == 'ok'){
+				if(!rs.content){
+					rs.content = '';
+				}
+				$("#biz_attr_options").html(rs.content);
+			}else{
+				$("#biz_attr_options").html(rs.content);
+			}
+		});
+	}
+	function attr_add(tid,pid)
+	{
+		var val = $("#biz_attr_id").val();
+		if(!val){
+			$.dialog.alert('请选择一个要添加的属性');
+			return false;
+		}
+		var text = $("#biz_attr_id").find('option:selected').text();
+		var url = get_url('list','options_add','aid='+val);
+		if(tid && tid != 'undefined'){
+			url += "&tid="+tid;
+		}else{
+			url += "&pid="+pid;
+		}
+		var rs = $.phpok.json(url+"&type=chk");
+		if(rs.status != 'ok'){
+			$.dialog.alert(rs.content);
+			return false;
+		}
+		$.dialog.open(url,{
+			'title':'添加属性，'+text,
+			'width':'700px',
+			'height':'400px',
+			'lock':true,
+			'ok':function(){
+				var iframe = this.iframe.contentWindow;
+				if (!iframe.document.body) {
+					alert('iframe还没加载完毕呢');
+					return false;
+				};
+				iframe.save();
+				return false;
+			},
+			'okVal':'提交',
+			'cancel':function(){
+				return true;
+			},
+			'cancelVal':'取消'
+		});
+
+	}
+	function biz_attr_delete(aid,tid)
+	{
+		var url = get_url('list','options_delete','aid='+aid+"&tid="+tid);
+		var rs = $.phpok.json(url);
+		if(rs.status == 'ok'){
+			biz_attr_reload();
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	}
+	function biz_attr_edit(aid,tid)
+	{
+		var url = get_url('list','options_edit','aid='+aid);
+		if(tid && tid != 'undefined'){
+			url += "&tid="+tid;
+		}else{
+			url += "&pid={$pid}";
+		}
+		var rs = $.phpok.json(url+"&type=chk");
+		if(rs.status != 'ok'){
+			$.dialog.alert(rs.content);
+			return false;
+		}
+		$.dialog.open(url,{
+			'title':'编辑属性',
+			'width':'700px',
+			'height':'400px',
+			'lock':true,
+			'ok':function(){
+				var iframe = this.iframe.contentWindow;
+				if (!iframe.document.body) {
+					alert('iframe还没加载完毕呢');
+					return false;
+				};
+				iframe.save();
+				return false;
+			},
+			'okVal':'提交',
+			'cancel':function(){
+				return true;
+			},
+			'cancelVal':'取消'
+		});
+	}
+	$(document).ready(function(){
+		biz_attr_reload();
+	});
+	</script>
+	<div class="biz_attr">
+		<div class="biz_attr_select">
+			<table cellpadding="0" cellspacing="0">
+			<tr>
+				<!-- if $biz_attrlist -->
+				<td>
+					<select id="biz_attr_id">
+						<option value="">请选择一个属性…</option>
+						<!-- loop from=$biz_attrlist key=$key value=$value id=$tmpid -->
+						<option value="{$value.id}">{$value.title}</option>
+						<!-- /loop -->
+					</select>
+				</td>
+				<td>&nbsp;</td>
+				<!-- /if -->
+				<td><input type="button" value="{lang添加属性}" onclick="attr_add('{$id}','{$p_rs.id}')" class="phpok-btn" /></td>
+				<td style="line-height:160%;">&nbsp;负号表示减，返之为加，如+10，表示加10，-10表示减10<br />&nbsp;价格：{$currency.title}，重量：千克，体积：立方米</td>
+			</tr>
+			</table>
+		</div>
+		<div id="biz_attr_options" class="options"></div>
+	</div>
+	<!-- /if -->
 	<!-- loop from=$extlist key=$key value=$value id=extlist_id -->
 	<div class="table clearfix">
 		<div class="title">
@@ -112,7 +255,7 @@ $(document).ready(function(){
 		<div class="content">{$value.html}</div>
 	</div>
 	<!-- /loop -->
-	<!-- if $rs.is_tag -->
+	<!-- if $p_rs.is_tag -->
 	<div class="table">
 		<div class="title">
 			Tag标签
@@ -123,7 +266,7 @@ $(document).ready(function(){
 	<!-- /if -->
 </div>
 <div class="main2">
-	<!-- if $p_rs.cate -->
+	<!-- if $p_rs.cate && $p_rs.cate_multiple -->
 	<div class="pfw mb10">
 		<h3>所属分类</h3>
 		<div class="cate_list clearfix" style="margin:0;">
@@ -157,8 +300,20 @@ $(document).ready(function(){
 	<!-- /if -->
 	<!-- if $p_rs.is_biz -->
 	<div class="pfw mb10">
-		<h3>价格</h3>
-		<table cellpadding="2" cellspacing="2">
+		<h3>产品属性及价格</h3>
+		<div><table cellpadding="2" cellspacing="2">
+		<tr>
+			<td align="right">{lang重量：}</td>
+			<td><input type="text" id="weight" name="weight" class="short" value="{$rs.weight}" /> 千克</td>
+		</tr>
+		<tr>
+			<td align="right">{lang体积：}</td>
+			<td><input type="text" id="volume" name="volume" class="short" value="{$rs.volume}" /> 立方米</td>
+		</tr>
+		<tr>
+			<td align="right">{lang计量单位：}</td>
+			<td><input type="text" id="unit" name="unit" class="short" value="{$rs.unit}" /></td>
+		</tr>
 		<tr>
 			<td>
 				<select name="currency_id" id="currency_id" onchange="price_show_auto()">
@@ -176,7 +331,7 @@ $(document).ready(function(){
 				<!-- /loop -->
 			</td>
 		</tr>
-		</table>
+		</table></div>
 		<script type="text/javascript">
 		function price_show_auto()
 		{
@@ -289,14 +444,12 @@ $(document).ready(function(){
 			<td><input type="text" id="dateline" name="dateline" class="default" value="{if $rs.dateline}{func date 'Y-m-d H:i:s' $rs.dateline}{else}{func date 'Y-m-d H:i:s' $sys.time}{/if}" onfocus="show_dateline()" /></td>
 		</tr>
 		<tr>
-			<td colspan="2" class="gray i">发布时间大于当前时将不会直接显示，文章将于：
-			<span class="red" id="postdatetime">
+			<td colspan="2" class="gray i">文章将于<span class="red" id="postdatetime">
 				<!-- if $rs.dateline -->
 				{func date Y年m月d日H点整 $rs.dateline}
 				<!-- else -->
 				{func date Y年m月d日H点整 $sys.time}
-				<!-- /if -->
-			</span>发布到网站上</td>
+				<!-- /if --></span>发布到网站上</td>
 		</tr>
 		<tr>
 			<td align="right">{lang阅读量：}</td>

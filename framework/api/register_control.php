@@ -21,7 +21,7 @@ class register_control extends phpok_control
 		if(!$user){
 			$this->json(P_Lang('账号不能为空'));
 		}
-		$safelist = array("'",'"','/','\\',';','.',')','(');
+		$safelist = array("'",'"','/','\\',';','&',')','(');
 		foreach($safelist as $key=>$value){
 			if(strpos($user,$value) !== false){
 				$this->json(P_Lang('会员账号不允许包含字符串：').$value);
@@ -56,7 +56,7 @@ class register_control extends phpok_control
 		if(!$user){
 			$this->json(P_Lang('账号不能为空'));
 		}
-		$safelist = array("'",'"','/','\\',';','.',')','(');
+		$safelist = array("'",'"','/','\\',';','&',')','(');
 		foreach($safelist as $key=>$value){
 			if(strpos($user,$value) !== false){
 				$this->json(P_Lang('会员账号不允许包含字符串：').$value);
@@ -78,21 +78,33 @@ class register_control extends phpok_control
 			$this->json(P_Lang('两次输入的密码不一致'));
 		}
 		$email = $this->get('email');
-		if(!$email){
-			$this->json(P_Lang('邮箱不能为空'));
+		$mobile = $this->get('mobile');
+		if($email){
+			$chk = $this->lib('common')->email_check($email);
+			if(!$chk){
+				$this->json(P_Lang('邮箱不合法'));
+			}
+			$chk = $this->model('user')->user_email($email);
+			if($chk){
+				$this->json(P_Lang('邮箱已注册'));
+			}
 		}
-		if(!phpok_check_email($email)){
-			$this->json(P_Lang('邮箱不合法'));
+		if($mobile){
+			$chk = $this->lib('common')->tel_check($mobile);
+			if(!$chk){
+				$this->json(P_Lang('手机号不合法'));
+			}
+			$chk = $this->model('user')->user_mobile($mobile);
+			if($chk){
+				$this->json(P_Lang('手机号已注册'));
+			}
 		}
-		$chk = $this->model('user')->user_email($email);
-		if($chk){
-			$this->json(P_Lang('该邮箱已被注册'));
-		}
+		
 		$array = array();
 		$array["user"] = $user;
 		$array["pass"] = password_create($newpass);
 		$array['email'] = $email;
-		$array['mobile'] = $this->get('mobile');
+		$array['mobile'] = $mobile;
 		$group_id = $this->get("group_id","int");
 		if($group_id){
 			$group_rs = $this->model("usergroup")->get_one($group_id);
@@ -119,6 +131,13 @@ class register_control extends phpok_control
 		$uid = $this->model('user')->save($array);
 		if(!$uid){
 			$this->json(P_Lang('注册失败，请联系管理员'));
+		}
+		if($uid){
+			//保存用户与用户的关系
+			if($_SESSION['introducer']){
+				$this->model('user')->save_relation($uid,$_SESSION['introducer']);
+			}
+			$this->model('wealth')->wealth_autosave($uid,P_Lang('注册积分'));
 		}
 		$extlist = $this->model('user')->fields_all();
 		$ext = array();

@@ -27,6 +27,18 @@
 		</span>
 	</div>
 </div>
+<div class="table">
+	<div class="title">
+		发票类型：
+		<span class="darkblue">{$rs.invoice_type}</span>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		发票抬头：
+		<span class="darkblue">{$rs.invoice_title}</span>
+	</div>
+</div>
 
 <!-- loop from=$rs.extlist key=$key value=$value -->
 <div class="table">
@@ -59,7 +71,7 @@
 </div>
 <div class="table">
 	<div class="title">
-		收货人：
+		收 货 人：
 		<span class="darkblue"><strong>{$shipping.fullname}</strong>（{$shipping.gender ? '先生' : '女士'}）</span>
 	</div>
 </div>
@@ -81,7 +93,7 @@
 <!-- /if -->
 <div class="table">
 	<div class="title">
-		Email：
+		电子邮箱：
 		<span class="darkblue">{$shipping.email}</span>
 	</div>
 </div>

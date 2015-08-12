@@ -15,7 +15,7 @@ $(document).ready(function(){
 				if(rs.status == 'ok'){
 					var tip = $("#id").val() ? '{lang附件分类编辑成功}' : '{lang附件分类添加成功}';
 					$.dialog.alert(tip,function(){
-						$.phpok.refresh();
+						$.phpok.go('{url ctrl=rescate/}');
 					},'succeed');
 				}else{
 					$.dialog.alert(rs.content);

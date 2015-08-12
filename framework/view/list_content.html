@@ -70,7 +70,7 @@ $(document).ready(function(){
 function list_content_search()
 {
 	$.dialog({
-		'title':'搜索',
+		'title':'{lang搜索}',
 		'content':document.getElementById("top_search_html"),
 		'ok':function(){
 			var url = get_url("list",'action','id={$pid}');
@@ -87,16 +87,27 @@ function list_content_search()
 				url += '&cateid='+cateid;
 			}
 			if(!cateid && !keywords && !attr){
-				$.dialog.alert('请输入要搜索的关键字或属性');
+				$.dialog.alert('{lang请输入要搜索的关键字或属性}');
 				return false;
 			}else{
 				$.phpok.go(url);
 			}
 			return true;
 		},
-		'okVal':'执行搜索',
+		'okVal':'{lang执行搜索}',
 		'lock':true,
 		'drag':false
+	});
+}
+function reply_it(id,title)
+{
+	var url = get_url('list','comment','id='+id);
+	$.dialog.open(url,{
+		'title':'{lang评论：}'+title,
+		'lock':true,
+		'width':'90%',
+		'height':'90%',
+		'cancel':function(){return true;}
 	});
 }
 </script>
@@ -233,6 +244,8 @@ function list_content_search()
 		<td class="center">{func date Y-m-d $value.dateline}</td>
 		<!-- elseif $k == "hits" -->
 		<td class="center">{$value.hits}</td>
+		<!-- elseif $k == "user_id" -->
+		<td>{$value._user ? $value._user : '-'}</td>
 		<!-- else -->
 			<!-- if is_array($value[$k])  -->
 				<!-- php:$c_list = $value[$k]['_admin'] -->
@@ -268,7 +281,7 @@ function list_content_search()
 		<a class="ico delete" onclick="content_del('{$value.id}')" title="{lang删除}"></a>
 		<!-- /if -->
 		<!-- if $popedom.comment && $rs.comment_status -->
-		<a class="ico comment" href="{url ctrl=list func=comment id=$value.id/}" title="{lang评论}"></a>
+		<a class="ico comment" onclick="reply_it('{$value.id}','{$value.title}')" title="{lang评论}"></a>
 		<!-- /if -->
 	</td>
 </tr>
@@ -309,6 +322,8 @@ function list_content_search()
 			<td class="center">{echo date("Y-m-d",$vv[dateline])}</td>
 			<!-- elseif $k == "hits" -->
 			<td class="center">{$vv.hits}</td>
+			<!-- elseif $k == 'user_id' -->
+			<td>{$vv._user ? $vv._user : '-'}</td>
 			<!-- else -->
 				<!-- if is_array($vv[$k])  -->
 					<!-- php:$c_list = $vv[$k]['_admin'] -->
@@ -340,7 +355,7 @@ function list_content_search()
 			<a class="ico delete" onclick="content_del('{$vv.id}')" title="{lang删除}"></a>
 			<!-- /if -->
 			<!-- if $popedom.comment && $rs.comment_status -->
-			<a class="ico comment" href="{url ctrl=list func=comment id=$vv.id/}" title="{lang评论}"></a>
+			<a class="ico comment" onclick="reply_it('{$vv.id}','{$vv.title}')" title="{lang评论}"></a>
 			<!-- /if -->
 		</td>
 	</tr>

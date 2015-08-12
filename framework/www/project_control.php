@@ -208,7 +208,7 @@ class project_control extends phpok_control
 			}
 		}
 		if($uid){
-			$pageurl .= "uid=".$uid."&";
+			$pageurl .= "&uid=".$uid;
 			$dt['user_id'] = $uid;
 		}
 		//自定义排序

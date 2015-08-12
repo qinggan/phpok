@@ -304,6 +304,20 @@ class all_control extends phpok_control
 		$this->json(true);
 	}
 
+	public function domain_mobile_f()
+	{
+		if(!$this->popedom['domain']){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get("id","int");
+		if(!$id){
+			$this->json(P_Lang('未指定域名ID'));
+		}
+		$act_mobile = $this->get('act_mobile','int');
+		$this->model('site')->set_mobile($id,$act_mobile);
+		$this->json(true);
+	}
+
 	public function gset_f()
 	{
 		if(!$this->popedom["gset"]){
@@ -315,6 +329,7 @@ class all_control extends phpok_control
 			$this->assign("id",$id);
 			$rs = $this->model('site')->all_one($id);
 		}
+		$status = $this->get('status','int');
 		$icolist = $this->lib('file')->ls('images/ico/');
 		if(($rs['ico'] && !in_array($rs['ico'],$icolist)) || !$rs['ico']){
 			$rs['ico'] = 'images/ico/default.png';
@@ -331,6 +346,7 @@ class all_control extends phpok_control
 		}
 		$id = $this->get("id","int");
 		$title = $this->get("title");
+		$status = $this->get('status','int');
 		$identifier = $this->get("identifier");
 		$ico = $this->get("ico");
 		$chk = $this->all_check($identifier,$id);
@@ -343,6 +359,7 @@ class all_control extends phpok_control
 		}
 		$array = array();
 		$array["title"] = $title;
+		$array["status"] = $status;
 		$array["ico"] = $ico;
 		$array["identifier"] = $identifier;
 		$array["site_id"] = $_SESSION["admin_site_id"];

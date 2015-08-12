@@ -70,6 +70,59 @@
 				<p><span>选择数量：</span>
 					<input name="buycount" id="buycount" value="1" type="text" class="numtxt" />
 				</p>
+				<style type="text/css">
+				.attr{border:1px solid #ccc;margin-right:10px;line-height:26px;padding:3px 10px;cursor:pointer;}
+				.attr.selected{border:1px solid red;}
+				</style>
+				<script type="text/javascript">
+				function attr_select(id,aid)
+				{
+					$("#attr_"+aid).val(id);
+					$("div[name=attr"+aid+"]").each(function(i){
+						var tid = $(this).attr('data');
+						if(tid == id){
+							$(this).addClass("selected");
+							//判断价格
+							var new_price = $(this).attr("price");
+							if(new_price && parseFloat(new_price)>0){
+								price = parseFloat(price) + parseFloat(new_price);
+								$("#showprice").html(price);
+							}
+						}else{
+							$(this).removeClass('selected');
+						}
+					});
+					var price = '{$rs.price}';
+					$("input[name=attr]").each(function(i){
+						var val = $(this).val();
+						var newprice = $("div[data="+val+"]").attr("price");
+						if(newprice && parseFloat(newprice)>0){
+							price = parseFloat(price) + parseFloat(newprice);
+						}
+					});
+					var url = api_url('cart','price_format','price='+$.str.encode(price));
+					$.phpok.json(url,function(rs){
+						if(rs.status == 'ok'){
+							$("#showprice").html(rs.content);
+						}
+					});
+				}
+				</script>
+				<!-- loop from=$rs.attrlist key=$key value=$value -->
+				<input type="hidden" name="attr" id="attr_{$value.id}" value="" />
+				<div style="margin-bottom:5px;">
+					<table>
+					<tr>
+						<!-- loop from=$value.rslist key=$k value=$v id=$tmpid -->
+						<td><div class="attr" name="attr{$value.id}" data="{$v.id}" price="{$v.price}" weight="{$v.weight}" volume="{$v.volume}" onclick="attr_select('{$v.id}','{$value.id}')">{$v.title}</div></td>
+						<!-- /loop -->
+					</tr>
+					</table>
+				</div>
+				<!-- /loop -->
+				<p><span>价格：</span>
+					<span class="price" style="color:red;font-size:16px;" id="showprice">{func price_format $rs.price $rs.currency_id}</span>
+				</p>
 				<p style="padding-top:10px;">
 					<a href="javascript:$.cart.add('{$rs.id}',$('#buycount').val());void(0);"><img src="images/buy-btn.jpg" width="157" height="33" /></a>
 				</p>

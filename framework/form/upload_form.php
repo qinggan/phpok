@@ -19,7 +19,6 @@ class upload_form extends _init_auto
 	{
 		$this->addjs('js/webuploader/webuploader.min.js');
 		$this->addcss('js/webuploader/webuploader.css');
-		$this->addjs('js/webuploader/admin.upload.js');
 	}
 
 	public function phpok_config()
@@ -138,6 +137,8 @@ class upload_form extends _init_auto
 
 	private function _format_admin($rs)
 	{
+		$this->addjs('js/webuploader/admin.upload.js');
+		//判断是否
 		if($rs["content"]){
 			if(is_string($rs["content"])){
 				$res = $this->model('res')->get_list_from_id($rs['content']);
@@ -181,6 +182,7 @@ class upload_form extends _init_auto
 		}
 		$rs['upload_type'] = $upload_type;
 		//echo "<pre>".print_r($rs,true)."</pre>";
+		$rs['_upload_binary'] = ini_get('upload_tmp_dir') ? false : true;
 		$this->assign("_rs",$rs);
 		return $this->fetch($this->dir_phpok.'form/html/upload_admin_tpl.html','abs-file',false);
 	}

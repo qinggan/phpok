@@ -25,15 +25,14 @@ class usercp_control extends phpok_control
 	//会员个人中心
 	public function index_f()
 	{
-		$rs = $this->model("user")->get_one($_SESSION['user_id']);
-		$this->assign('rs',$rs);
+		$this->assign('rs',$this->user);
 		$this->view('usercp');
 	}
 
 	//修改个人资料
 	public function info_f()
 	{
-		$rs = $this->model("user")->get_one($_SESSION['user_id']);
+		$rs = $this->user;
 		$group_rs = $this->group_rs;
 		//读取扩展属性
 		$condition = 'is_edit=1';
@@ -71,6 +70,85 @@ class usercp_control extends phpok_control
 	public function passwd_f()
 	{
 		$this->view("usercp_passwd");
+	}
+
+	//修改邮箱
+	public function email_f()
+	{
+		$this->assign('rs',$this->user);
+		//判断后台是否配置好SMTP
+		$send_email = false;
+		//判断是否发送系统邮件通知
+		if($this->site['email_server'] && $this->site['email_account'] && $this->site['email_pass'] && $this->site['email']){
+			$send_email = true;
+		}
+		$this->assign('sendemail',$send_email);
+		$this->view("usercp_email");
+	}
+
+	public function emailcode_f()
+	{
+		if(!$this->site['email_server'] || !$this->site['email_account'] || !$this->site['email_pass'] || !$this->site['email']){
+			$this->json(P_Lang('未配置好SMTP邮件发送，不支持此操作'));
+		}
+		$email = $this->get('email');
+		if(!$email){
+			$this->json(P_Lang('邮箱不能为空'));
+		}
+		if(!$this->lib('common')->email_check($email)){
+			$this->json(P_Lang('邮箱格式不正确'));
+		}
+		$chk = $this->model('user')->uid_from_email($email,$_SESSION['user_id']);
+		if($chk){
+			$this->json(P_Lang('邮箱已被使用，请更换其他邮箱'));
+		}
+		if($email == $this->user['email']){
+			$this->json(P_Lang('邮箱与当前使用是一致的，不需要修改'));
+		}
+		$code = rand(1000,9999);
+		$title = P_Lang('邮件验证码');
+		$content = P_Lang('您收到的验证码是：{code}，请在30分钟内执行，感谢您对我站的支持',array('code'=>$code));
+		$name = $this->user['fullname'] ? $this->user['fullname'] : $this->user['user'];
+		$info = $this->lib('email')->send_mail($email,$title,$content,$name);
+		if(!$info){
+			$this->json($this->lib('email')->error());
+		}
+		//验证码保存到数据库中
+		$this->model('user')->save(array('code'=>$code),$_SESSION['user_id']);
+		$this->json(true);
+	}
+
+	//修改手机
+	public function mobile_f()
+	{
+		$rs = $this->model("user")->get_one($_SESSION['user_id']);
+		$this->assign('rs',$rs);
+		$this->view("usercp_mobile");
+	}
+
+	//发票管理
+	public function invoice_f()
+	{
+		$rslist = $this->model('user')->invoice($_SESSION['user_id']);
+		if($rslist){
+			$this->assign('rslist',$rslist);
+			$this->assign('total',count($rslist));
+		}
+		$this->view("usercp_invoice");
+	}
+
+	public function invoice_setting_f()
+	{
+		$id = $this->get('id','int');
+		if($id){
+			$rs = $this->model('user')->invoice_one($id);
+			if(!$rs || $rs['user_id'] != $_SESSION['user_id']){
+				$this->error(P_Lang('发票信息不存在或您没有权限修改此发票设置'));
+			}
+			$this->assign('id',$id);
+			$this->assign('rs',$rs);
+		}
+		$this->view("usercp_invoice_setting");
 	}
 
 	//获取项目列表
@@ -141,21 +219,30 @@ class usercp_control extends phpok_control
 	//收货地址管理
 	public function address_f()
 	{
-		$shipping = $this->model('address')->address_list($_SESSION['user_id'],'shipping');
-		if($shipping)
-		{
-			reset($shipping);
-			$shipping = current($shipping);
-			$this->assign("shipping",$shipping);
-		}
-		$billing = $this->model('address')->address_list($_SESSION['user_id'],'billing');
-		if($billing)
-		{
-			reset($billing);
-			$billing = current($billing);
-			$this->assign("billing",$billing);
+		$rslist = $this->model('user')->address($_SESSION['user_id']);
+		if($rslist){
+			$this->assign('rslist',$rslist);
+			$this->assign('total',count($rslist));
 		}
 		$this->view("usercp_address");
+	}
+
+	public function address_setting_f()
+	{
+		$id = $this->get('id','int');
+		if($id){
+			$rs = $this->model('user')->address_one($id);
+			if(!$rs || $rs['user_id'] != $_SESSION['user_id']){
+				$this->error(P_Lang('地址信息不存在或您没有权限修改此地址'));
+			}
+			$this->assign('id',$id);
+			$this->assign('rs',$rs);
+		}else{
+			$rs = array();
+		}
+		$info = form_edit('pca',array('p'=>$rs['province'],'c'=>$rs['city'],'a'=>$rs['county']),'pca');
+		$this->assign('pca_rs',$info);
+		$this->view('usercp_address_setting');
 	}
 
 	public function avatar_f()

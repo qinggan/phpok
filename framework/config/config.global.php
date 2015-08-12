@@ -66,3 +66,4 @@ $config["engine"]["session"]["timeout"] = 3600;
 
 //Nginx对SERVER_NAME支持不好，如果您使用Nginx，且使用多站点，建议您改成：HTTP_HOST
 $config['get_domain_method'] = 'SERVER_NAME';
+

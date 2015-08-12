@@ -1,10 +1,21 @@
 <div class="tips">
 	实现注册通过手机号进行验证<br />
-	发送验证码网址：{$sys.url}api.php?c=plugin&f=index&id=duanxincm&exec=sendsms&mobile=手机号<br />
+	发送验证码网址：{$sys.url}api.php?c=plugin&id=duanxincm&exec=sendsms&mobile=手机号<br />
 	本插件使用第三方：莫名短信实现发送，请进入官网申请：<a href="http://www.duanxin.cm" target="_blank" title="访问官网" class="red">http://www.duanxin.cm</a>
 	<div class="clear"></div>
 </div>
-
+<script type="text/javascript">
+function clear_cm()
+{
+	var url = get_url('plugin','exec','id=duanxincm&exec=clearsms');
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok'){
+		$.dialog.alert('短信内容已清理',function(){},'succeed');
+	}else{
+		$.dialog.alert(rs.content);
+	}
+}
+</script>
 <div class="table">
 	<div class="title">
 		帐号：
@@ -32,4 +43,13 @@
 		<span class="note">指定验证码的表单字段，为空使用：<span class="red">_mobile_code</span></span>
 	</div>
 	<div class="content"><input type="text" id="cm_check_code" name="cm_check_code" class="long" value="{$rs.param.cm_check_code}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		短信内容处理：
+		<span class="note">清理已过期的短信数据，减少数据压力</span>
+	</div>
+	<div class="content">
+		<input type="button" value="清空过期或已使用的短信" onclick="clear_cm()" class="phpok-btn" />
+	</div>
 </div>

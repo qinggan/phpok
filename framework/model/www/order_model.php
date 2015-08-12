@@ -126,23 +126,6 @@ class order_model extends order_model_base
 		return $this->db->get_all($sql,'type_id');
 	}
 
-	//取得订单下的产品信息
-	function product_list($id)
-	{
-		if(!$id) return false;
-		$sql = "SELECT * FROM ".$this->db->prefix."order_product WHERE order_id='".$id."'";
-		$rslist = $this->db->get_all($sql);
-		if(!$rslist) return false;
-		foreach($rslist AS $key=>$value)
-		{
-			//读取订单的图片
-			if($value['ext']) $value['ext'] = unserialize($rs['ext']);
-			if($value['tid']) $value['url'] = $GLOBALS['app']->url($value['tid']);
-			$rslist[$key] = $value;
-		}
-		return $rslist;
-	}
-
 	//删除订单操作
 	function delete($id)
 	{

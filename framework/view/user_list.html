@@ -18,7 +18,6 @@
 	</tr>
 	</table>
 </div>
-
 <div class="list">
 <table width="100%" class="list" cellpadding="0" cellspacing="0">
 <tr>
@@ -26,10 +25,13 @@
 	<th width="35px">&nbsp;</th>
 	<th width="35px"></th>
 	<!-- loop from=$arealist key=$key value=$value -->
-	<th style="text-align:left">{func P_Lang $value}</th>
+	<th class="lft">{func P_Lang $value}</th>
+	<!-- /loop -->
+	<!-- loop from=$wlist key=$key value=$value id=$tmpid -->
+	<th class="lft" width="100">{$value.title}</th>
 	<!-- /loop -->
 	<th width="130px">{lang注册时间}</th>
-	<th width="65px">{lang操作}</th>
+	<th width="120px"></th>
 </tr>
 <!-- $rslist AS $key=>$value -->
 <tr>
@@ -53,10 +55,19 @@
 		<!-- /if -->
 	</td>
 	<!-- /loop -->
+	<!-- loop from=$wlist key=$k value=$v -->
+	<td class="lft">
+		{$value.wealth[$k] ? $value.wealth[$k] : 0}{$v.unit}
+		<a onclick="action_wealth('{$v.title}','{$v.id}','{$value.id}','{$v.unit}')" class="ico go" title="调整"></a>
+		<a class="ico page" onclick="show_wealth_log('{$v.title}','{$v.id}','{$value.id}')" title="{lang查看日志}"></a>
+	</td>
+	<!-- /loop -->
 	<td>{echo date('Y-m-d H:i',$value['regtime'])}</td>
 	<td>
-		<a href="{echo admin_url('user','set')}&id={$value.id}" class="icon edit" title="编辑"></a>
-		<a href="javascript:del({$value.id},'{$value.user}');void(0);" class="icon delete" title="删除"></a>
+		<a href="{echo admin_url('user','set')}&id={$value.id}" class="icon edit" title="{lang编辑}"></a>
+		<a onclick="show_address('{$value.user}','{$value.id}')" class="ico address" title="{lang会员地址库}"></a>
+		<a onclick="show_invoice('{$value.user}','{$value.id}')" class="ico invoice" title="{lang会员发票配置}"></a>
+		<a href="javascript:del({$value.id},'{$value.user}');void(0);" class="icon delete" title="{lang删除}"></a>
 	</td>
 </tr>
 <!-- end -->

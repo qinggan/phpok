@@ -312,8 +312,7 @@ function set_admin_id(id)
 				alert(p_lang('iframe还没加载完毕呢'));
 				return false;
 			};
-			iframe.save();
-			return false;
+			return iframe.save();
 		},
 		'cancel':function(){
 			return true;
@@ -366,4 +365,3 @@ function list_action_exec()
 		return false;
 	}
 }
-

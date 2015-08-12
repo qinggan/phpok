@@ -116,6 +116,22 @@ class site_model extends site_model_base
 		$this->db->query($sql);
 		return true;
 	}
+
+	public function set_mobile($id=0,$act=1)
+	{
+		$this->clear_mobile_domain();
+		if($id && $act){
+			$sql = "UPDATE ".$this->db->prefix."site_domain SET is_mobile=1 WHERE site_id=".$this->site_id." AND id='".$id."'";
+			return $this->db->query($sql);
+		}
+		return true;
+	}
+
+	public function clear_mobile_domain()
+	{
+		$sql = "UPDATE ".$this->db->prefix."site_domain SET is_mobile=0 WHERE site_id=".$this->site_id;
+		return $this->db->query($sql);
+	}
 }
 
 ?>

@@ -1,0 +1,96 @@
+<!-- include tpl=head title="发票设置 - 个人中心" -->
+<script type="text/javascript">
+function invoice_default(id)
+{
+	var url = api_url('usercp','invoice_default','id='+id);
+	$.phpok.json(url,function(data){
+		if(data.status != 'ok'){
+			$.dialog.alert(data.content);
+		}else{
+			$.phpok.reload();
+		}
+	});
+}
+function invoice_delete(id)
+{
+	$.dialog.confirm('确定要删除这个发票信息吗？',function(){
+		var url = api_url('usercp','invoice_delete','id='+id);
+		$.phpok.json(url,function(){
+			$.phpok.reload();
+		})
+	})
+}
+function invoice_setting(id)
+{
+	var url = get_url('usercp','invoice_setting');
+	if(id>0){
+		url += "&id="+id;
+		var title = '{lang编辑发票信息}';
+	}else{
+		var title = '{lang添加发票信息}';
+	}
+	$.dialog.open(url,{
+		'title':title,
+		'lock':true,
+		'width':'376px',
+		'height':'310px',
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		},'okVal':title,
+		'cancel':function(){
+			return true;
+		}
+	});
+}
+</script>
+<div class="cp">
+	<div class="left"><!-- include tpl=block_usercp --></div>
+	<div class="right">
+		<div class="pfw mbottom10">
+			<h3>发票设置
+				<!-- if $total<10 -->
+				<a href="javascript:invoice_setting(0);void(0)" class="more">添加发票</a>
+				<!-- /if -->
+			</h3>
+			<table class="list" width="100%">
+			<tr>
+				<th width="80px">发票类型</th>
+				<th class="lft">发票抬头</th>
+				<th class="lft">发票内容</th>
+				<th>&nbsp;</th>
+			</tr>
+			<!-- loop from=$rslist key=$key value=$value -->
+			<tr{if $rslist_id.num%2 == ''} class="o-dark"{else} class="o-white"{/if}>
+				<td height="26" class="center">{$value.type}</td>
+				<td>{$value.title}</td>
+				<td>{$value.content}</td>
+				<td align="center">
+					<a href="javascript:invoice_setting('{$value.id}');void(0);">编辑</a>
+					<a href="javascript:invoice_delete('{$value.id}');void(0);">删除</a>
+					<!-- if !$value.is_default -->
+					<a href="javascript:invoice_default('{$value.id}');void(0);">设为默认</a>
+					<!-- else -->
+					<span class="red">默认发票</span>
+					<!-- /if -->
+				</td>
+			</tr>
+			<!-- /loop -->
+			</table>
+		</div>
+		<div class="pfw mbottom10">
+			<h3>友情提示</h3>
+			<ul class="tip">
+				<li>未设置默认发票时，在提交订单中，默认是不要发票的</li>
+			</ul>
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>
+
+<!-- include tpl=foot -->

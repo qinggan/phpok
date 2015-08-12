@@ -112,6 +112,8 @@ class project_control extends phpok_control
 			}
 		}
 		$this->assign('grouplist',$grouplist);
+		$freight = $this->model('freight')->get_all();
+		$this->assign('freight',$freight);
 		$this->view("project_set");
 	}
 
@@ -180,6 +182,11 @@ class project_control extends phpok_control
 		$identifier = $this->get("identifier");
 		$module = $this->get("module","int");
 		$cate = $this->get("cate","int");
+		if($cate){
+			$cate_multiple = $this->get('cate_multiple','int');
+		}else{
+			$cate_multiple = 0;
+		}
 		$tpl_index = $this->get("tpl_index");
 		$tpl_list = $this->get("tpl_list");
 		$tpl_content = $this->get("tpl_content");
@@ -198,6 +205,7 @@ class project_control extends phpok_control
 		$array["parent_id"] = $this->get("parent_id","int");
 		$array["module"] = $module;
 		$array["cate"] = $cate;
+		$array['cate_multiple'] = $cate_multiple;
 		$array["title"] = $title;
 		$array["nick_title"] = $this->get("nick_title");
 		$array["alias_title"] = $this->get("alias_title");
@@ -235,6 +243,8 @@ class project_control extends phpok_control
 		$array['is_identifier'] = $this->get('is_identifier','checkbox');
 		$array['is_appoint'] = $this->get('is_appoint','checkbox');
 		$array['tag'] = $this->get('tag');
+		$array['biz_attr'] = $this->get('biz_attr');
+		$array['freight'] = $this->get('freight');
 		$ok_url = $this->url("project");
 		$c_rs = $this->model('sysmenu')->get_one_condition("appfile='list' AND parent_id>0");
 		$gid = $c_rs["id"];

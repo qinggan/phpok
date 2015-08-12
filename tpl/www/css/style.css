@@ -16,7 +16,9 @@ p{word-wrap:break-word}
 .wrap{ width:980px; margin:0 auto;}
 .hand{cursor:pointer;}
 .red{color:red;}
+.red a{color:red;}
 .tag{color:#000;text-decoration:underline;}
+.price{font-size:16px;color:red;}
 /* 公共页头样式 */
 .head{ width:980px;margin:0 auto 10px;}
 .head .head_right{float:right;}
@@ -508,7 +510,15 @@ div.table_lc td.center{text-align:center;}
 div.table_lc input.qty{text-align:center;width:45px;}
 
 /* 购物车里涉及到的样式 */
-div.address{float:left;width:495px;overflow:hidden;}
+ul.address{list-style:none;margin:10px 30px;padding:0}
+ul.address li{cursor:default;margin-bottom:5px;}
+ul.address li td.title{width:140px;height:24px;border:2px solid #ccc;text-align:center;cursor:pointer;}
+ul.address li td.selected{border-color:#e4393c;background:url('../images/selected.png') right bottom no-repeat;}
+ul.address li td.fullname{text-align:center;width:80px;}
+div.address h4{font-size:14px;color:#666;line-height:300%;}
+div.address td{padding:3px;}
+div.address td input[type=text]{border:1px solid #ccc;height:26px;line-height:26px;min-width:200px;}
+div.address td select{padding:3px;}
 /* 付款页面 */
 div.payment{padding:10px;}
 div.payment h4{font-size:14px;color:#666;}
@@ -526,17 +536,13 @@ div.pfw h3{height:30px;line-height:30px;font-size:14px;margin:0;padding:0 0 0 10
 div.pfw h3 .more{display:block;float:right;height:30px;line-height:30px;padding-right:8px;font-weight:normal;font-size:12px;}
 div.mbottom10{margin-bottom:10px;}
 
-.check_address h4{font-size:14px;color:#666;line-height:300%;}
-.check_address td{padding:3px;}
-.check_address td input[type=text]{border:1px solid #ccc;height:26px;line-height:26px;min-width:200px;}
-
-
 
 /* 会员个人中心涉及到的CSS，这里的布局基本上以cp_为前缀 */
-div.cp{margin:10px auto;width:1000px;}
+div.cp{margin:10px auto;width:980px;}
 div.cp:after{content:'.',display:block;height:0;line-height:0;overflow:hidden;visibility:hidden;}
 div.cp .left{width:200px;float:left;}
-div.cp .right{width:790px;float:right;}
+div.cp .right{width:770px;float:right;}
+div.cp .right .pages{border-top:0;}
 div.cp .cp_avatar{float:left;width:150px;padding:25px;}
 div.cp .cp_avatar img{width:150px;height:150px;border:0;}
 div.cp .cp_info{float:right;width:555px;overflow:hidden;}
@@ -562,24 +568,19 @@ ul.usercp li.mypost ul{list-style:none;margin:0;padding:0;}
 
 /* 订单列表信息 */
 div.orderlist{}
-table.orderlist{border-collapse:collapse;border-spacing:0;}
-table.orderlist th,table.orderlist td{padding:0;cursor:default;}
-table.orderlist th{background:#dddddd;height:30px;}
-table.orderlist th.o-price{text-align:left;padding-left:4px;width:100px;}
-table.orderlist th.o-status{text-align:left;padding-left:4px;}
-table.orderlist td.o-date{text-align:center;height:30px;}
-table.orderlist td.o-sn{text-align:center;}
-table.orderlist td.o-qty{text-align:center;}
-table.orderlist td.o-price{padding-left:4px;color:darkred;}
-table.orderlist td.o-status{padding-left:4px;color:darkblue;}
-table.orderlist tr.o-dark{background:#F1F1F1;}
-table.orderlist tr.o-dark-over{background:#00478A;color:#fff;}
-table.orderlist tr.o-dark-over a,table.orderlist tr.o-dark-over td{color:#fff;}
-
-table.orderlist tr.o-white{background:#ffffff;}
-table.orderlist tr.o-white-over{background:#006DB6;color:#fff;}
-table.orderlist tr.o-white-over a,table.orderlist tr.o-white-over td{background:#006DB6;color:#fff;}
-
+table.list{border-collapse:collapse;border-spacing:0;}
+table.list th,table.list td{padding:0;cursor:default;}
+table.list th{background:#dddddd;height:30px;}
+table.list th.lft{text-align:left;}
+table.list td.o-price{padding-left:4px;color:darkred;}
+table.list td.o-status{padding-left:4px;color:darkblue;}
+table.list tr.o-dark{background:#F1F1F1;}
+table.list tr.o-dark-over{background:#00478A;color:#fff;}
+table.list tr.o-dark-over a,table.orderlist tr.o-dark-over td{color:#fff;}
+table.list tr.o-white{background:#ffffff;}
+table.list tr.o-white-over{background:#006DB6;color:#fff;}
+table.list tr.o-white-over a,table.orderlist tr.o-white-over td{background:#006DB6;color:#fff;}
+table.list td.center{text-align:center;}
 
 table.form{cellspacing:2px;}
 table.form td{padding:3px;}
@@ -619,3 +620,6 @@ a.download{background:url('../images/icon_download.png') left center no-repeat;p
 .imglist li img{border-radius:5px;box-shadow:1px 1px 5px 0px #ccc;}
 .imglist li .tit{ line-height:22px; padding:2px; text-align:center;overflow:hidden;height:22px;}
 .imglist:after{clear:both;height:0;line-height:0;content:' ';display:block;visibility:hidden;}
+
+ul.tip{margin:10px 40px;list-style:square}
+ul.tip li{line-height:22px;}

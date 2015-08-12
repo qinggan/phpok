@@ -1,0 +1,61 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}<a href="{url ctrl=wealth/}">{lang财富方案}</a> &raquo; 未审核
+	<div class="action"><a href="{url ctrl=wealth/}">{lang返回}</a></div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+function check_it(id,type)
+{
+	if(type == 'error'){
+		$.dialog.confirm('确定要此财富信息无效吗？确定后，数据将被删除！',function(){
+			var url = get_url('wealth','action','id='+id+"&action=error");
+			var rs = $.phpok.json(url);
+			if(rs.status == 'ok'){
+				$.phpok.reload();
+			}else{
+				$.dialog.alert(rs.content);
+			}
+		});
+	}else{
+		var url = get_url('wealth','action','id='+id+"&action=ok");
+		var rs = $.phpok.json(url);
+		if(rs.status == 'ok'){
+			$.dialog.alert('审核通过',function(){
+				$.phpok.reload();
+			},'succeed');
+		}else{
+			$.dialog.alert(rs.content);
+		}
+	}
+}
+</script>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>ID</th>
+	<th>方案</th>
+	<th>会员</th>
+	<th width="140">时间</th>
+	<th width="100">财富</th>
+	<th class="lft">备注</th>
+	<th class="lft">&nbsp;</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td class="center">{$value.w_title}</td>
+	<td class="center">{$value.user}</td>
+	<td class="center">{func date "Y-m-d H:i" $value.dateline}</td>
+	<td class="center">{$value.val}{$value.w_unit}</td>
+	<td height="22">{$value.note}</td>
+	<td>
+		<div class="button-group">
+			<input type="button" value="{lang审核通过}" onclick="check_it('{$value.id}','ok')" class="phpok-btn" />
+			<input type="button" value="{lang审核无效}" onclick="check_it('{$value.id}','error')" class="phpok-btn" />
+		</div>
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- include tpl=pagelist -->
+<!-- include tpl=foot -->

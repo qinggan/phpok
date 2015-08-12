@@ -98,7 +98,6 @@ class reply_model_base extends phpok_model
 			$offset = intval($offset);
 			$sql .= " LIMIT ".$offset.",".$psize;
 		}
-		//phpok_log($sql);
 		return $this->db->get_all($sql,$pri);
 	}
 

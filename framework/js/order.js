@@ -208,7 +208,7 @@ function load_product(num,id)
 	}
 	$("#pro_tid_"+num).val(id);
 	if(rs.content.thumb){
-		$("#pro_thumb_"+num).val(rs.content.thumb.id);
+		$("#pro_thumb_"+num).val(rs.content.thumb.filename);
 		$("#pro_thumb_view_"+num).html('<img src="'+rs.content.thumb.ico+'" border="0" width="80px" height="80px" onclick="update_pic(\''+num+'\')" style="cursor:pointer;" />');
 	}
 	$("#pro_title_"+num).val(rs.content.title);

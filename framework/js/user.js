@@ -86,3 +86,106 @@ function set_status(id)
 		return false;
 	}
 }
+function action_wealth_select(val)
+{
+	if(val == '1'){
+		$("#a_html").html('增加');
+		$("#a_type").val("+");
+	}else{
+		$("#a_html").html('减少');
+		$("#a_type").val("-");
+	}
+}
+function action_wealth(title,wid,uid,unit)
+{
+	var t_title = p_lang('会员')+title+p_lang('操作');
+	var content = '<label><input type="radio" value="+" name="tmp1" checked onclick="action_wealth_select(1)">增加</label> &nbsp; &nbsp; &nbsp;';
+	content += '<label><input type="radio" value="-" name="tmp1" onclick="action_wealth_select(2)">减少</label><br /><br />'
+	content += '<input type="hidden" id="a_type" value="+" />'
+	content += '<span id="a_html">增加</span>：<input type="text" style="width:70px" id="a_val" /> '+unit+'<br /><br />';
+	content += p_lang('说明：')+'<input type="text" id="a_note" value="" style="width:300px" />';
+	$.dialog({
+		'title':t_title,
+		'lock':true,
+		'content':content,
+		'ok':function(){
+			var url = get_url('wealth','val','wid='+wid+'&uid='+uid);
+			var note = $("#a_note").val();
+			if(!note){
+				$.dialog.alert(p_lang('请填写相关说明'));
+				return false;
+			}
+			url += "&note="+$.str.encode(note);
+			var val = $("#a_val").val();
+			if(!val || (val && parseInt(val)<=0)){
+				$.dialog.alert(p_lang('请填写数值，数值必须大于0'));
+				return false;
+			}
+			url += "&val="+val;
+			var type = $("#a_type").val();
+			if(type){
+				url += "&type="+type;
+			}
+			var rs = $.phpok.json(url);
+			if(rs.status == 'ok'){
+				$.dialog.alert(p_lang('操作成功'),function(){
+					$.phpok.reload();
+					return true;
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		},
+		'okVal':p_lang('提交'),
+		'cancel':function(){
+			return true;
+		}
+	});
+}
+
+
+function show_wealth_log(title,wid,uid)
+{
+	var url = get_url('wealth','log','wid='+wid+"&uid="+uid);
+	$.dialog.open(url,{
+		'title':title+p_lang('日志'),
+		'lock':true,
+		'width':'500px',
+		'height':'400px',
+		'ok':function(){
+			return true;
+		},
+		'okVal':'关闭'
+	});
+}
+
+function show_address(title,uid)
+{
+	var url = get_url('user','address','id='+uid);
+	$.dialog.open(url,{
+		'title':title+p_lang('地址库')+p_lang('，每个会员最多30个地址'),
+		'width':'700px',
+		'height':'400px',
+		'lock':true,
+		'cancel':function(){
+			return true;
+		},
+		'cancelVal':'关闭窗口'
+	});
+}
+
+function show_invoice(title,uid)
+{
+	var url = get_url('user','invoice','id='+uid);
+	$.dialog.open(url,{
+		'title':title+p_lang('发票设置')+p_lang('，每个会员最多10条发票设置'),
+		'width':'500px',
+		'height':'400px',
+		'lock':true,
+		'cancel':function(){
+			return true;
+		},
+		'cancelVal':'关闭窗口'
+	});
+}

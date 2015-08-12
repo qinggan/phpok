@@ -24,7 +24,7 @@ define("FRAMEWORK",ROOT."framework/");
 //建议您在安装成功后去除这个判断。
 if(!is_file(ROOT."data/install.lock"))
 {
-	header("Location:install/index.php");
+	header("Location:phpokinstall.php");
 	exit;
 }
 

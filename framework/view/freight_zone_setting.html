@@ -1,0 +1,111 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}<a href="{url ctrl=freight/}">{lang运费模板}</a>
+	&raquo; <a href="{url ctrl=freight func=zone fid=$fid/}">{$fs.title}</a>
+	&raquo; <!-- if $id -->{lang编辑区域}<!-- else -->{lang添加区域}<!-- /if -->
+	<div class="action"><a href="{url ctrl=freight func=zone_setting fid=$fid/}">返回列表</a></div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+function check_it()
+{
+	var title = $("#title").val();
+	if(!title){
+		$.dialog.alert('名称不能为空');
+		return false;
+	}
+	var info = $.input.checkbox_join();
+	if(!info){
+		$.dialog.alert('请选择相应的省市');
+		return false;
+	}
+	return true;
+}
+</script>
+<form method="post" action="{url ctrl=freight func=zone_save/}" onsubmit="return check_it()">
+<!-- if $id -->
+<input type="hidden" name="id" id="id" value="{$id}" />
+<!-- else -->
+<input type="hidden" name="fid" id="fid" value="{$fid}" />
+<!-- /if -->
+<div class="table">
+	<div class="title">
+		名称：
+		<span class="note">设定一个名称，仅限后台维护管理，建议设置为：区域一，域二或是华东区，华北区等</span>
+	</div>
+	<div class="content"><input type="text" id="title" name="title" class="login" value="{$rs.title}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		摘要
+		<span class="note">简单描述该区域的主要地址</span>
+	</div>
+	<div class="content"><input type="text" id="note" name="note" class="long" value="{$rs.note}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		排序：
+		<span class="note">自定义区域排序</span>
+	</div>
+	<div class="content"><input type="text" id="taxis" name="taxis" class="short" value="{$rs ? $rs.taxis : $taxis}" /></div>
+</div>
+<input type="hidden" name="country" id="country" value="中国" />
+<script type="text/javascript">
+function update_city(pro)
+{
+	var p = false;
+	$('input[data=city'+pro+']').each(function(i){
+		if($(this).attr('checked') == 'checked'){
+			p = true;
+		}
+	});
+	if(p == true){
+		$("input[data=pro"+pro+"]").attr('checked',true);
+	}else{
+		$("input[data=pro"+pro+"]").attr('checked',false);
+	}
+}
+function update_pro(pro)
+{
+	var t = $("input[data=pro"+pro+"]").attr('checked');
+	if(t == 'checked'){
+		$('input[data=city'+pro+']').attr('checked',true);
+	}else{
+		$('input[data=city'+pro+']').attr('checked',false);
+	}
+}
+</script>
+<div class="table">
+	<div class="title">
+		请选择区域包含的省份及城市：
+		<span class="note">注意，要勾选城市，相应的省份也应当勾选上</span>
+	</div>
+	<div class="content">
+		<table width="100%" cellpadding="0" cellspacing="0" class="list">
+		<tr>
+			<th width="200">省份</th>
+			<th>城市</th>
+		</tr>
+		<!-- loop from=$prolist key=$key value=$value id=$tmpid -->
+		<tr id="pro_{$tmpid.num}">
+			<td><label><input type="checkbox" name="area[]" value="{$key}" data="pro{$key}"{if $area[$key]} checked{/if} onclick="update_pro('{$key}')" />{$key}</label></td>
+			<td>
+				<ul class="layout">
+					<!-- loop from=$value key=$k value=$v id=$tmpid2 -->
+					<li><label><input type="checkbox" name="city_{$key}[]" data="city{$key}" value="{$k}"{if $area[$key][$k]} checked{/if} onclick="update_city('{$key}')" />{$k}</label></label></li>
+					<!-- /loop -->
+				</ul>
+				<div class="clear"></div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit2" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot -->

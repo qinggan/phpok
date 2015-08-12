@@ -27,6 +27,7 @@ class phpok_call extends phpok_control
 		$array[] = 'subcate';
 		$array[] = 'res';
 		$array[] = 'reslist';
+		$array[] = 'subtitle';
 		return $array;
 	}
 
@@ -156,6 +157,9 @@ class phpok_call extends phpok_control
 					$nlist[$value['identifier']] = $value;
 				}
 			}
+		}
+		if($project['is_biz']){
+			$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit";
 		}
 		$condition = $this->_arc_condition($rs);
 		$array['total'] = $this->model('list')->arc_count($project['module'],$condition);
@@ -314,6 +318,8 @@ class phpok_call extends phpok_control
 		}
 		if($rs['ext'] && is_array($rs['ext'])){
 			foreach($rs['ext'] AS $key=>$value){
+				$key = stripslashes($key);
+				$key = str_replace(array("'",'"'),'',$key);
 				$condition .= " AND ext.".$key."='".$value."' ";
 			}
 		}
@@ -363,6 +369,30 @@ class phpok_call extends phpok_control
 		return $rslist;
 	}
 
+
+	private function _subtitle($rs)
+	{
+		if(!$rs['tid'] && !$rs['phpok']){
+			unset($rs);
+			return false;
+		}
+		if(!$rs['tid']){
+			$rs['tid'] = $rs['phpok'];
+		}
+		$idlist = $this->model('list')->subtitle_ids($rs['tid']);
+		if(!$idlist){
+			return false;
+		}
+		$rslist = array();
+		foreach($idlist as $key=>$value){
+			$tmp = $rs;
+			unset($tmp['phpok'],$tmp['id']);
+			$tmp['title_id'] = $value;
+			$rslist[$key] = $this->_arc($tmp);
+		}
+		return $rslist;
+	}
+	
 	private function _total($rs)
 	{
 		if(!$rs['pid'] && !$rs['phpok']){

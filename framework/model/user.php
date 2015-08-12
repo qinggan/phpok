@@ -25,6 +25,9 @@ class user_model_base extends phpok_model
 		if(!$id){
 			return false;
 		}
+		if(!$field){
+			$field = 'id';
+		}
 		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
 		$sql.= " WHERE u.".$field."='".$id."'";
@@ -38,6 +41,19 @@ class user_model_base extends phpok_model
 		}
 		foreach($flist AS $key=>$value){
 			$rs[$value['identifier']] = $this->lib('form')->show($value,$rs[$value['identifier']]);
+		}
+		//获取会员积分
+		$wlist = $this->model('wealth')->get_all(1,'id');
+		if($wlist){
+			$condition = "uid='".$rs['id']."'";
+			$tlist = $this->model('wealth')->vals($condition);
+			if($tlist){
+				$wealth = array();
+				foreach($tlist as $key=>$value){
+					$tmp = $wlist[$value['wid']];
+					$rs['wealth'][$tmp['identifier']] = array('title'=>$tmp['title'],'val'=>$value['val'],'unit'=>$tmp['unit']);
+				}
+			}
 		}
 		return $rs;
 	}
@@ -61,6 +77,19 @@ class user_model_base extends phpok_model
 			return false;
 		}
 		$idlist = array_keys($rslist);
+		//读取会员积分信息
+		$wlist = $this->model('wealth')->get_all(1,'id');
+		if($wlist){
+			$condition = "uid IN(".implode(",",$idlist).")";
+			$tlist = $this->model('wealth')->vals($condition);
+			if($tlist){
+				$wealth = array();
+				foreach($tlist as $key=>$value){
+					$tmp = $wlist[$value['wid']];
+					$rslist[$value['uid']]['wealth'][$tmp['identifier']] = $value['val'];
+				}
+			}
+		}
 		//获取会员扩展字段
 		$flist = $this->fields_all();
 		if(!$flist){
@@ -202,6 +231,108 @@ class user_model_base extends phpok_model
 			return false;
 		}
 		return $this->db->update_array($data,"user_ext",array("id"=>$id));
+	}
+
+	public function get_relation($uid)
+	{
+		$sql = "SELECT introducer FROM ".$this->db->prefix."user_relation WHERE uid='".$uid."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		return $rs['introducer'];
+	}
+
+	public function save_relation($uid,$introducer)
+	{
+		$sql = "REPLACE INTO ".$this->db->prefix."user_relation(uid,introducer,dateline) VALUES('".$uid."','".$introducer."','".$this->time."')";
+		return $this->db->query($sql);
+	}
+
+	public function address($uid)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user_address WHERE user_id='".$uid."' ORDER BY id DESC";
+		return $this->db->get_all($sql);
+	}
+
+	public function address_one($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user_address WHERE id='".$id."'";
+		return $this->db->get_one($sql);
+	}
+
+	public function address_save($data,$id=0)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		if($id){
+			return $this->db->update_array($data,'user_address',array('id'=>$id));
+		}else{
+			return $this->db->insert_array($data,'user_address');
+		}
+	}
+
+	public function address_delete($id)
+	{
+		$sql = "DELETE FROM ".$this->db->prefix."user_address WHERE id='".$id."'";
+		return $this->db->query($sql);
+	}
+
+	public function address_default($id=0)
+	{
+		if(!$id){
+			return false;
+		}
+		$rs = $this->address_one($id);
+		$sql = "UPDATE ".$this->db->prefix."user_address SET is_default=0 WHERE user_id='".$rs['user_id']."'";
+		$this->db->query($sql);
+		$sql = "UPDATE ".$this->db->prefix."user_address SET is_default=1 WHERE id='".$id."'";
+		$this->db->query($sql);
+		return true;
+	}
+
+	public function invoice($uid)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user_invoice WHERE user_id='".$uid."' ORDER BY id DESC";
+		return $this->db->get_all($sql);
+	}
+
+	public function invoice_one($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user_invoice WHERE id='".$id."'";
+		return $this->db->get_one($sql);
+	}
+
+	public function invoice_save($data,$id=0)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		if($id){
+			return $this->db->update_array($data,'user_invoice',array('id'=>$id));
+		}else{
+			return $this->db->insert_array($data,'user_invoice');
+		}
+	}
+
+	public function invoice_delete($id)
+	{
+		$sql = "DELETE FROM ".$this->db->prefix."user_invoice WHERE id='".$id."'";
+		return $this->db->query($sql);
+	}
+
+	public function invoice_default($id=0)
+	{
+		if(!$id){
+			return false;
+		}
+		$rs = $this->invoice_one($id);
+		$sql = "UPDATE ".$this->db->prefix."user_invoice SET is_default=0 WHERE user_id='".$rs['user_id']."'";
+		$this->db->query($sql);
+		$sql = "UPDATE ".$this->db->prefix."user_invoice SET is_default=1 WHERE id='".$id."'";
+		$this->db->query($sql);
+		return true;
 	}
 }
 ?>

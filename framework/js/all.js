@@ -231,3 +231,27 @@ function set_url_type(val)
 	$("#url_type_default,#url_type_rewrite,#url_type_html").hide();
 	$("#url_type_"+val).show();
 }
+
+function set_mobile(id)
+{
+	var url = get_url('all','domain_mobile','act_mobile=1&id='+id);
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok'){
+		$.phpok.reload();
+	}else{
+		$.dialog.alert(rs.content);
+		return false;
+	}
+}
+
+function unset_mobile(id)
+{
+	var url = get_url('all','domain_mobile','act_mobile=0&id='+id);
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok'){
+		$.phpok.reload();
+	}else{
+		$.dialog.alert(rs.content);
+		return false;
+	}
+}

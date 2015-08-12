@@ -173,7 +173,9 @@ class index_control extends phpok_control
 	{
 		$site_id = $_SESSION["admin_site_id"];
 		$rslist = $this->model('project')->get_all($site_id,0,"p.status=1 AND p.hidden=0");
-		if(!$rslist) $rslist = array();
+		if(!$rslist){
+			$rslist = array();
+		}
 		if(!$_SESSION["admin_rs"]["if_system"]){
 			if(!$_SESSION["admin_popedom"]){
 				return false;
@@ -203,6 +205,26 @@ class index_control extends phpok_control
 		}
 		if(!$rslist || count($rslist)< 1){
 			return false;
+		}
+		foreach($rslist as $key=>$value){
+			$value['url'] = $this->url('list','action','id='.$value['id']);
+			$rslist[$key] = $value;
+		}
+		//系统管理员
+		if($_SESSION['admin_rs']['if_system']){
+			$chk = $this->model('workflow')->chk();
+			if($chk){
+				$tmp = array('title'=>P_Lang('我授权的'),'ico'=>'images/ico/manage.png','id'=>'workflow');
+				$tmp['url'] = $this->url('workflow','manage');
+				$rslist[] = $tmp;
+			}
+		}else{
+			$chk = $this->model('workflow')->chk("admin_id=".$_SESSION['admin_id']);
+			if($chk){
+				$tmp = array('title'=>P_Lang('我管理的'),'ico'=>'images/ico/manage.png','id'=>'workflow');
+				$tmp['url'] = $this->url('workflow','list');
+				$rslist[] = $tmp;
+			}
 		}
 		$this->assign('list_rslist',$rslist);
 		return $this->fetch('index_block_listsetting');

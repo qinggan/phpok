@@ -251,6 +251,10 @@
             height = (!ow || !oh) ? '':width*oh/ow;
 
             if(url) {
+	            //判断网址是还有http://或是ftp://或是data:
+	            if (!(/^(https?|ftp|data):/i).test(url)){
+		            url = editor.options.UEDITOR_HOME_URL + "../../"+ url;
+	            }
                 preview.innerHTML = '<img src="' + url + '" width="' + width + '" height="' + height + '" border="' + border + 'px solid #000" title="' + title + '" />';
             }
         },

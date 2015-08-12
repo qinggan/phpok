@@ -14,13 +14,10 @@ $(document).ready(function(){
 			'dataType':'json',
 			'success':function(rs){
 				if(rs.status == 'ok'){
-					if($("#id").val()){
-						$.dialog.tips('{lang方案编辑成功}');
-					}else{
-						$.dialog.alert('{lang方案创建成功}',function(){
-							$.phpok.reload();
-						});
-					}
+					var t = $("#id").val() ? '{lang方案编辑成功}' : '{lang方案创建成功}';
+					$.dialog.alert(t,function(){
+						$.phpok.go('{url ctrl=gd /}');
+					},'succeed');
 				}else{
 					$.dialog.alert(rs.content);
 				}

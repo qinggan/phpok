@@ -76,7 +76,7 @@ p{word-wrap:break-word}
 .head_tab li.on{background:#3030a2;}
 
 .content{ width:100%; padding:55px 0 10px 0; background:#eeedeb;}
-.c_left{ width:200px; margin-left:10px; overflow:hidden; float:left;}
+.c_left{ width:160px; margin-left:10px; overflow:hidden; float:left;}
 .c_left li{ height:35px; border-bottom:1px solid #395e8d; background:#2a4567;}
 .c_left li a{ display:block; height:35px; line-height:35px; color:#fff; white-space:nowrap; overflow:hidden;}
 .c_left li a span{ width:22px; height:22px; float:left; margin:9px 1px 0 14px;  _margin:9px 1px 0 5px;display:block;font-size:16px;}

@@ -184,7 +184,7 @@ class reply_control extends phpok_control
 		$id = $this->get("id","int");
 		if(!$id) $this->json(P_Lang('未指定ID'));
 		$this->model('reply')->delete($id);
-		$this->json("OK",true);
+		$this->json(true);
 	}
 
 	function edit_f()
@@ -205,62 +205,50 @@ class reply_control extends phpok_control
 		$this->view("reply_content");
 	}
 
-	function edit_save_f()
+	public function edit_save_f()
 	{
-		if(!$this->popedom["modify"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
 		}
-		$id = $this->get("id","int");
-		if(!$id) error_open(P_Lang('未指定ID'));
 		$array = array();
 		$array["star"] = $this->get("star","int");
-		$array["content"] = $this->get("content",'html');
-		if($this->popedom["status"])
-		{
-			$array["status"] = $this->get("status","int");
-		}
+		$array["content"] = $this->get("content");
+		$array["status"] = $this->get("status","int");
 		$this->model('reply')->save($array,$id);
-		$html = P_Lang('系统会在2秒后关闭窗口，').'<a href="javascript:parent.window.location.href=parent.window.location.href;void(0);">'.P_Lang('您可以点这里关闭窗口').'</a>';
-		$html.= '<script type="text/javascript">'."\n";
-		$html.= 'window.setTimeout(\'top.window.location.href=top.window.location.href\',2000)'."\n";
-		$html.= "\n".'</script>';
-		error_open(P_Lang('评论信息更新成功'),"ok",$html);
+		$this->json(true);
 	}
 
-	function adm_f()
+	public function adm_f()
 	{
-		if(!$this->popedom["modify"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+		$id = $this->get('id','int');
+		if(!$id){
+			error(P_Lang('未指定ID'));
 		}
-		$id = $this->get("id","int");
-		if(!$id) error_open(P_Lang('未指定ID'));
 		$rs = $this->model('reply')->get_one($id);
 		if(!$rs){
-			error_open(P_Lang('数据记录不存在'));
+			error(P_Lang('数据记录不存在'));
 		}
 		$this->assign("id",$id);
 		$this->assign("rs",$rs);
 		$title_rs = $this->model('list')->get_one($rs["tid"]);
 		$this->assign("title_rs",$title_rs);
+		$edit_content = form_edit('content',$rs['adm_content'],'editor','width=680&height=300');
+		$this->assign('edit_content',$edit_content);
 		$this->view("reply_adm");
 	}
 
-	function adm_save_f()
+	public function adm_save_f()
 	{
-		if(!$this->popedom["reply"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
 		}
-		$id = $this->get("id","int");
-		if(!$id) error_open(P_Lang('未指定ID'));
 		$array = array();
-		$array["adm_content"] = $this->get("content","html",false);
-		$array["adm_time"] = $this->system_time;
+		$array["adm_content"] = $this->get("content","html");
+		$array["adm_time"] = $this->time;
 		$this->model('reply')->save($array,$id);
-		$html = P_Lang('系统会在2秒后关闭窗口，').'<a href="javascript:parent.window.location.href=parent.window.location.href;void(0);">'.P_Lang('您可以点这里关闭窗口').'</a>';
-		$html.= '<script type="text/javascript">'."\n";
-		$html.= 'window.setTimeout(\'top.window.location.href=top.window.location.href\',2000)'."\n";
-		$html.= "\n".'</script>';
-		error_open(P_Lang('回复成功'),"ok",$html);
+		$this->json(true);
 	}
 	
 }

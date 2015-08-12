@@ -31,5 +31,20 @@ class index_control extends phpok_control
 		}
 		$this->view($tplfile);
 	}
+
+	public function tips_f()
+	{
+		$info = $this->get('info');
+		$backurl = $this->get('back');
+		if(!$info){
+			$info = P_Lang('友情提示');
+		}
+		if(!$backurl){
+			$backurl = $this->url;
+		}
+		$this->assign('url',$backurl);
+		$this->assign('tips',$info);
+		$this->view('tips');
+	}
 }
 ?>

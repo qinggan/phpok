@@ -39,17 +39,20 @@ class list_model_base extends phpok_model
 	{
 		if(!$mid) return false;
 		$field = $this->ext_fields($mid,'ext');
-		$field = $field ? $field.",l.*" : "l.*";
-		$sql = "SELECT ".$field." FROM ".$this->db->prefix."list l LEFT JOIN ".$this->db->prefix."list_".$mid." ext ";
-		$sql.= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
-		if($condition)
-		{
+		$field = $field ? $field.",l.*,u.user _user" : "l.*,u.user _user";
+		$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit";
+		$sql = "SELECT ".$field." FROM ".$this->db->prefix."list l ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id AND u.status=1) ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
+		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
-		if(!$orderby) $orderby = "l.sort DESC,l.dateline DESC,l.id DESC";
+		if(!$orderby){
+			$orderby = "l.sort DESC,l.dateline DESC,l.id DESC";
+		}
 		$sql .= " ORDER BY ".$orderby." ";
-		if($psize && intval($psize))
-		{
+		if($psize && intval($psize)){
 			$offset = intval($offset);
 			$sql.= " LIMIT ".$offset.",".$psize;
 		}
@@ -115,23 +118,29 @@ class list_model_base extends phpok_model
 		if(!$id) return false;
 		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id='".$id."'";
 		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
-		//如果有绑定数据
-		if($rs['module_id'])
-		{
-			//扩展内容数据
+		if(!$rs){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."list_biz WHERE id='".$id."'";
+		$biz_rs = $this->db->get_one($sql);
+		if($biz_rs){
+			foreach($biz_rs as $key=>$value){
+				$rs[$key] = $value;
+			}
+			unset($biz_rs);
+		}
+		if($rs['module_id']){
 			$ext_rs = $this->get_ext($rs['module_id'],$id);
 			if(!$ext_rs) return $rs;
-			if(!$format)
-			{
+			if(!$format){
 				$rs = array_merge($ext_rs,$rs);
 				return $rs;
 			}
-			//扩展内容不为空时，判断是否需要执行格式化
-			$flist = $GLOBALS['app']->model('module')->fields_all($rs['module_id'],'identifier');
-			if(!$flist) return $rs;
-			foreach($flist AS $key=>$value)
-			{
+			$flist = $this->model('module')->fields_all($rs['module_id'],'identifier');
+			if(!$flist){
+				return $rs;
+			}
+			foreach($flist AS $key=>$value){
 				$content = $ext_rs[$value['identifier']];
 				$content = $GLOBALS['app']->lib('ext')->content_format($value,$content);
 				$rs[$value['identifier']] = $content;
@@ -456,6 +465,10 @@ class list_model_base extends phpok_model
 		$sql  = " SELECT ".$field." FROM ".$this->db->prefix."list l ";
 		$sql .= " JOIN ".$this->db->prefix."list_".$mid." ext ";
 		$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
+		if(strpos($field,'b.price') !== false){
+			$sql .= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
+		}
+		
 		if($condition)
 		{
 			$sql .= " WHERE ".$condition." ";
@@ -506,5 +519,26 @@ class list_model_base extends phpok_model
 		$this->db->query($sql);
 		return true;
 	}
+
+	public function subtitle_ids($id)
+	{
+		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE parent_id='".$id."' AND status=1";
+		$rslist = $this->db->get_all($sql,'id');
+		if(!$rslist){
+			return false;
+		}
+		return array_keys($rslist);
+	}
+
+	public function biz_attrlist($tid,$aid=0)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."list_attr WHERE tid='".$tid."' ";
+		if($aid){
+			$sql .= " AND aid='".$aid."'";
+		}
+		$sql.= " ORDER BY aid ASC,taxis ASC";
+		return $this->db->get_all($sql);
+	}
+
 }
 ?>

@@ -135,7 +135,6 @@ class update_control extends phpok_control
 		if(!$list || count($list) < 1){
 			return array('status'=>'error','content'=>P_Lang('没有升级文件内容'));
 		}
-		phpok_log(print_r($list,true));
 		$strlen = strlen($this->dir_root."data/update/");
 		$delfile = false;
 		$sqlfile = array();

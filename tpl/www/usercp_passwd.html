@@ -7,15 +7,12 @@ $(document).ready(function(){
 			'dataType':'json',
 			'url':api_url('usercp','passwd'),
 			'success':function(rs){
-				if(rs.status == 'ok')
-				{
-					alert("您的密码更新成功");
-					$.phpok.reload();
-				}
-				else
-				{
-					if(!rs.content) rs.content = '密码修改失败';
-					alert(rs.content);
+				if(rs.status == 'ok'){
+					$.dialog.alert("您的密码更新成功",function(){
+						$.phpok.reload();
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content);
 					return false;
 				}
 			}
@@ -45,9 +42,16 @@ $(document).ready(function(){
 
 			<div class="table">
 				<div class="l">&nbsp;</div>
-				<input type="submit" id="phpok_submit" value="提 交" class="but01">
+				<input type="submit" id="phpok_submit" value="提 交" class="button blue">
 			</div>
 			</form>
+		</div>
+		<div class="pfw mbottom10">
+			<h3>友情说明</h3>
+			<ul class="tip">
+				<li>密码长度不能小于6位数</li>
+				<li>为保证您数据的安全，密码建议您使用：字母+数字+大小写混合</li>
+			</ul>
 		</div>
 	</div>
 	<div class="clear"></div>

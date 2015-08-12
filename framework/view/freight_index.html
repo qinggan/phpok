@@ -1,0 +1,165 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}{lang运费模板}
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+function add_it()
+{
+	var url = get_url('freight','save');
+	var title = $("#title_0").val();
+	if(!title){
+		$.dialog.alert('名称不能为空');
+		return false
+	}
+	url += "&title="+$.str.encode(title);
+	var type = $("#type_0").val();
+	if(type){
+		url += "&type="+type;
+	}
+	var currency_id = $("#currency_0").val();
+	if(currency_id){
+		url += "&currency_id="+currency_id;
+	}
+	var taxis = $("#taxis_0").val();
+	if(taxis){
+		url += "&taxis="+taxis;
+	}
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+function update_it(id)
+{
+	var url = get_url('freight','save','id='+id);
+	var title = $("#title_"+id).val();
+	if(!title){
+		$.dialog.alert('名称不能为空');
+		return false
+	}
+	url += "&title="+$.str.encode(title);
+	var type = $("#type_"+id).val();
+	if(type){
+		url += "&type="+type;
+	}
+	var currency_id = $("#currency_"+id).val();
+	if(currency_id){
+		url += "&currency_id="+currency_id;
+	}
+	var taxis = $("#taxis_"+id).val();
+	if(taxis){
+		url += "&taxis="+taxis;
+	}
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+function delete_it(id)
+{
+	var t = $("#title_"+id).val();
+	$.dialog.confirm('确定要删除该区域：<span class="red">'+t+'</span> 吗？删除后，已使用此模板相关信息也会删除',function(){
+		var rs = $.phpok.json(get_url('freight','delete','id='+id));
+		if(rs.status == 'ok'){
+			$.dialog.alert('删除成功',function(){
+				$.phpok.reload();
+			},'succeed');
+		}else{
+			$.dialog.alert(rs.content);
+		}
+	});
+}
+function price_set(id)
+{
+	var currency = $("#currency_"+id).find("option:selected").text();
+	var type = $("#type_"+id).find("option:selected").text();
+	var url = get_url('freight','price','fid='+id);
+	$.dialog.open(url,{
+		'title':'运费价格，货币：'+currency+"，计费方式："+type,
+		'width':'90%',
+		'height':'80%',
+		'lock':true,
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		},'okVal':'{lang保存运费信息}',
+		'cancel':function(){
+			return true;
+		},'cancelVal':'取消'
+	});
+}
+</script>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>ID</th>
+	<th class="lft">名称</th>
+	<th class="lft">计费方式</th>
+	<th class="lft">货币</th>
+	<th width="80">排序</th>
+	<th></th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td><input type="text" id="title_{$value.id}" value="{$value.title}" style="width:200px" /></td>
+	<td>
+		<select id="type_{$value.id}">
+			<!-- loop from=$typelist key=$k value=$v id=$tmp -->
+			<option value="{$k}"{if $k == $value.type} selected{/if}>{$v}</option>
+			<!-- /loop -->
+		</select>
+	</td>
+	<td>
+		<select id="currency_{$value.id}">
+			<!-- loop from=$currency_list key=$k value=$v id=$tmp -->
+			<option value="{$v.id}"{if $v.id == $value.currency_id} selected{/if}>{$v.title}</option>
+			<!-- /loop -->
+		</select>
+	</td>
+	<td class="center"><input type="text" id="taxis_{$value.id}" value="{$value.taxis}" class="short" /></td>
+	<td>
+		<div class="button-group">
+			<input type="button" value="{lang编辑}" onclick="update_it('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="{lang区域设置}" onclick="$.phpok.go('{url ctrl=freight func=zone fid=$value.id/}')" class="phpok-btn" />
+			<input type="button" value="{lang价格设置}" onclick="price_set('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="phpok-btn" />
+		</div>
+	</td>
+</tr>
+<!-- /loop -->
+<tr>
+	<td class="center">添加</td>
+	<td><input type="text" id="title_0" style="width:200px" /></td>
+	<td>
+		<select id="type_0">
+			<!-- loop from=$typelist key=$key value=$value id=$tmpid -->
+			<option value="{$key}">{$value}</option>
+			<!-- /loop -->
+		</select>
+	</td>
+	<td>
+		<select id="currency_0">
+			<!-- loop from=$currency_list key=$k value=$v id=$tmp -->
+			<option value="{$v.id}">{$v.title}</option>
+			<!-- /loop -->
+		</select>
+	</td>
+	<td class="center"><input type="text" id="taxis_0" value="{$taxis}" class="short" /></td>
+	<td><input type="button" value="{lang添加}" onclick="add_it()" class="phpok-btn" /></td>
+</tr>
+</table>
+<!-- include tpl=foot -->

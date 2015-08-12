@@ -21,4 +21,5 @@
 	<all_ext_add_select_ico>请选择一个图标</all_ext_add_select_ico>
 	<open_text_pic_manage>图片管理器</open_text_pic_manage>
 	<open_text_pic_noid>未指定ID</open_text_pic_noid>
+	<list_set_admin_id>指派管理员维护</list_set_admin_id>
 </root>

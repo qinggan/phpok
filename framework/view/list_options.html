@@ -1,0 +1,47 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function save()
+{
+	var obj = $.dialog.opener;
+	$("#setsubmit").ajaxSubmit({
+		'url':get_url('list','options_save','pid={$pid}&tid={$tid}&aid={$aid}'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				obj.biz_attr_reload();
+				$.dialog.close();
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
+	return false;
+}
+</script>
+<form method="post" id="setsubmit">
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th width="30">&nbsp;</th>
+	<th class="lft">名称/值</th>
+	<th>加/减价格</th>
+	<!-- if $e_info -->
+	<th>加/减{$e_info}</th>
+	<!-- /if -->
+	<th width="80">排序</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center"><input type="checkbox" name="vid[]" id="vid_{$value.id}" value="{$value.id}"{if $value.checked} checked{/if} /></td>
+	<td><label for="vid_{$value.id}">{$value.title}{if $value.val}/{/if}{$value.val}</label></td>
+	<td class="center"><input type="text" name="price_{$value.id}" class="short center" value="{$value.price}" /></td>
+	<!-- if $e_info -->
+	<td class="center"><input type="text" name="{$freight.type}_{$value.id}" class="short center" value="{$value[$freight.type]}" /></td>
+	<!-- /if -->
+	<td class="center"><input type="text" name="taxis_{$value.id}" value="{$value.taxis}" class="short center" /></td>
+</tr>
+<!-- /loop -->
+</table>
+</form>
+<!-- include tpl=foot_open -->

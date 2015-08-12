@@ -27,6 +27,18 @@ class user_model extends user_model_base
 		$this->db->query($sql);
 		$sql = "DELETE FROM ".$this->db->prefix."user_ext WHERE id='".$id."'";
 		$this->db->query($sql);
+		//删除相应的积分
+		$sql = "DELETE FROM ".$this->db->prefix."wealth_info WHERE uid='".$id."'";
+		$this->db->query($sql);
+		//删除积分日志
+		$sql = "DELETE FROM ".$this->db->prefix."wealth_log WHERE goal_id='".$id."'";
+		$this->db->query($sql);
+		//删除地址库
+		$sql = "DELETE FROM ".$this->db->prefix."user_address WHERE user_id='".$id."'";
+		$this->db->query($sql);
+		//删除会员设置的发票
+		$sql = "DELETE FROM ".$this->db->prefix."user_invoice WHERE user_id='".$id."'";
+		$this->db->query($sql);
 		return true;
 	}
 
@@ -85,6 +97,22 @@ class user_model extends user_model_base
 		$this->db->query($sql);
 		$sql = "DELETE FROM ".$this->db->prefix."user_fields WHERE id='".$id."'";
 		return $this->db->query($sql);
+	}
+
+	//后台显示
+	public function get_one($id,$field='id')
+	{
+		if(!$id){
+			return false;
+		}
+		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
+		$sql.= " WHERE u.".$field."='".$id."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		return $rs;
 	}
 }
 

@@ -1,0 +1,89 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang您当前的位置：}{lang我授权的信息}
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+function delete_it(id)
+{
+	var title = $("#t_"+id).text();
+	$.dialog.confirm('{lang确定要取消这个主题授权吗？}<br /><span class="red">'+title+"</span>",function(){
+		var url = get_url('workflow','delete','id='+id);
+		var rs = $.phpok.json(url);
+		if(rs.status == 'ok'){
+			$.dialog.alert('{lang取消授权操作成功}',function(){
+				$.phpok.reload();
+			},'succeed');
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+function reset_it(id)
+{
+	var url = get_url('workflow','reset','id='+id);
+	$.dialog.open(url,{
+		'title':'{lang重新授权}',
+		'lock':true,
+		'width':'500px',
+		'height':'300px',
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert(p_lang('iframe还没加载完毕呢'));
+				return false;
+			};
+			var b = iframe.save();
+			if(b){
+				$.dialog.alert('{lang重设授权成功}',function(){
+					$.phpok.reload();
+					return true;
+				},'succeed');
+			}
+			return false;
+		},
+		'cancel':function(){
+			return true;
+		}
+	});
+}
+</script>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>ID</th>
+	<th>项目</th>
+	<th>主题</th>
+	<th>管理员</th>
+	<th>授权时间</th>
+	<th>结束时间</th>
+	<th width="220">操作</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td class="center">{$value.project_title}</td>
+	<td id="t_{$value.id}">{$value.title}<!-- if $value.note --> <span class="gray i">{$value.note}</span><!-- /if --></td>
+	<td class="center">{$value.account}</td>
+	<td class="center">{func date "Y-m-d H:i:s" $value.dateline}</td>
+	<td class="center">
+		<!-- if $value.endtime && $value.is_end -->
+		{func date "Y-m-d H:i:s" $value.endtime}
+		<!-- else -->
+		<!-- if $value.actting -->正在处理<!-- else -->等待处理<!-- /if -->
+		<!-- /if -->
+	</td>
+	<td>
+		<div class="button-group">
+			<input type="button" value="{lang查看}" onclick="top.$.win('{$value.project_title}','{url ctrl=list func=edit id=$value.tid/}')" class="phpok-btn" />
+			<input type="button" value="{lang取消授权}" onclick="delete_it('{$value.id}')" class="phpok-btn" />
+			<!-- if !$value.is_end && !$value.actting -->
+			<input type="button" value="{lang重新授权}"onclick="reset_it('{$value.id}')" class="phpok-btn" />
+			<!-- /if -->
+		</div>
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- include tpl=pagelist -->
+<!-- include tpl=foot -->

@@ -26,6 +26,7 @@ class session_default
 		}
 		session_cache_expire(intval($this->timeout)/60);
 		session_cache_limiter('public');
+		session_save_path($GLOBALS['app']->dir_root.'data/session/');
 		session_start();
 	}
 

@@ -111,13 +111,31 @@ function logout(t)
 		//id为产品ID
 		add: function(id,qty){
 			var url = api_url('cart','add','id='+id);
-			if(qty && qty != 'undefined')
-			{
+			if(qty && qty != 'undefined'){
 				url += "&qty="+qty;
 			}
+			//判断属性
+			if($("input[name=attr]").length>0){
+				var attr = '';
+				var showalert = false;
+				$("input[name=attr]").each(function(i){
+					var val = $(this).val();
+					if(!val){
+						showalert = true;
+					}
+					if(attr){
+						attr += ",";
+					}
+					attr += val;
+				});
+				if(!attr || showalert){
+					$.dialog.alert('请选择商品属性');
+					return false;
+				}
+				url += "&ext="+attr;
+			}
 			var rs = $.phpok.json(url);
-			if(rs.status == 'ok')
-			{
+			if(rs.status == 'ok'){
 				alert("商品已成功加入购物车中！");
 				this.total();
 			}

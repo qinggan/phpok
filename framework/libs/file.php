@@ -321,7 +321,9 @@ class file_lib
 	#[写入信息]
 	function _write($content,$file,$type="wb")
 	{
-		$content = stripslashes($content);
+		if($content){
+			$content = stripslashes($content);
+		}
 		$handle = $this->_open($file,$type);
 		fwrite($handle,$content);
 		unset($content);

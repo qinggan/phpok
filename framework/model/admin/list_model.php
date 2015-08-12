@@ -33,6 +33,43 @@ class list_model extends list_model_base
 		return $this->db->query($sql);
 	}
 
+	public function biz_save($data)
+	{
+		return $this->db->insert_array($data,'list_biz','replace');
+	}
+
+	public function biz_attr_save($data)
+	{
+		return $this->db->insert_array($data,'list_attr');
+	}
+
+	public function biz_attr_update($data,$id)
+	{
+		$aids = array();
+		foreach($data as $key=>$value){
+			$aids[] = $value['aid'];
+		}
+		$aids = array_unique($aids);
+		//echo "<pre>".print_r($aids,true)."</pre>";
+		//exit;
+		$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE tid='".$id."' AND aid IN(".implode(",",$aids).")";
+		$this->db->query($sql);
+		foreach($data as $key=>$value){
+			$value['tid'] = $id;
+			$this->db->insert_array($value,'list_attr');
+		}
+		return true;
+	}
+
+	public function biz_attr_delete($tid,$aid=0)
+	{
+		$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE tid='".$tid."'";
+		if($aid){
+			$sql .= " AND aid='".$aid."'";
+		}
+		return $this->db->query($sql);
+	}
+
 
 	public function ext_catelist($id)
 	{

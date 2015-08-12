@@ -37,6 +37,17 @@ class open_control extends phpok_control
 		$pageurl = $this->url('open','upload','id='.$id.'&multiple='.$multiple);
 		$this->assign('formurl',$pageurl);
 		$catelist = $this->model('res')->cate_all();
+		if($catelist){
+			foreach($catelist as $key=>$value){
+				$types = explode(",",$value['filetypes']);
+				$tmp = array();
+				foreach($types as $k=>$v){
+					$tmp[] = "*.".$v;
+				}
+				$value['typeinfos'] = implode(" , ",$tmp);
+				$catelist[$key] = $value;
+			}
+		}
 		$this->assign("catelist",$catelist);
 		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid){

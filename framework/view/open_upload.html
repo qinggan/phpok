@@ -124,6 +124,11 @@ function add_select(id){
 	$.dialog.data('select-{$id}',dval);
 	return true;
 }
+$(document).ready(function(){  
+	$(document).bind("contextmenu",function(e){
+		return false;   
+	});
+});
 </script>
 </head>
 <body>
@@ -145,6 +150,7 @@ function add_select(id){
 		</select></td>
 		<td><input type="text" name="keywords" id="keywords" value="{$keywords}" class="keywords" /></td>
 		<td><input type="submit" value=" {lang搜索} " /></td>
+		<td><input type="button" value=" {lang刷新} " onclick="$.phpok.reload()" /></td>
 	</tr>
 	</table>
 	</form>
@@ -190,6 +196,94 @@ $(document).ready(function(){
 	}
 });
 </script>
+<!-- if $session.admin_id && $sys.app_id == 'admin' -->
+<style type="text/css">
+.table{padding:2px 10px 2px 0;margin:1px 5px 0 0;cursor:default;}
+.table:after{clear:both;height:0;visibility:hidden;display: block;}
+.table .title{padding-left:3px;line-height:23px;}
+.table .title span.note{color:gray;font-style:italic;font-weight:normal;}
+.table .content{padding-left:3px;}
+.table .content .price{margin-top:5px;margin-right:0;}
+.table .content .price th{padding:0;border-bottom:2px solid #E5E5E5;height:25px;background:#D1D1D1;}
+.table .content .price th.lft{text-align:left;}
+.table .content .price tr.list{background:#F3F3F3}
+.table .content .price td{padding:3px;}
+.table .content textarea{font-size:14px;font-family:"Microsoft Yahei","宋体","Arial","Tahoma"}
+.table .content td label{margin:0 10px 0 0;padding:0;display:inline-block;}
+.table .content td label input{margin-right:5px;vertical-align:-7%;}
+.table .content ul.lang{margin:0;padding:0;list-style:none;}
+.table .content ul.lang li{margin-bottom:3px;}
+</style>
+<link rel="stylesheet" type="text/css" href="{#js#}/webuploader/webuploader.css" />
+<script type="text/javascript" src="{#js#}/webuploader/webuploader.min.js"></script>
+<script type="text/javascript" src="{#js#}/webuploader/admin.upload.js"></script>
+<script type="text/javascript">
+var obj_upload = {};
+var obj = art.dialog.opener;
+$(document).ready(function(){
+	cate_change();
+});
+function cate_change()
+{
+	val = $("#upload_cate_id").val();
+	if(!val){
+		$.dialog.alert('请选择要存储的目标分类');
+		return false;
+	}
+	var data = $("#upload_cate_id option[value="+val+"]").attr('data');
+	var catename = $("#upload_cate_id option[value="+val+"]").attr('catename');
+	obj_upload = new $.admin_upload({
+		"multiple"	: 'true',
+		"id" : "upload",
+		'pick':{'id':'#upload_picker','multiple':true},
+		'resize':false,
+		"swf" : "js/webuploader/uploader.swf",
+		"server": "{url ctrl=upload func=save/}",
+		'accept' : {'title':catename,'extensions':data},
+		"formData" :{'{func session_name}':'{func session_id}','cateid':val},
+		'fileVal':'upfile',
+		'auto':true,
+		"success":function(){
+			return true;
+		}
+	});
+	obj_upload.uploader.on('uploadFinished',function(){
+		$.dialog.alert('附件上传成功',function(){
+			$.phpok.reload();
+		});
+	});
+}
+function cancel()
+{
+	return obj_upload.uploader.stop();
+}
+</script>
+<hr />
+<div class="table">
+	<div class="title">
+		{lang附件分类：}
+		<span class="note">{lang请选择要上传的附件分类}</span>
+	</div>
+	<div class="content">
+		<select id="upload_cate_id" onchange="cate_change()">
+			<!-- loop from=$catelist key=$key value=$value -->
+			<option value="{$value.id}"{if $value.id == $cate_id} selected{/if} data="{$value.filetypes}" catename="{$value.title}">
+			{$value.title}<!-- if $value.typeinfos --> / {lang支持上传格式：}{$value.typeinfos}<!-- /if --></option>
+			<!-- /loop -->
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang选择要上传的文件：}
+		<span class="note">{lang单个文件上传不能超过：}<span class="red">{func get_cfg_var upload_max_filesize}</span></span>
+	</div>
+	<div class="content"><div id="upload_picker" class=""></div></div>
+</div>
 
+<div class="table">
+	<div class="content" id="upload_progress"></div>
+</div>
+<!-- /if -->
 </body>
 </html>

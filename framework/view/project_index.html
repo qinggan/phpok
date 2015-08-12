@@ -108,7 +108,7 @@ $(document).ready(function(){
 		<a class="ico space"></a>
 		<!-- /if -->
 		<a href="{url ctrl=project func=set id=$value.id/}" class="ico edit" title="{lang编辑}"></a>
-		<a href="{url ctrl=project func=set id=$value.id/}" class="ico key" title="{lang扩展}"></a>
+		<a href="{url ctrl=project func=content id=$value.id/}" class="ico key" title="{lang扩展}"></a>
 		<a href="javascript:project_copy('{$value.id}','{$value.title}');void(0);" class="ico copy" title="{lang复制}"></a>
 		<a href="javascript:project_delete('{$value.id}','{$value.title}');void(0);" class="ico delete" title="{lang删除}"></a>
 	</td>

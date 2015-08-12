@@ -57,6 +57,11 @@ class phpok_tpl
 		}
 	}
 
+	public function val($var)
+	{
+		return $this->tpl_value[$var];
+	}
+
 	//注销变量
 	public function unassign($var='')
 	{
@@ -205,6 +210,8 @@ class phpok_tpl
 		$html_content = $this->get_content($tpl,$type);
 		if($html_content){
 			$php_content = $this->html_to_php($html_content,$path_format);
+			$newarray = array('<?php echo $app->plugin_html_ap("phpokhead");?></head>','<?php echo $app->plugin_html_ap("phpokbody");?></body>');
+			$php_content = str_replace(array('</head>','</body>'),$newarray,$php_content);
 			file_put_contents($this->dir_cache.$compiling_id,$this->html_head.$php_content);
 		}
 		return true;

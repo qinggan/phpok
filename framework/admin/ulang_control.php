@@ -67,6 +67,13 @@ class ulang_control extends phpok_control
 		echo 'Update success.';
 		echo debug_time(1,1,1,1);
 	}
+
+	public function unzip_f()
+	{
+		echo '1<br />';
+		echo $this->lib('phpzip')->unzip($this->dir_root.'data/tmp.zip','data/update/');
+		echo 'ok';
+	}
 }
 
 ?>

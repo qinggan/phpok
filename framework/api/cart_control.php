@@ -28,6 +28,17 @@ class cart_control extends phpok_control
 		if(!$qty){
 			$qty = 1;
 		}
+		$ext = $this->get('ext');
+		if($ext){
+			$ext = explode(",",$ext);
+			foreach($ext as $key=>$value){
+				if(!$value || !intval($value)){
+					unset($ext[$key]);
+				}
+			}
+			sort($ext);
+			$ext = implode(",",$ext);
+		}
 		if(!$id){
 			$this->json(P_Lang('未指定产品ID'));
 		}
@@ -36,20 +47,46 @@ class cart_control extends phpok_control
 		if(!$rs){
 			$this->json(P_Lang('产品信息不存在'));
 		}
+		$price = $rs['price'];
+		$weight = $rs['weight'];
+		$volume = $rs['volume'];
+		if($ext && $rs['attrlist']){
+			$extlist = explode(",",$ext);
+			foreach($rs['attrlist'] as $key=>$value){
+				foreach($value['rslist'] as $k=>$v){
+					if(in_array($v['id'],$extlist)){
+						$price = floatval($price) + floatval($v['price']);
+						$weight = floatval($weight) + floatval($v['weight']);
+						$volume = floatval($volume) + floatval($v['volume']);
+					}
+				}
+			}
+		}
 		$rslist = $this->model('cart')->get_all($this->cart_id);
 		$updateid = $total = 0;
 		if($rslist){
 			foreach($rslist AS $key=>$value){
 				if($value['tid'] == $id){
-					$updateid = $value['id'];
-					$total = $value['qty'];
+					if($ext && $value['ext']){
+						if($ext == $value['ext']){
+							$updateid = $value['id'];
+							$total = $value['qty'];
+						}
+					}else{
+						if(!$ext && !$value['ext']){
+							$updateid = $value['id'];
+							$total = $value['qty'];
+						}
+					}
 				}
 			}
 		}
 		if($updateid){
 			$this->model('cart')->update($updateid,($total+$qty));
 		}else{
-			$array = array('cart_id'=>$this->cart_id,'tid'=>$id,'title'=>$rs['title'],'price'=>$rs['price'],'qty'=>$qty);
+			$array = array('cart_id'=>$this->cart_id,'tid'=>$id,'title'=>$rs['title'],'price'=>$price,'qty'=>$qty,'ext'=>$ext);
+			$array['weight'] = $weight;
+			$array['volume'] = $volume;
 			$this->model('cart')->add($array);
 		}
 		$rslist = $this->model('cart')->get_all($this->cart_id);
@@ -100,6 +137,18 @@ class cart_control extends phpok_control
 		}
 		$this->model('cart')->delete_product($id);
 		$this->json(true);
+	}
+
+	public function price_format_f()
+	{
+		$price = $this->get('price','float');
+		$this->json(price_format($price,$this->site['currency_id']),true);
+	}
+
+	public function price_format_val_f()
+	{
+		$price = $this->get('price','float');
+		$this->json(price_format_val($price,$this->site['currency_id']),true);
 	}
 }
 ?>

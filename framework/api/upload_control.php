@@ -59,7 +59,7 @@ class upload_control extends phpok_control
 		}
 		$filetypes = $this->u_id ? $cate_rs['filetypes'] : 'jpg,png,gif,rar,zip';
 		$this->lib('upload')->set_type($filetypes);
-		$this->lib('upload')->set_cate($cate_rs['id']);
+		$this->lib('upload')->set_cate($cate_rs);
 		$upload = $this->lib('upload')->upload('upfile');
 		if(!$upload || !$upload['status']){
 			$this->json(P_Lang('附件上传失败'));

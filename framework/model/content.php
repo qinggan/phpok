@@ -27,20 +27,54 @@ class content_model_base extends phpok_model
 		$sql  = "SELECT * FROM ".$this->db->prefix."list WHERE status=1 AND site_id='".$this->site_id."' AND ";
 		$sql .= is_numeric($id) ? " id='".$id."' " : " identifier='".$id."' ";
 		$rs = $this->db->get_one($sql);
-		if(!$rs)
-		{
+		if(!$rs){
 			return false;
 		}
-		//读取扩展
-		
-		if($rs['module_id'])
-		{
+		$sql = "SELECT * FROM ".$this->db->prefix."list_biz WHERE id='".$id."'";
+		$biz_rs = $this->db->get_one($sql);
+		if($biz_rs){
+			foreach($biz_rs as $key=>$value){
+				$rs[$key] = $value;
+			}
+			unset($biz_rs);
+		}
+		if($rs['module_id']){
 			$sql = "SELECT * FROM ".$this->db->prefix."list_".$rs['module_id']." WHERE id='".$rs['id']."'";
 			$ext_rs = $this->db->get_one($sql);
-			if($ext_rs)
-			{
+			if($ext_rs){
 				$rs = array_merge($ext_rs,$rs);
 			}
+		}
+		//读取属性
+		$sql = "SELECT * FROM ".$this->db->prefix."list_attr WHERE tid='".$id."'";
+		$attrlist = $this->db->get_all($sql);
+		if($attrlist){
+			$vids = array();
+			$attrs = array();
+			foreach($attrlist as $key=>$value){
+				$vids[] = $value['vid'];
+				if(!$attrs[$value['aid']]){
+					$attrs[$value['aid']] = array('id'=>$value['aid']);
+					$attrs[$value['aid']]['rslist'][$value['vid']] = $value;
+				}else{
+					$attrs[$value['aid']]['rslist'][$value['vid']] = $value;
+				}
+			}
+			unset($attrlist);
+			$vids = array_unique($vids);
+			$alist = $this->model('options')->get_all('id');
+			$vlist = $this->model('options')->values_list("id IN(".implode(",",$vids).")",0,999,'id');
+			foreach($attrs as $key=>$value){
+				$value['title'] = $alist[$key]['title'];
+				foreach($value['rslist'] as $k=>$v){
+					$v['title'] = $vlist[$k]['title'];
+					$v['val'] = $vlist[$k]['val'];
+					$v['pic'] = $vlist[$k]['pic'];
+					$value['rslist'][$k] = $v;
+				}
+				$attrs[$key] = $value;
+			}
+			$rs['attrlist'] = $attrs;
 		}
 		
 		return $rs;

@@ -1,0 +1,64 @@
+<!-- head title=$title css="css/style.css,artdialog.css,css/usercp.css" js="jquery.artdialog.js" html5=true -->
+<script type="text/javascript">
+function save()
+{
+	var id = '{$id}';
+	var url = api_url('usercp','invoice_setting');
+	if(id){
+		url += "&id="+id;
+	}
+	$("#setsubmit").ajaxSubmit({
+		'url':url,
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				$.dialog.alert('{lang操作成功}',function(){
+					top.$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
+	return false;
+}
+</script>
+<form method="post" id="setsubmit" onsubmit="return false;">
+<div class="table">
+	<div class="title">
+		发票类型
+		<span class="note">仅支持普通发票</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="type" value="普通发票"{if $rs.type == '普通发票' || !$rs.type} checked{/if} />普通发票</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		发票抬头：
+		<span class="note">个人发票请填写个人即可，企业发票就填写公司名称</span>
+	</div>
+	<div class="content"><input type="text" id="title" name="title" class="default" value="{$rs.title}" placeholder="为空使用“个人发票”" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		发票内容
+		<span class="note">请设置发票内容，留空使用<span class="red">“明细”</span></span>
+	</div>
+	<div class="content"><input type="text" id="content" name="content" class="default" value="{$rs.content}" placeholder="为空使用“明细”" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		备注
+		<span class="note"></span>
+	</div>
+	<div class="content"><textarea name="note" id="note" class="default" style="height:110px;min-height:110px;max-height:150px;min-width:350px;max-width:350px;">{$rs.note}</textarea></div>
+</div>
+</form>
+</body>
+</html>

@@ -19,7 +19,7 @@ $(document).ready(function(){
 <!-- /if -->
 <div class="main">
 	<div class="pfw mbottom10">
-		<h3>订单明细：您的订单号是：<span class="red i">{$rs.sn}</span>，请记住此编号，可用于查单</h3>
+		<h3>您的订单号是：<span class="red i">{$rs.sn}</span><a href="{url ctrl=order/}" class="more">我的订单</a></h3>
 		<table width="100%" class="form">
 		<tr>
 			<td width="20%" align="right">订单编号：</td>
@@ -28,10 +28,6 @@ $(document).ready(function(){
 		<tr>
 			<td align="right">下单时间：</td>
 			<td>{func time_format $rs.addtime}</td>
-		</tr>
-		<tr>
-			<td align="right">购买数量：</td>
-			<td>{$rs.qty}</td>
 		</tr>
 		<tr>
 			<td align="right">总金额：</td>
@@ -51,67 +47,57 @@ $(document).ready(function(){
 			<td>{func date "Y-m-d H:i:s" $rs.pay_date}</td>
 		</tr>
 		<!-- /if -->
+		<!-- if $invoice -->
 		<tr>
-			<td align="right"></td>
-			<td></td>
+			<td align="right">发票类型：</td>
+			<td class="red">{$invoice.type}</td>
 		</tr>
+		<tr>
+			<td align="right">发票抬头：</td>
+			<td class="red">{$invoice.title}</td>
+		</tr>
+		<tr>
+			<td align="right">发票内容：</td>
+			<td>{$invoice.content}</td>
+		</tr>
+		<!-- /if -->
 		</table>
 	</div>
-	<!-- if $shipping -->
+	<!-- if $rs.note -->
+	<div class="pfw mbottom10">
+		<h3>说明</h3>
+		<div style="padding:10px;line-height:170%">{func nl2br $rs.note}</div>
+	</div>
+	<!-- /if -->
+	<!-- if $address -->
 	<div class="pfw mbottom10">
 		<h3>送货地址</h3>
 		<table width="100%" class="form">
 		<tr>
 			<td width="20%" align="right">收货人：</td>
-			<td>{$shipping.fullname}（{$shipping.gender ? '先生' : '女士'}）</td>
+			<td>{$address.fullname}</td>
 		</tr>
 		<tr>
 			<td align="right">送货地址：</td>
 			<td>
-				{$shipping.province}
-				<!-- if strpos($shipping.city,'市辖') === false -->
-				{$shipping.city}
+				{$address.province}
+				<!-- if $address.province != $address.city -->
+				{$address.city}
 				<!-- /if -->
-				{$shipping.county}
-				{$shipping.address}
-				<!-- if $shipping.zipcode -->（邮编：{$shipping.zipcode}）<!-- /if -->
+				{$address.county}
+				{$address.address}
 			</td>
 		</tr>
 		<tr>
 			<td align="right">联系方式：</td>
-			<td>{$shipping.tel}<!-- if $shipping.tel && $shipping.mobile --> / <!-- /if -->{$shipping.mobile}</td>
+			<td>{$address.tel}<!-- if $address.tel && $address.mobile --> / <!-- /if -->{$address.mobile}</td>
 		</tr>
+		<!-- if $address.email -->
 		<tr>
 			<td align="right">Email：</td>
-			<td>{$shipping.email}</td>
+			<td>{$address.email}</td>
 		</tr>
-		</table>
-	</div>
-	<!-- /if -->
-	<!-- if $billing -->
-	<div class="pfw mbottom10">
-		<h3>账单地址</h3>
-		<table width="100%" class="form">
-		<tr>
-			<td width="20%" align="right">姓名：</td>
-			<td>{$billing.fullname}（{$billing.gender ? '先生' : '女士'}）</td>
-		</tr>
-		<tr>
-			<td align="right">地址：</td>
-			<td>
-				{$billing.province}
-				<!-- if strpos($billing.city,'市辖') === false -->
-				{$billing.city}
-				<!-- /if -->
-				{$billing.county}
-				{$billing.address}
-				<!-- if $billing.zipcode -->（邮编：{$billing.zipcode}）<!-- /if -->
-			</td>
-		</tr>
-		<tr>
-			<td align="right">联系方式：</td>
-			<td>{$billing.tel}<!-- if $billing.tel && $billing.mobile --> / <!-- /if -->{$billing.mobile}</td>
-		</tr>
+		<!-- /if -->
 		</table>
 	</div>
 	<!-- /if -->
@@ -119,14 +105,25 @@ $(document).ready(function(){
 	<div class="table_lc">
 	<table width="100%">
 	<tr>
+		<th>图片</th>
 		<th class="lft">产品信息</th>
 		<th>购买数量</th>
 		<th>价格</th>
 	</tr>
 	<!-- loop from=$rslist key=$key value=$value -->
 	<tr>
+		<td align="center">
+			<!-- if $value.thumb && file_exists($value.thumb) -->
+			<img src="{$value.thumb}" width="80" height="80" border="0" />
+			<!-- else -->
+			<img src="{#images#}/blank.gif" width="80" height="80" border="0" />
+			<!-- /if -->
+		</td>
 		<td>
 			<h3 id="title_{$value.id}">{$value.title}</h3>
+			<!-- loop from=$value.ext key=$k value=$v id=$tmpid -->
+			<div>{$v.title}：{$v.content}</div>
+			<!-- /loop -->
 			<div>售价：{func price_format $value.price $rs.currency_id $rs.currency_id}</div>
 		</td>
 		<td class="center">{$value.qty}</td>
@@ -134,7 +131,16 @@ $(document).ready(function(){
 	</tr>
 	<!-- /loop -->
 	<tr>
-		<td align="right" colspan="4">总价：<span class="price">{func price_format $rs.price $rs.currency_id $rs.currency_id}</span></td>
+		<td align="right" colspan="3">商品价：</td>
+		<td><span class="price">{func price_format $rs.product_price $rs.currency_id $rs.currency_id}</span></td>
+	</tr>
+	<tr>
+		<td align="right" colspan="3">运费价：</td>
+		<td><span class="price">{func price_format $rs.freight_price $rs.currency_id $rs.currency_id}</span></td>
+	</tr>
+	<tr>
+		<td align="right" colspan="3">总价：</td>
+		<td><span class="price">{func price_format $rs.price $rs.currency_id $rs.currency_id}</span></td>
 	</tr>
 	</table>
 	</div>
@@ -155,7 +161,6 @@ $(document).ready(function(){
 		<!-- /if -->
 		<!-- /loop -->
 	</div>
-	</form>
 	<div class="paymenbtn">
 		<table width="100%">
 		<tr>
@@ -163,6 +168,7 @@ $(document).ready(function(){
 		</tr>
 		</table>
 	</div>
+	</form>
 	<!-- /if -->
 </div>
 <!-- include tpl=foot -->

@@ -31,10 +31,11 @@ class html_control extends phpok_control
 			error($this->obj->error,'','error');
 		}
 		$tplinfo = $this->obj->tplinfo;
-		$tlist = $this->model('html')->list_tpl($this->dir_root.'tpl/'.$tplinfo['folder'].'/',$tplinfo['ext']);
+		$tlist = $this->obj->tlist;
+		/*$tlist = $this->model('html')->list_tpl($this->dir_root.'tpl/'.$tplinfo['folder'].'/',$tplinfo['ext']);
 		if(!$tlist){
 			error(P_Lang("没有模板文件，请检查"),'','error');
-		}
+		}*/
 		$types = array('index'=>P_Lang('封面'),'list'=>P_Lang('列表'),"content"=>P_Lang('内容'),'page'=>P_Lang('项目单页'));
 		$this->assign('types',$types);
 		$rslist = $this->model('project')->get_all_project($_SESSION["admin_site_id"]);
@@ -594,6 +595,8 @@ class html_control extends phpok_control
 			$obj->error = P_Lang('没有模板文件，请检查');
 			return $obj;
 		}
+		$obj->tplinfo = $tplinfo;
+		$obj->tlist = $tlist;
 		return $obj;
 	}
 }

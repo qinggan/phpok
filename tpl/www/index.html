@@ -3,7 +3,7 @@
 	<!-- php:$list = phpok('picplayer') -->
 	<ul class="pro_ul">
 		<!-- loop from=$list.rslist key=$key value=$value -->
-		<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{$value.pic.filename}" width="980" alt="{$value.title}" /></a></li>
+		<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{#images#}/blank.gif" _src="{$value.pic.filename}" width="980" alt="{$value.title}" /></a></li>
 		<!-- /loop -->
 	</ul>
 	<ul class="page_ul">
@@ -17,7 +17,8 @@ $(document).ready(function(){
 	$(".home_banner").slide({
 		'titCell':'.page_ul li',
 		'mainCell':'.pro_ul',
-		'autoPlay':true
+		'autoPlay':true,
+		'switchLoad':'_src'
 	});
 });
 </script>
@@ -149,7 +150,6 @@ $(document).ready(function(){
 			 		<p class="img159px"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" width="159" height="183" alt="{$value.title}" /></a></p>
 					<p class="l_name">{$value.title}</p>
 					<p class="l_price">价格：<span>{func price_format $value.price $value.currency_id}</span></p>
-					<p><a href="javascript:$.cart.add('{$value.id}',1);void(0);"><img src="images/buy-btn.jpg" width="157" height="33" /></a></p>
 				</li>
 				<!-- /loop -->
 			</ul>

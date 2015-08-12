@@ -1,6 +1,6 @@
 <link rel="stylesheet" type="text/css" href="{#js#}/webuploader/webuploader.css" />
 <script type="text/javascript" src="{#js#}/webuploader/webuploader.min.js"></script>
-<script type="text/javascript" src="{#js#}/webuploader/admin.upload.js"></script>
+<script type="text/javascript" src="{#js#}/webuploader/www.upload.js"></script>
 <input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs.content}" />
 <input type="hidden" id="{$_rs.identifier}_status" value="" />
 <style type="text/css">
@@ -121,10 +121,6 @@
 			<!-- if !$_rs.upload_auto -->
 			<td><button id="{$_rs.identifier}_submit" type="button" class="button">{lang开始上传}</button></td>
 			<!-- /if -->
-			<td id="{$_rs.identifier}_sort" style="display:none">
-				<button onclick="obj_{$_rs.identifier}.sort()" class="button" type="button">{lang排序}</button>
-				<button onclick="obj_{$_rs.identifier}.sort('title')" class="button" type="button">{lang自然排序}</button>
-			</td>
 			<td><div class="gray i" style="line-height:180%;">&nbsp;{lang支持格式有：}{$_rs.upload_type.swfupload}</div></td>
 		</tr>
 		</table>
@@ -138,7 +134,7 @@ var obj_{$_rs.identifier};
 $(document).ready(function(){
 	//清空本地存储，防止异常删除
 	$.dialog.data('upload-{$_rs.identifier}','');
-	obj_{$_rs.identifier} = new $.admin_upload({
+	obj_{$_rs.identifier} = new $.www_upload({
 		'id':'{$_rs.identifier}',
 		'swf':'{#js#}/webuploader/uploader.swf',
 		'server':'{url ctrl=upload func=save cateid=$_rs.cate_id/}',

@@ -46,7 +46,6 @@
 						<dd>添加时间：{func date Y-m-d $value.dateline}</dd>
 						<dd>查看次数：{$value.hits}</dd>
 						<dd class="price">售卖价格：<span class="price">{func price_format $value.price $value.currency_id}</span></dd>
-						<dd><a href="javascript:$.cart.add('{$value.id}',1);void(0);"><img src="images/buy-btn.jpg" width="157" height="33" /></a></dd>
 					</dl>
 				</li>
 				<!-- /loop -->

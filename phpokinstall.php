@@ -14,6 +14,8 @@ define("ROOT",str_replace("\\","/",dirname(__FILE__))."/");
 define('JQUERY','http://libs.phpok.cn/jquery/1.7.1/jquery.js');
 //PHPOK下载地址
 define('PHPOKFILE','http://www.phpok.com/index.php?c=download&id=6328');
+//PHPOK资源包
+define('PHPOKRES','http://update.phpok.com/upfiles/43165.zip');
 function error($tips="",$url="",$time=2)
 {
 	echo '<!DOCTYPE html>'."\n";
@@ -801,7 +803,6 @@ class phpzip_lib
 			}
 		}
 		$this->total_files ++;
-		//echo "<input name='dfile[]' type='checkbox' value='$to$header[filename]' checked> <a href='$to$header[filename]' target='_blank'>文件: $to$header[filename]</a><br>";
 		return true;
  	}
 
@@ -847,119 +848,6 @@ class phpzip_lib
 			return true;
 		}
 		return false;
-	}
-
-	/*
-	添加一个文件到 zip 压缩包中.
-	*/
-    function addfile($data, $name)
-    {
-        $name     = str_replace('\\', '/', $name);
-		
-		if(strrchr($name,'/')=='/')
-		{
-			return $this->adddir($name);
-		}
-		
-        $dtime    = dechex($this->unix2DosTime());
-        $hexdtime = '\x' . $dtime[6] . $dtime[7]
-                  . '\x' . $dtime[4] . $dtime[5]
-                  . '\x' . $dtime[2] . $dtime[3]
-                  . '\x' . $dtime[0] . $dtime[1];
-        eval('$hexdtime = "' . $hexdtime . '";');
-
-        $unc_len = strlen($data);
-        $crc     = crc32($data);
-        $zdata   = gzcompress($data);
-        $c_len   = strlen($zdata);
-        $zdata   = substr(substr($zdata, 0, strlen($zdata) - 4), 2);
-		
-		//新添文件内容格式化:
-        $datastr  = "\x50\x4b\x03\x04";
-        $datastr .= "\x14\x00";            // ver needed to extract
-        $datastr .= "\x00\x00";            // gen purpose bit flag
-        $datastr .= "\x08\x00";            // compression method
-        $datastr .= $hexdtime;             // last mod time and date
-        $datastr .= pack('V', $crc);             // crc32
-        $datastr .= pack('V', $c_len);           // compressed filesize
-        $datastr .= pack('V', $unc_len);         // uncompressed filesize
-        $datastr .= pack('v', strlen($name));    // length of filename
-        $datastr .= pack('v', 0);                // extra field length
-        $datastr .= $name;
-        $datastr .= $zdata;
-        $datastr .= pack('V', $crc);                 // crc32
-        $datastr .= pack('V', $c_len);               // compressed filesize
-        $datastr .= pack('V', $unc_len);             // uncompressed filesize
-
-
-		fwrite($this->fp,$datastr);	//写入新的文件内容
-		$my_datastr_len = strlen($datastr);
-		unset($datastr);
-		
-		//新添文件目录信息
-        $dirstr  = "\x50\x4b\x01\x02";
-        $dirstr .= "\x00\x00";                	// version made by
-        $dirstr .= "\x14\x00";                	// version needed to extract
-        $dirstr .= "\x00\x00";                	// gen purpose bit flag
-        $dirstr .= "\x08\x00";                	// compression method
-        $dirstr .= $hexdtime;                 	// last mod time & date
-        $dirstr .= pack('V', $crc);           	// crc32
-        $dirstr .= pack('V', $c_len);         	// compressed filesize
-        $dirstr .= pack('V', $unc_len);       	// uncompressed filesize
-        $dirstr .= pack('v', strlen($name) ); 	// length of filename
-        $dirstr .= pack('v', 0 );             	// extra field length
-        $dirstr .= pack('v', 0 );             	// file comment length
-        $dirstr .= pack('v', 0 );             	// disk number start
-        $dirstr .= pack('v', 0 );             	// internal file attributes
-        $dirstr .= pack('V', 32 );            	// external file attributes - 'archive' bit set
-        $dirstr .= pack('V',$this->datastr_len ); // relative offset of local header
-        $dirstr .= $name;
-		
-		$this->dirstr .= $dirstr;	//目录信息
-		
-		$this -> file_count ++;
-		$this -> dirstr_len += strlen($dirstr);
-		$this -> datastr_len += $my_datastr_len;	
-    }
-
-	//添加一个目录
-	function adddir($name)
-	{ 
-		$name = str_replace("\\", "/", $name); 
-		$datastr = "\x50\x4b\x03\x04\x0a\x00\x00\x00\x00\x00\x00\x00\x00\x00"; 
-		
-		$datastr .= pack("V",0).pack("V",0).pack("V",0).pack("v", strlen($name) ); 
-		$datastr .= pack("v", 0 ).$name.pack("V", 0).pack("V", 0).pack("V", 0); 
-
-		fwrite($this->fp,$datastr);	//写入新的文件内容
-		$my_datastr_len = strlen($datastr);
-		unset($datastr);
-		
-		$dirstr = "\x50\x4b\x01\x02\x00\x00\x0a\x00\x00\x00\x00\x00\x00\x00\x00\x00"; 
-		$dirstr .= pack("V",0).pack("V",0).pack("V",0).pack("v", strlen($name) ); 
-		$dirstr .= pack("v", 0 ).pack("v", 0 ).pack("v", 0 ).pack("v", 0 ); 
-		$dirstr .= pack("V", 16 ).pack("V",$this->datastr_len).$name; 
-		
-		$this->dirstr .= $dirstr;	//目录信息
-
-		$this -> file_count ++;
-		$this -> dirstr_len += strlen($dirstr);
-		$this -> datastr_len += $my_datastr_len;	
-	}
-
-
-	function createfile()
-	{
-		//压缩包结束信息,包括文件总数,目录信息读取指针位置等信息
-		$endstr = "\x50\x4b\x05\x06\x00\x00\x00\x00" .
-					pack('v', $this -> file_count) .
-					pack('v', $this -> file_count) .
-					pack('V', $this -> dirstr_len) .
-					pack('V', $this -> datastr_len) .
-					"\x00\x00";
-
-		fwrite($this->fp,$this->dirstr.$endstr);
-		fclose($this->fp);
 	}
 }
 
@@ -1497,6 +1385,10 @@ function check_connect(isin)
 				<input type="text" class="infor_input" name="dir" id="dir" value="{$site['dir']}" />
 				<p class="tips_p">根目录请设为/</p>
 			</li>
+			<li><span class="l_name">测试数据：</span>
+				<input type="radio" name="test" value="1" checked />有 &nbsp; 
+				<input type="radio" name="test" value="0" />无 &nbsp; 
+			</li>
         </ul>
     </div>   
 </div>
@@ -1722,6 +1614,23 @@ EOT;
 		echo '<script type="text/javascript" src="'.JQUERY.'"></script>';
 	}
 
+	public function download($url,$file='')
+	{
+		$curl = curl_init($url);
+		curl_setopt($curl,CURLOPT_FORBID_REUSE,true);
+		curl_setopt($curl,CURLOPT_HEADER,false);
+		//curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);//把结果返回，而非直接输出
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,10);//等待时间，超时退出
+		curl_setopt($curl,CURLOPT_ENCODING ,'gzip');//GZIP压缩
+		curl_setopt($curl, CURLOPT_TIMEOUT, 1800);
+		$handle = fopen($file,'wb');
+		curl_setopt($curl,CURLOPT_FILE,$handle);
+		curl_exec($curl);
+		curl_close($curl);
+		fclose($handle);
+		return true;
+	}
+
 	public function curl($url,$post="")
 	{
 		$curl = curl_init();
@@ -1921,7 +1830,7 @@ if($step == 'save'){
 	$info = array('title'=>$install->get('title',false));
 	$info['domain'] = $install->get('domain',false);
 	$info['dir'] = $install->get('dir',false);
-	$info['admin'] = $install->get('admin_user',false);
+	$info['user'] = $install->get('admin_user',false);
 	$info['email'] = $install->get('admin_email',false);
 	$info['pass'] = $install->get('admin_newpass',false);
 	$info['test'] = $install->get('test',false);
@@ -1941,7 +1850,7 @@ if($step == 'ajax_importsql'){
 	$file = $config['db']['file'];
 	$dbname = 'db_'.$file;
 	$db = new $dbname($config['db']);
-	$sql = file_get_contents(ROOT."install/phpok.sql");
+	$sql = file_get_contents(ROOT."data/table.sql");
 	if($db->prefix != "qinggan_"){
 		$sql = str_replace("qinggan_",$db->prefix,$sql);
 	}
@@ -1969,57 +1878,46 @@ if($step == 'ajax_initdata'){
 	$file = $config['db']['file'];
 	$dbname = 'db_'.$file;
 	$db = new $dbname($config['db']);
-	$truncate_array = array('address','adm','adm_popedom','cart','cart_product','log','order','order_product');
-	$truncate_array[] = 'order_address';
-	$truncate_array[] = 'payment';
-	$truncate_array[] = 'plugins';
-	$truncate_array[] = 'reply';
-	$truncate_array[] = 'session';
-	$truncate_array[] = 'tag';
-	$truncate_array[] = 'tag_list';
-	$truncate_array[] = 'temp';
-	$truncate_array[] = 'site';
-	$truncate_array[] = 'site_domain';
-	foreach($truncate_array as $key=>$value){
-		$sql = "TRUNCATE ".$db->prefix.$value;
-		$db->query($sql);
+	//安装测试数据
+	$file = ROOT."data/install.lock.php";
+	if(!file_exists($file)){
+		exit("配置文件data/install.lock.php不存在");
 	}
-	$sql = "UPDATE ".$db->prefix."list SET replydate=0";
+	include($file);
+	if($adminer['test']){
+		$sql = file_get_contents(ROOT."data/data.sql");
+		//解压资源包
+		$install->download(PHPOKRES,ROOT.'data/res.zip');
+		$zip = new phpzip_lib();
+		$zip->unzip(ROOT.'data/res.zip',ROOT.'/res/');
+	}else{
+		$sql = file_get_contents(ROOT.'data/data2.sql');
+	}
+	if($db->prefix != "qinggan_"){
+		$sql = str_replace("qinggan_",$db->prefix,$sql);
+	}
+	$sql = str_replace("\r","\n",$sql);
+	$ret = array();
+	$num = 0;
+	foreach(explode(";\n", trim($sql)) as $query) {
+		$queries = explode("\n", trim($query));
+		foreach($queries as $query) {
+			$ret[$num] .= $query[0] == '#' || $query[0].$query[1] == '--' ? '' : $query;
+		}
+		$num++;
+	}
+	unset($sql);
+	foreach($ret as $query) {
+		$query = trim($query);
+		if($query) {
+			$db->query($query);
+		}
+	}
+	//更新站点信息
+	$sql = "UPDATE ".$db->prefix."site_domain SET domain='".$adminer['domain']."'";
 	$db->query($sql);
-	//添加插件
-	$data = array('id'=>'identifier','title'=>'标识串自动生成工具','author'=>'phpok.com','version'=>'1.0');
-	$data['status'] = 1;
-	$data['note'] = '实现名称转拼音，英语的功能';
-	$tmp = array('is_youdao'=>0,'keyfrom'=>'','keyid'=>'','is_pingyin'=>1,'is_py'=>1);
-	$data['param'] = serialize($tmp);
-	$db->insert_array($data,'plugins');
-	//安装数据信息
-	$tmpfile = ROOT."data/install.lock.php";
-	if(file_exists($tmpfile)){
-		include($tmpfile);
-		$sql = "INSERT INTO ".$db->prefix."site_domain(id,site_id,domain) VALUES(1,1,'".$adminer['domain']."')";
-		$db->query($sql);
-		$data = array('domain_id'=>1,'title'=>$adminer['title'],'dir'=>$adminer['dir']);
-		$data['status'] = 1;
-		$data['content'] = '网站建设中';
-		$data['is_default'] = 1;
-		$data['tpl_id'] = 1;
-		$data['url_type'] = 'default';
-		$data['logo'] = 'res/201409/01/27a6e141c3d265ae.jpg';
-		$data['register_status'] = 1;
-		$data['login_status'] = 1;
-		$data['register_close'] = '暂停注册';
-		$data['login_close'] = '暂停登录';
-		$data['email_charset'] = 'utf-8';
-		$data['seo_title'] = '';
-		$data['seo_keywords'] = '';
-		$data['seo_desc'] = '';
-		$data['biz_sn'] = 'prefix[P]-year-month-date-number';
-		$data['currency_id'] = 1;
-		$data['upload_guest'] = 0;
-		$data['upload_user'] = 1;
-		$db->insert_array($data,'site');
-	}
+	$sql = "UPDATE ".$db->prefix."site SET title='".$adminer['title']."',dir='".$adminer['dir']."',api_code=''";
+	$db->query($sql);
 	exit('ok');
 }
 if($step == 'ajax_iadmin'){
@@ -2041,6 +1939,9 @@ if($step == 'ajax_iadmin'){
 }
 if($step == 'ajax_clearcache'){
 	unlink(ROOT."data/install.lock.php");
+	unlink(ROOT.'data/data2.sql');
+	unlink(ROOT.'data/data.sql');
+	unlink(ROOT.'data/table.sql');
 	exit('ok');
 }
 if($step == 'ajax_endok'){
@@ -2050,9 +1951,7 @@ if($step == 'ajax_endok'){
 if($step == 'getzip2'){
 	$array = array('status'=>'error','content'=>'正在执行中');
 	if(!file_exists(ROOT.'phpok.zip')){
-		$info = $install->curl(PHPOKFILE);
-		file_put_contents(ROOT.'phpok.zip',$info);
-		unset($info);
+		$install->download(PHPOKFILE,ROOT.'phpok.zip');
 	}
 	if(file_exists(ROOT.'phpok.zip') && !file_exists(ROOT.'config.php')){
 		$zip = new phpzip_lib();

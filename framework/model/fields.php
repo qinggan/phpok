@@ -21,9 +21,9 @@ class fields_model_base extends phpok_model
 		unset($this);
 	}
 
-	function get_one($id)
+	function get_one($id,$identifier='id')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id='".$id."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ".$identifier."='".$id."'";
 		return $this->db->get_one($sql);
 	}
 

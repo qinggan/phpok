@@ -1,0 +1,89 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}<a href="{url ctrl=freight/}">{lang运费模板}</a>
+	&raquo; <a href="{url ctrl=freight func=zone fid=$fid/}">{$rs.title}</a>
+	<div class="action"><a href="{url ctrl=freight func=zone_setting fid=$fid/}">添加区域</a></div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+function delete_it(id)
+{
+	var t = $("#title_"+id).val();
+	$.dialog.confirm('确定要删除该区域：<span class="red">'+t+'</span> 吗？删除后，已使用此模板相关信息也会删除',function(){
+		var rs = $.phpok.json(get_url('freight','delete','id='+id));
+		if(rs.status == 'ok'){
+			$.dialog.alert('删除成功',function(){
+				$.phpok.reload();
+			},'succeed');
+		}else{
+			$.dialog.alert(rs.content);
+		}
+	});
+}
+function update_taxis(val,id)
+{
+	$.ajax({
+		'url':get_url('freight','zone_sort','id='+id+"&val="+val),
+		'dataType':'json',
+		'cache':false,
+		'async':true,
+		'beforeSend': function (XMLHttpRequest){
+			XMLHttpRequest.setRequestHeader("request_type","ajax");
+		},
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				$.phpok.reload();
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
+}
+function delete_it(id)
+{
+	$.dialog.confirm('确定要删除这块区域配置吗？',function(){
+		var url = get_url('freight','zone_delete','id='+id);
+		$.phpok.json(url,function(rs){
+			if(rs.status != 'ok'){
+				$.dialog.alert(rs.content);
+				return false;
+			}
+			$.phpok.reload();
+		});
+	});
+}
+$(document).ready(function(){
+	$("div[name=taxis]").click(function(){
+		var oldval = $(this).text();
+		var id = $(this).attr('data');
+		$.dialog.prompt('{lang请填写新的排序：}',function(val){
+			if(val != oldval){
+				update_taxis(val,id);
+			}
+		},oldval);
+	});
+});
+</script>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>ID</th>
+	<th class="lft">名称</th>
+	<th width="80">排序</th>
+	<th></th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td>{$value.title}<!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></td>
+	<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
+	<td>
+		<div class="button-group">
+			<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=freight func=zone_setting id=$value.id/}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="phpok-btn" />
+		</div>
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- include tpl=foot -->

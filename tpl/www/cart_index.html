@@ -21,6 +21,9 @@ function checkout()
 		<td class="center"><a href="{$value.url}" title="{$value.title}" target="_blank"><img src="{$value.thumb.gd.thumb}" width="100px" border="0" alt="{$value.title}" /></a></td>
 		<td>
 			<h3 id="title_{$value.id}">{$value.title}</h3>
+			<!-- loop from=$value._attrlist key=$k value=$v id=$tmpid -->
+			<div>{$v.title}：{$v.content}</div>
+			<!-- /loop -->
 			<div>售价：{func price_format $value.price $value.currency_id}</div>
 		</td>
 		<td class="center price">{func price_format $value.price*$value.qty $value.currency_id}</td>

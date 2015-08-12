@@ -22,20 +22,24 @@ class ueditor_control extends phpok_control
 		$config = $this->lib('json')->decode($config);
 		$config['imageCompressEnable'] = false;
 		$cate_rs = $this->model('rescate')->get_one();
-		if(!$cate_rs || $cate_rs['root'] == '/' || !$cate_rs['root']){
-			$cate_rs["id"] = 0;
+		if(!$cate_rs){
+			$cate_rs = array('id'=>0,'root'=>'res/','folder'=>'/');
+		}
+		if($cate_rs['root'] == '/' || !$cate_rs['root']){
 			$cate_rs["root"] = "res/";
-			$cate_rs["folder"] = "/";
 		}
 		$folder = $cate_rs["root"];
 		if($cate_rs["folder"] && $cate_rs["folder"] != "/"){
 			$folder .= date($cate_rs["folder"],$this->time);
 		}
-		if(!file_exists($folder)){
-			$this->lib('file')->make($folder);
+		if(!file_exists($this->dir_root.$folder)){
+			$this->lib('file')->make($this->dir_root.$folder);
 		}
-		if(!file_exists($folder)){
+		if(!file_exists($this->dir_root.$folder)){
 			$folder = $cate_rs['root'];
+		}
+		if(!file_exists($this->dir_root.$folder)){
+			$folder = 'res/';
 		}
 		if(substr($folder,-1) != "/"){
 			$folder .= "/";

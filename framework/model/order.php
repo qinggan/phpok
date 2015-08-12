@@ -83,15 +83,19 @@ class order_model_base extends phpok_model
 
 	function save_address($data,$id=0)
 	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"order_address",array("id"=>$id));
+		if(!$data || !is_array($data)){
+			return false;
 		}
-		else
-		{
+		if($id){
+			return $this->db->update_array($data,"order_address",array("id"=>$id));
+		}else{
 			return $this->db->insert_array($data,"order_address");
 		}
+	}
+
+	public function save_invoice($data)
+	{
+		return $this->db->insert_array($data,'order_invoice','replace');
 	}
 
 	//通过订单号取得单个订单信息
@@ -119,28 +123,39 @@ class order_model_base extends phpok_model
 		return false;
 	}
 
-	function address_list($id)
+	function address($id)
 	{
-		if(!$id) return false;
-		$sql = "SELECT * FROM ".$this->db->prefix."order_address WHERE order_id='".$id."' ORDER BY type_id ASC";
-		return $this->db->get_all($sql,'type_id');
+		if(!$id){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."order_address WHERE order_id='".$id."'";
+		return $this->db->get_one($sql);
 	}
 
 	//取得订单下的产品信息
 	function product_list($id)
 	{
-		if(!$id) return false;
+		if(!$id){
+			return false;
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."order_product WHERE order_id='".$id."'";
 		$rslist = $this->db->get_all($sql);
-		if(!$rslist) return false;
-		foreach($rslist AS $key=>$value)
-		{
-			//读取订单的图片
-			if($value['ext']) $value['ext'] = unserialize($rs['ext']);
-			if($value['tid']) $value['url'] = $GLOBALS['app']->url($value['tid']);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist AS $key=>$value){
+			if($value['ext']){
+				$value['ext'] = unserialize($value['ext']);
+			}
 			$rslist[$key] = $value;
 		}
 		return $rslist;
+	}
+
+	public function invoice($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."order_invoice WHERE order_id='".$id."'";
+		return $this->db->get_one($sql);
 	}
 
 	//删除订单操作

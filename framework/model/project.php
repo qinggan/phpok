@@ -276,7 +276,7 @@ class project_model_base extends phpok_model
 	//取得项目信息
 	function plist($id,$status=0)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id IN(".$id.") ";
+		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id IN(".$id.") AND hidden=0 ";
 		if($status){
 			$sql.= "AND status=1 ";
 		}

@@ -10,6 +10,17 @@ $(document).ready(function(){
 			$.phpok.reload();
 		}
 	},{
+		'text': "新窗口打开",
+    	'func': function() {
+	    	var url = window.location.href;
+			//去除随机数
+			url = url.replace(/\_noCache=[0-9\.]+/g,'');
+			if(url.substr(-1) == '&' || url.substr(-1) == '?'){
+				url = url.substr(0,url.length-1);
+			}
+			window.open(url);
+	    }    
+	},{
 		'text':'网页属性',
 		'func':function(){
 			var url = window.location.href;

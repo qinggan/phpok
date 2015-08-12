@@ -184,32 +184,23 @@ class order_control extends phpok_control
 	function set_f()
 	{
 		$id = $this->get('id','int');
-		if(!$id)
-		{
-			if(!$this->popedom['add']) error(P_Lang('您没有权限执行此操作'),$this->url('order'),'error');
-		}
-		else
-		{
-			if(!$this->popedom['modify']) error(P_Lang('您没有权限执行此操作'),$this->url('order'),'error');
+		if(!$id){
+			if(!$this->popedom['add']){
+				error(P_Lang('您没有权限执行此操作'),$this->url('order'),'error');
+			}
+		}else{
+			if(!$this->popedom['modify']){
+				error(P_Lang('您没有权限执行此操作'),$this->url('order'),'error');
+			}
 			$rs = $this->model('order')->get_one($id);
 			$this->assign('rs',$rs);
 			//读取产品列表
 			$rslist = $this->model('order')->product_list($id);
-			if(!$rslist) $rslist = array();
-			foreach($rslist AS $key=>$value)
-			{
-				if($value['thumb']) $value['thumb'] = $this->model('res')->get_one($value['thumb']);
-				$rslist[$key] = $value;
-			}
 			$this->assign('rslist',$rslist);
-			//取得订单的地址
-			$address = $this->model('order')->address_list($rs['id']);
-			if($address['shipping']['city']) $address['shipping']['city'] = str_replace(array('(',')'),'',$address['shipping']['city']);
-			if($address['shipping']['county']) $address['shipping']['county'] = str_replace(array('(',')'),'',$address['shipping']['county']);
-			$this->assign('shipping',$address['shipping']);
-			if($address['billing']['city']) $address['billing']['city'] = str_replace(array('(',')'),'',$address['billing']['city']);
-			if($address['billing']['county']) $address['billing']['county'] = str_replace(array('(',')'),'',$address['billing']['county']);
-			$this->assign('billing',$address['billing']);
+			$address = $this->model('order')->address($rs['id']);
+			$this->assign('shipping',$address);
+			$invoice = $this->model('order')->invoice($rs['id']);
+			$this->assign('invoice',$invoice);
 		}
 		$site_rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
 		$this->assign("site_rs",$site_rs);
@@ -424,6 +415,7 @@ class order_control extends phpok_control
 		}
 		$main['note'] = $this->get('note');
 		$main['status'] = $this->get('status');
+		//$main['nu'] = $this->get('nu');
 		$this->model('order')->save($main,$id);
 		$prolist = $this->get('pro_id');
 		$pro_title = $this->get('pro_title');
@@ -449,7 +441,7 @@ class order_control extends phpok_control
 				'title'=>$tmp_title,
 				'price'=>$tmp_price,
 				'qty'=>$tmp_qty,
-				'thumb'=>intval($pro_thumb[$key]),
+				'thumb'=>$pro_thumb[$key],
 				'order_id'=>$id
 			);
 			if($value && $value != 'add'){
@@ -465,11 +457,11 @@ class order_control extends phpok_control
 			$sid = $this->get('s-id','int');
 			$this->model('order')->save_address($shipping,$sid);
 		}
-		$billing = $this->address('b');
-		if($billing['fullname']){
-			$billing['order_id'] = $id;
-			$bid = $this->get('b-id','int');
-			$this->model('order')->save_address($billing,$bid);
+		//存储发票
+		$invoice = array('type'=>$this->get('invoice_type'),'title'=>$this->get('invoice_title'),'content'=>$this->get('invoice_content'));
+		if($invoice['type'] && $invoice['title']){
+			$invoice['order_id'] = $id;
+			$this->model('order')->save_invoice($invoice);
 		}
 		$this->json(true);
 	}
@@ -533,10 +525,6 @@ class order_control extends phpok_control
 		if(!$plist) $this->json(P_Lang('产品信息为空'));
 		$shipping = $this->address('s');
 		$site_rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
-		$billing = false;
-		if($site_rs['biz_billing']){
-			$billing = $this->address('b');
-		}
 		//存储订单操作
 		$main['price'] = $this->get('price','float');
 		if(!$main['price']){
@@ -584,15 +572,16 @@ class order_control extends phpok_control
 			$shipping['order_id'] = $order_id;
 			$this->model('order')->save_address($shipping);
 		}
-		if($billing){
-			$billing['order_id'] = $order_id;
-			$this->model('order')->save_address($billing);
+		$invoice = array('type'=>$this->get('invoice_type'),'title'=>$this->get('invoice_title'),'content'=>$this->get('invoice_content'));
+		if($invoice['type'] && $invoice['title']){
+			$invoice['order_id'] = $order_id;
+			$this->model('order')->save_invoice($invoice);
 		}
 		$this->json(P_Lang('订单创建成功'),true);
 	}
 
 	//地址库
-	function address($type='s',$sid=0)
+	function address($type="s",$sid=0)
 	{
 		$array = array();
 		$array['country'] = $this->get($type."-country");
@@ -600,13 +589,10 @@ class order_control extends phpok_control
 		$array['city'] = $this->get($type."-city");
 		$array['county'] = $this->get($type."-county");
 		$array['address'] = $this->get($type."-address");
-		$array['zipcode'] = $this->get($type."-zipcode");
 		$array['mobile'] = $this->get($type."-mobile");
 		$array['tel'] = $this->get($type."-tel");
 		$array['email'] = $this->get($type."-email");
 		$array['fullname'] = $this->get($type."-fullname");
-		$array['gender'] = $this->get($type."-gender",'int');
-		$array['type_id'] = $type == 's' ? 'shipping' : 'billing';
 		return $array;
 	}
 }

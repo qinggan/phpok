@@ -2,21 +2,18 @@
 	<h3>会员功能</h3>
 	<ul class="usercp">
 		<li{if $sys.ctrl == 'usercp' && $sys.func == 'index'} class="red"{/if}><a href="{url ctrl=usercp/}" title="个人中心">个人中心</a></li>
-		<li{if $sys.func == 'info'} class="red"{/if}><a href="{url ctrl=usercp func=info/}" title="修改资料">修改资料</a></li>
+		<li{if $sys.func == 'info'} class="red"{/if}><a href="{url ctrl=usercp func=info/}" title="个人资料">个人资料</a></li>
+		<li{if $sys.func == 'avatar'} class="red"{/if}><a href="{url ctrl=usercp func=avatar/}" title="修改头像">修改头像</a></li>
 		<li{if $sys.func == 'passwd'} class="red"{/if}><a href="{url ctrl=usercp func=passwd/}" title="修改密码">修改密码</a></li>
+		<li{if $sys.func == 'mobile'} class="red"{/if}><a href="{url ctrl=usercp func=mobile/}" title="修改手机">修改手机</a></li>
+		<li{if $sys.func == 'email'} class="red"{/if}><a href="{url ctrl=usercp func=email/}" title="修改邮箱">修改邮箱</a></li>
 		<li{if $sys.ctrl == 'order'} class="red"{/if}><a href="{url ctrl=order/}" title="订单中心">订单中心</a></li>
 		<li{if $sys.func == 'address'} class="red"{/if}><a href="{url ctrl=usercp func=address/}" title="收货地址">收货地址</a></li>
+		<li{if $sys.func == 'invoice'} class="red"{/if}><a href="{url ctrl=usercp func=invoice/}" title="发票管理">发票管理</a></li>
 		<!-- php:$list = usercp_project() -->
-		<!-- if $list -->
-		<li class="mypost_title">我发布的信息</li>
-		<li class="mypost">
-			<ul>
-				<!-- loop from=$list key=$key value=$value -->
-				<li{if $sys.func == 'list' && $id == $value.identifier} class="red"{/if}><a href="{url ctrl=usercp func=list id=$value.identifier/}" title="{$value.title}">{$value.title}</a></li>
-				<!-- /loop -->
-			</ul>
-		</li>
-		<!-- /if -->
+		<!-- loop from=$list key=$key value=$value -->
+		<li{if $sys.func == 'list' && $id == $value.identifier} class="red"{/if}><a href="{url ctrl=usercp func=list id=$value.identifier/}" title="{$value.title}">{$value.title}</a></li>
+		<!-- /loop -->
 		<li><a href="javascript:logout('{$session.user_name}');void(0);" title="会员退出">会员退出</a></li>
 	</ul>
 	<div class="clear"></div>

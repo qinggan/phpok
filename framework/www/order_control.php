@@ -51,29 +51,9 @@ class order_control extends phpok_control
 		$rs['status_info'] = ($status_list && $status_list[$rs['status']]) ? $status_list[$rs['status']] : $rs['status'];
 		$rs['pay_status_info'] = ($status_list && $status_list[$rs['pay_status']]) ? $status_list[$rs['pay_status']] : $rs['pay_status'];
 		$this->assign('rs',$rs);
-		//取得订单的地址
-		$address = $this->model('order')->address_list($rs['id']);
-		$this->assign('shipping',$address['shipping']);
-		$this->assign('billing',$address['billing']);
-		//订单下的产品列表
+		$address = $this->model('order')->address($rs['id']);
+		$this->assign('address',$address);
 		$rslist = $this->model('order')->product_list($rs['id']);
-		if($rslist){
-			$thumb = '';
-			foreach($rslist AS $key=>$value){
-				if($value['thumb']) $thumb[] = $value['thumb'];
-			}
-			if($thumb && count($thumb)>0){
-				$tlist = $this->model('data')->res_info($thumb,true);
-				if($tlist){
-					foreach($rslist AS $key=>$value){
-						if($value['thumb']){
-							$value['thumb'] = $tlist[$value['thumb']];
-						}
-						$rslist[$key] = $value;
-					}
-				}
-			}
-		}
 		$this->assign('rslist',$rslist);
 		if($rs['pay_end']){
 			$payment = $this->model('payment')->get_one($rs['pay_id']);
@@ -88,6 +68,9 @@ class order_control extends phpok_control
 			}
 			$this->assign('payment_url',$payment_url);
 		}
+		//获取发票信息
+		$invoice = $this->model('order')->invoice($rs['id']);
+		$this->assign('invoice',$invoice);
 		$this->view('order_info');
 	}
 	

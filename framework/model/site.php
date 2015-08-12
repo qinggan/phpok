@@ -12,6 +12,7 @@ class site_model_base extends phpok_model
 {
 	private $sitelist = false;
 	private $domainlist = false;
+	private $mobile_domain = false;
 	public function __construct()
 	{
 		parent::model();
@@ -36,6 +37,11 @@ class site_model_base extends phpok_model
 		$domain_id = $rs['domain_id'];
 		if($rs['_domain'] && $rs['_domain'][$domain_id]){
 			$rs['domain'] = $rs['_domain'][$domain_id];
+		}
+		foreach($this->domainlist as $key=>$value){
+			if($value['is_mobile'] && $value['site_id'] == $id){
+				$rs['_mobile'] = $value;
+			}
 		}
 		return $rs;
 	}
@@ -65,9 +71,8 @@ class site_model_base extends phpok_model
 		}
 		$site_id = false;
 		foreach($this->domainlist as $key=>$value){
-			if($value['domain'] = $domain){
+			if($value['domain'] == $domain){
 				$site_id = $value['site_id'];
-				break;
 			}
 		}
 		if(!$site_id){
@@ -159,12 +164,12 @@ class site_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
-	public function site_config($id)
+	public function site_config($id,$status=1)
 	{
 		if(!$id){
 			return false;
 		}
-		$sql = "SElECT * FROM ".$this->db->prefix."all WHERE site_id='".$id."'";
+		$sql = "SElECT * FROM ".$this->db->prefix."all WHERE site_id='".$id."' AND status='".$status."'";
 		$list = $this->db->get_all($sql);
 		if(!$list){
 			return false;

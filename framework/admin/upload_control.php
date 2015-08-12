@@ -10,23 +10,19 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class upload_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
-		$this->model("res");
-		$this->model("gd");
-		$this->lib("file");
-		$this->lib("json");
-		$this->lib("trans");
 	}
 
 	//附件上传
-	function save_f()
+	public function save_f()
 	{
 		$cateid = $this->get('cateid','int');
 		$rs = $this->upload_base('upfile',$cateid);
 		if(!$rs || $rs['status'] != 'ok'){
-			$this->json($rs['error']);
+			$tip = $rs['error'] ? $rs['error'] : $rs['content'];
+			$this->json($tip);
 		}
 		unset($rs['status']);
 		$rs['uploadtime'] = date("Y-m-d H:i:s",$rs['addtime']); 
@@ -37,67 +33,31 @@ class upload_control extends phpok_control
 	//基础上传
 	private function upload_base($input_name='upfile',$cateid=0)
 	{
-		if(!$cateid){
-			$cate_rs = $this->model('rescate')->get_default();
-		}else{
-			$cate_rs = $this->model('rescate')->get_one($cateid);
-			if(!$cate_rs){
-				$cate_rs = $this->model('rescate')->get_default();
-			}
-		}
-		if(!$cate_rs){
-			return array('status'=>'error','error'=>P_Lang('未指定分类或附件分类不存在'));
-		}
-		if(!$cate_rs['filetypes']){
-			$cate_rs['filetypes'] = 'jpg,png,gif,rar,zip,doc,docx,xls,xlsx';
-		}
-		$this->lib('upload')->set_type($cate_rs['filetypes']);
-		$rs = $this->lib('upload')->upload($input_name);
-		if($rs["status"] != "ok"){
+		$rs = $this->lib('upload')->getfile($input_name,$cateid);
+		if($rs['status'] != 'ok'){
 			return $rs;
 		}
-		$folder = $cate_rs["root"];
-		if($cate_rs["folder"] && $cate_rs["folder"] != "/"){
-			$folder .= date($cate_rs["folder"],$this->time);
-		}
-		if(!file_exists($folder)){
-			$this->lib('file')->make($folder);
-		}
-		if(!file_exists($folder)){
-			$folder = $cate_rs['root'];
-		}
-		$basename = basename($rs["filename"]);
-		$save_folder = $this->dir_root.$folder;
-		if($save_folder.$basename != $rs["filename"]){
-			$this->lib('file')->mv($rs["filename"],$save_folder.$basename);
-		}
-		if(!file_exists($save_folder.$basename)){
-			$this->lib('file')->rm($rs["filename"]);
-			return array('status'=>'error','error'=>P_Lang('图片迁移失败'));
-		}
 		$array = array();
-		$array["cate_id"] = $cateid;
-		$array["folder"] = $folder;
-		$array["name"] = $basename;
-		$array["ext"] = $rs["ext"];
-		$array["filename"] = $folder.$basename;
+		$array["cate_id"] = $rs['cate']['id'];
+		$array["folder"] = $rs['folder'];
+		$array["name"] = basename($rs['filename']);
+		$array["ext"] = $rs['ext'];
+		$array["filename"] = $rs['filename'];
 		$array["addtime"] = $this->time;
-		$array["title"] = $this->lib('string')->to_utf8($rs['title']);
-		$array["title"] = str_replace(".".$rs["ext"],"",$array["title"]);
+		$array["title"] = $rs['title'];
 		$array['admin_id'] = $_SESSION['admin_id'];
 		$arraylist = array("jpg","gif","png","jpeg");
 		if(in_array($rs["ext"],$arraylist)){
-			$img_ext = getimagesize($save_folder.$basename);
+			$img_ext = getimagesize($this->dir_root.$rs['filename']);
 			$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
 			$array["attr"] = serialize($my_ext);
 		}
 		$id = $this->model('res')->save($array);
 		if(!$id){
-			$this->lib('file')->rm($save_folder.$basename);
+			$this->lib('file')->rm($this->dir_root.$rs['filename']);
 			return array('status'=>'error','error'=>P_Lang('图片存储失败'));
 		}
-		//更新缩略图
-		$this->gd_update($id);
+		$this->model('res')->gd_update($id);
 		$rs = $this->model('res')->get_one($id);
 		$rs["status"] = "ok";
 		return $rs;
@@ -129,70 +89,9 @@ class upload_control extends phpok_control
 		$tmp = array("addtime"=>$this->time);
 		$tmp["attr"] = serialize($my_ext);
 		$this->model('res')->save($tmp,$id);
-		$this->gd_update($id);
+		$this->model('res')->gd_update($id);
 		$rs = $this->model('res')->get_one($id);
 		$this->json($rs,true);
-	}
-
-	private function gd_update($id)
-	{
-		$rs = $this->model('res')->get_one($id);
-		if(!$rs){
-			return false;
-		}
-		$this->model('res')->ext_delete($id);
-		if($rs['cate_id']){
-			$cate_rs = $this->model('rescate')->get_one($rs['cate_id']);
-			if(!$cate_rs){
-				$cate_rs = $this->model('rescate')->get_default();
-			}
-		}else{
-			$cate_rs = $this->model('rescate')->get_default();
-		}
-		if(!$cate_rs){
-			$cate_rs = array('ico'=>1,'gdall'=>1,'gdtypes'=>'');
-		}
-		$arraylist = array('png','gif','jpeg','jpg');
-		if($cate_rs['ico'] && in_array($rs['ext'],$arraylist)){
-			$ico = $this->lib('gd')->thumb($this->dir_root.$rs["filename"],$id);
-			if(!$ico){
-				$ico = "images/filetype-large/".$rs["ext"].".jpg";
-				if(!file_exists($this->dir_root.$ico)){
-					$ico = "images/filetype-large/unknown.jpg";
-				}
-			}
-			$this->model('res')->save(array('ico'=>$rs['folder'].$ico),$id);
-		}else{
-			$ico = "images/filetype-large/".$rs["ext"].".jpg";
-			if(!file_exists($this->dir_root.$ico)){
-				$ico = "images/filetype-large/unknown.jpg";
-			}
-			$this->model('res')->save(array('ico'=>$ico),$id);
-		}
-		//判断是否有GD图案
-		$gdlist = $this->model('gd')->get_all('id');
-		if(!$gdlist){
-			return true;
-		}
-		if(!$cate_rs['gdtypes'] && !$cate_rs['gdall']){
-			return true;
-		}
-		$gdtypes = $cate_rs['gdall'] ? array_keys($gdlist) : explode(",",$cate_rs['gdtypes']);
-		foreach($gdlist as $key=>$value){
-			if(!in_array($value['id'],$gdtypes)){
-				continue;
-			}
-			$array = array();
-			$array["res_id"] = $id;
-			$array["gd_id"] = $value["id"];
-			$array["filetime"] = $this->time;
-			$gd_tmp = $this->lib('gd')->gd($this->dir_root.$rs["filename"],$id,$value);
-			if($gd_tmp){
-				$array["filename"] = $rs["folder"].$gd_tmp;
-				$this->model('res')->save_ext($array);
-			}
-		}
-		return true;
 	}
 
 	public function thumbshow_f()

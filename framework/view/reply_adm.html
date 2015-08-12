@@ -1,4 +1,3 @@
-<!-- php:$edit_content = form_edit('content',$rs.adm_content,'editor','width=680&height=300') -->
 <!-- include tpl=head_open -->
 <script type="text/javascript" src="{func include_js}"></script>
 <div class="help">
@@ -19,23 +18,25 @@
 </div>
 <!-- /if -->
 <script type="text/javascript">
-function check_save()
+function save()
 {
 	var c = edit_content.getContent();
-	if(!c)
-	{
+	if(!c){
 		$.dialog.alert("内容不能为空");
 		return false;
 	}
-	return true;
+	url = get_url('reply','adm_save','id={$id}');
+	url += "&content="+$.str.encode(c);
+	var info = $.phpok.json(url);
+	if(info.status == 'ok'){
+		return true;
+	}else{
+		$.dialog.alert(info.content);
+		return false;
+	}
 }
 </script>
-<form method="post" action="{func admin_url reply adm_save}&id={$id}" onsubmit="return check_save()">
+<form method="post" onsubmit="return false">
 <div style="margin:3px auto;">{$edit_content}</div>
-<div class="table">
-	<div class="content">
-		<input type="submit" value="提 交" class="submit" />
-	</div>
-</div>
 </form>
 <!-- inc:foot_open -->
