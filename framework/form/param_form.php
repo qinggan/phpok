@@ -32,7 +32,15 @@ class param_form extends _init_auto
 		if($rs['content']){
 			$list = unserialize($rs['content']);
 		}else{
-			$list = array('title'=>array(),'content'=>array());
+			$list = array();
+			if($pname){
+				foreach($pname as $key=>$value){
+					$tmp = array($value);
+					$list['title'][] = $value;
+				}
+			}else{
+				$list = array('title'=>array(),'content'=>array());
+			}
 		}
 		if($rs['p_type']){
 			$rs['p_width'] = intval($rs['p_width']) ? intval($rs['p_width']) : '80';

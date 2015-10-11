@@ -520,6 +520,10 @@ class list_control extends phpok_control
 		}
 		//增加JS和CSS
 		$this->addjs('js/laydate/laydate.js');
+		if($p_rs['freight']){
+			$freight = $this->model('freight')->get_one($project['freight']);
+			$this->assign('freight',$freight);
+		}
 		$this->view("list_edit");
 	}
 
@@ -643,8 +647,16 @@ class list_control extends phpok_control
 	 		$this->model('list')->biz_save($biz);
 	 		if($tmpadd && $_SESSION['attr'] && $p_rs['biz_attr']){
 		 		foreach($_SESSION['attr'] as $key=>$value){
-			 		$value['aid'] = $key;
-			 		$this->model('list')->biz_attr_save($value);
+			 		if(!$value || !is_array($value)){
+				 		continue;
+			 		}
+			 		foreach($value as $k=>$v){
+				 		if(!$v || !is_array($v)){
+					 		continue;
+				 		}
+				 		$v['tid'] = $id;
+				 		$this->model('list')->biz_attr_save($v);
+			 		}
 		 		}
 		 		unset($_SESSION['attr']);
 	 		}
@@ -1132,10 +1144,13 @@ class list_control extends phpok_control
 					$rslist[$value['aid']][] = $value;
 				}
 			}
+			$info = $this->model('list')->call_one($tid);
+			$pid = $info['project_id'];
 		}else{
 			if($_SESSION['attr']){
 				$rslist = $_SESSION['attr'];
 			}
+			$pid = $this->get('pid','int');
 		}
 		if(!$rslist){
 			$this->json(true);
@@ -1159,6 +1174,16 @@ class list_control extends phpok_control
 		$this->assign('rslist',$rslist);
 		$this->assign('tid',$tid);
 		$this->assign('options',$optlist);
+		
+		if($pid){
+			$project = $this->model('project')->get_one($pid,false);
+			if($project['freight']){
+				$freight = $this->model('freight')->get_one($project['freight']);
+			}else{
+				$freight = array();
+			}
+			$this->assign('freight',$freight);
+		}
 		$content = $this->fetch('list_options_html');
 		$this->json($content,true);
 	}

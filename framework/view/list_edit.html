@@ -28,6 +28,7 @@ $(document).ready(function(){
 	$("#_listedit").submit(function(){
 		var id = $("#id").val();
 		var pcate = parseInt("{$p_rs.cate}");
+		var pcate_multiple = '{$p_rs.cate_multiple}';
 		$(this).ajaxSubmit({
 			'url':'{url ctrl=list func=ok /}',
 			'type':'post',
@@ -36,7 +37,11 @@ $(document).ready(function(){
 				if(rs.status == 'ok'){
 					var url = "{url ctrl=list func=action id=$pid/}";
 					if(pcate>0){
-						var cateid = $("input[name=cate_id]:checked").val();
+						if(pcate_multiple > 0){
+							var cateid = $("input[name=cate_id]:checked").val();
+						}else{
+							var cateid = $("#cate_id").val();
+						}						
 						url += "&cateid="+cateid;
 					}
 					if(id){
@@ -93,8 +98,8 @@ $(document).ready(function(){
 	</ul>
 	<!-- /if -->
 	<!-- if $p_rs.cate && !$p_rs.cate_multiple -->
-	<select name="cate_id" id="cate_id" style="width:99%;padding:3px;">
-		<option value="">请选择…</option>
+	<select name="cate_id" id="cate_id" style="width:99%;padding:3px;margin-top:10px;">
+		<option value="">请选择分类…</option>
 		<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
 		<option value="{$value.id}"{if $value.id == $rs.cate_id} selected{/if}>{$value._space}{$value.title}</option>
 		<!-- /loop -->
@@ -121,7 +126,7 @@ $(document).ready(function(){
 	function biz_attr_loading()
 	{
 		var tid = "{$id}";
-		var url = get_url('list','options_html','tid='+tid);
+		var url = get_url('list','options_html','pid={$pid}&tid='+tid);
 		$.phpok.json(url,function(rs){
 			if(rs.status == 'ok'){
 				if(!rs.content){
@@ -239,7 +244,7 @@ $(document).ready(function(){
 				<td>&nbsp;</td>
 				<!-- /if -->
 				<td><input type="button" value="{lang添加属性}" onclick="attr_add('{$id}','{$p_rs.id}')" class="phpok-btn" /></td>
-				<td style="line-height:160%;">&nbsp;负号表示减，返之为加，如+10，表示加10，-10表示减10<br />&nbsp;价格：{$currency.title}，重量：千克，体积：立方米</td>
+				<td style="line-height:160%;">&nbsp;负号表示减，返之为加，如+10，表示加10，-10表示减10</td>
 			</tr>
 			</table>
 		</div>
@@ -302,14 +307,18 @@ $(document).ready(function(){
 	<div class="pfw mb10">
 		<h3>产品属性及价格</h3>
 		<div><table cellpadding="2" cellspacing="2">
+		<!-- if $freight && $freight.type == 'weight' -->
 		<tr>
 			<td align="right">{lang重量：}</td>
 			<td><input type="text" id="weight" name="weight" class="short" value="{$rs.weight}" /> 千克</td>
 		</tr>
+		<!-- /if -->
+		<!-- if $freight && $freight.type == 'volume' -->
 		<tr>
 			<td align="right">{lang体积：}</td>
 			<td><input type="text" id="volume" name="volume" class="short" value="{$rs.volume}" /> 立方米</td>
 		</tr>
+		<!-- /if -->
 		<tr>
 			<td align="right">{lang计量单位：}</td>
 			<td><input type="text" id="unit" name="unit" class="short" value="{$rs.unit}" /></td>
