@@ -19,9 +19,9 @@ function save()
 		return false;
 	}
 	url += "&star="+star;
-	var content = $("#content").val();
+	var content = edit_content.getContent();
 	if(!content){
-		$.dialog.alert('{lang内容不能为空}');
+		$.dialog.alert("内容不能为空");
 		return false;
 	}
 	url += "&content="+$.str.encode(content);
@@ -68,9 +68,7 @@ function save()
 		评论内容：
 		<span class="note">一般情况不用修改。</span>
 	</div>
-	<div class="content">
-		<textarea name="content" id="content" style="width:99%;height:150px;">{$rs.content}</textarea>
-	</div>
+	<div class="content">{$edit_content}</div>
 </div>
 <div class="table">
 	<div class="title">

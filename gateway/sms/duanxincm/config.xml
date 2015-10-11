@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>莫名短信</title>
+	<code>
+		<account>
+			<title>帐号</title>
+			<note>8位的接口帐号, 如:70288881</note>
+			<type>text</type>
+		</account>
+		<password>
+			<title>密码</title>
+			<note>帐号登录密码，在传输过程中执行32位加密</note>
+			<type>text</type>
+		</password>
+		<server>
+			<title>请求地址</title>
+			<note>即接口请求地址，如：http://api.duanxin.cm/</note>
+			<type>text</type>
+		</server>
+	</code>
+</root>

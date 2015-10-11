@@ -46,5 +46,29 @@ class index_control extends phpok_control
 		$this->assign('tips',$info);
 		$this->view('tips');
 	}
+
+	//推荐链执行
+	public function linker($code)
+	{
+		$rs = $this->model('user')->code_one($code);
+		if(!$rs || !$rs['user_id']){
+			$this->_location('index.php');
+		}
+		//增加点击率
+		$this->model('user')->code_addhits($rs['id']);
+		//已登录的会员，跳过
+		if($_SESSION['user_id']){
+			
+			if($rs['link']){
+				$this->_location($rs['link']);
+			}
+			$this->_location('index.php');
+		}
+		$user = $this->model('user')->get_one($rs['user_id']);
+		if(!$user){
+			$this->_location('index.php');
+		}
+		$_SESSION['introducer'] = $user['id'];
+	}
 }
 ?>

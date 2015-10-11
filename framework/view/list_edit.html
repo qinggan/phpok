@@ -324,70 +324,7 @@ $(document).ready(function(){
 			</td>
 			<td><input type="text" id="price" name="price" value="{$rs.price}" style="width:98%" /></td>
 		</tr>
-		<tr id="show_price_info_format" class="hide">
-			<td colspan="2">
-				<!-- loop from=$currency_list key=$key value=$value -->
-				<div style="line-height:26px;height:26px;font-size:14px;" class="darkblue">{$value.title}（{$value.code}）的价格：<span class="red" id="_show_price_{$value.code}"></span></div>
-				<!-- /loop -->
-			</td>
-		</tr>
 		</table></div>
-		<script type="text/javascript">
-		function price_show_auto()
-		{
-			var price = $("#price").val();
-			var currency_id = $("#currency_id").val();
-			if(!price || price == '0' || !currency_id || price == 'undefined')
-			{
-				$('#show_price_info_format').hide();
-				return false;
-			}
-			var df = $("#currency_id").find("option:selected").attr("rate");
-			var hide_html = false;
-			$("#currency_id option").each(function(i){
-				var t = $(this).val();
-				if(t)
-				{
-					var code = $(this).attr("code");
-					var sleft = $(this).attr("sleft");
-					var sright = $(this).attr("sright");
-					var rate = $(this).attr("rate");
-					//计算
-					if(df != rate)
-					{
-						var price2 = parseFloat((price / df) * rate);
-					}
-					else
-					{
-						var price2 = parseFloat(price);
-					}
-					if(price2.toString() == 'NaN')
-					{
-						$("#price").val('');
-						hide_html = true;
-					}
-					else
-					{
-						price2 = price2.toFixed(2);
-						price2 = sleft + ' '+(price2).toString()+" "+sright;
-						$("#_show_price_"+code).html(price2);
-					}
-				}
-			});
-			if(hide_html)
-			{
-				$("#show_price_info_format").hide();
-			}
-			else
-			{
-				$("#show_price_info_format").show();
-			}
-		}
-		$(document).ready(function(){
-			price_show_auto();
-			$('#price').keyup(function(){price_show_auto();}).keydown(function(){price_show_auto();});
-		});
-		</script>
 	</div>
 	<!-- /if -->
 	<script type="text/javascript">

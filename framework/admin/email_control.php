@@ -102,7 +102,7 @@ class email_control extends phpok_control
 		if(!$identifier){
 			exit(P_Lang('未指定标识串'));
 		}
-		$rs = $this->model('email')->get_identifier($identifier,$_SESSION["admin_site_id"],$id);
+		$rs = $this->model('email')->get_identifier($identifier,$id);
 		if($rs){
 			exit(P_Lang('标识串已被使用'));
 		}

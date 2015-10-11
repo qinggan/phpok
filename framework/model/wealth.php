@@ -166,7 +166,7 @@ class wealth_model_base extends phpok_model
 		$sql = "SELECT id,dateline FROM ".$this->db->prefix."wealth_log WHERE wid='".$data['wid']."' ";
 		$sql.= "AND goal_id='".$data['goal_id']."' AND ctrlid='".$data['ctrlid']."' ";
 		$time1 = strtotime(date("Y-m-d",$this->time));
-		$time2 = $time1+24*3600;
+		$time2 = $time1 + $mintime;
 		$sql.= "AND dateline>='".$time1."' AND dateline<'".$time2."' ";
 		if($linkid && $data['mid']){
 			$sql.= "AND mid='".$data['mid']."' ";
@@ -179,11 +179,6 @@ class wealth_model_base extends phpok_model
 		//如果已有数据记录，但当前规则不允许重复时，返回否
 		//超过重复记录数，返回否
 		if(!$repeat || ($repeat && count($rslist)>=$repeat)){
-			return false;
-		}
-		$rs = current($rslist);
-		//间隔时间内，返回为否
-		if(($rs['dateline'] + $mintime)>=$this->time){
 			return false;
 		}
 		return true;

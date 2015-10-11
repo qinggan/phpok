@@ -12,8 +12,7 @@ phpok
     tpl_html
     tpl_www
 
-2. 修改数据库配置文件 config.php
-3. 手工导入install/phpok.sql
+2. 运行 phpokinstall.php 进行安装
 
 感谢
 ===

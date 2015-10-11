@@ -413,7 +413,7 @@ class ueditor_control extends phpok_control
 		//存储目录
 		$basename = basename($rs["filename"]);
 		$save_folder = $this->dir_root.$folder;
-		if($save_folder.$basename != $rs["filename"]){
+		if($folder.$basename != $rs["filename"]){
 			$this->lib('file')->mv($rs["filename"],$save_folder.$basename);
 		}
 		if(!file_exists($save_folder.$basename)){

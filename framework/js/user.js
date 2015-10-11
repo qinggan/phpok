@@ -11,20 +11,25 @@ function check_add()
 {
 	var url = get_url("user","chk");
 	var id = $("#id").val();
-	if(id && id != "undefined")
-	{
+	if(id && id != "undefined"){
 		url += "&id="+id;
 	}
 	var user = $("#user").val();
-	if(!user || user == "undefined")
-	{
+	if(!user || user == "undefined"){
 		$.dialog.alert("会员账号不能为空");
 		return false;
 	}
 	url += "&user="+$.str.encode(user);
-	var rs = json_ajax(url);
-	if(rs.status != "ok")
-	{
+	var mobile = $("#mobile").val();
+	if(mobile){
+		url += "&mobile="+$.str.encode(mobile);
+	}
+	var email = $("#email").val();
+	if(email){
+		url += "&email="+$.str.encode(email);
+	}
+	var rs = $.phpok.json(url);
+	if(rs.status != "ok"){
 		$.dialog.alert(rs.content);
 		return false;
 	}

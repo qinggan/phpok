@@ -27,7 +27,7 @@ function check_input()
 	<dl class="box">
 		<dt>登录</dt>
 		<form method="post" id="login-form" onsubmit="return check_input()" action="{url ctrl=login func=ok/}">
-		<input type="hidden" id="_back" value="{$_back}" />
+		<input type="hidden" name="_back" value="{$_back}" />
 	    <input type="hidden" name="post_date" id="post_date" value="{func date 'Y-m-d H:i:s' $sys.time}" />
 	    <input type="hidden" name="pdip" id="pdip" value="{func phpok_ip}" />
 		<dd><label>账号：</label><input class="input" type="text" name="user" /><div class="clear"></div></dd>

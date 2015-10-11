@@ -53,7 +53,7 @@ class all_control extends phpok_control
 		$this->assign("currency_list",$currency_list);
 
 		//读取支付方式
-		$payment = $this->model('payment')->get_all($_SESSION['admin_site_id']);
+		$payment = $this->model('payment')->get_all();
 		$this->assign("payment",$payment);
 
 		//邮件模板列表

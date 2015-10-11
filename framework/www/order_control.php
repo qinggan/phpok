@@ -49,28 +49,39 @@ class order_control extends phpok_control
 		$rs = $this->auth_check();
 		$status_list = $this->model('order')->status_list();
 		$rs['status_info'] = ($status_list && $status_list[$rs['status']]) ? $status_list[$rs['status']] : $rs['status'];
-		$rs['pay_status_info'] = ($status_list && $status_list[$rs['pay_status']]) ? $status_list[$rs['pay_status']] : $rs['pay_status'];
 		$this->assign('rs',$rs);
 		$address = $this->model('order')->address($rs['id']);
 		$this->assign('address',$address);
 		$rslist = $this->model('order')->product_list($rs['id']);
 		$this->assign('rslist',$rslist);
-		if($rs['pay_end']){
-			$payment = $this->model('payment')->get_one($rs['pay_id']);
-			$this->assign('payment',$payment);
-		}else{
-			$paylist = $this->model('payment')->get_all($this->site['id'],1);
-			$this->assign("paylist",$paylist);
-			if($_SESSION['user_id']){
-				$payment_url = $this->url('payment','submit','id='.$rs['id']);
-			}else{
-				$payment_url = $this->url('payment','submit','sn='.$rs['sn'].'&passwd='.$rs['passwd']);
-			}
-			$this->assign('payment_url',$payment_url);
-		}
 		//获取发票信息
 		$invoice = $this->model('order')->invoice($rs['id']);
 		$this->assign('invoice',$invoice);
+		//获取价格
+		$price_tpl_list = $this->model('site')->price_status_all();
+		$order_price = $this->model('order')->order_price($rs['id']);
+		if($price_tpl_list && $order_price){
+			$pricelist = array();
+			foreach($price_tpl_list as $key=>$value){
+				if(!$value['status']){
+					continue;
+				}
+				$tmp = array();
+				$tmp['price'] = price_format($order_price[$key],$rs['currency_id']);
+				$tmp['title'] = $value['title'];
+				$pricelist[$key] = $tmp;
+			}
+			$this->assign('pricelist',$pricelist);
+		}
+		//检查订单是否已支付过
+		$paycheck = $this->model('order')->order_payment($rs['id']);
+		if($paycheck && $paycheck['dateline']){
+			$this->assign('pay_end',true);
+			$this->assign('payinfo',$paycheck);
+		}else{
+			$paylist = $this->model('payment')->get_all($this->site['id'],1);
+			$this->assign("paylist",$paylist);
+		}
 		$this->view('order_info');
 	}
 	

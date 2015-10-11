@@ -10,7 +10,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class project_control extends phpok_control
 {
-	public $popedom;
+	private $popedom;
 	function __construct()
 	{
 		parent::control();
@@ -47,6 +47,7 @@ class project_control extends phpok_control
 			$ext_module = "add-project";
 			$parent_id = $this->get("pid");
 			$rs["parent_id"] = $parent_id;
+			$rs['taxis'] = $this->model('project')->project_next_sort();
 			$this->assign("rs",$rs);
 		}		
 		$parent_list = $this->model('project')->get_all($site_id,0);

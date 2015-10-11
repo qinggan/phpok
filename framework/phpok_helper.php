@@ -488,31 +488,35 @@ function phpok_editor($rs)
 //val，值
 //currency_id，当前值对应的货币ID
 //show_id，要显示的货币ID
-function price_format($val,$currency_id,$show_id=0)
+function price_format($val='',$currency_id='',$show_id=0)
 {
 	//当显示为后台时
-	if($GLOBALS['app']->app_id == 'admin' && !$show_id)
-	{
+	if($GLOBALS['app']->app_id == 'admin' && !$show_id){
 		$show_id = $currency_id;
+	}else{
+		if(!$show_id){
+			$show_id = $GLOBALS['app']->site['currency_id'];
+		}
+		if(!$show_id){
+			$show_id = $currency_id;
+		}
 	}
-	else
-	{
-		if(!$show_id) $show_id = $GLOBALS['app']->site['currency_id'];
-		if(!$show_id) $show_id = $currency_id;
-	}
-	if(!$GLOBALS['app']->cache_data['currency'])
-	{
-		$GLOBALS['app']->cache_data['currency'] = $GLOBALS['app']->model('currency')->get_list('id');
-	}
-	if(!$GLOBALS['app']->cache_data['currency'] || !$GLOBALS['app']->cache_data['currency'][$currency_id] || !$GLOBALS['app']->cache_data['currency'][$show_id])
-	{
+	if(!$show_id){
 		return false;
 	}
-	if($val == '') $val = '0';
-	$rs = $GLOBALS['app']->cache_data['currency'][$show_id];
-	if($show_id != $currency_id)
-	{
-		$old_rs = $GLOBALS['app']->cache_data['currency'][$currency_id];
+	if(!$currency_id){
+		$currency_id = $show_id;
+	}
+	$currency = $GLOBALS['app']->model('currency')->get_list('id');
+	if(!$currency[$currency_id] || !$currency[$show_id]){
+		return false;
+	}
+	if(!$val){
+		$val = '0';
+	}
+	$rs = $currency[$show_id];
+	if($show_id != $currency_id){
+		$old_rs = $currency[$currency_id];
 		$val = ($val/$old_rs['val']) * $rs['val'];
 	}
 	$val = number_format($val,2,".","");
@@ -520,30 +524,33 @@ function price_format($val,$currency_id,$show_id=0)
 	return $string;
 }
 
-function price_format_val($val,$currency_id,$show_id=0)
+function price_format_val($val='',$currency_id='',$show_id=0)
 {
-	if($GLOBALS['app']->app_id == 'admin' && !$show_id)
-	{
+	if($GLOBALS['app']->app_id == 'admin' && !$show_id){
 		$show_id = $currency_id;
+	}else{
+		if(!$show_id){
+			$show_id = $GLOBALS['app']->site['currency_id'];
+		}
+		if(!$show_id){
+			$show_id = $currency_id;
+		}
 	}
-	else
-	{
-		if(!$show_id) $show_id == $GLOBALS['app']->site['currency_id'];
-		if(!$show_id) $show_id = $currency_id;
-	}
-	if(!$GLOBALS['app']->cache_data['currency'])
-	{
-		$GLOBALS['app']->cache_data['currency'] = $GLOBALS['app']->model('currency')->get_list('id');
-	}
-	if(!$GLOBALS['app']->cache_data['currency'] || !$GLOBALS['app']->cache_data['currency'][$currency_id] || !$GLOBALS['app']->cache_data['currency'][$show_id])
-	{
+	if(!$show_id){
 		return false;
 	}
-	if($val == '') $val = '0';
-	$rs = $GLOBALS['app']->cache_data['currency'][$show_id];
-	if($show_id != $currency_id)
-	{
-		$old_rs = $GLOBALS['app']->cache_data['currency'][$currency_id];
+	if(!$currency_id){
+		$currency_id = $show_id;
+	}
+	$currency = $GLOBALS['app']->model('currency')->get_list('id');
+	if(!$currency[$currency_id] || !$currency[$show_id]){
+		return false;
+	}
+	if(!$val){
+		$val = '0';
+	}
+	$rs = $currency[$show_id];
+	if($show_id != $currency_id){
 		$val = ($val/$old_rs['val']) * $rs['val'];
 	}
 	$val = number_format($val,2,".","");
@@ -734,10 +741,11 @@ function phpok_decode($string,$id="")
 //WEB前台通用模板，如果您的程序比较复杂，请自己写Head
 function tpl_head($array=array())
 {
+	$app = $GLOBALS['app'];
 	if($array['html5'] == 'true'){
 		$html  = '<!DOCTYPE html>'."\n";
 		if($array['manifest']){
-			$html .= '<html manifest="'.$GLOBALS['app']->url.'data/'.$array['manifest'].'.manifest">'."\n";
+			$html .= '<html manifest="'.$app->url.'data/'.$array['manifest'].'.manifest">'."\n";
 		}else{
 			$html .= '<html>'."\n";
 		}
@@ -752,55 +760,60 @@ function tpl_head($array=array())
 	$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate,max-age=3" />'."\n\t";
 	$html .= '<meta http-equiv="Expires" content="Mon, 26 Jul 1997 05:00:00 GMT" />'."\n\t";
 	$html .= '<meta name="renderer" content="webkit">'."\n\t";
-	$html .= '<meta name="author" content="phpok,admin@phpok.com" />'."\n\t";
-	$html .= '<meta name="license" content="'.$GLOBALS['app']->license.'" />'."\n\t";
-	$seo = $GLOBALS['app']->site['seo'];
+	if($app->license == 'LGPL'){
+		$html .= '<meta name="author" content="phpok,admin@phpok.com" />'."\n\t";
+	}
+	$html .= '<meta name="license" content="'.$app->license.'" />'."\n\t";
+	$seo = $app->site['seo'];
 	if($seo['keywords']){
 		$html .= '<meta name="keywords" content="'.$seo['keywords'].'" />'."\n\t";
 	}
 	if($seo['description']){
 		$html .= '<meta name="description" content="'.$seo['description'].'" />'."\n\t";
 	}
-	if($GLOBALS['app']->site['meta']){
-		$GLOBALS['app']->site['meta'] = trim(str_replace(array("\t","\r"),"",$GLOBALS['app']->site['meta']));
-		if($GLOBALS['app']->site['meta']){
-			$t = explode("\n",$GLOBALS['app']->site['meta']);
+	if($app->site['meta']){
+		$app->site['meta'] = trim(str_replace(array("\t","\r"),"",$app->site['meta']));
+		if($app->site['meta']){
+			$t = explode("\n",$app->site['meta']);
 			foreach($t AS $key=>$value){
 				$html .= $value."\n\t";
 			}
 		}
 	}
-	$html .= '<title>';
-	if($array['title']){
-		$html .= $array['title'].' - ';
+	$headtitle = $app->config['seo']['format'] ? $app->config['seo']['format'] : '{title}-{seo}-{sitename}';
+	$headtitle = str_replace("-",$app->config['seo']['line'],$headtitle);
+	$headtitle = str_replace('{title}',$array['title'],$headtitle);
+	$headtitle = str_replace('{seo}',$seo['title'],$headtitle);
+	$headtitle = str_replace('{sitename}',$app->site['title'],$headtitle);
+	$length = strlen($app->config['seo']['line']);
+	if(substr($headtitle,0,$length) == $app->config['seo']['line']){
+		$headtitle = substr($headtitle,$length);
 	}
-	$seo = $GLOBALS['app']->tpl->tpl_value['seo'];
-	if($seo['title']){
-		$html .= $seo['title'].' - ';
+	if(substr($headtitle,-$length) == $app->config['seo']['line']){
+		$headtitle = substr($headtitle,0,-$length);
 	}
-	$html .= $GLOBALS['app']->site['title'];
-	$html .= '</title>'."\n\t";
-	$html .= '<base href="'.$GLOBALS['app']->url.'" />'."\n\t";
+	$html .= '<title>'.trim($headtitle).'</title>'."\n\t";
+	if(substr($app->url,-1) != '/'){
+		$app->url .= "/";
+	}
+	$html .= '<base href="'.$app->url.'" />'."\n\t";
 	if($array["css"]){
 		$tmp = explode(",",$array['css']);
 		foreach($tmp AS $key=>$value){
 			$value = trim($value);
-			if($value){
-				if(is_file($GLOBALS['app']->dir_root.$value)){
-				$html .= '<link rel="stylesheet" type="text/css" href="'.$GLOBALS['app']->url.$value.'" />';
-				}else{
-					$value = basename($value);
-					if(is_file($GLOBALS['app']->dir_root."css/".$value)){
-						$html .= "\n\t".'<link rel="stylesheet" type="text/css" href="'.$GLOBALS['app']->url."css/".$value.'" />'."\n\t";
-					}
-				}
+			if(!$value){
+				continue;
+			}
+			if($value == basename($value)){
+				$html .= '<link rel="stylesheet" type="text/css" href="'.$app->url."css/".$value.'" />'."\n\t";
+			}else{
+				$html .= '<link rel="stylesheet" type="text/css" href="'.$app->url.$value.'" />'."\n\t";
 			}
 		}
 	}
 	$html .= phpok_head_css();
-	$jsurl = $GLOBALS['app']->url.$GLOBALS['app']->config["www_file"]."?".$GLOBALS['app']->config['ctrl_id']."=js";
-	//包含JS
-	$include_js = $GLOBALS['app']->is_mobile ? $GLOBALS['app']->config['mobile']['includejs'] : '';
+	$jsurl = $app->url('js');
+	$include_js = $app->is_mobile ? $app->config['mobile']['includejs'] : $app->config['pc']['includejs'];
 	if($array['extjs']){
 		$include_js = $include_js ? $include_js.','.$array['extjs'] : $array['extjs'];
 	}
@@ -813,33 +826,38 @@ function tpl_head($array=array())
 	if($include_js){
 		$jsurl .= "&ext=".rawurlencode($include_js);
 	}
-	$exclude_js = $GLOBALS['app']->is_mobile ? $GLOBALS['app']->config['mobile']['excludejs'] : '';
+	$exclude_js = $app->is_mobile ? $app->config['mobile']['excludejs'] : $app->config['pc']['excludejs'];
 	if($array['excludejs']){
 		$exclude_js = $exclude_js ? $exclude_js.','.$array['excludejs'] : $array['excludejs'];
 	}
 	if($exclude_js){
 		$jsurl .= "&_ext=".rawurlencode($exclude_js);
 	}
-	$html .= '<script type="text/javascript" src="'.$jsurl.'" charset="utf-8"></script>';
+	$html .= '<script type="text/javascript" src="'.$jsurl.'" charset="utf-8"></script>'."\n\t";
 	if($array['js']){
 		$tmp = explode(",",$array['js']);
+		$tpldir = $app->tpl->dir_tpl;
+		$tpldir_length = strlen($tpldir);
 		foreach($tmp AS $key=>$value){
 			$value = trim($value);
-			if($value){
-				if(is_file($GLOBALS['app']->dir_root.$value)){
-					$html .= "\n\t".'<script type="text/javascript" src="'.$GLOBALS['app']->url.$value.'" charset="utf-8"></script>';
-				}else{
-					if(is_file($GLOBALS['app']->dir_root."js/".$value)){
-						$html .= "\n\t".'<script type="text/javascript" src="'.$GLOBALS['app']->url."js/".$value.'" charset="utf-8"></script>';
-					}
-				}
+			if(!$value){
+				continue;
+			}
+			if(substr($value,0,$tpldir_length) == $tpldir){
+				$html .= '<script type="text/javascript" src="'.$app->url.$value.'" charset="utf-8"></script>'."\n\t";
+			}else{
+				$html .= '<script type="text/javascript" src="'.$app->url.'js/'.$value.'" charset="utf-8"></script>'."\n\t";
 			}
 		}
 	}
 	$html .= phpok_head_js();
+	if($array['html5'] == 'true'){
+		$html .= '<!--[if IE]>'."\n\t";
+		$html .= '<script type="text/javascript" src="'.$app->url.'js/html5.js" charset="utf-8"></script>'."\n\t";
+		$html .= '<![endif]-->'."\n\t";
+	}
 	if(!$array['close'] || $array["close"] != 'false'){
-		//增加插件节点
-		$html .= $GLOBALS['app']->plugin_html_ap("phpokhead");
+		$html .= $app->plugin_html_ap("phpokhead");
 		$html .= "\n".'</head>';
 	}
 	$html .= "\n";

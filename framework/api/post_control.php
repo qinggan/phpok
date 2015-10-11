@@ -123,7 +123,7 @@ class post_control extends phpok_control
 		}
 		$this->model('list')->save_ext($tmplist,$project_rs["module"]);
 		if($project_rs['etpl_admin']){
-			$email_rs = $this->model('email')->get_identifier($project_rs['etpl_admin'],$this->site['id']);
+			$email_rs = $this->model('email')->get_identifier($project_rs['etpl_admin']);
 			$email = $this->model('admin')->get_mail();
 			if($email_rs && $email){
 				$tmp = array_merge($tmplist,$array);
@@ -137,7 +137,7 @@ class post_control extends phpok_control
 			}
 		}
 		if($project_rs['etpl_user']){
-			$email_rs = $this->model('email')->get_identifier($project_rs['etpl_admin'],$this->site['id']);
+			$email_rs = $this->model('email')->get_identifier($project_rs['etpl_admin']);
 			$email = $this->get('email');
 			if(!$email && $_SESSION['user_id']){
 				$user_rs = $this->model('user')->get_one($_SESSION['user_id']);

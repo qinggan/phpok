@@ -74,6 +74,38 @@ class api_duanxincm extends phpok_plugin
 		$this->json(true);
 	}
 
+	public function notice()
+	{
+		$mobile = $this->get('mobile');
+		if(!$mobile){
+			$this->json('手机号不能为空');
+		}
+		//检测手机号是否合法
+		if(!$this->lib('common')->tel_check($mobile,'mobile')){
+			$this->json('手机号验证不通过');
+		}
+		$content = $this->get('content');
+		if(!$content){
+			$this->json('内容不能为空');
+		}
+		//发送短信
+		$url = $this->me['param']['cm_server'] ? $this->me['param']['cm_server'] : "http://api.duanxin.cm/";
+		$data = array(
+			'action'=>'send',
+			'username'=>$this->me['param']['cm_account'],
+			'password'=>strtolower(md5($this->me['param']['cm_password'])),
+			'phone'=>$mobile,
+			'content'=>$content,
+			'encode'=>'utf8'
+		);
+		$url .= "?";
+		foreach($data as $key=>$value){
+			$url .= $key.'='.rawurlencode($value).'&';
+		}
+		$info = $this->lib('html')->get_content($url);
+		$this->json(true);
+	}
+
 	//注册保存前验证
 	public function ap_register_save_before()
 	{

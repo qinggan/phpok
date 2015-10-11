@@ -285,7 +285,7 @@ class plugin_control extends phpok_control
 		$exec = $this->get("exec");
 		if(!$exec) $exec = 'index';
 		if(!$methods || !in_array($exec,$methods)){
-			$this->json(P_Lang('方法{method}不存在',array('method'=>'<span class="red">'.$exec.'</span> ')));
+			$this->json(P_Lang('方法{method}不存在',array('method'=>'<span class=red>'.$exec.'</span> ')));
 		}
 		$cls->$exec($rs);
 	}

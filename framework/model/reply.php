@@ -91,10 +91,11 @@ class reply_model_base extends phpok_model
 
 	function get_list($condition="",$offset=0,$psize=30,$pri="",$orderby="")
 	{
-		if(!$orderby) $orderby = 'addtime DESC,id DESC';
+		if(!$orderby){
+			$orderby = 'addtime DESC,id DESC';
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."reply WHERE ".$condition." ORDER BY ".$orderby;
-		if($psize)
-		{
+		if($psize && intval($psize)){
 			$offset = intval($offset);
 			$sql .= " LIMIT ".$offset.",".$psize;
 		}
@@ -144,6 +145,26 @@ class reply_model_base extends phpok_model
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."reply WHERE id='".$id."'";
 		return $this->db->get_one($sql);
+	}
+
+	public function comment_stat($ids)
+	{
+		if(!$ids){
+			return false;
+		}
+		if(is_array($ids)){
+			$ids = implode(",",$ids);
+		}
+		$sql = "SELECT count(tid) as total,tid FROM ".$this->db->prefix."reply WHERE tid IN(".$ids.") GROUP BY tid";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$rslist[$value['tid']] = $value['total'];
+		}
+		return $rslist;
 	}
 	
 }

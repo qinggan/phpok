@@ -27,6 +27,13 @@ class cate_model extends cate_model_base
 		}
 	}
 
+	public function cate_next_taxis($parent_id=0)
+	{
+		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."cate WHERE site_id='".$this->site_id."' AND parent_id='".$parent_id."'";
+		$rs = $this->db->get_one($sql);
+		return $this->return_next_taxis($rs);
+	}
+
 }
 
 ?>

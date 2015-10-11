@@ -47,6 +47,9 @@ $config['mobile']['status'] = false; //手机端开始，此项不开启的话�
 $config['mobile']['default'] = false; //默认为手机版，为方便开发人员调式，设置为默认后，在网页上也会展示手机版
 $config['mobile']['includejs'] = "jquery.touchslide.js"; //手机版自动加载的JS
 $config['mobile']['excludejs'] = "jquery.superslide.js"; //手机版要去除加载的JS
+//PC端JS的加载
+$config['pc']['includejs'] = '';
+$config['pc']['excludejs'] = '';
 
 //PHPOK公共JS加载类
 //jQuery表单插件，支持ajaxSubmit提交
@@ -66,4 +69,17 @@ $config["engine"]["session"]["timeout"] = 3600;
 
 //Nginx对SERVER_NAME支持不好，如果您使用Nginx，且使用多站点，建议您改成：HTTP_HOST
 $config['get_domain_method'] = 'SERVER_NAME';
+
+//SEO优化分割线
+$config['seo']['line'] = '-';
+//SEO优化模式
+//title，即传过来的值
+//seo，即内置的SEO标题
+//sitename，即网站名称
+$config['seo']['format'] = '{title}-{seo}-{sitename}';
+
+//订单状态设定
+$config['order']['status'] = 'create,unpaid,paid,shipped,received';
+$config['order']['price'] = 'product,shipping,fee,discount';
+
 

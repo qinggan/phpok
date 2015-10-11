@@ -296,6 +296,11 @@ function update_select()
 	}else{
 		$("#attr_set_li").hide();
 	}
+	if(val.substr(0,5) == 'cate:'){
+		$("#cate_set_li").show();
+	}else{
+		$("#cate_set_li").hide();
+	}
 }
 
 function set_admin_id(id)
@@ -353,7 +358,8 @@ function list_action_exec()
 			var type = $("#attr_set_val").val();
 			url = get_url('list','attr_set','ids='+$.str.encode(ids)+'&val='+tmp[1]+'&type='+type);
 		}else{
-			var url = get_url('list',"move_cate")+"&ids="+$.str.encode(ids)+"&cate_id="+val;
+			var type = $("#cate_set_val").val();
+			var url = get_url('list',"move_cate")+"&ids="+$.str.encode(ids)+"&cate_id="+tmp[1]+"&type="+type;
 		}
 	}
 	$.dialog.tips('正在执行操作，请稍候…');

@@ -182,7 +182,8 @@ class usercp_control extends phpok_control
 			}
 			$chkcode = 1;
 		}
-		$array = array('email'=>$email,'email_chk'=>$chkcode,'code'=>'');
+//		$array = array('email'=>$email,'email_chk'=>$chkcode,'code'=>'');
+		$array = array('email'=>$email,'code'=>'');
 		$this->model('user')->save($array,$this->u_id);
 		if(!$this->is_client){
 			$this->model('user')->update_session($this->u_id);

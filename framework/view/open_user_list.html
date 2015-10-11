@@ -1,4 +1,4 @@
-<!-- inc:head_open -->
+<!-- include tpl=head -->
 <script type="text/javascript">
 var input_id = "#{$id}";
 var multi = {$multi ? "1" : "0"};
@@ -46,7 +46,7 @@ function add_input(val)
 	}
 	else
 	{
-		obj.$("#{$id}").val(val)
+		obj.$("#{$id}").val(val);
 		obj.action_{$id}_show();
 		$.dialog.removeData("phpok_user_{$id}");
 		$.dialog.close();
@@ -89,17 +89,16 @@ function delete_input(val)
 	show_list();
 }
 $(document).ready(function(){
-	if(multi == 1)
-	{
+	if(multi == 1){
 		var new_c = $.dialog.data("phpok_user_{$id}");
-		if(!new_c || new_c == "undefined")
-		{
+		if(!new_c || new_c == "undefined"){
 			new_c = obj.$(input_id).val();
 		}
 		show_list();
 	}
 });
 </script>
+<!-- if $multi -->
 <div class="list">
 	<ul class="layout">
 		<li>已选择：</li>
@@ -107,12 +106,25 @@ $(document).ready(function(){
 		<div class="clear"></div>
 	</ul>
 </div>
-<div class="list">
-<ul class="layout" id="user_layout">
-	<!-- loop from=$rslist key=$key value=$value -->
-	<li id="user_{$value.id}" name="list" class="hand" onclick="add_input('{$value.id}')" style="height:20px;border:1px solid #ccc;padding:1px 5px;">{$value.user}</li>
-	<!-- /loop -->
-</ul>
-</div>
-<!-- if($pagelist) --><div class="table"><!-- include tpl=pagelist --></div><!-- end -->
+<!-- /if -->
+
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>会员ID</th>
+	<th class="lft">账号</th>
+	<th class="lft">Email</th>
+	<th class="lft">手机</th>
+	<th>&nbsp;</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td>{$value.user}</td>
+	<td id="email_{$value.id}">{$value.email}</td>
+	<td id="mobile_{$value.id}">{$value.mobile}</td>
+	<td><input type="button" value="选择" onclick="add_input('{$value.id}')" class="phpok-btn" /></td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- include tpl=pagelist -->
 <!-- inc:foot_open -->

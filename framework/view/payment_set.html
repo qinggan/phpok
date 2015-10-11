@@ -47,6 +47,20 @@
 </div>
 <div class="table">
 	<div class="title">
+		手机端使用：
+		<span class="note">启用后将允许在手机端使用该支付接口</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label><input type="radio" name="wap" value="1"{if $rs.wap} checked{/if} />启用</label></td>
+			<td><label><input type="radio" name="wap" value="0"{if !$rs.wap} checked{/if} />禁用</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
 		支付货币类型：
 		<span class="note">设置该支付方式使用的货币类型，仅支会单选，不清楚请选择：人民币</span>
 	</div>

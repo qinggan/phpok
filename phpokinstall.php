@@ -11,11 +11,11 @@ error_reporting(E_ALL ^ E_NOTICE);
 define('PHPOK_SET',true);
 define("ROOT",str_replace("\\","/",dirname(__FILE__))."/");
 //定义JQuery的文件地址
-define('JQUERY','http://libs.phpok.cn/jquery/1.7.1/jquery.js');
+define('JQUERY','js/jquery.js');
 //PHPOK下载地址
-define('PHPOKFILE','http://www.phpok.com/index.php?c=download&id=6328');
+define('PHPOKFILE','');
 //PHPOK资源包
-define('PHPOKRES','http://update.phpok.com/upfiles/43165.zip');
+define('PHPOKRES','');
 function error($tips="",$url="",$time=2)
 {
 	echo '<!DOCTYPE html>'."\n";
@@ -1616,6 +1616,9 @@ EOT;
 
 	public function download($url,$file='')
 	{
+		if($file && file_exists($file)){
+			return true;
+		}
 		$curl = curl_init($url);
 		curl_setopt($curl,CURLOPT_FORBID_REUSE,true);
 		curl_setopt($curl,CURLOPT_HEADER,false);
@@ -1886,8 +1889,6 @@ if($step == 'ajax_initdata'){
 	include($file);
 	if($adminer['test']){
 		$sql = file_get_contents(ROOT."data/data.sql");
-		//解压资源包
-		$install->download(PHPOKRES,ROOT.'data/res.zip');
 		$zip = new phpzip_lib();
 		$zip->unzip(ROOT.'data/res.zip',ROOT.'/res/');
 	}else{
@@ -1939,9 +1940,6 @@ if($step == 'ajax_iadmin'){
 }
 if($step == 'ajax_clearcache'){
 	unlink(ROOT."data/install.lock.php");
-	unlink(ROOT.'data/data2.sql');
-	unlink(ROOT.'data/data.sql');
-	unlink(ROOT.'data/table.sql');
 	exit('ok');
 }
 if($step == 'ajax_endok'){
@@ -1950,10 +1948,10 @@ if($step == 'ajax_endok'){
 }
 if($step == 'getzip2'){
 	$array = array('status'=>'error','content'=>'正在执行中');
-	if(!file_exists(ROOT.'phpok.zip')){
-		$install->download(PHPOKFILE,ROOT.'phpok.zip');
-	}
-	if(file_exists(ROOT.'phpok.zip') && !file_exists(ROOT.'config.php')){
+	if(!file_exists(ROOT.'config.php')){
+		if(!file_exists(ROOT.'phpok.zip')){
+			$install->download(PHPOKFILE,ROOT.'phpok.zip');
+		}
 		$zip = new phpzip_lib();
 		$zip->unzip(ROOT.'phpok.zip',ROOT);
 	}
@@ -1965,6 +1963,7 @@ if($step == 'getzip2'){
 	chmod(ROOT.'data/tpl_www',0777);
 	chmod(ROOT.'data/tpl_admin',0777);
 	chmod(ROOT.'data/tpl_html',0777);
+	chmod(ROOT.'data/cache',0777);
 	chmod(ROOT.'res',0777);
 	$array['status'] = 'ok';
 	$array['content'] = '文件获取成功';

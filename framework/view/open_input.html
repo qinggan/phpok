@@ -1,4 +1,10 @@
-<!-- include tpl=head_open -->
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="author" content="phpok.com" />
+	<meta http-equiv="expires" content="wed, 26 feb 1997 08:21:57 gmt"> 
+	<title>{$config.title}</title>
 <style type="text/css">
 html{font-size:14px;font-family:"Microsoft Yahei","宋体","Arial","Tahoma";margin:0;padding:0;background:#FFFFFF;}
 body{margin:3px;padding:0;overflow-y:scroll;_margin:0; _height:100%;}
@@ -47,6 +53,11 @@ function check_search()
 	}
 	return true;
 }
+$(document).ready(function(){  
+    $(document).bind("contextmenu",function(e){   
+          return false;   
+    });
+});
 </script>
 </head>
 <body>
@@ -67,7 +78,8 @@ function check_search()
 			<!-- /loop -->
 		</select></td>
 		<td><input type="text" name="keywords" id="keywords" value="{$keywords}" class="keywords" /></td>
-		<td><input type="submit" value=" {lang搜索} " /></td>
+		<td><input type="submit" value="{lang搜索}" /></td>
+		<td><input type="button" value="{lang刷新页面}" onclick="$.phpok.reload()" /></td>
 	</tr>
 	</table>
 	</form>
@@ -159,4 +171,5 @@ function cate_change()
 	});
 }
 </script>
-<!-- include tpl=foot_open -->
+</body>
+</html>

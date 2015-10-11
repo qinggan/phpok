@@ -188,14 +188,14 @@ class project_control extends phpok_control
 			}
 			$condition = '';
 			if($price['min']){
-				$condition .= "l.price>='".$price['min']."'";
+				$condition .= "b.price>='".$price['min']."'";
 				$pageurl .= '&price[min]='.rawurlencode($price['min']);
 			}
 			if($price['max']){
 				if($condition){
 					$condition .= " AND ";
 				}
-				$condition .= "l.price<='".$price['max']."'";
+				$condition .= "b.price<='".$price['max']."'";
 				$pageurl .= '&price[max]='.rawurlencode($price['max']);
 			}
 			if($condition){

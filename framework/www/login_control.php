@@ -111,6 +111,16 @@ class login_control extends phpok_control
 
 	public function getpass_f()
 	{
+		$_back = $this->get("_back");
+		if(!$_back){
+			$_back = $this->url;
+			$error_url = $this->url('usercp');
+		}else{
+			$error_url = $this->url('usercp','','_back='.rawurlencode($_back));
+		}
+		if($_SESSION["user_id"]){
+			error(P_Lang('您已是本站会员，不能执行这个操作'),$error_url);
+		}
 		if(!$this->site['email_server'] || !$this->site['email_account'] || !$this->site['email_pass']){
 			error(P_Lang('官网未配置好邮件通知功能，请联系管理员'),$this->url('index'),10);
 		}
@@ -119,6 +129,16 @@ class login_control extends phpok_control
 
 	public function repass_f()
 	{
+		$_back = $this->get("_back");
+		if(!$_back){
+			$_back = $this->url;
+			$error_url = $this->url('usercp');
+		}else{
+			$error_url = $this->url('usercp','','_back='.rawurlencode($_back));
+		}
+		if($_SESSION["user_id"]){
+			error(P_Lang('您已是本站会员，不能执行这个操作'),$error_url);
+		}
 		$_SESSION['repass_spam_code'] = str_rand(10);
 		$code = $this->get('_code');
 		if(!$code){

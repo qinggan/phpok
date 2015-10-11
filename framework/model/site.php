@@ -196,5 +196,102 @@ class site_model_base extends phpok_model
 		}
 		return $info;
 	}
+
+	//订单状态设置
+	public function order_status_all($sort=false)
+	{
+		$site_id = $GLOBALS['app']->app_id == 'admin' ? $_SESSION['admin_site_id'] : $GLOBALS['app']->site['id'];
+		$file = $this->dir_root.'data/xml/order_status_'.$site_id.'.xml';
+		$string = 'create,unpaid,paid,shipped,received';
+		if($this->config['order'] && $this->config['order']['status']){
+			$string = $this->config['order']['status'];
+		}
+		$list = explode(",",$string);
+		$taxis = 100;
+		if(!file_exists($file)){
+			$taxis = 1;
+			$tmplist = array();
+			foreach($list as $key=>$value){
+				$tmplist[$value] = array('title'=>$value,'email_tpl_user'=>'','email_tpl_admin'=>'','taxis'=>$taxis,'status'=>0);
+				$taxis++;
+			}
+		}else{
+			$tmplist = $this->lib('xml')->read($file);
+			foreach($list as $key=>$value){
+				if(!$tmplist[$value]){
+					$tmplist[$value] = array('title'=>$value,'email_tpl_user'=>'','email_tpl_admin'=>'','taxis'=>$taxis,'status'=>0);
+					$taxis++;
+				}
+			}
+			foreach($tmplist as $key=>$value){
+				if(!in_array($key,$list)){
+					unset($tmplist[$key]);
+				}
+			}
+		}
+		if($tmplist && $sort){
+			$rslist = array();
+			foreach($tmplist as $key=>$value){
+				$value['identifier'] = $key;
+				$rslist[] = $value;
+			}
+			usort($rslist,array($this,'status_sort'));
+			return $rslist;
+		}
+		return $tmplist;
+	}
+
+	private function status_sort($a,$b)
+	{
+		if($a['taxis'] == $b){
+			return 0;
+		}
+		return ($a['taxis'] < $b['taxis']) ? -1 : 1;
+	}
+
+	//
+	public function price_status_all($sort=false)
+	{
+		$site_id = $GLOBALS['app']->app_id == 'admin' ? $_SESSION['admin_site_id'] : $GLOBALS['app']->site['id'];
+		$file = $this->dir_root.'data/xml/price_status_'.$site_id.'.xml';
+		$string = 'product,shipping,fee,discount,wealth,payonline';
+		if($this->config['order'] && $this->config['order']['price']){
+			$string = $this->config['order']['price'];
+		}
+		$list = explode(",",$string);
+		$taxis = 100;
+		if(!file_exists($file)){
+			$taxis = 1;
+			$tmplist = array();
+			foreach($list as $key=>$value){
+				$tmplist[$value] = array('title'=>$value,'action'=>'add','taxis'=>$taxis,'status'=>0);
+				$taxis++;
+			}
+		}else{
+			$tmplist = $this->lib('xml')->read($file);
+			foreach($list as $key=>$value){
+				if(!$tmplist[$value]){
+					$tmplist[$value] = array('title'=>$value,'action'=>'add','taxis'=>$taxis,'status'=>0);
+					$taxis++;
+				}
+			}
+			foreach($tmplist as $key=>$value){
+				if(!in_array($key,$list)){
+					unset($tmplist[$key]);
+				}
+			}
+		}
+		if($tmplist && $sort){
+			$rslist = array();
+			foreach($tmplist as $key=>$value){
+				$value['identifier'] = $key;
+				$rslist[] = $value;
+			}
+			usort($rslist,array($this,'status_sort'));
+			return $rslist;
+		}
+		return $tmplist;
+	}
+	
 }
 ?>

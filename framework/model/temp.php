@@ -21,41 +21,24 @@ class temp_model_base extends phpok_model
 		unset($this);
 	}
 
-	# 存储内容
 	function save($data,$id=0)
 	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"temp",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"temp");
-		}
+		return false;
 	}
 
-	//单条存储记录
 	function get_one($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."temp WHERE id='".$id."'";
-		return $this->db->get_one($sql);
+		return false;
 	}
 
-	# 检查存储的数据
 	function chk($tbl,$admin_id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."temp WHERE tbl='".$tbl."' AND admin_id='".$admin_id."'";
-		return $this->db->get_one($sql);
+		return false;
 	}
 
-	# 清空临时表
 	function clean($tbl,$admin_id)
 	{
-		if(!$tbl || !$admin_id) return false;
-		$sql = "DELETE FROM ".$this->db->prefix."temp WHERE tbl='".$tbl."' AND admin_id='".$admin_id."'";
-		return $this->db->query($sql);
+		return false;
 	}
-
 }
 ?>

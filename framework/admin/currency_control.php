@@ -50,6 +50,7 @@ class currency_control extends phpok_control
 		}
 		$array = array();
 		$array["code"] = $this->get('code');
+		$array["code_num"] = $this->get('code_num');
 		$array["val"] = $this->get("val","float");
 		$array["title"] = $this->get("title");
 		$array["symbol_left"] = $this->get("symbol_left");

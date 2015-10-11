@@ -40,7 +40,8 @@ select{padding:3px;}
 .ti24{text-indent:24px}
 .size10{font-size:10px;}
 .pleft{padding-left:24px;}
-
+.extcate{line-height:180%;color:gray;}
+.extcate a{color:gray;}
 
 
 
@@ -125,7 +126,7 @@ ul.admin_panel li.hover{background-position:0 -93px;}
 .list2 tr.sub:hover td{color:#fff}
 .list2 tr.sub:hover td a{color:#fff}
 
-.table{padding:2px 10px 2px 0;margin:1px 5px 0 0;cursor:default;}
+.table{padding:2px 10px 2px 0;margin:1px 5px 0 15px;cursor:default;}
 .table:after{clear:both;height:0;visibility:hidden;display: block;}
 .table .title{padding-left:3px;line-height:23px;}
 .table .title span.note{color:gray;font-style:italic;font-weight:normal;}

@@ -1,6 +1,6 @@
 <!-- inc:head_open -->
 <script type="text/javascript">
-function select_input(val)
+function select_input(val,title)
 {
 	var obj = $.dialog.opener;
 	if(val == "index")
@@ -11,16 +11,24 @@ function select_input(val)
 	}
 	else
 	{
+		var old = obj.$("#title").val();
+		if(!old && old != 'undefined'){
+			obj.$("#title").val(title)
+		}
 		obj.$("#{$id},#{$id}_default").val("index.php?id="+val);
 		obj.$("#{$id}_rewrite").val(val+".html");
 	}
 	$.dialog.close();
 }
-function select_post(val)
+function select_post(val,title)
 {
 	var obj = $.dialog.opener;
 	obj.$("#{$id},#{$id}_default").val("index.php?{$app->config.ctrl_id}=post&id="+val);
 	obj.$("#{$id}_rewrite").val("post/"+val+".html");
+	var old = obj.$("#title").val();
+	if(!old && old != 'undefined'){
+		obj.$("#title").val(title)
+	}
 	$.dialog.close();
 }
 </script>
@@ -53,10 +61,10 @@ function select_post(val)
 		<!-- /if -->
 	</td>
 	<td>
-		<input type="button" value="提交" class="btn" onclick="select_input('{$value.identifier}')" />
+		<input type="button" value="提交" class="btn" onclick="select_input('{$value.identifier}','{$value.title}')" />
 	</td>
 	<td>
-		<input type="button" value="表单" class="btn" onclick="select_post('{$value.identifier}')" />
+		<input type="button" value="表单" class="btn" onclick="select_post('{$value.identifier}','{$value.title}')" />
 	</td>
 </tr>
 <!-- /foreach -->

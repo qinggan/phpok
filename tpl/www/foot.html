@@ -17,7 +17,7 @@
 		<div class="addlist">
 			<ul>
 				<!-- loop from=$list.rslist key=$key value=$value -->
-				<li>{$value.title}<br /><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes"><img border="0" src="http://wpa.qq.com/pa?p=2:{$value.qq}:51" alt="µã»÷ÕâÀï¸øÎÒ·¢ÏûÏ¢" title="µã»÷ÕâÀï¸øÎÒ·¢ÏûÏ¢"/></a></li>
+				<li>{$value.title}<br /><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes"><img border="0" src="http://wpa.qq.com/pa?p=2:{$value.qq}:51" alt="ç‚¹å‡»è¿™é‡Œç»™æˆ‘å‘æ¶ˆæ¯" title="ç‚¹å‡»è¿™é‡Œç»™æˆ‘å‘æ¶ˆæ¯"/></a></li>
 				<!-- /loop -->
 				<!-- if $list.project.barcode -->
 				<li><img src="{$list.project.barcode.filename}" width="80px" alt="{$list.project.title}" /></li>
@@ -27,5 +27,13 @@
 	</div>
 </div>
 <!-- /if -->
+<script type="text/javascript">
+$(document).ready(function(){
+	//è®¡åˆ’ä»»åŠ¡
+	window.setTimeout(function(){
+		$.phpok.json(api_url('task'),function(rs){return true;});
+	}, 2000);
+});
+</script>
 </body>
 </html>

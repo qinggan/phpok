@@ -71,5 +71,82 @@ class site_control extends phpok_control
 		$this->model('site')->set_default($id);
 		$this->json(P_Lang('默认站点设置成功'),true);
 	}
+
+	public function order_status_f()
+	{
+		if(!$this->popedom["order"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
+		//订单状态
+		$rslist = $this->model('site')->order_status_all(true);
+		$this->assign('rslist',$rslist);
+
+		//价格状态
+		$pricelist = $this->model('site')->price_status_all(true);
+		$this->assign('pricelist',$pricelist);
+		$this->view('site_order_status');
+	}
+
+	public function order_status_set_f()
+	{
+		if(!$this->popedom["order"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('site')->order_status_one($id);
+		$this->assign('rs',$rs);
+		$this->assign('id',$id);
+		//邮件模板列表
+		$emailtpl = $this->model('email')->simple_list($_SESSION['admin_site_id']);
+		$this->assign("emailtpl",$emailtpl);
+		$this->view('site_order_status_set');
+	}
+
+	public function order_status_save_f()
+	{
+		if(!$this->popedom["order"]){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$title = $this->get('title');
+		if(!$title){
+			$this->json(P_Lang('未指定状态名称'));
+		}
+		$array = array('title'=>$title);
+		$array['status'] = $this->get('status','int');
+		$array['email_tpl_user'] = $this->get('email_tpl_user');
+		$array['email_tpl_admin'] = $this->get('email_tpl_admin');
+		$array['sms_tpl_user'] = $this->get('sms_tpl_user');
+		$array['taxis'] = $this->get('taxis','int');
+		$this->model('site')->order_status_update($array,$id);
+		$this->json(true);
+	}
+
+	public function price_status_save_f()
+	{
+		if(!$this->popedom["order"]){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$title = $this->get('title');
+		if(!$title){
+			$this->json(P_Lang('未指定名称'));
+		}
+		$array = array('title'=>$title);
+		$array['status'] = $this->get('status','int');
+		$array['action'] = $this->get('action');
+		$array['taxis'] = $this->get('taxis','int');
+		$this->model('site')->price_status_update($array,$id);
+		$this->json(true);
+	}
 }
 ?>

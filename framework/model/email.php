@@ -81,15 +81,19 @@ class email_model_base extends phpok_model
 		return $this->db->query($sql);
 	}
 
-	function get_identifier($identifier,$site_id=0,$id=0)
+	function get_identifier($identifier,$id=0)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."email WHERE identifier='".$identifier."' AND site_id='".$site_id."'";
-		if($id)
-		{
+		$sql = "SELECT * FROM ".$this->db->prefix."email WHERE identifier='".$identifier."' AND site_id='".$this->site_id."'";
+		if($id){
 			$sql .= " AND id !='".$id."'";
 		}
-		$sql .= " ORDER BY site_id DESC LIMIT 1";
+		$sql .= " ORDER BY id DESC LIMIT 1";
 		return $this->db->get_one($sql);
+	}
+
+	public function tpl($code)
+	{
+		return $this->get_identifier($code);
 	}
 }
 ?>

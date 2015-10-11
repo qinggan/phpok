@@ -5,14 +5,14 @@
 		//刷新
 		refresh: function(){
 			var url = window.location.href;
+			url = this.nocache(url);
 			this.go(url);
 		},
 		reload:function(){
 			this.refresh();
 		},
 		go: function(url){
-			if(!url)
-			{
+			if(!url){
 				return false;
 			}
 			url = this.nocache(url);
@@ -22,6 +22,7 @@
 			if(!url){
 				return false;
 			}
+			url = this.nocache(url);
 			if(!obj || obj == 'undefined'){
 				return $.ajax({'url':url,cache:false,async:false,dataType:"html"}).responseText;
 			}else{
@@ -41,6 +42,7 @@
 			if(!url){
 				return false;
 			}
+			url = this.nocache(url);
 			if(!obj || obj == 'undefined'){
 				var info = $.ajax({'url':url,cache:false,async:false,dataType:"html"}).responseText;
 				return $.parseJSON(info);

@@ -28,20 +28,18 @@
 				'func_close'	:false,
 				'is_max'		:false, //是否直接全屏
 				'move'			:true, //允许移动
-				'z_index'		:1000 //弹出层的默认层级
+				'z_index'		:1000, //弹出层的默认层级
+				'close_tip'		:'' //关闭窗口前是否弹出提示
 			};
 			this.opt = $.extend({},defaults, opts);
-			this.ie6 = ($.browser.msie && $.browser.version < 7) ? true : false;
 			this.prefix = this.opt.prefix ? this.opt.prefix : 'phpok-';
 		},
 		_id:function(id)
 		{
-			if(!id || id == 'undefined')
-			{
+			if(!id || id == 'undefined'){
 				var str = (Math.random()).toString();
 				str = str.replace(".","");
-				if(!this.prefix || this.prefix == 'undefined')
-				{
+				if(!this.prefix || this.prefix == 'undefined'){
 					this.prefix = 'phpok-';
 				}
 				id = this.prefix + (str).toString();
@@ -53,84 +51,73 @@
 			this._id(id);
 			return this.id;
 		},
-		win: function(opts){
+		win: function(opts)
+		{
 			this.opt = $.extend({},this.opt, opts);
-			if(!this.id || this.id == 'undefined')
-			{
+			if(!this.id || this.id == 'undefined'){
 				this._id();
 			}
-			//创建弹窗HTML
 			this._style();
 			this._content();
 			this._pop();
-			//编写taskbar
 			this._taskbar();
 			this._action();
 		},
-		//重新计算宽高
-		height: function(height){
+		height: function(height)
+		{
 			var obj = this._win();
-			if(height == 'auto' || !height || height == 'undefined' || parseInt(height,10) > obj.height)
-			{
+			if(height == 'auto' || !height || height == 'undefined' || parseInt(height,10) > obj.height){
 				height = obj.height * 0.7;
 			}
-			if((new RegExp('%')).test(height))
-			{
+			if((new RegExp('%')).test(height)){
 				height = parseInt((obj.height * parseInt(height,10))/100,10);
 			}
 			return height;
 		},
-		//计算窗口的宽度
-		width: function(width){
+		width: function(width)
+		{
 			var obj = this._win();
-			if(width == 'auto' || !width || width == 'undefined' || parseInt(width,10) > obj.width)
-			{
+			if(width == 'auto' || !width || width == 'undefined' || parseInt(width,10) > obj.width){
 				width = obj.width * 0.8;
 			}
-			if((new RegExp('%')).test(width))
-			{
+			if((new RegExp('%')).test(width)){
 				width = parseInt((obj.width * parseInt(width,10))/100,10);
 			}
 			return width;
 		},
-		title: function(title,id){
-			if(!title || title == 'undefined')
-			{
+		title: function(title,id)
+		{
+			if(!title || title == 'undefined'){
 				return false;
 			}
-			if(!id || id == 'undefined')
-			{
+			if(!id || id == 'undefined'){
 				var zindex = new Array();
 				var idlist = new Array();
 				var tmpi = 0;
 				$("ul#"+this.prefix+"taskbar li").each(function(i){
 					id = ($(this).attr('id')).substr(8);
 					var ishidden = $("#"+id).is(":hidden");
-					if(!ishidden)
-					{
+					if(!ishidden){
 						zindex[tmpi] = $("#"+id).css('z-index');
 						idlist[tmpi] = id;
 						tmpi++;
+					}else{
+						$(this).removeClass('on');
 					}
-					$(this).removeClass('on');
 				});
 				//当
-				if(zindex.length>0 && idlist.length>0)
-				{
+				if(zindex.length>0 && idlist.length>0){
 					zmax = Math.max.apply(null,zindex);
 					var t = 0;
-					for(var i in zindex)
-					{
-						if(zindex[i] == zmax)
-						{
+					for(var i in zindex){
+						if(zindex[i] == zmax){
 							t = i;
 						}
 					}
 					id = idlist[t];
 				}
 			}
-			if(!id || id == 'undefined')
-			{
+			if(!id || id == 'undefined'){
 				return false;
 			}
 			$("#title-"+id+",#taskbar-"+id).html(title);
@@ -222,8 +209,13 @@
 			return zIndex;
 		},
 		close: function(id){
-			if(!id || id == 'undefined')
-			{
+			if(this.opt.close_tip){
+				var q = confirm(this.opt.close_tip);
+				if(q == 0){
+					return false;
+				}
+			}
+			if(!id || id == 'undefined'){
 				//获取ID
 				var obj = $("div.phpok-win").length > 0 ? $("div.phpok-win") : parent.$("div.phpok-win");
 				var zlist = new Array();
@@ -231,37 +223,28 @@
 				obj.each(function(i){
 					zlist[i] = {'zindex':$(this).css('z-index'),'id':$(this).attr('id')};
 				});
-				if(zlist.length>0)
-				{
+				if(zlist.length>0){
 					var zmax = 0;
-					for(var i in zlist)
-					{
-						if(parseInt(zlist[i]['zindex'],10) > parseInt(zmax,10))
-						{
+					for(var i in zlist){
+						if(parseInt(zlist[i]['zindex'],10) > parseInt(zmax,10)){
 							zmax = parseInt(zlist[i]['zindex'],10);
 							id = zlist[i]['id'];
 						}
 					}
-				}
-				else
-				{
+				}else{
 					id = this.id;
 				}
-				if(id && id != 'undefined')
-				{
+				if(id && id != 'undefined'){
 					return obj.find("li#close-"+id).click();
 				}
 			}
 			var arg = this._arg(id);
-			if($("#"+id).length > 0)
-			{
+			if($("#"+id).length > 0){
 				$("#"+id).remove();
 				$("#"+id+"-lock").remove();
 				$("#taskbar-"+id).remove();
 				this._taskbar_on();
-			}
-			else
-			{
+			}else{
 				parent.$("div#"+id).remove();
 				parent.$("iframe#"+id+"-lock").remove();
 				parent.$("li#taskbar-"+id).remove();
@@ -478,17 +461,14 @@
 			html += '		<h3 class="h3" id="title-'+this.id+'">'+this.opt.title+'</h3>';
 			html += '		<div class="button">';
 			html += '		<ul>';
-			if(this.opt.win_min)
-			{
-				html += '		<li class="min" id="min-'+this.id+'"><a href="javascript:void(0);" class="ie6png"></a></li>';
+			if(this.opt.win_min){
+				html += '		<li class="min" id="min-'+this.id+'"><a href="javascript:void(0);"></a></li>';
 			}
-			if(this.opt.win_max)
-			{
-				html += '		<li class="max-max" id="max-'+this.id+'"><a href="javascript:void(0);" class="ie6png"></a></li>';
+			if(this.opt.win_max){
+				html += '		<li class="max-max" id="max-'+this.id+'"><a href="javascript:void(0);"></a></li>';
 			}
-			if(this.opt.win_close)
-			{
-				html += '		<li class="close" id="close-'+this.id+'"><a href="javascript:void(0);" class="ie6png"></a></li>';
+			if(this.opt.win_close){
+				html += '		<li class="close" id="close-'+this.id+'"><a href="javascript:void(0);"></a></li>';
 			}
 			html += '		</ul>';
 			html += '		</div>';
@@ -554,14 +534,18 @@
 			var id = this.id;
 			var arg = this._arg(id);
 			//存在关闭窗口执行的触发
-			if(this.opt.win_close)
-			{
+			if(this.opt.win_close){
 				$("#close-"+id).click(function(){
-					if(self.opt.func_close)
-					{
-						(self.opt.func_close)();
+					if(self.opt.func_close){
+						var obj = (self.opt.func_close)();
+						if(!obj){
+							return false;
+						}else{
+							self.close(id);
+						}
+					}else{
+						self.close(id);
 					}
-					self.close(id);
 				});
 			}
 			//有最大化最小化按钮时
@@ -721,10 +705,19 @@
 			'win_min':true,
 			'is_max':true
 		}
-		var opt = $.extend({},defaults, opts);
+		if($.win2.opt){
+			var opt = $.extend({},defaults,$.win2.opt, opts);
+		}else{
+			var opt = $.extend({},defaults, opts);
+		}
 		$.desktop.init(opt);
 		$.desktop.win_id();
 		$.desktop.win();
+	};
+	$.win2 = {
+		init:function(opts){
+			this.opt = opts;
+		}
 	};
 })(jQuery);
 

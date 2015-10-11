@@ -201,6 +201,15 @@ class usercp_control extends phpok_control
 			$this->assign("keywords",$keywords);
 		}
 		$dt['not_status'] = 1;
+		$status = $this->get('status');
+		if($status){
+			if($status == 1){
+				$dt['sqlext'] = "l.status=1";
+			}else{
+				$dt['sqlext'] = "l.status=0";
+			}
+		}
+		
 		$dt['is_list'] = true;
 		$list = $this->call->phpok('_arclist',$dt);
 		if($list['total']){

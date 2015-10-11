@@ -1,124 +1,86 @@
 <!-- include tpl=head menutitle=网站首页 -->
-<div class="home_banner">
-	<!-- php:$list = phpok('picplayer') -->
-	<ul class="pro_ul">
+<!-- php:$list = phpok('picplayer') -->
+<!-- if $list.total -->
+<div class="indexbanner"{if $list.project.height} style="height:{$list.project.height}px;"{/if}>
+	<div class="bd">
+	<ul>
 		<!-- loop from=$list.rslist key=$key value=$value -->
-		<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{#images#}/blank.gif" _src="{$value.pic.filename}" width="980" alt="{$value.title}" /></a></li>
+		<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{#images#}/blank.gif" _src="{$value.pic.filename}" width="980" alt="{$value.title}"{if $list.project.height} style="height:{$list.project.height}px;"{/if} /></a></li>
 		<!-- /loop -->
 	</ul>
-	<ul class="page_ul">
-		<!-- loop from=$list.rslist key=$key value=$value -->
-		<li></li>
+	</div>
+	<div class="hd">
+	<ul>
+		<!-- loop from=$list.rslist key=$key value=$value id=tmpid -->
+		<li>{$tmpid.num}</li>
 		<!-- /loop -->
 	</ul>
+	</div>
 </div>
 <script type="text/javascript">
 $(document).ready(function(){
-	$(".home_banner").slide({
-		'titCell':'.page_ul li',
-		'mainCell':'.pro_ul',
-		'autoPlay':true,
-		'switchLoad':'_src'
-	});
+	$(".indexbanner").slide({'autoPlay':true,'switchLoad':'_src','mainCell':'.bd ul'});
 });
 </script>
-<div class="wrap">
-	<div class="home_left">
+<!-- /if -->
+<div class="index clearfix">
+	<div class="left">
 		<!-- php:$list = phpok('news','fields=id') -->
-		<div class="m_box">
-			<div class="m_t">
-				<p class="name">{$list.project.title}</p>
-				<span class="name_en">{$list.project.entitle}</span>
-				<a href="{$list.project.url}" class="more" title="阅读更多{$list.project.title}">更多</a>
-				<div class="cl"></div>
-			</div>
-			<ul class="home_news">
+		<!-- if $list.total -->
+		<div class="pfw mb10">
+			<h3>{$list.project.title}<small>{$list.project.entitle}</small><a href="{$list.project.url}" class="more">更多</a></h3>
+			<ul class="artlist">
 				<!-- loop from=$list.rslist key=$key value=$value -->
 				<li><a href="{$value.url}" title="{$value.title}">{func phpok_cut $value.title 17 …}</a><!-- if $value.dateline + 10 * 24 * 3600 > $sys.time --> <img src="images/new.gif" /><!-- /if --></li>
 				<!-- /loop -->
 			</ul>
 		</div>
-
+		<!-- /if -->
 		<!-- php:$list = phpok('products_cate') -->
-		<div class="m_box">
-			<div class="m_t">
-				<p class="name">产品分类</p>
-				<span class="name_en">Categories</span>
-				<a href="{$list.project.url}" class="more">more</a>
-				<div class="cl"></div>
-			</div>
+		<!-- if $list && $list.tree -->
+		<div class="pfw mb10">
+			<h3>{$list.cate.title}<small>{$list.cate.entitle}</small><a href="{$list.project.url}" class="more">更多</a></h3>
 			<!-- loop from=$list.tree key=$key value=$value -->
-			<dl class="sort">
-				<dt><a href="{$value.url}">{$value.title}</a></dt>
+			<dl class="cate clearfix">
+				<dt><a href="{$value.url}" title="{$value.title}">{$value.title}</a></dt>
 				<dd>
 					<!-- loop from=$value.sublist key=$k value=$v -->
-					<a href="{$v.url}">{$v.title}</a>
+					<a href="{$v.url}" title="{$v.title}">{$v.title}</a>
 					<!-- /loop -->
 				</dd>
 			</dl>
 			<!-- /loop -->
-		 </div>
-		
-		<div class="m_box">
-			<div class="m_t">
-				<p class="name">最新下载</p>
-				<span class="name_en">Downloads</span>
-				<a href="{url id=download-center/}" class="more">more</a>
-				<div class="cl"></div>
-			</div>
-			<ul class="home_news">
-				<!-- php:$list = phpok('xiazaizhongxin') -->
+		</div>
+		<!-- /if -->
+		<!-- php:$list = phpok('xiazaizhongxin') -->
+		<!-- if $list.total -->
+		<div class="pfw mb10">
+			<h3>{$list.project.title}<small>{$list.project.entitle}</small><a href="{$list.project.url}" class="more">更多</a></h3>
+			<ul class="downlist">
 				<!-- loop from=$list.rslist key=$key value=$value -->
 				<li><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
 				<!-- /loop -->
 			</ul>
 		</div>
-		<div class="m_box">
-			<div class="m_t">
-				<p class="name">联系我们</p>
-				<span class="name_en">Contact</span>
-				<div class="cl"></div>
-			</div>
-			<div class="home_contact">
-				<!-- if $config.contactus.company --><h3>{$config.contactus.company}</h3><!-- /if -->
-				<!-- if $config.contactus.address --><div>地址：{$config.contactus.address}</div><!-- /if -->
-				<!-- if $config.contactus.email --><div>Email：{$config.contactus.email}</div><!-- /if -->
-				<!-- if $config.contactus.zipcode --><div>邮编：{$config.contactus.zipcode}</div><!-- /if -->
-				<!-- if $config.contactus.tel --><div>电话：{$config.contactus.tel}</div><!-- /if -->
-				<!-- if $config.contactus.fullname --><div>联系人：{$config.contactus.fullname}</div><!-- /if -->
-			</div>
-		</div>
+		<!-- /if -->
+		<!-- include tpl=block/contact -->
 	</div>
-	
-	
-	<div class="home_right">
+	<div class="right">
 		<!-- if $page_rs -->
-		<div class="m_box">
-			<div class="m_t">
-				<p class="name">{$page_rs.subtitle}</p>
-				<span class="name_en">{$page_rs.entitle}</span>
-				<!-- if $page_rs.url && $page_rs.link -->
-				<a href="{$page_rs.url}" class="more">更多</a>
-				<!-- /if -->
-				<div class="cl"></div>
-			</div>
-			<div class="home_about">
+		<div class="pfw mb10">
+			<h3>{$page_rs.subtitle}<small>{$page_rs.entitle}</small><!-- if $page_rs.url && $page_rs.link --><a href="{$list.project.url}" class="more">更多</a><!-- /if --></h3>
+			<div class="about">
 				<img src="{$page_rs.pic}" width="129" height="133" />
 				<p>{$page_rs.note}</p>
 			</div>
 		</div>
 		<!-- /if -->
-	  
-		<div class="box" id="photoslist">
-			<!-- php:$list = phpok('tujixiangce','fields=thumb') -->
-			<h2 class="title">
-				{$list.project.title}<!-- if $list.project.entitle --><span class="en">{$list.project.entitle}</span><!-- /if -->
-				<div class="pn">
-					<span class="prev"></span>
-					<span class="next"></span>
-				</div>
-			</h2>
-			<ul class="imglist">
+
+		<!-- php:$list = phpok('tujixiangce','fields=thumb') -->
+		<!-- if $list.total -->
+		<div class="pfw mb10" id="photoslist">
+			<h3>{$list.project.title}<small>{$list.project.entitle}</small><a href="{$list.project.url}" class="more">更多</a></h3>
+			<ul class="imglist clearfix">
 				<!-- loop from=$list.rslist key=$key value=$value -->
 				<li>
 					<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.title}" /></a>
@@ -129,14 +91,10 @@ $(document).ready(function(){
 		</div>
 		<script type="text/javascript">
 		$(document).ready(function(){
-			$("#photoslist").slide({
-				'mainCell':'ul.imglist',
-				'effect':"leftLoop",
-				'autoPlay':true,
-				'vis':3
-			});
+			$("#photoslist").slide({'mainCell':'ul.imglist','effect':"leftLoop",'autoPlay':true,'vis':3});
 		});
 		</script>
+		<!-- /if -->
 
 		<div class="atlas">
 			<div class="atlas_t">
@@ -172,6 +130,18 @@ $(document).ready(function(){
 			<!-- if $list_id.num % 2 == '' --><div class="clear"></div><!-- /if -->
 			<!-- /loop -->
 		</div>
+
+	</div>
+</div>
+<div class="wrap">
+	<div class="home_left">
+
+		
+		
+	</div>
+	
+	
+	<div class="home_right">
 	</div>
 	<div class="cl"></div>
 </div>

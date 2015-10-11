@@ -113,6 +113,13 @@ class list_control extends phpok_control
 			$this->assign("catelist",$catelist);
 			$opt_catelist = $this->model('cate')->get_all($rs["site_id"],1,$rs["cate"]);
 			$opt_catelist = $this->model('cate')->cate_option_list($opt_catelist);
+			if($opt_catelist){
+				$cateall = array();
+				foreach($opt_catelist as $key=>$value){
+					$cateall[$value['id']] = $value['title'];
+				}
+				$this->assign('cateall',$cateall);
+			}
 			$this->assign("opt_catelist",$opt_catelist);
 			if($show_parent_catelist){
 				$parent_cate_rs = $this->model('cate')->get_one($show_parent_catelist);
@@ -297,7 +304,12 @@ class list_control extends phpok_control
 				$cate_id_list[] = $value["id"];
 			}
 			$cate_idstring = implode(",",$cate_id_list);
-			$condition .= " AND l.cate_id IN(".$cate_idstring.")";
+			if($project_rs['cate_multiple']){
+				$condition .= " AND c.cate_id IN(".$cate_idstring.")";
+			}else{
+				$condition .= " AND l.cate_id IN(".$cate_idstring.")";
+			}
+			
 			$pageurl .= "&cateid=".$cateid;
 			$this->assign("cateid",$cateid);
 		}else{
@@ -310,7 +322,11 @@ class list_control extends phpok_control
 					$cate_id_list[] = $value["id"];
 				}
 				$cate_idstring = implode(",",$cate_id_list);
-				$condition .= " AND l.cate_id IN(".$cate_idstring.")";
+				if($project_rs['cate_multiple']){
+					$condition .= " AND c.cate_id IN(".$cate_idstring.")";
+				}else{
+					$condition .= " AND l.cate_id IN(".$cate_idstring.")";
+				}
 			}
 		}
 		$keywords = $this->get("keywords");
@@ -346,18 +362,39 @@ class list_control extends phpok_control
 				$this->assign("attr",array($attr));
 			}
 		}
+		$status = $this->get('status');
+		if($status){
+			if($status == 1){
+				$condition .= ' AND l.status=1 ';
+			}else{
+				$condition .= ' AND l.status=0 ';
+			}
+			$pageurl .= "&status=".$status;
+			$this->assign('status',$status);
+		}
 		//取得列表信息
 		$total = $this->model('list')->get_total($mid,$condition);
 		if($total > 0){
 			$rslist = $this->model('list')->get_list($mid,$condition,$offset,$psize,$orderby);
 			$sub_idlist = $rslist ? array_keys($rslist) : array();
+			$extcate_ids = $sub_idlist;
 			$sub_idstring = implode(",",$sub_idlist);
 			$condition = "l.site_id='".$site_id."' AND l.project_id='".$pid."' AND l.parent_id IN(".$sub_idstring.") ";
 			$sublist = $this->model('list')->get_list($mid,$condition,0,0,$orderby);
 			if($sublist){
 				foreach($sublist AS $key=>$value){
 					$rslist[$value["parent_id"]]["sonlist"][$value["id"]] = $value;
+					$extcate_ids[] = $value['id'];
 				}
+			}
+			$extcate_ids = array_unique($extcate_ids);
+			if($project_rs['cate'] && $project_rs['cate_multiple']){
+				$clist = $this->model('list')->catelist($extcate_ids);
+				$this->assign('clist',$clist);
+			}
+			if($project_rs['comment_status']){
+				$comments = $this->model('reply')->comment_stat($extcate_ids);
+				$this->assign('comments',$comments);
 			}
 			unset($sublist,$sub_idstring,$sub_idlist);
 			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
@@ -743,21 +780,37 @@ class list_control extends phpok_control
 	{
 		$ids = $this->get("ids");
 		$cate_id = $this->get("cate_id");
-		if(!$cate_id || !$ids){
+		$type = $this->get('type');
+		if(!$cate_id || !$ids || !$type){
 			$this->json(P_Lang('参数传递不完整'));
 		}
 		$list = explode(",",$ids);
+		$delete_ok = true;
 		foreach($list AS $key=>$value){
 			$value = intval($value);
 			if(!$value){
 				continue;
 			}
-			$mid = $this->model('list')->get_mid($value);
-			if($mid){
-				$this->model('list')->update_ext(array("cate_id"=>$cate_id),$mid,$value);
+			if($type == 'add'){
+				$this->model('list')->list_cate_add($cate_id,$value);
 			}
-			$this->model('list')->save(array('cate_id'=>$cate_id),$value);
-			$this->model('list')->save_ext_cate($value,array($cate_id));
+			if($type == 'delete'){
+				$act = $this->model('list')->list_cate_delete($cate_id,$value);
+				if(!$act){
+					$delete_ok = false;
+				}
+			}
+			if($type == 'move'){
+				$mid = $this->model('list')->get_mid($value);
+				if($mid){
+					$this->model('list')->update_ext(array("cate_id"=>$cate_id),$mid,$value);
+				}
+				$this->model('list')->save(array('cate_id'=>$cate_id),$value);
+				$this->model('list')->list_cate_add($cate_id,$value);
+			}
+		}
+		if(!$delete_ok){
+			$this->json(P_Lang('主分类不允许删除'));
 		}
 		$this->json(P_Lang('更新成功'),true);
 	}

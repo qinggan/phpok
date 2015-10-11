@@ -263,11 +263,11 @@ button.disabled{
 }
 
 /* 评论 */
-.comment{margin:3px auto;position:relative;}
-.comment .content{border:1px solid #ccc;padding:3px;line-height:170%;font-size:14px;}
+.comment{margin:3px auto;position:relative;border:1px solid #ccc;margin-bottom:10px;border-radius:5px;background:#efefef;}
+.comment .content{border-bottom:1px solid #ccc;padding:3px;line-height:170%;font-size:14px;background:#fff;border-radius:5px 5px 0 0;}
 .comment .content p{margin:0;padding:0;}
 .comment .action{margin-bottom:3px;float:right;width:auto;}
-.comment fieldset.adm-reply{margin:3px 20px;border:1px solid red;}
+.comment fieldset.adm-reply{margin:10px;border:1px solid #dedede;padding-left:20px;}
 .comment fieldset.adm-reply p{margin:0;padding:0;}
 fieldset.sub_comment{border:1px solid darkblue;margin-left:48px;}
 

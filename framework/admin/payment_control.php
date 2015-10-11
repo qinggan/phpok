@@ -31,7 +31,7 @@ class payment_control extends phpok_control
 		{
 			foreach($rslist AS $key=>$value)
 			{
-				$rslist[$key]['paylist'] = $this->model('payment')->get_all("gid=".$value['id']);
+				$rslist[$key]['paylist'] = $this->model('payment')->get_all("p.gid=".$value['id']);
 			}
 			$this->assign('rslist',$rslist);
 		}
@@ -76,6 +76,7 @@ class payment_control extends phpok_control
 		$data = array('site_id'=>$_SESSION['admin_site_id'],'title'=>$title);
 		$data['taxis'] = $this->get('taxis','int');
 		$data['status'] = $this->get('status','int');
+		$data['wap'] = $this->get('wap','int');
 		$insert = $this->model('payment')->groupsave($data,$id);
 		if(!$insert)
 		{
@@ -105,7 +106,7 @@ class payment_control extends phpok_control
 		if(!$id){
 			$this->json(P_Lang('未指定ID'));
 		}
-		$rslist = $this->model('payment')->get_all("gid='".$id."'");
+		$rslist = $this->model('payment')->get_all("p.gid='".$id."'");
 		if($rslist){
 			$this->json(P_Lang('已存在支付方案，请先移除'));
 		}
@@ -113,7 +114,7 @@ class payment_control extends phpok_control
 		$this->json(P_Lang('删除成功'),true);
 	}
 	
-	function set_f()
+	public function set_f()
 	{
 		$gid = $this->get('gid','int');
 		$id = $this->get('id','int');
@@ -146,11 +147,12 @@ class payment_control extends phpok_control
 		//可使用的货币列表
 		$currency_list = $this->model('currency')->get_list();
 		$this->assign("currency_list",$currency_list);
+		$this->lib('form')->cssjs(array('form_type'=>'editor'));
 		$this->view('payment_set');
 	}
 
 	//存储支付方案
-	function save_f()
+	public function save_f()
 	{
 		$gid = $this->get('gid','int');
 		$code = $this->get('code');
@@ -183,6 +185,7 @@ class payment_control extends phpok_control
 		$data['logo3'] = $this->get('logo3');
 		$data['taxis'] = $this->get('taxis','int');
 		$data['status'] = $this->get('status','int');
+		$data['wap'] = $this->get('wap','int');
 		$data['note'] = $this->get('note','html');
 		//读取扩展信息
 		if($codeinfo['code'] && is_array($codeinfo['code']))
@@ -215,7 +218,7 @@ class payment_control extends phpok_control
 		error($tip,$this->url('payment'),'ok');
 	}
 
-	function delete_f()
+	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
 			$this->json(P_Lang('您没有权限执行此操作'));
@@ -226,6 +229,22 @@ class payment_control extends phpok_control
 		}
 		$this->model('payment')->delete($id);
 		$this->json(P_Lang('删除成功'),true);
+	}
+
+	public function taxis_f()
+	{
+		$id = $this->get('id','int');
+		$type = $this->get('type');
+		$taxis = $this->get('taxis','int');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
+		if($type == 'group'){
+			$this->model('payment')->groupsave(array('taxis'=>$taxis),$id);
+		}else{
+			$this->model('payment')->save(array('taxis'=>$taxis),$id);
+		}
+		$this->json(true);
 	}
 }
 

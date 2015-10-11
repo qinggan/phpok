@@ -15,7 +15,7 @@ class index_control extends phpok_control
 		parent::control();
 	}
 
-	function index_f()
+	public function index_f()
 	{
 		if(!$this->license_code){
 			$this->license = "LGPL";
@@ -137,7 +137,7 @@ class index_control extends phpok_control
 		$this->view("index");
 	}
 
-	function all_setting_f()
+	public function all_setting_f()
 	{
 		$info = $this->all_info();
 		if(!$info){
@@ -146,13 +146,15 @@ class index_control extends phpok_control
 		$this->json($info,true);
 	}
 
-	function all_info()
+	private function all_info()
 	{
 		$all_popedom = appfile_popedom("all");
 		if(!$all_popedom || !$all_popedom['list']){
 			return false;
 		}
 		$this->assign('all_popedom',$all_popedom);
+		$site_popedom = appfile_popedom('site');
+		$this->assign('site_popedom',$site_popedom);
 		$rslist = $this->model('site')->all_list($_SESSION["admin_site_id"]);
 		$this->assign("all_rslist",$rslist);
 		$rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
@@ -160,7 +162,7 @@ class index_control extends phpok_control
 		return $this->fetch('index_block_allsetting');
 	}
 
-	function list_setting_f()
+	public function list_setting_f()
 	{
 		$info = $this->list_setting();
 		if(!$info){
@@ -169,7 +171,7 @@ class index_control extends phpok_control
 		$this->json($info,true);
 	}
 
-	function list_setting()
+	private function list_setting()
 	{
 		$site_id = $_SESSION["admin_site_id"];
 		$rslist = $this->model('project')->get_all($site_id,0,"p.status=1 AND p.hidden=0");
@@ -230,7 +232,7 @@ class index_control extends phpok_control
 		return $this->fetch('index_block_listsetting');
 	}
 
-	function clear_f()
+	public function clear_f()
 	{
 		$this->lib('file')->rm($this->dir_root."data/tpl_www/");
 		$this->lib('file')->rm($this->dir_root."data/tpl_admin/");
@@ -239,7 +241,7 @@ class index_control extends phpok_control
 		$this->json(true);
 	}
 
-	function site_f()
+	public function site_f()
 	{
 		$siteid = $this->get("id","int");
 		if(!$siteid){
@@ -255,7 +257,31 @@ class index_control extends phpok_control
 	}
 
 	//获取待处理信息
-	function pendding_f()
+	public function pendding_f()
+	{
+		set_time_limit(30);
+		$endtime = $this->time + 1;
+		for($i=$this->time;$i<$endtime;$i++){
+			$list = $this->pendding_index();
+			if(!$list){
+				sleep(2);
+			}else{
+				if(!$_SESSION['pendding_old']){
+					$_SESSION['pendding_old'] = $list;
+					$this->json($list,true);
+				}else{
+					if($_SESSION['pendding_old'] === $list){
+						sleep(2);
+					}else{
+						$this->json($list,true);
+					}
+				}
+			}
+		}
+		$this->json(true);
+	}
+
+	private function pendding_index()
 	{
 		$list = false;
 		//读取未操作的主题
@@ -301,13 +327,34 @@ class index_control extends phpok_control
 			$url = $this->url("reply","","status=3");
 			$list['ctrl_reply'] = array("title"=>P_Lang('评论管理'),"total"=>$reply_total,"url"=>$url,'id'=>'reply');
 		}
-		if(!$list){
-			$this->json(P_Lang('没有消息'));
-		}
-		$this->json($list,true);
+		return $list;
 	}
 
-	function pendding_sublist_f()
+	public function pendding_sublist_f()
+	{
+		set_time_limit(30);
+		$endtime = $this->time + 1;
+		for($i=$this->time;$i<$endtime;$i++){
+			$list = $this->pendding_sublist();
+			if(!$list){
+				sleep(2);
+			}else{
+				if(!$_SESSION['pendding_sub_old']){
+					$_SESSION['pendding_sub_old'] = $list;
+					$this->json($list,true);
+				}else{
+					if($_SESSION['pendding_sub_old'] === $list){
+						sleep(2);
+					}else{
+						$this->json($list,true);
+					}
+				}
+			}
+		}
+		$this->json(true);
+	}
+
+	private function pendding_sublist()
 	{
 		$list = false;
 		$rslist = $this->model('list')->pending_info($_SESSION['admin_site_id']);
@@ -319,10 +366,6 @@ class index_control extends phpok_control
 				}
 			}
 		}
-		if(!$list){
-			$this->json(P_Lang('没有消息'));
-		}
-		$this->json($list,true);
 	}
 }
 ?>

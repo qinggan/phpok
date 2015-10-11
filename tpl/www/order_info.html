@@ -130,14 +130,12 @@ $(document).ready(function(){
 		<td class="center price">{func price_format $value.price*$value.qty $rs.currency_id $rs.currency_id}</td>
 	</tr>
 	<!-- /loop -->
+	<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
 	<tr>
-		<td align="right" colspan="3">商品价：</td>
-		<td><span class="price">{func price_format $rs.product_price $rs.currency_id $rs.currency_id}</span></td>
+		<td align="right" colspan="3">{$value.title}：</td>
+		<td><span class="price">{$value.price}</span></td>
 	</tr>
-	<tr>
-		<td align="right" colspan="3">运费价：</td>
-		<td><span class="price">{func price_format $rs.freight_price $rs.currency_id $rs.currency_id}</span></td>
-	</tr>
+	<!-- /loop -->
 	<tr>
 		<td align="right" colspan="3">总价：</td>
 		<td><span class="price">{func price_format $rs.price $rs.currency_id $rs.currency_id}</span></td>
@@ -145,17 +143,37 @@ $(document).ready(function(){
 	</table>
 	</div>
 	<div class="clear"></div>
-	<!-- if !$rs.pay_end && $paylist -->
-	<form method="post" action="{$payment_url}">
+	<!-- if !$pay_end -->
+	<script type="text/javascript">
+	function go_payment(sn,price)
+	{
+		var payment = $("input[name=payment]:checked").val();
+		if(!payment){
+			$.dialog.alert('未指定支付方式');
+			return false;
+		}
+		var url = get_url('payment','create','sn='+sn+"&price="+$.str.encode(price)+"&payment="+payment);
+		var rs = $.phpok.json(url);
+		if(rs.status != 'ok'){
+			$.dialog.alert(rs.content);
+			return false;
+		}
+		var url = get_url('payment','submit','id='+rs.content);
+		url = $.phpok.nocache(url);
+		window.open(url);
+		return false;
+	}
+	</script>
+	<form method="post" onsubmit="return go_payment('{$rs.sn}','{func price_format_val $rs.price $rs.currency_id}')">
 	<!-- loop from=$paylist key=$key value=$value -->
 	<!-- if $value.paylist -->
 	<div class="pfw mbottom10">
 		<h3>{$value.title}</h3>
 		<div class="payment">
 			<ul>
-				<!-- loop from=$value.paylist key=$k value=$v -->
+				<!-- loop from=$value.paylist key=$k value=$v --><!-- if $v.wap == 0 -->
 				<li><label><input name="payment" type="radio" value="{$v.id}"{if $v.id == $config.biz_payment} checked{/if} />{$v.title}</label></li>
-				<!-- /loop -->
+				<!-- /if --><!-- /loop -->
 			</ul>
 		</div>
 		<!-- /if -->

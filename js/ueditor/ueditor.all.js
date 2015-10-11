@@ -1,7 +1,7 @@
 /*!
  * UEditor
  * version: ueditor
- * build: Wed Jun 11 2014 10:44:31 GMT+0800 (中国标准时间)
+ * build: Tue Aug 25 2015 15:23:01 GMT+0800 (CST)
  */
 
 (function(){
@@ -9532,6 +9532,7 @@ var htmlparser = UE.htmlparser = function (htmlstr,ignoreBlank) {
     return root;
 };
 
+
 // core/filternode.js
 /**
  * UE过滤节点的静态方法
@@ -9991,15 +9992,6 @@ UE.plugins['defaultfilter'] = function () {
                         }
                         break;
                     case 'img':
-                        //todo base64暂时去掉，后边做远程图片上传后，干掉这个
-                        /*
-                        if (val = node.getAttr('src')) {
-                            if (/^data:/.test(val)) {
-                                node.parentNode.removeChild(node);
-                                break;
-                            }
-                        }
-                        */
                         node.setAttr('_src', node.getAttr('src'));
                         break;
                     case 'span':
@@ -13665,6 +13657,77 @@ UE.plugins['undo'] = function () {
 };
 
 
+// plugins/copy.js
+UE.plugin.register('copy', function () {
+
+    var me = this;
+
+    function initZeroClipboard() {
+
+        ZeroClipboard.config({
+            debug: false,
+            swfPath: me.options.UEDITOR_HOME_URL + '../zeroclipboard/zeroclipboard.swf'
+        });
+
+        var client = me.zeroclipboard = new ZeroClipboard();
+
+        // 复制内容
+        client.on('copy', function (e) {
+            var client = e.client,
+                rng = me.selection.getRange(),
+                div = document.createElement('div');
+
+            div.appendChild(rng.cloneContents());
+            client.setText(div.innerText || div.textContent);
+            client.setHtml(div.innerHTML);
+            rng.select();
+        });
+        // hover事件传递到target
+        client.on('mouseover mouseout', function (e) {
+            var target = e.target;
+            if (e.type == 'mouseover') {
+                domUtils.addClass(target, 'edui-state-hover');
+            } else if (e.type == 'mouseout') {
+                domUtils.removeClasses(target, 'edui-state-hover');
+            }
+        });
+        // flash加载不成功
+        client.on('wrongflash noflash', function () {
+            ZeroClipboard.destroy();
+        });
+    }
+
+    return {
+        bindEvents: {
+            'ready': function () {
+                if (!browser.ie) {
+                    if (window.ZeroClipboard) {
+                        initZeroClipboard();
+                    } else {
+                        utils.loadFile(document, {
+                            src: me.options.UEDITOR_HOME_URL + "../zeroclipboard/zeroclipboard.min.js",
+                            tag: "script",
+                            type: "text/javascript",
+                            defer: "defer"
+                        }, function () {
+                            initZeroClipboard();
+                        });
+                    }
+                }
+            }
+        },
+        commands: {
+            'copy': {
+                execCommand: function (cmd) {
+                    if (!me.document.execCommand('copy')) {
+                        alert(me.getLang('copymsg'));
+                    }
+                }
+            }
+        }
+    }
+});
+
 
 // plugins/paste.js
 ///import core
@@ -16271,123 +16334,6 @@ UE.plugins['fiximgclick'] = (function () {
     }
 })();
 
-// plugins/autoheight.js
-///import core
-///commands 当输入内容超过编辑器高度时，编辑器自动增高
-///commandsName  AutoHeight,autoHeightEnabled
-///commandsTitle  自动增高
-/**
- * @description 自动伸展
- * @author zhanyi
- */
-UE.plugins['autoheight'] = function () {
-    var me = this;
-    //提供开关，就算加载也可以关闭
-    me.autoHeightEnabled = me.options.autoHeightEnabled !== false;
-    if (!me.autoHeightEnabled) {
-        return;
-    }
-
-    var bakOverflow,
-        lastHeight = 0,
-        options = me.options,
-        currentHeight,
-        timer;
-
-    function adjustHeight() {
-        var me = this;
-        clearTimeout(timer);
-        if(isFullscreen)return;
-        if (!me.queryCommandState || me.queryCommandState && me.queryCommandState('source') != 1) {
-            timer = setTimeout(function(){
-
-                var node = me.body.lastChild;
-                while(node && node.nodeType != 1){
-                    node = node.previousSibling;
-                }
-                if(node && node.nodeType == 1){
-                    node.style.clear = 'both';
-                    currentHeight = Math.max(domUtils.getXY(node).y + node.offsetHeight + 25 ,Math.max(options.minFrameHeight, options.initialFrameHeight)) ;
-                    if (currentHeight != lastHeight) {
-                        if (currentHeight !== parseInt(me.iframe.parentNode.style.height)) {
-                            me.iframe.parentNode.style.height = currentHeight + 'px';
-                        }
-                        me.body.style.height = currentHeight + 'px';
-                        lastHeight = currentHeight;
-                    }
-                    domUtils.removeStyle(node,'clear');
-                }
-
-
-            },50)
-        }
-    }
-    var isFullscreen;
-    me.addListener('fullscreenchanged',function(cmd,f){
-        isFullscreen = f
-    });
-    me.addListener('destroy', function () {
-        me.removeListener('contentchange afterinserthtml keyup mouseup',adjustHeight)
-    });
-    me.enableAutoHeight = function () {
-        var me = this;
-        if (!me.autoHeightEnabled) {
-            return;
-        }
-        var doc = me.document;
-        me.autoHeightEnabled = true;
-        bakOverflow = doc.body.style.overflowY;
-        doc.body.style.overflowY = 'hidden';
-        me.addListener('contentchange afterinserthtml keyup mouseup',adjustHeight);
-        //ff不给事件算得不对
-
-        setTimeout(function () {
-            adjustHeight.call(me);
-        }, browser.gecko ? 100 : 0);
-        me.fireEvent('autoheightchanged', me.autoHeightEnabled);
-    };
-    me.disableAutoHeight = function () {
-
-        me.body.style.overflowY = bakOverflow || '';
-
-        me.removeListener('contentchange', adjustHeight);
-        me.removeListener('keyup', adjustHeight);
-        me.removeListener('mouseup', adjustHeight);
-        me.autoHeightEnabled = false;
-        me.fireEvent('autoheightchanged', me.autoHeightEnabled);
-    };
-
-    me.on('setHeight',function(){
-        me.disableAutoHeight()
-    });
-    me.addListener('ready', function () {
-        me.enableAutoHeight();
-        //trace:1764
-        var timer;
-        domUtils.on(browser.ie ? me.body : me.document, browser.webkit ? 'dragover' : 'drop', function () {
-            clearTimeout(timer);
-            timer = setTimeout(function () {
-                //trace:3681
-                adjustHeight.call(me);
-            }, 100);
-
-        });
-        //修复内容过多时，回到顶部，顶部内容被工具栏遮挡问题
-        var lastScrollY;
-        window.onscroll = function(){
-            if(lastScrollY === null){
-                lastScrollY = this.scrollY
-            }else if(this.scrollY == 0 && lastScrollY != 0){
-                me.window.scrollTo(0,0);
-                lastScrollY = null;
-            }
-        }
-    });
-
-
-};
-
-
 // plugins/video.js
 /**
  * video插件， 为UEditor提供视频插入支持
@@ -16422,12 +16368,9 @@ UE.plugins['video'] = function (){
             case 'video':
                 var ext = url.substr(url.lastIndexOf('.') + 1);
                 if(ext == 'ogv') ext = 'ogg';
-                var ftype = (ext == 'flv' || ext == 'swf') ? 'application/x-shockwave-flash' : 'application/x-mplayer2';
-                str = '<embed type="'+ftype+'"' + (id ? ' id="' + id + '"' : '') + ' class="' + classname + '" ';
-                str+= ' pluginspage="http://www.macromedia.com/go/getflashplayer"';
-                str+= (align ? ' style="float:' + align + '"': '') + ' width="' + width  + '" height="' + height  + '"';
-                str+= ' src="'+  utils.html(url) +'"';
-                str+= ' wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true" />';
+                str = '<video' + (id ? ' id="' + id + '"' : '') + ' class="' + classname + ' video-js" ' + (align ? ' style="float:' + align + '"': '') +
+                    ' controls preload="none" width="' + width + '" height="' + height + '" src="' + url + '" data-setup="{}">' +
+                    '<source src="' + url + '" type="video/' + ext + '" /></video>';
                 break;
         }
         return str;
@@ -20790,6 +20733,10 @@ UE.plugins['contextmenu'] = function () {
                 {
                     label:lang.insertparagraphafter,
                     cmdName:'insertparagraph'
+                },
+                {
+                    label:lang['copy'],
+                    cmdName:'copy'
                 }
             ];
     if ( !items.length ) {
@@ -24643,7 +24590,7 @@ UE.ui = baidu.editor.ui = {};
         'bold', 'italic', 'underline', 'fontborder', 'touppercase', 'tolowercase',
         'strikethrough', 'subscript', 'superscript', 'source', 'indent', 'outdent',
         'blockquote', 'pasteplain', 'pagebreak',
-        'print','horizontal', 'removeformat', 'time', 'date', 'unlink',
+        'horizontal', 'removeformat', 'time', 'date', 'unlink',
         'insertparagraphbeforetable', 'insertrow', 'insertcol', 'mergeright', 'mergedown', 'deleterow',
         'deletecol', 'splittorows', 'splittocols', 'splittocells', 'mergecells', 'deletetable', 'drafts'];
 

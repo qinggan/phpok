@@ -25,7 +25,7 @@ function phpok_admin_control()
 	$.dialog.open(url,{
 		"title":p_lang('修改管理员信息'),
 		"width":600,
-		"height":400,
+		"height":500,
 		"lock":true,
 		'move':false,
 		'is_max':false

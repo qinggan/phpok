@@ -93,5 +93,49 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_invoice` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员发票记录';
 
 
-ALTER TABLE  `qinggan_project` ADD `cate_multiple` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '0分类单选1分类支持多选';=======
-ALTER TABLE  `qinggan_all` ADD  `status` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '0不使用1正常使用' AFTER  `title` ;>>>>>>> .r1735
+ALTER TABLE  `qinggan_project` ADD `cate_multiple` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '0分类单选1分类支持多选';
+ALTER TABLE  `qinggan_all` ADD  `status` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '0不使用1正常使用' AFTER  `title` ;
+
+
+CREATE TABLE  `phpok`.`qinggan_user_link` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT  '自增ID',
+`user_id` INT UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '会员ID',
+`code` VARCHAR( 255 ) NOT NULL COMMENT  'CODE码，长度不限，必须是唯一的',
+`link` VARCHAR( 255 ) NOT NULL COMMENT  '跳转网址',
+`hits` INT UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '使用次数',
+`lasttime` INT UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '最近执行一次的时间'
+) ENGINE = MYISAM COMMENT =  '推广分享链接';
+
+
+CREATE TABLE  `phpok`.`qinggan_logistics` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT  '自增ID',
+`site_id` INT NOT NULL DEFAULT  '0' COMMENT  '站点ID，为0所有站点使用',
+`title` VARCHAR( 255 ) NOT NULL COMMENT  '名称',
+`homepage` VARCHAR( 255 ) NOT NULL COMMENT  '官方网站',
+`identifier` VARCHAR( 100 ) NOT NULL COMMENT  '接口标识，用于读取logistics文件夹下的接口文件',
+PRIMARY KEY (  `id` )
+) ENGINE = MYISAM COMMENT =  '物流平台管理';
+
+CREATE TABLE  `phpok`.`qinggan_order_logistics` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT  '自增ID',
+`order_id` INT UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '订单ID号',
+`logistics_id` INT NOT NULL DEFAULT  '0' COMMENT  '物流ID号',
+`code` VARCHAR( 255 ) NOT NULL COMMENT  '物流查询编码，可用于查询快递进度',
+`addtime` INT UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '登记时间'
+) ENGINE = MYISAM COMMENT =  '订单中涉及到的物流分配';
+
+
+CREATE TABLE  `phpok`.`qinggan_order_log` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT  '自增ID',
+`order_id` INT UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '订单ID',
+`addtime` INT UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '操作时间',
+`admin_id` INT NOT NULL DEFAULT  '0' COMMENT  '管理员ID',
+`user_id` INT NOT NULL DEFAULT  '0' COMMENT  '会员ID',
+`note` TEXT NOT NULL COMMENT  '操作内容',
+INDEX (  `order_id` )
+) ENGINE = MYISAM COMMENT =  '订单日志，用于了解当前的订单处理进度';
+
+--
+-- 判断支付接口是否在手机端使用
+--
+ALTER TABLE  `forice_payment` ADD  `wap` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '手机端使用，状态0未使用1正在使用中' AFTER  `status` ;

@@ -77,7 +77,7 @@ class email_control extends phpok_control
 		if(!$p_rs['module']){
 			$this->json(P_Lang('未绑定相应的模块'));
 		}
-		$email_rs = $this->model('email')->get_identifier('register_code',$p_rs['site_id']);
+		$email_rs = $this->model('email')->get_identifier('register_code');
 		if(!$email_rs){
 			 $this->json(P_Lang('通知邮箱模板不存在'));
 		}

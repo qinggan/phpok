@@ -27,6 +27,12 @@ function all_refresh()
 			<div class="name">{lang网站域名}</div></a>
 		</li>
 		<!-- /if -->
+		<!-- if $site_popedom.order -->
+		<li><a title="{lang订单常规配置}" href="javascript:$.win('{lang订单常规配置}','{url ctrl=site func=order_status/}');void(0);">
+			<div class="top_img"><img src="images/ico/shopping_setting.png" alt="{lang订单常规配置}" class="ie6png" width="48" height="48" /></div>
+			<div class="name">{lang订单常规配置}</div></a>
+		</li>
+		<!-- /if -->
 		<!-- if $all_rs.email_server && $all_rs.email_account && $all_rs.email_pass -->
 		<li><a title="{lang在线发邮件}" href="javascript:$.win('{lang发邮件}','{url ctrl=all func=email/}');void(0);">
 			<div class="top_img"><img src="images/ico/email.png" alt="{lang在线发邮件}" class="ie6png" width="48" height="48" /></div>

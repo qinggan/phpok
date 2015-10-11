@@ -1,0 +1,15 @@
+<!-- if $config.contactus -->
+<div class="pfw mb10">
+	<h3>联系我们<small>Contact</small><a href="{$list.project.url}" class="more">更多</a></h3>
+	<div class="contact">
+		<!-- if $config.contactus.company --><h4>{$config.contactus.company}</h4><!-- /if -->
+		<table>
+			<!-- if $config.contactus.address --><tr><td class="b">地址：</td><td class="i">{$config.contactus.address}</td></tr><!-- /if -->
+			<!-- if $config.contactus.email --><tr><td class="b">Email：</td><td class="i">{$config.contactus.email}</td></tr><!-- /if -->
+			<!-- if $config.contactus.zipcode --><tr><td class="b">邮编：</td><td class="i">{$config.contactus.zipcode}</td></tr><!-- /if -->
+			<!-- if $config.contactus.tel --><tr><td class="b">电话：</td><td class="i">{$config.contactus.tel}</td></tr><!-- /if -->
+			<!-- if $config.contactus.fullname --><tr><td class="b">联系人：</td><td class="i">{$config.contactus.fullname}</td></tr><!-- /if -->
+		</table>
+	</div>
+</div>
+<!-- /if -->

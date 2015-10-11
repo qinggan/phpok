@@ -45,6 +45,7 @@ class list_model_base extends phpok_model
 		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id AND u.status=1) ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."list_cate c ON(l.id=c.id) ";
 		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
@@ -102,11 +103,10 @@ class list_model_base extends phpok_model
 		$sql = " SELECT count(l.id) FROM ".$this->db->prefix."list l ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ";
 		$sql.= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
-		if($condition)
-		{
+		$sql.= " LEFT JOIN ".$this->db->prefix."list_cate c ON(l.id=c.id) ";
+		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
-		//echo $sql;
 		return $this->db->count($sql);
 	}
 
@@ -186,28 +186,6 @@ class list_model_base extends phpok_model
 		{
 			return $this->db->insert_array($data,"list");
 		}
-	}
-
-	//存储扩展分类
-	public function save_ext_cate($id,$catelist)
-	{
-		if(!$id || !$catelist){
-			return false;
-		}
-		if(is_string($catelist)){
-			$catelist = explode(",",$catelist);
-		}
-		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id='".$id."'";
-		$this->db->query($sql);
-		$sql = "INSERT INTO ".$this->db->prefix."list_cate(id,cate_id) VALUES ";
-		foreach($catelist as $key=>$value){
-			if($key>0){
-				$sql .= ",";
-			}
-			$sql .= "('".$id."','".$value."')";
-		}
-		$this->db->query($sql);
-		return true;
 	}
 
 	function save_ext($data,$mid)
@@ -398,13 +376,11 @@ class list_model_base extends phpok_model
 	function get_all($condition="",$offset=0,$psize=30,$pri="")
 	{
 		$sql = "SELECT l.* FROM ".$this->db->prefix."list l ";
-		if($condition)
-		{
+		if($condition){
 			$sql.= " WHERE ".$condition;
 		}
 		$sql .= " ORDER BY l.dateline DESC,l.id DESC ";
-		if($psize && $psize>0)
-		{
+		if($psize && $psize>0){
 			$offset = intval($offset);
 			$sql.= " LIMIT ".$offset.",".$psize;
 		}
@@ -489,6 +465,7 @@ class list_model_base extends phpok_model
 		$sql = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
 		$sql .= " JOIN ".$this->db->prefix."list_".$mid." ext ";
 		$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."list_biz b ON(l.id=b.id) ";
 		if($condition)
 		{
 			$sql .= " WHERE ".$condition." ";
@@ -522,7 +499,7 @@ class list_model_base extends phpok_model
 
 	public function subtitle_ids($id)
 	{
-		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE parent_id='".$id."' AND status=1";
+		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE parent_id='".$id."' AND status=1 ORDER BY taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql,'id');
 		if(!$rslist){
 			return false;

@@ -34,15 +34,15 @@ class payment_model extends payment_model_base
 		return $this->db->get_all($sql,'id');		
 	}
 
-	function get_all($condition="")
+	function get_all($condition="",$pri='')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."payment ";
-		if($condition)
-		{
-			$sql .= "WHERE ".$condition;
+		$sql = "SELECT p.* FROM ".$this->db->prefix."payment p LEFT JOIN ".$this->db->prefix."payment_group g ON(p.gid=g.id) ";
+		$sql.= "WHERE g.site_id='".$this->site_id."' ";
+		if($condition){
+			$sql .= " AND ".$condition;
 		}
-		$sql.= ' ORDER BY taxis ASC,id DESC';
-		return $this->db->get_all($sql);
+		$sql.= ' ORDER BY p.taxis ASC,p.id DESC';
+		return $this->db->get_all($sql,$pri);
 	}
 
 	//付款方案option
@@ -75,20 +75,15 @@ class payment_model extends payment_model_base
 	function code_all()
 	{
 		//读取目录下的
-		$handle = opendir($this->dir_root.'payment');
+		$handle = opendir($this->dir_root.'gateway/payment');
 		$list = array();
-		while(false !== ($myfile = readdir($handle)))
-		{
-			if(substr($myfile,0,1) != '.' && is_dir($this->dir_root.'payment/'.$myfile))
-			{
-				$list[$myfile] = array('id'=>$myfile,'dir'=>$this->dir_root.'payment/'.$myfile);
-				$tmpfile = $this->dir_root.'payment/'.$myfile.'/config.xml';
-				if(is_file($tmpfile))
-				{
-					$tmp = xml_to_array(file_get_contents($tmpfile));
-				}
-				else
-				{
+		while(false !== ($myfile = readdir($handle))){
+			if(substr($myfile,0,1) != '.' && is_dir($this->dir_root.'gateway/payment/'.$myfile)){
+				$list[$myfile] = array('id'=>$myfile,'dir'=>$this->dir_root.'gateway/payment/'.$myfile);
+				$tmpfile = $this->dir_root.'gateway/payment/'.$myfile.'/config.xml';
+				if(is_file($tmpfile)){
+					$tmp = $this->lib('xml')->read($tmpfile);
+				}else{
 					$tmp = array('title'=>$myfile,'code'=>'');
 				}
 				$list[$myfile]['title'] = $tmp['title'];
@@ -102,37 +97,32 @@ class payment_model extends payment_model_base
 	//取得当前Code信息
 	function code_one($id)
 	{
-		$rs = array('id'=>$id,'dir'=>$this->dir_root.'payment/'.$id);
-		$xmlfile = $this->dir_root.'payment/'.$id.'/config.xml';
-		if(is_file($xmlfile))
-		{
-			$tmp = xml_to_array(file_get_contents($xmlfile));
-		}
-		else
-		{
-			$tmp = array('title'=>$myfile,'code'=>'');
+		$rs = array('id'=>$id,'dir'=>$this->dir_root.'gateway/payment/'.$id);
+		$xmlfile = $this->dir_root.'gateway/payment/'.$id.'/config.xml';
+		if(is_file($xmlfile)){
+			$tmp = $this->lib('xml')->read($xmlfile);
+		}else{
+			$tmp = array('title'=>$id,'code'=>'');
 		}
 		$rs['code'] = $tmp['code'];
 		$rs['title'] = $tmp['title'];
-		return $rs;		
+		return $rs;
 	}
 
 	//存储组信息
 	function groupsave($data,$id=0)
 	{
-		if(!$data || !is_array($data))
-		{
+		if(!$data || !is_array($data)){
 			return false;
 		}
-		if($id)
-		{
+		if($id){
 			return $this->db->update_array($data,'payment_group',array('id'=>$id));
 		}
 		return $this->db->insert_array($data,'payment_group');
 		
 	}
 
-	function group_set_default($id,$site_id=0)
+	public function group_set_default($id,$site_id=0)
 	{
 		if(!$id)
 		{
@@ -146,27 +136,27 @@ class payment_model extends payment_model_base
 	}
 
 	//取得单个支付组
-	function group_one($id)
+	public function group_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."payment_group WHERE id=".intval($id);
 		return $this->db->get_one($sql);
 	}
 
 	//删除支付组
-	function group_delete($id)
+	public function group_delete($id)
 	{
 		$sql = "DELETE FROM ".$this->db->prefix."payment_group WHERE id=".intval($id);
 		return $this->db->query($sql);
 	}
 	//取得单个支付方式
-	function get_one($id)
+	public function get_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."payment WHERE id=".intval($id);
 		return $this->db->get_one($sql);
 	}
 
 	//存储表单信息
-	function save($data,$id=0)
+	public function save($data,$id=0)
 	{
 		if(!$data || !is_array($data))
 		{
@@ -182,7 +172,7 @@ class payment_model extends payment_model_base
 		}
 	}
 
-	function delete($id)
+	public function delete($id)
 	{
 		$sql = "DELETE FROM ".$this->db->prefix."payment WHERE id='".$id."'";
 		return $this->db->query($sql);

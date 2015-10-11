@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<create>
+		<title>创建订单</title>
+		<status>1</status>
+		<email_tpl_user></email_tpl_user>
+		<email_tpl_admin></email_tpl_admin>
+		<sms_tpl_user>sms_order_create</sms_tpl_user>
+		<taxis>1</taxis>
+	</create>
+	<unpaid>
+		<title>等待付款</title>
+		<status>1</status>
+		<email_tpl_user></email_tpl_user>
+		<email_tpl_admin></email_tpl_admin>
+		<sms_tpl_user></sms_tpl_user>
+		<taxis>2</taxis>
+	</unpaid>
+	<paid>
+		<title>付款完成</title>
+		<status>1</status>
+		<email_tpl_user>order_user_paid</email_tpl_user>
+		<email_tpl_admin>order_admin_paid</email_tpl_admin>
+		<sms_tpl_user>sms_order_paid</sms_tpl_user>
+		<taxis>3</taxis>
+	</paid>
+	<shipped>
+		<title>商家出货</title>
+		<status>1</status>
+		<email_tpl_user>order_admin</email_tpl_user>
+		<email_tpl_admin></email_tpl_admin>
+		<sms_tpl_user>sms_order_shipped</sms_tpl_user>
+		<taxis>4</taxis>
+	</shipped>
+	<received>
+		<title>客户签收</title>
+		<status>1</status>
+		<email_tpl_user></email_tpl_user>
+		<email_tpl_admin>order_admin_recerved</email_tpl_admin>
+		<sms_tpl_user></sms_tpl_user>
+		<taxis>5</taxis>
+	</received>
+</root>

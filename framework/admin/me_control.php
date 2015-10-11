@@ -25,49 +25,47 @@ class me_control extends phpok_control
 	function submit_f()
 	{
 		$oldpass = $this->get("oldpass");
-		if(!$oldpass)
-		{
+		if(!$oldpass){
 			error(P_Lang('管理员密码验证不能为空'),$this->url("me","setting"),"error");
 		}
 		$rs = $this->model('admin')->get_one($_SESSION["admin_id"]);
-		if(!password_check($oldpass,$rs["pass"]))
-		{
+		if(!password_check($oldpass,$rs["pass"])){
 			error(P_Lang("管理员密码不正确"),$this->url("me","setting"),"error");
 		}
 		$name = $this->get('name');
 		$array = array('email'=>$this->get('email'));
 		$update_login = false;
-		if($name && $name != $_SESSION['admin_account'])
-		{
+		$admin = $this->model('admin')->get_one($_SESSION['admin_id'],'id');
+		$tip = P_Lang('信息修改成功');
+		if($name && $name != $admin['account']){
 			//修改管理员账号
 			$check = $this->model('admin')->check_account($name,$_SESSION['admin_id']);
-			if($check)
-			{
+			if($check){
 				error(P_Lang('管理员账号已经存在，请重新设置'),$this->url('me','setting'),'error');
 			}
 			$array['account'] = $name;
 			$update_login = true;
+			$tip = P_Lang('管理员账号信息变更成功，请重新登录');
 		}
 		$newpass = $this->get("newpass");
-		if($newpass)
-		{
+		if($newpass){
 			$chkpass = $this->get("chkpass");
-			if($newpass != $chkpass)
-			{
-				error(P_Lang("两次输入的新密码不一致"),$this->url("me","password"),"error");
+			if($newpass != $chkpass){
+				error(P_Lang("两次输入的新密码不一致"),$this->url("me","setting"),"error");
 			}
 			$array['pass'] = password_create($newpass);
-			$_SESSION["admin_rs"]["pass"] = $array['pass'];
+			$tip = P_Lang('密码修改成功，请下次登录后使用新密码登录！');
 		}
+		$array['fullname'] = $this->get('fullname');
+		$array['close_tip'] = $this->get('close_tip');
 		$this->model('admin')->save($array,$_SESSION['admin_id']);
-		if($update_login)
-		{
-			error(P_Lang('您的信息已更新成功，请重新登录'),$this->url('logout'),'ok');
-		}
-		else
-		{
+		if($update_login){
+			error($tip,$this->url('logout'),'ok');
+		}else{
+			$info = $this->model('admin')->get_one($_SESSION['admin_id'],'id');
+			$_SESSION['admin_rs'] = $info;
 			$html = '<input type="button" value=" '.P_Lang('确定').' " class="submit" onclick="$.dialog.close();" />';
-			error_open(P_Lang('密码修改成功，请下次登录后使用新密码登录！'),"ok",$html);
+			error_open($tip,"ok",$html);
 		}
 	}
 }

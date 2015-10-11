@@ -10,7 +10,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class module_control extends phpok_control
 {
-	var $popedom;
+	private $popedom;
 	function __construct()
 	{
 		parent::control();
@@ -38,13 +38,15 @@ class module_control extends phpok_control
 	function set_f()
 	{
 		if(!$this->popedom["set"]) error(P_Lang('您没有权限执行此操作'));
-		$id = $this->lib('trans')->int("id");
-		if($id)
-		{
+		$id = $this->get('id','int');
+		if($id){
 			$this->assign("id",$id);
 			$rs = $this->model('module')->get_one($id);
-			$this->assign("rs",$rs);
+		}else{
+			$taxis = $this->model('module')->module_next_taxis();
+			$rs = array('taxis'=>$taxis);
 		}
+		$this->assign("rs",$rs);
 		$this->view("module_set");
 	}
 
@@ -245,6 +247,7 @@ class module_control extends phpok_control
 		if(!$title) $title = $f_rs["title"];
 		$note = $this->get("note");
 		if(!$note) $note = $f_rs["note"];
+		$taxis = $this->model('module')->fields_next_taxis($id);
 		$tmp_array = array("module_id"=>$id);
 		$tmp_array["title"] = $title;
 		$tmp_array["note"] = $note;
@@ -254,7 +257,7 @@ class module_control extends phpok_control
 		$tmp_array["form_style"] = $f_rs["form_style"];
 		$tmp_array["format"] = $f_rs["format"];
 		$tmp_array["content"] = $f_rs["content"];
-		$tmp_array["taxis"] = $f_rs["taxis"];
+		$tmp_array["taxis"] = $taxis;
 		$tmp_array["ext"] = "";
 		if($f_rs["ext"])
 		{
@@ -300,6 +303,8 @@ class module_control extends phpok_control
 		$this->assign('formats',$formats);
 		$this->assign('forms',$forms);
 		$this->assign('mid',$mid);
+		$taxis = $this->model('module')->fields_next_taxis($mid);
+		$this->assign('rs',array('taxis'=>$taxis));
 		$this->view('module_field_create');
 	}
 	

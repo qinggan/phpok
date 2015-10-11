@@ -12,7 +12,7 @@ function check_save()
 	var content = UE.getEditor('content').getContentTxt();
 	if(!content)
 	{
-		$.dialog.alert("邮件内容不能空");
+		$.dialog.alert("内容不能空");
 		return false;
 	}
 	var identifier = $("#identifier").val();
@@ -40,15 +40,15 @@ function check_save()
 <div class="tips">
 	<div class="action"><a href="{echo admin_url('email')}">返回列表</a></div>
 	您当前的位置：
-	<a href="{echo admin_url('email')}">邮件内容模板管理</a>
+	<a href="{echo admin_url('email')}">模板内容管理</a>
 	&raquo; <!-- if $id -->编辑<!-- else -->添加<!-- /if -->
 </div>
 <form method="post" action="{echo admin_url('email','setok')}" onsubmit="return check_save()">
 <input type="hidden" name="id" id="id" value="{$id}" />
 <div class="table">
 	<div class="title">
-		邮件主题：
-		<span class="note">支持PHPOK模板变量</span>
+		主题：
+		<span class="note">支持PHPOK模板变量，必填项，短信模板此项内容忽略</span>
 	</div>
 	<div class="content">
 		<input type="text" id="title" name="title" class="long" value="{$rs.title}" />
@@ -56,15 +56,15 @@ function check_save()
 </div>
 <div class="table">
 	<div class="title">
-		邮件内容：
-		<span class="note">支持PHPOK模板变量</span>
+		内容：
+		<span class="note">支持PHPOK模板变量，如为短信，内容HTML标签将自动去除</span>
 	</div>
 	<div class="content">{$edit_content}</div>
 </div>
 <div class="table">
 	<div class="title">
 		标识：
-		<span class="note">该标识用于实现前台邮件通知的调用</span>
+		<span class="note">该标识用于实现通知的调用，短信模板请以：<span class="red">sms_</span> 开头</span>
 	</div>
 	<div class="content">
 		<input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" />

@@ -15,83 +15,169 @@ class payment_control extends phpok_control
 		parent::control();
 	}
 
-	//提交支付
-	public function submit_f()
+	//创建一条支付接口
+	public function create_f()
 	{
-		$chk = $this->auth_check();
-		$rs = $chk['rs'];
-		$error_url = $chk['error_url'];
-		unset($chk);
-		if($rs['pay_end']){
-			error(P_Lang('该订单已结束，不能再执行付款操作'),$error_url,'error');
+		$sn = $this->get('sn');
+		if(!$sn){
+			$sn = $this->_create_sn();
+		}
+		$type = $this->get('type');
+		if(!$type){
+			$type = 'order';
+		}
+		$price = $this->get('price','float');
+		if(!$price){
+			$this->json(P_Lang('未指定金额'));
+		}
+		$currency_id = $this->get('currency_id');
+		if(!$currency_id){
+			$currency_id = $this->site['currency_id'];
+		}
+		if($type == 'order'){
+			$title = P_Lang('订单：{sn}',array('sn'=>$sn));
+		}elseif($type == 'recharge'){
+			$title = P_Lang('充值：{sn}',array('sn'=>$sn));
+		}else{
+			$title = $this->get('title');
+			if(!$title){
+				$title = P_Lang('其他：{sn}',array('sn'=>$sn));
+			}
 		}
 		$payment = $this->get('payment','int');
 		if(!$payment){
-			error(P_Lang('未指定付款方式'),$error_url,"error");
+			$this->json(P_Lang('未指定付款方式'));
 		}
 		$payment_rs = $this->model('payment')->get_one($payment);
 		if(!$payment_rs){
-			error(P_Lang('支付方式不存在'),$error_url,'error');
+			$this->json(P_Lang('支付方式不存在'));
 		}
 		if(!$payment_rs['status']){
-			error(P_Lang('支付方式未启用'),$error_url,'error');
+			$this->json(P_Lang('支付方式未启用'));
 		}
-		//进入支付页
-		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/submit.php';
-		if(!is_file($file)){
-			error(P_Lang('支付接口异常'),$error_url,'error');
+		//检测sn是否已存在
+		$chk = $this->model('payment')->log_check($sn);
+		if($chk){
+			if($chk['status']){
+				$this->json(P_Lang('订单{sn}已支付完成，不能重复执行'));
+			}
+			$array = array('sn'=>$sn,'type'=>$type,'payment_id'=>$payment,'title'=>$title,'content'=>$title);
+			$array['dateline'] = $this->time;
+			$array['price'] = $price;
+			$array['currency_id'] = $currency_id;
+			$this->model('payment')->log_update($array,$chk['id']);
+			$this->json($chk['id'],true);
 		}
-		include_once($file);
-		//更新定单支付信息
-		$data = array('pay_id'=>$payment_rs['id'],'pay_title'=>$payment_rs['title']);
-		$data['pay_date'] = $this->time;
-		$data['pay_status'] = '正在支付';
-		$currency = $payment_rs['currency']['id'] ? $payment_rs['currency']['id'] : $rs['currency_id'];
-		$price = price_format_val($rs['price'],$rs['currency_id'],$currency);
-		$data['pay_price'] = $price;
-		$data['pay_currency'] = $currency;
-		if($currency){
-			$currency_rs = $this->model('currency')->get_one($currency);
-			$currency_code = $currency_rs['code'];
-			$pay_currency_rate = $currency_rs['val'];
-		}else{
-			$currency_code = 'CNY';
-			$currency_rate = '1.00000000';
+		$array = array('sn'=>$sn,'type'=>$type,'payment_id'=>$payment,'title'=>$title,'content'=>$title);
+		$array['dateline'] = $this->time;
+		$array['user_id'] = $this->user['id'];
+		$array['price'] = $price;
+		$array['currency_id'] = $currency_id;
+		$insert_id = $this->model('payment')->log_create($array);
+		if(!$insert_id){
+			$this->json(P_Lang('支付记录创建失败'));
 		}
-		$data['pay_currency_code'] = $currency_code;
-		$data['pay_currency_rate'] = $pay_currency_rate;
-		$data['pay_end'] = 0;
-		$this->model('order')->save($data,$rs['id']);
+		//更新订单状态
+		if($type == 'order'){
+			$order = $this->model('order')->get_one_from_sn($sn);
+			if(!$order){
+				$this->model('payment')->log_delete($insert_id);
+				$this->json(P_Lang('订单信息不存在'));
+			}
+			//更新支付状态
+			$this->model('order')->update_order_status($order['id'],'unpaid');
+			//写入日志
+			$note = P_Lang('订单进入等待支付状态，编号：{sn}',array('sn'=>$sn));
+			$log = array('order_id'=>$order['id'],'addtime'=>$this->time,'who'=>$this->user['user'],'note'=>$note);
+			$this->model('order')->log_save($log);
+			//增加order_payment
+			$array = array('order_id'=>$order['id'],'payment_id'=>$payment_rs['id']);
+			$array['title'] = $payment_rs['title'];
+			$array['price'] = $price;
+			$array['startdate'] = $this->time;
+			$order_payment = $this->model('order')->order_payment($order['id']);
+			if(!$order_payment){
+				$this->model('order')->save_payment($array);
+			}else{
+				$this->model('order')->save_payment($array,$order_payment['id']);
+			}
+		}
+		$this->json($insert_id,true);
+	}
+
+	private function _create_sn()
+	{
+		$a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$rand_str = '';
+		for($i=0;$i<3;$i++){
+			$rand_str .= $a[rand(0,25)];
+		}
+		$rand_str .= rand(1000,9999);
+		$rand_str .= date("YmdHis",$this->time);
+		return $rand_str;
+	}
+
+	//提交支付
+	public function submit_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			error(P_Lang('未指定支付订单ID'),'','error');
+		}
+		$log = $this->model('payment')->log_one($id);
+		if(!$log){
+			error(P_Lang('订单信息不存在'),'','error');
+		}
+		if($log['status']){
+			error(P_Lang('订单已支付过了，不能再次执行'),'','error');
+		}
+		$payment_rs = $this->model('payment')->get_one($log['payment_id']);
+		if(!$payment_rs){
+			error(P_Lang('支付方式不存在'),'','error');
+		}
+		if(!$payment_rs['status']){
+			error(P_Lang('支付方式未启用'),'','error');
+		}
+		$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/submit.php';
+		if(!file_exists($file)){
+			$tmpfile = str_replace($this->dir_root,'',$file);
+			error(P_Lang('支付接口异常，文件{file}不存在',array('file'=>$tmpfile)),'','error');
+		}
+		include($file);
 		$name = $payment_rs['code']."_submit";
-		$payment = new $name($rs,$payment_rs);
+		$payment = new $name($log,$payment_rs);
 		$payment->submit();
 	}
 
-	//同步通知处理方案
 	public function notice_f()
 	{
-		$chk = $this->auth_check();
-		$rs = $chk['rs'];
-		$url = $chk['error_url'];
-		unset($chk);
-		if($rs['pay_end']){
+		$id = $this->get('id','int');
+		if(!$id){
+			error(P_Lang('执行异常，请检查，缺少参数ID'),'','error');
+		}
+		$rs = $this->model('payment')->log_one($id);
+		if(!$rs){
+			error(P_Lang('订单信息不存在'),$this->url('index'),'error');
+		}
+		if($rs['type'] == 'order'){
+			$order = $this->model('order')->get_one_from_sn($rs['sn']);
+			$url = $this->url('order','info','id='.$order['id']);
+		}elseif($rs['type'] == 'recharge'){
+			$url = $this->url('usercp','wealth','sn='.$rs['sn']);
+		}else{
+			$url = $this->url('payment','show','id='.$id);
+		}
+		//同步通知
+		if($rs['status']){
 			error(P_Lang('您的订单付款成功，请稍候…'),$url,'ok');
 		}
-		if(!$rs['pay_id']){
-			error(P_Lang('未指定支付方式'),$url,'ok');
+		$payment_rs = $this->model('payment')->get_one($rs['payment_id']);
+		$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/notice.php';
+		if(!file_exists($file)){
+			$tmpfile = str_replace($this->dir_root,'',$file);
+			error(P_Lang('支付接口异常，文件{file}不存在',array('file'=>$tmpfile)),'','error');
 		}
-		$payment_rs = $this->model('payment')->get_one($rs['pay_id']);
-		if(!$payment_rs){
-			error(P_Lang('付款方式不存在'),$url,'error');
-		}
-		if(!$payment_rs['status']){
-			error(P_Lang('付款方式未启用'),$url,'error');
-		}
-		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/notice.php';
-		if(!is_file($file)){
-			error(P_Lang('支付接口异常'),$url,'error');
-		}
-		include_once($file);
+		include($file);
 		$name = $payment_rs['code'].'_notice';
 		$cls = new $name($rs,$payment_rs);
 		$cls->submit();
@@ -106,65 +192,47 @@ class payment_control extends phpok_control
 		if(!$sn){
 			exit('error');
 		}
-		$rs = $this->model('order')->get_one_from_sn($sn);
+		$rs = $this->model('payment')->log_check($sn);
 		if(!$rs){
 			exit('error');
 		}
-		if($rs['pay_end']){
-			exit('success');
-		}
-		if(!$rs['pay_id']){
-			exit('error');
-		}
-		$payment_rs = $this->model('payment')->get_one($rs['pay_id']);
+		$payment_rs = $this->model('payment')->get_one($rs['payment_id']);
 		if(!$payment_rs){
 			exit('error');
 		}
 		if(!$payment_rs['status']){
 			exit('error');
 		}
-		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/notify.php';
-		if(!is_file($file)){
+		$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/notify.php';
+		if(!file_exists($file)){
 			exit('error');
 		}
-		include_once($file);
+		include($file);
 		$name = $payment_rs['code'].'_notify';
 		$cls = new $name($rs,$payment_rs);
 		$cls->submit();
 		exit('success');
 	}
 
-	private function auth_check()
+	public function show_f()
 	{
-		if($_SESSION['user_id']){
-			$id = $this->get('id','int');
-			if(!$id){
-				error(P_Lang('订单ID为空'),$this->url('order'),'error');
-			}
-			$rs = $this->model('order')->get_one($id);
-			if(!$rs){
-				error(P_Lang('订单信息不存在'),$this->url('order'),'error');
-			}
-			if($rs['user_id'] != $_SESSION['user_id']){
-				error(P_Lang('您没有权限为此订单执行支付'),$this->url('order'),'error');
-			}
-			$error_url = $this->url('order','info','id='.$id);
-		}else{
-			$sn = $this->get('sn');
-			$passwd = $this->get('passwd');
-			if(!$sn || !$passwd){
-				error(P_Lang('订单信息不完整，请检查'),$this->url('index'),'error');
-			}
-			$rs = $this->model('order')->get_one_from_sn($sn);
-			if(!$rs){
-				error(P_Lang('订单信息不存在'),$this->url('index'),'error');
-			}
-			if($rs['passwd'] != $passwd){
-				error(P_Lang('验证不通过'),$this->url('index'),'error');
-			}
-			$error_url = $this->url('order','info','sn='.$sn.'&passwd='.$passwd);
+		$id = $this->get('id');
+		if(!$id){
+			error(P_Lang('未指定ID'),'','error');
 		}
-		return array('rs'=>$rs,'error_url'=>$error_url);
+		$rs = $this->model('payment')->log_one($id);
+		if(!$rs){
+			error(P_Lang('数据不存在，请检查'),'','error');
+		}
+		if($rs['type'] == 'order'){
+			$order = $this->model('order')->get_one_from_sn($rs['sn']);
+			if(!$order){
+				error(P_Lang('订单信息不存在'),'','error');
+			}
+			$url = $this->url('order','info','id='.$order['id']);
+			$this->_location($url);
+		}
+		$this->view('payment_show');
 	}
 }
 

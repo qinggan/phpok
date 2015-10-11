@@ -28,6 +28,7 @@ class phpok_call extends phpok_control
 		$array[] = 'res';
 		$array[] = 'reslist';
 		$array[] = 'subtitle';
+		$array[] = 'comment';
 		return $array;
 	}
 
@@ -161,7 +162,7 @@ class phpok_call extends phpok_control
 		if($project['is_biz']){
 			$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit";
 		}
-		$condition = $this->_arc_condition($rs);
+		$condition = $this->_arc_condition($rs,$flist);
 		$array['total'] = $this->model('list')->arc_count($project['module'],$condition);
 		if(!$array['total']){
 			if($cache_id){
@@ -234,7 +235,7 @@ class phpok_call extends phpok_control
 		return $array;	
 	}
 
-	private function _arc_condition($rs)
+	private function _arc_condition($rs,$fields='')
 	{
 		$condition  = " l.site_id='".$rs['site']."' AND l.hidden=0 ";
 		//计划任务时发布文章
@@ -294,6 +295,7 @@ class phpok_call extends phpok_control
 			unset($tid_sql,$tag_condition,$list);
 		}
 		if($rs['keywords']){
+			$rs['keywords'] = str_replace(" ",",",$rs['keywords']);
 			$list = explode(",",$rs['keywords']);
 			$k_condition = false;
 			foreach($list AS $key=>$value){
@@ -302,6 +304,13 @@ class phpok_call extends phpok_control
 				$k_condition [] = " l.seo_desc LIKE '%".$value."%'";
 				$k_condition [] = " l.title LIKE '%".$value."%'";
 				$k_condition [] = " l.tag LIKE '%".$value."%'";
+				if($fields && is_array($fields)){
+					foreach($fields as $k=>$v){
+						if($v['field_type'] == 'varchar'){
+							$k_condition[] = " ext.".$v['identifier']." LIKE '%".$value."%' ";
+						}
+					}
+				}
 			}
 			$condition .= "AND (".implode(" OR ",$k_condition).") ";
 			unset($k_condition,$list);
@@ -349,9 +358,9 @@ class phpok_call extends phpok_control
 				if($value['ext']){
 					$value['ext'] = unserialize($value['ext']);
 				}
-				if($value['ext'] && $value['ext']['inc_tag']){
+				/*if($value['ext'] && $value['ext']['inc_tag']){
 					$value['content'] = $this->_tag_format($value['content'],$type.$baseinfo['id']);
-				}
+				}*/
 				$value['content'] = str_replace('[:page:]','',$value['content']);
 				$value['content'] = $this->lib('ubb')->to_html($value['content'],false);
 			}
@@ -416,7 +425,8 @@ class phpok_call extends phpok_control
 		if(!$project || !$project['status'] || !$project['module']){
 			return false;
 		}
-		$condition = $this->_arc_condition($rs);
+		$flist = $this->model('module')->fields_all($project['module']);
+		$condition = $this->_arc_condition($rs,$flist);
 		return $this->model('list')->arc_count($project['module'],$condition);
 	}
 
@@ -1032,6 +1042,9 @@ class phpok_call extends phpok_control
 			$cache_tbl[] = $prefix."user_fields";
 			$cache_tbl[] = $prefix."user_group";
 		}
+		if($type == 'comment'){
+			$cache_tbl = array($prefix.'user',$prefix.'reply');
+		}
 		return $cache_tbl;
 	}
 
@@ -1061,6 +1074,88 @@ class phpok_call extends phpok_control
 			$data['rslist'] = $this->model('user')->get_list($condition,$offset,$psize);
 		}
 		return $data;
+	}
+
+	private function _comment($rs)
+	{
+		if(!$rs['phpok'] && !$rs['tid']){
+			return false;
+		}
+		$id = $rs['tid'] ? $rs['tid'] : $rs['phpok'];
+		$arc = $this->_arc(array('title_id'=>$id));
+		if(!$arc){
+			return false;
+		}
+		$pid = $arc['project_id'];
+		$project = $this->_project(array('pid'=>$pid));
+		if(!$project || !$project['comment_status']){
+			return false;
+		}
+		$psize = $rs['psize'] ? $rs['psize'] : $this->config['psize'];
+		if(!$psize){
+			$psize = 30;
+		}
+		$pageid = ($rs['pageid'] && $rs['pageid']>1) ? ($rs['pageid']-1) : 1;
+		$offset = ($pageid-1) * $psize;
+		$condition = "tid='".$id."' AND parent_id='0' ";
+		$sessid = $this->session->sessid();
+		$uid = $_SESSION['user_id'] ? $_SESSION['user_id'] : 0;
+		$array = array('avatar'=>'images/avatar.gif','uid'=>$uid,'user'=>P_Lang('游客'));
+		if($uid){
+			if($this->user['avatar']){
+				$array['avatar'] = $this->user['avatar'];
+			}
+			$array['user'] = $this->user['user'];			
+		}
+		$condition .= " AND (status=1 OR (status=0 AND (uid=".$uid." OR session_id='".$sessid."'))) ";
+		if($rs['vouch'] && ($rs['vouch'] == 'true' || $rs['vouch'] == '1')){
+			$condition .= " AND vouch=1 ";
+		}
+		$total = $this->model('reply')->get_total($condition);
+		if(!$total){
+			return false;
+		}
+		$array['total'] = $total;
+		$rslist = $this->model('reply')->get_list($condition,$offset,$psize);
+		if($rslist){
+			$uidlist = $userlist = array();
+			foreach($rslist as $key=>$value){
+				if($value['uid']){
+					$uidlist[] = $value['uid'];
+				}
+			}
+			if($uidlist && count($uidlist)>0){
+				$uidlist = array_unique($uidlist);
+				$condition = "u.status='1' AND u.id IN(".implode(",",$uidlist).")";
+				$tmplist = $this->model('user')->get_list($condition,0,0);
+				if($tmplist){
+					foreach($tmplist as $key=>$value){
+						if(!$value['avatar']){
+							$value['avatar'] = 'images/avatar.gif';
+						}
+						$userlist[$value['id']] = $value;
+					}
+				}
+				foreach($rslist as $key=>$value){
+					if($value['uid'] && $userlist[$value['uid']]){
+						$value['uid'] = $userlist[$value['uid']];
+					}else{
+						$value['uid'] = array('id'=>0,'user'=>P_Lang('游客'),'avatar'=>'images/avatar.gif');
+					}
+					$rslist[$key] = $value;
+				}
+			}else{
+				foreach($rslist as $key=>$value){
+					$value['uid'] = array('id'=>0,'user'=>P_Lang('游客'),'avatar'=>'images/avatar.gif');
+					$rslist[$key] = $value;
+				}
+			}
+			$array['rslist'] = $rslist;
+		}
+		$array['pageid'] = $pageid;
+		$array['psize'] = $psize;
+		$array['arc'] = $arc;
+		return $array;
 	}
 }
 ?>

@@ -83,15 +83,17 @@ class cart_control extends phpok_control
 		$v_address = array('id'=>'email','fullname'=>P_Lang('邮箱'),'address'=>'');
 		$addresslist[] = $v_address;
 		$default_address = $first = $selected = false;
-		foreach($addresslist as $key=>$value){
-			if($key<1){
-				$first = $value;
-			}
-			if($value['is_default']){
-				$default_address = $value;
-			}
-			if($_SESSION['cart'] && $_SESSION['cart']['address_id'] && $_SESSION['cart']['address_id'] == $value['id']){
-				$selected = $value;
+		if(is_array($addresslist)){
+			foreach($addresslist as $key=>$value){
+				if($key<1){
+					$first = $value;
+				}
+				if($value['is_default']){
+					$default_address = $value;
+				}
+				if($_SESSION['cart'] && $_SESSION['cart']['address_id'] && $_SESSION['cart']['address_id'] == $value['id']){
+					$selected = $value;
+				}
 			}
 		}
 		if(!$default_address){
@@ -110,15 +112,17 @@ class cart_control extends phpok_control
 		$invoice = array('id'=>'no','title'=>P_Lang('不开发票'),'content'=>'');
 		$ilist[] = $invoice;
 		$default_invoice = $first = $selected = false;
-		foreach($ilist as $key=>$value){
-			if($key<1){
-				$first = $value;
-			}
-			if($value['is_default']){
-				$default_invoice = $value;
-			}
-			if($_SESSION['cart'] && $_SESSION['cart']['invoice_id'] && $_SESSION['cart']['invoice_id'] == $value['id']){
-				$selected = $value;
+		if(is_array($ilist)){
+			foreach($ilist as $key=>$value){
+				if($key<1){
+					$first = $value;
+				}
+				if($value['is_default']){
+					$default_invoice = $value;
+				}
+				if($_SESSION['cart'] && $_SESSION['cart']['invoice_id'] && $_SESSION['cart']['invoice_id'] == $value['id']){
+					$selected = $value;
+				}
 			}
 		}
 		if(!$default_invoice){
@@ -131,6 +135,17 @@ class cart_control extends phpok_control
 		$_SESSION['cart']['invoice_id'] = $default_invoice['id'];
 		$this->assign('invoice',$default_invoice);
 		$this->assign('invoicelist',$ilist);
+		$this->assign('totalinvoice',count($ilist));
+		$pricelist = $this->model('site')->price_status_all(true);
+		if($pricelist){
+			foreach($pricelist as $key=>$value){
+				if(!$value['status']){
+					unset($pricelist[$key]);
+				}
+			}
+		}
+		$this->assign('pricelist',$pricelist);
+
 		$this->view("cart_checkout");
 	}
 

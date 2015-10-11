@@ -72,6 +72,8 @@ function logout(t)
 	$.phpok.go(get_url('logout'));
 }
 
+
+
 //会员
 ;(function($){
 	$.user = {
@@ -136,12 +138,12 @@ function logout(t)
 			}
 			var rs = $.phpok.json(url);
 			if(rs.status == 'ok'){
-				alert("商品已成功加入购物车中！");
+				$.dialog.tips('成功加入购物车');
 				this.total();
 			}
 			else
 			{
-				alert(rs.content);
+				$.dialog.alert(rs.content);
 				return false;
 			}
 		},

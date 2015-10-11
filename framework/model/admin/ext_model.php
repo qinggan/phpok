@@ -117,6 +117,13 @@ class ext_model extends ext_model_base
 		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE identifier='".$identifier."' AND module='".$module."'";
 		return $this->db->get_one($sql);
 	}
+
+	public function ext_next_taxis($module)
+	{
+		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."ext WHERE module='".$module."'";
+		$rs = $this->db->get_one($sql);
+		return $this->return_next_taxis($rs);
+	}
 }
 
 ?>

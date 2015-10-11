@@ -41,11 +41,53 @@ class payment_model_base extends phpok_model
 		return $this->db->query($sql);
 	}
 
+	//更新手机端状态
+	function wap($id=0,$wap=0,$is_id=false)
+	{
+		$sql = "UPDATE ".$this->db->prefix."payment SET wap='".$wap."' WHERE ";
+		$sql.= $is_id ? " id='".$id."'" : " code='".$id."'";
+		return $this->db->query($sql);
+	}
+
 	//删除支付接口
 	function delete_code($code)
 	{
 		if(!$code) return false;
 		$sql = "DELETE FROM ".$this->db->prefix."payment WHERE code='".$code."'";
+		return $this->db->query($sql);
+	}
+
+	public function log_check($sn)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."payment_log WHERE sn='".$sn."'";
+		return $this->db->get_one($sql);
+	}
+
+	public function log_update($data,$id=0)
+	{
+		if(!$id || !$data || !is_array($data)){
+			return false;
+		}
+		return $this->db->update_array($data,'payment_log',array('id'=>$id));
+	}
+
+	public function log_create($data)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		return $this->db->insert_array($data,'payment_log');
+	}
+
+	public function log_one($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."payment_log WHERE id='".$id."'";
+		return $this->db->get_one($sql);
+	}
+
+	public function log_delete($id)
+	{
+		$sql = "DELETE FROM ".$this->db->prefix."payment_log WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
 }

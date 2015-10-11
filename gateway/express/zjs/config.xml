@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>宅急送接口引挈</title>
+	<code>
+		<logisticProviderID>
+			<title>客户标识(宅急送提供)</title>
+			<note>设置您的客户标识，即客户账号，此标识可由宅急送公司提供</note>
+			<type>text</type>
+		</logisticProviderID>
+		<keyseed>
+			<title>密钥</title>
+			<note>用于保护验证数据安全</note>
+			<type>text</type>
+		</keyseed>
+		<fixed_string>
+			<title>固定字符串</title>
+			<note>用于验证</note>
+			<type>text</type>
+		</fixed_string>
+	</code>
+</root>

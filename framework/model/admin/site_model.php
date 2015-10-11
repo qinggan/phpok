@@ -132,6 +132,46 @@ class site_model extends site_model_base
 		$sql = "UPDATE ".$this->db->prefix."site_domain SET is_mobile=0 WHERE site_id=".$this->site_id;
 		return $this->db->query($sql);
 	}
+
+
+	public function price_status_update($data,$id=0)
+	{
+		if(!$id || !$data){
+			return false;
+		}
+		$rslist = $this->price_status_all();
+		$rslist[$id] = $data;
+		$file = $this->dir_root.'data/xml/price_status_'.$this->site_id.'.xml';
+		$this->lib('xml')->save($rslist,$file);
+	}
+
+
+	public function order_status_one($id)
+	{
+		$rslist = $this->order_status_all();
+		if(!$rslist){
+			return false;
+		}
+		if($rslist[$id]){
+			$rs = $rslist[$id];
+			$rs['id'] = $id;
+			return $rs;
+		}
+		return false;
+	}
+
+	//更新状态
+	public function order_status_update($data,$id=0)
+	{
+		if(!$id || !$data){
+			return false;
+		}
+		$rslist = $this->order_status_all();
+		$rslist[$id] = $data;
+		$file = $this->dir_root.'data/xml/order_status_'.$this->site_id.'.xml';
+		$this->lib('xml')->save($rslist,$file);
+	}
+
 }
 
 ?>

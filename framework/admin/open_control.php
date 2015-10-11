@@ -302,21 +302,26 @@ class open_control extends phpok_control
 	}
 
 	//读取会员列表
-	function user_f()
+	public function user_f()
 	{
 		$id = $this->get("id");
-		if(!$id) $id = "user";
+		if(!$id){
+			$id = "user";
+		}
 		$pageid = $this->get($this->config["pageid"],"int");
-		if(!$pageid) $pageid = 1;
-		$psize = $this->config["psize"];
-		if(!$psize) $psize = 30;
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->config["psize"] ? $this->config['psize'] : 30;
 		$keywords = $this->get("keywords");
 		$multi = $this->get("multi","int");
-		$this->assign("multi",$multi);
-		$page_url = $this->url("open","user","id=".$id."&multi=".$multi);
+		$page_url = $this->url("open","user","id=".$id);
+		if($multi){
+			$page_url .= "&multi=1";
+			$this->assign("multi",$multi);
+		}
 		$condition = "1=1";
-		if($keywords)
-		{
+		if($keywords){
 			$this->assign("keywords",$keywords);
 			$condition .= " AND u.user LIKE '%".$keywords."%'";
 			$page_url.="&keywords=".rawurlencode($keywords);
@@ -326,12 +331,11 @@ class open_control extends phpok_control
 		$count = $this->model('user')->get_count($condition);
 		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=2';
 		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+		$pagelist = phpok_page($page_url,$count,$pageid,$psize,$string);
 		$this->assign("total",$count);
 		$this->assign("rslist",$rslist);
 		$this->assign("id",$id);
 		$this->assign("pagelist",$pagelist);
-		
 		$this->view("open_user_list");
 	}
 

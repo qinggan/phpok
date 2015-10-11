@@ -20,6 +20,13 @@ class editor_form extends _init_auto
 		$this->view($this->dir_phpok.'form/html/editor_admin.html','abs-file');
 	}
 
+	public function cssjs()
+	{
+		$this->addjs('js/ueditor/ueditor.config.js');
+		$this->addjs('js/ueditor/ueditor.all.min.js');
+		$this->addjs('js/ueditor/lang/zh-cn/zh-cn.js');
+	}
+
 	public function phpok_format($rs,$appid="admin")
 	{
 		$this->addjs('js/ueditor/ueditor.config.js');

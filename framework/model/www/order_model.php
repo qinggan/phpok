@@ -32,7 +32,27 @@ class order_model extends order_model_base
 		$offset = intval($offset);
 		$psize = intval($psize);
 		$sql .= " ORDER BY addtime DESC,id DESC LIMIT ".$offset.",".$psize;
-		return $this->db->get_all($sql);
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		$status_list = $this->status_list();
+		$order_idlist = array();
+		foreach($rslist as $key=>$value){
+			$value['status_info'] = ($status_list && $status_list[$value['status']]) ? $status_list[$value['status']] : $value['status'];
+			$rslist[$key] = $value;
+			$order_idlist[] = $value['id'];
+		}
+		$order_ids = implode(",",$order_idlist);
+		$sql = "SELECT SUM(qty) as qty,order_id FROM ".$this->db->prefix."order_product WHERE order_id IN(".$order_ids.") GROUP BY order_id";
+		$tmplist = $this->db->get_all($sql,'order_id');
+		if($tmplist){
+			foreach($rslist as $key=>$value){
+				$value['qty'] = $tmplist[$value['id']] ? $tmplist[$value['id']]['qty'] : 0;
+				$rslist[$key] = $value;
+			}
+		}
+		return $rslist;
 	}
 
 	function get_count($condition="")
@@ -160,6 +180,21 @@ class order_model extends order_model_base
 		return $this->db->get_one("SELECT * FROM ".$this->db->prefix."order_product WHERE id='".$id."'");
 	}
 
+
+	public function log_save($data)
+	{
+		if(!$data){
+			return false;
+		}
+		if(!$data['who'] && $_SESSION['user_id']){
+			$user = $this->model('user')->get_one($_SESSION['user_id']);
+			$data['who'] = $user['user'];
+		}
+		if(!$data['addtime']){
+			$data['addtime'] = $this->time;
+		}
+		return $this->db->insert_array($data,'order_log');
+	}
 }
 
 ?>

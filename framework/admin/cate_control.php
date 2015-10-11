@@ -51,6 +51,8 @@ class cate_control extends phpok_control
 			$this->assign("parent_id",$parent_id);
 			$ext_module = "add-cate";
 			$extlist = $_SESSION['admin-'.$ext_module];
+			$taxis = $this->model('cate')->cate_next_taxis($parent_id);
+			$this->assign('rs',array('taxis'=>$taxis));
 		}
 		if($extlist){
 			$tmp = false;
@@ -118,7 +120,7 @@ class cate_control extends phpok_control
 		$array["site_id"] = $_SESSION["admin_site_id"];
 		$array["parent_id"] = 0;
 		$array["title"] = $title;
-		$array["taxis"] = 255;
+		$array["taxis"] = $this->model('cate')->cate_next_taxis(0);
 		$array["psize"] = "";
 		$array["tpl_list"] = "";
 		$array["tpl_content"] = "";

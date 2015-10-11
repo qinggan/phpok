@@ -1,15 +1,16 @@
 <!-- inc:head_open -->
 <script type="text/javascript">
-function select_input(val,val2)
+function select_input(val,val2,title)
 {
 	var obj = $.dialog.opener;
-	if(val == "index")
-	{
+	if(val == "index"){
 		obj.$("#{$id},#{$id}_default").val("index.php");
 		obj.$("#{$id}_rewrite").val("index.html");
-	}
-	else
-	{
+	}else{
+		var old = obj.$("#title").val();
+		if(!old && old != 'undefined'){
+			obj.$("#title").val(title)
+		}
 		obj.$("#{$id},#{$id}_default").val("index.php?id="+val+"&cate="+val2);
 		obj.$("#{$id}_rewrite").val(val+"/"+val2+".html");
 	}
@@ -50,7 +51,7 @@ function go_back()
 		</table>
 	</td>
 	<td>
-		<a href="javascript:select_input('{$p_rs.identifier}','{$value.identifier}');void(0)">提交</a>
+		<a href="javascript:select_input('{$p_rs.identifier}','{$value.identifier}','{$value.title}');void(0)">提交</a>
 	</td>
 </tr>
 <!-- /foreach -->

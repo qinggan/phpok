@@ -202,6 +202,8 @@ class reply_control extends phpok_control
 		$this->assign("rs",$rs);
 		$title_rs = $this->model('list')->get_one($rs["tid"]);
 		$this->assign("title_rs",$title_rs);
+		$edit_content = form_edit('content',$rs['content'],'editor','width=680&height=180');
+		$this->assign('edit_content',$edit_content);
 		$this->view("reply_content");
 	}
 
@@ -213,7 +215,7 @@ class reply_control extends phpok_control
 		}
 		$array = array();
 		$array["star"] = $this->get("star","int");
-		$array["content"] = $this->get("content");
+		$array["content"] = $this->get("content",'html');
 		$array["status"] = $this->get("status","int");
 		$this->model('reply')->save($array,$id);
 		$this->json(true);
@@ -233,7 +235,7 @@ class reply_control extends phpok_control
 		$this->assign("rs",$rs);
 		$title_rs = $this->model('list')->get_one($rs["tid"]);
 		$this->assign("title_rs",$title_rs);
-		$edit_content = form_edit('content',$rs['adm_content'],'editor','width=680&height=300');
+		$edit_content = form_edit('content',$rs['adm_content'],'editor','width=680&height=180');
 		$this->assign('edit_content',$edit_content);
 		$this->view("reply_adm");
 	}

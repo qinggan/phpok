@@ -269,6 +269,38 @@ class user_control extends phpok_control
 		if($rs_name){
 			$this->json(P_Lang('会员账号已经存在'));
 		}
+		$mobile = $this->get('mobile');
+		if($mobile){
+			if(!$this->lib('common')->tel_check($mobile)){
+				$this->json(P_Lang('手机号填写不正确'));
+			}
+			$chk = $this->model('user')->get_one($mobile,'mobile');
+			if($id){
+				if($chk && $chk['id'] != $id){
+					$this->json(P_Lang('手机号已被占用'));
+				}
+			}else{
+				if($chk){
+					$this->json(P_Lang('手机号已被占用'));
+				}
+			}
+		}
+		$email = $this->get('email');
+		if($email){
+			if(!$this->lib('common')->email_check($email)){
+				$this->json(P_Lang('邮箱填写不正确'));
+			}
+			$chk = $this->model('user')->get_one($email,'email');
+			if($id){
+				if($chk && $chk['id'] != $id){
+					$this->json(P_Lang('邮箱已被占用'));
+				}
+			}else{
+				if($chk){
+					$this->json(P_Lang('邮箱已被占用'));
+				}
+			}
+		}
 		$this->json(P_Lang('验证通过'),true);
 	}
 
@@ -533,6 +565,60 @@ class user_control extends phpok_control
 		}
 		$this->model('user')->field_delete($id);
 		$this->json(P_Lang('删除成功'),true);
+	}
+
+	public function info_f()
+	{
+		$uid = $this->get('uid');
+		if(!$uid){
+			$this->json(P_Lang('未指定会员ID'));
+		}
+		$type = $this->get('type');
+		if($type == 'invoice'){
+			$rslist = $this->model('user')->invoice($uid);
+			if(!$rslist){
+				$this->json(P_Lang('该会员未设置发票信息'));
+			}
+			$first = $default = false;
+			foreach($rslist as $key=>$value){
+				if($key<1){
+					$first = $value;
+				}
+				if($value['is_default']){
+					$default = $value;
+				}
+			}
+			if(!$default){
+				$default = $first;
+				unset($first);
+			}
+			$this->json(array('rs'=>$default,'rslist'=>$rslist),true);
+		}elseif($type == 'address'){
+			$rslist = $this->model('user')->address($uid);
+			if(!$rslist){
+				$this->json(P_Lang('该会员未设置收件人信息'));
+			}
+			$first = $default = false;
+			foreach($rslist as $key=>$value){
+				if($key<1){
+					$first = $value;
+				}
+				if($value['is_default']){
+					$default = $value;
+				}
+			}
+			if(!$default){
+				$default = $first;
+				unset($first);
+			}
+			$this->json(array('rs'=>$default,'rslist'=>$rslist),true);
+		}else{
+			$info = $this->model('user')->get_one($uid);
+			if(!$info){
+				$this->json(P_Lang('会员信息不存在'));
+			}
+		}
+		$this->json($info,true);
 	}
 }
 ?>

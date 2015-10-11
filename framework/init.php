@@ -150,6 +150,8 @@ class _init_phpok
 	public $js_langlist;
 	public $language_status = 'gettext';
 
+	public $gateway;
+
 	public function __construct()
 	{
 		@ini_set("magic_quotes_runtime",0);
@@ -524,7 +526,6 @@ class _init_phpok
 			$this->config["engine"]["db"] = $this->config["db"];
 			$this->config["db"] = "";
 		}
-		//$engine_file_list = "";
 		foreach($this->config["engine"] AS $key=>$value)
 		{
 			$basefile = $this->dir_phpok.'engine/'.$key.'.php';
@@ -955,11 +956,13 @@ class _init_phpok
 		if($_SESSION['user_id']){
 			$this->user = $this->model('user')->get_one($_SESSION['user_id']);
 			$this->assign('user',$this->user);
+			$_SESSION['user'] = $this->user;
 		}
 		//管理员账号 $this->admin
 		if($_SESSION['admin_id']){
 			$this->admin = $this->model('admin')->get_one($_SESSION['admin_id']);
 			$this->assign('admin',$this->admin);
+			$_SESSION['admin'] = $this->admin;
 		}
 		$dir_root = $this->dir_phpok.$this->app_id.'/';
 		if($ctrl == 'js' || $ctrl == 'ajax' || $ctrl == "inp"){
@@ -1091,6 +1094,61 @@ class _init_phpok
 	{
 		$this->csslist[] = $url;
 	}
+
+	//第三方网关接入
+	final public function gateway($action,$param='')
+	{
+		if($action == 'type'){
+			$this->gateway['type'] = $param;
+			return true;
+		}
+		if($action == 'param'){
+			if($param == 'default'){
+				$info = $this->model('gateway')->get_default($this->gateway['type']);
+			}else{
+				$info = $this->model('gateway')->get_one($param);
+			}
+			if($info){
+				$this->gateway['param'] = $info;
+			}
+			return true;
+		}
+		if($action == 'extinfo'){
+			$this->gateway['extinfo'] = $param;
+		}
+		if($action == 'exec'){
+			if(!$this->gateway['param']){
+				return false;
+			}
+			$rs = $this->gateway['param'];
+			$extinfo = $this->gateway['extinfo'];
+			if(!$extinfo && $param){
+				$extinfo = $param;
+			}
+			$file = $this->dir_root.'gateway/'.$this->gateway['param']['type'].'/'.$this->gateway['param']['code'].'/exec.php';
+			$info = false;
+			if(file_exists($file)){
+				$info = include $file;
+			}
+			if($param == 'json'){
+				exit($this->lib('json')->encode($info));
+			}else{
+				return $info;
+			}
+		}
+		if(!$this->gateway['param']){
+			return false;
+		}
+		$file = $this->dir_root.'gateway/'.$this->gateway['param']['type'].'/'.$this->gateway['param']['code'].'/'.$action.'.php';
+		if(file_exists($file) && $param){
+			$param = explode(":",$param);
+			$classname = $param[0];
+			$funcname = $param[1] ? $param[1] : 'index';
+			$obj = new $classname($this->gateway['param']);
+			return $obj->$funcname($this->gateway['funcparam']);
+		}
+		return true;
+	}
 }
 
 //核心魔术方法，此项可实现类，方法的自动加载
@@ -1174,6 +1232,22 @@ class phpok_model extends _init_auto
 	{
 		unset($this);
 	}
+
+	protected function return_next_taxis($rs='')
+	{
+		if($rs){
+			if(is_array($rs)){
+				$taxis = $rs['taxis'] ? $rs['taxis'] : $rs['sort'];
+			}else{
+				$taxis = $rs;
+			}
+			$taxis = intval($taxis);
+			return intval($taxis+10);
+		}else{
+			return 10;
+		}
+	}
+	
 }
 
 class phpok_plugin extends _init_auto
@@ -1309,7 +1383,7 @@ function P_Lang($info,$replace='')
 	if($replace && is_string($replace)){
 		$replace  = unserialize($replace);
 	}
-	if($replace && is_array($replace)){
+	if($replace){
 		foreach($replace as $key=>$value){
 			$info = str_replace('{'.$key.'}',$value,$info);
 			$info = str_replace('['.$key.']',$value,$info);
