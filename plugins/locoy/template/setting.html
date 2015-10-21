@@ -1,14 +1,20 @@
-<div class="table">
-	<div class="title">
-		传递参数：
-		<span class="note">设置缩略图文本传递的参数，为空使用：<span class="red">thumbfile</span></span>
-	</div>
-	<div class="content"><input type="text" id="locoy_thumbfile" name="locoy_thumbfile" class="default" value="{$rs.param.locoy_thumbfile}" /></div>
+<div class="tips">
+	获取分类：{url ctrl=plugin func=exec id=locoy exec=catelist/}<br />
+	提交保存：{url ctrl=plugin func=exec id=locoy exec=save/}<br />
+	支持HTML里提取缩略图，如果您有需要保存图片请提将相应的HTML即可
+	<div class="clear"></div>
 </div>
 <div class="table">
 	<div class="title">
-		存储图片的ID：
-		<span class="note">设置缩略图存储的ID，为空使用：<span class="red">thumb</span></span>
+		项目
+		<span class="note">指定要采集的项目，项目必须包含模块</span>
 	</div>
-	<div class="content"><input type="text" id="locoy_thumb" name="locoy_thumb" class="default" value="{$rs.param.locoy_thumb}" /></div>
+	<div class="content">
+		<select id="pid" name="pid">
+		<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+		<option value="{$value.id}"{if $rs.param.pid == $value.id} selected{/if}>{$value.title}</option>
+		<!-- /loop -->
+		</select>
+	</div>
 </div>
+

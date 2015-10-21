@@ -132,6 +132,23 @@ class list_model extends list_model_base
 				$this->db->insert_array($tmp,'list_cate','replace');
 			}
 		}
+		//绑定价格
+		$sql = "SELECT * FROM ".$this->db->prefix."list_biz WHERE id='".$id."'";
+		$tmp = $this->db->get_one($sql);
+		if($tmp){
+			$tmp['id'] = $insert_id;
+			$this->db->insert_array($tmp,'list_biz','replace');
+		}
+		//绑定属性
+		$sql = "SELECT * FROM ".$this->db->prefix."list_attr WHERE tid='".$id."'";
+		$tmplist = $this->db->get_all($sql);
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$value['tid'] = $insert_id;
+				unset($value['id']);
+				$this->db->insert_array($value,'list_attr','replace');
+			}
+		}
 		return true;
 	}
 

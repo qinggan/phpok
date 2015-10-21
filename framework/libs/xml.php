@@ -19,13 +19,6 @@ class xml_lib
 			$this->xml_read_func = 'simplexml';
 		}
 		$this->xml_save_func = 'phpok';
-		/*if(class_exists('XMLWriter')){
-			$this->xml_save_func = 'xmlwriter';
-		}elseif(class_exists('DomDocument')){
-			$this->xml_save_func = 'dom';
-		}elseif(function_exists('simplexml_load_file') && function_exists('simplexml_load_string')){
-			$this->xml_save_func = 'simplexml';
-		}*/
 	}
 
 	public function read_setting($type='phpok')
@@ -92,7 +85,14 @@ class xml_lib
 	//通过SimpleXML读取XML信息
 	private function read_simplexml($info,$isfile=true)
 	{
-		$xml = $isfile ? simplexml_load_file($info) : simplexml_load_string($info);
+		if($isfile){
+			$xml = simplexml_load_file($info);
+		}else{
+			$info = preg_replace('/<\?xml.+\?>/isU','',$info);
+			$info = trim($info);
+			$info = '<?xml version="1.0" encoding="utf-8"?>'.$info;
+			$xml = simplexml_load_string($info);
+		}
 		return $this->simplexml_obj_to_array($xml);
 	}
 

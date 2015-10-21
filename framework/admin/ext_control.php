@@ -127,7 +127,7 @@ class ext_control extends phpok_control
 
 	public function add_f()
 	{
-		$id = $this->get("id","int");
+		$id = $this->get("id");
 		$module = $this->get("module");
 		if(!$id){
 			$this->json(P_Lang('未指定ID'));
@@ -135,36 +135,39 @@ class ext_control extends phpok_control
 		if(!$module){
 			$this->json(P_Lang('未指哪个模型要添加扩展字段'));
 		}
-		$rs = $this->model('fields')->get_one($id);
-		if(!$rs){
-			$this->json(P_Lang('没有相关字段内容'));
-		}
+		$tmplist = explode(",",$id);
 		$list = explode("-",$module);
-		if($list[0] == "add"){
-			if($_SESSION['admin-'.$module] && $_SESSION['admin-'.$module][$rs['identifier']]){
-				$this->json(P_Lang('字段已被使用，不能再使用'));
+		foreach($tmplist as $key=>$value){
+			$rs = $this->model('fields')->get_one($value);
+			if(!$rs){
+				continue;
 			}
-			unset($rs['id']);
-			$_SESSION['admin-'.$module][$rs['identifier']] = $rs;
-			$this->json(true);
+			if($list[0] == "add"){
+				if($_SESSION['admin-'.$module] && $_SESSION['admin-'.$module][$rs['identifier']]){
+					continue;
+				}
+				unset($rs['id']);
+				$_SESSION['admin-'.$module][$rs['identifier']] = $rs;
+			}else{
+				$chk_rs = $this->model('ext')->check_identifier($rs["identifier"],$module);
+				if($chk_rs){
+					continue;
+				}
+				$array = array();
+				$array["module"] = $module;
+				$array["title"] = $rs['title'];
+				$array["identifier"] = $rs['identifier'];
+				$array["field_type"] = $rs['field_type'];
+				$array["note"] = $rs['note'];
+				$array["form_type"] = $rs['form_type'];
+				$array["form_style"] = $rs["form_style"];
+				$array["format"] = $rs["format"];
+				$array["content"] = $rs["content"];
+				$array["taxis"] = $rs["taxis"];
+				$array["ext"] = $rs["ext"] ? serialize(unserialize($rs["ext"])) : "";
+				$this->model('ext')->save($array);
+			}
 		}
-		$chk_rs = $this->model('ext')->check_identifier($rs["identifier"],$module);
-		if($chk_rs){
-			$this->json(P_Lang('字段标识已被使用'));
-		}
-		$array = array();
-		$array["module"] = $module;
-		$array["title"] = $rs['title'];
-		$array["identifier"] = $rs['identifier'];
-		$array["field_type"] = $rs['field_type'];
-		$array["note"] = $rs['note'];
-		$array["form_type"] = $rs['form_type'];
-		$array["form_style"] = $rs["form_style"];
-		$array["format"] = $rs["format"];
-		$array["content"] = $rs["content"];
-		$array["taxis"] = $rs["taxis"];
-		$array["ext"] = $rs["ext"] ? serialize(unserialize($rs["ext"])) : "";
-		$this->model('ext')->save($array);
 		$this->json(true);
 	}
 

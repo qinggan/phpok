@@ -81,7 +81,7 @@ function add_ele_{$_rs.identifier}()
 function add_ele_{$_rs.identifier}()
 {
 	var val = $("#ele_{$_rs.identifier}").val();
-	var html = '<div><ul class="layout">';
+	var html = '<div style="margin-bottom:10px;"><ul class="layout">';
 	html += '<li><input type="text" name="{$_rs.identifier}_title[]" value="'+val+'"/></li>';
 	html += '<li><input type="text" name="{$_rs.identifier}_body[]"/></li>';
 	html += '<li><input type="button" value="删除" class="button" onclick="$(this).parent().parent().parent().remove()" /></li>';
@@ -90,23 +90,22 @@ function add_ele_{$_rs.identifier}()
 }
 </script>
 <div class="param">
-	<div style="float:left;margin-right:10px;">
+	<div style="margin-bottom:10px;">
 	<!-- if $_pname -->
-	<div style="margin-bottom:5px;">
 	<select name="ele_{$_rs.identifier}" id="ele_{$_rs.identifier}">
 		<option value="">请选择…</option>
 		<!-- loop from=$_pname key=$key value=$value -->
 		<option value="{$value}">{$value}</option>
 		<!-- /loop -->
-	</select></div>
+	</select>
 	<!-- else -->
 	<input type="hidden" name="ele_{$_rs.identifier}" id="ele_{$_rs.identifier}" value="" />
 	<!-- /if -->
 	<input type="button" value="添加属性" class="button" onclick="add_ele_{$_rs.identifier}()" />
 	</div>
-	<div id="list_{$_rs.identifier}" style="float:left;">
+	<div id="list_{$_rs.identifier}">
 		<!-- loop from=$_rslist.title key=$key value=$value -->
-		<div>
+		<div style="margin-bottom:10px;">
 			<ul class="layout">
 				<li><input type="text" name="{$_rs.identifier}_title[]" value="{$value}"/></li>
 				<li><input type="text" name="{$_rs.identifier}_body[]" value="{$_rslist.content[$key]}"/></li>

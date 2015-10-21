@@ -82,6 +82,10 @@ class order_control extends phpok_control
 			$paylist = $this->model('payment')->get_all($this->site['id'],1);
 			$this->assign("paylist",$paylist);
 		}
+		$loglist = $this->model('order')->log_list($rs['id']);
+		$this->assign('loglist',$loglist);
+		//取得订单快递信息
+		//$
 		$this->view('order_info');
 	}
 	

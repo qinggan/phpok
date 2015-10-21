@@ -308,5 +308,59 @@ class fields_control extends phpok_control
 		$this->model('fields')->delete($id);
 		$this->json(P_Lang('字段删除成功'),true);
 	}
+
+	public function cateset_f()
+	{
+		$ids = $this->get('ids');
+		if(!$ids){
+			$this->json(P_Lang('未指定要操作的字段ID'));
+		}
+		$idlist = explode(",",$ids);
+		foreach($idlist as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				unset($idlist[$key]);
+			}
+		}
+		$ids = implode(",",$idlist);
+		if(!$ids){
+			$this->json(P_Lang('没有要操作的字段ID'));
+		}
+		$action = $this->get('pl_act');
+		if(!$action){
+			$action = 'add';
+		}
+		$cateid = $this->get('cateid');
+		if(!$cateid){
+			$this->json(P_Lang('未指定分类'));
+		}
+		$rslist = $this->model('fields')->get_all("id IN(".$ids.")");
+		if(!$rslist){
+			$this->json(P_Lang('数据不存在'));
+		}
+		foreach($rslist as $key=>$value){
+			if(!$value['area']){
+				if($action == 'add'){
+					$this->model('fields')->save(array('area'=>$cateid),$value['id']);
+					continue;
+				}
+				continue;
+			}
+			if($value['area'] && $value['area'] == $cateid && $action != 'add'){
+				$this->model('fields')->save(array('area'=>''),$value['id']);
+				continue;
+			}
+			$tmp = explode(",",$value['area']);
+			$tmp[] = $cateid;
+			$tmp = array_unique($tmp);
+			if($action != 'add'){
+				$tmpid = array_search($cateid,$tmp);
+				unset($tmp[$tmpid]);
+			}
+			$area = implode(",",$tmp);
+			$this->model('fields')->save(array('area'=>$area),$value['id']);
+		}
+		$this->json(true);
+	}
 }
 ?>

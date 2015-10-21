@@ -21,16 +21,14 @@ class task_control extends phpok_control
 		//解除锁定
 		$this->model('task')->unlock();
 		//获取计划任务
-		$rs = $this->model('task')->get_first();
-		if(!$rs){
+		$rslist = $this->model('task')->get_all();
+		if(!$rslist){
 			$this->json(true);
 		}
-		$this->exec_action($rs);
+		foreach($rslist as $key=>$value){
+			$this->exec_action($value);
+		}
 		$this->json(true);
-		//foreach($rslist as $key=>$value){
-		//	$this->exec_action($value);
-		//}
-		//$this->json(true);
 	}
 
 	private function exec_action($rs)

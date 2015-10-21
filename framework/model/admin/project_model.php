@@ -107,9 +107,12 @@ class project_model extends project_model_base
 		return true;
 	}
 
-	public function project_next_sort()
+	public function project_next_sort($pid=0)
 	{
 		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."project WHERE site_id='".$this->site_id."'";
+		if($pid){
+			$sql .= " AND parent_id='".$pid."'";
+		}
 		$rs = $this->db->get_one($sql);
 		return $this->return_next_taxis($rs);
 	}

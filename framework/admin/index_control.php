@@ -260,23 +260,9 @@ class index_control extends phpok_control
 	public function pendding_f()
 	{
 		set_time_limit(30);
-		$endtime = $this->time + 1;
-		for($i=$this->time;$i<$endtime;$i++){
-			$list = $this->pendding_index();
-			if(!$list){
-				sleep(2);
-			}else{
-				if(!$_SESSION['pendding_old']){
-					$_SESSION['pendding_old'] = $list;
-					$this->json($list,true);
-				}else{
-					if($_SESSION['pendding_old'] === $list){
-						sleep(2);
-					}else{
-						$this->json($list,true);
-					}
-				}
-			}
+		$list = $this->pendding_index();
+		if($list){
+			$this->json($list,true);
 		}
 		$this->json(true);
 	}

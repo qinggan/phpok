@@ -46,15 +46,23 @@ class task_model_base extends phpok_model
 		return $this->db->insert_array($data,'task_log');
 	}
 
-	public function get_all()
+	public function get_all($is_lock=0,$condition="")
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."task WHERE is_lock=0 ORDER BY id ASC";
+		$sql = "SELECT * FROM ".$this->db->prefix."task WHERE 1=1 ";
+		if($is_lock){
+			$sql.= " AND is_lock='".($is_lock == 1 ? 1 : 0)."'";
+		}
+		if($condition){
+			$sql.= " AND ".$condition." ";
+		}
+		$sql.= "ORDER BY id ASC";
 		return $this->db->get_all($sql);
 	}
 
 	public function get_first()
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."task WHERE is_lock=0 ORDER BY id ASC LIMIT 1";
+		$exec_time = $this->time - 3 * 3600;
+		$sql = "SELECT * FROM ".$this->db->prefix."task WHERE is_lock=0 AND exec_time<".$exec_time." ORDER BY id ASC LIMIT 1";
 		return $this->db->get_one($sql);
 	}
 

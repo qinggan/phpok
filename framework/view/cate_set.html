@@ -95,29 +95,33 @@
 </div>
 <!-- /loop -->
 
+
 <!-- if $popedom.ext -->
 <div class="table">
 	<div class="content">
-		<span id="_quick_insert"></span>
-		<script type="text/javascript">
-		$(document).ready(function(){
-			$.ajax({
-				'url':"{url ctrl=ext func=select type=cate module=$ext_module/}",
-				'dataType':'html',
-				'cache':false,
-				'async':true,
-				'beforeSend': function (XMLHttpRequest){
-					XMLHttpRequest.setRequestHeader("request_type","html");
-				},
-				'success':function(rs){
-					$("#_quick_insert").html(rs);
-				}
-			});
-		});
-		</script>
+		<select id="_tmp_select_add" style="padding:3px">
+			<option value="">请选择扩展字段…</option>
+			<!-- loop from=$extfields key=$key value=$value -->
+			<!-- if !$used_fields || ($used_fields && !in_array($value.identifier,$used_fields)) -->
+			<option value="{$value.id}">{$value.title} - {$value.identifier}</option>
+			<!-- /if -->
+			<!-- /loop -->
+		</select>
+		<input type="button" value="添加" onclick="_update_select_add()" class="button2" />
 		<input type="button" value="标准创建扩展字段" onclick="ext_add('{$ext_module}')" class="button2" />
 	</div>
 </div>
+<script type="text/javascript">
+function _update_select_add()
+{
+	var val = $("#_tmp_select_add").val();
+	if(!val){
+		$.dialog.alert('请选择要添加的扩展');
+		return false;
+	}
+	ext_add2(val,'{$ext_module}');
+}
+</script>
 <!-- /if -->
 
 </div>
@@ -192,6 +196,22 @@
 			<input type="button" value="清空" onclick="$('#tpl_content').val('');" class="btn" />
 		</div>
 	</div>
+	<!-- if $popedom.ext && $extfields && !$parent_id -->
+	<div class="table">
+		<div class="title">
+			默认子分类扩展字段
+			<span class="note">此项用于配置默认的子项扩展字段属性，留空表示不添加子分类扩展字段</span>
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<!-- loop from=$extfields key=$key value=$value id=$tmpid -->
+				<li><label><input type="checkbox" name="_extfields[]" value="{$value.id}"{if $ext2 && in_array($value.id,$ext2)} checked{/if} />{$value.title}</label></li>
+				<!-- /loop -->
+			</ul>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<!-- /if -->
 </div>
 
 <div class="table">

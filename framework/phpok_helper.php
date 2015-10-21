@@ -781,22 +781,38 @@ function tpl_head($array=array())
 		}
 	}
 	$headtitle = $app->config['seo']['format'] ? $app->config['seo']['format'] : '{title}-{seo}-{sitename}';
-	$headtitle = str_replace("-",$app->config['seo']['line'],$headtitle);
-	$headtitle = str_replace('{title}',$array['title'],$headtitle);
-	$headtitle = str_replace('{seo}',$seo['title'],$headtitle);
-	$headtitle = str_replace('{sitename}',$app->site['title'],$headtitle);
-	$length = strlen($app->config['seo']['line']);
-	if(substr($headtitle,0,$length) == $app->config['seo']['line']){
-		$headtitle = substr($headtitle,$length);
+	$headtitle = explode("-",$headtitle);
+	foreach($headtitle as $key=>$value){
+		if($value == '{seo}'){
+			if($seo['title']){
+				$headtitle[$key] = $seo['title'];
+			}else{
+				unset($headtitle[$key]);
+			}
+		}elseif($value == '{sitename}'){
+			if($app->site['title']){
+				$headtitle[$key] = $app->site['title'];
+			}else{
+				unset($headtitle[$key]);
+			}
+		}elseif($value == '{title}'){
+			if($array['title']){
+				$headtitle[$key] = $array['title'];
+			}else{
+				unset($headtitle[$key]);
+			}
+		}
 	}
-	if(substr($headtitle,-$length) == $app->config['seo']['line']){
-		$headtitle = substr($headtitle,0,-$length);
-	}
+	$headtitle = implode($app->config['seo']['line'],$headtitle);
 	$html .= '<title>'.trim($headtitle).'</title>'."\n\t";
 	if(substr($app->url,-1) != '/'){
 		$app->url .= "/";
 	}
 	$html .= '<base href="'.$app->url.'" />'."\n\t";
+	$ico = $array['ico'] ? $array['ico'] : 'favicon.ico';
+	if(file_exists($app->dir_root.$ico)){
+		$html .= '<link rel="icon" href="'.$ico.'" />'."\n\t";
+	}
 	if($array["css"]){
 		$tmp = explode(",",$array['css']);
 		foreach($tmp AS $key=>$value){

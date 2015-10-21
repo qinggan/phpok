@@ -27,7 +27,7 @@ class order_model extends order_model_base
 		return $this->db->get_all($sql);
 	}
 
-	public function log_delete($order_id,$order_express_id)
+	public function log_delete($order_id,$order_express_id,$who='')
 	{
 		$sql = "DELETE FROM ".$this->db->prefix."order_log WHERE order_id='".$order_id."' ";
 		$sql.= " AND order_express_id='".$order_express_id."' ";

@@ -20,6 +20,15 @@ class install_locoy extends phpok_plugin
 
 	public function index()
 	{
+		$rslist = $this->model('project')->get_all_project($_SESSION['admin_site_id']);
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				if(!$value['module']){
+					unset($rslist[$key]);
+				}
+			}
+		}
+		$this->assign("plist",$rslist);
 		return $this->plugin_tpl('setting.html');
 	}
 
@@ -27,8 +36,7 @@ class install_locoy extends phpok_plugin
 	{
 		$id = $this->plugin_id();
 		$ext = array();
-		$ext['locoy_thumbfile'] = $this->get('locoy_thumbfile');
-		$ext['locoy_thumb'] = $this->get('locoy_thumb');
+		$ext['pid'] = $this->get('pid','int');
 		$this->plugin_save($ext,$id);
 	}
 }

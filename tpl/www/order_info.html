@@ -31,38 +31,44 @@ $(document).ready(function(){
 		</tr>
 		<tr>
 			<td align="right">总金额：</td>
-			<td class="red">{func price_format $rs.price $rs.currency_id $rs.currency_id}</td>
+			<td class="red">
+				{func price_format $rs.price $rs.currency_id $rs.currency_id}
+				<!-- if $payinfo -->
+				<span class="darkblue">（使用 {$payinfo.title} 付款，付款时间：{func time_format $payinfo.dateline}）</span>
+				<!-- /if -->
+			</td>
 		</tr>
 		<tr>
 			<td align="right">订单状态：</td>
-			<td class="red">{$rs.status_info}</td>
-		</tr>
-		<!-- if $rs.pay_status -->
-		<tr>
-			<td align="right">付款：</td>
-			<td>{$rs.pay_status}，金额：<span class="red i">{$rs.pay_currency_code} {$rs.pay_price}</span></td>
-		</tr>
-		<tr id="paid_time">
-			<td align="right">付款时间：</td>
-			<td>{func date "Y-m-d H:i:s" $rs.pay_date}</td>
-		</tr>
-		<!-- /if -->
-		<!-- if $invoice -->
-		<tr>
-			<td align="right">发票类型：</td>
-			<td class="red">{$invoice.type}</td>
+			<td class="darkblue">{$rs.status_info}</td>
 		</tr>
 		<tr>
-			<td align="right">发票抬头：</td>
-			<td class="red">{$invoice.title}</td>
+			<td align="right">发票：</td>
+			<td><!-- if $invoice --><span class="darkblue">{$invoice.type}</span>，抬头：<span class="darkblue">{$invoice.title}</span>，内容：<span class="darkblue">{$invoice.content}</span><!-- else -->无<!-- /if --></td>
 		</tr>
-		<tr>
-			<td align="right">发票内容：</td>
-			<td>{$invoice.content}</td>
-		</tr>
-		<!-- /if -->
 		</table>
 	</div>
+	<!-- if $loglist -->
+	<div class="table_lc">
+		<table width="100%">
+		<tr>
+			<th colspan="3">订单日志</th>
+		</tr>
+		<tr>
+			<th class="lft">说明</th>
+			<th>时间</th>
+			<th>操作人</th>
+		</tr>
+		<!-- loop from=$loglist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.note}</td>
+			<td class="center">{func time_format $value.addtime}</td>
+			<td class="center">{$value.who}</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+	<!-- /if -->
 	<!-- if $rs.note -->
 	<div class="pfw mbottom10">
 		<h3>说明</h3>
@@ -189,4 +195,5 @@ $(document).ready(function(){
 	</form>
 	<!-- /if -->
 </div>
+
 <!-- include tpl=foot -->

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<title>火车头采集器缩略图插件</title>
-	<desc>通过此项，可以实现采集的缩略地址图片存储到本地上</desc>
+	<title>火车头采集器插件</title>
+	<desc>实现火车头采集数据提交保存</desc>
 	<author>phpok.com</author>
 	<version>1.0</version>
 </root>

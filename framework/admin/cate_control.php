@@ -44,16 +44,39 @@ class cate_control extends phpok_control
 			$this->assign("parent_id",$parent_id);
 			$ext_module = "cate-".$id;
 			$extlist = $this->model('ext')->ext_all($ext_module);
+			if(!$rs['parent_id']){
+				$ext2 = $this->lib('xml')->read($this->dir_root.'data/xml/cate_extfields_'.$id.'.xml');
+				if($ext2['fid']){
+					$this->assign('ext2',explode(",",$ext2['fid']));
+				}
+			}
 		}else{
 			if(!$this->popedom["add"]){
 				error(P_Lang('您没有权限执行此操作'),$this->url('cate'),'error');
 			}
 			$this->assign("parent_id",$parent_id);
 			$ext_module = "add-cate";
-			$extlist = $_SESSION['admin-'.$ext_module];
+			$extlist = $_SESSION['admin-add-cate'];
 			$taxis = $this->model('cate')->cate_next_taxis($parent_id);
 			$this->assign('rs',array('taxis'=>$taxis));
+			if($parent_id && !$_SESSION['admin-add-cate']){
+				$root_id = $parent_id;
+				$this->model('cate')->get_root_id($root_id,$parent_id);
+				$ext2 = $this->lib('xml')->read($this->dir_root.'data/xml/cate_extfields_'.$root_id.'.xml');
+				if($ext2['fid']){
+					$tmplist = explode(",",$ext2['fid']);
+					foreach($tmplist as $key=>$value){
+						$tmp = $this->model('fields')->get_one($value);
+						if($tmp){
+							unset($tmp['id']);
+							$_SESSION['admin-add-cate'][$tmp['identifier']] = $tmp;
+						}
+					}
+					$extlist = $_SESSION['admin-add-cate'];
+				}
+			}
 		}
+		$used_fields = array();
 		if($extlist){
 			$tmp = false;
 			foreach($extlist AS $key=>$value){
@@ -65,13 +88,19 @@ class cate_control extends phpok_control
 				}
 				$tmp[] = $this->lib('form')->format($value);
 				$this->lib('form')->cssjs($value);
+				$used_fields[] = $value['identifier'];
 			}
 			$this->assign('extlist',$tmp);
+			//已使用的扩展字段
+			$this->assign('used_fields',$used_fields);
 		}
+		
 		$this->assign("ext_module",$ext_module);
 		$parentlist = $this->model('cate')->get_all($_SESSION["admin_site_id"]);
 		$parentlist = $this->model('cate')->cate_option_list($parentlist);
 		$this->assign("parentlist",$parentlist);
+		$extfields = $this->model('fields')->fields_list('',0,999,'cate');
+		$this->assign("extfields",$extfields);
 		$this->view("cate_set");
 	}
 
@@ -154,8 +183,9 @@ class cate_control extends phpok_control
 		if($check){
 			error(P_Lang('标识已被使用'),$error_url,"error");
 		}
+		$parent_id = $this->get('parent_id','int');
 		$array = array('title'=>$title,'identifier'=>$identifier);
-		$array['parent_id'] = $this->get("parent_id","int");
+		$array['parent_id'] = $parent_id;
 		$array['status'] = $this->get('status','int');
 		$array['tpl_list'] = $this->get('tpl_list');
 		$array['tpl_content'] = $this->get('tpl_content');
@@ -172,9 +202,7 @@ class cate_control extends phpok_control
 				error(P_Lang('分类添加失败，请检查'),$error_url);
 			}
 			ext_save("admin-add-cate",true,"cate-".$id);
-			$this->model('temp')->clean("add-cate",$_SESSION["admin_id"]);
 		}else{
-			$parent_id = $this->get('parent_id','int');
 			$rs = $this->model('cate')->get_one($id);
 			if($parent_id == $id){
 				$old_rs = $this->model('cate')->get_one($id);
@@ -191,9 +219,18 @@ class cate_control extends phpok_control
 				error(P_Lang('分类更新失败'),$error_url);
 			}
 			ext_save("cate-".$id);
-			$this->model('temp')->clean("cate-".$id,$_SESSION["admin_id"]);
 		}
 		$this->_save_tag($id);
+		//保存根分类的扩展字段属性配置
+		if(!$parent_id && $id)
+		{
+			$extfields = $this->get('_extfields');
+			//phpok_log(print_r($extfields))
+			if($extfields){
+				$extfields = implode(",",$extfields);
+				$this->lib('xml')->save(array('fid'=>$extfields),$this->dir_root.'data/xml/cate_extfields_'.$id.'.xml');
+			}
+		}
 		error(P_Lang('分类信息配置成功'),$this->url("cate"),"ok");
 	}
 

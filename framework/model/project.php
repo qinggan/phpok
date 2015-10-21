@@ -207,9 +207,12 @@ class project_model_base extends phpok_model
 		}
 	}
 
-	function get_all_project($site_id,$condition='')
+	function get_all_project($site_id=0,$condition='')
 	{
 		$list = array();
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
 		$this->get_sublist($list,0,$site_id,"",$condition);
 		return $list;
 	}

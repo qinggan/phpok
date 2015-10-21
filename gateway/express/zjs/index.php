@@ -15,12 +15,11 @@ $ext = ($express['ext'] && is_string($express['ext'])) ? unserialize($express['e
 $rdm1 ="0000" ;
 $rdm2 ="0000" ;
 $clientFlag = $ext['logisticProviderID'];
-$xml ="<BatchQueryRequest><logisticProviderID>".$ext['logisticProviderID']."</logisticProviderID>";
-$xml.= "<orders><order><mailNo>".$rs['code']."</mailNo></order></orders></BatchQueryRequest>";
+$xml ="<BatchQueryRequest><logisticProviderID>".trim($ext['logisticProviderID'])."</logisticProviderID>";
+$xml.= "<orders><order><mailNo>".trim($rs['code'])."</mailNo></order></orders></BatchQueryRequest>";
 $strSeed = $ext['keyseed'];//客户密钥
 $strConst = $ext['fixed_string'];//常量值
 $str = $rdm1.$clientFlag.$xml.$strSeed.$strConst.$rdm2;
-$str = mb_convert_encoding($str, "UTF-8", "GBK"); 
 $strVerifyData=$rdm1.substr(md5($str),7,21).$rdm2;//生成密钥
 $postdata='clientFlag='.$clientFlag.'&xml='.($xml).'&verifyData='.$strVerifyData;
 
@@ -31,6 +30,7 @@ curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_HEADER, 0);
+curl_setopt($ch, CURLOPT_REFERER, "http://www.zjs.com.cn/"); //构造来路
 // 3. 执行并获取HTML文档内容
 $output = curl_exec($ch);
 if(!$output){
@@ -42,11 +42,14 @@ if($curl_info['http_code'] != '200'){
 }
 curl_close($ch);
 $output=str_replace(array('&lt;', '&gt;'), array('<','>'),$output);
-$xmlinfo = $this->lib('xml')->read($output,false);
+$xmlinfo = $this->lib('xml')->read(trim($output),false);
 if(!$xmlinfo){
 	$output=substr($output,79);
 	$output=str_replace('</string>','',$output);
 	$this->json($output);
+}
+if($xmlinfo['BatchQueryResponse']){
+	$xmlinfo = $xmlinfo['BatchQueryResponse'];
 }
 $logisticProviderID=$xmlinfo['logisticProviderID'];//客户标识
 $orders=$xmlinfo['orders'];
@@ -58,9 +61,14 @@ $orderStatus=$order['orderStatus'];//当前订单状态，订单状态值：GOT 
 $statusTime=$order['statusTime'];//当前状态时间
 $tmplist = array();
 if($step && is_array($step)){
+	if($step['acceptTime'] && $key == 'acceptAddress'){
+		$tmplist[] = array('time'=>$step['acceptTime'],'content'=>$step['acceptAddress']);
+	}
 	foreach($step as $key=>$val){
-		$tmp = array('time'=>$val['acceptTime'],'content'=>$val['acceptAddress']);
-		$tmplist[] = $tmp;
+		if(!$key == 'acceptTime' && $key != 'acceptAddress' && is_array($val)){
+			$tmp = array('time'=>$val['acceptTime'],'content'=>$val['acceptAddress']);
+			$tmplist[] = $tmp;
+		}
 	}
 }
 $is_end = false;
@@ -69,7 +77,6 @@ if($orderStatus=="SIGNED"){
 	$last['time'] = $statusTime;
 	$last['content'] = '订单已经签收，签收人是'.$order['signinPer'];
 	$tmplist[] = $last;
-	return $tmplist;
 }elseif($orderStatus == 'GOT'){
 	$tmp = array('time'=>$statusTime,'content'=>'物流公司已取件');
 	$tmplist[] = $tmp;

@@ -195,6 +195,12 @@ class order_model extends order_model_base
 		}
 		return $this->db->insert_array($data,'order_log');
 	}
+
+	public function log_list($order_id)
+	{
+		$sql = "SELECT id,addtime,who,note FROM ".$this->db->prefix."order_log WHERE order_id='".$order_id."' ORDER BY addtime ASC,id ASC";
+		return $this->db->get_all($sql);
+	}
 }
 
 ?>

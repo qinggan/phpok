@@ -34,6 +34,17 @@ class cate_model extends cate_model_base
 		return $this->return_next_taxis($rs);
 	}
 
+	public function get_root_id(&$rootid,$id)
+	{
+		$rs = $this->get_one($id);
+		if($rs){
+			if(!$rs['parent_id']){
+				$rootid = $id;
+			}else{
+				$this->get_root_id($rootid,$rs['parent_id']);
+			}
+		}
+	}
 }
 
 ?>

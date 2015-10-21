@@ -85,10 +85,13 @@ $(document).ready(function(){
 <input type="hidden" name="pid" id="pid" value="{$pid}" />
 <input type="hidden" name="parent_id" id="parent_id" value="{$parent_id}" />
 <div class="main1">
-	<div class="title">
+	<div class="table">
+	<div class="content">
 		<input type="text" name="title" id="title" value="{$rs.title}" class="title" placeholder="请在此输入{$p_rs.alias_title ? $p_rs.alias_title : '主题'}{if $p_rs.alias_note}，{$p_rs.alias_note}{/if}" />
 	</div>
+	</div>
 	<!-- if $attrlist && $p_rs.is_attr -->
+	<div class="table"><div class="content">
 	<ul class="layout">
 		<li>{lang属性：}</li>
 		<!-- php:$attr = $rs.attr ? explode(",",$rs.attr) : array() -->
@@ -96,25 +99,17 @@ $(document).ready(function(){
 		<li><label><input type="checkbox" name="attr[]" id="_attr_{$key}" value="{$key}"{if in_array($key,$attr)} checked{/if} />{$value}</label></li>
 		<!-- /loop -->
 	</ul>
+	</div></div>
 	<!-- /if -->
 	<!-- if $p_rs.cate && !$p_rs.cate_multiple -->
-	<select name="cate_id" id="cate_id" style="width:99%;padding:3px;margin-top:10px;">
+	<div class="table"><div class="content">
+	<select name="cate_id" id="cate_id" style="width:99%;padding:3px;">
 		<option value="">请选择分类…</option>
 		<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
 		<option value="{$value.id}"{if $value.id == $rs.cate_id} selected{/if}>{$value._space}{$value.title}</option>
 		<!-- /loop -->
 	</select>
-	<!-- /if -->
-	<!-- if $p_rs.is_identifier -->
-	<div class="table">
-		<div class="title">
-			{lang标识：}
-			<span class="note">{lang限}<span class="red">{lang字母、数字、下划线或中划线且必须是字母开头，}</span>{lang适用于网址优化}</span>
-		</div>
-		<div class="content">
-			<input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" />
-		</div>
-	</div>
+	</div></div>
 	<!-- /if -->
 	<!-- if $p_rs.biz_attr -->
 	<script type="text/javascript">
@@ -271,10 +266,19 @@ $(document).ready(function(){
 	<!-- /if -->
 </div>
 <div class="main2">
+	<!-- if $p_rs.is_identifier -->
+	<div class="pfw mb10">
+		<h3>{lang自定义网址标识}</h3>
+		<div style="padding:5px">
+			<div class="gray">{lang限}<span class="red">{lang字母、数字、下划线或中划线且必须是字母开头，}</span></div>
+			<div style="padding:5px 0;"><input type="text" id="identifier" name="identifier" value="{$rs.identifier}" style="width:99%;margin-bottom:5px;" /></div>
+		</div>
+	</div>
+	<!-- /if -->
 	<!-- if $p_rs.cate && $p_rs.cate_multiple -->
 	<div class="pfw mb10">
 		<h3>所属分类</h3>
-		<div class="cate_list clearfix" style="margin:0;">
+		<div class="cate_list clearfix" style="margin:0;max-height:250px;overflow-y:scroll;">
 			<table width="100%" cellpadding="0" cellspacing="0">
 			<tr>
 				<th width="30px">主</th>

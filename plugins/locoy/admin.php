@@ -11,88 +11,203 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class admin_locoy extends phpok_plugin
 {
 	public $me;
-	private $thumbfile = 'thumbfile';
-	private $thumb = 'thumb';
 	public function __construct()
 	{
 		parent::plugin();
 		$this->me = $this->plugin_info();
-		$this->tpl->assign('plugin',$this->me);
-		if($this->me['param'] && $this->me['param']['locoy_thumbfile']){
-			$this->thumbfile = $this->me['param']['locoy_thumbfile'];
+		$this->pid = $this->me['param']['pid'];
+	}
+
+	public function catelist()
+	{
+		if(!$this->pid){
+			error("未指定项目ID");
 		}
-		if($this->me['param'] && $this->me['param']['locoy_thumb']){
-			$this->thumb = $this->me['param']['locoy_thumb'];
+		$project = $this->model('project')->get_one($this->pid);
+		if(!$project || !$project['module'] || !$project['cate']){
+			error('项目不存在或异常或未绑定分类');
+		}
+		$catelist = $this->model('cate')->get_all($project["site_id"],1,$project["cate"]);
+		if(!$catelist){
+			error('分类信息不存在');
+		}
+		$catelist = $this->model('cate')->cate_option_list($catelist);
+		if(!$catelist){
+			error('分类信息不存在');
+		}
+		$html = '<select name="cate_id" id="cate_id">';
+		foreach($catelist as $key=>$value){
+			$html .= '<option value="'.$value['id'].'">'.$value['title'].'</option>';
+		}
+		$html.= '</select>';
+		echo $html;
+		exit;
+	}
+
+	public function save()
+	{
+		if(!$this->pid){
+			error("未指定项目ID");
+		}
+		$project = $this->model('project')->get_one($this->pid);
+		if(!$project || !$project['module'] || !$project['cate']){
+			error('项目不存在或异常或未绑定分类');
+		}
+		$title = $this->get('title');
+		if(!$title){
+			error('未指定主题');
+		}
+		$cate_id = $this->get('cate_id','int');
+		if(!$cate_id){
+			error("未指定分类");
+		}
+		$dateline = $this->get('dateline','time');
+		if(!$dateline){
+			$dateline = $this->time;
+		}
+		$main = array('cate_id'=>$cate_id,'module_id'=>$project['module'],'site_id'=>$project['site_id']);
+		$main['project_id'] = $project['id'];
+		$main['title'] = $title;
+		$main['dateline'] = $dateline;
+		$main['status'] = $this->get('status','int');
+		$main["hidden"] = $this->get("hidden","int");
+		$main["hits"] = $this->get("hits","int");
+		$main["sort"] = $this->get("sort","int");
+		$main["seo_title"] = $this->get("seo_title");
+		$main["seo_keywords"] = $this->get("seo_keywords");
+		$main["seo_desc"] = $this->get("seo_desc");
+		$tid = $this->model('list')->save($main);
+		if(!$tid){
+			error('内容保存失败');
+		}
+		//保存电商信息
+		if($project['is_biz']){
+			$biz = array('price'=>$this->get('price','float'),'currency_id'=>$project['currency_id']);
+	 		$biz['weight'] = $this->get('weight','float');
+	 		$biz['volume'] = $this->get('volume','float');
+	 		$biz['unit'] = $this->get('unit');
+	 		$biz['id'] = $tid;
+	 		$this->model('list')->biz_save($biz);
+	 		unset($biz);
+		}
+		//保存扩展分类
+		$ext_cate = array($cate_id);
+		$this->model('list')->save_ext_cate($tid,$ext_cate);
+		//保存扩展数据
+		$extlist = $this->model('module')->fields_all($project["module"]);
+		$tmplist = array();
+ 		$tmplist["id"] = $tid;
+ 		$tmplist["site_id"] = $project["site_id"];
+ 		$tmplist["project_id"] = $this->pid;
+ 		$tmplist["cate_id"] = $cate_id;
+ 		if($extlist){
+	 		foreach($extlist as $key=>$value){
+		 		if($value['form_type'] == 'upload'){
+			 		$info = $this->_upload_format($value);
+			 		if(!$info){
+				 		$info = '';
+			 		}
+		 		}else{
+			 		$info = $this->get($value['identifier'],$value['format']);
+		 		}
+		 		$tmplist[$value['identifier']] = $info;
+	 		}
+ 		}
+		$this->model('list')->save_ext($tmplist,$project["module"]);
+		error('数据发布成功','','ok');
+	}
+
+	private function _upload_format($rs)
+	{
+		$ext = $rs['ext'];
+		if($ext && is_string($ext)){
+			$ext = unserialize($ext);
+		}
+		$info = $this->get($rs['identifier'],'html_js');
+		if(!$info){
+			return false;
+		}
+		$multiple = ($ext && $ext['is_multiple']) ? true : false;
+		$info = strtolower($info);
+		if(strpos($info,'<img') !== false){
+			$info = stripslashes($info);
+			preg_match_all("/<img.+src=(\"|\'){0,1}(.+)(\"|\'| |>){1}/isU",$info,$matches);
+			if(!$matches[0] || !is_array($matches[0])){
+				return false;
+			}
+			$picurl = array();
+			foreach($matches[0] AS $k=>$v){
+				$mypic_url = str_replace('"',"",$matches[2][$k]);
+				if(substr($mypic_url,-1) == "/"){
+					$mypic_url = substr($mypic_url,0,-1);
+				}
+				$picurl[] = $mypic_url;
+			}
+			$picurl = array_unique($picurl);
+			foreach($picurl as $key=>$value){
+				$ext = substr($value,-3);
+				if(!in_array($ext,array('jpg','png','gif'))){
+					unset($picurl[$key]);
+				}
+			}
+			reset($picurl);
+		}else{
+			$picurl = explode(";",$info);
+		}
+		if(!$picurl || !is_array($picurl)){
+			return false;
+		}
+		$cate = $this->model('rescate')->get_default();
+		if($multiple){
+			$ids = array();
+			foreach($picurl as $key=>$value){
+				if(!file_exists($this->dir_root.$value)){
+					continue;
+				}
+				$ids[] = $this->_gd_save($value,$cate);
+			}
+			if($ids && count($ids)>0){
+				return implode(",",$ids);
+			}else{
+				return false;
+			}
+		}else{
+			$ids = false;
+			foreach($picurl as $key=>$value){
+				if(!file_exists($this->dir_root.$value)){
+					continue;
+				}
+				$ids = $this->_gd_save($value,$cate);
+				break;
+			}
+			return $ids;
 		}
 	}
 
-	public function ap_list_ok_after($data)
+	private function _gd_save($file,$cate='')
 	{
-		$id = $data['id'];
-		$project = $data['project'];
-		$file = $this->get($this->thumbfile);
-		if(!$file){
-			return false;
-		}
-		$content_img = $this->lib("html")->get_content($file);
-		if(!$content_img){
-			return false;
-		}
-		$ext = strtolower(substr($file,-3));
-		if($ext != 'jpg' && $ext != 'png' && $ext != 'gif'){
-			return false;
-		}
-		$fileid = md5($file);
-		$filename = $fileid.'.'.$ext;
-		//取得附件配置
-		$cate_rs = $this->model("res")->cate_default();
-		$folder = $cate_rs["root"];
-		if($cate_rs["folder"] && $cate_rs["folder"] != "/"){
-			$folder .= date($cate_rs["folder"],$this->time);
-		}
-		if(!file_exists($folder)){
-			$this->lib("file")->make($folder);
-		}
-		if(substr($folder,-1) != "/"){
-			$folder .= "/";
-		}
-		if(substr($folder,0,1) == "/"){
-			$folder = substr($folder,1);
-		}
-		if($folder){
-			$folder = str_replace("//","/",$folder);
-		}
-		$save_folder = $this->dir_root.$folder;
-		$this->lib("file")->save_pic($content_img,$save_folder.$filename);
-		$array = array();
-		$array["cate_id"] = $cate_rs["id"];
-		$array["folder"] = $folder;
-		$array["name"] = basename($file);
-		$array["ext"] = $ext;
-		$array["filename"] = $folder.$filename;
-		$array["addtime"] = $this->time;
-		$array["title"] = str_replace(".".$ext,"",basename($file));
-		$img_ext = getimagesize($save_folder.$filename);
+		$img_ext = getimagesize($this->dir_root.$file);
 		$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
+		$info = pathinfo($file);
+		$ext = substr($basename,-3);
+		$array = array();
+		$array["cate_id"] = ($cate && is_array($cate)) ? $cate['id'] : 0;
+		$array["folder"] = $info['dirname'].'/';
+		$array["name"] = $info['basename'];
+		$array["ext"] = substr($info['basename'],-3);
+		$array["filename"] = $file;
+		$array["addtime"] = $this->time;
+		$array["title"] = $info['basename'];
+		$array['admin_id'] = $_SESSION['admin_id'];
 		$array["attr"] = serialize($my_ext);
-		$insert_id = $this->model("res")->save($array);
-		$ico = $this->lib("gd")->thumb($array["filename"],$insert_id);
-		if(!$ico){
-			$ico = "images/filetype-large/".$ext.".jpg";
-			if(!file_exists($ico)){
-				$ico = "images/filetype-large/unknow.jpg";
-			}
-		}else{
-			$ico = $folder.$ico;
+		$id = $this->model('res')->save($array);
+		if(!$id){
+			return false;
 		}
-		$tmp = array();
-		$tmp["ico"] = $ico;
-		$this->model("res")->save($tmp,$insert_id);
-		$this->model('res')->gd_update($insert_id);
-		//更新记录
-		$this->model('list')->update_ext(array($this->thumb=>$insert_id),$project['module'],$id);
-		return true;
+		$this->model('res')->gd_update($id);
+		return $id;
 	}
+
 }
 
 ?>

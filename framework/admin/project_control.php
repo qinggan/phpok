@@ -47,7 +47,7 @@ class project_control extends phpok_control
 			$ext_module = "add-project";
 			$parent_id = $this->get("pid");
 			$rs["parent_id"] = $parent_id;
-			$rs['taxis'] = $this->model('project')->project_next_sort();
+			$rs['taxis'] = $this->model('project')->project_next_sort($parent_id);
 			$this->assign("rs",$rs);
 		}		
 		$parent_list = $this->model('project')->get_all($site_id,0);
