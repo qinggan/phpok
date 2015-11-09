@@ -190,6 +190,12 @@ class order_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
+	public function order_payment_delete($id)
+	{
+		$sql = "DELETE FROM ".$this->db->prefix."order_payment WHERE id='".$id."'";
+		return $this->db->query($sql);
+	}
+
 	public function order_price($order_id)
 	{
 		$sql = "SELECT code,price FROM ".$this->db->prefix."order_price WHERE order_id='".$order_id."'";

@@ -59,7 +59,6 @@ function delete_it(id)
 	<td class="center">
 		<div class="button-group">
 			<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=wealth func=set id=$value.id/}')" class="phpok-btn" />
-			<input type="button" value="{lang执行规则}" onclick="$.phpok.go('{url ctrl=wealth func=rule id=$value.id/}')" class="phpok-btn" />
 			<input type="button" value="{lang财富列表}" onclick="$.phpok.go('{url ctrl=wealth func=info id=$value.id/}')" class="phpok-btn" />
 			<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="phpok-btn" />
 		</div>

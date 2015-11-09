@@ -79,9 +79,9 @@ INSERT INTO `qinggan_email` (`id`, `site_id`, `identifier`, `title`, `content`) 
 
 INSERT INTO `qinggan_fields` (`id`, `title`, `identifier`, `field_type`, `note`, `form_type`, `form_style`, `format`, `content`, `taxis`, `ext`, `area`) VALUES
 (6, '内容', 'content', 'longtext', '', 'editor', '', 'html', '', 255, 'a:11:{s:5:"width";s:3:"950";s:6:"height";s:3:"360";s:7:"is_code";s:0:"";s:9:"btn_image";s:1:"1";s:9:"btn_video";s:1:"1";s:8:"btn_file";s:1:"1";s:8:"btn_page";s:0:"";s:8:"btn_info";s:0:"";s:7:"is_read";s:0:"";s:5:"etype";s:4:"full";s:7:"btn_map";s:0:"";}', 'all,cate,module,project,user,usergroup'),
-(7, '图片', 'pictures', 'varchar', '支持多图', 'upload', '', 'safe', '', 50, 'a:3:{s:11:"upload_type";s:7:"picture";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";}', 'all,cate,module,project,user'),
-(8, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 30, 'a:3:{s:11:"upload_type";s:7:"picture";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";}', 'all,cate,module,project,user'),
-(9, '压缩文件', 'file', 'varchar', '仅支持压缩文件', 'upload', '', 'safe', '', 60, 'a:3:{s:11:"upload_type";s:3:"zip";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";}', 'all,cate,module,project'),
+(7, '图片', 'pictures', 'varchar', '支持多图', 'upload', '', 'safe', '', 50, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";s:11:"upload_auto";s:1:"1";}', 'all,cate,module,project,user'),
+(8, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 30, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}', 'all,module,project,user'),
+(128, '附件', 'dfiles', 'varchar', '支持多个附件', 'upload', '', '', '', 255, 'a:3:{s:7:"cate_id";s:2:"11";s:11:"is_multiple";s:1:"1";s:11:"upload_auto";s:1:"1";}', 'all,cate,module,project,user,usergroup'),
 (11, '链接', 'link', 'longtext', '手动指定外部链接时，伪静态链接可以留空', 'url', '', 'safe', '', 90, 'a:1:{s:5:"width";s:3:"500";}', 'all,cate,module,project,user'),
 (12, '摘要', 'note', 'longtext', '简要文字描述', 'textarea', '', 'safe', '', 20, 'a:2:{s:5:"width";s:3:"600";s:6:"height";s:2:"80";}', 'all,cate,module,project'),
 (13, '性别', 'gender', 'varchar', '', 'radio', '', 'safe', '女', 120, 'a:3:{s:11:"option_list";b:0;s:9:"put_order";s:1:"0";s:10:"ext_select";s:8:"男\r\n女";}', 'all,cate,module,project,user'),
@@ -89,14 +89,14 @@ INSERT INTO `qinggan_fields` (`id`, `title`, `identifier`, `field_type`, `note`,
 (37, '链接方式', 'target', 'varchar', '设置是否在新窗口打开', 'radio', '', 'safe', '_self', 100, 'a:1:{s:11:"option_list";s:5:"opt:6";}', 'cate,module,project'),
 (30, '姓名', 'fullname', 'varchar', '', 'text', '', 'safe', '', 10, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 'all,cate,module,project,user'),
 (31, '通栏图片', 'banner', 'varchar', '', 'upload', '', 'safe', '', 40, 'a:3:{s:11:"upload_type";s:7:"picture";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";}', 'all,cate,module,project'),
-(34, '附件', 'files', 'varchar', '仅支持rar和zip的压缩包，支持多附件', 'upload', '', 'safe', '', 70, 'a:3:{s:11:"upload_type";s:3:"zip";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";}', 'all,cate,module,project'),
+(127, '附件', 'dfile', 'varchar', '', 'upload', '', '', '', 255, 'a:3:{s:7:"cate_id";s:2:"11";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}', 'all,cate,module,project,user,usergroup,cart,order,pay'),
 (35, '文档', 'doc', 'varchar', '支持在线办公室的文档', 'upload', '', 'safe', '', 80, 'a:3:{s:11:"upload_type";s:8:"document";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";}', 'all,cate,module,project'),
 (36, '视频', 'video', 'varchar', '支持并推荐您使用FlV格式视频', 'upload', '', 'int', '', 110, 'a:3:{s:7:"cate_id";s:2:"16";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"0";}', 'all,cate,module,project,user,usergroup,cart,order,pay'),
 (60, '客服QQ', 'qq', 'varchar', '', 'text', '', 'safe', '', 150, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 'all,cate,module,project,user'),
 (116, '广告内容', 'ad', 'longtext', '', 'editor', '', 'html_js', '', 255, 'a:12:{s:5:"width";s:3:"600";s:6:"height";s:3:"100";s:7:"is_code";i:1;s:9:"btn_image";i:1;s:9:"btn_video";i:1;s:8:"btn_file";b:0;s:8:"btn_page";b:0;s:8:"btn_info";b:0;s:7:"is_read";b:0;s:5:"etype";s:6:"simple";s:7:"btn_tpl";b:0;s:7:"btn_map";b:0;}', 'all,cate,module,project'),
 (75, '联系地址', 'address', 'varchar', '', 'text', '', 'safe', '', 79, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"500";}', 'all,module,user'),
-(76, '联系电话', 'tel', 'varchar', '', 'text', '', 'safe', '', 89, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 'all,cate,module,project,user'),
-(77, '邮编', 'zipcode', 'varchar', '请填写六位数字的邮编号码', 'text', '', 'safe', '', 30, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 'all,module'),
+(76, '联系电话', 'tel', 'varchar', '', 'text', '', 'safe', '', 89, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 'all,module,project,user'),
+(77, '邮编', 'zipcode', 'varchar', '请填写六位数字的邮编号码', 'text', '', 'safe', '', 30, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 'all,module,cate'),
 (79, 'LOGO', 'logo', 'varchar', '网站LOGO，规格：88x31', 'text', '', 'safe', '', 160, 'a:2:{s:8:"form_btn";s:5:"image";s:5:"width";s:3:"500";}', 'all,cate,module,project'),
 (80, '图片', 'pic', 'varchar', '', 'text', '', 'safe', '', 255, 'a:2:{s:8:"form_btn";s:5:"image";s:5:"width";s:3:"500";}', 'all,cate,module,project,user'),
 (81, '统计', 'statjs', 'varchar', '', 'code_editor', '', 'html_js', '', 255, 'a:2:{s:5:"width";s:3:"500";s:6:"height";s:2:"80";}', 'all'),
@@ -1009,7 +1009,11 @@ INSERT INTO `qinggan_popedom` (`id`, `gid`, `pid`, `title`, `identifier`, `taxis
 (781, 78, 0, '修改', 'modify', 30),
 (782, 78, 0, '删除', 'delete', 40),
 (783, 78, 0, '审核', 'status', 50),
-(784, 78, 0, '设为默认', 'isdefault', 60);
+(784, 78, 0, '设为默认', 'isdefault', 60),
+(793, 80, 0, '查看', 'list', 10),
+(794, 80, 0, '添加', 'add', 20),
+(795, 80, 0, '修改', 'modify', 30),
+(796, 80, 0, '删除', 'delete', 40);
 
 --
 -- 转存表中的数据 `qinggan_res_cate`
@@ -1074,14 +1078,15 @@ INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, 
 (67, 4, '商品属性', 1, 'options', 40, '', '', '', 0, 1, ''),
 (68, 4, '运费模板', 1, 'freight', 50, '', '', '', 0, 1, ''),
 (78, 1, '网关路由', 1, 'gateway', 110, '', '', '', 0, 1, ''),
-(77, 2, '物流快递', 1, 'express', 50, '', '', '', 0, 1, '');
+(77, 2, '物流快递', 1, 'express', 50, '', '', '', 0, 1, ''),
+(80, 4, '计划任务', 1, 'task', 140, '', '', '', 0, 1, '');
 
 --
 -- 转存表中的数据 `qinggan_task`
 --
 
 INSERT INTO `qinggan_task` (`id`, `year`, `month`, `day`, `hour`, `minute`, `second`, `exec_time`, `stop_time`, `action`, `param`, `only_once`, `is_lock`) VALUES
-(1, '*', '*', '*', '5', '5', '10', 1444535443, 1444535443, 'clear', '', 0, 0);
+(1, '*', '*', '*', '5', '5', '*', 0, 0, 'clear', '', 0, 0);
 
 --
 -- 转存表中的数据 `qinggan_tpl`

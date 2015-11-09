@@ -8,7 +8,8 @@
 	时间： 2014年5月2日
 *****************************************************************************************/
 error_reporting(E_ALL ^ E_NOTICE);
-$root_dir = str_replace("\\","/",dirname(__FILE__))."/../../";
+define('PHPOK_SET',true);
+$root_dir = str_replace("\\","/",dirname(__FILE__))."/../../../";
 if(!isset($_POST)){
 	exit('error');
 }

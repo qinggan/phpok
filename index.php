@@ -28,5 +28,5 @@ if(!is_file(ROOT."data/install.lock"))
 	exit;
 }
 
-require_once(FRAMEWORK.'init.php');
+require(FRAMEWORK.'init.php');
 ?>

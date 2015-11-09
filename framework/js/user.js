@@ -122,7 +122,7 @@ function action_wealth(title,wid,uid,unit)
 			}
 			url += "&note="+$.str.encode(note);
 			var val = $("#a_val").val();
-			if(!val || (val && parseInt(val)<=0)){
+			if(!val || (val && parseFloat(val)<=0)){
 				$.dialog.alert(p_lang('请填写数值，数值必须大于0'));
 				return false;
 			}

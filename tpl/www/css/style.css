@@ -99,7 +99,7 @@ header nav.menu ul ul li a:hover{ background:#3375b9;}
 .index .right{width:700px;float:right;}
 
 	/*首页公司简介*/
-	.index .about{ line-height:22px;}
+	.index .about{ line-height:22px;padding:10px 10px 0 10px;}
 	.index .about img{ float:left; margin-right:10px;}
 	.index .about p{ margin-bottom:5px;}
 
@@ -646,3 +646,7 @@ a.download{background:url('../images/icon_download.png') left center no-repeat;p
 
 ul.tip{margin:10px 40px;list-style:square}
 ul.tip li{line-height:22px;}
+
+.plus_minus{background:url('../images/plus_minus.jpg') left center no-repeat;width:9px;height:9px;cursor:pointer;}
+.plus{background-position:right center;}
+.minus{background-position:left center;}

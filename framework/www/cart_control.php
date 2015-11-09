@@ -145,7 +145,6 @@ class cart_control extends phpok_control
 			}
 		}
 		$this->assign('pricelist',$pricelist);
-
 		$this->view("cart_checkout");
 	}
 

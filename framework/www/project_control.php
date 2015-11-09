@@ -11,7 +11,7 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class project_control extends phpok_control
 {
 	private $user_groupid;
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 		//判断是否有读权限
@@ -23,7 +23,7 @@ class project_control extends phpok_control
 	}
 
 	//栏目
-	function index_f()
+	public function index_f()
 	{
 		$id = $this->get("id");
 		if(!$id){

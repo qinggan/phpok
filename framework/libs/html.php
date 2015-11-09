@@ -51,11 +51,6 @@ class html_lib
 		$this->is_post = $post;
 	}
 
-	function html_lib()
-	{
-		$this->__construct();
-	}
-
 	function get_content($url,$post="")
 	{
 		if(!$url || $this->use_func == "error")

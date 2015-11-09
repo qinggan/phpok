@@ -112,8 +112,7 @@ class db_mysqli extends db
 
 	public function query($sql)
 	{
-		if(!$sql || !trim($sql))
-		{
+		if(!$sql || !trim($sql)){
 			return false;
 		}
 		$sql = trim($sql);
@@ -125,8 +124,7 @@ class db_mysqli extends db
 		if(preg_match($this->preg_sql,$sql)){
 			$this->cache_clear($sql);
 		}
-		if(!$this->query)
-		{
+		if(!$this->query){
 			return false;
 		}
 		return $this->query;

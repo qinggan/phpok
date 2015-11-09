@@ -27,8 +27,7 @@ class token_lib
 
 	public function keyid($keyid='')
 	{
-		if(!$keyid)
-		{
+		if(!$keyid){
 			return $this->keyid;
 		}
 		$this->keyid = strtolower(md5($keyid));
@@ -38,18 +37,16 @@ class token_lib
 	//创建一个KEY-ID
 	private function _keyid()
 	{
-		if(!$GLOBALS['app']->site || !$GLOBALS['app']->site['api_code'])
-		{
+		if(!$GLOBALS['app']->site || !$GLOBALS['app']->site['api_code']){
 			return false;
 		}
 		return strtolower(md5($GLOBALS['app']->site['api_code']));
 	}
 
 	//加密数据
-	function encode($string)
+	public function encode($string)
 	{
-		if(!$this->keyid)
-		{
+		if(!$this->keyid){
 			return false;
 		}
 		$string = serialize($string);
@@ -62,10 +59,9 @@ class token_lib
 	}
 
 	//解密
-	function decode($string)
+	public function decode($string)
 	{
-		if(!$this->keyid)
-		{
+		if(!$this->keyid){
 			return false;
 		}
 		$keyc = substr($string, 0, $this->keyc_length);
@@ -89,21 +85,18 @@ class token_lib
 		$box = range(0, 255);
 		$rndkey = array();
 		// 产生密匙簿
-		for($i = 0; $i <= 255; $i++)
-		{
+		for($i = 0; $i <= 255; $i++){
 			$rndkey[$i] = ord($cryptkey[$i % $key_length]);
 		}
 		// 用固定的算法，打乱密匙簿，增加随机性，好像很复杂，实际上并不会增加密文的强度
-		for($j = $i = 0; $i < 256; $i++)
-		{
+		for($j = $i = 0; $i < 256; $i++){
 			$j = ($j + $box[$i] + $rndkey[$i]) % 256;
 			$tmp = $box[$i];
 			$box[$i] = $box[$j];
 			$box[$j] = $tmp;
 		}
 		// 核心加解密部分
-		for($a = $j = $i = 0; $i < $string_length; $i++)
-		{
+		for($a = $j = $i = 0; $i < $string_length; $i++){
 			$a = ($a + 1) % 256;
 			$j = ($j + $box[$a]) % 256;
 			$tmp = $box[$a];

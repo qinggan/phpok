@@ -13,6 +13,10 @@ class order_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		/*$token = $this->get('token');
+		if($token){
+			$info = $this->lib('token')->decode($token);
+		}*/
 		$this->cart_id = $this->model('cart')->cart_id($this->session->sessid(),$_SESSION['user_id']);
 	}
 	
@@ -42,7 +46,7 @@ class order_control extends phpok_control
 			if(!$main['email']){
 				$this->json(P_Lang('Email地址不能为空'));
 			}
-			if(!$this->lib('common')->email_check($email)){
+			if(!$this->lib('common')->email_check($main['email'])){
 				$this->json(P_Lang('Email地址不合法'));
 			}
 		}else{
@@ -171,6 +175,42 @@ class order_control extends phpok_control
 		return $sn;
 	}
 
+	public function info_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$sn = $this->get('sn');
+			if(!$sn){
+				$this->json(P_Lang('未指定订单ID或SN号'));
+			}
+			$rs = $this->model('order')->get_one_from_sn($sn);
+		}else{
+			$rs = $this->model('order')->get_one($id);
+		}
+		if(!$rs){
+			$this->json(P_Lang('订单信息不存在'));
+		}
+		if($this->user['id']){
+			if($rs['user_id'] != $this->user['id']){
+				$this->json(P_Lang('您没有权限获取此订单信息'));
+			}
+		}else{
+			$passwd = $this->get('passwd');
+			if(!$passwd){
+				$this->json(P_Lang('查询密码不能留空'));
+			}
+			if($passwd != $rs['passwd']){
+				$this->json(P_Lang('密码不正确'));
+			}
+		}
+		$paycheck = $this->model('order')->order_payment($rs['id']);
+		if($paycheck && $paycheck['dateline']){
+			$rs['pay_end'] = true;
+		}else{
+			$rs['pay_end'] = false;
+		}
+		$this->json($rs,true);
+	}
 }
 
 ?>

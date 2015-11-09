@@ -32,6 +32,18 @@ function save_order()
 		}
 	});
 }
+function delete_payment(id)
+{
+	var url = get_url('order','payment_delete','id='+id);
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$("#pay_price").val('');
+			$("#pay_id").val('');
+			$("#pay_id_btn").hide();
+		}
+	})
+	
+}
 $(document).ready(function(){
 	$("#ordersave").submit(function(){
 		var price = $("#price").val();
@@ -357,7 +369,7 @@ function update_price()
 		</div>
 		<div class="content">
 			<input type="text" id="pay_price" name="pay_price" class="default" value="{$payinfo.price}" />
-			<select name="pay_id">
+			<select name="pay_id" id="pay_id">
 				<option value="">请选择一种在线支付方式…</option>
 				<!-- loop from=$paylist key=$key value=$value -->
 				<!-- if $value.paylist -->
@@ -369,6 +381,9 @@ function update_price()
 				<!-- /if -->
 				<!-- /loop -->
 			</select>
+			<!-- if $payinfo -->
+			<input type="button" id="pay_id_btn" value="清除支付记录" onclick="delete_payment('{$payinfo.id}')" class="btn" />
+			<!-- /if -->
 		</div>
 	</div>
 	<div class="table">

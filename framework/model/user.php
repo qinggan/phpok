@@ -45,13 +45,17 @@ class user_model_base extends phpok_model
 		//获取会员积分
 		$wlist = $this->model('wealth')->get_all(1,'id');
 		if($wlist){
+			foreach($wlist as $key=>$value){
+				$val = number_format(0,$value['dnum']);
+				$rs['wealth'][$value['identifier']] = array('title'=>$value['title'],'val'=>$val,'unit'=>$value['unit']);
+			}
 			$condition = "uid='".$rs['id']."'";
 			$tlist = $this->model('wealth')->vals($condition);
 			if($tlist){
-				$wealth = array();
 				foreach($tlist as $key=>$value){
 					$tmp = $wlist[$value['wid']];
-					$rs['wealth'][$tmp['identifier']] = array('title'=>$tmp['title'],'val'=>$value['val'],'unit'=>$tmp['unit']);
+					$val = number_format($value['val'],$tmp['dnum']);
+					$rs['wealth'][$tmp['identifier']]['val'] = $val;
 				}
 			}
 		}

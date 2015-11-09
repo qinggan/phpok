@@ -440,50 +440,6 @@ function ext_delete($myid)
 	return $GLOBALS['app']->model("ext")->del($myid);
 }
 
-# 加载可视化编辑器
-function phpok_editor($rs)
-{
-	$default_rs = array(
-		"identifier"=>"content",
-		"content"=>"",
-		"width"=>"96%",
-		"height"=>"300",
-		"is_code"=>false,
-		"is_read"=>false,
-		"is_float"=>false
-	);
-	if($rs && is_string($rs))
-	{
-		$rs = array("content"=>$rs);
-	}
-	$rs["width"] = 800;
-	$rs = ($rs && is_array($rs)) ? array_merge($default_rs,$rs) : $default_rs;
-	$rs["height"] = intval($rs["height"]);
-	if(!$rs["height"]) $rs["height"] = "320";
-	$GLOBALS['app']->assign("edit_rs",$rs);
-	$GLOBALS['app']->assign("edit_baseurl",$GLOBALS['app']->get_url());
-	//读取附件类型
-	$config_file = $GLOBALS['app']->dir_root."data/xml/filetype.xml";
-	$config = array();
-	if(file_exists($config_file))
-	{
-		$config = xml_to_array(file_get_contents($config_file));
-		$btn_file_list = array();
-		if(!$config) $config = array();
-		foreach($config AS $key=>$value)
-		{
-			if($key != "picture" && $key != "video")
-			{
-				$btn_file_list[$key] = $value;
-			}
-		}
-		$GLOBALS['app']->assign("btn_file_list",$btn_file_list);
-	}
-	$file = $GLOBALS['app']->dir_phpok."form/html/editor_from_admin.html";
-	$content = $GLOBALS['app']->fetch($file,'abs-file');
-	return $content;
-}
-
 //产品价格格式化
 //val，值
 //currency_id，当前值对应的货币ID
@@ -607,24 +563,6 @@ function phpok_filesize($size,$is_file=true)
 	if($is_file) $size = file_exists($size) ? filesize($size) : 0;
 	if(!$size) return "0 KB";
 	return $GLOBALS['app']->lib("trans")->num_format($size);
-}
-
-function phpok_res_type($type="")
-{
-	$config_file = $GLOBALS['app']->dir_root."data/xml/filetype.xml";
-	$config = array();
-	if(file_exists($config_file))
-	{
-		$config = xml_to_array(file_get_contents($config_file));
-	}
-	if($type && $config[$type])
-	{
-		return $config[$type];
-	}
-	else
-	{
-		$config;
-	}
 }
 
 function phpok_user_login($id,$pass="",$field='id')

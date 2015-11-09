@@ -78,21 +78,19 @@ class title_form extends _init_auto
 				$list[] = $value['title'];
 			}
 			return implode('<br />',$list);
-		}else{
-			if($ext['is_multiple']){
-				$list = explode(',',$rs['content']);
-				$rslist = false;
-				foreach($list as $key=>$value){
-					$rslist[$value] = $this->call->phpok('_arc',array('title_id'=>$value));
-				}
-				if(!$rslist){
-					return false;
-				}
-				return $rslist;
-			}else{
-				return $this->call->phpok('_arc',array('title_id'=>$rs['content']));
-			}
 		}
+		if($ext['is_multiple']){
+			$list = explode(',',$rs['content']);
+			foreach($list as $key=>$value){
+				if(!$value || !trim($value) || !intval($value)){
+					unset($list[$key]);
+				}
+			}
+			$rs['content'] = implode(",",$list);
+			$condition = "l.id IN(".$rs['content'].") AND status=1";
+			return $this->model('list')->get_all($condition,0,999);
+		}
+		return $this->model('list')->simple_one($rs['content']);
 	}
 }
 ?>

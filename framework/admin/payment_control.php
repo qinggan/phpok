@@ -76,7 +76,6 @@ class payment_control extends phpok_control
 		$data = array('site_id'=>$_SESSION['admin_site_id'],'title'=>$title);
 		$data['taxis'] = $this->get('taxis','int');
 		$data['status'] = $this->get('status','int');
-		$data['wap'] = $this->get('wap','int');
 		$insert = $this->model('payment')->groupsave($data,$id);
 		if(!$insert)
 		{

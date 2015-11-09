@@ -112,7 +112,7 @@ class js_control extends phpok_control
 		echo "\n";
 		echo '(function (config) {'."\n\t";
 		echo 'config["title"] = "'.P_Lang('消息').'";'."\n\t";
-		echo 'config["okVal"] = "'.P_Lang('提交').'";'."\n\t";
+		echo 'config["okVal"] = "'.P_Lang('确定').'";'."\n\t";
 		echo 'config["cancelVal"] = "'.P_Lang('取消').'";'."\n";
 		echo '})(art.dialog.defaults);'."\n";
 	}
@@ -159,7 +159,19 @@ class js_control extends phpok_control
 		echo "\n";
 		echo 'function api_plugin_url(id,func,ext){var url = "'.$weburl.$this->config['api_file'].'?'.$this->config['ctrl_id'].'=plugin&'.$this->config['func_id'].'=index&id="+id+"&exec="+func;if(ext){url+="&"+ext};url+="&_noCache="+Math.random();return url;};';
 		echo "\n";
-		echo $this->lib('file')->cat($this->dir_root."js/jquery.js");
+		//实现jQuery.js文件的自定义
+		if($this->app_id != 'admin'){
+			$file = $this->dir_root.$this->tpl->dir_tpl.'js/jquery.js';
+			if(!file_exists($file)){
+				$file = $this->dir_root.$this->tpl->dir_tpl.'javascript/jquery.js';
+			}
+			if(!file_exists($file)){
+				$file = $this->dir_root.'js/jquery.js';
+			}
+		}else{
+			$file = $this->dir_root.'js/jquery.js';
+		}
+		echo $this->lib('file')->cat($file);
 		echo "\n";
 	}
 }

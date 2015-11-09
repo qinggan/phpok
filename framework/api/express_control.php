@@ -70,7 +70,6 @@ class express_control extends phpok_control
 		if($info['is_end']){
 			$this->model('order')->update_end($id);
 		}
-		//执行刷新
 		$this->json('refresh',true);
 	}
 }

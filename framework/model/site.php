@@ -10,13 +10,10 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class site_model_base extends phpok_model
 {
-	private $sitelist = false;
-	private $domainlist = false;
 	private $mobile_domain = false;
 	public function __construct()
 	{
 		parent::model();
-		$this->_site_all();
 	}
 
 	public function __destruct()
@@ -27,20 +24,17 @@ class site_model_base extends phpok_model
 
 	public function get_one($id)
 	{
-		if(!$this->sitelist){
+		$sql = "SELECT * FROM ".$this->db->prefix."site WHERE id='".$id."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
 			return false;
 		}
-		if(!$this->sitelist[$id]){
-			return false;
-		}
-		$rs = $this->sitelist[$id];
-		$domain_id = $rs['domain_id'];
-		if($rs['_domain'] && $rs['_domain'][$domain_id]){
-			$rs['domain'] = $rs['_domain'][$domain_id];
-		}
-		foreach($this->domainlist as $key=>$value){
-			if($value['is_mobile'] && $value['site_id'] == $id){
-				$rs['_mobile'] = $value;
+		$rs['_domain'] = $this->domain_list($id,'id');
+		if($rs['_domain']){
+			foreach($rs['_domain'] as $key=>$value){
+				if($value['is_mobile']){
+					$rs['_mobile'] = $value;
+				}
 			}
 		}
 		return $rs;
@@ -48,37 +42,22 @@ class site_model_base extends phpok_model
 
 	public function get_one_default()
 	{
-		if(!$this->sitelist){
+		$sql = "SELECT id FROM ".$this->db->prefix."site WHERE is_default=1";
+		$tmp = $this->db->get_one($sql);
+		if(!$tmp){
 			return false;
 		}
-		$rs = false;
-		foreach($this->sitelist as $key=>$value){
-			if($value['is_default']){
-				$rs = $value;
-			}
-		}
-		$domain_id = $rs['domain_id'];
-		if($rs['_domain'] && $rs['_domain'][$domain_id]){
-			$rs['domain'] = $rs['_domain'][$domain_id];
-		}
-		return $rs;
+		return $this->get_one($tmp['id']);
 	}
 
 	public function get_one_from_domain($domain='')
 	{
-		if(!$domain || !$this->domainlist){
+		$sql = "SELECT site_id FROM ".$this->db->prefix."site_domain WHERE domain='".$domain."'";
+		$tmp = $this->db->get_one($sql);
+		if(!$tmp){
 			return false;
 		}
-		$site_id = false;
-		foreach($this->domainlist as $key=>$value){
-			if($value['domain'] == $domain){
-				$site_id = $value['site_id'];
-			}
-		}
-		if(!$site_id){
-			return false;
-		}
-		return $this->get_one($site_id);
+		return $this->get_one($tmp['site_id']);
 	}
 
 	public function get_all_site()
@@ -87,41 +66,10 @@ class site_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
-	private function _site_all()
+	public function domain_list($site_id=0,$pri='')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."site";
-		$rslist = $this->db->get_all($sql,'id');
-		if(!$rslist){
-			return false;
-		}
-		$sql = "SELECT * FROM ".$this->db->prefix."site_domain";
-		$dlist = $this->db->get_all($sql);
-		if(!$dlist){
-			return $rslist;
-		}
-		$this->domainlist = $dlist;
-		foreach($dlist as $key=>$value){
-			$rslist[$value['site_id']]['_domain'][$value['id']] = $value['domain'];
-		}
-		$this->sitelist = $rslist;
-		return $rslist;
-	}
-
-	public function domain_list($site_id=0)
-	{
-		if(!$this->domainlist){
-			return false;
-		}
-		if(!$site_id){
-			return $this->domainlist;
-		}
-		$rslist = false;
-		foreach($this->domainlist as $key=>$value){
-			if($value['site_id'] == $site_id){
-				$rslist[] = $value;
-			}
-		}
-		return $rslist;
+		$sql = "SELECT * FROM ".$this->db->prefix."site_domain WHERE site_id='".$site_id."'";
+		return $this->db->get_all($sql,$pri);
 	}
 
 	public function domain_check($domain)

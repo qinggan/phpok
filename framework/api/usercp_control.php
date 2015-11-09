@@ -95,7 +95,10 @@ class usercp_control extends phpok_control
 			$this->json(P_Lang('新密码不能为空'));
 		}
 		if(strlen($newpass) < 6){
-			$this->json(P_Lang('密码不符合要求'));
+			$this->json(P_Lang('密码不符合要求，密码长度不能小于6位'));
+		}
+		if(strlen($newpass) > 20){
+			$this->json(P_Lang('密码不符合要求，密码长度不能超过20位'));
 		}
 		if($newpass != $chkpass){
 			$this->json(P_Lang('新旧密码不一致'));
@@ -206,8 +209,7 @@ class usercp_control extends phpok_control
 			$this->json(P_Lang('发票抬头不能为空'));
 		}
 		$this->model('user')->update_invoice_title($invoice_title,$this->u_id);
-		if(!$this->is_client)
-		{
+		if(!$this->is_client){
 			$this->model('user')->update_session($this->u_id);
 		}
 		$this->json(true);
@@ -216,7 +218,6 @@ class usercp_control extends phpok_control
 	//更新地址信息
 	public function address_f()
 	{
-		
 		$id = $this->get('id','int');
 		if($id){
 			$rs = $this->model('address')->get_one($id);

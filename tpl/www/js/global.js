@@ -185,6 +185,37 @@ function logout(t)
 				}
 			});
 		},
+		//产品增加操作
+		//id为购物车里的ID，不是产品ID
+		//qty，是要增加的数值，
+		plus:function(id,num){
+			var qty = $("#qty_"+id).val();
+			if(!qty){
+				qty = 1;
+			}
+			if(!num || num == 'undefined'){
+				num = 1;
+			}
+			qty = parseInt(qty) + parseInt(num);
+			$("#qty_"+id).val(qty);
+			this.update(id);
+		},
+		minus:function(id,num){
+			var qty = $("#qty_"+id).val();
+			if(!qty){
+				qty = 1;
+			}
+			if(qty<2){
+				alert('产品数量不能少于1');
+				return false;
+			}
+			if(!num || num == 'undefined'){
+				num = 1;
+			}
+			qty = parseInt(qty) - parseInt(num);
+			$("#qty_"+id).val(qty);
+			this.update(id);
+		},
 		//删除产品信息
 		//id为购物车自动生成的ID号（不是产品ID号，请注意）
 		del: function(id){

@@ -10,7 +10,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class plugin_model_base extends phpok_model
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::model();
 	}
@@ -21,17 +21,14 @@ class plugin_model_base extends phpok_model
 		unset($this);
 	}
 
-	//取得全部插件
-	function get_all($status=0)
+	public function get_all($status=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."plugins ";
-		if($status)
-		{
+		if($status){
 			$sql .= "WHERE status=1 ";
 		}
 		$sql .= " ORDER BY taxis ASC,id DESC";
 		return $this->db->get_all($sql,'id');
-		if(!$rslist) return false;
 	}
 
 	//取得全部的插件列表
@@ -54,8 +51,11 @@ class plugin_model_base extends phpok_model
 
 	function get_one($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."plugins WHERE id='".$id."'";
-		return $this->db->get_one($sql);
+		$list = $this->get_all();
+		if(!$list || ($list && !$list[$id])){
+			return false;
+		}
+		return $list[$id];
 	}
 
 	function get_xml($id)
@@ -66,9 +66,8 @@ class plugin_model_base extends phpok_model
 			return false;
 		}
 		$rs = array();
-		if(is_file($folder."config.xml"))
-		{
-			$rs = xml_to_array(file_get_contents($folder."config.xml"));
+		if(file_exists($folder."config.xml")){
+			$rs = $this->lib('xml')->read($folder.'config.xml');
 		}
 		$rs["id"] = $id;
 		$rs["path"] = $folder;

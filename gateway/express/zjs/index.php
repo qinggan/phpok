@@ -61,11 +61,11 @@ $orderStatus=$order['orderStatus'];//当前订单状态，订单状态值：GOT 
 $statusTime=$order['statusTime'];//当前状态时间
 $tmplist = array();
 if($step && is_array($step)){
-	if($step['acceptTime'] && $key == 'acceptAddress'){
-		$tmplist[] = array('time'=>$step['acceptTime'],'content'=>$step['acceptAddress']);
+	if($step['acceptTime']){
+		$tmplist[0] = array('time'=>$step['acceptTime'],'content'=>$step['acceptAddress']);
 	}
 	foreach($step as $key=>$val){
-		if(!$key == 'acceptTime' && $key != 'acceptAddress' && is_array($val)){
+		if($key != 'acceptTime' && $key != 'acceptAddress' && is_array($val)){
 			$tmp = array('time'=>$val['acceptTime'],'content'=>$val['acceptAddress']);
 			$tmplist[] = $tmp;
 		}
@@ -74,8 +74,7 @@ if($step && is_array($step)){
 $is_end = false;
 if($orderStatus=="SIGNED"){
 	$is_end = true;
-	$last['time'] = $statusTime;
-	$last['content'] = '订单已经签收，签收人是'.$order['signinPer'];
+	$last = array('title'=>$statusTime,'content'=>'订单已经签收，签收人是'.$order['signinPer']);
 	$tmplist[] = $last;
 }elseif($orderStatus == 'GOT'){
 	$tmp = array('time'=>$statusTime,'content'=>'物流公司已取件');

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主机: 127.0.0.1:3306
--- 生成日期: 2015 年 10 月 11 日 12:29
+-- 生成日期: 2015 年 10 月 22 日 02:43
 -- 服务器版本: 5.5.40
 -- PHP 版本: 5.3.29
 
@@ -19,6 +19,226 @@ SET time_zone = "+00:00";
 --
 -- 数据库: `phpok`
 --
+
+--
+-- 表的结构 `qinggan_list_21`
+--
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_21` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `link` longtext NOT NULL COMMENT '链接',
+  `target` varchar(255) NOT NULL DEFAULT '_self' COMMENT '链接方式',
+  `pic` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='图片播放器';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qinggan_list_22`
+--
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_22` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
+  `content` longtext NOT NULL COMMENT '内容',
+  `note` longtext NOT NULL COMMENT '摘要',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文章资讯';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qinggan_list_23`
+--
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_23` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `link` longtext NOT NULL COMMENT '链接',
+  `target` varchar(255) NOT NULL DEFAULT '_self' COMMENT '链接方式',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='导航';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qinggan_list_24`
+--
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_24` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
+  `pictures` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
+  `content` longtext NOT NULL COMMENT '内容',
+  `spec_single` longtext NOT NULL COMMENT '产品属性',
+  `qingdian` longtext NOT NULL COMMENT '包装清单',
+  `enddate` varchar(255) NOT NULL DEFAULT '' COMMENT '预购结束日期',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='产品';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qinggan_list_40`
+--
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_40` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `content` longtext NOT NULL COMMENT '内容',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关于我们';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qinggan_list_46`
+--
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_46` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `fullname` varchar(255) NOT NULL DEFAULT '' COMMENT '姓名',
+  `email` varchar(255) NOT NULL DEFAULT '' COMMENT '邮箱',
+  `content` longtext NOT NULL COMMENT '内容',
+  `adm_reply` longtext NOT NULL COMMENT '管理员回复',
+  `pic` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='留言模块';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qinggan_list_61`
+--
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_61` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `link` longtext NOT NULL COMMENT '链接',
+  `target` varchar(255) NOT NULL DEFAULT '_self' COMMENT '链接方式',
+  `tel` varchar(255) NOT NULL DEFAULT '' COMMENT '联系人电话',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='友情链接';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qinggan_list_64`
+--
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_64` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `qq` varchar(255) NOT NULL DEFAULT '' COMMENT '客服QQ',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='客服';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qinggan_list_65`
+--
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_65` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `note` longtext NOT NULL COMMENT '摘要',
+  `fsize` varchar(255) NOT NULL DEFAULT '' COMMENT '文件大小',
+  `content` longtext NOT NULL COMMENT '内容',
+  `version` varchar(255) NOT NULL DEFAULT '' COMMENT '版本',
+  `website` varchar(255) NOT NULL DEFAULT '' COMMENT '官方网站',
+  `platform` varchar(255) NOT NULL DEFAULT '' COMMENT '适用平台',
+  `devlang` varchar(255) NOT NULL DEFAULT '' COMMENT '开发语言',
+  `author` varchar(255) NOT NULL DEFAULT '' COMMENT '开发商',
+  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
+  `copyright` varchar(255) NOT NULL DEFAULT '' COMMENT '授权协议',
+  `dfile` varchar(255) NOT NULL DEFAULT '' COMMENT '附件',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='资源下载';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qinggan_list_66`
+--
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_66` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `content` longtext NOT NULL COMMENT '内容',
+  `toplevel` varchar(255) NOT NULL DEFAULT '0' COMMENT '置顶',
+  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='论坛BBS';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qinggan_list_68`
+--
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_68` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
+  `pictures` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
+  `content` longtext NOT NULL COMMENT '内容',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='图集相册';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qinggan_list_69`
+--
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_69` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `attrs` longtext NOT NULL COMMENT '产品多属性',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='产品参考数据';
 
 --
 -- 转存表中的数据 `qinggan_all`
@@ -53,27 +273,6 @@ INSERT INTO `qinggan_attr_values` (`id`, `aid`, `title`, `pic`, `taxis`, `val`) 
 (10, 3, 'XXL', '', 40, '');
 
 --
--- 转存表中的数据 `qinggan_cart`
---
-
-INSERT INTO `qinggan_cart` (`id`, `session_id`, `user_id`, `addtime`) VALUES
-(18, '025q7cksh0e8at3ni1n5bsln70', 0, 1439966435),
-(13, 'rhpbet3ej7itatr3biuotdumm2', 24, 1439398701),
-(46, 'rkqakiuvckdfklkbse9fplo4s2', 23, 1444459196),
-(25, 'nqn11lg92m71cm5hu3n37rv304', 0, 1441337807),
-(26, 'q758o8ejqih9v5hc2og6993nn2', 0, 1441432709),
-(27, 'lts2grmihsk32vv2a7ho7r9va3', 0, 1442627271),
-(30, 'mjl1k6ptg0faml6m1bv8nobtm0', 0, 1443164708),
-(47, 'nujbnbr6p45pfin125i7v6u6h4', 0, 1444534169);
-
---
--- 转存表中的数据 `qinggan_cart_product`
---
-
-INSERT INTO `qinggan_cart_product` (`id`, `cart_id`, `tid`, `title`, `price`, `qty`, `ext`, `weight`, `volume`) VALUES
-(22, 30, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', 177, 1, '10,26', 1, 0);
-
---
 -- 转存表中的数据 `qinggan_cate`
 --
 
@@ -104,7 +303,8 @@ INSERT INTO `qinggan_cate` (`id`, `site_id`, `parent_id`, `status`, `title`, `ta
 (215, 1, 8, 1, '测试子分类', 10, '', '', 0, '', '', '', 'ceshizifenlei', ''),
 (216, 1, 215, 1, '测试三级分类', 10, '', '', 0, '', '', '', 'ceshisanjifenlei', ''),
 (217, 1, 215, 1, '测试三级分类2', 20, '', '', 0, '', '', '', 'ceshisanjifenlei2', ''),
-(218, 1, 8, 1, '测试子分类2', 20, '', '', 0, '', '', '', 'ceshizifenlei2', '');
+(218, 1, 8, 1, '测试子分类2', 20, '', '', 0, '', '', '', 'ceshizifenlei2', ''),
+(219, 1, 152, 1, '家电、生活用品', 170, '', '', 0, '', '', '', 'jdshyp', '');
 
 --
 -- 转存表中的数据 `qinggan_currency`
@@ -239,9 +439,9 @@ INSERT INTO `qinggan_extc` (`id`, `content`) VALUES
 
 INSERT INTO `qinggan_fields` (`id`, `title`, `identifier`, `field_type`, `note`, `form_type`, `form_style`, `format`, `content`, `taxis`, `ext`, `area`) VALUES
 (6, '内容', 'content', 'longtext', '', 'editor', '', 'html', '', 255, 'a:11:{s:5:"width";s:3:"950";s:6:"height";s:3:"360";s:7:"is_code";s:0:"";s:9:"btn_image";s:1:"1";s:9:"btn_video";s:1:"1";s:8:"btn_file";s:1:"1";s:8:"btn_page";s:0:"";s:8:"btn_info";s:0:"";s:7:"is_read";s:0:"";s:5:"etype";s:4:"full";s:7:"btn_map";s:0:"";}', 'all,cate,module,project,user,usergroup'),
-(7, '图片', 'pictures', 'varchar', '支持多图', 'upload', '', 'safe', '', 50, 'a:3:{s:11:"upload_type";s:7:"picture";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";}', 'all,cate,module,project,user'),
-(8, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 30, 'a:3:{s:11:"upload_type";s:7:"picture";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";}', 'all,cate,module,project,user'),
-(9, '压缩文件', 'file', 'varchar', '仅支持压缩文件', 'upload', '', 'safe', '', 60, 'a:3:{s:11:"upload_type";s:3:"zip";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";}', 'all,cate,module,project'),
+(7, '图片', 'pictures', 'varchar', '支持多图', 'upload', '', 'safe', '', 50, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";s:11:"upload_auto";s:1:"1";}', 'all,cate,module,project,user'),
+(8, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 30, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}', 'all,module,project,user'),
+(128, '附件', 'dfiles', 'varchar', '支持多个附件', 'upload', '', '', '', 255, 'a:3:{s:7:"cate_id";s:2:"11";s:11:"is_multiple";s:1:"1";s:11:"upload_auto";s:1:"1";}', 'all,cate,module,project,user,usergroup'),
 (11, '链接', 'link', 'longtext', '手动指定外部链接时，伪静态链接可以留空', 'url', '', 'safe', '', 90, 'a:1:{s:5:"width";s:3:"500";}', 'all,cate,module,project,user'),
 (12, '摘要', 'note', 'longtext', '简要文字描述', 'textarea', '', 'safe', '', 20, 'a:2:{s:5:"width";s:3:"600";s:6:"height";s:2:"80";}', 'all,cate,module,project'),
 (13, '性别', 'gender', 'varchar', '', 'radio', '', 'safe', '女', 120, 'a:3:{s:11:"option_list";b:0;s:9:"put_order";s:1:"0";s:10:"ext_select";s:8:"男\r\n女";}', 'all,cate,module,project,user'),
@@ -249,14 +449,14 @@ INSERT INTO `qinggan_fields` (`id`, `title`, `identifier`, `field_type`, `note`,
 (37, '链接方式', 'target', 'varchar', '设置是否在新窗口打开', 'radio', '', 'safe', '_self', 100, 'a:1:{s:11:"option_list";s:5:"opt:6";}', 'cate,module,project'),
 (30, '姓名', 'fullname', 'varchar', '', 'text', '', 'safe', '', 10, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 'all,cate,module,project,user'),
 (31, '通栏图片', 'banner', 'varchar', '', 'upload', '', 'safe', '', 40, 'a:3:{s:11:"upload_type";s:7:"picture";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";}', 'all,cate,module,project'),
-(34, '附件', 'files', 'varchar', '仅支持rar和zip的压缩包，支持多附件', 'upload', '', 'safe', '', 70, 'a:3:{s:11:"upload_type";s:3:"zip";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";}', 'all,cate,module,project'),
+(127, '附件', 'dfile', 'varchar', '', 'upload', '', '', '', 255, 'a:3:{s:7:"cate_id";s:2:"11";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}', 'all,cate,module,project,user,usergroup,cart,order,pay'),
 (35, '文档', 'doc', 'varchar', '支持在线办公室的文档', 'upload', '', 'safe', '', 80, 'a:3:{s:11:"upload_type";s:8:"document";s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";}', 'all,cate,module,project'),
 (36, '视频', 'video', 'varchar', '支持并推荐您使用FlV格式视频', 'upload', '', 'int', '', 110, 'a:3:{s:7:"cate_id";s:2:"16";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"0";}', 'all,cate,module,project,user,usergroup,cart,order,pay'),
 (60, '客服QQ', 'qq', 'varchar', '', 'text', '', 'safe', '', 150, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 'all,cate,module,project,user'),
 (116, '广告内容', 'ad', 'longtext', '', 'editor', '', 'html_js', '', 255, 'a:12:{s:5:"width";s:3:"600";s:6:"height";s:3:"100";s:7:"is_code";i:1;s:9:"btn_image";i:1;s:9:"btn_video";i:1;s:8:"btn_file";b:0;s:8:"btn_page";b:0;s:8:"btn_info";b:0;s:7:"is_read";b:0;s:5:"etype";s:6:"simple";s:7:"btn_tpl";b:0;s:7:"btn_map";b:0;}', 'all,cate,module,project'),
 (75, '联系地址', 'address', 'varchar', '', 'text', '', 'safe', '', 79, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"500";}', 'all,module,user'),
-(76, '联系电话', 'tel', 'varchar', '', 'text', '', 'safe', '', 89, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 'all,cate,module,project,user'),
-(77, '邮编', 'zipcode', 'varchar', '请填写六位数字的邮编号码', 'text', '', 'safe', '', 30, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 'all,module'),
+(76, '联系电话', 'tel', 'varchar', '', 'text', '', 'safe', '', 89, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 'all,module,project,user'),
+(77, '邮编', 'zipcode', 'varchar', '请填写六位数字的邮编号码', 'text', '', 'safe', '', 30, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 'all,module,cate'),
 (79, 'LOGO', 'logo', 'varchar', '网站LOGO，规格：88x31', 'text', '', 'safe', '', 160, 'a:2:{s:8:"form_btn";s:5:"image";s:5:"width";s:3:"500";}', 'all,cate,module,project'),
 (80, '图片', 'pic', 'varchar', '', 'text', '', 'safe', '', 255, 'a:2:{s:8:"form_btn";s:5:"image";s:5:"width";s:3:"500";}', 'all,cate,module,project,user'),
 (81, '统计', 'statjs', 'varchar', '', 'code_editor', '', 'html_js', '', 255, 'a:2:{s:5:"width";s:3:"500";s:6:"height";s:2:"80";}', 'all'),
@@ -348,7 +548,7 @@ INSERT INTO `qinggan_freight_zone` (`id`, `fid`, `title`, `taxis`, `note`, `area
 
 INSERT INTO `qinggan_gateway` (`id`, `site_id`, `status`, `is_default`, `type`, `code`, `title`, `taxis`, `note`, `ext`) VALUES
 (1, 1, 1, 1, 'sms', 'duanxincm', '莫名短信', 10, '', 'a:3:{s:7:"account";s:0:"";s:8:"password";s:0:"";s:6:"server";s:22:"http://api.duanxin.cm/";}'),
-(3, 1, 1, 1, 'email', 'smtp', 'SMTP邮件发送', 10, '', 'a:8:{s:6:"server";s:12:"smtp.126.com";s:4:"port";s:2:"25";s:7:"account";s:10:"suxiangkun";s:8:"password";s:0:"";s:7:"charset";s:5:"utf-8";s:3:"ssl";s:2:"no";s:8:"fullname";s:9:"苏相锟";s:5:"email";s:18:"suxiangkun@126.com";}');
+(3, 1, 1, 1, 'email', 'smtp', 'SMTP邮件发送', 10, '', 'a:8:{s:6:"server";s:0:"";s:4:"port";s:2:"25";s:7:"account";s:10:"suxiangkun";s:8:"password";s:0:"";s:7:"charset";s:5:"utf-8";s:3:"ssl";s:2:"no";s:8:"fullname";s:9:"苏相锟";s:5:"email";s:18:"suxiangkun@126.com";}');
 
 --
 -- 转存表中的数据 `qinggan_gd`
@@ -376,13 +576,13 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (719, 712, 0, 23, 42, 1, '联系我们', 1383355984, 23, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1277, 0, 0, 21, 41, 1, '选择PHPOK，企业更专业', 1394008434, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (755, 712, 0, 23, 42, 1, '工作环境', 1383640450, 24, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
-(1306, 0, 191, 24, 45, 1, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', 1410443859, 0, 1, 0, 197, '', '', '', '', '', 'n', 0, 0, ''),
+(1306, 0, 191, 24, 45, 1, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', 1410443859, 0, 1, 0, 198, '', '', '', '', '', 'n', 0, 0, ''),
 (1373, 0, 68, 22, 43, 1, '来自工程师的8项Web性能提升建议', 1424920049, 0, 1, 0, 41, '', '', '', '', '', 'h', 0, 0, ''),
 (760, 713, 0, 23, 42, 1, '公司新闻', 1383815715, 10, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (761, 713, 0, 23, 42, 1, '行业新闻', 1383815736, 20, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1258, 0, 0, 46, 96, 1, '测试的留言', 1392376101, 0, 1, 0, 0, '', '', '', '', '', '', 0, 3, ''),
 (1252, 0, 0, 61, 142, 1, 'phpok官网', 1390465160, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
-(1253, 0, 168, 24, 45, 1, '新款男人时尚长袖格子衬衫', 1391830871, 0, 1, 0, 135, '', '', '', '', '', '', 1404983732, 0, ''),
+(1253, 0, 168, 24, 45, 1, '新款男人时尚长袖格子衬衫', 1391830871, 0, 1, 0, 136, '', '', '', '', '', '', 1404983732, 0, ''),
 (1254, 712, 0, 23, 42, 1, '发展历程', 1392375210, 26, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1256, 0, 0, 23, 42, 1, '图集相册', 1392375722, 70, 1, 0, 0, '', '', '', '', '', 'mobile', 0, 0, ''),
 (1261, 0, 0, 61, 142, 1, '启邦互动', 1393321211, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
@@ -410,7 +610,7 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (1304, 0, 0, 23, 147, 1, '联系我们', 1409555008, 50, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1305, 0, 0, 64, 148, 1, 'PHPOK销售客服', 1409747629, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1308, 0, 0, 46, 96, 1, '测试一下留言功能', 1410960969, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
-(1310, 0, 198, 65, 151, 1, '测试软件下载', 1412136071, 0, 1, 0, 66, '', '', '', '', '', '', 0, 0, ''),
+(1310, 0, 198, 65, 151, 1, '主题复制插件', 1412136071, 0, 1, 0, 66, '', '', '', '', '', '', 0, 0, ''),
 (1311, 0, 204, 66, 152, 1, '测试论坛功能', 1412391521, 0, 1, 0, 9, '', '', '', '', '', '', 0, 3, ''),
 (1334, 0, 204, 66, 152, 1, '测试', 1413063267, 0, 1, 0, 11, '', '', '', '', '', '', 0, 3, ''),
 (1336, 0, 204, 66, 152, 1, '测试图片功能', 1413064520, 0, 1, 0, 28, '', '', '', '', '', '', 0, 3, ''),
@@ -425,8 +625,7 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (1381, 0, 68, 22, 43, 1, '科技进步给工人带来失业恐惧？', 1428675994, 0, 1, 0, 9, '', '', '', '', '科技 失业恐惧', '', 0, 0, ''),
 (1382, 0, 68, 22, 43, 1, '站点采用HTTPS协议的利弊分析、及SEO建议', 1433723870, 0, 1, 0, 109, '', '', '', '', '自检清单 必应 谷歌', '', 1439556917, 0, ''),
 (1389, 0, 211, 68, 144, 1, '清水岩，内奉中国百仙之一清水祖师', 1430579244, 0, 1, 0, 9, '', '', '', '', '', '', 0, 0, ''),
-(1386, 0, 211, 68, 144, 1, '开元寺，泉州古城的独特标志和象征', 1430559208, 0, 1, 0, 36, '', '', '', '', '', '', 0, 0, ''),
-(1396, 0, 207, 22, 43, 1, '测试添加视频', 1435918965, 0, 1, 0, 30, '', '', '', '', '', '', 1439432798, 18, ''),
+(1386, 0, 211, 68, 144, 1, '开元寺，泉州古城的独特标志和象征', 1430559208, 0, 1, 0, 38, '', '', '', '', '', '', 0, 0, ''),
 (1423, 0, 68, 22, 43, 1, '日本东京2020年奥运会主会场使用ETFE膜', 1398700800, 0, 1, 0, 508, '', '', '', '', '', '', 0, 0, ''),
 (1424, 0, 68, 22, 43, 1, 'PTFE膜材', 1402329600, 0, 1, 0, 469, '', '', '', '', '', '', 0, 0, '');
 
@@ -452,7 +651,6 @@ INSERT INTO `qinggan_list_22` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`
 (1372, 1, 43, 207, '', '<p>一、FTP连接中的PASV和PORT模式：</p><blockquote><p>PORT：其实是Standard模式的另一个名字，又称为Active模式。中文意思是“主动模式；</p><p>PASV：也就是Passive的简写，中文就是“被动模式。</p></blockquote><p>二、两者之间有什么不同：<br/></p><blockquote><p>1、不同之处是由于PORT这个方式需要在接上TCP 21端口后，服务器通过自己的TCP 20来发出数据。并且需要建立一个新的连接来传送档案。而PORT的命令包含一些客户端没用的资料，所以有了PASv的出现；</p><p>2、而PASV模式就当然拥有PORT模式的优点及去掉一些PORT的缺点。PASV运行方式就是当服务器接收到PASV命令时，就会自动从端口1024到5000中随机选择，而且还会使用同一个端口来传送数据，不用建立新的连接。</p></blockquote><p>三、有的 FTP 服务器是不支持 PASV 模式的，登入時要取消 PASV 模式才行。常用 FTP 下载工具取消PASV 模式的方法如下：</p><blockquote><p>1、Cutftp：点菜单上的“文件”－&gt;“站点管理”－&gt;在“站点管理器”窗口－&gt;“新建站点”－&gt;填上“域名”－&gt;“编辑”－&gt;“常规”－&gt;把“使用 pasv 模式”前的勾勾去掉。</p><p>2、FlashFXP：点菜单上的“站点”－&gt;“站点管理器”－&gt;站点管理器窗口－&gt;“新建站点”－&gt;填上“域名”－&gt;“选项”－&gt;把“使用被动模式”前的勾勾去掉－&gt;“应用” 即可。</p><p>3、FileZilla：点菜单上的“站点”－&gt;“站点管理器”－&gt;站点管理器窗口－&gt;“传输设置”－&gt;“传输模式”－&gt;选择“主动”或“默认”即可。</p></blockquote>', ''),
 (1381, 1, 43, 68, '734', '<p style="margin-top: 0px; margin-bottom: 1.5em; padding: 0px; list-style: none; color: rgb(51, 51, 51); font-family: Helvetica, Tahoma, Arial, sans-serif; font-size: 14px; line-height: 24px; white-space: normal; background-color: rgb(255, 255, 255);">之前就有报道说，富士康正在大力研发并使用机械手臂以代替人工劳动力。其对外公布的计划是每年增加超过1万台机器人和10万套自动化设备。这是一个相当庞大的工程，即使对于富士康这样的企业来说也是如此。那么，我们不去刨根问底富士康为什么要花这么大力气投入到机器人的研发使用上，我们只想知道这样的做法会不会带动更多的制造厂商如法炮制利用机器人代替人工劳动力，导致普通工人因机器人的介入丢失饭碗进而对科技进步的现实产生恐惧感。</p><p style="margin-top: 0px; margin-bottom: 1.5em; padding: 0px; list-style: none; color: rgb(51, 51, 51); font-family: Helvetica, Tahoma, Arial, sans-serif; font-size: 14px; line-height: 24px; white-space: normal; background-color: rgb(255, 255, 255); text-align: center;"><img src="res/201504/10/auto_734.jpg" style="vertical-align: middle; border: none;"/><br/></p><p style="margin-top: 0px; margin-bottom: 1.5em; padding: 0px; list-style: none; color: rgb(51, 51, 51); font-family: Helvetica, Tahoma, Arial, sans-serif; font-size: 14px; line-height: 24px; white-space: normal; background-color: rgb(255, 255, 255);">其实，谁都知道富士康之所以开始加大对机器人的研发，并希望通过机器人来取代人工，除了招工难的原因之外，同时降低人工成本和管理成本也是他们所考虑的问题重点。虽然劳动者在工作岗位上的工作范围较广，但肯定没有那些不用吃不用休息的机器人好使啊。可现实遇到的麻烦是，要想用机器人取代人工根本没那么简单：</p><ol style="margin-bottom: 1em; margin-left: 30px; padding: 0px; list-style-position: initial; list-style-image: initial; color: rgb(51, 51, 51); font-family: Helvetica, Tahoma, Arial, sans-serif; font-size: 14px; line-height: 24px; white-space: normal; background-color: rgb(255, 255, 255);" class=" list-paddingleft-2"><li><p><span style="color:#000000">机器人从事的工作较为低级，且本身的造价过高</span></p></li><li><p><span style="color:#000000">机械手臂很难做到像人类身体和五指那样的灵活</span></p></li><li><p><span style="color:#000000">机械手臂的后期维护过程中人力成本、时间成本较高</span></p></li></ol><p style="margin-top: 0px; margin-bottom: 1.5em; padding: 0px; list-style: none; color: rgb(51, 51, 51); font-family: Helvetica, Tahoma, Arial, sans-serif; font-size: 14px; line-height: 24px; white-space: normal; background-color: rgb(255, 255, 255);">如果解决了以上这三个问题，使用机械手臂也就不算是什么难事了。有富士康离职员工表示，在富士康主营的手机代工业务里，机器人主要应用领域还是在前端的高精度贴片和后端的装配、搬运环节，在绝大部分中间制造环节，还是必须用人工来完成。</p><p style="margin-top: 0px; margin-bottom: 1.5em; padding: 0px; list-style: none; color: rgb(51, 51, 51); font-family: Helvetica, Tahoma, Arial, sans-serif; font-size: 14px; line-height: 24px; white-space: normal; background-color: rgb(255, 255, 255);">所以，不管是从成本上还是可行度上考虑，要想真正实现完全自动化都是一件极具挑战的任务，也是一项超前的探索，毕竟这和汽车制造业、重工企业相比起来精确很多，还需要长时间的摸索。换句话说，要想在短时间内用机器手臂代替人工劳动力不是一件轻而易举的事，至于恐惧嘛，更是没必要。</p><p style="margin-top: 0px; margin-bottom: 1.5em; padding: 0px; list-style: none; color: rgb(51, 51, 51); font-family: Helvetica, Tahoma, Arial, sans-serif; font-size: 14px; line-height: 24px; white-space: normal; background-color: rgb(255, 255, 255);">除了国内，国外的小伙伴也同样有相似的担忧。美国的制造业是全球靠前的，正是因为这样的竞争压力和过高的人力成本，促使企业绞尽脑汁扩大机器人的工作量和岗位占有量，无疑致使出于普通岗位的工人开始担忧自己的工作前景。</p><p style="margin-top: 0px; margin-bottom: 1.5em; padding: 0px; list-style: none; color: rgb(51, 51, 51); font-family: Helvetica, Tahoma, Arial, sans-serif; font-size: 14px; line-height: 24px; white-space: normal; background-color: rgb(255, 255, 255);">目前，就有美国媒体报道说，四分之一的美国人（尤以年收入在3万美元以下的穷人为主）担心科技的发展会影响他们的就业，这一数字着实让人感到惊讶。根据CNBC最新的All-America Economic Survey调查结果显示，年收入在10万美元以上的人群中也有4%的人抱有同样的担心。</p><p style="margin-top: 0px; margin-bottom: 1.5em; padding: 0px; list-style: none; color: rgb(51, 51, 51); font-family: Helvetica, Tahoma, Arial, sans-serif; font-size: 14px; line-height: 24px; white-space: normal; background-color: rgb(255, 255, 255); text-align: center;"><img src="res/201504/10/auto_735.jpg" style="vertical-align: middle; border: none;"/><br/></p><p style="margin-top: 0px; margin-bottom: 1.5em; padding: 0px; list-style: none; color: rgb(51, 51, 51); font-family: Helvetica, Tahoma, Arial, sans-serif; font-size: 14px; line-height: 24px; white-space: normal; background-color: rgb(255, 255, 255);">提到对科技的敬畏就不得不提到教育水平的分界线：五分之一的高中及以下学历的人担心自己会被机器人抢了饭碗，研究生以上学历的人中只有6%担心这一点。CNBC的民调显示美国人和科技之间的关系很复杂，52%的人认为逐渐依赖科技只会让生活变得更加复杂，便利的一面根本不明显。同样的问题在1999年的调查中只有39%这么认为。事实上，收入和接受教育程度跟这样的担忧直接挂钩，也就是说，学历越低、越穷的人就越担心科技发展的太快，觉得自己跟不上时代的步伐。其实这样的担心也不是空穴来风，因为59%的受访者认为网络技术会给工作带来高效率，但是他们并不觉得高效率的产出跟他们所获得薪水成正比，只有35%的人承认自己的薪水因科技因素的介入而上涨，61%的工薪阶层人士其薪水是停滞不前的。或者可以这么解读他们的想法：随着技术的提升，人的劳动力被解放出来，自己的收入没有获得的主要原因是被机械设备赚去了。因此他们就觉得这样的科技进步对自己根本没有什么实际效益。</p><p style="margin-top: 0px; margin-bottom: 1.5em; padding: 0px; list-style: none; color: rgb(51, 51, 51); font-family: Helvetica, Tahoma, Arial, sans-serif; font-size: 14px; line-height: 24px; white-space: normal; background-color: rgb(255, 255, 255);">不过，有一件事几乎在美国是得到认可的，那就是：科技发展的很快，太快。70%的受访者说科技前进的脚步完全超出了他们5年前所设想的那样，只有9%的人持反对态度。</p><p style="margin-top: 0px; margin-bottom: 1.5em; padding: 0px; list-style: none; color: rgb(51, 51, 51); font-family: Helvetica, Tahoma, Arial, sans-serif; font-size: 14px; line-height: 24px; white-space: normal; background-color: rgb(255, 255, 255);"><strong>总结</strong>：从上面的案例可以看出，科学技术的发展总体上带动了经济的发展，但在这同时，劳动者和科技成果之间的矛盾会显露出来，一方面是觉得自己的价值得不到体现，另一方面是觉得自己的岗位随时都有可能被机器人代替而带来的焦躁感。事实上，这完全是多虑了，说是杞人忧天也不为过。毕竟在制造业，人力是不可完全取代的。</p>', '80后的我们生活在一个幸福的时代，至少跟自己的父辈比起来我们会用电子产品，生活上不愁吃不饱穿不暖。可是就是在这样的时代，有人觉得科技发展的脚步危及到自己的生存乐土。可在物竞天择的时代，我不赞同他们！'),
 (1382, 1, 43, 68, '736', '<p style="text-align:center"><strong><img src="res/201504/10/auto_736.png" alt="auto_736.png"/></strong></p><p style="text-align: left; text-indent: 2em;"><strong>注：</strong>本文作者为Moz网站专栏作家Cyrus Shepard，是一篇关于“HTTPS站点优化建议及技巧”的分享型文章。文章写于谷歌宣布将“HTTPS协议作为搜索引擎排名参考因素”后。</p><p style="text-align: left; text-indent: 2em;">谷歌几乎没有明确对外公开过影响谷歌搜索引擎排名的因素具体有哪些，因而当其在去年8月份宣布采用“HTTPS加密协议有利于搜索引擎排名”时，我的心情就两字儿：震惊！</p><p style="text-align: left; text-indent: 2em;">HTTPS与其他的谷歌参考因素不同，实行起来比较复杂，有一定的风险性，而且还需一些额外的费用。但利益也是显而易见的，使用HTTPS协议的站点更安全、且在搜索排名上更具优势。</p><p style="text-align: left; text-indent: 2em;">据Moz网站2014年9月份的调查数据显示：</p><p style="text-align: left; text-indent: 2em;"><span style="text-indent: 2em;">17.24%的站长表示其网站已采用HTTPS协议；</span></p><p style="text-align: left; text-indent: 2em;">24.9%的站长表示正在搭建中；</p><p style="text-align: left; text-indent: 2em;">57.85%的站长表示目前仍无此项计划。</p><p style="text-align: left; text-indent: 2em;">如下图：</p><p style="text-align:center"><a href="http://upload.chinaz.com/2015/0410/1428648643514.jpg"><img src="res/201504/10/auto_737.jpg" border="0" alt="站长之家, 搜索引擎排名, HTTPS搭建, https和http有什么区别" style="margin: 0px; padding: 0px; border: 1px solid rgb(153, 153, 153); font-style: inherit; font-variant: inherit; line-height: inherit; vertical-align: middle; color: transparent; display: inline-block; width: 600px; height: auto;"/></a></p><p style="text-align: left; text-indent: 2em;">虽然大部分站长仍无转向HTTPS阵营的打算，但相比之前的情况已有提升。看来，谷歌的算法更新对站长们还是很有震慑力的。</p><p style="text-align: left; text-indent: 2em;">采用HTTPS协议对SEO有何好处？</p><p style="text-align: left; text-indent: 2em;">除了安全性更高这一好处外，HTTPS对SEO也是有一定益处的。</p><p style="text-align: left; text-indent: 2em;">1、使用HTTPS协议有利于搜索引擎排名</p><p style="text-align: left; text-indent: 2em;">去年8月份，谷歌曾发布公告表示将把“是否使用安全加密协议（即HTTPS）”作为搜索引擎排名的一项参考因素。同等情况下，HTTPS站点能比HTTP站点获得更好的搜索排名。</p><p style="text-align: left; text-indent: 2em;">不过得说明下，影响谷歌搜索引擎排名的因素已有逾200项，因而HTTPS协议的影响到底几何目前尚不清楚。</p><p style="text-align: left; text-indent: 2em;">因而，与其他谷歌排名影响因素一样的是，HTTPS协议也并非独立存在的。</p><p style="text-align: left; text-indent: 2em;">建议：</p><p style="text-align: left; text-indent: 2em;">如果只是为了搜索引擎排名的话，那有很多因素的影响力比HTTPS协议大。</p><p style="text-align: left; text-indent: 2em;">如下图（14个影响力大于HTTPS协议的影响因素）：</p><p style="text-align:center"><a href="http://upload.chinaz.com/2015/0410/1428648643875.png"><img src="res/201504/10/auto_738.png" border="0" alt="站长之家, 搜索引擎排名, HTTPS搭建, https和http有什么区别" style="margin: 0px; padding: 0px; border: 1px solid rgb(153, 153, 153); font-style: inherit; font-variant: inherit; line-height: inherit; vertical-align: middle; color: transparent; display: inline-block; width: 600px; height: auto;"/></a></p><p style="text-align: left; text-indent: 2em;">更多影响因素可查看：<a href="http://www.chinaz.com/web/2014/0911/367371.shtml" target="_blank">影响谷歌搜索引擎排名的因素调查（完整版）</a></p><p style="text-align: left; text-indent: 2em;">2、安全隐私</p><p style="text-align: left; text-indent: 2em;">不少站长都认为，只有诸如电子商务、金融、社交网络等存在敏感信息安全问题的站点才有采用HTTPS协议的必要，其实不然。任何类型的站点都可以从中获益。</p><blockquote style="text-align: left; text-indent: 2em;"><p style="text-align: left; text-indent: 2em;">1）使用HTTPS协议可认证用户和服务器，确保数据发送到正确的客户机和服务器；</p><p style="text-align: left; text-indent: 2em;">2）HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议，要比http协议安全，可防止数据在传输过程中不被窃取、改变，确保数据的完整性。</p><p style="text-align: left; text-indent: 2em;">3）HTTPS是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p></blockquote><p style="text-align: left; text-indent: 2em;">建议：</p><p style="text-align: left; text-indent: 2em;">在成本费用允许情况下，还是建议站长采用HTTPS加密协议，毕竟网站安全也是用户体验的一个重要环节，而且还有利于搜索引擎排名，何乐而不为呢！</p><p style="text-align: left; text-indent: 2em;">使用HTTPS协议有何挑战？</p><p style="text-align: left; text-indent: 2em;">1、容易忽略的问题</p><p style="text-align: left; text-indent: 2em;">将站点由HTTP转为HTTPS协议涉及到很多问题，有时候会忽略了一些重要的细节问题：</p><p style="text-align: left; text-indent: 2em;">1）robots.txt文件中是否屏蔽了重要的URL链接？</p><p style="text-align: left; text-indent: 2em;">2）Canonical标签指向的URL是否正确？</p><p style="text-align: left; text-indent: 2em;">3）当用户访问你的网站时，是否会出现浏览器安全警告提示窗口？（出现安全警告提示可能会吓走用户）</p><p style="text-align: left; text-indent: 2em;">虽然概率很小，但这几个问题还是可能出现的。</p><p style="text-align: left; text-indent: 2em;">2、网站加载速度问题</p><p style="text-align: left; text-indent: 2em;">HTTPS协议的握手过程比较费时，对网站的响应速度有负面影响。据ACM CoNEXT数据显示，使用HTTPS协议很可能会使页面的加载时间延长近50%。而网站加载速度也是影响搜索引擎排名的一个很重要的因素。</p><p style="text-align: left; text-indent: 2em;">不过，还是可以通过一些技巧来减少这个问题的。比如，压缩文本内容可以降低解码耗用的CPU资源。实际上，建立HTTPS连接，要求额外的TCP往返，因此会新增一些发送和接收的字节，但这是第一次打开网页时的情况。</p><p style="text-align: left; text-indent: 2em;">3、成本</p><p style="text-align: left; text-indent: 2em;">据数据显示，很多站长每年花在SSL证书上的费用在100美元-200美元之间，这对于个人博客、或是小型站点来说是一笔不小的开支。不过，现在网上也有不少免费SSL证书，</p><p style="text-align: left; text-indent: 2em;">4、HTTPS兼容性问题</p><p style="text-align: left; text-indent: 2em;">这里所说得“兼容性”包括很多方面，比如现有的Web应用要尽可能无缝地迁移到HTTPS、浏览器对HTTPS的兼容性问题、HTTPS协议解析以及SSL证书管理等。</p><p style="text-align: left; text-indent: 2em;">5、更多问题</p><p style="text-align: left; text-indent: 2em;">如果你的网站依靠AdSense获得收入的话，那么转型HTTPS站点可能会使得收入大幅下降（谷歌对广告源采用SSL协议的站点有所限制）。</p><p style="text-align: left; text-indent: 2em;">此外，即使是谷歌管理员工具也尚不支持HTTPS站点的迁移工作。要完成SSL加密的全球化，需要的不止是时间，还少不了各方的努力啊。</p><p style="text-align: left; text-indent: 2em;">使用HTTPS协议的站点数量增长情况</p><p style="text-align: left; text-indent: 2em;">如今，越来越多的站点采用了HTTPS协议，不过大多用于登陆页面、或是存在交易信息的页面，很少网站选择全站采用HTTPS协议。</p><p style="text-align: left; text-indent: 2em;">据Builtwith调查数据显示，在排名TOP 10000的网站中，只有4.2%的站点默认使用HTTPS加密访问模式。再将范围放大到TOP 100万个网站，这个百分比则降到了1.9%。</p><p style="text-align: left; text-indent: 2em;">如下图：</p><p style="text-align:center"><a href="http://upload.chinaz.com/2015/0410/1428648643761.jpg"><img src="res/201504/10/auto_739.jpg" border="0" alt="站长之家, 搜索引擎排名, HTTPS搭建, https和http有什么区别" style="margin: 0px; padding: 0px; border: 1px solid rgb(153, 153, 153); font-style: inherit; font-variant: inherit; line-height: inherit; vertical-align: middle; color: transparent; display: inline-block; width: 600px; height: auto;"/></a></p><p style="text-align: left; text-indent: 2em;">不过，随着谷歌和百度等搜索引擎对HTTPS协议的“优待”，这个百分比未来应该会有所上升。</p><p style="text-align: left; text-indent: 2em;"><br/></p><p style="text-align: left; text-indent: 2em;"><strong>HTTPS站点的SEO自检清单</strong></p><blockquote><p style="text-align: left; text-indent: 2em;">1、确保网站的每个元素（包括插件、JS、CSS文件、图片、内容分发网站等）都采用HTTPS协议；</p><p style="text-align: left; text-indent: 2em;">2、使用301重定向将HTTP URL指向HTTPS版地址。记住别误用302跳转；<br/></p><p style="text-align: left; text-indent: 2em;">3、保证Canonical标签指向HTTPS版URL；</p><p style="text-align: left; text-indent: 2em;">4、采用HTTPS协议后，应确保网站内链指向的是HTTPS版URL，而非旧版URL。这对用户体验以及网站优化而言，都是一个很重要的步骤。</p><p style="text-align: left; text-indent: 2em;">5、在谷歌、必应等平台上的管理员工具中监控HTTPS版本站点；</p><p style="text-align: left; text-indent: 2em;">6、使用谷歌管理员工具中Fetch&amp;Render功能（http://googlewebmastercentral.blogspot.com/2014/05/rendering-pages-with-fetch-as-google.html），确保你的HTTPS站点能够正常的被谷歌抓取；</p><p style="text-align: left; text-indent: 2em;">7、更新网站sitemaps，并在谷歌管理员工具中提交新版sitemaps；</p><p style="text-align: left; text-indent: 2em;">8、更新robots.txt文件，加入新版sitemaps内容，确保重要的HTTPS版页面不会被屏蔽；</p><p style="text-align: left; text-indent: 2em;">9、如有必要，还应该更新网站的分析跟踪代码。现在已经有很多新的谷歌分析代码段都能够处理HTTPS站点了。<br/></p><p style="text-align: left; text-indent: 2em;">10、采用HSTS协议（HTTP严格传输安全协议），其作用是强制客户端（如浏览器）使用HTTPS与服务器建立连接。可在保证安全性的前提下，提高网站的响应速度。</p></blockquote>', ''),
-(1396, 1, 43, 207, '', '<p>测试添加视频</p><p><br/></p>', ''),
 (1399, 1, 43, 68, '', '<p ></p><ul><li >PTFE膜材&mdash;&mdash;耐久性强，使用寿命在30年以上</li><li >PTFE膜材&mdash;&mdash;是永久性建筑的首选材料</li><li >PTFE膜材&mdash;&mdash;超自洁，防火材料</li><li >PTFE膜材&mdash;&mdash;专业化的加工工艺，严格的施工规程<br /> 膜结构建筑中最常用的膜材料。PTFE膜材料是指在极细的玻璃纤维（3微米）编织成的基布上涂上PTFE（聚四氟乙烯）树脂而形成的复合材料。PVC膜材料是指在聚酯纤维编织的基布上涂上PVC（聚氟乙烯）树脂而形成的复合材料。</li></ul>', ''),
 (1400, 1, 43, 68, '', '<p ></p><ul><li >PTFE膜材&mdash;&mdash;耐久性强，使用寿命在30年以上</li><li >PTFE膜材&mdash;&mdash;是永久性建筑的首选材料</li><li >PTFE膜材&mdash;&mdash;超自洁，防火材料</li><li >PTFE膜材&mdash;&mdash;专业化的加工工艺，严格的施工规程<br /> 膜结构建筑中最常用的膜材料。PTFE膜材料是指在极细的玻璃纤维（3微米）编织成的基布上涂上PTFE（聚四氟乙烯）树脂而形成的复合材料。PVC膜材料是指在聚酯纤维编织的基布上涂上PVC（聚氟乙烯）树脂而形成的复合材料。</li></ul>', ''),
 (1401, 1, 43, 68, '', '<p ></p><pid="MyContent"><p>  2020年东京奥运会和残奥会筹备委员会公布了作为东京奥运会主会场的新国立竞技场的概念图。</p><p>　　国际奥委会全会当地时间9月7日在阿根廷首都布宜诺斯艾利斯投票选出2020年夏季奥运会的主办城市。日本东京最终击败西班牙马德里和土耳其伊斯坦布尔，获得2020年夏季奥运会举办权。</p><p></p><p ></p><p align="center"><img id="23416362" align="center" src="res/201509/02/1441090082_0_293.jpg" width="602" height="276" md5="" alt="" /></p><p align="center"></p><p ></p><p align="center"><img id="23416363" align="center" src="res/201509/02/1441090082_1_175.jpg" width="600" height="353" md5="" alt="" /></p><p align="center"></p><p ></p><p align="center"><img id="23416364" align="center" src="res/201509/02/1441090082_2_260.jpg" width="598" height="353" md5="" alt="" /></p><p align="center"></p><p align="center"></p><p >据了解，日本新国家体育场效果图是由东京奥运会审查委员会从全球募集的众多设计图中评选而出，该设计图出自的伊拉克女建筑家扎哈-哈迪德之手，从效果图来看，日本新国家体育场外观采用了全新的流线型设计，审查委员会给予了&ldquo;内部空间感强烈，与东京都城市空间相呼应&rdquo;、&ldquo;可开闭式天窗增加了体育场的实用性&rdquo;等高度评价。</p><p >根据计算，日本新国家体育场的扩建总花费将达到1300亿日元（约人民币78亿元），预计竣工时间为2019年3月，该体育场作为2020年东京奥运会比赛主会场，届时奥运会的开幕式、闭幕式、足球、田径等项目都将在该会场举行。</p><p ></p><p></p><p></p><p></p><p></p></p><p ></p>', ''),
@@ -554,7 +752,7 @@ INSERT INTO `qinggan_list_64` (`id`, `site_id`, `project_id`, `cate_id`, `qq`) V
 --
 
 INSERT INTO `qinggan_list_65` (`id`, `site_id`, `project_id`, `cate_id`, `note`, `fsize`, `content`, `version`, `website`, `platform`, `devlang`, `author`, `thumb`, `copyright`, `dfile`) VALUES
-(1310, 1, 151, 198, '​测试下载~', '10MB', '<p>测试下载~<br/></p>', '1.0', 'http://www.phpok.com', 'OS', 'PHP/MySQL', 'PHPOK.com', '724', '免费版', '733');
+(1310, 1, 151, 198, '​测试下载~', '5KB', '<p>测试下载~<br/></p>', '1.0', 'http://www.phpok.com', 'OS', 'PHP/MySQL', 'PHPOK.com', '724', '免费版', '993');
 
 --
 -- 转存表中的数据 `qinggan_list_66`
@@ -573,9 +771,9 @@ INSERT INTO `qinggan_list_66` (`id`, `site_id`, `project_id`, `cate_id`, `conten
 --
 
 INSERT INTO `qinggan_list_68` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `pictures`, `content`) VALUES
-(1387, 1, 144, 211, '861', '862,864,863,865,867,866', '<p style="text-indent: 2em; text-align: left;">道教老君造像，是我国现存最大的道教石雕－－老君造像，该景点位于<strong>福建省泉州市丰泽区清源山风景名胜区主景区内</strong>，为全国重点文物保护单位。道教尊老子为教主，奉《道德经》为主要经典。老子的哲学思想在我国占有重要位置，影响十分深远。是我国古代春秋时期著名的哲学家、思想家。吸引着越来越多的海内外游客、很多学者慕名而来参观考察。现在老君岩已成为著名历史文化名城泉州的旅游热点。</p><p style="text-indent: 2em; text-align: left;">老君造像原先被一座高大的道观围护，周围的真君殿、北斗殿等道教建筑颇为壮观，为历代文人墨客所咏赞。后道观不幸被焚毁，老君岩便露天屹立，背屏青山，巍然端坐，与大自然浑为一体，更显空山幽谷，离绝尘世。</p><p style="text-indent: 2em; text-align: left;">老君造像雕于宋代，据《泉州府志》记载：“石像天成，好事者为略施雕琢。”寥寥数语，使之更具有神秘色彩。石像高5.1米，厚7.2米，宽7.3米，席地面积为55平方米。石像额纹清晰，两眼平视，鼻梁高突，右耳垂肩，苍髯飞动，脸含笑容，左手依膝，右手凭几，食指与小指微前倾，似能弹物，背屏青山，巍然端坐，更显 空山幽谷，离绝尘世。头、额、眼、髭、须等细雕刻独具匠心。整个石像衣褶分明 ，刀法线条柔而力，手法精致，夸张而不失其意，浑然一体，毫无多余痕迹。逼真 生动的表现了老人慈祥、安乐的神态，因而成了一种健康长寿的象征。泉州民间俗 语“摸着老君鼻，活到一百二“，但是真要摸到它的它却也不容易呀。中外艺术家 把它视为东方石雕艺术珍品，莫怪四方游客慕名而来。该造像被列为全国文物保护单位。</p>'),
-(1386, 1, 144, 211, '830', '853,855,856,857,858,859,860', '<p style="text-indent: 2em; text-align: left;">位于鲤城区西街，占地面积7.8万平方米，建于唐武则天垂拱二年(公元686年)，至今已有1300多年的悠久历史，是全国重点佛教寺院和重点文物保护单位。它规模宏大，构筑壮观，景色优美，曾与洛阳白马寺、杭州灵隐寺、北京广济寺齐名。</p><p style="text-indent: 2em; text-align: left;">开元寺最有名的是它的双塔，东为“镇国塔”，西为“仁寿塔”，它们高40多米，是我国最高的一对石塔。塔每层的门龛两旁有武士、天王、金刚、罗汉等浮雕像。双塔历经风雨侵袭，仍屹然挺立，它是泉州古城的独特标志和象征，也是中国古代石构建筑的瑰宝，其中东塔被列为1994年“中国古塔”邮票四图案之一。石塔是我国古代石构建筑瑰宝。从石塔的建筑规模、形制和技艺等方面来看，都可以说得上精妙绝伦。它既是中世纪泉州海外交通鼎盛时期社会空前繁荣的象征，也是泉州历史文化名城特有的标志。现在，东西塔影雕作品已成为我市最高层领导人馈赠佳宾的珍贵礼品。</p><p style="text-indent: 2em; text-align: left;">开元寺布局，中轴线自南而北依次有：紫云屏、山门（天王殿）、拜亭、大雄宝殿、甘露戒坛、藏经阁。东翼有檀越祠、泉州佛教博物馆（弘一法师纪念馆）、准提禅院；西翼有安养院、功德堂、水陆寺；大雄宝殿前拜亭的东、西两侧分置镇国塔、仁寿塔两石塔，俗称东西塔。</p><p style="text-indent: 2em; text-align: left;">拜庭两旁古榕参天，大雄宝殿雕塑技术高超，尤其是粱槽间的24尊飞天乐伎，在中国国内古建筑中罕见。殿前月台须弥座的72幅狮身人面青石浮雕，殿后廊的两根古婆罗门教青石柱，同为明代修殿时从已毁的元代古印度教寺移来。大殿内用近一百根海棠式巨型石柱支撑殿堂，俗称&quot;百柱殿&quot;，殿内供奉的五方佛像，法相庄严，是汉地少有的密宗轨制。大雄宝殿之后的甘露戒坛，系中国现存三大戒坛之一，坛之四周立柱斗拱和铺作间的24尊木雕飞天。</p><p style="text-indent: 2em; text-align: left;"><br style="text-indent: 2em; text-align: left;"/></p>'),
-(1388, 1, 144, 211, '868', '869,870,871,872,873,874', '<p>永春牛姆林，牛姆林因势若牛姆孕崽怀宝而得名。被誉为闽南西双版纳的生态旅游区，坐落在福建省泉州市西部永春县下洋镇境内，距县城70公里，是国家4A级旅游区、福建省首批自然保护区，福建省生态教育基地、科普教育基地及小公民道德建设示范基地，是泉州十八景之一。</p><p>据《永春州志》载，牛姆林“势若牛姆，孕崽怀宝，树木苍翠，石皆灵秀，因而得名。”历代文人墨客到此游览并巧设十景：牛姆凌霄、水松引鹤、红豆折桂、修竹滴翠、南园杜鹃、素兰出圃、平盘芳草、鸟道迎云、竹坞流泉、灵猫拜月。宋朝永春进士陈知柔诗：“山前水落石岩出，海上潮来秋渚平。”明朝泉州陈绍功诗：“霜后绿筠仍旧色，云中金磬出新声”，都是描写牛姆林的旖旎风光。朱熹出任同安主薄时，到永春与挚友陈知柔同游一岱山岩时题刻“天风海涛”，他们也来牛姆林，称赞这里是“海涛天风”。区内还辟有驼鸟园、熊园、孔雀园、猴园等观赏性极强的动物园。 历代名人钟情于这方静谧的世界。宋朝理学家朱熹到永春与挚友陈知柔同游时，称牛姆林为“海涛天风”。古代文人墨客到此无不赞叹有加，据传杨文广过马跳留下马蹄印也策马路过牛姆林称此处幽境天开。</p><p>自然生态是牛姆林最大的特色。它是福建省保存最完好的原始森林群体，里面的生物多样性超乎人们的想象，据调查，牛姆林区内有维管束植物214科1700种，其中受国家重点保护的就有100多种，野生脊椎动物57科99属128种，是全省生物物种最丰富的，它面积一万公顷，距泉州、厦门、三明、莆田都在150公里左右。</p>'),
+(1387, 1, 144, 211, '861', '862,863', '<p style="text-indent: 2em; text-align: left;">道教老君造像，是我国现存最大的道教石雕－－老君造像，该景点位于<strong>福建省泉州市丰泽区清源山风景名胜区主景区内</strong>，为全国重点文物保护单位。道教尊老子为教主，奉《道德经》为主要经典。老子的哲学思想在我国占有重要位置，影响十分深远。是我国古代春秋时期著名的哲学家、思想家。吸引着越来越多的海内外游客、很多学者慕名而来参观考察。现在老君岩已成为著名历史文化名城泉州的旅游热点。</p><p style="text-indent: 2em; text-align: left;">老君造像原先被一座高大的道观围护，周围的真君殿、北斗殿等道教建筑颇为壮观，为历代文人墨客所咏赞。后道观不幸被焚毁，老君岩便露天屹立，背屏青山，巍然端坐，与大自然浑为一体，更显空山幽谷，离绝尘世。</p><p style="text-indent: 2em; text-align: left;">老君造像雕于宋代，据《泉州府志》记载：“石像天成，好事者为略施雕琢。”寥寥数语，使之更具有神秘色彩。石像高5.1米，厚7.2米，宽7.3米，席地面积为55平方米。石像额纹清晰，两眼平视，鼻梁高突，右耳垂肩，苍髯飞动，脸含笑容，左手依膝，右手凭几，食指与小指微前倾，似能弹物，背屏青山，巍然端坐，更显 空山幽谷，离绝尘世。头、额、眼、髭、须等细雕刻独具匠心。整个石像衣褶分明 ，刀法线条柔而力，手法精致，夸张而不失其意，浑然一体，毫无多余痕迹。逼真 生动的表现了老人慈祥、安乐的神态，因而成了一种健康长寿的象征。泉州民间俗 语“摸着老君鼻，活到一百二“，但是真要摸到它的它却也不容易呀。中外艺术家 把它视为东方石雕艺术珍品，莫怪四方游客慕名而来。该造像被列为全国文物保护单位。</p>'),
+(1386, 1, 144, 211, '830', '855,853', '<p style="text-indent: 2em; text-align: left;">位于鲤城区西街，占地面积7.8万平方米，建于唐武则天垂拱二年(公元686年)，至今已有1300多年的悠久历史，是全国重点佛教寺院和重点文物保护单位。它规模宏大，构筑壮观，景色优美，曾与洛阳白马寺、杭州灵隐寺、北京广济寺齐名。</p><p style="text-indent: 2em; text-align: left;">开元寺最有名的是它的双塔，东为“镇国塔”，西为“仁寿塔”，它们高40多米，是我国最高的一对石塔。塔每层的门龛两旁有武士、天王、金刚、罗汉等浮雕像。双塔历经风雨侵袭，仍屹然挺立，它是泉州古城的独特标志和象征，也是中国古代石构建筑的瑰宝，其中东塔被列为1994年“中国古塔”邮票四图案之一。石塔是我国古代石构建筑瑰宝。从石塔的建筑规模、形制和技艺等方面来看，都可以说得上精妙绝伦。它既是中世纪泉州海外交通鼎盛时期社会空前繁荣的象征，也是泉州历史文化名城特有的标志。现在，东西塔影雕作品已成为我市最高层领导人馈赠佳宾的珍贵礼品。</p><p style="text-indent: 2em; text-align: left;">开元寺布局，中轴线自南而北依次有：紫云屏、山门（天王殿）、拜亭、大雄宝殿、甘露戒坛、藏经阁。东翼有檀越祠、泉州佛教博物馆（弘一法师纪念馆）、准提禅院；西翼有安养院、功德堂、水陆寺；大雄宝殿前拜亭的东、西两侧分置镇国塔、仁寿塔两石塔，俗称东西塔。</p><p style="text-indent: 2em; text-align: left;">拜庭两旁古榕参天，大雄宝殿雕塑技术高超，尤其是粱槽间的24尊飞天乐伎，在中国国内古建筑中罕见。殿前月台须弥座的72幅狮身人面青石浮雕，殿后廊的两根古婆罗门教青石柱，同为明代修殿时从已毁的元代古印度教寺移来。大殿内用近一百根海棠式巨型石柱支撑殿堂，俗称"百柱殿"，殿内供奉的五方佛像，法相庄严，是汉地少有的密宗轨制。大雄宝殿之后的甘露戒坛，系中国现存三大戒坛之一，坛之四周立柱斗拱和铺作间的24尊木雕飞天。</p><p style="text-indent: 2em; text-align: left;"><br style="text-indent: 2em; text-align: left;"/></p>'),
+(1388, 1, 144, 211, '868', '871,869', '<p>永春牛姆林，牛姆林因势若牛姆孕崽怀宝而得名。被誉为闽南西双版纳的生态旅游区，坐落在福建省泉州市西部永春县下洋镇境内，距县城70公里，是国家4A级旅游区、福建省首批自然保护区，福建省生态教育基地、科普教育基地及小公民道德建设示范基地，是泉州十八景之一。</p><p>据《永春州志》载，牛姆林“势若牛姆，孕崽怀宝，树木苍翠，石皆灵秀，因而得名。”历代文人墨客到此游览并巧设十景：牛姆凌霄、水松引鹤、红豆折桂、修竹滴翠、南园杜鹃、素兰出圃、平盘芳草、鸟道迎云、竹坞流泉、灵猫拜月。宋朝永春进士陈知柔诗：“山前水落石岩出，海上潮来秋渚平。”明朝泉州陈绍功诗：“霜后绿筠仍旧色，云中金磬出新声”，都是描写牛姆林的旖旎风光。朱熹出任同安主薄时，到永春与挚友陈知柔同游一岱山岩时题刻“天风海涛”，他们也来牛姆林，称赞这里是“海涛天风”。区内还辟有驼鸟园、熊园、孔雀园、猴园等观赏性极强的动物园。 历代名人钟情于这方静谧的世界。宋朝理学家朱熹到永春与挚友陈知柔同游时，称牛姆林为“海涛天风”。古代文人墨客到此无不赞叹有加，据传杨文广过马跳留下马蹄印也策马路过牛姆林称此处幽境天开。</p><p>自然生态是牛姆林最大的特色。它是福建省保存最完好的原始森林群体，里面的生物多样性超乎人们的想象，据调查，牛姆林区内有维管束植物214科1700种，其中受国家重点保护的就有100多种，野生脊椎动物57科99属128种，是全省生物物种最丰富的，它面积一万公顷，距泉州、厦门、三明、莆田都在150公里左右。</p>'),
 (1389, 1, 144, 211, '875', '876,877', '<p>水岩位于世界名茶铁观音的故乡——福建安溪城关西北16公里处的蓬莱山。景区总面积11.1平方公里，主峰海拔763米，是一处以清水岩寺为主体，以清水祖师文化为特色，融宗教朝圣、生态旅游、民俗展示、休闲度假为一体的风景名胜区。现为国家AAAA级旅游区、全国重点文物保护单位、全国首批涉台文物保护工程之一、福建省级风景名胜区，“清水祖师信俗”被列为国家级非物质文化，清水岩及“帝”字形商标被评为“福建省著名商标”。</p><p>清水岩庙宇依山而筑，下临深壑，为三层楼阁式。一层昊天口，二层祖师殿，三层释迦楼。三层两边各有檀樾厅、观音厅、芳名厅。殿后有宋建清水祖师骨灰“真空塔”，上有新筑三重檐方亭。殿宇红砖墙、青灰瓦，危楼重阁，隐在青松翠竹、烟岚缭绕的山顶，典雅壮观。</p><p>岩宇附近有各具特色的景致：“狮喉”、“清珠帘”、“方鉴圹”、“枝枝朝北”、“罗汉松”、“觉亭”、“石栗柜”、“岩图碑刻”、“三忠庙”等。“清珠帘”，“一泓清水流千古，四望苍山垒万重”；“枝枝朝北”为古樟树，相传为感岳飞蒙难而枝杈北向；“岩图碑刻”系浮雕清水岩石全景碑了这株樟两岸信仰的清水祖师。</p>');
 
 --
@@ -768,189 +966,6 @@ INSERT INTO `qinggan_opt_group` (`id`, `title`) VALUES
 (7, '注册'),
 (8, '邮件编码'),
 (12, '置顶属性');
-
---
--- 转存表中的数据 `qinggan_order`
---
-
-INSERT INTO `qinggan_order` (`id`, `sn`, `user_id`, `addtime`, `price`, `currency_id`, `status`, `endtime`, `passwd`, `ext`, `note`, `email`) VALUES
-(35, 'KF2015910121555FQU', 23, 1441855405, '291.0000', 1, 'unpaid', 0, '74d89b8e4acc969829f6662bc3a70e9f', '', '这个测试订单', 'suxiangkun@126.com'),
-(36, 'KF2015910155457DZN', 23, 1441868139, '562.0000', 1, 'shipped', 0, 'a537dc1571c5b7c2cc85c50adf7bc7ef', '', '', 'suxiangkun@126.com'),
-(37, 'P20150919001', 23, 1442673912, '1153.0000', 1, 'create', 0, '882ba09c80c4b0f911beebcb36d1f9be', '', '测试订单是否创建成功！', 'demo@error.com'),
-(38, 'P20150928001', 23, 1443404494, '1.0000', 1, 'unpaid', 0, '965cdb3578ad37515d4ec90d1cf5b67c', '', '这个是测试留言的！', 'demo@error.com'),
-(39, 'P20150928002', 23, 1443431636, '1.0000', 1, 'paid', 0, '0ccce46431e255688125e4261fe999d8', '', '', 'demo@error.com'),
-(40, 'P20150929001', 23, 1443541416, '205.0000', 1, 'create', 0, '20ffbf9775138bd82cc703a3173eedcb', '', '', 'demo@error.com'),
-(41, 'P20150929002', 23, 1443541605, '300.0000', 1, 'create', 0, '77a0aaaf77b4ecc4faec865fecdda54b', '', '', 'demo@error.com'),
-(42, 'P20150929003', 23, 1443541662, '300.0000', 1, 'create', 0, '92b1366a0bb0f079c714ee739df58bef', '', '', 'demo@error.com'),
-(43, 'P20151009001', 23, 1444354994, '583.0000', 1, 'paid', 0, '01c89b9ab51a0be90b0a5b60cab94df7', '', '这个是测试的！', 'demo@error.com'),
-(44, 'P20151009002', 23, 1444360416, '300.0000', 1, 'create', 0, '2733d3e505f5e0c9bdbcec03fa240892', '', '', '40782502@qq.com'),
-(45, 'P20151010001', 23, 1444446504, '300.0000', 1, 'create', 0, 'a88edcc19cf44c9a9122a5d836a6c775', '', '这个是测试的！免运费的噢！', 'demo@error.com'),
-(46, 'P20151010002', 23, 1444449612, '203.0000', 1, 'create', 0, 'f8140f89e148ebe8533d73c3cb255f55', '', '测试订单提交！', 'demo@error.com'),
-(47, 'P20151010003', 23, 1444459195, '203.0000', 1, 'paid', 0, 'dabe3df10eb97352aaeae26a1968d153', '', '', '40782502@qq.com');
-
---
--- 转存表中的数据 `qinggan_order_address`
---
-
-INSERT INTO `qinggan_order_address` (`id`, `order_id`, `country`, `province`, `city`, `county`, `address`, `mobile`, `tel`, `email`, `fullname`) VALUES
-(49, 35, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
-(50, 36, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
-(51, 37, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
-(52, 38, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
-(53, 39, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
-(54, 40, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
-(55, 41, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
-(56, 42, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
-(57, 43, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
-(58, 44, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
-(59, 45, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
-(60, 46, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
-(61, 47, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', '40782502@qq.com', '测试账号');
-
---
--- 转存表中的数据 `qinggan_order_express`
---
-
-INSERT INTO `qinggan_order_express` (`id`, `order_id`, `express_id`, `code`, `addtime`, `last_query_time`, `title`, `homepage`, `company`, `is_end`) VALUES
-(3, 36, 4, '3847109081', 1442662547, 1442662552, '宅急送', 'http://www.zjs.com.cn/', '北京宅急送快运股份有限公司', 1);
-
---
--- 转存表中的数据 `qinggan_order_invoice`
---
-
-INSERT INTO `qinggan_order_invoice` (`order_id`, `type`, `title`, `content`, `note`) VALUES
-(35, '普通发票', '深圳市锟铻科技有限公司', '办公耗材', ''),
-(36, '普通发票', '深圳市锟铻科技有限公司', '办公耗材', ''),
-(37, '普通发票', '个人发票', '明细', ''),
-(38, '普通发票', '个人发票', '明细', ''),
-(39, '普通发票', '个人发票', '明细', ''),
-(40, '普通发票', '个人发票', '明细', ''),
-(41, '普通发票', '个人发票', '明细', ''),
-(42, '普通发票', '个人发票', '明细', ''),
-(43, '普通发票', '个人发票', '明细', ''),
-(44, '普通发票', '个人发票', '明细', ''),
-(45, '普通发票', '个人发票', '明细', ''),
-(46, '普通发票', '个人发票', '明细', ''),
-(47, '普通发票', '个人发票', '明细', '');
-
---
--- 转存表中的数据 `qinggan_order_log`
---
-
-INSERT INTO `qinggan_order_log` (`id`, `order_id`, `order_express_id`, `addtime`, `who`, `note`) VALUES
-(1, 35, 0, 1441855405, 'admin', '管理员创建订单，等待系统确认'),
-(2, 35, 0, 1441855405, 'admin', '管理员录入支付信息'),
-(3, 35, 0, 1441866627, 'admin', '管理员增加产品信息'),
-(4, 35, 0, 1441866638, 'admin', '管理员增加产品信息'),
-(5, 35, 0, 1441866651, 'admin', '管理员删除订单产品'),
-(6, 35, 0, 1441866713, 'admin', '管理员变更支付信息'),
-(7, 35, 0, 1441867819, 'admin', '管理员变更支付信息'),
-(29, 36, 3, 1402920720, '宅急送', '离开成都运转中心'),
-(25, 36, 3, 1402985160, '宅急送', '客户已签收'),
-(31, 37, 0, 1442673912, 'admin', '订单创建成功，订音编号：P20150919001'),
-(28, 36, 3, 1402939981, '宅急送', '离开成都运转中心'),
-(27, 36, 3, 1402960564, '宅急送', '离开四川_城东营业所_华阳营业厅'),
-(26, 36, 3, 1402963794, '宅急送', '离开四川_城东营业所_华阳营业厅'),
-(24, 36, 3, 1442662547, 'admin', '您的订单已经拣货完毕，待出库交付宅急送，运单号为：3847109081'),
-(30, 36, 3, 1402907524, '宅急送', '已取件，离开四川_城西营业所_交大营业厅'),
-(32, 38, 0, 1443404494, 'admin', '订单创建成功，订单编号：P20150928001'),
-(33, 39, 0, 1443431636, 'admin', '订单创建成功，订单编号：P20150928002'),
-(34, 39, 0, 1443432620, 'admin', '订单进入等待支付状态，编号：P20150928002'),
-(35, 39, 0, 1443432712, 'admin', '订单支付完成，编号：P20150928002'),
-(36, 40, 0, 1443541416, 'admin', '订单创建成功，订单编号：P20150929001'),
-(37, 41, 0, 1443541605, 'admin', '订单创建成功，订单编号：P20150929002'),
-(38, 42, 0, 1443541662, 'admin', '订单创建成功，订单编号：P20150929003'),
-(39, 43, 0, 1444354994, 'admin', '订单创建成功，订单编号：P20151009001'),
-(40, 43, 0, 1444355701, 'admin', '管理员录入支付信息'),
-(41, 44, 0, 1444360416, 'admin', '订单创建成功，订单编号：P20151009002'),
-(42, 45, 0, 1444446504, 'admin', '订单创建成功，订单编号：P20151010001'),
-(43, 46, 0, 1444449612, 'admin', '订单创建成功，订单编号：P20151010002'),
-(44, 47, 0, 1444459195, 'admin', '订单创建成功，订单编号：P20151010003'),
-(45, 47, 0, 1444468914, '苏相锟(admin)', '管理员录入支付信息');
-
---
--- 转存表中的数据 `qinggan_order_payment`
---
-
-INSERT INTO `qinggan_order_payment` (`id`, `order_id`, `payment_id`, `title`, `price`, `startdate`, `dateline`, `ext`) VALUES
-(1, 35, 1, '支付宝快捷支付', '291.0000', 0, 1441855402, ''),
-(3, 36, 2, 'Paypal在线支付', '562.0000', 0, 1441868139, ''),
-(4, 39, 1, '支付宝快捷支付', '1.0000', 1443432620, 1443432712, ''),
-(5, 43, 1, '支付宝快捷支付', '583.0000', 0, 1444355701, ''),
-(6, 47, 1, '支付宝快捷支付', '203.0000', 0, 1444468914, '');
-
---
--- 转存表中的数据 `qinggan_order_price`
---
-
-INSERT INTO `qinggan_order_price` (`id`, `order_id`, `code`, `price`) VALUES
-(40, 36, 'product', '470.0000'),
-(39, 35, 'discount', '10.0000'),
-(38, 35, 'fee', '1.0000'),
-(37, 35, 'shipping', '0.0000'),
-(36, 35, 'product', '300.0000'),
-(41, 36, 'shipping', '100.0000'),
-(42, 36, 'fee', '10.0000'),
-(43, 36, 'discount', '18.0000'),
-(44, 37, 'product', '1062.0000'),
-(45, 37, 'shipping', '91.0000'),
-(46, 37, 'fee', '0.0000'),
-(47, 37, 'discount', '0.0000'),
-(54, 38, 'discount', '0.0000'),
-(53, 38, 'shipping', '0.0000'),
-(52, 38, 'product', '1.0000'),
-(61, 39, 'discount', '299.0000'),
-(60, 39, 'shipping', '0.0000'),
-(59, 39, 'product', '300.0000'),
-(62, 40, 'product', '179.0000'),
-(63, 40, 'shipping', '26.0000'),
-(64, 40, 'fee', '0.0000'),
-(65, 40, 'discount', '0.0000'),
-(66, 41, 'product', '300.0000'),
-(67, 41, 'shipping', '0.0000'),
-(68, 41, 'fee', '0.0000'),
-(69, 41, 'discount', '0.0000'),
-(70, 42, 'product', '300.0000'),
-(71, 42, 'shipping', '0.0000'),
-(72, 42, 'fee', '0.0000'),
-(73, 42, 'discount', '0.0000'),
-(80, 43, 'discount', '0.0000'),
-(79, 43, 'shipping', '52.0000'),
-(78, 43, 'product', '531.0000'),
-(81, 44, 'product', '300.0000'),
-(82, 44, 'shipping', '0.0000'),
-(83, 44, 'fee', '0.0000'),
-(84, 44, 'discount', '0.0000'),
-(85, 45, 'product', '300.0000'),
-(86, 45, 'shipping', '0.0000'),
-(87, 45, 'fee', '0.0000'),
-(88, 45, 'discount', '0.0000'),
-(98, 46, 'discount', '0.0000'),
-(97, 46, 'shipping', '26.0000'),
-(96, 46, 'product', '177.0000'),
-(141, 47, 'discount', '0.0000'),
-(140, 47, 'shipping', '26.0000'),
-(139, 47, 'product', '177.0000');
-
---
--- 转存表中的数据 `qinggan_order_product`
---
-
-INSERT INTO `qinggan_order_product` (`id`, `order_id`, `tid`, `title`, `price`, `qty`, `thumb`, `ext`, `weight`, `volume`, `unit`) VALUES
-(44, 35, 1253, '新款男人时尚长袖格子衬衫', '300.0000', 1, 'res/201409/11/8179d9fbe71f5cf1.jpg', '', '0', '0', ''),
-(45, 36, 1253, '新款男人时尚长袖格子衬衫', '300.0000', 1, 'res/201409/11/8179d9fbe71f5cf1.jpg', '', '0', '0', ''),
-(46, 36, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', '170.0000', 1, 'res/201409/11/785bf4c3d697cdce.jpg', '', '0', '0', '条'),
-(47, 37, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', '177.0000', 6, 'res/201409/11/785bf4c3d697cdce.jpg', 'a:2:{i:0;a:5:{s:5:"title";s:6:"尺码";s:7:"content";s:1:"M";s:5:"price";s:6:"5.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}i:1;a:5:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"蓝色";s:5:"price";s:6:"2.0000";s:6:"weight";s:1:"1";s:6:"volume";s:1:"0";}}', '1', '0', '条'),
-(48, 38, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', '1.0000', 1, 'res/201409/11/785bf4c3d697cdce.jpg', 'a:2:{i:0;a:5:{s:5:"title";s:6:"尺码";s:7:"content";s:1:"M";s:5:"price";s:6:"5.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}i:1;a:5:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"蓝色";s:5:"price";s:6:"2.0000";s:6:"weight";s:1:"1";s:6:"volume";s:1:"0";}}', '0', '0', '条'),
-(49, 39, 1253, '新款男人时尚长袖格子衬衫', '300.0000', 1, 'res/201409/11/8179d9fbe71f5cf1.jpg', '', '0', '0', ''),
-(50, 40, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', '179.0000', 1, 'res/201409/11/785bf4c3d697cdce.jpg', 'a:2:{i:0;a:5:{s:5:"title";s:6:"尺码";s:7:"content";s:1:"M";s:5:"price";s:6:"5.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}i:1;a:5:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"绿色";s:5:"price";s:6:"4.0000";s:6:"weight";s:1:"1";s:6:"volume";s:1:"0";}}', '1', '0', '条'),
-(51, 41, 1253, '新款男人时尚长袖格子衬衫', '300.0000', 1, 'res/201409/11/8179d9fbe71f5cf1.jpg', '', '0', '0', ''),
-(52, 42, 1253, '新款男人时尚长袖格子衬衫', '300.0000', 1, 'res/201409/11/8179d9fbe71f5cf1.jpg', '', '0', '0', ''),
-(53, 43, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', '177.0000', 3, 'res/201409/11/785bf4c3d697cdce.jpg', 'a:2:{i:0;a:5:{s:5:"title";s:6:"尺码";s:7:"content";s:1:"M";s:5:"price";s:6:"5.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}i:1;a:5:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"蓝色";s:5:"price";s:6:"2.0000";s:6:"weight";s:1:"1";s:6:"volume";s:1:"0";}}', '0', '0', '条'),
-(54, 44, 1253, '新款男人时尚长袖格子衬衫', '300.0000', 1, 'res/201409/11/8179d9fbe71f5cf1.jpg', '', '0', '0', ''),
-(55, 45, 1253, '新款男人时尚长袖格子衬衫', '300.0000', 1, 'res/201409/11/8179d9fbe71f5cf1.jpg', '', '0', '0', ''),
-(56, 46, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', '177.0000', 1, 'res/201409/11/785bf4c3d697cdce.jpg', 'a:2:{i:0;a:5:{s:5:"title";s:6:"尺码";s:7:"content";s:1:"M";s:5:"price";s:6:"5.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}i:1;a:5:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"蓝色";s:5:"price";s:6:"2.0000";s:6:"weight";s:1:"1";s:6:"volume";s:1:"0";}}', '0', '0', '条'),
-(57, 47, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', '177.0000', 1, 'res/201409/11/785bf4c3d697cdce.jpg', 'a:2:{i:0;a:5:{s:5:"title";s:6:"尺码";s:7:"content";s:1:"M";s:5:"price";s:6:"5.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}i:1;a:5:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"蓝色";s:5:"price";s:6:"2.0000";s:6:"weight";s:1:"1";s:6:"volume";s:1:"0";}}', '0', '0', '条');
 
 --
 -- 转存表中的数据 `qinggan_payment`
@@ -1760,7 +1775,11 @@ INSERT INTO `qinggan_popedom` (`id`, `gid`, `pid`, `title`, `identifier`, `taxis
 (781, 78, 0, '修改', 'modify', 30),
 (782, 78, 0, '删除', 'delete', 40),
 (783, 78, 0, '审核', 'status', 50),
-(784, 78, 0, '设为默认', 'isdefault', 60);
+(784, 78, 0, '设为默认', 'isdefault', 60),
+(793, 80, 0, '查看', 'list', 10),
+(794, 80, 0, '添加', 'add', 20),
+(795, 80, 0, '修改', 'modify', 30),
+(796, 80, 0, '删除', 'delete', 40);
 
 --
 -- 转存表中的数据 `qinggan_project`
@@ -1796,8 +1815,6 @@ INSERT INTO `qinggan_reply` (`id`, `tid`, `parent_id`, `vouch`, `star`, `uid`, `
 (19, 1348, 0, 0, 0, 3, '127.0.0.1', 1414121370, 1, 'e6imcpgvei5tq0cmm8p7f0fs45', '测试评论！', 0, '', 0),
 (20, 1348, 0, 0, 0, 3, '127.0.0.1', 1414121403, 1, 'e6imcpgvei5tq0cmm8p7f0fs45', '测噢！', 0, '', 0),
 (23, 1382, 0, 0, 1, 12, '0.0.0.0', 1436057173, 1, '2mu46s1ukr39d8fhe7301ti3m0', '我的评论！\n这是一个牛评噢！9999999999', 0, '<p>管理<span style="text-decoration: line-through;">员回复这个</span>评论！</p><p>管理<strong>员回复支持HTML</strong>噢~</p>', 1436060013),
-(24, 1396, 0, 0, 0, 23, '0.0.0.0', 1439432793, 1, 'f09eu6qf16u3i984gsg9qkga74', '测试回复~~', 0, '<p>噢~</p>', 1439432828),
-(25, 1396, 0, 0, 0, 23, '0.0.0.0', 1439432798, 1, 'f09eu6qf16u3i984gsg9qkga74', '苛塔顶 ', 0, '<p>嘿嘿~~~</p>', 1439432819),
 (26, 1382, 0, 0, 0, 23, '0.0.0.0', 1439555927, 0, 'bq4rc6aml634ucj4de7qdlbeh6', '&lt;p&gt;测试下评论噢&lt;/p&gt;', 0, '', 0),
 (27, 1382, 0, 0, 0, 23, '0.0.0.0', 1439556101, 0, 'bq4rc6aml634ucj4de7qdlbeh6', '<p>再来测试下~嘿嘿~</p>', 0, '', 0),
 (28, 1382, 0, 0, 0, 23, '0.0.0.0', 1439556119, 0, 'bq4rc6aml634ucj4de7qdlbeh6', '<p>支<strong>持HTML不</strong>~~<span style="text-decoration: underline;">噢 噢</span>~~</p>', 0, '', 0),
@@ -1812,9 +1829,9 @@ INSERT INTO `qinggan_reply` (`id`, `tid`, `parent_id`, `vouch`, `star`, `uid`, `
 --
 
 INSERT INTO `qinggan_res` (`id`, `cate_id`, `folder`, `name`, `ext`, `filename`, `ico`, `addtime`, `title`, `attr`, `note`, `session_id`, `user_id`, `download`, `admin_id`) VALUES
-(827, 13, 'res/picplayer/', 'b13b0cfacb8567c2.jpg', 'jpg', 'res/picplayer/b13b0cfacb8567c2.jpg', 'images/filetype-large/jpg.jpg', 1430375027, '01', 'a:2:{s:5:"width";i:980;s:6:"height";i:180;}', '', '', 0, 0, 1),
-(828, 13, 'res/picplayer/', '21a7421bf229f2ff.jpg', 'jpg', 'res/picplayer/21a7421bf229f2ff.jpg', 'images/filetype-large/jpg.jpg', 1430375108, '02', 'a:2:{s:5:"width";i:980;s:6:"height";i:180;}', '', '', 0, 0, 1),
-(829, 13, 'res/picplayer/', '51d03925fffb2e14.jpg', 'jpg', 'res/picplayer/51d03925fffb2e14.jpg', 'images/filetype-large/jpg.jpg', 1430375118, '03', 'a:2:{s:5:"width";i:980;s:6:"height";i:180;}', '', '', 0, 0, 1),
+(827, 13, 'res/picplayer/', 'b13b0cfacb8567c2.jpg', 'jpg', 'res/picplayer/b13b0cfacb8567c2.jpg', 'res/picplayer/_827.jpg', 1430375027, '01', 'a:2:{s:5:"width";i:980;s:6:"height";i:180;}', '', '', 0, 0, 1),
+(828, 13, 'res/picplayer/', '21a7421bf229f2ff.jpg', 'jpg', 'res/picplayer/21a7421bf229f2ff.jpg', 'res/picplayer/_828.jpg', 1430375108, '02', 'a:2:{s:5:"width";i:980;s:6:"height";i:180;}', '', '', 0, 0, 1),
+(829, 13, 'res/picplayer/', '51d03925fffb2e14.jpg', 'jpg', 'res/picplayer/51d03925fffb2e14.jpg', 'res/picplayer/_829.jpg', 1430375118, '03', 'a:2:{s:5:"width";i:980;s:6:"height";i:180;}', '', '', 0, 0, 1),
 (624, 1, 'res/201409/01/', '27a6e141c3d265ae.jpg', 'jpg', 'res/201409/01/27a6e141c3d265ae.jpg', 'res/201409/01/_624.jpg', 1409550321, 'logo', 'a:2:{s:5:"width";i:219;s:6:"height";i:57;}', '', '', 0, 0, 0),
 (629, 1, 'res/201409/03/', 'e8b2a2815497215c.png', 'png', 'res/201409/03/e8b2a2815497215c.png', 'res/201409/03/_629.png', 1409747220, 'bbs', 'a:2:{s:5:"width";i:280;s:6:"height";i:280;}', '', '', 0, 0, 0),
 (630, 1, 'res/201409/03/', '5b0086d14de1bbf2.jpg', 'jpg', 'res/201409/03/5b0086d14de1bbf2.jpg', 'res/201409/03/_630.jpg', 1409749616, 'about-img', 'a:2:{s:5:"width";i:129;s:6:"height";i:133;}', '', '', 0, 0, 0),
@@ -1830,9 +1847,7 @@ INSERT INTO `qinggan_res` (`id`, `cate_id`, `folder`, `name`, `ext`, `filename`,
 (726, 1, 'res/201502/26/', 'bfc3513c24ba7355_94_0.jpg', 'jpg', 'res/201502/26/bfc3513c24ba7355_94_0.jpg', 'res/201502/26/_726.jpg', 1424920067, '1423019734597', 'a:2:{s:5:"width";i:368;s:6:"height";i:233;}', '', '78u1j5s4ef2jfbnu93uetuif67', 0, 0, 0),
 (727, 1, 'res/201502/26/', '36afa2d3dfe37cbd.png', 'png', 'res/201502/26/36afa2d3dfe37cbd.png', 'res/201502/26/_727.png', 1424921554, 'mark', 'a:2:{s:5:"width";i:220;s:6:"height";i:70;}', '', '', 0, 0, 0),
 (730, 1, 'res/201503/13/', '5bb3971514719131.jpg', 'jpg', 'res/201503/13/5bb3971514719131.jpg', 'res/201503/13/_730.jpg', 1426256922, '180', 'a:2:{s:5:"width";i:180;s:6:"height";i:180;}', '', '', 0, 0, 0),
-(731, 1, 'res/201503/22/', '4d191f2f96f43766.jpg', 'jpg', 'res/201503/22/4d191f2f96f43766.jpg', 'res/201503/22/_731.jpg', 1426979029, '农村老家', 'a:2:{s:5:"width";i:816;s:6:"height";i:594;}', '', '', 0, 0, 0),
 (732, 1, 'res/201503/24/', '3e9893b4813b3eb2.png', 'png', 'res/201503/24/3e9893b4813b3eb2.png', 'res/201503/24/_732.png', 1427165868, 'checkout-logo-large', 'a:2:{s:5:"width";i:228;s:6:"height";i:44;}', '', '', 0, 0, 0),
-(733, 1, 'res/201504/09/', '6626a6d2992e767d.rar', 'rar', 'res/201504/09/6626a6d2992e767d.rar', 'images/filetype-large/rar.jpg', 1428562186, 'dtree', '', '', '', 0, 8, 0),
 (734, 1, 'res/201504/10/', '788f2d92eae6a3cd_48_0.jpg', 'jpg', 'res/201504/10/788f2d92eae6a3cd_48_0.jpg', 'res/201504/10/_734.jpg', 1428676025, '测试的噢999', 'a:2:{s:5:"width";i:500;s:6:"height";i:333;}', '<p>测试附件可视化摘要！</p>', 'b6709c7259d2248815ece56da062ea61', 0, 0, 0),
 (735, 1, 'res/201504/10/', '8540dc15d85b44a9_63_1.jpg', 'jpg', 'res/201504/10/8540dc15d85b44a9_63_1.jpg', 'res/201504/10/_735.jpg', 1428676025, '55261f8b40096', 'a:2:{s:5:"width";i:500;s:6:"height";i:280;}', '', 'b6709c7259d2248815ece56da062ea61', 0, 0, 0),
 (736, 1, 'res/201504/10/', 'fc51638e37cb2124_74_0.png', 'png', 'res/201504/10/fc51638e37cb2124_74_0.png', 'res/201504/10/_736.png', 1428676255, '1428649014185', 'a:2:{s:5:"width";i:714;s:6:"height";i:464;}', '', 'b6709c7259d2248815ece56da062ea61', 0, 0, 0),
@@ -1843,59 +1858,14 @@ INSERT INTO `qinggan_res` (`id`, `cate_id`, `folder`, `name`, `ext`, `filename`,
 (855, 15, 'res/pictures/201505/02/', '42615936340458ec.jpg', 'jpg', 'res/pictures/201505/02/42615936340458ec.jpg', 'res/pictures/201505/02/_855.jpg', 1430561353, '开元寺实景图01', 'a:2:{s:5:"width";i:800;s:6:"height";i:557;}', '', '', 0, 0, 1),
 (853, 15, 'res/pictures/201505/02/', '67b2ad9d33910a08.jpg', 'jpg', 'res/pictures/201505/02/67b2ad9d33910a08.jpg', 'res/pictures/201505/02/_853.jpg', 1430559466, '开元寺实景图07', 'a:2:{s:5:"width";i:800;s:6:"height";i:600;}', '', '', 0, 0, 1),
 (830, 12, 'res/thumb/201505/02/', 'e7eb33702234fc5e.jpg', 'jpg', 'res/thumb/201505/02/e7eb33702234fc5e.jpg', 'res/thumb/201505/02/_830.jpg', 1430549177, '开元寺-小图', 'a:2:{s:5:"width";i:140;s:6:"height";i:160;}', '', '', 0, 0, 1),
-(856, 15, 'res/pictures/201505/02/', 'bd9803497279bd33.jpg', 'jpg', 'res/pictures/201505/02/bd9803497279bd33.jpg', 'res/pictures/201505/02/_856.jpg', 1430561353, '开元寺实景图02', 'a:2:{s:5:"width";i:800;s:6:"height";i:593;}', '', '', 0, 0, 1),
-(857, 15, 'res/pictures/201505/02/', '52a903c095758cf8.jpg', 'jpg', 'res/pictures/201505/02/52a903c095758cf8.jpg', 'res/pictures/201505/02/_857.jpg', 1430561353, '开元寺实景图03', 'a:2:{s:5:"width";i:800;s:6:"height";i:593;}', '', '', 0, 0, 1),
-(858, 15, 'res/pictures/201505/02/', '8f616f15da194998.jpg', 'jpg', 'res/pictures/201505/02/8f616f15da194998.jpg', 'res/pictures/201505/02/_858.jpg', 1430561355, '开元寺实景图04', 'a:2:{s:5:"width";i:800;s:6:"height";i:533;}', '', '', 0, 0, 1),
-(859, 15, 'res/pictures/201505/02/', '59d32d46223b1c2d.jpg', 'jpg', 'res/pictures/201505/02/59d32d46223b1c2d.jpg', 'res/pictures/201505/02/_859.jpg', 1430561355, '开元寺实景图05', 'a:2:{s:5:"width";i:800;s:6:"height";i:533;}', '', '', 0, 0, 1),
-(860, 15, 'res/pictures/201505/02/', '47227da5cf88bc48.jpg', 'jpg', 'res/pictures/201505/02/47227da5cf88bc48.jpg', 'res/pictures/201505/02/_860.jpg', 1430561355, '开元寺实景图06', 'a:2:{s:5:"width";i:800;s:6:"height";i:533;}', '', '', 0, 0, 1),
 (862, 15, 'res/pictures/201505/02/', '11b32f2adf42be51.jpg', 'jpg', 'res/pictures/201505/02/11b32f2adf42be51.jpg', 'res/pictures/201505/02/_862.jpg', 1430577615, '老君岩01', 'a:2:{s:5:"width";i:960;s:6:"height";i:640;}', '', '', 0, 0, 1),
 (863, 15, 'res/pictures/201505/02/', 'c7cc3a1075cddcf3.jpg', 'jpg', 'res/pictures/201505/02/c7cc3a1075cddcf3.jpg', 'res/pictures/201505/02/_863.jpg', 1430577615, '老君岩02', 'a:2:{s:5:"width";i:864;s:6:"height";i:1300;}', '', '', 0, 0, 1),
-(864, 15, 'res/pictures/201505/02/', '8812cd8b7dc94ea2.jpg', 'jpg', 'res/pictures/201505/02/8812cd8b7dc94ea2.jpg', 'res/pictures/201505/02/_864.jpg', 1430577615, '老君岩03', 'a:2:{s:5:"width";i:1300;s:6:"height";i:863;}', '', '', 0, 0, 1),
-(865, 15, 'res/pictures/201505/02/', '9e39f409f540579f.jpg', 'jpg', 'res/pictures/201505/02/9e39f409f540579f.jpg', 'res/pictures/201505/02/_865.jpg', 1430577618, '老君岩04', 'a:2:{s:5:"width";i:1300;s:6:"height";i:864;}', '', '', 0, 0, 1),
-(866, 15, 'res/pictures/201505/02/', '83486793a8ce6a21.jpg', 'jpg', 'res/pictures/201505/02/83486793a8ce6a21.jpg', 'res/pictures/201505/02/_866.jpg', 1430577618, '老君岩05', 'a:2:{s:5:"width";i:1300;s:6:"height";i:864;}', '', '', 0, 0, 1),
-(867, 15, 'res/pictures/201505/02/', '828bdaf176820f9d.jpg', 'jpg', 'res/pictures/201505/02/828bdaf176820f9d.jpg', 'res/pictures/201505/02/_867.jpg', 1430577618, '老君岩06', 'a:2:{s:5:"width";i:864;s:6:"height";i:1300;}', '', '', 0, 0, 1),
 (868, 12, 'res/thumb/201505/02/', 'fa27a7164eb857fc.jpg', 'jpg', 'res/thumb/201505/02/fa27a7164eb857fc.jpg', 'res/thumb/201505/02/_868.jpg', 1430578718, '牛姆林小图', 'a:2:{s:5:"width";i:200;s:6:"height";i:240;}', '', '', 0, 0, 1),
 (869, 15, 'res/pictures/201505/02/', 'b53cf8920ff5dc66.jpg', 'jpg', 'res/pictures/201505/02/b53cf8920ff5dc66.jpg', 'res/pictures/201505/02/_869.jpg', 1430578727, '牛姆林01', 'a:2:{s:5:"width";i:640;s:6:"height";i:428;}', '', '', 0, 0, 1),
-(870, 15, 'res/pictures/201505/02/', '77270a098f4cc6d5.jpg', 'jpg', 'res/pictures/201505/02/77270a098f4cc6d5.jpg', 'res/pictures/201505/02/_870.jpg', 1430578727, '牛姆林02', 'a:2:{s:5:"width";i:402;s:6:"height";i:600;}', '', '', 0, 0, 1),
 (871, 15, 'res/pictures/201505/02/', '9d902716b08721b1.jpg', 'jpg', 'res/pictures/201505/02/9d902716b08721b1.jpg', 'res/pictures/201505/02/_871.jpg', 1430578727, '牛姆林03', 'a:2:{s:5:"width";i:767;s:6:"height";i:416;}', '', '', 0, 0, 1),
-(872, 15, 'res/pictures/201505/02/', '2f29ccf2413bb97e.jpg', 'jpg', 'res/pictures/201505/02/2f29ccf2413bb97e.jpg', 'res/pictures/201505/02/_872.jpg', 1430578729, '牛姆林04', 'a:2:{s:5:"width";i:760;s:6:"height";i:423;}', '', '', 0, 0, 1),
-(873, 15, 'res/pictures/201505/02/', '6682b10e5bc200a9.jpg', 'jpg', 'res/pictures/201505/02/6682b10e5bc200a9.jpg', 'res/pictures/201505/02/_873.jpg', 1430578729, '牛姆林05', 'a:2:{s:5:"width";i:774;s:6:"height";i:478;}', '', '', 0, 0, 1),
-(874, 15, 'res/pictures/201505/02/', '14418e0c6a346fb6.jpg', 'jpg', 'res/pictures/201505/02/14418e0c6a346fb6.jpg', 'res/pictures/201505/02/_874.jpg', 1430578729, '牛姆林06', 'a:2:{s:5:"width";i:768;s:6:"height";i:422;}', '', '', 0, 0, 1),
 (875, 12, 'res/thumb/201505/02/', '8b25dd8fd55c7831.jpg', 'jpg', 'res/thumb/201505/02/8b25dd8fd55c7831.jpg', 'res/thumb/201505/02/_875.jpg', 1430579475, '清水岩小图', 'a:2:{s:5:"width";i:200;s:6:"height";i:240;}', '', '', 0, 0, 1),
 (876, 15, 'res/pictures/201505/02/', '165a4e7240412c1f.jpg', 'jpg', 'res/pictures/201505/02/165a4e7240412c1f.jpg', 'res/pictures/201505/02/_876.jpg', 1430579481, '清水岩01', 'a:2:{s:5:"width";i:1280;s:6:"height";i:960;}', '', '', 0, 0, 1),
-(908, 1, 'res/201507/09/', 'bdc8cae4959eee8b', 'jpg', 'res/201507/09/bdc8cae4959eee8b.jpg', 'res/201507/09/_908.jpg', 1436380956, 'me', 'a:2:{s:5:"width";i:300;s:6:"height";i:300;}', '', 'l5r1oh3120q41kuo870iero000', 18, 0, 0),
-(951, 1, 'res/201507/17/', '595c60768409e1ca.jpg', 'jpg', 'res/201507/17/595c60768409e1ca.jpg', 'res/201507/17/_951.jpg', 1437093949, '火', 'a:2:{s:5:"width";i:117;s:6:"height";i:155;}', '', '', 0, 0, 1),
-(955, 1, 'res/201507/18/', '5f65e9dc18ddae1c.zip', 'zip', 'res/201507/18/5f65e9dc18ddae1c.zip', 'images/filetype-large/zip.jpg', 1437187901, 'd123', '', '', '', 0, 0, 1),
-(962, 1, 'res/201508/05/', 'c63ee4dced85f66e', 'jpg', 'res/201508/05/c63ee4dced85f66e.jpg', 'res/201508/05/_962.jpg', 1438788942, 'me', 'a:2:{s:5:"width";i:300;s:6:"height";i:300;}', '', 'mvmjj12sj93ldhhl8t6cbae831', 23, 0, 0),
-(963, 1, 'res/201508/12/', '21baa1c82ce10561.jpg', 'jpg', 'res/201508/12/21baa1c82ce10561.jpg', 'res/201508/12/_963.jpg', 1439314053, '120', 'a:2:{s:5:"width";i:120;s:6:"height";i:120;}', '', '', 0, 0, 1),
-(964, 18, 'res/bank/', '6e99144bb14bfdbe.pfx', 'pfx', 'res/bank/6e99144bb14bfdbe.pfx', 'images/filetype-large/unknown.jpg', 1440748432, '700000000000001_acp', '', '', '', 0, 0, 1),
-(965, 18, 'res/bank/', '2b35f4d4048a70ae.cer', 'cer', 'res/bank/2b35f4d4048a70ae.cer', 'images/filetype-large/unknown.jpg', 1440748442, 'verify_sign_acp', '', '', '', 0, 0, 1),
-(966, 18, 'res/bank/', '352884420a189d95.pfx', 'pfx', 'res/bank/352884420a189d95.pfx', 'images/filetype-large/unknown.jpg', 1440906698, 'PM_700000000000001_acp', '', '', '', 0, 0, 1),
-(967, 18, 'res/bank/', '204f821aac78f86d.cer', 'cer', 'res/bank/204f821aac78f86d.cer', 'images/filetype-large/unknown.jpg', 1440906720, 'verify_sign_acp', '', '', '', 0, 0, 1),
-(968, 1, 'res/201509/02/', '1441090082_0_293.jpg', 'jpg', 'res/201509/02/1441090082_0_293.jpg', 'res/201509/02/_968.jpg', 1441123673, '1441090082_0_293.jpg', 'a:2:{s:5:"width";i:660;s:6:"height";i:303;}', '', '', 0, 0, 1),
-(969, 1, 'res/201509/02/', '1441090082_1_175.jpg', 'jpg', 'res/201509/02/1441090082_1_175.jpg', 'res/201509/02/_969.jpg', 1441123673, '1441090082_1_175.jpg', 'a:2:{s:5:"width";i:660;s:6:"height";i:389;}', '', '', 0, 0, 1),
-(970, 1, 'res/201509/02/', '1441090082_2_260.jpg', 'jpg', 'res/201509/02/1441090082_2_260.jpg', 'res/201509/02/_970.jpg', 1441123673, '1441090082_2_260.jpg', 'a:2:{s:5:"width";i:660;s:6:"height";i:390;}', '', '', 0, 0, 1),
-(971, 1, 'res/201509/02/', '1441090074_0_254.jpg', 'jpg', 'res/201509/02/1441090074_0_254.jpg', 'res/201509/02/_971.jpg', 1441123677, '1441090074_0_254.jpg', 'a:2:{s:5:"width";i:480;s:6:"height";i:360;}', '', '', 0, 0, 1),
-(972, 1, 'res/201509/02/', '1441090069_0_873.jpg', 'jpg', 'res/201509/02/1441090069_0_873.jpg', 'res/201509/02/_972.jpg', 1441123680, '1441090069_0_873.jpg', 'a:2:{s:5:"width";i:400;s:6:"height";i:300;}', '', '', 0, 0, 1),
-(973, 1, 'res/201509/02/', '1441090069_1_435.jpg', 'jpg', 'res/201509/02/1441090069_1_435.jpg', 'res/201509/02/_973.jpg', 1441123680, '1441090069_1_435.jpg', 'a:2:{s:5:"width";i:317;s:6:"height";i:400;}', '', '', 0, 0, 1),
-(974, 1, 'res/201509/02/', '1441090048_0_167.png', 'png', 'res/201509/02/1441090048_0_167.png', 'res/201509/02/_974.png', 1441123685, '1441090048_0_167.png', 'a:2:{s:5:"width";i:973;s:6:"height";i:4536;}', '', '', 0, 0, 1),
-(975, 1, 'res/201509/02/', '1441090034_0_765.jpg', 'jpg', 'res/201509/02/1441090034_0_765.jpg', 'res/201509/02/_975.jpg', 1441123697, '1441090034_0_765.jpg', 'a:2:{s:5:"width";i:359;s:6:"height";i:357;}', '', '', 0, 0, 1),
-(976, 1, 'res/201509/02/', '1441090034_1_947.jpg', 'jpg', 'res/201509/02/1441090034_1_947.jpg', 'res/201509/02/_976.jpg', 1441123697, '1441090034_1_947.jpg', 'a:2:{s:5:"width";i:367;s:6:"height";i:352;}', '', '', 0, 0, 1),
-(977, 1, 'res/201509/02/', '1441090016_0_396.jpg', 'jpg', 'res/201509/02/1441090016_0_396.jpg', 'res/201509/02/_977.jpg', 1441123710, '1441090016_0_396.jpg', 'a:2:{s:5:"width";i:500;s:6:"height";i:1181;}', '', '', 0, 0, 1),
-(978, 1, 'res/201509/02/', '1441090001_1_697.jpg', 'jpg', 'res/201509/02/1441090001_1_697.jpg', 'res/201509/02/_978.jpg', 1441123716, '1441090001_1_697.jpg', 'a:2:{s:5:"width";i:500;s:6:"height";i:103;}', '', '', 0, 0, 1),
-(979, 1, 'res/201509/02/', '1441090001_0_548.jpg', 'jpg', 'res/201509/02/1441090001_0_548.jpg', 'res/201509/02/_979.jpg', 1441123716, '1441090001_0_548.jpg', 'a:2:{s:5:"width";i:500;s:6:"height";i:254;}', '', '', 0, 0, 1),
-(980, 1, 'res/201509/02/', '1441090077_0_111.jpg', 'jpg', 'res/201509/02/1441090077_0_111.jpg', 'res/201509/02/_980.jpg', 1441123896, '1441090077_0_111.jpg', 'a:2:{s:5:"width";i:480;s:6:"height";i:360;}', '', '', 0, 0, 1),
-(981, 1, 'res/201509/02/', '1441090077_1_885.jpg', 'jpg', 'res/201509/02/1441090077_1_885.jpg', 'res/201509/02/_981.jpg', 1441123896, '1441090077_1_885.jpg', 'a:2:{s:5:"width";i:480;s:6:"height";i:360;}', '', '', 0, 0, 1),
-(982, 1, 'res/201509/02/', '1441090066_0_157.gif', 'gif', 'res/201509/02/1441090066_0_157.gif', 'res/201509/02/_982.gif', 1441123902, '1441090066_0_157.gif', 'a:2:{s:5:"width";i:292;s:6:"height";i:82;}', '', '', 0, 0, 1),
-(983, 1, 'res/201509/02/', '1441090061_0_691.jpg', 'jpg', 'res/201509/02/1441090061_0_691.jpg', 'res/201509/02/_983.jpg', 1441123905, '1441090061_0_691.jpg', 'a:2:{s:5:"width";i:427;s:6:"height";i:284;}', '', '', 0, 0, 1),
-(984, 1, 'res/201509/02/', '1441090045_0_444.jpg', 'jpg', 'res/201509/02/1441090045_0_444.jpg', 'res/201509/02/_984.jpg', 1441123908, '1441090045_0_444.jpg', 'a:2:{s:5:"width";i:1000;s:6:"height";i:739;}', '', '', 0, 0, 1),
-(985, 1, 'res/201509/02/', '1441090082_0_293.jpg', 'jpg', 'res/201509/02/1441090082_0_293.jpg', 'res/201509/02/_985.jpg', 1441124129, '1441090082_0_293.jpg', 'a:2:{s:5:"width";i:660;s:6:"height";i:303;}', '', '', 0, 0, 1),
-(986, 1, 'res/201509/02/', '1441090082_1_175.jpg', 'jpg', 'res/201509/02/1441090082_1_175.jpg', 'res/201509/02/_986.jpg', 1441124129, '1441090082_1_175.jpg', 'a:2:{s:5:"width";i:660;s:6:"height";i:389;}', '', '', 0, 0, 1),
-(987, 1, 'res/201509/02/', '1441090082_2_260.jpg', 'jpg', 'res/201509/02/1441090082_2_260.jpg', 'res/201509/02/_987.jpg', 1441124129, '1441090082_2_260.jpg', 'a:2:{s:5:"width";i:660;s:6:"height";i:390;}', '', '', 0, 0, 1),
-(988, 1, 'res/201509/02/', '1441090082_0_293.jpg', 'jpg', 'res/201509/02/1441090082_0_293.jpg', 'res/201509/02/_988.jpg', 1441124395, '1441090082_0_293.jpg', 'a:2:{s:5:"width";i:660;s:6:"height";i:303;}', '', '', 0, 0, 1),
-(989, 1, 'res/201509/02/', '1441090082_1_175.jpg', 'jpg', 'res/201509/02/1441090082_1_175.jpg', 'res/201509/02/_989.jpg', 1441124395, '1441090082_1_175.jpg', 'a:2:{s:5:"width";i:660;s:6:"height";i:389;}', '', '', 0, 0, 1),
-(990, 1, 'res/201509/02/', '1441090082_2_260.jpg', 'jpg', 'res/201509/02/1441090082_2_260.jpg', 'res/201509/02/_990.jpg', 1441124395, '1441090082_2_260.jpg', 'a:2:{s:5:"width";i:660;s:6:"height";i:390;}', '', '', 0, 0, 1),
-(992, 1, 'res/201510/09/', 'e69d4297d35ac2fc.jpg', 'jpg', 'res/201510/09/e69d4297d35ac2fc.jpg', 'res/201510/09/_992.jpg', 1444356014, '100x100', 'a:2:{s:5:"width";i:100;s:6:"height";i:100;}', '', 'hs4dmm34dv7s1ba6c3umjv9qh7', 23, 0, 0);
+(993, 11, 'res/soft/2015/', '61018e198ddb0a7a.zip', 'zip', 'res/soft/2015/61018e198ddb0a7a.zip', 'images/filetype-large/zip.jpg', 1445451573, 'copy', '', '', '', 0, 0, 1);
 
 --
 -- 转存表中的数据 `qinggan_res_cate`
@@ -1951,8 +1921,6 @@ INSERT INTO `qinggan_res_ext` (`res_id`, `gd_id`, `filename`, `filetime`) VALUES
 (726, 2, 'res/201502/26/thumb_726.jpg', 1430225421),
 (730, 12, 'res/201503/13/auto_730.jpg', 1430225417),
 (730, 2, 'res/201503/13/thumb_730.jpg', 1430225417),
-(731, 12, 'res/201503/22/auto_731.jpg', 1430225415),
-(731, 2, 'res/201503/22/thumb_731.jpg', 1430225415),
 (732, 12, 'res/201503/24/auto_732.png', 1430225413),
 (732, 2, 'res/201503/24/thumb_732.png', 1430225413),
 (734, 12, 'res/201504/10/auto_734.jpg', 1430225410),
@@ -1984,7 +1952,6 @@ INSERT INTO `qinggan_res_ext` (`res_id`, `gd_id`, `filename`, `filetime`) VALUES
 (726, 22, 'res/201502/26/mobile_726.jpg', 1430221673),
 (727, 22, 'res/201502/26/mobile_727.png', 1430221672),
 (732, 22, 'res/201503/24/mobile_732.png', 1430221666),
-(731, 22, 'res/201503/22/mobile_731.jpg', 1430221668),
 (730, 22, 'res/201503/13/mobile_730.jpg', 1430221670),
 (736, 22, 'res/201504/10/mobile_736.png', 1430221658),
 (735, 22, 'res/201504/10/mobile_735.jpg', 1430221660),
@@ -1993,208 +1960,36 @@ INSERT INTO `qinggan_res_ext` (`res_id`, `gd_id`, `filename`, `filetime`) VALUES
 (738, 22, 'res/201504/10/mobile_738.png', 1430221654),
 (737, 22, 'res/201504/10/mobile_737.jpg', 1430221656),
 (855, 12, 'res/pictures/201505/02/auto_855.jpg', 1430561353),
-(856, 29, 'res/pictures/201505/02/photo_856.jpg', 1430561353),
-(856, 12, 'res/pictures/201505/02/auto_856.jpg', 1430561353),
-(857, 29, 'res/pictures/201505/02/photo_857.jpg', 1430561353),
-(857, 12, 'res/pictures/201505/02/auto_857.jpg', 1430561353),
-(858, 29, 'res/pictures/201505/02/photo_858.jpg', 1430561355),
-(858, 12, 'res/pictures/201505/02/auto_858.jpg', 1430561355),
-(859, 29, 'res/pictures/201505/02/photo_859.jpg', 1430561355),
-(859, 12, 'res/pictures/201505/02/auto_859.jpg', 1430561355),
-(860, 29, 'res/pictures/201505/02/photo_860.jpg', 1430561355),
-(860, 12, 'res/pictures/201505/02/auto_860.jpg', 1430561355),
+(827, 25, 'res/picplayer/small_827.jpg', 1445451160),
+(827, 22, 'res/picplayer/mobile_827.jpg', 1445451160),
+(827, 12, 'res/picplayer/auto_827.jpg', 1445451160),
+(827, 2, 'res/picplayer/thumb_827.jpg', 1445451160),
 (862, 29, 'res/pictures/201505/02/photo_862.jpg', 1430577615),
 (862, 12, 'res/pictures/201505/02/auto_862.jpg', 1430577615),
 (863, 29, 'res/pictures/201505/02/photo_863.jpg', 1430577615),
 (863, 12, 'res/pictures/201505/02/auto_863.jpg', 1430577615),
-(864, 29, 'res/pictures/201505/02/photo_864.jpg', 1430577615),
-(864, 12, 'res/pictures/201505/02/auto_864.jpg', 1430577615),
-(865, 29, 'res/pictures/201505/02/photo_865.jpg', 1430577618),
-(865, 12, 'res/pictures/201505/02/auto_865.jpg', 1430577618),
-(866, 29, 'res/pictures/201505/02/photo_866.jpg', 1430577618),
-(866, 12, 'res/pictures/201505/02/auto_866.jpg', 1430577618),
-(867, 29, 'res/pictures/201505/02/photo_867.jpg', 1430577618),
-(867, 12, 'res/pictures/201505/02/auto_867.jpg', 1430577618),
+(828, 28, 'res/picplayer/product_828.jpg', 1445451158),
+(828, 25, 'res/picplayer/small_828.jpg', 1445451158),
+(828, 22, 'res/picplayer/mobile_828.jpg', 1445451158),
+(828, 12, 'res/picplayer/auto_828.jpg', 1445451158),
+(828, 2, 'res/picplayer/thumb_828.jpg', 1445451158),
+(827, 29, 'res/picplayer/photo_827.jpg', 1445451160),
+(827, 28, 'res/picplayer/product_827.jpg', 1445451160),
 (868, 2, 'res/thumb/201505/02/thumb_868.jpg', 1430578718),
 (869, 29, 'res/pictures/201505/02/photo_869.jpg', 1430578727),
 (869, 12, 'res/pictures/201505/02/auto_869.jpg', 1430578727),
-(870, 29, 'res/pictures/201505/02/photo_870.jpg', 1430578727),
-(870, 12, 'res/pictures/201505/02/auto_870.jpg', 1430578727),
+(829, 29, 'res/picplayer/photo_829.jpg', 1445451156),
+(829, 28, 'res/picplayer/product_829.jpg', 1445451156),
 (871, 29, 'res/pictures/201505/02/photo_871.jpg', 1430578727),
 (871, 12, 'res/pictures/201505/02/auto_871.jpg', 1430578727),
-(872, 29, 'res/pictures/201505/02/photo_872.jpg', 1430578729),
-(872, 12, 'res/pictures/201505/02/auto_872.jpg', 1430578729),
-(873, 29, 'res/pictures/201505/02/photo_873.jpg', 1430578729),
-(873, 12, 'res/pictures/201505/02/auto_873.jpg', 1430578729),
-(874, 29, 'res/pictures/201505/02/photo_874.jpg', 1430578729),
-(874, 12, 'res/pictures/201505/02/auto_874.jpg', 1430578729),
+(829, 25, 'res/picplayer/small_829.jpg', 1445451156),
+(829, 22, 'res/picplayer/mobile_829.jpg', 1445451156),
+(829, 12, 'res/picplayer/auto_829.jpg', 1445451156),
+(829, 2, 'res/picplayer/thumb_829.jpg', 1445451156),
+(828, 29, 'res/picplayer/photo_828.jpg', 1445451158),
 (875, 2, 'res/thumb/201505/02/thumb_875.jpg', 1430579475),
 (876, 29, 'res/pictures/201505/02/photo_876.jpg', 1430579481),
-(876, 12, 'res/pictures/201505/02/auto_876.jpg', 1430579481),
-(908, 12, 'res/201507/09/auto_908.jpg', 1436380956),
-(908, 2, 'res/201507/09/thumb_908.jpg', 1436380956),
-(951, 29, 'res/201507/17/photo_951.jpg', 1437093949),
-(951, 28, 'res/201507/17/product_951.jpg', 1437093949),
-(951, 25, 'res/201507/17/small_951.jpg', 1437093949),
-(951, 22, 'res/201507/17/mobile_951.jpg', 1437093949),
-(951, 12, 'res/201507/17/auto_951.jpg', 1437093949),
-(951, 2, 'res/201507/17/thumb_951.jpg', 1437093949),
-(962, 29, 'res/201508/05/photo_962.jpg', 1438788942),
-(962, 28, 'res/201508/05/product_962.jpg', 1438788942),
-(962, 25, 'res/201508/05/small_962.jpg', 1438788942),
-(962, 22, 'res/201508/05/mobile_962.jpg', 1438788942),
-(962, 12, 'res/201508/05/auto_962.jpg', 1438788942),
-(962, 2, 'res/201508/05/thumb_962.jpg', 1438788942),
-(963, 29, 'res/201508/12/photo_963.jpg', 1439314053),
-(963, 28, 'res/201508/12/product_963.jpg', 1439314053),
-(963, 25, 'res/201508/12/small_963.jpg', 1439314053),
-(963, 22, 'res/201508/12/mobile_963.jpg', 1439314053),
-(963, 12, 'res/201508/12/auto_963.jpg', 1439314053),
-(963, 2, 'res/201508/12/thumb_963.jpg', 1439314053),
-(968, 29, 'res/201509/02/photo_968.jpg', 1441123673),
-(968, 28, 'res/201509/02/product_968.jpg', 1441123673),
-(968, 25, 'res/201509/02/small_968.jpg', 1441123673),
-(968, 22, 'res/201509/02/mobile_968.jpg', 1441123673),
-(968, 12, 'res/201509/02/auto_968.jpg', 1441123673),
-(968, 2, 'res/201509/02/thumb_968.jpg', 1441123673),
-(969, 29, 'res/201509/02/photo_969.jpg', 1441123673),
-(969, 28, 'res/201509/02/product_969.jpg', 1441123673),
-(969, 25, 'res/201509/02/small_969.jpg', 1441123673),
-(969, 22, 'res/201509/02/mobile_969.jpg', 1441123673),
-(969, 12, 'res/201509/02/auto_969.jpg', 1441123673),
-(969, 2, 'res/201509/02/thumb_969.jpg', 1441123673),
-(970, 29, 'res/201509/02/photo_970.jpg', 1441123673),
-(970, 28, 'res/201509/02/product_970.jpg', 1441123673),
-(970, 25, 'res/201509/02/small_970.jpg', 1441123673),
-(970, 22, 'res/201509/02/mobile_970.jpg', 1441123673),
-(970, 12, 'res/201509/02/auto_970.jpg', 1441123673),
-(970, 2, 'res/201509/02/thumb_970.jpg', 1441123673),
-(971, 29, 'res/201509/02/photo_971.jpg', 1441123677),
-(971, 28, 'res/201509/02/product_971.jpg', 1441123677),
-(971, 25, 'res/201509/02/small_971.jpg', 1441123677),
-(971, 22, 'res/201509/02/mobile_971.jpg', 1441123677),
-(971, 12, 'res/201509/02/auto_971.jpg', 1441123677),
-(971, 2, 'res/201509/02/thumb_971.jpg', 1441123677),
-(972, 29, 'res/201509/02/photo_972.jpg', 1441123680),
-(972, 28, 'res/201509/02/product_972.jpg', 1441123680),
-(972, 25, 'res/201509/02/small_972.jpg', 1441123680),
-(972, 22, 'res/201509/02/mobile_972.jpg', 1441123680),
-(972, 12, 'res/201509/02/auto_972.jpg', 1441123680),
-(972, 2, 'res/201509/02/thumb_972.jpg', 1441123680),
-(973, 29, 'res/201509/02/photo_973.jpg', 1441123680),
-(973, 28, 'res/201509/02/product_973.jpg', 1441123680),
-(973, 25, 'res/201509/02/small_973.jpg', 1441123680),
-(973, 22, 'res/201509/02/mobile_973.jpg', 1441123680),
-(973, 12, 'res/201509/02/auto_973.jpg', 1441123680),
-(973, 2, 'res/201509/02/thumb_973.jpg', 1441123680),
-(974, 29, 'res/201509/02/photo_974.png', 1441123685),
-(974, 28, 'res/201509/02/product_974.png', 1441123685),
-(974, 25, 'res/201509/02/small_974.png', 1441123685),
-(974, 22, 'res/201509/02/mobile_974.png', 1441123685),
-(974, 12, 'res/201509/02/auto_974.png', 1441123685),
-(974, 2, 'res/201509/02/thumb_974.png', 1441123685),
-(975, 29, 'res/201509/02/photo_975.jpg', 1441123697),
-(975, 28, 'res/201509/02/product_975.jpg', 1441123697),
-(975, 25, 'res/201509/02/small_975.jpg', 1441123697),
-(975, 22, 'res/201509/02/mobile_975.jpg', 1441123697),
-(975, 12, 'res/201509/02/auto_975.jpg', 1441123697),
-(975, 2, 'res/201509/02/thumb_975.jpg', 1441123697),
-(976, 29, 'res/201509/02/photo_976.jpg', 1441123697),
-(976, 28, 'res/201509/02/product_976.jpg', 1441123697),
-(976, 25, 'res/201509/02/small_976.jpg', 1441123697),
-(976, 22, 'res/201509/02/mobile_976.jpg', 1441123697),
-(976, 12, 'res/201509/02/auto_976.jpg', 1441123697),
-(976, 2, 'res/201509/02/thumb_976.jpg', 1441123697),
-(977, 29, 'res/201509/02/photo_977.jpg', 1441123710),
-(977, 28, 'res/201509/02/product_977.jpg', 1441123710),
-(977, 25, 'res/201509/02/small_977.jpg', 1441123710),
-(977, 22, 'res/201509/02/mobile_977.jpg', 1441123710),
-(977, 12, 'res/201509/02/auto_977.jpg', 1441123710),
-(977, 2, 'res/201509/02/thumb_977.jpg', 1441123710),
-(978, 29, 'res/201509/02/photo_978.jpg', 1441123716),
-(978, 28, 'res/201509/02/product_978.jpg', 1441123716),
-(978, 25, 'res/201509/02/small_978.jpg', 1441123716),
-(978, 22, 'res/201509/02/mobile_978.jpg', 1441123716),
-(978, 12, 'res/201509/02/auto_978.jpg', 1441123716),
-(978, 2, 'res/201509/02/thumb_978.jpg', 1441123716),
-(979, 29, 'res/201509/02/photo_979.jpg', 1441123716),
-(979, 28, 'res/201509/02/product_979.jpg', 1441123716),
-(979, 25, 'res/201509/02/small_979.jpg', 1441123716),
-(979, 22, 'res/201509/02/mobile_979.jpg', 1441123716),
-(979, 12, 'res/201509/02/auto_979.jpg', 1441123716),
-(979, 2, 'res/201509/02/thumb_979.jpg', 1441123716),
-(980, 29, 'res/201509/02/photo_980.jpg', 1441123896),
-(980, 28, 'res/201509/02/product_980.jpg', 1441123896),
-(980, 25, 'res/201509/02/small_980.jpg', 1441123896),
-(980, 22, 'res/201509/02/mobile_980.jpg', 1441123896),
-(980, 12, 'res/201509/02/auto_980.jpg', 1441123896),
-(980, 2, 'res/201509/02/thumb_980.jpg', 1441123896),
-(981, 29, 'res/201509/02/photo_981.jpg', 1441123896),
-(981, 28, 'res/201509/02/product_981.jpg', 1441123896),
-(981, 25, 'res/201509/02/small_981.jpg', 1441123896),
-(981, 22, 'res/201509/02/mobile_981.jpg', 1441123896),
-(981, 12, 'res/201509/02/auto_981.jpg', 1441123896),
-(981, 2, 'res/201509/02/thumb_981.jpg', 1441123896),
-(982, 29, 'res/201509/02/photo_982.gif', 1441123902),
-(982, 28, 'res/201509/02/product_982.gif', 1441123902),
-(982, 25, 'res/201509/02/small_982.gif', 1441123902),
-(982, 22, 'res/201509/02/mobile_982.gif', 1441123902),
-(982, 12, 'res/201509/02/auto_982.gif', 1441123902),
-(982, 2, 'res/201509/02/thumb_982.gif', 1441123902),
-(983, 29, 'res/201509/02/photo_983.jpg', 1441123905),
-(983, 28, 'res/201509/02/product_983.jpg', 1441123905),
-(983, 25, 'res/201509/02/small_983.jpg', 1441123905),
-(983, 22, 'res/201509/02/mobile_983.jpg', 1441123905),
-(983, 12, 'res/201509/02/auto_983.jpg', 1441123905),
-(983, 2, 'res/201509/02/thumb_983.jpg', 1441123905),
-(984, 29, 'res/201509/02/photo_984.jpg', 1441123908),
-(984, 28, 'res/201509/02/product_984.jpg', 1441123908),
-(984, 25, 'res/201509/02/small_984.jpg', 1441123908),
-(984, 22, 'res/201509/02/mobile_984.jpg', 1441123908),
-(984, 12, 'res/201509/02/auto_984.jpg', 1441123908),
-(984, 2, 'res/201509/02/thumb_984.jpg', 1441123908),
-(985, 29, 'res/201509/02/photo_985.jpg', 1441124129),
-(985, 28, 'res/201509/02/product_985.jpg', 1441124129),
-(985, 25, 'res/201509/02/small_985.jpg', 1441124129),
-(985, 22, 'res/201509/02/mobile_985.jpg', 1441124129),
-(985, 12, 'res/201509/02/auto_985.jpg', 1441124129),
-(985, 2, 'res/201509/02/thumb_985.jpg', 1441124129),
-(986, 29, 'res/201509/02/photo_986.jpg', 1441124129),
-(986, 28, 'res/201509/02/product_986.jpg', 1441124129),
-(986, 25, 'res/201509/02/small_986.jpg', 1441124129),
-(986, 22, 'res/201509/02/mobile_986.jpg', 1441124129),
-(986, 12, 'res/201509/02/auto_986.jpg', 1441124129),
-(986, 2, 'res/201509/02/thumb_986.jpg', 1441124129),
-(987, 29, 'res/201509/02/photo_987.jpg', 1441124129),
-(987, 28, 'res/201509/02/product_987.jpg', 1441124129),
-(987, 25, 'res/201509/02/small_987.jpg', 1441124129),
-(987, 22, 'res/201509/02/mobile_987.jpg', 1441124129),
-(987, 12, 'res/201509/02/auto_987.jpg', 1441124129),
-(987, 2, 'res/201509/02/thumb_987.jpg', 1441124129),
-(988, 29, 'res/201509/02/photo_988.jpg', 1441124395),
-(988, 28, 'res/201509/02/product_988.jpg', 1441124395),
-(988, 25, 'res/201509/02/small_988.jpg', 1441124395),
-(988, 22, 'res/201509/02/mobile_988.jpg', 1441124395),
-(988, 12, 'res/201509/02/auto_988.jpg', 1441124395),
-(988, 2, 'res/201509/02/thumb_988.jpg', 1441124395),
-(989, 29, 'res/201509/02/photo_989.jpg', 1441124395),
-(989, 28, 'res/201509/02/product_989.jpg', 1441124395),
-(989, 25, 'res/201509/02/small_989.jpg', 1441124395),
-(989, 22, 'res/201509/02/mobile_989.jpg', 1441124395),
-(989, 12, 'res/201509/02/auto_989.jpg', 1441124395),
-(989, 2, 'res/201509/02/thumb_989.jpg', 1441124395),
-(990, 29, 'res/201509/02/photo_990.jpg', 1441124395),
-(990, 28, 'res/201509/02/product_990.jpg', 1441124395),
-(990, 25, 'res/201509/02/small_990.jpg', 1441124395),
-(990, 22, 'res/201509/02/mobile_990.jpg', 1441124395),
-(990, 12, 'res/201509/02/auto_990.jpg', 1441124395),
-(990, 2, 'res/201509/02/thumb_990.jpg', 1441124395),
-(992, 29, 'res/201510/09/photo_992.jpg', 1444356014),
-(992, 28, 'res/201510/09/product_992.jpg', 1444356014),
-(992, 25, 'res/201510/09/small_992.jpg', 1444356014),
-(992, 22, 'res/201510/09/mobile_992.jpg', 1444356014),
-(992, 12, 'res/201510/09/auto_992.jpg', 1444356014),
-(992, 2, 'res/201510/09/thumb_992.jpg', 1444356014);
+(876, 12, 'res/pictures/201505/02/auto_876.jpg', 1430579481);
 
 --
 -- 转存表中的数据 `qinggan_site`
@@ -2207,9 +2002,7 @@ INSERT INTO `qinggan_site` (`id`, `domain_id`, `title`, `dir`, `status`, `conten
 -- 转存表中的数据 `qinggan_site_domain`
 --
 
-INSERT INTO `qinggan_site_domain` (`id`, `site_id`, `domain`, `is_mobile`) VALUES
-(1, 1, 'phpok', 0),
-(25, 1, 'mobile', 1);
+INSERT INTO `qinggan_site_domain` (`id`, `site_id`, `domain`, `is_mobile`) VALUES(1, 1, 'phpok', 0);
 
 --
 -- 转存表中的数据 `qinggan_sysmenu`
@@ -2254,7 +2047,8 @@ INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, 
 (67, 4, '商品属性', 1, 'options', 40, '', '', '', 0, 1, ''),
 (68, 4, '运费模板', 1, 'freight', 50, '', '', '', 0, 1, ''),
 (78, 1, '网关路由', 1, 'gateway', 110, '', '', '', 0, 1, ''),
-(77, 2, '物流快递', 1, 'express', 50, '', '', '', 0, 1, '');
+(77, 2, '物流快递', 1, 'express', 50, '', '', '', 0, 1, ''),
+(80, 4, '计划任务', 1, 'task', 140, '', '', '', 0, 1, '');
 
 --
 -- 转存表中的数据 `qinggan_tag`
@@ -2328,22 +2122,21 @@ INSERT INTO `qinggan_tag_stat` (`title_id`, `tag_id`) VALUES
 --
 
 INSERT INTO `qinggan_task` (`id`, `year`, `month`, `day`, `hour`, `minute`, `second`, `exec_time`, `stop_time`, `action`, `param`, `only_once`, `is_lock`) VALUES
-(1, '*', '*', '*', '5', '5', '10', 1444535443, 1444535443, 'clear', '', 0, 0);
+(1, '*', '*', '*', '4', '11', '*', 1445407123, 1445407123, 'clear', '', 0, 0);
 
 --
 -- 转存表中的数据 `qinggan_tpl`
 --
 
 INSERT INTO `qinggan_tpl` (`id`, `title`, `author`, `folder`, `refresh_auto`, `refresh`, `ext`, `folder_change`, `phpfolder`) VALUES
-(1, '默认风格', 'phpok.com', 'www', 1, 0, 'html', 'css,images,js', 'phpinc'),
-(18, '第二个测试站', 'phpok.com', 'web', 1, 0, 'html', 'css,js,images', 'phpinc');
+(1, '默认风格', 'phpok.com', 'www', 1, 0, 'html', 'css,images,js', 'phpinc');
 
 --
 -- 转存表中的数据 `qinggan_user`
 --
 
 INSERT INTO `qinggan_user` (`id`, `group_id`, `user`, `pass`, `status`, `regtime`, `email`, `mobile`, `code`, `avatar`) VALUES
-(23, 2, 'admin', 'e0ae361b631ce089a16f4a4c8cc8d033:5a', 1, 1438668082, '40782502@qq.com', '15818533971', '', 'res/201508/05/c63ee4dced85f66e.jpg'),
+(23, 2, 'admin', 'e0ae361b631ce089a16f4a4c8cc8d033:5a', 1, 1438668082, '40782502@qq.com', '15818533971', '', 'res/201503/13/5bb3971514719131.jpg'),
 (24, 2, 'seika', '51e87180975db1b7c59a02b4b6bc3c99:3e', 1, 1439398782, 'admin@phpok.com', '15818533972', '', '');
 
 --
@@ -2377,8 +2170,8 @@ INSERT INTO `qinggan_user_fields` (`id`, `title`, `identifier`, `field_type`, `n
 --
 
 INSERT INTO `qinggan_user_group` (`id`, `title`, `status`, `is_default`, `is_guest`, `is_open`, `taxis`, `register_status`, `tbl_id`, `fields`, `popedom`) VALUES
-(2, '普通会员', 1, 1, 0, 0, 10, '0', 0, '', 'a:1:{i:1;s:178:"read:149,read:43,read:87,read:90,read:146,read:92,read:93,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,post:152,read:142,post:142,read:148";}'),
-(3, '游客组', 1, 0, 1, 0, 200, '0', 0, '', 'a:1:{i:1;s:438:"read:149,read:87,read:90,read:146,read:92,read:93,read:43,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,read:142,post:142,read:148,read:153,read:156,read:157,read:158,post:158,post1:158,read:159,read:160,post:160,reply:160,post1:160,reply1:160,read:161,post:161,reply:161,post1:161,reply1:161,read:162,post:162,reply:162,post1:162,reply1:162,read:163,read:164,post:164,reply:164,post1:164,reply1:164";}');
+(2, '普通会员', 1, 1, 0, 0, 10, '0', 0, '', 'a:1:{i:1;s:187:"read:149,read:43,read:87,read:90,read:146,read:92,read:93,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,post:152,read:142,post:142,read:148,read:165";}'),
+(3, '游客组', 1, 0, 1, 0, 200, '0', 0, '', 'a:1:{i:1;s:447:"read:149,read:87,read:90,read:146,read:92,read:93,read:43,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,read:142,post:142,read:148,read:153,read:156,read:157,read:158,post:158,post1:158,read:159,read:160,post:160,reply:160,post1:160,reply1:160,read:161,post:161,reply:161,post1:161,reply1:161,read:162,post:162,reply:162,post1:162,reply1:162,read:163,read:164,post:164,reply:164,post1:164,reply1:164,read:165";}');
 
 --
 -- 转存表中的数据 `qinggan_user_invoice`
@@ -2404,83 +2197,6 @@ INSERT INTO `qinggan_wealth` (`id`, `site_id`, `title`, `identifier`, `unit`, `d
 (1, 1, '积分', 'integral', '点', 0, 0, 0, 1, 10, 0, 0, 0),
 (2, 1, '钱包', 'wallet', '元', 2, 1, 1, 1, 20, 1, 100, 1),
 (3, 1, '威望', 'prestige', '星', 0, 0, 0, 1, 20, 0, 0, 0);
-
---
--- 转存表中的数据 `qinggan_wealth_info`
---
-
-INSERT INTO `qinggan_wealth_info` (`wid`, `uid`, `lasttime`, `val`) VALUES
-(1, 23, 1444459187, 116),
-(1, 21, 1438412851, 60),
-(2, 20, 1438416218, 9),
-(1, 22, 1438664133, 50),
-(1, 24, 1439398782, 50);
-
---
--- 转存表中的数据 `qinggan_wealth_log`
---
-
-INSERT INTO `qinggan_wealth_log` (`id`, `wid`, `goal_id`, `mid`, `val`, `note`, `appid`, `dateline`, `user_id`, `admin_id`, `ctrlid`, `funcid`, `url`, `status`) VALUES
-(2, 1, 23, '', 50, '注册积分', 'api', 1437362985, 0, 1, 'register', '', 'http://phpok//api.php?c=register&f=save&_noCache=0.5324386667925864', 1),
-(5, 1, 23, '', 1, '会员登录', 'www', 1437363285, 21, 1, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(6, 1, 23, '', 1, '阅读获积分', 'www', 1437363389, 21, 1, 'content', 'index', 'http://phpok//index.php?id=1382', 1),
-(7, 1, 23, '1388', 1, '阅读获积分', 'www', 1437373173, 21, 1, 'content', 'index', 'http://phpok//index.php?id=1388', 1),
-(8, 1, 23, '1387', 1, '阅读获积分', 'www', 1437373194, 21, 1, 'content', 'index', 'http://phpok//index.php?id=1387', 1),
-(9, 1, 23, '1389', 1, '阅读获积分', 'www', 1437373288, 21, 1, 'content', 'index', 'http://phpok//index.php?id=1389', 1),
-(25, 1, 23, '', 1, '会员登录', 'www', 1438907640, 23, 0, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(24, 1, 23, '', 1, '会员登录', 'www', 1438823408, 23, 0, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(12, 1, 23, '0', 10, '管理员操作，测试', 'admin', 1438412817, 0, 1, 'wealth', 'val', 'admin.php...', 1),
-(13, 1, 23, '0', -5, '管理员操作，test', 'admin', 1438412851, 0, 1, 'wealth', 'val', 'admin.php...', 1),
-(23, 1, 23, '', 1, '会员登录', 'www', 1438787492, 23, 0, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(16, 2, 23, '0', 10, '管理员操作，赠送', 'admin', 1438415566, 0, 1, 'wealth', 'val', 'admin.php...', 1),
-(17, 2, 23, '0', -1, '管理员操作：demo', 'admin', 1438416218, 0, 1, 'wealth', 'val', 'admin.php...', 1),
-(22, 1, 23, '', 1, '会员登录', 'www', 1438695585, 23, 0, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(21, 1, 23, '', 50, '注册积分', 'api', 1438668082, 0, 1, 'register', 'save', 'http://phpok//api.php?c=register&f=save&_noCache=0.37033853214234114', 1),
-(20, 1, 23, '', 50, '注册积分', 'api', 1438664133, 0, 1, 'register', 'save', 'http://phpok//api.php?c=register&f=save&_noCache=0.9639437620062381', 1),
-(26, 1, 23, '1306', 1, '阅读获积分', 'www', 1439100895, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1306', 1),
-(27, 1, 23, '1306', 1, '阅读获积分', 'www', 1439142087, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1306', 1),
-(28, 1, 23, '', 1, '会员登录', 'www', 1439175664, 23, 0, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(29, 1, 23, '', 1, '会员登录', 'www', 1439260746, 23, 1, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(30, 1, 23, '1306', 1, '阅读获积分', 'www', 1439265153, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1306', 1),
-(36, 1, 23, '1306', 1, '阅读获积分', 'www', 1439381388, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1306', 1),
-(32, 1, 23, '', 1, '阅读获积分', 'www', 1437363389, 21, 1, 'content', 'index', 'http://phpok//index.php?id=1382', 1),
-(33, 1, 23, '1388', 1, '阅读获积分', 'www', 1437373173, 21, 1, 'content', 'index', 'http://phpok//index.php?id=1388', 1),
-(35, 1, 23, '', 1, '会员登录', 'www', 1439313252, 23, 1, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(37, 1, 23, '1253', 1, '阅读获积分', 'www', 1439386753, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1253', 1),
-(38, 1, 23, '', 20, '注册积分', 'api', 1439398782, 0, 0, 'register', 'save', 'http://phpok//api.php?c=register&f=save&_noCache=0.45611315476708114', 1),
-(39, 1, 24, '', 50, '注册积分', 'api', 1439398782, 0, 0, 'register', 'save', 'http://phpok//api.php?c=register&f=save&_noCache=0.45611315476708114', 1),
-(40, 1, 23, '', 1, '会员登录', 'www', 1439432048, 23, 1, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(41, 1, 23, '1396', 1, '阅读获积分', 'www', 1439432783, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1396', 1),
-(42, 1, 23, '1372', 1, '阅读获积分', 'www', 1439452681, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1372', 1),
-(43, 1, 23, '', 1, '会员登录', 'www', 1439533251, 23, 1, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(44, 1, 23, '1382', 1, '阅读获积分', 'www', 1439548792, 23, 0, 'content', 'index', 'http://phpok//index.php?id=1382&_noCache=0.21253069979138672', 1),
-(45, 1, 23, '', 1, '会员登录', 'www', 1439826033, 23, 1, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(46, 1, 23, '1306', 1, '阅读获积分', 'www', 1439826051, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1306', 1),
-(47, 1, 23, '1253', 1, '阅读获积分', 'www', 1439826128, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1253', 1),
-(48, 1, 23, '', 1, '会员登录', 'www', 1440136385, 23, 1, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(49, 1, 23, '1373', 1, '阅读获积分', 'www', 1440137739, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1373', 1),
-(50, 1, 23, '', 1, '会员登录', 'www', 1440901903, 23, 1, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(51, 1, 23, '1306', 1, '阅读获积分', 'www', 1440901910, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1306', 1),
-(52, 1, 23, '1253', 1, '阅读获积分', 'www', 1440912085, 23, 0, 'content', 'index', 'http://localhost/phpok//phpok/index.php?id=1253', 1),
-(53, 1, 23, '', 1, '会员登录', 'www', 1442668973, 23, 1, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(54, 1, 23, '1306', 1, '阅读获积分', 'www', 1442668980, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1306', 1),
-(55, 1, 23, '', 1, '会员登录', 'www', 1443404462, 23, 0, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(56, 1, 23, '1306', 1, '阅读获积分', 'www', 1443404469, 23, 0, 'content', 'index', 'http://phpok//index.php?id=1306', 1),
-(57, 1, 23, '1253', 1, '阅读获积分', 'www', 1443431483, 23, 0, 'content', 'index', 'http://localhost/phpok//phpok/index.php?id=1253', 1),
-(58, 1, 23, '', 1, '会员登录', 'www', 1443541394, 23, 1, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(59, 1, 23, '1306', 1, '阅读获积分', 'www', 1443541401, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1306', 1),
-(60, 1, 23, '1253', 1, '阅读获积分', 'www', 1443541597, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1253', 1),
-(61, 1, 23, '', 1, '会员登录', 'www', 1444354857, 23, 1, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(62, 1, 23, '1382', 1, '阅读获积分', 'www', 1444355971, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1382', 1),
-(63, 1, 23, '1348', 1, '阅读获积分', 'www', 1444356002, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1348', 1),
-(64, 1, 23, '1310', 1, '阅读获积分', 'www', 1444356135, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1310', 1),
-(65, 1, 23, '1396', 1, '阅读获积分', 'www', 1444356200, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1396', 1),
-(66, 1, 23, '1253', 1, '阅读获积分', 'www', 1444360405, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1253', 1),
-(67, 1, 23, '', 1, '会员登录', 'www', 1444446454, 23, 1, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(68, 1, 23, '1253', 1, '阅读获积分', 'www', 1444446479, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1253', 1),
-(69, 1, 23, '', 1, '会员登录', 'www', 1444449591, 23, 0, 'login', 'ok', 'http://phpok//index.php?c=login&f=ok', 1),
-(70, 1, 23, '1306', 1, '阅读获积分', 'www', 1444449597, 23, 0, 'content', 'index', 'http://phpok//index.php?id=1306', 1),
-(71, 1, 23, '1306', 1, '阅读获积分', 'www', 1444459187, 23, 1, 'content', 'index', 'http://phpok//index.php?id=1306', 1);
 
 --
 -- 转存表中的数据 `qinggan_wealth_rule`

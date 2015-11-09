@@ -84,12 +84,10 @@ class order_control extends phpok_control
 		}
 		$loglist = $this->model('order')->log_list($rs['id']);
 		$this->assign('loglist',$loglist);
-		//取得订单快递信息
-		//$
 		$this->view('order_info');
 	}
 	
-	function auth_check()
+	private function auth_check()
 	{
 		$sn = $this->get('sn');
 		$back = $this->get('back');
@@ -109,14 +107,11 @@ class order_control extends phpok_control
 			}
 		}
 		$passwd = $this->get('passwd');
-		if(!$passwd)
-		{
+		if(!$passwd){
 			if(!$_SESSION['user_id'] || $_SESSION['user_id'] != $rs['user_id']){
 				error(P_Lang('您没有权限查看此订单'),$back,'error');
 			}
-		}
-		else
-		{
+		}else{
 			if($passwd != $rs['passwd']){
 				error(P_Lang('您没有权限查看此订单'),$back,'error');
 			}

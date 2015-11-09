@@ -8,7 +8,8 @@
 	时间： 2015年03月24日 21时11分
 *****************************************************************************************/
 error_reporting(E_ALL ^ E_NOTICE);
-$root_dir = str_replace("\\","/",dirname(__FILE__))."/../../";
+define('PHPOK_SET',true);
+$root_dir = str_replace("\\","/",dirname(__FILE__))."/../../../";
 function root_url()
 {
 	$http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';

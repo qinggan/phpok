@@ -15,7 +15,7 @@ class ueditor_control extends phpok_control
 		parent::control();
 	}
 
-	function load_config()
+	private function load_config()
 	{
 		$config = $this->lib('file')->cat($this->dir_root.'data/config.json');
 		$config = preg_replace("/\/\*[\s\S]+?\*\//","",$config);
@@ -96,21 +96,17 @@ class ueditor_control extends phpok_control
 	public function index_f()
 	{
 		$action = $this->get('action');
-		if(!$action)
-		{
+		if(!$action){
 			$this->_stop(P_Lang('未指定请求方式'));
 		}
 		$action_array = array('config','uploadimage','uploadvideo','uploadfile','listimage','listfile','listvideo','catchimage');
-		if(!in_array($action,$action_array))
-		{
+		if(!in_array($action,$action_array)){
 			$this->_stop(P_Lang('请求参数不正确'));
 		}
-		if(!$this->site['upload_guest'] && !$_SESSION['user_id'])
-		{
+		if(!$this->site['upload_guest'] && !$_SESSION['user_id']){
 			$this->_stop(P_Lang(P_Lang('系统已禁止游客上传，请联系管理员')));
 		}
-		if(!$this->site['upload_user'] && $_SESSION['user_id'])
-		{
+		if(!$this->site['upload_user'] && $_SESSION['user_id']){
 			$this->_stop(P_Lang(P_Lang('系统已禁止会员上传，请联系管理员')));
 		}
 		$action_name = 'u_'.$action;

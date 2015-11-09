@@ -349,13 +349,24 @@ class res_model_base extends phpok_model
 	# 取得所有的附件类型
 	function type_list()
 	{
-		$xmlfile = $this->dir_root."data/xml/filetype.xml";
-		if(!file_exists($xmlfile)){
+		$sql = "SELECT id,title,filetypes,typeinfo,gdall,filemax FROM ".$this->db->prefix."res_cate ORDER BY is_default DESC,id ASC";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
 			$array = array("picture"=>array("name"=>"图片","swfupload"=>"*.jpg;*.png;*.gif;*.jpeg","ext"=>"jpg,png,gif,jpeg","gd"=>1));
 			return $array;
 		}
-		$content = file_get_contents($xmlfile);
-		return xml_to_array($content);
+		$array = array();
+		foreach($rslist as $key=>$value){
+			$types = $value['filetypes'] ? explode(",",$value['filetypes']) : array('jpg','gif','png');
+			$swflist = array();
+			foreach($types as $k=>$v){
+				$swflist[] = '*.'.$v;
+			}
+			$value['swfupload'] = implode(";",$swflist);
+			$value['name'] = $value['typeinfo'] ? $value['typeinfo'] : $value['title'];
+			$array[$value['id']] = array('name'=>$value['name'],'swfupload'=>$value['swfupload'],'ext'=>implode(",",$types),'gd'=>1);
+		}
+		return $array;
 	}
 
 	function pl_delete($id)

@@ -362,8 +362,7 @@ class list_model_base extends phpok_model
 			$array = array("h"=>"头条","c"=>"推荐","a"=>"特荐");
 			return $array;
 		}
-		$content = file_get_contents($xmlfile);
-		return xml_to_array($content);
+		return $this->lib('xml')->read($xmlfile);
 	}
 
 	function title_list($pid=0)

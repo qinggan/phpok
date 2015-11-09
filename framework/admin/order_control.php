@@ -570,6 +570,12 @@ class order_control extends phpok_control
 			$array = array('order_id'=>$id,'payment_id'=>$pay_id,'title'=>$payment['title'],'price'=>$pay_price);
 			$array['dateline'] = $pay_date;
 			$this->model('order')->save_payment($array,$old_id);
+		}else{
+			$old_payment = $this->model('order')->order_payment($id);
+			if($old_payment){
+				$array = array('dateline'=>0);
+				$this->model('order')->save_payment($array,$old_payment['id']);
+			}
 		}
 		$this->model('order')->save($main,$id);
 		if($main['status'] != $old['status']){
@@ -710,6 +716,19 @@ class order_control extends phpok_control
 		$array['email'] = $this->get($type."-email");
 		$array['fullname'] = $this->get($type."-fullname");
 		return $array;
+	}
+
+	public function payment_delete_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
+		if(!$_SESSION['admin_rs']['if_system']){
+			$this->json(P_Lang('您没有权限，仅限系统管理员操作'));
+		}
+		$this->model('order')->order_payment_delete($id);
+		$this->json(true);
 	}
 }
 

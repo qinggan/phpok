@@ -71,7 +71,7 @@ $config["engine"]["session"]["timeout"] = 3600;
 $config['get_domain_method'] = 'SERVER_NAME';
 
 //SEO优化分割线
-$config['seo']['line'] = '-';
+$config['seo']['line'] = ' - ';
 //SEO优化模式
 //title，即传过来的值
 //seo，即内置的SEO标题

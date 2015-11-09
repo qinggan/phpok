@@ -30,7 +30,7 @@ class payment_control extends phpok_control
 		if(!$payment_rs){
 			exit('fail');
 		}
-		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/notify.php';
+		$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/notify.php';
 		if(!file_exists($file)){
 			exit('fail');
 		}
@@ -40,39 +40,50 @@ class payment_control extends phpok_control
 		$cls->submit();
 	}
 
-	public function notice_f()
+
+	public function status_f()
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			error(P_Lang("无法获取订单信息"),$this->url,'error');
+			$this->json(P_Lang('未指定ID'));
 		}
-		$rs = $this->model('order')->get_one($id);
+		$rs = $this->model('payment')->log_one($id);
 		if(!$rs){
-			error(P_Lang('订单信息为空'),$this->url,'error');
+			$this->json(P_Lang('支付信息不存在'));
 		}
-		$burl = $this->url("order",'info','id='.$rs['id']);
-		if(!$_SESSION['user_id']){
-			$burl = $this->url("order","info","sn=".$rs['sn']."&passwd=".$rs['passwd']);
+		if($rs['status']){
+			$this->json(true);
+		}else{
+			$this->json(P_Lang('等待支付完成'));
 		}
-		$burl = $this->config['www_file'].substr($burl,strlen($this->config['api_file']));
-		if($rs['pay_end']){
-			error(P_Lang('您的订单付款成功，请稍候，系统将引导您查看订单信息'),$burl,'ok');
-		}
-		$payment_rs = $this->model('payment')->get_one($rs['pay_id']);
-		if(!$payment_rs){
-			error(P_Lang('付款方案不存在'),$this->url,'error');
-		}
-		$file = $this->dir_root.'payment/'.$payment_rs['code'].'/notice.php';
-		if(!is_file($file)){
-			error(P_Lang('支付接口异常，请检查'),$this->url,'error');
-		}
-		include_once($file);
-		$name = $payment_rs['code'].'_notice';
-		$cls = new $name($rs,$payment_rs);
-		$cls->submit();
-		error(P_Lang('您的订单付款成功，请稍候，系统将引导您查看订单信息'),$burl,'ok');
 	}
 
+	//查询订单接口
+	public function query_f()
+	{
+		$sn = $this->get('sn');
+		if(!$sn){
+			$this->json(P_Lang('未指定订单编号'));
+		}
+		$rs = $this->model('payment')->log_check($sn);
+		if(!$rs){
+			$this->json(P_Lang('订单不存在'));
+		}
+		$payment_rs = $this->model('payment')->get_one($rs['payment_id']);
+		if(!$payment_rs){
+			$this->json(P_Lang('支付方式不存在'));
+		}
+		$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/query.php';
+		if(!file_exists($file)){
+			$this->json(P_Lang('查询接口不存在'));
+		}
+		include_once($file);
+		$name = $payment_rs['code'].'_query';
+		$cls = new $name($rs,$payment_rs);
+		$cls->submit();
+	}
+
+	
 	//权限验证
 	private function auth_check()
 	{

@@ -25,7 +25,7 @@ class upload_control extends phpok_control
 			$this->json($rs['error']);
 		}
 		unset($rs['status']);
-		$rs['uploadtime'] = date("Y-m-d H:i:s",$rs['addtime']); 
+		$rs['uploadtime'] = date("Y-m-d H:i:s",$rs['addtime']);
 		$this->json($rs,true);
 	}
 
@@ -43,7 +43,7 @@ class upload_control extends phpok_control
 
 
 	//基础上传
-	function upload_base($input_name='upfile',$cateid=0)
+	private function upload_base($input_name='upfile',$cateid=0)
 	{
 		if($cateid){
 			$cate_rs = $this->model('rescate')->get_one($cateid);

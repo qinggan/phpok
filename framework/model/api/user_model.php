@@ -75,34 +75,6 @@ class user_model extends user_model_base
 		return $this->db->query($sql);
 	}
 
-	//更新会员本次登录时间
-	function update_date($post_date,$id)
-	{
-		$sql = "UPDATE ".$this->db->prefix."user SET post_date='".strtotime($post_date)."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	//更新会员本次登录IP
-	function update_pdip($pdip,$id)
-	{
-		$sql = "UPDATE ".$this->db->prefix."user SET pdip='".$pdip."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	//更新会员上次登录时间
-	function update_lasttime($lasttime,$id)
-	{
-		$sql = "UPDATE ".$this->db->prefix."user SET lasttime=post_date WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	//更新会员上次登录IP
-	function update_lastip($lastip,$id)
-	{
-		$sql = "UPDATE ".$this->db->prefix."user SET lastip=pdip WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
 	//取得全部会员ID
 	function get_all_from_uid($uid,$pri="")
 	{

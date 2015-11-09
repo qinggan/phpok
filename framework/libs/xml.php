@@ -86,13 +86,13 @@ class xml_lib
 	private function read_simplexml($info,$isfile=true)
 	{
 		if($isfile){
-			$xml = simplexml_load_file($info);
-		}else{
-			$info = preg_replace('/<\?xml.+\?>/isU','',$info);
-			$info = trim($info);
-			$info = '<?xml version="1.0" encoding="utf-8"?>'.$info;
-			$xml = simplexml_load_string($info);
+			$info = file_get_contents($info);
 		}
+		$info = preg_replace('/<\?xml.+\?>/isU','',$info);
+		$info = trim($info);
+		$info = '<?xml version="1.0" encoding="utf-8"?>'.$info;
+		$xml = simplexml_load_string($info);
+		//echo "<pre>".print_r($info,true)."</pre>";
 		return $this->simplexml_obj_to_array($xml);
 	}
 

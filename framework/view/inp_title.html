@@ -110,7 +110,7 @@ function delete_input(val)
 	show_list();
 }
 $(document).ready(function(){
-	var new_c = parent.$(input_id).val();
+	var new_c = $.dialog.data("title_data_{$input}");
 	$("#val").val(new_c);
 	show_list();
 });

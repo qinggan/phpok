@@ -256,8 +256,7 @@ class usercp_control extends phpok_control
 
 	public function avatar_f()
 	{
-		$rs = $this->model("user")->get_one($_SESSION['user_id']);
-		$this->assign('rs',$rs);
+		$this->assign('rs',$this->user);
 		$this->view('usercp_avatar');
 	}
 

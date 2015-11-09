@@ -1,0 +1,11 @@
+User-Agent: *
+Allow: /
+Disallow: /js/
+Disallow: /payment/
+Disallow: /images/
+Disallow: /data/
+Disallow: /css/
+Disallow: /res/
+Disallow: /tpl/
+Disallow: /plugins/
+

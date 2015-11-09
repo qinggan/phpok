@@ -120,9 +120,6 @@ class content_control extends phpok_control
 		$this->db->cache_open();
 		$this->phpok_seo($rs);
 		$this->assign("rs",$rs);
-		if($_SESSION['user_id']){
-			$this->model('wealth')->wealth_autosave($_SESSION['user_id'],P_Lang('阅读获积分'),$rs['id']);
-		}
 		$this->view($tpl);
 	}
 }

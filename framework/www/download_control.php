@@ -82,7 +82,6 @@ class download_control extends phpok_control
 			ob_flush();
 		}
 		fclose($handle);
-		exit();
 	}
 }
 ?>

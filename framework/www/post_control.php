@@ -10,7 +10,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class post_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 		$this->model('popedom')->siteid($this->site['id']);
@@ -23,7 +23,7 @@ class post_control extends phpok_control
 	}
 
 	//内容发布页
-	function index_f()
+	public function index_f()
 	{
 		$id = $this->get("id");
 		$pid = $this->get('pid','int');
@@ -92,10 +92,9 @@ class post_control extends phpok_control
 	}
 
 	//编辑个人信息
-	function edit_f()
+	public function edit_f()
 	{
-		if(!$_SESSION['user_id'])
-		{
+		if(!$_SESSION['user_id']){
 			error(P_Lang('非会员不能操作此信息'),$this->url,'error',10);
 		}
 		$_back = $this->get("_back");
@@ -172,14 +171,13 @@ class post_control extends phpok_control
 		$this->view($project_rs["identifier"]."_post");
 	}
 	
-	function iframe_f()
+	public function iframe_f()
 	{
 		$id = $this->get("id");
 		$p_rs = $this->check($id,true);
 		$this->assign("id",$id);
 		$this->assign("page_rs",$p_rs);
 		$this->view($p_rs["identifier"]."_post_iframe");
-		//$this->view($p_rs["tpl_post_iframe"]);
 	}
 
 	function save_f()
@@ -258,7 +256,7 @@ class post_control extends phpok_control
 		error(P_Lang('数据存储成功，请等待管理员审核'),$_back,"ok");
 	}
 
-	function ajax_save_f()
+	public function ajax_save_f()
 	{
 		$id = $this->get("id");
 		$chk_rs = $this->check($id);

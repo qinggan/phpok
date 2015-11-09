@@ -15,19 +15,6 @@ header("Last-Modified: Mon, 26 Jul 1997 05:00:00  GMT");
 header("Cache-control: no-cache,no-store,must-revalidate,max-age=1"); 
 header("Pramga: no-cache"); 
 
-//xml纯内容
-function xml_to_array($xml)
-{
-	if(isset($GLOBALS['app'])){
-		return $GLOBALS['app']->lib('xml')->read($xml,false);
-	}else{
-		include_once(FRAMEWORK.'libs/xml.php');
-		$obj = new xml_lib();
-		return $obj->read($xml,false);
-	}
-}
-
-
 //计算执行的时间
 function run_time($is_end=false)
 {
@@ -154,7 +141,9 @@ class _init_phpok
 
 	public function __construct()
 	{
-		@ini_set("magic_quotes_runtime",0);
+		if(version_compare(PHP_VERSION, '5.3.0', '<') && function_exists('set_magic_quotes_runtime')){
+			ini_set("magic_quotes_runtime",0);
+		}
 		$this->init_constant();
 		$this->init_config();
 		if($this->app_id == 'www' && $this->config['mobile']['status']){
@@ -164,6 +153,11 @@ class _init_phpok
 			}
 		}
 		$this->init_engine();
+	}
+
+	public function __destruct()
+	{
+		unset($this);
 	}
 
 	private function init_assign()
@@ -294,23 +288,12 @@ class _init_phpok
 	}
 
 	//手机判断
+	//使用第三方类
 	public function is_mobile()
 	{
-		if(isset($_SERVER['HTTP_X_WAP_PROFILE'])){
-			return true;
-		}
-		if(isset($_SERVER['HTTP_PROFILE'])){
-			return true;
-		}
-		$regex_match = "/(nokia|iphone|android|motorola|^mot\-|softbank|foma|docomo|kddi|up\.browser|up\.link|";
-		$regex_match.= "htc|dopod|blazer|netfront|helio|hosin|huawei|novarra|CoolPad|webos|techfaith|palmsource|";
-		$regex_match.= "blackberry|alcatel|amoi|ktouch|nexian|samsung|^sam\-|s[cg]h|^lge|ericsson|philips|";
-		$regex_match.= "sagem|wellcom|bunjalloo|maui|symbian|smartphone|midp|wap|phone|windows ce|";
-		$regex_match.= "iemobile|^spice|^bird|^zte\-|longcos|pantech|gionee|^sie\-|portalmmm|";
-		$regex_match.= "jig\s browser|hiptop|^ucweb|^benq|haier|^lct|opera\s*mobi|opera\*mini|320x320|240x320|176x220";
-		$regex_match.= ")/i";
-		if(preg_match($regex_match,strtolower($_SERVER['HTTP_USER_AGENT']))){
-			unset($regex_match);
+		include_once $this->dir_phpok.'libs/mobile/Mobile_Detect.php';
+		$detect = new Mobile_Detect;
+		if($detect->isMobile()){
 			return true;
 		}
 		return false;
@@ -517,12 +500,10 @@ class _init_phpok
 	//装载资源引挈
 	private function init_engine()
 	{
-		if(!$this->config["db"] && !$this->config["engine"])
-		{
+		if(!$this->config["db"] && !$this->config["engine"]){
 			$this->error("资源引挈装载失败，请检查您的资源引挈配置，如数据库连接配置等");
 		}
-		if($this->config["db"] && !$this->config["engine"]["db"])
-		{
+		if($this->config["db"] && !$this->config["engine"]["db"]){
 			$this->config["engine"]["db"] = $this->config["db"];
 			$this->config["db"] = "";
 		}
@@ -848,16 +829,13 @@ class _init_phpok
 		$id = $this->get('id');
 		$ctrl = $this->get($this->config["ctrl_id"],"system");
 		$func = '';
-		if($id && !$ctrl && $id != 'index')
-		{
+		if($id && !$ctrl && $id != 'index'){
 			$ctrl = $id;
 			$reserved = $this->config['reserved'] ? explode(',',$this->config['reserved']) : array('js','ajax','inp');
-			if(!in_array($id,$reserved))
-			{
+			if(!in_array($id,$reserved)){
 				$ctrl = intval($id)>0 ? 'content' : $this->model('id')->get_ctrl($id,$this->site['id']);
 			}
-			if($ctrl == 'post')
-			{
+			if($ctrl == 'post'){
 				$cate = $this->get('cate','system');
 				if($cate == 'add' || $cate == 'edit') $func = $cate;
 			}
@@ -1160,6 +1138,11 @@ class _init_auto
 		//
 	}
 
+	public function __destruct()
+	{
+		unset($this);
+	}
+
 	//魔术方法之方法重载
 	public function __call($method,$param)
 	{
@@ -1197,9 +1180,15 @@ class _init_auto
 //PHPOK控制器，里面大部分函数将通过Global功能调用核心引挈
 class phpok_control extends _init_auto
 {
-	function control()
+	public function control()
 	{
 		parent::__construct();
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
 	}
 }
 
@@ -1222,16 +1211,18 @@ class phpok_model extends _init_auto
 			return $GLOBALS['app']->model($id);
 		}
 	}
+	
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
+	}
 
 	public function site_id($site_id=0)
 	{
 		$this->site_id = $site_id;
 	}
 
-	public function __destruct()
-	{
-		unset($this);
-	}
 
 	protected function return_next_taxis($rs='')
 	{
