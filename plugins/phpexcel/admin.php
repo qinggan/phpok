@@ -107,7 +107,7 @@ class admin_phpexcel extends phpok_plugin
 			error_open("附件信息不存在","error",$this->close_button);
 		}
 		//通过excel
-		include_once $this->path."PHPExcel.php";
+		include_once $this->dir_phpok.'lib/phpexcel/PHPExcel.php';
 		$filetype = $res["ext"] == "xlsx" ? "Excel2007" : "Excel5";
 		$objReader = PHPExcel_IOFactory::createReader($filetype);
 		$objReader->setReadDataOnly(true);
