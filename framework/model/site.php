@@ -35,6 +35,9 @@ class site_model_base extends phpok_model
 				if($value['is_mobile']){
 					$rs['_mobile'] = $value;
 				}
+				if($value['id'] == $rs['domain_id']){
+					$rs['domain'] = $value['domain'];
+				}
 			}
 		}
 		return $rs;
@@ -50,6 +53,7 @@ class site_model_base extends phpok_model
 		return $this->get_one($tmp['id']);
 	}
 
+	//有缓存读取
 	public function get_one_from_domain($domain='')
 	{
 		$sql = "SELECT site_id FROM ".$this->db->prefix."site_domain WHERE domain='".$domain."'";
@@ -68,7 +72,10 @@ class site_model_base extends phpok_model
 
 	public function domain_list($site_id=0,$pri='')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."site_domain WHERE site_id='".$site_id."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."site_domain ";
+		if($site_id){
+			$sql .= "WHERE site_id='".$site_id."'";
+		}
 		return $this->db->get_all($sql,$pri);
 	}
 

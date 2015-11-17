@@ -78,20 +78,11 @@ class project_model_base extends phpok_model
 	//取得单项
 	public function project_one($site_id,$id)
 	{
-		if(!$id)
-		{
+		if(!$id){
 			return false;
 		}
-		if(!$site_id)
-		{
-			$site_id = $this->site_id;
-		}
-		$list = $this->project_all($site_id,'id');
-		if(!$list || !$list[$id])
-		{
-			return false;
-		}
-		return $list[$id];
+		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id='".$id."' AND site_id='".$site_id."'";
+		return $this->db->get_one($sql);
 	}
 
 	//取得当前分类下的父级分类信息，无父级分类则调用当前分类

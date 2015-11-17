@@ -11,12 +11,38 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class phpok_call extends phpok_control
 {
 	private $mlist;
+	private $phpoklist;
 	public function __construct()
 	{
 		parent::control();
 		$this->mlist = get_class_methods($this);
 		$this->model('project')->site_id($this->site['id']);
 		$this->lib('form')->appid('www');
+	}
+
+	private function load_phpoklist($id,$siteid=0)
+	{
+		if($this->phpoklist && $this->phpoklist[$id] && $this->phpoklist[$id]['site_id'] == $siteid){
+			return $this->phpoklist[$id];
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE site_id='".$siteid."' AND status=1";
+		$cache_id = $this->cache->id($sql);
+		$this->db->cache_set($cache_id);
+		$this->phpoklist = $this->cache->get($cache_id);
+		if(!$this->phpoklist){
+			$this->phpoklist = $this->model('call')->all($siteid,'identifier');
+			if(!$this->phpoklist){
+				return false;
+			}
+			if($this->phpoklist && $cache_id){
+				$this->cache->save($cache_id,$this->phpoklist);
+			}
+		}
+		$info = $this->phpoklist[$id];
+		if(!$info){
+			return false;
+		}
+		return $info;
 	}
 
 	private function _phpok_sys_func()
@@ -32,20 +58,17 @@ class phpok_call extends phpok_control
 		return $array;
 	}
 
-	private function _phpok_nocache_id()
-	{
-		return array('arc','user','total');
-	}
-
 	//执行数据调用
 	public function phpok($id,$rs="")
 	{
 		if(!$id){
 			return false;
 		}
+		//格式化参数
 		if($rs && is_string($rs)){
 			parse_str($rs,$rs);
 		}
+		//扩展参数
 		if(!$rs){
 			$rs = array('site'=>$this->site['id']);
 		}
@@ -67,7 +90,7 @@ class phpok_call extends phpok_control
 		}
 		$this->model('url')->base_url($baseurl);
 		if(substr($id,0,1) != '_'){
-			$call_rs = $this->model('call')->one($id,$rs['site']);
+			$call_rs = $this->load_phpoklist($id,$rs['site']);
 			if(!$call_rs){
 				return false;
 			}
@@ -93,17 +116,17 @@ class phpok_call extends phpok_control
 		if(!in_array($func,$this->mlist)){
 			return false;
 		}
-		if($call_rs['cache'] == 'false' || !$this->db->cache_status() || in_array($call_rs['type_id'],$this->_phpok_nocache_id())){
+		//禁用缓存获取数据
+		if($call_rs['cache'] == 'false'){
 			return $this->$func($call_rs);
-		}else{
-			$cache_tbl = $this->_cache_tbl($call_rs['type_id']);
-			$cache_id = $this->db->cache_id(serialize($call_rs),$cache_tbl);
-			$cache_info = $this->db->cache_get($cache_id);
-			if($cache_info && !is_bool($cache_info)){
-				return $cache_info;
-			}
-			return $this->$func($call_rs,$cache_id);
 		}
+		$cache_id = $this->cache->id($call_rs);
+		$info = $this->cache->get($cache_id);
+		if($info){
+			return $info;
+		}
+		$this->db->cache_set($cache_id);
+		return $this->$func($call_rs,$cache_id);
 	}
 
 	//读取文章列表
@@ -166,7 +189,7 @@ class phpok_call extends phpok_control
 		$array['total'] = $this->model('list')->arc_count($project['module'],$condition);
 		if(!$array['total']){
 			if($cache_id){
-				$this->db->cache_save($cache_id,$array);
+				$this->cache->save($cache_id,$array);
 			}
 			return $array;
 		}
@@ -179,10 +202,49 @@ class phpok_call extends phpok_control
 		$rslist = $this->model('list')->arc_all($project['module'],$field,$condition,$offset,$psize,$orderby);
 		if(!$rslist){
 			if($cache_id){
-				$this->db->cache_save($cache_id,$array);
+				$this->cache->save($cache_id,$array);
 			}
 			return $array;
 		}
+		//绑定分类
+		if($project['cate']){
+			$tmpcateid = array();
+			foreach($rslist as $key=>$value){
+				$tmpcateid[] = $value['cate_id'];
+			}
+			$tmpcateid = array_unique($tmpcateid);
+			$tmp_catelist = $this->model('cate')->list_ids($tmpcateid);
+			if($tmp_catelist){
+				foreach($rslist as $key=>$value){
+					if($value['cate_id'] && $tmp_catelist[$value['cate_id']]){
+						$value['cate'] = $tmp_catelist[$value['cate_id']];
+						$rslist[$key] = $value; 
+					}
+				}
+			}
+			unset($tmp_cateid,$tmp_catelist);
+		}
+		//绑定会员
+		$tmp_userid = array();
+		foreach($rslist as $key=>$value){
+			if($value['user_id']){
+				$tmp_userid[] = $value['user_id'];
+			}
+		}
+		$tmp_userid = array_unique($tmp_userid);
+		if($tmp_userid && count($tmp_userid)>0){
+			$tmp_userid = implode(",",$tmp_userid);
+			$tmp_userlist = $this->model('user')->get_list("u.id IN(".$tmp_userid.")",0,9999);
+			if($tmp_userlist){
+				foreach($rslist as $key=>$value){
+					if($value['user_id'] && $tmp_userlist[$value['user_id']]){
+						$value['user'] = $tmp_userlist[$value['user_id']];
+						$rslist[$key] = $value;
+					}
+				}
+			}
+		}
+		//绑定扩展字段
 		if(!$nlist || !is_array($nlist)){
 			$nlist = array();
 		}
@@ -230,7 +292,7 @@ class phpok_call extends phpok_control
 		}
 		unset($rslist,$project);
 		if($cache_id){
-			$this->db->cache_save($cache_id,$array);
+			$this->cache->save($cache_id,$array);
 		}
 		return $array;	
 	}
@@ -431,7 +493,7 @@ class phpok_call extends phpok_control
 	}
 
 	//读取单篇文章
-	private function _arc($param)
+	private function _arc($param,$cache_id='')
 	{
 		$tmpid = $param['phpok'] ? $param['phpok'] : ($param['title_id'] ? $param['title_id'] : $param['id']);
 		if(!$tmpid){
@@ -640,7 +702,7 @@ class phpok_call extends phpok_control
 			$project['tag'] = $this->tag_filter($taglist,$project['id'],'project');
 		}
 		if($cache_id){
-			$this->db->cache_save($cache_id,$project);
+			$this->cache->save($cache_id,$project);
 		}
 		return $project;
 	}
@@ -684,6 +746,7 @@ class phpok_call extends phpok_control
 		foreach($cate_all as $k=>$v){
 			$cate_tmp = $this->model('ext')->ext_all('cate-'.$v['id'],true);
 			if($cate_tmp){
+				$cate_ext = array();
 				foreach($cate_tmp as $key=>$value){
 					$cate_ext[$value['identifier']] = $this->lib('form')->show($value);
 					if($value['form_type'] == 'url' && $value['content']){
@@ -722,7 +785,7 @@ class phpok_call extends phpok_control
 		}
 		$array['tree'] = $tree;
 		if($cache_id){
-			$this->db->cache_save($cache_id,$array);
+			$this->cache->save($cache_id,$array);
 		}
 		return $array;
 	}
@@ -784,7 +847,7 @@ class phpok_call extends phpok_control
 		$project = $this->model('project')->project_one($rs['site'],$rs['pid']);
 		$cate['url'] = $this->url($project['identifier'],$cate['identifier']);
 		if($cache_id){
-			$this->db->cache_save($cache_id,$cate);
+			$this->cache->save($cache_id,$cate);
 		}
 		return $cate;
 	}
@@ -930,7 +993,7 @@ class phpok_call extends phpok_control
 			$list[$key] = $value;
  		}
  		if($cache_id){
-			$this->db->cache_save($cache_id,$list);
+			$this->cache->save($cache_id,$list);
 		}
  		return $list;
 	}
@@ -977,7 +1040,7 @@ class phpok_call extends phpok_control
 			$list[$k] = $v;
 		}
 		if($cache_id){
-			$this->db->cache_save($cache_id,$array);
+			$this->cache->save($cache_id,$array);
 		}
 		return $list;
 	}
@@ -1013,41 +1076,6 @@ class phpok_call extends phpok_control
 		return $this->model('res')->get_list($condition,0,999,true);
 	}
 	
-	private function _cache_tbl($type)
-	{
-		$prefix = $this->db->prefix;
-		$cache_tbl = array($prefix.'tag',$prefix.'tag_stat',$prefix.'res',$prefix.'res_ext',$prefix.'ext',$prefix.'extc');
-		if(in_array($type,array('arc','arclist','total'))){
-			$cache_tbl[] = $prefix.'list';
-			$cache_tbl[] = $prefix.'project';
-			$cache_tbl[] = $prefix.'cate';
-			$cache_tbl[] = $prefix.'user';
-			$cache_tbl[] = $prefix.'user_ext';
-			$cache_tbl[] = $prefix.'module';
-			$cache_tbl[] = $prefix.'module_fields';
-			return $cache_tbl;
-		}
-		if($type == 'project' || $type == 'sublist' || $type == 'parent'){
-			$cache_tbl[] = $prefix."project";
-			return $cache_tbl;
-		}
-		if($type == 'catelist' || $type == 'cate'){
-			$cache_tbl[] = $prefix."project";
-			$cache_tbl[] = $prefix."cate";
-			return $cache_tbl;
-		}
-		if(in_array($type,array('user','user_group'))){
-			$cache_tbl[] = $prefix."user";
-			$cache_tbl[] = $prefix."user_ext";
-			$cache_tbl[] = $prefix."user_fields";
-			$cache_tbl[] = $prefix."user_group";
-		}
-		if($type == 'comment'){
-			$cache_tbl = array($prefix.'user',$prefix.'reply');
-		}
-		return $cache_tbl;
-	}
-
 	private function _user($rs)
 	{
 		if(!$rs['phpok'] && !$rs['user_id']){
@@ -1072,6 +1100,9 @@ class phpok_call extends phpok_control
 		$data['total'] = $this->model('user')->get_count($condition);
 		if($data['total']>0){
 			$data['rslist'] = $this->model('user')->get_list($condition,$offset,$psize);
+		}
+		if($cache_id){
+			$this->cache->save($cache_id,$data);
 		}
 		return $data;
 	}

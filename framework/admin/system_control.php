@@ -72,6 +72,7 @@ class system_control extends phpok_control
 			$css = $this->lib("file")->cat($this->dir_root.'css/icomoon.css');
 			preg_match_all("/\.icon-([a-z\-0-9]*):before\s*(\{|,)/isU",$css,$iconlist);
 			$iconlist = $iconlist[1];
+			sort($iconlist);
 			$this->assign('iconlist',$iconlist);
 		}
 		$this->view("sysmenu_set");
@@ -89,64 +90,50 @@ class system_control extends phpok_control
 		$error_url = admin_url("system","set");
 		if($id) $error_url .= "&id=".$id;
 		$title = $this->get("title");
-		if(!$title)
-		{
+		if(!$title){
 			error(P_Lang('名称不能为空'),$error_url,"error");
 		}
 		$array = array();
 		$array["title"] = $title;
 		$array["taxis"] = $this->get("taxis","int");
-		if(!$id)
-		{
+		$array["appfile"] = $this->get("appfile");
+		if(!$array["appfile"]){
+			error(P_Lang('未指定控制层'),$error_url,'error');
+		}
+		$array['icon'] = $this->get('icon');
+		$array['func'] = $this->get('func');
+		$array['ext'] = $this->get('ext');
+		if(!$id){
 			$parent_id = $this->get("parent_id","int");
-			if(!$parent_id)
-			{
+			if(!$parent_id){
 				error(P_Lang('未指定上一级项目'),$error_url);
 			}
-			$appfile = $this->get("appfile");
-			if(!$appfile)
-			{
-				error(P_Lang('未指定控制层'),$error_url);
-			}
 			$array["parent_id"] = $parent_id;
-			$array["appfile"] = $appfile;
 			$array["site_id"] = $_SESSION["admin_site_id"];
-			$array['icon'] = $this->get('icon');
 			$id = $this->model('sysmenu')->save($array);
-		}
-		else
-		{
+			if(!$id){
+				error(P_Lang('项目添加失败'),$error_url,"ok");
+			}
+		}else{
 			$rs = $this->model('sysmenu')->get_one($id);
-			if(!$rs)
-			{
+			if(!$rs){
 				error(P_Lang('获取数据失败，请检查'),$error_url,"error");
 			}
-			if($rs["parent_id"])
-			{
+			if($rs["parent_id"]){
 				$parent_id = $this->get("parent_id","int");
-				if(!$parent_id) $parent_id = $rs["parent_id"];
-				$array['icon'] = $this->get('icon');
-			}
-			else
-			{
+				if(!$parent_id){
+					$parent_id = $rs["parent_id"];
+				}
+			}else{
 				$parent_id = 0;
 			}
 			$array["parent_id"] = $parent_id;
 			$this->model('sysmenu')->save($array,$id);
 		}
-		//更新权限属性
-		if(!$id)
-		{
-			error(P_Lang('项目添加成功，但相应的权限字段没有更新成功'),$this->url("system"),"ok");
-		}
-		//判断是否有属性
 		$rs = $this->model('sysmenu')->get_one($id);
-		//更新配置
 		$popedom_list = $this->model('popedom')->get_list($id);
-		if($popedom_list)
-		{
-			foreach($popedom_list AS $key=>$value)
-			{
+		if($popedom_list){
+			foreach($popedom_list AS $key=>$value){
 				$tmp_array = array();
 				$tmp_title = $this->get("popedom_title_".$value["id"]);
 				$tmp_identifier = $this->get("popedom_identifier_".$value["id"]);
@@ -154,14 +141,10 @@ class system_control extends phpok_control
 				if($value["title"] != $tmp_title && $tmp_title) $tmp_array["title"] = $tmp_title;
 				if($value["identifier"] != $tmp_identifier && $tmp_identifier) $tmp_array["identifier"] = $tmp_identifier;
 				if($value["taxis"] != $tmp_taxis && $tmp_taxis) $tmp_array["taxis"] = $tmp_taxis;
-				if(count($tmp_array)>0)
-				{
-					if($rs["appfile"] == "list")
-					{
+				if(count($tmp_array)>0){
+					if($rs["appfile"] == "list"){
 						$this->model('popedom')->update_popedom_list($tmp_array,$id,$value["identifier"]);
-					}
-					else
-					{
+					}else{
 						$this->model('popedom')->save($tmp_array,$value["id"]);
 					}
 				}
@@ -171,18 +154,15 @@ class system_control extends phpok_control
 		$popedom_identifier_add = $this->get("popedom_identifier_add");
 		$popedom_taxis_add = $this->get("popedom_taxis_add");
 		$popedom_title_add = $this->get("popedom_title_add");
-		if($popedom_identifier_add && count($popedom_identifier_add)>0 && is_array($popedom_identifier_add) && $_SESSION["admin_rs"]["if_system"])
-		{
-			foreach($popedom_identifier_add AS $key=>$value)
-			{
+		if($popedom_identifier_add && count($popedom_identifier_add)>0 && is_array($popedom_identifier_add) && $_SESSION["admin_rs"]["if_system"]){
+			foreach($popedom_identifier_add AS $key=>$value){
 				if(!$value || !trim($value)) continue;
 				$title = $popedom_title_add[$key];
 				if(!$title || !trim($title)) continue;
 				$taxis = $popedom_taxis_add[$key] ? intval($popedom_taxis_add[$key]) : 255;
 				//检测这个字段是否被使用过了
 				$check_rs = $this->model('popedom')->is_exists($value,$id);
-				if(!$check_rs)
-				{
+				if(!$check_rs){
 					$tmp = array("title"=>$title,"identifier"=>$value,"taxis"=>$taxis,"gid"=>$id,"pid"=>0);
 					$this->model('popedom')->save($tmp);
 				}

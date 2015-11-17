@@ -63,10 +63,10 @@ function debug_time($memory_ctrl=1,$sql_ctrl=1,$file_ctrl=0,$cache_ctrl=0)
 {
 	$time = run_time(true);
 	$memory = run_memory(true);
-	$sql_db_count = $GLOBALS['app']->db->conn_count();
-	$sql_db_time = $GLOBALS['app']->db->conn_times();
-	$sql_cache_count = $GLOBALS['app']->db->cache_count();
-	$sql_cache_time = $GLOBALS['app']->db->cache_time();
+	$sql_db_count = $GLOBALS['app']->db->sql_count();
+	$sql_db_time = $GLOBALS['app']->db->sql_time();
+	$sql_cache_count = $GLOBALS['app']->cache->count();
+	$sql_cache_time = $GLOBALS['app']->cache->time();
 	$string  = P_Lang('运行{seconds_total}秒',array('seconds_total'=>$time));
 	//$string  = "运行 ".$time." 秒";
 	if($memory_ctrl && $memory_ctrl != 'false')
@@ -85,6 +85,14 @@ function debug_time($memory_ctrl=1,$sql_ctrl=1,$file_ctrl=0,$cache_ctrl=0)
 	if($cache_ctrl && $cache_ctrl != 'false')
 	{
 		$string .= P_Lang('，缓存执行{cache_count}次，耗时{cache_time}秒',array('cache_count'=>$sql_cache_count,'cache_time'=>$sql_cache_time));
+	}
+	$db_debug = $GLOBALS['app']->db->debug();
+	if($db_debug && is_string($db_debug)){
+		$string .= $db_debug;
+	}
+	$cache_debug = $GLOBALS['app']->cache->debug();
+	if($cache_debug){
+		$string .= $cache_debug;
 	}
 	return $string;
 }
@@ -507,19 +515,18 @@ class _init_phpok
 			$this->config["engine"]["db"] = $this->config["db"];
 			$this->config["db"] = "";
 		}
-		foreach($this->config["engine"] AS $key=>$value)
-		{
+		foreach($this->config["engine"] AS $key=>$value){
 			$basefile = $this->dir_phpok.'engine/'.$key.'.php';
-			if(is_file($basefile))
-			{
+			if(file_exists($basefile)){
 				include($basefile);
 			}
 			$file = $this->dir_phpok."engine/".$key."/".$value["file"].".php";
-			if(is_file($file))
-			{
+			if(file_exists($file)){
 				include($file);
 				$var = $key."_".$value["file"];
 				$this->$key = new $var($value);
+			}else{
+				$this->$key = new $key($value);
 			}
 		}
 	}
@@ -937,7 +944,7 @@ class _init_phpok
 			$_SESSION['user'] = $this->user;
 		}
 		//管理员账号 $this->admin
-		if($_SESSION['admin_id']){
+		if($_SESSION['admin_id'] && $this->app_id == 'admin'){
 			$this->admin = $this->model('admin')->get_one($_SESSION['admin_id']);
 			$this->assign('admin',$this->admin);
 			$_SESSION['admin'] = $this->admin;

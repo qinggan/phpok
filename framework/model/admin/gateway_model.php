@@ -49,23 +49,6 @@ class gateway_model extends gateway_model_base
 		return $list;
 	}
 
-	public function code_one($type,$id)
-	{
-		if(!$type || !$id){
-			return false;
-		}
-		$rs = array('id'=>$id,'dir'=>$this->dir_root.'gateway/'.$type.'/'.$id);
-		$xmlfile = $this->dir_root.'gateway/'.$type.'/'.$id.'/config.xml';
-		if(file_exists($xmlfile)){
-			$tmp = $this->lib('xml')->read($xmlfile);
-		}else{
-			$tmp = array('title'=>$id,'code'=>'');
-		}
-		$rs['code'] = $tmp['code'];
-		$rs['title'] = $tmp['title'];
-		return $rs;
-	}
-
 	public function next_taxis($type,$code)
 	{
 		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."gateway WHERE type='".$type."' AND code='".$code."'";

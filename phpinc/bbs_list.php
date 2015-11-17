@@ -19,7 +19,7 @@ if($rslist){
 			$icon = 'bbs-icon-new';
 		}
 		$value['_icon'] = $icon;
-		$value['_user'] = $value['user_id'] ? phpok('_user',array('user_id'=>$value['user_id'])) : array('user'=>'佚名');
+		$value['_user'] = $value['user'] ? $value['user'] : array('user'=>'佚名');
 		$value['_author'] = $value['_user']['user'];
 		$value['_author_url'] = $value['user_id'] ? $app->url('user','info','id='.$value['user_id']) : '';
 		$value['_lastdate'] = $value['replydate'] ? date("Y-m-d",$value['replydate']) : date("Y-m-d",$value['dateline']);

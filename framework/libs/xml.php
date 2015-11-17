@@ -35,8 +35,7 @@ class xml_lib
 	public function read($info,$isfile=true)
 	{
 		$func = "read_".$this->xml_read_func;
-		if($isfile && !file_exists($info))
-		{
+		if($isfile && !file_exists($info)){
 			return false;
 		}
 		return $this->$func($info,$isfile);

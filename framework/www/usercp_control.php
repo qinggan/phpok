@@ -76,53 +76,18 @@ class usercp_control extends phpok_control
 	public function email_f()
 	{
 		$this->assign('rs',$this->user);
-		//判断后台是否配置好SMTP
-		$send_email = false;
-		//判断是否发送系统邮件通知
-		if($this->site['email_server'] && $this->site['email_account'] && $this->site['email_pass'] && $this->site['email']){
-			$send_email = true;
-		}
-		$this->assign('sendemail',$send_email);
+		//判断后台是否配置好第三方网关
+		$sendemail = $this->model('gateway')->get_default('email') ? true : false;
+		$this->assign('sendemail',$sendemail);
 		$this->view("usercp_email");
-	}
-
-	public function emailcode_f()
-	{
-		if(!$this->site['email_server'] || !$this->site['email_account'] || !$this->site['email_pass'] || !$this->site['email']){
-			$this->json(P_Lang('未配置好SMTP邮件发送，不支持此操作'));
-		}
-		$email = $this->get('email');
-		if(!$email){
-			$this->json(P_Lang('邮箱不能为空'));
-		}
-		if(!$this->lib('common')->email_check($email)){
-			$this->json(P_Lang('邮箱格式不正确'));
-		}
-		$chk = $this->model('user')->uid_from_email($email,$_SESSION['user_id']);
-		if($chk){
-			$this->json(P_Lang('邮箱已被使用，请更换其他邮箱'));
-		}
-		if($email == $this->user['email']){
-			$this->json(P_Lang('邮箱与当前使用是一致的，不需要修改'));
-		}
-		$code = rand(1000,9999);
-		$title = P_Lang('邮件验证码');
-		$content = P_Lang('您收到的验证码是：{code}，请在30分钟内执行，感谢您对我站的支持',array('code'=>$code));
-		$name = $this->user['fullname'] ? $this->user['fullname'] : $this->user['user'];
-		$info = $this->lib('email')->send_mail($email,$title,$content,$name);
-		if(!$info){
-			$this->json($this->lib('email')->error());
-		}
-		//验证码保存到数据库中
-		$this->model('user')->save(array('code'=>$code),$_SESSION['user_id']);
-		$this->json(true);
 	}
 
 	//修改手机
 	public function mobile_f()
 	{
-		$rs = $this->model("user")->get_one($_SESSION['user_id']);
-		$this->assign('rs',$rs);
+		$this->assign('rs',$this->user);
+		$sendsms = $this->model('gateway')->get_default('sms') ? true : false;
+		$this->assign('sendsms',$sendsms);
 		$this->view("usercp_mobile");
 	}
 

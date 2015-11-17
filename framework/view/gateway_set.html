@@ -65,7 +65,7 @@ function check_gateway_set()
 <div class="table">
 	<div class="title">
 		{$value.title}：
-		<span class="note">{$value.note}</span>
+		<span class="note">{$value.note}<!-- if $value.required == 'true' --> <span class="red">(此项必填)</span><!-- /if --></span>
 	</div>
 	<div class="content">
 		<!-- if $value.type == 'radio' -->

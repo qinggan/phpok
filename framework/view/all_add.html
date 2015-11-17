@@ -14,16 +14,18 @@ function add_site_save()
 		return false;
 	}
 	url += "&title="+$.str.encode(title)+"&domain="+$.str.encode(domain);
-	var rs = $.phpok.json(url);
-	if(rs.status == "ok"){
-		$.dialog.alert(rs.content,function(){
-			top.$.phpok.reload();
-		});
-	}else{
-		if(!rs.content) rs.content = "{lang创建失败}";
-		$.dialog.alert(rs.content);
-		return false;
-	}
+	$.dialog.tips('正在添加站点，请稍候…');
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.dialog.alert(rs.content,function(){
+				top.$.phpok.reload();
+			});
+		}else{
+			if(!rs.content) rs.content = "{lang创建失败}";
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
 	return false;
 }
 </script>

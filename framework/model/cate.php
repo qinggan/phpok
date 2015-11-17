@@ -88,15 +88,11 @@ class cate_model_base extends phpok_model
 	//格式化分类数组
 	function format_list(&$rslist,$tmplist,$parent_id=0,$layer=0)
 	{
-		foreach($tmplist AS $key=>$value)
-		{
-			if($value["parent_id"] == $parent_id)
-			{
+		foreach($tmplist AS $key=>$value){
+			if($value["parent_id"] == $parent_id){
 				$is_end = true;
-				foreach($tmplist AS $k=>$v)
-				{
-					if($v["parent_id"] == $value["id"])
-					{
+				foreach($tmplist AS $k=>$v){
+					if($v["parent_id"] == $value["id"]){
 						$is_end = false;
 						break;
 					}
@@ -116,21 +112,14 @@ class cate_model_base extends phpok_model
 	{
 		if(!$list || !is_array($list)) return false;
 		$rslist = array();
-		foreach($list AS $key=>$value)
-		{
+		foreach($list AS $key=>$value){
 			$value["_space"] = "";
-			for($i=0;$i<$value["_layer"];$i++)
-			{
+			for($i=0;$i<$value["_layer"];$i++){
 				$value["_space"] .= "&nbsp; &nbsp;│";
 			}
-			if($value["_is_end"] && $value["_layer"])
-			{
+			if($value["_is_end"] && $value["_layer"]){
 				$value["_space"] .= "&nbsp; &nbsp;├";
 			}
-			/*else
-			{
-				$value["_space"] .= "&nbsp; &nbsp;├";
-			}*/
 			$rslist[$key] = $value;
 		}
 		return $rslist;
@@ -194,18 +183,18 @@ class cate_model_base extends phpok_model
 
 	function get_sonlist_id(&$list,$id=0,$status=0)
 	{
-		if(!$id) return false;
+		if(!$id){
+			return false;
+		}
 		$sql  = "SELECT id FROM ".$this->db->prefix."cate WHERE parent_id IN(".$id.") ";
 		if($status) $sql .= " AND status=1 ";
 		$sql .= " ORDER BY SUBSTRING_INDEX('".$id."',id,1),taxis ASC";
 		$rslist = $this->db->get_all($sql);
-		if($rslist)
-		{
+		if($rslist){
 			$idlist = array();
-			foreach($rslist AS $key=>$value)
-			{
+			foreach($rslist AS $key=>$value){
 				$list[] = $value["id"];
-				$idlist[] = $value;
+				$idlist[] = $value['id'];
 			}
 			$idstring = implode(",",$idlist);
 			$this->get_sonlist_id($list,$idstring,$status);
@@ -316,6 +305,42 @@ class cate_model_base extends phpok_model
 		$sql = "SELECT c.* FROM ".$this->db->prefix."list_cate lc JOIN ".$this->db->prefix."cate c ON(lc.cate_id=c.id) ";
 		$sql.= "WHERE lc.id='".$id."' AND c.status=1 ORDER BY c.taxis ASC,c.id DESC";
 		return $this->db->get_all($sql,'id');
+	}
+
+	public function list_ids($ids,$project_identifier='')
+	{
+		if(!$ids){
+			return false;
+		}
+		$ids = is_array($ids) ? implode(",",$ids) : $ids;
+		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE id IN(".$ids.") AND status=1";
+		$rslist = $this->db->get_all($sql,'id');
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			if($project_identifier){
+				$value['url'] = $this->url($project_identifier,$value['identifier']);
+			}
+			$cate_tmp = $this->model('ext')->ext_all('cate-'.$value['id'],true);
+			if($cate_tmp){
+				$cate_ext = array();
+				foreach($cate_tmp as $k=>$v){
+					$cate_ext[$v['identifier']] = $this->lib('form')->show($v);
+					if($v['form_type'] == 'url' && $v['content']){
+						$v['content'] = unserialize($v['content']);
+						$value['url'] = $v['content']['default'];
+						if($this->site['url_type'] == 'rewrite' && $v['content']['rewrite']){
+							$value['url'] = $v['content']['rewrite'];
+						}
+					}
+				}
+				$value = array_merge($cate_ext,$value);
+				unset($cate_ext,$cate_tmp);
+			}
+			$rslist[$key] = $value;
+		}
+		return $rslist;
 	}
 }
 ?>

@@ -35,24 +35,19 @@ class ext_model_base extends phpok_model
 	function ext_all($module,$show_content=true)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE module='".$module."' ORDER BY taxis ASC,id DESC";
-		if($show_content)
-		{
+		if($show_content){
 			$sql = "SELECT e.*,c.content content_val FROM ".$this->db->prefix."ext e ";
 			$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(e.id=c.id) ";
 			$sql.= "WHERE e.module='".$module."' ";
 			$sql.= "ORDER BY e.taxis asc,id DESC";
 		}
 		$rslist = $this->db->get_all($sql);
-		if(!$rslist)
-		{
+		if(!$rslist){
 			return false;
 		}
-		if($show_content)
-		{
-			foreach($rslist AS $key=>$value)
-			{
-				if($value['content_val'])
-				{
+		if($show_content){
+			foreach($rslist AS $key=>$value){
+				if($value['content_val']){
 					$value["content"] = $value['content_val'];
 				}
 				unset($value['content_val']);

@@ -114,10 +114,8 @@ class content_control extends phpok_control
 		if(!$this->tpl->check_exists($tpl)){
 			error(P_Lang('未配置模板'),'','error');
 		}
-		$this->db->cache_close();
 		$this->model('list')->add_hits($rs["id"]);
 		$rs['hits'] = $this->model('list')->get_hits($rs['id']);
-		$this->db->cache_open();
 		$this->phpok_seo($rs);
 		$this->assign("rs",$rs);
 		$this->view($tpl);

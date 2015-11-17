@@ -8,7 +8,16 @@
 	时间： 2015年10月09日 16时43分
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-if(!$rs['ext'] || !$rs['ext']['password'] || !$rs['ext']['account'] || !$extinfo['mobile'] || !$extinfo['content']){
+if(!$rs['ext'] || !$rs['ext']['password'] || !$rs['ext']['account']){
+	if($this->config['debug']){
+		phpok_log(print_r($rs,true));
+	}
+	return false;
+}
+if(!$extinfo['mobile'] || !$extinfo['content']){
+	if($this->config['debug']){
+		phpok_log(print_r($extinfo,true));
+	}
 	return false;
 }
 $url = $rs['ext']['server'] ? $rs['ext']['server'] : "http://api.duanxin.cm/";
@@ -25,5 +34,11 @@ foreach($data as $key=>$value){
 	$url .= $key.'='.rawurlencode($value).'&';
 }
 $info = $this->lib('html')->get_content($url);
-return $info;
+if($info != '100'){
+	if($this->config['debug']){
+		phpok_log($info);
+	}
+	return false;
+}
+return true;
 ?>

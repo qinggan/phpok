@@ -74,6 +74,117 @@ class ulang_control extends phpok_control
 		echo $this->lib('phpzip')->unzip($this->dir_root.'data/tmp.zip','data/update/');
 		echo 'ok';
 	}
+
+	public function delete_cate_f()
+	{
+		$sql = "SELECT id FROM ".$this->db->prefix."cate";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			$this->error('没有分类信息');
+		}
+		$clist = array();
+		foreach($rslist as $key=>$value){
+			$clist[] = 'cate-'.$value['id'];
+			echo 'Cate '.$value['id'].'<br />';
+		}
+		$sql = "SELECT id,module FROM ".$this->db->prefix."ext WHERE module LIKE 'cate-%'";
+		$rslist = $this->db->get_all($sql);
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				if(!in_array($value['module'],$clist)){
+					$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$value['id']."'";
+					$this->db->query($sql);
+					$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id='".$value['id']."'";
+					$this->db->query($sql);
+					echo 'Delete cate '.$value['id'].'<br />';
+				}
+			}
+		}
+		echo 'End<br />';
+	}
+
+	public function delete_project_f()
+	{
+		$sql = "SELECT id FROM ".$this->db->prefix."project";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			$this->error('没有项目信息');
+		}
+		$clist = array();
+		foreach($rslist as $key=>$value){
+			$clist[] = 'project-'.$value['id'];
+			echo 'project '.$value['id'].'<br />';
+		}
+		$sql = "SELECT id,module FROM ".$this->db->prefix."ext WHERE module LIKE 'project-%'";
+		$rslist = $this->db->get_all($sql);
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				if(!in_array($value['module'],$clist)){
+					$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$value['id']."'";
+					$this->db->query($sql);
+					$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id='".$value['id']."'";
+					$this->db->query($sql);
+					echo 'Delete project '.$value['id'].'<br />';
+				}
+			}
+		}
+		echo 'End<br />';
+	}
+
+	public function delete_all_f()
+	{
+		$sql = "SELECT id FROM ".$this->db->prefix."all";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			$this->error('没有项目信息');
+		}
+		$clist = array();
+		foreach($rslist as $key=>$value){
+			$clist[] = 'all-'.$value['id'];
+			echo 'all '.$value['id'].'<br />';
+		}
+		$sql = "SELECT id,module FROM ".$this->db->prefix."ext WHERE module LIKE 'all-%'";
+		$rslist = $this->db->get_all($sql);
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				if(!in_array($value['module'],$clist)){
+					$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$value['id']."'";
+					$this->db->query($sql);
+					$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id='".$value['id']."'";
+					$this->db->query($sql);
+					echo 'Delete all '.$value['id'].'<br />';
+				}
+			}
+		}
+		echo 'End<br />';
+	}
+
+	public function popedom_f()
+	{
+		$sql = "SELECT id FROM ".$this->db->prefix."project";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			$this->error('没有项目信息');
+		}
+		$plist = array();
+		foreach($rslist as $key=>$value){
+			$plist[] = $value['id'];
+			echo 'Project '.$value['id'].'<br />';
+		}
+		$sql = "SELECT id,pid FROM ".$this->db->prefix."popedom WHERE pid>0";
+		$rslist = $this->db->get_all($sql);
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				if(!in_array($value['pid'],$plist)){
+					$sql = "DELETE FROM ".$this->db->prefix."popedom WHERE id='".$value['id']."'";
+					$this->db->query($sql);
+					echo 'Delete popedom '.$value['id'].'<br />';
+				}
+			}
+		}
+		echo 'End<br />';
+		exit;
+	}
 }
 
 ?>

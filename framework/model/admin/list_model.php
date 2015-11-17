@@ -176,6 +176,18 @@ class list_model extends list_model_base
 
 	public function list_cate_add($cateid,$tid)
 	{
+		$sql = "SELECT p.cate_multiple FROM ".$this->db->prefix."list l ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
+		$sql.= "WHERE l.id='".$tid."'";
+		$rs = $this->db->get_one($sql);
+		$multiple = false;
+		if($rs && $rs['cate_multiple']){
+			$multiple = true;
+		}
+		if(!$multiple){
+			$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id='".$tid."'";
+			$this->db->query($sql);
+		}
 		$sql = "REPLACE INTO ".$this->db->prefix."list_cate(id,cate_id) VALUES('".$tid."','".$cateid."')";
 		return $this->db->query($sql);
 	}

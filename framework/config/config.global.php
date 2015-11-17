@@ -67,6 +67,16 @@ $config["engine"]["session"]["timeout"] = 3600;
 //$config["engine"]["session"]["db_data"] = 'phpok';
 //$config["engine"]["session"]["db_table"] = "qinggan_session";
 
+//缓存默认配置
+$config['engine']['cache']['debug'] = false;
+$config["engine"]["cache"]["file"] = "default";
+$config["engine"]["cache"]["status"] = true;
+$config["engine"]["cache"]["timeout"] = 3600;
+$config["engine"]["cache"]["folder"] = ROOT."data/cache/";//在Memcache缓存中，此项用于存储KEY
+$config["engine"]["cache"]["server"] = "localhost"; //Memcache缓存服务器
+$config["engine"]["cache"]["port"] = "11211"; //Memcache缓存端口
+$config["engine"]["cache"]["prefix"] = "phpok_";//缓存Key前缀，防止生成的Key重复
+
 //Nginx对SERVER_NAME支持不好，如果您使用Nginx，且使用多站点，建议您改成：HTTP_HOST
 $config['get_domain_method'] = 'SERVER_NAME';
 
@@ -81,5 +91,4 @@ $config['seo']['format'] = '{title}-{seo}-{sitename}';
 //订单状态设定
 $config['order']['status'] = 'create,unpaid,paid,shipped,received';
 $config['order']['price'] = 'product,shipping,fee,discount';
-
 

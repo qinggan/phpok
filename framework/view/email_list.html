@@ -1,17 +1,14 @@
-<!-- inc:head -->
+<!-- include tpl=head -->
 <script type="text/javascript">
 function mail_delete(id,title)
 {
-	$.dialog.confirm("确定要删除标识 <span class='red'>"+title+"</span> 的邮件模板吗?<br />删除后不能正常发送邮件通知",function(){
+	$.dialog.confirm("确定要删除标识 <span class='red'>"+title+"</span> 的模板内容吗?<br />删除后不能正常发送通知",function(){
 		var url = get_url("email","del")+"&id="+id;
-		var rs = get_ajax(url);
-		if(rs == "ok")
-		{
-			direct(window.location.href);
-		}
-		else
-		{
-			$.dialog.alert(rs);
+		var rs = $.phpok.json(url);
+		if(rs.status == "ok"){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
 			return false;
 		}
 	});
@@ -19,33 +16,40 @@ function mail_delete(id,title)
 </script>
 <div class="tips">
 	<!-- if $popedom.add -->
-	<div class="action"><a href="{echo admin_url('email','set')}">添加</a></div>
+	<div class="action"><a href="{url ctrl=email func=set/}">添加</a></div>
 	<!-- /if -->
 	您当前的位置：
-	<a href="{echo admin_url('email')}">邮件内容模板管理</a>
-	&raquo; 列表
+	<a href="{url ctrl=email/}">通知内容管理</a>
+	&raquo; 列表 <span class="gray i">短信模板以标识：<b class="red">sms_</b> 开头，发送的内容不带样式</span>
 </div>
 <div class="list">
 	<table width="100%" cellpadding="0" cellspacing="0">
 	<tr>
 		<th class="id">ID</th>
-		<th class="lft">邮件头</th>
-		<th width="150px">标识</th>
-		<th width="50px">操作</th>
+		<th class="lft">标题头</th>
+		<th width="200px" class="lft">标识</th>
+		<!-- if $popedom.modify || $popedom.delete --><th width="120px">操作</th><!-- /if -->
 	</tr>
-	<!-- foreach($rslist AS $key=>$value) -->
+	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 	<tr title="{$value.note}">
 		<td align="center">{$value.id}</td>
-		<td>{$value.title}<!-- if $value.note --><span class="gray i"> ({$value.note})</span><!-- /if --></td>
-		<td align="center">{$value.identifier}</td>
-		<td>
-			<!-- if $popedom.modify --><a class="icon edit" href="{echo admin_url('email','set')}&id={$value.id}" title="修改"></a><!-- /if -->
-			<!-- if $popedom.delete --><a class="icon delete end" onclick="mail_delete('{$value.id}','{$value.identifier}')" title="删除"></a><!-- /if -->
+		<td>{$value.title}</td>
+		<td>{$value.identifier}</td>
+		<!-- if $popedom.modify || $popedom.delete -->
+		<td class="center">
+			<div class="button-group">
+				<!-- if $popedom.modify -->
+				<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=email func=set id=$value.id/}')" class="phpok-btn" />
+				<!-- /if -->
+				<!-- if $popedom.delete -->
+				<input type="button" value="{lang删除}" onclick="mail_delete('{$value.id}','{$value.identifier}')" class="phpok-btn" />
+				<!-- /if -->
+			</div>
 		</td>
+		<!-- /if -->
 	</tr>
-	<!-- /foreach -->
+	<!-- /loop -->
 	</table>
 </div>
-<div class="table"><!-- inc:pagelist --></div>
-
-<!-- inc:foot -->
+<!-- include tpl=pagelist -->
+<!-- include tpl=foot -->

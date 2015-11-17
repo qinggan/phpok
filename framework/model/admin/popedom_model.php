@@ -107,10 +107,10 @@ class popedom_model extends popedom_model_base
 		$this->db->query($sql);
 	}
 
-	function is_exists($identifier,$gid)
+	function is_exists($identifier,$gid,$pid=0)
 	{
 		if(!$identifier || !$gid) return true;
-		$sql = "SELECT id FROM ".$this->db->prefix."popedom WHERE gid='".$gid."' AND identifier='".$identifier."'";
+		$sql = "SELECT id FROM ".$this->db->prefix."popedom WHERE gid='".$gid."' AND identifier='".$identifier."' AND pid='".$pid."'";
 		return $this->db->get_one($sql);
 	}
 

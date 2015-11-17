@@ -18,12 +18,10 @@ $config["db"]["data"] = "phpok";
 $config["db"]["prefix"] = "qinggan_";
 $config['db']['socket'] = '';
 $config['db']['debug'] = false;
-$config['db']['cache']['status'] = true;
-$config['db']['cache']['type'] = 'file';
-$config['db']['cache']['folder'] = ROOT.'data/cache/';
-$config['db']['cache']['server'] = 'localhost';
-$config['db']['cache']['port'] = 11211;
-$config['db']['cache']['time'] = 86400; //Memcache限制不能超过30天，我们建议设置86400，一天
+
+//缓存配置
+//$config['engine']['cache']['status'] = true;
+//$config['engine']['cache']['debug'] = true;
 
 //手机端配置
 $config['mobile']['autocheck'] = true; //自动检测手机端，启用后，检测出手机端将读取手机端网页

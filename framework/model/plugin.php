@@ -38,10 +38,8 @@ class plugin_model_base extends phpok_model
 		//读取列表
 		$handle = opendir($folder);
 		$list = array();
-		while(false !== ($file = readdir($handle)))
-		{
-			if(substr($file,0,1) != "." && is_dir($folder.$file))
-			{
+		while(false !== ($file = readdir($handle))){
+			if(substr($file,0,1) != "." && is_dir($folder.$file)){
 				$list[] = $file;
 			}
 		}
@@ -61,8 +59,7 @@ class plugin_model_base extends phpok_model
 	function get_xml($id)
 	{
 		$folder = $this->dir_root."plugins/".$id."/";
-		if(!is_dir($folder))
-		{
+		if(!is_dir($folder)){
 			return false;
 		}
 		$rs = array();

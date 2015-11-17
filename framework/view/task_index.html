@@ -61,7 +61,7 @@ function delete_id(id)
 		<select name="year">
 		<option value="*">每年</option>
 		<!-- loop from=$yearlist key=$k value=$v id=$tmpid -->
-		<option value="{$v}"{if $v == $value.year} selected{/if}>{$v}年</option>
+		<option value="{$v}"{if $v == $value.year && $value.year != '*'} selected{/if}>{$v}年</option>
 		<!-- /loop -->
 		</select>
 	</td>
@@ -69,7 +69,7 @@ function delete_id(id)
 		<select name="month">
 		<option value="*">每月</option>
 		<!-- loop from=$monthlist key=$k value=$v id=$tmpid -->
-		<option value="{$v}"{if $v == $value.month} selected{/if}>{$v}月</option>
+		<option value="{$v}"{if $v == $value.month && $value.month != '*'} selected{/if}>{$v}月</option>
 		<!-- /loop -->
 		</select>
 	</td>
@@ -77,7 +77,7 @@ function delete_id(id)
 		<select name="day">
 		<option value="*">每天</option>
 		<!-- loop from=$daylist key=$k value=$v id=$tmpid -->
-		<option value="{$v}"{if $v == $value.day} selected{/if}>{$v}日</option>
+		<option value="{$v}"{if $v == $value.day && $value.day != '*'} selected{/if}>{$v}日</option>
 		<!-- /loop -->
 		</select>
 	</td>
@@ -85,14 +85,14 @@ function delete_id(id)
 		<select name="hour">
 		<option value="*">每小时</option>
 		<!-- loop from=$hourlist key=$k value=$v id=$tmpid -->
-		<option value="{$v}"{if $v == $value.hour} selected{/if}>{$v}时</option>
+		<option value="{$v}"{if $v == $value.hour && $value.hour != '*'} selected{/if}>{$v}时</option>
 		<!-- /loop -->
 		</select>
 	</td>
 	<td class="center">
 		<select name="minute">
 		<!-- loop from=$minutelist key=$k value=$v id=$tmpid -->
-		<option value="{$v}"{if $v == $value.minute} selected{/if}>{$v}分</option>
+		<option value="{$v}"{if $v == $value.minute && $value.minute != '*'} selected{/if}>{$v}分</option>
 		<!-- /loop -->
 		</select>
 	</td>

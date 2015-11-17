@@ -443,17 +443,13 @@ class list_model_base extends phpok_model
 		if(strpos($field,'b.price') !== false){
 			$sql .= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
 		}
-		
-		if($condition)
-		{
+		if($condition){
 			$sql .= " WHERE ".$condition." ";
 		}
-		if($orderby)
-		{
+		if($orderby){
 			$sql .= " ORDER BY ".$orderby." ";
 		}
-		if($psize)
-		{
+		if($psize){
 			$sql .= " LIMIT ".intval($offset).",".$psize;
 		}
 		return $this->db->get_all($sql);

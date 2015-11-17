@@ -20,16 +20,22 @@ class user_model extends user_model_base
 	}
 
 	//邮箱登录
-	function user_email($email)
+	function user_email($email,$uid=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE email='".$email."'";
+		if($uid){
+			$sql .= " AND id != '".$uid."'";
+		}
 		return $this->db->get_one($sql);
 	}
 
 	//手机登录
-	public function user_mobile($mobile)
+	public function user_mobile($mobile,$uid=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE mobile='".$mobile."'";
+		if($uid){
+			$sql .= " AND id != '".$uid."'";
+		}
 		return $this->db->get_one($sql);
 	}
 
@@ -140,10 +146,6 @@ class user_model extends user_model_base
 		$_SESSION["user_id"] = $uid;
 		$_SESSION["user_rs"] = $rs;
 		$_SESSION["user_name"] = $rs["user"];
-		$_SESSION["user_date"] = $rs["post_date"];
-		$_SESSION["user_pdip"] = $rs["pdip"];
-		$_SESSION["user_lasttime"] = $rs["lasttime"];
-		$_SESSION["user_lastip"] = $rs["lastip"];
 		return true;
 	}
 

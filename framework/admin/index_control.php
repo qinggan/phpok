@@ -237,7 +237,7 @@ class index_control extends phpok_control
 		$this->lib('file')->rm($this->dir_root."data/tpl_www/");
 		$this->lib('file')->rm($this->dir_root."data/tpl_admin/");
 		$this->lib('file')->rm($this->dir_root."data/tpl_html/");
-		$this->db->cache_clear();
+		$this->cache->clear();
 		$this->json(true);
 	}
 

@@ -79,7 +79,7 @@ class usergroup_control extends phpok_control
 		//判断是否启用
 		//自定义扩展字段
 		$this->assign("ext_module",$ext_module);
-		$forbid_list = $this->model('ext')->fields("group,id");
+		$forbid_list = $this->model('ext')->fields("group");
 		$forbid = array_unique(array_merge(array("id","identifier"),$forbid_list));
 		$extlist = get_phpok_ext($ext_module,implode(",",$forbid));
 		$this->assign("extlist",$extlist);

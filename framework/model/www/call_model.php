@@ -21,53 +21,6 @@ class call_model extends call_model_base
 		unset($this);
 	}
 
-	//取得单个配置参数
-	public function one($id,$siteid=0,$type='identifier')
-	{
-		if(!$id)
-		{
-			return false;
-		}
-		$all = $this->all($siteid);
-		if(!$all)
-		{
-			return false;
-		}
-		$rs = false;
-		foreach($all as $key=>$value)
-		{
-			if($value[$type] == $id)
-			{
-				$rs = $value;
-				break;
-			}
-		}
-		return $rs;
-	}
-
-	//取得全部
-	public function all($siteid=0)
-	{
-		$siteid = intval($siteid);
-		$siteid = $siteid ? $siteid.',0' : '0';
-		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE site_id IN(".$siteid.") AND status=1";
-		$rslist = $this->db->get_all($sql);
-		if(!$rslist)
-		{
-			return false;
-		}
-		foreach($rslist as $key=>$value)
-		{
-			if($value['ext'])
-			{
-				$ext = unserialize($value['ext']);
-				unset($value['ext']);
-				$value = array_merge($value,$ext);
-			}
-			$rslist[$key] = $value;
-		}
-		return $rslist;
-	}
 }
 
 ?>

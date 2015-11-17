@@ -49,18 +49,18 @@ class email_control extends phpok_control
 		$id = $this->get("id","int");
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				error(P_Lang('您没有权限执行此操作'),$this->url('email'),'error');
 			}
 			$rs = $this->model('email')->get_one($id);
 			$this->assign("rs",$rs);
 			$this->assign("id",$id);
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				error(P_Lang('您没有权限执行此操作'),$this->url('email'),'error');
 			}
 			$rs = array("content"=>'');
 		}
-		$edit_content = form_edit('content',$rs['content'],'editor','height=480&btn_image=1&is_code=1');
+		$edit_content = form_edit('content',$rs['content'],'editor','height=300&btn_image=1&is_code=1');
 		$this->assign('edit_content',$edit_content);
 		$this->view("email_set");
 	}
@@ -73,8 +73,12 @@ class email_control extends phpok_control
 			$array["site_id"] = $_SESSION["admin_site_id"];
 		}
 		$array["title"] = $this->get("title");
-		$array["content"] = $this->get("content","html",false);
 		$array["identifier"] = $this->get("identifier");
+		if(substr($array['identifier'],0,4) == 'sms_'){
+			$array['content'] = $this->get('content','text');
+		}else{
+			$array["content"] = $this->get("content","html",false);
+		}
 		if(!$array["title"] || !$array["content"] || !$array["identifier"]){
 			error(P_Lang('信息填写不完整'),$this->url("email","set","id=".$id),"error");
 		}
@@ -85,14 +89,15 @@ class email_control extends phpok_control
 	//删除邮件
 	public function del_f()
 	{
-		if(!$this->popedom["delete"]) exit(P_Lang('您没有权限执行此操作'));
-		$id = $this->get("id","int");
-		if(!$id){
-			exit(P_Lang('未指定ID'));
-		}else{
-			$this->model('email')->del($id);
-			exit("ok");
+		if(!$this->popedom['delete']){
+			$this->json(P_Lang('您没有权限执行此操作'));
 		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
+		$this->model('email')->del($id);
+		$this->json(true);
 	}
 
 	public function check_f()
@@ -100,13 +105,13 @@ class email_control extends phpok_control
 		$id = $this->get("id","int");
 		$identifier = $this->get("identifier");
 		if(!$identifier){
-			exit(P_Lang('未指定标识串'));
+			$this->json(P_Lang('未指定标识串'));
 		}
 		$rs = $this->model('email')->get_identifier($identifier,$id);
 		if($rs){
-			exit(P_Lang('标识串已被使用'));
+			$this->json(P_Lang('标识串已被使用'));
 		}
-		exit("ok");
+		$this->json(true);
 	}
 }
 ?>

@@ -89,36 +89,6 @@ class content_model_base extends phpok_model
 		return $rs["module_id"];
 	}
 
-	//取得子主题列表
-	function get_sub($tid,$orderby="")
-	{
-		if(!$tid) return false;
-		$mid = $this->get_mid($tid);
-		if(!$mid) return false;
-		if(!$orderby) $orderby = "l.dateline DESC,l.id DESC";
-		$sql = "SELECT l.*,id.phpok identifier FROM ".$this->db->prefix."list l ";
-		$sql.= "JOIN ".$this->db->prefix."id id ON(l.id=id.id AND id.type_id='content' AND l.site_id=id.site_id) ";
-		$sql.= "WHERE l.parent_id='".$tid."' AND l.status=1 ORDER BY ".$orderby;
-		$rslist = $this->db->get_all($sql,"id");
-		if(!$rslist) return false;
-		//获取扩展扩展数据并格式化
-		$idlist = array_keys($rslist);
-		$ids = implode(",",$idlist);
-		$extlist = $this->ext_list($mid,$ids);
-		if($extlist)
-		{
-			//合并扩展数据
-			foreach($rslist AS $key=>$value)
-			{
-				if($extlist[$key])
-				{
-					$rslist[$key] = array_merge($extlist[$key],$value);
-				}
-			}
-		}
-		return $rslist;
-	}
-
 	//获取扩展字段并格式化内容
 	function ext_list($mid,$ids)
 	{

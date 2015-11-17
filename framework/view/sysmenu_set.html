@@ -33,42 +33,64 @@
 		</select>
 	</div>
 </div>
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".dropdown dt").click(function() {
+		$(".dropdown dd ul").toggle();
+	});
+				
+	$(".dropdown dd ul li").click(function() {
+		var text = $(this).html();
+		$(".dropdown dt span").html(text);
+		$(".dropdown dd ul").hide();
+		$("#icon").val($(this).find("span.value").html());
+	});
+	$(document).bind('click', function(e) {
+		var $clicked = $(e.target);
+		if (! $clicked.parents().hasClass("dropdown"))
+			$(".dropdown dd ul").hide();
+	});
+});
+</script>
+<style type="text/css">
+.dropdown{margin:0;padding:0;}
+.dropdown dd, .dropdown dt, .dropdown ul { margin:0px; padding:0px; }
+.dropdown dd { position:relative; }
+.dropdown dt:hover { color:#5d4617; border: 1px solid #E5E5E5; }
+.dropdown dt{ background:#fff url('images/add.png') no-repeat scroll right center; display:block; padding-right:20px; border:1px solid #E5E5E5; width:180px; height:27px;}
+.dropdown dt span { cursor:pointer; display:block; padding:5px; }
+.dropdown dd ul { background:#fff; border:1px solid #E5E5E5; color:#000; display:none; left:0px; padding:5px 0px; position:absolute; top:2px; width:auto; min-width:200px; list-style:none;height:300px;overflow-y:scroll; }
+.dropdown span.value { display:none; }
+.dropdown dd ul li{ padding:5px; display:block; }
+.dropdown dd ul li:hover { background-color:#d0c9af; }
+</style>
 <div class="table">
 	<div class="title">
 		{lang快捷图标：}
 		<span class="note">{lang启用快捷图标后，将在桌面显示相应的快捷链接}</span>
 	</div>
 	<div class="content">
-		<ul class="layout">
-			<li style="width:180px;"><label title="{lang不使用}">
-				<table>
-				<tr>
-					<td><input type="radio" name="icon" value=""{if !$rs.icon} checked{/if}/></td>
-					<td>{lang空}</td>
-				</tr>
-				</table>
-			</label></li>
-			<!-- loop from=$iconlist key=$key value=$value -->
-			<li style="width:180px;"><label title="{func basename $value}">
-				<table>
-				<tr>
-					<td><input type="radio" name="icon" value="{$value}"{if $rs.icon == $value} checked{/if}/></td>
-					<td><i class="icon-{$value}" style="font-size:16px;"></i> {$value}</td>
-				</tr>
-				</table>
-			</label></li>
-			<!-- /loop -->
-			<div class="clear"></div>
-		</ul>
+		<input type="hidden" name="icon" id="icon" value="{$rs.icon}" />
+		<dl class="dropdown">
+			<dt><span><!-- if $rs.icon --><i class="icon-{$rs.icon}" style="font-size:16px;"></i> {$rs.icon}<!-- else -->不使用图标<!-- /if --></span></dt>
+			<dd>
+			<ul>
+				<li>不使用图标<span class="value"></span></li>
+				<!-- loop from=$iconlist key=$key value=$value id=$tmpid -->
+				<li><i class="icon-{$value}" style="font-size:16px;"></i> {$value}<span class="value">{$value}</span></li>
+				<!-- /loop -->
+			</ul>
+			</dd>
+		</dl>
 	</div>
 </div>
 <!-- /if -->
 
-<!-- if $pid && $dirlist && !$id -->
+<!-- if $pid && $dirlist -->
 <div class="table">
 	<div class="title">
 		{lang控制层：}
-		<span class="note">{lang一经设定不允许修改，不熟请设为：}<span class="red">list_control.php</span></span>
+		<span class="note">{lang请不要随意修改，不熟请设为：}<span class="red">list_control.php</span></span>
 	</div>
 	<div class="content">
 		<select name="appfile" id="appfile">
@@ -77,6 +99,20 @@
 			<!-- /foreach -->
 		</select>
 	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang执行方法：}
+		<span class="note">{lang请选择要执行的方法动作，不熟悉请留空}</span>
+	</div>
+	<div class="content"><input type="text" id="func" name="func" class="long" value="{$rs.func}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang扩展参数：}
+		<span class="note">{lang不清楚的请留空}</span>
+	</div>
+	<div class="content"><input type="text" id="ext" name="ext" class="long" value="{$rs.ext}" /></div>
 </div>
 <!-- /if -->
 <div class="table">

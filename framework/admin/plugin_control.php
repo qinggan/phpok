@@ -153,9 +153,8 @@ class plugin_control extends phpok_control
 		}
 		$this->assign("id",$id);
 		$rs = $this->model('plugin')->get_xml($id);
+		$rs['taxis'] = $this->model('plugin')->get_next_taxis();
 		$this->assign("rs",$rs);
-		//加载安装手续
-		//加载include 属性
 		if(file_exists($rs['path'].'install.php')){
 			include_once($rs['path'].'install.php');
 			$name = 'install_'.$id;

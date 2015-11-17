@@ -89,5 +89,39 @@ class call_model_base extends phpok_model
 	{
 		return $this->get_one_sign($val);
 	}
+
+	public function one($identifier,$siteid=0)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE identifier='".$identifier."' AND site_id='".$siteid."' ";
+		$sql.= "AND status=1";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		if($rs['ext']){
+			$ext = unserialize($rs['ext']);
+			$rs = array_merge($rs,$ext);
+		}
+		return $rs;
+	}
+
+	public function all($siteid=0,$pri='')
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE site_id='".$siteid."' AND status=1";
+		$rslist = $this->db->get_all($sql,$pri);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			if($value['ext']){
+				$ext = unserialize($value['ext']);
+				unset($value['ext']);
+				$value = array_merge($value,$ext);
+			}
+			$rslist[$key] = $value;
+		}
+		return $rslist;
+	}
+
 }
 ?>

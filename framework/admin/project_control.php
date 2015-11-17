@@ -54,7 +54,7 @@ class project_control extends phpok_control
 		$this->assign("parent_list",$parent_list);
 		$this->assign("ext_module",$ext_module);
 		$forbid = array("id","identifier");
-		$forbid_list = $this->model('ext')->fields("project,id");
+		$forbid_list = $this->model('ext')->fields("project");
 		$forbid = array_merge($forbid,$forbid_list);
 		$forbid = array_unique($forbid);
 		$this->assign("ext_idstring",implode(",",$forbid));

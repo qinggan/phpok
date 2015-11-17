@@ -39,6 +39,12 @@ class popedom_model extends popedom_model_base
 	private function _popedom_list($groupid)
 	{
 		$sql = "SELECT popedom FROM ".$this->db->prefix."user_group WHERE id='".$groupid."' AND status=1";
+		$cache_id = $this->cache->id($sql);
+		$rs = $this->cache->get($cache_id);
+		if($rs){
+			return $rs;
+		}
+		$this->db->cache_set($cache_id);
 		$rs = $this->db->get_one($sql);
 		if(!$rs || !$rs['popedom']){
 			return false;
@@ -47,7 +53,9 @@ class popedom_model extends popedom_model_base
 		if(!$popedom[$this->site_id]){
 			return false;
 		}
-		return explode(",",$popedom[$this->site_id]);
+		$rs = explode(",",$popedom[$this->site_id]);
+		$this->cache->save($cache_id,$rs);
+		return $rs;
 	}
 }
 

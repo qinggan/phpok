@@ -34,10 +34,4 @@
 		<float>浮点型（支持小数点，数字及负号）</float>
 		<time>时间戳（将输入的信息转化成10位数字）</time>
 	</format>
-	<orderstatus>
-		<NOTCHECKED>未审核</NOTCHECKED>
-		<CHECKED>已审核</CHECKED>
-		<NOTPAID>未付款</NOTPAID>
-		<PAID>已付款</PAID>
-	</orderstatus>
 </root>
