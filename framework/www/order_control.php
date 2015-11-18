@@ -81,6 +81,15 @@ class order_control extends phpok_control
 		}else{
 			$paylist = $this->model('payment')->get_all($this->site['id'],1);
 			$this->assign("paylist",$paylist);
+			//创建支付链接
+			if(!$this->site['api_code']){
+				$_SESSION['api_code'] = $this->time.'-'.$_SESSION['user_id'].'-'.$rs['sn'];
+				$this->lib('token')->keyid($_SESSION['api_code']);
+			}
+			$tmp = array('sn'=>$rs['sn'],'price'=>$rs['price'],'user_id'=>$_SESSION['user_id'],'type'=>'order');
+			$tmp['currency_id'] = $rs['currency_id'];
+			$token = $this->lib('token')->encode($tmp);
+			$this->assign('token',$token);
 		}
 		$loglist = $this->model('order')->log_list($rs['id']);
 		$this->assign('loglist',$loglist);

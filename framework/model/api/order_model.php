@@ -40,14 +40,9 @@ class order_model extends order_model_base
 		if(!$data){
 			return false;
 		}
-		if(!$data['who'] && $_SESSION['admin_id']){
-			$adminer = $this->model('admin')->get_one($_SESSION['admin_id']);
-			$who = $adminer['fullname'] ? $adminer['fullname'].'('.$adminer['account'].')' : $adminer['account'];
-			$data['who'] = $who;
-		}
 		if(!$data['who'] && $_SESSION['user_id']){
 			$user = $this->model('user')->get_one($_SESSION['user_id']);
-			$data['who'] = $user['account'];
+			$data['who'] = $user['user'];
 		}
 		if(!$data['addtime']){
 			$data['addtime'] = $this->time;

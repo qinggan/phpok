@@ -14,10 +14,11 @@ class xml_lib
 	private $xml_save_func = 'phpok';
 	public function __construct()
 	{
-		$this->xml_read_func = 'phpok';
+		//$this->xml_read_func = 'phpok';
 		if(function_exists('simplexml_load_file') && function_exists('simplexml_load_string')){
 			$this->xml_read_func = 'simplexml';
 		}
+		$this->xml_read_func = 'phpok';
 		$this->xml_save_func = 'phpok';
 	}
 
@@ -89,9 +90,8 @@ class xml_lib
 		}
 		$info = preg_replace('/<\?xml.+\?>/isU','',$info);
 		$info = trim($info);
-		$info = '<?xml version="1.0" encoding="utf-8"?>'.$info;
+		$info = '<?xml version="1.0" encoding="utf-8"?>'."\n".$info;
 		$xml = simplexml_load_string($info);
-		//echo "<pre>".print_r($info,true)."</pre>";
 		return $this->simplexml_obj_to_array($xml);
 	}
 

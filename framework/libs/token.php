@@ -20,9 +20,13 @@ class token_lib
 	public function __construct()
 	{
 		$this->keyid = $this->_keyid();
-		$this->keya = md5(substr($this->keyid, 0, 16));
-		$this->keyb = md5(substr($this->keyid, 16, 16));
+		$this->config();
 		$this->time = $GLOBALS['app']->time;
+	}
+
+	public function __destruct()
+	{
+		unset($this);
 	}
 
 	public function keyid($keyid='')
@@ -31,7 +35,17 @@ class token_lib
 			return $this->keyid;
 		}
 		$this->keyid = strtolower(md5($keyid));
+		$this->config();
 		return $this->keyid;
+	}
+
+	private function config()
+	{
+		if(!$this->keyid){
+			return false;
+		}
+		$this->keya = md5(substr($this->keyid, 0, 16));
+		$this->keyb = md5(substr($this->keyid, 16, 16));
 	}
 
 	//创建一个KEY-ID

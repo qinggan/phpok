@@ -393,14 +393,23 @@ class usercp_control extends phpok_control
 	public function address_setting_f()
 	{
 		$id = $this->get('id','int');
+		$array = array();
+		if($id){
+			$chk = $this->model('user')->address_one($id);
+			if(!$chk || $chk['user_id'] != $this->u_id){
+				$this->json(P_Lang('您没有权限执行此操作'));
+			}
+		}else{
+			$array['user_id'] = $this->u_id;
+		}
 		$country = $this->get('country');
 		if(!$country){
 			$country = '中国';
 		}
-		$province = $this->get('pca_p');
-		$city = $this->get('pca_c');
-		$county = $this->get('pca_a');
-		$array = array('user_id'=>$this->u_id,'country'=>$country,'province'=>$province,'city'=>$city,'county'=>$county);
+		$array['country'] = $country;
+		$array['province'] = $this->get('pca_p');
+		$array['city'] = $this->get('pca_c');
+		$array['county'] = $this->get('pca_a');
 		$array['fullname'] = $this->get('fullname');
 		if(!$array['fullname']){
 			$this->json(P_Lang('收件人姓名不能为空'));

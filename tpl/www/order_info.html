@@ -151,14 +151,14 @@ $(document).ready(function(){
 	<div class="clear"></div>
 	<!-- if !$pay_end -->
 	<script type="text/javascript">
-	function go_payment(sn,price)
+	function go_payment()
 	{
 		var payment = $("input[name=payment]:checked").val();
 		if(!payment){
 			$.dialog.alert('未指定支付方式');
 			return false;
 		}
-		var url = get_url('payment','create','sn='+sn+"&price="+$.str.encode(price)+"&payment="+payment);
+		var url = api_url('payment','create','token={func rawurlencode $token}&payment='+payment);
 		var rs = $.phpok.json(url);
 		if(rs.status != 'ok'){
 			$.dialog.alert(rs.content);
@@ -170,7 +170,7 @@ $(document).ready(function(){
 		return false;
 	}
 	</script>
-	<form method="post" onsubmit="return go_payment('{$rs.sn}','{func price_format_val $rs.price $rs.currency_id}')">
+	<form method="post" onsubmit="return go_payment()">
 	<!-- loop from=$paylist key=$key value=$value -->
 	<!-- if $value.paylist -->
 	<div class="pfw mbottom10">
