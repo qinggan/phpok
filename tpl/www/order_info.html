@@ -158,7 +158,7 @@ $(document).ready(function(){
 			$.dialog.alert('未指定支付方式');
 			return false;
 		}
-		var url = api_url('payment','create','token={func rawurlencode $token}&payment='+payment);
+		var url = '{$payment_url}&payment='+payment;
 		var rs = $.phpok.json(url);
 		if(rs.status != 'ok'){
 			$.dialog.alert(rs.content);

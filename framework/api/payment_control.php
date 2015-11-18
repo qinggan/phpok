@@ -24,9 +24,6 @@ class payment_control extends phpok_control
 		if(!$this->site){
 			$this->json(P_Lang('数据异常，无法获取站点信息'));
 		}
-		if(!$this->site['api_code']){
-			$this->lib('token')->keyid($_SESSION['api_code']);
-		}
 		$info = $this->lib('token')->decode($token);
 		if(!$info || !$info['price']){
 			$this->json(P_Lang('数据不完整，请检查'));

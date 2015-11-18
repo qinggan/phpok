@@ -19,9 +19,9 @@ class token_lib
 	
 	public function __construct()
 	{
-		$this->keyid = $this->_keyid();
+		$this->_keyid();
 		$this->config();
-		$this->time = $GLOBALS['app']->time;
+		$this->time = time();
 	}
 
 	public function __destruct()
@@ -51,10 +51,20 @@ class token_lib
 	//创建一个KEY-ID
 	private function _keyid()
 	{
-		if(!$GLOBALS['app']->site || !$GLOBALS['app']->site['api_code']){
-			return false;
+		global $app;
+		if($app->site && $app->site['api_code']){
+			$api_code = $app->site['api_code'];
+			unset($app);
+		}else{
+			if($_SESSION['phpok_api_code']){
+				$api_code = $_SESSION['phpok_api_code'];
+			}else{
+				$api_code = uniqid(time(), true);
+				$_SESSION['phpok_api_code'] = $api_code;
+			}
 		}
-		return strtolower(md5($GLOBALS['app']->site['api_code']));
+		$this->keyid = strtolower(md5($api_code));
+		return true;
 	}
 
 	//加密数据
@@ -68,7 +78,6 @@ class token_lib
 		$keyc = substr(md5(microtime().rand(1000,9999)), -$this->keyc_length);
 		$cryptkey = $this->keya.md5($this->keya.$keyc);
 		$rs = $this->core($string,$cryptkey);
-		//return $keyc.str_replace('=', '', base64_encode($rs));
 		return $keyc.base64_encode($rs);
 	}
 
