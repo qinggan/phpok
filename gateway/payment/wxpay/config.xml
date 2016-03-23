@@ -33,9 +33,15 @@
 			<type>radio</type>
 			<option>
 				<native>原生扫码支付</native>
+				<jsapi>公众号支付</jsapi>
 			</option>
 			<default>native</default>
 		</trade_type>
+		<jsapi_link>
+			<title>支付成功后订单跳转</title>
+			<note>仅限使用【公众号支付】有效，用于订单购买成功后促发动作脚本</note>
+			<type>text</type>
+		</jsapi_link>
 		<pem_cert>
 			<title>证书pem格式</title>
 			<note>接口中强制要求时需携带的证书文件</note>
@@ -48,6 +54,12 @@
 			<type>text</type>
 			<typebtn>file</typebtn>
 		</pem_key>
+		<pem_ca>
+			<title>CA证书</title>
+			<note>同上</note>
+			<type>text</type>
+			<typebtn>file</typebtn>
+		</pem_ca>
 		<proxy_host>
 			<title>代理IP</title>
 			<note>只有需要代理的时候才设置，不需要代理，请设置为0.0.0.0</note>

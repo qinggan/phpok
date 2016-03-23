@@ -13,7 +13,6 @@ class js_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
-		header("Content-type: application/x-javascript; charset=UTF-8");
 	}
 
 	//WEB前台通用JS
@@ -58,9 +57,10 @@ class js_control extends phpok_control
 		exit;
 	}
 
-	# 人工指定js
+	//人工指定js
 	public function ext_f()
 	{
+		header("Content-type: application/x-javascript; charset=UTF-8");
 		$js = $this->get("js");
 		if(!$js) exit("\n");
 		$list = explode(",",$js);
@@ -120,6 +120,7 @@ class js_control extends phpok_control
 	//最小化加载js
 	private function js_base()
 	{
+		header("Content-type: application/x-javascript; charset=UTF-8");
 		$file = $_SERVER["SCRIPT_NAME"] ? basename($_SERVER["SCRIPT_NAME"]) : basename($_SERVER["SCRIPT_FILENAME"]);
 		//加载配置常用的JS
 		$weburl = $this->get_url();

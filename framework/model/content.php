@@ -22,10 +22,13 @@ class content_model_base extends phpok_model
 	}
 
 	//取得单个主题信息
-	function get_one($id)
+	function get_one($id,$status=true)
 	{
-		$sql  = "SELECT * FROM ".$this->db->prefix."list WHERE status=1 AND site_id='".$this->site_id."' AND ";
+		$sql  = "SELECT * FROM ".$this->db->prefix."list WHERE site_id='".$this->site_id."' AND ";
 		$sql .= is_numeric($id) ? " id='".$id."' " : " identifier='".$id."' ";
+		if($status){
+			$sql.= " AND status=1 ";
+		}
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
@@ -76,7 +79,11 @@ class content_model_base extends phpok_model
 			}
 			$rs['attrlist'] = $attrs;
 		}
-		
+
+		$ext = $this->model('ext')->get_all('list-'.$rs['id'],false);
+		if($ext){
+			$rs = array_merge($rs,$ext);
+		}		
 		return $rs;
 	}
 

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************
 	Filename: {phpok}/www/project_control.php
-	Note	: 网站首页及APP的封面页
+	Note	: 列表或封面或项目页
 	Version : 4.0
 	Web		: www.phpok.com
 	Author  : qinggan <qinggan@188.com>
@@ -168,16 +168,11 @@ class project_control extends phpok_control
 			unset($keywords);
 		}
 		if($ext && is_array($ext)){
-			$c = '';
-			$_ext = $this->get('_ext','int');
 			foreach($ext AS $key=>$value){
 				if($key && $value){
-					$c[] = $_ext ? "ext.".$key."='".$value."'" : "ext.".$key." LIKE '%".$value."%'";
+					$dt['e_'.$key] = $value;
+					$pageurl .= "ext[".$key."]=".rawurlencode($value)."&";
 				}
-				$pageurl .= "ext[".$key."]=".rawurlencode($value)."&";
-			}
-			if($c){
-				$dt['sqlext'] = implode(" AND ",$c);
 			}
 			$this->assign('ext',$ext);
 		}

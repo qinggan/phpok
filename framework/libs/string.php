@@ -33,7 +33,7 @@ class string_lib
 		}
 		$str = $string;
 		$string = strip_tags(trim($string));
-		$string = str_replace("&nbsp;"," ",$string);
+		$string = str_replace(array("&nbsp;",' ','　'),"",$string);
 		if(strlen($string) <= $length){
 			return $html ? $str : $string;
 		}

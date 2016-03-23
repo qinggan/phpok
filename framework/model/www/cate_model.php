@@ -22,7 +22,7 @@ class cate_model extends cate_model_base
 	}
 
 	//读取当前分类信息
-	public function get_one($id,$field="id")
+	public function get_one($id,$field="id",$ext=true)
 	{
 		$cate_all = $this->cate_all($this->site_id);
 		if(!$cate_all)

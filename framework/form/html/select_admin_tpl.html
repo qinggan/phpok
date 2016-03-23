@@ -12,7 +12,7 @@
 	{
 		var url = api_url("opt","index",'identifier={$_rs.identifier}&group_id={$_group_id}');
 		if(val) url += '&val='+$.str.encode(val);
-		var html = get_ajax(url);
+		var html = $.phpok.ajax(url);
 		$("#{$_rs.identifier}_html").html(html);
 	}
 	$(document).ready(function(){

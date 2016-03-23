@@ -25,6 +25,8 @@ class ext_control extends phpok_control
 		if(!$id){
 			error(P_Lang('未指定ID'));
 		}
+		$taxis = $this->model('ext')->ext_next_taxis($id);
+		$this->assign('taxis',$taxis);
 		$info = explode("-",$id);
 		$this->assign('id',$id);
 		$this->view('ext_open_create');
@@ -127,7 +129,7 @@ class ext_control extends phpok_control
 
 	public function add_f()
 	{
-		$id = $this->get("id");
+		$id = $this->get("id","int");
 		$module = $this->get("module");
 		if(!$id){
 			$this->json(P_Lang('未指定ID'));

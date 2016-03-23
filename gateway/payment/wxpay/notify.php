@@ -20,22 +20,14 @@ class wxpay_notify
 		$this->paydir = $GLOBALS['app']->dir_root.'gateway/payment/wxpay/';
 		$this->baseurl = $GLOBALS['app']->url;
 		include "wxpay.php";
-		$this->obj = new wxpay_lib();
-		$this->obj->app_id($this->param['param']['appid']);
-		$this->obj->mch_id($this->param['param']['mch_id']);
-		$this->obj->app_key($this->param['param']['app_key']);
-		$this->obj->app_secret($this->param['param']['app_secret']);
-		$this->obj->ssl_cert($this->param['param']['pem_cert']);
-		$this->obj->ssl_key($this->param['param']['pem_key']);
-		$this->obj->proxy_host($this->param['param']['proxy_host']);
-		$this->obj->proxy_port($this->param['param']['proxy_port']);
 	}
 
 	public function submit()
 	{
 		global $app;
+		$wxpay = new wxpay_lib();
+		$wxpay->config($this->param['param']);
 		$xml = $app->get('xml','html');
-		phpok_log($xml);
 		$data = $app->lib('xml')->read('<root>'.$xml.'</root>',false);
 		$rs = $app->model('payment')->log_check($data['out_trade_no']);
 		if(!$rs){
@@ -45,7 +37,7 @@ class wxpay_notify
 			$this->ok();
 		}
 		//验证接收的信息是否符合要求
-		$sign = $this->obj->create_sign($data);
+		$sign = $wxpay->create_sign($data);
 		if($sign != $data['sign']){
 			$this->error('签名验证不通过');
 		}

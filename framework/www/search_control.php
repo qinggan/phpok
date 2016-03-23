@@ -38,10 +38,11 @@ class search_control extends phpok_control
 		if(!$list){
 			error(P_Lang('您的网站没有允许可以搜索的信息'),$this->url,"error",10);
 		}
-		$pids = $mids = array();
+		$pids = $mids = $projects = array();
 		foreach($list AS $key=>$value){
 			$pids[] = $value["id"];
 			$mids[] = $value['module'];
+			$projects[$value['id']] = $value['identifier'];
 		}
 		$mids = array_unique($mids);
 		$condition = "l.project_id IN(".implode(",",$pids).") AND l.module_id IN(".implode(",",$mids).") ";

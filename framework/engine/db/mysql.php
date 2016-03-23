@@ -39,6 +39,56 @@ class db_mysql extends db
 		$this->socket = $config['socket'] ? $config['socket'] : '';
 	}
 
+	public function host($host='')
+	{
+		if($host){
+			$this->host = $host;
+		}
+		return $this->host;
+	}
+
+	public function user($user='')
+	{
+		if($user){
+			$this->user = $user;
+		}
+		return $this->user;
+	}
+
+	public function pass($pass='')
+	{
+		if($pass){
+			$this->pass = $pass;
+		}
+		return $this->pass;
+	}
+
+	public function port($port='')
+	{
+		if($port){
+			$this->port = $port;
+		}
+		return $this->port;
+	}
+
+	public function socket($socket='')
+	{
+		if($socket){
+			$this->socket = $socket;
+		}
+		return $this->socket;
+	}
+
+	public function type($type='')
+	{
+		if($type && ($type == 'num' || $type == MYSQL_NUM)){
+			$this->type = MYSQL_NUM;
+		}else{
+			$this->type = MYSQL_ASSOC;
+		}
+		return $this->type;
+	}
+
 	public function connect()
 	{
 		$this->_time();
@@ -46,7 +96,7 @@ class db_mysql extends db
 		if($this->socket){
 			$host .= ':'.$this->socket;
 		}
-		$this->conn = mysql_connect($host,$this->user,$this->pass,true,MYSQL_CLIENT_COMPRESS);
+		$this->conn = @mysql_connect($host,$this->user,$this->pass,true,MYSQL_CLIENT_COMPRESS);
 		if(!$this->conn || !is_resource($this->conn)){
 			$this->error(mysql_error(),mysql_errno());
 		}
@@ -95,16 +145,20 @@ class db_mysql extends db
 		}
 	}
 
-	public function query($sql)
+	public function query($sql,$loadcache=true)
 	{
 		if($this->debug){
 			$this->debug($sql);
 		}
-		$this->cache_sql($sql);
+		if($loadcache){
+			$this->cache_sql($sql);
+		}
 		$this->check_connect();
 		$this->_time();
 		$this->query = mysql_unbuffered_query($sql,$this->conn);
-		$this->cache_update($sql);
+		if($loadcache){
+			$this->cache_update($sql);
+		}
 		$this->_time();
 		$this->_count();
 		if(mysql_error($this->conn)){

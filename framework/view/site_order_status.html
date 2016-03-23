@@ -64,7 +64,8 @@ function edit_price(code)
 		<th>排序</th>
 		<th class="lft">名称</th>
 		<th>状态</th>
-		<th class="lft">通知</th>
+		<th class="lft">通知会员</th>
+		<th class="lft">通知管理员</th>
 		<th>&nbsp;</th>
 	</tr>
 	<!-- loop from=$rslist key=$key value=$value -->
@@ -74,9 +75,22 @@ function edit_price(code)
 		<td>{$value.title}</td>
 		<td class="center"><!-- if $value.status -->{lang启用}<!-- else --><span class="red">禁用</span><!-- /if --></td>
 		<td>
-			<!-- if $value.email_tpl_user -->通知客户<!-- else --><span class="red">不通知客户</span><!-- /if -->，
-			<!-- if $value.sms_tpl_user -->短信通知客户<!-- else --><span class="red">短信不通知客户</span><!-- /if -->，
-			<!-- if $value.email_tpl_admin -->通知管理员<!-- else --><span class="red">不通知管理员</span><!-- /if -->
+			<!-- if !$value.email_tpl_user && !$value.sms_tpl_user --><span class="red">不通知</span><!-- /if -->
+			<!-- if $value.email_tpl_user && $value.sms_tpl_user -->
+			邮件 + 短信
+			<!-- else -->
+				<!-- if $value.email_tpl_user -->邮件<!-- /if -->
+				<!-- if $value.sms_tpl_user -->短信<!-- /if -->
+			<!-- /if -->
+		</td>
+		<td>
+			<!-- if !$value.email_tpl_admin && !$value.sms_tpl_admin --><span class="red">不通知</span><!-- /if -->
+			<!-- if $value.email_tpl_admin && $value.sms_tpl_admin -->
+			邮件 + 短信
+			<!-- else -->
+				<!-- if $value.email_tpl_admin -->邮件<!-- /if -->
+				<!-- if $value.sms_tpl_admin -->短信<!-- /if -->
+			<!-- /if -->
 		</td>
 		<td><input type="button" value="{lang编辑}" onclick="edit_it('{$value.identifier}')" class="phpok-btn" /></td>
 	</tr>

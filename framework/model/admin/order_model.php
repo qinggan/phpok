@@ -80,8 +80,10 @@ class order_model extends order_model_base
 
 	public function get_list($condition='',$offset=0,$psize=30)
 	{
-		$sql = "SELECT o.*,p.title pay_title,p.price pay_price,p.dateline pay_dateline FROM ".$this->db->prefix."order o ";
+		$sql = "SELECT o.*,p.title pay_title,p.price pay_price,p.dateline pay_dateline,u.user ";
+		$sql.= "FROM ".$this->db->prefix."order o ";
 		$sql.= "LEFT JOIN ".$this->db->prefix."order_payment p ON(o.id=p.order_id) ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."user u ON(o.user_id=u.id) ";
 		if($condition){
 			$sql .= "WHERE ".$condition." ";
 		}

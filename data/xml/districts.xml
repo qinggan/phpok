@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<districts>
+<?xml version="1.0" encoding="utf-8"?>
+<root>
 	<district id="1" districtname="东城区" cid="1">东城区</district>
 	<district id="2" districtname="西城区" cid="1">西城区</district>
 	<district id="3" districtname="崇文区" cid="1">崇文区</district>
@@ -2862,4 +2862,4 @@
 	<district id="2860" districtname="哈巴河县" cid="338">哈巴河县</district>
 	<district id="2861" districtname="青河县" cid="338">青河县</district>
 	<district id="2862" districtname="吉木乃县" cid="338">吉木乃县</district>
-</districts>
+</root>

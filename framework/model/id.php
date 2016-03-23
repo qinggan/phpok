@@ -21,15 +21,19 @@ class id_model_base extends phpok_model
 		unset($this);
 	}
 
-	function get_ctrl($identifier,$site_id=0)
+	public function get_ctrl($identifier,$site_id=0)
 	{
 		$site_id = $site_id ? '0,'.$site_id : '0';
 		$sql = "SELECT id FROM ".$this->db->prefix."project WHERE identifier='".$identifier."' AND site_id IN(".$site_id.")";
 		$rs = $this->db->get_one($sql);
-		if($rs) return 'project';
+		if($rs){
+			return 'project';
+		}
 		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE identifier='".$identifier."' AND site_id IN(".$site_id.")";
 		$rs = $this->db->get_one($sql);
-		if($rs) return 'content';
+		if($rs){
+			return 'content';
+		}
 		return false;
 	}
 
@@ -89,27 +93,49 @@ class id_model_base extends phpok_model
 	//
 	public function id_all($site_id=0,$status=0)
 	{
-		$sql_1 = "SELECT concat('p',id) AS id,identifier FROM ".$this->db->prefix."project WHERE site_id='".$site_id."'";
-		$sql_2 = "SELECT concat('c',id) AS id,identifier FROM ".$this->db->prefix."cate WHERE site_id='".$site_id."'";
-		$sql_3 = "SELECT concat('t',id) AS id,identifier FROM ".$this->db->prefix."list WHERE site_id='".$site_id."' AND identifier!=''";
-		if($status){
-			$sql_1 .= " AND status=1";
-			$sql_2 .= " AND status=1";
-			$sql_3 .= " AND status=1";
+		$cache_id = $this->cache->id('model','id','id_all',$site_id,$status);
+		$rslist = $this->cache->get($cache_id);
+		if($rslist){
+			return $rslist;
 		}
-		$sql = "(".$sql_1.") UNION (".$sql_2.") UNION (".$sql_3.")";
-		$tmplist = $this->db->get_all($sql);
-		if(!$tmplist){
-			return false;
-		}
+		$this->db->cache_set($cache_id);
 		$rslist = array();
-		$tlist = array('t'=>'content','p'=>'project','c'=>'cate');
-		foreach($tmplist as $key=>$value){
-			$tmp = substr($value['id'],0,1);
-			$id = substr($value['id'],1);
-			$rslist[$value['identifier']] = array('id'=>$id,'type'=>$tlist[$tmp]);
+		$sql = "SELECT id,identifier FROM ".$this->db->prefix."project WHERE site_id='".$site_id."'";
+		if($status){
+			$sql.= " AND status=1 ";
 		}
-		return $rslist;
+		$tmplist = $this->db->get_all($sql);
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$rslist[$value['identifier']] = array('id'=>$value['id'],'type'=>'project');
+			}
+			unset($tmplist);
+		}
+		$sql = "SELECT id,identifier FROM ".$this->db->prefix."cate WHERE site_id='".$site_id."'";
+		if($status){
+			$sql.= " AND status=1";
+		}
+		$tmplist = $this->db->get_all($sql);
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$rslist[$value['identifier']] = array('id'=>$value['id'],'type'=>'cate');
+			}
+		}
+		$sql = "SELECT id,identifier FROM ".$this->db->prefix."list WHERE site_id='".$site_id."' AND identifier!=''";
+		if($status){
+			$sql.= " AND status=1";
+		}
+		$tmplist = $this->db->get_all($sql);
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$rslist[$value['identifier']] = array('id'=>$value['id'],'type'=>'content');
+			}
+		}
+		if($rslist && count($rslist)>0){
+			$this->cache->save($cache_id,$rslist);
+			return $rslist;
+		}
+		return false;
 	}
 }
 ?>

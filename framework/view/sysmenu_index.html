@@ -1,4 +1,5 @@
-<!-- inc:head -->
+<!-- include tpl=head -->
+<link rel="stylesheet" type="text/css" href="css/icomoon.css" />
 <script type="text/javascript">
 function set_status(id,obj)
 {
@@ -58,6 +59,28 @@ function update_taxis(val,id)
 		}
 	});
 }
+function set_icon(id)
+{
+	var url = get_url('system','icon','id='+id);
+	$.dialog.open(url,{
+		'title':'设置图标',
+		'width':'70%',
+		'height':'70%',
+		'lock':true,
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		},'okVal':'提交保存',
+		'cancel':function(){
+			return true;
+		}
+	});
+}
 $(document).ready(function(){
 	$("div[name=taxis]").click(function(){
 		var oldval = $(this).text();
@@ -81,13 +104,11 @@ $(document).ready(function(){
 	<th class="lft">&nbsp;名称</th>
 	<th class="lft">&nbsp;控制器</th>
 	<th width="60">状态</th>
-	<th width="70">桌面显示</th>
+	<th width="90" class="lft">桌面显示</th>
 	<th width="65">排序</th>
 	<th width="135" class="lft">操作</th>
 </tr>
-<!-- run:$tab_i = 0; -->
-<!-- foreach($rslist AS $key=>$value) -->
-<!-- run:$tab_i++ -->
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 	<tr class="list">
 		<td>&nbsp;{$value.title}</td>
 		<td>&nbsp;</td>
@@ -103,13 +124,12 @@ $(document).ready(function(){
 			</div>
 		</td>
 	</tr>
-	<!-- foreach($value.sublist AS $k=>$v) -->
-	<!-- run:$tab_i++ -->
+	<!-- loop from=$value.sublist key=$k value=$v id=$tmpid2 -->
 	<tr class="sub">
 		<td><div class="pleft">{$v.title}</div></td>
 		<td>&nbsp;framework/admin/{$v.appfile}_control.php</td>
 		<td class="center"><input type="button" value="{$v.status ? '启用' : '禁用'}" class="phpok-btn"{if $popedom.status} onclick="set_status({$v.id},this)"{else} onclick="$.dialog.alert('{lang您没有权限执行此功能}')"{/if} /></td>
-		<td align="center"><input type="button" class="phpok-btn" value="{if $v.icon}{lang显示}{else}{lang隐藏}{/if}" style="cursor:default;" /></td>
+		<td><input type="button" class="phpok-btn" id="icon_status_{$v.id}" onclick="set_icon('{$v.id}')" value="{if $v.icon}{lang显示}{else}{lang隐藏}{/if}" /> <i{if $v.icon} class="icon-{$v.icon}"{/if} id="icon_{$v.id}" style="font-size:16px;"></i></td>
 		<td class="center"><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$v.id}">{$v.taxis}</div></td>
 		<td>
 			<div class="button-group">
@@ -118,8 +138,8 @@ $(document).ready(function(){
 			</div>
 		</td>
 	</tr>
-	<!-- /foreach -->
-<!-- /foreach -->
+	<!-- /loop -->
+<!-- /loop -->
 </table>
 </div>
 <!-- inc:foot -->

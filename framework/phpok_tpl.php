@@ -476,12 +476,12 @@ class phpok_tpl
 		if(!$rs) return false;
 		if(!$rs["tpl"] && !$rs["file"] && !$rs["php"]) return false;
 		$string = "";
-		foreach($rs AS $key=>$value)
-		{
-			if($key != "tpl" && $key != "file")
-			{
-				if(substr($value,0,1) != '$') $value = '"'.$value.'"';
-				$string .= '<?php $'.$key.'='.$value.';?>';
+		foreach($rs AS $key=>$value){
+			if($key != "tpl" && $key != "file"){
+				if(substr($value,0,1) != '$'){
+					$value = '"'.$value.'"';
+				}
+				/*$string .= '<?php $'.$key.'='.$value.';?>';*/
 				$string .= '<?php $this->assign("'.$key.'",'.$value.'); ?>';
 			}
 		}
@@ -532,22 +532,20 @@ class phpok_tpl
 
 	function ajaxurl_php($string)
 	{
-		if(!$string || !trim($string)) return $this->return_false();
+		if(!$string || !trim($string)){
+			return $this->return_false();
+		}
 		$string = trim($string);
 		$string = preg_replace("/(\x20{2,})/"," ",$string);# 去除多余空格，只保留一个空格
 		parse_str($string,$list);
 		if(!$list || count($list)<1) return $this->return_false();
 		$url = $GLOBALS['app']->url.$GLOBALS['app']->config['www_file']."?";
 		$url.= $GLOBALS['app']->config['ctrl_id']."=ajax";
-		foreach($list AS $key=>$value)
-		{
+		foreach($list AS $key=>$value){
 			$value = $this->str_format($value);
-			if(substr($value,0,1) == '$')
-			{
+			if(substr($value,0,1) == '$'){
 				$url .= "&".$key.'=<?php echo rawurlencode('.$value.');?>';
-			}
-			else
-			{
+			}else{
 				$url .= "&".$key.'='.rawurlencode($value);
 			}
 		}
@@ -568,27 +566,19 @@ class phpok_tpl
 		$string = preg_replace("/(\x20{2,})/"," ",$string);# 去除多余空格，只保留一个空格
 		$list = explode(" ",$string);
 		$func = $list[0];
-		if(!$func || !function_exists($func))
-		{
+		if(!$func || !function_exists($func)){
 			return false;
 		}
 		$string = '<?php echo '.$func.'(';
 		$newlist = array();
-		foreach($list AS $key=>$value)
-		{
-			if($key>0)
-			{
-				if($value)
-				{
+		foreach($list AS $key=>$value){
+			if($key>0){
+				if($value){
 					$value = $this->str_format($value);
-					if($value)
-					{
-						if(substr($value,0,1) != '$')
-						{
+					if($value){
+						if(substr($value,0,1) != '$'){
 							$newlist[] = "'".rawurldecode($value)."'";
-						}
-						else
-						{
+						}else{
 							$newlist[] = rawurldecode($value);
 						}
 					}
@@ -720,14 +710,12 @@ class phpok_tpl
 	{
 		if($string == '') return false;
 		$string = stripslashes(trim($string));
-		if($del_mark)
-		{
+		if($del_mark){
 			if(substr($string,0,1) == '"' || substr($string,0,1) == "'") $string = substr($string,1);
 			if(substr($string,-1) == '"' || substr($string,-1) == "'") $string = substr($string,0,-1);
 		}
 		$string = $this->points_to_array($string);
-		if($auto_dollar && substr($string,0,1) != '$')
-		{
+		if($auto_dollar && substr($string,0,1) != '$'){
 			$string = '$'.$string;
 		}
 		return $string;

@@ -24,22 +24,23 @@ class ext_model extends ext_model_base
 	//添加验证
 	public function check_identifier_add($identifier,$type='')
 	{
-		if(!$identifier || !$type)
-		{
+		if(!$identifier || !$type){
 			return false;
 		}
-		if(!preg_match('/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u',$identifier))
-		{
+		if(!preg_match('/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u',$identifier)){
 			return false;
 		}
-		$flist = $this->db->list_fields($this->db->prefix.$type);
-		if(!$flist)
-		{
-			return true;
+		if(strlen($type)>5 && substr($type,0,5) == 'list_'){
+			$flist = $this->db->list_fields($this->db->prefix.$type);
+			if(!$flist){
+				return true;
+			}
+		}
+		if(!$flist){
+			$flist = array();
 		}
 		$chk = array('title','phpok','identifier','status','taxis','tag','parent_id','project');
-		if(in_array($identifier,$flist) || in_array($identifier,$chk))
-		{
+		if(in_array($identifier,$flist) || in_array($identifier,$chk)){
 			return false;
 		}
 		return true;
@@ -72,8 +73,7 @@ class ext_model extends ext_model_base
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE `".$type."`='".$val."' AND module='".$module."'";
 		$rs = $this->db->get_one($sql);
-		if(!$rs)
-		{
+		if(!$rs){
 			return false;
 		}
 		$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id='".$rs['id']."'";

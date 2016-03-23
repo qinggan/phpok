@@ -26,7 +26,6 @@ function rand_click()
 	<li class="on" onclick="$.admin.group(this)" name="main" title="{lang网站基本信息}">{lang基本设置}</li>
 	<li onclick="$.admin.group(this)" name="admin" title="{lang开关网站，设置风格，语言等功能}">{lang扩展信息}</li>
 	<li onclick="$.admin.group(this)" name="seo" title="{lang全站SEO信息设置}">{langSEO优化}</li>
-	<li onclick="$.admin.group(this)" name="email" title="{lang邮件发送模块设置}">{langSMTP设置}</li>
 	<li onclick="$.admin.group(this)" name="biz" title="{lang启用电子商务功能}">{lang电子商务}</li>
 	<li onclick="$.admin.group(this)" name="upload" title="{lang配置游客和会员的上传属性}">{lang上传配置}</li>
 </ul>
@@ -113,51 +112,16 @@ function rand_click()
 	<div class="content">
 		<table>
 		<tr>
-			<td><label><input type="radio" name="url_type" value="default"{if $rs.url_type == "default" || !$rs.url_type} checked{/if} onclick="set_url_type('default')" /> {lang默认，动态网址}</label></td>
+			<td><label><input type="radio" name="url_type" value="default"{if $rs.url_type == "default" || !$rs.url_type} checked{/if} /> {lang默认，动态网址}</label></td>
 			<td class="gray">{lang示例：}http://www.domain.com/index.php?id={lang标识或数字ID}</td>
 		</tr>
 		<tr>
-			<td><label><input type="radio" name="url_type" value="rewrite"{if $rs.url_type == "rewrite"} checked{/if} onclick="set_url_type('rewrite')" /> {lang伪静态页}</label></td>
+			<td><label><input type="radio" name="url_type" value="rewrite"{if $rs.url_type == "rewrite"} checked{/if} /> {lang伪静态页}</label></td>
 			<td class="gray">{lang示例：}http://www.domain.com/{lang标识或数字ID}.html</td>
-		</tr>
-		<tr>
-			<td><label><input type="radio" name="url_type" value="html"{if $rs.url_type == "html"} checked{/if} onclick="set_url_type('html')" /> {lang静态页}</label></td>
-			<td class="gray">{lang示例：}http://www.domain.com/***/***.html</td>
 		</tr>
 		</table>
 	</div>
 </div>
-<div id="url_type_html" class="hide">
-	<div class="table">
-		<div class="title">
-			{lang静态页根目会设置：}
-			<span class="note">{lang此项请谨慎设置，一经设置后请不要修改，会影响新网页的生成，慎用根目录，建议设置为html/}</span>
-		</div>
-		<div class="content">
-			<input type="text" id="html_root_dir" name="html_root_dir" class="default" value="{$rs.html_root_dir ? $rs.html_root_dir : 'html/'}" />
-		</div>
-	</div>
-	<div class="table">
-		<div class="title">
-			{lang静态页详细页生成规则：}
-			<span class="note">{lang仅限详细页生成规格，仅限未设置自定义标识}</span>
-		</div>
-		<div class="content">
-			<select id="html_content_type" name="html_content_type">
-			<option value="empty">不创建文件夹</option>
-			<option value="Ym/d/"{if $rs.html_content_type == 'Ym/d/'} selected{/if}>{lang年月/日/}</option>
-			<option value="Ymd/"{if $rs.html_content_type == 'Ymd/'} selected{/if}>{lang年月日/}</option>
-			<option value="Ym/"{if $rs.html_content_type == 'Ym/'} selected{/if}>{lang年月/}</option>
-			<option value="Y/m/d/"{if $rs.html_content_type == 'Y/m/d/'} selected{/if}>{lang年/月/日/}</option>
-			</select>
-		</div>
-	</div>
-</div>
-<script type="text/javascript">
-$(document).ready(function(){
-	set_url_type("{$rs.url_type}")
-});
-</script>
 <div class="table">
 	<div class="title">
 		{langSEO标题：}
@@ -303,93 +267,16 @@ $(document).ready(function(){
 	</div>
 </div>
 </div>
-
-<div id="email_setting" class="hide">
-<div class="table">
-	<div class="title">
-		{langSMTP服务器：}
-		<span class="note">{lang个人推荐国内用户使用：QQ或网易的邮箱}</span>
-	</div>
-	<div class="content">
-		<input type="text" name="email_server" value="{$rs.email_server}" class="long" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang邮件服务器端口：}
-		<span class="note">{lang未设置使用25为端口}</span>
-	</div>
-	<div class="content">
-		<input type="text" name="email_port" class="short" value="{$rs.email_port ? $rs.email_port : 25}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang是否启用SSL功能：}
-		<span class="note">{lang如果您使用Gmail邮箱，请选择“是”}</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="radio" name="email_ssl" value="1"{if $rs.email_ssl} checked{/if} /> {lang是}</label></td>
-			<td>&nbsp; &nbsp;</td>
-			<td><label><input type="radio" name="email_ssl" value="0"{if !$rs.email_ssl} checked{/if} /> {lang否}</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{langSMTP账号：}
-		<span class="note">{lang用于认证发送邮件}</span>
-	</div>
-	<div class="content">
-		<input type="text" id="email_account" name="email_account" class="long" value="{$rs.email_account}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{langSMTP密码：}
-		<span class="note">{lang同上}</span>
-	</div>
-	<div class="content">
-		<input type="password" id="email_pass" name="email_pass" class="long" value="{$rs.email_pass}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang发件人姓名：}
-		<span class="note">{lang设置发件人姓名，未设置将使用邮箱@之前的信息作为发件人姓名}</span>
-	</div>
-	<div class="content">
-		<input type="text" id="email_name" name="email_name" class="long" value="{$rs.email_name}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang邮箱：}
-		<span class="note">{lang设置发件人的邮箱，即你的邮箱，该邮箱也用于接收邮件}</span>
-	</div>
-	<div class="content">
-		<input type="text" id="email" name="email" class="long" value="{$rs.email}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang邮件编码：}
-		<span class="note">{lang设置你的邮件标题和内容的编码，国内用户推荐使用GBK，Gmail邮箱使用UTF-8}</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="radio" name="email_charset" value="gbk"{if $rs.email_charset == 'gbk'} checked{/if} /> GBK</label></td>
-			<td>&nbsp; &nbsp;</td>
-			<td><label><input type="radio" name="email_charset" value="utf-8"{if $rs.email_charset == 'utf-8' || !$rs.email_charset} checked{/if} /> UTF-8</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-</div>
+<script type="text/javascript">
+function insert_input(val)
+{
+	var info = $("#biz_sn").val();
+	if(info){
+		val = info + '-' +val;
+	}
+	$("#biz_sn").val(val);
+}
+</script>
 <div id="biz_setting" class="hide">
 <div class="table">
 	<div class="title">
@@ -399,7 +286,24 @@ $(document).ready(function(){
 		</span>
 	</div>
 	<div class="content">
-		<input type="text" id="biz_sn" name="biz_sn" class="long" value="{$rs.biz_sn ? $rs.biz_sn : 'year-month-date-number'}" />
+		<input type="text" id="biz_sn" name="biz_sn" class="long" value="{$rs.biz_sn}" />
+		<input type="button" value="清空" onclick="$('#biz_sn').val('')" class="phpok-btn" />
+		<div style="padding-top:5px">
+			<div class="button-group">
+				<input type="button" value="{lang前缀}" onclick="insert_input('prefix[P]')" class="phpok-btn" />
+				<input type="button" value="{lang年}" onclick="insert_input('year')" class="phpok-btn" />
+				<input type="button" value="{lang月}" onclick="insert_input('month')" class="phpok-btn" />
+				<input type="button" value="{lang日}" onclick="insert_input('date')" class="phpok-btn" />
+				<input type="button" value="{lang时}" onclick="insert_input('hour')" class="phpok-btn" />
+				<input type="button" value="{lang分}" onclick="insert_input('minute')" class="phpok-btn" />
+				<input type="button" value="{lang秒}" onclick="insert_input('second')" class="phpok-btn" />
+				<input type="button" value="{lang随机}" onclick="insert_input('rand')" class="phpok-btn" />
+				<input type="button" value="{lang时间戳}" onclick="insert_input('time')" class="phpok-btn" />
+				<input type="button" value="{lang序号}" onclick="insert_input('number')" class="phpok-btn" />
+				<input type="button" value="{lang订单ID}" onclick="insert_input('id')" class="phpok-btn" />
+				<input type="button" value="{lang会员ID}" onclick="insert_input('user')" class="phpok-btn" />
+			</div>
+		</div>
 	</div>
 </div>
 <div class="table">
@@ -419,21 +323,6 @@ $(document).ready(function(){
 
 <div class="table">
 	<div class="title">
-		{lang信用卡账单地址：}
-		<span class="note">{lang即Billing Address，要求提供往往是为了验证信用卡使用者是否为持有者本人}</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="radio" name="biz_billing" value="0" {if !$rs.biz_billing} checked{/if} />{lang不使用}</label></td>
-			<td><label><input type="radio" name="biz_billing" value="1" {if $rs.biz_billing} checked{/if} />{lang使用}</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
 		{lang默认支付方式：}
 		<span class="note">{lang结算订单后会自动绑定支付方式，当然，客户可以自行更换其他支付方式}</span>
 	</div>
@@ -444,20 +333,6 @@ $(document).ready(function(){
 		<option value="{$value.id}"{if $rs.biz_payment == $value.id} selected{/if}>{$value.title}</option>
 		<!-- /loop -->
 	</select>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang订单通知模板：}
-		<span class="note">仅{lang限已启用邮件通知并设置模板，此功能方才有效，此项仅用于通知}<span class="red">{lang管理员}</span></span>
-	</div>
-	<div class="content">
-		<select name="biz_etpl">
-			<option value="">{lang不通知管理员}</option>
-			<!-- loop from=$emailtpl key=$key value=$value -->
-			<option value="{$value.identifier}"{if $rs.biz_etpl == $value.identifier} selected{/if}>{lang管理员模板：}{$value.title}</option>
-			<!-- /loop -->
-		</select>
 	</div>
 </div>
 

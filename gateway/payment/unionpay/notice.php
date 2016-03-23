@@ -24,13 +24,12 @@ class unionpay_notice
 	//获取订单信息
 	public function submit()
 	{
-		$payment = new unionpay_lib();
-		$payment->set_verify_id($GLOBALS['app']->dir_root.$this->param['param']['verify_cert_file']);
-		if($_SESSION['user_id']){
-			$array = array($GLOBALS['app']->config['ctrl_id'],$GLOBALS['app']->config['func_id'],'id');
-		}else{
-			$array = array($GLOBALS['app']->config['ctrl_id'],$GLOBALS['app']->config['func_id'],'sn','passwd');
+		global $app;
+		if($this->order['status']){
+			return true;
 		}
+		$payment = new unionpay_lib();
+		$payment->set_verify_id($app->dir_root.$this->param['param']['verify_cert_file']);
 		$params = $_POST;
 		if($params['respCode'] != '00'){
 			error("付款失败，错误信息：".$params['respMsg'],'','error');
@@ -42,18 +41,41 @@ class unionpay_notice
 		if(!$chk){
 			error('付款签名验证失败，请登录支付平台检查','','error');
 		}
-
-		$pay_date = $GLOBALS['app']->time;
-		$price = round(($params['settleAmt']/100),2);
-		$array = array('pay_status'=>"付款完成",'pay_date'=>$pay_date,'pay_price'=>$price,'pay_end'=>1);
-		$array['status'] = '付款完成';
-		$data = array();
-		$data['traceNo'] = $params['traceNo'];
-		$data['traceTime'] = $params['traceTime'];
-		$data['queryId'] = $params['queryId'];
-		$data['currencyCode'] = $params['currencyCode'];
-		$array['ext'] = serialize($data);
-		$GLOBALS['app']->model('order')->save($array,$this->order['id']);
+		if($params['respMsg'] == 'success'){
+			$pay_date = $app->time;
+			$price = round(($params['settleAmt']/100),2);
+			//
+			$data = array();
+			$data['traceNo'] = $params['traceNo'];
+			$data['traceTime'] = $params['traceTime'];
+			$data['queryId'] = $params['queryId'];
+			$data['currencyCode'] = $params['currencyCode'];
+			$array = array('status'=>1,'ext'=>serialize($data));
+			$app->db->update_array($array,'payment_log',array('id'=>$this->order['id']));
+			if($this->order['type'] == 'order'){
+				$order = $app->model('order')->get_one_from_sn($this->order['sn']);
+				if($order){
+					$app->model('order')->update_order_status($order['id'],'paid');
+					$param = 'id='.$order['id']."&status=paid";
+					$app->model('task')->add_once('order',$param);
+					$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
+					$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
+					$app->model('order')->log_save($log);
+					//增加order_payment
+					$array = array('order_id'=>$order['id'],'payment_id'=>$this->param['id']);
+					$array['title'] = $this->param['title'];
+					$array['price'] = $price;
+					$array['dateline'] = $app->time;
+					$array['ext'] = serialize($data);
+					$order_payment = $app->model('order')->order_payment($order['id']);
+					if(!$order_payment){
+						$app->model('order')->save_payment($array);
+					}else{
+						$app->model('order')->save_payment($array,$order_payment['id']);
+					}
+				}
+			}
+		}
 		return true;
 	}
 }

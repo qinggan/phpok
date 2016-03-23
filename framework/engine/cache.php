@@ -46,6 +46,7 @@ class cache
 	public function __destruct()
 	{
 		$this->save($this->key_id,$this->key_list);
+		$this->expired();
 		unset($this);
 	}
 
@@ -89,7 +90,9 @@ class cache
 		file_put_contents($file,'<?php exit();?>'.$content);
 		$this->_time();
 		$this->_count();
-		$this->key_list($id,$GLOBALS['app']->db->cache_index($id));
+		if($GLOBALS['app']->db){
+			$this->key_list($id,$GLOBALS['app']->db->cache_index($id));
+		}
 		return true;
 	}
 
@@ -128,6 +131,13 @@ class cache
 		}
 		if(!$var){
 			$var = $this->time;
+		}
+		$count = func_num_args();
+		if($count>1){
+			$var = array($var);
+			for($i=1;$i<$count;++$i){
+				$var[] = func_get_arg($i);
+			}
 		}
 		if(is_array($var) || is_object($var)){
 			$var = serialize($var);

@@ -69,10 +69,22 @@ class unionpay_lib
 		$this->verify_file = $file;
 	}
 
-	public function set_channel_type($type)
+	public function set_channel_type($type='pc')
 	{
-		$val = $type == 'mobile' ? '08' : '07';
-		$this->form_params['channelType'] = $val;
+		if(is_numeric($type) && $type){
+			$this->form_params['channelType'] = '08';
+		}else{
+			if($type && $type == 'mobile'){
+				$this->form_params['channelType'] = '08';
+			}else{
+				$this->form_params['channelType'] = '07';
+			}
+		}
+	}
+
+	public function txn_sub_type($type='default')
+	{
+		$this->form_params['txnSubType'] = $type == 'installment' ? '03' : '01';
 	}
 
 	private function get_cert_id($file)
@@ -176,6 +188,5 @@ class unionpay_lib
 		$cert_id = $certdata['serialNumber'];
 		return $cert_id;
 	}
-
 }
 ?>

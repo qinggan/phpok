@@ -12,6 +12,9 @@
 	<option value="" area_id=''>请选择…</option>
 </select>
 <script type="text/javascript">
+var form_pca_{$_rs.identifier}_p = '{$rs.content ? $rs.content.p : ""}';
+var form_pca_{$_rs.identifier}_c = '{$rs.content ? $rs.content.c : ""}';
+var form_pca_{$_rs.identifier}_a = '{$rs.content ? $rs.content.a : ""}';
 function read_city_{$_rs.identifier}()
 {
 	var province_id = $("#{$_rs.identifier}_p").find("option:selected").attr('province_id');
@@ -33,7 +36,7 @@ function read_city_{$_rs.identifier}()
 			for(var i in info){
 				if(info[i].attr.pid == province_id){
 					html += '<option value="'+info[i].val+'" city_id="'+info[i].attr.id+'"';
-					if(city && info[i].val == city){
+					if((city && info[i].val == city) || (form_pca_{$_rs.identifier}_c && form_pca_{$_rs.identifier}_c == info[i].val)){
 						html += ' selected';
 					}
 					html += '>'+info[i].val+'</option>';
@@ -64,7 +67,7 @@ function read_county_{$_rs.identifier}()
 			for(var i in info){
 				if(info[i].attr.cid == city_id){
 					html += '<option value="'+info[i].val+'"';
-					if(area && info[i].val == area){
+					if((area && info[i].val == area) || (form_pca_{$_rs.identifier}_a && form_pca_{$_rs.identifier}_a == info[i].val)){
 						html += ' selected';
 					}
 					html += '>'+info[i].val+'</option>';

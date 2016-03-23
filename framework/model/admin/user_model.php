@@ -100,7 +100,7 @@ class user_model extends user_model_base
 	}
 
 	//后台显示
-	public function get_one($id,$field='id')
+	public function get_one($id,$field='id',$ext=true,$wealth=true)
 	{
 		if(!$id){
 			return false;

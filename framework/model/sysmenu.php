@@ -167,10 +167,5 @@ class sysmenu_model_base extends phpok_model
 		return false;
 	}
 
-	
-
-	# 存储核心菜单
-	
-
 }
 ?>

@@ -10,12 +10,6 @@
 error_reporting(E_ALL ^ E_NOTICE);
 define('PHPOK_SET',true);
 define("ROOT",str_replace("\\","/",dirname(__FILE__))."/");
-//定义JQuery的文件地址
-define('JQUERY','js/jquery.js');
-//PHPOK下载地址
-define('PHPOKFILE','');
-//PHPOK资源包
-define('PHPOKRES','');
 function error($tips="",$url="",$time=2)
 {
 	echo '<!DOCTYPE html>'."\n";
@@ -106,751 +100,6 @@ function format_sql($sql)
 	}
 }
 
-
-
-class db_mysql
-{
-	public $error_id = 0;
-	public $error = '';
-	public $prefix = 'qinggan_';
-	public $conn;
-	public $debug = false;
-	public $config_db = array('host'=>'localhost','user'=>'root','pass'=>'','data'=>'','port'=>3306);
-	private $type = MYSQL_ASSOC;
-	private $query; //执行对象
-	private $time_use = 0;
-	private $time_tmp = 0;
-	private $count = 0;
-
-	public function __construct($config=array())
-	{
-		$this->debug = $config["debug"] ? $config["debug"] : false;
-		$this->prefix = $config['prefix'] ? $config['prefix'] : 'qinggan_';
-		$this->_config_db($config);
-	}
-
-	//连接数据库
-	public function connect_db($data='')
-	{
-		if(!$data){
-			$data = $this->config_db['data'];
-		}
-		$linkhost = $this->config_db['host'].":".($this->config_db['port'] ? $this->config_db['port'] : '3306');
-		if($this->config_db['socket']){
-			$linkhost .= ":".$this->config_db['socket'];
-		}
-		$this->conn = @mysql_connect($linkhost,$this->config_db['user'],$this->config_db['pass'],true,MYSQL_CLIENT_COMPRESS);
-		if(!$this->conn || !is_resource($this->conn)){
-			return $this->debug(mysql_error(),mysql_errno());
-		}
-		$this->debug();
-		mysql_query("SET NAMES 'utf8'",$this->conn);
-		mysql_query("SET sql_mode=''",$this->conn);
-		$this->select_db($data);
-		return true;
-	}
-
-	//更换数据库选择
-	public function select_db($data="")
-	{
-		$this->check_connect();
-		@mysql_select_db($data,$this->conn);
-		if(mysql_error() || mysql_errno()){
-			return $this->debug(mysql_error(),mysql_errno());
-		}
-		$this->debug();
-		return true;
-	}
-
-	private function check_connect()
-	{
-		if(!$this->conn || !is_resource($this->conn)){
-			$this->connect_db();
-		}else{
-			if(!mysql_ping($this->conn)){
-				mysql_close($this->conn);
-				$this->connect_db();
-			}
-		}
-	}
-
-	//关闭数据库连接
-	public function __destruct()
-	{
-		@mysql_close($this->conn);
-		unset($this);
-	}
-
-	//定义基本的变量信息
-	public function set($name,$value)
-	{
-		if($name == "rs_type" || $name == 'type'){
-			$value = strtolower($value) == "num" ? MYSQL_NUM : MYSQL_ASSOC;
-			$this->type = $value;
-		}else{
-			$this->$name = $value;
-		}
-	}
-
-	public function query($sql)
-	{
-		if(!$sql || !trim($sql)){
-			return false;
-		}
-		$sql = trim($sql);
-		$this->check_connect();
-		$this->query = mysql_query($sql,$this->conn);
-		if(!$this->query){
-			return false;
-		}
-		return $this->query;
-	}
-
-	public function get_all($sql,$primary="")
-	{
-		if(!$sql || !trim($sql)){
-			return false;
-		}
-		$sql = trim($sql);
-		$this->query($sql);
-		$rs = false;
-		while($rows = mysql_fetch_array($this->query,$this->type)){
-			$rs[$rows[$primary]] = $rows;
-		}
-		mysql_free_result($this->query);
-		return $rs;
-	}
-
-	//取得单独数据
-	public function get_one($sql="")
-	{
-		if(!$sql || !trim($sql)){
-			return false;
-		}
-		$sql = trim($sql);
-		$this->query($sql);
-		$rs = mysql_fetch_array($this->query,$this->type);
-		mysql_free_result($this->query);
-		return $rs;
-	}
-
-	public function insert_id()
-	{
-		return mysql_insert_id($this->conn);
-	}
-
-	public function insert($sql)
-	{
-		$this->query($sql);
-		return $this->insert_id();
-	}
-
-	public function count($sql="")
-	{
-		if($sql){
-			$this->set('type','num');
-			$rs = $this->get_one($sql);
-			$this->set('type','assoc');
-			return $rs[0];
-		}else{
-			return mysql_num_rows($this->query);
-		}
-	}
-
-	public function escape_string($char)
-	{
-		if(!$char){
-			return false;
-		}
-		return mysql_real_escape_string($char,$this->conn);
-	}
-
-	private function _config_db($config)
-	{
-		$this->config_db['host'] = $config['host'] ? $config['host'] : 'localhost';
-		$this->config_db['port'] = $config['port'] ? $config['port'] : '3306';
-		$this->config_db['user'] = $config['user'] ? $config['user'] : 'root';
-		$this->config_db['pass'] = $config['pass'] ? $config['pass'] : '';
-		$this->config_db['data'] = $config['data'] ? $config['data'] : '';
-		$this->config_db['socket'] = isset($config['socket']) ? $config['socket'] : '';
-		if($this->config_db['data']){
-			$this->connect_db($this->config_db['data']);
-		}
-	}
-
-	public function debug($info='',$id=0)
-	{
-		$this->error_id = $id;
-		$this->error = $info;
-	}
-
-	public function insert_array($data,$table,$insert_type="insert")
-	{
-		$table = $this->prefix.$table;
-		if($insert_type == "insert"){
-			$sql = "INSERT INTO ".$table;
-		}else{
-			$sql = "REPLACE INTO ".$table;
-		}
-		$sql_fields = array();
-		$sql_val = array();
-		foreach($data AS $key=>$value){
-			$sql_fields[] = "`".$key."`";
-			$sql_val[] = "'".$value."'";
-		}
-		$sql.= "(".(implode(",",$sql_fields)).") VALUES(".(implode(",",$sql_val)).")";
-		return $this->insert($sql);
-	}
-
-}
-
-class db_mysqli
-{
-	public $prefix = 'qinggan_';
-	public $conn;
-	public $debug = false;
-	public $config_db = array('host'=>'localhost','user'=>'root','pass'=>'','data'=>'','port'=>3306);
-	private $type = MYSQLI_ASSOC;
-	private $query;
-	private $time_use = 0;
-	private $time_tmp = 0;
-	private $count = 0;
-
-	public $error_id = 0;
-	public $error = '';
-
-	public function __construct($config=array())
-	{
-		$this->debug = $config["debug"] ? $config["debug"] : false;
-		$this->prefix = $config['prefix'] ? $config['prefix'] : 'qinggan_';
-		$this->_config_db($config);
-	}
-
-	//连接数据库
-	public function connect_db($data='')
-	{
-		if(!$data){
-			$data = $this->config_db['data'];
-		}
-		$this->conn = @new mysqli($this->config_db['host'],$this->config_db['user'],$this->config_db['pass'],'',$this->config_db['port'],$this->config_db['socket']);
-		if(!$this->conn){
-			return $this->error('数据库连接失败');
-		}
-		if($this->conn->connect_error){
-			return $this->debug($this->conn->connect_error,$this->conn->connect_errno);
-		}
-		if($this->conn->error){
-			return $this->debug($this->conn->error,$this->conn->errno);
-		}
-		if(!$this->conn || !is_object($this->conn)){
-			return $this->debug('数据库连接请求失败');
-		}
-		$this->debug();
-		$this->conn->query("SET NAMES 'utf8'");
-		$this->conn->query("SET sql_mode=''");
-		$this->select_db($data);
-		return true;
-	}
-
-	//更换数据库选择
-	public function select_db($data="")
-	{
-		$this->check_connect();
-		$this->conn->select_db($data);
-		if($this->conn->error){
-			return $this->debug($this->conn->error,$this->conn->errno);
-		}
-		$this->debug();
-		return true;
-	}
-
-	private function check_connect()
-	{
-		if(!$this->conn || !is_object($this->conn)){
-			$this->connect_db();
-		}else{
-			if(!$this->conn->ping()){
-				$this->conn->close();
-				$this->connect_db();
-			}
-		}
-	}
-
-	//关闭数据库连接
-	public function __destruct()
-	{
-		@$this->conn->close();
-		unset($this);
-	}
-
-	//定义基本的变量信息
-	public function set($name,$value)
-	{
-		if($name == "rs_type" || $name == 'type'){
-			$value = strtolower($value) == "num" ? MYSQLI_NUM : MYSQLI_ASSOC;
-			$this->type = $value;
-		}else{
-			$this->$name = $value;
-		}
-	}
-
-	public function query($sql)
-	{
-		if(!$sql || !trim($sql)){
-			return false;
-		}
-		$sql = trim($sql);
-		$this->check_connect();
-		$this->query = $this->conn->query($sql);
-		return $this->query;
-	}
-
-	public function get_all($sql,$primary="")
-	{
-		if(!$sql || !trim($sql)){
-			return false;
-		}
-		$sql = trim($sql);
-		$this->query($sql);
-		if(!$this->query || !is_object($this->query)){
-			return false;
-		}
-		$rs = false;
-		while($rows = $this->query->fetch_array($this->type)){
-			$rs[$rows[$primary]] = $rows;
-		}
-		return $rs;
-	}
-
-	public function get_one($sql="")
-	{
-		if(!$sql || !trim($sql)){
-			return false;
-		}
-		$sql = trim($sql);
-		$this->query($sql);
-		if(!$this->query || !is_object($this->query)){
-			return false;
-		}
-		$this->_time();
-		$rs = $this->query->fetch_array($this->type);
-		$this->query->free_result();
-		return $rs;
-	}
-
-	//返回最后插入的ID
-	public function insert_id()
-	{
-		return $this->conn->insert_id;
-	}
-
-	//执行写入SQL
-	public function insert($sql)
-	{
-		$this->query($sql);
-		return $this->insert_id();
-	}
-
-	public function count($sql="")
-	{
-		if($sql){
-			$this->set('type','num');
-			$rs = $this->get_one($sql);
-			$this->set('type','assoc');
-			return $rs[0];
-		}else{
-			return $this->query->num_rows;
-		}
-	}
-
-	public function escape_string($char)
-	{
-		if(!$char){
-			return false;
-		}
-		return $this->conn->escape_string($char);
-	}
-
-	//初始化数据库
-	private function _config_db($config)
-	{
-		$this->config_db['host'] = $config['host'] ? $config['host'] : 'localhost';
-		$this->config_db['port'] = $config['port'] ? $config['port'] : '3306';
-		$this->config_db['user'] = $config['user'] ? $config['user'] : 'root';
-		$this->config_db['pass'] = $config['pass'] ? $config['pass'] : '';
-		$this->config_db['data'] = $config['data'] ? $config['data'] : '';
-		$this->config_db['socket'] = isset($config['socket']) ? $config['socket'] : '';
-		if($this->config_db['data']){
-			$this->connect_db($this->config_db['data']);
-		}
-	}
-
-	public function debug($info='',$id='')
-	{
-		$this->error_id = $id;
-		$this->error = $info;
-	}
-
-	public function insert_array($data,$table,$insert_type="insert")
-	{
-		$table = $this->prefix.$table;
-		if($insert_type == "insert"){
-			$sql = "INSERT INTO ".$table;
-		}else{
-			$sql = "REPLACE INTO ".$table;
-		}
-		$sql_fields = array();
-		$sql_val = array();
-		foreach($data AS $key=>$value){
-			$sql_fields[] = "`".$key."`";
-			$sql_val[] = "'".$value."'";
-		}
-		$sql.= "(".(implode(",",$sql_fields)).") VALUES(".(implode(",",$sql_val)).")";
-		return $this->insert($sql);
-	}
-}
-
-
-class phpzip_lib
-{
-	private $total_files = 0;
-	private $total_folders = 0;
-	public $file_count = 0 ;
-	public $datastr_len   = 0;
-	public $dirstr_len = 0;
-	public $gzfilename;
-	public $fp;
-	public $dirstr='';
-
-	public function __construct()
-	{
-		$this->total_files = 0;
-		$this->total_folders = 0;
-	}
-
-	public function unzip($file,$to='',$index= array(-1))
-	{
-		return $this->Extract($file,$to,$index);
-	}
-
-	public function Extract( $zn, $to, $index = array(-1) )
-	{
-		$ok = 0;
-		$zip = @fopen($zn,'rb');
-		if(!$zip) return(-1);
-		$cdir = $this->ReadCentralDir($zip,$zn);
-		$pos_entry = $cdir['offset'];
-
-		if(!is_array($index))
-		{
-			$index = array($index);
-		}
-		for($i=0; $index[$i];$i++)
-		{
-			if(intval($index[$i])!=$index[$i]||$index[$i]>$cdir['entries'])
-			{
-				return(-1);
-			}
-		}
-		for ($i=0; $i<$cdir['entries']; $i++)
-		{
-			@fseek($zip, $pos_entry);
-			$header = $this->ReadCentralFileHeaders($zip);
-			$header['index'] = $i; $pos_entry = ftell($zip);
-			@rewind($zip);
-			fseek($zip, $header['offset']);
-			if(in_array("-1",$index)||in_array($i,$index))
-			{
-				$stat[$header['filename']]=$this->ExtractFile($header, $to, $zip);
-			}
-		}
-		fclose($zip);
-		return $stat;
-	}
-
-	function ReadFileHeader($zip)
-	{
-		$binary_data = fread($zip, 30);
-		$data = unpack('vchk/vid/vversion/vflag/vcompression/vmtime/vmdate/Vcrc/Vcompressed_size/Vsize/vfilename_len/vextra_len',$binary_data);
-
-		$header['filename'] = fread($zip, $data['filename_len']);
-		if ($data['extra_len'] != 0)
-		{
-			$header['extra'] = fread($zip, $data['extra_len']);
-		}
-		else
-		{
-			$header['extra'] = '';
-		}
-		$header['compression'] = $data['compression'];
-		$header['size'] = $data['size'];
-		$header['compressed_size'] = $data['compressed_size'];
-		$header['crc'] = $data['crc'];
-		$header['flag'] = $data['flag'];
-		$header['mdate'] = $data['mdate'];
-		$header['mtime'] = $data['mtime'];
-
-		if ($header['mdate'] && $header['mtime'])
-		{
-			$hour=($header['mtime']&0xF800)>>11;$minute=($header['mtime']&0x07E0)>>5;
-			$seconde=($header['mtime']&0x001F)*2;$year=(($header['mdate']&0xFE00)>>9)+1980;
-			$month=($header['mdate']&0x01E0)>>5;$day=$header['mdate']&0x001F;
-			$header['mtime'] = mktime($hour, $minute, $seconde, $month, $day, $year);
-		}
-		else
-		{
-			$header['mtime'] = time();
-		}
-		$header['stored_filename'] = $header['filename'];
-		$header['status'] = "ok";
-		return $header;
-	}
-
-	function ReadCentralFileHeaders($zip)
-	{
-    	$binary_data = fread($zip, 46);
-    	$header = unpack('vchkid/vid/vversion/vversion_extracted/vflag/vcompression/vmtime/vmdate/Vcrc/Vcompressed_size/Vsize/vfilename_len/vextra_len/vcomment_len/vdisk/vinternal/Vexternal/Voffset', $binary_data);
-
-    	if ($header['filename_len'] != 0)
-    	{
-	    	$header['filename'] = fread($zip,$header['filename_len']);
-    	}
-    	else
-    	{
-	    	$header['filename'] = '';
-    	}
-    	if ($header['extra_len'] != 0)
-    	{
-	    	$header['extra'] = fread($zip, $header['extra_len']);
-    	}
-    	else
-    	{
-	    	$header['extra'] = '';
-    	}
-    	if ($header['comment_len'] != 0)
-    	{
-	    	$header['comment'] = fread($zip, $header['comment_len']);
-    	}
-    	else
-    	{
-	    	$header['comment'] = '';
-    	}
-
-		if ($header['mdate'] && $header['mtime'])
-		{
-			$hour = ($header['mtime'] & 0xF800) >> 11;
-			$minute = ($header['mtime'] & 0x07E0) >> 5;
-			$seconde = ($header['mtime'] & 0x001F)*2;
-			$year = (($header['mdate'] & 0xFE00) >> 9) + 1980;
-			$month = ($header['mdate'] & 0x01E0) >> 5;
-			$day = $header['mdate'] & 0x001F;
-			$header['mtime'] = mktime($hour, $minute, $seconde, $month, $day, $year);
-		}
-		else
-		{
-			$header['mtime'] = time();
-		}
-		$header['stored_filename'] = $header['filename'];
-		$header['status'] = 'ok';
-		if (substr($header['filename'], -1) == '/')
-		{
-			$header['external'] = 0x41FF0010;
-		}
-		return $header;
-	}
-
-	function ReadCentralDir($zip,$zip_name)
-	{
-		$size = filesize($zip_name);
-		if ($size < 277)
-		{
-			$maximum_size = $size;
-		}
-		else
-		{
-			$maximum_size=277;
-		}
-		@fseek($zip, $size-$maximum_size);
-		$pos = ftell($zip); $bytes = 0x00000000;
-		while ($pos < $size)
-		{
-			$byte = @fread($zip, 1);
-			$bytes=($bytes << 8) | ord($byte);
-			if ($bytes == 0x504b0506 or $bytes == 0x2e706870504b0506)
-			{
-				$pos++;
-				break;
-			}
-			$pos++;
-		}
-		$fdata=fread($zip,18);
-		$data=@unpack('vdisk/vdisk_start/vdisk_entries/ventries/Vsize/Voffset/vcomment_size',$fdata);
-		if ($data['comment_size'] != 0)
-		{
-			$centd['comment'] = fread($zip, $data['comment_size']);
-		}
-		else
-		{
-			$centd['comment'] = '';
-		}
-		$centd['entries'] = $data['entries'];
-		$centd['disk_entries'] = $data['disk_entries'];
-		$centd['offset'] = $data['offset'];$centd['disk_start'] = $data['disk_start'];
-		$centd['size'] = $data['size'];  $centd['disk'] = $data['disk'];
-		return $centd;
-	}
-
-	function ExtractFile($header,$to,$zip)
-	{
-		$header = $this->readfileheader($zip);
-		if(substr($to,-1)!="/")
-		{
-			$to.="/";
-		}
-		if($to=='./')
-		{
-			$to = '';
-		}
-		$pth = explode("/",$to.$header['filename']);
-		$mydir = '';
-		for($i=0;$i<count($pth)-1;$i++)
-		{
-			if(!$pth[$i])
-			{
-				continue;
-			}
-			$mydir .= $pth[$i]."/";
-			if((!is_dir($mydir) && @mkdir($mydir,0777)) || (($mydir==$to.$header['filename'] || ($mydir==$to && $this->total_folders==0)) && is_dir($mydir)) )
-			{
-				@chmod($mydir,0777);
-				$this->total_folders ++;
-				//echo "<input name='dfile[]' type='checkbox' value='$mydir' checked> <a href='$mydir' target='_blank'>目录: $mydir</a><br>";
-			}
-		}
-	
-		if(strrchr($header['filename'],'/')=='/')
-		{
-			return;
-		}
-
-		if (!($header['external']==0x41FF0010)&&!($header['external']==16))
-		{
-			if ($header['compression']==0)
-			{
-				$fp = @fopen($to.$header['filename'], 'wb');
-				if(!$fp)
-				{
-					return(-1);
-				}
-				$size = $header['compressed_size'];
-			
-				while ($size != 0)
-				{
-					$read_size = ($size < 2048 ? $size : 2048);
-					$buffer = fread($zip, $read_size);
-					$binary_data = pack('a'.$read_size, $buffer);
-					@fwrite($fp, $binary_data, $read_size);
-					$size -= $read_size;
-				}
-				fclose($fp);
-				touch($to.$header['filename'], $header['mtime']);
-			}
-			else
-			{
-				$fp = @fopen($to.$header['filename'].'.gz','wb');
-				if(!$fp)
-				{
-					return(-1);
-				}
-				$binary_data = pack('va1a1Va1a1', 0x8b1f, chr($header['compression']),chr(0x00), time(), chr(0x00), chr(3));
-				
-				fwrite($fp, $binary_data, 10);
-				$size = $header['compressed_size'];
-				while ($size != 0)
-				{
-					$read_size = ($size < 1024 ? $size : 1024);
-					$buffer = fread($zip, $read_size);
-					$binary_data = pack('a'.$read_size, $buffer);
-					@fwrite($fp, $binary_data, $read_size);
-					$size -= $read_size;
-				}
-			
-				$binary_data = pack('VV', $header['crc'], $header['size']);
-				fwrite($fp, $binary_data,8); fclose($fp);
-		
-				$gzp = @gzopen($to.$header['filename'].'.gz','rb') or die("Cette archive gzcompress error");
-				if(!$gzp)
-				{
-					return(-2);
-				}
-				$fp = @fopen($to.$header['filename'],'wb');
-				if(!$fp)
-				{
-					return(-1);
-				}
-				$size = $header['size'];
-				while ($size != 0)
-				{
-					$read_size = ($size < 2048 ? $size : 2048);
-					$buffer = gzread($gzp, $read_size);
-					$binary_data = pack('a'.$read_size, $buffer);
-					@fwrite($fp, $binary_data, $read_size);
-					$size -= $read_size;
-				}
-				fclose($fp); gzclose($gzp);
-				touch($to.$header['filename'], $header['mtime']);
-				@unlink($to.$header['filename'].'.gz');
-			}
-		}
-		$this->total_files ++;
-		return true;
- 	}
-
- 	//返回文件的修改时间格式
- 	//只为本类内部函数调用.
-	function unix2DosTime($unixtime = 0)
-	{
-		$timearray = ($unixtime == 0) ? getdate() : getdate($unixtime);
-		if ($timearray['year'] < 1980) 
-		{
-			$timearray['year']    = 1980;
-			$timearray['mon']     = 1;
-			$timearray['mday']    = 1;
-			$timearray['hours']   = 0;
-			$timearray['minutes'] = 0;
-			$timearray['seconds'] = 0;
-		}
-
-		return (($timearray['year'] - 1980) << 25) | ($timearray['mon'] << 21) | ($timearray['mday'] << 16) | ($timearray['hours'] << 11) | ($timearray['minutes'] << 5) | ($timearray['seconds'] >> 1);
-	}
-
-	/*
-	初始化文件,建立文件目录,
-	并返回文件的写入权限.
-	*/
-	function startfile($path = 'tmp.zip')
-	{
-		$this->gzfilename=$path;
-		$mypathdir=array();
-		do
-		{
-			$mypathdir[] = $path = dirname($path);
-		}while($path != '.');
-		@end($mypathdir);
-		do
-		{
-			$path = @current($mypathdir);
-			@mkdir($path);
-		}while(@prev($mypathdir));
-
-		if($this->fp=@fopen($this->gzfilename,"wb"))
-		{
-			return true;
-		}
-		return false;
-	}
-}
-
 class install
 {
 	public function head($num=1)
@@ -872,10 +121,10 @@ class install
 			$current[$num] = 'current';
 		}
 		echo '<li class="'.$current[1].'"><span class="num">1</span><p class="name">检测安装环境</p></li>';
-		echo '<li class="'.$current[2].'"><span class="num">2</span><p class="name">获取安装包</p></li>';
-		echo '<li class="'.$current[3].'"><span class="num">3</span><p class="name">可写检测</p></li>';
-		echo '<li class="'.$current[4].'"><span class="num">4</span><p class="name">阅读安装协议</p></li>';
-		echo '<li class="'.$current[5].'"><span class="num">5</span><p class="name">开始安装</p></li>';
+		echo '<li class="'.$current[2].'"><span class="num">2</span><p class="name">可写检测</p></li>';
+		echo '<li class="'.$current[3].'"><span class="num">3</span><p class="name">阅读安装协议</p></li>';
+		echo '<li class="'.$current[4].'"><span class="num">4</span><p class="name">配置资料</p></li>';
+		echo '<li class="'.$current[5].'"><span class="num">5</span><p class="name">开发安装</p></li>';
 		echo '<li class="'.$current[6].'"><span class="num">6</span><p class="name">完成安装</p></li>';
 		echo '</ul></div></div>';
 	}
@@ -953,56 +202,9 @@ class install
 		if(!$status){
 			echo '<div style="line-height:33px;color:red;text-align:center;">检测不通过，不能执行安装</div>';
 		}else{
-			echo '<input name="" type="button" class="next_btn" value="下一步" onclick="window.location.href=\'?step=getzip\'" />';
+			echo '<input name="" type="button" class="next_btn" value="下一步" onclick="window.location.href=\'?step=checkdir\'" />';
 		}
 		echo '<div class="cl"></div></div>';
-	}
-
-	public function load_zip()
-	{
-		echo "\n";
-		echo '<script type="text/javascript">'."\n";
-		echo 'function action()'."\n";
-		echo '{'."\n\t";
-		echo '$.ajax({'."\n\t\t";
-		echo '"url":"?step=getzip2",'."\n\t\t";
-		echo '"dataType":"json",'."\n\t\t";
-		echo '"cache":false,'."\n\t\t";
-		echo '"async":true,'."\n\t\t";
-		echo '"beforeSend": function (XMLHttpRequest){'."\n\t\t\t";
-		echo 'XMLHttpRequest.setRequestHeader("request_type","ajax");'."\n\t\t\t";
-		echo '$(".btn_wrap").html(\'正在获取数据……<img src="data:image/gif;base64,R0lGODlhEAAQAPeQANHR0fX19aampvDw8O/v7+zs7CgoKGBgYPf395iYmMPDw4CAgDMzM8LCwtbW1vv7+4SEhIWFhbe3t6Ojo25ubltbW+vr6+fn51paWjs7O0VFRXx8fKKiopubm7m5uUNDQ97e3pKSkqqqqvHx8W1tbc3NzTk5OYyMjEtLS4+PjzAwMKSkpO3t7ebm5ri4uG9vb5qamlhYWAkJCcjIyMzMzBgYGAUFBUpKStPT0zExMWRkZLq6ur6+vq+vr09PTzY2NgEBAfr6+vT09BkZGR0dHUdHR1ZWVmdnZ8/Pz9nZ2RYWFlNTU7a2tpmZma2trZGRkUZGRsTExOPj4729vaioqAICAk1NTeDg4KmpqaGhoenp6SkpKcXFxR4eHtzc3EhISKCgoO7u7rKysl5eXp6eni8vL7W1tSMjI1JSUsfHx3p6eioqKiEhIeHh4T09PVBQUOXl5bOzs0lJSc7OzsrKymZmZvPz88vLy2hoaEFBQT8/P3t7e9/f3z4+PpeXlx8fHxAQEAgICMbGxqysrOrq6jo6OvLy8tvb20BAQFVVVdTU1OLi4qurq8HBwf39/QAAAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQJAACQACwAAAAAEAAQAAAIfgAhCRzogYGJBgMTQoqy4A4kA48eZVAoUFCZR3kOqYioAZKjAY4GRogoI4GCDyhKQAoggMBABz6GjGlBMUDIgYR6FKCoEEGHCQ94KkwRkYNQSAAaQRr5KMHRpJAKnAgx4qjVq44CCLWZkIAArQpZuhz48SYAAALLHm2k9OrVgAAh+QQJAACQACwAAAAAEAAQAAAIfgAhCRzoAMMBEAMTKqzw6BGFIGCWCAgyMA0FGoZINNzwRMkjJVgGxnj0RsKFBRAsGGj46MBAMVDMWEiYZQ2QLRIGXsBSQCEkEVZ2+BzqsxEAogIBNBJoFCkkpU6jShXoKADRAI4SEhBgVWEAAQQSOhqQ9elRSGPLDm20dCrSgAAh+QQJAACQACwAAAAAEAAQAAAIfQAhCRyIoMOEBwMTKkzx6BEHSA0WzEnoaIAjSBEaJqDz41EhRQMJCAgAqcCJECP2VGkIY6Ajkgq9GKmBgY/Cm5C09GCBE6cHBiYaQGoEoCckAw0zDC3aU0VDDUYHKviAokTUni97BrgYcuTNAAIIULQoEADTilxxNmp0tW1AACH5BAkAAJAALAAAAAAQABAAAAh+ACEJHEiwoEGBjRodFOhogCOBAABAYqHgBRKCBAQEKLiizyM8BB1tLCiFSpEpCwu2EFEgZUEHGA6AgNRI4sIKjx5RoGnzIImcG1wKv';
-		echo 'LAAggWhMHKsCDmS4BM2j7qIGJixqUADOR8dGNjwIaSIkLIQeXRGwsKEAgcdceFVKMGAACH5BAkAAJAALAAAAAAQABAAAAh9ACEJHEiwoEGBjRodFOhogCOBAAAwdEiQgIAABgMIIEDQEcaDAR4uHElSIIIOEx5AaiRxYYpHjzisbHkwAswEJSEVOBFiRMkoL3B0/Ehwhp5AiIQKtIjRAwMTDdRUgdlkYMOHBmBmuILGRqJFB1XA1ADpihM4CxV8QFHCYEAAIfkECQAAkAAsAAAAABAAEAAACHsAIQkcSLCgQYGNGh0U6GiAI4EAADB0SJCAgAAGAwggQNARxoMBHi4cSfJgI4kjASiEdJKkypILE+RYYdDODiEDYQx5ZEAAwTA8YtAYeOORUSgOMBwAMcHNozoDBdR4tEVCBaMUWsTRoWDgA0ZHJEAiYXQDzAsLIFgwGBAAIfkECQAAkAAsAAAAABAAEAAACH0AIQkcSLCgQYGNGh0U6GiAI4EAADB0SJCAgAAGAwggQNARxoMBHi4c6YGBiQYjBxp49CjDSAAKVbDU8FKhgg8oSqQkOOMFkp2QuPyQ8SVJRpGQILCU4QdBhwkPIGnkKDCJHBsVtKRgyQFSQ6SQ2jiRAikCywRAC5wIMcJgQAAh+QQFAACQACwAAAAAEAAQAAAIfAAhCRxIsKBABGSWUHEEqVEjgwKbAHpERAAkAAAEOhrAUOCNRyCLFAwggMBAAX+AMHBhMEBHgSKsMIFI0AGGAyBoEqwAkoJOAA9JgNzw8+GFBRAs6Cw4wAWCpQMbGZkhpOVLSDEe+ZhJkKTJgVN08GBxMSOkjVcLOoTKNiAAOw==" width="16px" height="16px" /><div class="cl"></div>\');'."\n\t\t";
-		echo '},'."\n\t\t";
-		echo '"success":function(rs){'."\n\t\t\t";
-		echo 'if(rs.status == "ok"){'."\n\t\t\t\t";
-		echo 'alert("成功执行，请点下一步进行安装");'."\n\t\t\t\t";
-		echo 'window.location.href = "?step=checkdir";'."\n\t\t\t";
-		echo '}else{'."\n\t\t\t\t";
-		echo 'alert(rs.content);'."\n\t\t\t\t";
-		echo 'window.location.reload();'."\n\t\t\t\t";
-		echo 'return false;'."\n\t\t\t";
-		echo '}'."\n\t\t";
-		echo '}'."\n\t";
-		echo '});'."\n";
-		echo '}'."\n";
-		echo '</script>'."\n";
-		if(file_exists(ROOT.'phpok.zip')){
-			echo '<div class="tips_box"><div class="tips_title">提示消息</div>';
-			echo '<div class="tips_txt">';
-			echo '<p>检测到根目录存在phpok.zip安装包，点击“执行解压”进行解压操作</p></div></div>';
-			echo '<div class="btn_wrap">';
-			echo '<input name="" type="button" class="next_btn" value="执行解压" onclick="action()" />';
-			echo '<div class="cl"></div></div>';
-		}else{
-			echo '<div class="tips_box"><div class="tips_title">提示消息</div>';
-			echo '<div class="tips_txt">';
-			echo '<p>点击“远程获取”，系统将偿试从远程获取PHPOK.ZIP最新安装包，如获取失败，请手动下载<br />下载地址：<a href="http://www.phpok.com/phpok.html" target="_blank">http://www.phpok.com/phpok.html</a></p></div></div>';
-			echo '<div class="btn_wrap">';
-			echo '<input name="" type="button" class="next_btn" value="远程获取" onclick="action()" />';
-			echo '<input name="" type="button" class="prev_btn" value="上一步" onclick="go_prev()" />';
-			echo '<div class="cl"></div></div>';
-		}
 	}
 
 	public function check_dir()
@@ -1010,7 +212,7 @@ class install
 		$status = true;
 		echo '<div class="tips_box"><div class="tips_title">提示消息</div>';
 		echo '<div class="tips_txt">';
-		echo '<p>检测环境目录是否可写<br />已存在安装包将跳过第二步操作</p></div></div>';
+		echo '<p>检测环境目录是否可写</p></div></div>';
 		echo '<table width="980" border="0" cellspacing="0" cellpadding="0" class="tablebox">';
 		echo '<tr class="head_bg"><td>目录或文件</td><td>要求</td><td>当前环境检测</td></tr>';
 		$tmpfile = time().".txt";
@@ -1188,7 +390,7 @@ class install
 		echo 'function submit_next()'."\n";
 		echo '{'."\n\t";
 		echo 'if(!$("#agree").is(":checked")){'."\n\t\t";
-		echo 'alert("请勾选同意本站安装协议");'."\n\t\t";
+		echo '$.dialog.alert("请勾选同意本站安装协议");'."\n\t\t";
 		echo 'return false;'."\n\t\t";
 		echo '}'."\n\t";
 		echo 'window.location.href = "?step=install";'."\n";
@@ -1385,10 +587,6 @@ function check_connect(isin)
 				<input type="text" class="infor_input" name="dir" id="dir" value="{$site['dir']}" />
 				<p class="tips_p">根目录请设为/</p>
 			</li>
-			<li><span class="l_name">测试数据：</span>
-				<input type="radio" name="test" value="1" checked />有 &nbsp; 
-				<input type="radio" name="test" value="0" />无 &nbsp; 
-			</li>
         </ul>
     </div>   
 </div>
@@ -1432,7 +630,7 @@ function waiting(id)
 {
 	var val = jQuery("#"+id).attr("status");
 	if(val == 'wait'){
-		jQuery("#"+id).html('<img src="{$this->loading()}" width="16" height="16" />');
+		jQuery("#"+id).html('<img src="images/loading.gif" width="16" height="16" />');
 		jQuery("#"+id).attr("status","installing");
 		jQuery("#"+id+"_status").html('...');
 	}
@@ -1537,7 +735,7 @@ EOT;
 
 	private function loading()
 	{
-		$info = 'data:image/gif;base64,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';
+		$info = 'images/loading.gif';
 		return $info;
 	}
 	
@@ -1611,82 +809,10 @@ EOT;
 
 	private function jsinfo()
 	{
-		echo '<script type="text/javascript" src="'.JQUERY.'"></script>';
+		echo '<link rel="stylesheet" type="text/css" href="css/artdialog.css" />'."\n";
+		echo '<script type="text/javascript" src="js/jquery.js"></script>'."\n";
+		echo '<script type="text/javascript" src="js/jquery.artdialog.js"></script>'."\n";
 	}
-
-	public function download($url,$file='')
-	{
-		if($file && file_exists($file)){
-			return true;
-		}
-		$curl = curl_init($url);
-		curl_setopt($curl,CURLOPT_FORBID_REUSE,true);
-		curl_setopt($curl,CURLOPT_HEADER,false);
-		//curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);//把结果返回，而非直接输出
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,10);//等待时间，超时退出
-		curl_setopt($curl,CURLOPT_ENCODING ,'gzip');//GZIP压缩
-		curl_setopt($curl, CURLOPT_TIMEOUT, 1800);
-		$handle = fopen($file,'wb');
-		curl_setopt($curl,CURLOPT_FILE,$handle);
-		curl_exec($curl);
-		curl_close($curl);
-		fclose($handle);
-		return true;
-	}
-
-	public function curl($url,$post="")
-	{
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_FORBID_REUSE, true); // 处理完后，关闭连接，释放资源
-		curl_setopt($curl, CURLOPT_HEADER, true);//结果中包含头部信息
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);//把结果返回，而非直接输出
-		if($post){
-			curl_setopt($curl,CURLOPT_POST,true);
-			curl_setopt($curl,CURLOPT_POSTFIELDS,$post);
-		}else{
-			curl_setopt($curl, CURLOPT_HTTPGET,true);//使用GET传输数据
-		}
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,10);//等待时间，超时退出
-		curl_setopt($curl,CURLOPT_ENCODING ,'gzip');//GZIP压缩
-		curl_setopt($curl, CURLOPT_TIMEOUT, 1800);
-		$purl = $this->format_url($url);
-		$header = array();
-		$header[] = "Host: ".$purl["host"];
-		$header[] = "Referer: ".$purl['protocol'].$purl["host"];
-		if($post){
-			$length = strlen($post);
-			$header[] = 'Content-length: '.$length;
-		}
-		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-
-        $content = curl_exec($curl);
-        if (curl_errno($curl) != 0){
-            return false;
-        }
-        $separator = '/\r\n\r\n|\n\n|\r\r/';
-        list($http_header, $http_body) = preg_split($separator, $content, 2);
-        $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-		$last_url = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
-        curl_close($curl);
-        //判断是否是301或302跳转
-        if ($http_code == 301 || $http_code == 302){
-			$matches = array();
-			preg_match('/Location:(.*?)\n/', $http_header, $matches);
-			$url = @parse_url(trim(array_pop($matches)));
-			if (!$url) return $data;
-			$new_url = $url['scheme'] . '://' . $url['host'] . $url['path']
-			. (isset($url['query']) ? '?' . $url['query'] : '');
-			$new_url = stripslashes($new_url);
-			return $this->curl($new_url, $post);
-		}
-        if($http_code != '200'){
-	        return false;
-        }
-		return $http_body;
-    }
 
 	public function format_url($url)
 	{
@@ -1738,6 +864,7 @@ if(file_exists(ROOT.'data/install.lock')){
 	error('已安装过，不能重复安装');
 }
 
+include(ROOT.'framework/engine/db.php');
 $install = new install();
 $step = $install->get('step',true);
 if(!$step){
@@ -1745,27 +872,18 @@ if(!$step){
 	$install->env_check();
 	$install->foot();
 }
-if($step == 'getzip'){
-	if(file_exists(ROOT.'config.php')){
-		header("Location:?step=checkdir");
-		exit;
-	}
-	$install->head(2);
-	$install->load_zip();
-	$install->foot();
-}
 if($step == 'checkdir'){
-	$install->head(3);
+	$install->head(2);
 	$install->check_dir();
 	$install->foot();
 }
 if($step == 'readme'){
-	$install->head(4);
+	$install->head(3);
 	$install->readme();
 	$install->foot();
 }
 if($step == 'install'){
-	$install->head(5);
+	$install->head(4);
 	$install->config();
 	$install->foot();
 }
@@ -1799,6 +917,7 @@ if($step == 'checkdb'){
 		}
 	}
 	$config = array('host'=>$host,'user'=>$user,'pass'=>$pass,'port'=>$port,'data'=>$data);
+	include(ROOT.'framework/engine/db/'.$file.'.php');
 	$dbname = 'db_'.$file;
 	$db = new $dbname($config);
 	if($db->error || $db->error_id){
@@ -1814,6 +933,7 @@ if($step == 'save'){
 	if(!$file){
 		$file = "mysql";
 	}
+	include(ROOT.'framework/engine/db/'.$file.'.php');
 	$dbconfig = array("file"=>$file);
 	$dbconfig['host'] = $install->get("host",false);
 	$dbconfig['port'] = $install->get("port",false);
@@ -1836,7 +956,6 @@ if($step == 'save'){
 	$info['user'] = $install->get('admin_user',false);
 	$info['email'] = $install->get('admin_email',false);
 	$info['pass'] = $install->get('admin_newpass',false);
-	$info['test'] = $install->get('test',false);
 	$handle = fopen(ROOT.'data/install.lock.php','wb');
 	fwrite($handle,'<?php'."\n");
 	foreach($info as $key=>$value){
@@ -1844,16 +963,17 @@ if($step == 'save'){
 		fwrite($handle,'$adminer["'.$key.'"] = "'.$value.'";'."\n");
 	}
 	fwrite($handle,'?>');
-	$install->head(6);
+	$install->head(5);
 	$install->import_info();
 	$install->foot();
 }
 if($step == 'ajax_importsql'){
 	include(ROOT.'config.php');
 	$file = $config['db']['file'];
+	include(ROOT.'framework/engine/db/'.$file.'.php');
 	$dbname = 'db_'.$file;
 	$db = new $dbname($config['db']);
-	$sql = file_get_contents(ROOT."data/table.sql");
+	$sql = file_get_contents(ROOT."install.sql");
 	if($db->prefix != "qinggan_"){
 		$sql = str_replace("qinggan_",$db->prefix,$sql);
 	}
@@ -1879,6 +999,7 @@ if($step == 'ajax_importsql'){
 if($step == 'ajax_initdata'){
 	include(ROOT.'config.php');
 	$file = $config['db']['file'];
+	include(ROOT.'framework/engine/db/'.$file.'.php');
 	$dbname = 'db_'.$file;
 	$db = new $dbname($config['db']);
 	//安装测试数据
@@ -1887,33 +1008,6 @@ if($step == 'ajax_initdata'){
 		exit("配置文件data/install.lock.php不存在");
 	}
 	include($file);
-	if($adminer['test']){
-		$sql = file_get_contents(ROOT."data/data.sql");
-		$zip = new phpzip_lib();
-		$zip->unzip(ROOT.'data/res.zip',ROOT.'/res/');
-	}else{
-		$sql = file_get_contents(ROOT.'data/data2.sql');
-	}
-	if($db->prefix != "qinggan_"){
-		$sql = str_replace("qinggan_",$db->prefix,$sql);
-	}
-	$sql = str_replace("\r","\n",$sql);
-	$ret = array();
-	$num = 0;
-	foreach(explode(";\n", trim($sql)) as $query) {
-		$queries = explode("\n", trim($query));
-		foreach($queries as $query) {
-			$ret[$num] .= $query[0] == '#' || $query[0].$query[1] == '--' ? '' : $query;
-		}
-		$num++;
-	}
-	unset($sql);
-	foreach($ret as $query) {
-		$query = trim($query);
-		if($query) {
-			$db->query($query);
-		}
-	}
 	//更新站点信息
 	$sql = "UPDATE ".$db->prefix."site_domain SET domain='".$adminer['domain']."'";
 	$db->query($sql);
@@ -1924,6 +1018,7 @@ if($step == 'ajax_initdata'){
 if($step == 'ajax_iadmin'){
 	include(ROOT.'config.php');
 	$file = $config['db']['file'];
+	include(ROOT.'framework/engine/db/'.$file.'.php');
 	$dbname = 'db_'.$file;
 	$db = new $dbname($config['db']);
 	$file = ROOT."data/install.lock.php";
@@ -1945,28 +1040,5 @@ if($step == 'ajax_clearcache'){
 if($step == 'ajax_endok'){
 	touch(ROOT."data/install.lock");
 	exit('ok');
-}
-if($step == 'getzip2'){
-	$array = array('status'=>'error','content'=>'正在执行中');
-	if(!file_exists(ROOT.'config.php')){
-		if(!file_exists(ROOT.'phpok.zip')){
-			$install->download(PHPOKFILE,ROOT.'phpok.zip');
-		}
-		$zip = new phpzip_lib();
-		$zip->unzip(ROOT.'phpok.zip',ROOT);
-	}
-	if(!file_exists('config.php')){
-		$array['content'] = '执行操作失败，请检查';
-		exit(json_encode($array));
-	}
-	chmod(ROOT.'config.php',0666);
-	chmod(ROOT.'data/tpl_www',0777);
-	chmod(ROOT.'data/tpl_admin',0777);
-	chmod(ROOT.'data/tpl_html',0777);
-	chmod(ROOT.'data/cache',0777);
-	chmod(ROOT.'res',0777);
-	$array['status'] = 'ok';
-	$array['content'] = '文件获取成功';
-	exit(json_encode($array));
 }
 ?>

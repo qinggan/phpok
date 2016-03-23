@@ -8,68 +8,112 @@
 	Update  : 2012-11-07 20:27
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-function phpok($id,$ext="")
+function phpok($id='',$ext="")
 {
-	if($GLOBALS['app']->call){
+	if(!$id || !$GLOBALS['app']->call){
+		return false;
+	}
+	$count = func_num_args();
+	if($count<=2){
 		return $GLOBALS['app']->call->phpok($id,$ext);
 	}
-	return true;
+	$param = array();
+	for($i=1;$i<$count;++$i){
+		$tmp = func_get_arg($i);
+		if(strpos($tmp,'=') !== true){
+			$tmp = str_replace(':','=',$tmp);
+		}
+		$param[] = $tmp;
+	}
+	$param = implode("&",$param);
+	return $GLOBALS['app']->call->phpok($id,$param);
+}
+
+function fav_count($title_id=0)
+{
+	return $GLOBALS['app']->model('fav')->title_fav_count($title_id);
+}
+
+function fav_check($title_id=0)
+{
+	return $GLOBALS['app']->model('fav')->chk($title_id,$_SESSION['user_id']);
 }
 
 function token($data)
 {
-	$keyid = $GLOBALS['app']->site['api_code'];
-	$GLOBALS['app']->lib('token')->keyid($keyid);
+	if(!$data){
+		return false;
+	}
+	if(is_string($data)){
+		parse_str($data,$data);
+	}
 	return $GLOBALS['app']->lib('token')->encode($data);
 }
 
-//同上，此函数跳过后台数据调用中心，直接获取数据信息
-function phpok_load($type,$ext="")
-{
-	return $GLOBALS['app']->call->phpok_load($type,$ext);
-}
 
-//在模板页中直接分页传参数，完整参数有
-//home=首页&prev=上一页&next=下一页&last=尾页&half=5&opt=1&add={total}/{psize}
-function phpok_page($url,$total,$num=0,$psize=20,$param="")
+/**
+ * 模板中调用分页
+ * @param string $url 网址
+ * @param int $total 总数
+ * @param int $num 当前页
+ * @param int psize 每页显示数量
+ * @param string ... 更多参数，格式是 变量id=变量值 如：home=首页&prev=上一页&next=下一页&last=尾页&half=5&opt=1&add={total}/{psize}
+ * @date 2016年02月05日
+ */
+function phpok_page($url,$total,$num=0,$psize=20)
 {
 	if(!$url || !$total){
 		return false;
 	}
-	if($param){
-		parse_str($param,$list);
-		if(!$list){
-			$list = array();
+	$count = func_num_args();
+	if($count<=4){
+		return $GLOBALS['app']->lib('page')->page($url,$total,$num,$psize);
+	}
+	$param = array();
+	for($i=4;$i<$count;++$i){
+		$tmp = func_get_arg($i);
+		if(strpos($tmp,'=') !== true){
+			$tmp = str_replace(':','=',$tmp);
 		}
-		foreach($list AS $key=>$value){
-			if(substr($value,0,1) == ';' && substr($value,-1) == ';'){
-				$value = "&".substr($value,1);
-			}
-			if($key == 'home' && $value){
-				$GLOBALS['app']->lib('page')->home_str($value);
-			}
-			if($key == 'prev' && $value){
-				$GLOBALS['app']->lib('page')->prev_str($value);
-			}
-			if($key == 'next' && $value){
-				$GLOBALS['app']->lib('page')->next_str($value);
-			}
-			if($key == 'last' && $value){
-				$GLOBALS['app']->lib('page')->last_str($value);
-			}
-			if($key == 'half' && $value !=''){
-				$GLOBALS['app']->lib('page')->half($value);
-			}
-			if($key == 'opt' && $value){
-				$GLOBALS['app']->lib('page')->opt_str($value);
-			}
-			if($key == 'add' && $value){
-				$GLOBALS['app']->lib('page')->add_up($value);
-			}
-			if($key == 'always' && $value){
-				$GLOBALS['app']->lib('page')->always($value);
-			}
+		$param[] = $tmp;
+	}
+	$param = implode("&",$param);
+	parse_str($param,$list);
+	if(!$list){
+		$list = array();
+	}
+	foreach($list as $key=>$value){
+		if(substr($value,0,1) == ';' && substr($value,-1) == ';'){
+			$value = "&".substr($value,1);
 		}
+		$list[$key] = $value;
+	}
+	if($list['home']){
+		$GLOBALS['app']->lib('page')->home_str($list['home']);
+	}
+	if($list['prev']){
+		$GLOBALS['app']->lib('page')->prev_str($list['prev']);
+	}
+	if($list['next']){
+		$GLOBALS['app']->lib('page')->next_str($list['next']);
+	}
+	if($list['last']){
+		$GLOBALS['app']->lib('page')->last_str($list['last']);
+	}
+	if($list['half'] != ''){
+		$GLOBALS['app']->lib('page')->half($list['half']);
+	}
+	if($list['opt']){
+		$GLOBALS['app']->lib('page')->opt_str($list['opt']);
+	}
+	if($list['add']){
+		$GLOBALS['app']->lib('page')->add_up($list['add']);
+	}
+	if($list['always']){
+		$GLOBALS['app']->lib('page')->always($list['always']);
+	}
+	if($list['rewrite']){
+		$GLOBALS['app']->lib('page')->url_format($list['rewrite']);
 	}
 	if($num<1){
 		$num = 1;
@@ -121,8 +165,7 @@ function phpok_reply($id,$psize=10,$orderby="ASC",$vouch=false)
 	$sessid = $GLOBALS['app']->session->sessid();
 	$uid = $_SESSION['user_id'] ? $_SESSION['user_id'] : 0;
 	$condition .= " AND (status=1 OR (status=0 AND (uid=".$uid." OR session_id='".$sessid."'))) ";
-	if($vouch)
-	{
+	if($vouch){
 		$condition .= " AND vouch=1 ";
 	}
 	$total = $GLOBALS['app']->model('reply')->get_total($condition);

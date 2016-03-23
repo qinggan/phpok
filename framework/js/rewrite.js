@@ -4,80 +4,67 @@
 	版本： 4.0
 	网站： www.phpok.com
 	作者： qinggan <qinggan@188.com>
-	日期： 2015年02月03日 18时06分
+	日期： 2016年02月14日
 ***************************************************************************************************/
-function add_it()
+function insert_input(val,id,space)
 {
-	var dialog = art.dialog({'title': "添加规则",'lock':true});
-	$.ajax({
-		'url':get_url('rewrite','set'),
-		success: function (data) {
-			dialog.content(data);
-		},
-		cache: false
-	});
+	if(!id || id == 'undefined'){
+		id = 'rule';
+	}
+	if(!space || space == 'undefined'){
+		space = '';
+	}
+	var info = $("#"+id).val();
+	if(info){
+		val = info + space +val;
+	}
+	$("#"+id).val(val);
 }
-function edit_it(id,title)
+
+function update2(val,id)
 {
-	var dialog = art.dialog({'title': "编辑规则："+title,'lock':true});
-	$.ajax({
-		'url':get_url('rewrite','set','id='+id),
-		success: function (data) {
-			dialog.content(data);
-		},
-		cache: false
-	});
-}
-function delete_it(id,title)
-{
-	$.dialog.confirm("确定要删除规则：<span class='red'>"+title+"</span> 吗？",function(){
-		var url = get_url('rewrite','delete','id='+id);
-		var rs = $.phpok.json(url);
-		if(rs.status == 'ok')
-		{
-			$.dialog.alert("删除成功",function(){
-				$.phpok.reload();
-			},'succeed');
+	if(!val){
+		return false;
+	}
+	var info = $("#"+id).val();
+	if(info){
+		var lst = info.split('|');
+		var is_add = true;
+		for(var i in lst){
+			if(lst[i] == val){
+				is_add = false;
+			}
 		}
-		else
-		{
-			$.dialog.alert(rs.content);
+		if(!is_add){
+			$.dialog.alert('数据已经使用，不能重复');
 			return false;
 		}
-	});
+		val = info + "|"+val;
+	}
+	$("#"+id).val(val);
+	if(id == 'ctrl'){
+		update_func(val);
+	}
 }
-function insert_input(val)
+
+function update_func(val)
 {
-	var info = $("#urltype").val();
-	if(info)
-	{
-		if(val == '.html' && info.substr((info.length-1)) == '/')
-		{
-			info = info.substr(0,(info.length-1));
+	if(!val || val == 'undefined'){
+		val = $("#ctrl").val();
+		if(!val){
+			return false;
 		}
-		val = info + ""+val;
 	}
-	$("#urltype").val(val);
+	var url = get_url('rewrite','getfunc','id='+$.str.encode(val));
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			var lst = rs.content;
+			html = '<option value="">请选择…</option>';
+			for(var i in lst){
+				html += '<option value="'+i+'">'+lst[i]+'</option>';
+			}
+			$("#func_select").html(html);
+		}
+	})
 }
-function insert_type(type)
-{
-	var id = $("#id").val();
-	var info = $("#urltype").val();
-	if(info)
-	{
-		id = info + ""+id;
-	}
-	$("#urltype").val(id);
-}
-function update_urltype(type)
-{
-	var val = $("#id").val();
-	if(val.substr(0,7) != 'project')
-	{
-		$("#urltype").val(val+"/");
-	}
-	else
-	{
-		$("#urltype").val('');
-	}
-}
+

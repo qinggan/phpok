@@ -21,67 +21,6 @@ class usergroup_model extends usergroup_model_base
 		unset($this);
 	}
 
-	//取得会员组ID
-	//uid，会员ID
-	function group_id($uid=0)
-	{
-		$grouplist = $this->all();
-		if(!$grouplist)
-		{
-			return false;
-		}
-		$groupid = 0;
-		if($uid)
-		{
-			$sql = "SELECT group_id FROM ".$this->db->prefix."user WHERE id='".$uid."'";
-			$tmp = $this->db->get_one($sql);
-			if($tmp && $tmp['group_id'])
-			{
-				$groupid = $tmp['group_id'];
-			}
-			if(!$groupid)
-			{
-				$tmp = false;
-				foreach($grouplist as $key=>$value)
-				{
-					if($value['is_default'] && !$value['is_guest'])
-					{
-						$tmp = $value;
-						break;
-					}
-				}
-				if(!$tmp || !$tmp['id'])
-				{
-					return false;
-					
-				}
-				$groupid = $tmp['id'];
-			}
-		}
-		else
-		{
-			$tmp = false;
-			foreach($grouplist as $key=>$value)
-			{
-				if($value['is_guest'])
-				{
-					$tmp = $value;
-					break;
-				}
-			}
-			if(!$tmp || !$tmp['id'])
-			{
-				return false;
-			}
-			$groupid = $tmp['id'];
-		}
-		if(!$groupid)
-		{
-			return false;
-		}
-		return $groupid;
-	}
-
 	//通过会员取得会员组信息
 	function group_rs($uid=0)
 	{

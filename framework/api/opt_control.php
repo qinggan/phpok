@@ -72,9 +72,15 @@ class opt_control extends phpok_control
 			$list = array();
 		}
 		$total = count($mylist);
+		$usetr = $this->get('usetr','int');
 		$html  = '<table cellpadding="0" cellspacing="0" style="width:auto;height:auto;border:0" border="0">';
-		$html .= '<tr>';
+		if(!$usetr){
+			$html .= '<tr>';
+		}
 		foreach($mylist AS $key=>$value){
+			if($usetr){
+				$html .= '<tr>';
+			}
 			$html .= '<td>';
 			$html .= '<select onchange="opt_'.$identifier.'_onchange(this.value)"';
 			if( ($key+1) == $total ){
@@ -101,8 +107,14 @@ class opt_control extends phpok_control
 			}
 			$html .= '</select>';
 			$html .= '</td>';
+			if($usetr){
+				$html .= '</tr>';
+			}
 		}
-		$html .= '</tr><table>';
+		if(!$usetr){
+				$html .= '<tr>';
+		}
+		$html .= '<table>';
 		exit($html);
 	}
 

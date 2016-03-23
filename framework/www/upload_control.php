@@ -13,6 +13,7 @@ class upload_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		ini_set('upload_tmp_dir', $this->dir_root.'data/cache');
 	}
 
 	//附件上传
@@ -45,65 +46,32 @@ class upload_control extends phpok_control
 	//基础上传
 	private function upload_base($input_name='upfile',$cateid=0)
 	{
-		if($cateid){
-			$cate_rs = $this->model('rescate')->get_one($cateid);
-		}
-		if(!$cate_rs){
-			$cate_rs = $this->model('rescate')->get_default();
-		}
-		if(!$cate_rs){
-			return array('status'=>'error','error'=>P_Lang('未指定分类或附件分类不存在'));
-		}
-		if(!$cate_rs['filetypes']){
-			$cate_rs['filetypes'] = 'jpg,png,gif,rar,zip';
-		}
-		$this->lib('upload')->set_type($cate_rs['filetypes']);
-		$rs = $this->lib('upload')->upload($input_name);
+		$rs = $this->lib('upload')->getfile($input_name,$cateid);
 		if($rs["status"] != "ok"){
 			return $rs;
 		}
-		$folder = $cate_rs["root"];
-		if($cate_rs["folder"] && $cate_rs["folder"] != "/"){
-			$folder .= date($cate_rs["folder"],$this->time);
-		}
-		if(!file_exists($folder)){
-			$this->lib('file')->make($folder);
-		}
-		if(!file_exists($folder)){
-			$folder = $cate_rs['root'];
-		}
-		$basename = basename($rs["filename"]);
-		$save_folder = $this->dir_root.$folder;
-		if($save_folder.$basename != $rs["filename"]){
-			$this->lib('file')->mv($rs["filename"],$save_folder.$basename);
-		}
-		if(!file_exists($save_folder.$basename)){
-			$this->lib('file')->rm($rs["filename"]);
-			return array('status'=>'error','error'=>P_Lang('图片迁移失败'));
-		}
-		$rs['title'] = $this->lib('string')->to_utf8($rs['title']);
 		$array = array();
-		$array["cate_id"] = $cateid;
-		$array["folder"] = $folder;
-		$array["name"] = $basename;
-		$array["ext"] = $rs["ext"];
-		$array["filename"] = $folder.$basename;
+		$array["cate_id"] = $rs['cate']['id'];
+		$array["folder"] = $rs['folder'];
+		$array["name"] = basename($rs['filename']);
+		$array["ext"] = $rs['ext'];
+		$array["filename"] = $rs['filename'];
 		$array["addtime"] = $this->time;
 		$array["title"] = $rs['title'];
-		$array["title"] = str_replace(".".$rs["ext"],"",$array["title"]);
 		if($_SESSION['user_id']){
 			$array['user_id'] = $_SESSION['user_id'];
+		}else{
+			$array['session_id'] = $this->session->sessid();
 		}
-		$array['session_id'] = $this->session->sessid();
 		$arraylist = array("jpg","gif","png","jpeg");
 		if(in_array($rs["ext"],$arraylist)){
-			$img_ext = getimagesize($save_folder.$basename);
+			$img_ext = getimagesize($this->dir_root.$rs['filename']);
 			$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
 			$array["attr"] = serialize($my_ext);
 		}
 		$id = $this->model('res')->save($array);
 		if(!$id){
-			$this->lib('file')->rm($save_folder.$basename);
+			$this->lib('file')->rm($this->dir_root.$rs['filename']);
 			return array('status'=>'error','error'=>P_Lang('图片存储失败'));
 		}
 		$this->model('res')->gd_update($id);

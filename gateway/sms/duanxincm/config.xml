@@ -20,5 +20,11 @@
 			<type>text</type>
 			<required>true</required>
 		</server>
+		<mobile>
+			<title>手机号</title>
+			<note>填写管理员接收短信要用到的手机号，多个手机号用英文逗号“,”隔开</note>
+			<type>text</type>
+			<required>false</required>
+		</mobile>
 	</code>
 </root>

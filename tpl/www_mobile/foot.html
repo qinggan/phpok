@@ -1,7 +1,26 @@
-<div data-role="footer" role="contentinfo">
-	<div class="foot">Powered By Phpok.Com，All Right Reserved.</div>
+	</div>
+<div data-role="popup" id="popupkf">
+	<!-- php:$list = phpok('kefu') -->
+	<ul class="kfonline" data-role="listview" data-inset="true">
+		<!-- loop from=$list.rslist key=$key value=$value -->
+		<li data-icon="user"><a href="http://wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes" target="_blank">{$value.title}（{$value.qq}）</a></li>
+		<!-- /loop -->
+		<!-- php:$list = phpok('contactus') -->
+		<!-- if $list && $list.tel -->
+		<li data-icon="phone"><a href="tel:{$list.tel}" target="_blank">客服电话：{$list.tel}</a></li>
+		<!-- /if -->
+	</ul>
 </div>
-
+<div data-role="footer" data-position="fixed" style="padding-bottom:0;">
+	<div data-role="navbar" class="ui-body-a">
+	<ul>
+		<li><a href="{$sys.url}" data-icon="home">网站首页</a></li>
+		<li><a href="{url id=aboutus/}" data-icon="info">关于我们</a></li>
+		<li><a href="{url ctrl=post id=book/}" data-icon="edit">反馈留言</a></li>
+		<li><a href="#popupkf" data-icon="phone" data-transition="pop" data-rel="popup">在线客服</a></li>
+	</ul>
+	</div>
+</div>
 </div>
 </body>
 </html>

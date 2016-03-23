@@ -15,3 +15,4 @@ $config["autoload_func"] = "";
 $config["is_vcode"] = true;
 
 $config['gzip'] = false;
+

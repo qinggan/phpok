@@ -1,16 +1,15 @@
 <!-- php:$pageid = G('pageid') -->
 <!-- php:$pageid = $pageid ? $pageid : 1 -->
 <!-- php:$comment = phpok('_comment','tid='.$tid.'&pageid='.$pageid.'&psize=10') -->
-<!-- if $comment -->
 <style type="text/css">
 .comment{clear:both;display:block;width:100%;margin:10px 0;padding:0;border-top:1px dashed #ccc;}
 .comment div.phpok-title{height:24px;padding:15px 0 13px 0;color:#333;font-size:18px;}
 .comment div.phpok-title em{color:#e74851;font-family: Georgia;font-size:20px;}
 .comment input.comment-submit{cursor:pointer;padding:3px 10px;background:#C6C6C6;border:1px solid #ccc;border-radius:5px;margin-top:10px;}
 .comment input.comment-submit:hover{background:#BDBDBD;font-weight:bold;}
-.comment textarea.comment-textarea{width:100%;border:1px solid #ccc;height:84px;}
+.comment textarea.comment-textarea{width:99%;border:1px solid #ccc;height:84px;}
 .comment dl{ margin-bottom:15px;; overflow:hidden;}
-.comment dt{ float:left; width:50px; margin-right:5px;}
+.comment dt{ float:left; width:50px;}
 .comment dt img{ width:42px; height:42px; border-radius:3px;}
 .comment dd{ float:left; width:700px;}
 .comment dd .remarks{ background:#fff;border:1px solid #e0e0e0;border-radius:5px; padding:10px;position:relative; margin-bottom:5px;}
@@ -105,4 +104,3 @@ $(document).keypress(function(e){
 	</div>
 	<!-- /if -->
 </div>
-<!-- /if -->

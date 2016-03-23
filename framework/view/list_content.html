@@ -217,7 +217,7 @@ function reply_it(id,title)
 	<!-- /loop -->
 	<th style="width:80px">{lang排序}</th>
 	<th style="width:30px">&nbsp;</th>
-	<th style="width:120px;">&nbsp;</th>
+	<th>&nbsp;</th>
 </tr>
 <!-- php:$tmp_m = 0 -->
 <!-- foreach($rslist AS $key=>$value) -->
@@ -290,23 +290,13 @@ function reply_it(id,title)
 	<td class="center"><input type="text" class="short center" value="{$value.sort}" tabindex="{$tmp_m}" onblur="update_taxis(this.value,'{$value.id}')" /></td>
 	<td class="center"><span id="taxis_{$value.id}"></span></td>
 	<td>
-		<!-- if $rs.subtopics && !$value[parent_id] && $popedom.add -->
-		<a class="ico add" href="{url ctrl=list func=edit parent_id=$value.id pid=$value.project_id/}" title="{lang添加子主题}"></a>
-		<!-- else -->
-		<a class="ico space"></a>
-		<!-- /if -->
-		<!-- if $popedom.modify -->
-		<a class="ico edit" href="{url ctrl=list func=edit id=$value.id/}" title="{lang编辑}"></a>
-		<!-- /if -->
-		<!-- if $session.admin_rs.if_system && $rs.is_appoint -->
-		<a class="ico go" onclick="set_admin_id('{$value.id}')" title="{lang指派管理员维护}"></a>
-		<!-- /if -->
-		<!-- if $popedom.delete -->
-		<a class="ico delete" onclick="content_del('{$value.id}')" title="{lang删除}"></a>
-		<!-- /if -->
-		<!-- if $popedom.comment && $rs.comment_status && $comments[$value.id] -->
-		<a class="ico comment" onclick="reply_it('{$value.id}','{$value.title}')" title="{lang评论}"></a>
-		<!-- /if -->
+		<div class="button-group">
+			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=list func=edit id=$value.id/}')" class="phpok-btn" /><!-- /if -->
+			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="content_del('{$value.id}')" class="phpok-btn" /><!-- /if -->
+			<!-- if $session.admin_rs.if_system && $rs.is_appoint --><input type="button" value="{lang指派}" class="phpok-btn" onclick="set_admin_id('{$value.id}')" /><!-- /if -->
+			<!-- if $popedom.comment && $rs.comment_status && $comments[$value.id] --><input type="button" class="phpok-btn" value="{lang评论}" onclick="reply_it('{$value.id}','{$value.title}')"{if $comments[$value.id].uncheck} style="color:red;" title="{lang未审核评论：}{$comments[$value.id].uncheck}"{/if} /><!-- /if -->
+			<!-- if $rs.subtopics && !$value[parent_id] && $popedom.add --><input type="button" value="加子主题" onclick="$.phpok.go('{url ctrl=list func=edit parent_id=$value.id pid=$value.project_id/}')" class="phpok-btn" /><!-- /if -->
+		</div>
 	</td>
 </tr>
 	<!-- loop from=$value.sonlist key=$kk value=$vv -->
@@ -377,19 +367,12 @@ function reply_it(id,title)
 		<td class="center"><input type="text" class="short center" value="{$vv.sort}" tabindex="{$tmp_m}" onblur="update_taxis(this.value,'{$vv.id}')" /></td>
 		<td class="center"><span id="taxis_{$vv.id}"></span></td>
 		<td>
-			<a class="icon space"></a>
-			<!-- if $popedom.modify -->
-			<a class="ico edit" href="{url ctrl=list func=edit id=$vv.id/}" title="{lang编辑}"></a>
-			<!-- /if -->
-			<!-- if $session.admin_rs.if_system && $rs.is_appoint -->
-			<a class="ico go" onclick="set_admin_id('{$vv.id}')" title="{lang指派管理员维护}"></a>
-			<!-- /if -->
-			<!-- if $popedom.delete -->
-			<a class="ico delete" onclick="content_del('{$vv.id}')" title="{lang删除}"></a>
-			<!-- /if -->
-			<!-- if $popedom.comment && $rs.comment_status && $comments[$vv.id] -->
-			<a class="ico comment" onclick="reply_it('{$vv.id}','{$vv.title}')" title="{lang评论}"></a>
-			<!-- /if -->
+			<div class="button-group">
+				<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=list func=edit id=$vv.id/}')" class="phpok-btn" /><!-- /if -->
+				<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="content_del('{$vv.id}')" class="phpok-btn" /><!-- /if -->
+				<!-- if $session.admin_rs.if_system && $rs.is_appoint --><input type="button" value="{lang指派}" class="phpok-btn" onclick="set_admin_id('{$vv.id}')" /><!-- /if -->
+				<!-- if $popedom.comment && $rs.comment_status && $comments[$vv.id] --><input type="button" class="phpok-btn" value="{lang评论}" onclick="reply_it('{$vv.id}','{$vv.title}')"{if $comments[$vv.id].uncheck} style="color:red;" title="{lang未审核评论：}{$comments[$vv.id].uncheck}"{/if} /><!-- /if -->
+			</div>
 		</td>
 	</tr>
 	<!-- /loop -->
@@ -399,12 +382,16 @@ function reply_it(id,title)
 <!-- /if -->
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
-	<td>
+	<td style="padding-top:5px;">
 		<!-- if $rslist -->
 		<ul class="layout">
-			<li><input type="button" value="{lang全选}" class="btn" onclick="$.input.checkbox_all()" /></li>
-			<li><input type="button" value="{lang全不选}" class="btn" onclick="$.input.checkbox_none()" /></li>
-			<li><input type="button" value="{lang反选}" class="btn" onclick="$.input.checkbox_anti()" /></li>
+			<li>
+				<div class="button-group">
+					<input type="button" value="{lang全选}" class="phpok-btn" onclick="$.input.checkbox_all()" />
+					<input type="button" value="{lang全不选}" class="phpok-btn" onclick="$.input.checkbox_none()" />
+					<input type="button" value="{lang反选}" class="phpok-btn" onclick="$.input.checkbox_anti()" />
+				</div>
+			</li>
 			<li><select id="list_action_val" style="width:200px;margin-top:0px;" onchange="update_select()">
 				<option value="">{lang选择要执行的动作…}</option>
 				<!-- if $opt_catelist -->
@@ -415,7 +402,7 @@ function reply_it(id,title)
 				</optgroup>
 				<!-- /if -->
 				<!-- if $rs.is_attr -->
-				<optgroup label="{$rs.alias_title ? $rs.alias_title : '主题'}属性">
+				<optgroup label="{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}{lang属性}">
 					<!-- loop from=$attrlist key=$key value=$value -->
 					<option value="attr:{$key}">{$value} {$key}</option>
 					<!-- /loop -->
@@ -423,13 +410,13 @@ function reply_it(id,title)
 				<!-- /if -->
 				<optgroup label="其他">
 					<!-- if $popedom.status -->
-					<option value="status">批量审核</option>
-					<option value="unstatus">批量取消审核</option>
+					<option value="status">{lang审核}</option>
+					<option value="unstatus">{lang取消审核}</option>
 					<!-- /if -->
-					<option value="hidden">批量隐藏</option>
-					<option value="show">批量显示</option>
+					<option value="hidden">{lang隐藏}</option>
+					<option value="show">{lang显示}</option>
 					<!-- if $popedom.delete -->
-					<option value="delete">批量删除</option>
+					<option value="delete">{lang删除}</option>
 					<!-- /if -->
 					<!-- if $session.admin_rs.if_system && $rs.is_appoint -->
 					<option value="appoint">{lang指派管理员维护}</option>
@@ -438,22 +425,22 @@ function reply_it(id,title)
 				</select></li>
 			<li id="attr_set_li" class="hide">
 				<select name="attr_set_val" style="margin-top:0px;" id="attr_set_val">
-					<option value="add">添加</option>
-					<option value="delete">移除</option>
+					<option value="add">{lang添加}</option>
+					<option value="delete">{lang移除}</option>
 				</select>
 			</li>
 			<!-- if $opt_catelist -->
 			<li id="cate_set_li" class="hide">
 				<select name="cate_set_val" style="margin-top:0px;" id="cate_set_val">
 					<!-- if $rs.cate_multiple -->
-					<option value="add">添加扩展分类</option>
-					<option value="delete">移除分类绑定</option>
+					<option value="add">{lang添加扩展分类}</option>
+					<option value="delete">{lang移除分类绑定}</option>
 					<!-- /if -->
-					<option value="move">移动主分类</option>
+					<option value="move">{lang移动主分类}</option>
 				</select>
 			</li>
 			<!-- /if -->
-			<li id="plugin_button"><input type="button" value="执行操作" onclick="list_action_exec()" class="submit" /></li>
+			<li id="plugin_button"><input type="button" value="{lang执行操作}" onclick="list_action_exec()" class="phpok-btn" /></li>
 		</ul>
 		<!-- /if -->
 	</td>

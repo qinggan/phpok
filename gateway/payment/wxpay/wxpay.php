@@ -10,74 +10,240 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class wxpay_lib
 {
-	private $app_id = '';
+	private $appid = '';
 	private $mch_id = '';
 	private $app_key = '';
 	private $app_secret = '';
-	private $ssl_cert = '';
-	private $ssl_key = '';
+	private $pem_cert = '';
+	private $pem_key = '';
+	private $pem_ca = '';
 	private $proxy_host = '0.0.0.0';
-	private $proxy_port = '';
+	private $proxy_port = 0;
 	private $nonce_str = '';
 	private $timeout = 6;
+	private $errmsg = '';
+	private $trade_type = 'native';
+	private $red_config = array();
+	
 	public function __construct()
 	{
 		$this->nonce_str = strtoupper(md5(time().'-'.rand(100,999).'-phpok'));
 	}
 
+	public function config($config,$id='')
+	{
+		if($config && is_array($config)){
+			foreach($config as $key=>$value){
+				if($value != ''){
+					$this->$key = $value;
+				}
+			}
+		}else{
+			if($config && $id){
+				$this->$id = $config;
+			}
+		}
+	}
+
 	//定义公众账号ID
-	public function app_id($app_id='')
+	public function appid($val='')
 	{
-		$this->app_id = $app_id;
+		if($val){
+			$this->appid = $val;
+		}
+		return $this->appid;
 	}
 
-	public function mch_id($mch_id='')
+	public function nonce_str()
 	{
-		$this->mch_id = $mch_id;
+		return $this->nonce_str;
 	}
 
-	public function app_key($key='')
+	public function mch_id($val='')
 	{
-		$this->app_key = $key;
+		if($val){
+			$this->mch_id = $val;
+		}
+		return $this->mch_id;
 	}
 
-	public function app_secret($secret='')
+	public function app_key($val='')
 	{
-		$this->app_secret = $secret;
+		if($val){
+			$this->app_key = $val;
+		}
+		return $this->app_key;
 	}
 
-	public function ssl_cert($file='')
+	public function app_secret($val='')
 	{
-		$this->ssl_cert = $file;
+		if($val){
+			$this->app_secret = $val;
+		}
+		return $this->app_secret;
 	}
 
-	public function ssl_key($file='')
+	public function pem_cert($val='')
 	{
-		$this->ssl_key = $file;
+		if($val){
+			$this->pem_cert = $val;
+		}
+		return $this->pem_cert;
 	}
 
-	public function proxy_host($host='')
+	public function pem_key($val='')
 	{
-		$this->proxy_host = $host;
+		if($val){
+			$this->pem_key = $val;
+		}
+		return $this->pem_key;
 	}
 
-	public function proxy_port($port='')
+	public function pem_ca($val='')
 	{
-		$this->proxy_port = $port;
+		if($val){
+			$this->pem_ca = $val;
+		}
+		return $this->pem_ca;
 	}
 
-	public function timeout($time=10)
+	public function proxy_host($val='')
 	{
-		$this->timeout = $time;
+		if($val){
+			$this->proxy_host = $val;
+		}
+		return $this->proxy_host;
 	}
+
+	public function proxy_port($val='')
+	{
+		if($val){
+			$this->proxy_port = $val;
+		}
+		return $this->proxy_port;
+	}
+
+	public function trade_type($val='')
+	{
+		if($val){
+			$this->trade_type = $val;
+		}
+		return $this->trade_type;
+	}
+
+	public function timeout($val=0)
+	{
+		if($val){
+			$this->timeout = $val;
+		}
+		return $this->timeout;
+	}
+
+	public function errmsg($val='')
+	{
+		if($val){
+			$this->errmsg = $val;
+			$this->_log($val);
+		}
+		return $this->errmsg;
+	}
+
+	public function get_openid()
+	{
+		if (!isset($_GET['code'])){
+			$baseUrl = urlencode('http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+			$url = $this->__CreateOauthUrlForCode($baseUrl);
+			header("Location: $url");
+			exit;
+		}else{
+		    $code = $_GET['code'];
+			$openid = $this->getOpenidFromMp($code);
+			return $openid;
+		}
+	}
+
+	/**
+	 * 
+	 * 构造获取code的url连接
+	 * @param string $redirectUrl 微信服务器回跳的url，需要url编码
+	 * @return 返回构造好的url
+	 */
+	private function __CreateOauthUrlForCode($redirectUrl)
+	{
+		$urlObj["appid"] = $this->appid;
+		$urlObj["redirect_uri"] = "$redirectUrl";
+		$urlObj["response_type"] = "code";
+		$urlObj["scope"] = "snsapi_base";
+		$urlObj["state"] = "STATE"."#wechat_redirect";
+		$bizString = $this->ToUrlParams($urlObj);
+		return "https://open.weixin.qq.com/connect/oauth2/authorize?".$bizString;
+	}
+
+
+	/**
+	 * 
+	 * 通过code从工作平台获取openid机器access_token
+	 * @param string $code 微信跳转回来带上的code
+	 * 
+	 * @return openid
+	 */
+	public function GetOpenidFromMp($code)
+	{
+		$url = $this->__CreateOauthUrlForOpenid($code);
+		//初始化curl
+		$ch = curl_init();
+		//设置超时
+		curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,false);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,false);
+		curl_setopt($ch, CURLOPT_HEADER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		if($this->proxy_host != "0.0.0.0" && $this->proxy_port){
+			curl_setopt($ch,CURLOPT_PROXY,$this->proxy_host);
+			curl_setopt($ch,CURLOPT_PROXYPORT,$this->proxy_port);
+		}
+		//运行curl，结果以jason形式返回
+		$res = curl_exec($ch);
+		curl_close($ch);
+		//取出openid
+		$data = json_decode($res,true);
+		$this->data = $data;
+		$openid = $data['openid'];
+		return $openid;
+	}
+
+	private function __CreateOauthUrlForOpenid($code)
+	{
+		$urlObj["appid"] = $this->appid;
+		$urlObj["secret"] = $this->app_secret;
+		$urlObj["code"] = $code;
+		$urlObj["grant_type"] = "authorization_code";
+		$bizString = $this->ToUrlParams($urlObj);
+		return "https://api.weixin.qq.com/sns/oauth2/access_token?".$bizString;
+	}
+
+	private function ToUrlParams($urlObj)
+	{
+		$buff = "";
+		foreach ($urlObj as $k => $v){
+			if($k != "sign"){
+				$buff .= $k . "=" . $v . "&";
+			}
+		}
+		$buff = trim($buff, "&");
+		return $buff;
+	}
+
 
 	public function query($sn)
 	{
-		$url = "https://api.mch.weixin.qq.com/pay/orderquery";
 		if(!$sn){
+			$this->errmsg('未指定订单编号');
 			return false;
 		}
-		$data = array('appid'=>$this->app_id,'mch_id'=>$this->mch_id,'nonce_str'=>$this->nonce_str);
+		$url = "https://api.mch.weixin.qq.com/pay/orderquery";
+		$data = array('appid'=>$this->appid,'mch_id'=>$this->mch_id,'nonce_str'=>$this->nonce_str);
 		$data['out_trade_no'] = $sn;
 		$sign = $this->create_sign($data);
 		$data['sign'] = $sign;
@@ -87,6 +253,42 @@ class wxpay_lib
 		if($rs['return_code'] != 'SUCCESS'){
 			 return false;
 		}
+		return $rs;
+	}
+
+	//创建订单
+	public function create($data)
+	{
+		$url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+		if(!$data['out_trade_no'] || !$data['total_fee'] || !$data['body']){
+			$this->errmsg('参数不完整：价格，订单号，订单内容');
+			return false;
+		}
+		if($this->trade_type == 'native' && !$data['product_id']){
+			$this->errmsg('统一支付接口中，缺少必填参数product_id！trade_type为NATIVE时，product_id为必填参数');
+			return false;
+		}
+		if($this->trade_type == 'jsapi' && !$data['openid']){
+			$this->errmsg('统一支付接口中，缺少必填参数openid！trade_type为JSAPI时，openid为必填参数！');
+			return false;
+		}
+		$data['appid'] = $this->appid;
+		$data['mch_id'] = $this->mch_id;
+		$data['nonce_str'] = $this->nonce_str;
+		$data['spbill_create_ip'] = $GLOBALS['app']->lib('common')->ip();
+		$data['time_start'] = date("YmdHis",time());
+		$data['time_expire'] = date("YmdHis",time() + 600);
+		$data['trade_type'] = strtoupper($this->trade_type());
+		$sign = $this->create_sign($data);
+		$data['sign'] = $sign;
+		$xml = $this->ToXml($data);
+		//$startTimeStamp = $this->getMillisecond();//请求开始时间
+		$response = $this->postXmlCurl($xml, $url, false, $this->timeout);
+		$rs = $this->FromXml($response);
+		if($rs['return_code'] != 'SUCCESS'){
+			$this->_log($rs);
+			return false;
+		}
 		$sign = $rs['sign'];
 		$chksign = $this->create_sign($rs);
 		if($sign == $chksign){
@@ -95,45 +297,16 @@ class wxpay_lib
 		return false;
 	}
 
-	public function pay_url($data)
+	private function _log($info)
 	{
-		$url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-		if(!$data['out_trade_no'] || !$data['total_fee'] || !$data['trade_type'] || !$data['body']){
-			return false;
-			//return array('status'=>'error','content'=>'参数不完整');
+		if(is_array($info) || is_object($info)){
+			$info = print_r($info,true);
 		}
-		if($data['trade_type'] == 'NATIVE' && !$data['product_id']){
-			return false;
-			//return array('status'=>'error','content'=>'统一支付接口中，缺少必填参数product_id！trade_type为NATIVE时，product_id为必填参数');
+		if(!$info){
+			$info = time();
 		}
-		if($data['trade_type'] == "JSAPI" && !$data['openid']){
-			return false;
-			//throw new WxPayException("统一支付接口中，缺少必填参数openid！trade_type为JSAPI时，openid为必填参数！");
-		}
-		$data['appid'] = $this->app_id;
-		$data['mch_id'] = $this->mch_id;
-		$data['nonce_str'] = $this->nonce_str;
-		$data['spbill_create_ip'] = $GLOBALS['app']->lib('common')->ip();
-		$data['time_start'] = date("YmdHis",time());
-		$data['time_expire'] = date("YmdHis",time() + 600);
-		//$url.= $this->array_to_string($data);
-		$sign = $this->create_sign($data);
-		$data['sign'] = $sign;
-		//$url .= "&sign=".$sign;
-
-		$xml = $this->ToXml($data);
-		$startTimeStamp = $this->getMillisecond();//请求开始时间
-		$response = $this->postXmlCurl($xml, $url, false, $this->timeout);
-		$rs = $this->FromXml($response);
-		if($rs['return_code'] != 'SUCCESS'){
-			 return false;
-		}
-		$sign = $rs['sign'];
-		$chksign = $this->create_sign($rs);
-		if($sign == $chksign){
-			return $rs['code_url'];
-		}
-		return false;
+		phpok_log($info);
+		return true;
 	}
 
 	public function FromXml($xml)
@@ -186,7 +359,7 @@ class wxpay_lib
 		return $buff;
 	}
 
-	private function postXmlCurl($xml, $url, $useCert = false, $second = 30)
+	public function postXmlCurl($xml, $url, $useCert = false, $second = 30)
 	{		
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_TIMEOUT, $second);
@@ -195,15 +368,24 @@ class wxpay_lib
 			curl_setopt($ch,CURLOPT_PROXYPORT,$this->proxy_port);
 		}
 		curl_setopt($ch,CURLOPT_URL, $url);
-		curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
-		curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,false);
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		if($useCert == true){
+		if($useCert){
+			if($this->pem_ca){
+				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true); // 只信任CA颁布的证书 
+				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); // 检查证书中是否设置域名，并且是否与提供的主机名匹配
+				curl_setopt($ch, CURLOPT_CAINFO, $this->pem_ca); // CA根证书（用来验证的网站证书是否是CA颁布）
+			}else{
+				curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
+				curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,false);
+			}
 			curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
-			curl_setopt($ch,CURLOPT_SSLCERT, $this->ssl_cert);
+			curl_setopt($ch,CURLOPT_SSLCERT, $this->pem_cert);
 			curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
-			curl_setopt($ch,CURLOPT_SSLKEY, $this->ssl_key);
+			curl_setopt($ch,CURLOPT_SSLKEY, $this->pem_key);
+		}else{
+			curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
+			curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,false);
 		}
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
@@ -228,5 +410,70 @@ class wxpay_lib
 		return $time;
 	}
 
+
+	public function GetJsApiParameters($data)
+	{
+		if(!array_key_exists("appid", $data) || !array_key_exists("prepay_id", $data) || $data['prepay_id'] == ""){
+			$this->errmsg('参数错误');
+			return false;
+		}
+		$values = array();
+		$time = time();
+		$values['appId'] = $data['appid'];
+		$values['timeStamp'] = "$time";
+		$values['nonceStr'] = $this->nonce_str;
+		$values['package'] = "prepay_id=".$data['prepay_id'];
+		$values['signType'] = 'MD5';
+		$values['paySign'] = $this->create_sign($values);
+		return json_encode($values);
+	}
+
+	public function get_jsapi_param($data)
+	{
+		if(!array_key_exists("appid", $data) || !array_key_exists("prepay_id", $data) || $data['prepay_id'] == ""){
+			$this->errmsg('参数错误');
+			return false;
+		}
+		$values = array();
+		$time = time();
+		$values['appId'] = $data['appid'];
+		$values['timeStamp'] = "$time";
+		$values['nonceStr'] = $this->nonce_str;
+		$values['package'] = "prepay_id=".$data['prepay_id'];
+		$values['signType'] = 'MD5';
+		$values['paySign'] = $this->create_sign($values);
+		return $values;
+	}
+
+	//红包活动参数
+	//支持参数有：act_name：活动名称，wishing：活动祝愿
+	public function red_config($config='')
+	{
+		if($config && is_array($config)){
+			$this->red_config = $config;
+		}
+		return $this->red_config;
+	}
+
+	//发送红包给商户
+	//openid，目标ID
+	//price，价格，单位是：分
+	public function hongbao($openid,$price)
+	{
+		$url = 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack';
+		$data = $this->red_config();
+		$data["max_value"] = $price;
+		$data["min_value"] = $price;
+		$data['re_openid'] = $openid;
+		$sign = $this->create_sign($data);
+		$data['sign'] = $sign;
+		$xml = $this->ToXml($data);
+		$response = $this->postXmlCurl($xml, $url, true,$this->timeout);
+		$rs = $this->FromXml($response);
+		if($rs['return_code'] != 'SUCCESS'){
+			 return false;
+		}
+		return true;
+	}
 }
 ?>

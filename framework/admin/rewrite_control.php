@@ -16,105 +16,131 @@ class rewrite_control extends phpok_control
 		parent::control();
 		$this->popedom = appfile_popedom('rewrite');
 		$this->assign("popedom",$this->popedom);
-		$this->model('rewrite')->site_id($_SESSION['admin_site_id']);
 	}
 
 	public function index_f()
 	{
-		if(!$this->popedom["list"])
-		{
+		if(!$this->popedom["list"]){
 			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
-		$optlist = $this->model('rewrite')->type_all();
 		$rslist = $this->model('rewrite')->get_all();
-		if($rslist)
-		{
-			foreach($rslist as $key=>$value)
-			{
-				$value['title'] = '未知';
-				if($optlist[$key])
-				{
-					$value['title'] = $optlist[$key];
-					unset($optlist[$key]);
-				}
-				$rslist[$key] = $value;
-			}
-		}
 		$this->assign('rslist',$rslist);
-		if($optlist && count($optlist)>0)
-		{
-			$this->assign('optlist',$optlist);
-		}
 		$this->view('rewrite_index');
 	}
 
 	public function set_f()
 	{
-		if(!$this->popedom['set'])
-		{
-			$this->json(P_Lang('您没有权限执行此操作'));
+		if(!$this->popedom['set']){
+			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$id = $this->get('id');
-		if($id)
-		{
+		if($id){
 			$rs = $this->model('rewrite')->get_one($id);
 			$this->assign('rs',$rs);
 			$this->assign('id',$id);
 		}
-		else
-		{
-			$optlist = $this->model('rewrite')->type_all();
-			$rslist = $this->model('rewrite')->get_all();
-			if($rslist)
-			{
-				foreach($rslist as $key=>$value)
-				{
-					if($optlist[$key])
-					{
-						$value['title'] = $optlist[$key];
-						unset($optlist[$key]);
-					}
-				}
-			}
-			$this->assign("optlist",$optlist);
-		}
+		//读取控制器
+		$clist = $this->model('rewrite')->ctrl_list();
+		$this->assign('clist',$clist);
 		$this->view("rewrite_set");
+	}
+
+	public function getfunc_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$list = array('index'=>"Index");
+			$this->json($list,true);
+		}
+		$list = explode("|",$id);
+		$rslist = array();
+		foreach($list as $key=>$value){
+			$value = trim($value);
+			$tmp = $this->model('rewrite')->get_func($value);
+			if($tmp && is_array($tmp)){
+				$rslist = array_merge($rslist,$tmp);
+			}
+		}
+		$this->json($rslist,true);
 	}
 
 	public function save_f()
 	{
-		if(!$this->popedom['set'])
-		{
+		if(!$this->popedom['set']){
 			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id');
-		if(!$id)
-		{
-			$this->json(P_Lang('未指定ID'));
+		$data = array();
+		if($id){
+			$data['id'] = $id;
 		}
-		$urltype = $this->get('urltype');
-		if(!$urltype)
-		{
-			$this->json(P_Lang("未指定网址格式"));
+		$data['title'] = $this->get('title');
+		if(!$data['title']){
+			$this->json(P_Lang('主题不能为空'));
 		}
-		$array = array('id'=>$id,'site_id'=>$_SESSION['admin_site_id'],'urltype'=>$urltype);
-		$this->model('rewrite')->save($array);
+		$data['rule'] = $this->get('rule','html');
+		if(!$data['rule']){
+			$this->json(P_Lang('规则不能为空'));
+		}
+		$data['val'] = $this->get('val');
+		if(!$data['val']){
+			$this->json(P_Lang('目标网址不能为空'));
+		}
+		$data['format'] = $this->get('format');
+		if(!$data['format']){
+			$this->json(P_Lang('格式化方法不能为空'));
+		}
+		$data['ctrl'] = $this->get('ctrl');
+		if(!$data['ctrl']){
+			$this->json(P_Lang('控制器不能为空'));
+		}
+		$data['func'] = $this->get('func');
+		$data['var'] = $this->get('var');
+		$data['sort'] = $this->get('sort','int');
+		$this->model('rewrite')->save($data,$id);
 		$this->json(true);
+	}
+
+	public function taxis_f()
+	{
+		if(!$this->popedom['set']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$sort = $this->get('sort','int');
+		$this->model('rewrite')->update_taxis($id,$sort);
+		$this->success();
 	}
 
 	public function delete_f()
 	{
-		if(!$this->popedom['set'])
-		{
+		if(!$this->popedom['set']){
 			$this->json(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id');
-		if(!$id)
-		{
+		if(!$id){
 			$this->json(P_Lang('未指定ID'));
 		}
 		$this->model('rewrite')->delete($id);
 		$this->json(true);
+	}
+
+	public function copy_f()
+	{
+		if(!$this->popedom['set']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('rewrite')->get_one($id);
+		$rs['id'] = md5(serialize($rs));
+		$this->model('rewrite')->save($rs,'',false);
+		$this->success();
 	}
 }
 

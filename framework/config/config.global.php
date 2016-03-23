@@ -22,12 +22,13 @@ $config["psize"] = 30;//每页显示数量
 $config["pageid"] = "pageid";//分页ID
 $config["timezone"] = "Asia/Shanghai";//时区调节，仅限PHP5以上支持
 $config["timetuning"] = "0";//时间调节
-$config['user_rewrite'] = false;
+$config['token_id'] = 'token';//参数Token，后续将全面支持非$_SESSION模式，使用token替代参数传递，与第三方同步如果出现变量冲突，可在此调节
+$config['api_remote_sql'] = false; //启用SQL远程执行，建议禁用
 
 //保留词，在前端，存在这些变量时，直接走ctrl_id模式，而不走id模式
 $config["reserved"]  = "cart,content,download,login,logout,open,order";
 $config['reserved'] .= ",payment,plugin,post,project,register,search";
-$config['reserved'] .= ",ueditor,upload,usercp,user,ajax,js,inp,tag";
+$config['reserved'] .= ",ueditor,upload,usercp,user,ajax,js,inp,tag,comment";
 
 //管理员配置信息
 $config['admin']["is_login"] = false; //会员登录验证
@@ -42,8 +43,8 @@ $config['api']['is_login'] = false;
 $config['api']['is_admin'] = false;
 
 //手机端配置
-$config['mobile']['autocheck'] = false; //自动检测手机端，启用后，检测出手机端将读取手机端网页
-$config['mobile']['status'] = false; //手机端开始，此项不开启的话，将不使用手机
+$config['mobile']['autocheck'] = true; //自动检测手机端，启用后，检测出手机端将读取手机端网页
+$config['mobile']['status'] = true; //手机端开始，此项不开启的话，将不使用手机
 $config['mobile']['default'] = false; //默认为手机版，为方便开发人员调式，设置为默认后，在网页上也会展示手机版
 $config['mobile']['includejs'] = "jquery.touchslide.js"; //手机版自动加载的JS
 $config['mobile']['excludejs'] = "jquery.superslide.js"; //手机版要去除加载的JS
@@ -57,16 +58,13 @@ $config['autoload_js']  = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.m
 
 
 # SESSION存储方式
-$config["engine"]["session"]["file"] = "default";
+$config["engine"]["session"]["file"] = "sql";
 $config["engine"]["session"]["id"] = "PHPSESSION";
 $config["engine"]["session"]["timeout"] = 3600;
-//$config["engine"]["session"]["path"] = ROOT."data/session/";
+$config["engine"]["session"]["path"] = ROOT."data/session/";
 //当SESSION存储方式为数据库时，执行此配置
-//$config["engine"]["session"]["db_user"] = 'root';
-//$config["engine"]["session"]["db_pass"] = '';
-//$config["engine"]["session"]["db_data"] = 'phpok';
-//$config["engine"]["session"]["db_table"] = "qinggan_session";
-
+$config["engine"]["session"]["table"] = "session";
+$config['engine']['session']['auto_methods'] = "auto_start:db";
 //缓存默认配置
 $config['engine']['cache']['debug'] = false;
 $config["engine"]["cache"]["file"] = "default";
@@ -86,9 +84,12 @@ $config['seo']['line'] = ' - ';
 //title，即传过来的值
 //seo，即内置的SEO标题
 //sitename，即网站名称
-$config['seo']['format'] = '{title}-{seo}-{sitename}';
+$config['seo']['format'] = '{title}-{sitename}-{seo}';
 
 //订单状态设定
 $config['order']['status'] = 'create,unpaid,paid,shipped,received';
 $config['order']['price'] = 'product,shipping,fee,discount';
 
+//针对收藏夹里图片获取
+$config['fav']['thumb_id'] = 'thumb';
+$config['fav']['note_id'] = 'content';

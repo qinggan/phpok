@@ -56,15 +56,21 @@ class token_lib
 			$api_code = $app->site['api_code'];
 			unset($app);
 		}else{
-			if($_SESSION['phpok_api_code']){
-				$api_code = $_SESSION['phpok_api_code'];
+			if($_SESSION['phpok-site-api-code']){
+				$api_code = $_SESSION['phpok-site-api-code'];
 			}else{
 				$api_code = uniqid(time(), true);
-				$_SESSION['phpok_api_code'] = $api_code;
+				$_SESSION['phpok-site-api-code'] = $api_code;
 			}
 		}
 		$this->keyid = strtolower(md5($api_code));
 		return true;
+	}
+
+	//设置超时
+	public function expiry($time=0)
+	{
+		$this->expiry = $time;
 	}
 
 	//加密数据

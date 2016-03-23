@@ -22,17 +22,21 @@ class cate_model_base extends phpok_model
 	}
 
 	//取得单条分类信息
-	function get_one($id,$field="id")
+	public function get_one($id,$field="id",$ext=true)
 	{
-		if(!$id) return false;
-		$sql = " SELECT * FROM ".$this->db->prefix."cate ";
-		$sql.= " WHERE ".$field."='".$id."' ";
+		if(!$id){
+			return false;
+		}
+		$sql = " SELECT * FROM ".$this->db->prefix."cate WHERE `".$field."`='".$id."' ";
 		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
-		$ext_rs = phpok_ext_info("cate-".$rs['id']);
-		if($ext_rs)
-		{
-			$rs = array_merge($rs,$ext_rs);
+		if(!$rs){
+			return false;
+		}
+		if($ext){
+			$ext_rs = phpok_ext_info("cate-".$rs['id']);
+			if($ext_rs){
+				$rs = array_merge($rs,$ext_rs);
+			}
 		}
 		return $rs;
 	}
@@ -68,8 +72,9 @@ class cate_model_base extends phpok_model
 	function get_all($site_id=0,$status=0,$pid=0)
 	{
 		$rslist = $this->cate_all($site_id,$status);
-		if(!$rslist) return false;
-		//构建成树状
+		if(!$rslist){
+			return false;
+		}
 		$tmplist = array();
 		$this->format_list($tmplist,$rslist,$pid,"0");
 		$this->cate_list = $tmplist;
@@ -110,7 +115,9 @@ class cate_model_base extends phpok_model
 	//生成适用于select的下拉菜单中的参数
 	function cate_option_list($list)
 	{
-		if(!$list || !is_array($list)) return false;
+		if(!$list || !is_array($list)){
+			return false;
+		}
 		$rslist = array();
 		foreach($list AS $key=>$value){
 			$value["_space"] = "";
@@ -174,8 +181,17 @@ class cate_model_base extends phpok_model
 	function get_sonlist($id=0,$status=0)
 	{
 		$list = array();
-		$this->get_sonlist_id($list,$id,$status);
-		if(count($list) < 1) return false;
+		$sql  = "SELECT id FROM ".$this->db->prefix."cate WHERE parent_id IN(".$id.") ";
+		if($status){
+			$sql .= " AND status=1 ";
+		}
+		$sql .= " ORDER BY SUBSTRING_INDEX('".$id."',id,1),taxis ASC";
+		$rslist = $this->db->get_all($sql);
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				$list[] = $value['id'];
+			}
+		}
 		$list = array_unique($list);
 		$id = implode(",",$list);
 		return $this->catelist_cid($id,true);
@@ -187,7 +203,9 @@ class cate_model_base extends phpok_model
 			return false;
 		}
 		$sql  = "SELECT id FROM ".$this->db->prefix."cate WHERE parent_id IN(".$id.") ";
-		if($status) $sql .= " AND status=1 ";
+		if($status){
+			$sql .= " AND status=1 ";
+		}
 		$sql .= " ORDER BY SUBSTRING_INDEX('".$id."',id,1),taxis ASC";
 		$rslist = $this->db->get_all($sql);
 		if($rslist){

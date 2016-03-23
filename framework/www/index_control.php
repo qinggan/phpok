@@ -17,6 +17,7 @@ class index_control extends phpok_control
 
 	public function index_f()
 	{
+		$this->model('task')->set_title_status();
 		$tmp = $this->model('id')->id('index',$this->site['id'],true);
 		$tplfile = 'index';
 		if($tmp){
@@ -70,5 +71,16 @@ class index_control extends phpok_control
 		}
 		$_SESSION['introducer'] = $user['id'];
 	}
+
+	public function error404_f()
+	{
+		if(file_exists(ROOT.'phpinc/404.php')){
+			require(ROOT.'phpinc/404.php');
+		}
+		header("HTTP/1.0 404 Not Found");
+		header('Status: 404 Not Found');
+		exit;
+	}
+
 }
 ?>

@@ -111,6 +111,20 @@
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
+button.button_{$_rs.identifier}{
+	height: 23px;
+	padding: 0 5px;
+	margin: 0;
+	border: 1px solid #ACACAC;
+	line-height: 19px;
+	text-align: center;
+	cursor:pointer;
+	font-family:"Microsoft Yahei";
+}
+button.button_{$_rs.identifier}:hover {
+	border-color: #7EB4EA;
+	background: #E3F0FC;
+}
 
 </style>
 <div class="_e_upload">
@@ -119,9 +133,14 @@
 		<tr>
 			<td><div id="{$_rs.identifier}_picker"></div></td>
 			<!-- if !$_rs.upload_auto -->
-			<td><button id="{$_rs.identifier}_submit" type="button" class="button">{lang开始上传}</button></td>
+			<td valign="top" style="padding-left:2px;"><button id="{$_rs.identifier}_submit" type="button" class="button_{$_rs.identifier}">{lang开始上传}</button></td>
 			<!-- /if -->
+			<!-- if $session.user_id -->
+			<td valign="top" style="padding-left:2px;"><button id="select_res_{$_rs.identifier}" type="button" class="button_{$_rs.identifier}">{lang选择}{$_rs.upload_type.title}</button></td>
+			<!-- /if -->
+			<!-- if !$app->is_mobile() -->
 			<td><div class="gray i" style="line-height:180%;">&nbsp;{lang支持格式有：}{$_rs.upload_type.swfupload}</div></td>
+			<!-- /if -->
 		</tr>
 		</table>
 	</div>
@@ -145,6 +164,7 @@ $(document).ready(function(){
 		'fileVal':'upfile',
 		'disableGlobalDnd':true,
 		'compress':false,
+		'sendAsBinary':true,
 		'auto':{$_rs.upload_auto ? 'true' : 'false'},
 		'accept':{'title':'{$_rs.upload_type.title}({$_rs.upload_type.swfupload})','extensions':'{$_rs.upload_type.ext}'},
 		'fileSingleSizeLimit':'{$_rs.upload_type.maxsize}'
@@ -152,4 +172,39 @@ $(document).ready(function(){
 	obj_{$_rs.identifier}.showhtml();
 });
 </script>
-
+<!-- if $session.user_id -->
+<script type="text/javascript">
+$(document).ready(function(){
+		$("#select_res_{$_rs.identifier}").click(function(){
+		var url = "{url ctrl=open id=$_rs.identifier multiple=$_rs.is_multiple cate_id=$_rs.upload_type.id/}";
+		url = $.phpok.nocache(url);
+		var t = "{$_rs.is_multiple ? 'true' : 'false'}";
+		var old = $("#{$_rs.identifier}").val();
+		if(t == 'true'){
+			if(old){
+				$.cookie.set('phpok_input_{$_rs.identifier}',old);
+			}
+			$.dialog.open(url,{
+				title: "资源管理器",
+				lock : true,
+				width: "645px",
+				height: "450px",
+				ok: function(){
+					return true;
+				}
+			});
+		}else{
+			if(old){
+				url += "&selected="+old;
+			}
+			$.dialog.open(url,{
+				title: "资源管理器",
+				lock : true,
+				width: "645px",
+				height: "450px"
+			});
+		}
+	});
+});
+</script>
+<!-- /if -->

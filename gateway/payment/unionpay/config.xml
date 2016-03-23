@@ -82,15 +82,15 @@
 			<note>请填写自己的商户号</note>
 			<type>text</type>
 		</mer_id>
-		<channel_type>
-			<title>渠道类型</title>
-			<note>请选择渠道类型</note>
+		<txn_sub_type>
+			<title>交易消费子类</title>
+			<note>请选择交易消费子类，分期付款仅限信用卡，请检查您的商户是否已支持</note>
 			<type>radio</type>
 			<option>
-				<pc>互联网</pc>
-				<mobile>手机移动</mobile>
+				<default>自助消费</default>
+				<installment>分期付款</installment>
 			</option>
-			<default>pc</default>
-		</channel_type>
+			<default>default</default>
+		</txn_sub_type>
 	</code>
 </root>

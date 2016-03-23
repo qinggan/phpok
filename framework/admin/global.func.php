@@ -274,27 +274,22 @@ function show_pending_info()
 //返回JS URL 或 <script type="text/javascript" src="url"></script>
 function include_js($js="",$mini=false,$injs=false)
 {
-	//加载表单中涉及到的js
-	$array = $GLOBALS['app']->config['load_js'][$GLOBALS['app']->app_id];
+	global $app;
+	$array = $app->config['load_js'][$app->app_id];
 	$str = array();
-	if($array && is_array($array))
-	{
-		foreach($array AS $key=>$value)
-		{
-			if($key == 'global' || $key == $GLOBALS['app']->ctrl)
-			{
+	if($array && is_array($array)){
+		foreach($array AS $key=>$value){
+			if($key == 'global' || $key == $app->ctrl){
 				$str[] = $value;
 			}
 		}
 	}
-	if($js)
-	{
+	if($js){
 		$str[] = $js;
 	}
 	$str = implode(",",$str);
-	$url = $mini ? $GLOBALS['app']->url('js','mini','ext='.rawurlencode($str)) : $GLOBALS['app']->url('js','ext','js='.rawurlencode($str));
-	if($injs)
-	{
+	$url = $mini ? $app->url('js','mini','ext='.rawurlencode($str)) : $app->url('js','ext','js='.rawurlencode($str));
+	if($injs){
 		$url = '<script type="text/javascript" src="'.$url.'"></script>';
 	}
 	return $url;

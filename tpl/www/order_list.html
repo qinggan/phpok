@@ -36,7 +36,7 @@ $(document).ready(function(){
 				<td class="center">{func price_format $value.price $value.currency_id $value.currency_id}</td>
 				<td class="center">{$value.status_info}</td>
 				<td align="center">
-					<input type="button" value=" 查看 " onclick="$.phpok.go('{url ctrl=order func=info id=$value.id/}')" />
+					<input type="button" value=" 查看 " onclick="$.phpok.go('{url ctrl=order func=info id=$value.id/}',false)" />
 				</td>
 			</tr>
 			<!-- /loop -->

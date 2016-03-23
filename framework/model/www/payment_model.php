@@ -50,25 +50,19 @@ class payment_model extends payment_model_base
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."payment WHERE id=".intval($id);
 		$rs = $this->db->get_one($sql);
-		if(!$rs)
-		{
+		if(!$rs){
 			return false;
 		}
-		if($rs['param'])
-		{
+		if($rs['param'] && is_string($rs['param'])){
 			$rs['param'] = unserialize($rs['param']);
 		}
 		//货币类型
-		if($rs['currency'])
-		{
+		if($rs['currency']){
 			$sql = "SELECT * FROM ".$this->db->prefix."currency WHERE code='".$rs['currency']."'";
 			$tmp = $this->db->get_one($sql);
-			if($tmp)
-			{
+			if($tmp){
 				$rs['currency'] = $tmp;
-			}
-			else
-			{
+			}else{
 				unset($rs['currency']);
 			}
 		}

@@ -39,11 +39,61 @@ class db_mysqli extends db
 		$this->socket = $config['socket'] ? $config['socket'] : '';
 	}
 
+	public function host($host='')
+	{
+		if($host){
+			$this->host = $host;
+		}
+		return $this->host;
+	}
+
+	public function user($user='')
+	{
+		if($user){
+			$this->user = $user;
+		}
+		return $this->user;
+	}
+
+	public function pass($pass='')
+	{
+		if($pass){
+			$this->pass = $pass;
+		}
+		return $this->pass;
+	}
+
+	public function port($port='')
+	{
+		if($port){
+			$this->port = $port;
+		}
+		return $this->port;
+	}
+
+	public function socket($socket='')
+	{
+		if($socket){
+			$this->socket = $socket;
+		}
+		return $this->socket;
+	}
+
+	public function type($type='')
+	{
+		if($type && ($type == 'num' || $type == MYSQLI_NUM)){
+			$this->type = MYSQLI_NUM;
+		}else{
+			$this->type = MYSQLI_ASSOC;
+		}
+		return $this->type;
+	}
+
 	public function connect()
 	{
 		$this->_time();
 		$this->conn = mysqli_init();
-		mysqli_real_connect($this->conn,$this->host,$this->user,$this->pass,$this->database,$this->port,$this->socket,MYSQLI_CLIENT_COMPRESS);
+		@mysqli_real_connect($this->conn,$this->host,$this->user,$this->pass,$this->database,$this->port,$this->socket,MYSQLI_CLIENT_COMPRESS);
 		if(mysqli_connect_errno($this->conn)){
 			$this->error(mysqli_connect_error($this->conn),mysqli_connect_errno($this->conn));
 		}
@@ -91,16 +141,22 @@ class db_mysqli extends db
 		}
 	}
 
-	public function query($sql)
+	public function query($sql,$loadcache=true)
 	{
 		if($this->debug){
 			$this->debug($sql);
 		}
-		$this->cache_sql($sql);
+		if($loadcache){
+			$this->cache_sql($sql);
+		}
+		
 		$this->check_connect();
 		$this->_time();
 		$this->query = mysqli_query($this->conn,$sql);
-		$this->cache_update($sql);
+		if($loadcache){
+			$this->cache_update($sql);
+		}
+		
 		$this->_time();
 		$this->_count();
 		if(mysqli_error($this->conn)){

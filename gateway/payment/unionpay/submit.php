@@ -32,7 +32,8 @@ class unionpay_submit
 		$payment = new unionpay_lib();
 		$payment->sign_cert_pwd($this->param['param']['sign_cert_pwd']);
 		$payment->set_cert_id($this->dir_root.$this->param['param']['sign_cert_file']);
-		$payment->set_channel_type($this->param['param']['channel_type']);
+		$payment->set_channel_type($this->param['wap']);
+		$payment->txn_sub_type($this->param['param']['txn_sub_type']);
 		$payment->form_param('merId',$this->param['param']['mer_id']);
 		$payment->form_param('reqReserved',$this->order['passwd']);
 		$currency = $this->app->model('currency')->get_one($this->order['currency_id']);

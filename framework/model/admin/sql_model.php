@@ -25,7 +25,7 @@ class sql_model extends sql_model_base
 	public function tbl_all()
 	{
 		//$this->db->cache_clear();
-		$sql = "SHOW TABLE STATUS FROM ".$this->db->config_db['data'];
+		$sql = "SHOW TABLE STATUS FROM ".$this->db->database();
 		return $this->db->get_all($sql);
 	}
 
@@ -44,7 +44,7 @@ class sql_model extends sql_model_base
 
 	public function sql_prefix()
 	{
-		return $this->db->config_db['prefix'];
+		return $this->db->prefix;
 	}
 
 	public function show_create_table($table)
@@ -69,7 +69,7 @@ class sql_model extends sql_model_base
 
 	public function table_count($tbl)
 	{
-		$sql = "SHOW TABLE STATUS FROM ".$this->db->config_db['data']." WHERE Name='".$tbl."'";
+		$sql = "SHOW TABLE STATUS FROM ".$this->db->database()." WHERE Name='".$tbl."'";
 		$rs = $this->db->get_one($sql);
 		return $rs['Rows'];
 	}

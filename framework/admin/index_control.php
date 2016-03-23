@@ -257,17 +257,7 @@ class index_control extends phpok_control
 	}
 
 	//获取待处理信息
-	public function pendding_f()
-	{
-		set_time_limit(30);
-		$list = $this->pendding_index();
-		if($list){
-			$this->json($list,true);
-		}
-		$this->json(true);
-	}
-
-	private function pendding_index()
+	function pendding_f()
 	{
 		$list = false;
 		//读取未操作的主题
@@ -313,34 +303,13 @@ class index_control extends phpok_control
 			$url = $this->url("reply","","status=3");
 			$list['ctrl_reply'] = array("title"=>P_Lang('评论管理'),"total"=>$reply_total,"url"=>$url,'id'=>'reply');
 		}
-		return $list;
-	}
-
-	public function pendding_sublist_f()
-	{
-		set_time_limit(30);
-		$endtime = $this->time + 1;
-		for($i=$this->time;$i<$endtime;$i++){
-			$list = $this->pendding_sublist();
-			if(!$list){
-				sleep(2);
-			}else{
-				if(!$_SESSION['pendding_sub_old']){
-					$_SESSION['pendding_sub_old'] = $list;
-					$this->json($list,true);
-				}else{
-					if($_SESSION['pendding_sub_old'] === $list){
-						sleep(2);
-					}else{
-						$this->json($list,true);
-					}
-				}
-			}
+		if(!$list){
+			$this->json(P_Lang('没有消息'));
 		}
-		$this->json(true);
+		$this->json($list,true);
 	}
 
-	private function pendding_sublist()
+	function pendding_sublist_f()
 	{
 		$list = false;
 		$rslist = $this->model('list')->pending_info($_SESSION['admin_site_id']);
@@ -352,6 +321,10 @@ class index_control extends phpok_control
 				}
 			}
 		}
+		if(!$list){
+			$this->json(P_Lang('没有消息'));
+		}
+		$this->json($list,true);
 	}
 }
 ?>

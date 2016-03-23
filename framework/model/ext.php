@@ -96,28 +96,26 @@ class ext_model_base extends phpok_model
 	{
 		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.module FROM ".$this->db->prefix."ext ext ";
 		$sql.= "JOIN ".$this->db->prefix."extc extc ON(ext.id=extc.id) ";
-		if($mult)
-		{
+		if($mult){
+			if(is_array($id)){
+				$id = implode(",",$id);
+			}
 			$id = str_replace(",","','",$id);
 			$sql .= " WHERE ext.module IN('".$id."')";
-		}
-		else
-		{
+		}else{
 			$sql .= " WHERE ext.module='".$id."'";
 		}
 		$sql .= ' ORDER BY ext.taxis ASC,ext.id DESC';
 		$rslist = $this->db->get_all($sql);
-		if(!$rslist) return false;
-		$rs = "";
-		foreach($rslist AS $key=>$value)
-		{
-			if($mult)
-			{
-				$rs[$value["module"]][$value["identifier"]] = $GLOBALS['app']->lib('ext')->content_format($value,$value['content']);
-			}
-			else
-			{
-				$rs[$value["identifier"]] = $GLOBALS['app']->lib('ext')->content_format($value,$value['content']);
+		if(!$rslist){
+			return false;
+		}
+		$rs = array();
+		foreach($rslist AS $key=>$value){
+			if($mult){
+				$rs[$value["module"]][$value["identifier"]] = $this->lib('form')->show($value);
+			}else{
+				$rs[$value["identifier"]] = $this->lib('form')->show($value);
 			}
 		}
 		return $rs;

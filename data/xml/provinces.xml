@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<provinces>
+<?xml version="1.0" encoding="utf-8"?>
+<root>
 	<province id="1" provincename="北京市">北京市</province>
 	<province id="2" provincename="天津市">天津市</province>
 	<province id="3" provincename="河北省">河北省</province>
@@ -34,4 +34,4 @@
 	<province id="32" provincename="香港特别行政区">香港特别行政区</province>
 	<province id="33" provincename="澳门特别行政区">澳门特别行政区</province>
 	<province id="34" provincename="台湾省">台湾省</province>
-</provinces>
+</root>

@@ -137,6 +137,7 @@ class register_control extends phpok_control
 			if($_SESSION['introducer']){
 				$this->model('user')->save_relation($uid,$_SESSION['introducer']);
 			}
+			$this->model('wealth')->wealth_autosave($uid,P_Lang('会员注册'));
 		}
 		$extlist = $this->model('user')->fields_all();
 		$ext = array();

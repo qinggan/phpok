@@ -11,17 +11,75 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class post_control extends phpok_control
 {
 	private $user_groupid;
+	private $user_id = 0;
 	public function __construct()
 	{
 		parent::control();
 		$this->model('popedom')->siteid($this->site['id']);
-		$groupid = $this->model('usergroup')->group_id($_SESSION['user_id']);
+		$token = $this->get('token');
+		if($token){
+			$info = $this->lib('token')->decode($token);
+			if(!$info || !$info['user_id']){
+				$this->json(P_Lang('您没有权限执行此操作'));
+			}
+			$this->user_id = $info['user_id'];
+		}else{
+			$this->user_id = $_SESSION['user_id'];
+		}
+		$groupid = $this->model('usergroup')->group_id($this->user_id);
 		if(!$groupid){
 			$this->json(P_Lang('无法获取前端用户组信息'));
 		}
 		$this->user_groupid = $groupid;
 	}
 
+	public function edit_f()
+	{
+		//检测验证码填写正确与否
+		if($this->config['is_vcode'] && function_exists('imagecreate')){
+			$code = $this->get('_chkcode');
+			if(!$code){
+				$this->json(P_Lang('验证码不能为空'));
+			}
+			$code = md5(strtolower($code));
+			if($code != $_SESSION['vcode']){
+				$this->json(P_Lang('验证码填写不正确'));
+			}
+			unset($_SESSION['vcode']);
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定主题ID'));
+		}
+		$rs = $this->model('content')->get_one($id,false);
+		if(!$rs){
+			$this->json(P_Lang('内容不存在，请检查'));
+		}
+		if($rs['user_id'] != $this->user_id){
+			$this->json(P_Lang('您没有权限执行此主题编辑操作'));
+		}
+		$project_rs = $this->call->phpok('_project','pid='.$rs['project_id']);
+		if(!$project_rs || !$project_rs['module']){
+			$this->json(P_Lang('项目不符合要求'));
+		}
+		$title = $this->get('title');
+		if(!$title){
+			$this->json(P_Lang('主题不能为空'));
+		}
+		$data = array('title'=>$title);
+		if($project_rs['cate']){
+			$cate_id = $this->get('cate_id','int');
+			if(!$cate_id){
+				$this->json(P_Lang('分类不能为空'));
+			}
+			$data['cate_id'] = $cate_id;
+		}
+		//
+		$action = $this->model('list')->save($data,$id);
+		if(!$action){
+			$this->json(P_Lang('数据更新失败，请检查'));
+		}
+	}
 
 	public function save_f()
 	{
@@ -122,39 +180,13 @@ class post_control extends phpok_control
 			$this->json(P_Lang('内容编辑成功'),true);
 		}
 		$this->model('list')->save_ext($tmplist,$project_rs["module"]);
-		if($project_rs['etpl_admin']){
-			$email_rs = $this->model('email')->get_identifier($project_rs['etpl_admin']);
-			$email = $this->model('admin')->get_mail();
-			if($email_rs && $email){
-				$tmp = array_merge($tmplist,$array);
-				$tmp['id'] = $insert_id;
-				$this->assign('rs',$tmp);
-				$this->assign('page_rs',$project_rs);
-				$this->assign('user',$_SESSION['user_rs']);
-				$title = $this->fetch($email_rs["title"],"content");
-				$content = $this->fetch($email_rs["content"],"content");
-				$this->lib('email')->send_admin($title,$content,$email);
+		if($project_rs['etpl_admin'] || $project_rs['etpl_user']){
+			if($tid){
+				$param = 'id='.$tid.'&status=update';
+			}else{
+				$param = 'id='.$insert_id.'&status=create';
 			}
-		}
-		if($project_rs['etpl_user']){
-			$email_rs = $this->model('email')->get_identifier($project_rs['etpl_admin']);
-			$email = $this->get('email');
-			if(!$email && $_SESSION['user_id']){
-				$user_rs = $this->model('user')->get_one($_SESSION['user_id']);
-				if($user_rs){
-					$email = $user_rs['email'];
-				}
-			}
-			if($email && $email_rs){
-				$tmp = array_merge($tmplist,$array);
-				$tmp['id'] = $insert_id;
-				$this->assign('rs',$tmp);
-				$this->assign('page_rs',$project_rs);
-				$this->assign('user',$_SESSION['user_rs']);
-				$title = $this->fetch($email_rs["title"],"content");
-				$content = $this->fetch($email_rs["content"],"content");
-				$this->lib('email')->send_admin($title,$content,$email);
-			}
+			$this->model('task')->add_once('post',$param);
 		}
 		$this->json(true);
 	}

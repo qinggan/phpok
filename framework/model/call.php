@@ -22,6 +22,15 @@ class call_model_base extends phpok_model
 		unset($this);
 	}
 
+	public function types()
+	{
+		$xmlfile = $this->dir_root.'data/xml/calltype_'.$this->site_id.'.xml';
+		if(!file_exists($xmlfile)){
+			$xmlfile = $this->dir_root.'data/xml/calltype.xml';
+		}
+		return $this->lib('xml')->read($xmlfile);
+	}
+
 	public function psize($psize=20)
 	{
 		$this->psize = $psize;
@@ -41,16 +50,13 @@ class call_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
-	public function get_list($condition="",$pageid=0)
+	public function get_list($condition="",$offset=0,$psize=30)
 	{
-		$offset = $pageid>0 ? ($pageid-1)*$this->psize : 0;
-		//获取调用数据的列表
-		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE site_id='".$this->site_id."' ";
-		if($condition)
-		{
+		$sql = "SELECT call.* FROM ".$this->db->prefix."phpok call WHERE call.site_id='".$this->site_id."' ";
+		if($condition){
 			$sql .= " AND ".$condition." ";
 		}
-		$sql.= " ORDER BY id DESC LIMIT ".$offset.",".$this->psize;
+		$sql.= " ORDER BY call.id DESC LIMIT ".$offset.",".$psize;
 		return $this->db->get_all($sql);
 	}
 

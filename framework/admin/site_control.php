@@ -114,6 +114,7 @@ class site_control extends phpok_control
 		$array['email_tpl_user'] = $this->get('email_tpl_user');
 		$array['email_tpl_admin'] = $this->get('email_tpl_admin');
 		$array['sms_tpl_user'] = $this->get('sms_tpl_user');
+		$array['sms_tpl_admin'] = $this->get('sms_tpl_admin');
 		$array['taxis'] = $this->get('taxis','int');
 		$this->model('site')->order_status_update($array,$id);
 		$this->json(true);

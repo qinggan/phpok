@@ -18,7 +18,12 @@
 			'multiple':false,
 			'disableGlobalDnd':true,
 			'fileVal':'upfile',
+			'sendAsBinary':false,
+			'chunked':true,
+			'chunkSize':102400,
+			'threads':3,
 			'auto':false,
+			//'runtimeOrder':'flash',
 			'accept':{'title':'图片(*.jpg, *.gif, *.png)','extensions':'jpg,png,gif'}
 		};
 		this.opts = $.extend({},defaults,options);
@@ -90,6 +95,8 @@
 		this.showhtml = function(){
 			var id = $(this.id).val();
 			if(!id){
+				$(self.id).val('');
+				$(self.id+"_list").html('').fadeOut();
 				return false;
 			}
 			var url = get_url('upload','thumbshow','id='+$.str.encode(id));

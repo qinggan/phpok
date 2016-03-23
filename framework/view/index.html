@@ -48,7 +48,7 @@
 		<span class="leftspan">{lang网站：}</span>
 		<select class="web_select" name="top_site_id" id="top_site_id" onchange="goto_site(this.value,{$session.admin_site_id})">
 			<!-- loop from=$sitelist key=$key value=$value -->
-			<option value="{$value.id}"{if $value.id == $session.admin_site_id} selected{/if}>{$value.title}<!-- if $value.alias -->（{$value.alias}）<!-- /if --></option>
+			<option value="{$value.id}"{if $value.id == $session.admin_site_id} selected{/if}>{$value.alias ? $value.alias : $value.title}</option>
 			<!-- /loop -->
 		</select>
 		<!-- if $session.admin_rs.if_system -->

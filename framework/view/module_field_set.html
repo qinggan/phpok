@@ -1,30 +1,45 @@
-<!-- inc:head -->
+<!-- include tpl=head -->
 <script type="text/javascript">
-function check_save()
+function save()
 {
-	var id = $("#id").val();
-	if(!id || id == "undefined")
-	{
-		$.dialog.alert("未指定ID！");
-		return false;
+	var obj = art.dialog.opener;
+	var oldname = '{$rs.title}';
+	var oldnote = '{$rs.note}';
+	var oldtaxis = '{$rs.taxis}';
+	var refresh = false;
+	if(oldname != $("#title").val()){
+		refresh = true;
 	}
-	var title = $("#title").val();
-	if(!title || title == "undefined")
-	{
-		$.dialog.alert("名称不能为空");
-		return false;
+	if( (oldnote && oldnote != $("#note").val()) || (!oldnote && $("#note").val())){
+		refresh = true;
 	}
-	return true;
+	if( (oldtaxis && oldtaxis != $("#taxis").val()) || (!oldtaxis && $("#taxis").val())){
+		refresh = true;
+	}
+	$("#form_save").ajaxSubmit({
+		'url':get_url('module','field_edit_save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				$.dialog.alert('{lang字段编辑成功}',function(){
+					if(refresh){
+						obj.$.dialog.close();
+						obj.$.phpok.reload();
+					}else{
+						$.dialog.close();
+					}
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
 }
 </script>
-<div class="tips clearfix">
-	您当前的位置：
-	<a href="{url ctrl=module/}">模块管理</a>
-	&raquo; <a href="{url ctrl=module func=fields id=$m_rs.id/}" title="{$m_rs.title}">{$m_rs.title}</a>
-	&raquo; 修改字段<span class="gray i">（{$rs.identifier}）</span>
-</div>
 
-<form method="post" action="{url ctrl=module func=field_edit_save/}" onsubmit="return check_save();">
+<form method="post" id="form_save" onsubmit="return false">
 <input type="hidden" id="id" name="id" value="{$id}" />
 <div class="table">
 	<div class="title">
@@ -126,12 +141,33 @@ function check_save()
 		</table>
 	</div>
 </div>
-
+<script type="text/javascript">
+function search_set(val){
+	if(val == 3){
+		$("#search_separator_html").show();
+	}else{
+		$("#search_separator_html").hide();
+	}
+}
+</script>
 <div class="table">
+	<div class="title">
+		搜索：
+		<span class="note">指定该字段的搜索类型</span>
+	</div>
 	<div class="content">
-		<br />
-		<input type="submit" value="提 交" class="submit" />
-		<br />
+		<table>
+		<tr>
+			<td><label><input type="radio" name="search" value="0"{if !$rs.search} checked{/if} onclick="search_set(0)" />不支持搜索</label></td>
+			<td><label><input type="radio" name="search" value="1"{if $rs.search ==1} checked{/if} onclick="search_set(1)" />完全匹配搜索</label></td>
+			<td><label><input type="radio" name="search" value="2"{if $rs.search ==2} checked{/if} onclick="search_set(2)" />部分匹配搜索</label></td>
+			<td><label><input type="radio" name="search" value="3"{if $rs.search ==3} checked{/if} onclick="search_set(3)" />区间搜索</label></td>
+			<td id="search_separator_html"{if !$rs.search || $rs.search != 3} style="display:none"{/if}>
+				搜索字段分隔符：
+				<input type="text" name="search_separator" id="search_separator" value="{$rs.search_separator}" class="short" />
+			</td>
+		</tr>
+		</table>
 	</div>
 </div>
 </form>
@@ -140,4 +176,4 @@ $(document).ready(function(){
 	_phpok_form_opt("{$rs.form_type}","form_type_ext",'{$id}','module');
 });
 </script>
-<!-- inc:foot -->
+<!-- include tpl=foot_open -->

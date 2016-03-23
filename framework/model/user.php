@@ -20,7 +20,7 @@ class user_model_base extends phpok_model
 		unset($this);
 	}
 
-	public function get_one($id,$field='id')
+	public function get_one($id,$field='id',$ext=true,$wealth=true)
 	{
 		if(!$id){
 			return false;
@@ -35,30 +35,34 @@ class user_model_base extends phpok_model
 		if(!$rs){
 			return false;
 		}
-		$flist = $this->fields_all();
-		if(!$flist){
-			return $rs;
-		}
-		foreach($flist AS $key=>$value){
-			$rs[$value['identifier']] = $this->lib('form')->show($value,$rs[$value['identifier']]);
-		}
-		//获取会员积分
-		$wlist = $this->model('wealth')->get_all(1,'id');
-		if($wlist){
-			foreach($wlist as $key=>$value){
-				$val = number_format(0,$value['dnum']);
-				$rs['wealth'][$value['identifier']] = array('title'=>$value['title'],'val'=>$val,'unit'=>$value['unit']);
-			}
-			$condition = "uid='".$rs['id']."'";
-			$tlist = $this->model('wealth')->vals($condition);
-			if($tlist){
-				foreach($tlist as $key=>$value){
-					$tmp = $wlist[$value['wid']];
-					$val = number_format($value['val'],$tmp['dnum']);
-					$rs['wealth'][$tmp['identifier']]['val'] = $val;
+		if($ext){
+			$flist = $this->fields_all();
+			if($flist){
+				foreach($flist AS $key=>$value){
+					$rs[$value['identifier']] = $this->lib('form')->show($value,$rs[$value['identifier']]);
 				}
 			}
 		}
+		if($wealth){
+			//获取会员积分
+			$wlist = $this->model('wealth')->get_all(1,'id');
+			if($wlist){
+				foreach($wlist as $key=>$value){
+					$val = number_format(0,$value['dnum']);
+					$rs['wealth'][$value['identifier']] = array('title'=>$value['title'],'val'=>$val,'unit'=>$value['unit']);
+				}
+				$condition = "uid='".$rs['id']."'";
+				$tlist = $this->model('wealth')->vals($condition);
+				if($tlist){
+					foreach($tlist as $key=>$value){
+						$tmp = $wlist[$value['wid']];
+						$val = number_format($value['val'],$tmp['dnum']);
+						$rs['wealth'][$tmp['identifier']]['val'] = $val;
+					}
+				}
+			}
+		}
+		
 		return $rs;
 	}
 
@@ -159,14 +163,7 @@ class user_model_base extends phpok_model
 
 	public function tbl_fields_list($tbl)
 	{
-		$sql = "SELECT FIELDS FROM ".$tbl;
-		$rslist = $this->db->get_all($sql);
-		if($rslist){
-			foreach($rslist AS $key=>$value){
-				$idlist[] = $value["Field"];
-			}
-		}
-		return $idlist;
+		return $this->db->list_fields($tbl);
 	}
 
 	function field_one($id)
@@ -337,6 +334,42 @@ class user_model_base extends phpok_model
 		$sql = "UPDATE ".$this->db->prefix."user_invoice SET is_default=1 WHERE id='".$id."'";
 		$this->db->query($sql);
 		return true;
+	}
+
+	public function token_check($uid,$chk)
+	{
+		if(!$uid || !$chk){
+			return false;
+		}
+		$sql = "SELECT id,group_id,user,pass FROM ".$this->db->prefix."user WHERE id='".$uid."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		$code = md5($uid.'-'.$rs['user'].'-'.$rs['pass']);
+		if(strtolower($code) == strtolower($chk)){
+			$_SESSION['user_id'] = $uid;
+			$_SESSION['user_name'] = $rs['user'];
+			$_SESSION['user_gid'] = $rs['group_id'];
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public function token_create($uid)
+	{
+		if(!$uid){
+			return false;
+		}
+		$sql = "SELECT id,group_id,user,pass FROM ".$this->db->prefix."user WHERE id='".$uid."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		$code = md5($uid.'-'.$rs['user'].'-'.$rs['pass']);
+		$array = array('user_id'=>$uid,'user_chk'=>$code);
+		return $this->lib('token')->encode($array);
 	}
 }
 ?>

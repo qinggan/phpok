@@ -123,6 +123,7 @@ class usercp_control extends phpok_control
 		if(!$id){
 			error(P_Lang('未指定项目'),$this->url('usercp'),'notice',10);
 		}
+		$this->assign('id',$id);
 		$pid = $this->model('id')->project_id($id,$this->site['id']);
 		if(!$pid){
 			error(P_Lang('项目信息不存在'),$this->url('usercp'),'error');
@@ -217,6 +218,28 @@ class usercp_control extends phpok_control
 		$info = form_edit('pca',array('p'=>$rs['province'],'c'=>$rs['city'],'a'=>$rs['county']),'pca');
 		$this->assign('pca_rs',$info);
 		$this->view('usercp_address_setting');
+	}
+
+	public function fav_f()
+	{
+		$total = $this->model('fav')->get_total($_SESSION['user_id']);
+		if($total){
+			$pageurl = $this->url('usercp','fav');
+			$pageid = $this->get($this->config['pageid'],'int');
+			if(!$pageid){
+				$pageid = 1;
+			}
+			$psize = $this->config['psize'] ? $this->config['psize'] : 30;
+			$offset = ($pageid-1) * $psize;
+			$rslist = $this->model('fav')->get_list($_SESSION['user_id'],$offset,$psize);
+			$this->assign('rslist',$rslist);
+			$this->assign('pageurl',$pageurl);
+			$this->assign('offset',$offset);
+			$this->assign('psize',$psize);
+			$this->assign('pageid',$pageid);
+			$this->assign('total',$total);
+		}
+		$this->view('usercp_fav');
 	}
 
 	public function avatar_f()

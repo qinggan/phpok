@@ -10,7 +10,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class list_model_base extends phpok_model
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::model();
 	}
@@ -100,7 +100,7 @@ class list_model_base extends phpok_model
 	function get_total($mid,$condition="")
 	{
 		if(!$mid) return false;
-		$sql = " SELECT count(l.id) FROM ".$this->db->prefix."list l ";
+		$sql = " SELECT count(DISTINCT l.id) FROM ".$this->db->prefix."list l ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ";
 		$sql.= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."list_cate c ON(l.id=c.id) ";
@@ -177,13 +177,12 @@ class list_model_base extends phpok_model
 
 	function save($data,$id=0)
 	{
-		if(!$data || !is_array($data) || count($data) < 1) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"list",array("id"=>$id));
+		if(!$data || !is_array($data) || count($data) < 1){
+			return false;
 		}
-		else
-		{
+		if($id){
+			return $this->db->update_array($data,"list",array("id"=>$id));
+		}else{
 			return $this->db->insert_array($data,"list");
 		}
 	}
@@ -233,19 +232,6 @@ class list_model_base extends phpok_model
 		$sql = "DELETE FROM ".$this->db->prefix."list WHERE id IN(".$ids.")";
 		$this->db->query($sql);
 		return true;
-	}
-
-	function add_hits($id)
-	{
-		$sql = "UPDATE ".$this->db->prefix."list SET hits=hits+1 WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	public function get_hits($id)
-	{
-		$sql = "SELECT hits FROM ".$this->db->prefix."list WHERE id='".$id."'";
-		$rs = $this->db->get_one($sql);
-		return $rs['hits'];
 	}
 
 
@@ -357,8 +343,7 @@ class list_model_base extends phpok_model
 	function attr_list()
 	{
 		$xmlfile = $this->dir_root."data/xml/attr.xml";
-		if(!file_exists($xmlfile))
-		{
+		if(!file_exists($xmlfile)){
 			$array = array("h"=>"头条","c"=>"推荐","a"=>"特荐");
 			return $array;
 		}
@@ -435,10 +420,10 @@ class list_model_base extends phpok_model
 		return $rs;
 	}
 
-	public function arc_all($mid,$field='*',$condition='',$offset=0,$psize=0,$orderby='')
+	public function arc_all($project,$condition='',$field='*',$offset=0,$psize=0,$orderby='')
 	{
 		$sql  = " SELECT ".$field." FROM ".$this->db->prefix."list l ";
-		$sql .= " JOIN ".$this->db->prefix."list_".$mid." ext ";
+		$sql .= " JOIN ".$this->db->prefix."list_".$project['module']." ext ";
 		$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
 		if(strpos($field,'b.price') !== false){
 			$sql .= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
@@ -452,7 +437,65 @@ class list_model_base extends phpok_model
 		if($psize){
 			$sql .= " LIMIT ".intval($offset).",".$psize;
 		}
-		return $this->db->get_all($sql);
+		$rslist = $this->db->get_all($sql,'id');
+		if(!$rslist){
+			return false;
+		}
+		//ulist，会员信息
+		//clist，分类信息
+		//elist，扩展主题信息
+		$user_id_list = $idlist = $ulist = $elist = array();
+		foreach($rslist as $key=>$value){
+			$idlist[] = $value['id'];
+			if($value['user_id']){
+				$ulist[] = intval($value['user_id']);
+				$user_id_list[$value['id']] = $value['user_id']; 
+			}
+			$elist[] = 'list-'.$value['id'];
+		}
+		//读取会员信息
+		$user_ids = implode(",",array_unique($ulist));
+		if($user_ids){
+			$condition = "u.id IN(".$user_ids.") AND u.status=1";
+			$ulist = $this->model('user')->get_list($condition,0,0);
+			if($ulist){
+				foreach($user_id_list as $key=>$value){
+					if($ulist[$value]){
+						$rslist[$key]['user'] = $ulist[$value];
+					}
+				}
+			}
+		}
+		//读取主题分类信息
+		if($project['cate']){
+			$title_ids = implode(",",array_unique($idlist));
+			$sql = "SELECT lc.id,lc.cate_id,c.title,c.identifier FROM ".$this->db->prefix."list_cate lc ";
+			$sql.= "LEFT JOIN ".$this->db->prefix."cate c ON(lc.cate_id=c.id) WHERE lc.id IN(".$title_ids.") ";
+			$tmplist = $this->db->get_all($sql);
+			if($tmplist){
+				foreach($tmplist as $key=>$value){
+					$tmp = $value;
+					$tmp['url'] = $this->url($project['identifier'],$value['identifier']);
+					unset($tmp['id']);
+					$rslist[$value['id']]['catelist'][$value['cate_id']] = $tmp;
+					$cate_id = $rslist[$value['id']]['cate_id'];
+					if($cate_id && $cate_id == $value['cate_id']){
+						$rslist[$value['id']]['cate'] = $tmp;
+					}
+				}
+			}
+		}
+
+		//读取主题的扩展
+		$elist = array_unique($elist);
+		$tmplist = $this->model('ext')->get_all($elist,true);
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$k = explode('-',$key);
+				$rslist[$k[1]] = array_merge($value,$rslist[$k[1]]);
+			}
+		}
+		return $rslist;
 	}
 
 	public function arc_count($mid,$condition='')
@@ -476,8 +519,10 @@ class list_model_base extends phpok_model
 			$mid = $rs['module_id'];
 		}
 		//删除扩展主题信息
-		$sql = "DELETE FROM ".$this->db->prefix."list_".$mid." WHERE id='".$id."'";
-		$this->db->query($sql);
+		if($mid){
+			$sql = "DELETE FROM ".$this->db->prefix."list_".$mid." WHERE id='".$id."'";
+			$this->db->query($sql);
+		}
 		$sql = "DELETE FROM ".$this->db->prefix."list WHERE id='".$id."'";
 		$this->db->query($sql);
 		//删除相关的回复信息
@@ -487,8 +532,19 @@ class list_model_base extends phpok_model
 		$sql = "DELETE FROM ".$this->db->prefix."tag_stat WHERE title_id='".$id."'";
 		$this->db->query($sql);
 		//删除扩展分类
-		$sql = "DELETE ".$this->db->prefix."list_cate WHERE id='".$id."'";
+		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id='".$id."'";
 		$this->db->query($sql);
+		//删除主题自身的扩展字段
+		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='list-".$id."'";
+		$tmplist = $this->db->get_all($sql);
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$value['id']."'";
+				$this->db->query($sql);
+			}
+			$sql = "DELETE FROM ".$this->db->prefix."ext WHERE module='list-".$id."'";
+			$this->db->query($sql);
+		}
 		return true;
 	}
 

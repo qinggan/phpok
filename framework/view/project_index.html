@@ -89,7 +89,8 @@ $(document).ready(function(){
 	<th class="lft">{lang模块}</th>
 	<th width="65">{lang排序}</th>
 	<!-- if $popedom.set -->
-	<th class="lft" width="130">{lang操作}</th>
+	<th class="lft" style="width:90px;">&nbsp;</th>
+	<th class="lft" style="width:270px;">&nbsp;</th>
 	<!-- /if -->
 </tr>
 <!-- foreach($rslist AS $key=>$value) -->
@@ -101,17 +102,19 @@ $(document).ready(function(){
 	<td>{$value.project_module_title ? $value.project_module_title : '-'}</td>
 	<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 	<!-- if $popedom.set -->
-	<td>
-		<!-- if !$value.parent_id -->
-		<a href="{url ctrl=project func=set pid=$value.id/}" class="ico add" title="{lang添加子项}"></a>
+		<!-- if $value.parent_id -->
+		<td>&nbsp;</td>
 		<!-- else -->
-		<a class="ico space"></a>
+		<td align="right"><input type="button" value="添加子项" class="phpok-btn" onclick="$.phpok.go('{url ctrl=project func=set pid=$value.id/}')" /></td>
 		<!-- /if -->
-		<a href="{url ctrl=project func=set id=$value.id/}" class="ico edit" title="{lang编辑}"></a>
-		<a href="{url ctrl=project func=content id=$value.id/}" class="ico key" title="{lang扩展}"></a>
-		<a href="javascript:project_copy('{$value.id}','{$value.title}');void(0);" class="ico copy" title="{lang复制}"></a>
-		<a href="javascript:project_delete('{$value.id}','{$value.title}');void(0);" class="ico delete" title="{lang删除}"></a>
-	</td>
+		<td>
+			<div class="button-group">
+				<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=project func=set id=$value.id/}')" class="phpok-btn" />
+				<input type="button" value="{lang扩展字段}" onclick="$.phpok.go('{url ctrl=project func=content id=$value.id/}')" class="phpok-btn" />
+				<input type="button" value="{lang复制}" onclick="project_copy('{$value.id}','{$value.title}')" class="phpok-btn" />
+				<input type="button" value="{lang删除}" onclick="project_delete('{$value.id}','{$value.title}')" class="phpok-btn" />
+			</div>
+		</td>
 	<!-- /if -->
 </tr>
 <!-- /foreach -->

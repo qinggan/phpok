@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<cities>
+<?xml version="1.0" encoding="utf-8"?>
+<root>
 	<city id="1" cityname="北京市" pid="1" zipcode="100000">北京市</city>
 	<city id="2" cityname="天津市" pid="2" zipcode="100000">天津市</city>
 	<city id="3" cityname="石家庄市" pid="3" zipcode="050000">石家庄市</city>
@@ -345,4 +345,4 @@
 	<city id="343" cityname="香港特别行政区" pid="32" zipcode="000000">香港特别行政区</city>
 	<city id="344" cityname="澳门特别行政区" pid="33" zipcode="000000">澳门特别行政区</city>
 	<city id="345" cityname="台湾省" pid="34" zipcode="000000">台湾省</city>
-</cities>
+</root>

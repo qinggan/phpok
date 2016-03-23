@@ -1,5 +1,5 @@
 <!-- inc:head -->
-<script type="text/javascript" src="{echo add_js('module.js')}"></script>
+<script type="text/javascript" src="{func add_js module.js}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#title").blur(function(){check_title(false)});
@@ -7,7 +7,7 @@ $(document).ready(function(){
 </script>
 
 <div class="tips">
-	<div class="action"><a href="{url ctrl=module func=field_create mid=$id/}" title="添加字段">添加字段</a></div>
+	<div class="action"><a href="javascript:module_field_create('{$id}');void(0);" title="添加字段">添加字段</a></div>
 	<div class="action"><a href="{url ctrl=module/}" title="返回模块管理">返回模块管理</a></div>
 	您当前的位置：
 	<a href="{echo admin_url('module')}">模块管理</a>
@@ -23,7 +23,7 @@ $(document).ready(function(){
 	<th class="lft">名称</th>
 	<th class="lft">备注</th>
 	<th class="lft">排序</th>
-	<th class="lft w60">操作</th>
+	<th></th>
 </tr>
 <!-- foreach($used_list AS $key=>$value) -->
 <tr{if $used_list_id.num%2 == ""} class="list"{/if}>
@@ -32,8 +32,10 @@ $(document).ready(function(){
 	<td>{$value.note}</td>
 	<td>{$value.taxis}</td>
 	<td>
-		<a class="icon edit" onclick="module_field_edit('{$value.id}')" title="修改"></a>
-		<a class="icon delete end" onclick="module_field_del('{$value.id}','{$value.title}')" title="删除"></a>
+		<div class="button-group">
+			<input type="button" value="{lang编辑}" onclick="module_field_edit('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="module_field_del('{$value.id}','{$value.title}')" class="phpok-btn" />
+		</div>
 	</td>
 </tr>
 <!-- /foreach -->

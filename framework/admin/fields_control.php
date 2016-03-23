@@ -41,10 +41,8 @@ class fields_control extends phpok_control
 		}
 		//读取全部字段
 		$rslist = $this->model('fields')->get_all($condition);
-		if($rslist)
-		{
-			foreach($rslist AS $key=>$value)
-			{
+		if($rslist){
+			foreach($rslist AS $key=>$value){
 				$value["field_type_name"] = $this->field_list[$value["field_type"]];
 				$value["form_type_name"] = $this->form_list[$value["form_type"]];
 				$rslist[$key] = $value;
@@ -62,8 +60,7 @@ class fields_control extends phpok_control
 	{
 		$id = $this->get("id","int");
 		$area = array("module");
-		if($id)
-		{
+		if($id){
 			if(!$this->popedom["modify"]){
 				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
@@ -118,8 +115,7 @@ class fields_control extends phpok_control
 		$id = $this->get("id","int");
 		$title = $this->get("title");
 		$note = $this->get("note");
-		if(!$id)
-		{
+		if(!$id){
 			if(!$this->popedom["add"]){
 				error(P_Lang('您没有权限执行此操作'),'','error');
 			}

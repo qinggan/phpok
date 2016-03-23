@@ -54,4 +54,5 @@ $url = root_url()."index.php";
 $cls = new html_lib();
 $cls->set_post(true);
 echo $cls->get_content($url,'c=payment&f=notify&sn='.rawurlencode($data['out_trade_no']).'&xml='.rawurlencode($info));
+exit;
 ?>

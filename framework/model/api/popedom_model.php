@@ -10,7 +10,6 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class popedom_model extends popedom_model_base
 {
-	private $siteid;
 	public function __construct()
 	{
 		parent::__construct();
@@ -25,7 +24,7 @@ class popedom_model extends popedom_model_base
 	//设置站点ID
 	public function siteid($siteid)
 	{
-		$this->siteid = $siteid;
+		$this->site_id = $siteid;
 	}
 
 	//判断是否有阅读权限
@@ -69,11 +68,11 @@ class popedom_model extends popedom_model_base
 			return false;
 		}
 		$popedom = unserialize($rs['popedom']);
-		if(!$popedom[$this->siteid])
+		if(!$popedom[$this->site_id])
 		{
 			return false;
 		}
-		return explode(",",$popedom[$this->siteid]);
+		return explode(",",$popedom[$this->site_id]);
 	}
 }
 

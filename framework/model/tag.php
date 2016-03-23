@@ -157,5 +157,65 @@ class tag_model_base extends phpok_model
 		$sql = "REPLACE INTO ".$this->db->prefix."tag_stat(title_id,tag_id) VALUES('".$title_id."','".$tag_id."')";
 		return $this->db->query($sql);
 	}
+
+	public function tag_format($tag,$content)
+	{
+		if(!$tag || !$content || !is_array($tag) || !is_string($content)){
+			return false;
+		}
+		foreach($tag as $key=>$value){
+			//将已存在的网址内容提取出来
+			preg_match_all('/<a.*>.*<\/a>/isU',$content,$matches);
+			if($matches && $matches[0]){
+				$matches[0] = array_unique($matches[0]);
+				foreach($matches[0] as $k=>$v){
+					$string = '~/~/~'.md5($v).'~\~\~';
+					$content = str_replace($v,$string,$content);
+				}
+			}
+			$replace_count = $value['replace_count'] ? $value['replace_count'] : 3;
+			$content = preg_replace('`'.preg_quote($value['title'],'`').'`isU',$value['html'],$content,$replace_count);
+			if($matches && $matches[0]){
+				foreach($matches[0] as $k=>$v){
+					$string = '~/~/~'.md5($v).'~\~\~';
+					$content = str_replace($string,$v,$content);
+				}
+			}
+		}
+		return $content;
+	}
+
+	public function tag_filter($taglist,$id=0,$type='list')
+	{
+		if(!$taglist || !$taglist['list'] || !$taglist['tag']){
+			return false;
+		}
+		$tag = $tag_keys = false;
+		foreach($taglist['tag'] as $key=>$value){
+			$tag[$value['title']] = $value;
+			$tag_keys[] = $value['title'];
+		}
+		$list = false;
+		foreach($taglist['list'] as $key=>$value){
+			foreach($tag_keys as $k=>$v){
+				if(stripos($value,$v) !== false){
+					$list[$v] = $tag[$v];
+				}
+			}
+		}
+		if(!$list){
+			return false;
+		}
+		if(!$id){
+			return $list;
+		}
+		$title_id = $type == 'cate' ? 'c'.$id : ($type == 'project' ? 'p'.$id : $id);
+		foreach($list as $key=>$value){
+			if($value['title_id'] != $title_id){
+				$this->stat_save($value['id'],$title_id);
+			}
+		}
+		return $list;
+	}
 }
 ?>

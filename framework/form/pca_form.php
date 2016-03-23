@@ -30,8 +30,38 @@ class pca_form extends _init_auto
 		}
 	}
 
+	public function phpok_get($rs,$appid="admin")
+	{
+		$province = $this->get($rs['identifier'].'_p');
+		if(!$province){
+			return false;
+		}
+		$city = $this->get($rs['identifier'].'_c');
+		$area = $this->get($rs['identifier'].'_a');
+		if($area == $city){
+			$area = '';
+		}
+		return $province.'/'.$city.'/'.$area;
+	}
+
+	public function phpok_show($rs,$appid="admin")
+	{
+		if(!$rs || !$rs['content']){
+			return false;
+		}
+		return str_replace('/','',$rs['content']);
+	}
+
+
 	private function _format_admin($rs)
 	{
+		if($rs['content']){
+			$tmp = explode('/',$rs['content']);
+			$info = array('p'=>$tmp[0],'c'=>$tmp[1],'a'=>$tmp[2]);
+			$rs['content'] = $info;
+		}else{
+			$rs['content'] = array('p'=>'','c'=>'','a'=>'');
+		}
 		$province = $this->lib('xml')->read($this->dir_root.'data/xml/provinces.xml');
 		$this->assign('_province',$province['province']);
 		$this->assign('_rs',$rs);
@@ -40,6 +70,13 @@ class pca_form extends _init_auto
 
 	private function _format_default($rs)
 	{
+		if($rs['content'] && is_string($rs['content'])){
+			$tmp = explode('/',$rs['content']);
+			$info = array('p'=>$tmp[0],'c'=>$tmp[1],'a'=>$tmp[2]);
+			$rs['content'] = $info;
+		}else{
+			$rs['content'] = array('p'=>'','c'=>'','a'=>'');
+		}
 		$province = $this->lib('xml')->read($this->dir_root.'data/xml/provinces.xml');
 		$this->assign('_province',$province['province']);
 		$this->assign('_rs',$rs);

@@ -94,7 +94,6 @@ class cate_control extends phpok_control
 			//已使用的扩展字段
 			$this->assign('used_fields',$used_fields);
 		}
-		
 		$this->assign("ext_module",$ext_module);
 		$parentlist = $this->model('cate')->get_all($_SESSION["admin_site_id"]);
 		$parentlist = $this->model('cate')->cate_option_list($parentlist);
@@ -225,7 +224,6 @@ class cate_control extends phpok_control
 		if(!$parent_id && $id)
 		{
 			$extfields = $this->get('_extfields');
-			//phpok_log(print_r($extfields))
 			if($extfields){
 				$extfields = implode(",",$extfields);
 				$this->lib('xml')->save(array('fid'=>$extfields),$this->dir_root.'data/xml/cate_extfields_'.$id.'.xml');

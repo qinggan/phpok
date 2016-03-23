@@ -224,6 +224,37 @@ class list_model extends list_model_base
 		return $rslist;
 	}
 
+	public function fields_all($mid=0,$id=0,$ext='')
+	{
+		$f1 = $this->db->list_fields('list');
+		$f2 = $this->db->list_fields('list_attr');
+		$f3 = $this->db->list_fields('list_biz');
+		$f4 = $this->db->list_fields('list_cate');
+		$fields = array_merge($f1,$f2,$f3,$f4);
+		if($mid){
+			$f5 = $this->db->list_fields("list_".$mid);
+			$fields = array_merge($fields,$f5);
+		}
+		if($id){
+			$sql = "SELECT identifier FROM ".$this->db->prefix."ext WHERE module='list-".$id."'";
+			$f6 = $this->db->get_all($sql);
+			if($f6){
+				$tmp = array();
+				foreach($f6 as $key=>$value){
+					$tmp[] = $value['identifier'];
+				}
+				$fields = array_merge($fields,$tmp);
+			}
+		}
+		if($ext && is_array($ext)){
+			$f7 = array();
+			foreach($ext as $key=>$value){
+				$f7[] = $key;
+			}
+			$fields = array_merge($fields,$f7);
+		}
+		return $fields;
+	}
 }
 
 ?>

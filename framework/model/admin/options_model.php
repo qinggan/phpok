@@ -20,7 +20,9 @@ class options_model extends options_model_base
 		if(!$data || !is_array($data)){
 			return false;
 		}
-		$data['site_id'] = $this->site_id;
+		if(!$data['site_id']){
+			$data['site_id'] = $this->site_id;
+		}
 		if($id){
 			return $this->db->update_array($data,'attr',array('id'=>$id));
 		}else{

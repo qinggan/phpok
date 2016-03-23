@@ -81,9 +81,20 @@ class project_model extends project_model_base
 		//删除主题的扩展分类
 		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
 		$this->db->query($sql);
-		//删除主题
-		$sql = "DELETE FROM ".$this->db->prefix."list WHERE project_id=".$id;
-		$this->db->query($sql);
+		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."'";
+		$tmplist = $this->db->get_all($sql);
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$sql = "DELETE FROM ".$this->db->prefix."list_biz WHERE id='".$value['id']."'";
+				$this->db->query($sql);
+				$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id='".$value['id']."'";
+				$this->db->query($sql);
+				$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE tid='".$value['id']."'";
+				$this->db->query($sql);
+			}
+			$sql = "DELETE FROM ".$this->db->prefix."list WHERE project_id=".$id;
+			$this->db->query($sql);
+		}		
 		//删除项目扩展
 		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='project-".$id."'";
 		$extlist = $this->db->get_all($sql);
@@ -112,6 +123,8 @@ class project_model extends project_model_base
 		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."project WHERE site_id='".$this->site_id."'";
 		if($pid){
 			$sql .= " AND parent_id='".$pid."'";
+		}else{
+			$sql .= " AND parent_id=0";
 		}
 		$rs = $this->db->get_one($sql);
 		return $this->return_next_taxis($rs);

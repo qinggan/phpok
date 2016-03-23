@@ -91,6 +91,24 @@ if($status['email_tpl_admin']){
 		}
 	}
 }
+//短信通知管理员
+if($status['sms_tpl_admin']){
+	$tpl = $this->model('email')->tpl($status['sms_tpl_admin']);
+	if($tpl && $tpl['content']){
+		$this->gateway('type','sms');
+		$this->gateway('param','default');
+		$mobile = $this->gateway['param']['ext']['mobile'];
+		if($mobile){
+			$content = $this->fetch($tpl['content'],'msg');
+			if($content){
+				$content = strip_tags($content);
+			}
+			if($content){
+				$this->gateway('exec',array('mobile'=>$mobile,'content'=>$content));
+			}
+		}
+	}
+}
 
 return true;
 

@@ -1,29 +1,26 @@
 <!-- php:$title= $rs.title.' - '.$cate_rs.title.' - '.$page_rs.title -->
 <!-- include tpl=head title=$title menutitle=$page_rs.title -->
-<!-- if $page_rs.banner -->
-<div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$page_rs.title}" /></div>
-<!-- /if -->
-
-<div class="wrap mb10">
-	<div class="page_left">
-		<!-- include tpl=block_catelist -->
-		<!-- include tpl=block_contactus -->
-    </div>
-	<div class="page_right">
-		<div class="page_right_title">
-			<span class="breadcrumbs">
-				您现在的位置：
-				<a href="{$sys.url}" title="{$config.title}">首页</a>
-				<span class="arrow">&nbsp;</span> <a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a>
-				<!-- if $cate_parent_rs && $cate_parent_rs != $cate_root_rs -->
-				<span class="arrow">&nbsp;</span> <a href="{$cate_parent_rs.url}" title="{$cate_parent_rs.title}">{$cate_parent_rs.title}</a>
-				<!-- /if -->
-				<!-- if $cate_rs -->
-				<span class="arrow">&nbsp;</span> <a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a>
-				<!-- /if -->
-			</span>
-			{$cate_rs ? $cate_rs.title : $page_rs.title}
-		</div>
+<div class="main">
+	<!-- if $page_rs.banner -->
+	<div class="banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$page_rs.title}" /></div>
+	<!-- /if -->
+	<ol class="breadcrumb">
+		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
+		<li><a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a></li>
+		<!-- if $cate_parent_rs -->
+		<li><a href="{$cate_parent_rs.url}" title="{$cate_parent_rs.title}">{$cate_parent_rs.title}</a></li>
+		<!-- /if -->
+		<!-- if $cate_rs -->
+		<li><a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a></li>
+		<!-- /if -->
+		<li>{$rs.title}</li>
+	</ol>
+	<div class="left">
+		<!-- include tpl=block/catelist pid=$page_rs.id cid=$cate_rs.id title=$page_rs.title -->
+		<!-- include tpl=block/contact -->
+		<!-- include tpl=block/hot_article -->
+	</div>
+	<div class="right">
 		<div class="photo">
 			<h1>{$rs.title}</h1>
 			<div class="date-hits">
@@ -35,7 +32,7 @@
 			<ul class="pictures">
 				<!-- loop from=$rs.pictures key=$key value=$value -->
 				<li>
-					<div class="img"><a href="{$value.gd.auto}" target="_blank"><img src="{#images#}/blank.gif" _src="{$value.gd.photo}" border="0" alt="{$value.title}" /></a></div>
+					<div class="img"><a href="{$value.gd.auto}" target="_blank"><img src="{#images#}/blank.gif" _src="{$value.gd.auto}" border="0" alt="{$value.title}" /></a></div>
 					<!-- if $value.note -->
 					<div class="content">{$value.note}</div>
 					<!-- /if -->
@@ -75,7 +72,5 @@
 		</div>
 		<!-- if $page_rs.comment_status --><!-- include tpl=block_comment --><!-- /if -->
 	</div>
-	<div class="cl"></div>
 </div>
-
 <!-- include tpl=foot -->

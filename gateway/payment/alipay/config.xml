@@ -25,6 +25,7 @@
 				<create_direct_pay_by_user>即时到账</create_direct_pay_by_user>
 				<trade_create_by_buyer>标准双支付接口</trade_create_by_buyer>
 				<create_partner_trade_by_buyer>担保交易接口</create_partner_trade_by_buyer>
+				<alipay.wap.create.direct.pay.by.user>手机支付接口</alipay.wap.create.direct.pay.by.user>
 			</option>
 			<default>create_direct_pay_by_user</default>
 		</ptype>

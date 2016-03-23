@@ -41,7 +41,7 @@ $(document).ready(function(){
 							var cateid = $("input[name=cate_id]:checked").val();
 						}else{
 							var cateid = $("#cate_id").val();
-						}						
+						}
 						url += "&cateid="+cateid;
 					}
 					if(id){
@@ -250,7 +250,14 @@ $(document).ready(function(){
 	<div class="table clearfix">
 		<div class="title">
 			{$value.title}：
-			<span class="note">{$value.note}</span>
+			<span class="note">{$value.note}
+				<!-- if $popedom.ext && $value.is_edit -->
+				<!-- if $ext_module != 'add-list' -->
+				<a class="icon edit" onclick="ext_edit('{$value.identifier}','{$ext_module}')"></a>
+				<!-- /if -->
+				<a class="icon delete" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')"></a>
+				<!-- /if -->
+			</span>
 		</div>
 		<div class="content">{$value.html}</div>
 	</div>
@@ -347,24 +354,7 @@ $(document).ready(function(){
 			elem:"#dateline",
 			istime: true,
 			format: 'YYYY-MM-DD hh:mm:ss',
-			fixed:true,
-			choose: function(dates){
-				var date = new Date(dates);
-				var month = date.getMonth()+1;
-				if(month<10){
-					month = '0'+month;
-				}
-				var d = date.getDate();
-				if(d<10){
-					d = '0'+d;
-				}
-				var hour = date.getHours();
-				if(hour<10){
-					hour = '0'+hour;
-				}
-				var string = date.getFullYear()+"年"+month+'月'+d+'日'+hour+'整';
-				$("#postdatetime").html(string);
-	        }
+			fixed:true
 		});
 	}
 	</script>
@@ -392,14 +382,6 @@ $(document).ready(function(){
 		<tr>
 			<td align="right">{lang发布时间：}</td>
 			<td><input type="text" id="dateline" name="dateline" class="default" value="{if $rs.dateline}{func date 'Y-m-d H:i:s' $rs.dateline}{else}{func date 'Y-m-d H:i:s' $sys.time}{/if}" onfocus="show_dateline()" /></td>
-		</tr>
-		<tr>
-			<td colspan="2" class="gray i">文章将于<span class="red" id="postdatetime">
-				<!-- if $rs.dateline -->
-				{func date Y年m月d日H点整 $rs.dateline}
-				<!-- else -->
-				{func date Y年m月d日H点整 $sys.time}
-				<!-- /if --></span>发布到网站上</td>
 		</tr>
 		<tr>
 			<td align="right">{lang阅读量：}</td>
@@ -470,6 +452,38 @@ $(document).ready(function(){
 		</div>
 	</div>
 	<!-- /if -->
+	<!-- if $popedom.ext -->
+	<div class="pfw mb10">
+		<h3>{lang扩展主题字段}</h3>
+		<div class="table">
+			<div class="content">
+				<select id="_tmp_select_add" style="padding:3px">
+					<option value="">请选择扩展字段…</option>
+					<!-- loop from=$extfields key=$key value=$value -->
+					<option value="{$value.id}">{$value.title} - {$value.identifier}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="content">
+				<div class="button-group">
+					<input type="button" value="{lang快速添加}" onclick="_update_select_add()" class="phpok-btn" />
+					<input type="button" value="{lang手动创建字段}" onclick="ext_add('{$ext_module}')" class="phpok-btn" />
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	function _update_select_add()
+	{
+		var val = $("#_tmp_select_add").val();
+		if(!val){
+			$.dialog.alert('请选择要添加的扩展');
+			return false;
+		}
+		ext_add2(val,'{$ext_module}');
+	}
+	</script>
+	<!-- /if -->
 </div>
 <div class="clear"></div>
 <div class="table">
@@ -486,11 +500,6 @@ function win_resize()
 		var main1_width = width - 320;
 		$(".main1").css('width',main1_width+"px").css('float','left');
 		$(".main2").css('width','300px').css('float','right');
-		var h = $(".main2").height();
-		var d_h = $(window).height() - 30;
-		if(h < d_h){
-			$('.main2').css('position','fixed').css('top','30px').css('right','0px');
-		}
 	}else{
 		$(".main1,.main2").css('width',width+"px").css("float",'none');
 	}

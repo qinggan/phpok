@@ -8,7 +8,7 @@
 	<!-- php:$style = $value.style ? unserialize($value.style) : array();$style = implode(';',$style) -->
 	<li><a href="{$value.url}" title="{$value.title}" >
 		<h2 style="{$style}">{$value.title}</h2>
-		<p><strong>{func time_format $value.dateline}</strong>，{$value.user_id ? $value.user_id.user : '管理员'}，点击：{$value.hits}</p>
+		<p><strong>{func time_format $value.dateline}</strong>，点击：{$value.hits}</p>
 	</a></li>
 	<!-- /loop -->
 </ul>

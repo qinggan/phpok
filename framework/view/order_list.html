@@ -9,14 +9,12 @@ function www_show(sn,passwd)
 }
 $(document).ready(function(){
 	$(".status").each(function(){
-		if($(this).text() == '未审核')
-		{
+		if($(this).text() == '未审核'){
 			$(this).addClass('darkblue');
 		}
 	});
 	$(".pay_status").each(function(){
-		if($(this).text() == '未付款')
-		{
+		if($(this).text() == '未付款'){
 			$(this).addClass('red');
 		}
 	});
@@ -56,6 +54,7 @@ $(document).ready(function(){
 <tr>
 	<th width="70px">ID</th>
 	<th class="lft">&nbsp;编号</th>
+	<th class="lft">&nbsp;会员</th>
 	<th class="lft">&nbsp;金额</th>
 	<th>状态</th>
 	<th class="lft">付款</th>
@@ -67,6 +66,7 @@ $(document).ready(function(){
 <tr>
 	<td align="center"{if $value.pay_status == 'PAID'} rowspan="2"{/if}>{$value.id}</td>
 	<td>{$value.sn}</td>
+	<td>{$value.user}</td>
 	<td>{func price_format $value.price $value.currency_id $value.currency_id}</td>
 	<td align="center" class="status">{$statuslist[$value.status] ? $statuslist[$value.status] : $value.status}</td>
 	<td class="pay_status">

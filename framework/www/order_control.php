@@ -101,7 +101,9 @@ class order_control extends phpok_control
 			$back = $_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : $this->url;
 		}
 		//判断订单是否存在
-		if($sn) $rs = $this->model('order')->get_one_from_sn($sn);
+		if($sn){
+			$rs = $this->model('order')->get_one_from_sn($sn);
+		}
 		if(!$rs){
 			$id = $this->get('id','int');
 			if(!$id){

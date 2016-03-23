@@ -10,13 +10,80 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class open_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 	}
 
+	public function index_f()
+	{
+		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
+		$pageid = $this->get('pageid','int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$offset = ($pageid-1) * $psize;
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定附件存储ID'));
+		}
+		$this->assign('id',$id);
+		$pageurl = $this->url('open','','id='.$id);
+		if($_SESSION['user_id']){
+			$condition = "user_id='".$_SESSION['user_id']."' ";
+		}else{
+			$condition = "session_id='".$this->session->sessid()."' ";
+		}
+		$multiple = $this->get('multiple','int');
+		if($multiple){
+			$pageurl .= "&multiple=1";
+			$this->assign('multiple',$multiple);
+		}
+		$cate_id = $this->get('cate_id','int');
+		if($cate_id){
+			$cate_rs = $this->model('rescate')->get_one($cate_id);
+			if($cate_rs && $cate_rs['filetypes']){
+				$types = explode(',',$cate_rs['filetypes']);
+				$condition .= " AND ext IN('".implode("','",$types)."') ";
+				$this->assign('cate_id',$cate_id);
+				$pageurl .= "&cate_id=".$cate_id;
+			}
+		}
+		$selected = $this->get('selected','int');
+		if($selected){
+			$condition .= " AND id !='".$selected."' ";
+			$pageurl .= '&selected='.$selected;
+			$this->assign('selected',$selected);
+		}
+		$formurl = $pageurl;
+		$keywords = $this->get("keywords");
+		if($keywords){
+			$keywords = str_replace(' ','%',$keywords);
+			$condition .= " AND (title LIKE '%".$keywords."%' OR name LIKE '%".$keywords."%' OR filename LIKE '%".$keywords."%' OR id LIKE '%".$keywords."%') ";
+			$this->assign('keywords',$keywords);
+			$pageurl .= "&keywords=".rawurlencode($keywords);
+		}
+		$total = $this->model('res')->get_count($condition);
+		if(!$total){
+			$this->error(P_Lang('您没有上传过附件'));
+		}
+		$rslist = $this->model('res')->get_list($condition,$offset,$psize);
+		$this->assign('rslist',$rslist);
+		$this->assign('formurl',$formurl);
+		$this->assign('pageurl',$pageurl);
+		$this->assign('total',$total);
+		$this->assign('pageid',$pageid);
+		$this->assign('offset',$offset);
+		$this->assign('psize',$psize);
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=1';
+		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+		$this->assign('pagelist',$pagelist);
+		$this->view($this->dir_phpok.'open/res_openselect.html','abs-file');
+	}
+
 	// 附件选择器
-	function input_f()
+	public function input_f()
 	{
 		$id = $this->get("id");
 		if(!$id) $id = "content";
@@ -33,7 +100,7 @@ class open_control extends phpok_control
 			$type_s = "picture";
 			$ext = strtolower($config["picture"]["ext"]);
 			$tplfile = "open_image";
-		}elseif($type == "video")
+		}elseif($type == "video"){
 			$ext = strtolower($config["video"]["ext"]);
 			$tplfile = "open_input";
 		}else{

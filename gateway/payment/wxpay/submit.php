@@ -22,42 +22,81 @@ class wxpay_submit
 		$this->paydir = $GLOBALS['app']->dir_root.'gateway/payment/wxpay/';
 		$this->baseurl = $GLOBALS['app']->url;
 		include "wxpay.php";
-		$this->obj = new wxpay_lib();
-		$this->obj->app_id($this->param['param']['appid']);
-		$this->obj->mch_id($this->param['param']['mch_id']);
-		$this->obj->app_key($this->param['param']['app_key']);
-		$this->obj->app_secret($this->param['param']['app_secret']);
-		$this->obj->ssl_cert($this->param['param']['pem_cert']);
-		$this->obj->ssl_key($this->param['param']['pem_key']);
-		$this->obj->proxy_host($this->param['param']['proxy_host']);
-		$this->obj->proxy_port($this->param['param']['proxy_port']);
 	}
 
 	public function submit()
 	{
-		$data = array('body'=>'订单：'.$this->order['sn']);
+		$wxpay = new wxpay_lib();
+		$wxpay->config($this->param['param']);
+		$data = array();
+		if($wxpay->trade_type() == 'jsapi'){
+			$openid = $wxpay->get_openid();
+			if(!$openid){
+				exit('获取OpenId失败，请检查 '.$wxpay->errmsg());
+			}
+			$data['openid'] = $openid;
+		}else{
+			$data['product_id'] = $this->order['sn'];
+		}
+		$data['body'] = '订单：'.$this->order['sn'];
 		$data['detail'] = '订单：'.$this->order['sn'];
 		$data['out_trade_no'] = $this->order['sn'];
 		$data['total_fee'] = intval($this->order['price']*100);
 		$data['notify_url'] = $this->baseurl."gateway/payment/wxpay/notify_url.php";
-		$data['trade_type'] = strtoupper($this->param['param']['trade_type']);
-		$data['product_id'] = $this->order['sn'];
-		$info = $this->obj->pay_url($data);
+		$info = $wxpay->create($data);
 		if(!$info){
 			error('支付出错，请联系管理员');
 		}
-		$this->head();
-		$info = rawurlencode($info);
-		echo <<<EOT
-<div class="main">
-	<h3>请用微信扫一扫</h3>
-	<div class="qrcode"><img src="{$this->baseurl}gateway/payment/wxpay/qrcode.php?data={$info}" border="0" /></div>
-</div>
+		if($wxpay->trade_type() == 'jsapi'){
+			$this->head();
+			//$config = $wxpay->GetJsApiParameters($info);
+			$config = $wxpay->get_jsapi_param($info);
+			$gourl = $this->param['param']['jsapi_link'];
+			if(!$gourl){
+				$gourl = $GLOBALS['app']->url('order','info');
+			}
+			$gourl .= strpos($gourl,'?') !== false ? '&sn='.$this->order['sn'] : '?sn='.$this->order['sn'];
+			echo <<<EOT
+<script type="text/javascript" src="//res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript">
+function callpay()
+{
+	wx.config({
+        debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: '{$config[appId]}', // 必填，公众号的唯一标识
+        timestamp:'{$config[timeStamp]}' , // 必填，生成签名的时间戳
+        nonceStr: '{$config[nonceStr]}', // 必填，生成签名的随机串
+        signature: '{$config[sign]}',// 必填，签名，见附录1
+        jsApiList: ['chooseWXPay'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+    });
+    wx.ready(function(){
+        wx.chooseWXPay({
+            timestamp: '{$config[timeStamp]}', // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+            nonceStr: '{$config[nonceStr]}', // 支付签名随机串，不长于 32 位
+            package: '{$config[package]}', // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+            signType: 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+            paySign: '{$config[paySign]}', // 支付签名
+            success: function (res) {
+	            var url = "{$gourl}";
+	            $.phpok.go(url);
+            }
+        });
+    });
+}
+$(document).ready(function(){
+	callpay();
+});
+</script>
 EOT;
-		$this->foot();
+		}elseif($wxpay->trade_type() == 'native'){
+			$this->head('请用微信扫一扫');
+			echo '<div class="main"><h3>请用微信扫一扫</h3>';
+			echo '<div class="qrcode"><img src="'.$this->baseurl.'gateway/payment/wxpay/qrcode.php?data='.$info['code_url'].'" border="0" /></div></div>';
+			$this->foot();
+		}
 	}
 
-	private function head()
+	private function head($title='')
 	{
 		$jsurl = $GLOBALS['app']->url('js');
 		echo <<<EOT
@@ -66,7 +105,7 @@ EOT;
 <head>
 	<meta charset="utf-8" />
 	<meta http-equiv="expires" content="wed, 26 feb 1997 08:21:57 gmt"> 
-	<title>微信扫一扫</title>
+	<title>{$title}</title>
 	<style type="text/css">
 	body{width:900px;margin:0 auto;}
 	.main{width:300px;position:relative;margin:20% auto;}

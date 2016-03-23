@@ -31,13 +31,12 @@ class form_lib
 	public function cls($name)
 	{
 		$class_name = $name.'_form';
-		if($this->$class_name)
-		{
+		if($this->$class_name){
 			return $this->$class_name;
 		}
 		//新版写法
 		$newfile = $this->dir_form.$class_name.'.php';
-		if(is_file($newfile)){
+		if(file_exists($newfile)){
 			include($newfile);
 			$this->$class_name = new $class_name();
 			return $this->$class_name;
@@ -59,8 +58,7 @@ class form_lib
 
 	private function _obj($rs)
 	{
-		if(!$rs || !$rs['form_type'])
-		{
+		if(!$rs || !$rs['form_type']){
 			return false;
 		}
 		return $this->cls($rs['form_type']);
@@ -133,7 +131,7 @@ class form_lib
 		if(!$rs){
 			return $value;
 		}
-		if($value){
+		if($value != ''){
 			$rs['content'] = $value;
 		}
 		$obj = $this->_obj($rs);

@@ -34,49 +34,6 @@ class usergroup_model extends usergroup_model_base
 		return $rs;
 	}
 
-	//取得会员组ID
-	function group_id($uid=0)
-	{
-		$groupid = 0;
-		$cache_id = $this->cache->id(array('uid'=>$uid,'title'=>'get_user_default_id'));
-		$groupid = $this->cache->get($cache_id);
-		if($groupid){
-			return $groupid;
-		}
-		$this->db->cache_set($cache_id);
-		if($uid){
-			$sql = "SELECT group_id FROM ".$this->db->prefix."user WHERE id='".$uid."'";
-			$tmp = $this->db->get_one($sql);
-			if($tmp && $tmp['group_id']) $groupid = $tmp['group_id'];
-			if(!$groupid){
-				$sql = "SELECT id FROM ".$this->db->prefix."user_group WHERE status=1 AND is_default=1 ORDER BY id ASC LIMIT 1";
-				$tmp = $this->db->get_one($sql);
-				if(!$tmp || !$tmp['id']){
-					return false;
-				}
-				$groupid = $tmp['id'];
-			}
-		}else{
-			$sql = "SELECT id FROM ".$this->db->prefix."user_group WHERE status=1 AND is_guest=1 ORDER BY id ASC LIMIT 1";
-			$tmp = $this->db->get_one($sql);
-			if(!$tmp || !$tmp['id']){
-				return false;
-			}
-			$groupid = $tmp['id'];
-		}
-		if(!$groupid){
-			return false;
-		}
-
-		$sql = "SELECT id FROM ".$this->db->prefix."user_group WHERE status=1 AND id='".$groupid."'";
-		$tmp = $this->db->get_one($sql);
-		if(!$tmp || !$tmp['id']){
-			return false;
-		}
-		$this->cache->save($cache_id,$groupid);
-		return $groupid;
-	}
-
 	//取得开放的会员组列表
 	public function opened_grouplist($pri='')
 	{

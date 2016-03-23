@@ -7,36 +7,42 @@
 	Update  : 2014年1月2日
 ***********************************************************/
  @charset"utf-8";
- * {margin:0;padding:0}
-html, body {color:#666;height:100%;line-height:23px;font-size:14px;font-family:"微软雅黑","宋体","Tahoma","Arial"}
+html, body {line-height:170%;font-size:14px;margin:0;padding:0}
+h1,h2,h3,h4,h5,h6,p,div{margin:0;padding:0;}
+body{max-width:320px;}
 img {border:0}
 a {text-decoration:none;color:#3164cd}
 em {font-style:normal}
 .clear{clear:both;height:0;display: block;visibility:hidden;content:"."}
-.darkred{color:darkred;}
+.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
 .hand{cursor:pointer;}
+.price{font-size:18px;color:red;}
+.ui-content{padding:5px;}
 
 .btn-blue{border:0;margin:0;padding:0 20px;height:30px;line-height:30px;background:darkblue;color:#fff;font-size:14px;}
 .btn-blue:hover{background:#0000CC;}
 
-.main{margin:5px;}
-
 ul.pictures{list-style:none;margin:0;padding:0;}
-ul.pictures li{margin-top:5px;width:50%;text-align:center;float:left;}
-ul.pictures li img{width:172px;height:129px;}
+ul.pictures li{margin-top:5px;width:48%;float:left;border:1px solid #ccc;overflow:hidden;height:185px;text-align:center;background:#fff;}
+ul.pictures li:nth-child(2n){margin-left:2%;}
 
-.content{overflow:hidden;}
-.content blockquote{margin:5px 10px 5px 30px;}
-.content ul{margin-left:30px;}
+.home_banner{width:310px;overflow:hidden;position:relative;margin:0 auto 5px auto;}
+.home_banner .pro_ul{margin:0;padding:0;list-style:none;}
+.home_banner .pro_ul li{text-align:center;}
 
-div.admreply{border:1px solid #ccc;margin:10px auto 5px auto;padding:5px;}
+.content table {border: 1px solid #ddd;border-collapse: collapse;display: table;}
+.content table td {border: 1px solid #ddd;padding: 5px 10px;}
 
-.banner{width:100%;height:180px;overflow:hidden;position:relative;margin:0 auto 5px auto;}
-.banner .pro_ul{margin:0;padding:0;list-style:none;}
-.banner .pro_ul li{text-align:center;}
-.banner .page_ul{ width:100%; position:absolute; top:160px; text-align:center;list-style:none;}
-.banner .page_ul li{ width:45px; height:12px; background:#000; display:inline-block;zoom:1; margin:0 2px; cursor:pointer;opacity:0.6;}
-.banner .page_ul .on{ background:#3375b9;}
+img.thumb{width:80px;height:80px;border:0;}
+
+ul.np{list-style:none;margin:0;padding:0;font-size:12px;}
+ul.np li{height:24px;overflow:hidden;}
+ul.np li a{display:block;font-weight:normal;line-height:24px;overflow:hidden;white-space: nowrap;text-overflow:ellipsis;letter-spacing:1px;}
+ul.np b{color:#000;letter-spacing:normal;}
+
+div.product_img ul{list-style:none;padding:0;margin:0;}
+div.product_img li{width:310px;height:310px;overflow:hidden;}
+div.product_img li img{width:310px;height:310px;border:0;}
 
 
-.foot{text-align:center;font-size:14px;font-weight:normal;padding:5px;}
+.joblist .ui-li-count{line-height:26px;margin-top:0.45em;min-width:40px;margin-right:-30px;text-align:center;}

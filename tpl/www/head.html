@@ -1,12 +1,9 @@
-<!-- head title=$title css="css/style.css,artdialog.css" extjs="jquery.artdialog.js" js="js/global.js" html5=true -->
+<!-- php:$cssfile = $css ? "css/style.css,artdialog.css,".$css : "css/style.css,artdialog.css" -->
+<!-- php:$jsfile = $js ? "js/global.js,".$js : "js/global.js" -->
+<!-- head title=$title css=$cssfile extjs="jquery.artdialog.js" js=$jsfile html5=true -->
 <body>
-<script type="text/javascript">
-$(document).ready(function(){
-	$.cart.total();
-});
-</script>
 <header>
-	<div class="top clearfix">
+	<div class="top">
 		<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" /></a></div>
 		<div class="right">
 			<nav class="top">
@@ -27,16 +24,14 @@ $(document).ready(function(){
 	<nav class="menu">
 	<ul>
 		<!-- php:$list = phpok('menu') -->
-		<!-- loop from=$list.rslist key=$key value=$value id=list_id -->
-		<li{if $menutitle == $value.title} class="current"{/if}>
-			<a{if $list_id.num == 1} class="first"{/if}{if $list_id.num == $list_id.total} class="last"{/if} href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a>
-			<!-- if $value.sonlist -->
-			<ul>
+		<!-- loop from=$list.rslist key=$key value=$value id=mindex -->
+		<li{if $highlight == $mindex.num || $menutitle == $value.title} class="current"{/if}>
+			<dl>
+				<dt{if $value.sonlist} class="arrow"{/if}><a href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a></dt>
 				<!-- loop from=$value.sonlist key=$k value=$v -->
-				<li><a href="{$v.url}" title="{$v.title}" target="{$v.target}">{$v.title}</a></li>
+				<dd><a href="{$v.url}" title="{$v.title}" target="{$v.target}">{$v.title}</a></dd>
 				<!-- /loop -->
-			</ul>
-			<!-- /if -->
+			</dl>
 		</li>
 		<!-- /loop -->
 	</ul>

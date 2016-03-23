@@ -16,18 +16,8 @@ class call_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
-		$list = array(
-			"arclist"=>P_Lang('文章列表')
-			,"arc"=>P_Lang('文章内容')
-			,"cate"=>P_Lang('分类信息')
-			,"catelist"=>P_Lang('分类树')
-			,"project"=>P_Lang('项目信息')
-			,"sublist"=>P_Lang('子项目信息')
-			,"parent"=>P_Lang('上级项目')
-			,"fields"=>P_Lang('字段及表单')
-		);
-		$this->phpok_type_list = $list;
-		$this->assign("phpok_type_list",$list);
+		$this->phpok_type_list = $this->model('call')->types();
+		$this->assign("phpok_type_list",$this->phpok_type_list);
 		$this->popedom = appfile_popedom("call");
 		$this->assign("popedom",$this->popedom);
 	}
@@ -36,7 +26,7 @@ class call_control extends phpok_control
 	{
 		$site_id = $_SESSION["admin_site_id"];
 		$this->model('call')->site_id($site_id);
-		$psize = $this->config["psize"] ? $this->config["psize"] : 20;
+		
 		$this->model('call')->psize($psize);
 		$this->psize = $psize;
 	}
@@ -47,17 +37,21 @@ class call_control extends phpok_control
 			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$this->phpok_autoload();
+		$psize = $this->config["psize"] ? $this->config["psize"] : 20;
 		$pageid = $this->get($this->config["pageid"],"int");
-		if(!$pageid) $pageid = 1;
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$offset = ($pageid-1) * $psize;
 		$keywords = $this->get("keywords");
 		$pageurl = $this->url("call");
 		$condition = "";
 		if($keywords){
 			$this->assign("keywords",$keywords);
 			$pageurl.="&keywords=".rawurlencode($keywords)."&";
-			$condition = " (title LIKE '%".$keywords."%' OR note LIKE '%".$keywords."%' OR identifier LIKE '%".$keywords."%') ";
+			$condition = " (ok.title LIKE '%".$keywords."%' OR ok.identifier LIKE '%".$keywords."%') ";
 		}
-		$rslist = $this->model('call')->get_list($condition,$pageid);
+		$rslist = $this->model('call')->get_list($condition,$offset,$psize);
 		$this->assign("rslist",$rslist);
 		$total = $this->model('call')->get_count($condition);
 		$this->assign("total",$total);
@@ -96,6 +90,11 @@ class call_control extends phpok_control
 		$this->assign("rslist",$rslist);
 		$attrlist = $this->model('list')->attr_list();
 		$this->assign("attrlist",$attrlist);
+
+		//读取会员组
+		$ugroup = $this->model('usergroup')->get_all("is_guest=0");
+		$this->assign("usergroup",$ugroup);
+		
 		$this->view("phpok_set");
 	}
 
@@ -103,26 +102,19 @@ class call_control extends phpok_control
 	public function cate_list_f()
 	{
 		$id = $this->get("id","int");
-		if(!$id){
-			$this->json(P_Lang('未指定项目ID'));
+		if($id){
+			$rs = $this->model('project')->get_one($id);
+			if(!$rs["cate"]){
+				$this->error(P_Lang('无分类'));
+			}
+			$cate_rs = $this->model('cate')->cate_info($rs["cate"],false);
+			$catelist = $this->model('cate')->get_all($rs["site_id"],0,$rs["cate"]);
+			$catelist = $this->model('cate')->cate_option_list($catelist);
+			$this->success(array('cate'=>$cate_rs,'catelist'=>$catelist));
 		}
-		$val = $this->get("val");
-		if($val){
-			$val = explode(",",$val);
-			$this->assign("val",$val);
-		}
-		$rs = $this->model('project')->get_one($id);
-		$this->assign("rs",$rs);
-		if(!$rs["cate"]){
-			$this->json(P_Lang('无分类'));
-		}
-		$cate_rs = $this->model('cate')->cate_info($rs["cate"],false);
-		$this->assign("cate_rs",$cate_rs);
-		$catelist = $this->model('cate')->get_all($rs["site_id"],0,$rs["cate"]);
+		$catelist = $this->model('cate')->get_all($_SESSION["admin_site_id"]);
 		$catelist = $this->model('cate')->cate_option_list($catelist);
-		$this->assign("catelist",$catelist);
-		$content = $this->fetch("phpok_ajax_cate");
-		$this->json($content,true);
+		$this->success(array('catelist'=>$catelist));
 	}
 	
 	public function type_list_f()
@@ -185,7 +177,7 @@ class call_control extends phpok_control
 		$this->assign('rslist',$rslist);
 		$info = $this->fetch("phpok_ajax_fields");
 		$order = $this->fetch("phpok_ajax_orderby");
-		$this->json(array('need'=>$info,'orderby'=>$order),true);
+		$this->json(array('need'=>$info,'orderby'=>$order,'attr'=>$p_rs['is_attr'],'rslist'=>$rslist),true);
 	}
 
 	private function check_identifier($identifier)
@@ -217,8 +209,7 @@ class call_control extends phpok_control
 		$this->phpok_autoload();
 		$array = array();
 		$error_url = $this->url("call","set");
-		if(!$id)
-		{
+		if(!$id){
 			if(!$this->popedom["modify"]){
 				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
@@ -244,6 +235,8 @@ class call_control extends phpok_control
 		$array["type_id"] = $this->get("type_id");
 		$array["status"] = $this->get("status","int");
 		$array["cateid"] = $this->get("cateid",'int');
+		$array['sqlinfo'] = $this->get('sqlinfo');
+		$array['is_api'] = $this->get('is_api','int');
 		$ext = array();
 		$ext['psize'] = $this->get("psize",'int');
 		$ext['offset'] = $this->get("offset",'int');
@@ -253,9 +246,11 @@ class call_control extends phpok_control
 		$ext['tag'] = $this->get('tag');
 		$ext['keywords'] = $this->get('keywords');
 		$ext['orderby'] = $this->get('orderby');
-		$ext['cate'] = $this->get('cate');
+		$ext['fields'] = $this->get('fields');
 		$ext['fields_format'] = $this->get('fields_format','int');
 		$ext['user'] = $this->get('user');
+		$ext['user_ext'] = $this->get('user_ext','int');
+		$ext['usergroup'] = $this->get('usergroup','int');
 		$ext['in_sub'] = $this->get('in_sub','int');
 		$ext['title_id'] = $this->get('title_id');
 		$array['ext'] = serialize($ext);

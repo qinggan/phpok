@@ -242,6 +242,7 @@ function cate_change()
 		'accept' : {'title':catename,'extensions':data},
 		"formData" :{'{func session_name}':'{func session_id}','cateid':val},
 		'fileVal':'upfile',
+		'sendAsBinary':{$sendAsBinary ? 'true' : 'false'},
 		'auto':true,
 		"success":function(){
 			return true;

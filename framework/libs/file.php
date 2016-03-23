@@ -32,6 +32,9 @@ class file_lib
 			}
 			if(!$length){
 				$content = file_get_contents($file);
+				if(!$content){
+					return false;
+				}
 			}else{
 				$fp = fopen($file,'rb');
 				$content = fread($fp,$length);

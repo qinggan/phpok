@@ -22,6 +22,7 @@
 		<email_tpl_user>order_user_paid</email_tpl_user>
 		<email_tpl_admin>order_admin_paid</email_tpl_admin>
 		<sms_tpl_user>sms_order_paid</sms_tpl_user>
+		<sms_tpl_admin>sms_paid_admin</sms_tpl_admin>
 		<taxis>3</taxis>
 	</paid>
 	<shipped>

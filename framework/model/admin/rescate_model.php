@@ -32,7 +32,7 @@ class rescate_model extends rescate_model_base
 			}
 		}
 		if($data['is_default']){
-			$sql = "UPDATE ".$this->db->prefix."res_cate WHERE id !='".$id."'";
+			$sql = "UPDATE ".$this->db->prefix."res_cate SET is_default=0 WHERE id !='".$id."'";
 			$this->db->query($sql);
 		}
 		return $id;

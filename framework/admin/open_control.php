@@ -107,6 +107,8 @@ class open_control extends phpok_control
 		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 		$this->assign("pagelist",$pagelist);
 		$this->assign("pageurl",$pageurl);
+		$sendAsBinary = ini_get('upload_tmp_dir') ? false : true;
+		$this->assign('sendAsBinary',$sendAsBinary);
 		$this->view('open_upload');
 	}
 	

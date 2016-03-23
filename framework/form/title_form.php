@@ -67,6 +67,16 @@ class title_form extends _init_auto
 		if(!$rs['content']){
 			return false;
 		}
+		$list = explode(',',$rs['content']);
+		foreach($list as $key=>$value){
+			if(!$value || !trim($value) || !intval($value)){
+				unset($list[$key]);
+			}
+		}
+		$rs['content'] = implode(",",$list);
+		if(!$rs['content']){
+			return false;
+		}
 		if($appid == 'admin'){
 			$condition = "l.id IN(".$rs['content'].")";
 			$rslist = $this->model('list')->get_all($condition);
@@ -80,13 +90,7 @@ class title_form extends _init_auto
 			return implode('<br />',$list);
 		}
 		if($ext['is_multiple']){
-			$list = explode(',',$rs['content']);
-			foreach($list as $key=>$value){
-				if(!$value || !trim($value) || !intval($value)){
-					unset($list[$key]);
-				}
-			}
-			$rs['content'] = implode(",",$list);
+			
 			$condition = "l.id IN(".$rs['content'].") AND status=1";
 			return $this->model('list')->get_all($condition,0,999);
 		}

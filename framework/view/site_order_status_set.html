@@ -30,53 +30,58 @@ function save()
 </div>
 <div class="table">
 	<div class="title">
-		邮件通知会员：
-		<span class="note">选择模板，订单状态更新后，会以邮件形式通知客户</span>
+		通知会员：
+		<span class="note">选择模板，订单状态更新后，会以邮件或短信通知客户</span>
 	</div>
 	<div class="content">
-		<select name="email_tpl_user">
-			<option value="">{lang不通知会员}</option>
+		<select name="email_tpl_user" style="width:475px">
+			<option value="">{lang邮件模板：}{lang不通知会员}</option>
 			<!-- loop from=$emailtpl key=$key value=$value -->
 			<!-- if substr($value.identifier,0,4) != 'sms_' -->
-			<option value="{$value.identifier}"{if $rs.email_tpl_user == $value.identifier} selected{/if}>{lang模板：}{$value.title}</option>
+			<option value="{$value.identifier}"{if $rs.email_tpl_user == $value.identifier} selected{/if}>{lang邮件模板：}{$value.title}</option>
 			<!-- /if -->
 			<!-- /loop -->
 		</select>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		短信通知会员：
-		<span class="note">通知客户订单内容，模板中的HTML将被过滤</span>
-	</div>
-	<div class="content">
-		<select name="sms_tpl_user">
-			<option value="">{lang不通知会员}</option>
-			<!-- loop from=$emailtpl key=$key value=$value -->
-			<!-- if substr($value.identifier,0,4) == 'sms_' -->
-			<option value="{$value.identifier}"{if $rs.sms_tpl_user == $value.identifier} selected{/if}>{lang模板：}{$value.title}</option>
-			<!-- /if -->
-			<!-- /loop -->
-		</select>
+		<div style="padding-top:5px">
+			<select name="sms_tpl_user" style="width:475px">
+				<option value="">{lang短信模板：}{lang不通知会员}</option>
+				<!-- loop from=$emailtpl key=$key value=$value -->
+				<!-- if substr($value.identifier,0,4) == 'sms_' -->
+				<option value="{$value.identifier}"{if $rs.sms_tpl_user == $value.identifier} selected{/if}>{lang短信模板：}{$value.title}</option>
+				<!-- /if -->
+				<!-- /loop -->
+			</select>
+		</div>
 	</div>
 </div>
 
 <div class="table">
 	<div class="title">
-		邮件通知管理员：
-		<span class="note">选择模板，订单状态更新后，会以邮件形式通知管理员</span>
+		通知管理员：
+		<span class="note">选择模板，订单状态更新后，会以邮件或短信通知管理员</span>
 	</div>
 	<div class="content">
-		<select name="email_tpl_admin">
-			<option value="">{lang不通知管理员}</option>
+		<select name="email_tpl_admin" style="width:475px">
+			<option value="">{lang邮件模板：}{lang不通知管理员}</option>
 			<!-- loop from=$emailtpl key=$key value=$value -->
 			<!-- if substr($value.identifier,0,4) != 'sms_' -->
-			<option value="{$value.identifier}"{if $rs.email_tpl_admin == $value.identifier} selected{/if}>{lang模板：}{$value.title}</option>
+			<option value="{$value.identifier}"{if $rs.email_tpl_admin == $value.identifier} selected{/if}>{lang邮件模板：}{$value.title}</option>
 			<!-- /if -->
 			<!-- /loop -->
 		</select>
+		<div style="padding-top:5px">
+			<select name="sms_tpl_admin" style="width:475px">
+			<option value="">{lang短信模板：}{lang不通知管理员}</option>
+				<!-- loop from=$emailtpl key=$key value=$value -->
+				<!-- if substr($value.identifier,0,4) == 'sms_' -->
+				<option value="{$value.identifier}"{if $rs.sms_tpl_admin == $value.identifier} selected{/if}>{lang短信模板：}{$value.title}</option>
+				<!-- /if -->
+				<!-- /loop -->
+			</select>
+		</div>
 	</div>
 </div>
+
 <div class="table">
 	<div class="title">
 		状态：

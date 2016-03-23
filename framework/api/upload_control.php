@@ -76,8 +76,7 @@ class upload_control extends phpok_control
 		$array["addtime"] = $this->time;
 		$array['title'] = $upload['title'];
 		$arraylist = array("jpg","gif","png","jpeg");
-		if(in_array($upload['ext'],$arraylist))
-		{
+		if(in_array($upload['ext'],$arraylist)){
 			$img_ext = getimagesize($this->dir_root.$upload['filename']);
 			$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
 			$array["attr"] = serialize($my_ext);

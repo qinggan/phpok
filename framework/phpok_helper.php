@@ -110,7 +110,15 @@ function error($tips="",$url="",$type="notice",$time=2)
 	$GLOBALS['app']->assign("tips",$tips);
 	$GLOBALS['app']->assign("type",$type);
 	$GLOBALS['app']->assign("time",$time);
-	$GLOBALS['app']->view("tips");
+	if($type == 'error'){
+		$GLOBALS['app']->error($tips,$url,$time);
+	}else{
+		if($type == 'notice'){
+			$GLOBALS['app']->tip($tips,$url,$time);
+			exit;
+		}
+		$GLOBALS['app']->success($tips,$url,$time);
+	}
 	exit;
 }
 
@@ -178,56 +186,25 @@ function password_check($pass,$password)
 	}
 }
 
-# 格式化获取扩展数据的内容
+//格式化获取扩展数据的内容
 function ext_value($rs)
 {
-	//使用用户自定义获取的内容
-	$val = $GLOBALS['app']->lib('form')->get($rs);
-	if($val)
-	{
+	global $app;
+	$val = $app->lib('form')->get($rs);
+	if($val){
 		return $val;
 	}
-	//判断是否
-	if($rs["format"] == "int")
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"],"int");
+	$tmp = array('int','float','html','html_js','time','text');
+	if($rs['format'] && in_array($rs['format'],$tmp)){
+		$val = $app->get($rs['identifier'],$rs['format']);
+	}else{
+		$val = $app->get($rs['identifier']);
 	}
-	elseif($rs["format"] == "float")
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"],"float");
-	}
-	elseif($rs["format"] == "html")
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"],"html");
-	}
-	elseif($rs["format"] == "html_js")
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"],"html_js");
-	}
-	elseif($rs["format"] == "time")
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"],'time');
-	}
-	elseif($rs["format"] == "text")
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"],"html");
-		if($val) $val = strip_tags($val);
-	}
-	else
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"]);
-	}
-	if(is_array($val))
-	{
-		if($rs["form_type"] == "url")
-		{
-			$tmp = array("default"=>$val[0],"rewrite"=>$val[1]);
-			$val = serialize($tmp);
+	if($val && is_array($val)){
+		if($rs['form_type'] == 'url'){
+			$val = array('default'=>$val[0],'rewrite'=>$val[1]);
 		}
-		else
-		{
-			$val = serialize($val);
-		}
+		$val = serialize($val);
 	}
 	return $val;
 }
@@ -693,11 +670,15 @@ function tpl_head($array=array())
 		$html .= '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 		$html .= '<head>'."\n\t".'<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'."\n\t";
 	}
-	$html .= '<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />'."\n\t";
-	$html .= '<meta http-equiv="Pragma" content="no-cache" />'."\n\t";
-	$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate,max-age=3" />'."\n\t";
-	$html .= '<meta http-equiv="Expires" content="Mon, 26 Jul 1997 05:00:00 GMT" />'."\n\t";
-	$html .= '<meta name="renderer" content="webkit">'."\n\t";
+	if($array['mobile'] == 'true'){
+		$html .= '<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />'."\n\t";
+	}else{
+		$html .= '<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />'."\n\t";
+		$html .= '<meta http-equiv="Pragma" content="no-cache" />'."\n\t";
+		$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate,max-age=3" />'."\n\t";
+		$html .= '<meta http-equiv="Expires" content="Mon, 26 Jul 1997 05:00:00 GMT" />'."\n\t";
+		$html .= '<meta name="renderer" content="webkit">'."\n\t";
+	}
 	if($app->license == 'LGPL'){
 		$html .= '<meta name="author" content="phpok,admin@phpok.com" />'."\n\t";
 	}
@@ -748,8 +729,9 @@ function tpl_head($array=array())
 	}
 	$html .= '<base href="'.$app->url.'" />'."\n\t";
 	$ico = $array['ico'] ? $array['ico'] : 'favicon.ico';
+	$cssjs_debug = $app->config['debug'] ? '?_noCache=0.'.rand(1000,9999) : '';
 	if(file_exists($app->dir_root.$ico)){
-		$html .= '<link rel="icon" href="'.$ico.'" />'."\n\t";
+		$html .= '<link rel="icon" href="'.$app->url.$ico.$cssjs_debug.'" />'."\n\t";
 	}
 	if($array["css"]){
 		$tmp = explode(",",$array['css']);
@@ -759,9 +741,9 @@ function tpl_head($array=array())
 				continue;
 			}
 			if($value == basename($value)){
-				$html .= '<link rel="stylesheet" type="text/css" href="'.$app->url."css/".$value.'" />'."\n\t";
+				$html .= '<link rel="stylesheet" type="text/css" href="'.$app->url."css/".$value.$cssjs_debug.'" />'."\n\t";
 			}else{
-				$html .= '<link rel="stylesheet" type="text/css" href="'.$app->url.$value.'" />'."\n\t";
+				$html .= '<link rel="stylesheet" type="text/css" href="'.$app->url.$value.$cssjs_debug.'" />'."\n\t";
 			}
 		}
 	}
@@ -798,14 +780,14 @@ function tpl_head($array=array())
 				continue;
 			}
 			if(substr($value,0,$tpldir_length) == $tpldir){
-				$html .= '<script type="text/javascript" src="'.$app->url.$value.'" charset="utf-8"></script>'."\n\t";
+				$html .= '<script type="text/javascript" src="'.$app->url.$value.$cssjs_debug.'" charset="utf-8"></script>'."\n\t";
 			}else{
-				$html .= '<script type="text/javascript" src="'.$app->url.'js/'.$value.'" charset="utf-8"></script>'."\n\t";
+				$html .= '<script type="text/javascript" src="'.$app->url.'js/'.$value.$cssjs_debug.'" charset="utf-8"></script>'."\n\t";
 			}
 		}
 	}
 	$html .= phpok_head_js();
-	if($array['html5'] == 'true'){
+	if($array['html5'] == 'true' && (!$array['mobile'] || $array['mobile'] != 'true')){
 		$html .= '<!--[if IE]>'."\n\t";
 		$html .= '<script type="text/javascript" src="'.$app->url.'js/html5.js" charset="utf-8"></script>'."\n\t";
 		$html .= '<![endif]-->'."\n\t";
@@ -1014,5 +996,13 @@ function phpok_call_api_url($phpok,$param='',$tpl='')
 	}
 	$ext .= "token=".rawurlencode($token);
 	return api_url('index','phpok',$ext,true);
+}
+function token_userid()
+{
+	$info = array();
+	if($_SESSION['user_id']){
+		return $GLOBALS['app']->model('user')->token_create($_SESSION['user_id']);
+	}
+	return $GLOBALS['app']->lib('token')->encode($info);
 }
 ?>

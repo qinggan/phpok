@@ -22,6 +22,10 @@ class order_control extends phpok_control
 	
 	public function create_f()
 	{
+		$user = array();
+		if($_SESSION['user_id']){
+			$user = $this->model('user')->get_one($_SESSION['user_id']);
+		}
 		$rslist = $this->model('cart')->get_all($this->cart_id);
 		if(!$rslist){
 			$this->json(P_Lang("您的购物车里没有产品"));
@@ -35,7 +39,7 @@ class order_control extends phpok_control
 		$sn = $this->create_sn();
 		$allprice = round(($_SESSION['cart']['totalprice']+$_SESSION['cart']['freight_price']),2);
 		$main = array('sn'=>$sn);
-		$main['user_id'] = $this->user['id'];
+		$main['user_id'] = $user['id'];
 		$main['addtime'] = $this->time;
 		$main['price'] = $allprice;
 		$main['currency_id'] = $this->site['currency_id'];
@@ -51,12 +55,12 @@ class order_control extends phpok_control
 			}
 		}else{
 			$address = $this->model('user')->address_one($_SESSION['cart']['address_id']);
-			if(!$address || $address['user_id'] != $this->user['id']){
+			if(!$address || $address['user_id'] != $user['id']){
 				$this->json(P_Lang('请完善您的收货地址信息'));
 			}
 			$main['email'] = $address['email'];
 			if(!$main['email']){
-				$main['email'] = $this->user['email'];
+				$main['email'] = $user['email'];
 			}
 		}
 		$main['note'] = $this->get('note');
@@ -129,7 +133,7 @@ class order_control extends phpok_control
 		unset($_SESSION['cart']);
 		//填写订单日志
 		$note = P_Lang('订单创建成功，订单编号：{sn}',array('sn'=>$sn));
-		$log = array('order_id'=>$oid,'addtime'=>$this->time,'who'=>$this->user['user'],'note'=>$note);
+		$log = array('order_id'=>$oid,'addtime'=>$this->time,'who'=>$user['user'],'note'=>$note);
 		$this->model('order')->log_save($log);
 		//增加订单通知
 		$param = 'id='.$oid."&status=create";
@@ -190,8 +194,8 @@ class order_control extends phpok_control
 		if(!$rs){
 			$this->json(P_Lang('订单信息不存在'));
 		}
-		if($this->user['id']){
-			if($rs['user_id'] != $this->user['id']){
+		if($_SESSION['user_id']){
+			if($rs['user_id'] != $_SESSION['user_id']){
 				$this->json(P_Lang('您没有权限获取此订单信息'));
 			}
 		}else{

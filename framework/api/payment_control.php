@@ -70,7 +70,7 @@ class payment_control extends phpok_control
 			$this->model('payment')->log_update($array,$chk['id']);
 			$this->json($chk['id'],true);
 		}
-		$array = array('sn'=>$info['sn'],'type'=>$$info['type'],'payment_id'=>$payment,'title'=>$title,'content'=>$title);
+		$array = array('sn'=>$info['sn'],'type'=>$info['type'],'payment_id'=>$payment,'title'=>$title,'content'=>$title);
 		$array['dateline'] = $this->time;
 		$array['user_id'] = $info['user_id'] ? $info['user_id'] : $this->user['id'];
 		$array['price'] = $info['price'];

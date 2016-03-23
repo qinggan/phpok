@@ -23,6 +23,7 @@ class db
 	private $time_tmp = 0;
 	private $_sqlist = array();
 	public $prefix = 'qinggan_';
+	public $error_type = 'exit';
 	
 	public function __construct($config=array())
 	{
@@ -31,13 +32,23 @@ class db
 
 	public function config($config)
 	{
-		$this->database = $config['data'] ? $config['data'] : '';
+		$this->database($config['data']);
+		$this->prefix = $config['prefix'] ? $config['prefix'] : 'qinggan_';
 		$this->debug = $config['debug'] ? true : false;
 	}
 
 	public function __destruct()
 	{
+		session_write_close();
 		unset($this);
+	}
+
+	public function database($database='')
+	{
+		if($database){
+			$this->database = $database;
+		}
+		return $this->database;
 	}
 
 	public function status()
@@ -85,7 +96,12 @@ class db
 			$info .= "ID：".$errid."，";
 		}
 		$info .= "信息为：".$error."】";
-		exit($this->ascii($info));
+		if($this->error_type == 'json'){
+			$array = array('status'=>'error','content'=>$info);
+			exit(json_encode($array));
+		}else{
+			exit($this->ascii($info));
+		}
 	}
 
 	public function debug($sql='')
@@ -103,19 +119,24 @@ class db
 		if(!$this->debug){
 			return true;
 		}
-		$html = '<table cellspacing="0" border="1" style="border:1px solid #000;width:100%;height:auto;margin:10px;">';
+		$html = '<table cellspacing="0" border="1" style="border:1px solid #000;width:100%;height:auto;margin:10px 0;">';
 		$html.= '<tr>';
 		$html.= '<th style="background:#EEE;color:#000;text-align:center;font-weight:bold;padding:3px;">SQL</th>';
 		$html.= '<th style="background:#EEE;color:#000;text-align:center;font-weight:bold;padding:3px;">Count</th>';
 		$html.= '</tr>';
 		foreach($this->_sqlist as $key=>$value){
 			$html.= '<tr>';
-			$html.= '<td style="text-align:left;line-height:160%;padding:3px;">'.$value['sql'].'</td>';
-			$html.= '<td style="text-align:center;padding:3px;">'.$value['count'].'</td>';
+			$html.= '<td style="text-align:left;padding:3px;background:#fff;color:#000;">'.$value['sql'].'</td>';
+			$html.= '<td style="text-align:center;padding:3px;background:#fff;color:#000;">'.$value['count'].'</td>';
 			$html.= '</tr>';
 		}
 		$html.= '</table>';
 		return $html;
+	}
+
+	public function conn()
+	{
+		return $this->conn;
 	}
 
 	public function cache_save($id,$data)
@@ -185,7 +206,7 @@ class db
 		if(preg_match($this->preg_sql,$sql)){
 			preg_match_all('/(FROM|JOIN|UPDATE|INTO)\s+([a-zA-Z0-9\_\.\-]+)(\s|\()+/isU',$sql,$list);
 			$tbl = $list[2] ? $list[2] : false;
-			if($tbl){
+			if($tbl && $GLOBALS['app']){
 				foreach($tbl as $key=>$value){
 					$GLOBALS['app']->cache->delete_index($value);
 				}

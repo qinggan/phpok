@@ -51,23 +51,21 @@ class admin_sqldiff extends phpok_plugin
 		$dbconfig['data'] =$this->get('data1');
 		$this->assign('data1',$dbconfig['data']);
 		$errurl = $this->url('plugin','exec','id='.$plugin['id'].'&exec=manage');
-		if(!$dbconfig['host'] || !$dbconfig['port'] || !$dbconfig['user'] || !$dbconfig['data'])
-		{
+		if(!$dbconfig['host'] || !$dbconfig['port'] || !$dbconfig['user'] || !$dbconfig['data']){
 			error('主数据库配置不完整',$errurl,'error');
 		}
 		//连接主数据库
 		$engine = $this->get('engine1');
 		$engine = 'mysql';
 		$efile = $this->dir_phpok.'engine/db/'.$engine.'.php';
-		if(!is_file($efile))
-		{
+		if(!file_exists($efile)){
 			error('主数据库引挈：'.$engine.' 不存在！',$errurl,'error');
 		}
 		include_once($efile);
 		$dbname = "db_".$engine;
 		$db1 = new $dbname($dbconfig);
-		if(!$db1->conn)
-		{
+		$db1->connect();
+		if(!$db1->conn()){
 			error('主数据库配置不正确，请检查',$errurl,'error');
 		}
 
@@ -94,7 +92,8 @@ class admin_sqldiff extends phpok_plugin
 		include_once($efile);
 		$dbname = "db_".$engine;
 		$db2 = new $dbname($dbconfig);
-		if(!$db2->conn)
+		$db2->connect();
+		if(!$db2->conn())
 		{
 			error('副数据库配置不正确，请检查',$errurl,'error');
 		}

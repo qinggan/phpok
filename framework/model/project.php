@@ -24,7 +24,10 @@ class project_model_base extends phpok_model
 	//首页取得简单的项目信息，通过ID
 	function simple_project_from_identifier($identifier="",$site_id=0)
 	{
-		if(!$identifier || !$site_id) return false;
+		if(!$identifier) return false;
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE site_id=".intval($site_id)." AND status=1 ";
 		$sql.= "AND identifier='".$identifier."' LIMIT 1";
 		return $this->db->get_one($sql);
@@ -36,9 +39,10 @@ class project_model_base extends phpok_model
 		if(!$id || !intval($id)) return false;
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".intval($id);
 		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
-		if($ext)
-		{
+		if(!$rs){
+			return false;
+		}
+		if($ext){
 			$ext_rs = $GLOBALS['app']->model("ext")->get_all("project-".$id);
 			if($ext_rs) $rs = array_merge($ext_rs,$rs);
 		}
@@ -80,6 +84,9 @@ class project_model_base extends phpok_model
 	{
 		if(!$id){
 			return false;
+		}
+		if(!$site_id){
+			$site_id = $this->site_id;
 		}
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id='".$id."' AND site_id='".$site_id."'";
 		return $this->db->get_one($sql);

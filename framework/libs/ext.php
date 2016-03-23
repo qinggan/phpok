@@ -22,8 +22,8 @@ class ext_lib
 	{
 		$id = $this->safe_format($id);
 		if(!$id) return false;
-		$sql = "SELECT l.*,id.phpok identifier FROM ".$GLOBALS['app']->db->prefix."list l ";
-		$sql.= "JOIN ".$GLOBALS['app']->db->prefix."id id ON(l.id=id.id AND id.type_id='content' AND l.site_id=id.site_id) ";
+		$sql = "SELECT l.* FROM ".$GLOBALS['app']->db->prefix."list l ";
+		//$sql.= "JOIN ".$GLOBALS['app']->db->prefix."id id ON(l.id=id.id AND id.type_id='content' AND l.site_id=id.site_id) ";
 		$sql.= "WHERE l.id IN(".$id.") ORDER BY SUBSTRING_INDEX('".$id."',l.id,1)";
 		$rslist = $GLOBALS['app']->db->get_all($sql,"id");
 		if(!$rslist) return false;

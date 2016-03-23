@@ -11,7 +11,7 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class module_control extends phpok_control
 {
 	private $popedom;
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 		$this->form_list = $this->model('form')->form_all();
@@ -25,7 +25,7 @@ class module_control extends phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
-	function index_f()
+	public function index_f()
 	{
 		if(!$this->popedom["list"]){
 			error(P_Lang('您没有权限执行此操作'),'','error');
@@ -142,7 +142,7 @@ class module_control extends phpok_control
 	}
 
 	//存储或更新模型
-	function save_f()
+	public function save_f()
 	{
 		if(!$this->popedom["set"]) error(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
@@ -178,11 +178,11 @@ class module_control extends phpok_control
 		{
 			$this->model('module')->create_tbl($id);
 		}
-		error(P_Lang('模块数据添加/更新成功'),$this->url("module"));
+		error(P_Lang('模块数据添加/更新成功'),$this->url("module"),'ok');
 	}
 
 	//字段管理器
-	function fields_f()
+	public function fields_f()
 	{
 		if(!$this->popedom["set"]) error(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
@@ -231,7 +231,7 @@ class module_control extends phpok_control
 		$this->view("module_fields");
 	}
 
-	function field_add_f()
+	public function field_add_f()
 	{
 		if(!$this->popedom["set"]) $this->json(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
@@ -287,11 +287,10 @@ class module_control extends phpok_control
 	}
 
 	//创建扩展字段
-	function field_create_f()
+	public function field_create_f()
 	{
 		$mid = $this->get('mid','int');
-		if(!$mid)
-		{
+		if(!$mid){
 			error(P_Lang('未指定模块ID'));
 		}
 		$m_rs = $this->model('module')->get_one($mid);
@@ -309,7 +308,7 @@ class module_control extends phpok_control
 	}
 	
 	//删除字段
-	function field_delete_f()
+	public function field_delete_f()
 	{
 		if(!$this->popedom["set"]) $this->json(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
@@ -322,7 +321,7 @@ class module_control extends phpok_control
 	}
 
 	//删除模块
-	function delete_f()
+	public function delete_f()
 	{
 		if(!$this->popedom['set']){
 			$this->json(P_Lang('您没有权限执行此操作'));
@@ -338,7 +337,7 @@ class module_control extends phpok_control
 	}
 
 	//通过Ajax执行操作
-	function status_f()
+	public function status_f()
 	{
 		if(!$this->popedom["set"]) $this->json(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
@@ -365,7 +364,7 @@ class module_control extends phpok_control
 	}
 
 	//批量更新排序
-	function taxis_f()
+	public function taxis_f()
 	{
 		$taxis = $this->lib('trans')->safe("taxis");
 		if(!$taxis || !is_array($taxis))
@@ -379,7 +378,7 @@ class module_control extends phpok_control
 		$this->json(P_Lang('数据排序更新成功'),true);
 	}
 
-	function field_edit_f()
+	public function field_edit_f()
 	{
 		if(!$this->popedom["set"]) error_open(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
@@ -397,36 +396,29 @@ class module_control extends phpok_control
 
 	function field_edit_save_f()
 	{
-		if(!$this->popedom["set"]) error(P_Lang('您没有权限执行此操作'));
-		$id = $this->get("id","int");
-		if(!$id)
-		{
-			error(P_Lang('未指定ID'));
+		if(!$this->popedom['set']){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('module')->field_one($id);
 		$module_id = $rs['module_id'];
 		$title = $this->get("title");
-		$note = $this->get("note");
-		$form_type = $this->get("form_type");
-		$form_style = $this->get("form_style","html");
-		$content = $this->get("content");
-		$format = $this->get("format");
-		$taxis = $this->get("taxis","int");
+		if(!$title){
+			$this->json(P_Lang('字段名称不能为空'));
+		}
 		$ext_form_id = $this->get("ext_form_id");
 		$ext = array();
-		if($ext_form_id)
-		{
+		if($ext_form_id){
 			$list = explode(",",$ext_form_id);
-			foreach($list AS $key=>$value)
-			{
+			foreach($list AS $key=>$value){
 				$val = explode(':',$value);
-				if($val[1] && $val[1] == "checkbox")
-				{
+				if($val[1] && $val[1] == "checkbox"){
 					$value = $val[0];
-					$ext[$value] = $this->lib('trans')->checkbox($value);
-				}
-				else
-				{
+					$ext[$value] = $this->get($value,"checkbox");
+				}else{
 					$value = $val[0];
 					$ext[$value] = $this->get($value);
 				}
@@ -434,16 +426,19 @@ class module_control extends phpok_control
 		}
 		$array = array();
 		$array["title"] = $title;
-		$array["note"] = $note;
-		$array["form_type"] = $form_type;
-		$array["form_style"] = $form_style;
-		$array["format"] = $format;
-		$array["content"] = $content;
-		$array["taxis"] = $taxis;
+		$array["note"] = $this->get("note");
+		$array["form_type"] = $this->get("form_type");
+		$array["form_style"] = $this->get("form_style","html");
+		$array["format"] = $this->get("format");
+		$array["content"] = $this->get("content");
+		$array["taxis"] = $this->get("taxis","int");
 		$array['is_front'] = $this->get('is_front','int');
 		$array["ext"] = ($ext && count($ext)>0) ? serialize($ext) : "";
+		$array['search'] = $this->get('search','int');
+		$array['search_separator'] = $this->get('search_separator');
 		$this->model('module')->fields_save($array,$id);
-		error(P_Lang('自定义字段信息配置成功'),$this->url('module','fields','id='.$module_id),'ok');
+		$this->model('module')->update_fields($id);
+		$this->json(true);
 	}
 
 	public function field_addok_f()
@@ -488,6 +483,8 @@ class module_control extends phpok_control
 		$array['content'] = $this->get("content");
 		$array['taxis'] = $this->get("taxis","int");
 		$array['is_front'] = $this->get('is_front','int');
+		$array['search'] = $this->get('search','int');
+		$array['search_separator'] = $this->get('search_separator');
 		$ext_form_id = $this->get("ext_form_id");
 		$ext = array();
 		if($ext_form_id){

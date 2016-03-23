@@ -8,8 +8,8 @@
 ***********************************************************/
 class usergroup_control extends phpok_control
 {
-	var $popedom;
-	function __construct()
+	private $popedom;
+	public function __construct()
 	{
 		parent::control();
 		$this->popedom = appfile_popedom("usergroup");
@@ -17,7 +17,7 @@ class usergroup_control extends phpok_control
 		$this->lib('form')->cssjs();
 	}
 
-	function index_f()
+	public function index_f()
 	{
 		if(!$this->popedom["list"]){
 			error(P_Lang('您没有权限执行此操作'),'','error');
@@ -27,31 +27,26 @@ class usergroup_control extends phpok_control
 		$this->view("usergroup_list");
 	}
 
-	function set_f()
+	public function set_f()
 	{
 		$id = $this->get("id","int");
 		$popedom_users = array();
 		$read_popedom_list = $reply_popedom_list = array();
-		if($id)
-		{
+		if($id){
 			if(!$this->popedom["modify"]){
 				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
 			$rs = $this->model('usergroup')->get_one($id);
-			if($rs['popedom']);
-			{
+			if($rs['popedom']){
 				$rs['popedom'] = unserialize($rs['popedom']);
-				if($rs['popedom'][$_SESSION['admin_site_id']])
-				{
+				if($rs['popedom'][$_SESSION['admin_site_id']]){
 					$popedom_users = explode(",",$rs['popedom'][$_SESSION['admin_site_id']]);
 				}
 			}
 			$this->assign("rs",$rs);
 			$this->assign('id',$id);
 			$ext_module = "usergroup-".$id;
-		}
-		else
-		{
+		}else{
 			if(!$this->popedom["add"]){
 				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
@@ -64,10 +59,8 @@ class usergroup_control extends phpok_control
 		$this->assign("project_list",$rslist);
 		//取得模块中带有account字段
 		$reglist = false;
-		if($rslist)
-		{
-			foreach($rslist as $key=>$value)
-			{
+		if($rslist){
+			foreach($rslist as $key=>$value){
 				if(!$value['module']) continue;
 				$tmplist = $this->model('module')->f_all("identifier='account' AND module_id=".$value['module']);
 				if(!$tmplist) continue;
@@ -79,19 +72,17 @@ class usergroup_control extends phpok_control
 		//判断是否启用
 		//自定义扩展字段
 		$this->assign("ext_module",$ext_module);
-		$forbid_list = $this->model('ext')->fields("group");
+		$forbid_list = $this->model('ext')->fields("user_group");
 		$forbid = array_unique(array_merge(array("id","identifier"),$forbid_list));
 		$extlist = get_phpok_ext($ext_module,implode(",",$forbid));
 		$this->assign("extlist",$extlist);
 
 		//会员字段列表
 		$all_fields_list = $this->model('user')->fields_all();
-		if($all_fields_list)
-		{
+		if($all_fields_list){
 			$this->assign("all_fields_list",$all_fields_list);
 			$fields_list = "";
-			if($rs["fields"])
-			{
+			if($rs["fields"]){
 				$fields_list = explode(",",$rs["fields"]);
 			}
 			$this->assign("fields_list",$fields_list);
@@ -101,7 +92,7 @@ class usergroup_control extends phpok_control
 	}
 
 	//存储信息
-	function setok_f()
+	public function setok_f()
 	{
 		$array = array();
 		$id = $this->get("id","int");
@@ -169,7 +160,7 @@ class usergroup_control extends phpok_control
 		error(P_Lang('会员组信息添加/存储成功'),$this->url("usergroup"),"ok");
 	}
 
-	function ajax_del_f()
+	public function ajax_del_f()
 	{
 		if(!$this->popedom["delete"]) exit(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
@@ -190,7 +181,7 @@ class usergroup_control extends phpok_control
 		exit("ok");
 	}
 
-	function default_f()
+	public function default_f()
 	{
 		if(!$_SESSION["admin_rs"]["if_system"]){
 			exit(P_Lang('您没有权限执行此操作'));
@@ -203,7 +194,7 @@ class usergroup_control extends phpok_control
 		exit("ok");
 	}
 
-	function guest_f()
+	public function guest_f()
 	{
 		if(!$_SESSION["admin_rs"]["if_system"]){
 			exit(P_Lang('您没有权限执行此操作'));
@@ -223,7 +214,7 @@ class usergroup_control extends phpok_control
 		exit("ok");
 	}
 
-	function status_f()
+	public function status_f()
 	{
 		if(!$this->popedom['status']){
 			exit(P_Lang('您没有权限执行此操作'));

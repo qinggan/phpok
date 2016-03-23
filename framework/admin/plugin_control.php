@@ -356,7 +356,6 @@ class plugin_control extends phpok_control
 		$content.= '<version>1.0</version>'."\n";
 		$content.= '</root>';
 		$this->lib('file')->vim($content,$this->dir_root.'plugins/'.$id.'/config.xml');
-		$this->lib('file')->vim('',$this->dir_root.'plugins/'.$id.'/template/install.html');
 		$this->lib('file')->vim('',$this->dir_root.'plugins/'.$id.'/template/setting.html');
 		$array = array('www','api','admin','install','uninstall','setting');
 		foreach($array as $key=>$value){
@@ -412,7 +411,7 @@ class plugin_control extends phpok_control
 		$string.= 'public function __construct()'."\n\t";
 		$string.= '{'."\n\t\t";
 		$string.= 'parent::plugin();'."\n\t\t";
-		$string.= '$this->me = $this->plugin_info();'."\n\t";
+		$string.= '$this->me = $this->_info();'."\n\t";
 		$string.= '}'."\n\t";
 		//初始化全局应用
 		if($fileid == 'www' || $fileid == 'admin' || $fileid == 'api'){
@@ -431,15 +430,15 @@ class plugin_control extends phpok_control
 			$string .= '//插件安装时，增加的扩展表单输出项'."\n\t";
 			$string .= 'public function index()'."\n\t";
 			$string.= '{'."\n\t\t";
-			$string.= '//return $this->plugin_tpl(\'install.html\');'."\n\t";
+			$string.= '//return $this->_tpl(\'setting.html\');'."\n\t";
 			$string.= '}'."\n\t";
 			$string .= '//插件安装时，保存扩展参数'."\n\t";
 			$string .= 'public function save()'."\n\t";
 			$string.= '{'."\n\t\t";
-			$string.= '$id = $this->plugin_id();'."\n\t\t";
+			$string.= '$id = $this->_id();'."\n\t\t";
 			$string.= '$ext = array();'."\n\t\t";
 			$string.= '//$ext[\'扩展参数字段名\'] = $this->get(\'表单字段名\');'."\n\t\t";
-			$string.= '$this->plugin_save($ext,$id);'."\n\t";
+			$string.= '$this->_save($ext,$id);'."\n\t";
 			$string.= '}'."\n\t";
 		}
 		if($fileid == 'uninstall'){
@@ -453,15 +452,15 @@ class plugin_control extends phpok_control
 			$string .= '//插件配置参数时，增加的扩展表单输出项'."\n\t";
 			$string .= 'public function index()'."\n\t";
 			$string.= '{'."\n\t\t";
-			$string.= '//return $this->plugin_tpl(\'setting.html\');'."\n\t";
+			$string.= '//return $this->_tpl(\'setting.html\');'."\n\t";
 			$string.= '}'."\n\t";
 			$string .= '//插件配置参数时，保存扩展参数'."\n\t";
 			$string .= 'public function save()'."\n\t";
 			$string.= '{'."\n\t\t";
-			$string.= '$id = $this->plugin_id();'."\n\t\t";
+			$string.= '$id = $this->_id();'."\n\t\t";
 			$string.= '$ext = array();'."\n\t\t";
 			$string.= '//$ext[\'扩展参数字段名\'] = $this->get(\'表单字段名\');'."\n\t\t";
-			$string.= '$this->plugin_save($ext,$id);'."\n\t";
+			$string.= '$this->_save($ext,$id);'."\n\t";
 			$string.= '}'."\n\t";
 			$string .= '//插件执行审核动作时，执行的操作'."\n\t";
 			$string .= 'public function status()'."\n\t";

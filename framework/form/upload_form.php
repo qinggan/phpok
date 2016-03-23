@@ -76,16 +76,28 @@ class upload_form extends _init_auto
 			if(!$list){
 				return false;
 			}
-			$_admin = array("id"=>$rs["content"],"type"=>"pic");
-			$tmp = current($list);
-			$_admin["info"] = $tmp["ico"];
+			$_admin = array("id"=>$rs["content"],"type"=>"html");
+			$html = '';
+			if(count($list)>=5){
+				$html .= '<span class="red" style="float:left;margin-right:5px;line-height:30px;">('.count($list).')</span>';
+			}
+			$i = 0;
+			foreach($list as $key=>$value){
+				if($i>= 5){
+					break;
+				}
+				$html .= '<img src="'.$value['ico'].'" width="28px" border="0" class="hand" onclick="preview_attr(\''.$value['id'].'\')" style="border:1px solid #dedede;padding:1px;margin-right:5px;" />';
+				$i++;
+			}
+			$_admin["info"] = $html;
 			return array("info"=>$list,"_admin"=>$_admin);
 		}
 		$list = $this->lib('ext')->res_info($rs["content"]);
 		if(!$list){
 			return false;
 		}
-		$_admin = array("id"=>$rs["content"],"type"=>"pic","info"=>$list["ico"]);
+		$info = '<img src="'.$list['ico'].'" width="28px" border="0" class="hand" onclick="preview_attr(\''.$list['id'].'\')" style="border:1px solid #dedede;padding:1px;margin-right:10px;" />';
+		$_admin = array("id"=>$rs["content"],"type"=>"html","info"=>$info);
 		$list["_admin"] = $_admin;
 		return $list;
 	}
@@ -98,6 +110,16 @@ class upload_form extends _init_auto
 		if($rs['ext'] && is_string($rs['ext'])){
 			$rs['ext'] = unserialize($rs['ext']);
 		}
+		$tmp = explode(",",$rs['content']);
+		foreach($tmp as $key=>$value){
+			if(!$value || !intval($value)){
+				unset($tmp[$key]);
+			}
+		}
+		if(!$tmp || count($tmp)<1){
+			return false;
+		}
+		$rs['content'] = implode(",",$tmp);
 		$condition = "id IN(".$rs['content'].")";
 		$rslist = $GLOBALS['app']->model('res')->get_list($condition,0,999,true);
 		if(!$rslist){

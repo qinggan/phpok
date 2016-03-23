@@ -47,7 +47,7 @@ class phpok_call extends phpok_control
 
 	private function _phpok_sys_func()
 	{
-		$array = array('arc','arclist','cate','catelist','project','sublist','parent','plist','fields','user','userlist');
+		$array = array('arc','arclist','cate','catelist','project','sublist','parent','fields','user','userlist');
 		$array[] = 'total';
 		$array[] = 'cate_id';
 		$array[] = 'subcate';
@@ -55,6 +55,7 @@ class phpok_call extends phpok_control
 		$array[] = 'reslist';
 		$array[] = 'subtitle';
 		$array[] = 'comment';
+		$array[] = 'sql';
 		return $array;
 	}
 
@@ -129,6 +130,21 @@ class phpok_call extends phpok_control
 		return $this->$func($call_rs,$cache_id);
 	}
 
+	//自定义SQL
+	private function _sql($rs,$cache_id='')
+	{
+		$rs['sqlinfo'] = str_replace(array('&#39;','&quot;','&apos;','&#34;'),array("'",'"',"'",'"'),$rs['sqlinfo']);
+		if($rs['is_list'] && $rs['is_list'] != 'false'){
+			$rslist = $this->db->get_all($rs['sqlinfo']);
+		}else{
+			$rslist = $this->db->get_one($rs['sqlinfo']);
+		}
+		if($cache_id && $rslist){
+			$this->cache->save($cache_id,$rslist);
+		}
+		return $rslist;
+	}
+
 	//读取文章列表
 	private function _arclist($rs,$cache_id='')
 	{
@@ -162,7 +178,7 @@ class phpok_call extends phpok_control
 			}
 		}
 		$flist = $this->model('module')->fields_all($project['module']);
-		$nlist = false;
+		$nlist = array();
 		$field = 'l.*';
 		if($rs['fields']){
 			$tmp = explode(",",$rs['fields']);
@@ -199,54 +215,12 @@ class phpok_call extends phpok_control
 		}
 		$offset = $rs['offset'] ? intval($rs['offset']) : 0;
 		$psize = $rs['is_list'] ? intval($rs['psize']) : 1;
-		$rslist = $this->model('list')->arc_all($project['module'],$field,$condition,$offset,$psize,$orderby);
+		$rslist = $this->model('list')->arc_all($project,$condition,$field,$offset,$psize,$orderby);
 		if(!$rslist){
 			if($cache_id){
 				$this->cache->save($cache_id,$array);
 			}
 			return $array;
-		}
-		//绑定分类
-		if($project['cate']){
-			$tmpcateid = array();
-			foreach($rslist as $key=>$value){
-				$tmpcateid[] = $value['cate_id'];
-			}
-			$tmpcateid = array_unique($tmpcateid);
-			$tmp_catelist = $this->model('cate')->list_ids($tmpcateid);
-			if($tmp_catelist){
-				foreach($rslist as $key=>$value){
-					if($value['cate_id'] && $tmp_catelist[$value['cate_id']]){
-						$value['cate'] = $tmp_catelist[$value['cate_id']];
-						$rslist[$key] = $value; 
-					}
-				}
-			}
-			unset($tmp_cateid,$tmp_catelist);
-		}
-		//绑定会员
-		$tmp_userid = array();
-		foreach($rslist as $key=>$value){
-			if($value['user_id']){
-				$tmp_userid[] = $value['user_id'];
-			}
-		}
-		$tmp_userid = array_unique($tmp_userid);
-		if($tmp_userid && count($tmp_userid)>0){
-			$tmp_userid = implode(",",$tmp_userid);
-			$tmp_userlist = $this->model('user')->get_list("u.id IN(".$tmp_userid.")",0,9999);
-			if($tmp_userlist){
-				foreach($rslist as $key=>$value){
-					if($value['user_id'] && $tmp_userlist[$value['user_id']]){
-						$value['user'] = $tmp_userlist[$value['user_id']];
-						$rslist[$key] = $value;
-					}
-				}
-			}
-		}
-		//绑定扩展字段
-		if(!$nlist || !is_array($nlist)){
-			$nlist = array();
 		}
 		foreach($rslist AS $key=>$value){
 			foreach($nlist AS $k=>$v){
@@ -265,7 +239,15 @@ class phpok_call extends phpok_control
 			}
 			if(!$value['url']){
 				$tmpid = $value['identifier'] ? $value['identifier'] : $value['id'];
-				$value['url'] = $this->config['user_rewrite'] ? $this->url($value['id']) : $this->url($tmpid);
+				if($this->site['url_type'] == 'rewrite'){
+					$tmpext = '&project='.$project['identifier'];
+					if($project['cate']){
+						$tmpext.= '&cateid='.$value['cate_id'];
+					}
+					$value['url'] = $this->url($tmpid,'',$tmpext,'www');
+				}else{
+					$value['url'] = $this->url($tmpid,'','','www');
+				}
 			}
 			$rslist[$key] = $value;
 		}
@@ -276,7 +258,7 @@ class phpok_call extends phpok_control
 					$value['sonlist'] = '';
 					foreach($rslist AS $k=>$v){
 						if($v['parent_id'] == $value['id']){
-							$value['sonlist'][] = $v;
+							$value['sonlist'][$v['id']] = $v;
 						}
 					}
 					$list[] = $value;
@@ -300,8 +282,6 @@ class phpok_call extends phpok_control
 	private function _arc_condition($rs,$fields='')
 	{
 		$condition  = " l.site_id='".$rs['site']."' AND l.hidden=0 ";
-		//计划任务时发布文章
-		$condition .= " AND l.dateline<='".strtotime(date("Y-m-d H:00:00",($this->time+3600)))."' ";
 		if($rs['pid']){
 			$condition .= " AND l.project_id=".intval($rs['pid'])." ";
 		}
@@ -357,25 +337,26 @@ class phpok_call extends phpok_control
 			unset($tid_sql,$tag_condition,$list);
 		}
 		if($rs['keywords']){
-			$rs['keywords'] = str_replace(" ",",",$rs['keywords']);
-			$list = explode(",",$rs['keywords']);
-			$k_condition = false;
-			foreach($list AS $key=>$value){
-				$k_condition [] = " l.seo_title LIKE '%".$value."%'";
-				$k_condition [] = " l.seo_keywords LIKE '%".$value."%'";
-				$k_condition [] = " l.seo_desc LIKE '%".$value."%'";
-				$k_condition [] = " l.title LIKE '%".$value."%'";
-				$k_condition [] = " l.tag LIKE '%".$value."%'";
-				if($fields && is_array($fields)){
-					foreach($fields as $k=>$v){
-						if($v['field_type'] == 'varchar'){
-							$k_condition[] = " ext.".$v['identifier']." LIKE '%".$value."%' ";
+			$keywords = str_replace(" ","%",$rs['keywords']);
+			$k_condition = array();
+			$k_condition [] = " l.seo_title LIKE '%".$keywords."%'";
+			$k_condition [] = " l.seo_keywords LIKE '%".$keywords."%'";
+			$k_condition [] = " l.seo_desc LIKE '%".$keywords."%'";
+			$k_condition [] = " l.title LIKE '%".$keywords."%'";
+			$k_condition [] = " l.tag LIKE '%".$keywords."%'";
+			if($fields && is_array($fields)){
+				foreach($fields as $k=>$v){
+					if($v['search'] && ($v['search'] == 1 || $v['search'] == 2)){
+						if($v['search'] == 1){
+							$k_condition[] = " ext.".$v['identifier']."='".$keywords."' ";
+						}else{
+							$k_condition[] = " ext.".$v['identifier']." LIKE '%".$keywords."%' ";
 						}
 					}
 				}
 			}
 			$condition .= "AND (".implode(" OR ",$k_condition).") ";
-			unset($k_condition,$list);
+			unset($k_condition,$keywords);
 		}
 		if($rs['fields_need']){
 			$list = explode(",",$rs['fields_need']);
@@ -392,6 +373,29 @@ class phpok_call extends phpok_control
 				$key = stripslashes($key);
 				$key = str_replace(array("'",'"'),'',$key);
 				$condition .= " AND ext.".$key."='".$value."' ";
+			}
+		}
+		//判断是否有扩展字段
+		if($fields && is_array($fields)){
+			foreach($fields as $key=>$value){
+				$tmpid = 'e_'.$value['identifier'];
+				if(!$rs[$tmpid] || !$value['search']){
+					continue;
+				}
+				if($value['search'] == 2){
+					$condition .= " AND ext.".$value['identifier']." LIKE '%".$rs[$tmpid]."%' ";
+				}elseif($value['search'] == 3){
+					$separator = $value['search_separator'] ? $value['search_separator'] : ',';
+					$tmp = explode($separator,$rs[$tmpid]);
+					if($tmp[0]){
+						$condition .= " AND ext.".$value['identifier']." >='".$tmp[0]."' ";
+					}
+					if($tmp[1]){
+						$condition .= " AND ext.".$value['identifier']." <='".$tmp[1]."' ";
+					}
+				}else{
+					$condition .= " AND ext.".$value['identifier']."='".$rs[$tmpid]."' ";
+				}
 			}
 		}
 		unset($rs);
@@ -503,9 +507,13 @@ class phpok_call extends phpok_control
 		if(!$arc){
 			return false;
 		}
+		$project = $this->model('project')->project_one($arc['site_id'],$arc['project_id']);
+		if(!$project){
+			return false;
+		}
 		if(!$arc['module_id']){
 			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
-			$arc['url'] = $this->url($url_id);
+			$arc['url'] = $this->url($url_id,'','project='.$project['identifier'],'www');
 			return $arc;
 		}
 		//读取这个主题可能涉及到的Tag
@@ -513,7 +521,7 @@ class phpok_call extends phpok_control
 		$flist = $this->model('module')->fields_all($arc['module_id']);
 		if(!$flist){
 			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
-			$arc['url'] = $this->url($url_id);
+			$arc['url'] = $this->url($url_id,'','project='.$project['identifier'],'www');
 			return $arc;
 		}
 		$taglist = array('tag'=>$arc['tag'],'list'=>array('title'=>$arc['title']));
@@ -539,26 +547,25 @@ class phpok_call extends phpok_control
 					$ext = unserialize($value['ext']);
 					if($ext['inc_tag'] && $arc['tag']){
 						$taglist['list'][$value['identifier']] = $arc[$value['identifier']];
-						$arc[$value['identifier']] = $this->tag_format($arc['tag'],$arc[$value['identifier']]);
+						$arc[$value['identifier']] = $this->model('tag')->tag_format($arc['tag'],$arc[$value['identifier']]);
 					}
 				}
 			}
 		}
 		if($arc['tag']){
-			$arc['tag'] = $this->tag_filter($taglist,$arc['id'],'list');
+			$arc['tag'] = $this->model('tag')->tag_filter($taglist,$arc['id'],'list');
 		}
 		//如果未绑定网址
 		if(!$arc['url']){
 			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
-			$arc['url'] = $this->url($url_id);
+			$arc['url'] = $this->url($url_id,'','project='.$project['identifier'],'www');
 		}
 		//读取分类树
 		$arc['_catelist'] = $this->model('cate')->ext_catelist($arc['id']);
 		if(!$arc['_catelist']){
 			return $arc;
 		}
-		$project = $this->model('project')->project_one($arc['site_id'],$arc['project_id']);
-		$cate['url'] = $this->url($project['identifier'],$cate['identifier']);
+		$cate['url'] = $this->url($project['identifier'],$cate['identifier'],'','www');
 		foreach($arc['_catelist'] as $k=>$v){
 			$cate_tmp = $this->model('ext')->ext_all('cate-'.$v['id'],true);
 			if(!$cate_tmp){
@@ -576,72 +583,13 @@ class phpok_call extends phpok_control
 				$arc['_catelist'][$k][$value['identifier']] = $cate_ext[$value['identifier']];
 			}
 			if(!$arc['_catelist'][$k]['url']){
-				$arc['_catelist'][$k]['url'] = $this->url($project['identifier'],$value['identifier']);
+				$arc['_catelist'][$k]['url'] = $this->url($project['identifier'],$value['identifier'],'','www');
 			}
 		}
 		return $arc;
 	}
 
-	private function tag_format($tag,$content)
-	{
-		if(!$tag || !$content || !is_array($tag) || !is_string($content)){
-			return false;
-		}
-		foreach($tag as $key=>$value){
-			//将已存在的网址内容提取出来
-			preg_match_all('/<a.*>.*<\/a>/isU',$content,$matches);
-			if($matches && $matches[0]){
-				$matches[0] = array_unique($matches[0]);
-				foreach($matches[0] as $k=>$v){
-					$string = '~/~/~'.md5($v).'~\~\~';
-					$content = str_replace($v,$string,$content);
-				}
-			}
-			$replace_count = $value['replace_count'] ? $value['replace_count'] : 3;
-			$content = preg_replace('`'.preg_quote($value['title'],'`').'`isU',$value['html'],$content,$replace_count);
-			if($matches && $matches[0]){
-				foreach($matches[0] as $k=>$v){
-					$string = '~/~/~'.md5($v).'~\~\~';
-					$content = str_replace($string,$v,$content);
-				}
-			}
-		}
-		return $content;
-	}
-
 	//动态统计Tag，以更新Tag记录
-	private function tag_filter($taglist,$id=0,$type='list')
-	{
-		if(!$taglist || !$taglist['list'] || !$taglist['tag']){
-			return false;
-		}
-		$tag = $tag_keys = false;
-		foreach($taglist['tag'] as $key=>$value){
-			$tag[$value['title']] = $value;
-			$tag_keys[] = $value['title'];
-		}
-		$list = false;
-		foreach($taglist['list'] as $key=>$value){
-			foreach($tag_keys as $k=>$v){
-				if(stripos($value,$v) !== false){
-					$list[$v] = $tag[$v];
-				}
-			}
-		}
-		if(!$list){
-			return false;
-		}
-		if(!$id){
-			return $list;
-		}
-		$title_id = $type == 'cate' ? 'c'.$id : ($type == 'project' ? 'p'.$id : $id);
-		foreach($list as $key=>$value){
-			if($value['title_id'] != $title_id){
-				$this->model('tag')->stat_save($value['id'],$title_id);
-			}
-		}
-		return $list;
-	}
 
 	//取得项目信息
 	private function _project($rs,$cache_id='')
@@ -686,7 +634,7 @@ class phpok_call extends phpok_control
 						$ext = unserialize($value['ext']);
 						if($ext['inc_tag'] && $project['tag']){
 							$taglist['list'][$value['identifier']] = $project_ext[$value['identifier']];
-							$project_ext[$value['identifier']] = $this->tag_format($project['tag'],$project_ext[$value['identifier']]);
+							$project_ext[$value['identifier']] = $this->model('tag')->tag_format($project['tag'],$project_ext[$value['identifier']]);
 						}
 					}
 				}
@@ -696,10 +644,10 @@ class phpok_call extends phpok_control
 		}
 		unset($rs);
 		if(!$project['url']){
-			$project['url'] = $this->url($project['identifier']);
+			$project['url'] = $this->url($project['identifier'],'','','www');
 		}
 		if($project['tag']){
-			$project['tag'] = $this->tag_filter($taglist,$project['id'],'project');
+			$project['tag'] = $this->model('tag')->tag_filter($taglist,$project['id'],'project');
 		}
 		if($cache_id){
 			$this->cache->save($cache_id,$project);
@@ -845,7 +793,7 @@ class phpok_call extends phpok_control
 			return $cate;
 		}
 		$project = $this->model('project')->project_one($rs['site'],$rs['pid']);
-		$cate['url'] = $this->url($project['identifier'],$cate['identifier']);
+		$cate['url'] = $this->url($project['identifier'],$cate['identifier'],'','www');
 		if($cache_id){
 			$this->cache->save($cache_id,$cate);
 		}
@@ -890,6 +838,14 @@ class phpok_call extends phpok_control
 					$value['ext'] = unserialize($value['ext']);
 				}
 				if(!$value['is_front']){
+					continue;
+				}
+				//禁止游客上传时
+				if($value['form_type'] == 'upload' && !$this->site['upload_guest'] && !$_SESSION['user_id']){
+					continue;
+				}
+				//禁止会员上传时
+				if($value['form_type'] == 'upload' && !$this->site['upload_user'] && $_SESSION['user_id']){
 					continue;
 				}
 				if($rs['prefix']){
@@ -989,7 +945,9 @@ class phpok_call extends phpok_control
 		}
 		unset($rslist);
 		foreach($list AS $key=>$value){
-			if(!$value['url']) $value['url'] = $this->url($value['identifier']);
+			if(!$value['url']){
+				$value['url'] = $this->url($value['identifier'],'','','www');
+			}
 			$list[$key] = $value;
  		}
  		if($cache_id){
@@ -1113,38 +1071,37 @@ class phpok_call extends phpok_control
 			return false;
 		}
 		$id = $rs['tid'] ? $rs['tid'] : $rs['phpok'];
-		$arc = $this->_arc(array('title_id'=>$id));
-		if(!$arc){
+		$info = $this->model('reply')->get_title_info($id);
+		if(!$info || !$info['comment_status']){
 			return false;
 		}
-		$pid = $arc['project_id'];
-		$project = $this->_project(array('pid'=>$pid));
-		if(!$project || !$project['comment_status']){
-			return false;
-		}
-		$psize = $rs['psize'] ? $rs['psize'] : $this->config['psize'];
+		$psize = $rs['psize'] ? $rs['psize'] : ($info['psize'] ? $info['psize'] : $this->config['psize']);
 		if(!$psize){
 			$psize = 30;
 		}
-		$pageid = ($rs['pageid'] && $rs['pageid']>1) ? ($rs['pageid']-1) : 1;
+		$pageid = ($rs['pageid'] && intval($rs['pageid'])) ? intval($rs['pageid']) : 1;
 		$offset = ($pageid-1) * $psize;
 		$condition = "tid='".$id."' AND parent_id='0' ";
-		$sessid = $this->session->sessid();
-		$uid = $_SESSION['user_id'] ? $_SESSION['user_id'] : 0;
-		$array = array('avatar'=>'images/avatar.gif','uid'=>$uid,'user'=>P_Lang('游客'));
-		if($uid){
-			if($this->user['avatar']){
-				$array['avatar'] = $this->user['avatar'];
+		$array = array('avatar'=>'images/avatar.gif','uid'=>0,'user'=>P_Lang('游客'));
+		if($_SESSION['user_id']){
+			$user = $this->model('user')->get_one($uid,'id',false,false);
+			if($user){
+				if($user['avatar']){
+					$array['avatar'] = $user['avatar'];
+				}
+				$array['user'] = $user['user'];
+				$array['uid'] = $user['id'];
 			}
-			$array['user'] = $this->user['user'];			
+			$condition .= " AND (status=1 OR (status=0 AND uid=".$uid."))";
+		}else{
+			$condition .= " AND (status=1 OR (status=0 AND session_id='".$this->session->sessid()."'))";
 		}
-		$condition .= " AND (status=1 OR (status=0 AND (uid=".$uid." OR session_id='".$sessid."'))) ";
 		if($rs['vouch'] && ($rs['vouch'] == 'true' || $rs['vouch'] == '1')){
 			$condition .= " AND vouch=1 ";
 		}
 		$total = $this->model('reply')->get_total($condition);
 		if(!$total){
-			return false;
+			return $array;
 		}
 		$array['total'] = $total;
 		$rslist = $this->model('reply')->get_list($condition,$offset,$psize);
@@ -1185,7 +1142,6 @@ class phpok_call extends phpok_control
 		}
 		$array['pageid'] = $pageid;
 		$array['psize'] = $psize;
-		$array['arc'] = $arc;
 		return $array;
 	}
 }

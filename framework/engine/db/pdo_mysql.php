@@ -40,6 +40,57 @@ class db_pdo_mysql extends db
 		$this->socket = $config['socket'] ? $config['socket'] : '';
 	}
 
+
+	public function host($host='')
+	{
+		if($host){
+			$this->host = $host;
+		}
+		return $this->host;
+	}
+
+	public function user($user='')
+	{
+		if($user){
+			$this->user = $user;
+		}
+		return $this->user;
+	}
+
+	public function pass($pass='')
+	{
+		if($pass){
+			$this->pass = $pass;
+		}
+		return $this->pass;
+	}
+
+	public function port($port='')
+	{
+		if($port){
+			$this->port = $port;
+		}
+		return $this->port;
+	}
+
+	public function socket($socket='')
+	{
+		if($socket){
+			$this->socket = $socket;
+		}
+		return $this->socket;
+	}
+
+	public function type($type='')
+	{
+		if($type && $type == 'num'){
+			$this->type = PDO::FETCH_NUM;
+		}else{
+			$this->type = PDO::FETCH_ASSOC;
+		}
+		return $this->type;
+	}
+
 	public function connect()
 	{
 		$this->_time();
@@ -94,16 +145,20 @@ class db_pdo_mysql extends db
 		}
 	}
 
-	public function query($sql)
+	public function query($sql,$loadcache=true)
 	{
 		if($this->debug){
 			$this->debug($sql);
 		}
-		$this->cache_sql($sql);
+		if($loadcache){
+			$this->cache_sql($sql);
+		}
 		$this->check_connect();
 		$this->_time();
 		$this->query = $this->conn->query($sql);
-		$this->cache_update($sql);
+		if($loadcache){
+			$this->cache_update($sql);
+		}
 		$this->_time();
 		$this->_count();
 		return $this->query;

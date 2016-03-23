@@ -1,47 +1,4 @@
-<!-- include tpl=head title=$rs.title menutitle=$page_rs.title -->
-<style type="text/css">.imgs{margin-bottom:5px;text-align:center;}</style>
-<style type="text/css">
-ul.pics{list-style:none;text-align:center;margin:0;padding:0;}
-ul.pics li{text-align:center;margin-bottom:8px;display:block;}
-ul.pics li .img{text-align:center;overflow:hidden;}
-ul.pics li .txt{text-align:left;overflow:hidden;padding:3px;border:1px solid #eee;}
-</style>
-<div role="main" class="ui-content">
-	<div class="ui-body ui-body-a ui-corner-all">
-		<h3>{$rs.title}</h3>
-		<div class="info" id="infoimg">
-			<!-- if $rs.pictures -->
-			<ul class="pics">
-				<!-- loop from=$rs.pictures key=$key value=$value -->
-				<li>
-					<div class="img"><img src="{$value.gd.mobile}" border="0" alt="{$value.title}" /></div>
-					<!-- if $value.note -->
-					<div class="txt">{$value.note}</div>
-					<!-- /if -->
-				</li>
-				<!-- /loop -->
-			</ul>
-			<!-- /if -->
-		</div>
-	</div>
-</div>
-
-<!-- php:$prev = phpok_prev($rs) -->
-<!-- php:$next = phpok_next($rs) -->
-<!-- if $prev || $next -->
-<div class="main">
-	<ul data-role="listview">
-		<!-- if $prev -->
-		<li data-icon="arrow-l"><a href="{$prev.url}">上一主题：{$prev.title}</a></li>
-		<!-- /if -->
-		<!-- if $next -->
-		<li data-icon="arrow-r"><a href="{$next.url}">下一主题：{$next.title}</a></li>
-		<!-- /if -->
-	</ul>
-</div>
-<!-- /if -->
-
-<div data-role="footer">
+<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
 <div data-role="navbar">
 	<ul>
 		<!-- catelist pid=$page_rs.id -->
@@ -50,6 +7,54 @@ ul.pics li .txt{text-align:left;overflow:hidden;padding:3px;border:1px solid #ee
 		<!-- /loop -->
 	</ul>
 </div>
+
+
+
+<div role="main" class="ui-content">
+	<div class="product_img" id="product_img">
+		<ul class="ul">
+			<!-- loop from=$rs.pictures key=$key value=$value -->
+			<li><img src="{#images#}/blank.gif" _src="{$value.gd.auto}" border="0" alt="{$rs.title}" /></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		TouchSlide({
+			slideCell:"#product_img",
+			mainCell:".ul", 
+			effect:"leftLoop",
+			autoPlay:true,
+			switchLoad:"_src"
+		});
+	});
+	</script>
+	<div class="ui-body ui-body-a ui-corner-all" style="margin-top:5px;">
+		<h3>{$rs.title}</h3>
+		<p>查看：{$rs.hits}</p>
+		<p>时间：{func date Y-m-d $rs.dateline}</p>
+		<!-- loop from=$rs.attrs key=$key value=$value id=$tmpid -->
+		<p>{$key}：{$value}</p>
+		<!-- /loop -->
+		<!-- if $rs.price && is_numeric($rs.price) -->
+		<p><span>价格：</span><span class="price">{$rs.price} 元</span></p>
+		<!-- elseif $rs.price -->
+		<p><span>价格：</span><span class="price">{$rs.price}</span></p>
+		<!-- /if -->
+		<a href="#popupkf" role="button" data-transition="pop" data-rel="popup" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">咨询订购</a>
+		<!-- include file=content -->
+		<div class="content">{$rs.content}</div>
+		<ul class="np">
+			<!-- php:$prev = phpok_prev($rs) -->
+			<!-- if $prev -->
+			<li><a href="{$prev.url}"><b>上一主题：</b>{$prev.title}</a></li>
+			<!-- /if -->
+			<!-- php:$next = phpok_next($rs) -->
+			<!-- if $next -->
+			<li><a href="{$next.url}"><b>下一主题：</b>{$next.title}</a></li>
+			<!-- /if -->
+		</ul>
+	</div>
 </div>
 
 <!-- include tpl=foot -->

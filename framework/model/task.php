@@ -115,6 +115,25 @@ class task_model_base extends phpok_model
 		$sql = "DELETE FROM ".$this->db->prefix."task WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
+
+	/**
+	 * 定时更新主题状态，此项仅限访问首页时会自动执行
+	 * @date 2016年02月05日
+	 */
+	public function set_title_status()
+	{
+		if(file_exists($this->dir_root.'data/cache/tasklock.php')){
+			$time = filemtime($this->dir_root.'data/cache/tasklock.php');
+			if( ($time + 3600) > $this->time ){
+				return true;
+			}
+		}
+		$sql = "UPDATE ".$this->db->prefix."list SET hidden=0 WHERE status=1 AND hidden=2";
+		$sql.= " AND dateline<='".$this->time."' AND site_id='".$this->site_id."'";
+		$this->db->query($sql,false);
+		$this->lib('file')->vi($this->time,$this->dir_root.'data/cache/tasklock.php');
+		return true;
+	}
 }
 
 ?>

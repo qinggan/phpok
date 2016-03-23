@@ -374,6 +374,7 @@ class list_control extends phpok_control
 		}
 		//取得列表信息
 		$total = $this->model('list')->get_total($mid,$condition);
+		
 		if($total > 0){
 			$rslist = $this->model('list')->get_list($mid,$condition,$offset,$psize,$orderby);
 			$sub_idlist = $rslist ? array_keys($rslist) : array();
@@ -447,19 +448,33 @@ class list_control extends phpok_control
 		//读取扩展属性
 		$ext_list = $this->model('module')->fields_all($p_rs["module"]);
 		$extlist = array();
-		foreach(($ext_list ? $ext_list : array()) AS $key=>$value)
-		{
-			if($value["ext"]){
+		foreach(($ext_list ? $ext_list : array()) AS $key=>$value){
+			if($value["ext"] && is_string($value['ext'])){
 				$ext = unserialize($value["ext"]);
-				foreach($ext AS $k=>$v){
-					$value[$k] = $v;
-				}
+				$value = array_merge($value,$ext);
 			}
 			$idlist[] = strtolower($value["identifier"]);
 			if($rs[$value["identifier"]]){
 				$value["content"] = $rs[$value["identifier"]];
 			}
 			$extlist[] = $this->lib('form')->format($value);
+		}
+		if($id){
+			$tmplist = $this->model('ext')->ext_all('list-'.$id,true);
+		}else{
+			$tmplist = $_SESSION['admin-add-list'];
+		}
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				if($value['ext'] && is_string($value['ext'])){
+					$ext = unserialize($value['ext']);
+					$value = array_merge($value,$ext);
+				}
+				if($this->popedom['ext']){
+					$value['is_edit'] = true;
+				}
+				$extlist[] = $this->lib('form')->format($value);
+			}
 		}
 		$this->assign("extlist",$extlist);
 		$this->assign("p_rs",$p_rs);
@@ -524,6 +539,18 @@ class list_control extends phpok_control
 			$freight = $this->model('freight')->get_one($project['freight']);
 			$this->assign('freight',$freight);
 		}
+		$ext_module = $id ? 'list-'.$id : 'add-list';
+		$this->assign("ext_module",$ext_module);
+		$extfields = $this->model('fields')->fields_list('',0,999,'module');
+		if($extfields){
+			$used_fields = $this->model('list')->fields_all($p_rs['module'],$id,$_SESSION['admin-add-list']);
+			foreach($extfields as $key=>$value){
+				if(in_array($value['identifier'],$used_fields)){
+					unset($extfields[$key]);
+				}
+			}
+		}
+		$this->assign("extfields",$extfields);
 		$this->view("list_edit");
 	}
 
@@ -597,8 +624,6 @@ class list_control extends phpok_control
 		}
 		if($p_rs['is_userid']){
 			$array['user_id'] = $this->get('user_id','int');
-		}else{
-			$array['user_id'] = 0;
 		}
 		if($p_rs['is_tpl_content']){
 			$array['tpl'] = $this->get('tpl');
@@ -615,6 +640,9 @@ class list_control extends phpok_control
 			$array["status"] = $this->get("status","int");
 		}
 		$array["hidden"] = $this->get("hidden","int");
+		if($dateline > $this->time && $array['status']){
+			$array['hidden'] = 2;
+		}
 		$array["hits"] = $this->get("hits","int");
 		$array["sort"] = $this->get("sort","int");
 		$array["seo_title"] = $this->get("seo_title");
@@ -624,9 +652,6 @@ class list_control extends phpok_control
 		$array["project_id"] = $p_rs['id'];
 		$array["module_id"] = $p_rs["module"];
 		$array["site_id"] = $p_rs["site_id"];
-		//存储价格及货币
-		//$array["price"] = $this->get('price','float');
-		//$array["currency_id"] = $this->get('currency_id','int');
 		$tmpadd = false;
 		if(!$id){
 			$id = $this->model('list')->save($array);
@@ -687,6 +712,12 @@ class list_control extends phpok_control
 			}
 			$this->model('list')->save_ext($tmplist,$p_rs["module"]);
 		}
+		//保存内容扩展字段
+		if($tmpadd){
+			ext_save("admin-add-list",true,"list-".$id);
+		}else{
+			ext_save("list-".$id);
+		}
  		$this->plugin("ap-list-ok-after",array("id"=>$id,"project"=>$p_rs));
  		$this->json(true);
 	}
@@ -694,8 +725,7 @@ class list_control extends phpok_control
 	public function del_f()
 	{
 		$id = $this->get("id");
-		if(!$id)
-		{
+		if(!$id){
 			$this->json(P_Lang('没有指定主题ID'));
 		}
 		$idlist = explode(",",$id);
@@ -706,8 +736,7 @@ class list_control extends phpok_control
 		if(!$this->popedom['delete']){
 			$this->json(P_Lang('您没有权限执行此操作'));
 		}
-		foreach($idlist AS $key=>$value)
-		{
+		foreach($idlist AS $key=>$value){
 			$value = intval($value);
 			$this->model('list')->delete($value);
 		}

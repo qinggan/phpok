@@ -11,7 +11,7 @@ function show_module(val)
 			var lst = rs.content;
 			var c = '';
 			for(var i in lst){
-				c += '<li><input type="button" value="'+lst[i].title+'" onclick="phpok_admin_orderby(\'orderby\',\'ext.'+lst[i].identifier+'\')"/></li>';
+				c += '<input type="button" value="'+lst[i].title+'" onclick="phpok_admin_orderby(\'orderby\',\'ext.'+lst[i].identifier+'\')" class="phpok-btn"/>';
 			}
 			$("#tmp_orderby_btn").html(c);
 		}else{
@@ -405,17 +405,19 @@ $(document).ready(function(){
 		</div>
 		<div class="content">
 			<input type="text" id="orderby" name="orderby" class="long" value="{$rs.orderby ? $rs.orderby : 'l.sort ASC,l.dateline DESC,l.id DESC'}" />
-			<input type="button" value="{lang清空}" class="btn" onclick="$('#orderby').val('')" />
-			<ul class="btnlist">
-				<li><input type="button" value="{lang点击}" onclick="phpok_admin_orderby('orderby','l.hits')" /></li>
-				<li><input type="button" value="{lang时间}" onclick="phpok_admin_orderby('orderby','l.dateline')" /></li>
-				<li><input type="button" value="{lang回复时间}" onclick="phpok_admin_orderby('orderby','l.replydate')" /></li>
-				<li><input type="button" value="ID" onclick="phpok_admin_orderby('orderby','l.id')" /></li>
-				<li><input type="button" value="{lang人工}" onclick="phpok_admin_orderby('orderby','l.sort')" /></li>
-				<span id="tmp_orderby_btn">
-				</span>
-			</ul>
+			<input type="button" value="{lang清空}" class="phpok-btn" onclick="$('#orderby').val('')" />
+			<div style="display:block;margin-top:5px;">
+				<div class="button-group">
+					<input type="button" value="{lang点击}" onclick="phpok_admin_orderby('orderby','l.hits')" class="phpok-btn" />
+					<input type="button" value="{lang时间}" onclick="phpok_admin_orderby('orderby','l.dateline')" class="phpok-btn" />
+					<input type="button" value="{lang回复时间}" onclick="phpok_admin_orderby('orderby','l.replydate')" class="phpok-btn" />
+					<input type="button" value="ID" onclick="phpok_admin_orderby('orderby','l.id')" class="phpok-btn" />
+					<input type="button" value="{lang人工}" onclick="phpok_admin_orderby('orderby','l.sort')" class="phpok-btn" />
+				</div>
+				<div id="tmp_orderby_btn" class="button-group" style="margin-left:10px;"></div>
+			</div>
 		</div>
+		<div class="clear"></div>
 	</div>
 	<script type="text/javascript">
 	function refresh_catelist()
@@ -541,9 +543,17 @@ $(document).ready(function(){
 		<span class="note">{lang设定此模板将启用封面功能，不启用留空，不绑定模块时，此项不能为空}</span>
 	</div>
 	<div class="content">
-		<input type="text" id="tpl_index" name="tpl_index" class="default" value="{$rs.tpl_index}" />
-		<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_index')" class="btn" />
-		<input type="button" value="{lang清空}" onclick="$('#tpl_index').val('');" class="btn" />
+		<table>
+		<tr>
+			<td><input type="text" id="tpl_index" name="tpl_index" class="default" value="{$rs.tpl_index}" /></td>
+			<td>
+				<div class="button-group">
+					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_index')" class="phpok-btn" />
+					<input type="button" value="{lang清空}" onclick="$('#tpl_index').val('');" class="phpok-btn" />
+				</div>
+			</td>
+		</tr>
+		</table>
 	</div>
 </div>
 <div class="table">
@@ -552,9 +562,17 @@ $(document).ready(function(){
 		<span class="note">{lang仅限于绑定模块后才能生效}</span>
 	</div>
 	<div class="content">
-		<input type="text" id="tpl_list" name="tpl_list" class="default" value="{$rs.tpl_list}" />
-		<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_list')" class="btn" />
-		<input type="button" value="{lang清空}" onclick="$('#tpl_list').val('');" class="btn" />
+		<table>
+		<tr>
+			<td><input type="text" id="tpl_list" name="tpl_list" class="default" value="{$rs.tpl_list}" /></td>
+			<td>
+				<div class="button-group">
+					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_list')" class="phpok-btn" />
+					<input type="button" value="{lang清空}" onclick="$('#tpl_list').val('');" class="phpok-btn" />
+				</div>
+			</td>
+		</tr>
+		</table>
 	</div>
 </div>
 <div class="table">
@@ -563,9 +581,17 @@ $(document).ready(function(){
 		<span class="note">{lang仅限于绑定模块后才能生效}</span>
 	</div>
 	<div class="content">
-		<input type="text" id="tpl_content" name="tpl_content" class="default" value="{$rs.tpl_content}" />
-		<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_content')" class="btn" />
-		<input type="button" value="{lang清空}" onclick="$('#tpl_content').val('');" class="btn" />
+		<table>
+		<tr>
+			<td><input type="text" id="tpl_content" name="tpl_content" class="default" value="{$rs.tpl_content}" /></td>
+			<td>
+				<div class="button-group">
+					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_content')" class="phpok-btn" />
+					<input type="button" value="{lang清空}" onclick="$('#tpl_content').val('');" class="phpok-btn" />
+				</div>
+			</td>
+		</tr>
+		</table>
 	</div>
 </div>
 <div class="table">
@@ -574,9 +600,17 @@ $(document).ready(function(){
 		<span class="note">{lang仅限于绑定模块且启用发布功能后有效}</span>
 	</div>
 	<div class="content">
-		<input type="text" id="post_tpl" name="post_tpl" class="default" value="{$rs.post_tpl}" />
-		<input type="button" value="{lang选择}" onclick="phpok_tpl_open('post_tpl')" class="btn" />
-		<input type="button" value="{lang清空}" onclick="$('#post_tpl').val('');" class="btn" />
+		<table>
+		<tr>
+			<td><input type="text" id="post_tpl" name="post_tpl" class="default" value="{$rs.post_tpl}" /></td>
+			<td>
+				<div class="button-group">
+					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('post_tpl')" class="phpok-btn" />
+					<input type="button" value="{lang清空}" onclick="$('#post_tpl').val('');" class="phpok-btn" />
+				</div>
+			</td>
+		</tr>
+		</table>
 	</div>
 </div>
 

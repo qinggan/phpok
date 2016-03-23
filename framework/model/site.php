@@ -119,39 +119,6 @@ class site_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
-	public function site_config($id,$status=1)
-	{
-		if(!$id){
-			return false;
-		}
-		$sql = "SElECT * FROM ".$this->db->prefix."all WHERE site_id='".$id."' AND status='".$status."'";
-		$list = $this->db->get_all($sql);
-		if(!$list){
-			return false;
-		}
-		$tmp = $tmp2 = array();
-		foreach($list AS $key=>$value){
-			$tmp[$value["identifier"]] = "all-".$value["id"];
-			$tmp2["all-".$value["id"]] = $value["identifier"];
-		}
-		$condition = implode("','",$tmp);
-		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.module FROM ".$this->db->prefix."ext ext ";
-		$sql.= "JOIN ".$this->db->prefix."extc extc ON(ext.id=extc.id) ";
-		$sql.= "WHERE ext.module LIKE 'all-%' ORDER BY ext.taxis ASC,ext.id DESC";
-		$rslist = $this->db->get_all($sql);
-		if(!$rslist){
-			return false;
-		}
-		$info = false;
-		foreach($rslist AS $key=>$value){
-			if(!$tmp2[$value["module"]]){
-				continue;
-			}
-			$info[$tmp2[$value["module"]]][$value["identifier"]] = $this->lib('form')->show($value);
-		}
-		return $info;
-	}
-
 	//订单状态设置
 	public function order_status_all($sort=false)
 	{
@@ -198,7 +165,7 @@ class site_model_base extends phpok_model
 
 	private function status_sort($a,$b)
 	{
-		if($a['taxis'] == $b){
+		if($a['taxis'] == $b['taxis']){
 			return 0;
 		}
 		return ($a['taxis'] < $b['taxis']) ? -1 : 1;
@@ -247,6 +214,88 @@ class site_model_base extends phpok_model
 		}
 		return $tmplist;
 	}
-	
+
+	/**
+	 * 前台及API接口获取的网站信息
+	 * @param mixed $id 网站ID或网站域名
+	 * @return array 为空时返回false，不为空返回网站相关信息 
+	 * @date 2016年02月05日
+	 */
+	public function site_info($id='')
+	{
+		if(!$id){
+			return false;
+		}
+		$cache_id = $this->cache->id($id);
+		$rs = $this->cache->get($cache_id);
+		if($rs){
+			return $rs;
+		}
+		$this->db->cache_set($cache_id);
+		if(!is_numeric($id)){
+			$sql = "SELECT site_id FROM ".$this->db->prefix."site_domain WHERE domain='".$id."'";
+			$tmp = $this->db->get_one($sql);
+			if(!$tmp){
+				$sql = "SELECT id FROM ".$this->db->prefix."site WHERE status=1 AND is_default=1";
+				$tmp = $this->db->get_one($sql);
+				if(!$tmp){
+					return false;
+				}
+				$id = $tmp['id'];
+			}else{
+				$id = $tmp['site_id'];
+			}
+		}
+		if(!$id){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."site WHERE id='".$id."' AND status=1";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."site_domain WHERE site_id='".$id."'";
+		$dlist = $this->db->get_all($sql);
+		if($dlist){
+			$rs['_domain'] = $dlist;
+			foreach($dlist as $key=>$value){
+				if($value['is_mobile']){
+					$rs['_mobile'] = $value;
+				}
+				if($value['id'] == $rs['domain_id']){
+					$rs['domain'] = $value['domain'];
+				}
+			}
+		}
+		$sql = "SElECT * FROM ".$this->db->prefix."all WHERE site_id='".$id."' AND status='1'";
+		$list = $this->db->get_all($sql);
+		if(!$list){
+			$this->cache->save($cache_id,$rs);
+			return $rs;
+		}
+		$tmp = $tmp2 = array();
+		foreach($list AS $key=>$value){
+			$tmp[$value["identifier"]] = "all-".$value["id"];
+			$tmp2["all-".$value["id"]] = $value["identifier"];
+		}
+		$tmp = implode("','",$tmp);
+		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.module FROM ".$this->db->prefix."ext ext ";
+		$sql.= "JOIN ".$this->db->prefix."extc extc ON(ext.id=extc.id) ";
+		$sql.= "WHERE ext.module IN('".$tmp."') ORDER BY ext.taxis ASC,ext.id DESC";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			$this->cache->save($cache_id,$rs);
+			return $rs;
+		}
+		$info = false;
+		foreach($rslist AS $key=>$value){
+			if(!$tmp2[$value["module"]]){
+				continue;
+			}
+			$rs[$tmp2[$value["module"]]][$value["identifier"]] = $this->lib('form')->show($value);
+		}
+		$this->cache->save($cache_id,$rs);
+		return $rs;
+	}
 }
 ?>

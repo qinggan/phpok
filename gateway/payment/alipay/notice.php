@@ -31,7 +31,7 @@ class alipay_notice
 		if($this->order['status']){
 			return true;
 		}
-		unset($_GET[$app->config['ctrl_id']],$_GET[$app->config['func_id']],$_GET['id']);
+		unset($_GET[$app->config['ctrl_id']],$_GET[$app->config['func_id']],$_GET['id'],$_GET['_noCache']);
 		$alipay_config = array('partner'=>$this->param['param']['pid'],'key'=>$this->param['param']['key']);
 		$alipay_config['sign_type'] ='MD5';
 		$alipay_config['input_charset']= 'utf-8';
@@ -80,6 +80,8 @@ class alipay_notice
 				$order = $app->model('order')->get_one_from_sn($this->order['sn']);
 				if($order){
 					$app->model('order')->update_order_status($order['id'],'paid');
+					$param = 'id='.$order['id']."&status=paid";
+					$app->model('task')->add_once('order',$param);
 					$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
 					$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
 					$app->model('order')->log_save($log);

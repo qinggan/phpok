@@ -10,24 +10,26 @@
 <table class="list" width="100%" cellpadding="0" cellspacing="0">
 <tr>
 	<th class="w50">ID</th>
-	<th>名称</th>
+	<th class="lft">名称</th>
+	<th class="lft">类型</th>
+	<th class="lft">关联的项目</th>
+	<th class="lft">关联的分类</th>
 	<th class="w150 lft">参数变量</th>
-	<th class="w60">操作</th>
+	<th>&nbsp;</th>
 </tr>
 <!-- foreach($rslist AS $key=>$value) -->
 <tr>
 	<td class="center">{$value.id}</td>
-	<td>{$value.title}
-		<span class="gray i">（{$phpok_type_list[$value.type_id]}）</span>
-	</td>
+	<td>{$value.title}</td>
+	<td>{$phpok_type_list[$value.type_id].title}</td>
+	<td>{$value.project ? $value.project : '-'}</td>
+	<td>{$value.cate ? $value.cate : '-'}</td>
 	<td>{$value.identifier}</td>
 	<td>
-		<!-- if $popedom.modify -->
-		<a class="icon edit" href="{echo admin_url('call','set')}&id={$value.id}" title="修改"></a>
-		<!-- /if -->
-		<!-- if $popedom.delete -->
-		<a class="icon delete end" onclick="call_del('{$value.id}','{$value.title}')" title="删除"></a>
-		<!-- /if -->
+		<div class="button-group">
+			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=call func=set id=$value.id/}')" class="phpok-btn" /><!-- /if -->
+			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="call_del('{$value.id}','{$value.title}')" class="phpok-btn" /><!-- /if -->
+		</div>
 	</td>
 </tr>
 <!-- /foreach -->

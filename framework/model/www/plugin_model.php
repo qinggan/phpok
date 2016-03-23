@@ -21,7 +21,7 @@ class plugin_model extends plugin_model_base
 		if(!$list || ($list && !$list[$id])){
 			return false;
 		}
-		return $list;
+		return $list[$id];
 	}
 
 	public function get_all($status=0)

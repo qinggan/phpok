@@ -146,26 +146,14 @@ class all_control extends phpok_control
 		$array["lang"] = $this->get("lang");
 		$array['api'] = $this->get('api','int');
 		$array['api_code'] = $this->get("api_code");
-		$array["email_server"] = $this->get("email_server");
-		$array["email_port"] = $this->get("email_port",'int');
-		$array["email_ssl"] = $this->get("email_ssl",'int');
-		$array["email_account"] = $this->get("email_account");
-		$array["email_pass"] = $this->get("email_pass");
-		$array["email_name"] = $this->get("email_name");
-		$array["email"] = $this->get("email");
-		$array["email_charset"] = $this->get("email_charset");
 		$array["seo_title"] = $this->get("seo_title");
 		$array["seo_keywords"] = $this->get("seo_keywords");
 		$array["seo_desc"] = $this->get("seo_desc");
 		$array["currency_id"] = $this->get("currency_id","int");
 		$array["biz_sn"] = $this->get("biz_sn");
 		$array["biz_payment"] = $this->get("biz_payment","int");
-		$array["biz_billing"] = $this->get("biz_billing","int");
 		$array['upload_guest'] = $this->get('upload_guest','int');
 		$array['upload_user'] = $this->get('upload_user','int');
-		$array['html_root_dir'] = $this->get('html_root_dir');
-		$array['html_content_type'] = $this->get('html_content_type');
-		$array['biz_etpl'] = $this->get('biz_etpl');
 		$this->model('site')->save($array,$_SESSION['admin_site_id']);
 		error(P_Lang('网站信息更新完成'),$this->url("all","setting"),'ok');
 	}

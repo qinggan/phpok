@@ -1,162 +1,82 @@
-<!-- include tpl=head menutitle=网站首页 -->
+<!-- include tpl=head highlight=1 css="css/index.css" -->
 <!-- php:$list = phpok('picplayer') -->
 <!-- if $list.total -->
-<div class="indexbanner"{if $list.project.height} style="height:{$list.project.height}px;"{/if}>
+<div class="banner">
 	<div class="bd">
-	<ul>
-		<!-- loop from=$list.rslist key=$key value=$value -->
-		<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{#images#}/blank.gif" _src="{$value.pic.filename}" width="980" alt="{$value.title}"{if $list.project.height} style="height:{$list.project.height}px;"{/if} /></a></li>
-		<!-- /loop -->
-	</ul>
+		<ul>
+			<!-- loop from=$list.rslist key=$key value=$value -->
+			<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{#images#}/blank.gif" _src="{$value.pic.filename}" alt="{$value.title}" /></a></li>
+			<!-- /loop -->
+		</ul>
 	</div>
 	<div class="hd">
+		<ul>
+			<!-- loop from=$list.rslist key=$key value=$value id=tmpid -->
+			<li>{$tmpid.num}</li>
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$(".banner").slide({'autoPlay':true,'switchLoad':'_src','mainCell':'.bd ul'});
+});
+</script>
+<!-- /if -->
+<div class="index">
+	<div class="line1">
+		<!-- php:$list = phpok('news','fields=id','psize=10') -->
+		<!-- if $list.total -->
+		<div class="pfw">
+			<h3>{$list.project.title}<small>{$list.project.entitle}</small><a href="{$list.project.url}" class="more">更多</a></h3>
+			<ul class="artlist">
+				<!-- loop from=$list.rslist key=$key value=$value -->
+				<li><a href="{$value.url}" title="{$value.title}">{func phpok_cut $value.title 15 …}</a></li>
+				<!-- /loop -->
+			</ul>
+		</div>
+		<!-- /if -->
+	</div>
+	<div class="line2">
+		<!-- php:$about = phpok('aboutus') -->
+		<div class="pfw">
+			<h3>{$about.title}<a href="{$about.url}" class="more">更多</a></h3>
+			<div class="about"><img src="{$about.pic}" width="150" height="120" />{$about.note}</div>
+		</div>
+	</div>
+	<div class="line3"><!-- include tpl=block/contact showmore=1 --></div>
+</div>
+<div class="plist">
+	<!-- php:$list = phpok('new_products') -->
+	<h3>{$list.project.title}</h3>
+	<div class="prolist">
 	<ul>
-		<!-- loop from=$list.rslist key=$key value=$value id=tmpid -->
-		<li>{$tmpid.num}</li>
+		<!-- loop from=$list.rslist key=$key value=$value -->
+		<li>
+			<div class="img"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.title}" /></a></div>
+			<div class="title"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></div>
+			<!-- if $list.project.is_biz -->
+			<div class="price">价格：<span>{func price_format $value.price $value.currency_id}</span></div>
+			<!-- /if -->
+		</li>
 		<!-- /loop -->
 	</ul>
 	</div>
 </div>
 <script type="text/javascript">
 $(document).ready(function(){
-	$(".indexbanner").slide({'autoPlay':true,'switchLoad':'_src','mainCell':'.bd ul'});
+	$(".prolist").slide({'mainCell':'ul','effect':"leftLoop",'autoPlay':true,'vis':5});
 });
 </script>
-<!-- /if -->
-<div class="index clearfix">
-	<div class="left">
-		<!-- php:$list = phpok('news','fields=id') -->
-		<!-- if $list.total -->
-		<div class="pfw mb10">
-			<h3>{$list.project.title}<small>{$list.project.entitle}</small><a href="{$list.project.url}" class="more">更多</a></h3>
-			<ul class="artlist">
-				<!-- loop from=$list.rslist key=$key value=$value -->
-				<li><a href="{$value.url}" title="{$value.title}">{func phpok_cut $value.title 17 …}</a><!-- if $value.dateline + 10 * 24 * 3600 > $sys.time --> <img src="images/new.gif" /><!-- /if --></li>
-				<!-- /loop -->
-			</ul>
-		</div>
-		<!-- /if -->
-		<!-- php:$list = phpok('products_cate') -->
-		<!-- if $list && $list.tree -->
-		<div class="pfw mb10">
-			<h3>{$list.cate.title}<small>{$list.cate.entitle}</small><a href="{$list.project.url}" class="more">更多</a></h3>
-			<!-- loop from=$list.tree key=$key value=$value -->
-			<dl class="cate clearfix">
-				<dt><a href="{$value.url}" title="{$value.title}">{$value.title}</a></dt>
-				<dd>
-					<!-- loop from=$value.sublist key=$k value=$v -->
-					<a href="{$v.url}" title="{$v.title}">{$v.title}</a>
-					<!-- /loop -->
-				</dd>
-			</dl>
-			<!-- /loop -->
-		</div>
-		<!-- /if -->
-		<!-- php:$list = phpok('xiazaizhongxin') -->
-		<!-- if $list.total -->
-		<div class="pfw mb10">
-			<h3>{$list.project.title}<small>{$list.project.entitle}</small><a href="{$list.project.url}" class="more">更多</a></h3>
-			<ul class="downlist">
-				<!-- loop from=$list.rslist key=$key value=$value -->
-				<li><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
-				<!-- /loop -->
-			</ul>
-		</div>
-		<!-- /if -->
-		<!-- include tpl=block/contact -->
-	</div>
-	<div class="right">
-		<!-- if $page_rs -->
-		<div class="pfw mb10">
-			<h3>{$page_rs.subtitle}<small>{$page_rs.entitle}</small><!-- if $page_rs.url && $page_rs.link --><a href="{$list.project.url}" class="more">更多</a><!-- /if --></h3>
-			<div class="about">
-				<img src="{$page_rs.pic}" width="129" height="133" />
-				<p>{$page_rs.note}</p>
-			</div>
-		</div>
-		<!-- /if -->
-
-		<!-- php:$list = phpok('tujixiangce','fields=thumb') -->
-		<!-- if $list.total -->
-		<div class="pfw mb10" id="photoslist">
-			<h3>{$list.project.title}<small>{$list.project.entitle}</small><a href="{$list.project.url}" class="more">更多</a></h3>
-			<ul class="imglist clearfix">
-				<!-- loop from=$list.rslist key=$key value=$value -->
-				<li>
-					<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.title}" /></a>
-					<div class="tit"><a href="{$value.url}" title="{$value.title}">{func phpok_cut $value.title 15 …}</a></div>
-				</li>
-				<!-- /loop -->
-			</ul>
-		</div>
-		<script type="text/javascript">
-		$(document).ready(function(){
-			$("#photoslist").slide({'mainCell':'ul.imglist','effect':"leftLoop",'autoPlay':true,'vis':3});
-		});
-		</script>
-		<!-- /if -->
-
-		<div class="atlas">
-			<div class="atlas_t">
-				<p class="name">最新产品</p><span class="name_en">New products</span>
-				<div class="tabs"><a href="{url id=product/}" class="more">MORE</a></div>
-			</div>
-			<ul class="home_list">
-				<!-- php:$list = phpok('new_products','fields=thumb') -->
-				<!-- loop from=$list.rslist key=$key value=$value -->
-				<li>
-			 		<p class="img159px"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" width="159" height="183" alt="{$value.title}" /></a></p>
-					<p class="l_name">{$value.title}</p>
-					<p class="l_price">价格：<span>{func price_format $value.price $value.currency_id}</span></p>
-				</li>
-				<!-- /loop -->
-			</ul>
-		</div>
-		<div class="h_news">
-			<!-- php:$list = phpok('news_catelist') -->
-			<!-- loop from=$list.sublist key=$key value=$value id=list_id -->
-			<div class="plate">
-				<div class="plate_title">
-					<span class="ch_name">{$value.title}</span>
-					<a href="{$value.url}" class="plate_more">更多</a>
-				</div>
-				<dl class="plate_main">
-					<!-- php:$arclist = phpok('titlelist','cateid='.$value.id.'&fields=id') -->
-					<!-- loop from=$arclist.rslist key=$k value=$v -->
-					<dd><span>{func date Y-m $v.dateline}</span><a href="{$v.url}">{$v.title}</a></dd>
-					<!-- /loop -->
-				</dl>
-			</div>
-			<!-- if $list_id.num % 2 == '' --><div class="clear"></div><!-- /if -->
-			<!-- /loop -->
-		</div>
-
-	</div>
-</div>
-<div class="wrap">
-	<div class="home_left">
-
-		
-		
-	</div>
-	
-	
-	<div class="home_right">
-	</div>
-	<div class="cl"></div>
-</div>
-
 <div class="cooper">
 	<!-- php:$list = phpok('link') -->
-	<div class="cooper_t">
-		<p class="name">{$list.project.title}</p><span class="name_en">{$list.project.entitle}</span>
-		<a href="{url ctrl=post id=$list.project.identifier/}" class="more">+ 申请友情链接</a>
-		<div class="cl"></div>
-	</div>
-	<div class="home_link">
-		<!-- loop from=$list.rslist key=$key value=$value -->
-		<a href="{$value.link}" target="{$value.target}" title="{$value.title}">{$value.title}</a>
-		<!-- /loop -->
+	<div class="pfw">
+		<h3>{$list.project.title}<a href="{url ctrl=post id=$list.project.identifier/}" class="more">申请友情链接</a></h3>
+		<div class="link">
+			<!-- loop from=$list.rslist key=$key value=$value -->
+			<a href="{$value.link}" target="{$value.target}" title="{$value.title}">{$value.title}</a>
+			<!-- /loop -->
+		</div>
 	</div>
 </div>
 <!-- include tpl=foot -->

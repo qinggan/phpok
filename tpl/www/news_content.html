@@ -1,26 +1,26 @@
 <!-- php:$title = $rs.title.' - '.$cate_rs.title.' - '.$page_rs.title -->
 <!-- include tpl=head title=$title menutitle=$page_rs.title -->
-<!-- if $page_rs.banner -->
-<div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
-<!-- /if -->
-
-<div class="wrap mb10">
-	<div class="page_left">
-		<!-- include tpl=block_catelist -->
-		<!-- include tpl=block_contactus -->
+<div class="main">
+	<!-- if $page_rs.banner -->
+	<div class="banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
+	<!-- /if -->
+	<ol class="breadcrumb">
+		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
+		<li><a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a></li>
+		<!-- if $cate_parent_rs -->
+		<li><a href="{$cate_parent_rs.url}" title="{$cate_parent_rs.title}">{$cate_parent_rs.title}</a></li>
+		<!-- /if -->
+		<!-- if $cate_rs -->
+		<li><a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a></li>
+		<!-- /if -->
+		<li>{$rs.title}</li>
+	</ol>
+	<div class="left">
+		<!-- include tpl=block/catelist pid=$page_rs.id cid=$cate_rs.id title=$page_rs.title -->
+		<!-- include tpl=block/contact -->
+		<!-- include tpl=block/hot_products -->
 	</div>
-	<div class="page_right">
-		<div class="page_right_title">
-			<span class="breadcrumbs">
-				您现在的位置：
-				<a href="{$sys.url}" title="{$config.title}">首页</a>
-				<span class="arrow">&nbsp;</span> <a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a>
-				<!-- if $cate_rs.id != $page_rs.cate -->
-				<span class="arrow">&nbsp;</span> <a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a>
-				<!-- /if -->
-			</span>
-			{$cate_rs ? $cate_rs.title : $page_rs.title}
-		</div>
+	<div class="right">
 		<div class="news_detail">
 			<h2>{$rs.title}</h2>
 			<div class="news-extra-area">
@@ -34,6 +34,12 @@
 				<!-- /if -->
 			</div>
 			<div class="d_txt">{$rs.content}</div>
+			<!-- if $session.user_id -->
+				<!-- php:$string = 'user_id='.$session.user_id -->
+			<div class="action">
+				<input type="button" value="{if fav_check($rs.id) }加入收藏{else}已收藏{/if}" class="button blue" onclick="fav_add('{$rs.id}',this)" />
+			</div>
+			<!-- /if -->
 			<div class="d_page">
 				<p>上一主题：
 					<!-- php:$prev = phpok_prev($rs) -->
@@ -55,6 +61,5 @@
 		</div>
 		<!-- if $page_rs.comment_status --><!-- include tpl=block_comment tid=$rs.id --><!-- /if -->
 	</div>
-	<div class="cl"></div>
 </div>
 <!-- include tpl=foot -->

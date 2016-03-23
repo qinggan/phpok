@@ -160,7 +160,7 @@ class site_model extends site_model_base
 			$tmpids = array();
 			foreach($tmplist as $key=>$value){
 				$sql = "SELECT id FROM ".$this->db->prefix."freight_zone WHERE fid='".$value['id']."'";
-				$tmp = $this->db->get_all($id,'id');
+				$tmp = $this->db->get_all($sql,'id');
 				if($tmp){
 					$ids = array_keys($tmp);
 					$ids = implode(",",$ids);
@@ -213,9 +213,6 @@ class site_model extends site_model_base
 		$this->db->query($sql);
 		//删除回复
 		$sql = "DELETE FROM ".$this->db->prefix."reply WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE site_id='".$id."')";
-		$this->db->query($sql);
-		//删除伪静态页配置
-		$sql = "DELETE FROM ".$this->db->prefix."rewrite WHERE site_id='".$id."'";
 		$this->db->query($sql);
 		//删除站点域名
 		$sql = "DELETE FROM ".$this->db->prefix."site_domain WHERE site_id='".$id."'";

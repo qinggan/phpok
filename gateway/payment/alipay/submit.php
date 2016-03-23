@@ -55,7 +55,7 @@ class alipay_submit
 				"show_url"	=> $show_url,
 				"_input_charset"	=> 'utf-8'
 		);
-		if($this->param['param']['ptype'] != 'create_direct_pay_by_user'){
+		if($this->param['param']['ptype'] == 'create_partner_trade_by_buyer'){
 			$parameter['price'] = $total_fee;
 			$parameter['quantity'] = '1';
 			$parameter['logistics_fee'] = '0.00';

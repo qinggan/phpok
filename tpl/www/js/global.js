@@ -243,3 +243,24 @@ function logout(t)
 })(jQuery);
 
 
+function fav_add(id,obj)
+{
+	var val = ($(obj).val()).trim();
+	if(val == '已收藏'){
+		$.dialog.alert('已收藏过，不能重复执行');
+		return false;
+	}
+	var url = api_url('fav','add','id='+id);
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$(obj).val('加入收藏成功');
+			window.setTimeout(function(){
+				$(obj).val('已收藏')
+			}, 1000);
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+

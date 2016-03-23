@@ -30,8 +30,19 @@ class cart_model_base extends phpok_model
 		$sql = "SELECT id FROM ".$this->db->prefix."cart WHERE session_id='".$sessid."'";
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
-			$array = array('session_id'=>$sessid,'user_id'=>$uid,'addtime'=>$this->time);
-			$id = $this->db->insert_array($array,'cart');
+			if($uid){
+				$sql = "SELECT id FROM ".$this->db->prefix."cart WHERE user_id='".$uid."'";
+				$rs = $this->db->get_one($sql);
+				if(!$rs){
+					$array = array('session_id'=>$sessid,'user_id'=>$uid,'addtime'=>$this->time);
+					$id = $this->db->insert_array($array,'cart');
+				}else{
+					$id = $rs['id'];
+				}
+			}else{
+				$array = array('session_id'=>$sessid,'user_id'=>$uid,'addtime'=>$this->time);
+				$id = $this->db->insert_array($array,'cart');
+			}
 		}else{
 			$id = $rs['id'];
 		}

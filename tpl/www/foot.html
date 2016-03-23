@@ -29,10 +29,11 @@
 <!-- /if -->
 <script type="text/javascript">
 $(document).ready(function(){
-	//计划任务
 	window.setTimeout(function(){
 		$.phpok.json(api_url('task'),function(rs){return true;});
 	}, 2000);
+	//更新购物车产品数量
+	$.cart.total();
 });
 </script>
 </body>

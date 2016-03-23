@@ -21,14 +21,7 @@ class wxpay_query
 		$this->baseurl = $GLOBALS['app']->url;
 		include "wxpay.php";
 		$this->obj = new wxpay_lib();
-		$this->obj->app_id($this->param['param']['appid']);
-		$this->obj->mch_id($this->param['param']['mch_id']);
-		$this->obj->app_key($this->param['param']['app_key']);
-		$this->obj->app_secret($this->param['param']['app_secret']);
-		$this->obj->ssl_cert($this->param['param']['pem_cert']);
-		$this->obj->ssl_key($this->param['param']['pem_key']);
-		$this->obj->proxy_host($this->param['param']['proxy_host']);
-		$this->obj->proxy_port($this->param['param']['proxy_port']);
+		$this->obj->config($this->param['param']);
 	}
 
 	public function submit()

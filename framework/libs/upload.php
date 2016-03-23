@@ -108,14 +108,16 @@ class upload_lib
 
 	private function file_ext($tmpname)
 	{
-		$tmp = explode(".",$tmpname);
-	    if(count($tmp)<1){
-		    $ext = 'unknown';
-	    }else{
-		    $tmptotal = count($tmp);
-		    $ext = $tmp[($tmptotal-1)];
-	    }
-	    return strtolower($ext);
+		$ext = pathinfo($tmpname,PATHINFO_EXTENSION);
+		if(!$ext){
+			return false;
+		}
+		$ext = strtolower($ext);
+		$cate_exts = ($this->cate && $this->cate['filetypes']) ? explode(",",$this->cate['filetypes']) : array('jpg','gif','png');
+		if(!in_array($ext,$cate_exts)){
+			return false;
+		}
+		return $ext;
 	}
 
 	private function _upload($input)
@@ -183,8 +185,14 @@ class upload_lib
 	private function _save($input)
 	{
 		$basename = substr(md5(time().uniqid()),9,16);
-		$tmpname = isset($_REQUEST['name']) ? $_REQUEST["name"] : uniqid($input.'_');
+		$tmpname = $GLOBALS['app']->get('name');
+		if(!$tmpname){
+			$tmpname = uniqid($input.'_');
+		}
 		$ext = $this->file_ext($tmpname);
+		if(!$ext){
+			return array('status'=>'error','error'=>P_Lang('附件类型不符合要求'));
+		}
 		$chunk = isset($_REQUEST["chunk"]) ? intval($_REQUEST["chunk"]) : 0;
 		$chunks = isset($_REQUEST["chunks"]) ? intval($_REQUEST["chunks"]) : 1;
 		$tmpid = 's_'.md5($tmpname);
