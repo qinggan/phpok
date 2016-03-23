@@ -1,0 +1,12 @@
+<!-- include tpl=head title=下载文件 menutitle=$page_rs.title -->
+<!-- php:$link = $app->url('download','','id='.$rs.dfile.id.'&title='.rawurlencode($rs.title)) -->
+<div role="main" class="ui-content">
+	<div class="content">
+		<div class="title">请点击按钮下载文件：<span class="red">{$rs.title}</span></div>
+		<fieldset class="ui-grid-a">
+		    <div class="ui-block-a"><input type="button" value="点击下载" data-theme="b" onclick="$.phpok.go('{$link}')" /></div>
+		    <div class="ui-block-b"><input type="button" value="返回列表" data-theme="a" onclick="$.phpok.go('{$page_rs.url}')"></div>
+		</fieldset>
+	</div>
+</div>
+<!-- include tpl=foot -->

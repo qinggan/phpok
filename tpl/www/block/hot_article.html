@@ -1,0 +1,11 @@
+<!-- php:$list = phpok('news','psize=15') -->
+<!-- if $list.total -->
+<div class="pfw" id="hot_products">
+	<h3>最新资讯<a href="{$list.project.url}" class="more">更多</a></h3>
+	<ul class="artlist">
+		<!-- loop from=$list.rslist key=$key value=$value -->
+		<li><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
+		<!-- /loop -->
+	</ul>
+</div>
+<!-- /if -->

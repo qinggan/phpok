@@ -1,0 +1,15 @@
+<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
+<div role="main" class="ui-content">
+	<ul data-role="listview" data-inset="true" style="margin:0;">
+		<li data-role="list-divider">{$cate_rs ? $cate_rs.title : $page_rs.title}</li>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<li><a href="{$value.url}" title="{$value.title}">
+			<h2>{$value.title}</h2>
+			<p><strong>{func time_format $value.dateline}</strong></p>
+			</a>
+		</li>
+		<!-- /loop -->
+	</ul>
+	<!-- include tpl=pagelist -->
+</div>
+<!-- include tpl=foot -->

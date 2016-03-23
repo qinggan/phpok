@@ -1,0 +1,58 @@
+/***********************************************************
+	文件：css/content.css
+	备注：内容常用样式
+	版本：4.0
+	网站：www.phpok.com
+	作者：qinggan <qinggan@188.com>
+	日期：2016年03月20日
+***********************************************************/
+/*产品列表页*/
+.prolist ul{list-style:none;padding:0;margin:0}
+.prolist ul li{float:left;width:31%;margin:0 0.5% 0 1.5%}
+.prolist ul li .img{text-align:center;border:1px solid #e4e4e4;}
+.prolist ul li .img img{width:160px;height:160px;overflow:hidden;padding:10px}
+.prolist ul li .title{height:44px;line-height:22px;padding:0 10px 0 5px;overflow:hidden}
+.prolist ul li .price{font-size:1.2em;line-height:200%;padding:0 10px 0 5px}
+.prolist ul li .price span{color:red}
+.prolist:after{clear:both;content:'.';height:0;line-height:0;display:block;visibility:hidden;}
+
+
+/*产品详细页*/
+.pro_left{float:left;width:330px;margin-right:10px;}
+.proimg{height:330px;border:1px solid #dedede;box-shadow:1px 1px 1px #dedede;}
+.proimg .product_img{position:relative; width:320px;height:320px;overflow:hidden;margin:5px;overflow:hidden;}
+.proimg .product_img ul{list-style:none;margin:0;padding:0;}
+.proimg .product_img ul.hd{right:10px;bottom:10px;height:12px;overflow:hidden;z-index:3;position:absolute;}
+.proimg .product_img ul.hd li{float:left;width:20px;height:10px;margin-left:5px;cursor:pointer;background:#ccc;}
+.proimg .product_img ul.hd li.on{background:red;}
+
+.product .info{float:left;width:400px}
+.product h1{font-size:1.2em;line-height:1.5em;font-weight:600;}
+.product .info ul.alist{list-style:none;padding:0;margin:0;}
+.product .info ul.alist li{position:relative;line-height:2em;padding-left:88px;}
+.product .info ul.alist li em{position:absolute;left:0;top:0;width:87px;text-align:right;font-style:normal;}
+.product .info ul.alist li hr{border:0;border-top:1px dashed #ccc;}
+.product .info ul.alist li li{padding:0;margin-bottom:5px;}
+
+.numbg{background:#888888;width:29px;height:29px;cursor:pointer;text-align:center;font-size:1.4em;color:#fff;}
+.numtxt{width:60px;height:29px;text-align:center;padding:0;margin:0;border:1px solid #888;}
+
+div.attr{border:1px solid #ccc;margin-right:10px;line-height:26px;padding:3px 10px;cursor:pointer;}
+div.attr.selected{border:1px solid red;}
+
+
+.pro_detail{ overflow:hidden; margin-top:30px; padding-bottom:20px;}
+.pro_detail .pro_title{ width:100%; border-bottom:1px solid #ccc; height:30px;}
+.pro_detail .pro_title li{ float:left; height:30px; line-height:30px;padding:0 20px;cursor:pointer;background:#efefef;}
+.pro_detail .pro_title li:first-child{margin-left:10px;}
+.pro_detail .pro_title .current{ border:1px solid #ccc;  border-bottom:1px solid #fff;  height:29px; position:relative;background:#fff;}
+
+.pro_detail .pro_txt{ overflow:hidden; padding:0;border:1px solid #ccc;border-top:0;}
+.pro_detail h3.attr{line-height:33px;height:33px;text-align:center;margin-top:10px;}
+.pro_detail table.attr{border:1px solid #ccc;border-collapse:collapse;width:100%;}
+.pro_detail table.attr th{background:#eee;border:1px solid #ccc;text-align:left;padding:5px 10px;}
+.pro_detail table.attr td{border:1px solid #ccc;padding:5px 10px;}
+.pro_detail .content{padding:1em;}
+.pro_detail .content table{border:1px solid #ccc;border-collapse:collapse;width:100%;}
+.pro_detail .content table th{background:#eee;border:1px solid #ccc;text-align:left;padding:5px 10px;}
+.pro_detail .content table td{border:1px solid #ccc;padding:5px 10px;}

@@ -1,0 +1,12 @@
+<div class="pfw mb10">
+	<h3>{$title}</h3>
+	<!-- catelist pid=$pid -->
+	<dl class="catelist">
+		<!-- loop from=$list.tree key=$key value=$value id=$tmpid -->
+		<dt{if $value.id == $cid} class="on"{/if}><a href="{$value.url}" title="{$value.title}">{$value.title}</a></dt>
+		<!-- loop from=$value.sublist key=$k value=$v id=$tmpid2 -->
+		<dd{if $v.id == $cid} class="on"{/if}><a href="{$v.url}" title="{$v.title}">{$v.title}</a></dd>
+		<!-- /loop -->
+		<!-- /loop -->
+	</dl>
+</div>

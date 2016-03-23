@@ -1,0 +1,99 @@
+<!-- include tpl=head title=$page_rs.title -->
+<script type="text/javascript">
+$(document).ready(function(){
+	var is_vcode = '<!-- if $sys.is_vcode && function_exists("imagecreate") -->true<!-- else -->false<!-- /if -->';
+	$("#post_submit").submit(function(){
+		if(!$("#title").val()){
+			$.dialog.alert('{$page_rs.alias_title ? $page_rs.alias_title : "主题"}不能为空');
+			return false;
+		}
+		if(is_vcode == 'true'){
+			var chkcode = $("#_chkcode").val();
+			if(!chkcode){
+				$.dialog.alert('验证码不能为空');
+				$("#_vcode").phpok_vcode();
+				return false;
+			}
+		}
+		$(this).ajaxSubmit({
+			'url':api_url('post','save'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					$.dialog.alert('内容添加成功',function(){
+						window.close();
+					});
+				}else{
+					$.dialog.alert(rs.content,function(){
+						$("#_vcode").phpok_vcode();
+						$("#_chkcode").val('');
+					});
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="wrap mb10">
+	<div class="bbsbox">
+		<div class="bbstitle">
+			<span class="width715">{$page_rs.title}</span>
+		</div>
+		<form method="post" id="post_submit">
+		<input type="hidden" name="id" value="{$page_rs.identifier}" />
+		<div class="publish">
+			<table>
+			<tr>
+				<td class="l_title" valign="top">{$page_rs.alias_title ? $page_rs.alias_title : '主题'}：</td>
+				<td class="td"><input name="title" id="title" type="text" class="r_input" /></td>
+			</tr>
+			<!-- if $catelist -->
+			<tr>
+				<td class="l_title" valign="top">分类：</td>
+				<td class="td">
+					<select name="cate_id" id="cate_id" style="padding:3px;">
+						<option value="">请选择分类……</option>
+						<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+						<option value="{$value.id}"{if $cate_rs.id == $value.id} selected{/if}>{$value._space}{$value.title}</option>
+						<!-- /loop -->
+					</select>
+				</td>
+			</tr>
+			<!-- /if -->
+			<!-- loop from=$extlist key=$key value=$value -->
+			<tr>
+				<td class="l_title" valign="top">{$value.title}：</td>
+				<td class="td">{$value.html} {$value.note}</td>
+			</tr>
+			<!-- /loop -->
+			<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+			<tr>
+				<td class="l_title" valign="top">验证码：</td>
+				<td class="td">
+					<input class="vcode"  type="text" name="_chkcode" id="_chkcode" />
+					<img src="" border="0" align="absmiddle" id="_vcode" class="hand" />
+					<script type="text/javascript">
+					$(document).ready(function(){
+						$("#_vcode").phpok_vcode();
+						$("#_vcode").click(function(){
+							$(this).phpok_vcode();
+						});
+					});
+					</script>
+				</td>
+			</tr>
+			<!-- /if -->
+			<tr>
+				<td>&nbsp;</td>
+				<td><input name="" type="submit" class="bbsbtn" value="发布" /></td>
+			</tr>
+			</table>
+		</div>
+		</form>
+	</div>
+</div>
+
+<!-- include tpl=foot -->

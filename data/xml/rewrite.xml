@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<url>
+		<sort>0</sort>
+		<rule>index\.html</rule>
+		<val>index.php</val>
+		<ctrl>index</ctrl>
+		<title>首页</title>
+	</url>
+	<url>
+		<sort>2</sort>
+		<rule>^([a-z0-9A-Z\_\-]+)\/([a-z0-9A-Z\_\-]+)\.html$</rule>
+		<val>index.php?id=$1&cate=$2</val>
+		<format>[id]/[cate].html</format>
+		<ctrl>project</ctrl>
+		<var>id|cate</var>
+		<title>项目及分类</title>
+	</url>
+	<url>
+		<sort>3</sort>
+		<rule>^([a-zA-Z0-9\-\_]+)\.html$</rule>
+		<val>index.php?id=$1</val>
+		<format>[id].html</format>
+		<ctrl>content|project</ctrl>
+		<var>id</var>
+		<title>项目或内容</title>
+	</url>
+</root>

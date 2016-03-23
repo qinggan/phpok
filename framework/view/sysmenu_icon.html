@@ -1,0 +1,58 @@
+<!-- include tpl=head -->
+<link rel="stylesheet" type="text/css" href="css/icomoon.css" />
+<script type="text/javascript">
+function save()
+{
+	var obj = art.dialog.opener;
+	var url = get_url('system','icon_save','id={$id}');
+	var icon = $("input[name=icon]:checked").val();
+	if(icon){
+		url += "&icon="+icon;
+	}
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok'){
+		if(!icon){
+			obj.$("#icon_status_{$id}").val('{lang隐藏}');
+			obj.$("#icon_{$id}").removeClass().hide();
+			$.dialog.close();
+			return true;
+		}
+		obj.$("#icon_status_{$id}").val('{lang显示}');
+		obj.$("#icon_{$id}").removeClass().addClass('icon-'+icon).show();
+		$.dialog.close();
+		return true;
+	}
+	obj.$.dialog.alert(rs.content);
+	return false;
+}
+</script>
+<div class="table">
+	<div class="title">
+		快捷图标：
+		<span class="note">启用快捷图标后，将在桌面显示相应的快捷链接</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li style="width:180px;"><label title="不使用">
+				<table>
+				<tr>
+					<td><input type="radio" name="icon" value=""{if !$rs.icon} checked{/if}/></td>
+					<td>空/隐藏/不使用</td>
+				</tr>
+				</table>
+			</label></li>
+			<!-- loop from=$iconlist key=$key value=$value -->
+			<li style="width:180px;"><label title="{func basename $value}">
+				<table>
+				<tr>
+					<td><input type="radio" name="icon" value="{$value}"{if $rs.icon == $value} checked{/if}/></td>
+					<td><i class="icon-{$value}" style="font-size:16px;"></i> {$value}</td>
+				</tr>
+				</table>
+			</label></li>
+			<!-- /loop -->
+			<div class="clear"></div>
+		</ul>
+	</div>
+</div>
+<!-- include tpl=foot_open -->
