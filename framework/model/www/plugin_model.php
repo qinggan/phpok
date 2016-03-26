@@ -42,6 +42,7 @@ class plugin_model extends plugin_model_base
 			return false;
 		}
 		$this->cache->save($cache_id,$rslist);
+		return $rslist;
 	}
 }
 
