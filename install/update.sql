@@ -32,3 +32,5 @@ ADD  `search_separator` VARCHAR( 10 ) NOT NULL COMMENT  '·Ö¸î·û£¬½öÏÞÇø¼äËÑË÷Ê±Ó
 
 ALTER TABLE  `qinggan_phpok` ADD  `is_api` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '0²»Ö§³ÖAPIµ÷ÓÃ£¬1Ö§³Ö',
 ADD  `sqlinfo` TEXT NOT NULL COMMENT  'SQLÓï¾ä';
+
+ALTER TABLE  `qinggan_payment_group` ADD  `is_wap` TINYINT( 1 ) NOT NULL DEFAULT  '0' COMMENT  '0ÊÇPC¶Ë£¬1ÊÇÊÖ»ú¶Ë'

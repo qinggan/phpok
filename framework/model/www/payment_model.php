@@ -21,26 +21,27 @@ class payment_model extends payment_model_base
 		unset($this);
 	}
 
-	function get_all($site_id=0,$status=0)
+	function get_all($site_id=0,$status=0,$mobile=0)
 	{
 		$condition = $site_id ? "site_id IN(0,".$site_id.")" : "site_id=0";
 		$sql = "SELECT * FROM ".$this->db->prefix."payment_group WHERE ".$condition." ";
-		$sql.= "AND status=1 ORDER BY is_default DESC,taxis ASC,id DESC";
+		$sql.= "AND status=1 ";
+		$sql.= $mobile ? "AND is_wap=1 " : "AND is_wap=0 ";
+		$sql.= "ORDER BY is_default DESC,taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql,"id");
 		if(!$rslist)
 		{
 			return false;
 		}
 		$ids = array_keys($rslist);
-		$condition = "status=1 AND gid IN(".implode(",",$ids).")";
+		$condition = "status=1 AND gid IN(".implode(",",$ids).") ";
+		$condition.= $mobile ? "AND wap=1 " : "AND wap=0 ";
 		$sql = "SELECT * FROM ".$this->db->prefix."payment WHERE ".$condition." ORDER BY taxis ASC,id DESC";
 		$tmplist = $this->db->get_all($sql);
-		if(!$tmplist)
-		{
+		if(!$tmplist){
 			return false;
 		}
-		foreach($tmplist AS $key=>$value)
-		{
+		foreach($tmplist AS $key=>$value){
 			$rslist[$value['gid']]['paylist'][$value['id']] = $value;
 		}
 		return $rslist;

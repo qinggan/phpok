@@ -84,7 +84,13 @@ class unionpay_lib
 
 	public function txn_sub_type($type='default')
 	{
-		$this->form_params['txnSubType'] = $type == 'installment' ? '03' : '01';
+		if($type == 'installment'){
+			$this->form_params['txnSubType'] = '03';
+			$this->form_params['defaultPayType'] = '0401';
+		}else{
+			$this->form_params['txnSubType'] = '01';
+			$this->form_params['defaultPayType'] = '0001';
+		}
 	}
 
 	private function get_cert_id($file)

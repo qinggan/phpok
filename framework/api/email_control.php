@@ -15,11 +15,24 @@ class email_control extends phpok_control
 		parent::control();
 	}
 
+	//邮件发送
 	public function index_f()
 	{
-		$email = $this->get('email');
-		if(!$email){
-			$this->json(P_Lang('Email不能为空'));
+		if(!$_SESSION['admin_id']){
+			$token = $this->get('token');
+			if(!$token){
+				$this->json(P_Lang('Email获取异常，未指定Token信息'));
+			}
+			$info = $this->lib('token')->decode($token);
+			if(!$info || !$info['email']){
+				$this->json(P_Lang('异常，内容不能为空'));
+			}
+			$email = $info['email'];
+		}else{
+			$email = $this->get('email');
+			if(!$email){
+				$this->json(P_Lang('Email不能为空'));
+			}
 		}
 		$title = $this->get('title');
 		$content = $this->get('content','html');
@@ -29,7 +42,8 @@ class email_control extends phpok_control
 		if(!$title){
 			$title = phpok_cut($content,50,'…');
 		}
-		if(!$this->site['email_server'] || !$this->site['email_account'] || !$this->site['email_pass'] || !$this->site['email']){
+		$email_server = $this->model('gateway')->get_default('email');
+		if(!$email_server){
 			$this->json(P_Lang('SMTP未配置好'));
 		}
 		$list = explode(',',$email);
@@ -51,6 +65,10 @@ class email_control extends phpok_control
 	{
 		if($_SESSION['user_id']){
 			$this->json(P_Lang('您已经是会员，不能执行这个操作'));
+		}
+		$email_server = $this->model('gateway')->get_default('email');
+		if(!$email_server){
+			$this->json(P_Lang('SMTP未配置好'));
 		}
 		$group_id = $this->get('group_id','int');
 		if($group_id){

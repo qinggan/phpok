@@ -1,11 +1,21 @@
 <!-- inc:head -->
 <script type="text/javascript" src="{func add_js order.js}"></script>
+<script type="text/javascript" src="js/laydate/laydate.js"></script>
 <script type="text/javascript">
 function www_show(sn,passwd)
 {
 	var url = "{$sys.url}{$sys.www_file}?{$sys.ctrl_id}=order&{$sys.func_id}=info";
 	url += "&sn="+sn+"&passwd="+passwd;
 	window.open(url);
+}
+function update_keywords(val){
+	if(val == 'time'){
+		$("#keywords").bind("focus",function(){
+			laydate();
+		}).val('');
+	}else{
+		$("#keywords").unbind('focus').val('');
+	}
 }
 $(document).ready(function(){
 	$(".status").each(function(){
@@ -24,30 +34,81 @@ $(document).ready(function(){
 <div class="tips">
 	<table width="100%" cellpadding="0" cellspacing="0" height="100%">
 	<tr>
-		<td>&raquo; 订单列表</td>
+		<td>&raquo; <a href="{url ctrl=order/}" title="">订单列表</a></td>
 		<td>
-			<table>
-			<tr>
-				<form method="post" action="{func admin_url order}">
-				<td>
-					<select name="status">
-					<option value="">全部</option>
-					<!-- loop from=$statuslist key=$key value=$value id=$tmpid -->
-					<option value="{$key}"{if $key == $status} selected{/if}>{$value}</option>
-					<!-- /loop -->
-					</select>
-				</td>
-				<td><input type="text" id="keywords" name="keywords" value="{$keywords}" /></td>
-				<td><input type="submit" value="搜索" class="submit" /></td>
-				</form>
-			</tr>
-			</table>
 		</td>
 		<td align="right">
 			<div class="action"><a href="{url ctrl=order func=set/}">创建新订单</a></div>
 		</div>
 	</tr>
 	</table>
+</div>
+<div class="tips">
+	<form method="post" action="{func admin_url order}">
+	<div style="float:left;width:800px;">
+		<div><table>
+		<tr>
+			
+			<td>
+				<select name="status">
+				<option value="">订单状态…</option>
+				<!-- loop from=$statuslist key=$key value=$value id=$tmpid -->
+				<option value="{$key}"{if $key == $status} selected{/if}>{$value}</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			
+			<td>&nbsp; &nbsp;{lang时间：}</td>
+			<td><input type="text" name="date_start" value="{$date_start}" placeholder="开始时间" onfocus="laydate()" style="width:110px;" /></td>
+			<td>{lang至}</td>
+			<td><input type="text" name="date_stop" value="{$date_stop}" placeholder="结束时间" onfocus="laydate()" style="width:110px;" /></td>
+			<td>&nbsp; &nbsp;{lang价格：}</td>
+			<td><input type="text" name="price_min" value="{$price_min}" placeholder="最低价格" style="width:110px;" /></td>
+			<td>{lang至}</td>
+			<td><input type="text" name="price_max" value="{$price_max}" placeholder="最高价格" style="width:110px;" /></td>
+			
+			
+		</tr>
+		</table></div>
+		<table>
+		<tr>
+			<!-- if $paylist -->
+			<td>
+				<select name="paytype" >
+				<option value="">支付方式…</option>
+				<optgroup label="PC端">
+					<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+					<!-- if !$value.wap -->
+					<option value="{$value.id}"{if $paytype == $value.id} selected{/if}>{$value.title}</option>
+					<!-- /if -->
+					<!-- /loop -->
+				</optgroup>
+				<optgroup label="手机端">
+					<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+					<!-- if $value.wap -->
+					<option value="{$value.id}"{if $paytype == $value.id} selected{/if}>{$value.title}</option>
+					<!-- /if -->
+					<!-- /loop -->
+				</optgroup>
+				</select>
+			</td>
+			<!-- /if -->
+			<td>
+				<select name="keytype" onchange="update_keywords(this.value)">
+				<option value="">检索类型…</option>
+				<option value="sn"{if $keytype == 'sn'} selected{/if}>{lang订单编号}</option>
+				<option value="user"{if $keytype == 'user'} selected{/if}>{lang会员账号}</option>
+				<option value="email"{if $keytype == 'email'} selected{/if}>{lang订单邮箱}</option>
+				<option value="protitle"{if $keytype == 'protitle'} selected{/if}>{lang产品名称}</option>
+				</select>
+			</td>
+			<td><input type="text" id="keywords" name="keywords" class="default" value="{$keywords}"{if $keytype == 'time'} onfocus="laydate()"{/if} /></td>
+		</tr>
+		</table>
+	</div>
+	<div style="float:left;width:20%;margin-top:25px;"><input type="submit" value="提交搜索" class="submit2" /></div>
+	</form>
+	<div class="clear"></div>
 </div>
 
 <table width="100%" class="list" cellpadding="0" cellspacing="0">
@@ -56,10 +117,12 @@ $(document).ready(function(){
 	<th class="lft">&nbsp;编号</th>
 	<th class="lft">&nbsp;会员</th>
 	<th class="lft">&nbsp;金额</th>
+	<th class="lft">&nbsp;实付</th>
 	<th>状态</th>
-	<th class="lft">付款</th>
+	<th class="lft">&nbsp;支付方式</th>
+	<th width="130px">付款时间</th>
 	<th width="130px">创建时间</th>
-	<th>操作</th>
+	<th width="198px">操作</th>
 </tr>
 <!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 
@@ -68,21 +131,22 @@ $(document).ready(function(){
 	<td>{$value.sn}</td>
 	<td>{$value.user}</td>
 	<td>{func price_format $value.price $value.currency_id $value.currency_id}</td>
+	<td><!-- if $value.pay_price && $value.pay_dateline && $value.pay_title --><span class="darkblue">{func price_format $value.pay_price $value.currency_id $value.currency_id}</span><!-- else -->-<!-- /if --></td>
 	<td align="center" class="status">{$statuslist[$value.status] ? $statuslist[$value.status] : $value.status}</td>
-	<td class="pay_status">
-		<!-- if $value.pay_title -->{$value.pay_title}：<!-- /if -->
-		<!-- if $value.pay_price && $value.pay_dateline --><span class="darkblue">{func price_format $value.pay_price $value.currency_id $value.currency_id}</span>，付款时间：<span class="darkblue">{func date "Y-m-d H:i" $value.pay_dateline}</span><!-- /if -->
-	</td>
+	<td>{$value.pay_title ? $value.pay_title : '-'}</td>
+	<td align="center"><!-- if $value.pay_dateline -->{func date "Y-m-d H:i" $value.pay_dateline}<!-- else -->-<!-- /if --></td>
 	<td align="center">{func date "Y-m-d H:i" $value.addtime}</td>
 	<td align="center">
-		<input type="button" value="查看" onclick="www_show('{$value.sn}','{$value.passwd}')" class="btn" />
-		<input type="button" value="物流快递" onclick="order_express({$value.id},'{$value.sn}')" class="btn" />
-		<!-- if $popedom.modify -->
-		<input type="button" value="编辑" onclick="order_edit({$value.id})" class="btn" />
-		<!-- /if -->
-		<!-- if $popedom.delete -->
-		<input type="button" value="删除" onclick="order_delete({$value.id},'{$value.sn}')" class="btn" />
-		<!-- /if -->
+		<div class="button-group">
+			<input type="button" value="{lang查看}" onclick="www_show('{$value.sn}','{$value.passwd}')" class="phpok-btn" />
+			<input type="button" value="快递" onclick="order_express({$value.id},'{$value.sn}')" class="phpok-btn" />
+			<!-- if $popedom.modify -->
+			<input type="button" value="编辑" onclick="order_edit({$value.id})" class="phpok-btn" />
+			<!-- /if -->
+			<!-- if $popedom.delete -->
+			<input type="button" value="{lang删除}" onclick="order_delete({$value.id},'{$value.sn}')" class="phpok-btn" />
+			<!-- /if -->
+		</div>
 	</td>
 </tr>
 <!-- /loop -->

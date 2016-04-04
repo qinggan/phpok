@@ -116,8 +116,9 @@ class login_control extends phpok_control
 		if($_SESSION["user_id"]){
 			error(P_Lang('您已是本站会员，不能执行这个操作'),$error_url);
 		}
-		if(!$this->site['email_server'] || !$this->site['email_account'] || !$this->site['email_pass']){
-			error(P_Lang('官网未配置好邮件通知功能，请联系管理员'),$this->url('index'),10);
+		$server = $this->model('gateway')->get_default('email');
+		if(!$server){
+			error(P_Lang('未配置好邮件通知功能，请联系管理员'),$this->url('index'),10);
 		}
 		$this->view("login_getpass");
 	}
@@ -136,20 +137,19 @@ class login_control extends phpok_control
 		}
 		$_SESSION['repass_spam_code'] = str_rand(10);
 		$code = $this->get('_code');
-		if(!$code){
-			error(P_Lang('验证码不能为空'),'','error');
+		if($code){
+			$time = intval(substr($code,-10));
+			if(($this->time - $time) > (24*60*60)){
+				error(P_Lang('验证码超时过期，请重新获取'),$this->url('login','getpass'),'error',10);
+			}
+			$uid = $this->model('user')->uid_from_chkcode($code);
+			if(!$uid){
+				error(P_Lang('验证码不存在'),$this->url('login','getpass'),'error',10);
+			}
+			$this->assign('code',$code);
+			$user = $this->model('user')->get_one($uid);
+			$this->assign("user",$user);
 		}
-		$time = intval(substr($code,-10));
-		if(($this->time - $time) > (24*60*60)){
-			error(P_Lang('验证码超时过期，请重新获取'),$this->url('login','getpass'),'error',10);
-		}
-		$uid = $this->model('user')->uid_from_chkcode($code);
-		if(!$uid){
-			error(P_Lang('验证码不存在'),$this->url('login','getpass'),'error',10);
-		}
-		$user = $this->model('user')->get_one($uid);
-		$this->assign("user",$user);
-		$this->assign('code',$code);
 		$this->view('login_repass');
 	}
 

@@ -210,7 +210,7 @@ class call_control extends phpok_control
 		$array = array();
 		$error_url = $this->url("call","set");
 		if(!$id){
-			if(!$this->popedom["modify"]){
+			if(!$this->popedom["add"]){
 				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
 			$identifier = $this->get("identifier");
@@ -221,9 +221,21 @@ class call_control extends phpok_control
 			$array["identifier"] = $identifier;
 			$array["site_id"] = $_SESSION["admin_site_id"];
 		}else{
-			if(!$this->popedom["add"]){
+			if(!$this->popedom["modify"]){
 				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
+			$identifier = $this->get('identifier','system');
+			$rs = $this->model('call')->get_one($id);
+			if(!$identifier){
+				$identifier = $rs['identifier'];
+			}
+			if($identifier != $rs['identifier']){
+				$chk = $this->check_identifier($identifier);
+				if($chk != "ok"){
+					error($chk,$error_url,"error");
+				}
+			}
+			$array['identifier'] = $identifier;
 			$error_url .= "&id=".$id;
 		}
 		$title = $this->get("title");

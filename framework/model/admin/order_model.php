@@ -91,6 +91,17 @@ class order_model extends order_model_base
 		return $this->db->get_all($sql);
 	}
 
+	public function get_count($condition="")
+	{
+		$sql = "SELECT count(o.id) FROM ".$this->db->prefix."order o ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."order_payment p ON(o.id=p.order_id) ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."user u ON(o.user_id=u.id) ";
+		if($condition){
+			$sql .= " WHERE ".$condition;
+		}
+		return $this->db->count($sql);
+	}
+
 	public function express_all($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."order_express WHERE order_id='".$id."' AND express_id!=0 ";

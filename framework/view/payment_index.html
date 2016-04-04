@@ -55,7 +55,7 @@ $(document).ready(function(){
 </tr>
 <!-- loop from=$rslist key=$key value=$value -->
 <tr class="list">
-	<td>{$value.title}<!-- if !$value.status --><span class="gray i">（停用）</span><!-- /if --></td>
+	<td>{$value.title}<!-- if !$value.status --><span class="gray i">（停用）</span><!-- /if --><!-- if $value.is_wap --><span class="red">（手机端）</span><!-- /if --></td>
 	<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}" type="group">{$value.taxis}</div></td>
 	<td>
 		<!-- if $popedom.groupedit -->
@@ -71,7 +71,7 @@ $(document).ready(function(){
 </tr>
 	<!-- loop from=$value.paylist key=$k value=$v -->
 	<tr>
-		<td><div style="padding-left:24px;">{$v.title}<!-- if !$v.status --><span class="gray i">（停用）</span><!-- /if --></div></td>
+		<td><div style="padding-left:24px;">{$v.title}<!-- if !$v.status --><span class="gray i">（停用）</span><!-- /if --><!-- if $v.wap --><span class="red">（手机端）</span><!-- /if --></div></td>
 		<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$v.id}" type="payment">{$v.taxis}</div></td>
 		<td>
 			<!-- if $popedom.edit -->

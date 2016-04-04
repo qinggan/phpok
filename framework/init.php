@@ -198,14 +198,7 @@ class _init_phpok
 			if(!is_readable($mofile)){
 				return false;
 			}
-			$this->vendor('pomo');
-			$this->lang = new NOOP_Translations;
-			$mo = new MO();
-			if (!$mo->import_from_file($mofile)){
-				return false;
-			}
-			$mo->merge_with($this->lang);
-			$this->lang = &$mo;
+			$this->lang = $this->lib('pomo')->lang($mofile);
 		}else{
 			$this->language_status = 'gettext';
 			if($langid != 'default' && $langid != 'cn'){
@@ -279,7 +272,7 @@ class _init_phpok
 	//使用第三方类
 	public function is_mobile()
 	{
-		if($this->vendor('mobile')->isMobile()){
+		if($this->lib('mobile')->is_mobile()){
 			return true;
 		}
 		return false;
@@ -406,28 +399,49 @@ class _init_phpok
 		$this->assign('plugin',$param);
 	}
 	
-	public function lib($class,$ext_folder="")
+	public function lib($class)
 	{
-		$tmp = $class.'_lib';
-		if($this->$tmp && is_object($this->$tmp))
-		{
+		if($this->_libs && $this->_libs[$class]){
+			$config = $this->_libs[$class];
+		}else{
+			$config = array('param'=>'','include'=>'','auto'=>'','classname'=>$class.'_lib');
+			if(file_exists($this->dir_root.'extension/'.$class.'/config.inc.php')){
+				include($this->dir_root.'extension/'.$class.'/config.inc.php');
+				if($config['include']){
+					$list = explode(",",$config['include']);
+					foreach($list as $key=>$value){
+						include_once($this->dir_root.'extension/'.$class.'/'.$value);
+					}
+				}
+			}
+			$this->_libs[$class] = $config;			
+		}
+		$tmp = $config['class'] ? $config['class'] : $class.'_lib';
+		if($this->$tmp && is_object($this->$tmp)){
 			return $this->$tmp;
 		}
-		$file = $this->dir_phpok.'libs/';
-		if($folder && $folder != '/')
-		{
-			$file .= $folder;
-			if(substr($folder,-1) != '/')
-			{
-				$file .= '/';
+		$vfile = array($this->dir_phpok.'libs/'.$class.'.php');
+		$vfile[] = $this->dir_root.'extension/'.$class.'/phpok.php';
+		$vfile[] = $this->dir_root.'extension/'.$class.'/index.php';
+		$vfile[] = $this->dir_root.'extension/'.$class.'.php';
+		$chkstatus = false;
+		foreach($vfile as $key=>$value){
+			if(file_exists($value)){
+				include_once($value);
+				$chkstatus = true;
+				break;
 			}
 		}
-		$file .= $class.'.php';
-		if(!is_file($file))
-		{
-			return false;
+		if(!$chkstatus){
+			$this->error(P_Lang('类文件{classfile}不存在',array('classfile'=>$class.'.php')));
 		}
-		include($file);
+		$this->$tmp = new $tmp($config['param']);
+		if($config['auto']){
+			$list = explode(",",$config['auto']);
+			foreach($list as $key=>$value){
+				$this->$name->$value();
+			}
+		}
 		$this->$tmp = new $tmp();
 		return $this->$tmp;
 	}
@@ -1327,34 +1341,6 @@ class _init_phpok
 		return true;
 	}
 
-	final public function vendor($id)
-	{
-		$name = 'vendor_'.$id;
-		if($this->$name){
-			return $this->$name;
-		}
-		if(!file_exists($this->dir_root.'vendor/'.$id.'/config.inc.php')){
-			return false;
-		}
-		include($this->dir_root.'vendor/'.$id.'/config.inc.php');
-		if($config['include']){
-			$list = explode(",",$config['include']);
-			foreach($list as $key=>$value){
-				include_once($this->dir_root.'vendor/'.$id.'/'.$value);
-			}
-		}
-		if($config['class']){
-			$classname = $config['class'];
-			$this->$name = new $classname();
-			if($config['auto']){
-				$list = explode(",",$config['auto']);
-				foreach($list as $key=>$value){
-					$this->$name->$value();
-				}
-			}
-		}
-		return $this->$name;
-	}
 }
 
 //核心魔术方法，此项可实现类，方法的自动加载
@@ -1402,6 +1388,64 @@ class _init_auto
 	public function __isset($id)
 	{
 		return $this->__get($id);
+	}
+}
+
+//针对扩展的一些完善
+class _init_lib
+{
+	protected $dir_root;
+	protected $dir_phpok;
+	protected $dir_data;
+	protected $dir_cache;
+	protected $dir_extension;
+	public function __construct()
+	{
+		$this->dir_root = $GLOBALS['app']->dir_root;
+		$this->dir_phpok = $GLOBALS['app']->dir_phpok;
+		$this->dir_data = $GLOBALS['app']->dir_root.'data/';
+		$this->dir_cache = $GLOBALS['app']->dir_root.'data/cache/';
+		$this->dir_extension = $GLOBALS['app']->dir_root.'extension/';
+	}
+
+	protected function dir_root($dir='')
+	{
+		if($dir){
+			$this->dir_root = $dir;
+		}
+		return $this->dir_root;
+	}
+
+	protected function dir_phpok($dir='')
+	{
+		if($dir){
+			$this->dir_phpok = $dir;
+		}
+		return $this->dir_phpok;
+	}
+
+	protected function dir_data($dir='')
+	{
+		if($dir){
+			$this->dir_data = $dir;
+		}
+		return $this->dir_data;
+	}
+
+	protected function dir_cache($dir='')
+	{
+		if($dir){
+			$this->dir_cache = $dir;
+		}
+		return $this->dir_cache;
+	}
+
+	protected function dir_extension($dir='')
+	{
+		if($dir){
+			$this->dir_extension = $dir;
+		}
+		return $this->dir_extension;
 	}
 }
 

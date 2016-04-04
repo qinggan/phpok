@@ -1,0 +1,41 @@
+<!-- include tpl=head title="修改个人资料 - 个人中心" -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#userinfo_submit").submit(function(){
+		$(this).ajaxSubmit({
+			type:'post',
+			url: api_url('usercp','info'),
+			dataType:'json',
+			success: function(rs){
+				if(rs.status == 'ok'){
+					$.dialog.alert("您的信息更新成功",function(){
+						$.phpok.reload();
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div role="main" class="ui-content">
+	<div class="ui-body">
+		<form method="post" id="userinfo_submit">
+			<input type="hidden" name="avatar" id="avatar" value="{$rs.avatar}" />
+			<!-- loop from=$extlist key=$key value=$value -->
+			<div>{$value.title}：</div>
+			<div>{$value.html}</div>
+			<!-- /loop -->
+			<table>
+				<tr>
+					<td><input type="submit" value="修改资料" data-theme="b" /></td>
+					<td><input type="button" value="返回个人中心" onclick="$.phpok.go('{url ctrl=usercp/}')" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+<!-- include tpl=foot -->

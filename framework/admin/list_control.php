@@ -329,21 +329,40 @@ class list_control extends phpok_control
 				}
 			}
 		}
+		$keytype = $this->get('keytype');
+		if(!$keytype){
+			$keytype = 'title';
+		}
 		$keywords = $this->get("keywords");
-		if($keywords) $keywords = trim($keywords);
-		if($keywords){
-			$condition .= " AND (l.title LIKE '%".$keywords."%' OR l.tag LIKE '%".$keywords."%' OR l.seo_keywords LIKE '%".$keywords."%' OR l.seo_desc LIKE '%".$keywords."%' OR l.seo_title LIKE '%".$keywords."%'";
-			//搜索扩展字段
-			if($m_list){
-				foreach($m_list AS $key=>$value){
-					if($value['field_type'] != 'longtext' && $value['field_type'] != 'longblob'){
-						$condition .= " OR ext.".$key." LIKE '%".$keywords."%' ";
-					}
-				}
+		if($keywords && trim($keywords)){
+			$keywords = trim($keywords);
+			$main_keytype = array('title','tag','seo_title','seo_keywords','seo_desc','identifier');
+			if(in_array($keytype,$main_keytype)){
+				$condition .= " AND l.".$keytype." LIKE '%".$keywords."%' ";
+			}else{
+				$condition .= " AND ext.".$keytype." LIKE '%".$keywords."%'";
 			}
-			$condition .= ") ";
-			$pageurl .= "&keywords=".rawurlencode($keywords);
+			$pageurl .= "&keywords=".rawurlencode($keywords)."&keytype=".rawurlencode($keytype);
 			$this->assign("keywords",$keywords);
+			$this->assign("keytype",$keywords);
+		}
+		$dateline_start = $this->get('dateline_start');
+		if($dateline_start){
+			$tmp = strtotime($dateline_start);
+			if($tmp){
+				$condition .= " AND l.dateline>=".$tmp." ";
+				$this->assign('dateline_start',$dateline_start);
+				$pageurl .= "&dateline_start=".rawurlencode($dateline_start);
+			}
+		}
+		$dateline_stop = $this->get('dateline_stop');
+		if($dateline_stop){
+			$tmp = strtotime($dateline_stop);
+			if($tmp){
+				$condition .= " AND l.dateline<=".$tmp." ";
+				$this->assign('dateline_stop',$dateline_stop);
+				$pageurl .= "&dateline_stop=".rawurlencode($dateline_stop);
+			}
 		}
 		$attr = $this->get("attr");
 		if($attr){
@@ -372,9 +391,39 @@ class list_control extends phpok_control
 			$pageurl .= "&status=".$status;
 			$this->assign('status',$status);
 		}
+		$orderby_search = $this->get('orderby_search');
+		if($orderby_search){
+			switch($orderby_search){
+				case "hits_hot":
+					$orderby = "l.hits DESC,l.sort ASC,l.id DESC";
+					break;
+				case "hits_cold":
+					$orderby = "l.hits ASC,l.sort ASC,l.id DESC";
+					break;
+				case "price_high":
+					$orderby = "b.price DESC,l.sort ASC,l.id DESC";
+					break;
+				case "price_low":
+					$orderby = "b.price ASC,l.sort ASC,l.id DESC";
+					break;
+				case "sort_max":
+					$orderby = "l.sort DESC,l.sort ASC,l.id DESC";
+					break;
+				case "sort_min":
+					$orderby = "l.sort ASC,l.sort ASC,l.id DESC";
+					break;
+				case "dateline_max":
+					$orderby = "l.dateline DESC,l.sort ASC,l.id DESC";
+					break;
+				case "dateline_min":
+					$orderby = "l.dateline ASC,l.sort ASC,l.id DESC";
+					break;
+			}
+			$this->assign('orderby_search',$orderby_search);
+			$pageurl .= "&orderby_search=".$orderby_search;
+		}
 		//取得列表信息
 		$total = $this->model('list')->get_total($mid,$condition);
-		
 		if($total > 0){
 			$rslist = $this->model('list')->get_list($mid,$condition,$offset,$psize,$orderby);
 			$sub_idlist = $rslist ? array_keys($rslist) : array();

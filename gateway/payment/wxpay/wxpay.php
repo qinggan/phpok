@@ -276,9 +276,10 @@ class wxpay_lib
 		$data['mch_id'] = $this->mch_id;
 		$data['nonce_str'] = $this->nonce_str;
 		$data['spbill_create_ip'] = $GLOBALS['app']->lib('common')->ip();
-		$data['time_start'] = date("YmdHis",time());
-		$data['time_expire'] = date("YmdHis",time() + 600);
+		//$data['time_start'] = date("YmdHis",time());
+		//$data['time_expire'] = date("YmdHis",time() + 600);
 		$data['trade_type'] = strtoupper($this->trade_type());
+		//$this->_log($data);
 		$sign = $this->create_sign($data);
 		$data['sign'] = $sign;
 		$xml = $this->ToXml($data);

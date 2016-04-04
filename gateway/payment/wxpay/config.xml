@@ -34,14 +34,10 @@
 			<option>
 				<native>原生扫码支付</native>
 				<jsapi>公众号支付</jsapi>
+				<wap>WAP支付</wap>
 			</option>
 			<default>native</default>
 		</trade_type>
-		<jsapi_link>
-			<title>支付成功后订单跳转</title>
-			<note>仅限使用【公众号支付】有效，用于订单购买成功后促发动作脚本</note>
-			<type>text</type>
-		</jsapi_link>
 		<pem_cert>
 			<title>证书pem格式</title>
 			<note>接口中强制要求时需携带的证书文件</note>

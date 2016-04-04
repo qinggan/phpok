@@ -1,0 +1,27 @@
+<!-- include tpl=head title=会员中心 -->
+<div class="uinfo">
+	<div class="img"><img src="{$user.avatar ? $user.avatar : 'images/user_default.png'}" /></div>
+	<div class="fullname">{$user.fullname ? $user.fullname : $user.user}</div>
+	<div class="logout"><a href="javascript:$.user.logout('{$session.user_name}','{$sys.url}');void(0);">退出</a></div>
+</div>
+<div role="main" class="ui-content">
+	<ul data-role="listview" data-inset="true" data-divider-theme="a" style="margin:0;">
+	    <li data-role="list-divider">个人中心</li>
+	    <li><a href="{url ctrl=usercp func=info/}">资料维护</a></li>
+	    <li><a href="{url ctrl=usercp func=avatar/}">更换头像</a></li>
+	    <li><a href="{url ctrl=usercp func=passwd/}">修改密码</a></li>
+	    <li><a href="{url ctrl=usercp func=email/}">修改邮箱</a></li>
+	    <li><a href="{url ctrl=usercp func=mobile/}">修改手机号</a></li>
+	    <li data-role="list-divider">订单中心</li>
+	    <li><a href="{url ctrl=order/}">我的订单</a></li>
+	    <li><a href="{url ctrl=usercp func=address/}">收货地址</a></li>
+	    <li><a href="{url ctrl=usercp func=invoice/}">发票管理</a></li>
+	    <li data-role="list-divider">其他功能</li>
+	    <li><a href="{url ctrl=usercp func=fav/}">收藏夹</a></li>
+	    <!-- php:$list = usercp_project() -->
+		<!-- loop from=$list key=$key value=$value -->
+		<li><a href="{url ctrl=usercp func=list id=$value.identifier/}">{$value.title}</a></li>
+		<!-- /loop -->
+	</ul>
+</div>
+<!-- include tpl=foot -->

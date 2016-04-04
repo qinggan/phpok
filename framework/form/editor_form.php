@@ -46,7 +46,12 @@ class editor_form extends _init_auto
 			}
 		}
 		if($rs['width']){
-			$style["width"] = ($rs['width'] && $rs['width'] != '100%') ? $rs['width'].'px' : $rs['width'];
+			if($this->is_mobile && $appid != 'admin'){
+				$style['width'] = '100%';
+				$rs['width'] = '100%';
+			}else{
+				$style["width"] = ($rs['width'] && $rs['width'] != '100%') ? $rs['width'].'px' : $rs['width'];
+			}
 		}
 		if($rs['height']){
 			$style["height"] = $rs['height'].'px';

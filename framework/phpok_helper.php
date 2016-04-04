@@ -659,11 +659,7 @@ function tpl_head($array=array())
 	$app = $GLOBALS['app'];
 	if($array['html5'] == 'true'){
 		$html  = '<!DOCTYPE html>'."\n";
-		if($array['manifest']){
-			$html .= '<html manifest="'.$app->url.'data/'.$array['manifest'].'.manifest">'."\n";
-		}else{
-			$html .= '<html>'."\n";
-		}
+		$html .= '<html>'."\n";
 		$html .= '<head>'."\n\t".'<meta charset="utf-8" />'."\n\t";
 	}else{
 		$html  = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
@@ -672,13 +668,12 @@ function tpl_head($array=array())
 	}
 	if($array['mobile'] == 'true'){
 		$html .= '<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />'."\n\t";
-	}else{
-		$html .= '<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />'."\n\t";
-		$html .= '<meta http-equiv="Pragma" content="no-cache" />'."\n\t";
-		$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate,max-age=3" />'."\n\t";
-		$html .= '<meta http-equiv="Expires" content="Mon, 26 Jul 1997 05:00:00 GMT" />'."\n\t";
-		$html .= '<meta name="renderer" content="webkit">'."\n\t";
 	}
+	$html .= '<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />'."\n\t";
+	$html .= '<meta http-equiv="Pragma" content="no-cache" />'."\n\t";
+	$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate,max-age=3" />'."\n\t";
+	$html .= '<meta http-equiv="Expires" content="Mon, 26 Jul 1997 05:00:00 GMT" />'."\n\t";
+	$html .= '<meta name="renderer" content="webkit">'."\n\t";
 	if($app->license == 'LGPL'){
 		$html .= '<meta name="author" content="phpok,admin@phpok.com" />'."\n\t";
 	}

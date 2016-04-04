@@ -42,7 +42,7 @@ class email_lib
 			return false;
 		}
 		//初始化邮件服务器参数
-		$this->smtp_charset = $info['charset'] ? $info['charset'] : 'utf8';
+		$this->smtp_charset = $info['charset'] ? str_replace('-','',$info['charset']) : 'utf8';
 		$this->smtp_server = $info["server"];
 		$this->smtp_port = $info["port"] ? $info["port"] : 25;
 		$this->smtp_ssl = ($info['ssl'] && $info["ssl"] == 'yes') ? true : false;
@@ -79,7 +79,7 @@ class email_lib
 		}
 		global $app;
 		$this->smtp();
-		if($this->obj->CharSet != "utf8"){
+		if($this->obj->CharSet != "utf8" && $this->obj->CharSet != 'utf-8'){
 			$title = $app->lib('string')->charset($title,"UTF-8","GBK");
 			$content = $app->lib('string')->charset($content,"UTF-8","GBK");
 			$this->obj->FromName = $app->lib('string')->charset($this->obj->FromName,"UTF-8","GBK");
@@ -91,7 +91,7 @@ class email_lib
 			if($this->smtp_admin == $value['email']){
 				continue;
 			}
-			if(!$this->obj->CharSet != 'utf8'){
+			if(!$this->obj->CharSet != 'utf8' && $this->obj->CharSet != 'utf-8'){
 				$value['account'] = $app->lib('string')->charset($value['account'],'UTF-8','GBK');
 			}
 			$this->obj->AddAddress($value['email'],$value['account']);
@@ -137,7 +137,7 @@ class email_lib
 		}
 		global $app;
 		$this->smtp();
-		if($this->obj->CharSet != "utf8"){
+		if($this->obj->CharSet != "utf8" && $this->obj->CharSet != 'utf-8'){
 			$subject = $app->lib('string')->charset($subject,"UTF-8","GBK");
 			$content = $app->lib('string')->charset($content,"UTF-8","GBK");
 			$this->obj->FromName = $app->lib('string')->charset($this->obj->FromName,"UTF-8","GBK");
@@ -149,7 +149,7 @@ class email_lib
 			if(!$user_name){
 				$user_name = str_replace(strstr($sendto,"@"),"",$sendto);
 			}
-			if($this->obj->CharSet != "utf8"){
+			if($this->obj->CharSet != "utf8" && $this->obj->CharSet != 'utf-8'){
 				 $user_name = $app->lib('string')->charset($user_name,"UTF-8","GBK");
 			}
 			$this->obj->AddAddress($sendto,$user_name);

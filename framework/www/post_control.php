@@ -132,15 +132,17 @@ class post_control extends phpok_control
 			$this->assign("catelist",$catelist);
 		}
 		if($rs['cate_id']){
-			$cate_rs = $this->model("cate")->get_one($cateid,"id",$project_rs['site_id']);
+			$cate_rs = $this->model("cate")->get_one($rs['cate_id'],"id",$project_rs['site_id']);
 			$this->assign("cate_rs",$cate_rs);
 		}
 	
 		//扩展字段
 		$ext_list = $this->model('module')->fields_all($project_rs["module"],"identifier");
 		$extlist = array();
-		foreach(($ext_list ? $ext_list : array()) AS $key=>$value)
-		{
+		foreach(($ext_list ? $ext_list : array()) AS $key=>$value){
+			if(!$value['is_front']){
+				continue;
+			}
 			if($value["ext"]){
 				$ext = unserialize($value["ext"]);
 				foreach($ext AS $k=>$v){

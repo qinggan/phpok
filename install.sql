@@ -3,9 +3,8 @@
 -- http://www.phpmyadmin.net
 --
 -- 主机: 127.0.0.1
--- 生成日期: 2016 年 03 月 24 日 02:44
 -- 服务器版本: 5.5.47
--- PHP 版本: 5.2.17
+-- PHP 版本: 5.5.30
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -37,14 +36,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_adm` (
   `fullname` varchar(100) NOT NULL COMMENT '姓名',
   `close_tip` varchar(255) NOT NULL COMMENT '关闭窗口前弹出的提示',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='管理员信息' AUTO_INCREMENT=13 ;
-
---
--- 转存表中的数据 `qinggan_adm`
---
-
-INSERT INTO `qinggan_adm` (`id`, `account`, `pass`, `email`, `status`, `if_system`, `vpass`, `fullname`, `close_tip`) VALUES
-(1, 'admin', 'c289ffe12a30c94530b7fc4e532e2f42:23', 'qinggan@188.com', 1, 1, '', '苏相锟', '');
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='管理员信息' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -159,7 +151,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart` (
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示游客',
   `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车' AUTO_INCREMENT=68 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车' AUTO_INCREMENT=87 ;
 
 --
 -- 转存表中的数据 `qinggan_cart`
@@ -194,14 +186,24 @@ INSERT INTO `qinggan_cart` (`id`, `session_id`, `user_id`, `addtime`) VALUES
 (45, 'k184rcpmp64nt3achvob6ed6e3', 0, 1451280626),
 (50, 'ckf9nte2l25vj84jj34eio57m0', 0, 1452560030),
 (58, 'nc72auog9j4v4hgchfg9m68m27', 0, 1458112507),
-(65, 'n2mt8526rg4gkjqccet772s5t4', 23, 1458718410),
+(86, 'r7mlcla34mmclf7ipgkahnmds6', 23, 1459365505),
 (59, 'fhrqpkvbu90sposp5te50v21f5', 0, 1458112540),
 (60, '5t1ida3ge27dno3885ea6t4823', 0, 1458266342),
 (61, '1jd0rgp29mnp0eu2lpo6uoljk5', 0, 1458459653),
 (62, 'rilmngdhp3k2jhoehohu20s6o3', 0, 1458527466),
 (63, 'q9h36s80pdau2igg92d5ap8d41', 0, 1458634173),
 (66, 'm1pnl31f052flhn6sil67mn9c3', 0, 1458751074),
-(67, 'jpjjcfl0h3buk40qduvaveu092', 0, 1458751299);
+(67, 'jpjjcfl0h3buk40qduvaveu092', 0, 1458751299),
+(68, '12277931d6c4f8ed9a716cf8ad451089', 0, 1458818698),
+(69, '90cf0c9629e3cad7f7938a4d19c2ae19', 0, 1459024302),
+(70, '9f57qufa13nvlg37nqmaqodr42', 0, 1459027547),
+(71, '07pda6tv7u6ovpeg19l3on03n7', 0, 1459028381),
+(72, 'u137ou2kc4c7qhbbko7gsne8g1', 0, 1459074949),
+(74, '27rhihclvigfiko2kqqi7t6n96', 0, 1459187789),
+(76, 'gjjg4ljpi82nhbrnemvkkske52', 0, 1459189101),
+(77, 'pmc2ml0j8167vlkgilm7e9opd1', 0, 1459236184),
+(78, 'mnd0fcotllnr0ntcu7t4ou4v66', 0, 1459236417),
+(79, 'b87ubnot9r6e542ds3t6m2t6r6', 0, 1459236965);
 
 -- --------------------------------------------------------
 
@@ -220,7 +222,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart_product` (
   `weight` float unsigned NOT NULL DEFAULT '0' COMMENT '重量',
   `volume` float unsigned NOT NULL DEFAULT '0' COMMENT '体积',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车里的产品信息' AUTO_INCREMENT=9 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车里的产品信息' AUTO_INCREMENT=18 ;
 
 --
 -- 转存表中的数据 `qinggan_cart_product`
@@ -228,7 +230,10 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart_product` (
 
 INSERT INTO `qinggan_cart_product` (`id`, `cart_id`, `tid`, `title`, `price`, `qty`, `ext`, `weight`, `volume`) VALUES
 (1, 1, 1253, '新款男人时尚长袖格子衬衫', 300, 1, '', 0, 0),
-(5, 34, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', 179, 3, '10,25', 1, 0);
+(5, 34, 1306, '施华洛世奇（Swarovski） 浅粉蓝色雨滴项链', 179, 3, '10,25', 1, 0),
+(11, 77, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', 4088, 1, '47,51', 0, 0),
+(12, 78, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', 3288, 1, '48,50', 0, 0),
+(13, 78, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', 4088, 1, '48,51', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -502,7 +507,14 @@ CREATE TABLE IF NOT EXISTS `qinggan_fav` (
   `lid` int(11) NOT NULL COMMENT '关联主题',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员收藏夹' AUTO_INCREMENT=7 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员收藏夹' AUTO_INCREMENT=9 ;
+
+--
+-- 转存表中的数据 `qinggan_fav`
+--
+
+INSERT INTO `qinggan_fav` (`id`, `user_id`, `thumb`, `title`, `note`, `addtime`, `lid`) VALUES
+(8, 23, '', 'MySQL出错代码', '1005：创建表失败1006：创建数据库失败1007：数据库已存在，创建数据库失败1008：数据库不存在，删除数据库失败1009：不能删除数据库文件导致删除数据库失败1010：不能删除…', 1459322370, 1370);
 
 -- --------------------------------------------------------
 
@@ -704,15 +716,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_gateway` (
   `note` varchar(255) NOT NULL COMMENT '功能备注',
   `ext` text NOT NULL COMMENT '扩展参数',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='第三方网关路由引挈' AUTO_INCREMENT=4 ;
-
---
--- 转存表中的数据 `qinggan_gateway`
---
-
-INSERT INTO `qinggan_gateway` (`id`, `site_id`, `status`, `is_default`, `type`, `code`, `title`, `taxis`, `note`, `ext`) VALUES
-(1, 1, 1, 1, 'sms', 'duanxincm', '莫名短信', 10, '', 'a:4:{s:7:"account";s:8:"70206743";s:8:"password";s:0:"";s:6:"server";s:22:"http://api.duanxin.cm/";s:6:"mobile";s:0:"";}'),
-(3, 1, 1, 1, 'email', 'smtp', 'SMTP邮件发送', 10, '', 'a:8:{s:6:"server";s:11:"smtp.qq.com";s:4:"port";s:2:"25";s:7:"account";s:15:"admin@phpok.com";s:8:"password";s:0:"";s:7:"charset";s:5:"utf-8";s:3:"ssl";s:2:"no";s:8:"fullname";s:9:"苏相锟";s:5:"email";s:15:"admin@phpok.com";}');
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='第三方网关路由引挈' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -774,7 +778,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_list` (
   PRIMARY KEY (`id`),
   KEY `project_id` (`project_id`),
   KEY `site_id` (`site_id`,`identifier`,`status`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='内容主表' AUTO_INCREMENT=1770 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='内容主表' AUTO_INCREMENT=1773 ;
 
 --
 -- 转存表中的数据 `qinggan_list`
@@ -789,7 +793,7 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (716, 0, 0, 23, 42, 1, '在线留言', 1383355870, 60, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1277, 0, 0, 21, 41, 1, '选择PHPOK，专业建站', 1394008434, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (755, 712, 0, 23, 42, 1, '工作环境', 1383640450, 24, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
-(1373, 0, 68, 22, 43, 1, '来自工程师的8项Web性能提升建议', 1424920049, 0, 1, 0, 48, '', '', '', '', '', 'h', 1458699466, 0, ''),
+(1373, 0, 68, 22, 43, 1, '来自工程师的8项Web性能提升建议', 1424920049, 0, 1, 0, 60, '', '', '', '', '', 'h', 1458699466, 0, ''),
 (760, 713, 0, 23, 42, 1, '公司新闻', 1383815715, 10, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (761, 713, 0, 23, 42, 1, '行业新闻', 1383815736, 20, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1252, 0, 0, 61, 142, 1, 'phpok官网', 1390465160, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
@@ -803,8 +807,8 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (1266, 0, 0, 61, 142, 1, '中国站长', 1393321365, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1267, 0, 0, 61, 142, 1, '落伍者', 1393321391, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1268, 0, 0, 61, 142, 1, '源码之家', 1393321413, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
-(1767, 0, 211, 68, 144, 1, '华为P7', 1458701998, 0, 1, 0, 1, '', '', '', '', '', '', 0, 0, ''),
-(1768, 0, 211, 68, 144, 1, '魅族MX5', 1458702037, 0, 1, 0, 2, '', '', '', '', '', '', 0, 0, ''),
+(1767, 0, 211, 68, 144, 1, '华为P7', 1458701998, 0, 1, 0, 3, '', '', '', '', '', '', 0, 0, ''),
+(1768, 0, 211, 68, 144, 1, '魅族MX5', 1458702037, 0, 1, 0, 3, '', '', '', '', '', '', 0, 0, ''),
 (1766, 0, 211, 68, 144, 1, 'vivo Xplay5', 1458701947, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1278, 0, 0, 21, 41, 1, '开源精神，开创未来', 1394008456, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1285, 0, 0, 46, 96, 1, '测试留言', 1399239571, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
@@ -820,36 +824,37 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (1304, 0, 0, 23, 147, 1, '联系我们', 1409555008, 50, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1305, 0, 0, 64, 148, 1, 'PHPOK销售客服', 1409747629, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1753, 0, 582, 24, 45, 1, '小米(MI) 小米5 全网通4G手机 双卡双待', 1452570664, 0, 1, 0, 34, '', '', '', '', '', '', 0, 0, ''),
-(1310, 0, 198, 65, 151, 1, '主题复制插件', 1412136071, 0, 1, 0, 82, '', '', '', '', '', '', 0, 0, ''),
+(1310, 0, 198, 65, 151, 1, '主题复制插件', 1412136071, 0, 1, 0, 83, '', '', '', '', '', '', 0, 0, ''),
 (1311, 0, 204, 66, 152, 1, '测试论坛功能', 1412391521, 0, 1, 0, 9, '', '', '', '', '', '', 0, 23, ''),
 (1334, 0, 204, 66, 152, 1, '测试', 1413063267, 0, 1, 0, 11, '', '', '', '', '', '', 0, 23, ''),
-(1336, 0, 204, 66, 152, 1, '测试图片功能', 1413064520, 0, 1, 0, 31, '', '', '', '', '', '', 0, 23, ''),
+(1336, 0, 204, 66, 152, 1, '测试图片功能', 1413064520, 0, 1, 0, 35, '', '', '', '', '', '', 0, 23, ''),
 (1348, 0, 204, 66, 152, 1, '测试权限功能', 1414120852, 0, 1, 0, 29, '', '', '', '', '', '', 1414121403, 23, ''),
-(1356, 0, 205, 66, 152, 1, '测试下代码', 1421412599, 0, 1, 0, 10, '', '', '', '', '', '', 0, 23, ''),
+(1356, 0, 205, 66, 152, 1, '测试下代码9999', 1421412599, 0, 1, 0, 10, '', '', '', '', '', '', 0, 23, ''),
 (1368, 0, 8, 22, 43, 1, 'EverEdit - 值得关注的代码编辑器', 1424912045, 0, 1, 0, 26, '', '', '', '', '', '', 0, 0, ''),
-(1369, 0, 8, 22, 43, 1, '金山 WPS - 免费正版办公软件(支持Win/Linux/手机)', 1424916504, 0, 1, 0, 19, '', '', '', '', '', '', 0, 0, ''),
-(1370, 0, 207, 22, 43, 1, 'MySQL出错代码', 1424918437, 0, 1, 0, 10, '', '', '', '', '', 'h', 0, 0, ''),
+(1369, 0, 8, 22, 43, 1, '金山 WPS - 免费正版办公软件(支持Win/Linux/手机)', 1424916504, 0, 1, 0, 20, '', '', '', '', '', '', 0, 0, ''),
+(1370, 0, 207, 22, 43, 1, 'MySQL出错代码', 1424918437, 0, 1, 0, 13, '', '', '', '', '', 'h', 0, 0, ''),
 (1371, 0, 207, 22, 43, 1, 'MySQL安装后需要调整什么?', 1424918471, 0, 1, 0, 6, '', '', '', '', '', 'h', 0, 0, ''),
 (1372, 0, 207, 22, 43, 1, 'FTP软件使用中的PASV和PORT上传模式', 1424918718, 0, 1, 0, 13, '', '', '', '', '', '', 0, 0, ''),
-(1380, 0, 204, 66, 152, 1, '测试噢', 1426498401, 0, 1, 0, 10, '', '', '', '', '', '', 0, 24, ''),
-(1381, 0, 68, 22, 43, 1, '科技进步给工人带来失业恐惧？', 1428675994, 0, 1, 0, 26, '', '', '', '', '科技 失业恐惧', '', 0, 0, ''),
+(1380, 0, 204, 66, 152, 1, '测试噢', 1426498401, 0, 1, 0, 11, '', '', '', '', '', '', 0, 24, ''),
+(1381, 0, 68, 22, 43, 1, '科技进步给工人带来失业恐惧？', 1428675994, 0, 1, 0, 31, '', '', '', '', '科技 失业恐惧', '', 0, 0, ''),
 (1382, 0, 68, 22, 43, 1, '站点采用HTTPS协议的利弊分析、及SEO建议', 1433723870, 0, 1, 0, 151, '', '', '', '', '自检清单 必应 谷歌', '', 1449565454, 0, ''),
-(1769, 0, 211, 68, 144, 1, '小米5', 1458702065, 0, 1, 0, 3, '', '', '', '', '', '', 0, 0, ''),
+(1769, 0, 211, 68, 144, 1, '小米5', 1458702065, 0, 1, 0, 6, '', '', '', '', '', '', 0, 0, ''),
 (1765, 0, 211, 68, 144, 1, 'Apple iPhone 5SE', 1458701924, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1423, 0, 68, 22, 43, 1, '日本东京2020年奥运会主会场使用ETFE膜', 1398700800, 0, 1, 0, 511, '', '', '', '', '', '', 0, 0, ''),
 (1424, 0, 68, 22, 43, 1, 'PTFE膜材', 1402329600, 0, 1, 0, 469, '', '', '', '', '', '', 0, 0, ''),
 (1427, 0, 0, 64, 148, 1, '前台客服', 1446469762, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
 (1679, 0, 68, 22, 43, 1, '测试', 1449555906, 0, 1, 0, 9, '', '', '', '', '测试', '', 1453644174, 0, ''),
 (1754, 0, 0, 46, 96, 1, '测试用的', 1458266215, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
-(1756, 0, 0, 40, 87, 1, '公司简介', 1458467228, 10, 1, 0, 59, '', '', '', '', '', '', 0, 0, 'aboutus'),
-(1757, 0, 0, 40, 87, 1, '联系我们', 1458474081, 40, 1, 0, 13, '', '', '', '', '', '', 0, 0, 'contactus'),
-(1758, 0, 0, 40, 87, 1, '发展历程', 1458486519, 20, 1, 0, 11, '', '', '', '', '', '', 0, 0, 'development-course'),
-(1759, 0, 0, 40, 87, 1, '工作环境', 1458486574, 30, 1, 0, 9, '', '', '', '', '', '', 0, 0, 'work'),
-(1760, 0, 583, 24, 45, 1, '魅族 MX5 移动联通双4G手机 双卡双待', 1458626730, 0, 1, 0, 249, '', '', '', '', '', '', 0, 0, ''),
+(1756, 0, 0, 40, 87, 1, '公司简介', 1458467228, 10, 1, 0, 94, '', '', '', '', '', '', 0, 0, 'aboutus'),
+(1757, 0, 0, 40, 87, 1, '联系我们', 1458474081, 40, 1, 0, 16, '', '', '', '', '', '', 0, 0, 'contactus'),
+(1758, 0, 0, 40, 87, 1, '发展历程', 1458486519, 20, 1, 0, 21, '', '', '', '', '', '', 0, 0, 'development-course'),
+(1759, 0, 0, 40, 87, 1, '工作环境', 1458486574, 30, 1, 0, 15, '', '', '', '', '', '', 0, 0, 'work'),
+(1760, 0, 583, 24, 45, 1, '魅族 MX5 移动联通双4G手机 双卡双待', 1458626730, 0, 1, 0, 256, '', '', '', '', '', '', 0, 0, ''),
 (1761, 0, 584, 24, 45, 1, '华为 P7 移动4G手机', 1458667195, 0, 1, 0, 2, '', '', '', '', '', '', 0, 0, ''),
 (1762, 0, 585, 24, 45, 1, 'vivo Xplay5 全网通4G手机 4GB+128GB 双卡双待', 1458668060, 0, 1, 0, 1, '', '', '', '', '', '', 0, 0, ''),
-(1763, 0, 216, 24, 45, 1, 'Apple iPhone 5SE 16G 移动联通电信4G手机', 1458669038, 0, 1, 0, 7, '', '', '', '', '', '', 0, 0, ''),
-(1764, 0, 0, 46, 96, 1, 'fasdf', 1458701080, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '');
+(1763, 0, 216, 24, 45, 1, 'Apple iPhone 5SE 16G 移动联通电信4G手机', 1458669038, 0, 1, 0, 208, '', '', '', '', '', '', 0, 0, ''),
+(1764, 0, 0, 46, 96, 1, 'fasdf', 1458701080, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, ''),
+(1772, 0, 0, 61, 142, 1, 'PHPOK.Com', 1459324936, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '');
 
 -- --------------------------------------------------------
 
@@ -1100,7 +1105,8 @@ INSERT INTO `qinggan_list_61` (`id`, `site_id`, `project_id`, `cate_id`, `link`,
 (1265, 1, 142, 0, 'http://www.admin5.com/', '_blank', ''),
 (1266, 1, 142, 0, 'http://www.cnzz.cn/', '_blank', ''),
 (1267, 1, 142, 0, 'http://www.im286.com/', '_blank', ''),
-(1268, 1, 142, 0, 'http://www.mycodes.net/', '_blank', '');
+(1268, 1, 142, 0, 'http://www.mycodes.net/', '_blank', ''),
+(1772, 1, 142, 0, 'http://www.phpok.com', '_self', '15818533971');
 
 -- --------------------------------------------------------
 
@@ -1186,7 +1192,7 @@ INSERT INTO `qinggan_list_66` (`id`, `site_id`, `project_id`, `cate_id`, `conten
 (1334, 1, 152, 204, '<p>测试</p>', '', ''),
 (1336, 1, 152, 204, '<p>这个图片要搁在哪呢~~</p>', '', '669'),
 (1348, 1, 152, 204, '<p>测试权限功能</p>', '', ''),
-(1356, 1, 152, 205, '<p><embed type="application/x-shockwave-flash" class="edui-faked-video" pluginspage="http://www.macromedia.com/go/getflashplayer" src="javascript:void(0);" width="420" height="280" wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true"/></p><p>dddfadsf</p>', '0', ''),
+(1356, 1, 152, 205, '<p>dddfadsf</p><p>栽植</p>', '0', ''),
 (1380, 1, 152, 204, '<p>测试噢</p>', '0', '');
 
 -- --------------------------------------------------------
@@ -1433,7 +1439,7 @@ INSERT INTO `qinggan_module` (`id`, `title`, `status`, `taxis`, `note`, `layout`
 (61, '友情链接', 1, 120, '适用于导航，页脚文本导航，文字友情链接', 'link,target,tel'),
 (64, '客服', 1, 130, '', 'qq'),
 (65, '资源下载', 1, 70, '', 'hits,dateline,fsize,version,author,website,thumb'),
-(66, '论坛BBS', 1, 50, '', 'hits,dateline'),
+(66, '论坛BBS', 1, 50, '', 'hits,dateline,user_id'),
 (68, '图集相册', 1, 80, '', 'hits,dateline,thumb'),
 (69, '产品参考数据', 1, 140, '', 'hits,dateline');
 
@@ -1479,12 +1485,12 @@ INSERT INTO `qinggan_module_fields` (`id`, `module_id`, `title`, `identifier`, `
 (131, 40, '内容', 'content', 'longtext', '', 'editor', '', 'html_js', '', 255, 'a:7:{s:5:"width";s:3:"800";s:6:"height";s:3:"360";s:7:"is_code";b:0;s:9:"btn_image";s:1:"1";s:9:"btn_video";s:1:"1";s:8:"btn_file";s:1:"1";s:8:"btn_page";b:0;}', 0, 0, ''),
 (141, 46, '姓名', 'fullname', 'varchar', '', 'text', '', 'safe', '', 10, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";s:15:"ext_quick_words";b:0;s:14:"ext_quick_type";b:0;}', 1, 0, ''),
 (142, 46, '邮箱', 'email', 'varchar', '', 'text', '', 'safe', '', 130, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";s:15:"ext_quick_words";b:0;s:14:"ext_quick_type";b:0;}', 1, 0, ''),
-(143, 46, '内容', 'content', 'longtext', '', 'textarea', '', 'safe', '', 200, 'a:2:{s:5:"width";s:3:"500";s:6:"height";s:3:"180";}', 1, 0, ''),
+(143, 46, '内容', 'content', 'longtext', '', 'textarea', '', 'safe', '', 200, 'a:2:{s:5:"width";s:3:"300";s:6:"height";s:3:"180";}', 1, 0, ''),
 (144, 46, '管理员回复', 'adm_reply', 'longtext', '', 'editor', '', 'html_js', '', 255, 'a:13:{s:5:"width";s:3:"800";s:6:"height";s:3:"100";s:7:"is_code";i:0;s:9:"btn_image";i:1;s:9:"btn_video";i:1;s:8:"btn_file";i:1;s:8:"btn_page";i:1;s:8:"btn_info";i:1;s:7:"is_read";i:0;s:5:"etype";s:6:"simple";s:7:"btn_map";i:0;s:7:"inc_tag";i:0;s:10:"paste_text";i:0;}', 0, 0, ''),
 (200, 21, '图片', 'pic', 'varchar', '统一宽度为980，高度自定义，建议统一高度300', 'upload', '', 'safe', '', 20, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}', 0, 0, ''),
 (177, 22, '摘要', 'note', 'longtext', '简要文字描述', 'textarea', '', 'safe', '', 20, 'a:2:{s:5:"width";s:3:"800";s:6:"height";s:2:"80";}', 0, 2, ''),
 (204, 61, '链接方式', 'target', 'varchar', '设置是否在新窗口打开', 'radio', '', 'safe', '_self', 100, 'a:3:{s:11:"option_list";s:5:"opt:6";s:9:"put_order";s:1:"0";s:10:"ext_select";s:0:"";}', 0, 0, ''),
-(203, 61, '链接', 'link', 'longtext', '填写链接要求带上http://', 'text', 'height:22px;line-height:22px;padding:3px;border:1px solid #ccc;', 'safe', '', 90, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"280";s:15:"ext_quick_words";b:0;s:14:"ext_quick_type";b:0;}', 1, 0, ''),
+(203, 61, '链接', 'link', 'longtext', '填写链接要求带上http://', 'text', '', 'safe', '', 90, 'a:4:{s:8:"form_btn";s:0:"";s:5:"width";s:3:"280";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";}', 1, 0, ''),
 (268, 65, '附件', 'dfile', 'varchar', '', 'upload', '', 'safe', '', 60, 'a:3:{s:7:"cate_id";s:2:"11";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}', 0, 0, ''),
 (221, 65, '摘要', 'note', 'longtext', '简要描述下载信息', 'textarea', '', 'safe', '', 120, 'a:2:{s:5:"width";s:3:"600";s:6:"height";s:2:"80";}', 0, 0, ''),
 (222, 65, '文件大小', 'fsize', 'varchar', '设置文件大小，注意填写相应的单位，如KB，MB', 'text', '', 'safe', '', 10, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 0, 0, ''),
@@ -1501,10 +1507,10 @@ INSERT INTO `qinggan_module_fields` (`id`, `module_id`, `title`, `identifier`, `
 (238, 66, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 30, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}', 1, 0, ''),
 (239, 68, '缩略图', 'thumb', 'varchar', '请上传300x300规格的图片，文件大小建议不超过100KB', 'upload', '', 'safe', '', 30, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}', 0, 0, ''),
 (240, 68, '图片', 'pictures', 'varchar', '支持多图，建议上传500x500或600x600规格的图片', 'upload', '', 'safe', '', 50, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";s:11:"upload_auto";s:1:"1";}', 0, 0, ''),
-(244, 61, '联系人电话', 'tel', 'varchar', '填写联系人电话，以方便与人取得联系', 'text', 'height:22px;line-height:22px;padding:3px;border:1px solid #ccc;', 'safe', '', 110, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"280";s:15:"ext_quick_words";b:0;s:14:"ext_quick_type";b:0;}', 1, 0, ''),
+(244, 61, '联系人电话', 'tel', 'varchar', '填写联系人电话', 'text', '', 'safe', '', 110, 'a:4:{s:8:"form_btn";s:0:"";s:5:"width";s:3:"280";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";}', 1, 0, ''),
 (248, 69, '产品多属性', 'attrs', 'longtext', '', 'param', '', 'safe', '', 20, 'a:3:{s:6:"p_name";s:0:"";s:6:"p_type";s:1:"1";s:7:"p_width";s:0:"";}', 0, 0, ''),
 (267, 68, '内容', 'content', 'longtext', '', 'editor', '', 'html', '', 255, 'a:11:{s:5:"width";s:3:"950";s:6:"height";s:3:"360";s:7:"is_code";s:0:"";s:9:"btn_image";s:1:"1";s:9:"btn_video";s:1:"1";s:8:"btn_file";s:1:"1";s:8:"btn_page";s:0:"";s:8:"btn_info";s:0:"";s:7:"is_read";s:0:"";s:5:"etype";s:4:"full";s:7:"btn_map";s:0:"";}', 0, 0, ''),
-(269, 46, '图片', 'pic', 'varchar', '', 'upload', '', 'safe', '', 180, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";s:11:"upload_auto";s:1:"0";}', 1, 0, ''),
+(269, 46, '图片', 'pic', 'varchar', '', 'upload', '', 'safe', '', 180, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";s:11:"upload_auto";s:1:"1";}', 1, 0, ''),
 (270, 64, '客服QQ', 'qq', 'varchar', '', 'text', '', 'safe', '', 150, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 0, 0, ''),
 (288, 24, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 30, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}', 0, 0, ''),
 (292, 24, '包装清单', 'package', 'longtext', '', 'textarea', '', '', '', 70, 'a:2:{s:5:"width";s:3:"500";s:6:"height";s:3:"100";}', 0, 0, ''),
@@ -1606,15 +1612,16 @@ CREATE TABLE IF NOT EXISTS `qinggan_order` (
   `email` varchar(255) NOT NULL COMMENT '邮箱，用于接收通知',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ordersn` (`sn`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单中心' AUTO_INCREMENT=6 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单中心' AUTO_INCREMENT=7 ;
 
 --
 -- 转存表中的数据 `qinggan_order`
 --
 
 INSERT INTO `qinggan_order` (`id`, `sn`, `user_id`, `addtime`, `price`, `currency_id`, `status`, `endtime`, `passwd`, `ext`, `note`, `email`) VALUES
-(4, 'P2016022545U00023001', 23, 1456370765, '100.0000', 1, 'create', 0, '3981772f2e028fd1a55d980b9d08b9b5', '', '', 'admin@phpok.com'),
-(5, 'P2016032358U00023001', 23, 1458718408, '1499.0000', 1, 'create', 0, '670867c54b6390fd1f6a3f82d607a056', '', '测试订单', 'demo@error.com');
+(4, 'P2016022545U00023001', 23, 1456370765, '100.0000', 1, 'unpaid', 0, '3981772f2e028fd1a55d980b9d08b9b5', '', '', 'admin@phpok.com'),
+(5, 'P2016032358U00023001', 23, 1458718408, '499.0000', 1, 'paid', 0, '670867c54b6390fd1f6a3f82d607a056', '', '测试订单', 'demo@error.com'),
+(6, 'P2016033177U00023001', 23, 1459365504, '12374.0000', 1, 'create', 0, '62148c53ad9df39180cfd14adccebaee', '', '测试备注是否有成功噢！', 'demo@error.com');
 
 -- --------------------------------------------------------
 
@@ -1635,14 +1642,15 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_address` (
   `email` varchar(100) NOT NULL COMMENT '邮箱',
   `fullname` varchar(100) NOT NULL COMMENT '联系人姓名',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单地址库' AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单地址库' AUTO_INCREMENT=6 ;
 
 --
 -- 转存表中的数据 `qinggan_order_address`
 --
 
 INSERT INTO `qinggan_order_address` (`id`, `order_id`, `country`, `province`, `city`, `county`, `address`, `mobile`, `tel`, `email`, `fullname`) VALUES
-(4, 5, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号');
+(4, 5, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', '测试账号'),
+(5, 6, '中国', '广东省', '深圳市', '龙岗区', '测试地址', '15818533971', '0755-12346578', 'demo@error.com', 'Seika');
 
 -- --------------------------------------------------------
 
@@ -1685,7 +1693,8 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_invoice` (
 
 INSERT INTO `qinggan_order_invoice` (`order_id`, `type`, `title`, `content`, `note`) VALUES
 (4, '普通发票', '个人发票', '明细', ''),
-(5, '普通发票', '个人发票', '明细', '');
+(5, '普通发票', '个人发票', '明细', ''),
+(6, '普通发票', '深圳市锟铻科技有限公司', '办公耗材', '');
 
 -- --------------------------------------------------------
 
@@ -1702,7 +1711,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_log` (
   `note` text NOT NULL COMMENT '操作内容',
   PRIMARY KEY (`id`),
   KEY `order_id` (`order_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单日志，用于了解当前的订单处理进度' AUTO_INCREMENT=12 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单日志，用于了解当前的订单处理进度' AUTO_INCREMENT=15 ;
 
 --
 -- 转存表中的数据 `qinggan_order_log`
@@ -1710,7 +1719,10 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_log` (
 
 INSERT INTO `qinggan_order_log` (`id`, `order_id`, `order_express_id`, `addtime`, `who`, `note`) VALUES
 (10, 4, 0, 1456370765, 'admin', '订单创建成功，订单编号：P2016022545U00023001'),
-(11, 5, 0, 1458718408, 'admin', '订单创建成功，订单编号：P2016032358U00023001');
+(11, 5, 0, 1458718408, 'admin', '订单创建成功，订单编号：P2016032358U00023001'),
+(12, 5, 0, 1459284039, '苏相锟(admin)', '管理员录入支付信息'),
+(13, 4, 0, 1459287342, 'admin', '订单进入等待支付状态，编号：'),
+(14, 6, 0, 1459365504, 'admin', '订单创建成功，订单编号：P2016033177U00023001');
 
 -- --------------------------------------------------------
 
@@ -1728,7 +1740,15 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_payment` (
   `dateline` int(11) NOT NULL DEFAULT '0' COMMENT '支付时间',
   `ext` text NOT NULL COMMENT '其他常用扩展信息',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单支付' AUTO_INCREMENT=7 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单支付' AUTO_INCREMENT=9 ;
+
+--
+-- 转存表中的数据 `qinggan_order_payment`
+--
+
+INSERT INTO `qinggan_order_payment` (`id`, `order_id`, `payment_id`, `title`, `price`, `startdate`, `dateline`, `ext`) VALUES
+(7, 5, 1, '支付宝快捷支付', '499.0000', 0, 1459284038, ''),
+(8, 4, 12, '微信支付', '100.0000', 1459287342, 0, '');
 
 -- --------------------------------------------------------
 
@@ -1743,7 +1763,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_price` (
   `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '金额，-号表示优惠',
   PRIMARY KEY (`id`),
   KEY `order_id` (`order_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单金额明细清单' AUTO_INCREMENT=32 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单金额明细清单' AUTO_INCREMENT=48 ;
 
 --
 -- 转存表中的数据 `qinggan_order_price`
@@ -1765,10 +1785,13 @@ INSERT INTO `qinggan_order_price` (`id`, `order_id`, `code`, `price`) VALUES
 (25, 4, 'shipping', '0.0000'),
 (26, 4, 'fee', '0.0000'),
 (27, 4, 'discount', '0.0000'),
-(28, 5, 'product', '1499.0000'),
-(29, 5, 'shipping', '0.0000'),
-(30, 5, 'fee', '0.0000'),
-(31, 5, 'discount', '0.0000');
+(43, 5, 'discount', '1000.0000'),
+(42, 5, 'shipping', '0.0000'),
+(41, 5, 'product', '1499.0000'),
+(44, 6, 'product', '12374.0000'),
+(45, 6, 'shipping', '0.0000'),
+(46, 6, 'fee', '0.0000'),
+(47, 6, 'discount', '0.0000');
 
 -- --------------------------------------------------------
 
@@ -1789,7 +1812,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_product` (
   `volume` varchar(50) NOT NULL COMMENT '体积',
   `unit` varchar(50) NOT NULL COMMENT '单位',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单的产品信息' AUTO_INCREMENT=6 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单的产品信息' AUTO_INCREMENT=9 ;
 
 --
 -- 转存表中的数据 `qinggan_order_product`
@@ -1797,7 +1820,10 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_product` (
 
 INSERT INTO `qinggan_order_product` (`id`, `order_id`, `tid`, `title`, `price`, `qty`, `thumb`, `ext`, `weight`, `volume`, `unit`) VALUES
 (4, 4, 1753, '测试用的', '100.0000', 1, 'res/201409/11/8179d9fbe71f5cf1.jpg', '', '0', '0', ''),
-(5, 5, 1760, '魅族 MX5 移动联通双4G手机 双卡双待', '1499.0000', 1, 'res/201603/22/c329c62e183765ad.jpg', 'a:2:{i:0;a:5:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"白色";s:5:"price";s:6:"0.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}i:1;a:5:{s:5:"title";s:6:"版本";s:7:"content";s:7:"16G ROM";s:5:"price";s:6:"0.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}}', '0', '0', '');
+(5, 5, 1760, '魅族 MX5 移动联通双4G手机 双卡双待', '1499.0000', 1, 'res/201603/22/c329c62e183765ad.jpg', 'a:2:{i:0;a:5:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"白色";s:5:"price";s:6:"0.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}i:1;a:5:{s:5:"title";s:6:"版本";s:7:"content";s:7:"16G ROM";s:5:"price";s:6:"0.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}}', '0', '0', ''),
+(6, 6, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', '3288.0000', 1, 'res/201603/23/5b8b8f3f6cfd32b9.jpg', 'a:2:{i:0;a:5:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"黑色";s:5:"price";s:6:"0.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}i:1;a:5:{s:5:"title";s:6:"版本";s:7:"content";s:7:"16G ROM";s:5:"price";s:6:"0.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}}', '0', '0', ''),
+(7, 6, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', '4088.0000', 1, 'res/201603/23/5b8b8f3f6cfd32b9.jpg', 'a:2:{i:0;a:5:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"金色";s:5:"price";s:6:"0.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}i:1;a:5:{s:5:"title";s:6:"版本";s:7:"content";s:7:"64G ROM";s:5:"price";s:8:"800.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}}', '0', '0', ''),
+(8, 6, 1760, '魅族 MX5 移动联通双4G手机 双卡双待', '2499.0000', 2, 'res/201603/22/c329c62e183765ad.jpg', 'a:2:{i:0;a:5:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"白色";s:5:"price";s:6:"0.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}i:1;a:5:{s:5:"title";s:6:"版本";s:7:"content";s:7:"32G ROM";s:5:"price";s:9:"1000.0000";s:6:"weight";s:1:"0";s:6:"volume";s:1:"0";}}', '0', '0', '');
 
 -- --------------------------------------------------------
 
@@ -1820,7 +1846,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_payment` (
   `param` text NOT NULL COMMENT '参数',
   `wap` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0PC端1手机端',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='支付方案' AUTO_INCREMENT=11 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='支付方案' AUTO_INCREMENT=13 ;
 
 --
 -- 转存表中的数据 `qinggan_payment`
@@ -1829,7 +1855,9 @@ CREATE TABLE IF NOT EXISTS `qinggan_payment` (
 INSERT INTO `qinggan_payment` (`id`, `gid`, `code`, `title`, `currency`, `logo1`, `logo2`, `logo3`, `status`, `taxis`, `note`, `param`, `wap`) VALUES
 (1, 1, 'alipay', '支付宝快捷支付', 'CNY', '', '', '', 1, 10, '', 'a:4:{s:3:"pid";s:16:"2088002080074890";s:3:"key";s:32:"980txhi4j8bz5xsdyk94swx3tzvgpq40";s:5:"email";s:15:"qinggan@188.com";s:5:"ptype";s:25:"create_direct_pay_by_user";}', 0),
 (3, 1, 'unionpay', '银联支付', 'CNY', '', '', '', 1, 20, '', 'a:12:{s:11:"cvn2_encode";s:2:"no";s:11:"date_encode";s:2:"no";s:10:"pan_encode";s:2:"no";s:14:"sign_cert_file";s:29:"res/bank/6e99144bb14bfdbe.pfx";s:13:"sign_cert_pwd";s:6:"000000";s:17:"encrypt_cert_file";s:0:"";s:16:"verify_cert_file";s:29:"res/bank/2b35f4d4048a70ae.cer";s:16:"single_query_url";s:54:"https://101.231.204.80:5000/gateway/api/queryTrans.do ";s:14:"trans_url_type";s:5:"front";s:9:"trans_url";s:56:"https://101.231.204.80:5000/gateway/api/frontTransReq.do";s:6:"mer_id";s:15:"777290058115989";s:12:"channel_type";s:2:"pc";}', 0),
-(4, 1, 'wxpay', '微信支付', 'CNY', '', '', '', 1, 30, '', 'a:10:{s:5:"appid";s:18:"wxd61676fe9d7468ed";s:6:"mch_id";s:10:"1283067101";s:7:"app_key";s:32:"fa9f9fea5fe60ad17c60de61ab496131";s:10:"app_secret";s:32:"5239321d1305a4786f23cd106f5ab479";s:11:"device_info";s:3:"WEB";s:10:"trade_type";s:6:"native";s:8:"pem_cert";s:29:"res/bank/2a57f69cb194f85b.pem";s:7:"pem_key";s:29:"res/bank/4613457a9c419a6b.pem";s:10:"proxy_host";s:7:"0.0.0.0";s:10:"proxy_port";s:0:"";}', 0);
+(4, 1, 'wxpay', '微信支付', 'CNY', '', '', '', 1, 30, '', 'a:10:{s:5:"appid";s:18:"wxd61676fe9d7468ed";s:6:"mch_id";s:10:"1283067101";s:7:"app_key";s:32:"fa9f9fea5fe60ad17c60de61ab496131";s:10:"app_secret";s:32:"5239321d1305a4786f23cd106f5ab479";s:11:"device_info";s:3:"WEB";s:10:"trade_type";s:6:"native";s:8:"pem_cert";s:29:"res/bank/2a57f69cb194f85b.pem";s:7:"pem_key";s:29:"res/bank/4613457a9c419a6b.pem";s:10:"proxy_host";s:7:"0.0.0.0";s:10:"proxy_port";s:0:"";}', 0),
+(11, 2, 'alipay', '支付宝支付', 'CNY', '', '', '', 1, 10, '', 'a:4:{s:3:"pid";s:0:"";s:3:"key";s:0:"";s:5:"email";s:0:"";s:5:"ptype";s:25:"create_direct_pay_by_user";}', 1),
+(12, 2, 'wxpay', '微信支付', 'CNY', '', '', '', 1, 20, '', 'a:12:{s:5:"appid";s:0:"";s:6:"mch_id";s:0:"";s:7:"app_key";s:0:"";s:10:"app_secret";s:0:"";s:11:"device_info";s:0:"";s:10:"trade_type";s:3:"wap";s:10:"jsapi_link";s:0:"";s:8:"pem_cert";s:0:"";s:7:"pem_key";s:0:"";s:6:"pem_ca";s:0:"";s:10:"proxy_host";s:7:"0.0.0.0";s:10:"proxy_port";s:0:"";}', 1);
 
 -- --------------------------------------------------------
 
@@ -1844,6 +1872,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_payment_group` (
   `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0不启用1启用',
   `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
   `is_default` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1默认组0普通组',
+  `is_wap` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0是PC端，1是手机端',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='付款组管理' AUTO_INCREMENT=13 ;
 
@@ -1851,9 +1880,9 @@ CREATE TABLE IF NOT EXISTS `qinggan_payment_group` (
 -- 转存表中的数据 `qinggan_payment_group`
 --
 
-INSERT INTO `qinggan_payment_group` (`id`, `site_id`, `title`, `status`, `taxis`, `is_default`) VALUES
-(1, 1, '快捷支付', 1, 10, 0),
-(2, 1, '银行卡支付', 1, 20, 0);
+INSERT INTO `qinggan_payment_group` (`id`, `site_id`, `title`, `status`, `taxis`, `is_default`, `is_wap`) VALUES
+(1, 1, '快捷支付', 1, 10, 0, 0),
+(2, 1, '快捷支付', 1, 20, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -1876,7 +1905,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_payment_log` (
   `ext` text NOT NULL COMMENT '扩展',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='支付日志' AUTO_INCREMENT=6 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='支付日志' AUTO_INCREMENT=7 ;
 
 --
 -- 转存表中的数据 `qinggan_payment_log`
@@ -1887,7 +1916,8 @@ INSERT INTO `qinggan_payment_log` (`id`, `sn`, `type`, `payment_id`, `title`, `d
 (2, 'P20150928002', 'order', 1, '订单：P20150928002', 1443432620, 23, '1.00', 1, '订单：P20150928002', 1, ''),
 (3, 'P20151104001', 'order', 4, '订单：P20151104001', 1409721340, 23, '203.00', 1, '订单：P20151104001', 1, 'a:7:{s:6:"openid";s:28:"oUpF8uMEb4qRXf22hE3X68TekukE";s:10:"trade_type";s:5:"JSAPI";s:9:"bank_type";s:3:"CFT";s:9:"total_fee";s:1:"1";s:8:"fee_type";s:3:"CNY";s:14:"transaction_id";s:28:"1004400740201409030005092168";s:8:"time_end";s:14:"20140903131540";}'),
 (4, 'KF20151030115123CWR', 'order', 4, '订单：', 1447821976, 23, '170.00', 1, '订单：', 0, ''),
-(5, 'P2015121051U00023001', '', 4, '订单：', 1449736191, 23, '177.00', 1, '订单：', 0, '');
+(5, 'P2015121051U00023001', '', 4, '订单：', 1449736191, 23, '177.00', 1, '订单：', 0, ''),
+(6, 'P2016022545U00023001', 'order', 12, '订单：', 1459287342, 23, '100.00', 1, '订单：', 0, '');
 
 -- --------------------------------------------------------
 
@@ -1920,7 +1950,7 @@ INSERT INTO `qinggan_phpok` (`id`, `title`, `pid`, `type_id`, `identifier`, `sit
 (19, '头部导航内容', 42, 'arclist', 'menu', 1, 1, 0, 'a:23:{s:5:"psize";s:2:"80";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:7:"in_text";s:1:"1";s:4:"attr";b:0;s:11:"fields_need";b:0;s:3:"tag";b:0;s:8:"keywords";b:0;s:7:"orderby";b:0;s:4:"cate";b:0;s:8:"cate_ext";i:0;s:12:"catelist_ext";i:0;s:11:"project_ext";i:0;s:11:"sublist_ext";i:0;s:10:"parent_ext";i:0;s:13:"fields_format";i:0;s:8:"user_ext";i:0;s:4:"user";b:0;s:12:"userlist_ext";i:0;s:6:"in_sub";s:1:"1";s:10:"in_project";i:0;s:7:"in_cate";i:0;s:8:"title_id";b:0;}', 0, ''),
 (20, '公司简介', 87, 'arc', 'aboutus', 1, 1, 0, 'a:13:{s:5:"psize";i:0;s:6:"offset";i:0;s:7:"is_list";i:0;s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:4:"cate";s:0:"";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:6:"in_sub";i:0;s:8:"title_id";s:7:"aboutus";}', 0, ''),
 (21, '产品分类', 45, 'catelist', 'products_cate', 1, 1, 70, 'a:20:{s:5:"psize";b:0;s:6:"offset";b:0;s:7:"is_list";b:0;s:7:"in_text";b:0;s:4:"attr";b:0;s:11:"fields_need";b:0;s:3:"tag";b:0;s:8:"keywords";b:0;s:7:"orderby";b:0;s:4:"cate";b:0;s:8:"cate_ext";b:0;s:12:"catelist_ext";b:0;s:11:"project_ext";b:0;s:11:"sublist_ext";b:0;s:10:"parent_ext";b:0;s:13:"fields_format";b:0;s:8:"user_ext";b:0;s:4:"user";b:0;s:12:"userlist_ext";b:0;s:6:"in_sub";b:0;}', 0, ''),
-(22, '最新产品', 45, 'arclist', 'new_products', 1, 1, 70, 'a:15:{s:5:"psize";s:1:"8";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:9:"ext.thumb";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:13:"thumb,m_title";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 0, ''),
+(22, '最新产品', 45, 'arclist', 'new_products', 1, 1, 70, 'a:15:{s:5:"psize";s:1:"8";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:9:"ext.thumb";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:21:"thumb,m_title,content";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 0, ''),
 (55, '友情链接', 142, 'arclist', 'link', 1, 1, 0, 'a:23:{s:5:"psize";s:2:"30";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:7:"in_text";s:1:"1";s:4:"attr";b:0;s:11:"fields_need";b:0;s:3:"tag";b:0;s:8:"keywords";b:0;s:7:"orderby";b:0;s:4:"cate";b:0;s:8:"cate_ext";i:0;s:12:"catelist_ext";i:0;s:11:"project_ext";i:0;s:11:"sublist_ext";i:0;s:10:"parent_ext";i:0;s:13:"fields_format";i:0;s:8:"user_ext";i:0;s:4:"user";b:0;s:12:"userlist_ext";i:0;s:6:"in_sub";i:0;s:10:"in_project";s:1:"2";s:7:"in_cate";b:0;s:8:"title_id";b:0;}', 0, ''),
 (91, '新闻中心', 43, 'arclist', 'news', 1, 1, 7, 'a:23:{s:5:"psize";s:1:"8";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:7:"in_text";i:0;s:4:"attr";b:0;s:11:"fields_need";b:0;s:3:"tag";b:0;s:8:"keywords";b:0;s:7:"orderby";b:0;s:4:"cate";b:0;s:8:"cate_ext";i:0;s:12:"catelist_ext";i:0;s:11:"project_ext";i:0;s:11:"sublist_ext";i:0;s:10:"parent_ext";i:0;s:13:"fields_format";i:0;s:8:"user_ext";i:0;s:4:"user";b:0;s:12:"userlist_ext";i:0;s:6:"in_sub";i:0;s:10:"in_project";s:1:"2";s:7:"in_cate";b:0;s:8:"title_id";b:0;}', 0, ''),
 (92, '图集相册', 144, 'arclist', 'photo', 1, 1, 0, 'a:23:{s:5:"psize";s:2:"10";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:7:"in_text";i:0;s:4:"attr";b:0;s:11:"fields_need";s:9:"ext.thumb";s:3:"tag";b:0;s:8:"keywords";b:0;s:7:"orderby";b:0;s:4:"cate";b:0;s:8:"cate_ext";i:0;s:12:"catelist_ext";i:0;s:11:"project_ext";i:0;s:11:"sublist_ext";i:0;s:10:"parent_ext";i:0;s:13:"fields_format";i:0;s:8:"user_ext";i:0;s:4:"user";b:0;s:12:"userlist_ext";i:0;s:6:"in_sub";i:0;s:10:"in_project";s:1:"1";s:7:"in_cate";i:0;s:8:"title_id";b:0;}', 0, ''),
@@ -2557,7 +2587,7 @@ INSERT INTO `qinggan_project` (`id`, `parent_id`, `site_id`, `module`, `cate`, `
 (147, 0, 1, 23, 0, '页脚导航', '', 35, 1, '', '', '', 0, 'images/ico/menu.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'yejiaodaohang', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, 0),
 (148, 0, 1, 64, 0, '在线客服', '', 130, 1, '', '', '', 0, 'images/ico/qq.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '客服类型', '', 30, 0, 'kefu', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, 0),
 (150, 0, 1, 0, 0, '售后保障', '', 60, 1, '', '', '', 0, 'images/ico/paper.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'shouhoukouzhang', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, 0),
-(152, 0, 1, 66, 201, '论坛BBS', '', 110, 1, 'bbs_index', 'bbs_list', 'bbs_detail', 0, 'images/ico/forum.png', 'ext.toplevel DESC,l.replydate DESC,l.dateline DESC,l.id DESC', '讨论主题', '', 30, 0, 'bbs', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 1, 1, 'bbs_fabu', '', '', '', '', 0, '', 0, 0, 0, 0);
+(152, 0, 1, 66, 201, '论坛BBS', '', 110, 1, 'bbs_index', 'bbs_list', 'bbs_detail', 0, 'images/ico/forum.png', 'ext.toplevel DESC,l.replydate DESC,l.dateline DESC,l.id DESC', '讨论主题', '', 30, 0, 'bbs', '', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 1, 1, 'bbs_fabu', '', '', '', '', 0, '', 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -2627,7 +2657,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_res` (
   `admin_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '管理员ID',
   PRIMARY KEY (`id`),
   KEY `ext` (`ext`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='资源ID' AUTO_INCREMENT=1031 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='资源ID' AUTO_INCREMENT=1040 ;
 
 --
 -- 转存表中的数据 `qinggan_res`
@@ -2658,7 +2688,8 @@ INSERT INTO `qinggan_res` (`id`, `cate_id`, `folder`, `name`, `ext`, `filename`,
 (1026, 1, 'res/201603/23/', '2e16c80d821beaf0.jpg', 'jpg', 'res/201603/23/2e16c80d821beaf0.jpg', 'res/201603/23/_1026.jpg', 1458669513, 'iphone5se-2', 'a:2:{s:5:"width";i:600;s:6:"height";i:600;}', '', '', 0, 0, 1),
 (1027, 1, 'res/201603/23/', '1548d11e0a50ee55.jpg', 'jpg', 'res/201603/23/1548d11e0a50ee55.jpg', 'res/201603/23/_1027.jpg', 1458669513, 'iphone5se-3', 'a:2:{s:5:"width";i:600;s:6:"height";i:600;}', '', '', 0, 0, 1),
 (1028, 1, 'res/201603/23/', 'e2bb1c4c3a4bc11b.jpg', 'jpg', 'res/201603/23/e2bb1c4c3a4bc11b.jpg', 'res/201603/23/_1028.jpg', 1458669514, 'iphone5se-4', 'a:2:{s:5:"width";i:600;s:6:"height";i:600;}', '', '', 0, 0, 1),
-(1029, 11, 'res/soft/2016/', '37e7a0aff81446b8.zip', 'zip', 'res/soft/2016/37e7a0aff81446b8.zip', 'images/filetype-large/zip.jpg', 1458715867, 'copy', '', '', '', 0, 2, 1);
+(1029, 11, 'res/soft/2016/', '37e7a0aff81446b8.zip', 'zip', 'res/soft/2016/37e7a0aff81446b8.zip', 'images/filetype-large/zip.jpg', 1458715867, 'copy', '', '', '', 0, 3, 1),
+(1039, 1, 'res/201603/29/', 'ceb27a213d18f944', 'jpg', 'res/201603/29/ceb27a213d18f944.jpg', 'res/201603/29/_1039.jpg', 1459242200, 'img-2b1ae776ad67a70bcfbc3c72d29c016b', 'a:2:{s:5:"width";i:640;s:6:"height";i:799;}', '', 'b4mh68kho2b955ntv92r4atqq0', 23, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -2757,7 +2788,9 @@ INSERT INTO `qinggan_res_ext` (`res_id`, `gd_id`, `filename`, `filetime`) VALUES
 (1027, 2, 'res/201603/23/thumb_1027.jpg', 1458669513),
 (1025, 2, 'res/201603/23/thumb_1025.jpg', 1458669513),
 (1028, 12, 'res/201603/23/auto_1028.jpg', 1458669514),
-(1028, 2, 'res/201603/23/thumb_1028.jpg', 1458669514);
+(1028, 2, 'res/201603/23/thumb_1028.jpg', 1458669514),
+(1039, 12, 'res/201603/29/auto_1039.jpg', 1459242200),
+(1039, 2, 'res/201603/29/thumb_1039.jpg', 1459242200);
 
 -- --------------------------------------------------------
 
@@ -2781,7 +2814,29 @@ INSERT INTO `qinggan_session` (`id`, `data`, `lasttime`) VALUES
 ('q9h36s80pdau2igg92d5ap8d41', '', 0),
 ('n2mt8526rg4gkjqccet772s5t4', 'admin_lang_id|s:7:"default";admin_site_id|s:1:"1";admin_id|s:1:"1";admin_account|s:5:"admin";admin_rs|a:9:{s:2:"id";s:1:"1";s:7:"account";s:5:"admin";s:4:"pass";s:35:"c289ffe12a30c94530b7fc4e532e2f42:23";s:5:"email";s:15:"qinggan@188.com";s:6:"status";s:1:"1";s:9:"if_system";s:1:"1";s:5:"vpass";s:0:"";s:8:"fullname";s:9:"苏相锟";s:9:"close_tip";s:0:"";}vcode_api|s:32:"7c0f63c15f8749d716ba1ac9121cc1a8";', 0),
 ('m1pnl31f052flhn6sil67mn9c3', 'admin_lang_id|s:7:"default";admin_site_id|s:1:"1";admin_id|s:1:"1";admin_account|s:5:"admin";admin_rs|a:9:{s:2:"id";s:1:"1";s:7:"account";s:5:"admin";s:4:"pass";s:35:"c289ffe12a30c94530b7fc4e532e2f42:23";s:5:"email";s:15:"qinggan@188.com";s:6:"status";s:1:"1";s:9:"if_system";s:1:"1";s:5:"vpass";s:0:"";s:8:"fullname";s:9:"苏相锟";s:9:"close_tip";s:0:"";}vcode|s:32:"828752f77ada1b8badf688bb8be59f9d";vcode_api|s:32:"828752f77ada1b8badf688bb8be59f9d";', 0),
-('jpjjcfl0h3buk40qduvaveu092', 'vcode|s:32:"0342c9a7b54450830e9727b98f8e3cb7";vcode_api|s:32:"0342c9a7b54450830e9727b98f8e3cb7";', 0);
+('jpjjcfl0h3buk40qduvaveu092', 'vcode|s:32:"0342c9a7b54450830e9727b98f8e3cb7";vcode_api|s:32:"0342c9a7b54450830e9727b98f8e3cb7";', 0),
+('12277931d6c4f8ed9a716cf8ad451089', '', 0),
+('90cf0c9629e3cad7f7938a4d19c2ae19', 'admin_lang_id|s:7:"default";admin_site_id|s:1:"1";admin_id|s:1:"1";admin_account|s:5:"admin";admin_rs|a:9:{s:2:"id";s:1:"1";s:7:"account";s:5:"admin";s:4:"pass";s:35:"c289ffe12a30c94530b7fc4e532e2f42:23";s:5:"email";s:15:"qinggan@188.com";s:6:"status";s:1:"1";s:9:"if_system";s:1:"1";s:5:"vpass";s:0:"";s:8:"fullname";s:9:"苏相锟";s:9:"close_tip";s:0:"";}vcode|s:32:"f35fd567065af297ae65b621e0a21ae9";vcode_api|s:32:"f35fd567065af297ae65b621e0a21ae9";', 0),
+('9f57qufa13nvlg37nqmaqodr42', 'admin_lang_id|s:7:"default";admin_site_id|s:1:"1";admin_id|s:1:"1";admin_account|s:5:"admin";admin_rs|a:9:{s:2:"id";s:1:"1";s:7:"account";s:5:"admin";s:4:"pass";s:35:"c289ffe12a30c94530b7fc4e532e2f42:23";s:5:"email";s:15:"qinggan@188.com";s:6:"status";s:1:"1";s:9:"if_system";s:1:"1";s:5:"vpass";s:0:"";s:8:"fullname";s:9:"苏相锟";s:9:"close_tip";s:0:"";}', 0),
+('07pda6tv7u6ovpeg19l3on03n7', 'vcode|s:32:"1b89a2e980724cb8997459fadb907712";vcode_api|s:32:"1b89a2e980724cb8997459fadb907712";', 0),
+('9mciqnn8h7d7hsdedvuqfu1pj0', '', 0),
+('7cpk1qv6kaqutv4mcfmjr08r25', '', 0),
+('2kmto5r1hhhnjdv9vsemvpddj7', '', 0),
+('hk5lqj2gmlom1earq0rpgeqf24', 'vcode_api|s:32:"b848edae25876384476f8970b8491160";user_id|s:2:"23";user_gid|s:1:"2";user_name|s:5:"admin";cart|a:3:{s:10:"totalprice";d:12374;s:10:"address_id";s:2:"12";s:10:"invoice_id";s:1:"8";}', 0),
+('47herdciok6uomcngpqnbv6cu2', '', 0),
+('u137ou2kc4c7qhbbko7gsne8g1', '', 0),
+('sv0moppn0umdjsqv6sto7qgin0', 'vcode_api|s:32:"5848ad959570f87753a60ce8be1567f3";user_id|s:2:"23";user_gid|s:1:"2";user_name|s:5:"admin";', 0),
+('sjpb9eu43be65d69q8md6vjj70', '', 0),
+('gjjg4ljpi82nhbrnemvkkske52', 'vcode|s:32:"94ef7214c4a90790186e255304f8fd1f";vcode_api|s:32:"94ef7214c4a90790186e255304f8fd1f";', 0),
+('r7mlcla34mmclf7ipgkahnmds6', 'vcode_api|s:32:"9c4e6233c6d5ff637e7984152a3531d5";user_rs|a:14:{s:2:"id";s:2:"23";s:8:"group_id";s:1:"2";s:4:"user";s:5:"admin";s:4:"pass";s:35:"86d358654c70d82c38238b58f3247d24:c2";s:6:"status";s:1:"1";s:7:"regtime";s:10:"1438668082";s:5:"email";s:15:"40782502@qq.com";s:6:"mobile";s:11:"15818533971";s:4:"code";s:0:"";s:6:"avatar";s:34:"res/201603/29/ceb27a213d18f944.jpg";s:8:"fullname";s:9:"苏相锟";s:6:"gender";s:1:"1";s:7:"content";b:0;s:6:"wealth";a:3:{s:8:"integral";a:3:{s:5:"title";s:6:"积分";s:3:"val";s:1:"1";s:4:"unit";s:3:"点";}s:6:"wallet";a:3:{s:5:"title";s:6:"钱包";s:3:"val";s:4:"0.00";s:4:"unit";s:3:"元";}s:8:"prestige";a:3:{s:5:"title";s:6:"威望";s:3:"val";s:1:"0";s:4:"unit";s:3:"星";}}}repass_spam_code|s:10:"kMZuCTG67O";user_id|s:2:"23";user_gid|s:1:"2";user_name|s:5:"admin";', 0),
+('27rhihclvigfiko2kqqi7t6n96', '', 0),
+('pmc2ml0j8167vlkgilm7e9opd1', 'vcode|s:32:"b1300291698eadedb559786c809cc592";vcode_api|s:32:"b1300291698eadedb559786c809cc592";', 0),
+('mnd0fcotllnr0ntcu7t4ou4v66', 'vcode|s:32:"13b919438259814cd5be8cb45877d577";vcode_api|s:32:"13b919438259814cd5be8cb45877d577";', 0),
+('b87ubnot9r6e542ds3t6m2t6r6', 'vcode|s:32:"9ba196c7a6e89eafd0954de80fc1b224";vcode_api|s:32:"9ba196c7a6e89eafd0954de80fc1b224";', 0),
+('b4mh68kho2b955ntv92r4atqq0', 'vcode_api|s:32:"cb463625fc9dde2d82207e15bde1b674";user_id|s:2:"23";user_gid|s:1:"2";user_name|s:5:"admin";user_rs|a:14:{s:2:"id";s:2:"23";s:8:"group_id";s:1:"2";s:4:"user";s:5:"admin";s:4:"pass";s:35:"86d358654c70d82c38238b58f3247d24:c2";s:6:"status";s:1:"1";s:7:"regtime";s:10:"1438668082";s:5:"email";s:15:"40782502@qq.com";s:6:"mobile";s:11:"15818533971";s:4:"code";s:0:"";s:6:"avatar";s:34:"res/201603/29/ceb27a213d18f944.jpg";s:8:"fullname";s:9:"苏相锟";s:6:"gender";s:1:"1";s:7:"content";b:0;s:6:"wealth";a:3:{s:8:"integral";a:3:{s:5:"title";s:6:"积分";s:3:"val";s:1:"1";s:4:"unit";s:3:"点";}s:6:"wallet";a:3:{s:5:"title";s:6:"钱包";s:3:"val";s:4:"0.00";s:4:"unit";s:3:"元";}s:8:"prestige";a:3:{s:5:"title";s:6:"威望";s:3:"val";s:1:"0";s:4:"unit";s:3:"星";}}}vcode|s:32:"cb463625fc9dde2d82207e15bde1b674";', 0),
+('h5bunansshbgqrfktqtitntm01', 'vcode_api|s:32:"866c7ee013c58f01fa153a8d32c9ed57";user_id|s:2:"23";user_gid|s:1:"2";user_name|s:5:"admin";', 0),
+('hrmg9ddb8dee1roveni0nalrj6', 'admin_lang_id|s:7:"default";admin_site_id|s:1:"1";admin_id|s:1:"1";admin_account|s:5:"admin";admin_rs|a:9:{s:2:"id";s:1:"1";s:7:"account";s:5:"admin";s:4:"pass";s:35:"c289ffe12a30c94530b7fc4e532e2f42:23";s:5:"email";s:15:"qinggan@188.com";s:6:"status";s:1:"1";s:9:"if_system";s:1:"1";s:5:"vpass";s:0:"";s:8:"fullname";s:9:"苏相锟";s:9:"close_tip";s:0:"";}', 0),
+('ej5nlgmrlf5t6cj8e7a0g358p0', 'admin_lang_id|s:7:"default";admin_site_id|s:1:"1";admin_id|s:1:"1";admin_account|s:5:"admin";admin_rs|a:9:{s:2:"id";s:1:"1";s:7:"account";s:5:"admin";s:4:"pass";s:35:"c289ffe12a30c94530b7fc4e532e2f42:23";s:5:"email";s:15:"qinggan@188.com";s:6:"status";s:1:"1";s:9:"if_system";s:1:"1";s:5:"vpass";s:0:"";s:8:"fullname";s:9:"苏相锟";s:9:"close_tip";s:0:"";}', 0);
 
 -- --------------------------------------------------------
 
@@ -2900,7 +2955,7 @@ INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, 
 (31, 1, '站点管理', 1, 'site', 90, '', '', '', 0, 0, ''),
 (32, 5, '评论管理', 1, 'reply', 50, '', '', '', 0, 0, ''),
 (33, 2, '货币及汇率', 1, 'currency', 30, '', '', '', 0, 0, ''),
-(34, 2, '订单管理', 1, 'order', 10, '', '', '', 0, 0, ''),
+(34, 2, '订单管理', 1, 'order', 10, '', '', '', 0, 0, 'cart'),
 (4, 0, '工具', 1, 'tool', 40, '', '', '', 0, 0, ''),
 (45, 4, '程序升级', 1, 'update', 10, '', '', '', 0, 0, 'earth'),
 (2, 0, '商务', 1, '', 20, '', '', '', 0, 0, ''),
@@ -2971,18 +3026,23 @@ CREATE TABLE IF NOT EXISTS `qinggan_task` (
   `only_once` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1表示仅执行一次',
   `is_lock` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未锁定1已锁定',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='计划任务' AUTO_INCREMENT=24 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='计划任务' AUTO_INCREMENT=29 ;
 
 --
 -- 转存表中的数据 `qinggan_task`
 --
 
 INSERT INTO `qinggan_task` (`id`, `year`, `month`, `day`, `hour`, `minute`, `second`, `exec_time`, `stop_time`, `action`, `param`, `only_once`, `is_lock`) VALUES
-(15, '*', '*', '*', '*', '42', '*', 1458755911, 1458755911, 'expired', '', 0, 0),
-(18, '2016', '01', '12', '09', '27', '36', 1458757858, 0, 'post', 'id=1751&status=create', 1, 1),
-(19, '2016', '01', '12', '09', '30', '35', 1458757858, 0, 'post', 'id=1752&status=create', 1, 1),
-(21, '2016', '03', '18', '09', '59', '51', 1458757858, 0, 'post', 'id=1755&status=create', 1, 1),
-(22, '2016', '03', '23', '10', '44', '45', 1458757858, 0, 'post', 'id=1764&status=create', 1, 1);
+(15, '*', '*', '*', '*', '42', '*', 1459187784, 1459187784, 'expired', '', 0, 0),
+(18, '2016', '01', '12', '09', '27', '36', 1459246281, 0, 'post', 'id=1751&status=create', 1, 0),
+(19, '2016', '01', '12', '09', '30', '35', 1459246281, 0, 'post', 'id=1752&status=create', 1, 0),
+(21, '2016', '03', '18', '09', '59', '51', 1459246281, 0, 'post', 'id=1755&status=create', 1, 0),
+(22, '2016', '03', '23', '10', '44', '45', 1459246281, 0, 'post', 'id=1764&status=create', 1, 0),
+(24, '2016', '03', '30', '04', '40', '51', 0, 0, 'order', 'id=5&status=paid', 1, 0),
+(25, '2016', '03', '30', '15', '34', '27', 0, 0, 'post', 'id=1770&status=create', 1, 0),
+(26, '2016', '03', '30', '15', '36', '42', 0, 0, 'post', 'id=1771&status=create', 1, 0),
+(27, '2016', '03', '30', '16', '02', '21', 0, 0, 'post', 'id=1772&status=create', 1, 0),
+(28, '2016', '03', '31', '03', '18', '29', 0, 0, 'order', 'id=6&status=create', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -3029,15 +3089,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_user` (
   `code` varchar(255) NOT NULL COMMENT '验证串，可用于取回密码',
   `avatar` varchar(255) NOT NULL COMMENT '会员头像',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员管理' AUTO_INCREMENT=25 ;
-
---
--- 转存表中的数据 `qinggan_user`
---
-
-INSERT INTO `qinggan_user` (`id`, `group_id`, `user`, `pass`, `status`, `regtime`, `email`, `mobile`, `code`, `avatar`) VALUES
-(23, 2, 'admin', 'f91fdb6230f332bc4b3591f06d9eaa3a:a8', 1, 1438668082, '40782502@qq.com', '15818533971', '', ''),
-(24, 2, 'seika', '51e87180975db1b7c59a02b4b6bc3c99:3e', 1, 1439398782, 'admin@phpok.com', '15818533972', '', '');
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员管理' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -3059,15 +3111,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_address` (
   `is_default` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0普通，1默认填写',
   `fullname` varchar(100) NOT NULL COMMENT '姓名',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员地址库' AUTO_INCREMENT=12 ;
-
---
--- 转存表中的数据 `qinggan_user_address`
---
-
-INSERT INTO `qinggan_user_address` (`id`, `user_id`, `country`, `province`, `city`, `county`, `address`, `mobile`, `tel`, `email`, `is_default`, `fullname`) VALUES
-(10, 23, '中国', '广东省', '深圳市', '宝安区', '测试', '15818533971', '', '', 0, 'seika'),
-(11, 23, '中国', '广东省', '深圳市', '盐田区', '测试地址', '15818533971', '0755-1234657', 'demo@error.com', 0, '测试账号');
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员地址库' AUTO_INCREMENT=13 ;
 
 -- --------------------------------------------------------
 
@@ -3082,15 +3126,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_ext` (
   `content` longtext NOT NULL COMMENT '内容',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员扩展字段';
-
---
--- 转存表中的数据 `qinggan_user_ext`
---
-
-INSERT INTO `qinggan_user_ext` (`id`, `fullname`, `gender`, `content`) VALUES
-(23, 'seika', '1', ''),
-(0, 'demo', '', ''),
-(24, '', '', '');
 
 -- --------------------------------------------------------
 
@@ -3168,15 +3203,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_invoice` (
   `note` text NOT NULL COMMENT '备注',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员发票信息' AUTO_INCREMENT=10 ;
-
---
--- 转存表中的数据 `qinggan_user_invoice`
---
-
-INSERT INTO `qinggan_user_invoice` (`id`, `user_id`, `is_default`, `type`, `title`, `content`, `note`) VALUES
-(1, 20, 0, '普通发票', '个人发票', '明细', ''),
-(8, 23, 1, '普通发票', '个人发票', '明细', ''),
-(9, 23, 0, '普通发票', '深圳市锟铻科技有限公司', '办公耗材', '');
 
 -- --------------------------------------------------------
 

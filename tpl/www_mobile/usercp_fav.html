@@ -1,0 +1,29 @@
+<!-- include tpl=head title="收藏夹 - 个人中心" -->
+<script type="text/javascript">
+function fav_delete(id)
+{
+	$.dialog.confirm('确定要删除这条收藏记录吗？',function(){
+		var url = api_url('fav','delete','id='+id);
+		$.phpok.json(url,function(){
+			$.phpok.reload();
+		});
+	})
+}
+</script>
+<div role="main" class="ui-content">
+	<ul data-role="listview" data-split-icon="delete" data-inset="true" style="margin:0;">
+		<!-- if !$rslist -->
+		<li><p style="text-align:center;">暂无收藏信息</p></li>
+		<!-- /if -->
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<li>
+			<a href="{url id=$value.lid/}" target="_blank">
+			<h2>{$value.title}</h2>
+			<p><b>收藏时间：</b>{func time_format $value.addtime}</p></a>
+			<a href="javascript:fav_delete('{$value.id}');void(0);"></a>
+		</li>
+		<!-- /loop -->
+	</ul>
+	<!-- include tpl=pagelist -->
+</div>
+<!-- include tpl=foot -->

@@ -1,9 +1,4 @@
-<!-- head title=$title css="css/jquery.mobile-1.4.0.min.css,css/style.css" js="js/jquery.mobile-1.4.0.min.js,js/layer.js" html5=true close=false mobile=true -->
-<script type="text/javascript">
-$(document).ready(function() { 
-    jQuery.mobile.ajaxEnabled = false;
-});
-</script>
+<!-- head title=$title css="css/jquery.mobile.css,css/style.css,artdialog.css" js="js/jquery.mobile.js" html5=true close=false mobile=true -->
 </head>
 <body>
 <div data-role="page" id="page">
@@ -18,7 +13,7 @@ $(document).ready(function() {
 	</div>
 <div data-role="header" data-position="fixed">
 	<h1>{$title ? $title : $config.title}</h1>
-	<a href="{$sys.url}" class="ui-btn ui-corner-all ui-shadow ui-icon-home ui-btn-icon-left ui-btn-icon-notext">返回</a>
+	<a href="{url ctrl=cart/}" class="ui-btn ui-corner-all ui-shadow ui-icon-cart ui-btn-icon-left ui-btn-icon-notext" id="head_cart_num"></a>
 	<a href="#menu" class="ui-btn ui-shadow ui-corner-all ui-btn-icon-left ui-icon-bars  ui-btn-icon-notext">菜单</a>
 </div>
-<div dat-role="content" id="boy-content">
+<div dat-role="content" id="body-content">

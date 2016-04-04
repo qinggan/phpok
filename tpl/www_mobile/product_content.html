@@ -1,16 +1,5 @@
 <!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
-<div data-role="navbar">
-	<ul>
-		<!-- catelist pid=$page_rs.id -->
-		<!-- loop from=$list.sublist key=$key value=$value -->
-		<li><a href="{$value.url}"{if $cate_rs.id == $value.id} class="ui-btn-active"{/if}>{$value.title}</a></li>
-		<!-- /loop -->
-	</ul>
-</div>
-
-
-
-<div role="main" class="ui-content">
+	<div role="main" class="ui-content">
 	<div class="product_img" id="product_img">
 		<ul class="ul">
 			<!-- loop from=$rs.pictures key=$key value=$value -->
@@ -29,32 +18,97 @@
 		});
 	});
 	</script>
-	<div class="ui-body ui-body-a ui-corner-all" style="margin-top:5px;">
-		<h3>{$rs.title}</h3>
-		<p>查看：{$rs.hits}</p>
-		<p>时间：{func date Y-m-d $rs.dateline}</p>
-		<!-- loop from=$rs.attrs key=$key value=$value id=$tmpid -->
-		<p>{$key}：{$value}</p>
-		<!-- /loop -->
-		<!-- if $rs.price && is_numeric($rs.price) -->
-		<p><span>价格：</span><span class="price">{$rs.price} 元</span></p>
-		<!-- elseif $rs.price -->
-		<p><span>价格：</span><span class="price">{$rs.price}</span></p>
-		<!-- /if -->
-		<a href="#popupkf" role="button" data-transition="pop" data-rel="popup" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">咨询订购</a>
-		<!-- include file=content -->
-		<div class="content">{$rs.content}</div>
-		<ul class="np">
-			<!-- php:$prev = phpok_prev($rs) -->
-			<!-- if $prev -->
-			<li><a href="{$prev.url}"><b>上一主题：</b>{$prev.title}</a></li>
-			<!-- /if -->
-			<!-- php:$next = phpok_next($rs) -->
-			<!-- if $next -->
-			<li><a href="{$next.url}"><b>下一主题：</b>{$next.title}</a></li>
-			<!-- /if -->
+	<div class="product">
+		<h1>{$rs.title}</h1>
+		<ul class="alist">
+			<li><em>查看次数：</em>{$rs.hits}</li>
+			<li><em>添加时间：</em>{func date Y-m-d $rs.dateline}</li>
+			<li style="padding:0;height:10px;"><hr /></li>
+			<!-- loop from=$rs.attrlist key=$key value=$value -->
+			<li>
+				<em>{$value.title}：</em>
+				<input type="hidden" name="attr" id="attr_{$value.id}" value="" />
+				<div style="margin-bottom:5px;">
+					<ul class="attr">
+						<!-- loop from=$value.rslist key=$k value=$v id=$tmpid -->
+						<li><div class="attr" name="attr{$value.id}" data="{$v.id}" price="{$v.price}" weight="{$v.weight}" volume="{$v.volume}" onclick="attr_select('{$v.id}','{$value.id}')">{$v.title}</div></li>
+						<!-- /loop -->
+					</ul>
+					<div class="clear"></div>
+				</div>
+			</li>
+			<!-- /loop -->
+			<li>
+				<em>购买数量：</em>
+				<table cellspacing="0" cellpadding="0">
+				<tr>
+					<td class="numbg" id="minus">-</td>
+					<td style="line-height:1em;"><input name="buycount" id="buycount" value="1" type="text" class="numtxt" data-role="none" /></td>
+					<td class="numbg" id="plus">+</td>
+				</tr>
+				</table>
+			</li>
+			<li>
+				<em>价格：</em>
+				<span class="price" style="color:red;font-size:16px;" id="showprice">{func price_format $rs.price $rs.currency_id}</span>
+			</li>
+			<li style="padding-left:0;"><a href="javascript:javascript:$.cart.add('{$rs.id}',$('#buycount').val());void(0);" class="ui-btn">加入购物车</a></li>
 		</ul>
+		<div class="content" style="padding:5px;">{$rs.content}</div>
 	</div>
+	<script type="text/javascript">
+	function attr_select(id,aid)
+	{
+		$("#attr_"+aid).val(id);
+		$("div[name=attr"+aid+"]").each(function(i){
+			var tid = $(this).attr('data');
+			if(tid == id){
+				$(this).addClass("selected");
+				//判断价格
+				var new_price = $(this).attr("price");
+				if(new_price && parseFloat(new_price)>0){
+					price = parseFloat(price) + parseFloat(new_price);
+					$("#showprice").html(price);
+				}
+			}else{
+				$(this).removeClass('selected');
+			}
+		});
+		var price = '{$rs.price}';
+		$("input[name=attr]").each(function(i){
+			var val = $(this).val();
+			if(val && val != 'undefined'){
+				var newprice = $("div[data="+val+"]").attr("price");
+				if(newprice && parseFloat(newprice)>0){
+					price = parseFloat(price) + parseFloat(newprice);
+				}
+			}
+		});
+		var url = api_url('cart','price_format','price='+$.str.encode(price));
+		$.phpok.json(url,function(rs){
+			if(rs.status == 'ok'){
+				$("#showprice").html(rs.content);
+			}
+		});
+	}
+	$(document).ready(function(){
+		$("#minus").click(function(){
+			var o = $("#buycount").val();
+			if(o<2){
+				$.dialog.alert('要购买的数量不能少于1');
+				return false;
+			}
+			o = parseInt(o) - 1;
+			$("#buycount").val(o);
+		});
+		$("#plus").click(function(){
+			var o = $("#buycount").val();
+			o = parseInt(o) + 1;
+			$("#buycount").val(o);
+		});
+	});
+	</script>
+
 </div>
 
 <!-- include tpl=foot -->

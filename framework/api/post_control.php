@@ -35,50 +35,7 @@ class post_control extends phpok_control
 
 	public function edit_f()
 	{
-		//检测验证码填写正确与否
-		if($this->config['is_vcode'] && function_exists('imagecreate')){
-			$code = $this->get('_chkcode');
-			if(!$code){
-				$this->json(P_Lang('验证码不能为空'));
-			}
-			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode']){
-				$this->json(P_Lang('验证码填写不正确'));
-			}
-			unset($_SESSION['vcode']);
-		}
-		$id = $this->get('id','int');
-		if(!$id){
-			$this->json(P_Lang('未指定主题ID'));
-		}
-		$rs = $this->model('content')->get_one($id,false);
-		if(!$rs){
-			$this->json(P_Lang('内容不存在，请检查'));
-		}
-		if($rs['user_id'] != $this->user_id){
-			$this->json(P_Lang('您没有权限执行此主题编辑操作'));
-		}
-		$project_rs = $this->call->phpok('_project','pid='.$rs['project_id']);
-		if(!$project_rs || !$project_rs['module']){
-			$this->json(P_Lang('项目不符合要求'));
-		}
-		$title = $this->get('title');
-		if(!$title){
-			$this->json(P_Lang('主题不能为空'));
-		}
-		$data = array('title'=>$title);
-		if($project_rs['cate']){
-			$cate_id = $this->get('cate_id','int');
-			if(!$cate_id){
-				$this->json(P_Lang('分类不能为空'));
-			}
-			$data['cate_id'] = $cate_id;
-		}
-		//
-		$action = $this->model('list')->save($data,$id);
-		if(!$action){
-			$this->json(P_Lang('数据更新失败，请检查'));
-		}
+		$this->save_f();
 	}
 
 	public function save_f()
@@ -115,6 +72,12 @@ class post_control extends phpok_control
 			$this->json($tip.' '.P_Lang("不能为空"));
 		}
 		$tid = $this->get('tid','int');
+		if($tid){
+			$chk = $this->model('list')->call_one($tid);
+			if($chk['user_id'] != $_SESSION['user_id']){
+				$this->json(P_Lang('您没有权限编辑此内容'));
+			}
+		}
 		$array["status"] = $this->model('popedom')->val($project_rs['id'],$this->user_groupid,'post1');
 		$array["hidden"] = 0;
 		$array["module_id"] = $project_rs["module"];
@@ -152,7 +115,7 @@ class post_control extends phpok_control
 		if(!$ext_list){
 			$ext_list = array();
 		}
-		$tmplist = false;
+		$tmplist = array();
 		if(!$tid){
 			$tmplist["id"] = $insert_id;
 		}
@@ -160,6 +123,9 @@ class post_control extends phpok_control
 		$tmplist["project_id"] = $project_rs["id"];
 		$tmplist["cate_id"] = $array["cate_id"];
 		foreach($ext_list AS $key=>$value){
+			if(!$value['is_front']){
+				continue;
+			}
 			$val = ext_value($value);
 			if($value["ext"]){
 				$ext = unserialize($value["ext"]);

@@ -76,19 +76,17 @@ class payment_control extends phpok_control
 		$data = array('site_id'=>$_SESSION['admin_site_id'],'title'=>$title);
 		$data['taxis'] = $this->get('taxis','int');
 		$data['status'] = $this->get('status','int');
+		$data['is_wap'] = $this->get('is_wap','int');
 		$insert = $this->model('payment')->groupsave($data,$id);
-		if(!$insert)
-		{
+		if(!$insert){
 			$tip = $id ? P_Lang('编辑失败') : P_Lang('添加失败');
 			$this->json($tip);
 		}
-		if($id)
-		{
+		if($id){
 			$insert = $id;
 		}
 		$default = $this->get('is_default','int');
-		if($default)
-		{
+		if($default){
 			$this->model('payment')->group_set_default($insert,$_SESSION['admin_site_id']);
 		}
 		$this->json(true,true);

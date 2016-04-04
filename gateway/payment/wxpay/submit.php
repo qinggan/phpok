@@ -47,22 +47,29 @@ class wxpay_submit
 		if(!$info){
 			error('支付出错，请联系管理员');
 		}
+		if($wxpay->trade_type() == 'wap'){
+			$this->head('启动微信支付');
+			$config = $wxpay->get_jsapi_param($info);
+			$string = 'appid='.$config['appId'].'&timestamp='.$config['timeStamp'].'&noncestr='.$config['nonceStr'];
+			$string.= "&package=WAP&prepayid=".$config['prepay_id']."&sign=".$config['sign'];
+			$url = "weixin://wap/pay?".rawurlencode($string);
+			echo '<script type="text/javascript">'."\n";
+			echo 'window.open("'.$url.'")';
+			echo '</script>';
+			$this->foot();
+		}
 		if($wxpay->trade_type() == 'jsapi'){
 			$this->head();
-			//$config = $wxpay->GetJsApiParameters($info);
 			$config = $wxpay->get_jsapi_param($info);
-			$gourl = $this->param['param']['jsapi_link'];
-			if(!$gourl){
-				$gourl = $GLOBALS['app']->url('order','info');
-			}
-			$gourl .= strpos($gourl,'?') !== false ? '&sn='.$this->order['sn'] : '?sn='.$this->order['sn'];
+			$apiurl = $GLOBALS['app']->url('payment','query','sn='.$this->order['sn'],'api');
+			$gourl = $GLOBALS['app']->url('order','info','sn='.$this->order['sn'],'www');
 			echo <<<EOT
 <script type="text/javascript" src="//res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
 <script type="text/javascript">
 function callpay()
 {
 	wx.config({
-        debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        debug: false,
         appId: '{$config[appId]}', // 必填，公众号的唯一标识
         timestamp:'{$config[timeStamp]}' , // 必填，生成签名的时间戳
         nonceStr: '{$config[nonceStr]}', // 必填，生成签名的随机串
@@ -77,8 +84,13 @@ function callpay()
             signType: 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
             paySign: '{$config[paySign]}', // 支付签名
             success: function (res) {
-	            var url = "{$gourl}";
-	            $.phpok.go(url);
+	            var rs = $.phpok.json('{$apiurl}');
+	            if(rs.status == 'ok'){
+		            $.phpok.go("{$gourl}");
+	            }else{
+		            alert(rs.content);
+		            return false;
+	            }
             }
         });
     });

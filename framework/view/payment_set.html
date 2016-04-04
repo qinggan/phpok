@@ -26,7 +26,7 @@
 	<div class="content">
 		<select name="gid" id="gid">
 			<!-- loop from=$grouplist key=$key value=$value -->
-			<option value="{$value.id}"{if $gid == $value.id} selected{/if}>{$value.title}</option>
+			<option value="{$value.id}"{if $gid == $value.id} selected{/if}>{$value.title}{if $value.is_wap} - 手机端{/if}</option>
 			<!-- /loop -->
 		</select>
 	</div>

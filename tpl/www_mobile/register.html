@@ -1,0 +1,89 @@
+<!-- include tpl=head title=会员注册 -->
+<script type="text/javascript">
+var open_vcode = '{$sys.is_vcode && function_exists("imagecreate") ? 1 : 0}';
+$(document).ready(function(){
+	$("#register-form").submit(function(){
+		if(!$('#is_ok').attr('checked'))
+		{
+			alert('注册前请先同意本站协议');
+			return false;
+		}
+		$(this).ajaxSubmit({
+			type:'post',
+			url: api_url('register','save'),
+			dataType:'json',
+			success: function(rs){
+				if(rs.status == 'ok')
+				{
+					alert("恭喜您注册成功");
+					var back = $("#_back").val();
+					if(!back || back == 'undefined' || back == window.location.href) back = webroot;
+					$.phpok.go(back);
+				}
+				else
+				{
+					if(!rs.content) rs.content = '注册失败';
+					alert(rs.content);
+					if(open_vcode == '1')
+					{
+						$("#_chkcode").val('');
+						$("#update_vcode").phpok_vcode();
+					}
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+//更新会员组
+function update_group(gid)
+{
+	$.phpok.go(get_url('register','','group_id='+gid));
+}
+</script>
+<div role="main" class="ui-content">
+	<form method="post" id="register-form">
+	<!-- if $grouplist -->
+	<div>
+		<select name="group_id" onchange="update_group(this.value)">
+		<!-- loop from=$grouplist key=$key value=$value -->
+		<option value="{$value.id}"{if $group_id == $value.id} selected{/if}>{$value.title}</option>
+		<!-- /loop -->
+		</select>
+	</div>
+	<!-- /if -->
+	<!-- if $group_rs.register_status && $group_rs.register_status != 1 -->
+	<div>
+		验证串：
+		<input class="input" type="text" name="_code" value="{$code}" readonly style="color:#CCC" />
+	</div>
+	<!-- /if -->
+	<div>
+		<input class="input" type="text" name="user" value="{$account}" placeholder="会员账号" />
+		<input class="input" type="password" name="newpass" placeholder="会员密码，建议大小写字母+数字+特殊符号" />
+		<input class="input" type="password" name="chkpass" placeholder="确认密码：请再输入一次密码" />
+		<input class="input" type="text" name="email" value="{$email}" placeholder="Email，请填写您常用的邮箱" />
+		<input class="input" type="text" name="mobile" id="mobile" placeholder="请填写您的手机号" />
+	</div>
+	<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+	<div>
+		验证码：
+		<input class="vcode"  type="text" id="_chkcode" name="_chkcode" data-role="none" />
+		<img src="" border="0" align="absmiddle" id="update_vcode" class="hand" />
+	</div>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#update_vcode").phpok_vcode();
+		//更新点击时操作
+		$("#update_vcode").click(function(){
+			$(this).phpok_vcode();
+		});
+	});
+	</script>
+	<!-- /if -->
+	<label><input type="checkbox" name="is_ok" id="is_ok" checked /> 我已阅读并完全同意阅读注册协议</label>
+	<input class="button blue" type="submit" value="注册会员" name="">
+	</form>
+</div>
+<!-- include tpl=foot -->

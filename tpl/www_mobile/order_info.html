@@ -1,0 +1,110 @@
+<!-- include tpl=head title=$rs.sn -->
+<div role="main" class="ui-content">
+	<ul data-role="listview" data-inset="true" style="margin:0;">
+		<li>订单号<span class="ui-li-count">{$rs.sn}</span></li>
+		<li>下单时间<span class="ui-li-count">{func time_format $rs.addtime}</span></li>
+		<li>总金额<span class="ui-li-count">{func price_format $rs.price $rs.currency_id $rs.currency_id}</span></li>
+		<li>订单状态<span class="ui-li-count">{$rs.status_info}</span></li>
+		<!-- if $payinfo -->
+		<li>支付方式<span class="ui-li-count">{$payinfo.title}</span></li>
+		<li>付款时间<span class="ui-li-count">{func time_format $payinfo.dateline}</span></li>
+		<!-- /if -->
+		<!-- if $invoice -->
+		<li>发票类型<span class="ui-li-count">{$invoice.type}</span></li>
+		<li>发票抬头<span class="ui-li-count">{$invoice.title}</span></li>
+		<li>发票内容<span class="ui-li-count">{$invoice.content}</span></li>
+		<!-- /if -->
+	</ul>
+	<!-- if $loglist -->
+	<ul data-role="listview" data-inset="true">
+		<li data-role="list-divider">订单跟踪<span class="ui-li-count">{func count $loglist}</span></li>
+		<!-- loop from=$loglist key=$key value=$value id=$tmpid -->
+		<li>
+			<p>时间：{func date "Y-m-d H:i:s" $value.addtime}</p>
+			<p>信息：{$value.note}</p>
+			<p>操作人：{$value.who}</p>
+		</li>
+		<!-- /loop -->
+	</ul>
+	<!-- /if -->
+	<!-- if $rs.note -->
+	<ul data-role="listview" data-inset="true">
+		<li data-role="list-divider">订单备注</li>
+		<li class="wrap">{func nl2br $rs.note}</li>
+	</ul>
+	<!-- /if -->
+	<!-- if $address -->
+	<ul data-role="listview" data-inset="true">
+		<li data-role="list-divider">送货地址</li>
+		<li>
+			<div><b>收件人：</b>{$address.fullname}</div>
+			<div class="wrap"><b>地址：</b>{$address.province}<!-- if $address.province != $address.city -->{$address.city}<!-- /if -->{$address.county}{$address.address}</div>
+			<!-- if $address.tel -->
+			<div><b>电话：</b>{$address.tel}</div>
+			<!-- /if -->
+			<!-- if $address.mobile -->
+			<div><b>手机：</b>{$address.mobile}</div>
+			<!-- /if -->
+			<!-- if $address.email -->
+			<div><b>Email：</b>{$address.email}</div>
+			<!-- /if -->
+		</li>
+	</ul>
+	<!-- /if -->
+	<ul data-role="listview" data-inset="true">
+		<li data-role="list-divider">产品信息</li>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<li>
+			<!-- if $value.thumb --><img src="{$value.thumb}"><!-- /if -->
+			<p>{$value.title}</p>
+			<!-- loop from=$value.ext key=$k value=$v id=$tmpid -->
+			<div><b>{$v.title}：</b>{$v.content}</div>
+			<!-- /loop -->
+			<div><b>价格：</b><span class="red">{func price_format $value.price $rs.currency_id $rs.currency_id}</span></div>
+			<span class="ui-li-count">数量：{$value.qty}</span>
+		</li>
+		<!-- /loop -->
+	</ul>
+	<ul data-role="listview" data-inset="true">
+		<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
+		<li>{$value.title}<span class="ui-li-count">{$value.price}</span></li>
+		<!-- /loop -->
+		<li data-theme="b">总计<span class="ui-li-count">{func price_format $rs.price $rs.currency_id $rs.currency_id}</span></li>
+	</ul>
+	<!-- if !$pay_end -->
+	<script type="text/javascript">
+	function go_payment()
+	{
+		var payment = $("input[name=payment]:checked").val();
+		if(!payment || payment == 'undefined'){
+			$.dialog.alert('未指定支付方式');
+			return false;
+		}
+		var url = '{$payment_url}&payment='+payment;
+		var rs = $.phpok.json(url);
+		if(rs.status != 'ok'){
+			$.dialog.alert(rs.content);
+			return false;
+		}
+		var url = get_url('payment','submit','id='+rs.content);
+		$.phpok.go(url);
+		return false;
+	}
+	</script>
+	<form method="post" onsubmit="return go_payment()">
+	<!-- loop from=$paylist key=$key value=$value -->
+	<!-- if $value.paylist -->
+	<fieldset data-role="controlgroup">
+	    <legend><b>{$value.title}</b></legend>
+    	<!-- loop from=$value.paylist key=$k value=$v -->
+        <input name="payment" id="payment_{$v.id}" value="{$v.id}"{if $v.id == $config.biz_payment} checked{/if} type="radio">
+        <label for="payment_{$v.id}">{$v.title}</label>
+        <!-- /loop -->
+	</fieldset>
+	<!-- /if -->
+	<!-- /loop -->
+	<input type="submit" value="提交支付" />
+	</form>
+	<!-- /if -->
+</ul>
+<!-- include tpl=foot -->

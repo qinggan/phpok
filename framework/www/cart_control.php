@@ -53,6 +53,7 @@ class cart_control extends phpok_control
 		if(!$_SESSION['user_id']){
 			error(P_Lang('请先注册或登录'),$this->url('login','','_back='.rawurlencode($this->url('cart','checkout'))));
 		}
+		$user = $this->model('user')->get_one($_SESSION['user_id']);
 		$rslist = $this->model('cart')->get_all($this->cart_id);
 		if(!$rslist){
 			error(P_Lang('您的购物车里没有任何产品'),$this->url,"notice",5);
@@ -79,35 +80,36 @@ class cart_control extends phpok_control
 		$this->assign('price',$price);
 		$this->assign("rslist",$rslist);
 		//收件人信息处理模块
-		$addresslist = $this->model('user')->address($_SESSION['user_id']);
-		$v_address = array('id'=>'email','fullname'=>P_Lang('邮箱'),'address'=>'');
-		$addresslist[] = $v_address;
-		$default_address = $first = $selected = false;
-		if(is_array($addresslist)){
-			foreach($addresslist as $key=>$value){
-				if($key<1){
-					$first = $value;
-				}
-				if($value['is_default']){
-					$default_address = $value;
-				}
-				if($_SESSION['cart'] && $_SESSION['cart']['address_id'] && $_SESSION['cart']['address_id'] == $value['id']){
-					$selected = $value;
+		$this->_address();
+		
+		//发票管理模块
+		$this->_invoice();
+		$pricelist = $this->model('site')->price_status_all(true);
+		if($pricelist){
+			foreach($pricelist as $key=>$value){
+				if(!$value['status']){
+					unset($pricelist[$key]);
 				}
 			}
 		}
-		if(!$default_address){
-			$default_address = $first;
-		}
-		if($selected){
-			$default_address = $selected;
-		}
-		unset($first,$selected);
-		$_SESSION['cart']['address_id'] = $default_address['id'];
-		$this->assign('address',$default_address);
-		$this->assign('addresslist',$addresslist);
-		
-		//发票管理模块
+		$this->assign('pricelist',$pricelist);
+		$this->view("cart_checkout");
+	}
+
+	public function address_f()
+	{
+		$this->_address();
+		$this->view("cart_address");
+	}
+
+	public function invoice_f()
+	{
+		$this->_invoice();
+		$this->view("cart_invoice");
+	}
+
+	private function _invoice()
+	{
 		$ilist = $this->model('user')->invoice($_SESSION['user_id']);
 		$invoice = array('id'=>'no','title'=>P_Lang('不开发票'),'content'=>'');
 		$ilist[] = $invoice;
@@ -136,16 +138,40 @@ class cart_control extends phpok_control
 		$this->assign('invoice',$default_invoice);
 		$this->assign('invoicelist',$ilist);
 		$this->assign('totalinvoice',count($ilist));
-		$pricelist = $this->model('site')->price_status_all(true);
-		if($pricelist){
-			foreach($pricelist as $key=>$value){
-				if(!$value['status']){
-					unset($pricelist[$key]);
+	}
+
+	private function _address()
+	{
+		$addresslist = $this->model('user')->address($_SESSION['user_id']);
+		$v_address = array('id'=>'email','fullname'=>P_Lang('邮箱'),'address'=>'','email'=>$user['email']);
+		if($_SESSION['cart']['address_email']){
+			$v_address['email'] = $_SESSION['cart']['address_email'];
+		}
+		$addresslist[] = $v_address;
+		$default_address = $first = $selected = false;
+		if(is_array($addresslist)){
+			foreach($addresslist as $key=>$value){
+				if($key<1){
+					$first = $value;
+				}
+				if($value['is_default']){
+					$default_address = $value;
+				}
+				if($_SESSION['cart'] && $_SESSION['cart']['address_id'] && $_SESSION['cart']['address_id'] == $value['id']){
+					$selected = $value;
 				}
 			}
 		}
-		$this->assign('pricelist',$pricelist);
-		$this->view("cart_checkout");
+		if(!$default_address){
+			$default_address = $first;
+		}
+		if($selected){
+			$default_address = $selected;
+		}
+		unset($first,$selected);
+		$_SESSION['cart']['address_id'] = $default_address['id'];
+		$this->assign('address',$default_address);
+		$this->assign('addresslist',$addresslist);
 	}
 
 	//计算运费
@@ -242,6 +268,12 @@ class cart_control extends phpok_control
 			$rs = $this->model('user')->address_one($id);
 			if($rs['user_id'] != $_SESSION['user_id']){
 				$this->json(P_Lang('地址信息与会员不匹配'));
+			}
+		}else{
+			//如果有传Email地址过来，则保存相应的email信息
+			$email = $this->get('email');
+			if($email && $this->lib('common')->email_check($email)){
+				$_SESSION['cart']['address_email'] = $email;
 			}
 		}
 		$_SESSION['cart']['address_id'] = $id;

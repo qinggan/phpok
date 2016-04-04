@@ -34,9 +34,6 @@ class unionpay_notice
 		if($params['respCode'] != '00'){
 			error("付款失败，错误信息：".$params['respMsg'],'','error');
 		}
-		if($this->order['passwd'] != $params['reqReserved'] || !$params['reqReserved']){
-			error('您没有权限查看此订单信息','','error');
-		}
 		$chk = $payment->verify($params);
 		if(!$chk){
 			error('付款签名验证失败，请登录支付平台检查','','error');

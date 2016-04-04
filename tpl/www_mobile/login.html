@@ -1,0 +1,57 @@
+<!-- include tpl=head menutitle=网站首页 title=会员登录 -->
+<script type="text/javascript">
+var open_vcode = '{$sys.is_vcode && function_exists("imagecreate") ? 1 : 0}';
+$(document).ready(function(){
+	$("#login-form").submit(function(){
+		$(this).ajaxSubmit({
+			'url':api_url('login','save'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					var url = $("input[name=_back]").val();
+					if(!url){
+						url = "{url ctrl=usercp/}";
+					}
+					$.dialog.alert('欢迎您回来',function(){
+						$.phpok.go(url);
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div role="main" class="ui-content">
+	<form method="post" id="login-form" onsubmit="return false">
+		<input type="hidden" name="_back" value="{$_back}" />
+		<label>账号：<input class="input" type="text" name="user" placeholder="请填写账号/手机号/邮箱" /></label>
+		<label>密码：<input class="input" type="password" name="pass" placeholder="请输入登录密码" /></label>
+		<!-- if $sys.is_vcode && function_exists('imagecreate') -->
+		<label>验证码：
+			<input class="vcode"  type="text" name="_chkcode" id="_chkcode" data-role="none" />
+			<img src="" border="0" align="absmiddle" id="vcode" />
+		</label>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#vcode").phpok_vcode();
+			$("#vcode").click(function(){
+				$(this).phpok_vcode();
+			});
+		});
+		</script>
+		<!-- /if -->
+		<input type="submit" value="登录" data-theme="b" />
+	</form>
+	
+	<div class="ui-body ui-body-a ui-corner-all">
+		<h3>友情说明</h3>
+		<p>如果您忘记密码，您可以点这里<a href="{url ctrl=login func=getpass/}" title="找回密码功能">找回密码？</a></p>
+		<p>您还不是我们的会员，请点这里<a href="{url ctrl=register/}" title="注册会员">注册</a></p>
+	</div>
+</div>
+<!-- include tpl=foot -->

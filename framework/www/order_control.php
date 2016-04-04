@@ -66,7 +66,7 @@ class order_control extends phpok_control
 				if(!$value['status']){
 					continue;
 				}
-				$tmp = array();
+				$tmp = array('val'=>floatval($order_price[$key]));
 				$tmp['price'] = price_format($order_price[$key],$rs['currency_id']);
 				$tmp['title'] = $value['title'];
 				$pricelist[$key] = $tmp;
@@ -79,7 +79,8 @@ class order_control extends phpok_control
 			$this->assign('pay_end',true);
 			$this->assign('payinfo',$paycheck);
 		}else{
-			$paylist = $this->model('payment')->get_all($this->site['id'],1);
+			$mobile = $this->is_mobile ? 1 : 0;
+			$paylist = $this->model('payment')->get_all($this->site['id'],1,$mobile);
 			$this->assign("paylist",$paylist);
 			//创建支付链接
 			$tmp = array('sn'=>$rs['sn'],'price'=>$rs['price'],'user_id'=>$_SESSION['user_id'],'type'=>'order');

@@ -1,13 +1,9 @@
 <!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
-<script type="text/javascript" src="{#js#}/jquery.artdialog.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#postsave").submit(function(){
 		if(!$("#title").val()){
-			layer.open({
-			    content: '{$page_rs.alias_title ? $page_rs.alias_title : "主题"}不能为空',
-			    btn: ['确定']
-			});
+			$.dialog.alert('{$page_rs.alias_title ? $page_rs.alias_title : "主题"}不能为空');
 			return false;
 		}
 		$(this).ajaxSubmit({
@@ -16,20 +12,11 @@ $(document).ready(function(){
 			'dataType':'json',
 			'success':function(rs){
 				if(rs.status == 'ok'){
-					layer.open({
-					    content: '感觉您提交的信息<br />我们客服会尽快处理',
-					    btn: ['确定'],
-					    shadeClose:false,
-					    yes:function(){
-						    var backurl = '{$_back}';
-							$.phpok.go(backurl);
-					    }
-					});
+					$.dialog.alert('感觉您提交的信息<br />我们客服会尽快处理',function(){
+						$.phpok.go("{if $session.user_id}{url ctrl=usercp func=list id=$page_rs.identifier/}{else}{url ctrl=post id=$page_rs.identifier/}{/if}");
+					},'succeed');
 				}else{
-					layer.open({
-					    content: rs.content,
-					    btn: ['确定']
-					});
+					$.dialog.alert(rs.content);
 					return false;
 				}
 			}
@@ -43,12 +30,22 @@ $(document).ready(function(){
 	<form method="post" id="postsave" onsubmit="return false">
 		<input type="hidden" name="id" value="{$page_rs.identifier}" />
 		<label>{$page_rs.alias_title ? $page_rs.alias_title : '主题'}：<input type="text" name="title" id="title" value=""></label>
+		<!-- if $catelist -->
+		<label>分类：
+			<select name="cate_id" id="cate_id" style="padding:3px;">
+				<option value="">请选择分类……</option>
+				<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+				<option value="{$value.id}"{if $cate_rs.id == $value.id} selected{/if}>{$value._space}{$value.title}</option>
+				<!-- /loop -->
+			</select>
+		</label>
+		<!-- /if -->
 		<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
 		<label>{$value.title}：{$value.html}</label>
 		<!-- /loop -->
 		<!-- if $sys.is_vcode && function_exists('imagecreate') -->
 		<label>验证码：
-			<input class="vcode"  type="text" name="_chkcode" id="_chkcode" />
+			<input class="vcode"  type="text" name="_chkcode" id="_chkcode" data-role="none" />
 			<img src="" border="0" align="absmiddle" id="vcode" />
 		</label>
 		<script type="text/javascript">

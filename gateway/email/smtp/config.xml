@@ -31,9 +31,9 @@
 			<type>radio</type>
 			<option>
 				<gbk>GBK</gbk>
-				<utf-8>UTF-8</utf-8>
+				<utf8>UTF-8</utf8>
 			</option>
-			<default>utf-8</default>
+			<default>utf8</default>
 		</charset>
 		<ssl>
 			<title>是否使用SSL</title>

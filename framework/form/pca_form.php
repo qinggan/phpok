@@ -75,7 +75,9 @@ class pca_form extends _init_auto
 			$info = array('p'=>$tmp[0],'c'=>$tmp[1],'a'=>$tmp[2]);
 			$rs['content'] = $info;
 		}else{
-			$rs['content'] = array('p'=>'','c'=>'','a'=>'');
+			if(!$rs['content']){
+				$rs['content'] = array('p'=>'','c'=>'','a'=>'');
+			}
 		}
 		$province = $this->lib('xml')->read($this->dir_root.'data/xml/provinces.xml');
 		$this->assign('_province',$province['province']);

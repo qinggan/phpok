@@ -1,0 +1,53 @@
+<!-- include tpl=head title=收货地址 -->
+<script type="text/javascript">
+function update_cart_address(id)
+{
+	var url = get_url('cart','address_selected','id='+id);
+	if(id == 'email'){
+		var email = $("#email").val();
+		if(!email){
+			$.dialog.alert('请填写Email信息');
+			return false;
+		}
+		url += "&email="+$.str.encode(email);
+	}
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok'){
+		$.phpok.go('{url ctrl=cart func=checkout/}');
+	}else{
+		$.dialog.alert(rs.content);
+		return false;
+	}
+}
+</script>
+<div role="main" class="ui-content">
+	<ul data-role="listview" data-inset="true" style="margin:0">
+		<!-- loop from=$addresslist key=$key value=$value id=$tmpid -->
+		<li data-role="list-divider">
+			<!-- if $value.id == 'email' -->
+			仅邮件通知
+			<!-- else -->
+			收件人：{$value.fullname}
+			<!-- /if -->
+			<span class="ui-li-count" onclick="update_cart_address('{$value.id}')">使用</span>
+		</li>
+		<li>
+			<!-- if $value.id == 'email' -->
+			<input type="text" name="email" id="email" value="{$value.email ? $value.email : $user.email}" />
+			<!-- else -->
+			<div class="wrap"><b>地址：</b>{$value.province}<!-- if $value.city != $value.province -->{$value.city}<!-- /if -->{$value.county}{$value.address}</div>
+			<!-- if $value.tel --><div><b>电话：</b>{$value.tel}</div><!-- /if -->
+			<!-- if $value.mobile --><div><b>手机：</b>{$value.mobile}</div><!-- /if -->
+			<!-- if $value.email --><div><b>Email：</b>{$value.email}</div><!-- /if -->
+			<!-- /if -->
+		</li>
+		<!-- /loop -->
+	</ul>
+	<input type="button" value="取消返回" onclick="$.phpok.go('{url ctrl=cart func=checkout/}')" />
+	<input type="button" value="地址管理" onclick="$.phpok.go('{url ctrl=usercp func=address/}')" />
+	<div class="ui-body ui-body-a ui-corner-all">
+		<h3>友情说明</h3>
+		<p>收货地址管理请到会员中心进行维护</p>
+	</div>
+</div>
+<!-- include tpl=foot -->

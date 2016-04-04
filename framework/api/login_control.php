@@ -107,12 +107,12 @@ class login_control extends phpok_control
 		if($rs['status'] == '2'){
 			$this->json(P_Lang('会员账号被管理员锁定，不能使用取回密码功能，请联系管理员'));
 		}
-		if(!$this->site['email_server'] || !$this->site['email_account'] || !$this->site['email_pass']){
+		$email_server = $this->model('gateway')->get_default('email');
+		if(!$email_server){
 			$this->json(P_Lang('邮箱取回密码功能未启用，请联系我们的客服'));
 		}
 		$code = str_rand(10).$this->time;
 		$this->model('user')->update_code($code,$rs['id']);
-		//获取邮件模板ID
 		$email_rs = $this->model('email')->get_identifier('getpass',$this->site['id']);
 		if(!$email_rs){
 			$this->json(P_Lang('邮件模板为空，请配置邮件模板'));
@@ -124,7 +124,6 @@ class login_control extends phpok_control
 		$this->assign('user',$rs);
 		$title = $this->fetch($email_rs["title"],"content");
 		$content = $this->fetch($email_rs["content"],"content");
-		//发送邮件
 		$info = $this->lib('email')->send_mail($email,$title,$content);
 		if(!$info){
 			$this->json($this->lib('email')->error());
@@ -152,7 +151,7 @@ class login_control extends phpok_control
 		}
 		$code = $this->get('code');
 		if(!$code){
-			$this->json(P_Lang('确认码不能为空'));
+			$this->json(P_Lang('验证串不能为空'));
 		}
 		$time = intval(substr($code,-10));
 		if(($this->time - $time) > (24*60*60)){

@@ -8,13 +8,17 @@
 	</ul>
 </div>
 
-<div class="main">
-	<ul class="pictures">
-		<!-- loop from=$rslist key=$key value=$value -->
-		<li><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.title}" width="150" border="0" /><br />{$value.m_title}</a></a></li>
-		<!-- /loop -->
+<div role="main" class="ui-content">
+	<ul data-role="listview" data-split-icon="delete" data-inset="true" style="margin:0;">
+		<li data-role="list-divider">{$cate_rs ? $cate_rs.title : $page_rs.title}</li>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	    <li><a href="{$value.url}" title="{$value.title}">
+	        <img src="{$value.thumb.gd.thumb}" />
+	        <h3>{$value.m_title ? $value.m_title : $value.title}</h3>
+	        <div class="price">{func price_format $value.price $value.currency_id}</div></a>
+	    </li>
+	    <!-- /loop -->
 	</ul>
-	<div class="clear"></div>
-	<div style="margin-top:5px;"><!-- include tpl=pagelist --></div>
+	<!-- include tpl=pagelist -->
 </div>
 <!-- include tpl=foot -->

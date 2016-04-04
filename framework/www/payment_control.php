@@ -58,8 +58,8 @@ class payment_control extends phpok_control
 			error(P_Lang('订单信息不存在'),$this->url('index'),'error');
 		}
 		if($rs['type'] == 'order'){
-			$order = $this->model('order')->get_one_from_sn($rs['sn']);
-			$url = $this->url('order','info','id='.$order['id']);
+			//$order = $this->model('order')->get_one_from_sn($rs['sn']);
+			$url = $this->url('order','info','sn='.$rs['sn']);
 		}elseif($rs['type'] == 'recharge'){
 			$url = $this->url('usercp','wealth','sn='.$rs['sn']);
 		}else{
@@ -123,11 +123,11 @@ class payment_control extends phpok_control
 			error(P_Lang('数据不存在，请检查'),'','error');
 		}
 		if($rs['type'] == 'order'){
-			$order = $this->model('order')->get_one_from_sn($rs['sn']);
-			if(!$order){
-				error(P_Lang('订单信息不存在'),'','error');
-			}
-			$url = $this->url('order','info','id='.$order['id']);
+			//$order = $this->model('order')->get_one_from_sn($rs['sn']);
+			//if(!$order){
+			//	error(P_Lang('订单信息不存在'),'','error');
+			//}
+			$url = $this->url('order','info','sn='.$rs['sn']);
 			$this->_location($url);
 		}
 		$this->view('payment_show');

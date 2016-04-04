@@ -41,10 +41,21 @@ class order_control extends phpok_control
 			$pageurl .= "&status=".rawurlencode($status);
 			$this->assign('status',$status);
 		}
+		$keytype = $this->get('keytype');
+		if(!$keytype){
+			$keytype = 'sn';
+		}
 		$keywords = $this->get('keywords');
 		if($keywords){
-			$condition .= " AND o.sn LIKE '%".$keywords."%'";
-			$pageurl .= "&keywords=".rawurlencode($keywords);
+			if($keytype == 'sn' || $keytype == 'email'){
+				$condition .= " AND o.".$keytype." LIKE '%".$keywords."%'";
+			}elseif($keytype == 'user'){
+				$condition .= " AND u.user LIKE '%".$keywords."%'";
+			}elseif($keytype == 'protitle'){
+				$condition .= " AND o.id IN(SELECT order_id FROM ".$this->db->prefix."order_product WHERE title LIKE '%".$keywords."%')";
+			}
+			$pageurl .= "&keywords=".rawurlencode($keywords)."&keytype=".$keytype;
+			$this->assign('keytype',$keytype);
 			$this->assign('keywords',$keywords);
 		}
 		$price_min = $this->get('price_min');
@@ -71,10 +82,20 @@ class order_control extends phpok_control
 			$pageurl .= "&date_stop=".rawurlencode($date_stop);
 			$this->assign('date_stop',$date_stop);
 		}
+		$paytype = $this->get('paytype','int');
+		if($paytype){
+			$condition .= " AND p.payment_id='".$paytype."'";
+			$pageurl .= "&paytype=".$paytype;
+			$this->assign('paytype',$paytype);
+		}
 		$total = $this->model('order')->get_count($condition);
 		if($total>0){
 			$paylist = $this->model('payment')->get_all('','id');
-			if(!$paylist) $paylist = array();
+			if(!$paylist){
+				$paylist = array();
+			}else{
+				$this->assign('paylist',$paylist);
+			}
 			$tmp = array();
 			foreach($paylist AS $key=>$value){
 				$tmp[$value['id']] = $value;

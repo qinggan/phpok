@@ -159,6 +159,10 @@ class index_control extends phpok_control
 		$this->assign("all_rslist",$rslist);
 		$rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
 		$this->assign("all_rs",$rs);
+		$email_server = $this->model('gateway')->get_default('email');
+		if($email_server){
+			$this->assign('showemailtest',true);
+		}
 		return $this->fetch('index_block_allsetting');
 	}
 

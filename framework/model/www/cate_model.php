@@ -25,15 +25,12 @@ class cate_model extends cate_model_base
 	public function get_one($id,$field="id",$ext=true)
 	{
 		$cate_all = $this->cate_all($this->site_id);
-		if(!$cate_all)
-		{
+		if(!$cate_all){
 			return false;
 		}
 		$rs = false;
-		foreach($cate_all as $key=>$value)
-		{
-			if($value[$type] == $id)
-			{
+		foreach($cate_all as $key=>$value){
+			if($value[$field] == $id){
 				$rs = $value;
 				break;
 			}

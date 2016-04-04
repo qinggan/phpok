@@ -1,0 +1,131 @@
+<!-- include tpl=head title="填写并核对验证信息 - 购物车" -->
+<script type="text/javascript">
+var user_id = "{$session.user_id}";
+$(document).ready(function(){
+	$("#saveorder").submit(function(){
+		//通过Ajax提交订单，客户端检查订单信息是否完整
+		$(this).ajaxSubmit({
+			'url':api_url('order','create'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				//订单不成功的说明
+				if(rs.status != 'ok'){
+					if(!rs.content) rs.content = '订单创建失败';
+					alert(rs.content);
+					return false;
+				}
+				else
+				{
+					//订单创建成功后，跳转到订单详细页信息，执行支付操作
+					var urlext = 'sn='+$.str.encode(rs.content.sn);
+					if(!user_id){
+						urlext += '&passwd='+$.str.encode(rs.content.passwd);
+					}
+					var url = get_url('order','info',urlext);
+					$.phpok.go(url);
+				}
+			}
+		});
+		return false;
+	});
+});
+
+</script>
+<div role="main" class="ui-content">
+	<form method="post" id="saveorder">
+	<ul data-role="listview" data-split-icon="edit" data-inset="true" style="margin:0">
+		<li data-role="list-divider"><!-- if $address.id == 'email' -->Email通知<!-- else -->收货地址<!-- /if --></li>
+		<li>
+			<a href="javascript:void(0);">
+			<!-- if $address.id == 'email' -->
+			<input type="text" name="email" id="email" value="{$address.email ? $address.email : $user.email}" />
+			<!-- else -->
+			<p><b>收件人：</b>{$address.fullname}</p>
+			<p class="wrap"><b>地址：</b>{$address.province}<!-- if $address.city != $address.province -->{$address.city}<!-- /if -->{$address.county}{$address.address}</p>
+			<!-- if $address.tel --><p><b>电话：</b>{$address.tel}</p><!-- /if -->
+			<!-- if $address.mobile --><p><b>手机：</b>{$address.mobile}</p><!-- /if -->
+			<!-- if $address.email --><p><b>Email：</b>{$address.email}</p><!-- /if -->
+			<!-- /if -->
+			</a>
+			<a href="{url ctrl=cart func=address/}"></a>
+		</li>
+	</ul>
+	<ul data-role="listview" data-inset="true">
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<li data-role="list-divider"><span id="title_{$value.id}">{$value.title}</span><span class="ui-li-count">{func price_format $value.price $value.currency_id}</span></li>
+		<li>
+			<!-- if $value.thumb --><img src="{$value.thumb.ico}" style="left:5px;top:auto;" /><!-- /if -->
+			<div>
+				<!-- loop from=$value._attrlist key=$k value=$v id=$tmpid2 -->
+				<b>{$v.title}：</b>{$v.content}
+				<!-- if $tmpid2.num != $tmpid2.total -->/<!-- /if -->
+				<!-- /loop -->
+			</div>
+			<div>
+				<b>数量：</b><span class="red">{$value.qty}</span>
+			</div>
+			<div>
+				<b>小计：</b><span class="red">{func price_format $value.price*$value.qty $value.currency_id}</span>
+			</div>
+		</li>
+		<!-- /loop -->
+	</ul>
+	<ul data-role="listview" data-split-icon="edit" data-inset="true">
+		<li data-role="list-divider">发票信息</li>
+		<li>
+			<a href="javascript:void(0);">
+			<!-- if $invoice.id == 'no' -->
+			不开发票
+			<!-- else -->
+			<p><b>类型：</b>{$invoice.type}</p>
+			<p class="wrap"><b>抬头：</b>{$invoice.title}</p>
+			<!-- if $invoice.content --><p class="wrap"><b>内容：</b>{$invoice.content}</p><!-- /if -->
+			<!-- if $invoice.note --><p class="wrap"><b>备注：</b>{$invoice.note}</p><!-- /if -->
+			<!-- /if -->
+			</a>
+			<a href="{url ctrl=cart func=invoice/}"></a>
+		</li>
+	</ul>
+	<ul data-role="listview" data-inset="true">
+		<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
+		<li>{$value.title}<span class="ui-li-count" id="{$value.identifier}_price"><!-- if $value.identifier == product -->{$price}<!-- else -->{func price_format 0.00}<!-- /if --></span><input type="hidden" name="ext_price[{$value.identifier}]" id="ext_price_{$value.identifier}" value="" /></li>
+		<!-- /loop -->
+		<li data-theme="b">总计<span class="ui-li-count" id="all_price"></span></li>
+	</ul>
+	<div class="ui-body ui-body-a ui-corner-all">
+		<h3>留言，填写您对购买的商品特别要求</h3>
+		<textarea name="note" style="width:99%;height:80px;margin:4px;"></textarea>
+	</div>
+	<table width="100%">
+	<tr>
+		<td width="40%"><input type="button" value="返回购物车" onclick="$.phpok.go('{url ctrl=cart/}')" /></td>
+		<td align="right"><input type="submit" value="提交定单" data-theme="b" /></td>
+	</tr>
+	</table>
+	</form>
+</div>
+<script type="text/javascript">
+function load_freight()
+{
+	var url = get_url('cart','freight');
+	$("#shipping_price").html('0.00');
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$("#shipping_price").html(rs.content);
+			var url = get_url('cart','all_price');
+			$.phpok.json(url,function(data){
+				if(data.status == 'ok'){
+					$("#all_price").html(data.content);
+				}
+			});
+		}else{
+			$("#all_price").html('{$price}');
+		}
+	})
+}
+$(document).ready(function(){
+	load_freight()
+});
+</script>
+<!-- include tpl=foot -->

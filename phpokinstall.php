@@ -131,7 +131,7 @@ class install
 
 	public function foot()
 	{
-		echo '<div class="footer">Powered By phpok.com 版权所有 &copy; 2005-2015, All right reserved.</div>'."\n";
+		echo '<div class="footer">Powered By phpok.com 版权所有 &copy; 2005-2016, All right reserved.</div>'."\n";
 		echo '</body>'."\n";
 		echo '</html>';
 		exit;
@@ -296,20 +296,6 @@ class install
 			unlink(ROOT.'data/tpl_admin/'.$tmpfile);
 		}
 		echo '<tr><td class="lft">目录：data/tpl_admin/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		//data/tpl_html/
-		touch(ROOT.'data/tpl_html/'.$tmpfile);
-		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(ROOT.'data/tpl_html/'.$tmpfile)){
-			$dir_info = '<span class="red">不可写</span>';
-			$status = false;
-		}else{
-			if(!is_readable(ROOT.'data/tpl_html/'.$tmpfile)){
-				$dir_info = '<span class="red">不可读</span>';
-				$status = false;
-			}
-			unlink(ROOT.'data/tpl_html/'.$tmpfile);
-		}
-		echo '<tr><td class="lft">目录：data/tpl_html/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
 		//data/tpl_www/
 		touch(ROOT.'data/tpl_www/'.$tmpfile);
 		$dir_info = '<span class="darkblue">读写</span>';
@@ -1024,6 +1010,8 @@ if($step == 'ajax_iadmin'){
 	$file = ROOT."data/install.lock.php";
 	if(file_exists($file)){
 		include($file);
+		$sql = "TRUNCATE ".$db->prefix."adm";
+		$db->query($sql);
 		$pass_sub = rand(11,99);
 		$pass = md5($adminer['pass'].$pass_sub).":".$pass_sub;
 		$data = array('account'=>$adminer['user'],'pass'=>$pass,'email'=>$adminer['email']);

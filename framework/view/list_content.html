@@ -1,5 +1,6 @@
 <!-- inc:head -->
 <script type="text/javascript" src="{func include_js list.js}"></script>
+<script type="text/javascript" src="js/laydate/laydate.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	top.$.desktop.title('{$rs.title}');
@@ -67,42 +68,6 @@ $(document).ready(function(){
 
 <!-- if $rs.module -->
 <script type="text/javascript">
-function list_content_search()
-{
-	$.dialog({
-		'title':'{lang搜索}',
-		'content':document.getElementById("top_search_html"),
-		'ok':function(){
-			var url = get_url("list",'action','id={$pid}');
-			var status = $("#search_status").val();
-			if(status){
-				url += "&status="+$.str.encode(status);
-			}
-			var attr = $("#search_attr").val();
-			if(attr){
-				url += "&attr="+$.str.encode(attr);
-			}
-			var keywords = $("#keywords").val();
-			if(keywords){
-				url += '&keywords='+$.str.encode(keywords);
-			}
-			var cateid = $("#cateid").val();
-			if(cateid){
-				url += '&cateid='+cateid;
-			}
-			if(!cateid && !keywords && !attr && !status){
-				$.dialog.alert('{lang请输入要搜索的关键字或属性}');
-				return false;
-			}else{
-				$.phpok.go(url);
-			}
-			return true;
-		},
-		'okVal':'{lang执行搜索}',
-		'lock':true,
-		'drag':false
-	});
-}
 function reply_it(id,title)
 {
 	var url = get_url('list','comment','id='+id);
@@ -132,49 +97,83 @@ function reply_it(id,title)
 	<!-- if $popedom.add -->
 	<div class="action"><a href="{url ctrl=list func=edit pid=$pid/}">{lang添加内容}</a></div>
 	<!-- /if -->
-	<div class="action"><a href="javascript:list_content_search();void(0);">{lang搜索}</a></div>
 	<span id="AP_ACTION_HTML" title="插件节点，后台内容列表管理栏面包屑"></span>
 </div>
-<div style="display:none" id="top_search_html">
-	<div class="table">
-		<div class="title">
-			{lang审 核：}
-			<select name="status" id="search_status">
-				<option value="">不限</option>
+<div class="tips" style="position;relative;">
+	<form method="post" action="{url ctrl=list func=action id=$pid/}">
+	<div style="float:left;width:800px;">
+		<div><table>
+		<tr>
+			<td><select name="status">
+				<option value="">{lang选择状态…}</option>
 				<option value="1"{if $status==1} selected{/if}>已审核</option>
 				<option value="2"{if $status==2} selected{/if}>未审核</option>
-			</select>
-		</div>
-	</div>
-	<div class="table">
-		<div class="title">
-			{lang属 性：}
-			<select name="attr" id="search_attr">
-				<option value="">{lang属性选择}</option>
+			</select></td>
+			<!-- if $rs.is_attr -->
+			<td><select name="attr" id="search_attr">
+				<option value="">{lang选择属性…}</option>
 				<!-- loop from=$attrlist key=$key value=$value -->
 				<option value="{$key}"{if $attr == $key} selected{/if}>{$value}</option>
 				<!-- /loop -->
-			</select>
-		</div>
-	</div>
-	<!-- if $catelist -->
-	<div class="table">
-		<div class="title">
-			{lang分 类：}
-			<select name="top_cate_id" id="top_cate_id">
-				<option value="">{lang全部分类}</option>
+			</select></td>
+			<!-- /if -->
+			<!-- if $rs.cate && $catelist -->
+			<td><select name="cateid">
+				<option value="">{lang选择分类…}</option>
 				<!-- loop from=$catelist key=$key value=$value -->
 				<option value="{$value.id}"{if $cateid == $value.id} selected{/if}>{$value.title}</option>
 				<!-- /loop -->
-			</select>
-		</div>
+			</select></td>
+			<!-- /if -->
+			<td>{lang时间范围：}</td>
+			<td><input type="text" name="dateline_start" value="{$dateline_start}" placeholder="开始时间" onfocus="laydate()" style="width:110px;" /></td>
+			<td>{lang至}</td>
+			<td><input type="text" name="dateline_stop" value="{$dateline_stop}" placeholder="结束时间" onfocus="laydate()" style="width:110px;" /></td>
+		</tr>
+		</table></div>
+		<table>
+		<tr>
+			<td><select name="orderby_search">
+				<option value="">{lang默认排序}</option>
+				<option value="hits_hot"{if $orderby_search=='hits_hot'} selected{/if}>{lang查看次数多到少}</option>
+				<option value="hits_cold"{if $orderby_search=='hits_cold'} selected{/if}>{lang查看次数少到多}</option>
+				<!-- if $rs.is_biz -->
+				<option value="price_high"{if $orderby_search=='price_high'} selected{/if}>{lang价格从高到低}</option>
+				<option value="price_low"{if $orderby_search=='price_low'} selected{/if}>{lang价格从低到高}</option>
+				<!-- /if -->
+				<option value="sort_max"{if $orderby_search=='sort_max'} selected{/if}>{lang排序从高到低}</option>
+				<option value="sort_min"{if $orderby_search=='sort_min'} selected{/if}>{lang排序从低到高}</option>
+				<option value="dateline_max"{if $orderby_search=='dateline_max'} selected{/if}>{lang最后发布排在前面}</option>
+				<option value="dateline_min"{if $orderby_search=='dateline_min'} selected{/if}>{lang以前发布的排在前面}</option>
+			</select></td>
+			<td>{lang关键字查找：}</td>
+			<td><select name="keytype">
+				<option value="">{lang关键字类型…}</option>
+				<option value="title"{if $keytype == 'title'} selected{/if}>{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}</option>
+				<!-- if $rs.is_identifier -->
+				<option value="identifier"{if $keytype == 'identifier'} selected{/if}>{lang自定义标识}</option>
+				<!-- /if -->
+				<!-- if $rs.is_tag -->
+				<option value="tag"{if $keytype == 'tag'} selected{/if}>{lang标签}</option>
+				<!-- /if -->
+				<!-- if $rs.is_seo -->
+				<option value="seo_title"{if $keytype == 'seo_title'} selected{/if}>{langSEO标题}</option>
+				<option value="seo_keywords"{if $keytype == 'seo_keywords'} selected{/if}>{langSEO关键字}</option>
+				<option value="seo_desc"{if $keytype == 'seo_desc'} selected{/if}>{langSEO描述}</option>
+				<!-- /if -->
+				<!-- loop from=$ext_list key=$key value=$value id=$tmpid -->
+				<!-- if $value.search == 1 || $value.search == 2 -->
+				<option value="{$value.identifier}"{if $keytype == $value.identifier} selected{/if}>{$value.title}</option>
+				<!-- /if -->
+				<!-- /loop -->
+			</select></td>
+			<td><input type="text" id="keywords" name="keywords" class="default" value="{$keywords}" placeholder="{lang请输入要搜索的关键字}" /></td>
+		</tr>
+		</table>
 	</div>
-	<!-- /if -->
-	<div class="table">
-		<div class="title">
-			{lang关键字：}<input type="text" id="keywords" name="keywords" class="default" value="{$keywords}" />
-		</div>
-	</div>
+	<div style="float:left;width:18%;margin-top:20px;"><input type="submit" value="提交搜索" onclick="" class="submit2" /></div>
+	</form>
+	<div class="clear"></div>
 </div>
 <!-- /if -->
 
