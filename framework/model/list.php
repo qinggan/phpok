@@ -103,6 +103,8 @@ class list_model_base extends phpok_model
 		$sql = " SELECT count(DISTINCT l.id) FROM ".$this->db->prefix."list l ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ";
 		$sql.= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id AND u.status=1) ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."list_cate c ON(l.id=c.id) ";
 		if($condition){
 			$sql .= " WHERE ".$condition;
@@ -428,6 +430,9 @@ class list_model_base extends phpok_model
 		if(strpos($field,'b.price') !== false){
 			$sql .= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
 		}
+		if(strpos($condition,'cate_id') !== false){
+			$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+		}
 		if($condition){
 			$sql .= " WHERE ".$condition." ";
 		}
@@ -504,8 +509,10 @@ class list_model_base extends phpok_model
 		$sql .= " JOIN ".$this->db->prefix."list_".$mid." ext ";
 		$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
 		$sql .= " LEFT JOIN ".$this->db->prefix."list_biz b ON(l.id=b.id) ";
-		if($condition)
-		{
+		if($condition){
+			if(strpos($condition,'cate_id') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+			}
 			$sql .= " WHERE ".$condition." ";
 		}
 		return $this->db->count($sql);

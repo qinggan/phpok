@@ -67,7 +67,7 @@ $config["engine"]["session"]["table"] = "session";
 $config['engine']['session']['auto_methods'] = "auto_start:db";
 //缓存默认配置
 $config['engine']['cache']['debug'] = false;
-$config["engine"]["cache"]["file"] = "default";
+$config["engine"]["cache"]["file"] = "memcache";
 $config["engine"]["cache"]["status"] = true;
 $config["engine"]["cache"]["timeout"] = 3600;
 $config["engine"]["cache"]["folder"] = ROOT."data/cache/";//在Memcache缓存中，此项用于存储KEY

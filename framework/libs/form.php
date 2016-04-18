@@ -87,8 +87,7 @@ class form_lib
 	public function format($rs)
 	{
 		$obj = $this->_obj($rs);
-		if(!$obj)
-		{
+		if(!$obj){
 			return $rs;
 		}
 		$mlist = get_class_methods($obj);

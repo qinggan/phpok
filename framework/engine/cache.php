@@ -57,10 +57,20 @@ class cache
 
 	public function status($status='')
 	{
-		if($status != ""){
+		if(is_bool($status) || is_numeric($status)){
 			$this->status = $status ? true : false;
 		}
 		return $this->status;
+	}
+
+	public function close()
+	{
+		return $this->status(false);
+	}
+
+	public function open()
+	{
+		return $this->status(true);
 	}
 
 	public function timeout($time="")

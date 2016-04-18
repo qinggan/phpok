@@ -118,7 +118,7 @@ class phpok_call extends phpok_control
 			return false;
 		}
 		//禁用缓存获取数据
-		if($call_rs['cache'] == 'false'){
+		if(is_bool($call_rs['cache']) && !$call_rs['cache']){
 			return $this->$func($call_rs);
 		}
 		$cache_id = $this->cache->id($call_rs);
@@ -180,7 +180,7 @@ class phpok_call extends phpok_control
 		$flist = $this->model('module')->fields_all($project['module']);
 		$nlist = array();
 		$field = 'l.*';
-		if($rs['fields']){
+		if($rs['fields'] && $rs['fields'] != '*'){
 			$tmp = explode(",",$rs['fields']);
 			if($flist){
 				foreach($flist as $key=>$value){
@@ -281,7 +281,10 @@ class phpok_call extends phpok_control
 
 	private function _arc_condition($rs,$fields='')
 	{
-		$condition  = " l.site_id='".$rs['site']."' AND l.hidden=0 ";
+		$condition  = " l.site_id='".$rs['site']."' ";
+		if(!$rs['is_usercp']){
+			$condition .= "AND l.hidden=0 ";
+		}
 		if($rs['pid']){
 			$condition .= " AND l.project_id=".intval($rs['pid'])." ";
 		}
@@ -308,8 +311,11 @@ class phpok_call extends phpok_control
 			$cate_all = $this->model('cate')->cate_all($rs['site']);
 			$array = array($rs['cateid']);
 			$this->model('cate')->cate_ids($array,$rs['cateid'],$cate_all);
-			$tmp = "SELECT id FROM ".$this->db->prefix."list_cate WHERE cate_id IN(".implode(",",$array).")";
-			$condition .= " AND l.id IN(".$tmp.")";
+			$condition .= " AND (lc.cate_id IN(".implode(",",$array).") OR l.cate_id IN(".implode(",",$array).")) ";
+			//$tmp1 = "SELECT id FROM ".$this->db->prefix."list_cate WHERE cate_id IN(".implode(",",$array).")";
+			//$tmp2 = "SELECT id FROM ".$this->db->prefix."list WHERE cate_id IN(".implode(",",$array).")";
+			//$condition .= " AND l.id IN(".$tmp1." UNION ".$tmp2.")";
+			//$condition .= " AND l.id IN()"
 			unset($cate_all,$array);
 		}
 		//绑定某个会员
@@ -865,7 +871,6 @@ class phpok_call extends phpok_control
 			foreach($array AS $key=>$value){
 				if($value['ext']){
 					$ext = is_string($value['ext']) ? unserialize($value['ext']) : $value['ext'];
-					unset($value['ext']);
 					$value = array_merge($ext,$value);
 				}
 				$array[$key] = $this->lib('form')->format($value);
@@ -971,6 +976,13 @@ class phpok_call extends phpok_control
 			$rs['cateid'] = $tmp['id'];
 			unset($tmp,$identifier);
 		}
+		$project = false;
+		if($rs['pid']){
+			$project_rs = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
+			if($project_rs && $project_rs['status'] && $project_rs['cate']){
+				$project = $project_rs;
+			}
+		}
 		$cate_all = $this->model('cate')->cate_all($rs['site']);
 		if(!$cate_all){
 			return false;
@@ -980,6 +992,7 @@ class phpok_call extends phpok_control
 			if($v['parent_id'] != $rs['cateid']){
 				continue;
 			}
+			
 			$cate_tmp = $this->model('ext')->ext_all('cate-'.$v['id'],true);
 			if($cate_tmp){
 				foreach($cate_tmp as $key=>$value){
@@ -993,6 +1006,9 @@ class phpok_call extends phpok_control
 					}
 				}
 				$v = array_merge($cate_ext,$v);
+				if(!$v['url'] && $project){
+					$v['url'] = $this->url($project['identifier'],$v['identifier']);
+				}
 				unset($cate_ext,$cate_tmp);
 			}
 			$list[$k] = $v;

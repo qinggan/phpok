@@ -192,12 +192,12 @@ class usercp_control extends phpok_control
 		$fullname = $user['fullname'] ? $user['fullname'] : $user['user'];
 		$content = $this->fetch($info['content'],'content');
 		$data = array('content'=>$content,'mobile'=>$mobile,'fullname'=>$fullname);
+		$this->model('gateway')->save_temp($code,$server['id'],$this->u_id);
 		$action = $this->model('gateway')->action($server,$data);
 		if($action){
-			$this->model('gateway')->save_temp($code,$server['id'],$this->u_id);
 			$this->json(true);
 		}
-		$this->json(P_Lang('短信发送失败，请检查'));
+		$this->json(P_Lang('短信发送异常，请稍等看是否有收到短信'));
 	}
 	
 	//更新会员邮箱

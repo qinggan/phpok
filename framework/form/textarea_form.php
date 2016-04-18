@@ -28,7 +28,7 @@ class textarea_form extends _init_auto
 			$height = intval($rs['height']) ? intval($rs['height']) : '100';
 			$html .= '<textarea name="'.$rs["identifier"].'" id="'.$rs["identifier"].'" phpok_id="textarea" ';
 			$html .= 'style="'.$rs["form_style"].';width:'.$width.';height:'.$height.'px"';
-			$html .= '>'.$rs["content"].'</textarea>';
+			$html .= ' placeholder="'.$rs['note'].'">'.$rs["content"].'</textarea>';
 			return $html;
 		}else{
 			$width = intval($rs['width']) ? intval($rs['width']).'px' : '100%';
@@ -36,7 +36,7 @@ class textarea_form extends _init_auto
 			$html  = '<table style="border:0;margin:0;padding:0" cellpadding="0" cellspacing="0"><tr><td>';
 			$html .= '<textarea name="'.$rs["identifier"].'" id="'.$rs["identifier"].'" phpok_id="textarea" ';
 			$html .= 'style="'.$rs["form_style"].';width:'.$width.';height:'.$height.'"';
-			$html .= '>'.$rs["content"].'</textarea>';
+			$html .= ' placeholder="'.$rs['note'].'">'.$rs["content"].'</textarea>';
 			$html .= "</td></tr></table>";
 			return $html;
 		}

@@ -51,12 +51,12 @@ class post_control extends phpok_control
 		}
 		$cateid = $this->get("cateid","int");
 		if($cateid){
-			$cate_rs = $this->model('data')->cate(array('pid'=>$project_rs['id'],'cateid'=>$cateid,'cate_ext'=>true));
+			$cate_rs = $this->call->phpok('_cate',array('pid'=>$project_rs['id'],'cateid'=>$cateid,'cate_ext'=>true));
 			$this->assign("cate_rs",$cate_rs);
 		}else{
 			$cate = $this->get('cate');
 			if($cate){
-				$cate_rs = $this->model('data')->cate(array('pid'=>$project_rs['id'],'cate'=>$cate,'cate_ext'=>true));
+				$cate_rs = $this->call->phpok('_cate',array('pid'=>$project_rs['id'],'cate'=>$cate,'cate_ext'=>true));
 				$this->assign("cate_rs",$cate_rs);
 			}
 		}

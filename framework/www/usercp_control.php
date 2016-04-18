@@ -119,6 +119,7 @@ class usercp_control extends phpok_control
 	//获取项目列表
 	public function list_f()
 	{
+		//$this->cache->close();
 		$id = $this->get("id");
 		if(!$id){
 			error(P_Lang('未指定项目'),$this->url('usercp'),'notice',10);
@@ -166,7 +167,8 @@ class usercp_control extends phpok_control
 			$pageurl .= "&keywords=".$keywords;
 			$this->assign("keywords",$keywords);
 		}
-		$dt['not_status'] = 1;
+		$dt['not_status'] = true;
+		$dt['is_usercp'] = true;
 		$status = $this->get('status');
 		if($status){
 			if($status == 1){
@@ -177,6 +179,17 @@ class usercp_control extends phpok_control
 		}
 		
 		$dt['is_list'] = true;
+		$dt['cache'] = false;
+		$ext = $this->get('ext');
+		if($ext && is_array($ext)){
+			foreach($ext AS $key=>$value){
+				if($key && $value){
+					$dt['e_'.$key] = $value;
+					$pageurl .= "&ext[".$key."]=".rawurlencode($value);
+				}
+			}
+			$this->assign('ext',$ext);
+		}
 		$list = $this->call->phpok('_arclist',$dt);
 		if($list['total']){
 			$this->assign("pageid",$pageid);

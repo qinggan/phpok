@@ -24,13 +24,13 @@ $(document).ready(function(){
 			}
 		}
 		$(this).ajaxSubmit({
-			'url':api_url('post','edit'),
+			'url':api_url('post','save'),
 			'type':'post',
 			'dataType':'json',
 			'success':function(rs){
 				if(rs.status == 'ok'){
 					$.dialog.alert('内容编辑成功',function(){
-						window.close();
+						$.phpok.go('{url ctrl=usercp func=list id=$page_rs.identifier/}');
 					});
 				}else{
 					$.dialog.alert(rs.content,function(){
@@ -52,11 +52,12 @@ $(document).ready(function(){
 		</div>
 		<form method="post" id="post_submit">
 		<input type="hidden" name="id" value="{$page_rs.identifier}" />
+		<input type="hidden" name="tid" value="{$rs.id}" />
 		<div class="publish">
 			<table>
 			<tr>
 				<td class="l_title" valign="top">{$page_rs.alias_title ? $page_rs.alias_title : '主题'}：</td>
-				<td class="td"><input name="title" id="title" type="text" class="r_input" /></td>
+				<td class="td"><input name="title" id="title" type="text" class="r_input" value="{$rs.title}" /></td>
 			</tr>
 			<!-- if $catelist -->
 			<tr>

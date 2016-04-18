@@ -140,17 +140,26 @@
 			$("#phpok-upfile-"+file.id).fadeOut();
 		});
 		this.uploader.on('error',function(handle){
+			var tip = '';
 			if(handle == 'Q_EXCEED_NUM_LIMIT'){
-				$.dialog.alert('要添加的文件数量超出系统限制');
-			}else if(handle == 'Q_EXCEED_SIZE_LIMIT'){
-				$.dialog.alert('要添加的文件总大小超出系统限制');
-			}else if(handle == 'Q_TYPE_DENIED'){
-				$.dialog.alert('文件类型不符合要求');
-			}else if(handle == 'F_EXCEED_SIZE'){
-				$.dialog.alert('上传文件超过系统限制');
-			}else{
-				$.dialog.alert(handle);
+				tip = '要添加的文件数量超出系统限制';
 			}
+			if(handle == 'Q_EXCEED_SIZE_LIMIT'){
+				tip = '要添加的文件总大小超出系统限制';
+			}
+			if(handle == 'Q_TYPE_DENIED'){
+				tip = '文件类型不符合要求';
+			}
+			if(handle == 'F_DUPLICATE'){
+				tip = '文件重复';
+			}
+			if(handle =='F_EXCEED_SIZE'){
+				tip = '上传文件超过系统限制';
+			}
+			if(!tip){
+				tip = handle;
+			}
+			$.dialog.alert('<span style="color:red">'+tip+'</span>');
 			return false;
 		});
 		this.update = function(id){

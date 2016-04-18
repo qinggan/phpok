@@ -339,12 +339,14 @@ class list_control extends phpok_control
 			$main_keytype = array('title','tag','seo_title','seo_keywords','seo_desc','identifier');
 			if(in_array($keytype,$main_keytype)){
 				$condition .= " AND l.".$keytype." LIKE '%".$keywords."%' ";
+			}elseif($keytype == 'user'){
+				$condition .= " AND u.user LIKE '%".$keywords."%'";
 			}else{
 				$condition .= " AND ext.".$keytype." LIKE '%".$keywords."%'";
 			}
 			$pageurl .= "&keywords=".rawurlencode($keywords)."&keytype=".rawurlencode($keytype);
 			$this->assign("keywords",$keywords);
-			$this->assign("keytype",$keywords);
+			$this->assign("keytype",$keytype);
 		}
 		$dateline_start = $this->get('dateline_start');
 		if($dateline_start){

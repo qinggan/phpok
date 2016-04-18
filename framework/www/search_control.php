@@ -20,7 +20,7 @@ class search_control extends phpok_control
 		//查询
 		$keywords = $this->get('keywords');
 		if($keywords){
-			$keywords = str_replace(array("　","，",",","｜","|","、","/","\\","／","＼","+","＋","-","－","_","＿")," ",$keywords);
+			$keywords = str_replace(array("　","，",",","｜","|","、","/","\\","／","＼","+","＋")," ",$keywords);
 			$keywords = trim($keywords);
 			if($keywords){
 				$this->load_search($keywords);

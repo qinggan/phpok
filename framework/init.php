@@ -611,6 +611,10 @@ class _init_phpok
 		$this->model('url')->app_file($this->config[$appid.'_file']);
 		$this->model('url')->set_type($this->site['url_type']);
 		$this->model('url')->url_appid($appid);
+		if(is_bool($func)){
+			$baseurl = $func;
+			$func = '';
+		}
 		if($baseurl){
 			$this->model('url')->base_url($this->url);
 		}

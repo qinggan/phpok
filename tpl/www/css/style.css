@@ -112,8 +112,8 @@ header div.top form{width:253px; height:28px;border:1px solid #e7e7e7; margin-to
 header div.top form .input{ width:216px; height:20px; padding:4px; border:0; float:left;}
 header div.top form .btn{width:28px; height:28px; float:left; background:url("../images/icon-search.jpg") center center no-repeat; float:left; cursor:pointer; border:0;}
 
-header nav.menu{width:980px; height:40px;line-height:40px; background:#3375b9;list-style:none;position:relative;z-index:9999;}
-header nav.menu ul{list-style:none;margin:0;padding:0;position:absolute;z-index:10001;width:100%;}
+header nav.menu{width:980px; height:40px;line-height:40px; background:#3375b9;list-style:none;position:relative;z-index:1799;}
+header nav.menu ul{list-style:none;margin:0;padding:0;position:absolute;z-index:1800;width:100%;}
 header nav.menu ul li{ float:left;position:relative;width:12.5%;overflow:hidden;}
 header nav.menu ul li dl{list-style:none;color:#fff;font-size:1em;margin:0;text-align:center;}
 header nav.menu ul li dt.arrow{background:url('../images/arrow_down.png') 90% center no-repeat;}

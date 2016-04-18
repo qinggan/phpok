@@ -1,22 +1,16 @@
 <!-- php:$title = $page_rs.title.' - 会员中心' -->
 <!-- include tpl=head title=$title menutitle=会员中心 -->
-<script type="text/javascript">
-function title_edit(id){
-	var url = get_url('post','edit','id='+id);
-	window.open(url);
-}
-</script>
 <div class="cp">
 	<div class="left"><!-- include tpl=block_usercp --></div>
 	<div class="right">
 		<div class="pfw mbottom10">
-			<h3>{$page_rs.title}<a href="{url ctrl=post id=$id/}" class="more" target="_blank">添加</a></h3>
+			<h3>{$page_rs.title}<a href="{url ctrl=post id=$id/}" class="more">添加</a></h3>
 			<div class="table_lc" style="margin:5px 5px 0 5px;">
 			<table width="100%">
 			<tr>
 				<th>ID</th>
 				<th class="lft">{$page_rs.alias_title ? $page_rs.alias_title : '主题'}</th>
-				<th width="40px">状态</th>
+				<th width="50px">状态</th>
 				<th width="77px">操作</th>
 			</tr>
 			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
@@ -27,7 +21,7 @@ function title_edit(id){
 					<span class="gray">发布时间：{func time_format $value.dateline}，查看次数：{$value.hits}</span>
 				</td>
 				<td align="center"><!-- if $value.status -->正常<!-- else --><span class="red">审核中</span><!-- /if --></td>
-				<td align="center"><input type="button" value="编辑" class="button blue" onclick="title_edit('{$value.id}')" /></td>
+				<td align="center"><input type="button" value="编辑" class="button blue" onclick="$.phpok.go('{url ctrl=post func=edit id=$value.id/}')" /></td>
 			</tr>
 			<!-- /loop -->
 			</table>

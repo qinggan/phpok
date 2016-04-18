@@ -723,10 +723,10 @@ function tpl_head($array=array())
 		$app->url .= "/";
 	}
 	$html .= '<base href="'.$app->url.'" />'."\n\t";
-	$ico = $array['ico'] ? $array['ico'] : 'favicon.ico';
+	$ico = $array['ico'] ? $array['ico'] : 'favicon.png';
 	$cssjs_debug = $app->config['debug'] ? '?_noCache=0.'.rand(1000,9999) : '';
 	if(file_exists($app->dir_root.$ico)){
-		$html .= '<link rel="icon" href="'.$app->url.$ico.$cssjs_debug.'" />'."\n\t";
+		$html .= '<link rel="shortcut icon" href="'.$app->url.$ico.$cssjs_debug.'" />'."\n\t";
 	}
 	if($array["css"]){
 		$tmp = explode(",",$array['css']);

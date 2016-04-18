@@ -83,6 +83,23 @@ class fav_control extends phpok_control
 		$this->model('fav')->delete($id);
 		$this->json(true);
 	}
+
+	public function check_f()
+	{
+		if(!$_SESSION['user_id']){
+			$this->error(P_Lang('非会员不能使用此功能'));
+		}
+		//检测主题是否收藏过了
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定主题ID'));
+		}
+		$rs = $this->model('fav')->chk($id,$_SESSION['user_id'])
+		if(!$rs){
+			$this->error(P_Lang('未收藏'));
+		}
+		$this->success();
+	}
 }
 
 ?>

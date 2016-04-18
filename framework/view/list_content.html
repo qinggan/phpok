@@ -150,6 +150,9 @@ function reply_it(id,title)
 			<td><select name="keytype">
 				<option value="">{lang关键字类型…}</option>
 				<option value="title"{if $keytype == 'title'} selected{/if}>{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}</option>
+				<!-- if $rs.is_userid -->
+				<option value="user"{if $keytype == 'user'} selected{/if}>{lang会员账号}</option>
+				<!-- /if -->
 				<!-- if $rs.is_identifier -->
 				<option value="identifier"{if $keytype == 'identifier'} selected{/if}>{lang自定义标识}</option>
 				<!-- /if -->

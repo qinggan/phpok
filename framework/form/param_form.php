@@ -90,17 +90,43 @@ class param_form extends _init_auto
 		if(!$info || !$info['title'] || !is_array($info['title'])){
 			return false;
 		}
+		$ext = false;
+		if($rs['ext']){
+			if(is_string($rs['ext'])){
+				$ext = unserialize($rs['ext']);
+			}else{
+				$ext = $rs['ext'];
+			}
+		}
 		if($appid == 'admin'){
-			return implode("/",$info['title']);
-		}else{
-			$ext = false;
-			if($rs['ext']){
-				if(is_string($rs['ext'])){
-					$ext = unserialize($rs['ext']);
-				}else{
-					$ext = $rs['ext'];
+			$html = '';
+			if($ext && $ext['p_type']){
+				foreach($info['content'] as $key=>$value){
+					$tmp = '';
+					foreach($info['title'] as $k=>$v){
+						if($tmp){
+							$tmp .= " / ";
+						}
+						$tmp .= $v.': '.$value[$k];
+					}
+					$html .= '<div>'.$tmp.'</div>';
+				}
+			}else{
+				if(!$info['title']){
+					$info['title'] = array();
+				}
+				foreach($info['title'] as $key=>$value){
+					$html .= '<div>'.$value.'：'.$info['content'][$key].'</div>';
 				}
 			}
+			if(!$html){
+				$html = '无 <b>'.implode("/",$info['title']).'</b> 内容';
+			}
+
+			$html = '<input type="button" value="'.implode("/",$info['title']).'" class="phpok-btn" onclick="$.dialog.alert(\''.$html.'\');" />';
+			return $html;
+		}else{
+			
 			if($ext && $ext['p_type']){
 				return $info;
 			}else{
