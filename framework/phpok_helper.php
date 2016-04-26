@@ -484,6 +484,7 @@ function price_format_val($val='',$currency_id='',$show_id=0)
 	}
 	$rs = $currency[$show_id];
 	if($show_id != $currency_id){
+		$old_rs = $currency[$currency_id];
 		$val = ($val/$old_rs['val']) * $rs['val'];
 	}
 	$val = number_format($val,2,".","");

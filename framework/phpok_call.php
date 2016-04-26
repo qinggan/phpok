@@ -1108,7 +1108,7 @@ class phpok_call extends phpok_control
 				$array['user'] = $user['user'];
 				$array['uid'] = $user['id'];
 			}
-			$condition .= " AND (status=1 OR (status=0 AND uid=".$uid."))";
+			$condition .= " AND (status=1 OR (status=0 AND uid=".$_SESSION['user_id']."))";
 		}else{
 			$condition .= " AND (status=1 OR (status=0 AND session_id='".$this->session->sessid()."'))";
 		}
