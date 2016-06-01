@@ -8,59 +8,59 @@
 	Update  : 2013-04-18 02:24
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class call_model extends phpok_model
+class call_model_base extends phpok_model
 {
-	//site_id，为网站ID
-	var $site_id = 0;
-	var $psize = 20;
-	function __construct()
+	public $psize = 20;
+	public function __construct()
 	{
 		parent::model();
 	}
-	
-	function call_model()
+
+	public function __destruct()
 	{
-		$this->__construct();
+		parent::__destruct();
+		unset($this);
 	}
 
-	function site_id($site_id=0)
+	public function types()
 	{
-		$this->site_id = $site_id;
+		$xmlfile = $this->dir_root.'data/xml/calltype_'.$this->site_id.'.xml';
+		if(!file_exists($xmlfile)){
+			$xmlfile = $this->dir_root.'data/xml/calltype.xml';
+		}
+		return $this->lib('xml')->read($xmlfile);
 	}
 
-	function psize($psize=20)
+	public function psize($psize=20)
 	{
 		$this->psize = $psize;
 	}
 	
 	//通过ID取得数据（此操作用于后台）
-	function get_one($id)
+	public function get_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
 
-	function get_rs($id,$site_id)
+	public function get_rs($id,$site_id)
 	{
 		if(!$id || !$site_id) return false;
 		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE identifier='".$id."' AND site_id='".$site_id."'";
 		return $this->db->get_one($sql);
 	}
 
-	function get_list($condition="",$pageid=0)
+	public function get_list($condition="",$offset=0,$psize=30)
 	{
-		$offset = $pageid>0 ? ($pageid-1)*$this->psize : 0;
-		//获取调用数据的列表
-		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE site_id='".$this->site_id."' ";
-		if($condition)
-		{
+		$sql = "SELECT call.* FROM ".$this->db->prefix."phpok call WHERE call.site_id='".$this->site_id."' ";
+		if($condition){
 			$sql .= " AND ".$condition." ";
 		}
-		$sql.= " ORDER BY id DESC LIMIT ".$offset.",".$this->psize;
+		$sql.= " ORDER BY call.id DESC LIMIT ".$offset.",".$psize;
 		return $this->db->get_all($sql);
 	}
 
-	function get_all($site_id=0,$status=0)
+	public function get_all($site_id=0,$status=0)
 	{
 		if(!$site_id) return false;
 		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE site_id='".$site_id."'";
@@ -68,7 +68,7 @@ class call_model extends phpok_model
 		return $this->db->get_all($sql,"identifier");
 	}
 
-	function get_count($condition="")
+	public function get_count($condition="")
 	{
 		$sql = "SELECT count(id) FROM ".$this->db->prefix."phpok WHERE site_id='".$this->site_id."' ";
 		if($condition)
@@ -78,7 +78,7 @@ class call_model extends phpok_model
 		return $this->db->count($sql);
 	}
 
-	function chk_identifier($val)
+	public function chk_identifier($val)
 	{
 		return $this->get_one_sign($val);
 	}
@@ -96,29 +96,37 @@ class call_model extends phpok_model
 		return $this->get_one_sign($val);
 	}
 
-	function save($data,$id=0)
+	public function one($identifier,$siteid=0)
 	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"phpok",array("id"=>$id));
+		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE identifier='".$identifier."' AND site_id='".$siteid."' ";
+		$sql.= "AND status=1";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
 		}
-		else
-		{
-			return $this->db->insert_array($data,"phpok");
+		if($rs['ext']){
+			$ext = unserialize($rs['ext']);
+			$rs = array_merge($rs,$ext);
 		}
+		return $rs;
 	}
 
-	function set_status($id,$status=0)
+	public function all($siteid=0,$pri='')
 	{
-		$sql = "UPDATE ".$this->db->prefix."phpok SET status='".$status."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	function del($id)
-	{
-		$sql = "DELETE FROM ".$this->db->prefix."phpok WHERE id='".$id."'";
-		return $this->db->query($sql);
+		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE site_id='".$siteid."' AND status=1";
+		$rslist = $this->db->get_all($sql,$pri);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			if($value['ext']){
+				$ext = unserialize($value['ext']);
+				unset($value['ext']);
+				$value = array_merge($value,$ext);
+			}
+			$rslist[$key] = $value;
+		}
+		return $rslist;
 	}
 
 }

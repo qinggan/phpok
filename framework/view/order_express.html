@@ -1,0 +1,92 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function remote_info(id)
+{
+	var url = api_url('express','','id='+id);
+	$.dialog.tips('正在获取数据…');
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+function add_save()
+{
+	$("#postsave").ajaxSubmit({
+		'url':get_url('order','express_save','id={$rs.id}'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				$.phpok.reload();
+			}else{
+				$.dialog.alert(rs.content)
+			}
+		}
+	});
+}
+function delete_it(id)
+{
+	$.dialog.confirm('确定要删除这条物流信息吗？删除后相应记录会被删除',function(){
+		var url = get_url('order','express_delete','id='+id);
+		$.phpok.json(url,function(rs){
+			if(rs.status == 'ok'){
+				$.phpok.reload();
+			}else{
+				$.dialog.alert(rs.content)
+			}
+		})
+	});
+}
+$(document).ready(function(){
+	$("#postsave").submit(function(){
+		add_save();
+		return false;
+	});
+});
+</script>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>物流单号</th>
+	<th>物流</th>
+	<th>公司名称</th>
+	<th>登录时间</th>
+	<th>&nbsp;</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td rowspan="{$value.invoice_total}" align="center">{$value.code}</td>
+	<td>{$value.title}</td>
+	<td>{$value.company}</td>
+	<td>{func date "Y-m-d H:i" $value.addtime}</td>
+	<td>
+		<!-- if !$value.is_end -->
+		<input type="button" value="远程更新数据" onclick="remote_info('{$value.id}')" class="btn" />
+		<input type="button" value="删除记录" onclick="delete_it('{$value.id}')" class="btn" />
+		<!-- /if -->
+	</td>
+</tr>
+<!-- loop from=$value.invoicelist key=$k value=$v -->
+<tr><td colspan="4">时间：{func date "Y-m-d H:i:s" $v.addtime}，执行人：{$v.who}，执行任务：{$v.note}</td></tr>
+<!-- /loop -->
+<!-- /loop -->
+<tr>
+	<td class="center">添加</td>
+	<td colspan="4">
+		<form method="post" id="postsave">
+		<select name="express_id" id="express_id">
+			<option value="">请选择物流公司</option>
+			<!-- loop from=$expresslist key=$key value=$value id=$tmpid -->
+			<option value="{$value.id}">{$value.title}</option>
+			<!-- /loop -->
+		</select>
+		<input type="text" name="code" id="code" value="" placeholder='快递单号' />
+		<input type="submit" value="添加" class="btn" />
+		</form>
+	</td>
+</table>
+
+<!-- include tpl=foot_open -->

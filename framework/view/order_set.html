@@ -1,401 +1,441 @@
 <!-- php:$title = $id ? '编辑订单' : '添加新订单' --><!-- include tpl=head title=$title -->
-<script type="text/javascript" src="{func add_js order.js,pcas.js}"></script>
+<script type="text/javascript" src="{func add_js order.js}"></script>
 <script type="text/javascript" src="js/laydate/laydate.js"></script>
 <script type="text/javascript">
 var is_id = '{$id}';
-$(document).ready(function(){
-$("#ordersave").submit(function(){
-	$(this).ajaxSubmit({
+function save_order()
+{
+	$("#ordersave").ajaxSubmit({
 		'url':get_url('order','save'),
 		'type':'post',
 		'dataType':'json',
 		'success':function(rs){
 			//订单状态为否时
-			if(rs.status != 'ok')
-			{
-				if(!rs.content) rs.content = '提交失败';
+			if(rs.status != 'ok'){
+				if(!rs.content){
+					rs.content = '提交失败';
+				}
 				$.dialog.alert(rs.content);
 				return false;
 			}
 			//订单操作成功的提示
-			if(is_id)
-			{
-				$.dialog.alert('订单：<span class="red">{$rs.sn}</span> 编辑成功');
-			}
-			else
-			{
+			if(is_id && is_id != '0'){
+				$.dialog.alert('订单：<span class="red">{$rs.sn}</span> 编辑成功',function(){
+					$.phpok.go('{url ctrl=order/}');
+				},'succeed');
+			}else{
 				var sn = $("#sn").val();
 				$.dialog.alert("订单创建成功，编号是：<span class='red'>"+sn+"</span>",function(){
-					$.phpok.reload();
-				});
+					$.phpok.go('{url ctrl=order/}');
+				},'succeed');
 			}
 		}
 	});
-	return false;
-});
+}
+function delete_payment(id)
+{
+	var url = get_url('order','payment_delete','id='+id);
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$("#pay_price").val('');
+			$("#pay_id").val('');
+			$("#pay_id_btn").hide();
+		}
+	})
+	
+}
+$(document).ready(function(){
+	$("#ordersave").submit(function(){
+		var price = $("#price").val();
+		if(!price){
+			$.dialog.alert('请填写订单价格');
+			$("li[name=price]").click();
+			return false;
+		}
+		save_order();
+		return false;
+	});
 });
 function update_price()
 {
 	var val = 0;
-	$("input[class=price]").each(function(){
-		var t = $(this).val();
-		t = parseFloat(t);
-		if(t>0)
-		{
+	$("tr[class=prolist]").each(function(){
+		var price = $(this).find("input[class=price]").val();
+		var qty = $(this).find('input[class=qty]').val();
+		if(!qty){
+			qty = 1;
+		}
+		price = parseFloat(price);
+		qty = parseInt(qty);
+		var t = price * qty;
+		if(t>0){
 			val = val + t;
 		}
 	});
-	$("#price").val(val.toString());
+	val = val.toFixed(2);
+	$("#ext_price_product").val(val.toString());
 }
 </script>
 <div class="tips">
 	<a href="{func admin_url order}" title="订单管理">订单管理</a>
 	&raquo; <!-- if $id -->编辑订单<!-- else -->添加新订单<!-- /if -->
 </div>
+<ul class="group">
+	<li class="on" onclick="$.admin.group(this)" name="main">{lang主要信息}</li>
+	<li onclick="$.admin.group(this)" name="product">{lang商品信息}</li>
+	<li onclick="$.admin.group(this)" name="address">{lang收货地址}</li>
+	<li onclick="$.admin.group(this)" name="invoice">{lang发票信息}</li>
+	<li onclick="$.admin.group(this)" name="price">{lang付款与优惠}</li>
+	<li onclick="$.admin.group(this)" name="log">{lang订单操作日志}</li>
+</ul>
+
 <form method="post" id="ordersave">
-<!-- if $id -->
-<input type="hidden" name="id" id="id" value="{$id}" />
-<div class="table">
-	<div class="title">
-		订单编号：
-		<span class="red b">{$rs.sn}</span>
+<div id="main_setting">
+	<!-- if $id -->
+	<input type="hidden" name="id" id="id" value="{$id}" />
+	<div class="table">
+		<div class="title">
+			订单编号：
+			<span class="red b">{$rs.sn}</span>
+		</div>
 	</div>
-</div>
-<!-- else -->
-<div class="table">
-	<div class="title">
-		订单编号：
-		<span class="note">这里创建的订单编号不受网站信息里规则限制，是随机的，请慎用</span>
+	<!-- else -->
+	<div class="table">
+		<div class="title">
+			订单编号：
+			<span class="note">这里创建的订单编号不受网站信息里规则限制，是随机的，请慎用</span>
+		</div>
+		<div class="content">
+			<input type="text" id="sn" name="sn" class="default" value="{$rs.sn}" />
+			<input type="button" value="随机创建" onclick="update_sn()" class="btn" />
+		</div>
 	</div>
-	<div class="content">
-		<input type="text" id="sn" name="sn" class="default" value="{$rs.sn}" />
-		<input type="button" value="随机创建" onclick="update_sn()" class="btn" />
-	</div>
-</div>
-<script type="text/javascript">
-$(document).ready(function(){
-	update_sn();
-});
-</script>
-<!-- /if -->
-<div class="table">
-	<div class="title">
-		查看密码：
-		<span class="note">该项用于游客查看订单的凭证，无此凭证只能查看订单的状态（是否审核，是否付款）</span>
-	</div>
-	<div class="content">
-		<input type="text" id="passwd" name="passwd" class="long" value="{$rs.passwd}" />
-		<input type="button" value="随机生成" onclick="update_passwd()" class="btn" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		订单金额：
-		<span class="note">提交订单前，请先计算产品总额，注意货币单位</span>
-	</div>
-	<div class="content">
-		<input type="text" id="price" name="price" value="{$rs.price}" />
-		<select name="currency_id" id="currency_id">
-		<!-- loop from=$currency_list key=$key value=$value -->
-		<option value="{$value.id}"{if $rs.currency_id == $value.id} selected{/if}>{$value.title}（标识：{$value.code}，汇率：{$value.val}）</option>
-		<!-- /loop -->
-		</select>
-		<input type="button" value="根据产品计算价格" onclick="update_price()" class="btn" />
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		订单状态：
-		<span class="note">已完成订单在前台将不能执行付款，删除，退款等操作</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="radio" name="pay_end" value="0"{if !$rs.pay_status} checked{/if} />进行中</label></td>
-			<td><label><input type="radio" name="pay_end" value="1"{if $rs.pay_status} checked{/if} />已完成</label></td>
-			<td>&nbsp; &nbsp; 状态说明：</td>
-			<td><input type="text" id="status" name="status" value="{$rs.status}" /></td>
-			<td style="padding-left:10px;">
-				<select onchange="$('#status').val(this.value);">
-					<option value="">请选择……</option>
-					<option>审核中</option>
-					<option>已审核</option>
-					<option>已确认</option>
-					<option>已完成</option>
-				</select>
-			</td>
-		</tr>
-		</table>
-	</div>
-</div>
-
-
-<div class="table">
-	<div class="title">
-		会员：
-		<span class="note">指定会员ID，为空表示游客下单</span>
-	</div>
-	<div class="content">
-		{func form_edit user_id $rs.user_id user}
-	</div>
-</div>
-<div class="table_lc" style="margin-top:5px;margin-right:3px;">
-<table width="100%" id="prolist">
-<tr class="prolist">
-	<th width="80px">产品图片</th>
-	<th>产品名称/产品单价</th>
-	<th width="60px" width="60px">购买数量</th>
-	<th width="50px" ><input type="button" value="增加产品" onclick="add_row()" class="btn" /></th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value -->
-<tr id="pro_{$rslist_id.num}" class="prolist">
-	<input type="hidden" name="pro_id[]" value="{$value.id}" />
-	<input type="hidden" name="pro_tid[]" value="{$value.tid}" class="p_proid" id="pro_tid_{$rslist_id.num}" />
-	<input type="hidden" name="pro_thumb[]" value="{$value.thumb.id}" id="pro_thumb_{$rslist_id.num}" />
-	<td widtha="90px" align="center" id="pro_thumb_view_{$rslist_id.num}"><img src="{$value.thumb.ico}" style="cursor:pointer;" onclick="update_pic('{$rslist_id.num}')" width="80px" height="80px" border="0" /></td>
-	<td>
-		<table>
-			<tr>
-				<td><input type="text" name="pro_title[]" id="pro_title_{$value.id}" class="long" value="{$value.title}" /></td>
-			</tr>
-			<tr>
-				<td><input type="text" name="pro_price[]" class="price" id="pro_price_{$rslist_id.num}" value="{$value.price}" /> <input type="button" value="选择产品" onclick="pro_select('{$rslist_id.num}')" class="btn" /></td>
-			</tr>
-		</table>
-	</td>
-	<td class="center"><input type="text" name="pro_qty[]" class="qty" id="pro_qty_{$rslist_id.num}" value="{$value.qty}" /></td>
-	<td class="center"><input type="button" value="删除" onclick="order_pro_delete({$value.id})" class="btn" /></td>
-</tr>
-<!-- /loop -->
-</table>
-</div>
-<div class="tips clearfix">收货地址</div>
-<input type="hidden" name="s-id" value="{$shipping.id}" />
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">收件人姓名：</td>
-		<td><input type="text" name="s-fullname" id="s-fullname" value="{$shipping.fullname}" /></td>
-		<td>&nbsp; &nbsp;性别：</td>
-		<td><label><input type="radio" name="s-gender" value="0"{if !$shipping.gender} checked{/if} />女</label></td>
-		<td><label><input type="radio" name="s-gender" value="1"{if $shipping.gender} checked{/if} />男</label></td>
-	</tr>
-	</table>
-</div>
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">地址：</td>
-		<td><select name="s-country"><option value="中国">中国</option></select></td>
-		<td><select name="s-province"></select></td>
-		<td><select name="s-city"></select></td>
-		<td><select name="s-county"></select></td>
-	</tr>
-	</table>
 	<script type="text/javascript">
 	$(document).ready(function(){
-		new PCAS("s-province={$shipping.province}","s-city={$shipping.city}","s-county={$shipping.county}");
+		update_sn();
 	});
 	</script>
-</div>
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">&nbsp;</td>
-		<td><input type="text" id="s-address" name="s-address" class="long" value="{$shipping.address}" /></td>
-	</tr>
-	</table>	
-</div>
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">邮编：</td>
-		<td><input type="text" id="s-zipcode" name="s-zipcode" value="{$shipping.zipcode}" /></td>
-	</tr>
-	</table>	
-</div>
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">联系电话：</td>
-		<td><input type="text" id="s-tel" name="s-tel" value="{$shipping.tel}" class="default" /></td>
-		<td class="gray i">电话号码，格式：0755-12345678</td>
-	</tr>
-	</table>	
-</div>
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">手机号：</td>
-		<td><input type="text" id="s-mobile" name="s-mobile" value="{$shipping.mobile}" class="default" /></td>
-		<td class="gray i">手机，格式：13xxxxxxxxx，长度是11位</td>
-	</tr>
-	</table>	
-</div>
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">Email：</td>
-		<td><input type="text" id="s-email" name="s-email" value="{$shipping.email}" class="default" /></td>
-		<td class="gray i">邮箱，可用于手工客户订单状态</td>
-	</tr>
-	</table>	
-</div>
-<!-- if $site_rs.biz_billing || $billing -->
-<div class="tips">
-	<table width="100%">
-	<tr>
-		<td>账单地址，用于接收该笔订单的收据，发票等信息，一般填写您付款的信用卡地址信息，适用于外贸及给朋友送礼物时接收这一类信息</td>
-		<td align="right"><!-- <input type="button" value="获取会员地址" onclick="get_billing()" class="btn" /> --></td>
-	</tr>
-	</table>
-</div>
-<input type="hidden" name="b-id" value="{$billing.id}" />
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">姓名：</td>
-		<td><input type="text" name="b-fullname" id="b-fullname" value="{$billing.fullname}" /></td>
-		<td>&nbsp; &nbsp;性别：</td>
-		<td><label><input type="radio" name="b-gender" value="0"{if !$billing.gender} checked{/if} />女</label></td>
-		<td><label><input type="radio" name="b-gender" value="1"{if $billing.gender} checked{/if} />男</label></td>
-	</tr>
-	</table>
-</div>
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">地址：</td>
-		<td><select name="b-country"><option value="中国">中国</option></select></td>
-		<td><select name="b-province"></select></td>
-		<td><select name="b-city"></select></td>
-		<td><select name="b-county"></select></td>
-	</tr>
-	</table>
-	<script type="text/javascript">
-	$(document).ready(function(){
-		new PCAS("b-province={$billing.province}","b-city={$billing.city}","b-county={$billing.county}");
-	});
-	</script>
-</div>
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">&nbsp;</td>
-		<td><input type="text" id="b-address" name="b-address" class="long" value="{$billing.address}" /></td>
-	</tr>
-	</table>	
-</div>
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">邮编：</td>
-		<td><input type="text" id="b-zipcode" name="b-zipcode" value="{$billing.zipcode}" /></td>
-	</tr>
-	</table>	
-</div>
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">联系电话：</td>
-		<td><input type="text" id="b-tel" name="b-tel" value="{$billing.tel}" class="default" /></td>
-		<td class="gray i">电话号码，格式：0755-12345678</td>
-	</tr>
-	</table>	
-</div>
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">手机号：</td>
-		<td><input type="text" id="b-mobile" name="b-mobile" value="{$billing.mobile}" class="default" /></td>
-		<td class="gray i">手机，格式：13xxxxxxxxx，长度是11位</td>
-	</tr>
-	</table>	
-</div>
-<div class="table">
-	<table>
-	<tr>
-		<td width="130px" align="right">Email：</td>
-		<td><input type="text" id="b-email" name="b-email" value="{$billing.email}" class="default" /></td>
-		<td class="gray i">邮箱，可用于手工客户订单状态</td>
-	</tr>
-	</table>	
-</div>
-<!-- /if -->
-<div class="tips clearfix">付款信息信息</div>
-<div class="table">
-	<div class="title">
-		付款金额：
-		<span class="note">请填写客户实际支付的金额，为空将使用 <span class="red">订单金额</span>。货币类型会根据支付类型自动匹配</span>
+	<!-- /if -->
+	<div class="table">
+		<div class="title">
+			查看密码：
+			<span class="note">该项用于游客查看订单的凭证，无此凭证只能查看订单的状态（是否审核，是否付款）</span>
+		</div>
+		<div class="content">
+			<input type="text" id="passwd" name="passwd" class="long" value="{$rs.passwd}" />
+			<input type="button" value="随机生成" onclick="update_passwd()" class="btn" />
+		</div>
 	</div>
-	<div class="content">
-		<input type="text" id="pay_price" name="pay_price" value="{$rs.pay_price}" />
-		<input type="button" value="读订单金额" onclick="$('#pay_price').val($('#price').val());" class="btn" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		付款时间：
-		<span class="note">设置付款时间，为空使用系统当前时间：{func date "Y-m-d H:i" $app->time}</span>
-	</div>
-	<div class="content">
-		<input type="text" id="pay_date" name="pay_date" value="{$rs.pay_date ? date('Y-m-d H:i:s',$rs.pay_date) : ''}" onfocus="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		付款方式：
-		<span class="note">请选择一种付款方式</span>
-	</div>
-	<div class="content">
-		<select name="pay_id">
-			<!-- loop from=$paylist key=$key value=$value -->
-			<!-- if $value.paylist -->
-			<optgroup label="{$value.title}">
-				<!-- loop from=$value.paylist key=$k value=$v -->
-				<option value="{$v.id}"{if $v.id == $rs.pay_id} selected{/if}>{$v.title}（货币：{$v.currency}）</option>
+	<div class="table">
+		<div class="title">
+			订单状态：
+			<span class="note">请勾选当前订单状态</span>
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<!-- loop from=$statuslist key=$key value=$value id=$tmpid -->
+				<li><label{if !$value.status} class="gray"{/if}><input type="radio" name="status" value="{$value.identifier}"{if $rs.status == $value.identifier} checked{/if}{if !$value.status} disabled{/if} />{$value.taxis}. {$value.title}<!-- if !$value.status -->（禁用）<!-- /if --></label></li>
 				<!-- /loop -->
-			</optgroup>
-			<!-- /if -->
-			<!-- /loop -->
-		</select>
+			</ul>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			会员：
+			<span class="note">指定会员ID，为空表示游客下单</span>
+		</div>
+		<div class="content">
+			{func form_edit user_id $rs.user_id user}
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			邮箱Email：
+			<span class="note">用于接收邮件通知，为空将不发送通知给客户，请填写正确的Email</span>
+		</div>
+		<div class="content">
+			<input type="text" name="email" id="email" value="{$rs.email}" class="default" />
+			<input type="button" value="取得会员邮箱" onclick="get_user_email()" class="btn" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			订单备注：
+			<span class="note">填写一些客户的特殊要求说明，不支持HTML</span>
+		</div>
+		<div class="content"><textarea name="note" id="note" style="width:99%;height:80px;">{$rs.note}</textarea></div>
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		付款状态：
-		<span class="note">设置付款状态信息，仅用于显示</span>
+<div class="hide" id="product_setting" style="padding:0 20px;">
+	<div class="table_lc" style="margin-top:5px;margin-right:3px;">
+		<table width="100%" id="prolist">
+		<tr class="prolist">
+			<th width="80px">产品图片</th>
+			<th>产品名称/产品单价</th>
+			<th width="60px" width="60px">购买数量</th>
+			<th width="50px" ><input type="button" value="增加产品" onclick="add_row()" class="btn" /></th>
+		</tr>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr id="pro_{$rslist_id.num}" class="prolist">
+			<input type="hidden" name="pro_id[]" value="{$value.id}" />
+			<input type="hidden" name="pro_tid[]" value="{$value.tid}" class="p_proid" id="pro_tid_{$rslist_id.num}" />
+			<input type="hidden" name="pro_thumb[]" value="{$value.thumb}" id="pro_thumb_{$rslist_id.num}" />
+			<td widtha="90px" align="center" id="pro_thumb_view_{$rslist_id.num}"><img src="{$value.thumb ? $value.thumb : 'images/picture_default.png'}" style="cursor:pointer;" onclick="update_pic('{$rslist_id.num}')" width="80px" height="80px" border="0" /></td>
+			<td>
+				<table>
+					<tr>
+						<td><input type="text" name="pro_title[]" id="pro_title_{$rslist_id.num}" class="long" value="{$value.title}" /></td>
+					</tr>
+					<tr>
+						<td><input type="text" name="pro_price[]" class="price" id="pro_price_{$rslist_id.num}" value="{$value.price}" /> <input type="button" value="选择产品" onclick="pro_select('{$rslist_id.num}')" class="btn" /></td>
+					</tr>
+				</table>
+			</td>
+			<td class="center"><input type="text" name="pro_qty[]" class="qty" id="pro_qty_{$rslist_id.num}" value="{$value.qty}" /></td>
+			<td class="center"><input type="button" value="删除" onclick="order_pro_delete({$value.id},{$rslist_id.num})" class="btn" /></td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- if !$rslist -->
+		<script type="text/javascript">
+		$(document).ready(function(){
+			add_row();
+		});
+		</script>
+		<!-- /if -->
 	</div>
-	<div class="content">
+</div>
+<div class="hide" id="address_setting">
+	<div class="table">
+		<div class="content">
+			<table cellspacing="0" cellpadding="0">
+			<tr>
+				<td><input type="button" value="获取会员收货地址" class="btn" onclick="get_user_address()" /></td>
+				<td>&nbsp;</td>
+				<td id="address_user_select"></td>
+			</tr>
+			</table>
+		</div>
+	</div>
+	<input type="hidden" name="s-id" value="{$shipping.id}" />
+	<div class="table">
 		<table>
 		<tr>
-			<td><input type="text" id="pay_status" name="pay_status" value="{$rs.pay_status}" /></td>
-			<td style="padding-left:10px;">
-				<select onchange="$('#pay_status').val(this.value);">
-					<option value="">请选择……</option>
-					<option>等待付款</option>
-					<option>待款中</option>
-					<option>已付款</option>
-				</select>
-			</td>
+			<td width="130px" align="right">收件人姓名：</td>
+			<td><input type="text" name="s-fullname" id="s-fullname" value="{$shipping.fullname}" /></td>
 		</tr>
 		</table>
 	</div>
-</div>
-
-<div class="tips">订单说明，这里可填写一些客户的特殊要求说明，不支持HTML</div>
-<div class="table">
-	<div class="content">
-		<textarea name="note" id="note" style="width:700px;height:80px;">{$rs.note}</textarea>
+	<div class="table">
+		<table>
+		<tr>
+			<td width="130px" align="right">{lang国家：}</td>
+			<td><input type="text" id="s-country" name="s-country" value="{$shipping.country ? $shipping.country : '中国'}" /></td>
+			<td width="130px" align="right">{lang省/州：}</td>
+			<td><input type="text" id="s-province" name="s-province" value="{$shipping.province}" /></td>
+		</tr>
+		</table>
+	</div>
+	<div class="table">
+		<table>
+		<tr>
+			<td width="130px" align="right">{lang城市：}</td>
+			<td><input type="text" id="s-city" name="s-city" value="{$shipping.city}" /></td>
+			<td width="130px" align="right">{lang镇/区：}</td>
+			<td><input type="text" id="s-county" name="s-county" value="{$shipping.county}" /></td>
+		</tr>
+		</table>
+	</div>
+	<div class="table">
+		<table>
+		<tr>
+			<td width="130px" align="right">{lang地址：}</td>
+			<td><input type="text" id="s-address" name="s-address" class="long" value="{$shipping.address}" /></td>
+		</tr>
+		</table>	
+	</div>
+	<div class="table">
+		<table>
+		<tr>
+			<td width="130px" align="right">联系电话：</td>
+			<td><input type="text" id="s-tel" name="s-tel" value="{$shipping.tel}" class="default" /></td>
+			<td class="gray i">电话号码，格式：0755-12345678</td>
+		</tr>
+		</table>	
+	</div>
+	<div class="table">
+		<table>
+		<tr>
+			<td width="130px" align="right">手机号：</td>
+			<td><input type="text" id="s-mobile" name="s-mobile" value="{$shipping.mobile}" class="default" /></td>
+			<td class="gray i">手机，格式：13xxxxxxxxx，长度是11位</td>
+		</tr>
+		</table>	
+	</div>
+	<div class="table">
+		<table>
+		<tr>
+			<td width="130px" align="right">Email：</td>
+			<td><input type="text" id="s-email" name="s-email" value="{$shipping.email}" class="default" /></td>
+			<td class="gray i">邮箱，格式为：admin@admin.com</td>
+		</tr>
+		</table>	
 	</div>
 </div>
-
+<div class="hide" id="invoice_setting">
+	<div class="table">
+		<div class="content">
+			<table cellspacing="0" cellpadding="0">
+			<tr>
+				<td><input type="button" value="获取会员发票" class="btn" onclick="get_user_invoice()" /></td>
+				<td>&nbsp;</td>
+				<td id="invoice_user_select"></td>
+			</tr>
+			</table>
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			发票类型：
+			<span class="note">填写发票的类型，留空使用个人发票</span>
+		</div>
+		<div class="content">
+			<input type="text" id="invoice_type" name="invoice_type" value="{$invoice.type}" class="default" />
+			<input type="button" value="普通发票" onclick="$('#invoice_type').val('普通发票')" class="btn" />
+			<input type="button" value="电子发票" onclick="$('#invoice_type').val('电子发票')" class="btn" />
+			<input type="button" value="增值税发票" onclick="$('#invoice_type').val('增值税发票')" class="btn" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			发票抬头：
+			<span class="note">企业报销请填写企业名称，个人请填写“个人”两字即可</span>
+		</div>
+		<div class="content">
+			<input type="text" name="invoice_title" id="invoice_title" class="default" value="{$invoice.title}" />
+			<input type="button" value="个人" onclick="$('#invoice_title').val('个人')" class="btn" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			发票内容
+			<span class="note">靖填写您要索引的发票内容</span>
+		</div>
+		<div class="content">
+			<input type="text" name="invoice_content" id="invoice_content" class="default" value="{$invoice.content}" />
+			<input type="button" value="明细" onclick="$('#invoice_content').val('明细')" class="btn" />
+			<input type="button" value="办公用户（附购物清单）" onclick="$('#invoice_content').val('办公用户（附购物清单）')" class="btn" />
+			<input type="button" value="电脑配件" onclick="$('#invoice_content').val('电脑配件')" class="btn" />
+			<input type="button" value="耗材" onclick="$('#invoice_content').val('耗材')" class="btn" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			发票备注：
+			<span class="note"></span>
+		</div>
+		<div class="content">
+			<textarea name="invoice_note" id="invoice_note" style="width:99%;height:150px;">{$invoice.note}</textarea>
+		</div>
+		<ul style="line-height:200%;">
+			<li>电子发票请在备注中填写：收票人手机号及收票人Email</li>
+			<li>增值税发票需要填写对方公司资料：单位名称 / 纳税人识别码 / 注册地址 / 注册电话 / 开户银行 / 银行账户</li>
+		</ul>
+	</div>
+</div>
+<div class="hide" id="price_setting">
+	<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
+	<!-- if $value.status -->
+	<div class="table">
+		<div class="title">{$value.title}：
+			<span class="note">
+				填写价格，该数据将执行<span class="red"><!-- if $value.action == 'add' -->增加<!-- else -->减法<!-- /if --></span>操作
+			</span>
+		</div>
+		<div class="content">
+			<input type="text" ext="price" action="{$value.action}" id="ext_price_{$value.identifier}" name="ext_price[{$value.identifier}]" class="default" sign="ext_price" value="{$price[$value.identifier]}" />
+			<!-- if $value.identifier == 'product' -->
+			<input type="button" value="根据产品计算价格" onclick="update_price()" class="btn" />
+			<!-- /if -->
+		</div>
+	</div>
+	<!-- /if -->
+	<!-- /loop -->
+	<div class="table">
+		<div class="title">
+			在线支付：
+			<span class="note">请设置需要在线支付的费用及支付方式</span>
+		</div>
+		<div class="content">
+			<input type="text" id="pay_price" name="pay_price" class="default" value="{$payinfo.price}" />
+			<select name="pay_id" id="pay_id">
+				<option value="">请选择一种在线支付方式…</option>
+				<!-- loop from=$paylist key=$key value=$value -->
+				<!-- if $value.paylist -->
+				<optgroup label="{$value.title}">
+					<!-- loop from=$value.paylist key=$k value=$v -->
+					<option value="{$v.id}"{if $v.id == $payinfo.payment_id} selected{/if}>{$v.title}（货币：{$v.currency}）</option>
+					<!-- /loop -->
+				</optgroup>
+				<!-- /if -->
+				<!-- /loop -->
+			</select>
+			<!-- if $payinfo -->
+			<input type="button" id="pay_id_btn" value="清除支付记录" onclick="delete_payment('{$payinfo.id}')" class="btn" />
+			<!-- /if -->
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			总计：
+			<span class="note">计算该订单涉及到的总金额费用</span>
+		</div>
+		<div class="content">
+			<input type="text" id="price" name="price" value="{$rs.price}" />
+			<select name="currency_id" id="currency_id">
+			<!-- loop from=$currency_list key=$key value=$value -->
+			<option value="{$value.id}"{if $rs.currency_id == $value.id} selected{/if}>{$value.title}（标识：{$value.code}，汇率：{$value.val}）</option>
+			<!-- /loop -->
+			</select>
+			<input type="button" value="计算总价格" onclick="total_price()" class="btn" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			付款时间：
+			<span class="note">设置付款时间，为空使用系统当前时间：{func date "Y-m-d H:i" $sys.time}</span>
+		</div>
+		<div class="content">
+			<input type="text" id="pay_date" name="pay_date" value="{$payinfo.dateline ? date('Y-m-d H:i:s',$payinfo.dateline) : ''}" onfocus="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" />
+		</div>
+	</div>
+</div>
+<div class="hide" id="log_setting" style="padding:0 20px;">
+	<!-- if !$loglist -->
+	<div style="text-align:center;padding:30px;">暂无日志</div>
+	<!-- else -->
+	<table width="100%" cellpadding="0" cellspacing="0" class="list">
+	<tr>
+		<th>时间</th>
+		<th class="lft">内容</th>
+		<th>操作人</th>
+	</tr>
+	<!-- loop from=$loglist key=$key value=$value -->
+	<tr>
+		<td class="center">{func date "Y-m-d H:i:s" $value.addtime}</td>
+		<td>{$value.note}</td>
+		<td class="center">{$value.who}</td>
+	</tr>
+	<!-- /loop -->
+	</table>
+	<!-- /if -->
+</div>
+<br /><br />
 <div class="table">
 	<div class="content">
 		<input type="submit" value="提 交" class="submit2" />
 	</div>
 </div>
 </form>
-
 <!-- include tpl=foot -->

@@ -1,7 +1,28 @@
-<div data-role="footer" role="contentinfo">
-	<div class="foot">Powered By Phpok.Com，All Right Reserved.</div>
+	</div>
+	<div data-role="footer" data-position="fixed" style="padding-bottom:0;">
+		<div data-role="navbar" class="ui-body-a" data-overlay-theme="a">
+		<ul>
+			<li><a href="{$sys.url}" data-icon="home"{if $sys.ctrl == 'index'} data-theme="b"{/if}>首页</a></li>
+			<li><a href="{url id=aboutus/}" data-icon="info"{if $sys.ctrl == 'content' && $page_rs.identifier == 'about'} data-theme="b"{/if}>关于</a></li>
+			<li><a href="{url ctrl=post id=book/}" data-icon="edit"{if $sys.ctrl == 'post' && $page_rs.identifier == 'book'} data-theme="b"{/if}>留言</a></li>
+			<li><a href="javascript:void(0);" onclick="kfonline()" data-icon="phone" id="kfonline-btn">客服</a></li>
+			<li><a href="{if $session.user_id}{url ctrl=usercp/}{else}{url ctrl=login/}{/if}" data-icon="user"{if $sys.ctrl == 'usercp' || $sys.ctrl == 'order'}  data-theme="b"{/if}>会员</a></li>
+		</ul>
+		</div>
+	</div>
+	<div id="popupkf" style="display:none;">
+		<!-- php:$list = phpok('kefu') -->
+		<ul class="kfonline">
+			<!-- loop from=$list.rslist key=$key value=$value -->
+			<li class="qq"><a href="http://wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes" target="_blank">{$value.title}（{$value.qq}）</a></li>
+			<!-- /loop -->
+			<!-- php:$list = phpok('contactus') -->
+			<!-- if $list && $list.tel -->
+			<li class="phone"><a href="tel:{$list.tel}">客服电话：{$list.tel}</a></li>
+			<!-- /if -->
+		</ul>
+	</div>
 </div>
-
-</div>
+<script type="text/javascript" src="js/global.js"></script>
 </body>
 </html>

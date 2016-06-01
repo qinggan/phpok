@@ -21,12 +21,20 @@ function checkout()
 		<td class="center"><a href="{$value.url}" title="{$value.title}" target="_blank"><img src="{$value.thumb.gd.thumb}" width="100px" border="0" alt="{$value.title}" /></a></td>
 		<td>
 			<h3 id="title_{$value.id}">{$value.title}</h3>
+			<!-- loop from=$value._attrlist key=$k value=$v id=$tmpid -->
+			<div>{$v.title}：{$v.content}</div>
+			<!-- /loop -->
 			<div>售价：{func price_format $value.price $value.currency_id}</div>
 		</td>
 		<td class="center price">{func price_format $value.price*$value.qty $value.currency_id}</td>
 		<td class="center">
-			<input type="text" class="qty" name="qty_{$value.id}" id="qty_{$value.id}" value="{$value.qty}" />
-			<input type="button" value=" 修改 " onclick="$.cart.update({$value.id})" />
+			<table style="border:0;width:auto;" align="center">
+			<tr>
+				<td style="border:0;"><div class="plus_minus minus" onclick="$.cart.minus('{$value.id}',1)"></div></td>
+				<td style="border:0;"><input type="text" class="qty" name="qty_{$value.id}" id="qty_{$value.id}" value="{$value.qty}" /> <input type="button" value=" 更新 " onclick="$.cart.update('{$value.id}')" /></td>
+				<td style="border:0;"><div class="plus_minus plus" onclick="$.cart.plus('{$value.id}',1)"></div></td>
+			</tr>
+			</table>
 		</td>
 		<td class="center">
 			<input type="button" value=" 删除 " onclick="$.cart.del({$value.id})" />

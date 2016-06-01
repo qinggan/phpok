@@ -1,0 +1,77 @@
+<!-- if $_rs.is_multiple -->
+<script type="text/javascript">
+function action_{$_rs.identifier}_show()
+{
+	var tmp_id = $("#{$_rs.identifier}").val();
+	if(tmp_id)
+	{
+		var url = get_url("inp")+"&type=title&content="+$.str.encode(tmp_id);
+		var rs = json_ajax(url);
+		if(rs.status == "ok")
+		{
+			var lst = rs.content;
+			var c = '<table>';
+			for(var i in lst)
+			{
+				c += '<tr id="{$_rs.identifier}_div_'+lst[i]['id']+'">';
+				c += '<td><input type="checkbox" value="'+lst[i]['id']+'" id="title_{$_rs.identifier}_'+i+'"></td>';
+				c += '<td><label for="title_{$_rs.identifier}_'+i+'">'+lst[i]['title']+'</label></td>';
+				c += '<td style="width:80px;"><input type="button" value="删除" onclick="phpok_title_delete(\'{$_rs.identifier}\',\''+lst[i]['id']+'\')" /></td>';
+				c += '</tr>';
+			}
+			c += '</table>';
+			$("#{$_rs.identifier}_div").html(c).show();
+			$("#{$_rs.identifier}_button_checkbox").show();
+		}
+	}
+}
+</script>
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{if $_rs.content && is_array($_rs.content)}{func implode , $_rs.content}{/if}" />
+<div style="display:block;height:27px;">
+	<input type="button" value="请选择" class="button" onclick="phpok_title_select('{$_project_id_btn}',true,'{$_open_title}','{$_rs.identifier}')" />
+	<span class="hide" id="{$_rs.identifier}_button_checkbox">
+		<input type="button" value="全选" onclick="$.input.checkbox_all('{$_rs.identifier}_div')" />
+		<input type="button" value="全不选" onclick="$.input.checkbox_none('{$_rs.identifier}_div')" />
+		<input type="button" value="反选" onclick="$.input.checkbox_anti('{$_rs.identifier}_div')" />
+		<input type="button" value="删除选中" onclick="phpok_title_delete('{$_rs.identifier}')" />
+	</span>
+</div>
+<div id="{$_rs.identifier}_div" class="hide"></div>
+<!-- else -->
+<script type="text/javascript">
+function action_{$_rs.identifier}_show()
+{
+	var tmp_id = $("#{$_rs.identifier}").val();
+	if(tmp_id)
+	{
+		var url = get_url("inp")+"&type=title&content="+$.str.encode(tmp_id);
+		var rs = json_ajax(url);
+		if(rs.status == "ok")
+		{
+			var lst = rs.content;
+			for(var i in lst)
+			{
+				$("#title_{$_rs.identifier}").html(lst[i]['title']).show();
+				$("#phpok-btn-{$_rs.identifier}-delete").show();
+			}
+		}
+	}
+}
+</script>
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{if $_rs.content && is_array($_rs.content)}{func implode , $_rs.content}{else}{$_rs.content}{/if}" />
+<table>
+<tr>
+	<td id="title_{$_rs.identifier}"></td>
+	<td width="200px">
+		<div class="phpok-btn" onclick="phpok_title_select('{$_project_id_btn}',false,'{$_open_title}','{$_rs.identifier}')"><span class="b"><span class="c">&nbsp;</span><span class="d">请选择</span></span></div>
+		<div id="phpok-btn-{$_rs.identifier}-delete" class="phpok-btn" onclick="phpok_title_delete_single('{$_rs.identifier}')"><span class="b"><span class="c">&nbsp;</span><span class="d">删除</span></span></div>
+	</td>
+</tr>
+</table>
+<!-- /if -->
+<script type="text/javascript">
+$(document).ready(function(){
+	action_{$_rs.identifier}_show();
+	$.dialog.data("title_data_{$_rs.identifier}",$("#{$_rs.identifier}").val());
+});
+</script>

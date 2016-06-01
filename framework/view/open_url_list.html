@@ -1,10 +1,14 @@
 <!-- inc:head_open -->
 <script type="text/javascript">
-function select_input(val)
+function select_input(val,title)
 {
 	var obj = $.dialog.opener;
 	obj.$("#{$id},#{$id}_default").val("index.php?id="+val);
 	obj.$("#{$id}_rewrite").val(val+".html");
+	var old = obj.$("#title").val();
+	if(!old && old != 'undefined'){
+		obj.$("#title").val(title)
+	}
 	$.dialog.close();
 }
 function go_back()
@@ -24,7 +28,7 @@ function go_back()
 	<td class="center" height="25px">{$value.id}</td>
 	<td style="text-align: left;padding-left:10px;">{$value.title}</td>
 	<td>
-		<a href="javascript:select_input('{$value.identifier ? $value.identifier : $value.id}');void(0)">提交</a>
+		<a href="javascript:select_input('{$value.identifier ? $value.identifier : $value.id}','{$value.title}');void(0)">提交</a>
 	</td>
 </tr>
 	<!-- loop from=$value.sonlist key=$kk value=$vv -->
@@ -34,7 +38,7 @@ function go_back()
 			&nbsp; &nbsp; ├─ {$vv.title}
 		</td>
 		<td>
-			<a href="javascript:select_input('{$vv.identifier ? $vv.identifier : $vv.id}');void(0)">提交</a>
+			<a href="javascript:select_input('{$vv.identifier ? $vv.identifier : $vv.id}','{$vv.title}');void(0)">提交</a>
 		</td>
 	</tr>
 	<!-- /foreach -->		

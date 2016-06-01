@@ -1,10 +1,10 @@
 <div class="title">
-	<span class="maintain">内容管理</span>
+	<span class="maintain">{lang内容管理}</span>
 </div>
 <div class="box_item">
 	<ul>
 		<!-- loop from=$list_rslist key=$key value=$value -->
-		<li pid="{$value.id}"><a title="{$value.title}" href="javascript:$.win('{$value.title}','{url ctrl=list func=action id=$value.id/}');void(0);">
+		<li pid="{$value.id}"><a title="{$value.title}" href="javascript:$.win('{$value.title}','{$value.url}');void(0);">
 			<div class="top_img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
 			<div class="name">{$value.nick_title ? $value.nick_title : $value.title}</div></a>
 		</li>

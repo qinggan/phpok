@@ -8,11 +8,17 @@
 	Update  : 2013年06月21日 12时00分
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class reply_model extends phpok_model
+class reply_model_base extends phpok_model
 {
 	function __construct()
 	{
 		parent::model();
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
 	}
 
 	function get_all($condition="",$offset=0,$psize=30)
@@ -85,14 +91,14 @@ class reply_model extends phpok_model
 
 	function get_list($condition="",$offset=0,$psize=30,$pri="",$orderby="")
 	{
-		if(!$orderby) $orderby = 'addtime DESC,id DESC';
+		if(!$orderby){
+			$orderby = 'addtime DESC,id DESC';
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."reply WHERE ".$condition." ORDER BY ".$orderby;
-		if($psize)
-		{
+		if($psize && intval($psize)){
 			$offset = intval($offset);
 			$sql .= " LIMIT ".$offset.",".$psize;
 		}
-		//phpok_log($sql);
 		return $this->db->get_all($sql,$pri);
 	}
 
@@ -138,6 +144,44 @@ class reply_model extends phpok_model
 	function get_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."reply WHERE id='".$id."'";
+		return $this->db->get_one($sql);
+	}
+
+	public function comment_stat($ids)
+	{
+		if(!$ids){
+			return false;
+		}
+		if(is_array($ids)){
+			$ids = implode(",",$ids);
+		}
+		$sql = "SELECT count(tid) as total,tid FROM ".$this->db->prefix."reply WHERE tid IN(".$ids.") GROUP BY tid";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$rslist[$value['tid']] = $value['total'];
+		}
+		return $rslist;
+	}
+
+	/**
+	 * 取得主题属性信息，如绑定的项目ID，如分页页码等
+	 * @param int $id 主题ID或主题标识
+	 * @date 2016年02月07日
+	 */
+	public function get_title_info($id)
+	{
+		$sql = "SELECT l.id,l.project_id,p.psize,p.comment_status FROM ".$this->db->prefix."list l ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) WHERE ";
+		if(is_numeric($id)){
+			$sql.= "l.id='".$id."'";
+		}else{
+			$sql.= "l.identifier='".$id."' AND l.site_id='".$this->site_id."'";
+		}
+		$sql.= " AND l.status=1 AND p.status=1";
 		return $this->db->get_one($sql);
 	}
 	

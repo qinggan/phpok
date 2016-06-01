@@ -8,11 +8,17 @@
 	Update  : 2013年12月8日
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class order_model extends phpok_model
+class order_model extends order_model_base
 {
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
 	}
 
 	//取得订单列表
@@ -26,7 +32,27 @@ class order_model extends phpok_model
 		$offset = intval($offset);
 		$psize = intval($psize);
 		$sql .= " ORDER BY addtime DESC,id DESC LIMIT ".$offset.",".$psize;
-		return $this->db->get_all($sql);
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		$status_list = $this->status_list();
+		$order_idlist = array();
+		foreach($rslist as $key=>$value){
+			$value['status_info'] = ($status_list && $status_list[$value['status']]) ? $status_list[$value['status']] : $value['status'];
+			$rslist[$key] = $value;
+			$order_idlist[] = $value['id'];
+		}
+		$order_ids = implode(",",$order_idlist);
+		$sql = "SELECT SUM(qty) as qty,order_id FROM ".$this->db->prefix."order_product WHERE order_id IN(".$order_ids.") GROUP BY order_id";
+		$tmplist = $this->db->get_all($sql,'order_id');
+		if($tmplist){
+			foreach($rslist as $key=>$value){
+				$value['qty'] = $tmplist[$value['id']] ? $tmplist[$value['id']]['qty'] : 0;
+				$rslist[$key] = $value;
+			}
+		}
+		return $rslist;
 	}
 
 	function get_count($condition="")
@@ -120,23 +146,6 @@ class order_model extends phpok_model
 		return $this->db->get_all($sql,'type_id');
 	}
 
-	//取得订单下的产品信息
-	function product_list($id)
-	{
-		if(!$id) return false;
-		$sql = "SELECT * FROM ".$this->db->prefix."order_product WHERE order_id='".$id."'";
-		$rslist = $this->db->get_all($sql);
-		if(!$rslist) return false;
-		foreach($rslist AS $key=>$value)
-		{
-			//读取订单的图片
-			if($value['ext']) $value['ext'] = unserialize($rs['ext']);
-			if($value['tid']) $value['url'] = $GLOBALS['app']->url($value['tid']);
-			$rslist[$key] = $value;
-		}
-		return $rslist;
-	}
-
 	//删除订单操作
 	function delete($id)
 	{
@@ -171,6 +180,27 @@ class order_model extends phpok_model
 		return $this->db->get_one("SELECT * FROM ".$this->db->prefix."order_product WHERE id='".$id."'");
 	}
 
+
+	public function log_save($data)
+	{
+		if(!$data){
+			return false;
+		}
+		if(!$data['who'] && $_SESSION['user_id']){
+			$user = $this->model('user')->get_one($_SESSION['user_id']);
+			$data['who'] = $user['user'];
+		}
+		if(!$data['addtime']){
+			$data['addtime'] = $this->time;
+		}
+		return $this->db->insert_array($data,'order_log');
+	}
+
+	public function log_list($order_id)
+	{
+		$sql = "SELECT id,addtime,who,note FROM ".$this->db->prefix."order_log WHERE order_id='".$order_id."' ORDER BY addtime ASC,id ASC";
+		return $this->db->get_all($sql);
+	}
 }
 
 ?>

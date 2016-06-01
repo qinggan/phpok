@@ -1,59 +1,36 @@
-<!-- php:$title= $cate_rs.id==$page_rs.cate ? $page_rs.title : $cate_rs.title.' - '.$page_rs.title -->
-<!-- include tpl=head title=$title menutitle=$page_rs.title -->
-<!-- if $page_rs.banner -->
-<div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$page_rs.title}" /></div>
-<!-- /if -->
-<div class="wrap mb10">
-	<div class="page_left">
-		<!-- catelist pid=$page_rs.id cateid=$page_rs.cate -->
-		<div class="categ">{$list.cate.title}</div>
-		<!-- loop from=$list.tree key=$key value=$value -->
-		<dl class="sort">
-			<dt><a href="{$value.url}" title="{$value.title}">{$value.title}</a></dt>
-			<!-- if $value.sublist -->
-			<dd>
-				<!-- loop from=$value.sublist key=$k value=$v -->
-				<a href="{$v.url}" title="{$v.title}">{$v.title}</a>
-				<!-- /loop -->
-			</dd>
-			<!-- /if -->
-		</dl>
-		<!-- /loop -->
-		<!-- include tpl=block_contactus -->
+<!-- php:$title= $cate_rs ? $cate_rs.title.' - '.$page_rs.title : $page_rs.title -->
+<!-- include tpl=head title=$title menutitle=$page_rs.title css="css/product.css" -->
+<div class="main">
+	<!-- if $page_rs.banner -->
+	<div class="banner"><img src="{$page_rs.banner.filename}" alt="{$page_rs.title}" /></div>
+	<!-- /if -->
+	<ol class="breadcrumb">
+		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
+		<li><a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a></li>
+		<!-- if $cate_rs -->
+		<li><a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a></li>
+		<!-- /if -->
+	</ol>
+	<div class="left">
+		<!-- include tpl=block/catelist pid=$page_rs.id cid=$cate_rs.id title=$page_rs.title -->
+		<!-- include tpl=block/contact -->
+		<!-- include tpl=block/hot_article -->
 	</div>
-	<div class="page_right">
-		<div class="page_right_title">
-			<span class="breadcrumbs">
-				您现在的位置：
-				<a href="{$sys.url}" title="{$config.title}">首页</a>
-				<span class="arrow">&nbsp;</span> <a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a>
-				<!-- if $cate_parent_rs -->
-				<span class="arrow">&nbsp;</span> <a href="{$cate_parent_rs.url}" title="{$cate_parent_rs.title}">{$cate_parent_rs.title}</a>
-				<!-- /if -->
-				<!-- if $cate_rs.id != $page_rs.cate -->
-				<span class="arrow">&nbsp;</span> <a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a>
-				<!-- /if -->
-			</span>
-			{$page_rs.cate == $cate_rs.id ? $page_rs.title : $cate_rs.title}
-		</div>
-		<div class="mall">
+	<div class="right">
+		<div class="prolist">
 			<ul>
 				<!-- loop from=$rslist key=$key value=$value -->
-				<li{if $rslist_id.num == $rslist_id.total || $rslist_id.num + 1 == $rslist_id.total} class="laster"{/if}>
-					<span class="pro_img"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" width="150" height="200" alt="{$value.title}" /></a></span>
-					<dl class="p_prop">
-						<dt><a href="{$value.url}" title="{$value.title}">{$value.title}</a></dt>
-						<dd>添加时间：{func date Y-m-d $value.dateline}</dd>
-						<dd>查看次数：{$value.hits}</dd>
-						<dd class="price">售卖价格：<span class="price">{func price_format $value.price $value.currency_id}</span></dd>
-						<dd><a href="javascript:$.cart.add('{$value.id}',1);void(0);"><img src="images/buy-btn.jpg" width="157" height="33" /></a></dd>
-					</dl>
+				<li>
+					<div class="img"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.title}" /></a></div>
+					<div class="title"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></div>
+					<!-- if $page_rs.is_biz -->
+					<div class="price">价格：<span>{func price_format $value.price $value.currency_id}</span></div>
+					<!-- /if -->
 				</li>
 				<!-- /loop -->
 			</ul>
 		</div>
 		<!-- include tpl=block_pagelist -->
 	</div>
-	<div class="cl"></div>
 </div>
 <!-- include tpl=foot -->

@@ -1,0 +1,28 @@
+<!-- php:$title = $rs.title.' - '.$page_rs.title -->
+<!-- include tpl=head title=$title menutitle=$page_rs.title -->
+<div class="main about">
+	<!-- if $page_rs.banner -->
+	<div class="banner"><img src="{$page_rs.banner.filename}" /></div>
+	<!-- /if -->
+	<ol class="breadcrumb">
+		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
+		<li>{$page_rs.title}</li>
+		<li>{$rs.title}</li>
+	</ol>
+	<div class="left">
+		<div class="pfw mb10">
+			<h3>{$page_rs.title}</h3>
+			<ul class="catelist">
+				<!-- arclist pid=$page_rs.id psize=100 fields=id -->
+				<!-- loop from=$list.rslist key=$key value=$value -->
+				<li{if $rs.id == $value.id} class="on"{/if}><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
+				<!-- /loop -->
+			</ul>
+		</div>
+		<!-- include tpl=block/contact -->
+	</div>
+	<div class="right">
+		<div class="content">{$rs.content}</div>
+	</div>
+</div>
+<!-- include tpl=foot -->

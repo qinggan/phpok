@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<title>账号审核后通知会员</title>
-<desc>账号审核通过后以Email形式通知注册的会员，要求会员邮箱注册通用</desc>
-<author>phpok.com</author>
-<version>1.0</version>
-<param>
-	<title>账号审核通知</title>
-	<content>你好，{$rs.user}<br />您的账号已通过审核，欢迎光临网站：{$sys.url}</content>
-</param>

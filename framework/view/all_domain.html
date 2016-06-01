@@ -1,39 +1,42 @@
 <!-- inc:head -->
-<script type="text/javascript" src="{echo add_js('all.js')}"></script>
+<script type="text/javascript" src="{func include_js all.js}"></script>
 <div class="tips">
-	您当前的位置：
-	<a href="{echo admin_url('all')}">全局维护</a>
-	&raquo; 网站域名
+	{lang您当前的位置：}
+	<a href="{url ctrl=all/}">{lang全局维护}</a>
+	&raquo; {lang网站域名}
 </div>
 
 <div class="list">
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
 	<th class="id">ID</th>
-	<th>域名</th>
+	<th width="400">{lang域名}</th>
+	<th>{lang操作}</th>
 </tr>
 <!-- loop from=$rslist key=$key value=$value -->
-<tr{if $rslist_id.num%2 == ""} class="list"{/if}>
+<tr>
 	<td class="center">{$value.id}</td>
+	<td><input type="text" id="domain_{$value.id}" value="{$value.domain}" class="default" /></td>
 	<td>
-		<!-- if $value.id == $rs.domain_id -->
-		<input type="text" id="domain_{$value.id}" value="{$value.domain}" class="default" disabled />
-		<span class="red"> 主域名，请到【<a href="{echo admin_url('all','setting')}">网站信息</a>】更换域名</span>
-		<!-- else -->
-		<input type="text" id="domain_{$value.id}" value="{$value.domain}" class="default" />
-		<input type="button" value="更新" class="btn" onclick="domain_update({$value.id})" />
-		<input type="button" value="设主域名" class="btn" onclick="domain_default({$value.id})" />
-		<input type="button" value="删除" class="btn" onclick="domain_delete({$value.id})" />
-		<!-- end -->
+		<div class="button-group">
+			<input type="button" value="{lang更新}" onclick="domain_update({$value.id})" class="phpok-btn" />
+			<!-- if $value.id != $rs.domain_id -->
+				<input type="button" value="{lang设主域名}" class="phpok-btn" onclick="domain_default({$value.id})" />
+				<!-- if $value.is_mobile -->
+				<input type="button" value="{lang取消手机版专用}" class="phpok-btn" onclick="unset_mobile({$value.id})" />
+				<!-- else -->
+				<input type="button" value="{lang设为手机版专用}" class="phpok-btn" onclick="set_mobile({$value.id})" />
+				<!-- /if -->
+				<input type="button" value="{lang删除}" class="phpok-btn" onclick="domain_delete({$value.id})" />
+			<!-- /if -->
+		</div>
 	</td>
 </tr>
 <!-- /foreach -->
 <tr>
-	<td class="center">添加</td>
-	<td>
-		<input type="text" id="domain_0" class="default" />
-		<input type="button" value="添加" class="btn" onclick="domain_add()" />
-	</td>
+	<td class="center">{lang添加}</td>
+	<td><input type="text" id="domain_0" class="default" /></td>
+	<td><input type="button" value="{lang添加}" class="phpok-btn" onclick="domain_add()" /></td>
 </tr>
 </table>
 </div>

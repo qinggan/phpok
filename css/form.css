@@ -123,3 +123,15 @@ ul.ext_checkbox li label input{width:auto;height:auto;padding-right:3px;}
 ul.ext_radio{list-style:none;margin:0;padding:0;}
 ul.ext_radio li{float:left;padding-right:5px;line-height:25px;}
 ul.ext_radio li label input{width:auto;height:auto;padding-right:3px;}
+
+/* 表单样式 2015年03月02日 */
+/* 单选框中涉及到的样式 */
+ul.inp{list-style:none;padding:0;margin:0;}
+ul.inp_radio,ul.inp_radio1{line-height:23px;}
+ul.inp_radio li{display:block;}
+ul.inp_radio1:after{content:'&nbsp;';display: block;visibility:hidden;height:0;line-height:0;clear:both;overflow:hidden;}
+ul.inp_radio1 li{float:left;margin-right:15px;}
+ul.inp_radio label,ul.inp_radio1 label{vertical-align:middle;display:inline-block;}
+ul.inp_radio label input,ul.inp_radio1 label input{margin:-3px 5px 0 0;padding:0;border:0;vertical-align:middle;}
+
+

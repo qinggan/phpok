@@ -1,0 +1,34 @@
+<!-- include tpl=head title=订单中心 -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$(".o-dark").mouseover(function(){
+		$(this).addClass('o-dark-over');
+	}).mouseout(function(){
+		$(this).removeClass('o-dark-over');
+	});
+	$(".o-white").mouseover(function(){
+		$(this).addClass('o-white-over');
+	}).mouseout(function(){
+		$(this).removeClass('o-white-over');
+	});
+});
+</script>
+<div role="main" class="ui-content">
+	<ul data-role="listview" data-inset="true" style="margin:0;">
+		<!-- loop from=$rslist key=$key value=$value -->
+		<li data-role="list-divider">{$value.sn}<span class="ui-li-count">{func price_format $value.price $value.currency_id $value.currency_id}</span></li>
+		
+		<li>
+			<a href="{url ctrl=order func=info id=$value.id/}">
+			<p>状态：<span class="red">{$value.status_info}</span></p>
+			<!-- if $value.email --><p>邮箱：{$value.email}</p><!-- /if -->
+			<p>下单时间：{func time_format $value.addtime}</p>
+			<!-- if $value.note --><p>备注：{$value.note}</p><!-- /if -->
+			</a>
+		</li>
+		<!-- /loop -->
+	</ul>
+	<!-- include tpl=pagelist -->
+</div>
+
+<!-- include tpl=foot -->

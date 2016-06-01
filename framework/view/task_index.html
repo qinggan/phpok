@@ -1,0 +1,177 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}计划任务
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+function edit_it(id)
+{
+	$("#update_"+id).ajaxSubmit({
+		'url':get_url('task','save','id='+id),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				if(id>0){
+					$.dialog.tips('修改成功');
+				}else{
+					$.dialog.alert('添加计划任务成功',function(){
+						$.phpok.reload();
+					});
+				}
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
+	return false;
+}
+function delete_id(id)
+{
+	$.dialog.confirm('确定要删除这条计划任务吗？',function(){
+		var url = get_url('task','delete','id='+id);
+		var rs = $.phpok.json(url);
+		if(rs.status == 'ok'){
+			$.dialog.alert('删除成功',function(){
+				$.phpok.reload();
+			});
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	})
+}
+</script>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>年</th>
+	<th>月</th>
+	<th>日</th>
+	<th>时</th>
+	<th>分</th>
+	<th>动作</th>
+	<th>参数</th>
+	<th>操作</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<form method="post" id="update_{$value.id}" onsubmit="return false;">
+	<td class="center">
+		<select name="year">
+		<option value="*">每年</option>
+		<!-- loop from=$yearlist key=$k value=$v id=$tmpid -->
+		<option value="{$v}"{if $v == $value.year && $value.year != '*'} selected{/if}>{$v}年</option>
+		<!-- /loop -->
+		</select>
+	</td>
+	<td class="center">
+		<select name="month">
+		<option value="*">每月</option>
+		<!-- loop from=$monthlist key=$k value=$v id=$tmpid -->
+		<option value="{$v}"{if $v == $value.month && $value.month != '*'} selected{/if}>{$v}月</option>
+		<!-- /loop -->
+		</select>
+	</td>
+	<td class="center">
+		<select name="day">
+		<option value="*">每天</option>
+		<!-- loop from=$daylist key=$k value=$v id=$tmpid -->
+		<option value="{$v}"{if $v == $value.day && $value.day != '*'} selected{/if}>{$v}日</option>
+		<!-- /loop -->
+		</select>
+	</td>
+	<td class="center">
+		<select name="hour">
+		<option value="*">每小时</option>
+		<!-- loop from=$hourlist key=$k value=$v id=$tmpid -->
+		<option value="{$v}"{if $v == $value.hour && $value.hour != '*'} selected{/if}>{$v}时</option>
+		<!-- /loop -->
+		</select>
+	</td>
+	<td class="center">
+		<select name="minute">
+		<!-- loop from=$minutelist key=$k value=$v id=$tmpid -->
+		<option value="{$v}"{if $v == $value.minute && $value.minute != '*'} selected{/if}>{$v}分</option>
+		<!-- /loop -->
+		</select>
+	</td>
+	<td class="center">
+		<select name="actionfile">
+		<option value="">请选择…</option>
+		<!-- loop from=$filelist key=$k value=$v id=$tmpid -->
+		<option value="{$v.id}"{if $v.id == $value.action} selected{/if}>{$v.txt} - {$v.id}</option>
+		<!-- /loop -->
+		</select>
+	</td>
+	<td class="center">
+		<input type="text" name="param" value="{$value.param}" />
+	</td>
+	<td class="center">
+		<div class="button-group">
+			<input type="button" value="{lang编辑}" onclick="edit_it('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="delete_id('{$value.id}')" class="phpok-btn" />
+		</div>
+	</td>
+	</form>
+</tr>
+<!-- /loop -->
+<tr>
+	<form method="post" id="update_0" onsubmit="return false;">
+	<td class="center">
+		<select name="year">
+		<option value="*">每年</option>
+		<!-- loop from=$yearlist key=$k value=$v id=$tmpid -->
+		<option value="{$v}">{$v}年</option>
+		<!-- /loop -->
+		</select>
+	</td>
+	<td class="center">
+		<select name="month">
+		<option value="*">每月</option>
+		<!-- loop from=$monthlist key=$k value=$v id=$tmpid -->
+		<option value="{$v}">{$v}月</option>
+		<!-- /loop -->
+		</select>
+	</td>
+	<td class="center">
+		<select name="day">
+		<option value="*">每天</option>
+		<!-- loop from=$daylist key=$k value=$v id=$tmpid -->
+		<option value="{$v}">{$v}日</option>
+		<!-- /loop -->
+		</select>
+	</td>
+	<td class="center">
+		<select name="hour">
+		<option value="*">每小时</option>
+		<!-- loop from=$hourlist key=$k value=$v id=$tmpid -->
+		<option value="{$v}">{$v}时</option>
+		<!-- /loop -->
+		</select>
+	</td>
+	<td class="center">
+		<select name="minute">
+		<!-- loop from=$minutelist key=$k value=$v id=$tmpid -->
+		<option value="{$v}">{$v}分</option>
+		<!-- /loop -->
+		</select>
+	</td>
+	<td class="center">
+		<select name="actionfile">
+		<option value="">请选择…</option>
+		<!-- loop from=$filelist key=$k value=$v id=$tmpid -->
+		<option value="{$v.id}">{$v.txt} - {$v.id}</option>
+		<!-- /loop -->
+		</select>
+	</td>
+	<td class="center">
+		<input type="text" name="param" value="{$value.param}" />
+	</td>
+	<td class="center">
+		<input type="button" value="{lang新增}" onclick="edit_it(0)" class="phpok-btn" />
+	</td>
+	</form>
+</tr>
+</table>
+<!-- include tpl=foot -->

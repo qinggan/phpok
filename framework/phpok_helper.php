@@ -9,26 +9,22 @@
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 
-//字符串截取，一个汉字等同于两个字母，去除HTML版
 function phpok_cut($string,$length=255,$dot="")
 {
 	return $GLOBALS['app']->lib("string")->cut($string,$length,$dot);
 }
 
-//取得Get或是Post的数据
 function G($id)
 {
 	return $GLOBALS['app']->get($id);
 }
 
-//取得随机字符串
 function str_rand($length=10)//随机字符，参数是长度
 {
 	if(!$length) return false;
 	return $GLOBALS['app']->lib('common')->str_rand($length);
 }
 
-# 后台网址格式化，此函数仅限后台使用，在前台请使用phpok_url，支持静态化
 function admin_url($ctrl,$func="",$ext="")
 {
 	return $GLOBALS['app']->url($ctrl,$func,$ext);
@@ -41,58 +37,21 @@ function admin_url($ctrl,$func="",$ext="")
 //root，是否包含网站域名
 function api_url($ctrl,$func="",$ext="",$root=false)
 {
-	$url = '';
-	if($root) $url .= $GLOBALS['app']->url;
-	$url .= $GLOBALS['app']->config['api_file'];
-	$url .= '?'.$GLOBALS['app']->config['ctrl_id']."=".rawurlencode($ctrl);
-	if($func && $func != 'index')
-	{
-		$url .= '&'.$GLOBALS['app']->config['func_id'].'='.rawurlencode($func);
+	$url = $root ? $GLOBALS['app']->url : '';
+	$url .= $GLOBALS['app']->config['api_file'].'?';
+	if($ctrl && $ctrl != 'index'){
+		$url .= $GLOBALS['app']->config['ctrl_id']."=".rawurlencode($ctrl).'&';
 	}
-	if($ext)
-	{
-		if(substr($ext,0,1) != '&') $ext = '&'.$ext;
+	if($func && $func != 'index'){
+		$url .= $GLOBALS['app']->config['func_id'].'='.rawurlencode($func).'&';
+	}
+	if($ext){
 		$url .= $ext;
 	}
 	$url = str_replace('&amp;','&',$url);
-	return $url;
-}
-
-function msg_url($id,$ext="")
-{
-	return msgurl($id,$ext);
-}
-
-function msgurl($id,$ext="")
-{
-	return $GLOBALS['app']->url($id,"",$ext);
-}
-
-
-function web_url($ctrl,$func="",$ext="")
-{
-	if($ctrl == "list") $ctrl = "project";
-	if($ctrl == "msg") $ctrl = "content";
-	return $GLOBALS['app']->url($ctrl,$func,$ext);
-}
-
-function content_url($id,$ext)
-{
-	return $GLOBALS['app']->url("content",$id,$ext);
-}
-
-function site_url($ctrl,$func="",$ext="")
-{
-	if($ctrl == "list") $ctrl = "project";
-	if($ctrl == "msg") $ctrl = "content";
-	return web_url($ctrl,$func,$ext);
-}
-
-function jsurl($ext="")
-{
-	$url = $GLOBALS['app']->url.$GLOBALS['app']->config['www_file']."?";
-	$url.= $GLOBALS['app']->config['ctrl_id']."=js&";
-	if($ext) $url .= $ext;
+	if(substr($url,-1) == '&'){
+		$url = substr($url,0,-1);
+	}
 	return $url;
 }
 
@@ -151,7 +110,15 @@ function error($tips="",$url="",$type="notice",$time=2)
 	$GLOBALS['app']->assign("tips",$tips);
 	$GLOBALS['app']->assign("type",$type);
 	$GLOBALS['app']->assign("time",$time);
-	$GLOBALS['app']->view("tips");
+	if($type == 'error'){
+		$GLOBALS['app']->error($tips,$url,$time);
+	}else{
+		if($type == 'notice'){
+			$GLOBALS['app']->tip($tips,$url,$time);
+			exit;
+		}
+		$GLOBALS['app']->success($tips,$url,$time);
+	}
 	exit;
 }
 
@@ -210,68 +177,34 @@ function password_check($pass,$password)
 {
 	if(!$password || !$pass) return false;
 	$list = explode(":",$password);
-	if($list[1])
-	{
+	if($list[1]){
 		$chkpass = strlen($pass) != 32 ? md5($pass.$list[1]) : $pass;
 		return $chkpass == $list[0] ? true : false;
-	}
-	else
-	{
+	}else{
 		$chkpass = strlen($pass) != 32 ? md5($pass) : $pass;
 		return $chkpass == $password ? true : false;
 	}
 }
 
-# 格式化获取扩展数据的内容
+//格式化获取扩展数据的内容
 function ext_value($rs)
 {
-	//使用用户自定义获取的内容
-	$val = $GLOBALS['app']->lib('form')->get($rs);
-	if($val)
-	{
+	global $app;
+	$val = $app->lib('form')->get($rs);
+	if($val){
 		return $val;
 	}
-	//判断是否
-	if($rs["format"] == "int")
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"],"int");
+	$tmp = array('int','float','html','html_js','time','text');
+	if($rs['format'] && in_array($rs['format'],$tmp)){
+		$val = $app->get($rs['identifier'],$rs['format']);
+	}else{
+		$val = $app->get($rs['identifier']);
 	}
-	elseif($rs["format"] == "float")
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"],"float");
-	}
-	elseif($rs["format"] == "html")
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"],"html");
-	}
-	elseif($rs["format"] == "html_js")
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"],"html_js");
-	}
-	elseif($rs["format"] == "time")
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"],'time');
-	}
-	elseif($rs["format"] == "text")
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"],"html");
-		if($val) $val = strip_tags($val);
-	}
-	else
-	{
-		$val = $GLOBALS['app']->get($rs["identifier"]);
-	}
-	if(is_array($val))
-	{
-		if($rs["form_type"] == "url")
-		{
-			$tmp = array("default"=>$val[0],"rewrite"=>$val[1]);
-			$val = serialize($tmp);
+	if($val && is_array($val)){
+		if($rs['form_type'] == 'url'){
+			$val = array('default'=>$val[0],'rewrite'=>$val[1]);
 		}
-		else
-		{
-			$val = serialize($val);
-		}
+		$val = serialize($val);
 	}
 	return $val;
 }
@@ -372,12 +305,7 @@ function phpok_img_local($content)
 			$array["ext"] = $ext;
 			$array["filename"] = $folder.$filename;
 			$array["addtime"] = $GLOBALS['app']->system_time;
-			$array["title"] = basename($value);
-			if($GLOBALS['app']->is_utf8($array["title"]))
-			{
-				$array["title"] = $GLOBALS['app']->charset($array["title"],"GBK","UTF-8");
-			}
-			$array["title"] = str_replace(".".$ext,"",$array["title"]);
+			$array["title"] = str_replace(".".$ext,"",$GLOBALS['app']->lib('string')->to_utf8(basename($value)));
 			$img_ext = getimagesize($save_folder.$filename);
 			$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
 			$array["attr"] = serialize($my_ext);
@@ -431,16 +359,12 @@ function ext_password_format($val,$content,$type)
 # 存储扩展字段
 function ext_save($myid,$is_add=false,$save_id="")
 {
-	$GLOBALS['app']->model("ext");
-	$GLOBALS['app']->model("fields");
-	if($is_add)
-	{
-		$idstring = $_SESSION[$myid];
-		if(!$idstring) return false;
-		$tmplist = $GLOBALS['app']->model("fields")->get_list($idstring);
-		if(!$tmplist) return false;
-		foreach($tmplist AS $key=>$value)
-		{
+	if($is_add){
+		$tmplist = $_SESSION[$myid];
+		if(!$tmplist){
+			return false;
+		}
+		foreach($tmplist AS $key=>$value){
 			$val = ext_value($value);
 			$array = array();
 			$array["module"] = $save_id ? $save_id : $myid;
@@ -453,33 +377,29 @@ function ext_save($myid,$is_add=false,$save_id="")
 			$array["format"] = $value["format"];
 			$array["content"] = $value["content"];
 			$array["taxis"] = $value["taxis"];
-			$array["ext"] = "";
-			if($value["ext"] && $value["content"] && $val)
-			{
-				$tmp = unserialize($value["ext"]);
-				if($value["form_type"] == "password")
-				{
+			$array["ext"] = $value["ext"];
+			if($value["ext"] && $value["content"] && $val){
+				$tmp = is_string($value['ext']) ? unserialize($value["ext"]) : $value['ext'];
+				if($value["form_type"] == "password"){
 					$val = ext_password_format($val,$value["content"],$tmp["password_type"]);
 				}
 				$array["ext"] = serialize($tmp);
 			}
-			$insert_id = $GLOBALS['app']->model("ext")->ext_save($array);
+			$insert_id = $GLOBALS['app']->model("ext")->save($array);
 			$GLOBALS['app']->model("ext")->extc_save($val,$insert_id);
 		}
 		$_SESSION[$myid] = "";
-	}
-	else
-	{
+	}else{
 		$tmplist = $GLOBALS['app']->model("ext")->ext_all($myid);
-		if(!$tmplist) return false;
+		if(!$tmplist){
+			return false;
+		}
 		foreach($tmplist AS $key=>$value)
 		{
 			$val = ext_value($value);
-			if($value["form_type"] == "password")
-			{
+			if($value["form_type"] == "password"){
 				$tmp = $value["ext"] ? unserialize($value["ext"]) : "";
-				if(!$tmp)
-				{
+				if(!$tmp){
 					$tmp = array();
 					$tmp["password_type"] = "default";
 				}
@@ -497,79 +417,39 @@ function ext_delete($myid)
 	return $GLOBALS['app']->model("ext")->del($myid);
 }
 
-# 加载可视化编辑器
-function phpok_editor($rs)
-{
-	$default_rs = array(
-		"identifier"=>"content",
-		"content"=>"",
-		"width"=>"96%",
-		"height"=>"300",
-		"is_code"=>false,
-		"is_read"=>false,
-		"is_float"=>false
-	);
-	if($rs && is_string($rs))
-	{
-		$rs = array("content"=>$rs);
-	}
-	$rs["width"] = 800;
-	$rs = ($rs && is_array($rs)) ? array_merge($default_rs,$rs) : $default_rs;
-	$rs["height"] = intval($rs["height"]);
-	if(!$rs["height"]) $rs["height"] = "320";
-	$GLOBALS['app']->assign("edit_rs",$rs);
-	$GLOBALS['app']->assign("edit_baseurl",$GLOBALS['app']->get_url());
-	//读取附件类型
-	$config_file = $GLOBALS['app']->dir_root."data/xml/filetype.xml";
-	$config = array();
-	if(file_exists($config_file))
-	{
-		$config = xml_to_array(file_get_contents($config_file));
-		$btn_file_list = array();
-		if(!$config) $config = array();
-		foreach($config AS $key=>$value)
-		{
-			if($key != "picture" && $key != "video")
-			{
-				$btn_file_list[$key] = $value;
-			}
-		}
-		$GLOBALS['app']->assign("btn_file_list",$btn_file_list);
-	}
-	$file = $GLOBALS['app']->dir_phpok."form/html/editor_from_admin.html";
-	$content = $GLOBALS['app']->fetch($file,'abs-file');
-	return $content;
-}
-
 //产品价格格式化
 //val，值
 //currency_id，当前值对应的货币ID
 //show_id，要显示的货币ID
-function price_format($val,$currency_id,$show_id=0)
+function price_format($val='',$currency_id='',$show_id=0)
 {
 	//当显示为后台时
-	if($GLOBALS['app']->app_id == 'admin' && !$show_id)
-	{
+	if($GLOBALS['app']->app_id == 'admin' && !$show_id){
 		$show_id = $currency_id;
+	}else{
+		if(!$show_id){
+			$show_id = $GLOBALS['app']->site['currency_id'];
+		}
+		if(!$show_id){
+			$show_id = $currency_id;
+		}
 	}
-	else
-	{
-		if(!$show_id) $show_id = $GLOBALS['app']->site['currency_id'];
-		if(!$show_id) $show_id = $currency_id;
-	}
-	if(!$GLOBALS['app']->cache_data['currency'])
-	{
-		$GLOBALS['app']->cache_data['currency'] = $GLOBALS['app']->model('currency')->get_list('id');
-	}
-	if(!$GLOBALS['app']->cache_data['currency'] || !$GLOBALS['app']->cache_data['currency'][$currency_id] || !$GLOBALS['app']->cache_data['currency'][$show_id])
-	{
+	if(!$show_id){
 		return false;
 	}
-	if($val == '') $val = '0';
-	$rs = $GLOBALS['app']->cache_data['currency'][$show_id];
-	if($show_id != $currency_id)
-	{
-		$old_rs = $GLOBALS['app']->cache_data['currency'][$currency_id];
+	if(!$currency_id){
+		$currency_id = $show_id;
+	}
+	$currency = $GLOBALS['app']->model('currency')->get_list('id');
+	if(!$currency[$currency_id] || !$currency[$show_id]){
+		return false;
+	}
+	if(!$val){
+		$val = '0';
+	}
+	$rs = $currency[$show_id];
+	if($show_id != $currency_id){
+		$old_rs = $currency[$currency_id];
 		$val = ($val/$old_rs['val']) * $rs['val'];
 	}
 	$val = number_format($val,2,".","");
@@ -577,30 +457,34 @@ function price_format($val,$currency_id,$show_id=0)
 	return $string;
 }
 
-function price_format_val($val,$currency_id,$show_id=0)
+function price_format_val($val='',$currency_id='',$show_id=0)
 {
-	if($GLOBALS['app']->app_id == 'admin' && !$show_id)
-	{
+	if($GLOBALS['app']->app_id == 'admin' && !$show_id){
 		$show_id = $currency_id;
+	}else{
+		if(!$show_id){
+			$show_id = $GLOBALS['app']->site['currency_id'];
+		}
+		if(!$show_id){
+			$show_id = $currency_id;
+		}
 	}
-	else
-	{
-		if(!$show_id) $show_id == $GLOBALS['app']->site['currency_id'];
-		if(!$show_id) $show_id = $currency_id;
-	}
-	if(!$GLOBALS['app']->cache_data['currency'])
-	{
-		$GLOBALS['app']->cache_data['currency'] = $GLOBALS['app']->model('currency')->get_list('id');
-	}
-	if(!$GLOBALS['app']->cache_data['currency'] || !$GLOBALS['app']->cache_data['currency'][$currency_id] || !$GLOBALS['app']->cache_data['currency'][$show_id])
-	{
+	if(!$show_id){
 		return false;
 	}
-	if($val == '') $val = '0';
-	$rs = $GLOBALS['app']->cache_data['currency'][$show_id];
-	if($show_id != $currency_id)
-	{
-		$old_rs = $GLOBALS['app']->cache_data['currency'][$currency_id];
+	if(!$currency_id){
+		$currency_id = $show_id;
+	}
+	$currency = $GLOBALS['app']->model('currency')->get_list('id');
+	if(!$currency[$currency_id] || !$currency[$show_id]){
+		return false;
+	}
+	if(!$val){
+		$val = '0';
+	}
+	$rs = $currency[$show_id];
+	if($show_id != $currency_id){
+		$old_rs = $currency[$currency_id];
 		$val = ($val/$old_rs['val']) * $rs['val'];
 	}
 	$val = number_format($val,2,".","");
@@ -659,46 +543,34 @@ function phpok_filesize($size,$is_file=true)
 	return $GLOBALS['app']->lib("trans")->num_format($size);
 }
 
-function phpok_res_type($type="")
+function phpok_user_login($id,$pass="",$field='id')
 {
-	$config_file = $GLOBALS['app']->dir_root."data/xml/filetype.xml";
-	$config = array();
-	if(file_exists($config_file))
-	{
-		$config = xml_to_array(file_get_contents($config_file));
+	if(!$id){
+		return P_Lang('未指定会员账号或Email或手机号或ID号');
 	}
-	if($type && $config[$type])
-	{
-		return $config[$type];
+	$rs = $GLOBALS['app']->model('user')->get_one($id,$field);
+	if(!$rs){
+		return P_Lang('会员信息不存在');
 	}
-	else
-	{
-		$config;
+	if(!$rs["status"]){
+		return P_Lang('会员账号未审核');
 	}
-}
-
-//PHPOK会员登录
-function phpok_user_login($id,$pass="")
-{
-	global $app;
-	$GLOBALS['app']->model("user");
-	$rs = $GLOBALS['app']->user_model->get_one($id);
-	if(!$rs || !$rs["status"]) return $GLOBALS['app']->lang['global'][5001];
-	if($pass && !password_check($pass,$rs["pass"])) return $GLOBALS['app']->lang['global'][5002];
+	if($rs['status'] == '2'){
+		return P_Lang('会员账号被锁定，请联系管理员');
+	}
+	if($pass && !password_check($pass,$rs["pass"])){
+		return P_Lang('会员账号验证不通过，密码不正确');
+	}
 	$_SESSION["user_id"] = $id;
-	$_SESSION["user_rs"] = $rs;
+	$_SESSION["user_gid"] = $rs['group_id'];
 	$_SESSION["user_name"] = $rs["user"];
-	//更新购物车属性
-	//$GLOBALS['app']->model('cart')->cart_id(session_id(),$id);
-	return "ok";
+	return 'ok';
 }
 
 //取得扩展表里的信息
 function phpok_ext_info($module,$extc=true)
 {
-	global $app;
-	$GLOBALS['app']->model("ext");
-	$rslist = $GLOBALS['app']->ext_model->ext_all($module,true);
+	$rslist = $GLOBALS['app']->model('ext')->ext_all($module,true);
 	if(!$rslist) return false;
 	$rs = array();
 	foreach($rslist AS $key=>$value)
@@ -712,13 +584,12 @@ function phpok_ext_info($module,$extc=true)
 function phpok_ext_list($mid,$tid=0)
 {
 	if(!$mid || !$tid) return false;
-	global $app;
 	$GLOBALS['app']->model("module");
-	$rslist = $GLOBALS['app']->module_model->fields_all($mid,"identifier");
+	$rslist = $GLOBALS['app']->model('module')->fields_all($mid,"identifier");
 	if(!$rslist) return false;
 	$idlist = array_keys($rslist);
 	$GLOBALS['app']->model("list");
-	$infolist = $GLOBALS['app']->list_model->get_ext_list($mid,$tid);
+	$infolist = $GLOBALS['app']->model('list')->get_ext_list($mid,$tid);
 	if(!$infolist) $infolist = array();
 	foreach($idlist AS $key=>$value)
 	{
@@ -765,16 +636,6 @@ function phpok_opt($id,$ext="")
 	return $all;
 }
 
-//删除核心缓存文件
-function syscache_delete($id)
-{
-	$app = init_app();
-	$GLOBALS['app']->lib("file");
-	$file = $GLOBALS['app']->dir_root."data/cache/".$id.".php";
-	$GLOBALS['app']->file_lib->rm($file);
-	return true;
-}
-
 function phpok_decode($string,$id="")
 {
 	if(!$string) return false;
@@ -796,144 +657,140 @@ function phpok_decode($string,$id="")
 //WEB前台通用模板，如果您的程序比较复杂，请自己写Head
 function tpl_head($array=array())
 {
-	if($array['html5'] == 'true')
-	{
+	$app = $GLOBALS['app'];
+	if($array['html5'] == 'true'){
 		$html  = '<!DOCTYPE html>'."\n";
 		$html .= '<html>'."\n";
 		$html .= '<head>'."\n\t".'<meta charset="utf-8" />'."\n\t";
-	}
-	else
-	{
+	}else{
 		$html  = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 		$html .= '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 		$html .= '<head>'."\n\t".'<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'."\n\t";
 	}
+	if($array['mobile'] == 'true'){
+		$html .= '<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />'."\n\t";
+	}
+	$html .= '<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />'."\n\t";
 	$html .= '<meta http-equiv="Pragma" content="no-cache" />'."\n\t";
 	$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate,max-age=3" />'."\n\t";
 	$html .= '<meta http-equiv="Expires" content="Mon, 26 Jul 1997 05:00:00 GMT" />'."\n\t";
-	//$html .= '<meta http-equiv="Expires" content="0">'."\n\t";
-	$html .= '<title>';
-	if($array['title'])
-	{
-		$html .= $array['title'].' - ';
+	$html .= '<meta name="renderer" content="webkit">'."\n\t";
+	if($app->license == 'LGPL'){
+		$html .= '<meta name="author" content="phpok,admin@phpok.com" />'."\n\t";
 	}
-	$html .= $GLOBALS['app']->site['title'];
-	$seo = $GLOBALS['app']->tpl->tpl_value['seo'];
-	if($seo['title'])
-	{
-		$html .= ' - '.$seo['title'];
+	$html .= '<meta name="license" content="'.$app->license.'" />'."\n\t";
+	$seo = $app->site['seo'];
+	if($seo['keywords']){
+		$html .= '<meta name="keywords" content="'.$seo['keywords'].'" />'."\n\t";
 	}
-	$html .= '</title>'."\n\t";
-	$html .= '<base href="'.$GLOBALS['app']->url.'" />'."\n\t";
-	$html .= '<meta http-equiv="X-UA-Compatible" content="edge" />'."\n\t";
-	if($GLOBALS['app']->license == 'LGPL')
-	{
-		$html .= '<meta name="author" content="phpok.com" />'."\n\t";
-		$html .= '<meta http-equiv="phpok-license" content="LGPL" />'."\n\t";
+	if($seo['description']){
+		$html .= '<meta name="description" content="'.$seo['description'].'" />'."\n\t";
 	}
-	else
-	{
-		$html .= '<meta http-equiv="license" content="'.$GLOBALS['app']->license.'" />'."\n\t";
-		$html .= '<meta http-equiv="license-date" content="'.$GLOBALS['app']->license_date.'" />'."\n\t";
-		$html .= '<meta http-equiv="license-domain" content="'.$GLOBALS['app']->license_site.'" />'."\n\t";
-	}
-	if($seo['keywords'])
-	{
-		$html .= '<meta name="keywords" content="'.$seo['keywords'].'" />';
-		$html .= "\n\t";
-	}
-	if($seo['description'])
-	{
-		$html .= '<meta name="description" content="'.$seo['description'].'" />';
-		$html .= "\n\t";
-	}
-	if($GLOBALS['app']->site['meta'])
-	{
-		$t = explode("\n",$GLOBALS['app']->site['meta']);
-		foreach($t AS $key=>$value)
-		{
-			$html .= $value."\n\t";
+	if($app->site['meta']){
+		$app->site['meta'] = trim(str_replace(array("\t","\r"),"",$app->site['meta']));
+		if($app->site['meta']){
+			$t = explode("\n",$app->site['meta']);
+			foreach($t AS $key=>$value){
+				$html .= $value."\n\t";
+			}
 		}
 	}
-	$jsurl = $GLOBALS['app']->url.$GLOBALS['app']->config["www_file"]."?".$GLOBALS['app']->config['ctrl_id']."=js";
-	//包含JS
-	$include_js = $GLOBALS['app']->is_mobile ? $GLOBALS['app']->config['mobile']['includejs'] : '';
-	if($array['extjs'])
-	{
-		$include_js = $include_js ? $include_js.','.$array['extjs'] : $array['extjs'];
-	}
-	if($array['includejs'])
-	{
-		$include_js = $include_js ? $include_js.','.$array['includejs'] : $array['includejs'];
-	}
-	if($include_js)
-	{
-		$jsurl .= "&ext=".rawurlencode($include_js);
-	}
-	$exclude_js = $GLOBALS['app']->is_mobile ? $GLOBALS['app']->config['mobile']['excludejs'] : '';
-	if($array['excludejs'])
-	{
-		$exclude_js = $exclude_js ? $exclude_js.','.$array['excludejs'] : $array['excludejs'];
-		
-	}
-	if($exclude_js)
-	{
-		$jsurl .= "&_ext=".rawurlencode($exclude_js);
-	}
-	$html .= '<script type="text/javascript" src="'.$jsurl.'" charset="utf-8"></script>';
-	//加载css
-	if($array["css"])
-	{
-		$array['css'] = explode(",",$array['css']);
-		$cssfile = "";
-		foreach((is_array($array['css']) ? $array['css'] : array()) AS $key=>$value)
-		{
-			$value = trim($value);
-			if(!$value) continue;
-			if(is_file($GLOBALS['app']->dir_root.$value))
-			{
-				$html .= "\n\t".'<link rel="stylesheet" type="text/css" href="'.$GLOBALS['app']->url.$value.'" />';
+	$headtitle = $app->config['seo']['format'] ? $app->config['seo']['format'] : '{title}-{seo}-{sitename}';
+	$headtitle = explode("-",$headtitle);
+	foreach($headtitle as $key=>$value){
+		if($value == '{seo}'){
+			if($seo['title']){
+				$headtitle[$key] = $seo['title'];
+			}else{
+				unset($headtitle[$key]);
 			}
-			else
-			{
-				$value = basename($value);
-				if(is_file($GLOBALS['app']->dir_root."css/".$value))
-				{
-					$html .= "\n\t".'<link rel="stylesheet" type="text/css" href="'.$GLOBALS['app']->url."css/".$value.'" />';
-				}
+		}elseif($value == '{sitename}'){
+			if($app->site['title']){
+				$headtitle[$key] = $app->site['title'];
+			}else{
+				unset($headtitle[$key]);
+			}
+		}elseif($value == '{title}'){
+			if($array['title']){
+				$headtitle[$key] = $array['title'];
+			}else{
+				unset($headtitle[$key]);
+			}
+		}
+	}
+	$headtitle = implode($app->config['seo']['line'],$headtitle);
+	$html .= '<title>'.trim($headtitle).'</title>'."\n\t";
+	if(substr($app->url,-1) != '/'){
+		$app->url .= "/";
+	}
+	$html .= '<base href="'.$app->url.'" />'."\n\t";
+	$ico = $array['ico'] ? $array['ico'] : 'favicon.png';
+	$cssjs_debug = $app->config['debug'] ? '?_noCache=0.'.rand(1000,9999) : '';
+	if(file_exists($app->dir_root.$ico)){
+		$html .= '<link rel="shortcut icon" href="'.$app->url.$ico.$cssjs_debug.'" />'."\n\t";
+	}
+	if($array["css"]){
+		$tmp = explode(",",$array['css']);
+		foreach($tmp AS $key=>$value){
+			$value = trim($value);
+			if(!$value){
+				continue;
+			}
+			if($value == basename($value)){
+				$html .= '<link rel="stylesheet" type="text/css" href="'.$app->url."css/".$value.$cssjs_debug.'" />'."\n\t";
+			}else{
+				$html .= '<link rel="stylesheet" type="text/css" href="'.$app->url.$value.$cssjs_debug.'" />'."\n\t";
 			}
 		}
 	}
 	$html .= phpok_head_css();
-	//加载js
-	if($array['js'])
-	{
-		$array['js'] = explode(",",$array['js']);
-		$cssfile = "";
-		foreach((is_array($array['js']) ? $array['js'] : array()) AS $key=>$value)
-		{
+	$jsurl = $app->url('js');
+	$include_js = $app->is_mobile ? $app->config['mobile']['includejs'] : $app->config['pc']['includejs'];
+	if($array['extjs']){
+		$include_js = $include_js ? $include_js.','.$array['extjs'] : $array['extjs'];
+	}
+	if($array['includejs']){
+		$include_js = $include_js ? $include_js.','.$array['includejs'] : $array['includejs'];
+	}
+	if($array['incjs']){
+		$include_js = $include_js ? $include_js.','.$array['incjs'] : $array['incjs'];
+	}
+	if($include_js){
+		$jsurl .= "&ext=".rawurlencode($include_js);
+	}
+	$exclude_js = $app->is_mobile ? $app->config['mobile']['excludejs'] : $app->config['pc']['excludejs'];
+	if($array['excludejs']){
+		$exclude_js = $exclude_js ? $exclude_js.','.$array['excludejs'] : $array['excludejs'];
+	}
+	if($exclude_js){
+		$jsurl .= "&_ext=".rawurlencode($exclude_js);
+	}
+	$html .= '<script type="text/javascript" src="'.$jsurl.'" charset="utf-8"></script>'."\n\t";
+	if($array['js']){
+		$tmp = explode(",",$array['js']);
+		$tpldir = $app->tpl->dir_tpl;
+		$tpldir_length = strlen($tpldir);
+		foreach($tmp AS $key=>$value){
 			$value = trim($value);
-			if(!$value) continue;
-			if(is_file($GLOBALS['app']->dir_root.$value))
-			{
-				$html .= "\n\t".'<script type="text/javascript" src="'.$GLOBALS['app']->url.$value.'" charset="UTF-8"></script>';
+			if(!$value){
+				continue;
 			}
-			else
-			{
-				if(is_file($GLOBALS['app']->dir_root."css/".$value))
-				{
-					$html .= "\n\t".'<script type="text/javascript" src="'.$GLOBALS['app']->url."js/".$value.'" charset="UTF-8"></script>';
-				}
+			if(substr($value,0,$tpldir_length) == $tpldir){
+				$html .= '<script type="text/javascript" src="'.$app->url.$value.$cssjs_debug.'" charset="utf-8"></script>'."\n\t";
+			}else{
+				$html .= '<script type="text/javascript" src="'.$app->url.'js/'.$value.$cssjs_debug.'" charset="utf-8"></script>'."\n\t";
 			}
 		}
 	}
 	$html .= phpok_head_js();
-	//加载其他参数
-	$html .= $GLOBALS['app']->site['meta'];
-	if($array["ext"]) $html .= $array["ext"];
-	if(!$array['close'] || $array["close"] != 'false')
-	{
-		$html .= $array['symbol']."\n".'</head>';
+	if($array['html5'] == 'true' && (!$array['mobile'] || $array['mobile'] != 'true')){
+		$html .= '<!--[if IE]>'."\n\t";
+		$html .= '<script type="text/javascript" src="'.$app->url.'js/html5.js" charset="utf-8"></script>'."\n\t";
+		$html .= '<![endif]-->'."\n\t";
+	}
+	if(!$array['close'] || $array["close"] != 'false'){
+		$html .= $app->plugin_html_ap("phpokhead");
+		$html .= "\n".'</head>';
 	}
 	$html .= "\n";
 	return $html;	
@@ -942,14 +799,37 @@ function tpl_head($array=array())
 //表单生成器
 function form_edit($id,$content="",$type="text",$attr="",$return='echo')
 {
-	if(!$id) return false;
-	$array = array("identifier"=>$id,"form_type"=>$type,"content"=>$content);
-	if($attr)
-	{
+	if(!$id){
+		return false;
+	}
+	$array = array("id"=>$id,"identifier"=>$id,"form_type"=>$type,"content"=>$content);
+	if($attr){
 		parse_str($attr,$list);
 		if($list) $array = array_merge($list,$array);
 	}
 	$rs = $GLOBALS['app']->lib('form')->format($array);
+	if($return == 'array') return $rs;
+	return $rs['html'];
+}
+
+//基于字段管理生成表单项
+//
+function form_fields($identifer='',$id='',$content='',$return='')
+{
+	if(!$identifer){
+		return false;
+	}
+	if(!$id){
+		$id = $identifer;
+	}
+	$rs = $GLOBALS['app']->model('fields')->get_one($identifer,'identifier');
+	if(!$rs){
+		return false;
+	}
+	$rs['identifier'] = $id;
+	$rs['content'] = $content;
+	
+	$rs = $GLOBALS['app']->lib('form')->format($rs);
 	if($return == 'array') return $rs;
 	return $rs['html'];
 }
@@ -963,11 +843,9 @@ function form_edit($id,$content="",$type="text",$attr="",$return='echo')
 function form_html($type='text',$id='phpok',$attr='',$content='')
 {
 	$array = array("identifier"=>$id,"form_type"=>$type,"content"=>$content);
-	if($attr && is_string($attr))
-	{
+	if($attr && is_string($attr)){
 		parse_str($attr,$list);
-		if($list)
-		{
+		if($list){
 			$array = array_merge($list,$array);
 		}
 	}
@@ -988,42 +866,27 @@ function license_date()
 //PHPOK日志存储，可用于调试
 function phpok_log($info='')
 {
-	if(!$info) $info = '执行 {phpok}/'.$GLOBALS['app']->app_id.'/'.$GLOBALS['app']->ctrl.'_control.php 方法：'.$GLOBALS['app']->func.'_f';
-	$sql = "INSERT INTO ".$GLOBALS['app']->db->prefix."log(`title`,`addtime`,`app`,`action`,`app_id`) VALUES('".$info."','".$GLOBALS['app']->time."','".$GLOBALS['app']->ctrl."','".$GLOBALS['app']->func."','".$GLOBALS['app']->app_id."')";
-	$GLOBALS['app']->db->query($sql);
+	if(!$info){
+		$info = '执行 {phpok}/'.$GLOBALS['app']->app_id.'/'.$GLOBALS['app']->ctrl.'_control.php 方法：'.$GLOBALS['app']->func.'_f';
+	}
+	if(is_array($info) || is_object($info)){
+		$info = serialize($info);
+	}
+	$info = trim($info);
+	$date = date("Ymd",$GLOBALS['app']->time);
+	if(!file_exists($GLOBALS['app']->dir_root.'data/log'.$date.'.php')){
+		file_put_contents($GLOBALS['app']->dir_root.'data/log'.$date.'.php',"<?php exit();?>\n");
+	}
+	$handle = fopen($GLOBALS['app']->dir_root.'data/log'.$date.'.php','ab');
+	$info = $info.'|'.date("H:i:s",$GLOBALS['app']->time).'|'.$GLOBALS['app']->ctrl.'|'.$GLOBALS['app']->func.'|'.$GLOBALS['app']->app_id."\n";
+	fwrite($handle,$info);
+	fclose($handle);
 }
 
 //邮箱合法性验证
 function phpok_check_email($email)
 {
 	return $GLOBALS['app']->lib('common')->email_check($email);
-}
-
-//汉字转拼音
-function chinese2pingyin($title)
-{
-	if(!$title) return false;
-	$GLOBALS['app']->lib("pingyin")->path = $GLOBALS['app']->dir_phpok."libs/pingyin.qdb";
-	$py = iconv("UTF-8","GBK",$title);
- 	$py = $GLOBALS['app']->lib("pingyin")->ChineseToPinyin($py);
- 	if(!$py) return false;
- 	$py = strtolower($py);
- 	$safe_string = "abcdefghijklmnopqrstuvwxyz0123456789-_";
-	$str_array = str_split($py);
-	$safe_array = str_split($safe_string);
-	$string = "";
-	foreach($str_array AS $key=>$value)
-	{
-		if(in_array($value,$safe_array))
-		{
-			$string .= $value;
-		}
-		else
-		{
-			$string .= "-";
-		}
-	}
-	return $string;
 }
 
 function user_group($gid)
@@ -1111,170 +974,31 @@ function opt_rslist($type='default',$group_id=0,$info='')
 }
 
 
-//生成防灌水的随机码
-function spamcode($str='')
-{
-	$time = $GLOBALS['app']->time;
-	$url = $GLOBALS['app']->url;
-	if(!$url)
-	{
-		$url = $GLOBALS['app']->root_url();
-	}
-	$str = $GLOBALS['app']->root_url();
-	if(!$str)
-	{
-		$str = isset($_GET) ? $_GET : (isset($_POST) ? $_POST : '');
-		if(!$str)
-		{
-			$str = $GLOBALS['app']->time();
-		}
-	}
-	if(is_array($str)) $str = serialize($str);
-	$code = substr(md5($str),9,16);
-	//判断验证码是否存在
-	$spamcode = 'spam_'.$code;
-	if(!$_SESSION['spam'])
-	{
-		$_SESSION['spam'] = array();
-	}
-	if(!$_SESSION['spam'][$spamcode])
-	{
-		$_SESSION['spam'][$spamcode] = $GLOBALS['app']->time;
-	}
-	else
-	{
-		$waitingtime = $GLOBALS['app']->config['waitingtime'] ? $GLOBALS['app']->config['waitingtime'] : 30;
-		$chktime = $_SESSION['spam'][$spamcode] + $waitingtime;
-		if($chktime <= $GLOBALS['app']->time)
-		{
-			$_SESSION['spam'][$spamcode] = $GLOBALS['app']->time;
-		}
-	}
-	//删除一些超时session信息，以减少session数据太大
-	$expiretime = $GLOBALS['app']->config['expiretime'] ? $GLOBALS['app']->config['expiretime'] : 600;
-	foreach($_SESSION['spam'] AS $key=>$value)
-	{
-		if(($value + $expiretime) < $GLOBALS['app']->time)
-		{
-			unset($_SESSION['spam'][$key]);
-		}
-	}
-	return $code;
-}
-
 function add_js($js)
 {
 	return $GLOBALS['app']->url("js","ext","js=".rawurlencode($js));
 }
 
-//UBB语法
-function phpok_ubb($Text,$nl2br=true)
+function phpok_call_api_url($phpok,$param='',$tpl='')
 {
-	if(is_array($Text))
-	{
-		foreach($Text AS $key=>$value)
-		{
-			$value = phpok_ubb($value,$nl2br);
-			$Text[$key] = $value;
-		}
-		return $Text;
+	if(!$phpok || !$GLOBALS['app']->site['api_code']){
+		return false;
 	}
-	$Text=trim($Text);
-	//是否启用nl2br
-	if($nl2br) $Text=str_replace("\n","<br />",$Text);
-	$Text=preg_replace("/\[hr\]/is","<hr />",$Text);
-	$Text=preg_replace("/\[separator\]/is","<br/>",$Text);
-	$Text=preg_replace("/\[h([1-6])\](.+?)\[\/h([1-6])\]/is","<h\\1>\\2</h\\1>",$Text);
-	$Text=preg_replace("/\[center\](.+?)\[\/center\]/is","<div style='text-align:center'>\\1</div>",$Text);
-	$Text=preg_replace("/\[url\](.+?)\[\/url\]/is","<a href=\"\\1\" target='_blank'>\\1</a>",$Text);
-	$Text=preg_replace("/\[url=(http:\/\/.+?)\](.+?)\[\/url\]/is","<a href='\\1' target='_blank' title='\\2'>\\2</a>",$Text);
-	$Text=preg_replace("/\[url=(.+?)\](.+?)\[\/url\]/is","<a href='\\1' title='\\2'>\\2</a>",$Text);
-	$Text=preg_replace("/\[img\](.+?)\[\/img\]/is","<img src='\\1'>",$Text);
-	$Text=preg_replace("/\[img\s(.+?)\](.+?)\[\/img\]/is","<img \\1 src='\\2'>",$Text);
-	$Text=preg_replace("/\[color=(.+?)\](.+?)\[\/color\]/is","<span style='color:\\1'>\\2</span>",$Text);
-	$Text=preg_replace("/\[size=(.+?)\](.+?)\[\/size\]/is","<span style='font-size:\\1'>\\2</span>",$Text);
-	$Text=preg_replace("/\[sup\](.+?)\[\/sup\]/is","<sup>\\1</sup>",$Text);
-	$Text=preg_replace("/\[sub\](.+?)\[\/sub\]/is","<sub>\\1</sub>",$Text);
-	$Text=preg_replace("/\[pre\](.+?)\[\/pre\]/is","<pre>\\1</pre>",$Text);
-	$Text=preg_replace("/\[email\](.+?)\[\/email\]/is","<a href='mailto:\\1'>\\1</a>",$Text);
-	$Text=preg_replace("/\[i\](.+?)\[\/i\]/is","<i>\\1</i>",$Text);
-	$Text=preg_replace("/\[u\](.+?)\[\/u\]/is","<u>\\1</u>",$Text);
-	$Text=preg_replace("/\[b\](.+?)\[\/b\]/is","<b>\\1</b>",$Text);
-	$Text=preg_replace("/\[quote\](.+?)\[\/quote\]/is","<blockquote><div style='border:1px solid silver;background:#EFFFDF;color:#393939;padding:5px' >\\1</div></blockquote>", $Text);
-	//UBB下载格式化
-	preg_match_all("/\[download[:|：|=]*([0-9]*)\](.*)\[\/download\]/isU",$Text,$list);
-	if($list && count($list)>0)
-	{
-		$dlist = '';
-		foreach($list[0] AS $key=>$value)
-		{
-			$tmpid = $list[1][$key] ? $list[1][$key] : intval($list[2][$key]);
-			if(!$tmpid)
-			{
-				continue;
-			}
-			if($list[2][$key] && intval($list[2][$key]) == $tmpid)
-			{
-				$resinfo = $GLOBALS['app']->model('res')->get_one($tmpid);
-				if(!$resinfo)
-				{
-					continue;
-				}
-				$list[2][$key] = $resinfo['title'];
-			}
-			$string = '<a class="download" href="'.$GLOBALS['app']->url('download','','id='.$tmpid).'" title="'.strip_tags($list[2][$key]).'">'.$list[2][$key].'</a>';
-			$Text = str_replace($value,$string,$Text);
-		}
+	$ext = $tpl ? 'tpl='.rawurlencode($tpl) : '';
+	$info = array('id'=>$phpok,'param'=>$param);
+	$token = $GLOBALS['app']->lib('token')->encode($info);
+	if($ext){
+		$ext .= "&";
 	}
-	$list = '';
-	//格式化旧版的UBB附件下载
-	preg_match_all("/\[download[:|：]*([0-9]+)\]/isU",$Text,$list);
-	if($list && count($list)>0)
-	{
-		foreach($list[0] AS $key=>$value)
-		{
-			if(!$list[1][$key])
-			{
-				continue;
-			}
-			$rs = $GLOBALS['app']->model('res')->get_one($list[1][$key]);
-			if(!$rs)
-			{
-				continue;
-			}
-			$string = '<a href="'.$GLOBALS['app']->url('download','','id='.$rs['id']).'" title="'.$rs['title'].'">'.$rs['title'].'</a>';
-			$Text = str_replace($value,$string,$Text);
-		}
-	}
-	//格式化主题列表
-	$list = '';
-	preg_match_all("/\[title[:|：]*([0-9a-zA-Z\_\-]+)\](.+)\[\/title\]/isU",$Text,$list);
-	if($list && count($list)>0)
-	{
-		$dlist = '';
-		foreach($list[0] AS $key=>$value)
-		{
-			if(!$list[1][$key] || !$list[2][$key]) continue;
-			$string = '<a href="'.$GLOBALS['app']->url($list[1][$key]).'" title="'.strip_tags($list[2][$key]).'" target="_blank">'.$list[2][$key].'</a>';
-			$Text = str_replace($value,$string,$Text);
-		}
-	}
-	//格式化视频链接地址，主要是格式化FLV格式的转换
-	$list = false;
-	preg_match_all("/<embed(.+)src=[\"|'](.+\.flv)[\"|'](.*)>/isU",$Text,$list);
-	if($list && $list[2] && $list[0])
-	{
-		foreach($list[2] as $key=>$value)
-		{
-			$tmpurl = 'js/vcastr.swf?xml={vcastr}{channel}{item}{source}../'.$value.'{/source}{duration}{/duration}{title}{/title}{/item}{/channel}{config}{isAutoPlay}false{/isAutoPlay}{isLoadBegin}false{/isLoadBegin}{/config}{plugIns}{beginEndImagePlugIn}{url}js/image.swf{/url}{source}{/source}{type}beginend{/type}{scaletype}exactFil{/scaletype}{/beginEndImagePlugIn}{/plugIns}{/vcastr}';
-			$string = '<embed'.$list[1][$key].' src="'.$tmpurl.'"'.$list[3][$key].'>';
-			$Text = str_replace($list[0][$key],$string,$Text);
-		}
-	}
-	return $Text;
+	$ext .= "token=".rawurlencode($token);
+	return api_url('index','phpok',$ext,true);
 }
-
-
-// 兼容老版本写法，下面的这些写法将会在5.x版本中消除
-function sys_cutstring($string,$length=255,$dot=""){return phpok_cut($string,$length,$dot);}
+function token_userid()
+{
+	$info = array();
+	if($_SESSION['user_id']){
+		return $GLOBALS['app']->model('user')->token_create($_SESSION['user_id']);
+	}
+	return $GLOBALS['app']->lib('token')->encode($info);
+}
 ?>

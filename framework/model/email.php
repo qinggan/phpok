@@ -6,11 +6,17 @@
 	Author  : qinggan
 	Update  : 2013年06月30日 23时42分
 ***********************************************************/
-class email_model extends phpok_model
+class email_model_base extends phpok_model
 {
 	function __construct()
 	{
 		parent::model();
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
 	}
 
 
@@ -77,13 +83,20 @@ class email_model extends phpok_model
 
 	function get_identifier($identifier,$site_id=0,$id=0)
 	{
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."email WHERE identifier='".$identifier."' AND site_id='".$site_id."'";
-		if($id)
-		{
+		if($id){
 			$sql .= " AND id !='".$id."'";
 		}
-		$sql .= " ORDER BY site_id DESC LIMIT 1";
+		$sql .= " ORDER BY id DESC LIMIT 1";
 		return $this->db->get_one($sql);
+	}
+
+	public function tpl($code,$site_id=0)
+	{
+		return $this->get_identifier($code,$site_id);
 	}
 }
 ?>

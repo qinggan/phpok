@@ -1,0 +1,106 @@
+<!-- include tpl=head -->
+<script type="text/javascript" src="{func include_js list.js}"></script>
+<script type="text/javascript">
+$(document).keypress(function(e){
+	if(e.ctrlKey && e.which == 13 || e.which == 10) {
+		$('#phpok_submit_{$pid}').click();
+	}
+});
+$(document).ready(function(){
+	$("#_listedit").submit(function(){
+		$(this).ajaxSubmit({
+			'url':'{url ctrl=workflow func=save id=$wf.id /}',
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					$.dialog.alert('{lang任务操作完成}',function(){
+						$.phpok.reload();
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content);
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="tips">
+	{lang您当前的位置：}{lang我管理的} &raquo; {$rs.title}
+	<div class="action"><a href="{url ctrl=workflow func=list/}">返回</a></div>
+	<div class="clear"></div>
+</div>
+<form method="post" id="_listedit">
+<div class="main1">
+	<div class="title">
+		<input type="text" name="title" id="title" value="{$rs.title}" class="title" disabled />
+	</div>
+	<!-- if $p_rs.is_identifier -->
+	<div class="table">
+		<div class="title">
+			{lang标识：}
+			<span class="note">{lang限}<span class="red">{lang字母、数字、下划线或中划线且必须是字母开头}</span></span>
+		</div>
+		<div class="content">
+			<input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" />
+		</div>
+	</div>
+	<!-- /if -->
+	<!-- loop from=$extlist key=$key value=$value id=extlist_id -->
+	<div class="table clearfix">
+		<div class="title">
+			{$value.title}：
+			<span class="note">{$value.note}</span>
+		</div>
+		<div class="content">{$value.html}</div>
+	</div>
+	<!-- /loop -->
+</div>
+<div class="main2">
+	<div class="pfw mb10">
+		<h3>{lang动作}</h3>
+		<table width="100%">
+		<tr>
+			<td align="right">{lang状态：}</td>
+			<td>
+				<ul class="layout">
+					<li><label><input type="radio" name="is_end" value="0"{if !$wf.is_end} checked{/if} />{lang进行中}</label></li>
+					<li><label><input type="radio" name="is_end" value="1"{if $wf.is_end} checked{/if} />{lang已完成}</label></li>
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="{lang提 交}" class="submit2" id="phpok_submit_{$pid}" />
+	</div>
+</div>
+</form>
+<script type="text/javascript">
+function win_resize()
+{
+	var width = $('.main .tips').width();
+	if(width>=1000){
+		var main1_width = width - 320;
+		$(".main1").css('width',main1_width+"px").css('float','left');
+		$(".main2").css('width','300px').css('float','right');
+		var h = $(".main2").height();
+		var d_h = $(window).height() - 30;
+		if(h < d_h){
+			$('.main2').css('position','fixed').css('top','30px').css('right','0px');
+		}
+	}else{
+		$(".main1,.main2").css('width',width+"px").css("float",'none');
+	}
+}
+$(document).ready(function(){
+	win_resize();
+	$(window).resize(win_resize);
+});
+</script>
+
+<!-- inc:foot -->

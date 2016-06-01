@@ -1,0 +1,44 @@
+<!-- include tpl=head title=购物车 -->
+<div role="main" class="ui-content">
+	<ul data-role="listview" data-inset="true" style="margin:0;">
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<li data-role="list-divider"><span id="title_{$value.id}">{$value.title}</span><span class="ui-li-count">{func price_format $value.price $value.currency_id}</span></li>
+		<li>
+			<!-- if $value.thumb --><img src="{$value.thumb.ico}" style="left:5px;top:auto;" /><!-- /if -->
+			<div>
+				<!-- loop from=$value._attrlist key=$k value=$v id=$tmpid2 -->
+				<b>{$v.title}：</b>{$v.content}
+				<!-- if $tmpid2.num != $tmpid2.total -->/<!-- /if -->
+				<!-- /loop -->
+			</div>
+			<div>
+				<b>小计：</b><span class="red">{func price_format $value.price*$value.qty $value.currency_id}</span>
+			</div>
+			<div>
+				<table cellspacing="0" cellpadding="0">
+				<tr>
+					<td class="numbg" id="minus_{$value.id}" onclick="$.cart.minus('{$value.id}',1)">-</td>
+					<td style="line-height:1em;"><input id="qty_{$value.id}" value="{$value.qty}" type="text" class="numtxt" data-role="none" onblur="$.cart.update('{$value.id}','{$value.qty}')" /></td>
+					<td class="numbg" id="plus_{$value.id}" onclick="$.cart.plus('{$value.id}',1)">+</td>
+				</tr>
+				</table>
+			</div>
+			<div class="ui-li-aside" style="top:auto;bottom:5px;right:5px;"><a href="javascript:$.cart.del('{$value.id}');void(0)" class="ui-btn ui-shadow ui-corner-all ui-icon-bin ui-btn-icon-notext">Delete</a></div>
+		</li>
+		<!-- /loop -->
+	</ul>
+	<table width="100%">
+	<tr>
+		<td width="40%"><input type="button" value="继续购物" onclick="$.phpok.go('{url id=product/}')" /></td>
+		<td align="right"><input type="button" value="去结算" data-theme="b" onclick="$.phpok.go('{url ctrl=cart func=checkout/}')" /></td>
+	</tr>
+	</table>
+
+</div>
+<div class="main">
+	<div class="table_lc">
+	</div>
+	<div class="space"></div>
+	<div class="space"></div>
+</div>
+<!-- include tpl=foot -->

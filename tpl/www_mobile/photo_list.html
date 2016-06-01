@@ -1,18 +1,4 @@
-<!-- php:$title = $page_rs.cate != $cate_rs.id ? $cate_rs.title.' - '.$page_rs.title : $page_rs.title -->
-<!-- include tpl=head title=$title menutitle=$page_rs.title -->
-
-<div class="main">
-	<ul class="pictures">
-		<!-- loop from=$rslist key=$key value=$value -->
-		<li><a href="{$value.url}"><img src="{$value.thumb.gd.download}" alt="{$value.title}" border="0" /></a></li>
-		<!-- /loop -->
-	</ul>
-	<div class="clear"></div>
-	<!-- include tpl=pagelist -->
-</div>
-
-
-<div data-role="footer">
+<!-- include tpl=head title=$rs.title menutitle=$page_rs.title -->
 <div data-role="navbar">
 	<ul>
 		<!-- catelist pid=$page_rs.id -->
@@ -21,6 +7,16 @@
 		<!-- /loop -->
 	</ul>
 </div>
+
+<div class="main">
+	<ul class="pictures">
+		<!-- loop from=$rslist key=$key value=$value -->
+		<li style="height:150px;"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.title}" width="150px" height="150px" border="0" /></a></li>
+		<!-- /loop -->
+	</ul>
+	<div class="clear"></div>
+	<!-- include tpl=pagelist -->
 </div>
+
 
 <!-- include tpl=foot -->

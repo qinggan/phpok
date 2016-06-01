@@ -1,0 +1,112 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function save(){
+	//var obj = $.dialog.opener;
+	$("#setsubmit").ajaxSubmit({
+		'url':get_url('freight','price_save','fid={$fid}'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				$.dialog.alert('运费配置保存成功',function(){
+					$.dialog.close();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+			}
+		}
+	});
+	return false;
+}
+</script>
+<!-- if $rs.type == 'fixed' -->
+	<form method="post" id="setsubmit" onsubmit="return false;">
+		<!-- loop from=$zonelist key=$key value=$value id=$tmpid -->
+		<div class="table">
+			<div class="title">
+				{$value.title}
+				<span class="note"></span>
+			</div>
+			<input type="hidden" name="unit_val[]" value="fixed" />
+			<div class="content"><input type="text" name="price{$value.id}[]" value="{$rslist['phpokfixed'][$value.id]}" /></div>
+		</div>
+		<!-- /loop -->
+	</form>
+<!-- else -->
+<style type="text/css">
+input.short{width:80px;}
+</style>
+<script type="text/javascript">
+function del_it(obj)
+{
+	$(obj).parent().parent().remove();
+}
+function delete_it(val,obj)
+{
+	var url = get_url('freight','price_delete','fid={$fid}&val='+$.str.encode(val));
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$(obj).parent().parent().remove();
+		}else{
+			$.dialog.alert('删除失败，请检查');
+		}
+	});
+}
+function addline()
+{
+	var max = $("table.list tr:last td:first").find('input').val();
+	if(!max || max == 'undefined'){
+		max = '{$step}';
+	}else{
+		var type = '{$rs.type}';
+		var step = "{$step}";
+		if(type == 'number'){
+			max = parseInt(max) + parseInt(step);
+		}else{
+			max = parseFloat(max) + parseFloat(step);
+		}
+	}
+	var html = '<tr><td class="center"><input type="text" name="unit_val[]" value="'+max+'" class="short" /></td>';
+	html += '<!-- loop from=$zonelist key=$k value=$v id=$tmpid -->';
+	html += '<td class="center"><input type="text" name="price{$v.id}[]" class="short" /></td><!-- /loop -->';
+	html += '<td class="center"><input type="button" value="删除" onclick="del_it(this)" /></td>';
+	html += '</tr>';
+	$("table.list tr:last").after(html);
+}
+</script>
+<form method="post" id="setsubmit" onsubmit="return false;">
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>{$rs.type_title}</th>
+	<!-- loop from=$zonelist key=$key value=$value id=$tmpid -->
+	<th>{$value.title}</th>
+	<!-- /loop -->
+	<th>&nbsp;</th>
+</tr>
+<!-- loop from=$vlist key=$key value=$value -->
+<tr>
+	<td class="center"><input type="text" name="unit_val[]" value="{$value}" class="short" readonly style="background:#eee;" /></td>
+	<!-- loop from=$zonelist key=$k value=$v id=$tmpid -->
+	<td class="center"><input type="text" name="price{$v.id}[]" value="{$rslist['phpok'.$value][$v.id]}" class="short" /></td>
+	<!-- /loop -->
+	<td class="center"><input type="button" value="删除" onclick="delete_it('{$value}',this)" /></td>
+</tr>
+<!-- /loop -->
+</table>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="增加一行" class="button2" onclick="addline()" />
+		支持使用变量字母：N，N为整数型，
+		<!-- if $rs.type == 'weight' -->
+		表示重量，单位是千克，如设置为：118*N，表示118*重量，对应的费用
+		<!-- elseif $rs.type == 'number' -->
+		表示数量，如设置为：118*N，表示118*数量，对应的费用
+		<!-- elseif $rs.type == 'volume' -->
+		表示体积，单位是立方米，如设置为：118*N，表示118*体积，对应的费用
+		<!-- /if -->
+	</div>
+</div>
+</form>
+<!-- /if -->
+
+<!-- include tpl=foot_open -->

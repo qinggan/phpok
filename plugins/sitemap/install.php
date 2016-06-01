@@ -8,7 +8,7 @@
 	时间： 2014年6月2日
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class admin_sitemap extends phpok_plugin
+class install_sitemap extends phpok_plugin
 {
 	public $me;
 	function __construct()
@@ -21,6 +21,15 @@ class admin_sitemap extends phpok_plugin
 	function index()
 	{
 		return $this->plugin_tpl('setting.html');
+	}
+
+	//存储扩展表单内容
+	function save()
+	{
+		$id = $this->plugin_id();
+		$ext = array();
+		$ext['changefreq'] = $this->get('changefreq');
+		$this->plugin_save($ext,$id);
 	}
 }
 

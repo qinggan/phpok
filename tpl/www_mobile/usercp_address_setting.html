@@ -1,0 +1,69 @@
+<!-- php:$title = $id ? '编辑地址' :'添加地址' -->
+<!-- include tpl=head title=$title -->
+<script type="text/javascript">
+function save()
+{
+	var id = '{$id}';
+	var url = api_url('usercp','address_setting');
+	if(id){
+		url += "&id="+id;
+	}
+	$("#setsubmit").ajaxSubmit({
+		'url':url,
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				var tip = id ? '{lang地址信息修改成功}' : '{lang地址信息添加成功}';
+				$.dialog.alert(tip,function(){
+					$.phpok.go('{url ctrl=usercp func=address/}')
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
+	return false;
+}
+</script>
+<div role="main" class="ui-content">
+	<form method="post" id="setsubmit" onsubmit="return save();">
+	<input type="hidden" name="country" id="country" value="{$rs.country ? $rs.country : '中国'}" />
+	<div>
+		收件人：
+		<input type="text" id="fullname" name="fullname" class="default" value="{$rs.fullname}" placeholder="请填写收件人姓名" />
+	</div>
+	<div>
+		地址
+		<fieldset data-role="controlgroup">
+		{$pca_rs}
+		</fieldset>
+		<input type="text" name="address" id="address" value="{$rs.address}" placeholder="填写完善地址" />
+	</div>
+	<div>
+		手机号码
+		<input type="text" id="mobile" name="mobile" class="default" value="{$rs.mobile}" placeholder="请填写有效的手机号码" />
+	</div>
+	<div>
+		固定电话
+		<input type="tel" id="tel" name="tel" class="default" value="{$rs.tel}" placeholder="固定电话或手机号码必须有一个不能为空" />
+	</div>
+	<div>
+		Email：
+		<input type="email" id="email" name="email" class="default" value="{$rs.email}" placeholder="用来接收订单提醒邮件及其他重要信息" />
+	</div>
+	<table width="100%">
+	<tr>
+		<td width="70%"><input type="submit" value="保存" data-theme="b" /></td>
+		<td><input type="button" value="返回" onclick="$.phpok.go('{url ctrl=usercp/}')" /></td>
+	</tr>
+	</table>
+	</form>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#pca_c,#pca_a").selectmenu('refresh', true);
+});
+</script>
+<!-- include tpl=foot -->

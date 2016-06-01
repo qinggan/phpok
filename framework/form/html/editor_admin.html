@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="width,height,is_code:checkbox,btn_image:checkbox,btn_video:checkbox,btn_file:checkbox,btn_page:checkbox,btn_info:checkbox,is_read:checkbox,etype,btn_page:checkbox,btn_map:checkbox,btn_info:checkbox" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="width,height,is_code:checkbox,btn_image:checkbox,btn_video:checkbox,btn_file:checkbox,btn_page:checkbox,btn_info:checkbox,is_read:checkbox,etype,btn_page:checkbox,btn_map:checkbox,btn_info:checkbox,inc_tag:checkbox,paste_text:checkbox" />
 <div class="table">
 	<div class="title">
 		编辑器宽高设置：
@@ -19,7 +19,7 @@
 		<table>
 		<tr>
 			<td><label><input type="radio" name="etype" value="full"{if $rs.etype == 'full'} checked{/if} />完整编辑器</label></td>
-			<td><label><input type="radio" name="etype" value="simple"{if $rs.etype == 'simple'} checked{/if} />精简编辑器</label></td>
+			<td><label><input type="radio" name="etype" value="simple"{if $rs.etype == 'simple' || !$rs.etype} checked{/if} />精简编辑器</label></td>
 		</tr>
 		</table>
 	</div>
@@ -33,6 +33,8 @@
 		<ul class="layout">
 			<li><label><input type="checkbox" name="is_code" id="is_code"{if $rs.is_code} checked{/if}>显示源码</label></li>
 			<li><label><input type="checkbox" name="is_read" id="is_read"{if $rs.is_read} checked{/if}>只读</label></li>
+			<li><label><input type="checkbox" name="paste_text" id="paste_text"{if $rs.paste_text} checked{/if}>纯文本粘贴</label></li>
+			<li><label><input type="checkbox" name="inc_tag" id="inc_tag"{if $rs.inc_tag} checked{/if}>Tag标签信息格式化到内容</label></li>
 		</ul>
 		<div class="clear"></div>
 	</div>
@@ -46,7 +48,7 @@
 		<ul class="layout">
 			<li><label><input type="checkbox" name="btn_image" id="btn_image"{if $rs.btn_image} checked{/if}>图片</label></li>
 			<li><label><input type="checkbox" name="btn_info" id="btn_info"{if $rs.btn_info} checked{/if}>资料</label></li>
-			<li><label><input type="checkbox" name="btn_video" id="btn_video"{if $rs.btn_image} checked{/if}>视频</label></li>
+			<li><label><input type="checkbox" name="btn_video" id="btn_video"{if $rs.btn_video} checked{/if}>视频</label></li>
 			<li><label><input type="checkbox" name="btn_file" id="btn_file"{if $rs.btn_file} checked{/if}>文件</label></li>
 			<li><label><input type="checkbox" name="btn_page" id="btn_page"{if $rs.btn_page} checked{/if}>分页</label></li>
 			<li><label><input type="checkbox" name="btn_map" id="btn_map"{if $rs.btn_map} checked{/if}>百度地图</label></li>

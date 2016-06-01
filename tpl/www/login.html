@@ -1,41 +1,35 @@
 <!-- include tpl=head menutitle=网站首页 title=会员登录 -->
 <script type="text/javascript">
 var open_vcode = '{$sys.is_vcode && function_exists("imagecreate") ? 1 : 0}';
-$(document).ready(function(){
-	$('#login-form').submit(function(){
-		$(this).ajaxSubmit({
-			url:api_url('login'),
-			type:'post',
-			dataType:'json',
-			success:function(rs){
-				if(rs.status == 'ok')
-				{
-					var back = $("#_back").val();
-					if(!back || back == 'undefined' || back == window.location.href) back = webroot;
-					$.phpok.go(back);
-				}
-				else
-				{
-					if(!rs.content) rs.content = '登录失败';
-					alert(rs.content);
-					if(open_vcode == '1')
-					{
-						$("#_chkcode").val('');
-						$("#vcode").phpok_vcode();
-					}
-					return false;
-				}
-			}
-		});
+function check_input()
+{
+	var user = $("input[name=user]").val();
+	if(!user){
+		$.dialog.alert('账号不能为空','','error');
 		return false;
-	});
-});
+	}
+	var pass = $("input[name=pass]").val();
+	if(!pass){
+		$.dialog.alert('密码不能为空','','error');
+		return false;
+	}
+	if(open_vcode == '1'){
+		var chkcode = $("#_chkcode").val();
+		if(!chkcode){
+			$.dialog.alert('验证码不能为空','','error');
+			return false;
+		}
+	}
+	return true;
+}
 </script>
 <div class="login-reg">
 	<dl class="box">
 		<dt>登录</dt>
-		<form method="post" id="login-form">
-		<input type="hidden" id="_back" value="{$_back}" />
+		<form method="post" id="login-form" onsubmit="return check_input()" action="{url ctrl=login func=ok/}">
+		<input type="hidden" name="_back" value="{$_back}" />
+	    <input type="hidden" name="post_date" id="post_date" value="{func date 'Y-m-d H:i:s' $sys.time}" />
+	    <input type="hidden" name="pdip" id="pdip" value="{func phpok_ip}" />
 		<dd><label>账号：</label><input class="input" type="text" name="user" /><div class="clear"></div></dd>
 		<dd><label>密码：</label><input class="input" type="password" name="pass" /><div class="clear"></div></dd>
 		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
@@ -56,7 +50,16 @@ $(document).ready(function(){
 		<dt>说明</dt>
 		<dd>如果您忘记密码，您可以点这里<a href="{url ctrl=login func=getpass/}" title="找回密码功能">找回密码？</a></dd>
 		<dd>您还不是我们的会员，请点这里<a href="{url ctrl=register/}" title="注册会员">注册</a></dd>
-		<dd>&nbsp;</dd>
+		<!-- if $qqlink -->
+		<dd><a href="{$qqlink}" title="QQ登录"><img src="images/qqlogin.png" /></a></dd>
+		<!-- /if -->
+		<!-- if $wxlink -->
+		<dd><a href="{$wxlink}" title="微信登录"><img src="images/wx_button.png" /></a></dd>
+		<!-- /if -->
+		<!-- if $wblink -->
+		<dd><a href="{$wblink}" title="微博登录"><img src="images/weibo.png" /></a></dd>
+		<!-- /if -->
+		
 		<dd>&nbsp;</dd>
 	</dl>
 	<div class="clear"></div>

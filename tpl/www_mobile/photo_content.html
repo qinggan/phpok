@@ -1,26 +1,31 @@
-<!-- include tpl=head title=$rs.title menutitle=$page_rs.title -->
-<style type="text/css">.imgs{margin-bottom:5px;text-align:center;}</style>
+<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
 <style type="text/css">
-ul.pics{list-style:none;text-align:center;margin:0;padding:0;}
-ul.pics li{text-align:center;margin-bottom:8px;display:block;}
-ul.pics li .img{text-align:center;overflow:hidden;}
-ul.pics li .txt{text-align:left;overflow:hidden;padding:3px;border:1px solid #eee;}
+.imgs{margin-bottom:5px;text-align:center;}
+.imgs img{max-width:320px}
 </style>
+<script type="text/javascript" src="js/jquery.lazyload.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#infoimg img").lazyload({
+		'placeholder':'images/grey.gif',
+		'effect':'fadeIn',
+		'threshold':50
+	});
+});
+</script>
 <div role="main" class="ui-content">
 	<div class="ui-body ui-body-a ui-corner-all">
 		<h3>{$rs.title}</h3>
 		<div class="info" id="infoimg">
-			<!-- if $rs.pictures -->
-			<ul class="pics">
-				<!-- loop from=$rs.pictures key=$key value=$value -->
-				<li>
-					<div class="img"><img src="{$value.gd.download}" border="0" alt="{$value.title}" /></div>
-					<div class="txt">{$value.note}</div>
-				</li>
-				<!-- /loop -->
-			</ul>
-			<!-- /if -->
+			<!-- loop from=$rs.pictures key=$key value=$value -->
+				<!-- if $value.ext == 'gif' -->
+				<div class="imgs"><img src="images/grey.gif" original="{$value.filename}" border="0" width="98%" /></div>
+				<!-- else -->
+				<div class="imgs"><img src="images/grey.gif" original="{$value.gd.auto}" border="0" width="98%" /></div>
+				<!-- /if -->
+			<!-- /loop -->
 		</div>
+		<div class="content">{$rs.content}</div>
 	</div>
 </div>
 
@@ -38,16 +43,5 @@ ul.pics li .txt{text-align:left;overflow:hidden;padding:3px;border:1px solid #ee
 	</ul>
 </div>
 <!-- /if -->
-
-<div data-role="footer">
-<div data-role="navbar">
-	<ul>
-		<!-- catelist pid=$page_rs.id -->
-		<!-- loop from=$list.sublist key=$key value=$value -->
-		<li><a href="{$value.url}"{if $cate_rs.id == $value.id} class="ui-btn-active"{/if}>{$value.title}</a></li>
-		<!-- /loop -->
-	</ul>
-</div>
-</div>
 
 <!-- include tpl=foot -->

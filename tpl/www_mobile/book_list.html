@@ -1,17 +1,1 @@
-<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
-<div role="main" class="ui-content">
-	<!-- loop from=$rslist key=$key value=$value -->
-	<div class="ui-body ui-body-a ui-corner-all" {if $rslist_id.num != 1} style="margin-top:5px;"{/if}>
-		<h3>{$value.title}</h3>
-		<div class="content">{$value.content}</div>
-		<!-- if $value.adm_reply -->
-		<div class="admreply">
-			<span class="darkred">管理员回复：</span>{$value.adm_reply}
-		</div>
-		<!-- /if -->
-		<div align="right">发布时间：<strong>{func time_format $value.dateline}</strong></div>
-	</div>
-	<!-- /loop -->
-	<div align="center"><!-- include tpl=pagelist --></div>
-</div>
-<!-- include tpl=foot -->
+<!-- php:$app->_location($app->url('post','','id='.$page_rs.identifier)) -->

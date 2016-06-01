@@ -1,0 +1,99 @@
+<!-- if $_rs.is_multiple -->
+<script type="text/javascript">
+function action_{$_rs.identifier}_show()
+{
+	var tmp_id = $("#{$_rs.identifier}").val();
+	if(tmp_id)
+	{
+		var url = get_url("inp")+"&type=user&content="+$.str.encode(tmp_id);
+		var rs = json_ajax(url);
+		if(rs.status == "ok")
+		{
+			var lst = rs.content;
+			var c = '';
+			var m = 1;
+			for(var i in lst)
+			{
+				var class_cate_id = "cate_"+(m%9).toString();
+				c += '<li id="{$_rs.identifier}_div_'+lst[i]['id']+'">';
+				c += '<div class="cate '+class_cate_id+'"><a href="javascript:phpok_user_preview(\''+lst[i]['id']+'\');void(0);">'+lst[i]['user']+'</a></div>';
+				c += '<div class="cate_add"><a href="javascript:phpok_user_delete(\'{$_rs.identifier}\',\''+lst[i]['id']+'\');void(0);" title="删除"><img src="images/page_delete.png" border="0" alt="" /></a></div>';
+				c += '</li>';
+				m++;
+			}
+			$("#{$_rs.identifier}_div").html(c);
+		}
+	}
+}
+$(document).ready(function(){
+	$("#_phpok_button_user_{$_rs.identifier}").click(function(){
+		var url = get_url("open","user") + "&id={$_rs.identifier}&multi=1";
+		$.dialog.data("phpok_user_{$_rs.identifier}",$("#{$_rs.identifier}").val());
+		$.dialog.open(url,{
+			title: "会员管理器",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			resize: false
+			,"ok":function(){
+				var data = $.dialog.data("phpok_user_{$_rs.identifier}");
+				$("#{$_rs.identifier}").val(data);
+				action_{$_rs.identifier}_show();
+				$.dialog.data("phpok_user_{$_rs.identifier}","");
+			}
+			,"okVal":"确定"
+		});
+	});
+	action_{$_rs.identifier}_show();
+});
+</script>
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs_content}" />
+<ul class="layout_user">
+	<li style="margin-top:5px;"><input id="_phpok_button_user_{$_rs.identifier}" type="button" value="请选择" class="button" /></li>
+	<div id="{$_rs.identifier}_div" class="user_selected_div"></div>
+	<div class="clear"></div>
+</ul>
+<!-- else -->
+<script type="text/javascript">
+function action_{$_rs.identifier}_show()
+{
+	var tmp_id = $("#{$_rs.identifier}").val();
+	if(tmp_id)
+	{
+		var url = get_url("inp")+"&type=user&content="+$.str.encode(tmp_id);
+		var rs = json_ajax(url);
+		if(rs.status == "ok")
+		{
+			var lst = rs.content;
+			for(var i in lst)
+			{
+				$("#title_{$_rs.identifier}").val(lst[i]['user']);
+			}
+		}
+	}
+}
+$(document).ready(function(){
+	$("#_phpok_button_user_{$_rs.identifier}").click(function(){
+		var url = get_url("open","user") + "&id={$_rs.identifier}";
+		$.dialog.open(url,{
+			title: "会员管理器",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			resize: false
+		});
+	});
+	action_{$_rs.identifier}_show();
+});
+</script>
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs_content}" />
+<table cellpadding="0" cellspacing="0" border="0">
+<tr>
+	<td><input type="text" id="title_{$_rs.identifier}" name="title_{$_rs.identifier}" style="width:150px;" disabled /></td>
+	<td>&nbsp;</td>
+	<td><input type="button" value="会员" class="btn" id="_phpok_button_user_{$_rs.identifier}" /></td>
+	<td>&nbsp;</td>
+	<td><input type="button" value="删除" class="btn" onclick="$('#{$_rs.identifier}').val('');$('#title_{$_rs.identifier}').val('')" /></td>
+</tr>
+</table>
+<!-- /if -->

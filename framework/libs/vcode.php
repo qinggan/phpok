@@ -1,7 +1,7 @@
 <?php
 /***********************************************************
 	Filename: {phpok}/libs/vcode.php
-	Note	: 通用图形验证码类，支持干扰线
+	Note	: 图形验证码类，使用PNG透明图片
 	Version : 4.0
 	Web		: www.phpok.com
 	Author  : qinggan <qinggan@188.com>
@@ -13,44 +13,58 @@ class vcode_lib
 	private $width = 76;
 	private $height = 24;
 	private $count = 4;
-	//要生成的验证码
 	private $word = '';
-	private $font = 'data/font/airbus_special.ttf';
+	private $btype = '_bg_line';
+	private $font = '';
+	private $root = '';
 	
-	function __construct()
+	public function __construct()
 	{
+		$this->root = str_replace("\\","/",dirname(__FILE__))."/../../";
 		$this->width = 76;
 		$this->height = 24;
 		$this->count = 4;
+		$rand = mt_rand(0,1);
+		$this->btype = $rand ? '_bg_line' : '_bg_imagesetpixel';
+		if(file_exists($this->root.'data/font/airbus_special.ttf')){
+			$this->font = $this->root.'data/font/airbus_special.ttf';
+		}
 	}
 
-	function width($width=76)
+	public function width($width=76)
 	{
 		$this->width = $width;
 	}
 
-	function height($height=24)
+	public function height($height=24)
 	{
 		$this->height = $height;
 	}
 
-	function count($count=4)
+	public function count($count=4)
 	{
 		$this->count = $count;
 	}
 
-	function font($fontfile)
+	public function font($font='')
 	{
-		$this->font = $fontfile;
+		if(!$font){
+			return $this->font;
+		}
+		if(file_exists($this->root.$font)){
+			$this->font = $this->root.$font;
+		}else{
+			$this->font = '';
+		}
+		return $this->font;
 	}
 
-	function word()
+	public function word()
 	{
-		$txt = "345679ACDEFGHJKLMNPQRTUVWXY";
+		$txt = "1234567890";
 		$length = strlen($txt);
 		$thetxt = '';
-		for($i=0;$i<$this->count;$i++)
-		{
+		for($i=0;$i<$this->count;$i++){
 			$thetxt .= $txt[rand(0,$length-1)];
 		}
 		$this->word = $thetxt;
@@ -58,37 +72,37 @@ class vcode_lib
 	}
 	
 	//这里仅限数字
-	function create()
+	public function create()
 	{
-		//清空所有缓存
 		ob_end_clean();
 		$aimg = imagecreate($this->width,$this->height);
-		imagefilledrectangle($aimg, 0, 0, $this->width, $this->height, imagecolorallocate($aimg, 255, 255, 255));
-		//$color = $this->color();
-		$color1 = rand(1,120);
-		$color2 = rand(1,120);
-		$color3 = rand(1,120);
-		$color_id = imagecolorallocate($aimg,$color1, $color2, $color3);
-		$color_id_line = imagecolorallocate($aimg, ($color1+3), ($color2+5), ($color3+3));
-		$next = 7;
-		for($i=0;$i<$this->count;$i++)
-		{
-			$angle = rand(-10,10);
-			$rndtxt = $this->word[$i];
-			$size = rand(12,18);
-			imagettftext($aimg, $size, $angle, $next, ($this->height - 5), $color_id, $this->font, $rndtxt);
-			$next += $size;
+		$white_color = imagecolorallocate($aimg, 255, 255, 255);
+		imagefilledrectangle($aimg, 0, 0, $this->width, $this->height, $white_color);
+		imagecolortransparent($aimg,$white_color);
+		$color = $this->color();
+		$color_id = imagecolorallocate($aimg,$color[0], $color[1], $color[2]);
+		if($this->font && function_exists('imagettftext')){
+			$next = 7;
+			for($i=0;$i<$this->count;$i++){
+				$angle = rand(-10,10);
+				$rndtxt = $this->word[$i];
+				$size = rand(12,18);
+				imagettftext($aimg, $size, $angle, $next, ($this->height - 5), $color_id, $this->font, $rndtxt);
+				$next += $size;
+			}
+		}else{
+			$bx = round($this->width/$this->count);
+			$hy = round($this->height/2) - 5;
+			for($i=0;$i<$this->count;$i++){
+				$rndtxt = $this->word[$i];
+				$rndx=mt_rand(1,5);
+				$rndy=mt_rand(1,4);
+				$leftx = $i<1 ? 5 : $i*$bx+rand(1,5);
+				imagestring($aimg,5,$leftx,$hy,$rndtxt,$color_id);
+			}
 		}
-		//画曲线
-		//imageline($aimg,0,0,$this->width,$this->height,$color_id);
-		//imageline($aimg,0,1,$this->width-1,$this->height,$color_id);
-		//$this->lines($aimg,$color_id_line,8);
-		//增加同色系干扰素
-		$pxsum = 108;
-		for($i=0;$i<$pxsum;$i++)
-		{
-			imagesetpixel($aimg,mt_rand(1,$this->width-1),mt_rand(1,$this->height-1),$color_id);
-		}
+		$name= $this->btype;
+		$this->$name($aimg,$color_id);
 		header("Pragma:no-cache");
 		header("Cache-Control: no-cache, no-store, must-revalidate"); 
 		header("Content-type: image/png");
@@ -97,8 +111,26 @@ class vcode_lib
 		exit;
 	}
 
-	//随机颜色
-	function color()
+	private function _bg_line($aimg,$color_id)
+	{
+		$max_x = $this->width - 1;
+		$max_y = $this->height - 1;
+		for($i=0;$i<$this->count;$i++){
+	        imageline($aimg,rand(1,$max_x), rand(1,$max_y),rand(1,$max_x), rand(1,$max_y),$color_id);
+	    }
+	}
+
+	private function _bg_imagesetpixel($aimg,$color_id=0)
+	{
+		$pxsum = 27 * $this->count;
+		$max_x = $this->width-1;
+		$max_y = $this->height - 1;
+		for($i=0;$i<$pxsum;$i++){
+			imagesetpixel($aimg,mt_rand(1,$max_x),mt_rand(1,$max_y),$color_id);
+		}
+	}
+
+	private function color()
 	{
 		$list = array("#0000CC","#000066","#000000","#3300CC","#330066","#660000","#006633","#990033","#990066","#336633");
 		$total = count($list);
@@ -106,54 +138,5 @@ class vcode_lib
 		$color = $list[$color];
 		return array(hexdec($color[1].$color[2]),hexdec($color[3].$color[4]),hexdec($color[5].$color[6]));
 	}
-
-
-	function _writeCurve($img,$color_id,$st=2)
-	{
-		$A = mt_rand(1, $this->height/2);                  // 振幅
-		$b = mt_rand(-$this->height/4, $this->height/4);   // Y轴方向偏移量
-		$f = mt_rand(-$this->height/4, $this->height/4);   // X轴方向偏移量
-		$T = mt_rand($this->height*1.5, $this->width*2);  // 周期
-		$w = (2* M_PI)/$T;
-		$px1 = 0;  // 曲线横坐标起始位置
-		$px2 = mt_rand($this->width/2, $this->width * 0.667);  // 曲线横坐标结束位置
-		for ($px=$px1; $px<=$px2; $px=$px+ 1.2) {
-			if ($w!=0) {
-				$py = $A * sin($w*$px + $f)+ $b + $this->height/2;  // y = Asin(ωx+φ) + b
-				$i = $st;
-				while ($i > 0) {
-					imagesetpixel($img, $px + $i, $py + $i, $color_id);
-					$i--;
-				}
-			}
-		}
-
-		$A = mt_rand(1, $this->height/2);                  // 振幅
-		$f = mt_rand(-$this->height/4, $this->height/4);   // X轴方向偏移量
-		$T = mt_rand($this->height*1.5, $this->width*2);  // 周期
-		$w = (2* M_PI)/$T;
-		$b = $py - $A * sin($w*$px + $f) - $this->height/2;
-		$px1 = $px2;
-		$px2 = $this->width;
-		for ($px=$px1; $px<=$px2; $px=$px+ 1.2) {
-			if ($w!=0) {
-				$py = $A * sin($w*$px + $f)+ $b + $this->height/2;  // y = Asin(ωx+φ) + b
-				$i = $st;
-				while ($i > 0) {
-					imagesetpixel($img, $px + $i, $py + $i, $color_id);
-					$i--;
-				}
-			}
-		}
-	}
-
-	//画干扰线
-	function lines($img,$color_id,$st=1)
-	{
-		$this->_writeCurve($img,$color_id,$st);
-	}
 }
-//$vcode = new vcode_lib();
-//$vcode->word();
-//$vcode->create();
 ?>

@@ -1,0 +1,64 @@
+<!-- include tpl=head title="修改头像 - 个人中心" -->
+<link rel="stylesheet" type="text/css" href="{#js#}/webuploader/webuploader.css" />
+<div role="main" class="ui-content">
+	<div class="ui-body ui-body-a ui-corner-all">
+		<h3>当前使用的头像</h3>
+		<img src="{$rs.avatar ? $rs.avatar : 'images/user_default.png'}" border="0" style="max-width:100%;" />
+	</div>
+	<div class="ui-body ui-body-a ui-corner-all" style="margin-top:10px;">
+		<h3>上传新头像</h3>
+		<table width="100%">
+		<tr>
+			<td style="padding:10px;">
+				<div id="uploader" class="wu-example">
+					<!--用来存放文件信息-->
+					<div id="thelist" class="uploader-list"></div>
+					<div class="btns">
+						<div id="btn_picture"></div>
+					</div>
+				</div>
+			</td>
+		</tr>
+		</table>
+	</div>
+</div>
+<script type="text/javascript" src="{#js#}/webuploader/webuploader.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	var uploader = WebUploader.create({
+		auto: true,
+		swf: webroot + '{#js#}/webuploader/uploader.swf',
+		// 文件接收服务端。
+		server: api_url('upload','save'),
+		compress: false,
+		pick: '#btn_picture',
+		fileVal: 'upfile',
+		formdata:{
+			'{func session_name}':'{func session_id}'
+		},
+		accept: {
+			title: '图片',
+			extensions: 'gif,jpg,jpeg,bmp,png',
+			mimeTypes: 'image/*'
+		},
+		resize: false
+	});
+	uploader.on('uploadSuccess',function(file,data){
+		if(data.status == 'ok'){
+			var url = api_url('usercp','avatar','data='+$.str.encode(data.content.filename));
+			var rs = $.phpok.json(url);
+			if(rs.status == 'ok'){
+				$.dialog.alert('您的头像更新成功',function(){
+					$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}else{
+			$.dialog.alert(data.content);
+		}
+	});
+});
+</script>
+<!-- include tpl=foot -->

@@ -8,11 +8,17 @@
 	Update  : 2013-03-05 16:56
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class ext_model extends phpok_model
+class ext_model_base extends phpok_model
 {
 	function __construct()
 	{
 		parent::model();
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
 	}
 
 	# 检查字段是否有被使用
@@ -23,70 +29,35 @@ class ext_model extends phpok_model
 		return ($this->db->get_one($sql) ? true : false);
 	}
 
-	# 存储扩展字段配置信息
-	function ext_save($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"ext",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"ext");
-		}
-	}
-
-	function extc_save($content,$id)
-	{
-		if(!$id) return false;
-		$sql = "REPLACE INTO ".$this->db->prefix."extc(id,content) VALUES('".$id."','".$content."')";
-		return $this->db->query($sql);
-	}
-
-	# 存储扩展字段内容存储
-	function content_save($content,$id)
-	{
-		if(!$id || !$content) return false;
-		$sql = "REPLACE INTO ".$this->db->prefix."extc(id,content) VALUES('".$id."','".$content."')";
-		return $this->db->query($sql);
-	}
-
 	# 读取模块下的字段内容
 	# module，模块名称
 	# show_content，是否读取内容，默认true
 	function ext_all($module,$show_content=true)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE module='".$module."' ORDER BY taxis ASC";
-		$rslist = $this->db->get_all($sql,'id');
-		if(!$rslist) return false;
-		if($show_content)
-		{
-			$id_list = array_keys($rslist);
-			$id_string = implode(",",$id_list);
-			$sql = "SELECT * FROM ".$this->db->prefix."extc WHERE id IN(".$id_string.") ";
-			$content_list = $this->db->get_all($sql,"id");
-			foreach($rslist AS $key=>$value)
-			{
-				if($content_list[$key])
-				{
-					$value["content"] = $content_list[$key]["content"];
+		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE module='".$module."' ORDER BY taxis ASC,id DESC";
+		if($show_content){
+			$sql = "SELECT e.*,c.content content_val FROM ".$this->db->prefix."ext e ";
+			$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(e.id=c.id) ";
+			$sql.= "WHERE e.module='".$module."' ";
+			$sql.= "ORDER BY e.taxis asc,id DESC";
+		}
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		if($show_content){
+			foreach($rslist AS $key=>$value){
+				if($value['content_val']){
+					$value["content"] = $value['content_val'];
 				}
+				unset($value['content_val']);
 				$rslist[$key] = $value;
 			}
 		}
 		return $rslist;
 	}
 
-	# 删除字段内容
-	function ext_delete($id,$module)
-	{
-		$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id='".$id."'";
-		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$id."'";
-		$this->db->query($sql);
-		return true;
-	}
+	
 
 	# 取得数据库下的字段
 	# tbl 指定数据表名，多个数据表用英文逗号隔开
@@ -119,62 +90,32 @@ class ext_model extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
-	//存储表单
-	function save($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"ext",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"ext");
-		}
-	}
-
-	//删除表单
-	function del($module)
-	{
-		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='".$module."'";
-		$rslist = $this->db->get_all($sql);
-		if(!$rslist) return true;
-		foreach($rslist AS $key=>$value)
-		{
-			$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$value["id"]."'";
-			$this->db->query($sql);
-		}
-		$sql = "DELETE FROM ".$this->db->prefix."ext WHERE module='".$module."'";
-		return $this->db->query($sql);
-	}
 
 	//取得所有扩展选项信息
 	function get_all($id,$mult = false)
 	{
 		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.module FROM ".$this->db->prefix."ext ext ";
 		$sql.= "JOIN ".$this->db->prefix."extc extc ON(ext.id=extc.id) ";
-		if($mult)
-		{
+		if($mult){
+			if(is_array($id)){
+				$id = implode(",",$id);
+			}
 			$id = str_replace(",","','",$id);
 			$sql .= " WHERE ext.module IN('".$id."')";
-		}
-		else
-		{
+		}else{
 			$sql .= " WHERE ext.module='".$id."'";
 		}
 		$sql .= ' ORDER BY ext.taxis ASC,ext.id DESC';
 		$rslist = $this->db->get_all($sql);
-		if(!$rslist) return false;
-		$rs = "";
-		foreach($rslist AS $key=>$value)
-		{
-			if($mult)
-			{
-				$rs[$value["module"]][$value["identifier"]] = $GLOBALS['app']->lib('ext')->content_format($value,$value['content']);
-			}
-			else
-			{
-				$rs[$value["identifier"]] = $GLOBALS['app']->lib('ext')->content_format($value,$value['content']);
+		if(!$rslist){
+			return false;
+		}
+		$rs = array();
+		foreach($rslist AS $key=>$value){
+			if($mult){
+				$rs[$value["module"]][$value["identifier"]] = $this->lib('form')->show($value);
+			}else{
+				$rs[$value["identifier"]] = $this->lib('form')->show($value);
 			}
 		}
 		return $rs;

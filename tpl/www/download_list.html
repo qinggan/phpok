@@ -1,43 +1,38 @@
-<!-- php:$title = $cate_rs.id  != $page_rs.cate ? $cate_rs.title.' - '.$page_rs.title : $page_rs.title -->
+<!-- php:$title= $cate_rs ? $cate_rs.title.' - '.$page_rs.title : $page_rs.title -->
 <!-- include tpl=head title=$title menutitle=$page_rs.title -->
-<!-- if $page_rs.banner -->
-<div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
-<!-- /if -->
-
-<div class="wrap mb10">
-	<div class="page_left">
-		<!-- include tpl=block_catelist -->
-		<!-- include tpl=block_contactus -->
+<div class="main">
+	<!-- if $page_rs.banner -->
+	<div class="banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
+	<!-- /if -->
+	<ol class="breadcrumb">
+		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
+		<li><a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a></li>
+		<!-- if $cate_rs -->
+		<li><a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a></li>
+		<!-- /if -->
+	</ol>
+	<div class="left">
+		<!-- include tpl=block/catelist pid=$page_rs.id cid=$cate_rs.id title=$page_rs.title -->
+		<!-- include tpl=block/contact -->
+		<!-- include tpl=block/hot_article -->
 	</div>
-	<div class="page_right">
-		<div class="page_right_title">
-			<span class="breadcrumbs">
-				您现在的位置：
-				<a href="{$sys.url}" title="{$config.title}">首页</a>
-				<span class="arrow">&nbsp;</span> <a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a>
-				<!-- if $cate_rs.id != $page_rs.cate -->
-				<span class="arrow">&nbsp;</span> <a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a>
-				<!-- /if -->
-			</span>
-			{$page_rs.cate == $cate_rs.id ? $page_rs.title : $cate_rs.title}
-		</div>
+	<div class="right">
 		<ul class="download">
 			<!-- loop from=$rslist key=$key value=$value -->
 			<li>
 				<div class="softInfo">
 					<p class="title"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></p>
 					<p class="desc">{$value.note}</p>
-					<p class="info">大小：<font class="infoVal">{$value.fsize}</font>&nbsp;&nbsp;更新日期：<font class="infoVal">{func date Y-m-d $value.dateline}</font>
-					</p>
+					<p class="info">大小：<font class="infoVal">{$value.fsize}</font>&nbsp;&nbsp;更新日期：<font class="infoVal">{func date Y-m-d $value.dateline}</font></p>
 				</div>
-				<div class="downloadbtn">
-					<a href="{url ctrl=download id=$value.file.id/}" title="{$value.file.title}"></a>
-				</div>
+				<!-- if $value.dfile -->
+				<div class="downloadbtn"><a href="{url ctrl=download id=$value.dfile.id/}" title="{$value.file.title}"></a></div>
+				<!-- /if -->
+				<div class="clear"></div>
 			</li>
 			<!-- /loop -->
 		</ul>
-		<!-- include tpl=block_pagelist style=border-top:0 -->
+		<!-- include tpl=block_pagelist -->
 	</div>
-	<div class="cl"></div>
 </div>
 <!-- include tpl=foot -->

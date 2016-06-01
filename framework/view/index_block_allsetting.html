@@ -16,21 +16,27 @@ function all_refresh()
 <div class="box_item">
 	<ul>
 		<!-- if $all_popedom.site -->
-		<li><a title="配置网站信息，包括网址域名，布全局关键字等" href="javascript:$.win('网站信息','{url ctrl=all func=setting/}');void(0);">
-			<div class="top_img"><img src="images/ico/setting.png" alt="网站信息" class="ie6png" width="48" height="48" /></div>
-			<div class="name">网站信息</div></a>
+		<li><a title="{lang配置网站信息，包括网址域名，布全局关键字等}" href="javascript:$.win('{lang网站信息}','{url ctrl=all func=setting/}');void(0);">
+			<div class="top_img"><img src="images/ico/setting.png" alt="{lang网站信息}" class="ie6png" width="48" height="48" /></div>
+			<div class="name">{lang网站信息}</div></a>
 		</li>
 		<!-- /if -->
 		<!-- if $all_popedom.domain -->
-		<li><a title="网站可以绑定的域名" href="javascript:$.win('网站域名','{url ctrl=all func=domain/}');void(0);">
-			<div class="top_img"><img src="images/ico/alias.png" alt="网站域名" class="ie6png" width="48" height="48" /></div>
-			<div class="name">网站域名</div></a>
+		<li><a title="{lang网站可以绑定的域名}" href="javascript:$.win('{lang网站域名}','{url ctrl=all func=domain/}');void(0);">
+			<div class="top_img"><img src="images/ico/alias.png" alt="{lang网站域名}" class="ie6png" width="48" height="48" /></div>
+			<div class="name">{lang网站域名}</div></a>
 		</li>
 		<!-- /if -->
-		<!-- if $all_rs.email_server && $all_rs.email_account && $all_rs.email_pass -->
-		<li><a title="在线发邮件" href="javascript:$.win('发邮件','{url ctrl=all func=email/}');void(0);">
-			<div class="top_img"><img src="images/ico/email.png" alt="在线发邮件" class="ie6png" width="48" height="48" /></div>
-			<div class="name">发邮件</div></a>
+		<!-- if $site_popedom.order && $config.biz_sn && config.currency_id && $config.biz_payment -->
+		<li><a title="{lang订单常规配置}" href="javascript:$.win('{lang订单常规配置}','{url ctrl=site func=order_status/}');void(0);">
+			<div class="top_img"><img src="images/ico/shopping_setting.png" alt="{lang订单常规配置}" class="ie6png" width="48" height="48" /></div>
+			<div class="name">{lang订单常规配置}</div></a>
+		</li>
+		<!-- /if -->
+		<!-- if $showemailtest -->
+		<li><a title="{lang在线发邮件}" href="javascript:$.win('{lang发邮件}','{url ctrl=all func=email/}');void(0);">
+			<div class="top_img"><img src="images/ico/email.png" alt="{lang在线发邮件}" class="ie6png" width="48" height="48" /></div>
+			<div class="name">{lang发邮件}</div></a>
 		</li>
 		<!-- /if -->
 		<!-- if $all_popedom.gset || $all_popedom.set -->
@@ -41,6 +47,6 @@ function all_refresh()
 		</li>
 		<!-- /foreach -->
 		<!-- /if -->
-		<li class="plus" onclick="$.win('全局内容','{url ctrl=all func=gset/}')"></li>
+		<li class="plus" onclick="$.win('{lang全局内容}','{url ctrl=all func=gset/}')"></li>
 	</ul>
 </div>

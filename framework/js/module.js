@@ -4,7 +4,7 @@
 	Version : 4.0
 	Web		: www.phpok.com
 	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-11-29 21:20
+	Update  : 2015年12月24日 23时15分
 ***********************************************************/
 //检测标题名称是否为空
 function check_title(is_alert)
@@ -30,22 +30,16 @@ function module_check()
 //删除字段
 function module_field_del(id,title)
 {
-	var qc = confirm("确定要删除字段："+title+"？删除此字段将同时删除相应的内容信息！");
-	if(qc == "0")
-	{
-		return false;
-	}
-	var url = get_url("module","field_delete") + "&id="+id;
-	var rs = $.phpok.json(url);
-	if(rs.status == "ok")
-	{
-		$.phpok.reload();
-	}
-	else
-	{
-		alert(rs.content);
-		return false;
-	}
+	$.dialog.confirm('确定要删除字段：<span class="red">'+title+'</span>？<br />删除此字段将同时删除相应的内容信息',function(){
+		var url = get_url("module","field_delete") + "&id="+id;
+		var rs = $.phpok.json(url);
+		if(rs.status == "ok"){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
 }
 
 function module_field_add(id,fid)
@@ -53,22 +47,17 @@ function module_field_add(id,fid)
 	var url = get_url("module","field_add") + "&id="+id;
 	url += "&fid="+fid;
 	var title = $("#field_title_"+fid).val();
-	if(title)
-	{
+	if(title){
 		url += "&title="+$.str.encode(title);
 	}
 	var note = $("#field_note_"+fid).val();
-	if(note)
-	{
+	if(note){
 		url += "&note="+$.str.encode(note);
 	}
 	var rs = $.phpok.json(url);
-	if(rs.status == "ok")
-	{
+	if(rs.status == "ok"){
 		$.phpok.reload();
-	}
-	else
-	{
+	}else{
 		$.dialog.alert(rs.content);
 	}
 }
@@ -79,13 +68,12 @@ function module_del(id,title)
 	$.dialog.confirm("确定要删除模块：<span style='color:red;font-weight:bold;'>"+title+"</span>?<br />如果模块中有内容，也会相应的被删除，请慎用！",function(){
 		var url = get_url("module","delete")+"&id="+id;
 		var rs = json_ajax(url);
-		if(rs && rs.status == 'ok')
-		{
+		if(rs && rs.status == 'ok'){
 			$.phpok.reload();
-		}
-		else
-		{
-			if(!rs.content) rs.content = "删除失败";
+		}else{
+			if(!rs.content){
+				rs.content = "删除失败";
+			}
 			$.dialog.alert(rs.content);
 			return false;
 		}
@@ -97,17 +85,14 @@ function set_status(id)
 {
 	var url = get_url("module","status") + '&id='+id;
 	var rs = $.phpok.json(url);
-	if(rs.status == "ok")
-	{
+	if(rs.status == "ok"){
 		if(!rs.content) rs.content = '0';
 		var oldvalue = $("#status_"+id).attr("value");
 		var old_cls = "status"+oldvalue;
 		$("#status_"+id).removeClass(old_cls).addClass("status"+rs.content);
 		$("#status_"+id).attr("value",rs.content);
-	}
-	else
-	{
-		alert(rs.content);
+	}else{
+		$.dialog.alert(rs.content);
 		return false;
 	}
 }
@@ -116,7 +101,53 @@ function set_status(id)
 function module_field_edit(id)
 {
 	var url = get_url("module","field_edit") + "&id="+id;
-	$.phpok.go(url);
+	$.dialog.open(url,{
+		'title':'编辑字段 #'+id,
+		'lock':true,
+		'width':'600px',
+		'height':'70%',
+		'resize':false,
+		'drag':false,
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal':'保存编辑信息',
+		'cancel':function(){
+			return true;
+		}
+	})
+}
+
+function module_field_create(id)
+{
+	var url = get_url("module","field_create") + "&mid="+id;
+	$.dialog.open(url,{
+		'title':'添加字段',
+		'lock':true,
+		'width':'600px',
+		'height':'70%',
+		'resize':false,
+		'drag':false,
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal':'提交保存',
+		'cancel':function(){
+			return true;
+		}
+	})
 }
 
 function phpok_biz(val)

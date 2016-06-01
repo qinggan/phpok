@@ -9,8 +9,9 @@
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 
-$config["debug"] = true; //启用调试
+$config["debug"] = false; //启用调试
 $config["gzip"] = true;//启用压缩
+$config['develop'] = false;//开发状态
 $config["ctrl_id"] = "c";//取得控制器的ID
 $config["func_id"] = "f";//取得应用方法的ID
 $config["admin_file"] = "admin.php";//后台入口
@@ -21,14 +22,13 @@ $config["psize"] = 30;//每页显示数量
 $config["pageid"] = "pageid";//分页ID
 $config["timezone"] = "Asia/Shanghai";//时区调节，仅限PHP5以上支持
 $config["timetuning"] = "0";//时间调节
-$config["autoload_model"] = "";//自动加载的Model类信息
-$config["autoload_lib"] = "trans,file";//自动加载的Lib信息
-$config['waitingtime'] = 30; //两次评论的等待时间，单位为秒，未设置时使用默认时间
-$config['expiretime'] = 600; //超时时间，为空使用600
+$config['token_id'] = 'token';//参数Token，后续将全面支持非$_SESSION模式，使用token替代参数传递，与第三方同步如果出现变量冲突，可在此调节
+$config['api_remote_sql'] = false; //启用SQL远程执行，建议禁用
+
 //保留词，在前端，存在这些变量时，直接走ctrl_id模式，而不走id模式
 $config["reserved"]  = "cart,content,download,login,logout,open,order";
 $config['reserved'] .= ",payment,plugin,post,project,register,search";
-$config['reserved'] .= ",ueditor,upload,usercp,user,ajax,js,inp";
+$config['reserved'] .= ",ueditor,upload,usercp,user,ajax,js,inp,tag,comment";
 
 //管理员配置信息
 $config['admin']["is_login"] = false; //会员登录验证
@@ -48,6 +48,9 @@ $config['mobile']['status'] = true; //手机端开始，此项不开启的话，
 $config['mobile']['default'] = false; //默认为手机版，为方便开发人员调式，设置为默认后，在网页上也会展示手机版
 $config['mobile']['includejs'] = "jquery.touchslide.js"; //手机版自动加载的JS
 $config['mobile']['excludejs'] = "jquery.superslide.js"; //手机版要去除加载的JS
+//PC端JS的加载
+$config['pc']['includejs'] = '';
+$config['pc']['excludejs'] = '';
 
 //PHPOK公共JS加载类
 //jQuery表单插件，支持ajaxSubmit提交
@@ -55,12 +58,38 @@ $config['autoload_js']  = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.m
 
 
 # SESSION存储方式
-$config["engine"]["session"]["file"] = "file";
+$config["engine"]["session"]["file"] = "sql";
 $config["engine"]["session"]["id"] = "PHPSESSION";
 $config["engine"]["session"]["timeout"] = 3600;
 $config["engine"]["session"]["path"] = ROOT."data/session/";
 //当SESSION存储方式为数据库时，执行此配置
-$config["engine"]["session"]["db_user"] = $config["db"]["user"];
-$config["engine"]["session"]["db_pass"] = $config["db"]["pass"];
-$config["engine"]["session"]["db_data"] = $config["db"]["data"];
-$config["engine"]["session"]["db_table"] = $config["db"]["prefix"]."session";
+$config["engine"]["session"]["table"] = "session";
+$config['engine']['session']['auto_methods'] = "auto_start:db";
+//缓存默认配置
+$config['engine']['cache']['debug'] = false;
+$config["engine"]["cache"]["file"] = "memcache";
+$config["engine"]["cache"]["status"] = true;
+$config["engine"]["cache"]["timeout"] = 3600;
+$config["engine"]["cache"]["folder"] = ROOT."data/cache/";//在Memcache缓存中，此项用于存储KEY
+$config["engine"]["cache"]["server"] = "localhost"; //Memcache缓存服务器
+$config["engine"]["cache"]["port"] = "11211"; //Memcache缓存端口
+$config["engine"]["cache"]["prefix"] = "phpok_";//缓存Key前缀，防止生成的Key重复
+
+//Nginx对SERVER_NAME支持不好，如果您使用Nginx，且使用多站点，建议您改成：HTTP_HOST
+$config['get_domain_method'] = 'SERVER_NAME';
+
+//SEO优化分割线
+$config['seo']['line'] = ' - ';
+//SEO优化模式
+//title，即传过来的值
+//seo，即内置的SEO标题
+//sitename，即网站名称
+$config['seo']['format'] = '{title}-{sitename}-{seo}';
+
+//订单状态设定
+$config['order']['status'] = 'create,unpaid,paid,shipped,received';
+$config['order']['price'] = 'product,shipping,fee,discount';
+
+//针对收藏夹里图片获取
+$config['fav']['thumb_id'] = 'thumb';
+$config['fav']['note_id'] = 'content';

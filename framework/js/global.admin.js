@@ -38,28 +38,24 @@ function taxis(baseurl,default_value)
 	var url = baseurl;
 	if(!default_value || default_value == "undefined") default_value = "0";
 	var id_string = $.input.checkbox_join();
-	if(!id_string || id_string == "undefined")
-	{
-		alert("没有指定要更新的排序ID！");
+	if(!id_string || id_string == "undefined"){
+		$.dialog.alert("没有指定要更新的排序ID！");
 		return false;
 	}
 	//取得排序值信息
 	var id_list = id_string.split(",");
 	var id_leng = id_list.length;
-	for(var i=0;i<id_leng;i++)
-	{
+	for(var i=0;i<id_leng;i++){
 		var taxis = $("#taxis_"+id_list[i]).val();
 		if(!taxis) taxis = default_value;
 		url += "&taxis["+id_list[i]+"]="+$.str.encode(taxis);
 	}
-	var rs = json_ajax(url);
-	if(rs.status == "ok")
-	{
-		alert("排序更新完成！");
-		window.location.reload();
-	}
-	else
-	{
+	var rs = $.phpok.json(url);
+	if(rs.status == "ok"){
+		$.dialog.alert("排序更新完成！",function(){
+			$.phpok.reload();
+		});
+	}else{
 		alert(rs.content);
 		return false;
 	}
@@ -143,20 +139,16 @@ function autofill(type)
 //弹出图片选择窗口
 function phpok_pic(id)
 {
-	if(!id || id == "undefined")
-	{
-		$.dialog.alert("未指定ID");
+	if(!id || id == "undefined"){
+		$.dialog.alert(p_lang('未指定ID'));
 		return false;
 	}
-	var url = get_url("open","input") + "&type=picture&id="+id;
+	var url = get_url("open","input",'id='+id);
 	$.dialog.open(url,{
-		title: "图片管理器",
+		title: p_lang('图片管理器'),
 		lock : true,
-		width: "80%",
-		height: "70%",
-		win_min:false,
-		win_max:false,
-		resize: false
+		width: "650px",
+		height: "450px"
 	});
 }
 
@@ -164,12 +156,9 @@ function phpok_pic(id)
 function phpok_pic_view(id)
 {
 	var url = $("#"+id).val();
-	if(!url || url == "undefined")
-	{
+	if(!url || url == "undefined"){
 		$.dialog.alert("图片不存在，请在表单中填写图片地址");
-	}
-	else
-	{
+	}else{
 		top.$.dialog({
 			'title':'预览',
 			'content':'<img src="'+url+'" border="0" />',
@@ -195,39 +184,16 @@ function phpok_tpl_open(id)
 	});
 }
 
-function phpok_admin_control()
-{
-	var url = get_url("me","setting");
-	$.dialog.open(url,{
-		"title":"修改管理员信息",
-		"width":600,
-		"height":400,
-		"lock":true,
-		'move':false,
-		'is_max':false
-	});
-}
 
-function phpok_admin_logout()
+function p_lang(str)
 {
-	$.dialog.confirm("确定要退出吗？",function(){
-		var url = get_url("logout");
-		$.phpok.go(url);
-	});
-}
-
-function phpok_admin_clear()
-{
-	var url = get_url("index","clear");
-	var rs = json_ajax(url);
-	if(rs.status == "ok")
-	{
-		$.dialog.alert("缓存清空完成");
+	if(!str || str == 'undefined'){
+		return false;
 	}
-	else
-	{
-		$.dialog.alert(rs.content);
+	if(lang && lang[str]){
+		return lang[str];
 	}
+	return str;
 }
 
 
@@ -266,6 +232,87 @@ function goto_site(id,oldid)
 		direct(url);
 	},function(){
 		$("#top_site_id").val(oldid);
+	});
+}
+
+//添加自定义字段
+function ext_add(module)
+{
+	var url = get_url('ext','create','id='+$.str.encode(module));
+	$.dialog.open(url,{
+		'title':'创建扩展字段',
+		'width':'750px',
+		'height':'580px',
+		'resize':false,
+		'lock':true,
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal': '提交配置'
+	});
+	return true;
+}
+
+function ext_add2(id,module)
+{
+	var url = get_url("ext","add") + "&module="+module+"&id="+id;
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok'){
+		$.phpok.reload();
+	}else{
+		$.dialog.alert(rs.content);
+		return false;
+	}
+}
+
+function ext_delete(id,module,title)
+{
+	$.dialog.confirm('确定要删除扩展字段：<span class="red">'+title+'</span> 吗？删除后是不能恢复的！',function(){
+		var url = get_url('ext','delete');
+		url += "&module="+$.str.encode(module);
+		url += "&id="+id;
+		var rs = $.phpok.json(url);
+		if(rs.status == 'ok')
+		{
+			autosave(module,module,auto_refresh);
+		}
+		else
+		{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+
+//编辑字段
+function ext_edit(id,module)
+{
+	var url = get_url("ext","edit",'id='+id);
+	url += "&module="+$.str.encode(module);
+	$.dialog.open(url,{
+		"title" : "编辑扩展字段属性",
+		"width" : "700px",
+		"height" : "95%",
+		"win_min":false,
+		"win_max":false,
+		"resize" : false,
+		"lock" : true,
+		'okVal': '提交',
+		'ok': function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		}
 	});
 }
 

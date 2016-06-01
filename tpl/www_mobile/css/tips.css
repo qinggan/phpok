@@ -1,0 +1,13 @@
+body{font-size:12px;font-family:"Verdana","Microsoft Yahei","Geneva","sans-serif","Arial","Tahoma","HELVETICA";}
+.body{margin:100px auto auto auto;width:99%;border:1px solid #8F8F8F;}
+.body .tips{height:70px;}
+.body .tips .title{margin-left:70px;font-weight:bold;height:20px;padding-top:15px;}
+.body .tips .note{margin-left:70px;height:30px;}
+.body .tips .txt{margin-left:70px;padding-top:10px;line-height:25px;font-weight:bold;}
+.body .notice{background:url("../images/notice.jpg") 20px center no-repeat;}
+.body .ok{background:url("../images/success.jpg") 20px center no-repeat;}
+.body .success{background:url("../images/success.jpg") 20px center no-repeat;}
+.body .error{background:url("../images/error.jpg") 20px center no-repeat;}
+.debug_time{width:99%;margin:2px auto;}
+
+.red{color:red;}

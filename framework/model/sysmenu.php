@@ -8,11 +8,17 @@
 	Update  : 2012-10-27 14:36
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class sysmenu_model extends phpok_model
+class sysmenu_model_base extends phpok_model
 {
 	function __construct()
 	{
 		parent::model();
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
 	}
 
 	# 获取一条信息
@@ -33,29 +39,26 @@ class sysmenu_model extends phpok_model
 	}
 
 	# 取得指定菜单
-	function get_list($parent_id=0,$status=0)
+	public function get_list($parent_id=0,$status=0)
 	{
 		# 当未指定子菜单时，直接获取父栏目信息
 		$parent_id = intval($parent_id);
 		$sql = "SELECT * FROM ".$this->db->prefix."sysmenu WHERE parent_id=".intval($parent_id)." ";
-		if($status)
-		{
+		if($status){
 			$sql .= " AND status=1 ";
 		}
 		$sql .= " ORDER BY taxis ASC,id DESC";
 		return $this->db->get_all($sql);
 	}
 
-	# 取得全部菜单，并生成树状分类，仅限后台使用
-	function get_all($site_id=0,$status=0)
+	//取得全部菜单，并生成树状分类，仅限后台使用
+	public function get_all($site_id=0,$status=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."sysmenu WHERE 1=1 ";
-		if($status)
-		{
+		if($status){
 			$sql .= " AND status=1 ";
 		}
-		if($site_id)
-		{
+		if($site_id){
 			$sql_in = "0,".$site_id;
 			$sql .= " AND site_id IN(".$sql_in.") ";
 		}
@@ -63,17 +66,13 @@ class sysmenu_model extends phpok_model
 		$tmp_list = $this->db->get_all($sql);
 		if(!$tmp_list) return false;
 		$rslist = array();
-		foreach($tmp_list AS $key=>$value)
-		{
-			if(!$value["parent_id"])
-			{
+		foreach($tmp_list AS $key=>$value){
+			if(!$value["parent_id"]){
 				$rslist[$value["id"]] = $value;
 			}
 		}
-		foreach($tmp_list AS $key=>$value)
-		{
-			if($value["parent_id"])
-			{
+		foreach($tmp_list AS $key=>$value){
+			if($value["parent_id"]){
 				$rslist[$value["parent_id"]]["sublist"][$value["id"]] = $value;
 			}
 		}
@@ -85,25 +84,29 @@ class sysmenu_model extends phpok_model
 	{
 		$site_id = $site_id ? '0,'.$site_id : '0';
 		$sql = "SELECT * FROM ".$this->db->prefix."sysmenu WHERE site_id IN(".$site_id.") ";
-		if($ctrl)
-		{
+		if($ctrl){
 			$sql .= " AND appfile='".$ctrl."'";
 		}
 		$sql .= " AND parent_id !=0 AND status=1";
 		$sql .= " ORDER BY taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql);
-		//echo '<pre>';
-		//print_r($rslist);
-		if(!$rslist) return false;
+		if(!$rslist){
+			return false;
+		}
 		//计算相似度
 		$ulist = array();
-		foreach($rslist AS $key=>$value)
-		{
+		foreach($rslist AS $key=>$value){
 			$tmp = array();
 			$i = 0;
-			if($value['ext'] && $condition['ext'] && $this->sort($value['ext']) == $this->sort($condition['ext'])) $i = $i+4;
-			if($value['identifier'] && $condition['identifier'] && $value['identifier'] == $condition['identifier']) $i = $i+3;
-			if($value['func'] && $condition['func'] && $value['func'] == $condition['func']) $i++;
+			if($value['ext'] && $condition['ext'] && $this->sort($value['ext']) == $this->sort($condition['ext'])){
+				$i = $i+4;
+			}
+			if($value['identifier'] && $condition['identifier'] && $value['identifier'] == $condition['identifier']){
+				$i = $i+3;
+			}
+			if($value['func'] && $condition['func'] && $value['func'] == $condition['func']){
+				$i++;
+			}
 			$ulist[$value['id']] = $i;
 		}
 		//比较两个数据的相似度
@@ -119,13 +122,11 @@ class sysmenu_model extends phpok_model
 		return implode('&',$list);
 	}
 
-	# 根据条件取得菜单
-	function get_menu_id($site_id=0,$ctrl="",$func="",$identifier="")
+	public function get_menu_id($site_id=0,$ctrl="",$func="",$identifier="")
 	{
 		if(!$ctrl) return false;
 		$sql = " SELECT * FROM ".$this->db->prefix."sysmenu WHERE appfile='".$ctrl."' ";
-		if($site_id)
-		{
+		if($site_id){
 			$sql .= " AND site_id IN(0,".$site_id.") ";
 		}
 		$sql .= " AND parent_id !=0 ";
@@ -134,81 +135,36 @@ class sysmenu_model extends phpok_model
 		if(!$tmplist) return false;
 		# 最接近
 		$first = $second = $third = false;
-		foreach($tmplist AS $key=>$value)
-		{
-			if($value["identifier"] && $value["identifier"] == $identifer && $value["func"] && $value["func"] == $func && $value["appfile"] == $ctrl)
-			{
-				if(!$third)
-				{
+		foreach($tmplist AS $key=>$value){
+			if($value["identifier"] && $value["identifier"] == $identifer && $value["func"] && $value["func"] == $func && $value["appfile"] == $ctrl){
+				if(!$third){
 					$third = true;
 					$third_id = $value["id"];
 				}
 			}
-			if(!$value["identifier"] && $value["func"] && $value["func"] == $func && $value["appfile"] == $ctrl)
-			{
-				if(!$second)
-				{
+			if(!$value["identifier"] && $value["func"] && $value["func"] == $func && $value["appfile"] == $ctrl){
+				if(!$second){
 					$second = true;
 					$second_id = $value["id"];
 				}
 			}
-			if(!$value["identifier"] && !$value["func"] && $value["appfile"] == $ctrl)
-			{
-				if(!$first)
-				{
+			if(!$value["identifier"] && !$value["func"] && $value["appfile"] == $ctrl){
+				if(!$first){
 					$first = true;
 					$first_id = $value["id"];
 				}
 			}
 		}
-		if($third)
-		{
+		if($third){
 			return $third_id;
 		}
-		if($second)
-		{
+		if($second){
 			return $second_id;
 		}
-		if($first)
-		{
+		if($first){
 			return $first_id;
 		}
 		return false;
-	}
-
-	# 更新状态
-	function update_status($id,$status=0)
-	{
-		$sql = "UPDATE ".$this->db->prefix."sysmenu SET status='".$status."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	//更新排序
-	function update_taxis($id,$taxis=255)
-	{
-		$sql = "UPDATE ".$this->db->prefix."sysmenu SET taxis='".$taxis."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	# 存储核心菜单
-	function save($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		if(!$id)
-		{
-			return $this->db->insert_array($data,"sysmenu");
-		}
-		else
-		{
-			return $this->db->update_array($data,"sysmenu",array("id"=>$id));
-		}
-	}
-
-	//删除菜单
-	function delete($id)
-	{
-		$sql = "DELETE FROM ".$this->db->prefix."sysmenu WHERE id='".$id."' AND parent_id !=0";
-		return $this->db->query($sql);
 	}
 
 }

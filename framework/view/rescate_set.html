@@ -1,0 +1,156 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+$(document).ready(function(){
+	if($("input[name=gdall]:checked").val() == '1'){
+		$('#gdsetting').hide()
+	} else {
+		$('#gdsetting').show()
+	}
+	$("#catesubmit").submit(function(){
+		$(this).ajaxSubmit({
+			'url':'{url ctrl=rescate func=save/}',
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					var tip = $("#id").val() ? '{lang附件分类编辑成功}' : '{lang附件分类添加成功}';
+					$.dialog.alert(tip,function(){
+						$.phpok.go('{url ctrl=rescate/}');
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="tips">
+	{lang您当前的位置：}<a href="{url ctrl=rescate/}" title="{lang附件分类管理}">{lang附件分类管理}</a>
+	&raquo; <!-- if $id -->{lang编辑附件分类}<!-- else -->{lang添加附件分类}<!-- /if -->
+	<div class="action"><a href="{url ctrl=rescate/}">返回附件分类管理</a></div>
+	<div class="clear"></div>
+</div>
+<form method="post" id="catesubmit">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		{lang分类名称：}
+		<span class="note">{lang请设置附件分类名称，如图片库，影音库等，以方便管理}</span>
+	</div>
+	<div class="content"><input type="text" id="title" name="title" class="default" value="{$rs.title}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang存储目录：}
+		<span class="note">{lang相对于程序的根目而设，建议设置在res/之下的目录}</span>
+	</div>
+	<div class="content"><input type="text" id="root" name="root" class="default" value="{$rs.root ? $rs.root : 'res/'}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang创建子文件夹方式：}
+		<span class="note">{lang设置是否创建子文件夹}</span>
+	</div>
+	<div class="content">
+		<select name="folder">
+			<option value="">不创建文件夹</option>
+			<option value="Ym/d/"{if $rs.folder == 'Ym/d/'}selected{/if}>{lang年月/日/，示例：}{func date Ym/d/}</option>
+			<option value="Y/m/d/"{if $rs.folder == 'Y/m/d/'}selected{/if}>{lang年/月/日/，示例：}{func date Y/m/d/}</option>
+			<option value="Ymd/"{if $rs.folder == 'Ymd/'}selected{/if}>{lang年月日/，示例：}{func date Ymd/}</option>
+			<option value="Y/m/"{if $rs.folder == 'Y/m/'}selected{/if}>{lang年/月/，示例：}{func date Y/m/}</option>
+			<option value="Y/"{if $rs.folder == 'Y/'}selected{/if}>{lang年/，示例：}{func date Y/}</option>
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang是否默认使用：}
+		<span class="note">{lang当前端或未指定附件分类时，将使用这个默认来读取。整个附件分类管理中仅限支持一个}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="is_default" value="0"{if !$rs.is_default} checked{/if} />{lang否}</label></li>
+			<li><label><input type="radio" name="is_default" value="1"{if $rs.is_default} checked{/if} />{lang是}</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang支持的附件类型：}
+		<span class="note">{lang多种附件类型用英文逗号隔开，如jpg,gif,png，以此类推}</span>
+	</div>
+	<div class="content"><input type="text" id="filetypes" name="filetypes" class="default" value="{$rs.filetypes}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang类型说明：}
+		<span class="note">{lang描述上传的附件类型信息，如jpg,gif,png，可以描述为图片文件，rar,zip等可以描述为压缩文件}</span>
+	</div>
+	<div class="content"><input type="text" id="typeinfo" name="typeinfo" class="default" value="{$rs.typeinfo}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang上传大小限制：}
+		<span class="note">{lang设置该分类下能上传的文件大小，只需填写数值，不能超过PHP系统限制的：}<span class="red">{func get_cfg_var upload_max_filesize}B</span></span>
+	</div>
+	<div class="content"><input type="text" id="filemax" name="filemax" class="default" value="{$rs.filemax}" /> KB</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang图片方案生成定制：}
+		<span class="note">{lang即上传到该分类下的图片，是否使用GD配置生成特定的图片规格}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="gdall" value="1"{if $rs.gdall} checked{/if} onclick="$('#gdsetting').hide()" />{lang全部使用}</label></li>
+			<li><label><input type="radio" name="gdall" value="0"{if !$rs.gdall} checked{/if} onclick="$('#gdsetting').show()" />{lang自定义使用}</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table" id="gdsetting">
+	<div class="title">
+		{lang自定义要生成的GD方案：}
+		<span class="note">{lang全部不选表示不使用GD方案}</span>
+	</div>
+	<div class="content">
+		<div class="table_lc" style="width:400px;">
+		<table class="list">
+		<tr>
+			<th>标识</th>
+			<th>规格</th>
+		</tr>
+		<!-- loop from=$gdlist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td><label><input type="checkbox" name="gdtypes[]" id="gdtypes{$value.id}" value="{$value.id}"{if in_array($value.id,$rs.gdtypes)} checked{/if} /> {$value.identifier}</label></td>
+			<td><label for="gdtypes{$value.id}">{$value.width ? $value.width : '自动判定'} x {$value.height ? $value.height : '自动判定'}</label></td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		</div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang后台缩略图：}
+		<span class="note">{lang即上传后，自动生成一张后台缩略图，方便后台预览，禁用后将直接使用原图}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="ico" value="1"{if $rs.ico} checked{/if} />{lang启用}</label></li>
+			<li><label><input type="radio" name="ico" value="0"{if !$rs.ico} checked{/if} />{lang禁用}</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit2" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot -->

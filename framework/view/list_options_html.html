@@ -1,0 +1,29 @@
+<!-- loop from=$rslist key=$key value=$value -->
+<div style="margin-bottom:5px;">
+<table cellpadding="5" cellspacing="1" style="border:1px solid #ccc;">
+<tr>
+	<th height="30px" colspan="6" class="lft" style="background:#eee;border-bottom:1px solid #ccc;">
+		{$options[$key].title}
+		<input type="button" value="{lang编辑}" onclick="biz_attr_edit('{$key}','{$tid}')" class="phpok-btn" />
+		<input type="button" value="{lang删除}" onclick="biz_attr_delete('{$key}','{$tid}')" class="phpok-btn" />
+	</th>
+</tr>
+<tr>
+	<th style="background:#FFF;height:26px;">属性名称</th>
+	<th width="110px" style="background:#FFF;">加/减价格</th>
+	<!-- if $freight.type == 'weight' --><th width="110px" style="background:#FFF;">加/减重量</th><!-- /if -->
+	<!-- if $freight.type == 'volume' --><th width="110px" style="background:#FFF;">加/减体积</th><!-- /if -->
+	<th width="60px" style="background:#FFF;">排序</th>
+</tr>
+	<!-- loop from=$value key=$k value=$v id=$tmpid -->
+	<tr>
+		<td style="background:#FFF;">{$v.title}{if $v.val}/{/if}{$v.val}</td>
+		<td align="center" style="background:#FFF;">{$v.price}</td>
+		<!-- if $freight.type == 'weight' --><td align="center" style="background:#FFF;">{$v.weight}</td><!-- /if -->
+		<!-- if $freight.type == 'volume' --><td align="center" style="background:#FFF;">{$v.volume}</td><!-- /if -->
+		<td align="center" style="background:#FFF;">{$v.taxis}</td>
+	</tr>
+	<!-- /loop -->
+</table>
+</div>
+<!-- /loop -->

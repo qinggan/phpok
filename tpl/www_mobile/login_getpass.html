@@ -1,0 +1,53 @@
+<!-- include tpl=head title=取回密码 -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#getpass-form').submit(function(){
+		$(this).ajaxSubmit({
+			url:api_url('login','getpass'),
+			type:'post',
+			dataType:'json',
+			success:function(rs){
+				if(rs.status == 'ok'){
+					$.dialog.alert("请登录您的邮箱取得相关信息，以便进行下一步操作",function(){
+						$.phpok.go('{url ctrl=login func=repass/}');
+					});
+				}else{
+					if(!rs.content){
+						rs.content = '获取失败，请联系管理员。';
+					}
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div role="main" class="ui-content">
+	<form method="post" id="getpass-form">
+	<input class="input" type="text" name="email" placeholder="Email，请填写您注册的Email地址" />
+	<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+	<label>验证码：
+		<input class="vcode"  type="text" name="_chkcode" id="_chkcode" data-role="none" />
+		<img src="" border="0" align="absmiddle" id="vcode" class="hand" />
+	</label>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#vcode").phpok_vcode();
+		$("#vcode").click(function(){
+			$(this).phpok_vcode();
+		});
+	});
+	</script>
+	<!-- /if -->
+	<input type="submit" value="取回密码" name="">
+	</form>
+	<div class="ui-body ui-body-a ui-corner-all">
+		<h3>说明</h3>
+		<p>请输入邮箱，系统将以邮件形式通知到您更换密码步骤</p>
+		<p>已注册用户，请点这里<a href="{url ctrl=login/}" title="登录">登录</a></p>
+		<p>您还不是我们的会员，请点这里<a href="{url ctrl=register/}" title="注册会员">注册</a></p>
+	</div>
+</div>
+<!-- include tpl=foot -->

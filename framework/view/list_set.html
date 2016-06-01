@@ -107,10 +107,19 @@ $(document).ready(function(){
 		</div>
 		<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
 	</div>
-	<!-- php:$extlist = get_phpok_ext("project-".$id) -->
-	<div id="project_edit">
-	{$extlist.content.content}
+	<!-- loop from=$extlist key=$key value=$value -->
+	<div class="table">
+		<div class="title">
+			<table cellspacing="0" cellpadding="0">
+			<tr>
+				<td height="25">{$value.title}<span class="darkblue">[{$value.identifier}]</span>：</td>
+				<td><span class="note">{$value.note}</span></td>
+			</tr>
+			</table>
+		</div>
+		<div class="content">{$value.html}</div>
 	</div>
+	<!-- /loop -->
 </div>
 <div id="seo_setting" class="hide">
 	<div class="table">
@@ -138,6 +147,15 @@ $(document).ready(function(){
 		</div>
 		<div class="content">
 			<textarea name="seo_desc" id="seo_desc" class="long">{$rs.seo_desc}</textarea>
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			Tag标签：
+			<span class="note">多个标签用英文空格隔开，最多不能超过10个词</span>
+		</div>
+		<div class="content">
+			<input type="text" id="tag" name="tag" class="long" value="{$rs.tag}" />
 		</div>
 	</div>
 </div>

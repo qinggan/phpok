@@ -1,14 +1,14 @@
 <!-- php:$title = $page_rs.cate != $cate_rs.id ? $cate_rs.title.' - '.$page_rs.title : $page_rs.title -->
 <!-- include tpl=head title=$title menutitle=$page_rs.title -->
 
-<div class="main">
-<ul data-role="listview" data-inset="true" data-divider-theme="a">
+<div role="main" class="ui-content">
+<ul data-role="listview" data-inset="true" data-divider-theme="a" style="margin:0;">
 	<li data-role="list-divider">{$page_rs.title} - {$cate_rs.title}</li>
 	<!-- loop from=$rslist key=$key value=$value -->
 	<!-- php:$style = $value.style ? unserialize($value.style) : array();$style = implode(';',$style) -->
 	<li><a href="{$value.url}" title="{$value.title}" >
 		<h2 style="{$style}">{$value.title}</h2>
-		<p><strong>{func time_format $value.dateline}</strong>，{$value.user_id ? $value.user_id.user : '管理员'}，点击：{$value.hits}</p>
+		<p><strong>{func time_format $value.dateline}</strong>，点击：{$value.hits}</p>
 	</a></li>
 	<!-- /loop -->
 </ul>

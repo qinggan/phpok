@@ -1,0 +1,123 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}<a href="{url ctrl=express/}">{lang物流快递}</a>
+	&raquo; <!-- if $id -->{lang编辑物流}<!-- else -->{lang添加物流}<!-- /if -->
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+function submit_save()
+{
+	$("#postsave").ajaxSubmit({
+		'url':get_url('express','save','id={$id}&code={$code}'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				$.phpok.go(get_url('express'));
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
+}
+$(document).ready(function(){
+	$("#postsave").submit(function(){
+		submit_save();
+		return false;
+	});
+});
+</script>
+<form method="post" id="postsave">
+<div class="table">
+	<div class="title">
+		物流快递名称
+		<span class="note">填写常用的名称，如顺丰快递，中通快递等易识别名称</span>
+	</div>
+	<div class="content"><input type="text" id="title" name="title" value="{$rs.title}" class="default" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		公司名称
+		<span class="note">填写该物流或快递所属公司全称</span>
+	</div>
+	<div class="content"><input type="text" id="company" name="company" class="default" value="{$rs.company}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		官方网站
+		<span class="note">请填写官方网站，建议以http://开头</span>
+	</div>
+	<div class="content"><input type="text" id="homepage" name="homepage" class="default" value="{$rs.homepage}" /></div>
+</div>
+<!-- loop from=$extlist.code key=$key value=$value -->
+<!-- php:$valinfo = $rs.ext[$key] ? $rs.ext[$key] : $value.default -->
+<div class="table">
+	<div class="title">
+		{$value.title}：
+		<span class="note">{$value.note}</span>
+	</div>
+	<div class="content">
+		<!-- if $value.type == 'radio' -->
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+			<!-- loop from=$value.option key=$k value=$v -->
+			<td><label><input type="radio" name="{$code}_{$key}" value="{$k}"{if $valinfo == $k} checked{/if} />{$v}</label></td>
+			<!-- /loop -->
+		</tr>
+		</table>
+		<!-- elseif $value.type == 'select' -->
+		<select name="{$code}_{$key}" id="{$code}_{$key}">
+			<option value="">请选择…</option>
+			<!-- loop from=$value.option key=$k value=$v -->
+			<option value="{$k}"{if $valinfo == $k} selected{/if}>{$v}</option>
+			<!-- /loop -->
+		</select>
+		<!-- elseif $value.type == 'checkbox' -->
+		<!-- php:$valinfo = $valinfo ? explode(',',$valinfo) : array() -->
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+			<!-- loop from=$value.option key=$k value=$v -->
+			<td><label><input type="checkbox" name="{$code}_{$k}" value="{$k}"{if in_array($k,$valinfo)} checked{/if} />{$v}</label></td>
+			<!-- /loop -->
+		</tr>
+		</table>
+		<!-- else -->
+			<!-- php:$input_name = $code.'_'.$key -->
+			<!-- if $value.typebtn == 'file' -->
+			{func form_edit $input_name $valinfo text form_btn=file&width=500}
+			<!-- elseif $value.typebtn == 'image' -->
+			{func form_edit $input_name $valinfo text form_btn=image&width=500}
+			<!-- elseif $value.typebtn == 'video' -->
+			{func form_edit $input_name $valinfo text form_btn=video&width=500}
+			<!-- else -->
+			<input type="text" id="{$code}_{$key}" name="{$code}_{$key}" class="long" value="{$valinfo}" />
+			<!-- /if -->
+		<!-- /if -->
+	</div>
+</div>
+<!-- /loop -->
+<div class="table">
+	<div class="title">
+		订单动态查询频率：
+		<span class="note">请选择间隔多长时间进行物流查询，以保证数据高效</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="rate" value="2"{if $rs.rate == 2} checked{/if} />2小时</label></li>
+			<li><label><input type="radio" name="rate" value="4"{if $rs.rate == 4} checked{/if} />4小时</label></li>
+			<li><label><input type="radio" name="rate" value="6"{if $rs.rate == 6} checked{/if} />6小时</label></li>
+			<li><label><input type="radio" name="rate" value="8"{if $rs.rate == 8} checked{/if} />8小时</label></li>
+			<li><label><input type="radio" name="rate" value="10"{if $rs.rate == 10 || !$rs.rate} checked{/if} />10小时</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit2" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot -->

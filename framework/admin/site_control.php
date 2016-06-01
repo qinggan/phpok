@@ -10,60 +10,149 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class site_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 		$this->popedom = appfile_popedom("site");
 		$this->assign("popedom",$this->popedom);
 	}
 
-	function index_f()
+	public function index_f()
 	{
-		if(!$this->popedom['list']) error("您没有查看站点权限");
+		if(!$this->popedom["list"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$rslist = $this->model('site')->get_all_site();
 		$this->assign("rslist",$rslist);
-		$domain_list = $this->model('site')->domain_list();
-		if($domain_list)
-		{
-			$dlist = "";
-			foreach($domain_list AS $key=>$value)
-			{
-				$dlist[$value['site_id']][] = $value['domain'];
-			}
-			$this->assign("dlist",$dlist);
-		}
 		$this->view("site_list");
 	}
 
-	function delete_f()
+	public function delete_f()
 	{
 		//删除站点操作
-		if(!$this->popedom['delete']) json_exit("您没有删除站点权限");
+		if(!$this->popedom['delete']){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
-		if(!$id) json_exit("未指定要删除的站点信息");
+		if(!$id) $this->json(P_Lang('未指定ID'));
 		$rs = $this->model('site')->get_one($id);
-		if(!$rs) json_exit("站点信息不存在");
-		if($rs['is_default']) json_exit("默认站点不支持删除操作");
+		if(!$rs) $this->json(P_Lang('站点信息不存在'));
+		if($rs['is_default']){
+			$this->json(P_Lang('默认站点不支持删除操作'));
+		}
 		//删除网站内容
 		$this->model("site")->site_delete($id);
-		if($id == $_SESSION['admin_site_id'])
-		{
+		if($id == $_SESSION['admin_site_id']){
 			$d_rs = $this->model('site')->get_one_default();
 			$_SESSION['admin_site_id'] = $d_rs['id'];
 		}
-		json_exit("网站删除成功",true);
+		$this->json(P_Lang('网站删除成功'),true);
 	}
 
-	function default_f()
+	public function default_f()
 	{
-		if(!$this->popedom['default']) json_exit("您没有查看设置默认权限");
+		if(!$this->popedom['default']){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
-		if(!$id) json_exit("未指定站点信息");
+		if(!$id) $this->json(P_Lang('未指定站点信息'));
 		$rs = $this->model('site')->get_one($id);
-		if(!$rs) json_exit("站点信息不存在");
-		if($rs['is_default']) json_exit("默认站点不支持此操作");
+		if(!$rs) $this->json(P_Lang('站点信息不存在'));
+		if($rs['is_default']) $this->json(P_Lang('默认站点不支持此操作'));
 		$this->model('site')->set_default($id);
-		json_exit("默认站点设置成功",true);
+		$this->json(P_Lang('默认站点设置成功'),true);
+	}
+
+	public function order_status_f()
+	{
+		if(!$this->popedom["order"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
+		//订单状态
+		$rslist = $this->model('site')->order_status_all(true);
+		$this->assign('rslist',$rslist);
+
+		//价格状态
+		$pricelist = $this->model('site')->price_status_all(true);
+		$this->assign('pricelist',$pricelist);
+		$this->view('site_order_status');
+	}
+
+	public function order_status_set_f()
+	{
+		if(!$this->popedom["order"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('site')->order_status_one($id);
+		$this->assign('rs',$rs);
+		$this->assign('id',$id);
+		//邮件模板列表
+		$emailtpl = $this->model('email')->simple_list($_SESSION['admin_site_id']);
+		$this->assign("emailtpl",$emailtpl);
+		$this->view('site_order_status_set');
+	}
+
+	public function order_status_save_f()
+	{
+		if(!$this->popedom["order"]){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$title = $this->get('title');
+		if(!$title){
+			$this->json(P_Lang('未指定状态名称'));
+		}
+		$array = array('title'=>$title);
+		$array['status'] = $this->get('status','int');
+		$array['email_tpl_user'] = $this->get('email_tpl_user');
+		$array['email_tpl_admin'] = $this->get('email_tpl_admin');
+		$array['sms_tpl_user'] = $this->get('sms_tpl_user');
+		$array['sms_tpl_admin'] = $this->get('sms_tpl_admin');
+		$array['taxis'] = $this->get('taxis','int');
+		$this->model('site')->order_status_update($array,$id);
+		$this->json(true);
+	}
+
+	public function price_status_save_f()
+	{
+		if(!$this->popedom["order"]){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$title = $this->get('title');
+		if(!$title){
+			$this->json(P_Lang('未指定名称'));
+		}
+		$array = array('title'=>$title);
+		$array['status'] = $this->get('status','int');
+		$array['action'] = $this->get('action');
+		$array['taxis'] = $this->get('taxis','int');
+		$this->model('site')->price_status_update($array,$id);
+		$this->json(true);
+	}
+
+	public function alias_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->json(P_Lang('未指定站点ID'));
+		}
+		$alias = $this->get('alias');
+		if(!$alias){
+			$this->json(P_Lang('未指定别名'));
+		}
+		$this->model('site')->alias_save($alias,$id);
+		$this->json(true);
 	}
 }
 ?>

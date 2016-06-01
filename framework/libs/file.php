@@ -8,43 +8,47 @@
 ***********************************************************/
 class file_lib
 {
-	var $read_count;
-	function __construct()
+	public $read_count;
+	public function __construct()
 	{
 		$this->read_count = 0;
 	}
 
-	function file_lib()
+	public function __destruct()
 	{
-		$this->__construct();
+		unset($this);
 	}
 
 	//读取数据
-	function cat($file="")
+	public function cat($file="",$length=0)
 	{
-		if($file)
-		{
+		if($file){
 			$this->read_count++;
 			$check = strtolower($file);
-			if(strpos($check,"http://") === false)
-			{
-				if(!file_exists($file))
-				{
+			if(strpos($check,"http://") === false){
+				if(!file_exists($file)){
 					return false;
 				}
 			}
-			$content = file_get_contents($file);
+			if(!$length){
+				$content = file_get_contents($file);
+				if(!$content){
+					return false;
+				}
+			}else{
+				$fp = fopen($file,'rb');
+				$content = fread($fp,$length);
+				fclose($fp);
+			}
 			$content = str_replace("<?php die('forbidden'); ?>\n","",$content);
 			return $content;
-		}
-		else
-		{
+		}else{
 			return false;
 		}
 	}
 
 	#[存储数据]
-	function vi($content,$file,$var="",$type="wb",$ext='')
+	public function vi($content,$file,$var="",$type="wb",$ext='')
 	{
 		$this->make($file,"file");
 		if(is_array($content) && $var)
@@ -64,7 +68,7 @@ class file_lib
 	}
 
 	#[存储php等源码文件]
-	function vim($content,$file)
+	public function vim($content,$file)
 	{
 		$this->make($file,"file");
 		$this->_write($content,$file,"wb");
@@ -72,7 +76,7 @@ class file_lib
 	}
 
 	//存储图片
-	function save_pic($content,$file)
+	public function save_pic($content,$file)
 	{
 		$this->make($file,"file");
 		$handle = $this->_open($file,"wb");
@@ -84,7 +88,7 @@ class file_lib
 
 	#[删除数据操作]
 	#[这一步操作一定要小心，在程序中最好严格一些，不然有可能将整个目录删掉！]
-	function rm($file,$type="file")
+	public function rm($file,$type="file")
 	{
 		if(!file_exists($file))
 		{
@@ -124,7 +128,7 @@ class file_lib
 	}
 
 	#[创建文件或目录]
-	function make($file,$type="dir")
+	public function make($file,$type="dir")
 	{
 		$newfile = $file;
 		$msg = "";
@@ -171,7 +175,7 @@ class file_lib
 	}
 
 	//复制操作
-	function cp($old,$new,$recover=true)
+	public function cp($old,$new,$recover=true)
 	{
 		if(is_file($old))
 		{
@@ -211,7 +215,7 @@ class file_lib
 	}
 
 	#[文件移动操作]
-	function mv($old,$new,$recover=true)
+	public function mv($old,$new,$recover=true)
 	{
 		if(substr($new,-1) == "/")
 		{
@@ -241,7 +245,7 @@ class file_lib
 	}
 
 	#[获取文件夹列表]
-	function ls($folder)
+	public function ls($folder)
 	{
 		$this->read_count++;
 		$list = $this->_dir_list($folder);
@@ -250,7 +254,7 @@ class file_lib
 	}
 
 
-	function deep_ls($folder,&$list)
+	public function deep_ls($folder,&$list)
 	{
 		$this->read_count++;
 		$tmplist = $this->_dir_list($folder);
@@ -267,7 +271,7 @@ class file_lib
 		}
 	}
 
-	function _dir_list($file,$type="folder")
+	private function _dir_list($file,$type="folder")
 	{
 		if(substr($file,-1) == "/") $file = substr($file,0,-1);
 		if($type == "file")
@@ -291,7 +295,7 @@ class file_lib
 		}
 	}
 
-	function __array($array,$var,$content="")
+	private function __array($array,$var,$content="")
 	{
 		foreach($array AS $key=>$value)
 		{
@@ -311,7 +315,7 @@ class file_lib
 	}
 
 	#[打开文件]
-	function _open($file,$type="wb")
+	private function _open($file,$type="wb")
 	{
 		$handle = fopen($file,$type);
 		$this->read_count++;
@@ -319,9 +323,11 @@ class file_lib
 	}
 
 	#[写入信息]
-	function _write($content,$file,$type="wb")
+	private function _write($content,$file,$type="wb")
 	{
-		$content = stripslashes($content);
+		if($content){
+			$content = stripslashes($content);
+		}
 		$handle = $this->_open($file,$type);
 		fwrite($handle,$content);
 		unset($content);
@@ -329,7 +335,7 @@ class file_lib
 		return true;
 	}
 
-	function close($handle)
+	public function close($handle)
 	{
 		return fclose($handle);
 	}

@@ -1,79 +1,106 @@
+<!-- php:$pageid = G('pageid') -->
+<!-- php:$pageid = $pageid ? $pageid : 1 -->
+<!-- php:$comment = phpok('_comment','tid='.$tid.'&pageid='.$pageid.'&psize=10') -->
+<style type="text/css">
+.comment{clear:both;display:block;width:100%;margin:10px 0;padding:0;border-top:1px dashed #ccc;}
+.comment div.phpok-title{height:24px;padding:15px 0 13px 0;color:#333;font-size:18px;}
+.comment div.phpok-title em{color:#e74851;font-family: Georgia;font-size:20px;}
+.comment input.comment-submit{cursor:pointer;padding:3px 10px;background:#C6C6C6;border:1px solid #ccc;border-radius:5px;margin-top:10px;}
+.comment input.comment-submit:hover{background:#BDBDBD;font-weight:bold;}
+.comment textarea.comment-textarea{width:99%;border:1px solid #ccc;height:84px;}
+.comment dl{ margin-bottom:15px;; overflow:hidden;}
+.comment dt{ float:left; width:50px;}
+.comment dt img{ width:42px; height:42px; border-radius:3px;}
+.comment dd{ float:left; width:700px;}
+.comment dd .remarks{ background:#fff;border:1px solid #e0e0e0;border-radius:5px; padding:10px;position:relative; margin-bottom:5px;}
+.comment dd .remarks .postmessage {margin-top: 4px;margin-bottom: 4px;font-size: 14px;line-height: 1.5em;}
+.comment dd .remarks .postmessage p{margin-top: 4px;}
+.comment dd .remarks .moddiv{ padding:5px 0; text-align:right; color:#888888;}
+.comment dd .remarks .moddiv .nickname{font-weight:bold;padding-right:10px;}
+.comment dd fieldset.reply{margin:3px;border: 1px solid #efefef;padding:0 10px 10px 20px;border-radius:5px;line-height:170%;}
+.comment dd fieldset.reply legend{padding:0 5px;color:red;}
+.comment dd fieldset.reply div.rdate{color:#D9D9D9;font-style:italic;display:block;clear:both;line-height:170%;}
+</style>
 <script type="text/javascript">
+function save_comment()
+{
+	var url = api_url('comment','save','id={$tid}');
+	var uid = "{$comment.uid}";
+	if(uid && uid>0){
+		var comment = UE.getEditor('comment').getContent();
+	}else{
+		var comment = $("#comment").val();
+	}
+	if(!comment){
+		$.dialog.alert('评论内容不能为空',function(){},'error');
+		return false;
+	}
+	url += '&comment='+$.str.encode(comment);
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.dialog.alert('感谢您提交的评论',function(){
+				$.phpok.reload();
+			},'succeed');
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
 $(document).ready(function(){
-	$("#comment_post").submit(function(){
-		$(this).ajaxSubmit({
-			'url':api_url('comment','save','id={$rs.id}'),
-			'type':'post',
-			'dataType':'json',
-			'success':function(rs){
-				if(rs.status != 'ok')
-				{
-					alert(rs.content);
-					return false;
-				}
-				else
-				{
-					alert('您的评论已成功提交');
-					$.phpok.reload();
-					return true;
-				}
-			}
-		});
+	$("#comment-post").submit(function(){
+		save_comment();
 		return false;
 	});
 });
+$(document).keypress(function(e){
+	if(e.ctrlKey && e.which == 13 || e.which == 10) {
+		save_comment();
+		return false;
+	}
+});
 </script>
 <div class="comment">
-	<h4 class="title">评论：{$rs.title}</h4>
-	<!-- php:$list = phpok_reply($rs.id,5) -->
-	<!-- loop from=$list.list key=$key value=$value id=listId -->
+	<div class="phpok-title">评论（<em>{if $comment && $comment.total}{$comment.total}{else}0{/if}</em> 条评论）</div>
 	<dl>
-		<dt><img src="{$value.uid.avatar ? $value.uid.avatar : 'images/avatar_huge.gif'}" alt="{$value.uid.user ? $value.uid.user : '访客'}" /></dt>
+		<dt><img src="{$comment.avatar}" alt="{$comment.user}" /></dt>
+		<dd>{$comment.form}
+			<form method="post" id="comment-post">
+				<!-- if $comment.uid -->
+				{func form_edit comment $comment.content editor width=100%&height=84&btn_image=1}
+				<!-- else -->
+				<textarea name="comment" id="comment" class="comment-textarea"></textarea>
+				<!-- /if -->
+				<input name="" type="submit" class="comment-submit" value="提交" />
+			</form>
+		</dd>
+	</dl>
+	<!-- loop from=$comment.rslist key=$key value=$value id=tmpid -->
+	<dl>
+		<dt><img src="{$value.uid.avatar}" alt="{$value.uid.user}" /></dt>
 		<dd>
-			<div class="Remarks">
-				<span class="icon icon-left-arrow"></span>
+			<div class="remarks">
 				<div class="postmessage">{$value.content}</div>
-				<div class="moddiv"><span class="nickname">{$value.uid.user ? $value.uid.user :'游客'}</span>发表于{func time_format $value.addtime}</div>
+				<div class="moddiv"><span class="nickname">{$value.uid.user}</span>发表于{func time_format $value.addtime}</div>
+				<!-- if $value.adm_content && $value.adm_time -->
+				<fieldset class="reply">
+					<legend>管理员回复</legend>
+					{$value.adm_content}
+					<div class="rdate">回复时间：{func time_format $value.adm_time}</div>
+				</fieldset>
+				<!-- /if -->
 			</div>
 		</dd>
 	</dl>
 	<!-- /loop -->
-	<!-- if $list.total > 5 -->
-		<!-- php:$pagelist = phpok_page($rs.url,$list.total,$list.pageid,$list.psize,"always=1") -->
-		<div class="Pages">
-			<ul>
-				<!-- loop from=$pagelist key=$key value=$value -->
-				<li{if $value.status} class="current"{/if}><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
-				<!-- /loop -->
-			</ul>
-		</div>
-	<!-- /if -->
-	<!-- if $session.user_id -->
-	<dl>
-		<dt><img src="{$session.user_rs.avatar ? $session.user_rs.avatar : 'images/avatar_huge.gif'}" alt="{$session.user_name}" /></dt>
-		<dd>
-			<div class="Remarks">
-				<span class="icon icon-left-arrow"></span>
-				<form method="post" id="comment_post">
-				<textarea name="comment" id="comment" class="textarea"></textarea>
-				<input name="" type="submit" class="bbsbtn hover" value="提交" />
-				</form>
-			</div>
-		</dd>
-	</dl>
-	<!-- else -->
-	<dl>
-		<dt><img src="images/avatar_huge.gif" alt="游客" /></dt>
-		<dd>
-			<div class="Remarks">
-				<span class="icon icon-left-arrow"></span>
-				<div class="not_popedom">
-					您没有评论权限，请先
-					<a href="{url ctrl=login _back=$rs.url/}" title="登录">登录</a> 或 
-					<a href="{url ctrl=register _back=$rs.url/}" title="注册">注册</a>
-				</div>
-			</div>
-		</dd>
-	</dl>
+	<!-- php:$pagelist = phpok_page($comment.arc.url,$comment.total,$comment.pageid,$comment.psize,"prev=上一页&next=下一页&last=末页&home=首页&always=1") -->
+	<!-- if $pagelist -->
+	<div class="pages">
+		<ul>
+			<!-- loop from=$pagelist key=$key value=$value -->
+			<li{if $value.status} class="current"{/if}><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
+			<!-- /loop -->
+		</ul>
+	</div>
 	<!-- /if -->
 </div>

@@ -8,11 +8,17 @@
 	Update  : 2013年7月30日
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class popedom_model extends phpok_model
+class popedom_model extends popedom_model_base
 {
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
 	}
 
 	function delete($id)
@@ -101,10 +107,10 @@ class popedom_model extends phpok_model
 		$this->db->query($sql);
 	}
 
-	function is_exists($identifier,$gid)
+	function is_exists($identifier,$gid,$pid=0)
 	{
 		if(!$identifier || !$gid) return true;
-		$sql = "SELECT id FROM ".$this->db->prefix."popedom WHERE gid='".$gid."' AND identifier='".$identifier."'";
+		$sql = "SELECT id FROM ".$this->db->prefix."popedom WHERE gid='".$gid."' AND identifier='".$identifier."' AND pid='".$pid."'";
 		return $this->db->get_one($sql);
 	}
 
@@ -146,6 +152,71 @@ class popedom_model extends phpok_model
 			}
 		}
 		return $list;
+	}
+
+	public function get_site_id($pid)
+	{
+		if(!$pid){
+			return false;
+		}
+		if(is_array($pid)){
+			$idlist = false;
+			foreach($pid as $key=>$value){
+				if($value && intval($value)){
+					$idlist[] = intval($value);
+				}
+			}
+			if(!$idlist){
+				return false;
+			}
+			$pid = implode(",",$idlist);
+		}
+		$sql = "SELECT pid FROM ".$this->db->prefix."popedom WHERE id IN(".$pid.")";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		$tmp = false;
+		foreach($rslist as $key=>$value){
+			$tmp[] = $value['pid'];
+		}
+		$tmp = array_unique($tmp);
+		$pid = implode(",",$tmp);
+		$sql = "SELECT site_id FROM ".$this->db->prefix."project WHERE id IN(".$pid.") AND site_id!='0' ORDER BY site_id ASC";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		return $rs['site_id'];
+	}
+
+	//检测是否有站点权限
+	public function site_popedom($site_id,$user_id)
+	{
+		$sql = "SELECT pid FROM ".$this->db->prefix."adm_popedom WHERE id='".$user_id."'";
+		$list = $this->db->get_all($sql,'pid');
+		if(!$list){
+			return false;
+		}
+		$chklist = array_keys($list);
+		$sql = "SELECT id FROM ".$this->db->prefix."project WHERE site_id='".$site_id."' AND status=1";
+		$list = $this->db->get_all($sql,'id');
+		if(!$list){
+			return false;
+		}
+		$ids = implode(",",array_keys($list));
+		$sql = "SELECT id FROM ".$this->db->prefix."popedom WHERE pid IN(".$ids.")";
+		$list = $this->db->get_all($sql,'id');
+		if(!$list){
+			return false;
+		}
+		$idlist = array_keys($list);
+		//检查chklist和idlist是否有交集
+		$array = array_intersect($idlist,$chklist);
+		if(!$array || ($array && count($array)<1)){
+			return false;
+		}
+		return true;
 	}
 }
 ?>

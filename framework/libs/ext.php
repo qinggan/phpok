@@ -22,8 +22,8 @@ class ext_lib
 	{
 		$id = $this->safe_format($id);
 		if(!$id) return false;
-		$sql = "SELECT l.*,id.phpok identifier FROM ".$GLOBALS['app']->db->prefix."list l ";
-		$sql.= "JOIN ".$GLOBALS['app']->db->prefix."id id ON(l.id=id.id AND id.type_id='content' AND l.site_id=id.site_id) ";
+		$sql = "SELECT l.* FROM ".$GLOBALS['app']->db->prefix."list l ";
+		//$sql.= "JOIN ".$GLOBALS['app']->db->prefix."id id ON(l.id=id.id AND id.type_id='content' AND l.site_id=id.site_id) ";
 		$sql.= "WHERE l.id IN(".$id.") ORDER BY SUBSTRING_INDEX('".$id."',l.id,1)";
 		$rslist = $GLOBALS['app']->db->get_all($sql,"id");
 		if(!$rslist) return false;
@@ -87,7 +87,6 @@ class ext_lib
 	function title_info($id)
 	{
 		if(!$id) return false;
-		global $app;
 		$sql = "SELECT l.*,id.phpok identifier FROM ".$GLOBALS['app']->db->prefix."list l ";
 		$sql.= "JOIN ".$GLOBALS['app']->db->prefix."id id ON(l.id=id.id AND l.site_id=id.site_id AND id.type_id='content')";
 		$sql.= " WHERE l.id='".$id."'";
@@ -118,7 +117,6 @@ class ext_lib
 	function title_ext($id,$mid,$islist=false)
 	{
 		if(!$id || !$mid) return false;
-		global $app;
 		$sql = "SELECT * FROM ".$GLOBALS['app']->db->prefix."list_".$mid." WHERE id IN(".$id.") ORDER BY SUBSTRING_INDEX('".$id."',id,1)";
 		$rslist = $GLOBALS['app']->db->get_all($sql,"id");
 		if(!$rslist) return false;
@@ -159,7 +157,6 @@ class ext_lib
 	function res_info($id)
 	{
 		if(!$id) return false;
-		global $app;
 		$sql = "SELECT * FROM ".$GLOBALS['app']->db->prefix."res WHERE id='".$id."'";
 		$rs = $GLOBALS['app']->db->get_one($sql);
 		if(!$rs) return false;
@@ -189,7 +186,6 @@ class ext_lib
 	{
 		$id = $this->safe_format($id);
 		if(!$id) return false;
-		global $app;
 		$idlist = explode(",",$id);
 		$rslist = array();
 		foreach($idlist AS $key=>$value)
@@ -210,7 +206,6 @@ class ext_lib
 	function user_info($id)
 	{
 		if(!$id) return false;
-		global $app;
 		$sql = "SELECT * FROM ".$GLOBALS['app']->db->prefix."user WHERE id='".$id."'";
 		$rs = $GLOBALS['app']->db->get_one($sql);
 		if(!$rs) return false;
@@ -240,7 +235,6 @@ class ext_lib
 	//取得分类列表
 	function cate_list($id)
 	{
-		global $app;
 		$id = $this->safe_format($id);
 		if(!$id) return false;
 		//取得分类列表
@@ -295,9 +289,7 @@ class ext_lib
 	
 	function project_info($id)
 	{
-		global $app;
-		$GLOBALS['app']->model("project");
-		$rs = $GLOBALS['app']->project_model->get_one($id);
+		$rs = $GLOBALS['app']->model('project')->get_one($id);
 		if(!$rs || !$rs["status"]) return false;
 		return $rs;
 	}
@@ -376,7 +368,6 @@ class ext_lib
 	//格式化文本框信息
 	function _format_text($rs)
 	{
-		global $app;
 		if(!$rs || !$rs["content"]) return false;
 		if($rs["ext"]["form_btn"] == "date" && $rs["format"] == "time")
 		{
@@ -399,7 +390,6 @@ class ext_lib
 	//格式化密码框
 	function _format_password($rs)
 	{
-		global $app;
 		if(!$rs || !$rs["content"]) return false;
 		if($rs["ext"]["password_type"] == "md5")
 		{
@@ -419,7 +409,6 @@ class ext_lib
 	//格式化复选框
 	function _format_checkbox($rs)
 	{
-		global $app;
 		if(!$rs || !$rs["content"]) return false;
 		$rs["ext"]["is_multiple"] = true;
 		return $this->_global_format($rs);
@@ -428,7 +417,6 @@ class ext_lib
 	//格式化下拉菜单选项信息
 	function _format_select($rs)
 	{
-		global $app;
 		if(!$rs || !$rs["content"]) return false;
 		return $this->_global_format($rs);
 		
@@ -436,7 +424,6 @@ class ext_lib
 
 	function _global_format($rs)
 	{
-		global $app;
 		if(!$rs['ext']['option_list']) return $rs["content"];
 		$tmp = explode(":",$rs["ext"]["option_list"]);
 		if($tmp[0] == "opt")
@@ -459,7 +446,6 @@ class ext_lib
 
 	function _format_opt($rs)
 	{
-		global $app;
 		if(!$rs || !$rs["content"]) return false;
 		$tmp = explode(":",$rs["ext"]["option_list"]);
 		if(!$tmp[1]) return $rs["content"];
@@ -524,7 +510,6 @@ class ext_lib
 	//格式化项目信息
 	function _format_project($rs)
 	{
-		global $app;
 		if(!$rs || !$rs["content"]) return false;
 		if($rs["ext"]["is_multiple"])
 		{
@@ -547,7 +532,6 @@ class ext_lib
 	//格式化分类信息
 	function _format_cate($rs)
 	{
-		global $app;
 		if(!$rs || !$rs["content"]) return false;
 		if($rs["ext"]["is_multiple"])
 		{
@@ -570,7 +554,6 @@ class ext_lib
 	//格式化会员信息
 	function _format_user($rs)
 	{
-		global $app;
 		if(!$rs || !$rs["content"]) return false;
 		if($rs["ext"]["is_multiple"])
 		{
@@ -593,7 +576,6 @@ class ext_lib
 	//格式化附件
 	function _format_upload($rs)
 	{
-		global $app;
 		if(!$rs || !$rs["content"]) return false;
 		if($rs["ext"]["is_multiple"])
 		{
@@ -614,7 +596,6 @@ class ext_lib
 	//针对单个主题的格式化
 	function _format_title($rs)
 	{
-		global $app;
 		if(!$rs || !$rs["content"]) return false;
 		if($rs["ext"]["is_multiple"])
 		{
@@ -637,11 +618,9 @@ class ext_lib
 	//格式化网址信息
 	function _format_url($rs)
 	{
-		global $app;
 		if(!$rs || !$rs["content"]) return false;
 		$content = unserialize($rs["content"]);
 		$_admin = array("id"=>0,"type"=>"txt","info"=>$content["default"]);
-		global $app;
 		if($GLOBALS['app']->app_id == "admin")
 		{
 			$list = array("default"=>$content["default"],"rewrite"=>$content["rewrite"],"_admin"=>$_admin);
@@ -711,7 +690,6 @@ class ext_lib
 	//安全格式化外部传输过来的数据
 	function safe_format($id)
 	{
-		global $app;
 		if(!$id) return false;
 		$idlist = explode(",",$id);
 		$tmp = array();

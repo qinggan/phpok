@@ -8,51 +8,60 @@
 	<a href="{echo admin_url('currency')}">货币管理</a>
 	&raquo; 已添加货币信息
 </div>
-
+<script type="text/javascript">
+function update_taxis(val,id)
+{
+	var url = get_url("currency","sort","sort["+id+"]="+val);
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+$(document).ready(function(){
+	$("div[name=taxis]").click(function(){
+		var oldval = $(this).text();
+		var id = $(this).attr('data');
+		$.dialog.prompt('{lang请填写新的排序：}',function(val){
+			if(val != oldval){
+				update_taxis(val,id);
+			}
+		},oldval);
+	});
+});
+</script>
 <div class="list">
 <table width="100%" class="list" cellpadding="0" cellspacing="0">
 <tr>
-	<th width="50px">&nbsp;</th>
-	<th width="35px">状态</th>
-	<th width="100px">编号</th>
-	<th style="text-align:left;">名称</th>
+	<th width="50">货币代号</th>
+	<th width="80">数字代码</th>
+	<th width="30px">&nbsp;</th>
+	<th class="lft">名称</th>
 	<th width="150px">汇率</th>
 	<th width="150px" style="text-align:left;">显示效果</th>
 	<th width="60px">排序</th>
-	<th width="65px">操作</th>
+	<th>&nbsp;</th>
 </tr>
 <!-- loop from=$rslist key=$key value=$value -->
 <tr>
-	<td align="center"><input type="checkbox" name="ids[]" id="id_{$value.id}" value="{$value.id}" /></td>
+	<td align="center">{$value.code}</td>
+	<td class="center">{$value.code_num}</td>
 	<td><span class="status{$value.status}" id="status_{$value.id}"{if $popedom.status} onclick="phpok_status({$value.id},'{func admin_url currency status}')"{else} style="cursor: default;"{/if} value="{$value.status}"></span></td>
-	<td align="center"><label for="id_{$value.id}">{$value.code}</label></td>
 	<td><label for="id_{$value.id}">{$value.title}</label></td>
 	<td align="center">{$value.val}</td>
-	<td class="darkblue">{$value.symbol_left} {func rand 10 99}.{func rand 10 99} {$value.symbol_right}</td>
-	<td class="center"><input type="text" id="taxis_{$value.id}" name="taxis[]" class="short center" value="{$value.taxis}" tabindex="{$rslist_id.num}" /></td>
+	<td class="darkblue">{$value.symbol_left}{func rand 10 99}.{func rand 10 99}{$value.symbol_right}</td>
+	<td class="center"><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 	<td>
-		<!-- if $popedom.modify -->
-		<a class="icon edit" href="{func admin_url currency set}&id={$value.id}" title="修改"></a>
-		<!-- /if -->
-		<!-- if $popedom.delete -->
-		<a class="icon delete end" onclick="currency_del('{$value.id}','{$value.title}')" title="删除"></a>
-		<!-- /if -->
+		<div class="button-group">
+			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=currency func=set id=$value.id/}')" class="phpok-btn" /><!-- /if -->
+			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="currency_del('{$value.id}','{$value.title}')" class="phpok-btn" /><!-- /if -->
+		</div>
 	</td>
 </tr>
 <!-- /loop -->
 </table>
 </div>
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<td>
-		<ul class="layout">
-			<li><input type="button" value="全选" class="btn" onclick="$.input.checkbox_all()" /></li>
-			<li><input type="button" value="全不选" class="btn" onclick="$.input.checkbox_none()" /></li>
-			<li><input type="button" value="反选" class="btn" onclick="$.input.checkbox_anti()" /></li>
-			<li><input type="button" value="排序" class="submit" onclick="set_sort()" /></li>
-		</ul>
-	</td>
-</tr>
-</table>
-
 <!-- include tpl=foot -->

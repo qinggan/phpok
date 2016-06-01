@@ -8,57 +8,123 @@
 	Update  : 2012-11-07 20:27
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-
-
-//该函数可实现数据自定义调用
-//id，即标识串，在后台数据调用中心设置
-//ext，扩展属性，可替换默认的扩展属性，支持数组及字符串，字符串格式为：cateid=1&project=test，以&分格隔
-//notin，即不包含的ID，适用于读文章列表时要排除的ID
-function phpok($id,$ext="")
+function phpok($id='',$ext="")
 {
-	return $GLOBALS['app']->call->phpok($id,$ext);
-}
-
-//同上，此函数跳过后台数据调用中心，直接获取数据信息
-function phpok_load($type,$ext="")
-{
-	return $GLOBALS['app']->call->phpok_load($type,$ext);
-}
-
-//在模板页中直接分页传参数，完整参数有
-//home=首页&prev=上一页&next=下一页&last=尾页&half=5&opt=1&add={total}/{psize}
-function phpok_page($url,$total,$num=0,$psize=20,$param="")
-{
-	if(!$url || !$total) return false;
-	if($param)
-	{
-		parse_str($param,$list);
-		if(!$list) $list = array();
-		foreach($list AS $key=>$value)
-		{
-			if(substr($value,0,1) == ';' && substr($value,-1) == ';') $value = "&".substr($value,1);
-			if($key == 'home' && $value) $GLOBALS['app']->lib('page')->home_str($value);
-			if($key == 'prev' && $value) $GLOBALS['app']->lib('page')->prev_str($value);
-			if($key == 'next' && $value) $GLOBALS['app']->lib('page')->next_str($value);
-			if($key == 'last' && $value) $GLOBALS['app']->lib('page')->last_str($value);
-			if($key == 'half' && $value !='') $GLOBALS['app']->lib('page')->half($value);
-			if($key == 'opt' && $value) $GLOBALS['app']->lib('page')->opt_str($value);
-			if($key == 'add' && $value) $GLOBALS['app']->lib('page')->add_up($value);
-			if($key == 'always' && $value) $GLOBALS['app']->lib('page')->always($value);
-		}
+	if(!$id || !$GLOBALS['app']->call){
+		return false;
 	}
-	if($num<1) $num = 1;
-	$pagelist = $GLOBALS['app']->lib('page')->page($url,$total,$num,$psize);
-	return $pagelist;
+	$count = func_num_args();
+	if($count<=2){
+		return $GLOBALS['app']->call->phpok($id,$ext);
+	}
+	$param = array();
+	for($i=1;$i<$count;++$i){
+		$tmp = func_get_arg($i);
+		if(strpos($tmp,'=') !== true){
+			$tmp = str_replace(':','=',$tmp);
+		}
+		$param[] = $tmp;
+	}
+	$param = implode("&",$param);
+	return $GLOBALS['app']->call->phpok($id,$param);
 }
 
-# 后台调用插件
+function fav_count($title_id=0)
+{
+	return $GLOBALS['app']->model('fav')->title_fav_count($title_id);
+}
+
+function fav_check($title_id=0)
+{
+	return $GLOBALS['app']->model('fav')->chk($title_id,$_SESSION['user_id']);
+}
+
+function token($data)
+{
+	if(!$data){
+		return false;
+	}
+	if(is_string($data)){
+		parse_str($data,$data);
+	}
+	return $GLOBALS['app']->lib('token')->encode($data);
+}
+
+
+/**
+ * 模板中调用分页
+ * @param string $url 网址
+ * @param int $total 总数
+ * @param int $num 当前页
+ * @param int psize 每页显示数量
+ * @param string ... 更多参数，格式是 变量id=变量值 如：home=首页&prev=上一页&next=下一页&last=尾页&half=5&opt=1&add={total}/{psize}
+ * @date 2016年02月05日
+ */
+function phpok_page($url,$total,$num=0,$psize=20)
+{
+	if(!$url || !$total){
+		return false;
+	}
+	$count = func_num_args();
+	if($count<=4){
+		return $GLOBALS['app']->lib('page')->page($url,$total,$num,$psize);
+	}
+	$param = array();
+	for($i=4;$i<$count;++$i){
+		$tmp = func_get_arg($i);
+		if(strpos($tmp,'=') !== true){
+			$tmp = str_replace(':','=',$tmp);
+		}
+		$param[] = $tmp;
+	}
+	$param = implode("&",$param);
+	parse_str($param,$list);
+	if(!$list){
+		$list = array();
+	}
+	foreach($list as $key=>$value){
+		if(substr($value,0,1) == ';' && substr($value,-1) == ';'){
+			$value = "&".substr($value,1);
+		}
+		$list[$key] = $value;
+	}
+	if($list['home']){
+		$GLOBALS['app']->lib('page')->home_str($list['home']);
+	}
+	if($list['prev']){
+		$GLOBALS['app']->lib('page')->prev_str($list['prev']);
+	}
+	if($list['next']){
+		$GLOBALS['app']->lib('page')->next_str($list['next']);
+	}
+	if($list['last']){
+		$GLOBALS['app']->lib('page')->last_str($list['last']);
+	}
+	if($list['half'] != ''){
+		$GLOBALS['app']->lib('page')->half($list['half']);
+	}
+	if($list['opt']){
+		$GLOBALS['app']->lib('page')->opt_str($list['opt']);
+	}
+	if($list['add']){
+		$GLOBALS['app']->lib('page')->add_up($list['add']);
+	}
+	if($list['always']){
+		$GLOBALS['app']->lib('page')->always($list['always']);
+	}
+	if($list['rewrite']){
+		$GLOBALS['app']->lib('page')->url_format($list['rewrite']);
+	}
+	if($num<1){
+		$num = 1;
+	}
+	return $GLOBALS['app']->lib('page')->page($url,$total,$num,$psize);
+}
+
 function phpok_plugin()
 {
-	//取得全部插件
 	$rslist = $GLOBALS['app']->model('plugin')->get_all(1);
-	if(!$rslist)
-	{
+	if(!$rslist){
 		return false;
 	}
 	$id = $GLOBALS['app']->app_id;
@@ -68,16 +134,16 @@ function phpok_plugin()
 	//装载插件
 	foreach($rslist AS $key=>$value)
 	{
-		if(is_file($GLOBALS['app']->dir_root.'plugins/'.$key.'/'.$id.'.php'))
-		{
-			if($value['param']) $value['param'] = unserialize($value['param']);
-			include_once($GLOBALS['app']->dir_root.'plugins/'.$key.'/'.$id.'.php');
+		if(is_file($GLOBALS['app']->dir_root.'plugins/'.$key.'/'.$id.'.php')){
+			if($value['param']){
+				$value['param'] = unserialize($value['param']);
+			}
+			include($GLOBALS['app']->dir_root.'plugins/'.$key.'/'.$id.'.php');
 			$name = $id.'_'.$key;
 			$cls = new $name();
 			$func_name = $ctrl.'_'.$func;
 			$mlist = get_class_methods($cls);
-			if($mlist && in_array($func_name,$mlist))
-			{
+			if($mlist && in_array($func_name,$mlist)){
 				echo $cls->$func_name($value);
 			}
 		}
@@ -88,9 +154,7 @@ function phpok_plugin()
 function phpok_image_rs($img_id)
 {
 	if(!$img_id) return false;
-	global $app;
-	$app->model("res");
-	return $app->res_model->get_one($img_id);
+	return $GLOBALS['app']->model('res')->get_one($img_id);
 }
 
 //显示评论信息
@@ -101,8 +165,7 @@ function phpok_reply($id,$psize=10,$orderby="ASC",$vouch=false)
 	$sessid = $GLOBALS['app']->session->sessid();
 	$uid = $_SESSION['user_id'] ? $_SESSION['user_id'] : 0;
 	$condition .= " AND (status=1 OR (status=0 AND (uid=".$uid." OR session_id='".$sessid."'))) ";
-	if($vouch)
-	{
+	if($vouch){
 		$condition .= " AND vouch=1 ";
 	}
 	$total = $GLOBALS['app']->model('reply')->get_total($condition);
@@ -154,44 +217,7 @@ function phpok_reply($id,$psize=10,$orderby="ASC",$vouch=false)
 
 function phpok_ip()
 {
-	$cip = (isset($_SERVER['HTTP_CLIENT_IP']) AND $_SERVER['HTTP_CLIENT_IP'] != "") ? $_SERVER['HTTP_CLIENT_IP'] : FALSE;
-	$rip = (isset($_SERVER['REMOTE_ADDR']) AND $_SERVER['REMOTE_ADDR'] != "") ? $_SERVER['REMOTE_ADDR'] : FALSE;
-	$fip = (isset($_SERVER['HTTP_X_FORWARDED_FOR']) AND $_SERVER['HTTP_X_FORWARDED_FOR'] != "") ? $_SERVER['HTTP_X_FORWARDED_FOR'] : FALSE;
-	$ip = "0.0.0.0";
-	if($cip && $rip)
-	{
-		$ip = $cip;
-	}
-	elseif($rip)
-	{
-		$ip = $rip;
-	}
-	elseif($cip)
-	{
-		$ip = $cip;
-	}
-	elseif($fip)
-	{
-		$ip = $fip;
-	}
-
-	if (strstr($ip, ','))
-	{
-		$x = explode(',', $ip);
-		$ip = end($x);
-	}
-
-	if ( ! preg_match( "/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/", $ip))
-	{
-		$ip = '0.0.0.0';
-	}
-	return $ip;
-}
-
-//网址，驼峰写法
-function phpokUrl($rs)
-{
-	return phpok_url($rs);
+	return $GLOBALS['app']->lib('common')->ip();
 }
 
 //网址，下划线分割字符法
@@ -199,10 +225,11 @@ function phpok_url($rs)
 {
 	if(!$rs) return false;
 	if(is_string($rs)) parse_str($rs,$rs);
-	$ctrl = $func = $id = "";
+	$ctrl = $func = $id = $appid = "";
 	if($rs["ctrl"]) $ctrl = $rs["ctrl"];
 	if($rs["func"]) $func = $rs["func"];
 	if($rs["id"]) $id = $rs["id"];
+	if($rs['appid']) $appid = $rs['appid'];
 	if(!$ctrl && !$id) return false;
 	if(!$ctrl)
 	{
@@ -212,7 +239,7 @@ function phpok_url($rs)
 	$tmp = array();
 	foreach($rs AS $key=>$value)
 	{
-		if(!in_array($key,array("ctrl","id","func")))
+		if(!in_array($key,array("ctrl","id","func",'appid')))
 		{
 			if($key == '_nocache' && $value != 'false' && $value != '0')
 			{
@@ -229,17 +256,38 @@ function phpok_url($rs)
 		$tmp[] = "id=".rawurlencode($rs["id"]);
 	}
 	$string = ($tmp && count($tmp)>0) ? implode("&",$tmp) : "";
-	return $GLOBALS['app']->url($ctrl,$func,$string);
+	return $GLOBALS['app']->url($ctrl,$func,$string,$appid);
 }
 
 //读取会员拥有发布的权限信息
 function usercp_project()
 {
-	if(!$_SESSION['user_id'] || !$_SESSION['user_rs']['group_id']) return false;
-	$group_rs = $GLOBALS['app']->model('usergroup')->get_one($_SESSION['user_rs']['group_id']);
-	if(!$group_rs || !$group_rs['status'] || !$group_rs['post_popedom'] || $group_rs['post_popedom'] == 'none') return false;
-	return $GLOBALS['app']->model('project')->plist($group_rs['post_popedom'],1);
+	if(!$_SESSION['user_id'] || !$_SESSION['user_gid']){
+		return false;
+	}
+	$group_rs = $GLOBALS['app']->model('usergroup')->get_one($_SESSION['user_gid']);
+	$popedom = $group_rs['popedom'] ? unserialize($group_rs['popedom']) : array();
+	$site_id = $GLOBALS['app']->site['id'];
+	if(!$popedom || ($popedom && !$popedom[$site_id])){
+		return false;
+	}
+	$popedom = explode(",",$popedom[$site_id]);
+	$plist = false;
+	foreach($popedom as $key=>$value){
+		if(substr($value,0,5) == 'post:'){
+			if(!$plist){
+				$plist = array();
+			}
+			$plist[] = str_replace('post:','',trim($value));
+		}
+	}
+	if(!$plist){
+		return false;
+	}
+	$pids = implode(",",$plist);
+	return $GLOBALS['app']->model('project')->plist($pids,true);
 }
+
 //读取会员信息，如果有ID，则读取该ID数组信息
 function usercp_info($field="")
 {

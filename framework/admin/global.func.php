@@ -116,7 +116,7 @@ function phpok_sys_menu()
 
 	if(!$menulist || count($menulist) < 1 || !is_array($menulist))
 	{
-		$GLOBALS['app']->error("导航菜单异常：无法获取后台导航菜单，请检查表：".$GLOBALS['app']->db->prefix."sysmenu！");
+		$GLOBALS['app']->error(P_Lang('导航菜单异常：无法获取后台导航菜单，请检查表qinggan_sysmenu'));
 	}
 
 	$top_list = array();
@@ -266,7 +266,7 @@ function show_pending_info()
 	if($reply_total>0)
 	{
 		$url = $GLOBALS['app']->url("reply","","status=3");
-		$list[] = array("title"=>"未审核评论","total"=>$reply_total,"url"=>$url);
+		$list[] = array("title"=>P_Lang('未审核评论'),"total"=>$reply_total,"url"=>$url);
 	}
 	return $list;
 }
@@ -274,27 +274,22 @@ function show_pending_info()
 //返回JS URL 或 <script type="text/javascript" src="url"></script>
 function include_js($js="",$mini=false,$injs=false)
 {
-	//加载表单中涉及到的js
-	$array = $GLOBALS['app']->config['load_js'][$GLOBALS['app']->app_id];
+	global $app;
+	$array = $app->config['load_js'][$app->app_id];
 	$str = array();
-	if($array && is_array($array))
-	{
-		foreach($array AS $key=>$value)
-		{
-			if($key == 'global' || $key == $GLOBALS['app']->ctrl)
-			{
+	if($array && is_array($array)){
+		foreach($array AS $key=>$value){
+			if($key == 'global' || $key == $app->ctrl){
 				$str[] = $value;
 			}
 		}
 	}
-	if($js)
-	{
+	if($js){
 		$str[] = $js;
 	}
 	$str = implode(",",$str);
-	$url = $mini ? $GLOBALS['app']->url('js','mini','ext='.rawurlencode($str)) : $GLOBALS['app']->url('js','ext','js='.rawurlencode($str));
-	if($injs)
-	{
+	$url = $mini ? $app->url('js','mini','ext='.rawurlencode($str)) : $app->url('js','ext','js='.rawurlencode($str));
+	if($injs){
 		$url = '<script type="text/javascript" src="'.$url.'"></script>';
 	}
 	return $url;
@@ -305,7 +300,7 @@ function get_phpok_ext($module,$words="id,identifier")
 {
 	if(!$module)
 	{
-		return array_return("未指定模块");
+		return array_return(P_Lang('未指定模块'));
 	}
 	if(substr($module,0,3) == "add")
 	{
@@ -388,7 +383,6 @@ function appfile_popedom($string,$project_id=0)
 //string，权限ID，用于处理
 function system_popedom($string,$return_type="")
 {
-	global $app;
 	if($_SESSION["admin_rs"]["if_system"])
 	{
 		return true;
@@ -397,15 +391,15 @@ function system_popedom($string,$return_type="")
 	{
 		if($return_type == "tips" || $return_type == "tpl" || $return_type == "tip")
 		{
-			error("您没有权限执行此操作","","error");
+			error(P_Lang('您没有权限执行此操作'),"","error");
 		}
 		elseif($return_type == "json")
 		{
-			json_exit("您没有权限执行此操作");
+			$GLOBALS['app']->json(P_Lang('您没有权限执行此操作'));
 		}
 		elseif($return_type == "ajax")
 		{
-			exit("您没有权限执行此操作");
+			exit(P_Lang('您没有权限执行此操作'));
 		}
 		else
 		{
@@ -413,7 +407,6 @@ function system_popedom($string,$return_type="")
 		}
 	}
 	$string = str_replace(array(",","|","/",">"),":",$string);
-	$app->model("popedom");
 	$list = explode(":",$string);
 	$type = $list[0];
 	$identify = $list[1];
@@ -422,15 +415,15 @@ function system_popedom($string,$return_type="")
 	{
 		if($return_type == "tips" || $return_type == "tpl" || $return_type == "tip")
 		{
-			error("您没有权限执行此操作","","error");
+			error(P_Lang('您没有权限执行此操作'),"","error");
 		}
 		elseif($return_type == "json")
 		{
-			json_exit("您没有权限执行此操作");
+			$GLOBALS['app']->json(P_Lang('您没有权限执行此操作'));
 		}
 		elseif($return_type == "ajax")
 		{
-			exit("您没有权限执行此操作");
+			exit(P_Lang('您没有权限执行此操作'));
 		}
 		else
 		{

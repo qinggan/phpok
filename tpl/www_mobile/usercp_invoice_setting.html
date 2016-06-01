@@ -1,0 +1,55 @@
+<!-- php:$title = $id ? '编辑发票' : '添加发票' -->
+<!-- include tpl=head title=$title -->
+<script type="text/javascript">
+function save()
+{
+	var id = '{$id}';
+	var url = api_url('usercp','invoice_setting');
+	if(id){
+		url += "&id="+id;
+	}
+	$("#setsubmit").ajaxSubmit({
+		'url':url,
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				var tip = id ? '发票编辑成功' : '发票添加成功';
+				$.dialog.alert(tip,function(){
+					$.phpok.go('{url ctrl=usercp func=invoice/}');
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
+	return false;
+}
+</script>
+<div role="main" class="ui-content">
+	<form method="post" id="setsubmit" onsubmit="return save();">
+	<div>
+		设置发票类型，当前仅支持普通发票
+		<label><input type="radio" name="type" value="普通发票" checked />普通发票</label>
+	</div>
+	<div>
+		发票抬头：<span class="note">个人发票请填写个人即可，企业发票就填写公司名称</span>
+		<input type="text" id="title" name="title" class="default" value="{$rs.title}" placeholder="为空使用“个人发票”" />
+	</div>
+	<div>
+		设置发票内容，留空使用<span class="red">“明细”</span>
+		<input type="text" id="content" name="content" class="default" value="{$rs.content}" placeholder="为空使用“明细”" />
+	</div>
+	<div>
+		备注：
+		<input type="text" id="note" name="note" class="default" value="{$rs.note}" />
+	</div>
+	<table width="100%">
+	<tr>
+		<td width="70%"><input type="submit" value="保存" data-theme="b" /></td>
+		<td><input type="button" value="返回" onclick="$.phpok.go('{url ctrl=usercp func=invoice/}')" /></td>
+	</tr>
+	</table>
+</form>
+<!-- include tpl=foot -->

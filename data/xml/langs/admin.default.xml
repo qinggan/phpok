@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+	<edit>修改</edit>
+	<delete>删除</delete>
 	<options>选项</options>
 	<rows>记录数</rows>
 	<size>大小</size>
@@ -31,7 +33,9 @@
 	<sql-engine>引挈</sql-engine>
 	<sql-charset>字符集</sql-charset>
 	<sql-free>碎片</sql-free>
-	<sql-not-popedom>无权限，请联系超级管理员开放权限</sql-not-popedom>
+	<not-popedom>无权限，请联系超级管理员开放权限</not-popedom>
+	<not-id>未指定ID</not-id>
+	<not-data>数据不存在，请检查</not-data>
 	<sql-not-table>未选定要操作的数据表</sql-not-table>
 	<sql-optizime-ok>数据表优化成功</sql-optizime-ok>
 	<sql-repair-ok>数据表信修复成功！</sql-repair-ok>
@@ -50,4 +54,59 @@
 	<sql-recover-not-id>没有指定备份文件</sql-recover-not-id>
 	<sql-recover-not-exists>备份文件不存在</sql-recover-not-exists>
 	<sql-recover-table-ok>表结构数据修复成功，正在修复内容数据，请稍候！</sql-recover-table-ok>
+	<plugin-title-empty>插件名称不能为空</plugin-title-empty>
+	<plugin-setting-ok>插件{title}配置成功</plugin-setting-ok>
+	<plugin-install-error>插件安装失败，请检查</plugin-install-error>
+	<plugin-install-ok>插件{title}配置成功</plugin-install-ok>
+	<plugin-uninstall-ok>插件卸载成功</plugin-uninstall-ok>
+	<plugin-exec-not-appid>插件应用文件{appid}不存在</plugin-exec-not-appid>
+	<plugin-exec-not-method>方法{method}不存在</plugin-exec-not-method>
+	<tag-not-title>关键字名称不能为空</tag-not-title>
+	<tag-exists-title>关键字已存在，请检查</tag-exists-title>
+	<tag-add-error>添加失败，请检查</tag-add-error>
+	<tag-edit-ok>编辑关键字成功</tag-edit-ok>
+	<tag-option-0>当前窗口</tag-option-0>
+	<tag-option-1>新窗口</tag-option-1>
+	<tag-add-ok>添加关键字成功</tag-add-ok>
+	<tag-manage-title>标签管理</tag-manage-title>
+	<tag-manage-list>标签列表</tag-manage-list>
+	<admin-not-modify-me>您不能操作自己的信息</admin-not-modify-me>
+	<admin-not-modify-system>非系统管理员不能编辑系统管理员信息</admin-not-modify-system>
+	<admin-not-system>没有系统管理员，请检查</admin-not-system>
+	<admin-min-system-one>至少需要有一位可登录的系统管理员，请检查！</admin-min-system-one>
+	<admin-account-empty>账号不能为空</admin-account-empty>
+	<admin-account-exists>账号已存在</admin-account-exists>
+	<admin-pass-min-long>密码长度不能少于4位</admin-pass-min-long>
+	<admin-update-error>管理员信息更新失败，请检查</admin-update-error>
+	<admin-insert-error>管理员信息添加失败，请检查</admin-insert-error>
+	<admin-update-ok>管理员信息编辑成功</admin-update-ok>
+	<admin-insert-ok>管理员账号添加成功</admin-insert-ok>
+	<admin-update-status-error>更新状态失败</admin-update-status-error>
+	<index-admin-logout>管理员退出</index-admin-logout>
+	<index-start-menu>功能菜单</index-start-menu>
+	<index-show-desktop>显示桌面</index-show-desktop>
+	<index-adminer-setting>修改个人信息</index-adminer-setting>
+	<index-clear-cache>清空缓存</index-clear-cache>
+	<index-go-index>访问网站</index-go-index>
+	<index-site-prefix>网站：</index-site-prefix>
+	<index-site-add>添加新站点</index-site-add>
+	<index-version-tip>，版本：</index-version-tip>
+	<index-refresh>刷新网页</index-refresh>
+	<index-setting-me>修改我的信息</index-setting-me>
+	<index-about-phpok>关于PHPOK</index-about-phpok>
+	<index-copyright-lgpl>LGPL开源授权</index-copyright-lgpl>
+	<index-copyright-person>个人（{license}）商业授权</index-copyright-person>
+	<index-copyright-company>企业（{license}）商业授权</index-copyright-company>
+	<index-site-not>没有找到相关权限，请联系管理员</index-site-not>
+	<index-site-1>请选择要维护的站点</index-site-1>
+	<index-site-2>站点信息不存在</index-site-2>
+	<index-site-go>您正在切换到网站：{sitename}，请稍候…</index-site-go>
+	<index-site-tip1>会员列表</index-site-tip1>
+	<index-site-pl>评论管理</index-site-pl>
+	<index-site-no-message>没有消息</index-site-no-message>
+	<index-title>后台管理</index-title>
+	<index-all-1>配置网站信息，包括网址域名，布全局关键字等</index-all-1>
+	<index-all-2>网站信息</index-all-2>
+	<index-all-3>网站可以绑定的域名</index-all-3>
+	<index-all-4>网站域名</index-all-4>
 </root>

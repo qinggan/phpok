@@ -8,18 +8,17 @@
 	时间： 2014年10月6日
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class popedom_model extends phpok_model
+class popedom_model extends popedom_model_base
 {
-	private $siteid;
 	public function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
-	//设置站点ID
-	public function siteid($siteid)
+	public function __destruct()
 	{
-		$this->siteid = $siteid;
+		parent::__destruct();
+		unset($this);
 	}
 
 	//判断是否有阅读权限
@@ -28,12 +27,10 @@ class popedom_model extends phpok_model
 	public function check($pid,$groupid=0,$type='read')
 	{
 		$popedom = $this->_popedom_list($groupid);
-		if(!$popedom)
-		{
+		if(!$popedom){
 			return false;
 		}
-		if(in_array($type.':'.$pid,$popedom))
-		{
+		if(in_array($type.':'.$pid,$popedom)){
 			return true;
 		}
 		return false;
@@ -42,17 +39,23 @@ class popedom_model extends phpok_model
 	private function _popedom_list($groupid)
 	{
 		$sql = "SELECT popedom FROM ".$this->db->prefix."user_group WHERE id='".$groupid."' AND status=1";
+		$cache_id = $this->cache->id($sql);
+		$rs = $this->cache->get($cache_id);
+		if($rs){
+			return $rs;
+		}
+		$this->db->cache_set($cache_id);
 		$rs = $this->db->get_one($sql);
-		if(!$rs || !$rs['popedom'])
-		{
+		if(!$rs || !$rs['popedom']){
 			return false;
 		}
 		$popedom = unserialize($rs['popedom']);
-		if(!$popedom[$this->siteid])
-		{
+		if(!$popedom[$this->site_id]){
 			return false;
 		}
-		return explode(",",$popedom[$this->siteid]);
+		$rs = explode(",",$popedom[$this->site_id]);
+		$this->cache->save($cache_id,$rs);
+		return $rs;
 	}
 }
 

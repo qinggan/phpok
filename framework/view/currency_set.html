@@ -18,14 +18,22 @@
 </div>
 <div class="table">
 	<div class="title">
-		标识：
+		货币代号：
 		<span class="note">设置货币的标识，国际标准为三个大写的字母</span>
 	</div>
 	<div class="content">
 		<input type="text" id="code" name="code" class="default" value="{$rs.code}" />
 	</div>
 </div>
-
+<div class="table">
+	<div class="title">
+		数字代号：
+		<span class="note">设置货币的数字代码，国际标准为三个数字</span>
+	</div>
+	<div class="content">
+		<input type="text" id="code_num" name="code_num" class="default" value="{$rs.code_num}" />
+	</div>
+</div>
 <div class="table">
 	<div class="title">
 		汇率：
@@ -94,7 +102,7 @@
 
 <div class="table">
 	<div class="content">
-		<input type="submit" value="提 交" class="submit" />
+		<input type="submit" value="提 交" class="submit2" />
 	</div>
 </div>
 </form>

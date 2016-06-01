@@ -1,0 +1,138 @@
+<!-- include tpl=head title=$title -->
+<div class="tips clearfix">
+	当前位置：<a href="{url ctrl=gateway/}" title="网关管理">网关管理</a>
+	&raquo; {$group.title}
+	&raquo; <!-- if $id -->编辑<!-- else -->添加新<!-- /if -->网关信息，当前使用的引挈是：<span class="red">{$extlist.title}</span>
+</div>
+<script type="text/javascript">
+function check_gateway_set()
+{
+	var title = $("#title").val();
+	if(!title){
+		$.dialog.alert('名称不能为空');
+		return false;
+	}
+	return true;
+}
+</script>
+<form method="post" action="{url ctrl=gateway func=save/}" onsubmit="return check_gateway_set()">
+<!-- if $id -->
+<input type="hidden" name="id" id="id" value="{$id}" />
+<!-- else -->
+<input type="hidden" name="code" id="code" value="{$code}" />
+<input type="hidden" name="type" id="type" value="{$type}" />
+<!-- /if -->
+<div class="table">
+	<div class="title">
+		名称：
+		<span class="note">设置一个名称，该名称方便管理</span>
+	</div>
+	<div class="content">
+		<input type="text" id="title" name="title" class="default" value="{$rs.title}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		状态：
+		<span class="note">只有启用此项，前台支付才能生效</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label><input type="radio" name="status" value="1"{if $rs.status} checked{/if} />启用</label></td>
+			<td><label><input type="radio" name="status" value="0"{if !$rs.status} checked{/if} />禁用</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		默认：
+		<span class="note">设置此网关是否默认使用，一种类型的网关仅支持一个默认</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label><input type="radio" name="is_default" value="1"{if $rs.is_default} checked{/if} />是</label></td>
+			<td><label><input type="radio" name="is_default" value="0"{if !$rs.is_default} checked{/if} />否</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<!-- loop from=$extlist.code key=$key value=$value -->
+
+<!-- php:$valinfo = $rs['ext'][$key] ? $rs['ext'][$key] : $value.default -->
+<div class="table">
+	<div class="title">
+		{$value.title}：
+		<span class="note">{$value.note}<!-- if $value.required == 'true' --> <span class="red">(此项必填)</span><!-- /if --></span>
+	</div>
+	<div class="content">
+		<!-- if $value.type == 'radio' -->
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+			<!-- loop from=$value.option key=$k value=$v -->
+			<td><label><input type="radio" name="{$code}_{$key}" value="{$k}"{if $valinfo == $k} checked{/if} />{$v}</label></td>
+			<!-- /loop -->
+		</tr>
+		</table>
+		<!-- elseif $value.type == 'select' -->
+		<select name="{$code}_{$key}" id="{$code}_{$key}">
+			<option value="">请选择…</option>
+			<!-- loop from=$value.option key=$k value=$v -->
+			<option value="{$k}"{if $valinfo == $k} selected{/if}>{$v}</option>
+			<!-- /loop -->
+		</select>
+		<!-- elseif $value.type == 'checkbox' -->
+		<!-- php:$valinfo = $valinfo ? explode(',',$valinfo) : array() -->
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+			<!-- loop from=$value.option key=$k value=$v -->
+			<td><label><input type="checkbox" name="{$code}_{$k}" value="{$k}"{if in_array($k,$valinfo)} checked{/if} />{$v}</label></td>
+			<!-- /loop -->
+		</tr>
+		</table>
+		<!-- elseif $value.type == 'password' -->
+		<input type="password" id="{$code}_{$key}" name="{$code}_{$key}" class="long" value="{$valinfo}" />
+		<!-- else -->
+			<!-- php:$input_name = $code.'_'.$key -->
+			<!-- if $value.typebtn == 'file' -->
+			{func form_edit $input_name $valinfo text form_btn=file&width=500}
+			<!-- elseif $value.typebtn == 'image' -->
+			{func form_edit $input_name $valinfo text form_btn=image&width=500}
+			<!-- elseif $value.typebtn == 'video' -->
+			{func form_edit $input_name $valinfo text form_btn=video&width=500}
+			<!-- else -->
+			<input type="text" id="{$code}_{$key}" name="{$code}_{$key}" class="long" value="{$valinfo}" />
+			<!-- /if -->
+		<!-- /if -->
+	</div>
+</div>
+<!-- /loop -->
+<div class="table">
+	<div class="title">
+		排序：
+		<span class="note">值范围在0-255，越小越往前靠，默认为255</span>
+	</div>
+	<div class="content">
+		<input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		摘要说明：
+		<span class="note">说明性信息，如此支付方案的限额，注意事项</span>
+	</div>
+	<div class="content">
+		{func form_edit note $rs.note editor width=700&height=300&etype=simple&btn_image=1}
+	</div>
+</div>
+
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit2" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot -->

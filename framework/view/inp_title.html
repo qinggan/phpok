@@ -32,7 +32,7 @@ function show_list()
 			c += '<td>['+lst[i]['id']+']'+lst[i]['title']+'</td>';
 			if(multi == 1)
 			{
-				c += '<td class="center"><div class="phpok-btn" onclick="delete_input(\''+lst[i]['id']+'\')"><span class="b"><span class="c">&nbsp;</span><span class="d">删除</span></span></div></td>';
+				c += '<td class="center"><input type="button" value="删除" onclick="delete_input(\''+lst[i]['id']+'\')" class="phpok-btn" /></td>'
 			}
 			c += '</tr>';
 			var t = "#list_"+lst[i]['id'];
@@ -110,7 +110,7 @@ function delete_input(val)
 	show_list();
 }
 $(document).ready(function(){
-	var new_c = parent.$(input_id).val();
+	var new_c = $.dialog.data("title_data_{$input}");
 	$("#val").val(new_c);
 	show_list();
 });
@@ -127,9 +127,9 @@ $(document).ready(function(){
 	<td>[{$value.id}]{$value.title}</td>
 	<td class="center">
 		<!-- if $multi -->
-		<div class="phpok-btn" onclick="add_input('{$value.id}')"><span class="b"><span class="c">&nbsp;</span><span class="d">添加</span></span></div>
+		<input type="button" value="添加" onclick="add_input('{$value.id}')" class="phpok-btn" />
 		<!-- else -->
-		<div class="phpok-btn" onclick="add_input('{$value.id}')"><span class="b"><span class="c">&nbsp;</span><span class="d">选择</span></span></div>
+		<input type="button" value="选择" onclick="add_input('{$value.id}')" class="phpok-btn" />
 		<!-- /if -->
 	</td>
 </tr>

@@ -8,11 +8,17 @@
 	Update  : 2012-10-20 14:20
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class admin_model extends phpok_model
+class admin_model_base extends phpok_model
 {
 	function __construct()
 	{
 		parent::model();
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
 	}
 
 	# 通过管理员账号取得管理员信息

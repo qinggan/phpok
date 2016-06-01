@@ -1,25 +1,19 @@
-<!-- head title=$title css="css/style.css,css/jquery.mobile-1.4.0.min.css" js="js/mobile.js,js/global.js" close=false html5=true -->
-	<meta name="format-detection" content="telephone=no" />
-	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<!-- head title=$title css="css/jquery.mobile.css,css/style.css,artdialog.css" js="js/jquery.mobile.js" html5=true close=false mobile=true -->
 </head>
 <body>
 <div data-role="page" id="page">
-<div data-role="header">
-	<h1>{$title ? $title : $config.title}</h1>
-	<!-- if $sys.ctrl != 'index' -->
-	<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-icon-back ui-btn-icon-left ui-btn-icon-notext">返回</a>
-	<!-- else -->
-	<a href="#" onclick="$.phpok.go('{$sys.url}')" class="ui-btn ui-corner-all ui-shadow ui-icon-home ui-btn-icon-left ui-btn-icon-notext">首页</a>
-	<!-- /if -->
-	<!-- if $session.user_id -->
-	<a href="#" onclick="logout()" class="ui-btn ui-corner-all ui-shadow ui-icon-action ui-btn-icon-left ui-btn-icon-notext">退出</a>
-	<!-- /if -->
-	<div data-role="navbar">
-	<ul>
-		<!-- php:$list = phpok('menu_mobile') -->
-		<!-- loop from=$list key=$key value=$value -->
-		<li><a href="{$value.url}" target="{$value.target}" title="{$value.title}"{if $menutitle == $value.title} class="ui-btn-active"{/if}>{$value.title}</a></li>
-		<!-- /loop -->
-	</ul>
+	<div data-role="panel" id="menu" data-position="right" data-display="overlay">
+		<ul data-role="listview" data-icon="false">
+			<!-- php:$list = phpok('menu') -->
+			<!-- loop from=$list.rslist key=$key value=$value -->
+			<li><a href="{$value.url}" target="{$value.target}" title="{$value.title}"{if $menutitle == $value.title} style="color:darkblue;"{/if}>{$value.title}</a>
+			</li>
+			<!-- /loop -->
+		</ul>
 	</div>
+<div data-role="header" data-position="fixed">
+	<h1>{$title ? $title : $config.title}</h1>
+	<a href="{url ctrl=cart/}" class="ui-btn ui-corner-all ui-shadow ui-icon-cart ui-btn-icon-left ui-btn-icon-notext" id="head_cart_num"></a>
+	<a href="#menu" class="ui-btn ui-shadow ui-corner-all ui-btn-icon-left ui-icon-bars  ui-btn-icon-notext">菜单</a>
 </div>
+<div dat-role="content" id="body-content">

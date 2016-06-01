@@ -1,0 +1,92 @@
+<!-- include tpl=head_open -->
+<table class="list" width="100%">
+<tr>
+	<th>ID</th>
+	<th class="lft">&nbsp;{lang主题}</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<tr>
+	<td>{$value.id}</td>
+	<td>{$value.title}</td>
+</tr>
+<!-- /loop -->
+</table>
+<script type="text/javascript">
+function save()
+{
+	var url = get_url('workflow','addok');
+	var id = $("#ids").val();
+	if(!id){
+		$.dialog.alert('{lang未指定主题}');
+		return false;
+	}
+	url += "&id="+$.str.encode(id);
+	var admin_id = $("#admin_id").val();
+	if(!admin_id){
+		$.dialog.alert('{lang未指定管理员}');
+		return false;
+	}
+	url += "&admin_id="+admin_id;
+	var note = $("#note").val();
+	if(note){
+		url += "&note="+$.str.encode(note);
+	}
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok'){
+		$.dialog.alert('{lang授权成功}',function(){
+			$.dialog.close();
+			return true;
+		},'succeed');
+		return false;
+	}else{
+		$.dialog.alert(rs.content);
+		return false;
+	}
+}
+</script>
+<hr />
+<input type="hidden" name="ids" id="ids" value="{$ids}" />
+<div class="table">
+	<div class="title">
+		{lang将上述内容指定管理员维护}
+		<span class="note"></span>
+	</div>
+	<div class="content">
+		<select id="admin_id" name="admin_id">
+		<option value="">{lang请选择管理员}</option>
+		<!-- loop from=$alist key=$key value=$value id=$tmpid -->
+		<option value="{$value.id}">{$value.account}<!-- if $value.fullname -->（{$value.fullname}）<!-- /if --></option>
+		<!-- /loop -->
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang备注}
+		<span class="note">{lang简单说明下要通知什么内容，不超过80字}</span>
+	</div>
+	<div class="content"><textarea name="note" id="note" style="width:450px;height:40px;"></textarea></div>
+</div>
+<!-- if $endlist -->
+
+<div class="tips">
+	{lang已指派的主题，如果需要另外指派，请到《我授权的》进行删除}
+	<div class="clear"></div>
+</div>
+<table class="list" width="100%">
+<tr>
+	<th>ID</th>
+	<th class="lft">&nbsp;{lang主题}</th>
+	<th>{lang管理员}</th>
+</tr>
+<!-- loop from=$endlist key=$key value=$value id=$tmpid -->
+<tr>
+	<td>{$value.id}</td>
+	<td>{$value.title}</td>
+	<td>{$value.account}</td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- /if -->
+
+<!-- include tpl=foot_open -->

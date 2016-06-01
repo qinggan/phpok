@@ -18,32 +18,25 @@ $(document).ready(function(){
 	<div class="right">
 		<div class="pfw mbottom10">
 			<h3>订单中心</h3>
-			<div class="orderlist">
-			<table class="orderlist" width="100%">
+			<div class="list">
+			<table class="list" width="100%">
 			<tr>
 				<th width="80px">下单时间</th>
 				<th width="150px">订单编号</th>
 				<th width="80">数量</th>
 				<th class="o-price">金额</th>
 				<th class="o-status">审核</th>
-				<th class="o-status">付款</th>
 				<th width="80px">明细</th>
 			</tr>
 			<!-- loop from=$rslist key=$key value=$value -->
 			<tr{if $rslist_id.num%2 == ''} class="o-dark"{else} class="o-white"{/if}>
-				<td class="o-date">{func date Y.m.d $value.addtime}</td>
-				<td class="o-sn">{$value.sn}</td>
-				<td class="o-qty">{$value.qty}</td>
-				<td class="o-price">{func price_format $value.price $value.currency_id $value.currency_id}</td>
-				<td class="o-status">{$value.status}</td>
-				<td class="o-status">
-					{$value.pay_status}
-					<!-- if $value.pay_date -->
-					<span class="pay_date">支付时间：（{func time_format $value.pay_date}）</span>
-					<!-- /if -->
-				</td>
+				<td class="center" height="30">{func date Y.m.d $value.addtime}</td>
+				<td class="center">{$value.sn}</td>
+				<td class="center">{$value.qty}</td>
+				<td class="center">{func price_format $value.price $value.currency_id $value.currency_id}</td>
+				<td class="center">{$value.status_info}</td>
 				<td align="center">
-					<input type="button" value=" 查看 " onclick="$.phpok.go('{url ctrl=order func=info id=$value.id/}')" />
+					<input type="button" value=" 查看 " onclick="$.phpok.go('{url ctrl=order func=info id=$value.id/}',false)" />
 				</td>
 			</tr>
 			<!-- /loop -->

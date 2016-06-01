@@ -1,0 +1,60 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function delete_rescate(id,title)
+{
+	$.dialog.confirm('确定要删除这个附件分类吗？<span class="red">'+title+'</span>',function(){
+		var url = '{url ctrl=rescate func=delete/}&id='+id;
+		$.phpok.json(url,function(rs){
+			if(rs.status == 'ok'){
+				$.dialog.alert('删除成功',function(){
+					$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		});
+	});
+}
+</script>
+<div class="tips">
+	{lang您当前的位置：}
+	<a href="{url ctrl=rescate/}" title="{lang附件分类管理}">{lang资源分类管理}</a>
+	&raquo; {lang资源分类列表}
+	<div class="action"><a href="{url ctrl=rescate func=set/}">{lang创建资源分类}</a></div>
+	<div class="clear"></div>
+</div>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>ID</th>
+	<th class="lft">名称</th>
+	<th class="lft">目录</th>
+	<th class="lft">附件类型</th>
+	<th>是否默认</th>
+	<th class="lft">GD方案</th>
+	<th class="lft" width="120">操作</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td align="center">{$value.id}</td>
+	<td>{$value.title}</td>
+	<td>{$value.root}{$rs.folder}</td>
+	<td>{$value.filetypes}</td>
+	<td align="center"><!-- if $value.is_default --><span class="darkblue">{lang是}</span><!-- else -->{lang否}<!-- /if --></td>
+	<td>
+		<!-- if $value.gdall -->
+		<span class="darkblue">{lang全部}</span>
+		<!-- else -->
+		{$value.gdtypes}<!-- if !$value.gdtypes --><span class="red">{lang空}</span><!-- /if -->
+		<!-- /if -->
+	</td>
+	<td>
+		<div class="button-group">
+			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=rescate func=set id=$value.id/}')" class="phpok-btn" /><!-- /if -->
+			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="delete_rescate('{$value.id}','{$value.title}')" class="phpok-btn" /><!-- /if -->
+		</div>
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- include tpl=foot -->

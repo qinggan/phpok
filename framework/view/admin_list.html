@@ -1,8 +1,8 @@
-<!-- include tpl=head title="管理员信息维护" -->
+<!-- include tpl=head -->
 <script type="text/javascript">
 function admin_delete(id,title)
 {
-	$.dialog.confirm("确定要删除管理员 <span class='red'>"+title+"</span> 吗?",function(){
+	$.dialog.confirm("{lang确定要删除管理员} <span class='red'>"+title+"</span> {lang吗?}",function(){
 		var url = get_url("admin","delete") +"&id="+id;
 		var rs = json_ajax(url);
 		if(rs.status != "ok")
@@ -38,26 +38,31 @@ function admin_edit(id)
 	var url = get_url("admin","set") + '&id='+id;
 	direct(url);
 }
+$(document).ready(function(){
+	top.$.desktop.title('{lang管理员维护}');
+});
 </script>
 <div class="tips clearfix">
-	<!-- if $popedom.add --><div class="action"><a href="{echo admin_url('admin','set')}">添加管理员</a></div><!-- /if -->
-	您当前的位置：<a href="{func admin_url admin}" title="管理员列表">管理员列表</a>
+	<!-- if $popedom.add --><div class="action"><a href="{echo admin_url('admin','set')}">{lang添加管理员}</a></div><!-- /if -->
+	{lang您当前的位置：}<a href="{func admin_url admin}" title="{lang管理员列表}">{lang管理员列表}</a>
 </div>
 <div class="list">
 	<table width="100%" cellpadding="0" cellspacing="0" class="list">
 	<tr>
-		<th width="50">ID</th>
-		<th width="30">状态</th>
-		<th class="lft"><div style="padding-left:7px;">账号</div></th>
-		<th class="lft" colspan="2"><div style="padding-left:7px;">操作</div></th>
+		<th width="50">{langID}</th>
+		<th width="30">{lang状态}</th>
+		<th class="lft"><div style="padding-left:7px;">{lang账号}</div></th>
+		<th class="lft"><div style="padding-left:7px;">{lang邮箱}</div></th>
+		<th class="lft" colspan="2"><div style="padding-left:7px;">{lang操作}</div></th>
 	</tr>
 	<!-- loop from=$rslist key=$key value=$value -->
 	<tr id="admin_tr_{$value.id}">
 		<td align="center">{$value.id}</td>
 		<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="set_status({$value.id})"{else} style="cursor:default;"{/if} value="{$value.status}"></span></td>
-		<td><div style="padding-left:7px">{$value.account}<!-- if $value.if_system --><span class="red i">（系统管理员）</span><!-- /if --></div></td>
-		<td width="50"><!-- if $popedom.modify --><input type="button" value="编辑" class="btn" onclick="admin_edit({$value.id})" /><!-- /if --></td>
-		<td width="50"><!-- if $popedom.delete --><input type="button" value="删除" class="btn" {if !$value.if_system && $value.id != $session.admin_id}onclick="admin_delete('{$value.id}','{$value.account}')"{else}onclick="$.dialog.alert('系统管理员或您自己不能删除')"{/if} /><!-- /if --></td>
+		<td><div style="padding-left:7px">{$value.account}<!-- if $value.if_system --><span class="red i">{lang（系统管理员）}</span><!-- /if --></div></td>
+		<td><div style="padding-left:7px">{$value.email}</div></td>
+		<td width="50"><!-- if $popedom.modify --><input type="button" value="{lang编辑}" class="btn" onclick="admin_edit({$value.id})" /><!-- /if --></td>
+		<td width="50"><!-- if $popedom.delete --><input type="button" value="{lang删除}" class="btn" {if !$value.if_system && $value.id != $session.admin_id}onclick="admin_delete('{$value.id}','{$value.account}')"{else}onclick="$.dialog.alert('{lang系统管理员或您自己不能删除}')"{/if} /><!-- /if --></td>
 	</tr>
 	<!-- /loop -->
 	</table>

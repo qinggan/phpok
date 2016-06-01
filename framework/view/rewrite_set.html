@@ -1,0 +1,349 @@
+<!-- include tpl=head -->
+<style type="text/css">
+table.wikitable {
+	background: none repeat scroll 0 0 #F9F9F9;
+	border: 1px solid #AAAAAA;
+	border-collapse: collapse;
+	color: black;
+}
+.wikitable th, .wikitable td {
+	border: 1px solid #AAAAAA;
+	padding: 0.2em;
+}
+.wikitable th {
+	background: none repeat scroll 0 0 #F2F2F2;
+	text-align: center;
+}
+code{color:darkblue;font-weight:bold;font-size:16px;}
+</style>
+
+<script type="text/javascript" src="{func include_js rewrite.js}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	update_func();
+	$("#rewrite_submit").submit(function(){
+		$(this).ajaxSubmit({
+			'url':"{url ctrl=rewrite func=save/}",
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					var id = "{$id}";
+					var tip = id ? '规则编辑成功' : '添加成功';
+					$.dialog.alert(tip,function(){
+						$.phpok.go(get_url('rewrite'));
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+function read_zzinfo()
+{
+	$.dialog({
+		'title':'阅读正则信息',
+		'content':document.getElementById('zzinfo'),
+		'width':'500px',
+		'height':'400px',
+		'left':'100%',
+		'top':'0%',
+		'resize':false,
+		'padding':0
+	});
+}
+</script>
+<div class="tips">
+	{lang当前位置：}<a href="{url ctrl=rewrite/}">伪静态页规则</a>
+	&raquo;<!-- if $id -->编辑<!-- else -->添加<!-- /if -->规则
+	<div class="clear"></div>
+</div>
+<form method="post" id="rewrite_submit">
+<!-- if $id -->
+<input type="hidden" name="id" id="id" value="{$id}" />
+<!-- /if -->
+<div class="table">
+	<div class="title">
+		主题
+		<span class="note">方便后台管理</span>
+	</div>
+	<div class="content"><input type="text" name="title" id="title" value="{$rs.title}" class="long" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		正则：
+		<span class="note">请手动填写正则，关于正则的一些信息教程，<a href="javascript:read_zzinfo();void(0)">点这里阅读</a>！</span>
+	</div>
+	<div class="content">
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+			<td><input type="text" id="rule" name="rule" class="long" value="{$rs.rule}" /></td>
+			<td>&nbsp;</td>
+			<td>
+				<div class="button-group">
+					<input type="button" value="{lang清空}" onclick="$('#rule').val('')" class="phpok-btn" />
+					<input type="button" value="{lang正则手册}" onclick="read_zzinfo()" class="phpok-btn" />
+				</div>
+			</td>
+		</tr>
+		</table>
+		<div style="padding-top:5px">
+			<div class="button-group">
+				<input type="button" value="{langPHPOK标识}" onclick="insert_input('([a-zA-Z][a-zA-Z0-9\\_\\-]+)')" class="phpok-btn" />
+				<input type="button" value="{lang字母+数字+联字符}" onclick="insert_input('([a-zA-Z0-9\\_\\-]+)')" class="phpok-btn" />
+				<input type="button" value="{lang数字}" onclick="insert_input('([0-9]+)')" class="phpok-btn" />
+				<input type="button" value="{lang斜扛}" onclick="insert_input('\\/')" class="phpok-btn" />
+				<input type="button" value="{langHTML结尾}" onclick="insert_input('\\.html$')" class="phpok-btn" />
+			</div>
+		</div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		目标网址：
+		<span class="note">请填写目标网址，程序一般是：index.php?c=控制器&f=方法 或 index.php?id=标识</span>
+	</div>
+	<div class="content">
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+			<td><input type="text" id="val" name="val" class="long" value="{$id ? $rs.val : 'index.php?'}" /></td>
+			<td>&nbsp;</td>
+			<td><input type="button" value="{lang清空}" onclick="$('#val').val('')" class="phpok-btn" /></td>
+		</tr>
+		</table>
+		<div style="padding-top:5px">
+			<div class="button-group">
+				<input type="button" value="{lang控制器}" onclick="insert_input('{$sys.ctrl_id}=','val')" class="phpok-btn" />
+				<input type="button" value="{lang方法}" onclick="insert_input('{$sys.func_id}=','val')" class="phpok-btn" />
+				<input type="button" value="{lang分类}" onclick="insert_input('cate=','val')" class="phpok-btn" />
+				<input type="button" value="{langID}" onclick="insert_input('id=','val')" class="phpok-btn" />
+				<input type="button" value=" & " onclick="insert_input('&','val')" class="phpok-btn" />
+				<input type="button" value="{lang\$1}" onclick="insert_input('\$1','val')" class="phpok-btn" />
+				<input type="button" value="{lang\$2}" onclick="insert_input('\$2','val')" class="phpok-btn" />
+				<input type="button" value="{lang\$3}" onclick="insert_input('\$3','val')" class="phpok-btn" />
+			</div>
+		</div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		格式化
+		<span class="note">这里编辑通过参数格式化成想要的伪静态页，即动态链转伪静态页的生成规则</span>
+	</div>
+	<div class="content">
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+			<td><input type="text" id="format" name="format" class="long" value="{$rs.format}" /></td>
+			<td>&nbsp;</td>
+			<td><input type="button" value="{lang清空}" onclick="$('#format').val('')" class="phpok-btn" /></td>
+		</tr>
+		</table>
+		<div style="padding-top:5px">
+			<div class="button-group">
+				<input type="button" value="{lang控制器}" onclick="insert_input('[ctrl]','format')" class="phpok-btn" />
+				<input type="button" value="{lang方法}" onclick="insert_input('[func]','format')" class="phpok-btn" />
+				<input type="button" value="{lang分类}" onclick="insert_input('[cate]','format')" class="phpok-btn" />
+				<input type="button" value="{lang标识ID}" onclick="insert_input('[id]','format')" class="phpok-btn" />
+				<input type="button" value="{lang斜扛}" onclick="insert_input('/','format')" class="phpok-btn" />
+				<input type="button" value="{lang其他变量}" onclick="insert_input('[]','format')" class="phpok-btn" />
+				<input type="button" value="{langHTML结尾}" onclick="insert_input('.html','format')" class="phpok-btn" />
+			</div>
+		</div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		控制器：
+		<span class="note">请选择要操作的控制器，不清楚请填写project，多个项目请用“|”分开</span>
+	</div>
+	<div class="content">
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+			<td><input type="text" name="ctrl" id="ctrl" value="{$rs.ctrl}" class="default" /></td>
+			<!-- if $clist -->
+			<td>&nbsp;</td>
+			<td>
+				<select onchange="update2(this.value,'ctrl')">
+					<option value="">请选择…</option>
+					<!-- loop from=$clist key=$key value=$value id=$tmpid -->
+					<option value="{$key}">{$value}</option>
+					<!-- /loop -->
+				</select>
+			</td>
+			<!-- /if -->
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		方法：
+		<span class="note">请选择控制器下的方法，不清楚请填写index，多个方法请用“|”分开</span>
+	</div>
+	<div class="content">
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+			<td><input type="text" name="func" id="func" value="{$rs.func}" class="default" /></td>
+			<td>&nbsp;</td>
+			<td>
+				<select id="func_select" name="func_select" onchange="update2(this.value,'func')">
+					<option value="">请选择…</option>
+				</select>
+			</td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		变量
+		<span class="note">多个变量用英文“|”线隔开</span>
+	</div>
+	<div class="content">
+		<input type="text" name="var" id="var" value="{$rs.var}" class="long" />
+		<div style="padding-top:5px">
+			<div class="button-group">
+				<input type="button" value="{lang控制器}" onclick="insert_input('ctrl','var','|')" class="phpok-btn" />
+				<input type="button" value="{lang方法}" onclick="insert_input('func','var','|')" class="phpok-btn" />
+				<input type="button" value="{lang分类}" onclick="insert_input('cate','var','|')" class="phpok-btn" />
+				<input type="button" value="{lang标识ID}" onclick="insert_input('id','var','|')" class="phpok-btn" />
+				<input type="button" value="{lang订单号}" onclick="insert_input('sn','var','|')" class="phpok-btn" />
+				<input type="button" value="{lang订单密码}" onclick="insert_input('passwd','var','|')" class="phpok-btn" />
+				<input type="button" value="{lang分割号}" onclick="insert_input('','var','|')" class="phpok-btn" />
+			</div>
+		</div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		排序：
+		<span class="note">很重要，会影响网址的解析，因此请仔细设置，值越小越往前靠</span>
+	</div>
+	<div class="content"><input type="text" name="sort" id="sort" value="{$rs.sort}" class="short" /></div>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit2" />
+	</div>
+</div>
+</form>
+<div id="zzinfo" style="display:none;height:400px;overflow-y:scroll;">
+<table class="wikitable">
+<tr>
+	<th width="10%">字符</th>
+	<th width="90%">描述</th>
+</tr>
+<tr>
+	<th>\</th>
+	<td>将下一个字符标记为一个特殊字符、或一个原义字符、或一个向后引用、或一个八进制转义符。例如，“<code>n</code>”匹配字符“<code>n</code>”。“<code>\n</code>”匹配一个换行符。串行“<code>\\</code>”匹配“<code>\</code>”而“<code>\(</code>”则匹配“<code>(</code>”。</td>
+</tr>
+<tr>
+	<th>^</th>
+	<td>匹配输入字符串的开始位置，除非在方括号表达式中使用，此时它表示不接受该字符集合。要匹配 ^ 字符本身，请使用 <code>\^</code></td>
+</tr>
+<tr>
+	<th>$</th>
+	<td>匹配输入字符串的结束位置。要匹配 $ 字符本身，请使用 <code>\$</code></td>
+</tr>
+<tr>
+	<th>*</th>
+	<td>匹配前面的子表达式零次或多次。例如，zo*能匹配“<code>z</code>”以及“<code>zoo</code>”。*等价于{0,}。</td>
+</tr>
+<tr>
+	<th>+</th>
+	<td>匹配前面的子表达式一次或多次。例如，“<code>zo+</code>”能匹配“<code>zo</code>”以及“<code>zoo</code>”，但不能匹配“<code>z</code>”。+等价于{1,}。</td>
+</tr>
+<tr>
+	<th>?</th>
+	<td>匹配前面的子表达式零次或一次。例如，“<code>do(es)?</code>”可以匹配“<code>does</code>”或“<code>does</code>”中的“<code>do</code>”。?等价于{0,1}。</td>
+</tr>
+<tr>
+	<th>?</th>
+	<td>当该字符紧跟在任何一个其他限制符（*,+,?，{<span style="font-family:Times New Roman; font-style:italic;">n</span>}，{<span style="font-family:Times New Roman; font-style:italic;">n</span>,}，{<span style="font-family:Times New Roman; font-style:italic;">n</span>,<span style="font-family:Times New Roman; font-style:italic;">m</span>}）后面时，匹配模式是非贪婪的。非贪婪模式尽可能少的匹配所搜索的字符串，而默认的贪婪模式则尽可能多的匹配所搜索的字符串。例如，对于字符串“<code>oooo</code>”，“<code>o+?</code>”将匹配单个“<code>o</code>”，而“<code>o+</code>”将匹配所有“<code>o</code>”。</td>
+</tr>
+<tr>
+	<th>.</th>
+	<td>匹配除“<code>\</code><span style="font-family:Times New Roman; font-style:italic;"><code>n</code></span>”之外的任何单个字符。要匹配包括“<code>\</code><span style="font-family:Times New Roman; font-style:italic;"><code>n</code></span>”在内的任何字符，请使用像“<code>(.|\n)</code>”的模式。</td>
+</tr>
+<tr>
+	<th>(pattern)</th>
+	<td>匹配pattern并获取这一匹配。所获取的匹配可以从产生的Matches集合得到，在VBScript中使用SubMatches集合，在JScript中则使用$0…$9属性。要匹配圆括号字符，请使用“<code>\(</code>”或“<code>\)</code>”。</td>
+</tr>
+<tr>
+	<th>(?:pattern)</th>
+	<td>匹配pattern但不获取匹配结果，也就是说这是一个非获取匹配，不进行存储供以后使用。这在使用或字符“<code>(|)</code>”来组合一个模式的各个部分是很有用。例如“<code>industr(?:y|ies)</code>”就是一个比“<code>industry|industries</code>”更简略的表达式。</td>
+</tr>
+<tr>
+	<th>(?=pattern)</th>
+	<td>正向肯定预查，在任何匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如，“<code>Windows(?=95|98|NT|2000)</code>”能匹配“<code>Windows2000</code>”中的“<code>Windows</code>”，但不能匹配“<code>Windows3.1</code>”中的“<code>Windows</code>”。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。</td>
+</tr>
+<tr>
+	<th>(?!pattern)</th>
+	<td>正向否定预查，在任何不匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如“<code>Windows(?!95|98|NT|2000)</code>”能匹配“<code>Windows3.1</code>”中的“<code>Windows</code>”，但不能匹配“<code>Windows2000</code>”中的“<code>Windows</code>”。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始</td>
+</tr>
+<tr>
+	<th>x|y</th>
+	<td>匹配x或y。例如，“<code>z|food</code>”能匹配“<code>z</code>”或“<code>food</code>”。“<code>(z|f)ood</code>”则匹配“<code>zood</code>”或“<code>food</code>”。</td>
+</tr>
+<tr>
+	<th>[xyz]</th>
+	<td>字符集合。匹配所包含的任意一个字符。例如，“<code>[abc]</code>”可以匹配“<code>plain</code>”中的“<code>a</code>”。</td>
+</tr>
+<tr>
+	<th>[^xyz]</th>
+	<td>负值字符集合。匹配未包含的任意字符。例如，“<code>[^abc]</code>”可以匹配“<code>plain</code>”中的“<code>p</code>”。</td>
+</tr>
+<tr>
+	<th>[a-z]</th>
+	<td>字符范围。匹配指定范围内的任意字符。例如，“<code>[a-z]</code>”可以匹配“<code>a</code>”到“<code>z</code>”范围内的任意小写字母字符。</td>
+</tr>
+<tr>
+	<th>[^a-z]</th>
+	<td>负值字符范围。匹配任何不在指定范围内的任意字符。例如，“<code>[^a-z]</code>”可以匹配任何不在“<code>a</code>”到“<code>z</code>”范围内的任意字符。</td>
+</tr>
+<tr>
+	<th>\d</th>
+	<td>匹配一个数字字符。等价于[0-9]。</td>
+</tr>
+<tr>
+	<th>\D</th>
+	<td>匹配一个非数字字符。等价于[^0-9]。</td>
+</tr>
+<tr>
+	<th>\n</th>
+	<td>匹配一个换行符。等价于\x0a和\cJ。</td>
+</tr>
+<tr>
+	<th>\r</th>
+	<td>匹配一个回车符。等价于\x0d和\cM。</td>
+</tr>
+<tr>
+	<th>\s</th>
+	<td>匹配任何空白字符，包括空格、制表符、换页符等等。等价于[ \f\n\r\t\v]。</td>
+</tr>
+<tr>
+	<th>\S</th>
+	<td>匹配任何非空白字符。等价于[^ \f\n\r\t\v]。</td>
+</tr>
+<tr>
+	<th>\t</th>
+	<td>匹配一个制表符。等价于\x09和\cI。</td>
+</tr>
+<tr>
+	<th>\v</th>
+	<td>匹配一个垂直制表符。等价于\x0b和\cK。</td>
+</tr>
+<tr>
+	<th>\w</th>
+	<td>匹配包括下划线的任何单词字符。等价于“<code>[A-Za-z0-9_]</code>”。</td>
+</tr>
+<tr>
+	<th>\W</th>
+	<td>匹配任何非单词字符。等价于“<code>[^A-Za-z0-9_]</code>”。</td>
+</tr>
+</table>
+</div>
+<!-- include tpl=foot -->

@@ -1,24 +1,18 @@
 <!-- include tpl=head title="修改个人资料 - 个人中心" -->
-<link rel="stylesheet" type="text/css" href="{#js#}/webuploader/webuploader.css" />
-<script type="text/javascript" src="{#js#}/webuploader/webuploader.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-	//提交表单信息
 	$("#userinfo_submit").submit(function(){
 		$(this).ajaxSubmit({
 			type:'post',
 			url: api_url('usercp','info'),
 			dataType:'json',
 			success: function(rs){
-				if(rs.status == 'ok')
-				{
-					alert("您的信息更新成功");
-					$.phpok.reload();
-				}
-				else
-				{
-					if(!rs.content) rs.content = '信息更新失败';
-					alert(rs.content);
+				if(rs.status == 'ok'){
+					$.dialog.alert("您的信息更新成功",function(){
+						$.phpok.reload();
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content);
 					return false;
 				}
 			}
@@ -26,26 +20,6 @@ $(document).ready(function(){
 		return false;
 	});
 });
-
-//附件上传后执行的JS动作
-function update_avatar(rs)
-{
-	if(!rs || rs.status != 'ok')
-	{
-		alert(rs.content);
-		return false;
-	}
-	$("#avatar").val(rs.content.filename);
-	$("#avatar_view").attr('src',rs.content.filename);
-	//更新头像ID
-	$.ajax({
-		'url': api_url('usercp','avatar','data='+$.str.encode(rs.content.filename)),
-		'dataType': 'json',
-		'success': function(rs) {
-			return true;
-		}
-	});
-}
 </script>
 <div class="cp">
 	<div class="left"><!-- include tpl=block_usercp --></div>
@@ -55,30 +29,22 @@ function update_avatar(rs)
 			<form method="post" id="userinfo_submit">
 			<div class="table">
 				<input type="hidden" name="avatar" id="avatar" value="{$rs.avatar}" />
-				<div class="l" style="line-height:80px;">会员头像：</div>
-				<table cellspacing="0" cellpadding="0">
-				<tr>
-					<td><img src="{$rs.avatar ? $rs.avatar : 'images/user_default.png'}" width="80px" border="0" id="avatar_view"></td>
-					<td style="padding-left:10px;">
-						<div id="uploader" class="wu-example">
-							<!--用来存放文件信息-->
-							<div id="thelist" class="uploader-list"></div>
-							<div class="btns">
-								<div id="btn_picture"></div>
-							</div>
-						</div>
-					</td>
-				</tr>
-				</table>
+				<div class="l">&nbsp;</div>
+				<img src="{$rs.avatar ? $rs.avatar : 'images/avatar_huge.gif'}" width="80px" border="0" />
 			</div>
+			<!-- if $rs.email -->
 			<div class="table">
-				<div class="l"><span class="red">*</span> 邮箱：</div>
-				<input type="text" name="email" id="email" value="{$rs.email}" class="input" />
+				<div class="l">邮箱：</div>
+				{$rs.email}
 			</div>
+			<!-- /if -->
+			<!-- if $rs.mobile -->
+			
 			<div class="table">
-				<div class="l">手机或电话：</div>
-				<input type="text" name="mobile" id="mobile" value="{$rs.mobile}" class="input" />
+				<div class="l">手机：</div>
+				{$rs.mobile}
 			</div>
+			<!-- /if -->
 			<!-- loop from=$extlist key=$key value=$value -->
 			<div class="table">
 				<div class="l">{$value.title}：</div>
@@ -87,36 +53,11 @@ function update_avatar(rs)
 			<!-- /loop -->
 			<div class="table">
 				<div class="l">&nbsp;</div>
-				<input type="submit" value=" 修改资料 " />
+				<input type="submit" value="修改资料" class="button blue" />
 			</div>
 			</form>
 		</div>
 	</div>
 	<div class="clear"></div>
 </div>
-<script type="text/javascript">
-$(document).ready(function(){
-	var uploader = WebUploader.create({
-		auto: true,
-		swf: webroot + '{#js#}/webuploader/uploader.swf',
-		// 文件接收服务端。
-		server: api_url('upload','save'),
-		compress: false,
-		pick: '#btn_picture',
-		fileVal: 'upfile',
-		formdata:{
-			'{func session_name}':'{func session_id}'
-		},
-		accept: {
-			title: '图片',
-			extensions: 'gif,jpg,jpeg,bmp,png',
-			mimeTypes: 'image/*'
-		},
-		resize: false
-	});
-	uploader.on('uploadSuccess',function(file,data){
-		update_avatar(data);
-	});
-});
-</script>
 <!-- include tpl=foot -->

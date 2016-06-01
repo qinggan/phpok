@@ -1,0 +1,120 @@
+<!-- if $_ptype -->
+<script type="text/javascript">
+function add_line_{$_rs.identifier}()
+{
+	var td_count = ($("#{$_rs.identifier}_tbl tr:eq(0) th")).length - 1;
+	var html = '<tr>';
+	html += '<td><input type="button" value="删除" onclick="$(this).parent().parent().remove()" class="btn" /></td>'
+	for(var i=0;i<td_count;i++)
+	{
+		html += '<td><input type="text" name="{$_rs.identifier}_body[]" class="short" style="width:{$_rs.p_width}px;" /></td>';
+	}
+	html += '</tr>';
+	$("#{$_rs.identifier}_tbl").append(html);
+}
+function delete_one(obj)
+{
+	var idx = $('th').index($(obj).parent());
+	$(obj).parent().remove();
+	$("#{$_rs.identifier}_tbl tr").each(function(){
+		$(this).find('td:eq('+idx+')').remove();
+	});
+}
+function add_ele_{$_rs.identifier}()
+{
+	var val = $("#ele_{$_rs.identifier}").val();
+	var th = '<th>';
+	th += '<input type="text" name="{$_rs.identifier}_title[]" class="short" style="width:{$_rs.p_width}px;" value="'+val+'" />';
+	th += '<input type="button" value="删除" onclick="delete_one(this)"/>';
+	th += '</th>';
+	$("#{$_rs.identifier}_tbl tr:eq(0)").append(th);
+	//定制列
+	$("#{$_rs.identifier}_tbl tr").each(function(i){
+		if(i>0){
+			var td = '<td><input type="text" name="{$_rs.identifier}_body[]" class="short" style="width:{$_rs.p_width}px;" value="" /></td>';
+			$(this).append(td);
+		}
+	});
+}
+</script>
+<div class="param">
+	<div style="float:left;margin-right:10px;">
+		<!-- if $_pname -->
+		<div style="margin-bottom:5px;">
+		<select name="ele_{$_rs.identifier}" id="ele_{$_rs.identifier}">
+			<option value="">请选择…</option>
+			<!-- loop from=$_pname key=$key value=$value -->
+			<option value="{$value}">{$value}</option>
+			<!-- /loop -->
+		</select></div>
+		<!-- else -->
+		<input type="hidden" name="ele_{$_rs.identifier}" id="ele_{$_rs.identifier}" value="" />
+		<!-- /if -->
+		<div style="margin-bottom:5px;"><input type="button" value="添加一列" class="button" onclick="add_ele_{$_rs.identifier}()" /></div>
+		<input type="button" value="添加一行" class="btn" onclick="add_line_{$_rs.identifier}()" />
+	</div>
+	<div id="list_{$_rs.identifier}" style="float:left;">
+		<table class="list" style="border:1px solid #ccc;margin:0;" cellpadding="0" cellspacing="1" id="{$_rs.identifier}_tbl">
+		<tr>
+			<th width="50">操作</th>
+			<!-- loop from=$_rslist.title key=$key value=$value -->
+			<th>
+				<input type="text" name="{$_rs.identifier}_title[]" style="width:{$_rs.p_width}px;" value="{$value}" />
+				<input type="button" value="删除" onclick="delete_one(this)"/>
+			</th>
+			<!-- /loop -->
+		</tr>
+		<!-- loop from=$_rslist.content key=$key value=$value -->
+		<tr>
+			<td><input type="button" value="删除" onclick="$(this).parent().parent().remove()" class="btn" /></td>
+			<!-- loop from=$value key=$k value=$v -->
+			<td><input type="text" name="{$_rs.identifier}_body[]" style="width:{$_rs.p_width}px;" value="{$v}" /></td>
+			<!-- /loop -->
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+	<div class="clear"></div>
+</div>
+<!-- else -->
+<script type="text/javascript">
+function add_ele_{$_rs.identifier}()
+{
+	var val = $("#ele_{$_rs.identifier}").val();
+	var html = '<div style="margin-bottom:10px;"><ul class="layout">';
+	html += '<li><input type="text" name="{$_rs.identifier}_title[]" value="'+val+'"/></li>';
+	html += '<li><input type="text" name="{$_rs.identifier}_body[]"/></li>';
+	html += '<li><input type="button" value="删除" class="button" onclick="$(this).parent().parent().parent().remove()" /></li>';
+	html += '</ul><div class="clear"></div></div>';
+	$("#list_{$_rs.identifier}").append(html);
+}
+</script>
+<div class="param">
+	<div style="margin-bottom:10px;">
+	<!-- if $_pname -->
+	<select name="ele_{$_rs.identifier}" id="ele_{$_rs.identifier}">
+		<option value="">请选择…</option>
+		<!-- loop from=$_pname key=$key value=$value -->
+		<option value="{$value}">{$value}</option>
+		<!-- /loop -->
+	</select>
+	<!-- else -->
+	<input type="hidden" name="ele_{$_rs.identifier}" id="ele_{$_rs.identifier}" value="" />
+	<!-- /if -->
+	<input type="button" value="添加属性" class="button" onclick="add_ele_{$_rs.identifier}()" />
+	</div>
+	<div id="list_{$_rs.identifier}">
+		<!-- loop from=$_rslist.title key=$key value=$value -->
+		<div style="margin-bottom:10px;">
+			<ul class="layout">
+				<li><input type="text" name="{$_rs.identifier}_title[]" value="{$value}"/></li>
+				<li><input type="text" name="{$_rs.identifier}_body[]" value="{$_rslist.content[$key]}"/></li>
+				<li><input type="button" value="删除" class="button" onclick="$(this).parent().parent().parent().remove()" /></li>
+			</ul>
+			<div class="clear"></div>
+		</div>
+		<!-- /loop -->
+	</div>
+	<div class="clear"></div>
+</div>
+<!-- /if -->

@@ -1,12 +1,13 @@
-<!-- php:$title = ($cate_rs && $cate_rs.id != $page_rs.cate) ? '发布主题 - '.$cate_rs.title.' - '.$page_rs.title : '发布主题 - '.$page_rs.title -->
+<!-- php:$title = $rs.title.' - '.$cate_rs.title.' - '.$page_rs.title -->
 <!-- include tpl=head title=$title menutitle=$page_rs.title -->
 <!-- if $page_rs.banner -->
 <div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
 <!-- /if -->
+<!-- include file=bbs_content -->
 <div class="wrap mb10">
 	<div class="bbsdetail">
 		<dl>
-			<dt><img src="{$rs.user_id.avatar ? $rs.user_id.avatar : 'images/avatar_huge.gif'}" border="0" alt="{$rs.user_id.user ? $rs.user_id.user : '访客'}" />{$rs.user_id.user ? $rs.user_id.user : '访客'}</dt>
+			<dt><img src="{$rs.user_id.avatar ? $rs.user_id.avatar : 'images/avatar_huge.gif'}" border="0" alt="{$rs.user_id.user ? $rs.user_id.user : '访客'}" /><br />{$rs.user_id.user ? $rs.user_id.user : '访客'}</dt>
 			<dd>
 				<div class="Remarks">
 					<div class="postmessage">

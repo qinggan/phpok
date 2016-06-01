@@ -21,7 +21,9 @@ class opt_control extends phpok_control
 	# 读取全部组信息
 	function index_f()
 	{
-		if(!$this->popedom["list"]) error("你没有查看权限");
+		if(!$this->popedom["list"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$rslist = $this->model('opt')->group_all();
 		$this->assign("rslist",$rslist);
 		$this->view("opt_group");
@@ -30,11 +32,11 @@ class opt_control extends phpok_control
 	# 存储选项组
 	function group_save_f()
 	{
-		if(!$this->popedom["set"]) exit("你没有维护权限");
+		if(!$this->popedom["set"]) exit(P_Lang('您没有权限执行此操作'));
 		$title = $this->get("title");
 		if(!$title)
 		{
-			exit("没有指定选项组！");
+			exit(P_Lang('没有指定选项组'));
 		}
 		$id = $this->get("id","int");
 		$this->model('opt')->group_save($title,$id);
@@ -44,11 +46,11 @@ class opt_control extends phpok_control
 	# 删除选项组，同时删除选项组下的数据
 	function group_del_f()
 	{
-		if(!$this->popedom["set"]) exit("你没有维护权限");
+		if(!$this->popedom["set"]) exit(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
 		if(!$id)
 		{
-			exit("未指定选项组ID");
+			exit(P_Lang('未指定选项组'));
 		}
 		$this->model('opt')->group_del($id);
 		exit("ok");
@@ -57,16 +59,18 @@ class opt_control extends phpok_control
 	# 取得指定选项组下的内容，支持分页
 	function list_f()
 	{
-		if(!$this->popedom["list"]) error("你没有查看权限");
+		if(!$this->popedom["list"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$pid = $this->get("pid","int");
 		$group_id = $this->get("group_id","int");
-		if(!$group_id && !$pid) error("未指定选项组！",admin_url("opt"));
+		if(!$group_id && !$pid) error(P_Lang('未指定选项组'),$this->url("opt"));
 		if($pid)
 		{
 			$p_rs = $this->model('opt')->opt_one($pid);
 			if(!$p_rs)
 			{
-				error("操作异常，请检查！",admin_url("opt"));
+				error(P_Lang('操作异常，请检查'),$this->url("opt"));
 			}
 			$group_id = $p_rs["group_id"];
 			$list[0] = $p_rs;
@@ -84,7 +88,7 @@ class opt_control extends phpok_control
 		$psize = $this->config["psize"];
 		$pageid = $this->get($this->config["pageid"],"int");
 		$offset = $pageid ? ($pageid-1) * $psize : 0;
-		$pageurl = admin_url("opt","list");
+		$pageurl = $this->url("opt","list");
 		$keywords = $this->get("keywords");
 		$condition = "group_id='".$group_id."'";
 		if($pid)
@@ -106,7 +110,9 @@ class opt_control extends phpok_control
 		$total = $this->model('opt')->opt_count($condition);
 
 		# 传参数给分页
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&opt=第(num)页&add=(total)/(psize)&always=1");
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 		$this->assign("pagelist",$pagelist);
 
 		$this->assign("rslist",$rslist);
@@ -117,11 +123,11 @@ class opt_control extends phpok_control
 	# 添加选项内容
 	function add_f()
 	{
-		if(!$this->popedom["set"]) exit("你没有维护权限");
+		if(!$this->popedom["set"]) exit(P_Lang('您没有权限执行此操作'));
 		$group_id = $this->get("group_id","int");
 		if(!$group_id)
 		{
-			exit("未指定选项组！");
+			exit(P_Lang('未指定选项组'));
 		}
 		$title = $this->get("title");
 		$val = $this->get("val");
@@ -130,13 +136,13 @@ class opt_control extends phpok_control
 		$taxis = $this->get("taxis","int");
 		if(!$title || $val == "")
 		{
-			exit("显示或值不能为空！");
+			exit(P_Lang('显示或值不能为空'));
 		}
 		//判断选项内容是否已经存在，主要是判断值
 		$chk_exists = $this->model('opt')->chk_val($group_id,$val,$pid);
 		if($chk_exists)
 		{
-			exit("值已存在不允许重复创建！");
+			exit(P_Lang('值已存在不允许重复创建'));
 		}
 		//写入值
 		$array = array("group_id"=>$group_id,"parent_id"=>$pid,"title"=>$title,"val"=>$val,"taxis"=>$taxis);
@@ -147,16 +153,16 @@ class opt_control extends phpok_control
 	# 更新值选项信息
 	function edit_f()
 	{
-		if(!$this->popedom["set"]) exit("你没有维护权限");
+		if(!$this->popedom["set"]) exit(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
 		if(!$id)
 		{
-			exit("未指定要编辑的ID！");
+			exit(P_Lang('未指定要编辑的ID'));
 		}
 		$rs = $this->model('opt')->opt_one($id);
 		if(!$rs)
 		{
-			exit("没有此项内容！");
+			exit(P_Lang('没有此项内容'));
 		}
 		$pid = $rs["parent_id"];
 		$title = $this->get("title");
@@ -164,12 +170,12 @@ class opt_control extends phpok_control
 		$taxis = $this->get("taxis","int");
 		if(!$title || $val == "")
 		{
-			exit("显示或值不能为空！");
+			exit(P_Lang('显示或值不能为空'));
 		}
 		$chk_exists = $this->model('opt')->chk_val($rs["group_id"],$val,$pid,$id);
 		if($chk_exists)
 		{
-			exit("值已存在不允许重复！");
+			exit(P_Lang('值已存在不允许重复'));
 		}
 		$array = array("title"=>$title,"val"=>$val,"taxis"=>$taxis);
 		$this->model('opt')->opt_save($array,$id);
@@ -179,16 +185,16 @@ class opt_control extends phpok_control
 	//删除选项内容
 	function del_f()
 	{
-		if(!$this->popedom["set"]) exit("你没有维护权限");
+		if(!$this->popedom["set"]) exit(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
 		if(!$id)
 		{
-			exit("未指定要编辑的ID！");
+			exit(P_Lang('未指定要编辑的ID'));
 		}
 		$rs = $this->model('opt')->opt_one($id);
 		if(!$rs)
 		{
-			exit("没有此项内容！");
+			exit(P_Lang('没有此项内容'));
 		}
 		//判断是否有子
 		$list[0] = $rs;

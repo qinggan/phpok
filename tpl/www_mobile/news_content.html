@@ -1,0 +1,36 @@
+<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
+<div data-role="navbar">
+	<ul>
+		<!-- catelist pid=$page_rs.id -->
+		<!-- loop from=$list.sublist key=$key value=$value -->
+		<li><a href="{$value.url}"{if $cate_rs.id == $value.id} class="ui-btn-active"{/if}>{$value.title}</a></li>
+		<!-- /loop -->
+	</ul>
+</div>
+<div role="main" class="ui-content">
+	<div class="ui-body ui-body-a ui-corner-all">
+		<h3>{$rs.title}</h3>
+		<div class="content">{$rs.content}</div>
+		<!-- if $pagelist -->
+		<div style="margin-top:5px;">
+			<div data-role="controlgroup" data-type="horizontal" data-mini="true">
+				<!-- loop from=$pagelist key=$key value=$value -->
+				<a class="ui-btn ui-corner-all{if $value.status} ui-btn-active{/if}" href="{$value.url}" style="text-overflow:clip;">{$value.title}</a>
+				<!-- /loop -->
+			</div>
+		</div>
+		<!-- /if -->
+		<input type="button" value="加入收藏" onclick="fav_add('{$rs.id}',this)" />
+		<ul class="np">
+			<!-- php:$prev = phpok_prev($rs) -->
+			<!-- if $prev -->
+			<li><a href="{$prev.url}"><b>上一主题：</b>{$prev.title}</a></li>
+			<!-- /if -->
+			<!-- php:$next = phpok_next($rs) -->
+			<!-- if $next -->
+			<li><a href="{$next.url}"><b>下一主题：</b>{$next.title}</a></li>
+			<!-- /if -->
+		</ul>
+	</div>
+</div>
+<!-- include tpl=foot -->

@@ -1,5 +1,4 @@
-<!-- php:$extlist = get_phpok_ext($ext_module,$ext_idstring) -->
-<!-- inc:head -->
+<!-- include tpl=head -->
 <script type="text/javascript" src="{func include_js cate.js}"></script>
 <div class="tips">
 	您当前的位置：
@@ -15,7 +14,6 @@
 	<li onclick="$.admin.group(this)" name="admin" title="分类的一些其他属性">分类属性</li>
 	<li onclick="$.admin.group(this)" name="seo" title="分类SEO信息设置">SEO优化</li>
 </ul>
-
 <form method="post" id="{$ext_module}" action="{echo admin_url('cate','save')}" onsubmit="return cate_check();">
 <input type="hidden" id="id" name="id" value="{$id}" />
 <div id="main_setting">
@@ -77,7 +75,55 @@
 		</table>
 	</div>
 </div>
-{$extlist.content.content}
+<!-- loop from=$extlist key=$key value=$value -->
+<div class="table">
+	<div class="title">
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+			<td height="25">{$value.title}<span class="darkblue">[{$value.identifier}]</span>：</td>
+			<td><span class="note">{$value.note}</span></td>
+			<!-- if $popedom.ext -->
+			<!-- if $ext_module != 'add-cate' -->
+			<td><a class="icon edit" onclick="ext_edit('{$value.identifier}','{$ext_module}')"></a></td>
+			<!-- /if -->
+			<td><a class="icon delete" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')"></a></td>
+			<!-- /if -->
+		</tr>
+		</table>
+	</div>
+	<div class="content">{$value.html}</div>
+</div>
+<!-- /loop -->
+
+
+<!-- if $popedom.ext -->
+<div class="table">
+	<div class="content">
+		<select id="_tmp_select_add" style="padding:3px">
+			<option value="">请选择扩展字段…</option>
+			<!-- loop from=$extfields key=$key value=$value -->
+			<!-- if !$used_fields || ($used_fields && !in_array($value.identifier,$used_fields)) -->
+			<option value="{$value.id}">{$value.title} - {$value.identifier}</option>
+			<!-- /if -->
+			<!-- /loop -->
+		</select>
+		<input type="button" value="添加" onclick="_update_select_add()" class="button2" />
+		<input type="button" value="标准创建扩展字段" onclick="ext_add('{$ext_module}')" class="button2" />
+	</div>
+</div>
+<script type="text/javascript">
+function _update_select_add()
+{
+	var val = $("#_tmp_select_add").val();
+	if(!val){
+		$.dialog.alert('请选择要添加的扩展');
+		return false;
+	}
+	ext_add2(val,'{$ext_module}');
+}
+</script>
+<!-- /if -->
+
 </div>
 
 <div class="hide" id="seo_setting">
@@ -106,6 +152,15 @@
 		</div>
 		<div class="content">
 			<textarea name="seo_desc" id="seo_desc" class="long">{$rs.seo_desc}</textarea>
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			Tag标签：
+			<span class="note">多个标签用英文空格隔开，最多不能超过10个词</span>
+		</div>
+		<div class="content">
+			<input type="text" id="tag" name="tag" class="long" value="{$rs.tag}" />
 		</div>
 	</div>
 </div>
@@ -141,32 +196,30 @@
 			<input type="button" value="清空" onclick="$('#tpl_content').val('');" class="btn" />
 		</div>
 	</div>
+	<!-- if $popedom.ext && $extfields && !$parent_id -->
+	<div class="table">
+		<div class="title">
+			默认子分类扩展字段
+			<span class="note">此项用于配置默认的子项扩展字段属性，留空表示不添加子分类扩展字段</span>
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<!-- loop from=$extfields key=$key value=$value id=$tmpid -->
+				<li><label><input type="checkbox" name="_extfields[]" value="{$value.id}"{if $ext2 && in_array($value.id,$ext2)} checked{/if} />{$value.title}</label></li>
+				<!-- /loop -->
+			</ul>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<!-- /if -->
 </div>
 
 <div class="table">
 	<div class="content">
 		<br />
-		<input type="submit" value="提 交" class="submit" />
-		<br />
+		<input type="submit" value="提 交" class="submit2" />
 	</div>
 </div>
 </form>
-
-<script type="text/javascript">
-var use_ext = "{$popedom.ext ? 1 : 0}";
-$(document).ready(function(){
-	//检测是否有自动保存的表单
-	autofill("{$ext_module}");
-	//通过Ajax加载自定义表单选项
-	if(use_ext == "1")
-	{
-		ext_fields("{$ext_module}","{$extlist.content.words}",1,"cate");
-	}
-	else
-	{
-		$(".title a.icon").hide();
-	}
-});
-</script>
 
 <!-- inc:foot -->

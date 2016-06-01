@@ -1,0 +1,164 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang您当前的位置：}<a href="{url ctrl=gd/}" title="{lang图片方案}">{lang图片方案}</a>
+	&raquo; <!-- if $id -->{lang编辑方案}<!-- else -->{lang添加方案}<!-- /if -->
+	<div class="action"><a href="{url ctrl=gd/}">{lang返回方案列表}</a></div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#gdsetting").submit(function(){
+		$(this).ajaxSubmit({
+			'url':"{url ctrl=gd func=save/}",
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					var t = $("#id").val() ? '{lang方案编辑成功}' : '{lang方案创建成功}';
+					$.dialog.alert(t,function(){
+						$.phpok.go('{url ctrl=gd /}');
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content);
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<form method="post" id='gdsetting'>
+<input type="hidden" id="id" name="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		{lang标识：}
+		<span class="note">{lang标识必须是唯一的，添加后不能修改}</span>
+	</div>
+	<div class="content"><input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}"{if $id} disabled{/if} /></div>
+</div>
+
+<div class="table">
+	<div class="title">
+		{lang宽度：}
+		<span class="note">{lang设置宽度，仅支持数字，不限请设为０}</span>
+	</div>
+	<div class="content"><input type="text" id="width" name="width" class="short" value="{$rs.width}" /> {langpx，请只填写数字！}</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang高度：}
+		<span class="note">{lang同上}</span>
+	</div>
+	<div class="content"><input type="text" id="height" name="height" class="short" value="{$rs.height}" /> {langpx，同上}</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang水印：}
+		<span class="note">{lang设置水印图片，这里推荐使用PNG透明水印}</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input type="text" id="mark_picture" name="mark_picture" class="default" value="{$rs.mark_picture}" /></td>
+			<td><input type="button" value="{lang选择}" onclick="phpok_pic('mark_picture')" class="btn" /></td>
+			<td><input type="button" value="{lang预览}" onclick="phpok_pic_view('mark_picture')" class="btn" /></td>
+			<td><input type="button" value="{lang清空}" onclick="$('#mark_picture').val('');" class="btn" /></td>
+		</tr>
+		</table>
+	</div>
+</div>
+
+<div class="table" id="gd_position">
+	<div class="title">
+		{lang水印位置：}
+		<span class="note">{lang设置水印图片要放置的位置，推荐}<span class="red">{lang右下角}</span></span>
+	</div>
+	<div class="content">
+		<table style="border:1px solid #464646;">
+		<tr>
+			<td height="30px"><label for="mark_position_1"><input type="radio" name="mark_position" id="mark_position_1" value="top-left"{if $rs.mark_position == "top-left"} checked{/if} /> {lang左上角}</label></td>
+			<td><label for="mark_position_2"><input type="radio" name="mark_position" id="mark_position_2" value="top-middle"{if $rs.mark_position == "top-middle"} checked{/if} /> {lang中上}</label></td>
+			<td><label for="mark_position_3"><input type="radio" name="mark_position" id="mark_position_3" value="top-right"{if $rs.mark_position == "top-right"} checked{/if} /> {lang右上角}</label></td>
+		</tr>
+		<tr>
+			<td height="30px"><label for="mark_position_4"><input type="radio" name="mark_position" id="mark_position_4" value="middle-left"{if $rs.mark_position == "middle-left"} checked{/if} /> {lang左中}</label></td>
+			<td><label for="mark_position_5"><input type="radio" name="mark_position" id="mark_position_5" value="middle-middle"{if $rs.mark_position == "middle-middle"} checked{/if} /> {lang中间}</label></td>
+			<td><label for="mark_position_6"><input type="radio" name="mark_position" id="mark_position_6" value="middle-right"{if $rs.mark_position == "middle-right"} checked{/if} /> {lang右中}</label></td>
+		</tr>
+		<tr>
+			<td height="30px"><label for="mark_position_7"><input type="radio" name="mark_position" id="mark_position_7" value="bottom-left"{if $rs.mark_position == "bottom-left"} checked{/if} /> {lang左下角}</label></td>
+			<td><label for="mark_position_8"><input type="radio" name="mark_position" id="mark_position_8" value="bottom-middle"{if $rs.mark_position == "bottom-middle"} checked{/if} /> {lang中下}</label></td>
+			<td><label for="mark_position_9"><input type="radio" name="mark_position" id="mark_position_9" value="bottom-right"{if $rs.mark_position == "bottom-right" || !$rs.mark_position} checked{/if} /> {lang右下角}</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+
+<div class="table" id="gd_trans">
+	<div class="title">
+		{lang透明度：}
+		<span class="note">{lang仅JPG水印有效，建议设为65}</span>
+	</div>
+	<div class="content">
+		<select name="trans" id="trans">
+			<option value="0"{if !$rs.trans} selected{/if}>{lang完全透明}</option>
+			<option value="10"{if $rs.trans == "10"} selected{/if}>10</option>
+			<option value="20"{if $rs.trans == "20"} selected{/if}>20</option>
+			<option value="30"{if $rs.trans == "30"} selected{/if}>30</option>
+			<option value="40"{if $rs.trans == "40"} selected{/if}>40</option>
+			<option value="50"{if $rs.trans == "50"} selected{/if}>50{lang（半透明）}</option>
+			<option value="60"{if $rs.trans == "60"} selected{/if}>60</option>
+			<option value="70"{if $rs.trans == "70"} selected{/if}>70</option>
+			<option value="80"{if $rs.trans == "80"} selected{/if}>80</option>
+			<option value="90"{if $rs.trans == "90"} selected{/if}>90</option>
+			<option value="100"{if $rs.trans == "100"} selected{/if}>{lang不透明}</option>
+		</select>
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		{lang图片质量：}
+		<span class="note">{lang一般来说，设置为：}<span class="red">{lang高质量}</span> {lang即可，仅JPG图片有效}</span>
+	</div>
+	<div class="content">
+		<select id="quality" name="quality">
+			<option value="60"{if $rs.quality == "60"} selected{/if}>{lang较小文件}</option>
+			<option value="80"{if $rs.quality == "80" || !$rs.quality} selected{/if}>{lang高质量}</option>
+			<option value="100"{if $rs.quality == "100"} selected{/if}>{lang百分百精度}</option>
+		</select>
+	</div>
+</div>
+
+
+<div class="table">
+	<div class="title">
+		{lang图片生成方式：}
+		<span class="note">{lang建议大图用缩放法，小图用裁剪法}</span>
+	</div>
+	<div class="content">
+		<select id="cut_type" name="cut_type">
+			<option value="0">{lang缩放法}</option>
+			<option value="1"{if $rs.cut_type} selected{/if}>{lang裁剪法}</option>
+		</select>
+	</div>
+</div>
+
+<script type="text/javascript" src="js/jscolor/jscolor.js"></script>
+
+<div class="table">
+	<div class="title">
+		{lang背景颜色：}
+		<span class="note">{lang即填充色，默认为白色}</span>
+	</div>
+	<div class="content"><input type="text" id="bgcolor" name="bgcolor" value="{$rs.bgcolor}" class="color {pickerClosable:true}" /></div>
+</div>
+<br />
+<div class="table">
+	<div class="content">
+		<input type="submit" value="{lang提 交}" class="submit2" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot -->

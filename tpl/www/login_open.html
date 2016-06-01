@@ -1,0 +1,71 @@
+<!-- head title=$title css="css/login.css,artdialog.css" extjs="jquery.artdialog.js" html5=true -->
+<body>
+<script type="text/javascript">
+var open_vcode = '{$sys.is_vcode && function_exists("imagecreate") ? 1 : 0}';
+$(document).ready(function(){
+	$('#login-form').submit(function(){
+		$(this).ajaxSubmit({
+			url:api_url('login','save'),
+			type:'post',
+			dataType:'json',
+			success:function(rs){
+				if(rs.status == 'ok'){
+					$.dialog.alert('您已成功登录',function(){
+						top.$.phpok.reload();
+					},'succeed');
+				}else{
+					if(!rs.content){
+						rs.content = '登录失败';
+					}
+					$.dialog.alert(rs.content,function(){
+						if(open_vcode == '1'){
+							$("#_chkcode").val('');
+							$("#vcode").phpok_vcode();
+						}
+					},'error');
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<?php 
+function oIp(){
+    $oip = "";
+    if(getenv('HTTP_CLIENT_IP') && strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')) {
+        $oip = getenv('HTTP_CLIENT_IP');
+    } elseif(getenv('HTTP_X_FORWARDED_FOR') && strcasecmp(getenv('HTTP_X_FORWARDED_FOR'), 'unknown')) {
+        $oip = getenv('HTTP_X_FORWARDED_FOR');
+    } elseif(getenv('REMOTE_ADDR') && strcasecmp(getenv('REMOTE_ADDR'), 'unknown')) {
+        $oip = getenv('REMOTE_ADDR');
+    } elseif(isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], 'unknown')) {
+        $oip = $_SERVER['REMOTE_ADDR'];
+    }
+    return $oip;
+}
+?>
+
+<div class="box">
+	<form method="post" id="login-form">
+ 		<input type="hidden" name="post_date" id="post_date" value="{func date 'Y-m-d H:i:s' $sys.time}" />
+		<input type="hidden" name="pdip" id="pdip" value="<?php echo oIp() ?>" />
+		<dd><label>账号：</label><input class="input" type="text" name="user" /><div class="clear"></div></dd>
+		<dd><label>密码：</label><input class="input" type="password" name="pass" /><div class="clear"></div></dd>
+		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+		<dd><label>验证码：</label><input class="vcode"  type="text" name="_chkcode" id="_chkcode" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" /><div class="clear"></div></dd>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#vcode").phpok_vcode();
+			$("#vcode").click(function(){
+				$(this).phpok_vcode();
+			});
+		});
+		</script>
+		<!-- /if -->
+		<dd class="submit"><input class="button blue" type="submit" value="登录" name=""></dd>
+	</form>
+</div>
+</body>
+</html>

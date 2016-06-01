@@ -1,0 +1,72 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}
+	<a href="{url ctrl=user func=invoice id=$uid/}">{lang发票管理}</a> &raquo; <!-- if $id -->{lang编辑发票}<!-- else -->{lang添加发票}<!-- /if -->
+	<div class="action"><a href="{url ctrl=user func=invoice id=$uid/}">返回</a></div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#setsubmit").submit(function(){
+		$(this).ajaxSubmit({
+			'url':get_url("user",'invoice_setok','id={$id}&uid={$uid}'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					var id = '{$id}';
+					var tip = id ? '{lang信息修改成功}' : '{lang信息添加成功}';
+					$.dialog.alert(tip,function(){
+						$.phpok.go('{url ctrl=user func=invoice id=$uid/}');
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<form method="post" id="setsubmit">
+<div class="table">
+	<div class="title">
+		发票类型
+		<span class="note">本系统暂时只提供普通发票功能</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="type" value="普通发票"{if $rs.type == '普通发票' || !$rs.type} checked{/if} />普通发票</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		发票抬头：
+		<span class="note">个人发票请填写个人即可，企业发票就填写公司名称</span>
+	</div>
+	<div class="content"><input type="text" id="title" name="title" class="default" value="{$rs.title}" placeholder="为空使用“个人发票”" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		发票内容
+		<span class="note">请设置发票内容，留空使用<span class="red">“明细”</span></span>
+	</div>
+	<div class="content"><input type="text" id="content" name="content" class="default" value="{$rs.content}" placeholder="为空使用“明细”" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		备注
+		<span class="note">填写备注方法管理</span>
+	</div>
+	<div class="content"><textarea name="note" id="note" class="default" style="height:110px;min-height:110px;max-height:150px;min-width:350px;max-width:350px;">{$rs.note}</textarea></div>
+</div><br />
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit2" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_open -->

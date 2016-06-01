@@ -1,0 +1,24 @@
+<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
+<div data-role="navbar">
+	<ul>
+		<!-- catelist pid=$page_rs.id -->
+		<!-- loop from=$list.sublist key=$key value=$value -->
+		<li><a href="{$value.url}"{if $cate_rs.id == $value.id} class="ui-btn-active"{/if}>{$value.title}</a></li>
+		<!-- /loop -->
+	</ul>
+</div>
+
+<div role="main" class="ui-content">
+	<ul data-role="listview" data-split-icon="delete" data-inset="true" style="margin:0;">
+		<li data-role="list-divider">{$cate_rs ? $cate_rs.title : $page_rs.title}</li>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	    <li><a href="{$value.url}" title="{$value.title}">
+	        <img src="{$value.thumb.gd.thumb}" />
+	        <h3>{$value.m_title ? $value.m_title : $value.title}</h3>
+	        <div class="price">{func price_format $value.price $value.currency_id}</div></a>
+	    </li>
+	    <!-- /loop -->
+	</ul>
+	<!-- include tpl=pagelist -->
+</div>
+<!-- include tpl=foot -->

@@ -20,23 +20,18 @@ class res_action_control extends phpok_control
 	{
 		$file = $this->get("file");
 		$id = $this->get("id");
-		if(!$id && !$file)
-		{
-			error("未指定要下载的附件","","error");
+		if(!$id && !$file){
+			error(P_Lang('未指定ID'),"","error");
 		}
-		if($id)
-		{
+		if($id){
 			$rs = $this->model('res')->get_one($id);
 			$file = $rs["filename"];
 			$title = $rs["title"].".".$rs["ext"];
-		}
-		else
-		{
+		}else{
 			$title = basename($file);
 		}
-		if(!$file)
-		{
-			error("附件未指定","","error");
+		if(!$file){
+			error(P_Lang('未指定附件'),"","error");
 		}
 		if(substr($file,0,7) != "http://" && substr($file,0,8) != "https://")
 		{
@@ -44,7 +39,7 @@ class res_action_control extends phpok_control
 		}
 		if(!file_exists($file))
 		{
-			error("附件不存在","","error");
+			error(P_Lang('附件不存在'),"","error");
 		}
 		$filesize = filesize($file);
 		ob_end_clean();
@@ -65,7 +60,7 @@ class res_action_control extends phpok_control
 		$id = $this->get("id");
 		if(!$id && !$file)
 		{
-			error_open("未指定附件");
+			error_open(P_Lang('未指定附件'));
 		}
 		if($id)
 		{
@@ -85,12 +80,10 @@ class res_action_control extends phpok_control
 	{
 		$file = $this->get("file");
 		$id = $this->get("id");
-		if(!$id && !$file)
-		{
-			error_open("未指定视频源");
+		if(!$id && !$file){
+			error_open(P_Lang('未指定ID'));
 		}
-		if($id)
-		{
+		if($id){
 			$rs = $this->model('res')->get_one($id);
 			$file = $rs["filename"];
 		}
@@ -101,9 +94,8 @@ class res_action_control extends phpok_control
 	function preview_f()
 	{
 		$id = $this->get("id");
-		if(!$id)
-		{
-			error_open("未指定附件");
+		if(!$id){
+			error_open(P_Lang('未指定附件'));
 		}
 		$rs = $this->model('res')->get_one($id,true);
 		$config = $this->model('res')->type_list();

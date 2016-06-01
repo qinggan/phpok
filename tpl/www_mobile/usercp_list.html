@@ -1,0 +1,24 @@
+<!-- php:$title = '管理我的'.$page_rs.title -->
+<!-- include tpl=head title=$title -->
+<style type="text/css">
+.ui-content p{margin:0;}
+</style>
+<div role="main" class="ui-content">
+	<ul data-role="listview" data-inset="true" data-split-icon="edit" style="margin:0;">
+		<li data-role="list-divider">{$page_rs.title}<span class="ui-li-count hand" onclick="$.phpok.go('{url ctrl=post id=$id/}')">添加</span></li>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<li>
+			<a href="{$value.url}">
+				<h2>{$value.title}</h2>
+				<p><b>时间：</b>{func time_format $value.dateline}</p>
+				<p><b>状态：</b><!-- if $value.status -->正常<!-- else --><span class="red">审核中</span><!-- /if --></p>
+			</a>
+			<a href="{url ctrl=post func=edit id=$value.id/}"></a>
+		</li>
+		<!-- /loop -->
+	</ul>
+	<!-- include tpl=pagelist -->
+</div>
+
+
+<!-- include tpl=foot -->

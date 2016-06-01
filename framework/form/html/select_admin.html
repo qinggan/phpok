@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="option_list,is_multiple,width,ext_select" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="option_list,is_multiple,width,ext_select,empty_val" />
 <div class="table">
 	<div class="title">
 		内容来源：
@@ -47,7 +47,7 @@
 		<span class="note">仅限于下内容来源为空的情况下有效，这里一行一个值，复杂操作请到表单选项里维护</span>
 	</div>
 	<div class="content">
-		<textarea name="ext_select" style="width:620px;height:180px;">{$rs.ext_select}</textarea>
+		<textarea name="ext_select" style="width:98%;height:180px;">{$rs.ext_select}</textarea>
 	</div>
 </div>
 <div class="table">
@@ -64,6 +64,7 @@
 		</table>
 	</div>
 </div>
+
 <div class="table">
 	<div class="title">
 		表单宽度：
@@ -71,5 +72,14 @@
 	</div>
 	<div class="content">
 		<input type="text" name="width" id="width" value="{$rs.width}" /> px
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		空值选项：
+		<span class="note">不使用空值选项，请留空</span>
+	</div>
+	<div class="content">
+		<input type="text" name="empty_val" id="empty_val" value="{$rs.empty_val}" />
 	</div>
 </div>

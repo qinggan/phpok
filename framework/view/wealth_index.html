@@ -1,0 +1,70 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}{lang财富方案}
+	<div class="action"><a href="{url ctrl=wealth func=set/}">{lang添加方案}</a></div>
+	<div class="action"><a href="{url ctrl=wealth func=notcheck/}">{lang未审核财富}</a></div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+function set_status(id)
+{
+	var url = get_url("wealth","status") + '&id='+id;
+	var rs = $.phpok.json(url);
+	if(rs.status == "ok"){
+		if(!rs.content) rs.content = '0';
+		var oldvalue = $("#status_"+id).attr("value");
+		var old_cls = "status"+oldvalue;
+		$("#status_"+id).removeClass(old_cls).addClass("status"+rs.content).attr("value",rs.content);
+	}else{
+		$.dialog.alert(rs.content);
+		return false;
+	}
+}
+function delete_it(id)
+{
+	$.dialog.confirm('{lang确定要删除当前财富方案吗？}<br />{lang删除后此方案的财富将}<span class="red"><b>{lang清空，且不能恢复，请慎重考虑}</b></span>',function(){
+		var url = get_url('wealth','delete','id='+id);
+		var rs = $.phpok.json(url);
+		if(rs.status == 'ok'){
+			$.dialog.alert('{lang方案删除成功}',function(){
+				$.phpok.reload();
+			},'succeed');
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+</script>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>ID</th>
+	<th>&nbsp;</th>
+	<th>{lang名称}</th>
+	<th>{lang标识}</th>
+	<th>{lang计量单位}</th>
+	<th class="lft">{lang在线支付}</th>
+	<th class="lft">{lang抵现}</th>
+	<th width="330">&nbsp;</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="set_status({$value.id})"{else} style="cursor: default;"{/if} value="{$value.status}"></span></td>
+	<td class="center">{$value.title}</td>
+	<td class="center">{$value.identifier}</td>
+	<td class="center">{$value.unit}</td>
+	<td><!-- if $value.ifpay -->支持 <span class="gray i">（购买：1元={$value.pay_ratio}{$value.unit}）</span><!-- else -->不支持<!-- /if --></td>
+	<td><!-- if $value.ifcash -->支持 <span class="gray i">（兑换：100{$value.unit}={$value.cash_ratio}元）</span><!-- else -->不支持<!-- /if --></td>
+	<td class="center">
+		<div class="button-group">
+			<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=wealth func=set id=$value.id/}')" class="phpok-btn" />
+			<input type="button" value="{lang执行规则}" onclick="$.phpok.go('{url ctrl=wealth func=rule id=$value.id/}')" class="phpok-btn" />
+			<input type="button" value="{lang财富列表}" onclick="$.phpok.go('{url ctrl=wealth func=info id=$value.id/}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="phpok-btn" />
+		</div>
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- include tpl=foot -->

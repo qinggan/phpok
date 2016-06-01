@@ -22,8 +22,11 @@ class inp_control extends phpok_control
 	}
 
 	//取得表单数据
-	function index_f()
+	public function index_f()
 	{
+		if(!$_SESSION['admin_id']){
+			$this->json(P_Lang('仅限后台接入'));
+		}
 		$type = $this->get("type");
 		$content = $this->get("content");
 		if($type == "title" && $content)
@@ -35,6 +38,19 @@ class inp_control extends phpok_control
 			$this->get_user_list($content);
 		}
 		json_exit("ok");
+	}
+
+	public function xml_f()
+	{
+		$file = $this->get('file',"system");
+		if(!$file){
+			$this->json(P_Lang('未指定XML文件'));
+		}
+		if(!file_exists($this->dir_root.'data/xml/'.$file.'.xml')){
+			$this->json(P_Lang('XML文件不存在'));
+		}
+		$info = $this->lib('xml')->read($this->dir_root.'data/xml/'.$file.'.xml');
+		$this->json($info,true);
 	}
 
 	function get_title_list($content)

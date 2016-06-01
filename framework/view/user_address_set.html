@@ -1,0 +1,85 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}
+	<a href="{url ctrl=user func=address id=$uid/}">{lang地址库}</a> &raquo; <!-- if $id -->{lang编辑地址}<!-- else -->{lang添加地址}<!-- /if -->
+	<div class="action"><a href="{url ctrl=user func=address id=$uid/}">返回地址库</a></div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#setsubmit").submit(function(){
+		$(this).ajaxSubmit({
+			'url':get_url("user",'address_setok','id={$id}&uid={$uid}'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					var id = '{$id}';
+					var tip = id ? '{lang地址信息修改成功}' : '{lang地址信息添加成功}';
+					$.dialog.alert(tip,function(){
+						$.phpok.go('{url ctrl=user func=address id=$uid/}');
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<form method="post" id="setsubmit">
+<div class="table">
+	<div class="title">
+		收件人：
+		<span class="note">请填写收件人姓名</span>
+	</div>
+	<div class="content"><input type="text" id="fullname" name="fullname" class="default" value="{$rs.fullname}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		所在地址及详细地址：
+		<span class="note">请选择相应的省市县及填写地址明细信息</span>
+	</div>
+	<input type="hidden" name="country" id="country" value="{$rs.country ? $rs.country : '中国'}" />
+	<div class="content">
+		<table width="100%" cellspacing="0" cellpadding="0">
+		<tr>
+			<td>{$pca_rs}</td>
+		</tr>
+		<tr>
+			<td><input type="text" name="address" id="address" value="{$rs.address}" class="long" /></td>
+		</tr>
+		</table>
+		
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		手机号码
+		<span class="note">请填写有效的手机号码</span>
+	</div>
+	<div class="content"><input type="text" id="mobile" name="mobile" class="default" value="{$rs.mobile}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		固定电话
+		<span class="note">固定电话或手机号码必须有一个不能为空</span>
+	</div>
+	<div class="content"><input type="text" id="tel" name="tel" class="default" value="{$rs.tel}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		邮箱
+		<span class="note">用来接收订单提醒邮件，便于您及时了解订单状态</span>
+	</div>
+	<div class="content"><input type="text" id="email" name="email" class="default" value="{$rs.email}" /></div>
+</div><br />
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit2" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_open -->

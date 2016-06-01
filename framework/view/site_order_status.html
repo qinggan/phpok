@@ -1,0 +1,132 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}{lang订单常规配置} &raquo; 请根据您的实际使用环境配置相应的信息
+	<div class="clear"></div>
+</div>
+
+<script type="text/javascript">
+function edit_it(id)
+{
+	var url = get_url('site','order_status_set','id='+id);
+	$.dialog.open(url,{
+		'title':'编辑',
+		'lock':true,
+		'width':'550px',
+		'height':'370px',
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		},'okVal':'提交修改','cancel':function(){},'cancelVal':'取消关闭'
+	})
+}
+function edit_price(code)
+{
+	var url = get_url('site','price_status_save','id='+code);
+	var title = $("#price_title_"+code).val();
+	if(title){
+		url += "&title="+$.str.encode(title);
+	}
+	var action = $("#price_action_"+code).val();
+	if(action){
+		url += "&action="+$.str.encode(action);
+	}
+	var status = $("#price_status_"+code).val();
+	if(status){
+		url += "&status="+$.str.encode(status);
+	}
+	var taxis = $("#price_taxis_"+code).val();
+	if(taxis){
+		url += "&taxis="+$.str.encode(taxis);
+	}
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.dialog.tips('标识：<span class="red">'+code+'</span> 配置更新成功');
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+</script>
+<ul class="group">
+	<li class="on" onclick="$.admin.group(this)" name="status">{lang订单状态}</li>
+	<li onclick="$.admin.group(this)" name="price">{lang订单价格方案}</li>
+</ul>
+<div id="status_setting" style="padding:0 10px">
+	<table width="100%" cellpadding="0" cellspacing="0" class="list">
+	<tr>
+		<th class="lft">标识</th>
+		<th>排序</th>
+		<th class="lft">名称</th>
+		<th>状态</th>
+		<th class="lft">通知会员</th>
+		<th class="lft">通知管理员</th>
+		<th>&nbsp;</th>
+	</tr>
+	<!-- loop from=$rslist key=$key value=$value -->
+	<tr>
+		<td>{$value.identifier}</td>
+		<td class="center">{$value.taxis}</td>
+		<td>{$value.title}</td>
+		<td class="center"><!-- if $value.status -->{lang启用}<!-- else --><span class="red">禁用</span><!-- /if --></td>
+		<td>
+			<!-- if !$value.email_tpl_user && !$value.sms_tpl_user --><span class="red">不通知</span><!-- /if -->
+			<!-- if $value.email_tpl_user && $value.sms_tpl_user -->
+			邮件 + 短信
+			<!-- else -->
+				<!-- if $value.email_tpl_user -->邮件<!-- /if -->
+				<!-- if $value.sms_tpl_user -->短信<!-- /if -->
+			<!-- /if -->
+		</td>
+		<td>
+			<!-- if !$value.email_tpl_admin && !$value.sms_tpl_admin --><span class="red">不通知</span><!-- /if -->
+			<!-- if $value.email_tpl_admin && $value.sms_tpl_admin -->
+			邮件 + 短信
+			<!-- else -->
+				<!-- if $value.email_tpl_admin -->邮件<!-- /if -->
+				<!-- if $value.sms_tpl_admin -->短信<!-- /if -->
+			<!-- /if -->
+		</td>
+		<td><input type="button" value="{lang编辑}" onclick="edit_it('{$value.identifier}')" class="phpok-btn" /></td>
+	</tr>
+	<!-- /loop -->
+	</table>
+</div>
+<div id="price_setting" class="hide" style="padding:0 10px">
+	<table width="100%" cellpadding="0" cellspacing="0" class="list">
+	<tr>
+		<th class="lft" width="100">标识</th>
+		<th class="lft">名称</th>
+		<th>金额动作</th>
+		<th>状态</th>
+		<th>排序</th>
+		<th>&nbsp;</th>
+	</tr>
+	<!-- loop from=$pricelist key=$key value=$value -->
+	<tr>
+		<td>{$value.identifier}</td>
+		<td><input type="text" id="price_title_{$value.identifier}" value="{$value.title}" /></td>
+		<td class="center">
+			<select id="price_action_{$value.identifier}">
+				<option value="add">+</option>
+				<option value="less"{if $value.action == 'less'} selected{/if}>-</option>
+			</select>
+		</td>
+		<td class="center">
+			<select id="price_status_{$value.identifier}">
+				<option value="0">禁用</option>
+				<option value="1"{if $value.status} selected{/if}>启用</option>
+			</select>
+		</td>
+		<td class="center"><input type="text" id="price_taxis_{$value.identifier}" value="{$value.taxis}" class="center short" /></td>
+		<td><input type="button" value="{lang编辑}" onclick="edit_price('{$value.identifier}')" class="phpok-btn" /></td>
+	</tr>
+	<!-- /loop -->
+	</table>
+</div>
+<!-- include tpl=foot -->

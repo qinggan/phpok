@@ -1,48 +1,39 @@
-<!-- head title=$title css="css/style.css,artdialog.css" extjs="jquery.artdialog.js" js="js/global.js" close=false -->
-	<script type="text/javascript">
-	$(document).ready(function(){
-		$.cart.total();
-	});
-	</script>
-</head>
+<!-- php:$cssfile = $css ? "css/style.css,artdialog.css,".$css : "css/style.css,artdialog.css" -->
+<!-- php:$jsfile = $js ? "js/global.js,".$js : "js/global.js" -->
+<!-- head title=$title css=$cssfile extjs="jquery.artdialog.js" js=$jsfile html5=true -->
 <body>
-
-<div class="head">
-	<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" /></a></div>
-	<div class="head_right">
-		<div class="top_nav">
-			<a href="{url ctrl=cart _nocache=true/}" title="购物车">购物车 <span class="red">(<span id="head_cart_num">0</span>)</span></a> | 
-			<!-- if $session.user_id -->
-			<a href="{url ctrl=usercp/}">个人中心</a> | 
-			<a href="javascript:logout('{$session.user_name}');void(0)">退出</a>
-			<!-- else -->
-			<a href="{url ctrl=login/}">登录</a> | 
-			<a href="{url ctrl=register/}">注册</a>
-			<!-- /if -->
-		</div>
-		<div class="search">
+<header>
+	<div class="top">
+		<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" /></a></div>
+		<div class="right">
+			<nav class="top">
+				<a href="{url ctrl=cart/}" title="购物车">购物车 <span class="red">(<span id="head_cart_num">0</span>)</span></a> | 
+				<!-- if $session.user_id -->
+				<a href="{url ctrl=usercp/}">个人中心</a> | <a href="javascript:$.user.logout('{$session.user_name}');void(0)">退出</a>
+				<!-- else -->
+				<a href="{url ctrl=login/}">登录</a> | <a href="{url ctrl=register/}">注册</a>
+				<!-- /if -->
+				<span id="top_html_user_login"></span>
+			</nav>
 			<form method="post" action="{url ctrl=search/}" onsubmit="return top_search();">
-			<input name="keywords" value="{$keywords}" id="top-keywords" type="text" class="search_input" placeholder="请输入关键字" />
-			<input name="" type="submit" class="search_btn" value="" />
+				<input name="keywords" value="{$keywords}" id="top-keywords" type="text" class="input" placeholder="请输入关键字" />
+				<input name="" type="submit" class="btn" value="" />
 			</form>
 		</div>
 	</div>
-	<div class="cl"></div>
-	<div class="nav">
+	<nav class="menu">
 	<ul>
 		<!-- php:$list = phpok('menu') -->
-		<!-- loop from=$list key=$key value=$value -->
-		<li{if $menutitle == $value.title} class="current"{/if}>
-			<a{if $list_id.num == 1} class="first"{/if}{if $list_id.num == $list_id.total} class="last"{/if} href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a>
-			<!-- if $value.sonlist -->
-			<ul>
+		<!-- loop from=$list.rslist key=$key value=$value id=mindex -->
+		<li{if $highlight == $mindex.num || $menutitle == $value.title} class="current"{/if}>
+			<dl>
+				<dt{if $value.sonlist} class="arrow"{/if}><a href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a></dt>
 				<!-- loop from=$value.sonlist key=$k value=$v -->
-				<li><a href="{$v.url}" title="{$v.title}" target="{$v.target}">{$v.title}</a></li>
+				<dd><a href="{$v.url}" title="{$v.title}" target="{$v.target}">{$v.title}</a></dd>
 				<!-- /loop -->
-			</ul>
-			<!-- /if -->
+			</dl>
 		</li>
 		<!-- /loop -->
 	</ul>
-	</div>
-</div>
+	</nav>
+</header>

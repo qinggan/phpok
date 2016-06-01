@@ -8,252 +8,294 @@
 	Update  : 2012-10-17 15:15
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class site_model extends phpok_model
+class site_model_base extends phpok_model
 {
-	function __construct()
+	private $mobile_domain = false;
+	public function __construct()
 	{
 		parent::model();
 	}
 
-	# 取得网站信息
-	function get_one($id)
+	public function __destruct()
 	{
-		$sql  = " SELECT s.*,d.domain FROM ".$this->db->prefix."site s ";
-		$sql .= " LEFT JOIN ".$this->db->prefix."site_domain d ON(s.domain_id=d.id) ";
-		$sql .= " WHERE s.id='".$id."'";
-		return $this->db->get_one($sql);
+		parent::__destruct();
+		unset($this);
 	}
 
-	# 取得默认网站信息
-	function get_one_default()
+	public function get_one($id)
 	{
-		$sql = "SELECT id FROM ".$this->db->prefix."site WHERE is_default=1 ";
+		$sql = "SELECT * FROM ".$this->db->prefix."site WHERE id='".$id."'";
 		$rs = $this->db->get_one($sql);
-		if(!$rs || !$rs["id"])
-		{
+		if(!$rs){
 			return false;
 		}
-		return $this->get_one($rs["id"]);
+		$rs['_domain'] = $this->domain_list($id,'id');
+		if($rs['_domain']){
+			foreach($rs['_domain'] as $key=>$value){
+				if($value['is_mobile']){
+					$rs['_mobile'] = $value;
+				}
+				if($value['id'] == $rs['domain_id']){
+					$rs['domain'] = $value['domain'];
+				}
+			}
+		}
+		return $rs;
 	}
 
-	//设置站点为默认
-	function set_default($id)
+	public function get_one_default()
 	{
-		if(!$id) return false;
-		$sql = "UPDATE ".$this->db->prefix."site SET is_default=0";
-		$this->db->query($sql);
-		$sql = "UPDATE ".$this->db->prefix."site SET is_default=1 WHERE id=".intval($id);
-		$this->db->query($sql);
-		return true;
-	}
-
-	# 根据域名取网站信息
-	function get_one_from_domain($domain)
-	{
-		if(!$domain) return false;
-		$sql = "SELECT site_id FROM ".$this->db->prefix."site_domain WHERE domain='".$domain."' ";
-		$rs = $this->db->get_one($sql);
-		if(!$rs || !$rs["site_id"])
-		{
+		$sql = "SELECT id FROM ".$this->db->prefix."site WHERE is_default=1";
+		$tmp = $this->db->get_one($sql);
+		if(!$tmp){
 			return false;
 		}
-		return $this->get_one($rs["site_id"]);
+		return $this->get_one($tmp['id']);
 	}
 
-	# 取得全部网站
-	function get_all_site()
+	//有缓存读取
+	public function get_one_from_domain($domain='')
+	{
+		$sql = "SELECT site_id FROM ".$this->db->prefix."site_domain WHERE domain='".$domain."'";
+		$tmp = $this->db->get_one($sql);
+		if(!$tmp){
+			return false;
+		}
+		return $this->get_one($tmp['site_id']);
+	}
+
+	public function get_all_site()
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."site ";
 		return $this->db->get_all($sql);
 	}
 
-	# 存储网站信息
-	function save($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"site",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"site");
-		}
-	}
-
-	# 取得域名列表
-	function domain_list($site_id=0)
+	public function domain_list($site_id=0,$pri='')
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."site_domain ";
-		if($site_id)
-		{
+		if($site_id){
 			$sql .= "WHERE site_id='".$site_id."'";
 		}
-		return $this->db->get_all($sql);
+		return $this->db->get_all($sql,$pri);
 	}
 
-	# 检查域名是否存在
-	function domain_check($domain)
+	public function domain_check($domain)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."site_domain WHERE domain='".$domain."'";
 		return $this->db->get_one($sql);
 	}
 
-	# 更新网站域名
-	function domain_update($domain,$id)
-	{
-		if(!$domain || !$id) return false;
-		
-		$sql = "UPDATE ".$this->db->prefix."site_domain SET domain='".$domain."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	# 添加新的域名
-	function domain_add($domain,$site_id)
-	{
-		if(!$domain || !$site_id) return false;
-		
-		$sql = "INSERT INTO ".$this->db->prefix."site_domain(site_id,domain) VALUES('".$site_id."','".$domain."')";
-		return $this->db->insert($sql);
-	}
-
-	# 取得域名信息
-	function domain_one($id)
+	public function domain_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."site_domain WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
 
-	# 删除域名
-	function domain_delete($id)
-	{
-		
-		$sql = "DELETE FROM ".$this->db->prefix."site_domain WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	# 取得扩展全局字段
-	function all_one($id)
+	public function all_one($id)
 	{
 		if(!$id) return false;
 		$sql = "SELECT * FROM ".$this->db->prefix."all WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
 
-	# 取得全部扩展字段内容
-	function all_ext($id)
+	public function all_ext($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."all_ext WHERE all_id='".$id."'";
 		return $this->db->get_all($sql,"fields_id");
 	}
 
-	function all_check($identifier,$site_id=0,$id=0)
+	public function all_check($identifier,$site_id=0,$id=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."all WHERE identifier='".$identifier."' AND site_id='".$site_id."'";
-		if($id)
-		{
+		if($id){
 			$sql .= " AND id!='".$id."'";
 		}
 		return $this->db->get_one($sql);
 	}
 
-	# 存储扩展配置
-	function all_save($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		
-		if($id)
-		{
-			return $this->db->update_array($data,"all",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"all");
-		}
-	}
-
-	# 读取扩展配置
-	function all_list($site_id)
+	public function all_list($site_id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."all WHERE site_id='".$site_id."'";
 		return $this->db->get_all($sql);
 	}
 
-
-	# 删除扩展
-	function ext_delete($id)
+	//订单状态设置
+	public function order_status_all($sort=false)
 	{
-		if(!$id) return false;
-		$sql = "DELETE FROM ".$this->db->prefix."all WHERE id='".$id."'";
-		$this->db->query($sql);
-		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='all-".$id."'";
-		$rslist = $this->db->get_all($sql,"id");
-		if($rslist)
-		{
-			$id_array = array_keys($rslist);
-			$ids = implode(",",$id_array);
-			$sql = "DELETE FROM ".$this->db->prefix."ext_c WHERE id IN(".$ids.")";
-			$this->db->query($sql);
-			$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id IN(".$ids.")";
-			$this->db->query($sql);
+		$site_id = $GLOBALS['app']->app_id == 'admin' ? $_SESSION['admin_site_id'] : $GLOBALS['app']->site['id'];
+		$file = $this->dir_root.'data/xml/order_status_'.$site_id.'.xml';
+		$string = 'create,unpaid,paid,shipped,received';
+		if($this->config['order'] && $this->config['order']['status']){
+			$string = $this->config['order']['status'];
 		}
-		
-		return true;
-	}
-
-	# 取得网站下的所有扩展配置
-	function site_config($id)
-	{
-		if(!$id) return false;
-		$sql = "SElECT * FROM ".$this->db->prefix."all WHERE site_id='".$id."'";
-		$list = $this->db->get_all($sql);
-		if(!$list)
-		{
-			return false;
-		}
-		$tmp = $tmp2 = array();
-		foreach($list AS $key=>$value)
-		{
-			$tmp[$value["identifier"]] = "all-".$value["id"];
-			$tmp2["all-".$value["id"]] = $value["identifier"];
-		}
-		$condition = implode("','",$tmp);
-		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.module FROM ".$this->db->prefix."ext ext ";
-		$sql.= "JOIN ".$this->db->prefix."extc extc ON(ext.id=extc.id) ";
-		$sql.= "WHERE ext.module IN('".$condition."') ORDER BY ext.taxis ASC,ext.id DESC";
-		$rslist = $this->db->get_all($sql);
-		if(!$rslist) return false;
-		$info = false;
-		foreach($rslist AS $key=>$value)
-		{
-			if(!$tmp2[$value["module"]]) continue;
-			$info[$tmp2[$value["module"]]][$value["identifier"]] = content_format($value);
-		}
-		return $info;
-	}
-
-	function site_delete($id)
-	{
-		//读取所有的表
-		$rslist = $this->db->list_tables();
-		if($rslist)
-		{
-			foreach($rslist AS $key=>$value)
-			{
-				$flist = $this->db->list_fields($value);
-				if($flist && in_array("site_id",$flist))
-				{
-					$sql = "DELETE FROM ".$value." WHERE site_id='".$id."'";
-					$this->db->query($sql);
+		$list = explode(",",$string);
+		$taxis = 100;
+		if(!file_exists($file)){
+			$taxis = 1;
+			$tmplist = array();
+			foreach($list as $key=>$value){
+				$tmplist[$value] = array('title'=>$value,'email_tpl_user'=>'','email_tpl_admin'=>'','taxis'=>$taxis,'status'=>0);
+				$taxis++;
+			}
+		}else{
+			$tmplist = $this->lib('xml')->read($file);
+			foreach($list as $key=>$value){
+				if(!$tmplist[$value]){
+					$tmplist[$value] = array('title'=>$value,'email_tpl_user'=>'','email_tpl_admin'=>'','taxis'=>$taxis,'status'=>0);
+					$taxis++;
+				}
+			}
+			foreach($tmplist as $key=>$value){
+				if(!in_array($key,$list)){
+					unset($tmplist[$key]);
 				}
 			}
 		}
-		//删除主表信息
-		$sql = "DELETE FROM ".$this->db->prefix."site WHERE id='".$id."'";
-		$this->db->query($sql);
-		//清空缓存操作
-		return true;
+		if($tmplist && $sort){
+			$rslist = array();
+			foreach($tmplist as $key=>$value){
+				$value['identifier'] = $key;
+				$rslist[] = $value;
+			}
+			usort($rslist,array($this,'status_sort'));
+			return $rslist;
+		}
+		return $tmplist;
 	}
 
+	private function status_sort($a,$b)
+	{
+		if($a['taxis'] == $b['taxis']){
+			return 0;
+		}
+		return ($a['taxis'] < $b['taxis']) ? -1 : 1;
+	}
+
+	//
+	public function price_status_all($sort=false)
+	{
+		$site_id = $GLOBALS['app']->app_id == 'admin' ? $_SESSION['admin_site_id'] : $GLOBALS['app']->site['id'];
+		$file = $this->dir_root.'data/xml/price_status_'.$site_id.'.xml';
+		$string = 'product,shipping,fee,discount,wealth,payonline';
+		if($this->config['order'] && $this->config['order']['price']){
+			$string = $this->config['order']['price'];
+		}
+		$list = explode(",",$string);
+		$taxis = 100;
+		if(!file_exists($file)){
+			$taxis = 1;
+			$tmplist = array();
+			foreach($list as $key=>$value){
+				$tmplist[$value] = array('title'=>$value,'action'=>'add','taxis'=>$taxis,'status'=>0);
+				$taxis++;
+			}
+		}else{
+			$tmplist = $this->lib('xml')->read($file);
+			foreach($list as $key=>$value){
+				if(!$tmplist[$value]){
+					$tmplist[$value] = array('title'=>$value,'action'=>'add','taxis'=>$taxis,'status'=>0);
+					$taxis++;
+				}
+			}
+			foreach($tmplist as $key=>$value){
+				if(!in_array($key,$list)){
+					unset($tmplist[$key]);
+				}
+			}
+		}
+		if($tmplist && $sort){
+			$rslist = array();
+			foreach($tmplist as $key=>$value){
+				$value['identifier'] = $key;
+				$rslist[] = $value;
+			}
+			usort($rslist,array($this,'status_sort'));
+			return $rslist;
+		}
+		return $tmplist;
+	}
+
+	/**
+	 * 前台及API接口获取的网站信息
+	 * @param mixed $id 网站ID或网站域名
+	 * @return array 为空时返回false，不为空返回网站相关信息 
+	 * @date 2016年02月05日
+	 */
+	public function site_info($id='')
+	{
+		if(!$id){
+			return false;
+		}
+		$cache_id = $this->cache->id($id);
+		$rs = $this->cache->get($cache_id);
+		if($rs){
+			return $rs;
+		}
+		$this->db->cache_set($cache_id);
+		if(!is_numeric($id)){
+			$sql = "SELECT site_id FROM ".$this->db->prefix."site_domain WHERE domain='".$id."'";
+			$tmp = $this->db->get_one($sql);
+			if(!$tmp){
+				$sql = "SELECT id FROM ".$this->db->prefix."site WHERE status=1 AND is_default=1";
+				$tmp = $this->db->get_one($sql);
+				if(!$tmp){
+					return false;
+				}
+				$id = $tmp['id'];
+			}else{
+				$id = $tmp['site_id'];
+			}
+		}
+		if(!$id){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."site WHERE id='".$id."' AND status=1";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."site_domain WHERE site_id='".$id."'";
+		$dlist = $this->db->get_all($sql);
+		if($dlist){
+			$rs['_domain'] = $dlist;
+			foreach($dlist as $key=>$value){
+				if($value['is_mobile']){
+					$rs['_mobile'] = $value;
+				}
+				if($value['id'] == $rs['domain_id']){
+					$rs['domain'] = $value['domain'];
+				}
+			}
+		}
+		$sql = "SElECT * FROM ".$this->db->prefix."all WHERE site_id='".$id."' AND status='1'";
+		$list = $this->db->get_all($sql);
+		if(!$list){
+			$this->cache->save($cache_id,$rs);
+			return $rs;
+		}
+		$tmp = $tmp2 = array();
+		foreach($list AS $key=>$value){
+			$tmp[$value["identifier"]] = "all-".$value["id"];
+			$tmp2["all-".$value["id"]] = $value["identifier"];
+		}
+		$tmp = implode("','",$tmp);
+		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.module FROM ".$this->db->prefix."ext ext ";
+		$sql.= "JOIN ".$this->db->prefix."extc extc ON(ext.id=extc.id) ";
+		$sql.= "WHERE ext.module IN('".$tmp."') ORDER BY ext.taxis ASC,ext.id DESC";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			$this->cache->save($cache_id,$rs);
+			return $rs;
+		}
+		$info = false;
+		foreach($rslist AS $key=>$value){
+			if(!$tmp2[$value["module"]]){
+				continue;
+			}
+			$rs[$tmp2[$value["module"]]][$value["identifier"]] = $this->lib('form')->show($value);
+		}
+		$this->cache->save($cache_id,$rs);
+		return $rs;
+	}
 }
 ?>

@@ -1,0 +1,114 @@
+<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
+	<div role="main" class="ui-content">
+	<div class="product_img" id="product_img">
+		<ul class="ul">
+			<!-- loop from=$rs.pictures key=$key value=$value -->
+			<li><img src="{#images#}/blank.gif" _src="{$value.gd.auto}" border="0" alt="{$rs.title}" /></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		TouchSlide({
+			slideCell:"#product_img",
+			mainCell:".ul", 
+			effect:"leftLoop",
+			autoPlay:true,
+			switchLoad:"_src"
+		});
+	});
+	</script>
+	<div class="product">
+		<h1>{$rs.title}</h1>
+		<ul class="alist">
+			<li><em>查看次数：</em>{$rs.hits}</li>
+			<li><em>添加时间：</em>{func date Y-m-d $rs.dateline}</li>
+			<li style="padding:0;height:10px;"><hr /></li>
+			<!-- loop from=$rs.attrlist key=$key value=$value -->
+			<li>
+				<em>{$value.title}：</em>
+				<input type="hidden" name="attr" id="attr_{$value.id}" value="" />
+				<div style="margin-bottom:5px;">
+					<ul class="attr">
+						<!-- loop from=$value.rslist key=$k value=$v id=$tmpid -->
+						<li><div class="attr" name="attr{$value.id}" data="{$v.id}" price="{$v.price}" weight="{$v.weight}" volume="{$v.volume}" onclick="attr_select('{$v.id}','{$value.id}')">{$v.title}</div></li>
+						<!-- /loop -->
+					</ul>
+					<div class="clear"></div>
+				</div>
+			</li>
+			<!-- /loop -->
+			<li>
+				<em>购买数量：</em>
+				<table cellspacing="0" cellpadding="0">
+				<tr>
+					<td class="numbg" id="minus">-</td>
+					<td style="line-height:1em;"><input name="buycount" id="buycount" value="1" type="text" class="numtxt" data-role="none" /></td>
+					<td class="numbg" id="plus">+</td>
+				</tr>
+				</table>
+			</li>
+			<li>
+				<em>价格：</em>
+				<span class="price" style="color:red;font-size:16px;" id="showprice">{func price_format $rs.price $rs.currency_id}</span>
+			</li>
+			<li style="padding-left:0;"><a href="javascript:javascript:$.cart.add('{$rs.id}',$('#buycount').val());void(0);" class="ui-btn">加入购物车</a></li>
+		</ul>
+		<div class="content" style="padding:5px;">{$rs.content}</div>
+	</div>
+	<script type="text/javascript">
+	function attr_select(id,aid)
+	{
+		$("#attr_"+aid).val(id);
+		$("div[name=attr"+aid+"]").each(function(i){
+			var tid = $(this).attr('data');
+			if(tid == id){
+				$(this).addClass("selected");
+				//判断价格
+				var new_price = $(this).attr("price");
+				if(new_price && parseFloat(new_price)>0){
+					price = parseFloat(price) + parseFloat(new_price);
+					$("#showprice").html(price);
+				}
+			}else{
+				$(this).removeClass('selected');
+			}
+		});
+		var price = '{$rs.price}';
+		$("input[name=attr]").each(function(i){
+			var val = $(this).val();
+			if(val && val != 'undefined'){
+				var newprice = $("div[data="+val+"]").attr("price");
+				if(newprice && parseFloat(newprice)>0){
+					price = parseFloat(price) + parseFloat(newprice);
+				}
+			}
+		});
+		var url = api_url('cart','price_format','price='+$.str.encode(price));
+		$.phpok.json(url,function(rs){
+			if(rs.status == 'ok'){
+				$("#showprice").html(rs.content);
+			}
+		});
+	}
+	$(document).ready(function(){
+		$("#minus").click(function(){
+			var o = $("#buycount").val();
+			if(o<2){
+				$.dialog.alert('要购买的数量不能少于1');
+				return false;
+			}
+			o = parseInt(o) - 1;
+			$("#buycount").val(o);
+		});
+		$("#plus").click(function(){
+			var o = $("#buycount").val();
+			o = parseInt(o) + 1;
+			$("#buycount").val(o);
+		});
+	});
+	</script>
+
+</div>
+
+<!-- include tpl=foot -->

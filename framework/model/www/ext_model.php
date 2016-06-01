@@ -8,33 +8,40 @@
 	时间： 2014年11月05日 10时57分
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class ext_model extends phpok_model
+class ext_model extends ext_model_base
 {
 	private $url_type = 'default';
-	function __construct()
+	public function __construct()
 	{
-		parent::model();
+		parent::__construct();
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
 	}
 
 	//读取分类下的全部扩展
-	function cate()
+	public function cate()
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE module LIKE 'cate-%' ORDER BY taxis ASC,id DESC";
+		$sql = "SELECT e.*,c.content content_val FROM ".$this->db->prefix."ext e ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(e.id=c.id) ";
+		$sql.= "WHERE e.module='cate-%' ";
+		$sql.= "ORDER BY e.taxis asc,id DESC";
 		$rslist = $this->db->get_all($sql,'id');
 		if(!$rslist)
 		{
 			return false;
 		}
-		//读取分类扩展对应的值
-		$ids = array_keys($rslist);
-		$sql = "SELECT * FROM ".$this->db->prefix."extc WHERE id IN(".implode(",",$ids).")";
-		$clist = $this->db->get_all($sql);
-		if($clist)
+		foreach($rslist AS $key=>$value)
 		{
-			foreach($clist as $key=>$value)
+			if($value['content_val'])
 			{
-				$rslist[$value['id']]['content'] = $value['content'];
+				$value["content"] = $value['content_val'];
 			}
+			unset($value['content_val']);
+			$rslist[$key] = $value;
 		}
 		$rslist = $this->_format($rslist);
 		$tmplist = false;
@@ -46,7 +53,7 @@ class ext_model extends phpok_model
 			}
 			if($value['form_type'] == 'editor')
 			{
-				$value['content'] = phpok_ubb($value['content'],false);
+				$value['content'] = $this->lib('ubb')->to_html($value['content'],false);
 			}
 			$tmplist[$value['module']][$value['identifier']] = $value['content'];
 		}
@@ -102,9 +109,9 @@ class ext_model extends phpok_model
 			$reslist = $this->db->get_all($sql,'id');
 			if($reslist)
 			{
-				$sql = "SELECT ext.res_id,ext.gd_id,ext.filename,gd.identifier ".$this->db->prefix."res_ext ext ";
+				$sql = "SELECT ext.res_id,ext.gd_id,ext.filename,gd.identifier FROM ".$this->db->prefix."res_ext ext ";
 				$sql.= "LEFT JOIN ".$this->db->prefix."gd gd ON(ext.gd_id=gd.id) ";
-				$sql.= "WHERE res.res_id IN(".$ids.")";
+				$sql.= "WHERE ext.res_id IN(".$ids.")";
 				$elist = $this->db->get_all($sql);
 				if($elist)
 				{

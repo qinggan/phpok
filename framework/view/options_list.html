@@ -1,0 +1,159 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}<a href="{url ctrl=options/}">{lang产品属性管理}</a>
+	&raquo; <span class="red">{$rs.title}</span>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+function add_it()
+{
+	var url = get_url('options','save_values','aid={$rs.id}');
+	var title = $("#title_0").val();
+	if(!title){
+		$.dialog.alert('名称不能为空');
+		return false
+	}
+	url += "&title="+$.str.encode(title);
+	var taxis = $("#taxis_0").val();
+	if(taxis){
+		url += "&taxis="+taxis;
+	}
+	var pic = $("#pic_0").val();
+	if(pic){
+		url += "&pic="+pic;
+	}
+	var val = $("#val_0").val();
+	if(val){
+		url += "&val="+val;
+	}
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+function update_it(id)
+{
+	var url = get_url('options','save_values','id='+id);
+	var title = $("#title_"+id).val();
+	if(!title){
+		$.dialog.alert('名称不能为空');
+		return false
+	}
+	url += "&title="+$.str.encode(title);
+	var taxis = $("#taxis_"+id).val();
+	if(taxis){
+		url += "&taxis="+taxis;
+	}
+	var pic = $("#pic_"+id).val();
+	if(pic){
+		url += "&pic="+pic;
+	}
+	var val = $("#val_"+id).val();
+	if(val){
+		url += "&val="+val;
+	}
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+function delete_it(id)
+{
+	var t = $("#title_"+id).val();
+	$.dialog.confirm('确定要删除产品属性：<span class="red">'+t+'</span> 吗？删除后，产品已使用此属性相关信息也会删除',function(){
+		var rs = $.phpok.json(get_url('options','delete_values','id='+id));
+		if(rs.status == 'ok'){
+			$.dialog.alert('删除成功',function(){
+				$.phpok.reload();
+			},'succeed');
+		}else{
+			$.dialog.alert(rs.content);
+		}
+	});
+}
+function show_big(id)
+{
+	var url = $("#"+id).val();
+	if(!url){
+		$.dialog.alert('没有图片地址');
+		return false;
+	}
+	top.$.dialog({
+		'title':'查看大图',
+		'width':'500px',
+		'height':'400px',
+		'content':'<img src="'+url+'" border="0" />',
+		'lock':true
+	});
+}
+function select_pic(id)
+{
+	var url = get_url("open","input") + "&id="+id+"&type=image";
+	$.dialog.open(url,{
+		title: "图片管理器",
+		lock : true,
+		width: "700px",
+		height: "70%",
+		win_min:false,
+		win_max:false,
+		resize: false
+	});
+}
+</script>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>ID</th>
+	<th class="lft">名称</th>
+	<th class="lft" colspan="2">图片</th>
+	<th>值</th>
+	<th width="80">排序</th>
+	<th></th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td><input type="text" id="title_{$value.id}" value="{$value.title}" style="width:120px" /></td>
+	<td>
+		<input type="text" id="pic_{$value.id}" value="{$value.pic}" style="width:120px" /></td>
+	<td>
+		<div class="button-group">
+		<input type="button" class="phpok-btn" value="选择图片" onclick="select_pic('pic_{$value.id}')" />
+		<input type="button" value="预览" class="phpok-btn" onclick="show_big('pic_{$value.id}')" />
+		<input type="button" value="清除" class="phpok-btn" onclick="$('#pic_{$value.id}').val('')" />
+		</div>
+	</td>
+	<td class="center"><input type="text" id="val_{$value.id}" value="{$value.val}" style="width:80px" /></td>
+	<td class="center"><input type="text" id="taxis_{$value.id}" value="{$value.taxis}" class="short center" /></td>
+	<td>
+		<div class="button-group">
+			<input type="button" value="{lang编辑}" onclick="update_it('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="phpok-btn" />
+		</div>
+	</td>
+</tr>
+<!-- /loop -->
+<tr>
+	<td class="center">添加</td>
+	<td><input type="text" id="title_0" style="width:120px" /></td>
+	<td width="120"><input type="text" id="pic_0" style="width:120px" /></td>
+	<td width="180"><div class="button-group">
+		<input type="button" class="phpok-btn" value="选择图片" onclick="select_pic('pic_0')" />
+		<input type="button" value="预览" class="phpok-btn" onclick="show_big('pic_0')" />
+		<input type="button" value="清除" class="phpok-btn" onclick="$('#pic_0').val('')" />
+		</div>
+	</td>
+	<td class="center"><input type="text" id="val_0" value="" style="width:80px" /></td>
+	<td class="center"><input type="text" id="taxis_0" value="{$taxis}" class="short center" /></td>
+	<td><input type="button" value="{lang添加}" onclick="add_it()" class="phpok-btn" /></td>
+</tr>
+</table>
+<!-- include tpl=pagelist -->
+<!-- include tpl=foot -->

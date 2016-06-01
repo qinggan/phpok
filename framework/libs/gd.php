@@ -82,12 +82,12 @@ class gd_lib
 			$height = $imginfo["height"];
 			$this->iscut = false;
 		}
-		elseif(!$width && $height)
+		elseif(!$width && $height && $imginfo['height'])
 		{
 			$width =  ( $height * $imginfo["width"] ) / $imginfo["height"];
 			$this->iscut = false;
 		}
-		elseif($width && !$height)
+		elseif($width && !$height && $imginfo['width'])
 		{
 			$height = ($width * $imginfo["height"]) / $imginfo["width"];
 			$this->iscut = false;
@@ -161,7 +161,7 @@ class gd_lib
 	#[获取图片的相关数据]
 	function GetImgInfo($picture="")
 	{
-		if(!$picture || !file_exists($picture)) return false;
+		if(!$picture || !is_file($picture)) return false;
 		$infos = getimagesize($picture);
 		$info["width"] = $infos[0];
 		$info["height"] = $infos[1];

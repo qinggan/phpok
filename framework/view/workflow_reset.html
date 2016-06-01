@@ -1,0 +1,58 @@
+<!-- include tpl=head_open -->
+<table class="list" width="100%">
+<tr>
+	<th>ID</th>
+	<th class="lft">&nbsp;{lang主题}</th>
+</tr>
+<tr>
+	<td>{$rs.tid}</td>
+	<td>{$rs.title}</td>
+</tr>
+</table>
+<script type="text/javascript">
+function save()
+{
+	var url = get_url('workflow','reset_ok','id={$rs.id}');
+	var admin_id = $("#admin_id").val();
+	if(!admin_id){
+		$.dialog.alert('{lang未指定管理员}');
+		return false;
+	}
+	url += "&admin_id="+admin_id;
+	var note = $("#note").val();
+	if(note){
+		url += "&note="+$.str.encode(note);
+	}
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok'){
+		return true;
+	}else{
+		$.dialog.alert(rs.content);
+		return false;
+	}
+}
+</script>
+<hr />
+<div class="table">
+	<div class="title">
+		{lang将上述内容指定管理员维护}
+		<span class="note"></span>
+	</div>
+	<div class="content">
+		<select id="admin_id" name="admin_id">
+		<option value="">{lang请选择管理员}</option>
+		<!-- loop from=$alist key=$key value=$value id=$tmpid -->
+		<option value="{$value.id}"{if $rs.admin_id == $value.id} selected{/if}>{$value.account}<!-- if $value.fullname -->（{$value.fullname}）<!-- /if --></option>
+		<!-- /loop -->
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang备注}
+		<span class="note">{lang简单说明下要通知什么内容，不超过80字}</span>
+	</div>
+	<div class="content"><textarea name="note" id="note" style="width:450px;height:40px;">{$rs.note}</textarea></div>
+</div>
+
+<!-- include tpl=foot_open -->

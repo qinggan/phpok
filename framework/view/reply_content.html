@@ -1,4 +1,3 @@
-<!-- php:$edit_content = form_edit('content',$rs.content,'editor','width=680&height=300') -->
 <!-- include tpl=head_open -->
 <script type="text/javascript" src="{func include_js}"></script>
 <div class="help">
@@ -11,18 +10,33 @@
 	<!-- /if -->
 </div>
 <script type="text/javascript">
-function check_save()
+function save()
 {
-	var c = edit_content.getContent();
-	if(!c)
-	{
+	var url = get_url('reply','edit_save','id={$id}');
+	var star = $("input[name=star]:checked").val();
+	if(!star){
+		$.dialog.alert('{lang星级评等不能为空}');
+		return false;
+	}
+	url += "&star="+star;
+	var content = edit_content.getContent();
+	if(!content){
 		$.dialog.alert("内容不能为空");
 		return false;
 	}
-	return true;
+	url += "&content="+$.str.encode(content);
+	var status = $("input[name=status]:checked").val();
+	url += "&status="+status;
+	var info = $.phpok.json(url);
+	if(info.status == 'ok'){
+		return true;
+	}else{
+		$.dialog.alert(info.content);
+		return false;
+	}
 }
 </script>
-<form method="post" action="{func admin_url reply edit_save}&id={$id}" onsubmit="return check_save()">
+<form method="post" onsubmit="return false">
 <div class="table">
 	<div class="title">
 		评论星级：
@@ -37,7 +51,7 @@ function check_save()
 			<td><input type="radio" name="star" id="star_2" value="2"{if $rs.star == 2} checked{/if}></td>
 			<td><label for="star_2">二星</label></td>
 			<td>&nbsp;</td>
-			<td><input type="radio" name="star" id="star_3" value="3"{if $rs.star == 3} checked{/if}></td>
+			<td><input type="radio" name="star" id="star_3" value="3"{if $rs.star == 3 || !$rs.star} checked{/if}></td>
 			<td><label for="star_3">三星</label></td>
 			<td>&nbsp;</td>
 			<td><input type="radio" name="star" id="star_4" value="4"{if $rs.star == 4} checked{/if}></td>
@@ -56,7 +70,6 @@ function check_save()
 	</div>
 	<div class="content">{$edit_content}</div>
 </div>
-<!-- if $popedom.status -->
 <div class="table">
 	<div class="title">
 		审核：
@@ -72,12 +85,6 @@ function check_save()
 			<td><label for="status_1">已审核</label></td>
 		</tr>
 		</table>
-	</div>
-</div>
-<!-- /if -->
-<div class="table">
-	<div class="content">
-		<input type="submit" value="提 交" class="submit" />
 	</div>
 </div>
 </form>

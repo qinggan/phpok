@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<admin_logout_confirm>确定要退出吗？</admin_logout_confirm>
+	<admin_index_clear_cache>缓存清空完成</admin_index_clear_cache>
+	<admin_index_add_site>添加站点</admin_index_add_site>
+	<admin_index_edit_me>修改管理员信息</admin_index_edit_me>
+	<all_site_empty>网站名称不能为空</all_site_empty>
+	<all_domain_empty>域名不能为空</all_domain_empty>
+	<all_domain_error1>域名不能以http://或https://开头</all_domain_error1>
+	<all_domain_error2>域名填写不正确</all_domain_error2>
+	<all_domain_addok>域名添加成功</all_domain_addok>
+	<all_domain_updateok>域名更新成功</all_domain_updateok>
+	<all_domain_delete_confirm>确定要删除此域名吗</all_domain_delete_confirm>
+	<all_ext_delete1>确定要删除此组信息吗？删除后相关数据都会一起被删除</all_ext_delete1>
+	<all_ext_no_global_id>未指定全局ID</all_ext_no_global_id>
+	<all_ext_delete_confirm>确定要删除这个扩展字段吗？</all_ext_delete_confirm>
+	<all_ext_add_error>添加异常，未指定ID</all_ext_add_error>
+	<all_ext_add_name_empty>名称不能为空</all_ext_add_name_empty>
+	<all_ext_add_identifier_empty>标识串不能为空</all_ext_add_identifier_empty>
+	<all_ext_add_identifier_error>标识串不符合条件要求</all_ext_add_identifier_error>
+	<all_ext_add_select_ico>请选择一个图标</all_ext_add_select_ico>
+	<open_text_pic_manage>图片管理器</open_text_pic_manage>
+	<open_text_pic_noid>未指定ID</open_text_pic_noid>
+	<list_set_admin_id>指派管理员维护</list_set_admin_id>
+</root>

@@ -1,24 +1,30 @@
-<!-- inc:head_open -->
+<!-- include tpl=head_open -->
 <script type="text/javascript">
-function check_save()
+function save()
 {
-	var id = $("#id").val();
-	if(!id || id == "undefined")
-	{
-		$.dialog.alert("未指定ID！");
-		return false;
-	}
-	var title = $("#title").val();
-	if(!title || title == "undefined")
-	{
-		$.dialog.alert("名称不能为空");
-		return false;
-	}
-	return true;
+	var obj = art.dialog.opener;
+	$("#modify").ajaxSubmit({
+		'url':get_url('ext','save','id={$module}{if $tid}&tid={$tid}{/if}{if $tmpid}&tmpid={$tmpid}{/if}'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok')
+			{
+				$.dialog.alert('字段编辑成功',function(){
+					obj.$.dialog.close();
+					obj.$.phpok.reload();
+				},'succeed');
+			}
+			else
+			{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
 }
 </script>
-<form method="post" action="{echo admin_url('ext','edit_save')}" onsubmit="return check_save();">
-<input type="hidden" id="id" name="id" value="{$id}" />
+<form method="post" id="modify">
 <div class="table">
 	<div class="title">
 		字段名称：
@@ -89,9 +95,9 @@ function check_save()
 	</div>
 	<div class="content">
 		<select name="format" id="format">
-			<!-- foreach($format_list AS $key=>$value) -->
+			<!-- loop from=$format_list key=$key value=$value -->
 			<option value="{$key}"{if $rs.format == $key} selected{/if}>{$value}</option>
-			<!-- /foreach -->
+			<!-- /loop -->
 		</select>
 	</div>
 </div>
@@ -103,19 +109,10 @@ function check_save()
 	</div>
 	<div class="content"><input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis ? $rs.taxis : 255}" /></div>
 </div>
-
-
-<div class="table">
-	<div class="content">
-		<br />
-		<input type="submit" value="提 交" class="submit" />
-		<br />
-	</div>
-</div>
 </form>
 <script type="text/javascript">
 $(document).ready(function(){
-	_phpok_form_opt("{$rs.form_type}","form_type_ext","{$id}");
+	_phpok_form_opt("{$rs.form_type}","form_type_ext","{$rs.id}");
 });
 </script>
 <!-- inc:foot_open -->

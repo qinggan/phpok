@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>Paypal支付</title>
+	<code>
+		<at>
+			<title>PDT字符串</title>
+			<note>用于验证远程数据是否有效</note>
+			<type>text</type>
+		</at>
+		<payid>
+			<title>Paypal账号</title>
+			<note>设置Paypal的接收账号</note>
+			<type>text</type>
+		</payid>
+		<action>
+			<title>PayPal服务的模式</title>
+			<note>测试：https://www.sandbox.paypal.com/cgi-bin/webscr，正式：https://www.paypal.com/cgi-bin/webscr</note>
+			<type>text</type>
+		</action>
+	</code>
+</root>

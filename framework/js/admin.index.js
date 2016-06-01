@@ -11,7 +11,7 @@ function add_site()
 {
 	var url = get_url('all','add');
 	$.dialog.open(url,{
-		'title': '添加站点'
+		'title': p_lang('添加站点')
 		,'lock': true
 		,'width': '500px'
 		,'height': '300px'
@@ -19,37 +19,42 @@ function add_site()
 	});
 }
 
-//服务器计时
-function date_time()
+function phpok_admin_control()
 {
-	var d = new Date();
-	var hours = d.getHours();   
-	var minutes = d.getMinutes();
-	var seconds = d.getSeconds();
-	var myseconds = 60 - seconds;
-	var string = '';
-	if(hours < 10)
-	{
-		string += '0'+hours;
-	}
-	else
-	{
-		string += hours;
-	}
-	string += ":";
-	if(minutes < 10)
-	{
-		string += '0'+minutes;
-	}
-	else
-	{
-		string += minutes;
-	}
-	$("#desktop_hour").html(string);
-	window.setTimeout("date_time()", myseconds * 1000);
+	var url = get_url("me","setting");
+	$.dialog.open(url,{
+		"title":p_lang('修改管理员信息'),
+		"width":600,
+		"height":500,
+		"lock":true,
+		'move':false,
+		'is_max':false
+	});
 }
 
 
+function update_select_lang(val)
+	{
+		var url = get_url("index",'','_langid='+val);
+		$.phpok.go(url);
+	}
+	function phpok_admin_logout()
+	{
+		$.dialog.confirm(p_lang('确定要退出吗？'),function(){
+			var url = get_url("logout");
+			$.phpok.go(url);
+		});
+	}
+	function phpok_admin_clear()
+	{
+		var url = get_url("index","clear");
+		var rs = $.phpok.json(url);
+		if(rs.status == "ok"){
+			$.dialog.alert(p_lang('缓存清空完成'));
+		}else{
+			$.dialog.alert(rs.content);
+		}
+	}
 
 $(document).ready(function(){
 	//判断是否显示
@@ -80,6 +85,4 @@ $(document).ready(function(){
 		$(".second_ul").hide();
 		$(".second_ul",this).show();
 	});
-	//初始化时间
-	date_time();
 });

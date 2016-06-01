@@ -10,7 +10,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class ext_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 		$this->assign("form_list",$this->model('form')->form_all());
@@ -18,190 +18,193 @@ class ext_control extends phpok_control
 		$this->assign("format_list",$this->model('form')->format_all());
 	}
 
-	# 读取fields里的页面有效字段，Float
-	function float_f()
+	//创建扩展字段
+	public function create_f()
 	{
-		$psize = 40;
-		$pageid = $this->get("pageid","int");
-		if(!$pageid) $pageid = 1;
-		$offset = ($pageid - 1) * $psize;
-		$words = $this->get("words");
-		$this->assign("words",$words);
-		$this->assign("pageid",$pageid);
-		$bd = $words ? explode(",",$words) : array("id","identifier");
+		$id = $this->get('id');
+		if(!$id){
+			error(P_Lang('未指定ID'));
+		}
+		$taxis = $this->model('ext')->ext_next_taxis($id);
+		$this->assign('taxis',$taxis);
+		$info = explode("-",$id);
+		$this->assign('id',$id);
+		$this->view('ext_open_create');
+	}
+
+	public function save_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
+		$info = explode("-",$id);
+		$array = array();
+		$array['title'] = $this->get("title");
+		if(!$array['title']){
+			$this->json(P_Lang('未指定标题'));
+		}
+		$array['note'] = $this->get("note");
+		$array['form_type'] = $this->get("form_type");
+		if(!$array['form_type']){
+			$this->json(P_Lang('未选择配置表单类型'));
+		}
+		$array['form_style'] = $this->get("form_style","html");
+		$array['content'] = $this->get("content","html");
+		$array['format'] = $this->get("format");
+		$array['taxis'] = $this->get("taxis","int");
+		$ext_form_id = $this->get("ext_form_id");
+		$ext = false;
+		if($ext_form_id){
+			$list = explode(",",$ext_form_id);
+			foreach($list AS $key=>$value){
+				$val = explode(':',$value);
+				if($val[1] && $val[1] == "checkbox"){
+					$value = $val[0];
+					$ext[$value] = $this->get($value,"checkbox");
+				}else{
+					$value = $val[0];
+					$ext[$value] = $this->get($value);
+				}
+			}
+			$array['ext'] = ($ext && is_array($ext)) ? serialize($ext) : '';
+		}
+		$tid = $this->get('tid','int');
+		if($tid || !in_array('add',$info)){
+			if(!$tid){
+				$identifier = $this->get('identifier');
+				if(!$identifier){
+					$this->json(P_Lang('未指定标识串'));
+				}
+				if(!$this->model('ext')->check_identifier_add($identifier,$info[1])){
+					$this->json(P_Lang('验证码不符合验证要求，请检查'));
+				}
+				$array['identifier'] = $identifier;
+			}
+			$array['module'] = $id;
+			$this->model('ext')->save($array,$tid);
+			$this->json(true);
+		}
+		$tmpid = $this->get('tmpid');
+		if(!$tmpid){
+			$identifier = $this->get('identifier');
+			if(!$identifier){
+				$this->json(P_Lang('未指定标识串'));
+			}
+			if(!$this->model('ext')->check_identifier_add($identifier,$info[1])){
+				$this->json(P_Lang('验证码不符合验证要求，请检查'));
+			}
+			if($_SESSION['admin-'.$id] && $_SESSION['admin-'.$id][$identifier]){
+				$this->json(P_Lang('标识串已被使用'));
+			}
+		}else{
+			$identifier = $tmpid;
+		}
+		$array['identifier'] = $identifier;
+		$_SESSION['admin-'.$id][$identifier] = $array;
+		$this->json(true);
+	}
+
+	public function float_f()
+	{
 		$type = $this->get("type");
 		$this->assign("type",$type);
-		$rslist = $this->model('fields')->fields_list($words,$offset,$psize,$type);
+		$rslist = $this->model('fields')->fields_list($words,0,999,$type);
 		$module = $this->get("module");
 		$this->assign("module",$module);
 		$this->assign("rslist",$rslist);
-		$total = $this->model('fields')->fields_count($words,$type);
-		$total_page = intval($total/$psize);
-		if($total%$psize)
-		{
-			$total_page++;
-		}
-		if($total_page>5)
-		{
-			$pagelist = array();
-			if($pageid == 1)
-			{
-				$pagelist[0] = array("id"=>"1","title"=>"1");
-				$pagelist[1] = array("id"=>"2","title"=>"2");
-				$pagelist[2] = array("id"=>"3","title"=>"3");
-				$pagelist[3] = array("id"=>"2","title"=>"&gt;");
-				$pagelist[4] = array("id"=>$total_page,"title"=>"&gt;&gt;");
-			}
-			elseif($pageid == 2)
-			{
-				$pagelist[0] = array("id"=>"1","title"=>"&lt;&lt;");
-				$pagelist[1] = array("id"=>"1","title"=>"1");
-				$pagelist[2] = array("id"=>"2","title"=>"2");
-				$pagelist[3] = array("id"=>($pageid+1),"title"=>"&gt;");
-				$pagelist[4] = array("id"=>$total_page,"title"=>"&gt;&gt;");
-			}
-			elseif($pageid == $total_page)
-			{
-				$pagelist[0] = array("id"=>"1","title"=>"&lt;&lt;");
-				$pagelist[1] = array("id"=>($total_page-1),"title"=>"&lt;");
-				$pagelist[2] = array("id"=>($total_page-2),"title"=>($total_page-2));
-				$pagelist[3] = array("id"=>($total_page-1),"title"=>($total_page-1));
-				$pagelist[4] = array("id"=>$total_page,"title"=>$total_page);
-			}
-			elseif($pageid == ($total_page -1) )
-			{
-				$pagelist[0] = array("id"=>"1","title"=>"&lt;&lt;");
-				$pagelist[1] = array("id"=>($total_page-1),"title"=>"&lt;");
-				$pagelist[2] = array("id"=>($total_page-2),"title"=>($total_page-2));
-				$pagelist[3] = array("id"=>($total_page-1),"title"=>($total_page-1));
-				$pagelist[4] = array("id"=>$total_page,"title"=>"&gt;&gt;");
-			}
-			else
-			{
-				$pagelist[0] = array("id"=>"1","title"=>"&lt;&lt;");
-				$pagelist[1] = array("id"=>($pageid-1),"title"=>"&lt;");
-				$pagelist[2] = array("id"=>$pageid,"title"=>$pageid);
-				$pagelist[3] = array("id"=>($pageid+1),"title"=>"&gt;");
-				$pagelist[4] = array("id"=>$total_page,"title"=>"&gt;&gt;");
-			}
-		}
-		else
-		{
-			for($i = 0;$i<$total_page;$i++)
-			{
-				$m = $i + 1;
-				$pagelist[$i] = array("id"=>$m,"title"=>$m);
-			}
-		}
-		$this->assign("pagelist",$pagelist);
 		$this->view("ext_float");
 	}
 
-	# 添加存储字段
-	function add_f()
+	public function select_f()
 	{
-		$id = $this->get("id","int");
+		$type = $this->get("type");
+		$this->assign("type",$type);
+		$rslist = $this->model('fields')->fields_list('',0,999,$type);
 		$module = $this->get("module");
-		if(!$id)
-		{
-			json_exit("未指定要添加的ID！");
-		}
-		if(!$module)
-		{
-			json_exit("未指哪个模型要添加扩展字段");
-		}
-		$rs = $this->model('fields')->get_one($id);
-		if(!$rs)
-		{
-			json_exit("没有相关字段内容");
-		}
-		$list = explode("-",$module);
-		if($list[0] == "add")
-		{
-			$idstring = $_SESSION[$module.'-ext-id'];
-			$idstring = $idstring ? $idstring.",".$id : $id;
-			$_SESSION[$module."-ext-id"] = $idstring;
-		}
-		else
-		{
-			//检测这个字段是否已被使用
-			$chk_rs = $this->model('ext')->check_identifier($rs["identifier"],$module);
-			if($chk_rs)
-			{
-				json_exit("字段标识已被使用");
-			}
-			$array = array();
-			$array["module"] = $module;
-			$array["title"] = $rs['title'];
-			$array["identifier"] = $rs['identifier'];
-			$array["field_type"] = $rs['field_type'];
-			$array["note"] = $rs['note'];
-			$array["form_type"] = $rs['form_type'];
-			$array["form_style"] = $rs["form_style"];
-			$array["format"] = $rs["format"];
-			$array["content"] = $rs["content"];
-			$array["taxis"] = $rs["taxis"];
-			$array["ext"] = $rs["ext"] ? serialize(unserialize($rs["ext"])) : "";
-			$this->model('ext')->ext_save($array);
-		}
-		json_exit("添加成功！",true);
+		$this->assign("module",$module);
+		$this->assign("rslist",$rslist);
+		$this->view("ext_select");
 	}
 
-	# 删除扩展字段
-	function delete_f()
+	public function add_f()
 	{
 		$id = $this->get("id","int");
 		$module = $this->get("module");
-		if(!$id)
-		{
-			json_exit("未指定要删除的ID！");
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
 		}
-		if(!$module)
-		{
-			json_exit("未指哪个模型要添加扩展字段");
+		if(!$module){
+			$this->json(P_Lang('未指哪个模型要添加扩展字段'));
 		}
+		$tmplist = explode(",",$id);
 		$list = explode("-",$module);
-		if($list[0] == "add")
-		{
-			$idstring = $_SESSION[$module."-ext-id"];
-			if($idstring)
-			{
-				$list = explode(",",$idstring);
-				$tmp = array();
-				foreach($list AS $key=>$value)
-				{
-					if($value && $value != $id)
-					{
-						$tmp[] = $value;
-					}
+		foreach($tmplist as $key=>$value){
+			$rs = $this->model('fields')->get_one($value);
+			if(!$rs){
+				continue;
+			}
+			if($list[0] == "add"){
+				if($_SESSION['admin-'.$module] && $_SESSION['admin-'.$module][$rs['identifier']]){
+					continue;
 				}
-				$new_idstring = implode(",",$tmp);
-				$_SESSION[$module."-ext-id"] = $new_idstring;
+				unset($rs['id']);
+				$_SESSION['admin-'.$module][$rs['identifier']] = $rs;
+			}else{
+				$chk_rs = $this->model('ext')->check_identifier($rs["identifier"],$module);
+				if($chk_rs){
+					continue;
+				}
+				$array = array();
+				$array["module"] = $module;
+				$array["title"] = $rs['title'];
+				$array["identifier"] = $rs['identifier'];
+				$array["field_type"] = $rs['field_type'];
+				$array["note"] = $rs['note'];
+				$array["form_type"] = $rs['form_type'];
+				$array["form_style"] = $rs["form_style"];
+				$array["format"] = $rs["format"];
+				$array["content"] = $rs["content"];
+				$array["taxis"] = $rs["taxis"];
+				$array["ext"] = $rs["ext"] ? serialize(unserialize($rs["ext"])) : "";
+				$this->model('ext')->save($array);
 			}
 		}
-		else
-		{
-			$this->model('ext')->ext_delete($id,$module);
-		}
-		json_exit("扩展字段删除成功！",true);
+		$this->json(true);
 	}
 
-	# 加载已存在的扩展项
-	function load_f()
+	public function delete_f()
+	{
+		$id = $this->get("id");
+		$module = $this->get("module");
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
+		if(!$module){
+			$this->json(P_Lang('未指哪个模型要添加扩展字段'));
+		}
+		$list = explode("-",$module);
+		if($list[0] == "add"){
+			if($_SESSION['admin-'.$module] && $_SESSION['admin-'.$module][$id]){
+				unset($_SESSION['admin-'.$module][$id]);
+			}
+			$this->json(true);
+		}
+		$this->model('ext')->delete($id,$module,'identifier');
+		$this->json(true);
+	}
+
+	public function load_f()
 	{
 		$module = $this->get("module");
-		if(!$module)
-		{
-			json_exit("未指定模块");
+		if(!$module){
+			$this->json(P_Lang('未指定模块'));
 		}
-		if(substr($module,0,3) == "add")
-		{
+		if(substr($module,0,3) == "add"){
 			$idstring = $_SESSION[$module.'-ext-id'];
 			$show_edit = false;
 			$rslist = $this->model('fields')->get_list($idstring);
-		}
-		else
-		{
+		}else{
 			$show_edit = true;
 			$rslist = $this->model('ext')->ext_all($module);
 		}
@@ -209,8 +212,7 @@ class ext_control extends phpok_control
 		$list = array();
 		$words = $this->get("words");
 		$idlist = $words ? explode(",",$words) : array("id","identifier");
-		foreach($rslist AS $key=>$value)
-		{
+		foreach($rslist AS $key=>$value){
 			$idlist[] = strtolower($value["identifier"]);
 			$list[] = $this->lib('form')->format($value);
 		}
@@ -220,76 +222,36 @@ class ext_control extends phpok_control
 		$this->assign("rslist",$list);
 		$content = $this->fetch("ext_load");
 		$array = array("words"=>implode(",",$idlist),"content"=>$content);
-		json_exit($array,true);
+		$this->json($array,true);
 	}
 
 	# 编辑扩展属性
-	function edit_f()
+	public function edit_f()
 	{
-		$id = $this->get("id","int");
-		if(!$id)
-		{
-			error_open("未指定ID！");
+		$id = $this->get("id");
+		if(!$id){
+			error(P_Lang('未指定ID'));
 		}
 		$module = $this->get("module");
-		$rs = $this->model('ext')->get_one($id);
-		if(!$rs)
-		{
-			error_open("自定义字段不存在！");
+		if(!$module){
+			error(P_Lang('未指定模块'));
+		}
+		$info = explode('-',$module);
+		if(in_array('add',$info)){
+			if($_SESSION['admin-'.$module] && $_SESSION['admin-'.$module][$id]){
+				$rs = $_SESSION['admin-'.$module][$id];
+			}
+		}else{
+			$rs = $this->model('ext')->get_from_identifier($id,$module);
+			$this->assign('tid',$rs['id']);
+		}
+		if(!$rs){
+			error(P_Lang('自定义字段不存在！'));
 		}
 		$this->assign("module",$module);
-		$this->assign("id",$id);
 		$this->assign("rs",$rs);
+		$this->assign('tmpid',$id);
 		$this->view("ext_edit");
-	}
-
-	# 存储扩展的编辑
-	function edit_save_f()
-	{
-		$id = $this->get("id","int");
-		if(!$id)
-		{
-			error_open("未指定ID");
-		}
-		$title = $this->get("title");
-		$note = $this->get("note");
-		$form_type = $this->get("form_type");
-		$form_style = $this->get("form_style","html");
-		$content = $this->get("content","html");
-		$format = $this->get("format");
-		$taxis = $this->get("taxis","int");
-		$ext_form_id = $this->get("ext_form_id");
-		$ext = array();
-		if($ext_form_id)
-		{
-			$list = explode(",",$ext_form_id);
-			foreach($list AS $key=>$value)
-			{
-				$val = explode(':',$value);
-				if($val[1] && $val[1] == "checkbox")
-				{
-					$value = $val[0];
-					$ext[$value] = $this->get($value,"checkbox");
-				}
-				else
-				{
-					$value = $val[0];
-					$ext[$value] = $this->get($value);
-				}
-			}
-		}
-		$array = array();
-		$array["title"] = $title;
-		$array["note"] = $note;
-		$array["form_type"] = $form_type;
-		$array["form_style"] = $form_style;
-		$array["format"] = $format;
-		$array["content"] = $content;
-		$array["taxis"] = $taxis;
-		$array["ext"] = ($ext && count($ext)>0) ? serialize($ext) : "";
-		$this->model('ext')->save($array,$id);
-		$html = '<input type="button" value=" 确定 " class="submit" onclick="$.dialog.close();" />';
-		error_open("自定义字段信息配置成功！","ok",$html);
 	}
 }
 ?>

@@ -48,17 +48,6 @@ function payment_add(gid)
 		},
 		'cancel':function(){}
 	});
-	/*$.dialog.open(url,{
-		'title':'请选择要支付的类型',
-		'ok':function(){
-			
-		}
-	});
-	$.dialog.div('请选择要支付的类型','#payment_select_info',{
-		'func_submit':function(){
-			
-		}
-	})*/
 }
 
 //提交支付内容时的验证

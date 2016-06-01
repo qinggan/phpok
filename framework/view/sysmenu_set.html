@@ -1,28 +1,29 @@
 <!-- include tpl=head title=核心设置 -->
+<link rel="stylesheet" type="text/css" href="css/icomoon.css?version={echo VERSION}" />
 <script type="text/javascript" src="{echo add_js('sysmenu.js')}"></script>
 <div class="tips">
-	您当前的位置：
-	<a href="{echo admin_url('system')}">核心配置</a>
+	{lang您当前的位置：}
+	<a href="{echo admin_url('system')}">{lang核心配置}</a>
 	<!-- if $id -->
-	&raquo; 编辑应用
+	&raquo; {lang编辑应用}
 	<!-- else -->
-	&raquo; 添加应用
+	&raquo; {lang添加应用}
 	<!-- /if -->
 </div>
 <form method="post" id="ext_post" action="{echo admin_url('system','save')}">
 <input type="hidden" id="id" name="id" value="{$id}" />
 <div class="table">
 	<div class="title">
-		名称：
-		<span class="note">设置应用的名称，该名称将在后台左侧/头部显示</span>
+		{lang名称：}
+		<span class="note">{lang设置应用的名称，该名称将在后台左侧/头部显示}</span>
 	</div>
 	<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
 </div>
 <!-- if $parent_list -->
 <div class="table">
 	<div class="title">
-		上级项目：
-		<span class="note">设置上级项目</span>
+		{lang上级项目：}
+		<span class="note">{lang设置上级项目}</span>
 	</div>
 	<div class="content">
 		<select name="parent_id" id="parent_id">
@@ -32,42 +33,64 @@
 		</select>
 	</div>
 </div>
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".dropdown dt").click(function() {
+		$(".dropdown dd ul").toggle();
+	});
+				
+	$(".dropdown dd ul li").click(function() {
+		var text = $(this).html();
+		$(".dropdown dt span").html(text);
+		$(".dropdown dd ul").hide();
+		$("#icon").val($(this).find("span.value").html());
+	});
+	$(document).bind('click', function(e) {
+		var $clicked = $(e.target);
+		if (! $clicked.parents().hasClass("dropdown"))
+			$(".dropdown dd ul").hide();
+	});
+});
+</script>
+<style type="text/css">
+.dropdown{margin:0;padding:0;}
+.dropdown dd, .dropdown dt, .dropdown ul { margin:0px; padding:0px; }
+.dropdown dd { position:relative; }
+.dropdown dt:hover { color:#5d4617; border: 1px solid #E5E5E5; }
+.dropdown dt{ background:#fff url('images/add.png') no-repeat scroll right center; display:block; padding-right:20px; border:1px solid #E5E5E5; width:180px; height:27px;}
+.dropdown dt span { cursor:pointer; display:block; padding:5px; }
+.dropdown dd ul { background:#fff; border:1px solid #E5E5E5; color:#000; display:none; left:0px; padding:5px 0px; position:absolute; top:2px; width:auto; min-width:200px; list-style:none;height:300px;overflow-y:scroll; }
+.dropdown span.value { display:none; }
+.dropdown dd ul li{ padding:5px; display:block; }
+.dropdown dd ul li:hover { background-color:#d0c9af; }
+</style>
 <div class="table">
 	<div class="title">
-		快捷图标：
-		<span class="note">启用快捷图标后，将在桌面显示相应的快捷链接</span>
+		{lang快捷图标：}
+		<span class="note">{lang启用快捷图标后，将在桌面显示相应的快捷链接}</span>
 	</div>
 	<div class="content">
-		<ul class="layout">
-			<li style="width:180px;"><label title="不使用">
-				<table>
-				<tr>
-					<td><input type="radio" name="icon" value=""{if !$rs.icon} checked{/if}/></td>
-					<td>空</td>
-				</tr>
-				</table>
-			</label></li>
-			<!-- loop from=$iconlist key=$key value=$value -->
-			<li style="width:180px;"><label title="{func basename $value}">
-				<table>
-				<tr>
-					<td><input type="radio" name="icon" value="{$value}"{if $rs.icon == $value} checked{/if}/></td>
-					<td><i class="icon-{$value}" style="font-size:16px;"></i> {$value}</td>
-				</tr>
-				</table>
-			</label></li>
-			<!-- /loop -->
-			<div class="clear"></div>
-		</ul>
+		<input type="hidden" name="icon" id="icon" value="{$rs.icon}" />
+		<dl class="dropdown">
+			<dt><span><!-- if $rs.icon --><i class="icon-{$rs.icon}" style="font-size:16px;"></i> {$rs.icon}<!-- else -->不使用图标<!-- /if --></span></dt>
+			<dd>
+			<ul>
+				<li>不使用图标<span class="value"></span></li>
+				<!-- loop from=$iconlist key=$key value=$value id=$tmpid -->
+				<li><i class="icon-{$value}" style="font-size:16px;"></i> {$value}<span class="value">{$value}</span></li>
+				<!-- /loop -->
+			</ul>
+			</dd>
+		</dl>
 	</div>
 </div>
 <!-- /if -->
 
-<!-- if $pid && $dirlist && !$id -->
+<!-- if $pid && $dirlist -->
 <div class="table">
 	<div class="title">
-		控制层：
-		<span class="note">不熟请设为：<span class="red">list_control.php</span>，一经设定不允许修改</span>
+		{lang控制层：}
+		<span class="note">{lang请不要随意修改，不熟请设为：}<span class="red">list_control.php</span></span>
 	</div>
 	<div class="content">
 		<select name="appfile" id="appfile">
@@ -77,20 +100,34 @@
 		</select>
 	</div>
 </div>
+<div class="table">
+	<div class="title">
+		{lang执行方法：}
+		<span class="note">{lang请选择要执行的方法动作，不熟悉请留空}</span>
+	</div>
+	<div class="content"><input type="text" id="func" name="func" class="long" value="{$rs.func}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang扩展参数：}
+		<span class="note">{lang不清楚的请留空}</span>
+	</div>
+	<div class="content"><input type="text" id="ext" name="ext" class="long" value="{$rs.ext}" /></div>
+</div>
 <!-- /if -->
 <div class="table">
 	<div class="title">
-		排序：
-		<span class="note">自定义排序，值越小越往前靠</span>
+		{lang排序：}
+		<span class="note">{lang自定义排序，值越小越往前靠}</span>
 	</div>
 	<div class="content"><input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis}" /></div>
 </div>
 <!-- if $session.admin_rs.if_system -->
 	<div class="table">
 		<div class="title">
-			配置权限：
+			{lang配置权限：}
 			<span class="note">
-				此项用于二次扩展开发时使用，不熟悉的朋友请查看 <a href="http://www.phpok.com" target="_blank">phpok.com</a> 官网说明
+				{lang此项用于二次扩展开发时使用，对各个功能的权限分配，不熟悉请阅读官网帮助}
 				<input type="button" value="添加" class="btn" onclick="add_trtd()" />
 			</span>
 		</div>
@@ -98,14 +135,14 @@
 			<div class="list">
 			<table id="popedom" cellpadding="0" cellspacing="1" style="border:1px solid #ccc;width:auto;">
 			<tr>
-				<th width="72">删</th>
-				<th width="200">名称</th>
-				<th width="160">标识</td>
-				<th width="90">排序</td>
+				<th width="72">{lang删}</th>
+				<th width="200">{lang名称}</th>
+				<th width="160">{lang标识}</td>
+				<th width="90">{lang排序}</td>
 			</tr>
 			<!-- loop from=$popedom_list key=$key value=$value -->
 			<tr id="popedom_{$value.id}">
-				<td align="center"><input type="button" value="删除" class="btn" onclick="popedom_del('{$value.id}')" /></td>
+				<td align="center"><input type="button" value="{lang删除}" class="btn" onclick="popedom_del('{$value.id}')" /></td>
 				<td align="center"><input type="text" name="popedom_title_{$value.id}" value="{$value.title}" style="width:180px" /></td>
 				<td align="center"><input type="text" name="popedom_identifier_{$value.id}" value="{$value.identifier}" style="width:140px" /></td>
 				<td align="center"><input type="text" name="popedom_taxis_{$value.id}" value="{$value.taxis}" class="short" /></td>
@@ -121,7 +158,7 @@
 <div class="table">
 	<div class="content">
 		<br />
-		<input type="submit" value="提 交" class="submit" />
+		<input type="submit" value="{lang提 交}" class="submit2" />
 		<br />
 	</div>
 </div>

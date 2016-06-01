@@ -8,17 +8,17 @@
 	Update  : 2012-11-02 19:41
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class opt_model extends phpok_model
+class opt_model_base extends phpok_model
 {
 	function __construct()
 	{
 		parent::model();
 	}
 
-	# 兼容PHP4
-	function opt_model()
+	public function __destruct()
 	{
-		$this->__construct();
+		parent::__destruct();
+		unset($this);
 	}
 
 	# 取得全部的选项组
@@ -26,34 +26,6 @@ class opt_model extends phpok_model
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."opt_group ORDER BY id DESC";
 		return $this->db->get_all($sql);
-	}
-
-	# 存储选项组，title，选项组名称
-	# id，指定要更新的ID，如果没有ID，将添加一条记录
-	function group_save($title,$id=0)
-	{
-		if(!$id)
-		{
-			syscache_delete("opt");
-			return $this->db->insert_array(array("title"=>$title),"opt_group");
-		}
-		else
-		{
-			syscache_delete("opt");
-			return $this->db->update_array(array("title"=>$title),"opt_group",array("id"=>$id));
-		}
-	}
-
-	# 删除选项组，同时删除选项组下的内容
-	function group_del($id)
-	{
-		if(!$id) return false;
-		$sql = "DELETE FROM ".$this->db->prefix."opt_group WHERE id='".$id."'";
-		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."opt WHERE group_id='".$id."'";
-		$this->db->query($sql);
-		syscache_delete("opt");
-		return true;
 	}
 
 	# 取得某个组信息
@@ -111,27 +83,15 @@ class opt_model extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
-	# 存储写入的值
-	function opt_save($data,$id=0)
+	public function opt_val($gid,$val)
 	{
-		syscache_delete("opt");
-		if(!$id)
-		{
-			return $this->db->insert_array($data,"opt");
+		$sql = "SELECT * FROM ".$this->db->prefix."opt WHERE val='".$val."' AND group_id='".$gid."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
 		}
-		else
-		{
-			return $this->db->update_array($data,"opt",array("id"=>$id));
-		}
-	}
-
-	# 删除内容
-	function opt_del($id)
-	{
-		if(!$id) return false;
-		syscache_delete("opt");
-		$sql = "DELETE FROM ".$this->db->prefix."opt WHERE id='".$id."'";
-		return $this->db->query($sql);
+		$array = array('val'=>$val,'title'=>($rs['title'] ? $rs['title'] : $val));
+		return $array;
 	}
 
 	# 检测值是否重复

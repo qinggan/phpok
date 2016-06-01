@@ -2,47 +2,41 @@
 <script type="text/javascript">
 function field_form_opt(val,eid)
 {
-	if(!val || val == "undefined")
-	{
+	if(!val || val == "undefined"){
 		$("#form_type_ext").html('').hide();
 		return false;
 	}
 	var url = get_url("form","config") + "&id="+$.str.encode(val);
-	if(eid && eid != "undefined")
-	{
+	if(eid && eid != "undefined"){
 		url += "&eid="+eid;
 	}
 	url += "&etype=fields";
 	var html = get_ajax(url);
-	if(html && html != 'exit')
-	{
+	if(html && html != 'exit'){
 		$("#form_type_ext").html(html).show();
 	}
 }
 
-$(document).ready(function(){
-	$('#form_save').submit(function(){
-		$(this).ajaxSubmit({
-			'url':api_url('module','field_addok','mid={$mid}'),
-			'type':'post',
-			'dataType':'json',
-			'success':function(rs){
-				if(rs.status == 'ok')
-				{
-					$.dialog.alert('字段创建成功',function(){
-						$.phpok.go(get_url('module','fields','id={$mid}'));
-					});
-				}
-				else
-				{
-					$.dialog.alert(rs.content);
-					return false;
-				}
+function save()
+{
+	var obj = art.dialog.opener;
+	$("#form_save").ajaxSubmit({
+		'url':get_url('module','field_addok','mid={$mid}'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				$.dialog.alert('{lang字段创建成功}',function(){
+					obj.$.dialog.close();
+					obj.$.phpok.reload();
+				});
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
 			}
-		});
-		return false;
+		}
 	});
-});
+}
 </script>
 <div class="tips clearfix">
 	您当前的位置：
@@ -50,7 +44,7 @@ $(document).ready(function(){
 	&raquo; <a href="{url ctrl=module func=fields id=$mid/}" title="{$m_rs.title}">{$m_rs.title}</a>
 	&raquo; 添加字段
 </div>
-<form method="post" id="form_save">
+<form method="post" id="form_save" onsubmit="return false">
 <div class="table">
 	<div class="title">
 		名称/标识：
@@ -154,21 +148,34 @@ $(document).ready(function(){
 		</table>
 	</div>
 </div>
+<script type="text/javascript">
+function search_set(val){
+	if(val == 3){
+		$("#search_separator_html").show();
+	}else{
+		$("#search_separator_html").hide();
+	}
+}
+</script>
 <div class="table">
+	<div class="title">
+		搜索：
+		<span class="note">指定该字段的搜索类型</span>
+	</div>
 	<div class="content">
-		<br />
-		<input type="submit" value="提 交" class="submit" />
-		<br />
+		<table>
+		<tr>
+			<td><label><input type="radio" name="search" value="0" checked onclick="search_set(0)" />不支持搜索</label></td>
+			<td><label><input type="radio" name="search" value="1" onclick="search_set(1)" />完全匹配搜索</label></td>
+			<td><label><input type="radio" name="search" value="2" onclick="search_set(2)" />部分匹配搜索</label></td>
+			<td><label><input type="radio" name="search" value="3" onclick="search_set(3)" />区间搜索</label></td>
+			<td id="search_separator_html"  style="display:none">
+				搜索字段分隔符：
+				<input type="text" name="search_separator" id="search_separator" class="short" />
+			</td>
+		</tr>
+		</table>
 	</div>
 </div>
 </form>
-
-<!-- if $id -->
-<script type="text/javascript">
-$(document).ready(function(){
-	field_form_opt("{$rs.form_type}","{$id}");
-});
-</script>
-<!-- /if -->
-
-<!-- include tpl=foot -->
+<!-- include tpl=foot_open -->

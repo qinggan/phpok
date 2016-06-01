@@ -1,0 +1,39 @@
+<script type="text/javascript" src="{#js#}/ueditor/ueditor.config.js" charset="utf-8"></script>
+<script type="text/javascript" src="{#js#}/ueditor/ueditor.all.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="{#js#}/ueditor/lang/zh-cn/zh-cn.js" charset="utf-8"></script>
+<script id="{$_rs.identifier}" type="text/plain" style="{$_rs.form_style}">{$_rs.content}</script>
+<script type="text/javascript">
+var edit_config_{$_rs.id} = {
+	 'UEDITOR_HOME_URL':webroot+'{#js#}/ueditor/'
+	,'serverUrl':get_url('ueditor')
+	,'toolbars':[[
+		'bold', 'italic', 'underline', 'strikethrough', '|',
+		'justifyleft', 'justifycenter', 'justifyright', '|',
+		'removeformat', 'autotypeset', 'blockquote', '|',
+		'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', '|',
+		'horizontal','inserttable', 'link', 'unlink','|',
+		{if $_rs.btn_image}'insertimage',{/if}
+		{if $_rs.btn_map}'map',{/if}
+		{if $_rs.btn_video}'insertvideo',{/if}
+		{if $_rs.btn_file}'attachment',{/if}
+		'help'
+	]]
+	//扩展字段
+	,'labelMap':{'phpokvideo':'影音库','phpokfile':'附件库','phpokinfo':'主题库'}
+    //初始化宽度
+    ,'initialFrameWidth':'{$_rs.width}'
+    //允许使用DIV
+    ,'allowDivTransTop': false
+    //初始化高度
+    ,'initialFrameHeight':'{$_rs.height}'
+	,'sourceEditorFirst':{$_rs.is_code ? 'true' :'false'}
+	,'readonly':{$_rs.is_read ? 'true' :'false'}
+	,'autoFloatEnabled':false
+	,'autoHeightEnabled':false
+	,'pageBreakTag':'[:page:]'
+	,'textarea':'{$_rs.identifier}'
+	,'elementPathEnabled':false
+	,'wordCount':false
+};
+var edit_{$_rs.id} = UE.getEditor('{$_rs.identifier}',edit_config_{$_rs.id});
+</script>

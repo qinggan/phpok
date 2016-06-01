@@ -1,0 +1,53 @@
+<!-- include tpl=head title=重新设置密码 -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#repass-form').submit(function(){
+		$(this).ajaxSubmit({
+			url:api_url('login','repass'),
+			type:'post',
+			dataType:'json',
+			success:function(rs){
+				if(rs.status == 'ok'){
+					$.dialog.alert("您的密码修改成功，请登录",function(){
+						$.phpok.go("{url ctrl=login/}")
+					},'succeed');
+				}else{
+					if(!rs.content){
+						rs.content = '操作失败，请联系管理员。';
+					}
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div role="main" class="ui-content">
+	<form method="post" id="repass-form">
+	<input class="input" type="text" name="email" value="{$user.email}" placeholder="Email，请填写您的Email信息"{if $code && $user.email} readonly{/if} />
+	<input class="input" type="text" name="user" value="{$user.user}" placeholder="会员账号"{if $code && $user.user} readonly{/if} />
+	<input class="input" type="text" name="code" value="{$user.code}" placeholder="系统验证串"{if $code && $user.code} readonly{/if} />
+	<input class="input" type="password" name="newpass" placeholder="设置密码，建议大小写字母+数据+特殊符号" />
+	<input class="input" type="password" name="chkpass" placeholder="请再次输入密码" />
+	<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+	<label>验证码：<input class="vcode"  type="text" name="_chkcode" id="_chkcode" data-role="none" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" /></label>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#vcode").phpok_vcode();
+		$("#vcode").click(function(){
+			$(this).phpok_vcode();
+		});
+	});
+	</script>
+	<!-- /if -->
+	<input type="submit" value="修改密码">
+	</form>
+	<div class="ui-body ui-body-a ui-corner-all">
+		<h3>说明</h3>
+		<p>请输入新密码及确认密码（即输入两次一次的新密码）</p>
+		<p>验证串24小时内有效，超过24小时请重新申请</p>
+	</div>
+</div>
+<!-- include tpl=foot -->

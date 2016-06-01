@@ -1,7 +1,7 @@
 <!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
 
-<div class="main">
-<ul data-role="listview" data-inset="true" data-divider-theme="a">
+<div role="main" class="ui-content">
+<ul data-role="listview" data-inset="true" data-divider-theme="a" style="margin:0;">
 	<li data-role="list-divider">{$page_rs.title}</li>
 	<!-- catelist pid=$page_rs.id catelist_ext=1 -->
 	<!-- loop from=$list.sublist key=$key value=$value -->

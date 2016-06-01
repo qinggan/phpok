@@ -5,12 +5,15 @@
 		<div class="pfw mbottom10">
 			<h3>会员中心</h3>
 			<div class="cp_avatar">
-				<img src="{$session.user_rs.avatar ? $session.user_rs.avatar : 'images/user_default.png'}">
+				<img src="{$rs.avatar ? $rs.avatar : 'images/avatar_huge.gif'}">
 			</div>
 			<div class="cp_info">
 				<ul>
-					<li><strong>账号：</strong>{$session.user_rs.user}</li>
-					<li><strong>邮箱：</strong>{$session.user_rs.email}</li>
+					<li><strong>账号：</strong>{$rs.user}</li>
+					<li><strong>邮箱：</strong>{$rs.email}</li>
+					<!-- loop from=$user.wealth key=$key value=$value id=$tmpid -->
+					<li><strong>{$value.title}：</strong>{$value.val}{$value.unit}</li>
+					<!-- /loop -->
 				</ul>
 			</div>
 			<div class="clear"></div>

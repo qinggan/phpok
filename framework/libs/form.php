@@ -12,75 +12,140 @@ class form_lib
 {
 	//表单对象
 	public $cls;
+	public $appid = 'www';
+	public $dir_form;
 
 	//构造函数
-	function __construct()
+	public function __construct()
 	{
-		//自动装载表单信息
-		$flist = $GLOBALS['app']->model('form')->form_all();
-		if($flist)
-		{
-			foreach($flist AS $key=>$value)
-			{
-				$file = $GLOBALS['app']->dir_phpok.'form/'.$key.'_'.$GLOBALS['app']->app_id.'.php';
-				if(!file_exists($file))
-				{
-					$file = $GLOBALS['app']->dir_phpok.'form/'.$key.'_admin.php';
-				}
-				//如果文件存在
-				if(file_exists($file))
-				{
-					$cls_name = $key."_form";
-					include_once($file);
-					$this->cls[$key] = new $cls_name();
-				}
-			}
-		}
+		$this->dir_form = $GLOBALS['app']->dir_phpok.'form/';
+		$appid = $GLOBALS['app']->appid;
+		$this->appid = $appid == 'admin' ? 'admin' : 'www';
 	}
 
-	//格式化表单信息
-	function format($rs)
+	public function appid($appid='www')
 	{
-		//对象不存在时，返回否
-		if(!$this->cls[$rs['form_type']])
+		$this->appid = $appid;
+	}
+
+	public function cls($name)
+	{
+		$class_name = $name.'_form';
+		if($this->$class_name){
+			return $this->$class_name;
+		}
+		//新版写法
+		$newfile = $this->dir_form.$class_name.'.php';
+		if(file_exists($newfile)){
+			include($newfile);
+			$this->$class_name = new $class_name();
+			return $this->$class_name;
+		}
+		//旧版写法，将慢慢放弃
+		$file = $this->dir_form.$name.'_'.$this->appid.'.php';
+		if(!is_file($file))
+		{
+			$file = $this->dir_form.$name.'_admin.php';
+		}
+		if(!file_exists($file))
 		{
 			return false;
 		}
-		$info = $this->cls[$rs['form_type']]->format($rs);
-		$rs['html'] = $info;
+		include($file);
+		$this->$class_name = new $class_name();
+		return $this->$class_name;
+	}
+
+	private function _obj($rs)
+	{
+		if(!$rs || !$rs['form_type']){
+			return false;
+		}
+		return $this->cls($rs['form_type']);
+	}
+
+	public function config($id){
+		$obj = $this->cls($id);
+		if(!$obj){
+			return false;
+		}
+		$mlist = get_class_methods($obj);
+		if(in_array('phpok_config',$mlist))
+		{
+			$obj->phpok_config();
+			exit;
+		}
+		if(in_array('config',$mlist))
+		{
+			$obj->config();
+			exit;
+		}
+		exit(P_Lang('文件异常'));
+	}
+
+	//格式化表单信息
+	public function format($rs)
+	{
+		$obj = $this->_obj($rs);
+		if(!$obj){
+			return $rs;
+		}
+		$mlist = get_class_methods($obj);
+		if(in_array('phpok_format',$mlist))
+		{
+			$info = $obj->phpok_format($rs,$this->appid);
+			$rs['html'] = $info;
+			return $rs;
+		}
+		if(in_array('format',$mlist))
+		{
+			$info = $obj->format($rs);
+			$rs['html'] = $info;
+			return $rs;
+		}
 		return $rs;
 	}
 
 	//获取内容信息
-	function get($rs)
+	public function get($rs)
 	{
-		//对象不存在时，返回否
-		if(!$this->cls[$rs['form_type']])
+		$obj = $this->_obj($rs);
+		if(!$obj)
 		{
 			return false;
 		}
-		$mlist = get_class_methods($this->cls[$rs['form_type']]);
-		if(in_array('get',$mlist))
-		{
-			return $this->cls[$rs['form_type']]->get($rs);
+		$mlist = get_class_methods($obj);
+		if(in_array('phpok_get',$mlist)){
+			return $obj->phpok_get($rs,$this->appid);
 		}
-		return false;
+		if(in_array('get',$mlist)){
+			return $obj->get($rs);
+		}
+		return $GLOBALS['app']->get($rs['identifier'],$rs['format']);
 	}
 
 	//输出内容信息
-	function show($rs,$value='')
+	public function show($rs,$value='')
 	{
-		if(!$this->cls[$rs['form_type']])
-		{
-			return false;
+		if(!$rs){
+			return $value;
 		}
-		$mlist = get_class_methods($this->cls[$rs['form_type']]);
-		if(in_array('show',$mlist))
-		{
+		if($value != ''){
+			$rs['content'] = $value;
+		}
+		$obj = $this->_obj($rs);
+		if(!$obj){
+			return $value;
+		}
+		$mlist = get_class_methods($obj);
+		if(in_array('phpok_show',$mlist)){
+			return $obj->phpok_show($rs,$this->appid);
+		}
+		if(in_array('show',$mlist)){
 			if(!$value) $value = $rs['content'];
-			return $this->cls[$rs['form_type']]->show($rs,$value);
+			return $obj->show($rs,$value);
 		}
-		return false;
+		return $value;
 	}
 
 
@@ -117,7 +182,7 @@ class form_lib
 		//如果是编辑器
 		if($rs['form_type'] == 'editor')
 		{
-			return phpok_ubb($val);
+			return $GLOBALS['app']->lib('ubb')->to_html($val);
 		}
 		//如果是单选框
 		if($rs['form_type'] == 'radio')
@@ -137,9 +202,13 @@ class form_lib
 
 	function cssjs($rs='')
 	{
-		if($rs && $this->cls[$rs['form_type']])
+		if($rs && is_array($rs))
 		{
-			$obj = $this->cls[$rs['form_type']];
+			$obj = $this->_obj($rs);
+			if(!$obj)
+			{
+				return false;
+			}
 			$mlist = get_class_methods($obj);
 			if(in_array('cssjs',$mlist))
 			{
@@ -147,12 +216,14 @@ class form_lib
 			}
 			return true;
 		}
-		foreach($this->cls as $key=>$value)
+		$list = $GLOBALS['app']->model('form')->form_all();
+		foreach($list as $key=>$value)
 		{
-			$mlist = get_class_methods($value);
+			$obj = $this->_obj(array('form_type'=>$key));
+			$mlist = get_class_methods($obj);
 			if(in_array('cssjs',$mlist))
 			{
-				$value->cssjs();
+				$obj->cssjs();
 			}
 		}
 		return true;

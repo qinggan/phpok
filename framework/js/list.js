@@ -19,34 +19,7 @@ function project_check()
 	return true;
 }
 
-function edit_check()
-{
-	var id = $("#id").val();
-	var title = $("#title").val();
-	if(title) title = $.trim(title);
-	if(!title)
-	{
-		$.dialog.alert("主题不能为空");
-		return false;
-	}
-	var identifier = $("#identifier").val();
-	if(identifier) identifier = $.trim(identifier);
-	if(identifier)
-	{
-		var url = get_url("list","identifier")+"&sign="+$.str.encode(identifier);
-		if(id)
-		{
-			url += "&id="+id;
-		}
-		var rs = json_ajax(url);
-		if(rs.status != "ok")
-		{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	}	
-	return true;
-}
+
 
 function content_del(id)
 {
@@ -190,6 +163,33 @@ function set_sort()
 	}
 }
 
+function update_taxis(val,id)
+{
+	$.ajax({
+		'url':get_url('list','content_sort','sort['+id+']='+val),
+		'dataType':'json',
+		'cache':false,
+		'async':true,
+		'beforeSend': function (XMLHttpRequest){
+			XMLHttpRequest.setRequestHeader("request_type","ajax");
+		},
+		'success':function(rs){
+			if(rs.status == 'ok')
+			{
+				$("#taxis_"+id).addClass('status1');
+				window.setTimeout(function(){
+					$("#taxis_"+id).removeClass('status1');
+				}, 1000);
+			}
+			else
+			{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
+}
+
 //批量删除
 function set_delete()
 {
@@ -288,57 +288,86 @@ function preview_attr(id)
 	});
 }
 
+function update_select()
+{
+	var val = $("#list_action_val").val();
+	if(val.substr(0,5) == 'attr:'){
+		$("#attr_set_li").show();
+	}else{
+		$("#attr_set_li").hide();
+	}
+	if(val.substr(0,5) == 'cate:'){
+		$("#cate_set_li").show();
+	}else{
+		$("#cate_set_li").hide();
+	}
+}
+
+function set_admin_id(id)
+{
+	var url = get_url('workflow','title','id='+id);
+	$.dialog.open(url,{
+		'title':p_lang('指派管理员维护'),
+		'lock':true,
+		'width':'500px',
+		'height':'300px',
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert(p_lang('iframe还没加载完毕呢'));
+				return false;
+			};
+			return iframe.save();
+		},
+		'cancel':function(){
+			return true;
+		}
+	});
+}
+
 function list_action_exec()
 {
 	var ids = $.input.checkbox_join();
-	if(!ids)
-	{
-		$.dialog.alert("未指定要操作的主题");
+	if(!ids){
+		$.dialog.alert(p_lang('未指定要操作的主题'));
 		return false;
 	}
 	var val = $("#list_action_val").val();
-	if(!val || val == '')
-	{
-		$.dialog.alert('未指定要操作的动作','','error');
+	if(!val || val == ''){
+		$.dialog.alert(p_lang('未指定要操作的动作'),'','error');
 		return false;
 	}
-	//执行批量删除
-	if(val == 'delete')
-	{
+	if(val == 'appoint'){
+		set_admin_id(ids);
+		return false;
+	}
+	if(val == 'delete'){
 		set_delete();
 		return false;
 	}
-	//执行批量排序
-	if(val == 'sort')
-	{
+	if(val == 'sort'){
 		set_sort();
 		return false;
 	}
 	//执行批量审核通过
-	if(val == 'status' || val == 'unstatus' || val == 'show' || val == 'hidden')
-	{
+	if(val == 'status' || val == 'unstatus' || val == 'show' || val == 'hidden'){
 		var url = get_url('list','execute','ids='+$.str.encode(ids)+"&title="+val);
-	}
-	else
-	{
+	}else{
 		var tmp = val.split(':');
-		if(tmp[1] && (tmp[0] == "add" || tmp[0] == "delete"))
-		{
-			var url = get_url("list","attr_set")+"&ids="+$.str.encode(ids)+"&val="+tmp[1]+"&type="+tmp[0];
-			
-		}
-		else
-		{
-			var url = get_url('list',"move_cate")+"&ids="+$.str.encode(ids)+"&cate_id="+val;
+		if(tmp[1] && tmp[0] == 'attr'){
+			var type = $("#attr_set_val").val();
+			url = get_url('list','attr_set','ids='+$.str.encode(ids)+'&val='+tmp[1]+'&type='+type);
+		}else{
+			var type = $("#cate_set_val").val();
+			var url = get_url('list',"move_cate")+"&ids="+$.str.encode(ids)+"&cate_id="+tmp[1]+"&type="+type;
 		}
 	}
-	var rs = json_ajax(url);
-	if(!rs || rs.status != "ok")
-	{
-		if(!rs.content) rs.content = "操作失败";
+	$.dialog.tips('正在执行操作，请稍候…');
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok'){
+		$.phpok.reload();
+	}else{
 		$.dialog.alert(rs.content);
 		return false;
 	}
-	window.location.reload();
 }
-

@@ -80,7 +80,7 @@
 	<div class="content">
 		<table>
 		<tr>
-			<td><label for="status_0"><input type="radio" name="status" id="status_0" value="0"{if $id && !$rs['status']} checked{/if} />未审核</label></td>
+			<td><label for="status_0"><input type="radio" name="status" id="status_0" value="0"{if !$rs.status} checked{/if} />未审核</label></td>
 			<td><label for="status_1"><input type="radio" name="status" id="status_1" value="1"{if $rs.status == 1} checked{/if} />正常</label></td>
 			<td><label for="status_2"><input type="radio" name="status" id="status_2" value="2"{if $rs.status == 2} checked{/if} />锁定</label></td>
 		</tr>

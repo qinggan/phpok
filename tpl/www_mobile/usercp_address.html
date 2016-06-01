@@ -1,0 +1,64 @@
+<!-- include tpl=head title=收货地址 -->
+<script type="text/javascript">
+function address_default(id)
+{
+	var url = api_url('usercp','address_default','id='+id);
+	$.phpok.json(url,function(){
+		$.phpok.reload();
+	});
+}
+function address_delete(id)
+{
+	$.dialog.confirm('确定要删除这个地址吗？',function(){
+		var url = api_url('usercp','address_delete','id='+id);
+		$.phpok.json(url,function(){
+			$.phpok.reload();
+		})
+	})
+}
+function address_setting(id)
+{
+	var url = get_url('usercp','address_setting');
+	if(id>0){
+		url += "&id="+id;
+	}
+	$.phpok.go(url);
+}
+</script>
+<div role="main" class="ui-content">
+	<!-- if $total<30 && $rslist && count($rslist)>3 -->
+	<a href="javascript:address_setting(0);void(0)" class="ui-btn ui-btn-a">+ 添加地址</a>
+	<!-- /if -->
+	<ul data-role="listview" data-inset="true">
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<li data-role="list-divider">
+			收件人：{$value.fullname}
+			<!-- if !$value.is_default -->
+			<span class="ui-li-count hand" onclick="address_default('{$value.id}')">设为默认</span>
+			<!-- else -->
+			<span class="ui-li-count red">默认地址</span>
+			<!-- /if -->
+		</li>
+		<li>
+			<div class="wrap"><b>地址：</b>{$value.province}<!-- if $value.province != $value.city -->{$value.city}<!-- /if -->{$value.county}{$value.address}</div>
+			<!-- if $value.tel -->
+			<div><b>电话：</b>{$value.tel}</div>
+			<!-- /if -->
+			<!-- if $value.mobile -->
+			<div><b>手机：</b>{$value.mobile}</div>
+			<!-- /if -->
+			<!-- if $value.email -->
+			<div><b>Email：</b>{$value.email}</div>
+			<!-- /if -->
+			<span class="ui-li-count">
+				<a href="javascript:address_setting('{$value.id}');void(0);">编辑</a> | <a href="javascript:address_delete('{$value.id}');void(0);">删除</a>
+			</span>
+		</li>
+		<!-- /loop -->
+	</ul>
+	<!-- if $total<30 -->
+	<a href="javascript:address_setting(0);void(0)" class="ui-btn ui-btn-a">+ 添加地址</a>
+	<!-- /if -->
+</div>
+
+<!-- include tpl=foot -->

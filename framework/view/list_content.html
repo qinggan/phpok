@@ -1,5 +1,6 @@
 <!-- inc:head -->
 <script type="text/javascript" src="{func include_js list.js}"></script>
+<script type="text/javascript" src="js/laydate/laydate.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	top.$.desktop.title('{$rs.title}');
@@ -16,21 +17,17 @@ function pendding_info()
 		'async':true,
 		'dataType':'json',
 		'success': function(rs){
-			if(rs.status == "ok")
-			{
+			if(rs.status == "ok"){
 				var list = rs.content;
 				var html = '<em class="toptip">{total}</em>';
 				var total = 0;
-				for(var key in list)
-				{
+				for(var key in list){
 					$("li[id=project_"+list[key]['id']+"] em").remove();
 					$("li[id=project_"+list[key]['id']+"]").append(html.replace('{total}',list[key]['total']));
 				}
 				//每隔一分钟检测一次
 				window.setTimeout("pendding_info()", 60000);
-			}
-			else
-			{
+			}else{
 				//移除提示
 				$("em.toptip").remove();
 				//每隔三分钟进行一次检测
@@ -48,17 +45,13 @@ $(document).ready(function(){
 		$(this).removeClass("hover");
 	}).click(function(){
 		var url = $(this).attr("href");
-		if(url)
-		{
+		if(url){
 			$.phpok.go(url);
-		}
-		else
-		{
+		}else{
 			alert("未指定动作！");
 			return false;
 		}
 	});
-	
 });
 </script>
 <div class="tips"><span class="red">{$rs.title}</span> 子项信息，请点击进入修改</div>
@@ -75,47 +68,20 @@ $(document).ready(function(){
 
 <!-- if $rs.module -->
 <script type="text/javascript">
-function list_content_search()
+function reply_it(id,title)
 {
-	$.dialog({
-		'title':'搜索',
-		'content':document.getElementById("top_search_html"),
-		'ok':function(){
-			var url = get_url("list",'action','id={$pid}');
-			var attr = $("#search_attr").val();
-			if(attr)
-			{
-				url += "&attr="+$.str.encode(attr);
-			}
-			var keywords = $("#keywords").val();
-			if(keywords)
-			{
-				url += '&keywords='+$.str.encode(keywords);
-			}
-			var cateid = $("#cateid").val();
-			if(cateid)
-			{
-				url += '&cateid='+cateid;
-			}
-			if(!cateid && !keywords && !attr)
-			{
-				$.dialog.alert('请输入要搜索的关键字或属性');
-				return false;
-			}
-			else
-			{
-				$.phpok.go(url);
-			}
-			return true;
-		},
-		'okVal':'执行搜索',
+	var url = get_url('list','comment','id='+id);
+	$.dialog.open(url,{
+		'title':'{lang评论：}'+title,
 		'lock':true,
-		'drag':false
+		'width':'90%',
+		'height':'90%',
+		'cancel':function(){return true;}
 	});
 }
 </script>
 <div class="tips">
-	您当前的位置：内容管理
+	{lang您当前的位置：}{lang内容管理}
 	<!-- loop from=$plist key=$key value=$value id=plist_id -->
 	&raquo; <a href="{url ctrl=list func=action id=$value.id/}" title="{$value.title}">{$value.nick_title ? $value.nick_title : $value.title}</a>
 	<!-- /loop -->
@@ -126,44 +92,91 @@ function list_content_search()
 	&raquo; <span class="red">{$keywords}</span>
 	<!-- /if -->
 	<!-- if $popedom.set || $session.admin_rs.if_system -->
-	<div class="action"><a href="{url ctrl=list func=set id=$pid/}">编辑项目</a></div>
+	<div class="action"><a href="{url ctrl=list func=set id=$pid/}">{lang编辑项目}</a></div>
 	<!-- /if -->
 	<!-- if $popedom.add -->
-	<div class="action"><a href="{url ctrl=list func=edit pid=$pid/}">添加内容</a></div>
+	<div class="action"><a href="{url ctrl=list func=edit pid=$pid/}">{lang添加内容}</a></div>
 	<!-- /if -->
-	<div class="action"><a href="javascript:list_content_search();void(0);">搜索</a></div>
 	<span id="AP_ACTION_HTML" title="插件节点，后台内容列表管理栏面包屑"></span>
 </div>
-<div style="display:none" id="top_search_html">
-	<div class="table">
-		<div class="title">
-			属&nbsp; 性：
-			<select name="attr" id="search_attr">
-				<option value="">属性选择</option>
+<div class="tips" style="position;relative;">
+	<form method="post" action="{url ctrl=list func=action id=$pid/}">
+	<div style="float:left;width:800px;">
+		<div><table>
+		<tr>
+			<td><select name="status">
+				<option value="">{lang选择状态…}</option>
+				<option value="1"{if $status==1} selected{/if}>已审核</option>
+				<option value="2"{if $status==2} selected{/if}>未审核</option>
+			</select></td>
+			<!-- if $rs.is_attr -->
+			<td><select name="attr" id="search_attr">
+				<option value="">{lang选择属性…}</option>
 				<!-- loop from=$attrlist key=$key value=$value -->
 				<option value="{$key}"{if $attr == $key} selected{/if}>{$value}</option>
 				<!-- /loop -->
-			</select>
-		</div>
-	</div>
-	<!-- if $catelist -->
-	<div class="table">
-		<div class="title">
-			分&nbsp; 类：
-			<select name="top_cate_id" id="top_cate_id">
-				<option value="">全部分类</option>
+			</select></td>
+			<!-- /if -->
+			<!-- if $rs.cate && $catelist -->
+			<td><select name="cateid">
+				<option value="">{lang选择分类…}</option>
 				<!-- loop from=$catelist key=$key value=$value -->
 				<option value="{$value.id}"{if $cateid == $value.id} selected{/if}>{$value.title}</option>
 				<!-- /loop -->
-			</select>
-		</div>
+			</select></td>
+			<!-- /if -->
+			<td>{lang时间范围：}</td>
+			<td><input type="text" name="dateline_start" value="{$dateline_start}" placeholder="开始时间" onfocus="laydate()" style="width:110px;" /></td>
+			<td>{lang至}</td>
+			<td><input type="text" name="dateline_stop" value="{$dateline_stop}" placeholder="结束时间" onfocus="laydate()" style="width:110px;" /></td>
+		</tr>
+		</table></div>
+		<table>
+		<tr>
+			<td><select name="orderby_search">
+				<option value="">{lang默认排序}</option>
+				<option value="hits_hot"{if $orderby_search=='hits_hot'} selected{/if}>{lang查看次数多到少}</option>
+				<option value="hits_cold"{if $orderby_search=='hits_cold'} selected{/if}>{lang查看次数少到多}</option>
+				<!-- if $rs.is_biz -->
+				<option value="price_high"{if $orderby_search=='price_high'} selected{/if}>{lang价格从高到低}</option>
+				<option value="price_low"{if $orderby_search=='price_low'} selected{/if}>{lang价格从低到高}</option>
+				<!-- /if -->
+				<option value="sort_max"{if $orderby_search=='sort_max'} selected{/if}>{lang排序从高到低}</option>
+				<option value="sort_min"{if $orderby_search=='sort_min'} selected{/if}>{lang排序从低到高}</option>
+				<option value="dateline_max"{if $orderby_search=='dateline_max'} selected{/if}>{lang最后发布排在前面}</option>
+				<option value="dateline_min"{if $orderby_search=='dateline_min'} selected{/if}>{lang以前发布的排在前面}</option>
+			</select></td>
+			<td>{lang关键字查找：}</td>
+			<td><select name="keytype">
+				<option value="">{lang关键字类型…}</option>
+				<option value="title"{if $keytype == 'title'} selected{/if}>{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}</option>
+				<!-- if $rs.is_userid -->
+				<option value="user"{if $keytype == 'user'} selected{/if}>{lang会员账号}</option>
+				<!-- /if -->
+				<!-- if $rs.is_identifier -->
+				<option value="identifier"{if $keytype == 'identifier'} selected{/if}>{lang自定义标识}</option>
+				<!-- /if -->
+				<!-- if $rs.is_tag -->
+				<option value="tag"{if $keytype == 'tag'} selected{/if}>{lang标签}</option>
+				<!-- /if -->
+				<!-- if $rs.is_seo -->
+				<option value="seo_title"{if $keytype == 'seo_title'} selected{/if}>{langSEO标题}</option>
+				<option value="seo_keywords"{if $keytype == 'seo_keywords'} selected{/if}>{langSEO关键字}</option>
+				<option value="seo_desc"{if $keytype == 'seo_desc'} selected{/if}>{langSEO描述}</option>
+				<!-- /if -->
+				<!-- loop from=$ext_list key=$key value=$value id=$tmpid -->
+				<!-- if $value.search == 1 || $value.search == 2 -->
+				<option value="{$value.identifier}"{if $keytype == $value.identifier} selected{/if}>{$value.title}</option>
+				<!-- /if -->
+				<!-- /loop -->
+			</select></td>
+			<td><input type="text" id="keywords" name="keywords" class="default" value="{$keywords}" placeholder="{lang请输入要搜索的关键字}" /></td>
+		</tr>
+		</table>
 	</div>
-	<!-- /if -->
-	<div class="table">
-		<div class="title">
-			关键字：<input type="text" id="keywords" name="keywords" class="default" value="{$keywords}" />
-		</div>
-	</div>
+	<div style="float:left;width:18%;margin-top:20px;"><input type="submit" value="提交搜索" onclick="" class="submit2" /></div>
+	</form>
+	<div class="clear"></div>
 </div>
 <!-- /if -->
 
@@ -175,12 +188,10 @@ function list_content_search()
 <!-- if $catelist -->
 <ul class="list_cate clearfix">
 	<!-- loop from=$catelist key=$key value=$value -->
-	<!-- if $cate_popedom == 'all' || $cate_popedom[$value[id]] -->
 	<li>
 		<div class="cate cate_{$catelist_id.num%9}"><a href="{echo admin_url('list','action')}&id={$pid}&cateid={$value.id}">{$value.title}</a></div>
-		<div class="cate_add cate_{$catelist_id.num%9}"><a href="{echo admin_url('list','edit')}&pid={$pid}&cateid={$value.id}" title="添加《{$value.title}》下的 【{$rs.title}】"><img src="images/cate_add.png" border="0" alt="" /></a></div>
+		<div class="cate_add cate_{$catelist_id.num%9}"><a href="{echo admin_url('list','edit')}&pid={$pid}&cateid={$value.id}"><img src="images/cate_add.png" border="0" alt="" /></a></div>
 	</li>
-	<!-- /if -->
 	<!-- /loop -->
 </ul>
 <div class="clear"></div>
@@ -192,30 +203,33 @@ function list_content_search()
 <tr>
 	<th width="20px">&nbsp;</th>
 	<th width="20px">&nbsp;</th>
-	<th class="lft">{$rs.alias_title ? $rs.alias_title : '主题'}</th>
+	<th>&nbsp;</th>
+	<th class="lft">{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}</th>
 	<!-- if $rs.cate -->
-	<th>分类</th>
+	<th>{lang主分类}</th>
 	<!-- /if -->
 	<!-- loop from=$layout key=$key value=$value -->
 		<!-- if $key == "dateline" -->
 		<th style="width:150px">{$value}</th>
 		<!-- elseif $key == "hits" -->
-		<th style="width:50px">点击</th>
+		<th style="width:50px">{lang点击}</th>
 		<!-- else -->
 		<th class="lft">{$value}</th>
 		<!-- /if -->
 	<!-- /loop -->
-	<th style="width:90px">排序</th>
-	<th style="width:{$rs.subtopics ? '90px' : '60px'}">操作</th>
+	<th style="width:80px">{lang排序}</th>
+	<th style="width:30px">&nbsp;</th>
+	<th>&nbsp;</th>
 </tr>
 <!-- php:$tmp_m = 0 -->
 <!-- foreach($rslist AS $key=>$value) -->
 <!-- php:$tmp_m++ -->
-<tr id="list_{$value.id}" title="{$rs.alias_title ? $rs.alias_title : '主题'}：{$value.title}&#10;发布日期：{echo date('Y-m-d H:i:s',$value[dateline])}">
+<tr id="list_{$value.id}" title="{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}: {$value.title}&#10;{lang发布日期}: {echo date('Y-m-d H:i:s',$value[dateline])}">
 	<td class="center"><input type="checkbox" name="ids[]" id="id_{$value.id}" value="{$value.id}" /></td>
 	<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="set_status({$value.id})"{else} style="cursor: default;"{/if} value="{$value.status}"></span></td>
+	<td class="center">{$value.id}</td>
 	<td><label for="id_{$value.id}">
-		{$value.id}. {$value.title}
+		{$value.title}
 		<!-- if $value.attr -->
 			<!-- php:$attr = explode(",",$value['attr']) -->
 			<!-- loop from=$attr key=$attr_k value=$attr_v -->
@@ -229,7 +243,15 @@ function list_content_search()
 		<span class="red i"> {func price_format $value.price $value.currency_id}</span>
 		<!-- /if -->
 		<!-- if $value.hidden -->
-		<span class="red i">(隐藏)</span>
+		<span class="red i">({lang隐藏})</span>
+		<!-- /if -->
+		<!-- if $clist && $clist[$value.id] -->
+		<div class="extcate">
+			分类：
+			<!-- loop from=$clist[$value.id] key=$ck value=$cv -->
+			<a href="{url ctrl=list func=action id=$pid cateid=$cv/}" class="i">{$cateall[$cv]}</a> 
+			<!-- /loop -->
+		</div>
 		<!-- /if -->
 	</label>
 	</td>
@@ -238,7 +260,7 @@ function list_content_search()
 		<!-- if $value.cate_id && is_array($value.cate_id) -->
 		<a href="{echo admin_url('list','action')}&id={$pid}&cateid={$value.cate_id.id}">{$value.cate_id.title}</a>
 		<!-- else -->
-		未设分类
+		{lang未设分类}
 		<!-- /if -->
 	</td>
 	<!-- /if -->
@@ -248,6 +270,8 @@ function list_content_search()
 		<td class="center">{func date Y-m-d $value.dateline}</td>
 		<!-- elseif $k == "hits" -->
 		<td class="center">{$value.hits}</td>
+		<!-- elseif $k == "user_id" -->
+		<td>{$value._user ? $value._user : '-'}</td>
 		<!-- else -->
 			<!-- if is_array($value[$k])  -->
 				<!-- php:$c_list = $value[$k]['_admin'] -->
@@ -265,17 +289,16 @@ function list_content_search()
 			<!-- /if -->
 		<!-- /if -->
 	<!-- /loop -->
-	<td class="center"><input type="text" id="sort_{$value.id}" name="sort[]" class="short center" value="{$value.sort}" tabindex="{$tmp_m}" /></td>
+	<td class="center"><input type="text" class="short center" value="{$value.sort}" tabindex="{$tmp_m}" onblur="update_taxis(this.value,'{$value.id}')" /></td>
+	<td class="center"><span id="taxis_{$value.id}"></span></td>
 	<td>
-		<!-- if $rs.subtopics && !$value[parent_id] && $popedom.add -->
-		<a class="icon add" href="{echo admin_url('list','edit')}&parent_id={$value.id}&pid={$value.project_id}" title="添加子主题"></a>
-		<!-- /if -->
-		<!-- if $popedom.modify -->
-		<a class="icon edit" href="{echo admin_url('list','edit')}&id={$value.id}" title="修改"></a>
-		<!-- /if -->
-		<!-- if $popedom.delete -->
-		<a class="icon delete end" onclick="content_del('{$value.id}')" title="删除"></a>
-		<!-- /if -->
+		<div class="button-group">
+			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=list func=edit id=$value.id/}')" class="phpok-btn" /><!-- /if -->
+			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="content_del('{$value.id}')" class="phpok-btn" /><!-- /if -->
+			<!-- if $session.admin_rs.if_system && $rs.is_appoint --><input type="button" value="{lang指派}" class="phpok-btn" onclick="set_admin_id('{$value.id}')" /><!-- /if -->
+			<!-- if $popedom.comment && $rs.comment_status && $comments[$value.id] --><input type="button" class="phpok-btn" value="{lang评论}" onclick="reply_it('{$value.id}','{$value.title}')"{if $comments[$value.id].uncheck} style="color:red;" title="{lang未审核评论：}{$comments[$value.id].uncheck}"{/if} /><!-- /if -->
+			<!-- if $rs.subtopics && !$value[parent_id] && $popedom.add --><input type="button" value="加子主题" onclick="$.phpok.go('{url ctrl=list func=edit parent_id=$value.id pid=$value.project_id/}')" class="phpok-btn" /><!-- /if -->
+		</div>
 	</td>
 </tr>
 	<!-- loop from=$value.sonlist key=$kk value=$vv -->
@@ -283,6 +306,7 @@ function list_content_search()
 	<tr id="list_{$vv.id}" title="{$rs.alias_title ? $rs.alias_title : '主题'}：{$vv.title}&#10;发布日期：{echo date('Y-m-d H:i:s',$vv[dateline])}">
 		<td class="center"><input type="checkbox" name="ids[]" id="id_{$vv.id}" value="{$vv.id}" /></td>
 		<td><span class="status{$vv.status}" id="status_{$vv.id}" {if $popedom.status}onclick="set_status({$vv.id})"{else} style="cursor: default;"{/if} value="{$vv.status}"></span></td>
+		<td class="center">{$vv.id}</td>
 		<td><label for="id_{$vv.id}">
 			&nbsp; &nbsp; ├─ {$vv.title}
 			<!-- if $vv.attr -->
@@ -300,6 +324,14 @@ function list_content_search()
 			<!-- if $vv.hidden -->
 			<span class="red i">(隐藏)</span>
 			<!-- /if -->
+			<!-- if $clist && $clist[$vv.id] -->
+			<div class="extcate">
+				分类：
+				<!-- loop from=$clist[$vv.id] key=$ck value=$cv -->
+				<a href="{url ctrl=list func=action id=$pid cateid=$cv/}" class="i">{$cateall[$cv]}</a> 
+				<!-- /loop -->
+			</div>
+			<!-- /if -->
 		</label>
 		</td>
 		<!-- if $rs.cate -->
@@ -315,6 +347,8 @@ function list_content_search()
 			<td class="center">{echo date("Y-m-d",$vv[dateline])}</td>
 			<!-- elseif $k == "hits" -->
 			<td class="center">{$vv.hits}</td>
+			<!-- elseif $k == 'user_id' -->
+			<td>{$vv._user ? $vv._user : '-'}</td>
 			<!-- else -->
 				<!-- if is_array($vv[$k])  -->
 					<!-- php:$c_list = $vv[$k]['_admin'] -->
@@ -332,15 +366,15 @@ function list_content_search()
 				<!-- /if -->
 			<!-- /if -->
 		<!-- /loop -->
-		<td class="center"><input type="text" id="sort_{$vv.id}" name="sort[]" class="short center" value="{$vv.sort}" tabindex="{$tmp_m}" /></td>
+		<td class="center"><input type="text" class="short center" value="{$vv.sort}" tabindex="{$tmp_m}" onblur="update_taxis(this.value,'{$vv.id}')" /></td>
+		<td class="center"><span id="taxis_{$vv.id}"></span></td>
 		<td>
-			<a class="icon space"></a>
-			<!-- if $popedom.modify -->
-			<a class="icon edit" href="{echo admin_url('list','edit')}&id={$vv.id}" title="修改"></a>
-			<!-- /if -->
-			<!-- if $popedom.delete -->
-			<a class="icon delete end" onclick="content_del('{$vv.id}')" title="删除"></a>
-			<!-- /if -->
+			<div class="button-group">
+				<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=list func=edit id=$vv.id/}')" class="phpok-btn" /><!-- /if -->
+				<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="content_del('{$vv.id}')" class="phpok-btn" /><!-- /if -->
+				<!-- if $session.admin_rs.if_system && $rs.is_appoint --><input type="button" value="{lang指派}" class="phpok-btn" onclick="set_admin_id('{$vv.id}')" /><!-- /if -->
+				<!-- if $popedom.comment && $rs.comment_status && $comments[$vv.id] --><input type="button" class="phpok-btn" value="{lang评论}" onclick="reply_it('{$vv.id}','{$vv.title}')"{if $comments[$vv.id].uncheck} style="color:red;" title="{lang未审核评论：}{$comments[$vv.id].uncheck}"{/if} /><!-- /if -->
+			</div>
 		</td>
 	</tr>
 	<!-- /loop -->
@@ -350,48 +384,65 @@ function list_content_search()
 <!-- /if -->
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
-	<td>
+	<td style="padding-top:5px;">
 		<!-- if $rslist -->
 		<ul class="layout">
-			<li><input type="button" value="全选" class="btn" onclick="$.input.checkbox_all()" /></li>
-			<li><input type="button" value="全不选" class="btn" onclick="$.input.checkbox_none()" /></li>
-			<li><input type="button" value="反选" class="btn" onclick="$.input.checkbox_anti()" /></li>
-			<li><select id="list_action_val" style="width:200px;margin-top:0px;padding:1px;">
-				<option value="">选择要执行的动作…</option>
+			<li>
+				<div class="button-group">
+					<input type="button" value="{lang全选}" class="phpok-btn" onclick="$.input.checkbox_all()" />
+					<input type="button" value="{lang全不选}" class="phpok-btn" onclick="$.input.checkbox_none()" />
+					<input type="button" value="{lang反选}" class="phpok-btn" onclick="$.input.checkbox_anti()" />
+				</div>
+			</li>
+			<li><select id="list_action_val" style="width:200px;margin-top:0px;" onchange="update_select()">
+				<option value="">{lang选择要执行的动作…}</option>
 				<!-- if $opt_catelist -->
-				<optgroup label="移动分类">
+				<optgroup label="{lang分类操作}">
 					<!-- loop from=$opt_catelist key=$key value=$value -->
-					<!-- if $cate_popedom == 'all' || $cate_popedom[$value[id]] -->
-					<option value="{$value.id}"{if $value.id == $rs.cate_id} selected{/if}>{$value._space}{$value.title}</option>
-					<!-- /if -->
+					<option value="cate:{$value.id}">{$value._space}{$value.title}</option>
 					<!-- /loop -->
 				</optgroup>
 				<!-- /if -->
-				<optgroup label="添加属性">
+				<!-- if $rs.is_attr -->
+				<optgroup label="{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}{lang属性}">
 					<!-- loop from=$attrlist key=$key value=$value -->
-					<option value="add:{$key}">{$value}</option>
+					<option value="attr:{$key}">{$value} {$key}</option>
 					<!-- /loop -->
 				</optgroup>
-				<optgroup label="移除属性">
-					<!-- loop from=$attrlist key=$key value=$value -->
-					<option value="delete:{$key}">{$value}</option>
-					<!-- /loop -->
-				</optgroup>
+				<!-- /if -->
 				<optgroup label="其他">
 					<!-- if $popedom.status -->
-					<option value="status">批量审核</option>
-					<option value="unstatus">批量取消审核</option>
+					<option value="status">{lang审核}</option>
+					<option value="unstatus">{lang取消审核}</option>
 					<!-- /if -->
-					<option value="hidden">批量隐藏</option>
-					<option value="show">批量显示</option>
+					<option value="hidden">{lang隐藏}</option>
+					<option value="show">{lang显示}</option>
 					<!-- if $popedom.delete -->
-					<option value="delete">批量删除</option>
+					<option value="delete">{lang删除}</option>
 					<!-- /if -->
-					<option value="sort">批量排序</option>
+					<!-- if $session.admin_rs.if_system && $rs.is_appoint -->
+					<option value="appoint">{lang指派管理员维护}</option>
+					<!-- /if -->
 				</optgroup>
 				</select></li>
-			<li id="plugin_button"><input type="button" value="执行操作" onclick="list_action_exec()" class="submit" /></li>
-			<li><input type="button" value="批处理" onclick="direct('{url ctrl=list func=plaction id=$pid/}')" class="btn" /></li>
+			<li id="attr_set_li" class="hide">
+				<select name="attr_set_val" style="margin-top:0px;" id="attr_set_val">
+					<option value="add">{lang添加}</option>
+					<option value="delete">{lang移除}</option>
+				</select>
+			</li>
+			<!-- if $opt_catelist -->
+			<li id="cate_set_li" class="hide">
+				<select name="cate_set_val" style="margin-top:0px;" id="cate_set_val">
+					<!-- if $rs.cate_multiple -->
+					<option value="add">{lang添加扩展分类}</option>
+					<option value="delete">{lang移除分类绑定}</option>
+					<!-- /if -->
+					<option value="move">{lang移动主分类}</option>
+				</select>
+			</li>
+			<!-- /if -->
+			<li id="plugin_button"><input type="button" value="{lang执行操作}" onclick="list_action_exec()" class="phpok-btn" /></li>
 		</ul>
 		<!-- /if -->
 	</td>
@@ -399,5 +450,4 @@ function list_content_search()
 </tr>
 </table>
 
-
-<!-- inc:foot -->
+<!-- include tpl=foot -->

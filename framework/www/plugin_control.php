@@ -15,34 +15,61 @@ class plugin_control extends phpok_control
 		parent::control();
 	}
 
-	function index_f()
+	public function index_f()
 	{
-		$this->exec_f();
-	}
-
-	//执行JS
-	function exec_f()
-	{
-		$id = $this->get("id");
-		if(!$id) $this->json(1002);
+		$id = $this->get('id','system');
+		if(!$id){
+			$this->json(P_Lang('未指定ID'));
+		}
 		$rs = $this->model('plugin')->get_one($id);
-		if(!$rs) json_exit(1001);
-		if($rs['param']) $rs['param'] = unserialize($rs['param']);
-		if(!is_file($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php')) $this->json(1008);
+		if(!$rs || !$rs['status']){
+			$this->json(P_Lang("插件未启用或不存在"));
+		}
+		if(!file_exists($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php')){
+			$this->json(P_Lang('插件应用{appid}.php不存在',array('appid'=>$this->app_id)));
+		}
 		include_once($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php');
 		$name = $this->app_id.'_'.$id;
 		$cls = new $name();
-		$methods = get_class_methods($cls);
-		$exec = $this->get("exec");
-		if(!$exec) $exec = 'index';
-		if(!$methods || !in_array($exec,$methods)) $this->json(1009);
-		$this->assign('plugin_rs',$rs);
-		$cls->$exec($rs);
+		$mlist = get_class_methods($cls);
+		$exec = $this->get('exec','system');
+		if(!$exec){
+			$exec = 'index';
+		}
+		if(!$mlist || !in_array($exec,$mlist)){
+			$this->json(P_Lang('插件方法{method}不存在',array('method'=>$exec)));
+		}
+		$cls->$exec();
 	}
 
-	function ajax_f()
+	public function exec_f()
 	{
-		$this->exec_f();
+		$id = $this->get('id','system');
+		if(!$id){
+			error(P_Lang('未指定ID'),'','error');
+		}
+		$rs = $this->model('plugin')->get_one($id);
+		if(!$rs || !$rs['status']) error('插件不存在或未启用');
+		if(!file_exists($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php')){
+			error(P_Lang('插件应用{appid}.php不存在',array('appid'=>$this->app_id)),'','error');
+		}
+		include_once($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php');
+		$name = $this->app_id.'_'.$id;
+		$cls = new $name();
+		$mlist = get_class_methods($cls);
+		$exec = $this->get('exec','system');
+		if(!$exec){
+			$exec = 'index';
+		}
+		if(!$mlist || !in_array($exec,$mlist)){
+			error(P_Lang('插件方法{method}不存在',array('method'=>$exec)));
+		}
+		$cls->$exec();
+	}
+
+	public function ajax_f()
+	{
+		$this->index_f();
 	}
 }
 ?>

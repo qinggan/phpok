@@ -54,7 +54,20 @@
 	</div>
 </div>
 
-
+<div class="table">
+	<div class="title">
+		状态：
+		<span class="note">是否在前台网页启用</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label for="status_0"><input type="radio" name="status" id="status_0" value="0"{if $id && !$rs[status]} checked{/if} />不启用</label></td>
+			<td><label for="status_1"><input type="radio" name="status" id="status_1" value="1"{if !$id || $rs[status]} checked{/if} />启用</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
 
 <div class="table">
 	<div class="content">

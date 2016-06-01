@@ -1,0 +1,91 @@
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs.content}" />
+<input type="hidden" id="{$_rs.identifier}_status" value="" />
+<style type="text/css">
+.{$_rs.identifier}_thumb{float:left;width:144px;margin:3px 5px;padding:1px;border:1px solid #ccc;border-radius:3px;position:relative;}
+.{$_rs.identifier}_thumb .sort{position:absolute;right:5px;top:5px;}
+.{$_rs.identifier}_thumb .sort input.taxis{width:40px;border:1px solid #ccc;border-radius:3px;height:22px;text-align:center;padding:3px;}
+</style>
+<div class="_e_upload">
+	<div class="_select">
+		<table>
+		<tr>
+			<td><div id="{$_rs.identifier}_picker"></div></td>
+			<!-- if !$_rs.upload_auto -->
+			<td><button id="{$_rs.identifier}_submit" type="button" class="button">{lang开始上传}</button></td>
+			<!-- /if -->
+			<td><button id="select_res_{$_rs.identifier}" class="button" type="button">{lang选择}{$_rs.upload_type.title}</button></td>
+			<td id="{$_rs.identifier}_sort" style="display:none">
+				<button onclick="obj_{$_rs.identifier}.sort()" class="button" type="button">{lang排序}</button>
+				<button onclick="obj_{$_rs.identifier}.sort('title')" class="button" type="button">{lang自然排序}</button>
+			</td>
+			<td><div class="gray i" style="line-height:180%;">{lang支持格式有：}{$_rs.upload_type.swfupload}</div></td>
+		</tr>
+		</table>
+	</div>
+	<div class="_progress" id="{$_rs.identifier}_progress"></div>
+	<div class="_list" id="{$_rs.identifier}_list"></div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+var obj_{$_rs.identifier};
+$(document).ready(function(){
+	//清空本地存储，防止异常删除
+	$.dialog.data('upload-{$_rs.identifier}','');
+	obj_{$_rs.identifier} = new $.admin_upload({
+		'id':'{$_rs.identifier}',
+		'swf':'js/webuploader/uploader.swf',
+		'server':'{$sys.url}{url ctrl=upload func=save cateid=$_rs.cate_id/}',
+		'pick':{'id':'#{$_rs.identifier}_picker','multiple':{$_rs.is_multiple ? 'true' : 'false'}},
+		'resize':false,
+		'multiple':"{$_rs.is_multiple ? 'true' : 'false'}",
+		"formData":{'{func session_name}':'{func session_id}'},
+		'fileVal':'upfile',
+		'disableGlobalDnd':true,
+		'compress':false,
+		'auto':{$_rs.upload_auto ? 'true' : 'false'},
+		'sendAsBinary':{$_rs._upload_binary ? 'true' : 'false'},
+		'accept':{'title':'{$_rs.upload_type.title}({$_rs.upload_type.swfupload})','extensions':'{$_rs.upload_type.ext}'},
+		'fileSingleSizeLimit':'{$_rs.upload_type.maxsize*100}'
+	});
+	obj_{$_rs.identifier}.showhtml();
+	$("#select_res_{$_rs.identifier}").click(function(){
+		var url = "{url ctrl=open func=upload id=$_rs.identifier multiple=$_rs.is_multiple cate_id=$_rs.upload_type.id/}";
+		var t = "{$_rs.is_multiple ? 'true' : 'false'}";
+		var old = $("#{$_rs.identifier}").val();
+		if(t == 'true'){
+			if(old){
+				$.dialog.data('select-{$_rs.identifier}',old);
+			}
+			$.dialog.open(url,{
+				title: "资源管理器",
+				lock : true,
+				width: "645px",
+				height: "450px",
+				ok: function(){
+					var val = $.dialog.data('select-{$_rs.identifier}');
+					if(val){
+						$("#{$_rs.identifier}").val(val);
+					}else{
+						$("#{$_rs.identifier}").val('');
+					}
+					$.dialog.data('select-{$_rs.identifier}','');
+					obj_{$_rs.identifier}.showhtml();
+				},
+				cancel:function(){},
+				'cancelVal':'取消'
+			});
+		}else{
+			if(old){
+				url += "&selected="+old;
+			}
+			$.dialog.open(url,{
+				title: "资源管理器",
+				lock : true,
+				width: "645px",
+				height: "450px"
+			});
+		}
+	});
+});
+</script>
+

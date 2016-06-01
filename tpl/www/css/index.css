@@ -1,0 +1,39 @@
+/***********************************************************
+	文件：css/index.css
+	备注：首页CSS专用
+	版本：4.0
+	网站：www.phpok.com
+	作者：qinggan <qinggan@188.com>
+	日期：2016年03月20日
+***********************************************************/
+/*轮播*/
+.banner{position:relative;width:980px;margin:0 auto 10px;overflow:hidden}
+.banner .bd ul{list-style:none;margin:0;padding:0}
+.banner .bd ul li img{max-width:980px}
+.banner .hd{position:absolute;bottom:10px;right:10px;text-align:center}
+.banner .hd ul{list-style:none;margin:0;padding:0}
+.banner .hd ul li{width:18px;height:18px;background:#000;display:inline-block;+display:inline;zoom:1;margin:0 1px;cursor:pointer;line-height:18px;font-size:0.6em}
+.banner .hd ul li.on{background:darkred;color:#fff}
+/*三栏*/
+.index{width:980px;margin:0 auto 10px}
+.index:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+.index .line1{width:280px;float:left;margin-right:10px}
+.index .line2{width:400px;float:left;margin-right:10px}
+.index .line3{width:280px;float:left}
+.index .line1 .pfw,.index .line2 .pfw,.index .line3 .pfw{height:254px;overflow:hidden}
+.index .about{line-height:170%;padding:5px 6px 0 6px}
+.index .about img{float:left;margin-right:10px}
+.index .about p{margin-bottom:5px;text-indent:2em}
+/*产品滚动*/
+.plist{margin:0 auto;width:980px}
+.plist:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+.plist h3{text-align:center;line-height:44px;background:url('../images/plist.png') center center no-repeat;font-size:1.4em;letter-spacing:0.5em;margin:0;padding:0}
+.plist .prolist{margin-top:10px}
+.plist ul{list-style:none;padding:0;margin:0}
+.plist ul li{float:left;width:20%}
+.plist ul li .img{text-align:center}
+.plist ul li .img img{width:160px;height:160px;overflow:hidden;border:1px solid #e4e4e4;padding:10px}
+.plist ul li .title{height:44px;line-height:22px;padding:0 10px 0 5px;overflow:hidden}
+.plist ul li .price{font-size:1.2em;line-height:200%;padding:0 10px 0 5px}
+.plist ul li .price span{color:red}
+/*图片展示*/

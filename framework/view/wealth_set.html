@@ -1,0 +1,120 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang当前位置：}<a href="{url ctrl=wealth/}">{lang财富方案}</a>
+	&raquo; <!-- if $id -->{lang编辑方案}<!-- else -->{lang添加方案}<!-- /if -->
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#pay_submit").submit(function(){
+		$(this).ajaxSubmit({
+			'url':'{url ctrl=wealth func=save id=$id/}',
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					var tip = "<!-- if $id -->{lang编辑财富方案成功}<!-- else -->{lang添加方案成功}<!-- /if -->";
+					$.dialog.alert(tip,function(){
+						$.phpok.go('{url ctrl=wealth/}');
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<form method="post" id="pay_submit">
+<div class="table">
+	<div class="title">
+		{lang名称}
+		<span class="note">{lang给会员的财富取一个名称，如积分，收益，威望等}</span>
+	</div>
+	<div class="content"><input type="text" name="title" id="title" value="{$rs.title}" class="default" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang标识}
+		<span class="note">{lang定义一个标识，方便调用} <span class="red">{lang仅限字母、数字及下划线，且必须是字母开头}</span></span>
+	</div>
+	<div class="content"><input type="text" name="identifier" id="identifier" value="{$rs.identifier}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang财富计量单位}
+		<span class="note">{lang如元，分，个等}</span>
+	</div>
+	<div class="content"><input type="text" name="unit" id="unit" value="{$rs.unit}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang保留小数位数}
+		<span class="note">{lang定义财富的计量长度，整数还是浮点，保留几位数}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="dnum" value="0"{if !$rs.dnum} checked{/if} />整数</label></li>
+			<li><label><input type="radio" name="dnum" value="1"{if $rs.dnum == 1} checked{/if} />一位小数</label></li>
+			<li><label><input type="radio" name="dnum" value="2"{if $rs.dnum == 2} checked{/if} />两位小数</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang是否支持充值}
+		<span class="note">{lang设定为是，在前端用户可以通过下订单的方式进行充值，请注意设置好兑换比例}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="ifpay" value="0"{if !$rs.ifpay} checked{/if} onclick="$('#ratio_li').hide()" />否</label></li>
+			<li><label><input type="radio" name="ifpay" value="1"{if $rs.ifpay} checked{/if} onclick="$('#ratio_li').show()" />是</label></li>
+			<li id="ratio_li" style="display:{$rs.ifpay ? 'block' : 'none'}"><label>&nbsp;兑换比例（即1元可兑换多少财富）：<input type="text" name="pay_ratio" id="pay_ratio" value="{$rs.pay_ratio}" class="short" style="width:100px" /></label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang是否允许抵现}
+		<span class="note">{lang设定为是，在前端用户购物时可以通过设定的兑换比例来抵一部分现金}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="ifcash" value="0"{if !$rs.ifcash} checked{/if} onclick="$('#ratio2_li').hide()" />否</label></li>
+			<li><label><input type="radio" name="ifcash" value="1"{if $rs.ifcash} checked{/if} onclick="$('#ratio2_li').show()" />是</label></li>
+			<li id="ratio2_li" style="display:{$rs.ifcash ? 'block' : 'none'}"><label>&nbsp;兑换比例（即100财富可抵用多少元）：<input type="text" name="cash_ratio" id="cash_ratio" value="{$rs.cash_ratio}" class="short" style="width:100px" /></label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang是否审核}
+		<span class="note">{lang设定为是，前端获取的财富将进入人工审核阶段}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="ifcheck" value="0"{if !$rs.ifcheck} checked{/if} />否</label></li>
+			<li><label><input type="radio" name="ifcheck" value="1"{if $rs.ifcheck} checked{/if} />是</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang排序}
+		<span class="note">{lang定义排序，范围在1-255，值越小越往前靠}</span>
+	</div>
+	<div class="content"><input type="text" name="taxis" id="taxis" value="{$rs.taxis ? $rs.taxis : 255}" class="short" /></div>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="submit" value="提 交" class="submit2" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot -->

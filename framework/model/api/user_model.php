@@ -6,55 +6,37 @@
 	Author  : qinggan
 	Update  : 2013年5月4日
 ***********************************************************/
-class user_model extends phpok_model
+class user_model extends user_model_base
 {
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
-	//检测账号是否冲突
-	function chk_name($name,$id=0)
+	public function __destruct()
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE user='".$name."' ";
-		if($id)
-		{
-			$sql.= " AND id!='".$id."' ";
-		}
-		return $this->db->get_one($sql);
+		parent::__destruct();
+		unset($this);
 	}
 
 	//邮箱登录
-	function user_email($email)
+	function user_email($email,$uid=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE email='".$email."'";
+		if($uid){
+			$sql .= " AND id != '".$uid."'";
+		}
 		return $this->db->get_one($sql);
 	}
 
-	//获取会员信息
-	function get_one($id,$format=true)
+	//手机登录
+	public function user_mobile($mobile,$uid=0)
 	{
-		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
-		$sql.= " WHERE u.id='".$id."'";
-		$rs = $this->db->get_one($sql);
-		if(!$rs)
-		{
-			return false;
+		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE mobile='".$mobile."'";
+		if($uid){
+			$sql .= " AND id != '".$uid."'";
 		}
-		if($format)
-		{
-			$flist = $this->fields_all();
-			if(!$flist)
-			{
-				return $rs;
-			}
-			foreach($flist AS $key=>$value)
-			{
-				$rs[$value["identifier"]] = $this->lib("ext")->content_format($value,$rs[$value["identifier"]]);
-			}
-		}
-		return $rs;
+		return $this->db->get_one($sql);
 	}
 
 	//更新会员验证串
@@ -71,80 +53,32 @@ class user_model extends phpok_model
 		return $this->db->query($sql);
 	}
 
-
-	//存储会员数据
-	function save($data,$id=0)
+	//更新会员手机
+	function update_mobile($mobile,$id)
 	{
-		if($id)
-		{
-			$this->db->update_array($data,"user",array("id"=>$id));
-			return $id;
-		}
-		else
-		{
-			$insert_id = $this->db->insert_array($data,"user");
-			return $insert_id;
-		}
+		$sql = "UPDATE ".$this->db->prefix."user SET mobile='".$mobile."' WHERE id='".$id."'";
+		return $this->db->query($sql);
 	}
 
-
-
-	//取得扩展字段的所有扩展信息
-	function fields_all($condition="",$pri_id="")
+	//更新会员邮箱
+	function update_email($email,$id=0,$chk=0)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."user_fields ";
-		if($condition)
-		{
-			$sql .= " WHERE ".$condition;
-		}
-		$sql.= " ORDER BY taxis ASC,id DESC";
-		return $this->db->get_all($sql,$pri_id);
+		$sql = "UPDATE ".$this->db->prefix."user SET email='".$email."',email_chk='".$chk."' WHERE id='".$id."'";
+		return $this->db->query($sql);
 	}
 
-	//存储模块下的字段表
-	function fields_save($data,$id=0)
+	//发票类型
+	function update_invoice_type($invoice_type,$id)
 	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"user_fields",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"user_fields");
-		}
+		$sql = "UPDATE ".$this->db->prefix."user SET invoice_type='".$invoice_type."' WHERE id='".$id."'";
+		return $this->db->query($sql);
 	}
 
-	function tbl_fields_list($tbl)
+	//发票抬头
+	function update_invoice_title($invoice_title,$id)
 	{
-		$sql = "SELECT FIELDS FROM ".$tbl;
-		$rslist = $this->db->get_all($sql);
-		if($rslist)
-		{
-			foreach($rslist AS $key=>$value)
-			{
-				$idlist[] = $value["Field"];
-			}
-		}
-		return $idlist;
-	}
-
-	function field_one($id)
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."user_fields WHERE id='".$id."'";
-		return $this->db->get_one($sql);
-	}
-
-	function save_ext($data)
-	{
-		if(!$data || !is_array($data)) return false;
-		return $this->db->insert_array($data,"user_ext","replace");
-	}
-
-	function update_ext($data,$id)
-	{
-		if(!$data || !is_array($data) || !$id) return false;
-		return $this->db->update_array($data,"user_ext",array("id"=>$id));
+		$sql = "UPDATE ".$this->db->prefix."user SET invoice_title='".$invoice_title."' WHERE id='".$id."'";
+		return $this->db->query($sql);
 	}
 
 	//取得全部会员ID
@@ -172,11 +106,26 @@ class user_model extends phpok_model
 		return $rs['id'];
 	}
 
+	function uid_from_mobile($mobile,$id="")
+	{
+		if(!$mobile) return false;
+		$sql = "SELECT id FROM ".$this->db->prefix."user WHERE mobile='".$mobile."'";
+		if($id)
+		{
+			$sql.= " AND id !='".$id."'";
+		}
+		$rs = $this->db->get_one($sql);
+		if(!$rs) return false;
+		return $rs['id'];
+	}
+
 	function uid_from_chkcode($code)
 	{
 		$sql = "SELECT id FROM ".$this->db->prefix."user WHERE code='".$code."'";
 		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
+		if(!$rs){
+			return false;
+		}
 		return $rs['id'];
 	}
 
@@ -188,11 +137,10 @@ class user_model extends phpok_model
 	}
 
 	//更新会员登录操作
-	function update_session($uid)
+	public function update_session($uid)
 	{
 		$rs = $this->get_one($uid);
-		if(!$rs || $rs['status'] != 1)
-		{
+		if(!$rs || $rs['status'] != 1){
 			return false;
 		}
 		$_SESSION["user_id"] = $uid;
@@ -201,7 +149,7 @@ class user_model extends phpok_model
 		return true;
 	}
 
-	function set_status($id,$status=0)
+	public function set_status($id,$status=0)
 	{
 		$sql = "UPDATE ".$this->db->prefix."user SET status='".$status."' WHERE id='".$id."'";
 		return $this->db->query($sql);

@@ -1,4 +1,4 @@
-<!-- include tpl=head title=添加或修改管理员信息 -->
+<!-- include tpl=head -->
 <script type="text/javascript">
 function admin_system(val)
 {
@@ -20,7 +20,7 @@ function check_save()
 	var account = $("#account").val();
 	if(!account)
 	{
-		$.dialog.alert("管理员账号不能为空");
+		$.dialog.alert("{lang管理员账号不能为空}");
 		return false;
 	}
 	var id = $("#id").val();
@@ -41,7 +41,7 @@ function check_save()
 		var pass = $("#pass").val();
 		if(!pass || pass.length < 4)
 		{
-			$.dialog.alert("密码不能为空或密码长度太短");
+			$.dialog.alert("{lang密码不能为空或密码长度太短}");
 			return false;
 		}
 	}
@@ -54,7 +54,7 @@ function check_save()
 		var popedom_id = $.input.checkbox_join("sysmenu_html");
 		if(!popedom_id)
 		{
-			$.dialog.alert("账号：<span class='red'>"+account+"</span> 不是系统管理员，请配置好权限！");
+			$.dialog.alert("{lang账号：}<span class='red'>"+account+"</span> {lang不是系统管理员，请配置好权限！}");
 			return false;
 		}
 		//检查系统中是否还存在系统管理员（如果不存在，必须至少有一位系统管理员）
@@ -71,17 +71,20 @@ function check_save()
 		}
 	}
 }
+$(document).ready(function(){
+	top.$.desktop.title('{if $id}{lang编辑管理员}{else}{lang添加管理员}{/if}');
+});
 </script>
 <div class="tips">
-	您当前的位置：<a href="{func admin_url admin}" title="管理员列表">管理员列表</a>
-	&raquo; <!-- if $id -->编辑<!-- else -->添加新<!-- /if -->管理员
+	{lang您当前的位置：}<a href="{func admin_url admin}" title="{lang管理员列表}">{lang管理员列表}</a>
+	&raquo; <!-- if $id -->{lang编辑管理员}<!-- else -->{lang添加管理员}<!-- /if -->
 </div>
 <form method="post" action="{func admin_url admin save}" onsubmit="return check_save();">
 <input type="hidden" name="id" id="id" value="{$id}" />
 <div class="table">
 	<div class="title">
-		管理员账号：
-		<span class="note">请填写管理员的账号，建议使用 <span class="red">英文单词，中文或数字</span></span>
+		{lang管理员账号：}
+		<span class="note">{lang请填写管理员的账号，建议使用}<span class="red">{lang英文单词，中文或数字}</span></span>
 	</div>
 	<div class="content">
 		<input type="text" id="account" name="account" class="default" value="{$rs.account}" />
@@ -90,8 +93,8 @@ function check_save()
 
 <div class="table">
 	<div class="title">
-		管理员密码：
-		<span class="note"><!-- if $id -->不修改密码请留空，<!-- /if -->密码长不能少于4位数，建议使用<span class="red">数字，字母及下划线</span>等</span>
+		{lang管理员密码：}
+		<span class="note"><!-- if $id -->{lang不修改密码请留空，}<!-- /if -->{lang密码长不能少于4位数，建议使用}<span class="red">{lang数字，字母及下划线}</span>{lang等}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="pass" name="pass" class="default" />
@@ -99,8 +102,8 @@ function check_save()
 </div>
 <div class="table">
 	<div class="title">
-		管理员邮箱：
-		<span class="note">此邮箱可用于接收网站通知信息</span>
+		{lang管理员邮箱：}
+		<span class="note">{lang此邮箱可用于接收网站通知信息，请不要和SMTP配置的邮箱一致}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="email" name="email" class="default" value="{$rs.email}" />
@@ -109,17 +112,17 @@ function check_save()
 <!-- if $popedom.status -->
 <div class="table">
 	<div class="title">
-		状态：
-		<span class="note">设置该管理员是否启用！</span>
+		{lang状态：}
+		<span class="note">{lang设置该管理员是否启用！}</span>
 	</div>
 	<div class="content">
 		<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><input type="radio" name="status" id="status_0" value="0" {if !$rs.status} checked{/if} /></td>
-			<td><label for="status_0"> 禁用</label></td>
+			<td><label for="status_0"> {lang禁用}</label></td>
 			<td>&nbsp;</td>
 			<td><input type="radio" name="status" id="status_1" value="1" {if $rs.status} checked{/if} /></td>
-			<td><label for="status_1"> 启用</label></td>
+			<td><label for="status_1"> {lang启用}</label></td>
 		</tr>
 		</table>
 	</div>
@@ -128,17 +131,17 @@ function check_save()
 <input type="hidden" name="status" value="{$rs.status ? 1 : 0}" />
 <div class="table">
 	<div class="title">
-		状态：
-		<span class="note">您没有权限设置管理员状态</span>
+		{lang状态：}
+		<span class="note">{lang您没有权限设置管理员状态}</span>
 	</div>
 	<div class="content">
 		<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><input type="radio" {if !$rs.status} checked{/if} disabled /></td>
-			<td> 禁用</td>
+			<td> {lang禁用}</td>
 			<td>&nbsp;</td>
 			<td><input type="radio" {if $rs.status} checked{/if} disabled /></td>
-			<td> 启用</td>
+			<td> {lang启用}</td>
 		</tr>
 		</table>
 	</div>
@@ -148,17 +151,17 @@ function check_save()
 <!-- if $session.admin_rs.if_system -->
 <div class="table">
 	<div class="title">
-		管理员级别：
-		<span class="note"><span class="red">系统管理员</span>是最高级别管理也是开发管理员，可管理整个平台所有功能</span>
+		{lang管理员级别：}
+		<span class="note"><span class="red">{lang系统管理员}</span>{lang是最高级别管理也是开发管理员，可管理整个平台所有功能}</span>
 	</div>
 	<div class="content">
 		<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><input type="radio" name="if_system" id="if_system_1" value="1"{if $rs.if_system} checked{/if} onclick="admin_system(1)" /></td>
-			<td><label for="if_system_1"> 系统管理员</label></td>
+			<td><label for="if_system_1"> {lang系统管理员}</label></td>
 			<td>&nbsp;</td>
 			<td><input type="radio" name="if_system" id="if_system_0" value="0"{if !$rs.if_system} checked{/if} onclick="admin_system(0)" /></td>
-			<td><label for="if_system_0"> 普通管理员</label></td>
+			<td><label for="if_system_0"> {lang普通管理员}</label></td>
 		</tr>
 		</table>
 	</div>
@@ -166,14 +169,14 @@ function check_save()
 <!-- else -->
 <div class="table">
 	<div class="title">
-		管理员级别：
-		<span class="note">您只能添加普通管理员信息</span>
+		{lang管理员级别：}
+		<span class="note">{lang您只能添加普通管理员信息}</span>
 	</div>
 	<div class="content">
 		<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><input type="radio" name="if_system" id="if_system_0" value="0"{if !$rs.if_system} checked{/if} onclick="admin_system(0)" /></td>
-			<td><label for="if_system_0"> 普通管理员</label></td>
+			<td><label for="if_system_0"> {lang普通管理员}</label></td>
 		</tr>
 		</table>
 	</div>
@@ -182,39 +185,36 @@ function check_save()
 <div id="sysmenu_html" class="hide">
 <div class="table">
 	<div class="title">
-		功能权限分配：
-		<span class="note">分配系统后台各个功能的权限</span>
+		{lang功能权限分配：}
+		<span class="note">{lang分配系统后台各个功能的权限}</span>
 	</div>
 	<div class="content">
 		<!-- loop from=$syslist key=$key value=$value -->
 		<div class="list" id="mlist_{$value.id}" style="border:1px solid #ccc;">
 		<table cellpadding="0" cellspacing="0" width="100%" style="padding:1px;">
 		<tr>
-			<th class="lft" width="130px">&nbsp; {$value.title}</th>
+			<th class="lft" width="130px">&nbsp; {func P_Lang $value.title}</th>
 			<th colspan="2" align="right">
-				<input type="button" value="全选" onclick="$.input.checkbox_all('mlist_{$value.id}')" />
-				<input type="button" value="全不选" onclick="$.input.checkbox_none('mlist_{$value.id}')" />
-				<input type="button" value="反选" onclick="$.input.checkbox_anti('mlist_{$value.id}')" />
+				<input type="button" value="{lang全选}" onclick="$.input.checkbox_all('mlist_{$value.id}')" />
+				<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none('mlist_{$value.id}')" />
+				<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti('mlist_{$value.id}')" />
 			</th>
 		</tr>
 			<!-- loop from=$value.sublist key=$k value=$v -->
-			<!-- if $v.appfile != 'list' -->
+			<!-- if $v.appfile != 'list' && $v.appfile != 'admin' -->
 			<tr id="mlist_{$v.id}">
-				<td><div style="text-indent:24px;">{$v.title}</div></td>
+				<td><div style="text-indent:24px;">{func P_Lang $v.title}</div></td>
 				<td width="180px" align="center">
-					<input type="button" value="全选" onclick="$.input.checkbox_all('mlist_{$v.id}')" />
-					<input type="button" value="全不选" onclick="$.input.checkbox_none('mlist_{$v.id}')" />
-					<input type="button" value="反选" onclick="$.input.checkbox_anti('mlist_{$v.id}')" />
+					<input type="button" value="{lang全选}" onclick="$.input.checkbox_all('mlist_{$v.id}')" />
+					<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none('mlist_{$v.id}')" />
+					<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti('mlist_{$v.id}')" />
 				</td>
 				<td>
 					<!-- if $glist[$v['id']] -->
 					<ul class="layout">
 						<!-- loop from=$glist[$v['id']] key=$kk value=$vv -->
-						<li><label><input type="checkbox" name="popedom[]" value="{$vv.id}"{if $plist && in_array($vv.id,$plist)} checked{/if} /> {$vv.title}</label></li>
+						<li><label><input type="checkbox" name="popedom[]" value="{$vv.id}"{if $plist && in_array($vv.id,$plist)} checked{/if} /> {func P_Lang $vv.title}</label></li>
 						<!-- /loop -->
-						<!-- if $v.appfile == 'admin' -->
-						<li class="red i">此权限请慎用，风险大</li>
-						<!-- /if -->
 					</ul>
 					<!-- /if -->
 				</td>
@@ -229,8 +229,8 @@ function check_save()
 
 <div class="table">
 	<div class="title">
-		内容配置：
-		<span class="note">设置网站的内容里的权限<span class="darkblue i">（子项权限请同时启用父项的查看权限）</span></span>
+		{lang内容配置：}
+		<span class="note">{lang设置网站的内容里的权限}<span class="darkblue i">{lang（子项权限请同时启用父项的查看权限）}</span></span>
 	</div>
 	<div class="content">
 		<!-- loop from=$sitelist key=$key value=$value -->
@@ -239,23 +239,23 @@ function check_save()
 		<tr>
 			<th class="lft">&nbsp;{$value.title}</th>
 			<th colspan="2" align="right">
-				<input type="button" value="全选" onclick="$.input.checkbox_all('site_{$value.id}')" />
-				<input type="button" value="全不选" onclick="$.input.checkbox_none('site_{$value.id}')" />
-				<input type="button" value="反选" onclick="$.input.checkbox_anti('site_{$value.id}')" />
+				<input type="button" value="{lang全选}" onclick="$.input.checkbox_all('site_{$value.id}')" />
+				<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none('site_{$value.id}')" />
+				<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti('site_{$value.id}')" />
 			</th>
 		</tr>
 			<!-- loop from=$value.sonlist key=$k value=$v -->
 			<tr id="site_p_{$v.id}">
 				<td><div style="text-indent:5px;">{$v.space}{$v.title}</div></td>
 				<td width="180px" align="center">
-					<input type="button" value="全选" onclick="$.input.checkbox_all('site_p_{$v.id}')" />
-					<input type="button" value="全不选" onclick="$.input.checkbox_none('site_p_{$v.id}')" />
-					<input type="button" value="反选" onclick="$.input.checkbox_anti('site_p_{$v.id}')" />
+					<input type="button" value="{lang全选}" onclick="$.input.checkbox_all('site_p_{$v.id}')" />
+					<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none('site_p_{$v.id}')" />
+					<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti('site_p_{$v.id}')" />
 				</td>
 				<td>
 					<ul class="layout">
 						<!-- loop from=$v._popedom key=$kk value=$vv -->
-						<li><label><input type="checkbox" name="popedom[]" value="{$vv.id}"{if $plist && in_array($vv.id,$plist)} checked{/if} /> {$vv.title}</label></li>
+						<li><label><input type="checkbox" name="popedom[]" value="{$vv.id}"{if $plist && in_array($vv.id,$plist)} checked{/if} /> {func P_Lang $vv.title}</label></li>
 						<!-- /loop -->
 					</ul>
 				</td>
@@ -267,54 +267,11 @@ function check_save()
 	</div>
 </div>
 
-<div class="table">
-	<div class="title">
-		分类权限：
-		<span class="note">设置分类权限需要相匹配的项目权限才支持</span>
-	</div>
-	<div class="content">
-		<div class="list" id="cate_popedom_set" style="border:1px solid #ccc;">
-		<table cellpadding="0" cellspacing="0" width="100%" style="padding:1px;">
-		<tr>
-			<th class="lft">&nbsp;自定义分类权限</th>
-			<th align="right" colspan="2">
-				<input type="button" value="全部可读取" onclick="to_use_all()" />
-				<input type="button" value="全选" onclick="$.input.checkbox_all('cate_popedom_set')" />
-				<input type="button" value="全不选" onclick="$.input.checkbox_none('cate_popedom_set')" />
-				<input type="button" value="反选" onclick="$.input.checkbox_anti('cate_popedom_set')" />
-			</th>
-		</tr>
-			<!-- loop from=$catelist key=$k value=$v -->
-			<tr id="category_{$v.id}">
-				<td><div style="text-indent:5px;">{$v._space}{$v.title}</div></td>
-				<td width="180px" align="center">
-					<input type="button" value="全选" onclick="$.input.checkbox_all('category_{$v.id}')" />
-					<input type="button" value="全不选" onclick="$.input.checkbox_none('category_{$v.id}')" />
-					<input type="button" value="反选" onclick="$.input.checkbox_anti('category_{$v.id}')" />
-				</td>
-				<td>
-					<ul class="layout">
-						<li><label><input type="checkbox" data="category_use" name="category[]" value="read:{$v.id}"{if in_array('read:'.$v.id,$category)} checked{/if} /> 读取</label></li>
-						<li><label><input type="checkbox" name="category[]" value="edit:{$v.id}"{if in_array('edit:'.$v.id,$category)} checked{/if} /> 编辑</label></li>
-						<li><label><input type="checkbox" name="category[]" value="status:{$v.id}"{if in_array('status:'.$v.id,$category)} checked{/if} /> 审核</label></li>
-						<li><label><input type="checkbox" name="category[]" value="delete:{$v.id}"{if in_array('delete:'.$v.id,$category)} checked{/if} /> 删除</label></li>
-						<li><label><input type="checkbox" name="category[]" value="add:{$v.id}"{if in_array('add:'.$v.id,$category)} checked{/if} /> 加子类</label></li>
-						<li><label><input type="checkbox" name="category[]" value="ext:{$v.id}"{if in_array('ext:'.$v.id,$category)} checked{/if} /> 扩展维护</label></li>
-					</ul>
-				</td>
-			</tr>
-			<!-- /loop -->
-		</table>
-		</div>
-	</div>
-</div>
-
-
 </div>
 
 <div class="table">
 	<div class="content">
-		<input type="submit" value="提 交" class="submit" />
+		<input type="submit" value="{lang提交}" class="submit2" />
 	</div>
 </div>
 </form>

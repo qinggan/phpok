@@ -251,6 +251,10 @@
             height = (!ow || !oh) ? '':width*oh/ow;
 
             if(url) {
+	            //判断网址是还有http://或是ftp://或是data:
+	            if (!(/^(https?|ftp|data):/i).test(url)){
+		            url = editor.options.UEDITOR_HOME_URL + "../../"+ url;
+	            }
                 preview.innerHTML = '<img src="' + url + '" width="' + width + '" height="' + height + '" border="' + border + 'px solid #000" title="' + title + '" />';
             }
         },
@@ -360,7 +364,7 @@
                     extensions: acceptExtensions,
                     mimeTypes: 'image/*'
                 },
-                swf: '../../third-party/webuploader/Uploader.swf',
+                swf: '../../../webuploader/uploader.swf',
                 server: actionUrl,
                 fileVal: editor.getOpt('imageFieldName'),
                 duplicate: true,
@@ -750,6 +754,7 @@
             var file, i, status, readyFile = 0, files = this.uploader.getFiles();
             for (i = 0; file = files[i++]; ) {
                 status = file.getStatus();
+                //console.log('状态：'+status);
                 if (status == 'queued' || status == 'uploading' || status == 'progress') readyFile++;
             }
             return readyFile;

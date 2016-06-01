@@ -1,0 +1,67 @@
+<script id="{$_rs.identifier}" type="text/plain" style="{$_rs.form_style}">{$_rs.content}</script>
+<!-- if $_rs.etype == 'simple' -->
+<script type="text/javascript">
+var toolbars_{$_rs.id} = [[
+	'source','|', 
+	'bold', 'italic', 'underline', 'strikethrough', '|',
+	'justifyleft', 'justifycenter', 'justifyright', '|',
+	'removeformat', 'blockquote', 'pasteplain', '|',
+	'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', '|',
+	'link', 'unlink','|',
+	{if $_rs.btn_map}'map',{/if}
+	{if $_rs.btn_image}'simpleupload',{/if}
+	{if $_rs.btn_video}'insertvideo',{/if}
+	{if $_rs.btn_file}'attachment',{/if}
+	{if $_rs.btn_info}'phpokinfo',{/if}
+	{if $_rs.btn_image || $_rs.btn_video || $_rs.btn_file || $_rs.btn_info}'|',{/if}
+	'help'
+]];
+</script>
+<!-- else -->
+<script type="text/javascript">
+var toolbars_{$_rs.id} = [[
+	'fullscreen','source', '|',
+	'bold', 'italic', 'underline', 'strikethrough','|',
+	'justifyleft', 'justifycenter', 'justifyright', '|',
+	'insertorderedlist', 'insertunorderedlist','forecolor', 'backcolor',  '|',
+	'indent', 'horizontal','blockquote','inserttable','|',
+	'link', 'unlink', 'anchor',
+	{if $_rs.btn_image}'|','insertimage',{/if}
+	'wordimage', 'help'
+],[
+	'fontfamily','fontsize','paragraph','insertcode',
+	{if $_rs.btn_map}'map',{/if}
+	{if $_rs.btn_page}'pagebreak',{/if}
+	{if $_rs.btn_tpl}'template',{/if}
+	'|',
+	{if $_rs.btn_video}'insertvideo',{/if}
+	{if $_rs.btn_file}'attachment',{/if}
+	{if $_rs.btn_info}'phpokinfo',{/if}
+	{if $_rs.btn_video || $_rs.btn_file || $_rs.btn_info}'|',{/if}
+	'superscript', 'subscript','|',
+	'preview','spechars','removeformat', 'pasteplain'
+]];
+</script>
+<!-- /if -->
+<script type="text/javascript">
+var edit_config_{$_rs.id} = {
+	 'UEDITOR_HOME_URL':webroot+'js/ueditor/'
+	,'serverUrl':get_url('ueditor')
+	,'toolbars':toolbars_{$_rs.id}
+	,'labelMap':{'phpokinfo':'主题库'}
+    ,'initialFrameWidth':'{$_rs.width}'
+    ,'allowDivTransToP': false
+    ,'initialFrameHeight':'{$_rs.height}'
+	,'sourceEditorFirst':{$_rs.is_code ? 'true' :'false'}
+	,'readonly':{$_rs.is_read ? 'true' :'false'}
+	,'pasteplain':{$_rs.paste_text ? 'true' : 'false'}
+	,'autoFloatEnabled':false
+	,'autoHeightEnabled':false
+	,'pageBreakTag':'[:page:]'
+	,'textarea':'{$_rs.identifier}'
+	,'iframeUrlMap':{
+		'phpokinfo':get_url('ueditor','info')
+	}
+};
+var edit_{$_rs.id} = UE.getEditor('{$_rs.identifier}',edit_config_{$_rs.id});
+</script>

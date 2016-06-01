@@ -1,0 +1,42 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang您当前的位置：}{lang我授权的信息}
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+function edit_it(id)
+{
+	var url = get_url('workflow','step','id='+id);
+	$.phpok.go(url);
+}
+</script>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>ID</th>
+	<th>项目</th>
+	<th>主题</th>
+	<th>授权时间</th>
+	<th>结束时间</th>
+	<th width="80">操作</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td class="center">{$value.project_title}</td>
+	<td id="t_{$value.id}">{$value.title}<!-- if $value.note --> <span class="gray i">{$value.note}</span><!-- /if --></td>
+	<td class="center">{func date "Y-m-d H:i:s" $value.dateline}</td>
+	<td class="center">
+		<!-- if $value.endtime && $value.is_end -->
+		{func date "Y-m-d H:i:s" $value.endtime}
+		<!-- else -->
+		<!-- if $value.actting -->正在处理<!-- else -->等待处理<!-- /if -->
+		<!-- /if -->
+	</td>
+	<td class="center">
+		<input type="button" value="{lang管理}" onclick="edit_it('{$value.id}')" class="phpok-btn" />
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- include tpl=pagelist -->
+<!-- include tpl=foot -->

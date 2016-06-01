@@ -1,0 +1,109 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function save()
+{
+	var obj = $.dialog.opener;
+	$("#postsave").ajaxSubmit({
+		'url':get_url("site",'order_status_save','id={$id}'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				$.dialog.alert('编辑成功',function(){
+					obj.$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+			}
+		}
+	});
+	return false;
+}
+</script>
+<form method="post" id="postsave" onsubmit="return false">
+<div class="table">
+	<div class="title">
+		状态名称：
+		<span class="note">请填写标识为：<span class="red">{$rs.identifier}</span>对应的常用称呼</span>
+	</div>
+	<div class="content"><input type="text" id="title" name="title" value="{$rs.title}" class="default" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		通知会员：
+		<span class="note">选择模板，订单状态更新后，会以邮件或短信通知客户</span>
+	</div>
+	<div class="content">
+		<select name="email_tpl_user" style="width:475px">
+			<option value="">{lang邮件模板：}{lang不通知会员}</option>
+			<!-- loop from=$emailtpl key=$key value=$value -->
+			<!-- if substr($value.identifier,0,4) != 'sms_' -->
+			<option value="{$value.identifier}"{if $rs.email_tpl_user == $value.identifier} selected{/if}>{lang邮件模板：}{$value.title}</option>
+			<!-- /if -->
+			<!-- /loop -->
+		</select>
+		<div style="padding-top:5px">
+			<select name="sms_tpl_user" style="width:475px">
+				<option value="">{lang短信模板：}{lang不通知会员}</option>
+				<!-- loop from=$emailtpl key=$key value=$value -->
+				<!-- if substr($value.identifier,0,4) == 'sms_' -->
+				<option value="{$value.identifier}"{if $rs.sms_tpl_user == $value.identifier} selected{/if}>{lang短信模板：}{$value.title}</option>
+				<!-- /if -->
+				<!-- /loop -->
+			</select>
+		</div>
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		通知管理员：
+		<span class="note">选择模板，订单状态更新后，会以邮件或短信通知管理员</span>
+	</div>
+	<div class="content">
+		<select name="email_tpl_admin" style="width:475px">
+			<option value="">{lang邮件模板：}{lang不通知管理员}</option>
+			<!-- loop from=$emailtpl key=$key value=$value -->
+			<!-- if substr($value.identifier,0,4) != 'sms_' -->
+			<option value="{$value.identifier}"{if $rs.email_tpl_admin == $value.identifier} selected{/if}>{lang邮件模板：}{$value.title}</option>
+			<!-- /if -->
+			<!-- /loop -->
+		</select>
+		<div style="padding-top:5px">
+			<select name="sms_tpl_admin" style="width:475px">
+			<option value="">{lang短信模板：}{lang不通知管理员}</option>
+				<!-- loop from=$emailtpl key=$key value=$value -->
+				<!-- if substr($value.identifier,0,4) == 'sms_' -->
+				<option value="{$value.identifier}"{if $rs.sms_tpl_admin == $value.identifier} selected{/if}>{lang短信模板：}{$value.title}</option>
+				<!-- /if -->
+				<!-- /loop -->
+			</select>
+		</div>
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		状态：
+		<span class="note">设置是否使用，不使用将跳过进入下一项，如不存在则为结束</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="status" value="1"{if $rs.status} checked{/if} />启用</label></li>
+			<li><label><input type="radio" name="status" value="0"{if !$rs.status} checked{/if} />禁用</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		订单状态顺序：
+		<span class="note">请保持唯一，以确保客户能正常显示订单进度</span>
+	</div>
+	<div class="content">
+		<input type="text" name="taxis" id="taxis" value="{$rs.taxis}" class="short" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot_open -->

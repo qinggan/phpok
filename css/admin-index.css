@@ -1,7 +1,7 @@
 @charset "utf-8";
 /* CSS Document */
 body,ol,ul,h1,h2,h3,h4,h5,h6,p,th,td,dl,dd,form,fieldset,legend,input,textarea,select{margin:0;padding:0}
-body{font:12px  "微软雅黑","宋体","Arial Narrow",HELVETICA;background:#f9f9f9;-webkit-text-size-adjust:100%}
+body{font-size:12px;font-family:"Verdana","Arial","Microsoft Yahei","sans-serif","Tahoma";background:#f9f9f9;-webkit-text-size-adjust:100%;overflow-y:scroll;_margin:0; _height:100%;}
 a{color:#014;text-decoration:none}
 a:hover{color:#cd0200;text-decoration:underline}
 em{font-style:normal}
@@ -49,6 +49,7 @@ p{word-wrap:break-word}
 .header-tuc-logout {display: block;margin: 0 24px;font-size: 14px;font-weight: 700;cursor: pointer;text-decoration: none;color: #454545;line-height: 42px;}
 .header-tc-content .first_ul{ margin:0;padding:0; font-size:14px; line-height:42px;}
 .header-tc-content .first_ul li{border-bottom: 1px solid #E0E6F1; display:block; position:relative;text-align:center;}
+.header-tc-content .first_ul li li{text-align:left;padding-left:10px;}
 .header-tc-content .first_ul li a{ display:block;}
 .header-tc-content .first_ul .laster_line{ border-bottom: 0!important;}
 .header-tc-content .second_ul{ display:block; position:absolute; width:140px; border: 1px solid #AABAD5; top:3px; *+top:-7px; left:-100px;background-color: #f9f9f9;text-align: left;z-index: 1000;color: #4b4b4b;box-shadow: 0 0 6px rgba(0,0,0,.19);}
@@ -76,7 +77,7 @@ p{word-wrap:break-word}
 .head_tab li.on{background:#3030a2;}
 
 .content{ width:100%; padding:55px 0 10px 0; background:#eeedeb;}
-.c_left{ width:200px; margin-left:10px; overflow:hidden; float:left;}
+.c_left{ width:160px; margin-left:10px; overflow:hidden; float:left;}
 .c_left li{ height:35px; border-bottom:1px solid #395e8d; background:#2a4567;}
 .c_left li a{ display:block; height:35px; line-height:35px; color:#fff; white-space:nowrap; overflow:hidden;}
 .c_left li a span{ width:22px; height:22px; float:left; margin:9px 1px 0 14px;  _margin:9px 1px 0 5px;display:block;font-size:16px;}

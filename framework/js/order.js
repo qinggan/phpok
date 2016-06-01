@@ -34,20 +34,18 @@ function pro_select(id)
 	var ids='';
 	$("input.p_proid").each(function(i){
 		var t = $(this).val();
-		if(t && t != '0' && t != 'undefined')
-		{
+		if(t && t != '0' && t != 'undefined'){
 			ids += t+",";
 		}
 	});
-	if(ids)
-	{
+	if(ids){
 		ids = ids.substr(0,(ids.length - 1));
 		url += "&exinclude="+$.str.encode(ids);
 	}
 	$.dialog.open(url,{
 		'title':'选择商品',
-		'width':'50%',
-		'height':'80%',
+		'width':'70%',
+		'height':'70%',
 		'lock':true,
 		'resize':false,
 		'fixed':true
@@ -80,19 +78,6 @@ function order_delete(id,title)
 			$.dialog.alert(rs.content);
 			return false;
 		}
-	});
-}
-
-function order_info(id,title)
-{
-	var url = get_url('order','info','id='+id);
-	$.dialog.open(url,{
-		'title':'订单：'+title,
-		'lock':true,
-		'width':'600px',
-		'height':'80%',
-		'resize':false,
-		'fixed':true
 	});
 }
 
@@ -171,9 +156,9 @@ function update_sn()
 }
 
 //删除订单产品，删除操作成功会更新订单金额
-function order_pro_delete(id)
+function order_pro_delete(id,numid)
 {
-	var title = $("#pro_title_"+id).val();
+	var title = $("#pro_title_"+numid).val();
 	$.dialog.confirm("确定要删除产品：<span class='darkblue'>"+title+"</span><br /><strong class='red'>删除后会刷新当前面，并重新计算产品价格，请慎重选择</strong>",function(){
 		var url = get_url('order','product_delete','id='+id);
 		var rs = json_ajax(url);
@@ -198,17 +183,17 @@ function load_product(num,id)
 	var url = get_url('order','product','id='+id);
 	var currency_id = $("#currency_id").val();
 	url += '&currency_id='+currency_id;
-	var rs = json_ajax(url);
-	if(rs.status != 'ok')
-	{
-		if(!rs.content) rs.content = '产品信息获取失败';
+	var rs = $.phpok.json(url);
+	if(rs.status != 'ok'){
+		if(!rs.content){
+			rs.content = '产品信息获取失败';
+		}
 		$.dialog.alert(rs.content);
 		return false;
 	}
 	$("#pro_tid_"+num).val(id);
-	if(rs.content.thumb)
-	{
-		$("#pro_thumb_"+num).val(rs.content.thumb.id);
+	if(rs.content.thumb){
+		$("#pro_thumb_"+num).val(rs.content.thumb.filename);
 		$("#pro_thumb_view_"+num).html('<img src="'+rs.content.thumb.ico+'" border="0" width="80px" height="80px" onclick="update_pic(\''+num+'\')" style="cursor:pointer;" />');
 	}
 	$("#pro_title_"+num).val(rs.content.title);
@@ -230,42 +215,173 @@ function update_pic(tid)
 	});
 }
 
-//取得地址库
-function get_shipping()
+function such_as_shipping()
 {
-	order_get_address('shipping');
+	$("#b-fullname").val($("#s-fullname").val());
+	$("#b-country").val($("#s-country").val());
+	$("#b-province").val($("#s-province").val());
+	$("#b-city").val($("#s-city").val());
+	$("#b-county").val($("#s-county").val());
+	$("#b-address").val($("#s-address").val());
+	$("#b-zipcode").val($("#s-zipcode").val());
+	$("#b-tel").val($("#s-tel").val());
+	$("#b-mobile").val($("#s-mobile").val());
+	$("#b-email").val($("#s-email").val());
+	var gender = $("input[name=s-gender]:checked").val();
+	$("input[name=b-gender][value="+gender+"]").attr("checked",true);
 }
 
-function get_billing()
+function get_user_email()
 {
-	order_get_address('billing');
+	var uid = $("#user_id").val();
+	if(!uid){
+		$.dialog.alert(p_lang('未绑定会员账号'));
+		return false;
+	}
+	var url = get_url('user','info','uid='+uid);
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$("#email").val(rs.content.email);
+			return true;
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	})
 }
 
-function order_get_address(type)
+function get_user_invoice()
 {
-	var user_id = $("#user_id").val();
-	if(!user_id)
-	{
-		$.dialog.alert("未指定会员，不能执行此操作");
+	var uid = $("#user_id").val();
+	if(!uid){
+		$.dialog.alert(p_lang('未绑定会员账号'));
 		return false;
 	}
-	var url = api_url('user','address','type='+type+"&uid="+user_id);
-	var rs = json_ajax(url);
-	if(rs.status != 'ok')
-	{
-		if(!rs.content) rs.content = '获取失败';
-		$.dialog.alert(rs.content);
+	var url = get_url('user','info','uid='+uid+"&type=invoice");
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			var info = rs.content.rs;
+			var list = rs.content.rslist;
+			invoice_show_select(list,info.id);
+			$("#invoice_type").val(info.type);
+			$("#invoice_title").val(info.title);
+			$("#invoice_content").val(info.content);
+			return true;
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	})
+}
+function update_user_invoice(obj)
+{
+	var obj = $(obj).find("option:selected");
+	$("#invoice_type").val(obj.attr('type'));
+	$("#invoice_title").val(obj.attr('title'));
+	$("#invoice_content").val(obj.attr('content'));
+}
+
+function invoice_show_select(list,id)
+{
+	var html = '<select onchange="update_user_invoice(this)">';
+	for(var i in list){
+		html += '<option value="'+list[i].id+'" type="'+list[i].type+'" title="'+list[i].title+'" content="'+list[i].content+'"';
+		if(list[i].id == id){
+			html += ' selected';
+		}
+		html += '>'+list[i].type+'/'+list[i].title+'</option>';
+	}
+	html += '</select>';
+	$("#invoice_user_select").html(html);
+}
+function update_user_address(obj)
+{
+	var obj = $(obj).find("option:selected");
+	$("#s-fullname").val(obj.attr('fullname'));
+	$("#s-country").val(obj.attr('country'));
+	$("#s-province").val(obj.attr('province'));
+	$("#s-city").val(obj.attr('city'));
+	$("#s-county").val(obj.attr('county'));
+	$("#s-address").val(obj.attr('address'));
+	$("#s-mobile").val(obj.attr('mobile'));
+	$("#s-tel").val(obj.attr('tel'));
+	$("#s-email").val(obj.attr('email'));
+}
+function user_show_select(list,id)
+{
+	var html = '<select onchange="update_user_address(this)">';
+	for(var i in list){
+		html += '<option value="'+list[i].id+'" fullname="'+list[i].fullname+'" country="'+list[i].country+'" ';
+		html += 'city="'+list[i].city+'" province="'+list[i].province+'" county="'+list[i].county+'"';
+		html += 'address="'+list[i].address+'" mobile="'+list[i].mobile+'" tel="'+list[i].tel+'" email="'+list[i].email+'"';
+		if(list[i].id == id){
+			html += ' selected';
+		}
+		html += '>'+list[i].fullname+'：'+list[i].province+list[i].city+list[i].county+list[i].address;
+		if(list[i].mobile){
+			html += '/'+list[i].mobile;
+		}
+		html += '</option>'
+	}
+	html += '</select>';
+	$("#address_user_select").html(html);
+}
+
+function get_user_address()
+{
+	var uid = $("#user_id").val();
+	if(!uid){
+		$.dialog.alert(p_lang('未绑定会员账号'));
 		return false;
 	}
-	var user = rs.content;
-	var ext = type == 'shipping' ? 's-' : 'b-';
-	$("#"+ext+"fullname").val(user.fullname);
-	$("#"+ext+"gender[value='"+user.gender+"']").attr("checked",true);
-	$("#"+ext+"address").val(user.address);
-	$("#"+ext+"zipcode").val(user.zipcode);
-	$("#"+ext+"tel").val(user.tel);
-	$("#"+ext+"mobile").val(user.mobile);
-	$("#"+ext+"email").val(user.email);
-	//更新地址库
-	new PCAS(ext+"province",ext+"city",ext+"county",user.province,user.city,user.county);
+	var url = get_url('user','info','uid='+uid+"&type=address");
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			var info = rs.content.rs;
+			var list = rs.content.rslist;
+			user_show_select(list,info.id);
+			$("#s-fullname").val(info.fullname);
+			$("#s-country").val(info.country);
+			$("#s-province").val(info.province);
+			$("#s-city").val(info.city);
+			$("#s-county").val(info.county);
+			$("#s-address").val(info.address);
+			$("#s-mobile").val(info.mobile);
+			$("#s-tel").val(info.tel);
+			$("#s-email").val(info.email);
+			return true;
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	})
+}
+
+function total_price()
+{
+	var total = 0;
+	$("input[sign=ext_price]").each(function(i){
+		var val = $(this).val();
+		val = parseFloat(val);
+		if(isNaN(val)){
+			val = 0;
+		}
+		if($(this).attr("action") == 'add'){
+			total += val;
+		}else{
+			total -= val;
+		}
+	});
+	$('#price,#pay_price').val(total.toString());
+}
+
+function order_express(id,sn)
+{
+	var url = get_url('order','express','id='+id);
+	$.dialog.open(url,{
+		'title':p_lang('物流快递，您的订单编号是：')+'<span class="red">'+sn+'</span>',
+		'width':'70%',
+		'height':'70%',
+		'lock':true
+	});
 }

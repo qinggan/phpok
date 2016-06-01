@@ -1,0 +1,45 @@
+<!-- include tpl=head title=发票信息 -->
+<script type="text/javascript">
+function update_cart_invoice(id)
+{
+	var url = get_url('cart','invoice_selected','id='+id);
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok'){
+		$.phpok.go('{url ctrl=cart func=checkout/}');
+	}else{
+		$.dialog.alert(rs.content);
+		return false;
+	}
+}
+</script>
+<div role="main" class="ui-content">
+	<ul data-role="listview" data-inset="true" style="margin:0">
+		<!-- loop from=$invoicelist key=$key value=$value id=$tmpid -->
+		<li data-role="list-divider">
+			<!-- if $value.id == 'no' -->
+			不开发票
+			<!-- else -->
+			类型：{$value.type}
+			<!-- /if -->
+			<span class="ui-li-count" onclick="update_cart_invoice('{$value.id}')">使用</span>
+		</li>
+		
+		<li>
+			<!-- if $value.id == 'no' -->
+			<p>不使用发票</p>
+			<!-- else -->
+				<div class="wrap"><b>抬头：</b>{$value.title}</div>
+				<!-- if $value.content --><div class="wrap"><b>内容：</b>{$value.content}</div><!-- /if -->
+				<!-- if $value.note --><div class="wrap"><b>备注：</b>{$value.note}</div><!-- /if -->
+			<!-- /if -->
+		</li>
+		<!-- /loop -->
+	</ul>
+	<input type="button" value="取消返回" onclick="$.phpok.go('{url ctrl=cart func=checkout/}')" />
+	<input type="button" value="发票管理" onclick="$.phpok.go('{url ctrl=usercp func=invoice/}')" />
+	<div class="ui-body ui-body-a ui-corner-all">
+		<h3>友情说明</h3>
+		<p>发票管理请到会员中心进行维护</p>
+	</div>
+</div>
+<!-- include tpl=foot -->

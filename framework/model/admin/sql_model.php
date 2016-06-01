@@ -8,18 +8,24 @@
 	时间： 2015年01月05日 10时46分
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class sql_model extends phpok_model
+class sql_model extends sql_model_base
 {
 	public function __construct()
 	{
-		parent::model();
+		parent::__construct();
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
 	}
 
 	//读取全部表信息
 	public function tbl_all()
 	{
 		//$this->db->cache_clear();
-		$sql = "SHOW TABLE STATUS FROM ".$this->db->config_db['data'];
+		$sql = "SHOW TABLE STATUS FROM ".$this->db->database();
 		return $this->db->get_all($sql);
 	}
 
@@ -38,7 +44,7 @@ class sql_model extends phpok_model
 
 	public function sql_prefix()
 	{
-		return $this->db->config_db['prefix'];
+		return $this->db->prefix;
 	}
 
 	public function show_create_table($table)
@@ -63,7 +69,7 @@ class sql_model extends phpok_model
 
 	public function table_count($tbl)
 	{
-		$sql = "SHOW TABLE STATUS FROM ".$this->db->config_db['data']." WHERE Name='".$tbl."'";
+		$sql = "SHOW TABLE STATUS FROM ".$this->db->database()." WHERE Name='".$tbl."'";
 		$rs = $this->db->get_one($sql);
 		return $rs['Rows'];
 	}

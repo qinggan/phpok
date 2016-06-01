@@ -13,7 +13,7 @@
 		<span class="darkblue i">（发布时间：{echo date("Y-m-d H:i:s",$rs.dateline)}）</span>
 	</div>
 	<!-- if $rs.content -->
-	<div class="content">{func phpok_cut $rs.content 255 …}</div>
+	<div class="content" style="padding:5px;">{func phpok_cut $rs.content 255 …}</div>
 	<!-- /if -->
 </div>
 
@@ -88,6 +88,21 @@ function to_edit(id)
 		, height:"90%"
 		, resize:false
 		, lock:true
+		, ok:function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			var status = iframe.save();
+			if(status){
+				$.dialog.alert('评论信息修改成功',function(){
+					$.phpok.reload();
+				},'succeed');
+			}
+			return false;
+		},okVal:'{lang修改评论}'
+		,cancel:function(){return true;}
 	});
 }
 function to_reply(id)
@@ -99,6 +114,21 @@ function to_reply(id)
 		, height:"90%"
 		, resize:false
 		, lock:true
+		, ok:function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('{langiframe还没加载完毕呢}');
+				return false;
+			};
+			var status = iframe.save();
+			if(status){
+				$.dialog.alert('{lang管理员回复操作成功}',function(){
+					$.phpok.reload();
+				},'succeed');
+			}
+			return false;
+		},okVal:'{lang管理员回复}'
+		,cancel:function(){return true;}
 	});
 }
 </script>

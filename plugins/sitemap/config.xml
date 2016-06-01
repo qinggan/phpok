@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<title>网站地图Sitemap</title>
-<desc>提供百度和谷哥sitemap功能，生成的sitemap信息将放置在data/sitemap目录下</desc>
-<author>phpok.com</author>
-<version>1.0</version>
+<root>
+	<title>Sitemap</title>
+	<desc>支持百度和谷歌，请到相关平台上提交sitemap</desc>
+	<author>phpok.com</author>
+	<version>1.0</version>
+</root>

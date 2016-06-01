@@ -1,0 +1,19 @@
+<select id="_tmp_select_add" style="padding:3px">
+	<option value="">请选择扩展字段…</option>
+	<!-- loop from=$rslist key=$key value=$value -->
+	<option value="{$value.id}">{$value.title} - {$value.identifier}</option>
+	<!-- /loop -->
+</select>
+<input type="button" value="添加" onclick="_update_select_add()" class="button2" />
+<script type="text/javascript">
+function _update_select_add()
+{
+	var val = $("#_tmp_select_add").val();
+	if(!val)
+	{
+		$.dialog.alert('请选择要添加的扩展');
+		return false;
+	}
+	ext_add2(val,'{$module}');
+}
+</script>

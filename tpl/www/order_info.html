@@ -1,25 +1,4 @@
 <!-- php:$title = '订单信息：'.$rs.sn --><!-- include tpl=head title=$title -->
-<script type="text/javascript">
-function payment()
-{
-	//附款网址
-	var url = "{if $session.user_id}{url ctrl=payment id=$rs.id/}{else}{url ctrl=payment sn=$rs.sn passwd=$rs.passwd/}{/if}";
-	var payment = $("input[name=payment]:checked").val();
-	var tip = '点击确定后将会跳转到支付页执行支付\n您在支付成功后，请耐心等待页面返回，以保证付款成功操作';
-	if(payment)
-	{
-		url += "&payment="+payment;
-		var pay_title = $("input[name=payment]:checked").attr('alt');
-		tip = '您确定要使用 【'+pay_title+'】 支付该订单吗?\n点击确定将会跳转到支付页执行支付\n您在支付成功后，请耐心等待页面返回，以保证付款成功操作';
-	}
-	var qc = confirm(tip);
-	if(qc == '0')
-	{
-		return false;
-	}
-	$.phpok.go(url);
-}
-</script>
 <!-- if $rs.pay_status == 'PAID' -->
 <script type="text/javascript">
 function show_ext(rs)
@@ -27,8 +6,7 @@ function show_ext(rs)
 	if(rs.status != 'ok') return false;
 	var lst = rs.content;
 	var html = '';
-	for(var i in lst)
-	{
+	for(var i in lst){
 		html += '<tr><td align="right">'+lst[i]['title']+'：</td><td>'+lst[i]['content']+'</td></tr>';
 	}
 	$("#paid_time").after(html);
@@ -41,7 +19,7 @@ $(document).ready(function(){
 <!-- /if -->
 <div class="main">
 	<div class="pfw mbottom10">
-		<h3>订单明细：您的订单号是：<span class="red i">{$rs.sn}</span>，请记住此编号，可用于查单</h3>
+		<h3>您的订单号是：<span class="red i">{$rs.sn}</span><a href="{url ctrl=order/}" class="more">我的订单</a></h3>
 		<table width="100%" class="form">
 		<tr>
 			<td width="20%" align="right">订单编号：</td>
@@ -52,88 +30,80 @@ $(document).ready(function(){
 			<td>{func time_format $rs.addtime}</td>
 		</tr>
 		<tr>
-			<td align="right">购买数量：</td>
-			<td>{$rs.qty}</td>
-		</tr>
-		<tr>
 			<td align="right">总金额：</td>
-			<td class="red">{func price_format $rs.price $rs.currency_id $rs.currency_id}</td>
+			<td class="red">
+				{func price_format $rs.price $rs.currency_id $rs.currency_id}
+				<!-- if $payinfo -->
+				<span class="darkblue">（使用 {$payinfo.title} 付款，付款时间：{func time_format $payinfo.dateline}）</span>
+				<!-- /if -->
+			</td>
 		</tr>
 		<tr>
 			<td align="right">订单状态：</td>
-			<td class="red">{$rs.status_info}</td>
+			<td class="darkblue">{$rs.status_info}</td>
 		</tr>
-		<!-- if $rs.pay_status -->
 		<tr>
-			<td align="right">付款：</td>
-			<td>{$rs.pay_status}，金额：<span class="red i">{$rs.pay_currency_code} {$rs.pay_price}</span></td>
-		</tr>
-		<tr id="paid_time">
-			<td align="right">付款时间：</td>
-			<td>{func date "Y-m-d H:i:s" $rs.pay_date}</td>
-		</tr>
-		<!-- /if -->
-		<tr>
-			<td align="right"></td>
-			<td></td>
+			<td align="right">发票：</td>
+			<td><!-- if $invoice --><span class="darkblue">{$invoice.type}</span>，抬头：<span class="darkblue">{$invoice.title}</span>，内容：<span class="darkblue">{$invoice.content}</span><!-- else -->无<!-- /if --></td>
 		</tr>
 		</table>
 	</div>
-	<!-- if $shipping -->
+	<!-- if $loglist -->
+	<div class="table_lc">
+		<table width="100%">
+		<tr>
+			<th colspan="3">订单日志</th>
+		</tr>
+		<tr>
+			<th class="lft">说明</th>
+			<th>时间</th>
+			<th>操作人</th>
+		</tr>
+		<!-- loop from=$loglist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.note}</td>
+			<td class="center">{func time_format $value.addtime}</td>
+			<td class="center">{$value.who}</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+	<!-- /if -->
+	<!-- if $rs.note -->
+	<div class="pfw mbottom10">
+		<h3>说明</h3>
+		<div style="padding:10px;line-height:170%">{func nl2br $rs.note}</div>
+	</div>
+	<!-- /if -->
+	<!-- if $address -->
 	<div class="pfw mbottom10">
 		<h3>送货地址</h3>
 		<table width="100%" class="form">
 		<tr>
 			<td width="20%" align="right">收货人：</td>
-			<td>{$shipping.fullname}（{$shipping.gender ? '先生' : '女士'}）</td>
+			<td>{$address.fullname}</td>
 		</tr>
 		<tr>
 			<td align="right">送货地址：</td>
 			<td>
-				{$shipping.province}
-				<!-- if strpos($shipping.city,'市辖') === false -->
-				{$shipping.city}
+				{$address.province}
+				<!-- if $address.province != $address.city -->
+				{$address.city}
 				<!-- /if -->
-				{$shipping.county}
-				{$shipping.address}
-				<!-- if $shipping.zipcode -->（邮编：{$shipping.zipcode}）<!-- /if -->
+				{$address.county}
+				{$address.address}
 			</td>
 		</tr>
 		<tr>
 			<td align="right">联系方式：</td>
-			<td>{$shipping.tel}<!-- if $shipping.tel && $shipping.mobile --> / <!-- /if -->{$shipping.mobile}</td>
+			<td>{$address.tel}<!-- if $address.tel && $address.mobile --> / <!-- /if -->{$address.mobile}</td>
 		</tr>
+		<!-- if $address.email -->
 		<tr>
 			<td align="right">Email：</td>
-			<td>{$shipping.email}</td>
+			<td>{$address.email}</td>
 		</tr>
-		</table>
-	</div>
-	<!-- /if -->
-	<!-- if $billing -->
-	<div class="pfw mbottom10">
-		<h3>账单地址</h3>
-		<table width="100%" class="form">
-		<tr>
-			<td width="20%" align="right">姓名：</td>
-			<td>{$billing.fullname}（{$billing.gender ? '先生' : '女士'}）</td>
-		</tr>
-		<tr>
-			<td align="right">地址：</td>
-			<td>
-				{$billing.province}
-				<!-- if strpos($billing.city,'市辖') === false -->
-				{$billing.city}
-				<!-- /if -->
-				{$billing.county}
-				{$billing.address}
-				<!-- if $billing.zipcode -->（邮编：{$billing.zipcode}）<!-- /if -->
-			</td>
-		</tr>
-		<tr>
-			<td align="right">联系方式：</td>
-			<td>{$billing.tel}<!-- if $billing.tel && $billing.mobile --> / <!-- /if -->{$billing.mobile}</td>
-		</tr>
+		<!-- /if -->
 		</table>
 	</div>
 	<!-- /if -->
@@ -141,28 +111,89 @@ $(document).ready(function(){
 	<div class="table_lc">
 	<table width="100%">
 	<tr>
+		<th>图片</th>
 		<th class="lft">产品信息</th>
 		<th>购买数量</th>
 		<th>价格</th>
 	</tr>
 	<!-- loop from=$rslist key=$key value=$value -->
 	<tr>
+		<td align="center">
+			<!-- if $value.thumb && file_exists($value.thumb) -->
+			<img src="{$value.thumb}" width="80" height="80" border="0" />
+			<!-- else -->
+			<img src="{#images#}/blank.gif" width="80" height="80" border="0" />
+			<!-- /if -->
+		</td>
 		<td>
 			<h3 id="title_{$value.id}">{$value.title}</h3>
+			<!-- loop from=$value.ext key=$k value=$v id=$tmpid -->
+			<div>{$v.title}：{$v.content}</div>
+			<!-- /loop -->
 			<div>售价：{func price_format $value.price $rs.currency_id $rs.currency_id}</div>
 		</td>
 		<td class="center">{$value.qty}</td>
 		<td class="center price">{func price_format $value.price*$value.qty $rs.currency_id $rs.currency_id}</td>
 	</tr>
 	<!-- /loop -->
+	<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
 	<tr>
-		<td align="right" colspan="4">总价：<span class="price">{func price_format $rs.price $rs.currency_id $rs.currency_id}</span></td>
+		<td align="right" colspan="3">{$value.title}：</td>
+		<td><span class="price">{$value.price}</span></td>
+	</tr>
+	<!-- /loop -->
+	<tr>
+		<td align="right" colspan="3">总价：</td>
+		<td><span class="price">{func price_format $rs.price $rs.currency_id $rs.currency_id}</span></td>
 	</tr>
 	</table>
 	</div>
 	<div class="clear"></div>
-	<!-- if !$rs.pay_end -->
-	<div style="padding:10px;text-align:center;"><a href="{url ctrl=order func=payment sn=$rs.sn passwd=$rs.passwd/}" title="立即付款"><img src="images/payment.jpg" alt="立即付款" border="0" /></a></div>
+	<!-- if !$pay_end -->
+	<script type="text/javascript">
+	function go_payment()
+	{
+		var payment = $("input[name=payment]:checked").val();
+		if(!payment){
+			$.dialog.alert('未指定支付方式');
+			return false;
+		}
+		var url = '{$payment_url}&payment='+payment;
+		var rs = $.phpok.json(url);
+		if(rs.status != 'ok'){
+			$.dialog.alert(rs.content);
+			return false;
+		}
+		var url = get_url('payment','submit','id='+rs.content);
+		url = $.phpok.nocache(url);
+		window.open(url);
+		return false;
+	}
+	</script>
+	<form method="post" onsubmit="return go_payment()">
+	<!-- loop from=$paylist key=$key value=$value -->
+	<!-- if $value.paylist -->
+	<div class="pfw mbottom10">
+		<h3>{$value.title}</h3>
+		<div class="payment">
+			<ul>
+				<!-- loop from=$value.paylist key=$k value=$v --><!-- if $v.wap == 0 -->
+				<li><label><input name="payment" type="radio" value="{$v.id}"{if $v.id == $config.biz_payment} checked{/if} />{$v.title}</label></li>
+				<!-- /if --><!-- /loop -->
+			</ul>
+		</div>
+		<!-- /if -->
+		<!-- /loop -->
+	</div>
+	<div class="paymenbtn">
+		<table width="100%">
+		<tr>
+			<td><input type="submit" value="" class="paybtn" /></td>
+		</tr>
+		</table>
+	</div>
+	</form>
 	<!-- /if -->
 </div>
+
 <!-- include tpl=foot -->

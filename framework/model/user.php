@@ -6,62 +6,106 @@
 	Author  : qinggan
 	Update  : 2013年5月4日
 ***********************************************************/
-class user_model extends phpok_model
+class user_model_base extends phpok_model
 {
-	var $psize = 20;
-	function __construct()
+	public $psize = 20;
+	public function __construct()
 	{
 		parent::model();
 	}
 
-	function get_one($id)
+	public function __destruct()
 	{
-		if(!$id) return false;
+		parent::__destruct();
+		unset($this);
+	}
+
+	public function get_one($id,$field='id',$ext=true,$wealth=true)
+	{
+		if(!$id){
+			return false;
+		}
+		if(!$field){
+			$field = 'id';
+		}
 		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
-		$sql.= " WHERE u.id='".$id."'";
+		$sql.= " WHERE u.".$field."='".$id."'";
 		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
-		$flist = $this->fields_all();
-		if(!$flist) return $rs;
-		foreach($flist AS $key=>$value)
-		{
-			$rs[$value["identifier"]] = $GLOBALS['app']->lib("ext")->content_format($value,$rs[$value["identifier"]]);
+		if(!$rs){
+			return false;
 		}
+		if($ext){
+			$flist = $this->fields_all();
+			if($flist){
+				foreach($flist AS $key=>$value){
+					$rs[$value['identifier']] = $this->lib('form')->show($value,$rs[$value['identifier']]);
+				}
+			}
+		}
+		if($wealth){
+			//获取会员积分
+			$wlist = $this->model('wealth')->get_all(1,'id');
+			if($wlist){
+				foreach($wlist as $key=>$value){
+					$val = number_format(0,$value['dnum']);
+					$rs['wealth'][$value['identifier']] = array('title'=>$value['title'],'val'=>$val,'unit'=>$value['unit']);
+				}
+				$condition = "uid='".$rs['id']."'";
+				$tlist = $this->model('wealth')->vals($condition);
+				if($tlist){
+					foreach($tlist as $key=>$value){
+						$tmp = $wlist[$value['wid']];
+						$val = number_format($value['val'],$tmp['dnum']);
+						$rs['wealth'][$tmp['identifier']]['val'] = $val;
+					}
+				}
+			}
+		}
+		
 		return $rs;
 	}
 
-	//读取会员列表数据
-	function get_list($condition="",$offset=0,$psize=30)
+	public function get_list($condition="",$offset=0,$psize=30)
 	{
 		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
-		if($condition)
-		{
+		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
 		$offset = intval($offset);
 		$psize = intval($psize);
 		$sql.= " ORDER BY u.id DESC ";
-		if($psize)
-		{
+		if($psize){
 			$offset = intval($offset);
 			$sql .= "LIMIT ".$offset.",".$psize;
 		}
 		$rslist = $this->db->get_all($sql,"id");
-		if(!$rslist) return false;
+		if(!$rslist){
+			return false;
+		}
 		$idlist = array_keys($rslist);
+		//读取会员积分信息
+		$wlist = $this->model('wealth')->get_all(1,'id');
+		if($wlist){
+			$condition = "uid IN(".implode(",",$idlist).")";
+			$tlist = $this->model('wealth')->vals($condition);
+			if($tlist){
+				$wealth = array();
+				foreach($tlist as $key=>$value){
+					$tmp = $wlist[$value['wid']];
+					$rslist[$value['uid']]['wealth'][$tmp['identifier']] = $value['val'];
+				}
+			}
+		}
 		//获取会员扩展字段
 		$flist = $this->fields_all();
-		if(!$flist) return $rslist;
-		foreach($rslist AS $key=>$value)
-		{
-			foreach($flist AS $k=>$v)
-			{
-				if($value[$v["identifier"]])
-				{
-					$value[$v["identifier"]] = $GLOBALS['app']->lib('ext')->content_format($v,$value[$v['identifier']]);
-				}
+		if(!$flist){
+			return $rslist;
+		}
+		foreach($rslist AS $key=>$value){
+			foreach($flist AS $k=>$v){
+				$value[$v['identifier']] = $this->lib('form')->show($v,$value[$v['identifier']]);
 			}
 			$rslist[$key] = $value;
 		}
@@ -70,7 +114,7 @@ class user_model extends phpok_model
 
 
 	//取得总数量
-	function get_count($condition="")
+	public function get_count($condition="")
 	{
 		$sql = "SELECT count(u.id) FROM ".$this->db->prefix."user u ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
@@ -81,40 +125,11 @@ class user_model extends phpok_model
 		return $this->db->count($sql);
 	}
 
-	//存储会员数据
-	function save($data,$id=0)
-	{
-		if($id)
-		{
-			$this->db->update_array($data,"user",array("id"=>$id));
-			return $id;
-		}
-		else
-		{
-			$insert_id = $this->db->insert_array($data,"user");
-			return $insert_id;
-		}
-	}
-
-	function set_status($id,$status=0)
-	{
-		$sql = "UPDATE ".$this->db->prefix."user SET status='".$status."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	function del($id)
-	{
-		$sql = "DELETE FROM ".$this->db->prefix."user WHERE id='".$id."'";
-		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."user_ext WHERE id='".$id."'";
-		$this->db->query($sql);
-		return true;
-	}
 
 	//检测账号是否冲突
 	function chk_name($name,$id=0)
 	{
-		$sql = "SELECT id FROM ".$this->db->prefix."user WHERE user='".$name."' ";
+		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE user='".$name."' ";
 		if($id)
 		{
 			$sql.= " AND id!='".$id."' ";
@@ -122,6 +137,17 @@ class user_model extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
+	public function fields_save($data,$id=0)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		if($id){
+			return $this->db->update_array($data,"user_fields",array("id"=>$id));
+		}else{
+			return $this->db->insert_array($data,"user_fields");
+		}
+	}
 
 	//取得扩展字段的所有扩展信息
 	function fields_all($condition="",$pri_id="")
@@ -135,118 +161,15 @@ class user_model extends phpok_model
 		return $this->db->get_all($sql,$pri_id);
 	}
 
-	//存储模块下的字段表
-	function fields_save($data,$id=0)
+	public function tbl_fields_list($tbl)
 	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"user_fields",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"user_fields");
-		}
-	}
-
-	//创建字段
-	function create_fields($rs)
-	{
-		if(!$rs || !is_array($rs)) return false;
-		//判断表是否存在此字段，已创建就跳过
-		$idlist = $this->tbl_fields_list($this->db->prefix."user_ext");
-		if($idlist && in_array($rs["identifier"],$idlist))
-		{
-			return true;
-		}
-		//判断字段类型是否符合要求，不符合要求跳过创建
-		$tlist = array("varchar","int","float","date","datetime","text","longtext","blob","longblob");
-		if(!in_array($rs["field_type"],$tlist))
-		{
-			return false;
-		}
-		# 创建表字段，这里不加索引等功能，如果在数据量大时，可咨询PHPOK官方进行优化
-		$sql = "ALTER TABLE ".$this->db->prefix."user_ext ADD `".$rs["identifier"]."`";
-		if($rs["field_type"] == "varchar")
-		{
-			$sql.= " VARCHAR( 255 ) ";
-			$sql.= " NOT NULL DEFAULT '".$rs["content"]."' ";
-		}
-		elseif($rs["field_type"] == "int")
-		{
-			$sql.= " INT ";
-			$rs["content"] = intval($rs["content"]);
-			$sql.= " NOT NULL DEFAULT '".$rs["content"]."' ";
-		}
-		elseif($rs["field_type"] == "float")
-		{
-			$sql.= " FLOAT ";
-			$rs["content"] = intval($rs["content"]);
-			$sql.= " NOT NULL DEFAULT '".$rs["content"]."' ";
-		}
-		elseif($rs["field_type"] == "date")
-		{
-			$sql.= " DATE NULL ";
-		}
-		elseif($rs["field_type"] == "datetime")
-		{
-			$sql.= " DATETIME NULL ";
-		}
-		elseif($rs["field_type"] == "longtext" || $rs["field_type"] == "text")
-		{
-			$sql.= " LONGTEXT NOT NULL ";
-		}
-		elseif($rs["field_type"] == "longblob" || $rs["field_type"] == "blob")
-		{
-			$sql.= " LONGBLOB NOT NULL ";
-		}
-		$sql.= " COMMENT  '".$rs["title"]."' ";
-		return $this->db->query($sql);
-	}
-
-	function tbl_fields_list($tbl)
-	{
-		$sql = "SELECT FIELDS FROM ".$tbl;
-		$rslist = $this->db->get_all($sql);
-		if($rslist)
-		{
-			foreach($rslist AS $key=>$value)
-			{
-				$idlist[] = $value["Field"];
-			}
-		}
-		return $idlist;
+		return $this->db->list_fields($tbl);
 	}
 
 	function field_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."user_fields WHERE id='".$id."'";
 		return $this->db->get_one($sql);
-	}
-
-	//删除字段
-	function field_delete($id)
-	{
-		if(!$id) return false;
-		$rs = $this->field_one($id);
-		$field = $rs["identifier"];
-		$sql = "ALTER TABLE ".$this->db->prefix."user_ext DROP `".$field."`";
-		$this->db->query($sql);
-		# 删除记录
-		$sql = "DELETE FROM ".$this->db->prefix."user_fields WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	function save_ext($data)
-	{
-		if(!$data || !is_array($data)) return false;
-		return $this->db->insert_array($data,"user_ext","replace");
-	}
-
-	function update_ext($data,$id)
-	{
-		if(!$data || !is_array($data) || !$id) return false;
-		return $this->db->update_array($data,"user_ext",array("id"=>$id));
 	}
 
 	//取得全部会员ID
@@ -280,6 +203,173 @@ class user_model extends phpok_model
 		$rs = $this->db->get_one($sql);
 		if(!$rs) return false;
 		return $rs['id'];
+	}
+
+	public function save($data,$id=0)
+	{
+		if($id){
+			$status = $this->db->update_array($data,"user",array("id"=>$id));
+			if($status){
+				return $id;
+			}
+			return false;
+		}else{
+			return $this->db->insert_array($data,"user");
+		}
+	}
+
+	public function save_ext($data)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		return $this->db->insert_array($data,"user_ext","replace");
+	}
+
+	public function update_ext($data,$id)
+	{
+		if(!$data || !is_array($data) || !$id){
+			return false;
+		}
+		return $this->db->update_array($data,"user_ext",array("id"=>$id));
+	}
+
+	public function get_relation($uid)
+	{
+		$sql = "SELECT introducer FROM ".$this->db->prefix."user_relation WHERE uid='".$uid."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		return $rs['introducer'];
+	}
+
+	public function save_relation($uid,$introducer)
+	{
+		$sql = "REPLACE INTO ".$this->db->prefix."user_relation(uid,introducer,dateline) VALUES('".$uid."','".$introducer."','".$this->time."')";
+		return $this->db->query($sql);
+	}
+
+	public function address($uid)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user_address WHERE user_id='".$uid."' ORDER BY id DESC";
+		return $this->db->get_all($sql);
+	}
+
+	public function address_one($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user_address WHERE id='".$id."'";
+		return $this->db->get_one($sql);
+	}
+
+	public function address_save($data,$id=0)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		if($id){
+			return $this->db->update_array($data,'user_address',array('id'=>$id));
+		}else{
+			return $this->db->insert_array($data,'user_address');
+		}
+	}
+
+	public function address_delete($id)
+	{
+		$sql = "DELETE FROM ".$this->db->prefix."user_address WHERE id='".$id."'";
+		return $this->db->query($sql);
+	}
+
+	public function address_default($id=0)
+	{
+		if(!$id){
+			return false;
+		}
+		$rs = $this->address_one($id);
+		$sql = "UPDATE ".$this->db->prefix."user_address SET is_default=0 WHERE user_id='".$rs['user_id']."'";
+		$this->db->query($sql);
+		$sql = "UPDATE ".$this->db->prefix."user_address SET is_default=1 WHERE id='".$id."'";
+		$this->db->query($sql);
+		return true;
+	}
+
+	public function invoice($uid)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user_invoice WHERE user_id='".$uid."' ORDER BY id DESC";
+		return $this->db->get_all($sql);
+	}
+
+	public function invoice_one($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user_invoice WHERE id='".$id."'";
+		return $this->db->get_one($sql);
+	}
+
+	public function invoice_save($data,$id=0)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		if($id){
+			return $this->db->update_array($data,'user_invoice',array('id'=>$id));
+		}else{
+			return $this->db->insert_array($data,'user_invoice');
+		}
+	}
+
+	public function invoice_delete($id)
+	{
+		$sql = "DELETE FROM ".$this->db->prefix."user_invoice WHERE id='".$id."'";
+		return $this->db->query($sql);
+	}
+
+	public function invoice_default($id=0)
+	{
+		if(!$id){
+			return false;
+		}
+		$rs = $this->invoice_one($id);
+		$sql = "UPDATE ".$this->db->prefix."user_invoice SET is_default=0 WHERE user_id='".$rs['user_id']."'";
+		$this->db->query($sql);
+		$sql = "UPDATE ".$this->db->prefix."user_invoice SET is_default=1 WHERE id='".$id."'";
+		$this->db->query($sql);
+		return true;
+	}
+
+	public function token_check($uid,$chk)
+	{
+		if(!$uid || !$chk){
+			return false;
+		}
+		$sql = "SELECT id,group_id,user,pass FROM ".$this->db->prefix."user WHERE id='".$uid."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		$code = md5($uid.'-'.$rs['user'].'-'.$rs['pass']);
+		if(strtolower($code) == strtolower($chk)){
+			$_SESSION['user_id'] = $uid;
+			$_SESSION['user_name'] = $rs['user'];
+			$_SESSION['user_gid'] = $rs['group_id'];
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public function token_create($uid)
+	{
+		if(!$uid){
+			return false;
+		}
+		$sql = "SELECT id,group_id,user,pass FROM ".$this->db->prefix."user WHERE id='".$uid."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		$code = md5($uid.'-'.$rs['user'].'-'.$rs['pass']);
+		$array = array('user_id'=>$uid,'user_chk'=>$code);
+		return $this->lib('token')->encode($array);
 	}
 }
 ?>

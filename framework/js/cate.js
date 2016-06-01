@@ -55,21 +55,42 @@ function cate_check()
 	return true;
 }
 
-//删除分类
-function cate_delete(id,title)
+function show_submit(id)
 {
-	$.dialog.confirm("确定要删除分类：<span class='red'>"+title+"</span> 吗？删除后相关联的主题会失效！",function(){
-		var url = get_url("cate","delete");
-		url += "&id="+id;
-		var rs = json_ajax(url);
-		if(rs.status == "ok")
-		{
-			$.phpok.reload();
-		}
-		else
-		{
-			$.dialog.alert(rs.content);
-			return false;
+	//var html = '<input type="button" class="phpok-btn" value="提交" onclick="update_taxis('+id+')" />';
+	//$("#taxis_submit_"+id).html(html);
+}
+
+function hide_element(id)
+{
+	update_taxis(id);
+	//$("#taxis_submit_"+id).html('&nbsp;');
+}
+
+function update_taxis(id)
+{
+	val = $("#taxis_"+id).val();
+	$.ajax({
+		'url':get_url('cate','ajax_taxis','id='+id+'&taxis='+val),
+		'dataType':'json',
+		'cache':false,
+		'async':true,
+		'beforeSend': function (XMLHttpRequest){
+			XMLHttpRequest.setRequestHeader("request_type","ajax");
+		},
+		'success':function(rs){
+			if(rs.status == 'ok')
+			{
+				$("#taxis_submit_"+id).html('<span class="status1"></status1>');
+				window.setTimeout(function(){
+					$("#taxis_submit_"+id).html('&nbsp;');
+				}, 1000);
+			}
+			else
+			{
+				$.dialog.alert(rs.content);
+				return false;
+			}
 		}
 	});
 }

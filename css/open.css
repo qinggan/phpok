@@ -26,6 +26,13 @@ a{color:#000;text-decoration: none;}
 .table .content{padding-left:3px;}
 
 .tips{line-height:31px;border:1px solid #E5E5E5;background:#F5F5F5;padding:1px 3px;}
+.tips div.action{
+	float:right;
+	line-height:25px;
+	padding-right:5px;
+	padding-left:18px;
+	background:url("../images/tips_action_a.gif") left center no-repeat;
+}
 
 input[type=text],input[type=password]{
 	border:1px solid #E5E5E5;
@@ -36,7 +43,7 @@ input[type=text],input[type=password]{
 }
 
 input.select{margin:0;padding:0;border:1px solid #9FAFBB;height:22px;width:70px;}
-select{margin:0;padding:0;border:1px solid #9FAFBB;}
+select{margin:0;padding:3px;border:1px solid #9FAFBB;}
 
 textarea.long{width:500px;height:100px;}
 textarea.default{width:350px;height:40px;}
@@ -124,13 +131,129 @@ ul.layout:after{content:".";display: block;visibility: hidden;clear:both;height:
 ul.layout li{float:left;margin-right:10px;margin-left:3px;}
 
 
-/* 网上提供的多浏览器下支持的按钮 */
-.phpok-btn{display:inline-block; border-width:1px 0; border-color:#bbbbbb; border-style:solid; vertical-align:middle;}
-.phpok-btn .b{float:left; background:#e3e3e3; border-width:0 1px; border-color:#bbbbbb; border-style:solid; margin:0 -1px; position:relative;font-weight:normal;}
-.phpok-btn .c{display:block; line-height:0.6em; background:#f9f9f9; border-bottom:2px solid #eeeeee;}
-.phpok-btn .d{display:block; padding:0.1em 0.6em; margin-top:-0.7em; cursor:default;}
-.phpok-btn:hover{border-color:#0033CC;}
-.phpok-btn:hover .b{border-color:#0033CC;}
+/* 按钮样式 */
+button.button{
+	height:23px;
+	padding:0 5px;
+	margin:0;
+	border:1px solid #ACACAC;
+	line-height:19px;
+	text-align:center;
+}
+button.button:hover{
+	border-color:#7EB4EA;
+	background:#E3F0FC;
+}
+button.disabled{
+	color:#AAA;
+	background:#EEE;
+}
+
+
+.phpok-btn{
+	position:relative;
+	overflow:visible;
+	display:inline-block;
+	padding:0.2em 0.6em;
+	border:1px solid #d4d4d4;
+	margin:0;
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0 #fff;
+	font:14px/normal "Microsoft Yahei","宋体","Arial",sans-serif;
+	color:#333;
+	white-space:nowrap;
+	cursor:pointer;
+	outline:none;
+	background-color:#ececec;
+	background-image:-webkit-gradient(linear,0 0,0 100%,from(#f4f4f4),to(#ececec));
+	background-image:-moz-linear-gradient(#f4f4f4,#ececec);
+	background-image:-ms-linear-gradient(#f4f4f4,#ececec);
+	background-image:-o-linear-gradient(#f4f4f4,#ececec);
+	background-image:linear-gradient(#f4f4f4,#ececec);
+	-moz-background-clip:padding;
+	background-clip:padding-box;
+	border-radius:3px;
+	zoom:1;
+	*display:inline
+}
+
+.phpok-btn:hover,
+.phpok-btn:focus,
+.phpok-btn:active,
+.phpok-btn.active {
+	border-color: #3072b3;
+	border-bottom-color: #2a65a0;
+	text-decoration: none;
+	text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
+	color: #fff;
+	background-color: #3c8dde;
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#599bdc), to(#3072b3));
+	background-image: -moz-linear-gradient(#599bdc, #3072b3);
+	background-image: -o-linear-gradient(#599bdc, #3072b3);
+	background-image: linear-gradient(#599bdc, #3072b3);
+}
+
+.phpok-btn:active,
+.phpok-btn.active {
+	border-color: #2a65a0;
+	border-bottom-color: #3884cd;
+	background-color: #3072b3;
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#3072b3), to(#599bdc));
+	background-image: -moz-linear-gradient(#3072b3, #599bdc);
+	background-image: -ms-linear-gradient(#3072b3, #599bdc);
+	background-image: -o-linear-gradient(#3072b3, #599bdc);
+	background-image: linear-gradient(#3072b3, #599bdc);
+}
+
+.phpok-btn::-moz-focus-inner {padding: 0;border: 0;}
+
+.button-group {
+    display: inline-block;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    /* IE hacks */
+    zoom: 1;
+    *display: inline;
+}
+
+.phpok-btn + .phpok-btn,
+.phpok-btn + .button-group,
+.button-group + .phpok-btn,
+.button-group + .button-group {
+    margin-left: 15px;
+}
+
+.button-group li {
+    float: left;
+    padding: 0;
+    margin: 0;
+}
+
+.button-group .phpok-btn {
+    float: left;
+    margin-left: -1px;
+}
+
+.button-group > .phpok-btn:not(:first-child):not(:last-child),
+.button-group li:not(:first-child):not(:last-child) .phpok-btn {
+    border-radius: 0;
+}
+
+.button-group > .phpok-btn:first-child,
+.button-group li:first-child .phpok-btn {
+    margin-left: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.button-group > .phpok-btn:last-child,
+.button-group li:last-child > .phpok-btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
 
 .help{
 	border:1px solid #E5E5E5;
@@ -138,3 +261,25 @@ ul.layout li{float:left;margin-right:10px;margin-left:3px;}
 	padding-left:12px;
 	margin:3px 0 0 0;
 }
+
+/* 评论 */
+.comment{margin:3px auto;position:relative;border:1px solid #ccc;margin-bottom:10px;border-radius:5px;background:#efefef;}
+.comment .content{border-bottom:1px solid #ccc;padding:3px;line-height:170%;font-size:14px;background:#fff;border-radius:5px 5px 0 0;}
+.comment .content p{margin:0;padding:0;}
+.comment .action{margin-bottom:3px;float:right;width:auto;}
+.comment fieldset.adm-reply{margin:10px;border:1px solid #dedede;padding-left:20px;}
+.comment fieldset.adm-reply p{margin:0;padding:0;}
+fieldset.sub_comment{border:1px solid darkblue;margin-left:48px;}
+
+
+div.cate:hover{text-decoration:underline;color:#000;}
+div.cate_0{background:#99FFFF;}
+div.cate_1{background:#FFFF33;}
+div.cate_2{background:#FF6666;}
+div.cate_3{background:#CCFF33;}
+div.cate_4{background:#DDAAAA;}
+div.cate_5{background:#CC66FF;}
+div.cate_6{background:#6633FF;}
+div.cate_7{background:#83D3B4;}
+div.cate_8{background:#DACCC7;}
+div.cate_9{background:#AD78E9;}

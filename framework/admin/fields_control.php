@@ -10,10 +10,10 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class fields_control extends phpok_control
 {
-	var $form_list;
-	var $field_list;
-	var $popedom;
-	function __construct()
+	private $form_list;
+	private $field_list;
+	private $popedom;
+	public function __construct()
 	{
 		parent::control();
 		$this->form_list = $this->model('form')->form_all();
@@ -27,9 +27,11 @@ class fields_control extends phpok_control
 	}
 
 	//取得全部字段列表
-	function index_f()
+	public function index_f()
 	{
-		if(!$this->popedom["list"]) error("你没有查看权限");
+		if(!$this->popedom["list"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$type = $this->get("type");
 		$condition = "";
 		if($type)
@@ -39,10 +41,8 @@ class fields_control extends phpok_control
 		}
 		//读取全部字段
 		$rslist = $this->model('fields')->get_all($condition);
-		if($rslist)
-		{
-			foreach($rslist AS $key=>$value)
-			{
+		if($rslist){
+			foreach($rslist AS $key=>$value){
 				$value["field_type_name"] = $this->field_list[$value["field_type"]];
 				$value["form_type_name"] = $this->form_list[$value["form_type"]];
 				$rslist[$key] = $value;
@@ -56,13 +56,14 @@ class fields_control extends phpok_control
 	}
 
 	//添加字段
-	function set_f()
+	public function set_f()
 	{
 		$id = $this->get("id","int");
 		$area = array("module");
-		if($id)
-		{
-			if(!$this->popedom["modify"]) error("你没有编辑权限");
+		if($id){
+			if(!$this->popedom["modify"]){
+				error(P_Lang('您没有权限执行此操作'),'','error');
+			}
 			$rs = $this->model('fields')->get_one($id);
 			if($rs["ext"])
 			{
@@ -78,7 +79,9 @@ class fields_control extends phpok_control
 		}
 		else
 		{
-			if(!$this->popedom["add"]) error("你没有添加权限");
+			if(!$this->popedom["add"]){
+				error(P_Lang('您没有权限执行此操作'),'','error');
+			}
 		}
 		# 取得选项列表
 		$opt_list = $this->model('opt')->group_all();
@@ -90,10 +93,12 @@ class fields_control extends phpok_control
 		$this->view("fields_set");
 	}
 
-	function set1_f()
+	public function set1_f()
 	{
 		$area = array("module");
-		if(!$this->popedom["add"]) error("你没有添加权限");
+		if(!$this->popedom["add"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		# 取得选项列表
 		$opt_list = $this->model('opt')->group_all();
 		$this->assign("opt_list",$opt_list);
@@ -105,21 +110,24 @@ class fields_control extends phpok_control
 	}
 
 	# 存储表单信息
-	function save_f()
+	public function save_f()
 	{
 		$id = $this->get("id","int");
 		$title = $this->get("title");
 		$note = $this->get("note");
-		if(!$id)
-		{
-			if(!$this->popedom["add"]) error("你没有添加权限");
+		if(!$id){
+			if(!$this->popedom["add"]){
+				error(P_Lang('您没有权限执行此操作'),'','error');
+			}
 			$identifier = $this->get("identifier");
 			$this->chk_identifier($identifier);
 			$identifier = strtolower($identifier);
 		}
 		else
 		{
-			if(!$this->popedom["modify"]) error("你没有编辑权限");
+			if(!$this->popedom["modify"]){
+				error(P_Lang('您没有权限执行此操作'),'','error');
+			}
 		}
 		$field_type = $this->get("field_type");
 		$form_type = $this->get("form_type");
@@ -168,34 +176,36 @@ class fields_control extends phpok_control
 		$this->model('fields')->save($array,$id);
 		if($id)
 		{
-			error("字段：".$title." 更新成功！",admin_url("fields"));
+			error(P_Lang('字段更新成功'),$this->url("fields"));
 		}
 		else
 		{
-			error("字段创建成功！",admin_url("fields"));
+			error(P_Lang('字段创建成功'),$this->url("fields"));
 		}
 	}
 
-	function save1_f()
+	public function save1_f()
 	{
-		if(!$this->popedom["add"]) error("你没有添加权限");
+		if(!$this->popedom["add"]){
+			error(P_Lang('您没有权限执行此操作'),'','error');
+		}
 		$title = $this->get("title");
 		$note = $this->get("note");
 		$identifier = $this->get("identifier");
 		if(!$identifier)
 		{
-			error("字段标识不能为空！","","error");
+			error(P_Lang('字段标识不能为空'),"","error");
 		}
 		$identifier = strtolower($identifier);
 		//字符串是否符合条件
 		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$identifier))
 		{
-			error("字段标识不符合系统要求，限字母、数字及下划线且必须是字母开头！","","error");
+			error(P_Lang('字段标识不符合系统要求，限字母、数字及下划线且必须是字母开头'),"","error");
 		}
 		$chk = $this->model('fields')->is_has_sign($identifier);
 		if($chk)
 		{
-			error("字段标识已经存在！","","error");
+			error(P_Lang('字段标识已经存在'),"","error");
 		}
 		$field_type = $this->get("field_type");
 		$form_type = $this->get("form_type");
@@ -241,58 +251,112 @@ class fields_control extends phpok_control
 		$area = $this->get("area","checkbox");
 		$array["area"] = ($area && is_array($area)) ? implode(",",$area) : "";
 		$this->model('fields')->save($array);
-		$html = '系统会在 <span class="red">2秒</span>后关闭窗口，<a href="javascript:parent.window.location.reload();void(0);">您可以点这里关闭窗口</a>';
+		$html = P_Lang('系统会在2秒后关闭窗口，').'<a href="javascript:parent.window.location.reload();void(0);">'.P_Lang('您可以点这里关闭窗口').'</a>';
 		$html.= '<script type="text/javascript">'."\n";
 		$html.= 'window.setTimeout(\'parent.window.location.reload()\',2000)'."\n";
 		$html.= "\n".'</script>';
-		error_open("字段创建成功","ok",$html);
+		error_open(P_Lang('字段创建成功'),"ok",$html);
 	}
 
-	//检测字段
-	function chk_identifier($identifier)
+	private function chk_identifier($identifier)
 	{
-		$error_url = admin_url("fields","set");
+		$error_url = $this->url("fields","set");
 		if(!$identifier)
 		{
-			error("字段标识不能为空！",$error_url,"error");
+			error(P_Lang('字段标识不能为空'),$error_url,"error");
 		}
 		$identifier = strtolower($identifier);
-		//字符串是否符合条件
 		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$identifier))
 		{
-			error("字段标识不符合系统要求，限字母、数字及下划线且必须是字母开头！",$error_url);
+			error(P_Lang('字段标识不符合系统要求，限字母、数字及下划线且必须是字母开头'),$error_url);
 		}
 		$chk = $this->model('fields')->is_has_sign($identifier);
 		if($chk)
 		{
-			error("字段标识已经存在！",$error_url);
+			error(P_Lang('字段标识已经存在'),$error_url);
 		}
 	}
 
-	function taxis_f()
+	public function taxis_f()
 	{
 		$taxis = $this->lib('trans')->safe("taxis");
 		if(!$taxis || !is_array($taxis))
 		{
-			json_exit("没有指定要更新的排序！");
+			$this->json(P_Lang('没有指定要更新的排序'));
 		}
 		foreach($taxis AS $key=>$value)
 		{
 			$this->model('fields')->update_taxis($key,$value);
 		}
-		json_exit("数据排序更新成功！",true);
+		$this->json(P_Lang('数据排序更新成功'),true);
 	}
 
-	function delete_f()
+	public function delete_f()
 	{
-		if(!$this->popedom["delete"]) json_exit("你没有删除权限");
+		if(!$this->popedom['delete']){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
 		if(!$id)
 		{
-			json_exit("未指定字段ID！");
+			$this->json(P_Lang('未指定字段ID'));
 		}
 		$this->model('fields')->delete($id);
-		json_exit("字段删除成功！",true);
+		$this->json(P_Lang('字段删除成功'),true);
+	}
+
+	public function cateset_f()
+	{
+		$ids = $this->get('ids');
+		if(!$ids){
+			$this->json(P_Lang('未指定要操作的字段ID'));
+		}
+		$idlist = explode(",",$ids);
+		foreach($idlist as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				unset($idlist[$key]);
+			}
+		}
+		$ids = implode(",",$idlist);
+		if(!$ids){
+			$this->json(P_Lang('没有要操作的字段ID'));
+		}
+		$action = $this->get('pl_act');
+		if(!$action){
+			$action = 'add';
+		}
+		$cateid = $this->get('cateid');
+		if(!$cateid){
+			$this->json(P_Lang('未指定分类'));
+		}
+		$rslist = $this->model('fields')->get_all("id IN(".$ids.")");
+		if(!$rslist){
+			$this->json(P_Lang('数据不存在'));
+		}
+		foreach($rslist as $key=>$value){
+			if(!$value['area']){
+				if($action == 'add'){
+					$this->model('fields')->save(array('area'=>$cateid),$value['id']);
+					continue;
+				}
+				continue;
+			}
+			if($value['area'] && $value['area'] == $cateid && $action != 'add'){
+				$this->model('fields')->save(array('area'=>''),$value['id']);
+				continue;
+			}
+			$tmp = explode(",",$value['area']);
+			$tmp[] = $cateid;
+			$tmp = array_unique($tmp);
+			if($action != 'add'){
+				$tmpid = array_search($cateid,$tmp);
+				unset($tmp[$tmpid]);
+			}
+			$area = implode(",",$tmp);
+			$this->model('fields')->save(array('area'=>$area),$value['id']);
+		}
+		$this->json(true);
 	}
 }
 ?>

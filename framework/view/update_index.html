@@ -2,42 +2,16 @@
 <div class="tips">欢迎您使用在线升级功能，本工具支持用户配置升级服务器</div>
 <script type="text/javascript">
 $(document).ready(function(){
-	//判断浏览器版本
-	var mouse = false;
-	if($.browser.msie && parseInt($.browser.version, 10) < 7)
-	{
-		mouse = true;
-	}
 	$("#project li").each(function(i){
-		//判断
-		if(mouse)
-		{
-			$(this).mouseover(function(){
-				$(this).addClass("hover");
-			}).mouseout(function(){
-				$(this).removeClass("hover");
-			});
-		}
 		$(this).click(function(){
 			var tips = $(this).attr('tips');
-			if(tips)
-			{
-				tips = tips.replace(/<br>/,"\n");
-				var qc = confirm(tips);
-				if(qc == '0')
-				{
-					return false;
-				}
-			}
-			var url = $(this).attr("href");
-			if(url)
-			{
+			var url = $(this).attr('href');
+			if(tips){
+				$.dialog.confirm(tips,function(){
+					$.phpok.go(url);
+				})
+			}else{
 				$.phpok.go(url);
-			}
-			else
-			{
-				alert("未指定动作！");
-				return false;
 			}
 		});
 	});

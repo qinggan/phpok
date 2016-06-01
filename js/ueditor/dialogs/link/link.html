@@ -72,9 +72,6 @@
     function handleDialogOk(){
         var href =$G('href').value.replace(/^\s+|\s+$/g, '');
         if(href){
-            if(!hrefStartWith(href,["http","/","ftp://",'#'])) {
-                href  = "http://" + href;
-            }
             var obj = {
                 'href' : href,
                 'target' : $G("target").checked ? "_blank" : '_self',
@@ -103,24 +100,8 @@
         }
     };
     $G('href').onblur = function(){
-        if(!hrefStartWith(this.value,["http","/","ftp://",'#'])){
-            $G("msg").innerHTML = "<span style='color: red'>"+lang.httpPrompt+"</span>";
-        }else{
-            $G("msg").innerHTML = "";
-        }
+        $G("msg").innerHTML = "";
     };
-
-    function hrefStartWith(href,arr){
-        href = href.replace(/^\s+|\s+$/g, '');
-        for(var i=0,ai;ai=arr[i++];){
-            if(href.indexOf(ai)==0){
-                return true;
-            }
-        }
-        return false;
-    }
-
-
 </script>
 </body>
 </html>

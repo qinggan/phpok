@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<admin_logout_confirm>Are you want to quit?</admin_logout_confirm>
+	<admin_index_clear_cache>Cache flush is complete</admin_index_clear_cache>
+	<admin_index_add_site>Add a site</admin_index_add_site>
+	<admin_index_edit_me>Change my message</admin_index_edit_me>
+	<all_site_empty>Site name can not be empty</all_site_empty>
+	<all_domain_empty>Domain can not be empty</all_domain_empty>
+	<all_domain_error1>Domain can not be http: // or https: // at the beginning</all_domain_error1>
+	<all_domain_error2>domain is not correct</all_domain_error2>
+	<all_domain_addok>Domain successfully added</all_domain_addok>
+	<all_domain_updateok>Domain successfully updated</all_domain_updateok>
+	<all_domain_delete_confirm>Do you want to delete this domain</all_domain_delete_confirm>
+	<all_ext_delete1>Do you want to delete this group information it? After deleting the relevant data will be deleted together</all_ext_delete1>
+	<all_ext_no_global_id>Global ID Not specified</all_ext_no_global_id>
+	<all_ext_delete_confirm>Do you want to delete it?</all_ext_delete_confirm>
+	<all_ext_add_error>Add exception, ID is not specified</all_ext_add_error>
+	<all_ext_add_name_empty>Name can not be empty</all_ext_add_name_empty>
+	<all_ext_add_identifier_empty>Identification can not be empty</all_ext_add_identifier_empty>
+	<all_ext_add_identifier_error>Does not meet the conditions require identification string</all_ext_add_identifier_error>
+	<all_ext_add_select_ico>Please select an icon</all_ext_add_select_ico>
+	<open_text_pic_manage>Photo manage</open_text_pic_manage>
+	<open_text_pic_noid>Not ID</open_text_pic_noid>
+	<list_set_admin_id>Appoint administrators</list_set_admin_id>
+</root>

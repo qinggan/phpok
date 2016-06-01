@@ -8,16 +8,22 @@
 	Update  : 2012-11-01 20:24
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class fields_model extends phpok_model
+class fields_model_base extends phpok_model
 {
 	function __construct()
 	{
 		parent::model();
 	}
 
-	function get_one($id)
+	public function __destruct()
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id='".$id."'";
+		parent::__destruct();
+		unset($this);
+	}
+
+	function get_one($id,$identifier='id')
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ".$identifier."='".$id."'";
 		return $this->db->get_one($sql);
 	}
 

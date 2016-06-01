@@ -26,7 +26,7 @@
 	<div class="content">
 		<select name="gid" id="gid">
 			<!-- loop from=$grouplist key=$key value=$value -->
-			<option value="{$value.id}"{if $gid == $value.id} selected{/if}>{$value.title}</option>
+			<option value="{$value.id}"{if $gid == $value.id} selected{/if}>{$value.title}{if $value.is_wap} - 手机端{/if}</option>
 			<!-- /loop -->
 		</select>
 	</div>
@@ -41,6 +41,20 @@
 		<tr>
 			<td><label><input type="radio" name="status" value="1"{if $rs.status} checked{/if} />启用</label></td>
 			<td><label><input type="radio" name="status" value="0"{if !$rs.status} checked{/if} />禁用</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		手机端使用：
+		<span class="note">启用后将允许在手机端使用该支付接口</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label><input type="radio" name="wap" value="1"{if $rs.wap} checked{/if} />启用</label></td>
+			<td><label><input type="radio" name="wap" value="0"{if !$rs.wap} checked{/if} />禁用</label></td>
 		</tr>
 		</table>
 	</div>

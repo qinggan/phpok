@@ -5,44 +5,25 @@
 	Version : 4.0
 	Web		: www.phpok.com
 	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-10-19 10:27
+	Update  : 2015年01月21日 20时27分
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class phpok_tpl
 {
-	# 模板编译后的前缀ID，后面跟下划线
-	var $tpl_id = 1;
-
-	# 模板目录，后面以/结尾
-	var $dir_tpl = "tpl/";
-
-	# 编译后的存储目录
-	var $dir_cache = "data/cache/";
-
-	# PHP路径
-	var $dir_php = "./";
-	var $dir_root = "./";
-
-	# 路径调整
-	var $path_change = "";
-
-	# 自动检测刷新模板
-	var $refresh_auto = true;
-
-	# 强制刷新模板
-	var $refresh = false;
-
-	# 模板后缀
-	var $tpl_ext = "html";
-
-	# HTML头部信息，防止被下载
-	var $html_head = '<?php if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");} ?>';
-
-	# tpl_value，附值
-	var $tpl_value;
+	public $tpl_id = 1;
+	public $dir_tpl = "tpl/";
+	public $dir_cache = "data/cache/";
+	public $dir_php = "./";
+	public $dir_root = "./";
+	public $path_change = "";
+	public $refresh_auto = true;
+	public $refresh = false;
+	public $tpl_ext = "html";
+	public $html_head = '<?php if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");} ?>';
+	public $tpl_value;
 
 	//构造函数
-	function __construct($config=array())
+	public function __construct($config=array())
 	{
 		if($config["id"]) $this->tpl_id = $config["id"];
 		if($config["dir_tpl"]) $this->dir_tpl = $config["dir_tpl"];
@@ -57,70 +38,91 @@ class phpok_tpl
 		if($this->dir_cache && substr($this->dir_cache,-1) != "/") $this->dir_cache .= "/";
 	}
 
-	//附值变量信息
-	//var 变量名
-	//val 变量值
-	function assign($var,$val="")
+	public function assign($var,$val="")
 	{
-		if(!$var || is_array($var)) return false;
-		$this->tpl_value[$var] = $val;
+		if(!$var || (is_array($var) && $val))
+		{
+			return false;
+		}
+		if(is_array($var))
+		{
+			foreach($var as $key=>$value)
+			{
+				$this->tpl_value[$key] = $value;
+			}
+		}
+		else
+		{
+			$this->tpl_value[$var] = $val;
+		}
+	}
+
+	public function val($var)
+	{
+		return $this->tpl_value[$var];
 	}
 
 	//注销变量
-	function unassign($var)
+	public function unassign($var='')
 	{
-		if(!$var) return false;
-		if($this->tpl_value[$var])
+		if(!$var)
 		{
-			$this->tpl_value[$var] = "";
+			unset($this->tpl_value);
+			return false;
+		}
+		if(!is_array($var) && $this->tpl_value[$var])
+		{
+			unset($this->tpl_value[$var]);
 			return true;
 		}
-		return false;
-	}
-
-	//注销全部变量
-	function unassign_all()
-	{
-		$this->tpl_value = "";
+		foreach((array)$var as $key=>$value)
+		{
+			if($this->tpl_value[$key])
+			{
+				unset($this->tpl_value[$key]);
+			}
+		}
 		return true;
 	}
 
-	function path_change($val="")
+	public function path_change($val="")
 	{
 		$this->path_change = $val;
 	}
 
 	//输出编译后的模板信息
 	//tpl是指模板文件，支持子目录
-	# type 类型，可选值为：file,file-ext,content,msg,abs-file
-	#	file，相对路径，不带后缀
-	#	file-ext，相对路径，带后缀
-	#	content/msg，纯模板内容
-	#	abs-file，带后缀的绝对路径
-	function output($tpl,$type="file",$path_format=true)
+	//type 类型，可选值为：file,file-ext,content,msg,abs-file
+	//	file，相对路径，不带后缀
+	//	file-ext，相对路径，带后缀
+	//	content/msg，纯模板内容
+	//	abs-file，带后缀的绝对路径
+	public function output($tpl,$type="file",$path_format=true)
 	{
-		if(!$tpl) $this->error("模板信息为空！");
+		if(!$tpl){
+			$this->error(P_Lang('模板信息为空'));
+		}
 		$comp_id = $this->comp_id($tpl,$type);
-		if(!$comp_id) $this->error("没有指定模板源！");
-		# 编译模板信息
+		if(!$comp_id){
+			$this->error(P_Lang('没有指定模板源'));
+		}
 		$this->compiling($comp_id,$tpl,$type,$path_format);
 		$this->assign("session",$_SESSION);
 		$this->assign("get",$_GET);
 		$this->assign("post",$_POST);
 		$this->assign("cookie",$_COOKIE);
-		if($this->path_change)
-		{
+		if($this->path_change){
 			$tmp_path_list = explode(",",$this->path_change);
 			$tmp_path_list = array_unique($tmp_path_list);
-			foreach($tmp_path_list AS $key=>$value)
-			{
+			foreach($tmp_path_list AS $key=>$value){
 				$value = trim($value);
-				if(!$value) continue;
+				if($value == ''){
+					continue;
+				}
 				$this->assign("_".$value,$value);
 			}
 		}
-		if(!$this->tpl_value || !is_array($this->tpl_value))
-		{
+		if(!$this->tpl_value || !is_array($this->tpl_value)){
 			$this->tpl_value = array();
 		}
 		$varlist = (is_array($GLOBALS))?array_merge($GLOBALS,$this->tpl_value):$this->tpl_value;
@@ -129,7 +131,7 @@ class phpok_tpl
 	}
 
 	//取得内容，不直接输出，参数output
-	function fetch($tpl,$type="file",$path_format=true)
+	public function fetch($tpl,$type="file",$path_format=true)
 	{
 		ob_start();
 		$this->output($tpl,$type,$path_format);
@@ -139,22 +141,17 @@ class phpok_tpl
 	}
 
 	# 取得编译后的文件ID
-	function comp_id($tpl,$type="file")
+	public function comp_id($tpl,$type="file")
 	{
 		$string = $this->tpl_id."_";
-		if($type == "file" || $type == "file-ext")
-		{
+		if($type == "file" || $type == "file-ext"){
 			$tpl = strtolower($tpl);
 			$tpl = str_replace("/","_folder_",$tpl);
 			$string .= $tpl;
-		}
-		elseif($type == "abs-file")
-		{
+		}elseif($type == "abs-file"){
 			$string .= substr(md5($tpl),9,16);
 			$string .= "_abs";
-		}
-		else
-		{
+		}else{
 			$string .= substr(md5($tpl),9,16);
 			$string .= "_c";
 		}
@@ -163,9 +160,8 @@ class phpok_tpl
 	}
 
 
-
 	//显示HTML信息
-	function display($tpl,$type="file",$path_format=true)
+	public function display($tpl,$type="file",$path_format=true)
 	{
 		$this->output($tpl,$type,$path_format);
 		exit;
@@ -175,42 +171,54 @@ class phpok_tpl
 	# compiling_id，生成的编译文件ID
 	# tpl，模板源文件
 	# type，模板类型
-	function compiling($compiling_id,$tpl,$type="file",$path_format=true)
+	private function compiling($compiling_id,$tpl,$type="file",$path_format=true)
 	{
 		//判断是否刷新
 		$is_refresh = false;
-		if(!file_exists($this->dir_cache.$compiling_id) || $this->refresh) $is_refresh = true;
-		if($type !="file" && $type != "file-ext" && $type != "abs-file") $is_refresh = true; #当模板不是使用文件时，则强制刷新，因为无法判断模板的时间
-		if(!$is_refresh && ($type == "file" || $type == "file-ext" || $type == "abs-file"))
-		{
-			if($type == "file")
-			{
+		if(!file_exists($this->dir_cache.$compiling_id) || $this->refresh){
+			$is_refresh = true;
+		}
+		if($type !="file" && $type != "file-ext" && $type != "abs-file"){
+			$is_refresh = true;
+		}
+		if(!$is_refresh && ($type == "file" || $type == "file-ext" || $type == "abs-file")){
+			if($type == "file"){
 				$tplfile = $this->dir_root.$this->dir_tpl.$tpl.".".$this->tpl_ext;
-			}
-			elseif($type == "file-ext")
-			{
+				if(!file_exists($tplfile) && basename($this->dir_tpl) != 'www'){
+					$tplfile = $this->dir_root.'tpl/www/'.$tpl.'.html';
+				}
+			}elseif($type == "file-ext"){
 				$tplfile = $this->dir_root.$this->dir_tpl.$tpl;
-			}
-			else
-			{
+				if(!file_exists($tplfile) && basename($this->dir_tpl) != 'www'){
+					$tplfile = $this->dir_root.'tpl/www/'.$tpl;
+				}
+			}else{
 				$tplfile = $tpl;
 			}
-			if(!file_exists($tplfile))
-			{
-				$this->error("模板文件：".basename($tplfile)." 不存在！");
+			if($this->refresh_auto){
+				if(!file_exists($tplfile)){
+					$this->error(P_Lang('模板文件[tplfile]不存在',array('tplfile'=>basename($tpl))));
+				}
+				if(filemtime($tplfile) > filemtime($this->dir_cache.$compiling_id)){
+					$is_refresh = true;
+				}
 			}
-			if($this->refresh_auto && filemtime($tplfile) > filemtime($this->dir_cache.$compiling_id)) $is_refresh = true;
 		}
-		if(!$is_refresh) return true;
+		if(!$is_refresh){
+			return true;
+		}
 		$html_content = $this->get_content($tpl,$type);
-		if(!$html_content) exit($this->ascii("模板的内容为空！"));
-		$php_content = $this->html_to_php($html_content,$path_format);
-		file_put_contents($this->dir_cache.$compiling_id,$this->html_head.$php_content);
+		if($html_content){
+			$php_content = $this->html_to_php($html_content,$path_format);
+			$newarray = array('<?php echo $app->plugin_html_ap("phpokhead");?></head>','<?php echo $app->plugin_html_ap("phpokbody");?></body>');
+			$php_content = str_replace(array('</head>','</body>'),$newarray,$php_content);
+			file_put_contents($this->dir_cache.$compiling_id,$this->html_head.$php_content);
+		}
 		return true;
 	}
 
 	//前端HTML里Debug调用
-	function html_debug($info)
+	public function html_debug($info)
 	{
 		if(!$info || !is_array($info) || !$info[1] || !trim($info[1])) return '';
 		$info = $info[1];
@@ -219,16 +227,45 @@ class phpok_tpl
 		return '<?php echo "<pre>".print_r($'.$info.',true)."</pre>";?>';
 	}
 
-	function lang_replace($info)
+	private function lang_replace($info)
 	{
 		if(!$info || !is_array($info) || !$info[1] || !trim($info[1])) return '';
 		$info = $info[1];
-		$info = stripslashes(trim($info));
-		return '<?php echo P_Lang('.$info.');?>';
+		$info = trim(str_replace(array("'",'"'),'',$info));
+		$lst = explode("|",$info);
+		$param = false;
+		if($lst[1]){
+			$tmp = explode(",",$lst[1]);
+			foreach($tmp as $key=>$value){
+				$tmp2 = explode(":",$value);
+				if(!$param){
+					$param = array();
+				}
+				if(substr($tmp2[1],0,1) == '$'){
+					$tmp2[1] = '\'.'.$tmp2[1].'.\'';
+				}
+				$param[$tmp2[0]] = '<span style="color:red">'.$tmp2[1].'</span>';
+			}
+		}
+		if($param){
+			$string = "array(";
+			$i=0;
+			foreach($param as $key=>$value){
+				if($i>0){
+					$string .= ",";
+				}
+				$string .= "'".$key."'=>'".$value."'";
+				$i++;
+			}
+			$string .= ")";
+			return '<?php echo P_Lang("'.stripslashes($lst[0]).'",'.$string.');?>';
+		}else{
+			return '<?php echo P_Lang("'.stripslashes($info).'");?>';
+		}
 	}
 
 	//正则替换
-	function html_to_php($content,$path_format=true)
+	private function html_to_php($content,$path_format=true)
 	{
 		//第一步，整理模板中的路径问题
 		if($this->path_change && $path_format)
@@ -439,12 +476,12 @@ class phpok_tpl
 		if(!$rs) return false;
 		if(!$rs["tpl"] && !$rs["file"] && !$rs["php"]) return false;
 		$string = "";
-		foreach($rs AS $key=>$value)
-		{
-			if($key != "tpl" && $key != "file")
-			{
-				if(substr($value,0,1) != '$') $value = '"'.$value.'"';
-				$string .= '<?php $'.$key.'='.$value.';?>';
+		foreach($rs AS $key=>$value){
+			if($key != "tpl" && $key != "file"){
+				if(substr($value,0,1) != '$'){
+					$value = '"'.$value.'"';
+				}
+				/*$string .= '<?php $'.$key.'='.$value.';?>';*/
 				$string .= '<?php $this->assign("'.$key.'",'.$value.'); ?>';
 			}
 		}
@@ -495,22 +532,20 @@ class phpok_tpl
 
 	function ajaxurl_php($string)
 	{
-		if(!$string || !trim($string)) return $this->return_false();
+		if(!$string || !trim($string)){
+			return $this->return_false();
+		}
 		$string = trim($string);
 		$string = preg_replace("/(\x20{2,})/"," ",$string);# 去除多余空格，只保留一个空格
 		parse_str($string,$list);
 		if(!$list || count($list)<1) return $this->return_false();
 		$url = $GLOBALS['app']->url.$GLOBALS['app']->config['www_file']."?";
 		$url.= $GLOBALS['app']->config['ctrl_id']."=ajax";
-		foreach($list AS $key=>$value)
-		{
+		foreach($list AS $key=>$value){
 			$value = $this->str_format($value);
-			if(substr($value,0,1) == '$')
-			{
+			if(substr($value,0,1) == '$'){
 				$url .= "&".$key.'=<?php echo rawurlencode('.$value.');?>';
-			}
-			else
-			{
+			}else{
 				$url .= "&".$key.'='.rawurlencode($value);
 			}
 		}
@@ -531,27 +566,19 @@ class phpok_tpl
 		$string = preg_replace("/(\x20{2,})/"," ",$string);# 去除多余空格，只保留一个空格
 		$list = explode(" ",$string);
 		$func = $list[0];
-		if(!$func || !function_exists($func))
-		{
+		if(!$func || !function_exists($func)){
 			return false;
 		}
 		$string = '<?php echo '.$func.'(';
 		$newlist = array();
-		foreach($list AS $key=>$value)
-		{
-			if($key>0)
-			{
-				if($value)
-				{
+		foreach($list AS $key=>$value){
+			if($key>0){
+				if($value){
 					$value = $this->str_format($value);
-					if($value)
-					{
-						if(substr($value,0,1) != '$')
-						{
+					if($value){
+						if(substr($value,0,1) != '$'){
 							$newlist[] = "'".rawurldecode($value)."'";
-						}
-						else
-						{
+						}else{
 							$newlist[] = rawurldecode($value);
 						}
 					}
@@ -683,14 +710,12 @@ class phpok_tpl
 	{
 		if($string == '') return false;
 		$string = stripslashes(trim($string));
-		if($del_mark)
-		{
+		if($del_mark){
 			if(substr($string,0,1) == '"' || substr($string,0,1) == "'") $string = substr($string,1);
 			if(substr($string,-1) == '"' || substr($string,-1) == "'") $string = substr($string,0,-1);
 		}
 		$string = $this->points_to_array($string);
-		if($auto_dollar && substr($string,0,1) != '$')
-		{
+		if($auto_dollar && substr($string,0,1) != '$'){
 			$string = '$'.$string;
 		}
 		return $string;
@@ -747,7 +772,7 @@ class phpok_tpl
 	}
 
 	//取得模板的内容
-	function get_content($tpl,$type="file")
+	private function get_content($tpl,$type="file")
 	{
 		if(!$tpl) return false;
 		if($type == "content" || $type == "msg") return $tpl;
@@ -770,7 +795,7 @@ class phpok_tpl
 		return file_get_contents($tplfile);
 	}
 
-	function ascii($str)
+	private function ascii($str)
 	{
 		if(!$str)
 		{
@@ -792,36 +817,50 @@ class phpok_tpl
 		return $output;
 	}
 
-	function error($msg)
+	public function error($msg)
 	{
 		exit($this->ascii($msg));
 	}
 
-	function ext()
+	public function ext()
 	{
 		return $this->tpl_ext;
 	}
 
-	function get_tpl($tplname,$default="default")
+	public function get_tpl($tplname,$default="default")
 	{
 		$tplfile = $this->dir_tpl.$tplname.".".$this->tpl_ext;
 		if(file_exists($tplfile))
 		{
 			return $tplname;
 		}
-		else
-		{
-			return $default;
-		}
+		return $default;
 	}
 
 	//检测文件是否存在
-	function check_exists($tplname,$isext=false,$ifabs=false)
+	public function check_exists($tplname,$isext=false,$ifabs=false)
 	{
 		$tplfile = $tplname;
 		if(!$isext) $tplfile .= ".".$this->tpl_ext;
 		if(!$ifabs) $tplfile = $this->dir_root.$this->dir_tpl.$tplfile;
 		if(is_file($tplfile))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	//检测模板文件是否存在
+	public function check($tplfile)
+	{
+		if(!$tplfile)
+		{
+			return false;
+		}
+		$tpl_1 = $this->dir_root.$this->dir_tpl.$tplfile.".".$this->tpl_ext;
+		$tpl_2 = $this->dir_root.$this->dir_tpl.$tplfile;
+		$tpl_3 = $tplfile.'.'.$this->tpl_ext;
+		if(is_file($tpl_1) || is_file($tpl_2) || is_file($tpl_3) || is_file($tplfile))
 		{
 			return true;
 		}

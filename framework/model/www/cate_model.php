@@ -8,38 +8,29 @@
 	时间： 2014年11月05日 10时47分
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class cate_model extends phpok_model
+class cate_model extends cate_model_base
 {
-	private $siteid = 0;
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
 	}
 
-	//站点ID的两种写法
-	public function siteid($id)
+	public function __destruct()
 	{
-		$this->siteid = intval($id);
-	}
-
-	public function site_id($id)
-	{
-		return $this->siteid($id);
+		parent::__destruct();
+		unset($this);
 	}
 
 	//读取当前分类信息
-	public function get_one($id,$type='id',$siteid=0)
+	public function get_one($id,$field="id",$ext=true)
 	{
-		$cate_all = $this->cate_all($siteid);
-		if(!$cate_all)
-		{
+		$cate_all = $this->cate_all($this->site_id);
+		if(!$cate_all){
 			return false;
 		}
 		$rs = false;
-		foreach($cate_all as $key=>$value)
-		{
-			if($value[$type] == $id)
-			{
+		foreach($cate_all as $key=>$value){
+			if($value[$field] == $id){
 				$rs = $value;
 				break;
 			}
@@ -48,11 +39,11 @@ class cate_model extends phpok_model
 	}
 
 	//前端读取分类，带格式化
-	public function get_all($siteid=0,$parent_id=0)
+	public function get_all($site_id=0,$status=0,$pid=0)
 	{
 		$cate_all = $this->cate_all($siteid);
 		$tmplist = array();
-		$this->_format($tmplist,$cate_all,$parent_id);
+		$this->_format($tmplist,$cate_all,$pid);
 	}
 
 	//格式化分类数组
@@ -82,28 +73,22 @@ class cate_model extends phpok_model
 	}
 
 	//前端中涉及到的缓存
-	public function cate_all($siteid=0)
+	public function cate_all($site_id=0,$status=0)
 	{
-		$siteid = intval($siteid);
-		if(!$siteid)
-		{
-			$siteid = $this->siteid;
+		$siteid = intval($site_id);
+		if(!$siteid){
+			$siteid = $this->site_id;
 		}
-		$siteid = $siteid ? $siteid.',0' : '0';
-		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE site_id IN(".$siteid.") AND status=1 ORDER BY taxis ASC,id DESC";
+		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE site_id='".$siteid."' AND status=1 ORDER BY taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql,'id');
-		if(!$rslist)
-		{
+		if(!$rslist){
 			return false;
 		}
 		$extlist = $GLOBALS['app']->model('ext')->cate();
-		if($extlist)
-		{
-			foreach($rslist as $key=>$value)
-			{
+		if($extlist){
+			foreach($rslist as $key=>$value){
 				$tmpid = 'cate-'.$value['id'];
-				if($extlist[$tmpid])
-				{
+				if($extlist[$tmpid]){
 					$value = array_merge($value,$extlist[$tmpid]);
 				}
 				$rslist[$key] = $value;
@@ -152,6 +137,23 @@ class cate_model extends phpok_model
 			$rslist[$key] = $value;
 		}
 		return $rslist;
+	}
+
+	public function get_root_id($id)
+	{
+		$rs = $this->get_one($id);
+		if(!$rs)
+		{
+			return false;
+		}
+		if(!$rs['parent_id'])
+		{
+			return $rs['id'];
+		}
+		else
+		{
+			return $this->get_root_id($rs['parent_id']);
+		}
 	}
 	
 }

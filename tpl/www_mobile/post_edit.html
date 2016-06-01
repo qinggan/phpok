@@ -1,0 +1,84 @@
+<!-- include tpl=head title=$page_rs.title -->
+<script type="text/javascript">
+$(document).ready(function(){
+	var is_vcode = '<!-- if $sys.is_vcode && function_exists("imagecreate") -->true<!-- else -->false<!-- /if -->';
+	var is_cate = '{$page_rs.cate ? "true" : "false"}';
+	$("#post_submit").submit(function(){
+		if(!$("#title").val()){
+			$.dialog.alert('{$page_rs.alias_title ? $page_rs.alias_title : "主题"}不能为空');
+			return false;
+		}
+		if(is_cate == 'true'){
+			var cate_id = $("#cate_id").val();
+			if(!cate_id){
+				$.dialog.alert('请选择分类');
+				return false;
+			}
+		}
+		if(is_vcode == 'true'){
+			var chkcode = $("#_chkcode").val();
+			if(!chkcode){
+				$.dialog.alert('验证码不能为空');
+				$("#_vcode").phpok_vcode();
+				return false;
+			}
+		}
+		$(this).ajaxSubmit({
+			'url':api_url('post','save'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					$.dialog.alert('内容编辑成功',function(){
+						$.phpok.go('{if $session.user_id}{url ctrl=usercp func=list id=$page_rs.identifier/}{else}{$page_rs.url}{/if}');
+					});
+				}else{
+					$.dialog.alert(rs.content,function(){
+						$("#_vcode").phpok_vcode();
+						$("#_chkcode").val('');
+					});
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div role="main" class="ui-content">
+	<form method="post" id="post_submit">
+		<input type="hidden" name="id" value="{$page_rs.identifier}" />
+		<input type="hidden" name="tid" value="{$rs.id}" />
+		<div>{$page_rs.alias_title ? $page_rs.alias_title : '主题'}：<input type="text" name="title" id="title" value="{$rs.title}"></div>
+		<!-- if $catelist -->
+		<div>分类：
+			<select name="cate_id" id="cate_id" style="padding:3px;">
+				<option value="">请选择分类……</option>
+				<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+				<option value="{$value.id}"{if $cate_rs.id == $value.id} selected{/if}>{$value._space}{$value.title}</option>
+				<!-- /loop -->
+			</select>
+		</div>
+		<!-- /if -->
+		<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
+		<div>{$value.title}：{$value.html}</div>
+		<!-- /loop -->
+		<!-- if $sys.is_vcode && function_exists('imagecreate') -->
+		<div style="margin-top:10px;">验证码：
+			<input class="vcode"  type="text" name="_chkcode" id="_chkcode" data-role="none" />
+			<img src="" border="0" align="absmiddle" id="vcode" />
+		</div>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#vcode").phpok_vcode();
+			$("#vcode").click(function(){
+				$(this).phpok_vcode();
+			});
+		});
+		</script>
+		<!-- /if -->
+		<input type="submit" value="提交" data-theme="b" />
+	</form>
+</div>
+
+<!-- include tpl=foot -->

@@ -8,11 +8,17 @@
 	时间： 2014年10月6日
 *****************************************************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class usergroup_model extends phpok_model
+class usergroup_model extends usergroup_model_base
 {
 	function __construct()
 	{
-		parent::model();
+		parent::__construct();
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
+		unset($this);
 	}
 
 	function group_rs($uid)
@@ -26,50 +32,6 @@ class usergroup_model extends phpok_model
 			$rs = $this->db->get_one($sql);
 		}
 		return $rs;
-	}
-
-	//取得会员组ID
-	function group_id($uid=0)
-	{
-		$groupid = 0;
-		if($uid)
-		{
-			$sql = "SELECT group_id FROM ".$this->db->prefix."user WHERE id='".$uid."'";
-			$tmp = $this->db->get_one($sql);
-			if($tmp && $tmp['group_id']) $groupid = $tmp['group_id'];
-			if(!$groupid)
-			{
-				$sql = "SELECT id FROM ".$this->db->prefix."user_group WHERE status=1 AND is_default=1 ORDER BY id ASC LIMIT 1";
-				$tmp = $this->db->get_one($sql);
-				if(!$tmp || !$tmp['id'])
-				{
-					return false;
-				}
-				$groupid = $tmp['id'];
-			}
-		}
-		else
-		{
-			$sql = "SELECT id FROM ".$this->db->prefix."user_group WHERE status=1 AND is_guest=1 ORDER BY id ASC LIMIT 1";
-			$tmp = $this->db->get_one($sql);
-			if(!$tmp || !$tmp['id'])
-			{
-				return false;
-			}
-			$groupid = $tmp['id'];
-		}
-		if(!$groupid)
-		{
-			return false;
-		}
-
-		$sql = "SELECT id FROM ".$this->db->prefix."user_group WHERE status=1 AND id='".$groupid."'";
-		$tmp = $this->db->get_one($sql);
-		if(!$tmp || !$tmp['id'])
-		{
-			return false;
-		}
-		return $groupid;
 	}
 
 	//取得开放的会员组列表
