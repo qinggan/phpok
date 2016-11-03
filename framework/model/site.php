@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: phpok/model/site.php
-	Note	: 网站信息
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-10-17 15:15
-***********************************************************/
+/**
+ * 网站信息
+ * @package phpok\model
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2016年09月08日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class site_model_base extends phpok_model
 {
@@ -22,12 +25,23 @@ class site_model_base extends phpok_model
 		unset($this);
 	}
 
+	/**
+	 * 获取站点信息
+	 * @参数 $id 站点ID
+	 * @返回 数组
+	**/
 	public function get_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."site WHERE id='".$id."'";
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
+		}
+		if(file_exists($this->dir_root.'data/xml/site_'.$id.'.xml')){
+			$tmp = $this->lib('xml')->read($this->dir_root.'data/xml/site_'.$id.'.xml');
+			if($tmp){
+				$rs = array_merge($tmp,$rs);
+			}
 		}
 		$rs['_domain'] = $this->domain_list($id,'id');
 		if($rs['_domain']){
@@ -119,38 +133,24 @@ class site_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
-	//订单状态设置
+	/**
+	 * 订单状态设置
+	 * @参数 $sort 是否排序
+	 * @返回 false 或 数组
+	 * @更新时间 2016年09月28日
+	**/
 	public function order_status_all($sort=false)
 	{
-		$site_id = $GLOBALS['app']->app_id == 'admin' ? $_SESSION['admin_site_id'] : $GLOBALS['app']->site['id'];
+		$site_id = $this->app_id == 'admin' ? $this->session->val('admin_site_id') : $this->site['id'];
 		$file = $this->dir_root.'data/xml/order_status_'.$site_id.'.xml';
-		$string = 'create,unpaid,paid,shipped,received';
-		if($this->config['order'] && $this->config['order']['status']){
-			$string = $this->config['order']['status'];
-		}
-		$list = explode(",",$string);
-		$taxis = 100;
 		if(!file_exists($file)){
-			$taxis = 1;
-			$tmplist = array();
-			foreach($list as $key=>$value){
-				$tmplist[$value] = array('title'=>$value,'email_tpl_user'=>'','email_tpl_admin'=>'','taxis'=>$taxis,'status'=>0);
-				$taxis++;
-			}
-		}else{
-			$tmplist = $this->lib('xml')->read($file);
-			foreach($list as $key=>$value){
-				if(!$tmplist[$value]){
-					$tmplist[$value] = array('title'=>$value,'email_tpl_user'=>'','email_tpl_admin'=>'','taxis'=>$taxis,'status'=>0);
-					$taxis++;
-				}
-			}
-			foreach($tmplist as $key=>$value){
-				if(!in_array($key,$list)){
-					unset($tmplist[$key]);
-				}
-			}
+			$file = $this->dir_root.'data/xml/order_status.xml';
 		}
+		if(!file_exists($file)){
+			return false;
+		}
+		$taxis = 100;
+		$tmplist = $this->lib('xml')->read($file);
 		if($tmplist && $sort){
 			$rslist = array();
 			foreach($tmplist as $key=>$value){
@@ -171,36 +171,38 @@ class site_model_base extends phpok_model
 		return ($a['taxis'] < $b['taxis']) ? -1 : 1;
 	}
 
-	//
+	/**
+	 * 取得订单价格方案
+	 * @参数 $sort 是否执行排序操作
+	 * @返回 false 或是 数组
+	 * @更新时间 2016年09月28日
+	**/
 	public function price_status_all($sort=false)
 	{
-		$site_id = $GLOBALS['app']->app_id == 'admin' ? $_SESSION['admin_site_id'] : $GLOBALS['app']->site['id'];
+		$site_id = $this->app_id == 'admin' ? $this->session->val('admin_site_id') : $this->site['id'];
 		$file = $this->dir_root.'data/xml/price_status_'.$site_id.'.xml';
+		if(!file_exists($file)){
+			$file = $this->dir_root.'data/xml/price_status.xml';
+		}
+		if(!file_exists($file)){
+			return false;
+		}
 		$string = 'product,shipping,fee,discount,wealth,payonline';
 		if($this->config['order'] && $this->config['order']['price']){
 			$string = $this->config['order']['price'];
 		}
 		$list = explode(",",$string);
 		$taxis = 100;
-		if(!file_exists($file)){
-			$taxis = 1;
-			$tmplist = array();
-			foreach($list as $key=>$value){
+		$tmplist = $this->lib('xml')->read($file);
+		foreach($list as $key=>$value){
+			if(!$tmplist[$value]){
 				$tmplist[$value] = array('title'=>$value,'action'=>'add','taxis'=>$taxis,'status'=>0);
 				$taxis++;
 			}
-		}else{
-			$tmplist = $this->lib('xml')->read($file);
-			foreach($list as $key=>$value){
-				if(!$tmplist[$value]){
-					$tmplist[$value] = array('title'=>$value,'action'=>'add','taxis'=>$taxis,'status'=>0);
-					$taxis++;
-				}
-			}
-			foreach($tmplist as $key=>$value){
-				if(!in_array($key,$list)){
-					unset($tmplist[$key]);
-				}
+		}
+		foreach($tmplist as $key=>$value){
+			if(!in_array($key,$list)){
+				unset($tmplist[$key]);
 			}
 		}
 		if($tmplist && $sort){
@@ -253,6 +255,12 @@ class site_model_base extends phpok_model
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
+		}
+		if(file_exists($this->dir_root.'data/xml/site_'.$id.'.xml')){
+			$tmp = $this->lib('xml')->read($this->dir_root.'data/xml/site_'.$id.'.xml');
+			if($tmp){
+				$rs = array_merge($tmp,$rs);
+			}
 		}
 		$sql = "SELECT * FROM ".$this->db->prefix."site_domain WHERE site_id='".$id."'";
 		$dlist = $this->db->get_all($sql);

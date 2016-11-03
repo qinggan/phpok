@@ -1,17 +1,46 @@
 <!-- include tpl=head title=程序升级 -->
 <div class="tips">欢迎您使用在线升级功能，本工具支持用户配置升级服务器</div>
 <script type="text/javascript">
+function zip_update()
+{
+	var url = get_url('update','zip');
+	$.dialog.open(url,{
+		'title':'{langZIP包离线升级}',
+		'lock':true,
+		'width':'500px',
+		'height':'150px',
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert(p_lang('iframe还没加载完毕呢'));
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal':p_lang('上传离线包升级'),
+		'cancelVal':p_lang('取消'),
+		'cancel':function(){return true;}
+	});
+}
 $(document).ready(function(){
 	$("#project li").each(function(i){
 		$(this).click(function(){
 			var tips = $(this).attr('tips');
 			var url = $(this).attr('href');
-			if(tips){
-				$.dialog.confirm(tips,function(){
+			var func = $(this).attr('func');
+			if(url){
+				if(tips){
+					$.dialog.confirm(tips,function(){
+						$.phpok.go(url);
+					})
+				}else{
 					$.phpok.go(url);
-				})
+				}
 			}else{
-				$.phpok.go(url);
+				if(func){
+					eval(func);
+				}
 			}
 		});
 	});
@@ -26,7 +55,7 @@ $(document).ready(function(){
 		</li>
 		<!-- /if -->
 		<!-- if $update.zip -->
-		<li title="ZIP压缩包升级" href="{url ctrl=update func=zip/}">
+		<li title="ZIP压缩包升级" func="zip_update()">
 			<div class="img"><img src="images/ico/zip.png" /></div>
 			<div class="txt">压缩包升级</div>
 		</li>

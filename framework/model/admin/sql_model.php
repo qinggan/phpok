@@ -89,16 +89,23 @@ class sql_model extends sql_model_base
 	//检测管理员是否存在，不存在或存在异常就更新
 	public function update_adm($data,$id=0)
 	{
-		if($id)
-		{
+		if($id){
 			$sql = "UPDATE ".$this->db->prefix."adm SET account='".$data['account']."' WHERE id='".$id."'";
 			return $this->db->query($sql);
-		}
-		else
-		{
+		}else{
 			$sql = "INSERT INTO ".$this->db->prefix."adm(account,pass,email,status,if_system) VALUES('".$data['account']."','".$data['pass']."','".$data['status']."','".$data['if_system']."')";
-			return $this->db->query($sql);
+			return $this->db->insert($sql);
 		}
+	}
+
+	//更新SESSION
+	public function update_session($sid,$data)
+	{
+		$sql = "TRUNCATE TABLE `".$this->db->prefix."session`";
+		$this->db->query($sql);
+		$sql = "INSERT INTO ".$this->db->prefix."session(id,data,lasttime) VALUES('".$sid."','".$data."','".$this->time."')";
+		$this->db->query($sql);
+		return true;
 	}
 }
 

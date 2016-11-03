@@ -1,23 +1,35 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/api/login_control.php
-	Note	: API登录接口
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年11月2日
-***********************************************************/
+/**
+ * 会员登录，基于API请求
+ * @package phpok\api
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2016年07月25日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class login_control extends phpok_control
 {
+	/**
+	 * 构造函数
+	**/
 	public function __construct()
 	{
 		parent::control();
 	}
 
+	/**
+	 * 会员登录接口
+	 * @参数 _chkcode 验证码
+	 * @参数 user 会员账号/邮箱/手机号
+	 * @参数 pass 会员密码
+	**/
 	public function save_f()
 	{
-		if($_SESSION['user_id']){
+		if($this->session->val('user_id')){
 			$this->json(P_Lang('您已是本站会员，不需要再次登录'));
 		}
 		if($this->config['is_vcode'] && function_exists('imagecreate')){
@@ -26,10 +38,10 @@ class login_control extends phpok_control
 				$this->json(P_Lang('验证码不能为空'));
 			}
 			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode']){
+			if($code != $this->session->val('vcode')){
 				$this->json(P_Lang('验证码填写不正确'));
 			}
-			unset($_SESSION['vcode']);
+			$this->session->unassign('vcode');
 		}
 		$user = $this->get("user");
 		if(!$user){
@@ -59,23 +71,30 @@ class login_control extends phpok_control
 		if(!password_check($pass,$user_rs["pass"])){
 			$this->json(P_Lang('登录密码不正确'));
 		}
-		$_SESSION["user_id"] = $user_rs['id'];
-		$_SESSION["user_gid"] = $user_rs['group_id'];
-		$_SESSION["user_name"] = $user_rs["user"];
+		$this->session->assign('user_id',$user_rs['id']);
+		$this->session->assign('user_gid',$user_rs['group_id']);
+		$this->session->assign('user_name',$user_rs['user']);
+		$this->model('wealth')->login($user_rs['id'],P_Lang('会员登录'));
 		$this->json(true);
 	}
 
-	//会员登录
+	/**
+	 * 会员登录别名
+	**/
 	public function index_f()
 	{
 		$this->save_f();
 	}
 
-	//请求取回密码功能
+	/**
+	 * 请求取回密码功能
+	 * @参数 _chkcode 验证码
+	 * @参数 email 邮箱
+	**/
 	public function getpass_f()
 	{
 		//判断是否是会员
-		if($_SESSION['user_id']){
+		if($this->session->val('user_id')){
 			$this->json(P_Lang('您已是本站会员，不能执行这个操作'));
 		}
 		//检测是否启用验证码
@@ -85,10 +104,10 @@ class login_control extends phpok_control
 				$this->json(P_Lang('验证码不能为空'));
 			}
 			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode']){
+			if($code != $this->session->val('vcode')){
 				$this->json(P_Lang('验证码填写不正确'));
 			}
-			unset($_SESSION['vcode']);
+			$this->session->unassign('vcode');
 		}
 		$email = $this->get('email');
 		if(!$email){
@@ -131,10 +150,18 @@ class login_control extends phpok_control
 		$this->json(true);
 	}
 
-	//通过取回密码进行修改
+	/**
+	 * 通过取回密码进行修改
+	 * @参数 _chkcode 验证码
+	 * @参数 code 验证串
+	 * @参数 user 会员账号
+	 * @参数 email 邮箱
+	 * @参数 newpass 新密码
+	 * @参数 chkpass 确认密码
+	**/
 	public function repass_f()
 	{
-		if($_SESSION['user_id']){
+		if($this->session->val('user_id')){
 			$this->json(P_Lang('您已是本站会员，不能执行这个操作'));
 		}
 		//判断是否启用验证码功能
@@ -144,10 +171,10 @@ class login_control extends phpok_control
 				$this->json(P_Lang('验证码不能为空'));
 			}
 			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode']){
+			if($code != $this->session->val('vcode')){
 				$this->json(P_Lang('验证码填写不正确'));
 			}
-			unset($_SESSION['vcode']);
+			$this->session->unassign('vcode');
 		}
 		$code = $this->get('code');
 		if(!$code){
@@ -197,12 +224,16 @@ class login_control extends phpok_control
 		$this->json(true);
 	}
 
-	//登录状态判断
+	/**
+	 * 登录状态判断
+	**/
 	public function status_f()
 	{
-		if($_SESSION['user_id']){
-			$session = array('user_id'=>$_SESSION['user_id'],'user_name'=>$_SESSION['user_name'],'user_gid'=>$_SESSION['user_gid']);
-			$this->json($session,true);
+		if($this->session->val('user_id')){
+			$array = array('user_id'=>$this->session->val('user_id'));
+			$array['user_name'] = $this->session->val('user_name');
+			$array['user_gid'] = $this->session->val('user_gid');
+			$this->json($array,true);
 		}else{
 			$this->json(false);
 		}

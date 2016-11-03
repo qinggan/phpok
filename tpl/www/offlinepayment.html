@@ -1,0 +1,111 @@
+<!-- php:$cssfile = "css/style.css,artdialog.css,css/usercp.css" -->
+<!-- head title=填写您的银行汇款信息 css=$cssfile extjs="jquery.artdialog.js" js="js/global.js" html5=true -->
+<body>
+<header style="width:auto;min-width:980px;border-bottom:1px solid #ccc;margin-bottom:10px;">
+	<div style="width:980px;margin:0 auto;">
+		<div class="top">
+			<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" /></a></div>
+			<div class="right">
+				<div style="line-height:60px;margin-right:10px;">
+				<a href="{url ctrl=order func=info id=$rs.sn passwd=$rs.passwd/}">返回订单信息</a>
+				</div>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</header>
+
+<!-- php:$project = phpok('drmpjihitd') -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#book_post").submit(function(){
+		//提交表单
+		if(!$('#title').val()){
+			$.dialog.alert("订单编号不能为空");
+			return false;
+		}
+		if(!$('#bankname').val()){
+			$.dialog.alert('汇款银行不能为空');
+			return false;
+		}
+		if(!$('#fullname').val()){
+			$.dialog.alert('汇款人姓名不能为空');
+			return false;
+		}
+		if(!$('#mobile').val()){
+			$.dialog.alert('汇款人手机号不能为空');
+			return false;
+		}
+		$(this).ajaxSubmit({
+			'url':api_url('post','save'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					$.dialog.alert('您的汇款信息已经提交，请耐心等候管理员审核，感谢您的提交',function(){
+						$.phpok.go('{url ctrl=order func=info sn=$order.sn/}');
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content,function(){
+						$("#update_vcode").phpok_vcode();
+						$("#_chkcode").val('');
+					});
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<div class="main">
+	<div class="pfw book mb10">
+		<h3>填写银行汇款信息</h3>
+		<div class="content mess">
+			<form method="post" id="book_post">
+			<input type="hidden" name="id" id="id" value="{$project.identifier}" />
+			<!-- fields pid=$project.id fields_format=1 in_title=1 -->
+			<table width="100%">
+			<!-- loop from=$list key=$key value=$value -->
+			<tr>
+				<td width="150px" align="right" valign="top">{$value.title}：</td>
+				<td class="td">{$value.html}</td>
+			</tr>
+			<!-- /loop -->
+			<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+			<tr>
+				<td align="right" valign="top">验证码：</td>
+				<td class="td">
+					<table cellpadding="0" cellspacing="0" width="180px">
+					<tr>
+						<td><input type="text" name="_chkcode" id="_chkcode" class="vcode" /></td>
+						<td align="right"><img src="" border="0" align="absmiddle" id="update_vcode" class="hand"></td>
+					</tr>
+					</table>
+					<script type="text/javascript">
+					$(document).ready(function(){
+						$("#update_vcode").phpok_vcode();
+						//更新点击时操作
+						$("#update_vcode").click(function(){
+							$(this).phpok_vcode();
+						});
+					});
+					</script>
+				</td>
+			</tr>
+			<!-- /if -->
+			<tr>
+				<td>&nbsp;</td>
+				<td><input type="submit" value=" 提交 " class="submit" /></td>
+			</tr>
+			</table>
+			</form>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#title").val("{$order.sn}").attr('readonly',true).css("color","red");
+});
+</script>
+<!-- include tpl=foot -->

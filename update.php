@@ -1,12 +1,13 @@
 <?php
-/***********************************************************
-	Filename: update.php
-	Note	: PHPOK升级包
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年12月30日
-***********************************************************/
+/**
+ * PHPOK企业站系统，使用PHP语言及MySQL数据库编写的企业网站建设系统，基于LGPL协议开源授权
+ * @package phpok
+ * @author phpok.com
+ * @copyright 2015-2016 深圳市锟铻科技有限公司
+ * @version 4.x
+ * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ */
+
 error_reporting(E_ALL ^ E_NOTICE);
 //旧版数据配置
 /*

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<default>
+		<user>用户</user>
+		<introducer>一级推荐人</introducer>
+		<introducer2>二级推荐人</introducer2>
+		<introducer3>三级推荐人</introducer3>
+	</default>
+	<en_US>
+		<user>User</user>
+		<introducer>Introducer 1</introducer>
+		<introducer2>Introducer 2</introducer2>
+		<introducer3>Introducer 3</introducer3>
+	</en_US>
+</root>

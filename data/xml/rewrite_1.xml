@@ -9,7 +9,7 @@
 		<ctrl><![CDATA[index]]></ctrl>
 		<func><![CDATA[index]]></func>
 		<var><![CDATA[]]></var>
-		<sort><![CDATA[1]]></sort>
+		<sort><![CDATA[100]]></sort>
 	</url>
 	<url>
 		<id><![CDATA[2f1f172e8c066020907dca5278270df9]]></id>
@@ -20,7 +20,7 @@
 		<ctrl><![CDATA[order]]></ctrl>
 		<func><![CDATA[info]]></func>
 		<var><![CDATA[sn|passwd]]></var>
-		<sort><![CDATA[2]]></sort>
+		<sort><![CDATA[105]]></sort>
 	</url>
 	<url>
 		<id><![CDATA[d628e19d2ee1afd96b933e9a54b0f017]]></id>
@@ -31,7 +31,7 @@
 		<ctrl><![CDATA[order]]></ctrl>
 		<func><![CDATA[info]]></func>
 		<var><![CDATA[sn]]></var>
-		<sort><![CDATA[3]]></sort>
+		<sort><![CDATA[110]]></sort>
 	</url>
 	<url>
 		<id><![CDATA[68b1b9b521ba889e3ff01065e1ec8d22]]></id>
@@ -42,7 +42,18 @@
 		<ctrl><![CDATA[order]]></ctrl>
 		<func><![CDATA[info]]></func>
 		<var><![CDATA[id]]></var>
-		<sort><![CDATA[4]]></sort>
+		<sort><![CDATA[115]]></sort>
+	</url>
+	<url>
+		<id><![CDATA[79362eb38b905593922280e6e5b59b22]]></id>
+		<title><![CDATA[会员订单明细]]></title>
+		<rule><![CDATA[order\/(create|create\_success)\.html$]]></rule>
+		<val><![CDATA[index.php?c=order&f=$1]]></val>
+		<format><![CDATA[order/[func].html]]></format>
+		<ctrl><![CDATA[order]]></ctrl>
+		<func><![CDATA[create|create_success]]></func>
+		<var><![CDATA[]]></var>
+		<sort><![CDATA[117]]></sort>
 	</url>
 	<url>
 		<id><![CDATA[709ca43435f17523a81660bb2be619bf]]></id>
@@ -53,10 +64,10 @@
 		<ctrl><![CDATA[cart]]></ctrl>
 		<func><![CDATA[checkout|freight|all_price|address_selected|invoice_selected]]></func>
 		<var><![CDATA[func]]></var>
-		<sort><![CDATA[5]]></sort>
+		<sort><![CDATA[120]]></sort>
 	</url>
 	<url>
-		<sort><![CDATA[6]]></sort>
+		<sort><![CDATA[125]]></sort>
 		<rule><![CDATA[cart\.html$]]></rule>
 		<val><![CDATA[index.php?c=cart]]></val>
 		<format><![CDATA[cart.html]]></format>
@@ -65,7 +76,7 @@
 		<id><![CDATA[30a3a83228dbd75cb83961c6dcc9d4cd]]></id>
 	</url>
 	<url>
-		<sort><![CDATA[7]]></sort>
+		<sort><![CDATA[130]]></sort>
 		<rule><![CDATA[order\.html$]]></rule>
 		<val><![CDATA[index.php?c=order]]></val>
 		<format><![CDATA[order.html]]></format>
@@ -74,7 +85,7 @@
 		<id><![CDATA[341bb7c7b61ca2512b98bef4bff45e3e]]></id>
 	</url>
 	<url>
-		<sort><![CDATA[8]]></sort>
+		<sort><![CDATA[135]]></sort>
 		<rule><![CDATA[usercp\/list\/([a-zA-Z][a-zA-Z0-9]+)\.html$]]></rule>
 		<val><![CDATA[index.php?c=usercp&f=list&id=$1]]></val>
 		<format><![CDATA[usercp/list/[id].html]]></format>
@@ -85,7 +96,7 @@
 		<id><![CDATA[faccb056d7623007f85cc60f698bf936]]></id>
 	</url>
 	<url>
-		<sort><![CDATA[9]]></sort>
+		<sort><![CDATA[140]]></sort>
 		<rule><![CDATA[usercp\/([a-zA-Z][a-zA-Z0-9]+)\.html$]]></rule>
 		<val><![CDATA[index.php?c=usercp&f=$1]]></val>
 		<format><![CDATA[usercp/[func].html]]></format>
@@ -96,7 +107,7 @@
 		<id><![CDATA[30e8a9a43ac877ea6a4fe76f0e8fa9ec]]></id>
 	</url>
 	<url>
-		<sort><![CDATA[10]]></sort>
+		<sort><![CDATA[145]]></sort>
 		<rule><![CDATA[usercp\.html$]]></rule>
 		<val><![CDATA[index.php?c=usercp]]></val>
 		<format><![CDATA[usercp.html]]></format>
@@ -113,7 +124,7 @@
 		<ctrl><![CDATA[search]]></ctrl>
 		<func><![CDATA[]]></func>
 		<var><![CDATA[keywords]]></var>
-		<sort><![CDATA[70]]></sort>
+		<sort><![CDATA[150]]></sort>
 	</url>
 	<url>
 		<id><![CDATA[25aaff4a1b657a523b7e6f25907f00f7]]></id>
@@ -124,7 +135,7 @@
 		<ctrl><![CDATA[search]]></ctrl>
 		<func><![CDATA[]]></func>
 		<var><![CDATA[keywords|pageid]]></var>
-		<sort><![CDATA[75]]></sort>
+		<sort><![CDATA[155]]></sort>
 	</url>
 	<url>
 		<id><![CDATA[a76cc2f964141263805ba1a26b8beed5]]></id>
@@ -135,7 +146,7 @@
 		<ctrl><![CDATA[tag]]></ctrl>
 		<func><![CDATA[]]></func>
 		<var><![CDATA[title]]></var>
-		<sort><![CDATA[80]]></sort>
+		<sort><![CDATA[160]]></sort>
 	</url>
 	<url>
 		<id><![CDATA[f6aa7b5256eb1f7ea73bacee3bc270b8]]></id>
@@ -146,7 +157,7 @@
 		<ctrl><![CDATA[tag]]></ctrl>
 		<func><![CDATA[]]></func>
 		<var><![CDATA[title|pageid]]></var>
-		<sort><![CDATA[85]]></sort>
+		<sort><![CDATA[165]]></sort>
 	</url>
 	<url>
 		<id><![CDATA[6422fc2687dd874f8cc238024454ca81]]></id>
@@ -157,7 +168,7 @@
 		<ctrl><![CDATA[comment]]></ctrl>
 		<func><![CDATA[]]></func>
 		<var><![CDATA[id]]></var>
-		<sort><![CDATA[90]]></sort>
+		<sort><![CDATA[170]]></sort>
 	</url>
 	<url>
 		<title><![CDATA[评论分页]]></title>
@@ -167,7 +178,7 @@
 		<ctrl><![CDATA[comment]]></ctrl>
 		<func><![CDATA[]]></func>
 		<var><![CDATA[id|pageid]]></var>
-		<sort><![CDATA[95]]></sort>
+		<sort><![CDATA[175]]></sort>
 		<id><![CDATA[86c6c14744876fb44124fb10f783d6f2]]></id>
 	</url>
 	<url>

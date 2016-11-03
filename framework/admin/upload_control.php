@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/upload_control.php
-	Note	: 附件上传操作
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-01-09 10:51
-***********************************************************/
+/**
+ * 附件上传操作
+ * @package phpok\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2016年07月18日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class upload_control extends phpok_control
 {
@@ -15,7 +18,10 @@ class upload_control extends phpok_control
 		parent::control();
 	}
 
-	//附件上传
+	/**
+	 * 附件上传，上传的表单ID固定用upfile
+	 * @参数 cateid 分类ID，数值
+	**/
 	public function save_f()
 	{
 		$cateid = $this->get('cateid','int');
@@ -29,8 +35,24 @@ class upload_control extends phpok_control
 		$this->json($rs,true);
 	}
 
+	/**
+	 * 接收ZIP包上传，主要用于更新及数据导入，上传的表单ID固定用upfile
+	**/
+	public function zip_f()
+	{
+		$rs = $this->lib('upload')->zipfile('upfile');
+		if($rs['status'] != 'ok'){
+			$this->json($rs['error']);
+		}
+		$this->json($rs['filename'],true);
+	}
 
-	//基础上传
+
+	/**
+	 * 基础上传
+	 * @参数 $input_name，表单ID，默认是upfile
+	 * @参数 $cateid，附件保存到哪个分类下
+	**/
 	private function upload_base($input_name='upfile',$cateid=0)
 	{
 		$rs = $this->lib('upload')->getfile($input_name,$cateid);
@@ -63,7 +85,10 @@ class upload_control extends phpok_control
 		return $rs;
 	}
 
-	//附件上传替换
+	/**
+	 * 附件替换式上传，新文件表单ID固定用upfile
+	 * @参数 oldid，旧附件ID
+	**/
 	public function replace_f()
 	{
 		$id = $this->get("oldid",'int');
@@ -94,6 +119,11 @@ class upload_control extends phpok_control
 		$this->json($rs,true);
 	}
 
+	/**
+	 * 缩略图列表
+	 * @参数 id 多个附件ID用英文逗号隔开
+	 * @返回 Json字串
+	**/
 	public function thumbshow_f()
 	{
 		$id = $this->get('id');
@@ -126,6 +156,10 @@ class upload_control extends phpok_control
 		$this->json(P_Lang('附件信息获取失败，可能已经删除，请检查'));
 	}
 
+	/**
+	 * 弹出窗口编辑附件信息
+	 * @参数 id 附件ID
+	**/
 	public function editopen_f()
 	{
 		$id = $this->get('id','int');
@@ -139,6 +173,13 @@ class upload_control extends phpok_control
 		$this->view("res_editopen");
 	}
 
+	/**
+	 * 保存附件信息
+	 * @参数 id 附件ID
+	 * @参数 title 附件名称
+	 * @参数 note 附件备注，支持HTML代码
+	 * @返回 Json字串
+	**/
 	public function editopen_save_f()
 	{
 		$id = $this->get('id','int');
@@ -154,6 +195,10 @@ class upload_control extends phpok_control
 		$this->json(true);
 	}
 
+	/**
+	 * 附件预览
+	 * @参数 id 附件ID
+	**/
 	public function preview_f()
 	{
 		$id = $this->get('id','int');
@@ -169,6 +214,10 @@ class upload_control extends phpok_control
 		$this->view('res_openview');
 	}
 
+	/**
+	 * 附件删除
+	 * @参数 id 附件ID
+	**/
 	public function delete_f()
 	{
 		$id = $this->get('id','int');
@@ -179,10 +228,9 @@ class upload_control extends phpok_control
 		if(!$rs){
 			$this->json(P_Lang('附件信息不存在'));
 		}
-		if(!$_SESSION['admin_rs']['if_system'] && $rs['admin_id'] != $_SESSION['admin_id']){
+		if(!$this->session->val('admin_rs.if_system') && $rs['admin_id'] != $this->session->val('admin_id')){
 			$this->json(P_Lang('非系统管理员不能删除其他管理员上传的附件'));
 		}
-		//执行删除操作
 		$this->model('res')->delete($id);
 		$this->json(true);
 	}

@@ -1,36 +1,32 @@
-CREATE TABLE IF NOT EXISTS `qinggan_fav` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '×ÔÔöID',
-  `user_id` int(10) unsigned NOT NULL COMMENT '»áÔ±ID',
-  `thumb` varchar(255) NOT NULL COMMENT 'ËõÂÔÍ¼',
-  `title` varchar(255) NOT NULL COMMENT '±êÌâ',
-  `note` varchar(255) NOT NULL COMMENT 'ÕªÒª',
-  `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Ìí¼ÓÊ±¼ä',
-  `lid` int(11) NOT NULL COMMENT '¹ØÁªÖ÷Ìâ',
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='»áÔ±ÊÕ²Ø¼Ğ' AUTO_INCREMENT=1 ;
+ALTER TABLE `qinggan_wealth_rule` DROP `repeat`, DROP `mintime`;
+ALTER TABLE `qinggan_wealth_rule` DROP `linkid`;
+ALTER TABLE `qinggan_wealth_rule` DROP `efunc`;
+
+ALTER TABLE  `qinggan_wealth_log` ADD  `rule_id` INT UNSIGNED NOT NULL DEFAULT  '0' COMMENT  'è§„åˆ™ID' AFTER  `wid`;
+
+CREATE TABLE  `qinggan_log` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT  'è‡ªå¢ID',
+`note` VARCHAR( 255 ) NOT NULL COMMENT  'æ—¥å¿—æ‘˜è¦',
+`url` VARCHAR( 255 ) NOT NULL COMMENT  'è¯·æ±‚ç½‘å€',
+`dateline` INT UNSIGNED NOT NULL DEFAULT  '0' COMMENT  'æ‰§è¡Œæ—¶é—´',
+`appid` VARCHAR( 30 ) NOT NULL DEFAULT  'www' COMMENT  'æ¥å…¥APP_ID'
+) ENGINE = MYISAM COMMENT =  'æ—¥å¿—è®°å½•';
 
 
-ALTER TABLE  `qinggan_site` DROP  `email_charset` ,
-DROP  `email_server` ,
-DROP  `email_port` ,
-DROP  `email_ssl` ,
-DROP  `email_account` ,
-DROP  `email_pass` ,
-DROP  `email_name` ,
-DROP  `email` ,
-DROP  `biz_billing` ,
-DROP  `html_root_dir` ,
-DROP  `html_content_type` ,
-DROP  `biz_etpl` ;
-
-ALTER TABLE  `qinggan_adm` ADD  `mobile` INT( 255 ) NOT NULL COMMENT  'ÊÖ»úºÅ';
-
-ALTER TABLE  `qinggan_module_fields` ADD  `search` TINYINT( 1 ) NOT NULL DEFAULT  '0' COMMENT  '0²»Ö§³ÖËÑË÷1ÍêÈ«Æ¥ÅäËÑË÷2Ä£ºıÆ¥ÅäËÑË÷3Çø¼äËÑË÷',
-ADD  `search_separator` VARCHAR( 10 ) NOT NULL COMMENT  '·Ö¸î·û£¬½öÏŞÇø¼äËÑË÷Ê±ÓĞĞ§';
+ALTER TABLE  `qinggan_wealth` ADD  `min_val` FLOAT UNSIGNED NOT NULL DEFAULT  '0' COMMENT  'æœ€ä½ä½¿ç”¨å€¼';
 
 
-ALTER TABLE  `qinggan_phpok` ADD  `is_api` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '0²»Ö§³ÖAPIµ÷ÓÃ£¬1Ö§³Ö',
-ADD  `sqlinfo` TEXT NOT NULL COMMENT  'SQLÓï¾ä';
+ALTER TABLE  `qinggan_order` ADD  `currency_rate` DECIMAL( 13, 8 ) UNSIGNED NOT NULL DEFAULT  '1' COMMENT  'è´§å¸æ±‡ç‡' AFTER  `currency_id`;
 
-ALTER TABLE  `qinggan_payment_group` ADD  `is_wap` TINYINT( 1 ) NOT NULL DEFAULT  '0' COMMENT  '0ÊÇPC¶Ë£¬1ÊÇÊÖ»ú¶Ë'
+ALTER TABLE  `qinggan_order` ADD  `status_title` VARCHAR( 255 ) NOT NULL COMMENT  'è®¢å•çŠ¶æ€è¯´æ˜' AFTER  `status`;
+
+ALTER TABLE  `qinggan_order` ADD  `mobile` VARCHAR( 50 ) NOT NULL COMMENT  'æ‰‹æœºå·ï¼Œç”¨äºçŸ­ä¿¡å‘é€';
+
+ALTER TABLE  `qinggan_cart_product` ADD  `thumb` VARCHAR( 255 ) NOT NULL COMMENT  'ç¼©ç•¥å›¾';
+ALTER TABLE  `qinggan_list_biz` ADD  `is_virtual` TINYINT( 1 ) NOT NULL DEFAULT  '0' COMMENT  '0å®ç‰©1è™šæ‹Ÿäº§å“';
+ALTER TABLE  `qinggan_order_product` ADD  `note` VARCHAR( 255 ) NOT NULL COMMENT  'å¤‡æ³¨';
+ALTER TABLE  `qinggan_cart_product` ADD  `is_virtual` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '0å®ç‰©1è™šæ‹Ÿæˆ–æœåŠ¡';
+ALTER TABLE  `qinggan_order_product` ADD  `is_virtual` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0' COMMENT  '0å®ç‰©1è™šæ‹Ÿæˆ–æœåŠ¡';
+
+DROP TABLE `qinggan_user_address`, `qinggan_user_invoice`;
+ALTER TABLE  `qinggan_cart_product` ADD  `unit` VARCHAR( 50 ) NOT NULL COMMENT  'å•ä½';

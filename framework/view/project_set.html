@@ -223,11 +223,13 @@ $(document).ready(function(){
 			<td><label for="is_attr">{lang主题属性}</label></td>
 			<td class="gray i">{lang相当于给主题增加标签，如精华，推荐，热荐等}</td>
 		</tr>
+		<!-- if $config.biz_status -->
 		<tr>
 			<td><input type="checkbox" name="is_biz" id="is_biz"{if $rs.is_biz} checked{/if} onclick="set_biz()" /></td>
 			<td><label for="is_biz">{lang电子商务}</label></td>
 			<td class="gray i">{lang启用此项，该主题将支持交易功能}</td>
 		</tr>
+		<!-- /if -->
 		<tr>
 			<td><input type="checkbox" name="is_search" id="is_search"{if $rs.is_search} checked{/if} /></td>
 			<td><label for="is_search">{lang搜索}</label></td>
@@ -282,7 +284,7 @@ $(document).ready(function(){
 		</div>
 	</div>
 
-	<div id="use_biz_setting"{if !$rs.is_biz} style="display:none"{/if}>
+	<div id="use_biz_setting"{if !$rs.is_biz || !$config.biz_status} style="display:none"{/if}>
 	<div class="table">
 		<div class="title">
 			{lang货币默认类型：}
@@ -308,20 +310,6 @@ $(document).ready(function(){
 				<li><label><input type="radio" name="biz_attr" value="1"{if $rs.biz_attr} checked{/if} />使用</label></li>
 			</ul>
 			<div class="clear"></div>
-		</div>
-	</div>
-	<div class="table">
-		<div class="title">
-			运费模板：
-			<span class="note">是否设置运费功能，如需要请启用</span>
-		</div>
-		<div class="content">
-			<select name="freight">
-				<option value="0">不使用运费</option>
-				<!-- loop from=$freight key=$key value=$value id=$tmpid -->
-				<option value="{$value.id}"{if $rs.freight == $value.id} selected{/if}>{$value.title}</option>
-				<!-- /loop -->
-			</select>
 		</div>
 	</div>
 	</div>

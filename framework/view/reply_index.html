@@ -16,10 +16,16 @@ function subsearch()
 	}
 	direct(url);
 }
-function to_view(id)
+function to_view(id,title)
 {
 	var url = get_url("reply","list","tid="+id);
-	direct(url);
+	$.dialog.open(url,{
+		'title':'{lang评论：}'+title,
+		'lock':true,
+		'width':'90%',
+		'height':'90%',
+		'cancel':function(){return true;}
+	});
 }
 </script>
 <div class="tips" id="tips">
@@ -59,7 +65,7 @@ function to_view(id)
 	<td class="center">{$value.checked}</td>
 	<td class="center">{func date Y年m月d日H时i分 $value.replydate}</td>
 	<td class="center">
-		<input type="button" value="查看" class="btn" onclick="to_view({$value.id})" />
+		<input type="button" value="查看" class="btn" onclick="to_view({$value.id},'{$value.title}')" />
 	</td>
 </tr>
 <!-- /loop -->

@@ -89,13 +89,18 @@ class db
 		return $this->count;
 	}
 
+	/**
+	 * 自定义错误
+	 * @参数 $error 错误信息
+	 * @参数 $errid 错误ID
+	**/
 	public function error($error='',$errid='')
 	{
-		$info = "数据库连执行错误【";
-		if($errid){
-			$info .= "ID：".$errid."，";
+		if($this->debug){
+			$info = P_Lang('SQL执行错误【ID：{errid}，错误信息是：{error}】',array('errid'=>$errid,'error'=>$error));
+		}else{
+			$info = P_Lang('SQL执行错误，请检查');
 		}
-		$info .= "信息为：".$error."】";
 		if($this->error_type == 'json'){
 			$array = array('status'=>'error','content'=>$info);
 			exit(json_encode($array));

@@ -4,9 +4,7 @@
 	$.phpok = {
 		//刷新
 		refresh: function(){
-			var url = window.location.href;
-			url = this.nocache(url);
-			this.go(url);
+			window.location.reload(true);
 		},
 		reload:function(){
 			this.refresh();
@@ -17,7 +15,7 @@
 			}
 			if(ext || ext == 'undefined'){
 				url = this.nocache(url);
-			}			
+			}
 			window.location.href = url;
 		},
 		ajax:function(url,obj,async){
@@ -54,6 +52,9 @@
 					'url':url,
 					'cache':false,
 					'async':async,
+					'beforeSend': function (XMLHttpRequest){
+						XMLHttpRequest.setRequestHeader("request_type","ajax");
+					},
 					'dataType':'json',
 					'success':function(rs){
 						(obj)(rs);

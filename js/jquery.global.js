@@ -14,6 +14,7 @@
 				'win_min'		:true,
 				'win_max'		:true,
 				'win_close'		:true,
+				'win_refresh'	:true,
 				'title'			:'',
 				'iframe'		:'', // 定义iframe地址
 				'content'		:'', // 定义内容信息，当内容为iframe时，调用iframe对应的url
@@ -436,6 +437,9 @@
 			html += '		<h3 class="h3" id="title-'+this.id+'">'+this.opt.title+'</h3>';
 			html += '		<div class="button">';
 			html += '		<ul>';
+			if(this.opt.win_refresh){
+				html += '		<li class="refresh" id="refresh-'+this.id+'"><a href="javascript:void(0);"></a></li>';
+			}
 			if(this.opt.win_min){
 				html += '		<li class="min" id="min-'+this.id+'"><a href="javascript:void(0);"></a></li>';
 			}
@@ -531,6 +535,11 @@
 			//有最小化时的按钮信息
 			if(this.opt.win_min){
 				$("#min-"+id).click(function(){self.min(id);});
+			}
+			if(this.opt.win_refresh){
+				$("#refresh-"+id).click(function(){
+					document.getElementById(id+"-content").contentWindow.location.reload(true);
+				})
 			}
 			//如果有启用taskbar
 			if(this.opt.taskbar){

@@ -164,33 +164,3 @@ function show_wealth_log(title,wid,uid)
 		'okVal':'关闭'
 	});
 }
-
-function show_address(title,uid)
-{
-	var url = get_url('user','address','id='+uid);
-	$.dialog.open(url,{
-		'title':title+p_lang('地址库')+p_lang('，每个会员最多30个地址'),
-		'width':'700px',
-		'height':'400px',
-		'lock':true,
-		'cancel':function(){
-			return true;
-		},
-		'cancelVal':'关闭窗口'
-	});
-}
-
-function show_invoice(title,uid)
-{
-	var url = get_url('user','invoice','id='+uid);
-	$.dialog.open(url,{
-		'title':title+p_lang('发票设置')+p_lang('，每个会员最多10条发票设置'),
-		'width':'500px',
-		'height':'400px',
-		'lock':true,
-		'cancel':function(){
-			return true;
-		},
-		'cancelVal':'关闭窗口'
-	});
-}

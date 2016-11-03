@@ -171,4 +171,9 @@ class fields_model_base extends phpok_model
 		);
 		return $array;
 	}
+
+	public function list_fields()
+	{
+		return $this->db->list_fields('list');
+	}	
 }

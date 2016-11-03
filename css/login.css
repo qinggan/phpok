@@ -1,6 +1,8 @@
 body{ background:#ededed; margin:0; padding:0; font-size:14px; font-family:"Microsoft Yahei","宋体","Tahoma","Arial"; color:#4d4d4d;}
 .top{ height:232px; background:url("../images/top.jpg") center no-repeat; margin:0 auto;}
 .top .logo{text-align:center;line-height:280px;}
+.top .logo div{width:300px;height:100px;overflow:hidden;margin:0 auto;}
+.top .logo img{max-width:300px;max-height:100px;border:0;}
 .main{ height:240px; background:url("../images/main_bg.jpg") repeat-x;}
 .box{ height:225px; background:url("../images/main.jpg") center no-repeat; margin:0 auto; padding:15px 0 0 0;}
 .bottom{ background:url("../images/bottom.jpg") center no-repeat; height:56px;}

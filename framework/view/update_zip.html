@@ -1,31 +1,72 @@
-<!-- include tpl=head title=ZIP离线包升级 -->
-<div class="tips clearfix">
-	您当前的位置：<a href="{url ctrl=update/}" title="程序升级">程序升级</a>
-	&raquo; ZIP离线包升级 <span class="red">请确保 data/update 可写，程序将会尝试将文件解压到这个目录下</span>
-</div>
+<!-- include tpl=head -->
 <script type="text/javascript">
-function check_zip()
+var obj_upload = {};
+var obj = art.dialog.opener;
+$(document).ready(function(){
+	obj_upload = new $.admin_upload({
+		"multiple"	: false,
+		"id" : "upload",
+		'pick':{'id':'#upload_picker','multiple':false},
+		'resize':false,
+		"swf" : "js/webuploader/uploader.swf",
+		"server": "{url ctrl=upload func=zip/}",
+		"filetypes" : "{$rs.ext}",
+		'accept' : {'title':'{langZIP包}','extensions':'zip'},
+		"formData" :{'{func session_name}':'{func session_id}'},
+		'fileVal':'upfile',
+		'sendAsBinary':true,
+		'auto':false,
+		"success":function(file,data){
+			if(data.status != 'ok'){
+				$.dialog.alert(data.info);
+				return false;
+			}else{
+				var zipfile = data.info;
+				var url = get_url('update','unzip','zipfile='+$.str.encode(data.content));
+				var rs = $.phpok.json(url);
+				if(rs.status){
+					$.dialog.alert('升级成功',function(){
+						obj.$.phpok.reload();
+					});
+				}else{
+					$.dialog.alert(rs.info,function(){
+						$.phpok.reload();
+					});
+				}
+			}
+			return true;
+		}
+	});
+	obj_upload.uploader.on('uploadFinished',function(){
+		return true;
+	});
+});
+function save()
 {
-	var zipfile = $("#zipfile").val();
-	if(!zipfile)
-	{
-		$.dialog.alert('未指定ZIP文件');
+	var f = $("#upload_progress .phpok-upfile-list").length;
+	if(f<1){
+		$.dialog.alert('请选择要上传的文件');
 		return false;
 	}
-	return true;
+	obj_upload.uploader.upload();
+	return false;
+}
+function cancel()
+{
+	return obj_upload.uploader.stop();
 }
 </script>
-<form method="post" action="{url ctrl=update func=unzip/}" onsubmit="return check_zip()">
+
 <div class="table">
-	<div class="content">
-		<table cellspacing="0">
-			<tr>
-				<td valign="top">选对要升级的附件：</td>
-				<td valign="top">{$upload_html.html}</td>
-				<td valign="top"><input type="submit" value="开始升级" class="submit" /></td>
-			</tr>
-		</table>
+	<div class="title">
+		{lang单个文件上传不能超过：}
+		<span class="red">{func get_cfg_var upload_max_filesize}</span>，仅支持ZIP上传
 	</div>
+	<div class="content"><div id="upload_picker" class=""></div></div>
 </div>
-</form>
-<!-- include tpl=foot -->
+
+<div class="table">
+	<div class="content" id="upload_progress"></div>
+</div>
+
+<!-- include tpl=foot_open -->

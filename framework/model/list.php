@@ -1,56 +1,96 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/model/list.php
-	Note	: 读取内容列表
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-04-15 02:17
-***********************************************************/
+/**
+ * 读取内容列表，涉及到的主要表有 list及list_数字ID
+ * @package phpok\model\list
+ * @author qinggan <admin@phpok.com>
+ * @copyright 2015-2016 深圳市锟铻科技有限公司
+ * @homepage http://www.phpok.com
+ * @version 4.x
+ * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @update 2016年06月26日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class list_model_base extends phpok_model
 {
+	/**
+	 * 构造函数，继承父Model
+	**/
 	public function __construct()
 	{
 		parent::model();
 	}
 
+	/**
+	 * 析构函数
+	**/
 	public function __destruct()
 	{
 		parent::__destruct();
 		unset($this);
 	}
 
-	function ext_fields($mid,$prefix="ext")
+	/**
+	 * 获取扩展模块使用的扩展字段
+	 * @参数 $mid，模块ID，数值
+	 * @参数 $prefix，表别名，默认是ext
+	 * @返回 字符串，类似：ext.field1,ext.field2
+	 * @更新时间 2016年06月26日
+	**/
+	public function ext_fields($mid,$prefix="ext")
 	{
 		$sql = "SELECT identifier FROM ".$this->db->prefix."module_fields WHERE module_id='".$mid."'";
 		$rslist = $this->db->get_all($sql);
-		if(!$rslist) return false;
-		if(!$prefix) $prefix = 'ext';
+		if(!$rslist){
+			return false;
+		}
+		if(!$prefix){
+			$prefix = 'ext';
+		}
 		$list = "";
-		foreach($rslist AS $key=>$value)
-		{
+		foreach($rslist AS $key=>$value){
 			$list[] = 'ext.'.$value['identifier'];
 		}
 		return implode(",",$list);
 	}
 
-	function get_list($mid,$condition="",$offset=0,$psize=0,$orderby="")
+	/**
+	 * 获取主题列表
+	 * @参数 $mid，模块ID，数值
+	 * @参数 $condition，查询条件
+	 * @参数 $offset，查询起始位置，默认是0
+	 * @参数 $psize，查询条数，默认是0，表示不限制
+	 * @参数 $orderby，排序
+	 * @返回 数组，查询结果集，扩展字段内容已经格式化
+	**/
+	public function get_list($mid,$condition="",$offset=0,$psize=0,$orderby="")
 	{
-		if(!$mid) return false;
-		$field = $this->ext_fields($mid,'ext');
-		$field = $field ? $field.",l.*,u.user _user" : "l.*,u.user _user";
+		if(!$mid){
+			return false;
+		}
+		$fields_list = $this->db->list_fields('list');
+		$field = "DISTINCT l.id,u.user _user";
+		foreach($fields_list as $key=>$value){
+			if($value == 'id' || !$value){
+				continue;
+			}
+			$field .= ",l.".$value;
+		}
+		$field_ext = $this->ext_fields($mid,'ext');
+		if($field_ext){
+			$field .= ",".$field_ext;
+		}
 		$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit";
 		$sql = "SELECT ".$field." FROM ".$this->db->prefix."list l ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id AND l.project_id=ext.project_id) ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id AND u.status=1) ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."list_cate c ON(l.id=c.id) ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
 		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
 		if(!$orderby){
-			$orderby = "l.sort DESC,l.dateline DESC,l.id DESC";
+			$orderby = " l.sort DESC,l.dateline DESC,l.id DESC ";
 		}
 		$sql .= " ORDER BY ".$orderby." ";
 		if($psize && intval($psize)){
@@ -65,15 +105,10 @@ class list_model_base extends phpok_model
 			$cid_list[$value["cate_id"]] = $value["cate_id"];
 		}
 		$m_rs = $GLOBALS['app']->lib('ext')->module_fields($mid);
-		if($m_rs)
-		{
-			//读取更新
-			foreach($rslist AS $key=>$value)
-			{
-				foreach($value AS $k=>$v)
-				{
-					if($m_rs[$k])
-					{
+		if($m_rs){
+			foreach($rslist AS $key=>$value){
+				foreach($value AS $k=>$v){
+					if($m_rs[$k]){
 						$value[$k] = $GLOBALS['app']->lib('ext')->content_format($m_rs[$k],$v);
 					}
 				}
@@ -81,13 +116,10 @@ class list_model_base extends phpok_model
 			}
 		}
 		$cid_string = implode(",",$cid_list);
-		if($cid_string)
-		{
+		if($cid_string){
 			$catelist = $GLOBALS['app']->lib('ext')->cate_list($cid_string);
-			foreach($rslist AS $key=>$value)
-			{
-				if($value["cate_id"])
-				{
+			foreach($rslist AS $key=>$value){
+				if($value["cate_id"]){
 					$value["cate_id"] = $catelist[$value["cate_id"]];
 					$rslist[$key] = $value;
 				}
@@ -105,7 +137,7 @@ class list_model_base extends phpok_model
 		$sql.= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id AND u.status=1) ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."list_cate c ON(l.id=c.id) ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
 		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
@@ -505,7 +537,7 @@ class list_model_base extends phpok_model
 
 	public function arc_count($mid,$condition='')
 	{
-		$sql = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
+		$sql = "SELECT count(DISTINCT l.id) FROM ".$this->db->prefix."list l ";
 		$sql .= " JOIN ".$this->db->prefix."list_".$mid." ext ";
 		$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
 		$sql .= " LEFT JOIN ".$this->db->prefix."list_biz b ON(l.id=b.id) ";

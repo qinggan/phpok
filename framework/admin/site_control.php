@@ -88,11 +88,16 @@ class site_control extends phpok_control
 			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('site')->order_status_one($id);
+		if($rs['next']){
+			$rs['next'] = explode(",",$rs['next']);
+		}
 		$this->assign('rs',$rs);
 		$this->assign('id',$id);
 		//邮件模板列表
 		$emailtpl = $this->model('email')->simple_list($_SESSION['admin_site_id']);
 		$this->assign("emailtpl",$emailtpl);
+		$statuslist = $this->model('order')->status_list();
+		$this->assign('statuslist',$statuslist);
 		$this->view('site_order_status_set');
 	}
 

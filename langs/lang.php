@@ -48,4 +48,6 @@ P_Lang('数据库管理');
 P_Lang('生成静态页');
 P_Lang('附件分类管理');
 P_Lang('GD图片方案');
+P_Lang('插件中心');
+P_Lang('运行{total}秒，内存使用{mem_total}，数据库执行{sql_count}次，用时{sql_time}秒，缓存执行{cache_count}次，用时{cache_time}秒');
 ?>

@@ -1,12 +1,13 @@
 <?php
-/*****************************************************************************************
-	文件： phpokinstall.php
-	备注： PHPOK文件安装包
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年05月03日 10时29分
-*****************************************************************************************/
+/**
+ * PHPOK企业站系统，使用PHP语言及MySQL数据库编写的企业网站建设系统，基于LGPL协议开源授权
+ * @package phpok
+ * @author phpok.com
+ * @copyright 2015-2016 深圳市锟铻科技有限公司
+ * @version 4.x
+ * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ */
+
 error_reporting(E_ALL ^ E_NOTICE);
 define('PHPOK_SET',true);
 define("ROOT",str_replace("\\","/",dirname(__FILE__))."/");
@@ -40,6 +41,17 @@ function error($tips="",$url="",$time=2)
 	}
 	echo '</body>'."\n</html>";
 	exit;
+}
+
+if(!function_exists('P_Lang')){
+	function P_Lang($info,$replace=''){
+		if($replace && is_array($replace)){
+			foreach($replace as $key=>$value){
+				$info = str_replace(array('{'.$key.'}','['.$key.']'),$value,$info);
+			}
+		}
+		return $info;
+	}
 }
 
 function root_url()
@@ -832,12 +844,21 @@ EOT;
 		if($msg == ''){
 			return false;
 		}
-		if($system){
+		if($system && is_bool($system)){
 			if(!preg_match('/^[a-zA-Z][a-zA-Z0-9\_\-]+$/u',$msg)){
 				return false;
 			}
 			return $msg;
 		}else{
+			if($system == 'int' || $system == 'intval'){
+				return intval($msg);
+			}
+			if($system == 'float' || $system == 'floatval'){
+				return floatval($msg);
+			}
+			if(is_string($system) && function_exists($system)){
+				return $system($msg);
+			}
 			$msg = stripslashes($msg);
 			$msg = str_replace(array("\\","'",'"',"<",">"),array("&#92;","&#39;","&quot;","&lt;","&gt;"),$msg);
 			return addslashes($msg);
@@ -928,13 +949,13 @@ if($step == 'save'){
 	$dbconfig['data'] = $install->get("data",false);
 	$dbconfig['prefix'] = $install->get("prefix",false);
 	$content = file_get_contents(ROOT."config.php");
-	$content = preg_replace('/\$config\["db"\]\["file"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["db"]["file"] = "'.$dbconfig['file'].'";',$content);
-	$content = preg_replace('/\$config\["db"\]\["host"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["db"]["host"] = "'.$dbconfig['host'].'";',$content);
-	$content = preg_replace('/\$config\["db"\]\["port"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["db"]["port"] = "'.$dbconfig['port'].'";',$content);
-	$content = preg_replace('/\$config\["db"\]\["user"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["db"]["user"] = "'.$dbconfig['user'].'";',$content);
-	$content = preg_replace('/\$config\["db"\]\["pass"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["db"]["pass"] = "'.$dbconfig['pass'].'";',$content);
-	$content = preg_replace('/\$config\["db"\]\["data"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["db"]["data"] = "'.$dbconfig['data'].'";',$content);
-	$content = preg_replace('/\$config\["db"\]\["prefix"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_]*[\'|"];/isU','$config["db"]["prefix"] = "'.$dbconfig['prefix'].'";',$content);
+	$content = preg_replace('/\$config\["db"\]\["file"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["file"] = "'.$dbconfig['file'].'";',$content);
+	$content = preg_replace('/\$config\["db"\]\["host"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["host"] = "'.$dbconfig['host'].'";',$content);
+	$content = preg_replace('/\$config\["db"\]\["port"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["port"] = "'.$dbconfig['port'].'";',$content);
+	$content = preg_replace('/\$config\["db"\]\["user"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["user"] = "'.$dbconfig['user'].'";',$content);
+	$content = preg_replace('/\$config\["db"\]\["pass"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["pass"] = "'.$dbconfig['pass'].'";',$content);
+	$content = preg_replace('/\$config\["db"\]\["data"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["data"] = "'.$dbconfig['data'].'";',$content);
+	$content = preg_replace('/\$config\["db"\]\["prefix"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["prefix"] = "'.$dbconfig['prefix'].'";',$content);
 	file_put_contents(ROOT."config.php",$content);
 	$info = array('title'=>$install->get('title',false));
 	$info['domain'] = $install->get('domain',false);
@@ -942,6 +963,7 @@ if($step == 'save'){
 	$info['user'] = $install->get('admin_user',false);
 	$info['email'] = $install->get('admin_email',false);
 	$info['pass'] = $install->get('admin_newpass',false);
+	$info['demo'] = $install->get('demo','int');
 	$handle = fopen(ROOT.'data/install.lock.php','wb');
 	fwrite($handle,'<?php'."\n");
 	foreach($info as $key=>$value){

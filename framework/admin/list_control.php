@@ -305,7 +305,7 @@ class list_control extends phpok_control
 			}
 			$cate_idstring = implode(",",$cate_id_list);
 			if($project_rs['cate_multiple']){
-				$condition .= " AND c.cate_id IN(".$cate_idstring.")";
+				$condition .= " AND lc.cate_id IN(".$cate_idstring.")";
 			}else{
 				$condition .= " AND l.cate_id IN(".$cate_idstring.")";
 			}
@@ -323,7 +323,7 @@ class list_control extends phpok_control
 				}
 				$cate_idstring = implode(",",$cate_id_list);
 				if($project_rs['cate_multiple']){
-					$condition .= " AND c.cate_id IN(".$cate_idstring.")";
+					$condition .= " AND lc.cate_id IN(".$cate_idstring.")";
 				}else{
 					$condition .= " AND l.cate_id IN(".$cate_idstring.")";
 				}
@@ -650,6 +650,8 @@ class list_control extends phpok_control
 				$this->json(P_Lang('主分类不能为空'));
 			}
 			$array["cate_id"] = $cate_id;
+		}else{
+			$array['cate_id'] = 0;
 		}
 		//更新标识串
  		$array['identifier'] = $this->get("identifier");
@@ -720,6 +722,7 @@ class list_control extends phpok_control
 	 		$biz['volume'] = $this->get('volume','float');
 	 		$biz['unit'] = $this->get('unit');
 	 		$biz['id'] = $id;
+	 		$biz['is_virtual'] = $this->get('is_virtual','int');
 	 		$this->model('list')->biz_save($biz);
 	 		if($tmpadd && $_SESSION['attr'] && $p_rs['biz_attr']){
 		 		foreach($_SESSION['attr'] as $key=>$value){
@@ -744,6 +747,8 @@ class list_control extends phpok_control
 		 		$ext_cate = array($cate_id);
 	 		}
 	 		$this->model('list')->save_ext_cate($id,$ext_cate);
+ 		}else{
+	 		$this->model('list')->list_cate_clear($id);
  		}
  		//更新Tag标签
  		$this->model('tag')->update_tag($array['tag'],$id,$_SESSION['admin_site_id']);
@@ -1358,5 +1363,81 @@ class list_control extends phpok_control
 		}
 		$this->view("list_comment");
 	}
+
+	/**
+	 * 设定主题的父层关系
+	 * @参数 id 指定的父层
+	 * @参数 ids 要绑定的主题，多个主题用英文逗号隔开
+	 * @返回 JSON数据
+	 * @更新时间 2016年10月25日
+	**/
+	public function set_parent_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$ids = $this->get('ids');
+		if(!$ids){
+			$this->error(P_Lang('没有要变更的ID'));
+		}
+		$list = explode(",",$ids);
+		$isin = false;
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if(!$value || $value == $id){
+				$isin = true;
+				break;
+			}
+		}
+		if($isin){
+			$this->error(P_Lang('ID有冲突，要变更的主题ID和内置ID重复了'));
+		}
+		$rs = $this->model('list')->get_one($id,false);
+		if($rs['parent_id']){
+			$this->error(P_Lang('父主题不符合要求，父主题不允许存在上级关系'));
+		}
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if($value){
+				$tmp = array('parent_id'=>$id);
+				$this->model('list')->save($tmp,$value);
+			}
+		}
+		$this->success();
+	}
+
+	/**
+	 * 取消父层主题
+	 * @参数 ids 要取消的主题，多个主题用英文逗号隔开
+	 * @返回 JSON
+	 * @更新时间 2016年10月25日
+	**/
+	public function unset_parent_f()
+	{
+		$ids = $this->get('ids');
+		if(!$ids){
+			$this->error(P_Lang('没有要变更的ID'));
+		}
+		$list = explode(",",$ids);
+		$isin = false;
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				$isin = true;
+				break;
+			}
+		}
+		if($isin){
+			$this->error(P_Lang('ID有冲突，要变更的主题ID和内置ID重复了'));
+		}
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if($value){
+				$tmp = array('parent_id'=>0);
+				$this->model('list')->save($tmp,$value);
+			}
+		}
+		$this->success();
+	}
 }
-?>

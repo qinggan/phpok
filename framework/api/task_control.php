@@ -34,8 +34,9 @@ class task_control extends phpok_control
 	private function exec_action($rs)
 	{
 		//锁定计划任务执行
-		$id = $rs['id'];
-		$this->model('task')->lock($id);
+		$_id = $rs['id'];
+		$_only_once = $rs['only_once'];
+		$this->model('task')->lock($_id);
 		//年份处理
 		$rs['year'] = $rs['year'] == '*' ? date("Y",$this->time) : $rs['year'];
 		$rs['month'] = $rs['month'] == '*' ? date("m",$this->time) : $rs['month'];
@@ -47,13 +48,13 @@ class task_control extends phpok_control
 		$time = strtotime($time) - 5;
 		//五分钟内只执行一次
 		if($rs['exec_time'] && ($rs['exec_time'] + 300)>$this->time){
-			$this->model('task')->unlock($id);
+			$this->model('task')->unlock($_id);
 			return true;
 		}
 		//只执行一天内的计划任务，超过一天的不再执行
 		$if_delete = false;
 		if($time <= $this->time && (($time+24*3600)>$this->time || $rs['only_once'])){
-			$this->model('task')->exec_start($id);
+			$this->model('task')->exec_start($_id);
 			$file = $this->dir_root.'task/'.$rs['action'].'.php';
 			if(file_exists($file)){
 				if($rs['param']){
@@ -61,14 +62,14 @@ class task_control extends phpok_control
 				}
 				$status = include $file;
 			}
-			$this->model('task')->exec_stop($id);
-			if($rs['only_once']){
-				$this->model('task')->delete($id);
+			$this->model('task')->exec_stop($_id);
+			if($_only_once){
+				$this->model('task')->delete($_id);
 				$if_delete = true;
 			}
 		}
 		if(!$if_delete){
-			$this->model('task')->unlock($id);
+			$this->model('task')->unlock($_id);
 		}
 		return true;
 	}

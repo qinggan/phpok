@@ -28,6 +28,12 @@ class site_model extends site_model_base
 		if(!$rs){
 			return false;
 		}
+		if(file_exists($this->dir_root.'data/xml/site_'.$id.'.xml')){
+			$tmp = $this->lib('xml')->read($this->dir_root.'data/xml/site_'.$id.'.xml');
+			if($tmp){
+				$rs = array_merge($tmp,$rs);
+			}
+		}
 		$rs['_domain'] = $this->domain_list($id,'id');
 		if($rs['_domain']){
 			foreach($rs['_domain'] as $key=>$value){

@@ -10,7 +10,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 
 //前台自动加载的JS，此处的JS对应的CSS，HTML及图片路径是相对于网站根目录
-$config["autoload_js"] .= ",global.www.js,jquery.superslide.js,jquery.artdialog.js";
+$config["autoload_js"] .= ",global.www.js,jquery.superslide.js,jquery.artdialog.js,jquery.cart.js";
 
 $config["autoload_func"] = "";
 

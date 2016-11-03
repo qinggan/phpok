@@ -1,12 +1,15 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/libs/phpzip.php
-	备注： 根据网上代码整理
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年07月18日 09时51分
-*****************************************************************************************/
+/**
+ * ZIP类，支持压缩及解压
+ * @package phpok\libs\phpzip
+ * @author qinggan <admin@phpok.com>
+ * @copyright 2015-2016 深圳市锟铻科技有限公司
+ * @homepage http://www.phpok.com
+ * @version 4.x
+ * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @update 2015年07月18日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class phpzip_lib
 {
@@ -127,7 +130,11 @@ class phpzip_lib
 		}
 		ob_end_clean();
 		$filelist = array();
-		$this->filelist($filelist,$dir);
+		if(is_file($dir)){
+			$filelist = array($dir);
+		}else{
+			$this->filelist($filelist,$dir);
+		}
 		if(count($filelist) == 0){
 			return false;
 		}
@@ -138,6 +145,7 @@ class phpzip_lib
 				if(!file_exists($file) || !is_file($file)){
 					continue;
 				}
+				
 				$name = substr($file,strlen($this->dir_root));
 				$obj->addFile($file,$name);
 			}
@@ -364,7 +372,14 @@ class phpzip_lib
 		return $stat;
 	}
 
-	public function unzip($file,$to='',$index= array(-1))
+	/**
+	 * 解压缩，支持解压的类有：ZipArchive > zip_open > 自写PHP
+	 * @参数 $file，要解压的ZIP文件，完整的路径
+	 * @参数 $to，要解压到的目标文件，如果为空，将解压到当前文件夹
+	 * @返回 
+	 * @更新时间 
+	**/
+	public function unzip($file,$to='')
 	{
 		if(class_exists('ZipArchive')){
 			$zip = new ZipArchive;
@@ -373,7 +388,24 @@ class phpzip_lib
 			$zip->close();
 			return true;
 		}
-		return $this->Extract($file,$to,$index);
+		if(function_exists('zip_open') && function_exists('zip_close')){
+			$zip = zip_open($file);
+			if($zip){
+				while ($zip_entry = zip_read($zip)) {
+					$file = basename(zip_entry_name($zip_entry));
+					$fp = fopen($to.basename($file), "w+");
+					if (zip_entry_open($zip, $zip_entry, "r")) {
+						$buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
+						zip_entry_close($zip_entry);
+					}
+					fwrite($fp, $buf);
+					fclose($fp);
+				}
+				zip_close($zip);
+				return true;
+			}
+		}
+		return $this->Extract($file,$to);
 	}
 
 	public function zip_info($zipfile)

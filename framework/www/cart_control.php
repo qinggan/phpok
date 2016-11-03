@@ -1,42 +1,41 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/www/cart_control.php
-	Note	: 购物车
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年06月21日 15时21分
-***********************************************************/
+/**
+ * 购物车
+ * @package phpok\www
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2016年08月17日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class cart_control extends phpok_control
 {
-	public $cart_id = 0;
-	function __construct()
+	/**
+	 * 购物车ID，该ID将贯穿整个购物过程
+	**/
+	private $cart_id = 0;
+	
+	/**
+	 * 构造函数
+	**/
+	public function __construct()
 	{
 		parent::control();
-		//取得当前的购物车ID
-		$this->cart_id = $this->model('cart')->cart_id($this->session->sessid(),$_SESSION['user_id']);
+		$this->cart_id = $this->model('cart')->cart_id($this->session->sessid(),$this->session->val('user_id'));
 	}
 
+	/**
+	 * 购物车内容，留空读取cart_tip模板信息提示
+	**/
 	public function index_f()
 	{
 		//取得购物车产品列表
 		$rslist = $this->model('cart')->get_all($this->cart_id);
 		if(!$rslist){
 	    	$this->view("cart_tip");
-		}
-		foreach($rslist as $key=>$value){
-			if($value['ext'] && $value['attrlist']){
-				$ext = explode(",",$value['ext']);
-				foreach($value['attrlist'] as $k=>$v){
-					foreach($v['rslist'] as $kk=>$vv){
-						if(in_array($vv['id'],$ext)){
-							$value['_attrlist'][] = array('title'=>$v['title'],'content'=>$vv['title']);
-						}
-					}
-				}
-			}
-			$rslist[$key] = $value;
 		}
 		$this->assign("rslist",$rslist);
 		$totalprice = 0;
@@ -48,130 +47,187 @@ class cart_control extends phpok_control
 		$this->view("cart_index");
 	}
 
+	/**
+	 * 购物车结算页，生成订单并进行支付
+	**/
 	public function checkout_f()
 	{
-		if(!$_SESSION['user_id']){
-			error(P_Lang('请先注册或登录'),$this->url('login','','_back='.rawurlencode($this->url('cart','checkout'))));
-		}
-		$user = $this->model('user')->get_one($_SESSION['user_id']);
 		$rslist = $this->model('cart')->get_all($this->cart_id);
 		if(!$rslist){
-			error(P_Lang('您的购物车里没有任何产品'),$this->url,"notice",5);
+			$this->error(P_Lang('您的购物车里没有任何产品'),$this->url);
 		}
-		foreach($rslist as $key=>$value){
-			if($value['ext'] && $value['attrlist']){
-				$ext = explode(",",$value['ext']);
-				foreach($value['attrlist'] as $k=>$v){
-					foreach($v['rslist'] as $kk=>$vv){
-						if(in_array($vv['id'],$ext)){
-							$value['_attrlist'][] = array('title'=>$v['title'],'content'=>$vv['title']);
-						}
-					}
-				}
-			}
-			$rslist[$key] = $value;
+		if($this->session->val('user_id')){
+			$user_rs = $this->model('user')->get_one($this->session->val('user_id'));
+			$this->assign('user',$user_rs);
 		}
 		$totalprice = 0;
 		foreach($rslist AS $key=>$value){
-			$totalprice += price_format_val($value['price'] * $value['qty'],$value['currency_id'],$this->site['currency_id']);
+			$totalprice += price_format_val($value['price'] * $value['qty']);
 		}
-		$price = price_format($totalprice,$this->site['currency_id']);
-		$_SESSION['cart']['totalprice'] = $totalprice;
-		$this->assign('price',$price);
+		$this->assign('product_price',price_format($totalprice,$this->site['currency_id']));
 		$this->assign("rslist",$rslist);
-		//收件人信息处理模块
-		$this->_address();
-		
-		//发票管理模块
-		$this->_invoice();
+		//检测购物车是否需要使用地址
+		$is_virtual = true;
+		foreach($rslist as $key=>$value){
+			if(!$value['is_virtual']){
+				$is_virtual = false;
+			}
+		}
+		$this->assign('is_virtual',$is_virtual);
+		if(!$is_virtual){
+			$this->_address();
+		}else{
+			if($this->session->val('user_id')){
+				$address = $this->model('order')->last_address($this->session->val('user_id'),true);
+				$this->assign('address',$address);
+			}
+		}
 		$pricelist = $this->model('site')->price_status_all(true);
 		if($pricelist){
 			foreach($pricelist as $key=>$value){
 				if(!$value['status']){
 					unset($pricelist[$key]);
+					continue;
+				}
+				if($value['identifier'] == 'product'){
+					$value['price'] = price_format($totalprice,$this->site['currency_id']);
+					$value['price_val'] = $totalprice;
+					$pricelist[$key] = $value;
+				}
+				if($value['identifier'] == 'shipping'){
+					if($is_virtual){
+						unset($pricelist[$key]);
+						continue;
+					}
+					if($this->tpl->val('address')){
+						$freight_price = $this->_freight();
+						if(!$freight_price){
+							unset($pricelist[$key]);
+							continue;
+						}
+						$value['price'] = price_format($freight_price,$this->site['currency_id']);
+						$value['price_val'] = $freight_price;
+						$pricelist[$key] = $value;
+					}
+				}
+				if($value['identifier'] == 'discount'){
+					unset($pricelist[$key]);
+					continue;
 				}
 			}
 		}
 		$this->assign('pricelist',$pricelist);
+		if($freight_price){
+			$price = price_format(($totalprice+$freight_price),$this->site['currency_id']);
+		}else{
+			$price = price_format($totalprice,$this->site['currency_id']);
+		}
+		$this->assign('price',$price);
+		//支付方式
+		$paylist = $this->model('payment')->get_all($this->site['id'],1,($this->is_mobile ? 1 : 0));
+		$this->assign("paylist",$paylist);
 		$this->view("cart_checkout");
 	}
 
-	public function address_f()
-	{
-		$this->_address();
-		$this->view("cart_address");
-	}
-
-	public function invoice_f()
-	{
-		$this->_invoice();
-		$this->view("cart_invoice");
-	}
-
-	private function _invoice()
-	{
-		$ilist = $this->model('user')->invoice($_SESSION['user_id']);
-		$invoice = array('id'=>'no','title'=>P_Lang('不开发票'),'content'=>'');
-		$ilist[] = $invoice;
-		$default_invoice = $first = $selected = false;
-		if(is_array($ilist)){
-			foreach($ilist as $key=>$value){
-				if($key<1){
-					$first = $value;
-				}
-				if($value['is_default']){
-					$default_invoice = $value;
-				}
-				if($_SESSION['cart'] && $_SESSION['cart']['invoice_id'] && $_SESSION['cart']['invoice_id'] == $value['id']){
-					$selected = $value;
-				}
-			}
-		}
-		if(!$default_invoice){
-			$default_invoice = $first;
-		}
-		if($selected){
-			$default_invoice = $selected;
-		}
-		unset($first,$selected);
-		$_SESSION['cart']['invoice_id'] = $default_invoice['id'];
-		$this->assign('invoice',$default_invoice);
-		$this->assign('invoicelist',$ilist);
-		$this->assign('totalinvoice',count($ilist));
-	}
-
+	/**
+	 * 会员购买商品最后填写的地址
+	**/
 	private function _address()
 	{
-		$addresslist = $this->model('user')->address($_SESSION['user_id']);
-		$v_address = array('id'=>'email','fullname'=>P_Lang('邮箱'),'address'=>'','email'=>$user['email']);
-		if($_SESSION['cart']['address_email']){
-			$v_address['email'] = $_SESSION['cart']['address_email'];
+		if(!$this->session->val('user_id')){
+			return false;
 		}
-		$addresslist[] = $v_address;
-		$default_address = $first = $selected = false;
-		if(is_array($addresslist)){
-			foreach($addresslist as $key=>$value){
-				if($key<1){
-					$first = $value;
+		$rs = $this->model('order')->last_address($this->session->val('user_id'));
+		if($rs){
+			$this->assign('address',$rs);
+		}
+	}
+
+	/**
+	 * 计算运费
+	 * @参数 $rslist 购物车里的产品列表
+	 * @参数 $address 数组，地址
+	 * @返回 false 或 运费，未格式化
+	**/
+	private function _freight($rslist='',$address='')
+	{
+		if(!$rslist){
+			$rslist = $this->tpl->val('rslist');
+			if(!$rslist){
+				return false;
+			}
+		}
+		if(!$rslist || !is_array($rslist)){
+			return false;
+		}
+		if(!$address){
+			$address = $this->tpl->val('address');
+			if(!$address){
+				return false;
+			}
+		}
+		if(!$address || !is_array($address)){
+			return false;
+		}
+		$weight = $volume = $total = 0;
+		foreach($rslist as $key=>$value){
+			$weight += floatval($value['weight'] * $value['qty']);
+			$volume += floatval($value['volume'] * $value['qty']);
+			$total += $value['qty'];
+		}
+		$data = array('weight'=>$weight,'number'=>$total,'volume'=>$volume);
+		return $this->model('cart')->freight_price($data,$address['province'],$address['city']);
+	}
+
+	public function price_f()
+	{
+		$is_virtual = true;
+		$rslist = $this->model('cart')->get_all($this->cart_id);
+		if(!$rslist){
+			$this->error(P_Lang('购物车是空的'));
+		}
+		$province = $this->get('province');
+		$city = $this->get('city');
+		$freight_price = $product_price = 0;
+		foreach($rslist AS $key=>$value){
+			if(!$value['is_virtual']){
+				$is_virtual = false;
+			}
+			$product_price += price_format_val($value['price'] * $value['qty']);
+		}
+		if($province && $city && !$is_virtual){
+			$address = array('province'=>$province,'city'=>$city);
+			$freight_price = $this->_freight($rslist,$address);
+		}
+		$pricelist = $this->model('site')->price_status_all();
+		$price = $product_price;
+		if($pricelist){
+			foreach($pricelist as $key=>$value){
+				if(!$value['status'] || $key == 'discount'){
+					unset($pricelist[$key]);
+					continue;
 				}
-				if($value['is_default']){
-					$default_address = $value;
+				if($key == 'product'){
+					$value['price'] = price_format($product_price);
+					$value['price_val'] = $product_price;
+					$pricelist[$key] = $value;
 				}
-				if($_SESSION['cart'] && $_SESSION['cart']['address_id'] && $_SESSION['cart']['address_id'] == $value['id']){
-					$selected = $value;
+				if($key == 'shipping'){
+					if($is_virtual){
+						unset($pricelist[$key]);
+						continue;
+					}
+					if($freight_price){
+						$value['price'] = price_format($freight_price,$this->site['currency_id']);
+						$value['price_val'] = $freight_price;
+						$pricelist[$key] = $value;
+						$price += $freight_price;
+					}
 				}
 			}
 		}
-		if(!$default_address){
-			$default_address = $first;
-		}
-		if($selected){
-			$default_address = $selected;
-		}
-		unset($first,$selected);
-		$_SESSION['cart']['address_id'] = $default_address['id'];
-		$this->assign('address',$default_address);
-		$this->assign('addresslist',$addresslist);
+		$data = array('pricelist'=>$pricelist,'price'=>price_format($price));
+		$this->success($data);
 	}
 
 	//计算运费
@@ -255,48 +311,5 @@ class cart_control extends phpok_control
 		$this->json(price_format($price,$this->site['currency_id']),true);
 	}
 
-	public function address_selected_f()
-	{
-		if(!$_SESSION['user_id']){
-			$this->json(P_Lang('非会员没有此功能权限'));
-		}
-		$id = $this->get('id');
-		if(!$id){
-			$this->json(P_Lang('未指定地址ID'));
-		}
-		if($id != 'email'){
-			$rs = $this->model('user')->address_one($id);
-			if($rs['user_id'] != $_SESSION['user_id']){
-				$this->json(P_Lang('地址信息与会员不匹配'));
-			}
-		}else{
-			//如果有传Email地址过来，则保存相应的email信息
-			$email = $this->get('email');
-			if($email && $this->lib('common')->email_check($email)){
-				$_SESSION['cart']['address_email'] = $email;
-			}
-		}
-		$_SESSION['cart']['address_id'] = $id;
-		$this->json(true);
-	}
-
-	public function invoice_selected_f()
-	{
-		if(!$_SESSION['user_id']){
-			$this->json(P_Lang('非会员没有此功能权限'));
-		}
-		$id = $this->get('id');
-		if(!$id){
-			$this->json(P_Lang('未指定地址ID'));
-		}
-		if($id != 'no'){
-			$rs = $this->model('user')->invoice_one($id);
-			if($rs['user_id'] != $_SESSION['user_id']){
-				$this->json(P_Lang('信息与会员不匹配'));
-			}
-		}
-		$_SESSION['cart']['invoice_id'] = $id;
-		$this->json(true);
-	}
 }
 ?>

@@ -66,7 +66,7 @@
 	</div>
 	<div class="content">
 		<select name="currency">
-			<option value="CNY">默认</option>
+			<option value="CNY">{lang默认}</option>
 			<!-- loop from=$currency_list key=$key value=$value -->
 			<option value="{$value.code}"{if $rs.currency == $value.code} selected{/if}>{$value.title}（汇率：{$value.val}）</option>
 			<!-- /loop -->
@@ -75,8 +75,8 @@
 </div>
 <div class="table">
 	<div class="title">
-		支付图片一：
-		<span class="note">设置该支付接口的小图，建议使用正方形小图</span>
+		{lang支付图片一}
+		<span class="note">{lang设置该支付接口的小图，建议使用正方形小图}</span>
 	</div>
 	<div class="content">
 		{func form_edit logo1 $rs.logo1 text form_btn=image&width=500}
@@ -85,8 +85,8 @@
 
 <div class="table">
 	<div class="title">
-		支付图片二：
-		<span class="note">设置该支付图片，建议使用长方形，如160x50之类的</span>
+		{lang支付图片二}
+		<span class="note">{lang设置该支付图片，建议使用长方形，如160x50之类的}</span>
 	</div>
 	<div class="content">
 		{func form_edit logo2 $rs.logo2 text form_btn=image&width=500}
@@ -95,8 +95,8 @@
 
 <div class="table">
 	<div class="title">
-		支付图片三：
-		<span class="note">这个图片一般是大图，适用于一些需要大图的场合</span>
+		{lang支付图片三}
+		<span class="note">{lang这个图片一般是大图，适用于一些需要大图的场合}</span>
 	</div>
 	<div class="content">
 		{func form_edit logo3 $rs.logo3 text form_btn=image&width=500}
@@ -104,7 +104,7 @@
 </div>
 
 <!-- loop from=$extlist.code key=$key value=$value -->
-<!-- php:$valinfo = $rs['param'][$key] ? $rs['param'][$key] : $value.default -->
+<!-- php:$valinfo = ($rs['param'] && $rs['param'][$key]) ? $rs['param'][$key] : $value.default -->
 <div class="table">
 	<div class="title">
 		{$value.title}：
@@ -121,7 +121,7 @@
 		</table>
 		<!-- elseif $value.type == 'select' -->
 		<select name="{$code}_{$key}" id="{$code}_{$key}">
-			<option value="">请选择…</option>
+			<option value="">{lang请选择…}</option>
 			<!-- loop from=$value.option key=$k value=$v -->
 			<option value="{$k}"{if $valinfo == $k} selected{/if}>{$v}</option>
 			<!-- /loop -->
@@ -145,6 +145,10 @@
 			{func form_edit $input_name $valinfo text form_btn=video&width=500}
 			<!-- else -->
 			<input type="text" id="{$code}_{$key}" name="{$code}_{$key}" class="long" value="{$valinfo}" />
+				<!-- if $value.typebtn == 'tpl' -->
+				<input type="button" value="{lang选择}" onclick="phpok_tpl_open('{$code}_{$key}')" class="btn" />
+				<input type="button" value="{lang清空}" onclick="$('#{$code}_{$key}').val('');" class="btn" />
+				<!-- /if -->
 			<!-- /if -->
 		<!-- /if -->
 	</div>

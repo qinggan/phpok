@@ -94,7 +94,7 @@ class fav_control extends phpok_control
 		if(!$id){
 			$this->error(P_Lang('未指定主题ID'));
 		}
-		$rs = $this->model('fav')->chk($id,$_SESSION['user_id'])
+		$rs = $this->model('fav')->chk($id,$_SESSION['user_id']);
 		if(!$rs){
 			$this->error(P_Lang('未收藏'));
 		}

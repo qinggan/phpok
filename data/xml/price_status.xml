@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<product>
+		<title>产品售价</title>
+		<status>1</status>
+		<action>add</action>
+		<taxis>1</taxis>
+	</product>
+	<shipping>
+		<title>运费</title>
+		<status>1</status>
+		<action>add</action>
+		<taxis>2</taxis>
+	</shipping>
+	<fee>
+		<title>手续费</title>
+		<status>0</status>
+		<action>add</action>
+		<taxis>3</taxis>
+	</fee>
+	<discount>
+		<title>优惠价格</title>
+		<status>1</status>
+		<action>less</action>
+		<taxis>4</taxis>
+	</discount>
+</root>

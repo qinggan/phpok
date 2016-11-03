@@ -204,6 +204,16 @@ class list_model extends list_model_base
 		return true;
 	}
 
+	public function list_cate_clear($id)
+	{
+		$id = intval($id);
+		if(!$id){
+			return false;
+		}
+		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id=".$id;
+		return $this->db->query($sql);
+	}
+
 	public function catelist($ids)
 	{
 		if(!$ids){

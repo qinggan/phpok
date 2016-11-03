@@ -325,6 +325,60 @@ function set_admin_id(id)
 	});
 }
 
+function set_parent()
+{
+	var ids = $.input.checkbox_join();
+	if(!ids){
+		$.dialog.alert(p_lang('未指定要操作的主题'));
+		return false;
+	}
+	$.dialog.prompt(p_lang('请输入绑定的主题ID号，要绑定的主题不能是选中的ID'),function(val){
+		if(!val){
+			$.dialog.alert('内容不能为空');
+			return false;
+		}
+		var lst = ids.split(',');
+		var isin = false;
+		for(var i in lst){
+			if(lst[i] == val){
+				isin = true;
+			}
+		}
+		if(isin){
+			$.dialog.alert(p_lang('输入的主题重复了'));
+			return false;
+		}
+		var url = get_url('list','set_parent','id='+val+"&ids="+$.str.encode(ids));
+		var rs = $.phpok.json(url);
+		if(rs.status){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	},'');
+}
+
+function unset_parent()
+{
+	var ids = $.input.checkbox_join();
+	if(!ids){
+		$.dialog.alert(p_lang('未指定要操作的主题'));
+		return false;
+	}
+	$.dialog.confirm(p_lang('确定要移除父子级关系吗？'),function(){
+		var url = get_url('list','unset_parent','ids='+$.str.encode(ids));
+		var rs = $.phpok.json(url);
+		if(rs.status){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	})
+}
+
+
 function list_action_exec()
 {
 	var ids = $.input.checkbox_join();
@@ -347,6 +401,14 @@ function list_action_exec()
 	}
 	if(val == 'sort'){
 		set_sort();
+		return false;
+	}
+	if(val == 'set_parent'){
+		set_parent();
+		return false;
+	}
+	if(val == 'unset_parent'){
+		unset_parent();
 		return false;
 	}
 	//执行批量审核通过

@@ -1,12 +1,15 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/libs/upload.php
-	备注： 附件上传操作
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2014年7月10日
-*****************************************************************************************/
+/**
+ * 附件上传操作类
+ * @package phpok\libs\upload
+ * @author qinggan <admin@phpok.com>
+ * @copyright 2015-2016 深圳市锟铻科技有限公司
+ * @homepage http://www.phpok.com
+ * @version 4.x
+ * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @update 2014年7月10日
+**/
+
 class upload_lib
 {
 	private $folder = 'res/';
@@ -94,6 +97,38 @@ class upload_lib
 			return array('status'=>'error','content'=>P_Lang('未指定表单名称'));
 		}
 		$this->_cate($cateid);
+		if(isset($_FILES[$input])){
+			$rs = $this->_upload($input);
+		}else{
+			$rs = $this->_save($input);
+		}
+		if($rs['status'] != 'ok'){
+			return $rs;
+		}
+		$rs['cate'] = $this->cate;
+		return $rs;
+	}
+
+	/**
+	 * 上传ZIP文件
+	 * @参数 $input，表单名
+	 * @参数 $folder，存储目录，为空使用data/cache/
+	 * @返回 数组，上传状态status及保存的路径
+	 * @更新时间 2016年07月18日
+	**/
+	public function zipfile($input,$folder='')
+	{
+		if(!$input){
+			return array('status'=>'error','content'=>P_Lang('未指定表单名称'));
+		}
+		//如果未指定存储文件夹，则使用
+		if(!$folder){
+			$folder = 'data/cache/';
+		}
+		$this->cateid = 0;
+		$this->set_dir($folder);
+		$this->set_type('zip');
+		$this->cate = array('id'=>0,'filemax'=>104857600,'root'=>$folder,'folder'=>'/','filetypes'=>'zip');
 		if(isset($_FILES[$input])){
 			$rs = $this->_upload($input);
 		}else{

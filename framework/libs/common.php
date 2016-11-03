@@ -1,27 +1,29 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/libs/common.php
-	Note	: 常用信息调用
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2014年2月8日
-***********************************************************/
+/**
+ * 常用信息调用
+ * @package phpok\libs
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2016年07月26日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class common_lib
 {
-	//
+	/**
+	 * 构造函数
+	**/
 	public function __construct()
 	{
 		//
 	}
 
-	public function __destruct()
-	{
-		unset($this);
-	}
-
-	//取得IP地址
+	/**
+	 * 取得IP地址
+	**/
 	public function ip()
 	{
 		$cip = (isset($_SERVER['HTTP_CLIENT_IP']) AND $_SERVER['HTTP_CLIENT_IP'] != "") ? $_SERVER['HTTP_CLIENT_IP'] : false;
@@ -49,7 +51,10 @@ class common_lib
 		return $ip;
 	}
 
-	//CSS格式化或清理，去除无意义的CSS
+	/**
+	 * CSS格式化或清理，去除无意义的CSS
+	 * @参数 $info 要格式化的CSS信息
+	**/
 	public function css_format($info='')
 	{
 		if(!$info) return false;
@@ -68,8 +73,11 @@ class common_lib
 		return implode(";",$info);
 	}
 
-	//邮箱合法性验证
-	//此验证仅仅只是简单判断
+	/**
+	 * 邮箱合法性验证，此验证仅仅只是简单判断
+	 * @参数 $email 邮箱
+	 * @返回 true 或 false
+	**/
 	public function email_check($email)
 	{
 		$atIndex = strrpos($email, "@");
@@ -106,7 +114,11 @@ class common_lib
 		return true;
 	}
 
-	//身份证验证，仅限中国大陆
+	/**
+	 * 身份证验证，仅限中国大陆
+	 * @参数 $idcard 身份证号码
+	 * @返回 true 或 false
+	**/
 	public function idcard_check($idcard)
 	{
 		if(!$idcard || strlen($idcard) != 15 && strlen($idcard) != 18){
@@ -144,7 +156,11 @@ class common_lib
 		return true;
 	}
 
-	//升级15位身份证到18位
+	/**
+	 * 升级15位身份证到18位
+	 * @参数 $idcard 15位号码
+	 * @返回 18位身份证号码
+	**/
 	private function _idcard_15to18($idcard)
 	{
 		if (array_search(substr($idcard, 12, 3), array('996', '997', '998', '999')) !== false){ 
@@ -156,7 +172,11 @@ class common_lib
 		return $idcard;
 	}
 
-	//15位身份证升级到17位后，通过规则，取得第18位数字
+	/**
+	 * 15位身份证升级到17位后，通过规则，取得第18位数字
+	 * @参数 $idcard_base 15位号码
+	 * @返回 第18位号码
+	**/
 	private function _idcard_verify_number($idcard_base) 
 	{ 
 		//加权因子 
@@ -172,13 +192,18 @@ class common_lib
 		return $verify_number; 
 	}
 
-	//是否电话判断
+	/**
+	 * 是否电话判断
+	 * @参数 $tel 电话号码
+	 * @参数 $type 类型，支持 mobile tel 和 400电话，留空只要一个符合即通过
+	 * @返回 true 或 false
+	**/
 	public function tel_check($tel,$type='')
 	{
 		$regxArr = array(
 			'mobile'  =>  '/^(\+?86-?)?(18|15|13|17)[0-9]{9}$/',
-			'tel' =>  '/^(\+?86-?)?(010|02\d{1}|0[3-9]\d{2})-\d{7,9}(-\d+)?$/',
-			'400' =>  '/^400(-\d{3,4}){2}$/',
+			'tel' =>  '/^(\+?86-?)?(010|02\d{1}|0[3-9]\d{2})-?\d{7,9}(-\d+)?$/',
+			'400' =>  '/^400(-?\d{3,4}){2}$/',
 		);
 		if($type && isset($regxArr[$type])){
 			return preg_match($regxArr[$type], $tel) ? true:false;
@@ -191,10 +216,22 @@ class common_lib
 		return false;
 	}
 
-	//获取随机字串
-	public function str_rand($length=10)
+	/**
+	 * 获取随机字串
+	 * @参数 $length 长度，默认是10
+	 * @参数 $type 类型，支持：letter 字母，number 数字，all 全部
+	 * @返回 随机字符
+	 * @更新时间 2016年07月26日
+	**/
+	public function str_rand($length=10,$type='')
 	{
 		$a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
+		if($a == 'number'){
+			$a = '0123456789';
+		}
+		if($a == 'letter'){
+			$a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+		}
 		$maxlength = strlen($a)-1;
 		$rand_str = '';
 		for($i=0;$i<$length;++$i){
@@ -203,7 +240,13 @@ class common_lib
 		return $rand_str;
 	}
 
-	//字节数格式化为带单位的数据，默认保留两位小数
+	/**
+	 * 字节数格式化为带单位的数据，默认保留两位小数
+	 * @参数 $a 要格式化的数据
+	 * @参数 $ext 保留位数
+	 * @参数 $min_kb 小于1KB是否直接显示1kb还是显示字节
+	 * @返回 格式化后的字串
+	**/
 	public function num_format($a='',$ext=2,$min_kb=true)
 	{
 		if(!$a || $a == 0){

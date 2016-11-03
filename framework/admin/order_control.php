@@ -1,16 +1,26 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/order_control.php
-	Note	: 订单管理，编辑和删除等相关操作
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年12月18日
-***********************************************************/
+/**
+ * 订单管理，编辑和删除等相关操作
+ * @package phpok\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2016年10月03日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class order_control extends phpok_control
 {
+	/**
+	 * 权限
+	**/
 	private $popedom;
+
+	/**
+	 * 构造函数
+	**/
 	public function __construct()
 	{
 		parent::control();
@@ -18,11 +28,13 @@ class order_control extends phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
-	//显示订单列表
+	/**
+	 * 显示订单列表
+	**/
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$pageid = $this->get($this->config['pageid'],'int');
 		if(!$pageid){
@@ -84,45 +96,73 @@ class order_control extends phpok_control
 		}
 		$paytype = $this->get('paytype','int');
 		if($paytype){
-			$condition .= " AND p.payment_id='".$paytype."'";
+			$condition .= " AND o.id IN(SELECT order_id FROM ".$this->db->prefix."order_payment WHERE payment_id='".$paytype."') ";
 			$pageurl .= "&paytype=".$paytype;
 			$this->assign('paytype',$paytype);
 		}
 		$total = $this->model('order')->get_count($condition);
-		if($total>0){
-			$paylist = $this->model('payment')->get_all('','id');
-			if(!$paylist){
-				$paylist = array();
-			}else{
-				$this->assign('paylist',$paylist);
-			}
-			$tmp = array();
-			foreach($paylist AS $key=>$value){
-				$tmp[$value['id']] = $value;
-			}
-			$paylist = $tmp;
-			$rslist = $this->model('order')->get_list($condition,$offset,$psize);
-			if(!$rslist) $rslist = array();
-			foreach($rslist AS $key=>$value){
-				//如果不符合条件，跳过
-				if(!$value['pay_id'] || !$paylist[$value['pay_id']] || !$value['ext']) continue;
-				$code = $paylist[$value['pay_id']]['code'];
-				if(!$this->plugin[$code] || !$this->plugin[$code]['method']) continue;
-				if(!in_array('format',$this->plugin[$code]['method'])) continue;
-				$extlist = $this->plugin[$code]['obj']->format($value['ext']);
-				if($extlist && is_array($extlist)){
-					$value['extlist'] = $extlist;
-				}
+		if(!$total){
+			$this->view("order_list");
+		}
+		$paylist = $this->model('payment')->get_all('','id');
+		if(!$paylist){
+			$paylist = array();
+		}
+		$this->assign('paylist',$paylist);
+		$rslist = $this->model('order')->get_list($condition,$offset,$psize);
+		if(!$rslist){
+			$rslist = array();
+		}
+		foreach($rslist as $key=>$value){
+			if(!$value['status_title']){
+				$value['status_title'] = $statuslist[$value['status']] ? $statuslist[$value['status']] : $value['status'];
 				$rslist[$key] = $value;
 			}
-			$this->assign('rslist',$rslist);
-			$this->assign('total',$total);
-			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
-			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-			$this->assign('pagelist',$pagelist);
 		}
+		$this->assign('rslist',$rslist);
+		$this->assign('total',$total);
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+		$this->assign('pagelist',$pagelist);
 		$this->view("order_list");
+	}
+
+	/**
+	 * 结束订单操作
+	 * @参数 id 订单ID号
+	 * @参数 act 动作，仅限cancel，stop，end
+	 * @返回 JSON数据
+	 * @更新时间 2016年10月04日
+	**/
+	public function end_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定订单ID'));
+		}
+		$act = $this->get('act','system');
+		if(!$act){
+			$this->error(P_Lang('未指定要操作的动作'));
+		}
+		if(!in_array($act,array('cancel','stop','end'))){
+			$this->error(P_Lang('执行操作不符合要求'));
+		}
+		if(!$this->popedom[$act]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$rs = $this->model('order')->get_one($id);
+		if($rs['status'] == $act || in_array($rs['status'],array('cancel','stop','end'))){
+			$this->error(P_Lang('动作已执行过，不能重复执行了'));
+		}
+		$statuslist = $this->model('order')->status_list();
+		$this->model('order')->update_order_status($id,$act,$statuslist[$act]);
+		//如果订单动作是完成
+		if($act == 'end'){
+			//赠送订单积分
+			$this->model('wealth')->order($id,P_Lang('订单完成赚送积分'));
+		}
+		$this->success();
 	}
 
 	//物流维护管理
@@ -184,10 +224,13 @@ class order_control extends phpok_control
 			$this->json(P_Lang('写入失败'));
 		}
 		//增加订单日志
-		$data = array('order_id'=>$id,'order_express_id'=>$insert,'note'=>P_Lang('您的订单已经拣货完毕，待出库交付{title}，运单号为：{code}',array('title'=>$express['title'],'code'=>$code)));
-		$this->model('order')->log_save($data);
-		//更新订单状态
-		$this->model('order')->update_order_status($id,'shipped');
+		$tip = P_Lang('您的订单已经拣货完毕，待出库交付{title}，运单号为：{code}',array('title'=>$express['title'],'code'=>$code));
+		$data = array('order_id'=>$id,'order_express_id'=>$insert,'note'=>$tip);
+		$rs = $this->model('order')->get_one($id);
+		if($rs['status'] != 'shipping'){
+			$this->model('order')->log_save($data);
+			$this->model('order')->update_order_status($id,'shipping');
+		}
 		$this->json(true);
 	}
 
@@ -200,9 +243,6 @@ class order_control extends phpok_control
 		$rs = $this->model('order')->express_one($id);
 		if(!$rs){
 			$this->json(P_Lang('物流信息不存在'));
-		}
-		if($rs['is_end']){
-			$this->json(P_Lang('物流数据已完成，不能执行删除'));
 		}
 		$this->model('order')->express_delete($id);
 		$this->json(true);
@@ -220,48 +260,45 @@ class order_control extends phpok_control
 		$this->json(P_Lang('删除成功'),true);
 	}
 
-	//更新订单状态
-	public function status_f()
-	{
-		$id = $this->get('id');
-		if(!$this->popedom['status']) $this->json(P_Lang('您没有权限执行此操作'));
-		$array = array('status'=>'CHECKED');
-		$this->model('order')->save($array,$id);
-		$this->json(P_Lang('审核成功'),true);
-	}
-
 	//查看订单信息
 	public function info_f()
 	{
 		$id = $this->get('id','int');
-		if(!$id) error_open(P_Lang('未指定ID'));
-		
-		$rs = $this->model('order')->get_one($id);
-		if(!$rs) error_open(P_Lang('订单信息不存在'));
-		if($rs['pay_id'])
-		{
-			//取得付款方式
-			$payment = $this->model('payment')->get_one($rs['pay_id']);
-			if($this->plugin[$payment['code']] && $this->plugin[$payment['code']]['method'] && in_array('format',$this->plugin[$payment['code']]['method']) && $rs['ext'])
-			{
-				$ext = $this->plugin[$payment['code']]['obj']->format($rs['ext'],true);
-				if($ext && is_array($ext))
-				{
-					$rs['extlist'] = $ext;
-				}
-			}
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
 		}
-		$this->assign('rs',$rs);
+
+		$rs = $this->model('order')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('订单信息不存在'));
+		}
 		//订单状态
 		$statuslist = $this->model('order')->status_list();
+		if(!$rs['status_title']){
+			$rs['status_title'] = $statuslist[$rs['status']] ? $statuslist[$rs['status']] : $rs['status'];
+		}
+		$this->assign('rs',$rs);
 		$this->assign('statuslist',$statuslist);
 		//取得订单的地址
-		$address = $this->model('order')->address_list($id);
-		$this->assign('shipping',$address['shipping']);
-		$this->assign('billing',$address['billing']);
+		$address = $this->model('order')->address($id);
+		$this->assign('shipping',$address);
 		//订单下的产品列表
 		$rslist = $this->model('order')->product_list($id);
 		$this->assign('rslist',$rslist);
+		//取得支付记录
+		$paylist = $this->model('order')->payment_all($id);
+		$this->assign('paylist',$paylist);
+		$paid_price = $this->model('order')->paid_price($id);
+		$this->assign('paid_price',$paid_price);
+		$unpaid_price = $this->model('order')->unpaid_price($id);
+		$this->assign('unpaid_price',$unpaid_price);
+		if($rs['user_id']){
+			$user = $this->model('user')->get_one($rs['user_id']);
+			$this->assign('user',$user);
+		}
+		$loglist = $this->model('order')->log_list($id);
+		$this->assign('loglist',$loglist);
+
 		$this->view("order_info");
 	}
 
@@ -312,12 +349,12 @@ class order_control extends phpok_control
 
 		$loglist = $this->model('order')->log_list($id);
 		$this->assign('loglist',$loglist);
-		
+
 		$this->view("order_set");
 	}
 
 	//删除产品信息
-	function product_delete_f()
+	public function product_delete_f()
 	{
 		$id = $this->get('id','int');
 		if(!$id){
@@ -335,7 +372,7 @@ class order_control extends phpok_control
 	}
 
 	//选择商品
-	function prolist_f()
+	public function prolist_f()
 	{
 		$id = $this->get('id');
 		if(!$id) $id = 'add';
@@ -398,7 +435,7 @@ class order_control extends phpok_control
 	}
 
 	//取得产品信息
-	function product_f()
+	public function product_f()
 	{
 		$id = $this->get('id','int');
 		if(!$id) $this->json(P_Lang('未指定产品ID'));
@@ -411,7 +448,7 @@ class order_control extends phpok_control
 	}
 
 	//图片库
-	function thumb_f()
+	public function thumb_f()
 	{
 		$id = $this->get('id');
 		if(!$id) $id = 'add';
@@ -464,54 +501,164 @@ class order_control extends phpok_control
 		$this->view("order_picture");
 	}
 
-	//存储订单信息
-	function save_f()
+	/**
+	 * 存储订单信息
+	**/
+	public function save_f()
 	{
 		$id = $this->get('id','int');
 		if(!$id){
 			if(!$this->popedom['add']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
-			$this->add_save();
-		}
-		if(!$this->popedom['modify']){
-			$this->json(P_Lang('您没有权限执行此操作'));
-		}
-		$this->modify_save($id);
-	}
-
-	//编辑存储信息
-	private function modify_save($id)
-	{
-		$old = $this->model('order')->get_one($id);
-		if(!$old){
-			$this->json(P_Lang('订单信息不存在'));
+			$sn = $this->get('sn');
+			if(!$sn){
+				$this->error(P_Lang('订单编号不能为空'));
+			}
+			if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$sn)){
+				$this->error(P_Lang('订单编号不合要求，限字母、数字、下划线及中划线'));
+			}
+			$rs = $this->model('order')->get_one_from_sn($sn);
+			if($rs){
+				$this->error(P_Lang('订单编号已被使用，请换个编号'));
+			}
+		}else{
+			if(!$this->popedom['modify']){
+				$this->error(P_Lang('您没有权限执行此操作'));
+			}
+			$old = $this->model('order')->get_one($id);
+			if(!$old){
+				$this->error(P_Lang('订单信息不存在'));
+			}
 		}
 		$main = array();
-		$passwd = $this->get('passwd');
-		if(!$passwd){
-			$this->json(P_Lang('订单密码不能为空'));
-		}
-		if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$passwd)){
-			$this->json(P_Lang('订单密码不合要求，限字母、数字、下划线及中划线'));
-		}
-		$main['passwd'] = $passwd;
+		$main['user_id'] = $this->get('user_id','int');
 		$main['price'] = $this->get('price','float');
 		$main['currency_id'] = $this->get('currency_id','int');
-		$main['user_id'] = $this->get('user_id','int');
+		if($main['currency_id']){
+			$main['currency_rate'] = $this->model('currency')->rate($main['currency_id']);
+		}
+		$main['status'] = $id ? $this->get('status') : 'create';
+		if($main['status']){
+			$statuslist = $this->model('order')->status_list();
+			$main['status_title'] = $statuslist[$main['status']] ? $statuslist[$main['status']] : '';
+		}
+		$passwd = $this->get('passwd');
+		if(!$passwd){
+			$this->error(P_Lang('订单密码不能为空'));
+		}
+		if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$passwd)){
+			$this->error(P_Lang('订单密码不合要求，限字母、数字、下划线及中划线'));
+		}
+		$main['passwd'] = $passwd;
 		$main['note'] = $this->get('note');
-		$main['status'] = $this->get('status');
 		$main['email'] = $this->get('email');
-		$prolist = $this->get('pro_id');
+		$main['mobile'] = $this->get('mobile');
+		if(!$id){
+			$main['sn'] = $sn;
+			$main['addtime'] = $this->time;
+		}
+		//检查产品数据是否完整
+		$pro_id = $this->get('pro_id');
+		if(!$pro_id || !is_array($pro_id)){
+			$this->error(P_Lang('产品信息为空，订单异常，请添加产品或删除订单信息'));
+		}
+		if(!$id){
+			$order_id = $this->model('order')->save($main);
+			if(!$order_id){
+				$this->error(P_Lang('订单创建失败，请检查'));
+			}
+			$act_id = $order_id;
+		}else{
+			$this->model('order')->save($main,$id);
+			$act_id = $id;
+		}
+		$this->_save_products($act_id);
+		$this->_save_address($act_id);
+		$this->_save_invoice($act_id);
+		$this->_save_price($act_id);
+		if($id){
+			if($main['status'] && $main['status'] != $old['status']){
+				$this->model('order')->update_order_status($id,$main['status'],$main['status_title']);
+			}else{
+				$log = array('order_id'=>$order_id,'note'=>P_Lang('管理员编辑订单'));
+				$this->model('order')->log_save($log);
+			}
+		}else{
+			$log = array('order_id'=>$order_id,'note'=>P_Lang('管理员创建订单'));
+			$this->model('order')->log_save($log);
+			$param = 'id='.$order_id."&status=".$main['status'];
+			$this->model('task')->add_once('order',$param);
+		}
+		$this->success();
+	}
+
+	private function _save_price($order_id=0)
+	{
+		$this->model('order')->delete_order_price($order_id);
+		$pricelist = $this->model('site')->price_status_all(false);
+		$ext_price = $this->get('ext_price');
+		if($ext_price && is_array($ext_price) && $pricelist){
+			foreach($ext_price as $key=>$value){
+				$value = abs($value);
+				if($pricelist[$key] && $pricelist[$key]['action'] != 'add'){
+					$value = -$value;
+				}
+				$tmp = array('order_id'=>$order_id,'code'=>$key,'price'=>$value);
+				$this->model('order')->save_order_price($tmp);
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 保存发票
+	 * @参数 $order_id 订单ID
+	**/
+	private function _save_invoice($order_id=0)
+	{
+		$array = array();
+		$array['type'] = $this->get('invoice_type');
+		$array['title'] = $this->get('invoice_title');
+		$array['content'] = $this->get('invoice_content');
+		$array['note'] = $this->get('invoice_note');
+		$array['order_id'] = $order_id;
+		if($array['title'] && $array['type']){
+			$this->model('order')->save_invoice($array);
+		}
+		return true;
+	}
+
+
+	private function _save_products($order_id=0)
+	{
+		$pro_tmp = $this->get('pro_tmp');
+		$pro_id = $this->get('pro_id');
 		$pro_title = $this->get('pro_title');
 		$pro_thumb = $this->get('pro_thumb');
-		$pro_tid = $this->get('pro_tid');
-		$pro_price = $this->get('pro_price');
-		$pro_qty = $this->get('pro_qty');
-		if(!$prolist || !is_array($prolist)){
-			$this->json(P_Lang('产品信息为空，订单异常，请添加产品或删除订单信息'));
+		$pro_tid = $this->get('pro_tid','int');
+		$pro_price = $this->get('pro_price','float');
+		$pro_qty = $this->get('pro_qty','int');
+		$pro_weight = $this->get('pro_weight','float');
+		$pro_volume = $this->get('pro_volume','float');
+		$pro_note = $this->get('pro_note');
+		$pro_virtual = $this->get('pro_virtual','int');
+		$pro_unit = $this->get('pro_unit');
+		$prolist = array();
+		//删除不存在的商品
+		$idlist = false;
+		foreach($pro_id as $key=>$value){
+			if($value && is_numeric($value)){
+				if(!$idlist){
+					$idlist = array();
+				}
+				$idlist[] = $value;
+			}
 		}
-		foreach($prolist AS $key=>$value){
+		if($idlist){
+			$this->model('order')->order_product_clearup($order_id,$idlist);
+		}
+		foreach($pro_id as $key=>$value){
 			$tmp_title = $pro_title[$key];
 			if(!$tmp_title || !trim($tmp_title)){
 				continue;
@@ -520,237 +667,206 @@ class order_control extends phpok_control
 			if(!$tmp_qty){
 				$tmp_qty = 1;
 			}
-			$tmp_id = intval($pro_tid[$key]);
-			$tmp_price = floatval($pro_price[$key]);
 			$array = array(
-				'tid'=>$tmp_id,
+				'order_id'=>$order_id,
+				'tid'=>intval($pro_tid[$key]),
 				'title'=>$tmp_title,
-				'price'=>$tmp_price,
+				'price'=>floatval($pro_price[$key]),
 				'qty'=>$tmp_qty,
 				'thumb'=>$pro_thumb[$key],
-				'order_id'=>$id
+				'weight'=>$pro_weight[$key],
+				'volume'=>$pro_volume[$key],
+				'unit'=>$pro_unit[$key],
+				'note'=>$pro_note[$key],
+				'is_virtual'=>$pro_virtual[$key]
 			);
-			if($tmp_id){
-				$product = $this->model('list')->get_one($tmp_id,false);
-				if($product){
-					$array['weight'] = $product['weight'];
-					$array['unit'] = $product['unit'];
-					$array['volume'] = $product['volume'];
+			//属性
+			$tmp_ext_id = $pro_tmp[$key];
+			$ext_title = $this->get('ext_title_'.$tmp_ext_id);
+			$ext_content = $this->get('ext_content_'.$tmp_ext_id);
+			if($ext_title && $ext_content && is_array($ext_title) && is_array($ext_content)){
+				$tmp_ext = array();
+				foreach($ext_title as $k=>$v){
+					if($v && $ext_content[$k]){
+						$tmp_ext[] = array('title'=>$v,'content'=>$ext_content[$k]);
+					}
+				}
+				if($tmp_ext && count($tmp_ext)>0){
+					$array['ext'] = serialize($tmp_ext);
 				}
 			}
 			if($value && $value != 'add'){
 				$this->model('order')->save_product($array,$value);
 			}else{
 				$this->model('order')->save_product($array);
-				$info = P_Lang('管理员增加产品信息');
-				$log = array('order_id'=>$id,'note'=>$info);
-				$this->model('order')->log_save($log);
 			}
 		}
-		//存储收货地址
-		$shipping = $this->address('s');
-		if($shipping){
-			$shipping['order_id'] = $id;
-			$sid = $this->get('s-id','int');
-			$this->model('order')->save_address($shipping,$sid);
-		}
-		//删除已有扩展价格内容
-		$this->model('order')->delete_order_price($id);
-		$ext_price = $this->get('ext_price');
-		if($ext_price && is_array($ext_price)){
-			foreach($ext_price as $key=>$value){
-				$tmp = array('order_id'=>$id,'code'=>$key,'price'=>$value);
-				$this->model('order')->save_order_price($tmp);
-			}
-		}
-		//存储发票
-		$invoice = array('type'=>$this->get('invoice_type'),'title'=>$this->get('invoice_title'),'content'=>$this->get('invoice_content'));
-		if($invoice['type'] && $invoice['title']){
-			$invoice['order_id'] = $id;
-			$this->model('order')->save_invoice($invoice);
-		}
-		$pay_id = $this->get('pay_id');
-		$pay_price = $this->get('pay_price');
-		if($pay_price && $pay_id){
-			$old_payment = $this->model('order')->order_payment($id);
-			$old_id = $old_payment ? $old_payment['id'] : 0;
-			if(!$old_payment){
-				$info = P_Lang('管理员录入支付信息');
-				$log = array('order_id'=>$id,'note'=>$info);
-				$this->model('order')->log_save($log);
-			}else{
-				if($old_payment['payment_id'] != $pay_id){
-					$info = P_Lang('管理员变更支付信息');
-					$log = array('order_id'=>$id,'note'=>$info);
-					$this->model('order')->log_save($log);
-				}
-			}
-			$payment = $this->model('payment')->get_one($pay_id);
-			$pay_date = $this->get('pay_date');
-			$pay_date = $pay_date ? strtotime($pay_date) : $this->time;
-			$array = array('order_id'=>$id,'payment_id'=>$pay_id,'title'=>$payment['title'],'price'=>$pay_price);
-			$array['dateline'] = $pay_date;
-			$this->model('order')->save_payment($array,$old_id);
-		}else{
-			$old_payment = $this->model('order')->order_payment($id);
-			if($old_payment){
-				$array = array('dateline'=>0);
-				$this->model('order')->save_payment($array,$old_payment['id']);
-			}
-		}
-		$this->model('order')->save($main,$id);
-		if($main['status'] != $old['status']){
-			$param = 'id='.$id."&status=".$main['status'];
-			$this->model('task')->add_once('order',$param);
-		}
-		$this->json(true);
+		return true;
 	}
 
-	//添加存储信息
-	private function add_save()
-	{
-		$main = array();
-		$sn = $this->get('sn');
-		if(!$sn){
-			$this->json(P_Lang('订单编号不能为空'));
-		}
-		if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$sn)){
-			$this->json(P_Lang('订单编号不合要求，限字母、数字、下划线及中划线'));
-		}
-		$rs = $this->model('order')->get_one_from_sn($sn);
-		if($rs){
-			$this->json(P_Lang('订单编号已被使用，请换个编号'));
-		}
-		$main['sn'] = $sn;
-		$passwd = $this->get('passwd');
-		if(!$passwd){
-			$this->json(P_Lang('订单密码不能为空'));
-		}
-		if(!preg_match('/^[a-z0-9A-Z\_\-]+$/u',$passwd)){
-			$this->json(P_Lang('订单密码不合要求，限字母、数字、下划线及中划线'));
-		}
-		$main['user_id'] = $this->get('user_id');
-		$main['addtime'] = $this->time;
-		$main['status'] = $this->get('status');
-		$main['passwd'] = $passwd;
-		$main['note'] = $this->get('note');
-		$main['email'] = $this->get('email');
-		$main['price'] = $this->get('price','float');
-		$main['currency_id'] = $this->get('currency_id','int');
-		$order_id = $this->model('order')->save($main);
-		if(!$order_id){
-			$this->json(P_Lang('订单创建失败，请检查'));
-		}
-		//读取扩展价格的存储
-		$ext_price = $this->get('ext_price');
-		if($ext_price && is_array($ext_price)){
-			foreach($ext_price as $key=>$value){
-				$tmp = array('order_id'=>$order_id,'code'=>$key,'price'=>$value);
-				$this->model('order')->save_order_price($tmp);
-			}
-		}
-		//保存相应的产品信息
-		$prolist = $this->get('pro_id');
-		$pro_title = $this->get('pro_title');
-		$pro_thumb = $this->get('pro_thumb');
-		$pro_tid = $this->get('pro_tid');
-		$pro_price = $this->get('pro_price');
-		$pro_qty = $this->get('pro_qty');
-		if(!$prolist || !is_array($prolist)){
-			$this->model('order')->delete($order_id);
-			$this->json(P_Lang('没有指定产品信息'));
-		}
-		$total_price = 0;
-		$total_qty = 0;
-		foreach($prolist AS $key=>$value){
-			$tmp_title = $pro_title[$key];
-			if(!$tmp_title || !trim($tmp_title)){
-				continue;
-			}
-			$tmp_qty = intval($pro_qty[$key]);
-			if(!$tmp_qty){
-				$tmp_qty = 1;
-			}
-			$total_qty += $tmp_qty;
-			$tmp_price = floatval($pro_price[$key]);
-			$total_price += $tmp_price * $tmp_qty;
-			$tmp_id = intval($pro_tid[$key]);
-			$tmp = array('tid'=>$tmp_id,'title'=>$tmp_title,'price'=>$tmp_price,'qty'=>$tmp_qty,'thumb'=>$pro_thumb[$key]);
-			if($tmp_id){
-				$product = $this->model('list')->get_one($tmp_id,false);
-				if($product){
-					$tmp['weight'] = $product['weight'];
-					$tmp['unit'] = $product['unit'];
-					$tmp['volume'] = $product['volume'];
-				}
-			}
-			$tmp['order_id'] = $order_id;
-			$this->model('order')->save_product($tmp);
-		}
-		//保存订单地址信息
-		$address = $this->address('s');
-		if($address && $address['fullname'] && $address['address'] && ($address['mobile'] || $address['tel'])){
-			$address['order_id'] = $order_id;
-			$this->model('order')->save_address($address);
-		}
-		$invoice = array('type'=>$this->get('invoice_type'),'title'=>$this->get('invoice_title'),'content'=>$this->get('invoice_content'));
-		if($invoice['type'] && $invoice['title']){
-			$invoice['order_id'] = $order_id;
-			$this->model('order')->save_invoice($invoice);
-		}
-		//保存日志
-		$adminer = $this->model('admin')->get_one($_SESSION['admin_id']);
-		$who = $adminer['fullname'] ? $adminer['fullname'].'('.$adminer['account'].')' : $adminer['account'];
-		$info = P_Lang('管理员创建订单，等待系统确认');
-		$log = array('order_id'=>$order_id,'note'=>$info);
-		$this->model('order')->log_save($log);
-		//判断在线支付
-		$pay_id = $this->get('pay_id');
-		$pay_price = $this->get('pay_price');
-		if($pay_price && $pay_id){
-			$payment = $this->model('payment')->get_one($pay_id);
-			$pay_date = $this->get('pay_date');
-			$pay_date = $pay_date ? strtotime($pay_date) : $this->time;
-			$array = array('order_id'=>$order_id,'payment_id'=>$pay_id,'title'=>$payment['title'],'price'=>$pay_price);
-			$array['dateline'] = $pay_date;
-			$this->model('order')->save_payment($array);
-			$info = P_Lang('管理员录入支付信息');
-			$log = array('order_id'=>$order_id,'note'=>$info);
-			$this->model('order')->log_save($log);
-		}
-		$param = 'id='.$order_id."&status=".$main['status'];
-		$this->model('task')->add_once('order',$param);
-		$this->json(true);
-	}
-
-	//地址库
-	function address($type="s",$sid=0)
+	/**
+	 * 保存订单地址
+	 * @参数 $order_id 订单ID号
+	 * @返回 true
+	**/
+	private function _save_address($order_id)
 	{
 		$array = array();
-		$array['country'] = $this->get($type."-country");
-		$array['province'] = $this->get($type."-province");
-		$array['city'] = $this->get($type."-city");
-		$array['county'] = $this->get($type."-county");
-		$array['address'] = $this->get($type."-address");
-		$array['mobile'] = $this->get($type."-mobile");
-		$array['tel'] = $this->get($type."-tel");
-		$array['email'] = $this->get($type."-email");
-		$array['fullname'] = $this->get($type."-fullname");
-		return $array;
+		$array['country'] = $this->get("s-country");
+		$array['province'] = $this->get("s-province");
+		$array['city'] = $this->get("s-city");
+		$array['county'] = $this->get("s-county");
+		$array['address'] = $this->get("s-address");
+		$array['mobile'] = $this->get("s-mobile");
+		$array['tel'] = $this->get("s-tel");
+		$array['email'] = $this->get("s-email");
+		$array['fullname'] = $this->get("s-fullname");
+		$array['order_id'] = $order_id;
+		$sid = $this->get('s-id','int');
+		$this->model('order')->save_address($array,$sid);
+		return true;
 	}
 
 	public function payment_delete_f()
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		if(!$_SESSION['admin_rs']['if_system']){
-			$this->json(P_Lang('您没有权限，仅限系统管理员操作'));
+			$this->error(P_Lang('您没有权限，仅限系统管理员操作'));
 		}
 		$this->model('order')->order_payment_delete($id);
-		$this->json(true);
+		$this->success();
+	}
+
+	/**
+	 * 检测是否支持物流
+	 * @参数 id 订单ID
+	**/
+	public function express_check_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定订单ID'));
+		}
+		$total = $this->model('order')->check_need_express($id);
+		$this->success($total);
+	}
+
+	/**
+	 * 支付记录
+	 * @参数 id 订单ID
+	**/
+	public function payment_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定订单ID'));
+		}
+		$rs = $this->model('order')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('订单不存在'));
+		}
+		if(in_array($rs['status'],array('cancel','stop','end'))){
+			$this->error(P_Lang('订单已结束/取消/完成，不能执行此操作'));
+		}
+		$this->assign('rs',$rs);
+		if($rs['currency_id']){
+			$currency = $this->model('currency')->get_one($rs['currency_id']);
+			$this->assign('currency',$currency);
+		}
+		$loglist = $this->model('order')->payment_all($id);
+		$this->assign('loglist',$loglist);
+		$paylist = $this->model('payment')->get_all('','id');
+		$this->assign('paylist',$paylist);
+		//隐藏录入
+		$payend = $this->model('order')->check_payment_is_end($id);
+		if(!$payend){
+			$unpaid_price = $this->model('order')->unpaid_price($id);
+			$this->assign('unpaid_price',$unpaid_price);
+		}
+		$this->assign('payend',$payend);
+		$this->view('order_payment');
+	}
+
+	/**
+	 * 保存支付方法
+	 * @参数 id 订单ID
+	 * @参数 payment_id 支付方法
+	 * @参数 title 自设支付方法名称
+	 * @参数 price 支付金额
+	 * @参数 dateline 支付时间
+	 * @返回 JSON数据
+	**/
+	public function payment_save_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定订单ID'));
+		}
+		$rs = $this->model('order')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('订单不存在'));
+		}
+		if(in_array($rs['status'],array('cancel','stop','end'))){
+			$this->error(P_Lang('订单已结束/取消/完成，不能执行此操作'));
+		}
+		$payment_id = $this->get('payment_id');
+		if(!$payment_id){
+			$this->error(P_Lang('未设置支付方式'));
+		}
+		if($payment_id && $payment_id != 'other'){
+			$payment_rs = $this->model('payment')->get_one($payment_id);
+			$title = $payment_rs ? $payment_rs['title'] : '';
+		}
+		if(!$title){
+			$title = $this->get('title');
+			if(!$title){
+				$this->error(P_Lang('支付方式名称不能为空'));
+			}
+		}
+		if($this->model('order')->check_payment_is_end($id)){
+			$this->error(P_Lang('订单金额已付清，不能再录入'));
+		}
+		$dateline = $this->get('dateline');
+		if($dateline){
+			$dateline.= " ".date("H:i:s",$this->time);
+			$dateline = strtotime($dateline);
+		}
+		if(!$dateline){
+			$dateline = $this->time;
+		}
+		$price = $this->get('price','float');
+		if($price<0.01){
+			$this->error(P_Lang('支付金额不能少于0.01元'));
+		}
+		$unpaid_price = $this->model('order')->unpaid_price($id);
+		if($unpaid_price < $price){
+			$price = $unpaid_price;
+		}
+		$array = array('order_id'=>$id,'payment_id'=>intval($payment_id),'title'=>$title);
+		$array['price'] = $price;
+		$array['startdate'] = $dateline;
+		$array['dateline'] = $dateline;
+		$note = $this->get('note');
+		if($note){
+			$tmp = array(P_Lang('备注')=>$note);
+			$array['ext'] = serialize($tmp);
+		}
+		$this->model('order')->save_payment($array);
+		//判断
+		if($rs['status'] == 'create'){
+			$act = $this->model('order')->check_payment_is_end($id) ? 'paid' : 'unpaid';
+			$this->model('order')->update_order_status($id,$act);
+		}
+		if($rs['status'] == 'unpaid' && $this->model('order')->check_payment_is_end($id)){
+			$this->model('order')->update_order_status($id,'paid');
+		}
+		$tmp = array('title'=>$title,'price'=>price_format($price,$rs['currency_id'],$rs['currency_id']));
+		$tip = P_Lang('录入支付信息，支付方式：{title}，支付金额：{price}',$tmp);
+		$data = array('order_id'=>$id,'order_express_id'=>0,'note'=>$tip);
+		$this->model('order')->log_save($data);
+		$this->success();
 	}
 }
-
-?>

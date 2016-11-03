@@ -95,7 +95,7 @@ select{padding:3px;}
 .main2 div.pfw input.default{width:99%;}
 .main2 div.pfw textarea.long{width:99%;}
 
-.foot{text-align:left;border-top:1px solid #ccc;padding:7px 5px;font-family:"Tahoma","Arial";line-height:22px;height:40px;color:#929292;}
+.foot{text-align:left;padding:7px 5px;line-height:22px;color:#929292;}
 .foot a{color:#929292;}
 .foot .foot_right{float:right;text-align:right;display:block;height:40px;line-height:40px;font-weight:bold;font-size:14px;}
 /* 管理员个人中心 */
@@ -107,10 +107,12 @@ ul.admin_panel li.hover{background-position:0 -93px;}
 .list th{padding:0;border-bottom:2px solid #E5E5E5;height:25px;background:#D1D1D1;}
 .list th.lft{text-align:left;text-indent:5px;}
 .list tr.list{background:#F3F3F3}
-.list tr:nth-child(2n+1){background:#F1F1F1}
-.list td{padding:3px;}
+.list td{padding:3px;border-bottom:1px solid #efefef;}
+.list td td{border-bottom:0;}
 .list tr.end{background:none}
 .list td{cursor:default;max-width:400px;overflow:hidden;word-break:break-all}
+.list td.hover{background:#F3F3F3;}
+.list tr:hover td{background:#F3F3F3}
 
 
 
@@ -257,14 +259,7 @@ a.ico.space{background:none;cursor:default;}
 a.ico:after{content:'.';display:block;visibility:hidden;height:0;line-height:0;overflow:hidden;clear:both;}
 
 div.cate{height:20px;margin:5px auto auto auto;padding:3px 10px 1px 10px;line-height:20px;float:left;border:1px solid #000;}
-div.cate_add
-{
-	float:left;
-	margin:5px auto auto auto;
-	padding:4px 4px 2px 4px;
-	border:1px solid #000;
-	border-left:0;
-}
+div.cate_add{float:left;margin:5px auto auto auto;padding:3px 4px 1px 4px;border:1px solid #000;border-left:0;height:20px;}
 
 div.cate:hover{text-decoration:underline;color:#000;}
 div.cate_0{background:#99FFFF;}
@@ -805,5 +800,5 @@ button.aui_state_highlight:active { border-color:#1c6a9e; filter: progid:DXImage
 .aui_state_noTitle .aui_dialog { box-shadow: none; }
 
 
-.biz_attr{border:1px solid #ccc;margin:10px auto;padding:10px;background:#f1f1f1;}
+.biz_attr{border:1px solid #ccc;margin:1px 15px 0 15px;padding:10px;background:#f1f1f1;}
 .biz_attr .options{margin:10px;padding:5px;}

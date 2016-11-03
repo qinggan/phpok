@@ -42,10 +42,12 @@ $(document).ready(function(){
 			<td align="right">订单状态：</td>
 			<td class="darkblue">{$rs.status_info}</td>
 		</tr>
+		<!-- if $invoice -->
 		<tr>
 			<td align="right">发票：</td>
-			<td><!-- if $invoice --><span class="darkblue">{$invoice.type}</span>，抬头：<span class="darkblue">{$invoice.title}</span>，内容：<span class="darkblue">{$invoice.content}</span><!-- else -->无<!-- /if --></td>
+			<td><span class="darkblue">{$invoice.type}</span>，抬头：<span class="darkblue">{$invoice.title}</span>，内容：<span class="darkblue">{$invoice.content}</span></td>
 		</tr>
+		<!-- /if -->
 		</table>
 	</div>
 	<!-- if $loglist -->
@@ -91,7 +93,7 @@ $(document).ready(function(){
 				{$address.city}
 				<!-- /if -->
 				{$address.county}
-				{$address.address}
+				{$address.address}<!-- if $address.zipcode --><i>（邮编：{$address.zipcode}）</i><!-- /if -->
 			</td>
 		</tr>
 		<tr>
@@ -150,41 +152,35 @@ $(document).ready(function(){
 	</div>
 	<div class="clear"></div>
 	<!-- if !$pay_end -->
-	<script type="text/javascript">
-	function go_payment()
-	{
-		var payment = $("input[name=payment]:checked").val();
-		if(!payment){
-			$.dialog.alert('未指定支付方式');
-			return false;
-		}
-		var url = '{$payment_url}&payment='+payment;
-		var rs = $.phpok.json(url);
-		if(rs.status != 'ok'){
-			$.dialog.alert(rs.content);
-			return false;
-		}
-		var url = get_url('payment','submit','id='+rs.content);
-		url = $.phpok.nocache(url);
-		window.open(url);
-		return false;
-	}
-	</script>
-	<form method="post" onsubmit="return go_payment()">
+	<form method="post" action="{if session.user_id}{url ctrl=payment func=create id=$rs.id/}{else}{url ctrl=payment func=create id=$rs.sn passwd=$rs.passwd/}{/if}">
+	<!-- if $balance -->
+	<div class="pfw mbottom10">
+		<h3>{$balance.title}</h3>
+		<div class="payment">
+			<ul>
+				<!-- loop from=$balance.rslist key=$key value=$value -->
+				<li><label><input name="balance[]" type="checkbox" value="{$value.id}" checked />{$value.title}有<span class="red">{$value.val}</span>{$value.unit}，可抵现金<span class="red">{func price_format $value.price}</span></label></li>
+				<!-- /loop -->
+			</ul>
+		</div>
+	</div>
+	<!-- /if -->
 	<!-- loop from=$paylist key=$key value=$value -->
 	<!-- if $value.paylist -->
 	<div class="pfw mbottom10">
 		<h3>{$value.title}</h3>
 		<div class="payment">
 			<ul>
-				<!-- loop from=$value.paylist key=$k value=$v --><!-- if $v.wap == 0 -->
+				<!-- loop from=$value.paylist key=$k value=$v -->
+				<!-- if $v.wap == 0 -->
 				<li><label><input name="payment" type="radio" value="{$v.id}"{if $v.id == $config.biz_payment} checked{/if} />{$v.title}</label></li>
-				<!-- /if --><!-- /loop -->
+				<!-- /if -->
+				<!-- /loop -->
 			</ul>
 		</div>
-		<!-- /if -->
-		<!-- /loop -->
 	</div>
+	<!-- /if -->
+	<!-- /loop -->
 	<div class="paymenbtn">
 		<table width="100%">
 		<tr>

@@ -1,20 +1,31 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/api/register_control.php
-	Note	: 注册API接口
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2014年10月11日 05时41分
-***********************************************************/
+/**
+ * 注册接口API
+ * @package phpok\api
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2016年07月27日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class register_control extends phpok_control
 {
+	/**
+	 * 构造函数
+	**/
 	public function __construct()
 	{
 		parent::control();
 	}
 
+	/**
+	 * 验证账户是否被使用
+	 * @参数 user 用户账号
+	 * @返回 json字串
+	**/
 	public function check_user_f()
 	{
 		$user = $this->get("user");
@@ -34,10 +45,22 @@ class register_control extends phpok_control
 		$this->json(P_Lang('账号可以使用'),true);
 	}
 
+	/**
+	 * 保存注册信息
+	 * @参数 _chkcode 验证码
+	 * @参数 user 账号
+	 * @参数 newpass 密码
+	 * @参数 chkpass 确认密码
+	 * @参数 email 邮箱
+	 * @参数 mobile 手机号
+	 * @参数 group_id 用户组ID
+	 * @参数 _code 注册推广码
+	 * @返回 Json字串
+	 * @更新时间 2016年07月30日
+	**/
 	public function save_f()
 	{
-		//判断是否是会员
-		if($_SESSION['user_id']){
+		if($this->session->val('user_id')){
 			$this->json(P_Lang('您已是本站会员，不能执行这个操作'));
 		}
 		if($this->config['is_vcode'] && function_exists('imagecreate')){
@@ -46,10 +69,10 @@ class register_control extends phpok_control
 				$this->json(P_Lang('验证码不能为空'));
 			}
 			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode']){
+			if($code != $this->session->val('vcode')){
 				$this->json(P_Lang('验证码填写不正确'));
 			}
-			unset($_SESSION['vcode']);
+			$this->session->unassign('vcode');
 		}
 		//检测会员账号
 		$user = $this->get("user");
@@ -59,7 +82,7 @@ class register_control extends phpok_control
 		$safelist = array("'",'"','/','\\',';','&',')','(');
 		foreach($safelist as $key=>$value){
 			if(strpos($user,$value) !== false){
-				$this->json(P_Lang('会员账号不允许包含字符串：').$value);
+				$this->json(P_Lang('会员账号不允许包含字符串：{string}',array('string'=>$value)));
 			}
 		}
 		$chk = $this->model('user')->chk_name($user);
@@ -126,18 +149,16 @@ class register_control extends phpok_control
 			$this->json(P_Lang('注册失败，网站未开放注册权限'));
 		}
 		$array["group_id"] = $group_id;
-		$array["status"] = $group_rs["register_status"] == '1' ? 1 : 0;
+		$array["status"] = $group_rs["register_status"] ? 1 : 0;
 		$array["regtime"] = $this->time;
 		$uid = $this->model('user')->save($array);
 		if(!$uid){
 			$this->json(P_Lang('注册失败，请联系管理员'));
 		}
 		if($uid){
-			//保存用户与用户的关系
-			if($_SESSION['introducer']){
-				$this->model('user')->save_relation($uid,$_SESSION['introducer']);
+			if($this->session->val('introducer')){
+				$this->model('user')->save_relation($uid,$this->session->val('introducer'));
 			}
-			$this->model('wealth')->wealth_autosave($uid,P_Lang('会员注册'));
 		}
 		$extlist = $this->model('user')->fields_all();
 		$ext = array();
@@ -150,9 +171,11 @@ class register_control extends phpok_control
 		$this->model('user')->save_ext($ext);
 		if($array['status']){
 			$rs = $this->model('user')->get_one($uid);
-			$_SESSION["user_id"] = $rs['id'];
-			$_SESSION["user_gid"] = $rs['group_id'];
-			$_SESSION["user_name"] = $rs["user"];
+			$this->session->assign('user_id',$rs['id']);
+			$this->session->assign('user_gid',$rs['group_id']);
+			$this->session->assign('user_name',$rs['user']);
+			//注册审核通过后赠送积分
+			$this->model('wealth')->register($uid,P_Lang('会员注册'));
 			$this->json(P_Lang('注册成功，已自动登录，请稍候…'),true);
 		}
 		if(!$group_rs["tbl_id"] && !$group_rs['register_status']){
@@ -172,19 +195,28 @@ class register_control extends phpok_control
 			$ext['account'] = $user;
 			$this->model('list')->update_ext($ext,$project['module'],$info['id']);
 			$this->model('user')->set_status($uid,1);
-			$this->model('user')->update_session($uid);
 			$rs = $this->model('user')->get_one($uid);
-			$_SESSION["user_id"] = $rs['id'];
-			$_SESSION["user_gid"] = $rs['group_id'];
-			$_SESSION["user_name"] = $rs["user"];
+			$this->session->assign('user_id',$rs['id']);
+			$this->session->assign('user_gid',$rs['group_id']);
+			$this->session->assign('user_name',$rs['user']);
+			//注册审核通过后赠送积分
+			$this->model('wealth')->register($uid,P_Lang('会员注册'));
 			$this->json(P_Lang('注册成功，已自动登录，请稍候…'),true);
 		}
 		$this->json(P_Lang('注册成功，等待管理员验证'),true);
 	}
 
+	/**
+	 * 检测验证串是否正确，正确则跳转到注册页
+	 * @参数 _chkcode 验证码，防止机器人注册
+	 * @参数 _code 验证串，通过Email得到的验证串,24小时内有效
+	 * @参数 group_id 会员组ID
+	 * @返回 Json字串
+	 * @更新时间 2016年07月30日
+	**/
 	public function code_f()
 	{
-		if($_SESSION['user_id']){
+		if($this->session->val('user_id')){
 			$this->json(P_Lang('您已是本站会员，不能执行这个操作'));
 		}
 		if($this->config['is_vcode'] && function_exists('imagecreate')){
@@ -193,10 +225,10 @@ class register_control extends phpok_control
 				$this->json(P_Lang('验证码不能为空'));
 			}
 			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode']){
+			if($code != $this->session->val('vcode')){
 				$this->json(P_Lang('验证码填写不正确'));
 			}
-			unset($_SESSION['vcode']);
+			$this->session->unassign('vcode');
 		}
 		$code = $this->get('_code');
 		if(!$code){
@@ -240,4 +272,3 @@ class register_control extends phpok_control
 		$this->json($url,true);		
 	}
 }
-?>

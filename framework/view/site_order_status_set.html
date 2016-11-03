@@ -81,7 +81,34 @@ function save()
 		</div>
 	</div>
 </div>
-
+<div class="table">
+	<div class="title">
+		{lang前台可操作的下一步}
+		<span class="note">{lang设置前台会员可操作的下一步}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<!-- loop from=$statuslist key=$key value=$value id=$tmpid -->
+			<li><label><input type="checkbox" name="next[]" value="{$key}"{if $rs.next && in_array($key,$rs.next) } checked{/if} />{$value}</label></li>
+			<!-- /loop -->
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang管理员可执行的下一步}
+		<span class="note">{lang设置后台管理员可以执行的下一步}</span>
+	</div>
+	<div class="content">
+		<select name="nextact" style="width:475px">
+		<option value="">无</option>
+			<!-- loop from=$statuslist key=$key value=$value -->
+			<option value="{$key}"{if $rs.nextact && $rs.nextact == $key} selected{/if}>{$value}</option>
+			<!-- /loop -->
+		</select>
+	</div>
+</div>
 <div class="table">
 	<div class="title">
 		状态：

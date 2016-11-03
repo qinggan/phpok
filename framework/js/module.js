@@ -1,31 +1,12 @@
-/***********************************************************
-	Filename: {phpok}/js/module.js
-	Note	: 后台模型管理涉及到的JS
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2015年12月24日 23时15分
-***********************************************************/
-//检测标题名称是否为空
-function check_title(is_alert)
-{
-	var c = $("#title").val();
-	if(!c)
-	{
-		$("#title_note").addClass("error").html("名称不能为空！");
-		if(is_alert) alert("名称不能为空！");
-		return false;
-	}
-	$("#title_note").removeClass("error").html("");
-	return true;
-}
-
-function module_check()
-{
-	var chk_title = check_title(true);
-	if(!chk_title) return false;
-	return true;
-}
+/**
+ * 后台模块管理涉及到的JS
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @网站 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @日期 2016年07月19日
+**/
 
 //删除字段
 function module_field_del(id,title)
@@ -60,6 +41,12 @@ function module_field_add(id,fid)
 	}else{
 		$.dialog.alert(rs.content);
 	}
+}
+
+function module_export(id)
+{
+	var url = get_url('module','export','id='+id);
+	$.phpok.go(url);
 }
 
 //删除模块信息
@@ -150,18 +137,6 @@ function module_field_create(id)
 	})
 }
 
-function phpok_biz(val)
-{
-	if(val == "1")
-	{
-		$("#show_biz_set").show();
-	}
-	else
-	{
-		$("#show_biz_set").hide();
-	}
-}
-
 function module_layout(id,title)
 {
 	var url = get_url("module","layout") + "&id="+id;
@@ -192,7 +167,7 @@ function module_copy(id,title)
 		if(rs.status == "ok")
 		{
 			$.dialog.alert("模型 <span class='red'>"+val+"</span> 创建成功",function(){
-				window.location.reload();
+				$.phpok.reload();
 			});
 		}
 		else
@@ -200,5 +175,83 @@ function module_copy(id,title)
 			$.dialog.alert(rs.content);
 			return false;
 		}
+	});
+}
+
+/**
+ * 模块导入
+**/
+function module_import()
+{
+	var url = get_url('module','import');
+	$.dialog.open(url,{
+		'title':p_lang('模块导入'),
+		'lock':true,
+		'width':'500px',
+		'height':'150px',
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert(p_lang('iframe还没加载完毕呢'));
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal':p_lang('导入模块'),
+		'cancelVal':p_lang('取消'),
+		'cancel':function(){return true;}
+	});
+}
+
+/**
+ * 模块创建
+**/
+function module_create()
+{
+	var url = get_url('module','set');
+	$.dialog.open(url,{
+		'title':p_lang('模块添加'),
+		'lock':true,
+		'width':'650px',
+		'height':'400px',
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert(p_lang('iframe还没加载完毕呢'));
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal':p_lang('保存'),
+		'cancelVal':p_lang('取消'),
+		'cancel':function(){return true;}
+	});
+}
+
+/**
+ * 模块编辑
+**/
+function module_set(id)
+{
+	var url = get_url('module','set','id='+id);
+	$.dialog.open(url,{
+		'title':p_lang('模块修改')+" #"+id,
+		'lock':true,
+		'width':'650px',
+		'height':'400px',
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert(p_lang('iframe还没加载完毕呢'));
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal':p_lang('保存'),
+		'cancelVal':p_lang('取消'),
+		'cancel':function(){return true;}
 	});
 }

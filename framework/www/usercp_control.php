@@ -338,5 +338,9 @@ class usercp_control extends phpok_control
 		return $thumb_image_name;
 	}
 
+	public function introducer_f()
+	{
+		$this->view('usercp_introducer');
+	}
 }
 ?>

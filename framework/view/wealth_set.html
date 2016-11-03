@@ -51,6 +51,13 @@ $(document).ready(function(){
 </div>
 <div class="table">
 	<div class="title">
+		最低使用值：
+		<span class="note">设置最低使用的值，低于此值的财富不可用，只能填写大于0的数值</span>
+	</div>
+	<div class="content"><input type="text" name="min_val" id="min_val" value="{func intval $rs.min_val}"></div>
+</div>
+<div class="table">
+	<div class="title">
 		{lang保留小数位数}
 		<span class="note">{lang定义财富的计量长度，整数还是浮点，保留几位数}</span>
 	</div>
@@ -86,7 +93,9 @@ $(document).ready(function(){
 		<ul class="layout">
 			<li><label><input type="radio" name="ifcash" value="0"{if !$rs.ifcash} checked{/if} onclick="$('#ratio2_li').hide()" />否</label></li>
 			<li><label><input type="radio" name="ifcash" value="1"{if $rs.ifcash} checked{/if} onclick="$('#ratio2_li').show()" />是</label></li>
-			<li id="ratio2_li" style="display:{$rs.ifcash ? 'block' : 'none'}"><label>&nbsp;兑换比例（即100财富可抵用多少元）：<input type="text" name="cash_ratio" id="cash_ratio" value="{$rs.cash_ratio}" class="short" style="width:100px" /></label></li>
+			<li id="ratio2_li" style="display:{$rs.ifcash ? 'block' : 'none'}">
+				<label>&nbsp;兑换比例（即100财富可抵用多少元）：<input type="text" name="cash_ratio" id="cash_ratio" value="{$rs.cash_ratio}" class="short" style="width:100px" /></label>
+			</li>
 		</ul>
 		<div class="clear"></div>
 	</div>

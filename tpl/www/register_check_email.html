@@ -7,16 +7,13 @@ $(document).ready(function(){
 			'type':'post',
 			'dataType':'json',
 			'success':function(rs){
-				if(rs.status == 'ok')
-				{
+				if(rs.status == 'ok'){
 					$.dialog.alert("请登录您的邮箱获取注册资格");
-					//$.phpok.go(webroot);
-				}
-				else
-				{
-					if(!rs.content) rs.content = '验证失败';
-					alert(rs.content);
-					return false;
+				}else{
+					if(!rs.content){
+						rs.content = '验证失败';
+					}
+					$.dialog.alert(rs.content);
 				}
 			}
 		});

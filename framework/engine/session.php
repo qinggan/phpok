@@ -84,5 +84,86 @@ class session
 		}
 		return $this->timeout;
 	}
+
+	/**
+	 * 返回设定的SESSION信息，用$this->session->val('变量名')，替代写法 $_SESSION['变量名']
+	 * @参数 $var 变量名
+	 * @返回 session存储的信息，可以是对象，字符串，数值，布尔值等
+	**/
+	final public function val($var)
+	{
+		if(strpos($var,'.') !== false){
+			$list = explode(".",$var);
+			if(!isset($_SESSION[$list[0]])){
+				return false;
+			}
+			$tmp = $_SESSION[$list[0]];
+			foreach($list as $key=>$value){
+				if($key<1){
+					continue;
+				}
+				if(!isset($tmp[$value])){
+					$tmp = false;
+					break;
+				}else{
+					$tmp = $tmp[$value];
+				}
+			}
+			return $tmp;
+		}
+		if(isset($_SESSION[$var])){
+			return $_SESSION[$var];
+		}
+		return false;
+	}
+
+	/**
+	 * 设定session信息，用$this->session->assign('变量名','变量值') 替代写法 $_SESSION['变量名'] = '变量值'
+	 * @参数 $var 变量名
+	 * @参数 $val 变量值
+	 * @返回 true，无论如何，都返回true
+	**/
+	final public function assign($var,$val='')
+	{
+		if(strpos($var,'.') !== false){
+			$list = explode(".",$var);
+			$string = '$_SESSION';
+			foreach($list as $key=>$value){
+				$string .= '["'.$value.'"]';
+			}
+			eval("$string = $val;");
+			return true;
+		}
+		$_SESSION[$var] = $val;
+		return true;
+	}
+
+	/**
+	 * 取消session设定的内容，用$this->session->unassign('变量名') 替代写法 unset($_SESSION['变量名'])
+	 * @参数 $var 要取消的变量
+	 * @返回 true
+	 * @更新时间 2016年07月25日
+	**/
+	final public function unassign($var)
+	{
+		if(strpos($var,'.') !== false){
+			$list = explode(".",$var);
+			$string = '$_SESSION';
+			foreach($list as $key=>$value){
+				$string .= '['.$value.']';
+			}
+			eval("unset($string);");
+			return true;
+		}
+		if(isset($_SESSION[$var])){
+			unset($_SESSION[$var]);
+		}
+		return true;
+	}
+
+	public function destroy(){
+		session_destroy();
+		return true;
+	}
 }
 ?>

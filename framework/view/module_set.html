@@ -1,18 +1,30 @@
-<!-- inc:head -->
-<script type="text/javascript" src="{echo add_js('module.js')}"></script>
+<!-- include tpl=head -->
+<script type="text/javascript" src="{func add_js module.js}"></script>
 <script type="text/javascript">
-$(document).ready(function(){
-	$("#title").blur(function(){check_title(false)});
-});
+function save()
+{
+	var obj = art.dialog.opener;
+	$("#module_submit_post").ajaxSubmit({
+		'url':get_url('module','save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				var id = '{$id}';
+				var tip = !id ? '{lang模块添加成功}' : '{lang模块编辑成功}';
+				$.dialog.alert(tip,function(){
+					obj.$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.info);
+				return false;
+			}
+		}
+	});
+	return false;
+}
 </script>
-
-<div class="tips">
-	您当前的位置：
-	<a href="{echo admin_url('module')}">模块管理</a>
-	&raquo; <!-- if $id -->编辑模块<!-- else -->创建模块<!-- /if -->
-</div>
-
-<form method="post" id="module_add" action="{echo admin_url('module','save')}" onsubmit="return module_check();">
+<form method="post" id="module_submit_post" onsubmit="return false;">
 <input type="hidden" id="id" name="id" value="{$id}" />
 <div class="table">
 	<div class="title">
@@ -47,22 +59,6 @@ $(document).ready(function(){
 	</div>
 	<div class="content"><input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis ? $rs.taxis : 255}" /></div>
 </div>
-
-<div class="table">
-	<div class="content">
-		<br />
-		<input type="submit" value="提 交" class="submit" />
-		<br />
-	</div>
-</div>
 </form>
 
-<!-- if $rs.is_biz -->
-<script type="text/javascript">
-$(document).ready(function(){
-	phpok_biz(1);
-});
-</script>
-<!-- /if -->
-
-<!-- inc:foot -->
+<!-- include tpl=foot_open -->

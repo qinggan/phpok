@@ -1,11 +1,15 @@
 <?php
-/***********************************************************
-	Note	: phpok4升级引挈控制器
-	Version : 4.x
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2015年06月11日 14时33分
-***********************************************************/
+/**
+ * PHPOK4升级引挈控制器
+ * @package phpok\admin\update
+ * @author qinggan <admin@phpok.com>
+ * @copyright 2015-2016 深圳市锟铻科技有限公司
+ * @homepage http://www.phpok.com
+ * @version 4.x
+ * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @update 2016年07月19日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class update_control extends phpok_control
 {
@@ -99,32 +103,30 @@ class update_control extends phpok_control
 	//zip升级
 	function zip_f()
 	{
-		$array = array("identifier"=>'zipfile',"form_type"=>'upload');
-		$array['upload_type'] = 'update';
-		$this->lib('form')->cssjs($array);
-		$upload = $this->lib('form')->format($array);
-		$this->assign('upload_html',$upload);
+		$this->lib('form')->cssjs(array('form_type'=>'upload'));
+		$this->addjs('js/webuploader/admin.upload.js');
 		$this->view('update_zip');
 	}
 
 	//解压zip
 	public function unzip_f()
 	{
-		$zipfile = $this->get('zipfile','int');
+		$zipfile = $this->get('zipfile');
 		if(!$zipfile){
-			error(P_Lang('未指定附件文件'),$this->url('update','zip'),'error');
+			$this->error(P_Lang('未指定附件文件'));
 		}
-		$rs = $this->model('res')->get_one($zipfile);
-		if(!$rs){
-			error(P_Lang('附件不存在'),$this->url('update','zip'),'error');
+		if(strpos($zipfile,'..') !== false){
+			$this->error(P_Lang('不支持带..上级路径'));
 		}
-		$this->lib('phpzip')->unzip($rs['filename'],'data/update/');
-		//执行升级程序
+		if(!file_exists($this->dir_root.$zipfile)){
+			$this->error(P_Lang('ZIP文件不存在'));
+		}
+		$this->lib('phpzip')->unzip($this->dir_root.$zipfile,'data/update/');
 		$info = $this->update_load();
 		if(!$info || (is_array($info) && $info['status'] == 'error')){
-			error($info['content'],$this->url('update'),'error');
+			$this->error($info['content']);
 		}
-		error(P_Lang('升级成功'),$this->url('update'),'ok');
+		$this->success();
 	}
 
 	//升级文件

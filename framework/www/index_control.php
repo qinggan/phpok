@@ -30,6 +30,8 @@ class index_control extends phpok_control
 			}
 			unset($page_rs);
 		}
+		$taskurl = api_url('task','index','',true);
+		$this->lib('async')->start($taskurl);
 		$this->view($tplfile);
 	}
 
@@ -49,27 +51,21 @@ class index_control extends phpok_control
 	}
 
 	//推荐链执行
-	public function linker($code)
+	public function link_f()
 	{
-		$rs = $this->model('user')->code_one($code);
-		if(!$rs || !$rs['user_id']){
-			$this->_location('index.php');
+		$uid = $this->get('uid','int');
+		if(!$uid){
+			$this->_location($this->config['www_file']);
 		}
-		//增加点击率
-		$this->model('user')->code_addhits($rs['id']);
-		//已登录的会员，跳过
-		if($_SESSION['user_id']){
-			
-			if($rs['link']){
-				$this->_location($rs['link']);
-			}
-			$this->_location('index.php');
+		$rs = $this->model('user')->get_one($uid,'id',false,false);
+		if(!$rs){
+			$this->_location($this->config['www_file']);
 		}
-		$user = $this->model('user')->get_one($rs['user_id']);
-		if(!$user){
-			$this->_location('index.php');
+		if($this->session->val('user_id')){
+			$this->_location($this->config['www_file']);
 		}
-		$_SESSION['introducer'] = $user['id'];
+		$this->session->assign('introducer',$uid);
+		$this->_location($this->config['www_file']);
 	}
 
 	public function error404_f()

@@ -48,6 +48,9 @@ class index_control extends phpok_control
 		}
 		$this->assign('sitelist',$sitelist);
 		$plist = $this->model('popedom')->get_all('',false,false);
+		if(!$plist){
+			$plist = array();
+		}
 		$popedom_m = $popedom_p = array();
 		foreach($plist AS $key=>$value){
 			if(!$value["pid"]){
@@ -60,7 +63,15 @@ class index_control extends phpok_control
 		if(!$popedom){
 			$popedom = array();
 		}
-		$menulist = $this->model('sysmenu')->get_all($_SESSION["admin_site_id"],1);
+		
+		$site_rs = $this->model('site')->get_one($this->session->val('admin_site_id'));
+		$condition = '';
+		if(!$site_rs['biz_status']){
+			$biz_ctrl = array('order','options','payment','currency','express','freight');
+			$string = implode("','",$biz_ctrl);
+			$condition = "appfile NOT IN('".$string."')";
+		}
+		$menulist = $this->model('sysmenu')->get_all($_SESSION["admin_site_id"],1,$condition);
 		if(!$menulist){
 			$menulist = array();
 		}
@@ -240,7 +251,7 @@ class index_control extends phpok_control
 	{
 		$this->lib('file')->rm($this->dir_root."data/tpl_www/");
 		$this->lib('file')->rm($this->dir_root."data/tpl_admin/");
-		$this->lib('file')->rm($this->dir_root."data/tpl_html/");
+		$this->lib('file')->rm($this->dir_root."data/cache/");
 		$this->cache->clear();
 		$this->json(true);
 	}
@@ -307,6 +318,8 @@ class index_control extends phpok_control
 			$url = $this->url("reply","","status=3");
 			$list['ctrl_reply'] = array("title"=>P_Lang('评论管理'),"total"=>$reply_total,"url"=>$url,'id'=>'reply');
 		}
+		$taskurl = api_url('task','index','',true);
+		$this->lib('async')->start($taskurl);
 		if(!$list){
 			$this->json(P_Lang('没有消息'));
 		}

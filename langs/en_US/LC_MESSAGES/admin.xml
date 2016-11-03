@@ -22,4 +22,5 @@
 	<open_text_pic_manage>Photo manage</open_text_pic_manage>
 	<open_text_pic_noid>Not ID</open_text_pic_noid>
 	<list_set_admin_id>Appoint administrators</list_set_admin_id>
+	<admin_gosite_tip>Sure you want to switch to the website: </admin_gosite_tip>
 </root>

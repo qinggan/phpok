@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>线下支付</title>
+	<code>
+		<tplfile>
+			<title>银行汇款模板</title>
+			<note>请选择要使用银行汇款填写的表单</note>
+			<type>text</type>
+			<typebtn>tpl</typebtn>
+		</tplfile>
+	</code>
+</root>

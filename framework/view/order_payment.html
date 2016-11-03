@@ -1,0 +1,113 @@
+<!-- include tpl=head -->
+<script type="text/javascript" src="js/laydate/laydate.js"></script>
+<script type="text/javascript">
+function add_save()
+{
+	$("#postsave").ajaxSubmit({
+		'url':get_url('order','payment_save','id={$rs.id}'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.phpok.reload();
+			}else{
+				$.dialog.alert(rs.info)
+			}
+		}
+	});
+}
+function update_payment(val)
+{
+	if(val == 'other'){
+		$("input[name=title]").show();
+	}else{
+		$("input[name=title]").hide();
+	}
+}
+function payment_delete(id,oid)
+{
+	var url = get_url('order','payment_delete','id='+id+"&order_id="+id);
+	$.dialog.confirm(p_lang('确定要删除这条支付吗？'),function(){
+		var rs = $.phpok.json(url);
+		if(rs.status){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+}
+$(document).ready(function(){
+	$("#postsave").submit(function(){
+		add_save();
+		return false;
+	});
+});
+
+</script>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<!-- if !$payend -->
+
+
+<tr>
+	<td class="center">添加</td>
+	<td colspan="5">
+		<form method="post" id="postsave">
+		<select name="payment_id" onchange="update_payment(this.value)">
+		<option value="">{lang支付方式…}</option>
+		<option value="other">{lang自定义支付名称}</option>
+		<optgroup label="PC端">
+			<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+			<!-- if !$value.wap -->
+			<option value="{$value.id}"{if $paytype == $value.id} selected{/if}>{$value.title}</option>
+			<!-- /if -->
+			<!-- /loop -->
+		</optgroup>
+		<optgroup label="手机端">
+			<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+			<!-- if $value.wap -->
+			<option value="{$value.id}"{if $paytype == $value.id} selected{/if}>{$value.title}</option>
+			<!-- /if -->
+			<!-- /loop -->
+		</optgroup>
+		</select>
+		<input type="text" name="title" value="" placeholder='{lang支付名称}' class="hidden" />
+		&nbsp;
+		{$currency.title}：{$currency.symbol_left} <input type="text" name="price" id="price" value="{$unpaid_price}" placeholder='支付金额' style="width:90px" /> {$currency.symbol_right}
+		&nbsp;
+		<input type="text" name="dateline" value="" placeholder='支付时间' onfocus="laydate()" style="width:110px" readonly />
+		<input type="text" name="note" placeholder="请写好备注，以便核检" />
+		<input type="submit" value="添加" class="btn" />
+		</form>
+	</td>
+</tr>
+<!-- /if -->
+<tr>
+	<th>ID</th>
+	<th class="lft">支付方式</th>
+	<th>支付金额</th>
+	<th>支付时间</th>
+	<th>其他</th>
+	<th>&nbsp;</th>
+</tr>
+<!-- loop from=$loglist key=$key value=$value id=$tmpid -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<td>{$value.title}</td>
+	<td class="center">{func price_format $value.price $rs.currency_id $rs.currency_id}</td>
+	<td class="center"><!-- if $value.dateline -->{func time_format $value.dateline}<!-- else -->{func time_format $value.startdate}<!-- /if --></td>
+	<td>
+		<!-- if is_array($value.ext) -->
+		<!-- loop from=$value.ext key=$k value=$v id=$tmpid2 -->
+		<div>{$k}：{$v}</div>
+		<!-- /loop -->
+		<!-- else -->
+		{$value.ext}
+		<!-- /if -->
+	</td>
+	<td class="center"><input type="button" value="删除" onclick="payment_delete('{$value.id}','{$rs.id}')" /></td>
+</tr>
+<!-- /loop -->
+</table>
+
+<!-- include tpl=foot_open -->

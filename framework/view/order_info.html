@@ -1,0 +1,116 @@
+<!-- include tpl=head -->
+<table width="100%" class="list" cellspacing="0" cellpadding="0" style="margin:0;">
+<tr>
+	<td width="20%" align="right" height="25">订单编号：</td>
+	<td width="30%">{$rs.sn}</td>
+	<td width="20%" align="right">下单时间：</td>
+	<td>{func time_format $rs.addtime}</td>
+</tr>
+<tr>
+	<td align="right" height="25">总金额：</td>
+	<td class="red">{func price_format $rs.price $rs.currency_id $rs.currency_id}</td>
+	<td align="right">订单状态：</td>
+	<td class="darkblue">{$rs.status_title}</td>
+</tr>
+<tr>
+	<td align="right" height="25">已支付：</td>
+	<td class="darkblue">{func price_format $paid_price $rs.currency_id $rs.currency_id}</td>
+	<td align="right">未支付：</td>
+	<td class="red">{func price_format $unpaid_price $rs.currency_id $rs.currency_id}</td>
+</tr>
+<tr>
+	<td align="right" height="25">{lang邮箱：}</td>
+	<td class="darkblue"><span>{$rs.email}</span></td>
+	<td align="right">{lang手机：}</td>
+	<td class="darkblue"><span>{$rs.mobile}</span></td>
+</tr>
+<!-- if $user -->
+
+
+<tr>
+	<td class="darkblue" style="line-height:25px;text-align:right;">会员：</td>
+	<td class="darkblue" colspan="3" style="line-height:25px;">{$user.user}
+		<!-- if $user.mobile -->{lang，}{lang手机号：}{$user.mobile}<!-- /if -->
+		<!-- if $user.email -->{lang，}{lang邮箱：}{$user.email}<!-- /if -->
+		，注册时间：{func time_format $user.regtime}
+	</td>
+</tr>
+<!-- /if -->
+<!-- if $rs.note -->
+<tr>
+	<td style="line-height:25px;text-align:right">备注：</td>
+	<td colspan="3">{$rs.note}</td>
+</tr>
+<!-- /if -->
+</table>
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th width="90">{lang产品图片}</th>
+	<th class="lft">{lang产品名称}</th>
+	<th>{lang产品价格}</th>
+	<th>{lang数量}</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr>
+	<td><img src="{$value.thumb ? $value.thumb : 'images/picture_default.png'}" width="80px" height="80px" border="0" /></td>
+	<td>
+		<div style="font-size:14px;">{$value.title}</div>
+		<!-- loop from=$value.ext key=$k value=$v id=$tmpid2 -->
+		<div class="gray">{$v.title}：{$v.content}</div>
+		<!-- /loop -->
+		<!-- if $value.weight --><div class="gray">{lang重量：}{$value.weight}Kg</div><!-- /if -->
+		<!-- if $value.volume --><div class="gray">{lang体积：}{$value.volume}M<sup>3</sup></div><!-- /if -->
+		<!-- if $value.note --><div class="gray">{lang备注：}{$value.note}</div><!-- /if -->
+	</td>
+	<td class="center">{func price_format $value.price $rs.currency_id $rs.currency_id}</td>
+	<td class="center">{$value.qty} {$value.unit}</td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- if $paylist -->
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th class="lft">支付方法</th>
+	<th class="lft">金额</th>
+	<th>时间</th>
+	<th>其他</th>
+</tr>
+<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+<tr>
+	<td>{$value.title}</td>
+	<td>{func price_format $value.price $rs.currency_id $rs.currency_id}</td>
+	<td class="center">
+		<!-- if $value.startdate --><div>始：{func time_format $value.startdate}</div><!-- /if -->
+		<!-- if $value.dateline --><div>结：{func time_format $value.dateline}</div><!-- /if -->
+	</td>
+	<td>
+		<!-- if is_array($value.ext) -->
+		<!-- loop from=$value.ext key=$k value=$v id=$tmpid2 -->
+		<div>{$k}：{$v}</div>
+		<!-- /loop -->
+		<!-- else -->
+		{$value.ext}
+		<!-- /if -->
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- /if -->
+<!-- if $loglist -->
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>日志时间</th>
+	<th class="lft">日志内容</th>
+	<th>操作人</th>
+</tr>
+<!-- loop from=$loglist key=$key value=$value -->
+<tr>
+	<td class="center">{func date "Y-m-d H:i:s" $value.addtime}</td>
+	<td>{$value.note}</td>
+	<td class="center">{$value.who}</td>
+</tr>
+<!-- /loop -->
+</table>
+<!-- /if -->
+
+<!-- include tpl=foot_open -->

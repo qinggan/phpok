@@ -267,7 +267,6 @@ class res_control extends phpok_control
 
 	private function gd_update($id)
 	{
-		
 		if(!$id){
 			return false;
 		}
@@ -298,8 +297,10 @@ class res_control extends phpok_control
 				if(!file_exists($this->dir_root.$ico)){
 					$ico = "images/filetype-large/unknown.jpg";
 				}
+			}else{
+				$ico = $rs['folder'].$ico;
 			}
-			$this->model('res')->save(array('ico'=>$rs['folder'].$ico),$id);
+			$this->model('res')->save(array('ico'=>$ico),$id);
 		}else{
 			$ico = "images/filetype-large/".$rs["ext"].".jpg";
 			if(!file_exists($this->dir_root.$ico)){

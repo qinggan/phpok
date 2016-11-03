@@ -47,6 +47,9 @@ class user_form extends _init_auto
 		if($rs['ext']){
 			$ext = is_string($rs['ext']) ? unserialize($rs['ext']) : $rs['ext'];
 		}
+		if(!$rs['content']){
+			return false;
+		}
 		if($appid == 'admin'){
 			if($ext['is_multiple']){
 				$condition = "u.id IN(".$rs['content'].") AND status=1";

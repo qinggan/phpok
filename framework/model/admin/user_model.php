@@ -33,12 +33,6 @@ class user_model extends user_model_base
 		//删除积分日志
 		$sql = "DELETE FROM ".$this->db->prefix."wealth_log WHERE goal_id='".$id."'";
 		$this->db->query($sql);
-		//删除地址库
-		$sql = "DELETE FROM ".$this->db->prefix."user_address WHERE user_id='".$id."'";
-		$this->db->query($sql);
-		//删除会员设置的发票
-		$sql = "DELETE FROM ".$this->db->prefix."user_invoice WHERE user_id='".$id."'";
-		$this->db->query($sql);
 		return true;
 	}
 

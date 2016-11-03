@@ -65,8 +65,8 @@ $(document).ready(function(){
 	<td>
 		<!-- if !$value.is_end -->
 		<input type="button" value="远程更新数据" onclick="remote_info('{$value.id}')" class="btn" />
-		<input type="button" value="删除记录" onclick="delete_it('{$value.id}')" class="btn" />
 		<!-- /if -->
+		<input type="button" value="删除记录" onclick="delete_it('{$value.id}')" class="btn" />
 	</td>
 </tr>
 <!-- loop from=$value.invoicelist key=$k value=$v -->
@@ -87,6 +87,7 @@ $(document).ready(function(){
 		<input type="submit" value="添加" class="btn" />
 		</form>
 	</td>
+</tr>
 </table>
 
 <!-- include tpl=foot_open -->

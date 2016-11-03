@@ -1,0 +1,22 @@
+<!-- include tpl=head title="我的推荐 - 个人中心" -->
+<div class="cp">
+	<div class="left"><!-- include tpl=block_usercp --></div>
+	<div class="right">
+		<div class="pfw mbottom10">
+			<h3>推广链接</h3>
+			<div style="padding:10px;text-align:center;">
+				{url ctrl=index func=link uid=$session.user_id/}
+			</div>
+		</div>
+		<div class="pfw mbottom10">
+			<h3>友情说明</h3>
+			<ul class="tip">
+				<li>密码长度不能小于6位数</li>
+				<li>为保证您数据的安全，密码建议您使用：字母+数字+大小写混合</li>
+			</ul>
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>
+
+<!-- include tpl=foot -->

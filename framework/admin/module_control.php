@@ -95,7 +95,7 @@ class module_control extends phpok_control
 		error_open(P_Lang('后台列表布局设置成功'),"ok",$btn);
 	}
 
-	function copy_f()
+	public function copy_f()
 	{
 		if(!$this->popedom["set"]) $this->json(P_Lang('您没有权限执行此操作'));
 		$id = $this->get("id","int");
@@ -144,41 +144,32 @@ class module_control extends phpok_control
 	//存储或更新模型
 	public function save_f()
 	{
-		if(!$this->popedom["set"]) error(P_Lang('您没有权限执行此操作'));
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
 		$title = $this->get("title");
-		$error_url = $this->url("module","set");
-		if($id)
-		{
-			$error_url = "&id=".$id;
-		}
-		if(!$title)
-		{
-			error(P_Lang('模块名称不能为空'),$error_url,"error");
+		if(!$title){
+			$this->error(P_Lang('模块名称不能为空'));
 		}
 		$note = $this->get("note");
 		$taxis = $this->get("taxis","int");
 		$array = array("title"=>$title,"note"=>$note,"taxis"=>$taxis);
-		if($id)
-		{
+		if($id){
 			$this->model('module')->save($array,$id);
-		}
-		else
-		{
+		}else{
 			$array["layout"] = "hits,dateline";
 			$id = $this->model('module')->save($array);
 		}
-		if(!$id)
-		{
-			error(P_Lang('数据存储失败，请检查'),$error_url,"error");
+		if(!$id){
+			$this->error(P_Lang('数据存储失败，请检查'));
 		}
 		//检查模型表是否已创建
 		$tbl_exists = $this->model('module')->chk_tbl_exists($id);
-		if(!$tbl_exists)
-		{
+		if(!$tbl_exists){
 			$this->model('module')->create_tbl($id);
 		}
-		error(P_Lang('模块数据添加/更新成功'),$this->url("module"),'ok');
+		$this->success();
 	}
 
 	//字段管理器
@@ -363,19 +354,22 @@ class module_control extends phpok_control
 		}
 	}
 
-	//批量更新排序
+	/**
+	 * 更新模块排序
+	 * @参数 $id，数值，要排序的模块ID
+	 * @参数 $taxis，排序值
+	 * @返回 JSON
+	 * @更新时间 2016年07月12日
+	**/
 	public function taxis_f()
 	{
-		$taxis = $this->lib('trans')->safe("taxis");
-		if(!$taxis || !is_array($taxis))
-		{
-			$this->json(P_Lang('没有指定要更新的排序'));
+		$taxis = $this->get('taxis','int');
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
 		}
-		foreach($taxis AS $key=>$value)
-		{
-			$this->model('module')->update_taxis($key,$value);
-		}
-		$this->json(P_Lang('数据排序更新成功'),true);
+		$this->model('module')->update_taxis($id,$taxis);
+		$this->success();
 	}
 
 	public function field_edit_f()
@@ -394,7 +388,26 @@ class module_control extends phpok_control
 		$this->view("module_field_set");
 	}
 
-	function field_edit_save_f()
+	/**
+	 * 保存更新的字段排序
+	 * @参数 $id，要排序的字段ID
+	 * @参数 $taxis，排序值
+	 * @返回 JSON数据
+	 * @更新时间 2016年07月12日
+	**/
+	public function field_taxis_f()
+	{
+		$taxis = $this->get('taxis','int');
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定要编辑的ID'));
+		}
+		$array = array('taxis'=>$taxis);
+		$this->model('module')->fields_save($array,$id);
+		$this->success();
+	}
+
+	public function field_edit_save_f()
 	{
 		if(!$this->popedom['set']){
 			$this->json(P_Lang('您没有权限执行此操作'));
@@ -517,6 +530,100 @@ class module_control extends phpok_control
 			}
 		}
 		$this->json(true);
+	}
+
+	/**
+	 * 导出模块字段，此项仅用于导出XML配置文件，如果模块中绑定主题或其他一些选项，在这里不会被体现，需要您手动再绑定
+	 * @参数 $id，要导出的模块字段ID
+	**/
+	public function export_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'),$this->url('module'));
+		}
+		$rs = $this->model('module')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('模块数据不存在'),$this->url('module'));
+		}
+		unset($rs['id']);
+		$rslist = $this->model('module')->fields_all($id,'identifier');
+		if($rslist){
+			$tmplist = array();
+			foreach($rslist as $key=>$value){
+				unset($value['id'],$value['module_id']);
+				if($value['ext']){
+					$value['ext'] = unserialize($value['ext']);
+				}
+				$tmplist[$key] = $value;
+			}
+			$rs['_fields'] = $tmplist;
+		}
+		//将数据写成XML
+		$tmpfile = $this->dir_root.'data/cache/module.xml';
+		$this->lib('xml')->save($rs,$tmpfile);
+		$this->lib('phpzip')->set_root($this->dir_root.'data/cache/');
+		$zipfile = $this->dir_root.'data/cache/'.$this->time.'.zip';
+		$this->lib('phpzip')->zip($tmpfile,$zipfile);
+		$this->lib('file')->rm($tmpfile);
+		//下载zipfile
+		$this->lib('file')->download($zipfile,$rs['title']);
+	}
+
+	/**
+	 * 模块导入
+	 * @变量 zipfile 指定的ZIP文件地址
+	**/
+	public function import_f()
+	{
+		$zipfile = $this->get('zipfile');
+		if(!$zipfile){
+			$this->lib('form')->cssjs(array('form_type'=>'upload'));
+			$this->addjs('js/webuploader/admin.upload.js');
+			$this->view('module_import');
+		}
+		if(strpos($zipfile,'..') !== false){
+			$this->error(P_Lang('不支持带..上级路径'));
+		}
+		if(!file_exists($this->dir_root.$zipfile)){
+			$this->error(P_Lang('ZIP文件不存在'));
+		}
+		$this->lib('phpzip')->unzip($this->dir_root.$zipfile,$this->dir_root.'data/cache/');
+		if(!file_exists($this->dir_root.'data/cache/module.xml')){
+			$this->error(P_Lang('导入模块失败，请检查解压缩是否成功'));
+		}
+		$rs = $info = $this->lib('xml')->read($this->dir_root.'data/cache/module.xml',true);
+		if(!$rs){
+			$this->error(P_Lang('XML内容解析异常'));
+		}
+		$tmp = $rs;
+		if(isset($tmp['_fields'])){
+			unset($tmp['_fields']);
+		}
+		
+		$insert_id = $this->model('module')->save($tmp);
+		if(!$insert_id){
+			$this->error(P_Lang('模块导入失败，保存模块基本信息错误'));
+		}
+		$this->model('module')->create_tbl($insert_id);
+		$tbl_exists = $this->model('module')->chk_tbl_exists($insert_id);
+		if(!$tbl_exists){
+			$this->model('module')->delete($insert_id);
+			$this->error(P_Lang('创建模块表失败'));
+		}
+		if(isset($rs['_fields']) && $rs['_fields']){
+			foreach($rs['_fields'] as $key=>$value){
+				if($value['ext'] && is_array($value['ext'])){
+					$value['ext'] = serialize($value['ext']);
+				}
+				$value['module_id'] = $insert_id;
+				$this->model('module')->fields_save($value);
+				$this->model('module')->create_fields($insert_id,$value);
+			}
+		}
+		$this->lib('file')->rm($this->dir_root.'data/cache/module.xml');
+		$this->lib('file')->rm($this->dir_root.$zipfile);
+		$this->success();
 	}
 }
 ?>

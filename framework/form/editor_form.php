@@ -29,9 +29,7 @@ class editor_form extends _init_auto
 
 	public function phpok_format($rs,$appid="admin")
 	{
-		$this->addjs('js/ueditor/ueditor.config.js');
-		$this->addjs('js/ueditor/ueditor.all.min.js');
-		$this->addjs('js/ueditor/lang/zh-cn/zh-cn.js');
+		$this->cssjs();
 		if($appid == 'admin'){
 			$rs['width'] = '100%';
 		}

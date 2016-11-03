@@ -2862,4 +2862,8 @@
 	<district id="2860" districtname="哈巴河县" cid="338">哈巴河县</district>
 	<district id="2861" districtname="青河县" cid="338">青河县</district>
 	<district id="2862" districtname="吉木乃县" cid="338">吉木乃县</district>
+	<district id="2863" districtname="龙华新区" cid="199">龙华新区</district>
+	<district id="2864" districtname="光明新区" cid="199">光明新区</district>
+	<district id="2865" districtname="坪山新区" cid="199">坪山新区</district>
+	<district id="2866" districtname="大鹏新区" cid="199">大鹏新区</district>
 </root>

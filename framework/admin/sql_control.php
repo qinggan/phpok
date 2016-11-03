@@ -20,7 +20,7 @@ class sql_control extends phpok_control
 
 	public function index_f()
 	{
-		if(!$this->popedom["list"]){
+		if(!$this->popedom["list"] && !$_SESSION['admin_rs']['if_system']){
 			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		//读取全部数据库表
@@ -95,8 +95,8 @@ class sql_control extends phpok_control
 			$idlist = explode(",",$id);
 		}
 		$backfilename = $this->get('backfilename');
+		$sql_prefix = $this->model('sql')->sql_prefix();
 		if(!$backfilename){
-			$sql_prefix = $this->model('sql')->sql_prefix();
 			$backfilename = "sql".$this->time;
 			$url .= "&backfilename=".$backfilename;
 			//更新数据表结构
@@ -112,7 +112,7 @@ class sql_control extends phpok_control
 					$rslist = $this->model('sql')->getsql($sql_prefix."adm",0,"all");
 					if($rslist){
 						foreach($rslist AS $k=>$v){
-							$html .= "INSERT INTO ".$sql_prefix."admin VALUES('".implode("','",$v)."');\n";
+							$html .= "INSERT INTO ".$sql_prefix."adm VALUES('".implode("','",$v)."');\n";
 						}
 					}
 				}
@@ -229,7 +229,7 @@ class sql_control extends phpok_control
 
 	public function backlist_f()
 	{
-		if(!$this->popedom['list']){
+		if(!$this->popedom['list'] && !$_SESSION['admin_rs']['if_system']){
 			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
 		}
 		$filelist = $this->lib('file')->ls($this->dir_root.'data/');
@@ -293,7 +293,7 @@ class sql_control extends phpok_control
 
 	public function recover_f()
 	{
-		if(!$this->popedom['recover']){
+		if(!$this->popedom['recover'] && !$_SESSION['admin_rs']['if_system']){
 			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
 		}
 		$id = $this->get('id');
@@ -304,6 +304,11 @@ class sql_control extends phpok_control
 		if(!file_exists($backfile)){
 			error(P_Lang('备份文件不存在'),$this->url('sql','backlist'),'error');
 		}
+		$session_string = '';
+		if($this->config['engine']['session']['file'] == 'sql'){
+			$session_string = session_encode();
+			$session_id = $this->session->sessid();
+		}
 		$session = $_SESSION;
 		$msg = $this->lib('file')->cat($backfile);
 		$this->format_sql($msg);
@@ -311,11 +316,15 @@ class sql_control extends phpok_control
 		$admin_rs = $this->model('admin')->get_one($session['admin_id'],'id');
 		if(!$admin_rs || $admin_rs['account'] != $session['admin_account']){
 			//写入当前登录的管理员信息
-			if(!$admin_rs){
+			if($admin_rs){
 				$this->model('sql')->update_adm($session['admin_rs'],$session['admin_id']);
 			}else{
-				$this->model('sql')->update_adm($session['admin_rs']);
+				$insert_id = $this->model('sql')->update_adm($session['admin_rs']);
+				$session['admin_id'] = $insert_id;
 			}
+		}
+		if($session_string && $session_id){
+			$this->model('sql')->update_session($session_id,$session_string);
 		}
 		//更新相应的SESSION信息，防止被退出
 		$_SESSION = $session;
@@ -324,7 +333,7 @@ class sql_control extends phpok_control
 
 	public function recover_data_f()
 	{
-		if(!$this->popedom['recover']){
+		if(!$_SESSION['admin_rs']['if_system']){
 			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
 		}
 		$id = $this->get('id');
@@ -350,6 +359,7 @@ class sql_control extends phpok_control
 	{
 		$sql = str_replace("\r","\n",$sql);
 		$list = explode(";\n",trim($sql));
+		$update_admin = false;
 		foreach($list as $key=>$value){
 			if(!$value || !trim($value)){
 				continue;
@@ -366,9 +376,25 @@ class sql_control extends phpok_control
 				}
 			}
 			if($tmpsql){
+				if(strpos($tmpsql,'INSERT INTO '.$this->db->prefix.'adm') !== false){
+					$sql = "TRUNCATE TABLE `".$this->db->prefix."adm`";
+					$this->db->query($sql);
+					$update_admin = true;
+				}
 				$this->model('sql')->query($tmpsql);
 			}
 		}
+		if($update_admin){
+			$admin_rs = $this->model('admin')->get_one($_SESSION['admin_id'],'id');
+			if(!$admin_rs || $admin_rs['account'] != $_SESSION['admin_account']){
+				if($admin_rs){
+					$this->model('sql')->update_adm($_SESSION['admin_rs'],$_SESSION['admin_id']);
+				}else{
+					$_SESSION['admin_id'] = $this->model('sql')->update_adm($_SESSION['admin_rs']);
+				}
+			}
+		}
+		return true;
 	}
 }
 ?>

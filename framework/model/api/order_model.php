@@ -35,21 +35,6 @@ class order_model extends order_model_base
 		return $this->db->query($sql);
 	}
 
-	public function log_save($data)
-	{
-		if(!$data){
-			return false;
-		}
-		if(!$data['who'] && $_SESSION['user_id']){
-			$user = $this->model('user')->get_one($_SESSION['user_id']);
-			$data['who'] = $user['user'];
-		}
-		if(!$data['addtime']){
-			$data['addtime'] = $this->time;
-		}
-		return $this->db->insert_array($data,'order_log');
-	}
-
 	public function update_last_query_time($id)
 	{
 		$sql = "UPDATE ".$this->db->prefix."order_express SET last_query_time='".$this->time."' WHERE id='".$id."'";
@@ -61,13 +46,6 @@ class order_model extends order_model_base
 		$sql = "UPDATE ".$this->db->prefix."order_express SET is_end=1 WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
-
-	//保存订单各种状态下的价格
-	public function save_order_price($data)
-	{
-		return $this->db->insert_array($data,'order_price');
-	}
-	
 }
 
 ?>

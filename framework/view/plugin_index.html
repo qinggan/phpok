@@ -162,13 +162,15 @@ $(document).ready(function(){
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
 	<th width="10px">&nbsp;</th>
-	<th>{lang名称}</th>
+	<th class="lft">{lang名称}</th>
+	<th class="lft">{lang标识}</th>
 	<th></th>
 </tr>
 <!-- loop from=$not_install key=$key value=$value -->
 <tr{if $not_install_id.num%2 == ""} class="list"{/if}>
 	<td class="center">&nbsp;</td>
 	<td>{$value.title} <!-- if $value.note || $value.desc --><span class="gray i">（{$value.note ? $value.note : $value.desc}）</span><!-- /if --></td>
+	<td>{$key}</td>
 	<td align="right"><input type="button" value="{lang安装}" class="btn" onclick="plugin_install('{$key}','{$value.title}')" /></td>
 </tr>
 <!-- /loop -->

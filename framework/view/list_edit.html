@@ -335,6 +335,16 @@ $(document).ready(function(){
 			<td><input type="text" id="unit" name="unit" class="short" value="{$rs.unit}" /></td>
 		</tr>
 		<tr>
+			<td align="right">{lang产品类型：}</td>
+			<td>
+				<ul class="layout">
+					<li><label><input type="radio" name="is_virtual" value="0"{if !$rs.is_virtual} checked{/if} />实物</label></li>
+					<li><label><input type="radio" name="is_virtual" value="1"{if $rs.is_virtual} checked{/if} />虚拟/服务</label></li>
+				</ul>
+				<div class="clear"></div>
+			</td>
+		</tr>
+		<tr>
 			<td>
 				<select name="currency_id" id="currency_id" onchange="price_show_auto()">
 					<!-- loop from=$currency_list key=$key value=$value -->

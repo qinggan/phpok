@@ -139,11 +139,21 @@ class url_model_base extends phpok_model
 	public function url_rewrite($ctrl='index',$func='index',$ext='')
 	{
 		$data = array();
+		if($ext){
+			if(is_string($ext)){
+				parse_str($ext,$tmp);
+			}else{
+				$tmp = $ext;
+			}
+			foreach($tmp as $key=>$value){
+				$data[$key] = $value;
+			}
+		}
 		$rule_id = false;
 		if($ctrl == 'project' || $ctrl == 'content'){
 			$rule_id = $ctrl;
 			$data['ctrl'] = $ctrl;
-			if($rule_id == 'project' && $func && $func != 'index'){
+			if($func && $func != 'index'){
 				$data['cate'] = $func;
 			}
 		}
@@ -154,6 +164,7 @@ class url_model_base extends phpok_model
 				$data['func'] = $func;
 			}
 		}
+		
 		if(!$rule_id){
 			if(is_numeric($ctrl)){
 				$rule_id = 'content';
@@ -167,7 +178,7 @@ class url_model_base extends phpok_model
 				$rule_id = $this->ilist[$ctrl] ? 'content' : 'project';
 				$data['ctrl'] = $rule_id;
 				$data['id'] = $ctrl;
-				if($rule_id == 'project' && $func && $func != 'index'){
+				if($func && $func != 'index'){
 					$data['cate'] = $func;
 				}
 			}
@@ -175,15 +186,8 @@ class url_model_base extends phpok_model
 		if(!$rule_id){
 			return $this->url_default($ctrl,$func,$ext);
 		}
-		if($ext){
-			if(is_string($ext)){
-				parse_str($ext,$tmp);
-			}else{
-				$tmp = $ext;
-			}
-			foreach($tmp as $key=>$value){
-				$data[$key] = $value;
-			}
+		if($data['cateid'] && !$data['cate']){
+			$data['cate'] = $this->clist[$data['cateid']]['identifier'];
 		}
 		$rs = false;
 		foreach($this->rule_list as $key=>$value){
@@ -319,40 +323,33 @@ class url_model_base extends phpok_model
 				}
 			}
 		}
-		if(!$rs)
-		{
+		if(!$rs){
 			return false;
 		}
 		$project_rs = $this->plist[$rs['project_id']];
 		$array['identifier'] = $rs['identifier'] ? $rs['identifier'] : $rs['id'];
 		$array['project'] = $project_rs['identifier'];
-		if($project_rs['parent_id'])
-		{
+		if($project_rs['parent_id']){
 			$parent_rs = $this->plist[$project_rs['parent_id']];
 			$array['project_root'] = $parent_rs['identifier'];
 		}
-		if($project_rs['cate'])
-		{
+		if($project_rs['cate']){
 			$cate_root = $this->clist[$project_rs['cate']];
 			$array['cate_root'] = $cate_root['identifier'];
 		}
-		if($rs['cate_id'])
-		{
+		if($rs['cate_id']){
 			$cate_rs = $this->clist[$rs['cate_id']];
 			$array['cate'] = $cate_rs['identifier'];
 		}
 		$url = $this->rule;
-		foreach($array as $key=>$value)
-		{
+		foreach($array as $key=>$value){
 			$url = str_replace('{'.$key.'}',$value,$url);
 		}
 		$url = preg_replace("/(\/{2,})/","/",$url);
-		if(substr($url,0,1) == '/')
-		{
+		if(substr($url,0,1) == '/'){
 			$url = substr($url,1);
 		}
-		if(substr($url,-1) == '/')
-		{
+		if(substr($url,-1) == '/'){
 			$url = substr($url,0,-1);
 		}
 		$url = $this->base_url.$url;

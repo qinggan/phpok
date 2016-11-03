@@ -28,6 +28,7 @@ class system_control extends phpok_control
 		}
 		$rslist = $this->model('sysmenu')->get_all($_SESSION["admin_site_id"]);
 		$this->assign("rslist",$rslist);
+		$desktop_show_type = $this->model('sysmenu')->desktop_setting('show_desktop');
 		$this->view("sysmenu_index");
 	}
 

@@ -36,7 +36,11 @@ class xml_lib
 		$this->xml_save_func = 'phpok';
 	}
 
-	//读取XML操作
+	/**
+	 * 读取XML操作
+	 * @参数 $info XML文件或要解析的XML内容
+	 * @参数 $isfile，是否是文件，默认为是，如果要解析XML内容，请改为false
+	**/
 	public function read($info,$isfile=true)
 	{
 		$func = "read_".$this->xml_read_func;

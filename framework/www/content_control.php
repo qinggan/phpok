@@ -93,7 +93,7 @@ class content_control extends phpok_control
 		if($project['tpl_content']){
 			$tplfile[7] = $project['tpl_content'];
 		}
-		if($rs['cate_id']){
+		if($rs['cate_id'] && $project['cate']){
 			$cate_root_rs = $this->call->phpok('_cate',array('pid'=>$project['id'],'cateid'=>$project['cate']));
 			if(!$cate_root_rs || !$cate_root_rs['status']){
 				$this->error(P_Lang('根分类信息不存在或未启用'),$this->url,5);

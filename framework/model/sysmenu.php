@@ -52,7 +52,7 @@ class sysmenu_model_base extends phpok_model
 	}
 
 	//取得全部菜单，并生成树状分类，仅限后台使用
-	public function get_all($site_id=0,$status=0)
+	public function get_all($site_id=0,$status=0,$condition='')
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."sysmenu WHERE 1=1 ";
 		if($status){
@@ -61,6 +61,9 @@ class sysmenu_model_base extends phpok_model
 		if($site_id){
 			$sql_in = "0,".$site_id;
 			$sql .= " AND site_id IN(".$sql_in.") ";
+		}
+		if($condition){
+			$sql .= " AND ".$condition;
 		}
 		$sql .= " ORDER BY taxis ASC,id DESC";
 		$tmp_list = $this->db->get_all($sql);

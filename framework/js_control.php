@@ -95,7 +95,7 @@ class js_control extends phpok_control
 				if(!$value) continue;
 				if(strtolower(substr($value,-3)) != '.js') $value .= '.js';
 				$file = is_file($this->dir_phpok.'js/'.$value) ? $this->dir_phpok.'js/'.$value : $this->dir_root."js/".$value;
-				if(is_file($file)){
+				if(file_exists($file)){
 					echo "\n";
 					echo $this->lib('file')->cat($file);
 					echo "\n";
@@ -120,16 +120,14 @@ class js_control extends phpok_control
 	//最小化加载js
 	private function js_base()
 	{
-		header("Content-type: application/x-javascript; charset=UTF-8");
+		header("Content-type: text/javascript; charset=utf-8");
 		$file = $_SERVER["SCRIPT_NAME"] ? basename($_SERVER["SCRIPT_NAME"]) : basename($_SERVER["SCRIPT_FILENAME"]);
-		//加载配置常用的JS
 		$weburl = $this->get_url();
 		echo 'var basefile = "'.$file.'";'."\n";
 		echo 'var ctrl_id = "'.$this->config['ctrl_id'].'";'."\n";
 		echo 'var func_id = "'.$this->config['func_id'].'";'."\n";
 		echo 'var webroot = "'.$weburl.'";'."\n";
 		echo 'var apifile = "'.$this->config['api_file'].'";'."\n";
-		//echo 'var langid = "'.$this->langid.'"'."\n";
 		echo 'var lang= new Array();'."\n";
 		$js_default_file = $this->dir_root.'langs/'.$this->app_id.'.xml';
 		$default_list = $this->lib('xml')->read($js_default_file);
@@ -155,6 +153,8 @@ class js_control extends phpok_control
 		}
 		echo "\n";
 		echo 'function get_url(ctrl,func,ext){var url = "'.$weburl.$file.'?'.$this->config['ctrl_id'].'="+ctrl;if(func){url+="&'.$this->config['func_id'].'="+func;};if(ext){url+="&"+ext};return url;}';
+		echo "\n";
+		echo 'function get_plugin_url(id,func,ext){var url = "'.$weburl.$file.'?'.$this->config['ctrl_id'].'=plugin&'.$this->config['func_id'].'=index&id="+id+"&exec="+func;if(ext){url+="&"+ext};url+="&_noCache="+Math.random();return url;};';
 		echo "\n";
 		echo 'function api_url(ctrl,func,ext){var url = "'.$weburl.$this->config['api_file'].'?'.$this->config['ctrl_id'].'="+ctrl;if(func){url+="&'.$this->config['func_id'].'="+func;};if(ext){url+="&"+ext};url+="&_noCache="+Math.random();return url;};';
 		echo "\n";

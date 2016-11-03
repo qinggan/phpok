@@ -3,19 +3,6 @@
 function save()
 {
 	var obj = art.dialog.opener;
-	var oldname = '{$rs.title}';
-	var oldnote = '{$rs.note}';
-	var oldtaxis = '{$rs.taxis}';
-	var refresh = false;
-	if(oldname != $("#title").val()){
-		refresh = true;
-	}
-	if( (oldnote && oldnote != $("#note").val()) || (!oldnote && $("#note").val())){
-		refresh = true;
-	}
-	if( (oldtaxis && oldtaxis != $("#taxis").val()) || (!oldtaxis && $("#taxis").val())){
-		refresh = true;
-	}
 	$("#form_save").ajaxSubmit({
 		'url':get_url('module','field_edit_save'),
 		'type':'post',
@@ -23,12 +10,7 @@ function save()
 		'success':function(rs){
 			if(rs.status == 'ok'){
 				$.dialog.alert('{lang字段编辑成功}',function(){
-					if(refresh){
-						obj.$.dialog.close();
-						obj.$.phpok.reload();
-					}else{
-						$.dialog.close();
-					}
+					obj.$.phpok.reload();
 				},'succeed');
 			}else{
 				$.dialog.alert(rs.content);

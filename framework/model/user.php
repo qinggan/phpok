@@ -28,7 +28,14 @@ class user_model_base extends phpok_model
 		if(!$field){
 			$field = 'id';
 		}
-		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
+		$flist = $this->fields_all();
+		$ufields = "u.*";
+		if($flist){
+			foreach($flist as $key=>$value){
+				$ufields .= ",e.".$value['identifier'];
+			}
+		}
+		$sql = " SELECT ".$ufields." FROM ".$this->db->prefix."user u ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
 		$sql.= " WHERE u.".$field."='".$id."'";
 		$rs = $this->db->get_one($sql);
@@ -68,7 +75,14 @@ class user_model_base extends phpok_model
 
 	public function get_list($condition="",$offset=0,$psize=30)
 	{
-		$sql = " SELECT u.*,e.* FROM ".$this->db->prefix."user u ";
+		$flist = $this->fields_all();
+		$ufields = "u.*";
+		if($flist){
+			foreach($flist as $key=>$value){
+				$ufields .= ",e.".$value['identifier'];
+			}
+		}
+		$sql = " SELECT ".$ufields." FROM ".$this->db->prefix."user u ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
 		if($condition){
 			$sql .= " WHERE ".$condition;
@@ -98,8 +112,6 @@ class user_model_base extends phpok_model
 				}
 			}
 		}
-		//获取会员扩展字段
-		$flist = $this->fields_all();
 		if(!$flist){
 			return $rslist;
 		}
@@ -248,92 +260,6 @@ class user_model_base extends phpok_model
 	{
 		$sql = "REPLACE INTO ".$this->db->prefix."user_relation(uid,introducer,dateline) VALUES('".$uid."','".$introducer."','".$this->time."')";
 		return $this->db->query($sql);
-	}
-
-	public function address($uid)
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."user_address WHERE user_id='".$uid."' ORDER BY id DESC";
-		return $this->db->get_all($sql);
-	}
-
-	public function address_one($id)
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."user_address WHERE id='".$id."'";
-		return $this->db->get_one($sql);
-	}
-
-	public function address_save($data,$id=0)
-	{
-		if(!$data || !is_array($data)){
-			return false;
-		}
-		if($id){
-			return $this->db->update_array($data,'user_address',array('id'=>$id));
-		}else{
-			return $this->db->insert_array($data,'user_address');
-		}
-	}
-
-	public function address_delete($id)
-	{
-		$sql = "DELETE FROM ".$this->db->prefix."user_address WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	public function address_default($id=0)
-	{
-		if(!$id){
-			return false;
-		}
-		$rs = $this->address_one($id);
-		$sql = "UPDATE ".$this->db->prefix."user_address SET is_default=0 WHERE user_id='".$rs['user_id']."'";
-		$this->db->query($sql);
-		$sql = "UPDATE ".$this->db->prefix."user_address SET is_default=1 WHERE id='".$id."'";
-		$this->db->query($sql);
-		return true;
-	}
-
-	public function invoice($uid)
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."user_invoice WHERE user_id='".$uid."' ORDER BY id DESC";
-		return $this->db->get_all($sql);
-	}
-
-	public function invoice_one($id)
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."user_invoice WHERE id='".$id."'";
-		return $this->db->get_one($sql);
-	}
-
-	public function invoice_save($data,$id=0)
-	{
-		if(!$data || !is_array($data)){
-			return false;
-		}
-		if($id){
-			return $this->db->update_array($data,'user_invoice',array('id'=>$id));
-		}else{
-			return $this->db->insert_array($data,'user_invoice');
-		}
-	}
-
-	public function invoice_delete($id)
-	{
-		$sql = "DELETE FROM ".$this->db->prefix."user_invoice WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	public function invoice_default($id=0)
-	{
-		if(!$id){
-			return false;
-		}
-		$rs = $this->invoice_one($id);
-		$sql = "UPDATE ".$this->db->prefix."user_invoice SET is_default=0 WHERE user_id='".$rs['user_id']."'";
-		$this->db->query($sql);
-		$sql = "UPDATE ".$this->db->prefix."user_invoice SET is_default=1 WHERE id='".$id."'";
-		$this->db->query($sql);
-		return true;
 	}
 
 	public function token_check($uid,$chk)

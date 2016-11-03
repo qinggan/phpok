@@ -1,80 +1,20 @@
-<!-- php:$title = $id ? '编辑订单' : '添加新订单' --><!-- include tpl=head title=$title -->
+<!-- php:$title = $id ? '编辑订单' : '添加新订单' -->
+<!-- include tpl=head title=$title -->
 <script type="text/javascript" src="{func add_js order.js}"></script>
 <script type="text/javascript" src="js/laydate/laydate.js"></script>
 <script type="text/javascript">
-var is_id = '{$id}';
-function save_order()
-{
-	$("#ordersave").ajaxSubmit({
-		'url':get_url('order','save'),
-		'type':'post',
-		'dataType':'json',
-		'success':function(rs){
-			//订单状态为否时
-			if(rs.status != 'ok'){
-				if(!rs.content){
-					rs.content = '提交失败';
-				}
-				$.dialog.alert(rs.content);
-				return false;
-			}
-			//订单操作成功的提示
-			if(is_id && is_id != '0'){
-				$.dialog.alert('订单：<span class="red">{$rs.sn}</span> 编辑成功',function(){
-					$.phpok.go('{url ctrl=order/}');
-				},'succeed');
-			}else{
-				var sn = $("#sn").val();
-				$.dialog.alert("订单创建成功，编号是：<span class='red'>"+sn+"</span>",function(){
-					$.phpok.go('{url ctrl=order/}');
-				},'succeed');
-			}
-		}
-	});
-}
-function delete_payment(id)
-{
-	var url = get_url('order','payment_delete','id='+id);
-	$.phpok.json(url,function(rs){
-		if(rs.status == 'ok'){
-			$("#pay_price").val('');
-			$("#pay_id").val('');
-			$("#pay_id_btn").hide();
-		}
-	})
-	
-}
 $(document).ready(function(){
 	$("#ordersave").submit(function(){
 		var price = $("#price").val();
 		if(!price){
 			$.dialog.alert('请填写订单价格');
-			$("li[name=price]").click();
+			$("input[name=price]").focus();
 			return false;
 		}
 		save_order();
 		return false;
 	});
 });
-function update_price()
-{
-	var val = 0;
-	$("tr[class=prolist]").each(function(){
-		var price = $(this).find("input[class=price]").val();
-		var qty = $(this).find('input[class=qty]').val();
-		if(!qty){
-			qty = 1;
-		}
-		price = parseFloat(price);
-		qty = parseInt(qty);
-		var t = price * qty;
-		if(t>0){
-			val = val + t;
-		}
-	});
-	val = val.toFixed(2);
-	$("#ext_price_product").val(val.toString());
-}
 </script>
 <div class="tips">
 	<a href="{func admin_url order}" title="订单管理">订单管理</a>
@@ -82,17 +22,15 @@ function update_price()
 </div>
 <ul class="group">
 	<li class="on" onclick="$.admin.group(this)" name="main">{lang主要信息}</li>
-	<li onclick="$.admin.group(this)" name="product">{lang商品信息}</li>
 	<li onclick="$.admin.group(this)" name="address">{lang收货地址}</li>
 	<li onclick="$.admin.group(this)" name="invoice">{lang发票信息}</li>
-	<li onclick="$.admin.group(this)" name="price">{lang付款与优惠}</li>
 	<li onclick="$.admin.group(this)" name="log">{lang订单操作日志}</li>
 </ul>
-
 <form method="post" id="ordersave">
 <div id="main_setting">
 	<!-- if $id -->
 	<input type="hidden" name="id" id="id" value="{$id}" />
+	<input type="hidden" name="sn" id="sn" value="{$rs.sn}" />
 	<div class="table">
 		<div class="title">
 			订单编号：
@@ -100,13 +38,14 @@ function update_price()
 		</div>
 	</div>
 	<!-- else -->
+	<input type="hidden" name="id" id="id" value="0" />
 	<div class="table">
 		<div class="title">
 			订单编号：
 			<span class="note">这里创建的订单编号不受网站信息里规则限制，是随机的，请慎用</span>
 		</div>
 		<div class="content">
-			<input type="text" id="sn" name="sn" class="default" value="{$rs.sn}" />
+			<input type="text" id="sn" name="sn" class="long" value="{$rs.sn}" />
 			<input type="button" value="随机创建" onclick="update_sn()" class="btn" />
 		</div>
 	</div>
@@ -126,20 +65,29 @@ function update_price()
 			<input type="button" value="随机生成" onclick="update_passwd()" class="btn" />
 		</div>
 	</div>
+	<!-- if !$id || !$rs.passwd -->
+	<script type="text/javascript">
+	$(document).ready(function(){
+		update_passwd();
+	});
+	</script>
+	<!-- /if -->
+	<!-- if $id -->
 	<div class="table">
 		<div class="title">
 			订单状态：
-			<span class="note">请勾选当前订单状态</span>
+			<span class="note">请选择订单当前的状态，不清楚请留空</span>
 		</div>
 		<div class="content">
 			<ul class="layout">
 				<!-- loop from=$statuslist key=$key value=$value id=$tmpid -->
-				<li><label{if !$value.status} class="gray"{/if}><input type="radio" name="status" value="{$value.identifier}"{if $rs.status == $value.identifier} checked{/if}{if !$value.status} disabled{/if} />{$value.taxis}. {$value.title}<!-- if !$value.status -->（禁用）<!-- /if --></label></li>
+				<li><label><input type="radio" name="status" value="{$value.identifier}"{if $value.identifier == $rs.status} checked{/if} />{$value.title}</label></li>
 				<!-- /loop -->
 			</ul>
 			<div class="clear"></div>
 		</div>
 	</div>
+	<!-- /if -->
 	<div class="table">
 		<div class="title">
 			会员：
@@ -161,38 +109,77 @@ function update_price()
 	</div>
 	<div class="table">
 		<div class="title">
+			手机号：
+			<span class="note">用于接收短信通知，为空将不发送通知给客户，请填写正确的手机号</span>
+		</div>
+		<div class="content">
+			<input type="text" name="mobile" id="mobile" value="{$rs.mobile}" class="default" />
+			<input type="button" value="取得会员手机号" onclick="get_user_mobile()" class="btn" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
 			订单备注：
 			<span class="note">填写一些客户的特殊要求说明，不支持HTML</span>
 		</div>
 		<div class="content"><textarea name="note" id="note" style="width:99%;height:80px;">{$rs.note}</textarea></div>
 	</div>
-</div>
-<div class="hide" id="product_setting" style="padding:0 20px;">
-	<div class="table_lc" style="margin-top:5px;margin-right:3px;">
+	<div class="table_lc" style="margin:5px 20px 5px 18px;">
 		<table width="100%" id="prolist">
 		<tr class="prolist">
 			<th width="80px">产品图片</th>
 			<th>产品名称/产品单价</th>
+			<th width="240">属性</th>
 			<th width="60px" width="60px">购买数量</th>
 			<th width="50px" ><input type="button" value="增加产品" onclick="add_row()" class="btn" /></th>
 		</tr>
 		<!-- loop from=$rslist key=$key value=$value -->
 		<tr id="pro_{$rslist_id.num}" class="prolist">
 			<input type="hidden" name="pro_id[]" value="{$value.id}" />
+			<input type="hidden" name="pro_tmp[]" value="{$value.id}" />
 			<input type="hidden" name="pro_tid[]" value="{$value.tid}" class="p_proid" id="pro_tid_{$rslist_id.num}" />
 			<input type="hidden" name="pro_thumb[]" value="{$value.thumb}" id="pro_thumb_{$rslist_id.num}" />
-			<td widtha="90px" align="center" id="pro_thumb_view_{$rslist_id.num}"><img src="{$value.thumb ? $value.thumb : 'images/picture_default.png'}" style="cursor:pointer;" onclick="update_pic('{$rslist_id.num}')" width="80px" height="80px" border="0" /></td>
+			<td widtha="90px" align="center" id="pro_thumb_view_{$rslist_id.num}"><img src="{$value.thumb ? $value.thumb : 'images/picture_default.png'}"  class="hand" onclick="update_pic('{$rslist_id.num}')" width="80px" height="80px" border="0" /></td>
 			<td>
 				<table>
 					<tr>
-						<td><input type="text" name="pro_title[]" id="pro_title_{$rslist_id.num}" class="long" value="{$value.title}" /></td>
+						<td>名称：<input type="text" name="pro_title[]" id="pro_title_{$rslist_id.num}" class="long" value="{$value.title}" /></td>
 					</tr>
 					<tr>
-						<td><input type="text" name="pro_price[]" class="price" id="pro_price_{$rslist_id.num}" value="{$value.price}" /> <input type="button" value="选择产品" onclick="pro_select('{$rslist_id.num}')" class="btn" /></td>
+						<td>
+							价格：<input type="text" name="pro_price[]" class="price" id="pro_price_{$rslist_id.num}" value="{$value.price}" />
+							重量：<input type="text" name="pro_weight[]" class="short" id="pro_weight_{$rslist_id.num}" value="{$value.weight}" /> Kg
+							体积：<input type="text" name="pro_volume[]" class="short" id="pro_volume_{$rslist_id.num}" value="{$value.volume}" /> M<sup>3</sup>
+							<input type="button" value="选择产品" onclick="pro_select('{$rslist_id.num}')" class="btn" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							备注：<input type="text" name="pro_note[]" id="pro_note_{$rslist_id.num}" class="default" value="{$value.note}" />
+							<select name="pro_virtual[]" id="pro_virtual_{$rslist_id.num}">
+								<option value="0">实物</option>
+								<option value="1"{if $value.is_virtual} selected{/if}>虚拟/服务</option>
+							</select>
+						</td>
 					</tr>
 				</table>
 			</td>
-			<td class="center"><input type="text" name="pro_qty[]" class="qty" id="pro_qty_{$rslist_id.num}" value="{$value.qty}" /></td>
+			<td style="padding:0;background:#fefefe;" valign="top">
+				<table cellpadding="0" cellspacing="0">
+					<tr><th width="45%" class="lft">名称</th><th width="45%" class="lft">内容</th><th class="hand" onclick="order_attr_add('{$rslist_id.num}',this)">+</th></tr>
+					<!-- loop from=$value.ext key=$k value=$v id=$tmpid2 -->
+					<tr>
+						<td><input type="text" name="ext_title_{$value.id}[]" style="width:100%" value="{$v.title}" /></td>
+						<td><input type="text" name="ext_content_{$value.id}[]" style="width:100%" value="{$v.content}" /></td>
+						<td><input type="button" value="-" onclick="order_attr_remove(this)" /></td>
+					</tr>
+					<!-- /loop -->
+				</table>
+			</td>
+			<td class="center">
+				<div><input type="text" name="pro_qty[]" class="qty" id="pro_qty_{$rslist_id.num}" value="{$value.qty}" /></div>
+				<div style="margin-top:10px;"><input type="text" name="pro_unit[]" class="qty" id="pro_unit_{$rslist_id.num}" value="{$value.unit}" placeholder="单位" /></div>
+			</td>
 			<td class="center"><input type="button" value="删除" onclick="order_pro_delete({$value.id},{$rslist_id.num})" class="btn" /></td>
 		</tr>
 		<!-- /loop -->
@@ -205,19 +192,41 @@ function update_price()
 		</script>
 		<!-- /if -->
 	</div>
-</div>
-<div class="hide" id="address_setting">
+	<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
+	<!-- if $value.status -->
 	<div class="table">
+		<div class="title">{$value.title}：
+			<span class="note">
+				填写价格，该数据将执行<span class="red"><!-- if $value.action == 'add' -->增加<!-- else -->减法<!-- /if --></span>操作
+			</span>
+		</div>
 		<div class="content">
-			<table cellspacing="0" cellpadding="0">
-			<tr>
-				<td><input type="button" value="获取会员收货地址" class="btn" onclick="get_user_address()" /></td>
-				<td>&nbsp;</td>
-				<td id="address_user_select"></td>
-			</tr>
-			</table>
+			<input type="text" ext="price" action="{$value.action}" id="ext_price_{$value.identifier}" name="ext_price[{$value.identifier}]" class="default" sign="ext_price" value="{if $price && is_array($price) }{func abs $price[$value.identifier]}{else}0.0000{/if}" onkeyup="total_price()" onblur="total_price()" />
+			<!-- if $value.identifier == 'product' -->
+			<input type="button" value="获取产品价格" onclick="update_price()" class="btn" />
+			<!-- /if -->
 		</div>
 	</div>
+	<!-- /if -->
+	<!-- /loop -->
+	<div class="table">
+		<div class="title">
+			订单价格：
+			<span class="note">计算该订单涉及到的总金额费用</span>
+		</div>
+		<div class="content">
+			<input type="text" id="price" name="price" value="{$rs.price}" />
+			<select name="currency_id" id="currency_id">
+			<!-- loop from=$currency_list key=$key value=$value -->
+			<option value="{$value.id}"{if $rs.currency_id == $value.id} selected{/if}>{$value.title}（标识：{$value.code}，汇率：{$value.val}）</option>
+			<!-- /loop -->
+			</select>
+			<input type="button" value="计算总价格" onclick="total_price()" class="btn" />
+		</div>
+	</div>
+
+</div>
+<div class="hide" id="address_setting">
 	<input type="hidden" name="s-id" value="{$shipping.id}" />
 	<div class="table">
 		<table>
@@ -258,6 +267,15 @@ function update_price()
 	<div class="table">
 		<table>
 		<tr>
+			<td width="130px" align="right">邮编：</td>
+			<td><input type="text" id="s-zipcode" name="s-zipcode" value="{$shipping.zipcode}" class="default" /></td>
+			<td class="gray i">请填写有效的邮编号码</td>
+		</tr>
+		</table>	
+	</div>
+	<div class="table">
+		<table>
+		<tr>
 			<td width="130px" align="right">联系电话：</td>
 			<td><input type="text" id="s-tel" name="s-tel" value="{$shipping.tel}" class="default" /></td>
 			<td class="gray i">电话号码，格式：0755-12345678</td>
@@ -284,17 +302,6 @@ function update_price()
 	</div>
 </div>
 <div class="hide" id="invoice_setting">
-	<div class="table">
-		<div class="content">
-			<table cellspacing="0" cellpadding="0">
-			<tr>
-				<td><input type="button" value="获取会员发票" class="btn" onclick="get_user_invoice()" /></td>
-				<td>&nbsp;</td>
-				<td id="invoice_user_select"></td>
-			</tr>
-			</table>
-		</div>
-	</div>
 	<div class="table">
 		<div class="title">
 			发票类型：
@@ -342,73 +349,6 @@ function update_price()
 			<li>电子发票请在备注中填写：收票人手机号及收票人Email</li>
 			<li>增值税发票需要填写对方公司资料：单位名称 / 纳税人识别码 / 注册地址 / 注册电话 / 开户银行 / 银行账户</li>
 		</ul>
-	</div>
-</div>
-<div class="hide" id="price_setting">
-	<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
-	<!-- if $value.status -->
-	<div class="table">
-		<div class="title">{$value.title}：
-			<span class="note">
-				填写价格，该数据将执行<span class="red"><!-- if $value.action == 'add' -->增加<!-- else -->减法<!-- /if --></span>操作
-			</span>
-		</div>
-		<div class="content">
-			<input type="text" ext="price" action="{$value.action}" id="ext_price_{$value.identifier}" name="ext_price[{$value.identifier}]" class="default" sign="ext_price" value="{$price[$value.identifier]}" />
-			<!-- if $value.identifier == 'product' -->
-			<input type="button" value="根据产品计算价格" onclick="update_price()" class="btn" />
-			<!-- /if -->
-		</div>
-	</div>
-	<!-- /if -->
-	<!-- /loop -->
-	<div class="table">
-		<div class="title">
-			在线支付：
-			<span class="note">请设置需要在线支付的费用及支付方式</span>
-		</div>
-		<div class="content">
-			<input type="text" id="pay_price" name="pay_price" class="default" value="{$payinfo.price}" />
-			<select name="pay_id" id="pay_id">
-				<option value="">请选择一种在线支付方式…</option>
-				<!-- loop from=$paylist key=$key value=$value -->
-				<!-- if $value.paylist -->
-				<optgroup label="{$value.title}">
-					<!-- loop from=$value.paylist key=$k value=$v -->
-					<option value="{$v.id}"{if $v.id == $payinfo.payment_id} selected{/if}>{$v.title}（货币：{$v.currency}）</option>
-					<!-- /loop -->
-				</optgroup>
-				<!-- /if -->
-				<!-- /loop -->
-			</select>
-			<!-- if $payinfo -->
-			<input type="button" id="pay_id_btn" value="清除支付记录" onclick="delete_payment('{$payinfo.id}')" class="btn" />
-			<!-- /if -->
-		</div>
-	</div>
-	<div class="table">
-		<div class="title">
-			总计：
-			<span class="note">计算该订单涉及到的总金额费用</span>
-		</div>
-		<div class="content">
-			<input type="text" id="price" name="price" value="{$rs.price}" />
-			<select name="currency_id" id="currency_id">
-			<!-- loop from=$currency_list key=$key value=$value -->
-			<option value="{$value.id}"{if $rs.currency_id == $value.id} selected{/if}>{$value.title}（标识：{$value.code}，汇率：{$value.val}）</option>
-			<!-- /loop -->
-			</select>
-			<input type="button" value="计算总价格" onclick="total_price()" class="btn" />
-		</div>
-	</div>
-	<div class="table">
-		<div class="title">
-			付款时间：
-			<span class="note">设置付款时间，为空使用系统当前时间：{func date "Y-m-d H:i" $sys.time}</span>
-		</div>
-		<div class="content">
-			<input type="text" id="pay_date" name="pay_date" value="{$payinfo.dateline ? date('Y-m-d H:i:s',$payinfo.dateline) : ''}" onfocus="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" />
-		</div>
 	</div>
 </div>
 <div class="hide" id="log_setting" style="padding:0 20px;">

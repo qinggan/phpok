@@ -10,7 +10,9 @@
     position: relative;
     font-family: sans-serif;
 }
-
+.webuploader-pick{
+	height:auto;
+}
 /*tab样式框大小*/
 .tabhead {
     float:left;

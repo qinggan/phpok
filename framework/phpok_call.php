@@ -118,7 +118,7 @@ class phpok_call extends phpok_control
 			return false;
 		}
 		//禁用缓存获取数据
-		if(is_bool($call_rs['cache']) && !$call_rs['cache']){
+		if((is_bool($call_rs['cache']) && !$call_rs['cache']) || ($call_rs['cache'] && $call_rs['cache'] == 'false')){
 			return $this->$func($call_rs);
 		}
 		$cache_id = $this->cache->id($call_rs);
@@ -179,7 +179,18 @@ class phpok_call extends phpok_control
 		}
 		$flist = $this->model('module')->fields_all($project['module']);
 		$nlist = array();
-		$field = 'l.*';
+		if($project['cate'] && $project['cate_multiple']){
+			$list_fields = $this->model('fields')->list_fields();
+			$field = 'DISTINCT l.id';
+			foreach($list_fields as $key=>$value){
+				if($value == 'id'){
+					continue;
+				}
+				$field .= ",l.".$value;
+			}
+		}else{
+			$field = "l.*";
+		}
 		if($rs['fields'] && $rs['fields'] != '*'){
 			$tmp = explode(",",$rs['fields']);
 			if($flist){
@@ -312,10 +323,6 @@ class phpok_call extends phpok_control
 			$array = array($rs['cateid']);
 			$this->model('cate')->cate_ids($array,$rs['cateid'],$cate_all);
 			$condition .= " AND (lc.cate_id IN(".implode(",",$array).") OR l.cate_id IN(".implode(",",$array).")) ";
-			//$tmp1 = "SELECT id FROM ".$this->db->prefix."list_cate WHERE cate_id IN(".implode(",",$array).")";
-			//$tmp2 = "SELECT id FROM ".$this->db->prefix."list WHERE cate_id IN(".implode(",",$array).")";
-			//$condition .= " AND l.id IN(".$tmp1." UNION ".$tmp2.")";
-			//$condition .= " AND l.id IN()"
 			unset($cate_all,$array);
 		}
 		//绑定某个会员
@@ -389,7 +396,14 @@ class phpok_call extends phpok_control
 					continue;
 				}
 				if($value['search'] == 2){
-					$condition .= " AND ext.".$value['identifier']." LIKE '%".$rs[$tmpid]."%' ";
+					if($value['form_type'] == 'title' && !is_numeric($rs[$tmpid])){
+						$tmp = $this->model('id')->id($rs[$tmpid],$this->site_id,true);
+						if($tmp && $tmp['type'] == 'content'){
+							$condition .= " AND ext.".$value['identifier']." LIKE '%".$tmp['id']."%' ";
+						}
+					}else{
+						$condition .= " AND ext.".$value['identifier']." LIKE '%".$rs[$tmpid]."%' ";
+					}
 				}elseif($value['search'] == 3){
 					$separator = $value['search_separator'] ? $value['search_separator'] : ',';
 					$tmp = explode($separator,$rs[$tmpid]);
@@ -400,7 +414,14 @@ class phpok_call extends phpok_control
 						$condition .= " AND ext.".$value['identifier']." <='".$tmp[1]."' ";
 					}
 				}else{
-					$condition .= " AND ext.".$value['identifier']."='".$rs[$tmpid]."' ";
+					if($value['form_type'] == 'title' && !is_numeric($rs[$tmpid])){
+						$tmp = $this->model('id')->id($rs[$tmpid],$this->site_id,true);
+						if($tmp && $tmp['type'] == 'content'){
+							$condition .= " AND ext.".$value['identifier']."='".$tmp['id']."' ";
+						}
+					}else{
+						$condition .= " AND ext.".$value['identifier']."='".$rs[$tmpid]."' ";
+					}
 				}
 			}
 		}
@@ -564,7 +585,11 @@ class phpok_call extends phpok_control
 		//如果未绑定网址
 		if(!$arc['url']){
 			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
-			$arc['url'] = $this->url($url_id,'','project='.$project['identifier'],'www');
+			$tmpext = 'project='.$project['identifier'];
+			if($cate){
+				$tmpext .= "&cate=".$cate['identifier']."&cateid=".$cate['id'];
+			}
+			$arc['url'] = $this->url($url_id,'',$tmpext,'www');
 		}
 		//读取分类树
 		$arc['_catelist'] = $this->model('cate')->ext_catelist($arc['id']);
@@ -594,8 +619,6 @@ class phpok_call extends phpok_control
 		}
 		return $arc;
 	}
-
-	//动态统计Tag，以更新Tag记录
 
 	//取得项目信息
 	private function _project($rs,$cache_id='')

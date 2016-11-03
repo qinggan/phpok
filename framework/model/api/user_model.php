@@ -67,20 +67,6 @@ class user_model extends user_model_base
 		return $this->db->query($sql);
 	}
 
-	//发票类型
-	function update_invoice_type($invoice_type,$id)
-	{
-		$sql = "UPDATE ".$this->db->prefix."user SET invoice_type='".$invoice_type."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
-	//发票抬头
-	function update_invoice_title($invoice_title,$id)
-	{
-		$sql = "UPDATE ".$this->db->prefix."user SET invoice_title='".$invoice_title."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
 	//取得全部会员ID
 	function get_all_from_uid($uid,$pri="")
 	{

@@ -453,7 +453,7 @@ function price_format($val='',$currency_id='',$show_id=0)
 		$val = ($val/$old_rs['val']) * $rs['val'];
 	}
 	$val = number_format($val,2,".","");
-	$string = $rs['symbol_left'].' '.$val.' '.$rs['symbol_right'];
+	$string = $rs['symbol_left'].$val.$rs['symbol_right'];
 	return $string;
 }
 
@@ -723,6 +723,7 @@ function tpl_head($array=array())
 	if(substr($app->url,-1) != '/'){
 		$app->url .= "/";
 	}
+	$html .= '<meta name="toTop" content="true" />'."\n\t";
 	$html .= '<base href="'.$app->url.'" />'."\n\t";
 	$ico = $array['ico'] ? $array['ico'] : 'favicon.png';
 	$cssjs_debug = $app->config['debug'] ? '?_noCache=0.'.rand(1000,9999) : '';

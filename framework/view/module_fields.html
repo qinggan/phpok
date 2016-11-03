@@ -1,36 +1,64 @@
 <!-- inc:head -->
 <script type="text/javascript" src="{func add_js module.js}"></script>
 <script type="text/javascript">
+function update_taxis(val,id)
+{
+	$.ajax({
+		'url':get_url('module','field_taxis','taxis='+val+"&id="+id),
+		'dataType':'json',
+		'cache':false,
+		'async':true,
+		'beforeSend': function (XMLHttpRequest){
+			XMLHttpRequest.setRequestHeader("request_type","ajax");
+		},
+		'success':function(rs){
+			if(rs.status){
+				$.phpok.reload();
+			}else{
+				$.dialog.alert(rs.info);
+				return false;
+			}
+		}
+	});
+}
 $(document).ready(function(){
-	$("#title").blur(function(){check_title(false)});
+	$("div[name=taxis]").click(function(){
+		var oldval = $(this).text();
+		var id = $(this).attr('data');
+		$.dialog.prompt('{lang请填写新的排序：}',function(val){
+			if(val != oldval){
+				update_taxis(val,id);
+			}
+		},oldval);
+	});
 });
 </script>
 
 <div class="tips">
 	<div class="action"><a href="javascript:module_field_create('{$id}');void(0);" title="添加字段">添加字段</a></div>
-	<div class="action"><a href="{url ctrl=module/}" title="返回模块管理">返回模块管理</a></div>
 	您当前的位置：
-	<a href="{echo admin_url('module')}">模块管理</a>
-	&raquo; {$rs.title}
-	&raquo; 字段管理器
+	<a href="{url ctrl=module/}">模块管理</a>
+	&raquo; <span class="red">{$rs.title}</span>字段管理器
 </div>
 
 <!-- if $used_list -->
 <div class="list">
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
+	<th class="id">ID</th>
 	<th class="lft">&nbsp;字段名</th>
 	<th class="lft">名称</th>
 	<th class="lft">备注</th>
 	<th class="lft">排序</th>
 	<th></th>
 </tr>
-<!-- foreach($used_list AS $key=>$value) -->
-<tr{if $used_list_id.num%2 == ""} class="list"{/if}>
+<!-- loop from=$used_list key=$key value=$value id=$tmpid -->
+<tr>
+	<td class="center">{$value.id}</td>
 	<td>{$value.identifier}</td>
 	<td>{$value.title}</td>
 	<td>{$value.note}</td>
-	<td>{$value.taxis}</td>
+	<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 	<td>
 		<div class="button-group">
 			<input type="button" value="{lang编辑}" onclick="module_field_edit('{$value.id}')" class="phpok-btn" />
@@ -38,7 +66,7 @@ $(document).ready(function(){
 		</div>
 	</td>
 </tr>
-<!-- /foreach -->
+<!-- /loop -->
 </table>
 </div>
 <!-- /if -->

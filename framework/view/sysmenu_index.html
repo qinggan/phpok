@@ -29,35 +29,25 @@ function delete_sysmenu(id,title)
 {
 	$.dialog.confirm("确定要删除导航：<span class='red'>"+title+"</span>，删除后是不能恢复的！",function(){
 		var url = get_url('system','delete','id='+id);
-		var rs = json_ajax(url);
-		if(rs.status != 'ok')
-		{
+		var rs = $.phpok.json(url);
+		if(rs.status != 'ok'){
 			$.dialog.alert(rs.content);
 			return false;
 		}
-		window.location.reload();
+		$.phpok.reload();
 	});
 }
 function update_taxis(val,id)
 {
-	$.ajax({
-		'url':get_url('system','taxis','taxis['+id+']='+val),
-		'dataType':'json',
-		'cache':false,
-		'async':true,
-		'beforeSend': function (XMLHttpRequest){
-			XMLHttpRequest.setRequestHeader("request_type","ajax");
-		},
-		'success':function(rs){
-			if(rs.status == 'ok'){
-				$("div[data="+id+"]").html(val);
-				//$.phpok.reload();
-			}else{
-				$.dialog.alert(rs.content);
-				return false;
-			}
+	var url = get_url('system','taxis','taxis['+id+']='+val);
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$("div[data="+id+"]").html(val);
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
 		}
-	});
+	})
 }
 function set_icon(id)
 {
@@ -95,6 +85,7 @@ $(document).ready(function(){
 </script>
 <div class="tips">
 	您当前的位置：
+	<div class="action"><a href="javascript:desktop_show_set();void(0)">桌面左侧显示</a></div>
 	<a href="{echo admin_url('system')}">核心配置</a>
 	&raquo; 后台菜单列表
 </div>

@@ -339,5 +339,60 @@ class file_lib
 	{
 		return fclose($handle);
 	}
+
+	/**
+	 * 附件下载
+	 * @参数 $file 要下载的文件地址
+	 * @参数 $title 下载后的文件名
+	**/
+	public function download($file,$title='')
+	{
+		if(!$file){
+			return false;
+		}
+		if(!file_exists($file)){
+			return false;
+		}
+		$ext = pathinfo($file,PATHINFO_EXTENSION);
+		$filesize = filesize($file);
+		if(!$title){
+			$title = basename($file);
+		}else{
+			$title = str_replace('.'.$ext,'',$title);
+			$title.= '.'.$ext;
+		}
+		ob_end_clean();
+		header("Date: ".gmdate("D, d M Y H:i:s",time())." GMT");
+		header("Last-Modified: ".gmdate("D, d M Y H:i:s",time())." GMT");
+		header("Content-Encoding: none");
+		if(isset($_SERVER["HTTP_USER_AGENT"]) && preg_match("/Firefox/",$_SERVER["HTTP_USER_AGENT"])){
+			header("Content-Disposition: attachment; filename*=\"utf8''".rawurlencode($title)."\"");
+		}else{
+			header("Content-Disposition: attachment; filename=".rawurlencode($title));
+		}
+		header("Accept-Ranges: bytes");
+		$range = 0;
+		$size2 = $filesize -1;
+		if (isset ($_SERVER['HTTP_RANGE'])) {
+		    list ($a, $range) = explode("=", $_SERVER['HTTP_RANGE']);
+		    $new_length = $size2 - $range;
+		    header("HTTP/1.1 206 Partial Content");
+		    header("Content-Length: ".$new_length); //输入总长
+		    header("Content-Range: bytes ".$range."-".$size2."/".$filesize);
+		} else {
+		    header("Content-Range: bytes 0-".$size2."/".$filesize); //Content-Range: bytes 0-4988927/4988928
+		    header("Content-Length: ".$filesize);
+		}
+		$handle = fopen($file, "rb");
+		fseek($handle, $range);  
+		set_time_limit(0);
+		while (!feof($handle)) {
+			print (fread($handle, 1024 * 8));
+			flush();
+			ob_flush();
+		}
+		fclose($handle);
+	}
+	
 }
 ?>

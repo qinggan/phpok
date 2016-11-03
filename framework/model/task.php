@@ -134,6 +134,7 @@ class task_model_base extends phpok_model
 		$this->lib('file')->vi($this->time,$this->dir_root.'data/cache/tasklock.php');
 		return true;
 	}
+
 }
 
 ?>

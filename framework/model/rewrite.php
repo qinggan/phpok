@@ -66,6 +66,10 @@ class rewrite_model_base extends phpok_model
 		if(!$uri || $uri == '/'){
 			return false;
 		}
+		$tmp = strstr($uri,'?');
+		if($tmp){
+			$uri = str_replace($tmp,'',$uri);
+		}
 		$this->rlist();
 		$rs = false;
 		foreach($this->rlist as $key=>$value){

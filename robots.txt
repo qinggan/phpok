@@ -1,11 +1,15 @@
 User-Agent: *
 Allow: /
-Disallow: /js/
-Disallow: /payment/
-Disallow: /images/
-Disallow: /data/
 Disallow: /css/
+Disallow: /data/
+Disallow: /extension/
+Disallow: /framework/
+Disallow: /gateway/
+Disallow: /images/
+Disallow: /js/
+Disallow: /langs/
+Disallow: /phpinc/
+Disallow: /plugin/
 Disallow: /res/
+Disallow: /task/
 Disallow: /tpl/
-Disallow: /plugins/
-

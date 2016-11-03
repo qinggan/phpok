@@ -107,6 +107,9 @@ class project_control extends phpok_control
 		//价格，支持价格区间
 		$price = $this->get('price','float');
 		$sort = $this->get('sort');
+		if($sort && !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-,\s\.]*[a-zA-Z]$/u",$sort)){
+			$this->error(P_Lang('参数格式不正确'));
+		}
 		//判断该项目是否启用封面
 		if($rs["tpl_index"] && !$cateid && !$keywords && !$ext && !$tag && !$uid && !$attr && !$price && !$sort && $this->tpl->check($rs['tpl_index'])){
 			$this->view($rs["tpl_index"]);
@@ -155,7 +158,9 @@ class project_control extends phpok_control
 		}
 		//读取列表信息
 		$condition = "l.project_id=".$rs["id"]." AND l.module_id=".$rs["module"];
-		if($tag || $keywords || $ext) $pageurl .= $this->site["url_type"] == "rewrite" ? "?" : "&";
+		if($tag || $keywords || $ext || $sort || $attr || $price || $uid){
+			$pageurl .= $this->site["url_type"] == "rewrite" ? "?" : "&";
+		}
 		if($tag){
 			$dt['tag'] = $tag;
 			$pageurl .= "tag=".rawurlencode($tag)."&";
@@ -209,7 +214,7 @@ class project_control extends phpok_control
 		//自定义排序
 		if($sort){
 			$dt['orderby'] = $sort;
-			$pageurl .= '&sort='.rawurlencode($sort);
+			$pageurl .= 'sort='.rawurlencode($sort)."&";
 			$this->assign('sort',$sort);
 		}
 		if(substr($pageurl,-1) == "&" || substr($pageurl,-1) == "?"){

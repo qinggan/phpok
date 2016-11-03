@@ -423,6 +423,10 @@ function reply_it(id,title)
 					<!-- if $session.admin_rs.if_system && $rs.is_appoint -->
 					<option value="appoint">{lang指派管理员维护}</option>
 					<!-- /if -->
+					<!-- if $popedom.modify && $rs.subtopics -->
+					<option value="set_parent">{lang绑定父层}</option>
+					<option value="unset_parent">{lang取消父层}</option>
+					<!-- /if -->
 				</optgroup>
 				</select></li>
 			<li id="attr_set_li" class="hide">

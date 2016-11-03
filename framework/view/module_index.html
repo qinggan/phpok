@@ -1,38 +1,71 @@
 <!-- include tpl=head -->
-<script type="text/javascript" src="{echo add_js('module.js')}"></script>
+<script type="text/javascript" src="{func add_js module.js}"></script>
+<script type="text/javascript">
+function update_taxis(val,id)
+{
+	$.ajax({
+		'url':get_url('module','taxis','taxis='+val+"&id="+id),
+		'dataType':'json',
+		'cache':false,
+		'async':true,
+		'beforeSend': function (XMLHttpRequest){
+			XMLHttpRequest.setRequestHeader("request_type","ajax");
+		},
+		'success':function(rs){
+			if(rs.status){
+				$.phpok.reload();
+			}else{
+				$.dialog.alert(rs.info);
+				return false;
+			}
+		}
+	});
+}
+$(document).ready(function(){
+	$("div[name=taxis]").click(function(){
+		var oldval = $(this).text();
+		var id = $(this).attr('data');
+		$.dialog.prompt('{lang请填写新的排序：}',function(val){
+			if(val != oldval){
+				update_taxis(val,id);
+			}
+		},oldval);
+	});
+});
+</script>
 <div class="tips">
 	<!-- if $popedom.set -->
-	<div class="action"><a href="{echo admin_url('module','set')}">添加模块</a></div>
+	<div class="action"><a href="javascript:module_create();void(0);">添加模块</a></div>
+	<div class="action"><a href="javascript:module_import();void(0);">模块导入</a></div>
 	<!-- /if -->
 	您当前的位置：
-	<a href="{echo admin_url('module')}">模块管理</a>
+	<a href="{url ctrl=module/}">模块管理</a>
 	&raquo; 模块列表<!-- if $rslist --><span class="red">({func count $rslist})</span><!-- /if -->
 </div>
 <div class="list">
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
-	<th class="id">&nbsp;</th>
-	<th width="30px">&nbsp;</th>
 	<th width="50px">ID</th>
+	<th width="30px">&nbsp;</th>
 	<th class="lft">名称</th>
 	<th>排序</th>
-	<th>操作</th>
+	<th width="376px">操作</th>
 </tr>
 <!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 <tr>
-	<td class="id"><input type="checkbox" value="{$value.id}" id="tid_{$value.id}" checked /></td>
-	<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="set_status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
 	<td align="center">{$value.id}</td>
+	<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="set_status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
 	<td><label for="tid_{$value.id}">{$value.title}<!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></label></td>
-	<td class="center"><input type="text" id="taxis_{$value.id}" class="short center" value="{$value.taxis}" tabindex="{$tmpid.num}" /></td>
+	<td class="center"><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 	<td>
 		<!-- if $popedom.set -->
 		<div class="button-group">
-			<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=module func=set id=$value.id/}')" class="phpok-btn" />
+			<input type="button" value="{lang编辑}" onclick="module_set('{$value.id}')" class="phpok-btn" />
 			<input type="button" value="{lang删除}" onclick="module_del('{$value.id}','{$value.title}')" class="phpok-btn" />
 			<input type="button" value="{lang字段管理}" onclick="$.phpok.go('{url ctrl=module func=fields id=$value.id/}')" class="phpok-btn" />
 			<input type="button" value="{lang复制模块}" onclick="module_copy('{$value.id}','{$value.title}')" class="phpok-btn" />
 			<input type="button" value="{lang字段显示}" onclick="module_layout('{$value.id}','{$value.title}')" class="phpok-btn" />
+			<input type="button" value="{lang导出}" onclick="module_export('{$value.id}')" class="phpok-btn" />
 		</div>
 		<!-- /if -->
 	</td>
@@ -40,12 +73,12 @@
 <!-- /loop -->
 </table>
 </div>
-<!-- if $rslist -->
-<div class="button-group" style="margin:5px 0;">
-	<input type="button" value="全选" class="phpok-btn" onclick="$.input.checkbox_all()" />
-	<input type="button" value="全不选" class="phpok-btn" onclick="$.input.checkbox_none()" />
-	<input type="button" value="反选" class="phpok-btn" onclick="$.input.checkbox_anti()" />
-	<input type="button" value="更新排序" class="phpok-btn" onclick="taxis('{echo admin_url('module','taxis')}','255')" />
+<div class="tips">
+	<ul>
+		<li>模块功能用于扩展主题字段</li>
+		<li class="red">模块支持导入导出，仅限基本配置，如关联其他数据，请手动再配置</li>
+	</ul>
+	<div class="clear"></div>
 </div>
-<!-- /if -->
+
 <!-- include tpl=foot -->

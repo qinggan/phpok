@@ -36,7 +36,7 @@ class order_control extends phpok_control
 			$totalprice += price_format_val($value['price'] * $value['qty'],$value['currency_id'],$this->site['currency_id']);
 			$qty += $value['qty'];
 		}
-		$sn = $this->create_sn();
+		$sn = $this->model('order')->create_sn();
 		$allprice = round(($_SESSION['cart']['totalprice']+$_SESSION['cart']['freight_price']),2);
 		$main = array('sn'=>$sn);
 		$main['user_id'] = $user['id'];
@@ -45,23 +45,32 @@ class order_control extends phpok_control
 		$main['currency_id'] = $this->site['currency_id'];
 		$main['status'] = 'create';
 		$main['passwd'] = md5(str_rand(10));
-		if($_SESSION['cart']['address_id'] == 'email'){
-			$main['email'] = $this->get('email');
-			if(!$main['email']){
-				$this->json(P_Lang('Email地址不能为空'));
-			}
-			if(!$this->lib('common')->email_check($main['email'])){
-				$this->json(P_Lang('Email地址不合法'));
+		if($_SESSION['user_id']){
+			if($_SESSION['cart']['address_id'] == 'email'){
+				$main['email'] = $this->get('email');
+				if(!$main['email']){
+					$this->json(P_Lang('Email地址不能为空'));
+				}
+				if(!$this->lib('common')->email_check($main['email'])){
+					$this->json(P_Lang('Email地址不合法'));
+				}
+			}else{
+				$address = $this->model('user')->address_one($_SESSION['cart']['address_id']);
+				if(!$address || $address['user_id'] != $user['id']){
+					$this->json(P_Lang('请完善您的收货地址信息'));
+				}
+				$main['email'] = $address['email'];
+				if(!$main['email']){
+					$main['email'] = $user['email'];
+				}
 			}
 		}else{
-			$address = $this->model('user')->address_one($_SESSION['cart']['address_id']);
-			if(!$address || $address['user_id'] != $user['id']){
-				$this->json(P_Lang('请完善您的收货地址信息'));
+			$tmp_address = $this->form_address();
+			if(!$tmp_address['status']){
+				$this->json($tmp_address['info']);
 			}
+			$address = $tmp_address['info'];
 			$main['email'] = $address['email'];
-			if(!$main['email']){
-				$main['email'] = $user['email'];
-			}
 		}
 		$main['note'] = $this->get('note');
 		$oid = $this->model('order')->save($main);
@@ -76,7 +85,7 @@ class order_control extends phpok_control
 			$tmp['weight'] = $value['weight'];
 			$tmp['volume'] = $value['volume'];
 			$tmp['unit'] = $value['unit'];
-			$tmp['thumb'] = $value['thumb'] ? $value['thumb']['filename'] : 0;
+			$tmp['thumb'] = $value['thumb'] ? $value['thumb'] : '';
 			if($value['ext'] && $value['attrlist']){
 				$tmpext = array();
 				$ext = explode(",",$value['ext']);
@@ -138,45 +147,52 @@ class order_control extends phpok_control
 		//增加订单通知
 		$param = 'id='.$oid."&status=create";
 		$this->model('task')->add_once('order',$param);
-		$rs = array('sn'=>$sn,'passwd'=>$array['passwd'],'id'=>$oid);
+		$rs = array('sn'=>$sn,'passwd'=>$main['passwd'],'id'=>$oid);
 		$this->json($rs,true);
 	}
 
-	private function create_sn()
+	/**
+	 * 获取表单地址
+	 * @返回 数组
+	**/
+	private function form_address()
 	{
-		$sntype = $this->site['biz_sn'];
-		if(!$sntype) $sntype = 'year-month-date-number';
-		$sn = '';
-		$list = explode('-',$sntype);
-		foreach($list AS $key=>$value){
-			if($value == 'year') $sn.= date("Y",$this->time);
-			if($value == 'month') $sn.= date("m",$this->time);
-			if($value == 'date') $sn.= date("d",$this->time);
-			if($value == 'hour') $sn.= date('H',$this->time);
-			if($value == 'minute' || $value == 'minutes') $sn.= date("i",$this->time);
-			if($value == 'second' || $value == 'seconds') $sn.= date("s",$this->time);
-			if($value == 'rand' || $value == 'rands') $sn .= rand(10,99);
-			if($value == 'time' || $value == 'times') $sn .= $this->time;
-			if($value == 'number'){
-				$condition = "FROM_UNIXTIME(addtime,'%Y-%m-%d')='".date("Y-m-d",$this->time)."'";
-				$total = $this->model('order')->get_count($condition);
-				if(!$total) $total = '0';
-				$total++;
-				$sn .= str_pad($total,3,'0',STR_PAD_LEFT);
-			}
-			if($value == 'id'){
-				$maxid = $this->model('order')->maxid();
-				$sn .= str_pad($maxid,5,'0',STR_PAD_LEFT);
-			}
-			//包含会员信息
-			if($value == 'user'){
-				$sn .= $_SESSION['user_id'] ? 'U'.str_pad($_SESSION['user_id'],5,'0',STR_PAD_LEFT) : 'G';
-			}
-			if(substr($value,0,6) == 'prefix'){
-				$sn .= str_replace(array('prefix','[',']'),'',$value);
+		$array = array();
+		$country = $this->get('country');
+		if(!$country){
+			$country = '中国';
+		}
+		$array['country'] = $country;
+		$array['province'] = $this->get('pca_p');
+		$array['city'] = $this->get('pca_c');
+		$array['county'] = $this->get('pca_a');
+		$array['fullname'] = $this->get('fullname');
+		if(!$array['fullname']){
+			return array('status'=>false,'info'=>P_Lang('收件人姓名不能为空'));
+		}
+		$array['address'] = $this->get('address');
+		$array['mobile'] = $this->get('mobile');
+		$array['tel'] = $this->get('tel');
+		if(!$array['mobile'] && !$array['tel']){
+			return array('status'=>false,'info'=>P_Lang('手机或固定电话必须有填写一项'));
+		}
+		if($array['mobile']){
+			if(!$this->lib('common')->tel_check($array['mobile'],'mobile')){
+				return array('status'=>false,'info'=>P_Lang('手机号格式不对，请填写11位数字'));
 			}
 		}
-		return $sn;
+		if($array['tel']){
+			if(!$this->lib('common')->tel_check($array['tel'],'tel')){
+				return array('status'=>false,'info'=>P_Lang('电话格式不对'));
+			}
+		}
+		$array['email'] = $this->get('email');
+		if($array['email']){
+			if(!$this->lib('common')->email_check($array['email'])){
+				return array('status'=>false,'info'=>P_Lang('邮箱格式不对'));
+			}
+		}
+		return array('status'=>true,'info'=>$array);
 	}
 
 	public function info_f()

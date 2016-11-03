@@ -13,16 +13,48 @@ function add_row()
 	if($("#pro_"+total).length>0) total = total.toString() + "_"+ (parseInt(100*Math.random())).toString();
 	var html = '<tr id="pro_'+total+'" class="prolist">';
 	html += '<input type="hidden" name="pro_id[]" value="add" />';
+	html += '<input type="hidden" name="pro_tmp[]" value="'+total+'" />';
 	html += '<input type="hidden" name="pro_tid[]" id="pro_tid_'+total+'" value="0" class="p_proid" />';
 	html += '<input type="hidden" name="pro_thumb[]" id="pro_thumb_'+total+'" value="0" />';
 	html += '<td align="center" id="pro_thumb_view_'+total+'"><img src="images/picture_default.png" width="80px" height="80px" border="0" onclick="update_pic(\''+total+'\')" style="cursor:pointer;" /></td>';
 	html += '<td>';
-	html += '<table><tr><td><input type="text" name="pro_title[]" class="long" id="pro_title_'+total+'" placeholder="产品名称" /></td></tr><tr><td><input type="text" id="pro_price_'+total+'" name="pro_price[]" class="price" placeholder="产品单价" /> <input type="button" value="选择产品" onclick="pro_select(\''+total+'\')" class="btn" /></td></tr></table>';
+	html += '<table><tr><td>名称：<input type="text" name="pro_title[]" class="long" id="pro_title_'+total+'" /></td></tr>';
+	html += '<tr><td>价格：<input type="text" id="pro_price_'+total+'" name="pro_price[]" class="price" />';
+	html += ' 重量：<input type="text" name="pro_weight[]" id="pro_weight_'+total+'" class="short" value="0" /> Kg';
+	html += ' 体积：<input type="text" name="pro_volume[]" class="short" id="pro_volume_'+total+'" value="0" /> M<sup>3</sup>';
+	html += '<input type="button" value="选择产品" onclick="pro_select(\''+total+'\')" class="btn" /></td></tr>';
+	html += '<tr><td>备注：<input type="text" name="pro_note[]" id="pro_note_'+total+'" class="default" />';
+	html += '<select name="pro_virtual[]" id="pro_virtual_'+total+'"><option value="0">实物</option><option value="1">虚拟/服务</option>';
+	html += '</select>';
+	html += '</td></tr></table>';
 	html += '</td>';
-	html += '<td class="center"><input type="text" name="pro_qty[]" class="qty" value="1" /></td>';
+	html += '<td style="padding:0;background:#fefefe;" valign="top">';
+	html += '<table cellpadding="0" cellspacing="0">';
+	html += '<tr><th width="45%" class="lft">名称</th><th width="45%" class="lft">内容</th>';
+	html += '<th class="hand" onclick="order_attr_add(\''+total+'\',this)">+</th></tr>';
+	html +='</table></td>';
+	html += '<td class="center"><div><input type="text" name="pro_qty[]" class="qty" value="1" /></div>';
+	html += '<div style="margin-top:10px;">';
+	html += '<input type="text" name="pro_unit[]" class="qty" id="pro_unit_'+total+'" placeholder="单位" /></div>'
+	html += '</td>';
 	html += '<td class="center"><input type="button" value="删除" onclick="order_pro_delete2(\''+total+'\')" class="btn" /></td>';
 	html += '</tr>';
 	$("#prolist").append(html);
+}
+
+function order_attr_add(num,obj)
+{
+	var html = '<tr>';
+	html += '<td><input type="text" name="ext_title_'+num+'[]" style="width:100%" /></td>';
+	html += '<td><input type="text" name="ext_content_'+num+'[]" style="width:100%" /></td>';
+	html += '<td><input type="button" value="-" onclick="order_attr_remove(this)" /></td>';
+	html += '</tr>';
+	$(obj).parent().parent().append(html);
+}
+
+function order_attr_remove(obj)
+{
+	$(obj).parent().parent().remove();
 }
 
 //弹出窗口选取商品
@@ -198,6 +230,15 @@ function load_product(num,id)
 	}
 	$("#pro_title_"+num).val(rs.content.title);
 	$("#pro_price_"+num).val(rs.content.price);
+	$("#pro_weight_"+num).val(rs.content.weight);
+	$("#pro_volume_"+num).val(rs.content.volume);
+	$("#pro_unit_"+num).val(rs.content.unit);
+	if(rs.content.is_virtual == 1){
+		$("#pro_virtual_"+num+" option[value=1]").attr('selected','selected');
+	}else{
+		$("#pro_virtual_"+num+" option[value=0]").attr('selected','selected');
+	}
+	update_price();
 	return true;
 }
 
@@ -241,6 +282,10 @@ function get_user_email()
 	var url = get_url('user','info','uid='+uid);
 	$.phpok.json(url,function(rs){
 		if(rs.status == 'ok'){
+			if(!rs.content.email){
+				$.dialog.alert(p_lang('会员没有绑定邮箱'));
+				return false;
+			}
 			$("#email").val(rs.content.email);
 			return true;
 		}else{
@@ -250,22 +295,21 @@ function get_user_email()
 	})
 }
 
-function get_user_invoice()
+function get_user_mobile()
 {
 	var uid = $("#user_id").val();
 	if(!uid){
 		$.dialog.alert(p_lang('未绑定会员账号'));
 		return false;
 	}
-	var url = get_url('user','info','uid='+uid+"&type=invoice");
+	var url = get_url('user','info','uid='+uid);
 	$.phpok.json(url,function(rs){
 		if(rs.status == 'ok'){
-			var info = rs.content.rs;
-			var list = rs.content.rslist;
-			invoice_show_select(list,info.id);
-			$("#invoice_type").val(info.type);
-			$("#invoice_title").val(info.title);
-			$("#invoice_content").val(info.content);
+			if(!rs.content.mobile){
+				$.dialog.alert(p_lang('会员没有绑定手机号'));
+				return false;
+			}
+			$("#mobile").val(rs.content.mobile);
 			return true;
 		}else{
 			$.dialog.alert(rs.content);
@@ -273,89 +317,7 @@ function get_user_invoice()
 		}
 	})
 }
-function update_user_invoice(obj)
-{
-	var obj = $(obj).find("option:selected");
-	$("#invoice_type").val(obj.attr('type'));
-	$("#invoice_title").val(obj.attr('title'));
-	$("#invoice_content").val(obj.attr('content'));
-}
 
-function invoice_show_select(list,id)
-{
-	var html = '<select onchange="update_user_invoice(this)">';
-	for(var i in list){
-		html += '<option value="'+list[i].id+'" type="'+list[i].type+'" title="'+list[i].title+'" content="'+list[i].content+'"';
-		if(list[i].id == id){
-			html += ' selected';
-		}
-		html += '>'+list[i].type+'/'+list[i].title+'</option>';
-	}
-	html += '</select>';
-	$("#invoice_user_select").html(html);
-}
-function update_user_address(obj)
-{
-	var obj = $(obj).find("option:selected");
-	$("#s-fullname").val(obj.attr('fullname'));
-	$("#s-country").val(obj.attr('country'));
-	$("#s-province").val(obj.attr('province'));
-	$("#s-city").val(obj.attr('city'));
-	$("#s-county").val(obj.attr('county'));
-	$("#s-address").val(obj.attr('address'));
-	$("#s-mobile").val(obj.attr('mobile'));
-	$("#s-tel").val(obj.attr('tel'));
-	$("#s-email").val(obj.attr('email'));
-}
-function user_show_select(list,id)
-{
-	var html = '<select onchange="update_user_address(this)">';
-	for(var i in list){
-		html += '<option value="'+list[i].id+'" fullname="'+list[i].fullname+'" country="'+list[i].country+'" ';
-		html += 'city="'+list[i].city+'" province="'+list[i].province+'" county="'+list[i].county+'"';
-		html += 'address="'+list[i].address+'" mobile="'+list[i].mobile+'" tel="'+list[i].tel+'" email="'+list[i].email+'"';
-		if(list[i].id == id){
-			html += ' selected';
-		}
-		html += '>'+list[i].fullname+'：'+list[i].province+list[i].city+list[i].county+list[i].address;
-		if(list[i].mobile){
-			html += '/'+list[i].mobile;
-		}
-		html += '</option>'
-	}
-	html += '</select>';
-	$("#address_user_select").html(html);
-}
-
-function get_user_address()
-{
-	var uid = $("#user_id").val();
-	if(!uid){
-		$.dialog.alert(p_lang('未绑定会员账号'));
-		return false;
-	}
-	var url = get_url('user','info','uid='+uid+"&type=address");
-	$.phpok.json(url,function(rs){
-		if(rs.status == 'ok'){
-			var info = rs.content.rs;
-			var list = rs.content.rslist;
-			user_show_select(list,info.id);
-			$("#s-fullname").val(info.fullname);
-			$("#s-country").val(info.country);
-			$("#s-province").val(info.province);
-			$("#s-city").val(info.city);
-			$("#s-county").val(info.county);
-			$("#s-address").val(info.address);
-			$("#s-mobile").val(info.mobile);
-			$("#s-tel").val(info.tel);
-			$("#s-email").val(info.email);
-			return true;
-		}else{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	})
-}
 
 function total_price()
 {
@@ -372,16 +334,182 @@ function total_price()
 			total -= val;
 		}
 	});
-	$('#price,#pay_price').val(total.toString());
+	$('#price').val(total.toString());
 }
 
 function order_express(id,sn)
 {
-	var url = get_url('order','express','id='+id);
+	var url = get_url('order','express_check','id='+id);
+	var rs = $.phpok.json(url);
+	if(rs.status){
+		if(rs.info > 0){
+			url = get_url('order','express','id='+id);
+			$.dialog.open(url,{
+				'title':p_lang('物流快递，您的订单编号是：')+'<span class="red">'+sn+'</span>',
+				'width':'70%',
+				'height':'70%',
+				'lock':true,
+				'cancelVal':p_lang('关闭'),
+				'cancel':function(){return true;}
+			});
+		}else{
+			$.dialog.alert(p_lang('订单中没有实物，不需要填写物流信息'));
+			return false;
+		}
+	}
+}
+
+function update_price()
+{
+	var val = 0;
+	$("tr[class=prolist]").each(function(){
+		var price = $(this).find("input[class=price]").val();
+		var qty = $(this).find('input[class=qty]').val();
+		if(!qty){
+			qty = 1;
+		}
+		price = parseFloat(price);
+		qty = parseInt(qty);
+		var t = price * qty;
+		if(t>0){
+			val = val + t;
+		}
+	});
+	val = val.toFixed(2);
+	$("#ext_price_product").val(val.toString());
+	total_price();
+}
+
+function save_order()
+{
+	$("#ordersave").ajaxSubmit({
+		'url':get_url('order','save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			//订单状态为否时
+			if(!rs.status){
+				$.dialog.alert(rs.info);
+				return false;
+			}
+			var id = $("#id").val();
+			var sn = $("#sn").val();
+			var tip = p_lang('订单编辑成功');
+			if(id && id == '0'){
+				tip = p_lang('订单创建成功');
+			}
+			$.dialog.alert(tip,function(){
+				$.phpok.go(get_url('order'));
+			},'succeed');
+		}
+	});
+}
+
+function update_keywords(val){
+	if(val == 'time'){
+		$("#keywords").bind("focus",function(){
+			laydate();
+		}).val('');
+	}else{
+		$("#keywords").unbind('focus').val('');
+	}
+}
+
+function order_info_show(id,sn)
+{
+	var url = get_url('order','info','id='+id);
 	$.dialog.open(url,{
-		'title':p_lang('物流快递，您的订单编号是：')+'<span class="red">'+sn+'</span>',
+		'title':p_lang('查看订单：')+sn,
+		'lock':true,
 		'width':'70%',
 		'height':'70%',
-		'lock':true
+		'cancel':function(){
+			return true;
+		},
+		'cancelVal':p_lang('关闭')
+	})
+}
+
+/**
+ * 结束订单，无论订单进行到哪一步，后台管理员都能在这里直接中止订单
+ * @参数 id 订单ID号
+ * @参数 sn 订单SN号
+**/
+function order_stop(id,sn)
+{
+	var url = get_url('order','end','act=stop&id='+id);
+	var price = $("td[data-id="+id+"]").attr("data-unpaid");
+	var tip = '';
+	if(parseFloat(price)>0){
+		var text = $("td[data-unpaid-text="+id+"]").text();
+		tip = '<div>'+p_lang('未支付金额：')+'<span class="red">'+text+'</span></div>';
+	}
+	$.dialog.confirm(p_lang('确定要结束这个订单吗？')+tip+'<div>'+p_lang('订单号：')+'<span class="darkblue">'+sn+'</span></div>',function(){
+		var rs = $.phpok.json(url);
+		if(rs.status){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.info);
+			return false;
+		}
 	});
+}
+
+function order_cancel(id,sn)
+{
+	var url = get_url('order','end','act=cancel&id='+id);
+	var price = $("td[data-id="+id+"]").attr("data-unpaid");
+	var tip = '';
+	if(parseFloat(price)>0){
+		var text = $("td[data-unpaid-text="+id+"]").text();
+		tip = '<div>'+p_lang('未支付金额：')+'<span class="red">'+text+'</span></div>';
+	}
+	$.dialog.confirm(p_lang('确定要取消这个订单吗？')+tip+'<div>'+p_lang('订单号：')+'<span class="darkblue">'+sn+'</span></div>',function(){
+		var rs = $.phpok.json(url);
+		if(rs.status){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+}
+
+function order_end(id,sn)
+{
+	var url = get_url('order','end','act=end&id='+id);
+	var price = $("td[data-id="+id+"]").attr("data-unpaid");
+	var tip = '';
+	if(parseFloat(price)>0){
+		var text = $("td[data-unpaid-text="+id+"]").text();
+		tip = '<div>'+p_lang('未支付金额：')+'<span class="red">'+text+'</span></div>';
+	}
+	$.dialog.confirm(p_lang('这个订单已经完成全部流程了吗？')+tip+'<div>'+p_lang('订单号：')+'<span class="darkblue">'+sn+'</span></div>',function(){
+		var rs = $.phpok.json(url);
+		if(rs.status){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+}
+
+function order_payment(id,sn)
+{
+	var url = get_url('order','payment','id='+id);
+	$.dialog.open(url,{
+		'title':p_lang('订单支付：')+sn,
+		'lock':true,
+		'width':'70%',
+		'height':'70%',
+		'ok':function(){
+			$.phpok.reload();
+		},
+		'okVal':p_lang('关闭并刷新'),
+		'cancel':function(){
+			return true;
+		},
+		'cancelVal':p_lang('关闭')
+	})
 }

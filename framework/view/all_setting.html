@@ -280,6 +280,19 @@ function insert_input(val)
 <div id="biz_setting" class="hide">
 <div class="table">
 	<div class="title">
+		电商：
+		<span class="note">仅限这里启用电商后，整个平台才支持电商化</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="biz_status" value="0"{if !$rs.biz_status} checked{/if} />禁用</label></li>
+			<li><label><input type="radio" name="biz_status" value="1"{if $rs.biz_status} checked{/if} />启用</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
 		{lang订单号生成规则：}
 		<span class="note">
 			{lang支持以下常用选项（年-月-日-时-分-秒-随机数-序号-时间戳）}
@@ -333,6 +346,20 @@ function insert_input(val)
 		<option value="{$value.id}"{if $rs.biz_payment == $value.id} selected{/if}>{$value.title}</option>
 		<!-- /loop -->
 	</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		运费：
+		<span class="note">请选择电商平台运费计算方法</span>
+	</div>
+	<div class="content">
+		<select name="biz_freight">
+			<option value="0">不使用运费</option>
+			<!-- loop from=$freight key=$key value=$value id=$tmpid -->
+			<option value="{$value.id}"{if $rs.biz_freight == $value.id} selected{/if}>{$value.title}</option>
+			<!-- /loop -->
+		</select>
 	</div>
 </div>
 

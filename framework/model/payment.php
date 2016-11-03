@@ -91,4 +91,3 @@ class payment_model_base extends phpok_model
 		return $this->db->query($sql);
 	}
 }
-?>

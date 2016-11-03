@@ -1,0 +1,6 @@
+<!-- php:$title = '订单：'.$rs.sn -->
+<!-- include tpl=head title=$title -->
+<div class="main">
+    <div style="height:330px;line-height:330px;font-size:14px;text-align:center;color:#666">您的订单号是：{$rs.sn}，<a href="{url ctrl=order func=info sn=$rs.sn passwd=$rs.passwd/}">点这里查看订单详细信息</a></div>
+</div>
+<!-- include tpl=foot -->

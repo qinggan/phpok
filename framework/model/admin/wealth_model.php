@@ -1,12 +1,15 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/model/admin/wealth_model.php
-	备注： 财富管理
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年07月17日 00时49分
-*****************************************************************************************/
+/**
+ * 财富管理，后台Model类
+ * @package phpok\model\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2015年07月17日 00时49分
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class wealth_model extends wealth_model_base
 {
@@ -58,9 +61,42 @@ class wealth_model extends wealth_model_base
 		return $this->db->query($sql);
 	}
 
-	public function save_rule($data)
+	/**
+	 * 保存规则
+	 * @参数 $data 要保存的数组
+	 * @参数 $id ID不为0时表示更新
+	 * @返回 true或false或新插入的ID
+	 * @更新时间 2016年07月25日
+	**/
+	public function save_rule($data,$id=0)
 	{
-		return $this->db->insert_array($data,'wealth_rule');
+		if($id){
+			return $this->db->update_array($data,'wealth_rule',array('id'=>$id));
+		}else{
+			return $this->db->insert_array($data,'wealth_rule');
+		}
+	}
+
+	/**
+	 * 检查这规则是否使用，防止重复冲突
+	 * @参数 $action 执行动作
+	 * @参数 $goal 目标对象
+	 * @参数 $wid 财富ID
+	 * @返回 有数据返回true，无数据返回false
+	**/
+	public function check($action,$goal,$wid,$id=0)
+	{
+		$sql = "SELECT id FROM ".$this->db->prefix."wealth_rule WHERE action='".$action."' AND goal='".$goal."'";
+		$sql.= " AND wid='".$wid."' ";
+		if($id){
+			$sql .= " AND id != '".$id."'";
+		}
+		$chk = $this->db->get_one($sql);
+		if($chk && $chk['id']){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	public function info_total($condition='')

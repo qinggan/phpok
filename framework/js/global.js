@@ -44,6 +44,16 @@ function json_ajax(turl)
 	return $.phpok.json(turl);
 }
 
+function p_lang(str)
+{
+	if(!str || str == 'undefined'){
+		return false;
+	}
+	if(lang && lang[str]){
+		return lang[str];
+	}
+	return str;
+}
 
 // 异步加载Ajax，执行函数
 function ajax_async(turl,func,type)

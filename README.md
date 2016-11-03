@@ -5,13 +5,7 @@ phpok
 
 手工安装
 ===
-1. 打包下载后，请手工在data目录下创建以下文件夹：
-    cache
-    session
-    tpl_admin
-    tpl_html
-    tpl_www
-
+1. 打包下载后，请手工在data目录下创建以下文件夹： **cache**，**session**，**tpl_admin**，**tpl_html**，**tpl_www**
 2. 运行 phpokinstall.php 进行安装
 
 感谢

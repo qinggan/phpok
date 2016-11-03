@@ -13,6 +13,8 @@ p{word-wrap:break-word}
 .fr{ float:right;}
 .clear{ clear:both;}
 .red{color:red;}
+.darkblue{color:darkblue;}
+
 
 .foot{ background:#f9f9f9; padding:10px 0 0; border-top:1px solid #c3c3c3; width:100%; }
 .foot_left{ line-height:24px; float:left; padding-left:20px; color:#D2D2D2;}
@@ -70,7 +72,7 @@ p{word-wrap:break-word}
 .head_web .gohome a{color:#fff;}
 .head_web .leftspan{ float:left; margin-right:3px; line-height:26px; color:#999999; font-size:14px;}
 .head_web  .web_select{ width:135px; height:26px; border:1px solid #182C44; padding:3px; background:#2A4567; float:left; color:#8F9BAA;}
-.head_web  .web_add{ width:23px; height:24px; border:1px solid #182C44; border-left:0; float:left; background:url(../images/Add.jpg) no-repeat; display:block;}
+.head_web  .web_add{ width:23px; height:24px; border:1px solid #182C44; border-left:0; float:left; background:url('../images/create.jpg') no-repeat; display:block;}
 
 .head_tab{ position:absolute; height:27px; bottom:0; left:220px;}
 .head_tab li{ float:left; margin-left:10px; cursor:pointer; border-radius:3px 3px 0 0; background:#2a4567; border:1px solid #182c44; padding:0 15px; line-height:26px; border-bottom:0; color:#e0e0e0;}

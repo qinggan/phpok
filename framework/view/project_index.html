@@ -25,6 +25,12 @@ function project_copy(id,title)
 		$.phpok.json(url,project_result,true);
 	});
 }
+
+function project_export(id)
+{
+	var url = get_url('project','export','id='+id);
+	$.phpok.go(url);
+}
 function set_status(id)
 {
 	var url = '{url ctrl=project func=status/}&id='+id;
@@ -59,6 +65,28 @@ function update_taxis(val,id)
 		}
 	});
 }
+function project_import()
+{
+	var url = get_url('project','import');
+	$.dialog.open(url,{
+		'title':p_lang('项目导入'),
+		'lock':true,
+		'width':'500px',
+		'height':'150px',
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert(p_lang('iframe还没加载完毕呢'));
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal':p_lang('导入项目'),
+		'cancelVal':p_lang('取消'),
+		'cancel':function(){return true;}
+	});
+}
 $(document).ready(function(){
 	$("div[name=taxis]").click(function(){
 		var oldval = $(this).text();
@@ -74,6 +102,7 @@ $(document).ready(function(){
 <div class="tips">
 	<!-- if $popedom.set -->
 	<div class="action"><a href="{url ctrl=project func=set/}">{lang添加项目}</a></div>
+	<div class="action"><a href="javascript:project_import();void(0);">{lang项目导入}</a></div>
 	<!-- /if -->
 	{lang您当前的位置：}
 	<a href="{echo admin_url('project')}">{lang项目管理}</a>
@@ -112,6 +141,7 @@ $(document).ready(function(){
 				<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=project func=set id=$value.id/}')" class="phpok-btn" />
 				<input type="button" value="{lang扩展字段}" onclick="$.phpok.go('{url ctrl=project func=content id=$value.id/}')" class="phpok-btn" />
 				<input type="button" value="{lang复制}" onclick="project_copy('{$value.id}','{$value.title}')" class="phpok-btn" />
+				<input type="button" value="{lang导出}" onclick="project_export('{$value.id}')" class="phpok-btn" />
 				<input type="button" value="{lang删除}" onclick="project_delete('{$value.id}','{$value.title}')" class="phpok-btn" />
 			</div>
 		</td>

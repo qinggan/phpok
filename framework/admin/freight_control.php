@@ -280,7 +280,11 @@ class freight_control extends phpok_control
 				foreach($zonelist as $k=>$v){
 					$data = array('unit_val'=>$value);
 					$data['zid'] = $v['id'];
-					$data['price'] = $price[$v['id']][$key];
+					if($value == 'fixed'){
+						$data['price'] = $price[$v['id']][0];
+					}else{
+						$data['price'] = $price[$v['id']][$key];
+					}
 					$this->model('freight')->price_save($data);
 				}
 			}

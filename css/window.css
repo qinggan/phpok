@@ -76,6 +76,8 @@
 .phpok-win .window .title div.button{ position:absolute; top:0; right:6px; height:20px;}
 .phpok-win .window .title div.button ul{margin:0;padding:0;list-style:none;}
 .phpok-win .window .title div.button ul li{ float:left; margin-left:2px;list-style:none;}
+.phpok-win .window .title div.button ul li.refresh a{ width:20px; height:20px; background:url('images/refresh.png') center center no-repeat; display:block;}
+.phpok-win .window .title div.button ul li.refresh a:hover{ background-color:#0000FF;}
 .phpok-win .window .title div.button ul li.close a{ width:45px; height:20px; background:url('images/button.png') 19px 7px no-repeat #c75050; display:block;}
 .phpok-win .window .title div.button ul li.close a:hover{ background-color:#e25959;}
 .phpok-win .window .title div.button ul li.min a{ width:18px; height:20px; background:url('images/button.png') 5px -108px no-repeat; display:block;}

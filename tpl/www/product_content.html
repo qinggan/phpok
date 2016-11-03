@@ -28,8 +28,8 @@ function attr_select(id,aid)
 	});
 	var url = api_url('cart','price_format','price='+$.str.encode(price));
 	$.phpok.json(url,function(rs){
-		if(rs.status == 'ok'){
-			$("#showprice").html(rs.content);
+		if(rs.status){
+			$("#showprice").html(rs.info);
 		}
 	});
 }
@@ -139,7 +139,11 @@ $(document).ready(function(){
 					<em>价格：</em>
 					<span class="price" style="color:red;font-size:16px;" id="showprice">{func price_format $rs.price $rs.currency_id}</span>
 				</li>
-				<li><a href="javascript:$.cart.add('{$rs.id}',$('#buycount').val());void(0);"><img src="images/buy-btn.jpg" width="157" height="33" /></a></li>
+				<li>
+					<a href="javascript:$.cart.add('{$rs.id}',$('#buycount').val());void(0);"><img src="images/buy-btn.jpg" width="157" height="33" /></a>
+					
+				</li>
+				<li style="margin-top:10px;"><input type="button" value="立即购买" onclick="$.cart.onebuy('{$rs.id}',$('#buycount').val())" style="border:1px solid #c40000;background:#ffeded;color:#c40000;padding:0;margin:0;width:156px;height:33px;line-height:30px;" /></li>
 			</ul>
 		</div>
 		<div class="clear"></div>

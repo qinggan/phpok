@@ -185,16 +185,7 @@ function phpok_tpl_open(id)
 }
 
 
-function p_lang(str)
-{
-	if(!str || str == 'undefined'){
-		return false;
-	}
-	if(lang && lang[str]){
-		return lang[str];
-	}
-	return str;
-}
+
 
 
 function phpok_admin_orderby(id,val)
@@ -227,7 +218,7 @@ function phpok_admin_orderby(id,val)
 
 function goto_site(id,oldid)
 {
-	$.dialog.confirm("确定要切换到网站 <span style='color:red;font-weight:bold;'>"+$('#top_site_id').find("option:selected").text()+"</span> 吗?",function(){
+	$.dialog.confirm(p_lang('确定要切换到网站')+"<span style='color:red;font-weight:bold;'>"+$('#top_site_id').find("option:selected").text()+"</span>",function(){
 		var url = get_url("index","site") + "&id="+id.toString();
 		direct(url);
 	},function(){

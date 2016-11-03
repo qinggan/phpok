@@ -173,11 +173,29 @@ class tag_model_base extends phpok_model
 					$content = str_replace($v,$string,$content);
 				}
 			}
+			//将其他HTML分离出来
+			preg_match_all('/<.*>/isU',$content,$matches2);
+			//将已存在title或是alt内容提取出来
+			//preg_match_all('/title=["|\'](.+)["|\']/isU',$content,$matches2);
+			if($matches2 && $matches2[0]){
+				$matches2[0] = array_unique($matches2[0]);
+				foreach($matches2[0] as $k=>$v){
+					$string = '~\~\~'.md5($v).'~/~/~';
+					$content = str_replace($v,$string,$content);
+				}
+			}
 			$replace_count = $value['replace_count'] ? $value['replace_count'] : 3;
 			$content = preg_replace('`'.preg_quote($value['title'],'`').'`isU',$value['html'],$content,$replace_count);
+			//
 			if($matches && $matches[0]){
 				foreach($matches[0] as $k=>$v){
 					$string = '~/~/~'.md5($v).'~\~\~';
+					$content = str_replace($string,$v,$content);
+				}
+			}
+			if($matches2 && $matches2[0]){
+				foreach($matches2[0] as $k=>$v){
+					$string = '~\~\~'.md5($v).'~/~/~';
 					$content = str_replace($string,$v,$content);
 				}
 			}

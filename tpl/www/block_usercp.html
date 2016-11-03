@@ -7,12 +7,10 @@
 		<li{if $sys.func == 'passwd'} class="hover"{/if}><a href="{url ctrl=usercp func=passwd/}" title="修改密码">修改密码</a></li>
 		<li{if $sys.func == 'mobile'} class="hover"{/if}><a href="{url ctrl=usercp func=mobile/}" title="修改手机">修改手机</a></li>
 		<li{if $sys.func == 'email'} class="hover"{/if}><a href="{url ctrl=usercp func=email/}" title="修改邮箱">修改邮箱</a></li>
-		<li class="order">订单中心</li>
 		<li{if $sys.ctrl == 'order'} class="hover"{/if}><a href="{url ctrl=order/}" title="我的订单">我的订单</a></li>
-		<li{if $sys.func == 'address'} class="hover"{/if}><a href="{url ctrl=usercp func=address/}" title="收货地址">收货地址</a></li>
-		<li{if $sys.func == 'invoice'} class="hover"{/if}><a href="{url ctrl=usercp func=invoice/}" title="发票管理">发票管理</a></li>
 		<li class="article">我的…</li>
 		<li{if $sys.func == 'fav'} class="hover"{/if}><a href="{url ctrl=usercp func=fav/}" title="收藏夹">收藏夹</a></li>
+		<li{if $sys.func == 'introducer'} class="hover"{/if}><a href="{url ctrl=usercp func=introducer/}" title="推荐">推荐</a></li>
 		<!-- php:$list = usercp_project() -->
 		<!-- loop from=$list key=$key value=$value -->
 		<li{if $sys.func == 'list' && $id == $value.identifier} class="hover"{/if}><a href="{url ctrl=usercp func=list id=$value.identifier/}" title="{$value.title}">{$value.title}</a></li>

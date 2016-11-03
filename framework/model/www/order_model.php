@@ -114,24 +114,6 @@ class order_model extends order_model_base
 		}
 	}
 
-	//通过订单号取得单个订单信息
-	function get_one_from_sn($sn,$user='')
-	{
-		if(!$sn) return false;
-		$sql = "SELECT * FROM ".$this->db->prefix."order WHERE sn='".$sn."'";
-		if($user)
-		{
-			$sql .= " AND user_id='".$user."'";
-		}
-		return $this->db->get_one($sql);
-	}
-
-	function get_one($id)
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."order WHERE id='".$id."'";
-		return $this->db->get_one($sql);
-	}
-
 	function address_shipping($id)
 	{
 		if(!$id) return false;

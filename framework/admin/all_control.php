@@ -59,6 +59,11 @@ class all_control extends phpok_control
 		//邮件模板列表
 		$emailtpl = $this->model('email')->simple_list($_SESSION['admin_site_id']);
 		$this->assign("emailtpl",$emailtpl);
+
+		//运费列表
+		$freight = $this->model('freight')->get_all();
+		$this->assign('freight',$freight);
+
 		
 		$this->view("all_setting");
 	}
@@ -154,6 +159,9 @@ class all_control extends phpok_control
 		$array["biz_payment"] = $this->get("biz_payment","int");
 		$array['upload_guest'] = $this->get('upload_guest','int');
 		$array['upload_user'] = $this->get('upload_user','int');
+		//2016年09月08日
+		$array['biz_status'] = $this->get('biz_status','int');
+		$array['biz_freight'] = $this->get('biz_freight');
 		$this->model('site')->save($array,$_SESSION['admin_site_id']);
 		error(P_Lang('网站信息更新完成'),$this->url("all","setting"),'ok');
 	}

@@ -22,4 +22,6 @@
 	<open_text_pic_manage>图片管理器</open_text_pic_manage>
 	<open_text_pic_noid>未指定ID</open_text_pic_noid>
 	<list_set_admin_id>指派管理员维护</list_set_admin_id>
+	<admin_gosite_tip>确定要切换到网站</admin_gosite_tip>
+	<submit>确定</submit>
 </root>

@@ -1,5 +1,5 @@
 <!-- inc:head -->
-<script type="text/javascript" src="{echo add_js('user.js')}"></script>
+<script type="text/javascript" src="{func add_js user.js}"></script>
 <div class="tips">
 	<table width="100%" cellpadding="0" cellspacing="0" height="100%">
 	<tr>
@@ -28,10 +28,10 @@
 	<th class="lft">{func P_Lang $value}</th>
 	<!-- /loop -->
 	<!-- loop from=$wlist key=$key value=$value id=$tmpid -->
-	<th class="lft" width="100">{$value.title}</th>
+	<th class="lft" style="min-width:100px;">{$value.title}</th>
 	<!-- /loop -->
 	<th width="130px">{lang注册时间}</th>
-	<th width="120px"></th>
+	<th width="100px"></th>
 </tr>
 <!-- $rslist AS $key=>$value -->
 <tr>
@@ -64,10 +64,10 @@
 	<!-- /loop -->
 	<td>{echo date('Y-m-d H:i',$value['regtime'])}</td>
 	<td>
-		<a href="{echo admin_url('user','set')}&id={$value.id}" class="icon edit" title="{lang编辑}"></a>
-		<a onclick="show_address('{$value.user}','{$value.id}')" class="ico address" title="{lang会员地址库}"></a>
-		<a onclick="show_invoice('{$value.user}','{$value.id}')" class="ico invoice" title="{lang会员发票配置}"></a>
-		<a href="javascript:del({$value.id},'{$value.user}');void(0);" class="icon delete" title="{lang删除}"></a>
+		<div class="button-group">
+			<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=user func=set id=$value.id/}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="del({$value.id},'{$value.user}')" class="phpok-btn" />
+		</div>
 	</td>
 </tr>
 <!-- end -->

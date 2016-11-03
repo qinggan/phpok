@@ -99,7 +99,7 @@ class payment_model extends payment_model_base
 	{
 		$rs = array('id'=>$id,'dir'=>$this->dir_root.'gateway/payment/'.$id);
 		$xmlfile = $this->dir_root.'gateway/payment/'.$id.'/config.xml';
-		if(is_file($xmlfile)){
+		if(file_exists($xmlfile)){
 			$tmp = $this->lib('xml')->read($xmlfile);
 		}else{
 			$tmp = array('title'=>$id,'code'=>'');
