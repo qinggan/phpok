@@ -558,6 +558,23 @@ class order_control extends phpok_control
 			$main['sn'] = $sn;
 			$main['addtime'] = $this->time;
 		}
+		$main['ext'] = '';
+		$extkey = $this->get('extkey');
+		$extval = $this->get('extval');
+		if($extkey && $extval){
+			$tmp_main_ext = false;
+			foreach($extkey as $key=>$value){
+				if($extval[$key] && $value){
+					if(!$tmp_main_ext){
+						$tmp_main_ext = array();
+					}
+					$tmp_main_ext[$value] = $extval[$key];
+				}
+			}
+			if($tmp_main_ext){
+				$main['ext'] = serialize($tmp_main_ext);
+			}
+		}
 		//检查产品数据是否完整
 		$pro_id = $this->get('pro_id');
 		if(!$pro_id || !is_array($pro_id)){

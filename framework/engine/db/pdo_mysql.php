@@ -374,8 +374,9 @@ class db_pdo_mysql extends db
 		if(!$char){
 			return false;
 		}
-		$this->check_connect();
-		return $this->conn->quote($char);
+		return addslashes($char);
+		//$this->check_connect();
+		//return $this->conn->quote($char);
 	}
 
 	//PHPOK中常用的简洁高效的SQL生成查询，仅适合单表查询
@@ -390,5 +391,19 @@ class db_pdo_mysql extends db
 		}
 		return $this->get_one($sql);
 	}
+
+	/**
+	 * 取得MySQL版本号
+	 * @参数 $type 支持server和client两种类型
+	 * @返回 
+	 * @更新时间 
+	**/
+	public function version($type='server')
+	{
+		if($type == 'server'){
+			return $this->conn->getAttribute(PDO::ATTR_SERVER_VERSION);
+		}else{
+			return $this->conn->getAttribute(PDO::ATTR_CLIENT_VERSION);
+		}
+	}
 }
-?>

@@ -1,0 +1,46 @@
+<!-- include tpl=head -->
+<form method="post" action="{if $session.user_id}{url ctrl=payment func=create id=$rs.id/}{else}{url ctrl=payment func=create id=$rs.sn passwd=$rs.passwd/}{/if}">
+<div role="main" class="ui-content">
+	<ul data-role="listview" data-inset="true" style="margin:0;">
+		<li>订单号<span class="ui-li-count">{$rs.sn}</span></li>
+		<li>下单时间<span class="ui-li-count">{func time_format $rs.addtime}</span></li>
+		<li>总金额<span class="ui-li-count">{func price_format $rs.price $rs.currency_id}</span></li>
+	</ul>
+
+	<!-- if $integral -->
+	<ul data-role="listview" data-inset="true">
+		<li data-role="list-divider">积分抵扣</li>
+		<!-- loop from=$integral key=$key value=$value -->
+		<li>您当前的{$value.title}有<span class="red">{$value.val}</span>{$value.unit}，可抵现金<span class="red">{func price_format $value.price}</span>，您准备支出 <input type="text" name="integral_val[{$key}]" value="" class="price" />{$value.unit}（请填写100的整数倍数据，暂不支持小数）</li>
+		<!-- /loop -->
+	</ul>
+	<!-- /if -->
+	<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+	<ul data-role="listview" data-inset="true">
+		<li data-role="list-divider">{$value.title}</li>
+		<!-- loop from=$value.paylist key=$k value=$v id=$subid -->
+		<!-- if $v.wap -->
+		<li><label><input name="payment" type="radio" value="{$v.id}"{if !$tmpid.index && !$subid.index} checked{/if} />{$v.title}</label></li>
+		<!-- /if -->
+		<!-- /loop -->
+	</ul>
+	<!-- /loop -->
+	<!-- if $integral -->
+	<ul data-role="listview" data-inset="true">
+		<li data-role="list-divider">余额支付</li>
+		<!-- loop from=$balance key=$key value=$value -->
+		<li><label>
+			<input name="payment" type="radio" value="{$value.identifier}" data-price="{$rs.price}" data-balance="{$value.price}" />您当前的{$value.title}有<span class="red">{$value.val}</span>{$value.unit}
+				<!-- if $rs.price > $value.price -->
+				，您的余额不够，请<a href="{url ctrl=payment id=$value.id/}"><b>在线充值</b></a>
+				<!-- /if -->
+			</label>
+		</li>
+		<!-- /loop -->
+	</ul>
+	<!-- /if -->
+	<input type="submit" value="提交支付" />
+	<input type="button" value="返回订单" onclick="$.phpok.go('{if $session.user_id}{url ctrl=order func=info id=$rs.id/}{else}{url ctrl=order func=info sn=$rs.sn passwd=$rs.passwd/}{/if}')" />
+</form>
+</div>
+<!-- include tpl=foot -->

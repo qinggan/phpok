@@ -20,7 +20,18 @@ class setting_sitemap extends phpok_plugin
 
 	function index()
 	{
-		return $this->plugin_tpl('setting.html');
+		$glist = $this->model('gateway')->get_all(0);
+		if(!$glist){
+			$this->error('没有网关信息',$this->url('plugin'));
+		}
+		if(!$glist['sms']){
+			$this->error('没有短信网关配置',$this->url('plugin'));
+		}
+		if(!$glist['sms']['list']){
+			$this->error('请先配置好短信网关',$this->url('plugin'));
+		}
+		$this->assign('smslist',$glist['sms']['list']);
+		return $this->_tpl('setting.html');
 	}
 
 	//存储扩展表单内容
@@ -32,5 +43,3 @@ class setting_sitemap extends phpok_plugin
 		$this->plugin_save($ext,$id);
 	}
 }
-
-?>

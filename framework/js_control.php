@@ -68,11 +68,15 @@ class js_control extends phpok_control
 		$is_artdialog = false;
 		foreach($list AS $key=>$value){
 			$value = trim($value);
-			if(!$value) continue;
+			if(!$value){
+				continue;
+			}
 			//判断后缀是否是.js
-			if(strtolower(substr($value,-3)) != '.js') $value .= '.js';
+			if(strtolower(substr($value,-3)) != '.js'){
+				$value .= '.js';
+			}
 			//判断文件是否存在
-			$jsfile = is_file($this->dir_root."js/".$value) ? $this->dir_root."js/".$value : $this->dir_phpok."js/".$value;
+			$jsfile = file_exists($this->dir_root."js/".$value) ? $this->dir_root."js/".$value : $this->dir_phpok."js/".$value;
 			if(is_file($jsfile)){
 				echo "\n";
 				echo $this->lib('file')->cat($jsfile);

@@ -25,10 +25,6 @@ class db_mysqli extends db
 	public function config($config)
 	{
 		parent::config($config);
-		if (!defined('PHP_VERSION_ID')){
-			$version =  explode ('.',PHP_VERSION);
-			define('PHP_VERSION_ID',($version[0]*10000 + $version[1]*100 + $version[2]));
-		}
 		$this->host = $config['host'] ? $config['host'] : '127.0.0.1';
 		$this->user = $config['user'] ? $config['user'] : 'root';
 		$this->pass = $config['pass'] ? $config['pass'] : '';
@@ -391,5 +387,19 @@ class db_mysqli extends db
 		}
 		return $this->get_one($sql);
 	}
+
+	/**
+	 * 取得MySQL版本号
+	 * @参数 $type 支持server和client两种类型
+	 * @返回 
+	 * @更新时间 
+	**/
+	public function version($type="server")
+	{
+		if($type == 'server'){
+			return mysqli_get_server_info($this->conn);
+		}else{
+			return mysqli_get_client_info($this->conn);
+		}
+	}
 }
-?>

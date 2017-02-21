@@ -106,12 +106,16 @@ class form_lib
 		return $rs;
 	}
 
-	//获取内容信息
+	/**
+	 * 获取内容信息
+	 * @参数 $rs 数组，字段属性
+	 * @返回 
+	 * @更新时间 
+	**/
 	public function get($rs)
 	{
 		$obj = $this->_obj($rs);
-		if(!$obj)
-		{
+		if(!$obj){
 			return false;
 		}
 		$mlist = get_class_methods($obj);

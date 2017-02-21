@@ -15,9 +15,9 @@ class comment_control extends phpok_control
 	{
 		parent::control();
 		$this->model('popedom')->siteid($this->site['id']);
-		$groupid = $this->model('usergroup')->group_id($_SESSION['user_id']);
+		$groupid = $this->model('usergroup')->group_id($this->session->val('user_id'));
 		if(!$groupid){
-			error(P_Lang('无法获取前端用户组信息'),'','error');
+			$this->error(P_Lang('无法获取前端用户组信息'));
 		}
 		$this->user_groupid = $groupid;
 	}
@@ -75,5 +75,3 @@ class comment_control extends phpok_control
 		$this->view('comment');
 	}
 }
-
-?>

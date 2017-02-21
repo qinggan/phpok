@@ -157,9 +157,13 @@ class upload_lib
 
 	private function _upload($input)
 	{
+		global $app;
 		$basename = substr(md5(time().uniqid()),9,16);
-		$chunk = isset($_REQUEST["chunk"]) ? intval($_REQUEST["chunk"]) : 0;
-		$chunks = isset($_REQUEST["chunks"]) ? intval($_REQUEST["chunks"]) : 1;
+		$chunk = $app->get('chunk','int');
+		$chunks = $app->get('chunks','int');
+		if(!$chunks){
+			$chunks = 1;
+		}
 		$tmpname = $_FILES[$input]["name"];
 		$tmpid = 'u_'.md5($tmpname);
 		$ext = $this->file_ext($tmpname);
@@ -182,7 +186,7 @@ class upload_lib
 		}
 		@fclose($out);
 		@fclose($in);
-		$GLOBALS['app']->lib('file')->mv($out_tmpfile.'.parttmp',$out_tmpfile.'.part');
+		$app->lib('file')->mv($out_tmpfile.'.parttmp',$out_tmpfile.'.part');
 		$index = 0;
 		$done = true;
 		for($index=0;$index<$chunks;$index++) {
@@ -219,8 +223,9 @@ class upload_lib
 
 	private function _save($input)
 	{
+		global $app;
 		$basename = substr(md5(time().uniqid()),9,16);
-		$tmpname = $GLOBALS['app']->get('name');
+		$tmpname = $app->get('name');
 		if(!$tmpname){
 			$tmpname = uniqid($input.'_');
 		}
@@ -228,8 +233,11 @@ class upload_lib
 		if(!$ext){
 			return array('status'=>'error','error'=>P_Lang('附件类型不符合要求'));
 		}
-		$chunk = isset($_REQUEST["chunk"]) ? intval($_REQUEST["chunk"]) : 0;
-		$chunks = isset($_REQUEST["chunks"]) ? intval($_REQUEST["chunks"]) : 1;
+		$chunk = $app->get('chunk','int');
+		$chunks = $app->get('chunks','int');
+		if(!$chunks){
+			$chunks = 1;
+		}
 		$tmpid = 's_'.md5($tmpname);
 		$out_tmpfile = $this->dir_root.'data/cache/'.$tmpid.'_'.$chunk;
 		if (!$out = @fopen($out_tmpfile.".parttmp", "wb")) {
@@ -243,7 +251,7 @@ class upload_lib
 		}
 		@fclose($out);
 		@fclose($in);
-		$GLOBALS['app']->lib('file')->mv($out_tmpfile.'.parttmp',$out_tmpfile.'.part');
+		$app->lib('file')->mv($out_tmpfile.'.parttmp',$out_tmpfile.'.part');
 		$index = 0;
 		$done = true;
 		for($index=0;$index<$chunks;$index++) {
@@ -268,12 +276,12 @@ class upload_lib
 	                fwrite($out, $buff);
 	            }
 	            @fclose($in);
-	            $GLOBALS['app']->lib('file')->rm($this->dir_root.'data/cache/'.$tmpid."_".$index.".part");
+	            $app->lib('file')->rm($this->dir_root.'data/cache/'.$tmpid."_".$index.".part");
 	        }
 	        flock($out,LOCK_UN);
 	    }
 	    @fclose($out);
-	    $tmpname = $GLOBALS['app']->lib('string')->to_utf8($tmpname);
+	    $tmpname = $app->lib('string')->to_utf8($tmpname);
 	    $title = str_replace(".".$ext,'',$tmpname);
 	    return array('title'=>$title,'ext'=>$ext,'filename'=>$outfile,'folder'=>$this->folder,'status'=>'ok');
 	}

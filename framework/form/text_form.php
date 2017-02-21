@@ -15,13 +15,19 @@ class text_form extends _init_auto
 		parent::__construct();
 	}
 
-	//此项限制后台使用
+	/**
+	 * 此项限制后台使用
+	**/
 	public function phpok_config()
 	{
 		$this->view($this->dir_phpok.'form/html/text_admin.html','abs-file');
 	}
 
-	//格式化内容
+	/**
+	 * 格式化内容
+	 * @参数 $rs 数组，字段属性（对应module_fields里的一条记录属性信息）
+	 * @参数 $appid 入口，默认是admin
+	**/
 	public function phpok_format($rs,$appid='admin')
 	{
 		if($appid == 'admin'){
@@ -31,15 +37,18 @@ class text_form extends _init_auto
 		}
 	}
 
+	/**
+	 * 获取数据
+	 * @参数 $rs 数组，字段属性（对应module_fields里的一条记录属性信息）
+	 * @参数 $appid 入口，默认是admin
+	**/
 	public function phpok_get($rs,$appid='admin')
 	{
-		if(!$rs)
-		{
+		if(!$rs){
 			return false;
 		}
-		$array = array('int','intval','float','floatval','html','html_js','time');
-		if(in_array($rs['format'],$array))
-		{
+		$array = array('int','intval','float','floatval','html','html_js','time','safe');
+		if(in_array($rs['format'],$array)){
 			return $this->get($rs['identifier'],$rs['format']);
 		}
 		$info = $this->get($rs['identifier'],'html');
@@ -49,11 +58,14 @@ class text_form extends _init_auto
 		return $info;
 	}
 
-	//输出显示的内容
+	/**
+	 * 输出显示的内容
+	 * @参数 $rs 数组，字段属性（对应module_fields里的一条记录属性信息）
+	 * @参数 $appid 入口，默认是admin
+	**/
 	public function phpok_show($rs,$appid='admin')
 	{
-		if(!$rs || !$rs['content'])
-		{
+		if(!$rs || !$rs['content']){
 			return '';
 		}
 		if($appid == 'admin'){
@@ -71,40 +83,28 @@ class text_form extends _init_auto
 
 	private function _format_admin($rs)
 	{
-		if($rs['format'] == 'time')
-		{
+		if($rs['format'] == 'time'){
 			$format = $rs['form_btn'] == "datetime" ? "Y-m-d H:i" : "Y-m-d";
 			$time = $rs['content'] ? $rs['content'] : $this->time;
 			$rs['content'] = date($format,$time);
 		}
-		//当有扩展按钮为颜色选择器时，加载颜色选择器的JS文件
-		if($rs['form_btn'] == 'color')
-		{
+		if($rs['form_btn'] == 'color'){
 			$this->addjs('js/jscolor/jscolor.js');
 		}
-		if($rs['form_btn'] == 'date' || $rs['form_btn'] == 'datetime')
-		{
+		if($rs['form_btn'] == 'date' || $rs['form_btn'] == 'datetime'){
 			$this->addjs('js/laydate/laydate.js');
 		}
-		//未设置表单宽度时，使用200作为默认宽度
-		if(!$rs['width'] || intval($rs['width'])<1)
-		{
+		if(!$rs['width'] || intval($rs['width'])<1){
 			$rs['width'] = '200';
 		}
-		//封装并格式化CSS
 		$css = $rs['form_style'] ? $rs['form_style'].';width:'.intval($rs['width']).'px;' : 'width:'.intval($rs['width']).'px';
 		$rs['form_style'] = $this->lib('common')->css_format($css);
-		if($rs['ext_quick_words'])
-		{
+		if($rs['ext_quick_words']){
 			$tmp = explode("\n",$rs['ext_quick_words']);
-			foreach($tmp as $key=>$value)
-			{
-				if(!$value || !trim($value))
-				{
+			foreach($tmp as $key=>$value){
+				if(!$value || !trim($value)){
 					unset($tmp[$key]);
-				}
-				else
-				{
+				}else{
 					$tmp[$key] = trim($value);
 				}
 			}
@@ -122,11 +122,12 @@ class text_form extends _init_auto
 			$time = $rs['content'] ? $rs['content'] : $this->time;
 			$rs['content'] = date($format,$time);
 		}
-		if(!$rs['width'] || intval($rs['width'])<1) $rs['width'] = '200';
+		if(!$rs['width'] || intval($rs['width'])<1){
+			$rs['width'] = '200';
+		}
 		$css = $rs['form_style'] ? $rs['form_style'].';width:'.intval($rs['width']).'px;' : 'width:'.intval($rs['width']).'px';
 		$rs['form_style'] = $this->lib('common')->css_format($css);
 		$this->assign("_rs",$rs);
 		return $this->fetch($this->dir_phpok."form/html/text_www_tpl.html",'abs-file');
 	}
 }
-?>

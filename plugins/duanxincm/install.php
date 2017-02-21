@@ -20,6 +20,9 @@ class install_duanxincm extends phpok_plugin
 
 	public function index()
 	{
+		//读取短信网关列表
+		//$glist = $this->model('gateway')->get_all(0);
+		//echo "<pre>".print_r($glist,true)."</pre>";
 		return $this->plugin_tpl('install.html');
 	}
 

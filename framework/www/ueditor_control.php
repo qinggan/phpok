@@ -329,14 +329,10 @@ class ueditor_control extends phpok_control
 			$array["attr"] = serialize($my_ext);
 		}
 		$array["session_id"] = $this->session->sessid();
-		if($_SESSION['user_id'])
-		{
-			$array['user_id'] = $_SESSION['user_id'];
-		}
+		$array['user_id'] = $this->session->val('user_id');
 		//存储图片信息
 		$id = $this->model('res')->save($array);
-		if(!$id)
-		{
+		if(!$id){
 			$this->lib('file')->rm($save_folder.$basename);
 			$rs = array();
 			$rs["status"] = "error";
@@ -349,4 +345,3 @@ class ueditor_control extends phpok_control
 		return $rs;
 	}
 }
-?>

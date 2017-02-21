@@ -95,66 +95,77 @@ class inp_control extends phpok_control
 		json_exit("ok");
 	}
 
-	//取得主题列表
-	function title_f()
+	/**
+	 * 取得主题列表
+	 * @参数 pageid 页码
+	 * @参数 identifier 表单标识，对应输出的变量是$input
+	 * @参数 multi 是否多选，1为多选，其他为单选
+	 * @参数 project_id 项目ID
+	 * @参数 
+	 * @参数 
+	 * @返回 
+	 * @更新时间 
+	**/
+	public function title_f()
 	{
 		$psize = $this->config["psize"];
-		if(!$psize) $psize = 30;
+		if(!$psize){
+			$psize = 30;
+		}
 		$pageid = $this->config["pageid"] ? $this->config["pageid"] : "pageid";
 		$pageid = $this->get($pageid,"int");
-		if(!$pageid || $pageid<1) $pageid=1;
+		if(!$pageid || $pageid<1){
+			$pageid=1;
+		}
 		$offset = ($pageid-1) * $psize;
 		$input = $this->get("identifier");
-		if(!$input)
-		{
-			error_open("未指定表单ID","error");
+		if(!$input){
+			$this->error("未指定表单ID");
 		}
 		$multi = $this->get("multi","int");
 		$pageurl = $this->url("inp","title")."&identifier=".rawurlencode($input);
-		if($multi)
-		{
+		if($multi){
 			$pageurl .= "&multi=1";
 		}
 		$project_id = $this->get("project_id");
-		if(!$project_id)
-		{
-			error_open("未指定项目ID","error");
+		if(!$project_id){
+			$this->error("未指定项目ID");
 		}
 		$tmp = explode(",",$project_id);
 		$lst = array();
-		foreach($tmp AS $key=>$value)
-		{
+		foreach($tmp AS $key=>$value){
 			$value = intval($value);
-			if($value)
-			{
+			if($value){
 				$lst[] = $value;
 			}
 		}
 		$lst = array_unique($lst);
 		$project_id = implode(",",$lst);
-		if(!$project_id)
-		{
-			error_open("指定项目异常","error");
+		if(!$project_id){
+			$this->error("指定项目异常");
 		}
 		$pageurl .="&project_id=".rawurlencode($project_id);
+		$formurl = $pageurl;
 		$condition = "l.project_id IN(".$project_id.") AND l.status='1'";
-		$total = $this->model('list')->get_all_total($condition);
-		if($total<1)
-		{
-			error("没有内容信息");
+		$keywords = $this->get('keywords');
+		if($keywords){
+			$pageurl .= "&keywords=".rawurlencode($keywords);
+			$condition .= " AND l.title LIKE '%".$keywords."%'";
+			$this->assign('keywords',$keywords);
 		}
-		$rslist = $this->model('list')->get_all($condition,$offset,$psize);
-		$this->assign("total",$total);
-		$this->assign("rslist",$rslist);
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=(total)/(psize)&always=1");
-		$this->assign("pagelist",$pagelist);
+		$total = $this->model('list')->get_all_total($condition);
+		if($total){
+			$rslist = $this->model('list')->get_all($condition,$offset,$psize);
+			$this->assign("total",$total);
+			$this->assign("rslist",$rslist);
+			$string = "home=".P_Lang('首页')."&prev=".P_Lang('上一页')."&next=".P_Lang('下一页')."&last=".P_Lang('尾页')."&half=5&add=(total)/(psize)&always=1";
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+			$this->assign("pagelist",$pagelist);
+		}
 		$this->assign("multi",$multi);
 		$this->assign("input",$input);
+		$this->assign('formurl',$formurl);
 		$this->tpl->path_change("");
 		$this->view($this->dir_phpok."view/inp_title.html","abs-file");
 	}
-
-	//function 
-
 }
-?>

@@ -42,6 +42,7 @@ class upload_form extends _init_auto
 
 	public function phpok_format($rs,$appid="admin")
 	{
+		$this->cssjs();
 		if($appid == 'admin'){
 			return $this->_format_admin($rs);
 		}else{
@@ -211,6 +212,7 @@ class upload_form extends _init_auto
 
 	private function _format_default($rs)
 	{
+		$this->addjs("js/webuploader/www.upload.js");
 		if($rs["content"]){
 			if(is_string($rs["content"])){
 				$res = $this->model('res')->get_list_from_id($rs['content']);
@@ -218,8 +220,10 @@ class upload_form extends _init_auto
 				$is_list = $rs["content"]["id"] ? false : true;
 				$res = array();
 				if($is_list){
-					foreach($rs["content"]["info"] AS $key=>$value){
-						$res[$value["id"]] = $value;
+					if($rs['content'] && $rs['content']['info']){
+						foreach($rs["content"]["info"] AS $key=>$value){
+							$res[$value["id"]] = $value;
+						}
 					}
 				}else{
 					$res[$rs["content"]["id"]] = $rs["content"];

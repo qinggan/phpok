@@ -41,4 +41,3 @@ if($info != '100'){
 	return false;
 }
 return true;
-?>

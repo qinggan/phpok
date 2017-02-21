@@ -57,9 +57,12 @@ class payment_model_base extends phpok_model
 		return $this->db->query($sql);
 	}
 
-	public function log_check($sn)
+	public function log_check($sn,$type='')
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."payment_log WHERE sn='".$sn."'";
+		if($type){
+			$sql .= " AND type='".$type."'";
+		}
 		return $this->db->get_one($sql);
 	}
 
@@ -90,4 +93,5 @@ class payment_model_base extends phpok_model
 		$sql = "DELETE FROM ".$this->db->prefix."payment_log WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
+
 }

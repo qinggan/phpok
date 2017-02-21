@@ -658,22 +658,22 @@ function phpok_decode($string,$id="")
 function tpl_head($array=array())
 {
 	$app = $GLOBALS['app'];
-	if($array['html5'] == 'true'){
-		$html  = '<!DOCTYPE html>'."\n";
-		$html .= '<html>'."\n";
-		$html .= '<head>'."\n\t".'<meta charset="utf-8" />'."\n\t";
-	}else{
+	if($array['html5'] && $array['html5'] == 'false'){
 		$html  = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 		$html .= '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 		$html .= '<head>'."\n\t".'<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'."\n\t";
+	}else{
+		$html  = '<!DOCTYPE html>'."\n";
+		$html .= '<html>'."\n";
+		$html .= '<head>'."\n\t".'<meta charset="utf-8" />'."\n\t";
 	}
-	if($array['mobile'] == 'true'){
+	if($array['mobile'] && $array['mobile'] == 'true'){
 		$html .= '<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />'."\n\t";
 	}
 	$html .= '<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />'."\n\t";
+	$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate" />'."\n\t";
 	$html .= '<meta http-equiv="Pragma" content="no-cache" />'."\n\t";
-	$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate,max-age=3" />'."\n\t";
-	$html .= '<meta http-equiv="Expires" content="Mon, 26 Jul 1997 05:00:00 GMT" />'."\n\t";
+	$html .= '<meta http-equiv="Expires" content="-1" />'."\n\t";//Mon, 26 Jul 1997 05:00:00 GMT
 	$html .= '<meta name="renderer" content="webkit">'."\n\t";
 	if($app->license == 'LGPL'){
 		$html .= '<meta name="author" content="phpok,admin@phpok.com" />'."\n\t";
@@ -725,10 +725,9 @@ function tpl_head($array=array())
 	}
 	$html .= '<meta name="toTop" content="true" />'."\n\t";
 	$html .= '<base href="'.$app->url.'" />'."\n\t";
-	$ico = $array['ico'] ? $array['ico'] : 'favicon.png';
 	$cssjs_debug = $app->config['debug'] ? '?_noCache=0.'.rand(1000,9999) : '';
-	if(file_exists($app->dir_root.$ico)){
-		$html .= '<link rel="shortcut icon" href="'.$app->url.$ico.$cssjs_debug.'" />'."\n\t";
+	if($array['ico'] && file_exists($app->dir_root.$array['ico'])){
+		$html .= '<link rel="shortcut icon" type="image/x-icon" href="'.$app->url.$array['ico'].$cssjs_debug.'" />'."\n\t";
 	}
 	if($array["css"]){
 		$tmp = explode(",",$array['css']);
@@ -1002,4 +1001,3 @@ function token_userid()
 	}
 	return $GLOBALS['app']->lib('token')->encode($info);
 }
-?>

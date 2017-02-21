@@ -111,21 +111,28 @@
 		},
 		//更新产品数量
 		//id为购物车自动生成的ID号（不是产品ID号，请注意）
-		update: function(id){
+		update: function(id,showtip){
 			var qty = $("#qty_"+id).val();
 			if(!qty || parseInt(qty) < 1){
 				$.dialog.alert("购物车产品数量不能为空");
 				return false;
 			}
 			var url = api_url('cart','qty')+"&id="+id+"&qty="+qty;
-			var rs = $.phpok.json(url);
-			if(rs.status){
-				$.phpok.reload();
-			}else{
-				if(!rs.info) rs.info = '更新失败';
-				$.dialog.alert(rs.info);
-				return false;
+			if(showtip && showtip != 'undefined'){
+				var tip = $.dialog.tips(showtip);
 			}
+			$.phpok.json(url,function(rs){
+				if(showtip && showtip != 'undefined'){
+					tip.close();
+				}
+				if(rs.status){
+					$.phpok.reload();
+				}else{
+					if(!rs.info) rs.info = '更新失败';
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
 		},
 		//计算购物车数量
 		//这里使用异步Ajax处理

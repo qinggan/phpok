@@ -1,0 +1,66 @@
+<!-- include tpl=head -->
+<div class="main">
+<form method="post" action="{if session.user_id}{url ctrl=payment func=create id=$rs.id/}{else}{url ctrl=payment func=create id=$rs.sn passwd=$rs.passwd/}{/if}">
+<div class="pfw mt10">
+	<h3>订单信息</h3>
+	<div class="payment">
+		<ul>
+			<li>订单编号：{$rs.sn}</li>
+			<li>支付金额：<span class="red">{func price_format $rs.price $rs.currency_id}</span></li>
+		</ul>
+	</div>
+</div>
+<!-- if $integral -->
+<div class="pfw mt10">
+	<h3>积分抵扣</h3>
+	<div class="payment">
+		<ul>
+			<!-- loop from=$integral key=$key value=$value -->
+			<li><label>您当前的{$value.title}有<span class="red">{$value.val}</span>{$value.unit}，最多可抵现金<span class="red">{func price_format $value.price}</span>，您准备支出 <input type="text" name="integral_val[{$key}]" value="" class="price" />{$value.unit}（请填写100的整数倍数据，暂不支持小数）</label></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>
+<!-- /if -->
+<!-- loop from=$paylist key=$key value=$value -->
+<!-- if $value.paylist -->
+<div class="pfw mt10">
+	<h3>{$value.title}</h3>
+	<div class="payment">
+		<ul>
+			<!-- loop from=$value.paylist key=$k value=$v -->
+			<!-- if $v.wap == 0 -->
+			<li><label><input name="payment" type="radio" value="{$v.id}"{if $v.id == $config.biz_payment} checked{/if} />{$v.title}</label></li>
+			<!-- /if -->
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>
+<!-- /if -->
+<!-- /loop -->
+<!-- if $balance -->
+<div class="pfw mt10">
+	<h3>余额支付</h3>
+	<div class="payment">
+		<ul>
+			<!-- loop from=$balance key=$key value=$value -->
+			<li><label><input name="payment" type="radio" value="{$value.identifier}" data-price="{$rs.price}" data-balance="{$value.price}" />您当前的{$value.title}有<span class="red">{$value.val}</span>{$value.unit}
+				<!-- if $rs.price > $value.price -->
+				，您的余额不够，请<a href="{url ctrl=payment id=$value.id/}"><b>在线充值</b></a>
+				<!-- /if -->
+			</label></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>
+<!-- /if -->
+<div class="paymenbtn mt10">
+	<table width="100%">
+	<tr>
+		<td><input type="submit" value="" class="paybtn" /></td>
+	</tr>
+	</table>
+</div>
+</form>
+</div>
+<!-- include tpl=foot -->

@@ -21,7 +21,7 @@ class all_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rslist = $this->model('site')->all_list($_SESSION["admin_site_id"]);
 		$this->assign("rslist",$rslist);
@@ -33,10 +33,9 @@ class all_control extends phpok_control
 	public function setting_f()
 	{
 		if(!$this->popedom["site"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rs = $this->model('site')->get_one($_SESSION["admin_site_id"]);
-		$this->assign("rs",$rs);
 		# 读取风格列表
 		$tpl_list = $this->model('tpl')->get_all();
 		$this->assign("tpl_list",$tpl_list);
@@ -64,11 +63,25 @@ class all_control extends phpok_control
 		$freight = $this->model('freight')->get_all();
 		$this->assign('freight',$freight);
 
-		
+		//检测是否有启用邮件通知
+		$gateway_email = $this->model('gateway')->get_default('email');
+		if($rs['login_type'] && $rs['login_type'] == 'email' && !$gateway_email){
+			$rs['login_type'] = 0;
+		}
+		$this->assign('gateway_email',$gateway_email);
+		$gateway_sms = $this->model('gateway')->get_default('sms');
+		if(!$gateway_sms && $rs['login_type'] && $rs['login_type'] == 'sms'){
+			$rs['login_type'] = 0;
+		}
+		$this->assign('gateway_sms',$gateway_sms);
+
+		$this->assign("rs",$rs);
 		$this->view("all_setting");
 	}
 
-	# 存储全局配置
+	/**
+	 * 存储全局配置
+	**/
 	public function save_f()
 	{
 		if(!$this->popedom["site"]){
@@ -146,6 +159,10 @@ class all_control extends phpok_control
 		$array["register_close"] = $this->get("register_close");
 		$array["login_status"] = $this->get("login_status","int");
 		$array["login_close"] = $this->get("login_close");
+		//登录模式2016年11月22日
+		$array['login_type'] = $this->get('login_type');
+		$array['login_type_email'] = $this->get('login_type_email');
+		$array['login_type_sms'] = $this->get('login_type_sms');
 		$array["adm_logo29"] = $this->get("adm_logo29");
 		$array["adm_logo180"] = $this->get("adm_logo180");
 		$array["lang"] = $this->get("lang");

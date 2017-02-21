@@ -27,7 +27,7 @@ var toolbars_{$_rs.id} = [[
 	'indent', 'horizontal','blockquote','inserttable','|',
 	'link', 'unlink', 'anchor',
 	{if $_rs.btn_image}'|','insertimage',{/if}
-	'help'
+	'wordimage','help'
 ],[
 	'fontfamily','fontsize','paragraph','insertcode',
 	{if $_rs.btn_map}'map',{/if}
@@ -55,8 +55,8 @@ var edit_config_{$_rs.id} = {
 	,'sourceEditorFirst':{$_rs.is_code ? 'true' :'false'}
 	,'readonly':{$_rs.is_read ? 'true' :'false'}
 	,'pasteplain':{$_rs.paste_text ? 'true' : 'false'}
-	,'autoFloatEnabled':false
-	,'autoHeightEnabled':false
+	,'autoFloatEnabled':true
+	,'autoHeightEnabled':true
 	{if $_rs.btn_page},'pageBreakTag':'[:page:]'{/if}
 	,'textarea':'{$_rs.identifier}'
 	{if $_rs.btn_info},'iframeUrlMap':{'phpokinfo':get_url('ueditor','info')}{/if}

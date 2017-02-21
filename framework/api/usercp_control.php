@@ -34,7 +34,15 @@ class usercp_control extends phpok_control
 		}
 	}
 
-	//存储个人数据
+	/**
+	 * 存储个人数据
+	 * @参数 
+	 * @参数 
+	 * @参数 
+	 * @参数 
+	 * @返回 
+	 * @更新时间 
+	**/
 	public function info_f()
 	{
 		$group_rs = $this->model('usergroup')->group_rs($this->u_id);
@@ -499,5 +507,41 @@ class usercp_control extends phpok_control
 		$this->model('user')->invoice_delete($id);
 		$this->json(true);
 	}
+
+	/**
+	 * 变更个人信息，通过fields获取要变更的扩展参数信息，仅用于保存会员扩展表里字符类型
+	 * @参数 fields 要更新的变量
+	**/
+	public function save_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
+		}
+		$fields = $this->get('fields');
+		if(!$fields){
+			$this->error(P_Lang('未指定要修改的字段'));
+		}
+		$list = explode(",",$fields);
+		$flist = $this->model('user')->fields_all("is_edit=1");
+		if(!$flist){
+			$this->error(P_Lang('没有可编辑的字段'));
+		}
+		$idlist = array();
+		foreach($flist as $key=>$value){
+			$idlist[] = $value['identifier'];
+		}
+		$array = array();
+		foreach($list as $key=>$value){
+			if(!in_array($value,$idlist)){
+				continue;
+			}
+			$val = $this->get($value);
+			$array[$value] = $val;
+		}
+		if($array && count($array)>0){
+			$this->model("user")->update_ext($array,$this->session->val('user_id'));
+			$this->success();
+		}
+		$this->error(P_Lang('没有接收到参数及值'));
+	}
 }
-?>

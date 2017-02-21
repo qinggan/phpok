@@ -56,4 +56,11 @@
 			<type>text</type>
 		</email>
 	</code>
+	<manage>
+		<send>
+			<title>发邮件</title>
+			<exec>sendemail</exec>
+			<type>page</type>
+		</send>
+	</manage>
 </root>

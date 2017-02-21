@@ -103,4 +103,3 @@ class login_control extends phpok_control
 		$this->json(true);
 	}
 }
-?>

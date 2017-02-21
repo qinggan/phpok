@@ -200,27 +200,33 @@ function phpok_title_delete(id,val)
 function phpok_title_select(project_id,is_multi,title,input)
 {
 	var url = get_url("inp","title")+"&project_id="+$.str.encode(project_id);
-	if(is_multi && is_multi != 'undefined')
-	{
+	if(is_multi && is_multi != 'undefined'){
 		url += "&multi=1";
-	}
-	url += "&identifier="+$.str.encode(input);
-	$.dialog.open(url,{
-		"title" : title,
-		"width" : "760px",
-		"height" : "80%",
-		"resize" : false,
-		"lock" : true,
-		"ok": function(){
-			var data = $.dialog.data("title_data_"+input);
-			if(data)
-			{
-				$("#"+input).val(data);
-				window.eval("action_"+input+"_show()");
-				//window.setTimeout("action_"++"_show()",500);
+		url += "&identifier="+$.str.encode(input);
+		$.dialog.open(url,{
+			"title" : title,
+			"width" : "760px",
+			"height" : "80%",
+			"resize" : false,
+			"lock" : true,
+			"ok": function(){
+				var data = $.dialog.data("title_data_"+input);
+				if(data){
+					$("#"+input).val(data);
+					window.eval("action_"+input+"_show()");
+				}
 			}
-		}
-	});
+		});
+	}else{
+		url += "&identifier="+$.str.encode(input);
+		$.dialog.open(url,{
+			"title" : title,
+			"width" : "760px",
+			"height" : "80%",
+			"resize" : false,
+			"lock" : true
+		});
+	}
 }
 
 function phpok_user_delete(id,val)

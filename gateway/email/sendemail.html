@@ -1,0 +1,62 @@
+<!-- php:$content = form_edit('content','','editor','height=200&etype=simple&btn_image=1') -->
+<!-- include tpl=head -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#email_test').submit(function(){
+		$("#submit2").attr('disabled',true);
+		$(this).ajaxSubmit({
+			'type':'post',
+			'dataType':'json',
+			'url':get_url('gateway','extmanage','update=1&id={$rs.id}&type=ajax&manageid=send'),
+			'success':function(rs){
+				if(rs.status){
+					var email = $('#email').val();
+					$.dialog.alert('{lang邮件已发送到指定邮箱：}'+email,function(){
+						$.phpok.reload();
+					},'succeed');
+				}else{
+					$("#submit2").attr('disabled',false);
+					if(!rs.info) rs.info = '{lang邮件发送失败}';
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<form method="post" id="email_test">
+<div class="table">
+	<div class="title">
+		{lang目标邮箱：}
+		<span class="note">{lang即收件人邮箱}</span></span>
+	</div>
+	<div class="content">
+		<input type="text" id="email" name="email" class="long" value="" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang邮件主题：}
+		<span class="note">{lang填写邮件的主题，不能为空}</span></span>
+	</div>
+	<div class="content"><input type="text" id="title" name="title" class="long" value="" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang邮件内容：}
+		<span class="note">{lang填写要发送的邮件内容}</span></span>
+	</div>
+	<div class="content">{$content}</div>
+</div>
+
+<div class="table">
+	<div class="content">
+		<br />
+		<input type="submit" value="发送邮件" class="submit2" id="submit2" />
+		<br />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_open -->

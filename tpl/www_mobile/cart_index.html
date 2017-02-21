@@ -4,7 +4,7 @@
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 		<li data-role="list-divider"><span id="title_{$value.id}">{$value.title}</span><span class="ui-li-count">{func price_format $value.price $value.currency_id}</span></li>
 		<li>
-			<!-- if $value.thumb --><img src="{$value.thumb.ico}" style="left:5px;top:auto;" /><!-- /if -->
+			<!-- if $value.thumb --><img src="{$value.thumb}" style="left:5px;top:auto;" /><!-- /if -->
 			<div>
 				<!-- loop from=$value._attrlist key=$k value=$v id=$tmpid2 -->
 				<b>{$v.title}：</b>{$v.content}

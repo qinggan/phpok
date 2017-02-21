@@ -19,6 +19,11 @@ class POMO_Reader {
 		$this->_pos = 0;
 	}
 
+	function __construct()
+	{
+		$this->POMO_Reader();
+	}
+
 	/**
 	 * Sets the endianness of the file.
 	 *
@@ -127,6 +132,11 @@ class POMO_FileReader extends POMO_Reader {
 		$this->_f = fopen($filename, 'rb');
 	}
 
+	function __construct($filename)
+	{
+		$this->POMO_FileReader($filename);
+	}
+
 	/**
 	 * @param int $bytes
 	 */
@@ -182,6 +192,11 @@ class POMO_StringReader extends POMO_Reader {
 		$this->_pos = 0;
 	}
 
+	function __construct($str = '')
+	{
+		$this->POMO_StringReader($str);
+	}
+
 	/**
 	 * @param string $bytes
 	 * @return string
@@ -226,6 +241,11 @@ class POMO_CachedFileReader extends POMO_StringReader {
 			return false;
 		$this->_pos = 0;
 	}
+
+	function __construct($filename)
+	{
+		$this->POMO_CachedFileReader($filename);
+	}
 }
 endif;
 
@@ -236,6 +256,11 @@ if ( !class_exists( 'POMO_CachedIntFileReader' ) ):
 class POMO_CachedIntFileReader extends POMO_CachedFileReader {
 	function POMO_CachedIntFileReader($filename) {
 		parent::POMO_CachedFileReader($filename);
+	}
+
+	function __construct($filename)
+	{
+		$this->POMO_CachedIntFileReader($filename);
 	}
 }
 endif;

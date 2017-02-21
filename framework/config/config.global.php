@@ -18,7 +18,7 @@ $config["admin_file"] = "admin.php";//后台入口
 $config["www_file"] = "index.php";//网站首页，这里一般不修改，除非首页要另外制作，才改名
 $config["api_file"] = "api.php";//API接口
 $config["is_vcode"] = true;//显示验证码
-$config["psize"] = 30;//每页显示数量
+$config["psize"] = 10;//每页显示数量
 $config["pageid"] = "pageid";//分页ID
 $config["timezone"] = "Asia/Shanghai";//时区调节，仅限PHP5以上支持
 $config["timetuning"] = "0";//时间调节
@@ -118,3 +118,11 @@ $config['cart']['gd_id'] = '';
 **/
 $config['jsonp']['getid'] = 'callback';
 $config['jsonp']['default'] = 'callback';
+
+/**
+ * 在PHP程序中执行异步计划任务
+ * 如果您的空间不支持此项，请在相应的HTML模板里写入定时计划任务，并在这里将async.status设置为false
+ * 模式，支持fsockopen/curl/pfsockopen/stream
+**/
+$config['async']['status'] = true;
+$config['async']['type'] = 'fsockopen';

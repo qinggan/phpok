@@ -297,5 +297,16 @@ class user_model_base extends phpok_model
 		$array = array('user_id'=>$uid,'user_chk'=>$code);
 		return $this->lib('token')->encode($array);
 	}
+
+	/**
+	 * 更新会员验证串
+	 * @参数 $code 验证码，为空表示清空验证码
+	 * @参数 $id 会员ID
+	**/
+	public function update_code($code,$id)
+	{
+		$sql = "UPDATE ".$this->db->prefix."user SET code='".$code."' WHERE id='".$id."'";
+		return $this->db->query($sql);
+	}
+
 }
-?>

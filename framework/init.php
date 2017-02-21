@@ -20,10 +20,9 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
  * 强制使用UTF-8编码
 **/
 header("Content-type: text/html; charset=utf-8");
-header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-header("Last-Modified: Mon, 26 Jul 1997 05:00:00  GMT");
-header("Cache-control: no-cache,no-store,must-revalidate,max-age=1");
+header("Cache-control: no-cache,no-store,must-revalidate");
 header("Pramga: no-cache"); 
+header("Expires: -1");
 
 /**
  * 计算执行的时间
@@ -217,7 +216,7 @@ class _init_phpok
 	/**
 	 * 语言读取言式，通过系统检测，支持gettext和user两种
 	**/
-	private $language_status = 'gettext';
+	private $language_status = 'user';
 
 	/**
 	 * 网关路由接口，对应文件夹gateway里的PHP执行
@@ -335,6 +334,7 @@ class _init_phpok
 		if(!$info){
 			return false;
 		}
+		$this->language_status = function_exists('gettext') ? 'gettext' : 'user';
 		if($this->language_status == 'user' && $this->lang){
 			$info = $this->lang->translate($info);
 		}else{
@@ -396,6 +396,10 @@ class _init_phpok
 			$this->call = new phpok_call();
 		}
 		include_once($this->dir_phpok."phpok_tpl_helper.php");
+		if($this->app_id == 'www' && !$this->site['status']){
+			$close = $this->site['content'] ? $this->site['content'] : P_Lang('网站暂停关闭');
+			$this->_tip($close,2);
+		}
 	}
 
 	/**
@@ -943,8 +947,8 @@ class _init_phpok
 		if(is_array($msg)){
 			foreach($msg AS $key=>$value){
 				if(!is_numeric($key)){
-					$key2 = $this->format($key,"system");
-					if($key2 == ''){
+					$key2 = $this->format($key);
+					if($key2 == '' || in_array($key2,array('#','&','%'))){
 						unset($msg[$key]);
 						continue;
 					}
@@ -1102,8 +1106,9 @@ class _init_phpok
 		$array = array('www','admin','api');
 		if(in_array($this->app_id,$array)){
 			//读取会员信息
-			if($this->app_id != 'admin' && $_SESSION['user_id']){
-				$this->user = $this->model('user')->get_one($_SESSION['user_id']);
+			$user_id = $this->session->val('user_id');
+			if($this->app_id != 'admin' && $user_id){
+				$this->user = $this->model('user')->get_one($user_id);
 				if($this->app_id == 'www'){
 					$this->assign('user',$this->user);
 				}
@@ -1485,7 +1490,7 @@ class _init_phpok
 	 * @参数 $ajax 是否为Ajax方式 当数字时指定跳转时间
 	 * @更新时间 2016年01月22日
 	**/
-	public function tip($info,$url,$ajax=false)
+	public function tip($info='',$url='',$ajax=false)
 	{
 		if($url && $ajax === false && !$this->is_ajax){
 			$ajax = 2;
@@ -1577,31 +1582,6 @@ class _init_phpok
 	}
 
 	/**
-	 * 将非字母数字的字符转化为ASCII字符，以实现任意编码正常显示
-	 * @参数 $str 字符串，要转化的字串
-	 * @返回 转化后的字符串
-	**/
-	final public function ascii($str='')
-	{
-		if(!$str) return false;
-		$str = iconv("UTF-8", "UTF-16BE", $str);
-		$output = "";
-		for ($i = 0; $i < strlen($str); $i++,$i++)
-		{
-			$code = ord($str{$i}) * 256 + ord($str{$i + 1});
-			if ($code < 128)
-			{
-				$output .= chr($code);
-			}
-			else if($code != 65279)
-			{
-				$output .= "&#".$code.";";
-			}
-		}
-		return $output;
-	}
-
-	/**
 	 * 增加js库，在HTML模板里可以直接使用 phpok_head_js，将生成符合标准的js文件链接
 	**/
 	public function addjs($url='')
@@ -1621,7 +1601,7 @@ class _init_phpok
 	 * 第三方网关执行
 	 * @参数 $action 要执行的网关，param表示读取网关信息，extinfo表示变更网关扩展信息extinfo，exec表示网关路由文件的执行
 	 * @参数 $param action为param时表示网关ID，default表示读默认网关，action为extinfo时，param表示内容，
-	 *              action为exec时表示输出方式，为空返回，支持json
+	 *              action为exec时表示输出方式，为空返回，支持json，action为check时表示检测网关是否存在
 	**/
 	final public function gateway($action,$param='')
 	{
@@ -1663,16 +1643,11 @@ class _init_phpok
 				return $info;
 			}
 		}
+		if($action == 'check'){
+			return $this->gateway['param'] ? true : false;
+		}
 		if(!$this->gateway['param']){
 			return false;
-		}
-		$file = $this->dir_root.'gateway/'.$this->gateway['param']['type'].'/'.$this->gateway['param']['code'].'/'.$action.'.php';
-		if(file_exists($file) && $param){
-			$param = explode(":",$param);
-			$classname = $param[0];
-			$funcname = $param[1] ? $param[1] : 'index';
-			$obj = new $classname($this->gateway['param']);
-			return $obj->$funcname($this->gateway['funcparam']);
 		}
 		return true;
 	}
@@ -2020,7 +1995,8 @@ class phpok_plugin extends _init_auto
 		$list[3] = $this->dir_root.$this->tpl->dir_tpl.'plugins_'.$id.'_'.$name;
 		$list[4] = $this->dir_root.$this->tpl->dir_tpl.$id.'_'.$name;
 		$list[5] = $this->dir_root.'plugins/'.$id.'/template/'.$name;
-		$list[6] = $this->dir_root.'plugins/'.$id.'/'.$name;
+		$list[6] = $this->dir_root.'plugins/'.$id.'/tpl/'.$name;
+		$list[7] = $this->dir_root.'plugins/'.$id.'/'.$name;
 		$file = false;
 		foreach($list as $key=>$value){
 			if(file_exists($value)){

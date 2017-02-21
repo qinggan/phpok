@@ -255,4 +255,3 @@ class project_control extends phpok_control
 		$this->view($tplfile);
 	}
 }
-?>

@@ -58,15 +58,11 @@ $(document).ready(function(){
 	<td>{$value.title}<!-- if !$value.status --><span class="gray i">（停用）</span><!-- /if --><!-- if $value.is_wap --><span class="red">（手机端）</span><!-- /if --></td>
 	<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}" type="group">{$value.taxis}</div></td>
 	<td>
-		<!-- if $popedom.groupedit -->
-		<input type="button" value="编辑" onclick="group_edit('{$value.id}')" class="btn" />
-		<!-- /if -->
-		<!-- if $popedom.groupdelete -->
-		<input type="button" value="删除" onclick="group_delete('{$value.id}','{$value.title}')" class="btn" />
-		<!-- /if -->
-		<!-- if $popedom.add -->
-		<input type="button" value="添加支付方案" onclick="payment_add('{$value.id}')" class="btn" />
-		<!-- /if -->
+		<div class="button-group">
+			<!-- if $popedom.groupedit --><input type="button" value="{lang编辑}" onclick="group_edit('{$value.id}')" class="phpok-btn" /><!-- /if -->
+			<!-- if $popedom.groupdelete --><input type="button" value="{lang删除}" onclick="group_delete('{$value.id}','{$value.title}')" class="phpok-btn" /><!-- /if -->
+			<!-- if $popedom.add --><input type="button" value="添加支付方案" onclick="payment_add('{$value.id}')" class="phpok-btn" /><!-- /if -->
+		</div>
 	</td>
 </tr>
 	<!-- loop from=$value.paylist key=$k value=$v -->
@@ -74,12 +70,10 @@ $(document).ready(function(){
 		<td><div style="padding-left:24px;">{$v.title}<!-- if !$v.status --><span class="gray i">（停用）</span><!-- /if --><!-- if $v.wap --><span class="red">（手机端）</span><!-- /if --></div></td>
 		<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$v.id}" type="payment">{$v.taxis}</div></td>
 		<td>
-			<!-- if $popedom.edit -->
-			<input type="button" value="编辑" onclick="payment_edit('{$v.id}')" class="btn" />
-			<!-- /if -->
-			<!-- if $popedom.delete -->
-			<input type="button" value="删除" onclick="payment_delete('{$v.id}','{$v.title}')" class="btn" />
-			<!-- /if -->
+			<div class="button-group">
+				<!-- if $popedom.edit --><input type="button" value="{lang编辑}" onclick="payment_edit('{$v.id}')" class="phpok-btn" /><!-- /if -->
+				<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="payment_delete('{$v.id}','{$v.title}')" class="phpok-btn" /><!-- /if -->
+			</div>
 		</td>
 	</tr>	
 	<!-- /loop -->

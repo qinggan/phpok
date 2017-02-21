@@ -438,7 +438,7 @@ class ueditor_control extends phpok_control
 			$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
 			$array["attr"] = serialize($my_ext);
 		}
-		$array["admin_id"] = $_SESSION['admin_id'];
+		$array["admin_id"] = $this->session->val('admin_id');
 		//存储图片信息
 		$id = $this->model('res')->save($array);
 		if(!$id){
@@ -454,4 +454,3 @@ class ueditor_control extends phpok_control
 		return $rs;
 	}
 }
-?>

@@ -105,7 +105,8 @@ class db
 			$array = array('status'=>'error','content'=>$info);
 			exit(json_encode($array));
 		}else{
-			exit($this->ascii($info));
+			echo $info;
+			exit;
 		}
 	}
 
@@ -168,22 +169,6 @@ class db
 		$this->count += $val;
 	}
 
-
-	private function ascii($str='')
-	{
-		if(!$str) return false;
-		$str = iconv("UTF-8", "UTF-16BE", $str);
-		$output = "";
-		for ($i = 0; $i < strlen($str); $i++,$i++){
-			$code = ord($str{$i}) * 256 + ord($str{$i + 1});
-			if($code < 128){
-				$output .= chr($code);
-			}elseif($code != 65279){
-				$output .= "&#".$code.";";
-			}
-		}
-		return $output;
-	}
 
 	//通过正则获取表
 	protected function cache_sql($sql)

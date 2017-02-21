@@ -15,9 +15,9 @@ class content_control extends phpok_control
 	{
 		parent::control();
 		$this->model('popedom')->siteid($this->site['id']);
-		$groupid = $this->model('usergroup')->group_id($_SESSION['user_id']);
+		$groupid = $this->model('usergroup')->group_id($this->session->val('user_id'));
 		if(!$groupid){
-			error(P_Lang('无法获取前端用户组信息'),'','error');
+			$this->error(P_Lang('无法获取前端用户组信息'));
 		}
 		$this->user_groupid = $groupid;
 	}
@@ -141,6 +141,10 @@ class content_control extends phpok_control
 		$rs['hits'] = $this->model('list')->get_hits($rs['id']);
 		$this->phpok_seo($rs);
 		$this->assign("rs",$rs);
+		$userid = $this->session->val('user_id');
+		if($userid){
+			$this->model('wealth')->add_integral($rs['id'],$userid,'content',P_Lang('阅读#{id}',array('id'=>$rs['id'])));
+		}
 		$this->view($tpl);
 	}
 
@@ -181,4 +185,3 @@ class content_control extends phpok_control
 		return $rs;
 	}
 }
-?>

@@ -24,9 +24,18 @@
 	<td align="right">{lang手机：}</td>
 	<td class="darkblue"><span>{$rs.mobile}</span></td>
 </tr>
+<!-- if $rs.ext -->
+<tr>
+	<!-- loop from=$rs.ext key=$key value=$value id=$tmpid -->
+	<td align="right" height="25">{$key}：</td>
+	<td{if $tmpid.total%2 != '' && $tmpid.num == $tmpid.total} colspan="3"{/if} style="line-height:25px;">{$value}</td>
+		<!-- if $tmpid.num%2 == '' && $tmpid.num != $tmpid.total -->
+		</tr><tr>
+		<!-- /if -->
+	<!-- /loop -->
+</tr>
+<!-- /if -->
 <!-- if $user -->
-
-
 <tr>
 	<td class="darkblue" style="line-height:25px;text-align:right;">会员：</td>
 	<td class="darkblue" colspan="3" style="line-height:25px;">{$user.user}

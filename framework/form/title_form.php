@@ -90,7 +90,6 @@ class title_form extends _init_auto
 			return implode('<br />',$list);
 		}
 		if($ext['is_multiple']){
-			
 			$condition = "l.id IN(".$rs['content'].") AND status=1";
 			return $this->model('list')->get_all($condition,0,999);
 		}

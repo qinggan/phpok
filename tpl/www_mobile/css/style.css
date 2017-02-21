@@ -72,7 +72,7 @@ div.attr.selected{border:1px solid red;}
 
 .uinfo{width:100%;margin:10px auto 0 auto;}
 .uinfo:after{content:'.';display:block;visibility:hidden;height:0;line-height:0;clear:both;}
-.uinfo .img{float:left;width:45%;text-align:right;margin-right:3%;}
+.uinfo .img{float:left;width:30%;text-align:right;margin-right:3%;}
 .uinfo .img img{width:48px;height:48px;border-radius:24px;background:#fff;}
 .uinfo .fullname{float:left;width:50%;overflow:hidden;font-size:1.3em;font-weight:600;}
 .uinfo .logout{float:left;width:50%;overflow:hidden;font-size:0.8em;}

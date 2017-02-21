@@ -39,17 +39,17 @@ class user_model extends user_model_base
 		return $this->db->get_one($sql);
 	}
 
-	//更新会员验证串
-	function update_code($code,$id)
-	{
-		$sql = "UPDATE ".$this->db->prefix."user SET code='".$code."' WHERE id='".$id."'";
-		return $this->db->query($sql);
-	}
-
 	//更新会员密码
 	function update_password($pass,$id)
 	{
 		$sql = "UPDATE ".$this->db->prefix."user SET pass='".$pass."' WHERE id='".$id."'";
+		return $this->db->query($sql);
+	}
+
+	//短信更新会员密码
+	function update_smspass($pass,$mobile)
+	{
+		$sql = "UPDATE ".$this->db->prefix."user SET pass='".$pass."' WHERE mobile='".$mobile."'";
 		return $this->db->query($sql);
 	}
 

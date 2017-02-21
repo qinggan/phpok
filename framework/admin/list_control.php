@@ -502,7 +502,7 @@ class list_control extends phpok_control
 		foreach(($ext_list ? $ext_list : array()) AS $key=>$value){
 			if($value["ext"] && is_string($value['ext'])){
 				$ext = unserialize($value["ext"]);
-				$value = array_merge($value,$ext);
+				$value = array_merge($value,($ext ? $ext : array()));
 			}
 			$idlist[] = strtolower($value["identifier"]);
 			if($rs[$value["identifier"]]){
@@ -705,6 +705,7 @@ class list_control extends phpok_control
 		$array["project_id"] = $p_rs['id'];
 		$array["module_id"] = $p_rs["module"];
 		$array["site_id"] = $p_rs["site_id"];
+		$array['integral'] = $this->get('integral','int');
 		$tmpadd = false;
 		if(!$id){
 			$id = $this->model('list')->save($array);
@@ -774,6 +775,9 @@ class list_control extends phpok_control
 		}else{
 			ext_save("list-".$id);
 		}
+		if($array['status'] && $array['user_id']){
+			$this->model('wealth')->add_integral($id,$array['user_id'],'post',P_Lang('管理员编辑主题发布#{id}',array('id'=>$id)));
+		}
  		$this->plugin("ap-list-ok-after",array("id"=>$id,"project"=>$p_rs));
  		$this->json(true);
 	}
@@ -802,24 +806,22 @@ class list_control extends phpok_control
 	public function content_status_f()
 	{
 		$id = $this->get("id","int");
-		if(!$id)
-		{
+		if(!$id){
 			$this->json(P_Lang('没有指定ID'));
 		}
 		$rs = $this->model('list')->get_one($id);
 		$this->popedom_auto($rs['project_id']);
-		if(!$this->popedom["status"])
-		{
+		if(!$this->popedom["status"]){
 			$this->json("您没有启用/禁用权限");
 		}
 		$status = $rs["status"] ? 0 : 1;
 		$action = $this->model('list')->update_status($id,$status);
-		if(!$action)
-		{
+		if(!$action){
 			$this->json(P_Lang('操作失败，请检查SQL语句'));
-		}
-		else
-		{
+		}else{
+			if($status && $rs['user_id']){
+				$this->model('wealth')->add_integral($id,$rs['user_id'],'post',P_Lang('管理员操作审核主题发布#{id}',array('id'=>$rs['id'])));
+			}
 			//执行插件接入点
 			$this->plugin("ap-list-status",$id);
 			$this->json($status,true);

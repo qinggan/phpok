@@ -73,6 +73,7 @@ class phpok_call extends phpok_control
 		if(!$rs){
 			$rs = array('site'=>$this->site['id']);
 		}
+		$rs['domain'] = $this->site['domain'];//增加域名字段，以实现手机版与PC版调用生成的缓存URL中一致性问题
 		if(!isset($rs['site']) || (isset($rs['site']) && !$rs['site'])){
 			$rs['site'] = $this->site['id'];
 		}
@@ -1122,8 +1123,8 @@ class phpok_call extends phpok_control
 		$offset = ($pageid-1) * $psize;
 		$condition = "tid='".$id."' AND parent_id='0' ";
 		$array = array('avatar'=>'images/avatar.gif','uid'=>0,'user'=>P_Lang('游客'));
-		if($_SESSION['user_id']){
-			$user = $this->model('user')->get_one($uid,'id',false,false);
+		if($this->session->val('user_id')){
+			$user = $this->model('user')->get_one($this->session->val('user_id'),'id',false,false);
 			if($user){
 				if($user['avatar']){
 					$array['avatar'] = $user['avatar'];
@@ -1131,7 +1132,7 @@ class phpok_call extends phpok_control
 				$array['user'] = $user['user'];
 				$array['uid'] = $user['id'];
 			}
-			$condition .= " AND (status=1 OR (status=0 AND uid=".$_SESSION['user_id']."))";
+			$condition .= " AND (status=1 OR (status=0 AND uid=".$this->session->val('user_id')."))";
 		}else{
 			$condition .= " AND (status=1 OR (status=0 AND session_id='".$this->session->sessid()."'))";
 		}

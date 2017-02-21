@@ -166,8 +166,6 @@ class install
 		echo '<tr><td class="lft">PHP版本</td><td>5.0.x</td><td>5.3.x</td><td>'.PHP_VERSION.'</td></tr>';
 		echo '<tr><td class="lft">附件上传</td><td>2M+</td><td>10M+</td><td>'.get_cfg_var('upload_max_filesize').'</td></tr>';
 		echo '<tr><td class="lft">MYSQL支持</td><td>5.0.x</td><td>5.5.x</td><td>'.$mysql_status.'</td></tr>';
-		$space = disk_free_space(ROOT) > (80 * 1024 * 1024) ? '<span class="darkblue">80M+</span>' : '通过';
-		echo '<tr><td class="lft">磁盘空间</td><td>20M+</td><td>80M+</td><td>'.$space.'</td></tr>';
 		$curl = $this->func_check('curl_close');
 		if(!$curl['status']){
 			$status = false;
@@ -584,6 +582,11 @@ function check_connect(isin)
 			<li><span class="l_name">安装目录：</span>
 				<input type="text" class="infor_input" name="dir" id="dir" value="{$site['dir']}" />
 				<p class="tips_p">根目录请设为/</p>
+			</li>
+			<li><span class="l_name">演示数据：</span>
+				<label style="margin-right:10px;float:left;"><input type="radio" name="demo" value="1" checked/> 有</label>
+				<label style="margin-right:10px;float:left;"><input type="radio" name="demo" value="0"/> 无</label>
+				<p class="tips_p">不熟悉的用户建议安装演示数据</p>
 			</li>
         </ul>
     </div>   
@@ -1021,6 +1024,122 @@ if($step == 'ajax_initdata'){
 	$db->query($sql);
 	$sql = "UPDATE ".$db->prefix."site SET title='".$adminer['title']."',dir='".$adminer['dir']."',api_code=''";
 	$db->query($sql);
+
+	if(!$adminer['demo']){
+		$sql = "SELECT * FROM ".$db->prefix."module";
+		$tmplist = $db->get_all($sql);
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$sql = "DROP TABLE `".$db->prefix."list_".$value['id'];
+				$db->query($sql);
+			}
+		}
+		//清除模块记录
+		$sql = "TRUNCATE TABLE `".$db->prefix."module`";
+		$db->query($sql);
+		//清除模块里的扩展字段记录
+		$sql = "TRUNCATE TABLE `".$db->prefix."module_fields`";
+		$db->query($sql);
+		//清除主题记录
+		$sql = "TRUNCATE TABLE `".$db->prefix."list`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."list_cate`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."list_biz`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."list_attr`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."reply`";
+		$db->query($sql);
+		//清除项目
+		$sql = "TRUNCATE TABLE `".$db->prefix."project`";
+		$db->query($sql);
+		//清除插件
+		$sql = "TRUNCATE TABLE `".$db->prefix."plugins`";
+		$db->query($sql);
+		//清除附件
+		$sql = "TRUNCATE TABLE `".$db->prefix."res`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."res_ext`";
+		$db->query($sql);
+		//清除Tag
+		$sql = "TRUNCATE TABLE `".$db->prefix."tag`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."tag_stat`";
+		$db->query($sql);
+		//清除数据调用
+		$sql = "TRUNCATE TABLE `".$db->prefix."phpok`";
+		$db->query($sql);
+		//清除扩展字段
+		$sql = "TRUNCATE TABLE `".$db->prefix."ext`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."extc`";
+		$db->query($sql);
+		//清除全局
+		$sql = "TRUNCATE TABLE `".$db->prefix."all`";
+		$db->query($sql);
+		//清除分类
+		$sql = "TRUNCATE TABLE `".$db->prefix."cate`";
+		$db->query($sql);
+		//清除会员
+		$sql = "TRUNCATE TABLE `".$db->prefix."user`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."user_ext`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."user_relation`";
+		$db->query($sql);
+		//清除财富记录
+		$sql = "TRUNCATE TABLE `".$db->prefix."wealth_info`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."wealth_log`";
+		$db->query($sql);
+		//清除session表
+		$sql = "TRUNCATE TABLE `".$db->prefix."session`";
+		$db->query($sql);
+		//清除支付
+		$sql = "TRUNCATE TABLE `".$db->prefix."payment_log`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."order_product`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."order_price`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."order_payment`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."order_log`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."order_invoice`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."order_express`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."order_address`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."order`";
+		$db->query($sql);
+		//删除日志
+		$sql = "TRUNCATE TABLE `".$db->prefix."log`";
+		$db->query($sql);
+		//删除收藏夹
+		$sql = "TRUNCATE TABLE `".$db->prefix."fav`";
+		$db->query($sql);
+		//快递平台
+		$sql = "TRUNCATE TABLE `".$db->prefix."express`";
+		$db->query($sql);
+		//清除购物车
+		$sql = "TRUNCATE TABLE `".$db->prefix."cart`";
+		$db->query($sql);
+		$sql = "TRUNCATE TABLE `".$db->prefix."cart_product`";
+		$db->query($sql);
+		//删除附件
+		include_once(ROOT.'framework/libs/file.php');
+		$file = new file_lib();
+		$list = $file->ls(ROOT.'res/');
+		if($list){
+			foreach($list as $key=>$value){
+				$file->rm($value,'folder');
+			}
+		}
+	}
+	
 	exit('ok');
 }
 if($step == 'ajax_iadmin'){

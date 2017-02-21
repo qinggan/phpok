@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
 	<title>莫名短信</title>
+	<note>官网是：http://www.duanxin.cm</note>
 	<code>
 		<account>
 			<title>帐号</title>
@@ -27,4 +28,16 @@
 			<required>false</required>
 		</mobile>
 	</code>
+	<manage>
+		<balance>
+			<title>查余额</title>
+			<exec>balance</exec>
+			<type>ajax</type>
+		</balance>
+		<send>
+			<title>发短信</title>
+			<exec>sendsms</exec>
+			<type>page</type>
+		</send>
+	</manage>
 </root>

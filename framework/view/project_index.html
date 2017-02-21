@@ -57,7 +57,8 @@ function update_taxis(val,id)
 		},
 		'success':function(rs){
 			if(rs.status == 'ok'){
-				$.phpok.reload();
+				$("div[name=taxis][data="+id+"]").text(val);
+				//$.phpok.reload();
 			}else{
 				$.dialog.alert(rs.content);
 				return false;

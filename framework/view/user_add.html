@@ -64,9 +64,9 @@
 	</div>
 	<div class="content">
 		<select id="group_id" name="group_id">
-		<option value="0">请选择会员组</option>
+		<option value="0">请选择会员组…</option>
 		<!-- loop from=$grouplist key=$key value=$value -->
-		<option value="{$value.id}"{if $value.id == $rs.group_id} selected{/if}>{$value.title}</option>
+		<option value="{$value.id}"{if $value.id == $group_id} selected{/if} data-fields="{$value.fields}">{$value.title}</option>
 		<!-- /loop -->
 		</select>
 	</div>
@@ -99,7 +99,7 @@
 </div>
 
 <!-- loop from=$extlist key=$key value=$value id=extlist_id -->
-<div class="table">
+<div class="table" id="userext_{$value.identifier}" name="userext_html">
 	<div class="title">
 		{$value.title}：
 		<span class="note">{$value.note}</span>
@@ -115,4 +115,4 @@
 	</div>
 </div>
 </form>
-<!-- inc:foot -->
+<!-- include tpl=foot -->

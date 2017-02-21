@@ -509,6 +509,11 @@ class list_model_base extends phpok_model
 			$sql = "SELECT lc.id,lc.cate_id,c.title,c.identifier FROM ".$this->db->prefix."list_cate lc ";
 			$sql.= "LEFT JOIN ".$this->db->prefix."cate c ON(lc.cate_id=c.id) WHERE lc.id IN(".$title_ids.") ";
 			$tmplist = $this->db->get_all($sql);
+			if(!$tmplist){
+				$sql = "SELECT l.id,l.cate_id,c.title,c.identifier FROM ".$this->db->prefix."list l LEFT JOIN ".$this->db->prefix."cate c ON(l.cate_id=c.id) ";
+				$sql.= "WHERE l.id IN(".$title_ids.")";
+				$tmplist = $this->db->get_all($sql);
+			}
 			if($tmplist){
 				foreach($tmplist as $key=>$value){
 					$tmp = $value;
@@ -607,5 +612,62 @@ class list_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
+	/**
+	 * 取得主题的财富基数
+	 * @参数 $id 主题ID，数组或字串或数字
+	 * @返回 false/数字
+	 * @更新时间 2016年11月28日
+	**/
+	public function integral($id='')
+	{
+		$id = $this->title_id_to_string($id);
+		if(!$id){
+			return false;
+		}
+		$sql = "SELECT SUM(integral) FROM ".$this->db->prefix."list WHERE status=1 AND id IN(".$id.")";
+		return $this->db->count($sql);
+	}
+
+	public function integral_list($id='')
+	{
+		$id = $this->title_id_to_string($id);
+		if(!$id){
+			return false;
+		}
+		$sql = "SELECT id,integral FROM ".$this->db->prefix."list WHERE status=1 AND id IN(".$id.") AND integral>0";
+		$list = $this->db->get_all($sql);
+		if(!$list){
+			return false;
+		}
+		$rslist = array();
+		foreach($list as $key=>$value){
+			$rslist[$value['id']] = $value['integral'];
+		}
+		return $rslist;
+	}
+
+	private function title_id_to_string($id)
+	{
+		if(!$id){
+			return false;
+		}
+		if(is_array($id)){
+			$id = implode(",",$id);
+		}
+		$list = explode(",",$id);
+		$tmp = false;
+		foreach($list as $key=>$value){
+			if(!$value || !intval($value)){
+				continue;
+			}
+			if(!$tmp){
+				$tmp = array();
+			}
+			$tmp[] = intval($value);
+		}
+		if(!$tmp){
+			return false;
+		}
+		return implode(",",$tmp);
+	}
 }
-?>

@@ -1,22 +1,15 @@
 <!-- php:$title = '订单信息：'.$rs.sn --><!-- include tpl=head title=$title -->
-<!-- if $rs.pay_status == 'PAID' -->
 <script type="text/javascript">
-function show_ext(rs)
+function order_payment(orderid,passwd)
 {
-	if(rs.status != 'ok') return false;
-	var lst = rs.content;
-	var html = '';
-	for(var i in lst){
-		html += '<tr><td align="right">'+lst[i]['title']+'：</td><td>'+lst[i]['content']+'</td></tr>';
+	if(passwd && passwd != 'undefined'){
+		var url = get_url('order','payment','sn='+orderid+"&passwd="+passwd);
+	}else{
+		var url = get_url('order','payment','id='+orderid);
 	}
-	$("#paid_time").after(html);
+	$.phpok.go(url);
 }
-$(document).ready(function(){
-	var url = api_plugin_url('{$payment.code}','content','sn={$rs.sn}&passwd={$rs.passwd}');
-	ajax_async(url,show_ext);
-});
 </script>
-<!-- /if -->
 <div class="main">
 	<div class="pfw mbottom10">
 		<h3>您的订单号是：<span class="red i">{$rs.sn}</span><a href="{url ctrl=order/}" class="more">我的订单</a></h3>
@@ -48,6 +41,12 @@ $(document).ready(function(){
 			<td><span class="darkblue">{$invoice.type}</span>，抬头：<span class="darkblue">{$invoice.title}</span>，内容：<span class="darkblue">{$invoice.content}</span></td>
 		</tr>
 		<!-- /if -->
+		<!-- loop from=$rs.ext key=$key value=$value id=$tmpid -->
+		<tr>
+			<td align="right">{$key}：</td>
+			<td>{$value}</td>
+		</tr>
+		<!-- /loop -->
 		</table>
 	</div>
 	<!-- if $loglist -->
@@ -152,43 +151,13 @@ $(document).ready(function(){
 	</div>
 	<div class="clear"></div>
 	<!-- if !$pay_end -->
-	<form method="post" action="{if session.user_id}{url ctrl=payment func=create id=$rs.id/}{else}{url ctrl=payment func=create id=$rs.sn passwd=$rs.passwd/}{/if}">
-	<!-- if $balance -->
-	<div class="pfw mbottom10">
-		<h3>{$balance.title}</h3>
-		<div class="payment">
-			<ul>
-				<!-- loop from=$balance.rslist key=$key value=$value -->
-				<li><label><input name="balance[]" type="checkbox" value="{$value.id}" checked />{$value.title}有<span class="red">{$value.val}</span>{$value.unit}，可抵现金<span class="red">{func price_format $value.price}</span></label></li>
-				<!-- /loop -->
-			</ul>
-		</div>
+	<div align="center">
+		<!-- if $session.user_id -->
+		<input type="button" value="在线支付" class="button blue" onclick="order_payment('{$rs.id}')" />
+		<!-- else -->
+		<input type="button" value="在线支付" onclick="order_payment('{$rs.sn}','{$rs.passwd}')" />
+		<!-- /if -->
 	</div>
-	<!-- /if -->
-	<!-- loop from=$paylist key=$key value=$value -->
-	<!-- if $value.paylist -->
-	<div class="pfw mbottom10">
-		<h3>{$value.title}</h3>
-		<div class="payment">
-			<ul>
-				<!-- loop from=$value.paylist key=$k value=$v -->
-				<!-- if $v.wap == 0 -->
-				<li><label><input name="payment" type="radio" value="{$v.id}"{if $v.id == $config.biz_payment} checked{/if} />{$v.title}</label></li>
-				<!-- /if -->
-				<!-- /loop -->
-			</ul>
-		</div>
-	</div>
-	<!-- /if -->
-	<!-- /loop -->
-	<div class="paymenbtn">
-		<table width="100%">
-		<tr>
-			<td><input type="submit" value="" class="paybtn" /></td>
-		</tr>
-		</table>
-	</div>
-	</form>
 	<!-- /if -->
 </div>
 

@@ -33,10 +33,11 @@ class string_lib
 		}
 		$str = $string;
 		$string = strip_tags(trim($string));
-		$string = str_replace(array("&nbsp;",' ','　'),"",$string);
+		$string = str_replace('&nbsp;',' ',$string);
 		if(strlen($string) <= $length){
 			return $html ? $str : $string;
 		}
+		$string = str_replace('　','',$string);
 		$info = $this->cut_type ? $this->_substr($string,$length,$dot) : $this->_cut($string,$length,$dot);
 		if(!$html){
 			return $info;

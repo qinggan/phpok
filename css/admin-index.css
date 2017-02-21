@@ -80,7 +80,7 @@ p{word-wrap:break-word}
 
 .content{ width:100%; padding:55px 0 10px 0; background:#eeedeb;}
 .c_left{ width:160px; margin-left:10px; overflow:hidden; float:left;}
-.c_left li{ height:35px; border-bottom:1px solid #395e8d; background:#2a4567;}
+.c_left li{ height:35px; border-bottom:1px solid #395e8d; background:#2a4567;position: relative;}
 .c_left li a{ display:block; height:35px; line-height:35px; color:#fff; white-space:nowrap; overflow:hidden;}
 .c_left li a span{ width:22px; height:22px; float:left; margin:9px 1px 0 14px;  _margin:9px 1px 0 5px;display:block;font-size:16px;}
 .c_left li a span img{ width:22px; height:22px;}
@@ -241,7 +241,7 @@ p{word-wrap:break-word}
 
 
 /* 封面页提示 */
-em.toptip{float:right;display:block;min-width:16px;height:16px;border-radius:8px;background:red;color:#fff;text-align:center;line-height:16px;font-style:normal;}
+em.toptip{position:absolute;display:block;min-width:16px;height:16px;border-radius:8px;background:red;color:#fff;text-align:center;line-height:16px;font-style:normal;top:0;right:0;}
 
 /*留言*/
 .comment-focus {width:100%;padding: 10px 0 ;overflow: hidden;}

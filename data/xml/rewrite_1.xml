@@ -45,15 +45,26 @@
 		<sort><![CDATA[115]]></sort>
 	</url>
 	<url>
-		<id><![CDATA[79362eb38b905593922280e6e5b59b22]]></id>
-		<title><![CDATA[会员订单明细]]></title>
-		<rule><![CDATA[order\/(create|create\_success)\.html$]]></rule>
-		<val><![CDATA[index.php?c=order&f=$1]]></val>
-		<format><![CDATA[order/[func].html]]></format>
+		<id><![CDATA[a16013fa422cd9e4a3dca5073c2e030a]]></id>
+		<title><![CDATA[创建订单]]></title>
+		<rule><![CDATA[order\/create\.html$]]></rule>
+		<val><![CDATA[index.php?c=order&f=create]]></val>
+		<format><![CDATA[order/create.html]]></format>
 		<ctrl><![CDATA[order]]></ctrl>
-		<func><![CDATA[create|create_success]]></func>
+		<func><![CDATA[create]]></func>
 		<var><![CDATA[]]></var>
-		<sort><![CDATA[117]]></sort>
+		<sort><![CDATA[116]]></sort>
+	</url>
+	<url>
+		<id><![CDATA[79362eb38b905593922280e6e5b59b22]]></id>
+		<title><![CDATA[会员评论]]></title>
+		<rule><![CDATA[order\/comment\/([0-9]+)\.html$]]></rule>
+		<val><![CDATA[index.php?c=order&f=comment&id=$1]]></val>
+		<format><![CDATA[order/comment/[id].html]]></format>
+		<ctrl><![CDATA[order]]></ctrl>
+		<func><![CDATA[comment]]></func>
+		<var><![CDATA[id]]></var>
+		<sort><![CDATA[118]]></sort>
 	</url>
 	<url>
 		<id><![CDATA[709ca43435f17523a81660bb2be619bf]]></id>
@@ -96,15 +107,15 @@
 		<id><![CDATA[faccb056d7623007f85cc60f698bf936]]></id>
 	</url>
 	<url>
-		<sort><![CDATA[140]]></sort>
+		<id><![CDATA[30e8a9a43ac877ea6a4fe76f0e8fa9ec]]></id>
+		<title><![CDATA[会员中心]]></title>
 		<rule><![CDATA[usercp\/([a-zA-Z][a-zA-Z0-9]+)\.html$]]></rule>
 		<val><![CDATA[index.php?c=usercp&f=$1]]></val>
 		<format><![CDATA[usercp/[func].html]]></format>
 		<ctrl><![CDATA[usercp]]></ctrl>
-		<func><![CDATA[avatar|info|passwd|mobile|email|address|invoice]]></func>
+		<func><![CDATA[avatar|info|passwd|mobile|email|address|invoice|fav|introducer|wealth]]></func>
 		<var><![CDATA[func]]></var>
-		<title><![CDATA[会员中心]]></title>
-		<id><![CDATA[30e8a9a43ac877ea6a4fe76f0e8fa9ec]]></id>
+		<sort><![CDATA[140]]></sort>
 	</url>
 	<url>
 		<sort><![CDATA[145]]></sort>

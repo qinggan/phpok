@@ -112,6 +112,7 @@ class cart_control extends phpok_control
 			$array['tid'] = $array['weight'] = $array['volume'] = 0;
 			$array['ext'] = '';
 			$array['thumb'] = $this->get('thumb');
+			$array['is_virtual'] = $this->get('is_virtual','int');
 		}
 		//检测是否有记录
 		$rslist = $this->model('cart')->get_all($this->cart_id);

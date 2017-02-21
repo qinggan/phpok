@@ -119,13 +119,27 @@ class cart_control extends phpok_control
 		$this->assign('pricelist',$pricelist);
 		if($freight_price){
 			$price = price_format(($totalprice+$freight_price),$this->site['currency_id']);
+			$price_val = price_format_val(($totalprice+$freight_price),$this->site['currency_id']);
 		}else{
 			$price = price_format($totalprice,$this->site['currency_id']);
+			$price_val = price_format_val($totalprice,$this->site['currency_id']);
 		}
 		$this->assign('price',$price);
+		$this->assign('price_val',$price_val);
 		//支付方式
 		$paylist = $this->model('payment')->get_all($this->site['id'],1,($this->is_mobile ? 1 : 0));
 		$this->assign("paylist",$paylist);
+		if($this->session->val('user_id')){
+			$wlist = $this->model('order')->balance($this->session->val('user_id'));
+			if($wlist){
+				if($wlist['balance']){
+					$this->assign('balance',$wlist['balance']);
+				}
+				if($wlist['integral']){
+					$this->assign('integral',$wlist['integral']);
+				}
+			}
+		}
 		$this->view("cart_checkout");
 	}
 

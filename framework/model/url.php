@@ -10,7 +10,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class url_model_base extends phpok_model
 {
-	protected $baseurl = '';
+	protected $base_url = '';
 	protected $ctrl_id = "c";
 	protected $func_id = "f";
 	protected $phpfile = 'index.php';
@@ -219,8 +219,23 @@ class url_model_base extends phpok_model
 			return $this->url_default($ctrl,$func,$ext);
 		}
 		$url = $rs['format'];
+		$extlist = array();
+		$forbid = array('ctrl','func','cate','cateid','cate_id','cid','module','mid','project');
 		foreach($data as $key=>$value){
-			$url = str_replace('['.$key.']',$value,$url);
+			if(strpos($url,'['.$key.']') !== false){
+				$url = str_replace('['.$key.']',$value,$url);
+			}else{
+				if(!in_array($key,$forbid)){
+					$extlist[$key] = $value;
+				}
+			}
+		}
+		if($this->base_url){
+			$url = $this->base_url.$url;
+		}
+		if($extlist && count($extlist)>0){
+			$tmp = http_build_query($extlist);
+			$url .= "?".$tmp;
 		}
 		return $url;
 	}

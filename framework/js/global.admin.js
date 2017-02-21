@@ -340,3 +340,17 @@ function ext_edit(id,module)
 	};
 })(jQuery);
 
+$(document).keydown(function(e){
+	if(e.keyCode==8){
+		var keyEvent = false;
+		var d = e.srcElement || e.target;
+		if((d.tagName.toUpperCase()=='INPUT' && d.type.toUpperCase() == 'TEXT') || d.tagName.toUpperCase()=='TEXTAREA'){
+			keyEvent = d.readOnly||d.disabled
+		}else{
+			keyEvent=true;
+		}
+		if(keyEvent){
+			e.preventDefault();
+		}
+	}
+});

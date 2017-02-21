@@ -21,8 +21,14 @@ class order_model_base extends phpok_model
 		parent::model();
 	}
 
-	//取得订单列表
-	function get_list($condition='',$offset=0,$psize=20)
+	/**
+	 * 取得订单列表
+	 * @参数 $condition 查询条件，仅限主表查询
+	 * @参数 $offset 起始位置，从第一个开始查为0
+	 * @参数 $psize 查询数量，默认是20页
+	 * @返回 false/结果集数组
+	**/
+	public function get_list($condition='',$offset=0,$psize=20)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."order ";
 		if($condition){
@@ -31,21 +37,37 @@ class order_model_base extends phpok_model
 		$offset = intval($offset);
 		$psize = intval($psize);
 		$sql .= " ORDER BY addtime DESC,id DESC LIMIT ".$offset.",".$psize;
-		return $this->db->get_all($sql);
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			if($value['ext']){
+				$value['ext'] = unserialize($value['ext']);
+			}
+			$rslist[$key] = $value;
+		}
+		return $rslist;
 	}
 
-	function get_count($condition="")
+	/**
+	 * 查询订单数量
+	 * @参数 $condition 查询条件，仅限主表中使用
+	 * @返回 具体订单数量
+	**/
+	public function get_count($condition="")
 	{
 		$sql = "SELECT count(o.id) FROM ".$this->db->prefix."order o ";
-		if($condition)
-		{
+		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
 		return $this->db->count($sql);
 	}
 
-	//取得订单的最大ID号，再此基础上+1
-	function maxid()
+	/**
+	 * 取得订单的最大ID号，再此基础上+1
+	**/
+	public function maxid()
 	{
 		$sql = "SELECT MAX(id) id FROM ".$this->db->prefix."order";
 		$rs = $this->db->get_one($sql);
@@ -64,6 +86,9 @@ class order_model_base extends phpok_model
 		if(!$data || !is_array($data)){
 			return false;
 		}
+		if($data['ext'] && is_array($data['ext'])){
+			$data['ext'] = serialize($data['ext']);
+		}
 		if($id){
 			return $this->db->update_array($data,"order",array("id"=>$id));
 		}else{
@@ -71,11 +96,18 @@ class order_model_base extends phpok_model
 		}
 	}
 
-	//存储商品信息
+	/**
+	 * 存储商品信息
+	 * @参数 $data 产品信息，数组
+	 * @参数 $id order_product表中的主键ID，为0为空表示新增
+	**/
 	public function save_product($data,$id=0)
 	{
 		if(!$data || !is_array($data)){
 			return false;
+		}
+		if($data['ext'] && is_array($data['ext'])){
+			$data['ext'] = serialize($data['ext']);
 		}
 		if($id){
 			return $this->db->update_array($data,"order_product",array("id"=>$id));
@@ -84,7 +116,12 @@ class order_model_base extends phpok_model
 		}
 	}
 
-	function save_address($data,$id=0)
+	/**
+	 * 保存收件人地址
+	 * @参数 $data 地址信息，数组
+	 * @参数 $id order_address表中的主键ID，为0为空表示新增
+	**/
+	public function save_address($data,$id=0)
 	{
 		if(!$data || !is_array($data)){
 			return false;
@@ -96,6 +133,10 @@ class order_model_base extends phpok_model
 		}
 	}
 
+	/**
+	 * 保存发票信息
+	 * @参数 $data 订单中的发票信息
+	**/
 	public function save_invoice($data)
 	{
 		return $this->db->insert_array($data,'order_invoice','replace');
@@ -131,10 +172,21 @@ class order_model_base extends phpok_model
 		if($user){
 			$sql .= " AND user_id='".$user."' ";
 		}
-		return $this->db->get_one($sql);
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		if($rs['ext']){
+			$rs['ext'] = unserialize($rs['ext']);
+		}
+		return $rs;
 	}
 
-	function address($id)
+	/**
+	 * 取得订单中的地址信息
+	 * @参数 $id 订单号ID
+	**/
+	public function address($id)
 	{
 		if(!$id){
 			return false;
@@ -169,7 +221,11 @@ class order_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
-	//取得订单下的产品信息
+	/**
+	 * 取得订单下的产品信息
+	 * @参数 $id 订单ID号
+	 * @返回 数组
+	**/
 	public function product_list($id)
 	{
 		if(!$id){
@@ -189,29 +245,50 @@ class order_model_base extends phpok_model
 		return $rslist;
 	}
 
+	/**
+	 * 取得订单中的发票信息
+	 * @参数 $id 订单ID
+	**/
 	public function invoice($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."order_invoice WHERE order_id='".$id."'";
 		return $this->db->get_one($sql);
 	}
 
+	/**
+	 * 删除订单产品
+	 * @参数 $id order_product中的主键ID，不是产品ID，也不是订单ID
+	**/
 	public function product_delete($id)
 	{
-		if(!$id) return false;
+		if(!$id){
+			return false;
+		}
 		$rs = $this->product_one($id);
-		if(!$rs) return false;
-		$oid = $rs['order_id'];
+		if(!$rs){
+			return false;
+		}
 		$sql = "DELETE FROM ".$this->db->prefix."order_product WHERE id='".$id."'";
-		$this->db->query($sql);
-		return true;
+		return $this->db->query($sql);
 	}
 
+	/**
+	 * 取得产品信息，仅限订单表order_product中
+	 * @参数 $id order_product中的主键ID，不是产品ID，也不是订单ID
+	**/
 	public function product_one($id)
 	{
 		if(!$id){
 			return false;
 		}
-		return $this->db->get_one("SELECT * FROM ".$this->db->prefix."order_product WHERE id='".$id."'");
+		$sql = "SELECT * FROM ".$this->db->prefix."order_product WHERE id='".$id."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		if($rs['ext']){
+			$rs['ext'] = unserialize($rs['ext']);
+		}
 	}
 
 	/**
@@ -226,7 +303,7 @@ class order_model_base extends phpok_model
 	{
 		$status_list = $this->model('site')->order_status_all();
 		$status_info = $status_list[$status] ? $status_list[$status] : array('title'=>$status);
-		$sql = "UPDATE ".$this->db->prefix."order SET status='".$status."' WHERE id='".$id."'";
+		$sql = "UPDATE ".$this->db->prefix."order SET status='".$status."',status_title='".$status_info['title']."' WHERE id='".$id."'";
 		$this->db->query($sql);
 		$param = 'id='.$id."&status=".$status;
 		$this->model('task')->add_once('order',$param);
@@ -260,9 +337,19 @@ class order_model_base extends phpok_model
 		return $this->db->insert_array($data,'order_log');
 	}
 
-
+	/**
+	 * 保存订单中的支付方式，对应表order_payment
+	 * @参数 $data 数组
+	 * @参数 $id 主键ID
+	**/
 	public function save_payment($data,$id=0)
 	{
+		if(!$data){
+			return false;
+		}
+		if($data['ext'] && is_array($data['ext'])){
+			$data['ext'] = serialize($data['ext']);
+		}
 		if($id){
 			return $this->db->update_array($data,'order_payment',array('id'=>$id));
 		}else{
@@ -270,13 +357,28 @@ class order_model_base extends phpok_model
 		}
 	}
 
+	/**
+	 * 取得订单中的支付方式信息
+	 * @参数 $order_id 订单ID
+	 * @参数 $payment_id 支付方式ID，此项用于订单中有多条支付方式
+	**/
 	public function order_payment($order_id,$payment_id=0)
 	{
+		if(!$order_id){
+			return false;
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."order_payment WHERE order_id='".$order_id."'";
 		if($payment_id){
 			$sql .= " AND payment_id='".$payment_id."' ";
 		}
-		return $this->db->get_one($sql);
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		if($rs['ext']){
+			$rs['ext'] = unserialize($rs['ext']);
+		}
+		return $rs;
 	}
 
 	/**
@@ -362,12 +464,20 @@ class order_model_base extends phpok_model
 		return '0.00';
 	}
 
+	/**
+	 * 删除支付信息
+	 * @参数 $id order_payment里的主键ID
+	**/
 	public function order_payment_delete($id)
 	{
 		$sql = "DELETE FROM ".$this->db->prefix."order_payment WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
 
+	/**
+	 * 订单价格信息 order_price中使用
+	 * @参数 $order_id 订单ID
+	**/
 	public function order_price($order_id)
 	{
 		$sql = "SELECT code,price FROM ".$this->db->prefix."order_price WHERE order_id='".$order_id."'";
@@ -382,6 +492,9 @@ class order_model_base extends phpok_model
 		return $rs;
 	}
 
+	/**
+	 * 订单状态列表
+	**/
 	public function status_list()
 	{
 		$list = $this->model('site')->order_status_all(false);
@@ -396,10 +509,10 @@ class order_model_base extends phpok_model
 	}
 
 	/**
-	 * 取得指定会员下的余额
+	 * 取得指定会员下的余额及积分
 	 * @参数 $user_id 会员ID
 	 * @返回 false 或 余额多维数组列表
-	 * @更新时间 2016年08月04日
+	 * @更新时间 2016年11月26日
 	**/
 	public function balance($user_id)
 	{
@@ -422,11 +535,17 @@ class order_model_base extends phpok_model
 			if($value['min_val'] && $val < $value['min_val']){
 				continue;
 			}
-			$tmp = array('id'=>$value['id'],'title'=>$value['title'],'identifier'=>$value['identifier']);
-			$tmp['unit'] = $value['unit'];
+			$tmp = $value;
 			$tmp['val'] = $val;
 			$tmp['price'] = round($val*$value['cash_ratio']/100,$value['dnum']);
-			$wlist[] = $tmp;
+			if(!$wlist){
+				$wlist = array();
+			}
+			if($value['ifpay']){
+				$wlist['balance'][$tmp['id']] = $tmp;
+			}else{
+				$wlist['integral'][$tmp['id']] = $tmp;
+			}
 		}
 		if(!$wlist){
 			return false;
@@ -434,6 +553,9 @@ class order_model_base extends phpok_model
 		return $wlist;
 	}
 
+	/**
+	 * 获取订单编号
+	**/
 	public function create_sn()
 	{
 		$sntype = $this->site['biz_sn'];
@@ -491,11 +613,67 @@ class order_model_base extends phpok_model
 		return $sn;
 	}
 
-	//保存订单各种状态下的价格
+	/**
+	 * 保存订单各种状态下的价格，使用表order_price
+	 * @参数 $data 数组
+	**/
 	public function save_order_price($data)
 	{
 		return $this->db->insert_array($data,'order_price');
 	}
-}
 
-?>
+	/**
+	 * 积分抵扣费用
+	 * @参数 $order_id 订单ID
+	 * @参数 $price 价格
+	**/
+	public function integral_discount($order_id,$price=0)
+	{
+		if(!$price || !$order_id){
+			return false;
+		}
+		$price = floatval($price);
+		if($price<0){
+			if(function_exists('abs')){
+				$price = abs($price);
+			}else{
+				$price = -$price;
+			}
+		}
+		$sql = "UPDATE ".$this->db->prefix."order_price SET price=price-".$price." WHERE code='discount' AND order_id='".$order_id."'";
+		return $this->db->query($sql);
+	}
+
+	/**
+	 * 取得订单里的财富基数
+	 * @参数 $id 订单ID，整数
+	 * @返回 false/数字
+	 * @更新时间 2016年11月28日
+	**/
+	public function integral($id)
+	{
+		if(!$id){
+			return false;
+		}
+		$sql = "SELECT id,tid,qty FROM ".$this->db->prefix."order_product WHERE order_id='".$id."' AND tid>0";
+		$list = $this->db->get_all($sql);
+		if(!$list){
+			return false;
+		}
+		$idlist = array();
+		foreach($list as $key=>$value){
+			$idlist[] = $value['tid'];
+		}
+		$integral_list = $this->model('list')->integral_list($idlist);
+		if(!$integral_list){
+			return false;
+		}
+		$integral = 0;
+		foreach($list as $key=>$value){
+			if($integral_list[$value['tid']]){
+				$integral += intval($integral_list[$value['tid']]) * intval($value['qty']);
+			}
+		}
+		return $integral;
+	}
+}

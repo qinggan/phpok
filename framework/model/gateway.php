@@ -15,26 +15,6 @@ class gateway_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function get_all($status=0)
-	{
-		$grouplist = $this->group_all();
-		foreach($grouplist as $key=>$value){
-			$grouplist[$key] = array('title'=>$value);
-		}
-		$sql = "SELECT * FROM ".$this->db->prefix."gateway ";
-		if($status){
-			$sql .= " WHERE status='".($status == 1 ? 1 : 0)."' ";
-		}
-		$sql.= " ORDER BY taxis ASC";
-		$rslist = $this->db->get_all($sql);
-		if($rslist){
-			foreach($rslist as $key=>$value){
-				$grouplist[$value['type']]['list'][] = $value;
-			}
-		}
-		return $grouplist;
-	}
-
 	public function get_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."gateway WHERE id='".$id."'";
@@ -97,6 +77,10 @@ class gateway_model_base extends phpok_model
 		}
 		$rs['code'] = $tmp['code'];
 		$rs['title'] = $tmp['title'];
+		$rs['note'] = $tmp['note'];
+		if($tmp['manage']){
+			$rs['manage'] = $tmp['manage'];
+		}
 		return $rs;
 	}
 
@@ -140,5 +124,3 @@ class gateway_model_base extends phpok_model
 		return true;
 	}
 }
-
-?>

@@ -1,0 +1,29 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function update_remote_smskey()
+{
+	var url = get_url('gateway','extmanage','id={$rs.id}&manageid=smskey&type=ajax&update=1');
+	var rs = $.phpok.json(url);
+	if(rs.status){
+		$.dialog.alert(rs.info,function(){
+			$.phpok.reload();
+		},'succeed');
+	}else{
+		$.dialog.alert(rs.info);
+	}
+}
+</script>
+<div class="table">
+	<div class="title">
+		短信屏蔽关键字：<span class="note">这里显示的维美短信要屏蔽的关键字，数据较大，请缓存更新到本地上！</span>
+	</div>
+	<div class="content">
+		<textarea style="width:100%;height:500px" disabled>{$content}</textarea>
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<input type="button" value="远程更新" onclick="update_remote_smskey()" class="submit2" />
+	</div>
+</div>
+<!-- include tpl=foot_open -->

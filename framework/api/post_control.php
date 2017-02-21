@@ -156,6 +156,9 @@ class post_control extends phpok_control
 			$this->model('task')->add_once('post',$param);
 		}
 		$this->cache->delete_index($this->db->prefix.'list');
+		if(!$tid && $array['user_id'] && $array["status"]){
+			$this->model('wealth')->add_integral($insert_id,$array['user_id'],'post',P_Lang('发布：{title}',array('title'=>$array['title'])));
+		}
 		$this->json(true);
 	}
 

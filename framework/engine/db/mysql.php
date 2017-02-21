@@ -378,7 +378,7 @@ class db_mysql extends db
 			return false;
 		}
 		$this->check_connect();
-		return mysqli_escape_string($char,$this->conn);
+		return mysql_real_escape_string($char,$this->conn);
 	}
 
 	//PHPOK中常用的简洁高效的SQL生成查询，仅适合单表查询
@@ -393,5 +393,19 @@ class db_mysql extends db
 		}
 		return $this->get_one($sql);
 	}
+
+	/**
+	 * 取得MySQL版本号
+	 * @参数 $type 支持server和client两种类型
+	 * @返回 
+	 * @更新时间 
+	**/
+	public function version($type="server")
+	{
+		if($type == 'server'){
+			return mysql_get_server_info($this->conn);
+		}else{
+			return mysql_get_client_info ($this->conn);
+		}
+	}
 }
-?>

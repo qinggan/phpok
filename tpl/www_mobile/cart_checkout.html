@@ -1,61 +1,116 @@
 <!-- include tpl=head title="填写并核对验证信息 - 购物车" -->
 <script type="text/javascript">
-var user_id = "{$session.user_id}";
-$(document).ready(function(){
-	$("#saveorder").submit(function(){
-		//通过Ajax提交订单，客户端检查订单信息是否完整
-		$(this).ajaxSubmit({
-			'url':api_url('order','create'),
-			'type':'post',
-			'dataType':'json',
-			'success':function(rs){
-				//订单不成功的说明
-				if(rs.status != 'ok'){
-					if(!rs.content) rs.content = '订单创建失败';
-					alert(rs.content);
-					return false;
-				}
-				else
-				{
-					//订单创建成功后，跳转到订单详细页信息，执行支付操作
-					var urlext = 'sn='+$.str.encode(rs.content.sn);
-					if(!user_id){
-						urlext += '&passwd='+$.str.encode(rs.content.passwd);
-					}
-					var url = get_url('order','info',urlext);
-					$.phpok.go(url);
-				}
+function check_it()
+{
+	var is_virtual = $("#is_virtual").val();
+	if(is_virtual == 0){
+		var fullname = $("#fullname").val();
+		if(!fullname){
+			$.dialog.alert('请填写收货人姓名');
+			return false;
+		}
+		var province = $("#pca_p").val();
+		if(!province){
+			$.dialog.alert('请选择收货人所在省份');
+			return false;
+		}
+		var city = $("#pca_c").val();
+		if(!city){
+			$.dialog.alert('请选择收货人所在城市');
+			return false;
+		}
+		var address = $("#address").val();
+		if(!address){
+			$.dialog.alert('请填写收货人的明细地址');
+			return false;
+		}
+		var mobile = $("#mobile").val();
+		var tel = $("#tel").val();
+		if(!mobile && !tel){
+			$.dialog.alert('收货人手机或电话至少要填写一个');
+			return false;
+		}
+		if(mobile){
+			var url = api_url('check','mobile','val='+$.str.encode(mobile));
+			var chk = $.phpok.json(url);
+			if(!chk.status){
+				$.dialog.alert("验证不通过：<span class='red'>"+chk.info+"</span>");
+				return false;
 			}
-		});
+		}
+		if(tel){
+			var url = api_url('check','tel','val='+$.str.encode(tel));
+			var chk = $.phpok.json(url);
+			if(!chk.status){
+				$.dialog.alert("验证不通过：<span class='red'>"+chk.info+"</span>");
+				return false;
+			}
+		}
+	}else{
+		var mobile = $("#mobile").val();
+		if(!mobile){
+			$.dialog.alert('手机号不能为空');
+			return false;
+		}
+		var url = api_url('check','mobile','val='+$.str.encode(mobile));
+		var chk = $.phpok.json(url);
+		if(!chk.status){
+			$.dialog.alert("验证不通过：<span class='red'>"+chk.info+"</span>");
+			return false;
+		}
+	}
+	//验证邮箱
+	var email = $("#email").val();
+	if(!email){
+		$.dialog.alert('邮箱不能为空');
 		return false;
-	});
-});
-
+	}
+	var url = api_url('check','email','val='+$.str.encode(email));
+	var chk = $.phpok.json(url);
+	if(!chk.status){
+		$.dialog.alert("验证不通过：<span class='red'>"+chk.info+"</span>");
+		return false;
+	}
+	return true;
+}
 </script>
 <div role="main" class="ui-content">
-	<form method="post" id="saveorder">
-	<ul data-role="listview" data-split-icon="edit" data-inset="true" style="margin:0">
-		<li data-role="list-divider"><!-- if $address.id == 'email' -->Email通知<!-- else -->收货地址<!-- /if --></li>
+	<form method="post" id="saveorder" action="{url ctrl=order func=create/}" onsubmit="return check_it()">
+	<ul data-role="listview" data-inset="true" style="margin:0">
+		<li data-role="list-divider">收件人信息</li>
 		<li>
-			<a href="javascript:void(0);">
-			<!-- if $address.id == 'email' -->
-			<input type="text" name="email" id="email" value="{$address.email ? $address.email : $user.email}" />
-			<!-- else -->
-			<p><b>收件人：</b>{$address.fullname}</p>
-			<p class="wrap"><b>地址：</b>{$address.province}<!-- if $address.city != $address.province -->{$address.city}<!-- /if -->{$address.county}{$address.address}</p>
-			<!-- if $address.tel --><p><b>电话：</b>{$address.tel}</p><!-- /if -->
-			<!-- if $address.mobile --><p><b>手机：</b>{$address.mobile}</p><!-- /if -->
-			<!-- if $address.email --><p><b>Email：</b>{$address.email}</p><!-- /if -->
+			<!-- if !$is_virtual -->
+			<input type="hidden" name="country" id="country" value="中国" />
+			<label>姓名：
+				<input type="text" id="fullname" name="fullname" value="{$address.fullname}" />
+			</label>
+			<label>省市县：
+				<!-- php:$form_edit_content = array('p'=>$address.province,'c'=>$address.city,'a'=>$address.county) -->
+				{func form_edit pca $form_edit_content pca}
+			</label>
+			<label>地址（不含省市县）：
+				<input type="text" id="address" name="address" value="{$address.address}" />
+			</label>
+			<label>邮编：
+				<input type="text" id="zipcode" name="zipcode" value="{$address.zipcode}" />
+			</label>
+			<label>固定电话：
+				<input type="text" id="tel" name="tel" value="{$address.tel}" />
+			</label>
 			<!-- /if -->
-			</a>
-			<a href="{url ctrl=cart func=address/}"></a>
+			<label>Email（必填）：
+				<input type="text" id="email" name="email" value="{$address.email}" />
+			</label>
+			<label>手机号（和固定电话至少填一项）：
+				<input type="text" id="mobile" name="mobile" value="{$address.mobile}" />
+			</label>
 		</li>
 	</ul>
 	<ul data-role="listview" data-inset="true">
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 		<li data-role="list-divider"><span id="title_{$value.id}">{$value.title}</span><span class="ui-li-count">{func price_format $value.price $value.currency_id}</span></li>
 		<li>
-			<!-- if $value.thumb --><img src="{$value.thumb.ico}" style="left:5px;top:auto;" /><!-- /if -->
+			<!-- if $value.thumb --><img src="{$value.thumb}" style="left:5px;top:auto;" /><!-- /if -->
 			<div>
 				<!-- loop from=$value._attrlist key=$k value=$v id=$tmpid2 -->
 				<b>{$v.title}：</b>{$v.content}
@@ -70,22 +125,6 @@ $(document).ready(function(){
 			</div>
 		</li>
 		<!-- /loop -->
-	</ul>
-	<ul data-role="listview" data-split-icon="edit" data-inset="true">
-		<li data-role="list-divider">发票信息</li>
-		<li>
-			<a href="javascript:void(0);">
-			<!-- if $invoice.id == 'no' -->
-			不开发票
-			<!-- else -->
-			<p><b>类型：</b>{$invoice.type}</p>
-			<p class="wrap"><b>抬头：</b>{$invoice.title}</p>
-			<!-- if $invoice.content --><p class="wrap"><b>内容：</b>{$invoice.content}</p><!-- /if -->
-			<!-- if $invoice.note --><p class="wrap"><b>备注：</b>{$invoice.note}</p><!-- /if -->
-			<!-- /if -->
-			</a>
-			<a href="{url ctrl=cart func=invoice/}"></a>
-		</li>
 	</ul>
 	<ul data-role="listview" data-inset="true">
 		<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->

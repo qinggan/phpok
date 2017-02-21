@@ -66,11 +66,13 @@ class user_control extends phpok_control
 	public function set_f()
 	{
 		$id = $this->get("id","int");
+		$group_id = 0;
 		if($id){
 			if(!$this->popedom["modify"]){
 				error(P_Lang('您没有权限执行此操作'),'','error');
 			}
 			$rs = $this->model('user')->get_one($id);
+			$group_id = $rs['group_id'];
 		}else{
 			if(!$this->popedom["add"]){
 				error(P_Lang('您没有权限执行此操作'),'','error');
@@ -96,7 +98,16 @@ class user_control extends phpok_control
 		}
 		$this->assign("extlist",$extlist);
 		//会员组
-		$grouplist = $this->model('usergroup')->get_all();
+		$grouplist = $this->model('usergroup')->get_all("is_guest=0 AND status=1");
+		if(!$group_id){
+			foreach($grouplist as $key=>$value){
+				if($value['is_default']){
+					$group_id = $value['id'];
+					break;
+				}
+			}
+		}
+		$this->assign('group_id',$group_id);
 		$this->assign("grouplist",$grouplist);
 		$this->assign("rs",$rs);
 		$this->assign("id",$id);

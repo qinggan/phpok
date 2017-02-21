@@ -1,22 +1,29 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/upload_control.php
-	Note	: 附件上传操作
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-01-09 10:51
-***********************************************************/
+/**
+ * 附件上传相关操作
+ * @package phpok\www
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2016年12月08日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class upload_control extends phpok_control
 {
 	public function __construct()
 	{
 		parent::control();
-		ini_set('upload_tmp_dir', $this->dir_root.'data/cache');
 	}
 
-	//附件上传
+	/**
+	 * 附件上传
+	 * @参数 cateid 分类ID
+	 * @参数 upfile 上传的附件
+	 * @返回 JSON数据
+	**/
 	public function save_f()
 	{
 		$this->popedom();
@@ -30,20 +37,27 @@ class upload_control extends phpok_control
 		$this->json($rs,true);
 	}
 
-	//设置权限，防止非法人员上传
+	/**
+	 * 设置权限，防止非法人员上传
+	**/
 	private function popedom()
 	{
-		if(!$this->site['upload_guest'] && !$_SESSION['user_id']){
+		if(!$this->site['upload_guest'] && !$this->session->val('user_id')){
 			$this->json(P_Lang('系统已禁止游客上传，请联系管理员'));
 		}
-		if(!$this->site['upload_user'] && $_SESSION['user_id']){
+		if(!$this->site['upload_user'] && $this->session->val('user_id')){
 			$this->json(P_Lang('系统已禁止会员上传，请联系管理员'));
 		}
 		return true;
 	}
 
 
-	//基础上传
+	/**
+	 * 基础上传
+	 * @参数 $input_name 上传表单名
+	 * @参数 $cateid 要存储的目录
+	 * @返回 数组，含status状态，ok表示上传成功，其他为失败
+	**/
 	private function upload_base($input_name='upfile',$cateid=0)
 	{
 		$rs = $this->lib('upload')->getfile($input_name,$cateid);
@@ -58,11 +72,8 @@ class upload_control extends phpok_control
 		$array["filename"] = $rs['filename'];
 		$array["addtime"] = $this->time;
 		$array["title"] = $rs['title'];
-		if($_SESSION['user_id']){
-			$array['user_id'] = $_SESSION['user_id'];
-		}else{
-			$array['session_id'] = $this->session->sessid();
-		}
+		$array['session_id'] = $this->session->sessid();
+		$array['user_id'] = $this->session->val('user_id');
 		$arraylist = array("jpg","gif","png","jpeg");
 		if(in_array($rs["ext"],$arraylist)){
 			$img_ext = getimagesize($this->dir_root.$rs['filename']);
@@ -80,13 +91,20 @@ class upload_control extends phpok_control
 		return $rs;
 	}
 
-	//附件上传替换
+	/**
+	 * 附件上传替换
+	 * @参数 oldid 旧附件ID
+	 * @参数 
+	 * @参数 
+	 * @参数 
+	 * @返回 
+	 * @更新时间 
+	**/
 	public function replace_f()
 	{
 		$this->popedom();
 		$id = $this->get("oldid",'int');
-		if(!$id)
-		{
+		if(!$id){
 			$this->json(P_Lang('没有指定要替换的附件'));
 		}
 		$old_rs = $this->model('res')->get_one($id);

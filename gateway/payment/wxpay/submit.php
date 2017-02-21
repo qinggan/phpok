@@ -26,6 +26,7 @@ class wxpay_submit
 
 	public function submit()
 	{
+		global $app;
 		$wxpay = new wxpay_lib();
 		$wxpay->config($this->param['param']);
 		$data = array();
@@ -38,14 +39,21 @@ class wxpay_submit
 		}else{
 			$data['product_id'] = $this->order['sn'];
 		}
+		if($this->order['type'] == 'order'){
+			$order = $app->model('order')->get_one($this->order['sn'],'sn');
+			$data['attach'] = $order['passwd'];
+		}
 		$data['body'] = '订单：'.$this->order['sn'];
-		$data['detail'] = '订单：'.$this->order['sn'];
+		//$data['detail'] = '{"goods_detail":[{"goods_id":"'.md5($this->order['sn']).'","goods_name":"订单：'.$this->order['sn'].'","quantity":1,"price":'.intval($this->order['price']*100).'}]}';
 		$data['out_trade_no'] = $this->order['sn'];
 		$data['total_fee'] = intval($this->order['price']*100);
 		$data['notify_url'] = $this->baseurl."gateway/payment/wxpay/notify_url.php";
 		$info = $wxpay->create($data);
 		if(!$info){
-			error('支付出错，请联系管理员');
+			$app->error('支付出错，请联系管理员');
+		}
+		if(strtolower($info['result_code']) == 'fail'){
+			$app->error($info['err_code'].'：'.$info['err_code_des']);
 		}
 		if($wxpay->trade_type() == 'wap'){
 			$this->head('启动微信支付');

@@ -33,12 +33,6 @@ function all_refresh()
 			<div class="name">{lang订单常规配置}</div></a>
 		</li>
 		<!-- /if -->
-		<!-- if $showemailtest -->
-		<li><a title="{lang在线发邮件}" href="javascript:$.win('{lang发邮件}','{url ctrl=all func=email/}');void(0);">
-			<div class="top_img"><img src="images/ico/email.png" alt="{lang在线发邮件}" class="ie6png" width="48" height="48" /></div>
-			<div class="name">{lang发邮件}</div></a>
-		</li>
-		<!-- /if -->
 		<!-- if $all_popedom.gset || $all_popedom.set -->
 		<!-- foreach($all_rslist AS $key=>$value) -->
 		<li><a title="{$value.title}" href="javascript:$.win('{$value.title}','{url ctrl=all func=set id=$value.id/}');void(0);">
@@ -46,7 +40,7 @@ function all_refresh()
 			<div class="name">{$value.title}</div></a>
 		</li>
 		<!-- /foreach -->
-		<!-- /if -->
 		<li class="plus" onclick="$.win('{lang全局内容}','{url ctrl=all func=gset/}')"></li>
+		<!-- /if -->
 	</ul>
 </div>

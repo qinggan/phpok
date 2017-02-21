@@ -252,8 +252,13 @@ class ext_lib
 	//取得自定义选项列表
 	function opt_list($id,$gid=0)
 	{
-		if(!$gid || !$id) return false;
+		if(!$gid || !$id){
+			return false;
+		}
 		$idlist = unserialize($id);
+		if(!$idlist){
+			$idlist = array();
+		}
 		$rslist = false;
 		foreach($idlist AS $key=>$value)
 		{
@@ -452,7 +457,6 @@ class ext_lib
 		//多项选择，不存在联动说法
 		if($rs["ext"]["is_multiple"])
 		{
-			//$content = unserialize($rs['content']);
 			$list = $this->opt_list($rs["content"],$tmp[1]);
 			if(!$list) return false;
 			$_admin = array("id"=>$rs["content"],"type"=>"txt");

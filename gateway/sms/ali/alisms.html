@@ -1,0 +1,61 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#sendsmssubmit').submit(function(){
+		$("#submit2").attr('disabled',true);
+		$(this).ajaxSubmit({
+			'type':'post',
+			'dataType':'json',
+			'url':get_url('gateway','extmanage','update=1&type=ajax&id={$rs.id}&manageid=send'),
+			'success':function(rs){
+				if(rs.status){
+					$.dialog.alert('短信发送成功',function(){$.phpok.reload()},'succeed');
+				}else{
+					$("#submit2").attr('disabled',false);
+					$.dialog.alert(rs.info);
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>
+<form method="post" id="sendsmssubmit">
+<div class="table">
+	<div class="title">
+		手机号：
+		<span class="note">提交接收人的手机号，仅支持一个手机号</span></span>
+	</div>
+	<div class="content">
+		<input type="text" name="mobile" class="long" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		短信类型：<span class="note">请选择要发送的短信类型</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="type" value="chkcode" checked />验证码</label></li>
+			<li><label><input type="radio" name="type" value="ordersn" />订单通知</label></li>
+		</ul>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		短信内容：
+		<span class="note">请输入验证码或订单编号</span></span>
+	</div>
+	<div class="content"><input type="text" name="content" /></div>
+</div>
+
+<div class="table">
+	<div class="content">
+		<br />
+		<input type="submit" value="发短信" class="submit2" id="submit2" />
+	</div>
+</div>
+</form>
+
+
+<!-- include tpl=foot_open -->

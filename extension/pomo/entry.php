@@ -55,6 +55,10 @@ class Translation_Entry {
 		if (!is_array($this->flags)) $this->flags = array();
 	}
 
+	function __construct($args=array()){
+		$this->Translation_Entry($args);
+	}
+
 	/**
 	 * Generates a unique key for this entry
 	 *

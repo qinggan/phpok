@@ -60,18 +60,32 @@ class update_control extends phpok_control
 	{
 		$setfile = $this->dir_root.'data/update.php';
 		$uconfig = array();
-		if(is_file($setfile)){
+		if(file_exists($setfile)){
 			include($setfile);
 		}
 		$uconfig['status'] = $this->get('status','int');
 		$uconfig['server'] = $this->get('server');
 		$uconfig['date'] = $this->get('date','int');
+		$uconfig['ip'] = $this->get('ip');
+		if(!$uconfig['onlyid']){
+			$uconfig['onlyid'] = $this->_onlyid();
+		}
 		$this->lib('file')->vi($uconfig,$this->dir_root.'data/update.php','uconfig');
 		error(P_Lang('升级环境配置成功'),$this->url('update'),'ok');
 	}
 
+
+	private function _onlyid()
+	{
+		$onlyid = $this->lib('server')->domain($this->config['get_domain_method']).'/phpok/';
+		$onlyid.= $this->lib('common')->ip().'/phpok/';
+		$onlyid.= $this->lib('server')->signature().'/phpok/';
+		$onlyid.= filemtime($this->dir_root.'config.php');
+		return md5($onlyid);
+	}
+
 	//在线升级
-	function main_f()
+	public function main_f()
 	{
 		if(!$this->popedom['update']){
 			error(P_Lang('您没有权限执行此操作'),$this->url('update'),'error');
@@ -101,7 +115,7 @@ class update_control extends phpok_control
 	}
 
 	//zip升级
-	function zip_f()
+	public function zip_f()
 	{
 		$this->lib('form')->cssjs(array('form_type'=>'upload'));
 		$this->addjs('js/webuploader/admin.upload.js');
@@ -435,7 +449,7 @@ class update_control extends phpok_control
 	{
 		$check = false;
 		$time = 0;
-		if(is_file($this->dir_root.'data/update.time')){
+		if(file_exists($this->dir_root.'data/update.time')){
 			$time = file_get_contents($this->dir_root.'data/update.time');
 		}
 		if($time < $this->time && ($this->time - $this->config['update']['time'] * 86400) > $time){
@@ -462,7 +476,7 @@ class update_control extends phpok_control
 		if(!$uconfig['server']){
 			return $this->json(P_Lang('未配置升级服务器'),false,false);
 		}
-		if(is_file($this->dir_root.'data/update.xml')){
+		if(file_exists($this->dir_root.'data/update.xml')){
 			$info = $this->lib('xml')->read($this->dir_root.'data/update.xml',true);
 			$info['time'] = $info['time'] ? strtotime($info['time']) : 0;
 		}else{
@@ -470,11 +484,35 @@ class update_control extends phpok_control
 			$info['time'] = 0;
 		}
 		$url = $uconfig['server'];
+		if(substr($url,-1) != '/'){
+			$url .= '/';
+		}
 		$url .= 'index.php?version='.rawurlencode(trim($info['version'])).'&time='.$this->time.'&type='.$type;
 		if($urlext){
 			$url.="&".$urlext;
 		}
+		if($type == 1 || $type == 4){
+			$onlyid = $uconfig['onlyid'] ? $uconfig['onlyid'] : $this->_onlyid();
+			$domain = $this->lib('server')->domain($this->config['get_domain_method']);
+			$client_ip = $this->lib('common')->ip();
+			$url .= "&domain=".rawurlencode($domain)."&ip=".rawurlencode($client_ip);
+			$url .= "&onlyid=".$onlyid."&phpversion=".PHP_VERSION;
+			if(function_exists('php_uname')){
+				$url .= "&server=".rawurlencode(php_uname('s'));
+			}
+			$soft = $_SERVER['SERVER_SOFTWARE'];
+			if($soft){
+				$url .= "&soft=".rawurlencode($soft);
+			}
+			$mysqlversion = $this->db->version('server');
+			if($mysqlversion){
+				$url .= "&mysql=".$mysqlversion;
+			}
+		}
 		$this->lib('html')->setting('timeout',900);
+		if($uconfig['ip']){
+			$this->lib('html')->ip($uconfig['ip']);
+		}
 		$info = $this->lib('html')->get_content($url);
 		if(!$info){
 			return $this->json(P_Lang('检测异常，请登录官网查询补丁更新'),false,false);
@@ -486,4 +524,3 @@ class update_control extends phpok_control
 		return $this->json($rs['content'],true,false,false);
 	}
 }
-?>

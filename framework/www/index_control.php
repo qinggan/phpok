@@ -30,8 +30,13 @@ class index_control extends phpok_control
 			}
 			unset($page_rs);
 		}
-		$taskurl = api_url('task','index','',true);
-		$this->lib('async')->start($taskurl);
+		if($this->config['async']['status']){
+			$taskurl = api_url('task','index',$this->session->sid()."=".$this->session->sessid(),true);
+			if($this->config['async']['type']){
+				$this->lib('async')->loadtype($this->config['async']['type']);
+			}
+			$this->lib('async')->start($taskurl);
+		}
 		$this->view($tplfile);
 	}
 

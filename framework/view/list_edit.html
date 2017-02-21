@@ -25,6 +25,7 @@ $(document).keypress(function(e){
 	}
 });
 $(document).ready(function(){
+	var loading_action;
 	$("#_listedit").submit(function(){
 		var id = $("#id").val();
 		var pcate = parseInt("{$p_rs.cate}");
@@ -33,7 +34,13 @@ $(document).ready(function(){
 			'url':'{url ctrl=list func=ok /}',
 			'type':'post',
 			'dataType':'json',
+			'beforeSubmit':function(){
+				loading_action = $.dialog.tips('<img src="images/loading.gif" border="0" align="absmiddle" /> 正在保存数据，请稍候…').time(30).lock();
+			},
 			'success':function(rs){
+				if(loading_action){
+					loading_action.close();
+				}
 				if(rs.status == 'ok'){
 					var url = "{url ctrl=list func=action id=$pid/}";
 					if(pcate>0){
@@ -49,7 +56,7 @@ $(document).ready(function(){
 							$.phpok.go(url);
 						},'succeed');
 					}else{
-						$.dialog({
+						$.dialog.through({
 							'icon':'succeed',
 							'content':'{lang内容添加操作成功，请选择继续添加或返回列表}',
 							'ok':function(){$.phpok.reload();},
@@ -331,7 +338,7 @@ $(document).ready(function(){
 		</tr>
 		<!-- /if -->
 		<tr>
-			<td align="right">{lang计量单位：}</td>
+			<td align="right" width="100">{lang计量单位：}</td>
 			<td><input type="text" id="unit" name="unit" class="short" value="{$rs.unit}" /></td>
 		</tr>
 		<tr>
@@ -345,6 +352,7 @@ $(document).ready(function(){
 			</td>
 		</tr>
 		<tr>
+			<td align="right">{lang货币：}</td>
 			<td>
 				<select name="currency_id" id="currency_id" onchange="price_show_auto()">
 					<!-- loop from=$currency_list key=$key value=$value -->
@@ -352,7 +360,10 @@ $(document).ready(function(){
 					<!-- /loop -->
 				</select>
 			</td>
-			<td><input type="text" id="price" name="price" value="{$rs.price}" style="width:98%" /></td>
+		</tr>
+		<tr>
+			<td align="right">{lang销售价格：}</td>
+			<td><input type="text" id="price" name="price" value="{$rs.price}" style="width:80%" /></td>
 		</tr>
 		</table></div>
 	</div>
@@ -372,7 +383,7 @@ $(document).ready(function(){
 		<h3>{lang其他属性}</h3>
 		<table width="100%">
 		<tr>
-			<td align="right">{lang状态：}</td>
+			<td align="right" width="90">{lang状态：}</td>
 			<td>
 				<ul class="layout">
 					<li><label><input type="radio" name="status" id="status_0" value="0"{if $id && !$rs[status]} checked{/if} />{lang未审核}</label></li>
@@ -391,11 +402,15 @@ $(document).ready(function(){
 		</tr>
 		<tr>
 			<td align="right">{lang发布时间：}</td>
-			<td><input type="text" id="dateline" name="dateline" class="default" value="{if $rs.dateline}{func date 'Y-m-d H:i:s' $rs.dateline}{else}{func date 'Y-m-d H:i:s' $sys.time}{/if}" onfocus="show_dateline()" /></td>
+			<td><input type="text" id="dateline" name="dateline" class="default" value="{if $rs.dateline}{func date 'Y-m-d H:i:s' $rs.dateline}{else}{func date 'Y-m-d H:i:s' $sys.time}{/if}" onfocus="show_dateline()" style="width:180px" /></td>
 		</tr>
 		<tr>
-			<td align="right">{lang阅读量：}</td>
+			<td align="right">{lang阅读次数：}</td>
 			<td><input type="text" id="hits" name="hits" class="short" value="{$rs.hits}" /></td>
+		</tr>
+		<tr>
+			<td align="right">{lang财富基数：}</td>
+			<td><input type="text" id="integral" name="integral" class="short" value="{$rs.integral}" /> <span class="gray">{lang（只支持整数）}</span></td>
 		</tr>
 		<tr>
 			<td align="right">{lang排序：}</td>
@@ -474,7 +489,7 @@ $(document).ready(function(){
 					<!-- /loop -->
 				</select>
 			</div>
-			<div class="content">
+			<div class="content" style="margin-top:5px">
 				<div class="button-group">
 					<input type="button" value="{lang快速添加}" onclick="_update_select_add()" class="phpok-btn" />
 					<input type="button" value="{lang手动创建字段}" onclick="ext_add('{$ext_module}')" class="phpok-btn" />
@@ -496,11 +511,7 @@ $(document).ready(function(){
 	<!-- /if -->
 </div>
 <div class="clear"></div>
-<div class="table">
-	<div class="content">
-		<input type="submit" value="{lang提 交}" class="submit2" id="phpok_submit_{$pid}" />
-	</div>
-</div>
+<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" id="phpok_submit_{$pid}" /></div>
 </form>
 <script type="text/javascript">
 function win_resize()

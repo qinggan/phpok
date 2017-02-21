@@ -63,11 +63,6 @@ class json_lib
 		$this->json_phpok = true;
 	}
 
-	function json_lib()
-	{
-		$this->__construct();
-	}
-
     function name_value($name, $value)
     {
         $encoded_value = $this->encode($value);

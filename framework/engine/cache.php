@@ -218,24 +218,8 @@ class cache
 
 	public function error($error='')
 	{
-		$info = "执行错误【".$error."】";
-		exit($this->ascii($info));
-	}
-
-	private function ascii($str='')
-	{
-		if(!$str) return false;
-		$str = iconv("UTF-8", "UTF-16BE", $str);
-		$output = "";
-		for ($i = 0; $i < strlen($str); $i++,$i++){
-			$code = ord($str{$i}) * 256 + ord($str{$i + 1});
-			if($code < 128){
-				$output .= chr($code);
-			}elseif($code != 65279){
-				$output .= "&#".$code.";";
-			}
-		}
-		return $output;
+		echo "执行错误【".$error."】";
+		exit;
 	}
 
 	public function debug()

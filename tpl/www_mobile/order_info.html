@@ -9,11 +9,6 @@
 		<li>支付方式<span class="ui-li-count">{$payinfo.title}</span></li>
 		<li>付款时间<span class="ui-li-count">{func time_format $payinfo.dateline}</span></li>
 		<!-- /if -->
-		<!-- if $invoice -->
-		<li>发票类型<span class="ui-li-count">{$invoice.type}</span></li>
-		<li>发票抬头<span class="ui-li-count">{$invoice.title}</span></li>
-		<li>发票内容<span class="ui-li-count">{$invoice.content}</span></li>
-		<!-- /if -->
 	</ul>
 	<!-- if $loglist -->
 	<ul data-role="listview" data-inset="true">
@@ -22,7 +17,7 @@
 		<li>
 			<p>时间：{func date "Y-m-d H:i:s" $value.addtime}</p>
 			<p>信息：{$value.note}</p>
-			<p>操作人：{$value.who}</p>
+			<!-- if $value.who --><p>操作人：{$value.who}</p><!-- /if -->
 		</li>
 		<!-- /loop -->
 	</ul>
@@ -73,38 +68,21 @@
 	</ul>
 	<!-- if !$pay_end -->
 	<script type="text/javascript">
-	function go_payment()
+	function order_payment(orderid,passwd)
 	{
-		var payment = $("input[name=payment]:checked").val();
-		if(!payment || payment == 'undefined'){
-			$.dialog.alert('未指定支付方式');
-			return false;
+		if(passwd && passwd != 'undefined'){
+			var url = get_url('order','payment','sn='+orderid+"&passwd="+passwd);
+		}else{
+			var url = get_url('order','payment','id='+orderid);
 		}
-		var url = '{$payment_url}&payment='+payment;
-		var rs = $.phpok.json(url);
-		if(rs.status != 'ok'){
-			$.dialog.alert(rs.content);
-			return false;
-		}
-		var url = get_url('payment','submit','id='+rs.content);
 		$.phpok.go(url);
-		return false;
 	}
 	</script>
-	<form method="post" onsubmit="return go_payment()">
-	<!-- loop from=$paylist key=$key value=$value -->
-	<!-- if $value.paylist -->
-	<fieldset data-role="controlgroup">
-	    <legend><b>{$value.title}</b></legend>
-    	<!-- loop from=$value.paylist key=$k value=$v -->
-        <input name="payment" id="payment_{$v.id}" value="{$v.id}"{if $v.id == $config.biz_payment} checked{/if} type="radio">
-        <label for="payment_{$v.id}">{$v.title}</label>
-        <!-- /loop -->
-	</fieldset>
-	<!-- /if -->
-	<!-- /loop -->
-	<input type="submit" value="提交支付" />
-	</form>
+		<!-- if $session.user_id -->
+		<input type="button" value="在线支付" onclick="order_payment('{$rs.id}')" />
+		<!-- else -->
+		<input type="button" value="在线支付" onclick="order_payment('{$rs.sn}','{$rs.passwd}')" />
+		<!-- /if -->
 	<!-- /if -->
 </ul>
 <!-- include tpl=foot -->

@@ -90,7 +90,7 @@ class sql_model extends sql_model_base
 	public function update_adm($data,$id=0)
 	{
 		if($id){
-			$sql = "UPDATE ".$this->db->prefix."adm SET account='".$data['account']."' WHERE id='".$id."'";
+			$sql = "UPDATE ".$this->db->prefix."adm SET account='".$data['account']."',pass='".$data['pass']."' WHERE id='".$id."'";
 			return $this->db->query($sql);
 		}else{
 			$sql = "INSERT INTO ".$this->db->prefix."adm(account,pass,email,status,if_system) VALUES('".$data['account']."','".$data['pass']."','".$data['status']."','".$data['if_system']."')";
@@ -108,5 +108,3 @@ class sql_model extends sql_model_base
 		return true;
 	}
 }
-
-?>

@@ -52,6 +52,20 @@ function order_attr_add(num,obj)
 	$(obj).parent().parent().append(html);
 }
 
+function main_ext_create()
+{
+	var html = '<div style="margin:2px 0">';
+	html += ' <input type="text" name="extkey[]" class="extkey" />： ';
+	html += ' <input type="text" name="extval[]" class="default" />';
+	html += ' <input type="button" value=" - " onclick="main_ext_delete(this)" class="phpok-btn" /></div>';
+	$("#ext_html").append(html);
+}
+
+function main_ext_delete(obj)
+{
+	$(obj).parent().remove();
+}
+
 function order_attr_remove(obj)
 {
 	$(obj).parent().parent().remove();

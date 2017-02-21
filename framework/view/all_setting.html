@@ -210,12 +210,18 @@ function rand_click()
 	<div class="content">
 		<table>
 		<tr>
-			<td><label><input type="radio" name="register_status" value="1" {if $rs.register_status} checked{/if} /> {lang开启}</label></td>
-			<td><label><input type="radio" name="register_status" value="0" {if !$rs.register_status} checked{/if} /> {lang关闭}</label></td>
-			<td class="gray">{lang原因：}</td>
-			<td><input type="text" id="register_close" name="register_close" class="long" value="{$rs.register_close}" /></td>
+			<td><label><input type="radio" name="register_status" value="1" {if $rs.register_status} checked{/if} onclick="$('#register_close_note').hide()" /> {lang开启}</label></td>
+			<td><label><input type="radio" name="register_status" value="0" {if !$rs.register_status} checked{/if} onclick="$('#register_close_note').show()" /> {lang关闭}</label></td>
 		</tr>
 		</table>
+	</div>
+</div>
+<div class="table{if $rs.register_status} hide{/if}" id="register_close_note">
+	<div class="title">
+		{lang注册关闭说明：}<span class="note">{lang简单一句话说明关掉网站会员注册的原因}</span>
+	</div>
+	<div class="content">
+		<textarea id="register_close" name="register_close" class="long">{$rs.register_close}</textarea>
 	</div>
 </div>
 <div class="table">
@@ -226,12 +232,66 @@ function rand_click()
 	<div class="content">
 		<table>
 		<tr>
-			<td><label><input type="radio" name="login_status" value="1" {if $rs.login_status} checked{/if} /> {lang开启}</label></td>
-			<td><label><input type="radio" name="login_status" value="0" {if !$rs.login_status} checked{/if} /> {lang关闭}</label></td>
-			<td class="gray">{lang原因：}</td>
-			<td><input type="text" id="login_close" name="login_close" class="long" value="{$rs.login_close}" /></td>
+			<td><label><input type="radio" name="login_status" value="1" {if $rs.login_status} checked{/if} onclick="$('#login_status_1').show();$('#login_status_0').hide()" /> {lang开启}</label></td>
+			<td><label><input type="radio" name="login_status" value="0" {if !$rs.login_status} checked{/if} onclick="$('#login_status_1').hide();$('#login_status_0').show()" /> {lang关闭}</label></td>
 		</tr>
 		</table>
+	</div>
+</div>
+<div class="table{if $rs.login_status} hide{/if}" id="login_status_0">
+	<div class="title">
+		{lang登录关闭说明：}<span class="note">{lang简单一句话说明关掉网站会员登录的原因}</span>
+	</div>
+	<div class="content">
+		<textarea id="login_close" name="login_close" class="long">{$rs.login_close}</textarea>
+	</div>
+</div>
+<div id="login_status_1"{if !$rs.login_status} class="hide"{/if}>
+	<div class="table">
+		<div class="title">
+			{lang默认登录方式：}<span class="note">{lang设置一个会员登录的默认方式}</span>
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<li><label><input type="radio" name="login_type" value="0"{if !$rs.login_type} checked{/if} />{lang普通登录（即账号密码登录方式）}</label></li>
+				<!-- if $gateway_email -->
+				<li><label><input type="radio" name="login_type" value="email"{if $rs.login_type == 'email'} checked{/if} />{langEmail验证登录}</label></li>
+				<!-- /if -->
+				<!-- if $gateway_sms -->
+				<li><label><input type="radio" name="login_type" value="sms"{if $rs.login_type == 'sms'} checked{/if} />{lang短信验证登录}</label></li>
+				<!-- /if -->
+			</ul>
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang邮件验证码模板：}<span class="note">{lang请配置好邮件验证码模板，不然系统无法支持邮件验证码登录}</span>
+		</div>
+		<div class="content">
+			<select name="login_type_email">
+				<option value="">{lang请选择…}</option>
+				<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
+				<!-- if substr($value.identifier,0,4) != 'sms_' -->
+				<option value="{$value.identifier}"{if $rs.login_type_email == $value.identifier} selected{/if}>{lang模板：}{$value.title}</option>
+				<!-- /if -->
+				<!-- /loop -->
+			</select>
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang短信验证码模板：}<span class="note">{lang请配置好短信验证码模板，不然系统无法支持短信验证码登录}</span>
+		</div>
+		<div class="content">
+			<select name="login_type_sms">
+				<option value="">{lang请选择…}</option>
+				<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
+				<!-- if substr($value.identifier,0,4) == 'sms_' -->
+				<option value="{$value.identifier}"{if $rs.login_type_sms == $value.identifier} selected{/if}>模板：{$value.title}</option>
+				<!-- /if -->
+				<!-- /loop -->
+			</select>
+		</div>
 	</div>
 </div>
 <div class="table">
@@ -395,14 +455,10 @@ function insert_input(val)
 	</div>
 </div>
 </div>
-<div class="table">
-	<div class="content">
-		<br />
-		<input type="submit" value="{lang提交}" class="submit2" />
-		<br />
-	</div>
-</div>
+
+<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
+
 </form>
 </div>
 
-<!-- inc:foot -->
+<!-- include tpl=foot -->

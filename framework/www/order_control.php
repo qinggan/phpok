@@ -153,6 +153,20 @@ class order_control extends phpok_control
 		$main['mobile'] = $address['mobile'];
 		$main['email'] = $address['email'];
 		$main['note'] = $this->get('note');
+		//存储扩展字段信息
+		$tmpext = $this->get('ext');
+		if($tmpext){
+			foreach($tmpext as $key=>$value){
+				$key = $this->format($key);
+				if(!$key || !$value){
+					unset($tmpext[$key]);
+					continue;
+				}
+			}
+			if($tmpext){
+				$main['ext'] = serialize($tmpext);
+			}
+		}
 		$id = $this->model('order')->save($main);
 		if(!$id){
 			$this->error(P_Lang('订单创建失败'),$this->url('cart','check'));
@@ -167,6 +181,7 @@ class order_control extends phpok_control
 			$tmp['unit'] = $value['unit'];
 			$tmp['thumb'] = $value['thumb'] ? $value['thumb'] : '';
 			$tmp['ext'] = $value['_attrlist'] ? serialize($value['_attrlist']) : '';
+			$tmp['is_virtual'] = $value['is_virtual'];
 			$this->model('order')->save_product($tmp);
 		}
 		if(!$is_virtual && $address){
@@ -212,39 +227,22 @@ class order_control extends phpok_control
 		$this->model('task')->add_once('order',$param);
 		$taskurl = api_url('task','index','',true);
 		$this->lib('async')->start($taskurl);
-		$payment = $this->get('payment','int');
+		$payment = $this->get('payment');
 		$urlext = $this->session->val('user_id') ? 'id='.$id : 'sn='.$sn.'&passwd='.$main['passwd'];
 		if(!$payment){
-			$this->_location($this->url('order','create_success',$urlext));
+			$this->_location($this->url('order','payment',$urlext));
 			exit;
 		}
-		$this->_location($this->url('payment','create',$urlext."&payment=".$payment));
-	}
-
-	public function create_success_f()
-	{
-		if($this->session->val('user_id')){
-			$id = $this->get('id','int');
-			if(!$id){
-				$this->error(P_Lang('未指定订单ID'),$this->url);
-			}
-			$rs = $this->model('order')->get_one($id);
-		}else{
-			$sn = $this->get('sn');
-			if(!$sn){
-				$this->error(P_Lang('未指定订单号'),$this->url);
-			}
-			$passwd = $this->get('passwd');
-			if(!$passwd){
-				$this->error(P_Lang('未指定订单密码'),$this->url);
-			}
-			$rs = $this->model('order')->get_one_from_sn($sn);
-			if($rs['passwd'] != $passwd){
-				$this->error(P_Lang('订单密码不一致'),$this->url);
+		$urlext .= "&payment=".$payment;
+		$integral_val = $this->get('integral_val');
+		if($integral_val){
+			foreach($integral_val as $key=>$value){
+				if($value && $key && intval($value) && intval($key)){
+					$urlext.= "&integral_val[".intval($key)."]=".intval($value);
+				}
 			}
 		}
-		$this->assign('rs',$rs);
-		$this->view('order_success');
+		$this->_location($this->url('payment','create',$urlext));
 	}
 
 	/**
@@ -257,46 +255,15 @@ class order_control extends phpok_control
 	public function info_f()
 	{
 		$back = $this->get('back');
-		if($this->session->val('user_id')){
-			if(!$back){
-				$back = $_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : $this->url('order');
-			}
-			$id = $this->get('id','int');
-			if(!$id){
-				$sn = $this->get('sn');
-				if(!$sn){
-					$this->error(P_Lang('未指定订单ID或订单号'),$back);
-				}
-				$rs = $this->model('order')->get_one_from_sn($sn);
-			}else{
-				$rs = $this->model('order')->get_one($id);
-			}
-			if(!$rs){
-				$this->error(P_Lang('订单信息不存在'),$back);
-			}
-			if($rs['user_id'] != $this->session->val('user_id')){
-				$this->error(P_Lang('您没有权限查看此订单'),$back);
-			}
-		}else{
-			if(!$back){
-				$back = $_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : $this->url;
-			}
-			$sn = $this->get('sn');
-			if(!$sn){
-				$this->error(P_Lang('未指定订单ID或订单号'),$back);
-			}
-			$passwd = $this->get('passwd');
-			if(!$passwd){
-				$this->error(P_Lang('您没有权限查看此订单'),$back);
-			}
-			$rs = $this->model('order')->get_one_from_sn($sn);
-			if(!$rs){
-				$this->error(P_Lang('订单信息不存在'),$back);
-			}
-			if($rs['passwd'] != $passwd){
-				$this->error(P_Lang('订单权限验证不通过'));
-			}
+		if(!$back){
+			$back = $_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : ($this->session->val('user_id') ? $this->url('order') : $this->url);
 		}
+		$order = $this->_order();
+		if(!$order['status']){
+			$this->error($order['error'],$back);
+		}
+		$rs = $order['info'];
+		unset($order);
 		$status_list = $this->model('order')->status_list();
 		$rs['status_info'] = ($status_list && $status_list[$rs['status']]) ? $status_list[$rs['status']] : $rs['status'];
 		$this->assign('rs',$rs);
@@ -326,15 +293,88 @@ class order_control extends phpok_control
 		}
 		if($this->model('order')->check_payment_is_end($rs['id'])){
 			$this->assign('pay_end',true);
-		}else{
-			$mobile = $this->is_mobile ? 1 : 0;
-			$paylist = $this->model('payment')->get_all($this->site['id'],1,$mobile);
-			$this->assign("paylist",$paylist);
-			$this->balance();
 		}
 		$loglist = $this->model('order')->log_list($rs['id']);
 		$this->assign('loglist',$loglist);
 		$this->view('order_info');
+	}
+
+	/**
+	 * 订单支付页
+	 * @参数 
+	 * @返回 
+	 * @更新时间 
+	**/
+	public function payment_f()
+	{
+		$back = $this->get('back');
+		if(!$back){
+			$back = $_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : ($this->session->val('user_id') ? $this->url('order') : $this->url);
+		}
+		$order = $this->_order();
+		if(!$order['status']){
+			$this->error($order['error'],$back);
+		}
+		$rs = $order['info'];
+		$this->assign('rs',$rs);
+		unset($order);
+		if($this->model('order')->check_payment_is_end($rs['id'])){
+			$url = $this->session->val('user_id') ? $this->url('order','info','id='.$rs['id']) : $this->url('order','info','sn='.$rs['sn'].'&passwd='.$rs['passwd']);
+			$this->success(P_Lang('您的订单 {sn} 已经支付完成，无需再支付',array('sn'=>$rs['sn'])),$url);
+		}
+		$mobile = $this->is_mobile ? 1 : 0;
+		$paylist = $this->model('payment')->get_all($this->site['id'],1,$mobile);
+		$this->assign("paylist",$paylist);
+		$this->balance();
+		$this->view('order_payment');
+	}
+
+	/**
+	 * 获取订单信息，无论成功或是失败均返回数据或布尔值
+	 * @参数 id 订单ID号
+	 * @参数 sn 订单编号
+	 * @参数 passwd 订单密码
+	 * @返回 
+	 * @更新时间 
+	**/
+	private function _order()
+	{
+		$userid = $this->session->val('user_id');
+		if($userid){
+			$id = $this->get('id','int');
+			if(!$id){
+				$sn = $this->get('sn');
+				if(!$sn){
+					return array('status'=>false,'error'=>P_Lang('未指定订单ID或订单号'));
+				}
+				$rs = $this->model('order')->get_one_from_sn($sn);
+			}else{
+				$rs = $this->model('order')->get_one($id);
+			}
+			if(!$rs){
+				return array('status'=>false,'error'=>P_Lang('订单信息不存在'));
+			}
+			if($rs['user_id'] != $userid){
+				$passwd = $this->get('passwd');
+				if(!$passwd || ($passwd && $passwd != $rs['passwd'])){
+					return array('status'=>false,'error'=>P_Lang('您没有权限查看此订单'));
+				}
+			}
+		}else{
+			$sn = $this->get('sn');
+			$passwd = $this->get('passwd');
+			if(!$sn || !$passwd){
+				return array('status'=>false,'error'=>P_Lang('参数不完整'));
+			}
+			$rs = $this->model('order')->get_one_from_sn($sn);
+			if(!$rs){
+				return array('status'=>false,'error'=>P_Lang('订单信息不存在'));
+			}
+			if($passwd != $rs['passwd']){
+				return array('status'=>false,'error'=>P_Lang('您没有权限查看此订单'));
+			}
+		}
+		return array('status'=>true,'info'=>$rs);
 	}
 
 	/**
@@ -349,10 +389,70 @@ class order_control extends phpok_control
 		if(!$wlist){
 			return false;
 		}
-		$balance = array('title'=>P_Lang('余额支付'),'rslist'=>$wlist);
-		$this->assign('balance',$balance);
-		return $balance;
+		if($wlist['balance']){
+			$this->assign('balance',$wlist['balance']);
+		}
+		if($wlist['integral']){
+			$this->assign('integral',$wlist['integral']);
+		}
+		return true;
+	}
+
+	/**
+	 * 订单评论
+	 * @参数 $id 订单ID
+	 * @更新时间 
+	**/
+	public function comment_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('订单ID不能为空'),$this->url('order'));
+		}
+		$userid = $this->session->val('user_id');
+		if(!$userid){
+			$this->error(P_Lang('非会员账号不能执行此操作'),$this->url('login','index','_back='.rawurlencode($this->url('order','comment','id='.$id))));
+		}
+		$backurl = $this->lib('server')->referer();
+		if(!$backurl){
+			$backurl = $this->url('order');
+		}
+		$rs = $this->model('order')->get_one($id);
+		if($rs['user_id'] != $userid){
+			$this->error(P_Lang('您没有权限评论此订单信息'),$backurl);
+		}
+		if(!$rs['endtime']){
+			$this->error(P_Lang('订单未结束，暂不支持评论'),$backurl);
+		}
+		if($rs['status'] == 'cancel'){
+			$this->error(P_Lang('订单已取消，不支持评论'),$backurl);
+		}
+		$plist = $this->model('order')->product_list($id);
+		if(!$plist){
+			$this->error(P_Lang('订单中无法找到相关产品信息'),$backurl);
+		}
+		$rslist = false;
+		foreach($plist as $key=>$value){
+			if(!$value['tid']){
+				continue;
+			}
+			if(!$rslist){
+				$rslist = array();
+			}
+			//$value['info'] = phpok("_arc",'title_id='.$value['tid']);
+			//读取他评论过的
+			$condition = "tid='".$value['tid']."' AND uid='".$userid."' AND order_id='".$id."'";
+			$commentlist = $this->model('reply')->get_list($condition,0,100,"","addtime ASC,id ASC");
+			if($commentlist){
+				$value['comment'] = $commentlist;
+			}
+			$rslist[] = $value;
+		}
+		if(!$rslist){
+			$this->error(P_Lang('订单中没有找到可以关联的产品信息，所以不支持评论'),$backurl);
+		}
+		$this->assign('rslist',$rslist);
+		$this->assign('rs',$rs);
+		$this->view('order_comment');
 	}
 }
-
-?>

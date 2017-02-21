@@ -33,6 +33,18 @@ class gateway_control extends phpok_control
 					}
 				}
 			}
+			foreach($rslist as $key=>$value){
+				if($value['list']){
+					foreach($value['list'] as $k=>$v){
+						$tmpcode = $this->model('gateway')->code_one($v['type'],$v['code']);
+						if($tmpcode['manage']){
+							$v['extbtn'] = $tmpcode['manage'];
+							$value['list'][$k] = $v;
+						}
+					}
+					$rslist[$key] = $value;
+				}
+			}
 			$this->assign('rslist',$rslist);
 		}
 		$this->view('gateway_index');
@@ -191,6 +203,63 @@ class gateway_control extends phpok_control
 		$this->model('gateway')->delete($id);
 		$this->json(true);
 	}
-}
 
-?>
+	public function extmanage_f()
+	{
+		if(!$this->popedom["list"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id','int');
+		$manageid = $this->get('manageid');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		if(!$manageid){
+			$this->error(P_Lang('未指定管理文件'));
+		}
+		$rs = $this->model('gateway')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('网关路由不存在'));
+		}
+		$this->assign('rs',$rs);
+		$code = $this->model('gateway')->code_one($rs['type'],$rs['code']);
+		if(!$code){
+			$this->error(P_Lang('配置文件有损坏，请检查'));
+		}
+		if(!$code['manage']){
+			$this->error(P_Lang('没有扩展管理项'));
+		}
+		if(!$code['manage'][$manageid]){
+			$this->error(P_Lang('网关路由扩展管理项不存在'));
+		}
+		if($code['code']){
+			foreach($code['code'] as $key=>$value){
+				if($value['required'] && $value['required'] != 'false' && $rs['ext'][$key] == ''){
+					$this->error(P_Lang('参数配置不完整'));
+				}
+			}
+		}
+		$code = $code['manage'][$manageid];
+		$exec = $code['exec'] ? $code['exec'] : $manageid;
+		if(substr($exec,-4) != '.php'){
+			$exec .= '.php';
+		}
+		$execfile = $this->dir_root.'gateway/'.$rs['type'].'/'.$rs['code'].'/'.$exec;
+		if(!file_exists($execfile)){
+			$this->error(P_Lang('执行文件不存在'));
+		}
+		$type = $this->get('type');
+		if(!$type){
+			$type = $code['type'];
+		}
+		//判断必填的参数是否存在
+		if($type == 'ajax'){
+			$info = include $execfile;
+			if(!$info){
+				$this->error(P_Lang('获取数据失败'));
+			}
+			$this->success($info);
+		}
+		include $execfile;
+	}
+}

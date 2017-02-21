@@ -30,3 +30,14 @@ ALTER TABLE  `qinggan_order_product` ADD  `is_virtual` TINYINT( 1 ) UNSIGNED NOT
 
 DROP TABLE `qinggan_user_address`, `qinggan_user_invoice`;
 ALTER TABLE  `qinggan_cart_product` ADD  `unit` VARCHAR( 50 ) NOT NULL COMMENT  '单位';
+
+
+-- 2016年11月27日
+ALTER TABLE  `qinggan_payment_log` CHANGE  `payment_id`  `payment_id` VARCHAR( 255 ) NOT NULL DEFAULT  '0' COMMENT  '支付方式，为数字时表示payment表中的主要支付方式，为字母数字混合表示财富付款';
+ALTER TABLE  `qinggan_order_payment` CHANGE  `payment_id`  `payment_id` VARCHAR( 255 ) NOT NULL DEFAULT  '0' COMMENT  '支付方式ID，数字表示网上业务支付，字母为财富支付';
+
+-- 2016年11月28日
+ALTER TABLE `qinggan_list` ADD `integral` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '财富基数，此基数可用于财富方案计算';
+
+-- 2016年11月29日
+ALTER TABLE `qinggan_reply` ADD `order_id` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0为评论，非零绑定订单ID';

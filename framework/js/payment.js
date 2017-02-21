@@ -14,19 +14,15 @@ function group_edit(id)
 
 function group_delete(id,title)
 {
-	var q = confirm('确定要删除支付组【'+title+'】 吗？删除后是不能恢复的！');
-	if(q == '0')
-	{
-		return false;
-	}
-	var url = get_url('payment','groupdel','id='+id);
-	var rs = $.phpok.json(url);
-	if(!rs || rs.status != 'ok')
-	{
-		alert(rs.content);
-		return false;
-	}
-	$.phpok.reload();
+	$.dialog.confirm("确定要删除支付组【<span class='red'>"+title+"</span>】吗？<br />删除后是不能恢复的！",function(){
+		var url = get_url('payment','groupdel','id='+id);
+		var rs = $.phpok.json(url);
+		if(!rs || rs.status != 'ok'){
+			$.dialog.alert(rs.content);
+			return false;
+		}
+		$.phpok.reload();
+	});
 }
 
 function payment_add(gid)

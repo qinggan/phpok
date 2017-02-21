@@ -180,10 +180,14 @@ class reply_control extends phpok_control
 		if(!$id){
 			$this->json(P_Lang('未指定ID'));
 		}
+		$rs = $this->model('reply')->get_one($id);
 		$status = $this->get("status","int");
 		$status = $status ? 1 : 0;
 		$array = array("status"=>$status);
 		$this->model('reply')->save($array,$id);
+		if($status && $rs['tid'] && $rs['uid']){
+			$this->model('wealth')->add_integral($rs['tid'],$rs['uid'],'comment',P_Lang('管理员审核评论#{id}',array('id'=>$id)));
+		}
 		$this->json("OK",true);
 	}
 
@@ -248,6 +252,10 @@ class reply_control extends phpok_control
 		$array["content"] = $this->get("content",'html');
 		$array["status"] = $this->get("status","int");
 		$this->model('reply')->save($array,$id);
+		$rs = $this->model('reply')->get_one($id);
+		if($array["status"] && $rs['tid'] && $rs['uid']){
+			$this->model('wealth')->add_integral($rs['tid'],$rs['uid'],'comment',P_Lang('管理员编辑评论#{id}',array('id'=>$rs['id'])));
+		}
 		$this->json(true);
 	}
 

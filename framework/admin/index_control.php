@@ -170,10 +170,6 @@ class index_control extends phpok_control
 		$this->assign("all_rslist",$rslist);
 		$rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
 		$this->assign("all_rs",$rs);
-		$email_server = $this->model('gateway')->get_default('email');
-		if($email_server){
-			$this->assign('showemailtest',true);
-		}
 		return $this->fetch('index_block_allsetting');
 	}
 
@@ -318,8 +314,39 @@ class index_control extends phpok_control
 			$url = $this->url("reply","","status=3");
 			$list['ctrl_reply'] = array("title"=>P_Lang('评论管理'),"total"=>$reply_total,"url"=>$url,'id'=>'reply');
 		}
-		$taskurl = api_url('task','index','',true);
-		$this->lib('async')->start($taskurl);
+		if($this->config['async']['status']){
+			$taskurl = api_url('task','index','',true);
+			if($this->config['async']['type']){
+				$this->lib('async')->loadtype($this->config['async']['type']);
+			}
+			$this->lib('async')->start($taskurl);
+		}
+		//远程检查更新
+		if(file_exists($this->dir_root.'data/update.php')){
+			include($this->dir_root.'data/update.php');
+			$time = 0;
+			if(file_exists($this->dir_root.'data/update.time')){
+				$time = file_get_contents($this->dir_root.'data/update.time');
+			}
+			$check = false;
+			if($time < $this->time && ($this->time - $uconfig['date'] * 86400) > $time){
+				$check = true;
+			}
+			if($check){
+				file_put_contents($this->dir_root.'data/update.time',$this->time);
+				$list['update_action'] = true;
+				/*$url = $this->url('update','check',$this->session->sid().'='.$this->session->sessid(),'admin',true);
+				$this->lib('html')->ip('127.0.0.1');
+				$info = $this->lib('html')->get_content($url);
+				if($info){
+					$info = $this->lib('json')->decode($info);
+					if($info['status'] == 'ok'){
+						$url = $this->url('update');
+						$list['ctrl_update'] = array('title'=>P_Lang('程序升级'),'total'=>'new','url'=>$url,'id'=>'update');
+					}
+				}*/
+			}
+		}
 		if(!$list){
 			$this->json(P_Lang('没有消息'));
 		}

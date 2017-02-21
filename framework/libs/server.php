@@ -44,6 +44,22 @@ class server_lib
 	}
 
 	/**
+	 * 取得IP，仅限服务端IP，客户端IP不能通过此方法取
+	**/
+	public function ip()
+	{
+		return $_SERVER['SERVER_ADDR'];
+	}
+
+	/**
+	 * 取得服务器版本和虚拟主机名的字符串。
+	**/
+	public function signature()
+	{
+		return $_SERVER['SERVER_SIGNATURE'];
+	}
+
+	/**
 	 * 取得$_SERVER['PHP_SELF']，当前执行脚本的文件名，与 document root 有关
 	**/
 	public function me()

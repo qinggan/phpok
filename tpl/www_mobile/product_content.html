@@ -86,8 +86,8 @@
 		});
 		var url = api_url('cart','price_format','price='+$.str.encode(price));
 		$.phpok.json(url,function(rs){
-			if(rs.status == 'ok'){
-				$("#showprice").html(rs.content);
+			if(rs.status){
+				$("#showprice").html(rs.info);
 			}
 		});
 	}

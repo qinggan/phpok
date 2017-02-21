@@ -26,7 +26,7 @@ $(document).ready(function(){
 				<th width="80">数量</th>
 				<th class="o-price">金额</th>
 				<th class="o-status">审核</th>
-				<th width="80px">明细</th>
+				<th width="140">明细</th>
 			</tr>
 			<!-- loop from=$rslist key=$key value=$value -->
 			<tr{if $rslist_id.num%2 == ''} class="o-dark"{else} class="o-white"{/if}>
@@ -37,6 +37,7 @@ $(document).ready(function(){
 				<td class="center">{$value.status_info}</td>
 				<td align="center">
 					<input type="button" value=" 查看 " onclick="$.phpok.go('{url ctrl=order func=info id=$value.id/}',false)" />
+					<input type="button" value=" 评论 " onclick="$.phpok.go('{url ctrl=order func=comment id=$value.id/}',false)" />
 				</td>
 			</tr>
 			<!-- /loop -->

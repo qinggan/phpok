@@ -164,3 +164,23 @@ function show_wealth_log(title,wid,uid)
 		'okVal':'关闭'
 	});
 }
+
+function update_user_group(id)
+{
+	var str = $("#group_id option:selected").attr("data-fields");
+	if(!str || str == 'undefined'){
+		return true;
+	}
+	var list = str.split(",");
+	$("div[name=userext_html]").hide();
+	for(var i in list){
+		$("#userext_"+list[i]).show();
+	}
+}
+
+$(document).ready(function(){
+	update_user_group();
+	$("#group_id").change(function(){
+		update_user_group();
+	});
+});

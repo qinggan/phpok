@@ -119,6 +119,34 @@ $(document).ready(function(){
 	</div>
 	<div class="table">
 		<div class="title">
+			订单其他扩展字段：<span class="note">请根据实际情况增加扩展字段，字段数据存储在主表中</span>
+		</div>
+		<div class="content" id="ext_html">
+			<!-- if !$rs.ext -->
+			<div style="margin:2px 0">
+				<input type="text" name="extkey[]" class="extkey" />：
+				<input type="text" name="extval[]" class="default" />
+				<input type="button" value=" + " onclick="main_ext_create()" class="phpok-btn" />
+			</div>
+			<!-- /if -->
+			<!-- loop from=$rs.ext key=$key value=$value id=$tmpid -->
+			<div style="margin:2px 0">
+				<input type="text" name="extkey[]" value="{$key}" class="extkey" />：
+				<input type="text" name="extval[]" value="{$value}" class="default" />
+				<!-- if !$tmpid.index -->
+				<input type="button" value=" + " onclick="main_ext_create()" class="phpok-btn" />
+				<!-- else -->
+				<input type="button" value=" - " onclick="main_ext_delete(this)" class="phpok-btn" />
+				<!-- /if -->
+			</div>
+			<!-- /loop -->
+		</div>
+	</div>
+	
+	
+	
+	<div class="table">
+		<div class="title">
 			订单备注：
 			<span class="note">填写一些客户的特殊要求说明，不支持HTML</span>
 		</div>

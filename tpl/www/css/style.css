@@ -507,7 +507,7 @@ input.paybtn{background:url('../images/pay-btn.jpg') no-repeat;width:118px;heigh
 
 /* 会员个人中心涉及到的CSS，这里的布局基本上以cp_为前缀 */
 div.cp{margin:10px auto;width:980px;}
-div.cp:after{content:'.',display:block;height:0;line-height:0;overflow:hidden;visibility:hidden;}
+div.cp:after{content:'.',display:block;height:0;line-height:0;overflow:hidden;visibility:hidden;clear:both;}
 div.cp .left{width:200px;float:left;}
 div.cp .right{width:770px;float:right;}
 div.cp .right .pages{border-top:0;}
@@ -586,3 +586,4 @@ ul.tip li{line-height:22px;}
 
 
 
+input.price{width:80px;text-align:center;}

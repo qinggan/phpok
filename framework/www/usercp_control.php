@@ -8,17 +8,19 @@
 ***********************************************************/
 class usercp_control extends phpok_control
 {
-	var $group_rs;
-	var $user_rs;
+	public $group_rs;
+	public $user_rs;
 	public function __construct()
 	{
 		parent::control();
-		if(!$_SESSION["user_id"]){
-			error(P_Lang('未登录会员不能执行此操作'),$this->url,"error");
+		$user_id = $this->session->val('user_id');
+		if(!$user_id){
+			$errurl = $this->url('login','',$this->url('usercp'));
+			$this->error(P_Lang('未登录会员不能执行此操作'),$errurl);
 		}
-		$this->group_rs = $this->model('usergroup')->group_rs($_SESSION['user_id']);
+		$this->group_rs = $this->model('usergroup')->group_rs($user_id);
 		if(!$this->group_rs){
-			error(P_Lang('您的账号有异常：无法获取相应的会员组信息，请联系管理员'),'',"error");
+			$this->error(P_Lang('您的账号有异常：无法获取相应的会员组信息，请联系管理员'));
 		}
 	}
 
@@ -342,5 +344,19 @@ class usercp_control extends phpok_control
 	{
 		$this->view('usercp_introducer');
 	}
+
+	public function wealth_f()
+	{
+		$rslist = $this->model('wealth')->get_all(1);
+		if(!$rslist){
+			$this->error(P_Lang('系统没有启用任何财富功能，请联系管理员'));
+		}
+		$wealth = $this->user['wealth'];
+		foreach($rslist as $key=>$value){
+			$value['val'] = $wealth[$value['identifier']]['val'];
+			$rslist[$key] = $value;
+		}
+		$this->assign('rslist',$rslist);
+		$this->view('usercp_wealth');
+	}
 }
-?>

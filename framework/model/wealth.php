@@ -40,11 +40,15 @@ class wealth_model_base extends phpok_model
 	/**
 	 * 取得某个财富规则配置信息
 	 * @参数 $id 财富ID
+	 * @参数 $typeid 字段ID
 	 * @返回 一维数组
 	**/
-	public function get_one($id)
+	public function get_one($id,$typeid='id')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."wealth WHERE id='".$id."'";
+		if(!$typeid){
+			$typeid = 'id';
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."wealth WHERE `".$typeid."`='".$id."'";
 		return $this->db->get_one($sql);
 	}
 
@@ -218,6 +222,7 @@ class wealth_model_base extends phpok_model
 			return false;
 		}
 		$data = $this->_data($note);
+		$integral = $this->model('order')->integral($id);
 		foreach($tmplist as $key=>$value){
 			$log = $data;
 			$log['status'] = $value['ifcheck'] ? 0 : 1;
@@ -225,6 +230,75 @@ class wealth_model_base extends phpok_model
 			$log['wid'] = $value['wid'];
 			$log['goal_id'] = $this->_goal($uid,$value['goal']);
 			$tmpprice = str_replace('price',$order['price'],$value['val']);
+			$tmpprice = str_replace('integral',$integral,$tmpprice);
+			eval('$value[\'val\'] = '.$tmpprice.';');
+			$val = round($value['val'],$value['dnum']);
+			$log['val'] = $val;
+			$log['mid'] = $id;
+			$chk = $this->chk_log($log);
+			if(!$chk){
+				continue;
+			}
+			$this->save_log($log);
+			if($log['status']){
+				$get_val = $this->get_val($log['goal_id'],$log['wid']);
+				$val2 = $get_val + $val;
+				if($val2<0){
+					$val2 = 0;
+				}
+				$array = array('wid'=>$log['wid'],'lasttime'=>$this->time,'uid'=>$log['goal_id'],'val'=>$val2);
+				$this->save_info($array);
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 阅读/发布/评论赠送财富
+	 * @参数 $id 主题ID
+	 * @参数 $uid 会员ID
+	 * @参数 $type 类型，content读主题，comment评论主题，post发布主题
+	 * @参数 $note 备注
+	 * @返回 true 或 false
+	 * @更新时间 2016年08月16日
+	**/
+	public function add_integral($id=0,$uid=0,$type='content',$note='')
+	{
+		if(!$id || !$uid || !intval($id) || !intval($uid)){
+			return false;
+		}
+		if(!in_array($type,array('content','comment','post'))){
+			return false;
+		}
+		$id = intval($id);
+		$uid = intval($uid);
+		$rs = $this->model('list')->simple_one($id);
+		if(!$rs || !$rs['status']){
+			return false;
+		}
+		if($type == 'post' && $rs['user_id'] != $uid){
+			return false;
+		}
+		if($type == 'comment'){
+			$condition = "tid='".$id."' AND uid='".$uid."' AND status=1";
+			$comment_list = $this->model('reply')->get_list($condition,0,1);
+			if(!$comment_list){
+				return false;
+			}
+		}
+		$tmplist = $this->_rule_list($type);
+		if(!$tmplist){
+			return false;
+		}
+		$data = $this->_data($note);
+		$integral = $this->model('list')->integral($id);
+		foreach($tmplist as $key=>$value){
+			$log = $data;
+			$log['status'] = $value['ifcheck'] ? 0 : 1;
+			$log['rule_id'] = $value['id'];
+			$log['wid'] = $value['wid'];
+			$log['goal_id'] = $this->_goal($uid,$value['goal']);
+			$tmpprice = str_replace('integral',$integral,$value['val']);
 			eval('$value[\'val\'] = '.$tmpprice.';');
 			$val = round($value['val'],$value['dnum']);
 			$log['val'] = $val;
@@ -332,93 +406,6 @@ class wealth_model_base extends phpok_model
 		$sql.= "ON(r.wid=w.id) WHERE w.site_id='".$this->site_id."' AND w.status=1 AND r.action='".$type."' ";
 		$sql.= "ORDER BY w.taxis,r.taxis ASC";
 		return $this->db->get_all($sql);
-	}
-	/**
-	 * 根据规则自动计算财富
-	 * @参数 
-	 * @返回 
-	 * @更新时间 
-	**/
-	public function wealth_autosave($uid=0,$note='',$main_id='',$ext='')
-	{
-		if(!$uid){
-			return false;
-		}
-		$data = array('dateline'=>$this->time,'appid'=>$this->app_id,'ctrlid'=>$this->config['ctrl'],'funcid'=>$this->config['func']);
-		$url = $this->url.$_SERVER['PHP_SELF'];
-		if($_SERVER['QUERY_STRING']){
-			$url .= '?'.$_SERVER['QUERY_STRING'];
-		}
-		$data['url'] = substr($url,0,255);
-		if($_SESSION['admin_id']){
-			$data['admin_id'] = $_SESSION['admin_id'];
-		}
-		if($_SESSION['user_id']){
-			$data['user_id'] = $_SESSION['user_id'];
-		}
-		$data['note'] = $note;
-		//读取当前积分规则
-		$wealth_list = $this->get_all(1,'id');
-		if(!$wealth_list){
-			return false;
-		}
-		$rule_list = $this->rule_all();
-		if(!$rule_list){
-			return false;
-		}
-		foreach($rule_list as $key=>$value){
-			$wealth_list[$value['wid']]['rule'][] = $value;
-		}
-		unset($rule_list);
-		foreach($wealth_list as $key=>$value){
-			if(!$value['rule']){
-				unset($wealth_list[$key]);
-				continue;
-			}
-			$log = $data;
-			$log['wid'] = $value['id'];
-			$log['status'] = $value['ifcheck'] ? 0 : 1;
-			$log['mid'] = $main_id;
-			foreach($value['rule'] as $k=>$v){
-				//当控制器不符合要求时，跳过
-				if($v['action'] != $log['ctrlid']){
-					continue;
-				}
-				if($v['goal'] == 'user'){
-					$log['goal_id'] = $uid;
-				}else{
-					$tmp = $this->model('user')->get_relation($uid);
-					if(!$tmp){
-						continue;
-					}
-					$log['goal_id'] = $tmp;
-					unset($tmp);
-				}
-				//判断符合这个条件的规则是否有记录
-				$chk = $this->chk_log($log,$v['repeat'],$v['mintime'],$v['linkid']);
-				if(!$chk){
-					continue;
-				}
-				$val = $v['val'];
-				if($ext && is_array($ext) && count($ext)>0){
-					foreach($ext as $kk=>$vv){
-						$val = str_replace($kk,$vv,$val);
-					}
-				}
-				$val = round($val,$value['dnum']);
-				$log['val'] = $val;
-				$get_val = $this->get_val($log['goal_id'],$log['wid']);
-				$this->save_log($log);
-				if($log['status']){
-					$val2 = $get_val + $val;
-					if($val2<0){
-						$val2 = 0;
-					}
-					$array = array('wid'=>$log['wid'],'lasttime'=>$this->time,'uid'=>$log['goal_id'],'val'=>$val2);
-					$this->save_info($array);
-				}
-			}
-		}
 	}
 
 	/**

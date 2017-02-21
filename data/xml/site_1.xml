@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<biz_status><![CDATA[1]]></biz_status>
+	<login_type><![CDATA[0]]></login_type>
+	<login_type_email><![CDATA[login_email]]></login_type_email>
+	<login_type_sms><![CDATA[sms_code]]></login_type_sms>
+	<biz_status><![CDATA[0]]></biz_status>
 	<biz_freight><![CDATA[4]]></biz_freight>
 </root>

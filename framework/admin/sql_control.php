@@ -1,16 +1,23 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/admin/sql_control.php
-	备注： 数据库备份及恢复操作
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2014年3月19日
-*****************************************************************************************/
+/**
+ * 数据库备份及恢复操作
+ * @package phpok\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2016年12月02日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class sql_control extends phpok_control
 {
 	private $popedom;
+
+	/**
+	 * 构造函数
+	**/
 	public function __construct()
 	{
 		parent::control();
@@ -18,10 +25,13 @@ class sql_control extends phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
+	/**
+	 * 数据库列表
+	**/
 	public function index_f()
 	{
-		if(!$this->popedom["list"] && !$_SESSION['admin_rs']['if_system']){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+		if(!$this->popedom["list"] && !$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		//读取全部数据库表
 		$rslist = $this->model('sql')->tbl_all();
@@ -39,14 +49,18 @@ class sql_control extends phpok_control
 		$this->view("sql_index");
 	}
 
+	/**
+	 * 数据表优化
+	 * @参数 id 要优化的数据表，不能为空
+	**/
 	public function optimize_f()
 	{
 		if(!$this->popedom['optimize']){
-			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
+			$this->error(P_Lang('您没有权限执行此操作'),$this->url('sql'));
 		}
 		$id = $this->get('id');
 		if(!$id){
-			error(P_Lang('未选定要操作的数据表'),$this->url('sql'),'error');
+			$this->error(P_Lang('未选定要操作的数据表'),$this->url('sql'));
 		}
 		$idlist = explode(",",$id);
 		foreach($idlist as $key=>$value){
@@ -55,17 +69,21 @@ class sql_control extends phpok_control
 			}
 			$this->model('sql')->optimize($value);
 		}
-		error(P_Lang('数据表优化成功'),$this->url("sql"),'ok');
+		$this->success(P_Lang('数据表优化成功'),$this->url("sql"));
 	}
 
+	/**
+	 * 数据表修复
+	 * @参数 id 要修复的数据表，不能为空
+	**/
 	public function repair_f()
 	{
 		if(!$this->popedom['repair']){
-			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
+			$this->error(P_Lang('您没有权限执行此操作'),$this->url('sql'));
 		}
 		$id = $this->get('id');
 		if(!$id){
-			error(P_Lang('未选定要操作的数据表'),$this->url('sql'),'error');
+			$this->error(P_Lang('未选定要操作的数据表'),$this->url('sql'));
 		}
 		$idlist = explode(",",$id);
 		foreach($idlist as $key=>$value){
@@ -74,13 +92,21 @@ class sql_control extends phpok_control
 			}
 			$this->model('sql')->repair($value);
 		}
-		error(P_Lang('数据表信修复成功'),$this->url("sql"),'ok');
+		$this->success(P_Lang('数据表信修复成功'),$this->url("sql"));
 	}
 
+	/**
+	 * 备份数据表操作
+	 * @参数 id 要备份的表，为空或all时表示备份全部
+	 * @参数 backfilename 备份的文件名，为空表示刚开始备份，系统自动生成一个备份文件名，并同时将数据库里的表结构备份好
+	 * @参数 startid 整数型 开始ID，为空表示从0开始，表示备份表的ID顺序
+	 * @参数 dataid 备份到的目标ID，也是从0开始（为空即为0）
+	 * @参数 pageid 页码ID，每次备份100条数据，当数据表中的数据超过100条时，pageid就起到作用了
+	**/
 	public function backup_f()
 	{
 		if(!$this->popedom['create']){
-			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
+			$this->error(P_Lang('您没有权限执行此操作'),$this->url('sql'));
 		}
 		$id = $this->get('id');
 		if(!$id || $id == "all"){
@@ -119,7 +145,7 @@ class sql_control extends phpok_control
 			}
 			$this->lib('file')->vi($html,$this->dir_root.'data/'.$backfilename.".php");//存储数据
 			$this->lib('file')->vi("-- PHPOK4 Full 数据备份\n\n",$this->dir_root.'data/'.$backfilename."_tmpdata.php");
-			error(P_Lang('表结构备份成功，正在执行下一步'),$url,'ok');
+			$this->success(P_Lang('表结构备份成功，正在执行下一步'),$url);
 		}
 		$url .= "&backfilename=".$backfilename;
 		$startid = $this->get("startid","int");
@@ -127,27 +153,27 @@ class sql_control extends phpok_control
 		if(($startid + 1)> count($idlist) && file_exists($this->dir_root.'data/'.$backfilename.'_tmpdata.php')){
 			$newfile = $this->dir_root.'data/'.$backfilename.'_'.$dataid.'.php';
 			$this->lib('file')->mv($this->dir_root.'data/'.$backfilename.'_tmpdata.php',$newfile);
-			error(P_Lang('数据备份成功'),$this->url('sql','backlist'),'ok');
+			$this->success(P_Lang('数据备份成功'),$this->url('sql','backlist'));
 		}
 		$pageid = $this->get("pageid",'int');
 		$table = $idlist[$startid];//指定表
 		//判断如果是管理员表，则跳到下一步
 		if($table == $sql_prefix."adm" || $table == $sql_prefix."session"){
 			$url .= "&startid=".($startid+1)."&pageid=".$pageid."&dataid=".$dataid;
-			error(P_Lang('数据表{table}已备份完成！正在进行下一步操作，请稍候！',array('table'=>' <span class="red">'.$table.'</span> ')),$url);
+			$this->success(P_Lang('数据表{table}已备份完成！正在进行下一步操作，请稍候！',array('table'=>' <span class="red">'.$table.'</span> ')),$url);
 		}
 		$psize = 100;
 		$total = $this->model('sql')->table_count($table);
 		if($total<1){
 			$url .= "&startid=".($startid+1)."&pageid=".$pageid."&dataid=".$dataid;
-			error(P_Lang('数据表{table}已备份完成！正在进行下一步操作，请稍候！',array('table'=>' <span class="red">'.$table.'</span> ')),$url);
+			$this->success(P_Lang('数据表{table}已备份完成！正在进行下一步操作，请稍候！',array('table'=>' <span class="red">'.$table.'</span> ')),$url);
 		}
 		if($psize >= $total){
 			$rslist = $this->model('sql')->getsql($table,0,'all');
 			if(!$rslist){
 				$rslist = array();
 			}
-			$msg = "\n-- table : ".$table." , backup time ".date("Y-m-d H:i:s",$this->time)."\n";
+			$msg = "\n-- 表：".$table."，备份时间：".date("Y-m-d H:i:s",$this->time)."\n";
 			$msg.= "INSERT INTO ".$table." VALUES";
 			$i=0;
 			foreach($rslist as $key=>$value){
@@ -172,7 +198,7 @@ class sql_control extends phpok_control
 				$pageid = 1;
 			}
 			if($pageid<2){
-				$msg .= "\n-- table : ".$table." , backup time ".date("Y-m-d H:i:s",$this->time)."\n";
+				$msg .= "\n-- 表：".$table."，备份时间：".date("Y-m-d H:i:s",$this->time)."\n";
 			}
 			$offset = ($pageid-1) * $psize;
 			if($offset < $total){
@@ -222,19 +248,23 @@ class sql_control extends phpok_control
 			$url .= "&dataid=".(intval($dataid)+1);
 		}
 		if(!$idlist[$new_startid]){
-			error(P_Lang('数据备份成功'),$this->url('sql','backlist'),'ok');
+			$this->success(P_Lang('数据备份成功'),$this->url('sql','backlist'));
 		}
-		error(P_Lang('正在备份数据，当前第{pageid}个文件，正在备{table}相关数据',array('pageid'=>' <span class="red">'.($dataid+1).'</span> ','table'=>' <span class="red">'.$idlist[$startid].'</span> ')),$url,'ok');
+		$tmparray = array('pageid'=>' <span class="red">'.($dataid+1).'</span> ','table'=>' <span class="red">'.$idlist[$startid].'</span> ');
+		$this->success(P_Lang('正在备份数据，当前第{pageid}个文件，正在备{table}相关数据',$tmparray),$url);
 	}
 
+	/**
+	 * 备份列表，查看当前系统备份的数据表数据
+	**/
 	public function backlist_f()
 	{
-		if(!$this->popedom['list'] && !$_SESSION['admin_rs']['if_system']){
-			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
+		if(!$this->popedom['list'] && !$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有权限执行此操作'),$this->url('sql'));
 		}
 		$filelist = $this->lib('file')->ls($this->dir_root.'data/');
 		if(!$filelist){
-			error(P_Lang('空数据，请检查目录：{root}data/',array('root'=>$this->dir_root)),$this->url("sql"));
+			$this->error(P_Lang('空数据，请检查目录：data/'),$this->url("sql"));
 		}
 		$tmplist = array();
 		$i=0;
@@ -249,7 +279,7 @@ class sql_control extends phpok_control
 			}
 		}
 		if(!$tmplist){
-			error(P_Lang('没有相备份数据'),$this->url('sql'));
+			$this->error(P_Lang('没有相备份数据'),$this->url('sql'));
 		}
 		foreach($tmplist as $key=>$value){
 			foreach($filelist as $k=>$v){
@@ -264,22 +294,26 @@ class sql_control extends phpok_control
 			$value['size_str'] = $this->lib('common')->num_format($value['size']);
 			$tmplist[$key] = $value;
 		}
-		$this->tpl->assign("rslist",$tmplist);
+		$this->assign("rslist",$tmplist);
 		$this->view("sql_list");
 	}
 
+	/**
+	 * 删除备份数据
+	 * @参数 id 指定要删除的备份数据ID
+	**/
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
-			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
+			$this->error(P_Lang('您没有权限执行此操作'),$this->url('sql'));
 		}
 		$id = $this->get('id');
 		if(!$id){
-			error(P_Lang('没有指定备份文件'),$this->url('sql','backlist'),'error');
+			$this->error(P_Lang('没有指定备份文件'),$this->url('sql','backlist'));
 		}
 		$filelist = $this->lib('file')->ls($this->dir_root.'data/');
 		if(!$filelist){
-			error(P_Lang('空数据，请检查目录：{root}data/',array('root'=>$this->dir_root)),$this->url("sql"));
+			$this->error(P_Lang('空数据，请检查目录：data/'),$this->url("sql"));
 		}
 		$idlen = strlen($id);
 		foreach($filelist AS $key=>$value){
@@ -288,21 +322,25 @@ class sql_control extends phpok_control
 				$this->lib('file')->rm($value);
 			}
 		}
-		error(P_Lang('备份文件删除成功'),$this->url('sql','backlist'),'ok');
+		$this->success(P_Lang('备份文件删除成功'),$this->url('sql','backlist'));
 	}
 
+	/**
+	 * 恢复数据备份
+	 * @参数 id 要恢复的数据ID
+	**/
 	public function recover_f()
 	{
-		if(!$this->popedom['recover'] && !$_SESSION['admin_rs']['if_system']){
-			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
+		if(!$this->popedom['recover'] && !$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有权限执行此操作'),$this->url('sql'));
 		}
 		$id = $this->get('id');
 		if(!$id){
-			error(P_Lang('没有指定备份文件'),$this->url('sql','backlist'),'error');
+			$this->error(P_Lang('没有指定备份文件'),$this->url('sql','backlist'));
 		}
 		$backfile = $this->dir_root.'data/sql'.$id.'.php';
 		if(!file_exists($backfile)){
-			error(P_Lang('备份文件不存在'),$this->url('sql','backlist'),'error');
+			$this->error(P_Lang('备份文件不存在'),$this->url('sql','backlist'));
 		}
 		$session_string = '';
 		if($this->config['engine']['session']['file'] == 'sql'){
@@ -328,33 +366,43 @@ class sql_control extends phpok_control
 		}
 		//更新相应的SESSION信息，防止被退出
 		$_SESSION = $session;
-		error(P_Lang('表结构数据修复成功，正在修复内容数据，请稍候！'),$this->url('sql','recover_data','id='.$id."&startid=0"),'ok');
+		$this->success(P_Lang('表结构数据修复成功，正在修复内容数据，请稍候！'),$this->url('sql','recover_data','id='.$id."&startid=0"));
 	}
 
+	/**
+	 * 恢复备份文件中的其他数据
+	 * @参数 id 要恢复的数据ID
+	 * @参数 startid 开始ID，从0记起
+	**/
 	public function recover_data_f()
 	{
-		if(!$_SESSION['admin_rs']['if_system']){
-			error(P_Lang('您没有权限执行此操作'),$this->url('sql'),'error');
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有权限执行此操作'),$this->url('sql'));
 		}
 		$id = $this->get('id');
 		if(!$id){
-			error(P_Lang('没有指定备份文件'),$this->url('sql','backlist'),'error');
+			$this->error(P_Lang('没有指定备份文件'),$this->url('sql','backlist'));
 		}
 		$startid = $this->get('startid','int');
 		$backfile = $this->dir_root.'data/sql'.$id.'_'.$startid.'.php';
 		if(!file_exists($backfile)){
-			error(P_Lang('数据恢复完成'),$this->url('sql','backlist'),'ok');
+			$this->success(P_Lang('数据恢复完成'),$this->url('sql','backlist'));
 		}
 		$msg = $this->lib('file')->cat($backfile);
 		$this->format_sql($msg);
 		$new_startid = $startid + 1;
 		$newfile = $this->dir_root.'data/sql'.$id.'_'.$new_startid.'.php';
 		if(!file_exists($newfile)){
-			error(P_Lang('数据恢复完成'),$this->url('sql','backlist'),'ok');
+			$this->success(P_Lang('数据恢复完成'),$this->url('sql','backlist'));
 		}
-		error(P_Lang("正在恢复数据，正在恢复第{pageid}个文件，请稍候…",array('pageid'=>' <span class="red">'.($startid+1).'</span>')),$this->url('sql','recover_data','id='.$id.'&startid='.$new_startid),'ok');
+		$tmparray = array('pageid'=>' <span class="red">'.($startid+1).'</span>');
+		$this->success(P_Lang("正在恢复数据，正在恢复第{pageid}个文件，请稍候…",$tmparray),$this->url('sql','recover_data','id='.$id.'&startid='.$new_startid));
 	}
 
+	/**
+	 * 格式化SQL语句
+	 * @参数 $sql 要格式化的数据
+	**/
 	private function format_sql($sql)
 	{
 		$sql = str_replace("\r","\n",$sql);
@@ -385,16 +433,16 @@ class sql_control extends phpok_control
 			}
 		}
 		if($update_admin){
-			$admin_rs = $this->model('admin')->get_one($_SESSION['admin_id'],'id');
-			if(!$admin_rs || $admin_rs['account'] != $_SESSION['admin_account']){
+			$admin_rs = $this->model('admin')->get_one($this->session->val('admin_id'),'id');
+			if(!$admin_rs || $admin_rs['account'] != $this->session->val('admin_account')){
 				if($admin_rs){
-					$this->model('sql')->update_adm($_SESSION['admin_rs'],$_SESSION['admin_id']);
+					$this->model('sql')->update_adm($this->session->val('admin_rs'),$this->session->val('admin_id'));
 				}else{
-					$_SESSION['admin_id'] = $this->model('sql')->update_adm($_SESSION['admin_rs']);
+					$insert_id = $this->model('sql')->update_adm($this->session->val('admin_rs'));
+					$this->session->assign('admin_id',$insert_id);
 				}
 			}
 		}
 		return true;
 	}
 }
-?>

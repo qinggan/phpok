@@ -1,6 +1,3 @@
-<link rel="stylesheet" type="text/css" href="{#js#}/webuploader/webuploader.css" />
-<script type="text/javascript" src="{#js#}/webuploader/webuploader.min.js"></script>
-<script type="text/javascript" src="{#js#}/webuploader/www.upload.js"></script>
 <input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs.content}" />
 <input type="hidden" id="{$_rs.identifier}_status" value="" />
 <style type="text/css">
@@ -139,7 +136,7 @@ button.button_{$_rs.identifier}:hover {
 			<td valign="top" style="padding-left:2px;"><button id="select_res_{$_rs.identifier}" type="button" class="button_{$_rs.identifier}">{lang选择}{$_rs.upload_type.title}</button></td>
 			<!-- /if -->
 			<!-- if !$app->is_mobile() -->
-			<td><div class="gray i" style="line-height:180%;">&nbsp;{lang支持格式有：}{$_rs.upload_type.swfupload}</div></td>
+			<td><div class="gray i" style="line-height:180%;">&nbsp;{lang支持格式有：}{$_rs.upload_type.swfupload}{if $_rs.note}，{$_rs.note}{/if}</div></td>
 			<!-- /if -->
 		</tr>
 		</table>

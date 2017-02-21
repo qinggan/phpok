@@ -134,22 +134,21 @@ class plugin_control extends phpok_control
 		if(file_exists($this->dir_root.'plugins/'.$info[0])){
 			$this->json(P_Lang('插件已存在，不允许重复解压'));
 		}
-		if(!$info[1]){
-			$this->json(P_Lang('插件打包模式有问题'));
-		}
 		$this->lib('phpzip')->unzip($this->dir_root.$rs['filename'],$this->dir_root.'plugins/');
 		$this->json(true);
 	}
 
-	//安装插件
-	function install_f()
+	/**
+	 * 安装插件
+	**/
+	public function install_f()
 	{
 		if(!$this->popedom["install"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id");
 		if(!$id){
-			error(P_Lang('未指定ID'),$this->url('plugin'),'error');
+			$this->error(P_Lang('未指定ID'),$this->url('plugin'));
 		}
 		$this->assign("id",$id);
 		$rs = $this->model('plugin')->get_xml($id);
@@ -168,31 +167,31 @@ class plugin_control extends phpok_control
 		$this->view("plugin_install");
 	}
 
-	//存储安装插件中的信息
+	/**
+	 * 存储安装插件中的信息
+	**/
 	public function install_save_f()
 	{
 		if(!$this->popedom["install"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id");
 		if(!$id){
-			error(P_Lang('未指定ID'),$this->url('plugin'),'error');
+			$this->error(P_Lang('未指定ID'),$this->url('plugin'));
 		}
 		$title = $this->get('title');
 		if(!$title){
-			error(P_Lang('插件名称不能为空'),$this->url('plugin','config','id='.$id),'error');
+			$this->error(P_Lang('插件名称不能为空'),$this->url('plugin','config','id='.$id));
 		}
 		$note = $this->get("note");
 		$taxis = $this->get('taxis','int');
 		$author = $this->get('author');
 		$version = $this->get('version');
 		$array = array('id'=>$id,'title'=>$title,'note'=>$note,'status'=>0,'author'=>$author,'taxis'=>$taxis,'version'=>$version);
-		//存储安装数据
 		$id = $this->model('plugin')->install_save($array);
 		if(!$id){
-			error(P_Lang('插件安装失败'),$this->url('plugin','install','id='.$id),'error');
+			$this->error(P_Lang('插件安装失败'),$this->url('plugin','install','id='.$id));
 		}
-		//判断是否有
 		$xmlrs = $this->model('plugin')->get_xml($id);
 		if(file_exists($xmlrs['path'].'install.php')){
 			include_once($xmlrs['path'].'install.php');
@@ -203,10 +202,12 @@ class plugin_control extends phpok_control
 				$cls->save();
 			}
 		}
-		error(P_Lang('{title}安装成功',array('title'=>' <span class="red">'.$title.'</span> ')),$this->url("plugin"),'ok');
+		$this->success(P_Lang('{title}安装成功',array('title'=>' <span class="red">'.$title.'</span> ')),$this->url("plugin"));
 	}
 
-	//卸载插件
+	/**
+	 * 卸载插件
+	**/
 	public function uninstall_f()
 	{
 		if(!$this->popedom["install"]){
@@ -233,7 +234,9 @@ class plugin_control extends phpok_control
 		$this->json(P_Lang('插件卸载成功'),true);
 	}
 
-	//状态执行
+	/**
+	 * 状态执行
+	**/
 	public function status_f()
 	{
 		if(!$this->popedom["install"]){
@@ -262,20 +265,22 @@ class plugin_control extends phpok_control
 		$this->json($status,true,true,false);
 	}
 
-	//执行JS
+	/**
+	 * 执行自定义函数
+	**/
 	public function exec_f()
 	{
 		$id = $this->get("id");
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs){
-			$this->json(P_Lang('数据记录不存在'));
+			$this->error(P_Lang('数据记录不存在'));
 		}
 		if($rs['param']) $rs['param'] = unserialize($rs['param']);
 		if(!file_exists($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php')){
-			$this->json(P_Lang('插件文件{appid}不存在',array('appid'=>' <span class="red">'.$this->app_id.'.php</span> ')));
+			$this->error(P_Lang('插件文件{appid}不存在',array('appid'=>' <span class="red">'.$this->app_id.'.php</span> ')));
 		}
 		include_once($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php');
 		$name = $this->app_id.'_'.$id;
@@ -284,27 +289,31 @@ class plugin_control extends phpok_control
 		$exec = $this->get("exec");
 		if(!$exec) $exec = 'index';
 		if(!$methods || !in_array($exec,$methods)){
-			$this->json(P_Lang('方法{method}不存在',array('method'=>'<span class=red>'.$exec.'</span> ')));
+			$this->error(P_Lang('方法{method}不存在',array('method'=>'<span class=red>'.$exec.'</span> ')));
 		}
 		$cls->$exec($rs);
 	}
 
+	/**
+	 * 执行自定义函数，即exec的别名
+	**/
 	public function ajax_f()
 	{
 		$this->exec_f();
 	}
 
-	//导出插件
+	/**
+	 * 导出插件
+	**/
 	public function zip_f()
 	{
 		$id = $this->get('id');
 		if(!$id){
-			error(P_Lang('插件标识不存在'),$this->url('plugin'),'error');
+			$this->error(P_Lang('插件标识不存在'),$this->url('plugin'));
 		}
 		if(!file_exists($this->dir_root.'plugins/'.$id)){
-			error(P_Lang('插件不存在'),$this->url('plugin'),'error');
+			$this->error(P_Lang('插件不存在'),$this->url('plugin'));
 		}
-		//打包
 		$zipfile = $this->dir_root.'data/cache/'.$id.'.zip';
 		$this->lib('phpzip')->set_root($this->dir_root.'plugins/');
 		$this->lib('phpzip')->zip($this->dir_root.'plugins/'.$id,$zipfile);
@@ -320,6 +329,9 @@ class plugin_control extends phpok_control
 		ob_flush();
 	}
 
+	/**
+	 * 创建插件
+	**/
 	public function create_f()
 	{
 		$title = $this->get('title');
@@ -345,7 +357,7 @@ class plugin_control extends phpok_control
 			$author = 'phpok.com';
 		}
 		if(!$note){
-			$note = P_Lang('这是由程序后台初始化的一个小插件');
+			$note = P_Lang('自定义插件');
 		}
 		//创建XML文件
 		$content = '<?xml version="1.0" encoding="utf-8"?>'."\n";
@@ -390,16 +402,16 @@ class plugin_control extends phpok_control
 			default:
 				$note = P_Lang('未知');
 		}
-		$string = '/*****************************************************************************************'."\n\t";
-		$string.= '文件： plugins/'.$id.'/'.$fileid.'.php'."\n\t";
-		$string.= '备注： '.$title.'<'.$note.">\n\t";
-		$string.= '版本： 4.x'."\n\t";
-		$string.= '网站： www.phpok.com'."\n\t";
+		$string = "/**\n";
+		$string.= " * ".$title.($note ? '<'.$note.'>': '')."\n";
+		$string.= " * @package phpok\plugins\n";
 		if($author){
-			$string.= '作者： '.$author."\n\t";
+			$string.= " * @作者 ".$author."\n";
 		}
-		$string.= '时间： '.date("Y年m月d日 H时i分",$this->time)."\n";
-		$string.= '*****************************************************************************************/';
+		$string.= " * @版本 ".$this->version."\n";
+		$string.= " * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License\n";
+		$string.= " * @时间 ".date("Y年m月d日 H时i分",$this->time)."\n";
+		$string.= "**/";
 		return $string;
 	}
 
@@ -473,4 +485,3 @@ class plugin_control extends phpok_control
 		return $string;
 	}
 }
-?>

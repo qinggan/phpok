@@ -1,14 +1,15 @@
 <?php
 /**
  * ZIP类，支持压缩及解压
- * @package phpok\libs\phpzip
- * @author qinggan <admin@phpok.com>
- * @copyright 2015-2016 深圳市锟铻科技有限公司
- * @homepage http://www.phpok.com
- * @version 4.x
- * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @update 2015年07月18日
+ * @package phpok\libs
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2016年12月16日
 **/
+
 
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class phpzip_lib
@@ -18,6 +19,7 @@ class phpzip_lib
 	public $old_offset = 0;
 	public $eof_ctrl_dir = "\x50\x4b\x05\x06\x00\x00\x00\x00";
 	public $dir_root = '';
+	private $obj;
 
 	public function __construct()
 	{
@@ -37,7 +39,7 @@ class phpzip_lib
 			if($file == '.' || $file == '..'){
 				continue;
 			}
-			$path_sub = preg_replace("*/{2,}*", "/", $path."/".$file);  // 替换多个反斜杠
+			$path_sub = preg_replace("*/{2,}*", "/", $path."/".$file);
 			$filelist[] = is_dir($path_sub) ? $path_sub."/" : $path_sub;
 			if(is_dir($path_sub)){
 				$this->filelist($filelist,$path_sub);
@@ -45,8 +47,7 @@ class phpzip_lib
 		}
 		$fdir->close();
 	}
-	 
-	 
+	
 	private function unix2DosTime($unixtime = 0)
 	{
 		$timearray = ($unixtime == 0) ? getdate() : getdate($unixtime);
@@ -60,7 +61,6 @@ class phpzip_lib
 		}
 		return (($timearray['year'] - 1980) << 25) | ($timearray['mon'] << 21) | ($timearray['mday'] << 16)	| ($timearray['hours'] << 11) | ($timearray['minutes'] << 5) | ($timearray['seconds'] >> 1);
 	}
-	 
 	 
 	private function addFile($data, $filename, $time = 0)
 	{
@@ -122,7 +122,12 @@ class phpzip_lib
 		$ctrldir = implode('', $this->ctrl_dir);
 		return   $data.$ctrldir.$this->eof_ctrl_dir.pack('v', sizeof($this->ctrl_dir)).pack('v', sizeof($this->ctrl_dir)).pack('V', strlen($ctrldir)).pack('V', strlen($data)). "\x00\x00";
 	}
- 
+
+	/**
+	 * 制作压缩包
+	 * @参数 $dir，支持单个文件，目录及数组
+	 * @参数 $saveName，保存的ZIP文件名
+	**/
 	public function zip($dir, $saveName)
 	{
 		if(@!function_exists('gzcompress')){
@@ -130,12 +135,19 @@ class phpzip_lib
 		}
 		ob_end_clean();
 		$filelist = array();
-		if(is_file($dir)){
-			$filelist = array($dir);
+		if(is_array($dir)){
+			$filelist = $dir;
 		}else{
-			$this->filelist($filelist,$dir);
+			if(!file_exists($dir)){
+				return false;
+			}
+			if(is_file($dir)){
+				$filelist = array($dir);
+			}else{
+				$this->filelist($filelist,$dir);
+			}
 		}
-		if(count($filelist) == 0){
+		if(count($filelist) < 1){
 			return false;
 		}
 		if(class_exists('ZipArchive')){
@@ -150,25 +162,25 @@ class phpzip_lib
 				$obj->addFile($file,$name);
 			}
 			$obj->close();
-		}else{
-			foreach($filelist as $file){
-				if(!file_exists($file) || !is_file($file)){
-					continue;
-				}
-				$fd = fopen($file, "rb");
-				$content = @fread($fd, filesize($file));
-				fclose($fd);
-				$file = substr($file, strlen($this->dir_root));
-				if(substr($file, 0, 1) == "\\" || substr($file, 0, 1) == "/"){
-					$file = substr($file, 1);
-				}
-				$this->addFile($content, $file);
-			}
-			$out = $this->file();
-			$fp = fopen($saveName, "wb");
-			fwrite($fp, $out, strlen($out));
-			fclose($fp);
+			return true;
 		}
+		foreach($filelist as $file){
+			if(!file_exists($file) || !is_file($file)){
+				continue;
+			}
+			$fd = fopen($file, "rb");
+			$content = @fread($fd, filesize($file));
+			fclose($fd);
+			$file = substr($file, strlen($this->dir_root));
+			if(substr($file, 0, 1) == "\\" || substr($file, 0, 1) == "/"){
+				$file = substr($file, 1);
+			}
+			$this->addFile($content, $file);
+		}
+		$out = $this->file();
+		$fp = fopen($saveName, "wb");
+		fwrite($fp, $out, strlen($out));
+		fclose($fp);
 	}
 	 
 	private function ReadCentralDir($zip, $zipfile)
@@ -452,4 +464,3 @@ class phpzip_lib
 		return $centd[comment];
 	}
 }
-?>

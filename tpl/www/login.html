@@ -48,17 +48,10 @@ function check_input()
 	</dl>
 	<dl class="box note">
 		<dt>说明</dt>
-		<dd>如果您忘记密码，您可以点这里<a href="{url ctrl=login func=getpass/}" title="找回密码功能">找回密码？</a></dd>
+		<!-- if $logintype.email --><dd>邮件登录，<a href="{url ctrl=login type=email/}" title="会员邮件登录">请点这里</a></dd><!-- /if -->
+		<!-- if $logintype.sms --><dd>手机短信登录，<a href="{url ctrl=login type=sms/}" title="手机短信登录">请点这里</a></dd><!-- /if -->
+		<!-- if $logintype.sms || $logintype.email --><dd>如果您忘记密码，您可以点这里<a href="{url ctrl=login func=getpass/}" title="找回密码功能">找回密码？</a></dd><!-- /if -->
 		<dd>您还不是我们的会员，请点这里<a href="{url ctrl=register/}" title="注册会员">注册</a></dd>
-		<!-- if $qqlink -->
-		<dd><a href="{$qqlink}" title="QQ登录"><img src="images/qqlogin.png" /></a></dd>
-		<!-- /if -->
-		<!-- if $wxlink -->
-		<dd><a href="{$wxlink}" title="微信登录"><img src="images/wx_button.png" /></a></dd>
-		<!-- /if -->
-		<!-- if $wblink -->
-		<dd><a href="{$wblink}" title="微博登录"><img src="images/weibo.png" /></a></dd>
-		<!-- /if -->
 		
 		<dd>&nbsp;</dd>
 	</dl>

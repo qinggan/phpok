@@ -79,9 +79,7 @@
 					val = data.content.id;
 				}
 				$(self.id).val(val);
-				if(tmp){
-					tmp += ','+data.content.id;
-				}
+				tmp = tmp ? tmp+","+data.content.id : data.content.id;
 			}else{
 				if(tmp){
 					self.remote_delete(tmp);

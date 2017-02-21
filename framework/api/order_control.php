@@ -223,8 +223,8 @@ class order_control extends phpok_control
 				$this->json(P_Lang('密码不正确'));
 			}
 		}
-		$paycheck = $this->model('order')->order_payment($rs['id']);
-		if($paycheck && $paycheck['dateline']){
+		$paycheck = $this->model('order')->check_payment_is_end($rs['id']);
+		if($paycheck){
 			$rs['pay_end'] = true;
 		}else{
 			$rs['pay_end'] = false;
@@ -232,5 +232,3 @@ class order_control extends phpok_control
 		$this->json($rs,true);
 	}
 }
-
-?>

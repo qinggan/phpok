@@ -26,7 +26,7 @@ $(document).ready(function(){
 </script>
 <div class="login-reg">
 	<dl class="box">
-		<dt>取回密码</dt>
+		<dt>邮箱取回密码</dt>
 		<form method="post" id="getpass-form">
 		<dd><label>邮箱：</label><input class="input" type="text" name="email" /><div class="clear"></div></dd>
 		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
@@ -48,6 +48,9 @@ $(document).ready(function(){
 		<dd>请输入邮箱，系统将以邮件形式通知到您更换密码步骤</dd>
 		<!-- if $config.contactus.tel -->
 		<dd>我站客服电话：<span class="red">{$config.contactus.tel}</span></dd>
+		<!-- /if -->
+		<!-- if $getpasstype.sms -->
+		<dd>选择<a href="{url ctrl=login func=smspass/}" title="短信验证码">短信验证码</a>取回密码</dd>
 		<!-- /if -->
 		<dd>已注册用户，请点这里<a href="{url ctrl=login/}" title="登录">登录</a></dd>
 		<dd>您还不是我们的会员，请点这里<a href="{url ctrl=register/}" title="注册会员">注册</a></dd>

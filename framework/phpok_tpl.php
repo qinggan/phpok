@@ -374,15 +374,17 @@ class phpok_tpl
 		return $this->loop_php($info[2]);
 	}
 
-	function url_encode($info)
+	public function url_encode($info)
 	{
 		return rawurlencode($info[1]);
 	}
 
 	//更换头部信息
-	function head_php($string)
+	public function head_php($string)
 	{
-		if(!$string || !is_array($string) || !$string[1] || !trim($string[1])) return '';
+		if(!$string || !is_array($string) || !$string[1] || !trim($string[1])){
+			return '';
+		}
 		$string = $string[1];
 		$string = stripslashes(trim($string));
 		$string = $this->str_format($string);
@@ -557,9 +559,16 @@ class phpok_tpl
 		return '<?php echo "";?>';
 	}
 
-	function func_php($string)
+	/**
+	 * 格式化函数参数
+	 * @参数 $string
+	 * @返回 带有PHP标识的字符串
+	**/
+	private function func_php($string)
 	{
-		if(!$string) return false;
+		if(!$string){
+			return false;
+		}
 		$string = stripslashes(trim($string));
 		$string = $this->str_format($string);
 		$string = preg_replace_callback("/[\"|']{1}(.+)[\"|']{1}/isU",array($this,'url_encode'),$string);
@@ -572,16 +581,23 @@ class phpok_tpl
 		$string = '<?php echo '.$func.'(';
 		$newlist = array();
 		foreach($list AS $key=>$value){
-			if($key>0){
-				if($value){
-					$value = $this->str_format($value);
-					if($value){
-						if(substr($value,0,1) != '$'){
-							$newlist[] = "'".rawurldecode($value)."'";
-						}else{
-							$newlist[] = rawurldecode($value);
-						}
-					}
+			if($key<1){
+				continue;
+			}
+			if($value == ''){
+				continue;
+			}
+			$value = $this->str_format($value);
+			if($value == ''){
+				continue;
+			}
+			if($value == '0'){
+				$newlist[] = 0;
+			}else{
+				if(substr($value,0,1) != '$'){
+					$newlist[] = "'".rawurldecode($value)."'";
+				}else{
+					$newlist[] = rawurldecode($value);
 				}
 			}
 		}
@@ -708,11 +724,20 @@ class phpok_tpl
 	# del_mark，是否删除引号
 	function str_format($string,$auto_dollar=false,$del_mark=true)
 	{
-		if($string == '') return false;
+		if($string == ''){
+			return false;
+		}
+		if($string == '0'){
+			return '0';
+		}
 		$string = stripslashes(trim($string));
 		if($del_mark){
-			if(substr($string,0,1) == '"' || substr($string,0,1) == "'") $string = substr($string,1);
-			if(substr($string,-1) == '"' || substr($string,-1) == "'") $string = substr($string,0,-1);
+			if(substr($string,0,1) == '"' || substr($string,0,1) == "'"){
+				$string = substr($string,1);
+			}
+			if(substr($string,-1) == '"' || substr($string,-1) == "'"){
+				$string = substr($string,0,-1);
+			}
 		}
 		$string = $this->points_to_array($string);
 		if($auto_dollar && substr($string,0,1) != '$'){
@@ -721,20 +746,29 @@ class phpok_tpl
 		return $string;
 	}
 
-	# 点变成数组
-	function points_to_array($string)
+	/**
+	 * 将字串中的点变成数组，最多支持5级
+	 * @参数 $string 字符串
+	 * @返回 字符串（有带中括号）
+	**/
+	private function points_to_array($string)
 	{
 		if(!$string) return false;
 		//if(substr($string,0,1) != '$' && substr($string,1,1) != '$') return $string;
-		for($i=0;$i<5;$i++)
-		{
+		for($i=0;$i<5;$i++){
 			$string = preg_replace('/\$([\w\[\]\>\-]+)\.([\w]+\b)/iU','$\\1[\\2]',$string);
 		}
 		$string = preg_replace('/\[([a-z\_][a-z0-9\_]*)\]/iU',"['\\1']",$string);
 		return $string;
 	}
 
-	# 字符串格式化为数组
+	/**
+	 * 字符串格式化为数组
+	 * @参数 
+	 * @参数 
+	 * @返回 
+	 * @更新时间 
+	**/
 	function str_to_list($string,$need_dollar="")
 	{
 		if(!$string || !trim($string)) return false;
@@ -795,31 +829,9 @@ class phpok_tpl
 		return file_get_contents($tplfile);
 	}
 
-	private function ascii($str)
-	{
-		if(!$str)
-		{
-			return false;
-		}
-		$str = iconv("UTF-8", "UTF-16BE", $str);
-		for ($i = 0; $i < strlen($str); $i++,$i++)
-		{
-			$code = ord($str{$i}) * 256 + ord($str{$i + 1});
-			if ($code < 128)
-			{
-				$output .= chr($code);
-			}
-			else if($code != 65279)
-			{
-				$output .= "&#".$code.";";
-			}
-		}
-		return $output;
-	}
-
 	public function error($msg)
 	{
-		exit($this->ascii($msg));
+		exit($msg);
 	}
 
 	public function ext()

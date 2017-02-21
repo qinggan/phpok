@@ -238,7 +238,7 @@ class site_model_base extends phpok_model
 			$sql = "SELECT site_id FROM ".$this->db->prefix."site_domain WHERE domain='".$id."'";
 			$tmp = $this->db->get_one($sql);
 			if(!$tmp){
-				$sql = "SELECT id FROM ".$this->db->prefix."site WHERE status=1 AND is_default=1";
+				$sql = "SELECT id FROM ".$this->db->prefix."site WHERE is_default=1";
 				$tmp = $this->db->get_one($sql);
 				if(!$tmp){
 					return false;
@@ -251,7 +251,7 @@ class site_model_base extends phpok_model
 		if(!$id){
 			return false;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."site WHERE id='".$id."' AND status=1";
+		$sql = "SELECT * FROM ".$this->db->prefix."site WHERE id='".$id."'";
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
@@ -306,4 +306,3 @@ class site_model_base extends phpok_model
 		return $rs;
 	}
 }
-?>

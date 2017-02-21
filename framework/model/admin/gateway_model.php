@@ -15,6 +15,26 @@ class gateway_model extends gateway_model_base
 		parent::__construct();
 	}
 
+	public function get_all($status=0)
+	{
+		$grouplist = $this->group_all();
+		foreach($grouplist as $key=>$value){
+			$grouplist[$key] = array('title'=>$value);
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."gateway ";
+		if($status){
+			$sql .= " WHERE status='".($status == 1 ? 1 : 0)."' ";
+		}
+		$sql.= " ORDER BY taxis ASC";
+		$rslist = $this->db->get_all($sql);
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				$grouplist[$value['type']]['list'][] = $value;
+			}
+		}
+		return $grouplist;
+	}
+
 	public function group_all()
 	{
 		$file = $this->dir_root.'gateway/config.xml';
@@ -43,6 +63,9 @@ class gateway_model extends gateway_model_base
 				}
 				$list[$myfile]['title'] = $tmp['title'];
 				$list[$myfile]['code'] = $tmp['code'];
+				if($tmp['note']){
+					$list[$myfile]['note'] = $tmp['note'];
+				}
 			}
 		}
 		closedir($handle);
@@ -88,5 +111,3 @@ class gateway_model extends gateway_model_base
 	}
 	
 }
-
-?>

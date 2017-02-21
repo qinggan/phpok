@@ -22,9 +22,90 @@ class payment_control extends phpok_control
 	}
 
 	/**
-	 * 创建支付链接，仅限订单有效
+	 * 在线充值
+	 * @参数 id 充值的目标标识，如果存在必须是字符串或整型数字
+	 * @参数 val 充值金额
+	**/
+	public function index_f()
+	{
+		$back = $this->get('back');
+		if(!$back){
+			$back = $this->lib('server')->referer();
+		}
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('请先登录，非会员没有此权限'),$this->url('login','','_back='.rawurlencode($this->url('payment'))));
+		}
+		$id = $this->get('id');
+		if($id){
+			$typeid = intval($id) > 0 ? 'id' : 'identifier';
+			$rs = $this->model('wealth')->get_one($id,$typeid);
+			if(!$rs){
+				$this->error(P_Lang('要支付的目标不存在，请检查'),$back);
+			}
+			if(!$rs['status']){
+				$this->error(P_Lang('财富：{title} 未启用',array('title'=>$rs['title'])),$back);
+			}
+			if(!$rs['ifpay']){
+				$this->error(P_Lang('{title}不支持在线充值',array('title'=>$rs['title'])),$back);
+			}
+			$this->assign('rs',$rs);
+			$this->assign('id',$rs['id']);
+		}else{
+			$wealthlist = $this->model('wealth')->get_all(1);
+			if(!$wealthlist){
+				$this->error(P_Lang('没有可以充值的财富方案'),$back);
+			}
+			$wlist = false;
+			foreach($wealthlist as $key=>$value){
+				if(!$value['ifpay']){
+					continue;
+				}
+				if(!$wlist){
+					$wlist = array();
+				}
+				$wlist[$value['identifier']] = $value;
+			}
+			$this->assign('rslist',$wlist);
+		}
+		$paylist = $this->model('payment')->get_all($this->site['id'],1,($this->is_mobile ? 1 : 0));
+		$this->assign("paylist",$paylist);
+		$price = $this->get('price','float');
+		if($price){
+			$this->assign('price',$price);
+		}
+		$this->view('payment_index');
+	}
+
+	/**
+	 * 充值页面
+	 * @参数 id 给哪个财富ID充值
+	 * @参数 val 充值的金额
+	**/
+	public function wealth_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('请先登录，非会员没有此权限'),$this->url('login','','_back='.rawurlencode($this->url('payment'))));
+		}
+		//创建充值页面
+		$id = $this->get('id','int');
+		if(!id){
+			$this->error(P_Lang('未指定要充值的财富ID'));
+		}
+		$rs = $this->model('wealth')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('财富方案不存在'));
+		}
+		if(!$rs['status']){
+			$this->error(P_Lang('财富方案未启用'));
+		}
+		$this->view("payment_wealth");
+	}
+
+	/**
+	 * 创建支付链接
 	 * @参数 id 订单ID，仅限会员登录时有效
 	 * @参数 sn 订单编号，游客购买有效
+	 * @参数 type 支付链类型
 	 * @参数 passwd 订单密码，游客购买有效
 	 * @参数 balance 财富支付，仅限会员登录时有效
 	 * @参数 payment 支付方式 仅限财富支付不能完全抵消或是游客购买时有效
@@ -32,7 +113,60 @@ class payment_control extends phpok_control
 	**/
 	public function create_f()
 	{
-		if($this->session->val('user_id')){
+		$userid = $this->session->val('user_id');
+		$type = $this->get('type');
+		if(!$type){
+			$type = 'order';
+		}
+		if($type == 'order'){
+			$this->_create_order();
+		}
+		$backurl = $this->lib('server')->referer();
+		$wealth = $this->get('wealth','int');
+		if(!$wealth){
+			$this->error(P_Lang('未指定充值目标'),$backurl);
+		}
+		$price = $this->get('price','float');
+		if(!$price){
+			$this->error(P_Lang('未指定充值金额'),$backurl);
+		}
+		if($price < 1){
+			$this->error(P_Lang('充值金额不能少于1元'),$backurl);
+		}
+		$payment = $this->get('payment','int');
+		if(!$payment){
+			$this->error(P_Lang('未指定支付方式'),$backurl);
+		}
+		$sn = uniqid('CZ');
+		$array = array('type'=>$type,'price'=>$price,'currency_id'=>$this->site['currency_id'],'sn'=>$sn);
+		$array['title'] = P_Lang('在线充值');
+		$array['content'] = P_Lang('充值编号：{sn}',array('sn'=>$sn));
+		$array['payment_id'] = $payment;
+		$array['dateline'] = $this->time;
+		$array['user_id'] = $userid;
+		$array['status'] = 0;
+		$tmp = array('goal'=>$wealth);
+		$array['ext'] = serialize($tmp);
+		$insert_id = $this->model('payment')->log_create($array);
+		if(!$insert_id){
+			$this->error(P_Lang('支付记录创建失败，请联系管理员'),$backurl);
+		}
+		$this->success(P_Lang('成功创建支付链，请稍候，即将为您跳转支付页面…'),$this->url('payment','submit','id='.$insert_id));
+	}
+
+	/**
+	 * 创建订单的支付链
+	 * @参数 id 订单ID，仅限会员登录时有效
+	 * @参数 sn 订单编号，游客购买有效
+	 * @参数 passwd 订单密码，游客购买有效
+	 * @参数 payment 支付方式 仅限财富支付不能完全抵消或是游客购买时有效
+	 * @返回 
+	 * @更新时间 
+	**/
+	private function _create_order()
+	{
+		$userid = $this->session->val('user_id');
+		if($userid){
 			$id = $this->get('id','int');
 			if(!$id){
 				$this->error(P_Lang('未指定订单号ID'));
@@ -62,40 +196,73 @@ class payment_control extends phpok_control
 		if($this->model('order')->check_payment_is_end($rs['id'])){
 			$this->error(P_Lang('订单已支付过，不能重复操作'),$order_url);
 		}
-		if(!$this->balance_minus($rs,true)){
-			$payment = $this->get('payment','int');
-			if(!$payment){
-				$this->error(P_Lang('未指定付款方式'),$order_url);
+		//若积分抵扣完全能满足支付，则跳过支付
+		if($userid && $this->integral_minus($rs,true)){
+			//如果积分超出
+			$this->integral_minus($rs);
+			$array = array('order_id'=>$rs['id'],'payment_id'=>0);
+			$array['title'] = P_Lang('积分抵扣支付');
+			$array['price'] = 0;
+			$array['startdate'] = $this->time;
+			$array['dateline'] = $this->time;
+			$array['ext'] = serialize(array('备注'=>'积分抵现完全支付'));
+			$this->model('order')->save_payment($array);
+			//登记支付链
+			$array = array('type'=>'order','price'=>'0.00','currency_id'=>$rs['currency_id'],'sn'=>$rs['sn']);
+			$array['content'] = $array['title'] = P_Lang('订单：{sn}',array('sn'=>$rs['sn']));
+			$array['payment_id'] = 0;
+			$array['dateline'] = $this->time;
+			$array['user_id'] = $this->session->val('user_id');
+			$array['status'] = 1;
+			$chk = $this->model('payment')->log_check($rs['sn'],'order');
+			if($chk){
+				if(!$chk['status']){
+					$this->model('payment')->log_update($array,$chk['id']);
+				}
+				$this->model('order')->update_order_status($rs['id'],'paid');
+				$this->success(P_Lang('订单{sn}支付成功',array('sn'=>$rs['sn'])),$order_url);
 			}
-			$payment_rs = $this->model('payment')->get_one($payment);
-			if(!$payment_rs){
-				$this->error(P_Lang('支付方式不存在'),$order_url);
-			}
-			if(!$payment_rs['status']){
-				$this->error(P_Lang('支付方式未启用'),$order_url);
-			}
-			$chk = $this->model('payment')->log_check($rs['sn']);
-			if($chk && $chk['status']){
-				$this->error(P_Lang('订单{sn}已支付完成，不能重复执行',array('sn'=>$info['sn'])),$order_url);
-			}
-		}
-		$this->balance_minus($rs);
-		//检测是否已支付完成
-		if($this->model('order')->check_payment_is_end($rs['id'])){
+			$this->model('payment')->log_create($array);
 			$this->model('order')->update_order_status($rs['id'],'paid');
-			//订单返财富
-			$this->model('wealth')->order($rs['id'],$this->session->val('user_id'));
-			$this->success(P_Lang('订单已支付完成'),$order_url);
+			$this->success(P_Lang('订单{rs}支付成功',array('sn'=>$rs['sn'])),$order_url);
+		}
+		if($userid){
+			$this->integral_minus($rs);
+			$rs = $this->model('order')->get_one($id);
+		}
+		$payment = $this->get('payment');
+		if(!$payment){
+			$this->error(P_Lang('未指定支付方式'),$error_url);
+		}
+		if(is_numeric($payment)){
+			$payment = intval($payment);
+			$payment_rs = $this->model('payment')->get_one($payment);
+		}else{
+			if(!$userid){
+				$this->error(P_Lang('非会员不支持余额支付功能'));
+			}
+			$payment_rs = $this->model('wealth')->get_one($payment,'identifier');
 		}
 		//订单未支付完成创建生成链接
 		$price_paid = $this->model('order')->paid_price($rs['id']);
 		$price = $rs['price'] - $price_paid;
+		if(!is_numeric($payment)){
+			//检测余额是否充足
+			$my_integral = $this->model('wealth')->get_val($userid,$payment_rs['id']);
+			$my_price = round($my_integral*$payment_rs['cash_ratio']/100,$payment_rs['dnum']);
+			if(floatval($my_price) < floatval($price)){
+				$this->error(P_Lang('您的余额不足，请先充值或使用其他方式支付'),$error_url);
+			}
+		}
 		$array = array('type'=>'order','price'=>$price,'currency_id'=>$rs['currency_id'],'sn'=>$rs['sn']);
 		$array['content'] = $array['title'] = P_Lang('订单：{sn}',array('sn'=>$rs['sn']));
 		$array['payment_id'] = $payment;
 		$array['dateline'] = $this->time;
 		$array['user_id'] = $this->session->val('user_id');
-		$chk = $this->model('payment')->log_check($rs['sn']);
+		if(!is_numeric($payment)){
+			$array['ext'] = serialize(array('wealth'=>$payment_rs['id']));
+		}
+		$chk = $this->model('payment')->log_check($rs['sn'],'order');
 		if($chk){
 			$insert_id = $chk['id'];
 			$this->model('payment')->log_update($array,$chk['id']);
@@ -121,48 +288,52 @@ class payment_control extends phpok_control
 	}
 
 	/**
-	 * 从余额中扣除费用，如果余额已超出订单金额，则无需再跳转到支付链
-	 * @参数 $order 订单信息
-	 * @参数 $check 是否仅用于检测，为true时不扣除费用
-	 * @返回 false 或 剩余订单信息
-	 * @更新时间 2016年08月04日
+	 * 积分抵扣
+	 * @参数 integral 积分ID，数组，可叠加使用
+	 * @参数 integral_val 要处理的积分数值
+	 * @参数 $order 订单信息，数组
+	 * @参数 $check 是否检测，为true时仅作检测，为false时表示直接扣除
+	 * @返回 true/false
+	 * @更新时间 
 	**/
-	private function balance_minus($order,$check=false)
+	private function integral_minus($order,$check=false)
 	{
 		if(!$this->session->val('user_id')){
 			return false;
 		}
-		$balance = $this->get('balance','int');
-		if(!$balance){
+		$integral_val = $this->get('integral_val','int');
+		if(!$integral_val){
 			return false;
 		}
 		$wlist = $this->model('order')->balance($this->session->val('user_id'));
 		if(!$wlist){
 			return false;
 		}
-		$rslist = array();
-		foreach($wlist as $key=>$value){
-			$rslist[$value['id']] = $value;
+		if(!$wlist['integral']){
+			return false;
 		}
+		$wlist = $wlist['integral'];
 		$totalprice = price_format_val($order['price'],$order['currency_id'],$order['currency_id']);
 		$tmpprice = 0;
-		foreach($balance as $key=>$value){
-			if(!$value || !$rslist[$value]){
+		foreach($integral_val as $key=>$value){
+			if(!$value || !intval($value) || !$key || !intval($key) || !$wlist[$key]){
 				continue;
 			}
+			if($value > $wlist[$key]['val']){
+				continue;
+			}
+			$useprice = round($value*$wlist[$key]['cash_ratio']/100,$wlist[$key]['dnum']);
 			if($check){
-				$balance = price_format_val($rslist[$value]['price'],$order['currency_id'],$order['currency_id']);
-				$tmpprice += $balance;
+				$tmpprice += price_format_val($useprice,$order['currency_id'],$order['currency_id']);
 			}else{
-				$tmporder = array('id'=>$order['id'],'sn'=>$order['sn'],'price'=>$totalprice,'currency_id'=>$order['currency_id']);
-				$tmp = $this->balance_order_payment($tmporder,$rslist[$value]);
-				if(!$tmp){
-					continue;
+				//$tmporder = array('id'=>$order['id'],'sn'=>$order['sn'],'price'=>$totalprice,'currency_id'=>$order['currency_id']);
+				$tmp = $this->integral_order_payment($order,$wlist[$key],$value);
+				if($tmp && $tmp['status'] && $tmp['price']){
+					$totalprice = $tmp['price'];
+					//更新订单总额
+					$data = array('price'=>$tmp['price']);
+					$this->model('order')->save($data,$order['id']);
 				}
-				if(!$tmp['price']){
-					return true;
-				}
-				$totalprice = $tmp['price'];
 			}
 		}
 		if($check){
@@ -171,61 +342,57 @@ class payment_control extends phpok_control
 			}
 			return false;
 		}
-		return true;
+		return false;
 	}
 
 	/**
-	 * 创建订单及扣除订单费用
+	 * 积分抵扣
 	 * @参数 $order 订单信息，数组
 	 * @参数 $info 用户积分信息
+	 * @参数 $integral 积分
 	 * @返回 数组 或 false
-	 * @更新时间 2016年08月16日
+	 * @更新时间 2016年11月27日
 	**/
-	private function balance_order_payment($order,$info)
+	private function integral_order_payment($order,$info,$integral=0)
 	{
-		$totalprice = price_format_val($order['price'],$order['currency_id'],$order['currency_id']);
-		$balance = price_format_val($info['price'],$order['currency_id'],$order['currency_id']);
-		if(!$balance){
+		if(!$this->session->val('user_id')){
 			return false;
 		}
-		$surplus = $balance >= $totalprice ? 0 : ($totalprice - $balance);
-		$array = array('order_id'=>$order['id'],'payment_id'=>0);
-		$array['title'] = $info['title'];
-		$array['price'] = $balance;
-		$array['startdate'] = $this->time;
-		$array['dateline'] = $this->time;
-		$array['ext'] = serialize(array('wealth'=>$info['id'],'wealth_val'=>$info['val']));
-		$this->model('order')->save_payment($array);
+		if(!$order || !$info || !$integral){
+			return false;
+		}
+		$totalprice = price_format_val($order['price'],$order['currency_id'],$order['currency_id']);
+		$price = round($integral*$info['cash_ratio']/100,$info['dnum']);
+		$balance = price_format_val($price,$order['currency_id'],$order['currency_id']);
+		$surplus = $balance >= $totalprice ? 0 : floatval($totalprice - $balance);
 		//扣除会员积分
-		$savelogs = array('wid'=>$info['id'],'goal_id'=>$this->session->val('user_id'),'mid'=>0,'val'=>'-'.$info['val']);
+		$savelogs = array('wid'=>$info['id'],'goal_id'=>$this->session->val('user_id'),'mid'=>0,'val'=>'-'.$integral);
 		$savelogs['appid'] = $this->app_id;
 		$savelogs['dateline'] = $this->time;
 		$savelogs['user_id'] = $this->session->val('user_id');
 		$savelogs['ctrlid'] = 'payment';
 		$savelogs['funcid'] = 'create';
 		$savelogs['url'] = 'index.php';
-		$savelogs['note'] = $note ? P_Lang('财富抵现：').$note : P_Lang('财富抵现');
+		$savelogs['note'] = P_Lang('财富（{title}）抵现',array('title'=>$info['title']));
 		$savelogs['status'] = 1;
+		$savelogs['val'] = -$integral;
 		$data = array('wid'=>$info['id'],'uid'=>$this->session->val('user_id'),'lasttime'=>$this->time);
+		$data['val'] = intval($info['val'] - $integral);
 		//剩余积分
 		if($surplus){
-			$data['val'] = 0;
-			$savelogs['val'] = -$info['val'];
-			$paid_price = price_format($info['price'],$order['currency_id'],$order['currency_id']);
+			$paid_price = price_format($price,$order['currency_id'],$order['currency_id']);
 		}else{
-			$savelogs['val'] = -($order['price'] * $info['val'] / $info['price']);
-			$data['val'] = round(($info['val']+$savelogs['val']),$info['dnum']);
 			$paid_price = price_format($order['price'],$order['currency_id'],$order['currency_id']);
 		}
 		$this->model('wealth')->save_log($savelogs);
 		$this->model('wealth')->save_info($data);
 		//创建订单日志，记录支付信息
-		$tmparray = array('sn'=>$order['sn'],'price'=>$paid_price,'payment'=>$info['title']);
-		$note = P_Lang('订单{sn}支付{price}，支付方法：{payment}',$tmparray);
+		$tmparray = array('price'=>$paid_price,'payment'=>$info['title'],'integral'=>$integral,'unit'=>$info['unit']);
+		$note = P_Lang('使用{payment}抵扣{price}，共消耗{payment}{integral}{unit}',$tmparray);
 		$who = $this->session->val('user_name');
 		$log = array('order_id'=>$order['id'],'addtime'=>$this->time,'who'=>$who,'note'=>$note);
 		$this->model('order')->log_save($log);
-		
+		$this->model('order')->integral_discount($order['id'],$balance);
 		return array('price'=>$surplus,'status'=>true);
 	}
 
@@ -246,22 +413,81 @@ class payment_control extends phpok_control
 		if($log['status']){
 			error(P_Lang('订单已支付过了，不能再次执行'),'','error');
 		}
-		$payment_rs = $this->model('payment')->get_one($log['payment_id']);
-		if(!$payment_rs){
-			error(P_Lang('支付方式不存在'),'','error');
+		if($log['payment_id'] && is_numeric($log['payment_id'])){
+			$payment_rs = $this->model('payment')->get_one($log['payment_id']);
+			if(!$payment_rs){
+				$this->error(P_Lang('支付方式不存在'));
+			}
+			if(!$payment_rs['status']){
+				$this->error(P_Lang('支付方式未启用'));
+			}
+			$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/submit.php';
+			if(!file_exists($file)){
+				$tmpfile = str_replace($this->dir_root,'',$file);
+				$this->error(P_Lang('支付接口异常，文件{file}不存在',array('file'=>$tmpfile)));
+			}
+			include($file);
+			$name = $payment_rs['code']."_submit";
+			$payment = new $name($log,$payment_rs);
+			$payment->submit();
+			exit;
 		}
-		if(!$payment_rs['status']){
-			error(P_Lang('支付方式未启用'),'','error');
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不支持余额支付，请登录再执行此操作'));
 		}
-		$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/submit.php';
-		if(!file_exists($file)){
-			$tmpfile = str_replace($this->dir_root,'',$file);
-			error(P_Lang('支付接口异常，文件{file}不存在',array('file'=>$tmpfile)),'','error');
+		if(!$log['payment_id']){
+			$ext = $log['ext'] ? unserialize($log['ext']) : false;
+			if(!$ext || !$ext['wealth'] || !is_numeric($ext['wealth'])){
+				$this->error(P_Lang('支付信息异常，无法找到支付方法，请联系管理员'));
+			}
+			$wealth = $this->model('wealth')->get_one($ext['wealth']);
+			$log['payment_id'] = $wealth['identifier'];
+			if(!$log['payment_id']){
+				$this->error(P_Lang('支付信息异常，无法找到支付方法，请联系管理员'));
+			}
 		}
-		include($file);
-		$name = $payment_rs['code']."_submit";
-		$payment = new $name($log,$payment_rs);
-		$payment->submit();
+		$wealth = $this->model('wealth')->get_one($log['payment_id'],'identifier');
+		//取得要扣除的积分
+		$integral = round(($log['price'] * 100)/$wealth['cash_ratio'],$wealth['dnum']);
+		$my_integral = $this->model('wealth')->get_val($this->session->val('user_id'),$wealth['id']);
+		if(!$my_integral){
+			$this->error(P_Lang('您的余额为空，请先充值'),$this->url('payment','index','id='.$wealth['id']));
+		}
+		if(floatval($my_integral) < floatval($integral)){
+			$this->error(P_Lang('您的余额不足，请先充值'),$this->url('payment','index','id='.$wealth['id']));
+		}
+		//扣除会员积分
+		$savelogs = array('wid'=>$wealth['id'],'goal_id'=>$this->session->val('user_id'),'mid'=>0,'val'=>'-'.$integral);
+		$savelogs['appid'] = $this->app_id;
+		$savelogs['dateline'] = $this->time;
+		$savelogs['user_id'] = $this->session->val('user_id');
+		$savelogs['ctrlid'] = 'payment';
+		$savelogs['funcid'] = 'create';
+		$savelogs['url'] = 'index.php';
+		$savelogs['note'] = P_Lang('支付订单：{sn}',array('sn'=>$log['sn']));
+		$savelogs['status'] = 1;
+		$savelogs['val'] = -$integral;
+		$data = array('wid'=>$wealth['id'],'uid'=>$this->session->val('user_id'),'lasttime'=>$this->time);
+		$data['val'] = intval($my_integral - $integral);
+		$this->model('wealth')->save_log($savelogs);
+		$this->model('wealth')->save_info($data);
+		//更新payment_log日志
+		$array = array('status'=>1);
+		$array['ext'] = serialize(array($wealth['title']=>$integral));
+		$this->model('payment')->log_update($array,$log['id']);
+		//更新订单状态
+		if($log['type'] == 'order'){
+			$order = $this->model('order')->get_one_from_sn($log['sn']);
+			$this->model('order')->update_order_status($order['id'],'paid',P_Lang('支付完成'));
+			$order_payment = $this->model('order')->order_payment($order['id'],$log['payment_id']);
+			if($order_payment){
+				$array = array('dateline'=>$this->time);
+				$array['ext'] = serialize(array($wealth['title']=>$integral));
+				$this->model('order')->save_payment($array,$order_payment['id']);
+			}
+		}
+		$price = price_format($log['price'],$this->site['currency_id']);
+		$this->success(P_Lang('支付操作完成，您共支付：{price}',array('price'=>$price)),$this->url('payment','show','id='.$id));
 	}
 
 	public function notice_f()
@@ -333,22 +559,25 @@ class payment_control extends phpok_control
 	{
 		$id = $this->get('id');
 		if(!$id){
-			error(P_Lang('未指定ID'),'','error');
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('payment')->log_one($id);
 		if(!$rs){
-			error(P_Lang('数据不存在，请检查'),'','error');
+			$this->error(P_Lang('数据不存在，请检查'));
 		}
 		if($rs['type'] == 'order'){
-			//$order = $this->model('order')->get_one_from_sn($rs['sn']);
-			//if(!$order){
-			//	error(P_Lang('订单信息不存在'),'','error');
-			//}
-			$url = $this->url('order','info','sn='.$rs['sn']);
-			$this->_location($url);
+			if($this->session->val('user_id')){
+				$order = $this->model('order')->get_one_from_sn($rs['sn']);
+				$url = $this->url('order','info','id='.$order['id']);
+				$this->_location($url);
+			}else{
+				$this->success(P_Lang('订单{sn}支付完成',array('sn'=>$rs['sn'])),$this->url);
+			}
 		}
-		$this->view('payment_show');
+		if($this->session->val('user_id')){
+			$this->_location($this->url('usercp','wealth'));
+		}else{
+			$this->_location($this->url);
+		}
 	}
 }
-
-?>
