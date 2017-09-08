@@ -1,0 +1,70 @@
+<!-- include tpl=head -->
+<div class="tips">
+	<div class="left">
+		<a href="{url ctrl=address/}">{lang会员地址库}</a>
+		&raquo; <!-- if $id -->{lang编辑地址}<!-- else -->{lang添加地址}<!-- /if -->
+	</div>
+	<div class="action"><a href="{url ctrl=address/}">{lang返回地址库}</a></div>
+</div>
+<form method="post" id="post_save">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		{lang会员：}<span class="note">{lang请选择会员信息}</span>
+	</div>
+	<div class="content">{func form_edit user_id $rs.user_id user}</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang收件人姓名：}<span class="note">{lang请填写收件人的真实姓名}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="fullname" id="fullname" value="{$rs.fullname}" class="default" />
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		{lang地址：}<span class="note">请填写收件人地址</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><input type="text" name="country" id="country" value="{$rs.country ? $rs.country : '中国'}" placeholder="{lang国家}" /></li>
+			<li><input type="text" name="province" id="province" value="{$rs.province}" placeholder="{lang省份}" /> {lang省}</li>
+			<li><input type="text" name="city" id="city" value="{$rs.city}" placeholder="{lang城市}" /> {lang市}</li>
+			<li><input type="text" name="county" id="county" value="{$rs.county}" placeholder="{lang县区}" /> {lang县（区）}</li>
+		</ul>
+		<ul class="layout" style="margin-top:10px;">
+			<li><input type="text" name="address" id="address" value="{$rs.address}" placeholder="{lang地址}" class="long" /></li>
+			<li><input type="text" name="zipcode" id="zipcode" value="{$rs.zipcode}" placeholder="{lang邮编}" /></li>
+		</ul>
+		<div></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{langEmail：}<span class="note"></span>
+	</div>
+	<div class="content">
+		<input type="text" name="email" id="email" value="{$rs.email}" class="default" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang手机：}<span class="note"></span>
+	</div>
+	<div class="content">
+		<input type="text" name="mobile" id="mobile" value="{$rs.mobile}" class="default" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang电话：}<span class="note"></span>
+	</div>
+	<div class="content">
+		<input type="text" name="tel" id="tel" value="{$rs.tel}" class="default" />
+	</div>
+</div>
+<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
+</form>
+<!-- include tpl=foot -->

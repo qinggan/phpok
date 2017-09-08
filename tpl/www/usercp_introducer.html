@@ -1,20 +1,63 @@
 <!-- include tpl=head title="我的推荐 - 个人中心" -->
+<script type="text/javascript">
+function relation_reload(val)
+{
+	var url = get_url('usercp','introducer');
+	if(val){
+		url = get_url('usercp','introducer','month='+val);
+	}
+	$.phpok.go(url);
+}
+</script>
 <div class="cp">
 	<div class="left"><!-- include tpl=block_usercp --></div>
 	<div class="right">
 		<div class="pfw mbottom10">
 			<h3>推广链接</h3>
-			<div style="padding:10px;text-align:center;">
-				{url ctrl=index func=link uid=$session.user_id/}
-			</div>
+			<div style="padding:10px;text-align:center;">{$vlink}</div>
 		</div>
 		<div class="pfw mbottom10">
 			<h3>友情说明</h3>
 			<ul class="tip">
-				<li>密码长度不能小于6位数</li>
-				<li>为保证您数据的安全，密码建议您使用：字母+数字+大小写混合</li>
+				<li>您可以把推广链接放到您适合的文章里嵌入，也可以发给好友分享</li>
 			</ul>
 		</div>
+		<!-- if $monthlist -->
+		<div class="pfw mbottom10">
+			<h3>月统计</h3>
+			<div style="padding:10px;">
+				<select onchange="relation_reload(this.value)">
+				<option value="">请选择</option>
+				<!-- loop from=$monthlist key=$key value=$value id=$tmpid -->
+				<option value="{$value.month}"{if $month == $value.month} selected{/if}>{func substr $value.month 0 4}年{func substr $value.month -2}月 ({$value.total}人)</option>
+				<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<!-- /if -->
+		<!-- if $rslist -->
+		<h3>我推荐的会员</h3>
+		<div class="table_lc">
+			<table width="100%" cellpadding="0" cellspacing="0">
+			<tr>
+				<th>会员账号</th>
+				<th>注册时间</th>
+				<th>姓名</th>
+			</tr>
+			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+			
+			
+			<tr>
+				<td class="center">{$value.user}</td>
+				<td class="center">{func time_format $value.regtime}</td>
+				<td class="center">{$value.fullname}</td>
+			</tr>
+			<!-- /loop -->
+			</table>
+		</div>
+			
+		<!-- /if -->
+		<!-- if $total --><!-- include tpl=block_pagelist --><!-- /if -->
 	</div>
 	<div class="clear"></div>
 </div>

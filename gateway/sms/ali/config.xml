@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<title>阿里云短信</title>
-	<note>官网是：http://www.aliyun.com</note>
+	<title>阿里云市场短信</title>
+	<note>官网（http://www.aliyun.com）</note>
 	<code>
 		<sendtype>
 			<title>发送短信方式</title>
@@ -38,18 +38,6 @@
 			<required>true</required>
 			<default>http://sms.market.alicloudapi.com/singleSendSms</default>
 		</server>
-		<tplvcode>
-			<title>验证码模板标识</title>
-			<note><![CDATA[模板中的验证码变量必须使用 <span style="color:darkblue">${chkcode}</span>]]></note>
-			<type>text</type>
-			<required>true</required>
-		</tplvcode>
-		<tplorder>
-			<title>订单通知模板标识</title>
-			<note><![CDATA[模板中的订单编号变量必须使用 <span style="color:darkblue">${ordersn}</span>]]></note>
-			<type>text</type>
-			<required>true</required>
-		</tplorder>
 		<signame>
 			<title>签名</title>
 			<note><![CDATA[请填写您在阿里上设置的短信签名]]></note>
@@ -63,5 +51,10 @@
 			<exec>sendsms</exec>
 			<type>page</type>
 		</send>
+		<readme>
+			<title>帮助说明</title>
+			<exec>readme</exec>
+			<type>page</type>
+		</readme>
 	</manage>
 </root>

@@ -1,11 +1,15 @@
 <?php
-/***********************************************************
-	Filename: app/admin/control/email.php
-	Note	: 邮件发送操作
-	Version : 3.0
-	Author  : qinggan
-	Update  : 2011-03-12
-***********************************************************/
+/**
+ * 通知类模板，包括短信通知及邮件通知
+ * @package phpok\admin\control
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年02月24日
+**/
+
 class email_control extends phpok_control
 {
 	private $popedom;
@@ -16,51 +20,70 @@ class email_control extends phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
+	/**
+	 * 通知模板列表
+	 * @参数 pageid 分页ID
+	 * @参数 
+	 * @返回 
+	 * @更新时间 
+	**/
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$site_id = $_SESSION["admin_site_id"];
-		if($site_id){
-			$condition = "site_id IN(".$site_id.",0)";
-		}else{
-			$condition = "site_id=0";
-		}
+		$condition = "site_id IN(".$this->session->val('admin_site_id').",0)";
 		$pageid = $this->get($this->config["pageid"],"int");
-		if(!$pageid) $pageid = 1;
-		$psize = $this->config["psize"] ? $this->config["psize"] : 30;
-		$offset = ($pageid-1) * $psize;
-		$rslist = $this->model('email')->get_list($condition,$offset,$psize);
-		$this->assign("rslist",$rslist);
-		$total = $this->model('email')->get_count($condition);//读取模块总数
-		$pageurl = $this->url("email");
-		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
-		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-		if($pagelist){
-			$this->assign("pagelist",$pagelist);
+		if(!$pageid){
+			$pageid = 1;
 		}
+		$psize = $this->config["psize"] ? $this->config["psize"] : 20;
+		$offset = ($pageid-1) * $psize;
+		$total = $this->model('email')->get_count($condition);//读取模块总数
+		if($total){
+			$rslist = $this->model('email')->get_list($condition,$offset,$psize);
+			$this->assign("rslist",$rslist);
+			$pageurl = $this->url("email");
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+			if($pagelist){
+				$this->assign("pagelist",$pagelist);
+			}
+		}		
 		$this->view("email_list");
 	}
 
+	/**
+	 * 添加可配置通知模板的内容
+	**/
 	public function set_f()
 	{
 		$id = $this->get("id","int");
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('您没有权限执行此操作'),$this->url('email'),'error');
+				$this->error(P_Lang('您没有权限执行此操作'),$this->url('email'));
 			}
 			$rs = $this->model('email')->get_one($id);
+			$type = substr($rs['identifier'],0,4) == 'sms_' ? 'sms' : 'email';
 			$this->assign("rs",$rs);
 			$this->assign("id",$id);
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),$this->url('email'),'error');
+				$this->error(P_Lang('您没有权限执行此操作'),$this->url('email'));
+			}
+			$type = $this->get('type');
+			if(!$type){
+				$type = 'email';
 			}
 			$rs = array("content"=>'');
 		}
-		$edit_content = form_edit('content',$rs['content'],'editor','height=300&btn_image=1&is_code=1');
+		$this->assign('type',$type);
+		if($type == 'sms'){
+			$edit_content = form_edit('content',$rs['content'],'textarea','height=300&width=500');
+		}else{
+			$edit_content = form_edit('content',$rs['content'],'editor','height=300&btn_image=1&is_code=1');
+		}
 		$this->assign('edit_content',$edit_content);
 		$this->view("email_set");
 	}
@@ -70,7 +93,10 @@ class email_control extends phpok_control
 		$array = array();
 		$id = $this->get("id","int");
 		if(!$id){
-			$array["site_id"] = $_SESSION["admin_site_id"];
+			$array["site_id"] = $this->session->val('admin_site_id');
+			$tip = P_Lang('通知内容添加成功，请稍候…');
+		}else{
+			$tip = P_Lang('通知内容编辑成功，请稍候…');
 		}
 		$array["title"] = $this->get("title");
 		$array["identifier"] = $this->get("identifier");
@@ -79,14 +105,20 @@ class email_control extends phpok_control
 		}else{
 			$array["content"] = $this->get("content","html",false);
 		}
-		if(!$array["title"] || !$array["content"] || !$array["identifier"]){
-			error(P_Lang('信息填写不完整'),$this->url("email","set","id=".$id),"error");
+		if(!$array["title"] || !$array["identifier"]){
+			$this->error(P_Lang('信息填写不完整'),$this->url("email","set","id=".$id));
 		}
+		$array['note'] = $this->get('note');
 		$this->model('email')->save($array,$id);
-		error(P_Lang('邮件内容创建/修改成功，请稍候……'),$this->url("email"),"ok");
+		$this->success($tip,$this->url("email"));
 	}
 
-	//删除邮件
+	/**
+	 * 删除通知模板
+	 * @参数 id 模板内容ID
+	 * @返回 JSON数据
+	 * @更新时间 2017年02月25日
+	**/
 	public function del_f()
 	{
 		if(!$this->popedom['delete']){
@@ -100,12 +132,24 @@ class email_control extends phpok_control
 		$this->json(true);
 	}
 
+	/**
+	 * 验证标识是否符合要求
+	 * @参数 id 通知模板ID
+	 * @参数 identifier 标识
+	 * @参数 type 类型, sms 表示短信,其他表示邮件
+	 * @返回 JSON数据
+	 * @更新时间 2017年02月25日
+	**/
 	public function check_f()
 	{
 		$id = $this->get("id","int");
 		$identifier = $this->get("identifier");
 		if(!$identifier){
 			$this->json(P_Lang('未指定标识串'));
+		}
+		$type = $this->get('type');
+		if($type == 'sms' && substr($identifier,0,4) != 'sms_'){
+			$this->json(P_Lang('短信必须是以sms_开头'));
 		}
 		$rs = $this->model('email')->get_identifier($identifier,$id);
 		if($rs){
@@ -114,4 +158,3 @@ class email_control extends phpok_control
 		$this->json(true);
 	}
 }
-?>

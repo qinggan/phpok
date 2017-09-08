@@ -115,7 +115,25 @@ class rewrite_model_base extends phpok_model
 			}
 		}
 		$list = $this->lib('xml')->read($file);
-		$list = $list['url'];
+		if($list['url'] && $list['url']['title']){
+			$tmp = false;
+			$tmplist = array();
+			foreach($list['url'] as $key=>$value){
+				if(is_numeric($key)){
+					$tmplist[$key] = $value;
+				}else{
+					$tmp[$key] = $value;
+				}
+			}
+			if($tmp){
+				$list = array(0=>$tmp);
+				foreach($tmplist as $key=>$value){
+					$list[] = $value;
+				}
+			}
+		}else{
+			$list = $list['url'];
+		}
 		usort($list,array($this,'_sort'));
 		foreach($list as $key=>$value){
 			if($value['var']){

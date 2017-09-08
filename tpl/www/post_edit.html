@@ -1,7 +1,7 @@
 <!-- include tpl=head title=$page_rs.title -->
 <script type="text/javascript">
 $(document).ready(function(){
-	var is_vcode = '<!-- if $sys.is_vcode && function_exists("imagecreate") -->true<!-- else -->false<!-- /if -->';
+	var is_vcode = '<!-- if $is_vcode -->true<!-- else -->false<!-- /if -->';
 	var is_cate = '{$page_rs.cate ? "true" : "false"}';
 	$("#post_submit").submit(function(){
 		if(!$("#title").val()){
@@ -78,7 +78,7 @@ $(document).ready(function(){
 				<td class="td">{$value.html} {$value.note}</td>
 			</tr>
 			<!-- /loop -->
-			<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+			<!-- if $is_vcode -->
 			<tr>
 				<td class="l_title" valign="top">验证码：</td>
 				<td class="td">

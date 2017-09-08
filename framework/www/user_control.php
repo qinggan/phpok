@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: {phpok}www/user_control.php
-	Note	: 会员趣事
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年9月30日
-***********************************************************/
+/**
+ * 会员详细页，开放浏览
+ * @package phpok\www
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年07月01日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class user_control extends phpok_control
 {
@@ -23,8 +26,10 @@ class user_control extends phpok_control
 		}
 		$user_rs = $this->model('user')->get_one($uid);
 		$this->assign("user_rs",$user_rs);
-		$this->view("user_info");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'user_info';
+		}
+		$this->view($tplfile);
 	}
-
 }
-?>

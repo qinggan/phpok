@@ -3,7 +3,84 @@
 	</div>
 	<div class="clear"></div>
 </div>
-<div class="foot" style="text-align:center;"></div>
+<div class="foot" style="text-align:center;"><!-- if $sys.debug -->{func debug_time}<!-- /if --></div>
 <!-- plugin foot -->
+<script type="text/javascript">
+$(document).ready(function(){
+	var r_menu = [[{
+		'text':'{lang刷新}',
+		'func':function(){
+			$.phpok.reload();
+		}
+	}],[{
+		'text':"{lang清空缓存}",
+		'func': function() {top.phpok_admin_clear();}
+	},{
+		'text':'{lang修改我的信息}',
+		'func':function(){top.phpok_admin_control();}
+	},{
+		'text':'{lang访问网站首页}',
+		'func':function(){
+			var url = "{$sys.www_file}?siteId={$session.admin_site_id}";
+			url = $.phpok.nocache(url);
+			window.open(url);
+		}
+	}],[{
+		'text':'{lang网页属性}',
+		'func':function(){
+			var url = window.location.href;
+			//去除随机数
+			url = url.replace(/\_noCache=[0-9\.]+/g,'');
+			if(url.substr(-1) == '&' || url.substr(-1) == '?'){
+				url = url.substr(0,url.length-1);
+			}
+			top.$.dialog({
+				'title':'{lang网址属性}',
+				'content':'{lang网址：}'+url+'<br /><div style="text-indent:36px"><a href="'+url+'" target="_blank" class="red">{lang新窗口打开}</a></div>',
+				'lock':true,
+				'drag':false,
+				'fixed':true
+			});
+		}
+	},{
+		'text': "{lang新窗口打开}",
+		'func': function() {
+			var url = window.location.href;
+			//去除随机数
+			url = url.replace(/\_noCache=[0-9\.]+/g,'');
+			if(url.substr(-1) == '&' || url.substr(-1) == '?'){
+				url = url.substr(0,url.length-1);
+			}
+			window.open(url);
+		}    
+	},{
+		'text': "{lang显示桌面}",
+		'func': function() {top.$.desktop.tohome();}
+	}],[{
+		'text': "{lang帮助说明}",
+		'func': function() {
+			var url = window.location.href;
+			//去除随机数
+			url = url.replace(/\_noCache=[0-9\.]+/g,'');
+			if(url.substr(-1) == '&' || url.substr(-1) == '?'){
+				url = url.substr(0,url.length-1);
+			}
+			var tip = '{lang网址：}'+url+'<br /><div style="text-indent:36px"><a href="'+url+'" target="_blank" class="red">{lang新窗口打开}</a></div>';
+			tip += '<div style="text-indent:36px">{lang复制请按快捷键：CTRL+C，粘贴请使用：CTRL+V}</div>';
+			top.$.dialog({
+				'title':'{lang帮助说明}',
+				'content':tip,
+				'lock':true,
+				'drag':false,
+				'fixed':true
+			});
+		}
+	}]];
+	$(window).smartMenu(r_menu,{
+		'name':'smart',
+		'textLimit':8
+	});
+});
+</script>
 </body>
 </html>

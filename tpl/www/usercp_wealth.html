@@ -15,32 +15,29 @@ function payit(id,title)
 <div class="cp">
 	<div class="left"><!-- include tpl=block_usercp --></div>
 	<div class="right">
-		<div class="pfw mbottom10">
-			<h3>财富档案</h3>
-			<div class="table_lc" style="margin:5px;">
-			<table width="100%">
-			<tr>
-				<th class="lft">名称</th>
-				<th width="77px">操作</th>
-			</tr>
-			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-			<tr>
-				<td>
-					<div><b>{$value.title}</b>，您当前有 <span class="red">{$value.val}</span> {$value.unit}</div>
-					<!-- if $value.ifpay -->
-					<div class="gray">充值比例：1元人民币 = {$value.pay_ratio} {$value.unit}</div>
-					<!-- /if -->
-					<!-- if $value.ifcash && !$value.ifpay -->
-					<div class="gray">抵现比例：100{$value.unit} = {$value.cash_ratio}元人民币，可用于抵扣购物金额</div>
-					<!-- /if -->
-				</td>
-				<td align="center">
-				<!-- if $value.ifpay --><input type="button" value="充值" class="button blue" onclick="payit('{$value.id}','{$value.title}')" /><!-- /if -->
-				</td>
-			</tr>
-			<!-- /loop -->
-			</table>
-			</div>
+		<div class="table_lc">
+		<table width="100%">
+		<tr>
+			<th class="lft">名称</th>
+			<th width="77px">操作</th>
+		</tr>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>
+				<div><b>{$value.title}</b>，您当前有 <span class="red">{$value.val}</span> {$value.unit}</div>
+				<!-- if $value.ifpay -->
+				<div class="gray">充值比例：1元人民币 = {$value.pay_ratio} {$value.unit}</div>
+				<!-- /if -->
+				<!-- if $value.ifcash && !$value.ifpay -->
+				<div class="gray">抵现比例：100{$value.unit} = {$value.cash_ratio}元人民币，可用于抵扣购物金额</div>
+				<!-- /if -->
+			</td>
+			<td align="center">
+			<!-- if $value.ifpay --><input type="button" value="充值" class="button blue" onclick="payit('{$value.id}','{$value.title}')" /><!-- /if -->
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
 		</div>
 	</div>
 	<div class="clear"></div>

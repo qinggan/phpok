@@ -75,8 +75,6 @@ function send_sms()
 		<dt>短信验证码登录</dt>
 		<form method="post" id="login-form" onsubmit="return check_input()">
 		<input type="hidden" name="_back" value="{$_back}" />
-	    <input type="hidden" name="post_date" id="post_date" value="{func date 'Y-m-d H:i:s' $sys.time}" />
-	    <input type="hidden" name="pdip" id="pdip" value="{func phpok_ip}" />
 		<dd><label>手机号：</label><input class="input" type="text" name="mobile" id="mobile" /><div class="clear"></div></dd>
 		<dd>
 			<label>&nbsp;</label>

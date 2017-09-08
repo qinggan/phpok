@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title><![CDATA[LOGO]]></title>
+	<identifier><![CDATA[logo]]></identifier>
+	<field_type><![CDATA[varchar]]></field_type>
+	<note><![CDATA[网站LOGO，规格：88x31]]></note>
+	<form_type><![CDATA[text]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[safe]]></format>
+	<content><![CDATA[]]></content>
+	<ext>
+		<form_btn><![CDATA[image]]></form_btn>
+		<width><![CDATA[500]]></width>
+		<ext_quick_words><![CDATA[]]></ext_quick_words>
+		<ext_quick_type><![CDATA[]]></ext_quick_type>
+	</ext>
+</root>

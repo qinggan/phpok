@@ -12,34 +12,30 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 if(!function_exists("phpok_next")){
 	function phpok_next($rs)
 	{
-		if(!$rs) return false;
-		if(!is_array($rs)){
-			$rs = $GLOBALS['app']->model('list')->call_one($rs);
-			if(!$rs) return false;
+		if(!$rs){
+			return false;
 		}
-		$rs = $GLOBALS['app']->model('list')->get_next($rs['id'],$rs["cate_id"],$rs["project_id"],$rs["module_id"],$rs["site_id"]);
-		if($rs){
-			$idname = $rs['identifier'] ? $rs['identifier'] : $rs['id'];
-			$rs['url'] = $GLOBALS['app']->url($idname);
+		$id = is_array($rs) ? $rs['id'] : $rs;
+		$next_id = $GLOBALS['app']->model('list')->get_next($id);
+		if(!$next_id){
+			return false;
 		}
-		return $rs;
+		return phpok('_arc',"title_id=".$next_id);
 	}
 }
 
 if(!function_exists("phpok_prev")){
 	function phpok_prev($rs)
 	{
-		if(!$rs) return false;
-		if(!is_array($rs)){
-			$rs = $GLOBALS['app']->model('list')->call_one($rs);
-			if(!$rs) return false;
+		if(!$rs){
+			return false;
 		}
-		$rs = $GLOBALS['app']->model('list')->get_prev($rs['id'],$rs["cate_id"],$rs["project_id"],$rs["module_id"],$rs["site_id"]);
-		if($rs){
-			$idname = $rs['identifier'] ? $rs['identifier'] : $rs['id'];
-			$rs['url'] = $GLOBALS['app']->url($idname);
+		$id = is_array($rs) ? $rs['id'] : $rs;
+		$prev_id = $GLOBALS['app']->model('list')->get_prev($id);
+		if(!$prev_id){
+			return false;
 		}
-		return $rs;
+		return phpok('_arc',"title_id=".$prev_id);
 	}
 }
 

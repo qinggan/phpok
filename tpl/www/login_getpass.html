@@ -29,7 +29,7 @@ $(document).ready(function(){
 		<dt>邮箱取回密码</dt>
 		<form method="post" id="getpass-form">
 		<dd><label>邮箱：</label><input class="input" type="text" name="email" /><div class="clear"></div></dd>
-		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+		<!-- if $is_vcode -->
 		<dd><label>验证码：</label><input class="vcode"  type="text" name="_chkcode" id="_chkcode" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" /><div class="clear"></div></dd>
 		<script type="text/javascript">
 		$(document).ready(function(){

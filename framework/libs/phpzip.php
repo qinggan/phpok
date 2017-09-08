@@ -152,12 +152,11 @@ class phpzip_lib
 		}
 		if(class_exists('ZipArchive')){
 			$obj = new ZipArchive();
-			$obj->open($saveName,ZipArchive::OVERWRITE);//创建一个空的zip文件
+			$obj->open($saveName,ZipArchive::OVERWRITE|ZipArchive::CREATE);//创建一个空的zip文件
 			foreach($filelist as $file){
 				if(!file_exists($file) || !is_file($file)){
 					continue;
 				}
-				
 				$name = substr($file,strlen($this->dir_root));
 				$obj->addFile($file,$name);
 			}

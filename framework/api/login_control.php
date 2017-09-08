@@ -32,7 +32,7 @@ class login_control extends phpok_control
 		if($this->session->val('user_id')){
 			$this->json(P_Lang('您已是本站会员，不需要再次登录'));
 		}
-		if($this->config['is_vcode'] && function_exists('imagecreate')){
+		if($this->model('site')->vcode('system','login')){
 			$code = $this->get('_chkcode');
 			if(!$code){
 				$this->json(P_Lang('验证码不能为空'));
@@ -151,7 +151,7 @@ class login_control extends phpok_control
 			$this->json(P_Lang('您已是本站会员，不能执行这个操作'));
 		}
 		//检测是否启用验证码
-		if($this->config['is_vcode'] && function_exists('imagecreate')){
+		if($this->model('site')->vcode('system','getpass')){
 			$code = $this->get('_chkcode');
 			if(!$code){
 				$this->json(P_Lang('验证码不能为空'));
@@ -218,7 +218,7 @@ class login_control extends phpok_control
 			$this->json(P_Lang('您已是本站会员，不能执行这个操作'));
 		}
 		//判断是否启用验证码功能
-		if($this->config['is_vcode'] && function_exists('imagecreate')){
+		if($this->model('site')->vcode('system','getpass')){
 			$code = $this->get('_chkcode');
 			if(!$code){
 				$this->json(P_Lang('验证码不能为空'));
@@ -338,19 +338,23 @@ class login_control extends phpok_control
 					}
 				}
 			}
-			$tplcontent = P_Lang('您的验证码是：').'{$code}';
-			if($this->site['login_type_sms']){
-				$tpl = $this->model('email')->tpl($this->site['login_type_sms']);
-				if($tpl && $tpl['content'] && strip_tags($tpl['content'])){
-					$tplcontent = strip_tags($tpl['content']);
-				}
+			if(!$this->site['login_type_sms']){
+				$this->error(P_Lang('未设置短信模板'));
+			}
+			$tpl = $this->model('email')->tpl($this->site['login_type_sms']);
+			if(!$tpl){
+				$this->error(P_Lang('短信模板不存在'));
 			}
 			$info = $this->lib("vcode")->word();
 			$this->model('user')->update_code($info.'-'.$this->time,$rs['id']);
 			$this->assign('code',$info);
 			$this->assign('mobile',$mobile);
-			$content = $this->fetch($tplcontent,'msg');
-			$this->gateway('exec',array('mobile'=>$mobile,'content'=>$content));
+			$content = $tpl['content'] ? $this->fetch($tpl['content'],'msg') : '';
+			if($content){
+				$content = strip_tags($content);
+			}
+			$title = $tpl['title'] ? $this->fetch($tpl['title'],'msg') : '';
+			$this->gateway('exec',array('mobile'=>$mobile,'content'=>$content,'title'=>$title,'identifier'=>$tpl['identifier']));
 			$this->success();
 		}
 		$code = $this->get('_chkcode');

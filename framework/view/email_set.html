@@ -1,6 +1,6 @@
 <!-- include tpl=head -->
-<script type="text/javascript" src="{func include_js}"></script>
 <script type="text/javascript">
+var type = "{$type}";
 function check_save()
 {
 	var title = $("#title").val();
@@ -8,17 +8,28 @@ function check_save()
 		$.dialog.alert("主题不能为空");
 		return false;
 	}
-	var content = UE.getEditor('content').getContentTxt();
-	if(!content){
-		$.dialog.alert("内容不能空");
-		return false;
-	}
 	var identifier = $("#identifier").val();
 	if(!identifier){
 		$.dialog.alert("标识不能为空");
 		return false;
 	}
-	var url = get_url("email","check") + "&identifier="+$.str.encode(identifier);
+	if(type == "email"){
+		if(identifier.substr(0,4) == 'sms_'){
+			$.dialog.alert('不能使用sms_做标识');
+			return false;
+		}
+		var content = UE.getEditor('content').getContentTxt();
+		if(!content){
+			$.dialog.alert("内容不能空");
+			return false;
+		}
+	}else{
+		if(identifier.substr(0,4) != 'sms_'){
+			$.dialog.alert('必须使用sms_做标识前缀');
+			return false;
+		}
+	}
+	var url = get_url("email","check") + "&identifier="+$.str.encode(identifier)+"&type="+type;
 	var id = $("#id").val();
 	if(id && id != "undefined" && id != "0"){
 		url += "&id="+id;
@@ -33,37 +44,64 @@ function check_save()
 }
 </script>
 <div class="tips">
-	<div class="action"><a href="{echo admin_url('email')}">返回列表</a></div>
-	您当前的位置：
-	<a href="{echo admin_url('email')}">通知内容管理</a>
+	<div class="action"><a href="{url ctrl=email/}">{lang返回列表}</a></div>
+	{lang您当前的位置：}
+	<a href="{url ctrl=email/}">{lang通知模板内容}</a>
 	&raquo; <!-- if $id -->编辑<!-- else -->添加<!-- /if -->
 </div>
-<form method="post" action="{echo admin_url('email','setok')}" onsubmit="return check_save()">
+<!-- if $type == 'sms' -->
+
+
+<div class="tips">
+	<ul>
+		<li>{lang短信标识必须使用sms_开头，其他开头标识都归为邮件模板}</li>
+		<li>{lang部分短信接口不支持内容，只允许使用变量参数，这时内容是一行一条格式是：变量名:模板变量}</li>
+		<li>允许自定义的短信内容都有自身规范，建议使用阿里提供的短信</li>
+		<li>短信长度不要超过50字（请注意变量可能用到的长度）</li>
+	</ul>
+</div>
+<!-- /if -->
+<form method="post" action="{url ctrl=email func=setok/}" onsubmit="return check_save()">
 <input type="hidden" name="id" id="id" value="{$id}" />
 <div class="table">
 	<div class="title">
-		主题：
-		<span class="note">支持PHPOK模板变量，必填项，短信模板此项内容忽略</span>
+		{lang标识：}
+		<span class="note">{lang该标识用于调用}<!-- if $type == 'sms' -->{lang，}{lang短信模板请以：}<span class="red">sms_</span> {lang开头}<!-- else -->{lang禁止使用} sms_ {lang开头}<!-- /if --></span>
 	</div>
+	<!-- php:$identifier = $rs.identifier ? $rs.identifier : ($type == 'sms' ? 'sms_' : 'email_') -->
+	<div class="content">
+		<input type="text" id="identifier" name="identifier" class="long" value="{$identifier}" />
+	</div>
+</div>
+<div class="table">
+	<!-- if $type == 'sms' -->
+	<div class="title">
+		{lang模板标签：}
+		<span class="note">{lang适用于阿里云短信等需要使用标签的地方，使用标签后，内容将可能是无效的}</span>
+	</div>
+	<!-- else -->
+	<div class="title">
+		{lang邮件标题：}
+		<span class="note">{lang可以简单的使用PHPOK变量}</span>
+	</div>
+	<!-- /if -->
 	<div class="content">
 		<input type="text" id="title" name="title" class="long" value="{$rs.title}" />
 	</div>
 </div>
 <div class="table">
 	<div class="title">
-		内容：
-		<span class="note">支持PHPOK模板变量，如为短信，内容HTML标签将自动去除</span>
+		{lang备注：}
+		<span class="note">{lang对该模板内容的一些备注，建议使用您熟悉的语言}</span>
 	</div>
-	<div class="content">{$edit_content}</div>
+	<div class="content"><input type="text" name="note" id="note" value="{$rs.note}" class="long" /></div>
 </div>
 <div class="table">
 	<div class="title">
-		标识：
-		<span class="note">该标识用于实现通知的调用，短信模板请以：<span class="red">sms_</span> 开头</span>
+		{lang内容：}
+		<span class="note">{lang支持PHPOK模板变量}</span>
 	</div>
-	<div class="content">
-		<input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" />
-	</div>
+	<div class="content">{$edit_content}</div>
 </div>
 <div class="table">
 	<div class="content">

@@ -16,6 +16,15 @@ if(!$order){
 	return false;
 }
 $this->assign('order',$order);
+$sql = "SELECT tid FROM ".$this->db->prefix."order_product WHERE order_id='".$order['id']."' AND tid>0 LIMIT 1";
+$tmpchk = $this->db->get_one($sql);
+if($tmpchk && $tmpchk['tid']){
+	$sql = "SELECT site_id FROM ".$this->db->prefix."list WHERE id='".$tmpchk['tid']."'";
+	$tmpchk = $this->db->get_one($sql);
+	if($tmpchk && $tmpchk['site_id']){
+		$this->model('gateway')->site_id($tmpchk['site_id']);
+	}
+}
 
 $status_list = $this->model('site')->order_status_all();
 if(!$status_list || !$status_list[$param['status']]){
@@ -51,7 +60,7 @@ if($status['email_tpl_user']){
 
 if($status['sms_tpl_user']){
 	$tpl = $this->model('email')->tpl($status['sms_tpl_user']);
-	if($tpl && $tpl['content']){
+	if($tpl){
 		$address = $this->model('order')->address($order['id']);
 		$user = $this->model('user')->get_one($order['user_id']);
 		$this->assign('address',$address);
@@ -60,13 +69,12 @@ if($status['sms_tpl_user']){
 		$this->gateway('param','default');
 		$mobile = $address['mobile'] ? $address['mobile'] : $user['mobile'];
 		if($mobile){
-			$content = $this->fetch($tpl['content'],'msg');
+			$content = $tpl['content'] ? $this->fetch($tpl['content'],'msg') : '';
 			if($content){
 				$content = strip_tags($content);
 			}
-			if($content){
-				$this->gateway('exec',array('mobile'=>$mobile,'content'=>$content));
-			}
+			$title = $tpl['title'] ? $this->fetch($tpl['title'],'msg') : '';
+			$this->gateway('exec',array('mobile'=>$mobile,'content'=>$content,'title'=>$title,'identifier'=>$tpl['identifier']));
 		}
 	}
 }
@@ -94,18 +102,17 @@ if($status['email_tpl_admin']){
 //短信通知管理员
 if($status['sms_tpl_admin']){
 	$tpl = $this->model('email')->tpl($status['sms_tpl_admin']);
-	if($tpl && $tpl['content']){
+	if($tpl){
 		$this->gateway('type','sms');
 		$this->gateway('param','default');
 		$mobile = $this->gateway['param']['ext']['mobile'];
 		if($mobile){
-			$content = $this->fetch($tpl['content'],'msg');
+			$content = $tpl['content'] ? $this->fetch($tpl['content'],'msg') : '';
 			if($content){
 				$content = strip_tags($content);
 			}
-			if($content){
-				$this->gateway('exec',array('mobile'=>$mobile,'content'=>$content));
-			}
+			$title = $tpl['title'] ? $this->fetch($tpl['title'],'msg') : '';
+			$this->gateway('exec',array('mobile'=>$mobile,'content'=>$content,'title'=>$title,'identifier'=>$tpl['identifier']));
 		}
 	}
 }

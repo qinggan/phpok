@@ -34,7 +34,7 @@ $(document).ready(function(){
 		<dd><label>验证串：</label><input class="input" type="text" name="code" value="{$user.code}" readonly /><div class="clear"></div></dd>
 		<dd><label>新密码：</label><input class="input" type="password" name="newpass" value="" /><div class="clear"></div></dd>
 		<dd><label>确认密码：</label><input class="input" type="password" name="chkpass" value="" /><div class="clear"></div></dd>
-		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+		<!-- if $is_vcode -->
 		<dd><label>验证码：</label><input class="vcode"  type="text" name="_chkcode" id="_chkcode" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" /><div class="clear"></div></dd>
 		<script type="text/javascript">
 		$(document).ready(function(){

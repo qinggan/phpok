@@ -24,18 +24,12 @@ class upload_form extends _init_auto
 	public function phpok_config()
 	{
 		$catelist = $this->model('rescate')->get_all();
-		if($catelist){
-			foreach($catelist as $key=>$value){
-				$types = explode(",",$value['filetypes']);
-				$tmp = array();
-				foreach($types as $k=>$v){
-					$tmp[] = "*.".$v;
-				}
-				$value['filetypes'] = implode(" , ",$tmp);
-				$catelist[$key] = $value;
-			}
-		}
 		$this->assign("catelist",$catelist);
+		$rs = $this->tpl->val('rs');
+		if($rs['ext']){
+			$ext = is_string($rs['ext']) ? unserialize($rs['ext']) : $rs['ext'];
+			$this->assign('ext',$ext);
+		}
 		$html = $this->dir_phpok."form/html/upload_admin.html";
 		$this->view($html,"abs-file",false);
 	}
@@ -185,28 +179,58 @@ class upload_form extends _init_auto
 		//上传类型
 		$upload_type = array('title'=>'图片','ext'=>'jpg,gif,png','maxsize'=>'512000','swfupload'=>'*.jpg,*.png,*.gif');
 		$ext = ($rs['ext'] && is_string($rs['ext'])) ? unserialize($rs['ext']) : ($rs['ext'] ? $rs['ext'] : array());
-		if($ext['cate_id']){
-			$cateinfo = $this->model('rescate')->get_one($ext['cate_id']);
-		}
-		if(!$cateinfo){
-			$cateinfo = $this->model('rescate')->get_default();
-		}
+		$cateinfo = $this->model('rescate')->cate_info($ext['cate_id']);
 		if($cateinfo){
 			$upload_type = array('title'=>($cateinfo['typeinfo'] ? $cateinfo['typeinfo'] : $cateinfo['title']));
-			$upload_type['ext'] = $cateinfo['filetypes'] ? $cateinfo['filetypes'] : 'jpg,png,gif';
+			$upload_type['ext'] = $cateinfo['filetypes'] ? $cateinfo['filetypes'] : 'jpg,png,gif,rar,zip';
+			if($ext['upload_type']){
+				$upload_type['ext'] = $ext['upload_type'];
+			}
+			if($ext['upload_name']){
+				$upload_type['title'] = $ext['upload_name'];
+			}
 			$upload_type['maxsize'] = $cateinfo['filemax'] * 1024;
 			$upload_type['id'] = $ext['cate_id'];
-			$tmp = array();
-			foreach(explode(",",$upload_type['ext']) as $key=>$value){
-				$tmp[] = "*.".$value;
-			}
-			$upload_type['swfupload'] = implode(", ",$tmp);
 			$rs['cate_id'] = $cateinfo['id'];
+		}else{
+			$upload_type = array('title'=>($ext['upload_name'] ? $ext['upload_name'] : P_Lang('附件')));
+			$upload_type['ext'] = $ext['upload_type'] ? $ext['upload_type'] : 'jpg,gif,png,rar,zip';
+			$upload_type['maxsize'] = 1024*1024*100;
+			$upload_type['id'] = 0;
+			$rs['cate_id'] = 0;
 		}
+		$tmp = array();
+		foreach(explode(",",$upload_type['ext']) as $key=>$value){
+			$tmp[] = "*.".$value;
+		}
+		$upload_type['swfupload'] = implode(", ",$tmp);
 		$rs['upload_type'] = $upload_type;
-		//echo "<pre>".print_r($rs,true)."</pre>";
-		$rs['_upload_binary'] = ini_get('upload_tmp_dir') ? false : true;
+		unset($tmp);
+		
+
+		//二进制上传设置
+		$rs['upload_binary'] = 'false';
+		if($ext['upload_binary']){
+			$rs['upload_binary'] = 'true';
+		}
+		if($rs['upload_binary'] == 'false' && !ini_get('upload_tmp_dir')){
+			$rs['upload_binary'] = 'true';
+		}
+		//上传压缩属性
+		$compress = 'false';
+		if($ext['upload_compress']){
+			$compress = "{width:".$ext['upload_compress_wh'].",height:".$ext['upload_compress_wh'].",quality:100,allowMagnify:false,crop:false}";
+		}
+		$rs['upload_compress'] = $compress;
 		$this->assign("_rs",$rs);
+		
+		//自定义分类列表
+		if($ext['cate_custom']){
+			$catelist = $this->model('rescate')->cate_all();
+			if($catelist){
+				$this->assign("_catelist",$catelist);
+			}
+		}
 		return $this->fetch($this->dir_phpok.'form/html/upload_admin_tpl.html','abs-file',false);
 	}
 
@@ -239,24 +263,48 @@ class upload_form extends _init_auto
 		//上传类型
 		$upload_type = array('title'=>'图片','ext'=>'jpg,gif,png','maxsize'=>'512000','swfupload'=>'*.jpg,*.png,*.gif');
 		$ext = ($rs['ext'] && is_string($rs['ext'])) ? unserialize($rs['ext']) : ($rs['ext'] ? $rs['ext'] : array());
-		if($ext['cate_id']){
-			$cateinfo = $this->model('rescate')->get_one($ext['cate_id']);
-		}
-		if(!$cateinfo){
-			$cateinfo = $this->model('rescate')->get_default();
-		}
+		$cateinfo = $this->model('rescate')->cate_info($ext['cate_id']);
 		if($cateinfo){
 			$upload_type = array('title'=>($cateinfo['typeinfo'] ? $cateinfo['typeinfo'] : $cateinfo['title']));
-			$upload_type['ext'] = $cateinfo['filetypes'] ? $cateinfo['filetypes'] : 'jpg,png,gif';
+			$upload_type['ext'] = $cateinfo['filetypes'] ? $cateinfo['filetypes'] : 'jpg,png,gif,rar,zip';
+			if($ext['upload_type']){
+				$upload_type['ext'] = $ext['upload_type'];
+			}
+			if($ext['upload_name']){
+				$upload_type['title'] = $ext['upload_name'];
+			}
 			$upload_type['maxsize'] = $cateinfo['filemax'] * 1024;
 			$upload_type['id'] = $ext['cate_id'];
-			$tmp = array();
-			foreach(explode(",",$upload_type['ext']) as $key=>$value){
-				$tmp[] = "*.".$value;
-			}
-			$upload_type['swfupload'] = implode(", ",$tmp);
+			$rs['cate_id'] = $cateinfo['id'];
+		}else{
+			$upload_type = array('title'=>($ext['upload_name'] ? $ext['upload_name'] : P_Lang('附件')));
+			$upload_type['ext'] = $ext['upload_type'] ? $ext['upload_type'] : 'jpg,gif,png,rar,zip';
+			$upload_type['maxsize'] = 1024*1024*100;
+			$upload_type['id'] = 0;
+			$rs['cate_id'] = 0;
 		}
+		$tmp = array();
+		foreach(explode(",",$upload_type['ext']) as $key=>$value){
+			$tmp[] = "*.".$value;
+		}
+		$upload_type['swfupload'] = implode(", ",$tmp);
 		$rs['upload_type'] = $upload_type;
+
+		//二进制上传设置
+		$rs['upload_binary'] = 'false';
+		if($ext['upload_binary']){
+			$rs['upload_binary'] = 'true';
+		}
+		if($rs['upload_binary'] == 'false' && !ini_get('upload_tmp_dir')){
+			$rs['upload_binary'] = 'true';
+		}
+		//上传压缩属性
+		$compress = 'false';
+		if($ext['upload_compress']){
+			$compress = "{width:".$ext['upload_compress_wh'].",height:".$ext['upload_compress_wh'].",quality:100,allowMagnify:false,crop:false}";
+		}
+		$rs['upload_compress'] = $compress;
+		$rs['upload_ios'] = $this->lib('mobile')->is_ios();
 		$this->assign("_rs",$rs);
 		return $this->fetch($this->dir_phpok.'form/html/upload_www_tpl.html','abs-file',false);
 	}

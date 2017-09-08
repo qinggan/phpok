@@ -1,4 +1,48 @@
 <!-- plugin body -->
 <!-- plugin foot -->
+<script type="text/javascript">
+$(document).ready(function(){
+	var r_menu = [[{
+		'text':'{lang刷新}',
+		'func':function(){
+			$.phpok.reload();
+		}
+	},{
+		'text': "{lang新窗口打开}",
+    	'func': function() {
+	    	var url = window.location.href;
+			//去除随机数
+			url = url.replace(/\_noCache=[0-9\.]+/g,'');
+			if(url.substr(-1) == '&' || url.substr(-1) == '?'){
+				url = url.substr(0,url.length-1);
+			}
+			window.open(url);
+	    }
+	},{
+		'text':'{lang帮助说明}',
+		'func':function(){
+			var url = window.location.href;
+			//去除随机数
+			url = url.replace(/\_noCache=[0-9\.]+/g,'');
+			if(url.substr(-1) == '&' || url.substr(-1) == '?'){
+				url = url.substr(0,url.length-1);
+			}
+			var tip = '{lang网址：}'+url+'<br /><div style="text-indent:36px"><a href="'+url+'" target="_blank" class="red">{lang新窗口打开}</a></div>';
+			tip += '<div style="text-indent:36px">{lang复制请按快捷键：CTRL+C，粘贴请使用：CTRL+V}</div>';
+			top.$.dialog({
+				'title':'{lang帮助说明}',
+				'content':tip,
+				'lock':true,
+				'drag':false,
+				'fixed':true
+			});
+		}
+	}]];
+	$(window).smartMenu(r_menu,{
+		'name':'smart',
+		'textLimit':8
+	});
+});
+</script>
 </body>
 </html>

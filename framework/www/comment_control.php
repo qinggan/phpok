@@ -72,6 +72,12 @@ class comment_control extends phpok_control
 			$this->assign('avatar',$comment['avatar']);
 			$this->assign('nickname',$comment['user']);
 		}
-		$this->view('comment');
+		$this->model('site')->site_id($this->site['id']);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'comment';
+		}
+		$this->assign('is_vcode',$this->model('site')->vcode($project['id'],'comment'));
+		$this->view($tplfile);
 	}
 }

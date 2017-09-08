@@ -1,24 +1,13 @@
-<script type="text/javascript">
-function all_refresh()
-{
-	var url = get_url('index','all_setting');
-	var rs = $.phpok.json(url);
-	if(rs.status == 'ok')
-	{
-		$("#all_setting").html(rs.content).show();
-	}
-	else
-	{
-		$("#all_setting").html('').hide();
-	}
-}
-</script>
 <div class="box_item">
 	<ul>
 		<!-- if $all_popedom.site -->
 		<li><a title="{lang配置网站信息，包括网址域名，布全局关键字等}" href="javascript:$.win('{lang网站信息}','{url ctrl=all func=setting/}');void(0);">
 			<div class="top_img"><img src="images/ico/setting.png" alt="{lang网站信息}" class="ie6png" width="48" height="48" /></div>
 			<div class="name">{lang网站信息}</div></a>
+		</li>
+		<li><a title="{lang验证码开启或关闭设置}" href="javascript:$.win('{lang验证码配置}','{url ctrl=all func=vcode/}');void(0);">
+			<div class="top_img"><img src="images/ico/setting2.png" alt="{lang验证码配置}" class="ie6png" width="48" height="48" /></div>
+			<div class="name">{lang验证码}</div></a>
 		</li>
 		<!-- /if -->
 		<!-- if $all_popedom.domain -->
@@ -33,6 +22,12 @@ function all_refresh()
 			<div class="name">{lang订单常规配置}</div></a>
 		</li>
 		<!-- /if -->
+		<!-- loop from=$plugin_alist key=$key value=$value id=$tmpid -->
+		<li><a title="{$value.title}" href="javascript:$.win('{$value.title}','{$value.url}');void(0);">
+			<div class="top_img"><img src="{$value.ico}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
+			<div class="name">{$value.title}</div></a>
+		</li>
+		<!-- /loop -->
 		<!-- if $all_popedom.gset || $all_popedom.set -->
 		<!-- foreach($all_rslist AS $key=>$value) -->
 		<li><a title="{$value.title}" href="javascript:$.win('{$value.title}','{url ctrl=all func=set id=$value.id/}');void(0);">

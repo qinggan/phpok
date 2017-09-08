@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: admin/list_control.php
-	Note	: 内容控制器
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-10-31 19:45
-***********************************************************/
+/**
+ * 内容控制器
+ * @package phpok\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年07月09日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class list_control extends phpok_control
 {
@@ -27,7 +30,7 @@ class list_control extends phpok_control
 	public function index_f()
 	{
 		$site_id = $_SESSION["admin_site_id"];
-		$rslist = $this->model('project')->get_all($site_id,0,"p.status=1 AND p.hidden=0");
+		$rslist = $this->model('project')->get_all($this->session->val('admin_site_id'),0,"p.status=1 AND p.hidden=0");
 		if(!$rslist) $rslist = array();
 		//读取全部模型
 		if(!$_SESSION["admin_rs"]["if_system"]){
@@ -132,53 +135,8 @@ class list_control extends phpok_control
 		if($rs["module"]){
 			$this->content_list($rs);
 			$this->view("list_content");
-		}else{
-			$show_edit = true;
-			$extlist = $this->model('ext')->ext_all('project-'.$id);
-			if($extlist){
-				$tmp = false;
-				foreach($extlist AS $key=>$value){
-					if($value["ext"]){
-						$ext = unserialize($value["ext"]);
-						foreach($ext AS $k=>$v){
-							$value[$k] = $v;
-						}
-					}
-					$tmp[] = $this->lib('form')->format($value);
-					$this->lib('form')->cssjs($value);
-				}
-				$this->assign('extlist',$tmp);
-			}
-			$this->view("list_set");
 		}
-	}
-
-
-	public function set_f()
-	{
-		$id = $this->get("id");
-		if(!$id)
-		{
-			error(P_Lang('操作有错误'),$this->url("list"),"error");
-		}
-		$this->popedom_auto($id);
-		if(!$this->popedom["set"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
-		}
-		$rs = $this->model('project')->get_one($id);
-		if(!$rs)
-		{
-			error(P_Lang('项目信息不存在'),$this->url("list"),"error");
-		}
-		$this->assign("rs",$rs);
-		$this->assign("id",$id);
-		$this->assign("pid",$id);
-		$plist = array($rs);
-		if($rs["parent_id"])
-		{
-			$this->model('project')->get_parentlist($plist,$rs["parent_id"]);
-			krsort($plist);
-		}
+		$show_edit = true;
 		$extlist = $this->model('ext')->ext_all('project-'.$id);
 		if($extlist){
 			$tmp = false;
@@ -194,23 +152,63 @@ class list_control extends phpok_control
 			}
 			$this->assign('extlist',$tmp);
 		}
-		$this->assign("plist",$plist);
+		$this->view("list_set2");
+	}
+
+	public function set_f()
+	{
+		$id = $this->get("id");
+		if(!$id){
+			$this->error(P_Lang('操作有错误'),$this->url("list"));
+		}
+		$this->popedom_auto($id);
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$rs = $this->model('project')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('项目信息不存在'),$this->url("list"),"error");
+		}
+		$this->assign("rs",$rs);
+		$this->assign("id",$id);
+		$this->assign("pid",$id);
+		$extlist = $this->model('ext')->ext_all('project-'.$id);
+		if($extlist){
+			$tmp = false;
+			foreach($extlist AS $key=>$value){
+				if($value["ext"]){
+					$ext = unserialize($value["ext"]);
+					foreach($ext AS $k=>$v){
+						$value[$k] = $v;
+					}
+				}
+				$tmp[] = $this->lib('form')->format($value);
+				$this->lib('form')->cssjs($value);
+			}
+			$this->assign('extlist',$tmp);
+		}
+
+		$tag_config = $this->model('tag')->config();
+		$this->assign('tag_config',$tag_config);
 		$this->view("list_set");
 	}
-	
+
+	/**
+	 * 保存项目信息
+	**/
 	public function save_f()
 	{
 		$id = $this->get("id","int");
 		if(!$id){
-			error(P_Lang('未指定项目ID'),$this->url('list'),"error");
+			$this->error(P_Lang('未指定项目ID'));
 		}
 		$this->popedom_auto($id);
 		if(!$this->popedom["set"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$title = $this->get("title");
 		if(!$title){
-			error(P_Lang('名称不能为空'),$this->url("list","action","id=".$id),"error");
+			$this->error(P_Lang('名称不能为空'));
 		}
 		$array = array("title"=>$title);
 		$array["seo_title"] = $this->get("seo_title");
@@ -218,18 +216,10 @@ class list_control extends phpok_control
 		$array["seo_desc"] = $this->get("seo_desc");
 		$array['tag'] = $this->get('tag');
 		$this->model('project')->save($array,$id);
-		if($array['tag'])
-		{
-			$this->model('tag')->update_tag($array['tag'],'p'.$id,$_SESSION['admin_site_id']);
-		}
-		else
-		{
-			$this->model('tag')->stat_delete('p'.$id,"title_id");
-		}
+		$this->model('tag')->update_tag($array['tag'],'p'.$id);
 		ext_save("project-".$id);
 		$this->model('temp')->clean("project-".$id,$_SESSION["admin_id"]);
-		$ok_url = $this->url("list","action","id=".$id);
-		error(P_Lang('项目信息编辑成功'),$ok_url,"ok");
+		$this->success();
 	}
 
 	private function check_identifier($sign,$id=0,$site_id=0)
@@ -265,6 +255,12 @@ class list_control extends phpok_control
 		if(!$pid || !$mid || !$site_id){
 			error(P_Lang('数据异常'),'','error');
 		}
+		//读取电商数据
+		$this->model('list')->is_biz(($project_rs['is_biz'] ? true : false));
+		//读取多级分类
+		$this->model('list')->multiple_cate(($project_rs['cate_multiple'] ? true : false));
+		//绑定会员
+		$this->model('list')->is_user(($project_rs['is_userid'] ? true : false));
 		//内容布局维护
 		$layout = $m_list = array();
 		$m_rs = $this->model('module')->get_one($mid);
@@ -288,6 +284,9 @@ class list_control extends phpok_control
 		$this->assign("layout",$layout_list);
 		unset($layout_list);
 		$psize = $this->config["psize"] ? $this->config["psize"] : "30";
+		if($project_rs['psize'] && $project_rs['psize'] > $psize){
+			$psize = $project_rs['psize'];
+		}
 		if(!$this->config["pageid"]) $this->config["pageid"] = "pageid";
 		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid) $pageid = 1;
@@ -430,13 +429,15 @@ class list_control extends phpok_control
 			$rslist = $this->model('list')->get_list($mid,$condition,$offset,$psize,$orderby);
 			$sub_idlist = $rslist ? array_keys($rslist) : array();
 			$extcate_ids = $sub_idlist;
-			$sub_idstring = implode(",",$sub_idlist);
-			$condition = "l.site_id='".$site_id."' AND l.project_id='".$pid."' AND l.parent_id IN(".$sub_idstring.") ";
-			$sublist = $this->model('list')->get_list($mid,$condition,0,0,$orderby);
-			if($sublist){
-				foreach($sublist AS $key=>$value){
-					$rslist[$value["parent_id"]]["sonlist"][$value["id"]] = $value;
-					$extcate_ids[] = $value['id'];
+			if($project_rs['subtopics']){
+				$sub_idstring = implode(",",$sub_idlist);
+				$condition = "l.site_id='".$site_id."' AND l.project_id='".$pid."' AND l.parent_id IN(".$sub_idstring.") ";
+				$sublist = $this->model('list')->get_list($mid,$condition,0,0,$orderby);
+				if($sublist){
+					foreach($sublist AS $key=>$value){
+						$rslist[$value["parent_id"]]["sonlist"][$value["id"]] = $value;
+						$extcate_ids[] = $value['id'];
+					}
 				}
 			}
 			$extcate_ids = array_unique($extcate_ids);
@@ -460,13 +461,15 @@ class list_control extends phpok_control
 		return true;
 	}
 
-	//添加或编辑内容
+	/**
+	 * 添加或编辑内容，这里的内容是带模块的
+	**/
 	public function edit_f()
 	{
 		$id = $this->get("id","int");
 		$pid = $this->get("pid","int");
 		if(!$id && !$pid){
-			error(P_Lang('操作异常'),$this->url("list"),"error");
+			$this->error(P_Lang('操作异常'),$this->url("list"));
 		}
 		if($id){
 			$rs = $this->model('list')->get_one($id,false);
@@ -478,13 +481,21 @@ class list_control extends phpok_control
 		}else{
 			$cateid = $this->get("cateid","int");
 			$rs = $extcate = array();
+			//判断是否有临时未保存的数据
+			$autosave = $this->lib('file')->cat($this->dir_data.'cache/autosave_'.$this->session->val('admin_id').'_'.$pid.'.php');
+			if($autosave){
+				$rs = unserialize($autosave);
+				if($rs['dateline']){
+					$rs['dateline'] = strtotime($rs['dateline']);
+				}
+			}
 			if($cateid){
 				$rs["cate_id"] = $cateid;
 				$extcate = array($cateid);
 			}
 		}
 		if(!$pid){
-			error(P_Lang('操作异常'),$this->url("list"),"error");
+			$this->error(P_Lang('操作异常'),$this->url("list"));
 		}
 		$this->popedom_auto($pid);
 		$popedom_id = $id ? 'modify' : 'add';
@@ -513,13 +524,19 @@ class list_control extends phpok_control
 		if($id){
 			$tmplist = $this->model('ext')->ext_all('list-'.$id,true);
 		}else{
-			$tmplist = $_SESSION['admin-add-list'];
+			$tmplist = $this->session->val('admin-add-list');
 		}
 		if($tmplist){
 			foreach($tmplist as $key=>$value){
-				if($value['ext'] && is_string($value['ext'])){
-					$ext = unserialize($value['ext']);
-					$value = array_merge($value,$ext);
+				if($value['ext']){
+					$ext = $value['ext'];
+					if(is_string($value['ext'])){
+						$ext = unserialize($value['ext']);
+					}
+					unset($value['ext']);
+					if($ext){
+						$value = array_merge($value,$ext);
+					}
 				}
 				if($this->popedom['ext']){
 					$value['is_edit'] = true;
@@ -590,18 +607,29 @@ class list_control extends phpok_control
 			$freight = $this->model('freight')->get_one($project['freight']);
 			$this->assign('freight',$freight);
 		}
-		$ext_module = $id ? 'list-'.$id : 'add-list';
-		$this->assign("ext_module",$ext_module);
-		$extfields = $this->model('fields')->fields_list('',0,999,'module');
-		if($extfields){
-			$used_fields = $this->model('list')->fields_all($p_rs['module'],$id,$_SESSION['admin-add-list']);
-			foreach($extfields as $key=>$value){
-				if(in_array($value['identifier'],$used_fields)){
-					unset($extfields[$key]);
-				}
+
+		// 扩展字段管理
+		if($this->popedom['ext']){
+			$ext_module = $id ? 'list-'.$id : 'add-list';
+			$this->assign("ext_module",$ext_module);
+			$no_include = array('id','title','identifier');
+			$used_fields = $this->model('list')->fields_all($p_rs['module'],$id,$this->session->val('admin-add-list'));
+			$used_fields = $used_fields ? array_merge($no_include,$used_fields) : $no_include;
+			$used_fields = array_unique($used_fields);
+			$extfields = $this->model('fields')->fields_list($used_fields);
+			$this->assign("extfields",$extfields);
+		}
+
+		//获取标签选项
+		if($p_rs['is_tag']){
+			$tag_config = $this->model('tag')->config();
+			$this->assign('tag_config',$tag_config);
+			if($tag_config['count']){
+				$taglist = $this->model('tag')->tag_quick($tag_config['count']);
+				$this->assign('taglist',$taglist);
 			}
 		}
-		$this->assign("extfields",$extfields);
+
 		$this->view("list_edit");
 	}
 
@@ -671,9 +699,10 @@ class list_control extends phpok_control
 		if($p_rs['is_tag']){
 			$array["tag"] = $this->get("tag");
 			if($array["tag"]){
-				$array["tag"] = str_replace(array("　","，",",","｜","|","、","/","\\","／","＼","+","＋","-","－","_","＿","—")," ",$array["tag"]);
 				$array["tag"] = preg_replace("/(\x20{2,})/"," ",$array["tag"]);
 			}
+		}else{
+			$array['tag'] = '';
 		}
 		if($p_rs['is_userid']){
 			$array['user_id'] = $this->get('user_id','int');
@@ -710,6 +739,7 @@ class list_control extends phpok_control
 		if(!$id){
 			$id = $this->model('list')->save($array);
 			$tmpadd = true;
+			$this->lib('file')->rm($this->dir_data.'cache/autosave_'.$this->session->val('admin_id').'_'.$p_rs['id'].'.php');
  		}else{
  			$this->model('list')->save($array,$id);
  		}
@@ -752,7 +782,7 @@ class list_control extends phpok_control
 	 		$this->model('list')->list_cate_clear($id);
  		}
  		//更新Tag标签
- 		$this->model('tag')->update_tag($array['tag'],$id,$_SESSION['admin_site_id']);
+ 		$this->model('tag')->update_tag($array['tag'],$id);
  		if($p_rs["module"]){
 	 		$ext_list = $this->model('module')->fields_all($p_rs["module"]);
 	 		$tmplist = array();
@@ -778,7 +808,7 @@ class list_control extends phpok_control
 		if($array['status'] && $array['user_id']){
 			$this->model('wealth')->add_integral($id,$array['user_id'],'post',P_Lang('管理员编辑主题发布#{id}',array('id'=>$id)));
 		}
- 		$this->plugin("ap-list-ok-after",array("id"=>$id,"project"=>$p_rs));
+		$this->plugin('system_admin_title_success',$id,$p_rs);
  		$this->json(true);
 	}
 

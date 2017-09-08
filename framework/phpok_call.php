@@ -1,20 +1,23 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/phpok_call.php
-	Note	: PHPOK调用中心类
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-04-20 17:42
-***********************************************************/
+/**
+ * 调用中心类
+ * @package phpok\framework
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 https://www.phpok.com
+ * @版本 4.x
+ * @授权 GNU Lesser General Public License (LGPL)
+ * @时间 2017年04月02日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class phpok_call extends phpok_control
+class phpok_call extends _init_auto
 {
 	private $mlist;
 	private $phpoklist;
 	public function __construct()
 	{
-		parent::control();
+		parent::__construct();
 		$this->mlist = get_class_methods($this);
 		$this->model('project')->site_id($this->site['id']);
 		$this->lib('form')->appid('www');
@@ -73,7 +76,9 @@ class phpok_call extends phpok_control
 		if(!$rs){
 			$rs = array('site'=>$this->site['id']);
 		}
-		$rs['domain'] = $this->site['domain'];//增加域名字段，以实现手机版与PC版调用生成的缓存URL中一致性问题
+		if($this->is_mobile){
+			$rs['_mobile'] = true;
+		}
 		if(!isset($rs['site']) || (isset($rs['site']) && !$rs['site'])){
 			$rs['site'] = $this->site['id'];
 		}
@@ -90,6 +95,8 @@ class phpok_call extends phpok_control
 		}else{
 			$baseurl = $this->url;
 		}
+		//定义 _baseurl
+		$rs['_baseurl'] = $baseurl;
 		$this->model('url')->base_url($baseurl);
 		if(substr($id,0,1) != '_'){
 			$call_rs = $this->load_phpoklist($id,$rs['site']);
@@ -1073,24 +1080,62 @@ class phpok_call extends phpok_control
 		$condition = " id IN(".implode(",",$ids).") ";
 		return $this->model('res')->get_list($condition,0,999,true);
 	}
-	
+
+	/**
+	 * 获取会员数据
+	 * @参数 $rs 数组，数组参数分别是：
+	 *       phpok：会员 field 对应的字段值，默认为会员ID
+	 *       user_id：等同于 phpok
+	 *       field：要查询的字段ID，默认是id，支持mobile,email
+	 *       ext：是否显示扩展，默认为true，当参数字符为false时，不查询扩展数据
+	 *       weight：是否显示财富，默认为true，当参数字符为false时，不查询财富信息
+	 * @返回 false 或 数组
+	**/
 	private function _user($rs)
 	{
 		if(!$rs['phpok'] && !$rs['user_id']){
 			return false;
 		}
 		$user_id = $rs['user_id'] ? $rs['user_id'] : $rs['phpok'];
-		return $this->model('user')->get_one($user_id);
+		$field = $rs['field'] ? $rs['field'] : 'id';
+		$showext = true;
+		if(isset($rs['ext']) && (!$rs['ext'] || ($rs['ext'] && $rs['ext'] == 'false'))){
+			$showext = false;
+		}
+		$wealth = true;
+		if(isset($rs['wealth']) && (!$rs['wealth'] || ($rs['wealth'] && $rs['wealth'] == 'false'))){
+			$wealth = false;
+		}
+		return $this->model('user')->get_one($user_id,$field,$showext,$wealth);
 	}
 
+	/**
+	 * 会员列表
+	 * @参数 $rs 数组，数组参数分别是：
+	 *       phpok：会员 field 对应的字段值，默认为会员ID
+	 *       status：未设置时，默认为true，已设置参数，为false时表示未审核会员数据也读取
+	 *       group_id：会员组ID
+	 *       sqlext：SQL扩展查询，会员主表使用字段u，扩展表用ext
+	 * @返回 多维数组
+	**/
 	private function _userlist($rs,$cache_id='')
 	{
-		$condition = 'u.status=1 ';
-		if($rs['is_avatar'] && $rs['is_avatar'] != 'false' && $rs['is_avatar'] != '0'){
-			$condition .= " AND u.avatar !='' ";
+		$condition = 'u.status=1';
+		if(isset($rs['status']) && (!$rs['status'] || ($rs['status'] && $rs['status'] == 'false'))){
+			$condition = '1=1';
+		}
+		if(isset($rs['is_avatar'])){
+			if(!$rs['is_avatar'] || ($rs['is_avatar'] && $rs['is_avatar'] == 'false')){
+				$condition .= " AND u.avatar=''";
+			}else{
+				$condition .= " AND u.avatar !='' ";
+			}
 		}
 		if($rs['group_id']){
 			$condition .= " AND u.group_id='".$rs['group_id']."'";
+		}
+		if($rs['sqlext']){
+			$condition .= " AND ".$rs['sqlext'];
 		}
 		$psize = ($rs['psize'] && intval($rs['psize'])) ? $rs['psize'] : 20;
 		$offset = $rs['pageid'] ? (($rs['pageid'] - 1)* $psize) : 0;
@@ -1185,4 +1230,3 @@ class phpok_call extends phpok_control
 		return $array;
 	}
 }
-?>

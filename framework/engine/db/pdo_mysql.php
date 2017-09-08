@@ -144,9 +144,6 @@ class db_pdo_mysql extends db
 
 	public function query($sql,$loadcache=true)
 	{
-		if($this->debug){
-			$this->debug($sql);
-		}
 		if($loadcache){
 			$this->cache_sql($sql);
 		}
@@ -156,8 +153,11 @@ class db_pdo_mysql extends db
 		if($loadcache){
 			$this->cache_update($sql);
 		}
-		$this->_time();
+		$tmptime = $this->_time();
 		$this->_count();
+		if($this->debug){
+			$this->debug($sql,$tmptime);
+		}
 		return $this->query;
 	}
 

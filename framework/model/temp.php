@@ -41,4 +41,3 @@ class temp_model_base extends phpok_model
 		return false;
 	}
 }
-?>

@@ -1,0 +1,56 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function save()
+{
+	$("#post_save").ajaxSubmit({
+		'url':get_url('all','vcode_save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.alert('验证码信息配置保存成功',function(){
+					$.phpok.reload();
+				},'succeed');
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+$(document).ready(function(){
+	
+});
+</script>
+<div class="tips">
+	<div class="left">
+		{lang您当前的位置：}{lang验证码设置，打勾表示启用验证码，不打勾表示禁用验证码}
+	</div>
+</div>
+<form method="post" id="post_save" onsubmit="return save()">
+<div class="list">
+<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<!-- loop from=$vcodelist key=$key value=$value id=$idx -->
+<tr>
+	<input type="hidden" name="{$key}" value="{$value.title}" />
+	<td align="right">{$value.title}</td>
+	<td>
+		<ul class="layout">
+			<!-- loop from=$value.list key=$k value=$v id=$idxx -->
+			<input type="hidden" name="{$key}-{$k}-title" value="{$v.title}" />
+			<li><label><input type="checkbox" name="{$key}-{$k}"{if $v.status} checked{/if} />{$v.title}</label></li>
+			<!-- /loop -->
+		</ul>
+	</td>
+</tr>
+<!-- /loop -->
+<tr>
+	<td>&nbsp;</td>
+	<td><input type="submit" value="{lang提交}" class="submit2" /></td>
+</tr>
+</table>
+</div>
+</form>
+
+<!-- include tpl=foot -->

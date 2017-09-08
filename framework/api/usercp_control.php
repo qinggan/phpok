@@ -199,7 +199,8 @@ class usercp_control extends phpok_control
 		$this->assign('user',$user);
 		$fullname = $user['fullname'] ? $user['fullname'] : $user['user'];
 		$content = $this->fetch($info['content'],'content');
-		$data = array('content'=>$content,'mobile'=>$mobile,'fullname'=>$fullname);
+		$title = $this->fetch($info['title'],'content');
+		$data = array('content'=>$content,'mobile'=>$mobile,'fullname'=>$fullname,'title'=>$title);
 		$this->model('gateway')->save_temp($code,$server['id'],$this->u_id);
 		$action = $this->model('gateway')->action($server,$data);
 		if($action){

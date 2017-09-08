@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/model/tag.php
-	Note	: TAG管理器
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-04-16 07:53
-***********************************************************/
+/**
+ * 标签管理器
+ * @package phpok\model
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年04月21日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class tag_model_base extends phpok_model
 {
@@ -21,10 +24,13 @@ class tag_model_base extends phpok_model
 		unset($this);
 	}
 
-	//根据指定主题下的可能用到的Tag
-	//id，指的是主题id
-	//type，仅支持list,cate,project,site四种类型，分类是主题，分类，项目及站点全局
-	//使用一层层递进，list，cate和project支持读父级的tag
+	/**
+	 * 根据指定主题下的可能用到的标签，其中 $type 为主题/分类/项目时，本身读不到标签时会尝试读取系统设置的分类/项目/站点里的标签
+	 * @参数 $id 指主题ID或是项目ID或是分类ID或是站点ID
+	 * @参数 $type 仅支持：list（主题），cate（分类），project（项目），site（全局）
+	 * @参数 $site_id 站点ID
+	 * @返回 格式化后的标签数组
+	**/
 	public function tag_list($id,$type="list",$site_id=0)
 	{
 		if(!$id){
@@ -77,6 +83,12 @@ class tag_model_base extends phpok_model
 			return false;
 		}
 		return $this->tag_array_html($rslist);
+	}
+
+	public function tag_quick($count=10)
+	{
+		$sql = "SELECT title FROM ".$this->db->prefix."tag WHERE site_id='".$this->site_id."' ORDER BY id DESC LIMIT ".$count;
+		return $this->db->get_all($sql);
 	}
 
 	private function tag_array_html($rslist)
@@ -235,5 +247,46 @@ class tag_model_base extends phpok_model
 		}
 		return $list;
 	}
+
+	/**
+	 * 读取标签配置信息
+	 * @参数 $data 要保存的标签数据，必须是数组。为空或非数组时，表示读标签配置信息
+	**/
+	public function config($data='')
+	{
+		if($data && is_array($data)){
+			$this->lib('xml')->save($data,$this->dir_root.'data/xml/tag_config_'.$this->site_id.'.xml');
+			return true;
+		}
+		if(file_exists($this->dir_root.'data/xml/tag_config_'.$this->site_id.'.xml')){
+			return $this->lib('xml')->read($this->dir_root.'data/xml/tag_config_'.$this->site_id.'.xml');
+		}
+		if(file_exists($this->dir_root.'data/xml/tag_config.xml')){
+			return $this->lib('xml')->read($this->dir_root.'data/xml/tag_config.xml');
+		}
+		return array('separator'=>',','count'=>10);
+	}
+
+	/**
+	 * 取得指定主题、项目，分类下的标签
+	 * @参数 $id 主题ID或是项目ID（p前缀）或是分类ID（c前缀）
+	 * @返回 合并后的标签字符串
+	**/
+	public function get_tags($id)
+	{
+		$sql = "SELECT t.title FROM ".$this->db->prefix."tag_stat s ";
+		$sql.= " JOIN ".$this->db->prefix."tag t ON(s.tag_id=t.id) ";
+		$sql.= " WHERE s.title_id='".$id."'";
+		$rs = $this->db->get_all($sql);
+		if(!$rs){
+			return false;
+		}
+		$list = array();
+		foreach($rs as $key=>$value){
+			$list[] = $value['title'];
+		}
+		$config = $this->config();
+		$separator = $config['separator'] ? $config['separator'] : ',';
+		return implode($separator,$list);
+	}
 }
-?>

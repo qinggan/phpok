@@ -1,6 +1,6 @@
 <!-- include tpl=head -->
 <div class="main">
-<form method="post" action="{if session.user_id}{url ctrl=payment func=create id=$rs.id/}{else}{url ctrl=payment func=create id=$rs.sn passwd=$rs.passwd/}{/if}">
+<form method="post" action="{if $session.user_id}{url ctrl=payment func=create id=$rs.id/}{else}{url ctrl=payment func=create sn=$rs.sn passwd=$rs.passwd/}{/if}">
 <div class="pfw mt10">
 	<h3>订单信息</h3>
 	<div class="payment">

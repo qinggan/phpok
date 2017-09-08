@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/model/call.php
-	Note	: 数据调用中心涉及到的SQL操作
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-04-18 02:24
-***********************************************************/
+/**
+ * 数据调用中心涉及到的SQL操作
+ * @package phpok
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年08月23日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class call_model_base extends phpok_model
 {
@@ -16,12 +19,9 @@ class call_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
+	/**
+	 * 取得数据调用类型
+	**/
 	public function types()
 	{
 		$xmlfile = $this->dir_root.'data/xml/calltype_'.$this->site_id.'.xml';
@@ -31,25 +31,50 @@ class call_model_base extends phpok_model
 		return $this->lib('xml')->read($xmlfile);
 	}
 
-	public function psize($psize=20)
+	/**
+	 * 页码
+	**/
+	public function psize($psize='')
 	{
-		$this->psize = $psize;
+		if($psize && is_numeric($psize)){
+			$this->psize = $psize;
+		}
+		return $this->psize;
 	}
 	
-	//通过ID取得数据（此操作用于后台）
+	/**
+	 * 通过ID取得数据（此操作用于后台）
+	 * @参数 $id 主键ID
+	**/
 	public function get_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
 
-	public function get_rs($id,$site_id)
+	/**
+	 * 取得标识对应的内容
+	 * @参数 $identifier 标识
+	 * @参数 $site_id 站点ID
+	**/
+	public function get_rs($identifier,$site_id=0)
 	{
-		if(!$id || !$site_id) return false;
-		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE identifier='".$id."' AND site_id='".$site_id."'";
+		if(!$id){
+			return false;
+		}
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE identifier='".$identifier."' AND site_id='".$site_id."'";
 		return $this->db->get_one($sql);
 	}
 
+	/**
+	 * 取得列表
+	 * @参数 $condition 查询条件
+	 * @参数 $offset 初始位置
+	 * @参数 $psize 查询数量
+	**/
 	public function get_list($condition="",$offset=0,$psize=30)
 	{
 		$sql = "SELECT call.* FROM ".$this->db->prefix."phpok call WHERE call.site_id='".$this->site_id."' ";
@@ -60,46 +85,82 @@ class call_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
-	public function get_all($site_id=0,$status=0)
+	/**
+	 * 取得站点下的全部数据
+	 * @参数 $site_id 站点ID
+	 * @参数 $status 为1或true时表示仅查已审核的数据
+	 * @参数 $pri 主键，留空使用identifier
+	**/
+	public function get_all($site_id=0,$status=0,$pri='identifier')
 	{
-		if(!$site_id) return false;
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		if(!$site_id){
+			return false;
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE site_id='".$site_id."'";
-		if($status) $sql.= " AND status=1";
-		return $this->db->get_all($sql,"identifier");
+		if($status){
+			$sql.= " AND status=1";
+		}
+		return $this->db->get_all($sql,$pri);
 	}
 
+	/**
+	 * 查询数量
+	 * @参数 $condition 查询条件
+	**/
 	public function get_count($condition="")
 	{
 		$sql = "SELECT count(id) FROM ".$this->db->prefix."phpok WHERE site_id='".$this->site_id."' ";
-		if($condition)
-		{
+		if($condition){
 			$sql .= " AND ".$condition." ";
 		}
 		return $this->db->count($sql);
 	}
 
-	public function chk_identifier($val)
+	/**
+	 * 检测标识串是否存在
+	 * @参数 $identifier 标识
+	**/
+	public function chk_identifier($identifier)
 	{
-		return $this->get_one_sign($val);
+		return $this->get_one_sign($identifier);
 	}
 
-	//通过标识串取得调用的配置数据
-	function get_one_sign($val)
+	/**
+	 * 通过标识串取得调用的配置数据
+	 * @参数 $identifier 标识
+	**/
+	public function get_one_sign($identifier)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE identifier='".$val."' AND site_id='".$this->site_id."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE identifier='".$identifier."' AND site_id='".$this->site_id."'";
 		return $this->db->get_one($sql);
 	}
 
-	//检测标识串是否存在
-	function chksign($val)
+	/**
+	 * 检测标识串是否存在
+	 * @参数 $identifier 标识
+	**/
+	public function chksign($identifier)
 	{
-		return $this->get_one_sign($val);
+		return $this->get_one_sign($identifier);
 	}
 
-	public function one($identifier,$siteid=0)
+	/**
+	 * 获取一条数据，仅获取已通过审核的数据，并对扩展数据进行合并
+	 * @参数 $identifier 标识
+	 * @参数 $site_id 站点ID
+	**/
+	public function one($identifier,$site_id=0)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE identifier='".$identifier."' AND site_id='".$siteid."' ";
-		$sql.= "AND status=1";
+		if(!$identifier){
+			return false;
+		}
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE identifier='".$identifier."' AND site_id='".$site_id."' AND status=1";
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
@@ -111,10 +172,21 @@ class call_model_base extends phpok_model
 		return $rs;
 	}
 
-	public function all($siteid=0,$pri='')
+	/**
+	 * 取得站点下的全部数据，并对数据进行格式化
+	 * @参数 $site_id 站点ID
+	 * @参数 $status 为1或true时表示仅查已审核的数据
+	**/
+	public function all($site_id=0,$pri='')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE site_id='".$siteid."' AND status=1";
-		$rslist = $this->db->get_all($sql,$pri);
+		if($site_id && !is_numeric($site_id)){
+			$pri = $site_id;
+			$site_id = $this->site_id;
+		}
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		$rslist = $this->get_all($site_id,true,$pri);
 		if(!$rslist){
 			return false;
 		}
@@ -128,6 +200,4 @@ class call_model_base extends phpok_model
 		}
 		return $rslist;
 	}
-
 }
-?>

@@ -1,12 +1,15 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/www/userlist_control.php
-	备注： 会员组列表
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年06月29日 15时08分
-*****************************************************************************************/
+/**
+ * 会员列表
+ * @package phpok\www
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年07月01日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class userlist_control extends phpok_control
 {
@@ -40,8 +43,10 @@ class userlist_control extends phpok_control
 			$this->assign('pageid',$pageid);
 			$this->assign('psize',$array['psize']);
 		}
-		$this->view('userlist');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'userlist';
+		}
+		$this->view($tplfile);
 	}
 }
-
-?>

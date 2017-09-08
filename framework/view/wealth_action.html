@@ -1,0 +1,60 @@
+<!-- include tpl=head_open -->
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	var num = $("input[name=val]").val();
+	if(!num || (num && parseFloat(num)<=0)){
+		$.dialog.alert('未指定数值');
+		return false;
+	}
+	var note = $("input[name=note]").val();
+	if(!note || note == 'undefined'){
+		$.dialog.alert('未填写备注');
+		return false;
+	}
+	$("#post_save").ajaxSubmit({
+		'url':get_url('wealth','val'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				$.dialog.alert('操作成功',function(){
+					opener.$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
+}
+</script>
+<form method="post" id="post_save" onsubmit="return false">
+<input type="hidden" name="wid" id="wid" value="{$rs.id}" />
+<input type="hidden" name="uid" id="uid" value="{$uid}" />
+<div class="table">
+	<div class="content">
+		<ul class="layout">
+			<li style="width:60px;text-align:right">
+				<select name="type">
+					<option value="+">增加</option>
+					<option value="-">减少</option>
+				</select>
+			</li>
+			<li><input type="text" name="val" id="val" /></li>
+			<li>{$rs.unit}</li>
+		</ul>
+	</div>
+</div>
+<div class="table">
+	<div class="content">
+		<ul class="layout">
+			<li style="width:60px;text-align:right">备注：</li>
+			<li><input type="text" name="note" id="note" class="default" /></li>
+		</ul>
+		
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_open -->

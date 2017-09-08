@@ -1,74 +1,20 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta http-equiv="Expires" content="wed, 26 feb 1997 08:21:57 gmt" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Cache-Control" content="no-cache" />
-<title>{lang管理员登录}</title>
-<link href="css/css.php?file={func rawurlencode login.css,artdialog.css}" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="{url ctrl=js /}"></script>
-<script type="text/javascript">
-function login_code(appid)
-{
-	var src_url = api_url("vcode","","id="+appid);
-	$("#src_code").attr("src",src_url);
-}
-
-//验证并登录
-function admlogin()
-{
-	var username = $("#username").val();
-	if(!username)
-	{
-		$.dialog.alert("{lang管理员账号不能为空}",false,'error');
-		return false;
-	}
-	//密码验证
-	var pass = $("#password").val();
-	if(!pass)
-	{
-		$.dialog.alert("{lang密码不能为空}",false,'error');
-		return false;
-	}
-	var url = get_url('login','check','user='+$.str.encode(username)+"&pass="+$.str.encode(pass));
-	var vcode = $("#code_id").val();
-	if(vcode)
-	{
-		url += "&_code="+$.str.encode(vcode);
-	}
-	var rs = $.phpok.json(url);
-	if(rs.status != 'ok')
-	{
-		$.dialog.alert(rs.content,function(){
-			$("#code_id").val('');
-			login_code('{$sys.app_id}');
-		},'error');
-		return false;
-	}
-	else
-	{
-		url = get_url('index');
-		$.phpok.go(url);
-	}
-	return false;
-}
-function update_lang(val)
-{
-	url = "{url ctrl=login/}&_langid="+val;
-	$.phpok.go(url);
-}
-
-//防止被嵌套
-if (self.location != top.location) top.location = self.location;
-</script>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="Expires" content="wed, 26 feb 1997 08:21:57 gmt" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<title>{lang管理员登录}</title>
+	<meta name="author" content="phpok.com" />
+	<link rel="stylesheet" type="text/css" href="css/login.css" />
+	<link rel="stylesheet" type="text/css" href="css/artdialog.css" />
+	<script type="text/javascript" src="{url ctrl=js ext=admin.login.js /}"></script>
 </head>
 <body>
 <div class="top">
-	<!-- if $config.adm_logo180 -->
-	<div class="logo"><div><img src="{$config.adm_logo180}" border="0" /></div></div>
-	<!-- /if -->
+	<div class="logo"><img src="{$logo}" border="0" alt="{$config.title}" /></div>
 </div>
 <div class="main">
 	<div class="box">
@@ -79,7 +25,7 @@ if (self.location != top.location) top.location = self.location;
 			<td colspan="2">{lang语言}</td>
 		</tr>
 		<tr>
-			<td height="40"><input name="username" type="text" class="user user_bg1" id="username" tabindex="1" /></td>
+			<td height="40"><input name="user" type="text" class="user user_bg1" tabindex="1" /></td>
 			<td colspan="2">
 				<select name="langid" id="langid" onchange="update_lang(this.value)" style="padding:3px;border:1px solid #7ea3b8;line-height:27px;height:27px;">
 					<!-- loop from=$langlist key=$key value=$value -->
@@ -93,14 +39,14 @@ if (self.location != top.location) top.location = self.location;
 				<td colspan="2"><!-- if $vcode -->{lang验证码}<!-- /if --></td>
 			</tr>
 			<tr>
-				<td height="40"><input name="password" id="password" type="password" class="user user_bg2" tabindex="2" /></td>
+				<td height="40"><input name="pass" type="password" class="user user_bg2" tabindex="2" /></td>
 				<!-- if $vcode -->
-				<td width="72"><input name="code_id" type="text" class="user user_bg3" id="code_id" tabindex="3" /></td>
-				<td width="79"><img src="images/blank.gif" border="0" align="absmiddle" style="cursor:pointer;" onclick="login_code('{$sys.app_id}')" id="src_code"><script type="text/javascript">$(document).ready(function(){login_code("{$sys.app_id}");});</script></td>
+				<td width="72"><input name="_code" type="text" class="user user_bg3" id="code_id" tabindex="3" /></td>
+				<td width="79"><img src="images/blank.gif" border="0" align="absmiddle" style="cursor:pointer;" id="src_code"></td>
 				<!-- /if -->
 			</tr>
 		<tr>
-			<td height="50" colspan="3"><input type="submit" value="{lang认证登录}" class="but" /></td>
+			<td height="50" colspan="3"><input type="submit" value="{lang管理员登录}" class="but" /></td>
 		</tr>
 		<tr>
 			<td height="30" colspan="3">{lang"推荐使用：傲游/谷歌/火狐/IE9-12等浏览器访问本系统"}</td>
@@ -110,5 +56,15 @@ if (self.location != top.location) top.location = self.location;
 	</div>
 	<div class="bottom"></div>
 </div>
+<!-- if $vcode -->
+<script type="text/javascript">
+$(document).ready(function(){
+	login_code('admin');
+	$("#src_code").click(function(){
+		login_code('admin');
+	})
+});
+</script>
+<!-- /if -->
 </body>
 </html>

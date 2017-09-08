@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<login>1</login>
-	<register>1</register>
-	<p-message>1</p-message>
-	<r-article>1</r-article>
+	<system>
+		<title><![CDATA[系统设置]]></title>
+		<list>
+			<login>
+				<title><![CDATA[登录]]></title>
+				<status>1</status>
+			</login>
+			<register>
+				<title><![CDATA[注册]]></title>
+				<status>1</status>
+			</register>
+			<getpass>
+				<title><![CDATA[密码取回]]></title>
+				<status>1</status>
+			</getpass>
+		</list>
+	</system>
 </root>

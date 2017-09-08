@@ -13,18 +13,14 @@ class order_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
-		/*$token = $this->get('token');
-		if($token){
-			$info = $this->lib('token')->decode($token);
-		}*/
 		$this->cart_id = $this->model('cart')->cart_id($this->session->sessid(),$_SESSION['user_id']);
 	}
 	
 	public function create_f()
 	{
 		$user = array();
-		if($_SESSION['user_id']){
-			$user = $this->model('user')->get_one($_SESSION['user_id']);
+		if($this->session->val('user_id')){
+			$user = $this->model('user')->get_one($this->session->val('user_id'));
 		}
 		$rslist = $this->model('cart')->get_all($this->cart_id);
 		if(!$rslist){
@@ -37,7 +33,7 @@ class order_control extends phpok_control
 			$qty += $value['qty'];
 		}
 		$sn = $this->model('order')->create_sn();
-		$allprice = round(($_SESSION['cart']['totalprice']+$_SESSION['cart']['freight_price']),2);
+		$allprice = round(($this->session->val('cart.totalprice')+$this->session->val('cart.freight_price')),2);
 		$main = array('sn'=>$sn);
 		$main['user_id'] = $user['id'];
 		$main['addtime'] = $this->time;
@@ -178,7 +174,7 @@ class order_control extends phpok_control
 		}
 		if($array['mobile']){
 			if(!$this->lib('common')->tel_check($array['mobile'],'mobile')){
-				return array('status'=>false,'info'=>P_Lang('手机号格式不对，请填写11位数字'));
+				return array('status'=>false,'info'=>P_Lang('手机号格式不对'));
 			}
 		}
 		if($array['tel']){

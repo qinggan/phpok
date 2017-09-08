@@ -39,7 +39,7 @@ function cate_add(title)
 
 function set_biz()
 {
-	var status = $("#is_biz").attr('checked');
+	var status = $("#is_biz").is(':checked');
 	if(status){
 		$("#use_biz_setting").show();
 	}else{
@@ -49,7 +49,7 @@ function set_biz()
 
 function set_post_status()
 {
-	var status = $("#post_status").attr('checked');
+	var status = $("#post_status").is(':checked');
 	if(status){
 		$("#email_set_post_status").show();
 		$("li[name=f_post]").show();
@@ -62,7 +62,7 @@ function set_post_status()
 
 function set_comment_status()
 {
-	var status = $("#comment_status").attr('checked');
+	var status = $("#comment_status").is(':checked');
 	if(status){
 		$("#email_set_comment_status").show();
 		$("li[name=f_reply]").show();
@@ -275,11 +275,6 @@ $(document).ready(function(){
 			<td><label for="is_identifier">{lang自定义标识}</label></td>
 			<td class="gray i">{lang启用此项后，允许管理员针对添加的主题设定一个标识，更便于用户记住及SEO优化}</td>
 		</tr>
-		<tr>
-			<td><input type="checkbox" name="is_appoint" id="is_appoint"{if $rs.is_appoint} checked{/if} /></td>
-			<td><label for="is_appoint">{lang指定维护}</label></td>
-			<td class="gray i">{lang此项用于指定的主题可以授权给其他管理员维护，即使被授权的管理员没有内容维护权限}</td>
-		</tr>
 		</table>
 		</div>
 	</div>
@@ -301,8 +296,8 @@ $(document).ready(function(){
 	</div>
 	<div class="table">
 		<div class="title">
-			自定义产品属性：
-			<span class="note">启用此项后，将允许设定可选产品的一些属性，如颜色，款式，支持价格浮动</span>
+			{lang自定义产品属性：}
+			<span class="note">{lang启用此项后，将允许设定可选产品的一些属性，如颜色，款式，支持价格浮动}</span>
 		</div>
 		<div class="content">
 			<ul class="layout">
@@ -663,8 +658,8 @@ $(document).ready(function(){
 </div>
 <div class="table">
 	<div class="title">
-		{langTag标签：}
-		<span class="note">{lang多个标签用英文空格隔开，最多不能超过10个词}</span>
+		{lang标签：}
+		<span class="note">{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="tag" name="tag" class="long" value="{$rs.tag}" />
@@ -672,13 +667,7 @@ $(document).ready(function(){
 </div>
 </div>
 <div class="clear"></div>
-<div class="table">
-	<div class="content">
-		<br />
-		<input type="submit" value="{lang提 交}" class="submit2" />
-		<br />
-	</div>
-</div>
+<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
 </form>
 
 

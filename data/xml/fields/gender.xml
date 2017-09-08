@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title><![CDATA[性别]]></title>
+	<identifier><![CDATA[gender]]></identifier>
+	<field_type><![CDATA[varchar]]></field_type>
+	<note><![CDATA[]]></note>
+	<form_type><![CDATA[radio]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[safe]]></format>
+	<content><![CDATA[0]]></content>
+	<ext>
+		<option_list><![CDATA[opt:1]]></option_list>
+		<put_order><![CDATA[0]]></put_order>
+		<ext_select><![CDATA[]]></ext_select>
+	</ext>
+</root>

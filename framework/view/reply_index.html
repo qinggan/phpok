@@ -47,30 +47,116 @@ function to_view(id,title)
 	</table>
 </div>
 
-<div class="list">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th width="20px">&nbsp;</th>
-	<th class="lft">主题</th>
-	<th>未审核</th>
-	<th>已审核</th>
-	<th>最后回复时间</th>
-	<th>操作</th>
-</tr>
 <!-- loop from=$rslist key=$key value=$value -->
-<tr>
-	<td class="center"><input type="checkbox" name="ids[]" id="id_{$value.id}" value="{$value.id}" checked /></td>
-	<td>{$value.title}</td>
-	<td class="red center">{$value.uncheck}</td>
-	<td class="center">{$value.checked}</td>
-	<td class="center">{func date Y年m月d日H时i分 $value.replydate}</td>
-	<td class="center">
-		<input type="button" value="查看" class="btn" onclick="to_view({$value.id},'{$value.title}')" />
-	</td>
-</tr>
-<!-- /loop -->
-</table>
+<div class="comment">
+	<div class="content" id="tmp_{$value.id}">
+		<div class="id">#{$value.id} </div>
+		<!-- if $value.list_id -->
+		<div class="linksymbol"><b class="darkblue">主题：</b><a href="{$sys.www_file}?id={$value.list_id}" target="_blank">{$value.l_title}</a></div>
+		<!-- /if -->
+		<!-- if $value.p_title -->
+		<div class="linksymbol"><b class="darkblue">项目：</b>{$value.p_title}</div>
+		<!-- /if -->
+		<!-- if $value.c_title -->
+		<div class="linksymbol"><b class="darkblue">分类：</b>{$value.c_title}</div>
+		<!-- /if -->
+		<!-- if $value.o_title -->
+		<div class="linksymbol"><b class="darkblue">订单：</b>{$value.o_title}</div>
+		<!-- /if -->
+		<div class="info"><span class="darkblue">评论内容：</span>{$value.content}</div>
+		<!-- if $value.adm_content -->
+		<fieldset class="adm-reply">
+			<legend>管理员回复时间：{func date Y-m-d $value.adm_time}</legend>
+			{$value.adm_content}
+		</fieldset>
+		<!-- /if -->
+	</div>
+	<table width="100%">
+	<tr>
+		<td>
+			发布人：
+			<!-- if $value.uid && is_array($value.uid) -->
+			<span class="darkblue b">{$value.uid.user}</span>
+			<!-- else -->
+			游客
+			<!-- /if -->
+			，IP：{$value.ip}
+			，发布时间：{echo date("Y-m-d H:i:s",$value.addtime)}
+			，星级：{$value.star}星
+		</td>
+		<td align="right">
+			<div class="button-group">
+				<!-- if $value.sublist -->
+				<input type="button" value="显示评论的回复" class="phpok-btn" id="show_hide_c_{$value.id}" onclick="$.admin_reply.sublist({$value.id})" />
+				<!-- /if -->
+				<!-- if $value.status -->
+				<input type="button" value="已审核" onclick="$.admin_reply.status({$value.id},0)" class="phpok-btn" />
+				<!-- else -->
+				<input type="button" value="未审核" class="phpok-btn" onclick="$.admin_reply.status({$value.id},1)" style="color:red;" />
+				<!-- /if -->
+				<input type="button" value="管理员回复" onclick="$.admin_reply.adm({$value.id})" class="phpok-btn" />
+				<input type="button" value="修改" onclick="$.admin_reply.edit({$value.id})" class="phpok-btn" />
+				<input type="button" value="删除" onclick="$.admin_reply.del({$value.id})" class="phpok-btn" />
+			</div>
+		</td>
+	</tr>
+	</table>
 </div>
+<!-- if $value.sublist -->
+<fieldset class="sub_comment hide" id="comment_reply_{$value.id}">
+	<legend>针对该评论的回复</legend>
+	<!-- loop from=$value.sublist key=$kk value=$vv -->
+		<div class="comment">
+			<div class="content cate_{$value_sublist_id.index%9}" id="tmp_{$vv.id}">
+				<span class="darkblue b">ID：{$vv.id} 内容：</span>{func nl2br $vv.content}
+				<!-- if $vv.adm_content -->
+				<fieldset class="adm-reply">
+					<legend>管理员回复时间：{func date Y-m-d $vv.adm_time}</legend>
+					{$vv.adm_content}
+				</fieldset>
+				<!-- /if -->
+			</div>
+			<table width="100%">
+			<tr>
+				<td>
+					发布人：
+					<!-- if $vv.uid && is_array($vv.uid) -->
+					<span class="darkblue b">{$vv.user}</span>
+					<!-- else -->
+					游客
+					<!-- /if -->
+					，IP：{$vv.ip}
+					，发布时间：{echo date("Y-m-d H:i:s",$vv.addtime)}
+					，星级：{$vv.star}星
+				</td>
+				<td align="right">
+					<div class="button-group">
+						<!-- if $popedom.status -->
+							<!-- if $vv.status -->
+							<input type="button" value="已审核" onclick="to_status({$vv.id},0)" class="phpok-btn" />
+							<!-- else -->
+							<input type="button" value="未审核" class="phpok-btn" onclick="to_status({$vv.id},1)" style="color:red;" />
+							<!-- /if -->
+						<!-- /if -->
+						<!-- if $popedom.reply -->
+						<input type="button" value="管理员回复" onclick="to_reply({$vv.id})" class="phpok-btn" />
+						<!-- /if -->
+						<!-- if $popedom.modify -->
+						<input type="button" value="修改" onclick="to_edit({$vv.id})" class="phpok-btn" />
+						<!-- /if -->
+						<!-- if $popedom.delete -->
+						<input type="button" value="删除" onclick="to_delete({$vv.id})" class="phpok-btn" />
+						<!-- /if -->
+					</div>
+				</td>
+			</tr>
+			</table>
+		</div>
+	<!-- /loop -->
+</fieldset>
+<!-- /if -->
+<!-- /loop -->
+
 <!-- if $pagelist --><div class="table"><!-- include tpl=pagelist --></div><!-- /if -->
 
 <!-- include tpl=foot -->

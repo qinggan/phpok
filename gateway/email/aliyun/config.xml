@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>阿里云邮件</title>
+	<note>使用阿里云自带的SDK包，默认官方免费200条/日邮件</note>
+	<code>
+		<appkey>
+			<title>Access Key</title>
+			<note><![CDATA[请到阿里云提供的https://ak-console.aliyun.com/#/accesskey/申请]]></note>
+			<type>text</type>
+			<required>true</required>
+		</appkey>
+		<appsecret>
+			<title><![CDATA[Access Secret（密钥）]]></title>
+			<note><![CDATA[同上，在申请Key ID后，会同时提供密钥]]></note>
+			<type>text</type>
+			<required>false</required>
+		</appsecret>
+		<server>
+			<title>服务器标识</title>
+			<note><![CDATA[不清楚请留空，此项默认为杭州]]></note>
+			<type>text</type>
+			<required>true</required>
+			<default>cn-hangzhou</default>
+		</server>
+		<signame>
+			<title>标签</title>
+			<note><![CDATA[控制台创建的标签]]></note>
+			<type>text</type>
+			<required>true</required>
+		</signame>
+		<email>
+			<title>发信地址</title>
+			<note><![CDATA[阿里云控制台创建的发信地址]]></note>
+			<type>text</type>
+			<required>true</required>
+		</email>
+		<nickname>
+			<title>发信人称呼</title>
+			<note><![CDATA[建议您使用公司简称]]></note>
+			<type>text</type>
+			<required>true</required>
+		</nickname>
+	</code>
+	<manage>
+		<send>
+			<title>发邮件</title>
+			<exec>sendemail</exec>
+			<type>page</type>
+		</send>
+	</manage>
+</root>

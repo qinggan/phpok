@@ -69,16 +69,11 @@
 	</div>
 </div>
 
-<div class="table">
-	<div class="content">
-		<br />
-		<input type="submit" value="提 交" class="submit" />
-		&nbsp; &nbsp;
-		<!-- if $id && !$rs.is_system -->
-		<input type="button" value="删 除" class="btn" onclick="ext_g_delete({$id})"/>
-		<!-- /if -->
-		<br />
-	</div>
+<div class="submit-info">
+	<input type="submit" value="{lang提交}" class="submit2" />
+	<!-- if $id && !$rs.is_system -->
+	<input type="button" value="{lang删除}" class="button2" onclick="ext_g_delete({$id})"/>
+	<!-- /if -->
 </div>
 </form>
 <!-- inc:foot -->

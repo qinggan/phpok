@@ -80,7 +80,12 @@ class server_lib
 	**/
 	public function uri()
 	{
-		return $_SERVER['REQUEST_URI'];
+		$uri = $_SERVER['REQUEST_URI'];
+		if(strpos($uri, "?") !== false){
+			$tmp = explode("?",$uri);
+			$uri = $tmp[0].'?'.$this->query();
+		}
+		return $uri;
 	}
 
 	/**

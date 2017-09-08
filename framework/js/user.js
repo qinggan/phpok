@@ -38,27 +38,24 @@ function check_add()
 
 function del(id)
 {
-	if(!id)
-	{
-		alert("操作非法");
+	if(!id){
+		$.dialog.alert("操作非法");
 		return false;
 	}
-	var q = confirm("确定要删除此信息吗？删除后是不能恢复的");
-	if(q != 0)
-	{
-		var url = get_url("user","ajax_del") + "&id="+id;
-		var msg = get_ajax(url);
-		if(!msg) msg = "error: 操作非法";
-		if(msg == "ok")
-		{
-			window.location.reload();
-		}
-		else
-		{
-			alert(msg);
-			return false;
-		}
-	}
+	$.dialog.confirm(p_lang('确定要删除会员号ID为 {id} 的会员信息吗？<br>删除后数据将被清空且不能恢复','<span class="red">#'+id+'</span>'),function(){
+		var url = get_url('user','ajax_del','id='+id);
+		$.phpok.ajax(url,function(data){
+			if(data == 'ok'){
+				$.phpok.reload();
+			}else{
+				if(!data){
+					data = p_lang('删除会员操作异常');
+					$.dialog.alert(data);
+				}
+			}
+		});
+		return true;
+	});
 }
 
 //更改权限状态
@@ -103,50 +100,24 @@ function action_wealth_select(val)
 }
 function action_wealth(title,wid,uid,unit)
 {
-	var t_title = p_lang('会员')+title+p_lang('操作');
-	var content = '<label><input type="radio" value="+" name="tmp1" checked onclick="action_wealth_select(1)">增加</label> &nbsp; &nbsp; &nbsp;';
-	content += '<label><input type="radio" value="-" name="tmp1" onclick="action_wealth_select(2)">减少</label><br /><br />'
-	content += '<input type="hidden" id="a_type" value="+" />'
-	content += '<span id="a_html">增加</span>：<input type="text" style="width:70px" id="a_val" /> '+unit+'<br /><br />';
-	content += p_lang('说明：')+'<input type="text" id="a_note" value="" style="width:300px" />';
-	$.dialog({
-		'title':t_title,
+	var url = get_url('wealth','action_user','wid='+wid+"&uid="+uid);
+	$.dialog.open(url,{
+		'title':p_lang('会员{title}操作',{'title':title}),
 		'lock':true,
-		'content':content,
+		'width':'500px',
+		'height':'150px',
 		'ok':function(){
-			var url = get_url('wealth','val','wid='+wid+'&uid='+uid);
-			var note = $("#a_note").val();
-			if(!note){
-				$.dialog.alert(p_lang('请填写相关说明'));
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
 				return false;
-			}
-			url += "&note="+$.str.encode(note);
-			var val = $("#a_val").val();
-			if(!val || (val && parseFloat(val)<=0)){
-				$.dialog.alert(p_lang('请填写数值，数值必须大于0'));
-				return false;
-			}
-			url += "&val="+val;
-			var type = $("#a_type").val();
-			if(type){
-				url += "&type="+type;
-			}
-			var rs = $.phpok.json(url);
-			if(rs.status == 'ok'){
-				$.dialog.alert(p_lang('操作成功'),function(){
-					$.phpok.reload();
-					return true;
-				},'succeed');
-			}else{
-				$.dialog.alert(rs.content);
-				return false;
-			}
+			};
+			iframe.save();
+			return false;
 		},
-		'okVal':p_lang('提交'),
-		'cancel':function(){
-			return true;
-		}
-	});
+		'okVal':'提交保存',
+		'cancel':true
+	})
 }
 
 

@@ -136,22 +136,20 @@ class db_mysqli extends db
 
 	public function query($sql,$loadcache=true)
 	{
-		if($this->debug){
-			$this->debug($sql);
-		}
 		if($loadcache){
 			$this->cache_sql($sql);
 		}
-		
 		$this->check_connect();
 		$this->_time();
 		$this->query = mysqli_query($this->conn,$sql);
 		if($loadcache){
 			$this->cache_update($sql);
 		}
-		
-		$this->_time();
+		$tmptime = $this->_time();
 		$this->_count();
+		if($this->debug){
+			$this->debug($sql,$tmptime);
+		}
 		if(mysqli_error($this->conn)){
 			$this->error(mysqli_error($this->conn).', '.$sql,mysqli_errno($this->conn));
 		}
@@ -284,14 +282,17 @@ class db_mysqli extends db
 		return $this->query($sql);
 	}
 
-	public function count($sql="")
+	public function count($sql="",$is_count=true)
 	{
-		if($sql){
+		if($sql && $is_count){
 			$this->set('type','num');
 			$rs = $this->get_one($sql);
 			$this->set('type','assoc');
 			return $rs[0];
 		}else{
+			if($sql){
+				$this->query($sql);
+			}
 			if($this->query){
 				return mysqli_num_rows($this->query);
 			}

@@ -498,24 +498,18 @@ class data_model_base extends phpok_model
 
 	public function id($identifier,$site_id=0)
 	{
-		return $this->_id($identifier,$site_id);
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		return $this->model('id')->id($identifier,$site_id,true);
 	}
 
-	//通过标识串获取内容信息
 	private function _id($identifier,$site_id=0)
 	{
-		$rslist = $this->_id_all($site_id);
-		if($rslist[$identifier])
-		{
-			return $rslist[$identifier];
+		if(!$site_id){
+			$site_id = $this->site_id;
 		}
-		return false;
-	}
-
-	//读取全部ID
-	private function _id_all($site_id=0)
-	{
-		return $GLOBALS['app']->model('id')->id_all($site_id,true);
+		return $this->model('id')->id($identifier,$site_id,true);
 	}
 
 	//获取项目，分类的扩展信息

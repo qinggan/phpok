@@ -20,11 +20,19 @@ class param_form extends _init_auto
 		$this->view($this->dir_phpok."form/html/param_admin.html","abs-file");
 	}
 
+	public function cssjs()
+	{
+		$this->addjs("js/form.param.js");
+		$this->addjs('js/jscolor/jscolor.js');
+		$this->addjs('js/laydate/laydate.js');
+	}
+
 	public function phpok_format($rs,$appid="admin")
 	{
 		if(!$rs){
 			return false;
 		}
+		$pname = false;
 		if($rs['p_name']){
 			$pname = explode("\n",$rs['p_name']);
 			$this->assign('_pname',$pname);
@@ -47,9 +55,13 @@ class param_form extends _init_auto
 		}else{
 			$rs['p_width'] = intval($rs['p_width']) ? intval($rs['p_width']) : '300';
 		}
+		if(!$rs['p_add'] || (!$pname && $rs['p_add'] == 'no')){
+			$rs['p_add'] = 'yes';
+		}
 		$this->assign('_rslist',$list);
 		$this->assign('_rs',$rs);
 		$this->assign('_ptype',$rs['p_type']);
+		$this->assign('_param_edit',($rs['p_add'] == 'yes' ? true : false));
 		$file = $appid == 'admin' ? $this->dir_phpok.'form/html/param_admin_tpl.html' : $this->dir_phpok.'form/html/param_www_tpl.html';
 		if(!is_file($file)){
 			$file = $this->dir_phpok.'form/html/param_admin_tpl.html';
@@ -70,7 +82,9 @@ class param_form extends _init_auto
 			$list['title'] = $this->get($rs['identifier'].'_title');
 			if($list['title'] && count($list['title'])>0){
 				$tmp = $GLOBALS['app']->get($rs['identifier'].'_body');
-				$list['content'] = array_chunk($tmp,count($list['title']));
+				if($tmp){
+					$list['content'] = array_chunk($tmp,count($list['title']));
+				}
 				return serialize($list);
 			}
 			return false;
@@ -101,7 +115,7 @@ class param_form extends _init_auto
 		if($appid == 'admin'){
 			$html = '';
 			if($ext && $ext['p_type']){
-				foreach($info['content'] as $key=>$value){
+				foreach(($info['content'] ? $info['content'] : array()) as $key=>$value){
 					$tmp = '';
 					foreach($info['title'] as $k=>$v){
 						if($tmp){
@@ -142,4 +156,3 @@ class param_form extends _init_auto
 		}
 	}
 }
-?>

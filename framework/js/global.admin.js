@@ -88,52 +88,16 @@ function phpok_status(id,url)
 // func，返回执行的函数
 function autosave(formid,type,func)
 {
-	if(!type || type == "undefined") type = "list";
-	if(!func || func == "undefined") func = "autosave_callback";
+	if(!type || type == "undefined"){
+		type = "list";
+	}
+	if(!func || func == "undefined"){
+		func = "autosave_callback";
+	}
 	var str = $("#"+formid).serialize();
 	var url = get_url("auto") + "&__type="+type;
 	//通过POST存储数据
-	$.post(url,str,function(rs){func(rs);},"json");
-}
-
-/* 自动填写表单数据 */
-function autofill(type)
-{
-	var turl = get_url("auto","read") + "&__type="+type;
-	$.ajax({
-		url:turl,
-		cache:false,
-		async:true,
-		dataType:"json",
-		success: function(rs){
-			if(rs.status == "ok")
-			{
-				var list = rs.content;
-				for(var key in list)
-				{
-					var input = $("input[name="+key+"]");
-					var textarea = $("textarea[name="+key+"]");
-					if(input.length>0)
-					{
-						input.val(list[key]);
-					}
-					else if(textarea.length>0)
-					{
-						var edit = $("textarea[name="+key+"][phpok_id=htmledit]");
-						if(edit.length>0)
-						{
-							var my_edit = eval(key+"_editor");
-							my_edit.html(list[key]);
-						}
-						else
-						{
-							textarea.val(list[key]);
-						}
-					}
-				}
-			}
-		}
-	});
+	$.post(url,str,function(rs){(func)(rs);},"json");
 }
 
 //弹出图片选择窗口
@@ -179,7 +143,7 @@ function phpok_tpl_open(id)
 		title: "模板选择",
 		lock : true,
 		width: "700px",
-		height: "400px",
+		height: "70%",
 		resize: false
 	});
 }
@@ -253,32 +217,35 @@ function ext_add(module)
 function ext_add2(id,module)
 {
 	var url = get_url("ext","add") + "&module="+module+"&id="+id;
-	var rs = $.phpok.json(url);
-	if(rs.status == 'ok'){
-		$.phpok.reload();
-	}else{
-		$.dialog.alert(rs.content);
-		return false;
-	}
-}
-
-function ext_delete(id,module,title)
-{
-	$.dialog.confirm('确定要删除扩展字段：<span class="red">'+title+'</span> 吗？删除后是不能恢复的！',function(){
-		var url = get_url('ext','delete');
-		url += "&module="+$.str.encode(module);
-		url += "&id="+id;
-		var rs = $.phpok.json(url);
-		if(rs.status == 'ok')
-		{
-			autosave(module,module,auto_refresh);
-		}
-		else
-		{
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.phpok.reload();
+		}else{
 			$.dialog.alert(rs.content);
 			return false;
 		}
 	});
+}
+
+/**
+ * 删除扩展字段
+ * @参数 id 要删除的ID
+ * @参数 module 指定模块
+ * @参数 title 标题，用于提示说明
+**/
+function ext_delete(id,module,title)
+{
+	$.dialog.confirm(p_lang('确定要删除扩展字段：{title} 吗？<br>删除后是不能恢复的！','<span class="red">'+title+'</span>'),function(){
+		var url = get_url('ext','delete','module='+$.str.encode(module)+"&id="+id);
+		$.phpok.json(url,function(data){
+			if(data.status == 'ok'){
+				$.phpok.reload();
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		})
+	})
 }
 
 //编辑字段
@@ -344,8 +311,10 @@ $(document).keydown(function(e){
 	if(e.keyCode==8){
 		var keyEvent = false;
 		var d = e.srcElement || e.target;
-		if((d.tagName.toUpperCase()=='INPUT' && d.type.toUpperCase() == 'TEXT') || d.tagName.toUpperCase()=='TEXTAREA'){
-			keyEvent = d.readOnly||d.disabled
+		var tag_name = d.tagName.toUpperCase();
+		var tag_type = d.type.toUpperCase();
+		if((tag_name == 'INPUT' && (tag_type == 'TEXT' || tag_type == 'PASSWORD')) || tag_name == 'TEXTAREA'){
+			keyEvent = d.readOnly||d.disabled;
 		}else{
 			keyEvent=true;
 		}

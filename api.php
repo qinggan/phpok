@@ -29,6 +29,31 @@ define("ROOT",str_replace("\\","/",dirname(__FILE__))."/");
 define("FRAMEWORK",ROOT."framework/");
 
 /**
+ * 定义配置文件目录
+**/
+define('CONFIG',ROOT.'_config/');
+
+/**
+ * 定义缓存目录
+**/
+define('CACHE',ROOT.'data/cache/');
+
+/**
+ * 定义数据文件目录
+**/
+define('DATA',ROOT.'data/');
+
+/**
+ * 定义扩展库目录
+**/
+define('EXTENSION',ROOT.'extension/');
+
+/**
+ * 定义插件目录
+**/
+define('PLUGIN',ROOT.'plugins/');
+
+/**
  * 引入初始化文件
 **/
 require(FRAMEWORK.'init.php');

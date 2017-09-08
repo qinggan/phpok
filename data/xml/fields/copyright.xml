@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title><![CDATA[页脚版权]]></title>
+	<identifier><![CDATA[copyright]]></identifier>
+	<field_type><![CDATA[longtext]]></field_type>
+	<note><![CDATA[]]></note>
+	<form_type><![CDATA[editor]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[html]]></format>
+	<content><![CDATA[]]></content>
+	<ext>
+		<width><![CDATA[800]]></width>
+		<height><![CDATA[100]]></height>
+		<is_code><![CDATA[]]></is_code>
+		<is_read><![CDATA[]]></is_read>
+		<inc_tag><![CDATA[]]></inc_tag>
+		<paste_text><![CDATA[]]></paste_text>
+		<btns><![CDATA[]]></btns>
+	</ext>
+</root>

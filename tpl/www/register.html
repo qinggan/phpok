@@ -10,14 +10,30 @@ function check_register()
 		$.dialog.alert('注册前请先同意本站协议');
 		return false;
 	}
-	return true;
+	$("#register-form").ajaxSubmit({
+		'url':get_url('register','save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				var info = rs.info ? rs.info : '会员注册成功';
+				$.dialog.alert(info,function(){
+					$.phpok.go(get_url('index'));
+				},'succeed');
+				return false;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
 }
 </script>
 
 <div class="login-reg">
 	<dl class="box">
 		<dt>注册</dt>
-		<form method="post" action="{url ctrl=register func=save/}" id="register-form" onsubmit="return check_register()">
+		<form method="post" id="register-form" onsubmit="return check_register()">
 		<!-- if $grouplist && count($grouplist) > 1 -->
 		<dd>
 			<label>会员组：</label>
@@ -61,7 +77,7 @@ function check_register()
 			<input class="input" type="text" name="mobile" id="mobile" />
 			<div class="clear"></div>
 		</dd>
-		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+		<!-- if $is_vcode -->
 		<dd>
 			<label>验证码：</label>
 			<input class="vcode"  type="text" id="_chkcode" name="_chkcode" />

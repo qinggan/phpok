@@ -1,101 +1,37 @@
-<!-- inc:head -->
-<script type="text/javascript" src="{echo add_js('fields.js')}"></script>
-<script type="text/javascript">
-function cate_set(type)
-{
-	var ids = $.input.checkbox_join();
-	if(!ids){
-		$.dialog.alert('未指定字段');
-		return false;
-	}
-	var cateid = $("#list_action_val").val();
-	if(!cateid){
-		$.dialog.alert('未选择要操作分类');
-		return false;
-	}
-	var url = get_url('fields','cateset','pl_act='+type+'&ids='+$.str.encode(ids)+"&cateid="+cateid);
-	var rs = $.phpok.json(url);
-	if(rs.status == 'ok'){
-		var tip = type == 'add' ? '{lang所选字段已绑定到指定分类上}' : '{lang所选字段已移除分类}';
-		$.dialog.alert(tip,function(){
-			$.phpok.reload();
-		},'succeed');
-	}else{
-		$.dialog.alert(rs.content);
-		return false;
-	}
-}
-</script>
+<!-- include tpl=head -->
 <div class="tips">
 	<!-- if $popedom.add -->
-	<div class="action"><a href="{echo admin_url('fields','set')}">添加新字段</a></div>
+	<div class="action"><a href="javascript:$.admin_fields.set();void(0);">添加新字段</a></div>
 	<!-- /if -->
 	您当前的位置：
-	<a href="{echo admin_url('fields')}">字段属性管理</a>
+	<a href="{url ctrl=fields/}">常用字段管理</a>
 	&raquo; 字段列表
-	&nbsp; 筛选：
-	<select onchange="fields_goto(this.value)">
-	<option value="">全部</option>
-	<!-- loop from=$arealist key=$key value=$value -->
-	<option value="{$key}"{if $key == $type} selected{/if}>{$value}</option>
-	<!-- /loop -->
-	</select>
 </div>
 <div class="list">
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
-	<th width="30">&nbsp;</th>
 	<th class="lft" style="text-indent:12px;">名称</th>
 	<th>字段名</th>
 	<th>字段类型</th>
 	<th>表单类型</th>
-	<th class="action">操作</th>
+	<!-- if $popedom.modify || $popedom.delete --><th class="action">操作</th><!-- /if -->
 </tr>
-<!-- foreach($rslist AS $key=>$value) -->
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 <tr title="{$value.note}">
-	<td class="center"><input type="checkbox" value="{$value.id}" /></td>
-	<td style="text-indent:12px;height:22px;">
-		{$value.title}
-		<!-- php:$t = $value['area'] ? explode(",",$value['area']) : array() -->
-		<!-- if $value.area -->
-		<span class="gray size10">&raquo;
-			<!-- php:$t = explode(",",$value['area']) -->
-			<!-- loop from=$t key=$k value=$v -->
-				<!-- if $t_id.num>1 -->/<!-- /if -->
-				{$arealist[$v]}
-			<!-- /loop -->
-		</span>
-		<!-- /if -->
-	</td>
+	<td style="text-indent:16px;">{$value.title}</td>
 	<td class="center">{$value.identifier}</td>
 	<td class="center">{$value.field_type_name}</td>
 	<td class="center">{$value.form_type_name}</td>
+	<!-- if $popedom.modify || $popedom.delete -->
 	<td>
-		<!-- if $popedom.modify -->
-		<a class="icon edit" href="{echo admin_url('fields','set')}&id={$value.id}" title="修改"></a>
-		<!-- /if -->
-		<!-- if $popedom.delete -->
-		<a class="icon delete end" onclick="field_del('{$value.id}','{$value.title}')" title="删除"></a>
-		<!-- /if -->
+		<div class="button-group">
+			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.admin_fields.set('{$value.identifier}')" class="phpok-btn" /><!-- /if -->
+			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_fields.del('{$value.identifier}')" class="phpok-btn" /><!-- /if -->
+		</div>
 	</td>
+	<!-- /if -->
 </tr>
-<!-- /foreach -->
+<!-- /loop -->
 </table>
-<ul class="layout">
-	<li><input type="button" value="{lang全选}" class="btn" onclick="$.input.checkbox_all()" /></li>
-	<li><input type="button" value="{lang全不选}" class="btn" onclick="$.input.checkbox_none()" /></li>
-	<li><input type="button" value="{lang反选}" class="btn" onclick="$.input.checkbox_anti()" /></li>
-	<li>
-		<select id="list_action_val" style="width:200px;margin-top:0px;">
-			<option value="">{lang选择要操作分类…}</option>
-			<!-- loop from=$arealist key=$key value=$value id=$tmpid -->
-			<option value="{$key}">{$value}</option>
-			<!-- /loop -->
-		</select>
-	</li>
-	<li id="plugin_button"><input type="button" value="添加分类" onclick="cate_set('add')" class="submit" /></li>
-	<li id="plugin_button"><input type="button" value="移除分类" onclick="cate_set('remove')" class="submit" /></li>
-</ul>
-<div class="clear"></div>
 </div>
-<!-- inc:foot -->
+<!-- include tpl=foot -->

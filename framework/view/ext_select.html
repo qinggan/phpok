@@ -1,7 +1,7 @@
 <select id="_tmp_select_add" style="padding:3px">
 	<option value="">请选择扩展字段…</option>
 	<!-- loop from=$rslist key=$key value=$value -->
-	<option value="{$value.id}">{$value.title} - {$value.identifier}</option>
+	<option value="{$value.identifier}">{$value.title} - {$value.identifier}</option>
 	<!-- /loop -->
 </select>
 <input type="button" value="添加" onclick="_update_select_add()" class="button2" />

@@ -1,0 +1,43 @@
+<!-- include tpl=head_open -->
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	$("#post_save").ajaxSubmit({
+		'url':get_url('tag','config_save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.alert('操作成功',function(){
+					opener.$.phpok.reload();
+				},'succeed');
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+<div class="tips">{lang特别说明：分割符号一经确认，就不要再修改，否则会造成平台标签识别异常}</div>
+<form method="post" id="post_save" onsubmit="return false;">
+<div class="table">
+	<div class="title">
+		{lang分割符号：}<span class="note">{lang用于操作主题时对标签进行分割，留空将使用英文逗号}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="separator" id="separator" value="{$rs.separator}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang快捷标签数量：}<span class="note">{lang添加文章时，读取最新的快捷标签个数}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="count" id="count" value="{$rs.count}" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_open -->

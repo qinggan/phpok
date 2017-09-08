@@ -40,17 +40,6 @@ class post_control extends phpok_control
 
 	public function save_f()
 	{
-		if($this->config['is_vcode'] && function_exists('imagecreate')){
-			$code = $this->get('_chkcode');
-			if(!$code){
-				$this->json(P_Lang('验证码不能为空'));
-			}
-			$code = md5(strtolower($code));
-			if($code != $_SESSION['vcode']){
-				$this->json(P_Lang('验证码填写不正确'));
-			}
-			unset($_SESSION['vcode']);
-		}
 		$id = $this->get('id','system');
 		if(!$id){
 			$this->json(P_Lang('未绑定相应的项目'));
@@ -69,15 +58,30 @@ class post_control extends phpok_control
 		$array["title"] = $this->get("title");
 		if(!$array['title']){
 			$tip = $project_rs['alias_title'] ? $project_rs['alias_title'] : P_Lang('主题');
-			$this->json($tip.' '.P_Lang("不能为空"));
+			$this->json(P_Lang('{title}不能为空',array('title'=>$note)));
 		}
 		$tid = $this->get('tid','int');
+		$vcode_act = 'add';
 		if($tid){
 			$chk = $this->model('list')->call_one($tid);
-			if($chk['user_id'] != $_SESSION['user_id']){
+			if($chk['user_id'] != $this->session->val('user_id')){
 				$this->json(P_Lang('您没有权限编辑此内容'));
 			}
+			$vcode_act = 'edit';
 		}
+		//增加是否需要验证码 2017年08月28日
+		if($this->model('site')->vcode($project_rs['id'],$vcode_act)){
+			$code = $this->get('_chkcode');
+			if(!$code){
+				$this->json(P_Lang('验证码不能为空'));
+			}
+			$code = md5(strtolower($code));
+			if($code != $this->session->val('vcode')){
+				$this->json(P_Lang('验证码填写不正确'));
+			}
+			$this->session->unassign('vcode');
+		}
+		//----结束
 		$array["status"] = $this->model('popedom')->val($project_rs['id'],$this->user_groupid,'post1');
 		$array["hidden"] = 0;
 		$array["module_id"] = $project_rs["module"];
@@ -110,6 +114,16 @@ class post_control extends phpok_control
 		 		}
 		 		$this->model('list')->save_ext_cate($insert_id,$ext_cate);
 	 		}
+		}
+		//电商模块扩展
+		if($project_rs['is_biz']){
+			$biz = array('price'=>$this->get('price','float'),'currency_id'=>$project_rs['currency_id']);
+	 		$biz['weight'] = $this->get('weight','float');
+	 		$biz['volume'] = $this->get('volume','float');
+	 		$biz['unit'] = $this->get('unit');
+	 		$biz['id'] = $tid ? $tid : $insert_id;
+	 		$biz['is_virtual'] = $this->get('is_virtual','int');
+	 		$this->model('list')->biz_save($biz);
 		}
 		$ext_list = $this->model('module')->fields_all($project_rs["module"]);
 		if(!$ext_list){

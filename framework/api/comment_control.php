@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/api/comment_control.php
-	Note	: 发表评论信息
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年11月6日
-***********************************************************/
+/**
+ * 评论信息
+ * @package phpok\api
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年08月28日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class comment_control extends phpok_control
 {
@@ -112,8 +115,10 @@ class comment_control extends phpok_control
 		$this->json($html,true,true,false);
 	}
 
-	//存储评论信息
-	function save_f()
+	/**
+	 * 存储评论信息
+	**/
+	public function save_f()
 	{
 		$tid = $this->get('tid','int');
 		if(!$tid){
@@ -122,8 +127,20 @@ class comment_control extends phpok_control
 		if(!$tid){
 			$this->json(P_Lang('未指定主题'));
 		}
-		$uid = $_SESSION['user_id'];
+		$uid = $this->session->val('user_id');
 		$rs = $this->model('list')->call_one($tid);
+		//判断是否需要验证码
+		if($this->model('site')->vcode($rs['project_id'],'comment')){
+			$code = $this->get('_chkcode');
+			if(!$code){
+				$this->json(P_Lang('验证码不能为空'));
+			}
+			$code = md5(strtolower($code));
+			if($code != $this->session->val('vcode')){
+				$this->json(P_Lang('验证码填写不正确'));
+			}
+			$this->session->unassign('vcode');
+		}
 		$order_id = $this->get('order_id','int');
 		if($order_id){
 			if(!$uid){
@@ -161,7 +178,7 @@ class comment_control extends phpok_control
 			}
 		}
 		$parent_id = $this->get("parent_id","int");
-		if($_SESSION['user_id']){
+		if($this->session->val('user_id')){
 			$content = $this->get('comment','html');
 			$tmp = strip_tags($content);
 			if(!$tmp){

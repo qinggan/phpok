@@ -1,24 +1,21 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/model/admin/list_model.php
-	备注： 主题内容管理
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年02月06日 22时18分
-*****************************************************************************************/
+/**
+ * 主题内容管理
+ * @package phpok\model\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年08月22日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class list_model extends list_model_base
 {
 	public function __construct()
 	{
 		parent::__construct();
-	}
-
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
 	}
 
 	public function update_status($id,$status=0)
@@ -31,11 +28,6 @@ class list_model extends list_model_base
 	{
 		$sql = "UPDATE ".$this->db->prefix."list SET sort='".$sort."' WHERE id='".$id."'";
 		return $this->db->query($sql);
-	}
-
-	public function biz_save($data)
-	{
-		return $this->db->insert_array($data,'list_biz','replace');
 	}
 
 	public function biz_attr_save($data)
@@ -152,28 +144,6 @@ class list_model extends list_model_base
 		return true;
 	}
 
-	//存储扩展分类
-	public function save_ext_cate($id,$catelist)
-	{
-		if(!$id || !$catelist){
-			return false;
-		}
-		if(is_string($catelist)){
-			$catelist = explode(",",$catelist);
-		}
-		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id='".$id."'";
-		$this->db->query($sql);
-		$sql = "INSERT INTO ".$this->db->prefix."list_cate(id,cate_id) VALUES ";
-		foreach($catelist as $key=>$value){
-			if($key>0){
-				$sql .= ",";
-			}
-			$sql .= "('".$id."','".$value."')";
-		}
-		$this->db->query($sql);
-		return true;
-	}
-
 	public function list_cate_add($cateid,$tid)
 	{
 		$sql = "SELECT p.cate_multiple FROM ".$this->db->prefix."list l ";
@@ -265,6 +235,107 @@ class list_model extends list_model_base
 		}
 		return $fields;
 	}
-}
 
-?>
+
+	/**
+	 * 获取主题列表
+	 * @参数 $mid，模块ID，数值
+	 * @参数 $condition，查询条件
+	 * @参数 $offset，查询起始位置，默认是0
+	 * @参数 $psize，查询条数，默认是0，表示不限制
+	 * @参数 $orderby，排序
+	 * @返回 数组，查询结果集，扩展字段内容已经格式化
+	**/
+	public function get_list($mid,$condition="",$offset=0,$psize=0,$orderby="")
+	{
+		if(!$mid){
+			return false;
+		}
+		if(!$orderby){
+			$orderby = " l.sort DESC,l.dateline DESC,l.id DESC ";
+		}
+		$fields_list = $this->db->list_fields('list');
+		$field = "l.id";
+		if($this->is_user || ($condition && strpos($condition,'u.') !== false) || strpos($orderby,'u.') !== false){
+			$field .= ",u.user _user";
+		}
+		foreach($fields_list as $key=>$value){
+			if($value == 'id' || !$value){
+				continue;
+			}
+			$field .= ",l.".$value;
+		}
+		$field_ext = $this->ext_fields($mid,'ext',"field_type!='longtext'");
+		if($field_ext){
+			$field .= ",".$field_ext;
+		}
+		if($this->is_biz || ($condition && strpos($condition,'b.') !== false) || strpos($orderby,'b.') !== false){
+			$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit";
+		}
+		//$sql = "SELECT ".$field." FROM ".$this->db->prefix."list l ";
+		$linksql = " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id AND l.project_id=ext.project_id) ";
+		if($this->is_user || ($condition && strpos($condition,'u.') !== false) || strpos($orderby,'u.') !== false){
+			$linksql .= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id AND u.status=1) ";
+		}
+		if($this->is_biz || ($condition && strpos($condition,'b.') !== false) || strpos($orderby,'b.') !== false){
+			$linksql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
+		}
+		if($this->multiple_cate || ($condition && strpos($condition,'lc.') !== false) || strpos($orderby,'lc.') !== false){
+			$linksql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+		}
+		//if($condition){
+		//	$linksql .= " WHERE ".$condition;
+		//}
+		//先取得ID
+		$id_sql  = "SELECT l.id FROM ".$this->db->prefix."list l ".$linksql;
+		if($condition){
+			$id_sql .= " WHERE ".$condition." ";
+		}
+		$id_sql .= " ORDER BY ".$orderby;
+		if($psize && is_numeric($psize) && intval($psize)){
+			$offset = intval($offset);
+			$id_sql.= " LIMIT ".$offset.",".$psize;
+		}
+		$idlist = $this->db->get_all($id_sql);
+		if(!$idlist){
+			return false;
+		}
+		$ids = array();
+		foreach($idlist as $key=>$value){
+			$ids[] = $value['id'];
+		}
+		$sql  = "SELECT ".$field." FROM ".$this->db->prefix."list l ".$linksql;
+		$sql .= " WHERE l.id IN(".implode(",",$ids).") ";
+		$sql .= " ORDER BY ".$orderby." ";
+		$rslist = $this->db->get_all($sql,"id");
+		if(!$rslist){
+			return false;
+		}
+		$cid_list = array();
+		foreach($rslist as $key=>$value){
+			$cid_list[$value["cate_id"]] = $value["cate_id"];
+		}
+		$m_rs = $this->lib('ext')->module_fields($mid);
+		if($m_rs){
+			foreach($rslist as $key=>$value){
+				foreach($value as $k=>$v){
+					if($m_rs[$k]){
+						$value[$k] = $this->lib('ext')->content_format($m_rs[$k],$v);
+					}
+				}
+				$rslist[$key] = $value;
+			}
+		}
+		$cid_string = implode(",",$cid_list);
+		if($cid_string){
+			$catelist = $this->lib('ext')->cate_list($cid_string);
+			foreach($rslist AS $key=>$value){
+				if($value["cate_id"]){
+					$value["cate_id"] = $catelist[$value["cate_id"]];
+					$rslist[$key] = $value;
+				}
+			}
+		}
+		return $rslist;
+	}
+}

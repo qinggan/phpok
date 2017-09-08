@@ -1,0 +1,101 @@
+<!-- include tpl=head_open -->
+<link rel="stylesheet" type="text/css" href="css/icomoon.css" />
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	$("#post_save").ajaxSubmit({
+		'url':get_url('plugin','icon_save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.alert('{lang操作成功}',function(){
+					opener.$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.info);
+				return false;
+			}
+		}
+	});
+}
+</script>
+<form method="post" id="post_save" onsubmit="return false">
+<!-- if $vid --><input type="hidden" name="vid" value="{$vid}" /><!-- /if -->
+<input type="hidden" name="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		{lang执行方法：}<span class="note">{lang请选择要执行的参数}</span>
+	</div>
+	<div class="content">
+		<select name="efunc" onchange="$.admin_plugin.einfo(this.value)">
+			<option value=''>{lang请选择执行方法}</option>
+			<!-- loop from=$elist key=$k value=$v id=$idxx -->
+			<option value="{$k}"{if $k == $rs.efunc} selected{/if} data-title="{$v.title}">{$v.title}<!-- if $v.id != $v.title --> / {$v.id}<!-- /if --></option>
+			<!-- /loop -->
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang名称：}<span class="note">{lang请针对快捷菜单设置一个名称}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="title" value="{$rs.title}" class="default" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang排序：}<span class="note">{lang值越小越往前靠}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="taxis" value="{$rs ? $rs.taxis : $taxis}" class="short" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang显示位置：}<span class="note">{lang请选择要摆放的位置}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<!-- loop from=$glist key=$k value=$v id=$tmpid -->
+			<li><label><input type="radio" name="type" value="{$k}"{if $rs.type && $rs.type == $k} checked{/if} onclick="$.admin_plugin.showicolist('{$k}')" />{$v}</label></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>
+<div class="table" id="iconlist"{if !$rs.type || $rs.type == 'none'} style="display:none;"{/if}>
+	<div class="title">
+		{lang图标选择：}<span class="note">{lang请选择一个图标或图片}</span>
+	</div>
+	<div class="content" id="iconlist_html">
+		<ul class="layout">
+		<!-- if $rs && $rs.type == 'menu' -->
+			<!-- loop from=$iconlist key=$key value=$value -->
+			<li style="width:180px;"><label title="{func basename $value}">
+				<table>
+				<tr>
+					<td><input type="radio" name="icon" value="{$value}"{if $rs.icon == $value} checked{/if}/></td>
+					<td><i class="icon-{$value}" style="font-size:16px;"></i> {$value}</td>
+				</tr>
+				</table>
+			</label></li>
+			<!-- /loop -->
+		<!-- else -->
+			<!-- loop from=$iconlist key=$key value=$value -->
+			<li><label title="{func basename $value}">
+				<table>
+				<tr>
+					<td><input type="radio" name="icon" value="{$value}"{if $rs.icon == $value} checked{/if} /></td>
+					<td><img src="images/ico/{$value}" /></td>
+				</tr>
+				</table>
+			</label></li>
+			<!-- /loop -->
+		<!-- /if -->
+		</ul>
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_open -->

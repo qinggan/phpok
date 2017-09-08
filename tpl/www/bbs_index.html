@@ -1,12 +1,8 @@
 <!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
-<!-- if $page_rs.banner -->
-<div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
-<!-- /if -->
-
 <div class="wrap bbs_index">
 	<!-- catelist pid=$page_rs.id catelist_ext=1 -->
-	<!-- loop from=$list.sublist key=$key value=$value -->
-	<div class="bd">
+	<!-- loop from=$list.sublist key=$key value=$value id=$tmpid -->
+	<div class="bd"{if !$tmpid.index} style="margin-top:10px;"{/if}>
 		<a href="{$value.url}" title="{$value.title}"><h3>{$value.title}</h3></a>
 		<div class="info">
 			<table width="100%">

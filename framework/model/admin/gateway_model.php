@@ -21,9 +21,9 @@ class gateway_model extends gateway_model_base
 		foreach($grouplist as $key=>$value){
 			$grouplist[$key] = array('title'=>$value);
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."gateway ";
+		$sql = "SELECT * FROM ".$this->db->prefix."gateway WHERE site_id='".$this->site_id."'";
 		if($status){
-			$sql .= " WHERE status='".($status == 1 ? 1 : 0)."' ";
+			$sql .= " AND status='".($status == 1 ? 1 : 0)."' ";
 		}
 		$sql.= " ORDER BY taxis ASC";
 		$rslist = $this->db->get_all($sql);

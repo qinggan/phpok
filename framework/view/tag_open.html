@@ -1,0 +1,9 @@
+<!-- include tpl=head_open -->
+<ul class="layout">
+	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	<li><input type="button" value="{$value.title}" class="phpok-btn" onclick="$.phpok_tag.selected(this.value,'{$rs.separator}')" /></li>
+	<!-- /loop -->
+</ul>
+<!-- include tpl=pagelist -->
+
+<!-- include tpl=foot_open -->

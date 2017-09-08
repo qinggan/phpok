@@ -3,7 +3,7 @@
  * PHPOK企业站系统，使用PHP语言及MySQL数据库编写的企业网站建设系统，基于LGPL协议开源授权
  * @package phpok
  * @author phpok.com
- * @copyright 2015-2016 深圳市锟铻科技有限公司
+ * @copyright 2015-2017 深圳市锟铻科技有限公司
  * @version 4.x
  * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
  */
@@ -11,6 +11,14 @@
 error_reporting(E_ALL ^ E_NOTICE);
 define('PHPOK_SET',true);
 define("ROOT",str_replace("\\","/",dirname(__FILE__))."/");
+define('DIR_CONFIG',ROOT.'_config/');
+define('DIR_CACHE',ROOT.'data/cache/');
+if(file_exists(ROOT.'version.php')){
+	include(ROOT.'version.php');
+}
+if(!defined('VERSION')){
+	define('VERSION','4.x');
+}
 function error($tips="",$url="",$time=2)
 {
 	echo '<!DOCTYPE html>'."\n";
@@ -60,8 +68,7 @@ function root_url()
 	$port = $_SERVER["SERVER_PORT"];
 	//$myurl = $http_type.$_SERVER["SERVER_NAME"];
 	$myurl = $_SERVER["SERVER_NAME"];
-	if($port != "80" && $port != "443")
-	{
+	if($port != "80" && $port != "443"){
 		$myurl .= ":".$port;
 	}
 	$site = array("domain"=>$myurl);
@@ -69,23 +76,18 @@ function root_url()
 	$array = explode("/",$docu);
 	$count = count($array);
 	$dir = "";
-	if($count>1)
-	{
-		foreach($array AS $key=>$value)
-		{
+	if($count>1){
+		foreach($array AS $key=>$value){
 			$value = trim($value);
-			if($value)
-			{
-				if(($key+1) < $count)
-				{
-					$dir .= "/".$value;
-				}
+			if($value && ($key+1) < $count){
+				$dir .= "/".$value;
 			}
 		}
 	}
 	$dir .= "/";
 	$dir = str_replace(array("//","install/"),array("/",""),$dir);
 	$site["dir"] = $dir;
+	$site['url'] = $http_type.$myurl.$dir;
 	return $site;
 }
 
@@ -126,7 +128,7 @@ class install
 		echo '</head>'."\n";
 		echo '<body>'."\n";
 		echo '<div class="header">';
-		echo '<div class="logo"><img src="'.$this->logo().'" width="266" height="63" /></div>';
+		echo '<div class="logo"><img src="images/login-logo.png" /> PHPOK <span>'.VERSION.'</span></div>';
 		echo '<div class="step"><div class="line"></div><ul class="step_num">';
 		$current = array('1'=>'','2'=>'','3'=>'','4'=>'','5'=>'','6'=>'');
 		if($num){
@@ -143,7 +145,7 @@ class install
 
 	public function foot()
 	{
-		echo '<div class="footer">Powered By phpok.com 版权所有 &copy; 2005-2016, All right reserved.</div>'."\n";
+		echo '<div class="footer">Powered By phpok.com 版权所有 &copy; 2005-2017, All right reserved.</div>'."\n";
 		echo '</body>'."\n";
 		echo '</html>';
 		exit;
@@ -239,9 +241,9 @@ class install
 			unlink(ROOT.$tmpfile);
 		}
 		echo '<tr><td class="lft">网站根目录</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		if(is_writable($ROOT.'config.php')){
+		if(is_writable(DIR_CONFIG.'db.ini.php')){
 			$info = '<span class="darkblue">正常</span>';
-			if(!is_readable(ROOT.'config.php')){
+			if(!is_readable(DIR_CONFIG.'db.ini.php')){
 				$info = '<span class="red">不可读</span>';
 				$status = false;
 			}
@@ -249,7 +251,7 @@ class install
 			$info = '<span class="red">异常，无法写入</span>';
 			$status = false;
 		}
-		echo '<tr><td class="lft">文件：config.php</td><td>写入</td><td>'.$info.'</td></tr>';
+		echo '<tr><td class="lft">文件：_config/db.ini.php</td><td>写入</td><td>'.$info.'</td></tr>';
 		//data/
 		touch(ROOT.'data/'.$tmpfile);
 		$dir_info = '<span class="darkblue">读写</span>';
@@ -265,17 +267,17 @@ class install
 		}
 		echo '<tr><td class="lft">目录：data/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
 		//data/cache/
-		touch(ROOT.'data/cache/'.$tmpfile);
+		touch(DIR_CACHE.$tmpfile);
 		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(ROOT.'data/cache/'.$tmpfile)){
+		if(!file_exists(DIR_CACHE.$tmpfile)){
 			$dir_info = '<span class="red">不可写</span>';
 			$status = false;
 		}else{
-			if(!is_readable(ROOT.'data/cache/'.$tmpfile)){
+			if(!is_readable(DIR_CACHE.$tmpfile)){
 				$dir_info = '<span class="red">不可读</span>';
 				$status = false;
 			}
-			unlink(ROOT.'data/cache/'.$tmpfile);
+			unlink(DIR_CACHE.$tmpfile);
 		}
 		echo '<tr><td class="lft">目录：data/cache/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
 		//data/session/
@@ -402,7 +404,8 @@ class install
 
 	public function config()
 	{
-		include(ROOT."config.php");
+		$config = array();
+		$config['db'] = parse_ini_file(DIR_CONFIG.'db.ini.php');
 		$dbconfig = $config['db'];
 		unset($config);
 		$site = root_url();
@@ -431,36 +434,36 @@ function submit_next()
 	}
 	var sitename = jQuery("#title").val();
 	if(!sitename){
-		alert('网站名称不能为空');
+		jQuery.dialog.alert('网站名称不能为空');
 		return false;
 	}
 	var domain = jQuery("#domain").val();
 	if(!domain){
-		alert('域名不能为空');
+		jQuery.dialog.alert('域名不能为空');
 		return false;
 	}
 	var user = jQuery('#admin_user').val();
 	if(!user){
-		alert('管理员账号不能为空');
+		jQuery.dialog.alert('管理员账号不能为空');
 		return false;
 	}
 	var email = jQuery('#admin_email').val();
 	if(!email){
-		alert('管理员邮箱不能为空');
+		jQuery.dialog.alert('管理员邮箱不能为空');
 		return false;
 	}
 	var newpass = jQuery('#admin_newpass').val();
 	if(!newpass){
-		alert('管理员密码不能为空');
+		jQuery.dialog.alert('管理员密码不能为空');
 		return false;
 	}
 	var chkpass = jQuery('#admin_chkpass').val();
 	if(!chkpass){
-		alert('管理员确认密码不能为空');
+		jQuery.dialog.alert('管理员确认密码不能为空');
 		return false;
 	}
 	if(newpass != chkpass){
-		alert('两次输入的管理员密码不一致');
+		jQuery.dialog.alert('两次输入的管理员密码不一致');
 		return false;
 	}
 	return true;
@@ -483,7 +486,7 @@ function check_connect(isin)
 	url += "&port="+encodeURIComponent(port);
 	var user = jQuery("#user").val();
 	if(!user){
-		alert("请填写数据库账号！");
+		jQuery.dialog.alert("请填写数据库账号！");
 		return false;
 	}
 	url += "&user="+encodeURIComponent(user);
@@ -491,11 +494,11 @@ function check_connect(isin)
 	var chkpass = $("#chkpass").val();
 	if(pass){
 		if(!chkpass){
-			alert('请再次输入数据库密码');
+			jQuery.dialog.alert('请再次输入数据库密码');
 			return false;
 		}
 		if(pass != chkpass){
-			alert('两次输入的数据库密码不一致');
+			jQuery.dialog.alert('两次输入的数据库密码不一致');
 			return false;
 		}
 	}else{
@@ -507,18 +510,18 @@ function check_connect(isin)
 	url += "&pass="+encodeURIComponent(pass)+"&chkpass="+encodeURIComponent(chkpass);
 	var data = jQuery("#data").val();
 	if(!data){
-		alert("请填写您的数据库名称，不能为空");
+		jQuery.dialog.alert("请填写您的数据库名称，不能为空");
 		return false;
 	}
 	url += "&data="+encodeURIComponent(data);
 	var info = $.ajax({'url':url,'dataType':'html','cache':false,'async':false}).responseText;
 	var rs = $.parseJSON(info);
 	if(rs.status != 'ok'){
-		alert(rs.content);
+		jQuery.dialog.alert(rs.content);
 		return false;
 	}
 	if(!isin || isin == 'undefined'){
-		alert('测试连接数据库通过');
+		jQuery.dialog.alert('测试连接数据库通过',true,'succeed');
 	}
 	return true;
 }
@@ -740,12 +743,6 @@ EOT;
 		return $info;
 	}
 	
-	private function logo()
-	{
-		$info = "data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAABLAAD/4QNvaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjMtYzAxMSA2Ni4xNDU2NjEsIDIwMTIvMDIvMDYtMTQ6NTY6MjcgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6QTY4ODUwN0FENDNFRTQxMTkxNEVGOUJDNUEzRjZGNjMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MzA5MUFDQTEzRjlFMTFFNDgzNDc5NkEzNUYwQTc0NkQiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MzA5MUFDQTAzRjlFMTFFNDgzNDc5NkEzNUYwQTc0NkQiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpFRDA5OTQ1MUU4M0VFNDExQjZEQkM5MzdCOTYxRDgyMCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpBNjg4NTA3QUQ0M0VFNDExOTE0RUY5QkM1QTNGNkY2MyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6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";
-		return $info;
-	}
-
 	private function cssinfo()
 	{
 		echo '<style type="text/css">'."\n";
@@ -768,7 +765,8 @@ EOT;
 		echo '.darkblue{color:darkblue}'."\n";
 		echo '.lft{text-align:left}'."\n";
 		echo '.header{height:63px;width:980px;margin:0 auto;padding:40px 0 30px}'."\n";
-		echo '.logo{float:left;width:266px;height:63px}'."\n";
+		echo '.logo{float:left;width:270px;height:64px;line-height:64px;font-size:2.6em;font-weight:bold;font-style:italic;}'."\n";
+		echo '.logo span{font-size:0.6em;}'."\n";
 		echo '.step{width:650px;float:right;height:50px;position:relative;margin-top:15px}'."\n";
 		echo '.step .line{width:650px;height:3px;background:#dde6ed;position:absolute;left:0;top:13px;z-index:9}'."\n";
 		echo '.step .step_num{width:650px;height:50px;position:absolute;left:0;top:0;z-index:10;margin:0;padding:0;list-style:none}'."\n";
@@ -789,7 +787,7 @@ EOT;
 		echo '.tips_box{width:978px;border:1px solid #e6e6e6;margin:0 auto 15px}'."\n";
 		echo '.tips_box .tips_title{background:#F5F5F5;height:39px;border-bottom:1px solid #e6e6e6;padding:0 20px;line-height:39px;font-size:16px;color:#03C}'."\n";
 		echo '.tips_box .tips_txt{padding:20px;line-height:22px;font-size:14px}'."\n";
-		echo '.tips_box .tips_txt p{margin-bottom:15px}'."\n";
+		//echo '.tips_box .tips_txt p{margin-bottom:15px}'."\n";
 		echo '.tablebox{border-collapse:collapse;width:980px;margin:0 auto 15px;text-align:center}'."\n";
 		echo '.tablebox td{border:#e6e6e6 solid 1px;padding:5px;height:30px}'."\n";
 		echo '.tablebox .head_bg{background:#F5F5F5;height:38px}'."\n";
@@ -813,6 +811,14 @@ EOT;
 		echo '<link rel="stylesheet" type="text/css" href="css/artdialog.css" />'."\n";
 		echo '<script type="text/javascript" src="js/jquery.js"></script>'."\n";
 		echo '<script type="text/javascript" src="js/jquery.artdialog.js"></script>'."\n";
+		$site = root_url();
+		echo '<script type="text/javascript">'."\n";
+		echo '$(document).ready(function(){'."\n";
+		echo "\t".'(function (config) {'."\n\t";
+		echo "\t\t".'config["path"] = "'.$site['url'].'";'."\n";
+		echo "\t".'})(art.dialog.defaults);'."\n";
+		echo '});'."\n";
+		echo '</script>'."\n";
 	}
 
 	public function format_url($url)
@@ -868,10 +874,28 @@ EOT;
 		}
 	}
 
+	public function lib($id)
+	{
+		if(!$id){
+			return false;
+		}
+		$classname = $id.'_lib';
+		if(isset($this->$classname) && is_object($this->$classname)){
+			return $this->$classname;
+		}
+		$file = ROOT.'framework/libs/'.$id.'.php';
+		if(!file_exists($file)){
+			return false;
+		}
+		include_once($file);
+		$this->$classname = new $classname();
+		return $this->$classname;
+	}
+
 }
 
 if(file_exists(ROOT.'data/install.lock')){
-	error('已安装过，不能重复安装');
+	//error('已安装过，不能重复安装');
 }
 
 include(ROOT.'framework/engine/db.php');
@@ -929,6 +953,7 @@ if($step == 'checkdb'){
 	$config = array('host'=>$host,'user'=>$user,'pass'=>$pass,'port'=>$port,'data'=>$data);
 	include(ROOT.'framework/engine/db/'.$file.'.php');
 	$dbname = 'db_'.$file;
+	$config['db']['debug'] = true;
 	$db = new $dbname($config);
 	if($db->error || $db->error_id){
 		$array['content'] = '错误ID:'.$db->error_id.',错误信息:'.$db->error;
@@ -951,15 +976,23 @@ if($step == 'save'){
 	$dbconfig['pass'] = $install->get("pass",false);
 	$dbconfig['data'] = $install->get("data",false);
 	$dbconfig['prefix'] = $install->get("prefix",false);
-	$content = file_get_contents(ROOT."config.php");
-	$content = preg_replace('/\$config\["db"\]\["file"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["file"] = "'.$dbconfig['file'].'";',$content);
-	$content = preg_replace('/\$config\["db"\]\["host"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["host"] = "'.$dbconfig['host'].'";',$content);
-	$content = preg_replace('/\$config\["db"\]\["port"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["port"] = "'.$dbconfig['port'].'";',$content);
-	$content = preg_replace('/\$config\["db"\]\["user"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["user"] = "'.$dbconfig['user'].'";',$content);
-	$content = preg_replace('/\$config\["db"\]\["pass"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["pass"] = "'.$dbconfig['pass'].'";',$content);
-	$content = preg_replace('/\$config\["db"\]\["data"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["data"] = "'.$dbconfig['data'].'";',$content);
-	$content = preg_replace('/\$config\["db"\]\["prefix"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["prefix"] = "'.$dbconfig['prefix'].'";',$content);
-	file_put_contents(ROOT."config.php",$content);
+	$content = file_get_contents(DIR_CONFIG."db.ini.php");
+	$content = preg_replace('/file\s*=.*/i','file = "'.$dbconfig['file'].'"',$content);
+	$content = preg_replace('/host\s*=.*/i','host = "'.$dbconfig['host'].'"',$content);
+	$content = preg_replace('/port\s*=.*/i','port = "'.$dbconfig['port'].'"',$content);
+	$content = preg_replace('/user\s*=.*/i','user = "'.$dbconfig['user'].'"',$content);
+	$content = preg_replace('/pass\s*=.*/i','pass = "'.$dbconfig['pass'].'"',$content);
+	$content = preg_replace('/data\s*=.*/i','data = "'.$dbconfig['data'].'"',$content);
+	$content = preg_replace('/prefix\s*=.*/i','prefix = "'.$dbconfig['prefix'].'"',$content);
+	//echo "<pre>".print_r($content,true)."</pre>";
+	//exit;
+	//$content = preg_replace('/\$config\["db"\]\["host"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["host"] = "'.$dbconfig['host'].'";',$content);
+	//$content = preg_replace('/\$config\["db"\]\["port"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["port"] = "'.$dbconfig['port'].'";',$content);
+	//$content = preg_replace('/\$config\["db"\]\["user"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["user"] = "'.$dbconfig['user'].'";',$content);
+	//$content = preg_replace('/\$config\["db"\]\["pass"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["pass"] = "'.$dbconfig['pass'].'";',$content);
+	//$content = preg_replace('/\$config\["db"\]\["data"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["data"] = "'.$dbconfig['data'].'";',$content);
+	//$content = preg_replace('/\$config\["db"\]\["prefix"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["prefix"] = "'.$dbconfig['prefix'].'";',$content);
+	file_put_contents(DIR_CONFIG."db.ini.php",$content);
 	$info = array('title'=>$install->get('title',false));
 	$info['domain'] = $install->get('domain',false);
 	$info['dir'] = $install->get('dir',false);
@@ -973,42 +1006,51 @@ if($step == 'save'){
 		$value = str_replace('"','',$value);
 		fwrite($handle,'$adminer["'.$key.'"] = "'.$value.'";'."\n");
 	}
-	fwrite($handle,'?>');
 	$install->head(5);
 	$install->import_info();
 	$install->foot();
 }
 if($step == 'ajax_importsql'){
-	include(ROOT.'config.php');
+	$config = array();
+	$config['db'] = parse_ini_file(DIR_CONFIG.'db.ini.php');
+	$config['db']['debug'] = true;
 	$file = $config['db']['file'];
 	include(ROOT.'framework/engine/db/'.$file.'.php');
 	$dbname = 'db_'.$file;
 	$db = new $dbname($config['db']);
-	$sql = file_get_contents(ROOT."install.sql");
-	if($db->prefix != "qinggan_"){
-		$sql = str_replace("qinggan_",$db->prefix,$sql);
+	$sqlist = $install->lib('file')->ls(ROOT.'data/install/');
+	if(!$sqlist){
+		error("安装SQL文件不存在，请检查");
 	}
-	$sql = str_replace("\r","\n",$sql);
-	$ret = array();
-	$num = 0;
-	foreach(explode(";\n", trim($sql)) as $query) {
-		$queries = explode("\n", trim($query));
-		foreach($queries as $query) {
-			$ret[$num] .= $query[0] == '#' || $query[0].$query[1] == '--' ? '' : $query;
+	foreach($sqlist as $key=>$value){
+		$sql = file_get_contents($value);
+		if($db->prefix != 'qinggan_'){
+			$sql = str_replace("qinggan_",$db->prefix,$sql);
 		}
-		$num++;
-	}
-	unset($sql);
-	foreach($ret as $query) {
-		$query = trim($query);
-		if($query) {
-			$db->query($query);
+		$sql = str_replace("\r","\n",$sql);
+		$ret = array();
+		$num = 0;
+		foreach(explode(";\n", trim($sql)) as $query) {
+			$queries = explode("\n", trim($query));
+			foreach($queries as $query) {
+				$ret[$num] .= $query[0] == '#' || $query[0].$query[1] == '--' ? '' : $query;
+			}
+			$num++;
+		}
+		unset($sql);
+		foreach($ret as $query) {
+			$query = trim($query);
+			if($query) {
+				$db->query($query);
+			}
 		}
 	}
 	exit('ok');
 }
 if($step == 'ajax_initdata'){
-	include(ROOT.'config.php');
+	$config = array();
+	$config['db'] = parse_ini_file(DIR_CONFIG.'db.ini.php');
+	$config['db']['debug'] = true;
 	$file = $config['db']['file'];
 	include(ROOT.'framework/engine/db/'.$file.'.php');
 	$dbname = 'db_'.$file;
@@ -1026,124 +1068,42 @@ if($step == 'ajax_initdata'){
 	$db->query($sql);
 
 	if(!$adminer['demo']){
+		$tblist = $db->list_tables();
 		$sql = "SELECT * FROM ".$db->prefix."module";
 		$tmplist = $db->get_all($sql);
 		if($tmplist){
 			foreach($tmplist as $key=>$value){
-				$sql = "DROP TABLE `".$db->prefix."list_".$value['id'];
+				$table = $db->prefix."list_".$value['id'];
+				if(in_array($table,$tblist)){
+					$sql = "DROP TABLE `".$table."`";
+					$db->query($sql);
+				}
+			}
+		}
+		$string  = 'module,module_fields,list,list_cate,list_biz,list_attr,reply,project,plugins,res,res_ext,tag,tag_stat,phpok,ext,extc,all,cate,user,user_ext,user_relation,';
+		$string .= 'wealth_info,wealth_log,session,payment_log,order_product,order_price,order_payment,order_log,order_invoice,order_express,order_address,order,log,fav,express,';
+		$string .= 'cart,cart_product';
+		$tmplist = explode(",",$string);
+		foreach($tmplist as $key=>$value){
+			$table = $db->prefix."".$value;
+			if(in_array($table,$tblist)){
+				$sql = "TRUNCATE TABLE `".$table."`";
 				$db->query($sql);
 			}
 		}
-		//清除模块记录
-		$sql = "TRUNCATE TABLE `".$db->prefix."module`";
-		$db->query($sql);
-		//清除模块里的扩展字段记录
-		$sql = "TRUNCATE TABLE `".$db->prefix."module_fields`";
-		$db->query($sql);
-		//清除主题记录
-		$sql = "TRUNCATE TABLE `".$db->prefix."list`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."list_cate`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."list_biz`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."list_attr`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."reply`";
-		$db->query($sql);
-		//清除项目
-		$sql = "TRUNCATE TABLE `".$db->prefix."project`";
-		$db->query($sql);
-		//清除插件
-		$sql = "TRUNCATE TABLE `".$db->prefix."plugins`";
-		$db->query($sql);
-		//清除附件
-		$sql = "TRUNCATE TABLE `".$db->prefix."res`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."res_ext`";
-		$db->query($sql);
-		//清除Tag
-		$sql = "TRUNCATE TABLE `".$db->prefix."tag`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."tag_stat`";
-		$db->query($sql);
-		//清除数据调用
-		$sql = "TRUNCATE TABLE `".$db->prefix."phpok`";
-		$db->query($sql);
-		//清除扩展字段
-		$sql = "TRUNCATE TABLE `".$db->prefix."ext`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."extc`";
-		$db->query($sql);
-		//清除全局
-		$sql = "TRUNCATE TABLE `".$db->prefix."all`";
-		$db->query($sql);
-		//清除分类
-		$sql = "TRUNCATE TABLE `".$db->prefix."cate`";
-		$db->query($sql);
-		//清除会员
-		$sql = "TRUNCATE TABLE `".$db->prefix."user`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."user_ext`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."user_relation`";
-		$db->query($sql);
-		//清除财富记录
-		$sql = "TRUNCATE TABLE `".$db->prefix."wealth_info`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."wealth_log`";
-		$db->query($sql);
-		//清除session表
-		$sql = "TRUNCATE TABLE `".$db->prefix."session`";
-		$db->query($sql);
-		//清除支付
-		$sql = "TRUNCATE TABLE `".$db->prefix."payment_log`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."order_product`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."order_price`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."order_payment`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."order_log`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."order_invoice`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."order_express`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."order_address`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."order`";
-		$db->query($sql);
-		//删除日志
-		$sql = "TRUNCATE TABLE `".$db->prefix."log`";
-		$db->query($sql);
-		//删除收藏夹
-		$sql = "TRUNCATE TABLE `".$db->prefix."fav`";
-		$db->query($sql);
-		//快递平台
-		$sql = "TRUNCATE TABLE `".$db->prefix."express`";
-		$db->query($sql);
-		//清除购物车
-		$sql = "TRUNCATE TABLE `".$db->prefix."cart`";
-		$db->query($sql);
-		$sql = "TRUNCATE TABLE `".$db->prefix."cart_product`";
-		$db->query($sql);
-		//删除附件
-		include_once(ROOT.'framework/libs/file.php');
-		$file = new file_lib();
-		$list = $file->ls(ROOT.'res/');
+		$list = $install->lib('file')->ls(ROOT.'res/');
 		if($list){
 			foreach($list as $key=>$value){
-				$file->rm($value,'folder');
+				$install->lib('file')->rm($value,'folder');
 			}
 		}
 	}
-	
 	exit('ok');
 }
 if($step == 'ajax_iadmin'){
-	include(ROOT.'config.php');
+	$config = array();
+	$config['db'] = parse_ini_file(DIR_CONFIG.'db.ini.php');
+	$config['db']['debug'] = true;
 	$file = $config['db']['file'];
 	include(ROOT.'framework/engine/db/'.$file.'.php');
 	$dbname = 'db_'.$file;

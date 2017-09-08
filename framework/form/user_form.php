@@ -59,9 +59,9 @@ class user_form extends _init_auto
 				}
 				$uinfo = array();
 				foreach($rslist as $key=>$value){
-					$uinfo = $value['user'];
+					$uinfo[] = $value['user'];
 				}
-				return implode('/',$uinfo);
+				return implode(' / ',$uinfo);
 			}else{
 				$uinfo = $this->model('user')->get_one($rs['content']);
 				if($uinfo){

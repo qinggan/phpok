@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>SendCloud短信</title>
+	<note>官网（https://sendcloud.sohu.com）</note>
+	<code>
+		<api_user>
+			<title>API_USER</title>
+			<note>请到SendCloud官网上获取自己的API_USER</note>
+			<type>text</type>
+			<required>true</required>
+		</api_user>
+		<api_key>
+			<title>API_KEY</title>
+			<note>创建完成API_USER后，系会发送API_KEY到您的邮箱，请将值写到这里来</note>
+			<type>text</type>
+			<required>true</required>
+		</api_key>
+	</code>
+	<manage>
+		<send>
+			<title>发短信</title>
+			<exec>sendsms</exec>
+			<type>page</type>
+		</send>
+		<readme>
+			<title>帮助说明</title>
+			<exec>readme</exec>
+			<type>page</type>
+		</readme>
+	</manage>
+</root>

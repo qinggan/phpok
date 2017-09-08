@@ -148,8 +148,16 @@ class upload_lib
 			return false;
 		}
 		$ext = strtolower($ext);
-		$cate_exts = ($this->cate && $this->cate['filetypes']) ? explode(",",$this->cate['filetypes']) : array('jpg','gif','png');
-		if(!in_array($ext,$cate_exts)){
+		$filetypes = "jpg,gif,png";
+		if($this->cate && $this->cate['filetypes']){
+			$filetypes .= ",".$this->cate['filetypes'];
+		}
+		if($this->file_type){
+			$filetypes .= ",".$this->file_type;
+		}
+		$list = explode(",",$filetypes);
+		$list = array_unique($list);
+		if(!in_array($ext,$list)){
 			return false;
 		}
 		return $ext;
@@ -320,38 +328,10 @@ class upload_lib
 		if(!$inputname){
 			return array('status'=>'error','content'=>P_Lang('未指定表单名称'));
 		}
-		if(!isset($_FILES[$inputname])){
-			return array('status'=>'error','content'=>P_Lang('没有指定上传的图片'));
+		if(isset($_FILES[$inputname])){
+			return $this->_upload($inputname);
 		}
-		$t = $_FILES[$inputname]['error'];
-		if($t){
-			$tinfo = $this->up_error[$t] ? $this->up_error[$t] : P_Lang('附件上传失败');
-			return array('status'=>'error','content'=>$tinfo);
-		}
-		if(!is_uploaded_file($_FILES[$inputname]['tmp_name'])){
-			return array('status'=>'error','content'=>P_Lang('没有找到临时文件'));
-		}
-		$file_info = $this->title_format($_FILES[$inputname]['name']);
-		$filetype = $file_info['ext'];
-		if(!$filetype || $filetype == 'unknown'){
-			return array('status'=>'error','content'=>P_Lang('获取文件类型失败'));
-		}
-		$filetype = strtolower($filetype);
-		if(!in_array($filetype,explode(",",$this->file_type))){
-			return array('status'=>'error','content'=>P_Lang('文件类型不符合系统要求'));
-		}
-		$filename = substr(md5(time().uniqid()),9,16);
-		$file = $this->dir_root.$this->folder.$filename.'.'.$filetype;
-		if(move_uploaded_file($_FILES[$inputname]['tmp_name'],$file)){
-			$title = $file_info['title'];
-			if(!$title) $title = $filename;
-			$title = $GLOBALS['app']->lib('string')->to_utf8($title);
-			$title = strtolower($title);
-			$title = str_replace('.'.$filetype,'',$title);
-			$title = $GLOBALS['app']->format($title);
-			return array("status"=>"ok","title"=>$title,"filename"=>$this->folder.$filename.'.'.$filetype,"ext"=>$filetype,'name'=>$filename);
-		}
-		return array('status'=>'error','content'=>'附件上传失败');
+		return $this->_save($inputname);
 	}
 
 	public function get_folder()

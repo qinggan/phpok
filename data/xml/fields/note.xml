@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title><![CDATA[摘要]]></title>
+	<identifier><![CDATA[note]]></identifier>
+	<field_type><![CDATA[longtext]]></field_type>
+	<note><![CDATA[简要文字描述]]></note>
+	<form_type><![CDATA[textarea]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[safe]]></format>
+	<content><![CDATA[]]></content>
+	<ext>
+		<width><![CDATA[600]]></width>
+		<height><![CDATA[80]]></height>
+	</ext>
+</root>

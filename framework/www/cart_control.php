@@ -35,7 +35,12 @@ class cart_control extends phpok_control
 		//取得购物车产品列表
 		$rslist = $this->model('cart')->get_all($this->cart_id);
 		if(!$rslist){
-	    	$this->view("cart_tip");
+			$this->model('site')->site_id($this->site['id']);
+			$tplfile = $this->model('site')->tpl_file($this->ctrl,'tip');
+			if(!$tplfile){
+				$tplfile = 'cart_tip';
+			}
+	    	$this->view($tplfile);
 		}
 		$this->assign("rslist",$rslist);
 		$totalprice = 0;
@@ -44,7 +49,12 @@ class cart_control extends phpok_control
 		}
 		$price = price_format($totalprice,$this->site['currency_id']);
 		$this->assign('price',$price);
-		$this->view("cart_index");
+		$this->model('site')->site_id($this->site['id']);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'cart_index';
+		}
+		$this->view($tplfile);
 	}
 
 	/**
@@ -140,7 +150,12 @@ class cart_control extends phpok_control
 				}
 			}
 		}
-		$this->view("cart_checkout");
+		$this->model('site')->site_id($this->site['id']);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'cart_checkout';
+		}
+		$this->view($tplfile);
 	}
 
 	/**
@@ -326,4 +341,3 @@ class cart_control extends phpok_control
 	}
 
 }
-?>

@@ -37,17 +37,17 @@ class reply_control extends phpok_control
 		}
 		$pageurl = $this->url("reply");
 		$status = $this->get("status","int");
-		$condition = "l.replydate>0";
+		$condition = "l.replydate>0 ";
 		if($status){
 			$n_status = $status == 1 ? "1" : "0";
-			$condition .= " AND l.id IN(SELECT DISTINCT tid FROM ".$this->db->prefix."reply WHERE status='".$n_status."')";
+			$condition .= "AND r.status=".$n_status." ";
 			$pageurl .= "&status=".$status; 
 			$this->assign("status",$status);
 		}
 		//关键字
 		$keywords = $this->get("keywords");
 		if($keywords){
-			$condition .= " AND (l.title LIKE '%".$keywords."%' OR l.id IN(SELECT DISTINCT tid FROM ".$this->db->prefix."reply WHERE content LIKE '%".$keywords."%' OR adm_content LIKE '%".$keywords."%')) ";
+			$condition .= "AND (l.title LIKE '%".$keywords."%' OR r.content LIKE '%".$keywords."%' OR r.adm_content LIKE '%".$keywords."%') ";
 			$pageurl .= "&keywords=".rawurlencode($keywords);
 			$this->assign("keywords",$keywords);
 		}
@@ -59,7 +59,7 @@ class reply_control extends phpok_control
 		$total = $this->model('reply')->get_all_total($condition);
 		if($total>0){
 			$offset = ($pageid-1) * $psize;
-			$rslist = $this->model('reply')->get_all($condition,$offset,$psize,"id");
+			$rslist = $this->model('reply')->get_all($condition,$offset,$psize);
 			$this->assign("rslist",$rslist);
 			if($total>$psize){
 				$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
@@ -229,7 +229,7 @@ class reply_control extends phpok_control
 		$this->assign("rs",$rs);
 		$title_rs = $this->model('list')->get_one($rs["tid"]);
 		$this->assign("title_rs",$title_rs);
-		$edit_content = form_edit('content',$rs['content'],'editor','width=680&height=180');
+		$edit_content = form_edit('content',$rs['content'],'editor','width=680&height=180&btns[image]=1&btns[video]=1&btns[file]=1&btns[info]=1&btns[fontfamily]=1&btns[fontsize]=1&btns[paragraph]=1&btns[insertcode]=1');
 		$this->assign('edit_content',$edit_content);
 		$this->view("reply_content");
 	}
@@ -277,7 +277,7 @@ class reply_control extends phpok_control
 		$this->assign("rs",$rs);
 		$title_rs = $this->model('list')->get_one($rs["tid"]);
 		$this->assign("title_rs",$title_rs);
-		$edit_content = form_edit('content',$rs['adm_content'],'editor','width=680&height=180&etype=simple&btn_image=1');
+		$edit_content = form_edit('content',$rs['adm_content'],'editor','width=680&height=300&btns[image]=1&btns[video]=1&btns[file]=1&btns[info]=1&btns[fontfamily]=1&btns[fontsize]=1&btns[paragraph]=1&btns[insertcode]=1');
 		$this->assign('edit_content',$edit_content);
 		$this->view("reply_adm");
 	}

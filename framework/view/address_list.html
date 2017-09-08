@@ -1,0 +1,73 @@
+<!-- include tpl=head -->
+<div class="tips">
+	<div class="left">
+		<form method="post" action="{url ctrl=address/}" style="padding:0;margin:0;">
+		<ul class="layout" style="margin:7px 5px 2px -5px;">
+			<li>
+				<select name="type">
+				<option value="fullname">{lang姓名}</option>
+				<option value="mobile"{if $type == 'mobile'} selected{/if}>{lang手机号}</option>
+				<option value="tel"{if $type == 'tel'} selected{/if}>{lang电话}</option>
+				<option value="email"{if $type == 'email'} selected{/if}>{lang邮箱}</option>
+				<option value="country"{if $type == 'country'} selected{/if}>{lang国家}</option>
+				<option value="province"{if $type == 'country'} selected{/if}>{lang省份}</option>
+				<option value="city"{if $type == 'country'} selected{/if}>{lang城市}</option>
+				<option value="county"{if $type == 'country'} selected{/if}>{lang县区}</option>
+				<option value="address"{if $type == 'country'} selected{/if}>{lang详细地址}</option>
+				<option value="user_id"{if $type == 'user_id'} selected{/if}>{lang会员ID}</option>
+				<option value="user"{if $type == 'user'} selected{/if}>{lang会员账号}</option>
+				</select>
+			</li>
+			<li>
+				<input type="text" name="keywords" value="{$keywords}" class="default" style="width:200px" />
+			</li>
+			<li>
+				<div class="button-group">
+					<input type="submit" class="phpok-btn" value="{lang搜索}" />
+					<input type="button" value="{lang查看全部地址}" onclick="$.phpok.go('{url ctrl=address/}')" class="phpok-btn" />
+					<input type="button" value="{lang添加新地址}" onclick="$.phpok.go('{url ctrl=address func=set/}')" class="phpok-btn" />
+				</div>
+			</li>
+		</ul>
+		</form>
+	</div>
+</div>
+
+<div class="list">
+<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<tr>
+	<th width="50px">{langID}</th>
+	<th>{lang会员账号}</th>
+	<th>{lang收件人}</th>
+	<th>{lang手机号}</th>
+	<th>{lang电话}</th>
+	<th>{lang邮箱}</th>
+	<th width="120"></th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<tr>
+	<td class="center" rowspan="2">{$value.id}</td>
+	<td class="center" rowspan="2" style="border-right:1px solid #efefef;">{$value.user}</td>
+	<td class="center" style="padding:5px;">{$value.fullname}</td>
+	<td class="center">{$value.mobile}</td>
+	<td class="center">{$value.tel}</td>
+	<td class="center">{$value.email}</td>
+	<td class="center" rowspan="2">
+		<!-- if $popedom.modify || $popedom.delete -->
+		
+		
+		<div class="button-group">
+			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=address func=set id=$value.id/}')" class="phpok-btn" /><!-- /if -->
+			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="address_delete('{$value.id}')" class="phpok-btn" /><!-- /if -->
+		</div>
+		<!-- /if -->
+	</td>
+</tr>
+<tr>
+	<td colspan="4" style="text-align:left;border-right:0;border-left:0;padding:5px;">{$value.country}/{$value.province}/{$value.city}/{$value.county} {$value.address}</td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<!-- if $pagelist --><div class="table"><!-- include tpl=pagelist --></div><!-- /if -->
+<!-- include tpl=foot -->

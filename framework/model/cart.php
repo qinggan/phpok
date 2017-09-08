@@ -91,12 +91,8 @@ class cart_model_base extends phpok_model
 			return false;
 		}
 		foreach($rslist AS $key=>$value){
-			if($value['tid'] && $value['ext']){
-				$sql = "SELECT a.title,v.title content,v.val FROM ".$this->db->prefix."list_attr l ";
-				$sql.= "LEFT JOIN ".$this->db->prefix."attr a ON(l.aid=a.id AND a.site_id=".$this->site_id.") ";
-				$sql.= "LEFT JOIN ".$this->db->prefix."attr_values v ON(l.vid=v.id AND l.aid=v.aid) ";
-				$sql.= "WHERE l.tid='".$value['tid']."' AND l.id IN(".$value['ext'].") ";
-				$value['_attrlist'] = $this->db->get_all($sql);
+			if($value['ext']){
+				$value['_attrlist'] = $this->product_ext_to_array($value['ext'],$value['tid']);
 				$rslist[$key] = $value;
 			}
 		}
@@ -151,21 +147,34 @@ class cart_model_base extends phpok_model
 			return false;
 		}
 		$this->update_cart_time($data['cart_id']);
+		$data['ext'] = $this->product_ext_to_string($data['ext']);
 		return $this->db->insert_array($data,'cart_product');
 	}
 
+	/**
+	 * 更新购物车操作时间
+	 * @参数 $cart_id 购物车ID
+	**/
 	public function update_cart_time($cart_id)
 	{
 		$sql = "UPDATE ".$this->db->prefix."cart SET addtime='".$this->time."' WHERE id='".$cart_id."'";
 		return $this->db->query($sql);
 	}
 
+	/**
+	 * 取得购物车下的产品数量
+	 * @参数 $cart_id 购物车ID
+	**/
 	public function total($cart_id)
 	{
 		$sql = "SELECT SUM(qty) FROM ".$this->db->prefix."cart_product WHERE cart_id='".$cart_id."'";
 		return $this->db->count($sql);
 	}
 
+	/**
+	 * 删除购物车信息
+	 * @参数 $cart_id 购物车ID
+	**/
 	public function delete($cart_id)
 	{
 		$sql = "DELETE FROM ".$this->db->prefix."cart WHERE id='".$cart_id."'";
@@ -175,23 +184,32 @@ class cart_model_base extends phpok_model
 		return true;
 	}
 
+	/**
+	 * 删除产品
+	 * @参数 $id 主键ID，这里说明下，不是产品ID
+	**/
 	public function delete_product($id)
 	{
 		$sql = "DELETE FROM ".$this->db->prefix."cart_product WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
 
+	/**
+	 * 清空超过24小时的购物车
+	**/
 	public function clear_expire_cart()
 	{
 		$oldtime = $this->time - 24 * 60 *60;
-		$sql = "SELECT id FROM ".$this->db->prefix."cart WHERE addtime<".$oldtime;
-		$rslist = $this->db->get_all($sql,'id');
-		if(!$rslist) return true;
-		$idlist = array_keys($rslist);
-		$idstring = implode(',',$idlist);
-		$sql = "DELETE FROM ".$this->db->prefix."cart_product WHERE cart_id IN(".$idstring.")";
+		$sql = "DELETE FROM ".$this->db->prefix."cart WHERE addtime<".$oldtime;
 		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."cart WHERE id IN(".$idstring.")";
+		$sql = "SELECT id FROM ".$this->db->prefix."cart LIMIT 1";
+		$tmp = $this->db->get_one($sql);
+		if($tmp){
+			$sql = "DELETE FROM ".$this->db->prefix."cart_product WHERE cart_id NOT IN(SELECT id FROM ".$this->db->prefix."cart)";
+			$this->db->query($sql);
+			return true;
+		}
+		$sql = "TRUNCATE ".$this->db->prefix."cart_product";
 		$this->db->query($sql);
 		return true;
 	}
@@ -226,7 +244,6 @@ class cart_model_base extends phpok_model
 		}
 		$zone_id = $this->model('freight')->zone_id($freight['id'],$province,$city);
 		if(!$zone_id){
-			echo "<pre>".print_r(5,true)."</pre>";
 			return false;
 		}
 		$val = $this->model('freight')->price_one($zone_id,$param_val);
@@ -239,5 +256,86 @@ class cart_model_base extends phpok_model
 		}
 		return false;
 	}
+
+	/**
+	 * 购物车产品属性扩展数组数据格式化为字串，如果值都是数字，则用英文逗号隔开，非数字则用serialize序列化
+	 * @参数 $data 要格式化的内容，必须是数组
+	**/
+	public function product_ext_to_string($data='')
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		$is_num = true;
+		foreach($data as $key=>$value){
+			if(!is_numeric($key) || !is_numeric($value)){
+				$is_num = false;
+				break;
+			}
+		}
+		if($is_num){
+			return implode(",",$data);
+		}
+		return serialize($data);
+	}
+
+	/**
+	 * 购物车产品中的扩展属性数据转化为数组，多数字组合则读取产品属性表，反之则用unserialize反序列化
+	 * @参数 $data 要格式化的数据，字串
+	 * @参数 $tid 产品ID（仅限数据为数字及英文逗号组成）
+	**/
+	public function product_ext_to_array($data='',$tid=0)
+	{
+		if(!$data || ($data && is_array($data))){
+			return false;
+		}
+		if(strpos($data,':{') !== false){
+			$list = unserialize($data);
+			if(!$list){
+				return false;
+			}
+			$tmparray = array();
+			foreach($list as $key=>$value){
+				$tmp = array('title'=>$key,'val'=>$value,'content'=>$value);
+				$tmparray[] = $tmp;
+			}
+			return $tmparray;
+		}
+		if(!$tid){
+			return explode(",",$data);
+		}
+		$sql = "SELECT a.title,v.title content,v.val FROM ".$this->db->prefix."list_attr l ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."attr a ON(l.aid=a.id AND a.site_id=".$this->site_id.") ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."attr_values v ON(l.vid=v.id AND l.aid=v.aid) ";
+		$sql.= "WHERE l.tid='".$tid."' AND l.id IN(".$data.") ";
+		return $this->db->get_all($sql);
+	}
+
+	/**
+	 * 产品属性参数比较，如果相同返回 true，不同返回 false
+	 * @参数 $data 属性1
+	 * @参数 $check 属性2
+	**/
+	public function product_ext_compare($data,$check)
+	{
+		if(!$data && !$check){
+			return true;
+		}
+		if(($data && !$check) ||(!$data && $check)){
+			return false;
+		}
+		if(is_string($data)){
+			$data = $this->product_ext_to_array($data);
+		}
+		if(is_string($check)){
+			$check = $this->product_ext_to_array($check);
+		}
+		$status = false;
+		$diff1 = array_diff($data,$check);
+		$diff2 = array_diff($check,$data);
+		if($diff1 || $diff2){
+			return false;
+		}
+		return true;
+	}
 }
-?>

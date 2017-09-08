@@ -27,14 +27,6 @@ function module_field_add(id,fid)
 {
 	var url = get_url("module","field_add") + "&id="+id;
 	url += "&fid="+fid;
-	var title = $("#field_title_"+fid).val();
-	if(title){
-		url += "&title="+$.str.encode(title);
-	}
-	var note = $("#field_note_"+fid).val();
-	if(note){
-		url += "&note="+$.str.encode(note);
-	}
 	var rs = $.phpok.json(url);
 	if(rs.status == "ok"){
 		$.phpok.reload();
@@ -117,7 +109,7 @@ function module_field_create(id)
 	$.dialog.open(url,{
 		'title':'添加字段',
 		'lock':true,
-		'width':'600px',
+		'width':'650px',
 		'height':'70%',
 		'resize':false,
 		'drag':false,

@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/form_control.php
-	Note	: 控制器管理
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-03-12 17:45
-***********************************************************/
+/**
+ * 自定义表单的字段异步处理
+ * @package phpok\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年06月13日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class form_control extends phpok_control
 {
@@ -18,35 +21,35 @@ class form_control extends phpok_control
 	public function config_f()
 	{
 		$id = $this->get("id");
-		if(!$id)
-		{
+		if(!$id){
 			exit(P_Lang('未指定ID'));
 		}
-		$eid = $this->get("eid","int");
+		$eid = $this->get("eid");
 		$etype = $this->get("etype");
-		if(!$etype) $etype = "ext";
+		if(!$etype){
+			$etype = "ext";
+		}
 		if($eid) {
-			if($etype == "fields")
-			{
+			if($etype == "fields"){
 				$rs = $this->model('fields')->get_one($eid);
-			}
-			elseif($etype == "module")
-			{
+				if($rs && $rs['ext'] && is_array($rs['ext'])){
+					foreach($rs['ext'] as $key=>$value){
+						$rs[$key] = $value;
+					}
+				}
+			}elseif($etype == "module"){
 				$rs = $this->model('module')->field_one($eid);
-			}
-			elseif($etype == "user")
-			{
+			}elseif($etype == "user"){
 				$rs = $this->model('user')->field_one($eid);
-			}
-			else
-			{
+			}else{
 				$rs = $this->model('ext')->get_one($eid);
 			}
-			if($rs["ext"])
-			{
+			if($rs["ext"] && is_string($rs['ext'])){
 				$ext = unserialize($rs["ext"]);
-				foreach($ext AS $key=>$value)
-				{
+				if(!$ext){
+					$ext = array();
+				}
+				foreach($ext AS $key=>$value){
 					$rs[$key] = $value;
 				}
 			}
@@ -55,4 +58,3 @@ class form_control extends phpok_control
 		$this->lib('form')->config($id);
 	}
 }
-?>

@@ -71,29 +71,20 @@ $(document).ready(function(){
 </div>
 <!-- /if -->
 <!-- if $fields_list -->
-<div class="tips">
-	<div class="action"><a href="javascript:top.$.win('字段维护','{url ctrl=fields func=set/}')" title="创建常用字段">创建常用字段</a></div>
-	常见字段快速添加</div>
-<div class="list2">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th class="id">ID</th>
-	<th class="lft" style="width:130px">&nbsp;字段名</th>
-	<th class="lft" style="width:150px">&nbsp;名称</th>
-	<th class="lft">&nbsp;备注</th>
-	<th class="lft w30">添加</th>
-</tr>
-<!-- foreach($fields_list AS $key=>$value) -->
-<tr{if $fields_list_id.num%2 == ""} class="list"{/if} title="{$value.note}">
-	<td class="center">{$value.id}</td>
-	<td><label for="field_{$value.id}">{$value.identifier}</label></td>
-	<td><input type="text" id="field_title_{$value.id}" name="field_title_{$value.id}" value="{$value.title}" style="width:150px" /></td>
-	<td><input type="text" id="field_note_{$value.id}" name="field_note_{$value.id}" value="{$value.note}" style="width:430px" /></td>
-	<td><a class="icon add" onclick="module_field_add('{$id}','{$value.id}')" title="添加：{$value.identifier}"></a></td>
-</tr>
-<!-- /foreach -->
-</table>
-</div>
+<div class="tips">常见字段快速添加</div>
+<ul class="layout fields_quick_add">
+	<!-- loop from=$fields_list key=$key value=$value id=$tmpid -->
+	<li>
+		<div class="left">
+			<div class="title">{$value.title}</div>
+			<div class="gray i">{$value.identifier}</div>
+		</div>
+		<div class="right">
+			<input type="button" value="{lang添加}" onclick="module_field_add('{$id}','{$value.identifier}')" class="phpok-btn" />
+		</div>
+	</li>
+	<!-- /loop -->
+</ul>
 <!-- /if -->
 
 <!-- inc:foot -->

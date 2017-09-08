@@ -92,7 +92,12 @@ class rewrite_model extends rewrite_model_base
 				if($matches && $matches[3] && $matches[3][0]){
 					$title = trim($matches[3][0]).'('.ucwords($id).')';
 				}else{
-					$title = ucwords($id);
+					preg_match_all('/\/\*\*\s+\*(.+)\n\s+\*\s+@package.+/isU',$info,$matches);
+					if($matches && $matches[1] && $matches[1][0]){
+						$title = trim($matches[1][0]).'('.ucwords($id).')';
+					}else{
+						$title = ucwords($id);
+					}
 				}
 				$rslist[$id] = $title;
 			}

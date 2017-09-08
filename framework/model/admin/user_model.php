@@ -108,6 +108,31 @@ class user_model extends user_model_base
 		}
 		return $rs;
 	}
-}
 
-?>
+	/**
+	 * 会员自定义字段排序
+	**/
+	public function user_next_taxis()
+	{
+		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."user_fields WHERE taxis<255";
+		$rs = $this->db->get_one($sql);
+		return $this->return_next_taxis($rs);
+	}
+
+	/**
+	 * 保存扩展字段数据
+	 * @参数 $data 一维数组
+	 * @参数 $id 主键ID，留空或为0表示写入新的
+	**/
+	public function fields_save($data,$id=0)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		if($id){
+			return $this->db->update_array($data,"user_fields",array("id"=>$id));
+		}else{
+			return $this->db->insert_array($data,"user_fields");
+		}
+	}	
+}

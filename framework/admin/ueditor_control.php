@@ -332,10 +332,10 @@ class ueditor_control extends phpok_control
 	//写入主题列表
 	public function info_f()
 	{
-		$pageurl = $this->url("uedit","info");
+		$pageurl = $this->url("ueditor","info");
 		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid) $pageid = 1;
-		$psize = 28;
+		$psize = 14;
 		$offset = ($pageid - 1) * $psize;
 		//读取所有项目
 		$projectlist = $this->model('project')->get_all_project($_SESSION['admin_site_id']);

@@ -69,18 +69,38 @@ function rand_click()
 </div>
 <div class="table">
 	<div class="title">
-		{lang网站LOGO}
+		{lang网站版LOGO}
 		<span class="note">{lang绑定网站的LOGO信息}</span></span>
 	</div>
 	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><input type="text" id="logo" name="logo" class="default" value="{$rs.logo}" /></td>
-			<td><input type="button" value="{lang选择}" onclick="phpok_pic('logo')" class="btn" /></td>
-			<td><input type="button" value="{lang预览}" onclick="phpok_pic_view('logo')" class="btn" /></td>
-			<td><input type="button" value="{lang清空}" onclick="$('#logo').val('');" class="btn" /></td>
-		</tr>
-		</table>
+		<ul class="layout">
+			<li><input type="text" id="logo" name="logo" class="default" value="{$rs.logo}" /></li>
+			<li>
+				<div class="button-group">
+					<input type="button" value="{lang选择}" onclick="phpok_pic('logo')" class="phpok-btn" />
+					<input type="button" value="{lang预览}" onclick="phpok_pic_view('logo')" class="phpok-btn" />
+					<input type="button" value="{lang清空}" onclick="$('#logo').val('');" class="phpok-btn" />
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang手机版LOGO}
+		<span class="note">{lang绑定网站的手机版Logo}</span></span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><input type="text" id="logo_mobile" name="logo_mobile" class="default" value="{$rs.logo_mobile}" /></li>
+			<li>
+				<div class="button-group">
+					<input type="button" value="{lang选择}" onclick="phpok_pic('logo_mobile')" class="phpok-btn" />
+					<input type="button" value="{lang预览}" onclick="phpok_pic_view('logo_mobile')" class="phpok-btn" />
+					<input type="button" value="{lang清空}" onclick="$('#logo_mobile').val('');" class="phpok-btn" />
+				</div>
+			</li>
+		</ul>
 	</div>
 </div>
 <div class="table">
@@ -90,7 +110,7 @@ function rand_click()
 	</div>
 	<div class="content">
 		<input type="text" id="api_code" name="api_code" class="default" value="{$rs.api_code}" />
-		<input type="button" value="{lang随机生成}" onclick="rand_click()" class="btn" />
+		<input type="button" value="{lang随机生成}" onclick="rand_click()" class="phpok-btn" />
 	</div>
 </div>
 <div class="table">
@@ -128,7 +148,7 @@ function rand_click()
 		<span class="note">{lang针对HTML里的Title属性进行优化，建议使用英文竖线分割开来，不超过80字}</span></span>
 	</div>
 	<div class="content">
-		<input type="text" id="seo_title" name="seo_title" class="long" value="{$rs.seo_title}" />
+		<input type="text" id="seo_title" name="seo_title" class="long100" value="{$rs.seo_title}" />
 	</div>
 </div>
 <div class="table">
@@ -137,7 +157,7 @@ function rand_click()
 		<span class="note">{lang简单明了用几个词来描述您的网站，多个词用英文逗号隔开}</span></span>
 	</div>
 	<div class="content">
-		<input type="text" id="seo_keywords" name="seo_keywords" class="long" value="{$rs.seo_keywords}" />
+		<input type="text" id="seo_keywords" name="seo_keywords" class="long100" value="{$rs.seo_keywords}" />
 	</div>
 </div>
 <div class="table">
@@ -145,7 +165,7 @@ function rand_click()
 		{langSEO摘要：}
 		<span class="note">{lang针对您的网站，简单描述其作用，目标群体，未来方向等信息，建议不超过100字}</span>
 	</div>
-	<div class="content"><textarea id="seo_desc" name="seo_desc" class="long">{$rs.seo_desc}</textarea></div>
+	<div class="content"><textarea id="seo_desc" name="seo_desc" class="long100">{$rs.seo_desc}</textarea></div>
 </div>
 </div>
 <input type="hidden" name="api" id="" value="0" />
@@ -187,6 +207,7 @@ function rand_click()
 			<option value="">{lang未安装风格包，请先安装}</option>
 			<!-- /if -->
 		</select>
+		<input type="button" value="自定义风格" onclick="$.admin_all.setting_style('{$rs.id}')" class="phpok-btn" />
 	</div>
 </div>
 <div class="table">
@@ -263,6 +284,7 @@ function rand_click()
 			</ul>
 		</div>
 	</div>
+	<!-- if $gateway_email -->
 	<div class="table">
 		<div class="title">
 			{lang邮件验证码模板：}<span class="note">{lang请配置好邮件验证码模板，不然系统无法支持邮件验证码登录}</span>
@@ -272,12 +294,14 @@ function rand_click()
 				<option value="">{lang请选择…}</option>
 				<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
 				<!-- if substr($value.identifier,0,4) != 'sms_' -->
-				<option value="{$value.identifier}"{if $rs.login_type_email == $value.identifier} selected{/if}>{lang模板：}{$value.title}</option>
+				<option value="{$value.identifier}"{if $rs.login_type_email == $value.identifier} selected{/if}>{lang模板：}{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
 				<!-- /if -->
 				<!-- /loop -->
 			</select>
 		</div>
 	</div>
+	<!-- /if -->
+	<!-- if $gateway_sms -->
 	<div class="table">
 		<div class="title">
 			{lang短信验证码模板：}<span class="note">{lang请配置好短信验证码模板，不然系统无法支持短信验证码登录}</span>
@@ -287,12 +311,13 @@ function rand_click()
 				<option value="">{lang请选择…}</option>
 				<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
 				<!-- if substr($value.identifier,0,4) == 'sms_' -->
-				<option value="{$value.identifier}"{if $rs.login_type_sms == $value.identifier} selected{/if}>模板：{$value.title}</option>
+				<option value="{$value.identifier}"{if $rs.login_type_sms == $value.identifier} selected{/if}>{lang短信模板：}{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
 				<!-- /if -->
 				<!-- /loop -->
 			</select>
 		</div>
 	</div>
+	<!-- /if -->
 </div>
 <div class="table">
 	<div class="title">
@@ -422,6 +447,7 @@ function insert_input(val)
 		</select>
 	</div>
 </div>
+
 
 </div>
 

@@ -287,12 +287,6 @@ function orderby_set(val)
 }
 
 function random_string(len) {
-　　len = len || 10;
-　　var $chars = 'abcdefhijkmnprstwxyz';
-　　var maxPos = $chars.length;
-　　var pwd = '';
-　　for (i = 0; i < len; i++) {
-　　　　pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
-　　}
-　　$("#identifier").val(pwd);
+	$("#identifier").val($.phpok.rand(len,'letter'));
+	return true;
 }

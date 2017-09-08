@@ -46,7 +46,7 @@ class file_lib
 		if(!$file){
 			return false;
 		}
-		if(strpos($file,"://") !== false){
+		if(strpos($file,"://") !== false && strpos($file,'file://') === false){
 			return $this->remote($file);
 		}
 		if(!file_exists($file)){
@@ -54,7 +54,7 @@ class file_lib
 		}
 		$this->read_count++;
 		
-		if($length){
+		if($length && is_numeric($length)){
 			$maxlength = $length;
 			if($filter){
 				$maxlength = $length + strlen($this->safecode);
@@ -71,7 +71,7 @@ class file_lib
 		if(!$content){
 			return false;
 		}
-		if($filter){
+		if($filter || (is_bool($length) && $length)){
 			$content = str_replace($this->safecode,'',$content);
 		}
 		return $content;
@@ -110,10 +110,10 @@ class file_lib
 	 * @参数 $file 保存的地址
 	 * @返回 true
 	**/
-	public function vim($content,$file)
+	public function vim($content,$file,$type="wb")
 	{
 		$this->make($file,"file");
-		$this->_write($content,$file,"wb");
+		$this->_write($content,$file,$type);
 		return true;
 	}
 
@@ -451,7 +451,7 @@ class file_lib
 		    header("Content-Length: ".$filesize);
 		}
 		$handle = fopen($file, "rb");
-		fseek($handle, $range);  
+		fseek($handle, $range);
 		set_time_limit(0);
 		while (!feof($handle)) {
 			print (fread($handle, 1024 * 8));

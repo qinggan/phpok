@@ -254,7 +254,7 @@ $(document).ready(function(){
 	</div>
 	<!-- /if -->
 	<!-- loop from=$extlist key=$key value=$value id=extlist_id -->
-	<div class="table clearfix">
+	<div class="table clearfix" id="form_html_{$value.identifier}">
 		<div class="title">
 			{$value.title}：
 			<span class="note">{$value.note}
@@ -272,10 +272,33 @@ $(document).ready(function(){
 	<!-- if $p_rs.is_tag -->
 	<div class="table">
 		<div class="title">
-			Tag标签
-			<span class="note">多个Tag用英文空格分开，最多不能超过10个</span>
+			{lang标签：}
+			<span class="note">{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}</span>
 		</div>
-		<div class="content"><input type="text" id="tag" name="tag" class='title' value='{$rs.tag}' /></div>
+		<div class="content">
+			<table width="100%">
+			<tr>
+				<td><input type="text" id="tag" name="tag" class='long' value='{$rs.tag}' style="width:100%;" /></td>
+				<td style="padding-left:10px;">
+					<div class="button-group">
+						<input type="button" value="{lang更多选择}" onclick="$.phpok_list.tag()" id="tag_more" class="phpok-btn" />
+						<input type="button" value="{lang清空}" onclick="$('input[name=tag]').val('')" class="phpok-btn" />
+					</div>
+				</td>
+			</tr>
+			<!-- if $tag_config.count && $taglist -->
+			<tr>
+				<td colspan="2">
+					<div class="button-group">
+						<!-- loop from=$taglist key=$key value=$value id=$tmpid -->
+						<input type="button" value="{$value.title}" onclick="$.phpok_list.tag_append(this.value,'{$tag_config.separator}')" class="phpok-btn" />
+						<!-- /loop -->
+					</div>
+				</td>
+			</tr>
+			<!-- /if -->
+			</table>
+		</div>
 	</div>
 	<!-- /if -->
 </div>
@@ -485,7 +508,7 @@ $(document).ready(function(){
 				<select id="_tmp_select_add" style="padding:3px">
 					<option value="">请选择扩展字段…</option>
 					<!-- loop from=$extfields key=$key value=$value -->
-					<option value="{$value.id}">{$value.title} - {$value.identifier}</option>
+					<option value="{$value.identifier}">{$value.title} - {$value.identifier}</option>
 					<!-- /loop -->
 				</select>
 			</div>
@@ -513,22 +536,4 @@ $(document).ready(function(){
 <div class="clear"></div>
 <div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" id="phpok_submit_{$pid}" /></div>
 </form>
-<script type="text/javascript">
-function win_resize()
-{
-	var width = $('.main .tips').width();
-	if(width>=1000){
-		var main1_width = width - 320;
-		$(".main1").css('width',main1_width+"px").css('float','left');
-		$(".main2").css('width','300px').css('float','right');
-	}else{
-		$(".main1,.main2").css('width',width+"px").css("float",'none');
-	}
-}
-$(document).ready(function(){
-	win_resize();
-	$(window).resize(win_resize);
-});
-</script>
-
-<!-- inc:foot -->
+<!-- include tpl=foot -->

@@ -1,4 +1,4 @@
-<!-- inc:head -->
+<!-- include tpl=head -->
 <script type="text/javascript">
 var optconfig = {
 	'width':'400px',
@@ -7,32 +7,33 @@ var optconfig = {
 	'group_id':'{$group_id}'
 }
 </script>
-<script type="text/javascript" src="{func add_js opt.js}"></script>
 <div class="tips">
-	您当前的位置：
-	<a href="{url ctrl=opt/}">选项维护</a>
-	&raquo; <a href="{url ctrl=opt func=list group_id=$group_id/}">选项组【<span class="red">{$rs.title}</span>】</a>
-	<!-- $lead_list AS $key=>$value -->
+	{lang您当前的位置：}
+	<a href="{url ctrl=opt/}">{lang选项维护}</a>
+	&raquo; <a href="{url ctrl=opt func=list group_id=$group_id/}">{lang选项组}【<span class="red">{$rs.title}</span>】</a>
+	<!-- loop from=$lead_list key=$key value=$value id=$tmpid -->	
 	&raquo; <a href="{url ctrl=opt func=list pid=$value.id/}"><span class="red">{$value.title}</span></a>
-	<!-- end -->
-	&raquo; 内容维护
+	<!-- /loop -->
+	&raquo; {lang内容维护}
 	<!-- if $popedom.set -->
-	<div class="action"><a href="javascript:$.phpok_opt(optconfig).create();void(0);">{lang添加内容}</a></div>
+	<div class="action"><a href="javascript:$.admin_opt.opt_import('{$group_id}','{$pid}',false);void(0);">{lang导入}</a></div>
+	<!-- if $_export --><div class="action"><a href="javascript:$.admin_opt.opt_export('{$group_id}','{$pid}',false);void(0);">{lang导出}</a></div><!-- /if -->
+	<div class="action"><a href="javascript:$.phpok_opt(optconfig).create({'okVal':'{lang添加}'});void(0);">{lang添加内容}</a></div>
 	<!-- /if -->
 </div>
 <div id="html-edit-content" class="hide">
 	<div class="table inline">
-		<div class="title"><span class="red">*</span> 显示：</div>
+		<div class="title"><span class="red">*</span> {lang显示：}</div>
 		<div class="content"><input type="text" name="title" id="opt_title" /></div>
 		<div class="clear"></div>
 	</div>
 	<div class="table inline">
-		<div class="title"><span class="red">*</span> 值：</div>
+		<div class="title"><span class="red">*</span> {lang值：}</div>
 		<div class="content"><input type="text" name="val" id="opt_val" /></div>
 		<div class="clear"></div>
 	</div>
 	<div class="table inline">
-		<div class="title">排序：</div>
+		<div class="title">{lang排序：}</div>
 		<div class="content"><input type="text" name="taxis" id="opt_taxis" class="short" /></div>
 		<div class="clear"></div>
 	</div>
@@ -42,10 +43,10 @@ var optconfig = {
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
 	<th class="id">ID</th>
-	<th class="lft">值</th>
-	<th class="lft">显示</th>
-	<th width="80">排序</th>
-	<th width="180"></th>
+	<th class="lft">{lang值}</th>
+	<th class="lft">{lang显示}</th>
+	<th width="80">{lang排序}</th>
+	<th></th>
 </tr>
 <!-- loop from=$rslist key=$key value=$value -->
 <tr{if $rslist_id.num%2 == ""} class="list"{/if} id="opt_{$value.id}">
@@ -57,15 +58,17 @@ var optconfig = {
 		<div class="button-group">
 			<input type="button" value="{lang子项}" onclick="$.phpok.go('{url ctrl=opt func=list pid=$value.id/}')" class="phpok-btn" />
 			<!-- if $popedom.set -->
-			<input type="button" value="{lang编辑}" onclick="$.phpok_opt(optconfig).edit({$value.id})" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="delete_opt({$value.id})" class="phpok-btn" />
+			<input type="button" value="{lang导入}" onclick="$.admin_opt.opt_import('{$group_id}','{$value.id}')" class="phpok-btn" />
+			<!-- if $value._export --><input type="button" value="{lang导出}" onclick="$.admin_opt.opt_export('{$group_id}','{$value.id}',true)" class="phpok-btn" /><!-- /if -->
+			<input type="button" value="{lang编辑}" onclick="$.phpok_opt(optconfig).edit({$value.id},{'okVal':'{lang修改}'})" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="$.admin_opt.opt_delete({$value.id},'{$value.title}')" class="phpok-btn" />
 			<!-- /if -->
 		</div>
 	</td>
 </tr>
-<!-- /foreach -->
+<!-- /loop -->
 </table>
 </div>
-<!-- inc:pagelist -->
+<!-- include tpl=pagelist -->
 
-<!-- inc:foot -->
+<!-- include tpl=foot -->

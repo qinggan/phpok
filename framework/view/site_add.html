@@ -1,0 +1,53 @@
+<!-- include tpl=head_open -->
+<script type="text/javascript">
+function save()
+{
+	var $parent = $.dialog.opener;
+	var url = get_url("site",'addok');
+	var title = $("#title").val();
+	if(!title){
+		$.dialog.alert("{lang网站名称不能为空}");
+		return false;
+	}
+	var domain = $("#domain").val();
+	if(!domain){
+		$.dialog.alert("{lang域名不能为空}");
+		return false;
+	}
+	var url = get_url('site','addok','title='+$.str.encode(title)+"&domain="+$.str.encode(domain));
+	$.phpok.json(url,function(rs){
+		if(rs.status){
+			$.dialog.alert("{lang网站添加成功}",function(){
+				$parent.$.phpok.reload();
+			});
+		}else{
+			if(!rs.info) rs.info = "{lang创建失败}";
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+<form method="post" action="javascript:void(0)" onsubmit="return false;">
+<div class="table">
+	<div class="title">
+		{lang网站名称：}
+		<span class="note">{lang设置网站的名称}</span>
+	</div>
+	<div class="content">
+		<input type="text" id="title" name="title" class="default" />
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		{lang网站主域名：}
+		<span class="note">{lang设置访问此网站的域名，此项不能为空}</span>
+	</div>
+	<div class="content">
+		<input type="text" id="domain" name="domain" class="default" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_open -->

@@ -12,13 +12,13 @@ function save()
 	var rs = $.phpok.json(url);
 	if(rs.status == 'ok'){
 		if(!icon){
-			obj.$("#icon_status_{$id}").val('{lang隐藏}');
+			obj.$("#icon_status_{$id}").val('{lang隐藏}').attr("data-icon",'');
 			obj.$("#icon_{$id}").removeClass().hide();
 			$.dialog.close();
 			return true;
 		}
-		obj.$("#icon_status_{$id}").val('{lang显示}');
-		obj.$("#icon_{$id}").removeClass().addClass('icon-'+icon).show();
+		obj.$("#icon_status_{$id}").val('{lang显示}').attr("data-icon",icon);
+		obj.$("#icon_{$id}").removeClass().addClass('hand').addClass('icon-'+icon).show();
 		$.dialog.close();
 		return true;
 	}

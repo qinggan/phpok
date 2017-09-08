@@ -34,72 +34,98 @@ class page_lib
 		$this->total = 0;
 	}
 
-	public function pageid($pageid)
+	public function pageid($pageid=1)
 	{
 		$this->pageid = $pageid;
+		return $this->pageid;
 	}
 
 	public function num($num=1)
 	{
 		$this->num = $num;
+		return $this->num;
 	}
 
 	public function half($half=5)
 	{
 		$this->half = $half;
+		return $this->half;
 	}
 
 	public function psize($psize=20)
 	{
 		$this->psize = $psize;
+		return $this->psize;
 	}
 
 	public function always($always=0)
 	{
 		$this->always = $always;
+		return $this->always;
 	}
 
 	public function add_up($add_up="")
 	{
-		$this->add_up = $add_up;
+		if($add_up){
+			$this->add_up = $add_up;
+		}
+		return $this->add_up;
 	}
 
-	public function home_str($title)
+	public function home_str($title='')
 	{
-		$this->home_str = $title;
+		if($title){
+			$this->home_str = $title;
+		}
+		return $this->home_str;
 	}
 
-	public function prev_str($title)
+	public function prev_str($title='')
 	{
-		$this->prev_str = $title;
+		if($title){
+			$this->prev_str = $title;
+		}
+		return $this->prev_str;
 	}
 
-	public function next_str($title)
+	public function next_str($title='')
 	{
-		$this->next_str = $title;
+		if($title){
+			$this->next_str = $title;
+		}
+		return $this->next_str;
 	}
 
-	public function last_str($title)
+	public function last_str($title='')
 	{
-		$this->last_str = $title;
+		if($title){
+			$this->last_str = $title;
+		}
+		return $this->last_str;
 	}
 
-	public function opt_str($title)
+	public function opt_str($title='')
 	{
-		$this->opt_str = $title;
+		if($title){
+			$this->opt_str = $title;
+		}
+		return $this->opt_str;
 	}
 
 	public function url_format($str='')
 	{
 		if($str){
-			$list = explode("=",$str);
-			if($list[1]){
-				$this->url_format = $list[1];
-				$this->url_cut = $list[0];
-			}else{
-				$this->url_format = $list[0];
-			}
+			$this->url_format = $str;
 		}
+		return $this->url_format;
+	}
+
+	public function url_cut($val='')
+	{
+		if($val){
+			$this->url_cut = $val;
+		}
+		return $this->url_cut;
 	}
 
 	private function _page_rewrite($url,$total,$num=0,$psize=0,$total_page=0)

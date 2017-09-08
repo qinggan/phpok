@@ -27,7 +27,7 @@ if($project['etpl_admin']){
 	$this->gateway('type','email');
 	$this->gateway('param','default');
 	$tpl = $this->model('email')->tpl($project['etpl_admin']);
-	$condition = "email!='' AND if_system=1";
+	$condition = "email!='' AND if_system=1 AND status=1";
 	$admin = $this->model('admin')->get_list($condition,0,1);
 	if($tpl && $admin){
 		$admin = current($admin);

@@ -85,7 +85,7 @@ class email_lib
 			$this->obj->FromName = $app->lib('string')->charset($this->obj->FromName,"UTF-8","GBK");
 		}
 		$this->obj->Subject = $title;
-		$this->obj->MsgHTML($content);
+		$this->obj->MsgHTML(stripslashes($content));
 		foreach($account as $key=>$value){
 			//如果管理员邮箱和要发送的邮箱是一样的
 			if($this->smtp_admin == $value['email']){
@@ -143,7 +143,7 @@ class email_lib
 			$this->obj->FromName = $app->lib('string')->charset($this->obj->FromName,"UTF-8","GBK");
 		}
 		$this->obj->Subject = $subject;
-		$this->obj->MsgHTML($content);
+		$this->obj->MsgHTML(stripslashes($content));
 		$sendto_array = explode(";",$sendto);
 		if(count($sendto_array)<2){
 			if(!$user_name){

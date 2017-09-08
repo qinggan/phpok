@@ -1,7 +1,7 @@
 <!-- include tpl=head highlight=1 css="css/index.css" -->
 <!-- php:$list = phpok('picplayer') -->
 <!-- if $list.total -->
-<div class="banner">
+<div class="banner" style="margin-bottom:20px;">
 	<div class="bd">
 		<ul>
 			<!-- loop from=$list.rslist key=$key value=$value -->
@@ -48,7 +48,7 @@ $(document).ready(function(){
 </div>
 <div class="plist">
 	<!-- php:$list = phpok('new_products') -->
-	<h3>{$list.project.title}</h3>
+	<h3><span>{$list.project.title}</span></h3>
 	<div class="prolist">
 	<ul>
 		<!-- loop from=$list.rslist key=$key value=$value -->

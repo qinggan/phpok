@@ -28,7 +28,11 @@ class usercp_control extends phpok_control
 	public function index_f()
 	{
 		$this->assign('rs',$this->user);
-		$this->view('usercp');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp';
+		}
+		$this->view($tplfile);
 	}
 
 	//修改个人资料
@@ -65,13 +69,21 @@ class usercp_control extends phpok_control
 		}
 		$this->assign("rs",$rs);
 		$this->assign("group_rs",$group_rs);
-		$this->view("usercp_info");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_info';
+		}
+		$this->view($tplfile);
 	}
 
 	//修改密码
 	public function passwd_f()
 	{
-		$this->view("usercp_passwd");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_passwd';
+		}
+		$this->view($tplfile);
 	}
 
 	//修改邮箱
@@ -81,7 +93,11 @@ class usercp_control extends phpok_control
 		//判断后台是否配置好第三方网关
 		$sendemail = $this->model('gateway')->get_default('email') ? true : false;
 		$this->assign('sendemail',$sendemail);
-		$this->view("usercp_email");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_email';
+		}
+		$this->view($tplfile);
 	}
 
 	//修改手机
@@ -90,7 +106,11 @@ class usercp_control extends phpok_control
 		$this->assign('rs',$this->user);
 		$sendsms = $this->model('gateway')->get_default('sms') ? true : false;
 		$this->assign('sendsms',$sendsms);
-		$this->view("usercp_mobile");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_mobile';
+		}
+		$this->view($tplfile);
 	}
 
 	//发票管理
@@ -201,7 +221,10 @@ class usercp_control extends phpok_control
 			$this->assign("rslist",$list['rslist']);
 		}
 		if(!$this->tpl->check_exists($tplfile)){
-			$tplfile = "usercp_list";
+			$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+			if(!$tplfile){
+				$tplfile = 'usercp_list';
+			}
 		}
 		$this->view($tplfile);
 	}
@@ -209,12 +232,16 @@ class usercp_control extends phpok_control
 	//收货地址管理
 	public function address_f()
 	{
-		$rslist = $this->model('user')->address($_SESSION['user_id']);
+		$rslist = $this->model('user')->address_all($this->session->val('user_id'));
 		if($rslist){
 			$this->assign('rslist',$rslist);
 			$this->assign('total',count($rslist));
 		}
-		$this->view("usercp_address");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_address';
+		}
+		$this->view($tplfile);
 	}
 
 	public function address_setting_f()
@@ -232,7 +259,11 @@ class usercp_control extends phpok_control
 		}
 		$info = form_edit('pca',array('p'=>$rs['province'],'c'=>$rs['city'],'a'=>$rs['county']),'pca');
 		$this->assign('pca_rs',$info);
-		$this->view('usercp_address_setting');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,'address2');
+		if(!$tplfile){
+			$tplfile = 'usercp_address_setting';
+		}
+		$this->view($tplfile);
 	}
 
 	public function fav_f()
@@ -254,13 +285,21 @@ class usercp_control extends phpok_control
 			$this->assign('pageid',$pageid);
 			$this->assign('total',$total);
 		}
-		$this->view('usercp_fav');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_fav';
+		}
+		$this->view($tplfile);
 	}
 
 	public function avatar_f()
 	{
 		$this->assign('rs',$this->user);
-		$this->view('usercp_avatar');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_avatar';
+		}
+		$this->view($tplfile);
 	}
 
 	public function avatar_cut_f()
@@ -340,9 +379,46 @@ class usercp_control extends phpok_control
 		return $thumb_image_name;
 	}
 
+	/**
+	 * 查看会员的推广链及推广统计
+	**/
 	public function introducer_f()
 	{
-		$this->view('usercp_introducer');
+		$vlink = $this->url("index","link","uid=".$this->session->val('user_id'));
+		$this->assign('vlink',$vlink);
+		//取得推荐人列表
+		$pageid = $this->get($this->config['pageid'],'int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$monthlist = $this->model('user')->stat_relation($this->session->val('user_id'));
+		if($monthlist){
+			$this->assign('monthlist',$monthlist);
+		}
+		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
+		$month = $this->get('month');
+		$pageurl = $this->url('usercp','introducer');
+		$condition = '';
+		if($month && strlen($month) == 6 && is_numeric($month)){
+			$condition = "FROM_UNIXTIME(dateline,'%Y%m')='".$month."'";
+			$this->assign('month',$month);
+			$pageurl .= "&month=".$month;
+		}
+		$total = $this->model('user')->count_relation($this->session->val('user_id'),$condition);
+		if($total && $total>0){
+			$rslist = $this->model('user')->list_relation($this->session->val('user_id'),$offset,$psize,$condition);
+			$this->assign('psize',$psize);
+			$this->assign('offset',$offset);
+			$this->assign('pageid',$pageid);
+			$this->assign('total',$total);
+			$this->assign('pageurl',$pageurl);
+			$this->assign('rslist',$rslist);
+		}
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_introducer';
+		}
+		$this->view($tplfile);
 	}
 
 	public function wealth_f()
@@ -357,6 +433,10 @@ class usercp_control extends phpok_control
 			$rslist[$key] = $value;
 		}
 		$this->assign('rslist',$rslist);
-		$this->view('usercp_wealth');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_wealth';
+		}
+		$this->view($tplfile);
 	}
 }

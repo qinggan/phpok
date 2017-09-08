@@ -115,6 +115,9 @@ function phpok_page($url,$total,$num=0,$psize=20)
 	if($list['rewrite']){
 		$GLOBALS['app']->lib('page')->url_format($list['rewrite']);
 	}
+	if($list['cut']){
+		$GLOBALS['app']->lib('page')->url_cut($list['cut']);
+	}
 	if($num<1){
 		$num = 1;
 	}
@@ -419,4 +422,28 @@ function phpok_txt($file,$pageid=0,$type='txt')
 	}
 }
 
-
+/**
+ * 生成 Token 或解析 Token，一个页面仅允许一个 Token，请注意使用
+ * @参数 data 要加密的数据，为空表示解密
+**/
+function phpok_token($data='')
+{
+	if(!$GLOBALS['app']->site['api_code']){
+		return false;
+	}
+	$GLOBALS['app']->lib('token')->keyid($GLOBALS['app']->site['api_code']);
+	if($data){
+		$info = $GLOBALS['app']->lib('token')->encode($data);
+		$GLOBALS['app']->assign('token',$info);
+		return $info;
+	}
+	$getid = $GLOBALS['app']->config['token_id'] ? $GLOBALS['app']->config['token_id'] : 'token';
+	if(!$getid){
+		$getid = 'token';
+	}
+	$token = $GLOBALS['app']->get($getid);
+	if(!$token){
+		return false;
+	}
+	return $GLOBALS['app']->lib('token')->decode($token);	
+}

@@ -17,15 +17,18 @@ class tag_control extends phpok_control
 
 	function index_f()
 	{
-		//查询
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'tag';
+		}
 		$title = $this->get('title');
 		if(!$title){
-			$this->view('tag');
+			$this->view($tplfile);
 			exit;
 		}
 		$rs = $this->model('tag')->get_one($title,'title',$this->site['id']);
 		if(!$rs){
-			$this->view('tag');
+			$this->view($tplfile);
 			exit;
 		}
 		$this->model('tag')->add_hits($rs['id']);
@@ -40,7 +43,7 @@ class tag_control extends phpok_control
 		$offset = ($pageid-1) * $psize;
 		$idlist = $this->model('tag')->id_list($rs['id'],$offset,$psize);
 		if(!$idlist){
-			$this->view('tag');
+			$this->view($tplfile);
 			exit;
 		}
 		$rslist = false;
@@ -70,7 +73,7 @@ class tag_control extends phpok_control
 		$this->assign("psize",$psize);
 		$this->assign("keywords",$title);
 		$this->assign("rs",$rs);
-		$this->view('tag');
+		$this->view($tplfile);
 	}
 }
 ?>

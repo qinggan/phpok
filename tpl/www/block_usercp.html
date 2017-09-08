@@ -7,6 +7,7 @@
 		<li{if $sys.func == 'passwd'} class="hover"{/if}><a href="{url ctrl=usercp func=passwd/}" title="修改密码">修改密码</a></li>
 		<li{if $sys.func == 'mobile'} class="hover"{/if}><a href="{url ctrl=usercp func=mobile/}" title="修改手机">修改手机</a></li>
 		<li{if $sys.func == 'email'} class="hover"{/if}><a href="{url ctrl=usercp func=email/}" title="修改邮箱">修改邮箱</a></li>
+		<li{if $sys.func == 'address'} class="hover"{/if}><a href="{url ctrl=usercp func=address/}" title="会员地址库">会员地址库</a></li>
 		<li{if $sys.ctrl == 'order'} class="hover"{/if}><a href="{url ctrl=order/}" title="我的订单">我的订单</a></li>
 		<li{if $sys.ctrl == 'payment' && $sys.func == 'index'} class="hover"{/if}><a href="{url ctrl=payment/}" title="在线充值">在线充值</a></li>
 		<li class="article">我的…</li>

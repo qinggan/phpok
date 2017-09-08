@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title><![CDATA[链接]]></title>
+	<identifier><![CDATA[link]]></identifier>
+	<field_type><![CDATA[longtext]]></field_type>
+	<note><![CDATA[手动指定外部链接时，伪静态链接可以留空]]></note>
+	<form_type><![CDATA[url]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[safe]]></format>
+	<content><![CDATA[]]></content>
+	<ext>
+		<width><![CDATA[500]]></width>
+	</ext>
+</root>

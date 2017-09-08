@@ -1,59 +1,9 @@
-<!-- inc:head -->
-<script type="text/javascript">
-function site_delete(id,title)
-{
-	$.dialog.confirm("确定要删除网站 <span class='red i'>"+title+"</span> 信息吗?<br />删除后相关网站信息都将删除，请慎用！",function(){
-		//删除网站操作
-		var url = get_url("site","delete")+"&id="+id;
-		var rs = $.phpok.json(url);
-		if(rs.status == "ok"){
-			$.dialog.alert('站点删除成功',function(){
-				$.phpok.reload();
-			});
-		}else{
-			$.dialog.alert(rs.content);
-		}
-	});
-}
-function site_default(id,title)
-{
-	$.dialog.confirm("确定要设置网站 <span class='red i'>"+title+"</span> 为默认网站吗?",function(){
-		var url = get_url("site","default")+"&id="+id;
-		var rs = $.phpok.json(url);
-		if(rs.status == "ok"){
-			$.phpok.reload();
-		}else{
-			$.dialog.alert(rs.content);
-		}
-	});
-}
-function site_alias(id,old)
-{
-	if(!old || old == 'undefined'){
-		old = '';
-	}
-	$.dialog.prompt('请输入站点别名：',function(val){
-		if(!val){
-			$.dialog.alert('别名不能为空');
-			return false;
-		}
-		var url = get_url('site','alias','id='+id+'&alias='+$.str.encode(val));
-		var rs = $.phpok.json(url);
-		if(rs.status == 'ok'){
-			$.dialog.alert('别名配置成功',function(){
-				$.phpok.reload();
-			},'succeed');
-		}else{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	},old);
-}
-</script>
+<!-- include tpl=head -->
 <div class="tips">
 	您当前的位置：
-	<a href="{echo admin_url('site')}">多站点维护</a>
+	<a href="{url ctrl=site/}">多站点维护</a>
 	&raquo; 站点列表（别名用于后台管理，在前台并不调用）
+	<!-- if $session.admin_rs.if_system --><div class="action"><a href="javascript:$.phpok_site.add();void(0);">{lang添加新站点}</a></div><!-- /if -->
 </div>
 <div class="list">
 <table width="100%" cellpadding="0" cellspacing="0">
@@ -64,7 +14,7 @@ function site_alias(id,old)
 	<th>域名</th>
 	<th>&nbsp;</th>
 </tr>
-<!-- foreach($rslist AS $key=>$value) -->
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 <tr>
 	<td style="text-indent:12px;height:22px;">
 		{$value.title}
@@ -74,19 +24,19 @@ function site_alias(id,old)
 	</td>
 	<td class="center">{$value.dir}</td>
 	<td class="center">
-		<input type="button" value="{$value.alias ? $value.alias : '无别名，点击设置'}" onclick="site_alias('{$value.id}','{$value.alias}')" class="phpok-btn" />
+		<input type="button" value="{$value.alias ? $value.alias : '无别名，点击设置'}" onclick="$.phpok_site.alias('{$value.id}','{$value.alias}')" class="phpok-btn" />
 	</td>
 	<td class="center">{$value.dlist_string}</td>
 	<td>
 		<!-- if !$value.is_default && $popedom.default -->
-		<input type="button" value="{lang设为默认站点}" onclick="site_default('{$value.id}','{$value.title}')" class="phpok-btn" />
+		<input type="button" value="{lang设为默认站点}" onclick="$.phpok_site.set_default('{$value.id}','{$value.title}')" class="phpok-btn" />
 		<!-- /if -->
 		<!-- if $popedom.delete && !$value.is_default -->
-		<input type="button" value="{lang删除}" onclick="site_delete('{$value.id}','{$value.title}')" class="phpok-btn" />
+		<input type="button" value="{lang删除}" onclick="$.phpok_site.del('{$value.id}','{$value.title}')" class="phpok-btn" />
 		<!-- /if -->
 	</td>
 </tr>
-<!-- /foreach -->
+<!-- /loop -->
 </table>
 </div>
 <!-- inc:foot -->

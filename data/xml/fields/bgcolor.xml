@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title><![CDATA[背景颜色]]></title>
+	<identifier><![CDATA[bgcolor]]></identifier>
+	<field_type><![CDATA[varchar]]></field_type>
+	<note><![CDATA[实现在不支持CSS3的情况与背景融合]]></note>
+	<form_type><![CDATA[text]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[safe]]></format>
+	<content><![CDATA[FFFFFF]]></content>
+	<ext>
+		<form_btn><![CDATA[color]]></form_btn>
+		<width><![CDATA[]]></width>
+		<ext_quick_words><![CDATA[]]></ext_quick_words>
+		<ext_quick_type><![CDATA[]]></ext_quick_type>
+	</ext>
+</root>

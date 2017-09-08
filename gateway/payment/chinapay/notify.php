@@ -54,7 +54,12 @@ class chinapay_notify
 		if($status != '1001'){
 			exit($status);
 		}
-		$tmparray = array('merid'=>$merid,'orderno'=>$orderno,'transdate'=>$transdate,'amount'=>$amount);
+		$tmparray = $this->order['ext'] ? unserialize($this->order['ext']) : array();
+		$tmparray['merid'] = $merid;
+		$tmparray['orderno'] = $orderno;
+		$tmparray['transdate'] = $transdate;
+		$tmparray['amount'] = $amount;
+		//$tmparray = array('merid'=>$merid,'orderno'=>$orderno,'transdate'=>$transdate,'amount'=>$amount);
 		$tmparray['currencycode'] = $currencycode;
 		$tmparray['transtype'] = $transtype;
 		$tmparray['status'] = $status;
@@ -85,6 +90,9 @@ class chinapay_notify
 					$app->model('order')->save_payment($array,$order_payment['id']);
 				}
 			}
+		}
+		if($this->order['type'] == 'recharge' && $tmparray['goal']){
+			$app->model('wealth')->recharge($this->order['id']);
 		}
 		exit('success');
 	}

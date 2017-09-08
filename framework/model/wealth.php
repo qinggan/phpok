@@ -254,6 +254,49 @@ class wealth_model_base extends phpok_model
 	}
 
 	/**
+	 * 充值到账对积分进行转换
+	 * @参数 $logid 支付ID
+	**/
+	public function recharge($logid)
+	{
+		$order = $this->model('payment')->log_one($logid);
+		if(!$order || !$order['status'] || !$order['user_id']){
+			return false;
+		}
+		$ext = $order['ext'] ? unserialize($order['ext']) : array();
+		//如果充值成功
+		if($ext['phpok_status'] || !$ext['goal']){
+			return true;
+		}
+		//查看金额
+		$data = $this->_data(P_Lang('在线充值'));
+		$rs = $this->get_one($ext['goal']);
+		if(!$rs || !$rs['status'] || !$rs['ifpay']){
+			return false;
+		}
+		$data['status'] = $rs['ifcheck'] ? 0 : 1;
+		$data['rule_id'] = 0;
+		$data['wid'] = $rs['id'];
+		$data['goal_id'] = $order['user_id'];
+		$data['val'] = round($order['price'] * $rs['pay_ratio'],2);
+		$data['mid'] = 0;
+		$this->save_log($data);
+		if($data['status']){
+			$get_val = $this->get_val($data['goal_id'],$data['wid']);
+			$val2 = $get_val + $data['val'];
+			if($val2<0){
+				$val2 = 0;
+			}
+			$array = array('wid'=>$data['wid'],'lasttime'=>$this->time,'uid'=>$data['goal_id'],'val'=>$val2);
+			$this->save_info($array);
+		}
+		$ext['phpok_status'] = true;
+		$tmp = serialize($ext);
+		$this->model('payment')->log_update(array('ext'=>$tmp),$logid);
+		return true;
+	}
+
+	/**
 	 * 阅读/发布/评论赠送财富
 	 * @参数 $id 主题ID
 	 * @参数 $uid 会员ID

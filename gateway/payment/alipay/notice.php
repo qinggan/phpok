@@ -54,7 +54,8 @@ class alipay_notice
 		$tmp = array('WAIT_SELLER_SEND_GOODS','WAIT_BUYER_CONFIRM_GOODS','TRADE_FINISHED','TRADE_SUCCESS');
 		if(in_array($trade_status,$tmp)){
 			//更新扩展数据
-			$alipay = array();
+			$alipay = $this->order['ext'] ? unserialize($this->order['ext']) : array();
+			//$alipay = array();
 			$alipay['log_id'] = $this->order['id'];
 			$alipay['buyer_email'] = $app->get('buyer_email');
 			$alipay['buyer_id'] = $app->get('buyer_id');
@@ -98,6 +99,10 @@ class alipay_notice
 						$app->model('order')->save_payment($array,$order_payment['id']);
 					}
 				}
+			}
+			//充值操作
+			if($this->order['type'] == 'recharge' && $alipay['goal']){
+				$app->model('wealth')->recharge($this->order['id']);
 			}
 		}
 		return true;

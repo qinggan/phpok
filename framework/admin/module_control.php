@@ -172,51 +172,48 @@ class module_control extends phpok_control
 		$this->success();
 	}
 
-	//字段管理器
+	/**
+	 * 字段管理器
+	**/
 	public function fields_f()
 	{
-		if(!$this->popedom["set"]) error(P_Lang('您没有权限执行此操作'));
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
-		if(!$id) error(P_Lang('未指定模型'),$this->url("module"),"error");
+		if(!$id){
+			$this->error(P_Lang('未指定模型'),$this->url("module"));
+		}
 		$rs = $this->model('module')->get_one($id);
 		$this->assign("id",$id);
 		$this->assign("rs",$rs);
 		$condition = "area LIKE '%module%'";
 		$fields_list = $this->model('fields')->get_all($condition,"identifier");
-		if($fields_list)
-		{
-			foreach($fields_list AS $key=>$value)
-			{
+		if($fields_list){
+			foreach($fields_list AS $key=>$value){
 				$value["field_type_name"] = $this->field_list[$value["field_type"]];
 				$value["form_type_name"] = $this->form_list[$value["form_type"]];
 				$fields_list[$key] = $value;
 			}
 		}
 		$used_list = $this->model('module')->fields_all($id,"identifier");
-		if($used_list)
-		{
-			foreach($used_list AS $key=>$value)
-			{
+		if($used_list){
+			foreach($used_list AS $key=>$value){
 				$value["field_type_name"] = $this->field_list[$value["field_type"]];
 				$value["form_type_name"] = $this->form_list[$value["form_type"]];
 				$used_list[$key] = $value;
 			}
 		}
 		$this->assign("used_list",$used_list);
-		if($fields_list && $used_list)
-		{
+		if($fields_list && $used_list){
 			$newlist = array();
-			foreach($fields_list AS $key=>$value)
-			{
-				if(!$used_list[$key])
-				{
+			foreach($fields_list AS $key=>$value){
+				if(!$used_list[$key]){
 					$newlist[$key] = $value;
 				}
 			}
 			$this->assign("fields_list",$newlist);
-		}
-		else
-		{
+		}else{
 			$this->assign("fields_list",$fields_list);
 		}
 		$this->view("module_fields");
@@ -224,20 +221,34 @@ class module_control extends phpok_control
 
 	public function field_add_f()
 	{
-		if(!$this->popedom["set"]) $this->json(P_Lang('您没有权限执行此操作'));
+		if(!$this->popedom["set"]){
+			$this->json(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
-		if(!$id) $this->json(P_Lang('未指定模型ID'));
+		if(!$id){
+			$this->json(P_Lang('未指定模型ID'));
+		}
 		$fid = $this->get("fid");
-		if(!$fid) $this->json(P_Lang('未指定要添加的字段ID'));
+		if(!$fid){
+			$this->json(P_Lang('未指定要添加的字段ID'));
+		}
 		$rs = $this->model('module')->get_one($id);
-		if(!$rs) $this->json(P_Lang('模型不存在'));
+		if(!$rs){
+			$this->json(P_Lang('模型不存在'));
+		}
 		//取得fid的内容信息
 		$f_rs = $this->model('fields')->get_one($fid);
-		if(!$f_rs) $this->json(P_Lang('字段不存在'));
+		if(!$f_rs){
+			$this->json(P_Lang('字段不存在'));
+		}
 		$title = $this->get("title");
-		if(!$title) $title = $f_rs["title"];
+		if(!$title){
+			$title = $f_rs["title"];
+		}
 		$note = $this->get("note");
-		if(!$note) $note = $f_rs["note"];
+		if(!$note){
+			$note = $f_rs["note"];
+		}
 		$taxis = $this->model('module')->fields_next_taxis($id);
 		$tmp_array = array("module_id"=>$id);
 		$tmp_array["title"] = $title;
@@ -250,27 +261,22 @@ class module_control extends phpok_control
 		$tmp_array["content"] = $f_rs["content"];
 		$tmp_array["taxis"] = $taxis;
 		$tmp_array["ext"] = "";
-		if($f_rs["ext"])
-		{
-			$tmp_array["ext"] = stripslashes($f_rs["ext"]);
+		if($f_rs["ext"]){
+			$tmp_array["ext"] = serialize($f_rs['ext']);
 		}
 		$this->model('module')->fields_save($tmp_array);
 		//更新扩展表信息
 		$tbl_exists = $this->model('module')->chk_tbl_exists($id);
-		if(!$tbl_exists)
-		{
+		if(!$tbl_exists){
 			$this->model('module')->create_tbl($id);
 			$tbl_exists2 = $this->model('module')->chk_tbl_exists($id);
-			if(!$tbl_exists2)
-			{
+			if(!$tbl_exists2){
 				$this->json(P_Lang('模块创建表失败，请检查'));
 			}
 		}
 		$list = $this->model('module')->fields_all($id);
-		if($list)
-		{
-			foreach($list AS $key=>$value)
-			{
+		if($list){
+			foreach($list AS $key=>$value){
 				$this->model('module')->create_fields($id,$value);
 			}
 		}
@@ -474,7 +480,7 @@ class module_control extends phpok_control
 			$this->json(P_Lang('标识串不能为空'));
 		}
 		$identifier = strtolower($identifier);
-		if(!preg_match("/[a-z][a-z0-9\_]+/",$identifier)){
+		if(!preg_match("/^[a-z][a-z0-9\_]+$/u",$identifier)){
 			$this->json(P_Lang('字段标识不符合系统要求，限字母、数字及下划线且必须是字母开头'));
 		}
 		if($identifier == 'phpok'){

@@ -30,8 +30,32 @@ class opt_control extends phpok_control
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rslist = $this->model('opt')->group_all();
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				$tmp = $this->model('opt')->opt_count("group_id='".$value['id']."' AND parent_id=0");
+				$value['_export'] = false;
+				if($tmp){
+					$value['_export'] = true;
+				}
+				$rslist[$key] = $value;
+			}
+		}
 		$this->assign("rslist",$rslist);
 		$this->view("opt_group");
+	}
+
+	public function group_set_f()
+	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id','int');
+		if($id){
+			$this->assign('id',$id);
+			$rs = $this->model('opt')->group_one($id);
+			$this->assign('rs',$rs);
+		}
+		$this->view('opt_group_set');
 	}
 
 	/**
@@ -40,15 +64,17 @@ class opt_control extends phpok_control
 	public function group_save_f()
 	{
 		if(!$this->popedom["set"]){
-			exit(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$title = $this->get("title");
 		if(!$title){
-			exit(P_Lang('没有指定选项组'));
+			$this->error(P_Lang('组名称不能为空'));
 		}
+		$link_symbol = $this->get('link_symbol');
+		$data = array('title'=>$title,'link_symbol'=>$link_symbol);
 		$id = $this->get("id","int");
-		$this->model('opt')->group_save($title,$id);
-		exit("ok");
+		$this->model('opt')->group_save($data,$id);
+		$this->success();
 	}
 
 	/**
@@ -97,7 +123,7 @@ class opt_control extends phpok_control
 		}
 		$this->assign("group_id",$group_id);
 		$rs = $this->model('opt')->group_one($group_id);
-		$psize = $this->config["psize"];
+		$psize = 50;
 		$pageid = $this->get($this->config["pageid"],"int");
 		$offset = $pageid ? ($pageid-1) * $psize : 0;
 		$pageurl = $this->url("opt","list");
@@ -115,11 +141,26 @@ class opt_control extends phpok_control
 			$pageurl .= "&keywords=".rawurlencode($keywords);
 		}
 		$rslist = $this->model('opt')->opt_list($condition,$offset,$psize);
+		$_export = false;
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				$tmp = $this->model('opt')->opt_count("group_id='".$group_id."' AND parent_id='".$value['id']."'");
+				$value['_export'] = false;
+				if($tmp){
+					$value['_export'] = true;
+				}
+				$rslist[$key] = $value;
+			}
+			$_export = true;
+		}
+		$this->assign("_export",$_export);
 		$total = $this->model('opt')->opt_count($condition);
-		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
-		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-		$this->assign("pagelist",$pagelist);
+		if($total > $psize){
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+			$this->assign("pagelist",$pagelist);
+		}
 		$this->assign("total",$total);
 		$this->assign("psize",$psize);
 		$this->assign("pageid",$pageid);
@@ -211,5 +252,173 @@ class opt_control extends phpok_control
 			$this->model('opt')->opt_del($value["id"]);
 		}
 		exit("ok");
+	}
+
+	/**
+	 * 导入数据上传界面
+	**/
+	public function import_f()
+	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id','int');
+		if($id){
+			$this->assign('id',$id);
+			$rs = $this->model('opt')->group_one($id);
+			if(!$rs){
+				$this->error(P_Lang('组信息不存在'));
+			}
+			$this->assign('rs',$rs);
+		}
+		$pid = $this->get('pid','int');
+		if($pid){
+			$this->assign('pid',$pid);
+			$info = $this->model('opt')->opt_one($pid);
+			if($info){
+				$this->assign('info',$info);
+			}
+		}
+		$this->lib('form')->cssjs(array('form_type'=>'upload'));
+		$this->addjs('js/webuploader/admin.upload.js');
+		$this->view('opt_import');
+	}
+
+	/**
+	 * 导入数据操作
+	**/
+	public function import_data_f()
+	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id','int');
+		$pid = $this->get('pid','int');
+		$zipfile = $this->get('zipfile');
+		if(!$zipfile){
+			$this->error(P_Lang('没有ZIP文件'));
+		}
+		if(!file_exists($this->dir_root.$zipfile)){
+			$this->error(P_Lang('ZIP文件不存在'));
+		}
+		$tmpdir = $this->dir_cache.$this->session->val('admin_id').'_'.$this->time;
+		$this->lib('file')->make($tmpdir);
+		$this->lib('phpzip')->unzip($this->dir_root.$zipfile,$tmpdir);
+		$flist = $this->lib('file')->ls($tmpdir);
+		if(!$flist){
+			$this->error(P_Lang('没有文件'));
+		}
+		$file = current($flist);
+		if(strtolower(substr($file,-4)) != '.xml'){
+			$this->error(P_Lang('压缩包有异常，不是XML文件'));
+		}
+		$data = $this->lib('xml')->read($file);
+		$this->lib('file')->rm($tmpdir,'folder');
+		$this->lib('file')->rm($this->dir_root.$zipfile);
+		if(!$id && $data['title']){
+			$id = $this->model('opt')->group_save($data['title']);
+		}
+		if(!$id){
+			$this->error('导入失败');
+		}
+		$data = $data['data'];
+		$this->_import($data,$id,$pid);
+		$this->success();
+	}
+
+	private function _import($data,$id,$pid=0)
+	{
+		if($data['info']['val']){
+			$tmplist = array();
+			$tmp = false;
+			foreach($data['info'] as $key=>$value){
+				if(is_numeric($key)){
+					$tmplist[$key] = $value;
+				}else{
+					$tmp[$key] = $value;
+				}
+			}
+			$data['info'] = array();
+			$data['info'][] = $tmp;
+			foreach($tmplist as $key=>$value){
+				$data['info'][] = $value;
+			}
+		}
+		foreach($data['info'] as $key=>$value){
+			$tmp = array('val'=>$value['val']);
+			$tmp['title'] = $value['title'] ? $value['title'] : $value['val'];
+			$tmp['taxis'] = $value['taxis'] ? $value['taxis'] : ($key+1)*5;
+			$tmp['parent_id'] = $pid;
+			$tmp['group_id'] = $id;
+			$insert_id = $this->model('opt')->opt_save($tmp);
+			if($insert_id && $value['sublist'] && $value['sublist']['info']){
+				$this->_import($value['sublist'],$id,$insert_id);
+			}
+		}
+	}
+
+	/**
+	 * 导出数据
+	**/
+	public function export_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('项目组ID未指定'),$this->url('opt'));
+		}
+		$pid = $this->get('pid','int');
+		$sub = $this->get('sub','int');
+		$rs = $this->model('opt')->group_one($id);
+		if(!$rs){
+			$this->error(P_Lang('组信息不存在'),$this->url('opt'));
+		}
+		$rslist = $this->model('opt')->opt_all("group_id=".$id." AND parent_id=".$pid);
+		if(!$rslist){
+			$this->error(P_Lang('没有选项内容数据'),$this->url('opt'));
+		}
+		$tmpfile = 'opt_'.$this->session->val('admin_id').'_'.$id.'.xml';
+		$data  = '<root>'."\n";
+		if(!$pid && $sub){
+			$data .= "\t".'<title><![CDATA['.$rs['title'].']]></title>'."\n";
+		}
+		$data .= "\t".'<data>'."\n";
+		$this->_export($data,$rslist,$id,"\t\t",($sub ? true : false));
+		$data .= "\t".'</data>'."\n";
+		$data .= '</root>';
+		$this->lib('file')->vim($data,$this->dir_cache.$tmpfile);
+		$zipfile = $this->dir_cache.md5($tmpfile).'.zip';
+		$this->lib('phpzip')->set_root($this->dir_cache);
+		$this->lib('phpzip')->zip($this->dir_cache.$tmpfile,$zipfile);
+		$title = $rs['title'];
+		if($pid){
+			$info = $this->model('opt')->opt_one($pid);
+			if($info){
+				$title .= '-'.($info['title'] ? $info['title'] : $info['val']);
+			}
+		}
+		$this->lib('file')->rm($this->dir_cache.$tmpfile);
+		$this->lib('file')->download($zipfile,$title);
+	}
+
+	private function _export(&$data,$rslist,$gid,$space='',$readsublist=true)
+	{
+		foreach($rslist as $key=>$value){
+			$title = $value['title'] ? $value['title'] : ($value['val'] ? $value['val'] : '0');
+			$val = $value['val'] ? $value['val'] : '0';
+			$taxis = $value['taxis'] ? $value['taxis'] : 255;
+			$data .= $space.'<info>'."\n";
+			$data .= $space."\t".'<title><![CDATA['.$value['title'].']]></title>'."\n";
+			$data .= $space."\t".'<val><![CDATA['.$value['val'].']]></val>'."\n";
+			$data .= $space."\t".'<taxis><![CDATA['.$value['taxis'].']]></taxis>'."\n";
+			if($readsublist){
+				$tmplist = $this->model('opt')->opt_all("group_id='".$gid."' AND parent_id='".$value['id']."'");
+				if($tmplist){
+					$data .= $space."\t".'<sublist>'."\n";
+					$this->_export($data,$tmplist,$gid,$space."\t\t");
+					$data .= $space."\t".'</sublist>'."\n";
+				}
+			}
+			$data .= $space.'</info>'."\n";
+		}
 	}
 }

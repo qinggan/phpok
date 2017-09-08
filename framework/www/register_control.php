@@ -132,7 +132,12 @@ class register_control extends phpok_control
 			}
 		}
 		$this->assign("extlist",$extlist);
-		$this->view("register");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'register';
+		}
+		$this->assign('is_vcode',$this->model('site')->vcode('system','register'));
+		$this->view($tplfile);
 	}
 
 	/**
@@ -153,7 +158,7 @@ class register_control extends phpok_control
 			$this->error(P_Lang('您已是本站会员，不能执行这个操作'),$this->url);
 		}
 		$errurl = $this->url('register');
-		if($this->config['is_vcode'] && function_exists('imagecreate')){
+		if($this->model('site')->vcode('system','register')){
 			$code = $this->get('_chkcode');
 			if(!$code){
 				$this->error(P_Lang('验证码不能为空'),$errurl);
@@ -296,4 +301,3 @@ class register_control extends phpok_control
 		$this->success(P_Lang('注册成功，等待管理员验证'),$this->url);
 	}
 }
-?>

@@ -42,9 +42,16 @@ class select_form extends _init_auto
 		$this->view($this->dir_phpok.'form/html/select_admin.html','abs-file');
 	}
 
+	public function cssjs()
+	{
+		$this->addjs('js/form.select.js');
+	}
+
 	public function phpok_format($rs,$appid="admin")
 	{
-		if(!$rs["option_list"]) $rs['option_list'] = 'default:0';
+		if(!$rs["option_list"]){
+			$rs['option_list'] = 'default:0';
+		}
 		$opt_list = explode(":",$rs["option_list"]);
 		$rslist = opt_rslist($opt_list[0],$opt_list[1],$rs['ext_select']);
 		$opt_list = explode(":",$rs["option_list"]);
@@ -82,9 +89,6 @@ class select_form extends _init_auto
 		$this->assign("_rs",$rs);
 		$this->assign("_rslist",$rslist);
 		$file = $appid == 'admin' ? $this->dir_phpok.'form/html/select_admin_tpl.html' : $this->dir_phpok.'form/html/select_www_tpl.html';
-		if(!is_file($file)){
-			$file = $this->dir_phpok.'form/html/select_admin_tpl.html';
-		}
 		return $this->fetch($file,'abs-file');
 	}
 

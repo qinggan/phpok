@@ -26,7 +26,7 @@ function action_{$_rs.identifier}_show()
 }
 </script>
 <input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{if $_rs.content && is_array($_rs.content)}{func implode , $_rs.content}{/if}" />
-<div>
+<div class="button-group">
 	<input type="button" value="{lang请选择}" onclick="phpok_title_select('{$_project_id_btn}',true,'{$_open_title}','{$_rs.identifier}')" class="phpok-btn" />
 	<span class="hide" id="{$_rs.identifier}_button_checkbox">
 		<input type="button" class="phpok-btn" value="全选" onclick="$.input.checkbox_all('{$_rs.identifier}_div')" />
@@ -63,8 +63,10 @@ function action_{$_rs.identifier}_show()
 <tr>
 	<td id="title_{$_rs.identifier}"></td>
 	<td width="200px">
-		<input type="button" value="请选择" class="phpok-btn" onclick="phpok_title_select('{$_project_id_btn}',false,'{$_open_title}','{$_rs.identifier}')" />
-		<input type="button" value="删除" onclick="phpok_title_delete_single('{$_rs.identifier}')" id="phpok-btn-{$_rs.identifier}-delete" class="phpok-btn" />
+		<div class="button-group">
+			<input type="button" value="请选择" class="phpok-btn" onclick="phpok_title_select('{$_project_id_btn}',false,'{$_open_title}','{$_rs.identifier}')" />
+			<input type="button" value="删除" onclick="phpok_title_delete_single('{$_rs.identifier}')" id="phpok-btn-{$_rs.identifier}-delete" class="phpok-btn" />
+		</div>
 	</td>
 </tr>
 </table>

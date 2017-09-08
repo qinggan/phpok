@@ -60,8 +60,11 @@ class weixin_lib
 		return $this->debug;
 	}
 
-	public function error()
+	public function error($info='')
 	{
+		if($info){
+			$this->error = $info;
+		}
 		return $this->error;
 	}
 
@@ -92,6 +95,24 @@ class weixin_lib
 	{
 		echo $this->_txt($content);
 		exit;
+	}
+
+	public function image_xml($content='',$picurl='')
+	{
+		if(!$content){
+		    echo '';
+		    exit;
+	    }
+        $xml  = "<xml>\n"."\t<ToUserName><![CDATA[".$this->openid()."]]></ToUserName>\n";
+        $xml .= "\t<FromUserName><![CDATA[".$this->account()."]]></FromUserName>\n";
+        $xml .= "\t<CreateTime>".time()."</CreateTime>\n\t<MsgType><![CDATA[image]]></MsgType>\n";
+        //$xml.= "\t<PicUrl><![CDATA[".$picurl."]]></PicUrl>\n";
+        $xml .= "\t<Image>\n\t";
+        $xml .= "\t<MediaId><![CDATA[".$content."]]></MediaId>\n";
+        $xml .= "\t</Image>\n";
+        $xml .= "</xml>";
+        echo $xml;
+        exit;
 	}
 
 	private function _txt($content='')
@@ -129,9 +150,8 @@ class weixin_lib
 	{
 		$token = '';
 		$cachefile = $this->datadir.'weixin_access_token.php';
-		$ftime = filemtime($cachefile);
 		$ctime = time() - 7000;
-		if(file_exists($cachefile) && $ftime > $ctime){
+		if(file_exists($cachefile) && filemtime($cachefile) > $ctime){
 			$token = file_get_contents($cachefile);
 			$token = substr($token,strlen('<?php exit();?>'));
 			return trim($token);
@@ -163,24 +183,17 @@ class weixin_lib
 	public function create_menu($data='')
 	{
 		if($data && is_array($data)){
-			$data = json_encode($data);
-			$data = rawurldecode($data);
+			$data = json_encode($data,JSON_UNESCAPED_UNICODE);
+			//$data = rawurldecode($data);
 		}
 		$url = " https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$this->access_token();
 		$info = $this->curl($url,$data);
-		if($this->debug){
-			phpok_log($url);
-			phpok_log($data);
-		}
 		if(!$info){
 			return false;
 		}
 		$info = json_decode($info,true);
 		
 		if($info['errcode']){
-			if($this->debug){
-				phpok_log($info['errcode'].':'.$info['errmsg']);
-			}
 			$this->error = $info['errcode'].':'.$info['errmsg'];
 			return false;
 		}
@@ -195,36 +208,44 @@ class weixin_lib
 		curl_setopt($curl, CURLOPT_HEADER,true);//结果中包含头部信息
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);//把结果返回，而非直接输出
 		if($post){
+			if($headers && $headers == 'upload'){
+				if(class_exists('CURLFile')){
+					curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
+				}else{
+					if(defined( 'CURLOPT_SAFE_UPLOAD' )){
+						curl_setopt($curl,CURLOPT_SAFE_UPLOAD,false);
+					}
+				}
+			}
 			curl_setopt($curl,CURLOPT_POST,true);
 			curl_setopt($curl,CURLOPT_POSTFIELDS,$post);
 		}else{
 			curl_setopt($curl, CURLOPT_HTTPGET,true);
 		}
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,15);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,30);
 		curl_setopt($curl,CURLOPT_ENCODING ,'gzip');//GZIP压缩
 		curl_setopt($curl, CURLOPT_TIMEOUT,30);
 		$purl = $this->format_url($url);
-		$header = array();
-		$header[] = "Host: ".$purl["host"].":".$purl['port'];
-		$header[] = "Referer: ".$purl['protocol'].$purl["host"];
 		if($headers && is_array($headers)){
+			$header = array();
+			$header[] = "Host: ".$purl["host"].":".$purl['port'];
+			$header[] = "Referer: ".$purl['protocol'].$purl["host"];
 			foreach($headers AS $key=>$value){
 				$header[] = $key.": ".$value;
 			}
+			curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
 		}
 		if($post){
 			$length = strlen($post);
 			$header[] = 'Content-length: '.$length;
 		}
 		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
 		$content = curl_exec($curl);
 		if (curl_errno($curl) != 0){
 			if($this->debug){
 				$this->error = curl_errno($curl).':'.curl_error($curl);
-				phpok_log($this->error);
 			}
 			return false;
 		}
@@ -237,7 +258,6 @@ class weixin_lib
 		if($http_code != '200'){
 			if($this->debug){
 				$this->error = 'httpcode:'.$http_code;
-				phpok_log($this->error);
 			}
 			return false;
 		}
@@ -309,6 +329,33 @@ class weixin_lib
 		$url = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=".rawurlencode($info['ticket']);
 		$info = $this->curl($url);
 		return $info;
+	}
+
+	public function upload($file,$root='')
+	{
+		$extension = pathinfo($file,PATHINFO_EXTENSION);
+		$type = 'image/jpg';
+		if($extension == 'png'){
+			$type = 'image/png';
+		}
+		if($extension == 'gif'){
+			$type = 'image/gif';
+		}
+		$data = array("media" => "@".realpath($root.$file), 'form-data' => array('filename'=>$file,'content-type'=>$type,'filelength'=>filesize($file)));
+		if(class_exists('CURLFile')){
+			$data['media'] = new CURLFile ( realpath ( $root.$file ),$type );
+		}
+        $info = $this->curl("https://api.weixin.qq.com/cgi-bin/media/upload?access_token=".$this->access_token()."&type=image",$data,'upload');
+        if(!$info){
+	        $this->error('上传临时素材失败');
+	        return false;
+        }
+        $info = json_decode($info,true);
+		if($info['errcode']){
+			$this->error($info['errcode'].':'.$info['errmsg']);
+			return false;
+		}
+		return array('id'=>$info['media_id'],'time'=>$info['created_at']);
 	}
 
 	public function jsapi_ticket()

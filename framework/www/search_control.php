@@ -26,7 +26,11 @@ class search_control extends phpok_control
 				$this->load_search($keywords);
 			}
 		}
-		$this->view("search_index");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'search_index';
+		}
+		$this->view($tplfile);
 	}
 
 	private function load_search($keywords)
@@ -36,7 +40,7 @@ class search_control extends phpok_control
 		$condition = "status=1 AND hidden=0 AND is_search !=0 AND module>0";
 		$list = $this->model('project')->project_all($this->site['id'],'id',$condition);
 		if(!$list){
-			error(P_Lang('您的网站没有允许可以搜索的信息'),$this->url,"error",10);
+			$this->error(P_Lang('您的网站没有允许可以搜索的信息'),$this->url,10);
 		}
 		$pids = $mids = $projects = array();
 		foreach($list AS $key=>$value){
@@ -83,7 +87,11 @@ class search_control extends phpok_control
 		$this->assign("pageid",$pageid);
 		$this->assign("psize",$psize);
 		$this->assign("keywords",$keywords);
-		$this->view("search_list");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,'list');
+		if(!$tplfile){
+			$tplfile = 'search_list';
+		}
+		$this->view($tplfile);
 		exit;
 	}
 }

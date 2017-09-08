@@ -80,14 +80,79 @@ class id_model_base extends phpok_model
 		return $rs['id'];
 	}
 
-	//取得id
+	/**
+	 * 获取ID属性信息，优先级：项目>分类>主题
+	 * @参数 $identifier 标识串
+	 * @参数 $site_id 站点ID
+	 * @参数 $status 为true时表示只检索状态为1的数据
+	**/
 	public function id($identifier,$site_id=0,$status=false)
 	{
-		$rslist = $this->id_all($site_id,$status);
-		if($rslist[$identifier]){
-			return $rslist[$identifier];
+		$plist = $this->id_project($site_id,$status);
+		if($plist && $plist[$identifier]){
+			return $plist[$identifier];
+		}
+		$clist = $this->id_cate($site_id,$status);
+		if($clist && $clist[$identifier]){
+			return $clist[$identifier];
+		}
+		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE site_id='".$site_id."' AND identifier='".$identifier."'";
+		if($status){
+			$sql .= " AND status=1 ";
+		}
+		$chk = $this->db->get_one($sql);
+		if($chk && $chk['id']){
+			return array('id'=>$chk['id'],'type'=>'content');
 		}
 		return false;
+	}
+
+	public function id_project($site_id=0,$status=0)
+	{
+		$sql = "SELECT id,identifier FROM ".$this->db->prefix."project WHERE site_id='".$site_id."'";
+		if($status){
+			$sql .= " AND status=1 ";
+		}
+		$cache_id  = $this->cache->id($sql);
+		$tmplist = $this->cache->get($cache_id);
+		if(!$tmplist){
+			$tmplist = $this->db->get_all($sql);
+			if($tmplist){
+				$this->cache->save($cache_id,$tmplist);
+			}
+		}
+		if(!$tmplist){
+			return false;
+		}
+		$plist = array();
+		foreach($tmplist as $key=>$value){
+			$plist[$value['identifier']] = array('id'=>$value['id'],'type'=>'project');
+		}
+		return $plist;
+	}
+
+	public function id_cate($site_id,$status=0)
+	{
+		$sql = "SELECT id,identifier FROM ".$this->db->prefix."cate WHERE site_id='".$site_id."'";
+		if($status){
+			$sql .= " AND status=1 ";
+		}
+		$cache_id  = $this->cache->id($sql);
+		$tmplist = $this->cache->get($cache_id);
+		if(!$tmplist){
+			$tmplist = $this->db->get_all($sql);
+			if($tmplist){
+				$this->cache->save($cache_id,$tmplist);
+			}
+		}
+		if(!$tmplist){
+			return false;
+		}
+		$clist = array();
+		foreach($tmplist as $key=>$value){
+			$clist[$value['identifier']] = array('id'=>$value['id'],'type'=>'cate');
+		}
+		return $clist;
 	}
 
 	//

@@ -33,12 +33,12 @@ class rescate_control extends phpok_control
 		$id = $this->get('id','int');
 		if(!$id){
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),$this->url('rescate'),'error');
+				$this->error(P_Lang('您没有权限执行此操作'),$this->url('rescate'));
 			}
 			$rs = array();
 		}else{
 			if(!$this->popedom["modify"]){
-				error(P_Lang('您没有权限执行此操作'),$this->url('rescate'),'error');
+				$this->error(P_Lang('您没有权限执行此操作'),$this->url('rescate'));
 			}
 			$rs = $this->model('rescate')->get_one($id);
 			$this->assign('id',$id);
@@ -122,6 +122,36 @@ class rescate_control extends phpok_control
 		$this->json(true);
 	}
 
+	/**
+	 * 快速创建分类
+	 * @参数 
+	 * @返回 
+	 * @更新时间 
+	**/
+	public function qcreate_f()
+	{
+		$title = $this->get('title');
+		if(!$title){
+			$this->error(P_Lang('附件分类名称不能为空'));
+		}
+		$name = $this->get('name');
+		if(!$name){
+			$name = $title;
+		}
+		$filetypes = $this->get('filetypes');
+		if(!$filetypes){
+			$filetypes = 'jpg,gif,png,jpeg';
+		}
+		$data = array('title'=>$title,'root'=>'res/','filetypes'=>$filetypes,'typeinfo'=>$name,'filemax'=>1024*100);
+		$data['folder'] = 'Ym/d/';
+		$data['gdall'] = 1;
+		$data['gdtypes'] = '';
+		$data['ico'] = 1;
+		$data['is_default'] = 0;
+		$id = $this->model('rescate')->save($data);
+		$this->success($id);
+	}
+
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
@@ -139,5 +169,3 @@ class rescate_control extends phpok_control
 		$this->json(true);
 	}
 }
-
-?>

@@ -1,8 +1,8 @@
-<!-- include tpl=head title=会员管理 -->
+<!-- include tpl=head -->
 <script type="text/javascript" src="{func include_js user.js}"></script>
 <script type="text/javascript" src="js/laydate/laydate.js"></script>
 <div class="tips">
-	<a href="{echo admin_url('user')}" title="会员列表">会员列表</a> &raquo; {if $id}编辑{else}添加新{/if}会员
+	<a href="{echo admin_url('user')}">{lang会员列表}</a> &raquo; <!-- if $id -->{lang编辑会员}<!-- else -->{lang添加新会员}<!-- /if -->
 </div>
 
 <form method="post" action="{echo admin_url('user','setok')}" onsubmit="return check_add()">
@@ -10,7 +10,7 @@
 
 <div class="table">
 	<div class="title">
-		会员头像：
+		{lang会员头像：}
 		<span class="note"></span>
 	</div>
 	<div class="content">
@@ -19,8 +19,8 @@
 </div>
 <div class="table">
 	<div class="title">
-		会员账号：
-		<span class="note">请填写会员账号，必须保证唯一，建议使用邮箱作为账号</span>
+		{lang会员账号：}
+		<span class="note">{lang请填写会员账号，必须保证唯一，建议使用邮箱作为账号}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="user" name="user" class="default" value="{$rs.user}" />
@@ -29,11 +29,12 @@
 
 <div class="table">
 	<div class="title">
-		会员密码：
-		<span class="note">设置会员的密码，此项不能为空</span>
+		{lang会员密码：}
+		<span class="note">{lang设置会员的密码，此项不能为空}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="pass" name="pass" class="default" value="" />
+		<input type="button" value="随机生成" onclick="$('#pass').val($.phpok.rand(10,'fixed'))" class="phpok-btn" />
 	</div>
 </div>
 
@@ -49,8 +50,8 @@
 
 <div class="table">
 	<div class="title">
-		手机：
-		<span class="note">设置会员的密码，此项不能为空</span>
+		{lang手机：}
+		<span class="note">{lang如有手机号，请填写}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="mobile" name="mobile" class="default" value="{$rs.mobile}" />
@@ -59,12 +60,12 @@
 
 <div class="table">
 	<div class="title">
-		会员组：
-		<span class="note">请选择会员所属主要身份</span>
+		{lang会员组：}
+		<span class="note">{lang请选择会员所属主要身份}</span>
 	</div>
 	<div class="content">
 		<select id="group_id" name="group_id">
-		<option value="0">请选择会员组…</option>
+		<option value="0">{lang请选择会员组…}</option>
 		<!-- loop from=$grouplist key=$key value=$value -->
 		<option value="{$value.id}"{if $value.id == $group_id} selected{/if} data-fields="{$value.fields}">{$value.title}</option>
 		<!-- /loop -->
@@ -74,8 +75,8 @@
 
 <div class="table">
 	<div class="title">
-		状态：
-		<span class="note">设置会员状态，未审核会员不能登录，锁定会员将只有查看权限</span>
+		{lang状态：}
+		<span class="note">{lang设置会员状态，未审核会员不能登录，锁定会员将只有查看权限}</span>
 	</div>
 	<div class="content">
 		<table>
@@ -90,8 +91,8 @@
 
 <div class="table">
 	<div class="title">
-		注册时间：
-		<span class="note">人工设置会员的注册时间，默认使用当前时间</span>
+		{lang注册时间：}
+		<span class="note">{lang人工设置会员的注册时间，默认使用当前时间}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="regtime" name="regtime" class="default" value="{$rs.regtime ? date('Y-m-d H:i:s',$rs['regtime']) : ''}" onfocus="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" />
@@ -108,11 +109,6 @@
 </div>
 <!-- /loop -->
 
-
-<div class="table">
-	<div class="content">
-		<input type="submit" value="提 交" class="submit" />
-	</div>
-</div>
+<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
 </form>
 <!-- include tpl=foot -->

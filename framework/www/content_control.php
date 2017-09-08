@@ -35,7 +35,7 @@ class content_control extends phpok_control
 		}
 		$rs = $this->model('content')->get_one($id,true);
 		if(!$rs){
-			$this->error(P_Lang('内容不存在'),$this->url,5);
+			$this->error_404();
 		}
 		if(!$rs['project_id']){
 			$this->error(P_Lang('未绑定项目'),$this->url,5);
@@ -65,9 +65,6 @@ class content_control extends phpok_control
 		$rs['tag'] = $this->model('tag')->tag_list($rs['id'],'list');
 		$rs = $this->content_format($rs);
 		$taglist = array('tag'=>$rs['tag'],'list'=>array('title'=>$rs['title']));
-		//if($rs['tag'] && $taglist){
-		//	$rs['tag'] = $this->model('tag')->tag_filter($taglist,$rs['id'],'list');
-		//}
 		//如果未绑定网址
 		if(!$rs['url']){
 			$url_id = $rs['identifier'] ? $rs['identifier'] : $rs['id'];
@@ -135,7 +132,7 @@ class content_control extends phpok_control
 			}
 		}
 		if(!$tpl){
-			$this->eror(P_Lang('未配置相应的模板'));
+			$this->error(P_Lang('未配置相应的模板'));
 		}
 		$this->model('list')->add_hits($rs["id"]);
 		$rs['hits'] = $this->model('list')->get_hits($rs['id']);

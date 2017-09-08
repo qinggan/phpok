@@ -20,6 +20,15 @@
 	background:#63b4fb;
 	border:1px solid #4c8ac0;
 	padding-bottom:5px;
+	position:relative;
+}
+.phpok-win .window .div-drag-resize{
+	width:10px;
+	height:10px;
+	position:absolute;
+	right:0;
+	bottom:0;
+	cursor:nw-resize;
 }
 .phpok-win-lock{
 	width:100%;

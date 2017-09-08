@@ -259,31 +259,35 @@ function cancel()
 	return obj_upload.uploader.stop();
 }
 </script>
-<hr />
-<div class="table">
-	<div class="title">
-		{lang附件分类：}
-		<span class="note">{lang请选择要上传的附件分类}</span>
+<div style="height:120px">&nbsp;</div>
+<div id="upload_open" style="border-top:1px solid #000;background:#efefef;position: fixed;bottom:0;height:120px;z-index:1999;width:100%;margin-left:-3px;margin-right:-3px;">
+	<div class="table">
+		<div class="title">
+			{lang上传附件：}
+			<span class="note">{lang上传前请注意选择附件分类}</span>
+		</div>
+		<div class="content">
+			<table>
+			<tr>
+				<td>
+					<select id="upload_cate_id" onchange="cate_change()" style="width:400px;">
+						<!-- loop from=$catelist key=$key value=$value -->
+						<option value="{$value.id}"{if $value.id == $cate_id} selected{/if} data="{$value.filetypes}" catename="{$value.title}">
+						{$value.title}<!-- if $value.typeinfos --> / {lang支持上传格式：}{$value.typeinfos}<!-- /if --></option>
+						<!-- /loop -->
+					</select>
+				</td>
+				<td><div id="upload_picker" class=""></div></td>
+			</tr>
+			</table>
+			
+			
+		</div>
 	</div>
-	<div class="content">
-		<select id="upload_cate_id" onchange="cate_change()">
-			<!-- loop from=$catelist key=$key value=$value -->
-			<option value="{$value.id}"{if $value.id == $cate_id} selected{/if} data="{$value.filetypes}" catename="{$value.title}">
-			{$value.title}<!-- if $value.typeinfos --> / {lang支持上传格式：}{$value.typeinfos}<!-- /if --></option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang选择要上传的文件：}
-		<span class="note">{lang单个文件上传不能超过：}<span class="red">{func get_cfg_var upload_max_filesize}</span></span>
-	</div>
-	<div class="content"><div id="upload_picker" class=""></div></div>
-</div>
 
-<div class="table">
-	<div class="content" id="upload_progress"></div>
+	<div class="table">
+		<div class="content" id="upload_progress"></div>
+	</div>
 </div>
 <!-- /if -->
 </body>

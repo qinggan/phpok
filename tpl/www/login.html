@@ -1,6 +1,6 @@
 <!-- include tpl=head menutitle=网站首页 title=会员登录 -->
 <script type="text/javascript">
-var open_vcode = '{$sys.is_vcode && function_exists("imagecreate") ? 1 : 0}';
+var open_vcode = '{$is_vcode}';
 function check_input()
 {
 	var user = $("input[name=user]").val();
@@ -32,7 +32,7 @@ function check_input()
 	    <input type="hidden" name="pdip" id="pdip" value="{func phpok_ip}" />
 		<dd><label>账号：</label><input class="input" type="text" name="user" /><div class="clear"></div></dd>
 		<dd><label>密码：</label><input class="input" type="password" name="pass" /><div class="clear"></div></dd>
-		<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+		<!-- if $is_vcode -->
 		<dd><label>验证码：</label><input class="vcode"  type="text" name="_chkcode" id="_chkcode" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" /><div class="clear"></div></dd>
 		<script type="text/javascript">
 		$(document).ready(function(){
@@ -53,7 +53,7 @@ function check_input()
 		<!-- if $logintype.sms || $logintype.email --><dd>如果您忘记密码，您可以点这里<a href="{url ctrl=login func=getpass/}" title="找回密码功能">找回密码？</a></dd><!-- /if -->
 		<dd>您还不是我们的会员，请点这里<a href="{url ctrl=register/}" title="注册会员">注册</a></dd>
 		
-		<dd>&nbsp;</dd>
+		<dd><a href="{$fblink}" title=""><img src="images/facebook.png" width="26" /></a></dd>
 	</dl>
 	<div class="clear"></div>
 </div>

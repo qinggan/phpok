@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/auto_control.php
-	Note	: 自动读写表单处理（数据表qinggan_temp）
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-12-10 00:01
-***********************************************************/
+/**
+ * 自动保存数据
+ * @package phpok\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年06月14日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class auto_control extends phpok_control
 {
@@ -51,5 +54,21 @@ class auto_control extends phpok_control
 		}
 	}
 
+
+	/**
+	 * 自动保存添加的数据
+	**/
+	public function list_f()
+	{
+		$pid = $this->get('pid');
+		$uid = $this->session->val('admin_id');
+		$filename = $this->dir_data.'cache/autosave_'.$uid.'_'.$pid.'.php';
+		$this->lib('file')->rm($filename);
+		$data = isset($_POST) ? serialize($_POST) : '';
+		if($data){
+			$this->lib('file')->vi($data,$filename);
+		}
+		$this->success();
+	}
+
 }
-?>

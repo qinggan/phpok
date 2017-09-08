@@ -1,5 +1,5 @@
 body{font-size:12px;font-family:"Verdana","Microsoft Yahei","Geneva","sans-serif","Arial","Tahoma","HELVETICA";}
-.body{margin:100px auto auto auto;width:550px;border:1px solid #8F8F8F;}
+.body{margin:100px auto auto auto;max-width:550px;width:96%;border:1px solid #8F8F8F;}
 .body .tips{height:70px;}
 .body .tips .title{margin-left:70px;font-weight:bold;height:20px;padding-top:15px;}
 .body .tips .note{margin-left:70px;height:30px;}

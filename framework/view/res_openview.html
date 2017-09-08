@@ -1,9 +1,9 @@
-<!-- inc:head_open -->
+<!-- include tpl=head_open -->
 <!-- if $ispic -->
 <style type="text/css">
-.img{max-width:650px}
+.img{max-width:100%}
 </style>
-<div style="margin-top:3px;"><img src="{$rs.filename}" onload="javascript:if(this.width>650)this.width=650;"></div>
+<div style="margin-top:3px;"><img src="{$rs.filename}"/></div>
 <!-- else -->
 <div class="list">
 <table>
@@ -29,10 +29,10 @@
 </tr>
 <tr>
 	<td>&nbsp;</td>
-	<td><input type="button" value=" 点这里下载 " onclick="window.open('{$rs.filename}')" /></td>
+	<td><input type="button" value="点这里下载" class="phpok-btn" onclick="window.open('{$rs.filename}')" /></td>
 </tr>
 </table>
 </div>
 <!-- /if -->
 
-<!-- inc:foot_open -->
+<!-- include tpl=foot_open -->

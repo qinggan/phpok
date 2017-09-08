@@ -305,4 +305,123 @@ class site_model_base extends phpok_model
 		$this->cache->save($cache_id,$rs);
 		return $rs;
 	}
+
+	/**
+	 * 默认模板配置文件
+	**/
+	public function tpl_default()
+	{
+		$rslist = false;
+		if(file_exists($this->dir_data.'xml/site_tpl_default.xml')){
+			$rslist = $this->lib('xml')->read($this->dir_data.'xml/site_tpl_default.xml');
+		}
+		return $rslist;
+	}
+
+	public function tpl_file($ctrl='',$func='')
+	{
+		$id = $ctrl.'-'.$func;
+		if(file_exists($this->dir_data.'xml/site_tpl_'.$this->site_id.'.xml')){
+			$info = $this->lib('xml')->read($this->dir_data.'xml/site_tpl_'.$this->site_id.'.xml');
+			if($info[$id]){
+				return $info[$id];
+			}
+		}
+		$list = $this->tpl_default();
+		if($list && $list[$id] && $list[$id]['default']){
+			return $list[$id]['default'];
+		}
+		return false;
+	}
+
+	/**
+	 * 读写自定义的模板信息
+	 * @参数 $data 要保存的数据，留空表示读操作
+	**/
+	public function tpl_setting($data='')
+	{
+		if($data && is_array($data)){
+			return $this->lib('xml')->save($data,$this->dir_data.'xml/site_tpl_'.$this->site_id.'.xml');
+		}
+		$rslist = $this->tpl_default();
+		if(file_exists($this->dir_data.'xml/site_tpl_'.$this->site_id.'.xml')){
+			$extlist = $this->lib('xml')->read($this->dir_data.'xml/site_tpl_'.$this->site_id.'.xml');
+			if($extlist && is_array($extlist)){
+				foreach($extlist as $key=>$value){
+					$rslist[$key]['tpl'] = $value;
+				}
+			}
+		}
+		return $rslist;
+	}
+
+	/**
+	 * 重置模板设置
+	**/
+	public function tpl_reset()
+	{
+		if(file_exists($this->dir_data.'xml/site_tpl_'.$this->site_id.'.xml')){
+			$this->lib('file')->rm($this->dir_data.'xml/site_tpl_'.$this->site_id.'.xml');
+		}
+		return true;
+	}
+
+	public function reserved()
+	{
+		$reserved = array('js','ajax','inp');
+		if($this->config['reserved']){
+			$tmp = explode(",",$this->config['reserved']);
+			$reserved = array_merge($reserved,$tmp);
+		}
+		$list = $this->lib('file')->ls($this->dir_phpok.'www');
+		foreach($list as $key=>$value){
+			if(!$value || is_dir($value) || !file_exists($value) || substr($value,-12) != '_control.php'){
+				continue;
+			}
+			$basename = basename($value);
+			$basename = str_replace("_control.php",'',$basename);
+			$reserved[] = $basename;
+		}
+		$reserved = array_unique($reserved);
+		return $reserved;
+	}
+
+	public function vcode_all()
+	{
+		$xmlfile = $this->dir_data.'xml/vcode_'.$this->site_id.'.xml';
+		if(!file_exists($xmlfile)){
+			$xmlfile = $this->dir_data.'xml/vcode.xml';
+		}
+		return $this->lib('xml')->read($xmlfile,true);
+	}
+
+	/**
+	 * 是否启用验证码，返回 true 表示启用，返回 false 表示不启用
+	 * @参数 $id 值项目ID或是system
+	 * @参数 $act 动作标识，如为 system，支持 login register，使用项目支持 add，edit，comment
+	**/
+	public function vcode($id,$act='')
+	{
+		if(!$this->config['is_vcode']){
+			return false;
+		}
+		if(!function_exists('imagecreate')){
+			return false;
+		}
+		$rslist = $this->vcode_all();
+		if(!$rslist){
+			return true;
+		}
+		$identifier = $id == 'system' ? $id : 'p-'.$id;
+		if(!$rslist[$identifier]){
+			return true;
+		}
+		if(!$rslist[$identifier]['list']){
+			return true;
+		}
+		if(!isset($rslist[$identifier]['list'][$act])){
+			return true;
+		}
+		return $rslist[$identifier]['list'][$act]['status'];
+	}
 }

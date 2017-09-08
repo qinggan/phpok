@@ -14,14 +14,9 @@ class POMO_Reader {
 	var $endian = 'little';
 	var $_post = '';
 
-	function POMO_Reader() {
+	function __construct() {
 		$this->is_overloaded = ((ini_get("mbstring.func_overload") & 2) != 0) && function_exists('mb_substr');
 		$this->_pos = 0;
-	}
-
-	function __construct()
-	{
-		$this->POMO_Reader();
 	}
 
 	/**
@@ -127,14 +122,9 @@ class POMO_FileReader extends POMO_Reader {
 	/**
 	 * @param string $filename
 	 */
-	function POMO_FileReader($filename) {
-		parent::POMO_Reader();
+	function __construct($filename) {
+		parent::__construct();
 		$this->_f = fopen($filename, 'rb');
-	}
-
-	function __construct($filename)
-	{
-		$this->POMO_FileReader($filename);
 	}
 
 	/**
@@ -186,15 +176,10 @@ class POMO_StringReader extends POMO_Reader {
 
 	var $_str = '';
 
-	function POMO_StringReader($str = '') {
-		parent::POMO_Reader();
+	function __construct($str = '') {
+		parent::__construct();
 		$this->_str = $str;
 		$this->_pos = 0;
-	}
-
-	function __construct($str = '')
-	{
-		$this->POMO_StringReader($str);
 	}
 
 	/**
@@ -234,18 +219,14 @@ if ( !class_exists( 'POMO_CachedFileReader' ) ):
  * Reads the contents of the file in the beginning.
  */
 class POMO_CachedFileReader extends POMO_StringReader {
-	function POMO_CachedFileReader($filename) {
-		parent::POMO_StringReader();
+	function __construct($filename) {
+		parent::__construct();
 		$this->_str = file_get_contents($filename);
 		if (false === $this->_str)
 			return false;
 		$this->_pos = 0;
 	}
 
-	function __construct($filename)
-	{
-		$this->POMO_CachedFileReader($filename);
-	}
 }
 endif;
 
@@ -254,13 +235,9 @@ if ( !class_exists( 'POMO_CachedIntFileReader' ) ):
  * Reads the contents of the file in the beginning.
  */
 class POMO_CachedIntFileReader extends POMO_CachedFileReader {
-	function POMO_CachedIntFileReader($filename) {
-		parent::POMO_CachedFileReader($filename);
+	function __construct($filename) {
+		parent::__construct($filename);
 	}
 
-	function __construct($filename)
-	{
-		$this->POMO_CachedIntFileReader($filename);
-	}
 }
 endif;

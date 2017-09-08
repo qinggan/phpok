@@ -1,10 +1,18 @@
 <!-- php:$title = $rs.title.' - '.$cate_rs.title.' - '.$page_rs.title -->
 <!-- include tpl=head title=$title menutitle=$page_rs.title -->
-<!-- if $page_rs.banner -->
-<div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
-<!-- /if -->
+
+
 <!-- include file=bbs_content -->
 <div class="wrap mb10">
+	<ol class="breadcrumb">
+		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
+		<li><a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a></li>
+		<!-- if $cate_rs -->
+		<li><a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a></li>
+		<!-- /if -->
+		<li>{$rs.title}</li>
+	</ol>
+
 	<div class="bbsdetail">
 		<dl>
 			<dt><img src="{$rs.user_id.avatar ? $rs.user_id.avatar : 'images/avatar_huge.gif'}" border="0" alt="{$rs.user_id.user ? $rs.user_id.user : '访客'}" /><br />{$rs.user_id.user ? $rs.user_id.user : '访客'}</dt>
@@ -75,9 +83,9 @@
 		<dl>
 			<dt><img src="{$session.user_rs.avatar ? $session.user_rs.avatar : 'images/avatar_huge.gif'}" alt="{$session.user_name}" /></dt>
 			<dd>
-				<div class="Remarks">
+				<div class="Remarks" style="margin:0;padding:0;border:0;">
 					<form method="post" id="comment_post">
-					<textarea name="comment" id="comment" class="textarea"></textarea>
+					<textarea name="comment" id="comment" class="textarea" style="width:98%"></textarea>
 					<input name="" type="submit" class="bbsbtn hover" value="提交" />
 					</form>
 				</div>

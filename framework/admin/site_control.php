@@ -27,26 +27,93 @@ class site_control extends phpok_control
 		$this->view("site_list");
 	}
 
+	/**
+	 * 添加新站点
+	**/
+	public function add_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$this->view("site_add");
+	}
+
+	public function addok_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$title = $this->get("title");
+		if(!$title){
+			$this->error(P_Lang('网站标题不能为空'));
+		}
+		$domain = $this->get("domain");
+		if(!$domain){
+			$this->error("域名不能为空");
+		}
+		$domain = strtolower($domain);
+		if(strpos($domain,'/') !== false){
+			$this->error(P_Lang('域名填写不规范，不能带有http://或https://或/'));
+		}
+		$domain_rs = $this->model("site")->domain_check($domain);
+		if($domain_rs){
+			$this->error(P_Lang('域名已被使用，请更换'));
+		}
+		$array = array();
+		$array["title"] = $title;
+		$array["dir"] = '/';
+		$array["status"] = 0;
+		$array["content"] = '';
+		$array["tpl_id"] = 0;
+		$array["url_type"] = 'default';
+		$array["domain_id"] = "";
+		$array["logo"] = '';
+		$array["meta"] = '';
+		$array["register_status"] = 0;
+		$array["register_close"] = "";
+		$array["login_status"] = 0;
+		$array["login_close"] = "";
+		$site_id = $this->model('site')->save($array);
+		if(!$site_id){
+			$this->error(P_Lang('网站创建失败'));
+		}
+		$domain_id = $this->model('site')->domain_add($domain,$site_id);
+		if($domain_id){
+			$tmp = array('domain_id'=>$domain_id);
+			$this->model("site")->save($tmp,$site_id);
+		}
+		$this->success();
+	}
+
+
+	/**
+	 * 删除站点操作，仅限系统管理员有权限
+	 * @参数 id 网站ID，默认站点不支持删除
+	**/
 	public function delete_f()
 	{
 		//删除站点操作
-		if(!$this->popedom['delete']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+		$admin_rs = $this->session->val('admin_rs');
+		if(!$admin_rs['if_system']){
+			$this->error(P_Lang('您没有权限执行此操作，此操作仅限系统管理员有权限'));
 		}
 		$id = $this->get("id","int");
-		if(!$id) $this->json(P_Lang('未指定ID'));
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
 		$rs = $this->model('site')->get_one($id);
-		if(!$rs) $this->json(P_Lang('站点信息不存在'));
+		if(!$rs){
+			$this->error(P_Lang('站点信息不存在'));
+		}
 		if($rs['is_default']){
-			$this->json(P_Lang('默认站点不支持删除操作'));
+			$this->error(P_Lang('默认站点不支持删除操作'));
 		}
-		//删除网站内容
 		$this->model("site")->site_delete($id);
-		if($id == $_SESSION['admin_site_id']){
+		if($id == $this->session->val('admin_site_id')){
 			$d_rs = $this->model('site')->get_one_default();
-			$_SESSION['admin_site_id'] = $d_rs['id'];
+			$this->session->assign('admin_site_id',$d_rs['id']);
 		}
-		$this->json(P_Lang('网站删除成功'),true);
+		$this->success();
 	}
 
 	public function default_f()

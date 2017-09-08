@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: phpok/phpok_helper.php
-	Note	: 通用函数
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-10-17 14:49
-***********************************************************/
+/**
+ * 常用函数
+ * @package phpok\framework
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年06月21日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 
 function phpok_cut($string,$length=255,$dot="")
@@ -232,7 +235,7 @@ function phpok_img_local($content)
 	$folder = $cate_rs["root"];
 	if($cate_rs["folder"] && $cate_rs["folder"] != "/")
 	{
-		$folder .= date($cate_rs["folder"],$GLOBALS['app']->system_time);
+		$folder .= date($cate_rs["folder"],$GLOBALS['app']->time);
 	}
 	if(!file_exists($folder))
 	{
@@ -294,7 +297,7 @@ function phpok_img_local($content)
 			$content_img = $GLOBALS['app']->lib("html")->get_content($value);
 			if(!$content_img) continue;
 			//文件名
-			$filename = $GLOBALS['app']->system_time."_".$key.".".$ext;
+			$filename = $GLOBALS['app']->time."_".$key.".".$ext;
 			$GLOBALS['app']->lib("file")->save_pic($content_img,$save_folder.$filename);
 			unset($content_img);
 			//生成记录
@@ -304,7 +307,7 @@ function phpok_img_local($content)
 			$array["name"] = $filename;
 			$array["ext"] = $ext;
 			$array["filename"] = $folder.$filename;
-			$array["addtime"] = $GLOBALS['app']->system_time;
+			$array["addtime"] = $GLOBALS['app']->time;
 			$array["title"] = str_replace(".".$ext,"",$GLOBALS['app']->lib('string')->to_utf8(basename($value)));
 			$img_ext = getimagesize($save_folder.$filename);
 			$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
@@ -658,28 +661,31 @@ function phpok_decode($string,$id="")
 function tpl_head($array=array())
 {
 	$app = $GLOBALS['app'];
-	if($array['html5'] && $array['html5'] == 'false'){
-		$html  = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
-		$html .= '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
-		$html .= '<head>'."\n\t".'<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'."\n\t";
-	}else{
-		$html  = '<!DOCTYPE html>'."\n";
-		$html .= '<html>'."\n";
-		$html .= '<head>'."\n\t".'<meta charset="utf-8" />'."\n\t";
-	}
-	if($array['mobile'] && $array['mobile'] == 'true'){
+	$html  = '<!DOCTYPE html>'."\n";
+	$html .= '<html>'."\n";
+	$html .= '<head>'."\n\t".'<meta charset="utf-8" />'."\n\t";
+	if(isset($array['mobile']) && $array['mobile']){
 		$html .= '<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />'."\n\t";
 	}
 	$html .= '<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />'."\n\t";
 	$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate" />'."\n\t";
 	$html .= '<meta http-equiv="Pragma" content="no-cache" />'."\n\t";
-	$html .= '<meta http-equiv="Expires" content="-1" />'."\n\t";//Mon, 26 Jul 1997 05:00:00 GMT
+	$html .= '<meta http-equiv="Expires" content="-1" />'."\n\t";
 	$html .= '<meta name="renderer" content="webkit">'."\n\t";
 	if($app->license == 'LGPL'){
 		$html .= '<meta name="author" content="phpok,admin@phpok.com" />'."\n\t";
 	}
 	$html .= '<meta name="license" content="'.$app->license.'" />'."\n\t";
 	$seo = $app->site['seo'];
+	if($array['seo_title']){
+		$seo['title'] = $array['seo_title'];
+	}
+	if($array['keywords']){
+		$seo['keywords'] = $array['keywords'];
+	}
+	if($array['description']){
+		$seo['description'] = $array['description'];
+	}
 	if($seo['keywords']){
 		$html .= '<meta name="keywords" content="'.$seo['keywords'].'" />'."\n\t";
 	}
@@ -783,13 +789,16 @@ function tpl_head($array=array())
 		}
 	}
 	$html .= phpok_head_js();
-	if($array['html5'] == 'true' && (!$array['mobile'] || $array['mobile'] != 'true')){
+	if(!$array['mobile']){
 		$html .= '<!--[if IE]>'."\n\t";
 		$html .= '<script type="text/javascript" src="'.$app->url.'js/html5.js" charset="utf-8"></script>'."\n\t";
 		$html .= '<![endif]-->'."\n\t";
 	}
-	if(!$array['close'] || $array["close"] != 'false'){
-		$html .= $app->plugin_html_ap("phpokhead");
+	if(isset($array['close']) && $array['close']){
+		ob_start();
+		$app->plugin_html_ap("phpokhead");
+		$html .= ob_get_contents();
+		ob_end_clean();
 		$html .= "\n".'</head>';
 	}
 	$html .= "\n";
@@ -864,23 +873,12 @@ function license_date()
 
 
 //PHPOK日志存储，可用于调试
-function phpok_log($info='')
+function phpok_log($info='',$mask=false)
 {
-	if(!$info){
-		$info = '执行 {phpok}/'.$GLOBALS['app']->app_id.'/'.$GLOBALS['app']->ctrl.'_control.php 方法：'.$GLOBALS['app']->func.'_f';
+	if($info && (is_array($info) || is_object($info))){
+		$mask = true;
 	}
-	if(is_array($info) || is_object($info)){
-		$info = serialize($info);
-	}
-	$info = trim($info);
-	$date = date("Ymd",$GLOBALS['app']->time);
-	if(!file_exists($GLOBALS['app']->dir_root.'data/log'.$date.'.php')){
-		file_put_contents($GLOBALS['app']->dir_root.'data/log'.$date.'.php',"<?php exit();?>\n");
-	}
-	$handle = fopen($GLOBALS['app']->dir_root.'data/log'.$date.'.php','ab');
-	$info = $info.'|'.date("H:i:s",$GLOBALS['app']->time).'|'.$GLOBALS['app']->ctrl.'|'.$GLOBALS['app']->func.'|'.$GLOBALS['app']->app_id."\n";
-	fwrite($handle,$info);
-	fclose($handle);
+	$GLOBALS['app']->model('log')->save($info,$mask);
 }
 
 //邮箱合法性验证
@@ -993,6 +991,7 @@ function phpok_call_api_url($phpok,$param='',$tpl='')
 	$ext .= "token=".rawurlencode($token);
 	return api_url('index','phpok',$ext,true);
 }
+
 function token_userid()
 {
 	$info = array();
@@ -1001,3 +1000,4 @@ function token_userid()
 	}
 	return $GLOBALS['app']->lib('token')->encode($info);
 }
+

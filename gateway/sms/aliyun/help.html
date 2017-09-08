@@ -1,0 +1,30 @@
+<!-- include tpl=head_open -->
+<style type="text/css">
+.alihelp{padding:10px;}
+.alihelp h3{line-height:200%;font-size:22px;font-weight:normal;margin:0;padding:0;}
+.alihelp ul.nostyle{list-style: none;margin:0;padding:0;}
+.alihelp ul.nostyle li{padding:5px 0;}
+.alihelp ul.nostyle li img{max-width:100%;overflow: hidden;}
+</style>
+<div class="alihelp">
+	<ol>
+		<li>请在阿里云申请相应的接口，并配置好相应的发送模板（开通默认8个模板，可直接使用）</li>
+		<li><b>配置短信模板</b>
+			<ul class="nostyle">
+				<li>菜单 / 设置（工具） / 通知模板</li>
+				<li>创建阿里云发送短信需要使用的模板标签</li>
+				<li>标签即对应阿里云控制台上设置的：<span class="darkblue">模板CODE</span></li>
+			</ul>
+		</li>
+		<li><b>常见的变量有</b>
+			<ul class="nostyle">
+				<li>验证码：<span class="red">code</span></li>
+				<li>网站名称：<span class="red">product</span></li>
+				<li>账户：<span class="red">customer</span></li>
+				<li>事件：<span class="red">item</span></li>
+			</ul>
+		</li>
+	</ol>
+</div>
+
+<!-- include tpl=foot_open -->

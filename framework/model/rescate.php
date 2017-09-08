@@ -1,12 +1,15 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/model/rescate.php
-	备注： 资源分类管理工具
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年04月25日 00时02分
-*****************************************************************************************/
+/**
+ * 资源分类
+ * @package phpok\model
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年03月21日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class rescate_model_base extends phpok_model
 {
@@ -61,6 +64,29 @@ class rescate_model_base extends phpok_model
 		$sql = "SELECT * FROM ".$this->db->prefix."res_cate WHERE is_default=1";
 		return $this->db->get_one($sql);
 	}
-}
 
-?>
+	/**
+	 * 获取分类信息，分类ID内容不存在时读默认分类
+	 * @参数 $id 分类ID，为空读默认分类
+	 * @返回 false 或 array
+	**/
+	public function cate_info($id='')
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."res_cate WHERE is_default=1";
+		if($id && intval($id)>0){
+			$sql .= " OR id='".intval($id)."'";
+		}
+		$sql .= " ORDER BY is_default ASC LIMIT 1";
+		return $this->db->get_one($sql);
+	}
+
+	/**
+	 * 取得附件下的全部分类
+	 * @返回 数组
+	**/
+	public function cate_all()
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."res_cate ORDER BY id ASC";
+		return $this->db->get_all($sql);
+	}
+}

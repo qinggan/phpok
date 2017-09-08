@@ -42,7 +42,10 @@ class wxpay_notify
 			$this->error('签名验证不通过');
 		}
 		//保存订单信息
-		$ext = array('openid'=>$data['openid'],'trade_type'=>$data['trade_type'],'bank_type'=>$data['bank_type']);
+		$ext = $this->order['ext'] ? unserialize($this->order['ext']) : array();
+		$ext['openid'] = $data['openid'];
+		$ext['trade_type'] = $data['trade_type'];
+		$ext['bank_type'] = $data['bank_type'];
 		$ext['total_fee'] = $data['total_fee'];
 		if($data['fee_type']){
 			$ext['fee_type'] = $data['fee_type'];
@@ -90,6 +93,9 @@ class wxpay_notify
 				$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
 				$app->model('order')->log_save($log);
 			}
+		}
+		if($this->order['type'] == 'recharge' && $ext['goal']){
+			$app->model('wealth')->recharge($this->order['id']);
 		}
 		$this->ok();		
 	}

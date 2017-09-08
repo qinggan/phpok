@@ -24,8 +24,7 @@ class tag_model extends tag_model_base
 
 	public function get_one($id,$field='id',$site_id=0)
 	{
-		if($site_id)
-		{
+		if($site_id){
 			$this->site_id($site_id);
 		}
 		$sql = "SELECT * FROM ".$this->db->prefix."tag WHERE ".$field."='".$id."' AND site_id='".$this->site_id."'";
@@ -108,70 +107,81 @@ class tag_model extends tag_model_base
 		return $this->db->query($sql);
 	}
 
-	//批量更新Tag及Tag里的统计
-	public function update_tag($data,$list_id,$site_id=0)
+	/**
+	 * 批量更新标签及标签统计
+	 * @参数 $data 标签数据，可以是数组也可以是字符串
+	 * @参数 $list_id 主题ID（项目ID，p前缀）（分类ID，c前缀）
+	**/
+	public function update_tag($data='',$list_id=0)
 	{
-		if(!$data || !$list_id || (is_string($data) && !trim($data))) return false;
+		if(!$list_id){
+			return false;
+		}
+
+		//没有要更新的tag标签时，删除原有记录
+		if(!$data){
+			return $this->stat_delete($list_id,'title_id');
+		}
 		$data = $this->string_to_array($data);
-		if($site_id) $this->site_id($site_id);
-		//删除主题的Tag Id
+		
+		$site_id = $this->_tag_site_id($list_id);
 		$this->stat_delete($list_id,'title_id');
-		foreach($data as $key=>$value)
-		{
-			$value = trim($value);
-			if(!$value) continue;
-			$chk_rs = $this->chk_title($value);
-			if($chk_rs)
-			{
-				$id = $chk_rs['id'];
+		foreach($data as $key=>$value){
+			if(!$value || !trim($value)){
+				continue;
 			}
-			else
-			{
-				$array = array('site_id'=>$this->site_id,'title'=>$value,'url'=>'','target'=>'0');
+			$value = trim($value);
+			$chk_rs = $this->chk_title($value);
+			if($chk_rs){
+				$id = $chk_rs['id'];
+			}else{
+				$array = array('site_id'=>$site_id,'title'=>$value,'url'=>'','target'=>'0');
 				$id = $this->save($array);
 			}
-			if($id)
-			{
+			if($id){
 				$this->stat_save($id,$list_id);
 			}
 		}
 		return true;
 	}
 
-	public function string_to_array($string)
+	/**
+	 * 通过标签中的记录，获取相应的站点ID
+	 * @参数 $id 标签ID
+	**/
+	private function _tag_site_id($id)
 	{
-		if(!$string || !trim($string))
-		{
+		if(substr($id,0,1) == 'p'){
+			$sql = "SELECT site_id FROM ".$this->db->prefix."project WHERE id='".substr($id,1)."'";
+		}
+		if(substr($id,0,1) == 'c'){
+			$sql = "SELECT site_id FROM ".$this->db->prefix."cate WHERE id='".substr($id,1)."'";
+		}
+		if(is_numeric($id)){
+			$sql = "SELECT site_id FROM ".$this->db->prefix."list WHERE id='".$id."'";
+		}
+		$rs = $this->db->get_one($sql);
+		if(!$rs || !$rs['site_id']){
+			return $this->site_id;
+		}
+		return $rs['site_id'];
+	}
+
+	/**
+	 * 字符串转数组
+	 * @参数 $string 要转化的字符串
+	 * @返回 数组
+	**/
+	private function string_to_array($string)
+	{
+		if(!$string || !trim($string)){
 			return false;
 		}
-		if(is_array($string))
-		{
+		if(is_array($string)){
 			return $string;
 		}
-		$str_list = array("　","，",",","｜","|","、","/","\\","／","＼","+","＋","-","－","_","＿","—","&nbsp;","&lt;","&gt;",">","<");
-		$string = str_replace($str_list," ",$string);
-		$string = preg_replace("/(\x20{2,})/"," ",$string);
-		return explode(" ",$string);
+		$config = $this->config();
+		$separator = $config['separator'] ? $config['separator'] : ',';
+		return explode($separator,$string);
 	}
-
-	public function get_tags($id)
-	{
-		$sql = "SELECT t.title FROM ".$this->db->prefix."tag_stat s ";
-		$sql.= " JOIN ".$this->db->prefix."tag t ON(s.tag_id=t.id) ";
-		$sql.= " WHERE s.title_id='".$id."'";
-		$rs = $this->db->get_all($sql);
-		if(!$rs)
-		{
-			return false;
-		}
-		$list = array();
-		foreach($rs as $key=>$value)
-		{
-			$list[] = $value['title'];
-		}
-		return implode(" ",$list);
-	}
-
 }
-
-?>

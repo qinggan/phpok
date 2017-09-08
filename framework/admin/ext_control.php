@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/ext_control.php
-	Note	: 扩展字段管理
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-03-05 16:07
-***********************************************************/
+/**
+ * 扩展字段快速添加动作
+ * @package phpok\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年06月14日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class ext_control extends phpok_control
 {
@@ -77,7 +80,7 @@ class ext_control extends phpok_control
 					$this->json(P_Lang('未指定标识串'));
 				}
 				if(!$this->model('ext')->check_identifier_add($identifier,$info[1])){
-					$this->json(P_Lang('验证码不符合验证要求，请检查'));
+					$this->json(P_Lang('标识串不符合要求，请检查'));
 				}
 				$array['identifier'] = $identifier;
 			}
@@ -92,7 +95,7 @@ class ext_control extends phpok_control
 				$this->json(P_Lang('未指定标识串'));
 			}
 			if(!$this->model('ext')->check_identifier_add($identifier,$info[1])){
-				$this->json(P_Lang('验证码不符合验证要求，请检查'));
+				$this->json(P_Lang('标识串不符合验证要求，请检查'));
 			}
 			if($_SESSION['admin-'.$id] && $_SESSION['admin-'.$id][$identifier]){
 				$this->json(P_Lang('标识串已被使用'));
@@ -127,9 +130,12 @@ class ext_control extends phpok_control
 		$this->view("ext_select");
 	}
 
+	/**
+	 * 主题增加扩展字段操作
+	**/
 	public function add_f()
 	{
-		$id = $this->get("id","int");
+		$id = $this->get("id");
 		$module = $this->get("module");
 		if(!$id){
 			$this->json(P_Lang('未指定ID'));
@@ -137,39 +143,43 @@ class ext_control extends phpok_control
 		if(!$module){
 			$this->json(P_Lang('未指哪个模型要添加扩展字段'));
 		}
-		$tmplist = explode(",",$id);
 		$list = explode("-",$module);
-		foreach($tmplist as $key=>$value){
-			$rs = $this->model('fields')->get_one($value);
-			if(!$rs){
-				continue;
-			}
-			if($list[0] == "add"){
-				if($_SESSION['admin-'.$module] && $_SESSION['admin-'.$module][$rs['identifier']]){
-					continue;
-				}
-				unset($rs['id']);
-				$_SESSION['admin-'.$module][$rs['identifier']] = $rs;
-			}else{
-				$chk_rs = $this->model('ext')->check_identifier($rs["identifier"],$module);
-				if($chk_rs){
-					continue;
-				}
-				$array = array();
-				$array["module"] = $module;
-				$array["title"] = $rs['title'];
-				$array["identifier"] = $rs['identifier'];
-				$array["field_type"] = $rs['field_type'];
-				$array["note"] = $rs['note'];
-				$array["form_type"] = $rs['form_type'];
-				$array["form_style"] = $rs["form_style"];
-				$array["format"] = $rs["format"];
-				$array["content"] = $rs["content"];
-				$array["taxis"] = $rs["taxis"];
-				$array["ext"] = $rs["ext"] ? serialize(unserialize($rs["ext"])) : "";
-				$this->model('ext')->save($array);
-			}
+		$rs = $this->model('fields')->get_one($id);
+		if(!$rs){
+			$this->json(P_Lang('常用字段不存在'));
 		}
+		if($list[0] == "add"){
+			$tmp = 'admin-'.$module;
+			if($this->session->val($tmp) && $this->session->val($tmp.'.'.$id)){
+				$this->json(P_Lang('标识已被使用，不能重复使用'));
+			}
+			$this->session->assign($tmp.'.'.$id,$rs);
+			$this->json(true);
+		}
+		$chk_rs = $this->model('ext')->check_identifier($rs["identifier"],$module);
+		if($chk_rs){
+			$this->json(P_Lang('标识已被使用，不能重复使用'));
+		}
+		$array = array();
+		$array["module"] = $module;
+		$array["title"] = $rs['title'];
+		$array["identifier"] = $rs['identifier'];
+		$array["field_type"] = $rs['field_type'];
+		$array["note"] = $rs['note'];
+		$array["form_type"] = $rs['form_type'];
+		$array["form_style"] = $rs["form_style"];
+		$array["format"] = $rs["format"];
+		$array["content"] = $rs["content"];
+		$array["taxis"] = $rs["taxis"];
+		if($rs['ext']){
+			if(is_array($rs['ext'])){
+				$rs['ext'] = serialize($rs['ext']);
+			}else{
+				$rs['ext'] = serialize(unserialize($rs["ext"]));
+			}
+			$array['ext'] = $rs['ext'];
+		}
+		$this->model('ext')->save($array);
 		$this->json(true);
 	}
 
@@ -230,23 +240,24 @@ class ext_control extends phpok_control
 	{
 		$id = $this->get("id");
 		if(!$id){
-			error(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$module = $this->get("module");
 		if(!$module){
-			error(P_Lang('未指定模块'));
+			$this->error(P_Lang('未指定模块'));
 		}
 		$info = explode('-',$module);
 		if(in_array('add',$info)){
-			if($_SESSION['admin-'.$module] && $_SESSION['admin-'.$module][$id]){
-				$rs = $_SESSION['admin-'.$module][$id];
+			$tmp = 'admin-'.$module;
+			if($this->session->val($tmp) && $this->session->val($tmp.'.'.$id)){
+				$rs = $this->session->val($tmp.'.'.$id);
 			}
 		}else{
 			$rs = $this->model('ext')->get_from_identifier($id,$module);
 			$this->assign('tid',$rs['id']);
 		}
 		if(!$rs){
-			error(P_Lang('自定义字段不存在！'));
+			$this->error(P_Lang('自定义字段不存在！'));
 		}
 		$this->assign("module",$module);
 		$this->assign("rs",$rs);
@@ -254,4 +265,3 @@ class ext_control extends phpok_control
 		$this->view("ext_edit");
 	}
 }
-?>

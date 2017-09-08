@@ -26,8 +26,10 @@ $(document).ready(function(){
 		</tr>
 		<tr>
 			<td>&nbsp;</td>
-			<td><input type="button" value="首页" class="btn" onclick="$('#{$_rs.identifier}_default').val('index.php');$('#{$_rs.identifier}_rewrite').val('index.html');" />
+			<td>
+			    <input type="button" value="首页" class="btn" onclick="$('#{$_rs.identifier}_default').val('index.php');$('#{$_rs.identifier}_rewrite').val('index.html');" />
 				<input type="button" value="网址库" class="btn" id="_phpok_button_url_{$_rs.identifier}" />
+				<input type="button" value="无链接" class="btn" onclick="$('#{$_rs.identifier}_default').val('javascript:;void(0)');$('#{$_rs.identifier}_rewrite').val('javascript:;void(0)');" />
 				<input type="button" value="清除" class="btn" onclick="$('#{$_rs.identifier}_default').val('');$('#{$_rs.identifier}_rewrite').val('');" />
 			</td>
 		</tr>

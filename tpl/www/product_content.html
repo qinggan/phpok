@@ -21,9 +21,11 @@ function attr_select(id,aid)
 	var price = '{$rs.price}';
 	$("input[name=attr]").each(function(i){
 		var val = $(this).val();
-		var newprice = $("div[data="+val+"]").attr("price");
-		if(newprice && parseFloat(newprice)>0){
-			price = parseFloat(price) + parseFloat(newprice);
+		if(val){
+			var newprice = $("div[data="+val+"]").attr("price");
+			if(newprice && parseFloat(newprice)>0){
+				price = parseFloat(price) + parseFloat(newprice);
+			}
 		}
 	});
 	var url = api_url('cart','price_format','price='+$.str.encode(price));

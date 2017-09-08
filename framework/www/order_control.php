@@ -54,7 +54,11 @@ class order_control extends phpok_control
 			$rslist = $this->model('order')->get_list($condition,$offset,$psize);
 			$this->assign('rslist',$rslist);
 		}
-		$this->view('order_list');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'order_list';
+		}
+		$this->view($tplfile);
 	}
 
 	/**
@@ -296,7 +300,11 @@ class order_control extends phpok_control
 		}
 		$loglist = $this->model('order')->log_list($rs['id']);
 		$this->assign('loglist',$loglist);
-		$this->view('order_info');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'order_info';
+		}
+		$this->view($tplfile);
 	}
 
 	/**
@@ -326,7 +334,11 @@ class order_control extends phpok_control
 		$paylist = $this->model('payment')->get_all($this->site['id'],1,$mobile);
 		$this->assign("paylist",$paylist);
 		$this->balance();
-		$this->view('order_payment');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'order_payment';
+		}
+		$this->view($tplfile);
 	}
 
 	/**
@@ -453,6 +465,10 @@ class order_control extends phpok_control
 		}
 		$this->assign('rslist',$rslist);
 		$this->assign('rs',$rs);
-		$this->view('order_comment');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'order_comment';
+		}
+		$this->view($tplfile);
 	}
 }

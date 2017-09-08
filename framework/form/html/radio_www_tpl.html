@@ -10,12 +10,12 @@ ul.radio_{$_rs.identifier} li{display:block;}
 <!-- else -->
 <style type="text/css">
 ul.radio_{$_rs.identifier}:after{content:'&nbsp;';display: block;visibility:hidden;height:0;line-height:0;clear:both;overflow:hidden;}
-ul.radio_{$_rs.identifier} li{float:left;margin-right:5px;}
+ul.radio_{$_rs.identifier} li{float:left;margin-right:15px;}
 </style>
 <!-- /if -->
-<ul class="radio_{$_rs.identifier}">
+<ul class="radio radio_{$_rs.identifier}">
 	<!-- loop from=$_rslist key=$key value=$value -->
-	<li><label><input type="radio" name="{$_rs.identifier}" value="{$value.val}"{if $_rs.content == $value.val} checked{/if} />{$value.title}</label></li>
+	<li><label><input type="radio" class="radio radio_{$_rs.identifier}" name="{$_rs.identifier}" value="{$value.val}"{if $_rs.content == $value.val} checked{/if} />{$value.title}</label></li>
 	<!-- /loop -->
 	<!-- if $_rs.note -->
 	<li style="line-height:24px;color:gray;font-style:italic;margin-left:-3px;">{$_rs.note}</li>

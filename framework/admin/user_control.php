@@ -1,14 +1,18 @@
 <?php
-/***********************************************************
-	Filename: app/admin/user.php
-	Note	: 会员中心
-	Version : 3.0
-	Author  : qinggan
-	Update  : 2009-12-23
-***********************************************************/
+/**
+ * 会员相关处理
+ * @package phpok\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年06月08日
+**/
+
 class user_control extends phpok_control
 {
-	var $popedom;
+	private $popedom;
 	function __construct()
 	{
 		parent::control();
@@ -18,24 +22,104 @@ class user_control extends phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
+	/**
+	 * 配置要显示的会员字段，仅在后台有效
+	**/
+	public function show_setting_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$list = $this->lib('xml')->read($this->dir_data.'xml/admin_user.xml');
+		if($list){
+			$this->assign("arealist",$list);
+			$keys = array_keys($list);
+			$this->assign('keys',$keys);
+		}
+		$rslist = array('user'=>P_Lang('账号'),'group_id'=>P_Lang('会员组'),'email'=>P_Lang('邮箱'),'mobile'=>P_Lang('手机号'));
+		$flist = $this->model('user')->fields_all();
+		if($flist){
+			foreach($flist as $key=>$value){
+				$rslist[$value['identifier']] = $value['title'];
+			}
+		}
+		$this->assign('rslist',$rslist);
+		$this->view('user_show_setting');
+	}
+
+
+	public function show_setting_save_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$array = $this->get('setting','checkbox');
+		if(!$array){
+			$array = array('user');
+		}
+		$rslist = array('user'=>P_Lang('账号'),'group_id'=>P_Lang('会员组'),'email'=>P_Lang('邮箱'),'mobile'=>P_Lang('手机号'));
+		$flist = $this->model('user')->fields_all();
+		if($flist){
+			foreach($flist as $key=>$value){
+				$rslist[$value['identifier']] = $value['title'];
+			}
+		}
+		$arealist = array();
+		foreach($rslist as $key=>$value){
+			if(in_array($key,$array)){
+				$arealist[$key] = $value;
+			}
+		}
+		$this->lib('xml')->save($arealist,$this->dir_data.'xml/admin_user.xml');
+		$this->success();
+	}
+
 
 	//会员列表
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
+		$flist = array('user'=>P_Lang('账号'),'mobile'=>P_Lang('手机号'),'email'=>P_Lang('邮箱'));
+		$tmplist = $this->model('user')->fields_all("field_type NOT IN('longtext','text','longblob','blog') AND form_type='text'");
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$flist[$value['identifier']] = $value['title'];
+			}
+		}
+		$this->assign('flist',$flist);
 		$pageid = $this->get($this->config["pageid"],"int");
-		if(!$pageid) $pageid = 1;
+		if(!$pageid){
+			$pageid = 1;
+		}
 		$psize = $this->config["psize"];
-		if(!$psize) $psize = 30;
+		if(!$psize){
+			$psize = 30;
+		}
 		$keywords = $this->get("keywords");
+		$keytype = $this->get('keytype');
+		if(!$keytype){
+			$keytype = 'user';
+		}
 		$page_url = $this->url("user");
 		$condition = "1=1";
 		if($keywords){
 			$this->assign("keywords",$keywords);
-			$condition .= " AND u.user LIKE '%".$keywords."%'";
-			$page_url.="&keywords=".rawurlencode($keywords);
+			$this->assign("keytype",$keytype);
+			$tmparray = array('email','user','mobile');
+			if(in_array($keytype,$tmparray)){
+				$condition .= " AND u.".$keytype." LIKE '%".$keywords."%'";
+			}else{
+				$condition .= " AND e.".$keytype." LIKE '%".$keywords."%'";
+			}
+			$page_url.="&keywords=".rawurlencode($keywords)."&keytype=".rawurlencode($keytype);
+		}
+		$group_id = $this->get('group_id','int');
+		if($group_id){
+			$this->assign('group_id',$group_id);
+			$condition .= " AND u.group_id='".$group_id."'";
+			$page_url .= "&group_id=".$group_id;
 		}
 		$offset = ($pageid-1) * $psize;
 		$rslist = $this->model('user')->get_list($condition,$offset,$psize);
@@ -237,8 +321,10 @@ class user_control extends phpok_control
 		exit("ok");
 	}
 
-	//会员字段管理器中涉及到的字段
-	function fields_auto()
+	/**
+	 * 会员字段管理器中涉及到的字段
+	**/
+	private function fields_auto()
 	{
 		$this->form_list = $this->model('form')->form_all();
 		$this->field_list = $this->model('form')->field_all();
@@ -250,97 +336,79 @@ class user_control extends phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
-	function fields_f()
+	public function fields_f()
 	{
 		$this->fields_auto();
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		// 取得现有全部字段
 		$condition = "area LIKE '%user%'";
 		$used_list = $this->model('user')->fields_all("","identifier");
-		if($used_list)
-		{
-			foreach($used_list AS $key=>$value)
-			{
+		if($used_list){
+			foreach($used_list AS $key=>$value){
 				$value["field_type_name"] = $this->field_list[$value["field_type"]];
 				$value["form_type_name"] = $this->form_list[$value["form_type"]];
 				$used_list[$key] = $value;
 			}
 		}
 		$this->assign("used_list",$used_list);
-		if($this->popedom["set"])
-		{
-			$fields_list = $this->model('fields')->get_all($condition,"identifier");
-			if($fields_list)
-			{
-				foreach($fields_list AS $key=>$value)
-				{
-					$value["field_type_name"] = $this->field_list[$value["field_type"]];
-					$value["form_type_name"] = $this->form_list[$value["form_type"]];
-					$fields_list[$key] = $value;
-				}
-			}
-			if($fields_list && $used_list)
-			{
+		if($this->popedom["set"]){
+			$fields_list = $this->model('fields')->get_all();
+			$this->assign("fields_list",$fields_list);
+			if($fields_list && $used_list){
 				$main_key = $this->model('user')->fields();
 				$newlist = array();
-				foreach($fields_list AS $key=>$value)
-				{
-					if(!$used_list[$key] && !in_array($key,$main_key))
-					{
+				foreach($fields_list AS $key=>$value){
+					if(!$used_list[$key] && !in_array($key,$main_key)){
 						$newlist[$key] = $value;
 					}
 				}
 				$this->assign("fields_list",$newlist);
 			}
-			else
-			{
-				$this->assign("fields_list",$fields_list);
-			}
 		}
 		$this->view("user_fields");
 	}
 
-	//自定义字段
-	function fields_save_f()
+	/**
+	 * 保存自定义字段
+	 * @参数 
+	 * @返回 
+	 * @更新时间 
+	**/
+	public function fields_save_f()
 	{
 		$this->fields_auto();
-		if(!$this->popedom["set"]) error(P_Lang('您没有权限执行此操作'));
-		$id_list = isset($_POST["add_field"]) ? $_POST["add_field"] : "";
-		if($id_list && is_array($id_list))
-		{
-			$condition = "area LIKE '%user%'";
-			$flist = $this->model('fields')->get_all($condition,"id");
-			foreach($id_list AS $key=>$value)
-			{
-				if(!$flist[$value]) continue;
-				$f_rs = $flist[$value];
-				$title = $this->get("field_title_".$value);
-				if(!$title) $title = $f_rs["title"];
-				$note = $this->get("field_note_".$value);
-				if(!$note) $note = $f_rs["note"];
-				$tmp_array = array("title"=>$title,"note"=>$note);
-				$tmp_array["identifier"] = $f_rs["identifier"];
-				$tmp_array["field_type"] = $f_rs["field_type"];
-				$tmp_array["form_type"] = $f_rs["form_type"];
-				$tmp_array["form_style"] = $f_rs["form_style"];
-				$tmp_array["format"] = $f_rs["format"];
-				$tmp_array["content"] = $f_rs["content"];
-				$tmp_array["taxis"] = $f_rs["taxis"];
-				$tmp_array["ext"] = $f_rs["ext"] ? serialize(unserialize($f_rs["ext"])) : "";
-				$this->model('user')->fields_save($tmp_array);
-			}
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('fields')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('字段内容不存在'));
+		}
+		$tmp_array = array('title'=>$rs['title'],'note'=>$rs['note']);
+		$tmp_array["identifier"] = $rs["identifier"];
+		$tmp_array["field_type"] = $rs["field_type"];
+		$tmp_array["form_type"] = $rs["form_type"];
+		$tmp_array["form_style"] = $rs["form_style"];
+		$tmp_array["format"] = $rs["format"];
+		$tmp_array["content"] = $rs["content"];
+		$tmp_array["taxis"] = $this->model('user')->user_next_taxis();
+		if($rs['ext'] && is_array($rs['ext'])){
+			$tmp_array['ext'] = serialize($rs['ext']);
+		}
+		$this->model('user')->fields_save($tmp_array);
 		$list = $this->model('user')->fields_all();
-		if($list)
-		{
-			foreach($list AS $key=>$value)
-			{
+		if($list){
+			foreach($list AS $key=>$value){
 				$this->model('user')->create_fields($value);
 			}
 		}
-		error(P_Lang('会员自定义字段配置成功'),$this->url("user","fields"));
+		$this->success();
 	}
 
 	
@@ -409,18 +477,24 @@ class user_control extends phpok_control
 		$html = '<input type="button" value=" '.P_Lang('确定').' " class="submit" onclick="$.dialog.close();" />';
 		error_open(P_Lang('自定义字段信息配置成功'),"ok",$html);
 	}
-	//删除字段
-	function field_delete_f()
+
+	/**
+	 * 删除字段
+	 * @参数 id 要删除的字段ID，数字
+	 * @返回 JSON数据
+	**/
+	public function field_delete_f()
 	{
 		$this->fields_auto();
-		if(!$this->popedom["set"]) $this->json(P_Lang('您没有权限执行此操作'));
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
-		if(!$id)
-		{
-			$this->json(P_Lang('未指定要删除的字段'));
+		if(!$id){
+			$this->error(P_Lang('未指定要删除的字段'));
 		}
 		$this->model('user')->field_delete($id);
-		$this->json(P_Lang('删除成功'),true);
+		$this->success();
 	}
 
 	public function info_f()
@@ -476,5 +550,21 @@ class user_control extends phpok_control
 		}
 		$this->json($info,true);
 	}
+
+	public function address_list_f()
+	{
+		if(!$this->popedom['list']){
+			$this->error(P_Lang('您没有权限查看会员地址信息'));
+		}
+		$uid = $this->get('uid','int');
+		if(!$uid){
+			$this->error(P_Lang('未指定会员ID'));
+		}
+		$rslist = $this->model('user')->address_all($uid);
+		if($rslist){
+			$this->assign('rslist',$rslist);
+			$this->assign('total',count($rslist));
+		}
+		$this->view('user_address');
+	}
 }
-?>

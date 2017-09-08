@@ -1,51 +1,26 @@
-<!-- inc:head_open -->
-<script type="text/javascript">
-function phpok_input(val)
-{
-	var obj = $.dialog.opener;
-	obj.$("#{$id}").val(val);
-	$.dialog.close();
-}
-</script>
+<!-- include tpl=head_open -->
 <div class="tips">
-	站点：<span class="red">{$site_rs[title]}</span>，
-	风格：<span class="red">{$rs.title}</span>，
-	当前路径：<span class="red">{$folder}</span>
-	<!-- if $folder != "/" -->
-	，<a href="{echo admin_url('tpl','open')}&id={$id}" title="返回根目录">点此返回根目录</a>
-	<!-- /if -->
+	{lang允许选择其他风格文件的模板}
+	<select name="tpl_id" onchange="$.admin_tpl.open_select('{$id}',this.value)">
+	<!-- loop from=$tplist key=$key value=$value id=$tmpid -->
+	<option value="{$value.id}"{if $value.id == $tpl_id} selected{/if}>{$value.title}</option>
+	<!-- /loop -->
+	</select>
 </div>
 <div class="list">
-<table class="list" width="100%">
-<tr>
-	<th width="40px">类型</th>
-	<th>名称</th>
-	<th width="150px">时间</th>
-</tr>
-<!-- foreach($rslist AS $key=>$value) -->
-	<!-- if $value.tplid -->
-	<tr class="hand" onclick="phpok_input('{$value.tplid}')">
-		<td><img src="images/filetype/html.gif" border="0" alt="文件：{$value.title}"></td>
+	<table class="list" width="100%">
+	<tr>
+		<th width="20px">&nbsp;</th>
+		<th>名称</th>
+		<th width="150px">时间</th>
+	</tr>
+	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	<tr class="hand" onclick="$.admin_tpl.phpok_input('{if $site_rs.tpl_id != $tpl_id}{$tpl_id}:{/if}{$value.tplid}','{$id}')">
+		<td align="center"><img src="images/filetype/html.gif" border="0" alt="文件：{$value.title}"></td>
 		<td class="lft">{$value.title}</td>
 		<td>{$value.date}</td>
 	</tr>
-	<!-- else -->
-		<!-- if $value.type == "dir" && $value.url -->
-		<tr class="hand" onclick="direct('{$value.url}')">
-			<td><img src="images/filetype/dir.gif" border="0" alt="文件夹：{$value.title}"></td>
-			<td class="lft">{$value.title}</td>
-			<td>{$value.date}</td>
-		</tr>
-		<!-- else -->
-		<tr class="hand" onclick="$.dialog.alert('名称：{$value.title}<br />路径：{$value.filename}<br />日期：{$value.date}')">
-			<td><img src="images/filetype/{$value.type}.gif" border="0" alt="文件夹：{$value.title}"></td>
-			<td class="lft">{$value.title}</td>
-			<td>{$value.date}</td>
-		</tr>
-		<!-- /if -->
-	<!-- /if -->
-<!-- /foreach -->
-</table>
+	<!-- /loop -->
+	</table>
 </div>
-
-<!-- inc:foot_open -->
+<!-- include tpl=foot_open -->

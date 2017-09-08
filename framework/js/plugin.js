@@ -24,22 +24,17 @@ function plugin_install(id)
 //卸载插件
 function plugin_uninstall(id,title)
 {
-	var qc = confirm("确定要卸载插件："+title+" 吗？卸载后相应栏目不能使用！");
-	if(qc == "0")
-	{
-		return false;
-	}
-	var url = get_url("plugin","uninstall") + "&id="+$.str.encode(id);
-	var rs = json_ajax(url);
-	if(rs.status == "ok")
-	{
-		direct(window.location.href);
-	}
-	else
-	{
-		alert(rs.content);
-		return false;
-	}
+	$.dialog.confirm(p_lang('确定要卸载插件 {title} 吗？<br>卸载后相应的功能都不能使用','<span class="red">'+title+'</span>'),function(){
+		var url = get_url('plugin','uninstall','id='+$.str.encode(id));
+		$.phpok.json(url,function(rs){
+			if(rs.status == 'ok'){
+				$.phpok.reload();
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		})
+	});
 }
 
 //删除插件

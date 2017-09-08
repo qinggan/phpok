@@ -29,10 +29,12 @@ class ext_model_base extends phpok_model
 		return ($this->db->get_one($sql) ? true : false);
 	}
 
-	# 读取模块下的字段内容
-	# module，模块名称
-	# show_content，是否读取内容，默认true
-	function ext_all($module,$show_content=true)
+	/**
+	 * 读取模块下的字段内容
+	 * @参数 $module 模块名称
+	 * @参数 $show_content 是否读取内容，默认true
+	**/
+	public function ext_all($module,$show_content=true)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE module='".$module."' ORDER BY taxis ASC,id DESC";
 		if($show_content){

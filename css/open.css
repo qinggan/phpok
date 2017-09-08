@@ -1,5 +1,5 @@
 html{font-size:14px;font-family:"Microsoft Yahei","宋体","Arial","Tahoma";margin:0;padding:0;background:#FFFFFF;}
-body{margin:3px;padding:0;overflow-y:scroll;_margin:0; _height:100%;}
+body{margin:3px;padding:0;overflow-y:auto;}
 
 a{color:#000;text-decoration: none;}
 .i{font-style:italic;}
@@ -43,7 +43,17 @@ input[type=text],input[type=password]{
 }
 
 input.select{margin:0;padding:0;border:1px solid #9FAFBB;height:22px;width:70px;}
-select{margin:0;padding:3px;border:1px solid #9FAFBB;}
+select{padding:3px;}
+select {
+  border: solid 1px #acacac;
+  appearance:none;
+  -moz-appearance:none;
+  -webkit-appearance:none;
+  background: url("../images/arrow-select.png") no-repeat scroll right center transparent;
+  padding-right: 14px !important;
+}
+select::-ms-expand { display: none; }
+
 
 textarea.long{width:500px;height:100px;}
 textarea.default{width:350px;height:40px;}
@@ -108,7 +118,7 @@ table.list th{padding:0;border-bottom:2px solid #E5E5E5;height:25px;background:#
 table.list th.lft{text-align:left;}
 table.list tr:nth-child(2n+1){background:#F1F1F1}
 table.list tr:hover{background:#F9F9F9;}
-table.list td{padding:3px;}
+table.list td{padding:3px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
 table.list th.id{width:50px;}
 table.list tr.on{background:#FFCC99;}
 table.list tr.on td{font-weight:bold;}
@@ -283,3 +293,12 @@ div.cate_6{background:#6633FF;}
 div.cate_7{background:#83D3B4;}
 div.cate_8{background:#DACCC7;}
 div.cate_9{background:#AD78E9;}
+
+.res_preview ul{list-style:none;margin:0;padding:0}
+.res_preview ul li{color:#717171;text-align:right;border-bottom:1px solid #f1f1f1;padding:5px;}
+.res_preview ul li i{float:left;width:140px;height:100%;display: block;font-style:normal;color:#000;padding-left:10px;text-align:left;}
+.res_preview ul li:after{content:'.';clear:both;height:0;line-height:0;font-size:0;overflow:hidden;display: block;visibility: hidden;}
+.res_preview ul li.picture{text-align:left;}
+.res_preview ul li.picture img{max-width:100%;}
+.res_preview ul li.video{text-align:center;}
+.res_preview ul li:last-child{border-bottom:0;}

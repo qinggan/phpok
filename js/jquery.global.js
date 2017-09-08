@@ -1,11 +1,12 @@
-/**************************************************************************************************
-	文件： js/jquery.global.js
-	说明： PHPOK编写并整理的通用组件，包含常用的Ajax，弹出窗，桌面组件
-	版本： 4.0
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	日期： 2014年7月11日
-***************************************************************************************************/
+/**
+ * 通用桌面组件
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @网站 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @日期 2017年06月21日
+**/
 ;(function($){
 	$.desktop = {
 		init:function(opts)
@@ -15,6 +16,7 @@
 				'win_max'		:true,
 				'win_close'		:true,
 				'win_refresh'	:true,
+				'win_resize'	:true,
 				'title'			:'',
 				'iframe'		:'', // 定义iframe地址
 				'content'		:'', // 定义内容信息，当内容为iframe时，调用iframe对应的url
@@ -455,6 +457,9 @@
 			html += '	<div class="body" id="'+this.id+'-body" style="'+this.bodystyle+'">';
 			html += 	this.content;
 			html += '	</div>';
+			if(this.opt.win_resize){
+				html += '	<div class="div-drag-resize" id="resize-'+this.id+'"></div>';
+			}
 			html += '</div>';
 			$(html).appendTo("body");
 		},
@@ -472,7 +477,7 @@
 			$(html).appendTo("#"+ul_id);
 			return true;
 		},
-		_vlayer: function(id)
+		_vlayer: function(id,ext)
 		{
 			if(!id){
 				return false;
@@ -483,20 +488,45 @@
 			var top = parseInt($("#"+id).css('top'),10);
 			var css = "width:"+width+"px;height:"+height+"px;left:"+left+"px;top:"+top+'px;position:absolute;';
 			var zindex = $("#"+id).css("z-index");
-			css += "z-index:"+parseInt(zindex+1)+";";
-			//css += "background:#FFF;"
-			var html = '<div class="phpok-win-vlayer" id="vlayer-'+id+'" style="'+css+'">&nbsp;</div>';
+			var addlayer = 1;
+			var html = '';
+			if(ext && ext != 'undefined'){
+				addlayer = 2;
+				var css2 = css + "z-index:"+parseInt(zindex+1)+";background:#fff;";
+				html += '<div class="phpok-win-vlayer" id="vlayer-white-'+id+'" style="'+css2+'">&nbsp;</div>';
+			}
+			css += "z-index:"+parseInt(zindex+addlayer)+";";
+			html += '<div class="phpok-win-vlayer" id="vlayer-'+id+'" style="'+css+'">&nbsp;</div>';
 			$(html).appendTo('body');
 		},
 		//关闭移动时的触发
-		_vlayer_close: function(id)
+		_vlayer_close: function(id,ext)
 		{
 			var arg = this._arg(id);
 			var top = parseInt($("#vlayer-"+id).css("top"),10);
 			var left = parseInt($("#vlayer-"+id).css('left'),10);
+			
 			$("#"+id).css({'top':top+"px",'left':left+"px"});//控件新位置
 			if(arg.lock != 1){
 				$("#"+id+"-lock").css({'top':top+"px",'left':left+"px"});//控件新位置
+			}
+			if(ext && ext != 'undefined'){
+				var width = parseInt($("#vlayer-"+id).width(),10);
+				var height = parseInt($("#vlayer-"+id).height(),10);
+				arg.width = width;
+				arg.height = height;
+				$("#"+id).css({
+					'width':width+"px",
+					'height':height+"px"
+				});//控件新位置
+				$("#"+id+"-body").css({
+					"width":parseInt((width-12),10)+"px",
+					'height':parseInt((height-38),10)+"px"
+				});
+				if(arg.lock != 1){
+					$("#"+id+"-lock").css({'width':width+"px",'height':height+"px"});//控件新位置
+				}
+				$("#vlayer-white-"+id).remove();
 			}
 			arg.left = left;
 			arg.top = top;
@@ -509,9 +539,11 @@
 		{
 			var _x,_y;//鼠标离控件左上角的相对位置
 			var _move = false;
+			var _resize = false;
 			var self = this;
 			var id = this.id;
 			var arg = this._arg(id);
+			var resize_width,resize_height;
 			//存在关闭窗口执行的触发
 			if(this.opt.win_close){
 				$("#close-"+id).click(function(){
@@ -540,6 +572,23 @@
 				$("#refresh-"+id).click(function(){
 					document.getElementById(id+"-content").contentWindow.location.reload(true);
 				})
+			}
+			if(this.opt.win_resize){
+				$("#resize-"+id).mousedown(function(e){
+					e = e || window.event;
+					var zindex = self.zindex(id);
+					_x = e.clientX;
+					_y = e.clientY;
+					_move = false;
+					_resize = true;
+					self._vlayer(id,true);
+					e.preventDefault && e.preventDefault();
+				}).mouseup(function(e){
+					e = e || window.event;
+					_resize = false;
+					self._vlayer_close(id,true);
+					e.preventDefault && e.preventDefault();
+				});
 			}
 			//如果有启用taskbar
 			if(this.opt.taskbar){
@@ -573,25 +622,41 @@
 				//创建一个虚拟的DIV层
 				_x = e.pageX-parseInt($("#"+id).css("left"));
 				_y = e.pageY-parseInt($("#"+id).css("top"));
-				if(arg.move == 1)
-				{
+				if(arg.move == 1){
 					_move = true;
+					_resize = false;
 					self._vlayer(id);
 				}
 				e.preventDefault && e.preventDefault();
 			}).mouseup(function(e){
 				e = e || window.event;
 				_move = false;
+				_resize = false;
 				self._vlayer_close(id);
 				e.preventDefault && e.preventDefault();
 			});
 			$(document).mousemove(function(e){
 				e = e || window.event;
-				if(!_move){
+				if(!_move && _resize){
+					resize_width = e.clientX - _x + parseInt($("#"+id).width(),10);
+					resize_height = e.clientY- _y + parseInt($("#"+id).height(),10);
+					if(resize_width > arg.win_width){
+						resize_width  = arg.win_width;
+					}
+					if(resize_height > arg.win_height){
+						resize_height = arg.win_height;
+					}
+					$("#vlayer-"+id).css({'width':resize_width+"px",'height':resize_height+"px"});//控件新位置
+					e.preventDefault && e.preventDefault();
 					return false;
 				}
 				var x = e.pageX - _x;
 				var y = e.pageY - _y;
+				if(!_move && _resize){
+					var w = x + $("#vlayer-"+id).width();
+					var h = y + $("#vlayer-"+id).height();
+					return false;
+				}
 				if(self.opt.taskbar == 'top' && y < parseInt(self.opt.exheight,10)){
 					y = parseInt(self.opt.exheight,10);
 				}else{
@@ -622,7 +687,13 @@
 			}).mouseup(function(e){
 				e = e || window.event;
 				_move = false;
-				self._vlayer_close(id);
+				if(_resize){
+					_resize = false;
+					$("#")
+					self._vlayer_close(id,true);
+				}else{
+					self._vlayer_close(id);
+				}
 				e.preventDefault && e.preventDefault();
 			});
 		}
@@ -665,7 +736,8 @@
 			'move':true,
 			'win_max':true,
 			'win_min':true,
-			'is_max':true
+			'is_max':true,
+			'win_resize':true
 		}
 		if($.win2.opt){
 			var opt = $.extend({},defaults,$.win2.opt, opts);

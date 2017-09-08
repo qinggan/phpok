@@ -1,16 +1,19 @@
 <?php
-/***********************************************************
-	Filename: phpok/admin/index_control.php
-	Note	: 后台首页控制台
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-10-19 13:03
-***********************************************************/
+/**
+ * 后台首页控制台
+ * @package phpok\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年08月13日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class index_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 	}
@@ -52,14 +55,14 @@ class index_control extends phpok_control
 			$plist = array();
 		}
 		$popedom_m = $popedom_p = array();
-		foreach($plist AS $key=>$value){
+		foreach($plist as $key=>$value){
 			if(!$value["pid"]){
 				$popedom_m[$value["gid"]][] = $value["id"];
 			}else{
 				$popedom_p[] = $value["id"];
 			}
 		}
-		$popedom = $_SESSION["admin_rs"]["if_system"] ? array("all") : $_SESSION["admin_popedom"];
+		$popedom = $this->session->val('admin_rs.if_system') ? array("all") : $_SESSION["admin_popedom"];
 		if(!$popedom){
 			$popedom = array();
 		}
@@ -93,7 +96,7 @@ class index_control extends phpok_control
 						continue;
 					}
 				}
-				if($v["appfile"] == "list" && !$_SESSION["admin_rs"]["if_system"]){
+				if($v["appfile"] == "list" && !$this->session->val('admin_rs.if_system')){
 					if(!$popedom_p || count($popedom_p)<1){
 						unset($value["sublist"][$k]);
 						continue;
@@ -118,27 +121,64 @@ class index_control extends phpok_control
 			$menulist[$key] = $value;
 		}
 		$this->assign('menulist',$menulist);
-		
-		if($menulist){
-			$iconlist = false;
-			foreach($menulist as $key=>$value){
-				if($value['sublist']){
-					foreach($value['sublist'] as $k=>$v){
-						if($v['icon']){
-							$iconlist[] = $v;
-						}
+		//检测插件列表有没有快捷图标
+		$plugin_mlist = $plugin_alist = $plugin_glist = array();
+		if($this->plugin && is_array($this->plugin)){
+			foreach($this->plugin as $key=>$value){
+				$tmplist = $this->model('plugin')->iconlist($key);
+				if(!$tmplist){
+					continue;
+				}
+				foreach($tmplist as $k=>$v){
+					$tmp = array();
+					$tmp['url'] = $this->url('plugin','exec','id='.$key.'&exec='.$v['efunc']);
+					$tmp['title'] = $v['title'];
+					if($v['type'] == 'menu'){
+						$tmp['icon'] = $v['icon'];
+					}else{
+						$tmp['ico'] = 'images/ico/'.$v['icon'];
+						$tmp['id'] = $key.'-'.$v['id'];
+					}
+					$tmp['appfile'] = 'plugin';
+					if($v['type'] == 'menu'){
+						$plugin_mlist[] = $tmp;
+					}
+					if($v['type'] == 'all'){
+						$plugin_alist[] = $tmp;
+					}
+					if($v['type'] == 'content'){
+						$plugin_glist[] = $tmp;
 					}
 				}
 			}
-			if($iconlist){
-				$this->assign('iconlist',$iconlist);
+		}
+		$iconlist = false;
+		if($menulist){
+			foreach($menulist as $key=>$value){
+				if(!$value['sublist']){
+					continue;
+				}
+				foreach($value['sublist'] as $k=>$v){
+					if(!$v['icon']){
+						continue;
+					}
+					$iconlist[] = $v;
+				}
 			}
 		}
-		$all_info = $this->all_info();
+		if($plugin_mlist && count($plugin_mlist)>0){
+			foreach($plugin_mlist as $key=>$value){
+				$iconlist[] = $value;
+			}
+		}
+		if($iconlist){
+			$this->assign('iconlist',$iconlist);
+		}
+		$all_info = $this->all_info($plugin_alist);
 		if($all_info){
 			$this->assign('all_info',$all_info);
 		}
-		$list_setting = $this->list_setting();
+		$list_setting = $this->list_setting($plugin_glist);
 		if($list_setting){
 			$this->assign('list_setting',$list_setting);
 		}
@@ -157,7 +197,7 @@ class index_control extends phpok_control
 		$this->json($info,true);
 	}
 
-	private function all_info()
+	private function all_info($alist='')
 	{
 		$all_popedom = appfile_popedom("all");
 		if(!$all_popedom || !$all_popedom['list']){
@@ -166,10 +206,13 @@ class index_control extends phpok_control
 		$this->assign('all_popedom',$all_popedom);
 		$site_popedom = appfile_popedom('site');
 		$this->assign('site_popedom',$site_popedom);
-		$rslist = $this->model('site')->all_list($_SESSION["admin_site_id"]);
+		$rslist = $this->model('site')->all_list($this->session->val('admin_site_id'));
 		$this->assign("all_rslist",$rslist);
-		$rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
+		$rs = $this->model('site')->get_one($this->session->val('admin_site_id'));
 		$this->assign("all_rs",$rs);
+		if($alist && is_array($alist)){
+			$this->assign('plugin_alist',$alist);
+		}
 		return $this->fetch('index_block_allsetting');
 	}
 
@@ -182,15 +225,14 @@ class index_control extends phpok_control
 		$this->json($info,true);
 	}
 
-	private function list_setting()
+	private function list_setting($glist)
 	{
-		$site_id = $_SESSION["admin_site_id"];
-		$rslist = $this->model('project')->get_all($site_id,0,"p.status=1 AND p.hidden=0");
+		$rslist = $this->model('project')->get_all($this->session->val('admin_site_id'),0,"p.status=1 AND p.hidden=0");
 		if(!$rslist){
 			$rslist = array();
 		}
-		if(!$_SESSION["admin_rs"]["if_system"]){
-			if(!$_SESSION["admin_popedom"]){
+		if(!$this->session->val('admin_rs.if_system')){
+			if(!$this->session->val('admin_popedom')){
 				return false;
 			}
 			$condition = "parent_id>0 AND appfile='list' AND func=''";
@@ -205,74 +247,81 @@ class index_control extends phpok_control
 			}
 			$popedom = array();
 			foreach($popedom_list AS $key=>$value){
-				if(in_array($value["id"],$_SESSION["admin_popedom"])){
+				if(in_array($value["id"],$this->session->val('admin_popedom'))){
 					$popedom[$value["pid"]][$value["identifier"]] = true;
 				}
 			}
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				if(!$popedom[$value["id"]] || !$popedom[$value["id"]]["list"]){
 					unset($rslist[$key]);
 					continue;
 				}
 			}
 		}
-		if(!$rslist || count($rslist)< 1){
-			return false;
-		}
-		foreach($rslist as $key=>$value){
-			$value['url'] = $this->url('list','action','id='.$value['id']);
-			$rslist[$key] = $value;
-		}
-		//系统管理员
-		if($_SESSION['admin_rs']['if_system']){
-			$chk = $this->model('workflow')->chk();
-			if($chk){
-				$tmp = array('title'=>P_Lang('我授权的'),'ico'=>'images/ico/manage.png','id'=>'workflow');
-				$tmp['url'] = $this->url('workflow','manage');
-				$rslist[] = $tmp;
+		if($rslist && is_array($rslist)){
+			foreach($rslist as $key=>$value){
+				$value['url'] = $this->url('list','action','id='.$value['id']);
+				$rslist[$key] = $value;
 			}
-		}else{
-			$chk = $this->model('workflow')->chk("admin_id=".$_SESSION['admin_id']);
-			if($chk){
-				$tmp = array('title'=>P_Lang('我管理的'),'ico'=>'images/ico/manage.png','id'=>'workflow');
-				$tmp['url'] = $this->url('workflow','list');
-				$rslist[] = $tmp;
+		}
+		if($glist && is_array($glist) && count($glist)>0){
+			foreach($glist as $key=>$value){
+				$rslist[] = $value;
 			}
 		}
 		$this->assign('list_rslist',$rslist);
 		return $this->fetch('index_block_listsetting');
 	}
 
+	/**
+	 * 清空缓存，包括过时的购物车，及Data目录下的Session文件
+	**/
 	public function clear_f()
 	{
-		$this->lib('file')->rm($this->dir_root."data/tpl_www/");
-		$this->lib('file')->rm($this->dir_root."data/tpl_admin/");
-		$this->lib('file')->rm($this->dir_root."data/cache/");
+		$this->model('cart')->clear_expire_cart();
+		$this->lib('file')->rm($this->dir_data."tpl_www/");
+		$this->lib('file')->rm($this->dir_data."tpl_admin/");
+		$this->lib('file')->rm($this->dir_cache);
+		//清空SESSION过期的SESSION文件
+		$list = $this->lib('file')->ls($this->dir_data.'session/');
+		if($list){
+			foreach($list as $key=>$value){
+				if(filesize($value)>0 && (filemtime($value) + $this->session->timeout()) > $this->time){
+					continue;
+				}
+				$this->lib('file')->rm($value);
+			}
+		}
 		$this->cache->clear();
 		$this->json(true);
 	}
 
+	/**
+	 * 站点切换提示
+	**/
 	public function site_f()
 	{
 		$siteid = $this->get("id","int");
 		if(!$siteid){
-			error(P_Lang('请选择要维护的站点'),$this->ur('index'));
+			$this->error(P_Lang('请选择要维护的站点'),$this->ur('index'));
 		}
 		$rs = $this->model("site")->get_one($siteid);
 		if(!$rs){
-			error(P_Lang('站点信息不存在'),$this->url("index"));
+			$this->error(P_Lang('站点信息不存在'),$this->url("index"));
 		}
-		$_SESSION['admin_site_id'] = $siteid;
+		$this->session->assign('admin_site_id',$siteid);
 		$tip = P_Lang('您正在切换到网站：{sitename}，请稍候…',array('sitename'=>"<span style='color:red;font-weight:bold;'>".$rs['title']."</span>"));
-		error($tip,$this->url("index"),"ok");
+		$this->success($tip,$this->url("index"));
 	}
 
-	//获取待处理信息
-	function pendding_f()
+	/**
+	 * 获取待处理信息
+	**/
+	public function pendding_f()
 	{
 		$list = false;
 		//读取未操作的主题
-		$rslist = $this->model('list')->pending_info($_SESSION['admin_site_id']);
+		$rslist = $this->model('list')->pending_info($this->session->val('admin_site_id'));
 		if($rslist){
 			foreach($rslist AS $key=>$value){
 				if(!$value['parent_id']){
@@ -326,37 +375,27 @@ class index_control extends phpok_control
 			include($this->dir_root.'data/update.php');
 			$time = 0;
 			if(file_exists($this->dir_root.'data/update.time')){
-				$time = file_get_contents($this->dir_root.'data/update.time');
+				$time = $this->lib('file')->cat($this->dir_data.'update.time');
 			}
 			$check = false;
 			if($time < $this->time && ($this->time - $uconfig['date'] * 86400) > $time){
 				$check = true;
 			}
 			if($check){
-				file_put_contents($this->dir_root.'data/update.time',$this->time);
+				$this->lib('file')->vim($this->time,$this->dir_data.'update.time');
 				$list['update_action'] = true;
-				/*$url = $this->url('update','check',$this->session->sid().'='.$this->session->sessid(),'admin',true);
-				$this->lib('html')->ip('127.0.0.1');
-				$info = $this->lib('html')->get_content($url);
-				if($info){
-					$info = $this->lib('json')->decode($info);
-					if($info['status'] == 'ok'){
-						$url = $this->url('update');
-						$list['ctrl_update'] = array('title'=>P_Lang('程序升级'),'total'=>'new','url'=>$url,'id'=>'update');
-					}
-				}*/
 			}
 		}
 		if(!$list){
-			$this->json(P_Lang('没有消息'));
+			$this->error();
 		}
-		$this->json($list,true);
+		$this->success($list);
 	}
 
-	function pendding_sublist_f()
+	public function pendding_sublist_f()
 	{
 		$list = false;
-		$rslist = $this->model('list')->pending_info($_SESSION['admin_site_id']);
+		$rslist = $this->model('list')->pending_info($this->session->val('admin_site_id'));
 		if($rslist){
 			foreach($rslist AS $key=>$value){
 				if($value['parent_id']){
@@ -366,9 +405,8 @@ class index_control extends phpok_control
 			}
 		}
 		if(!$list){
-			$this->json(P_Lang('没有消息'));
+			$this->success();
 		}
-		$this->json($list,true);
+		$this->success($list);
 	}
 }
-?>

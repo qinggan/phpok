@@ -100,6 +100,9 @@ class cate_control extends phpok_control
 		$this->assign("parentlist",$parentlist);
 		$extfields = $this->model('fields')->fields_list('',0,999,'cate');
 		$this->assign("extfields",$extfields);
+
+		$tag_config = $this->model('tag')->config();
+		$this->assign('tag_config',$tag_config);
 		$this->view("cate_set");
 	}
 
@@ -235,11 +238,7 @@ class cate_control extends phpok_control
 	private function _save_tag($id)
 	{
 		$rs = $this->model('cate')->cate_info($id,false);
-		if($rs['tag']){
-			$this->model('tag')->update_tag($rs['tag'],'c'.$id,$_SESSION['admin_site_id']);
-		}else{
-			$this->model('tag')->stat_delete('c'.$id,"title_id");
-		}
+		$this->model('tag')->update_tag($rs['tag'],'c'.$id);
 		return true;
 	}
 

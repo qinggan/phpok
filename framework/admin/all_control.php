@@ -56,7 +56,7 @@ class all_control extends phpok_control
 		$this->assign("payment",$payment);
 
 		//邮件模板列表
-		$emailtpl = $this->model('email')->simple_list($_SESSION['admin_site_id']);
+		$emailtpl = $this->model('email')->simple_list($this->session->val('admin_site_id'));
 		$this->assign("emailtpl",$emailtpl);
 
 		//运费列表
@@ -79,18 +79,88 @@ class all_control extends phpok_control
 		$this->view("all_setting");
 	}
 
+	public function tpl_setting_f()
+	{
+		if(!$this->popedom["site"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定站点ID'));
+		}
+		$rs = $this->model('site')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('站点信息不存在'));
+		}
+		$this->assign('site_rs',$rs);
+		$tplid = $this->get('tplid','int');
+		$ext = 'html';
+		if($tplid){
+			$tpl_rs = $this->model('tpl')->get_one($tplid);
+			if($tpl_rs && $tpl_rs['ext']){
+				$ext = $tpl_rs['ext'];
+			}
+		}
+		$this->assign('tplext',$ext);
+		$filelist = $this->model('tpl')->all_files();
+		$this->assign('filelist',$filelist);
+		//读取项目模块
+		$tpls = $this->model('site')->tpl_setting();
+		$this->assign('tpls',$tpls);
+		$this->assign('id',$id);
+		$this->assign('tplid',$tplid);
+		$this->view('all_tpl');
+	}
+
+	public function tpl_resetting_f()
+	{
+		if(!$this->popedom["site"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定站点ID'));
+		}
+		$this->model('site')->tpl_reset();
+		$this->success();
+	}
+
+	public function tpl_setting_save_f()
+	{
+		if(!$this->popedom["site"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$list = $this->model('site')->tpl_default();
+		if(!$list){
+			$list = array();
+		}
+		$all = false;
+		foreach($list as $key=>$value){
+			$tmp = $this->get($key);
+			if($tmp){
+				$all[$key] = $tmp;
+			}
+		}
+		if(!$all){
+			$this->model('site')->tpl_reset();
+		}else{
+			$this->model('site')->tpl_setting($all);
+		}
+		$this->success();
+	}
+
 	/**
 	 * 存储全局配置
 	**/
 	public function save_f()
 	{
 		if(!$this->popedom["site"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$error_url = $this->url("all","setting");
 		$title = $this->get("title");
 		if(!$title){
-			error(P_Lang('网站标题不能为空'),$error_url,"error");
+			$this->error(P_Lang('网站标题不能为空'),$error_url);
 		}
 		$dir = $this->get("dir");
 		if(!$dir){
@@ -110,7 +180,7 @@ class all_control extends phpok_control
 		$meta = $this->get("meta","html_js");
 		$site_rs = $this->model('site')->get_one($_SESSION["admin_site_id"]);
 		if(!$site_rs){
-			error(P_Lang('网站信息不存在'),$error_url,"error");
+			$this->error(P_Lang('网站信息不存在'),$error_url);
 		}
 		$domain = $this->get("domain");
 		$domain_id = $site_rs["domain_id"];
@@ -154,6 +224,7 @@ class all_control extends phpok_control
 		$array["url_type"] = $url_type;
 		$array["domain_id"] = $domain_id;
 		$array["logo"] = $logo;
+		$array['logo_mobile'] = $this->get('logo_mobile');
 		$array["meta"] = $meta;
 		$array["register_status"] = $this->get("register_status","int");
 		$array["register_close"] = $this->get("register_close");
@@ -180,7 +251,7 @@ class all_control extends phpok_control
 		$array['biz_status'] = $this->get('biz_status','int');
 		$array['biz_freight'] = $this->get('biz_freight');
 		$this->model('site')->save($array,$_SESSION['admin_site_id']);
-		error(P_Lang('网站信息更新完成'),$this->url("all","setting"),'ok');
+		$this->success(P_Lang('网站信息更新完成'),$this->url("all","setting"));
 	}
 
 	public function domain_check_f()
@@ -219,13 +290,78 @@ class all_control extends phpok_control
 	public function domain_f()
 	{
 		if(!$this->popedom["domain"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rs = $this->model('site')->get_one($_SESSION["admin_site_id"]);
 		$this->assign("rs",$rs);
 		$rslist = $this->model('site')->domain_list($_SESSION["admin_site_id"]);
 		$this->assign("rslist",$rslist);
 		$this->view("all_domain");
+	}
+
+	/**
+	 * 验证码权限配置
+	**/
+	public function vcode_f()
+	{
+		if(!$this->popedom['site']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$vcodelist = $this->model('site')->vcode_all();
+		$condition = "module>0";
+		$plist = $this->model('project')->project_all($this->session->val('admin_site_id'),'id',$condition);
+		if($plist){
+			foreach($plist as $key=>$value){
+				$tmpid = 'p-'.$value['id'];
+				if(!isset($vcodelist[$tmpid])){
+					$tmp = array('add'=>array('title'=>P_Lang('添加'),'status'=>1));
+					$tmp['edit'] = array('title'=>P_Lang('修改'),'status'=>1);
+					$tmp['comment'] = array('title'=>P_Lang('评论'),'status'=>1);
+					$vcodelist[$tmpid] = array('title'=>$value['title'],'list'=>$tmp);
+				}
+			}
+			foreach($vcodelist as $key=>$value){
+				if($key == 'system'){
+					continue;
+				}
+				$tmpid = substr($key,2);
+				if(!$plist[$tmpid]){
+					unset($vcodelist[$key]);
+				}
+			}
+		}
+		$this->assign('vcodelist',$vcodelist);
+		$this->view('all_vcode');
+	}
+
+	public function vcode_save_f()
+	{
+		if(!$this->popedom['site']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		//读取系统的验证码
+		$tmp = array();
+		$tmp['system'] = array();
+		$tmp['system']['title'] = $this->get('system');
+		$tmp['system']['list'] = array();
+		$tmp['system']['list']['login'] = array('title'=>$this->get('system-login-title'),'status'=>$this->get('system-login','checkbox'));
+		$tmp['system']['list']['register'] = array('title'=>$this->get('system-register-title'),'status'=>$this->get('system-register','checkbox'));
+		$tmp['system']['list']['getpass'] = array('title'=>$this->get('system-getpass-title'),'status'=>$this->get('system-getpass','checkbox'));
+		$condition = "module>0";
+		$plist = $this->model('project')->project_all($this->session->val('admin_site_id'),'id',$condition);
+		if($plist){
+			foreach($plist as $key=>$value){
+				$tmpid = 'p-'.$value['id'];
+				$tmp[$tmpid] = array();
+				$tmp[$tmpid]['title'] = $this->get($tmpid);
+				$tmp[$tmpid]['list'] = array();
+				$tmp[$tmpid]['list']['add'] = array('title'=>$this->get($tmpid.'-add-title'),'status'=>$this->get($tmpid.'-add','checkbox'));
+				$tmp[$tmpid]['list']['edit'] = array('title'=>$this->get($tmpid.'-edit-title'),'status'=>$this->get($tmpid.'-edit','checkbox'));
+				$tmp[$tmpid]['list']['comment'] = array('title'=>$this->get($tmpid.'-comment-title'),'status'=>$this->get($tmpid.'-comment','checkbox'));
+			}
+		}
+		$this->lib('xml')->save($tmp,$this->dir_data.'xml/vcode_'.$this->session->val('admin_site_id').'.xml');
+		$this->success();
 	}
 
 	public function domain_save_f()
@@ -479,79 +615,6 @@ class all_control extends phpok_control
 		}
 		$this->model('site')->ext_delete($id);
 		error(P_Lang('全局配置删除成功'),$this->url("all"),"ok");
-	}
-
-	public function add_f()
-	{
-		if(!$_SESSION['admin_rs']['if_system']){
-			error(P_Lang('您没有权限执行此操作'),'','error');
-		}
-		$this->view("all_add");
-	}
-
-	public function addok_f()
-	{
-		if(!$_SESSION['admin_rs']['if_system']){
-			$this->json(P_Lang('您没有权限执行此操作'));
-		}
-		$title = $this->get("title");
-		if(!$title){
-			$this->json(P_Lang('网站标题不能为空'));
-		}
-		$dir = "/";
-		$status = 0;
-		$content = "";
-		$tpl_id = 0;
-		$url_type = 'default';
-		$logo = "";
-		$meta = "";
-		# 检测网站域名
-		$domain = $this->get("domain");
-		if(!$domain){
-			$this->json("域名不能为空");
-		}
-		$domain = strtolower($domain);
-		# 检查域名是否符合要求
-		if(substr($domain,0,7) == "https://"){
-			$domain = substr($domain,7);
-		}
-		if(substr($domain,0,8) == "https://"){
-			$domain = substr($domain,8);
-		}
-		if(!$domain){
-			$this->json(P_Lang('域名填写不规范'));
-		}
-		if($domain && $domain != str_replace("/","",$domain)){
-			$this->json(P_Lang('域名不符合规范'));
-		}
-		$domain_rs = $this->model("site")->domain_check($domain);
-		if($domain_rs){
-			$this->json(P_Lang('域名已被使用，请更换'));
-		}
-		$array = array();
-		$array["title"] = $title;
-		$array["dir"] = $dir;
-		$array["status"] = $status;
-		$array["content"] = $content;
-		$array["tpl_id"] = $tpl_id;
-		$array["url_type"] = $url_type;
-		$array["domain_id"] = "";
-		$array["logo"] = $logo;
-		$array["meta"] = $meta;
-		$array["register_status"] = 0;
-		$array["register_close"] = "";
-		$array["login_status"] = 0;
-		$array["login_close"] = "";
-		$site_id = $this->model('site')->save($array);
-		if(!$site_id){
-			$this->json(P_Lang('创建失败'));
-		}
-		$domain_id = $this->model('site')->domain_add($domain,$site_id);
-		if($domain_id){
-			$tmp = array('domain_id'=>$domain_id);
-			$this->model("site")->save($tmp,$site_id);
-		}
-		$this->json(P_Lang('创建网站完成，您可以切换到新网站中进行栏目配置'),true);
 	}
 
 	public function email_f()

@@ -1,0 +1,103 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang您当前的位置：}{lang内容管理}
+	&raquo; <a href="{url ctrl=log/}" title="">{lang日志列表}</a>
+	<span id="AP_ACTION_HTML" title="插件节点"></span>
+</div>
+<div class="tips" style="position;relative;">
+	<form method="post" action="{url ctrl=log/}">
+	<div style="float:left;width:750px;">
+		<div><table>
+		<tr>
+			<td><select name="psize">
+				<option value="20"{if $psize==20} selected{/if}>{lang每页[total]条|total:20}</option>
+				<option value="30"{if $psize==30} selected{/if}>{lang每页[total]条|total:30}</option>
+				<option value="40"{if $psize==40} selected{/if}>{lang每页[total]条|total:40}</option>
+				<option value="50"{if $psize==50} selected{/if}>{lang每页[total]条|total:50}</option>
+				<option value="60"{if $psize==60} selected{/if}>{lang每页[total]条|total:60}</option>
+				<option value="70"{if $psize==70} selected{/if}>{lang每页[total]条|total:70}</option>
+				<option value="90"{if $psize==90} selected{/if}>{lang每页[total]条|total:90}</option>
+				<option value="100"{if $psize==100} selected{/if}>{lang每页[total]条|total:100}</option>
+				<option value="150"{if $psize==150} selected{/if}>{lang每页[total]条|total:150}</option>
+			</select></td>
+			<td><select name="position">
+				<option value="admin"{if $position == 'admin'} selected{/if}>后台</option>
+				<option value="www"{if $position == 'www'} selected{/if}>前台</option>
+				<option value="api"{if $position == 'api'} selected{/if}>接口</option>
+			</select></td>
+			<td>{lang时间范围：}</td>
+			<td><input type="text" name="start_time" value="{$start_time}" placeholder="开始时间" onfocus="laydate()" style="width:110px;" /></td>
+			<td>{lang至}</td>
+			<td><input type="text" name="stop_time" value="{$stop_time}" placeholder="结束时间" onfocus="laydate()" style="width:110px;" /></td>
+			<td><input type="button" value="{lang最近30天内日志}" onclick="$.admin_log.search('start_time','{func date Y-m-d $sys.time-30*24*60*60}')" class="phpok-btn" />
+			<td><input type="button" value="{lang最近7天内日志}" onclick="$.admin_log.search('start_time','{func date Y-m-d $sys.time-7*24*60*60}')" class="phpok-btn" />
+		</tr>
+		</table></div>
+		<table>
+		<tr>
+			<td><input type="text" id="keywords" name="keywords" value="{$keywords}" placeholder="{lang请输入要搜索的关键字}" /></td>
+			<td><input type="text" name="adminer" value="{$adminer}" placeholder="{lang管理员账号}" /></td>
+			<td><input type="text" name="user" value="{$user}" placeholder="{lang会员账号}" /></td>
+			<td><input type="submit" value="提交搜索" class="submit2" /></td>
+		</tr>
+		</table>
+	</div>
+	<!-- if $session.admin_rs.if_system -->
+	<div style="float:left;margin-top:20px;">
+		<input type="button" value="删除30天之前的日志" class="phpok-btn" onclick="$.admin_log.delete30()" />
+	</div>
+	<!-- /if -->
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="list clearfix">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th width="20px">&nbsp;</th>
+	<th class="lft">备注/网址</th>
+	<th>IP</th>
+	<th>{lang操作人}</th>
+	<th class="lft">{lang文件}</th>
+	<th style="width:80px">{lang时间}</th>
+	<!-- if $session.admin_rs.if_system --><th style="width:40px">{lang删除}</th><!-- /if -->
+</tr>
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<tr id="list_{$value.id}">
+	<td class="center"><input type="checkbox" name="ids[]" id="id_{$value.id}" value="{$value.id}" /></td>
+	<td><label for="id_{$value.id}">
+		<!-- if $value.note --><div class="gray">{$value.note}</div><!-- /if -->
+		{$value.url}</label>
+	</td>
+	<td class="center">{$value.ip}</td>
+	<td class="center">
+		<!-- if $value.account --><span class="red">{$value.account}</span><!-- /if -->
+		<!-- if $value.account && $value.user --> / <!-- /if -->
+		<!-- if $value.user --><span class="blue">{$value.user}</span><!-- /if -->
+		<!-- if !$value.admin_id && !$value.user_id -->{lang访客}<!-- /if -->
+	</td>
+	<td>{$value.ctrl}_control.php &raquo; {$value.func}_f</td>
+	<td class="center">{func time_format $value.dateline}</td>
+	<!-- if $session.admin_rs.if_system -->
+	<td class="center"><input type="button" value="{lang删除}" onclick="$.admin_log.del('{$value.id}')" class="phpok-btn" /></td>
+	<!-- /if -->
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<table width="100%">
+<tr>
+	<!-- if $session.admin_rs.if_system -->
+	<td>
+		<div class="button-group">
+			<input type="button" value="{lang全选}" onclick="$.checkbox.all()" class="phpok-btn" />
+			<input type="button" value="{lang全不选}" onclick="$.checkbox.none()" class="phpok-btn" />
+			<input type="button" value="{lang反选}" onclick="$.checkbox.anti()" class="phpok-btn" />
+			<input type="button" value="{lang删除选中日志}" onclick="$.admin_log.delete_selected()" class="phpok-btn" />
+		</div>
+	</td>
+	<!-- /if -->
+	<!-- if $pagelist --><td align="right"><!-- include tpl=pagelist --></td><!-- /if -->
+</tr>
+</table>
+
+<!-- include tpl=foot -->

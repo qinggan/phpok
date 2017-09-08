@@ -13,6 +13,9 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class list_model_base extends phpok_model
 {
+	protected $is_biz = false;
+	protected $is_user = false;
+	protected $multiple_cate = false;
 	/**
 	 * 构造函数，继承父Model
 	**/
@@ -21,13 +24,40 @@ class list_model_base extends phpok_model
 		parent::model();
 	}
 
-	/**
-	 * 析构函数
+		/**
+	 * 是否启用电商
+	 * @参数 $is_biz true 或 false
 	**/
-	public function __destruct()
+	public function is_biz($is_biz='')
 	{
-		parent::__destruct();
-		unset($this);
+		if(isset($is_biz) && is_bool($is_biz)){
+			$this->is_biz = $is_biz;
+		}
+		return $this->is_biz;
+	}
+
+	/**
+	 * 是否有绑定会员
+	 * @参数 $is_user true 或 false
+	**/
+	public function is_user($is_user='')
+	{
+		if(isset($is_user) && is_bool($is_user)){
+			$this->is_user = $is_user;
+		}
+		return $this->is_user;
+	}
+
+	/**
+	 * 是否有多级分类
+	 * @参数 $is_user true 或 false
+	**/
+	public function multiple_cate($multiple_cate='')
+	{
+		if(isset($multiple_cate) && is_bool($multiple_cate)){
+			$this->multiple_cate = $multiple_cate;
+		}
+		return $this->multiple_cate;
 	}
 
 	/**
@@ -37,9 +67,12 @@ class list_model_base extends phpok_model
 	 * @返回 字符串，类似：ext.field1,ext.field2
 	 * @更新时间 2016年06月26日
 	**/
-	public function ext_fields($mid,$prefix="ext")
+	public function ext_fields($mid,$prefix="ext",$condition='')
 	{
 		$sql = "SELECT identifier FROM ".$this->db->prefix."module_fields WHERE module_id='".$mid."'";
+		if($condition){
+			$sql .= " AND ".$condition;
+		}
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist){
 			return false;
@@ -69,7 +102,7 @@ class list_model_base extends phpok_model
 			return false;
 		}
 		$fields_list = $this->db->list_fields('list');
-		$field = "DISTINCT l.id,u.user _user";
+		$field = "l.id,u.user _user";
 		foreach($fields_list as $key=>$value){
 			if($value == 'id' || !$value){
 				continue;
@@ -128,26 +161,42 @@ class list_model_base extends phpok_model
 		return $rslist;
 	}
 
-	//
-	function get_total($mid,$condition="")
+	/**
+	 * 取得总数
+	 * @参数 $mid 模块ID
+	 * @参数 $condition 查询条件
+	**/
+	public function get_total($mid,$condition="")
 	{
-		if(!$mid) return false;
-		$sql = " SELECT count(DISTINCT l.id) FROM ".$this->db->prefix."list l ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ";
-		$sql.= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id AND u.status=1) ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+		if(!$mid){
+			return false;
+		}
+		$sql = " SELECT count(l.id) FROM ".$this->db->prefix."list l ";
 		if($condition){
+			if(strpos($condition,'ext.') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ";
+				$sql.= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
+			}
+			if(strpos($condition,'u.') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id) ";
+			}
+			if(strpos($condition,'b.') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
+			}
+			if(strpos($condition,'lc.') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+			}
 			$sql .= " WHERE ".$condition;
 		}
 		return $this->db->count($sql);
 	}
 
-	//取得当前一个主题的信息
-	//id，主题id
-	//format，是否格式化
-	function get_one($id,$format=true)
+	/**
+	 * 取得当前一个主题的信息
+	 * @参数 $id 主题ID
+	 * @参数 $format 是否格式化
+	**/
+	public function get_one($id,$format=true)
 	{
 		if(!$id) return false;
 		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id='".$id."'";
@@ -176,7 +225,7 @@ class list_model_base extends phpok_model
 			}
 			foreach($flist AS $key=>$value){
 				$content = $ext_rs[$value['identifier']];
-				$content = $GLOBALS['app']->lib('ext')->content_format($value,$content);
+				$content = $this->lib('ext')->content_format($value,$content);
 				$rs[$value['identifier']] = $content;
 			}
 		}
@@ -209,7 +258,7 @@ class list_model_base extends phpok_model
 		return $rslist;
 	}
 
-	function save($data,$id=0)
+	public function save($data,$id=0)
 	{
 		if(!$data || !is_array($data) || count($data) < 1){
 			return false;
@@ -221,25 +270,80 @@ class list_model_base extends phpok_model
 		}
 	}
 
-	function save_ext($data,$mid)
+	/**
+	 * 保存扩展表信息
+	 * @参数 $data 数组，一维
+	 * @参数 $mid 模块ID
+	**/
+	public function save_ext($data,$mid)
 	{
-		if(!$data || !is_array($data) || !$mid) return false;
+		if(!$data || !is_array($data) || !$mid){
+			return false;
+		}
+		if($data['id']){
+			$sql = "SELECT id FROM ".$this->db->prefix."list_".$mid." WHERE id='".$data['id']."'";
+			$chk = $this->db->get_one($sql);
+			if($chk){
+				unset($data['id']);
+				$this->db->update_array($data,'list_'.$mid,array('id'=>$chk['id']));
+				return true;
+			}
+		}
 		return $this->db->insert_array($data,"list_".$mid,"replace");
 	}
 
-	function update_ext($data,$mid,$id)
+	/**
+	 * 更新扩展表信息
+	 * @参数 $data 数组，一维数组 
+	 * @参数 $mid 模块ID
+	 * @参数 $id 主题ID
+	**/
+	public function update_ext($data,$mid,$id)
 	{
-		if(!$data || !is_array($data) || !$mid || !$id) return false;
+		if(!$data || !is_array($data) || !$mid || !$id){
+			return false;
+		}
 		return $this->db->update_array($data,"list_".$mid,array("id"=>$id));
 	}
 
-	//批量删除
-	function pl_delete($condition='',$mid=0)
+	/**
+	 * 存储扩展分类
+	 * @参数 $id 主题ID
+	 * @参数 $catelist 要保存的扩展分类ID，支持数组，字串，整数
+	**/
+	public function save_ext_cate($id,$catelist)
+	{
+		if(!$id || !$catelist){
+			return false;
+		}
+		if(is_string($catelist)){
+			$catelist = explode(",",$catelist);
+		}
+		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id='".$id."'";
+		$this->db->query($sql);
+		$sql = "INSERT INTO ".$this->db->prefix."list_cate(id,cate_id) VALUES ";
+		foreach($catelist as $key=>$value){
+			if($key>0){
+				$sql .= ",";
+			}
+			$sql .= "('".$id."','".$value."')";
+		}
+		$this->db->query($sql);
+		return true;
+	}
+
+
+	/**
+	 * 批量删除
+	 * @参数 $condition 查询条件
+	 * @参数 $mid 模块ID
+	 * @参数 
+	**/
+	public function pl_delete($condition='',$mid=0)
 	{
 		$sql = "SELECT id,module_id FROM ".$this->db->prefix."list WHERE ".$condition;
 		$rslist = $this->db->get_all($sql,'id');
-		if(!$rslist)
-		{
+		if(!$rslist){
 			return false;
 		}
 		$id_list = array_keys($rslist);
@@ -251,15 +355,12 @@ class list_model_base extends phpok_model
 		$sql = "DELETE FROM ".$this->db->prefix."tag_stat WHERE title_id IN(".$ids.")";
 		$this->db->query($sql);
 		//
-		foreach($rslist AS $key=>$value)
-		{
-			if(!$mid && $value['module_id'])
-			{
+		foreach($rslist AS $key=>$value){
+			if(!$mid && $value['module_id']){
 				$mid = $value['module_id'];
 			}
 		}
-		if($mid)
-		{
+		if($mid){
 			$sql = "DELETE FROM ".$this->db->prefix."list_".$mid." WHERE id IN(".$ids.")";
 			$this->db->query($sql);
 		}
@@ -268,109 +369,191 @@ class list_model_base extends phpok_model
 		return true;
 	}
 
-
-	//检测主表中的唯一性
-	function main_only_check($field,$val,$site_id=0,$project_id=0,$mid=0)
+	
+	/**
+	 * 检测主表及扩展表中的唯一内容记录
+	 * @参数 $field 字段标识
+	 * @参数 $val 字段内容
+	 * @参数 $pid 项目ID
+	 * @参数 $mid 模块ID
+	**/
+	public function only_record($field,$val,$pid=0,$mid=0)
 	{
-		if(!$field || !$val) return true;
-		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE ".$field."='".$val."'";
-		if($site_id)
-		{
-			$sql .= " AND site_id='".$site_id."'";
+		if(!$field || !$value){
+			return true;
 		}
-		if($project_id)
-		{
-			$sql .= " AND project_id='".$project_id."'";
+		$chk = $this->main_only_check($field,$val,$pid,$mid);
+		if($chk){
+			return true;
 		}
-		if($mid)
-		{
+		$chk = $this->ext_only_check($field,$val,$pid,$mid);
+		if($chk){
+			return true;
+		}
+		return false;
+	}
+
+
+	/**
+	 * 检测主表中的唯一性
+	 * @参数 $field 字段标识
+	 * @参数 $val 字段内容
+	 * @参数 $pid 项目ID
+	 * @参数 $mid 模块ID
+	**/
+	public function main_only_check($field,$val,$pid=0,$mid=0)
+	{
+		if(!$field || !$val){
+			return true;
+		}
+		$flist = $this->db->list_fields('list');
+		if(!$flist || ($flist && !in_array($field,$flist))){
+			return true;
+		}
+		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE ".$field."='".$val."'";
+		$sql .= " AND site_id='".$this->site_id."'";
+		if($pid){
+			$sql .= " AND project_id='".$pid."'";
+		}
+		if($mid){
 			$sql .= " AND module_id='".$mid."'";
 		}
 		return $this->db->get_one($sql);
 	}
 
-	function ext_only_check($field,$val,$mid,$site_id=0,$project_id=0)
+	/**
+	 * 扩展表唯一性检查
+	 * @参数 $field 字段标识
+	 * @参数 $val 字段内容
+	 * @参数 $pid 项目ID
+	 * @参数 $mid 模块ID
+	**/
+	public function ext_only_check($field,$val,$pid=0,$mid=0)
 	{
-		if(!$field || !$val || !$mid) return true;
-		$sql = "SELECT * FROM ".$this->db->prefix."list_".$mid." WHERE ".$field."='".$val."'";
-		if($site_id)
-		{
-			$sql .= " AND site_id='".$site_id."'";
+		if(!$field || !$val || !$mid){
+			return true;
 		}
-		if($project_id)
-		{
-			$sql .= " AND project_id='".$project_id."'";
+		//检查表字段
+		$flist = $this->db->list_fields('list_'.$mid);
+		if(!$flist){
+			return false;
+		}
+		if(!in_array($field,$flist)){
+			return false;
+		}
+		$sql = "SELECT id FROM ".$this->db->prefix."list_".$mid." WHERE `".$field."`='".$val."'";
+		$sql .= " AND site_id='".$this->site_id."'";
+		if($pid){
+			$sql .= " AND project_id='".$pid."'";
 		}
 		return $this->db->get_one($sql);
 		
 	}
 
-	function get_next($id,$cate_id=0,$project_id=0,$module_id=0,$site_id=0)
+	private function _project_format_orderby($orderby='')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."list l ";
-		$sql.= " WHERE l.status='1' AND l.hidden='0' ";
-		if($cate_id)
-		{
-			$sql .= " AND l.cate_id='".$cate_id."' ";
+		if(!$orderby){
+			$orderby = "l.sort DESC,l.dateline DESC,l.id DESC";
 		}
-		if($project_id)
-		{
-			$sql .= " AND l.project_id='".$project_id."' ";
+		$tmp = explode(",",$orderby);
+		$list = false;
+		foreach($tmp as $key=>$value){
+			$value = trim($value);
+			if(!$value){
+				continue;
+			}
+			$tmp2 = explode(" ",$value);
+			$type = end($tmp2);
+			if(!$type){
+				$type = "ASC";
+			}
+			$id = $tmp2[0];
+			$chk = explode(".",$id);
+			$field = $chk[1] ? trim($chk[1]) : $id;
+			$list[] = array('id'=>$tmp2[0],'type'=>strtoupper($type),'field'=>$field);
 		}
-		if($module_id)
-		{
-			$sql .= " AND l.module_id='".$module_id."' ";
-		}
-		if($site_id)
-		{
-			$sql .= " AND l.site_id='".$site_id."' ";
-		}
-		$sql .= " AND l.id>".$id." ";
-		$sql .= " ORDER BY l.sort DESC,l.dateline ASC,l.id ASC LIMIT 1";
-		return $this->db->get_one($sql);
+		return $list;
+	}
+	
+
+	/**
+	 * 取得下一个主题ID
+	 * @参数 $id 当前主题ID
+	 * @返回 数字或false
+	 * @更新时间 
+	**/
+	public function get_next($id)
+	{
+		return $this->next_prev($id,'next');
 	}
 
-	function get_prev($id,$cate_id=0,$project_id=0,$module_id=0,$site_id=0)
+	/**
+	 * 取得上一主题ID
+	 * @参数 $id 当前主题ID
+	 * @返回 数字或false
+	 * @更新时间 2017年02月24日
+	**/
+	public function get_prev($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."list l ";
-		$sql.= " WHERE l.status='1' AND l.hidden='0' ";
-		if($cate_id)
-		{
-			$sql .= " AND l.cate_id='".$cate_id."' ";
-		}
-		if($project_id)
-		{
-			$sql .= " AND l.project_id='".$project_id."' ";
-		}
-		if($module_id)
-		{
-			$sql .= " AND l.module_id='".$module_id."' ";
-		}
-		if($site_id)
-		{
-			$sql .= " AND l.site_id='".$site_id."' ";
-		}
-		$sql .= " AND l.id<".$id." ";
-		$sql .= " ORDER BY l.sort DESC,l.dateline DESC,l.id DESC LIMIT 1";
-		return $this->db->get_one($sql);
+		return $this->next_prev($id,'prev');
 	}
 
-	//根据当前主题ID，取得其上下主题
-	function next_prev($id)
+	private function next_prev($id,$type='prev')
 	{
-		if(!$id) return false;
-		$sql = "SELECT l.*,p.orderby FROM ".$this->db->prefix."list l ";
-		$sql.= " JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
-		$sql.= " WHERE l.status=1 AND p.status=1";
-		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
-		//
-		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id=".intval($id)." AND status=1";
-		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
-		$sql = "SELECT orderby FROM ".$this->db->prefix."project WHERE id=".intval($rs['project_id'])." AND status=1";
-		$o_rs = $this->db->get_one($sql);
-		$orderby = $o_rs['orderby'] ? $o_rs['orderby'] : 'l.sort DESC,l.dateline DESC,l.id DESC';
+		$rs = $this->call_one($id);
+		if(!$rs || !$rs['status'] || !$rs['project_id']){
+			return false;
+		}
+		$project = $this->model('project')->get_one($rs['project_id'],false);
+		if(!$project || !$project['status']){
+			return false;
+		}
+		$data = $this->_project_format_orderby($project['orderby']);
+		$sql = "SELECT l.id FROM ".$this->db->prefix."list l ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$project['module']." ext ON(l.id=ext.id) ";
+		if($rs['cate_id']){
+			$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+		}
+		$sql.= " WHERE l.status='1' AND l.hidden='0' ";
+		if($rs['cate_id']){
+			$sql .= " AND (l.cate_id='".$rs['cate_id']."' OR lc.cate_id='".$rs['cate_id']."') ";
+		}
+		if($rs['project_id']){
+			$sql .= " AND l.project_id='".$rs['project_id']."' ";
+		}
+		if($rs['module_id']){
+			$sql .= " AND l.module_id='".$rs['module_id']."' ";
+		}
+		$sql .= " AND l.site_id='".$rs['site_id']."' ";
+		$orderby = $condition = array();
+		$symbol = $type == 'prev' ? '<' : '>';
+		foreach($data as $key=>$value){
+			if($type == 'prev'){
+				$orderby[] = $value['id']." ".$value['type'];
+			}else{
+				$orderby[] = $value['id']." ".($value['type'] == 'DESC' ? 'ASC' : 'DESC');
+			}
+			
+			if(!$value['field'] || !$rs[$value['field']]){
+				continue;
+			}
+			$tmp = $rs[$value['field']];
+			$condition[] = $value['id'].$symbol.(is_numeric($tmp) ? $tmp : "'".$tmp."'");
+		}
+		$orderby = implode(",",$orderby);
+		$newid = 0;
+		foreach($condition as $key=>$value){
+			$tmpsql = $sql." AND ".$value." ORDER BY ".$orderby." LIMIT 1";
+			$tmp = $this->db->get_one($tmpsql);
+			if($tmp && $tmp['id'] != $rs['id']){
+				$newid = $tmp['id'];
+				break;
+			}
+		}
+		if(!$newid){
+			return false;
+		}
+		return $newid;
 	}
 
 
@@ -542,7 +725,7 @@ class list_model_base extends phpok_model
 
 	public function arc_count($mid,$condition='')
 	{
-		$sql = "SELECT count(DISTINCT l.id) FROM ".$this->db->prefix."list l ";
+		$sql = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
 		$sql .= " JOIN ".$this->db->prefix."list_".$mid." ext ";
 		$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
 		$sql .= " LEFT JOIN ".$this->db->prefix."list_biz b ON(l.id=b.id) ";
@@ -645,6 +828,16 @@ class list_model_base extends phpok_model
 		}
 		return $rslist;
 	}
+
+	/**
+	 * 保存电商数据
+	 * @参数 $data 数组，里面含有字段：id,unit,price,is_virtual,currency_id,weight,volume
+	**/
+	public function biz_save($data)
+	{
+		return $this->db->insert_array($data,'list_biz','replace');
+	}
+
 
 	private function title_id_to_string($id)
 	{

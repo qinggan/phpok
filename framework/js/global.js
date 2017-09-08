@@ -1,11 +1,13 @@
-/***********************************************************
-	Filename: js/global.js
-	Note	: 后台通用JS，此JS应加载在jquery.js之后
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-10-19 16:58
-***********************************************************/
+/**
+ * 表单通用JS，涉及到自定义表单中所有的JS文件，请注意，此文件需要加载在 jQuery 之后，且不建议直接读取
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @网站 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @日期 2017年03月22日
+**/
+
 //异步加载js
 function load_js(url)
 {
@@ -44,13 +46,39 @@ function json_ajax(turl)
 	return $.phpok.json(turl);
 }
 
-function p_lang(str)
+/**
+ * JS语法中涉及到的语言包替换
+ * @参数 str 要替换的语言包，支持使用{}包起来的变量
+ * @参数 info 支持字符串，对数数据，要替换的变量，为空表示没有变量信息
+ * @返回 替换后的数据
+ * @更新时间 
+**/
+function p_lang(str,info)
 {
 	if(!str || str == 'undefined'){
 		return false;
 	}
 	if(lang && lang[str]){
-		return lang[str];
+		if(!info || info == 'undefined' || typeof info == 'boolean'){
+			return lang[str];
+		}
+		str = lang[str];
+		if(typeof info == 'string' || typeof info == 'number'){
+			return str.replace(/\{\w+\}/,info);
+		}
+		for(var i in info){
+			str = str.replace('{'+i+'}',info[i]);
+		}
+		return str;
+	}
+	if(!info || info == 'undefined' || typeof info == 'boolean'){
+		return str;
+	}
+	if(typeof info == 'string' || typeof info == 'number'){
+		return str.replace(/\{\w+\}/,info);
+	}
+	for(var i in info){
+		str = str.replace('{'+i+'}',info[i]);
 	}
 	return str;
 }
@@ -170,12 +198,5 @@ function count(id)
 	return false;
 }
 
-//JS语言包替换
-function lang_replace(str,id,val)
-{
-	if(!str || str == "undefined") return false;
-	if(!id || !val) return str;
-	return str.replace("{"+id+"}",val);
-}
 
 

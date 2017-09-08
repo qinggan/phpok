@@ -42,7 +42,7 @@ class unionpay_notice
 			$pay_date = $app->time;
 			$price = round(($params['settleAmt']/100),2);
 			//
-			$data = array();
+			$data = $this->order['ext'] ? unserialize($this->order['ext']) : array();
 			$data['traceNo'] = $params['traceNo'];
 			$data['traceTime'] = $params['traceTime'];
 			$data['queryId'] = $params['queryId'];
@@ -71,6 +71,9 @@ class unionpay_notice
 						$app->model('order')->save_payment($array,$order_payment['id']);
 					}
 				}
+			}
+			if($this->order['type'] == 'recharge' && $data['goal']){
+				$app->model('wealth')->recharge($this->order['id']);
 			}
 		}
 		return true;

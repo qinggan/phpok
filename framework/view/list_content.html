@@ -10,29 +10,20 @@ $(document).ready(function(){
 <script type="text/javascript">
 function pendding_info()
 {
-	var url = get_url('index','pendding_sublist');
-	$.ajax({
-		'url':url,
-		'cache':false,
-		'async':true,
-		'dataType':'json',
-		'success': function(rs){
-			if(rs.status == "ok"){
-				var list = rs.content;
-				var html = '<em class="toptip">{total}</em>';
-				var total = 0;
-				for(var key in list){
-					$("li[id=project_"+list[key]['id']+"] em").remove();
-					$("li[id=project_"+list[key]['id']+"]").append(html.replace('{total}',list[key]['total']));
-				}
-				//每隔一分钟检测一次
-				window.setTimeout("pendding_info()", 60000);
-			}else{
-				//移除提示
-				$("em.toptip").remove();
-				//每隔三分钟进行一次检测
-				window.setTimeout("pendding_info()", 180000);
+	$.phpok.json(get_url('index','pendding_sublist'),function(rs){
+		$("em.toptip").remove();
+		if(rs.status && rs.info){
+			var list = rs.info;
+			var html = '<em class="toptip">{total}</em>';
+			var total = 0;
+			for(var key in list){
+				$("li[id=project_"+list[key]['id']+"] em").remove();
+				$("li[id=project_"+list[key]['id']+"]").append(html.replace('{total}',list[key]['total']));
 			}
+			//每隔一分钟检测一次
+			window.setTimeout("pendding_info()", 60000);
+		}else{
+			window.setTimeout("pendding_info()", 180000);
 		}
 	});
 }
@@ -92,7 +83,7 @@ function reply_it(id,title)
 	&raquo; <span class="red">{$keywords}</span>
 	<!-- /if -->
 	<!-- if $popedom.set || $session.admin_rs.if_system -->
-	<div class="action"><a href="{url ctrl=list func=set id=$pid/}">{lang编辑项目}</a></div>
+	<div class="action"><a href="javascript:$.phpok_list.set({$pid});void(0);">{lang编辑项目}</a></div>
 	<!-- /if -->
 	<!-- if $popedom.add -->
 	<div class="action"><a href="{url ctrl=list func=edit pid=$pid/}">{lang添加内容}</a></div>
@@ -113,7 +104,7 @@ function reply_it(id,title)
 			<td><select name="attr" id="search_attr">
 				<option value="">{lang选择属性…}</option>
 				<!-- loop from=$attrlist key=$key value=$value -->
-				<option value="{$key}"{if $attr == $key} selected{/if}>{$value}</option>
+				<option value="{$key}"{if $attr && is_array($attr) && in_array($key,$attr)} selected{/if}>{$value}</option>
 				<!-- /loop -->
 			</select></td>
 			<!-- /if -->
@@ -289,13 +280,12 @@ function reply_it(id,title)
 			<!-- /if -->
 		<!-- /if -->
 	<!-- /loop -->
-	<td class="center"><input type="text" class="short center" value="{$value.sort}" tabindex="{$tmp_m}" onblur="update_taxis(this.value,'{$value.id}')" /></td>
+	<td class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}" onclick="$.phpok_list.sort(this)">{$value.sort}</td>
 	<td class="center"><span id="taxis_{$value.id}"></span></td>
 	<td>
 		<div class="button-group">
 			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=list func=edit id=$value.id/}')" class="phpok-btn" /><!-- /if -->
 			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="content_del('{$value.id}')" class="phpok-btn" /><!-- /if -->
-			<!-- if $session.admin_rs.if_system && $rs.is_appoint --><input type="button" value="{lang指派}" class="phpok-btn" onclick="set_admin_id('{$value.id}')" /><!-- /if -->
 			<!-- if $popedom.comment && $rs.comment_status && $comments[$value.id] --><input type="button" class="phpok-btn" value="{lang评论}" onclick="reply_it('{$value.id}','{$value.title}')"{if $comments[$value.id].uncheck} style="color:red;" title="{lang未审核评论：}{$comments[$value.id].uncheck}"{/if} /><!-- /if -->
 			<!-- if $rs.subtopics && !$value[parent_id] && $popedom.add --><input type="button" value="加子主题" onclick="$.phpok.go('{url ctrl=list func=edit parent_id=$value.id pid=$value.project_id/}')" class="phpok-btn" /><!-- /if -->
 		</div>
@@ -366,13 +356,12 @@ function reply_it(id,title)
 				<!-- /if -->
 			<!-- /if -->
 		<!-- /loop -->
-		<td class="center"><input type="text" class="short center" value="{$vv.sort}" tabindex="{$tmp_m}" onblur="update_taxis(this.value,'{$vv.id}')" /></td>
+		<td class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$vv.id}" onclick="$.phpok_list.sort(this)">{$vv.sort}</td>
 		<td class="center"><span id="taxis_{$vv.id}"></span></td>
 		<td>
 			<div class="button-group">
 				<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=list func=edit id=$vv.id/}')" class="phpok-btn" /><!-- /if -->
 				<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="content_del('{$vv.id}')" class="phpok-btn" /><!-- /if -->
-				<!-- if $session.admin_rs.if_system && $rs.is_appoint --><input type="button" value="{lang指派}" class="phpok-btn" onclick="set_admin_id('{$vv.id}')" /><!-- /if -->
 				<!-- if $popedom.comment && $rs.comment_status && $comments[$vv.id] --><input type="button" class="phpok-btn" value="{lang评论}" onclick="reply_it('{$vv.id}','{$vv.title}')"{if $comments[$vv.id].uncheck} style="color:red;" title="{lang未审核评论：}{$comments[$vv.id].uncheck}"{/if} /><!-- /if -->
 			</div>
 		</td>
@@ -419,9 +408,6 @@ function reply_it(id,title)
 					<option value="show">{lang显示}</option>
 					<!-- if $popedom.delete -->
 					<option value="delete">{lang删除}</option>
-					<!-- /if -->
-					<!-- if $session.admin_rs.if_system && $rs.is_appoint -->
-					<option value="appoint">{lang指派管理员维护}</option>
 					<!-- /if -->
 					<!-- if $popedom.modify && $rs.subtopics -->
 					<option value="set_parent">{lang绑定父层}</option>

@@ -107,7 +107,16 @@ $(document).ready(function(){
 	</ul>
 </div>
 <!-- /if -->
-
+<div class="tips">
+	<form method="post" action="{url ctrl=open func=user id=$id/}">
+	<table align="center">
+	<tr>
+		<td><input type="text" name="keywords" id="keywords" value="{$keywords}" /></td>
+		<td><input type="submit" value="搜索" class="submit" /></td>
+	</tr>
+	</table>
+	</form>
+</div>
 <table width="100%" cellpadding="0" cellspacing="0" class="list">
 <tr>
 	<th>会员ID</th>

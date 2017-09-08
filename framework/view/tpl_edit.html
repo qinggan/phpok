@@ -3,32 +3,12 @@
 <script type="text/javascript" src="js/codemirror/codemirror.js"></script>
 <style type="text/css">
 .CodeMirror{border:1px solid #ccc;}
-.CodeMirror-scroll{width:675px;height:360px;}
+.CodeMirror-scroll{width:100%;height:100%;}
 </style>
-<div class="tips">
-	在线编辑请确定文件有写入权限，
-	风格：<span class="red">{$rs.title}</span>，
-	文件：<span class="red">{$folder}{$title}</span>
-</div>
-
-<form method="post" action="{func admin_url tpl edit_save}&id={$id}&folder={func rawurlencode $folder}&title={func rawurlencode $title}">
-<div style="margin-top:3px;">
-	<table cellpadding="0" cellspacing="0" style="width:auto;height:auto;border:0;" border="0">
-	<tr>
-		<td><textarea id="content" name="content">{$content}</textarea></td>
-	</tr>
-	</table>
-</div>
-<div class="table">
-	<div class="content">
-		<input type="submit" value="提 交" class="submit" />
-	</div>
-</div>
-</form>
 <script type="text/javascript">
+var code_editor,delay
 $(document).ready(function(){
-	var delay;
-	var code_editor_{$rs.identifier} = CodeMirror.fromTextArea(document.getElementById("content"),{
+	code_editor = CodeMirror.fromTextArea(document.getElementById("content"),{
 		lineNumbers		: true,
 		matchBrackets	: true,
 		lineWrapping	: true,
@@ -36,5 +16,31 @@ $(document).ready(function(){
 		indentUnit		: 4
 	});
 });
+function save()
+{
+	var opener = $.dialog.opener;
+	code_editor.save();
+	$("#post_save").ajaxSubmit({
+		'url':get_url('tpl','edit_save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.tips('{lang代码保存成功}').position('49%','10px')
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+}
 </script>
+<form method="post" id="post_save" onsubmit="return false">
+<input type="hidden" name="id" value="{$id}" />
+<input type="hidden" name="folder" value="{$folder}" />
+<input type="hidden" name="title" value="{$title}" />
+<div style="margin-top:3px;">
+	<textarea id="content" name="content">{$content}</textarea>
+</div>
+</form>
 <!-- include tpl=foot_open -->

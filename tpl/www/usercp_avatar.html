@@ -106,20 +106,14 @@ function save_thumb()
 		<div class="pfw mbottom10">
 			<h3>修改头像</h3>
 			<div class="table">
-				<table width="100%">
-				<tr>
-					<td style="padding:10px;">
-						<div id="uploader" class="wu-example">
-							<!--用来存放文件信息-->
-							<div id="thelist" class="uploader-list"></div>
-							<div class="btns">
-								<div id="btn_picture"></div>
-							</div>
-						</div>
-					</td>
-				</tr>
-				</table>
-				<div style="display:none;" id="show_cut">
+				<div style="margin:10px;">
+					<div id="thelist" class="uploader-list"></div>
+					<div class="_progress" id="upload_progress"></div>
+					<div class="btns">
+						<div id="btn_picture"></div>
+					</div>
+				</div>
+				<div style="display:none;margin:10px;padding:10px;border:1px solid #ccc;background:#efefef;" id="show_cut">
 					<div><img src="about:blank" width="500" alt="原图" id="thumbnail" /></div>
 					<div style="padding:10px"><input type="button" onclick="save_thumb()" value=" 保存图片 " /></div>
 				</div>
@@ -142,8 +136,8 @@ $(document).ready(function(){
 		swf: webroot + '{#js#}/webuploader/uploader.swf',
 		// 文件接收服务端。
 		server: api_url('upload','save'),
-		compress: false,
-		pick: '#btn_picture',
+		compress: {width:800,height:800,quality:90,compressSize:200},
+		pick: {'id':'#btn_picture','innerHTML':'选择本地图片'},
 		fileVal: 'upfile',
 		formdata:{
 			'{func session_name}':'{func session_id}'
@@ -154,6 +148,28 @@ $(document).ready(function(){
 			mimeTypes: 'image/*'
 		},
 		resize: false
+	});
+	uploader.on('fileQueued',function(file){
+		$("#upload_progress").append('<div id="phpok-upfile-' + file.id + '" class="phpok-upfile-list">' +
+			'<div class="title">' + file.name + ' <span class="status">等待上传…</span></div>' +
+			'<div class="progress"><span>&nbsp;</span></div>' +
+			'<div class="cancel" id="phpok-upfile-cancel-'+file.id+'"></div>' + 
+		'</div>' );
+		$("#phpok-upfile-"+file.id+" .cancel").click(function(){
+			uploader.removeFile(file,true);
+			$("#phpok-upfile-"+file.id).remove();
+		});
+	});
+	uploader.on('uploadProgress',function(file,percent){
+		var $li = $('#phpok-upfile-'+file.id),
+		$percent = $li.find('.progress span');
+		var width = $li.find('.progress').width();
+		$percent.css( 'width', parseInt(width * percent, 10) + 'px' );
+		$li.find('span.status').html('正在上传…');
+		self.upload_state = 'running';
+	});
+	uploader.on('uploadComplete',function(file){
+		$("#phpok-upfile-"+file.id).fadeOut();
 	});
 	uploader.on('uploadSuccess',function(file,data){
 		if(data.status == 'ok'){

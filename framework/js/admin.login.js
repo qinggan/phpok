@@ -16,39 +16,33 @@ function login_code(appid)
 //验证并登录
 function admlogin()
 {
-	var username = $("#username").val();
-	if(!username)
-	{
-		$.dialog.alert("管理员账号不能为空",false,'error');
-		return false;
-	}
-	//密码验证
-	var pass = $("#password").val();
-	if(!pass)
-	{
-		$.dialog.alert("密码不能为空！",false,'error');
-		return false;
-	}
-	var url = get_url('login','check','user='+$.str.encode(username)+"&pass="+$.str.encode(pass));
-	var vcode = $("#code_id").val();
-	if(vcode)
-	{
-		url += "&_code="+$.str.encode(vcode);
-	}
-	var rs = $.phpok.json(url);
-	if(rs.status != 'ok')
-	{
-		$.dialog.alert(rs.content,function(){
-			$("#code_id").val('');
-			login_code('admin');
-		},'error');
-		return false;
-	}
-	else
-	{
-		url = get_url('index');
-		$.phpok.go(url);
-	}
+	$("#adminlogin").ajaxSubmit({
+		'url':get_url('login','ok'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.phpok.go(get_url('index'));
+				return true;
+			}
+			$.dialog.alert(rs.info,function(){
+				$("#code_id").val('');
+				login_code('admin');
+			},'error');
+			return false;
+		}
+	});
 	return false;
 }
 
+function update_lang(val)
+{
+	var url = get_url('login','','_langid='+val);
+	$.phpok.go(url);
+}
+
+$(document).ready(function(){
+	if (self.location != top.location){
+		top.location = self.location;
+	}
+});

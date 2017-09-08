@@ -1,11 +1,8 @@
 <!-- php:$title = ($cate_rs && $cate_rs.id != $page_rs.cate) ? '发布主题 - '.$cate_rs.title.' - '.$page_rs.title : '发布主题 - '.$page_rs.title -->
 <!-- include tpl=head title=$title menutitle=$page_rs.title -->
-<!-- if $page_rs.banner -->
-<div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
-<!-- /if -->
 <script type="text/javascript">
 $(document).ready(function(){
-	var is_vcode = '<!-- if $sys.is_vcode && function_exists("imagecreate") -->true<!-- else -->false<!-- /if -->';
+	var is_vcode = '<!-- if $is_vcode -->true<!-- else -->false<!-- /if -->';
 	$("#post_submit").submit(function(){
 		var title = $("#title").val();
 		if(!title){
@@ -17,20 +14,18 @@ $(document).ready(function(){
 			$.dialog.alert('没有指定分类');
 			return false;
 		}
-		if(is_vcode == 'true')
-		{
+		if(is_vcode == 'true'){
 			var chkcode = $("#_chkcode").val();
-			if(!chkcode)
-			{
-				alert('验证码不能为空');
-				$("#_vcode").phpok_vcode();
+			if(!chkcode){
+				$.dialog.alert('验证码不能为空',function(){
+					$("#_vcode").phpok_vcode();
+				});
 				return false;
 			}
 		}
 		var content = UE.getEditor('content').getContentTxt();
-		if(!content)
-		{
-			alert('内容不能为空');
+		if(!content){
+			$.dialog.alert('内容不能为空');
 			return false;
 		}
 		$(this).ajaxSubmit({
@@ -38,16 +33,15 @@ $(document).ready(function(){
 			'type':'post',
 			'dataType':'json',
 			'success':function(rs){
-				if(rs.status == 'ok')
-				{
-					alert('您的信息已发布，感谢您的提交');
-					$.phpok.go("{$_back}");
-				}
-				else
-				{
-					alert(rs.content);
-					$("#_vcode").phpok_vcode();
-					$("#_chkcode").val('');
+				if(rs.status == 'ok'){
+					$.dialog.alert('您的信息已发布，感谢您的提交',function(){
+						$.phpok.go("{$_back}");
+					});
+				}else{
+					$.dialog.alert(rs.content,function(){
+						$("#_vcode").phpok_vcode();
+						$("#_chkcode").val('');
+					});
 					return false;
 				}
 			}
@@ -57,10 +51,8 @@ $(document).ready(function(){
 });
 </script>
 <div class="wrap mb10">
-	<div class="bbsbox">
-		<div class="bbstitle">
-			<span class="width715">发布新帖</span>
-		</div>
+	<div class="pfw" style="margin-top:10px;">
+		<h3>发布新贴</h3>
 		<form method="post" id="post_submit">
 		<input type="hidden" name="id" value="{$page_rs.identifier}" />
 		<!-- if $cate_rs -->
@@ -91,7 +83,7 @@ $(document).ready(function(){
 				<td class="td">{$value.html}</td>
 			</tr>
 			<!-- /loop -->
-			<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+			<!-- if $is_vcode -->
 			<tr>
 				<td class="l_title" valign="top">验证码：</td>
 				<td class="td">

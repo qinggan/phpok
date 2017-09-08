@@ -147,19 +147,19 @@ $(document).ready(function(){
 	
 	<div class="table">
 		<div class="title">
-			订单备注：
-			<span class="note">填写一些客户的特殊要求说明，不支持HTML</span>
+			{lang订单备注：}
+			<span class="note">{lang填写一些客户的特殊要求说明，不支持HTML}</span>
 		</div>
 		<div class="content"><textarea name="note" id="note" style="width:99%;height:80px;">{$rs.note}</textarea></div>
 	</div>
 	<div class="table_lc" style="margin:5px 20px 5px 18px;">
 		<table width="100%" id="prolist">
 		<tr class="prolist">
-			<th width="80px">产品图片</th>
-			<th>产品名称/产品单价</th>
-			<th width="240">属性</th>
-			<th width="60px" width="60px">购买数量</th>
-			<th width="50px" ><input type="button" value="增加产品" onclick="add_row()" class="btn" /></th>
+			<th width="80px">{lang产品图片}</th>
+			<th>{lang产品名称/产品单价}</th>
+			<th width="240">{lang属性}</th>
+			<th width="60px" width="60px">{lang购买数量}</th>
+			<th width="50px" ><input type="button" value="{lang增加产品}" onclick="add_row()" class="btn" /></th>
 		</tr>
 		<!-- loop from=$rslist key=$key value=$value -->
 		<tr id="pro_{$rslist_id.num}" class="prolist">
@@ -259,8 +259,9 @@ $(document).ready(function(){
 	<div class="table">
 		<table>
 		<tr>
-			<td width="130px" align="right">收件人姓名：</td>
+			<td width="130px" align="right">{lang收件人姓名：}</td>
 			<td><input type="text" name="s-fullname" id="s-fullname" value="{$shipping.fullname}" /></td>
+			<td><input type="button" value="{lang选择地址}" onclick="$.admin_order.address()" class="phpok-btn" /></td>
 		</tr>
 		</table>
 	</div>
@@ -400,10 +401,6 @@ $(document).ready(function(){
 	<!-- /if -->
 </div>
 <br /><br />
-<div class="table">
-	<div class="content">
-		<input type="submit" value="提 交" class="submit2" />
-	</div>
-</div>
+<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
 </form>
 <!-- include tpl=foot -->

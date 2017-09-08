@@ -106,7 +106,7 @@ class xml_lib
 		if(!$info){
 			return false;
 		}
-		if($info['root']){
+		if(isset($info['root']) && $info['root']){
 			return $info['root'];
 		}
 		return $info;
@@ -134,7 +134,7 @@ class xml_lib
 				}
 			}
 			if(isset($list[$key])){
-				if(!is_array($list[$key]) || $list[$key]['attr'] || $list[$key]['val']){
+				if(!is_array($list[$key]) || (isset($list[$key]['attr']) && $list[$key]['attr']) || (isset($list[$key]['val']) && $list[$key]['val'])){
 					$tmp = $list[$key];
 					unset($list[$key]);
 					$list[$key][] = $tmp;

@@ -1,89 +1,10 @@
 <!-- include tpl=head title=标签管理 -->
-<script type="text/javascript">
-function save_tag(id)
-{
-	var url = "{url ctrl=tag func=save/}";
-	if(id != 'top' && id != 'bottom')
-	{
-		url += "&id="+id;
-	}
-	var title = $("#tag_title_"+id).val();
-	if(!title)
-	{
-		$.dialog.alert('{lang关键字名称不能为空}');
-		return false;
-	}
-	url += "&title="+$.str.encode(title);
-	var tag_url = $("#tag_url_"+id).val();
-	if(tag_url)
-	{
-		url += "&url="+$.str.encode(tag_url);
-	}
-	var target_val = $("#tag_target_"+id).val();
-	url += "&target="+target_val;
-	var is_global = $("#tag_isg_"+id).val();
-	if(is_global)
-	{
-		url += "&is_global="+is_global;
-	}
-	var replace_count = $("#tag_replace_"+id).val();
-	if(replace_count && parseInt(replace_count,10)>0)
-	{
-		url += "&replace_count="+replace_count;
-	}
-	var alt = $("#tag_alt_"+id).val();
-	if(alt)
-	{
-		url += "&alt="+$.str.encode(alt);
-	}
-	var rs = $.phpok.json(url);
-	if(rs.status != 'ok')
-	{
-		$.dialog.alert(rs.content);
-		return false;
-	}
-	else
-	{
-		var tip = '{lang编辑关键字成功}';
-		if(id == 'top' || id == 'bottom')
-		{
-			tip = '{lang添加关键字成功}';
-			$.dialog.alert(tip,function(){
-				$.phpok.reload();
-			},'succeed');
-		}
-		else
-		{
-			$.dialog.tips(tip);
-		}
-		return false;
-	}
-}
-
-function delete_it(id)
-{
-	var title = $("#tag_title_"+id).val();
-	$.dialog.confirm('确定要删除关键字：<span class="red">'+title+"</span> 吗？删除后是不能恢复的",function(){
-		var url = "{url ctrl=tag func=delete/}&id="+id;
-		var rs = $.phpok.json(url);
-		if(rs.status == 'ok')
-		{
-			$.dialog.tips('删除成功');
-			$("#edit_"+id).remove();
-			return true;
-		}
-		else
-		{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	});
-}
-</script>
 <div class="tips">
 	{lang您当前的位置：}
 	<a href="{url ctrl=tag/}">{lang标签管理}</a>
 	&raquo; {lang标签列表}
+	<!-- if $popedom.add --><div class="action"><a href="javascript:$.phpok_tag.add();void(0);">添加标签</a></div><!-- /if -->
+	<!-- if $session.admin_rs.if_system --><div class="action"><a href="javascript:$.phpok_tag.config();void(0);">配置标签</a></div><!-- /if -->
 </div>
 <div class="list">
 <table width="100%" cellpadding="0" cellspacing="0">
@@ -99,89 +20,31 @@ function delete_it(id)
 	<th width="90">点击数</th>
 	<th class="action">操作</th>
 </tr>
-<tr id="add_top">
-	<form method="post" onsubmit="return save_tag('top')">
-	<td class="center">添加</td>
-	<td><input type="text" id="tag_title_top" placeholder="填写关键字名称" style="width:150px" /></td>
-	<td><input type="text" id="tag_alt_top" placeholder="链接提示文字" style="width:150px" /></td>
-	<td><input type="text" id="tag_url_top" placeholder="自定义链接地址，可以为空" style="width:300px" /></td>
-	<td class="center">
-		<select id="tag_target_top">
-			<option value="0">当前窗口</option>
-			<option value="1">新窗口</option>
-		</select>
-	</td>
-	<td class="center">
-		<select id="tag_isg_top">
-			<option value="0">非全局</option>
-			<option value="1">全局可用</option>
-		</select>
-	</td>
-	<td class="center"><input type="text" id="tag_replace_top" value="3" class="short center" /></td>
-	<td class="center">0</td>
-	<td class="center">0</td>
-	<td>
-		<input type="submit" value="添加" class="btn" />
-	</td>
-	</form>
-</tr>
 <!-- loop from=$rslist key=$key value=$value -->
 <tr id="edit_{$value.id}">
-	<form method="post" onsubmit="return save_tag('{$value.id}')">
 	<td class="center">{$value.id}</td>
-	<td><input type="text" id="tag_title_{$value.id}" value="{$value.title}" style="width:150px" /></td>
-	<td><input type="text" id="tag_alt_{$value.id}" value="{$value.alt}" style="width:150px" /></td>
-	<td><input type="text" id="tag_url_{$value.id}" value="{$value.url}" style="width:300px" /></td>
+	<td>{$value.title}</td>
+	<td>{$value.alt ? $value.alt : '-'}</td>
+	<td>{$value.url ? $value.url : '-'}</td>
 	<td class="center">
-		<select id="tag_target_{$value.id}">
-			<option value="0">当前窗口</option>
-			<option value="1"{if $value.target} selected{/if}>新窗口</option>
-		</select>
+		<!-- if $value.target --><span class="red">新窗口</span><!-- else --><span class="darkblue">当前窗口</span><!-- /if -->
 	</td>
 	<td class="center">
-		<select id="tag_isg_{$value.id}">
-			<option value="0">非全局</option>
-			<option value="1"{if $value.is_global} selected{/if}>全局可用</option>
-		</select>
+		<!-- if $value.is_global --><span class="darkblue">全局可用</span><!-- else -->-<!-- /if -->
 	</td>
-	<td class="center"><input type="text" id="tag_replace_{$value.id}" value="{$value.replace_count}" class="short center" /></td>
+	<td class="center">{$value.replace_count}</td>
 	<td class="center">{$value.count ? $value.count : 0}</td>
 	<td class="center">{$value.hits ? $value.hits : 0}</td>
 	<td>
-		<input type="submit" value="修改" class="btn" /> <input type="button" value="删除" onclick="delete_it('{$value.id}')" class="btn" />
+		<div class="button-group">
+			<input type="button" value="{lang编辑}" onclick="$.phpok_tag.edit('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="$.phpok_tag.del('{$value.id}','{$value.title}')" class="phpok-btn" />
+		</div>
 	</td>
-	</form>
 </tr>
 <!-- /loop -->
-<!-- if $rslist && count($rslist)>=1 -->
-<tr id="add_bottom">
-	<form method="post" onsubmit="return save_tag('bottom')">
-	<td class="center">添加</td>
-	<td><input type="text" id="tag_title_bottom" placeholder="填写关键字名称" style="width:150px" /></td>
-	<td><input type="text" id="tag_alt_bottom" placeholder="链接提示文字" style="width:150px" /></td>
-	<td><input type="text" id="tag_url_bottom" placeholder="自定义链接地址，可以为空" style="width:300px" /></td>
-	<td class="center">
-		<select id="tag_target_bottom">
-			<option value="0">当前窗口</option>
-			<option value="1">新窗口</option>
-		</select>
-	</td>
-	<td class="center">
-		<select id="tag_isg_bottom">
-			<option value="0">非全局</option>
-			<option value="1">全局可用</option>
-		</select>
-	</td>
-	<td class="center"><input type="text" id="tag_replace_bottom" value="3" class="short center" /></td>
-	<td class="center">0</td>
-	<td class="center">0</td>
-	<td>
-		<input type="submit" value="添加" class="btn" />
-	</td>
-	</form>
-</tr>
-<!-- /if -->
 </table>
 </div>
 <!-- include tpl=pagelist -->
-<!-- inc:foot -->
+
+<!-- include tpl=foot -->

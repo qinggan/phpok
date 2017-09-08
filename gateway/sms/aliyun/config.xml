@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title><![CDATA[阿里云消息服务（短信）]]></title>
+	<note><![CDATA[与阿里云市场短信有所区别，此处使用阿里云自带的SDK包]]></note>
+	<code>
+		<appkey>
+			<title><![CDATA[Access Key ID]]></title>
+			<note><![CDATA[请到阿里云提供的https://ak-console.aliyun.com/#/accesskey/申请]]></note>
+			<type>text</type>
+			<required>true</required>
+		</appkey>
+		<appsecret>
+			<title><![CDATA[Access Key Secret（密钥）]]></title>
+			<note><![CDATA[同上，在申请Key ID后，会同时提供密钥]]></note>
+			<type>text</type>
+			<required>true</required>
+		</appsecret>
+		<server>
+			<title><![CDATA[外网访问域名，即EndPoint]]></title>
+			<note><![CDATA[进入阿里云MNS管理控制台，选取需要访问的地域，点击右上角的“获取Endpoint”按钮即可得到该地域的内外网访问域名。]]></note>
+			<type>text</type>
+			<required>true</required>
+		</server>
+		<mnstitle>
+			<title><![CDATA[实例名称]]></title>
+			<note><![CDATA[针对使用短信功能的用户，每个地区会免费赠送一个主题和对应的订阅。您在调取接口发送时，需要将主题名称填写在API的代码中。]]></note>
+			<type>text</type>
+			<required>true</required>
+		</mnstitle>
+		<signame>
+			<title><![CDATA[签名]]></title>
+			<note><![CDATA[请填写您在阿里上设置的短信签名]]></note>
+			<type>text</type>
+			<required>true</required>
+		</signame>
+	</code>
+	<manage>
+		<send>
+			<title>发短信</title>
+			<exec>sendsms</exec>
+			<type>page</type>
+		</send>
+		<readme>
+			<title>帮助说明</title>
+			<exec>readme</exec>
+			<type>page</type>
+		</readme>
+	</manage>
+</root>

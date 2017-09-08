@@ -1,0 +1,37 @@
+<!-- include tpl=head_open -->
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	$("#post_save").ajaxSubmit({
+		'url':get_url('user','show_setting_save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.alert('操作成功',function(){
+					opener.$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.info);
+				return false;
+			}
+		}
+	});
+}
+</script>
+<div class="table">
+	<form method="post" id="post_save">
+	<div class="title">
+		{lang要显示的字段：}<span class="note">{lang请勾选在后台列表中要显示的字段}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+			<li><label><input type="checkbox" name="setting[]" value="{$key}"{if $keys && in_array($key,$keys)} checked{/if} />{$value}</label></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+	</form>
+</div>
+<!-- include tpl=foot_open -->

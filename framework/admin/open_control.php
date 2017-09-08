@@ -351,8 +351,7 @@ class open_control extends phpok_control
 		$keywords = $this->get("keywords");
 		$page_url = $this->url("open","user2","id=".$id);
 		$condition = "1=1";
-		if($keywords)
-		{
+		if($keywords){
 			$this->assign("keywords",$keywords);
 			$condition .= " AND u.user LIKE '%".$keywords."%'";
 			$page_url.="&keywords=".rawurlencode($keywords);
@@ -362,7 +361,7 @@ class open_control extends phpok_control
 		$count = $this->model('user')->get_count($condition);
 		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=2';
 		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+		$pagelist = phpok_page($page_url,$count,$pageid,$psize,$string);
 		$this->assign("total",$count);
 		$this->assign("rslist",$rslist);
 		$this->assign("id",$id);

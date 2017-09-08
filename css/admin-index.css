@@ -14,6 +14,7 @@ p{word-wrap:break-word}
 .clear{ clear:both;}
 .red{color:red;}
 .darkblue{color:darkblue;}
+.b{font-weight:bold;}
 
 
 .foot{ background:#f9f9f9; padding:10px 0 0; border-top:1px solid #c3c3c3; width:100%; }

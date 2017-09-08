@@ -22,18 +22,20 @@
 		</div>
 	</div>
 	<nav class="menu">
-	<ul>
-		<!-- php:$list = phpok('menu') -->
-		<!-- loop from=$list.rslist key=$key value=$value id=mindex -->
-		<li{if $highlight == $mindex.num || $menutitle == $value.title} class="current"{/if}>
-			<dl>
-				<dt{if $value.sonlist} class="arrow"{/if}><a href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a></dt>
-				<!-- loop from=$value.sonlist key=$k value=$v -->
-				<dd><a href="{$v.url}" title="{$v.title}" target="{$v.target}">{$v.title}</a></dd>
-				<!-- /loop -->
-			</dl>
-		</li>
-		<!-- /loop -->
-	</ul>
+		<div class="menu">
+		<ul>
+			<!-- php:$list = phpok('menu') -->
+			<!-- loop from=$list.rslist key=$key value=$value id=mindex -->
+			<li{if $highlight == $mindex.num || $menutitle == $value.title} class="current"{/if}>
+				<dl>
+					<dt{if $value.sonlist} class="arrow"{/if}><a href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a></dt>
+					<!-- loop from=$value.sonlist key=$k value=$v -->
+					<dd><a href="{$v.url}" title="{$v.title}" target="{$v.target}">{$v.title}</a></dd>
+					<!-- /loop -->
+				</dl>
+			</li>
+			<!-- /loop -->
+		</ul>
+		</div>
 	</nav>
 </header>

@@ -81,7 +81,7 @@ class url_model_base extends phpok_model
 	}
 
 	//保护字段
-	public function protected_ctrl($info)
+	public function protected_ctrl($info='')
 	{
 		if(!$info){
 			$info = array("js",'ajax','inp');

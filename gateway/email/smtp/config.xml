@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
 	<title>SMTP邮件</title>
+	<note>所有支持SMTP邮件发送的都可以使用</note>
 	<code>
 		<server>
 			<title>SMTP服务器</title>

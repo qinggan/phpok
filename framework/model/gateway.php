@@ -99,14 +99,14 @@ class gateway_model_base extends phpok_model
 	//保存临时数据
 	public function save_temp($info,$gid,$uid=0)
 	{
-		$file = 'gateway_'.$gid.'_'.$uid.'.php';
+		$file = 'gateway_'.$gid.'_'.$uid.'_'.$this->site_id.'.php';
 		return $this->lib('file')->vi($info,$this->dir_root.'data/cache/'.$file);
 	}
 
 	//读取临时数据
 	public function read_temp($gid,$uid=0)
 	{
-		$file = 'gateway_'.$gid.'_'.$uid.'.php';
+		$file = 'gateway_'.$gid.'_'.$uid.'_'.$this->site_id.'.php';
 		if(!file_exists($this->dir_root.'data/cache/'.$file)){
 			return false;
 		}
@@ -119,7 +119,7 @@ class gateway_model_base extends phpok_model
 
 	public function delete_temp($gid,$uid=0)
 	{
-		$file = 'gateway_'.$gid.'_'.$uid.'.php';
+		$file = 'gateway_'.$gid.'_'.$uid.'_'.$this->site_id.'.php';
 		$this->lib('file')->rm($this->dir_root.'data/cache/'.$file);
 		return true;
 	}

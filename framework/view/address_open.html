@@ -1,0 +1,28 @@
+<!-- include tpl=head_open -->
+<div class="list">
+<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<tr>
+	<th width="50px">{langID}</th>
+	<th>{lang会员账号}</th>
+	<th>{lang收件人}</th>
+	<th>{lang手机号}</th>
+	<th>{lang电话}</th>
+	<th>{lang邮箱}</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<tr>
+	<td class="center" rowspan="2" style="border-bottom:1px solid #ccc;">{$value.id}</td>
+	<td class="center">{$value.user}</td>
+	<td class="center" style="padding:5px;">{$value.fullname}</td>
+	<td class="center">{$value.mobile}</td>
+	<td class="center">{$value.tel}</td>
+	<td class="center">{$value.email}</td>
+</tr>
+<tr>
+	<td colspan="5" style="text-align:left;border-bottom:1px solid #ccc;padding:5px;">{$value.country}/{$value.province}/{$value.city}/{$value.county} {$value.address}</td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<!-- if $pagelist --><div class="table"><!-- include tpl=pagelist --></div><!-- /if -->
+<!-- include tpl=foot_open -->

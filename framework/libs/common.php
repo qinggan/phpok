@@ -29,7 +29,7 @@ class common_lib
 		$cip = (isset($_SERVER['HTTP_CLIENT_IP']) AND $_SERVER['HTTP_CLIENT_IP'] != "") ? $_SERVER['HTTP_CLIENT_IP'] : false;
 		$rip = (isset($_SERVER['REMOTE_ADDR']) AND $_SERVER['REMOTE_ADDR'] != "") ? $_SERVER['REMOTE_ADDR'] : false;
 		$fip = (isset($_SERVER['HTTP_X_FORWARDED_FOR']) AND $_SERVER['HTTP_X_FORWARDED_FOR'] != "") ? $_SERVER['HTTP_X_FORWARDED_FOR'] : false;
-		$ip = "0.0.0.0";
+		$ip = "Unknown";
 		if($cip && $rip){
 			$ip = $cip;
 		}elseif($rip){
@@ -43,10 +43,6 @@ class common_lib
 		if (strstr($ip, ',')){
 			$x = explode(',', $ip);
 			$ip = end($x);
-		}
-
-		if (!preg_match( "/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/", $ip)){
-			$ip = '0.0.0.0';
 		}
 		return $ip;
 	}
@@ -193,7 +189,7 @@ class common_lib
 	}
 
 	/**
-	 * 是否电话判断
+	 * 是否电话判断，支持国际电话判断
 	 * @参数 $tel 电话号码
 	 * @参数 $type 类型，支持 mobile tel 和 400电话，留空只要一个符合即通过
 	 * @返回 true 或 false
@@ -201,8 +197,8 @@ class common_lib
 	public function tel_check($tel,$type='')
 	{
 		$regxArr = array(
-			'mobile'  =>  '/^(\+?86-?)?(18|15|13|17)[0-9]{9}$/',
-			'tel' =>  '/^(\+?86-?)?(010|02\d{1}|0[3-9]\d{2})-?\d{7,9}(-\d+)?$/',
+			'mobile'  =>  '/^(\+?\(?[0-9]+\)?\-?)?([0-9\-\s]+)+(-\d+)?$/',
+			'tel' =>  '/^(\+?\(?[0-9]+\)?\-?)?([0-9\-\s]+)+(-\d+)?$/',
 			'400' =>  '/^400(-?\d{3,4}){2}$/',
 		);
 		if($type && isset($regxArr[$type])){

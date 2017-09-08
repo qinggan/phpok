@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title><![CDATA[视频]]></title>
+	<identifier><![CDATA[video]]></identifier>
+	<field_type><![CDATA[varchar]]></field_type>
+	<note><![CDATA[支持并推荐您使用FlV格式视频]]></note>
+	<form_type><![CDATA[upload]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[int]]></format>
+	<content><![CDATA[]]></content>
+	<ext>
+		<cate_id><![CDATA[]]></cate_id>
+		<cate_custom><![CDATA[0]]></cate_custom>
+		<is_multiple><![CDATA[0]]></is_multiple>
+		<upload_type><![CDATA[jpg,png,gif]]></upload_type>
+		<upload_name><![CDATA[图片]]></upload_name>
+		<upload_binary><![CDATA[0]]></upload_binary>
+		<upload_compress><![CDATA[0]]></upload_compress>
+		<upload_compress_wh><![CDATA[500]]></upload_compress_wh>
+	</ext>
+</root>

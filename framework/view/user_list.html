@@ -1,20 +1,40 @@
-<!-- inc:head -->
+<!-- include tpl=head -->
 <script type="text/javascript" src="{func add_js user.js}"></script>
 <div class="tips">
 	<table width="100%" cellpadding="0" cellspacing="0" height="100%">
 	<tr>
-		<td>&raquo; {lang会员列表}</td>
+		<td>&raquo; <a href="{url ctrl=user/}">{lang会员列表}</a></td>
 		<td>
 			<table>
 			<tr>
-				<form method="post" action="{echo admin_url('user')}">
+				<form method="post" action="{url ctrl=user/}">
+				<td>
+					<select name="group_id">
+						<option value="">{lang全部}</option>
+						<!-- loop from=$grouplist key=$key value=$value id=$tmpid -->
+						<option value="{$value.id}"{if $group_id == $value.id} selected{/if}>{$value.title}</option>
+						<!-- /loop -->
+					</select>
+				</td>
+				<td>
+					<select name="keytype" id="keytype">
+						<!-- loop from=$flist key=$key value=$value id=$tmpid -->
+						<option value="{$key}"{if $key == $keytype} selected{/if}>{$value}</option>
+						<!-- /loop -->
+					</select>
+				</td>
 				<td><input type="text" id="keywords" name="keywords" value="{$keywords}" /></td>
 				<td><input type="submit" value="{lang搜索}" class="submit" /></td>
 				</form>
 			</tr>
 			</table>
 		</td>
-		<td align="right"><div class="action"><a href="{echo admin_url('user','set')}">{lang添加会员}</a></div></div>
+		<td align="right">
+			<div class="action"><a href="{url ctrl=user func=set/}">{lang添加会员}</a></div>
+			<!-- if $session.admin_rs.if_system -->
+			<div class="action"><a href="javascript:$.admin_user.show_setting();void(0);">{lang显示字段设置}</a></div>
+			<!-- /if -->
+		</td>
 	</tr>
 	</table>
 </div>
@@ -31,7 +51,7 @@
 	<th class="lft" style="min-width:100px;">{$value.title}</th>
 	<!-- /loop -->
 	<th width="130px">{lang注册时间}</th>
-	<th width="100px"></th>
+	<th></th>
 </tr>
 <!-- $rslist AS $key=>$value -->
 <tr>
@@ -66,6 +86,9 @@
 	<td>
 		<div class="button-group">
 			<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=user func=set id=$value.id/}')" class="phpok-btn" />
+			<!-- if $config.biz_status -->
+			<input type="button" value="{lang地址库}" onclick="$.admin_user.address({$value.id})" class="phpok-btn" />
+			<!-- /if -->
 			<input type="button" value="{lang删除}" onclick="del({$value.id},'{$value.user}')" class="phpok-btn" />
 		</div>
 	</td>
@@ -74,4 +97,4 @@
 </table>
 </div>
 <!-- if $pagelist --><div class="table"><!-- include tpl=pagelist --></div><!-- /if -->
-<!-- inc:foot -->
+<!-- include tpl=foot -->

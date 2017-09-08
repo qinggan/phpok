@@ -45,7 +45,7 @@ if($email->CharSet != "utf8"){
 	$email->FromName = $this->lib('string')->charset($email->FromName,"UTF-8","GBK");
 }
 $email->Subject = $extinfo['title'];
-$email->MsgHTML($extinfo['content']);
+$email->MsgHTML(stripslashes($extinfo['content']));
 $email->AddAddress($extinfo['email'],$extinfo['fullname']);
 $obj = $email->Send();
 if(!$obj && $email->ErrorInfo){

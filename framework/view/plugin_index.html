@@ -44,6 +44,16 @@ function create_plugin()
 		}
 	});
 }
+function upload_plugin()
+{
+	$.dialog({
+		'title':'上传插件',
+		'content':document.getElementById('upload_plugin_html'),
+		'width':'500px',
+		'height':'100px',
+		'lock':true
+	})
+}
 function plugin_zip(id)
 {
 	var url = get_url('plugin','zip','id='+id);
@@ -83,55 +93,57 @@ function plugin_zip(id)
 <div class="tips">
 	{lang您当前的位置：}<a href="{url ctrl=plugin/}">{lang插件列表}</a>
 	&raquo; {lang已安装的插件}
+	<!-- if $popedom.install --><div class="action"><a href="javascript:upload_plugin();void(0);">{lang本地上传插件}</a></div><!-- /if -->
 	<div class="action"><a href="javascript:create_plugin();void(0);">{lang创建插件}</a></div>
-	<div class="clear"></div>
 </div>
 <div class="list">
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
-	<th width="10px">&nbsp;</th>
-	<th width="30px">{lang状态}</th>
+	<th width="20px">&nbsp;</th>
 	<th>{lang名称}</th>
 	<th width="40px">{lang排序}</th>
 	<th>&nbsp;</th>
 </tr>
 <!-- loop from=$rslist key=$key value=$value -->
 <tr{if $rslist_id.num%2 == ""} class="list"{/if}>
-	<td class="center">&nbsp;</td>
-	<td>
-		<span class="status{$value.status}" id="status_{$key}" {if $popedom.status}onclick="phpok_status('{$key}','{func admin_url plugin status}')"{else} style="cursor: default;"{/if} value="{$value.status}"></span>
+	<td class="center">
+		<div class="status{$value.status}" id="status_{$key}" {if $popedom.status}onclick="phpok_status('{$key}','{func admin_url plugin status}')"{else} style="cursor: default;"{/if} value="{$value.status}"></div>
 	</td>
 	<td>{$value.title} <!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></td>
-	<td class="center">{$value.taxis}</td>
+	<td class="center pointer" onclick="$.admin_plugin.taxis('{$value.id}','{$value.taxis}')">{$value.taxis}</td>
 	<td align="right">
-		<!-- if $popedom.uninstall -->
-		<input type="button" value="{lang卸载}" class="btn" onclick="plugin_uninstall('{$key}','{$value.title}')" />
-		<!-- /if -->
-		<!-- if $popedom.config -->
-		<input type="button" value="{lang配置}" class="btn" onclick="plugin_config('{$key}')" />
-		<!-- /if -->
-		<input type="button" value="{lang导出}" class="btn" onclick="plugin_zip('{$key}')" />
-		<span id="node-action-{$key}"></span>
+		<div class="button-group">
+			<!-- if $popedom.config -->
+				<!-- if $value.extconfig --><input type="button" value="{lang配置}" class="phpok-btn" onclick="$.admin_plugin.config('{$key}','{$value.title}')" /><!-- /if -->
+				<input type="button" value="{lang管理}" class="phpok-btn" onclick="$.admin_plugin.setting('{$key}')" />
+				<input type="button" value="{lang导出}" class="phpok-btn" onclick="plugin_zip('{$key}')" />
+			<!-- /if -->
+			<!-- if $popedom.uninstall -->
+			<input type="button" value="{lang卸载}" class="phpok-btn" onclick="plugin_uninstall('{$key}','{$value.title}')" />
+			<!-- /if -->
+		</div>
 	</td>
 </tr>
 <!-- /loop -->
 </table>
 </div>
 <!-- if $popedom.install -->
-<input type="hidden" name="zipfile" id="zipfile" value="" />
-<div class="tips">
-	{lang未安装插件}
-	<div class="action" style="background:none;margin:1px;padding-right:0;"><div id="zipfile_picker"></div></div>
+<div id="upload_plugin_html" style="display:none;">
+	<div style="width:450px;height:80px;">
+		<div id="zipfile_picker"></div>
+		<div class="_progress" id="zipfile_progress"></div>
+	</div>
 </div>
-<div class="_progress" id="zipfile_progress"></div>
+<input type="hidden" name="zipfile" id="zipfile" value="" />
+<div class="tips">{lang未安装插件}</div>
 <script type="text/javascript">
 var obj_zipfile;
 $(document).ready(function(){
 	obj_zipfile = new $.admin_upload({
 		'id':'zipfile',
 		'swf':'{#js#}/webuploader/uploader.swf',
-		'server':'{url ctrl=upload func=save cateid=1/}',
-		'pick':{'id':'#zipfile_picker','multiple':false},
+		'server':'{url ctrl=upload func=zip/}',
+		'pick':{'id':'#zipfile_picker','multiple':false,'innerHTML':'{lang选择本地文件}'},
 		'resize':false,
 		'multiple':"false",
 		"formData":{'{func session_name}':'{func session_id}'},
@@ -144,16 +156,18 @@ $(document).ready(function(){
 		'fileSingleSizeLimit':'204800000',
 		'success':function(file,data){
 			//执行在线解压
-			var url = get_url('plugin','unzip','id='+data.content.id);
-			var rs = $.phpok.json(url);
-			if(rs.status == 'ok'){
-				$.dialog.alert('插件导入成功，请执行安装',function(){
-					$.phpok.reload();
-				},'succeed');
-			}else{
-				$.dialog.alert(rs.content);
-				return false;
-			}
+			var url = get_url('plugin','unzip','filename='+$.str.encode(data.content));
+			$.dialog.tips("正在解压插件，请稍候…",2);
+			var rs = $.phpok.json(url,function(rs){
+				if(rs.status == 'ok'){
+					$.dialog.alert('插件导入成功，请执行安装',function(){
+						$.phpok.reload();
+					},'succeed');
+				}else{
+					$.dialog.alert(rs.content);
+					return false;
+				}
+			});
 		}
 	});
 });
@@ -161,17 +175,15 @@ $(document).ready(function(){
 <div class="list">
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
-	<th width="10px">&nbsp;</th>
 	<th class="lft">{lang名称}</th>
 	<th class="lft">{lang标识}</th>
-	<th></th>
+	<th width="80px"></th>
 </tr>
 <!-- loop from=$not_install key=$key value=$value -->
 <tr{if $not_install_id.num%2 == ""} class="list"{/if}>
-	<td class="center">&nbsp;</td>
 	<td>{$value.title} <!-- if $value.note || $value.desc --><span class="gray i">（{$value.note ? $value.note : $value.desc}）</span><!-- /if --></td>
 	<td>{$key}</td>
-	<td align="right"><input type="button" value="{lang安装}" class="btn" onclick="plugin_install('{$key}','{$value.title}')" /></td>
+	<td align="right"><input type="button" value="{lang安装}" class="phpok-btn" onclick="plugin_install('{$key}','{$value.title}')" /></td>
 </tr>
 <!-- /loop -->
 </table>

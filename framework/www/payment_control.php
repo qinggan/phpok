@@ -73,11 +73,15 @@ class payment_control extends phpok_control
 		if($price){
 			$this->assign('price',$price);
 		}
-		$this->view('payment_index');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'payment_index';
+		}
+		$this->view($tplfile);
 	}
 
 	/**
-	 * 充值页面
+	 * 财富明细信息
 	 * @参数 id 给哪个财富ID充值
 	 * @参数 val 充值的金额
 	**/
@@ -98,7 +102,11 @@ class payment_control extends phpok_control
 		if(!$rs['status']){
 			$this->error(P_Lang('财富方案未启用'));
 		}
-		$this->view("payment_wealth");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'payment_wealth';
+		}
+		$this->view($tplfile);
 	}
 
 	/**
@@ -411,7 +419,7 @@ class payment_control extends phpok_control
 			$this->error(P_Lang('订单信息不存在'));
 		}
 		if($log['status']){
-			error(P_Lang('订单已支付过了，不能再次执行'),'','error');
+			$this->error(P_Lang('订单已支付过了，不能再次执行'));
 		}
 		if($log['payment_id'] && is_numeric($log['payment_id'])){
 			$payment_rs = $this->model('payment')->get_one($log['payment_id']);
@@ -494,11 +502,11 @@ class payment_control extends phpok_control
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			error(P_Lang('执行异常，请检查，缺少参数ID'),'','error');
+			$this->error(P_Lang('执行异常，请检查，缺少参数ID'));
 		}
 		$rs = $this->model('payment')->log_one($id);
 		if(!$rs){
-			error(P_Lang('订单信息不存在'),$this->url('index'),'error');
+			$this->error(P_Lang('订单信息不存在'),$this->url('index'));
 		}
 		if($rs['type'] == 'order'){
 			//$order = $this->model('order')->get_one_from_sn($rs['sn']);
@@ -510,19 +518,19 @@ class payment_control extends phpok_control
 		}
 		//同步通知
 		if($rs['status']){
-			error(P_Lang('您的订单付款成功，请稍候…'),$url,'ok');
+			$this->success(P_Lang('您的订单付款成功，请稍候…'),$url);
 		}
 		$payment_rs = $this->model('payment')->get_one($rs['payment_id']);
 		$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/notice.php';
 		if(!file_exists($file)){
 			$tmpfile = str_replace($this->dir_root,'',$file);
-			error(P_Lang('支付接口异常，文件{file}不存在',array('file'=>$tmpfile)),'','error');
+			$this->error(P_Lang('支付接口异常，文件{file}不存在',array('file'=>$tmpfile)));
 		}
 		include($file);
 		$name = $payment_rs['code'].'_notice';
 		$cls = new $name($rs,$payment_rs);
 		$cls->submit();
-		error(P_Lang('您的订单付款成功，请稍候…'),$url,'ok');
+		$this->success(P_Lang('您的订单付款成功，请稍候…'),$url);
 	}
 
 	//异步通知方案

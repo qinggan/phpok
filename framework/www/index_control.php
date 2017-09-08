@@ -18,8 +18,12 @@ class index_control extends phpok_control
 	public function index_f()
 	{
 		$this->model('task')->set_title_status();
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'index';
+		}
+		//检测是否有指定
 		$tmp = $this->model('id')->id('index',$this->site['id'],true);
-		$tplfile = 'index';
 		if($tmp){
 			$pid = $tmp['id'];
 			$page_rs = $this->call->phpok('_project',array('pid'=>$pid));
@@ -55,7 +59,10 @@ class index_control extends phpok_control
 		$this->view('tips');
 	}
 
-	//推荐链执行
+	/**
+	 * 推荐人
+	 * @参数 uid 推荐人ID
+	**/
 	public function link_f()
 	{
 		$uid = $this->get('uid','int');
@@ -70,18 +77,6 @@ class index_control extends phpok_control
 			$this->_location($this->config['www_file']);
 		}
 		$this->session->assign('introducer',$uid);
-		$this->_location($this->config['www_file']);
+		$this->_location($this->url('register'));
 	}
-
-	public function error404_f()
-	{
-		if(file_exists(ROOT.'phpinc/404.php')){
-			require(ROOT.'phpinc/404.php');
-		}
-		header("HTTP/1.0 404 Not Found");
-		header('Status: 404 Not Found');
-		exit;
-	}
-
 }
-?>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<user>账号</user>
-	<group_id>会员组</group_id>
-	<email>邮箱</email>
+	<user><![CDATA[账号]]></user>
+	<group_id><![CDATA[会员组]]></group_id>
+	<email><![CDATA[邮箱]]></email>
+	<mobile><![CDATA[手机号]]></mobile>
 </root>

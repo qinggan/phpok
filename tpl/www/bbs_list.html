@@ -1,11 +1,15 @@
 <!-- php:$title= $cate_rs ? $cate_rs.title.' - '.$page_rs.title : $page_rs.title -->
 <!-- include tpl=head title=$title menutitle=$page_rs.title -->
-<!-- if $page_rs.banner -->
-<div class="page_banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
-<!-- /if -->
-<!-- include file=bbs_list.php -->
 
+<!-- include file=bbs_list.php -->
 <div class="wrap mb10">
+	<ol class="breadcrumb">
+		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
+		<li><a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a></li>
+		<!-- if $cate_rs -->
+		<li><a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a></li>
+		<!-- /if -->
+	</ol>
 	<div class="bbsbox table_lc" style="border:0;">
 		<table width="100%" cellspacing="0" cellpadding="0">
 		<tr>
@@ -26,10 +30,14 @@
 	</div>
 	<table width="100%">
 	<tr>
-		<td valign="top">
-			<div style="margin-top:8px"><a href="{if $session.user_id}{url ctrl=post id=$page_rs.identifier cateid=$cate_rs.id/}{else}javascript:alert('游客不支持发贴，请先登录');void(0);{/if}" title="发新贴"><img src="images/bbs_post.png" alt="发新贴" /></a></div>
+		<td>
+			<!-- if $session.user_id -->
+			<input type="button" value="发布新主题" onclick="$.phpok.go('{url ctrl=post id=$page_rs.identifier cateid=$cate_rs.id/}')" class="button blue" />
+			<!-- else -->
+			<a href="{url ctrl=login _back=$backurl/}" class="red">仅限会员才有发布权限，请先登录或注册<a>
+			<!-- /if -->
 		</td>
-		<td align="right" valign="top"><!-- include tpl=block_pagelist style="border-top:0;" --></td>
+		<td><!-- include tpl=block_pagelist --></td>
 	</tr>
 	</table>
 </div>

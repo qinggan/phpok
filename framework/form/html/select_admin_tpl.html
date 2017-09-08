@@ -6,17 +6,14 @@
 </select>
 <!-- else -->
 	<!-- if $_is_step -->
+	<style type="text/css">
+	ul.select{list-style:none;margin:0;padding:0;}
+	ul.select li{float:left;margin-right:10px;}
+	</style>
 	<div id="{$_rs.identifier}_html"></div>
 	<script type="text/javascript">
-	function opt_{$_rs.identifier}_onchange(val)
-	{
-		var url = api_url("opt","index",'identifier={$_rs.identifier}&group_id={$_group_id}');
-		if(val) url += '&val='+$.str.encode(val);
-		var html = $.phpok.ajax(url);
-		$("#{$_rs.identifier}_html").html(html);
-	}
 	$(document).ready(function(){
-		opt_{$_rs.identifier}_onchange("{$_rs.content}");
+		$.phpok_form_select.change('{$_group_id}','{$_rs.identifier}','{$_rs.content}');
 	});
 	</script>
 	<!-- else -->
@@ -25,9 +22,9 @@
 		<option value="">{$_rs.empty_val}</option>
 		<!-- /if -->
 		<!-- php:$_rs.content = is_array($_rs.content) ? $_rs.content.id : $_rs.content -->
-		<!-- foreach($_rslist AS $key=>$value) -->
+		<!-- loop from=$_rslist key=$key value=$value id=$tmpid -->
 		<option value="{$value.val}"{if $value.val == $_rs.content} selected{/if}>{$value.title}</option>
-		<!-- /foreach -->
+		<!-- /loop -->
 	</select>
 	<!-- /if -->
 <!-- /if -->

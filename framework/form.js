@@ -1,11 +1,14 @@
-/***********************************************************
-	Filename: {phpok}/form.js
-	Note	: 自定义表单中涉及到的JS
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-12-26 11:02
-***********************************************************/
+/**
+ * 自定义表单中涉及到的JS操作
+ * @package phpok
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年03月22日
+**/
+
 function phpok_form_password(id,len)
 {
 	var list = new Array("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z");
@@ -71,30 +74,20 @@ function phpok_btn_clear(btn,id)
 
 function _phpok_form_opt(val,id,eid,etype)
 {
-	if(!val || val == "undefined")
-	{
+	if(!val || val == "undefined"){
 		$("#"+id).html("").hide();
 		return false;
 	}
 	var url = get_url("form","config") + "&id="+$.str.encode(val);
-	if(eid && eid != "undefined")
-	{
+	if(eid && eid != "undefined"){
 		url += "&eid="+eid;
 	}
-	if(etype && etype != "undefined")
-	{
+	if(etype && etype != "undefined"){
 		url += "&etype="+etype;
 	}
-	$.ajax({
-		"url" : url,
-		"cache" : false,
-		"dataType" : "html",
-		"success" : function (rs)
-		{
-			if(rs && rs != "exit")
-			{
-				$("#"+id).html(rs).show();
-			}
+	$.phpok.ajax(url,function(rs){
+		if(rs && rs != 'exit'){
+			$("#"+id).html(rs).show();
 		}
 	});
 }
@@ -277,320 +270,93 @@ function phpok_edit_type(id)
 	{
 		$("#"+id).xheditor(false);
 		eval("CodeMirror_PHPOK_"+id+"()");
-		//$("#textarea_"+id+" xhe_default:first").hide();
-		//$("#textarea_"+id+" CodeMirror:first").show();
 		$(t).val("可视化");
 	}
 }
 
-/*
- * PHPOK自定义表单中关于附件上传涉及到的JS操作
- * 最后修改时间：2014年7月29日
- * 此JS涉及到外部调用的JS函数get_url，json_ajax，$.str，$.dialog,$.parseJSON
- */
-;(function($){
-	$.phpok_upload = function(opts){
-		var self = this;
-		var defaults = {
-			'multi':false, //是否多附件
-			'id':'upload',
-			'swf':'js/webuploader/uploader.swf',
-			'server':'index.php',
-			'pick':'#picker',
-			'resize': false,
-			'disableGlobalDnd':true,
-			'fileVal':'upfile',
-			'filetypes':'jpg,png,gif,jpeg',
-			'runtimeOrder':'flash,html5',
-			'cateid':0,
-			'accept':{'title':'图片(*.jpg, *.gif, *.png)','extensions':'jpg,png,gif'}
-		};
-		opts.accept = {'title':opts.typeDesc,'extensions':opts.filetypes};
-		this.opts = $.extend({},defaults,opts);
-		if(this.opts.multi){
-			this.opts.pick = this.opts.pick;
-		}else{
-			this.opts.pick = {'id':this.opts.pick,'multiple':false};
+function phpok_form_upload_attr_cate_id()
+{
+	var obj = $("select#cate_id").find("option:selected");
+	var dataType = obj.attr('data-type');
+	var name = $("#upload_name").val();
+	var type = $("#upload_type").val();
+	if(!dataType || dataType == 'undefined'){
+		if(name == '' || name == 'undefined'){
+			$("#upload_name").val('图片');
 		}
-		this.id = "#"+this.opts.id;
-		this.update_status = 'ready';
-		//添加动作
-		this.open_action = function(val){
-			var content = $(this.id).val();
-			if(opts.multi){
-				content = (content && content != "undefined") ? content + ","+val : val;
-				var lst = $.unique(content.split(","));
-				content = lst.join(',');
-			}else{
-				content = val;
+		if(type == '' || type == 'undefined'){
+			$("#upload_type").val('jpg,png,gif');
+		}
+	}else{
+		if(name == '' || name == 'undefined'){
+			$("#upload_name").val(obj.text());
+		}
+		if(type == '' || type == 'undefined'){
+			$("#upload_type").val(dataType);
+		}
+	}
+	return true;
+}
+
+
+;(function($){
+	
+	var config = {
+		'id':'phpok',
+		'content':'',
+		'url':'',
+		'filetype':'jpg,png,gif'
+	};
+	var form = {
+		init:function(opts)
+		{
+			config = $.extend({},config,opts);
+			if(config.total<1){
+				config.total = 10;
 			}
-			$(this.id).val(content);
-			if(this.opts.preview && this.opts.preview != 'undefined'){
-				(this.opts.preview)(content);
-			}else{
-				this.preview_res(content);
-			}
-		};
-		this.cateid = function(val){
-			this.opts.cateid = val;
-		};
-		this.uploader = WebUploader.create(this.opts);
-		this.uploader.on('beforeFileQueued',function(file){
-			var val = (self.opts.filetypes).toLowerCase();
-			var lst = val.split(',');
-			if($.inArray((file.ext).toLowerCase(),lst) < 0){
-				$.dialog.alert('不支持 <span class="red">'+file.ext+'</span> 类型附件上传');
-				return false;
-			}
-		});
-		//执行添加队列
-		this.uploader.on('fileQueued', function( file ) {
-			if(self.opts.progress && self.opts.progress != 'undefined'){
-				(self.opts.progress)(file);
-			}else{
-				$(self.id+"_progress").append('<div id="phpok-upfile-' + file.id + '" class="phpok-upfile-list">' +
-					'<div class="title">' + file.name + '（<span class="status">等待上传…</span>）</div>' +
-					'<div class="progress"><span>&nbsp;</span></div>' +
-					'<div class="cancel" id="phpok-upfile-cancel-'+file.id+'"></div>' + 
-				'</div>' );
-			}
-			self.upload_state = 'ready';
-			$("#phpok-upfile-"+file.id+" .cancel").click(function(){
-				self.uploader.removeFile(file,true);
-				$("#phpok-upfile-"+file.id).remove();
-			});
-		});
-		this.uploader.on('uploadProgress',function(file,percent){
-			var $li = $('#phpok-upfile-'+file.id),
-	        $percent = $li.find('.progress span');
-	        var width = $li.find('.progress').width();
-	        $percent.css( 'width', parseInt(width * percent, 10) + 'px' );
-	        $li.find('span.status').html('正在上传…');
-		});
-		this.uploader.on('uploadBeforeSend',function(block,data){
-			data.cateid = self.opts.cateid;
-		});
-		this.uploader.on('uploadSuccess',function(file,data){
-			if(data.status != 'ok'){
-				if(!data.content) data.content = '上传异常';
-				$.dialog.alert(data.content);
-				return false;
-			}
-			$('#phpok-upfile-'+file.id).find('span.status').html('上传成功');
-			if(self.opts.success && self.opts.success != 'undefined'){
-				(self.opts.success)(file,data);
-			}else{
-				self.open_action(data.content.id);
-			}
-		});
-		this.uploader.on('uploadAccept',function(file,data){
-			//
-		});
-		this.uploader.on('uploadError',function(file,reason){
-			$('#phpok-upfile-'+file.id).find('span.status').html('上传错误：<span style="color:red">'+reason+'</span>');
-		});
-		//上传完成，无论失败与否，3秒后删除
-		this.uploader.on('uploadComplete',function(file){
-			$("#phpok-upfile-"+file.id).hide(1000,function(){
-				$(this).remove();
-			})
-		});
-		//上传异常时，触发这个信息
-		this.uploader.on('error',function(string){
-			alert(string);
-			return false;
-		});
-		$(this.id+"_submit").click(function(){
-			//如果
-			if($(this).hasClass('disabled'))
-			{
-				return false;
-			}
-			var f = $(self.id+"_progress .phpok-upfile-list").length;
-			if(f<1)
-			{
-				alert('请选择要上传的文件');
-				return false;
-			}
-			if(self.upload_state == 'ready' || self.upload_state == 'paused')
-			{
-				self.uploader.upload();
-			}
-			else
-			{
-				self.uploader.stop();
-			}
-		});
-		
-		//更新附件信息
-		this.update_res = function(id){
-			var title = $(self.id+"_title_"+id).val();
-			if(!title)
-			{
-				$.dialog.alert("名称不能为空");
-				return false;
-			}
-			var url = api_url("res","update_title_note") +"&id="+id;
-			url += "&title="+$.str.encode(title);
-			var note = $(this.id+"_content_"+id).val();
-			if(note)
-			{
-				url += "&note="+$.str.encode(note);
-			}
-			var rs = json_ajax(url);
-			if(rs.status == "ok")
-			{
-				alert("附件信息更新成功");
-				return false;
-			}
-			else
-			{
-				alert(rs.content);
-				return false;
-			}
-		};
-		//删除附件功能
-		this.del_res = function(id){
-			var content = $(this.id).val();
-			if(!content || content == "undefined")
-			{
-				return false;
-			}
-			if(content == id)
-			{
-				$(this.id).val("");
-				$(this.id+"_list").html("").hide();
-				return false;
-			}
-			var list = content.split(",");
-			var newlist = new Array();
-			var new_i = 0;
-			for(var i=0;i<list.length;i++)
-			{
-				if(list[i] != id)
-				{
-					newlist[new_i] = list[i];
-					new_i++;
-				}
-			}
-			content = newlist.join(",");
-			$(this.id).val(content);
-			if(this.opts.preview && this.opts.preview != 'undefined')
-			{
-				(this.opts.preview)(content);
-			}
-			else
-			{
-				this.preview_res(content);
-			}
-		};
-		//预览图片
-		this.preview = function(id){
-			var url = get_url("res_action","preview") + "&id="+id;
-			$.dialog.open(url,{
-				title: "预览",
-				lock : true,
-				width: "700px",
-				height: "70%",
-				resize: true
-			});
-		};
-		//排序
-		this.sort = function(){
-			var t = [];
-			$("."+this.opts.id+"_taxis").each(function(i){
-				var val = $(this).val();
-				var data = $(this).attr("data");
-				t.push({"id":val,"data":data});
-			});
-			t = t.sort(function(a,b){return parseInt(a['id'])>parseInt(b['id']) ? 1 : -1});
-			var list = new Array();
-			for(var i in t){
-				list[i] = t[i]['data'];
-			}
-			var val = list.join(",");
-			$(this.id).val(val);
-			if(this.opts.preview && this.opts.preview != 'undefined'){
-				(this.opts.preview)(val);
-			}else{
-				this.preview_res(val);
-			}
-		};
-		this.sort_title = function(){
-			var t = [];
-			$("#"+this.opts.id+"_list ._title input").each(function(i){
-				var val = $(this).val();
-				var data = $(this).attr("data");
-				t.push({"id":val,"data":data});
-			});
-			t = t.sort(function(a,b){return a['id']>b['id'] ? 1 : -1});
-			var list = new Array();
-			for(var i in t){
-				list[i] = t[i]['data'];
-			}
-			var val = list.join(",");
-			$(this.id).val(val);
-			if(this.opts.preview && this.opts.preview != 'undefined'){
-				(this.opts.preview)(val);
-			}else{
-				this.preview_res(val);
-			}
-		};
-		//获取列表
-		this.preview_res = function(id){
-			$(this.id+"_sort").hide();
-			if(!id || id == "undefined")
-			{
-				id = $(this.id).val();
-				if(!id || id == "undefined")
-				{
-					$(this.id+"_list").hide(1000,function(){
-						$(this).html('');
-					});
+			return form;
+		},
+		upload_cate_create:function(id)
+		{
+			
+		}
+	};
+	$.phpokform = {
+		upload_cate_create:function(id,name,filetypes){
+			$.dialog.prompt(p_lang('请输入分类名称'),function(val){
+				if(!val){
+					$.dialog.alert(p_lang('分类名称不能为空'));
 					return false;
 				}
+				var url = config.url;
+				var url = get_url('rescate','qcreate','title='+$.str.encode(val)+"&name="+$.str.encode(name)+"&filetypes="+$.str.encode(filetypes));
+				$.phpok.json(url,function(data){
+					if(data.status){
+						var obj = $("select[name="+id+"_cateid]");
+						obj.append("<option value='"+data.info+"'>"+val+"</option>");
+						obj.find("option[value="+data.info+"]").attr("selected",true);
+					}else{
+						$.dialog.alert(data.info);
+						return false;
+					}
+				});
+			},'');
+		},
+		param_type_setting:function(val,id){
+			var old = $("#"+id).val();
+			if(old){
+				val = old+","+val;
 			}
-			var url = api_url("res","idlist") + "&id="+$.str.encode(id);
-			var optsid = this.opts.id;
-			$.phpok.json(url,function(rs){
-				if(rs.status != 'ok'){
-					$.dialog.alert(rs.content);
-					return false;
-				}
-				var list = rs.content;
-				var total = count(list);
-				var html = '<div class="_elist">';
-				var t = 1;
-				var tmp = id.split(",");
-				for(var i in tmp){
-					if(!list[tmp[i]] || list[tmp[i]] == 'undefined' || !list[tmp[i]]['ico']){
-						continue;
-					}
-					var info = list[tmp[i]];
-					var cls = t == total ? "_line_end" : "_line";
-					html += '<div class="'+cls+'"><table><tr>';
-					html += '<td class="img"><img src="'+info.ico+'" width="100px" height="100px" /></td>';
-					html += '<td valign="top">';
-					html += '<div class="_title" style="width:450px;margin-bottom:5px;"><input type="text" id="'+optsid+'_title_'+info.id+'" value="'+info.title+'" class="_input" placeholder="名称" data="'+info.id+'"></div>';
-					html += '<div class="_note" style="width:450px;margin-bottom:5px;"><textarea id="'+optsid+'_content_'+info.id+'" class="_textarea" placeholder="备注">'+info.note+'</textarea></div>';
-					html += '<div class="ext_action" style="width:450px;">';
-					html += '<button type="button" class="_btn" onclick="obj_'+optsid+'.update_res('+info.id+')">更新附件信息</button>';
-					html += '<button type="button" class="_btn" onclick="obj_'+optsid+'.preview('+info.id+')">预览</button>';
-					html += '<button type="button" class="_btn" onclick="obj_'+optsid+'.del_res('+info.id+')">删除</button>';
-					if(total > 1){
-						html += '<input type="text" class="_taxis '+optsid+'_taxis" value="'+t+'" data="'+info.id+'" />';
-					}
-					html += '</div></td>';
-					html += '</tr></table></div>';
-					t++;
-				}
-				html += '</div>';
-				$(self.id+"_list").html(html).show();
-				if(total>1){
-					$(this.id+"_sort").show();
-				}
-			});
+			$("#"+id).val(val);
+		},
+		param_type_set:function(v){
+			if(v == 1){
+				$("#p_name_type_html").show();
+			}else{
+				$("#p_name_type_html").hide();
+			}
 		}
 	};
 })(jQuery);
+
 

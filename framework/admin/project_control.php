@@ -130,6 +130,9 @@ class project_control extends phpok_control
 		$this->assign('grouplist',$grouplist);
 		$freight = $this->model('freight')->get_all();
 		$this->assign('freight',$freight);
+
+		$tag_config = $this->model('tag')->config();
+		$this->assign('tag_config',$tag_config);
 		$this->view("project_set");
 	}
 
@@ -237,7 +240,6 @@ class project_control extends phpok_control
 	 * @参数 is_tpl_content 是否允许主题单独绑定模板
 	 * @参数 is_seo 是否启用主题自定义SEO，未启用将使用 分类SEO > 项目SEO > 全局SEO
 	 * @参数 is_identifier 是否启用自定义标识
-	 * @参数 is_appoint 是否启用授权普通管理员管理主题，授权后普通管理员有管理指定主题的权限
 	 * @参数 tag 项目标签，这里设置后，在添加主题如果启用标签而未配置标签，将会偿试从这里获取
 	 * @参数 biz_attr 是否启用电商产品属性功能，启用后，电商商品支持自定义属性以实现价格浮动
 	 * @参数 freight 运费模板，为0表示不使用运费
@@ -313,7 +315,6 @@ class project_control extends phpok_control
 		$array['is_tpl_content'] = $this->get('is_tpl_content','checkbox');
 		$array['is_seo'] = $this->get('is_seo','checkbox');
 		$array['is_identifier'] = $this->get('is_identifier','checkbox');
-		$array['is_appoint'] = $this->get('is_appoint','checkbox');
 		$array['tag'] = $this->get('tag');
 		$array['biz_attr'] = $this->get('biz_attr');
 		$array['freight'] = $this->get('freight');
@@ -390,11 +391,7 @@ class project_control extends phpok_control
 	private function _save_tag($id)
 	{
 		$rs = $this->model('project')->get_one($id,false);
-		if($rs['tag']){
-			$this->model('tag')->update_tag($rs['tag'],'p'.$id,$this->session->val('admin_site_id'));
-		}else{
-			$this->model('tag')->stat_delete('p'.$id,"title_id");
-		}
+		$this->model('tag')->update_tag($rs['tag'],'p'.$id);
 		return true;
 	}
 

@@ -3,21 +3,27 @@
 }
 .webuploader-element-invisible {
 	position: absolute !important;
-	clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
     clip: rect(1px,1px,1px,1px);
+}
+.webuploader-select{
+	height:23px;
+	padding:1px;
 }
 .webuploader-pick {
 	position: relative;
 	display: inline-block;
-	cursor: pointer;
-	background:#eee url('upload.png') left top no-repeat;
-	height:23px;
+	background:#eee;
+	border:1px solid #ACACAC;
+	line-height:21px;
+	height:21px;
 	width:92px;
 	text-align: center;
 	overflow: hidden;
+	color:#000;
 }
 .webuploader-pick-hover {
-	background:#eee url('upload.png') left -46px no-repeat;
+	border-color:#7EB4EA;
+	background-color:#E3F0FC;
 }
 
 .webuploader-pick-disable {

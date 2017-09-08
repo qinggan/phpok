@@ -118,6 +118,9 @@ class js_control extends phpok_control
 		echo 'config["title"] = "'.P_Lang('消息').'";'."\n\t";
 		echo 'config["okVal"] = "'.P_Lang('确定').'";'."\n\t";
 		echo 'config["cancelVal"] = "'.P_Lang('取消').'";'."\n";
+		if($this->app_id == 'admin'){
+			echo 'config["opacity"] = "0.2";'."\n";
+		}
 		echo '})(art.dialog.defaults);'."\n";
 	}
 
@@ -158,7 +161,7 @@ class js_control extends phpok_control
 		echo "\n";
 		echo 'function get_url(ctrl,func,ext){var url = "'.$weburl.$file.'?'.$this->config['ctrl_id'].'="+ctrl;if(func){url+="&'.$this->config['func_id'].'="+func;};if(ext){url+="&"+ext};return url;}';
 		echo "\n";
-		echo 'function get_plugin_url(id,func,ext){var url = "'.$weburl.$file.'?'.$this->config['ctrl_id'].'=plugin&'.$this->config['func_id'].'=index&id="+id+"&exec="+func;if(ext){url+="&"+ext};url+="&_noCache="+Math.random();return url;};';
+		echo 'function get_plugin_url(id,func,ext){var url = "'.$weburl.$file.'?'.$this->config['ctrl_id'].'=plugin&'.$this->config['func_id'].'=exec&id="+id+"&exec="+func;if(ext){url+="&"+ext};url+="&_noCache="+Math.random();return url;};';
 		echo "\n";
 		echo 'function api_url(ctrl,func,ext){var url = "'.$weburl.$this->config['api_file'].'?'.$this->config['ctrl_id'].'="+ctrl;if(func){url+="&'.$this->config['func_id'].'="+func;};if(ext){url+="&"+ext};url+="&_noCache="+Math.random();return url;};';
 		echo "\n";

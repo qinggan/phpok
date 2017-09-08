@@ -56,7 +56,7 @@ class tenpay_notice
 		$pay_date = $tenpay->get_date();
 		$pay_date = $pay_date ? strtotime($pay_date) : $app->time;
 		$price = round(($tenpay->param('total_fee') / 100),2);
-		$tenpay = array();
+		$tenpay = $this->order['ext'] ? unserialize($this->order['ext']) : array();
 		$tenpay['fee_type'] = $tenpay->param('fee_type');
 		$tenpay['notify_id'] = $tenpay->param('notify_id');
 		$tenpay['time_end'] = $tenpay->param('time_end');
@@ -86,6 +86,9 @@ class tenpay_notice
 					$app->model('order')->save_payment($array,$order_payment['id']);
 				}
 			}
+		}
+		if($this->order['type'] == 'recharge' && $tenpay['goal']){
+			$app->model('wealth')->recharge($this->order['id']);
 		}
 		return true;
 	}

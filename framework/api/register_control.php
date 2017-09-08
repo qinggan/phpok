@@ -63,7 +63,7 @@ class register_control extends phpok_control
 		if($this->session->val('user_id')){
 			$this->json(P_Lang('您已是本站会员，不能执行这个操作'));
 		}
-		if($this->config['is_vcode'] && function_exists('imagecreate')){
+		if($this->model('site')->vcode('system','register')){
 			$code = $this->get('_chkcode');
 			if(!$code){
 				$this->json(P_Lang('验证码不能为空'));
@@ -219,7 +219,7 @@ class register_control extends phpok_control
 		if($this->session->val('user_id')){
 			$this->json(P_Lang('您已是本站会员，不能执行这个操作'));
 		}
-		if($this->config['is_vcode'] && function_exists('imagecreate')){
+		if($this->model('site')->vcode('system','register')){
 			$code = $this->get('_chkcode');
 			if(!$code){
 				$this->json(P_Lang('验证码不能为空'));

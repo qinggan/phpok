@@ -101,10 +101,6 @@ class inp_control extends phpok_control
 	 * @参数 identifier 表单标识，对应输出的变量是$input
 	 * @参数 multi 是否多选，1为多选，其他为单选
 	 * @参数 project_id 项目ID
-	 * @参数 
-	 * @参数 
-	 * @返回 
-	 * @更新时间 
 	**/
 	public function title_f()
 	{

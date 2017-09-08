@@ -46,8 +46,15 @@ class login_control extends phpok_control
 			$type = $this->site['login_type'];
 		}
 		$tplfile = 'login';
-		if($type && $this->tpl->check('login_'.$type) && $this->model('gateway')->get_default($type)){
-			$tplfile = 'login_'.$type;
+		if($type){
+			$tmp = $this->model('site')->tpl_file('login',$type);
+			if($tmp){
+				$tplfile = $tmp;
+			}else{
+				if($this->tpl->check('login_'.$type) && $this->model('gateway')->get_default($type)){
+					$tplfile = 'login_'.$type;
+				}
+			}
 		}
 		$logintype = array('sms'=>false,'email'=>false);
 		if($this->model('gateway')->get_default('sms')){
@@ -58,6 +65,7 @@ class login_control extends phpok_control
 		}
 		$this->assign("_back",$backurl);
 		$this->assign('logintype',$logintype);
+		$this->assign('is_vcode',$this->model('site')->vcode('system','login'));
 		$this->view($tplfile);
 	}
 
@@ -80,7 +88,7 @@ class login_control extends phpok_control
 		if($this->session->val('user_id')){
 			$this->success(P_Lang('您已是本站会员，不需要再次登录'),$_back);
 		}
-		if($this->config['is_vcode'] && function_exists('imagecreate')){
+		if($this->model('site')->vcode('system','login')){
 			$code = $this->get('_chkcode');
 			if(!$code){
 				$this->error(P_Lang('验证码不能为空'),$error_url);
@@ -140,7 +148,12 @@ class login_control extends phpok_control
 			$tips = $this->site["login_close"] ? $this->site["login_close"] : P_Lang('网站关闭');
 			$this->error($tips);
 		}
-		$this->view("login_open");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'login_open';
+		}
+		$this->assign('is_vcode',$this->model('site')->vcode('system','login'));
+		$this->view($tplfile);
 	}
 
 	/**
@@ -158,7 +171,11 @@ class login_control extends phpok_control
 		if($_SESSION["user_id"]){
 			error(P_Lang('您已是本站会员，不能执行这个操作'),$error_url);
 		}
-		$this->view("login_smspass");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'login_smspass';
+		}
+		$this->view($tplfile);
 	}
 
 	/**
@@ -191,18 +208,24 @@ class login_control extends phpok_control
 		}
 		$this->assign('getpasstype',$getpasstype);
 		if(!$server){
-			$this->view("login_smspass");
+			$tplfile = $this->model('site')->tpl_file($this->ctrl,'smspass');
+			if(!$tplfile){
+				$tplfile = 'login_smspass';
+			}
+			$this->view($tplfile);
 		}
-		$this->view("login_getpass");
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'login_getpass';
+		}
+		$this->assign('is_vcode',$this->model('site')->vcode('system','getpass'));
+		$this->view($tplfile);
 	}
 
 	/**
 	 * 重置密码操作
 	 * @参数 _back 返回之前跳转的页面
 	 * @参数 _code 险证码
-	 * @参数 
-	 * @返回 
-	 * @更新时间 
 	**/
 	public function repass_f()
 	{
@@ -230,8 +253,11 @@ class login_control extends phpok_control
 			$user = $this->model('user')->get_one($uid);
 			$this->assign("user",$user);
 		}
-		$this->view('login_repass');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'login_repass';
+		}
+		$this->assign('is_vcode',$this->model('site')->vcode('system','getpass'));
+		$this->view($tplfile);
 	}
-
 }
-?>

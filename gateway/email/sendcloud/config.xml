@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>SendCloud邮件</title>
+	<note>官网（https://sendcloud.sohu.com）</note>
+	<code>
+		<api_user>
+			<title>API_USER</title>
+			<note>请到SendCloud官网上获取自己的API_USER</note>
+			<type>text</type>
+			<required>true</required>
+		</api_user>
+		<api_key>
+			<title>API_KEY</title>
+			<note>创建完成API_USER后，系会发送API_KEY到您的邮箱，请将值写到这里来</note>
+			<type>text</type>
+			<required>true</required>
+		</api_key>
+		<fullname>
+			<title>发件人姓名</title>
+			<note>设置发件人的姓名</note>
+			<type>text</type>
+		</fullname>
+		<email>
+			<title>发件人邮箱</title>
+			<note>填写发件人的邮箱</note>
+			<type>text</type>
+			<required>true</required>
+		</email>
+		<label_id>
+			<title>标签ID</title>
+			<note>在SendCloud中设置相应的标签名，即可以获取到标签ID</note>
+			<type>text</type>
+			<required>true</required>
+		</label_id>
+	</code>
+	<manage>
+		<send>
+			<title>发邮件</title>
+			<exec>sendemail</exec>
+			<type>page</type>
+		</send>
+	</manage>
+</root>

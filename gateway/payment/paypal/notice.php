@@ -44,7 +44,7 @@ class paypal_notice
 		if($payment_status != 'Completed'){
 			return false;
 		}
-		$p_array = array();
+		$p_array = $this->order['ext'] ? unserialize($this->order['ext']) : array();
 		$p_array['txn_id'] = $app->get('txn_id');
 		$p_array['txn_type'] = $app->get('txn_type');
 		$p_array['mc_fee'] = $app->get('mc_fee');
@@ -81,6 +81,9 @@ class paypal_notice
 					$app->model('order')->save_payment($array,$order_payment['id']);
 				}
 			}
+		}
+		if($this->order['type'] == 'recharge' && $p_array['goal']){
+			$app->model('wealth')->recharge($this->order['id']);
 		}
 		return true;
 	}

@@ -48,96 +48,22 @@ class cart_control extends phpok_control
 		if(!$qty){
 			$qty = 1;
 		}
-		$array = array('cart_id'=>$this->cart_id);
-		if($id){
-			$array['tid'] = $id;
-			$dt = array('site_id'=>$this->site['id'],'title_id'=>$id);
-			$rs = $this->call->phpok("_arc",$dt);
-			if(!$rs){
-				$this->error(P_Lang('产品信息不存在或未启用'));
-			}
-			$array['title'] = $rs['title'];
-			$array['is_virtual'] = $rs['is_virtual'];
-			$array['thumb'] = '';
-			$array['unit'] = $rs['unit'];
-			$thumb_id = $this->config['cart']['thumb_id'] ? $this->config['cart']['thumb_id'] : 'thumb';
-			$gd_id = $this->config['cart']['gd_id'] ? $this->config['cart']['gd_id'] : '';
-			if($rs[$thumb_id] && is_string($rs[$thumb_id])){
-				$array['thumb'] = $rs[$thumb_id];
-			}
-			if($rs[$thumb_id] && is_array($rs[$thumb_id])){
-				$array['thumb'] = $rs[$thumb_id]['filename'];
-			}
-			if($rs[$thumb_id] && is_array($rs[$thumb_id]) && $rs[$thumb_id]['gd'] && $rs[$thumb_id]['gd'][$gd_id]){
-				$array['thumb'] = $rs[$thumb_id]['gd'][$gd_id];
-			}
-			$ext = $this->get('ext');
-			if($ext){
-				$ext = explode(",",$ext);
-				foreach($ext as $key=>$value){
-					$value = intval($value);
-					if(!$value){
-						unset($ext[$key]);
-					}else{
-						$ext[$key] = $value;
-					}
-				}
-				sort($ext);
-			}
-			$price = price_format_val($rs['price'],$rs['currency_id'],$this->site['currency_id']);
-			$weight = $rs['weight'];
-			$volume = $rs['volume'];
-			if($ext && $rs['attrlist']){
-				foreach($rs['attrlist'] as $key=>$value){
-					foreach($value['rslist'] as $k=>$v){
-						if(in_array($v['id'],$ext)){
-							$price = floatval($price) + price_format_val($v['price'],$rs['currency_id'],$this->site['currency_id']);
-							$weight = floatval($weight) + floatval($v['weight']);
-							$volume = floatval($volume) + floatval($v['volume']);
-						}
-					}
-				}
-				$array['ext'] = implode(",",$ext);
-			}
-			$array['price'] = $price;
-			$array['weight'] = $weight;
-			$array['volume'] = $volume;
-		}else{
-			$title = $this->get('title');
-			if(!$title){
-				$this->error(P_Lang('产品名称不能为空'));
-			}
-			$array['title'] = $title;
-			$array['price'] = $this->get('price','float');
-			$array['tid'] = $array['weight'] = $array['volume'] = 0;
-			$array['ext'] = '';
-			$array['thumb'] = $this->get('thumb');
-			$array['is_virtual'] = $this->get('is_virtual','int');
-		}
-		//检测是否有记录
+		$array = $id ? $this->product_from_tid($id) : $this->product_from_title();
 		$rslist = $this->model('cart')->get_all($this->cart_id);
 		$updateid = $total = 0;
-		if($rslist){
-			foreach($rslist AS $key=>$value){
-				if($id){
-					if($value['tid'] == $id){
-						if($ext && $value['ext']){
-							if($array['ext'] == $value['ext']){
-								$updateid = $value['id'];
-								$total = $value['qty'];
-							}
-						}else{
-							if(!$ext && !$value['ext']){
-								$updateid = $value['id'];
-								$total = $value['qty'];
-							}
-						}
-					}
-				}else{
-					if($value['title'] == $array['title'] && $array['price'] == $value['price']){
-						$updateid = $value['id'];
-						$total = $value['qty'];
-					}
+		if(!$rslist){
+			$rslist = array();
+		}
+		foreach($rslist as $key=>$value){
+			if($id){
+				if($value['tid'] == $id && $this->model('cart')->product_ext_compare($array['ext'],$value['ext'])){
+					$updateid = $value['id'];
+					$total = $value['qty'];
+				}
+			}else{
+				if($value['title'] == $array['title'] && $array['price'] == $value['price'] && $this->model('cart')->product_ext_compare($array['ext'],$value['ext'])){
+					$updateid = $value['id'];
+					$total = $value['qty'];
 				}
 			}
 		}
@@ -149,6 +75,97 @@ class cart_control extends phpok_control
 		}
 		$rslist = $this->model('cart')->get_all($this->cart_id);
 		$this->success($rslist);
+	}
+
+	private function product_from_title()
+	{
+		$title = $this->get('title');
+		if(!$title){
+			$this->error(P_Lang('产品名称不能为空'));
+		}
+		$array = array('cart_id'=>$this->cart_id);
+		$array['title'] = $title;
+		$array['price'] = $this->get('price','float');
+		$array['tid'] = 0;
+		$array['weight'] = $this->get('weight','int');
+		$array['volume'] = $this->get('volume','int');
+		$ext = $this->get('ext');
+		if($ext && is_array($ext)){
+			sort($ext);
+		}
+		$array['ext'] = $ext;
+		$array['thumb'] = $this->get('thumb');
+		$array['is_virtual'] = $this->get('is_virtual','int');
+		return $array;
+	}
+
+	/**
+	 * 产品数据从id传过来的值生成
+	 * @参数 $id 产品ID
+	 * @参数 $qty 数量
+	**/
+	private function product_from_tid($id,$qty=0)
+	{
+		$array = array('tid'=>$id,'cart_id'=>$this->cart_id);
+		$rs = $this->call->phpok('_arc',array('site'=>$this->site['id'],'title_id'=>$id));		
+		if(!$rs){
+			$this->error(P_Lang('产品信息不存在或未启用'));
+		}
+		$thumb_id = $this->get('thumb_id');
+		if(!$thumb_id){
+			$thumb_id = $this->config['cart']['thumb_id'] ? $this->config['cart']['thumb_id'] : 'thumb';
+		}
+		if($rs[$thumb_id]){
+			if(is_string($rs[$thumb_id])){
+				$array['thumb'] = $rs[$thumb_id];
+			}
+			if(is_array($rs[$thumb_id])){
+				$array['thumb'] = $rs[$thumb_id]['filename'];
+			}
+			$gd_id = $this->config['cart']['gd_id'] ? $this->config['cart']['gd_id'] : '';
+			if(is_array($rs[$thumb_id]) && $rs[$thumb_id]['gd'] && $rs[$thumb_id]['gd'][$gd_id]){
+				$array['thumb'] = $rs[$thumb_id]['gd'][$gd_id];
+			}
+		}
+		$array['title'] = $rs['title'];
+		$array['is_virtual'] = $rs['is_virtual'];
+		$array['unit'] = $rs['unit'];
+		$ext = $this->get('ext');
+		$int = false;
+		if($ext && (is_string($ext) || is_int($ext))){
+			$int = true;
+			$ext = explode(",",$ext);
+			foreach($ext as $key=>$value){
+				$value = intval($value);
+				if(!$value){
+					unset($ext[$key]);
+					continue;
+				}
+				$ext[$key] = $value;
+			}
+		}
+		if($ext && is_array($ext)){
+			sort($ext);
+		}
+		$price = price_format_val($rs['price'],$rs['currency_id'],$this->site['currency_id']);
+		$weight = $rs['weight'];
+		$volume = $rs['volume'];
+		if($ext && $rs['attrlist'] && $int){
+			foreach($rs['attrlist'] as $key=>$value){
+				foreach($value['rslist'] as $k=>$v){
+					if(in_array($v['id'],$ext)){
+						$price = floatval($price) + price_format_val($v['price'],$rs['currency_id'],$this->site['currency_id']);
+						$weight = floatval($weight) + floatval($v['weight']);
+						$volume = floatval($volume) + floatval($v['volume']);
+					}
+				}
+			}
+		}
+		$array['ext'] = $ext;
+		$array['price'] = $price;
+		$array['weight'] = $weight;
+		$array['volume'] = $volume;
+		return $array;
 	}
 
 	/**
@@ -249,4 +266,3 @@ class cart_control extends phpok_control
 		$this->success(price_format_val($price,$this->site['currency_id']));
 	}
 }
-?>

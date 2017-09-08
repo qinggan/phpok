@@ -79,7 +79,7 @@ class admin_control extends phpok_control
 			}
 			$this->assign("id",$id);
 			$rs = $this->model('admin')->get_one($id);
-			if($rs["if_system"] && $this->session->val('admin_rs.if_system')){
+			if($rs["if_system"] && !$this->session->val('admin_rs.if_system')){
 				$this->error(P_Lang("非系统管理员不能执行此项"),$this->url("admin"));
 			}
 			$this->assign("rs",$rs);

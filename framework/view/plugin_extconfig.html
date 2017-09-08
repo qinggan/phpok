@@ -1,0 +1,26 @@
+<!-- include tpl=head_open -->
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	$("#post_save").ajaxSubmit({
+		'url':get_url('plugin','extconfig_save','id={$id}'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.alert('操作成功',function(){
+					opener.$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.info);
+				return false;
+			}
+		}
+	});
+}
+</script>
+<form method="post" id="post_save" onsubmit="return false">
+{$plugin_html}
+</form>
+<!-- include tpl=foot_open -->

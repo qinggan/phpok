@@ -421,6 +421,10 @@
                 fileVal: editor.getOpt('videoFieldName'),
                 duplicate: true,
                 fileSingleSizeLimit: fileMaxSize,
+                chunked:true,
+				chunkSize:102400,
+				threads:3,
+				//sendAsBinary:true,
                 compress: false
             });
             uploader.addButton({

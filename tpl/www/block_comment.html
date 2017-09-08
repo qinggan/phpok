@@ -11,7 +11,7 @@
 .comment dl{ margin-bottom:15px;; overflow:hidden;}
 .comment dt{ float:left; width:50px;}
 .comment dt img{ width:42px; height:42px; border-radius:3px;}
-.comment dd{ float:left; width:700px;}
+.comment dd{ float:left; width:860px;}
 .comment dd .remarks{ background:#fff;border:1px solid #e0e0e0;border-radius:5px; padding:10px;position:relative; margin-bottom:5px;}
 .comment dd .remarks .postmessage {margin-top: 4px;margin-bottom: 4px;font-size: 14px;line-height: 1.5em;}
 .comment dd .remarks .postmessage p{margin-top: 4px;}
@@ -67,7 +67,7 @@ $(document).keypress(function(e){
 		<dd>{$comment.form}
 			<form method="post" id="comment-post">
 				<!-- if $comment.uid -->
-				{func form_edit comment $comment.content editor width=100%&height=84&btn_image=1}
+				{func form_edit comment $comment.content editor width=100%&height=150&btns.image=1}
 				<!-- else -->
 				<textarea name="comment" id="comment" class="comment-textarea"></textarea>
 				<!-- /if -->

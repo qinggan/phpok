@@ -432,6 +432,11 @@ class wealth_control extends phpok_control
 		$this->view('wealth_notcheck');
 	}
 
+	/**
+	 * 财富审核
+	 * @参数 id 日志ID
+	 * @参数 $action 动作
+	**/
 	public function action_f()
 	{
 		$id = $this->get('id','int');
@@ -446,6 +451,20 @@ class wealth_control extends phpok_control
 		}
 		$this->json(true);
 	}
-}
 
-?>
+	public function action_user_f()
+	{
+		$id = $this->get('wid','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$uid = $this->get('uid','int');
+		if(!$uid){
+			$this->error(P_Lang('未指定会员ID'));
+		}
+		$rs = $this->model('wealth')->get_one($id);
+		$this->assign('rs',$rs);
+		$this->assign('uid',$uid);
+		$this->view("wealth_action");
+	}
+}

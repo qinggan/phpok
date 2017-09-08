@@ -100,50 +100,43 @@ class res_control extends phpok_control
 		$this->view("res_manage");
 	}
 
+	/**
+	 * 下载附件
+	 * @参数 id 附件ID
+	**/
 	public function download_f()
 	{
-		$e_url = $_SESSION["admin_return_url"] ? $_SESSION["admin_return_url"] : admin_url("res");
+		$e_url = $this->session->val('admin_return_url') ? $this->session->val('admin_return_url') : $this->url('res');
 		$id = $this->get("id","int");
-		if(!$id)
-		{
-			error(P_Lang('未指定附件名'),$e_url,"error");
+		if(!$id){
+			$this->error(P_Lang('未指定附件ID'));
 		}
 		$rs = $this->model('res')->get_one($id);
-		if(!$rs)
-		{
-			error(P_Lang('附件信息不存在'),$e_url,"error");
-		}
-		$e_url = admin_url("res","set","id=".$id);
-		if(!$rs["filename"] || !file_exists($this->dir_root.$rs["filename"]))
-		{
-			error(P_Lang('附件不存在'),$e_url,"error");
+		if(!$rs){
+			$this->error(P_Lang('附件信息不存在'));
 		}
 		$my = strtolower(substr($rs["filename"],0,7));
-		if($my == "https:/" || $my == "http://")
-		{
-			error(P_Lang('远程附件不允许下载，请直接打开'),$e_url,"error");
+		if($my == "https:/" || $my == "http://"){
+			$this->_location($rs['filename']);
 		}
-		$filesize = filesize($this->dir_root.$rs["filename"]);
-		ob_end_clean();
-		header("Date: ".gmdate("D, d M Y H:i:s", $rs["addtime"])." GMT");
-		header("Last-Modified: ".gmdate("D, d M Y H:i:s", $rs["addtime"])." GMT");
-		header("Content-Encoding: none");
-		header("Content-Disposition: attachment; filename=".rawurlencode($rs["title"].".".$rs["ext"]));
-		header("Content-Length: ".$filesize);
-		header("Accept-Ranges: bytes");
-		readfile($this->dir_root.$rs["filename"]);
-		flush();
-		ob_flush();
+		if(!$rs["filename"] || !file_exists($this->dir_root.$rs["filename"])){
+			$this->error(P_Lang('附件不存在'));
+		}
+		$this->lib('file')->download($rs['filename'],$rs['title']);
 	}
 
-	//附件批量处理
-	function pl_f()
+	/**
+	 * 附件批量处理
+	**/
+	public function pl_f()
 	{
 		if(!$this->popedom["pl"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$pageid = $this->get($this->config["pageid"],"int");
-		if(!$pageid) $pageid = 1;
+		if(!$pageid){
+			$pageid = 1;
+		}
 		$psize = 240;
 		$pageurl = $this->url("res","pl");
 		$offset = ($pageid - 1) * $psize;

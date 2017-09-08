@@ -59,6 +59,9 @@ class editor_form extends _init_auto
 			if($rs['form_style']) $rs['form_style'] .= ';';
 			$rs['form_style'] .= $key.':'.$value;
 		}
+		if(!$rs['btns']){
+			$rs['btns'] = array();
+		}
 		$this->assign("_rs",$rs);
 		if($appid == 'admin'){
 			$save_path = $this->model('res')->cate_all();

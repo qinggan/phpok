@@ -1,27 +1,30 @@
 <?php
-/**********************************************************************
-	Filename	: {phpok}/admin/res_action_control.php
-	Note		: 附件常见动作操作
-	Version		: 4.0
-	Web			: www.phpok.com
-	Author		: qinggan <qinggan@188.com>
-	Update		: 2013-04-06 00:52
-**********************************************************************/
+/**
+ * 附件常见动作操作
+ * @package phpok\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年03月30日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class res_action_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 		$this->model("res");
 	}
 
-	function download_f()
+	public function download_f()
 	{
 		$file = $this->get("file");
 		$id = $this->get("id");
 		if(!$id && !$file){
-			error(P_Lang('未指定ID'),"","error");
+			$this->error(P_Lang('未指定ID'));
 		}
 		if($id){
 			$rs = $this->model('res')->get_one($id);
@@ -31,43 +34,27 @@ class res_action_control extends phpok_control
 			$title = basename($file);
 		}
 		if(!$file){
-			error(P_Lang('未指定附件'),"","error");
+			$this->error(P_Lang('未指定附件'));
 		}
-		if(substr($file,0,7) != "http://" && substr($file,0,8) != "https://")
-		{
+		if(substr($file,0,7) != "http://" && substr($file,0,8) != "https://"){
 			$file = $this->dir_root.$file;
+			if(!file_exists($file)){
+				$this->error(P_Lang('附件不存在'));
+			}
 		}
-		if(!file_exists($file))
-		{
-			error(P_Lang('附件不存在'),"","error");
-		}
-		$filesize = filesize($file);
-		ob_end_clean();
-		header("Date: ".gmdate("D, d M Y H:i:s", $this->system_time)." GMT");
-		header("Last-Modified: ".gmdate("D, d M Y H:i:s", $this->system_time)." GMT");
-		header("Content-Encoding: none");
-		header("Content-Disposition: attachment; filename=".rawurlencode($title));
-		header("Content-Length: ".$filesize);
-		header("Accept-Ranges: bytes");
-		readfile($file);
-		flush();
-		ob_flush();
+		$this->lib('file')->download($file,$title);
 	}
 
-	function view_f()
+	public function view_f()
 	{
 		$file = $this->get("file");
 		$id = $this->get("id");
-		if(!$id && !$file)
-		{
-			error_open(P_Lang('未指定附件'));
+		if(!$id && !$file){
+			$this->error(P_Lang('未指定附件'));
 		}
-		if($id)
-		{
+		if($id){
 			$rs = $this->model('res')->get_one($id,true);
-		}
-		else
-		{
+		}else{
 			$rs = array();
 			$rs["title"] = basename($file);
 			$rs["filename"] = $file;
@@ -76,12 +63,12 @@ class res_action_control extends phpok_control
 		$this->view("res_action_view");
 	}
 
-	function video_f()
+	public function video_f()
 	{
 		$file = $this->get("file");
 		$id = $this->get("id");
 		if(!$id && !$file){
-			error_open(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		if($id){
 			$rs = $this->model('res')->get_one($id);
@@ -91,26 +78,22 @@ class res_action_control extends phpok_control
 		$this->view("res_action_video");
 	}
 
-	function preview_f()
+	public function preview_f()
 	{
 		$id = $this->get("id");
 		if(!$id){
-			error_open(P_Lang('未指定附件'));
+			$this->error(P_Lang('未指定附件'));
 		}
 		$rs = $this->model('res')->get_one($id,true);
-		$config = $this->model('res')->type_list();
 		$type = "files";
-		foreach($config AS $key=>$value)
-		{
-			$ext = array();
-			if($value["ext"])
-			{
-				$ext = explode(",",$value["ext"]);
-			}
-			if(in_array($rs["ext"],$ext))
-			{
-				$type = $key;
-			}
+		$picture = array('jpg','gif','png','jpeg','tiff','svg');
+		$video = array('mp4','mpeg','avi','mov','mpg','qt','ram','rm','dat','asf','wmv','wma');
+
+		if(in_array($rs['ext'],$picture)){
+			$type = 'picture';
+		}
+		if(in_array($rs['ext'],$video)){
+			$type = 'video';
 		}
 		$this->assign("type",$type);
 		$this->assign("rs",$rs);

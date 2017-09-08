@@ -110,33 +110,48 @@ class db
 		}
 	}
 
-	public function debug($sql='')
+	/**
+	 * 输出调试
+	 * @参数 $sql SQL语句
+	 * @参数 $time 当前SQL运行时间
+	**/
+	public function debug($sql='',$time=0)
 	{
 		if($sql && trim($sql)){
 			$sql = trim($sql);
 			$sqlid = 'phpok'.md5($sql);
 			if($this->_sqlist && $this->_sqlist[$sqlid]){
 				$this->_sqlist[$sqlid]['count']++;
+				$this->_sqlist[$sqlid]['time'] = round(($this->_sqlist[$sqlid]['time']+$time),5);
 			}else{
-				$this->_sqlist[$sqlid] = array('sql'=>$sql,'count'=>1);
+				$this->_sqlist[$sqlid] = array('sql'=>$sql,'count'=>1,'time'=>$time);
 			}
 			return true;
 		}
 		if(!$this->debug){
 			return true;
 		}
-		$html = '<table cellspacing="0" border="1" style="border:1px solid #000;width:100%;height:auto;margin:10px 0;">';
-		$html.= '<tr>';
-		$html.= '<th style="background:#EEE;color:#000;text-align:center;font-weight:bold;padding:3px;">SQL</th>';
-		$html.= '<th style="background:#EEE;color:#000;text-align:center;font-weight:bold;padding:3px;">Count</th>';
-		$html.= '</tr>';
+		$html  = '<style type="text/css">'."\n";
+		$html .= 'table.debug{border-collapse:collapse;border:1px solid #000;width:100%;height:auto;margin:10px auto;background:#fff;padding:0;font-size:12px;}'."\n";
+		$html .= 'table.debug tr th{background:#ccc;color:#000;text-align:center;font-weight:bold;padding:3px;border:1px solid #000;}'."\n";
+		$html .= 'table.debug tr td{text-align:center;padding:3px;background:#fff;color:#000;border:1px solid #000;}'."\n";
+		$html .= 'table.debug tr td:first-child{text-align:left;table-layout: fixed;word-break: break-all; word-wrap: break-word}'."\n";
+		$html .= 'table.debug tr:hover td{background:#efefef;}'."\n";
+		$html .= '</style>'."\n";
+		$html .= '<table class="debug">'."\n";
+		$html .= '<tr>'."\n";
+		$html .= '	<th>SQL</th>'."\n";
+		$html .= '	<th>Count</th>'."\n";
+		$html .= '	<th>Time</th>'."\n";
+		$html .= '</tr>'."\n";
 		foreach($this->_sqlist as $key=>$value){
-			$html.= '<tr>';
-			$html.= '<td style="text-align:left;padding:3px;background:#fff;color:#000;">'.$value['sql'].'</td>';
-			$html.= '<td style="text-align:center;padding:3px;background:#fff;color:#000;">'.$value['count'].'</td>';
-			$html.= '</tr>';
+			$html .= '<tr>'."\n";
+			$html .= '	<td>'.$value['sql'].'</td>'."\n";
+			$html .= '	<td>'.$value['count'].'</td>'."\n";
+			$html .= '	<td>'.$value['time'].'</td>'."\n";
+			$html .= '</tr>'."\n";
 		}
-		$html.= '</table>';
+		$html .= '</table>';
 		return $html;
 	}
 
@@ -156,8 +171,10 @@ class db
 	{
 		$time = microtime(true);
 		if($this->time_tmp){
-			$this->time = round(($this->time + ($time - $this->time_tmp)),5);
+			$tmptime = round(($time - $this->time_tmp),5);
+			$this->time = round(($this->time + $tmptime),5);
 			$this->time_tmp = 0;
+			return $tmptime;
 		}else{
 			$this->time_tmp = $time;
 		}

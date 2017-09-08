@@ -38,12 +38,6 @@ function save()
 	});
 }
 </script>
-<div class="tips clearfix">
-	您当前的位置：
-	<a href="{url ctrl=module/}">模块管理</a>
-	&raquo; <a href="{url ctrl=module func=fields id=$mid/}" title="{$m_rs.title}">{$m_rs.title}</a>
-	&raquo; 添加字段
-</div>
 <form method="post" id="form_save" onsubmit="return false">
 <div class="table">
 	<div class="title">
@@ -55,7 +49,7 @@ function save()
 		<tr>
 			<td><input type="text" id="title" name="title" value="{$rs.title}" placeholder="名称" /></td>
 			<td>&nbsp;/&nbsp;</td>
-			<td><input type="text" id="identifier" name="identifier" value="{$rs.identifier}" placeholder="标识" /></td>
+			<td><input type="text" id="identifier" name="identifier" placeholder="标识" /></td>
 		</tr>
 		</table>
 	</div>

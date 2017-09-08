@@ -131,7 +131,8 @@ class session
 			foreach($list as $key=>$value){
 				$string .= '["'.$value.'"]';
 			}
-			eval("$string = $val;");
+			$string .= ' = $val;';
+			eval($string);
 			return true;
 		}
 		$_SESSION[$var] = $val;
@@ -148,11 +149,12 @@ class session
 	{
 		if(strpos($var,'.') !== false){
 			$list = explode(".",$var);
-			$string = '$_SESSION';
+			$string = 'unset($_SESSION';
 			foreach($list as $key=>$value){
-				$string .= '['.$value.']';
+				$string .= '["'.$value.'"]';
 			}
-			eval("unset($string);");
+			$string .= ');';
+			eval($string);
 			return true;
 		}
 		if(isset($_SESSION[$var])){

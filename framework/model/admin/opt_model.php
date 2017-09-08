@@ -1,12 +1,15 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/model/admin/opt_model.php
-	备注： 选项组管理
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年03月05日 21时03分
-*****************************************************************************************/
+/**
+ * 选项组管理
+ * @package phpok\model\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年08月03日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class opt_model extends opt_model_base
 {
@@ -21,9 +24,15 @@ class opt_model extends opt_model_base
 		unset($this);
 	}
 
+	/**
+	 * 选项组删除
+	 * @参数 $id 组ID
+	**/
 	public function group_del($id)
 	{
-		if(!$id) return false;
+		if(!$id){
+			return false;
+		}
 		$sql = "DELETE FROM ".$this->db->prefix."opt_group WHERE id='".$id."'";
 		$this->db->query($sql);
 		$sql = "DELETE FROM ".$this->db->prefix."opt WHERE group_id='".$id."'";
@@ -31,15 +40,25 @@ class opt_model extends opt_model_base
 		return true;
 	}
 
-	public function group_save($title,$id=0)
+	/**
+	 * 保存选项组
+	 * @参数 $data 数组
+	 * @参数 $id 组ID，为0或空时，表示添加
+	**/
+	public function group_save($data,$id=0)
 	{
 		if(!$id){
-			return $this->db->insert_array(array("title"=>$title),"opt_group");
+			return $this->db->insert_array($data,"opt_group");
 		}else{
-			return $this->db->update_array(array("title"=>$title),"opt_group",array("id"=>$id));
+			return $this->db->update_array($data,"opt_group",array("id"=>$id));
 		}
 	}
 
+	/**
+	 * 保存选项内容
+	 * @参数 $data 数组
+	 * @参数 $id 选项ID
+	**/
 	public function opt_save($data,$id=0)
 	{
 		if(!$id){
@@ -49,6 +68,10 @@ class opt_model extends opt_model_base
 		}
 	}
 
+	/**
+	 * 删除选项
+	 * @参数 $id 选项ID
+	**/
 	public function opt_del($id)
 	{
 		if(!$id) return false;
@@ -56,5 +79,3 @@ class opt_model extends opt_model_base
 		return $this->db->query($sql);
 	}
 }
-
-?>

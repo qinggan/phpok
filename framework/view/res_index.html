@@ -53,8 +53,15 @@ function preview_attr(id)
 		'width':'700px',
 		'height':'400px',
 		'lock':true,
-		'okVal':'关闭',
-		'ok':function(){}
+		'button': [{
+			'name': p_lang('下载原文件'),
+			'callback': function () {
+				$.phpok.open(get_url('res','download','id='+id));
+				return false;
+			},
+		}],
+		'okVal':p_lang('关闭'),
+		'ok':true
 	});
 }
 function modify(id)
