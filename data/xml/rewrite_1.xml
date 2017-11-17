@@ -3,7 +3,7 @@
 	<url>
 		<id><![CDATA[0088058f6c348a285227215154691df8]]></id>
 		<title><![CDATA[首页]]></title>
-		<rule><![CDATA[index\.html]]></rule>
+		<rule><![CDATA[index\.html$]]></rule>
 		<val><![CDATA[index.php]]></val>
 		<format><![CDATA[index.html]]></format>
 		<ctrl><![CDATA[index]]></ctrl>

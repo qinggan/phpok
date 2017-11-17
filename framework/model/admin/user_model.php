@@ -134,5 +134,30 @@ class user_model extends user_model_base
 		}else{
 			return $this->db->insert_array($data,"user_fields");
 		}
-	}	
+	}
+
+	/**
+	 * 简单通过会员ID获取会员的ID及账号
+	 * @参数 $ids 会员ID，支持数据及字串
+	 * @参数 $field 字段，要查询的字段
+	**/
+	public function simple_user_list($ids,$field='user')
+	{
+		if(!$ids){
+			return false;
+		}
+		if($ids && is_array($ids)){
+			$ids = implode(",",$ids);
+		}
+		$sql = "SELECT id,".$field." FROM ".$this->db->prefix."user WHERE id IN(".$ids.")";
+		$tmplist = $this->db->get_all($sql,'id');
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$rslist[$value['id']] = $value[$field];
+		}
+		return $rslist;
+	}
 }

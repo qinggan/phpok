@@ -1,6 +1,6 @@
 ;<?php exit("<h1>Access Denied</h1>");?>
 
-;支持 mysqli pdo_mysql，PHP大于5.3版的用户建议使用mysqli或pdo_mysql
+;支持 mysqli pdo_mysql sqlite pdo_sqlite，PHP大于5.3版的用户建议使用mysqli或pdo_mysql
 file = "mysqli"
 
 ;数据库服务器，本地请填写localhost或127.0.0.1

@@ -94,6 +94,7 @@ class post_control extends phpok_control
 			if(!$get_result){
 				$this->json(P_Lang('编辑失败，请联系管理员'));
 			}
+			$this->model('list')->list_cate_clear($tid);
 			if($array["cate_id"]){
 		 		$ext_cate = $this->get('ext_cate_id');
 		 		if(!$ext_cate){

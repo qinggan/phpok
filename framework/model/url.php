@@ -1,12 +1,15 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/model/url.php
-	备注： URL网址生成，解读Model
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年02月03日 20时39分
-*****************************************************************************************/
+/**
+ * URL网址生成
+ * @package phpok\model
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年10月01日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class url_model_base extends phpok_model
 {
@@ -26,12 +29,6 @@ class url_model_base extends phpok_model
 		if($this->config['debug']){
 			$this->nocache = '0.'.$this->time;
 		}
-	}
-
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
 	}
 
 	public function page_id($pageid)
@@ -62,6 +59,14 @@ class url_model_base extends phpok_model
 	public function url_appid($appid='www')
 	{
 		$this->url_appid = $appid;
+	}
+
+	public function nocache($act=false)
+	{
+		if($act){
+			$this->nocache = '0.'.$this->time;
+		}
+		return $this->nocache;
 	}
 
 	public function url($ctrl='index',$func='index',$ext='')
@@ -140,13 +145,14 @@ class url_model_base extends phpok_model
 	{
 		$data = array();
 		if($ext){
+			$tmp = $ext;
 			if(is_string($ext)){
 				parse_str($ext,$tmp);
-			}else{
-				$tmp = $ext;
 			}
-			foreach($tmp as $key=>$value){
-				$data[$key] = $value;
+			if($tmp && is_array($tmp)){
+				foreach($tmp as $key=>$value){
+					$data[$key] = $value;
+				}
 			}
 		}
 		$rule_id = false;
@@ -174,8 +180,10 @@ class url_model_base extends phpok_model
 					$data['pageid'] = $func;
 				}
 			}else{
-				$this->id_list('identifier');
-				$rule_id = $this->ilist[$ctrl] ? 'content' : 'project';
+				$rule_id = 'project';
+				if($this->get_from_identifier($ctrl,'list')){
+					$rule_id = 'content';
+				}
 				$data['ctrl'] = $rule_id;
 				$data['id'] = $ctrl;
 				if($func && $func != 'index'){
@@ -187,7 +195,8 @@ class url_model_base extends phpok_model
 			return $this->url_default($ctrl,$func,$ext);
 		}
 		if($data['cateid'] && !$data['cate']){
-			$data['cate'] = $this->clist[$data['cateid']]['identifier'];
+			$tmp = $this->get_from_id($data['cateid'],'cate');
+			$data['cate'] = $tmp['identifier'];
 		}
 		$rs = false;
 		foreach($this->rule_list as $key=>$value){
@@ -200,7 +209,7 @@ class url_model_base extends phpok_model
 			if(!$data['func'] && $value['func']){
 				continue;
 			}
-			if($value['var']){
+			if($value['var'] && is_array($value['var'])){
 				$chk = true;
 				foreach($value['var'] as $k=>$v){
 					if(!$data[$v]){
@@ -266,54 +275,50 @@ class url_model_base extends phpok_model
 	private function _url_project($ctrl,$func='',$ext='')
 	{
 		$array = array('project_root'=>'','project'=>'','cate_root'=>'','cate'=>'','identifier'=>'','pageid'=>'');
-		$project_rs = false;
-		foreach($this->plist as $key=>$value)
-		{
-			if($value['identifier'] == $ctrl)
-			{
-				$project_rs = $value;
+		$project_rs = $this->get_from_identifier($ctrl,'project');
+		if($project_rs){
+			$array['project'] = $project_rs['identifier'];
+			if($project_rs['parent_id']){
+				$tmp = $this->get_from_id($project_rs['parent_id'],'project');
+				$array['project_root'] = $tmp['identifier'];
+			}
+			if($project_rs['cate']){
+				$tmp = $this->get_from_id($project_rs['cate'],'cate');
+				if($tmp){
+					$array['cate_root'] = $tmp['identifier'];
+				}
+			}
+			if($func){
+				$array['cate'] = $func;
+				if(is_numeric($func)){
+					$tmp = $this->get_from_id($func,'cate');
+					if($tmp){
+						$array['cate'] = $tmp['identifier'];
+					}
+				}
 			}
 		}
-		$array['project'] = $project_rs['identifier'];
-		if($project_rs['parent_id'])
-		{
-			$array['project_root'] = $this->plist[$project_rs['parent_id']]['identifier'];
-		}
-		if($project_rs['cate'] && $this->clist[$project_rs['cate']])
-		{
-			$array['cate_root'] = $this->clist[$project_rs['cate']]['identifier'];
-		}
-		if($func)
-		{
-			$array['cate'] = is_numeric($func) ? $this->clist[$func]['identifier'] : $func;
-		}
-		if($ext && is_string($ext))
-		{
+		if($ext && is_string($ext)){
 			$list = array();
 			parse_str($ext,$list);
 			$ext = $list;
 		}
-		if($ext && is_array($ext))
-		{
-			if($ext[$this->page_id])
-			{
+		if($ext && is_array($ext)){
+			if($ext[$this->page_id]){
 				$array['pageid'] = $ext[$this->page_id];
 				unset($ext[$this->page_id]);
 			}
 			$ext = http_build_query($ext);
 		}
 		$url = $this->rule;
-		foreach($array as $key=>$value)
-		{
+		foreach($array as $key=>$value){
 			$url = str_replace('{'.$key.'}',$value,$url);
 		}
 		$url = preg_replace("/(\/{2,})/","/",$url);
-		if(substr($url,0,1) == '/')
-		{
+		if(substr($url,0,1) == '/'){
 			$url = substr($url,1);
 		}
-		if(substr($url,-1) == '/')
-		{
+		if(substr($url,-1) == '/'){
 			$url = substr($url,0,-1);
 		}
 		$url = $this->base_url.$url;
@@ -323,38 +328,33 @@ class url_model_base extends phpok_model
 	private function _url_content($ctrl,$func='',$ext='')
 	{
 		$array = array('project_root'=>'','project'=>'','cate_root'=>'','cate'=>'','identifier'=>'','pageid'=>'');
-		if(is_numeric($ctrl)){
-			if(!$this->ilist[$ctrl]){
-				$sql = "SELECT id,project_id,cate_id,identifier FROM ".$this->db->prefix."list WHERE id='".$ctrl."'";
-				$rs = $this->db->get_one($sql);
-			}else{
-				$rs = $this->ilist[$ctrl];
-			}
-		}else{
-			$rs = false;
-			foreach($this->ilist as $key=>$value){
-				if($value['identifier'] == $ctrl){
-					$rs = $value;
-				}
-			}
-		}
+		$rs = is_numeric($ctrl) ? $this->get_from_id($ctrl,'list') : $this->get_from_identifier($ctrl,'list');
 		if(!$rs){
 			return false;
 		}
-		$project_rs = $this->plist[$rs['project_id']];
+		$project_rs = $this->get_from_id($rs['project_id'],'project');
+		if(!$project_rs){
+			return false;
+		}
 		$array['identifier'] = $rs['identifier'] ? $rs['identifier'] : $rs['id'];
 		$array['project'] = $project_rs['identifier'];
 		if($project_rs['parent_id']){
-			$parent_rs = $this->plist[$project_rs['parent_id']];
-			$array['project_root'] = $parent_rs['identifier'];
+			$parent_rs = $this->get_from_id($project_rs['parent_id'],'project');
+			if($parent_rs){
+				$array['project_root'] = $parent_rs['identifier'];
+			}
 		}
 		if($project_rs['cate']){
-			$cate_root = $this->clist[$project_rs['cate']];
-			$array['cate_root'] = $cate_root['identifier'];
+			$tmp = $this->get_from_id($project_rs['cate'],'cate');
+			if($tmp){
+				$array['cate_root'] = $tmp['identifier'];
+			}
 		}
 		if($rs['cate_id']){
-			$cate_rs = $this->clist[$rs['cate_id']];
-			$array['cate'] = $cate_rs['identifier'];
+			$tmp = $this->get_from_id($rs['cate_id'],'cate');
+			if($tmp){
+				$array['cate'] = $tmp['identifier'];
+			}
 		}
 		$url = $this->rule;
 		foreach($array as $key=>$value){
@@ -376,62 +376,45 @@ class url_model_base extends phpok_model
 		$this->rule_list = $rslist;
 	}
 
-	public function global_list()
+	/**
+	 * 取得标识
+	 * @参数 $id 主键ID
+	 * @参数 $type 类型，仅支持：list，cate，project
+	**/
+	public function get_from_id($id,$type='list')
 	{
-		$sql_1  = "SELECT id,project_id,cate_id,identifier FROM ".$this->db->prefix."list WHERE ";
-		$sql_1 .= "site_id='".$this->site_id."' AND status=1 AND identifier!=''";
-		$sql_2  = "SELECT id,parent_id,identifier FROM ".$this->db->prefix."cate WHERE ";
-		$sql_2 .= "site_id='".$this->site_id."' AND status=1";
-		$sql_3  = "SELECT id,parent_id,identifier FROM ".$this->db->prefix."project WHERE ";
-		$sql_3 .= "site_id='".$this->site_id."' AND status=1";
-		$cache_id = $this->cache->id($sql_1.'-'.$sql_2.'-'.$sql_3);
-		$this->db->cache_set($cache_id);
-		$rslist = $this->cache->get($cache_id);
-		if($rslist){
-			$this->ilist = $rslist['ilist'];
-			$this->clist = $rslist['clist'];
-			$this->plist = $rslist['plist'];
-			return true;
+		return $this->_get_url_data($id,$type,'id');
+	}
+
+	/**
+	 * 取得ID
+	 * @参数 $identifier 标识
+	 * @参数 $type 类型，仅支持：list，cate，project
+	**/
+	public function get_from_identifier($identifier,$type='list')
+	{
+		return $this->_get_url_data($identifier,$type,'identifier');
+	}
+
+
+	private function _get_url_data($id,$type='list',$pri='id')
+	{
+		$sql = '';
+		if($type == 'list'){
+			$sql = "SELECT id,parent_id,project_id,cate_id,identifier FROM ".$this->db->prefix."list WHERE site_id='".$this->site_id."' AND status=1 AND ".$pri."='".$id."'";
 		}
-		$this->ilist = $this->db->get_all($sql_1,'id');
-		$this->clist = $this->db->get_all($sql_2,'id');
-		$this->plist = $this->db->get_all($sql_3,'id');
-		$rslist = array('ilist'=>$this->ilist,'clist'=>$this->clist,'plist'=>$this->plist);
-		$this->cache->save($cache_id,$rslist);
-		return true;
-	}
-
-	public function id_list($pri='id')
-	{
-		$cache_id = $this->cache->id('url','id_list',$this->site_id,$pri);
-		$rslist = $this->cache->get($cache_id);
-		if($rslist){
-			$this->ilist = $rslist;
-			return $rslist;
-		}else{
-			$sql = "SELECT id,project_id,cate_id,identifier FROM ".$this->db->prefix."list WHERE ";
-			$sql.= "site_id='".$this->site_id."' AND status=1 AND identifier!=''";
-			$this->ilist = $this->db->get_all($sql,$pri);
-			if($this->ilist && $cache_id){
-				$this->cache->save($cache_id,$this->ilist);
-			}
-			return $this->ilist;
+		if($type == 'cate'){
+			$sql = "SELECT id,parent_id,identifier FROM ".$this->db->prefix."cate WHERE site_id='".$this->site_id."' AND status=1 AND ".$pri."='".$id."'";
 		}
+		if($type == 'project'){
+			$sql = "SELECT id,parent_id,identifier FROM ".$this->db->prefix."project WHERE site_id='".$this->site_id."' AND status=1 AND ".$pri."='".$id."'";
+		}
+		if(!$sql){
+			return false;
+		}
+		return $this->db->get_one($sql);
 	}
 
-	public function cate_list()
-	{
-		$sql = "SELECT id,parent_id,identifier FROM ".$this->db->prefix."cate WHERE ";
-		$sql.= "site_id='".$this->site_id."' AND status=1";
-		$this->clist = $this->db->get_all($sql,'id');
-	}
-
-	public function project_list()
-	{
-		$sql = "SELECT id,parent_id,identifier FROM ".$this->db->prefix."project WHERE ";
-		$sql.= "site_id='".$this->site_id."' AND status=1";
-		$this->plist = $this->db->get_all($sql,'id');
-	}
 
 	private function _url_rewrite_default($ctrl='index',$func='index',$ext='')
 	{

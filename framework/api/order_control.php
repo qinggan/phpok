@@ -44,10 +44,7 @@ class order_control extends phpok_control
 		if($_SESSION['user_id']){
 			if($_SESSION['cart']['address_id'] == 'email'){
 				$main['email'] = $this->get('email');
-				if(!$main['email']){
-					$this->json(P_Lang('Email地址不能为空'));
-				}
-				if(!$this->lib('common')->email_check($main['email'])){
+				if($main['email'] && !$this->lib('common')->email_check($main['email'])){
 					$this->json(P_Lang('Email地址不合法'));
 				}
 			}else{

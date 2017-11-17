@@ -38,7 +38,7 @@ function save()
 			<option value="">{lang邮件模板：}{lang不通知会员}</option>
 			<!-- loop from=$emailtpl key=$key value=$value -->
 			<!-- if substr($value.identifier,0,4) != 'sms_' -->
-			<option value="{$value.identifier}"{if $rs.email_tpl_user == $value.identifier} selected{/if}>{lang邮件模板：}{$value.title}</option>
+			<option value="{$value.identifier}"{if $rs.email_tpl_user == $value.identifier} selected{/if}>{lang邮件模板：}{$value.title}<!-- if $value.note --> / {$value.note}<!-- /if --></option>
 			<!-- /if -->
 			<!-- /loop -->
 		</select>
@@ -47,7 +47,7 @@ function save()
 				<option value="">{lang短信模板：}{lang不通知会员}</option>
 				<!-- loop from=$emailtpl key=$key value=$value -->
 				<!-- if substr($value.identifier,0,4) == 'sms_' -->
-				<option value="{$value.identifier}"{if $rs.sms_tpl_user == $value.identifier} selected{/if}>{lang短信模板：}{$value.title}</option>
+				<option value="{$value.identifier}"{if $rs.sms_tpl_user == $value.identifier} selected{/if}>{lang短信模板：}{$value.title}<!-- if $value.note --> / {$value.note}<!-- /if --></option>
 				<!-- /if -->
 				<!-- /loop -->
 			</select>
@@ -65,7 +65,7 @@ function save()
 			<option value="">{lang邮件模板：}{lang不通知管理员}</option>
 			<!-- loop from=$emailtpl key=$key value=$value -->
 			<!-- if substr($value.identifier,0,4) != 'sms_' -->
-			<option value="{$value.identifier}"{if $rs.email_tpl_admin == $value.identifier} selected{/if}>{lang邮件模板：}{$value.title}</option>
+			<option value="{$value.identifier}"{if $rs.email_tpl_admin == $value.identifier} selected{/if}>{lang邮件模板：}{$value.title}<!-- if $value.note --> / {$value.note}<!-- /if --></option>
 			<!-- /if -->
 			<!-- /loop -->
 		</select>
@@ -74,7 +74,7 @@ function save()
 			<option value="">{lang短信模板：}{lang不通知管理员}</option>
 				<!-- loop from=$emailtpl key=$key value=$value -->
 				<!-- if substr($value.identifier,0,4) == 'sms_' -->
-				<option value="{$value.identifier}"{if $rs.sms_tpl_admin == $value.identifier} selected{/if}>{lang短信模板：}{$value.title}</option>
+				<option value="{$value.identifier}"{if $rs.sms_tpl_admin == $value.identifier} selected{/if}>{lang短信模板：}{$value.title}<!-- if $value.note --> / {$value.note}<!-- /if --></option>
 				<!-- /if -->
 				<!-- /loop -->
 			</select>

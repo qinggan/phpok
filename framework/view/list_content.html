@@ -136,6 +136,8 @@ function reply_it(id,title)
 				<option value="sort_min"{if $orderby_search=='sort_min'} selected{/if}>{lang排序从低到高}</option>
 				<option value="dateline_max"{if $orderby_search=='dateline_max'} selected{/if}>{lang最后发布排在前面}</option>
 				<option value="dateline_min"{if $orderby_search=='dateline_min'} selected{/if}>{lang以前发布的排在前面}</option>
+				<option value="id_max"{if $orderby_search=='id_max'} selected{/if}>{langID值从大到小}</option>
+				<option value="id_min"{if $orderby_search=='id_min'} selected{/if}>{langID值从小到大}</option>
 			</select></td>
 			<td>{lang关键字查找：}</td>
 			<td><select name="keytype">

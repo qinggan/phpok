@@ -5,10 +5,12 @@
 			<div class="top_img"><img src="images/ico/setting.png" alt="{lang网站信息}" class="ie6png" width="48" height="48" /></div>
 			<div class="name">{lang网站信息}</div></a>
 		</li>
-		<li><a title="{lang验证码开启或关闭设置}" href="javascript:$.win('{lang验证码配置}','{url ctrl=all func=vcode/}');void(0);">
-			<div class="top_img"><img src="images/ico/setting2.png" alt="{lang验证码配置}" class="ie6png" width="48" height="48" /></div>
-			<div class="name">{lang验证码}</div></a>
-		</li>
+			<!-- if $show_vcode_setting -->
+			<li><a title="{lang验证码开启或关闭设置}" href="javascript:$.win('{lang验证码配置}','{url ctrl=all func=vcode/}');void(0);">
+				<div class="top_img"><img src="images/ico/setting2.png" alt="{lang验证码配置}" class="ie6png" width="48" height="48" /></div>
+				<div class="name">{lang验证码}</div></a>
+			</li>
+			<!-- /if -->
 		<!-- /if -->
 		<!-- if $all_popedom.domain -->
 		<li><a title="{lang网站可以绑定的域名}" href="javascript:$.win('{lang网站域名}','{url ctrl=all func=domain/}');void(0);">

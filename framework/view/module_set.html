@@ -1,31 +1,6 @@
 <!-- include tpl=head -->
-<script type="text/javascript" src="{func add_js module.js}"></script>
-<script type="text/javascript">
-function save()
-{
-	var obj = art.dialog.opener;
-	$("#module_submit_post").ajaxSubmit({
-		'url':get_url('module','save'),
-		'type':'post',
-		'dataType':'json',
-		'success':function(rs){
-			if(rs.status){
-				var id = '{$id}';
-				var tip = !id ? '{lang模块添加成功}' : '{lang模块编辑成功}';
-				$.dialog.alert(tip,function(){
-					obj.$.phpok.reload();
-				},'succeed');
-			}else{
-				$.dialog.alert(rs.info);
-				return false;
-			}
-		}
-	});
-	return false;
-}
-</script>
 <form method="post" id="module_submit_post" onsubmit="return false;">
-<input type="hidden" id="id" name="id" value="{$id}" />
+<!-- if $id --><input type="hidden" id="id" name="id" value="{$id}" /><!-- /if -->
 <div class="table">
 	<div class="title">
 		{lang名称：}
@@ -48,7 +23,19 @@ function save()
 	</div>
 	<div class="content"><input type="text" id="note" name="note" class="long" value="{$rs.note}" /></div>
 </div>
-
+<!-- if !$id -->
+<div class="table">
+	<div class="title">
+		{lang独立运行：}<span class="note">{lang启用独立运行后，需要设置相应的标识，且不支持项目关联，功能比较简单}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="mtype" value="0"{if !$rs.mtype} checked{/if} />否</label></li>
+			<li><label><input type="radio" name="mtype" value="1"{if $rs.mtype} checked{/if} />是</label></li>
+		</ul>
+	</div>
+</div>
+<!-- /if -->
 
 <div class="table">
 	<div class="title">

@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/model/plugins.php
-	Note	: 插件中心
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-12-08 10:19
-***********************************************************/
+/**
+ * 插件中心
+ * @package phpok\model
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年10月07日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class plugin_model_base extends phpok_model
 {
@@ -15,12 +18,10 @@ class plugin_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
+	/**
+	 * 读取已安装的全部插件
+	 * @参数 $status 为1进，表示只读取正在使用的插件
+	**/
 	public function get_all($status=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."plugins ";
@@ -31,8 +32,10 @@ class plugin_model_base extends phpok_model
 		return $this->db->get_all($sql,'id');
 	}
 
-	//取得全部的插件列表
-	function dir_list()
+	/**
+	 * 取得全部的插件列表
+	**/
+	public function dir_list()
 	{
 		$folder = $this->dir_root."plugins/";
 		//读取列表
@@ -47,16 +50,21 @@ class plugin_model_base extends phpok_model
 		return $list;
 	}
 
-	function get_one($id)
+	/**
+	 * 读取插件基本数据
+	 * @参数 $id 插件标识
+	**/
+	public function get_one($id)
 	{
-		$list = $this->get_all();
-		if(!$list || ($list && !$list[$id])){
-			return false;
-		}
-		return $list[$id];
+		$sql = "SELECT * FROM ".$this->db->prefix."plugins WHERE id='".$id."'";
+		return $this->db->get_one($sql);
 	}
 
-	function get_xml($id)
+	/**
+	 * 读取插件配置文件XML数据，仅在安装时有效
+	 * @参数 $id 插件标识
+	**/
+	public function get_xml($id)
 	{
 		$folder = $this->dir_root."plugins/".$id."/";
 		if(!is_dir($folder)){
@@ -71,39 +79,69 @@ class plugin_model_base extends phpok_model
 		return $rs;
 	}
 
-	function install_save($data)
+	/**
+	 * 保存安装的数据
+	 * @参数 $data 插件数据
+	**/
+	public function install_save($data)
 	{
-		if(!$data || !is_array($data)) return false;
+		if(!$data || !is_array($data)){
+			return false;
+		}
 		$this->db->insert_array($data,'plugins','replace');
-		//检测是否写入成功
 		$sql = "SELECT id FROM ".$this->db->prefix."plugins WHERE id='".$data['id']."'";
 		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
+		if(!$rs){
+			return false;
+		}
 		return $rs['id'];
 	}
 
-	function update_param($id,$info='')
+	/**
+	 * 更新插件扩展数据
+	 * @参数 $id 插件标识
+	 * @参数 $info 插件扩展数据
+	**/
+	public function update_param($id,$info='')
 	{
+		if($info && is_array($info)){
+			$info = serialize($info);
+		}
 		$sql = "UPDATE ".$this->db->prefix."plugins SET param='".$info."' WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
 
-	function update_plugin($data,$id)
+	/**
+	 * 更新插件信息
+	 * @参数 $data 插件基本数据
+	 * @参数 $id 插件标识
+	**/
+	public function update_plugin($data,$id)
 	{
-		if(!$data || !$id || !is_array($data)) return false;
+		if(!$data || !$id || !is_array($data)){
+			return false;
+		}
 		$this->db->update_array($data,'plugins',array('id'=>$id));
 	}
 
-	function delete($id)
+	/**
+	 * 删除插件
+	 * @参数 $id 插件标识
+	**/
+	public function delete($id)
 	{
 		$sql = "DELETE FROM ".$this->db->prefix."plugins WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
 
-	function update_status($id,$status=0)
+	/**
+	 * 更新插件状态
+	 * @参数 $id 插件标识
+	 * @参数 $status 状态，1使用，0未使用
+	**/
+	public function update_status($id,$status=0)
 	{
 		$sql = "UPDATE ".$this->db->prefix."plugins SET status='".$status."' WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
 }
-?>

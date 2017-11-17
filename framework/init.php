@@ -261,11 +261,23 @@ class _init_phpok
 	}
 
 	/**
-	 * 析构函数
+	 * 变量参数核心处理
+	 * @参数 $id 变量名
+	 * @参数 $val 变量值
+	 * @参数 $type 变量类型，system 系统变量，config 配置变量，site 站点变量
 	**/
-	public function __destruct()
+	final public function config($id,$val='',$type='system')
 	{
-		unset($this);
+		if($type == 'system'){
+			$this->$id = $val;
+		}
+		if($type == 'config'){
+			$this->config[$id] = $val;
+		}
+		if($type == 'site'){
+			$this->site[$id] = $val;
+		}
+		return true;
 	}
 
 	/**
@@ -402,7 +414,6 @@ class _init_phpok
 			if($this->site['url_type'] == 'rewrite'){
 				$this->model('url')->site_id($this->site['id']);
 				$this->model('rewrite')->site_id($this->site['id']);
-				$this->model('url')->global_list();
 				$this->model('url')->rules($this->model('rewrite')->get_all());
 				$this->model('url')->page_id($this->config['pageid']);
 			}
@@ -562,7 +573,7 @@ class _init_phpok
 			return false;
 		}
 		$param = array();
-		foreach($rslist AS $key=>$value){
+		foreach($rslist as $key=>$value){
 			if($value['param']){
 				$value['param'] = unserialize($value['param']);
 			}
@@ -615,10 +626,10 @@ class _init_phpok
 		}
 		$vfile = array($this->dir_phpok.'libs/'.$class.'.php');
 		$vfile[] = $this->dir_phpok.'libs/'.$class.'.phar';
+		$vfile[] = $this->dir_root.'extension/'.$class.'.phar';
 		$vfile[] = $this->dir_root.'extension/'.$class.'/phpok.php';
 		$vfile[] = $this->dir_root.'extension/'.$class.'/index.php';
 		$vfile[] = $this->dir_root.'extension/'.$class.'.php';
-		$vfile[] = $this->dir_root.'extension/'.$class.'.phar';
 		$chkstatus = false;
 		foreach($vfile as $key=>$value){
 			if(file_exists($value)){
@@ -704,7 +715,7 @@ class _init_phpok
 			}
 			return true;
 		}
-		foreach($this->plugin AS $key=>$value){
+		foreach($this->plugin as $key=>$value){
 			if(in_array($ap,$value['method'])){
 				$value['obj']->$ap($param);
 			}
@@ -746,7 +757,7 @@ class _init_phpok
 		$var = 'db_'.$this->config['engine']['db']['file'];
 		$this->db = new $var($this->config['engine']['db']);
 		
-		foreach($this->config["engine"] AS $key=>$value){
+		foreach($this->config["engine"] as $key=>$value){
 			if($key == 'db'){
 				continue;
 			}
@@ -914,7 +925,7 @@ class _init_phpok
 		$array = explode("/",$docu);
 		$count = count($array);
 		if($count>1){
-			foreach($array AS $key=>$value){
+			foreach($array as $key=>$value){
 				$value = trim($value);
 				if($value && ($key+1) < $count){
 					$myurl .= "/".$value;
@@ -1003,7 +1014,7 @@ class _init_phpok
 	**/
 	final public function get($id,$type="safe",$ext="")
 	{
-		$val = isset($_POST[$id]) ? $_POST[$id] : (isset($_GET[$id]) ? $_GET[$id] : "");
+		$val = isset($_POST[$id]) ? $_POST[$id] : (isset($_GET[$id]) ? $_GET[$id] : (isset($_COOKIE[$id]) ? $_COOKIE[$id] : ''));
 		if($val == ''){
 			if($type == 'int' || $type == 'intval' || $type == 'float' || $type == 'floatval'){
 				return 0;
@@ -1034,7 +1045,7 @@ class _init_phpok
 			return '';
 		}
 		if(is_array($msg)){
-			foreach($msg AS $key=>$value){
+			foreach($msg as $key=>$value){
 				if(!is_numeric($key)){
 					$key2 = $this->format($key);
 					if($key2 == '' || in_array($key2,array('#','&','%'))){
@@ -1093,7 +1104,7 @@ class _init_phpok
 	private function _addslashes($val)
 	{
 		if(is_array($val)){
-			foreach($val AS $key=>$value){
+			foreach($val as $key=>$value){
 				$val[$key] = $this->_addslashes($value);
 			}
 		}else{
@@ -1186,23 +1197,39 @@ class _init_phpok
 
 	/**
 	 * 执行应用，三个入口（前端，接口，后台）都是从这里执行，进行初始化处理
+	 * token 及 user_id 在 phpok5.0 中将剥离，不会放在核心引挈里
 	**/
 	final public function action()
 	{
 		$this->init_assign();
 		$this->init_plugin();
 		$func_name = "action_".$this->app_id;
-		$array = array('www','admin','api');
-		if(in_array($this->app_id,$array)){
-			//读取会员信息
-			$user_id = $this->session->val('user_id');
-			if($this->app_id != 'admin' && $user_id){
-				$this->user = $this->model('user')->get_one($user_id);
-				if($this->app_id == 'www'){
+		if($this->app_id == 'admin'){
+			$this->action_admin();
+			exit;
+		}
+		if($this->session->val('user_id')){
+			$this->user = $this->model('user')->get_one($this->session->val('user_id'));
+			if($this->app_id == 'www' && $this->user){
+				$this->assign('user',$this->user);
+			}
+		}
+		$id = $this->config['token_id'] ? $this->config['token_id'] : 'token';
+		$token = $this->get($id,'html');
+		if($token && !$this->session->val('user_id')){
+			$info = $this->lib('token')->decode($token);
+			if($info && is_array($info) && $info['user_id'] && $info['user_chk']){
+				$chk_status = $this->model('user')->token_check($info['user_id'],$info['user_chk']);
+				if($chkstatus){
+					$this->user = $this->model('user')->get_one($info['user_id']);
 					$this->assign('user',$this->user);
+					$this->token = $this->lib('token')->encode(array('user_id'=>$info['user_id'],'user_chk'=>$info['user_chk']));
+					$this->assign('token',$token);
 				}
 			}
-			$this->$func_name();
+		}
+		if($this->app_id == 'api'){
+			$this->action_api();
 			exit;
 		}
 		$this->action_www();
@@ -1214,18 +1241,6 @@ class _init_phpok
 	**/
 	private function action_api()
 	{
-		$id = $this->config['token_id'] ? $this->config['token_id'] : 'token';
-		$token = $this->get($id);
-		if($token){
-			$info = $this->lib('token')->decode($token);
-			if($info && is_array($info) && $info['user_id'] && $info['user_chk']){
-				$chk_status = $this->model('user')->token_check($info['user_id'],$info['user_chk']);
-				if($chkstatus){
-					$token = $this->lib('token')->encode(array('user_id'=>$info['user_id'],'user_chk'=>$info['user_chk']));
-					$this->token = $token;
-				}
-			}
-		}
 		$ctrl = $this->get($this->config["ctrl_id"],"system");
 		if(!$ctrl){
 			$ctrl = 'index';
@@ -1253,7 +1268,7 @@ class _init_phpok
 			$docu = '/';
 			$count = count($array);
 			if($count>1){
-				foreach($array AS $key=>$value){
+				foreach($array as $key=>$value){
 					$value = trim($value);
 					if($value && ($key+1) < $count){
 						$docu .= $value.'/';
@@ -1312,6 +1327,38 @@ class _init_phpok
 		}
 		if(!$func){
 			$func = 'index';
+		}
+		//针对乱七八糟的网址，或是路径进行清理
+		if($ctrl == 'index' && $func == 'index'){
+			$uri = $this->lib('server')->uri();
+			if(!$uri){
+				$uri = '/';
+			}
+			$query = $this->lib('server')->query();
+			if($query){
+				$uri = str_replace('?'.$query,'',$uri);
+			}
+			$exit = false;
+			if(file_exists($this->dir_root.$uri)){
+				$exit = true;
+			}
+			$uri = str_replace(array('index.html','index.htm',$this->config['www_file'],'index'),'',$uri);
+			$script_name = $this->lib('server')->phpfile();
+			$docu = $this->lib('server')->me();
+			if($this->lib('server')->path_info()){
+				$docu = substr($docu,0,-(strlen($this->lib('server')->path_info())));
+			}
+			$basename = basename($docu);
+			$folder = $docu;
+			if($basename){
+				$folder = substr($docu,0,-(strlen($basename)));
+				if($uri && substr($uri,-(strlen($basename))) == $basename){
+					$uri = substr($uri,0,-(strlen($basename)));
+				}
+			}
+			if($uri && $uri != '/' && $folder && $uri != $folder && !$exit){
+				$this->error_404();
+			}
 		}
 		$this->model('site')->site_id($this->site['id']);
 		$this->_action($ctrl,$func);
@@ -1469,7 +1516,7 @@ class _init_phpok
 		//自动运行的函数
 		if($this->config[$this->app_id]["autoload_func"]){
 			$list = explode(",",$this->config["autoload_func"]);
-			foreach($list AS $key=>$value){
+			foreach($list as $key=>$value){
 				if(function_exists($value)){
 					$value();
 				}
@@ -1499,7 +1546,7 @@ class _init_phpok
 	**/
 	final public function json($content,$status=false,$exit=true)
 	{
-		if($content && !is_bool($content) && is_string($content)){
+		if($content && !is_bool($content) && is_string($content) && strlen($content) < 61440 && $exit){
 			$this->model('log')->save($content);
 		}
 		if($exit){
@@ -1735,7 +1782,7 @@ class _init_phpok
 	{
 		if(!$rs || !is_array($rs)) return false;
 		$seo = $this->site['seo'] ? $this->site["seo"] : array();
-		foreach($rs AS $key=>$value){
+		foreach($rs as $key=>$value){
 			if(substr($key,0,3) == "seo" && $value && is_string($value)){
 				$subkey = substr($key,4);
 				if($subkey == "kw" || $subkey == "keywords" || $subkey == "keyword"){
@@ -1999,12 +2046,6 @@ class phpok_model extends _init_auto
 			return $GLOBALS['app']->model($id);
 		}
 	}
-	
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
 
 	/**
 	 * 定义站点ID，用于实现同一个程序里有多个站点
@@ -2258,7 +2299,7 @@ function phpok_head_js()
 	}
 	$jslist = array_unique($jslist);
 	$html = "";
-	foreach($jslist AS $key=>$value){
+	foreach($jslist as $key=>$value){
 		if($debug){
 			$value .= strpos($value,'?') !== false ? '&_noCache='.time() : '?_noCache='.time();
 		}
@@ -2279,7 +2320,7 @@ function phpok_head_css()
 	}
 	$csslist = array_unique($csslist);
 	$html = "";
-	foreach($csslist AS $key=>$value){
+	foreach($csslist as $key=>$value){
 		if($debug){
 			$value .= strpos($value,'?') !== false ? '&_noCache='.time() : '?_noCache='.time();
 		}

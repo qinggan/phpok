@@ -128,7 +128,7 @@ class install
 		echo '</head>'."\n";
 		echo '<body>'."\n";
 		echo '<div class="header">';
-		echo '<div class="logo"><img src="images/login-logo.png" /> PHPOK <span>'.VERSION.'</span></div>';
+		echo '<div class="logo">PHPOK <span>'.VERSION.'</span></div>';
 		echo '<div class="step"><div class="line"></div><ul class="step_num">';
 		$current = array('1'=>'','2'=>'','3'=>'','4'=>'','5'=>'','6'=>'');
 		if($num){
@@ -765,8 +765,8 @@ EOT;
 		echo '.darkblue{color:darkblue}'."\n";
 		echo '.lft{text-align:left}'."\n";
 		echo '.header{height:63px;width:980px;margin:0 auto;padding:40px 0 30px}'."\n";
-		echo '.logo{float:left;width:270px;height:64px;line-height:64px;font-size:2.6em;font-weight:bold;font-style:italic;}'."\n";
-		echo '.logo span{font-size:0.6em;}'."\n";
+		echo '.logo{float:left;width:270px;height:64px;line-height:64px;font-size:2.6em;font-weight:bold;font-style:italic;color:#205696}'."\n";
+		echo '.logo span{font-size:0.5em;color:#ff0000}'."\n";
 		echo '.step{width:650px;float:right;height:50px;position:relative;margin-top:15px}'."\n";
 		echo '.step .line{width:650px;height:3px;background:#dde6ed;position:absolute;left:0;top:13px;z-index:9}'."\n";
 		echo '.step .step_num{width:650px;height:50px;position:absolute;left:0;top:0;z-index:10;margin:0;padding:0;list-style:none}'."\n";
@@ -895,7 +895,7 @@ EOT;
 }
 
 if(file_exists(ROOT.'data/install.lock')){
-	//error('已安装过，不能重复安装');
+	error('已安装过，不能重复安装');
 }
 
 include(ROOT.'framework/engine/db.php');

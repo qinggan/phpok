@@ -119,6 +119,7 @@ table.list th.lft{text-align:left;}
 table.list tr:nth-child(2n+1){background:#F1F1F1}
 table.list tr:hover{background:#F9F9F9;}
 table.list td{padding:3px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+table.list td.break{word-wrap:break-word;word-break:break-all;white-space:normal;padding:5px;}
 table.list th.id{width:50px;}
 table.list tr.on{background:#FFCC99;}
 table.list tr.on td{font-weight:bold;}

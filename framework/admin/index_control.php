@@ -79,12 +79,12 @@ class index_control extends phpok_control
 			$menulist = array();
 		}
 		$ftmp = array('list','index','res');
-		foreach($menulist AS $key=>$value){
+		foreach($menulist as $key=>$value){
 			if(!$value["sublist"] || !is_array($value["sublist"]) || count($value["sublist"]) < 1){
 				unset($menulist[$key]);
 				continue;
 			}
-			foreach($value["sublist"] AS $k=>$v){
+			foreach($value["sublist"] as $k=>$v){
 				if(!in_array($v['appfile'],$ftmp) && !$_SESSION['admin_rs']['if_system'] && $popedom_m[$v['id']]){
 					if(!$popedom_m || !$popedom_m[$v['id']] || !is_array($popedom_m[$v['id']]) || count($popedom_m[$v["id"]])<1){
 						unset($value["sublist"][$k]);
@@ -213,6 +213,20 @@ class index_control extends phpok_control
 		if($alist && is_array($alist)){
 			$this->assign('plugin_alist',$alist);
 		}
+		//是否显示验证码信息
+		$show_vcode_setting = false;
+		if($rs['register_status'] || $rs['login_status']){
+			$show_vcode_setting = true;
+		}
+		if(!$show_vcode_setting){
+			//读取项目是否有开放评论及发布功能
+			$condition = "module>0 AND (post_status=1 || comment_status=1)";
+			$plist = $this->model('project')->project_all($this->session->val('admin_site_id'),'id',$condition);
+			if($plist){
+				$show_vcode_setting = true;
+			}
+		}
+		$this->assign("show_vcode_setting",$show_vcode_setting);
 		return $this->fetch('index_block_allsetting');
 	}
 
@@ -246,7 +260,7 @@ class index_control extends phpok_control
 				return false;
 			}
 			$popedom = array();
-			foreach($popedom_list AS $key=>$value){
+			foreach($popedom_list as $key=>$value){
 				if(in_array($value["id"],$this->session->val('admin_popedom'))){
 					$popedom[$value["pid"]][$value["identifier"]] = true;
 				}
@@ -323,7 +337,7 @@ class index_control extends phpok_control
 		//读取未操作的主题
 		$rslist = $this->model('list')->pending_info($this->session->val('admin_site_id'));
 		if($rslist){
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				if(!$value['parent_id']){
 					$url = $this->url("list","action","id=".$value["pid"]);
 					$list['project_'.$value['pid']] = array("title"=>$value["title"],"total"=>$value["total"],"url"=>$url,'id'=>$value['pid']);
@@ -378,7 +392,7 @@ class index_control extends phpok_control
 				$time = $this->lib('file')->cat($this->dir_data.'update.time');
 			}
 			$check = false;
-			if($time < $this->time && ($this->time - $uconfig['date'] * 86400) > $time){
+			if($uconfig['status'] && $time < $this->time && ($this->time - $uconfig['date'] * 86400) > $time){
 				$check = true;
 			}
 			if($check){
@@ -397,7 +411,7 @@ class index_control extends phpok_control
 		$list = false;
 		$rslist = $this->model('list')->pending_info($this->session->val('admin_site_id'));
 		if($rslist){
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				if($value['parent_id']){
 					$url = $this->url("list","action","id=".$value["pid"]);
 					$list['project_'.$value['pid']] = array("title"=>$value["title"],"total"=>$value["total"],"url"=>$url,'id'=>$value['pid']);

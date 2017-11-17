@@ -2,7 +2,7 @@
 <root>
 	<arclist>
 		<title>列表</title>
-		<showid>pid,offset,psize,is_list,in_sub,attr,fields_need,tag,keywords,orderby,fields</showid>
+		<showid>pid,offset,psize,is_list,attr,fields_need,tag,keywords,orderby,fields</showid>
 		<ajax>load_catelist</ajax>
 	</arclist>
 	<arc>

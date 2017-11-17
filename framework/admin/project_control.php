@@ -181,22 +181,23 @@ class project_control extends phpok_control
 	public function mfields_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rslist = $this->model('module')->fields_all($id);
-		if(!$rslist) $this->json('',true);
-
+		if(!$rslist){
+			$this->success();
+		}
 		$list = array();
 		foreach($rslist AS $key=>$value){
 			if($value["field_type"] != "longtext" && $value["field_type"] != "longblob" && $value["field_type"] != "text"){
 				$list[] = array("id"=>$value["id"],"identifier"=>$value["identifier"],"title"=>$value["title"]);
 			}
 		}
-		$this->json($list,true);
+		$this->success($list);
 	}
 
 	/**
@@ -276,21 +277,29 @@ class project_control extends phpok_control
 		if(!$id){
 			$array["site_id"] = $this->session->val('admin_site_id');
 		}
+		if($module){
+			$m_rs = $this->model('module')->get_one($module);
+			if($m_rs['mtype']){
+				$array["orderby"] = $this->get("orderby2");
+				$array["psize"] = $this->get("psize2","int");
+			}else{
+				$array["orderby"] = $this->get("orderby");
+				$array["psize"] = $this->get("psize","int");
+				$array["alias_title"] = $this->get("alias_title");
+				$array["alias_note"] = $this->get("alias_note");
+			}
+		}
 		$array["parent_id"] = $this->get("parent_id","int");
 		$array["module"] = $module;
 		$array["cate"] = $cate;
 		$array['cate_multiple'] = $cate_multiple;
 		$array["title"] = $title;
 		$array["nick_title"] = $this->get("nick_title");
-		$array["alias_title"] = $this->get("alias_title");
-		$array["alias_note"] = $this->get("alias_note");
-		$array["psize"] = $this->get("psize","int");
 		$array["taxis"] = $taxis;
 		$array["tpl_index"] = $tpl_index;
 		$array["tpl_list"] = $tpl_list;
 		$array["tpl_content"] = $tpl_content;
 		$array["ico"] = $this->get("ico");
-		$array["orderby"] = $this->get("orderby");
 		$array["status"] = $this->get("lock","checkbox") ? 0 : 1;
 		$array["hidden"] = $this->get("hidden","checkbox");
 		$array["identifier"] = $identifier;
@@ -779,7 +788,7 @@ class project_control extends phpok_control
 				$this->error(P_Lang('项目导入失败：模块创建失败'));
 			}
 			$this->model('module')->create_tbl($mid);
-			$tbl_exists = $this->model('module')->chk_tbl_exists($mid);
+			$tbl_exists = $this->model('module')->chk_tbl_exists($mid,$tmp2['mtype']);
 			if(!$tbl_exists){
 				$this->model('module')->delete($mid);
 				$this->model('project')->delete_project($insert_id);
@@ -792,7 +801,7 @@ class project_control extends phpok_control
 					}
 					$value['module_id'] = $mid;
 					$this->model('module')->fields_save($value);
-					$this->model('module')->create_fields($mid,$value);
+					$this->model('module')->create_fields($value['id']);
 				}
 			}
 			//更新项目和模块之间的关系

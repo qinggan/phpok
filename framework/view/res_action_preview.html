@@ -1,4 +1,5 @@
-<!-- inc:head_open -->
+<!-- include tpl=head_open -->
+<script type="text/javascript" src="js/clipboard.min.js"></script>
 <div class="res_preview">
 	<ul>
 		<li><i>上传时间：</i>{func time_format $rs.addtime}</li>
@@ -10,10 +11,23 @@
 		<!-- /if -->
 		<li><i>操作</i><input type="button" value="下载此文件" onclick="$.phpok.go('{url ctrl=res func=download id=$rs.id/}')" class="phpok-btn" /></li>
 		<!-- if $type == "picture" -->
-		<li><i>{lang原图}</i></li>
+		<li>
+			<i>{lang原图}</i>
+			<div class="button-group">
+				<input type="button" value="{lang复制相对地址}" data-clipboard-text="{$rs.filename}" class="phpok-btn phpok-copy" />
+				<input type="button" value="{lang复制完整地址}" data-clipboard-text="{$sys.url}{$rs.filename}" class="phpok-btn phpok-copy" />
+			</div>
+		</li>
 		<li class="picture"><img src="{$rs.filename}"/></li>
 		<!-- foreach($rs.gd AS $key=>$value) -->
-		<li><i>{lang生成图}</i>{$key}</li>
+		<li>
+			<i>{lang生成图} <span class="red">{$key}</span></i>
+			<div class="button-group">
+				<input type="button" value="{lang复制相对地址}" data-clipboard-text="{$value.filename}" class="phpok-btn phpok-copy" />
+				<input type="button" value="{lang复制完整地址}" data-clipboard-text="{$sys.url}{$value.filename}" class="phpok-btn phpok-copy" />
+			</div>
+
+		</li>
 		<li class="picture"><img src="{$value.filename}"/></li>
 		<!-- /foreach -->
 		<!-- elseif $type == "video" -->
@@ -21,5 +35,18 @@
 		<!-- /if -->
 	</ul>
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+	var clipboard = new Clipboard('.phpok-copy');
 
-<!-- inc:foot_open -->
+	clipboard.on('success', function(e) {
+		$.dialog.tips('{lang网址复制成功}');
+		e.clearSelection();
+	});
+
+	clipboard.on('error', function(e) {
+		$.dialog.alert('{lang网址复制失败}');
+	});
+});
+</script>
+<!-- include tpl=foot_open -->

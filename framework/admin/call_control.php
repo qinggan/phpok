@@ -173,11 +173,13 @@ class call_control extends phpok_control
 		if(!$p_rs['module']){
 			$this->json(P_Lang('未绑定模块'));
 		}
+		$module = $this->model('module')->get_one($p_rs['module']);
 		$rslist = $this->model('module')->fields_all($p_rs['module']);
 		$this->assign('rslist',$rslist);
+		$this->assign('mtype',$module['mtype']);
 		$info = $this->fetch("phpok_ajax_fields");
 		$order = $this->fetch("phpok_ajax_orderby");
-		$this->json(array('need'=>$info,'orderby'=>$order,'attr'=>$p_rs['is_attr'],'rslist'=>$rslist),true);
+		$this->json(array('need'=>$info,'orderby'=>$order,'attr'=>$p_rs['is_attr'],'rslist'=>$rslist,'mtype'=>$module['mtype'],'sub'=>$p_rs['']),true);
 	}
 
 	private function check_identifier($identifier)

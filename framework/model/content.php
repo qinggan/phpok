@@ -38,7 +38,7 @@ class content_model_base extends phpok_model
 		if(!$rs){
 			return false;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."list_biz WHERE id='".$id."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."list_biz WHERE id='".$rs['id']."'";
 		$biz_rs = $this->db->get_one($sql);
 		if($biz_rs){
 			foreach($biz_rs as $key=>$value){

@@ -711,7 +711,7 @@ class plugin_control extends phpok_control
 		if($fileid == 'www' || $fileid == 'admin' || $fileid == 'api'){
 			$string .= '/**'."\n\t";
 			$string .= ' * 全局运行插件，在执行当前方法运行前，调整参数，如果不使用，请删除这个方法'."\n\t";
-			$string .= '}*/'."\n\t";
+			$string .= '**/'."\n\t";
 			$string .= 'public function phpok_before()'."\n\t";
 			$string .= '{'."\n\t\t";
 			$string .= '//PHP代码;'."\n\t";
@@ -719,7 +719,7 @@ class plugin_control extends phpok_control
 			$string .= "\n\t";
 			$string .= '/**'."\n\t";
 			$string .= ' * 全局运行插件，在执行当前方法运行后，数据未输出前，如果不使用，请删除这个方法'."\n\t";
-			$string .= '}*/'."\n\t";
+			$string .= '**/'."\n\t";
 			$string .= 'public function phpok_after()'."\n\t";
 			$string .= '{'."\n\t\t";
 			$string .= '//PHP代码;'."\n\t";

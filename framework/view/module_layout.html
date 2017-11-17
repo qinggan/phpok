@@ -1,5 +1,5 @@
 <!-- include tpl=head_open -->
-<form method="post" id="module_add" action="{echo admin_url('module','layout_save')}">
+<form method="post" id="module_layout_save" onsubmit="return false">
 <input type="hidden" id="id" name="id" value="{$id}" />
 <div class="table">
 	<div class="title">
@@ -8,22 +8,16 @@
 	</div>
 	<div class="content">
 		<ul class="layout">
+			<!-- if !$rs.mtype -->
 			<li><label><input type="checkbox" name="layout[]" value="hits"{if in_array("hits",$layout)} checked{/if} />{lang查看次数}</label></li>
 			<li><label><input type="checkbox" name="layout[]" value="dateline"{if in_array("dateline",$layout)} checked{/if} />{lang发布时间}</label></li>
 			<li><label><input type="checkbox" name="layout[]" value="user_id"{if in_array("user_id",$layout)} checked{/if} />{lang会员账号}</label></li>
+			<!-- /if -->
 			<!-- loop from=$used_list key=$key value=$value -->
 			<li><label><input type="checkbox" name="layout[]" id="layout_{$value.identifier}" value="{$value.identifier}"{if in_array($value[identifier],$layout)} checked{/if} />{$value.title}</label></li>
 			<!-- /loop -->
 		</ul>
 	</div>
 </div>
-<div class="table">
-	<div class="content">
-		<br />
-		<input type="submit" value="提 交" class="submit" />
-		<br />
-	</div>
-</div>
 </form>
-
 <!-- include tpl=foot_open -->

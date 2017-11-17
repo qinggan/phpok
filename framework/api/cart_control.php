@@ -43,6 +43,10 @@ class cart_control extends phpok_control
 		if(!$this->cart_id){
 			$this->error(P_Lang('购物车编号异常'));
 		}
+		$clear = $this->get('_clear');
+		if($clear){
+			$this->model('cart')->clear_cart($this->cart_id);
+		}
 		$id = $this->get('id','int');
 		$qty = $this->get('qty','int');
 		if(!$qty){
@@ -111,10 +115,7 @@ class cart_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('产品信息不存在或未启用'));
 		}
-		$thumb_id = $this->get('thumb_id');
-		if(!$thumb_id){
-			$thumb_id = $this->config['cart']['thumb_id'] ? $this->config['cart']['thumb_id'] : 'thumb';
-		}
+		$thumb_id = $this->config['cart']['thumb_id'] ? $this->config['cart']['thumb_id'] : 'thumb';
 		if($rs[$thumb_id]){
 			if(is_string($rs[$thumb_id])){
 				$array['thumb'] = $rs[$thumb_id];
@@ -123,7 +124,7 @@ class cart_control extends phpok_control
 				$array['thumb'] = $rs[$thumb_id]['filename'];
 			}
 			$gd_id = $this->config['cart']['gd_id'] ? $this->config['cart']['gd_id'] : '';
-			if(is_array($rs[$thumb_id]) && $rs[$thumb_id]['gd'] && $rs[$thumb_id]['gd'][$gd_id]){
+			if($gd_id && is_array($rs[$thumb_id]) && $rs[$thumb_id]['gd'] && $rs[$thumb_id]['gd'][$gd_id]){
 				$array['thumb'] = $rs[$thumb_id]['gd'][$gd_id];
 			}
 		}
@@ -175,6 +176,12 @@ class cart_control extends phpok_control
 	{
 		$total = $this->model('cart')->total($this->cart_id);
 		$this->success($total);
+	}
+
+	public function clear_f()
+	{
+		$this->model('cart')->clear_cart($this->cart_id);
+		$this->success();
 	}
 
 	/**

@@ -1,12 +1,15 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/engine/db/mysqli.php
-	备注： MySQL连接引挈，后续phpok内核文件之一
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2014年10月29日 09时49分
-*****************************************************************************************/
+/**
+ * MySQL读取引挈
+ * @package phpok\engine\db
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年09月26日
+**/
+
 class db_mysqli extends db
 {
 	private $host = '127.0.0.1';
@@ -156,9 +159,11 @@ class db_mysqli extends db
 		return $this->query;
 	}
 
-	public function get_all($sql,$primary="")
+	public function get_all($sql='',$primary="")
 	{
-		$this->query($sql);
+		if($sql){
+			$this->query($sql);
+		}
 		if(!$this->query || !is_object($this->query)){
 			return false;
 		}
@@ -178,7 +183,9 @@ class db_mysqli extends db
 
 	public function get_one($sql="")
 	{
-		$this->query($sql);
+		if($sql){
+			$this->query($sql);
+		}
 		if(!$this->query || !is_object($this->query)){
 			return false;
 		}
@@ -219,7 +226,7 @@ class db_mysqli extends db
 		$sql.= " INTO ".$tbl." ";
 		$sql_fields = array();
 		$sql_val = array();
-		foreach($data AS $key=>$value){
+		foreach($data as $key=>$value){
 			$sql_fields[] = "`".$key."`";
 			$sql_val[] = "'".$value."'";
 		}
@@ -244,7 +251,7 @@ class db_mysqli extends db
 		}
 		if(is_array($condition)){
 			$sql_fields = array();
-			foreach($condition AS $key=>$value){
+			foreach($condition as $key=>$value){
 				$sql_fields[] = "`".$key."`='".$value."' ";
 			}
 			$condition = implode(" AND ",$sql_fields);
@@ -270,12 +277,12 @@ class db_mysqli extends db
 		}
 		$sql = "UPDATE ".$table." SET ";
 		$sql_fields = array();
-		foreach($data AS $key=>$value){
+		foreach($data as $key=>$value){
 			$sql_fields[] = "`".$key."`='".$value."'";
 		}
 		$sql.= implode(",",$sql_fields);
 		$sql_fields = array();
-		foreach($condition AS $key=>$value){
+		foreach($condition as $key=>$value){
 			$sql_fields[] = "`".$key."`='".$value."' ";
 		}
 		$sql .= " WHERE ".implode(" AND ",$sql_fields);
@@ -311,34 +318,34 @@ class db_mysqli extends db
 		return false;
 	}
 
-	public function list_fields($table)
+	public function list_fields($table,$check_prefix=true)
 	{
-		if(substr($table,0,strlen($this->prefix)) != $this->prefix){
+		if($check_prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
 			$table = $this->prefix.$table;
 		}
 		$rs = $this->get_all("SHOW COLUMNS FROM ".$table);
 		if(!$rs){
 			return false;
 		}
-		foreach($rs AS $key=>$value){
+		foreach($rs as $key=>$value){
 			$rslist[] = $value["Field"];
 		}
 		return $rslist;
 	}
 
 	//取得明细的字段管理
-	public function list_fields_more($table)
+	public function list_fields_more($table,$check_prefix=true)
 	{
-		if(substr($table,0,strlen($this->prefix)) != $this->prefix){
+		if($check_prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
 			$table = $this->prefix.$table;
 		}
-		$rs = $this->get_all("SHOW COLUMNS FROM ".$table);
+		$rs = $this->get_all("SHOW FULL COLUMNS FROM ".$table);
 		if(!$rs){
 			return false;
 		}
-		foreach($rs AS $key=>$value){
+		foreach($rs as $key=>$value){
 			$tmp = array();
-			foreach($value AS $k=>$v){
+			foreach($value as $k=>$v){
 				$tmp[strtolower($k)] = $v;
 			}
 			$rslist[$value["Field"]] = $tmp;
@@ -355,7 +362,7 @@ class db_mysqli extends db
 		}
 		$rslist = array();
 		$id = 'Tables_in_'.$this->database;
-		foreach($list AS $key=>$value){
+		foreach($list as $key=>$value){
 			$rslist[] = $value[$id];
 		}
 		return $rslist;
@@ -402,5 +409,214 @@ class db_mysqli extends db
 		}else{
 			return mysqli_get_client_info($this->conn);
 		}
+	}
+
+	/**
+	 * 存储过程执行，返回多个结果集
+	 * @参数 $sql 要执行的存储过程
+	 * @参数 $out 返回的结果集变量处理，多个变量用英文逗号隔开
+	**/
+	public function call_more($sql,$out='')
+	{
+		mysqli_multi_query($this->conn,$sql);
+		if(!$out){
+			$out = array();
+		}
+		if(is_string($out)){
+			$out = explode(",",$out);
+		}
+		$data = array();
+		$i=0;
+		do{
+			$id = $out[$i] ? $out[$i] : $i;
+			if($result = mysqli_store_result($this->conn)){
+				while($row = mysqli_fetch_assoc($result)){
+					$data[$id][] = $row;
+				}
+				mysqli_free_result($result);
+			}
+			if (!mysqli_more_results($this->conn)){
+				break;
+			}
+			$i++;
+		}while(mysqli_next_result($this->conn));
+		if($data && count($data)>0){
+			return $data;
+		}
+		return false;
+	}
+
+	/**
+	 * 存储过程执行，返回一条结果集
+	 * @参数 $sql 要执行的存储过程的语句
+	 * @参数 $out 返回的变量，如果out为空，直接返回
+	**/
+	public function call($sql,$out='')
+	{
+		$this->query($sql,false);
+		if($out && !is_bool($out)){
+			$tmp = array();
+			if(is_string($out)){
+				$out = explode(",",$out);
+			}
+			foreach($out as $key=>$value){
+				$value = str_replace('@','',$value);
+				$tmp[] = '@'.$value;
+			}
+			$sql = "SELECT ".implode(",",$tmp);
+			$this->query($sql,false);
+			return $this->get_one();
+		}
+		return $this->get_one();
+	}
+
+	/**
+	 * 存储过程执行，返回一个结果集的多条
+	 * @参数 $sql 要执行的SQL
+	 * @参数 $out 返回值，多个值用英文逗号隔开
+	**/
+	public function call_list($sql,$out='')
+	{
+		$this->query($sql,false);
+		if($out && is_string($out)){
+			$tmp = array();
+			if(is_string($out)){
+				$out = explode(",",$out);
+			}
+			foreach($out as $key=>$value){
+				$value = str_replace('@','',$value);
+				$tmp[] = '@'.$value;
+			}
+			$sql = "SELECT ".implode(",",$tmp);
+			$this->query($sql,false);
+			return $this->get_all();
+		}
+		return $this->get_all();
+	}
+
+	/**
+	 * 创建主表操作
+	 * @参数 $tblname 表名称
+	 * @参数 $pri_id 主键ID
+	 * @参数 $note 表摘要
+	 * @参数 $engine 引挈，默认是 MYISAM
+	**/
+	public function create_table_main($tblname,$pri_id='',$note='',$engine='')
+	{
+		if(!$engine){
+			$engine = 'MYISAM';
+		}
+		if(!$pri_id){
+			$pri_id = 'id';
+		}
+		$sql  = "CREATE TABLE IF NOT EXISTS `".$tblname."`(`".$pri_id."` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',";
+		$sql .= "PRIMARY KEY (`".$pri_id."`) ) ";
+		$sql .= "ENGINE=".$engine." DEFAULT CHARACTER SET utf8 COMMENT='".$note."' AUTO_INCREMENT=1;";
+		return $this->query($sql);
+	}
+
+	/**
+	 * 增加或修改表字段
+	 * @参数 $tblname 表名称，带前缀
+	 * @参数 $data 要更新的表信息，包括字段有：id 表ID，type类型，length长度，unsigned是否无符号，notnull是否非空，default默认值，comment备注
+	 * @参数 $old 旧表字段ID，如果检查不能，表示新增
+	**/
+	public function update_table_fields($tblname,$data,$old='')
+	{
+		if(!$tblname || !$data || !is_array($data)){
+			return false;
+		}
+		$check = $this->list_fields_more($tblname,false);
+		if(!$check){
+			return false;
+		}
+		if(!$oldid){
+			$old = $data['id'];
+		}
+		if(!$data['type']){
+			$data['type'] = 'varchar';
+		}
+		$sql = "ALTER TABLE `".$tblname."` ";
+		if($check[$old]){
+			$sql .= "CHANGE `".$old."` `".$data['id']."` ";
+		}else{
+			$sql .= "ADD `".$data['id']."` ";
+		}
+		$sql .= strtoupper($data['type']);
+		if($data['type'] == 'varchar'){
+			$sql .= "(255)";
+		}else{
+			if($data['length']){
+				$sql.= "(".$data['length'].")";
+			}
+		}
+		$sql .= " ";
+		if($data['unsigned']){
+			$sql .= "UNSIGNED ";
+		}
+		if($data['notnull']){
+			$sql .= "NOT NULL ";
+			if($data['default'] == ''){
+				$sql .= "DEFAULT '' ";
+			}
+		}else{
+			$sql .= "NULL ";
+		}
+		if($data['default'] != ''){
+			$sql .= "DEFAULT '".$data['default']."' ";
+		}
+		if($data['comment']){
+			$sql .= "COMMENT '".$data['comment']."' ";
+		}
+		phpok_log($sql);
+		return $this->query($sql);
+	}
+
+	/**
+	 * 创建更新索引
+	 * @参数 $tblname 表名
+	 * @参数 $indexname 索引名，也可以是字段名
+	 * @参数 $fields 字段名，支持字段数组，留空使用索引名
+	 * @参数 $old 删除旧索引
+	**/
+	public function update_table_index($tblname,$indexname,$fields='',$old='')
+	{
+		$sql = "ALTER TABLE ".$tblname." ";
+		if($old){
+			$sql .= "DROP INDEX `".$old."`,";
+		}
+		if(!$fields){
+			$fields = $indexname;
+		}
+		if(is_array($fields)){
+			$fields = implode("`,`",$fields);
+		}
+		$sql .= "ADD INDEX `".$indexname."`(`".$fields."`)";
+		return $this->query($sql);
+	}
+
+	/**
+	 * 删除表字段
+	 * @参数 $tblname 表名称
+	 * @参数 $id 要删除的字段
+	**/
+	public function delete_table_fields($tblname,$id)
+	{
+		$sql = "ALTER TABLE ".$tblname." DROP `".$id."`";
+		return $this->query($sql);
+	}
+
+	/**
+	 * 删除表操作
+	 * @参数 $table 表名称，要求带前缀
+	 * @参数 $check_prefix 是否加前缀
+	**/
+	public function delete_table($table,$check_prefix=true)
+	{
+		if($check_prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
+			$table = $this->prefix.$table;
+		}
+		$sql = "DROP TABLE IF EXISTS `".$table."`";
+		return $this->query($sql);
 	}
 }

@@ -195,6 +195,20 @@ class cart_model_base extends phpok_model
 	}
 
 	/**
+	 * 清空购物车下的产品数据
+	 * @参数 $cart_id 购物车ID
+	**/
+	public function clear_cart($cart_id='')
+	{
+		if(!$cart_id){
+			return false;
+		}
+		$sql = "DELETE FROM ".$this->db->prefix."cart_product WHERE cart_id='".$cart_id."'";
+		$this->db->query($sql);
+		return true;
+	}
+
+	/**
 	 * 清空超过24小时的购物车
 	**/
 	public function clear_expire_cart()

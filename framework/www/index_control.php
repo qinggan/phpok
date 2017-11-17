@@ -17,7 +17,6 @@ class index_control extends phpok_control
 
 	public function index_f()
 	{
-		$this->model('task')->set_title_status();
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
 			$tplfile = 'index';

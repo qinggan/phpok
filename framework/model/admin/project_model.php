@@ -75,26 +75,26 @@ class project_model extends project_model_base
 			return false;
 		}
 		if($rs['module']){
-			$sql = "DELETE FROM ".$this->db->prefix."list_".$rs['module']." WHERE project_id=".$id;
-			$this->db->query($sql);
-		}
-		//删除主题的扩展分类
-		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
-		$this->db->query($sql);
-		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."'";
-		$tmplist = $this->db->get_all($sql);
-		if($tmplist){
-			foreach($tmplist as $key=>$value){
-				$sql = "DELETE FROM ".$this->db->prefix."list_biz WHERE id='".$value['id']."'";
+			$module = $this->model('module')->get_one($rs['module']);
+			if($module['mtype']){
+				$sql = "DELETE FROM ".$this->db->prefix.$rs['module']." WHERE project_id='".$id."'";
 				$this->db->query($sql);
-				$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id='".$value['id']."'";
+			}else{
+				$sql = "DELETE FROM ".$this->db->prefix."list_".$rs['module']." WHERE project_id=".$id;
 				$this->db->query($sql);
-				$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE tid='".$value['id']."'";
+				$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
+				$this->db->query($sql);
+				$sql = "DELETE FROM ".$this->db->prefix."list_biz WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
+				$this->db->query($sql);
+				$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE tid IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
+				$this->db->query($sql);
+				$sql = "DELETE FROM ".$this->db->prefix."list WHERE project_id=".$id;
 				$this->db->query($sql);
 			}
-			$sql = "DELETE FROM ".$this->db->prefix."list WHERE project_id=".$id;
-			$this->db->query($sql);
-		}		
+			
+			
+		}
+
 		//删除项目扩展
 		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='project-".$id."'";
 		$extlist = $this->db->get_all($sql);
@@ -131,5 +131,3 @@ class project_model extends project_model_base
 	}
 	
 }
-
-?>

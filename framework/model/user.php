@@ -90,7 +90,7 @@ class user_model_base extends phpok_model
 		if($tlist){
 			foreach($tlist as $key=>$value){
 				$tmp = $wlist[$value['wid']];
-				$val = number_format($value['val'],$tmp['dnum']);
+				$val = round($value['val'],$tmp['dnum']);
 				$wealth[$tmp['identifier']]['val'] = $val;
 			}
 		}

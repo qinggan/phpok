@@ -117,6 +117,10 @@ class db
 	**/
 	public function debug($sql='',$time=0)
 	{
+		if(isset($sql) && is_bool($sql)){
+			$this->debug = $sql;
+			return $this->debug;
+		}
 		if($sql && trim($sql)){
 			$sql = trim($sql);
 			$sqlid = 'phpok'.md5($sql);

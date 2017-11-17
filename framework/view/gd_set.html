@@ -5,30 +5,11 @@
 	<div class="action"><a href="{url ctrl=gd/}">{lang返回方案列表}</a></div>
 	<div class="clear"></div>
 </div>
-<script type="text/javascript">
-$(document).ready(function(){
-	$("#gdsetting").submit(function(){
-		$(this).ajaxSubmit({
-			'url':"{url ctrl=gd func=save/}",
-			'type':'post',
-			'dataType':'json',
-			'success':function(rs){
-				if(rs.status == 'ok'){
-					var t = $("#id").val() ? '{lang方案编辑成功}' : '{lang方案创建成功}';
-					$.dialog.alert(t,function(){
-						$.phpok.go('{url ctrl=gd /}');
-					},'succeed');
-				}else{
-					$.dialog.alert(rs.content);
-				}
-			}
-		});
-		return false;
-	});
-});
-</script>
-<form method="post" id='gdsetting'>
+
+<form method="post" id='gdsetting' onsubmit="return $.admin_gd.save()">
+<!-- if $id -->
 <input type="hidden" id="id" name="id" value="{$id}" />
+<!-- /if -->
 <div class="table">
 	<div class="title">
 		{lang标识：}
@@ -154,10 +135,9 @@ $(document).ready(function(){
 	<div class="content"><input type="text" id="bgcolor" name="bgcolor" value="{$rs.bgcolor}" class="color {pickerClosable:true}" /></div>
 </div>
 <br />
-<div class="table">
-	<div class="content">
-		<input type="submit" value="{lang提 交}" class="submit2" />
-	</div>
+<div class="submit-info">
+	<input type="submit" value="{lang提交}" class="submit2" />
+	<input type="button" value="{lang取消}" onclick="$.phpok.go('{url ctrl=gd/}')" class="phpok-btn" />
 </div>
 </form>
 

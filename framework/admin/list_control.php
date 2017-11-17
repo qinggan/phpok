@@ -27,33 +27,37 @@ class list_control extends phpok_control
 		return $this->popedom;
 	}
 
+	/**
+	 * 内容管理首页
+	**/
 	public function index_f()
 	{
 		$site_id = $_SESSION["admin_site_id"];
 		$rslist = $this->model('project')->get_all($this->session->val('admin_site_id'),0,"p.status=1 AND p.hidden=0");
-		if(!$rslist) $rslist = array();
-		//读取全部模型
-		if(!$_SESSION["admin_rs"]["if_system"]){
-			if(!$_SESSION["admin_popedom"]){
-				error(P_Lang('该管理员未配置权限，请检查'));
+		if(!$rslist){
+			$rslist = array();
+		}
+		if(!$this->session->val('admin_rs.if_system')){
+			if(!$this->session->val('admin_popedom')){
+				$this->error(P_Lang('该管理员未配置权限，请检查'));
 			}
 			$condition = "parent_id>0 AND appfile='list' AND func=''";
 			$p_rs = $this->model('sysmenu')->get_one_condition($condition);
 			if(!$p_rs){
-				error(P_Lang('数据获取异常，请检查'));
+				$this->error(P_Lang('数据获取异常，请检查'));
 			}
 			$gid = $p_rs["id"];
 			$popedom_list = $this->model('popedom')->get_all("gid='".$gid."' AND pid>0",false,false);
 			if(!$popedom_list){
-				error(P_Lang('未配置站点内容权限，请检查'));
+				$this->error(P_Lang('未配置站点内容权限，请检查'));
 			}
 			$popedom = array();
-			foreach($popedom_list AS $key=>$value){
-				if(in_array($value["id"],$_SESSION["admin_popedom"])){
+			foreach($popedom_list as $key=>$value){
+				if(in_array($value["id"],$this->session->val('admin_popedom'))){
 					$popedom[$value["pid"]][$value["identifier"]] = true;
 				}
 			}
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				if(!$popedom[$value["id"]] || !$popedom[$value["id"]]["list"]){
 					unset($rslist[$key]);
 					continue;
@@ -68,19 +72,19 @@ class list_control extends phpok_control
 	{
 		$id = $this->get("id");
 		if(!$id){
-			error(P_Lang('未指定ID'),$this->url("list"),"error");
+			$this->error(P_Lang('未指定ID'),$this->url("list"));
 		}
 		$this->popedom_auto($id);
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rs = $this->model('project')->get_one($id);
 		if(!$rs){
-			error(P_Lang('项目信息不存在'),$this->url("list"),"error");
+			$this->error(P_Lang('项目信息不存在'),$this->url("list"));
 		}
 		$son_list = $this->model('project')->get_all($rs["site_id"],$id,"p.status=1");
 		if($son_list){
-			foreach($son_list AS $key=>$value){
+			foreach($son_list as $key=>$value){
 				$popedom = appfile_popedom("list",$value["id"]);
 				if(!$popedom["list"]){
 					unset($son_list[$key]);
@@ -133,6 +137,10 @@ class list_control extends phpok_control
 		
 		//设置内容列表
 		if($rs["module"]){
+			$m_rs = $this->model('module')->get_one($rs['module']);
+			if($m_rs['mtype']){
+				$this->standalone_app($rs,$m_rs);
+			}
 			$this->content_list($rs);
 			$this->view("list_content");
 		}
@@ -140,10 +148,10 @@ class list_control extends phpok_control
 		$extlist = $this->model('ext')->ext_all('project-'.$id);
 		if($extlist){
 			$tmp = false;
-			foreach($extlist AS $key=>$value){
+			foreach($extlist as $key=>$value){
 				if($value["ext"]){
 					$ext = unserialize($value["ext"]);
-					foreach($ext AS $k=>$v){
+					foreach($ext as $k=>$v){
 						$value[$k] = $v;
 					}
 				}
@@ -175,10 +183,10 @@ class list_control extends phpok_control
 		$extlist = $this->model('ext')->ext_all('project-'.$id);
 		if($extlist){
 			$tmp = false;
-			foreach($extlist AS $key=>$value){
+			foreach($extlist as $key=>$value){
 				if($value["ext"]){
 					$ext = unserialize($value["ext"]);
-					foreach($ext AS $k=>$v){
+					foreach($ext as $k=>$v){
 						$value[$k] = $v;
 					}
 				}
@@ -242,6 +250,58 @@ class list_control extends phpok_control
 		return 'ok';
 	}
 
+	/**
+	 * 独立模块应用
+	 * @参数 $project 项目信息，数组
+	 * @参数 $module 模块信息，数组
+	**/
+	private function standalone_app($project,$module)
+	{
+		$pid = $project["id"];
+		$mid = $project["module"];
+		$layout = $module['layout'] ? explode(",",$module['layout']) : array();
+		$this->assign("m_rs",$module);
+		$m_list = $this->model('module')->fields_all($mid,"identifier");
+		$layout_list = array();
+		foreach($layout as $key=>$value){
+			$layout_list[$value] = $m_list[$value]["title"];
+		}
+		$this->assign("ext_list",$m_list);
+		$this->assign("layout",$layout_list);
+		unset($layout_list);
+		$psize = $this->config["psize"] ? $this->config["psize"] : "30";
+		if($project['psize'] && $project['psize'] > $psize){
+			$psize = $project['psize'];
+		}
+		if(!$this->config["pageid"]){
+			$this->config["pageid"] = "pageid";
+		}
+		$pageid = $this->get($this->config["pageid"],"int");
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$offset = ($pageid-1) * $psize;
+		$condition = "site_id='".$project['site_id']."' AND project_id='".$project['id']."'";
+		$pageurl = $this->url("list","action","id=".$pid);
+		$keytype = $this->get('keytype');
+		$keywords = $this->get("keywords");
+		if($keytype && $keywords && trim($keywords)){
+			$condition .= " AND ".$keytype." LIKE '%".$keywords."%'";
+			$pageurl .= "&keywords=".rawurlencode($keywords)."&keytype=".rawurlencode($keytype);
+			$this->assign("keywords",$keywords);
+			$this->assign("keytype",$keytype);
+		}
+		$total = $this->model('list')->single_count($mid,$condition);
+		if($total > 0){
+			$rslist = $this->model('list')->single_list($mid,$condition,$offset,$psize,$project['orderby']);
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+			$this->assign("pagelist",$pagelist);
+			$this->assign("rslist",$rslist);
+		}
+		$this->view('list_standalone');
+	}
 	//列表管理
 	private function content_list($project_rs)
 	{
@@ -269,7 +329,7 @@ class list_control extends phpok_control
 		$this->assign("m_rs",$m_rs);
 		//布局
 		$layout_list = array();
-		foreach($layout AS $key=>$value){
+		foreach($layout as $key=>$value){
 			if($value == "hits"){
 				$layout_list[$value] = P_Lang('查看次数');
 			}elseif($value == "dateline"){
@@ -299,7 +359,7 @@ class list_control extends phpok_control
 			$catelist = array($cate_rs);
 			$this->model('cate')->get_sublist($catelist,$cateid);
 			$cate_id_list = array();
-			foreach($catelist AS $key=>$value){
+			foreach($catelist as $key=>$value){
 				$cate_id_list[] = $value["id"];
 			}
 			$cate_idstring = implode(",",$cate_id_list);
@@ -317,7 +377,7 @@ class list_control extends phpok_control
 				$catelist = array($cate_rs);
 				$this->model('cate')->get_sublist($catelist,$project_rs['cate']);
 				$cate_id_list = array();
-				foreach($catelist AS $key=>$value){
+				foreach($catelist as $key=>$value){
 					$cate_id_list[] = $value["id"];
 				}
 				$cate_idstring = implode(",",$cate_id_list);
@@ -369,7 +429,7 @@ class list_control extends phpok_control
 		if($attr){
 			if(is_array($attr) && count($attr)>0){
 				$attr_list = array();
-				foreach($attr AS $key=>$value){
+				foreach($attr as $key=>$value){
 					$attr_list[] = "l.attr LIKE '%".$attr."%'";
 					$pageurl .= "&attr[]=".$value;
 				}
@@ -419,6 +479,12 @@ class list_control extends phpok_control
 				case "dateline_min":
 					$orderby = "l.dateline ASC,l.sort ASC,l.id DESC";
 					break;
+				case "id_max":
+					$orderby = "l.id DESC";
+					break;
+				case "id_min":
+					$orderby = "l.id ASC";
+					break;
 			}
 			$this->assign('orderby_search',$orderby_search);
 			$pageurl .= "&orderby_search=".$orderby_search;
@@ -434,7 +500,7 @@ class list_control extends phpok_control
 				$condition = "l.site_id='".$site_id."' AND l.project_id='".$pid."' AND l.parent_id IN(".$sub_idstring.") ";
 				$sublist = $this->model('list')->get_list($mid,$condition,0,0,$orderby);
 				if($sublist){
-					foreach($sublist AS $key=>$value){
+					foreach($sublist as $key=>$value){
 						$rslist[$value["parent_id"]]["sonlist"][$value["id"]] = $value;
 						$extcate_ids[] = $value['id'];
 					}
@@ -459,6 +525,59 @@ class list_control extends phpok_control
 		$attrlist = $this->model('list')->attr_list();
 		$this->assign("attrlist",$attrlist);
 		return true;
+	}
+
+	/**
+	 * 添加或编辑独立模块下的内容
+	 * @参数 id 主题ID
+	 * @参数 pid 项目ID
+	**/
+	public function edit2_f()
+	{
+		$pid = $this->get("pid","int");
+		if(!$pid){
+			$this->error(P_Lang('操作异常，未指定项目'),$this->url("list"));
+		}
+		$project = $this->model('project')->get_one($pid);
+		if(!$project){
+			$this->error(P_Lang('项目信息不存在'));
+		}
+		$this->assign('p_rs',$p_rs);
+		$this->assign('pid',$pid);
+		$this->popedom_auto($pid);
+		$id = $this->get('id','int');
+		$popedom_id = $id ? 'modify' : 'add';
+		if(!$this->popedom[$popedom_id]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$module = $this->model('module')->get_one($project['module']);
+		$this->assign('m_rs',$module);
+		if($id){
+			$rs = $this->model('list')->single_one($id,$project['module']);
+			if(!$rs){
+				$this->error(P_Lang('主题信息不存在'));
+			}
+			$this->assign('rs',$rs);
+			$this->assign("id",$rs["id"]);
+		}
+		$tmplist = $this->model('module')->fields_all($project["module"]);
+		if(!$tmplist){
+			$tmplist = array();
+		}
+		$extlist = array();
+		foreach($tmplist as $key=>$value){
+			if($value["ext"] && is_string($value['ext'])){
+				$ext = unserialize($value["ext"]);
+				$value = array_merge($value,($ext ? $ext : array()));
+			}
+			$idlist[] = strtolower($value["identifier"]);
+			if($rs && $rs[$value["identifier"]]){
+				$value["content"] = $rs[$value["identifier"]];
+			}
+			$extlist[] = $this->lib('form')->format($value);
+		}
+		$this->assign("extlist",$extlist);
+		$this->view('list_edit2');
 	}
 
 	/**
@@ -510,7 +629,7 @@ class list_control extends phpok_control
 		//读取扩展属性
 		$ext_list = $this->model('module')->fields_all($p_rs["module"]);
 		$extlist = array();
-		foreach(($ext_list ? $ext_list : array()) AS $key=>$value){
+		foreach(($ext_list ? $ext_list : array()) as $key=>$value){
 			if($value["ext"] && is_string($value['ext'])){
 				$ext = unserialize($value["ext"]);
 				$value = array_merge($value,($ext ? $ext : array()));
@@ -772,14 +891,13 @@ class list_control extends phpok_control
 	 		}
  		}
  		//更新扩展分类
+ 		$this->model('list')->list_cate_clear($id);
  		if($cate_id){
 	 		$ext_cate = $this->get('ext_cate_id');
 	 		if(!$ext_cate){
 		 		$ext_cate = array($cate_id);
 	 		}
 	 		$this->model('list')->save_ext_cate($id,$ext_cate);
- 		}else{
-	 		$this->model('list')->list_cate_clear($id);
  		}
  		//更新Tag标签
  		$this->model('tag')->update_tag($array['tag'],$id);
@@ -791,7 +909,7 @@ class list_control extends phpok_control
 	 		$tmplist["project_id"] = $pid;
 	 		$tmplist["cate_id"] = $cate_id;
 	 		if(!$ext_list) $ext_list = array();
-			foreach($ext_list AS $key=>$value){
+			foreach($ext_list as $key=>$value){
 				if($rs[$value['identifier']]){
 					$value['content'] = $rs[$value['identifier']];
 				}
@@ -812,6 +930,51 @@ class list_control extends phpok_control
  		$this->json(true);
 	}
 
+	public function single_save_f()
+	{
+		$id = $this->get("id","int");
+		$pid = $this->get("pid","int");
+		if(!$pid){
+			$this->error(P_Lang('未指定项目ID'));
+		}
+		$this->popedom_auto($pid);
+		$popedom_id = $id ? 'modify' : 'add';
+		if(!$this->popedom[$popedom_id]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$project = $this->model('project')->get_one($pid);
+		if(!$project){
+			$this->error(P_Lang('操作异常，无法取得项目信息'));
+		}
+		$array = array();
+		$array["project_id"] = $pid;
+		$array['site_id'] = $project['site_id'];
+		$extlist = $this->model('module')->fields_all($project["module"]);
+		if($extlist){
+			foreach($extlist as $key=>$value){
+				$array[$value['identifier']] = $this->lib('form')->get($value);
+			}
+		}
+		//保存数据
+		if($id){
+			$array['id'] = $id;
+			$state = $this->model('list')->single_save($array,$project["module"]);
+			if(!$state){
+				$this->error(P_Lang('更新数据失败，请检查'));
+			}
+		}else{
+			$id = $this->model('list')->single_save($array,$project["module"]);
+			if(!$id){
+				$this->error(P_Lang('保存数据失败，请检查'));
+			}
+		}
+		$this->plugin('system_admin_title_success',$id,$project);
+		$this->success();
+	}
+
+	/**
+	 * 主题删除
+	**/
 	public function del_f()
 	{
 		$id = $this->get("id");
@@ -826,11 +989,37 @@ class list_control extends phpok_control
 		if(!$this->popedom['delete']){
 			$this->json(P_Lang('您没有权限执行此操作'));
 		}
-		foreach($idlist AS $key=>$value){
+		foreach($idlist as $key=>$value){
 			$value = intval($value);
 			$this->model('list')->delete($value);
 		}
 		$this->json(P_Lang('主题删除成功'),true);
+	}
+
+	/**
+	 * 单独模块主题删除
+	**/
+	public function single_delete_f()
+	{
+		$id = $this->get("id");
+		if(!$id){
+			$this->error(P_Lang('没有指定主题ID'));
+		}
+		$pid = $this->get('pid');
+		if(!$pid){
+			$this->error(P_Lang('未指定项目'));
+		}
+		$this->popedom_auto($pid);
+		if(!$this->popedom['delete']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$project = $this->model('project')->get_one($pid);
+		$idlist = explode(",",$id);
+		foreach($idlist as $key=>$value){
+			$value = intval($value);
+			$this->model('list')->single_delete($value,$project['module']);
+		}
+		$this->success();
 	}
 
 	public function content_status_f()
@@ -873,7 +1062,7 @@ class list_control extends phpok_control
 		if(!$this->popedom['status']){
 			$this->json(P_Lang('您没有权限执行此操作'));
 		}
-		foreach($list AS $key=>$value){
+		foreach($list as $key=>$value){
 			$value = intval($value);
 			if(!$value){
 				continue;
@@ -898,7 +1087,7 @@ class list_control extends phpok_control
 		{
 			$this->json(P_Lang('更新排序失败'));
 		}
-		foreach($sort AS $key=>$value)
+		foreach($sort as $key=>$value)
 		{
 			$this->model('list')->update_sort($key,$value);
 		}
@@ -915,7 +1104,7 @@ class list_control extends phpok_control
 		}
 		$list = explode(",",$ids);
 		$delete_ok = true;
-		foreach($list AS $key=>$value){
+		foreach($list as $key=>$value){
 			$value = intval($value);
 			if(!$value){
 				continue;
@@ -956,7 +1145,7 @@ class list_control extends phpok_control
 		}
 		if($type != "add" && $type != "delete") $type = "add";
 		$list = explode(",",$ids);
-		foreach($list AS $key=>$value)
+		foreach($list as $key=>$value)
 		{
 			$value = intval($value);
 			if(!$value) continue;
@@ -976,7 +1165,7 @@ class list_control extends phpok_control
 				{
 					if(in_array($val,$tmp))
 					{
-						foreach($tmp AS $k=>$v)
+						foreach($tmp as $k=>$v)
 						{
 							if($v == $val) unset($tmp[$k]);
 						}
@@ -1350,7 +1539,7 @@ class list_control extends phpok_control
 			$rslist = $this->model('reply')->get_list($condition,$offset,$psize,"id");
 			if($rslist){
 				$uidlist = array();
-				foreach($rslist AS $key=>$value){
+				foreach($rslist as $key=>$value){
 					if($value["uid"]){
 						$uidlist[] = $value["uid"];
 					}
@@ -1359,7 +1548,7 @@ class list_control extends phpok_control
 				$condition = "tid='".$tid."' AND parent_id IN(".implode(",",$idlist).")";
 				$sublist = $this->model('reply')->get_list($condition,0,0);
 				if($sublist){
-					foreach($sublist AS $key=>$value){
+					foreach($sublist as $key=>$value){
 						if($value["uid"]) $uidlist[] = $value["uid"];
 						$rslist[$value["parent_id"]]["sublist"][$value["id"]] = $value;
 					}
@@ -1368,12 +1557,12 @@ class list_control extends phpok_control
 					$uidlist = array_unique($uidlist);
 					$ulist = $this->model('user')->get_all_from_uid(implode(",",$uidlist),'id');
 					if(!$ulist) $ulist = array();
-					foreach($rslist AS $key=>$value){
+					foreach($rslist as $key=>$value){
 						if($value["uid"]){
 							$value["uid"] = $ulist[$value["uid"]];
 						}
 						if($value["sublist"]){
-							foreach($value["sublist"] AS $k=>$v){
+							foreach($value["sublist"] as $k=>$v){
 								if($v){
 									$v["uid"] = $ulist[$v["uid"]];
 								}

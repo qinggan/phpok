@@ -120,7 +120,74 @@
 			});
 			return false;
 		}
-	}
+	};
+
+	$.admin_list = {
+		single_save:function()
+		{
+			var loading_action;
+			$("#_listedit").ajaxSubmit({
+				'url':get_url('list','single_save'),
+				'type':'post',
+				'dataType':'json',
+				'beforeSubmit':function(){
+					loading_action = $.dialog.tips(p_lang('正在保存数据，请稍候…')).time(30).lock();
+				},
+				'success':function(rs){
+					if(loading_action){
+						loading_action.close();
+					}
+					if(!rs.status){
+						$.dialog.alert(rs.info);
+						return false;
+					}
+					var pid = $("#project_id").val();
+					var url = get_url('list','action','id='+pid);
+					var id = $("#id").val();
+					if(id){
+						$.dialog.alert(p_lang('内容信息修改成功'),function(){
+							$.phpok.go(url);
+						},'succeed');
+						return false;
+					}
+					$.dialog.through({
+						'icon':'succeed',
+						'content':p_lang('内容添加操作成功，请选择继续添加或返回列表'),
+						'ok':function(){
+							$.phpok.reload();
+						},
+						'okVal':p_lang('继续添加'),
+						'cancel':function(){
+							$.phpok.go(url);
+						},
+						'cancelVal':p_lang('返回列表'),
+						'lock':true
+					});
+				}
+			});
+			return false;
+		},
+
+		/**
+		 * 删除主题
+		 * @参数 pid 项目ID
+		 * @参数 tid 主题ID
+		**/
+		single_delete:function(pid,tid)
+		{
+			$.dialog.confirm(p_lang('确定要删除ID #{tid} 的信息吗？<br/>删除后数据是不能恢复的',tid),function(){
+				var url = get_url('list','single_delete','pid='+pid+"&id="+tid);
+				$.phpok.json(url,function(data){
+					if(data.status){
+						$.phpok.reload();
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				});
+			});
+		}
+	};
 
 	function win_resize()
 	{

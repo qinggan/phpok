@@ -58,13 +58,20 @@ class module_model_base extends phpok_model
 	}
 
 	//检查表是否存在
-	public function chk_tbl_exists($id)
+	public function chk_tbl_exists($id,$mtype=0)
 	{
 		if(!$id){
 			return false;
 		}
-		$sql = "SHOW TABLES LIKE '".$this->db->prefix."list_".$id."'";
-		return $this->db->get_one($sql);
+		$mlist = $this->db->list_tables();
+		if(!$mlist){
+			return false;
+		}
+		$tblname = $mtype ? $this->db->prefix.$id : $this->db->prefix."list_".$id;
+		if(in_array($tblname,$mlist)){
+			return true;
+		}
+		return false;
 	}
 
 	public function tbl_fields_list($tbl)
@@ -72,10 +79,13 @@ class module_model_base extends phpok_model
 		return $this->db->list_fields($tbl);
 	}
 
+	/**
+	 * 模块字段内容
+	 * @参数 $id 字段 ID
+	**/
 	public function field_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."module_fields WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
 }
-?>

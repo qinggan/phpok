@@ -140,10 +140,7 @@ class order_control extends phpok_control
 			}
 		}
 		$address['email'] = $this->get('email');
-		if(!$address['email']){
-			$this->error(P_Lang('邮箱不能为空'),$this->url('cart','check'));
-		}
-		if(!$this->lib('common')->email_check($address['email'])){
+		if($address['email'] && !$this->lib('common')->email_check($address['email'])){
 			$this->error(P_Lang('邮箱格式不正确'),$this->url('cart','check'));
 		}
 		$sn = $this->model('order')->create_sn();

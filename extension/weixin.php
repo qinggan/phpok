@@ -30,6 +30,7 @@ class weixin_lib
 	{
 		$data = file_get_contents("php://input");
 		if($data){
+			libxml_disable_entity_loader(true);
 			$this->obj = simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA);
 			$this->wx_type = trim($this->obj->MsgType);
 		}

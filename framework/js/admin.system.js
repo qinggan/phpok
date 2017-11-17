@@ -99,7 +99,7 @@
 			var id = $(this).attr('data');
 			$.dialog.prompt(p_lang('请填写新的排序：'),function(val){
 				if(val != oldval){
-					$.amdin_system.update_taxis(val,id);
+					$.admin_system.update_taxis(val,id);
 				}
 			},oldval);
 		});

@@ -1,12 +1,4 @@
 <?php
-/***********************************************************
-	Filename: phpok/model/fields.php
-	Note	: 读取 qinggan_fields/qinggan_fields_ext 表操作
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-11-01 20:24
-***********************************************************/
 /**
  * 常用字段增删查改
  * @package phpok\model
@@ -117,37 +109,31 @@ class fields_model_base extends phpok_model
 		# 检查核心表的字段ID
 		$idlist = array("title","phpok","identifier");
 		$idlist = $this->_rslist("list",$idlist);
-		if($idlist)
-		{
+		if($idlist){
 			$idlist = array_unique($idlist);
-			if(in_array($identifier,$idlist))
-			{
+			if(in_array($identifier,$idlist)){
 				return true;
 			}
 		}
 		return false;
 	}
 
-	function tbl_fields($tbl)
+	public function tbl_fields($tbl)
 	{
 		return $this->_rslist($tbl);
 	}
 
-	function _rslist($tbl,$idlist=array())
+	private function _rslist($tbl,$idlist=array())
 	{
 		$sql = "SHOW FIELDS FROM ".$this->db->prefix.$tbl;
 		$rslist = $this->db->get_all($sql);
-		if($rslist)
-		{
+		if($rslist){
 			$idlist = array();
-			foreach($rslist AS $key=>$value)
-			{
+			foreach($rslist AS $key=>$value){
 				$idlist[] = $value["Field"];
 			}
 			return $idlist;
-		}
-		else
-		{
+		}else{
 			return false;
 		}
 	}

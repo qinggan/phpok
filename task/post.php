@@ -1,12 +1,15 @@
 <?php
-/*****************************************************************************************
-	文件： task/post.php
-	备注： 提交表单时启动的通知功能
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年12月20日 12时24分
-*****************************************************************************************/
+/**
+ * 提交表单时启动的通知功能
+ * @package phpok\task
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年10月26日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 if(!$param['id'] || !$param['status']){
 	return false;
@@ -57,4 +60,3 @@ if($project['etpl_user'] && $rs['user_id'] && $user_rs && $user_rs['email']){
 		}
 	}
 }
-?>

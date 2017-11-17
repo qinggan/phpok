@@ -1,12 +1,15 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/libs/token.php
-	备注： 令牌生成器管理工具
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2014年7月9日
-*****************************************************************************************/
+/**
+ * Token加密解密
+ * @package phpok\libs
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年09月28日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class token_lib
 {
@@ -19,16 +22,16 @@ class token_lib
 	
 	public function __construct()
 	{
+		global $app;
 		$this->_keyid();
 		$this->config();
-		$this->time = time();
+		$this->time = $app->time;
 	}
 
-	public function __destruct()
-	{
-		unset($this);
-	}
-
+	/**
+	 * 自定义密钥
+	 * @参数 $keyid 密钥内容
+	**/
 	public function keyid($keyid='')
 	{
 		if(!$keyid){
@@ -48,7 +51,9 @@ class token_lib
 		$this->keyb = md5(substr($this->keyid, 16, 16));
 	}
 
-	//创建一个KEY-ID
+	/**
+	 * 创建一个KEY-ID
+	**/
 	private function _keyid()
 	{
 		global $app;
@@ -56,50 +61,60 @@ class token_lib
 			$api_code = $app->site['api_code'];
 			unset($app);
 		}else{
-			if($_SESSION['phpok-site-api-code']){
-				$api_code = $_SESSION['phpok-site-api-code'];
-			}else{
-				$api_code = uniqid(time(), true);
-				$_SESSION['phpok-site-api-code'] = $api_code;
-			}
+			$api_code = $app->session->val('phpok-site-api-code') ? $app->session->val('phpok-site-api-code') : uniqid(time(), true);
+			$app->session->assign('phpok-site-api-code',$api_code);
 		}
 		$this->keyid = strtolower(md5($api_code));
 		return true;
 	}
 
-	//设置超时
+	/**
+	 * 设置超时
+	 * @参数 $time 超时时间，单位是秒
+	**/
 	public function expiry($time=0)
 	{
-		$this->expiry = $time;
+		if($time && $time > 0){
+			$this->expiry = $time;
+		}
+		return $this->expiry;
 	}
 
-	//加密数据
+	/**
+	 * 加密数据
+	 * @参数 $string 要加密的数据，数组或字符
+	**/
 	public function encode($string)
 	{
 		if(!$this->keyid){
 			return false;
 		}
 		$string = serialize($string);
-		$string = sprintf('%010d',($this->expiry + $this->time)).substr(md5($string.$this->keyb), 0, 16).$string;
+		$expiry_time = $this->expiry ? $this->expiry : 365*24*3600;
+		$string = sprintf('%010d',($expiry_time + $this->time)).substr(md5($string.$this->keyb), 0, 16).$string;	
 		$keyc = substr(md5(microtime().rand(1000,9999)), -$this->keyc_length);
 		$cryptkey = $this->keya.md5($this->keya.$keyc);
 		$rs = $this->core($string,$cryptkey);
-		return $keyc.base64_encode($rs);
+		return $keyc.str_replace('=', '', base64_encode($rs));
+		//return $keyc.base64_encode($rs);
 	}
 
-	//解密
+	/**
+	 * 解密
+	 * @参数 $string 要解密的字串
+	**/
 	public function decode($string)
 	{
 		if(!$this->keyid){
 			return false;
 		}
+		$string = str_replace(' ','+',$string);
 		$keyc = substr($string, 0, $this->keyc_length);
 		$string = base64_decode(substr($string, $this->keyc_length));
 		$cryptkey = $this->keya.md5($this->keya.$keyc);
 		$rs = $this->core($string,$cryptkey);
 		$chkb = substr(md5(substr($rs,26).$this->keyb),0,16);
-		if((substr($rs, 0, 10) - $this->time > 0) && substr($rs, 10, 16) == $chkb)
-		{
+		if((substr($rs, 0, 10) - $this->time > 0) && substr($rs, 10, 16) == $chkb){
 			$info = substr($rs, 26);
 			return unserialize($info);
 		}
@@ -136,4 +151,3 @@ class token_lib
 		return $result;
 	}
 }
-?>

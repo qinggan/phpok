@@ -1,12 +1,15 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/js_control.php
-	Note	: JS控制器，这里用来控制后台的JS信息
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-10-29 20:22
-***********************************************************/
+/**
+ * JS 控制器
+ * @package phpok\framework
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年11月13日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class js_control extends phpok_control
 {

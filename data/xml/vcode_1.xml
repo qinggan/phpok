@@ -17,40 +17,6 @@
 			</getpass>
 		</list>
 	</system>
-	<p-41>
-		<title><![CDATA[图片播放器]]></title>
-		<list>
-			<add>
-				<title><![CDATA[添加]]></title>
-				<status><![CDATA[1]]></status>
-			</add>
-			<edit>
-				<title><![CDATA[修改]]></title>
-				<status><![CDATA[1]]></status>
-			</edit>
-			<comment>
-				<title><![CDATA[评论]]></title>
-				<status><![CDATA[1]]></status>
-			</comment>
-		</list>
-	</p-41>
-	<p-42>
-		<title><![CDATA[导航菜单]]></title>
-		<list>
-			<add>
-				<title><![CDATA[添加]]></title>
-				<status><![CDATA[1]]></status>
-			</add>
-			<edit>
-				<title><![CDATA[修改]]></title>
-				<status><![CDATA[1]]></status>
-			</edit>
-			<comment>
-				<title><![CDATA[评论]]></title>
-				<status><![CDATA[1]]></status>
-			</comment>
-		</list>
-	</p-42>
 	<p-43>
 		<title><![CDATA[资讯中心]]></title>
 		<list>
@@ -68,40 +34,6 @@
 			</comment>
 		</list>
 	</p-43>
-	<p-87>
-		<title><![CDATA[关于我们]]></title>
-		<list>
-			<add>
-				<title><![CDATA[添加]]></title>
-				<status><![CDATA[1]]></status>
-			</add>
-			<edit>
-				<title><![CDATA[修改]]></title>
-				<status><![CDATA[1]]></status>
-			</edit>
-			<comment>
-				<title><![CDATA[评论]]></title>
-				<status><![CDATA[1]]></status>
-			</comment>
-		</list>
-	</p-87>
-	<p-45>
-		<title><![CDATA[产品展示]]></title>
-		<list>
-			<add>
-				<title><![CDATA[添加]]></title>
-				<status><![CDATA[1]]></status>
-			</add>
-			<edit>
-				<title><![CDATA[修改]]></title>
-				<status><![CDATA[1]]></status>
-			</edit>
-			<comment>
-				<title><![CDATA[评论]]></title>
-				<status><![CDATA[1]]></status>
-			</comment>
-		</list>
-	</p-45>
 	<p-142>
 		<title><![CDATA[友情链接]]></title>
 		<list>
@@ -136,74 +68,6 @@
 			</comment>
 		</list>
 	</p-96>
-	<p-144>
-		<title><![CDATA[图集相册]]></title>
-		<list>
-			<add>
-				<title><![CDATA[添加]]></title>
-				<status><![CDATA[1]]></status>
-			</add>
-			<edit>
-				<title><![CDATA[修改]]></title>
-				<status><![CDATA[1]]></status>
-			</edit>
-			<comment>
-				<title><![CDATA[评论]]></title>
-				<status><![CDATA[1]]></status>
-			</comment>
-		</list>
-	</p-144>
-	<p-151>
-		<title><![CDATA[下载中心]]></title>
-		<list>
-			<add>
-				<title><![CDATA[添加]]></title>
-				<status><![CDATA[1]]></status>
-			</add>
-			<edit>
-				<title><![CDATA[修改]]></title>
-				<status><![CDATA[1]]></status>
-			</edit>
-			<comment>
-				<title><![CDATA[评论]]></title>
-				<status><![CDATA[1]]></status>
-			</comment>
-		</list>
-	</p-151>
-	<p-147>
-		<title><![CDATA[页脚导航]]></title>
-		<list>
-			<add>
-				<title><![CDATA[添加]]></title>
-				<status><![CDATA[1]]></status>
-			</add>
-			<edit>
-				<title><![CDATA[修改]]></title>
-				<status><![CDATA[1]]></status>
-			</edit>
-			<comment>
-				<title><![CDATA[评论]]></title>
-				<status><![CDATA[1]]></status>
-			</comment>
-		</list>
-	</p-147>
-	<p-148>
-		<title><![CDATA[在线客服]]></title>
-		<list>
-			<add>
-				<title><![CDATA[添加]]></title>
-				<status><![CDATA[1]]></status>
-			</add>
-			<edit>
-				<title><![CDATA[修改]]></title>
-				<status><![CDATA[1]]></status>
-			</edit>
-			<comment>
-				<title><![CDATA[评论]]></title>
-				<status><![CDATA[1]]></status>
-			</comment>
-		</list>
-	</p-148>
 	<p-152>
 		<title><![CDATA[论坛BBS]]></title>
 		<list>
@@ -238,21 +102,4 @@
 			</comment>
 		</list>
 	</p-386>
-	<p-394>
-		<title><![CDATA[Demo大数据]]></title>
-		<list>
-			<add>
-				<title><![CDATA[添加]]></title>
-				<status><![CDATA[1]]></status>
-			</add>
-			<edit>
-				<title><![CDATA[修改]]></title>
-				<status><![CDATA[1]]></status>
-			</edit>
-			<comment>
-				<title><![CDATA[评论]]></title>
-				<status><![CDATA[1]]></status>
-			</comment>
-		</list>
-	</p-394>
 </root>

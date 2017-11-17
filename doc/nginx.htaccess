@@ -1,6 +1,0 @@
-rewrite ^(.*)/ajax/(exit|json).html$									$1/index.php?c=ajax&f=$2 last;
-rewrite ^(.*)/(post)/([a-z0-9A-Z\_\-]+).html$							$1/index.php?c=$2&id=$3 last;
-rewrite ^(.*)/([a-z0-9A-Z\_\-]+)/([a-z0-9A-Z\_\-]+).html$				$1/index.php?id=$2&cate=$3 last;
-rewrite ^(.*)/index.html$												$1/index.php last;
-rewrite ^(.*)/([a-z0-9A-Z\_\-]+)\.html$									$1/index.php?id=$2 last;
-

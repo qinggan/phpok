@@ -49,6 +49,9 @@ class wealth_model_base extends phpok_model
 			$typeid = 'id';
 		}
 		$sql = "SELECT * FROM ".$this->db->prefix."wealth WHERE `".$typeid."`='".$id."'";
+		if($this->site_id){
+			$sql .= " AND site_id='".$this->site_id."'";
+		}
 		return $this->db->get_one($sql);
 	}
 

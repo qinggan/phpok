@@ -192,6 +192,90 @@ class list_model_base extends phpok_model
 	}
 
 	/**
+	 * 获取独立表数据
+	 * @参数 $id 主题ID
+	 * @参数 $mid 模块ID
+	**/
+	public function single_one($id,$mid=0)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix.$mid." WHERE id='".$id."'";
+		return $this->db->get_one($sql);
+	}
+
+
+	/**
+	 * 独立表数据保存
+	 * @参数 $data 要保存的数据，如果存在 $data[id]，表示更新
+	 * @参数 $mid 模块ID
+	**/
+	public function single_save($data,$mid=0)
+	{
+		if(!$data || !$mid){
+			return false;
+		}
+		if($data['id']){
+			$id = $data['id'];
+			unset($data['id']);
+			return $this->db->update_array($data,$mid,array('id'=>$id));
+		}else{
+			return $this->db->insert_array($data,$mid);
+		}
+	}
+
+	/**
+	 * 独立表列表数据
+	 * @参数 $mid 模块ID
+	 * @参数 $condition 查询条件
+	 * @参数 $offset 起始位置
+	 * @参数 $psize 查询数量
+	 * @参数 $orderby 排序
+	**/
+	public function single_list($mid,$condition='',$offset=0,$psize=30,$orderby='',$field='*')
+	{
+		$sql = "SELECT ".$field." FROM ".$this->db->prefix.$mid." ";
+		if($condition){
+			$sql .= " WHERE ".$condition." ";
+		}
+		if(!$orderby){
+			$orderby = 'id DESC';
+		}
+		$sql .= " ORDER BY ".$orderby." ";
+		if($psize && intval($psize)>0){
+			$sql .= " LIMIT ".intval($offset).",".intval($psize);
+		}
+		return $this->db->get_all($sql);
+	}
+
+	/**
+	 * 查询独立表数量
+	 * @参数 $mid 模块ID
+	 * @参数 $condition 查询条件
+	**/
+	public function single_count($mid,$condition='')
+	{
+		$sql = "SELECT count(id) FROM ".$this->db->prefix.$mid." ";
+		if($condition){
+			$sql .= " WHERE ".$condition." ";
+		}
+		return $this->db->count($sql);
+	}
+
+
+	/**
+	 * 删除独立项目下的主题信息
+	 * @参数 $id 主题ID
+	 * @参数 $mid 模块ID
+	**/
+	public function single_delete($id,$mid=0)
+	{
+		if(!$id || !$mid){
+			return false;
+		}
+		$sql = "DELETE FROM ".$this->db->prefix.$mid." WHERE id='".$id."'";
+		return $this->db->query($sql);
+	}
+
+	/**
 	 * 取得当前一个主题的信息
 	 * @参数 $id 主题ID
 	 * @参数 $format 是否格式化
@@ -316,11 +400,11 @@ class list_model_base extends phpok_model
 		if(!$id || !$catelist){
 			return false;
 		}
-		if(is_string($catelist)){
+		if(is_string($catelist) || is_numeric($catelist)){
 			$catelist = explode(",",$catelist);
 		}
-		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id='".$id."'";
-		$this->db->query($sql);
+		$this->list_cate_clear($id);
+		$catelist = array_unique($catelist);
 		$sql = "INSERT INTO ".$this->db->prefix."list_cate(id,cate_id) VALUES ";
 		foreach($catelist as $key=>$value){
 			if($key>0){
@@ -330,6 +414,20 @@ class list_model_base extends phpok_model
 		}
 		$this->db->query($sql);
 		return true;
+	}
+
+	/**
+	 * 删除主题绑定的分类
+	 * @参数 $id 要删除的主题
+	**/
+	public function list_cate_clear($id)
+	{
+		$id = intval($id);
+		if(!$id){
+			return false;
+		}
+		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id=".$id;
+		return $this->db->query($sql);
 	}
 
 
@@ -600,10 +698,10 @@ class list_model_base extends phpok_model
 
 	function pending_info($site_id=0)
 	{
-		$sql = "SELECT count(l.id) total,p.title,p.id pid,p.parent_id FROM ".$this->db->prefix."list l ";
-		$sql.= "JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
-		$sql.= " WHERE l.status!=1 AND l.site_id='".$site_id."' AND p.status=1";
-		$sql.= " GROUP BY l.project_id ORDER BY p.taxis ASC,p.id DESC ";
+		$sql = " SELECT count(l.id) total,p.title,p.id pid,p.parent_id FROM ".$this->db->prefix."list l ";
+		$sql.= " JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
+		$sql.= " WHERE l.status!=1 AND l.site_id='".$site_id."' AND p.status=1 ";
+		$sql.= " GROUP BY l.project_id ";
 		return $this->db->get_all($sql);
 	}
 
@@ -642,10 +740,10 @@ class list_model_base extends phpok_model
 		$sql  = " SELECT ".$field." FROM ".$this->db->prefix."list l ";
 		$sql .= " JOIN ".$this->db->prefix."list_".$project['module']." ext ";
 		$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
-		if(strpos($field,'b.price') !== false){
+		if($project['is_biz']){
 			$sql .= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
 		}
-		if(strpos($condition,'cate_id') !== false){
+		if($project['cate'] && $project['cate_multiple']){
 			$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
 		}
 		if($condition){
@@ -667,21 +765,23 @@ class list_model_base extends phpok_model
 		$user_id_list = $idlist = $ulist = $elist = array();
 		foreach($rslist as $key=>$value){
 			$idlist[] = $value['id'];
-			if($value['user_id']){
+			if($project['is_userid'] && $value['user_id']){
 				$ulist[] = intval($value['user_id']);
 				$user_id_list[$value['id']] = $value['user_id']; 
 			}
 			$elist[] = 'list-'.$value['id'];
 		}
 		//读取会员信息
-		$user_ids = implode(",",array_unique($ulist));
-		if($user_ids){
-			$condition = "u.id IN(".$user_ids.") AND u.status=1";
-			$ulist = $this->model('user')->get_list($condition,0,0);
-			if($ulist){
-				foreach($user_id_list as $key=>$value){
-					if($ulist[$value]){
-						$rslist[$key]['user'] = $ulist[$value];
+		if($project['is_userid']){
+			$user_ids = implode(",",array_unique($ulist));
+			if($user_ids){
+				$condition = "u.id IN(".$user_ids.") AND u.status=1";
+				$ulist = $this->model('user')->get_list($condition,0,0);
+				if($ulist){
+					foreach($user_id_list as $key=>$value){
+						if($ulist[$value]){
+							$rslist[$key]['user'] = $ulist[$value];
+						}
 					}
 				}
 			}
@@ -726,11 +826,15 @@ class list_model_base extends phpok_model
 	public function arc_count($mid,$condition='')
 	{
 		$sql = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
-		$sql .= " JOIN ".$this->db->prefix."list_".$mid." ext ";
-		$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
-		$sql .= " LEFT JOIN ".$this->db->prefix."list_biz b ON(l.id=b.id) ";
+		if($condition && strpos($condition,'ext.') !== false){
+			$sql .= " JOIN ".$this->db->prefix."list_".$mid." ext ";
+			$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
+		}
 		if($condition){
-			if(strpos($condition,'cate_id') !== false){
+			if(strpos($condition,'b.') !== false){
+				$sql .= " LEFT JOIN ".$this->db->prefix."list_biz b ON(l.id=b.id) ";
+			}
+			if(strpos($condition,'lc.') !== false){
 				$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
 			}
 			$sql .= " WHERE ".$condition." ";

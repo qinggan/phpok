@@ -19,6 +19,7 @@ class payment_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		$this->model('url')->nocache(true);
 	}
 
 	/**

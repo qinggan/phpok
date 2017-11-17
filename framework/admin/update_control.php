@@ -29,7 +29,7 @@ class update_control extends phpok_control
 		$update = array('online'=>true,'zip'=>true);
 		$setfile = $this->dir_root.'data/update.php';
 		$uconfig = array();
-		if(is_file($setfile)){
+		if(file_exists($setfile)){
 			include($setfile);
 		}
 		if(!$uconfig['status']){
@@ -48,7 +48,7 @@ class update_control extends phpok_control
 	{
 		$setfile = $this->dir_root.'data/update.php';
 		$uconfig = array();
-		if(is_file($setfile)){
+		if(file_exists($setfile)){
 			include($setfile);
 		}
 		$this->assign("rs",$uconfig);
@@ -80,7 +80,12 @@ class update_control extends phpok_control
 		$onlyid = $this->lib('server')->domain($this->config['get_domain_method']).'/phpok/';
 		$onlyid.= $this->lib('common')->ip().'/phpok/';
 		$onlyid.= $this->lib('server')->signature().'/phpok/';
-		$onlyid.= filemtime($this->dir_root.'config.php');
+		if(file_exists($this->dir_root.'config.php')){
+			$onlyid.= filemtime($this->dir_root.'config.php');
+		}
+		if(file_exists($this->dir_config.'db.ini.php')){
+			$onlyid.= filemtime($this->dir_config.'db.ini.php');
+		}
 		return md5($onlyid);
 	}
 
@@ -98,7 +103,7 @@ class update_control extends phpok_control
 		if(!$rs['content'] || count($rs['content']) < 1)	{
 			error(P_Lang('没有符合您要求的升级包'),$this->url('update'),'error');
 		}
-		if(is_file($this->dir_root.'data/update.php')){
+		if(file_exists($this->dir_root.'data/update.php')){
 			include($this->dir_root.'data/update.php');
 			$this->assign('uconfig',$uconfig);
 		}
@@ -154,8 +159,7 @@ class update_control extends phpok_control
 		$strlen = strlen($this->dir_root."data/update/");
 		$delfile = false;
 		$sqlfile = array();
-		$cfile = array();
-		foreach($list AS $key=>$value){
+		foreach($list as $key=>$value){
 			$value = trim($value);
 			if(!$value){
 				continue;
@@ -174,10 +178,6 @@ class update_control extends phpok_control
 			}
 			if(substr($tmp,-3) == 'sql' && $tmp != 'table.sql'){
 				$sqlfile[] = $value;
-				continue;
-			}
-			if(substr($tmp,0,17) == 'framework/config/'){
-				$cfile[] = $value;
 				continue;
 			}
 			if(substr($tmp,0,10) == 'framework/'){
@@ -224,7 +224,7 @@ class update_control extends phpok_control
 		//执行table.sql操作
 		$this->update_table();
 		//执行新的扩展
-		foreach($sqlfile AS $key=>$value){
+		foreach($sqlfile as $key=>$value){
 			if(!$value || !is_file($value)){
 				continue;
 			}
@@ -236,19 +236,13 @@ class update_control extends phpok_control
 				$this->sql_run($info);
 			}
 		}
-		//更新配置文件
-		foreach($cfile AS $key=>$value){
-			$base = basename($value);
-			$this->lib('file')->mv($value,$this->dir_phpok.'config/'.$base);
-		}
 		//运行PHP文件，以实现高级的PHP更新操作
 		if(file_exists($this->dir_root."data/update/run.php")){
 			include($this->dir_root.'data/update/run.php');
 		}
 		$this->lib('file')->rm($this->dir_root.'data/update/');
 		$list = $this->lib('file')->ls($this->dir_root.'data/update/');
-		if($list && count($list)>0)
-		{
+		if($list && count($list)>0){
 			foreach($list as $key=>$value){
 				$this->lib('file')->rm($value,'folder');
 			}
@@ -442,6 +436,22 @@ class update_control extends phpok_control
 
 	public function check_f()
 	{
+		if(!file())
+		if(file_exists($this->dir_root.'data/update.php')){
+			include($this->dir_root.'data/update.php');
+			$time = 0;
+			if(file_exists($this->dir_root.'data/update.time')){
+				$time = $this->lib('file')->cat($this->dir_data.'update.time');
+			}
+			$check = false;
+			if($uconfig['status'] && $time < $this->time && ($this->time - $uconfig['date'] * 86400) > $time){
+				$check = true;
+			}
+			if($check){
+				$this->lib('file')->vim($this->time,$this->dir_data.'update.time');
+				$list['update_action'] = true;
+			}
+		}
 		exit($this->service(1));
 	}
 
@@ -465,7 +475,7 @@ class update_control extends phpok_control
 
 	private function service($type=0,$urlext='')
 	{
-		if(!is_file($this->dir_root.'data/update.php')){
+		if(!file_exists($this->dir_root.'data/update.php')){
 			return $this->json(P_Lang('未配置升级服务器'),false,false);
 		}
 		$uconfig = array();
@@ -521,6 +531,10 @@ class update_control extends phpok_control
 		if(!$rs['status']){
 			return $this->json($rs['content'],false,false,false);
 		}
-		return $this->json($rs['content'],true,false,false);
+		$rs = array('status'=>'ok','content'=>$rs['content']);
+		return $this->lib('json')->encode($rs);
+		//if($content != '') $rs['content'] = $content;
+		//$info = 
+		//return $this->json($rs['content'],true,false,false);
 	}
 }

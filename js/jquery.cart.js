@@ -42,7 +42,7 @@
 			if(!url){
 				return false;
 			}
-			var rs = $.phpok.json(url);
+			var rs = $.phpok.json(url+"&_clear=1");
 			if(rs.status){
 				$.phpok.go(get_url('cart','checkout'));
 				return true;
@@ -52,7 +52,7 @@
 		},
 		onebuy: function(id,qty){
 			var url = this._addurl(id,qty);
-			var rs = $.phpok.json(url);
+			var rs = $.phpok.json(url+"&_clear=1");
 			if(rs.status){
 				$.phpok.go(get_url('cart','checkout'));
 				return true;

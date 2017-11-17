@@ -1,42 +1,8 @@
 <!-- include tpl=head -->
-<script type="text/javascript" src="{func add_js module.js}"></script>
-<script type="text/javascript">
-function update_taxis(val,id)
-{
-	$.ajax({
-		'url':get_url('module','taxis','taxis='+val+"&id="+id),
-		'dataType':'json',
-		'cache':false,
-		'async':true,
-		'beforeSend': function (XMLHttpRequest){
-			XMLHttpRequest.setRequestHeader("request_type","ajax");
-		},
-		'success':function(rs){
-			if(rs.status){
-				$.phpok.reload();
-			}else{
-				$.dialog.alert(rs.info);
-				return false;
-			}
-		}
-	});
-}
-$(document).ready(function(){
-	$("div[name=taxis]").click(function(){
-		var oldval = $(this).text();
-		var id = $(this).attr('data');
-		$.dialog.prompt('{lang请填写新的排序：}',function(val){
-			if(val != oldval){
-				update_taxis(val,id);
-			}
-		},oldval);
-	});
-});
-</script>
 <div class="tips">
 	<!-- if $popedom.set -->
-	<div class="action"><a href="javascript:module_create();void(0);">添加模块</a></div>
-	<div class="action"><a href="javascript:module_import();void(0);">模块导入</a></div>
+	<div class="action"><a href="javascript:$.admin_module.create();void(0);">添加模块</a></div>
+	<div class="action"><a href="javascript:$.admin_module.input();void(0);">模块导入</a></div>
 	<!-- /if -->
 	您当前的位置：
 	<a href="{url ctrl=module/}">模块管理</a>
@@ -54,18 +20,18 @@ $(document).ready(function(){
 <!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 <tr>
 	<td align="center">{$value.id}</td>
-	<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="set_status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
+	<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="$.admin_module.status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
 	<td><label for="tid_{$value.id}">{$value.title}<!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></label></td>
-	<td class="center"><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
+	<td class="center"><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}" onclick="$.admin_module.taxis('{$value.id}','{$value.taxis}')">{$value.taxis}</div></td>
 	<td>
 		<!-- if $popedom.set -->
 		<div class="button-group">
-			<input type="button" value="{lang编辑}" onclick="module_set('{$value.id}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="module_del('{$value.id}','{$value.title}')" class="phpok-btn" />
+			<input type="button" value="{lang编辑}" onclick="$.admin_module.edit('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="$.admin_module.del('{$value.id}','{$value.title}')" class="phpok-btn" />
 			<input type="button" value="{lang字段管理}" onclick="$.phpok.go('{url ctrl=module func=fields id=$value.id/}')" class="phpok-btn" />
-			<input type="button" value="{lang复制模块}" onclick="module_copy('{$value.id}','{$value.title}')" class="phpok-btn" />
-			<input type="button" value="{lang字段显示}" onclick="module_layout('{$value.id}','{$value.title}')" class="phpok-btn" />
-			<input type="button" value="{lang导出}" onclick="module_export('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="{lang复制模块}" onclick="$.admin_module.copy('{$value.id}','{$value.title}')" class="phpok-btn" />
+			<input type="button" value="{lang字段显示}" onclick="$.admin_module.layout('{$value.id}','{$value.title}')" class="phpok-btn" />
+			<input type="button" value="{lang导出}" onclick="$.admin_module.export('{$value.id}')" class="phpok-btn" />
 		</div>
 		<!-- /if -->
 	</td>

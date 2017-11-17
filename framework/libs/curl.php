@@ -280,6 +280,11 @@ class curl_lib
 		return $this->user_agent;
 	}
 
+	public function post_data($id,$value='')
+	{
+		$this->post_data[$id] = $value;
+	}
+
 	/**
 	 * 设置代理参数
 	 * @参数 $service 代理服务器
@@ -372,6 +377,18 @@ class curl_lib
 		curl_setopt($curl, CURLOPT_FORBID_REUSE, true);
 		curl_setopt($curl, CURLOPT_HEADER,true);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		if($this->is_post && $this->post_data){
+			curl_setopt($curl,CURLOPT_POST,true);
+			$post = http_build_query($this->post_data);
+			curl_setopt($curl,CURLOPT_POSTFIELDS,$post);
+			$this->set_header('Content-length',strlen($post));
+		}else{
+			curl_setopt($curl, CURLOPT_HTTPGET,true);
+		}
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,$this->connect_timeout);//等待时间，超时退出
+		if($this->is_gzip){
+			curl_setopt($curl,CURLOPT_ENCODING ,'gzip');//GZIP压缩
+		}
 		if($this->referer){
 			curl_setopt($curl, CURLOPT_REFERER,$this->referer);
 		}
@@ -384,18 +401,6 @@ class curl_lib
 			}
 			curl_setopt($curl, CURLOPT_COOKIEJAR,$this->cookie_file); 
 		}
-		if($this->is_post && $this->post_data){
-			curl_setopt($curl,CURLOPT_POST,true);
-			$post = http_build_query($this->post_data);
-			curl_setopt($curl,CURLOPT_POSTFIELDS,$post);
-			$this->set_header('Content-length', strlen($post));
-		}else{
-			curl_setopt($curl, CURLOPT_HTTPGET,true);
-		}
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,$this->connect_timeout);//等待时间，超时退出
-		if($this->is_gzip){
-			curl_setopt($curl,CURLOPT_ENCODING ,'gzip');//GZIP压缩
-		}
 		if($this->is_proxy && $this->proxy_service){
 			curl_setopt($curl,CURLOPT_HTTPPROXYTUNNEL,true);
 			curl_setopt($curl,CURLOPT_PROXY,$this->proxy_service);
@@ -407,13 +412,14 @@ class curl_lib
 			curl_setopt($curl, CURLOPT_PROXYTYPE, $this->proxy_type);
 		}
 		curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
-		if($this->user){
+		if($this->user && $this->pass){
 			curl_setopt($curl, CURLOPT_USERPWD, $this->user.":".$this->pass);
 			curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		}
+		
 		if($this->headers && is_array($this->headers)){
 			$headers = array();
-			foreach($this->headers AS $key=>$value){
+			foreach($this->headers as $key=>$value){
 				$headers[] = $key.": ".$value;
 			}
 			if($headers && count($headers)>0){
@@ -421,11 +427,12 @@ class curl_lib
 			}
 		}
 		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
 		if($this->is_ssl){
 			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
 			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, true);
+		}else{
+			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
 		}
 		if($this->ssl_ca_info){
 			curl_setopt($curl, CURLOPT_CAINFO, $this->ssl_ca_info); 
@@ -450,6 +457,7 @@ class curl_lib
 		}
 		$separator = '/\r\n\r\n|\n\n|\r\r/';
 		list($this->http_header, $this->http_body) = preg_split($separator, $content, 2);
+		file_put_contents('tmp.txt',$content);
 		$this->http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 		curl_close($curl);
 		if($this->http_code == 301 || $this->http_code == 302){
@@ -511,26 +519,37 @@ class curl_lib
 
 	public function get_json($url='')
 	{
-		$this->set_header('Content-Type','application/json; charset=utf-8');
+		if(!$this->is_post && !$this->post_data){
+			$this->set_header('Content-Type','application/json; charset=utf-8');
+		}
 		if($url){
 			$this->exec($url);
 		}
 		if($this->http_code != 200){
-			return $this->error('错误，HTTP 返回代码'.$this->http_code,'json');
+			$info = $this->error('错误，HTTP 返回代码'.$this->http_code,'json');
+			return json_decode($info,true);
 		}
 		if(!$this->http_body){
-			return $this->error('内容为空','json');
+			$info = $this->error('内容为空','json');
+			return json_decode($info,true);
 		}
 		$this->http_body = trim($this->http_body);
 		if(substr($this->http_body,0,1) != '{' || substr($this->http_body,-1) != "}"){
-			return $this->error('非 JSON 数据','json');
+			$info = $this->error('非 JSON 数据','json');
+			return json_decode($info,true);
 		}
-		return json_decode($this->http_body,true);
+		$info = json_decode($this->http_body,true);
+		if(!isset($info['status'])){
+			$info['status'] = true;
+		}
+		return $info;
 	}
 
 	public function get_xml($url='')
 	{
-		$this->set_header('Content-Type','text/xml; charset=utf-8');
+		if(!$this->is_post && !$this->post_data){
+			$this->set_header('Content-Type','text/xml; charset=utf-8');
+		}
 		if($url){
 			$this->exec($url);
 		}

@@ -21,7 +21,8 @@ class upload_lib
 
 	public function __construct()
 	{
-		$this->dir_root = $GLOBALS['app']->dir_root;
+		global $app;
+		$this->dir_root = $app->dir_root;
 		$this->up_error = array(
 			 0 => P_Lang('上传成功'),
 			 1 => P_Lang('上传的文件超过了 php.ini 中 upload_max_filesize 选项限制的值'),
@@ -38,6 +39,7 @@ class upload_lib
 	//目录不存在，就自动创建，创建失败即就存到res/根目录下
 	public function set_dir($dir="")
 	{
+		global $app;
 		if(!$dir){
 			return false;
 		}
@@ -46,7 +48,7 @@ class upload_lib
 			$dir = substr($dir,$root_num);
 		}
 		if(!file_exists($this->dir_root.$dir)){
-			$GLOBALS['app']->lib('file')->make($this->dir_root.$dir);
+			$app->lib('file')->make($this->dir_root.$dir);
 			if(!file_exists($this->dir_root.$dir)){
 				$dir = 'res/';
 			}
@@ -80,12 +82,13 @@ class upload_lib
 	//设置分类
 	public function set_cate($cate_rs)
 	{
+		global $app;
 		if(!$cate_rs){
 			$cate_rs = array('id'=>0,'root'=>'res/','folder'=>'Y/md/');
 		}
 		$folder = $cate_rs["root"];
 		if($cate_rs["folder"] && $cate_rs["folder"] != "/"){
-			$folder .= date($cate_rs["folder"],$GLOBALS['app']->time);
+			$folder .= date($cate_rs["folder"],$app->time);
 		}
 		$this->cateid = $cate_rs['id'];
 		return $this->set_dir($folder);
@@ -173,6 +176,8 @@ class upload_lib
 			$chunks = 1;
 		}
 		$tmpname = $_FILES[$input]["name"];
+	    $tmpname = $app->lib('string')->to_utf8($tmpname);
+	    $tmpname = $app->format($tmpname);
 		$tmpid = 'u_'.md5($tmpname);
 		$ext = $this->file_ext($tmpname);
 		$out_tmpfile = $this->dir_root.'data/cache/'.$tmpid.'_'.$chunk;
@@ -219,12 +224,11 @@ class upload_lib
 	                fwrite($out, $buff);
 	            }
 	            @fclose($in);
-	            $GLOBALS['app']->lib('file')->rm($this->dir_root.'data/cache/'.$tmpid."_".$index.".part");
+	            $app->lib('file')->rm($this->dir_root.'data/cache/'.$tmpid."_".$index.".part");
 	        }
 	        flock($out,LOCK_UN);
 	    }
 	    @fclose($out);
-	    $tmpname = $GLOBALS['app']->lib('string')->to_utf8($tmpname);
 	    $title = str_replace(".".$ext,'',$tmpname);
 	    return array('title'=>$title,'ext'=>$ext,'filename'=>$outfile,'folder'=>$this->folder,'status'=>'ok');
 	}
@@ -234,6 +238,8 @@ class upload_lib
 		global $app;
 		$basename = substr(md5(time().uniqid()),9,16);
 		$tmpname = $app->get('name');
+	    $tmpname = $app->lib('string')->to_utf8($tmpname);
+	    $tmpname = $app->format($tmpname); //安全格式化数据
 		if(!$tmpname){
 			$tmpname = uniqid($input.'_');
 		}
@@ -289,29 +295,29 @@ class upload_lib
 	        flock($out,LOCK_UN);
 	    }
 	    @fclose($out);
-	    $tmpname = $app->lib('string')->to_utf8($tmpname);
 	    $title = str_replace(".".$ext,'',$tmpname);
 	    return array('title'=>$title,'ext'=>$ext,'filename'=>$outfile,'folder'=>$this->folder,'status'=>'ok');
 	}
 
 	private function _cate($id=0)
 	{
+		global $app;
 		$cate_rs = '';
 		if($id){
-			$cate_rs = $GLOBALS['app']->model('rescate')->get_one($id);
+			$cate_rs = $app->model('rescate')->get_one($id);
 		}
 		if(!$cate_rs){
-			$cate_rs = $GLOBALS['app']->model('rescate')->get_default();
+			$cate_rs = $app->model('rescate')->get_default();
 		}
 		if(!$cate_rs){
 			$cate_rs = array('id'=>0,'filemax'=>50000,'root'=>'res/','folder'=>'Ym/d/','filetypes'=>'jpg,gif,png,zip,rar','gdall'=>1,'ico'=>1);
 		}
 		$folder = $cate_rs["root"];
 		if($cate_rs["folder"] && $cate_rs["folder"] != "/"){
-			$folder .= date($cate_rs["folder"],$GLOBALS['app']->time);
+			$folder .= date($cate_rs["folder"],$app->time);
 		}
 		if(!file_exists($this->dir_root.$folder)){
-			$GLOBALS['app']->lib('file')->make($this->dir_root.$folder);
+			$app->lib('file')->make($this->dir_root.$folder);
 		}
 		if(!$cate_rs['filetypes']){
 			$cate_rs['filetypes'] = 'jpg,gif,png,zip,rar';
@@ -322,8 +328,11 @@ class upload_lib
 		return $cate_rs;
 	}
 
-	//附件上传
-	function upload($inputname)
+	/**
+	 * 附件上传
+	 * @参数 $inputname 上传表单名
+	**/
+	public function upload($inputname)
 	{
 		if(!$inputname){
 			return array('status'=>'error','content'=>P_Lang('未指定表单名称'));

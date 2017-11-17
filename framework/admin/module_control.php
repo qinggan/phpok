@@ -50,25 +50,23 @@ class module_control extends phpok_control
 		$this->view("module_set");
 	}
 
-	function layout_f()
+	public function layout_f()
 	{
 		$id = $this->get("id");
-		$btn = '<input type="button" value="'.P_Lang('关闭').'" onclick="$.dialog.close()" />';
-		if(!$id) error_open(P_Lang('未指定模块ID'),"error",$btn);
+		if(!$id){
+			$this->error(P_Lang('未指定模块ID'));
+		}
 		$rs = $this->model('module')->get_one($id);
 		$this->assign("id",$id);
 		$this->assign("rs",$rs);
-		$layout = array("hits","dateline");
-		if($rs["layout"])
-		{
+		$layout = !$rs['mtype'] ? array("hits","dateline") : array();
+		if($rs["layout"]){
 			$layout = explode(",",$rs["layout"]);
 		}
 		$this->assign("layout",$layout);
 		$used_list = $this->model('module')->fields_all($id,"identifier");
-		if($used_list)
-		{
-			foreach($used_list AS $key=>$value)
-			{
+		if($used_list){
+			foreach($used_list AS $key=>$value){
 				$value["field_type_name"] = $this->field_list[$value["field_type"]];
 				$value["form_type_name"] = $this->form_list[$value["form_type"]];
 				$used_list[$key] = $value;
@@ -78,70 +76,79 @@ class module_control extends phpok_control
 		$this->view("module_layout");
 	}
 
-	function layout_save_f()
+	public function layout_save_f()
 	{
 		$id = $this->get("id");
-		$btn = '<input type="button" value="'.P_Lang('关闭').'" onclick="$.dialog.close()" />';
-		if(!$id) error_open(P_Lang('未指定模块ID'),"error",$btn);
+		if(!$id){
+			$this->error(P_Lang('未指定模块ID'));
+		}
 		$layout = $this->get("layout");
-		if($layout && is_array($layout))
-		{
+		if($layout && is_array($layout)){
 			$layout = implode(",",$layout);
 		}else{
 			$layout = '';
 		}
 		$array = array("layout"=>$layout);
 		$this->model('module')->save($array,$id);
-		error_open(P_Lang('后台列表布局设置成功'),"ok",$btn);
+		$this->success();
 	}
 
+	/**
+	 * 模块复制
+	 * @参数 id 要复制的模块ID
+	 * @参数 title 新的模块名称
+	**/
 	public function copy_f()
 	{
-		if(!$this->popedom["set"]) $this->json(P_Lang('您没有权限执行此操作'));
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
-		if(!$id) $this->json(P_Lang('未指定模块ID'));
+		if(!$id){
+			$this->error(P_Lang('未指定模块ID'));
+		}
 		$rs = $this->model('module')->get_one($id);
-		if(!$rs) $this->json(P_Lang('模块信息不存在'));
+		if(!$rs){
+			$this->error(P_Lang('模块信息不存在'));
+		}
 		$title = $this->get("title");
-		if(!$title) $title = $rs["title"].P_Lang('(复制)');
+		if(!$title){
+			$title = $rs["title"].P_Lang('(复制)');
+		}
 		$rs["title"] = $title;
 		unset($rs["id"]);
 		$new_id = $this->model('module')->save($rs);
-		if(!$new_id) $this->json(P_Lang('模块复制失败，请检查'));
+		if(!$new_id){
+			$this->error(P_Lang('模块复制失败，请检查'));
+		}
 		$list = $this->model('module')->fields_all($id);
-		if($list)
-		{
-			foreach($list AS $key=>$value)
-			{
+		if($list){
+			foreach($list AS $key=>$value){
 				unset($value["id"]);
 				$value["module_id"] = $new_id;
-				if($value["ext"])
-				{
+				if($value["ext"]){
 					$value["ext"] = stripslashes($value["ext"]);
 				}
 				$this->model('module')->fields_save($value);
 			}
 		}
-		//更新扩展表信息
-
 		$this->model('module')->create_tbl($new_id);
-		$tbl_exists = $this->model('module')->chk_tbl_exists($new_id);
-		if(!$tbl_exists)
-		{
-			$this->json(P_Lang('模块创建表失败，请检查'));
+		$tbl_exists = $this->model('module')->chk_tbl_exists($new_id,$rs['mtype']);
+		if(!$tbl_exists){
+			$this->error(P_Lang('模块创建表失败，请检查'));
 		}
 		$rslist = $this->model('module')->fields_all($new_id);
-		if($rslist)
-		{
-			foreach($rslist AS $key=>$value)
-			{
-				$this->model('module')->create_fields($new_id,$value);
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				$this->model('module')->create_fields($value['id']);
 			}
 		}
-		$this->json(P_Lang('模块复制成功'),true);
+		$this->success();
 	}
 
-	//存储或更新模型
+	/**
+	 * 存储或更新模型
+	**/
 	public function save_f()
 	{
 		if(!$this->popedom["set"]){
@@ -159,13 +166,14 @@ class module_control extends phpok_control
 			$this->model('module')->save($array,$id);
 		}else{
 			$array["layout"] = "hits,dateline";
+			$array['mtype'] = $this->get('mtype','int');
 			$id = $this->model('module')->save($array);
 		}
 		if(!$id){
 			$this->error(P_Lang('数据存储失败，请检查'));
 		}
-		//检查模型表是否已创建
-		$tbl_exists = $this->model('module')->chk_tbl_exists($id);
+		$rs = $this->model('module')->get_one($id);
+		$tbl_exists = $this->model('module')->chk_tbl_exists($id,$rs['mtype']);
 		if(!$tbl_exists){
 			$this->model('module')->create_tbl($id);
 		}
@@ -222,24 +230,24 @@ class module_control extends phpok_control
 	public function field_add_f()
 	{
 		if(!$this->popedom["set"]){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		if(!$id){
-			$this->json(P_Lang('未指定模型ID'));
+			$this->error(P_Lang('未指定模型ID'));
 		}
 		$fid = $this->get("fid");
 		if(!$fid){
-			$this->json(P_Lang('未指定要添加的字段ID'));
+			$this->error(P_Lang('未指定要添加的字段ID'));
 		}
 		$rs = $this->model('module')->get_one($id);
 		if(!$rs){
-			$this->json(P_Lang('模型不存在'));
+			$this->error(P_Lang('模型不存在'));
 		}
 		//取得fid的内容信息
 		$f_rs = $this->model('fields')->get_one($fid);
 		if(!$f_rs){
-			$this->json(P_Lang('字段不存在'));
+			$this->error(P_Lang('字段不存在'));
 		}
 		$title = $this->get("title");
 		if(!$title){
@@ -266,29 +274,31 @@ class module_control extends phpok_control
 		}
 		$this->model('module')->fields_save($tmp_array);
 		//更新扩展表信息
-		$tbl_exists = $this->model('module')->chk_tbl_exists($id);
+		$tbl_exists = $this->model('module')->chk_tbl_exists($id,$rs['mtype']);
 		if(!$tbl_exists){
 			$this->model('module')->create_tbl($id);
-			$tbl_exists2 = $this->model('module')->chk_tbl_exists($id);
+			$tbl_exists2 = $this->model('module')->chk_tbl_exists($id,$rs['mtype']);
 			if(!$tbl_exists2){
-				$this->json(P_Lang('模块创建表失败，请检查'));
+				$this->error(P_Lang('模块创建表失败，请检查'));
 			}
 		}
 		$list = $this->model('module')->fields_all($id);
 		if($list){
-			foreach($list AS $key=>$value){
-				$this->model('module')->create_fields($id,$value);
+			foreach($list as $key=>$value){
+				$this->model('module')->create_fields($value['id']);
 			}
 		}
-		$this->json(P_Lang('字段添加成功'),true);
+		$this->success();
 	}
 
-	//创建扩展字段
+	/**
+	 * 创建扩展字段
+	**/
 	public function field_create_f()
 	{
 		$mid = $this->get('mid','int');
 		if(!$mid){
-			error(P_Lang('未指定模块ID'));
+			$this->error(P_Lang('未指定模块ID'));
 		}
 		$m_rs = $this->model('module')->get_one($mid);
 		$this->assign('m_rs',$m_rs);
@@ -304,60 +314,68 @@ class module_control extends phpok_control
 		$this->view('module_field_create');
 	}
 	
-	//删除字段
+	/**
+	 * 删除字段
+	**/
 	public function field_delete_f()
 	{
-		if(!$this->popedom["set"]) $this->json(P_Lang('您没有权限执行此操作'));
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
-		if(!$id)
-		{
-			$this->json(P_Lang('未指定要删除的字段'));
+		if(!$id){
+			$this->error(P_Lang('未指定要删除的字段'));
 		}
 		$this->model('module')->field_delete($id);
-		$this->json(P_Lang('删除成功'),true);
+		$this->success();
 	}
 
-	//删除模块
+	/**
+	 * 删除模块
+	**/
 	public function delete_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
-		if(!$id) $this->json(P_Lang('未指定要删除的模块'));
+		if(!$id){
+			$this->error(P_Lang('未指定要删除的模块'));
+		}
 		$rs = $this->model('module')->get_one($id);
-		if(!$rs) $this->json(P_Lang('模块不存在'));
-		if($rs["status"]) $this->json(P_Lang('模块使用中，请先停用模块信息'));
-		//删除模块操作
+		if(!$rs){
+			$this->error(P_Lang('模块不存在'));
+		}
+		if($rs["status"] == '1'){
+			$this->error(P_Lang('模块使用中，请先停用模块信息'));
+		}
 		$this->model("module")->delete($id);
-		$this->json(P_Lang('模块删除成功'),true);
+		$this->success();
 	}
 
-	//通过Ajax执行操作
+	/**
+	 * 更新模块状态
+	**/
 	public function status_f()
 	{
-		if(!$this->popedom["set"]) $this->json(P_Lang('您没有权限执行此操作'));
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
-		if(!$id)
-		{
-			$this->json(P_Lang('没有指定ID'));
+		if(!$id){
+			$this->error(P_Lang('没有指定ID'));
 		}
 		$rs = $this->model('module')->get_one($id);
 		$status = $rs["status"];
 		$status++;
-		if($status>2)
-		{
+		if($status>2){
 			$status = '0';
 		}
 		$action = $this->model('module')->update_status($id,$status);
-		if(!$action)
-		{
-			$this->json(P_Lang('操作失败，请检查SQL语句'));
+		if(!$action){
+			$this->error(P_Lang('操作失败，请检查SQL语句'));
 		}
-		else
-		{
-			$this->json($status,true);
-		}
+		$this->success($status);
 	}
 
 	/**
@@ -463,36 +481,43 @@ class module_control extends phpok_control
 	public function field_addok_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$mid = $this->get('mid','int');
 		if(!$mid){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('module')->get_one($mid);
+		if(!$rs){
+			$this->error(P_Lang('模块信息不存在'));
 		}
 		$array = array('module_id'=>$mid);
 		$array['title'] = $this->get("title");
 		if(!$array['title']){
-			$this->json(P_Lang('名称不能为空'));
+			$this->error(P_Lang('名称不能为空'));
 		}
 		$array['note'] = $this->get("note");
 		$identifier = $this->get('identifier');
 		if(!$identifier){
-			$this->json(P_Lang('标识串不能为空'));
+			$this->error(P_Lang('标识串不能为空'));
 		}
 		$identifier = strtolower($identifier);
 		if(!preg_match("/^[a-z][a-z0-9\_]+$/u",$identifier)){
-			$this->json(P_Lang('字段标识不符合系统要求，限字母、数字及下划线且必须是字母开头'));
+			$this->error(P_Lang('字段标识不符合系统要求，限字母、数字及下划线且必须是字母开头'));
 		}
 		if($identifier == 'phpok'){
-			$this->json(P_Lang('phpok是系统禁用字符，请不要使用'));
+			$this->error(P_Lang('phpok是系统禁用字符，请不要使用'));
 		}
-		$flist = $this->model('fields')->tbl_fields('list');
-		if($flist && in_array($identifier,$flist)){
-			$this->json(P_Lang('字符已经存在'));
+		if(!$rs['mtype']){
+			$flist = $this->model('fields')->tbl_fields('list');
+			if($flist && in_array($identifier,$flist)){
+				$this->json(P_Lang('字符已经存在'));
+			}
 		}
-		$flist = $this->model('fields')->tbl_fields('list_'.$mid);
+		$tblname = $rs['mtype'] ? $mid : 'list_'.$mid;
+		$flist = $this->model('fields')->tbl_fields($tblname);
 		if($flist && in_array($identifier,$flist)){
-			$this->json(P_Lang('字符在扩展表中已使用'));
+			$this->error(P_Lang('字符在扩展表中已使用'));
 		}
 		$array['identifier'] = $identifier;
 		$array['field_type'] = $this->get("field_type");
@@ -521,21 +546,24 @@ class module_control extends phpok_control
 		}
 		$array['ext'] = ($ext && count($ext)>0) ? serialize($ext) : "";
 		$this->model('module')->fields_save($array);
-		$tbl_exists = $this->model('module')->chk_tbl_exists($mid);
+		$tbl_exists = $this->model('module')->chk_tbl_exists($mid,$rs['mtype']);
 		if(!$tbl_exists){
 			$this->model('module')->create_tbl($mid);
-			$tbl_exists2 = $this->model('module')->chk_tbl_exists($mid);
+			$tbl_exists2 = $this->model('module')->chk_tbl_exists($mid,$rs['mtype']);
 			if(!$tbl_exists2){
-				$this->json(P_Lang('模块：[title]创建表失败',array('title'=>$rs['title'])));
+				$this->error(P_Lang('模块：[title]创建表失败',array('title'=>$rs['title'])));
 			}
 		}
 		$list = $this->model('module')->fields_all($mid);
 		if($list){
-			foreach($list AS $key=>$value){
-				$this->model('module')->create_fields($mid,$value);
+			foreach($list as $key=>$value){
+				if($flist && in_array($value['identifier'],$flist)){
+					continue;
+				}
+				$this->model('module')->create_fields($value['id']);
 			}
 		}
-		$this->json(true);
+		$this->success();
 	}
 
 	/**
@@ -612,7 +640,7 @@ class module_control extends phpok_control
 			$this->error(P_Lang('模块导入失败，保存模块基本信息错误'));
 		}
 		$this->model('module')->create_tbl($insert_id);
-		$tbl_exists = $this->model('module')->chk_tbl_exists($insert_id);
+		$tbl_exists = $this->model('module')->chk_tbl_exists($insert_id,$tmp['mtype']);
 		if(!$tbl_exists){
 			$this->model('module')->delete($insert_id);
 			$this->error(P_Lang('创建模块表失败'));
@@ -624,7 +652,7 @@ class module_control extends phpok_control
 				}
 				$value['module_id'] = $insert_id;
 				$this->model('module')->fields_save($value);
-				$this->model('module')->create_fields($insert_id,$value);
+				$this->model('module')->create_fields($value['id']);
 			}
 		}
 		$this->lib('file')->rm($this->dir_root.'data/cache/module.xml');
@@ -632,4 +660,3 @@ class module_control extends phpok_control
 		$this->success();
 	}
 }
-?>

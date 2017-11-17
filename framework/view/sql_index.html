@@ -3,54 +3,6 @@
 	{lang您当前的位置：}<a href="{url ctrl=sql/}" title="{lang数据库管理}">{lang数据库管理}</a>
 	<div class="action"><a href="{url ctrl=sql func=backlist/}">{lang已备份列表}</a></div>
 </div>
-<script type="text/javascript">
-$(document).ready(function(){
-	top.$.desktop.title('{lang数据库管理}');
-});
-function select_free()
-{
-	$.input.checkbox_none();
-	$("input[sign=free]").attr("checked",true);
-	return true;
-}
-function optimize_sql()
-{
-	var id = $.input.checkbox_join();
-	if(!id)
-	{
-		$.dialog.alert("{lang请选择数据表}");
-		return false;
-	}
-	var url = "{url ctrl=sql func=optimize/}&id="+$.str.encode(id);
-	$.phpok.go(url);
-}
-
-function repair_sql()
-{
-	var id = $.input.checkbox_join();
-	if(!id)
-	{
-		$.dialog.alert("{lang请选择数据表}");
-		return false;
-	}
-	var url = "{url ctrl=sql func=repair/}&id="+$.str.encode(id);
-	$.phpok.go(url);
-}
-
-function backup_sql()
-{
-	$.dialog.confirm("{lang确定要执行备份操作吗？未选定表将备份全部！}",function(){
-		var id = $.input.checkbox_join();
-		if(!id)
-		{
-			id = 'all';
-		}
-		var url = "{url ctrl=sql func=backup/}&id="+$.str.encode(id);
-		$.phpok.go(url);
-	});
-}
-</script>
-
 <table width="100%" cellpadding="0" cellspacing="0" class="list">
 <tr>
 	<th class="id">{lang选项}</th>
@@ -61,6 +13,7 @@ function backup_sql()
 	<th class="lft">&nbsp;{lang大小}</th>
 	<th>{lang更新时间}</th>
 	<th class="lft">&nbsp;{lang碎片}</th>
+	<th>&nbsp;</th>
 </tr>
 <!-- loop from=$rslist key=$key value=$value -->
 <tr>
@@ -72,24 +25,36 @@ function backup_sql()
 	<td>{$value.length}</td>
 	<td align="center">{$value.Update_time ? $value.Update_time : $value.Create_time}</td>
 	<td{if $value.free} style="background:red;"{/if}>{$value.free}</td>
-</tr>
-<!-- /loop -->
-<tr>
-	<td colspan="8">
-		<input type="button" value="{lang全选}" onclick="$.input.checkbox_all()" class="btn" />
-		<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none()" class="btn" />
-		<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti()" class="btn" />
-		<input type="button" value="{lang只选择有碎片}" onclick="select_free()" class="btn" />
-		<!-- if $popedom.optimize -->
-		<input type="button" value="{lang优化}" onclick="optimize_sql()" class="submit" />
-		<!-- /if -->
-		<!-- if $popedom.repair -->
-		<input type="button" value="{lang修复}" onclick="repair_sql()" class="submit" />
-		<!-- /if -->
-		<!-- if $popedom.create -->
-		<input type="button" value="{lang备份}" onclick="backup_sql()" class="submit" />
-		<!-- /if -->
+	<td>
+		<div class="button-group">
+			<input type="button" value="{lang明细}" onclick="$.admin_sql.show('{$value.Name}')" class="phpok-btn" />
+			<!-- if $value.delete -->
+			<input type="button" value="{lang删除}" onclick="$.admin_sql.tbl_delete('{$value.Name}')" class="phpok-btn" />
+			<!-- /if -->
+		</div>
 	</td>
 </tr>
+<!-- /loop -->
 </table>
+<div style="margin:10px;">
+	<div class="button-group">
+		<input type="button" value="{lang全选}" onclick="$.input.checkbox_all()" class="phpok-btn" />
+		<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none()" class="phpok-btn" />
+		<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti()" class="phpok-btn" />
+		<input type="button" value="{lang只选择有碎片}" onclick="$.admin_sql.select_free()" class="phpok-btn" />
+	</div>
+	<!-- if $popedom.optimize || $popedom.repair || $popedom.create -->
+	<div class="button-group">
+		<!-- if $popedom.optimize -->
+		<input type="button" value="{lang优化}" onclick="$.admin_sql.optimize()" class="phpok-btn" />
+		<!-- /if -->
+		<!-- if $popedom.repair -->
+		<input type="button" value="{lang修复}" onclick="$.admin_sql.repair()" class="phpok-btn" />
+		<!-- /if -->
+		<!-- if $popedom.create -->
+		<input type="button" value="{lang备份}" onclick="$.admin_sql.backup()" class="phpok-btn" />
+		<!-- /if -->
+	</div>
+	<!-- /if -->
+</div>
 <!-- include tpl=foot -->

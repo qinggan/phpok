@@ -308,7 +308,7 @@ class all_control extends phpok_control
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$vcodelist = $this->model('site')->vcode_all();
-		$condition = "module>0";
+		$condition = "module>0 AND (post_status=1 || comment_status=1)";
 		$plist = $this->model('project')->project_all($this->session->val('admin_site_id'),'id',$condition);
 		if($plist){
 			foreach($plist as $key=>$value){
@@ -347,7 +347,7 @@ class all_control extends phpok_control
 		$tmp['system']['list']['login'] = array('title'=>$this->get('system-login-title'),'status'=>$this->get('system-login','checkbox'));
 		$tmp['system']['list']['register'] = array('title'=>$this->get('system-register-title'),'status'=>$this->get('system-register','checkbox'));
 		$tmp['system']['list']['getpass'] = array('title'=>$this->get('system-getpass-title'),'status'=>$this->get('system-getpass','checkbox'));
-		$condition = "module>0";
+		$condition = "module>0 AND (post_status=1 || comment_status=1)";
 		$plist = $this->model('project')->project_all($this->session->val('admin_site_id'),'id',$condition);
 		if($plist){
 			foreach($plist as $key=>$value){

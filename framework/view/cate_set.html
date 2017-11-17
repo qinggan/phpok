@@ -205,7 +205,7 @@ function _update_select_add()
 		<div class="content">
 			<ul class="layout">
 				<!-- loop from=$extfields key=$key value=$value id=$tmpid -->
-				<li><label><input type="checkbox" name="_extfields[]" value="{$value.id}"{if $ext2 && in_array($value.id,$ext2)} checked{/if} />{$value.title}</label></li>
+				<li><label><input type="checkbox" name="_extfields[]" value="{$key}"{if $ext2 && in_array($key,$ext2)} checked{/if} />{$value.title}</label></li>
 				<!-- /loop -->
 			</ul>
 			<div class="clear"></div>

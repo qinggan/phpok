@@ -1,20 +1,4 @@
 <!-- include tpl=head -->
-<script type="text/javascript">
-function sql_recover(id)
-{
-	$.dialog.confirm('{lang确定要恢复到这个备份}',function(){
-		var url = get_url('sql','recover','id='+id);
-		$.phpok.go(url);
-	});
-}
-function sql_delete(id)
-{
-	$.dialog.confirm('{lang确定要删除这个备份吗？删除后就不能恢复了}',function(){
-		var url = get_url('sql','delete','id='+id);
-		$.phpok.go(url);
-	});
-}
-</script>
 <div class="tips clearfix">
 	{lang您当前的位置：}<a href="{url ctrl=sql/}" title="{lang数据库管理}">{lang数据库管理}</a>
 	&raquo; {lang已备份列表}
@@ -31,8 +15,11 @@ function sql_delete(id)
 	<td>{$value.filename}</td>
 	<td>{$value.size_str}</td>
 	<td align="center">{$value.time}</td>
-	<td><input type="button" value="恢复这个备份" onclick="sql_recover('{$value.id}')" class="btn" />
-		<input type="button" value="删除" onclick="sql_delete('{$value.id}')" class="btn" />
+	<td>
+		<div class="button-group">
+			<input type="button" value="恢复这个备份" onclick="$.admin_sql.recover('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="删除" onclick="$.admin_sql.del('{$value.id}')" class="phpok-btn" />
+		</div>
 	</td>
 </tr>
 <!-- /loop -->

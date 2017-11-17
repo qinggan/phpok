@@ -79,7 +79,7 @@ if($update == 1){
 	}
 	$this->lib('aliyun')->end_point($rs['ext']['server']);
 	$this->lib('aliyun')->access_key($rs['ext']['appkey']);
-	$this->lib('aliyun')->access_secrect($rs['ext']['appsecret']);
+	$this->lib('aliyun')->access_secret($rs['ext']['appsecret']);
 	$this->lib('aliyun')->signature($rs['ext']['signame']);
 	$this->lib('aliyun')->mns_title($rs['ext']['mnstitle']);
 	$this->lib('aliyun')->sms_template_id($code['title']);

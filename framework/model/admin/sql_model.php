@@ -1,24 +1,21 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/model/admin/sql_model.php
-	备注： 数据库备份相关Model管理
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年01月05日 10时46分
-*****************************************************************************************/
+/**
+ * 数据库管理相关
+ * @package phpok\model\admin
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @时间 2017年10月04日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class sql_model extends sql_model_base
 {
 	public function __construct()
 	{
 		parent::__construct();
-	}
-
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
 	}
 
 	//读取全部表信息
@@ -106,5 +103,11 @@ class sql_model extends sql_model_base
 		$sql = "INSERT INTO ".$this->db->prefix."session(id,data,lasttime) VALUES('".$sid."','".$data."','".$this->time."')";
 		$this->db->query($sql);
 		return true;
+	}
+
+	public function table_delete($tbl)
+	{
+		$sql = "DROP TABLE IF EXISTS ".$tbl;
+		return $this->db->query($sql);
 	}
 }

@@ -161,7 +161,7 @@ class www_sitemap extends phpok_plugin
 		}
 		$ids = array_keys($tmplist);
 		$ids = implode(",",$ids);
-		$sql = "SELECT id,title,identifier,dateline FROM ".$this->db->prefix."list WHERE project_id IN(".$ids.") ORDER BY id ASC LIMIT ".$offset.",".$psize;
+		$sql = "SELECT id,title,identifier,dateline FROM ".$this->db->prefix."list WHERE project_id IN(".$ids.") AND status=1 AND parent_id=0 ORDER BY id ASC LIMIT ".$offset.",".$psize;
 		$tmplist = $this->db->get_all($sql);
 		if(!$tmplist){
 			return false;

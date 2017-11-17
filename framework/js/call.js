@@ -121,9 +121,17 @@ function end_param()
 	var url = get_url('call','arclist')+"&pid="+pid;
 	$.phpok.json(url,function(rs){
 		if(rs.status == 'ok'){
+			var mtype = (rs.content.mtype && rs.content.mtype == '1') ? true : false;
 			var html = $("#fields_need_default").html() + rs.content.need;
+			if(mtype){
+				html = rs.content.need;
+			}
 			$("#fields_need_list").html(html);
 			html = $("#orderby_default").html() + rs.content.orderby;
+			if(mtype){
+				html = '<input type="button" value="ID" onclick="phpok_admin_orderby(\'orderby\',\'id\')" class="phpok-btn" />';
+				html+= rs.content.orderby;
+			}
 			$("#orderby_li").html(html);
 			if(rs.content.attr == 1){
 				$("div[name=ext_attr]").show();
@@ -137,10 +145,12 @@ function end_param()
 			html += '</div>';
 			$("#fields_list").html(html);
 			$("div[name=ext_fields]").show();
+			if(rs.content.mtype && rs.content.mtype == '0'){
+				$("div[name=ext_in_sub]").show();
+			}
 		}else{
 			$("#fields_need_list").html($("#fields_need_default").html());
 			$("#orderby_li").html($("#orderby_default").html());
-			
 		}
 		$("div[name=ext_need_list],div[name=ext_orderby]").show();
 	})

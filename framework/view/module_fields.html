@@ -1,5 +1,4 @@
-<!-- inc:head -->
-<script type="text/javascript" src="{func add_js module.js}"></script>
+<!-- include tpl=head -->
 <script type="text/javascript">
 function update_taxis(val,id)
 {
@@ -35,7 +34,7 @@ $(document).ready(function(){
 </script>
 
 <div class="tips">
-	<div class="action"><a href="javascript:module_field_create('{$id}');void(0);" title="添加字段">添加字段</a></div>
+	<div class="action"><a href="javascript:$.admin_module.field_create('{$id}');void(0);" title="添加字段">添加字段</a></div>
 	您当前的位置：
 	<a href="{url ctrl=module/}">模块管理</a>
 	&raquo; <span class="red">{$rs.title}</span>字段管理器
@@ -61,8 +60,8 @@ $(document).ready(function(){
 	<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 	<td>
 		<div class="button-group">
-			<input type="button" value="{lang编辑}" onclick="module_field_edit('{$value.id}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="module_field_del('{$value.id}','{$value.title}')" class="phpok-btn" />
+			<input type="button" value="{lang编辑}" onclick="$.admin_module.field_edit('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="$.admin_module.field_del('{$value.id}','{$value.title}')" class="phpok-btn" />
 		</div>
 	</td>
 </tr>
@@ -80,11 +79,11 @@ $(document).ready(function(){
 			<div class="gray i">{$value.identifier}</div>
 		</div>
 		<div class="right">
-			<input type="button" value="{lang添加}" onclick="module_field_add('{$id}','{$value.identifier}')" class="phpok-btn" />
+			<input type="button" value="{lang添加}" onclick="$.admin_module.field_add('{$id}','{$value.identifier}')" class="phpok-btn" />
 		</div>
 	</li>
 	<!-- /loop -->
 </ul>
 <!-- /if -->
 
-<!-- inc:foot -->
+<!-- include tpl=foot -->

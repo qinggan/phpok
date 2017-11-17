@@ -60,8 +60,8 @@ class log_model_base extends phpok_model
 		}
 		$url .= $this->lib('server')->uri();
 		$referer = $this->lib('server')->referer();
-		$data['url'] = $url;
-		$data['referer'] = $referer;
+		$data['url'] = $this->format($url);
+		$data['referer'] = $this->format($referer);
 		$data['session_id'] = $this->session->sessid();
 		
 		//1分钟内同样的错误不再重复写入

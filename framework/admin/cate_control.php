@@ -23,7 +23,7 @@ class cate_control extends phpok_control
 		if(!$this->popedom["list"]){
 			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
-		$rslist = $this->model('cate')->get_all($_SESSION["admin_site_id"]);
+		$rslist = $this->model('cate')->get_all($this->session->val('admin_site_id'));
 		$this->assign("rslist",$rslist);
 		$this->view("cate_index");
 	}
@@ -56,10 +56,10 @@ class cate_control extends phpok_control
 			}
 			$this->assign("parent_id",$parent_id);
 			$ext_module = "add-cate";
-			$extlist = $_SESSION['admin-add-cate'];
+			$extlist = $this->session->val('admin-add-cate');
 			$taxis = $this->model('cate')->cate_next_taxis($parent_id);
 			$this->assign('rs',array('taxis'=>$taxis));
-			if($parent_id && !$_SESSION['admin-add-cate']){
+			if($parent_id && !$this->session->val('admin-add-cate')){
 				$root_id = $parent_id;
 				$this->model('cate')->get_root_id($root_id,$parent_id);
 				$ext2 = $this->lib('xml')->read($this->dir_root.'data/xml/cate_extfields_'.$root_id.'.xml');
@@ -69,10 +69,11 @@ class cate_control extends phpok_control
 						$tmp = $this->model('fields')->get_one($value);
 						if($tmp){
 							unset($tmp['id']);
-							$_SESSION['admin-add-cate'][$tmp['identifier']] = $tmp;
+							$this->session->assign('admin-add-cate.'.$tmp['identifier'],$tmp);
+							//$_SESSION['admin-add-cate'][$tmp['identifier']] = $tmp;
 						}
 					}
-					$extlist = $_SESSION['admin-add-cate'];
+					$extlist = $this->session->val('admin-add-cate');
 				}
 			}
 		}
@@ -81,8 +82,11 @@ class cate_control extends phpok_control
 			$tmp = false;
 			foreach($extlist AS $key=>$value){
 				if($value["ext"]){
-					$ext = unserialize($value["ext"]);
-					foreach($ext AS $k=>$v){
+					$ext = is_string($value['ext']) ? unserialize($value["ext"]) : $value['ext'];
+					if(!$ext){
+						$ext = array();
+					}
+					foreach($ext as $k=>$v){
 						$value[$k] = $v;
 					}
 				}
@@ -95,7 +99,7 @@ class cate_control extends phpok_control
 			$this->assign('used_fields',$used_fields);
 		}
 		$this->assign("ext_module",$ext_module);
-		$parentlist = $this->model('cate')->get_all($_SESSION["admin_site_id"]);
+		$parentlist = $this->model('cate')->get_all($this->session->val('admin_site_id'));
 		$parentlist = $this->model('cate')->cate_option_list($parentlist);
 		$this->assign("parentlist",$parentlist);
 		$extfields = $this->model('fields')->fields_list('',0,999,'cate');
@@ -143,12 +147,12 @@ class cate_control extends phpok_control
 		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$identifier2)){
 			$this->json(P_Lang('标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头'));
 		}
-		$check = $this->model('id')->check_id($identifier2,$_SESSION["admin_site_id"]);
+		$check = $this->model('id')->check_id($identifier2,$this->session->val('admin_site_id'));
 		if($check){
 			$this->json(P_Lang('标识已被使用'));
 		}
 		$array = array();
-		$array["site_id"] = $_SESSION["admin_site_id"];
+		$array["site_id"] = $this->session->val('admin_site_id');
 		$array["parent_id"] = 0;
 		$array["title"] = $title;
 		$array["taxis"] = $this->model('cate')->cate_next_taxis(0);
@@ -181,7 +185,7 @@ class cate_control extends phpok_control
 		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$identifier2)){
 			error(P_Lang('标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头'),$error_url,"error");
 		}
-		$check = $this->model('id')->check_id($identifier2,$_SESSION["admin_site_id"],$id);
+		$check = $this->model('id')->check_id($identifier2,$this->session->val('admin_site_id'),$id);
 		if($check){
 			error(P_Lang('标识已被使用'),$error_url,"error");
 		}
@@ -198,7 +202,7 @@ class cate_control extends phpok_control
 		$array['seo_desc'] = $this->get('seo_desc');
 		$array['tag'] = $this->get('tag');
 		if(!$id){
-			$array["site_id"] = $_SESSION["admin_site_id"];
+			$array["site_id"] = $this->session->val('admin_site_id');
 			$id = $this->model('cate')->save($array);
 			if(!$id){
 				error(P_Lang('分类添加失败，请检查'),$error_url);
@@ -288,7 +292,7 @@ class cate_control extends phpok_control
 		if($cate_id){
 			$action = $this->model('cate')->cate_ext_delete($cate_id,$id);
 		}else{
-			$idstring = $_SESSION["cate_ext_id"];
+			$idstring = $this->session->val('cate_ext_id');
 			if($idstring){
 				$list = explode(",",$idstring);
 				$tmp = array();
@@ -298,7 +302,8 @@ class cate_control extends phpok_control
 					}
 				}
 				$new_idstring = implode(",",$tmp);
-				$_SESSION["cate_ext_id"] = $new_idstring;
+				//$_SESSION["cate_ext_id"] = $new_idstring;
+				$this->session->assign('cate_ext_id',$new_idstring);
 			}
 		}
 		$this->json(P_Lang('扩展字段删除成功'),true);
@@ -315,7 +320,7 @@ class cate_control extends phpok_control
 		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$sign)){
 			$this->json(P_Lang('标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头'));
 		}
-		$check = $this->model('id')->check_id($sign,$_SESSION["admin_site_id"],$id);
+		$check = $this->model('id')->check_id($sign,$this->session->val('admin_site_id'),$id);
 		if($check){
 			$this->json(P_Lang('标识已被使用，请检查'));
 		}

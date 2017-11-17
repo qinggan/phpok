@@ -174,15 +174,7 @@ class list_model extends list_model_base
 		return true;
 	}
 
-	public function list_cate_clear($id)
-	{
-		$id = intval($id);
-		if(!$id){
-			return false;
-		}
-		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id=".$id;
-		return $this->db->query($sql);
-	}
+	
 
 	public function catelist($ids)
 	{
@@ -265,14 +257,18 @@ class list_model extends list_model_base
 			}
 			$field .= ",l.".$value;
 		}
-		$field_ext = $this->ext_fields($mid,'ext',"field_type!='longtext'");
-		if($field_ext){
-			$field .= ",".$field_ext;
+		$module = $this->model('module')->get_one($mid);
+		if($module && $module['layout']){
+			$tmp = explode(",",$module['layout']);
+			$field_ext = $this->ext_fields($mid,'ext',"identifier IN('".implode("','",$tmp)."')");
+			if($field_ext){
+				$field .= ",".$field_ext;
+			}
 		}
+		
 		if($this->is_biz || ($condition && strpos($condition,'b.') !== false) || strpos($orderby,'b.') !== false){
 			$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit";
 		}
-		//$sql = "SELECT ".$field." FROM ".$this->db->prefix."list l ";
 		$linksql = " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id AND l.project_id=ext.project_id) ";
 		if($this->is_user || ($condition && strpos($condition,'u.') !== false) || strpos($orderby,'u.') !== false){
 			$linksql .= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id AND u.status=1) ";
@@ -283,30 +279,15 @@ class list_model extends list_model_base
 		if($this->multiple_cate || ($condition && strpos($condition,'lc.') !== false) || strpos($orderby,'lc.') !== false){
 			$linksql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
 		}
-		//if($condition){
-		//	$linksql .= " WHERE ".$condition;
-		//}
-		//先取得ID
-		$id_sql  = "SELECT l.id FROM ".$this->db->prefix."list l ".$linksql;
+		$sql  = "SELECT ".$field." FROM ".$this->db->prefix."list l ".$linksql;
 		if($condition){
-			$id_sql .= " WHERE ".$condition." ";
+			$sql .= " WHERE ".$condition." ";
 		}
-		$id_sql .= " ORDER BY ".$orderby;
+		$sql .= " ORDER BY ".$orderby;
 		if($psize && is_numeric($psize) && intval($psize)){
 			$offset = intval($offset);
-			$id_sql.= " LIMIT ".$offset.",".$psize;
+			$sql.= " LIMIT ".$offset.",".$psize;
 		}
-		$idlist = $this->db->get_all($id_sql);
-		if(!$idlist){
-			return false;
-		}
-		$ids = array();
-		foreach($idlist as $key=>$value){
-			$ids[] = $value['id'];
-		}
-		$sql  = "SELECT ".$field." FROM ".$this->db->prefix."list l ".$linksql;
-		$sql .= " WHERE l.id IN(".implode(",",$ids).") ";
-		$sql .= " ORDER BY ".$orderby." ";
 		$rslist = $this->db->get_all($sql,"id");
 		if(!$rslist){
 			return false;

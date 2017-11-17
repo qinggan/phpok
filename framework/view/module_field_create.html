@@ -19,23 +19,7 @@ function field_form_opt(val,eid)
 
 function save()
 {
-	var obj = art.dialog.opener;
-	$("#form_save").ajaxSubmit({
-		'url':get_url('module','field_addok','mid={$mid}'),
-		'type':'post',
-		'dataType':'json',
-		'success':function(rs){
-			if(rs.status == 'ok'){
-				$.dialog.alert('{lang字段创建成功}',function(){
-					obj.$.dialog.close();
-					obj.$.phpok.reload();
-				});
-			}else{
-				$.dialog.alert(rs.content);
-				return false;
-			}
-		}
-	});
+	return $.admin_module.field_addok('{$mid}');
 }
 </script>
 <form method="post" id="form_save" onsubmit="return false">

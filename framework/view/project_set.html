@@ -1,27 +1,5 @@
 <!-- include tpl=head -->
 <script type="text/javascript">
-function show_module(val)
-{
-	if(val && val != "0"){
-		$("#tmp_orderby_btn").html("");
-		$("#module_set").show();
-		var url = get_url("project","mfields") + "&id="+val;
-		rs = json_ajax(url);
-		if(rs.status == "ok"){
-			var lst = rs.content;
-			var c = '';
-			for(var i in lst){
-				c += '<input type="button" value="'+lst[i].title+'" onclick="phpok_admin_orderby(\'orderby\',\'ext.'+lst[i].identifier+'\')" class="phpok-btn"/>';
-			}
-			$("#tmp_orderby_btn").html(c);
-		}else{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	}else{
-		$("#module_set").hide();
-	}
-}
 
 function cate_add(title)
 {
@@ -181,12 +159,40 @@ $(document).ready(function(){
 		<span class="note">{lang实现类似新闻，产品等多条项目信息，绑定成功后建议不要修改，以防止数据混乱！}</span>
 	</div>
 	<div class="content">
-		<select id="module" name="module" onchange="show_module(this.value)">
+		<select id="module" name="module" onchange="$.admin_project.module_change(this)">
 		<option value="0">{lang不关联模块}</option>
 		<!-- loop from=$module_list key=$key value=$value id=module_list_id -->
-		<option value="{$value.id}"{if $value.id == $rs.module} selected{/if}>{$value.title}</option>
+		<option value="{$value.id}"{if $value.id == $rs.module} selected{/if} data-mtype="{$value.mtype}">{$value.title}</option>
 		<!-- /loop -->
 		</select>
+	</div>
+</div>
+<div id="module_set2" class="hidden">
+	<div class="table">
+		<div class="title">
+			{lang默认主题数：}
+			<span class="note">{lang设置每页默认的主题数量}</span>
+		</div>
+		<div class="content">
+			<input type="text" id="psize2" name="psize2" value="{$rs.psize ? $rs.psize : 30}" class="short" />
+		</div>
+	</div>
+
+	<div class="table">
+		<div class="title">
+			{lang数据排序：}
+			<span class="note">{lang设置好默认排序，有利于网站的管理（前后台一致）}</span>
+		</div>
+		<div class="content">
+			<input type="text" id="orderby2" name="orderby2" class="long" value="{$rs.orderby ? $rs.orderby : 'id DESC'}" />
+			<input type="button" value="{lang清空}" class="phpok-btn" onclick="$('input[name=orderby2]').val('')" />
+			<div style="display:block;margin-top:5px;">
+				<div class="button-group" id="tmp_orderby_btn2">
+					<input type="button" value="ID" onclick="phpok_admin_orderby('orderby2','id')" class="phpok-btn" />
+				</div>
+			</div>
+		</div>
+		<div class="clear"></div>
 	</div>
 </div>
 
@@ -671,10 +677,4 @@ $(document).ready(function(){
 </form>
 
 
-<script type="text/javascript">
-$(document).ready(function(){
-	var mid = $("#module").val();
-	show_module(mid);
-});
-</script>
-<!-- inc:foot -->
+<!-- include tpl=foot -->

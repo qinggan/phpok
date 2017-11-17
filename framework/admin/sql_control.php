@@ -36,12 +36,14 @@ class sql_control extends phpok_control
 		//读取全部数据库表
 		$rslist = $this->model('sql')->tbl_all();
 		$total_size = 0;
+		$strlen = strlen($this->db->prefix);
 		if($rslist){
 			foreach($rslist as $key=>$value){
 				$length = $value['Avg_row_length'] + $value['Data_length'] + $value['Index_length'] + $value['Data_free'];
 				$value['length'] = $this->lib('common')->num_format($length);
 				$value['free'] = $value['Data_free'] ? $this->lib('common')->num_format($value['Data_free']) : 0;
 				$total_size += $length;
+				$value['delete'] = substr($value['Name'],0,$strlen) == $this->db->prefix ? false : true;
 				$rslist[$key] = $value;
 			}
 		}
@@ -56,11 +58,11 @@ class sql_control extends phpok_control
 	public function optimize_f()
 	{
 		if(!$this->popedom['optimize']){
-			$this->error(P_Lang('您没有权限执行此操作'),$this->url('sql'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id');
 		if(!$id){
-			$this->error(P_Lang('未选定要操作的数据表'),$this->url('sql'));
+			$this->error(P_Lang('未选定要操作的数据表'));
 		}
 		$idlist = explode(",",$id);
 		foreach($idlist as $key=>$value){
@@ -69,7 +71,7 @@ class sql_control extends phpok_control
 			}
 			$this->model('sql')->optimize($value);
 		}
-		$this->success(P_Lang('数据表优化成功'),$this->url("sql"));
+		$this->success();
 	}
 
 	/**
@@ -79,11 +81,11 @@ class sql_control extends phpok_control
 	public function repair_f()
 	{
 		if(!$this->popedom['repair']){
-			$this->error(P_Lang('您没有权限执行此操作'),$this->url('sql'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id');
 		if(!$id){
-			$this->error(P_Lang('未选定要操作的数据表'),$this->url('sql'));
+			$this->error(P_Lang('未选定要操作的数据表'));
 		}
 		$idlist = explode(",",$id);
 		foreach($idlist as $key=>$value){
@@ -92,7 +94,7 @@ class sql_control extends phpok_control
 			}
 			$this->model('sql')->repair($value);
 		}
-		$this->success(P_Lang('数据表信修复成功'),$this->url("sql"));
+		$this->success();
 	}
 
 	/**
@@ -444,5 +446,33 @@ class sql_control extends phpok_control
 			}
 		}
 		return true;
+	}
+
+	public function show_f()
+	{
+		$tbl = $this->get('table');
+		if(!$tbl){
+			$this->error(P_Lang('未指定表名'));
+		}
+		$rslist = $this->model('sql')->table_info($tbl);
+		$this->assign('rslist',$rslist);
+		$this->view('sql_show');
+	}
+
+	public function table_delete_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$tbl = $this->get('tbl');
+		if(!$tbl){
+			$this->error(P_Lang('未指定表名'));
+		}
+		$length = strlen($this->db->prefix);
+		if(substr($tbl,0,$length) == $this->db->prefix){
+			$this->error(P_Lang('官网前缀的系统表不支持删除'));
+		}
+		$this->model('sql')->table_delete($tbl);
+		$this->success();
 	}
 }

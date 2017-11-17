@@ -105,21 +105,21 @@ price = "product,shipping,fee,discount"
 
 [cart]
 ;购物车里的图片来字系统中哪个字段
-thumb_id = 'thumb'
+thumb_id = "thumb"
 ;要保存的到购物车里的图片是哪个 GD 方案，留空存原图
-gd_id = ''
+gd_id = ""
 
 [fav]
 ;收藏夹里的图片获取，即收藏主题时，如果检测到主题有指定的图片字段，将图片存到收藏夹的缩略图中来
-thumb_id = 'thumb'
+thumb_id = "thumb"
 
 ;收藏夹中获取的摘要从文章中哪里获取
-note_id = 'content'
+note_id = "content"
 
 [async]
 ;在PHP程序中执行异步计划任务
 ;如果您的空间不支持此项或要禁用，请在相应的HTML模板里写入定时计划任务请求链接，并将此处设为 false
-status = true
+status = false
 
 ;模式，支持 fsockopen / curl / pfsockopen / stream
 type = fsockopen

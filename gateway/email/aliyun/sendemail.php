@@ -34,7 +34,7 @@ if($update){
 
 	$this->lib('aliyun')->access_id($rs['ext']['server']);
 	$this->lib('aliyun')->access_key($rs['ext']['appkey']);
-	$this->lib('aliyun')->access_secrect($rs['ext']['appsecret']);
+	$this->lib('aliyun')->access_secret($rs['ext']['appsecret']);
 	$this->lib('aliyun')->signature($rs['ext']['signame']);
 	$this->lib('aliyun')->dm_account($rs['ext']['email']);
 	$this->lib('aliyun')->dm_name($rs['ext']['nickname']);

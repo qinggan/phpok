@@ -96,7 +96,8 @@ class tag_model_base extends phpok_model
 		foreach($rslist as $key=>$value)
 		{
 			$value['target'] = $value['target'] ? '_blank' : '_self';
-			$url = $this->url('tag','','title='.rawurlencode($value['title']));
+			//$url = $this->url('tag','','title='.rawurlencode($value['title']));
+			$url = $value['url'] ? $value['url'] : $this->url('tag','','title='.rawurlencode($value['title']));
 			$alt = $value['alt'] ? $value['alt'] : $value['title'];
 			$rslist[$key]['html'] = '<a href="'.$url.'" title="'.$alt.'" target="'.$value['target'].'" class="tag">'.$value['title'].'</a>';
 			$rslist[$key]['target'] = $value['target'];

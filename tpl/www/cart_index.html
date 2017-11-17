@@ -2,26 +2,17 @@
 <!-- head title="购物车 - 购物车" css=$cssfile extjs="jquery.artdialog.js" js="js/global.js" html5=true -->
 <body>
 <header style="width:auto;min-width:980px;border-bottom:1px solid #ccc;margin-bottom:10px;">
-	<div style="width:980px;margin:0 auto;">
-		<div class="top">
-			<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" /></a></div>
-			<div class="right">
-				<div style="line-height:60px;margin-right:10px;">
-				<a href="{$sys.url}">返回首页</a>
-				</div>
+	<div class="top">
+		<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" /></a></div>
+		<div class="right">
+			<div style="line-height:60px;margin-right:10px;">
+			<a href="{$sys.url}">返回首页</a>
 			</div>
 		</div>
-		<div class="clear"></div>
 	</div>
+	<div class="clear"></div>
 </header>
 
-<script type="text/javascript">
-function checkout()
-{
-	var url = "{url ctrl=cart func=checkout/}";
-	direct(url);
-}
-</script>
 <div class="main">
 	<div class="table_lc">
 	<table width="100%">
@@ -69,7 +60,7 @@ function checkout()
 	<table width="100%">
 	<tr>
 		<td><a href="{url id=product/}" title=""><img src="images/gotopro.gif" border="0" alt="返回继续购物" /></a></td>
-		<td align="right"><img src="images/checkout.gif" border="0" alt="去结算" class="hand" onclick="checkout()" /></td>
+		<td align="right"><img src="images/checkout.gif" border="0" alt="去结算" class="hand" onclick="$.phpok.go(get_url('cart','checkout'))" /></td>
 	</tr>
 	</table>
 	<div class="space"></div>

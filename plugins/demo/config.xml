@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<title>测试插件</title>
-	<desc>这是一个测试插件，用来测试插件是否能运行成功</desc>
+	<title>演示插件</title>
+	<desc>测试用的</desc>
 	<author>phpok.com</author>
 	<version>1.0</version>
 </root>
