@@ -1,0 +1,73 @@
+<!-- include tpl=head -->
+<!-- include tpl=list_project_sublist -->
+
+<div class="tips">
+	{lang您当前的位置：}{lang内容管理}
+	<!-- loop from=$plist key=$key value=$value id=plist_id -->
+	&raquo; <a href="{url ctrl=list func=action id=$value.id/}" title="{$value.title}">{$value.nick_title ? $value.nick_title : $value.title}</a>
+	<!-- /loop -->
+	<!-- if $keywords -->
+	&raquo; <span class="red">{$keywords}</span>
+	<!-- /if -->
+	<!-- if $popedom.set || $session.admin_rs.if_system -->
+	<div class="action"><a href="javascript:$.phpok_list.set({$pid});void(0);">{lang编辑项目}</a></div>
+	<!-- /if -->
+	<!-- if $popedom.add -->
+	<div class="action"><a href="{url ctrl=list func=edit2 pid=$pid/}">{lang添加内容}</a></div>
+	<!-- /if -->
+	<span id="AP_ACTION_HTML" title="插件节点，后台内容列表管理栏面包屑"></span>
+</div>
+
+<!-- if $rs.admin_note -->
+<div class="tips clearfix">{$rs.admin_note}</div>
+<!-- /if -->
+
+
+<!-- if $rslist -->
+<div class="list clearfix">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<th>&nbsp;</th>
+	<!-- loop from=$layout key=$key value=$value -->
+	<th class="lft">{$value}</th>
+	<!-- /loop -->
+	<th width="120px">&nbsp;</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<tr id="list_{$value.id}">
+	<td class="center">{$value.id}</td>
+	
+	<!-- loop from=$layout key=$k value=$v -->
+		<!-- if is_array($value[$k])  -->
+			<!-- php:$c_list = $value[$k]['_admin'] -->
+			<!-- if $c_list.type == 'pic' -->
+			<td><img src="{$c_list.info}" width="28px" height="28px" border="0" class="hand" onclick="preview_attr('{$c_list.id}')" style="border:1px solid #dedede;padding:1px;" /></td>
+			<!-- else -->
+				<!-- if is_array($c_list.info) -->
+				<td>{echo implode(' / ',$c_list.info)}</td>
+				<!-- else -->
+				<td>{$c_list.info ? $c_list.info : '-'}</td>
+				<!-- /if -->
+			<!-- /if -->
+		<!-- else -->
+		<td>{$value[$k] ? $value[$k] : '-'}</td>
+		<!-- /if -->
+	<!-- /loop -->
+	<td>
+		<div class="button-group">
+			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=list func=edit2 id=$value.id pid=$pid/}')" class="phpok-btn" /><!-- /if -->
+			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_list.single_delete('{$pid}','{$value.id}')" class="phpok-btn" /><!-- /if -->
+		</div>
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<!-- /if -->
+<!-- include tpl=pagelist -->
+<script type="text/javascript">
+$(document).ready(function(){
+	top.$.desktop.title('{$rs.title}');
+});
+</script>
+<!-- include tpl=foot -->

@@ -1,0 +1,32 @@
+<!-- include tpl=head -->
+<div class="tips">
+	{lang您当前的位置：}{lang内容管理}
+	<!-- if $pid -->
+		<!-- loop from=$plist key=$key value=$value id=plist_id -->
+		&raquo; <a href="{url ctrl=list func=action id=$value.id/}" title="{$value.title}">{$value.title}</a>
+		<!-- /loop -->
+	<!-- /if -->	
+	&raquo; <!-- if $id -->{lang编辑内容}<!-- else -->{lang添加内容}<!-- end -->
+</div>
+<form method="post" id="_listedit" onsubmit="return $.admin_list.single_save()">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<input type="hidden" name="pid" id="project_id" value="{$pid}" />
+<!-- loop from=$extlist key=$key value=$value id=extlist_id -->
+<div class="table clearfix" id="form_html_{$value.identifier}">
+	<div class="title">
+		{$value.title}：
+		<span class="note">{$value.note}</span>
+	</div>
+	<div class="content">{$value.html}</div>
+</div>
+<!-- /loop -->
+<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" id="phpok_submit" /></div>
+</form>
+<script type="text/javascript">
+$(document).keypress(function(e){
+	if(e.ctrlKey && e.which == 13 || e.which == 10) {
+		$('#phpok_submit').click();
+	}
+});
+</script>
+<!-- include tpl=foot -->

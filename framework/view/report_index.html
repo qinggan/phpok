@@ -1,0 +1,150 @@
+<!-- include tpl=head -->
+<div class="tips">
+	<div class="left">
+		{lang报表及统计} &raquo; <!-- if $lead_title -->{$lead_title}<!-- else -->{lang选择要查看的项目}<!-- /if -->
+	</div>
+</div>
+<style type="text/css">
+div.report{margin:10px;min-width:800px}
+div.report:after{content:'.';display: block;visibility: hidden;height:0;line-height:0;font-size:0;}
+div.report .left{float:left;width:30%;min-width:240px;overflow:hidden;}
+div.report .right{float:left;width:70%;overflow:hidden;}
+</style>
+<div class="report">
+	<div class="left">
+		<form method="post">
+		<div class="table" data-id="project">
+			<div class="title">
+				{lang项目}<span class="note"></span>
+			</div>
+			<div class="content">
+				<select name="type" onchange="$.admin_report.select_project(this.value)">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+					<option value="{$key}"{if $type == $key} selected{/if}>{$value}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="table" data-id="line-x"{if !$xlist} class="hide"{/if}>
+			<div class="title">
+				{lang统计频次}<span class="note"></span>
+			</div>
+			<div class="content">
+				<select name="x">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$xlist key=$key value=$value id=$tmpid -->
+					<option value="{$key}"{if $x == $key} selected{/if}>{$value}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="table"{if !$ylist} class="hide"{/if} data-id="line-y">
+			<div class="title">
+				{lang统计选项}<span class="note"></span>
+			</div>
+			<div class="content">
+				<ul class="layout">
+					<!-- loop from=$ylist key=$key value=$value id=$tmpid -->
+					<li><label><input type="checkbox" name="y[]" value="{$key}"{if $y && is_array($y) && in_array($key,$y) } checked{/if} />{$value}</label></li>
+					<!-- /loop -->
+				</ul>
+			</div>
+		</div>
+		<div class="table"{if !$zlist} class="hide"{/if} data-id="line-z">
+			<div class="title">
+				{lang计算方式}<span class="note">{lang仅限扩展字段有效}</span>
+			</div>
+			<div class="content">
+				<ul class="layout">
+					<li><label><input type="radio" name="data_mode" value="count"{if !$data_mode || $data_mode == 'count'} checked{/if} />{lang数量计算（Count）}</label></li>
+					<li><label><input type="radio" name="data_mode" value="sum"{if $data_mode && $data_mode == 'sum'} checked{/if} />{lang和计算（SUM）}</label></li>
+				</ul>
+			</div>
+		</div>
+		<div class="table">
+			<div class="title">
+				{lang时间范围}<span class="note">{lang指定开始时间和结束时间}</span>
+			</div>
+			<div class="content">
+				<ul class="layout">
+					<li><input type="text" name="startdate" onclick="laydate()" value="{$startdate}" placeholder="开始时间" /></li>
+					<li><input type="text" name="stopdate" onclick="laydate()" value="{$stopdate}" placeholder="结束时间" /></li>
+				</ul>
+			</div>
+		</div>
+		<div class="table">
+			<div class="title">
+				{lang图表模式}<span class="note"></span>
+			</div>
+			<div class="content">
+				<select name="chart">
+					<option value="">{lang请选择…}</option>
+					<option value="line"{if $chart == 'line'} selected{/if}>{lang折线图}</option>
+					<option value="bar"{if $chart == 'bar'} selected{/if}>{lang柱状图}</option>
+				</select>
+			</div>
+		</div>
+		<div style="margin:10px 15px;"><input type="submit" value="{lang提交}" class="phpok-btn" /></div>
+		</form>
+	</div>
+	<div class="right">
+		<div class="list">
+		<table width="100%" class="list" cellpadding="0" cellspacing="0">
+		<tr>
+			<th>{$x_title}</th>
+			<!-- loop from=$y_title key=$key value=$value id=$tmpid -->
+			<th name="y_title">{$value}</th>
+			<!-- /loop -->
+		</tr>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr name="chart">
+			<td class="center">{$value.x}</td>
+			<!-- loop from=$y_title key=$k value=$v id=$idx -->
+			<td class="center">{$value['y_'.$k]}</td>
+			<!-- /loop -->
+		</tr>
+		<!-- /loop -->
+		</table>
+		</div>
+		<div id="chart_main" style="width: 100%;height:600px;margin-top:10px;"></div>
+	</div>
+</div>
+
+<!-- if $chart -->
+<script type="text/javascript">
+$(document).ready(function(){
+    var myChart = echarts.init(document.getElementById('chart_main'));
+	var chart = "{$chart}";
+    var data_x = new Array();
+    var data_y = new Array();
+    var y_title = new Array();
+    var series_data = new Array();
+    $("th[name=y_title]").each(function(i){
+	    y_title[i] = $(this).text();
+	    var tmp = {'name':y_title[i],'type':chart};
+	    var tmp_data = new Array();
+	    $("tr[name=chart]").each(function(m){
+		    var m_i = i+1;
+		    tmp_data[m] = $(this).find('td:eq('+m_i+')').text();
+	    });
+	    tmp.data = tmp_data;
+	    series_data[i] = tmp;
+    });
+    $("tr[name=chart]").each(function(i){
+	    data_x[i] = $(this).find('td:eq(0)').text();
+    });
+    var option = {
+	    title:{text:'{$lead_title}'},
+        legend: {data:y_title},
+        xAxis: {data: data_x},
+        yAxis: {},
+        series: series_data
+    };
+    myChart.setOption(option);
+});
+</script>
+<!-- /if -->
+</div>
+
+<!-- include tpl=foot -->
