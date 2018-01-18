@@ -165,7 +165,7 @@ class install
 		}
 		echo '<table width="980" border="0" cellspacing="0" cellpadding="0" class="tablebox">';
 		echo '<tr class="head_bg"><td>&nbsp;</td><td>PHPOK最低要求</td><td>PHPOK最佳配置</td><td>当前环境检测</td></tr>';
-		echo '<tr><td class="lft">PHP版本</td><td>5.0.x</td><td>5.3.x</td><td>'.PHP_VERSION.'</td></tr>';
+		echo '<tr><td class="lft">PHP版本</td><td>5.2.17</td><td>5.5.x</td><td>'.PHP_VERSION.'</td></tr>';
 		echo '<tr><td class="lft">附件上传</td><td>2M+</td><td>10M+</td><td>'.get_cfg_var('upload_max_filesize').'</td></tr>';
 		echo '<tr><td class="lft">MYSQL支持</td><td>5.0.x</td><td>5.5.x</td><td>'.$mysql_status.'</td></tr>';
 		$curl = $this->func_check('curl_close');

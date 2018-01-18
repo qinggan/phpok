@@ -1,13 +1,21 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/form/select_form.php
-	备注： 下拉菜单项
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年03月06日 10时29分
-*****************************************************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * 下拉菜单项
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2017年12月11日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class select_form extends _init_auto
 {
 	public function __construct()
@@ -95,29 +103,20 @@ class select_form extends _init_auto
 	public function phpok_get($rs,$appid='admin'){
 		$ext = array();
 		if($rs['ext']){
-			if(is_string($rs['ext'])){
-				$ext = unserialize($rs['ext']);
-			}else{
-				$ext = $rs['ext'];
-			}
+			$ext = is_string($rs['ext']) ? unserialize($rs['ext']) : $rs['ext'];
 		}
 		$info = $this->get($rs['identifier'],$rs['form']);
 		if($ext['is_multiple'] && $info){
 			return serialize($info);
-		}else{
-			return $info;
 		}
+		return $info;
 	}
 
 	public function phpok_show($rs,$appid="admin")
 	{
 		$ext = array();
 		if($rs['ext']){
-			if(is_string($rs['ext'])){
-				$ext = unserialize($rs['ext']);
-			}else{
-				$ext = $rs['ext'];
-			}
+			$ext = is_string($rs['ext']) ? unserialize($rs['ext']) : $rs['ext'];
 		}
 		if(!$ext["option_list"]){
 			$ext['option_list'] = 'default:0';
@@ -137,57 +136,61 @@ class select_form extends _init_auto
 					}
 				}
 				return implode('<br />',$list);
-			}else{
-				$info = $this->opt_rs($rs['content'],$opt[0],$opt[1]);
-				if($info){
-					return $info['title'];
-				}
-				return false;
 			}
-		}else{
-			if($ext['is_multiple']){
-				$info = unserialize($rs['content']);
-				$list = array();
-				foreach($info as $key=>$value){
-					$tmp = $value;
-					if($opt[0] == 'project'){
-						$tmp = $this->call->phpok('_project',array('pid'=>$value));
-					}
-					if($opt[0] == 'cate'){
-						$tmp = $this->call->phpok('_cate',array('cateid'=>$value));
-					}
-					if($opt[0] == 'title'){
-						$tmp = $this->call->phpok('_arc',array('title_id'=>$value));
-					}
-					if($opt[0] == 'opt'){
-						$tmp = $this->model('opt')->opt_val($opt[1],$value);
-					}
-					$list[$value] = $tmp;
+			$info = $this->opt_rs($rs['content'],$opt[0],$opt[1]);
+			if($info){
+				if(is_array($info['title'])){
+					return implode(' / ',$info['title']);
 				}
-				return $list;
-			}else{
-				$tmp = $rs['content'];
-				if($opt[0] == 'project'){
-					$tmp = $this->call->phpok('_project',array('pid'=>$rs['content']));
-				}
-				if($opt[0] == 'cate'){
-					$tmp = $this->call->phpok('_cate',array('cateid'=>$rs['content']));
-				}
-				if($opt[0] == 'title'){
-					$tmp = $this->call->phpok('_arc',array('title_id'=>$rs['content']));
-				}
-				if($opt[0] == 'opt'){
-					$tmp = $this->model('opt')->opt_val($opt[1],$rs['content']);
-				}
-				return $tmp;
+				return $info['title'];
 			}
+			return false;
 		}
+		if($ext['is_multiple']){
+			$info = unserialize($rs['content']);
+			if(!$info){
+				$info = array();
+			}
+			$list = array();
+			foreach($info as $key=>$value){
+				$list[$value] = $this->opt_rs($value,$opt[0],$opt[1]);
+			}
+			return $list;
+		}
+		return $this->opt_rs($rs['content'],$opt[0],$opt[1]);
 	}
 	
 	private function opt_rs($val,$type='default',$group_id='')
 	{
 		$rs = array('val'=>$val,'title'=>$val);
 		if($type == 'opt'){
+			$group_rs = $this->model('opt')->group_one($group_id);
+			//检查是否是联动数据
+			if($group_rs && $group_rs['link_symbol'] && strpos($val,$group_rs['link_symbol']) !== false){
+				$list = explode($group_rs['link_symbol'],$val);
+				$list2 = array();
+				$parent_id = 0;
+				foreach( $list as $key => $value ){
+					if(!$value || !trim($value)){
+						continue;
+					}
+					$value = trim($value);
+					$condition = "val='".$value."' AND group_id='".$group_id."' AND parent_id='".$parent_id."'";
+					$opt_data = $this->model('opt')->opt_one_condition($condition);
+					if($opt_data){
+						$list2[$key] = array('val'=>$value,'title'=>$opt_data['title']);
+						$parent_id = $opt_data['id'];
+					}
+				}
+				$tmp = array('title'=>array(),'val'=>array(),'type'=>$type);
+				foreach($list2 as $key=>$value){
+					if($value && is_array($value)){
+						$tmp['title'][$key] = $value['title'];
+						$tmp['val'][$key] = $value['val'];
+					}
+				}
+				return $tmp;
+			}
 			$tmp = $this->model('opt')->opt_val($group_id,$val);
 			if(!$tmp){
 				return false;
@@ -218,6 +221,7 @@ class select_form extends _init_auto
 		$rs['type'] = $type;
 		return $rs;
 	}
+
 	//
 	private function opt_rslist($type='default',$group_id=0,$info='')
 	{
@@ -279,6 +283,4 @@ class select_form extends _init_auto
 		}
 		return false;
 	}
-
 }
-?>

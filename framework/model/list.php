@@ -80,8 +80,8 @@ class list_model_base extends phpok_model
 		if(!$prefix){
 			$prefix = 'ext';
 		}
-		$list = "";
-		foreach($rslist AS $key=>$value){
+		$list = array();
+		foreach($rslist as $key=>$value){
 			$list[] = 'ext.'.$value['identifier'];
 		}
 		return implode(",",$list);

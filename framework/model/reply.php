@@ -18,12 +18,6 @@ class reply_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	/**
 	 * 取得全部回复
 	 * @参数 $condition 查询条件

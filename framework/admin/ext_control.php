@@ -136,7 +136,7 @@ class ext_control extends phpok_control
 	public function add_f()
 	{
 		$id = $this->get("id");
-		$module = $this->get("module");
+		$module = $this->get("module","system");
 		if(!$id){
 			$this->json(P_Lang('未指定ID'));
 		}

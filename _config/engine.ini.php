@@ -2,7 +2,7 @@
 
 [session]
 ;SESSION相关配置
-;会话保存方式，默认是 default，支持 default，sql，file
+;会话保存方式，默认是 default，支持 default，memcache
 file = default
 
 ;会话读取参数，适用于 Cookie 被禁用的时候使用
@@ -14,11 +14,20 @@ timeout = 3600
 ;会员临时文件存储目录，默认是 data/session/，变量 {dir_data}，{dir_cache}，{dir_root}
 path = "{dir_data}session/"
 
-;当会话存储表，存储方式为数据库时，执行此配置，不含表前缀
-table = 'session'
-
 ;会员自动运行方法，经测试目前仅用于为 sql
 methods = "auto_start:db"
+
+;SESSION服务器
+host = "127.0.0.1"
+
+;SESSION服务器对应的端口
+port = 11211
+
+;Domain 域名限制，留空使用默认，如果要所有子域名支持，请以.开头
+domain = ""
+
+;SESSION前缀，仅用于Memcache中使用
+prefix = "sess_"
 
 [cache]
 ;缓存引挈配置

@@ -18,12 +18,6 @@ class tag_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	/**
 	 * 根据指定主题下的可能用到的标签，其中 $type 为主题/分类/项目时，本身读不到标签时会尝试读取系统设置的分类/项目/站点里的标签
 	 * @参数 $id 指主题ID或是项目ID或是分类ID或是站点ID
@@ -112,8 +106,19 @@ class tag_model_base extends phpok_model
 
 	private function get_global_tag($site_id)
 	{
+		$id = $this->cache->id(get_class(),'get_global_tag',$site_id);
+		$check = $this->cache->get($id,true);
+		if($check){
+			return $this->cache->get($id);
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."tag WHERE is_global=1 AND site_id='".$site_id."' ORDER BY LENGTH(title) DESC";
-		return $this->db->get_all($sql);
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			$this->cache->save($id,false);
+			return false;
+		}
+		$this->cache->save($id,$rslist);
+		return $rslist;
 	}
 
 	private function _parent_project($id)

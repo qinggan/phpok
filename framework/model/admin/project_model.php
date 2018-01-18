@@ -15,12 +15,6 @@ class project_model extends project_model_base
 		parent::__construct();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	//存储核心菜单
 	public function save($data,$id=0)
 	{

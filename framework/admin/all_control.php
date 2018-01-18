@@ -40,8 +40,13 @@ class all_control extends phpok_control
 		$tpl_list = $this->model('tpl')->get_all();
 		$this->assign("tpl_list",$tpl_list);
 		// 获取网站语言包列表
-		$langlist = $this->model('lang')->get_list();
-		$this->assign("langlist",$langlist);
+		$multiple_language = isset($GLOBALS['app']->config['multiple_language']) ? $GLOBALS['app']->config['multiple_language'] : false;
+		if($multiple_language){
+			$langlist = $this->model('lang')->get_list();
+			$this->assign("langlist",$langlist);
+
+		}
+		$this->assign('multiple_language',$multiple_language);
 
 		//项目列表
 		$project_list = $this->model('project')->project_all($_SESSION['admin_site_id'],'id','status=1 AND hidden=1 AND module>0');

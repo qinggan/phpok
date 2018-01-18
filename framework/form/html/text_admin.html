@@ -1,53 +1,74 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_btn,width,ext_quick_words,ext_quick_type" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_btn,ext_format,ext_quick_words,ext_quick_type,ext_include_3" />
 <div class="table">
 	<div class="title">
-		扩展按钮：
-		<span class="note">设置文本框后跟随的按钮</span>
+		{lang扩展按钮：}
+		<span class="note">{lang设置文本框后跟随的按钮}</span>
 	</div>
 	<div class="content">
 		<table>
 		<tr>
 			<td>
-				<select name="form_btn" id="form_btn">
-					<option value="">默认</option>
-					<option value="date"{if $rs.form_btn == "date"} selected{/if}>日期选择器</option>
-					<option value="datetime"{if $rs.form_btn == "datetime"} selected{/if}>日期时间选择器</option>
-					<option value="file"{if $rs.form_btn == "file"} selected{/if}>附件选择</option>
-					<option value="image"{if $rs.form_btn == "image"} selected{/if}>图片库</option>
-					<option value="video"{if $rs.form_btn == "video"} selected{/if}>影音列表</option>
-					<option value="url"{if $rs.form_btn == "url"} selected{/if}>网址</option>
-					<option value="user"{if $rs.form_btn == "user"} selected{/if}>会员</option>
-					<option value="color"{if $rs.form_btn == "color"} selected{/if}>颜色选择器</option>
+				<select name="form_btn" id="form_btn" onchange="$._configForm.text('form_btn',this.value)">
+					<option value="">{lang默认}</option>
+					<option value="date"{if $rs.form_btn == "date"} selected{/if}>{lang日期选择器}</option>
+					<option value="datetime"{if $rs.form_btn == "datetime"} selected{/if}>{lang日期时间选择器}</option>
+					<option value="year"{if $rs.form_btn == "year"} selected{/if}>{lang年份选择器}</option>
+					<option value="month"{if $rs.form_btn == "month"} selected{/if}>{lang年月选择器}</option>
+					<option value="time"{if $rs.form_btn == "time"} selected{/if}>{lang时间选择器}</option>
+					<option value="file"{if $rs.form_btn == "file"} selected{/if}>{lang附件选择}</option>
+					<option value="image"{if $rs.form_btn == "image"} selected{/if}>{lang图片库}</option>
+					<option value="video"{if $rs.form_btn == "video"} selected{/if}>{lang影音列表}</option>
+					<option value="url"{if $rs.form_btn == "url"} selected{/if}>{lang网址}</option>
+					<option value="user"{if $rs.form_btn == "user"} selected{/if}>{lang会员}</option>
+					<option value="color"{if $rs.form_btn == "color"} selected{/if}>{lang颜色选择器}</option>
 				</select>
 			</td>
 		</tr>
 		</table>
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		表单宽度：
-		<span class="note">设置表单的宽度，这是只需要<span class="red">填写数字</span></span>
+
+<div id="ext_quick_words_html"{if $rs.form_btn} class="hide"{/if}>
+	<div class="table">
+		<div class="title">
+			{lang快捷内容：}
+			<span class="note">{lang一行一个值，使用此项可以通过点击来实现快速输入}</span>
+		</div>
+		<div class="content"><textarea name="ext_quick_words" style="width:99%;height:180px;">{$rs.ext_quick_words}</textarea></div>
 	</div>
-	<div class="content">
-		<input type="text" name="width" id="width" value="{$rs.width}" /> px
+	<div class="table">
+		<div class="title">
+			{lang分割符号：}
+			<span class="note">{lang确认使用哪种分割，不清楚请使用覆盖}</span>
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<li><input type="text" name="ext_quick_type" id="ext_quick_type" value="{$rs.ext_quick_type}" /></li>
+				<li>
+					<div class="button-group">
+						<input type="button" value="{lang覆盖}" onclick="$._configForm.text('eqt','none')" class="phpok-btn" />
+						<input type="button" value="{lang逗号}" onclick="$._configForm.text('eqt',',')" class="phpok-btn" />
+						<input type="button" value="{lang斜杠}" onclick="$._configForm.text('eqt','/')" class="phpok-btn" />
+						<input type="button" value="{lang竖线}" onclick="$._configForm.text('eqt','|')" class="phpok-btn" />
+						<input type="button" value="{lang冒号}" onclick="$._configForm.text('eqt',':')" class="phpok-btn" />
+					</div>
+				</li>
+			</ul>
+			
+		</div>
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		快捷内容：
-		<span class="note">一行一个值，使用此项可以通过点击来实现快速输入</span>
-	</div>
-	<div class="content">
-		<textarea name="ext_quick_words" style="width:99%;height:180px;">{$rs.ext_quick_words}</textarea>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		快捷内容输入分割单词：
-		<span class="note">点击多个快捷输入，使用哪类单词分割，覆盖请设置：<span class="red" style="cursor:pointer;" onclick="$('#ext_quick_type').val('none')">none</span>，建议使用逗号<span class="red" style="cursor:pointer;" onclick="$('#ext_quick_type').val(',')">（,）</span>或是斜线<span class="red" style="cursor:pointer;" onclick="$('#ext_quick_type').val('/')">（/）</span></span>
-	</div>
-	<div class="content">
-		<input type="text" name="ext_quick_type" id="ext_quick_type" value="{$rs.ext_quick_type}" />
+<div id="ext_color_html"{if !$rs.form_btn || $rs.form_btn != 'color'} class="hide"{/if}>
+	<div class="table">
+		<div class="title">
+			{lang颜色值加井号}
+			<span class="note">{lang请选择颜色值是否加 # 符号}</span>
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<li><label><input type="radio" name="ext_include_3" value="0"{if !$rs.ext_include_3} checked{/if} />{lang不包含}</label></li>
+				<li><label><input type="radio" name="ext_include_3" value="1"{if $rs.ext_include_3} checked{/if} />{lang包含}</label></li>
+			</ul>
+		</div>
 	</div>
 </div>

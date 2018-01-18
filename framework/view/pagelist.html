@@ -1,20 +1,22 @@
 <!-- if $pagelist -->
 <div class="pagelist">
 	<ul>
-		<!-- $pagelist AS $key=>$value -->
+		<!-- loop from=$pagelist key=$key value=$value id=$idx -->
 			<!-- if $value.type != 'opt' -->
-			<li><!-- if $value.url --><a href="{$value.url}"{if $value.status} class="current"{/if}>{$value.title}</a><!-- else --><a>{$value.title}</a><!-- /if --></li>
+			<li><a{if $value.url} href="{$value.url}"{/if} {if $value.status} class="current"{/if}>{$value.title}</a></li>
 			<!-- /if -->
 			<!-- if $value.type == 'opt' -->
 			<li>
-				<select onchange="direct('{$value.url}'+this.value)">
-					<!-- $value.title AS $k=>$v -->
+				<select onchange="$.phpok.go('{$value.url}'+this.value)">
+					<!-- loop from=$value.title key=$k value=$v id=$idxx -->
 					<option value="{$v.value}"{if $v.status} selected{/if}>{$v.title}</option>
-					<!-- end -->
+					<!-- /loop -->
 				</select>
 			</li>
 			<!-- /if -->
-		<!-- end -->
+		<!-- /loop -->
+		<li><input type="number" name="go_to_page" id="go_to_page" value="{func G pageid}" class="short" min="0" max="{$total_page}"  /></li>
+		<li><input type="button" value="GO" onclick="go_to_page_action()" /></li>
 	</ul>
 </div>
 <!-- /if -->

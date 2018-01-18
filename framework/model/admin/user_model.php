@@ -15,12 +15,6 @@ class user_model extends user_model_base
 		parent::__construct();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	public function del($id)
 	{
 		$sql = "DELETE FROM ".$this->db->prefix."user WHERE id='".$id."'";

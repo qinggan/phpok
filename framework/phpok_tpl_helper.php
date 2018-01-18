@@ -1,13 +1,21 @@
 <?php
-/***********************************************************
-	Filename: phpok_tpl_helper.php
-	Note	: 在PHPOK模板中常用的函数，此函数在action前才加载
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-11-07 20:27
-***********************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * 在PHPOK模板中常用的函数，此函数在action前才加载
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年01月15日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 function phpok($id='',$ext="")
 {
 	if(!$id || !$GLOBALS['app']->call){

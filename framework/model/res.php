@@ -1,13 +1,12 @@
 <?php
 /**
  * 附件管理基础类
- * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @时间 2016年12月08日
+ * @时间 2018年01月17日
 **/
 
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
@@ -745,5 +744,26 @@ class res_model_base extends phpok_model
 			$list[$key] = intval($value);
 		}
 		return implode(",",$list);
+	}
+
+	/**
+	 * 读写附件远程配置
+	 * @参数 $data 不为空且为数组时，表示保存信息
+	**/
+	public function remote_config($data='')
+	{
+		$file = $this->dir_data.'xml/remote_config_'.$this->site_id.'.xml';
+		if($data && is_array($data)){
+			$this->lib('xml')->save($data,$file);
+			return true;
+		}
+		$file = $this->dir_data.'xml/remote_config_'.$this->site_id.'.xml';
+		if(!file_exists($file)){
+			$file = $this->dir_data.'xml/remote_config.xml';
+		}
+		if(!file_exists($file)){
+			return false;
+		}
+		return $this->lib('xml')->read($file);
 	}
 }

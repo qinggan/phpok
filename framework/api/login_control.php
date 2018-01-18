@@ -361,10 +361,14 @@ class login_control extends phpok_control
 		if(!$code){
 			$this->error(P_Lang('验证码不能为空'));
 		}
-		if(!$rs['code']){
+		$checkcode = $this->session->val('sms_code');
+		if(!$checkcode){
+			$checkcode = $rs['code'];
+		}
+		if(!$checkcode){
 			$this->error(P_Lang('验证码丢失，请重新获取'));
 		}
-		$tmpcode = explode("-",$rs['code']);
+		$tmpcode = explode("-",$checkcode);
 		if($tmpcode[0] != $code){
 			$this->error(P_Lang('验证码填写不正确'));
 		}

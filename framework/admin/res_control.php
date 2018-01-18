@@ -369,5 +369,29 @@ class res_control extends phpok_control
 		$this->model('res')->update_cate($id,$newcate);
 		$this->json(true);
 	}
+
+	/**
+	 * 编辑器远程附件本地化设置
+	**/
+	public function setting_remote_to_local_f()
+	{
+		$rs = $this->model('res')->remote_config();
+		if(!$rs){
+			$rs = array('domain1'=>'localhost','domain2'=>'*');
+		}
+		$this->assign('rs',$rs);
+		$this->view('res_remote_file');
+	}
+
+	/**
+	 * 保存附件本地化配置信息
+	**/
+	public function setting_remote_to_local_save_f()
+	{
+		$data = array();
+		$data['domain1'] = $this->get('domain1');
+		$data['domain2'] = $this->get('domain2');
+		$this->model('res')->remote_config($data);
+		$this->success();
+	}
 }
-?>

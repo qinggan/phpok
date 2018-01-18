@@ -37,7 +37,7 @@ $.fn.phpok_vcode = function(ext){
 	{
 		url += "&id="+ext;
 	}
-	$(this).attr('src',url);
+	$(this).attr('src',$.phpok.nocache(url));
 }
 $.phpok_www = {
 	comment:function(id,tid,callback){

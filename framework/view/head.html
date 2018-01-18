@@ -12,7 +12,7 @@
 	<link rel="stylesheet" type="text/css" href="css/admin.css?version={:VERSION}" />
 	<link rel="stylesheet" type="text/css" href="css/artdialog.css?version={:VERSION}" />
 	{func phpok_head_css}
-	<!-- php:$js_ext = 'admin.'.$sys.ctrl.'.js' -->
+	<!-- php:$js_ext = 'admin.'.$sys.ctrl.'.js,admin.'.$sys.ctrl.'-'.$sys.func.'.js' -->
 	<script type="text/javascript" src="{url ctrl=js ext=$js_ext/}"></script>
 	{func phpok_head_js}
 	<!-- plugin head -->

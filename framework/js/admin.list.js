@@ -8,7 +8,6 @@
  * @日期 2017年04月21日
 **/
 ;(function($){
-	var autosave_handle;
 	$.phpok_list = {
 		set:function(id)
 		{
@@ -100,25 +99,6 @@
 					}
 				})
 			},old);
-		},
-		autosave:function()
-		{
-			window.clearTimeout(autosave_handle);
-			$("#_listedit").ajaxSubmit({
-				'url':get_url('auto','list'),
-				'type':'post',
-				'dataType':'json',
-				'success':function(rs){
-					if(rs.status){
-						$.dialog.tips('数据已临时保存').position('50%','1px');
-						// 每隔 5 分钟自动保存一次数据
-						autosave_handle = window.setTimeout(function(){
-							$.phpok_list.autosave();
-						}, 300000);
-					}
-				}
-			});
-			return false;
 		}
 	};
 
@@ -186,6 +166,52 @@
 					return false;
 				});
 			});
+		},
+
+		/**
+		 * 评论维护
+		 * @参数 id 主题ID
+		**/
+		reply_it:function(id)
+		{
+			$.dialog.open(get_url('list','comment','id='+id),{
+				'title':p_lang('评论#{id}',id),
+				'lock':true,
+				'width':'80%',
+				'height':'80%',
+				'cancel':true
+			});
+		},
+
+		/**
+		 * 生成随机码
+		**/
+		rand_identifier:function()
+		{
+			var info = $.phpok.rand(3,'letter')+''+$.phpok.rand(7,'fixed');
+			$("#identifier").val(info);
+			return true;
+		},
+
+		/**
+		 * 发布时间
+		**/
+		show_date:function()
+		{
+			laydate({elem:"#dateline",istime: true,format: 'YYYY-MM-DD hh:mm:ss'});
+		},
+
+		/**
+		 * 快速添加扩展字段
+		**/
+		update_select_add:function(module)
+		{
+			var val = $("#_tmp_select_add").val();
+			if(!val){
+				$.dialog.alert(p_lang('请选择要添加的扩展'));
+				return false;
+			}
+			ext_add2(val,module);
 		}
 	};
 
@@ -203,13 +229,6 @@
 	$(document).ready(function(){
 		win_resize();
 		$(window).resize(win_resize);
-		//仅在添加主题时执行自动保存操作
-		var id = $("#id").val();
-		if(!id || id == '0' || id == 'undefined'){
-			autosave_handle = window.setTimeout(function(){
-				$.phpok_list.autosave();
-			}, 60000);
-		}
 	});
 	
 })(jQuery);

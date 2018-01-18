@@ -210,6 +210,7 @@ function rand_click()
 		<input type="button" value="自定义风格" onclick="$.admin_all.setting_style('{$rs.id}')" class="phpok-btn" />
 	</div>
 </div>
+<!-- if $multiple_language -->
 <div class="table">
 	<div class="title">
 		{lang默认语言：}
@@ -223,6 +224,9 @@ function rand_click()
 		</select>
 	</div>
 </div>
+<!-- else -->
+<input type="hidden" name="lang" id="lang" value="cn" />
+<!-- /if -->
 <div class="table">
 	<div class="title">
 		{lang注册：}

@@ -61,6 +61,12 @@ autoload_js = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.min.js,jquery
 ;获取域名方式，Apache 用户建议使用 SERVER_NAME，Nginx 用户建议使用 HTTP_HOST
 get_domain_method = SERVER_NAME
 
+;是否多语言选择
+multiple_language = false
+
+;是否启用 opcache，仅限 debug 为 false 时有效
+opcache = true
+
 ;[www]
 ;网页端是否需要会员验证，1/true启用，0/false禁用
 ;is_login = false
@@ -121,8 +127,8 @@ note_id = "content"
 ;如果您的空间不支持此项或要禁用，请在相应的HTML模板里写入定时计划任务请求链接，并将此处设为 false
 status = false
 
-;模式，支持 fsockopen / curl / pfsockopen / stream
-type = fsockopen
+;检查频率，单位是分钟，不能小于1
+interval_times = 5
 
 [jsonp]
 ;远程跨域获取数据

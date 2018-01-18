@@ -15,12 +15,6 @@ class payment_model extends payment_model_base
 		parent::__construct();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	//取得所支持的付款组
 	function group_all($site_id=0,$status=0)
 	{

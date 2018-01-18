@@ -1,17 +1,20 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/www/content_control.php
-	Note	: 内容信息
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-11-27 11:24
-***********************************************************/
+/**
+ * 内容信息
+ * @package phpok\framework\www
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2017年11月17日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class content_control extends phpok_control
 {
 	private $user_groupid;
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 		$this->model('popedom')->siteid($this->site['id']);
@@ -22,7 +25,6 @@ class content_control extends phpok_control
 		$this->user_groupid = $groupid;
 	}
 
-	//内容首页
 	/**
 	 * 内容信息，可传递参数：主题ID，分类标识符及项目标识符
 	 * @date 2016年02月05日

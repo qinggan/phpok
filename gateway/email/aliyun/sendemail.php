@@ -32,7 +32,7 @@ if($update){
 		return false;
 	}
 
-	$this->lib('aliyun')->access_id($rs['ext']['server']);
+	$this->lib('aliyun')->regoin_id($rs['ext']['server']);
 	$this->lib('aliyun')->access_key($rs['ext']['appkey']);
 	$this->lib('aliyun')->access_secret($rs['ext']['appsecret']);
 	$this->lib('aliyun')->signature($rs['ext']['signame']);

@@ -15,12 +15,6 @@ class cate_model extends cate_model_base
 		parent::__construct();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	//读取当前分类信息
 	public function get_one($id,$field="id",$ext=true)
 	{

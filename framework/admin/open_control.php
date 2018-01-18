@@ -1,12 +1,14 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/open_control.php
-	Note	: 虚弹窗口管理器
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-02-07 17:23
-***********************************************************/
+/**
+ * 虚弹窗口管理器
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年01月18日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class open_control extends phpok_control
 {
@@ -24,12 +26,14 @@ class open_control extends phpok_control
 		$this->assign('keytype_list',$keytype_list);
 	}
 
-	//附件资源选择器
+	/**
+	 * 附件资源选择器
+	**/
 	public function upload_f()
 	{
 		$id = $this->get('id');
 		if(!$id){
-			error(P_Lang('未指定表单ID'));
+			$this->error(P_Lang('未指定表单ID'));
 		}
 		$this->assign('id',$id);
 		$multiple = $this->get('multiple','int');
@@ -99,22 +103,23 @@ class open_control extends phpok_control
 			$this->assign("cate_id",$cate_id);
 		}
 		$rslist = $this->model('res')->get_list($condition,$offset,$psize);
-		$this->assign("rslist",$rslist);
 		$total = $this->model('res')->get_count($condition);
-		$this->assign("total",$total);
 		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
 		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
 		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+		$this->assign("rslist",$rslist);
+		$this->assign("total",$total);
 		$this->assign("pagelist",$pagelist);
 		$this->assign("pageurl",$pageurl);
-		$sendAsBinary = ini_get('upload_tmp_dir') ? false : true;
-		$this->assign('sendAsBinary',$sendAsBinary);
+		$this->assign('sendAsBinary',(ini_get('upload_tmp_dir') ? false : true));
 		$this->view('open_upload');
 	}
 	
 
-	// 附件选择器
-	function input_f()
+	/**
+	 * 附件选择器
+	**/
+	public function input_f()
 	{
 		$id = $this->get("id");
 		if(!$id){
@@ -240,18 +245,22 @@ class open_control extends phpok_control
 		$this->assign("pagelist",$pagelist);
 	}
 
-	//网址列表，这里读的是项目的网址列表
-	function url_f()
+	/**
+	 * 网址列表，这里读的是项目的网址列表
+	**/
+	public function url_f()
 	{
 		$id = $this->get("id");
-		if(!$id) $id = "content";
+		if(!$id){
+			$id = "content";
+		}
 		$this->assign("id",$id);
 		$pid = $this->get("pid");
 		if($pid){
 			$p_rs = $this->model('project')->get_one($pid);
 			$type = $this->get("type");
 			if(!$p_rs){
-				error_open(P_Lang('项目不存在'));
+				$this->error(P_Lang('项目不存在'));
 			}
 			if($type == "cate" && $p_rs["cate"]){
 				$catelist = $this->model('cate')->get_all($p_rs["site_id"],1,$p_rs["cate"]);
@@ -303,7 +312,9 @@ class open_control extends phpok_control
 		$this->view("open_url");
 	}
 
-	//读取会员列表
+	/**
+	 * 读取会员列表
+	**/
 	public function user_f()
 	{
 		$id = $this->get("id");
@@ -341,7 +352,10 @@ class open_control extends phpok_control
 		$this->view("open_user_list");
 	}
 
-	function user2_f()
+	/**
+	 * 会员选择
+	**/
+	public function user2_f()
 	{
 		$id = $this->get("id");
 		if(!$id) $id = "user";
@@ -366,8 +380,6 @@ class open_control extends phpok_control
 		$this->assign("rslist",$rslist);
 		$this->assign("id",$id);
 		$this->assign("pagelist",$pagelist);
-		
 		$this->view("open_user_list2");
 	}
 }
-?>

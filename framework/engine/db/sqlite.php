@@ -1,7 +1,6 @@
 <?php
 /**
  * 文件型数据库 SQLite 3 引挈，该引挈仅支持 PHP5.3 及更高版本
- * @package phpok\framework\engine\db
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -9,7 +8,14 @@
  * @许可 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
  * @时间 2017年09月08日
 **/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class db_sqlite extends db
 {
 	private $type = SQLITE3_ASSOC;
@@ -23,8 +29,6 @@ class db_sqlite extends db
 	public function __destruct()
 	{
 		$this->close();
-		parent::__destruct();
-		
 	}
 
 	public function config($config)

@@ -1,12 +1,15 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/form/param_form.php
-	备注： 自定义参数
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年03月06日 09时59分
-*****************************************************************************************/
+/**
+ * 自定义参数
+ * @package phpok\framework\form
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2017年12月02日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class param_form extends _init_auto
 {

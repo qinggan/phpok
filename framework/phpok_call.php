@@ -25,27 +25,8 @@ class phpok_call extends _init_auto
 
 	private function load_phpoklist($id,$siteid=0)
 	{
-		if($this->phpoklist && $this->phpoklist[$id] && $this->phpoklist[$id]['site_id'] == $siteid){
-			return $this->phpoklist[$id];
-		}
-		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE site_id='".$siteid."' AND status=1";
-		$cache_id = $this->cache->id($sql);
-		$this->db->cache_set($cache_id);
-		$this->phpoklist = $this->cache->get($cache_id);
-		if(!$this->phpoklist){
-			$this->phpoklist = $this->model('call')->all($siteid,'identifier');
-			if(!$this->phpoklist){
-				return false;
-			}
-			if($this->phpoklist && $cache_id){
-				$this->cache->save($cache_id,$this->phpoklist);
-			}
-		}
-		$info = $this->phpoklist[$id];
-		if(!$info){
-			return false;
-		}
-		return $info;
+		$this->model('call')->site_id($siteid);
+		return $this->model('call')->one($id);
 	}
 
 	private function _phpok_sys_func()
@@ -288,7 +269,7 @@ class phpok_call extends _init_auto
 			$list = array();
 			foreach($rslist as $key=>$value){
 				if(!$value['parent_id']){
-					$value['sonlist'] = '';
+					$value['sonlist'] = array();
 					foreach($rslist as $k=>$v){
 						if($v['parent_id'] == $value['id']){
 							$value['sonlist'][$v['id']] = $v;

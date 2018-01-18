@@ -101,6 +101,7 @@ class xml_lib
 		}
 		$info = preg_replace('/<\?xml[^\?>]+\?>/isU','',$info);
 		$info = trim($info);
+		libxml_disable_entity_loader(true);
 		$xml = simplexml_load_string($info);
 		$info = $this->simplexml_obj_to_array($xml);
 		if(!$info){

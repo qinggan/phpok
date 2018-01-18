@@ -45,29 +45,17 @@ class call_model_base extends phpok_model
 	/**
 	 * 通过ID取得数据（此操作用于后台）
 	 * @参数 $id 主键ID
+	 * @参数 $identifier 标识，默认是id，也可以取identifier
 	**/
-	public function get_one($id)
+	public function get_one($id,$identifier='id')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE id='".$id."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE ".$identifier."='".$id."'";
+		if($identifier != 'id'){
+			$sql .= " AND site_id='".$this->site_id."'";
+		}
 		return $this->db->get_one($sql);
 	}
 
-	/**
-	 * 取得标识对应的内容
-	 * @参数 $identifier 标识
-	 * @参数 $site_id 站点ID
-	**/
-	public function get_rs($identifier,$site_id=0)
-	{
-		if(!$id){
-			return false;
-		}
-		if(!$site_id){
-			$site_id = $this->site_id;
-		}
-		$sql = "SELECT * FROM ".$this->db->prefix."phpok WHERE identifier='".$identifier."' AND site_id='".$site_id."'";
-		return $this->db->get_one($sql);
-	}
 
 	/**
 	 * 取得列表

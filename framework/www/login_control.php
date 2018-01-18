@@ -42,18 +42,19 @@ class login_control extends phpok_control
 			$this->error($tips,$backurl,10);
 		}
 		$type = $this->get('type');
-		if(!$type){
+		if(!$type && $this->site['login_type']){
 			$type = $this->site['login_type'];
 		}
+		if(!$type){
+			$type = 'index';
+		}
 		$tplfile = 'login';
-		if($type){
-			$tmp = $this->model('site')->tpl_file('login',$type);
-			if($tmp){
-				$tplfile = $tmp;
-			}else{
-				if($this->tpl->check('login_'.$type) && $this->model('gateway')->get_default($type)){
-					$tplfile = 'login_'.$type;
-				}
+		$tmp = $this->model('site')->tpl_file('login',$type);
+		if($tmp){
+			$tplfile = $tmp;
+		}else{
+			if($this->tpl->check('login_'.$type) && $this->model('gateway')->get_default($type)){
+				$tplfile = 'login_'.$type;
 			}
 		}
 		$logintype = array('sms'=>false,'email'=>false);

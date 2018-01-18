@@ -85,16 +85,14 @@
 .phpok-win .window .title div.button{ position:absolute; top:0; right:6px; height:20px;}
 .phpok-win .window .title div.button ul{margin:0;padding:0;list-style:none;}
 .phpok-win .window .title div.button ul li{ float:left; margin-left:2px;list-style:none;}
+.phpok-win .window .title div.button ul li a:hover{ background-color:#0000FF;}
+.phpok-win .window .title div.button ul li.w900 a{ width:20px; height:20px; background:url('images/w900.png') center center no-repeat; display:block;}
 .phpok-win .window .title div.button ul li.refresh a{ width:20px; height:20px; background:url('images/refresh.png') center center no-repeat; display:block;}
-.phpok-win .window .title div.button ul li.refresh a:hover{ background-color:#0000FF;}
+.phpok-win .window .title div.button ul li.min a{ width:18px; height:20px; background:url('images/button.png') 5px -108px no-repeat; display:block;}
+.phpok-win .window .title div.button ul li.max-max a{ width:20px; height:20px; background:url('images/button.png') 5px -34px no-repeat; display:block;}
+.phpok-win .window .title div.button ul li.max a{ width:20px; height:20px; background:url('images/button.png') 5px -76px no-repeat; display:block;}
 .phpok-win .window .title div.button ul li.close a{ width:45px; height:20px; background:url('images/button.png') 19px 7px no-repeat #c75050; display:block;}
 .phpok-win .window .title div.button ul li.close a:hover{ background-color:#e25959;}
-.phpok-win .window .title div.button ul li.min a{ width:18px; height:20px; background:url('images/button.png') 5px -108px no-repeat; display:block;}
-.phpok-win .window .title div.button ul li.min a:hover{ background-color:#0000FF;}
-.phpok-win .window .title div.button ul li.max-max a{ width:20px; height:20px; background:url('images/button.png') 5px -34px no-repeat; display:block;}
-.phpok-win .window .title div.button ul li.max-max a:hover{ background-color:#0000FF;}
-.phpok-win .window .title div.button ul li.max a{ width:20px; height:20px; background:url('images/button.png') 5px -76px no-repeat; display:block;}
-.phpok-win .window .title div.button ul li.max a:hover{ background-color:#0000FF;}
 
 
 .phpok-win .body .main .prompt{ background:#fff; overflow:hidden;}

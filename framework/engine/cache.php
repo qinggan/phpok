@@ -47,7 +47,6 @@ class cache
 	{
 		$this->save($this->key_id,$this->key_list);
 		$this->expired();
-		unset($this);
 	}
 
 	public function key_list($id,$value)
@@ -89,13 +88,15 @@ class cache
 		return $this->prefix;
 	}
 
-	public function save($id,$content)
+	public function save($id,$content='')
 	{
-		if(!$id || !$content || !$this->status){
+		if(!$id || $content === '' || !$this->status){
+			echo "<pre>".print_r(88888,true)."</pre>";
 			return false;
 		}
 		$this->_time();
 		$content = serialize($content);
+		//echo "<pre>".print_r($content,true)."</pre>////////";
 		$file = $this->folder.$id.".php";
 		file_put_contents($file,'<?php exit();?>'.$content);
 		$this->_time();
@@ -106,7 +107,7 @@ class cache
 		return true;
 	}
 
-	public function get($id)
+	public function get($id,$onlycheck=false)
 	{
 		if(!$id || !$this->status){
 			return false;
@@ -127,8 +128,11 @@ class cache
 			return false;
 		}
 		$content = trim(substr($content,15));
-		if(!$content){
+		if($content == ''){
 			return false;
+		}
+		if($onlycheck){
+			return true;
 		}
 		return unserialize($content);
 	}

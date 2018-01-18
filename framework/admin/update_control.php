@@ -351,20 +351,11 @@ class update_control extends phpok_control
 		$html.= "\t".'<time>'.date("Y-m-d H:i:s",$this->time).'</time>'."\n";
 		$html.= '</phpok>';
 		file_put_contents($this->dir_root.'data/update.xml',$html);
-		if(is_writeable($this->dir_root.'version.php')){
-			$html = '<?php'."\n";
-			$html.= '/***********************************************************'."\n";
-			$html.= "\t".'文件：version.php'."\n";
-			$html.= "\t".'备注：PHPOK版本'."\n";
-			$html.= "\t".'版本：4.x'."\n";
-			$html.= "\t".'网站：www.phpok.com'."\n";
-			$html.= "\t".'作者：qinggan <qinggan@188.com>'."\n";
-			$html.= "\t".'更新：'.date("Y-m-d H:i",$this->time)."\n";
-			$html.= '***********************************************************/'."\n";
-			$html.= 'if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}'."\n";
-			$html.= 'define("VERSION","'.trim($version).'");'."\n";
-			$html.= '?>';
-			file_put_contents($this->dir_root.'version.php',$html);
+		if(is_writeable($this->dir_root.'version.php') && file_exists($this->dir_data.'version.tpl')){
+			$info = file_get_contents($this->dir_data.'version.tpl');
+			$info = str_replace('{version}',trim($version),$info);
+			$info = str_replace('{updatetime}',date("Y年m月d日 H时i分s秒",$this->time),$info);
+			file_put_contents($this->dir_root.'version.php',$info);
 		}
 		$this->lib('file')->rm($this->dir_root.'data/tpl_admin/');
 		$this->lib('file')->rm($this->dir_root.'data/tpl_www/');
@@ -426,8 +417,7 @@ class update_control extends phpok_control
 	{
 		$info = $this->service(3);
 		$rs = $this->lib('json')->decode($info);
-		if($rs['status'] != 'ok')
-		{
+		if($rs['status'] != 'ok'){
 			$this->json($rs['content']);
 		}
 		$this->success_version($rs['content']);
@@ -533,8 +523,5 @@ class update_control extends phpok_control
 		}
 		$rs = array('status'=>'ok','content'=>$rs['content']);
 		return $this->lib('json')->encode($rs);
-		//if($content != '') $rs['content'] = $content;
-		//$info = 
-		//return $this->json($rs['content'],true,false,false);
 	}
 }

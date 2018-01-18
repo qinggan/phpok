@@ -1,123 +1,238 @@
 <!-- include tpl=head -->
 <script type="text/javascript" src="{func include_js list.js}"></script>
-<script type="text/javascript">
-function set_ext_cateid(val)
-{
-	var main_cateid = $("input[name=cate_id]:checked").val();
-	if(!main_cateid || main_cateid == 'undefined'){
-		$("input[name=cate_id][value="+val+"]").attr('checked',true);
-		return true;
-	}
-	if(main_cateid == val){
-		$("#ext_cate_id_"+val).attr('checked',true);
-		$.dialog.alert('{lang当前分类已设置为主分类，扩展分类不支持取消}');
-	}
-}
-function set_main_cateid(val)
-{
-	$("input[name=cate_id][value="+val+"]").attr('checked',true);
-	$("#ext_cate_id_"+val).attr('checked',true);
-}
-
-$(document).keypress(function(e){
-	if(e.ctrlKey && e.which == 13 || e.which == 10) {
-		$('#phpok_submit_{$pid}').click();
-	}
-});
-$(document).ready(function(){
-	var loading_action;
-	$("#_listedit").submit(function(){
-		var id = $("#id").val();
-		var pcate = parseInt("{$p_rs.cate}");
-		var pcate_multiple = '{$p_rs.cate_multiple}';
-		$(this).ajaxSubmit({
-			'url':'{url ctrl=list func=ok /}',
-			'type':'post',
-			'dataType':'json',
-			'beforeSubmit':function(){
-				loading_action = $.dialog.tips('<img src="images/loading.gif" border="0" align="absmiddle" /> 正在保存数据，请稍候…').time(30).lock();
-			},
-			'success':function(rs){
-				if(loading_action){
-					loading_action.close();
-				}
-				if(rs.status == 'ok'){
-					var url = "{url ctrl=list func=action id=$pid/}";
-					if(pcate>0){
-						if(pcate_multiple > 0){
-							var cateid = $("input[name=cate_id]:checked").val();
-						}else{
-							var cateid = $("#cate_id").val();
-						}
-						url += "&cateid="+cateid;
-					}
-					if(id){
-						$.dialog.alert('{lang内容信息修改成功}',function(){
-							$.phpok.go(url);
-						},'succeed');
-					}else{
-						$.dialog.through({
-							'icon':'succeed',
-							'content':'{lang内容添加操作成功，请选择继续添加或返回列表}',
-							'ok':function(){$.phpok.reload();},
-							'okVal':'{lang继续添加}',
-							'cancel':function(){$.phpok.go(url);},
-							'cancelVal':'{lang返回列表}',
-							'lock':true
-						});
-					}
-				}else{
-					$.dialog.alert(rs.content);
-				}
-			}
-		});
-		return false;
-	});
-});
-</script>
 <div class="tips">
 	{lang您当前的位置：}{lang内容管理}
 	<!-- if $pid -->
 		<!-- loop from=$plist key=$key value=$value id=plist_id -->
 		&raquo; <a href="{echo admin_url('list','action')}&id={$value.id}" title="{$value.title}">{$value.title}</a>
 		<!-- /loop -->
-	<!-- /if -->	
+	<!-- /if -->
 	<!-- if $parent_id -->
 	&raquo; {lang父主题：}<a href="{echo admin_url('list','edit')}&id={$parent_id}" title=""><span class="red">{$parent_rs.title}</span></a>
 	<!-- /if -->
 	&raquo; <!-- if $id -->{lang编辑内容}<!-- else -->{lang添加内容}<!-- end -->
 </div>
-<form method="post" id="_listedit">
+<ul class="group">
+	<li class="on" onclick="$.admin.group(this)" name="main" title="{lang主要内容}">{lang主要内容}</li>
+	<!-- if $p_rs.is_biz --><li onclick="$.admin.group(this)" name="biz" title="{lang启用电子商务功能}">{lang电子商务}</li><!-- /if -->
+	<li onclick="$.admin.group(this)" name="extinfo" title="{lang扩展信息，包括SEO优化在内}">{lang扩展信息}</li>
+	<!-- if $p_rs.is_seo --><li onclick="$.admin.group(this)" name="seo" title="{lang全站SEO信息设置}">{langSEO优化}</li><!-- /if -->
+</ul>
+
+<form method="post" id="_listedit" onsubmit="return $.admin_list_edit.save()">
+<input type="hidden" id="_root_cate" value="{$p_rs.cate}" />
+<input type="hidden" id="_root_cate_multiple" value="{$p_rs.cate_multiple}" />
 <input type="hidden" name="id" id="id" value="{$id}" />
 <input type="hidden" name="pid" id="pid" value="{$pid}" />
 <input type="hidden" name="parent_id" id="parent_id" value="{$parent_id}" />
-<div class="main1">
+<div id="main_setting">
 	<div class="table">
-	<div class="content">
-		<input type="text" name="title" id="title" value="{$rs.title}" class="title" placeholder="请在此输入{$p_rs.alias_title ? $p_rs.alias_title : '主题'}{if $p_rs.alias_note}，{$p_rs.alias_note}{/if}" />
-	</div>
+		<div class="title">
+			<!-- if $p_rs.alias_title -->{$p_rs.alias_title}<!-- else -->{lang主题}<!-- /if --> <span class="note">{lang不能超过80个汉字}<!-- if $p_rs.note -->，{$p_rs.alias_note}<!-- /if --></span>
+		</div>
+		<div class="content">
+			<input type="text" name="title" id="title" value="{$rs.title}" class="title" />
+		</div>
 	</div>
 	<!-- if $attrlist && $p_rs.is_attr -->
-	<div class="table"><div class="content">
-	<ul class="layout">
-		<li>{lang属性：}</li>
-		<!-- php:$attr = $rs.attr ? explode(",",$rs.attr) : array() -->
-		<!-- loop from=$attrlist key=$key value=$value -->
-		<li><label><input type="checkbox" name="attr[]" id="_attr_{$key}" value="{$key}"{if in_array($key,$attr)} checked{/if} />{$value}</label></li>
-		<!-- /loop -->
-	</ul>
-	</div></div>
+	<div class="table">
+		<div class="content">
+			<ul class="layout">
+				<li>{lang属性：}</li>
+				<!-- loop from=$attrlist key=$key value=$value -->
+				<li><label><input type="checkbox" name="attr[]" id="_attr_{$key}" value="{$key}"{if $value.status} checked{/if} />{$value.val}</label></li>
+				<!-- /loop -->
+			</ul>
+		</div>
+	</div>
 	<!-- /if -->
-	<!-- if $p_rs.cate && !$p_rs.cate_multiple -->
-	<div class="table"><div class="content">
-	<select name="cate_id" id="cate_id" style="width:99%;padding:3px;">
-		<option value="">请选择分类…</option>
-		<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
-		<option value="{$value.id}"{if $value.id == $rs.cate_id} selected{/if}>{$value._space}{$value.title}</option>
-		<!-- /loop -->
-	</select>
-	</div></div>
+	<!-- if $p_rs.is_identifier -->
+	<div class="table">
+		<div class="title">
+			{lang自定义网址标识} <span class="note">{lang仅支持字母、数字、下划线或中划线且必须是字母开头}</span>
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<li style="width:50%"><input type="text" id="identifier" name="identifier" value="{$rs.identifier}" class="title" /></li>
+				<li>
+					<div class="button-group" id="identifier-button">
+						<input type="button" value="{lang随机标识}" onclick="$.admin_list.rand_identifier()" class="phpok-btn" />
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
 	<!-- /if -->
+	<!-- if $p_rs.cate -->
+	<div class="table">
+		<div class="content">
+			<select name="cate_id" id="cate_id" class="single">
+				<option value=""><!-- if $p_rs.cate_multiple -->{lang请选择主分类…}<!-- else -->{lang请选择分类…}<!-- /if --></option>
+				<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+				<option value="{$value.id}"{if $value.id == $rs.cate_id} selected{/if}>{$value._space}{$value.title}</option>
+				<!-- /loop -->
+			</select>
+		</div>
+	</div>
+		<!-- if $p_rs.cate_multiple -->
+		<div class="table">
+			<div class="title">
+				{lang扩展分类：}<span class="note">{lang请按住 CTRL 键进行多选}</span>
+			</div>
+			<div class="content">
+				<select name="ext_cate_id[]" multiple="multiple" class="multiple">
+					<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if in_array($value.id,$extcate)} selected{/if}>{$value._space}{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<!-- /if -->
+	<!-- /if -->
+	<!-- if $p_rs.is_tag -->
+	<div class="table">
+		<div class="title">
+			{lang标签：}
+			<span class="note">{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}</span>
+		</div>
+		<div class="content">
+			<table width="100%">
+			<tr>
+				<td><input type="text" id="tag" name="tag" class='long' value='{$rs.tag}' style="width:100%;" /></td>
+				<td style="padding-left:10px;">
+					<div class="button-group">
+						<input type="button" value="{lang更多选择}" onclick="$.phpok_list.tag()" id="tag_more" class="phpok-btn" />
+						<input type="button" value="{lang清空}" onclick="$('input[name=tag]').val('')" class="phpok-btn" />
+					</div>
+				</td>
+			</tr>
+			<!-- if $tag_config.count && $taglist -->
+			<tr>
+				<td colspan="2">
+					<div class="button-group">
+						<!-- loop from=$taglist key=$key value=$value id=$tmpid -->
+						<input type="button" value="{$value.title}" onclick="$.phpok_list.tag_append(this.value,'{$tag_config.separator}')" class="phpok-btn" />
+						<!-- /loop -->
+					</div>
+				</td>
+			</tr>
+			<!-- /if -->
+			</table>
+		</div>
+	</div>
+	<!-- /if -->
+	<!-- loop from=$extlist key=$key value=$value id=extlist_id -->
+	<div class="table clearfix" id="form_html_{$value.identifier}">
+		<div class="title">
+			{$value.title}：
+			<span class="note">{$value.note}
+				<!-- if $popedom.ext && $value.is_edit -->
+				<!-- if $ext_module != 'add-list' -->
+				<a class="icon edit" onclick="ext_edit('{$value.identifier}','{$ext_module}')"></a>
+				<!-- /if -->
+				<a class="icon delete" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')"></a>
+				<!-- /if -->
+			</span>
+		</div>
+		<div class="content">{$value.html}</div>
+	</div>
+	<!-- /loop -->
+	<!-- if $popedom.ext -->
+	<div class="table">
+		<div class="content">
+			<ul class="layout">
+				<li>
+					<select id="_tmp_select_add" style="padding:3px">
+						<option value="">{lang主题自定义扩展字段…}</option>
+						<!-- loop from=$extfields key=$key value=$value -->
+						<option value="{$value.identifier}">{$value.title} - {$value.identifier}</option>
+						<!-- /loop -->
+					</select>
+				</li>
+				<li>
+					<div class="button-group">
+						<input type="button" value="{lang快速添加}" onclick="$.admin_list.update_select_add('{$ext_module}')" class="phpok-btn" />
+						<input type="button" value="{lang手动创建字段}" onclick="ext_add('{$ext_module}')" class="phpok-btn" />
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!-- /if -->
+</div>
+
+<!-- if $p_rs.is_biz -->
+<div id="biz_setting" class="hide">
+	<div class="table">
+		<div class="title">
+			{lang产品类型：}
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<li><label><input type="radio" name="is_virtual" value="0"{if !$rs.is_virtual} checked{/if} />{lang实物}</label></li>
+				<li><label><input type="radio" name="is_virtual" value="1"{if $rs.is_virtual} checked{/if} />{lang服务}</label></li>
+			</ul>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang销售价格：}<span class="note">{lang请设置产品的价格及计算货币类型}</span>
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<li><input type="text" name="price" id="price" value="{$rs.price}" class="title" /></li>
+				<li>
+					<select name="currency_id" id="currency_id" onchange="price_show_auto()">
+						<!-- loop from=$currency_list key=$key value=$value -->
+						<option value="{$value.id}"{if $rs[currency_id] == $value.id} selected{/if} code="{$value.code}" rate="{$value.val}" sleft="{$value.symbol_left}" sright="{$value.symbol_right}">{$value.title}</option>
+						<!-- /loop -->
+					</select>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang计量单位：}<span class="note">{lang填写产品的计量单位，以方便结算}</span>
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<li><input type="text" id="unit" name="unit" value="{$rs.unit}" /></li>
+				<!-- if $unitlist -->
+				<li>
+					<div class="button-group">
+						<!-- loop from=$unitlist key=$key value=$value id=$tmpid -->
+						<input type="button" value="{$value}" onclick="$('#unit').val(this.value)" class="phpok-btn" />
+						<!-- /loop -->
+					</div>
+				</li>
+				<!-- /if -->
+			</ul>		
+		</div>
+		<!-- if $freight && $freight.type == 'weight' -->
+		<div class="table">
+			<div class="title">
+				{lang重量：}
+			</div>
+			<div class="content">
+				<input type="text" id="weight" name="weight" value="{$rs.weight}" /> {lang千克}
+			</div>
+		</div>
+		<!-- /if -->
+		<!-- if $freight && $freight.type == 'volume' -->
+		<div class="table">
+			<div class="title">
+				{lang体积：}
+			</div>
+			<div class="content">
+				<input type="text" id="volume" name="volume" value="{$rs.volume}" /> {lang立方米}
+			</div>
+		</div>
+		<!-- /if -->
+	
+	</div>
+
 	<!-- if $p_rs.biz_attr -->
 	<script type="text/javascript">
 	function biz_attr_reload()
@@ -140,6 +255,7 @@ $(document).ready(function(){
 			}
 		});
 	}
+	
 	function attr_add(tid,pid)
 	{
 		var val = $("#biz_attr_id").val();
@@ -253,287 +369,129 @@ $(document).ready(function(){
 		<div id="biz_attr_options" class="options"></div>
 	</div>
 	<!-- /if -->
-	<!-- loop from=$extlist key=$key value=$value id=extlist_id -->
-	<div class="table clearfix" id="form_html_{$value.identifier}">
-		<div class="title">
-			{$value.title}：
-			<span class="note">{$value.note}
-				<!-- if $popedom.ext && $value.is_edit -->
-				<!-- if $ext_module != 'add-list' -->
-				<a class="icon edit" onclick="ext_edit('{$value.identifier}','{$ext_module}')"></a>
-				<!-- /if -->
-				<a class="icon delete" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')"></a>
-				<!-- /if -->
-			</span>
-		</div>
-		<div class="content">{$value.html}</div>
-	</div>
-	<!-- /loop -->
-	<!-- if $p_rs.is_tag -->
+</div>
+<!-- /if -->
+
+<div id="extinfo_setting" class="hide">
 	<div class="table">
 		<div class="title">
-			{lang标签：}
-			<span class="note">{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}</span>
+			{lang状态：}
 		</div>
 		<div class="content">
-			<table width="100%">
-			<tr>
-				<td><input type="text" id="tag" name="tag" class='long' value='{$rs.tag}' style="width:100%;" /></td>
-				<td style="padding-left:10px;">
+			<ul class="layout">
+				<li><label><input type="radio" name="status" id="status_0" value="0"{if $id && !$rs[status]} checked{/if} />{lang未审核}</label></li>
+				<li><label><input type="radio" name="status" id="status_1" value="1"{if !$id || $rs[status]} checked{/if} />{lang已审核}</label></li>
+			</ul>
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang是否隐藏：}
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<li><label><input type="radio" name="hidden" id="hidden_0" value="0"{if !$rs[hidden]} checked{/if} />{lang显示}</label></li>
+				<li><label><input type="radio" name="hidden" id="hidden_1" value="1"{if $rs.hidden} checked{/if} />{lang隐藏}</label></li>
+			</ul>
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang发布时间：}<span class="note">{lang自定义发布时间，留空使用系统时间}</span>
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<li><input type="text" id="dateline" name="dateline" class="default" value="{if $rs.dateline}{func date 'Y-m-d H:i:s' $rs.dateline}{/if}" onfocus="$.admin_list.show_date()" /></li>
+				<li>
 					<div class="button-group">
-						<input type="button" value="{lang更多选择}" onclick="$.phpok_list.tag()" id="tag_more" class="phpok-btn" />
-						<input type="button" value="{lang清空}" onclick="$('input[name=tag]').val('')" class="phpok-btn" />
+						<input type="button" value="{lang时间选择器}" class="phpok-btn" id="btn_dateline_datetime" onclick="$.phpokform.laydate_button('dateline','datetime')" />
+						<input type="button" value="{lang清空}" onclick="$.phpokform.clear('dateline')" class="phpok-btn" />
 					</div>
-				</td>
-			</tr>
-			<!-- if $tag_config.count && $taglist -->
-			<tr>
-				<td colspan="2">
+				</li>
+			</ul>
+			
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang阅读次数：}<span class="note">{lang正常情况请不要设置，以保证数据的准确，仅支持整数}</span>
+		</div>
+		<div class="content">
+			<input type="text" id="hits" name="hits" value="{$rs.hits}" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang财富基数：}<span class="note">{lang只支持整数，用于计算会员虚拟财富增减}</span>
+		</div>
+		<div class="content">
+			<input type="text" id="integral" name="integral" value="{$rs.integral}" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang排序}<span class="note">{lang排序值只支持数字，不清楚请留空}</span>
+		</div>
+		<div class="content">
+			<input type="text" id="sort" name="sort" value="{$rs.sort}" />
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang绑定会员}<span class="note">{lang绑定会员功能，允许会员对主题进行修改或删除，需要开放发布权限}</span>
+		</div>
+		<div class="content">{func form_edit user_id $rs.user_id user}</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang自定义内容模板}<span class="note">{lang为空将使用} <span class="red">{$p_rs.tpl_content ? $p_rs.tpl_content : $p_rs.identifier.'_content'}</span></span>
+		</div>
+		<div class="content">
+			<ul class="layout">
+				<li><input type="text" id="tpl" name="tpl" class="default" value="{$rs.tpl}" /></li>
+				<li>
 					<div class="button-group">
-						<!-- loop from=$taglist key=$key value=$value id=$tmpid -->
-						<input type="button" value="{$value.title}" onclick="$.phpok_list.tag_append(this.value,'{$tag_config.separator}')" class="phpok-btn" />
-						<!-- /loop -->
+						<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl')" class="phpok-btn" />
+						<input type="button" value="{lang清空}" onclick="$('#tpl').val('');" class="phpok-btn" />
 					</div>
-				</td>
-			</tr>
-			<!-- /if -->
-			</table>
+				</li>
+			</ul>
 		</div>
 	</div>
-	<!-- /if -->
 </div>
-<div class="main2">
-	<!-- if $p_rs.is_identifier -->
-	<div class="pfw mb10">
-		<h3>{lang自定义网址标识}</h3>
-		<div style="padding:5px">
-			<div class="gray">{lang限}<span class="red">{lang字母、数字、下划线或中划线且必须是字母开头，}</span></div>
-			<div style="padding:5px 0;"><input type="text" id="identifier" name="identifier" value="{$rs.identifier}" style="width:99%;margin-bottom:5px;" /></div>
+
+<!-- if $p_rs.is_seo -->
+<div id="seo_setting" class="hide">
+	<div class="table">
+		<div class="title">
+			{langSEO标题：}<span class="note">{lang设置此标题后，网站Title将会替代默认定义的，不能超过50个汉字}</span>
+		</div>
+		<div class="content">
+			<input type="text" id="seo_title" name="seo_title" class="title" value="{$rs.seo_title}" />
 		</div>
 	</div>
-	<!-- /if -->
-	<!-- if $p_rs.cate && $p_rs.cate_multiple -->
-	<div class="pfw mb10">
-		<h3>所属分类</h3>
-		<div class="cate_list clearfix" style="margin:0;max-height:250px;overflow-y:scroll;">
-			<table width="100%" cellpadding="0" cellspacing="0">
-			<tr>
-				<th width="30px">主</th>
-				<th>扩展分类</th>
-			</tr>
-			<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
-			<tr{if $tmpid.num%2} class="list"{/if}>
-				<td align="center"><input type="radio" name="cate_id" value="{$value.id}"{if $rs.cate_id == $value.id} checked{/if} onclick="set_main_cateid('{$value.id}')" /></td>
-				<td>
-					<table cellpadding="0" cellspacing="0">
-					<tr>
-						<!-- for($i=1;$i<$value._layer;$i++) -->
-						<td class="cate_line">&nbsp;</td>
-						<!-- /for -->
-						<!-- if $value._layer -->
-						<td class="cate_middle">&nbsp;</td>
-						<!-- /if -->
-						<td><input type="checkbox" name="ext_cate_id[]" value="{$value.id}" id="ext_cate_id_{$value.id}" onclick="set_ext_cateid('{$value.id}')"{if in_array($value.id,$extcate)} checked{/if} /></td>
-						<td><label for="ext_cate_id_{$value.id}">{$value.title}</label></td>
-					</tr>
-					</table>
-				</td>
-			</tr>
-			<!-- /loop -->
-			</table>
+	<div class="table">
+		<div class="title">
+			{langSEO关键字：}<span class="note">{lang多个关键字用英文逗号隔开，为空将使用默认}</span>
+		</div>
+		<div class="content">
+			<input type="text" id="seo_keywords" name="seo_keywords" class="title" value="{$rs.seo_keywords}" />
 		</div>
 	</div>
-	<!-- /if -->
-	<!-- if $p_rs.is_biz -->
-	<div class="pfw mb10">
-		<h3>产品属性及价格</h3>
-		<div><table cellpadding="2" cellspacing="2">
-		<!-- if $freight && $freight.type == 'weight' -->
-		<tr>
-			<td align="right">{lang重量：}</td>
-			<td><input type="text" id="weight" name="weight" class="short" value="{$rs.weight}" /> 千克</td>
-		</tr>
-		<!-- /if -->
-		<!-- if $freight && $freight.type == 'volume' -->
-		<tr>
-			<td align="right">{lang体积：}</td>
-			<td><input type="text" id="volume" name="volume" class="short" value="{$rs.volume}" /> 立方米</td>
-		</tr>
-		<!-- /if -->
-		<tr>
-			<td align="right" width="100">{lang计量单位：}</td>
-			<td><input type="text" id="unit" name="unit" class="short" value="{$rs.unit}" /></td>
-		</tr>
-		<tr>
-			<td align="right">{lang产品类型：}</td>
-			<td>
-				<ul class="layout">
-					<li><label><input type="radio" name="is_virtual" value="0"{if !$rs.is_virtual} checked{/if} />实物</label></li>
-					<li><label><input type="radio" name="is_virtual" value="1"{if $rs.is_virtual} checked{/if} />虚拟/服务</label></li>
-				</ul>
-				<div class="clear"></div>
-			</td>
-		</tr>
-		<tr>
-			<td align="right">{lang货币：}</td>
-			<td>
-				<select name="currency_id" id="currency_id" onchange="price_show_auto()">
-					<!-- loop from=$currency_list key=$key value=$value -->
-					<option value="{$value.id}"{if $rs[currency_id] == $value.id} selected{/if} code="{$value.code}" rate="{$value.val}" sleft="{$value.symbol_left}" sright="{$value.symbol_right}">{$value.title}</option>
-					<!-- /loop -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td align="right">{lang销售价格：}</td>
-			<td><input type="text" id="price" name="price" value="{$rs.price}" style="width:80%" /></td>
-		</tr>
-		</table></div>
-	</div>
-	<!-- /if -->
-	<script type="text/javascript">
-	function show_dateline()
-	{
-		laydate({
-			elem:"#dateline",
-			istime: true,
-			format: 'YYYY-MM-DD hh:mm:ss',
-			fixed:true
-		});
-	}
-	</script>
-	<div class="pfw mb10">
-		<h3>{lang其他属性}</h3>
-		<table width="100%">
-		<tr>
-			<td align="right" width="90">{lang状态：}</td>
-			<td>
-				<ul class="layout">
-					<li><label><input type="radio" name="status" id="status_0" value="0"{if $id && !$rs[status]} checked{/if} />{lang未审核}</label></li>
-					<li><label><input type="radio" name="status" id="status_1" value="1"{if !$id || $rs[status]} checked{/if} />{lang已审核}</label></li>
-				</ul>
-			</td>
-		</tr>
-		<tr>
-			<td align="right">{lang是否隐藏：}</td>
-			<td>
-				<ul class="layout">
-					<li><label><input type="radio" name="hidden" id="hidden_0" value="0"{if !$rs[hidden]} checked{/if} />{lang显示}</label></li>
-					<li><label><input type="radio" name="hidden" id="hidden_1" value="1"{if $rs.hidden} checked{/if} />{lang隐藏}</label></li>
-				</ul>
-			</td>
-		</tr>
-		<tr>
-			<td align="right">{lang发布时间：}</td>
-			<td><input type="text" id="dateline" name="dateline" class="default" value="{if $rs.dateline}{func date 'Y-m-d H:i:s' $rs.dateline}{else}{func date 'Y-m-d H:i:s' $sys.time}{/if}" onfocus="show_dateline()" style="width:180px" /></td>
-		</tr>
-		<tr>
-			<td align="right">{lang阅读次数：}</td>
-			<td><input type="text" id="hits" name="hits" class="short" value="{$rs.hits}" /></td>
-		</tr>
-		<tr>
-			<td align="right">{lang财富基数：}</td>
-			<td><input type="text" id="integral" name="integral" class="short" value="{$rs.integral}" /> <span class="gray">{lang（只支持整数）}</span></td>
-		</tr>
-		<tr>
-			<td align="right">{lang排序：}</td>
-			<td><input type="text" id="sort" name="sort" class="short" value="{$rs.sort}" /></td>
-		</tr>
-		</table>
-	</div>
-	<!-- if $p_rs.is_tpl_content -->
-	<div class="pfw mb10">
-		<h3>{lang自定义内容模板}</h3>
-		<table width="100%">
-		<tr>
-			<td><input type="text" id="tpl" name="tpl" class="default" value="{$rs.tpl}" /></td>
-			<td><input type="button" value="选择" onclick="phpok_tpl_open('tpl')" class="btn" /></td>
-			<td><input type="button" value="清空" onclick="$('#tpl').val('');" class="btn" /></td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<div class="gray">{lang为空将使用} <span class="red">{$p_rs.tpl_content ? $p_rs.tpl_content : $p_rs.identifier.'_content'}</span></div>
-			</td>
-		</tr>
-		</table>
-	</div>
-	<!-- /if -->
-	<!-- if $p_rs.is_userid -->
-	<div class="pfw mb10">
-		<h3>{lang绑定会员}</h3>
-		<table>
-		<tr>
-			<td>{func form_edit user_id $rs.user_id user}</td>
-		</tr>
-		</table>
-	</div>
-	<!-- /if -->
-	<!-- if $p_rs.is_seo -->
-	<div class="pfw mb10">
-		<h3>{langSEO优化}</h3>
-		<div class="table">
-			<div class="title">
-				{langSEO标题：}
-				<span class="note">{lang设置此标题后，网站Title将会替代默认定义的，不能超过50个汉字}</span>
-			</div>
-			<div class="content">
-				<input type="text" id="seo_title" name="seo_title" class="long" value="{$rs.seo_title}" />
-			</div>
+	<div class="table">
+		<div class="title">
+			{langSEO描述：}<span class="note">{lang简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过80个汉字}</span>
 		</div>
-		<div class="table">
-			<div class="title">
-				{langSEO关键字：}
-				<span class="note">{lang多个关键字用英文逗号隔开，为空将使用默认}</span>
-			</div>
-			<div class="content">
-				<input type="text" id="seo_keywords" name="seo_keywords" class="long" value="{$rs.seo_keywords}" />
-			</div>
-		</div>
-		<div class="table">
-			<div class="title">
-				{langSEO描述：}
-				<span class="note">{lang简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字}</span>
-			</div>
-			<div class="content">
-				<textarea name="seo_desc" id="seo_desc" class="long">{$rs.seo_desc}</textarea>
-			</div>
+		<div class="content">
+			<textarea name="seo_desc" id="seo_desc" class="long" style="width:100%">{$rs.seo_desc}</textarea>
 		</div>
 	</div>
-	<!-- /if -->
-	<!-- if $popedom.ext -->
-	<div class="pfw mb10">
-		<h3>{lang扩展主题字段}</h3>
-		<div class="table">
-			<div class="content">
-				<select id="_tmp_select_add" style="padding:3px">
-					<option value="">请选择扩展字段…</option>
-					<!-- loop from=$extfields key=$key value=$value -->
-					<option value="{$value.identifier}">{$value.title} - {$value.identifier}</option>
-					<!-- /loop -->
-				</select>
-			</div>
-			<div class="content" style="margin-top:5px">
-				<div class="button-group">
-					<input type="button" value="{lang快速添加}" onclick="_update_select_add()" class="phpok-btn" />
-					<input type="button" value="{lang手动创建字段}" onclick="ext_add('{$ext_module}')" class="phpok-btn" />
-				</div>
-			</div>
-		</div>
-	</div>
-	<script type="text/javascript">
-	function _update_select_add()
-	{
-		var val = $("#_tmp_select_add").val();
-		if(!val){
-			$.dialog.alert('请选择要添加的扩展');
-			return false;
-		}
-		ext_add2(val,'{$ext_module}');
-	}
-	</script>
-	<!-- /if -->
 </div>
+<!-- /if -->
+
+
+
 <div class="clear"></div>
-<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" id="phpok_submit_{$pid}" /></div>
+<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2 phpok_submit_click" /></div>
 </form>
 <!-- include tpl=foot -->

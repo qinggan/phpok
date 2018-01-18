@@ -1,82 +1,95 @@
 <?php
 /**
  * 阿里云SDK信息，请配合插件或是网关路由使用
- * @package phpok\extension\aliyun
  * @作者 qinggan <admin@phpok.com>
- * @版权 2015-2016 深圳市锟铻科技有限公司
+ * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
- * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @时间 2017年02月27日
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2017年12月23日
 **/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-include_once dirname(__FILE__).'/aliyun-php-sdk-core/Config.php';
-include_once dirname(__FILE__).'/aliyun-php-sdk-mns/mns-autoloader.php';
-use AliyunMNS\Client;
-use AliyunMNS\Topic;
-use AliyunMNS\Constants;
-use AliyunMNS\Model\MailAttributes;
-use AliyunMNS\Model\SmsAttributes;
-use AliyunMNS\Model\BatchSmsAttributes;
-use AliyunMNS\Model\MessageAttributes;
-use AliyunMNS\Exception\MnsException;
-use AliyunMNS\Requests\PublishMessageRequest;
 
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
+include_once dirname(__FILE__).'/aliyun-php-sdk-core/Config.php';
+
+/**
+ * 邮件推送
+**/
 use Dm\Request\V20151123 as Dm;
+
+/**
+ * 视频上传
+**/
 use vod\Request\V20170321 as vod;
+
+/**
+ * 短消息服务
+**/
+use Aliyun\DySDKLite as sms;
+
 class aliyun_lib
 {
+	/**
+	 * Access Key ID 密钥ID
+	**/
 	private $access_key = '';
-	private $access_secret = '';
-	private $access_id = '';
-	private $regoin_id = 'cn-hangzhou';
-	private $signature = '锟铻科技';
-	private $sms_template_id = 0;
-	private $end_point = ''; //节点
-	private $mns_title = '';
 
+	/**
+	 * Access Key Secret 密钥加密参数
+	**/
+	private $access_secret = '';
+
+	/**
+	 * 服务器节点ID，默认使用 cn-hangzhou
+	**/
+	private $regoin_id = 'cn-hangzhou';
+
+	/**
+	 * 签名
+	**/
+	private $signature = '锟铻科技';
+
+	/**
+	 * 模板ID，一般适用于短信发送使用
+	**/
+	private $template_id = 0;
+
+	/**
+	 * 服务器节点地址
+	**/
+	private $end_point = ''; //节点
+
+	/**
+	 * 邮件发送账号
+	**/
 	private $dm_account = '';
+
+	/**
+	 * 发件人昵称
+	**/
 	private $dm_name = '锟铻科技';
 
 	private $client;
 
+	/**
+	 * 构造函数
+	**/
 	public function __construct()
 	{
 		//
 	}
 
-	public function mns_title($val='')
-	{
-		if($val){
-			$this->mns_title = $val;
-		}
-		return $this->mns_title;
-	}
-
-	public function end_point($val='')
-	{
-		if($val){
-			$this->end_point = $val;
-		}
-		return $this->end_point;
-	}
-
-	public function regoin_id($val='')
-	{
-		if($val){
-			$this->regoin_id = $val;
-		}
-		return $this->regoin_id;
-	}
-
-	public function access_id($val='')
-	{
-		if($val){
-			$this->access_id = $val;
-		}
-		return $this->access_id;
-	}
-
+	/**
+	 * Access Key ID 密钥ID
+	 * @参数 $val 要设定的值
+	**/
 	public function access_key($val='')
 	{
 		if($val){
@@ -85,6 +98,10 @@ class aliyun_lib
 		return $this->access_key;
 	}
 
+	/**
+	 * Access Key Secret 密钥加密参数
+	 * @参数 $val 要设定的值
+	**/
 	public function access_secret($val='')
 	{
 		if($val){
@@ -93,6 +110,22 @@ class aliyun_lib
 		return $this->access_secret;
 	}
 
+	/**
+	 * 服务器节点ID，默认使用 cn-hangzhou
+	 * @参数 $val 要设定的值
+	**/
+	public function regoin_id($val='')
+	{
+		if($val){
+			$this->regoin_id = $val;
+		}
+		return $this->regoin_id;
+	}
+
+	/**
+	 * 签名
+	 * @参数 $val 要设定的值
+	**/
 	public function signature($val='')
 	{
 		if($val){
@@ -101,14 +134,34 @@ class aliyun_lib
 		return $this->signature;
 	}
 
-	public function sms_template_id($val='')
+	/**
+	 * 模板ID
+	 * @参数 $val 要设定的值
+	**/
+	public function template_id($val='')
 	{
 		if($val){
-			$this->sms_template_id = $val;
+			$this->template_id = $val;
 		}
-		return $this->sms_template_id;
+		return $this->template_id;
 	}
 
+	/**
+	 * 服务器节点地址
+	 * @参数 $val 要设定的值
+	**/
+	public function end_point($val='')
+	{
+		if($val){
+			$this->end_point = $val;
+		}
+		return $this->end_point;
+	}
+
+	/**
+	 * 邮件账号
+	 * @参数 $val 要设定的值
+	**/
 	public function dm_account($val='')
 	{
 		if($val){
@@ -117,6 +170,10 @@ class aliyun_lib
 		return $this->dm_account;
 	}
 
+	/**
+	 * 发件人称呼
+	 * @参数 $val 要设定的值
+	**/
 	public function dm_name($val='')
 	{
 		if($val){
@@ -125,6 +182,12 @@ class aliyun_lib
 		return $this->dm_name;
 	}
 
+	/**
+	 * 邮件发送
+	 * @参数 $title 邮件主题
+	 * @参数 $content 邮件内容
+	 * @参数 $mailto 目标邮箱
+	**/
 	public function email($title='',$content='',$mailto='')
 	{
 		if(!$title || !$content || !$mailto){
@@ -145,17 +208,23 @@ class aliyun_lib
 		if(!$this->dm_name){
 			return $this->error(P_Lang('未配置发信人昵称'));
 		}
-		$iClientProfile = DefaultProfile::getProfile($this->access_id, $this->access_key,$this->access_secret);
-		$client = new DefaultAcsClient($iClientProfile);    
-		$request = new Dm\SingleSendMailRequest();     
+		$iClientProfile = DefaultProfile::getProfile($this->regoin_id, $this->access_key,$this->access_secret);
+		if($this->end_point && $this->regoin_id != 'cn-hangzhou'){
+			$iClientProfile::addEndpoint($this->regoin_id,$this->regoin_id,"Dm",$this->end_point);
+		}
+		$client = new DefaultAcsClient($iClientProfile);
+		$request = new Dm\SingleSendMailRequest();
+		if($this->regoin_id != 'cn-hangzhou'){
+			$request->setVersion("2017-06-22");
+		}
 		$request->setAccountName($this->dm_account);
 		$request->setFromAlias($this->dm_name);
 		$request->setAddressType(1);
 		$request->setTagName($this->signature);
 		$request->setReplyToAddress("true");
-		$request->setToAddress($mailto);        
+		$request->setToAddress($mailto);
 		$request->setSubject($title);
-		$request->setHtmlBody(stripslashes($content));        
+		$request->setHtmlBody(stripslashes($content));
 		try {
 			$response = $client->getAcsResponse($request);
 			return $this->success();
@@ -168,12 +237,17 @@ class aliyun_lib
 		}
 	}
 
+	/**
+	 * 短信发送
+	 * @参数 $mobile 目标手机号
+	 * @参数 $data 变量参数，仅限数组
+	**/
 	public function sms($mobile,$data='')
 	{
 		if(!$mobile){
 			return $this->error(P_Lang('未指定手机号'));
 		}
-		if(!$this->sms_template_id){
+		if(!$this->template_id){
 			return $this->error(P_Lang('未指定模板ID'));
 		}
 		if(!$this->access_key){
@@ -190,23 +264,24 @@ class aliyun_lib
 			return $this->error(P_Lang('未配置EndPoint'));
 		}
 
-		if(!$this->mns_title){
-			return $this->error(P_Lang('未配置主题'));
+		$params = array("PhoneNumbers"=>$mobile,'SignName'=>$this->signature,'TemplateCode'=>$this->template_id);
+		if($data){
+			$data = json_encode($data, JSON_UNESCAPED_UNICODE);
+			$params['TemplateParam'] = $data;
 		}
-
-		$this->client = new Client($this->end_point, $this->access_key,$this->access_secret);
-		$topic = $this->client->getTopicRef($this->mns_title);
-		$batchSmsAttributes = new BatchSmsAttributes($this->signature, $this->sms_template_id);
-		$batchSmsAttributes->addReceiver($mobile,$data);
-		$messageAttributes = new MessageAttributes(array($batchSmsAttributes));
-		$request = new PublishMessageRequest('smsmessage', $messageAttributes);
-		try{
-			$res = $topic->publishMessage($request);
-			return $this->success();
+		$params['RegionId'] = $this->regoin_id;
+		$params['Action'] = 'SendSms';
+		$params['Version'] = '2017-05-25';
+		$helper = new sms\SignatureHelper();
+		$content = $helper->request($this->access_key,$this->access_secret,$this->end_point,$params);
+		if(!$content){
+			return $this->error('短信发送失败');
 		}
-		catch (MnsException $e){
-			return $this->error($e->getMessage(),$e->getMnsErrorCode());
+		$content = (array) $content;
+		if($content['Code'] == 'OK'){
+			return $this->success($content);
 		}
+		return $this->error($content['Message'],$content['Code']);
 	}
 
 	public function client()
@@ -214,7 +289,7 @@ class aliyun_lib
 		if(!$this->regoin_id){
 			return $this->error(P_Lang('未设置 Regoin ID'));
 		}
-		if(!$this->access_id){
+		if(!$this->access_key){
 			return $this->error(P_Lang('未指定Access Key ID'));
 		}
 		if(!$this->access_secret){
@@ -223,11 +298,19 @@ class aliyun_lib
 		if(!$this->signature){
 			return $this->error(P_Lang('未配置标签'));
 		}
-		$iClientProfile = DefaultProfile::getProfile($this->regoin_id, $this->access_id,$this->access_secret);
+		$iClientProfile = DefaultProfile::getProfile($this->regoin_id, $this->access_key,$this->access_secret);
 		$this->client = new DefaultAcsClient($iClientProfile);
 		return $this->client;
 	}
-	
+
+	/**
+	 * 上传视频文件
+	 * @参数 $filename 文件名
+	 * @参数 $title 标题
+	 * @参数 $thumb 缩略图
+	 * @参数 $note 摘要
+	 * @参数 $tag 标签
+	**/
 	public function create_upload_video($filename,$title='',$thumb='',$note='',$tag='')
 	{
 		if(!$filename){
@@ -271,6 +354,10 @@ class aliyun_lib
 		}
 	}
 
+	/**
+	 * 视频刷新
+	 * @参数 $videoid 视频ID
+	**/
 	public function refresh_upload_video($videoid)
 	{
 		if(!$videoid){
@@ -292,6 +379,10 @@ class aliyun_lib
 		}
 	}
 
+	/**
+	 * 取得视频信息
+	 * @参数 $videoid 视频ID
+	**/
 	public function video_info($videoid)
 	{
 		if(!$videoid){
@@ -313,6 +404,13 @@ class aliyun_lib
 		}
 	}
 
+	/**
+	 * 视频列表
+	 * @参数 $pageid 页码
+	 * @参数 $psize 每次查询数量
+	 * @参数 $starttime 开始时间
+	 * @参数 $endtime 结束时间
+	**/
 	public function video_list($pageid=1,$psize=30,$starttime='',$endtime='')
 	{
 		$request = new vod\GetVideoListRequest();
@@ -341,7 +439,7 @@ class aliyun_lib
 			return $this->error($e->getErrorMessage(),$e->getErrorCode());
 		}
 	}
-	
+
 	/**
 	 * 错误返回
 	 * @参数 $error 错误内容

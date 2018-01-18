@@ -7,9 +7,12 @@
  * @version 4.5.0
  * @date 2016年01月27日
  */
+
 if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
+
+
 class url_model extends url_model_base
 {
 	public function __construct()
@@ -22,5 +25,3 @@ class url_model extends url_model_base
 		return $this->url_ctrl($ctrl,$func,$ext);
 	}
 }
-
-?>

@@ -15,12 +15,6 @@ class sysmenu_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	# 获取一条信息
 	function get_one($id)
 	{

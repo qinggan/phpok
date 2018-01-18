@@ -15,12 +15,6 @@ class ext_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	# 检查字段是否有被使用
 	function check_identifier($identifier,$module)
 	{

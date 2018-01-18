@@ -58,19 +58,6 @@ $(document).ready(function(){
 <!-- /if -->
 
 <!-- if $rs.module -->
-<script type="text/javascript">
-function reply_it(id,title)
-{
-	var url = get_url('list','comment','id='+id);
-	$.dialog.open(url,{
-		'title':'{lang评论：}'+title,
-		'lock':true,
-		'width':'90%',
-		'height':'90%',
-		'cancel':function(){return true;}
-	});
-}
-</script>
 <div class="tips">
 	{lang您当前的位置：}{lang内容管理}
 	<!-- loop from=$plist key=$key value=$value id=plist_id -->
@@ -260,7 +247,7 @@ function reply_it(id,title)
 	
 	<!-- loop from=$layout key=$k value=$v -->
 		<!-- if $k == "dateline" -->
-		<td class="center">{func date Y-m-d $value.dateline}</td>
+		<td class="center">{func date "Y-m-d H:i" $value.dateline}</td>
 		<!-- elseif $k == "hits" -->
 		<td class="center">{$value.hits}</td>
 		<!-- elseif $k == "user_id" -->
@@ -288,7 +275,7 @@ function reply_it(id,title)
 		<div class="button-group">
 			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=list func=edit id=$value.id/}')" class="phpok-btn" /><!-- /if -->
 			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="content_del('{$value.id}')" class="phpok-btn" /><!-- /if -->
-			<!-- if $popedom.comment && $rs.comment_status && $comments[$value.id] --><input type="button" class="phpok-btn" value="{lang评论}" onclick="reply_it('{$value.id}','{$value.title}')"{if $comments[$value.id].uncheck} style="color:red;" title="{lang未审核评论：}{$comments[$value.id].uncheck}"{/if} /><!-- /if -->
+			<!-- if $popedom.comment && $rs.comment_status && $comments[$value.id] --><input type="button" class="phpok-btn" value="{lang评论}" onclick="$.admin_list.reply_it('{$value.id}')"{if $comments[$value.id][uncheck]} style="color:red;" title="{lang未审核评论：}{$comments[$value.id][uncheck]}"{/if} /><!-- /if -->
 			<!-- if $rs.subtopics && !$value[parent_id] && $popedom.add --><input type="button" value="加子主题" onclick="$.phpok.go('{url ctrl=list func=edit parent_id=$value.id pid=$value.project_id/}')" class="phpok-btn" /><!-- /if -->
 		</div>
 	</td>
@@ -336,7 +323,7 @@ function reply_it(id,title)
 		<!-- /if -->
 		<!-- loop from=$layout key=$k value=$v -->
 			<!-- if $k == "dateline" -->
-			<td class="center">{echo date("Y-m-d",$vv[dateline])}</td>
+			<td class="center">{echo date("Y-m-d H:i",$vv[dateline])}</td>
 			<!-- elseif $k == "hits" -->
 			<td class="center">{$vv.hits}</td>
 			<!-- elseif $k == 'user_id' -->
@@ -364,7 +351,7 @@ function reply_it(id,title)
 			<div class="button-group">
 				<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=list func=edit id=$vv.id/}')" class="phpok-btn" /><!-- /if -->
 				<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="content_del('{$vv.id}')" class="phpok-btn" /><!-- /if -->
-				<!-- if $popedom.comment && $rs.comment_status && $comments[$vv.id] --><input type="button" class="phpok-btn" value="{lang评论}" onclick="reply_it('{$vv.id}','{$vv.title}')"{if $comments[$vv.id].uncheck} style="color:red;" title="{lang未审核评论：}{$comments[$vv.id].uncheck}"{/if} /><!-- /if -->
+				<!-- if $popedom.comment && $rs.comment_status && $comments[$vv.id] --><input type="button" class="phpok-btn" value="{lang评论}" onclick="$.phpok_list.reply_it('{$vv.id}')"{if $comments[$vv.id][uncheck]} style="color:red;" title="{lang未审核评论：}{$comments[$vv.id][uncheck]}"{/if} /><!-- /if -->
 			</div>
 		</td>
 	</tr>

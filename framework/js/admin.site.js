@@ -86,4 +86,18 @@
 			});
 		}
 	}
+	$(document).ready(function(){
+		$.getScript('js/clipboard.min.js',function(){
+			var clipboard = new Clipboard('.site-url-copy');
+			clipboard.on('success', function(e) {
+				$.dialog.alert(p_lang('网址复制成功'));
+				e.clearSelection();
+			});
+
+			clipboard.on('error', function(e) {
+				$.dialog.alert(p_lang('网址复制失败'));
+			});
+		});
+	});
 })(jQuery);
+

@@ -38,13 +38,15 @@ class post_control extends phpok_control
 		if(!$project_rs || !$project_rs['module']){
 			$this->error(P_Lang("项目不符合要求"));
 		}
+		$err_url = $project_rs['url'];
 		if(!$project_rs['post_status']){
-			$this->error(P_Lang('项目未启用发布功能，联系管理员启用此功能'));
+			$this->error(P_Lang('项目未启用发布功能，联系管理员启用此功能'),$err_url,10);
 		}
 		$project_rs['url'] = $this->url('post',$project_rs['identifier']);
 		$this->assign("page_rs",$project_rs);
+		$group_rs = $this->model('usergroup')->get_one($this->user_groupid);
 		if(!$this->model('popedom')->check($project_rs['id'],$this->user_groupid,'post')){
-			$this->error(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您的级别（{grouptitle}）没有发布权限，请联系我们的客服',array('grouptitle'=>$group_rs['title'])),$err_url,10);
 		}
 		//绑定分类信息
 		if($project_rs['cate']){
@@ -167,7 +169,7 @@ class post_control extends phpok_control
 		}
 		$this->assign("extlist",$extlist);
 		$this->assign('rs',$rs);
-		$tpl = $project_rs['identifier'].'_post_edit';
+		$tpl = $project_rs['post_tpl'] ? $project_rs['post_tpl'].'_edit' : $project_rs['identifier'].'_post_edit';
 		if(!$this->tpl->check_exists($tpl)){
 			$tpl = 'post_edit';
 			if(!$this->tpl->check_exists($tpl)){

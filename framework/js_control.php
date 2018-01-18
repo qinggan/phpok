@@ -18,12 +18,18 @@ class js_control extends phpok_control
 		parent::control();
 	}
 
-	//WEB前台通用JS
+	/**
+	 * 通用 JS，包括加载 form.js
+	**/
 	public function index_f()
 	{
 		$this->js_base();
 		echo $this->lib('file')->cat($this->dir_phpok."form.js");
 		echo "\n";
+		if($this->app_id == 'admin'){
+			echo $this->lib('file')->cat($this->dir_phpok."admin.form.js");
+			echo "\n";
+		}
 		$ext = $this->get("ext");
 		$_ext = $this->get('_ext');
 		$autoload_js = $this->config["autoload_js"];
@@ -33,83 +39,80 @@ class js_control extends phpok_control
 		if(!$ext && !$_ext){
 			exit;
 		}
-		$list = explode(",",$ext);
+		$list = ($ext && is_string($ext)) ? explode(",",$ext) : ($ext ? $ext : array());
 		$list = array_unique($list);
-		$forbid_ext = $_ext ? explode(",",$_ext) : array();
-		$is_artdialog = false;
-		foreach($list AS $key=>$value){
-			$value = trim($value);
-			if(!$value){
-				continue;
-			}
-			if($value && in_array($value,$forbid_ext)){
-				continue;
-			}
-			if($value && strtolower(substr($value,-3)) != '.js'){
-				$value .= '.js';
-			}
-			$jsfile = is_file($this->dir_root."js/".$value) ? $this->dir_root."js/".$value : $this->dir_phpok."js/".$value;
-			if($value && is_file($jsfile) && $value != "jquery.js"){
-				echo $this->lib('file')->cat($jsfile);
-				if($value == 'jquery.artdialog.js'){
-					$this->js_artdialog_global_config();
-				}
-				echo "\n";
+		if($_ext){
+			$forbid_ext = is_string($_ext) ? explode(",",$_ext) : $_ext;
+			$list = array_diff($list,$forbid_ext);
+			if(!$list){
+				exit;
 			}
 		}
+		$this->load_ext($list,false);
 		exit;
 	}
 
-	//人工指定js
+	/**
+	 * 加载扩展JS，不包括核心JS
+	**/
 	public function ext_f()
 	{
 		header("Content-type: application/x-javascript; charset=UTF-8");
 		$js = $this->get("js");
-		if(!$js) exit("\n");
-		$list = explode(",",$js);
-		echo "\n";
-		$is_artdialog = false;
-		foreach($list AS $key=>$value){
-			$value = trim($value);
-			if(!$value){
-				continue;
-			}
-			//判断后缀是否是.js
-			if(strtolower(substr($value,-3)) != '.js'){
-				$value .= '.js';
-			}
-			//判断文件是否存在
-			$jsfile = file_exists($this->dir_root."js/".$value) ? $this->dir_root."js/".$value : $this->dir_phpok."js/".$value;
-			if(is_file($jsfile)){
-				echo "\n";
-				echo $this->lib('file')->cat($jsfile);
-				echo "\n";
-				if($value == 'jquery.artdialog.js'){
-					$this->js_artdialog_global_config();
-				}
-			}
+		if(!$js){
+			exit("\n");
 		}
+		$this->load_ext($js,false);
 	}
 
+	/**
+	 * 最小核心JS加载（只加载 jquery.js 及 system.js 文件）
+	**/
 	public function mini_f()
 	{
 		$this->js_base();
 		$ext = $this->get('ext');
 		if($ext){
-			$list = explode(",",$ext);
-			foreach($list AS $key=>$value){
-				$value = trim($value);
-				if(!$value) continue;
-				if(strtolower(substr($value,-3)) != '.js') $value .= '.js';
-				$file = is_file($this->dir_phpok.'js/'.$value) ? $this->dir_phpok.'js/'.$value : $this->dir_root."js/".$value;
-				if(file_exists($file)){
-					echo "\n";
-					echo $this->lib('file')->cat($file);
-					echo "\n";
-					if($value == 'jquery.artdialog.js'){
-						$this->js_artdialog_global_config();
-					}
+			$this->load_ext($ext,true);
+		}
+	}
+
+	private function load_ext($ext,$is_admin=false)
+	{
+		if(!$ext){
+			return false;
+		}
+		$list = is_string($ext) ? explode(",",$ext) : $ext;
+		foreach($list as $key=>$value){
+			if(!$value || !trim($value)){
+				continue;
+			}
+			$value = trim($value);
+			if(strtolower(substr($value,-3)) != '.js'){
+				$value .= '.js';
+			}
+			if($is_admin){
+				$file = $this->dir_phpok.'js/'.$value;
+				if(!file_exists($file)){
+					$file = $this->dir_root."js/".$value;
 				}
+				if(!file_exists($file)){
+					continue;
+				}
+			}else{
+				$file = $this->dir_root."js/".$value;
+				if(!file_exists($file)){
+					$file = $this->dir_phpok.'js/'.$value;
+				}
+				if(!file_exists($file)){
+					continue;
+				}
+			}
+			echo "\n";
+			echo $this->lib('file')->cat($file);
+			echo "\n";
+			if($value == 'jquery.artdialog.js'){
+				$this->js_artdialog_global_config();
 			}
 		}
 	}
@@ -127,18 +130,39 @@ class js_control extends phpok_control
 		echo '})(art.dialog.defaults);'."\n";
 	}
 
-	//最小化加载js
+	/**
+	 * 加载基本的JS
+	**/
 	private function js_base()
 	{
 		header("Content-type: text/javascript; charset=utf-8");
-		$file = $_SERVER["SCRIPT_NAME"] ? basename($_SERVER["SCRIPT_NAME"]) : basename($_SERVER["SCRIPT_FILENAME"]);
-		$weburl = $this->get_url();
-		echo 'var basefile = "'.$file.'";'."\n";
-		echo 'var ctrl_id = "'.$this->config['ctrl_id'].'";'."\n";
-		echo 'var func_id = "'.$this->config['func_id'].'";'."\n";
-		echo 'var webroot = "'.$weburl.'";'."\n";
-		echo 'var apifile = "'.$this->config['api_file'].'";'."\n";
-		echo 'var lang= new Array();'."\n";
+		$file = $this->app_id == 'admin' ? $this->config['admin_file'] : $this->config['www_file'];
+		$this->assign('basefile',$file);
+		$this->load_language_js();
+		$file = $this->dir_root.'js/jquery.js';
+		//实现jQuery.js文件的自定义
+		if($this->app_id != 'admin'){
+			if(file_exists($this->dir_root.$this->tpl->dir_tpl.'js/jquery.js')){
+				$file = $this->dir_root.$this->tpl->dir_tpl.'js/jquery.js';
+			}
+			if(file_exists($this->dir_root.$this->tpl->dir_tpl.'js/jquery.min.js')){
+				$file = $this->dir_root.$this->tpl->dir_tpl.'js/jquery.min.js';
+			}
+		}
+		$jquery = $this->lib('file')->cat($file);
+		$this->assign('jquery',$jquery);
+		$this->tpl->output($this->dir_phpok.'system.js','abs-file',false);
+	}
+
+	/**
+	 * 加载JS下的语言包
+	**/
+	private function load_language_js()
+	{
+		$multiple_language = isset($GLOBALS['app']->config['multiple_language']) ? $GLOBALS['app']->config['multiple_language'] : false;
+		if(!$multiple_language){
+			return false;
+		}
 		$js_default_file = $this->dir_root.'langs/'.$this->app_id.'.xml';
 		$default_list = $this->lib('xml')->read($js_default_file);
 		if(!$default_list){
@@ -157,33 +181,7 @@ class js_control extends phpok_control
 			}
 		}
 		if($langs){
-			foreach($langs as $key=>$value){
-				echo 'lang["'.$key.'"] = "'.$value.'";'."\n";
-			}
+			$this->assign('langs',$langs);
 		}
-		echo "\n";
-		echo 'function get_url(ctrl,func,ext){var url = "'.$weburl.$file.'?'.$this->config['ctrl_id'].'="+ctrl;if(func){url+="&'.$this->config['func_id'].'="+func;};if(ext){url+="&"+ext};return url;}';
-		echo "\n";
-		echo 'function get_plugin_url(id,func,ext){var url = "'.$weburl.$file.'?'.$this->config['ctrl_id'].'=plugin&'.$this->config['func_id'].'=exec&id="+id+"&exec="+func;if(ext){url+="&"+ext};url+="&_noCache="+Math.random();return url;};';
-		echo "\n";
-		echo 'function api_url(ctrl,func,ext){var url = "'.$weburl.$this->config['api_file'].'?'.$this->config['ctrl_id'].'="+ctrl;if(func){url+="&'.$this->config['func_id'].'="+func;};if(ext){url+="&"+ext};url+="&_noCache="+Math.random();return url;};';
-		echo "\n";
-		echo 'function api_plugin_url(id,func,ext){var url = "'.$weburl.$this->config['api_file'].'?'.$this->config['ctrl_id'].'=plugin&'.$this->config['func_id'].'=index&id="+id+"&exec="+func;if(ext){url+="&"+ext};url+="&_noCache="+Math.random();return url;};';
-		echo "\n";
-		//实现jQuery.js文件的自定义
-		if($this->app_id != 'admin'){
-			$file = $this->dir_root.$this->tpl->dir_tpl.'js/jquery.js';
-			if(!file_exists($file)){
-				$file = $this->dir_root.$this->tpl->dir_tpl.'javascript/jquery.js';
-			}
-			if(!file_exists($file)){
-				$file = $this->dir_root.'js/jquery.js';
-			}
-		}else{
-			$file = $this->dir_root.'js/jquery.js';
-		}
-		echo $this->lib('file')->cat($file);
-		echo "\n";
 	}
 }
-?>

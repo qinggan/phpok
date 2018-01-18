@@ -137,13 +137,11 @@ class ext_lib
 		if(!$id) return false;
 		$rslist = $GLOBALS['app']->model('res')->get_list_from_id($id,true);
 		if(!$rslist) return false;
-		foreach($rslist AS $key=>$value)
+		foreach($rslist as $key=>$value)
 		{
-			if($value["gd"])
-			{
-				$tmp = "";
-				foreach($value['gd'] AS $k=>$v)
-				{
+			if($value["gd"]){
+				$tmp = array();
+				foreach($value['gd'] as $k=>$v){
 					$tmp[$v['identifier']] = $v['filename'];
 				}
 				$value["gd"] = $tmp;

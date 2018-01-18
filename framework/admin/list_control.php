@@ -703,6 +703,8 @@ class list_control extends phpok_control
 					$this->assign('biz_attrlist',$biz_attrlist);
 				}
 			}
+			$unitlist = $this->model('biz')->unitlist();
+			$this->assign('unitlist',$unitlist['name']);
 		}
 		//判断是否有父主题
 		$parent_id = $this->get("parent_id","int");
@@ -718,7 +720,18 @@ class list_control extends phpok_control
 		$this->model("list");
 		if($p_rs['is_attr']){
 			$attrlist = $this->model('list')->attr_list();
-			$this->assign("attrlist",$attrlist);
+			if($attrlist){
+				$attr = $rs['attr'] ? explode(",",$rs['attr']) : array();
+				foreach($attrlist as $key=>$value){
+					$tmp = array('status'=>false,'val'=>$value);
+					if($attr && in_array($value,$attr)){
+						$tmp['status'] = true;
+					}
+					$attrlist[$key] = $tmp;
+				}
+				$this->assign("attrlist",$attrlist);
+			}
+			
 		}
 		//增加JS和CSS
 		$this->addjs('js/laydate/laydate.js');
@@ -1438,6 +1451,9 @@ class list_control extends phpok_control
 		$this->json(true);
 	}
 
+	/**
+	 * 电子商务属性
+	**/
 	public function options_html_f()
 	{
 		//读属性
@@ -1453,8 +1469,8 @@ class list_control extends phpok_control
 			$info = $this->model('list')->call_one($tid);
 			$pid = $info['project_id'];
 		}else{
-			if($_SESSION['attr']){
-				$rslist = $_SESSION['attr'];
+			if($this->session->val('attr')){
+				$rslist = $this->session->val('attr');
 			}
 			$pid = $this->get('pid','int');
 		}

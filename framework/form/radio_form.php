@@ -143,15 +143,16 @@ class radio_form extends _init_auto
 		//当类型为默认时
 		if($type == 'default' && $info){
 			$list = explode("\n",$info);
-			$rslist = "";
+			$rslist = array();
 			$i=0;
 			foreach($list AS $key=>$value){
-				if($value && trim($value)){
-					$value = trim($value);
-					$rslist[$i]['val'] = $value;
-					$rslist[$i]['title'] = $value;
-					$i++;
+				if(!$value || !trim($value)){
+					continue;
 				}
+				$value = trim($value);
+				$rslist[$i]['val'] = $value;
+				$rslist[$i]['title'] = $value;
+				$i++;
 			}
 			return $rslist;
 		}
@@ -165,7 +166,7 @@ class radio_form extends _init_auto
 		if($type == 'project'){
 			$tmplist = $this->model('project')->project_sonlist($group_id);
 			if(!$tmplist) return false;
-			$rslist = '';
+			$rslist = array();
 			foreach($tmplist AS $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;
@@ -173,11 +174,10 @@ class radio_form extends _init_auto
 			return $rslist;
 		}
 		//读主题列表信息
-		if($type == 'title')
-		{
+		if($type == 'title'){
 			$tmplist = $this->model("list")->title_list($group_id);
 			if(!$tmplist) return false;
-			$rslist = '';
+			$rslist = array();
 			foreach($tmplist AS $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;
@@ -185,11 +185,10 @@ class radio_form extends _init_auto
 			return $rslist;
 		}
 		//读子分类信息
-		if($type == 'cate')
-		{
+		if($type == 'cate'){
 			$tmplist = $this->model('cate')->catelist_sonlist($group_id,false,0);
 			if(!$tmplist) return false;
-			$rslist = '';
+			$rslist = array();
 			foreach($tmplist AS $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;
@@ -198,6 +197,4 @@ class radio_form extends _init_auto
 		}
 		return false;
 	}
-
 }
-?>

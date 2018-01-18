@@ -15,12 +15,6 @@ class project_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	//首页取得简单的项目信息，通过ID
 	function simple_project_from_identifier($identifier="",$site_id=0)
 	{

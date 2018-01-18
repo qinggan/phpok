@@ -173,12 +173,12 @@ class _init_phpok
 	/**
 	 * 授权码，16位或32位的授权码，要求全部大写，对应license.php里的常量LICENSE_CODE
 	**/
-	public $license_code = "ED988858BCB1903A529C762DBA51DD40";
+	public $license_code = "";
 
 	/**
 	 * 授权时间，对应license.php里的常量LICENSE_DATE
 	**/
-	public $license_date = "2012-10-29";
+	public $license_date = "";
 
 	/**
 	 * 授权者称呼，企业授权填写公司名称，个人授权填写姓名，对应license.php里的常量LICENSE_NAME
@@ -247,6 +247,8 @@ class _init_phpok
 
 	private $_libs = array();
 
+	public $ctrol_param = array();
+
 	/**
 	 * 构造函数，用于初化一些数据
 	**/
@@ -313,7 +315,11 @@ class _init_phpok
 			}
 		}
 		$this->langid = $langid;
-		$this->language($langid);
+		
+		if($multiple_language){
+			
+			$this->language($langid);
+		}
 	}
 
 	/**
@@ -323,27 +329,14 @@ class _init_phpok
 	**/
 	public function language($langid='default')
 	{
-		if(!function_exists('gettext')){
-			$this->language_status = 'user';
-			$mofile = $this->dir_root.'langs/'.$langid.'/LC_MESSAGES/'.$this->app_id.'.mo';
-			if(!is_readable($mofile)){
-				return false;
-			}
-			$this->lang = $this->lib('pomo')->lang($mofile);
-		}else{
-			$this->language_status = 'gettext';
-			if($langid != 'default' && $langid != 'cn'){
-				putenv('LANG='.$langid);
-				setlocale(LC_ALL,$langid);
-				bindtextdomain($this->app_id,$this->dir_root.'langs');
-				textdomain($this->app_id);
-			}else{
-				putenv('LANG=zh_CN');
-				setlocale(LC_ALL,'zh_CN');
-				bindtextdomain($this->app_id,$this->dir_root.'langs');
-				textdomain($this->app_id);
-			}
-		}
+		$multiple_language = isset($this->config['multiple_language']) ? $this->config['multiple_language'] : false;
+		include_once($this->dir_phpok.'language.php');
+		$this->language = new phpok_language($langid);
+		$this->language->status($multiple_language);
+		$this->language->folder($this->dir_root.'langs');
+		$this->language->id($this->app_id);
+		$this->language->pomo($this->dir_extension);
+		unset($multiple_language);
 	}
 
 	/**
@@ -355,17 +348,14 @@ class _init_phpok
 	**/
 	final public function lang_format($info,$var='')
 	{
-		if(!$info){
-			return false;
+		if(!$this->language){
+			$this->language($this->langid);
 		}
-		$this->language_status = function_exists('gettext') ? 'gettext' : 'user';
-		if($this->language_status == 'user' && $this->lang){
-			$info = $this->lang->translate($info);
-		}else{
-			if($this->language_status == 'gettext'){
-				$info = gettext($info);
-			}
-		}
+		return $this->language->format($info,$var);
+	}
+
+	private function _lang_format($info,$var='')
+	{
 		if($var && is_string($var)){
 			$var  = unserialize($var);
 		}
@@ -399,7 +389,7 @@ class _init_phpok
 			if($this->session->val('admin_lang_id')){
 				$tpl_rs['langid'] = $this->session->val('admin_lang_id');
 			}
-			$this->tpl = new phpok_tpl($tpl_rs);
+			$this->tpl = new phpok_template($tpl_rs);
 		}else{
 			if($this->app_id == 'www'){
 				if(!$this->site["tpl_id"] || ($this->site["tpl_id"] && !is_array($this->site["tpl_id"]))){
@@ -417,7 +407,7 @@ class _init_phpok
 				$this->model('url')->rules($this->model('rewrite')->get_all());
 				$this->model('url')->page_id($this->config['pageid']);
 			}
-			$this->tpl = new phpok_tpl($this->site["tpl_id"]);
+			$this->tpl = new phpok_template($this->site["tpl_id"]);
 			include($this->dir_phpok."phpok_call.php");
 			$this->call = new phpok_call();
 		}
@@ -602,7 +592,7 @@ class _init_phpok
 		if(!$class){
 			return false;
 		}
-		if($this->_libs && $this->_libs[$class]){
+		if(isset($this->_libs) && $this->_libs && isset($this->_libs[$class]) && $this->_libs[$class]){
 			$config = $this->_libs[$class];
 		}else{
 			$config = array('param'=>'','include'=>'','auto'=>'','classname'=>$class.'_lib');
@@ -652,6 +642,32 @@ class _init_phpok
 	}
 
 	/**
+	 * 按需加载 Control 类文件，以实现control里数据交叉处理
+	 * @参数 $name 字符串，方法名称
+	 * @参数 $appid 字符串，指定APP_ID，不指定使用内置
+	**/
+	public function control($name,$appid='')
+	{
+		if($appid && !in_array($appid,array('www','api','www'))){
+			$appid = $this->app_id;
+		}
+		if(!$appid){
+			$appid = $this->app_id;
+		}
+		$class_name = $appid.'_'.$name.'_control';
+		if($this->$class_name && is_object($this->$class_name)){
+			return $this->$class_name;
+		}
+		$file = $this->dir_phpok.'/'.$appid.'/'.$name.'_control.php';
+		if(!file_exists($file)){
+			return false;
+		}
+		include_once($file);
+		$this->$class_name = new $class_name();
+		return $this->$class_name;
+	}
+
+	/**
 	 * 按需加载Model信息，所有的文件均放在framework/model/目录下。会根据**app_id**自动加载同名但不同入口的文件
 	 * @参数 $name，字符串
 	 * @返回 实例化后的类，出错则中止运行报错
@@ -679,10 +695,9 @@ class _init_phpok
 			include($extfile);
 			$this->$class_name = new $class_name();
 			return $this->$class_name;
-		}else{
-			$this->$class_base = new $class_base();
-			return $this->$class_base;
 		}
+		$this->$class_base = new $class_base();
+		return $this->$class_base;
 	}
 
 	/**
@@ -805,6 +820,7 @@ class _init_phpok
 			}
 			$this->$key = $obj;
 		}
+		$info = $this->lib('debug')->stop('config');
 	}
 
 	/**
@@ -855,6 +871,9 @@ class _init_phpok
 			error_reporting(E_ALL ^ E_NOTICE);
 		}else{
 			error_reporting(0);
+			if(isset($config['opcache']) && function_exists('opcache_reset')){
+				ini_set('opcache.enable',$config['opcache']);
+			}
 		}
 		if(ini_get('zlib.output_compression')){
 			ob_start();
@@ -1144,6 +1163,26 @@ class _init_phpok
 	{
 		$this->plugin('phpok-after');
 		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-after');
+		
+		//是否启用异步通知
+		if($this->config['async']['status'] && $this->config['async']['interval_times']){
+			$check = false;
+			if(!file_exists($this->dir_cache.'async_interval_times.php')){
+				$check = true;
+			}
+			if(!$check){
+				$time = file_get_contents($this->dir_cache.'async_interval_times.php');
+				if(($time + $this->config['async_interval_times'] * 60) < $this->time){
+					$check = true;
+				}
+			}
+			if($check){
+				$taskurl = api_url('task','index',$this->session->sid()."=".$this->session->sessid(),true);
+				$this->lib('async')->start($taskurl);
+				file_put_contents($this->dir_cache.'async_interval_times.php',$this->time);
+			}
+		}
+
 		header("Content-type: text/html; charset=utf-8");
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 		header("Last-Modified: Mon, 26 Jul 1997 05:00:00  GMT");
@@ -1371,8 +1410,12 @@ class _init_phpok
 	{
 		$ctrl = $this->get($this->config["ctrl_id"],"system");
 		$func = $this->get($this->config["func_id"],"system");
-		if(!$ctrl) $ctrl = "index";
-		if(!$func) $func = "index";
+		if(!$ctrl){
+			$ctrl = "index";
+		}
+		if(!$func){
+			$func = "index";
+		}
 		if($ctrl != 'login' && !$this->config['develop']){
 			if(!$this->lib('server')->referer()){
 				$ctrl='login';
@@ -1527,7 +1570,6 @@ class _init_phpok
 		$this->config['func'] = $func;
 		$this->config['time'] = $this->time;
 		$this->assign('sys',$this->config);
-		//节点触发器
 		$this->plugin('phpok-before');
 		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-before');
 		if($this->app_id == 'www' && !$this->site['status'] && !$_SESSION['admin_id']){
@@ -1546,7 +1588,7 @@ class _init_phpok
 	**/
 	final public function json($content,$status=false,$exit=true)
 	{
-		if($content && !is_bool($content) && is_string($content) && strlen($content) < 61440 && $exit){
+		if($content && !is_bool($content) && is_string($content) && strlen($content) < 61440 && $exit && $this->config['debug']){
 			$this->model('log')->save($content);
 		}
 		if($exit){
@@ -1676,7 +1718,7 @@ class _init_phpok
 		if($url && $ajax === false && !$this->is_ajax){
 			$ajax = 2;
 		}
-		if($info && is_string($info)){
+		if($info && is_string($info) && $this->config['debug']){
 			$this->model('log')->save($info);
 		}
 		$this->_tip($info,0,$url,$ajax);
@@ -1694,7 +1736,7 @@ class _init_phpok
 		if($url && $ajax === false && !$this->is_ajax){
 			$ajax = 2;
 		}
-		if($info && is_string($info)){
+		if($info && is_string($info) && $this->config['debug']){
 			$this->model('log')->save($info);
 		}
 		$this->_tip($info,1,$url,$ajax);
@@ -1712,7 +1754,7 @@ class _init_phpok
 		if($url && $ajax === false && !$this->is_ajax){
 			$ajax = 2;
 		}
-		if($info && is_string($info)){
+		if($info && is_string($info) && $this->config['debug']){
 			$this->model('log')->save($info);
 		}
 		$this->_tip($info,2,$url,$ajax);
@@ -1884,11 +1926,6 @@ class _init_auto
 		//
 	}
 
-	public function __destruct()
-	{
-		unset($this);
-	}
-
 	/**
 	 * 魔术方法之方法重载
 	 * @参数 $method $GLOBALS['app']下的方法，如果存在，直接调用，不存在，通过分析动态加载lib或是model
@@ -2006,15 +2043,13 @@ class _init_lib
 **/
 class phpok_control extends _init_auto
 {
-	public function control()
+	public function control($id='',$app_id='')
 	{
-		parent::__construct();
-	}
-
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
+		if(!$id){
+			parent::__construct();
+			return true;
+		}
+		return $GLOBALS['app']->control($id,$app_id);
 	}
 }
 
@@ -2036,8 +2071,8 @@ class phpok_model extends _init_auto
 	{
 		if(!$id){
 			parent::__construct();
-			if($this->app_id == 'admin' && $_SESSION['admin_site_id']){
-				$this->site_id = $_SESSION['admin_site_id'];
+			if($this->app_id == 'admin' && $this->session->val('admin_site_id')){
+				$this->site_id = $this->session->val('admin_site_id');
 			}
 			if($this->app_id != 'admin' && $this->site['id']){
 				$this->site_id = $this->site['id'];
@@ -2338,7 +2373,19 @@ function phpok_head_css()
 **/
 function P_Lang($info,$replace='')
 {
-	return $GLOBALS['app']->lang_format($info,$replace);
+	$status = isset($GLOBALS['app']->config['multiple_language']) ? $GLOBALS['app']->config['multiple_language'] : false;
+	if($status){
+		return $GLOBALS['app']->lang_format($info,$replace);
+	}
+	if($replace && is_string($replace)){
+		$replace  = unserialize($replace);
+	}
+	if($replace && is_array($replace)){
+		foreach($replace as $key=>$value){
+			$info = str_replace(array('{'.$key.'}','['.$key.']'),$value,$info);
+		}
+	}
+	return $info;
 }
 
 /**

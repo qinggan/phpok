@@ -19,11 +19,6 @@ class file_lib
 		$this->read_count = 0;
 	}
 
-	public function __destruct()
-	{
-		unset($this);
-	}
-
 	/**
 	 * 远程获取内容，这里直接调用html类来执行
 	 * @参数 $url 网址

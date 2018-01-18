@@ -24,10 +24,12 @@ class wxpay_lib
 	private $errmsg = '';
 	private $trade_type = 'native';
 	private $red_config = array();
+	private $timeStamp = '';
 	
 	public function __construct()
 	{
 		$this->nonce_str = md5(time().'-'.rand(100,999).'-phpok');
+		$this->time_stamp = time();
 	}
 
 	public function config($config,$id='')
@@ -137,6 +139,14 @@ class wxpay_lib
 			$this->timeout = $val;
 		}
 		return $this->timeout;
+	}
+
+	public function time_stamp($time='')
+	{
+		if($time){
+			$this->time_stamp = $time;
+		}
+		return $this->time_stamp;
 	}
 
 	public function errmsg($val='')
@@ -280,7 +290,6 @@ class wxpay_lib
 		$sign = $this->create_sign($data);
 		$data['sign'] = $sign;
 		$xml = $this->ToXml($data);
-		//$startTimeStamp = $this->getMillisecond();//请求开始时间
 		$response = $this->postXmlCurl($xml, $url, false, $this->timeout);
 		$rs = $this->FromXml($response);
 		if($rs['return_code'] != 'SUCCESS'){
@@ -330,7 +339,6 @@ class wxpay_lib
     		}
         }
         $xml.="</xml>";
-        phpok_log($xml);
         return $xml; 
 	}
 
@@ -419,7 +427,7 @@ class wxpay_lib
 		$values = array();
 		$time = time();
 		$values['appId'] = $data['appid'];
-		$values['timeStamp'] = "$time";
+		$values['timeStamp'] = $this->time_stamp;
 		$values['nonceStr'] = $this->nonce_str;
 		$values['package'] = "prepay_id=".$data['prepay_id'];
 		$values['signType'] = 'MD5';
@@ -436,7 +444,7 @@ class wxpay_lib
 		$values = array();
 		$time = time();
 		$values['appId'] = $data['appid'];
-		$values['timeStamp'] = "$time";
+		$values['timeStamp'] = $this->time_stamp;
 		$values['nonceStr'] = $this->nonce_str;
 		$values['package'] = "prepay_id=".$data['prepay_id'];
 		$values['signType'] = 'MD5';

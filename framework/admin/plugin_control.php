@@ -40,8 +40,8 @@ class plugin_control extends phpok_control
 		$this->assign("rslist",$rslist);
 		$dlist = $this->model('plugin')->dir_list();
 		if($dlist){
-			$not_install = "";
-			foreach($dlist AS $key=>$value){
+			$not_install = array();
+			foreach($dlist as $key=>$value){
 				if(!$rslist[$value] || !$rslist){
 					$not_install[$value] = $this->model('plugin')->get_xml($value);
 				}

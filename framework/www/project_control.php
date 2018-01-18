@@ -58,8 +58,14 @@ class project_control extends phpok_control
 	private function load_me($project,$parent_rs='')
 	{
 		$tpl = $project["tpl_index"] ? $project["tpl_index"] : ($project["tpl_list"] ? $project["tpl_list"] : $project["tpl_content"]);
+		if(!$tpl && !$parent_rs){
+			$tpl = $project["identifier"]."_page";
+		}
 		if(!$tpl && $project["parent_id"] && $parent_rs){
 			$tpl = $parent_rs["tpl_index"] ? $parent_rs["tpl_index"] : ($parent_rs["tpl_list"] ? $parent_rs["tpl_list"] : $parent_rs["tpl_content"]);
+			if(!$tpl){
+				$tpl = $parent_rs["identifier"]."_page";
+			}
 		}
 		if(!$tpl){
 			$tpl = $project["identifier"]."_page";

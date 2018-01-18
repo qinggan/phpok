@@ -13,12 +13,6 @@ class usergroup_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	function get_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."user_group WHERE id='".$id."'";

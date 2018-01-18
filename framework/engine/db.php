@@ -1,13 +1,21 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/engine/db.php
-	备注： DB基类
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年02月04日 09时55分
-*****************************************************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * DB基类
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2017年12月04日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class db
 {
 	protected $database;
@@ -35,12 +43,6 @@ class db
 		$this->database($config['data']);
 		$this->prefix = $config['prefix'] ? $config['prefix'] : 'qinggan_';
 		$this->debug = $config['debug'] ? true : false;
-	}
-
-	public function __destruct()
-	{
-		session_write_close();
-		unset($this);
 	}
 
 	public function database($database='')
@@ -225,4 +227,3 @@ class db
 		}
 	}
 }
-?>

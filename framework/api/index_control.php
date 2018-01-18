@@ -32,7 +32,8 @@ class index_control extends phpok_control
 		if(!$id){
 			$this->error(P_Lang('未指定数据调用标识'));
 		}
-		$rs = $this->model('call')->get_rs($id,$this->site['id']);
+		$this->model('call')->site_id($this->site['id']);
+		$rs = $this->model('call')->get_one($id,'identifier');
 		if(!$rs || !$rs['status']){
 			$this->error(P_Lang('标识不存在或未启用'));
 		}

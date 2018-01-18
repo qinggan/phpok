@@ -65,7 +65,7 @@ function delete_it(id)
 	<td id="title_{$value.id}">{$value.title}</td>
 	<td>{$value.company}</td>
 	<td><a href="{$value.url}" target="_blank">{$value.homepage}</a></td>
-	<td>{$codelist[$value.code].title}</td>
+	<td>{$codelist[$value.code][title]}</td>
 	<td>
 		<div class="button-group">
 			<input type="button" value="{lang编辑}" onclick="edit_it('{$value.id}')" class="phpok-btn" />

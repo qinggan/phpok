@@ -19,12 +19,6 @@ class site_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	/**
 	 * 获取站点信息
 	 * @参数 $id 站点ID

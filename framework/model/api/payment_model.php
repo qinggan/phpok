@@ -15,12 +15,6 @@ class payment_model extends payment_model_base
 		parent::__construct();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	public function get_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."payment WHERE id=".intval($id);

@@ -78,7 +78,16 @@ function save()
 </div>
 
 <div id="form_type_ext" style="display:none;"></div>
-<input type="hidden" name="form_style" id="form_style" value="{$rs.form_style}" />
+
+<div class="table">
+	<div class="title">
+		<span class="edit">
+			表单样式（CSS）：
+			<span class="note">不能超过250个字符，不熟悉CSS，请查手册：<a href="http://www.phpok.com" target="_blank">phpok.com</a></span>
+		</span>
+	</div>
+	<div class="content"><input type="text" id="form_style" name="form_style" class="long" value="{$rs.form_style}" /></div>
+</div>
 
 <div class="table">
 	<div class="title">

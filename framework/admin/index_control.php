@@ -178,11 +178,7 @@ class index_control extends phpok_control
 		if($all_info){
 			$this->assign('all_info',$all_info);
 		}
-		$list_setting = $this->list_setting($plugin_glist);
-		if($list_setting){
-			$this->assign('list_setting',$list_setting);
-		}
-		//读取语言包
+		$this->list_setting($plugin_glist);
 		$langlist = $this->model('lang')->get_list();
 		$this->assign('langlist',$langlist);
 		$this->view("index");
@@ -226,8 +222,11 @@ class index_control extends phpok_control
 				$show_vcode_setting = true;
 			}
 		}
+		if($this->config['hide_vcode_setting']){
+			$show_vcode_setting = false;
+		}
 		$this->assign("show_vcode_setting",$show_vcode_setting);
-		return $this->fetch('index_block_allsetting');
+		return true;
 	}
 
 	public function list_setting_f()
@@ -284,7 +283,7 @@ class index_control extends phpok_control
 			}
 		}
 		$this->assign('list_rslist',$rslist);
-		return $this->fetch('index_block_listsetting');
+		return true;
 	}
 
 	/**

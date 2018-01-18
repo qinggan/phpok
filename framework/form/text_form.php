@@ -1,12 +1,14 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/form/text.php
-	备注： 文本框表单配置器
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年02月27日 19时35分
-*****************************************************************************************/
+/**
+ * 文本框表单配置器
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年01月18日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class text_form extends _init_auto
 {
@@ -91,42 +93,50 @@ class text_form extends _init_auto
 		if($rs['form_btn'] == 'color'){
 			$this->addjs('js/jscolor/jscolor.js');
 		}
-		if($rs['form_btn'] == 'date' || $rs['form_btn'] == 'datetime'){
+		if($rs['form_btn'] && in_array($rs['form_btn'],array('date','datetime','time','year','month'))){
 			$this->addjs('js/laydate/laydate.js');
+			$this->assign('_laydate',true);
+			$tmp = array('date'=>P_Lang('日期'),'datetime'=>P_Lang('日期时间'),'time'=>P_Lang('时间'),'year'=>P_Lang('年份'),'month'=>P_Lang('年月'));
+			$this->assign('_laydate_button',$tmp[$rs['form_btn']]);
 		}
-		if(!$rs['width'] || intval($rs['width'])<1){
-			$rs['width'] = '200';
+		if($rs['form_style']){
+			$rs['form_style'] = $this->lib('common')->css_format($rs['form_style']);
 		}
-		$css = $rs['form_style'] ? $rs['form_style'].';width:'.intval($rs['width']).'px;' : 'width:'.intval($rs['width']).'px';
-		$rs['form_style'] = $this->lib('common')->css_format($css);
-		if($rs['ext_quick_words']){
-			$tmp = explode("\n",$rs['ext_quick_words']);
+		if($rs['form_btn'] == 'user'){
+			$css = $rs['form_style'] ? $rs['form_style'].';background:#EFEFEF;cursor:default;' : 'background:#EFEFEF;cursor:default;';
+			$rs['form_style'] = $this->lib('common')->css_format($css);
+		}
+		if($rs['ext_quick_words'] && trim($rs['ext_quick_words'])){
+			$tmp = explode("\n",trim($rs['ext_quick_words']));
 			foreach($tmp as $key=>$value){
 				if(!$value || !trim($value)){
 					unset($tmp[$key]);
-				}else{
-					$tmp[$key] = trim($value);
+					continue;
 				}
+				$tmp[$key] = trim($value);
 			}
 			$rs['ext_quick_words'] = $tmp;
 		}
 		$this->assign('_rs',$rs);
-		$file = $this->dir_phpok."form/html/text_admin_tpl.html";
-		return $this->fetch($file,'abs-file');
+		return $this->fetch($this->dir_phpok."form/html/text_admin_tpl.html",'abs-file');
 	}
 
 	private function _format_default($rs)
 	{
+		if($rs['form_btn'] == 'color'){
+			$this->addjs('js/jscolor/jscolor.js');
+		}
+		if($rs['form_btn'] && in_array($rs['form_btn'],array('date','datetime','time','year','month'))){
+			$this->addjs('js/laydate/laydate.js');
+		}
+		if($rs['form_style']){
+			$rs['form_style'] = $this->lib('common')->css_format($rs['form_style']);
+		}
 		if($rs['format'] == 'time'){
 			$format = $rs['form_btn'] == "datetime" ? "Y-m-d H:i" : "Y-m-d";
 			$time = $rs['content'] ? $rs['content'] : $this->time;
 			$rs['content'] = date($format,$time);
 		}
-		if(!$rs['width'] || intval($rs['width'])<1){
-			$rs['width'] = '200';
-		}
-		$css = $rs['form_style'] ? $rs['form_style'].';width:'.intval($rs['width']).'px;' : 'width:'.intval($rs['width']).'px';
-		$rs['form_style'] = $this->lib('common')->css_format($css);
 		$this->assign("_rs",$rs);
 		return $this->fetch($this->dir_phpok."form/html/text_www_tpl.html",'abs-file');
 	}

@@ -15,12 +15,6 @@ class call_model extends call_model_base
 		parent::__construct();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	public function del($id)
 	{
 		$sql = "DELETE FROM ".$this->db->prefix."phpok WHERE id='".$id."'";

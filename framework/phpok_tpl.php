@@ -10,8 +10,14 @@
  * @时间 2017年06月21日
 **/
 
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class phpok_tpl
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
+class phpok_template
 {
 	public $tpl_id = 1;
 	public $dir_tpl = "tpl/";
@@ -596,7 +602,8 @@ class phpok_tpl
 				$rs['file'] .= '.php';
 			}
 			if(file_exists($this->dir_php.$rs['file'])){
-				$string .= '<?php include("'.$this->dir_php.$rs["file"].'");?>';
+				
+				$string .= '<?php include($this->dir_php."'.$rs['file'].'");?>';
 			}
 		}
 		if($rs["tpl"]){
@@ -883,6 +890,16 @@ class phpok_tpl
 		return $string;
 	}
 
+	private function points_sort($a,$b)
+	{
+		$al = strlen($a);
+		$bl = strlen($b);
+		if ($al == $bl) {
+			return 0;
+		}
+		return ($al < $bl) ? +1 : -1;
+	}
+
 	/**
 	 * 将字串中的点变成数组，最多支持5级
 	 * @参数 $string 字符串
@@ -893,10 +910,27 @@ class phpok_tpl
 		if(!$string){
 			return false;
 		}
-		for($i=0;$i<5;$i++){
-			$string = preg_replace('/\$([\w\[\]\>\-]+)\.([\w]+\b)/iU','$\\1[\\2]',$string);
+		preg_match_all('/\$([\w\_\-\.]+?)/iU',$string,$matches);
+		if(!$matches || !$matches[0]){
+			return $string;
 		}
-		$string = preg_replace('/\[([a-z\_][a-z0-9\_]*)\]/iU',"['\\1']",$string);
+		$matches[0] = array_unique($matches[0]);
+		usort($matches[0],array($this,'points_sort'));
+		foreach($matches[0] as $key=>$value){
+			$list = explode('.',$value);
+			$tmp = '';
+			foreach($list as $k=>$v){
+				if($k < 1){
+					$tmp = $v;
+				}else{
+					$tmp .= $v ? '['.$v.']' : '.';
+				}
+			}
+			$string = str_replace($value,$tmp,$string);
+		}
+		$string = preg_replace('/\[([0-9][a-z\_\-]+)\]/iU',"['\\1']",$string);
+		$string = preg_replace('/\[(0[0-9]+)\]/iU',"['\\1']",$string);
+		$string = preg_replace('/\[([a-z\_\x7f-\xff].*)\]/iU',"['\\1']",$string);
 		return $string;
 	}
 

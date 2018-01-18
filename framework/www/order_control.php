@@ -95,7 +95,7 @@ class order_control extends phpok_control
 		if(!$is_virtual){
 			$address['fullname'] = $this->get('fullname');
 			if(!$address['fullname']){
-				$this->error(P_Lang('姓名不能为空'),$this->url('cart','check'));
+				$this->error(P_Lang('姓名不能为空'),$this->url('cart','checkout'));
 			}
 			$address['country'] = $this->get('country');
 			if(!$address['country']){
@@ -103,27 +103,27 @@ class order_control extends phpok_control
 			}
 			$address['province'] = $this->get('pca_p');
 			if(!$address['province']){
-				$this->error(P_Lang('请选择省份'),$this->url('cart','check'));
+				$this->error(P_Lang('请选择省份'),$this->url('cart','checkout'));
 			}
 			$address['city'] = $this->get('pca_c');
 			if(!$address['city']){
-				$this->error(P_Lang('请选择城市'),$this->url('cart','check'));
+				$this->error(P_Lang('请选择城市'),$this->url('cart','checkout'));
 			}
 			$address['county'] = $this->get('pca_a');
 			$address['address'] = $this->get('address');
 			if(!$address['address']){
-				$this->error(P_Lang('地址不能为空'),$this->url('cart','check'));
+				$this->error(P_Lang('地址不能为空'),$this->url('cart','checkout'));
 			}
 			$address['mobile'] = $this->get('mobile');
 			$address['tel'] = $this->get('tel');
 			if(!$address['mobile'] && !$address['tel']){
-				$this->error(P_Lang('手机号或联系电话至少要有一项不能为空'),$this->url('cart','check'));
+				$this->error(P_Lang('手机号或联系电话至少要有一项不能为空'),$this->url('cart','checkout'));
 			}
 			if($address['mobile'] && !$this->lib('common')->tel_check($address['mobile'],'mobile')){
-				$this->error(P_Lang('手机号格式不正确'),$this->url('cart','check'));
+				$this->error(P_Lang('手机号格式不正确'),$this->url('cart','checkout'));
 			}
 			if($address['tel'] && !$this->lib('common')->tel_check($address['tel'])){
-				$this->error(P_Lang('联系电话格式不正确'),$this->url('cart','check'));
+				$this->error(P_Lang('联系电话格式不正确'),$this->url('cart','checkout'));
 			}
 			$address['zipcode'] = $this->get('zipcode');
 			$freight_price = $this->model('cart')->freight_price(array('weight'=>$weight,'number'=>$qty,'volume'=>$volume),$address['province'],$address['city']);
@@ -133,15 +133,15 @@ class order_control extends phpok_control
 		}else{
 			$address['mobile'] = $this->get('mobile');
 			if(!$address['mobile']){
-				$this->error(P_Lang('手机号不能为空'),$this->url('cart','check'));
+				$this->error(P_Lang('手机号不能为空'),$this->url('cart','checkout'));
 			}
 			if(!$this->lib('common')->tel_check($address['mobile'],'mobile')){
-				$this->error(P_Lang('手机号格式不正确'),$this->url('cart','check'));
+				$this->error(P_Lang('手机号格式不正确'),$this->url('cart','checkout'));
 			}
 		}
 		$address['email'] = $this->get('email');
 		if($address['email'] && !$this->lib('common')->email_check($address['email'])){
-			$this->error(P_Lang('邮箱格式不正确'),$this->url('cart','check'));
+			$this->error(P_Lang('邮箱格式不正确'),$this->url('cart','checkout'));
 		}
 		$sn = $this->model('order')->create_sn();
 		$main = array('sn'=>$sn);
@@ -170,7 +170,7 @@ class order_control extends phpok_control
 		}
 		$id = $this->model('order')->save($main);
 		if(!$id){
-			$this->error(P_Lang('订单创建失败'),$this->url('cart','check'));
+			$this->error(P_Lang('订单创建失败'),$this->url('cart','checkout'));
 		}
 		foreach($rslist as $key=>$value){
 			$tmp = array('order_id'=>$id,'tid'=>$value['tid']);

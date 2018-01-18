@@ -38,6 +38,7 @@ class login_control extends phpok_control
 			$logo = $this->site['adm_logo180'];
 		}
 		$this->assign('logo',$logo);
+		$this->assign('multiple_language',(isset($this->config['multiple_language']) ? $this->config['multiple_language'] : false));
 		$this->view('login');
 	}
 

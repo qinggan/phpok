@@ -15,7 +15,7 @@ function select_input(val,title)
 		if(!old && old != 'undefined'){
 			obj.$("#title").val(title)
 		}
-		obj.$("#{$id},#{$id}_default").val("index.php?id="+val);
+		obj.$("#{$id},#{$id}_default").val("{$sys.www_file}?id="+val);
 		obj.$("#{$id}_rewrite").val(val+".html");
 	}
 	$.dialog.close();
@@ -23,7 +23,7 @@ function select_input(val,title)
 function select_post(val,title)
 {
 	var obj = $.dialog.opener;
-	obj.$("#{$id},#{$id}_default").val("index.php?{$app->config.ctrl_id}=post&id="+val);
+	obj.$("#{$id},#{$id}_default").val("{$sys.www_file}?{$sys.ctrl_id}=post&id="+val);
 	obj.$("#{$id}_rewrite").val("post/"+val+".html");
 	var old = obj.$("#title").val();
 	if(!old && old != 'undefined'){

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<plugin>
+		<id><![CDATA[84a1fae7b0f7e622a0bf635ac752ad78]]></id>
+		<title><![CDATA[演示方法]]></title>
+		<efunc><![CDATA[phpokdemo]]></efunc>
+		<taxis><![CDATA[10]]></taxis>
+		<type><![CDATA[content]]></type>
+		<icon><![CDATA[applications.png]]></icon>
+	</plugin>
+</root>

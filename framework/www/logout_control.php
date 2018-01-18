@@ -34,4 +34,3 @@ class logout_control extends phpok_control
 		$this->success($tip,$this->url);
 	}
 }
-?>

@@ -74,9 +74,8 @@
 						var info = $("#id").val() ? p_lang('方案编辑成功') : p_lang('方案添加成功');
 						$.dialog.alert(info,function(){
 							$.phpok.go(get_url('gd'));
-							return false;
 						},'succeed');
-						return false;
+						return true;
 					}
 					$.dialog.alert(rs.info);
 					return false;

@@ -15,12 +15,6 @@ class usergroup_model extends usergroup_model_base
 		parent::__construct();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	function group_rs($uid)
 	{
 		$sql = "SELECT g.* FROM ".$this->db->prefix."user_group g ";

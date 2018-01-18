@@ -86,5 +86,3 @@ class site_model extends site_model_base
 	}
 
 }
-
-?>

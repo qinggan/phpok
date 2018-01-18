@@ -18,7 +18,7 @@ class module_model extends module_model_base
 	public function get_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."module WHERE id='".$id."'";
-		$cache_id = $this->cache->id(sql);
+		$cache_id = $this->cache->id($sql);
 		$rs = $this->cache->get($cache_id);
 		if($rs){
 			return $rs;

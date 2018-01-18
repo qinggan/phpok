@@ -16,12 +16,6 @@ class tag_model extends tag_model_base
 		parent::__construct();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	public function get_one($id,$field='id',$site_id=0)
 	{
 		if($site_id){

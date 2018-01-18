@@ -55,7 +55,7 @@ select {
 select::-ms-expand { display: none; }
 
 
-textarea.long{width:500px;height:100px;}
+textarea.long{width:100%;height:100px;}
 textarea.default{width:350px;height:40px;}
 input.long{width:500px;}
 input.default{width:350px;}

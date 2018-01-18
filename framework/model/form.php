@@ -17,12 +17,6 @@ class form_model_base extends phpok_model
 		$this->info = $this->lib('xml')->read($this->dir_phpok.'system.xml');
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	function form_all()
 	{
 		if($this->info['form'])

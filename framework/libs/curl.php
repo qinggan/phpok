@@ -21,10 +21,11 @@ class curl_lib
 	private $proxy_user = ''; // 代理账号
 	private $proxy_pass = ''; // 代理密码
 	private $proxy_type = 'http'; // 代理方式
-	private $post_data = ''; // POST 表单数据，数组
+	private $post_data = array(); // POST 表单数据，数组
 	private $http_body = ''; // 返回的内容信息
 	private $http_header = ''; // 返回的头部信息
 	private $http_code = 200; // 返回的状态
+	private $host_ip = 0;
 	private $headers = array(); // 发送的头部信息
 	private $timeout = 30; // 超时时间，单位秒
 	private $connect_timeout = 10; // 连接超时时间，单位秒
@@ -368,6 +369,19 @@ class curl_lib
 		return $this->http_code;
 	}
 
+	/**
+	 * 设置IP，当主机无法获取gethostbyname
+	 * @参数 $ip IP地址
+	 * @返回 当前的IP或是您指定的IP
+	**/
+	public function host_ip($ip='')
+	{
+		if($ip){
+			$this->host_ip = $ip;
+		}
+		return $this->host_ip;
+	}
+
 	public function exec($url='')
 	{
 		if(!$url){
@@ -416,6 +430,15 @@ class curl_lib
 			curl_setopt($curl, CURLOPT_USERPWD, $this->user.":".$this->pass);
 			curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		}
+
+		//绑定IP后执行
+		if($this->host_ip){
+			$info = parse_url($url);
+			$string = $info['scheme'].'://'.$info['host'];
+			$url = $info['scheme'].'://'.$this->host_ip.substr($url,strlen($string));
+			$port = $info['port'] ? $info['port'] : ($info['scheme'] == 'https' ? '443' : '80');
+			$this->set_header('Host',$info['host'].':'.$port);
+		}
 		
 		if($this->headers && is_array($this->headers)){
 			$headers = array();
@@ -457,7 +480,6 @@ class curl_lib
 		}
 		$separator = '/\r\n\r\n|\n\n|\r\r/';
 		list($this->http_header, $this->http_body) = preg_split($separator, $content, 2);
-		file_put_contents('tmp.txt',$content);
 		$this->http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 		curl_close($curl);
 		if($this->http_code == 301 || $this->http_code == 302){

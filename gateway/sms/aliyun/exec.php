@@ -50,11 +50,11 @@ if($extinfo['content']){
 	}
 }
 $this->lib('aliyun')->end_point($rs['ext']['server']);
+$this->lib('aliyun')->regoin_id($rs['ext']['regoin_id']);
 $this->lib('aliyun')->access_key($rs['ext']['appkey']);
 $this->lib('aliyun')->access_secret($rs['ext']['appsecret']);
 $this->lib('aliyun')->signature($rs['ext']['signame']);
-$this->lib('aliyun')->mns_title($rs['ext']['mnstitle']);
-$this->lib('aliyun')->sms_template_id($extinfo['title']);
+$this->lib('aliyun')->template_id($extinfo['title']);
 $info = $this->lib('aliyun')->sms($extinfo['mobile'],$postdata);
 if(!$info){
 	if($this->config['debug']){

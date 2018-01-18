@@ -1,219 +1,95 @@
-<!-- 文本表单项 -->
-<!-- if $_rs.form_btn == 'date' -->
-<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
-<input type="button" value="日期" class="btn btn_{$_rs.identifier}" onclick="laydate({elem:'#{$_rs.identifier}'})" />
-<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
-<!-- elseif $_rs.form_btn == "datetime" -->
-<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
-<input type="button" value="日期时间" class="btn btn_{$_rs.identifier}" onclick="laydate({elem:'#{$_rs.identifier}',istime:true,format: 'YYYY-MM-DD hh:mm:ss'})" />
-<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
-<!-- elseif $_rs.form_btn == "file" -->
-<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
-<input type="button" value="文件" class="btn btn_{$_rs.identifier}" id="_btn_{$_rs.identifier}" />
-<input type="button" value="下载" class="btn btn_{$_rs.identifier}" id="_btn2_{$_rs.identifier}" />
-<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
-<script type="text/javascript">
-$(document).ready(function(){
-	$("#_btn_{$_rs.identifier}").click(function(){
-		var url = get_url("open","input") + "&id={$_rs.identifier}";
-		$.dialog.open(url,{
-			title: "附件管理器",
-			lock : true,
-			width: "700px",
-			height: "70%",
-			win_min:false,
-			win_max:false,
-			resize: false
-		});
-	});
-
-	$("#_btn2_{$_rs.identifier}").click(function(){
-		var url = get_url("res_action","download");
-		var file = $("#{$_rs.identifier}").val();
-		if(!file)
-		{
-			$.dialog.alert("没有可下载的附件");
-			return false;
-		}
-		url += "&file="+$.str.encode(file);
-		window.open(url);
-	});
-});
-</script>
-<!-- elseif $_rs.form_btn == "image" -->
-<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
-<input type="button" value="选择图片" class="btn btn_{$_rs.identifier}" id="_btn_{$_rs.identifier}" />
-<input type="button" value="预览" class="btn btn_{$_rs.identifier}" id="_btn2_{$_rs.identifier}" />
-<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
-<script type="text/javascript">
-$(document).ready(function(){
-	$("#_btn_{$_rs.identifier}").click(function(){
-		var url = get_url("open","input") + "&id={$_rs.identifier}&type=image";
-		$.dialog.open(url,{
-			title: "图片管理器",
-			lock : true,
-			width: "700px",
-			height: "70%",
-			win_min:false,
-			win_max:false,
-			resize: false
-		});
-	});
-
-	$("#_btn2_{$_rs.identifier}").click(function(){
-		var url = get_url("res_action","view");
-		var file = $("#{$_rs.identifier}").val();
-		if(!file)
-		{
-			$.dialog.alert("没有指定图片");
-			return false;
-		}
-		url += "&file="+$.str.encode(file);
-		$.dialog.open(url,{
-			title: '预览图片',
-			lock: true,
-			width: '700px',
-			height: '70%',
-			win_min:false,
-			win_max:false,
-			resize: false,
-			ok: function(){}
-		});
-	});
-});
-</script>
-<!-- elseif $_rs.form_btn == "video" -->
-<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
-<input type="button" value="选择视频" class="btn btn_{$_rs.identifier}" id="_btn_{$_rs.identifier}" />
-<input type="button" value="预览" class="btn btn_{$_rs.identifier}" id="_btn2_{$_rs.identifier}" />
-<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
-<script type="text/javascript">
-$(document).ready(function(){
-	$("#_btn_{$_rs.identifier}").click(function(){
-		var url = get_url("open","input") + "&id={$_rs.identifier}&type=video";
-		$.dialog.open(url,{
-			title: "视频管理器",
-			lock : true,
-			width: "700px",
-			height: "70%",
-			win_min:false,
-			win_max:false,
-			resize: false
-		});
-	});
-
-	$("#_btn2_{$_rs.identifier}").click(function(){
-		var url = get_url("res_action","video");
-		var file = $("#{$_rs.identifier}").val();
-		if(!file)
-		{
-			$.dialog.alert("没有指定视频");
-			return false;
-		}
-		url += "&file="+$.str.encode(file);
-		$.dialog.open(url,{
-			title: '试播',
-			lock: true,
-			width: '700px',
-			height: '430px',
-			win_min:false,
-			win_max:false,
-			resize: false,
-			ok: function(){}
-		});
-	});
-});
-</script>
-<!-- elseif $_rs.form_btn == "url" -->
-<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
-<input type="button" value="首页" class="btn btn_{$_rs.identifier}" id="_btn_{$_rs.identifier}" />
-<input type="button" value="网址库" class="btn btn_{$_rs.identifier}" id="_btn2_{$_rs.identifier}" />
-<input type="button" value="访问" class="btn btn_{$_rs.identifier}" id="_btn3_{$_rs.identifier}" />
-<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
-<script type="text/javascript">
-$(document).ready(function(){
-	//点击首页时
-	$("#_btn_{$_rs.identifier}").click(function(){
-		$("#{$_rs.identifier}").val('index.php');
-	});
-	//点击网址库时弹出窗口进行选择
-	$("#_btn2_{$_rs.identifier}").click(function(){
-		var url = get_url("open","url") + "&id={$_rs.identifier}";
-		$.dialog.open(url,{
-			title: "网址管理器",
-			lock : true,
-			width: "700px",
-			height: "70%",
-			win_min:false,
-			win_max:false,
-			resize: false
-		});
-	});
-	//访问填写的地址
-	$("#_btn3_{$_rs.identifier}").click(function(){
-		var url = $("#{$_rs.identifier}").val();
-		if(!url || url == "http://" || url == "https://")
-		{
-			$.dialog.alert("未指定网址");
-			return false;
-		}
-		window.open(url);
-	});
-});
-</script>
-<!-- elseif $_rs.form_btn == "user" -->
-<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
-<input type="button" value="会员库" class="btn btn_{$_rs.identifier}" id="_btn_{$_rs.identifier}" />
-<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
-<script type="text/javascript">
-$(document).ready(function(){
-	$("#_btn_{$_rs.identifier}").click(function(){
-		var url = get_url("open","user2") + "&id={$_rs.identifier}";
-		$.dialog.open(url,{
-			title: "会员列表",
-			lock : true,
-			width: "700px",
-			height: "70%",
-			resize: false
-		});
-	});
-});
-</script>
-<!-- elseif $_rs.form_btn == 'color' -->
-<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier} color {pickerClosable:true,pickerPosition:'right',required:false}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
-<!-- else -->
-<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
+<!-- if $_laydate -->
+<ul class="layout">
+	<li><input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li>
+		<div class="button-group">
+			<input type="button" value="{$_laydate_button}" class="phpok-btn" id="btn_{$_rs.identifier}_{$_rs.form_btn}" onclick="$.phpokform.laydate_button('{$_rs.identifier}','{$_rs.form_btn}')" />
+			<input type="button" value="{lang清除}" class="phpok-btn" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+		</div>
+	</li>
+</ul>
 <!-- /if -->
-<!-- if $_rs.ext_quick_words -->
-<script type="text/javascript">
-function _obj_quick_insert_{$_rs.identifier}(val)
-{
-	var linkid = "{$_rs.ext_quick_type}";
-	if(linkid == 'none')
-	{
-		$("#{$_rs.identifier}").val(val);
-	}
-	else
-	{
-		var tmp = $("#{$_rs.identifier}").val();
-		if(tmp)
-		{
-			tmp = tmp + "" +linkid + ""+val;
-		}
-		else
-		{
-			tmp = val;
-		}
-		$("#{$_rs.identifier}").val(tmp);
-	}
-}
-</script>
-	<!-- if !$_rs.form_btn -->
-	<input type="button" value="清除" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
+<!-- if $_rs.form_btn == "file" -->
+<ul class="layout">
+	<li><input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li>
+		<div class="button-group">
+			<input type="button" value="{lang选择文件}" class="phpok-btn" onclick="$.phpokform.text_button_file_select('{$_rs.identifier}')" />
+			<input type="button" value="{lang下载}" class="phpok-btn" onclick="$.phpokform.text_button_file_download('{$_rs.identifier}')" />
+			<input type="button" value="{lang清除}" class="phpok-btn" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+		</div>
+	</li>
+</ul>
+<!-- elseif $_rs.form_btn == "image" -->
+<ul class="layout">
+	<li><input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li>
+		<div class="button-group">
+			<input type="button" value="{lang选择图片}" class="phpok-btn" onclick="$.phpokform.text_button_image_select('{$_rs.identifier}')" />
+			<input type="button" value="{lang预览}" class="phpok-btn" onclick="$.phpokform.text_button_image_preview('{$_rs.identifier}')" />
+			<input type="button" value="{lang清除}" class="phpok-btn" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+		</div>
+	</li>
+</ul>
+<!-- elseif $_rs.form_btn == "video" -->
+<ul class="layout">
+	<li><input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li>
+		<div class="button-group">
+			<input type="button" value="{lang选择视频}" class="phpok-btn" onclick="$.phpokform.text_button_video_select('{$_rs.identifier}')" />
+			<input type="button" value="{lang预览}" class="phpok-btn" onclick="$.phpokform.text_button_video_preview('{$_rs.identifier}')" />
+			<input type="button" value="{lang清除}" class="phpok-btn" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+		</div>
+	</li>
+</ul>
+<!-- elseif $_rs.form_btn == "url" -->
+<ul class="layout">
+	<li><input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li>
+		<div class="button-group">
+			<input type="button" value="{lang首页}" class="phpok-btn" onclick="$('#{$_rs.identifier}').val('index.php')" />
+			<input type="button" value="{lang网址库}" class="phpok-btn" onclick="$.phpokform.text_button_url_select('{$_rs.identifier}')" />
+			<input type="button" value="{lang访问}" class="phpok-btn" onclick="$.phpokform.text_button_url_open('{$_rs.identifier}')" />
+			<input type="button" value="{lang清除}" class="phpok-btn" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+		</div>
+	</li>
+</ul>
+<!-- elseif $_rs.form_btn == "user" -->
+<ul class="layout">
+	<li><input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} readonly value="{$_rs.content}" onclick="$.dialog.alert('{lang会员禁止手动输入}')" /></li>
+	<li>
+		<div class="button-group">
+			<input type="button" value="{lang会员库}" class="phpok-btn" onclick="$.phpokform.text_button_user_select('{$_rs.identifier}')" />
+			<input type="button" value="{lang清除}" class="phpok-btn" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+		</div>
+	</li>
+</ul>
+<!-- elseif $_rs.form_btn == 'color' -->
+<ul class="layout">
+	<li><input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li><input type="button" value=" " id="preview_color_{$_rs.identifier}" style="width:30px;height:30px;border:0;margin:0;padding:0;display:block;" /></li>
+	<li>
+		<div class="button-group">
+			<input type="button" value="{lang颜色选择}" class="phpok-btn jscolor {valueElement:'{$_rs.identifier}', styleElement:'preview_color_{$_rs.identifier}',required:false{if $_rs.ext_include_3},hash:true{/if}}" />
+			<input type="button" value="{lang清除}" class="phpok-btn" onclick="$.phpokform.clear('{$_rs.identifier}')" />
+		</div>
+	</li>
+</ul>
+<!-- elseif !$_rs.form_btn -->
+
+	<!-- if $_rs.ext_quick_words -->
+	<ul class="layout">
+		<li><input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+		<li>
+			<div class="button-group">
+				<!-- loop from=$_rs.ext_quick_words key=$key value=$value id=$tmpid -->
+				<input type="button" value="{$value}" class="phpok-btn" onclick="$.phpokform.text_button_quickwords('{$_rs.identifier}',this.value,'{$_rs.ext_quick_type}')" />
+				<!-- /loop -->
+				<input type="button" value="{lang清除}" class="phpok-btn" onclick="$.phpokform.clear('{$_rs.identifier}')" />
+			</div>
+		</li>
+	</ul>
+	<!-- else -->
+	<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" />
 	<!-- /if -->
-<div style="padding-top:5px;">
-	<!-- loop from=$_rs.ext_quick_words key=$key value=$value -->
-	<!-- if $key -->，<!-- /if --><span style="cursor:pointer;" onclick="_obj_quick_insert_{$_rs.identifier}('{$value}')">{$value}</span>
-	<!-- /loop -->
-</div>
 <!-- /if -->

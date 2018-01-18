@@ -18,12 +18,6 @@ class opt_model extends opt_model_base
 		parent::__construct();
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	/**
 	 * 选项组删除
 	 * @参数 $id 组ID

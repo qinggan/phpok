@@ -54,7 +54,7 @@ class content_model_base extends phpok_model
 			}
 		}
 		//读取属性
-		$sql = "SELECT * FROM ".$this->db->prefix."list_attr WHERE tid='".$rs['id']."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."list_attr WHERE tid='".$rs['id']."' ORDER BY taxis ASC,id DESC";
 		$attrlist = $this->db->get_all($sql);
 		if($attrlist){
 			$vids = array();

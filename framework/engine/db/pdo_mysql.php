@@ -1,13 +1,21 @@
 <?php
-/*****************************************************************************************
-	文件： pdo_mysql.php
-	备注： PDO连接MySQL操作类
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年01月13日 22时17分
-*****************************************************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * 通过PDO连接MYSQL数据库
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2017年12月02日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class db_pdo_mysql extends db
 {
 	private $host = '127.0.0.1';
@@ -26,10 +34,6 @@ class db_pdo_mysql extends db
 	public function config($config)
 	{
 		parent::config($config);
-		if (!defined('PHP_VERSION_ID')){
-			$version =  explode ('.',PHP_VERSION);
-			define('PHP_VERSION_ID',($version[0]*10000 + $version[1]*100 + $version[2]));
-		}
 		$this->host = $config['host'] ? $config['host'] : '127.0.0.1';
 		$this->user = $config['user'] ? $config['user'] : 'root';
 		$this->pass = $config['pass'] ? $config['pass'] : '';
@@ -125,12 +129,6 @@ class db_pdo_mysql extends db
 		return true;
 	}
 
-	public function __destruct()
-	{
-		parent::__destruct();
-		unset($this);
-	}
-
 	//定义基本的变量信息
 	public function set($name,$value)
 	{
@@ -224,7 +222,7 @@ class db_pdo_mysql extends db
 		$sql.= " INTO ".$tbl." ";
 		$sql_fields = array();
 		$sql_val = array();
-		foreach($data AS $key=>$value){
+		foreach($data as $key=>$value){
 			$sql_fields[] = "`".$key."`";
 			$sql_val[] = "'".$value."'";
 		}
@@ -249,7 +247,7 @@ class db_pdo_mysql extends db
 		}
 		if(is_array($condition)){
 			$sql_fields = array();
-			foreach($condition AS $key=>$value){
+			foreach($condition as $key=>$value){
 				$sql_fields[] = "`".$key."`='".$value."' ";
 			}
 			$condition = implode(" AND ",$sql_fields);
@@ -275,31 +273,37 @@ class db_pdo_mysql extends db
 		}
 		$sql = "UPDATE ".$table." SET ";
 		$sql_fields = array();
-		foreach($data AS $key=>$value){
+		foreach($data as $key=>$value){
 			$sql_fields[] = "`".$key."`='".$value."'";
 		}
 		$sql.= implode(",",$sql_fields);
 		$sql_fields = array();
-		foreach($condition AS $key=>$value){
+		foreach($condition as $key=>$value){
 			$sql_fields[] = "`".$key."`='".$value."' ";
 		}
 		$sql .= " WHERE ".implode(" AND ",$sql_fields);
 		return $this->query($sql);
 	}
 
-	public function count($sql="")
+	/**
+	 * 计算数量
+	**/
+	public function count($sql="",$is_count=true)
 	{
-		if($sql){
+		if($sql && is_string($sql) && $is_count){
 			$this->set('type','num');
 			$rs = $this->get_one($sql);
 			$this->set('type','assoc');
 			return $rs[0];
 		}else{
+			if($sql && is_string($sql)){
+				$this->query($sql);
+			}
 			if($this->query){
 				return $this->query->rowCount();
 			}
-			return false;
 		}
+		return false;
 	}
 
 	public function num_fields($sql="")
@@ -322,7 +326,7 @@ class db_pdo_mysql extends db
 		if(!$rs){
 			return false;
 		}
-		foreach($rs AS $key=>$value){
+		foreach($rs as $key=>$value){
 			$rslist[] = $value["Field"];
 		}
 		return $rslist;
@@ -338,9 +342,9 @@ class db_pdo_mysql extends db
 		if(!$rs){
 			return false;
 		}
-		foreach($rs AS $key=>$value){
+		foreach($rs as $key=>$value){
 			$tmp = array();
-			foreach($value AS $k=>$v){
+			foreach($value as $k=>$v){
 				$tmp[strtolower($k)] = $v;
 			}
 			$rslist[$value["Field"]] = $tmp;
@@ -357,7 +361,7 @@ class db_pdo_mysql extends db
 		}
 		$rslist = array();
 		$id = 'Tables_in_'.$this->database;
-		foreach($list AS $key=>$value){
+		foreach($list as $key=>$value){
 			$rslist[] = $value[$id];
 		}
 		return $rslist;

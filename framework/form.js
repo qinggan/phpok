@@ -298,6 +298,22 @@ function phpok_form_upload_attr_cate_id()
 	return true;
 }
 
+function go_to_page_action()
+{
+	var page = $("#go_to_page").val();
+	if(!page){
+		$.dialog.alert('请输入要跳转的页码');
+		return false;
+	}
+	page = parseInt(page);
+	if(page<1){
+		page = 1;
+	}
+	var url = window.location.href;
+	url = url.replace(/&pageid=\d/g,"");
+	url += "&pageid="+$.str.encode(page);
+	$.phpok.go(url);
+}
 
 ;(function($){
 	
@@ -355,6 +371,197 @@ function phpok_form_upload_attr_cate_id()
 			}else{
 				$("#p_name_type_html").hide();
 			}
+		},
+		
+		/**
+		 * 文本框旁边的日期按钮控件
+		**/
+		laydate_button:function(id,type)
+		{
+			laydate.render({
+				elem:'#'+id,
+				type:type,
+				show: true,
+	    		closeStop: '#btn_'+id+'_'+type
+			});
+		},
+		/**
+		 * 清空文本框内容
+		**/
+		clear:function(id){
+			if(id.substr(0,1) != '.' && id.substr(0,1) != '#'){
+				id = '#'+id;
+			}
+			return $(id).val('');
+		},
+
+		/**
+		 * 文件选择器
+		**/
+		text_button_file_select:function(id)
+		{
+			$.dialog.open(get_url("open","input","id="+id),{
+				title: p_lang('附件管理器'),
+				lock : true,
+				width: "700px",
+				height: "70%",
+				resize: false
+			});
+		},
+
+		/**
+		 * 文件下载
+		**/
+		text_button_file_download:function(id)
+		{
+			if(id.substr(0,1) != '.' && id.substr(0,1) != '#'){
+				id = '#'+id;
+			}
+			var file = $(id).val();
+			if(!file){
+				$.dialog.alert(p_lang('没有可下载的附件'));
+				return false;
+			}
+			var url = get_url("res_action","download",'file='+$.str.encode(file));
+			window.open(url);
+		},
+
+		/**
+		 * 图片选择器
+		**/
+		text_button_image_select:function(id)
+		{
+			$.dialog.open(get_url("open","input","id="+id+"&type=image"),{
+				title: p_lang('图片管理器'),
+				lock : true,
+				width: "700px",
+				height: "70%",
+				resize: false
+			});
+		},
+
+		/**
+		 * 图片预览
+		**/
+		text_button_image_preview:function(id)
+		{
+			if(id.substr(0,1) != '.' && id.substr(0,1) != '#'){
+				id = '#'+id;
+			}
+			var file = $(id).val();
+			if(!file){
+				$.dialog.alert(p_lang('没有指定图片'));
+				return false;
+			}
+			var url = get_url("res_action","view",'file='+$.str.encode(file));
+			$.dialog.open(url,{
+				title: p_lang('预览图片'),
+				lock: true,
+				width: '700px',
+				height: '70%',
+				resize: false,
+				ok: true
+			});
+		},
+
+		/**
+		 * 视频选择器
+		**/
+		text_button_video_select:function(id)
+		{
+			var url = get_url("open","input","id="+id+"&type=video");
+			$.dialog.open(url,{
+				title: p_lang('视频管理器'),
+				lock : true,
+				width: "700px",
+				height: "70%"
+			});
+		},
+
+		/**
+		 * 视频预览
+		**/
+		text_button_video_preview:function(id)
+		{
+			if(id.substr(0,1) != '.' && id.substr(0,1) != '#'){
+				id = '#'+id;
+			}
+			var file = $(id).val();
+			if(!file){
+				$.dialog.alert(p_lang('没有指定视频'));
+				return false;
+			}
+			var url = get_url("res_action","video","file="+$.str.encode(file));
+			$.dialog.open(url,{
+				title: p_lang('视频预览'),
+				lock: true,
+				width: '700px',
+				height: '430px',
+				ok:true
+			});
+		},
+
+		/**
+		 * 网址选择器
+		**/
+		text_button_url_select:function(id)
+		{
+			var url = get_url("open","url","id="+id);
+			$.dialog.open(url,{
+				title: p_lang('网址管理器'),
+				lock : true,
+				width: "700px",
+				height: "70%"
+			});
+		},
+
+		/**
+		 * 网址预览
+		**/
+		text_button_url_open:function(id)
+		{
+			if(id.substr(0,1) != '.' && id.substr(0,1) != '#'){
+				id = '#'+id;
+			}
+			var url = $(id).val();
+			if(!url || url == "http://" || url == "https://"){
+				$.dialog.alert(p_lang('未指定网址'));
+				return false;
+			}
+			window.open(url);
+		},
+
+		/**
+		 * 会员选择库
+		**/
+		text_button_user_select:function(id)
+		{
+			var url = get_url("open","user2","id="+id);
+			$.dialog.open(url,{
+				title: p_lang('会员列表'),
+				lock : true,
+				width: "700px",
+				height: "70%",
+				resize: false
+			});
+		},
+
+		/**
+		 * 快速插入文本
+		**/
+		text_button_quickwords:function(id,val,type)
+		{
+			if(id.substr(0,1) != '.' && id.substr(0,1) != '#'){
+				id = '#'+id;
+			}
+			if(type && type == 'none'){
+				$(id).val(val);
+				return true;
+			}
+			var tmp = $(id).val();
+			tmp = (tmp && tmp != 'undefined') ? (tmp+''+type+''+val) : val;
+			$(id).val(tmp);
+			return true;
 		}
 	};
 })(jQuery);

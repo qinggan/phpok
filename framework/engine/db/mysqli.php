@@ -1,7 +1,6 @@
 <?php
 /**
  * MySQL读取引挈
- * @package phpok\engine\db
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -9,6 +8,13 @@
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
  * @时间 2017年09月26日
 **/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
 
 class db_mysqli extends db
 {
@@ -25,6 +31,10 @@ class db_mysqli extends db
 		$this->config($config);
 	}
 
+	/**
+	 * 初始数据库连接参数，用于更换数据库服务器使用
+	 * @参数 $config 数组
+	**/
 	public function config($config)
 	{
 		parent::config($config);
@@ -35,6 +45,10 @@ class db_mysqli extends db
 		$this->socket = $config['socket'] ? $config['socket'] : '';
 	}
 
+	/**
+	 * 数据库服务器
+	 * @参数 $host 指定数据库服务器
+	**/
 	public function host($host='')
 	{
 		if($host){
@@ -43,6 +57,10 @@ class db_mysqli extends db
 		return $this->host;
 	}
 
+	/**
+	 * 数据库账号
+	 * @参数 $user 账号名称
+	**/
 	public function user($user='')
 	{
 		if($user){
@@ -51,6 +69,10 @@ class db_mysqli extends db
 		return $this->user;
 	}
 
+	/**
+	 * 数据库密码
+	 * @参数 $pass 密码
+	**/
 	public function pass($pass='')
 	{
 		if($pass){
@@ -59,14 +81,22 @@ class db_mysqli extends db
 		return $this->pass;
 	}
 
+	/**
+	 * 数据库端口
+	 * @参数 $port 端口，必须是数字
+	**/
 	public function port($port='')
 	{
-		if($port){
+		if($port && is_numeric($port)){
 			$this->port = $port;
 		}
 		return $this->port;
 	}
 
+	/**
+	 * Socket 套接字，使应用程序能够读写与收发通讯协定（protocol）与资料的程序
+	 * @参数 $socket 指定 socket 文件
+	**/
 	public function socket($socket='')
 	{
 		if($socket){
@@ -75,6 +105,10 @@ class db_mysqli extends db
 		return $this->socket;
 	}
 
+	/**
+	 * 类型设置
+	 * @参数 $type ，为 num 时使用 MYSQLI_NUM ，返之为 MYSQLI_ASSOC
+	**/
 	public function type($type='')
 	{
 		if($type && ($type == 'num' || $type == MYSQLI_NUM)){
@@ -85,6 +119,9 @@ class db_mysqli extends db
 		return $this->type;
 	}
 
+	/**
+	 * 数据库连接
+	**/
 	public function connect()
 	{
 		$this->_time();
@@ -120,11 +157,9 @@ class db_mysqli extends db
 
 	public function __destruct()
 	{
-		parent::__destruct();
 		if($this->conn && is_object($this->conn)){
 			mysqli_close($this->conn);
 		}
-		unset($this);
 	}
 
 	public function set($name,$value)
@@ -289,22 +324,25 @@ class db_mysqli extends db
 		return $this->query($sql);
 	}
 
+	/**
+	 * 计算数量
+	**/
 	public function count($sql="",$is_count=true)
 	{
-		if($sql && $is_count){
+		if($sql && is_string($sql) && $is_count){
 			$this->set('type','num');
 			$rs = $this->get_one($sql);
 			$this->set('type','assoc');
 			return $rs[0];
 		}else{
-			if($sql){
+			if($sql && is_string($sql)){
 				$this->query($sql);
 			}
 			if($this->query){
 				return mysqli_num_rows($this->query);
 			}
-			return false;
 		}
+		return false;
 	}
 
 	public function num_fields($sql="")
@@ -318,6 +356,12 @@ class db_mysqli extends db
 		return false;
 	}
 
+	/**
+	 * 显示表字段，仅限字段名，没有字段属性
+	 * @参数 $table 表名
+	 * @参数 $check_prefix 是否检查数据表前缀
+	 * @返回 无值或表字段数组
+	**/
 	public function list_fields($table,$check_prefix=true)
 	{
 		if($check_prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
@@ -333,7 +377,9 @@ class db_mysqli extends db
 		return $rslist;
 	}
 
-	//取得明细的字段管理
+	/**
+	 * 取得明细的字段管理
+	**/
 	public function list_fields_more($table,$check_prefix=true)
 	{
 		if($check_prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
@@ -353,7 +399,9 @@ class db_mysqli extends db
 		return $rslist;
 	}
 
-	//显示表明细
+	/**
+	 * 显示数据库表
+	**/
 	public function list_tables()
 	{
 		$list = $this->get_all("SHOW TABLES");
@@ -368,12 +416,6 @@ class db_mysqli extends db
 		return $rslist;
 	}
 
-	//显示表名
-	public function table_name($table_list,$i)
-	{
-		return $table_list[$i];
-	}
-
 	public function escape_string($char)
 	{
 		if(!$char){
@@ -383,24 +425,10 @@ class db_mysqli extends db
 		return mysqli_escape_string($this->conn,$char);
 	}
 
-	//PHPOK中常用的简洁高效的SQL生成查询，仅适合单表查询
-	public function phpok_one($tbl,$condition="",$fields="*")
-	{
-		if(substr($table,0,strlen($this->prefix)) != $this->prefix){
-			$table = $this->prefix.$table;
-		}
-		$sql = "SELECT ".$fields." FROM ".$table;
-		if($condition){
-			$sql .= " WHERE ".$condition;
-		}
-		return $this->get_one($sql);
-	}
 
 	/**
-	 * 取得MySQL版本号
+	 * 取得数据库服务版本
 	 * @参数 $type 支持server和client两种类型
-	 * @返回 
-	 * @更新时间 
 	**/
 	public function version($type="server")
 	{
@@ -568,7 +596,6 @@ class db_mysqli extends db
 		if($data['comment']){
 			$sql .= "COMMENT '".$data['comment']."' ";
 		}
-		phpok_log($sql);
 		return $this->query($sql);
 	}
 

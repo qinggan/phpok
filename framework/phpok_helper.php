@@ -33,6 +33,45 @@ function admin_url($ctrl,$func="",$ext="")
 	return $GLOBALS['app']->url($ctrl,$func,$ext);
 }
 
+/**
+ * 执行SQL操作
+ * @参数 $db DB引挈，这里直接从外部引入
+ * @参数 $sql SQL文件或是SQL代码
+ * @参数 $isfile 为true时表示这是$sql是一个文件，为false表示是一个字串
+**/
+function phpok_loadsql($db,$sql='',$isfile=false)
+{
+	if(!$db){
+		return false;
+	}
+	if($isfile && !file_exists($sql)){
+		return false;
+	}
+	if($isfile){
+		$sql = file_get_contents($sql);
+	}
+	$sql = str_replace("\r","\n",$sql);
+	if($db->prefix != 'qinggan_'){
+		$sql = str_replace("qinggan_",$db->prefix,$sql);
+	}
+	$ret = array();
+	$num = 0;
+	foreach(explode(";\n", trim($sql)) as $query){
+		$queries = explode("\n", trim($query));
+		foreach($queries as $query){
+			$ret[$num] .= $query[0] == '#' || $query[0].$query[1] == '--' ? '' : $query;
+		}
+		$num++;
+	}
+	foreach($ret as $query){
+		$query = trim($query);
+		if($query){
+			$db->query($query);
+		}
+	}
+	return true;
+}
+
 //创建API_url
 //ctrl，控制器名称
 //func，应用方法名称
@@ -906,63 +945,51 @@ function pageurl($pageurl,$pageid=1)
 function opt_rslist($type='default',$group_id=0,$info='')
 {
 	//当类型为默认时
-	if($type == 'default' && $info)
-	{
+	if($type == 'default' && $info){
 		$list = explode("\n",$info);
 		$rslist = "";
 		$i=0;
-		foreach($list AS $key=>$value)
-		{
-			if($value && trim($value))
-			{
-				$value = trim($value);
-				$rslist[$i]['val'] = $value;
-				$rslist[$i]['title'] = $value;
-				$i++;
+		foreach($list as $key=>$value){
+			if(!$value || !trim($value)){
+				continue;
 			}
+			$value = trim($value);
+			$rslist[$i]['val'] = $value;
+			$rslist[$i]['title'] = $value;
+			$i++;
 		}
 		return $rslist;
 	}
-
-	//表单选项
-	if($type == "opt")
-	{
+	if($type == "opt"){
 		return $GLOBALS['app']->model('opt')->opt_all("group_id=".$group_id);
 	}
-	//读子项目信息
-	if($type == 'project')
-	{
+	if($type == 'project'){
 		$tmplist = $GLOBALS['app']->model('project')->project_sonlist($group_id);
 		if(!$tmplist) return false;
-		$rslist = '';
-		foreach($tmplist AS $key=>$value)
-		{
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
 			$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 			$rslist[] = $tmp;
 		}
 		return $rslist;
 	}
 	//读主题列表信息
-	if($type == 'title')
-	{
+	if($type == 'title'){
 		$tmplist = $GLOBALS['app']->model("list")->title_list($group_id);
 		if(!$tmplist) return false;
-		$rslist = '';
-		foreach($tmplist AS $key=>$value)
-		{
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
 			$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 			$rslist[] = $tmp;
 		}
 		return $rslist;
 	}
 	//读子分类信息
-	if($type == 'cate')
-	{
+	if($type == 'cate'){
 		$tmplist = $GLOBALS['app']->model('cate')->catelist_sonlist($group_id,false,0);
 		if(!$tmplist) return false;
-		$rslist = '';
-		foreach($tmplist AS $key=>$value)
-		{
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
 			$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 			$rslist[] = $tmp;
 		}

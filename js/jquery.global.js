@@ -17,6 +17,7 @@
 				'win_close'		:true,
 				'win_refresh'	:true,
 				'win_resize'	:true,
+				'win_900'		:false,
 				'title'			:'',
 				'iframe'		:'', // 定义iframe地址
 				'content'		:'', // 定义内容信息，当内容为iframe时，调用iframe对应的url
@@ -318,6 +319,24 @@
 			$("#"+id+",#"+id+"-lock").hide();
 			this._taskbar_on();
 		},
+		w900:function(id)
+		{
+			var arg = this._arg(id);
+			var max_width = arg.win_width;
+			if(max_width < 1400){
+				return true;
+			}
+			var win_width = $(window).width() - 24;
+			var left = parseInt((win_width - 1200)/2,10);
+			$("#"+id).css('width','1200px').css('left',left+'px');
+			$("#"+id+"-body").css("width","1188px");
+			if(arg.lock != 1){
+				$("#"+id+"-lock").css('width','1200px');//控件新位置
+			}
+			arg.left = left;
+			this._save(arg,id);
+			return true;
+		},
 		_arg: function(id)
 		{
 			if(!id || id == 'undefined'){
@@ -439,6 +458,9 @@
 			html += '		<h3 class="h3" id="title-'+this.id+'">'+this.opt.title+'</h3>';
 			html += '		<div class="button">';
 			html += '		<ul>';
+			if(this.opt.win_900){
+				html += '		<li class="w900" id="w900-'+this.id+'" title="适宽1200，最佳编写内容体验"><a href="javascript:void(0);"></a></li>';
+			}
 			if(this.opt.win_refresh){
 				html += '		<li class="refresh" id="refresh-'+this.id+'"><a href="javascript:void(0);"></a></li>';
 			}
@@ -560,8 +582,11 @@
 				});
 			}
 			//有最大化最小化按钮时
+			if(this.opt.win_900){
+				$("#w900-"+id).click(function(){self.w900(id);});
+			}
+			//有最大化最小化按钮时
 			if(this.opt.win_max){
-				$("#title-"+id).dblclick(function(){self.max(id);});
 				$("#max-"+id).click(function(){self.max(id);});
 			}
 			//有最小化时的按钮信息
@@ -689,7 +714,6 @@
 				_move = false;
 				if(_resize){
 					_resize = false;
-					$("#")
 					self._vlayer_close(id,true);
 				}else{
 					self._vlayer_close(id);
@@ -737,7 +761,11 @@
 			'win_max':true,
 			'win_min':true,
 			'is_max':true,
+			'win_900':true,
 			'win_resize':true
+		}
+		if($(window).width()<1600){
+			defaults.win_900 = false;
 		}
 		if($.win2.opt){
 			var opt = $.extend({},defaults,$.win2.opt, opts);

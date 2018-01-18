@@ -53,15 +53,43 @@ class ueditor_control extends phpok_control
 		$rooturl = $this->root_url();
 		$config['imagePathFormat'] = $folder;
 		$config['imageManagerUrlPrefix'] = $rooturl;
-		//$config['scrawlPathFormat'] = $folder;
-		//$config['snapscreenPathFormat'] = $folder;
-		$tmp = array('localhost','127.0.0.1','img.baidu.com',$_SERVER[$this->config['get_domain_method']]);
+		$domain = $this->lib('server')->domain($this->config['get_domain_method']);
+		$tmp = array('localhost','127.0.0.1','img.baidu.com');
+		if($domain){
+			$tmp[] = $domain;
+		}
+		$tmp_xml = $this->model('res')->remote_config();
+		$domainlist = '*';
+		if($tmp_xml && $tmp_xml['domain1']){
+			$tmp = explode("\n",$tmp_xml['domain1']);
+			if($domain){
+				$tmp[] = $domain;
+			}
+		}
+		if($tmp_xml && $tmp_xml['domain2']){
+			$tmplist = explode("\n",$tmp_xml['domain2']);
+			$dlist = array();
+			$is_all = false;
+			foreach($tmplist as $key=>$value){
+				if($value && trim($value) =='*'){
+					$is_all = true;
+					break;
+				}
+				if($value && trim($value) && trim($value) != '*'){
+					$dlist[] = trim($value);
+				}
+			}
+			if(!$is_all && $dlist){
+				$domainlist = $dlist;
+			}
+		}
 		$config['catcherLocalDomain'] = array_unique($tmp);
 		$config['catcherPathFormat'] = $folder;
 		$config['videoPathFormat'] = $folder;
 		$config['filePathFormat'] = $folder;
 		$config['fileManagerUrlPrefix'] = $rooturl;
 		$config['cateid'] = $cate_rs['id'];
+		$config['phpok_get_local_domains'] = $domainlist;
 		foreach($config as $key=>$value){
 			if(substr($key,0,5) == 'scraw'){
 				unset($config[$key]);
@@ -100,6 +128,7 @@ class ueditor_control extends phpok_control
 		$config = $this->load_config();
 		$folder = $config['catcherPathFormat'];
 		$imgUrls = $this->get($config['catcherFieldName']);
+		$domains = $config['phpok_get_local_domains'] ? $config['phpok_get_local_domains'] : '*';
 		if(!$imgUrls){
 			$this->_stop(P_Lang('没有图片信息'));
 		}
@@ -108,7 +137,7 @@ class ueditor_control extends phpok_control
 		$arraylist = array("jpg","gif","png","jpeg");
 		$rslist = array();
 		$oldlist = array();
-		foreach($imgUrls AS $key=>$imgUrl){
+		foreach($imgUrls as $key=>$imgUrl){
 			$imgUrl = str_replace( "&amp;" , "&" , $imgUrl);
 			if(strtolower(substr($imgUrl,0,10)) == 'data:image'){
 				$tmp = explode(",",$imgUrl);
@@ -121,12 +150,20 @@ class ueditor_control extends phpok_control
 					array_push($rslist,array('state'=>'附件获取失败'));
 					continue;
 				}
+				if($domains && is_array($domains)){
+					$tmp_host = parse_url($imgUrl,PHP_URL_HOST);
+					if(!in_array($tmp_host,$domains)){
+						array_push($rslist,array('state'=>'附件获取失败'));
+						continue;
+					}
+				}
 				$content = $this->lib('html')->get_content($imgUrl);
 				$tmp_title = basename($imgUrl);
 				$new_filename = substr(md5($imgUrl),9,16)."_".rand(0,99)."_".$key;
-				$fileType = strtolower( strrchr( $imgUrl , '.' ));
-				$ext = substr($fileType,1);
-				if(!$ext) $ext = "png";
+				$ext = strtolower(substr($imgUrl,-3));
+				if(!$ext || !in_array($ext,$arraylist)){
+					$ext = "png";
+				}
 			}
             if(!$content){
 	            array_push($rslist,array('state'=>P_Lang('附件获取失败')));
