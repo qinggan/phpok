@@ -1,13 +1,21 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/model/admin/user_model.php
-	备注： 会员增删改
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年03月13日 13时14分
-*****************************************************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * 会员增删改查
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年01月20日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class user_model extends user_model_base
 {
 	public function __construct()
@@ -15,6 +23,10 @@ class user_model extends user_model_base
 		parent::__construct();
 	}
 
+	/**
+	 * 删除会员操作
+	 * @参数 $id 会员ID
+	**/
 	public function del($id)
 	{
 		$sql = "DELETE FROM ".$this->db->prefix."user WHERE id='".$id."'";
@@ -30,12 +42,31 @@ class user_model extends user_model_base
 		return true;
 	}
 
-	public function set_status($id,$status=0)
+	public function identifier_chk($identifier='')
 	{
-		$sql = "UPDATE ".$this->db->prefix."user SET status='".$status."' WHERE id='".$id."'";
-		return $this->db->query($sql);
+		if(!$identifier){
+			return false;
+		}
+		$fields = $this->db->list_fields('user');
+		$fields[] = 'wealth';
+		$fields[] = 'introducer';
+		$fields[] = 'title';
+		$sql = "SELECT identifier FROM ".$this->db->prefix."user_fields";
+		$tmplist = $this->db->get_all($sql);
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$fields[] = $value['identifier'];
+			}
+		}
+		if(in_array($identifier,$fields)){
+			return false;
+		}
+		return true;
 	}
 
+	/**
+	 * 创建会员字段
+	**/
 	public function create_fields($rs)
 	{
 		if(!$rs || !is_array($rs)){

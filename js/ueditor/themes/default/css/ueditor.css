@@ -871,6 +871,15 @@ div.edui-box {
     background-position: -602px -76px;
 }
 
+
+.edui-default  .edui-for-insertpbefore  .edui-icon {
+    background-position: -625px -76px;
+}
+
+.edui-default  .edui-for-insertpafter  .edui-icon {
+    background-position: -602px -76px;
+}
+
 .edui-default  .edui-for-insertcaption  .edui-icon {
     background-position: -336px -76px;
 }

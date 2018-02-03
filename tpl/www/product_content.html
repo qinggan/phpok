@@ -183,7 +183,9 @@ $(document).ready(function(){
 				<div class="content">{func nl2br $rs.package}</div>
 				<!-- /if -->
 				<div class="content"><!-- php:$t = phpok('after-sale-protection') -->{$t.content}</div>
-				<!-- if $page_rs.comment_status --><div class="content"><!-- include tpl=block_comment --></div><!-- /if -->
+				<!-- if $page_rs.comment_status -->
+				<div class="content"><!-- include tpl=block_comment tid=$rs.id --></div>
+				<!-- /if -->
 			</div>
 		</div>
 		<script type="text/javascript">

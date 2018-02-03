@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
 	<title>演示插件</title>
-	<desc>测试用的</desc>
+	<desc>这是一个插件功能</desc>
 	<author>phpok.com</author>
 	<version>1.0</version>
 </root>

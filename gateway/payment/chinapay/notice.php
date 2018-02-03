@@ -96,6 +96,7 @@ class chinapay_notice
 		if($this->order['type'] == 'recharge' && $tmparray['goal']){
 			$app->model('wealth')->recharge($this->order['id']);
 		}
+		$app->plugin('payment-notice',$this->order['id']);
 		return true;
 	}
 }

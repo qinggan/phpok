@@ -1,12 +1,14 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/admin/options_control.php
-	备注： 产品属性管理工具
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年08月07日 13时27分
-*****************************************************************************************/
+/**
+ * 产品属性管理工具
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年02月02日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class options_control extends phpok_control
 {
@@ -21,13 +23,22 @@ class options_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rslist = $this->model('options')->get_all();
 		$this->assign('rslist',$rslist);
-		$taxis = $rslist ? (count($rslist)+1) * 10 : 10;
+		$taxis = $rslist ? (count($rslist)+1) * 5 : 5;
 		$this->assign('taxis',$taxis);
 		$this->view('options_index');
+	}
+
+	public function all_f()
+	{
+		$rslist = $this->model('options')->get_all();
+		if(!$rslist){
+			$this->json(P_Lang('没有数据'));
+		}
+		$this->json($rslist,true);
 	}
 
 	public function save_f()
@@ -48,7 +59,18 @@ class options_control extends phpok_control
 		}
 		$taxis = $this->get('taxis');
 		if(!$taxis){
-			$taxis = 255;
+			$rslist = $this->model('options')->get_all();
+			$taxis = $rslist ? (count($rslist)+1) * 5 : 5;
+			if($taxis > 255){
+				$taxis = 255;
+			}
+		}
+		if(!$id){
+			$insert_id = $this->model('options')->save(array('title'=>$title,'taxis'=>$taxis));
+			if(!$insert_id){
+				$this->json(P_Lang('添加失败'));
+			}
+			$this->json($insert_id,true);
 		}
 		$this->model('options')->save(array('title'=>$title,'taxis'=>$taxis),$id);
 		$this->json(true);
@@ -71,7 +93,7 @@ class options_control extends phpok_control
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			error(P_Lang('未指定ID'),'','error');
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('options')->get_one($id);
 		$this->assign('rs',$rs);
@@ -92,7 +114,7 @@ class options_control extends phpok_control
 			$this->assign("pagelist",$pagelist);
 			$this->assign('rslist',$rslist);
 		}
-		$taxis = $rslist ? (count($rslist)+1) * 10 : 10;
+		$taxis = $rslist ? (count($rslist)+1) * 5 : 5;
 		$this->assign('taxis',$taxis);
 		$this->view('options_list');
 	}
@@ -118,13 +140,20 @@ class options_control extends phpok_control
 		}
 		$taxis = $this->get('taxis');
 		if(!$taxis){
-			$taxis = 255;
+			$condition = "aid='".$aid."'";
+			$rslist = $this->model('options')->values_list($condition,0,9999);
+			$taxis = $rslist ? (count($rslist)+1) * 5 : 5;
 		}
 		$array = array('aid'=>$aid,'title'=>$title,'taxis'=>$taxis);
 		$array['pic'] = $this->get('pic');
 		$array['val'] = $this->get('val');
-		$this->model('options')->save_values($array,$id);
-		$this->json(true);
+		if($id){
+			$this->model('options')->save_values($array,$id);
+			$this->json(true);
+		}else{
+			$insert_id = $this->model('options')->save_values($array);
+			$this->json($insert_id,true);
+		}
 	}
 
 	public function delete_values_f()
@@ -137,5 +166,3 @@ class options_control extends phpok_control
 		$this->json(true);
 	}
 }
-
-?>

@@ -27,7 +27,6 @@ class content_control extends phpok_control
 
 	/**
 	 * 内容信息，可传递参数：主题ID，分类标识符及项目标识符
-	 * @date 2016年02月05日
 	 */
 	public function index_f()
 	{
@@ -140,9 +139,14 @@ class content_control extends phpok_control
 		$rs['hits'] = $this->model('list')->get_hits($rs['id']);
 		$this->phpok_seo($rs);
 		$this->assign("rs",$rs);
-		$userid = $this->session->val('user_id');
-		if($userid){
-			$this->model('wealth')->add_integral($rs['id'],$userid,'content',P_Lang('阅读#{id}',array('id'=>$rs['id'])));
+		//判断这个主题是否支持评论及评论验证码
+		if($project['comment_status']){
+			$vcode = $this->model('site')->vcode($project['id'],'comment');
+			$this->assign('is_vcode',$vcode);
+		}
+		//是否增加积分
+		if($this->session->val('user_id')){
+			$this->model('wealth')->add_integral($rs['id'],$this->session->val('user_id'),'content',P_Lang('阅读#{id}',array('id'=>$rs['id'])));
 		}
 		$this->view($tpl);
 	}

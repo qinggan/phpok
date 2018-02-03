@@ -212,6 +212,18 @@
 				return false;
 			}
 			ext_add2(val,module);
+		},
+
+		extitle_view:function(id,pid)
+		{
+			var url = get_url('form','preview','id='+id+"&pid="+pid);
+			$.dialog.open(url,{
+				'title':p_lang('预览'),
+				'lock':true,
+				'width':'750px',
+				'height':'650px',
+				'ok':true
+			});
 		}
 	};
 

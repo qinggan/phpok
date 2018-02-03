@@ -146,7 +146,7 @@ class user_model_base extends phpok_model
 		}
 		$offset = intval($offset);
 		$psize = intval($psize);
-		$sql.= " ORDER BY u.id DESC ";
+		$sql.= " ORDER BY u.regtime DESC,u.id DESC ";
 		if($psize){
 			$offset = intval($offset);
 			$sql .= "LIMIT ".$offset.",".$psize;
@@ -587,5 +587,14 @@ class user_model_base extends phpok_model
 		$sql = "DELETE FROM ".$this->db->prefix."user_address WHERE id='".$id."'";
 		$this->db->query($sql);
 		return true;
+	}
+
+	/**
+	 * 设置会员状态
+	**/
+	public function set_status($id,$status=0)
+	{
+		$sql = "UPDATE ".$this->db->prefix."user SET status='".$status."' WHERE id='".$id."'";
+		return $this->db->query($sql);
 	}
 }

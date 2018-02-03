@@ -40,7 +40,7 @@ class alipay_notice
 		$alipayNotify = new AlipayNotify($alipay_config);
 		$verify_result = $alipayNotify->verify($_GET);
 		if(!$verify_result){
-			error(P_Lang('订单验证不通过，请联系管理员确认'),$app->url,'error');
+			$app->error(P_Lang('订单验证不通过，请联系管理员确认'),$app->url);
 		}
 		$pay_date = $app->get('notify_time');
 		if($pay_date){
@@ -52,59 +52,61 @@ class alipay_notice
 			$trade_status = 'TRADE_FINISHED';
 		}
 		$tmp = array('WAIT_SELLER_SEND_GOODS','WAIT_BUYER_CONFIRM_GOODS','TRADE_FINISHED','TRADE_SUCCESS');
-		if(in_array($trade_status,$tmp)){
-			//更新扩展数据
-			$alipay = $this->order['ext'] ? unserialize($this->order['ext']) : array();
-			//$alipay = array();
-			$alipay['log_id'] = $this->order['id'];
-			$alipay['buyer_email'] = $app->get('buyer_email');
-			$alipay['buyer_id'] = $app->get('buyer_id');
-			$alipay['out_trade _no'] = $app->get('out_trade _no');
-			$alipay['seller_email'] = $app->get('seller_email');
-			$alipay['seller_id'] = $app->get('seller_id');
-			$alipay['trade_no'] = $app->get('trade_no');
-			$alipay['trade_status'] = $app->get('trade_status');
-			$alipay['notify_id'] = $app->get('notify_id');
-			$alipay['notify_time'] = $app->get('notify_time');
-			$alipay['notify_type'] = $app->get('notify_type');
-			$alipay['total_fee'] = $price;
-			$alipay['body'] = $app->get('body');
-			$alipay['agent_user_id'] = $app->get('agent_user_id');
-			$alipay['extra_common_param'] = $app->get('extra_common_param');
-			$alipay['subject'] = $app->get('subject');
-			//$app->db->insert_array($alipay,'payment_alipay');
-			//更新支付记录
-			$array = array('status'=>1,'ext'=>serialize($alipay));
-			$app->db->update_array($array,'payment_log',array('id'=>$this->order['id']));
-			//如果当前支付操作是订单
-			if($this->order['type'] == 'order'){
-				$order = $app->model('order')->get_one_from_sn($this->order['sn']);
-				if($order){
-					$app->model('order')->update_order_status($order['id'],'paid');
-					$param = 'id='.$order['id']."&status=paid";
-					$app->model('task')->add_once('order',$param);
-					$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
-					$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
-					$app->model('order')->log_save($log);
-					//增加order_payment
-					$array = array('order_id'=>$order['id'],'payment_id'=>$this->param['id']);
-					$array['title'] = $this->param['title'];
-					$array['price'] = $price;
-					$array['dateline'] = $app->time;
-					$array['ext'] = serialize($alipay);
-					$order_payment = $app->model('order')->order_payment($order['id']);
-					if(!$order_payment){
-						$app->model('order')->save_payment($array);
-					}else{
-						$app->model('order')->save_payment($array,$order_payment['id']);
-					}
+		if(!$trade_status || !in_array($trade_status,$tmp)){
+			return false;
+		}
+		//更新扩展数据
+		$alipay = $this->order['ext'] ? unserialize($this->order['ext']) : array();
+		//$alipay = array();
+		$alipay['log_id'] = $this->order['id'];
+		$alipay['buyer_email'] = $app->get('buyer_email');
+		$alipay['buyer_id'] = $app->get('buyer_id');
+		$alipay['out_trade _no'] = $app->get('out_trade _no');
+		$alipay['seller_email'] = $app->get('seller_email');
+		$alipay['seller_id'] = $app->get('seller_id');
+		$alipay['trade_no'] = $app->get('trade_no');
+		$alipay['trade_status'] = $app->get('trade_status');
+		$alipay['notify_id'] = $app->get('notify_id');
+		$alipay['notify_time'] = $app->get('notify_time');
+		$alipay['notify_type'] = $app->get('notify_type');
+		$alipay['total_fee'] = $price;
+		$alipay['body'] = $app->get('body');
+		$alipay['agent_user_id'] = $app->get('agent_user_id');
+		$alipay['extra_common_param'] = $app->get('extra_common_param');
+		$alipay['subject'] = $app->get('subject');
+		//$app->db->insert_array($alipay,'payment_alipay');
+		//更新支付记录
+		$array = array('status'=>1,'ext'=>serialize($alipay));
+		$app->db->update_array($array,'payment_log',array('id'=>$this->order['id']));
+		//如果当前支付操作是订单
+		if($this->order['type'] == 'order'){
+			$order = $app->model('order')->get_one_from_sn($this->order['sn']);
+			if($order){
+				$app->model('order')->update_order_status($order['id'],'paid');
+				$param = 'id='.$order['id']."&status=paid";
+				$app->model('task')->add_once('order',$param);
+				$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
+				$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
+				$app->model('order')->log_save($log);
+				//增加order_payment
+				$array = array('order_id'=>$order['id'],'payment_id'=>$this->param['id']);
+				$array['title'] = $this->param['title'];
+				$array['price'] = $price;
+				$array['dateline'] = $app->time;
+				$array['ext'] = serialize($alipay);
+				$order_payment = $app->model('order')->order_payment($order['id']);
+				if(!$order_payment){
+					$app->model('order')->save_payment($array);
+				}else{
+					$app->model('order')->save_payment($array,$order_payment['id']);
 				}
 			}
-			//充值操作
-			if($this->order['type'] == 'recharge' && $alipay['goal']){
-				$app->model('wealth')->recharge($this->order['id']);
-			}
 		}
+		//充值操作
+		if($this->order['type'] == 'recharge' && $alipay['goal']){
+			$app->model('wealth')->recharge($this->order['id']);
+		}
+		$app->plugin('payment-notice',$this->order['id']);
 		return true;
 	}
 }

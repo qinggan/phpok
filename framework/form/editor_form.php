@@ -23,34 +23,24 @@ class editor_form extends _init_auto
 	public function cssjs()
 	{
 		$this->addjs('js/ueditor/ueditor.config.js');
-		$this->addjs('js/ueditor/ueditor.all.js');
+		$this->addjs('js/ueditor/ueditor.all.min.js');
 		$this->addjs('js/ueditor/lang/zh-cn/zh-cn.js');
 	}
 
 	public function phpok_format($rs,$appid="admin")
 	{
 		$this->cssjs();
-		if($appid == 'admin'){
-			$rs['width'] = '100%';
-		}
 		$style = array();
 		if($rs['form_style']){
 			$list = explode(";",$rs['form_style']);
-			foreach($list AS $key=>$value){
+			foreach($list as $key=>$value){
 				$tmp = explode(":",$value);
 				if($tmp[0] && $tmp[1] && trim($tmp[1])){
 					$style[strtolower($tmp[0])] = trim($tmp[1]);
 				}
 			}
 		}
-		if($rs['width']){
-			if($this->is_mobile && $appid != 'admin'){
-				$style['width'] = '100%';
-				$rs['width'] = '100%';
-			}else{
-				$style["width"] = ($rs['width'] && $rs['width'] != '100%') ? $rs['width'].'px' : $rs['width'];
-			}
-		}
+		$style['width'] = '100%';
 		if($rs['height']){
 			$style["height"] = $rs['height'].'px';
 		}
@@ -58,6 +48,23 @@ class editor_form extends _init_auto
 		foreach($style AS $key=>$value){
 			if($rs['form_style']) $rs['form_style'] .= ';';
 			$rs['form_style'] .= $key.':'.$value;
+		}
+		$btns = array();
+		$btns["image"] = true;
+		$btns["info"] = true;
+		$btns["video"] = true;
+		$btns["file"] = true;
+		$btns["page"] = true;
+		$btns["table"] = true;
+		$btns["emotion"] = true;
+		$btns["map"] = true;
+		$btns["spechars"] = true;
+		$btns["insertcode"] = true;
+		$btns["paragraph"] = true;
+		$btns["fontsize"] = true;
+		$btns["fontfamily"] = true;
+		if($appid == 'admin' && !$rs['btns']){
+			$rs['btns'] = $btns;
 		}
 		if(!$rs['btns']){
 			$rs['btns'] = array();
@@ -67,7 +74,7 @@ class editor_form extends _init_auto
 			$save_path = $this->model('res')->cate_all();
 			if($save_path){
 				$save_path_array = array();
-				foreach($save_path AS $key=>$value){
+				foreach($save_path as $key=>$value){
 					$save_path_array[] = $value['title'];
 				}
 				$save_path = "['". implode("','",$save_path_array) ."']";

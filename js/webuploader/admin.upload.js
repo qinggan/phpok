@@ -119,6 +119,7 @@
 		this.showhtml = function(){
 			var id = $(this.id).val();
 			if(!id){
+				$(this.id+"_list").html('').fadeOut();
 				return false;
 			}
 			var url = get_url('upload','thumbshow','id='+$.str.encode(id));

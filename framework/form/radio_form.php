@@ -45,14 +45,12 @@ class radio_form extends _init_auto
 
 	public function phpok_format($rs,$appid='admin')
 	{
-		if(!$rs["option_list"])
-		{
+		if(!$rs["option_list"]){
 			$rs['option_list'] = 'default:0';
 		}
 		$opt_list = explode(":",$rs["option_list"]);
 		$rslist = $this->opt_rslist($opt_list[0],$opt_list[1],$rs['ext_select']);
-		if(!$rslist)
-		{
+		if(!$rslist){
 			return false;
 		}
 		if($rs["content"] && is_array($rs['content']))

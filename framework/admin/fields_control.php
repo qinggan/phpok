@@ -19,9 +19,9 @@ class fields_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
-		$this->form_list = $this->model('form')->form_all();
-		$this->field_list = $this->model('form')->field_all();
-		$this->format_list = $this->model('form')->format_all();
+		$this->form_list = $this->model('form')->form_all(true);
+		$this->field_list = $this->model('form')->field_all(true);
+		$this->format_list = $this->model('form')->format_all(true);
 		$this->assign("field_list",$this->field_list);
 		$this->assign("form_list",$this->form_list);
 		$this->assign("format_list",$this->format_list);
@@ -29,7 +29,9 @@ class fields_control extends phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
-	//取得全部字段列表
+	/**
+	 * 取得全部常用字段列表
+	**/
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
@@ -39,19 +41,18 @@ class fields_control extends phpok_control
 		$rslist = $this->model('fields')->get_all($condition);
 		if($rslist){
 			foreach($rslist AS $key=>$value){
-				$value["field_type_name"] = $this->field_list[$value["field_type"]];
-				$value["form_type_name"] = $this->form_list[$value["form_type"]];
+				$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
+				$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
 				$rslist[$key] = $value;
 			}
 		}
 		$this->assign("rslist",$rslist);
-		//读取字段使用范围
-		$arealist = $this->lib('xml')->read($this->dir_root.'data/xml/fields_area.xml');
-		$this->assign("arealist",$arealist);
 		$this->view("fields_index");
 	}
 
-	//添加字段
+	/**
+	 * 添加字段
+	**/
 	public function set_f()
 	{
 		$id = $this->get("id");
@@ -75,7 +76,7 @@ class fields_control extends phpok_control
 			$this->assign("id",$id);
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		$opt_list = $this->model('opt')->group_all();

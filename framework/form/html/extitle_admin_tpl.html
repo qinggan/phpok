@@ -1,0 +1,11 @@
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs.content}" />
+<div id="{$_rs.identifier}_edit_preview">
+	<!-- if $_html -->
+	{$_html}
+	<!-- else -->
+	<div class="button-group" style="padding:2px 0 0 0;">
+		<!-- if !$_rs.form_true_delete --><input type="button" value="{lang选择}" onclick="$.phpokform.extitle_list('{$_rs.id}')" class="phpok-btn" /><!-- /if -->
+		<input type="button" value="{lang添加}" onclick="$.phpokform.extitle_quickadd('{$_rs.id}')" class="phpok-btn" />
+	</div>
+	<!-- /if -->
+</div>

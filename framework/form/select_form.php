@@ -57,6 +57,7 @@ class select_form extends _init_auto
 
 	public function phpok_format($rs,$appid="admin")
 	{
+		$this->cssjs();
 		if(!$rs["option_list"]){
 			$rs['option_list'] = 'default:0';
 		}

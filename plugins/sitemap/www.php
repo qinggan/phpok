@@ -97,14 +97,12 @@ class www_sitemap extends phpok_plugin
 		if($total>$this->max_count){
 			//生成索引
 			$rslist = array();
-			$listurl = $this->url('plugin','exec','id=sitemap&exec=glist','',true);
-			$rslist[0] = array('url'=>$this->url_quote($listurl),'lastmod'=>date("Y-m-d",$this->time));
 			$page_total = intval($total/$this->max_count);
 			if($total%$this->max_count){
 				$page_total++;
 			}
 			$listurl = $this->url('plugin','exec','id=sitemap&exec=ginfo','',true);
-			for($i=1;$i<=$page_total;$i++){
+			for($i=0;$i<=$page_total;$i++){
 				$url = $listurl.'&pageid='.$i;
 				$rslist[$i] = array('url'=>$this->url_quote($url),'lastmod'=>date("Y-m-d",$this->time));
 			}

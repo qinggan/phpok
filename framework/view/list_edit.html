@@ -1,5 +1,6 @@
 <!-- include tpl=head -->
 <script type="text/javascript" src="{func include_js list.js}"></script>
+<script type="text/javascript" src="js/selectpage.min.js"></script>
 <div class="tips">
 	{lang您当前的位置：}{lang内容管理}
 	<!-- if $pid -->
@@ -77,14 +78,13 @@
 		<!-- if $p_rs.cate_multiple -->
 		<div class="table">
 			<div class="title">
-				{lang扩展分类：}<span class="note">{lang请按住 CTRL 键进行多选}</span>
+				{lang扩展分类：}<span class="note">{lang支持多选}</span>
 			</div>
 			<div class="content">
-				<select name="ext_cate_id[]" multiple="multiple" class="multiple">
-					<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
-					<option value="{$value.id}"{if in_array($value.id,$extcate)} selected{/if}>{$value._space}{$value.title}</option>
-					<!-- /loop -->
-				</select>
+				<input type="text" name="ext_cate_id" id="ext_cate_id" value="{if $extcate}{func implode , $extcate}{/if}" style="width:99%" />
+				<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+				<input type="hidden" name="_ext_cateid" value="{$value.id}" data-orderby="{$tmpid.num}" data-name="{$value.title}" data-space="{$value._space}" />
+				<!-- /loop -->
 			</div>
 		</div>
 		<!-- /if -->
@@ -208,165 +208,54 @@
 					</div>
 				</li>
 				<!-- /if -->
-			</ul>		
+			</ul>
 		</div>
-		<!-- if $freight && $freight.type == 'weight' -->
-		<div class="table">
-			<div class="title">
-				{lang重量：}
-			</div>
-			<div class="content">
-				<input type="text" id="weight" name="weight" value="{$rs.weight}" /> {lang千克}
-			</div>
-		</div>
-		<!-- /if -->
-		<!-- if $freight && $freight.type == 'volume' -->
-		<div class="table">
-			<div class="title">
-				{lang体积：}
-			</div>
-			<div class="content">
-				<input type="text" id="volume" name="volume" value="{$rs.volume}" /> {lang立方米}
-			</div>
-		</div>
-		<!-- /if -->
-	
 	</div>
+	<div class="table">
+		<div class="title">
+			{lang重量}：<span class="note">{lang设置产品重量，可用于计算基于重量的运费，单位是千克，请注意换算}</span>
+		</div>
+		<div class="content">
+			<input type="text" id="weight" name="weight" value="{$rs.weight}" /> Kg
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang体积：}<span class="note">{lang设置产品体积，可用于计算基于体积的运费，单位是立方米，请注意换算}</span>
+		</div>
+		<div class="content">
+			<input type="text" id="volume" name="volume" value="{$rs.volume}" /> M<sup>3</sup>
+		</div>
+	</div>
+	
 
 	<!-- if $p_rs.biz_attr -->
-	<script type="text/javascript">
-	function biz_attr_reload()
-	{
-		$("#biz_attr_options").html('<div style="background:#fff;padding:30px;text-align:center;"><img src="images/loading.gif" /></div>');
-		biz_attr_loading();
-	}
-	function biz_attr_loading()
-	{
-		var tid = "{$id}";
-		var url = get_url('list','options_html','pid={$pid}&tid='+tid);
-		$.phpok.json(url,function(rs){
-			if(rs.status == 'ok'){
-				if(!rs.content){
-					rs.content = '';
-				}
-				$("#biz_attr_options").html(rs.content);
-			}else{
-				$("#biz_attr_options").html(rs.content);
-			}
-		});
-	}
-	
-	function attr_add(tid,pid)
-	{
-		var val = $("#biz_attr_id").val();
-		if(!val){
-			$.dialog.alert('请选择一个要添加的属性');
-			return false;
-		}
-		var text = $("#biz_attr_id").find('option:selected').text();
-		var url = get_url('list','options_add','aid='+val);
-		if(tid && tid != 'undefined'){
-			url += "&tid="+tid;
-		}else{
-			url += "&pid="+pid;
-		}
-		var rs = $.phpok.json(url+"&type=chk");
-		if(rs.status != 'ok'){
-			$.dialog.alert(rs.content);
-			return false;
-		}
-		$.dialog.open(url,{
-			'title':'添加属性，'+text,
-			'width':'700px',
-			'height':'400px',
-			'lock':true,
-			'ok':function(){
-				var iframe = this.iframe.contentWindow;
-				if (!iframe.document.body) {
-					alert('iframe还没加载完毕呢');
-					return false;
-				};
-				iframe.save();
-				return false;
-			},
-			'okVal':'提交',
-			'cancel':function(){
-				return true;
-			},
-			'cancelVal':'取消'
-		});
-
-	}
-	function biz_attr_delete(aid,tid)
-	{
-		var url = get_url('list','options_delete','aid='+aid+"&tid="+tid);
-		var rs = $.phpok.json(url);
-		if(rs.status == 'ok'){
-			biz_attr_reload();
-		}else{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	}
-	function biz_attr_edit(aid,tid)
-	{
-		var url = get_url('list','options_edit','aid='+aid);
-		if(tid && tid != 'undefined'){
-			url += "&tid="+tid;
-		}else{
-			url += "&pid={$pid}";
-		}
-		var rs = $.phpok.json(url+"&type=chk");
-		if(rs.status != 'ok'){
-			$.dialog.alert(rs.content);
-			return false;
-		}
-		$.dialog.open(url,{
-			'title':'编辑属性',
-			'width':'700px',
-			'height':'400px',
-			'lock':true,
-			'ok':function(){
-				var iframe = this.iframe.contentWindow;
-				if (!iframe.document.body) {
-					alert('iframe还没加载完毕呢');
-					return false;
-				};
-				iframe.save();
-				return false;
-			},
-			'okVal':'提交',
-			'cancel':function(){
-				return true;
-			},
-			'cancelVal':'取消'
-		});
-	}
-	$(document).ready(function(){
-		biz_attr_reload();
-	});
-	</script>
-	<div class="biz_attr">
-		<div class="biz_attr_select">
-			<table cellpadding="0" cellspacing="0">
-			<tr>
-				<!-- if $biz_attrlist -->
-				<td>
-					<select id="biz_attr_id">
-						<option value="">请选择一个属性…</option>
-						<!-- loop from=$biz_attrlist key=$key value=$value id=$tmpid -->
-						<option value="{$value.id}">{$value.title}</option>
-						<!-- /loop -->
-					</select>
-				</td>
-				<td>&nbsp;</td>
-				<!-- /if -->
-				<td><input type="button" value="{lang添加属性}" onclick="attr_add('{$id}','{$p_rs.id}')" class="phpok-btn" /></td>
-				<td style="line-height:160%;">&nbsp;负号表示减，返之为加，如+10，表示加10，-10表示减10</td>
-			</tr>
-			</table>
+	<div class="table">
+		<div class="title">
+			{lang产品属性}：
+			<span class="note">{lang负号表示价格下调，加号或无符号表示价格上调，如+10或10，表示加10，-10表示减10}</span>
 		</div>
-		<div id="biz_attr_options" class="options"></div>
+		<div class="content">
+			<input type="hidden" name="_biz_attr" id="_biz_attr" value="{$_attr}" />
+			<div>
+				<table cellpadding="0" cellspacing="0">
+				<tr>
+					<td>
+						<select id="biz_attr_id" onchange="$.admin_list_edit.attr_add(this.value)">
+							<option value="">{lang请选择一个属性操作内容…}</option>
+							<!-- loop from=$biz_attrlist key=$key value=$value id=$tmpid -->
+							<option value="{$value.id}">{$value.title}</option>
+							<!-- /loop -->
+						</select>
+					</td>
+					<td>&nbsp;</td>
+					<td><input type="button" value="{lang添加新属性}" onclick="$.admin_list_edit.attr_create()" class="phpok-btn" /></td>
+				</tr>
+				</table>
+			</div>
+			<ul id="biz_attr_options" class="layout">
+			</ul>
+		</div>
 	</div>
 	<!-- /if -->
 </div>

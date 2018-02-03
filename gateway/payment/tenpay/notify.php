@@ -59,46 +59,48 @@ class tenpay_notify
 		if(!$tenpay->check_sign($array)){
 			exit('fail');
 		}
-		if($tenpay->param('retcode') == '0'){
-			$pay_date = $tenpay->get_date();
-			$pay_date = $pay_date ? strtotime($pay_date) : $app->time;
-			$price = round(($tenpay->param('total_fee') / 100),2);
+		if($tenpay->param('retcode') != '0'){
+			exit('fail');
+		}
+		$pay_date = $tenpay->get_date();
+		$pay_date = $pay_date ? strtotime($pay_date) : $app->time;
+		$price = round(($tenpay->param('total_fee') / 100),2);
 
-			$tenpay = $this->order['ext'] ? unserialize($this->order['ext']) : array();
-			$tenpay['fee_type'] = $tenpay->param('fee_type');
-			$tenpay['notify_id'] = $tenpay->param('notify_id');
-			$tenpay['time_end'] = $tenpay->param('time_end');
-			$tenpay['total_fee'] = $tenpay->param('total_fee');
-			$tenpay['transaction_id'] = $tenpay->param('transaction_id');
-			$array = array('status'=>1,'ext'=>serialize($tenpay));
-			$app->db->update_array($array,'payment_log',array('id'=>$this->order['id']));
-			if($this->order['type'] == 'order'){
-				$order = $app->model('order')->get_one_from_sn($this->order['sn']);
-				if($order){
-					$app->model('order')->update_order_status($order['id'],'paid');
-					$param = 'id='.$order['id']."&status=paid";
-					$app->model('task')->add_once('order',$param);
-					$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
-					$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
-					$app->model('order')->log_save($log);
-					//增加order_payment
-					$array = array('order_id'=>$order['id'],'payment_id'=>$this->param['id']);
-					$array['title'] = $this->param['title'];
-					$array['price'] = $price;
-					$array['dateline'] = $app->time;
-					$array['ext'] = serialize($tenpay);
-					$order_payment = $app->model('order')->order_payment($order['id']);
-					if(!$order_payment){
-						$app->model('order')->save_payment($array);
-					}else{
-						$app->model('order')->save_payment($array,$order_payment['id']);
-					}
+		$tenpay = $this->order['ext'] ? unserialize($this->order['ext']) : array();
+		$tenpay['fee_type'] = $tenpay->param('fee_type');
+		$tenpay['notify_id'] = $tenpay->param('notify_id');
+		$tenpay['time_end'] = $tenpay->param('time_end');
+		$tenpay['total_fee'] = $tenpay->param('total_fee');
+		$tenpay['transaction_id'] = $tenpay->param('transaction_id');
+		$array = array('status'=>1,'ext'=>serialize($tenpay));
+		$app->db->update_array($array,'payment_log',array('id'=>$this->order['id']));
+		if($this->order['type'] == 'order'){
+			$order = $app->model('order')->get_one_from_sn($this->order['sn']);
+			if($order){
+				$app->model('order')->update_order_status($order['id'],'paid');
+				$param = 'id='.$order['id']."&status=paid";
+				$app->model('task')->add_once('order',$param);
+				$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
+				$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
+				$app->model('order')->log_save($log);
+				//增加order_payment
+				$array = array('order_id'=>$order['id'],'payment_id'=>$this->param['id']);
+				$array['title'] = $this->param['title'];
+				$array['price'] = $price;
+				$array['dateline'] = $app->time;
+				$array['ext'] = serialize($tenpay);
+				$order_payment = $app->model('order')->order_payment($order['id']);
+				if(!$order_payment){
+					$app->model('order')->save_payment($array);
+				}else{
+					$app->model('order')->save_payment($array,$order_payment['id']);
 				}
 			}
-			if($this->order['type'] == 'recharge' && $tenpay['goal']){
-				$app->model('wealth')->recharge($this->order['id']);
-			}
 		}
+		if($this->order['type'] == 'recharge' && $tenpay['goal']){
+			$app->model('wealth')->recharge($this->order['id']);
+		}
+		$app->plugin('payment-notify',$this->order['id']);
 		exit('success');
 	}
 }

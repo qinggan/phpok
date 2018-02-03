@@ -86,6 +86,239 @@ var autosave_handle;
 				}
 			});
 			return false;
+		},
+
+		/**
+		 * 添加属性
+		**/
+		attr_create:function()
+		{
+			var self = this;
+			$.dialog.prompt(p_lang('请添加属性名称，注意，添加前请先检查之前的属性是否存在'),function(name){
+				if(!name){
+					$.dialog.alert(p_lang('名称不能为空'));
+				}
+				var url = get_url('options','save','title='+$.str.encode(name));
+				$.phpok.json(url,function(data){
+					if(data.status == 'ok'){
+						self.attrlist_load();
+						self.attr_add(data.content);
+						return true;
+					}
+					$.dialog.alert(data.content);
+					return false;
+				})
+			});
+		},
+
+		/**
+		 * 选择添加属性
+		**/
+		attr_add:function(val)
+		{
+			if(!val){
+				return false;
+			}
+			var old = $("#_biz_attr").val();
+			if(old){
+				if(old == val){
+					$.dialog.alert(p_lang('属性已经使用，不能重复'));
+					return false;
+				}
+				var list = old.split(",");
+				var is_used = false;
+				for(var i in list){
+					if(list[i] == val){
+						is_used = true;
+						break;
+					}
+				}
+				if(is_used){
+					$.dialog.alert(p_lang('属性已经使用，不能重复'));
+					return false;
+				}
+				var ncontent = old+","+val;
+				//写入新值
+				$("#_biz_attr").val(ncontent);
+				//创建HTML
+				var html = '<li id="_biz_attr_'+val+'"><li>';
+				$("#biz_attr_options").append(html);
+				//异步加载HTML
+			}else{
+				$("#_biz_attr").val(val);
+				var html = '<li id="_biz_attr_'+val+'"><li>';
+				$("#biz_attr_options").html(html);
+			}
+			this.attr_info_product(val);
+		},
+
+		/**
+		 * 删除属性
+		 * @参数 id
+		**/
+		attr_remove:function(val)
+		{
+			if(!val){
+				return false;
+			}
+			var old = $("#_biz_attr").val();
+			if(!old || old == 'undefined' || old == '0'){
+				return false;
+			}
+			if(old == val){
+				$("#_biz_attr").val('');
+				$("#biz_attr_options").html('');
+				return false;
+			}
+			var list = old.split(",");
+			var nlist = new Array();
+			var m = 0;
+			for(var i in list){
+				if(list[i] != val){
+					nlist[m] = list[i];
+					m++;
+				}
+			}
+			var ncontent = nlist.join(",");
+			$("#_biz_attr").val(ncontent);
+			//删除HTML
+			var html = '<li id="_biz_attr_'+val+'"><li>';
+			$("#_biz_attr_"+val).remove();
+		},
+
+		/**
+		 * 异步加载属性
+		**/
+		attr_load:function()
+		{
+			var bizinfo = $("#_biz_attr").val();
+			if(bizinfo && bizinfo != 'undefined' && bizinfo != '0'){
+				var list = bizinfo.split(",");
+				var html = '';
+				for(var i in list){
+					html += '<li id="_biz_attr_'+list[i]+'"><li>';
+				}
+				$("#biz_attr_options").html(html);
+				for(var i in list){
+					this.attr_info_product(list[i]);
+				}
+			}
+		},
+
+		/**
+		 * 读取属性及内容信息
+		 * @参数 id 属性ID
+		**/
+		attr_info_product:function(id)
+		{
+			//执行属性添加
+			var url = get_url('list','attr','aid='+id);
+			var tid = $("#id").val();
+			if(tid){
+				url += "&tid="+tid;
+			}
+			$.phpok.json(url,function(data){
+				if(data.status){
+					$("#_biz_attr_"+id).html(data.info);
+					return true;
+				}
+				$.dialog.alert(data.info);
+				return false;
+			});
+		},
+
+		/**
+		 * 选择全部属性
+		**/
+		attrlist_load:function()
+		{
+			var url = get_url('options','all');
+			$.phpok.json(url,function(data){
+				if(data.status != 'ok'){
+					var html = '<option value="">'+data.content+'</option>';
+					$("#biz_attr_id").html(html);
+					return false;
+				}
+				var html = '<option value="">'+p_lang('请选择一个属性…')+'</option>';
+				for(var i in data.content){
+					html += '<option value="'+data.content[i].id+'">'+data.content[i].title+'</option>';
+				}
+				$("#biz_attr_id").html(html);
+				return true;
+			});
+			return false;
+		},
+
+		attr_option_delete:function(id,val)
+		{
+			var name = $("#attr_"+id+"_"+val).attr("data-name");
+			$("#attr_"+id+"_opt").append('<option value="'+val+'">'+name+'</option>');
+			$("#attr_"+id+"_"+val).remove();
+		},
+
+		/**
+		 * 属性快速添加
+		 * @参数 id 属性ID
+		 * @参数 val 要写入的值
+		**/
+		attr_option_quickadd:function(id,val)
+		{
+			if(!id || !val || val == 'undefined' || val == '0' || val == ''){
+				return false;
+			}
+			var text = $("#attr_"+id+"_opt").find("option:selected").text();
+			$("#attr_"+id+"_opt option[value="+val+"]").remove();
+			this.attr_option_html(id,val,text);
+		},
+
+		/**
+		 * 输出HTML
+		 * @参数 id 属性ID
+		 * @参数 val 参数ID
+		 * @参数 text 显示名称
+		**/
+		attr_option_html:function(id,val,text)
+		{
+			var count = $("tr[name=attr_"+id+"]").length;
+			var taxis = count > 0 ? parseInt(count+1) * 5 : 5;
+			var html = '<tr name="attr_'+id+'" id="attr_'+id+'_'+val+'" data-name="'+text+'">';
+			html += '<td class="center"><input type="hidden" name="_attr_'+id+'[]" value="'+val+'" />'+text+'</td>';
+			html += '<td class="center"><input type="text" name="_attr_weight_'+id+'['+val+']" value="0" class="short center" /></td>';
+			html += '<td class="center"><input type="text" name="_attr_volume_'+id+'['+val+']" value="0" class="short center" /></td>';
+			html += '<td class="center"><input type="text" name="_attr_price_'+id+'['+val+']" value="0" class="center" style="width:100px" /></td>';
+			html += '<td class="center"><input type="text" name="_attr_taxis_'+id+'['+val+']" value="'+taxis+'" class="short center" /></td>'
+			html += '<td class="center"><input type="button" value="'+p_lang('删除')+'" onclick="$.admin_list_edit.attr_option_delete(\''+id+'\',\''+val+'\')" class="phpok-btn" /></td>';
+			html += '</tr>';
+			if($("tr[name=attr_"+id+"]").length > 0){
+				$("tr[name=attr_"+id+"]").last().after(html);
+			}else{
+				$("tr[name=attr_"+id+"_thead]").after(html);
+			}
+			return true;
+		},
+
+		/**
+		 * 手动添加值信息
+		 * @参数 id 属性ID
+		**/
+		attr_option_add:function(id)
+		{
+			var self = this;
+			$.dialog.prompt(p_lang('请创建一个新值'),function(name){
+				if(!name){
+					$.dialog.alert(p_lang('新值不能为空'));
+					return false;
+				}
+				var url = get_url('options','save_values','aid='+id+'&title='+$.str.encode(name));
+				$.phpok.json(url,function(data){
+					if(data.status == 'ok'){
+						self.attr_option_html(id,data.content,name);
+						return true;
+					}
+					$.dialog.alert(data.content);
+					return false;
+				})
+			});
 		}
 	}
 
@@ -96,6 +329,9 @@ $(document).keypress(function(e){
 		$('.phpok_submit_click').click();
 	}
 
+});
+$(document).ready(function(){
+	
 	//仅在添加主题时执行自动保存操作
 	var id = $("#id").val();
 	if(!id || id == '0' || id == 'undefined'){
@@ -104,4 +340,35 @@ $(document).keypress(function(e){
 		}, 60000);
 	}
 
+	//完善扩展分类设置
+	if($("#ext_cate_id").length > 0){
+		var tag_data = new Array();
+		$("input[name=_ext_cateid]").each(function(i){
+			var id = $(this).val();
+			var name = $(this).attr("data-name");
+			var space = $(this).attr("data-space");
+			var orderby = parseInt($(this).attr("data-orderby"));
+			tag_data[i] = {'id':id,'name':name,'space':space,'orderby':orderby};
+		});
+		$('#ext_cate_id').selectPage({
+		    showField : 'name',
+		    keyField : 'id',
+		    selectOnly : true,
+		    pagination : false,
+		    listSize : 20,
+		    multiple : true,
+		    orderBy:['orderby'],
+		    data : tag_data,
+		    multipleControlbar:false,
+		    formatItem : function(data){
+		        return data.space + '' + data.name;
+		    }
+		});
+	}
+
+	//加载产品属性
+	if($("#_biz_attr").length > 0){
+		$.admin_list_edit.attr_load();
+	}
+	
 });

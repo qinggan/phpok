@@ -1,0 +1,41 @@
+<div class="list">
+<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<tr>
+	<th width="180px">ID</th>
+	<!-- loop from=$layout key=$key value=$value id=$tmpid -->
+	<th class="lft">{$value}</th>
+	<!-- /loop -->
+	<th width="60px">{lang排序}</th>
+	<th id="{$_identifier}_action_buttons">
+		<div class="button-group" style="padding:2px 0 0 0;">
+			<!-- if !$_true_delete --><input type="button" value="{lang选择}" onclick="$.phpokform.extitle_list('{$_id}')" class="phpok-btn" /><!-- /if -->
+			<input type="button" value="{lang添加}" onclick="$.phpokform.extitle_quickadd('{$_id}')" class="phpok-btn" />
+		</div>
+	</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value id=$idx -->
+<tr>
+	<td class="center">{$value.id}</td>
+	<!-- loop from=$layout key=$k value=$v id=$idxx -->
+	<td class="lft">{$value[$k]}</td>
+	<!-- /loop -->
+	<td align="center" data-value="{$idx.num}" data-total="{$idx.total}" data-id="{$value.id}" data-name="taxis-{$_identifier}-{$_id}">
+		<div class="button-group">
+			<!-- if $idx.index -->
+			<input type="button" value="↑" class="phpok-btn" title="{lang向前移一位}" onclick="$.phpokform.extitle_sortup(this,'{$_id}','{$_identifier}')" />
+			<!-- /if -->
+			<!-- if $idx.num != $idx.total -->
+			<input type="button" value="↓" class="phpok-btn" title="{lang向后移一位}" onclick="$.phpokform.extitle_sortdown(this,'{$_id}','{$_identifier}')" />
+			<!-- /if -->
+		</div>
+	</td>
+	<td class="center">
+		<div class="button-group">
+			<input type="button" value="{lang编辑}" onclick="$.phpokform.extitle_quickedit('{$value.id}','{$_id}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="$.phpokform.extitle_delete('{$value.id}','{$_id}','{$_identifier}')" class="phpok-btn" />
+		</div>
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+</div>

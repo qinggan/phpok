@@ -1,34 +1,11 @@
-<!-- if $_rs.form_btn == 'date' -->
-<script type="text/javascript" src="{$_js}/laydate/laydate.js"></script>
+<!-- if $_laydate -->
 <input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
-<input type="button" value="{lang日期}" onclick="laydate({elem:'#{$_rs.identifier}'})" />
-<input type="button" value="{lang清除}" onclick="$('#{$_rs.identifier}').val('');" />
-<!-- elseif $_rs.form_btn == "datetime" -->
-<script type="text/javascript" src="{$_js}/laydate/laydate.js"></script>
-<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
-<input type="button" value="{lang日期时间}" onclick="laydate({elem:'#{$_rs.identifier}',istime:true,format: 'YYYY-MM-DD hh:mm:ss'})" />
-<input type="button" value="{lang清除}" onclick="$('#{$_rs.identifier}').val('');" />
-<!-- elseif $_rs.form_btn == "file" -->
-<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
-<input type="button" value="{lang会员库}" class="btn btn_{$_rs.identifier}" id="_btn_{$_rs.identifier}" />
-<input type="button" value="{lang清除}" class="btn btn_{$_rs.identifier}" onclick="$('#{$_rs.identifier}').val('');" />
-<script type="text/javascript">
-$(document).ready(function(){
-	$("#_btn_{$_rs.identifier}").click(function(){
-		var url = get_url("open","user2") + "&id={$_rs.identifier}";
-		$.dialog.open(url,{
-			title: p_lang('会员列表'),
-			lock : true,
-			width: "700px",
-			height: "70%",
-			resize: false
-		});
-	});
-});
-</script>
-<!-- elseif $_rs.form_btn == 'color' -->
-<script type="text/javascript" src="{$_js}/jscolor/jscolor.js"></script>
-<input type="text" id="{$_rs.identifier}" class="color {pickerClosable:true,pickerPosition:'right',required:false}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
+<input type="button" value="{$_laydate_button}" id="btn_{$_rs.identifier}_{$_rs.form_btn}" onclick="$.phpokform.laydate_button('{$_rs.identifier}','{$_rs.form_btn}')" />
+<input type="button" value="{lang清除}" onclick="$.phpokform.clear('{$_rs.identifier}')" />
 <!-- else -->
-<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" />
+	<!-- if $_rs.form_btn == 'color' -->
+		<input type="text" id="{$_rs.identifier}" class="jscolor {required:false{if $_rs.ext_include_3},hash:true{/if}}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" />
+	<!-- else -->
+		<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" />
+	<!-- /if -->
 <!-- /if -->

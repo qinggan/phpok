@@ -83,7 +83,7 @@
 		<li>
 			<div class="button-group">
 				<!-- loop from=$_rs.ext_quick_words key=$key value=$value id=$tmpid -->
-				<input type="button" value="{$value}" class="phpok-btn" onclick="$.phpokform.text_button_quickwords('{$_rs.identifier}',this.value,'{$_rs.ext_quick_type}')" />
+				<input type="button" value="{$value.show}" class="phpok-btn" onclick="$.phpokform.text_button_quickwords('{$_rs.identifier}','{$value.id}','{$_rs.ext_quick_type}')" />
 				<!-- /loop -->
 				<input type="button" value="{lang清除}" class="phpok-btn" onclick="$.phpokform.clear('{$_rs.identifier}')" />
 			</div>

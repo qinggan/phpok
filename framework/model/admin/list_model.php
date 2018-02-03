@@ -228,6 +228,45 @@ class list_model extends list_model_base
 		return $fields;
 	}
 
+	/**
+	 * 独立表列表数据
+	 * @参数 $mid 模块ID
+	 * @参数 $condition 查询条件
+	 * @参数 $offset 起始位置
+	 * @参数 $psize 查询数量
+	 * @参数 $orderby 排序
+	**/
+	public function single_list($mid,$condition='',$offset=0,$psize=30,$orderby='',$field='*')
+	{
+		$sql = "SELECT ".$field." FROM ".$this->db->prefix.$mid." ";
+		if($condition){
+			$sql .= " WHERE ".$condition." ";
+		}
+		if(!$orderby){
+			$orderby = 'id DESC';
+		}
+		$sql .= " ORDER BY ".$orderby." ";
+		if($psize && intval($psize)>0){
+			$sql .= " LIMIT ".intval($offset).",".intval($psize);
+		}
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		$m_rs = $this->lib('ext')->module_fields($mid);
+		if($m_rs){
+			foreach($rslist as $key=>$value){
+				foreach($value as $k=>$v){
+					if($m_rs[$k]){
+						$value[$k] = $this->lib('ext')->content_format($m_rs[$k],$v);
+					}
+				}
+				$rslist[$key] = $value;
+			}
+		}
+		return $rslist;
+	}
+
 
 	/**
 	 * 获取主题列表

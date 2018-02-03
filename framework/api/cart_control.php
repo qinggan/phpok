@@ -91,8 +91,8 @@ class cart_control extends phpok_control
 		$array['title'] = $title;
 		$array['price'] = $this->get('price','float');
 		$array['tid'] = 0;
-		$array['weight'] = $this->get('weight','int');
-		$array['volume'] = $this->get('volume','int');
+		$array['weight'] = $this->get('weight','float');
+		$array['volume'] = $this->get('volume','float');
 		$ext = $this->get('ext');
 		if($ext && is_array($ext)){
 			sort($ext);

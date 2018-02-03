@@ -2,43 +2,43 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	var toolbars_{$_rs.id} = [[
-		'fullscreen','source', '|',
+		'fullscreen','removeformat','source', '|',
 		'bold', 'italic', 'underline', 'strikethrough','|',
 		'superscript', 'subscript','|',
 		'justifyleft', 'justifycenter', 'justifyright', '|',
 		'insertorderedlist', 'insertunorderedlist','forecolor',  '|',
-		'indent', 'horizontal','blockquote','inserttable','|',
+		'indent', 'horizontal','blockquote','|',
 		'link', 'unlink','|',
-		{if $_rs.btns.image}'insertimage',{/if}
+		{if $_rs.btns.image}'simpleupload','insertimage','imagenone', 'imageleft', 'imageright', 'imagecenter','|',{/if}
 		{if $_rs.btns.video}'insertvideo',{/if}
 		{if $_rs.btns.file}'attachment',{/if}
-		{if $_rs.btns.info}'phpokinfo',{/if}
-		{if $_rs.btns.map}'map',{/if}
-		{if $_rs.btns.page}'pagebreak',{/if}
-		{if $_rs.btns.image || $_rs.btns.video || $_rs.btns.file || $_rs.btns.info || $_rs.btns.map || $_rs.btns.page}'|',{/if}
-		'spechars','emotion','removeformat', 'pasteplain','|',
+		{if $_rs.btns.spechars}'spechars',{/if}
+		{if $_rs.btns.emotion}'emotion',{/if}
+		'insertpbefore','insertpafter','|',
 		{if $_rs.btns.fontfamily}'fontfamily',{/if}
 		{if $_rs.btns.fontsize}'fontsize',{/if}
 		{if $_rs.btns.paragraph}'paragraph',{/if}
 		{if $_rs.btns.insertcode}'insertcode',{/if}
+		{if $_rs.btns.table}
+		'inserttable','deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols','|',
+		{/if}
 		'help'
 	]];
 	var edit_config_{$_rs.id} = {
 		 'UEDITOR_HOME_URL':webroot+'{#js#}/ueditor/'
 		,'serverUrl':get_url('ueditor')
 		,'toolbars':toolbars_{$_rs.id}
-		{if $_rs.btns.info},'labelMap':{'phpokinfo':'主题库'}{/if}
-	    ,'initialFrameWidth':'{$_rs.width}'
+	    ,'initialFrameWidth':'100%'
 	    ,'allowDivTransToP': false
 	    ,'initialFrameHeight':'{$_rs.height}'
-		,'sourceEditorFirst':{$_rs.is_code ? 'true' :'false'}
-		,'readonly':{$_rs.is_read ? 'true' :'false'}
-		,'pasteplain':{$_rs.paste_text ? 'true' : 'false'}
-		,'autoFloatEnabled':true
-		,'autoHeightEnabled':true
+		,'sourceEditorFirst':false
+		,'readonly':false
+		,'pasteplain':true
+		,'autoFloatEnabled':false
+		,'autoHeightEnabled':false
+		,'imagePopup':false
 		{if $_rs.btns.page},'pageBreakTag':'[:page:]'{/if}
 		,'textarea':'{$_rs.identifier}'
-		{if $_rs.btns.info},'iframeUrlMap':{'phpokinfo':get_url('ueditor','info')}{/if}
 	};
 	var edit_{$_rs.id} = UE.getEditor('{$_rs.identifier}',edit_config_{$_rs.id});
 });

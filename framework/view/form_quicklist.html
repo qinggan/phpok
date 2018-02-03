@@ -1,0 +1,62 @@
+<!-- include tpl=head_open -->
+<script type="text/javascript">
+function form_check_search()
+{
+	if(!$("#keywords").val()){
+		$.dialog.alert(p_lang('请输入要搜索的关键字'));
+		return false;
+	}
+	return true;
+}
+</script>
+<div class="center" style="padding:10px;">
+	<form method="post" action="{url ctrl=form func=quicklist id=$id/}" onsubmit="return form_check_search()">
+	<input type="text" name="keywords" id="keywords" value="{$keywords}" />
+	<input type="submit" value="{lang搜索}" class="phpok-btn" />
+	</form>
+</div>
+<div class="list">
+<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<tr>
+	<th width="50px">ID</th>
+	<!-- loop from=$layout key=$key value=$value id=$tmpid -->
+	<th class="lft" style="max-width:20%;">{$value}</th>
+	<!-- /loop -->
+	<th width="110px">{lang操作}</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value id=$idx -->
+<tr id="title_{$value.id}">
+	<td class="center">{$value.id}</td>
+	<!-- loop from=$layout key=$k value=$v id=$idxx -->
+		<!-- if is_array($value[$k])  -->
+			<!-- php:$c_list = $value[$k]['_admin'] -->
+			<!-- if $c_list.type == 'pic' -->
+			<td><img src="{$c_list.info}" width="28px" height="28px" border="0" style="border:1px solid #dedede;padding:1px;" /></td>
+			<!-- else -->
+				<!-- if is_array($c_list.info) -->
+				<td>{echo implode(' / ',$c_list.info)}</td>
+				<!-- else -->
+				<td>{$c_list.info ? $c_list.info : '-'}</td>
+				<!-- /if -->
+			<!-- /if -->
+		<!-- else -->
+		<td>{$value[$k] ? $value[$k] : '-'}</td>
+		<!-- /if -->
+	<!-- /loop -->
+	<td class="center">
+		<div class="button-group">
+			<input type="button" value="{lang查看}" onclick="$.admin_form.view('{$value.id}','{$p_rs.id}')" class="phpok-btn" />
+			<input type="button" value="{lang选择}" onclick="$.phpokform.extitle_select_action('{$value.id}','{$id}','{$identifier}')" class="phpok-btn" />
+		</div>
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<!-- include tpl=pagelist -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$.phpokform.extitle_remove_selected('{$identifier}');
+});
+</script>
+<!-- include tpl=foot_open -->

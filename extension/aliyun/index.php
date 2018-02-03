@@ -440,6 +440,27 @@ class aliyun_lib
 		}
 	}
 
+	public function play_auth($videoid)
+	{
+		if(!$videoid){
+			return false;
+		}
+		$request = new vod\GetVideoPlayAuthRequest();
+		$request->setAcceptFormat('JSON');
+		$request->setRegionId($this->regoin_id);
+		$request->setVideoId($videoid);
+		try {
+			$response = $this->client->getAcsResponse($request);
+			return $this->success($response);
+		}
+		catch (ClientException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+		catch (ServerException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+	}
+
 	/**
 	 * 错误返回
 	 * @参数 $error 错误内容

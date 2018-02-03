@@ -26,51 +26,51 @@ function save()
 <!-- else -->
 <div class="table">
 	<div class="title">
-		字段标识：
-		<span class="note">仅限 <span class="darkblue b">字母、数字及下划线，且必须以字母开头</span></span>
+		{lang字段标识}：
+		<span class="note">{lang仅限} <span class="darkblue b">{lang字母、数字及下划线，且必须以字母开头}</span></span>
 	</div>
 	<div class="content">
-		<input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" />
-		<input type="button" value="随机生成" onclick="$('#identifier').val($.phpok.rand(10,'letter'))" class="phpok-btn" />
+		<ul class="layout">
+			<li><input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" /></li>
+			<li>
+				<div class="button-group">
+					<input type="button" value="{lang随机生成}" onclick="$('#identifier').val($.phpok.rand(10,'letter'))" class="phpok-btn" />
+				</div>
+			</li>
+		</ul>	
 	</div>
 </div>
 <!-- /if -->
 <div class="table">
 	<div class="title">
-		字段名称：
-		<span class="note">设置一个名称，该名称在表单的头部信息显示</span></span>
+		{lang字段名称}：
+		<span class="note">{lang设置一个名称，该名称在表单的头部信息显示}</span></span>
 	</div>
 	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><input type="text" id="title" name="title" class="default" value="{$rs.title}" /></td>
-			<td><div id="title_note"></div></td>
-		</tr>
-		</table>
+		<input type="text" id="title" name="title" class="w99" value="{$rs.title}" />
 	</div>
 </div>
 
 <div class="table">
 	<div class="title">
-		字段备注：
-		<span class="note">仅限后台管理使用，用于查看这个字段主要做什么</span></span>
+		{lang字段备注}：
+		<span class="note">{lang仅限后台管理使用，用于查看这个字段主要做什么}</span></span>
 	</div>
-	<div class="content"><input type="text" id="note" name="note" class="long" value="{$rs.note}" /></div>
+	<div class="content"><input type="text" id="note" name="note" class="w99" value="{$rs.note}" /></div>
 </div>
 
 <div class="table">
 	<div class="title">
-		字段类型：
-		<span class="note">设置存储的类型，一经创建不允许修改</span>
+		{lang字段类型}：
+		<span class="note">{lang设置存储的类型，一经创建不允许修改}</span>
 	</div>
 	<div class="content">
-		<table>
-		<tr>
-			<td><label><input type="radio" name="field_type" value="varchar"{if $rs.field_type == 'varchar' || !$id} checked{/if} /> 字符串（最长255个字符）</label></td>
-			<td><label><input type="radio" name="field_type" value="longtext"{if $rs.field_type == 'longtext'} checked{/if} /> 长文本</label></td>
-			<td><label><input type="radio" name="field_type" value="longblob"{if $rs.field_type == 'longblob'} checked{/if} /> 二进制数据</label></td>
-		</tr>
-		</table>
+		<select name="field_type" id="field_type" class="w99">
+			<option value="">{lang请选择字段类型…}</option>
+			<!-- loop from=$field_list key=$key value=$value -->
+			<option value="{$key}"{if $rs.field_type == $key} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
+			<!-- /loop -->
+		</select>
 	</div>
 </div>
 
@@ -80,10 +80,10 @@ function save()
 		<span class="note">请选择字段要使用的表单</span>
 	</div>
 	<div class="content">
-		<select id="form_type" name="form_type" onchange="$.admin_fields.loading(this.value,'{$id}')">
-			<option value="">{lang请选择…}</option>
+		<select id="form_type" name="form_type" class="w99" onchange="$._configForm.option(this.value,'form_type_ext','{$id}','user')">
+			<option value="">{lang请选择表单…}</option>
 			<!-- loop from=$form_list key=$key value=$value id=$tmpid -->
-			<option value="{$key}"{if $rs && $key == $rs.form_type} selected{/if}>{$value}</option>
+			<option value="{$key}"{if $key == $rs.form_type} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
 			<!-- /loop -->
 		</select>
 	</div>
@@ -93,31 +93,32 @@ function save()
 
 <div class="table">
 	<div class="title">
-		CSS：
-		<span class="note">长度不能超过250个字符，建议您不要在这里设置宽高</span>
+		<span class="edit">
+			{lang表单样式：}
+			<span class="note">{lang不能超过250个字符，不熟悉CSS，请查相关手册}</span>
+		</span>
 	</div>
-	<div class="content"><input type="text" id="form_style" name="form_style" class="long" value="{$rs.form_style}" /></div>
+	<div class="content"><input type="text" id="form_style" name="form_style" class="w99" value="{$rs.form_style}" /></div>
 </div>
 
 <div class="table">
 	<div class="title">
-		表单默认值：
-		<span class="note">设置表单默认值，如果表单中有多个值，请用英文逗号隔开</span>
+		{lang表单默认值：}
+		<span class="note">{lang设置表单默认值，如果表单中有多个值，请用英文逗号隔开}</span>
 	</div>
-	<div class="content"><input type="text" id="content" name="content" class="long" value="{$rs.content}" /></div>
+	<div class="content"><input type="text" id="content" name="content" class="w99" value="{$rs.content}" /></div>
 </div>
 
 
 <div class="table">
 	<div class="title">
-		接收数据格式化：
-		<span class="note">设置文本常见格式，如HTML，整型，浮点型等</span>
+		{lang接收数据格式化：}
+		<span class="note">{lang设置文本常见格式，如HTML，整型，浮点型等}</span>
 	</div>
 	<div class="content">
-		<select name="format" id="format">
-			{if !$id}<option value="">请选择…</option>{/if}
-			<!-- loop from=$format_list key=$key value=$value id=format_list_id -->
-			<option value="{$key}"{if $rs.format == $key} selected{/if}>{$value}</option>			
+		<select name="format" id="format" class="w99">
+			<!-- loop from=$format_list key=$key value=$value id=$tmpid -->
+			<option value="{$key}"{if $rs.format == $key} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
 			<!-- /loop -->
 		</select>
 	</div>
@@ -127,7 +128,8 @@ function save()
 <!-- if $rs -->
 <script type="text/javascript">
 $(document).ready(function(){
-	$.admin_fields.loading('{$rs.form_type}','{$id}');
+	$._configForm.option("{$rs.form_type}","form_type_ext",'{$id}');
+	//$.admin_fields.loading('{$rs.form_type}','{$id}');
 });
 </script>
 <!-- /if -->

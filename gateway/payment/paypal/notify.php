@@ -86,6 +86,7 @@ class paypal_notify
 		if($this->order['type'] == 'recharge' && $p_array['goal']){
 			$app->model('wealth')->recharge($this->order['id']);
 		}
+		$app->plugin('payment-notify',$this->order['id']);
 		exit('SUCCESS');
 	}
 }

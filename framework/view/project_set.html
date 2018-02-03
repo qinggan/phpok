@@ -295,7 +295,21 @@ $(document).ready(function(){
 			<select name="currency_id" id="currency_id">
 				<option value="">{lang请选择……}</option>
 				<!-- loop from=$currency_list key=$key value=$value -->
-				<option value="{$value.id}"{if $rs[currency_id] == $value.id} selected{/if}>{$value.title}/{lang标识：}{$value.code}/{lang汇率：}{$value.val}</option>
+				<option value="{$value.id}"{if $rs.currency_id == $value.id} selected{/if}>{$value.title}/{lang标识：}{$value.code}/{lang汇率：}{$value.val}</option>
+				<!-- /loop -->
+			</select>
+		</div>
+	</div>
+	<div class="table">
+		<div class="title">
+			{lang运费模板}：
+			<span class="note">{lang请选择这个项目的运费计算方式}</span>
+		</div>
+		<div class="content">
+			<select name="freight" id="freight">
+				<option value="">{lang请选择运费计算方式……}</option>
+				<!-- loop from=$freight key=$key value=$value -->
+				<option value="{$value.id}"{if $rs.freight == $value.id} selected{/if}>{$value.title}</option>
 				<!-- /loop -->
 			</select>
 		</div>

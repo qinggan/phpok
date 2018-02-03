@@ -25,9 +25,6 @@
 			if(p_name_type && p_name_type != 'undefined' && !isNaN(p_name_type)){
 				width = p_name_type;
 			}
-			if(!width || width == 'undefined'){
-				width = '120';
-			}
 			var td_count = ($("#"+identifier+"_tbl tr:eq(0) th")).length - 1;
 			var html = '<tr>';
 			html += '<td><input type="button" value="'+p_lang('删除')+'" onclick="$.phpok_form_param.delete_line(this)" class="btn" /></td>';
@@ -42,7 +39,7 @@
 						jscolor_reload = true;
 					}
 				}
-				html += ' style="width:'+width+'px;" /></td>';
+				html += ' style="width:99%" /></td>';
 			}
 			html += '</tr>';
 			$("#"+identifier+"_tbl").append(html);

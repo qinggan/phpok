@@ -1,7 +1,6 @@
 <?php
 /**
  * 公共操作，不限前台，后台
- * @package phpok\framework
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com

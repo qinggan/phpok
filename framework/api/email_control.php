@@ -78,7 +78,7 @@ class email_control extends phpok_control
 			}
 			$this->json(true);
 		}
-		foreach($list AS $key=>$value){
+		foreach($list as $key=>$value){
 			$value = trim($value);
 			if(!$value){
 				continue;
@@ -177,4 +177,3 @@ class email_control extends phpok_control
 		$this->json(true);
 	}
 }
-?>

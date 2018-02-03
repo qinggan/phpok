@@ -654,7 +654,7 @@ class res_model_base extends phpok_model
 		}
 		$ico = '';
 		if($cate_rs['ico'] && file_exists($this->dir_root.$rs['filename'])){
-			$ico = $this->lib('gd')->thumb($this->dir_root.$rs['filename'],$id);
+			$ico = $this->lib('gd')->thumb($this->dir_root.addslashes($rs['filename']),$id);
 			if($ico){
 				$ico = $rs['folder'].$ico;
 			}

@@ -66,6 +66,20 @@ class order_control extends phpok_control
 			$main['email'] = $address['email'];
 		}
 		$main['note'] = $this->get('note');
+		//存储扩展字段信息
+		$tmpext = $this->get('ext');
+		if($tmpext){
+			foreach($tmpext as $key=>$value){
+				$key = $this->format($key);
+				if(!$key || !$value){
+					unset($tmpext[$key]);
+					continue;
+				}
+			}
+			if($tmpext){
+				$main['ext'] = serialize($tmpext);
+			}
+		}
 		$oid = $this->model('order')->save($main);
 		if(!$oid){
 			$this->json(P_Lang('订单创建失败'));

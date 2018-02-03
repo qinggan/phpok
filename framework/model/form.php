@@ -1,46 +1,77 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/model/form.php
-	Note	: 表单选择器
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-03-12 17:34
-***********************************************************/
+/**
+ * 表单选择器
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年01月20日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class form_model_base extends phpok_model
 {
-	public $info = "";
-	function __construct()
+	private $info = array();
+	public function __construct()
 	{
 		parent::model();
 		$this->info = $this->lib('xml')->read($this->dir_phpok.'system.xml');
 	}
 
-	function form_all()
+	/**
+	 * 表单类型
+	 * @参数 $note 是否显示备注，默认为 false
+	**/
+	public function form_all($note = false)
 	{
-		if($this->info['form'])
-		{
-			return $this->info['form'];
+		if($this->info['form']){
+			if($note){
+				return $this->info['form'];
+			}
+			$list = array();
+			foreach($this->info['form'] as $key=>$value){
+				$list[$key] = is_array($value) ? $value['title'] : $value;
+			}
+			return $list;
 		}
 		return false;
 	}
 
-	function format_all()
+	/**
+	 * 格式化方式
+	 * @参数 $note 是否显示备注，默认为 false
+	**/
+	public function format_all($note = false)
 	{
-		if($this->info['format'])
-		{
-			return $this->info['format'];
+		if($this->info['format']){
+			if($note){
+				return $this->info['format'];
+			}
+			$list = array();
+			foreach($this->info['format'] as $key=>$value){
+				$list[$key] = is_array($value) ? $value['title'] : $value;
+			}
+			return $list;
 		}
 		return false;
 	}
 
-	//字段类型
-	function field_all()
+	/**
+	 * 字段类型
+	 * @参数 $note 是否显示备注，默认为 false
+	**/
+	public function field_all($note = false)
 	{
-		if($this->info['field'])
-		{
-			return $this->info['field'];
+		if($this->info['field']){
+			if($note){
+				return $this->info['field'];
+			}
+			$list = array();
+			foreach($this->info['field'] as $key=>$value){
+				$list[$key] = is_array($value) ? $value['title'] : $value;
+			}
+			return $list;
 		}
 		return false;
 	}
@@ -53,4 +84,3 @@ class form_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 }
-?>

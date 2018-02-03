@@ -6,10 +6,7 @@
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<title><!-- if $config.title -->{$config.title} - <!-- /if -->{lang后台管理}</title>
-	<link href="css/admin-index.css" rel="stylesheet" type="text/css" />
-	<link rel="stylesheet" type="text/css" href="css/window.css" rel="stylesheet" type="text/css" />
-	<link rel="stylesheet" type="text/css" href="css/artdialog.css" rel="stylesheet" type="text/css" />
-	<link rel="stylesheet" type="text/css" href="css/icomoon.css" />
+	<link rel="stylesheet" type="text/css" href="{#css#}/css.php?type=admin" />
 	<script type="text/javascript" src="{url ctrl=js ext=admin.index/}"></script>
 	<!-- plugin head -->
 </head>
@@ -133,6 +130,7 @@
 			</div>
 		</div>
 		<!-- /if -->
+		<!-- if $sys.multiple_language && $langlist -->
 		<div style="float:right;">{lang语言}
 			<select onchange="$.admin_index.lang(this.value)" style="padding:3px;">
 				<!-- loop from=$langlist key=$key value=$value id=$tmpid -->
@@ -140,6 +138,7 @@
 				<!-- /loop -->
 			</select>
 		</div>
+		<!-- /if -->
 		<div class="clear"></div>
 	</div></td>
 </tr>

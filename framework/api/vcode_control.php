@@ -1,15 +1,6 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/api/vcode_control.php
-	Note	: 验证码
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年11月1日
-***********************************************************/
 /**
  * 验证码接口
- * @package phpok\api
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -41,5 +32,4 @@ class vcode_control extends phpok_control
 		}
 		$this->lib("vcode")->create();
 	}
-
 }

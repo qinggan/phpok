@@ -1,0 +1,67 @@
+<!-- include tpl=head_open -->
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	var obj = opener.$("#{$identifier}");
+	var tip = $.dialog.tips(p_lang('正在保存数据…'),100);
+	$("#post_save").ajaxSubmit({
+		'url':get_url('form','quick_save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			tip.close();
+			if(rs.status){
+				var content = obj.val();
+				var is_new = true;
+				if(content){
+					var list = content.split(',');
+					for(var i in list){
+						if(list[i] == rs.info){
+							is_new = false;
+							break;
+						}
+					}
+					var newinfo = is_new ? content+","+rs.info : content;
+				}else{
+					var newinfo = rs.info;
+				}
+				obj.val(newinfo);
+				opener.$.phpokform.extitle_reload('{$id}','{$identifier}');
+				$.dialog.close();
+				var tipinfo = is_new ? p_lang('添加成功') : p_lang('编辑成功');
+				opener.$.dialog.tips(tipinfo);
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+}
+</script>
+<form method="post" id="post_save" onsubmit="return false">
+<input type="hidden" name="pid" id="pid" value="{$pid}" />
+<!-- if $rs && $rs.id --><input type="hidden" name="tid" id="tid" value="{$rs.id}" /><!-- /if -->
+<!-- if !$m_rs.mtype -->
+<div class="table clearfix">
+	<div class="title">
+		<!-- if $p_rs.alias_title -->{$p_rs.alias_title}：<!-- else -->{lang主题}：<!-- /if -->
+		<span class="note">{lang此项必填}<!-- if $p_rs.alias_note -->，{$p_rs.alias_note}<!-- /if --></span>
+	</div>
+	<div class="content">
+		<input type="text" name="title" id="title" value="{$rs.title}" class="w99" />
+	</div>
+</div>
+<!-- /if -->
+<!-- loop from=$extlist key=$key value=$value id=extlist_id -->
+<div class="table clearfix" id="form_html_{$value.identifier}">
+	<div class="title">
+		{$value.title}：
+		<!-- if $value.note --><span class="note">{$value.note}</span><!-- /if -->
+	</div>
+	<div class="content">{$value.html}</div>
+	<div class="clear"></div>
+</div>
+<!-- /loop -->
+</form>
+<!-- include tpl=foot_open -->

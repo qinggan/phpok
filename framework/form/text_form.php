@@ -85,6 +85,7 @@ class text_form extends _init_auto
 
 	private function _format_admin($rs)
 	{
+		$_laydate = false;
 		if($rs['format'] == 'time'){
 			$format = $rs['form_btn'] == "datetime" ? "Y-m-d H:i" : "Y-m-d";
 			$time = $rs['content'] ? $rs['content'] : $this->time;
@@ -95,7 +96,7 @@ class text_form extends _init_auto
 		}
 		if($rs['form_btn'] && in_array($rs['form_btn'],array('date','datetime','time','year','month'))){
 			$this->addjs('js/laydate/laydate.js');
-			$this->assign('_laydate',true);
+			$_laydate = true;
 			$tmp = array('date'=>P_Lang('日期'),'datetime'=>P_Lang('日期时间'),'time'=>P_Lang('时间'),'year'=>P_Lang('年份'),'month'=>P_Lang('年月'));
 			$this->assign('_laydate_button',$tmp[$rs['form_btn']]);
 		}
@@ -113,21 +114,44 @@ class text_form extends _init_auto
 					unset($tmp[$key]);
 					continue;
 				}
-				$tmp[$key] = trim($value);
+				if(strpos($value,':') !== false){
+					$tmp2 = explode(":",$value);
+					if(!$tmp2[1]){
+						$tmp2[1] = $tmp2[0];
+					}
+					$tmp[$key] = array('id'=>$tmp2[0],'show'=>$tmp2[1]);
+				}else{
+					$tmp[$key] = array('id'=>trim($value),'show'=>trim($value));
+				}
+				
 			}
 			$rs['ext_quick_words'] = $tmp;
 		}
+		//检查是否有设置宽度
+		if(!$rs['form_btn'] && !$rs['ext_quick_words']){
+			if($rs['form_style'] && strpos($rs['form_style'],'width') === false){
+				$rs['form_style'] .= ";width:99%";
+			}
+			if(!$rs['form_style']){
+				$rs['form_style'] = 'width:99%';
+			}
+		}
 		$this->assign('_rs',$rs);
+		$this->assign('_laydate',$_laydate);
 		return $this->fetch($this->dir_phpok."form/html/text_admin_tpl.html",'abs-file');
 	}
 
 	private function _format_default($rs)
 	{
+		$_laydate = false;
 		if($rs['form_btn'] == 'color'){
 			$this->addjs('js/jscolor/jscolor.js');
 		}
 		if($rs['form_btn'] && in_array($rs['form_btn'],array('date','datetime','time','year','month'))){
 			$this->addjs('js/laydate/laydate.js');
+			$_laydate = true;
+			$tmp = array('date'=>P_Lang('日期'),'datetime'=>P_Lang('日期时间'),'time'=>P_Lang('时间'),'year'=>P_Lang('年份'),'month'=>P_Lang('年月'));
+			$this->assign('_laydate_button',$tmp[$rs['form_btn']]);
 		}
 		if($rs['form_style']){
 			$rs['form_style'] = $this->lib('common')->css_format($rs['form_style']);
@@ -138,6 +162,7 @@ class text_form extends _init_auto
 			$rs['content'] = date($format,$time);
 		}
 		$this->assign("_rs",$rs);
+		$this->assign('_laydate',$_laydate);
 		return $this->fetch($this->dir_phpok."form/html/text_www_tpl.html",'abs-file');
 	}
 }

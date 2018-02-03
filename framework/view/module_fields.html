@@ -48,6 +48,9 @@ $(document).ready(function(){
 	<th class="lft">&nbsp;字段名</th>
 	<th class="lft">名称</th>
 	<th class="lft">备注</th>
+	<th>字段类型</th>
+	<th>表单</th>
+	<th>格式化</th>
 	<th class="lft">排序</th>
 	<th></th>
 </tr>
@@ -57,6 +60,9 @@ $(document).ready(function(){
 	<td>{$value.identifier}</td>
 	<td>{$value.title}</td>
 	<td>{$value.note}</td>
+	<td class="center">{$value.field_type_name}</td>
+	<td class="center">{$value.form_type_name}</td>
+	<td class="center">{$value.format_type_name}</td>
 	<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 	<td>
 		<div class="button-group">

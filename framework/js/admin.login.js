@@ -10,7 +10,7 @@
 function login_code(appid)
 {
 	var src_url = api_url("vcode","","id="+appid);
-	$("#src_code").attr("src",src_url);
+	$("#src_code").attr("src",$.phpok.nocache(src_url));
 }
 
 //验证并登录

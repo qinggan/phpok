@@ -326,9 +326,9 @@ class user_control extends phpok_control
 	**/
 	private function fields_auto()
 	{
-		$this->form_list = $this->model('form')->form_all();
-		$this->field_list = $this->model('form')->field_all();
-		$this->format_list = $this->model('form')->format_all();
+		$this->form_list = $this->model('form')->form_all(true);
+		$this->field_list = $this->model('form')->field_all(true);
+		$this->format_list = $this->model('form')->format_all(true);
 		$this->assign('form_list',$this->form_list);
 		$this->assign("field_list",$this->field_list);
 		$this->assign("format_list",$this->format_list);
@@ -347,8 +347,8 @@ class user_control extends phpok_control
 		$used_list = $this->model('user')->fields_all("","identifier");
 		if($used_list){
 			foreach($used_list AS $key=>$value){
-				$value["field_type_name"] = $this->field_list[$value["field_type"]];
-				$value["form_type_name"] = $this->form_list[$value["form_type"]];
+				$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
+				$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
 				$used_list[$key] = $value;
 			}
 		}
@@ -411,71 +411,98 @@ class user_control extends phpok_control
 		$this->success();
 	}
 
-	
-	function field_edit_f()
+	/**
+	 * 会员字段添加修改操作
+	**/
+	public function field_edit_f()
 	{
 		$this->fields_auto();
-		if(!$this->popedom["set"]) error_open(P_Lang('您没有权限执行此操作'));
-		$id = $this->get("id","int");
-		if(!$id)
-		{
-			error_open(P_Lang('未指定ID'));
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$rs = $this->model('user')->field_one($id);
-		$this->assign("rs",$rs);
-		$this->assign("id",$id);
+		$id = $this->get("id","int");
+		if($id){
+			$rs = $this->model('user')->field_one($id);
+			$this->assign("rs",$rs);
+			$this->assign("id",$id);
+		}
 		$this->view("user_field_set");
 	}
 
-	function field_edit_save_f()
+	/**
+	 * 保存会员字段
+	**/
+	public function field_edit_save_f()
 	{
 		$this->fields_auto();
-		if(!$this->popedom["set"]) error_open(P_Lang('您没有权限执行此操作'));
-		$id = $this->get("id","int");
-		if(!$id)
-		{
-			error_open(P_Lang('未指定ID'));
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$title = $this->get("title");
-		$note = $this->get("note");
+		if(!$title){
+			$this->error(P_Lang('名称不能为空'));
+		}
+		$id = $this->get("id","int");
+		if(!$id){
+			$identifier = $this->get('identifier','system');
+			if(!$identifier){
+				$this->error(P_Lang('标识不能为空或不符合要求'));
+			}
+			//检查标识是否已被使用
+			if(!$this->model('user')->identifier_chk($identifier)){
+				$this->error(P_Lang('标识检测到已经使用，请更换标识'));
+			}
+			$field_type = $this->get('field_type');
+			if(!$field_type){
+				$this->error(P_Lang('请选择字段类型'));
+			}
+		}
 		$form_type = $this->get("form_type");
-		$form_style = $this->get("form_style","html");
-		$content = $this->get("content");
-		$format = $this->get("format");
-		$taxis = $this->get("taxis","int");
+		if(!$form_type){
+			$this->error(P_Lang('表单类型不能为空'));
+		}
 		$ext_form_id = $this->get("ext_form_id");
 		$ext = array();
-		if($ext_form_id)
-		{
+		if($ext_form_id){
 			$list = explode(",",$ext_form_id);
-			foreach($list AS $key=>$value)
-			{
+			foreach($list as $key=>$value){
 				$val = explode(':',$value);
-				if($val[1] && $val[1] == "checkbox")
-				{
+				if($val[1] && $val[1] == "checkbox"){
 					$value = $val[0];
 					$ext[$value] = $this->get($value,"checkbox");
-				}
-				else
-				{
+				}else{
 					$value = $val[0];
 					$ext[$value] = $this->get($value);
+					if($val[2] && $val[2] == 'required' && $ext[$value] == ''){
+						$this->error(P_Lang('扩展参数属性有必填选项没有写'));
+					}
 				}
 			}
 		}
 		$array = array();
 		$array["title"] = $title;
-		$array["note"] = $note;
+		$array["note"] = $this->get("note");
 		$array["form_type"] = $form_type;
-		$array["form_style"] = $form_style;
-		$array["format"] = $format;
-		$array["content"] = $content;
-		$array["taxis"] = $taxis;
+		$array["form_style"] = $this->get("form_style","html");
+		$array["format"] = $this->get("format");
+		$array["content"] = $this->get("content");
+		$array["taxis"] = $this->get("taxis","int");
 		$array["ext"] = ($ext && count($ext)>0) ? serialize($ext) : "";
 		$array["is_edit"] = $this->get("is_edit","int");
-		$this->model('user')->fields_save($array,$id);
-		$html = '<input type="button" value=" '.P_Lang('确定').' " class="submit" onclick="$.dialog.close();" />';
-		error_open(P_Lang('自定义字段信息配置成功'),"ok",$html);
+		if($id){
+			$this->model('user')->fields_save($array,$id);
+			$this->success();
+		}
+		$array['identifier'] = $identifier;
+		$array['field_type'] = $field_type;
+		$this->model('user')->fields_save($array);
+		$list = $this->model('user')->fields_all();
+		if($list){
+			foreach($list as $key=>$value){
+				$this->model('user')->create_fields($value);
+			}
+		}
+		$this->success();
 	}
 
 	/**

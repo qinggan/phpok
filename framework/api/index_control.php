@@ -25,6 +25,7 @@ class index_control extends phpok_control
 
 	public function token_f()
 	{
+		$this->config('is_ajax',true);
 		if(!$this->site['api_code']){
 			$this->error(P_Lang("系统未配置接口功能"));
 		}

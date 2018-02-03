@@ -229,7 +229,7 @@ class reply_control extends phpok_control
 		$this->assign("rs",$rs);
 		$title_rs = $this->model('list')->get_one($rs["tid"]);
 		$this->assign("title_rs",$title_rs);
-		$edit_content = form_edit('content',$rs['content'],'editor','width=680&height=180&btns[image]=1&btns[video]=1&btns[file]=1&btns[info]=1&btns[fontfamily]=1&btns[fontsize]=1&btns[paragraph]=1&btns[insertcode]=1');
+		$edit_content = form_edit('content',$rs['content'],'editor','width=680&height=180');
 		$this->assign('edit_content',$edit_content);
 		$this->view("reply_content");
 	}
@@ -277,7 +277,7 @@ class reply_control extends phpok_control
 		$this->assign("rs",$rs);
 		$title_rs = $this->model('list')->get_one($rs["tid"]);
 		$this->assign("title_rs",$title_rs);
-		$edit_content = form_edit('content',$rs['adm_content'],'editor','width=680&height=300&btns[image]=1&btns[video]=1&btns[file]=1&btns[info]=1&btns[fontfamily]=1&btns[fontsize]=1&btns[paragraph]=1&btns[insertcode]=1');
+		$edit_content = form_edit('content',$rs['adm_content'],'editor','width=680&height=300');
 		$this->assign('edit_content',$edit_content);
 		$this->view("reply_adm");
 	}

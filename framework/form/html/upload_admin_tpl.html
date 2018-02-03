@@ -78,18 +78,7 @@ $(document).ready(function(){
 				'lock' : true,
 				'width': width,
 				'height': height,
-				'ok': function(){
-					var val = $.dialog.data('select-{$_rs.identifier}');
-					if(val){
-						$("#{$_rs.identifier}").val(val);
-					}else{
-						$("#{$_rs.identifier}").val('');
-					}
-					$.dialog.data('select-{$_rs.identifier}','');
-					obj_{$_rs.identifier}.showhtml();
-				},
-				'cancel':true,
-				'cancelVal':'{lang取消}'
+				'ok': true,'okVal':'{lang关闭}'
 			});
 		}else{
 			if(old){

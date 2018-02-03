@@ -18,7 +18,7 @@ select {
   appearance:none;
   -moz-appearance:none;
   -webkit-appearance:none;
-  background: url("../images/arrow-select.png") no-repeat scroll right center transparent;
+  background:url("../images/arrow-select.png") no-repeat scroll right center transparent;
   padding-right: 14px !important;
 }
 select::-ms-expand { display: none; }
@@ -97,8 +97,8 @@ ul.admin_panel li.hover{background-position:0 -93px;}
 .list tr.end{background:none}
 .list td{cursor:default;max-width:400px;overflow:hidden;word-break:break-all}
 .list td.hover{background:#F3F3F3;}
-.list tr:hover td{background:#F3F3F3}
-
+.list tr:hover td{background:#2A2A2A;color:#fff;}
+.list tr:hover td a{color:#fff;}
 
 
 .list2{margin:5px 3px 0 0;}
@@ -672,7 +672,8 @@ ul.list_cate li{float:left;margin:0 5px 5px 0;}
 /* ICONS 新版图标 */
 .ico,.status0,.status1,.status2
 {
-	background:url('../images/icon.gif') right bottom no-repeat;
+	background-repeat:no-repeat;
+	background-position:center center;
 	width:16px;
 	height:16px;
 	overflow:hidden;
@@ -681,9 +682,10 @@ ul.list_cate li{float:left;margin:0 5px 5px 0;}
 }
 
 /* 状态属性 */
-.status0{background-position:-16px 0;}
-.status1{background-position:0 0;}
-.status2{background-position:-64px 0;}
+.status0{background-image:url('../images/status0.png');}
+.status1{background-image:url('../images/status1.png');}
+.status2{background-image:url('../images/status2.png');}
+
 
 /* 页面 JS 切换涉及到的样式 */
 ul.group{border-bottom:1px solid #e1e1e1;padding:0 20px;height:35px;margin-bottom:10px;list-style:none}

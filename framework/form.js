@@ -331,10 +331,6 @@ function go_to_page_action()
 				config.total = 10;
 			}
 			return form;
-		},
-		upload_cate_create:function(id)
-		{
-			
 		}
 	};
 	$.phpokform = {
@@ -562,6 +558,240 @@ function go_to_page_action()
 			tmp = (tmp && tmp != 'undefined') ? (tmp+''+type+''+val) : val;
 			$(id).val(tmp);
 			return true;
+		},
+
+		/**
+		 * 快速添加主题
+		 * @参数 fid 字段ID
+		**/
+		extitle_quickadd:function(fid)
+		{
+			var url = get_url('form','quickadd','id='+fid);
+			$.dialog.open(url,{
+				'title':p_lang('添加'),
+				'width':'80%',
+				'height':'70%',
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.save();
+					return false;
+				},
+				'lock':true,
+				'okVal':p_lang('保存'),
+				'cancel':true
+			});
+		},
+
+		/**
+		 * 快速编辑
+		**/
+		extitle_quickedit:function(id,fid)
+		{
+			var url = get_url('form','quickadd','id='+fid+"&tid="+id);
+			$.dialog.open(url,{
+				'title':p_lang('编辑 #'+id),
+				'width':'80%',
+				'height':'70%',
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.save();
+					return false;
+				},
+				'lock':true,
+				'okVal':p_lang('保存'),
+				'cancel':true
+			});
+		},
+
+		extitle_list:function(fid)
+		{
+			var url = get_url('form','quicklist','id='+fid);
+			$.dialog.open(url,{
+				'title':p_lang('选择'),
+				'width':'90%',
+				'height':'80%',
+				'ok':true,
+				'lock':true,
+				'okVal':p_lang('关闭')
+			});
+		},
+
+		/**
+		 * 重载扩展字段
+		 * @参数 id 模块字段ID
+		 * @参数 identifier 标识
+		**/
+		extitle_reload:function(id,identifier)
+		{
+			var url = get_url('form','redata','id='+id);
+			var content = $("#"+identifier).val();
+			if(content){
+				url += "&content="+$.str.encode(content);
+			}
+			$.phpok.json(url,function(data){
+				if(data.status){
+					if(data.info){
+						$("#"+identifier+"_edit_preview").html(data.info);
+					}else{
+						//
+					}
+					
+					return true;
+				}
+				return true;
+			})
+		},
+
+		/**
+		 * 删除已存在的主题，防止重复筛选
+		**/
+		extitle_remove_selected:function(identifier)
+		{
+			var opener = $.dialog.opener;
+			var content = opener.$("#"+identifier).val();
+			if(content){
+				var list = content.split(",");
+				for(var i in list){
+					$("#title_"+list[i]).remove();
+				}
+			}
+		},
+
+		/**
+		 * 选中已存在主题
+		 * @参数 id 主题ID
+		 * @参数 pid 项目ID
+		 * @参数 identifier 要更新的标识内容
+		**/
+		extitle_select_action:function(id,pid,identifier)
+		{
+			var opener = $.dialog.opener;
+			var content = opener.$("#"+identifier).val();
+			if(content){
+				content = content+","+id;
+				var list = content.split(",");
+				var rs = $.unique(list);
+				content = rs.join(",");
+				opener.$("#"+identifier).val(content);
+			}else{
+				opener.$("#"+identifier).val(id);
+			}
+			$("#title_"+id).remove();
+			opener.$.phpokform.extitle_reload(pid,identifier);
+			return true;
+		},
+
+		/**
+		 * 向前移一位
+		**/
+		extitle_sortup:function(obj,id,identifier)
+		{
+			var t = [];
+			var old = $(obj).parent().parent().attr("data-id");
+			var total = $(obj).parent().parent().attr('data-total');
+			var string = "td[data-name=taxis-"+identifier+"-"+id+"]";
+			var chk = $(string).eq(0).attr('data-id');
+			$(string).each(function(i){
+				var id = $(this).attr("data-id");
+				if($(string).eq(i+1).attr('data-id') == old){
+					var val = $(string).eq(i+1).attr("data-value");
+				}else{
+					if(id == old){
+						var val = $(string).eq(i-1).attr('data-value');
+					}else{
+						var val = $(this).attr("data-value");
+					}
+				}
+				t.push({"id":id,"sort":val});
+			});
+			t = t.sort(function(a,b){return parseInt(a['sort'])>parseInt(b['sort']) ? 1 : -1});
+			var list = new Array();
+			for(var i in t){
+				list[i] = t[i]['id'];
+			}
+			var data = list.join(",");
+			$("#"+identifier).val(data);
+			this.extitle_reload(id,identifier);
+		},
+
+		/**
+		 * 向后移一位
+		**/
+		extitle_sortdown:function(obj,id,identifier)
+		{
+			var t = [];
+			var old = $(obj).parent().parent().attr("data-id");
+			var string = "td[data-name=taxis-"+identifier+"-"+id+"]";
+			var chk = $(string).eq(0).attr('data-id');
+			var num = 0;
+			var old_value = 0;
+			$(string).each(function(i){
+				var id = $(this).attr("data-id");
+				if(id == old){
+					var val = $(string).eq(i+1).attr('data-value');
+					num = i+1;
+					old_value = $(this).attr('data-value');
+				}else{
+					if(id == $(string).eq(num).attr('data-id')){
+						var val = old_value;
+					}else{
+						var val = $(this).attr('data-value');
+					}
+				}
+				t.push({"id":id,"sort":val});
+			});
+			t = t.sort(function(a,b){return parseInt(a['sort'])>parseInt(b['sort']) ? 1 : -1});
+			var list = new Array();
+			for(var i in t){
+				list[i] = t[i]['id'];
+			}
+			var data = list.join(",");
+			$("#"+identifier).val(data);
+			this.extitle_reload(id,identifier);
+		},
+
+		/**
+		 * 删除操作
+		**/
+		extitle_delete:function(val,id,identifier)
+		{
+			var content = $("#"+identifier).val();
+			if(!content || !val || val == '0' || content == '0' || val == 'undefined' || content == 'undefined'){
+				return true;
+			}
+			if(content == val){
+				$("#"+identifier).val('');
+				this.extitle_reload(id,identifier);
+				return true;
+			}
+			var list = content.split(',');
+			var nlist = new Array();
+			var m = 0;
+			for(var i in list){
+				if(list[i] != val){
+					nlist[m] = list[i];
+					m++;
+				}
+			}
+			content = nlist.join(',');
+			$("#"+identifier).val(content);
+			var _self = this;
+			$.phpok.json(get_url('form','quickdelete','fid='+id+"&id="+val),function(rs){
+				if(rs.status){
+					_self.extitle_reload(id,identifier);
+					return true;
+				}
+				$.dialog.alert(rs.info);
+				return false;
+			});
 		}
 	};
 })(jQuery);

@@ -1,75 +1,30 @@
 <!-- php:$pageid = G('pageid') -->
 <!-- php:$pageid = $pageid ? $pageid : 1 -->
 <!-- php:$comment = phpok('_comment','tid='.$tid.'&pageid='.$pageid.'&psize=10') -->
-<style type="text/css">
-.comment{clear:both;display:block;width:100%;margin:10px 0;padding:0;border-top:1px dashed #ccc;}
-.comment div.phpok-title{height:24px;padding:15px 0 13px 0;color:#333;font-size:18px;}
-.comment div.phpok-title em{color:#e74851;font-family: Georgia;font-size:20px;}
-.comment input.comment-submit{cursor:pointer;padding:3px 10px;background:#C6C6C6;border:1px solid #ccc;border-radius:5px;margin-top:10px;}
-.comment input.comment-submit:hover{background:#BDBDBD;font-weight:bold;}
-.comment textarea.comment-textarea{width:99%;border:1px solid #ccc;height:84px;}
-.comment dl{ margin-bottom:15px;; overflow:hidden;}
-.comment dt{ float:left; width:50px;}
-.comment dt img{ width:42px; height:42px; border-radius:3px;}
-.comment dd{ float:left; width:860px;}
-.comment dd .remarks{ background:#fff;border:1px solid #e0e0e0;border-radius:5px; padding:10px;position:relative; margin-bottom:5px;}
-.comment dd .remarks .postmessage {margin-top: 4px;margin-bottom: 4px;font-size: 14px;line-height: 1.5em;}
-.comment dd .remarks .postmessage p{margin-top: 4px;}
-.comment dd .remarks .moddiv{ padding:5px 0; text-align:right; color:#888888;}
-.comment dd .remarks .moddiv .nickname{font-weight:bold;padding-right:10px;}
-.comment dd fieldset.reply{margin:3px;border: 1px solid #efefef;padding:0 10px 10px 20px;border-radius:5px;line-height:170%;}
-.comment dd fieldset.reply legend{padding:0 5px;color:red;}
-.comment dd fieldset.reply div.rdate{color:#D9D9D9;font-style:italic;display:block;clear:both;line-height:170%;}
-</style>
-<script type="text/javascript">
-function save_comment()
-{
-	var url = api_url('comment','save','id={$tid}');
-	var uid = "{$comment.uid}";
-	if(uid && uid>0){
-		var comment = UE.getEditor('comment').getContent();
-	}else{
-		var comment = $("#comment").val();
-	}
-	if(!comment){
-		$.dialog.alert('评论内容不能为空',function(){},'error');
-		return false;
-	}
-	url += '&comment='+$.str.encode(comment);
-	$.phpok.json(url,function(rs){
-		if(rs.status == 'ok'){
-			$.dialog.alert('感谢您提交的评论',function(){
-				$.phpok.reload();
-			},'succeed');
-		}else{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	});
-}
-$(document).ready(function(){
-	$("#comment-post").submit(function(){
-		save_comment();
-		return false;
-	});
-});
-$(document).keypress(function(e){
-	if(e.ctrlKey && e.which == 13 || e.which == 10) {
-		save_comment();
-		return false;
-	}
-});
-</script>
 <div class="comment">
 	<div class="phpok-title">评论（<em>{if $comment && $comment.total}{$comment.total}{else}0{/if}</em> 条评论）</div>
 	<dl>
 		<dt><img src="{$comment.avatar}" alt="{$comment.user}" /></dt>
 		<dd>{$comment.form}
 			<form method="post" id="comment-post">
+				<input type="hidden" name="id" id="id" value="{$tid ? $tid : $rs.id}" />
 				<!-- if $comment.uid -->
-				{func form_edit comment $comment.content editor width=100%&height=150&btns.image=1}
+				<div>{func form_edit comment $comment.content editor width=100%&height=150&btns.image=1}</div>
 				<!-- else -->
-				<textarea name="comment" id="comment" class="comment-textarea"></textarea>
+				<div><textarea name="comment" id="comment" class="comment-textarea"></textarea></div>
+				<!-- /if -->
+				<!-- if $is_vcode -->
+				<div style="margin-top:10px;">
+					<input class="vcode"  type="text" name="_chkcode" id="_chkcode" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" />
+				</div>
+				<script type="text/javascript">
+				$(document).ready(function(){
+					$("#vcode").phpok_vcode();
+					$("#vcode").click(function(){
+						$(this).phpok_vcode();
+					});
+				});
+				</script>
 				<!-- /if -->
 				<input name="" type="submit" class="comment-submit" value="提交" />
 			</form>

@@ -369,20 +369,33 @@ function insert_input(val)
 <div id="biz_setting" class="hide">
 <div class="table">
 	<div class="title">
-		电商：
-		<span class="note">仅限这里启用电商后，整个平台才支持电商化</span>
+		{lang电子商务}：
+		<span class="note">{lang仅限这里启用电商后，整个平台才支持电商化}</span>
 	</div>
 	<div class="content">
 		<ul class="layout">
-			<li><label><input type="radio" name="biz_status" value="0"{if !$rs.biz_status} checked{/if} />禁用</label></li>
-			<li><label><input type="radio" name="biz_status" value="1"{if $rs.biz_status} checked{/if} />启用</label></li>
+			<li><label><input type="radio" name="biz_status" value="0"{if !$rs.biz_status} checked{/if} />{lang禁用}</label></li>
+			<li><label><input type="radio" name="biz_status" value="1"{if $rs.biz_status} checked{/if} />{lang启用}</label></li>
 		</ul>
 		<div class="clear"></div>
 	</div>
 </div>
 <div class="table">
 	<div class="title">
-		{lang订单号生成规则：}
+		{lang产品主要特点}：
+		<span class="note">{lang请勾选实物或服务，以方便在录入产品时优先选中项}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="biz_main_service" value="0"{if !$rs.biz_main_service} checked{/if} />{lang实物}</label></li>
+			<li><label><input type="radio" name="biz_main_service" value="1"{if $rs.biz_main_service} checked{/if} />{lang服务}</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang订单号生成规则}：
 		<span class="note">
 			{lang支持以下常用选项（年-月-日-时-分-秒-随机数-序号-时间戳）}
 		</span>

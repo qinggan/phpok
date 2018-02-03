@@ -38,44 +38,46 @@ class unionpay_notice
 		if(!$chk){
 			error('付款签名验证失败，请登录支付平台检查','','error');
 		}
-		if($params['respMsg'] == 'success'){
-			$pay_date = $app->time;
-			$price = round(($params['settleAmt']/100),2);
-			//
-			$data = $this->order['ext'] ? unserialize($this->order['ext']) : array();
-			$data['traceNo'] = $params['traceNo'];
-			$data['traceTime'] = $params['traceTime'];
-			$data['queryId'] = $params['queryId'];
-			$data['currencyCode'] = $params['currencyCode'];
-			$array = array('status'=>1,'ext'=>serialize($data));
-			$app->db->update_array($array,'payment_log',array('id'=>$this->order['id']));
-			if($this->order['type'] == 'order'){
-				$order = $app->model('order')->get_one_from_sn($this->order['sn']);
-				if($order){
-					$app->model('order')->update_order_status($order['id'],'paid');
-					$param = 'id='.$order['id']."&status=paid";
-					$app->model('task')->add_once('order',$param);
-					$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
-					$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
-					$app->model('order')->log_save($log);
-					//增加order_payment
-					$array = array('order_id'=>$order['id'],'payment_id'=>$this->param['id']);
-					$array['title'] = $this->param['title'];
-					$array['price'] = $price;
-					$array['dateline'] = $app->time;
-					$array['ext'] = serialize($data);
-					$order_payment = $app->model('order')->order_payment($order['id']);
-					if(!$order_payment){
-						$app->model('order')->save_payment($array);
-					}else{
-						$app->model('order')->save_payment($array,$order_payment['id']);
-					}
+		if(!$params['respMsg'] || $params['respMsg'] != 'success'){
+			return false;
+		}
+		$pay_date = $app->time;
+		$price = round(($params['settleAmt']/100),2);
+		//
+		$data = $this->order['ext'] ? unserialize($this->order['ext']) : array();
+		$data['traceNo'] = $params['traceNo'];
+		$data['traceTime'] = $params['traceTime'];
+		$data['queryId'] = $params['queryId'];
+		$data['currencyCode'] = $params['currencyCode'];
+		$array = array('status'=>1,'ext'=>serialize($data));
+		$app->db->update_array($array,'payment_log',array('id'=>$this->order['id']));
+		if($this->order['type'] == 'order'){
+			$order = $app->model('order')->get_one_from_sn($this->order['sn']);
+			if($order){
+				$app->model('order')->update_order_status($order['id'],'paid');
+				$param = 'id='.$order['id']."&status=paid";
+				$app->model('task')->add_once('order',$param);
+				$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
+				$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
+				$app->model('order')->log_save($log);
+				//增加order_payment
+				$array = array('order_id'=>$order['id'],'payment_id'=>$this->param['id']);
+				$array['title'] = $this->param['title'];
+				$array['price'] = $price;
+				$array['dateline'] = $app->time;
+				$array['ext'] = serialize($data);
+				$order_payment = $app->model('order')->order_payment($order['id']);
+				if(!$order_payment){
+					$app->model('order')->save_payment($array);
+				}else{
+					$app->model('order')->save_payment($array,$order_payment['id']);
 				}
 			}
-			if($this->order['type'] == 'recharge' && $data['goal']){
-				$app->model('wealth')->recharge($this->order['id']);
-			}
 		}
+		if($this->order['type'] == 'recharge' && $data['goal']){
+			$app->model('wealth')->recharge($this->order['id']);
+		}
+		$app->plugin('payment-notice',$this->order['id']);
 		return true;
 	}
 }

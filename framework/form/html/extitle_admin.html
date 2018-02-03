@@ -1,0 +1,47 @@
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_pid,form_field_used,form_show_editing,form_true_delete" />
+<div class="table">
+	<div class="title">{lang选择关联的项目}：</div>
+	<div class="content">
+		<select id="form_pid" name="form_pid" onchange="$._configForm.extitle('form_pid',this.value,'{$eid}','{$etype}')">
+			<option value="">{lang请选择…}</option>
+			<!-- loop from=$opt_list key=$key value=$value id=$tmpid -->
+			<option value="{$value.id}"{if $value.id == $rs.form_pid} selected{/if}>{$value.title}</option>
+			<!-- /loop -->
+		</select>
+	</div>
+</div>
+<div class="table{if !$rs || !$rs.form_pid} hide{/if}" id="true_delete_html">
+	<div class="title">
+		{lang真实删除}：<span class="note">{lang启用此项，将不提供选择功能，请将绑定的项目隐藏}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="form_true_delete" value="1"{if $rs.form_true_delete} checked{/if} />启用</label></li>
+			<li><label><input type="radio" name="form_true_delete" value="0"{if !$rs.form_true_delete} checked{/if} />禁用</label></li>
+		</ul>
+	</div>
+</div>
+<div class="table{if !$rs || !$rs.form_pid} hide{/if}" id="fields_show_html">
+	<div class="title">
+		{lang后台显示字段}：<span class="note">{lang建议不超过5个字段}</span>
+	</div>
+	<div class="content" id="fields_show">
+		<ul class="layout">
+			<!-- loop from=$fields_list key=$key value=$value id=$tmpid -->
+			<li><label><input type="checkbox" name="form_show_editing[]" value="{$key}"{if $form_show_editing && in_array($key,$form_show_editing)} checked{/if} />{$value.title}</label></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>
+<div class="table{if !$rs || !$rs.form_pid} hide{/if}" id="fields_used_html">
+	<div class="title">
+		{lang有效数据字段}：<span class="note">{lang请注意选择，以防止出现死循环（您需要懂一点点PHPOK，嘿嘿）}</span>
+	</div>
+	<div class="content" id="fields_used">
+		<ul class="layout">
+			<!-- loop from=$fields_list key=$key value=$value id=$tmpid -->
+			<li><label><input type="checkbox" name="form_field_used[]" value="{$key}"{if $form_field_used && in_array($key,$form_field_used)} checked{/if} />{$value.title}</label></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>

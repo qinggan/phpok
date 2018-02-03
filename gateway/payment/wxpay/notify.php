@@ -97,6 +97,7 @@ class wxpay_notify
 		if($this->order['type'] == 'recharge' && $ext['goal']){
 			$app->model('wealth')->recharge($this->order['id']);
 		}
+		$app->plugin('payment-notify',$this->order['id']);
 		$this->ok();		
 	}
 

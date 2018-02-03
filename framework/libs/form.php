@@ -1,13 +1,21 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/libs/form.php
-	Note	: 表单选项管理器
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年12月2日
-***********************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * 表单选项管理器
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年01月20日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class form_lib
 {
 	//表单对象
@@ -28,30 +36,20 @@ class form_lib
 		$this->appid = $appid;
 	}
 
+	/**
+	 * 获取对象
+	 * @参数 $name 表单名称
+	**/
 	public function cls($name)
 	{
 		$class_name = $name.'_form';
 		if($this->$class_name){
 			return $this->$class_name;
 		}
-		//新版写法
-		$newfile = $this->dir_form.$class_name.'.php';
-		if(file_exists($newfile)){
-			include($newfile);
-			$this->$class_name = new $class_name();
-			return $this->$class_name;
-		}
-		//旧版写法，将慢慢放弃
-		$file = $this->dir_form.$name.'_'.$this->appid.'.php';
-		if(!is_file($file))
-		{
-			$file = $this->dir_form.$name.'_admin.php';
-		}
-		if(!file_exists($file))
-		{
+		if(!file_exists($this->dir_form.$class_name.'.php')){
 			return false;
 		}
-		include($file);
+		include_once($this->dir_form.$class_name.'.php');
 		$this->$class_name = new $class_name();
 		return $this->$class_name;
 	}
@@ -64,26 +62,32 @@ class form_lib
 		return $this->cls($rs['form_type']);
 	}
 
-	public function config($id){
+	/**
+	 * 表单配置信息
+	 * @参数 $id 表单类型名
+	**/
+	public function config($id)
+	{
 		$obj = $this->cls($id);
 		if(!$obj){
 			return false;
 		}
 		$mlist = get_class_methods($obj);
-		if(in_array('phpok_config',$mlist))
-		{
+		if(in_array('phpok_config',$mlist)){
 			$obj->phpok_config();
 			exit;
 		}
-		if(in_array('config',$mlist))
-		{
+		if(in_array('config',$mlist)){
 			$obj->config();
 			exit;
 		}
 		exit(P_Lang('文件异常'));
 	}
 
-	//格式化表单信息
+	/**
+	 * 格式化表单信息
+	 * @参数 $rs 要格式化的内容
+	**/
 	public function format($rs)
 	{
 		$obj = $this->_obj($rs);
@@ -91,14 +95,12 @@ class form_lib
 			return $rs;
 		}
 		$mlist = get_class_methods($obj);
-		if(in_array('phpok_format',$mlist))
-		{
+		if(in_array('phpok_format',$mlist)){
 			$info = $obj->phpok_format($rs,$this->appid);
 			$rs['html'] = $info;
 			return $rs;
 		}
-		if(in_array('format',$mlist))
-		{
+		if(in_array('format',$mlist)){
 			$info = $obj->format($rs);
 			$rs['html'] = $info;
 			return $rs;
@@ -128,7 +130,11 @@ class form_lib
 		return $GLOBALS['app']->get($rs['identifier'],$rs['format']);
 	}
 
-	//输出内容信息
+	/**
+	 * 输出内容信息
+	 * @参数 $rs 内容
+	 * @参数 $value 值
+	**/
 	public function show($rs,$value='')
 	{
 		if(!$rs){
@@ -204,33 +210,31 @@ class form_lib
 		return $val;
 	}
 
-	function cssjs($rs='')
+	/**
+	 * 按需装载CSS和JS文件
+	 * @参数 $rs 要加载的对象
+	**/
+	public function cssjs($rs='')
 	{
-		if($rs && is_array($rs))
-		{
+		if($rs && is_array($rs)){
 			$obj = $this->_obj($rs);
-			if(!$obj)
-			{
+			if(!$obj){
 				return false;
 			}
 			$mlist = get_class_methods($obj);
-			if(in_array('cssjs',$mlist))
-			{
+			if(in_array('cssjs',$mlist)){
 				$obj->cssjs();
 			}
 			return true;
 		}
 		$list = $GLOBALS['app']->model('form')->form_all();
-		foreach($list as $key=>$value)
-		{
+		foreach($list as $key=>$value){
 			$obj = $this->_obj(array('form_type'=>$key));
 			$mlist = get_class_methods($obj);
-			if(in_array('cssjs',$mlist))
-			{
+			if(in_array('cssjs',$mlist)){
 				$obj->cssjs();
 			}
 		}
 		return true;
 	}
 }
-?>

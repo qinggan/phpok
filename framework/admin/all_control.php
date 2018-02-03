@@ -255,7 +255,8 @@ class all_control extends phpok_control
 		//2016年09月08日
 		$array['biz_status'] = $this->get('biz_status','int');
 		$array['biz_freight'] = $this->get('biz_freight');
-		$this->model('site')->save($array,$_SESSION['admin_site_id']);
+		$array['biz_main_service'] = $this->get('biz_main_service','int');
+		$this->model('site')->save($array,$this->session->val('admin_site_id'));
 		$this->success(P_Lang('网站信息更新完成'),$this->url("all","setting"));
 	}
 

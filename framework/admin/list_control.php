@@ -82,7 +82,7 @@ class list_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('项目信息不存在'),$this->url("list"));
 		}
-		$son_list = $this->model('project')->get_all($rs["site_id"],$id,"p.status=1");
+		$son_list = $this->model('project')->get_all($rs["site_id"],$id,"p.status=1 AND p.hidden=0");
 		if($son_list){
 			foreach($son_list as $key=>$value){
 				$popedom = appfile_popedom("list",$value["id"]);
@@ -612,6 +612,9 @@ class list_control extends phpok_control
 				$rs["cate_id"] = $cateid;
 				$extcate = array($cateid);
 			}
+			if($this->site['biz_main_service']){
+				$rs['is_virtual'] = 1;
+			}
 		}
 		if(!$pid){
 			$this->error(P_Lang('操作异常'),$this->url("list"));
@@ -702,6 +705,21 @@ class list_control extends phpok_control
 				if($biz_attrlist){
 					$this->assign('biz_attrlist',$biz_attrlist);
 				}
+				//加载现有电商属性
+				if($rs['id']){
+					$tmplist = $this->model('list')->biz_attrlist($rs['id']);
+					if($tmplist){
+						$bizattrs = array();
+						foreach($tmplist as $key=>$value){
+							$bizattrs[] = $value['aid'];
+						}
+						if($bizattrs){
+							$bizattrs = array_unique($bizattrs);
+							$this->assign("_attr",implode(",",$bizattrs));
+						}
+						
+					}
+				}
 			}
 			$unitlist = $this->model('biz')->unitlist();
 			$this->assign('unitlist',$unitlist['name']);
@@ -735,10 +753,7 @@ class list_control extends phpok_control
 		}
 		//增加JS和CSS
 		$this->addjs('js/laydate/laydate.js');
-		if($p_rs['freight']){
-			$freight = $this->model('freight')->get_one($project['freight']);
-			$this->assign('freight',$freight);
-		}
+		
 
 		// 扩展字段管理
 		if($this->popedom['ext']){
@@ -887,20 +902,33 @@ class list_control extends phpok_control
 	 		$biz['id'] = $id;
 	 		$biz['is_virtual'] = $this->get('is_virtual','int');
 	 		$this->model('list')->biz_save($biz);
-	 		if($tmpadd && $_SESSION['attr'] && $p_rs['biz_attr']){
-		 		foreach($_SESSION['attr'] as $key=>$value){
-			 		if(!$value || !is_array($value)){
-				 		continue;
-			 		}
-			 		foreach($value as $k=>$v){
-				 		if(!$v || !is_array($v)){
+	 		if($p_rs['biz_attr']){
+		 		$attr = $this->get('_biz_attr');
+		 		if($attr){
+			 		$tmplist = explode(",",$attr);
+			 		foreach($tmplist as $key=>$value){
+				 		$attr_vid_list = $this->get("_attr_".$value);
+				 		$attr_weight_list = $this->get('_attr_weight_'.$value);
+				 		$attr_volume_list = $this->get('_attr_volume_'.$value);
+				 		$attr_price_list = $this->get('_attr_price_'.$value);
+				 		$attr_taxis_list = $this->get('_attr_taxis_'.$value);
+				 		if(!$attr_vid_list || !is_array($attr_vid_list)){
 					 		continue;
 				 		}
-				 		$v['tid'] = $id;
-				 		$this->model('list')->biz_attr_save($v);
+				 		$tmps = array();
+				 		foreach($attr_vid_list as $k=>$v){
+					 		$tmp = array('aid'=>$value,'vid'=>$v);
+					 		$tmp['price'] = isset($attr_price_list[$v]) ? $attr_price_list[$v] : 0;
+					 		$tmp['weight'] = isset($attr_weight_list[$v]) ? $attr_weight_list[$v] : 0;
+					 		$tmp['volume'] = isset($attr_volume_list[$v]) ? $attr_volume_list[$v] : 0;
+					 		$tmp['taxis'] = isset($attr_taxis_list[$v]) ? $attr_taxis_list[$v] : 0;
+					 		$tmps[] = $tmp;
+					 		unset($tmp);
+				 		}
+				 		$this->model('list')->biz_attr_update($tmps,$id);
+				 		unset($tmps);
 			 		}
 		 		}
-		 		unset($_SESSION['attr']);
 	 		}
  		}
  		//更新扩展分类
@@ -1281,250 +1309,42 @@ class list_control extends phpok_control
 		$this->json(P_Lang('批处理操作成功'),true);
 	}
 
-	public function options_add_f()
-	{
-		$pid = $this->get('pid','int');
-		$tid = $this->get('tid','int');
-		$aid = $this->get('aid','int');
-		$type = $this->get('type');
-		$funcname = $type == 'chk' ? 'json' : 'error';
-		if(!$aid){
-			$this->$funcname(P_Lang('未指定要添加的属性'));
-		}
-		if(!$tid && !$pid){
-			$this->$funcname(P_Lang('数据参数不完整'));
-		}
-		if(!$pid){
-			$info = $this->model('list')->call_one($tid);
-			$pid = $info['project_id'];
-		}
-		if(!$pid){
-			$this->$funcname(P_Lang('未指定项目ID'));
-		}
-		//检查数据是否存在
-		if($tid){
-			$ilist = $this->model('list')->biz_attrlist($tid,$aid);
-			if($ilist){
-				$this->$funcname(P_Lang('属性已存在，不能再次添加'));
-			}
-		}else{
-			if($_SESSION['attr'] && $_SESSION['attr'][$aid]){
-				$this->$funcname(P_Lang('属性已存在，不能再次添加'));
-			}
-		}
-		if($type == 'chk'){
-			$this->json(true);
-		}
-		$rs = $this->model('project')->get_one($pid,false);
-		$freight = $this->model('freight')->get_one($rs['freight']);
-		$ext = '';
-		if($freight['type'] == 'weight'){
-			$ext = P_Lang('重量');
-		}elseif($freight == 'volume'){
-			$ext = P_Lang('体积');
-		}
-		$this->assign('freight',$freight);
-		$this->assign('e_info',$ext);
-		$rslist = $this->model('options')->values_list("aid='".$aid."'",0,9999);
-		$this->assign('rslist',$rslist);
-		$this->assign('tid',$tid);
-		$this->assign('pid',$pid);
-		$this->assign('aid',$aid);
-		$this->view('list_options');
-	}
-
-	public function options_edit_f()
-	{
-		$pid = $this->get('pid','int');
-		$tid = $this->get('tid','int');
-		$aid = $this->get('aid','int');
-		$type = $this->get('type');
-		$funcname = $type == 'chk' ? 'json' : 'error';
-		if(!$aid){
-			$this->$funcname(P_Lang('未指定要添加的属性'));
-		}
-		if(!$tid && !$pid){
-			$this->$funcname(P_Lang('数据参数不完整'));
-		}
-		if(!$pid){
-			$info = $this->model('list')->call_one($tid);
-			$pid = $info['project_id'];
-		}
-		if(!$pid){
-			$this->$funcname(P_Lang('未指定项目ID'));
-		}
-		//检查数据是否存在
-		if($tid){
-			$ilist = $this->model('list')->biz_attrlist($tid,$aid);
-			if(!$ilist){
-				$this->$funcname(P_Lang('属性不存在，请检查'));
-			}
-		}else{
-			if(!$_SESSION['attr'] || !$_SESSION['attr'][$aid]){
-				$this->$funcname(P_Lang('属性不存在，请检查'));
-			}
-			$ilist = $_SESSION['attr'][$aid];
-		}
-		if($type == 'chk'){
-			$this->json(true);
-		}
-		$rs = $this->model('project')->get_one($pid,false);
-		$freight = $this->model('freight')->get_one($rs['freight']);
-		$ext = '';
-		if($freight['type'] == 'weight'){
-			$ext = P_Lang('重量');
-		}elseif($freight == 'volume'){
-			$ext = P_Lang('体积');
-		}
-		$this->assign('freight',$freight);
-		$this->assign('e_info',$ext);
-		$rslist = $this->model('options')->values_list("aid='".$aid."'",0,9999,'id');
-		$mlist = array();
-		foreach($ilist as $key=>$value){
-			$tmp_title = $rslist[$value['vid']]['title'];
-			$tmp_val = $rslist[$value['vid']]['val'];
-			$tmp = array('title'=>$tmp_title,'val'=>$tmp_val,'price'=>$value['price'],'weight'=>$value['weight']);
-			$tmp['taxis'] = $value['taxis'];
-			$tmp['volume'] = $value['volume'];
-			$tmp['id'] = $value['vid'];
-			$tmp['checked'] = true;
-			$mlist[$value['vid']] = $tmp;
-		}
-		foreach($rslist as $key=>$value){
-			if($mlist[$key]){
-				continue;
-			}
-			$tmp = array('title'=>$value['title'],'val'=>$value['val'],'taxis'=>$value['taxis']);
-			$tmp['id'] = $value['id'];
-			$mlist[$key] = $tmp;
-		}
-		$this->assign('rslist',$mlist);
-		$this->assign('tid',$tid);
-		$this->assign('pid',$pid);
-		$this->assign('aid',$aid);
-		$this->view('list_options');
-	}
-
-
-	public function options_save_f()
-	{
-		$pid = $this->get('pid','int');
-		$tid = $this->get('tid','int');
-		$aid = $this->get('aid','int');
-		if(!$aid){
-			$this->json(P_Lang('未指定要操作的属性'));
-		}
-		if(!$tid && !$pid){
-			$this->json(P_Lang('数据参数不完整'));
-		}
-		if(!$pid){
-			$info = $this->model('list')->call_one($tid);
-			$pid = $info['project_id'];
-		}
-		if(!$pid){
-			$this->json(P_Lang('未指定项目ID'));
-		}
-		$vid = $this->get('vid');
-		if(!$vid){
-			$this->json(P_Lang('未选中要启用的属性'));
-		}
-		$data = array();
-		foreach($vid as $key=>$value){
-			if(!$value || !intval($value)){
-				continue;
-			}
-			$tmp = array();
-			$tmp['aid'] = $aid;
-			$tmp['vid'] = $value;
-			$tmp['price'] = $this->get('price_'.$value,'float');
-			$tmp['weight'] = $this->get('weight_'.$value,'float');
-			$tmp['volume'] = $this->get('volume_'.$value,'float');
-			$tmp['taxis'] = $this->get('taxis_'.$value,'int');
-			$data[] = $tmp;
-		}
-		if($tid){
-			//更新属性
-			$this->model('list')->biz_attr_update($data,$tid);
-		}else{
-			$_SESSION['attr'][$aid] = $data;
-		}
-		$this->json(true);
-	}
-
 	/**
-	 * 电子商务属性
+	 * 读取产品属性及可操作内容
 	**/
-	public function options_html_f()
+	public function attr_f()
 	{
-		//读属性
-		$optlist = $this->model('options')->get_all('id');
-		$tid = $this->get('tid');
+		$tid = $this->get('tid','int');
+		$aid = $this->get('aid','int');
+		if(!$aid){
+			$this->error(P_Lang('未指定属性ID'));
+		}
+		$rs = $this->model('options')->get_one($aid);
+		if(!$rs){
+			$this->error(P_Lang('属性信息不存在'));
+		}
+		$this->assign('rs',$rs);
+		$optlist = $this->model('options')->values_list("aid='".$aid."'",0,9999,'id');
 		if($tid){
-			$ilist = $this->model('list')->biz_attrlist($tid);
-			if($ilist){
-				foreach($ilist as $key=>$value){
-					$rslist[$value['aid']][] = $value;
+			$rslist = $this->model('list')->biz_attrlist($tid,$aid);
+			if($rslist){
+				foreach($rslist as $key=>$value){
+					if($optlist && $optlist[$value['vid']]){
+						$value['title'] = $optlist[$value['vid']]['title'];
+						unset($optlist[$value['vid']]);
+						$rslist[$key] = $value;
+					}
 				}
 			}
-			$info = $this->model('list')->call_one($tid);
-			$pid = $info['project_id'];
-		}else{
-			if($this->session->val('attr')){
-				$rslist = $this->session->val('attr');
-			}
-			$pid = $this->get('pid','int');
+			$this->assign('rslist',$rslist);
 		}
-		if(!$rslist){
-			$this->json(true);
+		if($optlist){
+			$this->assign('optlist',$optlist);
 		}
-		$vids = array();
-		foreach($rslist as $key=>$value){
-			foreach($value as $k=>$v){
-				$vids[] = $v['vid'];
-			}
-		}
-		$condition = "id IN(".implode(",",$vids).")";
-		$vlist = $this->model('options')->values_list($condition,0,9999,'id');
-		foreach($rslist as $key=>$value){
-			foreach($value as $k=>$v){
-				$v['title'] = $vlist[$v['vid']]['title'];
-				$v['val'] = $vlist[$v['vid']]['val'];
-				$value[$k] = $v;
-			}
-			$rslist[$key] = $value;
-		}
-		$this->assign('rslist',$rslist);
-		$this->assign('tid',$tid);
-		$this->assign('options',$optlist);
-		
-		if($pid){
-			$project = $this->model('project')->get_one($pid,false);
-			if($project['freight']){
-				$freight = $this->model('freight')->get_one($project['freight']);
-			}else{
-				$freight = array();
-			}
-			$this->assign('freight',$freight);
-		}
-		$content = $this->fetch('list_options_html');
-		$this->json($content,true);
+		$content = $this->fetch('list_option_info');
+		$this->success($content);
 	}
 
-	public function options_delete_f()
-	{
-		$tid = $this->get('tid','int');
-		$aid = $this->get('aid');
-		if(!$aid){
-			$this->json(P_Lang('未指定属性ID'));
-		}
-		if($_SESSION['attr'][$aid]){
-			unset($_SESSION['attr'][$aid]);
-		}
-		if($tid){
-			$this->model('list')->biz_attr_delete($tid,$aid);
-		}
-		$this->json(true);
-	}
 
 	public function comment_f()
 	{

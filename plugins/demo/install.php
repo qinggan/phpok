@@ -5,7 +5,7 @@
  * @作者 phpok.com
  * @版本 4.8.000
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @时间 2017年09月29日 11时38分
+ * @时间 2017年11月18日 10时44分
 **/
 class install_demo extends phpok_plugin
 {
@@ -21,7 +21,10 @@ class install_demo extends phpok_plugin
 	**/
 	public function index()
 	{
-		//return $this->_tpl('setting.html');
+		$condition = "module>0";
+		$project_list = $this->model('project')->project_all($this->session->val('admin_site_id'),'id',$condition);
+		$this->assign('project_list',$project_list);
+		return $this->_tpl('setting.html');
 	}
 	
 	/**
@@ -31,6 +34,8 @@ class install_demo extends phpok_plugin
 	{
 		$id = $this->_id();
 		$ext = array();
+		$ext['demo'] = $this->get('demo1');
+		$ext['mypid'] = $this->get('mypid');
 		//$ext['扩展参数字段名'] = $this->get('表单字段名');
 		$this->_save($ext,$id);
 	}

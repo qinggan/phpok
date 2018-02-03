@@ -34,14 +34,14 @@
 
         //工具栏上的所有的功能按钮和下拉框，可以在new编辑器的实例时选择自己需要的从新定义
         , toolbars: [[
-            'fullscreen', 'source', '|', 'undo', 'redo', '|',
+            'fullscreen', 'source', '|','insertpbefore','insertpafter', '|', 'undo', 'redo', '|',
             'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
             'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
             'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
             'directionalityltr', 'directionalityrtl', 'indent', '|',
             'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
             'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
-            'insertimage', 'insertvideo'
+            'insertimage', 'insertvideo','simpleupload'
             , 'attachment', 'map', 'insertframe', 'insertcode', 'pagebreak', 'background', '|',
             'horizontal', 'date', 'time', 'spechars', '|',
             'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', '|',
@@ -49,8 +49,8 @@
         ]]
         //当鼠标放在工具栏上时显示的tooltip提示,留空支持自动多语言配置，否则以配置值为准
         //,labelMap:{
-        //    'anchor':'', 'undo':''
-        //}
+        //    'insertpbefore':'', 'undo':''
+        ///}
 
         //语言配置项,默认是zh-cn。有需要的话也可以使用如下这样的方式来自动多语言切换，当然，前提条件是lang文件夹下存在对应的语言文件：
         //lang值也可以通过自动获取 (navigator.language||navigator.browserLanguage ||navigator.userLanguage).toLowerCase()
@@ -214,23 +214,6 @@
         //    {tag:'span',name:'hi', label:'', style:'font-style:italic;font-weight:bold;color:rgb(51, 153, 204)'}
         //]
 
-        //打开右键菜单功能
-        //,enableContextMenu: true
-        //右键菜单的内容，可以参考plugins/contextmenu.js里边的默认菜单的例子，label留空支持国际化，否则以此配置为准
-        //,contextMenu:[
-        //    {
-        //        label:'',       //显示的名称
-        //        cmdName:'selectall',//执行的command命令，当点击这个右键菜单时
-        //        //exec可选，有了exec就会在点击时执行这个function，优先级高于cmdName
-        //        exec:function () {
-        //            //this是当前编辑器的实例
-        //            //this.ui._dialogs['inserttableDialog'].open();
-        //        }
-        //    }
-        //]
-
-        //快捷菜单
-        //,shortcutMenu:["fontfamily", "fontsize", "bold", "italic", "underline", "forecolor", "backcolor", "insertorderedlist", "insertunorderedlist"]
 
         //elementPathEnabled
         //是否启用元素路径，默认是显示
@@ -293,15 +276,6 @@
 
 
 
-        //sourceEditor
-        //源码的查看方式,codemirror 是代码高亮，textarea是文本框,默认是codemirror
-        //注意默认codemirror只能在ie8+和非ie中使用
-        //,sourceEditor:"codemirror"
-        //如果sourceEditor是codemirror，还用配置一下两个参数
-        //codeMirrorJsUrl js加载的路径，默认是 URL + "third-party/codemirror/codemirror.js"
-        //,codeMirrorJsUrl:URL + "third-party/codemirror/codemirror.js"
-        //codeMirrorCssUrl css加载的路径，默认是 URL + "third-party/codemirror/codemirror.css"
-        //,codeMirrorCssUrl:URL + "third-party/codemirror/codemirror.css"
         //编辑器初始化完成后是否进入源码模式，默认为否。
         //,sourceEditorFirst:false
 

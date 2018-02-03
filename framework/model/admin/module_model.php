@@ -107,6 +107,9 @@ class module_model extends module_model_base
 		if($rs['content'] != ''){
 			$data['default'] = (string) $rs['content'];
 		}
+		if(!$rs['content'] && ($rs['field_type'] == 'int' || $rs['field_type'] == 'float')){
+			$date['default'] = '0';
+		}
 		$data['comment'] = $rs['title'];
 		if($rs['type'] == 'varchar'){
 			$data['length'] = 255;

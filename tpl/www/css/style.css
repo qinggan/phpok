@@ -355,7 +355,7 @@ header nav.menu ul li.current{ background:#23a0e7;}
 .bbsdetail .bbspage .bbspagebtn:hover{ text-decoration:none;}
 
 
-
+.vcode{border: 1px solid #CCCCCC; line-height: 20px; padding:3px;width:130px;text-transform:uppercase;margin-right:3px;}
 
 .Goback_wrap{ overflow:hidden; width:980px; margin:0 auto; text-align:center; padding:20px;}
 .Goback_wrap .pro_btn{ padding-left: 0; margin:0 10px;background: #e11629; padding:0 20px; text-align:center; height: 35px; line-height:35px;display:inline-block; *display:inline; *zoom:1; border: none;cursor: pointer;color: #fff;font-size: 18px; font-family:"微软雅黑", "宋体";border-radius: 3px;}
@@ -370,7 +370,6 @@ header nav.menu ul li.current{ background:#23a0e7;}
 .login-reg dl.box label.agreement{margin:0 5px 0 110px;text-align:left; width:auto; line-height:26px;}
 .login-reg dl.box select{border: 1px solid #CCCCCC; line-height: 20px; padding:3px;}
 .login-reg dl.box .input{border: 1px solid #CCCCCC; line-height: 20px; padding:3px;width: 220px;}
-.login-reg dl.box .vcode{border: 1px solid #CCCCCC; line-height: 20px; padding:3px;width:130px;text-transform:uppercase;margin-right:3px;}
 .login-reg dl.box dd.submit{ padding-left: 115px; padding-top:10px;}
 .login-reg dl.box dd a{color:blue;font-size:14px;}
 .login-reg dl.box dd a:hover{text-decoration:none;color:red;}
@@ -590,3 +589,23 @@ ul.tip li{line-height:22px;}
 
 
 input.price{width:80px;text-align:center;}
+
+
+.comment{clear:both;display:block;width:100%;margin:10px 0;padding:0;border-top:1px dashed #ccc;}
+.comment div.phpok-title{height:24px;padding:15px 0 13px 0;color:#333;font-size:18px;}
+.comment div.phpok-title em{color:#e74851;font-family: Georgia;font-size:20px;}
+.comment input.comment-submit{cursor:pointer;padding:3px 10px;background:#C6C6C6;border:1px solid #ccc;border-radius:5px;margin-top:10px;}
+.comment input.comment-submit:hover{background:#BDBDBD;font-weight:bold;}
+.comment textarea.comment-textarea{width:99%;border:1px solid #ccc;height:84px;}
+.comment dl{ margin-bottom:15px;; overflow:hidden;}
+.comment dt{ float:left; width:50px;}
+.comment dt img{ width:42px; height:42px; border-radius:3px;}
+.comment dd{ float:left; width:840px;}
+.comment dd .remarks{ background:#fff;border:1px solid #e0e0e0;border-radius:5px; padding:10px;position:relative; margin-bottom:5px;}
+.comment dd .remarks .postmessage {margin-top: 4px;margin-bottom: 4px;font-size: 14px;line-height: 1.5em;}
+.comment dd .remarks .postmessage p{margin-top: 4px;}
+.comment dd .remarks .moddiv{ padding:5px 0; text-align:right; color:#888888;}
+.comment dd .remarks .moddiv .nickname{font-weight:bold;padding-right:10px;}
+.comment dd fieldset.reply{margin:3px;border: 1px solid #efefef;padding:0 10px 10px 20px;border-radius:5px;line-height:170%;}
+.comment dd fieldset.reply legend{padding:0 5px;color:red;}
+.comment dd fieldset.reply div.rdate{color:#D9D9D9;font-style:italic;display:block;clear:both;line-height:170%;}

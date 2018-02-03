@@ -16,7 +16,12 @@ a{color:#000;text-decoration: none;}
 .w80{width:80px;}
 .w90{width:90px;}
 .w110{width:110px;}
+.w99{width:99%;}
 .h33{height:33px;}
+.hide{display:none;}
+.hidden{display:none;}
+
+td{word-break:break-all;}
 
 .hand{cursor: pointer;}
 .clear{clear:both;height:0;line-height:0;overflow:hidden;}
@@ -45,7 +50,7 @@ input[type=text],input[type=password]{
 input.select{margin:0;padding:0;border:1px solid #9FAFBB;height:22px;width:70px;}
 select{padding:3px;}
 select {
-  border: solid 1px #acacac;
+  border: solid 1px #E5E5E5;
   appearance:none;
   -moz-appearance:none;
   -webkit-appearance:none;
@@ -117,8 +122,10 @@ table.list{border-collapse:collapse;}
 table.list th{padding:0;border-bottom:2px solid #E5E5E5;height:25px;background:#D1D1D1;}
 table.list th.lft{text-align:left;}
 table.list tr:nth-child(2n+1){background:#F1F1F1}
-table.list tr:hover{background:#F9F9F9;}
-table.list td{padding:3px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+table.list tr:hover{background:#2A2A2A;color:#fff;}
+table.list tr:hover a{color:#fff;}
+
+table.list td{padding:3px;}
 table.list td.break{word-wrap:break-word;word-break:break-all;white-space:normal;padding:5px;}
 table.list th.id{width:50px;}
 table.list tr.on{background:#FFCC99;}
@@ -303,3 +310,14 @@ div.cate_9{background:#AD78E9;}
 .res_preview ul li.picture img{max-width:100%;}
 .res_preview ul li.video{text-align:center;}
 .res_preview ul li:last-child{border-bottom:0;}
+
+
+/*附件选择页*/
+ul.filelist{list-style:none;padding:0;margin:0}
+ul.filelist li{float:left;margin:3px 5px;height:75px;width:296px;padding:1px;border:1px solid #ccc;cursor:pointer;}
+ul.filelist li:hover{background:#efefef;}
+ul.filelist li .ico{float:left;width:75px;height:75px;text-align:center;position:relative;z-index: 2;}
+ul.filelist li .ico .checkbox{position:absolute;width:20px;height:20px;background:#fff;top:1px;left:1px;z-index:1;}
+ul.filelist li .note{float:left;width:220px;overflow:hidden;}
+ul.filelist li .note .info{line-height:22px;overflow:hidden;height:22px;}
+ul.filelist li img.img{width:73px;height:73px;text-align:center;padding:1px;}

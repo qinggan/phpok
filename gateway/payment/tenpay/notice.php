@@ -35,22 +35,22 @@ class tenpay_notice
 		$trade_status = $app->get('trade_state','int');
 		//检测为fail的几种情况
 		if($trade_mode != '1' && $trade_mode != '2'){
-			error('订单错误：参数传递错误！','','error');
+			$app->error('订单错误：参数传递错误！');
 		}
 		if($trade_mode == '1'){
 			if($trade_status != '0'){
-				error('订单错误：付款失败！','','error');
+				$app->error('订单错误：付款失败！');
 			}
 		}
 		$attach = $app->get('attach');
 		if(!$attach){
-			error('您没有权限查看此订单信息','','error');
+			$app->error('您没有权限查看此订单信息');
 		}
 		if(!$tenpay->check_sign($array)){
-			error('验证不通过，请检查','','error');
+			$app->error('验证不通过，请检查');
 		}
 		if($app->get('retcode','int') != '0'){
-			error('付款失败，请检查','','error');
+			$app->error('付款失败，请检查');
 		}
 
 		$pay_date = $tenpay->get_date();
@@ -90,6 +90,7 @@ class tenpay_notice
 		if($this->order['type'] == 'recharge' && $tenpay['goal']){
 			$app->model('wealth')->recharge($this->order['id']);
 		}
+		$app->plugin('payment-notice',$this->order['id']);
 		return true;
 	}
 }

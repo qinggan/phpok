@@ -1,47 +1,56 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="width,height,is_code:checkbox,is_read:checkbox,inc_tag:checkbox,paste_text:checkbox,btns:checkbox" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="height,is_code:checkbox,is_read:checkbox,inc_tag:checkbox,paste_text,btns" />
 <div class="table">
 	<div class="title">
-		编辑器宽高设置：
-		<span class="note">只需要填写数字，后台宽度强制为百分百</span>
+		{lang编辑器最小高度设置}：
+		<span class="note">{lang只需要填写数字，宽度强制为百分百}</span>
 	</div>
-	<div class="content">
-		<input type="text" name="width" id="width" value="{$rs.width}" class="short" />
-		&#215;
-		<input type="text" name="height" id="height" value="{$rs.height}" class="short" />
-	</div>
+	<div class="content"><input type="text" name="height" id="height" value="{$rs.height}" class="short" /> px</div>
 </div>
 <div class="table">
 	<div class="title">
-		编辑器属性：
-		<span class="note">设置编辑器常用属性</span>
+		{lang编辑器扩展按钮}：
+		<span class="note">{lang请根据实际情况需要设置编辑器扩展按钮，前台不支持地图}</span>
 	</div>
 	<div class="content">
 		<ul class="layout">
-			<li><label><input type="checkbox" name="is_code" id="is_code"{if $rs.is_code} checked{/if}>显示源码</label></li>
-			<li><label><input type="checkbox" name="is_read" id="is_read"{if $rs.is_read} checked{/if}>只读</label></li>
-			<li><label><input type="checkbox" name="paste_text" id="paste_text"{if $rs.paste_text} checked{/if}>纯文本粘贴</label></li>
-			<li><label><input type="checkbox" name="inc_tag" id="inc_tag"{if $rs.inc_tag} checked{/if}>Tag标签信息格式化到内容</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[image]"{if $rs.btns && $rs.btns.image} checked{/if}>{lang图片}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[info]"{if $rs.btns && $rs.btns.info} checked{/if}>{lang资料}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[video]"{if $rs.btns && $rs.btns.video} checked{/if}>{lang视频}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[file]"{if $rs.btns && $rs.btns.file} checked{/if}>{lang文件}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[page]"{if $rs.btns && $rs.btns.page} checked{/if}>{lang分页}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[table]"{if $rs.btns && $rs.btns.table} checked{/if}>{lang表格}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[emotion]"{if $rs.btns && $rs.btns.emotion} checked{/if}>{lang表情}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[map]"{if $rs.btns && $rs.btns.map} checked{/if}>{lang地图}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[spechars]"{if $rs.btns && $rs.btns.spechars} checked{/if}>{lang符号}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[insertcode]"{if $rs.btns && $rs.btns.insertcode} checked{/if}>{lang代码}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[paragraph]"{if $rs.btns && $rs.btns.paragraph} checked{/if}>{lang段落}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[fontsize]"{if $rs.btns && $rs.btns.fontsize} checked{/if}>{lang字号}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[fontfamily]"{if $rs.btns && $rs.btns.fontfamily} checked{/if}>{lang字体}</label></li>
 		</ul>
 		<div class="clear"></div>
 	</div>
 </div>
 <div class="table">
 	<div class="title">
-		编辑器扩展按钮：
-		<span class="note"></span>
+		{lang默认粘贴方式}：<span class="note">{lang前台使用默认都是纯文本粘贴}</span>
 	</div>
 	<div class="content">
 		<ul class="layout">
-			<li><label><input type="checkbox" name="btns[image]"{if $rs.btns && $rs.btns.image} checked{/if}>图片</label></li>
-			<li><label><input type="checkbox" name="btns[info]"{if $rs.btns && $rs.btns.info} checked{/if}>资料</label></li>
-			<li><label><input type="checkbox" name="btns[video]"{if $rs.btns && $rs.btns.video} checked{/if}>视频</label></li>
-			<li><label><input type="checkbox" name="btns[file]"{if $rs.btns && $rs.btns.file} checked{/if}>文件</label></li>
-			<li><label><input type="checkbox" name="btns[page]"{if $rs.btns && $rs.btns.page} checked{/if}>分页</label></li>
-			<li><label><input type="checkbox" name="btns[map]"{if $rs.btns && $rs.btns.map} checked{/if}>百度地图</label></li>
-			<li><label><input type="checkbox" name="btns[insertcode]"{if $rs.btns && $rs.btns.insertcode} checked{/if}>代码语言</label></li>
-			<li><label><input type="checkbox" name="btns[paragraph]"{if $rs.btns && $rs.btns.paragraph} checked{/if}>段落格式</label></li>
-			<li><label><input type="checkbox" name="btns[fontsize]"{if $rs.btns && $rs.btns.fontsize} checked{/if}>字号大小</label></li>
-			<li><label><input type="checkbox" name="btns[fontfamily]"{if $rs.btns && $rs.btns.fontfamily} checked{/if}>字体</label></li>
+			<li><label><input type="radio" name="paste_text"{if !$rs.paste_text} checked{/if}>{lang带格式粘贴}</label></li>
+			<li><label><input type="radio" name="paste_text"{if $rs.paste_text} checked{/if}>{lang纯文本粘贴}</label></li>
+		</ul>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang编辑器属性}：
+		<span class="note">{lang设置编辑器常用属性}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="checkbox" name="is_code" id="is_code"{if $rs.is_code} checked{/if}>{lang显示源码}</label></li>
+			<li><label><input type="checkbox" name="is_read" id="is_read"{if $rs.is_read} checked{/if}>{lang只读}</label></li>
+			<li><label><input type="checkbox" name="inc_tag" id="inc_tag"{if $rs.inc_tag} checked{/if}>{lang标签信息格式化到内容}</label></li>
 		</ul>
 		<div class="clear"></div>
 	</div>

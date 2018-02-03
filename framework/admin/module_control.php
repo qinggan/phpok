@@ -14,9 +14,9 @@ class module_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
-		$this->form_list = $this->model('form')->form_all();
-		$this->field_list = $this->model('form')->field_all();
-		$this->format_list = $this->model('form')->format_all();
+		$this->form_list = $this->model('form')->form_all(true);
+		$this->field_list = $this->model('form')->field_all(true);
+		$this->format_list = $this->model('form')->format_all(true);
 		$this->assign('form_list',$this->form_list);
 		$this->assign("field_list",$this->field_list);
 		$this->assign("format_list",$this->format_list);
@@ -67,8 +67,8 @@ class module_control extends phpok_control
 		$used_list = $this->model('module')->fields_all($id,"identifier");
 		if($used_list){
 			foreach($used_list AS $key=>$value){
-				$value["field_type_name"] = $this->field_list[$value["field_type"]];
-				$value["form_type_name"] = $this->form_list[$value["form_type"]];
+				$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
+				$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
 				$used_list[$key] = $value;
 			}
 		}
@@ -198,17 +198,18 @@ class module_control extends phpok_control
 		$condition = "area LIKE '%module%'";
 		$fields_list = $this->model('fields')->get_all($condition,"identifier");
 		if($fields_list){
-			foreach($fields_list AS $key=>$value){
-				$value["field_type_name"] = $this->field_list[$value["field_type"]];
-				$value["form_type_name"] = $this->form_list[$value["form_type"]];
+			foreach($fields_list as $key=>$value){
+				$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
+				$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
 				$fields_list[$key] = $value;
 			}
 		}
 		$used_list = $this->model('module')->fields_all($id,"identifier");
 		if($used_list){
-			foreach($used_list AS $key=>$value){
-				$value["field_type_name"] = $this->field_list[$value["field_type"]];
-				$value["form_type_name"] = $this->form_list[$value["form_type"]];
+			foreach($used_list as $key=>$value){
+				$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
+				$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
+				$value['format_type_name'] = $this->format_list[$value['format']]['title'];
 				$used_list[$key] = $value;
 			}
 		}
@@ -302,12 +303,6 @@ class module_control extends phpok_control
 		}
 		$m_rs = $this->model('module')->get_one($mid);
 		$this->assign('m_rs',$m_rs);
-		$fields = $this->model('form')->field_all();
-		$formats = $this->model('form')->format_all();
-		$forms = $this->model('form')->form_all();
-		$this->assign('fields',$fields);
-		$this->assign('formats',$formats);
-		$this->assign('forms',$forms);
 		$this->assign('mid',$mid);
 		$taxis = $this->model('module')->fields_next_taxis($mid);
 		$this->assign('rs',array('taxis'=>$taxis));

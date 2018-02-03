@@ -577,6 +577,7 @@ class db_mysqli extends db
 			if($data['length']){
 				$sql.= "(".$data['length'].")";
 			}
+
 		}
 		$sql .= " ";
 		if($data['unsigned']){
@@ -584,14 +585,15 @@ class db_mysqli extends db
 		}
 		if($data['notnull']){
 			$sql .= "NOT NULL ";
-			if($data['default'] == ''){
-				$sql .= "DEFAULT '' ";
+			if($data['default'] != ''){
+				$sql .= "DEFAULT '".$data['default']."' ";
+			}else{
+				if($data['type'] == 'varchar'){
+					$sql .= "DEFAULT '' ";
+				}
 			}
 		}else{
 			$sql .= "NULL ";
-		}
-		if($data['default'] != ''){
-			$sql .= "DEFAULT '".$data['default']."' ";
 		}
 		if($data['comment']){
 			$sql .= "COMMENT '".$data['comment']."' ";

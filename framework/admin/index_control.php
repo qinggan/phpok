@@ -179,8 +179,10 @@ class index_control extends phpok_control
 			$this->assign('all_info',$all_info);
 		}
 		$this->list_setting($plugin_glist);
-		$langlist = $this->model('lang')->get_list();
-		$this->assign('langlist',$langlist);
+		if($this->config['multiple_language']){
+			$langlist = $this->model('lang')->get_list();
+			$this->assign('langlist',$langlist);
+		}
 		$this->view("index");
 	}
 

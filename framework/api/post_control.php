@@ -1,12 +1,14 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/api/post_control.php
-	Note	: 存储发布的项目信息
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年11月11日
-***********************************************************/
+/**
+ * 存储发布的项目信息
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年01月28日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class post_control extends phpok_control
 {
@@ -137,7 +139,7 @@ class post_control extends phpok_control
 		$tmplist["site_id"] = $project_rs["site_id"];
 		$tmplist["project_id"] = $project_rs["id"];
 		$tmplist["cate_id"] = $array["cate_id"];
-		foreach($ext_list AS $key=>$value){
+		foreach($ext_list as $key=>$value){
 			if(!$value['is_front']){
 				continue;
 			}
@@ -207,4 +209,3 @@ class post_control extends phpok_control
 		$this->json(true);
 	}
 }
-?>

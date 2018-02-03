@@ -1,44 +1,45 @@
 <!-- include tpl=head -->
-<script type="text/javascript" src="{func add_js userfields.js}"></script>
 <div class="tips">
-	您当前的位置：
-	<a href="{url ctrl=user func=fields/}">会员字段管理</a>
+	{lang您当前的位置：}
+	<a href="{url ctrl=user func=fields/}">{lang会员字段管理}</a>
+	<div class="action"><a href="javascript:$.admin_user.field_add();void(0)">{lang添加会员字段}</a></div>
 </div>
 
-
-
-
 <!-- if $used_list -->
-	<div class="list">
+<div class="list">
 	<table width="100%" cellpadding="0" cellspacing="0">
 	<tr>
-		<th class="lft">字段名</th>
-		<th class="lft">名称</th>
-		<th class="lft">备注</th>
-		<th class="lft">排序</th>
-		<!-- if $popedom.set --><th>操作</th><!-- /if -->
+		<th class="lft">{lang字段名}</th>
+		<th class="lft">{lang名称}</th>
+		<th class="lft">{lang字段类型}</th>
+		<th class="lft">{lang表单类型}</th>
+		<th class="lft">{lang备注}</th>
+		<th class="lft">{lang排序}</th>
+		<!-- if $popedom.set --><th>{lang操作}</th><!-- /if -->
 	</tr>
-	<!-- foreach($used_list AS $key=>$value) -->
-	<tr{if $used_list_id.num%2 == ""} class="list"{/if}>
+	<!-- loop from=$used_list key=$key value=$value id=$tmpid -->
+	<tr>
 		<td>{$value.identifier}</td>
 		<td>{$value.title}</td>
+		<td>{$value.field_type_name}</td>
+		<td>{$value.form_type_name}</td>
 		<td>{$value.note}</td>
 		<td>{$value.taxis}</td>
 		<!-- if $popedom.set -->
 		<td>
 			<div class="button-group">
-				<input type="button" value="{lang修改}" onclick="user_field_edit('{$value.id}')" class="phpok-btn" />
-				<input type="button" value="{lang删除}" onclick="user_field_del('{$value.id}','{$value.title}')" class="phpok-btn" />
+				<input type="button" value="{lang修改}" onclick="$.admin_user.field_edit('{$value.id}')" class="phpok-btn" />
+				<input type="button" value="{lang删除}" onclick="$.admin_user.field_delete('{$value.id}','{$value.title}')" class="phpok-btn" />
 			</div>
 		</td>
 		<!-- /if -->
 	</tr>
-	<!-- /foreach -->
+	<!-- /loop -->
 	</table>
-	</div>
+</div>
 <!-- /if -->
 <!-- if $fields_list -->
-<div class="tips">常见字段快速添加</div>
+<div class="tips">{lang常见字段快速添加}</div>
 <ul class="layout fields_quick_add">
 	<!-- loop from=$fields_list key=$key value=$value id=$tmpid -->
 	<li>
@@ -47,7 +48,7 @@
 			<div class="gray i">{$value.identifier}</div>
 		</div>
 		<div class="right">
-			<input type="button" value="{lang添加}" onclick="user_field_quickadd('{$value.identifier}')" class="phpok-btn" />
+			<input type="button" value="{lang添加}" onclick="$.admin_user.field_quick_add('{$value.identifier}')" class="phpok-btn" />
 		</div>
 	</li>
 	<!-- /loop -->

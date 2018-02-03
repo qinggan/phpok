@@ -1,12 +1,14 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/api/express_control.php
-	备注： 物流通用数据对接
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年09月07日 16时06分
-*****************************************************************************************/
+/**
+ * 物流通用数据对接
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年01月28日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class express_control extends phpok_control
 {
@@ -73,5 +75,3 @@ class express_control extends phpok_control
 		$this->json('refresh',true);
 	}
 }
-
-?>

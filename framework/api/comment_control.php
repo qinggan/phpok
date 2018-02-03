@@ -90,7 +90,7 @@ class comment_control extends phpok_control
 			}
 		}
 		//整理回复列表
-		foreach($rslist AS $key=>$value){
+		foreach($rslist as $key=>$value){
 			if($mylist && $mylist[$value["id"]]){
 				foreach($mylist[$value["id"]] AS $k=>$v){
 					if($v["uid"] && $userlist){
