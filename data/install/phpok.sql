@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- 主机: 127.0.0.1
--- 生成日期: 2017 �?10 �?23 �?05:45
+-- 生成日期: 2018 �?02 �?03 �?06:18
 -- 服务器版本: 5.5.53
--- PHP 版本: 5.6.27
+-- PHP 版本: 5.5.38
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -19,29 +19,6 @@ SET time_zone = "+00:00";
 --
 -- 数据库: `phpok`
 --
-
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_92`
---
-
-CREATE TABLE IF NOT EXISTS `qinggan_92` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `address` varchar(255) NOT NULL DEFAULT '' COMMENT '联系地址',
-  `cert` varchar(255) NOT NULL DEFAULT '' COMMENT '备案号',
-  PRIMARY KEY (`id`),
-  KEY `site_id_index` (`site_id`,`project_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='测试独立模块' AUTO_INCREMENT=4 ;
-
---
--- 转存表中的数据 `qinggan_92`
---
-
-INSERT INTO `qinggan_92` (`id`, `site_id`, `project_id`, `address`, `cert`) VALUES
-(3, 1, 397, '测试9999', '123456');
 
 -- --------------------------------------------------------
 
@@ -118,16 +95,16 @@ CREATE TABLE IF NOT EXISTS `qinggan_attr` (
   `title` varchar(100) NOT NULL COMMENT '属性名称',
   `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='产品属性' AUTO_INCREMENT=9 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='产品属性' AUTO_INCREMENT=15 ;
 
 --
 -- 转存表中的数据 `qinggan_attr`
 --
 
 INSERT INTO `qinggan_attr` (`id`, `site_id`, `title`, `taxis`) VALUES
-(1, 1, '颜色', 10),
-(3, 1, '尺码', 20),
-(8, 1, '版本', 30);
+(1, 1, '颜色', 5),
+(3, 1, '尺码', 10),
+(8, 1, '版本', 15);
 
 -- --------------------------------------------------------
 
@@ -144,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_attr_values` (
   `val` varchar(255) NOT NULL COMMENT '值',
   PRIMARY KEY (`id`),
   KEY `aid` (`aid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='属性参数管理' AUTO_INCREMENT=38 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='属性参数管理' AUTO_INCREMENT=41 ;
 
 --
 -- 转存表中的数据 `qinggan_attr_values`
@@ -168,7 +145,10 @@ INSERT INTO `qinggan_attr_values` (`id`, `aid`, `title`, `pic`, `taxis`, `val`) 
 (34, 8, '16G ROM', '', 50, 'MZ16G'),
 (35, 8, '32G ROM', '', 60, 'MZ32G'),
 (36, 1, '灰色', '', 70, 'gray'),
-(37, 8, '64G ROM', '', 70, '64G');
+(37, 8, '64G ROM', '', 70, '64G'),
+(38, 1, 'demo', '', 80, 'demo'),
+(39, 1, 'ok', '', 90, ''),
+(40, 8, '在99', '', 40, '');
 
 -- --------------------------------------------------------
 
@@ -182,14 +162,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart` (
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示游客',
   `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车' AUTO_INCREMENT=45 ;
-
---
--- 转存表中的数据 `qinggan_cart`
---
-
-INSERT INTO `qinggan_cart` (`id`, `session_id`, `user_id`, `addtime`) VALUES
-(44, 'qoedjr82b36gvspqeilpef45g1', 0, 1508737055);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='购物车' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -211,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart_product` (
   `is_virtual` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0实物1虚拟或服务',
   `unit` varchar(50) NOT NULL COMMENT '单位',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车里的产品信息' AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='购物车里的产品信息' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -367,7 +340,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_express` (
   `rate` int(11) NOT NULL DEFAULT '6' COMMENT '查询频率，用于减少请求',
   `ext` text NOT NULL COMMENT '扩展数据保存',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='快递平台管理' AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='快递平台管理' AUTO_INCREMENT=6 ;
 
 --
 -- 转存表中的数据 `qinggan_express`
@@ -375,7 +348,8 @@ CREATE TABLE IF NOT EXISTS `qinggan_express` (
 
 INSERT INTO `qinggan_express` (`id`, `site_id`, `title`, `company`, `homepage`, `code`, `rate`, `ext`) VALUES
 (1, 1, '宅急送-官方', '北京宅急送快运股份有限公司', 'http://www.zjs.com.cn/', 'zjs', 4, 'a:3:{s:18:"logisticProviderID";s:14:"NanFang_LianHe";s:7:"keyseed";s:36:"86AF9251-F3A4-40AF-B9CC-7E509B303F9A";s:12:"fixed_string";s:13:"z宅J急S送g";}'),
-(4, 1, '顺丰速运', '顺丰速运(集团)有限公司', 'http://www.sf-express.com/', 'showapi', 4, 'a:3:{s:6:"app_id";s:4:"4485";s:10:"app_secret";s:32:"95a43a307f51416980ff86cae4c70f4e";s:7:"app_com";s:8:"shunfeng";}');
+(4, 1, '顺丰速运', '顺丰速运(集团)有限公司', 'http://www.sf-express.com/', 'showapi', 4, 'a:3:{s:6:"app_id";s:4:"4485";s:10:"app_secret";s:32:"95a43a307f51416980ff86cae4c70f4e";s:7:"app_com";s:8:"shunfeng";}'),
+(5, 1, '京东物流', '京东', 'http://route-ql.jd.com/trace/push', 'jd', 10, 'a:4:{s:12:"company_code";s:3:"RRT";s:10:"debug_pass";s:6:"111111";s:7:"app_key";s:6:"123456";s:12:"push_address";s:36:"http://111.202.36.9/trace/trace/push";}');
 
 -- --------------------------------------------------------
 
@@ -433,7 +407,6 @@ INSERT INTO `qinggan_ext` (`id`, `module`, `title`, `identifier`, `field_type`, 
 (811, 'list-1756', '摘要', 'note', 'longtext', '支持HTML，仅在首页显示，请注意长度', 'editor', '', 'html', '', 20, 'a:13:{s:5:"width";s:0:"";s:6:"height";s:3:"100";s:7:"is_code";s:0:"";s:9:"btn_image";s:0:"";s:9:"btn_video";s:0:"";s:8:"btn_file";s:0:"";s:8:"btn_page";s:0:"";s:8:"btn_info";s:0:"";s:7:"is_read";s:0:"";s:5:"etype";s:6:"simple";s:7:"btn_map";s:0:"";s:7:"inc_tag";s:0:"";s:10:"paste_text";s:0:"";}'),
 (812, 'list-1757', '邮编', 'zipcode', 'varchar', '请填写六位数字的邮编号码', 'text', '', 'safe', '', 30, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}'),
 (815, 'cate-582', '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 30, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}'),
-(819, 'list-1423', '通栏图片2222', 'banner', 'varchar', '', 'upload', '', 'safe', '', 255, 'a:8:{s:7:"cate_id";s:1:"1";s:11:"cate_custom";s:1:"0";s:11:"is_multiple";s:1:"0";s:11:"upload_type";s:11:"png,jpg,gif";s:11:"upload_name";s:6:"图片";s:13:"upload_binary";s:1:"0";s:15:"upload_compress";s:1:"0";s:18:"upload_compress_wh";s:3:"500";}'),
 (831, 'cate-598', '联系地址', 'address', 'varchar', '', 'text', '', 'safe', '', 0, 'Array'),
 (832, 'cate-598', '通栏图片', 'banner', 'varchar', '', 'upload', '', 'safe', '', 0, 'Array'),
 (833, 'cate-599', '通栏图片', 'banner', 'varchar', '', 'upload', '', 'safe', '', 0, 'Array');
@@ -481,8 +454,7 @@ INSERT INTO `qinggan_extc` (`id`, `content`) VALUES
 (259, '关于常见问题'),
 (276, 'Categories'),
 (277, 'Download'),
-(812, '518000'),
-(819, '');
+(812, '518000');
 
 -- --------------------------------------------------------
 
@@ -618,7 +590,7 @@ INSERT INTO `qinggan_freight_zone` (`id`, `fid`, `title`, `taxis`, `note`, `area
 (8, 3, '港澳台', 80, '包括包港，澳门，台湾', 'a:3:{s:21:"香港特别行政区";a:1:{s:21:"香港特别行政区";b:1;}s:21:"澳门特别行政区";a:1:{s:21:"澳门特别行政区";b:1;}s:9:"台湾省";a:1:{s:9:"台湾省";b:1;}}'),
 (10, 1, 'zoom1', 10, '广东深圳', 'a:1:{s:9:"广东省";a:1:{s:9:"深圳市";b:1;}}'),
 (11, 1, 'zoom2', 20, '福建及广东', 'a:2:{s:9:"福建省";a:9:{s:9:"福州市";b:1;s:9:"厦门市";b:1;s:9:"莆田市";b:1;s:9:"三明市";b:1;s:9:"泉州市";b:1;s:9:"漳州市";b:1;s:9:"南平市";b:1;s:9:"龙岩市";b:1;s:9:"宁德市";b:1;}s:9:"广东省";a:20:{s:9:"广州市";b:1;s:9:"韶关市";b:1;s:9:"珠海市";b:1;s:9:"汕头市";b:1;s:9:"佛山市";b:1;s:9:"江门市";b:1;s:9:"湛江市";b:1;s:9:"茂名市";b:1;s:9:"肇庆市";b:1;s:9:"惠州市";b:1;s:9:"梅州市";b:1;s:9:"汕尾市";b:1;s:9:"河源市";b:1;s:9:"阳江市";b:1;s:9:"清远市";b:1;s:9:"东莞市";b:1;s:9:"中山市";b:1;s:9:"潮州市";b:1;s:9:"揭阳市";b:1;s:9:"云浮市";b:1;}}'),
-(12, 4, '一线城市', 10, '', 'a:4:{s:9:"北京市";a:1:{s:9:"北京市";b:1;}s:9:"天津市";a:1:{s:9:"天津市";b:1;}s:9:"上海市";a:1:{s:9:"上海市";b:1;}s:9:"广东省";a:1:{s:9:"深圳市";b:1;}}'),
+(12, 4, '一线城市', 10, '', 'a:4:{s:9:"北京市";a:1:{s:9:"北京市";b:1;}s:9:"天津市";a:1:{s:9:"天津市";b:1;}s:9:"上海市";a:1:{s:9:"上海市";b:1;}s:9:"广东省";a:2:{s:9:"广州市";b:1;s:9:"深圳市";b:1;}}'),
 (24, 4, '偏远地区', 20, '', 'a:1:{s:24:"新疆维吾尔自治区";a:18:{s:15:"乌鲁木齐市";b:1;s:15:"克拉玛依市";b:1;s:15:"吐鲁番地区";b:1;s:12:"哈密地区";b:1;s:21:"昌吉回族自治州";b:1;s:27:"博尔塔拉蒙古自治州";b:1;s:27:"巴音郭楞蒙古自治州";b:1;s:15:"阿克苏地区";b:1;s:33:"克孜勒苏柯尔克孜自治州";b:1;s:12:"喀什地区";b:1;s:12:"和田地区";b:1;s:24:"伊犁哈萨克自治州";b:1;s:12:"塔城地区";b:1;s:15:"阿勒泰地区";b:1;s:12:"石河子市";b:1;s:12:"阿拉尔市";b:1;s:15:"图木舒克市";b:1;s:12:"五家渠市";b:1;}}');
 
 -- --------------------------------------------------------
@@ -646,9 +618,8 @@ CREATE TABLE IF NOT EXISTS `qinggan_gateway` (
 --
 
 INSERT INTO `qinggan_gateway` (`id`, `site_id`, `status`, `is_default`, `type`, `code`, `title`, `taxis`, `note`, `ext`) VALUES
-(1, 1, 1, 0, 'sms', 'duanxincm', '莫名短信', 10, '', 'a:4:{s:7:"account";s:8:"70206743";s:8:"password";s:8:"40782502";s:6:"server";s:22:"http://api.duanxin.cm/";s:6:"mobile";s:11:"15818533971";}'),
 (3, 1, 1, 1, 'email', 'smtp', 'SMTP邮件发送', 10, '', 'a:8:{s:6:"server";s:11:"smtp.qq.com";s:4:"port";s:2:"25";s:7:"account";s:15:"admin@phpok.com";s:8:"password";s:0:"";s:7:"charset";s:4:"utf8";s:3:"ssl";s:2:"no";s:8:"fullname";s:9:"苏相锟";s:5:"email";s:15:"admin@phpok.com";}'),
-(12, 1, 1, 1, 'sms', 'aliyun', '阿里云消息服务', 5, '', 'a:6:{s:6:"appkey";s:16:"LTAIHnEvclNZ02QR";s:9:"appsecret";s:30:"7r3f8vKtPxZL7yoz1AzLLTMapd3LrI";s:6:"server";s:45:"http://30526616.mns.cn-hangzhou.aliyuncs.com/";s:8:"mnstitle";s:21:"sms.topic-cn-hangzhou";s:7:"signame";s:12:"锟铻科技";s:6:"mobile";s:11:"15818533971";}');
+(12, 1, 1, 1, 'sms', 'aliyun', '阿里云消息服务', 5, '', 'a:6:{s:6:"appkey";s:0:"";s:9:"appsecret";s:0:"";s:6:"server";s:21:"dysmsapi.aliyuncs.com";s:9:"regoin_id";s:11:"cn-hangzhou";s:7:"signame";s:12:"锟铻科技";s:6:"mobile";s:11:"15818533971";}');
 
 -- --------------------------------------------------------
 
@@ -677,7 +648,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_gd` (
 
 INSERT INTO `qinggan_gd` (`id`, `identifier`, `width`, `height`, `mark_picture`, `mark_position`, `cut_type`, `quality`, `bgcolor`, `trans`, `editor`) VALUES
 (2, 'thumb', 320, 320, '', 'bottom-right', 1, 80, 'FFFFFF', 0, 0),
-(12, 'auto', 0, 0, 'res/201502/26/36afa2d3dfe37cbd.png', 'bottom-right', 0, 80, 'FFFFFF', 0, 1);
+(12, 'auto', 0, 0, '', 'bottom-right', 0, 80, 'FFFFFF', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -711,7 +682,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_list` (
   PRIMARY KEY (`id`),
   KEY `project_id` (`project_id`),
   KEY `site_id` (`site_id`,`identifier`,`status`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='内容主表' AUTO_INCREMENT=222087 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='内容主表' AUTO_INCREMENT=1869 ;
 
 --
 -- 转存表中的数据 `qinggan_list`
@@ -728,18 +699,16 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (755, 712, 0, 23, 42, 1, '工作环境', 1383640450, 24, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (760, 713, 0, 23, 42, 1, '公司新闻', 1383815715, 10, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (761, 713, 0, 23, 42, 1, '行业新闻', 1383815736, 20, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
-(1252, 0, 0, 61, 142, 1, 'phpok官网', 1390465160, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1254, 712, 0, 23, 42, 1, '发展历程', 1392375210, 26, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1256, 0, 0, 23, 42, 1, '图集相册', 1392375722, 70, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1261, 0, 0, 61, 142, 1, '启邦互动', 1393321211, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1262, 0, 0, 61, 142, 1, '联迅网络', 1393321235, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1263, 0, 0, 61, 142, 1, '梦幻网络', 1393321258, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
-(1264, 0, 0, 61, 142, 1, '中国站长站', 1393321288, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1265, 0, 0, 61, 142, 1, 'A5站长网', 1393321321, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1266, 0, 0, 61, 142, 1, '中国站长', 1393321365, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1267, 0, 0, 61, 142, 1, '落伍者', 1393321391, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1268, 0, 0, 61, 142, 1, '源码之家', 1393321413, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
-(1767, 0, 211, 68, 144, 1, '华为P7', 1458701998, 0, 1, 0, 3, '', '', '', '', '', '', 0, 0, '', 0),
+(1767, 0, 211, 68, 144, 1, '华为P7', 1458701998, 0, 1, 0, 4, '', '', '', '', '', '', 0, 0, '', 0),
 (1768, 0, 211, 68, 144, 1, '魅族MX5', 1458702037, 0, 1, 0, 5, '', '', '', '', '', '', 0, 0, '', 0),
 (1766, 0, 211, 68, 144, 1, 'vivo Xplay5', 1458701947, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1278, 0, 0, 21, 41, 1, '开源精神，开创未来', 1394008456, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
@@ -753,32 +722,26 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (1304, 0, 0, 23, 147, 1, '联系我们', 1409555008, 50, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1305, 0, 0, 64, 148, 1, 'PHPOK销售客服', 1409747629, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1753, 0, 582, 24, 45, 1, '小米(MI) 小米5 全网通4G手机 双卡双待', 1452570664, 0, 1, 0, 38, '', '', '', '', '', '', 0, 0, '', 0),
-(1310, 0, 198, 65, 151, 1, '主题复制插件', 1412136071, 0, 1, 0, 84, '', '', '', '', '', '', 0, 0, '', 0),
 (1311, 0, 204, 66, 152, 1, '测试论坛功能', 1412391521, 0, 1, 0, 10, '', '', '', '', '', '', 0, 23, '', 0),
 (1334, 0, 204, 66, 152, 1, '测试', 1413063267, 0, 1, 0, 12, '', '', '', '', '', '', 0, 23, '', 0),
 (1368, 0, 8, 22, 43, 1, 'EverEdit - 值得关注的代码编辑器', 1424912045, 0, 1, 0, 33, '', '', '', '', '', '', 0, 0, '', 0),
-(1369, 0, 8, 22, 43, 1, '金山 WPS - 免费正版办公软件(支持Win/Linux/手机)', 1424916504, 0, 1, 0, 35, '', '', '', '', '', '', 1480329276, 0, '', 0),
+(1369, 0, 8, 22, 43, 1, '金山 WPS - 免费正版办公软件(支持Win/Linux/手机)', 1424916504, 0, 1, 0, 37, '', '', '', '', '', '', 1480329276, 0, '', 0),
 (1370, 0, 68, 22, 43, 1, 'MySQL出错代码', 1424918437, 0, 1, 0, 44, '', '', '', '', '', '', 0, 0, '', 0),
-(1371, 0, 68, 22, 43, 1, 'MySQL安装后需要调整什么?', 1424918471, 0, 1, 0, 28, '', '', '', '', '', '', 0, 0, '', 0),
+(1371, 0, 68, 22, 43, 1, 'MySQL安装后需要调整什么', 1424918471, 0, 1, 0, 35, '', '', '', '', '', '', 0, 0, '', 0),
 (1769, 0, 211, 68, 144, 1, '小米5', 1458702065, 0, 1, 0, 7, '', '', '', '', '', '', 0, 0, '', 0),
-(1765, 0, 211, 68, 144, 1, 'Apple iPhone 5SE', 1458701924, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
-(1423, 0, 68, 22, 43, 1, '日本东京2020年奥运会主会场使用ETFE膜', 1398700800, 10, 1, 0, 521, '', '', '', '', '', '', 0, 0, '', 0),
+(1765, 0, 211, 68, 144, 1, 'Apple iPhone 5SE Apple iPhone 5SE Apple iPhone 5SE Apple iPhone 5SE Apple iPhone 5SE Apple iPhone 5SE Apple iPhone 5SE Apple iPhone 5SE Apple iPhone 5SE Apple iPhone 5SE ', 1458701924, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
 (1427, 0, 0, 64, 148, 1, '前台客服', 1446469762, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
-(1756, 0, 0, 40, 87, 1, '公司简介', 1458467228, 10, 1, 0, 107, '', '', '', '', '', '', 0, 0, 'aboutus', 0),
+(1756, 0, 0, 40, 87, 1, '公司简介', 1458467228, 10, 1, 0, 114, '', '', '', '', '', '', 0, 0, 'aboutus', 0),
 (1757, 0, 0, 40, 87, 1, '联系我们', 1458474081, 40, 1, 0, 19, '', '', '', '', '', '', 0, 0, 'contactus', 0),
-(1758, 0, 0, 40, 87, 1, '发展历程', 1458486519, 20, 1, 0, 25, '', '', '', '', '', '', 0, 0, 'development-course', 0),
+(1758, 0, 0, 40, 87, 1, '发展历程', 1458486519, 20, 1, 0, 27, '', '', '', '', '', '', 0, 0, 'development-course', 0),
 (1759, 0, 0, 40, 87, 1, '工作环境', 1458486574, 30, 1, 0, 33, '', '', '', '', '', '', 0, 0, 'work', 0),
 (1760, 0, 583, 24, 45, 1, '魅族 MX5 移动联通双4G手机 双卡双待', 1458626730, 0, 1, 0, 262, '', '', '', '', '', '', 0, 0, '', 0),
 (1761, 0, 584, 24, 45, 1, '华为 P7 移动4G手机', 1458667195, 0, 1, 0, 18, '', '', '', '', '', '', 0, 0, '', 0),
-(1762, 0, 585, 24, 45, 1, 'vivo Xplay5 全网通4G手机 4GB+128GB 双卡双待', 1458668060, 0, 1, 0, 22, '', '', '', '', '', '', 1480393813, 0, '', 0),
-(1763, 0, 216, 24, 45, 1, 'Apple iPhone 5SE 16G 移动联通电信4G手机', 1458669038, 0, 1, 0, 282, '', '', '', '', '', '', 1480398396, 0, '', 0),
-(1772, 0, 0, 61, 142, 1, 'PHPOK.Com', 1459324936, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0),
-(1802, 0, 0, 75, 386, 1, 'P2016033177U00023001', 1465808130, 0, 1, 0, 2, '', '', '', '', '', '', 0, 23, '', 0),
+(1762, 0, 585, 24, 45, 1, 'vivo Xplay5 全网通4G手机 4GB+128GB 双卡双待', 1458668060, 0, 1, 0, 25, '', '', '', '', '', '', 1480393813, 0, '', 0),
+(1763, 0, 216, 24, 45, 1, 'Apple iPhone 5SE 16G 移动联通电信4G手机', 1458669038, 0, 1, 0, 292, '', '', '', '', '', '', 0, 0, '', 0),
+(1772, 0, 0, 61, 142, 1, 'PHPOK-Com', 1459324936, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0),
 (1854, 0, 204, 66, 152, 1, '测试新主题', 1498026275, 0, 1, 0, 12, '', '', '', '', '', '', 0, 23, '', 0),
-(222081, 0, 204, 66, 152, 1, '一模一样dg', 1503908307, 0, 1, 0, 5, '', '', '', '', '', '', 1508737010, 23, '', 0),
-(222082, 0, 204, 66, 152, 1, '栽植', 1503909184, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0),
-(222083, 0, 0, 87, 396, 1, '道情.flv', 1505293298, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0),
-(222084, 0, 0, 87, 396, 1, '测试的视频', 1505298905, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0);
+(1855, 0, 200, 65, 151, 1, '主题复制', 1516290172, 0, 1, 0, 4, '', '', '', '', '', '', 0, 0, '', 0);
 
 -- --------------------------------------------------------
 
@@ -860,8 +823,7 @@ INSERT INTO `qinggan_list_22` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`
 (1419, 1, 43, 68, '', '<p ><br class="Apple-interchange-newline" /><p align="center"></p><center><imgid="597978" title="" border="0" align="center" src="res/201509/02/1441090061_0_691.jpg" sourcename="本地文件" sourcedescription="编辑提供的本地文件" alt="" /></center><p></p><p></p><p >大连体育场，2754个气枕附着在体育新城中心体育场周围的钢结构桁架上，白天或夜晚在阳光或LED灯的照射下，蓝白相间的膜气枕将会形成海浪翻滚的大景观，将把本市这座海滨城市的特点充分展现在世人面前。据了解，中心体育场外膜结构工程将在5月底全部完工。昨天，记者走进中心体育场进行了一番探访。</p><p >蓝白相间的条块将中心体育场从空中&ldquo;包裹&rdquo;起来，远看，犹如大海中的波浪在翻滚。蓝色条块就像蓝色的海面一样，白色条块象征翻滚着的白色浪花。近看，在偌大的圆形体育场四周布满了脚手架，蓝色条块和白色条块由众多气枕组成，将圆形的体育场在纵向也形成圆弧形状，若一幢巨型战鼓悬于半空。</p><p >进入体育场内部，看台上坐椅林立，广场上的塑胶跑道和中间的绿色球场已经显现出来。往上看，圆穹形的膜结构将看台全部覆盖。&ldquo;观看比赛时，自然是风吹不着，雨淋不到。 &rdquo;中心体育场外膜结构工程施工单位，是曾参与北京水立方膜结构工程施工的本市民营企业大连伟霖膜结构工程有限公司，该公司高级工程师刘昌伟说，大连中心体育场还有内膜，将会从内部把眼前的纵横交错的钢结构桁架全部包裹起来。</p><p >目前，仅有西南部接近1万平方米的外膜结构还没有完工。本月底外膜结构将全部完工。</p></p>', '', 0),
 (1420, 1, 43, 68, '', '<p ><p><b>膜结构</b><span >主要适用场所：体育场馆,体育场看台,主席台,相关遮阳遮雨膜结构; 高速公路收费站,加油站,停车场,公交站台,机场,地铁站,游乐园,休闲广场,观景台,舞台空,停车场膜结构；小区入口、车库入口、通道走廊、城市标志入口；高速公路收费站空间膜结构、加油站膜结构、博览会展厅膜结构、购物中心、售货亭、商业步行街、批发中心、临时会场张拉膜结构、休闲场所张拉膜结构景观膜结构、泳池遮阳膜，景观膜结构、大门出入张拉膜、小品膜、标志性膜结构建筑等。</span></p><p><span class="Apple-converted-space"></span><br /></p><p><imgborder="0" width="675" height="670" alt="" src="res/201509/02/1441090045_0_444.jpg" /></p><p><p >膜结构主要适用场所：运动场、体育馆、体育看台张拉膜结构; 博物馆张拉膜、音乐广场索膜结构、游乐园、休闲广场张拉膜结构、观景台张拉膜、舞台空间膜结构、停车场膜结构；高速公路收费站空间膜结构、加油站膜结构、博览会展厅膜结构、购物中心、售货亭、商业步行街、批发中心、临时会场张拉膜结构、休闲场所张拉膜结构景观膜结构、泳池遮阳膜，景观膜结构、大门出入张拉膜、小品膜、标志性膜结构建筑等。</p><p ></p><p ></p><p ></p></p></p>', '', 0),
 (1421, 1, 43, 68, '', '<p ></p><ul><li >PTFE膜材&mdash;&mdash;耐久性强，使用寿命在30年以上</li><li >PTFE膜材&mdash;&mdash;是永久性建筑的首选材料</li><li >PTFE膜材&mdash;&mdash;超自洁，防火材料</li><li >PTFE膜材&mdash;&mdash;专业化的加工工艺，严格的施工规程<br /> 膜结构建筑中最常用的膜材料。PTFE膜材料是指在极细的玻璃纤维（3微米）编织成的基布上涂上PTFE（聚四氟乙烯）树脂而形成的复合材料。PVC膜材料是指在聚酯纤维编织的基布上涂上PVC（聚氟乙烯）树脂而形成的复合材料。</li></ul>', '', 0),
-(1422, 1, 43, 68, '', '<p ></p><pid="MyContent"><p>  2020年东京奥运会和残奥会筹备委员会公布了作为东京奥运会主会场的新国立竞技场的概念图。</p><p>　　国际奥委会全会当地时间9月7日在阿根廷首都布宜诺斯艾利斯投票选出2020年夏季奥运会的主办城市。日本东京最终击败西班牙马德里和土耳其伊斯坦布尔，获得2020年夏季奥运会举办权。</p><p></p><p ></p><p align="center"><img id="23416362" align="center" src="res/201509/02/1441090082_0_293.jpg" width="602" height="276" md5="" alt="" /></p><p align="center"></p><p ></p><p align="center"><img id="23416363" align="center" src="res/201509/02/1441090082_1_175.jpg" width="600" height="353" md5="" alt="" /></p><p align="center"></p><p ></p><p align="center"><img id="23416364" align="center" src="res/201509/02/1441090082_2_260.jpg" width="598" height="353" md5="" alt="" /></p><p align="center"></p><p align="center"></p><p >据了解，日本新国家体育场效果图是由东京奥运会审查委员会从全球募集的众多设计图中评选而出，该设计图出自的伊拉克女建筑家扎哈-哈迪德之手，从效果图来看，日本新国家体育场外观采用了全新的流线型设计，审查委员会给予了&ldquo;内部空间感强烈，与东京都城市空间相呼应&rdquo;、&ldquo;可开闭式天窗增加了体育场的实用性&rdquo;等高度评价。</p><p >根据计算，日本新国家体育场的扩建总花费将达到1300亿日元（约人民币78亿元），预计竣工时间为2019年3月，该体育场作为2020年东京奥运会比赛主会场，届时奥运会的开幕式、闭幕式、足球、田径等项目都将在该会场举行。</p><p ></p><p></p><p></p><p></p><p></p></p><p ></p>', '', 0),
-(1423, 1, 43, 68, '1247', '', '', 1);
+(1422, 1, 43, 68, '', '<p ></p><pid="MyContent"><p>  2020年东京奥运会和残奥会筹备委员会公布了作为东京奥运会主会场的新国立竞技场的概念图。</p><p>　　国际奥委会全会当地时间9月7日在阿根廷首都布宜诺斯艾利斯投票选出2020年夏季奥运会的主办城市。日本东京最终击败西班牙马德里和土耳其伊斯坦布尔，获得2020年夏季奥运会举办权。</p><p></p><p ></p><p align="center"><img id="23416362" align="center" src="res/201509/02/1441090082_0_293.jpg" width="602" height="276" md5="" alt="" /></p><p align="center"></p><p ></p><p align="center"><img id="23416363" align="center" src="res/201509/02/1441090082_1_175.jpg" width="600" height="353" md5="" alt="" /></p><p align="center"></p><p ></p><p align="center"><img id="23416364" align="center" src="res/201509/02/1441090082_2_260.jpg" width="598" height="353" md5="" alt="" /></p><p align="center"></p><p align="center"></p><p >据了解，日本新国家体育场效果图是由东京奥运会审查委员会从全球募集的众多设计图中评选而出，该设计图出自的伊拉克女建筑家扎哈-哈迪德之手，从效果图来看，日本新国家体育场外观采用了全新的流线型设计，审查委员会给予了&ldquo;内部空间感强烈，与东京都城市空间相呼应&rdquo;、&ldquo;可开闭式天窗增加了体育场的实用性&rdquo;等高度评价。</p><p >根据计算，日本新国家体育场的扩建总花费将达到1300亿日元（约人民币78亿元），预计竣工时间为2019年3月，该体育场作为2020年东京奥运会比赛主会场，届时奥运会的开幕式、闭幕式、足球、田径等项目都将在该会场举行。</p><p ></p><p></p><p></p><p></p><p></p></p><p ></p>', '', 0);
 
 -- --------------------------------------------------------
 
@@ -945,6 +907,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_40` (
   `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
   `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `content` longtext NOT NULL COMMENT '内容',
+  `ahhzkfzmnp` varchar(255) NOT NULL DEFAULT '' COMMENT '土地',
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`,`project_id`,`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关于我们';
@@ -953,11 +916,11 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_40` (
 -- 转存表中的数据 `qinggan_list_40`
 --
 
-INSERT INTO `qinggan_list_40` (`id`, `site_id`, `project_id`, `cate_id`, `content`) VALUES
-(1756, 1, 87, 0, '<p>深圳市锟铻科技有限公司（Shenzhen Kunwu Technology Co., Ltd.）创立于2014年，专注于企业网站技术的研究和开发，是国内最有影响力的企业网站技术提供商。</p><p>“创新，将新技术转化为生产力”是锟铻科技的核心竞争力。凭借对软件和互联网行业的深刻理解，锟铻科技将软件技术与互联网应用相结合，将领先业界的产品理念和丰富的产品开发经验相结合，为用户提供简单、方便、安全、实用的协同应用软件产品和解决方案，帮助客户实现低成本、低风险、快起步、高效率的信息化目标。</p><p>锟铻科技成长的过程，就是服务客户并和客户一起不断成功的过程！我们用心、努力作好每一件事，满怀信心迎接每一次挑战。</p>'),
-(1757, 1, 87, 0, '<p>联系我们</p><p>请到后台：关于我们》联系我们那里管理相关内容</p>'),
-(1758, 1, 87, 0, '<table><tbody><tr class="firstRow"><td width="117" valign="top" style="word-break: break-all;"><span style="color: rgb(192, 0, 0);">2011年12月</span></td><td width="721" valign="top" style="word-break: break-all;">phpok3.4版发布（后台更换为桌面式）</td></tr><tr><td width="116" valign="top" style="word-break: break-all;"><span style="color: rgb(192, 0, 0);">2011年9月</span></td><td width="721" valign="top" style="word-break: break-all;">phpok3.3完整版发布</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="115"><span style="color: rgb(192, 0, 0);">2010年8月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">phpok3.0完整版发布</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="115"><span style="color: rgb(192, 0, 0);">2008年9月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">phpok3.0精简版发布</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="115"><span style="color: rgb(192, 0, 0);">2008年5月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">phpok2.2稳定版发布</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="116"><span style="color: rgb(192, 0, 0);">2008年3月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">phpok2.0发布</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="116"><span style="color: rgb(192, 0, 0);">2007年5月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">qgweb5.2发布，同时更名为 phpok1.0版本</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="115"><span style="color: rgb(192, 0, 0);">2007年1月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">qgweb5.0发布（第一次实现多语言，多风格的建站系统）</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="115"><span style="color: rgb(192, 0, 0);">2006年10月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">qgweb4.2发布（GBK）</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="115"><span style="color: rgb(192, 0, 0);">2006年8月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">qgweb4.1发布（UTF-8）</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="115"><span style="color: rgb(192, 0, 0);">2006年6月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">qgweb4.0发布</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="115"><span style="color: rgb(192, 0, 0);">2005年11月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">qgWeb3.0发布</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="115"><span style="color: rgb(192, 0, 0);">2005年8月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">工作室论坛开通</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="115"><span style="color: rgb(192, 0, 0);">2005年7月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">qgWeb1.0发布</td></tr><tr><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="115"><span style="color: rgb(192, 0, 0);">2005年4月</span></td><td valign="top" colspan="1" rowspan="1" style="word-break: break-all;" width="719">qgWeb0.54版发布</td></tr></tbody></table><p><br/></p>'),
-(1759, 1, 87, 0, '<p>工作环境~</p>');
+INSERT INTO `qinggan_list_40` (`id`, `site_id`, `project_id`, `cate_id`, `content`, `ahhzkfzmnp`) VALUES
+(1756, 1, 87, 0, '<p>深圳市锟铻科技有限公司（Shenzhen Kunwu Technology Co., Ltd.）创立于2014年，专注于企业网站技术的研究和开发，是国内最有影响力的企业网站技术提供商。</p><p>“创新，将新技术转化为生产力”是锟铻科技的核心竞争力。凭借对软件和互联网行业的深刻理<img src="images/emotion/04.png"/>解，锟铻科技将软件技术与互联网应用相结合，将领先业<img src="images/emotion/37.png" style="width: 62px; height: 62px;" width="62" height="62"/>界的产品理念和丰富的产品开发经验相结合，为用户提供简单、方便、安全、实用的协同应用软件产品和解决方案，帮助客户实现低成本、低风险、快起步、高效率的信息化目标。</p><p>锟铻科技成长的过程，就是服务客户并和客户一起不断成功的过程！我们用心、努力作好每一件事，满怀信心迎接每一次挑战。</p><p><img src="images/emotion/01.png"/>d</p>', ''),
+(1757, 1, 87, 0, '<p>联系我们</p><p>请到后台：关于我们》联系我们那里管理相关内容</p>', ''),
+(1758, 1, 87, 0, '<table><tbody><tr class="firstRow"><td style="word-break: break-all;" width="117" valign="top"><span style="color: rgb(192, 0, 0);">2011年12月</span></td><td style="word-break: break-all;" width="721" valign="top">phpok3.4版发布（后台更换为桌面式）</td></tr><tr><td style="word-break: break-all;" width="116" valign="top"><span style="color: rgb(192, 0, 0);">2011年9月</span></td><td style="word-break: break-all;" width="721" valign="top">phpok3.3完整版发布</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="115" valign="top"><span style="color: rgb(192, 0, 0);">2010年8月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">phpok3.0完整版发布</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="115" valign="top"><span style="color: rgb(192, 0, 0);">2008年9月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">phpok3.0精简版发布</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="115" valign="top"><span style="color: rgb(192, 0, 0);">2008年5月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">phpok2.2稳定版发布</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="116" valign="top"><span style="color: rgb(192, 0, 0);">2008年3月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">phpok2.0发布</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="116" valign="top"><span style="color: rgb(192, 0, 0);">2007年5月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">qgweb5.2发布，同时更名为 phpok1.0版本</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="115" valign="top"><span style="color: rgb(192, 0, 0);">2007年1月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">qgweb5.0发布（第一次实现多语言，多风格的建站系统）</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="115" valign="top"><span style="color: rgb(192, 0, 0);">2006年10月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">qgweb4.2发布（GBK）</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="115" valign="top"><span style="color: rgb(192, 0, 0);">2006年8月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">qgweb4.1发布（UTF-8）</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="115" valign="top"><span style="color: rgb(192, 0, 0);">2006年6月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">qgweb4.0发布</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="115" valign="top"><span style="color: rgb(192, 0, 0);">2005年11月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">qgWeb3.0发布</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="115" valign="top"><span style="color: rgb(192, 0, 0);">2005年8月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">工作室论坛开通</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="115" valign="top"><span style="color: rgb(192, 0, 0);">2005年7月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">qgWeb1.0发布</td></tr><tr><td colspan="1" rowspan="1" style="word-break: break-all;" width="115" valign="top"><span style="color: rgb(192, 0, 0);">2005年4月</span></td><td colspan="1" rowspan="1" style="word-break: break-all;" width="719" valign="top">qgWeb0.54版发布</td></tr></tbody></table><p><br/></p>', ''),
+(1759, 1, 87, 0, '<p>工作环境~</p>', '');
 
 -- --------------------------------------------------------
 
@@ -1009,11 +972,9 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_61` (
 --
 
 INSERT INTO `qinggan_list_61` (`id`, `site_id`, `project_id`, `cate_id`, `link`, `target`, `tel`) VALUES
-(1252, 1, 142, 0, 'http://www.phpok.com', '_blank', ''),
 (1261, 1, 142, 0, 'http://www.sz-qibang.com/', '_blank', ''),
 (1262, 1, 142, 0, 'http://www.17tengfei.com/', '_blank', ''),
 (1263, 1, 142, 0, 'http://www.7139.com', '_blank', ''),
-(1264, 1, 142, 0, 'http://www.chinaz.com/', '_blank', ''),
 (1265, 1, 142, 0, 'http://www.admin5.com/', '_blank', ''),
 (1266, 1, 142, 0, 'http://www.cnzz.cn/', '_blank', ''),
 (1267, 1, 142, 0, 'http://www.im286.com/', '_blank', ''),
@@ -1064,7 +1025,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_65` (
   `devlang` varchar(255) NOT NULL DEFAULT '' COMMENT '开发语言',
   `author` varchar(255) NOT NULL DEFAULT '' COMMENT '开发商',
   `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
-  `copyright` varchar(255) NOT NULL DEFAULT '' COMMENT '授权协议',
   `dfile` varchar(255) NOT NULL DEFAULT '' COMMENT '附件',
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`,`project_id`,`cate_id`)
@@ -1074,8 +1034,8 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_65` (
 -- 转存表中的数据 `qinggan_list_65`
 --
 
-INSERT INTO `qinggan_list_65` (`id`, `site_id`, `project_id`, `cate_id`, `note`, `fsize`, `content`, `version`, `website`, `platform`, `devlang`, `author`, `thumb`, `copyright`, `dfile`) VALUES
-(1310, 1, 151, 198, '​测试下载~', '5KB', '<p>测试下载~<br/></p>', '1.0', 'http://www.phpok.com', 'OS', 'PHP/MySQL', 'PHPOK.com', '624', '免费版', '1029');
+INSERT INTO `qinggan_list_65` (`id`, `site_id`, `project_id`, `cate_id`, `note`, `fsize`, `content`, `version`, `website`, `platform`, `devlang`, `author`, `thumb`, `dfile`) VALUES
+(1855, 1, 151, 200, '实现主题复制功能，做模板时很适用噢', '5KB', '<p>实现主题复制功能，做模板时很适用噢</p>', '1.0', 'https://www.phpok.com', 'phpok', 'php', 'phpok.com', '1040', '1029');
 
 -- --------------------------------------------------------
 
@@ -1102,9 +1062,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_66` (
 INSERT INTO `qinggan_list_66` (`id`, `site_id`, `project_id`, `cate_id`, `content`, `toplevel`, `thumb`) VALUES
 (1311, 1, 152, 204, '<p>测试论坛功能</p>', '', ''),
 (1334, 1, 152, 204, '<p>测试</p>', '', ''),
-(1854, 1, 152, 204, '<p>测试新主题测试新主题测试新主题测试新主题测试新主题</p>', '0', '1040'),
-(222081, 1, 152, 204, '<p>塔顶载<br/></p>', '0', '1248'),
-(222082, 1, 152, 204, '<p>栽植asf<br/></p>', '0', '');
+(1854, 1, 152, 204, '<p>测试新主题测试新主题测试新主题测试新主题测试新主题</p>', '0', '1040');
 
 -- --------------------------------------------------------
 
@@ -1187,40 +1145,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_75` (
   KEY `site_id` (`site_id`,`project_id`,`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='银行汇款';
 
---
--- 转存表中的数据 `qinggan_list_75`
---
-
-INSERT INTO `qinggan_list_75` (`id`, `site_id`, `project_id`, `cate_id`, `fullname`, `mobile`, `bankprice`, `note`, `bankname`) VALUES
-(1802, 1, 386, 0, 'seika', '15818', 'dfaf', 'adsfasfas', '测试的');
-
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_87`
---
-
-CREATE TABLE IF NOT EXISTS `qinggan_list_87` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
-  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '自定义视频缩略图',
-  `note` longtext NOT NULL COMMENT '摘要',
-  `longtime` varchar(255) NOT NULL DEFAULT '' COMMENT '播放时长',
-  `videoid` varchar(255) NOT NULL DEFAULT '' COMMENT '阿里云视频ID',
-  PRIMARY KEY (`id`),
-  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='阿里云视频库';
-
---
--- 转存表中的数据 `qinggan_list_87`
---
-
-INSERT INTO `qinggan_list_87` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `note`, `longtime`, `videoid`) VALUES
-(222083, 1, 396, 0, 'http://video.phpok.com/snapshot/11feead7fe37446b97a7a1adc2f6a82800001.jpg', '', '243', '11feead7fe37446b97a7a1adc2f6a828'),
-(222084, 1, 396, 0, 'http://video.phpok.com/snapshot/a2025ae2a0fb4bec9238e3ec3828401c00001.jpg', '', '128', 'a2025ae2a0fb4bec9238e3ec3828401c');
-
 -- --------------------------------------------------------
 
 --
@@ -1238,7 +1162,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_attr` (
   `taxis` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   PRIMARY KEY (`id`),
   KEY `tid` (`tid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='主题属性' AUTO_INCREMENT=52 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='主题属性' AUTO_INCREMENT=69 ;
 
 --
 -- 转存表中的数据 `qinggan_list_attr`
@@ -1265,12 +1189,17 @@ INSERT INTO `qinggan_list_attr` (`id`, `tid`, `aid`, `vid`, `price`, `weight`, `
 (43, 1761, 1, 6, '0.0000', 0, 0, 50),
 (44, 1761, 8, 34, '0.0000', 0, 0, 50),
 (45, 1761, 8, 35, '100.0000', 0, 0, 60),
-(46, 1762, 1, 33, '0.0000', 0, 0, 60),
-(47, 1763, 1, 6, '0.0000', 0, 0, 50),
-(48, 1763, 1, 33, '0.0000', 0, 0, 60),
-(49, 1763, 1, 5, '0.0000', 0, 0, 40),
-(50, 1763, 8, 34, '0.0000', 0, 0, 50),
-(51, 1763, 8, 37, '800.0000', 0, 0, 70);
+(65, 1762, 1, 33, '0.0000', 0, 0, 60),
+(56, 1763, 8, 35, '1299.0000', 0, 0, 10),
+(55, 1763, 8, 34, '0.0000', 0, 0, 5),
+(54, 1763, 1, 4, '0.0000', 0, 0, 15),
+(53, 1763, 1, 3, '0.0000', 0, 0, 10),
+(52, 1763, 1, 1, '0.0000', 0, 0, 5),
+(64, 1762, 1, 3, '0.0000', 0, 0, 15),
+(63, 1762, 1, 1, '0.0000', 0, 0, 10),
+(68, 1762, 8, 35, '1600.0000', 0, 0, 15),
+(67, 1762, 8, 37, '3200.0000', 0, 0, 10),
+(66, 1762, 8, 34, '0.0000', 0, 0, 5);
 
 -- --------------------------------------------------------
 
@@ -1321,7 +1250,8 @@ INSERT INTO `qinggan_list_biz` (`id`, `price`, `currency_id`, `weight`, `volume`
 (1763, '3288.0000', 1, 0, 0, '台', 1),
 (1855, '0.0000', 1, 0, 0, '', 0),
 (1856, '0.0000', 1, 0, 0, '', 0),
-(1857, '0.0000', 1, 0, 0, '', 0);
+(1857, '0.0000', 1, 0, 0, '', 0),
+(222125, '0.0000', 1, 0, 0, '', 0);
 
 -- --------------------------------------------------------
 
@@ -1342,14 +1272,12 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_cate` (
 --
 
 INSERT INTO `qinggan_list_cate` (`id`, `cate_id`) VALUES
-(1310, 198),
 (1311, 204),
 (1334, 204),
 (1368, 8),
 (1369, 8),
 (1370, 68),
 (1371, 68),
-(1423, 68),
 (1676, 68),
 (1677, 68),
 (1753, 582),
@@ -1357,13 +1285,13 @@ INSERT INTO `qinggan_list_cate` (`id`, `cate_id`) VALUES
 (1761, 584),
 (1762, 585),
 (1763, 216),
+(1763, 589),
 (1765, 211),
 (1766, 211),
 (1767, 211),
 (1768, 211),
 (1769, 211),
-(222081, 204),
-(222082, 204);
+(1855, 200);
 
 -- --------------------------------------------------------
 
@@ -1386,543 +1314,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_log` (
   `mask` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0表示系统日志，1表示手动断点日志用于调试',
   `session_id` varchar(255) NOT NULL COMMENT 'SESSION_ID',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='日志记录' AUTO_INCREMENT=703 ;
-
---
--- 转存表中的数据 `qinggan_log`
---
-
-INSERT INTO `qinggan_log` (`id`, `note`, `url`, `dateline`, `app_id`, `ctrl`, `func`, `admin_id`, `user_id`, `ip`, `referer`, `mask`, `session_id`) VALUES
-(42, '会员登录成功', 'http://localhost/phpok/index.php?c=login&f=ok&_noCache=0.1495869477', 1495869485, 'www', 'login', 'ok', 0, 23, '::1', 'http://localhost/phpok/index.php?c=login&_noCache=0.1495869475', 0, 'hsu2o78iejmja3cob312a3ce17'),
-(56, '上传的文件异常', 'http://192.168.1.18/phpok/index.php?c=upload&f=save&cateid=1&PHPSESSION=b0vh4748em3ip35kemjl9io5c4&id=WU_FILE_0&name=P40427-083714.jpg&type=image%2Fjpeg&lastModifiedDate=Wed+May+10+2017+09%3A53%3A59+GMT%2B0800&size=223981&chunks=3', 1496649585, 'www', 'upload', 'save', 0, 0, '192.168.1.18', 'http://192.168.1.18/phpok/index.php?id=book', 0, 'b0vh4748em3ip35kemjl9io5c4'),
-(123, 'the-new-label', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=%E6%96%B0%E6%A0%87%E7%AD%BE&_noCache=0.5959239991176&_=1497335286080', 1497335296, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set', 0, 'oik7bqkf00g4r7u6ji0qvcf527'),
-(121, 'fwd-xbqy', 'http://localhost/phpok/api.php?c=plugin&f=index&id=identifier&exec=py&title=%E6%9C%8D%E5%8A%A1%E7%AB%AF-%E6%96%B0%E6%A0%87%E7%AD%BE%E9%A1%B5&_noCache=0.2893146238953779&_=1497335250710', 1497335274, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set', 0, 'oik7bqkf00g4r7u6ji0qvcf527'),
-(122, 'a-new-tab', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=%E6%96%B0%E6%A0%87%E7%AD%BE%E9%A1%B5&_noCache=0.65259692043233&_=1497335250712', 1497335280, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set', 0, 'oik7bqkf00g4r7u6ji0qvcf527'),
-(120, 'fuwuduan-xinbiaoqianye', 'http://localhost/phpok/api.php?c=plugin&f=index&id=identifier&exec=pingyin&title=%E6%9C%8D%E5%8A%A1%E7%AB%AF-%E6%96%B0%E6%A0%87%E7%AD%BE%E9%A1%B5&_noCache=0.9752174963935893&_=1497335250709', 1497335272, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set', 0, 'oik7bqkf00g4r7u6ji0qvcf527'),
-(71, 'heaven-and-earth', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=%E5%A4%A9%E5%9C%B0&_noCache=0.5183449148095168&_=1496818405539', 1496818413, 'api', 'plugin', 'index', 0, 0, '127.0.0.1', 'http://localhost/phpok/admin.php?c=cate&f=set', 0, '7j1130sp869rebrl0au8qrheq1'),
-(119, 'the-service-side---a-new-tab', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=%E6%9C%8D%E5%8A%A1%E7%AB%AF-%E6%96%B0%E6%A0%87%E7%AD%BE%E9%A1%B5&_noCache=0.7369647218765046&_=1497335250707', 1497335270, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set', 0, 'oik7bqkf00g4r7u6ji0qvcf527'),
-(209, '<span class="red">数据库比较工具</span> 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1498038611', 1498038617, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=sqldiff', 0, '9rh7k3t61428dcr3ko9hinqr62'),
-(208, '模块删除成功', 'http://localhost/phpok/admin.php?c=module&f=delete&id=84&_=1498036837258', 1498036857, 'admin', 'module', 'delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&menu_id=8&_noCache=0.9585232946668526', 0, '9rh7k3t61428dcr3ko9hinqr62'),
-(207, '插件卸载成功', 'http://localhost/phpok/admin.php?c=plugin&f=uninstall&id=loginext&_=1498036844668', 1498036851, 'admin', 'plugin', 'uninstall', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&menu_id=16&_noCache=0.06991441992537639', 0, '9rh7k3t61428dcr3ko9hinqr62'),
-(206, '模块使用中，请先停用模块信息', 'http://localhost/phpok/admin.php?c=module&f=delete&id=84&_=1498036837255', 1498036840, 'admin', 'module', 'delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&menu_id=8&_noCache=0.9585232946668526', 0, '9rh7k3t61428dcr3ko9hinqr62'),
-(205, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498036664, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1498036658', 0, '9rh7k3t61428dcr3ko9hinqr62'),
-(176, 'Cross-site request forgery validation failed. Required param "state" missing from persistent data.', 'http://localhost/phpok/index.php?c=plugin&id=loginext&exec=facebook&_noCache=0.1497583249&code=AQBULGhW4wPZ23RGR_h7M64Pkmna6ug7tC3B_tPCCDwSrXbrHxvgTyvRil-PYX_KJgO-k_QmsurL1t3G8Q5kvKKxQFlB9hyEMpDwI5lfTNIjN1rcp4fwx2iBiGsnnrqeurjJEAVH36YO_pL2uPtlp5ejStrkP4g6', 1497583286, 'www', 'plugin', 'index', 0, 0, '::1', 'https://www.facebook.com/', 0, 'pe7vggsg8a3aq54spe2lmfcvh3'),
-(177, 'SDK错误：Cross-site request forgery validation failed. Required param "state" missing from persistent data.', 'http://localhost/phpok/index.php?c=plugin&id=loginext&exec=facebook&_noCache=0.1497583249&code=AQBULGhW4wPZ23RGR_h7M64Pkmna6ug7tC3B_tPCCDwSrXbrHxvgTyvRil-PYX_KJgO-k_QmsurL1t3G8Q5kvKKxQFlB9hyEMpDwI5lfTNIjN1rcp4fwx2iBiGsnnrqeurjJEAVH36YO_pL2uPtlp5ejStrkP4g6', 1497583328, 'www', 'plugin', 'index', 0, 0, '::1', 'https://www.facebook.com/', 0, 'pe7vggsg8a3aq54spe2lmfcvh3'),
-(178, 'SDK错误：Cross-site request forgery validation failed. Required param "state" missing from persistent data.', 'http://localhost/phpok/index.php?c=plugin&id=loginext&exec=facebook&_noCache=0.1497583351&code=AQCLeofBJ9DeSv7E1FhK7KR0p4yNDeNOHZQaXlg76sH5qMaM9wS-VsELpQ1uLVMdEvP12A34eRhVljDg8q9Xx0LgnU_mQKyaS1PjUk5gx6De02iTYGeEBIIf2VMHI8hkkC1sMZ043NtgZGkhoEDqU0NRfsh29FVh', 1497583464, 'www', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/index.php?c=login&_noCache=0.1497583040', 0, 'pe7vggsg8a3aq54spe2lmfcvh3'),
-(179, '登录失败，取得请求失败', 'http://localhost/phpok/index.php?c=plugin&id=loginext&exec=facebook&_noCache=0.1497589899&error_code=4201&error_message=User+canceled+the+Dialog+flow&state=ca6760bd34f6504ab12ca9921c909f3a', 1497589954, 'www', 'plugin', 'index', 0, 0, '::1', '', 0, 'pe7vggsg8a3aq54spe2lmfcvh3'),
-(204, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.538307903257949&_=1498033508653', 1498033524, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'b4dj1ttaob02jjcocv2n8mrqu5'),
-(181, 'SDK错误：Cross-site request forgery validation failed. Required param "state" missing from persistent data.', 'http://localhost/phpok/index.php?c=plugin&id=loginext&exec=facebook&_noCache=0.1497591202&code=AQAC9-e43PZhFMNmryvNUNoUoDZEmD-RFKMWxmrtiBPXqMIUTK9EN-fD7EFzzlOyD4lchQwjzMKF__RPv2Q9lo1YOekPLLruf52QoranCGkXnC6ut7TSI0IIEpIRFdrIE7zeq9wUKLpzqBrDIoWfF4fXL7CmyLkB', 1497591325, 'www', 'plugin', 'index', 0, 0, '::1', 'https://www.facebook.com/', 0, 'pe7vggsg8a3aq54spe2lmfcvh3'),
-(203, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.7710967055848521&_=1498033508651', 1498033511, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'b4dj1ttaob02jjcocv2n8mrqu5'),
-(202, 'ok', 'http://localhost/phpok/admin.php?c=inp&type=user&_=1498028216866', 1498028217, 'admin', 'inp', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1369&_noCache=0.1498028213', 0, 'b4dj1ttaob02jjcocv2n8mrqu5'),
-(184, '上传的文件异常', 'http://192.168.1.18/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1497928635&PHPSESSION=vd4dsoddtshl2orfidnbd4ubu7&id=WU_FILE_0&name=20170607-153855.jpg&type=image%2Fjpeg&lastModifiedDate=Wed+Jun+07+2017+15%3A38%3A57+GMT%2B0800&size=311630&chunks=4', 1497928641, 'www', 'upload', 'save', 0, 0, '192.168.1.18', 'http://192.168.1.18/phpok/index.php?id=book', 0, 'vd4dsoddtshl2orfidnbd4ubu7'),
-(185, '上传的文件异常', 'http://192.168.1.18/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1497928743&PHPSESSION=vd4dsoddtshl2orfidnbd4ubu7&id=WU_FILE_0&name=20170607-153855.jpg&type=image%2Fjpeg&lastModifiedDate=Wed+Jun+07+2017+15%3A38%3A57+GMT%2B0800&size=311630&chunks=4', 1497928750, 'www', 'upload', 'save', 0, 0, '192.168.1.18', 'http://192.168.1.18/phpok/index.php?id=book', 0, 'vd4dsoddtshl2orfidnbd4ubu7'),
-(186, '上传的文件异常', 'http://192.168.1.18/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1497928856&PHPSESSION=vd4dsoddtshl2orfidnbd4ubu7&id=WU_FILE_0&name=20170607-153855.jpg&type=image%2Fjpeg&lastModifiedDate=Wed+Jun+07+2017+15%3A38%3A57+GMT%2B0800&size=311630&chunks=4', 1497928862, 'www', 'upload', 'save', 0, 0, '192.168.1.18', 'http://192.168.1.18/phpok/index.php?id=book', 0, 'vd4dsoddtshl2orfidnbd4ubu7'),
-(187, '上传的文件异常', 'http://192.168.1.18/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1497948965&PHPSESSION=8vr8kfiahstp0csaavupcktl87&id=WU_FILE_0&name=auto_7375.jpg&type=image%2Fjpeg&lastModifiedDate=Tue+Jun+20+2017+16%3A57%3A07+GMT%2B0800+%28CST%29&size=213643&chunk', 1497949048, 'www', 'upload', 'save', 0, 0, '192.168.1.100', 'http://192.168.1.18/phpok/index.php?id=book', 0, '8vr8kfiahstp0csaavupcktl87'),
-(188, '上传的文件异常', 'http://192.168.1.18/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1497949369&PHPSESSION=a19gtk6vh1vuph38jco2h97bl6&id=WU_FILE_0&name=20170607-153855.jpg&type=image%2Fjpeg&lastModifiedDate=Wed+Jun+07+2017+15%3A38%3A57+GMT%2B0800+%28%E4%B8%AD%E5%9B%BD', 1497949374, 'www', 'upload', 'save', 0, 0, '192.168.1.18', 'http://192.168.1.18/phpok/index.php?c=post&id=book&_noCache=0.1497949366', 0, 'a19gtk6vh1vuph38jco2h97bl6'),
-(189, '上传的文件异常', 'http://192.168.1.18/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1497949382&PHPSESSION=8vr8kfiahstp0csaavupcktl87&id=WU_FILE_0&name=auto_7375.jpg&type=image%2Fjpeg&lastModifiedDate=Tue+Jun+20+2017+16%3A57%3A07+GMT%2B0800+%28CST%29&size=213643&chunk', 1497949448, 'www', 'upload', 'save', 0, 0, '192.168.1.100', 'http://192.168.1.18/phpok/index.php?c=post&id=book&_noCache=0.1497949265', 0, '8vr8kfiahstp0csaavupcktl87'),
-(201, '附件信息获取失败，可能已经删除，请检查', 'http://localhost/phpok/admin.php?c=upload&f=thumbshow&id=725&_=1498028216865', 1498028217, 'admin', 'upload', 'thumbshow', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1369&_noCache=0.1498028213', 0, 'b4dj1ttaob02jjcocv2n8mrqu5'),
-(198, '删除日志#197', 'http://localhost/phpok/admin.php?c=log&f=delete&id=197&_=1498023294930', 1498023296, 'admin', 'log', 'delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=log&menu_id=87&_noCache=0.48924106712903537', 0, 'b4dj1ttaob02jjcocv2n8mrqu5'),
-(199, '会员登录成功', 'http://localhost/phpok/index.php?c=login&f=ok&_noCache=0.1498025598', 1498025606, 'www', 'login', 'ok', 0, 23, '::1', 'http://localhost/phpok/index.php?c=login&_back=http%3A%2F%2Flocalhost%2Fphpok%2Findex.php%3Fid%3Dbbs%26cate%3Dqingganyizhan&_noCache=0.1498025594', 0, 'b4dj1ttaob02jjcocv2n8mrqu5'),
-(193, '上传的文件异常', 'http://192.168.1.18/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1498015279&PHPSESSION=ogdtvk2l0rkmli5vu8v3ich2s4&id=WU_FILE_0&name=20170607-153855.jpg&type=image%2Fjpeg&lastModifiedDate=Wed+Jun+07+2017+15%3A38%3A57+GMT%2B0800&size=311630&chunks=4', 1498015283, 'www', 'upload', 'save', 0, 0, '192.168.1.18', 'http://192.168.1.18/phpok/index.php?id=book', 0, 'ogdtvk2l0rkmli5vu8v3ich2s4'),
-(194, '上传的文件异常', 'http://192.168.1.18/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1498015697&PHPSESSION=ogdtvk2l0rkmli5vu8v3ich2s4&id=WU_FILE_0&name=20170607-153855.jpg&type=image%2Fjpeg&lastModifiedDate=Wed+Jun+07+2017+15%3A38%3A57+GMT%2B0800&size=311630&chunks=4', 1498015702, 'www', 'upload', 'save', 0, 0, '192.168.1.18', 'http://192.168.1.18/phpok/index.php?id=book', 0, 'ogdtvk2l0rkmli5vu8v3ich2s4'),
-(195, '上传的文件异常', 'http://192.168.1.18/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1498017363&PHPSESSION=6o207up8utr8a5ojs7hgvvk867&id=WU_FILE_0&name=IMG_0133.JPG&type=image%2Fjpeg&lastModifiedDate=2017%2F6%2F21+%E4%B8%8A%E5%8D%8811%3A56%3A09&size=291141&chunks=3', 1498017373, 'www', 'upload', 'save', 0, 0, '192.168.1.138', 'http://192.168.1.18/phpok/index.php?c=post&id=book&_noCache=0.1498013295', 0, '6o207up8utr8a5ojs7hgvvk867'),
-(200, '上传的文件异常', 'http://localhost/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1498025975&PHPSESSION=b4dj1ttaob02jjcocv2n8mrqu5&id=WU_FILE_0&name=20170607-153855.jpg&type=image%2Fjpeg&lastModifiedDate=Wed+Jun+07+2017+15%3A38%3A57+GMT%2B0800&size=158667&chunks=2', 1498025994, 'www', 'upload', 'save', 0, 23, '::1', 'http://localhost/phpok/index.php?c=post&cateid=204&id=bbs&_noCache=0.1498025627', 0, 'b4dj1ttaob02jjcocv2n8mrqu5'),
-(210, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498098871, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1498098866', 0, '8p6lo26m25o28hfipqjs8ld9p0'),
-(211, '未指定要添加的字段ID', 'http://localhost/phpok/admin.php?c=module&f=field_add&id=40&_=1498098875454', 1498098876, 'admin', 'module', 'field_add', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=40&_noCache=0.1498098873', 0, '8p6lo26m25o28hfipqjs8ld9p0'),
-(212, '字段添加成功', 'http://localhost/phpok/admin.php?c=module&f=field_add&id=40&fid=copyright&_=1498099024114', 1498099025, 'admin', 'module', 'field_add', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=40&_noCache=0.1498098873', 0, '8p6lo26m25o28hfipqjs8ld9p0'),
-(213, '删除成功', 'http://localhost/phpok/admin.php?c=module&f=field_delete&id=335&_=1498099026187', 1498099029, 'admin', 'module', 'field_delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=40&_noCache=0.1498098873', 0, '8p6lo26m25o28hfipqjs8ld9p0'),
-(214, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498101101, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1498101096', 0, 'otboq735eic9e0lja6nqe5pc77'),
-(215, '<span class="red">采集器</span> 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1498101110', 1498101201, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=collection', 0, 'otboq735eic9e0lja6nqe5pc77'),
-(216, '<span class="red">采集器</span> 设置成功', 'http://localhost/phpok/admin.php?c=plugin&f=save&_noCache=0.1498101375', 1498101379, 'admin', 'plugin', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=config&id=collection', 0, 'otboq735eic9e0lja6nqe5pc77'),
-(217, '插件卸载成功', 'http://localhost/phpok/admin.php?c=plugin&f=uninstall&id=collection&_=1498101588737', 1498101596, 'admin', 'plugin', 'uninstall', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&menu_id=16&_noCache=0.31750129004588246', 0, 'otboq735eic9e0lja6nqe5pc77'),
-(218, '<span class="red">采集器</span> 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1498101625', 1498101627, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=collection', 0, 'otboq735eic9e0lja6nqe5pc77'),
-(219, '插件卸载成功', 'http://localhost/phpok/admin.php?c=plugin&f=uninstall&id=collection&_=1498101654928', 1498101667, 'admin', 'plugin', 'uninstall', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&menu_id=16&_noCache=0.181260018145861', 0, 'otboq735eic9e0lja6nqe5pc77'),
-(220, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498190626, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1498190618', 0, 'v05pj24ssmqre34a2p9d0hg242'),
-(221, '您当前是最新版本，不需要再升级', 'http://localhost/phpok/admin.php?c=update&f=check&_=1498190627219', 1498190627, 'admin', 'update', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'v05pj24ssmqre34a2p9d0hg242'),
-(222, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498557596, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1498557591', 0, '47vu9n16i6ql3cu7lrq2jio3l7'),
-(223, '主分类不能为空', 'http://localhost/phpok/admin.php?c=list&f=ok&_noCache=0.1498569119', 1498569124, 'admin', 'list', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&pid=45&_noCache=0.1498559573', 0, '47vu9n16i6ql3cu7lrq2jio3l7'),
-(224, '主题删除成功', 'http://localhost/phpok/admin.php?c=list&f=del&id=1855&_=1498569131200', 1498569135, 'admin', 'list', 'del', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=action&id=45&_noCache=0.1498569119&cateid=582', 0, '47vu9n16i6ql3cu7lrq2jio3l7'),
-(225, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498639999, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1498639995', 0, 'oj7kts4hk73octgl1vdht2cqj3'),
-(226, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498705932, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1498705927', 0, 'aovvjo197oi3d9h2rtkhphvks5'),
-(227, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498793371, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1498793366', 0, 'rjsaa8ep89vvvsn07hhi08ogt1'),
-(228, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498802384, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1498802330', 0, 'hhcis0h7botmdus2c6k3h649k4'),
-(229, '您当前还可以使用<span style="color:red">231</span>条短信', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&id=1&manageid=balance&_=1498802502150', 1498802514, 'admin', 'gateway', 'extmanage', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=gateway&menu_id=78&_noCache=0.7060075628218959', 0, 'hhcis0h7botmdus2c6k3h649k4'),
-(230, '参数配置不完整', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&id=3&manageid=send', 1498802543, 'admin', 'gateway', 'extmanage', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'hhcis0h7botmdus2c6k3h649k4'),
-(231, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498810589, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1498810584', 0, 'fqq7vi13iln4jscq8ciaoh8i82'),
-(232, '管理员<span class="red">admin</span>成功退出', 'http://localhost/phpok/admin.php?c=logout', 1498810613, 'admin', 'logout', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'fqq7vi13iln4jscq8ciaoh8i82'),
-(233, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498813233, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.29849', 0, 'hhcis0h7botmdus2c6k3h649k4'),
-(234, '风格文件信息不存在', 'http://localhost/phpok/admin.php?c=tpl&f=open&id=tpl_index', 1498813240, 'admin', 'tpl', 'open', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'hhcis0h7botmdus2c6k3h649k4'),
-(235, '未配置模板 news_list，请配置相应的模板', 'http://localhost/phpok/index.php?id=news', 1498822283, 'www', 'project', 'index', 0, 0, '::1', '', 0, 'hhcis0h7botmdus2c6k3h649k4'),
-(236, '未配置模板 news_list，请配置相应的模板', 'http://localhost/phpok/index.php?id=news', 1498822366, 'www', 'project', 'index', 0, 0, '::1', '', 0, 'hhcis0h7botmdus2c6k3h649k4'),
-(237, 'ok', 'http://localhost/phpok/admin.php?c=inp&type=user&_=1498823222130', 1498823222, 'admin', 'inp', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1423&_noCache=0.1498823219', 0, 'hhcis0h7botmdus2c6k3h649k4'),
-(238, '管理员<span class="red">admin</span>成功退出', 'http://localhost/phpok/admin.php?c=logout', 1498824244, 'admin', 'logout', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'hhcis0h7botmdus2c6k3h649k4'),
-(239, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498874367, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1498874363', 0, 's7iblci1k0jccn9svvr90unlv1'),
-(240, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1498961560, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1498961555', 0, '69a8p0rt8kuk90l87au5ht1q31'),
-(241, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1499075650, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1499075643', 0, 'kbbf1pjipkt75cdt3p5c1iv6c1'),
-(242, '您当前是最新版本，不需要再升级', 'http://localhost/phpok/admin.php?c=update&f=check&_=1499075650513', 1499075650, 'admin', 'update', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'kbbf1pjipkt75cdt3p5c1iv6c1'),
-(243, 'ok', 'http://localhost/phpok/admin.php?c=inp&type=user&_=1499075657517', 1499075657, 'admin', 'inp', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1423&_noCache=0.1499075654', 0, 'kbbf1pjipkt75cdt3p5c1iv6c1'),
-(244, 'ok', 'http://localhost/phpok/admin.php?c=inp&type=user&_=1499075939405', 1499075939, 'admin', 'inp', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1423&_noCache=0.1499075654', 0, 'kbbf1pjipkt75cdt3p5c1iv6c1'),
-(245, 'ok', 'http://localhost/phpok/admin.php?c=inp&type=user&_=1499076052241', 1499076052, 'admin', 'inp', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1423&_noCache=0.1499075654', 0, 'kbbf1pjipkt75cdt3p5c1iv6c1'),
-(246, 'ok', 'http://localhost/phpok/admin.php?c=inp&type=user&_=1499076146208', 1499076146, 'admin', 'inp', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1423&_noCache=0.1499075654', 0, 'kbbf1pjipkt75cdt3p5c1iv6c1'),
-(247, 'ok', 'http://localhost/phpok/admin.php?c=inp&type=user&_=1499076660886', 1499076661, 'admin', 'inp', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1423&_noCache=0.1499075654', 0, 'kbbf1pjipkt75cdt3p5c1iv6c1'),
-(248, 'ok', 'http://localhost/phpok/admin.php?c=inp&type=user&_=1499080081705', 1499080081, 'admin', 'inp', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1423&_noCache=0.1499080079', 0, 'kbbf1pjipkt75cdt3p5c1iv6c1'),
-(249, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1499138198, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1499138194', 0, 'f96d8qslj2oa0gdnec50n80bl0'),
-(250, '网站信息更新完成', 'http://localhost/phpok/admin.php?c=all&f=save&_noCache=0.1499138199', 1499138207, 'admin', 'all', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=all&f=setting&_noCache=0.2530821432409128', 0, 'f96d8qslj2oa0gdnec50n80bl0'),
-(251, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1499246107, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1499246102', 0, 'l6h3bp8rfkcuvb9jsdjq7f1en6'),
-(252, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1499340829, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1499340824', 0, 'ggt8e5onhsesvgfnta43bfep62'),
-(253, '<span class="red">微信</span> 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1499341030', 1499341723, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=weixin', 0, 'ggt8e5onhsesvgfnta43bfep62'),
-(254, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1499744149, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1499744144', 0, 'goehalfeufsrcfupiabcdpa9v6'),
-(255, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1499938099, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1499937806', 0, 'hhe55akv6jjl15vam5mq6ust42'),
-(256, '<span class="red">测试插件</span> 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1499941460', 1499941463, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=demo', 0, 'hhe55akv6jjl15vam5mq6ust42'),
-(257, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1500016408, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1500016402', 0, 'f2h0rtb02n6vqu5eckalmb1dd7'),
-(258, '您当前是最新版本，不需要再升级', 'http://localhost/phpok/admin.php?c=update&f=check&_=1500016409079', 1500016409, 'admin', 'update', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'f2h0rtb02n6vqu5eckalmb1dd7'),
-(259, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1500369033, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1500369027', 0, 'vtvj1fofpqkfje6l9srhebgov3'),
-(260, '主分类不能为空', 'http://localhost/phpok/admin.php?c=list&f=ok&_noCache=0.1500369040', 1500369047, 'admin', 'list', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&pid=45&_noCache=0.1500369038', 0, 'vtvj1fofpqkfje6l9srhebgov3'),
-(261, '主分类不能为空', 'http://localhost/phpok/admin.php?c=list&f=ok&_noCache=0.1500369279', 1500369297, 'admin', 'list', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&pid=45&_noCache=0.1500369277', 0, 'vtvj1fofpqkfje6l9srhebgov3'),
-(262, '主题删除成功', 'http://localhost/phpok/admin.php?c=list&f=del&id=1857&_=1500369308221', 1500369311, 'admin', 'list', 'del', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=action&id=45&_noCache=0.1500369279&cateid=591', 0, 'vtvj1fofpqkfje6l9srhebgov3'),
-(263, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1500434801, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1500434796', 0, '3kclnuv0umtc21fr9338gi1663'),
-(264, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1500463268, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1500463263', 0, 'bn5kuorqven8q94550ismfp546'),
-(265, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1500519284, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1500519281', 0, '11lpeofi3mue43hp63gkmqti44'),
-(266, '添加成功', 'http://localhost/phpok/admin.php?c=payment&f=save&_noCache=0.1500519304', 1500519319, 'admin', 'payment', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=payment&f=set&gid=14&code=alipay', 0, '11lpeofi3mue43hp63gkmqti44'),
-(267, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1500621196, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1500621191', 0, 'ql1a7e4fr1dsll71i0k1p21865'),
-(268, '验证码填写不正确', 'http://localhost/phpok/api.php?c=login&f=save&_noCache=0.3730883538114469', 1500895210, 'api', 'login', 'save', 0, 0, '::1', 'http://localhost/phpok/index.php?c=login&_noCache=0.1500895204', 0, 'm1np9o0h5lt1hco791k4ftn0s5'),
-(269, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.4458452919023397&_=1500895240720', 1500895242, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'm1np9o0h5lt1hco791k4ftn0s5'),
-(270, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.6330153031957997&_=1500895240723', 1500895244, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'm1np9o0h5lt1hco791k4ftn0s5'),
-(271, '您的购物车里没有任何产品', 'http://localhost/phpok/index.php?c=cart&f=freight&_=1500895248584', 1500895248, 'www', 'cart', 'freight', 0, 23, '::1', 'http://localhost/phpok/index.php?c=cart&f=checkout&_noCache=0.1500895246', 0, 'm1np9o0h5lt1hco791k4ftn0s5'),
-(272, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1500900217, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1500900212', 0, 'k7063mogjlamg15j60tgdbg016'),
-(273, '检测异常，请登录官网查询补丁更新', 'http://localhost/phpok/admin.php?c=update&f=check&_=1500900217474', 1500900217, 'admin', 'update', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'k7063mogjlamg15j60tgdbg016'),
-(274, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1500945562, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1500945558', 0, 'l8rjvib0spqt148naibahejok3'),
-(275, '未指定插件ID', 'http://localhost/phpok/admin.php?c=plugin&f=setting&_noCache=0.1500946260', 1500946305, 'admin', 'plugin', 'setting', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=setting&id=weixin', 0, 'l8rjvib0spqt148naibahejok3'),
-(276, '未指定要显示的位置', 'http://localhost/phpok/admin.php?c=plugin&f=icon_save', 1500966508, 'admin', 'plugin', 'icon_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=icon&id=demo', 0, 'l8rjvib0spqt148naibahejok3'),
-(277, '数据已存在记录，请重新设置一个', 'http://localhost/phpok/admin.php?c=plugin&f=icon_save', 1500967140, 'admin', 'plugin', 'icon_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=icon&id=demo&vid=b7030572255e048164583a55ef4f2717', 0, 'l8rjvib0spqt148naibahejok3'),
-(278, '未指定要显示的位置', 'http://localhost/phpok/admin.php?c=plugin&f=icon_save', 1500967909, 'admin', 'plugin', 'icon_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=icon&id=demo', 0, 'l8rjvib0spqt148naibahejok3'),
-(279, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1500976892, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1500976885', 0, '3knsr2447peetjho7jbv8n52g3'),
-(280, '<span class="red">购物需要会员登录插件</span> 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1500976968', 1500976970, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=useraddcart', 0, '3knsr2447peetjho7jbv8n52g3'),
-(281, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.9156200395737912&_=1500977248215', 1500977257, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, '3knsr2447peetjho7jbv8n52g3'),
-(282, '请先登录或注册', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.9862022412117819&qty=1&ext=48%2C50&_=1500977248216', 1500977260, 'api', 'cart', 'add', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, '3knsr2447peetjho7jbv8n52g3'),
-(283, '请先登录', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1500977247', 1500977264, 'www', 'cart', 'index', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, '3knsr2447peetjho7jbv8n52g3'),
-(284, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1501221297, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1501221292', 0, 'hojnciva4kl6lrv4l7ue634q54'),
-(285, 'code:', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&update=2&type=ajax&id=12&manageid=send&tplcode=37&_=1501222070660', 1501222079, 'admin', 'gateway', 'extmanage', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&id=12&manageid=send', 0, 'hojnciva4kl6lrv4l7ue634q54'),
-(286, '短信发送成功', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&update=1&type=ajax&id=12&manageid=send', 1501222083, 'admin', 'gateway', 'extmanage', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&id=12&manageid=send', 0, 'hojnciva4kl6lrv4l7ue634q54'),
-(287, '请传递正确的附件ID', 'http://localhost/phpok/admin.php?c=upload&f=thumbshow&id=Array&_=1501230427996', 1501230428, 'admin', 'upload', 'thumbshow', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&pid=43&_noCache=0.1501230410', 0, 'hojnciva4kl6lrv4l7ue634q54'),
-(288, '内容的主题不能为空', 'http://localhost/phpok/admin.php?c=list&f=ok&_noCache=0.1501230427', 1501230433, 'admin', 'list', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&pid=43&_noCache=0.1501230410', 0, 'hojnciva4kl6lrv4l7ue634q54'),
-(289, '主分类不能为空', 'http://localhost/phpok/admin.php?c=list&f=ok&_noCache=0.1501230427', 1501230438, 'admin', 'list', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&pid=43&_noCache=0.1501230410', 0, 'hojnciva4kl6lrv4l7ue634q54'),
-(290, 'ok', 'http://localhost/phpok/admin.php?c=inp&type=user&_=1501230446715', 1501230446, 'admin', 'inp', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1858&_noCache=0.1501230443', 0, 'hojnciva4kl6lrv4l7ue634q54'),
-(291, 'ok', 'http://localhost/phpok/admin.php?c=inp&type=user&_=1501230517029', 1501230517, 'admin', 'inp', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1858&_noCache=0.1501230443', 0, 'hojnciva4kl6lrv4l7ue634q54'),
-(292, 'ok', 'http://localhost/phpok/admin.php?c=inp&type=user&_=1501230582958', 1501230583, 'admin', 'inp', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1858&_noCache=0.1501230443', 0, 'hojnciva4kl6lrv4l7ue634q54'),
-(293, 'ok', 'http://localhost/phpok/admin.php?c=inp&type=user&_=1501230655293', 1501230655, 'admin', 'inp', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1858&_noCache=0.1501230443', 0, 'hojnciva4kl6lrv4l7ue634q54'),
-(294, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1501290294, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1501290289', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(295, '会员登录成功', 'http://localhost/phpok/index.php?c=login&f=ok&_noCache=0.1501317826', 1501317831, 'www', 'login', 'ok', 0, 23, '::1', 'http://localhost/phpok/index.php?c=login&_noCache=0.1501317817', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(296, '4088.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=4088&_noCache=0.012757182705927295&_=1501317836827', 1501317842, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(297, '产品信息不存在或未启用', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.6667317016410909&qty=1&ext=49%2C51&_=1501317836828', 1501317844, 'api', 'cart', 'add', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(298, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.6111170029566674&_=1501317887799', 1501317888, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(299, '扩展全局内容设置成功', 'http://localhost/phpok/admin.php?c=all&f=ext_save&_noCache=0.1501317907', 1501317918, 'admin', 'all', 'ext_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=all&f=set&id=37&_noCache=0.8289161349216162', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(300, '4088.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=4088&_noCache=0.6818479589377511&_=1501317930210', 1501318188, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(301, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.8217348473301977&_=1501317930211', 1501318190, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(302, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.06366248868185365&_=1501317930217', 1501318358, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(303, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.15835789200714845&_=1501318371516', 1501318371, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(304, '4088.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=4088&_noCache=0.13625621466125393&_=1501318387868', 1501318391, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(305, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.33697380692452505&_=1501318460140', 1501318460, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(306, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.14735249811426676&_=1501318460141', 1501318466, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(307, '4888.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=4888&_noCache=0.6820478294669843&_=1501318460142', 1501318468, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(308, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.1647440853772424&_=1501318528364', 1501318528, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(309, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.6187325900268738&_=1501318528365', 1501318533, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(310, 'SELECT a.title,v.title content,v.val FROM qinggan_list_attr l LEFT JOIN qinggan_attr a ON(l.aid=a.id AND a.site_id=1) LEFT JOIN qinggan_attr_values v ON(l.vid=v.id AND l.aid=v.aid) WHERE l.tid=''1763'' AND l.id IN(Array)', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.3418444259046508&qty=1&ext=48%2C50&_=1501318528368', 1501318618, 'api', 'cart', 'add', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(311, 'Array', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.7648681801584887&qty=1&ext=48%2C50&_=1501318528369', 1501318658, 'api', 'cart', 'add', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(312, 'SELECT a.title,v.title content,v.val FROM qinggan_list_attr l LEFT JOIN qinggan_attr a ON(l.aid=a.id AND a.site_id=1) LEFT JOIN qinggan_attr_values v ON(l.vid=v.id AND l.aid=v.aid) WHERE l.tid=''1763'' AND l.id IN(Array)', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.5514904557693355&qty=1&ext=48%2C50&_=1501318528370', 1501318689, 'api', 'cart', 'add', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(313, 'Array', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.8096669884842937&qty=1&ext=48%2C50&_=1501318528372', 1501318741, 'api', 'cart', 'add', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(314, 'SELECT a.title,v.title content,v.val FROM qinggan_list_attr l LEFT JOIN qinggan_attr a ON(l.aid=a.id AND a.site_id=1) LEFT JOIN qinggan_attr_values v ON(l.vid=v.id AND l.aid=v.aid) WHERE l.tid=''1763'' AND l.id IN(Array)', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.4918756292634423&qty=1&ext=48%2C50&_=1501318528373', 1501318772, 'api', 'cart', 'add', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(315, 'SELECT a.title,v.title content,v.val FROM qinggan_list_attr l LEFT JOIN qinggan_attr a ON(l.aid=a.id AND a.site_id=1) LEFT JOIN qinggan_attr_values v ON(l.vid=v.id AND l.aid=v.aid) WHERE l.tid=''1763'' AND l.id IN(Array)', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.7144607622730599&qty=1&ext=48%2C50&_=1501318528374', 1501318866, 'api', 'cart', 'add', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(316, 'SELECT a.title,v.title content,v.val FROM qinggan_list_attr l LEFT JOIN qinggan_attr a ON(l.aid=a.id AND a.site_id=1) LEFT JOIN qinggan_attr_values v ON(l.vid=v.id AND l.aid=v.aid) WHERE l.tid=''1763'' AND l.id IN(Array)', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.9098049348590589&qty=1&ext=48%2C50&_=1501318528376', 1501318952, 'api', 'cart', 'add', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(317, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.6027692328477317&_=1501319146311', 1501319149, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(318, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.3441517845206853&_=1501319146315', 1501319184, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(319, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.668982606626511&_=1501320773411', 1501320773, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1501319145', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(320, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.45109252202473826&_=1501320776260', 1501320776, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1501319145', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(321, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.04846194942251203&_=1501320886186', 1501320886, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1501319145', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(322, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.15217983838372828&_=1501320979658', 1501320979, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1501319145', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(323, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.4087241192326161&_=1501320999683', 1501321006, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(324, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.5376001187883486&_=1501321474431', 1501321476, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(325, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.8578001294121586&_=1501321474434', 1501321477, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(326, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.47291521566923467&_=1501321474436', 1501321491, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(327, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.6109891927980777&_=1501322170312', 1501322170, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(328, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.4027539907552672&_=1501322170313', 1501322226, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(329, 'thumb///', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.6491400732328886&qty=1&ext=49%2C50&_=1501322170315', 1501322257, 'api', 'cart', 'add', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(330, '<pre>Array\n(\n    [id] => 1025\n    [cate_id] => 1\n    [folder] => res/201603/23/\n    [name] => 5b8b8f3f6cfd32b9.jpg\n    [ext] => jpg\n    [filename] => res/201603/23/5b8b8f3f6cfd32b9.jpg\n    [ico] => res/201603/23/_1025.jpg\n    [addtime] => 1458669513\n    [', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.6491400732328886&qty=1&ext=49%2C50&_=1501322170315', 1501322257, 'api', 'cart', 'add', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 1, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(331, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.9985520645584611&_=1501322170316', 1501322258, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(332, '4888.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=4888&_noCache=0.7336953772325637&_=1501322170317', 1501322289, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(333, '<pre>Array\n(\n    [id] => 1025\n    [cate_id] => 1\n    [folder] => res/201603/23/\n    [name] => 5b8b8f3f6cfd32b9.jpg\n    [ext] => jpg\n    [filename] => res/201603/23/5b8b8f3f6cfd32b9.jpg\n    [ico] => res/201603/23/_1025.jpg\n    [addtime] => 1458669513\n    [', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.4328351252038489&qty=1&ext=49%2C51&_=1501322170318', 1501322291, 'api', 'cart', 'add', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 1, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(334, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.7935332235544391&_=1501322170319', 1501322291, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(335, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.3617830037501715&_=1501322360165', 1501322360, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1501322170', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(336, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.8338907894851544&_=1501322170322', 1501322363, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(337, '4888.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=4888&_noCache=0.5108825307247056&_=1501322371556', 1501322373, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(338, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.017257126500816233&_=1501322371557', 1501322375, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(339, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.5134263267473285&_=1501322429922', 1501322430, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(340, '4088.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=4088&_noCache=0.5594768525330349&_=1501322429924', 1501322432, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(341, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.27330369032896906&_=1501322449140', 1501322522, 'api', 'cart', 'price_format', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(342, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.21817290471148976&_=1501322449143', 1501322524, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(343, '4', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.2254425145385257&_=1501322449146', 1501322533, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(344, '4', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.26758848253127365&_=1501322742639', 1501322742, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=cart&f=checkout&_noCache=0.1501322534', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(345, '4', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.07115898182602565&_=1501322876119', 1501322876, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=payment&id=2&_noCache=0.1501322742', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(346, '成功创建支付链，请稍候，即将为您跳转支付页面…', 'http://localhost/phpok/index.php?c=payment&f=create&type=recharge&_noCache=0.1501322875', 1501322884, 'www', 'payment', 'create', 0, 23, '::1', 'http://localhost/phpok/index.php?c=payment&id=2&_noCache=0.1501322742', 0, 'qhhdeqinrf46bqhjgc9kdpr206'),
-(347, '4', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.2709009804445268&_=1501573683178', 1501573683, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/', 0, 'jajc3a8cv45rji1acb9defb622'),
-(348, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1501641896, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1501641890', 0, '75428itaoprgqqpgsen8kn8hm3'),
-(349, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1501753204, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1501753199', 0, 's5u8h24bl0m4q9oof1spavpfc1'),
-(350, '类文件zip.php不存在', 'http://localhost/phpok/admin.php?c=opt&f=export&id=14&pid=true', 1501767879, 'admin', 'opt', 'export', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&_noCache=0.1501767181', 0, 's5u8h24bl0m4q9oof1spavpfc1'),
-(351, '内容不能为空', 'http://localhost/phpok/admin.php?c=opt&f=import', 1501769729, 'admin', 'opt', 'import', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 's5u8h24bl0m4q9oof1spavpfc1');
-INSERT INTO `qinggan_log` (`id`, `note`, `url`, `dateline`, `app_id`, `ctrl`, `func`, `admin_id`, `user_id`, `ip`, `referer`, `mask`, `session_id`) VALUES
-(352, 'data/cache/843e2f85ab932f40.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501769784&PHPSESSION=s5u8h24bl0m4q9oof1spavpfc1&id=WU_FILE_0&name=%E5%BE%AE%E4%BF%A1%E8%8F%9C%E5%8D%95%E7%B1%BB%E5%9E%8B.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Thu+Aug+03+2017+2', 1501769791, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import', 0, 's5u8h24bl0m4q9oof1spavpfc1'),
-(353, 'D:/phpstudy/WWW/phpok/data/cache/1_1501769791/opt_1_14.xml', 'http://localhost/phpok/admin.php?c=opt&f=import_data&zipfile=data%2Fcache%2F843e2f85ab932f40.zip&_=1501769784918', 1501769791, 'admin', 'opt', 'import_data', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import', 0, 's5u8h24bl0m4q9oof1spavpfc1'),
-(354, 'data/cache/928f9d8e30110208.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501771278&PHPSESSION=s5u8h24bl0m4q9oof1spavpfc1&id=WU_FILE_0&name=%E7%9C%81%E5%B8%82%E5%8E%BF%E5%A4%9A%E7%BA%A7%E8%81%94%E5%8A%A8%281%29.zip&type=application%2Fx-zip-compressed&lastModifiedDate=T', 1501771285, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import', 0, 's5u8h24bl0m4q9oof1spavpfc1'),
-(355, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1501814378, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1501814374', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(356, '您当前是最新版本，不需要再升级', 'http://localhost/phpok/admin.php?c=update&f=check&_=1501814379293', 1501814379, 'admin', 'update', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(357, '没有选项内容数据', 'http://localhost/phpok/admin.php?c=opt&f=export&id=12&pid=62&sub=1', 1501814481, 'admin', 'opt', 'export', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=list&group_id=12', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(358, 'data/cache/a0bb49a271d9ee92.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501816115&PHPSESSION=b86bv28no9idcdemb4ifbo1us2&id=WU_FILE_0&name=province.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Fri+Aug+04+2017+11%3A08%3A52+GMT%2B0800&size=525', 1501816143, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import&id=2', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(359, 'data/cache/f8f087958b22c04b.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501816329&PHPSESSION=b86bv28no9idcdemb4ifbo1us2&id=WU_FILE_0&name=province.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Fri+Aug+04+2017+11%3A08%3A52+GMT%2B0800&size=525', 1501816334, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import&id=2', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(360, 'data/cache/640b380bf4b34ee1.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501816545&PHPSESSION=b86bv28no9idcdemb4ifbo1us2&id=WU_FILE_0&name=1.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Fri+Aug+04+2017+11%3A15%3A37+GMT%2B0800&size=360', 1501816550, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import&id=2&pid=115', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(361, 'data/cache/0ec83208f2153a52.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501816570&PHPSESSION=b86bv28no9idcdemb4ifbo1us2&id=WU_FILE_0&name=1.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Fri+Aug+04+2017+11%3A15%3A37+GMT%2B0800&size=360', 1501816577, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import&id=2&pid=115', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(362, 'data/cache/c5ac3cf8e6924f11.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501816634&PHPSESSION=b86bv28no9idcdemb4ifbo1us2&id=WU_FILE_0&name=1.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Fri+Aug+04+2017+11%3A17%3A04+GMT%2B0800&size=387', 1501816641, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import&id=2&pid=115', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(363, 'data/cache/37d0081624dc5bb1.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501816758&PHPSESSION=b86bv28no9idcdemb4ifbo1us2&id=WU_FILE_0&name=2.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Fri+Aug+04+2017+11%3A19%3A03+GMT%2B0800&size=371', 1501816763, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import&id=2&pid=116', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(364, 'data/cache/71a1db0d799ded69.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501822828&PHPSESSION=b86bv28no9idcdemb4ifbo1us2&id=WU_FILE_0&name=pca-new.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Fri+Aug+04+2017+12%3A59%3A00+GMT%2B0800&size=28772', 1501822834, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(365, '导入失败', 'http://localhost/phpok/admin.php?c=opt&f=import_data&zipfile=data%2Fcache%2F71a1db0d799ded69.zip&_=1501822829132', 1501822834, 'admin', 'opt', 'import_data', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(366, 'data/cache/ec26b7cb25def60d.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501822901&PHPSESSION=b86bv28no9idcdemb4ifbo1us2&id=WU_FILE_0&name=pca-new.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Fri+Aug+04+2017+12%3A59%3A00+GMT%2B0800&size=28772', 1501822907, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(367, '导入失败', 'http://localhost/phpok/admin.php?c=opt&f=import_data&zipfile=data%2Fcache%2Fec26b7cb25def60d.zip&_=1501822901735', 1501822907, 'admin', 'opt', 'import_data', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(368, 'data/cache/c66dcfdd39b50af1.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501822938&PHPSESSION=b86bv28no9idcdemb4ifbo1us2&id=WU_FILE_0&name=pca-new.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Fri+Aug+04+2017+12%3A59%3A00+GMT%2B0800&size=28772', 1501822944, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import&id=17', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(369, 'data/cache/64dc5646e19eebce.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501823053&PHPSESSION=b86bv28no9idcdemb4ifbo1us2&id=WU_FILE_0&name=%E7%9C%81%E5%B8%82%E5%8E%BF.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Fri+Aug+04+2017+13%3A03%3A29+GMT%2B0800&size', 1501823058, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(370, 'data/cache/68bbaa840137415b.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1501823103&PHPSESSION=b86bv28no9idcdemb4ifbo1us2&id=WU_FILE_0&name=pca-new.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Fri+Aug+04+2017+13%3A04%3A57+GMT%2B0800&size=28738', 1501823107, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import', 0, 'b86bv28no9idcdemb4ifbo1us2'),
-(371, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1502092046, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1502092040', 0, 'rr9465rc4thk2evci5635duat4'),
-(372, '&lt;span class=&quot;red&quot;&gt;批处理插件&lt;/span&gt; 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1502092113', 1502092116, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=plaction', 0, 'rr9465rc4thk2evci5635duat4'),
-(373, '没有可配置的扩展参数', 'http://localhost/phpok/admin.php?c=plugin&f=extconfig&id=plaction', 1502092161, 'admin', 'plugin', 'extconfig', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'rr9465rc4thk2evci5635duat4'),
-(374, '插件卸载成功', 'http://localhost/phpok/admin.php?c=plugin&f=uninstall&id=plaction&_=1502092183006', 1502092203, 'admin', 'plugin', 'uninstall', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&_noCache=0.1502092125', 0, 'rr9465rc4thk2evci5635duat4'),
-(375, '&lt;span class=&quot;red&quot;&gt;批处理插件&lt;/span&gt; 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1502092207', 1502092208, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=plaction', 0, 'rr9465rc4thk2evci5635duat4'),
-(376, '方法&lt;span class=red&gt;plact&lt;/span&gt; 不存在', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=plaction&exec=plact&pid=87&_noCache=0.4691514423977329', 1502092629, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'rr9465rc4thk2evci5635duat4'),
-(377, '方法&lt;span class=red&gt;plact&lt;/span&gt; 不存在', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=plaction&exec=plact&pid=87&_noCache=0.6348885253791647', 1502092700, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'rr9465rc4thk2evci5635duat4'),
-(378, '方法 &lt;span class=red&gt;plact&lt;/span&gt; 不存在', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=plaction&exec=plact&pid=87&_noCache=0.8529640718545235', 1502092730, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'rr9465rc4thk2evci5635duat4'),
-(379, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1502161185, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1502161180', 0, '4fsaki6a33reqq1a86gidnjla6'),
-(380, 'SELECT count(r.id) FROM qinggan_reply r LEFT JOIN qinggan_list l ON(r.vtype=''title'' AND r.tid=l.id) LEFT JOIN qinggan_project p ON(r.vtype=''project'' AND r.tid=p.id) LEFT JOIN qinggan_cate c ON(r.vtype=''cate'' AND r.tid=c.id) LEFT JOIN qinggan_order o ON(r.', 'http://localhost/phpok/admin.php?c=reply&menu_id=32&_noCache=0.6523791272245211', 1502172126, 'admin', 'reply', 'index', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, '4fsaki6a33reqq1a86gidnjla6'),
-(381, 'OK', 'http://localhost/phpok/admin.php?c=reply&f=status&id=40&_=1502173168379', 1502173173, 'admin', 'reply', 'status', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=reply&menu_id=32&_noCache=0.6523791272245211', 0, '4fsaki6a33reqq1a86gidnjla6'),
-(382, 'data/cache/14ec641e453589bd.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1502180960&PHPSESSION=4fsaki6a33reqq1a86gidnjla6&id=WU_FILE_0&name=%E4%B8%AD%E5%9B%BD%E7%9C%81%E5%B8%82%E5%8E%BF%E4%BF%A1%E6%81%AF.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Tue+Aug+', 1502180968, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import', 0, '4fsaki6a33reqq1a86gidnjla6'),
-(383, '导入失败', 'http://localhost/phpok/admin.php?c=opt&f=import_data&zipfile=data%2Fcache%2F14ec641e453589bd.zip&_=1502180960233', 1502180968, 'admin', 'opt', 'import_data', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=opt&f=import', 0, '4fsaki6a33reqq1a86gidnjla6'),
-(384, '网站信息更新完成', 'http://localhost/phpok/admin.php?c=all&f=save&_noCache=0.1502185643', 1502185655, 'admin', 'all', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=all&f=setting&_noCache=0.8309055793302552', 0, '4fsaki6a33reqq1a86gidnjla6'),
-(385, '管理员&lt;span class=&quot;red&quot;&gt;admin&lt;/span&gt;成功退出', 'http://localhost/phpok/admin.php?c=logout', 1502185663, 'admin', 'logout', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php', 0, '4fsaki6a33reqq1a86gidnjla6'),
-(386, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1502185729, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.99609', 0, '4fsaki6a33reqq1a86gidnjla6'),
-(387, '网站信息更新完成', 'http://localhost/phpok/admin.php?c=all&f=save&_noCache=0.1502185731', 1502185735, 'admin', 'all', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=all&f=setting&_noCache=0.8763010083743749', 0, '4fsaki6a33reqq1a86gidnjla6'),
-(388, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1502251280, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1502251275', 0, 'a8lcbh59ook7r8mv8a07mno6m5'),
-(389, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1502362796, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1502362791', 0, 'khhkfc6bh52msnaaub3na0a1n6'),
-(390, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1502436579, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1502436180', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(391, '&lt;span class=&quot;red&quot;&gt;赞插件&lt;/span&gt; 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1502436914', 1502436958, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=zhan', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(392, '插件卸载成功', 'http://localhost/phpok/admin.php?c=plugin&f=uninstall&id=zhan&_=1502437317441', 1502437319, 'admin', 'plugin', 'uninstall', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&_noCache=0.1502436958', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(393, '&lt;span class=&quot;red&quot;&gt;投票插件&lt;/span&gt; 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1502437797', 1502437800, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=vote', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(394, '插件卸载成功', 'http://localhost/phpok/admin.php?c=plugin&f=uninstall&id=vote&_=1502437810687', 1502437833, 'admin', 'plugin', 'uninstall', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&_noCache=0.1502437809', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(395, '1', 'http://localhost/phpok/api.php?c=plugin&f=index&id=vote&exec=plus&tid=1371&_noCache=0.619215970529749&_=1502442485730', 1502442498, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1371', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(396, '您已经投票过', 'http://localhost/phpok/api.php?c=plugin&f=index&id=vote&exec=plus&tid=1371&_noCache=0.852539014871045&_=1502442485731', 1502442502, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1371', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(397, '1', 'http://localhost/phpok/api.php?c=plugin&f=index&id=vote&exec=plus&tid=1423&_noCache=0.6699013890773103&_=1502442971384', 1502442974, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1423', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(398, '您已经投票过', 'http://localhost/phpok/api.php?c=plugin&f=index&id=vote&exec=plus&tid=1371&_noCache=0.005739860661884477&_=1502443026563', 1502443028, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1371', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(399, '您已经投票过', 'http://localhost/phpok/api.php?c=plugin&f=index&id=vote&exec=plus&tid=1371&_noCache=0.38525705554681355&_=1502443105932', 1502443108, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1371', 0, 'i5toohn1tkhjn1v3urretu2510'),
-(400, '方法 &lt;span class=red&gt;votelist&lt;/span&gt; 不存在', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=vote&exec=votelist&tid=1423&_noCache=0.5399146522978152', 1502445088, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(401, '您已经投票过', 'http://localhost/phpok/api.php?c=plugin&f=index&id=vote&exec=plus&tid=1371&_noCache=0.8634848524816334&_=1502443114949', 1502446114, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1371', 0, '175vdr2ndi9p7old8gi5vip1o0'),
-(402, '&lt;span class=&quot;red&quot;&gt;PDF订单生成&lt;/span&gt; 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1502450081', 1502450084, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=ordertopdf', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(403, '1', 'http://localhost/phpok/admin.php?c=order&f=express_check&id=28&_=1502450144587', 1502455674, 'admin', 'order', 'express_check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=order&menu_id=34&_noCache=0.5705550649977486', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(404, '该订单未设置收货地址，请先设置', 'http://localhost/phpok/admin.php?c=order&f=express&id=28', 1502455674, 'admin', 'order', 'express', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(405, 'data/cache/1502459365.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.23007554047389134', 1502459365, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.8055587253883433', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(406, 'data/cache/1502459379.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.360869071541864', 1502459379, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.8055587253883433', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(407, 'data/cache/1502459484.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.6462674068599815', 1502459484, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.8055587253883433', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(408, 'data/cache/1502459694.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.98733266055197', 1502459694, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.5801007113293446', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(409, 'data/cache/1502459721.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.4803712899294663', 1502459721, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.5801007113293446', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(410, 'data/cache/1502459758.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.9090282737603802', 1502459758, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.6233039145712808', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(411, 'data/cache/1502459907.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.6087368221236374', 1502459907, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.5691416024806132', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(412, 'data/cache/1502461029.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.21209471453904405', 1502461029, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.649943726574655', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(413, 'data/cache/1502461078.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.14419837204297203', 1502461078, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.6226889455901732', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(414, 'data/cache/1502461102.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.5669047055795052', 1502461102, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.6226889455901732', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(415, 'data/cache/1502461314.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.025688744545009023', 1502461314, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.6226889455901732', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(416, 'data/cache/1502461363.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.09064260215713638', 1502461363, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.6226889455901732', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(417, 'data/cache/1502461704.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.33737281354740667', 1502461704, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.6226889455901732', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(418, 'data/cache/1502461776.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.72534781289814', 1502461776, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.6226889455901732', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(419, 'data/cache/1502461872.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.2031218101445641', 1502461872, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.6226889455901732', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(420, 'data/cache/1502461942.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.4898386208106832', 1502461942, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.6226889455901732', 0, 'hrmap3sh0tbtdahktd5ccct7e1'),
-(421, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1502501796, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1502501791', 0, 'mt6t2aopgmmqnjalaovd2gv373'),
-(422, '网站信息更新完成', 'http://localhost/phpok/admin.php?c=all&f=save&_noCache=0.1502529097', 1502529100, 'admin', 'all', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=all&f=setting&_noCache=0.5371778546379846', 0, 'mt6t2aopgmmqnjalaovd2gv373'),
-(423, '网站信息更新完成', 'http://localhost/phpok/admin.php?c=all&f=save&_noCache=0.1502529101', 1502529453, 'admin', 'all', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=all&f=setting&_noCache=0.1502529100', 0, 'mt6t2aopgmmqnjalaovd2gv373'),
-(424, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1502590014, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1502590009', 0, 's81suhvmq7mi1gh0ne6enrh706'),
-(425, 'OK', 'http://localhost/phpok/admin.php?c=reply&f=status&id=44&_=1502590021123', 1502590023, 'admin', 'reply', 'status', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=reply&menu_id=32&_noCache=0.6972128829242278', 0, 's81suhvmq7mi1gh0ne6enrh706'),
-(426, 'OK', 'http://localhost/phpok/admin.php?c=reply&f=status&id=44&_=1502593103154', 1502593105, 'admin', 'reply', 'status', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=reply&menu_id=32&_noCache=0.3093026448100059', 0, 's81suhvmq7mi1gh0ne6enrh706'),
-(427, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1502681269, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1502681262', 0, 'laii4lfbe20ktltrotb9ld0ts5'),
-(428, '您当前是最新版本，不需要再升级', 'http://localhost/phpok/admin.php?c=update&f=check&_=1502681270223', 1502681270, 'admin', 'update', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'laii4lfbe20ktltrotb9ld0ts5'),
-(429, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1502764765, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1502764761', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(430, '字段添加成功', 'http://localhost/phpok/admin.php?c=module&f=field_add&id=85&fid=address&_=1502765045750', 1502765047, 'admin', 'module', 'field_add', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=85&_noCache=0.1502765042', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(431, '标识串不能为空', 'http://localhost/phpok/admin.php?c=project&f=save&_noCache=0.1502765083', 1502765116, 'admin', 'project', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=project&f=set&_noCache=0.1502765082', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(432, '无分类', 'http://localhost/phpok/admin.php?c=call&f=cate_list&id=393&_=1502765217137', 1502765236, 'admin', 'call', 'cate_list', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=call&f=set&_noCache=0.1502765214', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(433, '数据调用中心配置成功', 'http://localhost/phpok/admin.php?c=call&f=save&_noCache=0.1502765216', 1502765242, 'admin', 'call', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=call&f=set&_noCache=0.1502765214', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(434, '删除成功', 'http://localhost/phpok/admin.php?c=module&f=field_delete&id=292&_=1502769278327', 1502769281, 'admin', 'module', 'field_delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=24&_noCache=0.1502769251', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(435, '&lt;div style=&quot;margin-bottom:5px;&quot;&gt;\n&lt;table cellpadding=&quot;5&quot; cellspacing=&quot;1&quot; style=&quot;border:1px solid #ccc;&quot;&gt;\n&lt;tr&gt;\n	&lt;th height=&quot;30px&quot; colspan=&quot;6&quot; class=&quot;lft&quot; style=&quot;', 'http://localhost/phpok/admin.php?c=list&f=options_html&pid=45&_=1502769288826', 1502769370, 'admin', 'list', 'options_html', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&pid=45&_noCache=0.1502768974', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(436, 'data/cache/1502769974.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.6526720115149554', 1502769974, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.7251982406017304', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(437, 'data/cache/1502773764.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.0028319426613961918', 1502773764, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.8736751124582695', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(438, 'data/cache/1502773794.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.19951416416380352', 1502773794, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.8736751124582695', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(439, 'data/cache/1502773830.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.375229876538431', 1502773830, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.8736751124582695', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(440, 'data/cache/1502773872.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.9288453224440236', 1502773872, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.8736751124582695', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(441, 'data/cache/1502773900.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.9216839460804217', 1502773900, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.8736751124582695', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(442, 'data/cache/1502774024.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.004712747006786255', 1502774024, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.3735087248384332', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(443, 'data/cache/1502774106.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.44006743854918273', 1502774106, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.3735087248384332', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(444, 'data/cache/1502777559.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.7716579106318658', 1502777559, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.08319646744626064', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(445, 'data/cache/1502779468.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.7031029429925225', 1502779468, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.35184052160286894', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(446, 'data/cache/1502779704.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.45701571837009436', 1502779704, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.11547311375446956', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(447, 'data/cache/1502780424.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.7266505654796521', 1502780424, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.11547311375446956', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(448, 'data/cache/1502780481.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.15270765735224923', 1502780481, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.6875354620653789', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(449, 'data/cache/1502780622.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.9418836114122066', 1502780622, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.5082977883199133', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(450, 'data/cache/1502782162.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.7343132097059594', 1502782162, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.7872830595658838', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(451, 'data/cache/1502782211.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.7062675079517658', 1502782211, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.7872830595658838', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(452, 'data/cache/1502782726.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.07517889098332231', 1502782726, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.7872830595658838', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(453, 'data/cache/1502782840.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.4229496892492961', 1502782840, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.7872830595658838', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(454, 'data/cache/1502782888.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.35091789704472176', 1502782888, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.7872830595658838', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(455, 'data/cache/1502783248.pdf', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=to_pdflist&_noCache=0.3105008111844313', 1502783248, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=ordertopdf&exec=pdflist&_noCache=0.791385638463095', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(456, '&lt;span class=&quot;red&quot;&gt;强制使用SSL&lt;/span&gt; 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1502792819', 1502792827, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=tossl', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(457, '插件卸载成功', 'http://localhost/phpok/admin.php?c=plugin&f=uninstall&id=tossl&_=1502793108408', 1502793301, 'admin', 'plugin', 'uninstall', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&_noCache=0.1502792827', 0, '7ndmsjqb29n3vm42iog3r6o046'),
-(458, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1503160366, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1503160362', 0, 'v6fuo6ns20hrmeijh0f1emv9v6'),
-(459, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1503378757, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1503378751', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(460, 'data/cache/558d5ddec5d3281a.zip', 'http://localhost/phpok/admin.php?c=upload&f=zip&_noCache=0.1503378764&PHPSESSION=ad71236ccqde42l2nf6vqofnq2&id=WU_FILE_0&name=Products.zip&type=application%2Fx-zip-compressed&lastModifiedDate=Tue+Aug+22+2017+13%3A12%3A22+GMT%2B0800&size=2078', 1503378773, 'admin', 'upload', 'zip', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=project&f=import', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(461, 'j------', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=Demo&_noCache=0.08991991151564382&_=1503379053719', 1503379059, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&_noCache=0.1503379012', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(462, 'demo', 'http://localhost/phpok/api.php?c=plugin&f=index&id=identifier&exec=pingyin&title=Demo&_noCache=0.7618111512797283&_=1503379053720', 1503379061, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&_noCache=0.1503379012', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(463, '标识正常，可以使用', 'http://localhost/phpok/admin.php?c=cate&f=check&sign=demo&_=1503379053721', 1503379062, 'admin', 'cate', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&_noCache=0.1503379012', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(464, '分类信息配置成功', 'http://localhost/phpok/admin.php?c=cate&f=save&_noCache=0.1503379053', 1503379062, 'admin', 'cate', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&_noCache=0.1503379012', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(465, 'demo1', 'http://localhost/phpok/api.php?c=plugin&f=index&id=identifier&exec=pingyin&title=Demo1&_noCache=0.37671555574776994&_=1503379067145', 1503379073, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=592&_noCache=0.1503379064', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(466, 'demo2', 'http://localhost/phpok/api.php?c=plugin&f=index&id=identifier&exec=pingyin&title=Demo2&_noCache=0.3809291113250376&_=1503379077612', 1503379082, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=592&_noCache=0.1503379075', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(467, 'demo3', 'http://localhost/phpok/api.php?c=plugin&f=index&id=identifier&exec=pingyin&title=Demo3&_noCache=0.11472026146592573&_=1503379087774', 1503379091, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=592&_noCache=0.1503379085', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(468, '模块删除成功', 'http://localhost/phpok/admin.php?c=module&f=delete&id=85&_=1503379123195', 1503379207, 'admin', 'module', 'delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&_noCache=0.1503379121', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(469, '标识符已被使用', 'http://localhost/phpok/admin.php?c=project&f=save&_noCache=0.1503381500', 1503381503, 'admin', 'project', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=project&f=set&id=394&_noCache=0.1503381497', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(470, '您没有阅读权限，请联系网站管理员', 'http://localhost/phpok/index.php?id=chem', 1503384917, 'www', 'project', 'index', 0, 0, '::1', '', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(471, '未配置相应的模板', 'http://localhost/phpok/index.php?id=cas_908287-21-8', 1503384937, 'www', 'content', 'index', 0, 0, '::1', '', 0, 'ad71236ccqde42l2nf6vqofnq2'),
-(472, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1503479305, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1503479300', 0, 'q3h9tof17rgockj9p776q4dr10'),
-(473, '会员登录成功', 'http://localhost/phpok/index.php?c=login&f=ok&_noCache=0.1503826078', 1503826090, 'www', 'login', 'ok', 0, 23, '::1', 'http://localhost/phpok/index.php?c=login&_noCache=0.1503826071', 0, 's1hupp2h5fkp6as2bkbg0hk7u1'),
-(474, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1503902110, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1503902105', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(475, '您当前是最新版本，不需要再升级', 'http://localhost/phpok/admin.php?c=update&f=check&_=1503902110586', 1503902111, 'admin', 'update', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(476, '网站信息更新完成', 'http://localhost/phpok/admin.php?c=all&f=save&_noCache=0.1503907395', 1503907407, 'admin', 'all', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=all&f=setting&_noCache=0.4773802633582136', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(477, '主题删除成功', 'http://localhost/phpok/admin.php?c=list&f=del&id=198287&_=1503908080650', 1503908084, 'admin', 'list', 'del', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=action&id=394&_noCache=0.1503908076', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(478, '会员登录成功', 'http://localhost/phpok/index.php?c=login&f=ok&_noCache=0.1503908275', 1503908281, 'www', 'login', 'ok', 0, 23, '::1', 'http://localhost/phpok/index.php?c=login&_back=http%3A%2F%2Flocalhost%2Fphpok%2Findex.php%3Fid%3Dbbs%26cate%3Dqingganyizhan&_noCache=0.1503908273', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(479, '上传的文件异常', 'http://localhost/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1503908284&PHPSESSION=ojtnpl8akhr27h5d9a8dm79lk7&id=WU_FILE_0&name=%E8%87%AA%E5%B7%B1.jpg&type=image%2Fjpeg&lastModifiedDate=Fri+Jun+23+2017+11%3A22%3A15+GMT%2B0800&size=117302&chunks=2', 1503908299, 'www', 'upload', 'save', 0, 23, '::1', 'http://localhost/phpok/index.php?c=post&cateid=204&id=bbs&_noCache=0.1503908283', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(480, '验证码不能为空', 'http://localhost/phpok/api.php?c=post&f=save&_noCache=0.6997972446083861', 1503908400, 'api', 'post', 'save', 0, 23, '::1', 'http://localhost/phpok/index.php?c=post&cateid=204&id=bbs&_noCache=0.1503908328', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(481, '您没有权限执行此操作', 'http://localhost/phpok/index.php?c=post&cateid=204&id=bbs&_noCache=0.1503908328', 1503908421, 'www', 'post', 'index', 0, 0, '::1', 'http://localhost/phpok/index.php?id=bbs&cate=qingganyizhan', 0, '8p95jm33144atu9qsrjdsi9187'),
-(482, '验证码不能为空2', 'http://localhost/phpok/api.php?c=post&f=save&_noCache=0.5937070778578502', 1503908473, 'api', 'post', 'save', 0, 23, '::1', 'http://localhost/phpok/index.php?c=post&cateid=204&id=bbs&_noCache=0.1503908328', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(483, '验证码不能为空2-add', 'http://localhost/phpok/api.php?c=post&f=save&_noCache=0.5632935580715348', 1503908506, 'api', 'post', 'save', 0, 23, '::1', 'http://localhost/phpok/index.php?c=post&cateid=204&id=bbs&_noCache=0.1503908328', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(484, '验证码不能为空2-152', 'http://localhost/phpok/api.php?c=post&f=save&_noCache=0.08465430331571377', 1503908532, 'api', 'post', 'save', 0, 23, '::1', 'http://localhost/phpok/index.php?c=post&cateid=204&id=bbs&_noCache=0.1503908328', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(485, '验证码不能为空2-152', 'http://localhost/phpok/api.php?c=post&f=save&_noCache=0.9683784192896493', 1503908648, 'api', 'post', 'save', 0, 23, '::1', 'http://localhost/phpok/index.php?c=post&cateid=204&id=bbs&_noCache=0.1503908328', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(486, '55555', 'http://localhost/phpok/api.php?c=post&f=save&_noCache=0.3503282145405048', 1503908699, 'api', 'post', 'save', 0, 23, '::1', 'http://localhost/phpok/index.php?c=post&cateid=204&id=bbs&_noCache=0.1503908328', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(487, 'p-152///', 'http://localhost/phpok/api.php?c=post&f=save&_noCache=0.4195879709433994', 1503908721, 'api', 'post', 'save', 0, 23, '::1', 'http://localhost/phpok/index.php?c=post&cateid=204&id=bbs&_noCache=0.1503908328', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(488, 'Array\n(\n    [system] => Array\n        (\n            [title] => 系统设置\n            [list] => Array\n                (\n                    [login] => Array\n                        (\n                            [title] => 登录\n                            [status]', 'http://localhost/phpok/api.php?c=post&f=save&_noCache=0.711545022955168', 1503908769, 'api', 'post', 'save', 0, 23, '::1', 'http://localhost/phpok/index.php?c=post&cateid=204&id=bbs&_noCache=0.1503908328', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(489, '会员&lt;span class=&quot;red&quot;&gt; admin &lt;/span&gt;成功退出', 'http://localhost/phpok/index.php?c=logout', 1503909284, 'www', 'logout', 'index', 0, 0, '::1', 'http://localhost/phpok/index.php?id=bbs&cate=qingganyizhan', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(490, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.8993195350268522&_=1503909292052', 1503909295, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(491, '4088.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=4088&_noCache=0.7252329045069672&_=1503909292053', 1503909295, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(492, '请先登录或注册', 'http://localhost/phpok/api.php?c=cart&f=add&id=1763&_noCache=0.8712218906819583&qty=1&ext=49%2C51&_=1503909292054', 1503909297, 'api', 'cart', 'add', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(493, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.7871796722718856&_=1503909312061', 1503909312, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?c=cart&f=checkout', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(494, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.001377850931833291&_=1503910148036', 1503910148, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(495, '管理员&lt;span class=&quot;red&quot;&gt;admin&lt;/span&gt;成功退出', 'http://localhost/phpok/admin.php?c=logout', 1503910208, 'admin', 'logout', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(496, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.6955768429182304&_=1503910274678', 1503910274, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(497, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1503910504, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_langid=cn', 0, 'ojtnpl8akhr27h5d9a8dm79lk7'),
-(498, '会员登录成功', 'http://localhost/phpok/index.php?c=login&f=ok&_noCache=0.1504416174', 1504416178, 'www', 'login', 'ok', 0, 23, '::1', 'http://localhost/phpok/index.php?c=login&_noCache=0.1504416171', 0, 'g8ao8vcsd7pbtglnjp41b2ggv6'),
-(499, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1504420885, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1504420876', 0, 'g8ao8vcsd7pbtglnjp41b2ggv6'),
-(500, '999.00元', 'http://192.168.1.18/phpok/api.php?c=cart&f=price_format&price=999.0000&_noCache=0.14292584778741002&_=1504438929894', 1504438958, 'api', 'cart', 'price_format', 0, 23, '192.168.1.112', 'http://192.168.1.18/phpok/index.php?id=1761', 0, '82d5c1fkqkuius5ipauj42t8v1'),
-(501, '1', 'http://192.168.1.18/phpok/api.php?c=cart&f=total&_noCache=0.08160198712721467&_=1504438929897', 1504438965, 'api', 'cart', 'total', 0, 23, '192.168.1.112', 'http://192.168.1.18/phpok/index.php?id=1761', 0, '82d5c1fkqkuius5ipauj42t8v1'),
-(502, '您的购物车里没有任何产品', 'http://192.168.1.18/phpok/index.php?c=cart&f=freight&_=1504438950227', 1504438976, 'www', 'cart', 'freight', 0, 23, '192.168.1.112', 'http://192.168.1.18/phpok/index.php?c=cart&f=checkout&_noCache=0.1504438972', 0, '82d5c1fkqkuius5ipauj42t8v1'),
-(503, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1504597774, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1504597770', 0, 'd34lmdrclmm2magfj7os92e0h0'),
-(504, '标识串不能为空', 'http://localhost/phpok/admin.php?c=project&f=save&_noCache=0.1504597886', 1504597906, 'admin', 'project', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=project&f=set&pid=87&_noCache=0.1504597883', 0, 'd34lmdrclmm2magfj7os92e0h0'),
-(505, 'the-tower-fa', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=%E5%A1%94%E9%A1%B6fa&_noCache=0.5241244284960238&_=1504597887426', 1504597910, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=project&f=set&pid=87&_noCache=0.1504597883', 0, 'd34lmdrclmm2magfj7os92e0h0'),
-(506, '字段添加成功', 'http://localhost/phpok/admin.php?c=module&f=field_add&id=40&fid=thumb&_=1504598097364', 1504598103, 'admin', 'module', 'field_add', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=40&_noCache=0.1504597961', 0, 'd34lmdrclmm2magfj7os92e0h0'),
-(507, '删除成功', 'http://localhost/phpok/admin.php?c=module&f=field_delete&id=367&_=1504598104056', 1504599129, 'admin', 'module', 'field_delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=40&_noCache=0.1504597961', 0, 'd34lmdrclmm2magfj7os92e0h0'),
-(508, '会员登录成功', 'http://localhost/phpok/index.php?c=login&f=ok&_noCache=0.1504690595', 1504690602, 'www', 'login', 'ok', 0, 23, '::1', 'http://localhost/phpok/index.php?c=login&_noCache=0.1504690592', 0, 'uvkj3s78d0p473h2hjt2ujbhf1'),
-(509, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.015051026230407216&_=1504690604337', 1504690604, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/', 0, 'uvkj3s78d0p473h2hjt2ujbhf1'),
-(510, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.8422921466847423&_=1504691003210', 1504691003, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php', 0, 'uvkj3s78d0p473h2hjt2ujbhf1'),
-(511, '上传的文件异常', 'http://localhost/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1504755536&PHPSESSION=jddhla7jirumkghkhco1994go2&id=WU_FILE_2&name=%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20170630154710.png&type=image%2Fpng&lastModifiedDate=Fri+Jun+30+2017+15%3A47%3A14+', 1504755727, 'www', 'upload', 'save', 0, 0, '::1', 'http://localhost/phpok/index.php?id=book', 0, 'jddhla7jirumkghkhco1994go2'),
-(512, '附件类型不符合要求', 'http://localhost/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1504755845&PHPSESSION=jddhla7jirumkghkhco1994go2&id=WU_FILE_0&name=%E4%BA%A7%E5%93%81%E5%8A%9F%E8%83%BD%E4%B8%8E%E7%BB%93%E6%9E%84.pdf&type=application%2Fpdf&lastModifiedDate=Tue+May+23+', 1504755850, 'www', 'upload', 'save', 0, 0, '::1', 'http://localhost/phpok/index.php?id=book', 0, 'jddhla7jirumkghkhco1994go2'),
-(513, '会员登录成功', 'http://localhost/phpok/index.php?c=login&f=ok&_noCache=0.1504757890', 1504757899, 'www', 'login', 'ok', 0, 23, '::1', 'http://localhost/phpok/index.php?c=login&_noCache=0.1504755845', 0, 'jddhla7jirumkghkhco1994go2'),
-(514, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.9830502977561831&_=1504757901979', 1504757902, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/', 0, 'jddhla7jirumkghkhco1994go2'),
-(515, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.9745182210011725&_=1504757979753', 1504757979, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504757903', 0, 'jddhla7jirumkghkhco1994go2'),
-(516, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.08583763797978616&_=1504758059328', 1504758059, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504757903', 0, 'jddhla7jirumkghkhco1994go2');
-INSERT INTO `qinggan_log` (`id`, `note`, `url`, `dateline`, `app_id`, `ctrl`, `func`, `admin_id`, `user_id`, `ip`, `referer`, `mask`, `session_id`) VALUES
-(517, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.8627730121434352&_=1504758204006', 1504758204, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504757903', 0, 'jddhla7jirumkghkhco1994go2'),
-(518, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.1507703921022392&_=1504758423909', 1504758424, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504757903', 0, 'jddhla7jirumkghkhco1994go2'),
-(519, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.12997350929287377&_=1504758491502', 1504758491, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504757903', 0, 'jddhla7jirumkghkhco1994go2'),
-(520, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.5273967991160796&_=1504758591549', 1504758591, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504757903', 0, 'jddhla7jirumkghkhco1994go2'),
-(521, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.8021461634313674&_=1504758663643', 1504758663, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504757903', 0, 'jddhla7jirumkghkhco1994go2'),
-(522, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.8762799082218902&_=1504758808450', 1504758808, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504757903', 0, 'jddhla7jirumkghkhco1994go2'),
-(523, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.7065037680544463&_=1504758871677', 1504758871, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&month=201709', 0, 'jddhla7jirumkghkhco1994go2'),
-(524, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.6393026526497979&_=1504760577560', 1504760577, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&month=201709', 0, 'jddhla7jirumkghkhco1994go2'),
-(525, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.6101388828909121&_=1504761011685', 1504761011, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=wealth&_noCache=0.1504760577', 0, 'jddhla7jirumkghkhco1994go2'),
-(526, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.6914629537071716&_=1504763745600', 1504763745, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504761011', 0, 'jddhla7jirumkghkhco1994go2'),
-(527, '会员账号已存用', 'http://localhost/phpok/index.php?c=register&f=save&_noCache=0.1504763953', 1504763973, 'www', 'register', 'save', 0, 0, '::1', 'http://localhost/phpok/index.php?c=register&_noCache=0.1504763953', 0, 'n7k918ctq1ghfetbd5pgfnkp93'),
-(528, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.194710153463309&_=1504764177998', 1504764178, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504761011', 0, 'jddhla7jirumkghkhco1994go2'),
-(529, '会员账号已存用', 'http://localhost/phpok/index.php?c=register&f=save', 1504764199, 'www', 'register', 'save', 0, 0, '::1', 'http://localhost/phpok/index.php?c=register&_noCache=0.1504763973', 0, 'n7k918ctq1ghfetbd5pgfnkp93'),
-(530, '验证码填写不正确', 'http://localhost/phpok/index.php?c=register&f=save', 1504764204, 'www', 'register', 'save', 0, 0, '::1', 'http://localhost/phpok/index.php?c=register&_noCache=0.1504763973', 0, 'n7k918ctq1ghfetbd5pgfnkp93'),
-(531, '注册成功，等待管理员验证', 'http://localhost/phpok/index.php?c=register&f=save', 1504764209, 'www', 'register', 'save', 0, 0, '::1', 'http://localhost/phpok/index.php?c=register&_noCache=0.1504763973', 0, 'n7k918ctq1ghfetbd5pgfnkp93'),
-(532, '会员审核中，暂时不能登录', 'http://localhost/phpok/index.php?c=login&f=ok&_noCache=0.1504764254', 1504764263, 'www', 'login', 'ok', 0, 0, '::1', 'http://localhost/phpok/index.php?c=login&_noCache=0.1504764211', 0, 'n7k918ctq1ghfetbd5pgfnkp93'),
-(533, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1504764456, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1504764451', 0, 'jddhla7jirumkghkhco1994go2'),
-(534, '会员登录成功', 'http://localhost/phpok/index.php?c=login&f=ok&_noCache=0.1504764265', 1504764469, 'www', 'login', 'ok', 0, 31, '::1', 'http://localhost/phpok/index.php?c=login&_back=http%3A%2F%2Flocalhost%2Fphpok%2F&_noCache=0.1504764263', 0, 'n7k918ctq1ghfetbd5pgfnkp93'),
-(535, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.9856207323847886&_=1504764488491', 1504764488, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504764177', 0, 'jddhla7jirumkghkhco1994go2'),
-(536, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.6971178674007975&_=1504764557512', 1504764557, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504764490', 0, 'jddhla7jirumkghkhco1994go2'),
-(537, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.2642258830416643&_=1504764631692', 1504764631, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504764490', 0, 'jddhla7jirumkghkhco1994go2'),
-(538, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.15678641351499467&_=1504764731054', 1504764731, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=wealth&_noCache=0.1504764685', 0, 'jddhla7jirumkghkhco1994go2'),
-(539, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.5669595008105767&_=1504764797313', 1504764797, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504764758', 0, 'jddhla7jirumkghkhco1994go2'),
-(540, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.7994447905526895&_=1504764859049', 1504764859, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504764758', 0, 'jddhla7jirumkghkhco1994go2'),
-(541, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.44550817705600154&_=1504764929155', 1504764929, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&month=201508', 0, 'jddhla7jirumkghkhco1994go2'),
-(542, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.16162940227410827&_=1504764997919', 1504764998, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&month=201709', 0, 'jddhla7jirumkghkhco1994go2'),
-(543, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.14513083761115209&_=1504765160015', 1504765160, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&month=201709', 0, 'jddhla7jirumkghkhco1994go2'),
-(544, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.8172481296406248&_=1504765377313', 1504765377, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504765165', 0, 'jddhla7jirumkghkhco1994go2'),
-(545, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.5429969454776057&_=1504765458661', 1504765458, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504765165', 0, 'jddhla7jirumkghkhco1994go2'),
-(546, '验证通过', 'http://localhost/phpok/admin.php?c=user&f=chk&id=31&user=demo123&mobile=147258369&email=de%40dd.com&_=1504765507412', 1504765511, 'admin', 'user', 'chk', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=user&f=set&id=31&_noCache=0.1504764458', 0, 'jddhla7jirumkghkhco1994go2'),
-(547, '会员编辑成功', 'http://localhost/phpok/admin.php?c=user&f=setok&_noCache=0.1504765507', 1504765511, 'admin', 'user', 'setok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=user&f=set&id=31&_noCache=0.1504764458', 0, 'jddhla7jirumkghkhco1994go2'),
-(548, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.8955269732973731&_=1504765563263', 1504765563, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=introducer&_noCache=0.1504765487', 0, 'jddhla7jirumkghkhco1994go2'),
-(549, '您当前是最新版本，不需要再升级', 'http://localhost/phpok/admin.php?c=update&f=check&_=1504786487676', 1504786488, 'admin', 'update', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php', 0, 'jddhla7jirumkghkhco1994go2'),
-(550, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.9163144032076048&_=1504787583517', 1504787583, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/', 0, 'jddhla7jirumkghkhco1994go2'),
-(551, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1504855789, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1504855785', 0, '94b373o4eqvvj4ad351dhcdhg4'),
-(552, '模块使用中，请先停用模块信息', 'http://localhost/phpok/admin.php?c=module&f=delete&id=86&_=1504856162910', 1504856165, 'admin', 'module', 'delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&_noCache=0.1504856160', 0, '94b373o4eqvvj4ad351dhcdhg4'),
-(553, '模块删除成功', 'http://localhost/phpok/admin.php?c=module&f=delete&id=86&_=1504856162913', 1504856171, 'admin', 'module', 'delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&_noCache=0.1504856160', 0, '94b373o4eqvvj4ad351dhcdhg4'),
-(554, '管理员登录成功', 'http://localhost/hnedu/admin.php?c=login&f=ok', 1505287516, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/hnedu/admin.php?c=login&_noCache=0.1505287511', 0, 'cqreq7b8abcegq2keivvtnl146'),
-(555, '检测到升级包', 'http://localhost/hnedu/admin.php?c=update&f=check&_=1505287516359', 1505287516, 'admin', 'update', 'check', 1, 0, '::1', 'http://localhost/hnedu/admin.php?c=index', 0, 'cqreq7b8abcegq2keivvtnl146'),
-(556, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1505290878, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1505290826', 0, 'cqreq7b8abcegq2keivvtnl146'),
-(557, 'video-library', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=%E8%A7%86%E9%A2%91%E5%BA%93&_noCache=0.7301268422923461&_=1505292594035', 1505292603, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=project&f=set&_noCache=0.1505292591', 0, 'cqreq7b8abcegq2keivvtnl146'),
-(558, '&lt;span class=&quot;red&quot;&gt;阿里云视频库插件&lt;/span&gt; 安装成功', 'http://localhost/phpok/admin.php?c=plugin&f=install_save&_noCache=0.1505292923', 1505293015, 'admin', 'plugin', 'install_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&f=install&id=aliyunvod', 0, 'cqreq7b8abcegq2keivvtnl146'),
-(559, '插件卸载成功', 'http://localhost/phpok/admin.php?c=plugin&f=uninstall&id=useraddcart&_=1505293016695', 1505293021, 'admin', 'plugin', 'uninstall', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&_noCache=0.1505293015', 0, 'cqreq7b8abcegq2keivvtnl146'),
-(560, '方法 &lt;span class=red&gt;videolist&lt;/span&gt; 不存在', 'http://localhost/phpok/admin.php?c=plugin&f=exec&id=aliyunvod&exec=videolist&_noCache=0.6500692426326998', 1505300405, 'admin', 'plugin', 'exec', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'cqreq7b8abcegq2keivvtnl146'),
-(561, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1505527583, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1505527578', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(562, 'test-the-root-classification-and-extension', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=%E6%B5%8B%E8%AF%95%E6%A0%B9%E5%88%86%E7%B1%BB%E5%8F%8A%E6%89%A9%E5%B1%95&_noCache=0.2111004410448818&_=1505527588857', 1505527608, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&_noCache=0.1505527586', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(563, 'ceshigenfenleijikuozhan', 'http://localhost/phpok/api.php?c=plugin&f=index&id=identifier&exec=pingyin&title=%E6%B5%8B%E8%AF%95%E6%A0%B9%E5%88%86%E7%B1%BB%E5%8F%8A%E6%89%A9%E5%B1%95&_noCache=0.6489152870233841&_=1505527588858', 1505527610, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&_noCache=0.1505527586', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(564, '标识正常，可以使用', 'http://localhost/phpok/admin.php?c=cate&f=check&sign=ceshigenfenleijikuozhan&_=1505527588859', 1505527612, 'admin', 'cate', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&_noCache=0.1505527586', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(565, '分类信息配置成功', 'http://localhost/phpok/admin.php?c=cate&f=save&_noCache=0.1505527588', 1505527612, 'admin', 'cate', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&_noCache=0.1505527586', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(566, '标识正常，可以使用', 'http://localhost/phpok/admin.php?c=cate&f=check&id=596&sign=ceshigenfenleijikuozhan&_=1505527768499', 1505527778, 'admin', 'cate', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&id=596&_noCache=0.1505527630', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(567, '分类信息配置成功', 'http://localhost/phpok/admin.php?c=cate&f=save&_noCache=0.1505527768', 1505527778, 'admin', 'cate', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&id=596&_noCache=0.1505527630', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(568, 'a------', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=demo&_noCache=0.1822018339201371&_=1505527867881', 1505527875, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=596&_noCache=0.1505527862', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(569, 'v------', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=demo&_noCache=0.0836074817773883&_=1505527867882', 1505527877, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=596&_noCache=0.1505527862', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(570, 'k------', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=demo&_noCache=0.16734334935287898&_=1505527867883', 1505527878, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=596&_noCache=0.1505527862', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(571, 'x------', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=demo&_noCache=0.4805171361243116&_=1505527867884', 1505527879, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=596&_noCache=0.1505527862', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(572, 'demo', 'http://localhost/phpok/api.php?c=plugin&f=index&id=identifier&exec=pingyin&title=demo&_noCache=0.5591564917351391&_=1505527867885', 1505527879, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=596&_noCache=0.1505527862', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(573, '标识已被使用，请检查', 'http://localhost/phpok/admin.php?c=cate&f=check&sign=demo&_=1505527867887', 1505527882, 'admin', 'cate', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=596&_noCache=0.1505527862', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(574, '标识正常，可以使用', 'http://localhost/phpok/admin.php?c=cate&f=check&sign=demo9999&_=1505527867888', 1505527885, 'admin', 'cate', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=596&_noCache=0.1505527862', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(575, '分类信息配置成功', 'http://localhost/phpok/admin.php?c=cate&f=save&_noCache=0.1505527867', 1505527885, 'admin', 'cate', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=596&_noCache=0.1505527862', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(576, '删除成功', 'http://localhost/phpok/admin.php?c=cate&f=delete&id=597&_=1505527940509', 1505527943, 'admin', 'cate', 'delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&_noCache=0.1505527936', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(577, 'ddddddd', 'http://localhost/phpok/api.php?c=plugin&f=index&id=identifier&exec=pingyin&title=ddddddd&_noCache=0.8355539805078684&_=1505528164986', 1505528178, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=596&_noCache=0.1505528161', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(578, '标识正常，可以使用', 'http://localhost/phpok/admin.php?c=cate&f=check&sign=ddddddd&_=1505528164987', 1505528179, 'admin', 'cate', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=596&_noCache=0.1505528161', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(579, '分类信息配置成功', 'http://localhost/phpok/admin.php?c=cate&f=save&_noCache=0.1505528164', 1505528179, 'admin', 'cate', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=596&_noCache=0.1505528161', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(580, '删除成功', 'http://localhost/phpok/admin.php?c=cate&f=delete&id=598&_=1505528180972', 1505528184, 'admin', 'cate', 'delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&_noCache=0.435451', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(581, 'fasdfasdfasdf', 'http://localhost/phpok/api.php?c=plugin&f=index&id=identifier&exec=pingyin&title=fasdfasdfasdf&_noCache=0.9116422879521043&_=1505528196103', 1505528200, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=cate&f=set&parent_id=7&_noCache=0.1505528184', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(582, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.14324483157394952&_=1505529116395', 1505529118, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(583, '4088.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=4088&_noCache=0.5697659021336565&_=1505529116396', 1505529118, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(584, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.9557671044460835&_=1505529116398', 1505529121, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(585, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.8107297110974409&_=1505529198142', 1505529198, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1505529116', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(586, '3698.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3698.0000&_noCache=0.8725755538390294&_=1505529246941', 1505529248, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1762', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(587, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.9474153197002012&_=1505529246943', 1505529250, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1762', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(588, '999.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=999.0000&_noCache=0.9773569836109729&_=1505529285318', 1505529291, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(589, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.9374042163424205&_=1505529285321', 1505529298, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(590, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.7646855115294686&_=1505529441050', 1505529441, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(591, '1099.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=1099&_noCache=0.8356358859778925&_=1505529441051', 1505529444, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(592, '4', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.027830589369953862&_=1505529441054', 1505529446, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(593, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.5941553964281511&_=1505529498645', 1505529498, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1505529440', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(594, '999.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=999.0000&_noCache=0.5655114375505367&_=1505529491801', 1505529503, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(595, '<pre>Array\n(\n    [id] => 1761\n    [site_id] => 1\n    [project_id] => 45\n    [cate_id] => 584\n    [pictures] => Array\n        (\n            [1019] => Array\n                (\n                    [id] => 1019\n                    [cate_id] => 1\n              ', 'http://localhost/phpok/api.php?c=cart&f=add&id=1761&_noCache=0.338670765744425&qty=1&ext=43%2C44&_=1505529491803', 1505529505, 'api', 'cart', 'add', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 1, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(596, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.493364469156386&_=1505529491804', 1505529505, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(597, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.795920125351171&_=1505529734499', 1505529734, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1505529440', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(598, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.7163185788456705&_=1505529491806', 1505529737, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(599, '4', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.04448206704905111&_=1505529491810', 1505529829, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(600, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.4266222392376836&_=1505529876237', 1505529876, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1505529440', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(601, '999.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=999.0000&_noCache=0.49945121701905637&_=1505529866440', 1505529878, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(602, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.7624953070580479&_=1505529866443', 1505529881, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(603, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.3563063804456795&_=1505530024346', 1505530024, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1505529440', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(604, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.004113480761286259&_=1505530027849', 1505530027, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1505529440', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(605, '999.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=999.0000&_noCache=0.8536923349028412&_=1505530030504', 1505530031, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(606, '1099.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=1099&_noCache=0.32065836744207055&_=1505530030505', 1505530031, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(607, '主题删除成功', 'http://localhost/phpok/admin.php?c=list&f=del&id=1856&_=1505530244831', 1505530248, 'admin', 'list', 'del', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=action&id=45&_noCache=0.47263019257842265', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(608, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.8253375832761304&_=1505530261606', 1505530261, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1505529440', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(609, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.9759035390008408&_=1505530446013', 1505530446, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/999999', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(610, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.1876738840406894&_=1505530544352', 1505530544, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/999999', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(611, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.8543984103244164&_=1505531145979', 1505531146, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(612, '网站信息更新完成', 'http://localhost/phpok/admin.php?c=all&f=save&_noCache=0.1505531189', 1505531192, 'admin', 'all', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=all&f=setting&_noCache=0.7154649805612365', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(613, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.5732312501744492&_=1505531210274', 1505531210, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/1763.html', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(614, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.7465740216980862&_=1505531360174', 1505531360, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(615, '网站信息更新完成', 'http://localhost/phpok/admin.php?c=all&f=save&_noCache=0.1505531194', 1505531491, 'admin', 'all', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=all&f=setting&_noCache=0.1505531192', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(616, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.6876553212324376&_=1505531618607', 1505531618, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?siteId=1', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(617, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.29509480842946545&_=1505531761362', 1505531761, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=product', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(618, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.9360484658134474&_=1505531766798', 1505531766, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1505531760', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(619, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.3660192985670956&_=1505531768739', 1505531768, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?c=cart&_noCache=0.1505531760', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(620, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.9823448376748851&_=1505531897345', 1505531900, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(621, '4088.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=4088&_noCache=0.3518945795408518&_=1505531897346', 1505531901, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(622, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.06349868257574243&_=1505531897348', 1505531902, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(623, '2', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.32276788527230005&_=1505531897352', 1505531905, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'cl2gqvhrno0fojg2g2k45bvnj2'),
-(624, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1505801786, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1505801782', 0, 'jsu964hg97d3k86hgv8t6p2dq2'),
-(625, '您当前是最新版本，不需要再升级', 'http://localhost/phpok/admin.php?c=update&f=check&_=1505801786829', 1505801787, 'admin', 'update', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'jsu964hg97d3k86hgv8t6p2dq2'),
-(626, '主题删除成功', 'http://localhost/phpok/admin.php?c=list&f=del&id=222086&_=1505802253364', 1505802258, 'admin', 'list', 'del', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=action&id=96&_noCache=0.0821267085473979', 0, 'jsu964hg97d3k86hgv8t6p2dq2'),
-(627, '会员登录成功', 'http://localhost/phpok/index.php?c=login&f=ok&_noCache=0.1505820872', 1505820876, 'www', 'login', 'ok', 0, 23, '::1', 'http://localhost/phpok/index.php?c=login&_noCache=0.1505820869', 0, 'jsu964hg97d3k86hgv8t6p2dq2'),
-(628, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1505973059, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1505973055', 0, 'mpqk5l3c63otusmlgrdieu7c75'),
-(629, 'code:', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&update=2&type=ajax&id=12&manageid=send&tplcode=37&_=1505973077709', 1505973080, 'admin', 'gateway', 'extmanage', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&id=12&manageid=send', 0, 'mpqk5l3c63otusmlgrdieu7c75'),
-(630, '短信发送成功', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&update=1&type=ajax&id=12&manageid=send', 1505973090, 'admin', 'gateway', 'extmanage', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&id=12&manageid=send', 0, 'mpqk5l3c63otusmlgrdieu7c75'),
-(631, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1506312701, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1506312697', 0, '5jrcvul64pcv6l5v302f6fl3v7'),
-(632, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1506321262, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1506321258', 0, 'gmamqpr4epajt965uufmsiecc1'),
-(633, 'code:', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&update=2&type=ajax&id=12&manageid=send&tplcode=37&_=1506321279197', 1506321282, 'admin', 'gateway', 'extmanage', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&id=12&manageid=send', 0, 'gmamqpr4epajt965uufmsiecc1'),
-(634, 'code:', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&update=2&type=ajax&id=12&manageid=send&tplcode=37&_=1506321601326', 1506321607, 'admin', 'gateway', 'extmanage', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&id=12&manageid=send', 0, 'gmamqpr4epajt965uufmsiecc1'),
-(635, '短信发送成功', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&update=1&type=ajax&id=12&manageid=send', 1506321613, 'admin', 'gateway', 'extmanage', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&id=12&manageid=send', 0, 'gmamqpr4epajt965uufmsiecc1'),
-(636, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1506577172, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1506577167', 0, 'v3g0sec1b0vf7ag4l79kdonu04'),
-(637, '上传的文件异常', 'http://localhost/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1506584564&PHPSESSION=v3g0sec1b0vf7ag4l79kdonu04&id=WU_FILE_0&name=20170607-153855.jpg&type=image%2Fjpeg&lastModifiedDate=Wed+Jun+07+2017+15%3A38%3A57+GMT%2B0800&size=158667&chunks=2', 1506584574, 'www', 'upload', 'save', 0, 0, '::1', 'http://localhost/phpok/index.php?id=book', 0, 'v3g0sec1b0vf7ag4l79kdonu04'),
-(638, '上传的文件异常', 'http://localhost/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1506594896&PHPSESSION=v3g0sec1b0vf7ag4l79kdonu04&id=WU_FILE_1&name=WIN_20170630_15_41_56_Pro.jpg&type=image%2Fjpeg&lastModifiedDate=Fri+Jun+30+2017+15%3A41%3A56+GMT%2B0800&size=281551&ch', 1506594935, 'www', 'upload', 'save', 0, 0, '::1', 'http://localhost/phpok/index.php?id=book', 0, 'v3g0sec1b0vf7ag4l79kdonu04'),
-(639, '上传的文件异常', 'http://localhost/phpok/index.php?c=upload&f=save&cateid=1&_noCache=0.1506595188', 1506595195, 'www', 'upload', 'save', 0, 0, '127.0.0.1', 'http://localhost/phpok/index.php?id=book', 0, 'v3g0sec1b0vf7ag4l79kdonu04'),
-(640, '请充值，当前账户没有剩余短信数量', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&id=1&manageid=balance&_=1506595586405', 1506595589, 'admin', 'gateway', 'extmanage', 1, 0, '127.0.0.1', 'http://localhost/phpok/admin.php?c=gateway&menu_id=78&_noCache=0.12562018255765173', 0, 'v3g0sec1b0vf7ag4l79kdonu04'),
-(641, '参数配置不完整', 'http://localhost/phpok/admin.php?c=gateway&f=extmanage&id=3&manageid=send', 1506595600, 'admin', 'gateway', 'extmanage', 1, 0, '127.0.0.1', 'http://localhost/phpok/admin.php', 0, 'v3g0sec1b0vf7ag4l79kdonu04'),
-(642, '更新成功', 'http://localhost/phpok/admin.php?c=gateway&f=save&_noCache=0.1506595609', 1506595613, 'admin', 'gateway', 'save', 1, 0, '127.0.0.1', 'http://localhost/phpok/admin.php?c=gateway&f=set&id=12&_noCache=0.1506595599', 0, 'v3g0sec1b0vf7ag4l79kdonu04'),
-(643, '通知内容编辑成功，请稍候…', 'http://localhost/phpok/admin.php?c=email&f=setok&_noCache=0.1506595797', 1506595802, 'admin', 'email', 'setok', 1, 0, '127.0.0.1', 'http://localhost/phpok/admin.php?c=email&f=set&id=37&_noCache=0.1506595794', 0, 'v3g0sec1b0vf7ag4l79kdonu04'),
-(644, '升级环境配置成功', 'http://localhost/phpok/admin.php?c=update&f=save&_noCache=0.1506596209', 1506596214, 'admin', 'update', 'save', 1, 0, '127.0.0.1', 'http://localhost/phpok/admin.php?c=update&f=set&_noCache=0.1506596209', 0, 'v3g0sec1b0vf7ag4l79kdonu04'),
-(645, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1506656302, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1506656274', 0, 'fafo05ar80h8qlt201df09itq0'),
-(646, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1506743540, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1506743535', 0, 'm551hkojh9vl7ec9c4qp18mn24'),
-(647, '管理员&lt;span class=&quot;red&quot;&gt;admin&lt;/span&gt;成功退出', 'http://localhost/phpok/admin.php?c=logout', 1506743555, 'admin', 'logout', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=index', 0, 'm551hkojh9vl7ec9c4qp18mn24'),
-(648, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1506743670, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.750354', 0, 'm551hkojh9vl7ec9c4qp18mn24'),
-(649, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1507267711, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1507267706', 0, '6em95qed5djri7knjig6l316m0'),
-(650, 'ALTER TABLE `qinggan_88` ADD `site_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT ''0'' COMMENT ''网站ID''', 'http://localhost/phpok/admin.php?c=module&f=save', 1507270205, 'admin', 'module', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=set', 0, '6em95qed5djri7knjig6l316m0'),
-(651, 'ALTER TABLE `qinggan_88` ADD `project_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT '''' COMMENT ''项目ID''', 'http://localhost/phpok/admin.php?c=module&f=save', 1507270205, 'admin', 'module', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=set', 0, '6em95qed5djri7knjig6l316m0'),
-(652, 'ALTER TABLE `qinggan_89` ADD `site_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT ''0'' COMMENT ''网站ID''', 'http://localhost/phpok/admin.php?c=module&f=save', 1507270214, 'admin', 'module', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=set', 0, '6em95qed5djri7knjig6l316m0'),
-(653, 'ALTER TABLE `qinggan_89` ADD `project_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT '''' COMMENT ''项目ID''', 'http://localhost/phpok/admin.php?c=module&f=save', 1507270214, 'admin', 'module', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=set', 0, '6em95qed5djri7knjig6l316m0'),
-(654, '模块删除成功', 'http://localhost/phpok/admin.php?c=module&f=delete&id=88&_=1507270234566', 1507270267, 'admin', 'module', 'delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&menu_id=8&_noCache=0.1565405009688733', 0, '6em95qed5djri7knjig6l316m0'),
-(655, 'ALTER TABLE `qinggan_90` ADD `site_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT ''0'' COMMENT ''网站ID''', 'http://localhost/phpok/admin.php?c=module&f=save', 1507270286, 'admin', 'module', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=set', 0, '6em95qed5djri7knjig6l316m0'),
-(656, 'ALTER TABLE `qinggan_90` ADD `project_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT ''0'' COMMENT ''项目ID''', 'http://localhost/phpok/admin.php?c=module&f=save', 1507270286, 'admin', 'module', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=set', 0, '6em95qed5djri7knjig6l316m0'),
-(657, 'ALTER TABLE `qinggan_90` ADD `address` VARCHAR(255) NOT NULL DEFAULT '''' COMMENT ''联系地址''', 'http://localhost/phpok/admin.php?c=module&f=field_add&id=90&fid=address&_=1507270303327', 1507270517, 'admin', 'module', 'field_add', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=90&_noCache=0.1507270287', 0, '6em95qed5djri7knjig6l316m0'),
-(658, 'ALTER TABLE `qinggan_90` CHANGE `address` `address` VARCHAR(255) NOT NULL DEFAULT '''' COMMENT ''联系地址''', 'http://localhost/phpok/admin.php?c=module&f=field_add&id=90&fid=gender&_=1507271323890', 1507271336, 'admin', 'module', 'field_add', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=90&_noCache=0.1507270287', 0, '6em95qed5djri7knjig6l316m0'),
-(659, 'ALTER TABLE `qinggan_90` ADD `gender` VARCHAR(255) NOT NULL DEFAULT ''0'' COMMENT ''性别''', 'http://localhost/phpok/admin.php?c=module&f=field_add&id=90&fid=gender&_=1507271323890', 1507271336, 'admin', 'module', 'field_add', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=90&_noCache=0.1507270287', 0, '6em95qed5djri7knjig6l316m0'),
-(660, 'ALTER TABLE `qinggan_90` CHANGE `site_id` `site_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT ''0'' COMMENT ''网站ID''', 'http://localhost/phpok/admin.php?c=module&f=field_addok&mid=90', 1507271354, 'admin', 'module', 'field_addok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=field_create&mid=90', 0, '6em95qed5djri7knjig6l316m0'),
-(661, 'ALTER TABLE `qinggan_90` CHANGE `project_id` `project_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT ''0'' COMMENT ''项目ID''', 'http://localhost/phpok/admin.php?c=module&f=field_addok&mid=90', 1507271354, 'admin', 'module', 'field_addok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=field_create&mid=90', 0, '6em95qed5djri7knjig6l316m0'),
-(662, 'ALTER TABLE `qinggan_90` ADD `demo` VARCHAR(255) NOT NULL DEFAULT '''' COMMENT ''测试''', 'http://localhost/phpok/admin.php?c=module&f=field_addok&mid=90', 1507271548, 'admin', 'module', 'field_addok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=field_create&mid=90', 0, '6em95qed5djri7knjig6l316m0'),
-(663, '模块删除成功', 'http://localhost/phpok/admin.php?c=module&f=delete&id=90&_=1507281056439', 1507281059, 'admin', 'module', 'delete', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&menu_id=8&_noCache=0.5579771440874327', 0, '6em95qed5djri7knjig6l316m0'),
-(664, 'ALTER TABLE `qinggan_list_91` ADD `site_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT ''0'' COMMENT ''网站ID''', 'http://localhost/phpok/admin.php?c=module&f=save', 1507282707, 'admin', 'module', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=set', 0, '6em95qed5djri7knjig6l316m0'),
-(665, 'ALTER TABLE `qinggan_list_91` ADD `project_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT ''0'' COMMENT ''项目ID''', 'http://localhost/phpok/admin.php?c=module&f=save', 1507282707, 'admin', 'module', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=set', 0, '6em95qed5djri7knjig6l316m0'),
-(666, 'ALTER TABLE `qinggan_list_91` ADD `cate_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT ''0'' COMMENT ''主分类ID''', 'http://localhost/phpok/admin.php?c=module&f=save', 1507282707, 'admin', 'module', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=set', 0, '6em95qed5djri7knjig6l316m0'),
-(667, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1507349997, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1507349992', 0, 'cvt253qa8845p04rsboobtfg47'),
-(668, 'ALTER TABLE `qinggan_92` ADD `site_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT ''0'' COMMENT ''网站ID''', 'http://localhost/phpok/admin.php?c=module&f=save', 1507350019, 'admin', 'module', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=set', 0, 'cvt253qa8845p04rsboobtfg47'),
-(669, 'ALTER TABLE `qinggan_92` ADD `project_id` MEDIUMINT UNSIGNED NOT NULL DEFAULT ''0'' COMMENT ''项目ID''', 'http://localhost/phpok/admin.php?c=module&f=save', 1507350019, 'admin', 'module', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=set', 0, 'cvt253qa8845p04rsboobtfg47'),
-(670, 'ALTER TABLE `qinggan_92` ADD `address` VARCHAR(255) NOT NULL DEFAULT '''' COMMENT ''联系地址''', 'http://localhost/phpok/admin.php?c=module&f=field_add&id=92&fid=address&_=1507350023727', 1507350025, 'admin', 'module', 'field_add', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=92&_noCache=0.1507350020', 0, 'cvt253qa8845p04rsboobtfg47'),
-(671, 'ALTER TABLE `qinggan_92` CHANGE `address` `address` VARCHAR(255) NOT NULL DEFAULT '''' COMMENT ''联系地址''', 'http://localhost/phpok/admin.php?c=module&f=field_add&id=92&fid=cert&_=1507350025953', 1507350027, 'admin', 'module', 'field_add', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=92&_noCache=0.1507350020', 0, 'cvt253qa8845p04rsboobtfg47'),
-(672, 'ALTER TABLE `qinggan_92` ADD `cert` VARCHAR(255) NOT NULL DEFAULT '''' COMMENT ''备案号''', 'http://localhost/phpok/admin.php?c=module&f=field_add&id=92&fid=cert&_=1507350025953', 1507350027, 'admin', 'module', 'field_add', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=fields&id=92&_noCache=0.1507350020', 0, 'cvt253qa8845p04rsboobtfg47'),
-(673, '插件卸载成功', 'http://localhost/phpok/admin.php?c=plugin&f=uninstall&id=sqldiff&_=1507356006881', 1507356016, 'admin', 'plugin', 'uninstall', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&menu_id=16&_noCache=0.4961211813471471', 0, 'cvt253qa8845p04rsboobtfg47'),
-(674, '插件卸载成功', 'http://localhost/phpok/admin.php?c=plugin&f=uninstall&id=vote&_=1507356073920', 1507356080, 'admin', 'plugin', 'uninstall', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=plugin&menu_id=16&_noCache=0.9615620698835138', 0, 'cvt253qa8845p04rsboobtfg47'),
-(675, '标识串不能为空', 'http://localhost/phpok/admin.php?c=project&f=save&_noCache=0.1507356516', 1507356528, 'admin', 'project', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=project&f=set&_noCache=0.1507356513', 0, 'cvt253qa8845p04rsboobtfg47'),
-(676, 'test-independence', 'http://localhost/phpok/api.php?c=plugin&id=identifier&exec=fanyi&q=%E6%B5%8B%E8%AF%95%E7%8B%AC%E7%AB%8B&_noCache=0.16578607922395783&_=1507356516572', 1507356531, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=project&f=set&_noCache=0.1507356513', 0, 'cvt253qa8845p04rsboobtfg47'),
-(677, '您已成功登录', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1507349992', 1507358276, 'admin', 'login', 'index', 1, 0, '::1', '', 0, 'cvt253qa8845p04rsboobtfg47'),
-(678, '未指定项目ID', 'http://localhost/phpok/admin.php?c=list&f=single_save', 1507365857, 'admin', 'list', 'single_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit2&pid=397&_noCache=0.1507364309', 0, 'cvt253qa8845p04rsboobtfg47'),
-(679, '保存数据失败，请检查', 'http://localhost/phpok/admin.php?c=list&f=single_save', 1507365880, 'admin', 'list', 'single_save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit2&pid=397&_noCache=0.1507364309', 0, 'cvt253qa8845p04rsboobtfg47'),
-(680, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1507543589, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1507543584', 0, '16kkvfank8mtb8naipqk1149s7'),
-(681, 'csdl', 'http://localhost/phpok/api.php?c=plugin&f=index&id=identifier&exec=py&title=%E6%B5%8B%E8%AF%95%E7%8B%AC%E7%AB%8B&_noCache=0.5171545339448558&_=1507544293228', 1507544301, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=call&f=set&_noCache=0.1507544286', 0, '16kkvfank8mtb8naipqk1149s7'),
-(682, 'ce-shi-du-li', 'http://localhost/phpok/api.php?c=plugin&f=index&id=identifier&exec=pingyin&title=%E6%B5%8B%E8%AF%95%E7%8B%AC%E7%AB%8B&_noCache=0.1230421684813211&_=1507544293229', 1507544302, 'api', 'plugin', 'index', 0, 0, '::1', 'http://localhost/phpok/admin.php?c=call&f=set&_noCache=0.1507544286', 0, '16kkvfank8mtb8naipqk1149s7'),
-(683, '无分类', 'http://localhost/phpok/admin.php?c=call&f=cate_list&id=397&_=1507544293231', 1507544307, 'admin', 'call', 'cate_list', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=call&f=set&_noCache=0.1507544286', 0, '16kkvfank8mtb8naipqk1149s7'),
-(684, '无分类', 'http://localhost/phpok/admin.php?c=call&f=cate_list&id=397&_=1507544823117', 1507544835, 'admin', 'call', 'cate_list', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=call&f=set&_noCache=0.1507544286', 0, '16kkvfank8mtb8naipqk1149s7'),
-(685, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1507866143, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1507866135', 0, 'tn8vuo5sk2t4cs6au5etmigke2'),
-(686, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1507876882, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1507876877', 0, 'u1qs9tgfjkagjj2i6j4dn28pt0'),
-(687, '无分类', 'http://localhost/phpok/admin.php?c=call&f=cate_list&id=397&_=1507876912897', 1507876921, 'admin', 'call', 'cate_list', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=call&f=set&_noCache=0.1507876908', 0, 'u1qs9tgfjkagjj2i6j4dn28pt0'),
-(688, '无分类', 'http://localhost/phpok/admin.php?c=call&f=cate_list&id=397&_=1507876912899', 1507877186, 'admin', 'call', 'cate_list', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=call&f=set&_noCache=0.1507876908', 0, 'u1qs9tgfjkagjj2i6j4dn28pt0'),
-(689, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1508225305, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1508225301', 0, 'of0o326nvpuuqdc43pe9sj6o10'),
-(690, '项目添加/更新成功', 'http://localhost/phpok/admin.php?c=system&f=save&_noCache=0.1508236817', 1508236941, 'admin', 'system', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=system&f=set&pid=5&_noCache=0.1508236810', 0, 'of0o326nvpuuqdc43pe9sj6o10'),
-(691, '数据排序更新成功', 'http://localhost/phpok/admin.php?c=system&f=taxis&taxis%5B92%5D=80&_=1508236943328', 1508236953, 'admin', 'system', 'taxis', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=system&_noCache=0.610803', 0, 'of0o326nvpuuqdc43pe9sj6o10'),
-(692, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1508331758, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1508331753', 0, '3h9nrrcuobs4d655781ag714d3'),
-(693, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1508393202, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1508393198', 0, 't6f10152p7v7vblnjnngd8a7a6'),
-(694, '会员组信息添加/存储成功', 'http://localhost/phpok/admin.php?c=usergroup&f=setok&_noCache=0.1508398769', 1508398788, 'admin', 'usergroup', 'setok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=usergroup&f=set&_noCache=0.1508398766', 0, 't6f10152p7v7vblnjnngd8a7a6'),
-(695, '验证通过', 'http://localhost/phpok/admin.php?c=user&f=chk&id=30&user=Xiangkun+Su&_=1508398796724', 1508398800, 'admin', 'user', 'chk', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=user&f=set&id=30&_noCache=0.1508398758', 0, 't6f10152p7v7vblnjnngd8a7a6'),
-(696, '会员编辑成功', 'http://localhost/phpok/admin.php?c=user&f=setok&_noCache=0.1508398796', 1508398800, 'admin', 'user', 'setok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=user&f=set&id=30&_noCache=0.1508398758', 0, 't6f10152p7v7vblnjnngd8a7a6'),
-(697, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1508557897, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1508557891', 0, '64blvh4bmim2jltkn1ton3djs7'),
-(698, '3288.00元', 'http://localhost/phpok/api.php?c=cart&f=price_format&price=3288.0000&_noCache=0.47301239301108555&_=1508736925692', 1508736928, 'api', 'cart', 'price_format', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qoedjr82b36gvspqeilpef45g1'),
-(699, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_noCache=0.494556617414703&_=1508736925695', 1508736930, 'api', 'cart', 'total', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'qoedjr82b36gvspqeilpef45g1');
-INSERT INTO `qinggan_log` (`id`, `note`, `url`, `dateline`, `app_id`, `ctrl`, `func`, `admin_id`, `user_id`, `ip`, `referer`, `mask`, `session_id`) VALUES
-(700, '会员登录成功', 'http://localhost/phpok/index.php?c=login&f=ok&_noCache=0.1508736962', 1508736969, 'www', 'login', 'ok', 0, 23, '::1', 'http://localhost/phpok/index.php?c=login&_noCache=0.1508736949', 0, 'qoedjr82b36gvspqeilpef45g1'),
-(701, '评论内容不能为空', 'http://localhost/phpok/api.php?c=comment&f=save&id=222081&_noCache=0.4510333560421437', 1508737001, 'api', 'comment', 'save', 0, 23, '::1', 'http://localhost/phpok/index.php?id=222081', 0, 'qoedjr82b36gvspqeilpef45g1'),
-(702, '会员&lt;span class=&quot;red&quot;&gt; admin &lt;/span&gt;成功退出', 'http://localhost/phpok/index.php?c=logout', 1508737053, 'www', 'logout', 'index', 0, 0, '::1', 'http://localhost/phpok/index.php', 0, 'qoedjr82b36gvspqeilpef45g1');
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='日志记录' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1939,7 +1331,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_module` (
   `layout` text NOT NULL COMMENT '布局',
   `mtype` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0联合模块，1独立模块',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='模块管理，每创建一个模块自动创建一个表' AUTO_INCREMENT=93 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='模块管理，每创建一个模块自动创建一个表' AUTO_INCREMENT=94 ;
 
 --
 -- 转存表中的数据 `qinggan_module`
@@ -1959,9 +1351,7 @@ INSERT INTO `qinggan_module` (`id`, `title`, `status`, `taxis`, `note`, `layout`
 (68, '图集相册', 1, 80, '', 'hits,dateline,thumb', 0),
 (69, '产品参考数据', 1, 120, '', 'hits,dateline', 0),
 (74, '注册审核模块', 1, 130, '用户实现会员自动审核验证', 'dateline,account', 0),
-(75, '银行汇款', 1, 140, '', 'dateline,user_id,bankname,fullname,mobile,bankprice', 0),
-(87, '阿里云视频库', 1, 145, '', 'dateline,user_id,videoid,longtime', 0),
-(92, '测试独立模块', 1, 150, '', 'address,cert', 1);
+(75, '银行汇款', 1, 140, '', 'dateline,user_id,bankname,fullname,mobile,bankprice', 0);
 
 -- --------------------------------------------------------
 
@@ -1987,7 +1377,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_module_fields` (
   `search_separator` varchar(10) NOT NULL COMMENT '分割符，仅限区间搜索时有效',
   PRIMARY KEY (`id`),
   KEY `module_id` (`module_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='字段管理器' AUTO_INCREMENT=378 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='字段管理器' AUTO_INCREMENT=389 ;
 
 --
 -- 转存表中的数据 `qinggan_module_fields`
@@ -1995,16 +1385,16 @@ CREATE TABLE IF NOT EXISTS `qinggan_module_fields` (
 
 INSERT INTO `qinggan_module_fields` (`id`, `module_id`, `title`, `identifier`, `field_type`, `note`, `form_type`, `form_style`, `format`, `content`, `taxis`, `ext`, `is_front`, `search`, `search_separator`) VALUES
 (92, 21, '链接', 'link', 'longtext', '', 'text', '', 'safe', '', 90, 'a:2:{s:8:"form_btn";s:3:"url";s:5:"width";s:3:"500";}', 0, 0, ''),
-(82, 22, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 10, 'a:8:{s:7:"cate_id";s:1:"1";s:11:"cate_custom";s:1:"1";s:11:"is_multiple";s:1:"0";s:11:"upload_type";s:11:"png,jpg,gif";s:11:"upload_name";s:6:"图片";s:13:"upload_binary";s:1:"0";s:15:"upload_compress";s:1:"0";s:18:"upload_compress_wh";s:3:"500";}', 0, 0, ''),
+(82, 22, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 10, 'a:8:{s:7:"cate_id";s:0:"";s:11:"cate_custom";s:1:"0";s:11:"is_multiple";s:1:"0";s:11:"upload_type";s:11:"png,jpg,gif";s:11:"upload_name";s:6:"图片";s:13:"upload_binary";s:1:"0";s:15:"upload_compress";s:1:"0";s:18:"upload_compress_wh";s:3:"500";}', 0, 0, ''),
 (83, 22, '内容', 'content', 'longtext', '', 'editor', '', 'html_js', '', 30, 'a:8:{s:5:"width";s:3:"950";s:6:"height";s:3:"360";s:7:"is_code";s:0:"";s:7:"is_read";s:0:"";s:5:"etype";s:4:"full";s:7:"inc_tag";s:1:"1";s:10:"paste_text";s:0:"";s:4:"btns";a:9:{s:5:"image";s:1:"1";s:4:"info";s:1:"1";s:5:"video";s:1:"1";s:4:"file";s:1:"1";s:4:"page";s:1:"1";s:10:"insertcode";s:1:"1";s:9:"paragraph";s:1:"1";s:8:"fontsize";s:1:"1";s:10:"fontfamily";s:1:"1";}}', 0, 0, ''),
 (84, 23, '链接', 'link', 'longtext', '设置导航链接', 'url', '', 'safe', '', 90, 'a:1:{s:5:"width";s:3:"500";}', 0, 0, ''),
 (85, 23, '链接方式', 'target', 'varchar', '设置是否在新窗口打开', 'radio', '', 'safe', '_self', 100, 'a:1:{s:11:"option_list";s:5:"opt:6";}', 0, 0, ''),
 (88, 24, '图片', 'pictures', 'varchar', '设置产品的图片，支持多图，上传规格为500x500', 'upload', '', 'safe', '', 50, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"1";s:11:"upload_auto";s:1:"1";}', 0, 0, ''),
 (93, 21, '链接方式', 'target', 'varchar', '设置是否在新窗口打开', 'radio', '', 'safe', '_blank', 100, 'a:3:{s:11:"option_list";s:5:"opt:6";s:9:"put_order";s:1:"0";s:10:"ext_select";b:0;}', 0, 0, ''),
-(131, 40, '内容', 'content', 'longtext', '', 'editor', '', 'html_js', '', 255, 'a:7:{s:5:"width";s:3:"800";s:6:"height";s:3:"360";s:7:"is_code";s:0:"";s:7:"is_read";s:0:"";s:7:"inc_tag";s:0:"";s:10:"paste_text";s:0:"";s:4:"btns";a:6:{s:5:"image";s:1:"1";s:4:"info";s:1:"1";s:10:"insertcode";s:1:"1";s:9:"paragraph";s:1:"1";s:8:"fontsize";s:1:"1";s:10:"fontfamily";s:1:"1";}}', 0, 0, ''),
-(141, 46, '姓名', 'fullname', 'varchar', '', 'text', '', 'safe', '', 10, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";s:15:"ext_quick_words";b:0;s:14:"ext_quick_type";b:0;}', 1, 0, ''),
-(142, 46, '邮箱', 'email', 'varchar', '', 'text', '', 'safe', '', 130, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";s:15:"ext_quick_words";b:0;s:14:"ext_quick_type";b:0;}', 1, 0, ''),
-(143, 46, '内容', 'content', 'longtext', '', 'textarea', '', 'safe', '', 200, 'a:2:{s:5:"width";s:3:"300";s:6:"height";s:3:"180";}', 1, 0, ''),
+(131, 40, '内容', 'content', 'longtext', '', 'editor', '', 'html', '', 255, 'a:7:{s:5:"width";s:3:"800";s:6:"height";s:3:"360";s:7:"is_code";s:0:"";s:7:"is_read";s:0:"";s:7:"inc_tag";s:0:"";s:10:"paste_text";s:0:"";s:4:"btns";a:6:{s:5:"image";s:1:"1";s:4:"info";s:1:"1";s:10:"insertcode";s:1:"1";s:9:"paragraph";s:1:"1";s:8:"fontsize";s:1:"1";s:10:"fontfamily";s:1:"1";}}', 0, 0, ''),
+(141, 46, '姓名', 'fullname', 'varchar', '', 'text', '', 'safe', '', 10, 'a:5:{s:8:"form_btn";s:4:"date";s:10:"ext_format";s:0:"";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";s:13:"ext_include_3";s:1:"0";}', 1, 0, ''),
+(142, 46, '邮箱', 'email', 'varchar', '', 'text', '', 'safe', '', 130, 'a:5:{s:8:"form_btn";s:0:"";s:10:"ext_format";s:0:"";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";s:13:"ext_include_3";s:1:"0";}', 1, 0, ''),
+(143, 46, '内容', 'content', 'longtext', '', 'editor', '', 'html', '', 200, 'a:6:{s:6:"height";s:3:"180";s:7:"is_code";s:0:"";s:7:"is_read";s:0:"";s:7:"inc_tag";s:0:"";s:10:"paste_text";s:2:"on";s:4:"btns";s:0:"";}', 1, 0, ''),
 (144, 46, '管理员回复', 'adm_reply', 'longtext', '', 'editor', '', 'html_js', '', 255, 'a:7:{s:5:"width";s:3:"800";s:6:"height";s:3:"100";s:7:"is_code";s:0:"";s:7:"is_read";s:0:"";s:7:"inc_tag";s:0:"";s:10:"paste_text";s:0:"";s:4:"btns";a:3:{s:5:"image";s:1:"1";s:9:"paragraph";s:1:"1";s:8:"fontsize";s:1:"1";}}', 0, 0, ''),
 (200, 21, '图片', 'pic', 'varchar', '统一宽度为980，高度自定义，建议统一高度300', 'upload', '', 'safe', '', 20, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}', 0, 0, ''),
 (177, 22, '摘要', 'note', 'longtext', '简要文字描述', 'textarea', '', 'safe', '', 20, 'a:2:{s:5:"width";s:3:"800";s:6:"height";s:2:"80";}', 0, 2, ''),
@@ -2020,7 +1410,6 @@ INSERT INTO `qinggan_module_fields` (`id`, `module_id`, `title`, `identifier`, `
 (229, 65, '开发语言及数据库', 'devlang', 'varchar', '设置该软件的开发语言及数据库', 'text', '', 'safe', '', 50, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";s:15:"ext_quick_words";s:108:"PHPASPJSPPerlHTMLJSMySQLAccessSQLiteOracleC++C#VBDephiJavaPythonRuby其他";s:14:"ext_quick_type";s:1:"/";}', 0, 0, ''),
 (230, 65, '开发商', 'author', 'varchar', '设置开发商名称', 'text', '', 'safe', '', 20, 'a:4:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";s:15:"ext_quick_words";b:0;s:14:"ext_quick_type";b:0;}', 0, 0, ''),
 (231, 65, '缩略图', 'thumb', 'varchar', '设置附件缩略图，宽高为420x420', 'upload', '', 'safe', '', 110, 'a:8:{s:7:"cate_id";s:1:"1";s:11:"cate_custom";s:1:"0";s:11:"is_multiple";s:1:"0";s:11:"upload_type";s:11:"png,jpg,gif";s:11:"upload_name";s:6:"图片";s:13:"upload_binary";s:1:"1";s:15:"upload_compress";s:1:"0";s:18:"upload_compress_wh";s:3:"500";}', 0, 0, ''),
-(232, 65, '授权协议', 'copyright', 'varchar', '针对这个软件设置相应的授权协议', 'radio', '', 'safe', '免费版', 70, 'a:3:{s:11:"option_list";b:0;s:9:"put_order";s:1:"0";s:10:"ext_select";s:97:"免费版共享版试用版商业版开源软件GPLLGPLApache License其他授权";}', 0, 0, ''),
 (233, 66, '内容', 'content', 'longtext', '', 'editor', '', 'html', '', 255, 'a:7:{s:5:"width";s:3:"800";s:6:"height";s:3:"360";s:7:"is_code";s:0:"";s:7:"is_read";s:0:"";s:7:"inc_tag";s:0:"";s:10:"paste_text";s:0:"";s:4:"btns";a:4:{s:5:"image";s:1:"1";s:9:"paragraph";s:1:"1";s:8:"fontsize";s:1:"1";s:10:"fontfamily";s:1:"1";}}', 1, 0, ''),
 (234, 66, '置顶', 'toplevel', 'varchar', '', 'radio', '', 'int', '', 10, 'a:3:{s:11:"option_list";s:6:"opt:12";s:9:"put_order";s:1:"0";s:10:"ext_select";b:0;}', 0, 0, ''),
 (238, 66, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 30, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}', 1, 0, ''),
@@ -2032,7 +1421,7 @@ INSERT INTO `qinggan_module_fields` (`id`, `module_id`, `title`, `identifier`, `
 (269, 46, '图片', 'pic', 'varchar', '', 'upload', '', 'safe', '', 180, 'a:8:{s:7:"cate_id";s:1:"1";s:11:"cate_custom";s:1:"0";s:11:"is_multiple";s:1:"1";s:11:"upload_type";s:11:"png,jpg,gif";s:11:"upload_name";s:6:"图片";s:13:"upload_binary";s:1:"0";s:15:"upload_compress";s:1:"1";s:18:"upload_compress_wh";s:3:"500";}', 1, 0, ''),
 (270, 64, '客服QQ', 'qq', 'varchar', '', 'text', '', 'safe', '', 150, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 0, 0, ''),
 (288, 24, '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 20, 'a:3:{s:7:"cate_id";s:1:"1";s:11:"is_multiple";s:1:"0";s:11:"upload_auto";s:1:"1";}', 0, 0, ''),
-(293, 24, '内容', 'content', 'longtext', '', 'editor', '', 'html', '', 80, 'a:8:{s:5:"width";s:3:"950";s:6:"height";s:3:"360";s:7:"is_code";s:0:"";s:7:"is_read";s:0:"";s:5:"etype";s:4:"full";s:7:"inc_tag";s:0:"";s:10:"paste_text";s:0:"";s:4:"btns";a:4:{s:5:"image";s:1:"1";s:9:"paragraph";s:1:"1";s:8:"fontsize";s:1:"1";s:10:"fontfamily";s:1:"1";}}', 0, 0, ''),
+(293, 24, '内容', 'content', 'longtext', '', 'editor', '', 'html', '', 255, 'a:8:{s:5:"width";s:3:"950";s:6:"height";s:3:"360";s:7:"is_code";s:0:"";s:7:"is_read";s:0:"";s:5:"etype";s:4:"full";s:7:"inc_tag";s:0:"";s:10:"paste_text";s:0:"";s:4:"btns";a:4:{s:5:"image";s:1:"1";s:9:"paragraph";s:1:"1";s:8:"fontsize";s:1:"1";s:10:"fontfamily";s:1:"1";}}', 0, 0, ''),
 (294, 24, '手机版标题', 'm_title', 'varchar', '标题较短，请根据实际情况使用', 'text', '', 'safe', '', 10, 'a:4:{s:8:"form_btn";s:0:"";s:5:"width";s:3:"500";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";}', 0, 0, ''),
 (296, 74, '会员账号', 'account', 'varchar', '验证会员模块的账号', 'text', '', 'safe', '', 10, 'a:4:{s:8:"form_btn";s:0:"";s:5:"width";s:3:"500";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";}', 1, 0, ''),
 (297, 75, '姓名', 'fullname', 'varchar', '请填写汇款人的姓名', 'text', '', 'safe', '', 10, 'a:4:{s:8:"form_btn";s:0:"";s:5:"width";s:3:"300";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";}', 1, 0, ''),
@@ -2040,12 +1429,7 @@ INSERT INTO `qinggan_module_fields` (`id`, `module_id`, `title`, `identifier`, `
 (299, 75, '汇款金额', 'bankprice', 'varchar', '请填写您汇款的金额，建议多汇几分，以示区别', 'text', '', 'safe', '', 30, 'a:4:{s:8:"form_btn";s:0:"";s:5:"width";s:3:"300";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";}', 1, 0, ''),
 (300, 75, '摘要', 'note', 'longtext', '填写您的备注或汇款银行上的备注信息', 'textarea', '', 'safe', '', 40, 'a:2:{s:5:"width";s:3:"600";s:6:"height";s:2:"80";}', 1, 0, ''),
 (301, 75, '汇款银行', 'bankname', 'varchar', '请填写您汇款的银行', 'text', '', 'safe', '', 5, 'a:4:{s:8:"form_btn";s:0:"";s:5:"width";s:3:"300";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";}', 1, 0, ''),
-(368, 87, '自定义视频缩略图', 'thumb', 'varchar', '请指定视频缩略图地址，留空将读取阿里云视频里的缩略图', 'text', '', 'safe', '', 5, 'a:4:{s:8:"form_btn";s:5:"image";s:5:"width";s:3:"500";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";}', 0, 0, ''),
-(369, 87, '摘要', 'note', 'longtext', '请填写视频摘要，不超过80字，不支持HTML', 'textarea', '', 'safe', '', 10, 'a:2:{s:5:"width";s:3:"800";s:6:"height";s:3:"200";}', 0, 0, ''),
-(370, 87, '播放时长', 'longtime', 'varchar', '请填写视频能播放多少秒（单位是秒），留空从阿里云视频库中获取', 'text', '', 'safe', '', 25, 'a:4:{s:8:"form_btn";s:0:"";s:5:"width";s:0:"";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";}', 0, 0, ''),
-(371, 87, '阿里云视频ID', 'videoid', 'varchar', '请填写阿里云的视频ID，手动上传后会自动传进来', 'text', '', 'safe', '', 20, 'a:4:{s:8:"form_btn";s:0:"";s:5:"width";s:3:"500";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";}', 0, 0, ''),
-(376, 92, '联系地址', 'address', 'varchar', '', 'text', '', 'safe', '', 5, 'a:4:{s:8:"form_btn";s:0:"";s:5:"width";s:3:"500";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";}', 0, 0, ''),
-(377, 92, '备案号', 'cert', 'varchar', '', 'text', '', 'safe', '', 10, 'a:4:{s:8:"form_btn";s:0:"";s:5:"width";s:3:"300";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";}', 0, 0, '');
+(388, 40, '土地', 'ahhzkfzmnp', 'varchar', '请输入土地', 'text', '', 'safe', '', 5, 'a:5:{s:8:"form_btn";s:0:"";s:10:"ext_format";s:0:"";s:15:"ext_quick_words";s:14:"万元/亩\n天";s:14:"ext_quick_type";s:0:"";s:13:"ext_include_3";s:1:"0";}', 0, 0, '');
 
 -- --------------------------------------------------------
 
@@ -7145,12 +6529,12 @@ INSERT INTO `qinggan_order` (`id`, `sn`, `user_id`, `addtime`, `price`, `currenc
 (29, 'P2016120181U00023005', 23, 1480590448, '3288.0000', 1, '1.00000000', 'create', '', 0, 'b3bc02bfee2f30355d1e5376678fbcd8', 'a:2:{s:15:"投保人姓名";s:5:"fasdf";s:18:"投保人身份证";s:8:"fasdfasd";}', '', 'admin@phpok.com', '15818533971'),
 (30, 'P2016120721U00023001', 23, 1481082923, '3287.0000', 1, '1.00000000', 'create', '', 0, 'ee990818d86057886c54d0c8908f53d4', '', '', 'admin@phpok.com', '15818533971'),
 (31, 'P2017010666G001', 0, 1483673968, '0.0000', 1, '1.00000000', 'create', '', 0, '5ee860cf07307ec257bee5eaf17f2255', '', '', 'admin@phpok.com', ''),
-(32, 'P2017010660G002', 0, 1483676999, '0.0000', 1, '1.00000000', 'create', '', 0, '3e29208f0376f5d75524db3ce1b0c45f', '', '', 'admin@phpok.com', ''),
+(32, 'P2017010660G002', 0, 1483676999, '0.0000', 1, '1.00000000', 'shipping', '', 0, '3e29208f0376f5d75524db3ce1b0c45f', '', '', 'admin@phpok.com', ''),
 (33, 'P2017010631G003', 0, 1483677587, '4088.0000', 1, '1.00000000', 'create', '', 0, 'a6538051d54d573d62d04067992a8a02', '', '', 'admin@phpok.com', '15818533971'),
 (34, 'P2017010610U00023004', 23, 1483677638, '3288.0000', 1, '1.00000000', 'unpaid', '等待付款', 0, '83eedf1df5a6276c55c9166e4d097d0a', '', '', 'admin@phpok.com', '15818533971'),
 (35, 'P2017012041U00029001', 29, 1484897086, '4088.0000', 1, '1.00000000', 'unpaid', '等待付款', 0, '6059f590f531624ca5d716dc69d0109b', '', '', 'admin@phpok.com', '15818533971'),
 (36, 'P2017072477U00023001', 23, 1500895254, '3288.0000', 1, '1.00000000', 'create', '', 0, '2dd0f29b4212185eb44b1a55dbcd165e', '', 'fdsfasdf', 'admin@phpok.com', '15818533971'),
-(37, 'P2017102310G001', 0, 1508736949, '3288.0000', 1, '1.00000000', 'create', '', 0, 'aa9b1e2fb3d6a489e63de66b11db9c62', '', '', '', '15818533971');
+(37, 'P2017102310G001', 0, 1508736949, '3289.0000', 1, '6.16989994', 'unpaid', '等待付款', 0, 'aa9b1e2fb3d6a489e63de66b11db9c62', '', '', '', '15818533971');
 
 -- --------------------------------------------------------
 
@@ -7172,7 +6556,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_address` (
   `fullname` varchar(100) NOT NULL COMMENT '联系人姓名',
   `zipcode` varchar(50) NOT NULL COMMENT '邮编',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单地址库' AUTO_INCREMENT=26 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单地址库' AUTO_INCREMENT=27 ;
 
 --
 -- 转存表中的数据 `qinggan_order_address`
@@ -7187,7 +6571,8 @@ INSERT INTO `qinggan_order_address` (`id`, `order_id`, `country`, `province`, `c
 (22, 23, '中国', '', '', '', '', '', '', '', '', ''),
 (23, 24, '中国', '', '', '', '', '', '', '', '', ''),
 (24, 31, '中国', '浙江省', '绍兴市', '嵊州市', 'asdf', '15818533971', '', 'admin@phpok.com', 'fadsfasdfaf', ''),
-(25, 32, '中国', '河北省', '秦皇岛市', '青龙满族自治县', 'fasdf', '15818533971', '', 'admin@phpok.com', 'fdasfas', '');
+(25, 32, '中国', '河北省', '秦皇岛市', '青龙满族自治县', 'fasdf', '15818533971', '', 'admin@phpok.com', 'fdasfas', ''),
+(26, 37, '中国', '', '', '', '', '', '', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -7207,14 +6592,15 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_express` (
   `company` varchar(255) NOT NULL COMMENT '快递的公司全称',
   `is_end` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未结束1已结束',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单中涉及到的物流分配' AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单中涉及到的物流分配' AUTO_INCREMENT=6 ;
 
 --
 -- 转存表中的数据 `qinggan_order_express`
 --
 
 INSERT INTO `qinggan_order_express` (`id`, `order_id`, `express_id`, `code`, `addtime`, `last_query_time`, `title`, `homepage`, `company`, `is_end`) VALUES
-(4, 19, 4, '035652070464', 1476361318, 1476438520, '顺丰速运', 'http://www.sf-express.com/', '顺丰速运(集团)有限公司', 1);
+(4, 19, 4, '035652070464', 1476361318, 1476438520, '顺丰速运', 'http://www.sf-express.com/', '顺丰速运(集团)有限公司', 1),
+(5, 32, 4, '221781524940', 1509954037, 1509954043, '顺丰速运', 'http://www.sf-express.com/', '顺丰速运(集团)有限公司', 1);
 
 -- --------------------------------------------------------
 
@@ -7254,7 +6640,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_log` (
   `note` text NOT NULL COMMENT '操作内容',
   PRIMARY KEY (`id`),
   KEY `order_id` (`order_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单日志，用于了解当前的订单处理进度' AUTO_INCREMENT=204 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单日志，用于了解当前的订单处理进度' AUTO_INCREMENT=221 ;
 
 --
 -- 转存表中的数据 `qinggan_order_log`
@@ -7374,7 +6760,24 @@ INSERT INTO `qinggan_order_log` (`id`, `order_id`, `order_express_id`, `addtime`
 (200, 35, 0, 1484900171, '游客', '订单（P2017012041U00029001）状态变更为：等待付款'),
 (201, 35, 0, 1484900186, '游客', '订单（P2017012041U00029001）状态变更为：等待付款'),
 (202, 36, 0, 1500895254, 'admin', '订单创建成功，订单编号：P2017072477U00023001'),
-(203, 37, 0, 1508736949, '', '订单创建成功，订单编号：P2017102310G001');
+(203, 37, 0, 1508736949, '', '订单创建成功，订单编号：P2017102310G001'),
+(204, 32, 5, 1509954037, '苏相锟(admin)', '您的订单已经拣货完毕，待出库交付顺丰速运，运单号为：221781524940'),
+(205, 32, 0, 1509954037, '管理员：admin', '订单（P2017010660G002）状态变更为：正在发货'),
+(206, 32, 5, 1508376356, '顺丰速运', '已签收(前台古世燕 ),感谢使用顺丰,期待再次为您服务'),
+(207, 32, 5, 1508373636, '顺丰速运', '快件交给王红专，正在派送途中（联系电话：15013896651）'),
+(208, 32, 5, 1508331619, '顺丰速运', '已与收方客户约定新派送时间 201710192036,待派送'),
+(209, 32, 5, 1508330219, '顺丰速运', '快件派送不成功(已与收方客户约定新派送时间 ),待再次派送'),
+(210, 32, 5, 1508329645, '顺丰速运', '快件交给王红专，正在派送途中（联系电话：15013896651）'),
+(211, 32, 5, 1508316969, '顺丰速运', '快件到达 【深圳福田广华大厦营业点】'),
+(212, 32, 5, 1508314917, '顺丰速运', '快件在【深圳彩田集散中心】装车，已发往下一站'),
+(213, 32, 5, 1508313221, '顺丰速运', '快件到达 【深圳彩田集散中心】'),
+(214, 32, 5, 1508312316, '顺丰速运', '快件在【深圳五和集散中心】装车，已发往下一站'),
+(215, 32, 5, 1508307831, '顺丰速运', '快件到达 【深圳五和集散中心】'),
+(216, 32, 5, 1508305923, '顺丰速运', '快件在【深圳宝安深圳北站营业部】装车，已发往下一站'),
+(217, 32, 5, 1508300104, '顺丰速运', '顺丰速运 已收取快件'),
+(218, 32, 5, 1508296499, '顺丰速运', '顺丰速运 已收取快件'),
+(219, 0, 0, 1511505522, '苏相锟(admin)', '管理员编辑订单'),
+(220, 37, 0, 1511505548, '游客', '订单（P2017102310G001）状态变更为：等待付款');
 
 -- --------------------------------------------------------
 
@@ -7392,7 +6795,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_payment` (
   `dateline` int(11) NOT NULL DEFAULT '0' COMMENT '支付时间',
   `ext` text NOT NULL COMMENT '其他常用扩展信息',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单支付' AUTO_INCREMENT=35 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单支付' AUTO_INCREMENT=36 ;
 
 --
 -- 转存表中的数据 `qinggan_order_payment`
@@ -7412,7 +6815,8 @@ INSERT INTO `qinggan_order_payment` (`id`, `order_id`, `payment_id`, `title`, `p
 (31, 23, 'wallet', '钱包', '4.0000', 1480397786, 1480397788, 'a:1:{s:6:"钱包";d:4;}'),
 (32, 24, 'wallet', '钱包', '2.0000', 1480398062, 1480398064, 'a:1:{s:6:"钱包";d:2;}'),
 (33, 34, '16', '支付宝', '3288.0000', 1483677767, 0, ''),
-(34, 35, '17', '微信支付', '4088.0000', 1484900186, 0, '');
+(34, 35, '17', '微信支付', '4088.0000', 1484900186, 0, ''),
+(35, 37, '15', '支付宝', '3289.0000', 1511505548, 0, '');
 
 -- --------------------------------------------------------
 
@@ -7427,7 +6831,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_price` (
   `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '金额，-号表示优惠',
   PRIMARY KEY (`id`),
   KEY `order_id` (`order_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单金额明细清单' AUTO_INCREMENT=238 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单金额明细清单' AUTO_INCREMENT=241 ;
 
 --
 -- 转存表中的数据 `qinggan_order_price`
@@ -7547,9 +6951,9 @@ INSERT INTO `qinggan_order_price` (`id`, `order_id`, `code`, `price`) VALUES
 (232, 36, 'product', '3288.0000'),
 (233, 36, 'fee', '0.0000'),
 (234, 36, 'discount', '0.0000'),
-(235, 37, 'product', '3288.0000'),
-(236, 37, 'fee', '0.0000'),
-(237, 37, 'discount', '0.0000');
+(239, 37, 'shipping', '0.0000'),
+(238, 37, 'product', '3289.0000'),
+(240, 37, 'discount', '0.0000');
 
 -- --------------------------------------------------------
 
@@ -7600,7 +7004,7 @@ INSERT INTO `qinggan_order_product` (`id`, `order_id`, `tid`, `title`, `price`, 
 (39, 34, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', '3288.0000', 1, 'res/201603/23/5b8b8f3f6cfd32b9.jpg', 'a:2:{i:0;a:3:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"金色";s:3:"val";s:4:"gold";}i:1;a:3:{s:5:"title";s:6:"版本";s:7:"content";s:7:"16G ROM";s:3:"val";s:5:"MZ16G";}}', '0', '0', '台', '', 1),
 (40, 35, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', '4088.0000', 1, 'res/201603/23/5b8b8f3f6cfd32b9.jpg', 'a:2:{i:0;a:3:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"白色";s:3:"val";s:5:"white";}i:1;a:3:{s:5:"title";s:6:"版本";s:7:"content";s:7:"64G ROM";s:3:"val";s:3:"64G";}}', '0', '0', '台', '', 1),
 (41, 36, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', '3288.0000', 1, 'res/201603/23/5b8b8f3f6cfd32b9.jpg', 'a:2:{i:0;a:3:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"金色";s:3:"val";s:4:"gold";}i:1;a:3:{s:5:"title";s:6:"版本";s:7:"content";s:7:"16G ROM";s:3:"val";s:5:"MZ16G";}}', '0', '0', '台', '', 1),
-(42, 37, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', '3288.0000', 1, 'res/201603/23/5b8b8f3f6cfd32b9.jpg', 'a:2:{i:0;a:3:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"白色";s:3:"val";s:5:"white";}i:1;a:3:{s:5:"title";s:6:"版本";s:7:"content";s:7:"16G ROM";s:3:"val";s:5:"MZ16G";}}', '0', '0', '台', '', 1);
+(42, 37, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机5', '3288.0000', 1, 'res/201603/23/5b8b8f3f6cfd32b9.jpg', 'a:2:{i:0;a:2:{s:5:"title";s:6:"颜色";s:7:"content";s:6:"白色";}i:1;a:2:{s:5:"title";s:6:"版本";s:7:"content";s:7:"16G ROM";}}', '0', '0', '台', '', 1);
 
 -- --------------------------------------------------------
 
@@ -7679,7 +7083,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_payment_log` (
   `ext` text NOT NULL COMMENT '扩展',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='支付日志' AUTO_INCREMENT=21 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='支付日志' AUTO_INCREMENT=22 ;
 
 --
 -- 转存表中的数据 `qinggan_payment_log`
@@ -7703,7 +7107,8 @@ INSERT INTO `qinggan_payment_log` (`id`, `sn`, `type`, `payment_id`, `title`, `d
 (17, 'P2017010610U00023004', 'order', '16', '订单：P2017010610U00023004', 1483677767, 23, '3288.00', 1, '订单：P2017010610U00023004', 0, ''),
 (18, 'P2017012041U00029001', 'order', '17', '订单：P2017012041U00029001', 1484900186, 29, '4088.00', 1, '订单：P2017012041U00029001', 0, ''),
 (19, 'CZ590ee7f20cd1f', 'recharge', '15', '在线充值', 1494149106, 23, '1.00', 1, '充值编号：CZ590ee7f20cd1f', 0, 'a:1:{s:4:"goal";s:1:"2";}'),
-(20, 'CZ597c5e8463105', 'recharge', '15', '在线充值', 1501322884, 23, '100.00', 1, '充值编号：CZ597c5e8463105', 0, 'a:1:{s:4:"goal";s:1:"2";}');
+(20, 'CZ597c5e8463105', 'recharge', '15', '在线充值', 1501322884, 23, '100.00', 1, '充值编号：CZ597c5e8463105', 0, 'a:1:{s:4:"goal";s:1:"2";}'),
+(21, 'P2017102310G001', 'order', '15', '订单：P2017102310G001', 1511505548, 0, '3289.00', 1, '订单：P2017102310G001', 0, '');
 
 -- --------------------------------------------------------
 
@@ -7733,7 +7138,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_phpok` (
 
 INSERT INTO `qinggan_phpok` (`id`, `title`, `pid`, `type_id`, `identifier`, `site_id`, `status`, `cateid`, `ext`, `is_api`, `sqlinfo`) VALUES
 (18, '网站首页图片播放', 41, 'arclist', 'picplayer', 1, 1, 0, 'a:23:{s:5:"psize";s:1:"5";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:7:"in_text";s:1:"1";s:4:"attr";b:0;s:11:"fields_need";b:0;s:3:"tag";b:0;s:8:"keywords";b:0;s:7:"orderby";b:0;s:4:"cate";b:0;s:8:"cate_ext";i:0;s:12:"catelist_ext";i:0;s:11:"project_ext";i:0;s:11:"sublist_ext";i:0;s:10:"parent_ext";i:0;s:13:"fields_format";i:0;s:8:"user_ext";i:0;s:4:"user";b:0;s:12:"userlist_ext";i:0;s:6:"in_sub";i:0;s:10:"in_project";i:0;s:7:"in_cate";i:0;s:8:"title_id";b:0;}', 0, ''),
-(19, '头部导航内容', 42, 'arclist', 'menu', 1, 1, 0, 'a:23:{s:5:"psize";s:2:"80";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:7:"in_text";s:1:"1";s:4:"attr";b:0;s:11:"fields_need";b:0;s:3:"tag";b:0;s:8:"keywords";b:0;s:7:"orderby";b:0;s:4:"cate";b:0;s:8:"cate_ext";i:0;s:12:"catelist_ext";i:0;s:11:"project_ext";i:0;s:11:"sublist_ext";i:0;s:10:"parent_ext";i:0;s:13:"fields_format";i:0;s:8:"user_ext";i:0;s:4:"user";b:0;s:12:"userlist_ext";i:0;s:6:"in_sub";s:1:"1";s:10:"in_project";i:0;s:7:"in_cate";i:0;s:8:"title_id";b:0;}', 0, ''),
+(19, '头部导航内容', 42, 'arclist', 'menu', 1, 1, 0, 'a:15:{s:5:"psize";s:2:"80";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:1:"*";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";s:1:"1";s:8:"title_id";s:0:"";}', 0, ''),
 (20, '公司简介', 87, 'arc', 'aboutus', 1, 1, 0, 'a:13:{s:5:"psize";i:0;s:6:"offset";i:0;s:7:"is_list";i:0;s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:4:"cate";s:0:"";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:6:"in_sub";i:0;s:8:"title_id";s:7:"aboutus";}', 0, ''),
 (21, '产品分类', 45, 'catelist', 'products_cate', 1, 1, 70, 'a:20:{s:5:"psize";b:0;s:6:"offset";b:0;s:7:"is_list";b:0;s:7:"in_text";b:0;s:4:"attr";b:0;s:11:"fields_need";b:0;s:3:"tag";b:0;s:8:"keywords";b:0;s:7:"orderby";b:0;s:4:"cate";b:0;s:8:"cate_ext";b:0;s:12:"catelist_ext";b:0;s:11:"project_ext";b:0;s:11:"sublist_ext";b:0;s:10:"parent_ext";b:0;s:13:"fields_format";b:0;s:8:"user_ext";b:0;s:4:"user";b:0;s:12:"userlist_ext";b:0;s:6:"in_sub";b:0;}', 0, ''),
 (22, '最新产品', 45, 'arclist', 'new_products', 1, 1, 70, 'a:15:{s:5:"psize";s:1:"8";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:9:"ext.thumb";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:21:"thumb,m_title,content";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 0, ''),
@@ -7777,8 +7182,8 @@ CREATE TABLE IF NOT EXISTS `qinggan_plugins` (
 --
 
 INSERT INTO `qinggan_plugins` (`id`, `title`, `author`, `version`, `status`, `taxis`, `note`, `param`) VALUES
-('identifier', '标识串自动生成工具', 'phpok.com', '1.0', 1, 10, '可实现以 title 的表单数据', 'a:5:{s:9:"is_youdao";s:1:"1";s:7:"keyfrom";s:9:"phpok-com";s:5:"keyid";s:9:"108499576";s:10:"is_pingyin";s:1:"1";s:5:"is_py";s:1:"1";}'),
-('plaction', '批处理插件', 'phpok.com', '1.0', 1, 60, '可以批量删除，审核，隐藏等操作', '');
+('usershow', '会员才可以查看的权限', 'phpok.com', '1.0', 1, 10, '实现会员才可以查看内容及显示列表', 'a:3:{s:7:"is_list";s:1:"1";s:7:"checkid";s:7:"is_user";s:5:"thumb";s:5:"thumb";}'),
+('ggzt', '更改主题插件', 'phpok.com', '1.0', 1, 20, '是一个更改主题插件', '');
 
 -- --------------------------------------------------------
 
@@ -7795,7 +7200,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_popedom` (
   `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序',
   PRIMARY KEY (`id`),
   KEY `gid` (`gid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='权限明细' AUTO_INCREMENT=1403 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='权限明细' AUTO_INCREMENT=1411 ;
 
 --
 -- 转存表中的数据 `qinggan_popedom`
@@ -8314,22 +7719,6 @@ INSERT INTO `qinggan_popedom` (`id`, `gid`, `pid`, `title`, `identifier`, `taxis
 (1365, 88, 0, '添加', 'add', 20),
 (1366, 88, 0, '修改', 'modify', 30),
 (1367, 88, 0, '删除', 'delete', 40),
-(1384, 20, 396, '查看', 'list', 10),
-(1385, 20, 396, '编辑', 'set', 20),
-(1386, 20, 396, '添加', 'add', 30),
-(1387, 20, 396, '修改', 'modify', 40),
-(1388, 20, 396, '删除', 'delete', 50),
-(1389, 20, 396, '启用/禁用', 'status', 60),
-(1390, 20, 396, '扩展', 'ext', 70),
-(1391, 20, 396, '评论', 'comment', 80),
-(1392, 20, 397, '查看', 'list', 10),
-(1393, 20, 397, '编辑', 'set', 20),
-(1394, 20, 397, '添加', 'add', 30),
-(1395, 20, 397, '修改', 'modify', 40),
-(1396, 20, 397, '删除', 'delete', 50),
-(1397, 20, 397, '启用/禁用', 'status', 60),
-(1398, 20, 397, '扩展', 'ext', 70),
-(1399, 20, 397, '评论', 'comment', 80),
 (1400, 92, 0, '查看', 'list', 10),
 (1401, 92, 0, '生成', 'save', 20),
 (1402, 92, 0, '删除', 'delete', 30);
@@ -8389,7 +7778,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_project` (
   PRIMARY KEY (`id`),
   KEY `parent_id` (`parent_id`),
   KEY `site_id` (`site_id`,`status`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='项目管理器' AUTO_INCREMENT=398 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='项目管理器' AUTO_INCREMENT=399 ;
 
 --
 -- 转存表中的数据 `qinggan_project`
@@ -8398,9 +7787,9 @@ CREATE TABLE IF NOT EXISTS `qinggan_project` (
 INSERT INTO `qinggan_project` (`id`, `parent_id`, `site_id`, `module`, `cate`, `title`, `nick_title`, `taxis`, `status`, `tpl_index`, `tpl_list`, `tpl_content`, `is_identifier`, `ico`, `orderby`, `alias_title`, `alias_note`, `psize`, `uid`, `identifier`, `seo_title`, `seo_keywords`, `seo_desc`, `subtopics`, `is_search`, `is_tag`, `is_biz`, `is_userid`, `is_tpl_content`, `is_seo`, `currency_id`, `admin_note`, `hidden`, `post_status`, `comment_status`, `post_tpl`, `etpl_admin`, `etpl_user`, `etpl_comment_admin`, `etpl_comment_user`, `is_attr`, `tag`, `cate_multiple`, `biz_attr`, `freight`) VALUES
 (41, 0, 1, 21, 0, '图片播放器', '', 20, 1, '', '', '', 0, 'images/ico/picplayer.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'picture-player', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0),
 (42, 0, 1, 23, 0, '导航菜单', '', 30, 1, '', '', '', 0, 'images/ico/menu.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '导航名称', '', 30, 0, 'menu', '', '', '', 1, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0),
-(43, 0, 1, 22, 7, '资讯中心', '', 12, 1, '', '', '', 0, 'images/ico/article.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '新闻主题', '', 20, 0, 'news', '', '', '', 0, 1, 1, 0, 1, 0, 0, 0, '', 0, 0, 1, '', '', '', '', '', 1, '新闻,资讯', 0, 0, 0),
+(43, 0, 1, 22, 7, '资讯中心', '', 12, 1, '', '', '', 1, 'images/ico/article.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '新闻主题', '', 20, 0, 'news', '', '', '', 0, 1, 0, 0, 1, 0, 1, 0, '', 0, 0, 1, '', '', '', '', '', 1, '新闻,资讯', 0, 0, 0),
 (87, 0, 1, 40, 0, '关于我们', '', 15, 1, '', '', '', 1, 'images/ico/about.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'about', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0),
-(45, 0, 1, 24, 70, '产品展示', '', 50, 1, '', '', '', 0, 'images/ico/product.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '产品名称', '', 12, 0, 'product', '', '', '', 0, 1, 0, 1, 0, 0, 0, 1, '', 0, 0, 0, '', '', '', '', '', 1, '', 1, 1, 0),
+(45, 0, 1, 24, 70, '产品展示', '', 50, 1, '', '', '', 0, 'images/ico/product.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '产品名称', '', 12, 0, 'product', '', '', '', 0, 1, 0, 1, 0, 0, 0, 1, '', 0, 0, 1, '', '', '', '', '', 1, '', 1, 1, 1),
 (142, 0, 1, 61, 0, '友情链接', '', 120, 1, '', '', '', 0, 'images/ico/link.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '网站名称', '', 30, 0, 'link', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 1, 0, 'post_link', 'project_save', '', '', '', 0, '', 0, 0, 0),
 (96, 0, 1, 46, 0, '在线留言', '', 70, 1, '', '', '', 0, 'images/ico/comment.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '留言主题', '', 30, 0, 'book', '', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 1, 1, '', 'project_save', '', '', '', 0, '', 0, 0, 0),
 (144, 0, 1, 68, 154, '图集相册', '', 90, 1, '', '', '', 0, 'images/ico/photo.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'photo', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0),
@@ -8409,9 +7798,7 @@ INSERT INTO `qinggan_project` (`id`, `parent_id`, `site_id`, `module`, `cate`, `
 (148, 0, 1, 64, 0, '在线客服', '', 130, 1, '', '', '', 0, 'images/ico/qq.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '客服类型', '', 30, 0, 'kefu', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0),
 (150, 0, 1, 0, 0, '售后保障', '', 60, 1, '', '', '', 0, 'images/ico/paper.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'shouhoukouzhang', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0),
 (152, 0, 1, 66, 201, '论坛BBS', '', 110, 1, 'bbs_index', 'bbs_list', 'bbs_detail', 0, 'images/ico/forum.png', 'ext.toplevel DESC,l.replydate DESC,l.dateline DESC,l.id DESC', '讨论主题', '', 30, 0, 'bbs', '', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 1, 1, 'bbs_fabu', '', '', '', '', 0, '', 0, 0, 0),
-(386, 0, 1, 75, 0, '银行汇款', '', 140, 1, '', '', '', 0, 'images/ico/bank.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '订单编号', '', 30, 0, 'yinxinghuikuan', '', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 1, 0, '', '', '', '', '', 0, '', 0, 0, 0),
-(396, 0, 1, 87, 0, '视频库', '', 145, 1, '', '', '', 0, 'images/ico/video.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '视频名称', '', 30, 0, 'video-library', '', '', '', 0, 0, 1, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0),
-(397, 0, 1, 92, 0, '测试独立', '', 150, 1, '', '', '', 0, '', 'id DESC', '', '', 30, 0, 'test-independence', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '测试', 0, 0, 0);
+(386, 0, 1, 75, 0, '银行汇款', '', 140, 1, '', '', '', 0, 'images/ico/bank.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '订单编号', '', 30, 0, 'yinxinghuikuan', '', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 1, 0, '', '', '', '', '', 0, '', 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -8439,19 +7826,16 @@ CREATE TABLE IF NOT EXISTS `qinggan_reply` (
   `vtype` varchar(255) NOT NULL DEFAULT 'title' COMMENT '主题类型，titlte表示列表中的主题，project表示项目，cate表示分类',
   PRIMARY KEY (`id`),
   KEY `tid` (`tid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='主题评论表' AUTO_INCREMENT=46 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='主题评论表' AUTO_INCREMENT=48 ;
 
 --
 -- 转存表中的数据 `qinggan_reply`
 --
 
 INSERT INTO `qinggan_reply` (`id`, `tid`, `parent_id`, `vouch`, `star`, `uid`, `ip`, `addtime`, `status`, `session_id`, `content`, `admin_id`, `adm_content`, `adm_time`, `order_id`, `res`, `vtype`) VALUES
-(39, 1369, 0, 0, 3, 0, '0.0.0.0', 1480329243, 1, 'sr4fjluaen5tpins0v8c3ife23', '<p>测试这个的评论，看有没有赠分~</p>', 0, '<p>测试下回复！<br/></p>', 1502172747, 0, '', 'title'),
 (40, 1369, 0, 0, 0, 23, '0.0.0.0', 1480329276, 1, 'sr4fjluaen5tpins0v8c3ife23', '看下这条评论！', 0, '', 0, 0, '', 'title'),
 (42, 1762, 0, 0, 0, 23, '0.0.0.0', 1480392662, 1, 'kvvddou0472srpf83vcpd32h20', '测试下评论', 0, '', 0, 0, '', 'title'),
-(43, 1762, 0, 0, 0, 23, '0.0.0.0', 1480393813, 1, 'kvvddou0472srpf83vcpd32h20', '再来测试下！', 0, '', 0, 0, '', 'title'),
-(44, 1763, 0, 0, 0, 23, '0.0.0.0', 1480398396, 1, '', '测试下点评噢', 0, '', 0, 23, '', 'title'),
-(45, 222081, 0, 0, 0, 23, '::1', 1508737010, 1, 'qoedjr82b36gvspqeilpef45g1', '测试用的', 0, '', 0, 0, '', 'title');
+(43, 1762, 0, 0, 0, 23, '0.0.0.0', 1480393813, 1, 'kvvddou0472srpf83vcpd32h20', '再来测试下！', 0, '', 0, 0, '', 'title');
 
 -- --------------------------------------------------------
 
@@ -8477,7 +7861,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_res` (
   `admin_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '管理员ID',
   PRIMARY KEY (`id`),
   KEY `ext` (`ext`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='资源ID' AUTO_INCREMENT=1259 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='资源ID' AUTO_INCREMENT=1308 ;
 
 --
 -- 转存表中的数据 `qinggan_res`
@@ -8508,15 +7892,8 @@ INSERT INTO `qinggan_res` (`id`, `cate_id`, `folder`, `name`, `ext`, `filename`,
 (1026, 1, 'res/201603/23/', '2e16c80d821beaf0.jpg', 'jpg', 'res/201603/23/2e16c80d821beaf0.jpg', 'res/201603/23/_1026.jpg', 1458669513, 'iphone5se-2', 'a:2:{s:5:"width";i:600;s:6:"height";i:600;}', '', '', 0, 0, 1),
 (1027, 1, 'res/201603/23/', '1548d11e0a50ee55.jpg', 'jpg', 'res/201603/23/1548d11e0a50ee55.jpg', 'res/201603/23/_1027.jpg', 1458669513, 'iphone5se-3', 'a:2:{s:5:"width";i:600;s:6:"height";i:600;}', '', '', 0, 0, 1),
 (1028, 1, 'res/201603/23/', 'e2bb1c4c3a4bc11b.jpg', 'jpg', 'res/201603/23/e2bb1c4c3a4bc11b.jpg', 'res/201603/23/_1028.jpg', 1458669514, 'iphone5se-4', 'a:2:{s:5:"width";i:600;s:6:"height";i:600;}', '', '', 0, 0, 1),
-(1029, 11, 'res/soft/2016/', '37e7a0aff81446b8.zip', 'zip', 'res/soft/2016/37e7a0aff81446b8.zip', 'images/filetype-large/zip.jpg', 1458715867, 'copy', '', '', '', 0, 4, 1),
-(1040, 1, 'res/201604/03/', '0143658fa7928c1c', 'jpg', 'res/201604/03/0143658fa7928c1c.jpg', 'res/201604/03/_1040.jpg', 1459617276, '160', 'a:2:{s:5:"width";i:160;s:6:"height";i:160;}', '', 'v8tocibrgebid4pht9ksprfhd1', 23, 0, 0),
-(1247, 1, 'res/201706/23/', '9c775ba204240f55.jpg', 'jpg', 'res/201706/23/9c775ba204240f55.jpg', 'res/201706/23/_1247.jpg', 1498191006, '我', 'a:2:{s:5:"width";i:1080;s:6:"height";i:1920;}', '', '', 0, 0, 1),
-(1248, 1, 'res/201708/28/', '337eb426640e0b98.jpg', 'jpg', 'res/201708/28/337eb426640e0b98.jpg', 'res/201708/28/_1248.jpg', 1503908299, '自己', 'a:2:{s:5:"width";i:1080;s:6:"height";i:1332;}', '', 'ojtnpl8akhr27h5d9a8dm79lk7', 23, 0, 0),
-(1250, 1, 'res/201709/16/', '655b45e9c29c8e30.jpg', 'jpg', 'res/201709/16/655b45e9c29c8e30.jpg', 'res/201709/16/_1250.jpg', 1505531806, '400', 'a:2:{s:5:"width";i:400;s:6:"height";i:400;}', '', 'cl2gqvhrno0fojg2g2k45bvnj2', 0, 0, 0),
-(1256, 1, 'res/201709/28/', '628f03f84b269dd2.jpg', 'jpg', 'res/201709/28/628f03f84b269dd2.jpg', 'res/201709/28/_1256.jpg', 1506594973, 'WIN_20170630_15_41_53_Pro', 'a:2:{s:5:"width";i:1920;s:6:"height";i:1080;}', '', 'v3g0sec1b0vf7ag4l79kdonu04', 0, 0, 0),
-(1255, 1, 'res/201709/28/', '8082ae652ca7f8de.jpg', 'jpg', 'res/201709/28/8082ae652ca7f8de.jpg', 'res/201709/28/_1255.jpg', 1506594935, 'WIN_20170630_15_41_56_Pro', 'a:2:{s:5:"width";i:1920;s:6:"height";i:1080;}', '', 'v3g0sec1b0vf7ag4l79kdonu04', 0, 0, 0),
-(1257, 1, 'res/201709/28/', 'f48f8d342c67915c.jpg', 'jpg', 'res/201709/28/f48f8d342c67915c.jpg', 'res/201709/28/_1257.jpg', 1506594988, 'WIN_20170630_15_41_56_Pro', 'a:2:{s:5:"width";i:1920;s:6:"height";i:1080;}', '', 'v3g0sec1b0vf7ag4l79kdonu04', 0, 0, 0),
-(1258, 1, 'res/201709/28/', '35689810417bd6ac.jpg', 'jpg', 'res/201709/28/35689810417bd6ac.jpg', 'res/201709/28/_1258.jpg', 1506595195, 'WIN_20170630_15_41_56_Pro', 'a:2:{s:5:"width";i:1920;s:6:"height";i:1080;}', '', 'v3g0sec1b0vf7ag4l79kdonu04', 0, 0, 0);
+(1029, 11, 'res/soft/2016/', '37e7a0aff81446b8.zip', 'zip', 'res/soft/2016/37e7a0aff81446b8.zip', 'images/filetype-large/zip.jpg', 1458715867, 'copy', '', '', '', 0, 6, 1),
+(1250, 1, 'res/201709/16/', '655b45e9c29c8e30.jpg', 'jpg', 'res/201709/16/655b45e9c29c8e30.jpg', 'res/201709/16/_1250.jpg', 1505531806, '400', 'a:2:{s:5:"width";i:400;s:6:"height";i:400;}', '', 'cl2gqvhrno0fojg2g2k45bvnj2', 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -8537,7 +7914,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_res_cate` (
   `ico` tinyint(1) NOT NULL DEFAULT '0' COMMENT '后台缩略图',
   `filemax` int(10) unsigned NOT NULL DEFAULT '2' COMMENT '上传文件大小限制',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='资源分类存储' AUTO_INCREMENT=25 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='资源分类存储' AUTO_INCREMENT=26 ;
 
 --
 -- 转存表中的数据 `qinggan_res_cate`
@@ -8547,9 +7924,6 @@ INSERT INTO `qinggan_res_cate` (`id`, `title`, `root`, `folder`, `is_default`, `
 (1, '图片', 'res/', 'Ym/d/', 1, 'png,jpg,gif', '图片', '', 1, 1, 2000),
 (11, '压缩软件', 'res/soft/', 'Y/', 0, 'rar,zip', '压缩包', '', 0, 0, 2000),
 (20, 'Excel', 'res/excel', '', 0, 'xls,xlsx', 'Excel文件', '', 0, 0, 2048),
-(21, '测试分类', 'res/', 'Ym/d/', 0, 'png,jpg,gif', '图片', '', 1, 1, 2048),
-(22, '这个也是测试的', 'res/', 'Ym/d/', 0, 'png,jpg,gif', '图片', '', 1, 1, 102400),
-(23, 'ddd', 'res/', 'Ym/d/', 0, 'png,jpg,gif', '图片', '', 1, 1, 102400),
 (24, '视频', 'res/', 'Ym/d/', 0, 'mp4,flv,mp3,mpeg', '影音文字', '', 0, 0, 2048);
 
 -- --------------------------------------------------------
@@ -8619,22 +7993,8 @@ INSERT INTO `qinggan_res_ext` (`res_id`, `gd_id`, `filename`, `filetime`) VALUES
 (1025, 2, 'res/201603/23/thumb_1025.jpg', 1478857221),
 (1028, 12, 'res/201603/23/auto_1028.jpg', 1478857215),
 (1028, 2, 'res/201603/23/thumb_1028.jpg', 1478857215),
-(1040, 12, 'res/201604/03/auto_1040.jpg', 1478857209),
-(1040, 2, 'res/201604/03/thumb_1040.jpg', 1478857209),
-(1247, 12, 'res/201706/23/auto_1247.jpg', 1498191006),
-(1247, 2, 'res/201706/23/thumb_1247.jpg', 1498191006),
-(1248, 12, 'res/201708/28/auto_1248.jpg', 1503908299),
-(1248, 2, 'res/201708/28/thumb_1248.jpg', 1503908299),
 (1250, 12, 'res/201709/16/auto_1250.jpg', 1505531806),
-(1250, 2, 'res/201709/16/thumb_1250.jpg', 1505531806),
-(1256, 12, 'res/201709/28/auto_1256.jpg', 1506594973),
-(1255, 12, 'res/201709/28/auto_1255.jpg', 1506594935),
-(1255, 2, 'res/201709/28/thumb_1255.jpg', 1506594935),
-(1256, 2, 'res/201709/28/thumb_1256.jpg', 1506594973),
-(1257, 12, 'res/201709/28/auto_1257.jpg', 1506594988),
-(1257, 2, 'res/201709/28/thumb_1257.jpg', 1506594988),
-(1258, 12, 'res/201709/28/auto_1258.jpg', 1506595195),
-(1258, 2, 'res/201709/28/thumb_1258.jpg', 1506595195);
+(1250, 2, 'res/201709/16/thumb_1250.jpg', 1505531806);
 
 -- --------------------------------------------------------
 
@@ -8736,7 +8096,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_sysmenu` (
   `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '0表示全局网站',
   `icon` varchar(255) NOT NULL COMMENT '图标路径',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='PHPOK后台系统菜单' AUTO_INCREMENT=93 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='PHPOK后台系统菜单' AUTO_INCREMENT=95 ;
 
 --
 -- 转存表中的数据 `qinggan_sysmenu`
@@ -8762,7 +8122,7 @@ INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, 
 (27, 1, '项目管理', 1, 'project', 10, '', '', '', 0, 0, 'newtab'),
 (28, 4, '通知模板', 1, 'email', 40, '', '', '', 0, 0, ''),
 (29, 1, '管理员维护', 1, 'admin', 80, '', '', '', 0, 0, ''),
-(30, 1, '风格管理', 1, 'tpl', 60, '', '', '', 0, 0, 'newtab'),
+(30, 1, '风格管理', 1, 'tpl', 60, '', '', '', 0, 0, ''),
 (31, 1, '站点管理', 1, 'site', 90, '', '', '', 0, 0, ''),
 (32, 5, '评论管理', 1, 'reply', 50, '', '', '', 0, 0, 'newtab'),
 (33, 2, '货币及汇率', 1, 'currency', 30, '', '', '', 0, 0, ''),
@@ -8784,7 +8144,7 @@ INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, 
 (80, 4, '计划任务', 1, 'task', 140, '', '', '', 0, 0, ''),
 (87, 1, '日志', 1, 'log', 110, '', '', '', 0, 1, ''),
 (88, 3, '会员地址库', 1, 'address', 50, '', '', '', 0, 1, ''),
-(92, 5, '报表统计', 1, 'report', 80, '', '', '', 0, 1, 'newtab');
+(92, 5, '报表统计', 1, 'report', 80, '', '', '', 0, 1, '');
 
 -- --------------------------------------------------------
 
@@ -8814,7 +8174,7 @@ INSERT INTO `qinggan_tag` (`id`, `site_id`, `title`, `url`, `target`, `hits`, `a
 (64, 1, '资讯', '', 0, 0, '', 0, 3),
 (65, 1, '自检清单', '', 0, 0, '', 0, 3),
 (66, 1, '必应', '', 0, 0, '', 0, 3),
-(67, 1, '谷歌', '', 0, 0, '', 0, 3),
+(67, 1, '谷歌', 'https://www.google.com', 0, 0, '', 0, 3),
 (68, 1, '测试', '', 0, 0, '', 0, 3);
 
 -- --------------------------------------------------------
@@ -8836,7 +8196,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_tag_stat` (
 --
 
 INSERT INTO `qinggan_tag_stat` (`title_id`, `tag_id`) VALUES
-('p397', 68),
 ('p43', 63),
 ('p43', 64);
 
@@ -8861,14 +8220,14 @@ CREATE TABLE IF NOT EXISTS `qinggan_task` (
   `only_once` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1表示仅执行一次',
   `is_lock` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未锁定1已锁定',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='计划任务' AUTO_INCREMENT=122 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='计划任务' AUTO_INCREMENT=124 ;
 
 --
 -- 转存表中的数据 `qinggan_task`
 --
 
 INSERT INTO `qinggan_task` (`id`, `year`, `month`, `day`, `hour`, `minute`, `second`, `exec_time`, `stop_time`, `action`, `param`, `only_once`, `is_lock`) VALUES
-(15, '*', '*', '*', '*', '42', '*', 1505529723, 1505529723, 'expired', '', 0, 0);
+(15, '*', '*', '*', '*', '42', '*', 1516287431, 1516287431, 'expired', '', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -8894,8 +8253,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_tpl` (
 --
 
 INSERT INTO `qinggan_tpl` (`id`, `title`, `author`, `folder`, `refresh_auto`, `refresh`, `ext`, `folder_change`, `phpfolder`) VALUES
-(1, '默认风格', 'phpok.com', 'www', 1, 0, 'html', 'css,images,js', 'phpinc'),
-(18, 'English', 'phpok.com', 'en', 1, 0, 'html', 'css,js,images', 'phpinc');
+(1, '默认风格', 'phpok.com', 'www', 1, 0, 'html', 'css,images,js', 'phpinc');
 
 -- --------------------------------------------------------
 
@@ -8928,8 +8286,6 @@ INSERT INTO `qinggan_user` (`id`, `group_id`, `user`, `pass`, `status`, `regtime
 (26, 2, 'd2', 'defe12aad396f90e6b179c239de260d4:ab', 1, 1469963896, 'ddd@ddd.com', '', '', ''),
 (27, 2, 'suxiangkun', 'e8eb7ea7212ace80bbc98aa93a17904e:35', 1, 1470033757, 'suxiangkun@126.com', '', '', ''),
 (28, 2, '18928475010', '44e8f70e59e6b6a2472c241d351428a7:ed', 1, 1481105125, '', '18928475010', '8536-1481439164', ''),
-(29, 2, 'WX148480971245', 'a6c26f6a231a66b61b410d828f4ab454:03', 1, 1484809712, '', '', '', 'http://wx.qlogo.cn/mmopen/C5MIGaMvBHLg44Juo7PFGnV1Viavz6NnCQcO0UnN7tW6vXLnibFEWpSnoWrpwJnljrfibboQiaric4O8DV8iaNcng1uCjboibkmUXQz/0'),
-(30, 7, 'Xiangkun Su', 'fbba68c30cf6807deb9eaae82e4fdea2:5f', 1, 1497592640, '', '', '', ''),
 (31, 2, 'demo123', 'a6c742c087858b436686c019306f0bb9:c3', 1, 1504764209, 'de@dd.com', '147258369', '', '');
 
 -- --------------------------------------------------------
@@ -8989,8 +8345,6 @@ INSERT INTO `qinggan_user_ext` (`id`, `fullname`, `gender`) VALUES
 (26, '', ''),
 (27, '', ''),
 (28, '', ''),
-(29, 'phpok.com-苏相锟', '1'),
-(30, 'Xiangkun Su', ''),
 (31, 'Su', '');
 
 -- --------------------------------------------------------
@@ -9003,7 +8357,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_fields` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '字段ID，自增',
   `title` varchar(255) NOT NULL COMMENT '字段名称',
   `identifier` varchar(50) NOT NULL COMMENT '字段标识串',
-  `field_type` varchar(255) NOT NULL DEFAULT '200' COMMENT '字段存储类型',
+  `field_type` varchar(255) NOT NULL COMMENT '字段存储类型',
   `note` varchar(255) NOT NULL COMMENT '字段内容备注',
   `form_type` varchar(100) NOT NULL COMMENT '表单类型',
   `form_style` varchar(255) NOT NULL COMMENT '表单CSS',
@@ -9013,14 +8367,14 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_fields` (
   `ext` text NOT NULL COMMENT '扩展内容',
   `is_edit` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0不可编辑1可编辑',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='字段管理器' AUTO_INCREMENT=28 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='字段管理器' AUTO_INCREMENT=31 ;
 
 --
 -- 转存表中的数据 `qinggan_user_fields`
 --
 
 INSERT INTO `qinggan_user_fields` (`id`, `title`, `identifier`, `field_type`, `note`, `form_type`, `form_style`, `format`, `content`, `taxis`, `ext`, `is_edit`) VALUES
-(21, '姓名', 'fullname', 'varchar', '', 'text', '', 'safe', '', 10, 'a:2:{s:8:"form_btn";b:0;s:5:"width";s:3:"300";}', 1),
+(21, '姓名9999', 'fullname', 'varchar', '', 'text', '', 'safe', '', 10, 'a:5:{s:8:"form_btn";s:0:"";s:10:"ext_format";s:0:"";s:15:"ext_quick_words";s:0:"";s:14:"ext_quick_type";s:0:"";s:13:"ext_include_3";s:1:"0";}', 1),
 (22, '性别', 'gender', 'varchar', '', 'radio', '', 'safe', '', 15, 'a:3:{s:11:"option_list";s:5:"opt:1";s:9:"put_order";s:1:"0";s:10:"ext_select";s:0:"";}', 1);
 
 -- --------------------------------------------------------
@@ -9049,9 +8403,9 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_group` (
 --
 
 INSERT INTO `qinggan_user_group` (`id`, `title`, `status`, `is_default`, `is_guest`, `is_open`, `taxis`, `register_status`, `tbl_id`, `fields`, `popedom`) VALUES
-(2, '普通会员', 1, 1, 0, 0, 10, '', 0, '', 'a:2:{i:1;s:266:"read:43,read:87,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,post:152,post1:152,reply:152,reply1:152,read:142,post:142,read:148,read:386,post:386,read:389,read:390,read:391,read:392,read:393,read:394,read:395,read:396,read:397";i:33;s:57:"read:384,post:384,reply:384,post1:384,reply1:384,read:385";}'),
-(3, '游客组', 1, 0, 1, 0, 200, '', 0, '', 'a:2:{i:1;s:555:"read:149,read:87,read:90,read:146,read:92,read:93,read:43,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,read:142,post:142,read:148,read:153,read:156,read:157,read:158,post:158,post1:158,read:159,read:160,post:160,reply:160,post1:160,reply1:160,read:161,post:161,reply:161,post1:161,reply1:161,read:162,post:162,reply:162,post1:162,reply1:162,read:163,read:164,post:164,reply:164,post1:164,reply1:164,read:165,read:166,read:386,post:386,read:389,read:390,read:391,read:392,read:393,read:394,read:395,read:396,read:397";i:33;s:57:"read:384,post:384,reply:384,post1:384,reply1:384,read:385";}'),
-(7, 'VIP会员', 1, 0, 0, 0, 255, '0', 0, 'fullname,gender', 'a:1:{i:1;s:251:"read:43,read:87,read:41,read:42,read:147,read:45,read:150,read:96,post:96,post1:96,reply:96,reply1:96,read:144,read:151,read:152,post:152,post1:152,reply:152,reply1:152,read:142,post:142,post1:142,read:148,read:386,post:386,post1:386,read:396,read:397";}');
+(2, '普通会员', 1, 1, 0, 0, 10, '', 0, '', 'a:2:{i:1;s:275:"read:43,read:87,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,post:152,post1:152,reply:152,reply1:152,read:142,post:142,read:148,read:386,post:386,read:389,read:390,read:391,read:392,read:393,read:394,read:395,read:396,read:397,read:398";i:33;s:57:"read:384,post:384,reply:384,post1:384,reply1:384,read:385";}'),
+(3, '游客组', 1, 0, 1, 0, 200, '', 0, '', 'a:2:{i:1;s:564:"read:149,read:87,read:90,read:146,read:92,read:93,read:43,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,read:142,post:142,read:148,read:153,read:156,read:157,read:158,post:158,post1:158,read:159,read:160,post:160,reply:160,post1:160,reply1:160,read:161,post:161,reply:161,post1:161,reply1:161,read:162,post:162,reply:162,post1:162,reply1:162,read:163,read:164,post:164,reply:164,post1:164,reply1:164,read:165,read:166,read:386,post:386,read:389,read:390,read:391,read:392,read:393,read:394,read:395,read:396,read:397,read:398";i:33;s:57:"read:384,post:384,reply:384,post1:384,reply1:384,read:385";}'),
+(7, 'VIP会员', 1, 0, 0, 0, 255, '0', 0, 'fullname,gender', 'a:1:{i:1;s:260:"read:43,read:87,read:41,read:42,read:147,read:45,read:150,read:96,post:96,post1:96,reply:96,reply1:96,read:144,read:151,read:152,post:152,post1:152,reply:152,reply1:152,read:142,post:142,post1:142,read:148,read:386,post:386,post1:386,read:396,read:397,read:398";}');
 
 -- --------------------------------------------------------
 
@@ -9127,7 +8481,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_wealth_info` (
 --
 
 INSERT INTO `qinggan_wealth_info` (`wid`, `uid`, `lasttime`, `val`) VALUES
-(1, 23, 1508737010, 613),
+(1, 23, 1516868956, 643),
 (1, 24, 1479890664, 2007.8),
 (1, 25, 1470021972, 55),
 (1, 0, 1469963896, 5),
@@ -9136,11 +8490,9 @@ INSERT INTO `qinggan_wealth_info` (`wid`, `uid`, `lasttime`, `val`) VALUES
 (2, 23, 1508572947, 538),
 (5, 23, 1508572939, 65),
 (1, 28, 1481105324, 5),
-(1, 29, 1493900979, 12),
 (1, 31, 1504764469, 5),
 (2, 24, 1508572903, 150),
 (2, 25, 1508572911, 100),
-(2, 29, 1508572921, 89),
 (5, 27, 1508572931, 18);
 
 -- --------------------------------------------------------
@@ -9166,7 +8518,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_wealth_log` (
   `url` varchar(255) NOT NULL COMMENT '执行的URL',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未审核1已审核',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='财富获取或消耗日志' AUTO_INCREMENT=150 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='财富获取或消耗日志' AUTO_INCREMENT=156 ;
 
 --
 -- 转存表中的数据 `qinggan_wealth_log`
@@ -9278,8 +8630,6 @@ INSERT INTO `qinggan_wealth_log` (`id`, `wid`, `rule_id`, `goal_id`, `mid`, `val
 (103, 1, 5, 23, '', 5, '会员登录', 'api', 1481182216, 23, 0, 'login', 'sms', '', 1),
 (104, 1, 5, 23, '', 5, '会员登录', 'www', 1483091256, 23, 0, 'login', 'ok', '', 1),
 (105, 1, 5, 23, '', 5, '会员登录', 'api', 1483677612, 23, 0, 'login', 'save', '', 1),
-(106, 1, 12, 29, '1763', 1, '阅读#1763', 'www', 1484897052, 29, 0, 'content', 'index', '', 1),
-(107, 1, 12, 29, '1756', 1, '阅读#1756', 'www', 1484900526, 29, 0, 'content', 'index', '', 1),
 (108, 1, 5, 23, '', 5, '会员登录', 'www', 1486363410, 23, 0, 'login', 'ok', '', 1),
 (109, 1, 5, 23, '', 5, '会员登录', 'api', 1487666948, 23, 0, 'login', 'save', '', 1),
 (110, 1, 12, 23, '1753', 1, '阅读#1753', 'www', 1487666977, 23, 0, 'content', 'index', '', 1),
@@ -9290,7 +8640,7 @@ INSERT INTO `qinggan_wealth_log` (`id`, `wid`, `rule_id`, `goal_id`, `mid`, `val
 (115, 1, 5, 23, '', 5, '会员登录', 'api', 1492072570, 23, 0, 'login', 'sms', '', 1),
 (116, 1, 5, 23, '', 5, '会员登录', 'www', 1493627586, 23, 0, 'login', 'ok', '', 1),
 (117, 1, 0, 23, '0', 10, '管理员操作：20', 'admin', 1493899072, 0, 1, 'wealth', 'val', 'admin.php...', 1),
-(118, 1, 0, 29, '0', 10, '管理员操作：22222', 'admin', 1493900979, 0, 1, 'wealth', 'val', 'admin.php...', 1),
+(153, 1, 5, 23, '', 5, '会员登录', 'www', 1515786632, 23, 0, 'login', 'ok', '', 1),
 (119, 1, 5, 23, '', 5, '会员登录', 'www', 1494149094, 23, 0, 'login', 'ok', '', 1),
 (120, 1, 5, 23, '', 5, '会员登录', 'www', 1495869485, 23, 0, 'login', 'ok', '', 1),
 (121, 1, 5, 23, '', 5, '会员登录', 'api', 1498017760, 23, 0, 'login', 'save', '', 1),
@@ -9315,13 +8665,17 @@ INSERT INTO `qinggan_wealth_log` (`id`, `wid`, `rule_id`, `goal_id`, `mid`, `val
 (140, 1, 5, 23, '', 5, '会员登录', 'www', 1505820876, 23, 0, 'login', 'ok', '', 1),
 (141, 2, 0, 24, '0', 150, '管理员操作：测试用的', 'admin', 1508572903, 0, 1, 'wealth', 'val', 'admin.php...', 1),
 (142, 2, 0, 25, '0', 100, '管理员操作：测试用的', 'admin', 1508572911, 0, 1, 'wealth', 'val', 'admin.php...', 1),
-(143, 2, 0, 29, '0', 89, '管理员操作：测试用的', 'admin', 1508572921, 0, 1, 'wealth', 'val', 'admin.php...', 1),
+(152, 1, 5, 23, '', 5, '会员登录', 'api', 1512366922, 23, 0, 'login', 'sms', '', 1),
 (144, 5, 0, 27, '0', 18, '管理员操作：测试用的', 'admin', 1508572931, 0, 1, 'wealth', 'val', 'admin.php...', 1),
 (145, 5, 0, 23, '0', 15, '管理员操作：测试用的', 'admin', 1508572939, 0, 1, 'wealth', 'val', 'admin.php...', 1),
 (146, 2, 0, 23, '0', 500, '管理员操作：测试用的', 'admin', 1508572947, 0, 1, 'wealth', 'val', 'admin.php...', 1),
 (147, 1, 5, 23, '', 5, '会员登录', 'www', 1508736969, 23, 0, 'login', 'ok', '', 1),
 (148, 1, 12, 23, '222081', 1, '阅读#222081', 'www', 1508736999, 23, 0, 'content', 'index', '', 1),
-(149, 1, 13, 23, '222081', 5, '评论：一模一样dg', 'api', 1508737010, 23, 0, 'comment', 'save', '', 1);
+(149, 1, 13, 23, '222081', 5, '评论：一模一样dg', 'api', 1508737010, 23, 0, 'comment', 'save', '', 1),
+(150, 1, 5, 23, '', 5, '会员登录', 'www', 1511017905, 23, 0, 'login', 'ok', '', 1),
+(151, 1, 5, 23, '', 5, '会员登录', 'www', 1511090935, 23, 0, 'login', 'ok', '', 1),
+(154, 1, 5, 23, '', 5, '会员登录', 'www', 1516776224, 23, 0, 'login', 'ok', '', 1),
+(155, 1, 5, 23, '', 5, '会员登录', 'www', 1516868956, 23, 0, 'login', 'ok', '', 1);
 
 -- --------------------------------------------------------
 
