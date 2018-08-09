@@ -43,12 +43,16 @@ $(document).ready(function(){
 		$(this).removeClass("hover");
 	}).click(function(){
 		var url = $(this).attr("href");
-		if(url){
-			$.phpok.go(url);
-		}else{
-			alert("未指定动作！");
-			return false;
+		var txt = $(this).text();
+		if(txt == '' || $.trim(txt) == ''){
+			txt = $(this).attr('title');
 		}
+		if(url){
+			$.win(txt,url);
+			return true;
+		}
+		$.dialog.alert(p_lang('未指定动作'));
+		return false;
 	});
 });
 </script>
@@ -84,20 +88,11 @@ function save()
 	return false;
 }
 </script>
-<div class="tips">
-	{lang您当前的位置：}{lang内容管理}
-	<!-- loop from=$plist key=$key value=$value id=plist_id -->
-	&raquo; <a href="{url ctrl=list func=action id=$value.id/}" title="{$value.title}">{$value.nick_title ? $value.nick_title : $value.title}</a>
-	<!-- /loop -->
-	<span id="AP_ACTION_HTML" title="插件节点，后台内容列表管理栏面包屑"></span>
-</div>
-
 <form method="post" id="post_save" onsubmit="return save()">
 <input type="hidden" id="id" name="id" value="{$id}" />
 <div class="table">
 	<div class="title">
-		名称：
-		<span class="note">设置名称</span>
+		{lang名称}
 	</div>
 	<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
 </div>
@@ -116,8 +111,8 @@ function save()
 <!-- /loop -->
 <div class="table">
 	<div class="title">
-		SEO标题：
-		<span class="note">设置此标题后，网站Title将会替代默认定义的，不能超过85个汉字</span>
+		{langSEO标题}
+		<span class="note">{lang设置此标题后，网站Title将会替代默认定义的，不能超过85个汉字}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="seo_title" name="seo_title" class="long" value="{$rs.seo_title}" />
@@ -125,8 +120,8 @@ function save()
 </div>
 <div class="table">
 	<div class="title">
-		SEO关键字：
-		<span class="note">多个关键字用英文逗号或英文竖线隔开</span>
+		{langSEO关键字}
+		<span class="note">{lang多个关键字用英文逗号或下划线或竖线隔开}</span>
 	</div>
 	<div class="content">
 		<input type="text" id="seo_keywords" name="seo_keywords" class="long" value="{$rs.seo_keywords}" />
@@ -134,8 +129,8 @@ function save()
 </div>
 <div class="table">
 	<div class="title">
-		SEO描述：
-		<span class="note">简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字</span>
+		{langSEO描述}
+		<span class="note">{lang简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字}</span>
 	</div>
 	<div class="content">
 		<textarea name="seo_desc" id="seo_desc" class="long">{$rs.seo_desc}</textarea>

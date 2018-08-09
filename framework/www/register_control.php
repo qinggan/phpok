@@ -111,7 +111,7 @@ class register_control extends phpok_control
 			$this->assign("code",$code);
 		}
 		//取得当前组的扩展字段
-		$ext_list = $this->model("user")->fields_all("is_edit=1");
+		$ext_list = $this->model("user")->fields_all("is_front=1");
 		$extlist = false;
 		if(!$ext_list){
 			$ext_list = array();

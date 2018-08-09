@@ -29,7 +29,7 @@ function save_comment(tid)
 		<li><a href="{url ctrl=order func=info id=$rs.id/}" title="订单：{$rs.sn}">订单{$rs.sn}</a></li>
 		<li><a href="{url ctrl=order func=comment id=$rs.id/}" title="评论">评论</a></li>
 	</ol>
-	<div class="left"><!-- include tpl=block_usercp --></div>
+	<div class="left"><!-- include tpl=block/usercp_nav --></div>
 	<div class="right">
 		
 		<!-- loop from=$rslist key=$key value=$value -->

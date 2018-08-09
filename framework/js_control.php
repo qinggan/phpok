@@ -40,6 +40,16 @@ class js_control extends phpok_control
 			exit;
 		}
 		$list = ($ext && is_string($ext)) ? explode(",",$ext) : ($ext ? $ext : array());
+		if($this->app_id != 'admin'){
+			$tlist = $this->model('url')->protected_ctrl();
+			if($tlist){
+				foreach($tlist as $key=>$value){
+					if(is_file($this->dir_app.$value.'/'.$this->app_id.'.js')){
+						$list[] = $value.'/'.$this->app_id.'.js';
+					}
+				}
+			}
+		}
 		$list = array_unique($list);
 		if($_ext){
 			$forbid_ext = is_string($_ext) ? explode(",",$_ext) : $_ext;
@@ -47,6 +57,10 @@ class js_control extends phpok_control
 			if(!$list){
 				exit;
 			}
+		}
+		if($this->app_id == 'admin'){
+			$this->load_ext($list,true);
+			exit;
 		}
 		$this->load_ext($list,false);
 		exit;
@@ -92,25 +106,45 @@ class js_control extends phpok_control
 				$value .= '.js';
 			}
 			if($is_admin){
-				$file = $this->dir_phpok.'js/'.$value;
-				if(!file_exists($file)){
-					$file = $this->dir_root."js/".$value;
+				$tmp = explode(".",$value);
+				$file = '';
+				if($tmp[0] && $tmp[0] == $this->app_id && $tmp[1] && $tmp[1] != 'js'){
+					$tmplist = explode("-",$tmp[1]);
+					if($tmplist[1] && is_file($this->dir_app.$tmplist[0].'/'.$tmp[0].'.'.$tmplist[1].'.js')){
+						$file = $this->dir_app.$tmplist[0].'/'.$tmp[0].'.'.$tmplist[1].'.js';
+					}else{
+						$file = $this->dir_app.$tmp[1].'/'.$tmp[0].'.js';
+					}
 				}
-				if(!file_exists($file)){
-					continue;
+				if(!$file || !is_file($file)){
+					$file = $this->dir_phpok.'js/'.$value;
+					if(!is_file($file)){
+						$file = $this->dir_root."js/".$value;
+					}
+					if(!is_file($file)){
+						continue;
+					}
 				}
 			}else{
-				$file = $this->dir_root."js/".$value;
-				if(!file_exists($file)){
-					$file = $this->dir_phpok.'js/'.$value;
+				$tmplist = array($this->dir_root.'js/'.$value);
+				$tmplist[] = $this->dir_phpok.'js/'.$value;
+				$tmplist[] = $this->dir_app.$value;
+				$file = '';
+				foreach($tmplist as $k=>$v){
+					if(is_file($v)){
+						$file = $v;
+						break;
+					}
 				}
-				if(!file_exists($file)){
+				if(!$file){
 					continue;
 				}
 			}
-			echo "\n";
-			echo $this->lib('file')->cat($file);
-			echo "\n";
+			if($file && is_file($file)){
+				echo "\n";
+				echo $this->lib('file')->cat($file);
+				echo "\n";
+			}
 			if($value == 'jquery.artdialog.js'){
 				$this->js_artdialog_global_config();
 			}
@@ -142,10 +176,10 @@ class js_control extends phpok_control
 		$file = $this->dir_root.'js/jquery.js';
 		//实现jQuery.js文件的自定义
 		if($this->app_id != 'admin'){
-			if(file_exists($this->dir_root.$this->tpl->dir_tpl.'js/jquery.js')){
+			if(is_file($this->dir_root.$this->tpl->dir_tpl.'js/jquery.js')){
 				$file = $this->dir_root.$this->tpl->dir_tpl.'js/jquery.js';
 			}
-			if(file_exists($this->dir_root.$this->tpl->dir_tpl.'js/jquery.min.js')){
+			if(is_file($this->dir_root.$this->tpl->dir_tpl.'js/jquery.min.js')){
 				$file = $this->dir_root.$this->tpl->dir_tpl.'js/jquery.min.js';
 			}
 		}

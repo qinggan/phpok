@@ -10,6 +10,13 @@
  * @时间 2017年07月12日
 **/
 
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class curl_lib
 {
 	private $is_gzip = true; // 是否启用 GZIP 压缩传输
@@ -43,12 +50,6 @@ class curl_lib
 	private $cookie = array(); // COOKIE 信息，数组
 	private $cookie_file = '';
 	private $error = false;
-	
-	
-	public function __construct()
-	{
-		//
-	}
 
 	/**
 	 * 超时设置

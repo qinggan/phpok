@@ -14,23 +14,24 @@
 	<th width="50px">ID</th>
 	<th width="30px">&nbsp;</th>
 	<th class="lft">名称</th>
+	<th>运行模式</th>
 	<th>排序</th>
-	<th width="376px">操作</th>
+	<th>操作</th>
 </tr>
 <!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 <tr>
 	<td align="center">{$value.id}</td>
 	<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="$.admin_module.status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
 	<td><label for="tid_{$value.id}">{$value.title}<!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></label></td>
+	<td class="center"><!-- if $value.mtype -->独立<!-- else -->集成<!-- /if --></td>
 	<td class="center"><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}" onclick="$.admin_module.taxis('{$value.id}','{$value.taxis}')">{$value.taxis}</div></td>
-	<td>
+	<td class="center">
 		<!-- if $popedom.set -->
 		<div class="button-group">
 			<input type="button" value="{lang编辑}" onclick="$.admin_module.edit('{$value.id}')" class="phpok-btn" />
 			<input type="button" value="{lang删除}" onclick="$.admin_module.del('{$value.id}','{$value.title}')" class="phpok-btn" />
 			<input type="button" value="{lang字段管理}" onclick="$.phpok.go('{url ctrl=module func=fields id=$value.id/}')" class="phpok-btn" />
 			<input type="button" value="{lang复制模块}" onclick="$.admin_module.copy('{$value.id}','{$value.title}')" class="phpok-btn" />
-			<input type="button" value="{lang字段显示}" onclick="$.admin_module.layout('{$value.id}','{$value.title}')" class="phpok-btn" />
 			<input type="button" value="{lang导出}" onclick="$.admin_module.export('{$value.id}')" class="phpok-btn" />
 		</div>
 		<!-- /if -->

@@ -157,6 +157,19 @@
 				val += string.charAt(Math.floor(Math.random() * length));
 			}
 			return val;
+		},
+		/**
+		 * 向顶层发送消息
+		 * @参数 info 要发送的文本消息，注意，仅限文本
+		**/
+		message:function(info)
+		{
+			try{
+				window.top.postMessage(info,top.window.location.origin);
+			} catch (error) {
+				console.log(error);
+				return false;
+			}
 		}
 	};
 
@@ -195,9 +208,15 @@
 		{
 			if(id && id != 'undefined' && typeof id == 'string'){
 				if(id.match(/^[a-zA-Z0-9\-\_]{1,}$/)){
-					id = "#"+id+" input[type=checkbox],#"+id;
+					if($("#"+id).is('input')){
+						return $("#"+id);
+					}
+					return $("#"+id+" input[type=checkbox]");
 				}
-				return $(id);
+				if($(id).is('input')){
+					return $(id);
+				}
+				return $(id+" input[type=checkbox]");
 			}
 			return $("input[type=checkbox]");
 		},

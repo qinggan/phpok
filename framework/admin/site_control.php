@@ -133,7 +133,7 @@ class site_control extends phpok_control
 	public function order_status_f()
 	{
 		if(!$this->popedom["order"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		//订单状态
 		$rslist = $this->model('site')->order_status_all(true);
@@ -142,6 +142,8 @@ class site_control extends phpok_control
 		//价格状态
 		$pricelist = $this->model('site')->price_status_all(true);
 		$this->assign('pricelist',$pricelist);
+		$type = $this->get('type');
+		$this->assign('type',$type);
 		$this->view('site_order_status');
 	}
 

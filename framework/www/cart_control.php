@@ -44,8 +44,11 @@ class cart_control extends phpok_control
 		}
 		$this->assign("rslist",$rslist);
 		$totalprice = 0;
-		foreach($rslist AS $key=>$value){
-			$totalprice += price_format_val($value['price'] * $value['qty'],$value['currency_id'],$this->site['currency_id']);
+		$_date = date("Ymd",$this->time);
+		foreach($rslist as $key=>$value){
+			$totalprice += price_format_val($value['price'] * $value['qty'],$this->site['currency_id']);
+			$value['_checked'] = ($value['dateline'] && date("Ymd",$value['dateline']) == $_date) ? true : false;
+			$rslist[$key] = $value;
 		}
 		$price = price_format($totalprice,$this->site['currency_id']);
 		$this->assign('price',$price);
@@ -62,7 +65,21 @@ class cart_control extends phpok_control
 	**/
 	public function checkout_f()
 	{
-		$rslist = $this->model('cart')->get_all($this->cart_id);
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定要结算的产品ID'),$this->url('cart'));
+		}
+		if($id && !is_array($id)){
+			$id = explode(",",$id);
+		}
+		foreach($id as $key=>$value){
+			if(!$value || !trim($value) || !intval($value)){
+				unset($id[$key]);
+			}
+		}
+		//定义要结算的产品ID
+		$this->assign('id',implode(",",$id));
+		$rslist = $this->model('cart')->get_all($this->cart_id,$id);
 		if(!$rslist){
 			$this->error(P_Lang('您的购物车里没有任何产品'),$this->url);
 		}
@@ -71,7 +88,7 @@ class cart_control extends phpok_control
 			$this->assign('user',$user_rs);
 		}
 		$totalprice = 0;
-		foreach($rslist AS $key=>$value){
+		foreach($rslist as $key=>$value){
 			$totalprice += price_format_val($value['price'] * $value['qty']);
 		}
 		$this->assign('product_price',price_format($totalprice,$this->site['currency_id']));
@@ -84,13 +101,13 @@ class cart_control extends phpok_control
 			}
 		}
 		$this->assign('is_virtual',$is_virtual);
+		
+		if($is_virtual && $user_rs){
+			$address = array('mobile'=>$user_rs['mobile'],'email'=>$user_rs['email']);
+			$this->assign('address',$address);
+		}
 		if(!$is_virtual){
 			$this->_address();
-		}else{
-			if($this->session->val('user_id')){
-				$address = $this->model('order')->last_address($this->session->val('user_id'),true);
-				$this->assign('address',$address);
-			}
 		}
 		$pricelist = $this->model('site')->price_status_all(true);
 		if($pricelist){
@@ -164,11 +181,27 @@ class cart_control extends phpok_control
 	private function _address()
 	{
 		if(!$this->session->val('user_id')){
-			return false;
+			$this->assign('pca_rs',form_edit('pca','','pca'));
+			return true;
 		}
-		$rs = $this->model('order')->last_address($this->session->val('user_id'));
-		if($rs){
-			$this->assign('address',$rs);
+		$condition = "a.user_id='".$this->session->val('user_id')."'";
+		$addresslist = $this->model('address')->get_list($condition,0,30);
+		if($addresslist){
+			$first = $address_id = 0;
+			foreach($addresslist as $key=>$value){
+				if($key<1){
+					$first = $value['id'];
+				}
+				if($value['is_default']){
+					$address_id = $value['id'];
+					break;
+				}
+			}
+			if(!$address_id && $first){
+				$address_id = $first;
+			}
+			$this->assign('address_id',$address_id);
+			$this->assign('address_list',$addresslist);
 		}
 	}
 

@@ -189,7 +189,10 @@ class Mail implements JsonSerializable {
 		return $this->headers;
 	}
 	public function hasAttachment() {
-		return sizeof ( $this->attachments );
+		if($this->attachments && (is_array($this->attachments) || is_object($this->attachments))){
+			return sizeof ( $this->attachments );
+		}
+		return false;
 	}
 	public function setTemplateContent($template_content) {
 		$this->template_content = $template_content;

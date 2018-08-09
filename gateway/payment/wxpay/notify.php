@@ -29,7 +29,7 @@ class wxpay_notify
 		$wxpay->config($this->param['param']);
 		$xml = $app->get('xml','html');
 		$data = $app->lib('xml')->read('<root>'.$xml.'</root>',false);
-		$rs = $app->model('payment')->log_check($data['out_trade_no']);
+		$rs = $app->model('payment')->log_one($this->order['id']);
 		if(!$rs){
 			$this->error('订单信息不存在');
 		}
@@ -73,25 +73,16 @@ class wxpay_notify
 		if($rs['type'] == 'order'){
 			$order = $app->model('order')->get_one_from_sn($rs['sn']);
 			if($order){
-				$payinfo = $app->model('order')->order_payment($order['id']);
+				$payinfo = $app->model('order')->order_payment_notend($order['id']);
 				if($payinfo){
 					$payment_data = array('dateline'=>$mytime,'ext'=>serialize($ext));
 					$app->model('order')->save_payment($payment_data,$payinfo['id']);
-				}else{
-					$payment = $app->model('payment')->get_one($rs['payment_id']);
-					$data2 = array('order_id'=>$order['id'],'payment_id'=>$rs['payment_id']);
-					$data2['title'] = $payment['title'];
-					$data2['price'] = round($data['total_fee'],100);
-					$data2['startdate'] = $mytime;
-					$data2['dateline'] = $mytime;
-					$data2['ext'] = serialize($ext);
-					$app->model('order')->save_payment($data2);
+					//更新订单日志
+					$app->model('order')->update_order_status($order['id'],'paid');
+					$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
+					$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
+					$app->model('order')->log_save($log);
 				}
-				//更新订单日志
-				$app->model('order')->update_order_status($order['id'],'paid');
-				$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
-				$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
-				$app->model('order')->log_save($log);
 			}
 		}
 		if($this->order['type'] == 'recharge' && $ext['goal']){

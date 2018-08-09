@@ -1,8 +1,21 @@
-<!-- include tpl=head_open -->
+<!-- include tpl=head_open title=$rs.title -->
 <div class="list">
-<table>
+<table width="100%">
 <tr>
-	<td>附件名称：</td>
+	<td>{lang复制操作}</td>
+	<td>
+		<div class="button-group">
+			<input type="button" value="{lang名称}" class="phpok-btn phpok-copy" data-clipboard-text="{$rs.title}" title="{$rs.title}" />
+			<input type="button" value="{lang文件名}" class="phpok-btn phpok-copy" data-clipboard-text="{$rs.name}" title="{$rs.name}" />
+			<input type="button" value="{lang扩展名}" class="phpok-btn phpok-copy" data-clipboard-text="{$rs.ext}" title="{$rs.ext}" />
+			<input type="button" value="{lang目录}" class="phpok-btn phpok-copy" data-clipboard-text="{$rs.folder}" title="{$rs.folder}" />
+			<input type="button" value="{lang目录+文件名}" class="phpok-btn phpok-copy" data-clipboard-text="{$rs.filename}" title="{$rs.filename}" />
+			<input type="button" value="{lang附件地址}" class="phpok-btn phpok-copy" data-clipboard-text="{$sys.url}{$rs.filename}" title="{$sys.url}{$rs.filename}" />
+		</div>
+	</td>
+</tr>
+<tr>
+	<td>{lang附件名称}</td>
 	<td>{$rs.title}</td>
 </tr>
 <tr>

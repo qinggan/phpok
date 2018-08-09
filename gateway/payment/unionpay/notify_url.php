@@ -1,12 +1,14 @@
 <?php
-/*****************************************************************************************
-	文件： payment/unionpay/notify_url.php
-	备注： 订单异步通知处理
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年03月24日 21时11分
-*****************************************************************************************/
+/**
+ * 异步通知请求地址
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年04月02日
+**/
+
 error_reporting(E_ALL ^ E_NOTICE);
 define('PHPOK_SET',true);
 $root_dir = str_replace("\\","/",dirname(__FILE__))."/../../../";
@@ -43,10 +45,9 @@ if(!isset($_POST)){
 	exit('error');
 }
 include_once($root_dir.'framework/libs/html.php');
-$url = root_url()."index.php?c=payment&f=notify&sn=".rawurlencode($_POST['orderId']);
+$url = root_url()."index.php?c=payment&f=notify&_id=".intval($_POST['orderId']);
 foreach($_POST AS $key=>$value){
 	$url .= "&".$key."=".rawurlencode($value);
 }
 $cls = new html_lib();
 echo $cls->get_content($url);
-?>

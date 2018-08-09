@@ -195,7 +195,6 @@ class list_control extends phpok_control
 			}
 			$this->assign('extlist',$tmp);
 		}
-
 		$tag_config = $this->model('tag')->config();
 		$this->assign('tag_config',$tag_config);
 		$this->view("list_set");
@@ -542,9 +541,15 @@ class list_control extends phpok_control
 		if(!$project){
 			$this->error(P_Lang('项目信息不存在'));
 		}
-		$this->assign('p_rs',$p_rs);
+		$this->assign('p_rs',$project);
 		$this->assign('pid',$pid);
 		$this->popedom_auto($pid);
+		$plist = array($project);
+		if($project["parent_id"]){
+			$this->model('project')->get_parentlist($plist,$project["parent_id"]);
+			krsort($plist);
+		}
+		$this->assign("plist",$plist);
 		$id = $this->get('id','int');
 		$popedom_id = $id ? 'modify' : 'add';
 		if(!$this->popedom[$popedom_id]){
@@ -742,7 +747,8 @@ class list_control extends phpok_control
 				$attr = $rs['attr'] ? explode(",",$rs['attr']) : array();
 				foreach($attrlist as $key=>$value){
 					$tmp = array('status'=>false,'val'=>$value);
-					if($attr && in_array($value,$attr)){
+					
+					if($attr && in_array($key,$attr)){
 						$tmp['status'] = true;
 					}
 					$attrlist[$key] = $tmp;

@@ -28,7 +28,7 @@
 			<td height="40"><input name="user" type="text" class="user user_bg1" tabindex="1" /></td>
 			<td colspan="2">
 				<!-- if $multiple_language -->
-				<select name="langid" id="langid" onchange="update_lang(this.value)" style="padding:3px;border:1px solid #7ea3b8;line-height:27px;height:27px;">
+				<select name="langid" id="langid" onchange="update_lang(this.value)" style="padding:3px;border:1px solid #7ea3b8;height:27px;">
 					<!-- loop from=$langlist key=$key value=$value -->
 					<option value="{$key}"{if $key == $langid} selected{/if}>{$value}</option>
 					<!-- /loop -->

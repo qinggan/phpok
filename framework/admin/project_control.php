@@ -81,7 +81,15 @@ class project_control extends phpok_control
 		$currency_list = $this->model('currency')->get_list();
 		$this->assign('currency_list',$currency_list);
 		$emailtpl = $this->model('email')->simple_list($this->session->val('admin_site_id'));
-		$this->assign("emailtpl",$emailtpl);
+		if($emailtpl){
+			foreach($emailtpl as $key=>$value){
+				if(substr($value['identifier'],0,4) == 'sms_'){
+					unset($emailtpl[$key]);
+				}
+			}
+			$this->assign("emailtpl",$emailtpl);
+		}
+		
 
 		$c_rs = $this->model('sysmenu')->get_one_condition("appfile='list' AND parent_id>0");
 		$gid = $c_rs["id"];
@@ -236,7 +244,7 @@ class project_control extends phpok_control
 	 * @参数 etpl_user 发布通知会员的邮件模板
 	 * @参数 etpl_comment_admin 评论通知管理员
 	 * @参数 etpl_comment_user 评论通知会员
-	 * @参数 is_attr 是否启用主题属性，主题属性配置在 data/xml/attr.xml 里
+	 * @参数 is_attr 是否启用主题属性，主题属性配置在 _data/xml/attr.xml 里
 	 * @参数 is_userid 主题是否绑定会员
 	 * @参数 is_tpl_content 是否允许主题单独绑定模板
 	 * @参数 is_seo 是否启用主题自定义SEO，未启用将使用 分类SEO > 项目SEO > 全局SEO
@@ -534,15 +542,22 @@ class project_control extends phpok_control
 	public function status_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$id = $this->get('id','int');
+		$id = $this->get('id');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
+		$list = explode(",",$id);
 		$status = $this->get("status","int");
-		$this->model('project')->status($id,$status);
-		$this->json(true);
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				continue;
+			}
+			$this->model('project')->status($value,$status);
+		}
+		$this->success();
 	}
 
 	/**
@@ -685,7 +700,12 @@ class project_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('项目不存在'),$this->url('project'),'error');
 		}
-		unset($rs['id']);
+		unset($rs['id'],$rs['parent_id'],$rs['site_id']);
+		foreach($rs as $key=>$value){
+			if($value == ''){
+				unset($rs[$key]);
+			}
+		}
 		if($rs['module']){
 			$module = $this->model('module')->get_one($rs['module']);
 			unset($module['id']);
@@ -717,10 +737,10 @@ class project_control extends phpok_control
 			}
 			$rs['_ext'] = $tmplist;
 		}
-		$tmpfile = $this->dir_root.'data/cache/project.xml';
+		$tmpfile = $this->dir_cache.'project.xml';
 		$this->lib('xml')->save($rs,$tmpfile);
-		$this->lib('phpzip')->set_root($this->dir_root.'data/cache/');
-		$zipfile = $this->dir_root.'data/cache/'.$this->time.'.zip';
+		$this->lib('phpzip')->set_root($this->dir_cache);
+		$zipfile = $this->dir_cache.$this->time.'.zip';
 		$this->lib('phpzip')->zip($tmpfile,$zipfile);
 		$this->lib('file')->rm($tmpfile);
 		//下载zipfile
@@ -745,11 +765,11 @@ class project_control extends phpok_control
 		if(!file_exists($this->dir_root.$zipfile)){
 			$this->error(P_Lang('ZIP文件不存在'));
 		}
-		$this->lib('phpzip')->unzip($this->dir_root.$zipfile,$this->dir_root.'data/cache/');
-		if(!file_exists($this->dir_root.'data/cache/project.xml')){
+		$this->lib('phpzip')->unzip($this->dir_root.$zipfile,$this->dir_cache);
+		if(!file_exists($this->dir_cache.'project.xml')){
 			$this->error(P_Lang('导入项目失败，请检查解压缩是否成功'));
 		}
-		$rs = $info = $this->lib('xml')->read($this->dir_root.'data/cache/project.xml',true);
+		$rs = $info = $this->lib('xml')->read($this->dir_cache.'project.xml',true);
 		if(!$rs){
 			$this->error(P_Lang('XML内容解析异常'));
 		}
@@ -773,7 +793,7 @@ class project_control extends phpok_control
 				if($value['ext']){
 					$value['ext'] = serialize($value['ext']);
 				}
-				$value['module'] = 'project-'.$insert_id;
+				$value['ftype'] = 'project-'.$insert_id;
 				$this->model('ext')->save($value);
 			}
 		}
@@ -808,9 +828,34 @@ class project_control extends phpok_control
 			$array = array('module'=>$mid);
 			$this->model('project')->update($array,$insert_id);
 		}
-		$this->lib('file')->rm($this->dir_root.'data/cache/project.xml');
-		$this->lib('file')->rm($this->dir_root.$zipfile);
+		$this->lib('file')->rm($this->dir_cache.'project.xml');
+		$this->lib('file')->rm($this->dir_cache.$zipfile);
+		$this->success();
+	}
+
+	public function hidden_f()
+	{
+		if(!$this->popedom['set']){
+			$this->error(P_Lang('您没有权限执行状态操作'));
+		}
+		$id = $this->get('id');
+		$hidden = $this->get('hidden','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		if($hidden>1){
+			$hidden = 1;
+		}
+		if($hidden < 0){
+			$hidden = 0;
+		}
+		$list = explode(",",$id);
+		foreach($list as $key=>$value){
+			if(!$value || !trim($value) || !intval($value)){
+				continue;
+			}
+			$this->model('project')->set_hidden(intval($value),$hidden);
+		}
 		$this->success();
 	}
 }
-?>

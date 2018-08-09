@@ -41,7 +41,7 @@ class form_control extends phpok_control
 			return false;
 		}
 		if($etype == "fields"){
-			$rs = $this->model('fields')->get_one($eid);
+			$rs = $this->model('fields')->default_one($eid);
 			if($rs && $rs['ext'] && is_array($rs['ext'])){
 				foreach($rs['ext'] as $key=>$value){
 					$rs[$key] = $value;
@@ -393,6 +393,13 @@ class form_control extends phpok_control
 				$pageurl .= "&keywords=".rawurlencode($keywords);
 				$this->assign('keywords',$keywords);
 			}
+			if($ext && is_array($ext)){
+				foreach($ext as $key=>$value){
+					if($value != ''){
+						$condition .= " AND ".$key."='".$value."'";
+					}
+				}
+			}
 			$total = $this->model('list')->single_count($module['id'],$condition);
 			if($total>0){
 				$rslist = $this->model('list')->single_list($module['id'],$condition,$offset,$psize,$project['orderby']);
@@ -421,6 +428,13 @@ class form_control extends phpok_control
 				$condition .= " AND (".implode(" OR ",$clist).") ";
 				$pageurl .= "&keywords=".rawurlencode($keywords);
 				$this->assign('keywords',$keywords);
+			}
+			if($ext && is_array($ext)){
+				foreach($ext as $key=>$value){
+					if($value != ''){
+						$condition .= " AND ext.".$key."='".$value."'";
+					}
+				}
 			}
 			$total = $this->model('list')->get_total($module['id'],$condition);
 			if($total>0){
@@ -451,6 +465,11 @@ class form_control extends phpok_control
 			$this->assign("pagelist",$pagelist);
 			$this->assign("rslist",$rslist);
 		}
+		$maxcount = $this->get('maxcount','int');
+		if(!$maxcount){
+			$maxcount = 9999;
+		}
+		$this->assign('maxcount',$maxcount);
 		$this->view("form_quicklist");
 	}
 

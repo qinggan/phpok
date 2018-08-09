@@ -169,7 +169,13 @@ class payment_control extends phpok_control
 		if(!$sn){
 			$this->json(P_Lang('未指定订单编号'));
 		}
-		$rs = $this->model('payment')->log_check($sn);
+		if(strpos($sn,'-') !== false){
+			$tmp = explode("-",$sn);
+			$sn = $tmp[0];
+			$rs = $this->model('payment')->log_one($tmp[1]);
+		}else{
+			$rs = $this->model('payment')->log_check_notstatus($sn);
+		}
 		if(!$rs){
 			$this->json(P_Lang('订单不存在'));
 		}

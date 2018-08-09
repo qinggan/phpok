@@ -45,7 +45,7 @@ class excel_lib
 			$title = $this->app->time;
 		}
 		if(!$saveto){
-			$saveto = $this->app->dir_root.'/data/cache/'.$this->app->time.'.xls';
+			$saveto = $this->app->dir_cache.$this->app->time.'.xls';
 		}
 	}
 }

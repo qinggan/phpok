@@ -82,6 +82,17 @@
 					$.dialog.alert(data.info);
 					return false;
 				});
+				return true;
+			}
+			if(id == 'form_is_single'){
+				if(val == 1){
+					$("#form_maxcount_li").hide();
+					$("#form_maxcount").val(1);
+				}else{
+					$("#form_maxcount_li").show();
+					$("#form_maxcount").val(20);
+				}
+				return true;
 			}
 		},
 

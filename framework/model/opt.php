@@ -13,6 +13,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class opt_model_base extends phpok_model
 {
+	private $_cache;
 	public function __construct()
 	{
 		parent::model();
@@ -33,8 +34,17 @@ class opt_model_base extends phpok_model
 	**/
 	public function group_one($id)
 	{
+		$cache_id = "group_one_".$id;
+		if(isset($this->_cache[$cache_id])){
+			return $this->_cache[$cache_id];
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."opt_group WHERE id='".$id."'";
-		return $this->db->get_one($sql);
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		$this->_cache[$cache_id] = $rs;
+		return $rs;
 	}
 
 	/**
@@ -162,12 +172,21 @@ class opt_model_base extends phpok_model
 	**/
 	public function chk_val($gid,$val,$pid=0,$id=0)
 	{
+		$cache_id = "chk_val_".$gid.'_'.$val."_".$pid."_".$id;
+		if(isset($this->_cache[$cache_id])){
+			return $this->_cache[$cache_id];
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."opt WHERE val='".$val."' AND group_id='".$gid."'";
 		$sql.= " AND parent_id='".$pid."'";
 		if($id){
 			$sql .= " AND id !='".$id."'";
 		}
-		return $this->db->get_one($sql);
+		$rs = $this->db->get_one($sql);
+		$this->_cache[$cache_id] = $rs;
+		if(!$rs){
+			return false;
+		}
+		return $rs;
 	}
 
 	/**

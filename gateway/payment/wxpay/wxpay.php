@@ -286,6 +286,9 @@ class wxpay_lib
 		$data['mch_id'] = $this->mch_id;
 		$data['nonce_str'] = $this->nonce_str;
 		$data['spbill_create_ip'] = $GLOBALS['app']->lib('common')->ip();
+		if(!$data['spbill_create_ip']){
+			$data['spbill_create_ip'] = '0.0.0.0';
+		}
 		$data['trade_type'] = strtoupper($this->trade_type());
 		$sign = $this->create_sign($data);
 		$data['sign'] = $sign;

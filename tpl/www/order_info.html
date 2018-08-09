@@ -11,151 +11,208 @@ function order_payment(orderid,passwd)
 }
 </script>
 <div class="main">
-	<div class="pfw mbottom10">
-		<h3>您的订单号是：<span class="red i">{$rs.sn}</span><a href="{url ctrl=order/}" class="more">我的订单</a></h3>
-		<table width="100%" class="form">
-		<tr>
-			<td width="20%" align="right">订单编号：</td>
-			<td>{$rs.sn}</td>
-		</tr>
-		<tr>
-			<td align="right">下单时间：</td>
-			<td>{func time_format $rs.addtime}</td>
-		</tr>
-		<tr>
-			<td align="right">总金额：</td>
-			<td class="red">
-				{func price_format $rs.price $rs.currency_id $rs.currency_id}
-				<!-- if $payinfo -->
-				<span class="darkblue">（使用 {$payinfo.title} 付款，付款时间：{func time_format $payinfo.dateline}）</span>
+	<!-- include tpl=block/breadcrumb -->
+	<div class="am-panel-group">
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">订单基本信息</div>
+			<ul class="am-list am-list-static am-list-striped">
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">订单编号</div>
+						<div class="am-u-sm-8">{$rs.sn}</div>
+					</div>
+				</li>
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">下单时间</div>
+						<div class="am-u-sm-8">{func time_format $rs.addtime}</div>
+					</div>
+				</li>
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">订单金额</div>
+						<div class="am-u-sm-8">{func price_format $rs.price $rs.currency_id}</div>
+					</div>
+				</li>
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">订单状态</div>
+						<div class="am-u-sm-8">{$rs.status_info}</div>
+					</div>
+				</li>
+				<!-- if $rs.email -->
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">邮箱</div>
+						<div class="am-u-sm-8">{$rs.email}</div>
+					</div>
+				</li>
 				<!-- /if -->
-			</td>
-		</tr>
-		<tr>
-			<td align="right">订单状态：</td>
-			<td class="darkblue">{$rs.status_info}</td>
-		</tr>
-		<!-- if $invoice -->
-		<tr>
-			<td align="right">发票：</td>
-			<td><span class="darkblue">{$invoice.type}</span>，抬头：<span class="darkblue">{$invoice.title}</span>，内容：<span class="darkblue">{$invoice.content}</span></td>
-		</tr>
-		<!-- /if -->
-		<!-- loop from=$rs.ext key=$key value=$value id=$tmpid -->
-		<tr>
-			<td align="right">{$key}：</td>
-			<td>{$value}</td>
-		</tr>
-		<!-- /loop -->
-		</table>
-	</div>
-	<!-- if $loglist -->
-	<div class="table_lc">
-		<table width="100%">
-		<tr>
-			<th colspan="3">订单日志</th>
-		</tr>
-		<tr>
-			<th class="lft">说明</th>
-			<th>时间</th>
-			<th>操作人</th>
-		</tr>
-		<!-- loop from=$loglist key=$key value=$value id=$tmpid -->
-		<tr>
-			<td>{$value.note}</td>
-			<td class="center">{func time_format $value.addtime}</td>
-			<td class="center">{$value.who}</td>
-		</tr>
-		<!-- /loop -->
-		</table>
-	</div>
-	<!-- /if -->
-	<!-- if $rs.note -->
-	<div class="pfw mbottom10">
-		<h3>说明</h3>
-		<div style="padding:10px;line-height:170%">{func nl2br $rs.note}</div>
-	</div>
-	<!-- /if -->
-	<!-- if $address -->
-	<div class="pfw mbottom10">
-		<h3>送货地址</h3>
-		<table width="100%" class="form">
-		<tr>
-			<td width="20%" align="right">收货人：</td>
-			<td>{$address.fullname}</td>
-		</tr>
-		<tr>
-			<td align="right">送货地址：</td>
-			<td>
-				{$address.province}
-				<!-- if $address.province != $address.city -->
-				{$address.city}
+				<!-- if $rs.mobile -->
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">手机号</div>
+						<div class="am-u-sm-8">{$rs.mobile}</div>
+					</div>
+				</li>
 				<!-- /if -->
-				{$address.county}
-				{$address.address}<!-- if $address.zipcode --><i>（邮编：{$address.zipcode}）</i><!-- /if -->
-			</td>
-		</tr>
-		<tr>
-			<td align="right">联系方式：</td>
-			<td>{$address.tel}<!-- if $address.tel && $address.mobile --> / <!-- /if -->{$address.mobile}</td>
-		</tr>
-		<!-- if $address.email -->
-		<tr>
-			<td align="right">Email：</td>
-			<td>{$address.email}</td>
-		</tr>
+				<!-- if $invoice -->
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">发票信息</div>
+						<div class="am-u-sm-8">{$invoice.type}，抬头：<span class="am-text-danger">{$invoice.title}</span>，内容：<span class="am-text-danger">{$invoice.content}</span></div>
+					</div>
+				</li>
+				<!-- /if -->
+				<!-- loop from=$rs.ext key=$key value=$value id=$tmpid -->
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">{$key}</div>
+						<div class="am-u-sm-8">{$value}</div>
+					</div>
+				</li>
+				<!-- /loop -->
+				<!-- if $rs.note -->
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">备注</div>
+						<div class="am-u-sm-8">{func nl2br $rs.note}</div>
+					</div>
+				</li>
+				<!-- /if -->
+			</ul>
+		</div>
+		
+		<!-- if $address -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">收件人信息</div>
+			<ul class="am-list am-list-static">
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">姓名</div>
+						<div class="am-u-sm-8">{$address.fullname}</div>
+					</div>
+				</li>
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">地址</div>
+						<div class="am-u-sm-8">
+							{$address.province}
+							<!-- if $address.province != $address.city -->
+							{$address.city}
+							<!-- /if -->
+							{$address.county}
+							{$address.address}<!-- if $address.zipcode --><i>（邮编：{$address.zipcode}）</i><!-- /if -->
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">联系方式</div>
+						<div class="am-u-sm-8">{$address.tel}<!-- if $address.tel && $address.mobile --> / <!-- /if -->{$address.mobile}</div>
+					</div>
+				</li>
+				<!-- if $address.email -->
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">邮箱 Email</div>
+						<div class="am-u-sm-8">{$address.email}</div>
+					</div>
+				</li>
+				<!-- /if -->
+			</ul>
+		</div>
 		<!-- /if -->
-		</table>
-	</div>
-	<!-- /if -->
 
-	<div class="table_lc">
-	<table width="100%">
-	<tr>
-		<th>图片</th>
-		<th class="lft">产品信息</th>
-		<th>购买数量</th>
-		<th>价格</th>
-	</tr>
-	<!-- loop from=$rslist key=$key value=$value -->
-	<tr>
-		<td align="center">
-			<!-- if $value.thumb && file_exists($value.thumb) -->
-			<img src="{$value.thumb}" width="80" height="80" border="0" />
-			<!-- else -->
-			<img src="{#images#}/blank.gif" width="80" height="80" border="0" />
-			<!-- /if -->
-		</td>
-		<td>
-			<h3 id="title_{$value.id}">{$value.title}</h3>
-			<!-- loop from=$value.ext key=$k value=$v id=$tmpid -->
-			<div>{$v.title}：{$v.content}</div>
-			<!-- /loop -->
-			<div>售价：{func price_format $value.price $rs.currency_id $rs.currency_id}</div>
-		</td>
-		<td class="center">{$value.qty}</td>
-		<td class="center price">{func price_format $value.price*$value.qty $rs.currency_id $rs.currency_id}</td>
-	</tr>
-	<!-- /loop -->
-	<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
-	<tr>
-		<td align="right" colspan="3">{$value.title}：</td>
-		<td><span class="price">{$value.price}</span></td>
-	</tr>
-	<!-- /loop -->
-	<tr>
-		<td align="right" colspan="3">总价：</td>
-		<td><span class="price">{func price_format $rs.price $rs.currency_id $rs.currency_id}</span></td>
-	</tr>
-	</table>
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">产品信息</div>
+			<table class="am-table am-table-centered">
+				<thead>
+					<tr>
+						<th>图片</th>
+						<th class="am-text-left">产品信息</th>
+						<th>购买数量</th>
+						<th>价格</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- loop from=$rslist key=$key value=$value -->
+					<tr>
+						<td>
+							<!-- if $value.thumb && file_exists($value.thumb) -->
+							<img src="{$value.thumb}" width="80" height="80" border="0" />
+							<!-- else -->
+							<img src="{#images#}/blank.gif" width="80" height="80" border="0" />
+							<!-- /if -->
+						</td>
+						<td class="am-text-left">
+							<div><b>{$value.title}</b></div>
+							<!-- loop from=$value.ext key=$k value=$v id=$tmpid -->
+							<div>{$v.title}：{$v.content}</div>
+							<!-- /loop -->
+							<div>售价：{func price_format $value.price $rs.currency_id $rs.currency_id}</div>
+						</td>
+						<td>{$value.qty}</td>
+						<td>{func price_format $value.price*$value.qty $rs.currency_id $rs.currency_id}</td>
+					</tr>
+					<!-- /loop -->
+				</tbody>
+			</table>
+		</div>
+
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">价格明细</div>
+			<div class="am-panel-bd">
+				<ul class="am-list am-list-static">
+					<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
+					<li>
+						<div class="am-g">
+							<div class="am-u-sm-10 am-text-right">{$value.title}</div>
+							<div class="am-u-sm-2 am-text-danger">{$value.price}</div>
+						</div>
+					</li>
+					<!-- /loop -->
+					<li>
+						<div class="am-g">
+							<div class="am-u-sm-10 am-text-right">总价</div>
+							<div class="am-u-sm-2 am-text-danger">{func price_format $rs.price $rs.currency_id $rs.currency_id}</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<!-- if $loglist -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">订单日志</div>
+			<table class="am-table am-table-centered am-table-striped am-table-hover">
+				<thead>
+					<tr>
+						<th class="am-text-left">说明</th>
+						<th>时间</th>
+						<th>操作人</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- loop from=$loglist key=$key value=$value id=$tmpid -->
+					<tr>
+						<td class="am-text-left">{$value.note}</td>
+						<td>{func time_format $value.addtime}</td>
+						<td>{$value.who}</td>
+					</tr>
+					<!-- /loop -->
+				</tbody>
+			</table>
+		</div>
+		<!-- /if -->
 	</div>
-	<div class="clear"></div>
+	
+
 	<!-- if !$pay_end -->
 	<div align="center">
 		<!-- if $session.user_id -->
-		<input type="button" value="在线支付" class="button blue" onclick="order_payment('{$rs.id}')" />
+		<a href="{url ctrl=order func=payment id=$rs.id/}" class="am-btn am-btn-primary">在线支付</a>
 		<!-- else -->
-		<input type="button" value="在线支付" onclick="order_payment('{$rs.sn}','{$rs.passwd}')" />
+		<a href="{url ctrl=order func=payment sn=$rs.sn passwd=$rs.passwd/}" class="am-btn am-btn-primary">在线支付</a>
 		<!-- /if -->
 	</div>
 	<!-- /if -->

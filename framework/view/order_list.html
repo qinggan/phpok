@@ -1,11 +1,6 @@
-<!-- inc:head -->
+<!-- include tpl=head -->
 <script type="text/javascript" src="{func add_js order.js}"></script>
-<script type="text/javascript" src="js/laydate/laydate.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-	top.$.desktop.title('{lang订单管理}');
-});
-</script>
+
 <div class="tips">
 	<table width="100%" cellpadding="0" cellspacing="0" height="100%">
 	<tr>
@@ -19,7 +14,7 @@ $(document).ready(function(){
 	</table>
 </div>
 <div class="tips">
-	<form method="post" action="{func admin_url order}">
+	<form method="post" action="{url ctrl=order/}">
 	<div style="float:left;width:800px;">
 		<div><table>
 		<tr>
@@ -34,15 +29,13 @@ $(document).ready(function(){
 			</td>
 			
 			<td>&nbsp; &nbsp;{lang时间：}</td>
-			<td><input type="text" name="date_start" value="{$date_start}" placeholder="{lang开始时间}" onfocus="laydate()" style="width:110px;" /></td>
+			<td><input type="text" name="date_start" id="date_start" value="{$date_start}" placeholder="{lang开始时间}" style="width:110px;" /></td>
 			<td>{lang至}</td>
-			<td><input type="text" name="date_stop" value="{$date_stop}" placeholder="{lang结束时间}" onfocus="laydate()" style="width:110px;" /></td>
+			<td><input type="text" name="date_stop" id="date_stop" value="{$date_stop}" placeholder="{lang结束时间}" style="width:110px;" /></td>
 			<td>&nbsp; &nbsp;{lang价格：}</td>
 			<td><input type="text" name="price_min" value="{$price_min}" placeholder="{lang最低价格}" style="width:110px;" /></td>
 			<td>{lang至}</td>
 			<td><input type="text" name="price_max" value="{$price_max}" placeholder="{lang最高价格}" style="width:110px;" /></td>
-			
-			
 		</tr>
 		</table></div>
 		<table>

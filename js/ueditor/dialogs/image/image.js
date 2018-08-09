@@ -15,6 +15,10 @@
         initTabs();
         initAlign();
         initButtons();
+        $("#image_search").submit(function(){
+	        setTabFocus('online');
+	        return false;
+        })
     };
 
     /* 初始化tab标签 */
@@ -60,7 +64,7 @@
             case 'online':
                 setAlign(editor.getOpt('imageManagerInsertAlign'));
                 onlineImage = onlineImage || new OnlineImage('imageList');
-                onlineImage.reset();
+                onlineImage.reset();               
                 break;
         }
     }
@@ -366,6 +370,7 @@
                 },
                 swf: '../../../webuploader/uploader.swf',
                 server: actionUrl,
+                threads:1,
                 fileVal: editor.getOpt('imageFieldName'),
                 duplicate: true,
                 fileSingleSizeLimit: imageMaxSize,    // 默认 2 M
@@ -853,6 +858,14 @@
                 this.isLoadingData = true;
                 var url = editor.getActionUrl(editor.getOpt('imageManagerActionName')),
                     isJsonp = utils.isCrossDomainUrl(url);
+                var keywords = $("#keywords").val(); 
+                if(keywords && keywords != 'undefined'){
+	                if(url.indexOf('?') == -1){
+		                url += '?keywords='+encodeURIComponent(keywords);
+	                }else{
+		                url += '&keywords='+encodeURIComponent(keywords);
+	                }
+                }
                 ajax.request(url, {
                     'timeout': 100000,
                     'dataType': isJsonp ? 'jsonp':'',

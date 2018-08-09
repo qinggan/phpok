@@ -70,7 +70,9 @@ var autosave_handle;
 						$.dialog.through({
 							'icon':'succeed',
 							'content':p_lang('内容添加操作成功，请选择继续添加或返回列表'),
-							'ok':function(){$.phpok.reload();},
+							'ok':function(){
+								$.phpok.reload();
+							},
 							'okVal':p_lang('继续添加'),
 							'cancel':function(){
 								$.phpok.go(url);

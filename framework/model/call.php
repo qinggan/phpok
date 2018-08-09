@@ -24,9 +24,9 @@ class call_model_base extends phpok_model
 	**/
 	public function types()
 	{
-		$xmlfile = $this->dir_root.'data/xml/calltype_'.$this->site_id.'.xml';
+		$xmlfile = $this->dir_data.'xml/calltype_'.$this->site_id.'.xml';
 		if(!file_exists($xmlfile)){
-			$xmlfile = $this->dir_root.'data/xml/calltype.xml';
+			$xmlfile = $this->dir_data.'xml/calltype.xml';
 		}
 		return $this->lib('xml')->read($xmlfile);
 	}

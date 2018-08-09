@@ -1,0 +1,6 @@
+<!-- php:$pagelist = phpok_page($pageurl,$total,$pageid,$psize,"prev=上一页&next=下一页&last=末页&home=首页&always=1") -->
+<ul data-am-widget="pagination" class="am-fr am-pagination am-pagination-default" style="margin-right:0;font-size:1.4rem;">
+	<!-- loop from=$pagelist key=$key value=$value id=$tmpid -->
+	<li{if $value.type != 'num'} class="am-pagination-{if $value.type == 'home'}first{else}{$value.type}{/if}"{/if}{if $value.type == 'num' && $value.status} class="am-active"{/if}><a href="{$value.url}"{if $value.type == 'num' && $value.status} class="am-active"{/if}>{$value.title}</a></li>
+	<!-- /loop -->
+</ul>

@@ -118,6 +118,3 @@ if($status['sms_tpl_admin']){
 }
 
 return true;
-
-
-?>

@@ -64,7 +64,7 @@ class xml_lib
 		$dir = pathinfo($file,PATHINFO_DIRNAME);
 		$tmpfile = $dir.'/'.uniqid('tmp_',true).'.xml';
 		$handle = fopen($tmpfile,'ab');
-		fwrite($handle,'<?xml version="1.0" encoding="utf-8"?>'."\n");
+		fwrite($handle,'<?xml version="1.0" encoding="UTF-8"?>'."\n");
 		fwrite($handle,'<root>'."\n");
 		$string = '';
 		$this->_array_to_string($string,$data,"\t",$ekey);
@@ -82,11 +82,16 @@ class xml_lib
 	{
 		foreach($data as $key=>$value){
 			$tmpid = (is_numeric($key) && $ekey) ? $ekey : $key;
-			if($value && is_array($value)){
-				$tmp = "\n";
-				$this->_array_to_string($tmp,$value,$space."\t");
-				$string .= $space."<".$tmpid.">".$tmp.$space."</".$tmpid.">\n";
+			if($value && (is_array($value) || is_object($value))){
+				if(count($value)>0){
+					$tmp = "\n";
+					$this->_array_to_string($tmp,$value,$space."\t");
+					$string .= $space."<".$tmpid.">".$tmp.$space."</".$tmpid.">\n";
+				}
 			}else{
+				if(is_array($value) || is_object($value)){
+					continue;
+				}
 				$value = str_replace(array('<![CDATA[',']]>'),array('&lt;![CDATA[',']]&gt;'),$value);
 				$string .= $space."<".$tmpid."><![CDATA[".$value."]]></".$tmpid.">\n";
 			}
@@ -99,7 +104,6 @@ class xml_lib
 		if($isfile){
 			$info = file_get_contents($info);
 		}
-		$info = preg_replace('/<\?xml[^\?>]+\?>/isU','',$info);
 		$info = trim($info);
 		libxml_disable_entity_loader(true);
 		$xml = simplexml_load_string($info);

@@ -71,4 +71,18 @@ class index_control extends phpok_control
 		$this->session->assign('introducer',$uid);
 		$this->_location($this->url('register'));
 	}
+
+	public function phpinc_f()
+	{
+		$phpfile = $this->get('phpfile','system');
+		if(!$phpfile){
+			$this->error(P_Lang('未指定合法的 PHP 文件'));
+		}
+		$phpfile .= ".php";
+		if(!file_exists($this->dir_root.'phpinc/'.$phpfile)){
+			$this->error(P_Lang('PHP 文件不存在'));
+		}
+		global $app;
+		include($this->dir_root.'phpinc/'.$phpfile);
+	}
 }

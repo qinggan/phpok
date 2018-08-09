@@ -82,7 +82,7 @@
 		<tr>
 			<td height="25">{$value.title}<span class="darkblue">[{$value.identifier}]</span>：</td>
 			<td><span class="note">{$value.note}</span></td>
-			<!-- if $popedom.ext -->
+			<!-- if $popedom.ext && $session.adm_develop -->
 			<!-- if $ext_module != 'add-cate' -->
 			<td><a class="icon edit" onclick="ext_edit('{$value.identifier}','{$ext_module}')"></a></td>
 			<!-- /if -->
@@ -96,7 +96,7 @@
 <!-- /loop -->
 
 
-<!-- if $popedom.ext -->
+<!-- if $popedom.ext && $session.adm_develop -->
 <div class="table">
 	<div class="content">
 		<select id="_tmp_select_add" style="padding:3px">

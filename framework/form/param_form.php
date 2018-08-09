@@ -35,6 +35,7 @@ class param_form extends _init_auto
 		if(!$rs){
 			return false;
 		}
+		$this->cssjs();
 		$pname = false;
 		if($rs['p_name']){
 			$pname = explode("\n",$rs['p_name']);

@@ -76,5 +76,3 @@ class sysmenu_model extends sysmenu_model_base
 		return $this->db->query($sql);
 	}
 }
-
-?>

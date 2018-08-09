@@ -1,0 +1,57 @@
+<!-- include tpl=head title=支付宝支付 -->
+<div class="main" style="width:500px;margin:10% auto;">
+	<div class="am-panel am-panel-default">
+		<div class="am-panel-hd">订单信息</div>
+		<ul class="am-list am-list-static">
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">订单编号</div>
+					<div class="am-u-sm-8">{$order.sn}</div>
+				</div>
+			</li>
+			<!-- if $orderinfo -->
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">订单金额</div>
+					<div class="am-u-sm-8 am-text-primary">{func price_format $orderinfo.price $orderinfo.currency_id}</div>
+				</div>
+			</li>
+			<!-- /if -->
+			<!-- if $paid_price -->
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">已付金额</div>
+					<div class="am-u-sm-8">{func price_format $paid_price $order.currency_id}</div>
+				</div>
+			</li>
+			<!-- /if -->
+			<!-- if $unpaid_price -->
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">还需付款</div>
+					<div class="am-u-sm-8 am-text-danger">{func price_format $unpaid_price $order.currency_id}</div>
+				</div>
+			</li>
+			<!-- /if -->
+		</ul>
+	</div>
+
+	<form method="post" action="https://mapi.alipay.com/gateway.do?_input_charset={$alipay_config.input_charset}">
+	<!-- loop from=$postdata key=$key value=$value id=$tmpid -->
+	<input type="hidden" name="{$key}" value="{$value}" />
+	<!-- /loop -->
+	<div style="margin-top:10px;">
+		<!-- if $orderinfo -->
+		<input type="button" value="返回订单" class="am-btn am-btn-default" onclick="$.phpok.go('{url ctrl=order func=info sn=$orderinfo.sn passwd=$orderinfo.passwd/}')" />
+		<!-- /if -->
+		
+		<input type="submit" value="确认支付" class="am-btn am-btn-primary am-fr" id="payment_submit" />
+	</div>
+</form>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#payment_submit").click();
+});
+</script>
+</div>
+<!-- include tpl=foot -->

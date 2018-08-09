@@ -1,0 +1,29 @@
+<!-- include tpl=head title=微信扫码支付 -->
+<input type="hidden" name="logid" id="logid" value="{$order.id}" />
+<input type="hidden" name="sn" id="sn" value="{$rs.sn}" />
+<script type="text/javascript">
+function pending()
+{
+	var url = api_url('payment','query','sn='+$("#sn").val());
+	$.phpok.json("{$ajaxurl}",function(data){
+		if(data.status == 'ok'){
+			url = get_url('payment','show','id='+$("#logid").val());
+			$.phpok.go(url);
+			return true;
+		}else{
+			window.setTimeout("pending()", 3000);
+		}
+	})
+}
+$(document).ready(function(){
+	window.setTimeout("pending()", 5000);
+});
+
+//禁止后退
+window.history.forward(1);   
+history.pushState(null, null, document.URL);
+window.addEventListener('popstate', function () {
+    history.pushState(null, null, document.URL);
+});
+</script>
+<!-- include tpl=foot -->

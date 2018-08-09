@@ -1,23 +1,83 @@
-<!-- include tpl=head title=个人中心 -->
-<div class="cp">
-	<div class="left"><!-- include tpl=block_usercp --></div>
-	<div class="right">
-		<div class="pfw mbottom10">
-			<h3>会员中心</h3>
-			<div class="cp_avatar">
-				<img src="{$rs.avatar ? $rs.avatar : 'images/avatar_huge.gif'}">
+<!-- include tpl=head title=会员中心 -->
+<div class="main">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="left"><!-- include tpl=block/usercp_nav --></div>
+	<div class="right am-panel-group">
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">会员基本资料</div>
+			<div class="am-panel-bd">
+				<div class="am-g">
+					<div class="am-u-sm-3 am-text-center cp-avatar"><img src="{$rs.avatar ? $rs.avatar : 'images/avatar.gif'}" class="am-circle am-img-thumbnail"></div>
+					<div class="am-u-sm-9">
+						<ul class="am-list am-list-static">
+							<li><strong>会员账号：</strong>{$rs.user}</li>
+							<!-- if $rs.email --><li><strong>会员邮箱：</strong>{$rs.email}</li><!-- /if -->
+							<!-- loop from=$user.wealth key=$key value=$value id=$tmpid -->
+							<li><strong>{$value.title}：</strong>{$value.val}{$value.unit}</li>
+							<!-- /loop -->
+						</ul>
+					</div>
+				</div>
 			</div>
-			<div class="cp_info">
-				<ul>
-					<li><strong>账号：</strong>{$rs.user}</li>
-					<li><strong>邮箱：</strong>{$rs.email}</li>
-					<!-- loop from=$user.wealth key=$key value=$value id=$tmpid -->
-					<li><strong>{$value.title}：</strong>{$value.val}{$value.unit}</li>
-					<!-- /loop -->
-				</ul>
-			</div>
-			<div class="clear"></div>
 		</div>
+		<!-- if $rslist -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">最新订单</div>
+			<table class="am-table am-table-striped am-table-hover am-table-centered">
+			<thead>
+		        <tr>
+		            <th class="am-text-left">订单编号</th>
+		            <th>价格</th>
+		            <th>下单时间</th>
+		            <th>&nbsp;</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+			    <!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		        <tr>
+		            <td class="am-text-left">{$value.sn}</td>
+		            <td>{func price_format $value.price $value.currency_id}</td>
+		            <td>{func time_format $value.addtime}</td>
+		            <td><a href="{url ctrl=order func=info id=$value.id/}">查看明细</a></td>
+		        </tr>
+		        <!-- /loop -->
+		    </tbody>
+			</table>
+		</div>
+		<!-- /if -->
+		<!-- if $reslist -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">最新上传文件</div>
+			<table class="am-table am-table-hover am-table-centered">
+			<thead>
+		        <tr>
+		            <th class="am-text-left">文件名</th>
+		            <th>缩略图</th>
+		            <th>类型</th>
+		            <th>上传时间</th>
+		            
+		            <th>&nbsp;</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+			    <!-- loop from=$reslist key=$key value=$value id=$tmpid -->
+		        <tr>
+		            <td class="am-text-left">{$value.title}</td>
+		            <td><img src="{$value.ico}" class="cp-ico" /></td>
+		            <td>{$value.ext}</td>
+		            <td>{func time_format $value.addtime}</td>
+		            <td>
+			            <a href="{url ctrl=download id=$value.id/}">下载</a>
+			            <!-- if $value.ext == 'jpg' || $value.ext == 'png' || $value.ext == 'gif' -->
+			            | <a href="{$value.filename}" target="_blank">查看</a>
+			            <!-- /if -->
+			        </td>
+		        </tr>
+		        <!-- /loop -->
+		    </tbody>
+			</table>
+		</div>
+		<!-- /if -->
 	</div>
 	<div class="clear"></div>
 </div>

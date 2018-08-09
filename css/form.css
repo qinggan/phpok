@@ -66,7 +66,7 @@ table.ext_upload td.ext_res div.ext_action input.ext_btn{
 	margin:0 0 0 3px;
 	padding:1px 6px;
 	text-align:center;
-	background:#ECECEC url("../images/btn_bg.jpg") center center repeat-x;
+	background:#ECECEC;
 	color:#000;
 }
 table.ext_upload td.ext_res div.ext_action input.ext_submit{
@@ -74,7 +74,7 @@ table.ext_upload td.ext_res div.ext_action input.ext_submit{
 	margin:0 0 0 3px;
 	padding:1px 6px;
 	text-align:center;
-	background:#ECECEC url("../images/btn_bg2.jpg") center center repeat-x;
+	background:#ECECEC;
 	color:#000;
 }
 table.ext_upload td.ext_res div.ext_action input.ext_taxis{
@@ -94,7 +94,7 @@ table.ext_upload input.submit,input.button,input.btn,input.ext_btn{
 	padding:0 6px;
 	line-height:23px;
 	text-align:center;
-	background:#ECECEC url("../images/btn_bg.jpg") center center repeat-x;
+	background:#ECECEC;
 	color:#000;
 }
 table.ext_upload input.submit{color:darkred;font-weight:bold;}

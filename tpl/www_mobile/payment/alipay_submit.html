@@ -1,0 +1,32 @@
+<!-- include tpl=head title=支付宝支付 -->
+<ul data-role="listview">
+	<li data-role="list-divider">订单信息</li>
+	<li>订单编号 <span class="ui-li-count">{$order.sn}</span></li>
+	<!-- if $orderinfo -->
+	<li>订单金额<span class="ui-li-count">{func price_format $orderinfo.price $orderinfo.currency_id}</span></li>
+	<!-- /if -->
+	<!-- if $paid_price -->
+	<li>已付金额<span class="ui-li-count">{func price_format $paid_price $orderinfo.currency_id}</span></li>
+	<!-- /if -->
+	<!-- if $paid_price -->
+	<li>还需付款<span class="ui-li-count">{func price_format $unpaid_price $orderinfo.currency_id}</span></li>
+	<!-- /if -->
+</ul>
+
+<form method="post" action="https://mapi.alipay.com/gateway.do?_input_charset={$alipay_config.input_charset}">
+	<!-- loop from=$postdata key=$key value=$value id=$tmpid -->
+	<input type="hidden" name="{$key}" value="{$value}" />
+	<!-- /loop -->
+	<div align="center">
+	<!-- if $orderinfo -->
+	<input type="button" data-inline="true" value="返回订单" class="ui-btn" onclick="$.phpok.go('{url ctrl=order func=info sn=$orderinfo.sn passwd=$orderinfo.passwd/}')" />
+	<!-- /if -->
+	<input type="submit" data-inline="true" data-theme="b" value="确认支付" class="ui-btn" id="payment_submit" />
+	</div>
+</form>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#payment_submit").click();
+});
+</script>
+<!-- include tpl=foot -->

@@ -4,38 +4,7 @@
 	&raquo; <a href="{url ctrl=payment/}" title="方案列表">方案列表</a>
 	&raquo; <!-- if $id -->编辑支付方案<!-- else -->添加支付方案<!-- /if -->
 </div>
-<script type="text/javascript">
-$(document).ready(function(){
-	top.$.desktop.title('{$id ? "编辑" : "添加"}支付方案');
-	var tip = "您的支付组信息{$id ? '编辑' : '添加'}成功";
-	$("#post_save").submit(function(){
-		if(!$("#title").val())
-		{
-			alert('设置支付组名称');
-			return false;
-		}
-		$(this).ajaxSubmit({
-			'url':get_url('payment','groupsave'),
-			'type':'post',
-			'dataType':'json',
-			'success':function(rs){
-				if(rs.status == 'ok')
-				{
-					alert(tip);
-					$.phpok.go(get_url('payment'));
-				}
-				else
-				{
-					alert(rs.content);
-					return false;
-				}
-			}
-		});
-		return false;
-	});
-});
-</script>
-<form method="post" id="post_save">
+<form method="post" id="post_save" onsubmit="return $.admin_payment.group_save()">
 <!-- if $id -->
 <input type="hidden" name="id" id="id" value="{$id}" />
 <!-- /if -->
@@ -99,11 +68,7 @@ $(document).ready(function(){
 		</table>
 	</div>
 </div>
-<div class="table">
-	<div class="content">
-		<input type="submit" value="提 交" class="submit" />
-	</div>
-</div>
+<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
 </form>
 
 <!-- include tpl=foot -->

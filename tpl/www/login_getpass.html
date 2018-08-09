@@ -1,60 +1,251 @@
-<!-- include tpl=head menutitle=网站首页 title=取回密码 -->
+<!-- include tpl=header menutitle=网站首页 title=取回密码 -->
 <script type="text/javascript">
-$(document).ready(function(){
-	$('#getpass-form').submit(function(){
-		$(this).ajaxSubmit({
-			url:api_url('login','getpass'),
-			type:'post',
-			dataType:'json',
-			success:function(rs){
-				if(rs.status == 'ok')
-				{
-					alert("请登录您的邮箱取得相关信息，以便进行下一步操作");
-					$.phpok.go(webroot);
-				}
-				else
-				{
-					if(!rs.content) rs.content = '获取失败，请联系管理员。';
-					alert(rs.content);
-					return false;
-				}
+function login_reset_pass()
+{
+	$("#getpass-form").ajaxSubmit({
+		url:api_url('login','repass'),
+		type:'post',
+		dataType:'json',
+		success:function(rs){
+			if(rs.status){
+				$.dialog.alert('密码修改成功，请登录',function(){
+					$.phpok.go(get_url('login'));
+					return true;
+				},'succeed');
+				return true;
 			}
-		});
+			if(!rs.info){
+				rs.info = '获取失败，请联系管理员。';
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+function update_type(val)
+{
+	var url = get_url('login','getpass','type_id='+val);
+	$.phpok.go(url);
+}
+</script>
+<!-- if $type_id == 'email' -->
+<script type="text/javascript">
+var maxtime = 300;
+var email_send_lock = false;
+var win_time_out;
+function update_send_email_loading()
+{
+	maxtime--;
+	if(maxtime < 1){
+		$("#email_send_status").val('发送邮件验证码');
+		email_send_lock = false;
+		maxtime = 300;
+		window.clearInterval(win_time_out);
+		return true;
+	}
+	var tips = "验证码已发送("+maxtime+")";
+	$("#email_send_status").val(tips);
+}
+
+function check_input()
+{
+	var email = $("input[name=email]").val();
+	if(!email){
+		$.dialog.alert('邮箱不能为空','','error');
+		return false;
+	}
+	var code = $("input[name=_chkcode]").val();
+	if(!code){
+		$.dialog.alert('验证码不能为空','','error');
+		return false;
+	}
+	var url = api_url('login','email','email='+email+"&_chkcode="+code);
+	$.phpok.json(url,function(rs){
+		if(rs.status){
+			var backurl = $("input[name=_back]").val();
+			if(!backurl){
+				backurl = webroot;
+			}
+			$.phpok.go(backurl);
+			return false;
+		}
+		$.dialog.alert(rs.info,true,'error');
 		return false;
 	});
+	
+	return false;
+}
+function send_email()
+{
+	if(email_send_lock){
+		$.dialog.alert('验证码已发送，请五分钟后再执行');
+		return false;
+	}
+	var url = api_url('vcode','email');
+	var email = $("#email").val();
+	if(!email){
+		$.dialog.alert('邮箱不能为空');
+		return false;
+	}
+	url += "&email="+$.str.encode(email);
+	$.dialog.tips("请稍候…");
+	update_send_email_loading();
+	$.phpok.json(url,function(rs){
+		if(rs.status){
+			maxtime = 300;
+			email_send_lock = true;
+			
+			win_time_out = window.setInterval("update_send_email_loading()",1000);
+			return true;
+		}
+		$.dialog.alert(rs.info);
+		$("#email_send_status").val('发送邮件验证码');
+		return false;
+	})
+}
+</script>
+<!-- /if -->
+<!-- if $type_id == 'sms' -->
+<script type="text/javascript">
+var maxtime = 60;
+var mobile_send_lock = false;
+var win_time_out;
+function update_send_sms_loading()
+{
+	maxtime--;
+	if(maxtime < 1){
+		$("#mobile_send_status").val('发送手机验证码');
+		mobile_send_lock = false;
+		maxtime = 60;
+		window.clearInterval(win_time_out);
+		return true;
+	}
+	var tips = "验证码已发送("+maxtime+")";
+	$("#mobile_send_status").val(tips);
+}
+
+function check_input()
+{
+	$("#login_submit").attr("disabled",true);
+	var act = $.dialog.tips('正在登录，请稍候…');
+	var mobile = $("input[name=mobile]").val();
+	if(!mobile){
+		$("#login_submit").attr("disabled",false);
+		act.close();
+		$.dialog.alert('手机号不能为空','','error');
+		return false;
+	}
+	var code = $("input[name=_chkcode]").val();
+	if(!code){
+		$("#login_submit").attr("disabled",false);
+		act.close();
+		$.dialog.alert('验证码不能为空','','error');
+		return false;
+	}
+	var url = api_url('login','sms','mobile='+mobile+"&_chkcode="+code);
+	$.phpok.json(url,function(rs){
+		$("#login_submit").attr("disabled",false);
+		act.close();
+		if(rs.status){
+			var backurl = $("input[name=_back]").val();
+			if(!backurl){
+				backurl = webroot;
+			}
+			$.phpok.go(backurl);
+			return true;
+		}
+		$.dialog.alert(rs.info,true,'error');
+		return false;
+	});
+	return false;
+}
+
+function send_sms()
+{
+	if(mobile_send_lock){
+		$.dialog.alert('验证码已发送，请一分钟后再执行');
+		return false;
+	}
+	var url = api_url('vcode','sms');
+	var mobile = $("#mobile").val();
+	if(!mobile){
+		$.dialog.alert('手机号不能为空');
+		return false;
+	}
+	url += "&mobile="+mobile;
+	$.dialog.tips("请稍候…");
+	update_send_sms_loading();
+	$.phpok.json(url,function(rs){
+		if(rs.status){
+			maxtime = 60;
+			mobile_send_lock = true;
+			win_time_out = window.setInterval("update_send_sms_loading()",1000);
+		}else{
+			$.dialog.alert(rs.info);
+			$("#mobile_send_status").val('发送手机验证码');
+		}
+	})
+}
+</script>
+<!-- /if -->
+<div class="main main-single main-login am-animation-scale-up">
+	<form class="am-form" id="getpass-form" method="post" onsubmit="return login_reset_pass()">
+		<fieldset>
+			<legend>取回密码操作</legend>
+			<div class="am-form-group">
+				<label for="mobile">选择密码取回方式</label>
+				<select id="type_id" name="type_id" onchange="update_type(this.value)">
+					<!-- if $check_email --><option value="email"{if $type_id == 'email'} selected{/if}>邮件验证码</option><!-- /if -->
+					<!-- if $check_sms --><option value="sms"{if $type_id == 'sms'} selected{/if}>短信验证码</option><!-- /if -->
+				</select>
+			</div>
+			<!-- if $type_id == 'email' -->
+			<div class="am-form-group">
+				<label for="mobile">邮箱 Email</label>
+				<div class="am-g am-g-collapse">
+					<div class="am-u-sm-6"><input type="text" id="email" name="email" placeholder="请输入邮箱" /></div>
+					<div class="am-u-sm-1"></div>
+					<div class="am-u-sm-5"><input type="button" value="发送邮件验证码" onclick="send_email()" class="am-btn am-btn-default" id="email_send_status" /></div>
+				</div>
+			</div>
+			<div class="am-form-group">
+				<label for="_chkcode">邮件验证码</label>
+				<input type="text" name="_chkcode" id="_chkcode" placeholder="请输入邮箱收到的验证码" />
+			</div>
+			<!-- /if -->
+			<!-- if $type_id == 'sms' -->
+			<div class="am-form-group">
+				<label for="mobile">手机号</label>
+				<div class="am-g am-g-collapse">
+					<div class="am-u-sm-6"><input type="text" id="mobile" name="mobile" placeholder="请输入手机号" /></div>
+					<div class="am-u-sm-1"></div>
+					<div class="am-u-sm-5"><input type="button" value="发送手机验证码" onclick="send_sms()" class="am-btn am-btn-primary" id="mobile_send_status" /></div>
+				</div>
+			</div>
+			<div class="am-form-group">
+				<label for="_chkcode">手机验证码</label>
+				<input type="text" name="_chkcode" id="_chkcode" placeholder="请输入手机上收到的验证码" />
+			</div>
+			<!-- /if -->
+			<div class="am-form-group">
+				<label for="_chkcode">新密码</label>
+				<input type="password" name="newpass" id="newpass" placeholder="请输入新密码" />
+			</div>
+			<div class="am-form-group">
+				<label for="_chkcode">确认密码</label>
+				<input type="password" name="chkpass" id="chkpass" placeholder="请再次输入新密码" />
+			</div>
+			<div class="am-form-group">
+				<button type="submit" class="am-btn am-btn-primary" id="login_submit">修改密码</button>
+				<a href="{$sys.url}" class="am-btn am-btn-default am-fr">返回首页</a>
+			</div>
+		</fieldset>
+	</form>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("body").css('background-color','#EFEFEF');
 });
 </script>
-<div class="login-reg">
-	<dl class="box">
-		<dt>邮箱取回密码</dt>
-		<form method="post" id="getpass-form">
-		<dd><label>邮箱：</label><input class="input" type="text" name="email" /><div class="clear"></div></dd>
-		<!-- if $is_vcode -->
-		<dd><label>验证码：</label><input class="vcode"  type="text" name="_chkcode" id="_chkcode" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" /><div class="clear"></div></dd>
-		<script type="text/javascript">
-		$(document).ready(function(){
-			$("#vcode").phpok_vcode();
-			$("#vcode").click(function(){
-				$(this).phpok_vcode();
-			});
-		});
-		</script>
-		<!-- /if -->
-		<dd class="submit"><input class="button blue" type="submit" value="取回密码" name=""></dd>
-		</form>
-	</dl>
-	<dl class="box note">
-		<dt>说明</dt>
-		<dd>请输入邮箱，系统将以邮件形式通知到您更换密码步骤</dd>
-		<!-- if $config.contactus.tel -->
-		<dd>我站客服电话：<span class="red">{$config.contactus.tel}</span></dd>
-		<!-- /if -->
-		<!-- if $getpasstype.sms -->
-		<dd>选择<a href="{url ctrl=login func=smspass/}" title="短信验证码">短信验证码</a>取回密码</dd>
-		<!-- /if -->
-		<dd>已注册用户，请点这里<a href="{url ctrl=login/}" title="登录">登录</a></dd>
-		<dd>您还不是我们的会员，请点这里<a href="{url ctrl=register/}" title="注册会员">注册</a></dd>
-	</dl>
-	<div class="clear"></div>
-</div>
-<!-- include tpl=foot -->
+<!-- include tpl=footer -->

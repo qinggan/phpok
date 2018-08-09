@@ -1,4 +1,4 @@
-<!-- include tpl=head menutitle=网站首页 title=会员登录 -->
+<!-- include tpl=header menutitle=网站首页 title=会员登录 -->
 <script type="text/javascript">
 var maxtime = 300;
 var email_send_lock = false;
@@ -30,17 +30,19 @@ function check_input()
 		return false;
 	}
 	var url = api_url('login','email','email='+email+"&_chkcode="+code);
-	var rs = $.phpok.json(url);
-	if(rs.status){
-		var backurl = $("input[name=_back]").val();
-		if(!backurl){
-			backurl = "{$sys.url}";
+	$.phpok.json(url,function(rs){
+		if(rs.status){
+			var backurl = $("input[name=_back]").val();
+			if(!backurl){
+				backurl = webroot;
+			}
+			$.phpok.go(backurl);
+			return false;
 		}
-		$.phpok.go(backurl);
-	}else{
-		$.dialog.alert(rs.info,'','error');
+		$.dialog.alert(rs.info,true,'error');
 		return false;
-	}
+	});
+	
 	return false;
 }
 function send_email()
@@ -49,7 +51,7 @@ function send_email()
 		$.dialog.alert('验证码已发送，请五分钟后再执行');
 		return false;
 	}
-	var url = api_url('login','email','type=getcode');
+	var url = api_url('vcode','email');
 	var email = $("#email").val();
 	if(!email){
 		$.dialog.alert('邮箱不能为空');
@@ -62,38 +64,48 @@ function send_email()
 		if(rs.status){
 			maxtime = 300;
 			email_send_lock = true;
-			win_time_out = setInterval("update_send_email_loading()",1000);
-		}else{
-			$.dialog.alert(rs.info);
-			$("#email_send_status").val('发送邮件验证码');
+			
+			win_time_out = window.setInterval("update_send_email_loading()",1000);
+			return true;
 		}
+		$.dialog.alert(rs.info);
+		$("#email_send_status").val('发送邮件验证码');
+		return false;
 	})
 }
 </script>
-<div class="login-reg">
-	<dl class="box">
-		<dt>邮件验证码登录</dt>
-		<form method="post" id="login-form" onsubmit="return check_input()">
-		<input type="hidden" name="_back" value="{$_back}" />
-		<dd><label>Email：</label><input class="input" type="text" name="email" id="email" /><div class="clear"></div></dd>
-		<dd>
-			<label>&nbsp;</label>
-			<input type="button" value="发送邮件验证码" onclick="send_email()" class="button blue" id="email_send_status" />
-			<div class="clear"></div>
-		</dd>
-		<dd><label>验证码：</label><input class="input" type="text" name="_chkcode" /><div class="clear"></div></dd>
-		<dd class="submit"><input class="button blue" type="submit" value="登录" name=""></dd>
-		</form>
-	</dl>
-	<dl class="box note">
-		<dt>说明</dt>
-		<dd>您正在使用邮件验证码登录，请先获取邮件验证码</dd>
-		<dd>短信登录，<a href="{url ctrl=login type=sms/}" title="手机短信登录">请点这里</a></dd>
-		<dd>普通登录，<a href="{url ctrl=login type=default/}" title="普通登录">请点这里</a></dd>
-		<dd>您还不是我们的会员，请点这里<a href="{url ctrl=register/}" title="注册会员">注册</a></dd>
-		
-		<dd>&nbsp;</dd>
-	</dl>
-	<div class="clear"></div>
+<div class="main main-single main-login am-animation-scale-up">
+	<form class="am-form" onsubmit="return check_input()" method="post">
+		<input type="hidden" name="_back" id="_back" value="{$_back}" />
+		<fieldset>
+			<legend>邮件验证登录</legend>
+			<div class="am-form-group">
+				<label for="mobile">邮箱 Email</label>
+				<div class="am-g am-g-collapse">
+					<div class="am-u-sm-6"><input type="text" id="email" name="email" placeholder="请输入邮箱" /></div>
+					<div class="am-u-sm-1"></div>
+					<div class="am-u-sm-5"><input type="button" value="发送邮件验证码" onclick="send_email()" class="am-btn am-btn-default" id="email_send_status" /></div>
+				</div>
+			</div>
+			<div class="am-form-group">
+				<label for="_chkcode">邮件验证码</label>
+				<input type="text" name="_chkcode" id="_chkcode" placeholder="请输入邮箱收到的验证码" />
+			</div>
+			<div class="am-form-group">
+				<button type="submit" class="am-btn am-btn-primary" id="login_submit">登录</button>
+			</div>
+			<div class="am-form-group">
+				<a href="{$sys.url}" class="am-btn am-btn-default am-btn-xs">返回首页</a>
+				<a href="{url ctrl=login/}" class="am-btn am-btn-default am-btn-xs"><i class="am-icon-user"></i> 账号密码登录</a>
+				<!-- if $login_sms --><a href="{url ctrl=login func=sms/}" class="am-btn am-btn-default am-btn-xs"><i class="am-icon-mobile"></i> 短信登录</a><!-- /if -->
+			</div>
+		</fieldset>
+	</form>
 </div>
-<!-- include tpl=foot -->
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$("body").css('background-color','#EFEFEF');
+});
+</script>
+<!-- include tpl=footer -->

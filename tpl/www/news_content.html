@@ -4,63 +4,40 @@
 	<!-- if $page_rs.banner -->
 	<div class="banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
 	<!-- /if -->
-	<ol class="breadcrumb">
-		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
-		<li><a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a></li>
-		<!-- if $cate_parent_rs -->
-		<li><a href="{$cate_parent_rs.url}" title="{$cate_parent_rs.title}">{$cate_parent_rs.title}</a></li>
-		<!-- /if -->
-		<!-- if $cate_rs -->
-		<li><a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a></li>
-		<!-- /if -->
-		<li>{$rs.title}</li>
-	</ol>
-	<div class="left">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="left am-panel-group">
 		<!-- include tpl=block/catelist pid=$page_rs.id cid=$cate_rs.id title=$page_rs.title -->
 		<!-- include tpl=block/contact -->
 		<!-- include tpl=block/hot_products -->
 	</div>
 	<div class="right">
-		<div class="news_detail">
-			<h2>{$rs.title}</h2>
-			<div class="news-extra-area">
-				发布日期：<span>{func date Y年m月d日 $rs.dateline}</span>&nbsp;&nbsp;&nbsp;
-				浏览次数：<span id="lblVisits">{$rs.hits}</span>
-				<!-- if $rs.tag -->
-				&nbsp;&nbsp;&nbsp;关键字：
-					<!-- loop from=$rs.tag key=$key value=$value -->
-					<a href="{$value.url}" title="{$value.alt}" target="{$value.target}">{$value.title}</a>
-					<!-- /loop -->
+		<article class="am-article">
+			<div class="am-article-hd">
+				<h1 class="am-article-title">{$rs.title}</h1>
+				<p class="am-article-meta">
+					发布日期：<span>{func time_format $rs.dateline}</span>&nbsp; &nbsp;
+					浏览次数：<span id="lblVisits">{$rs.hits}</span>
+					<!-- if $rs.tag -->
+					&nbsp; &nbsp; 关键字：
+						<!-- loop from=$rs.tag key=$key value=$value -->
+						<a href="{$value.url}" title="{$value.alt}" target="{$value.target}" style="color:#999;">{$value.title}</a>
+						<!-- /loop -->
+					<!-- /if -->
+				</p>
+			</div>
+			<div class="am-article-bd">
+				<!-- if $rs.note --><p class="am-article-lead">{func nl2br $rs.note}</p><!-- /if -->
+				<div class="content">{$rs.content}</div>
+				<!-- if $session.user_id -->
+				<div style="padding:10px;" class="am-text-center">
+					<input type="button" value="{if fav_check($rs.id) }已收藏{else}加入收藏{/if}" class="am-btn am-btn-primary" onclick="$.phpok_app_fav.act('{$rs.id}',this)" />
+				</div>
 				<!-- /if -->
 			</div>
-			<div class="d_txt">{$rs.content}</div>
-			<!-- if $session.user_id -->
-				<!-- php:$string = 'user_id='.$session.user_id -->
-			<div class="action">
-				<input type="button" value="{if fav_check($rs.id) }加入收藏{else}已收藏{/if}" class="button blue" onclick="fav_add('{$rs.id}',this)" />
-			</div>
-			<!-- /if -->
-			<div class="d_page">
-				<p>上一主题：
-					<!-- php:$prev = phpok_prev($rs) -->
-					<!-- if $prev -->
-					<a href="{$prev.url}" title="{$prev.title}">{$prev.title}</a>
-					<!-- else -->
-					没有了
-					<!-- /if -->
-				</p>
-				<p>下一主题：
-					<!-- php:$next = phpok_next($rs) -->
-					<!-- if $next -->
-					<a href="{$next.url}" title="{$next.title}">{$next.title}</a>
-					<!-- else -->
-					没有了
-					<!-- /if -->
-				</p>
-			</div>
-		</div>
+		</article>
+		<!-- include tpl=block/next_prev -->
 		<!-- if $page_rs.comment_status -->
-			<!-- include tpl=block_comment tid=$rs.id -->
+			<!-- include tpl=block/comment tid=$rs.id -->
 		<!-- /if -->
 	</div>
 </div>

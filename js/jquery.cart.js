@@ -13,51 +13,86 @@
 		//添加到购物车中
 		//id为产品ID
 		add: function(id,qty){
+			var self = this;
 			var url = this._addurl(id,qty);
-			var rs = $.phpok.json(url);
-			if(rs.status){
-				$.dialog.tips(p_lang('成功加入购物车'));
-				this.total();
-				return true;
+			if(!url){
+				return false;
 			}
-			$.dialog.alert(rs.info);
+			$.phpok.json(url,function(rs){
+				if(rs.status){
+					$.dialog.tips(p_lang('成功加入购物车'));
+					self.total();
+					return true;
+				}
+				$.dialog.alert(rs.info);
+				return false;
+			});
 			return false;
 		},
+		/**
+		 * 自定义产品加入购物车
+		 * @参数 title 产品名称
+		 * @参数 price 价格 
+		 * @参数 qty 数量
+		 * @参数 thumb 缩略图
+		**/
 		add2: function(title,price,qty,thumb){
 			var url = this._addurl2(title,price,qty,thumb);
 			if(!url){
 				return false;
 			}
-			var rs = $.phpok.json(url);
-			if(rs.status){
-				$.dialog.tips(p_lang('成功加入购物车'));
-				this.total();
-				return true;
-			}
-			$.dialog.alert(rs.info);
+			var self = this;
+			$.phpok.json(url,function(rs){
+				if(rs.status){
+					$.dialog.tips(p_lang('成功加入购物车'));
+					self.total();
+					return true;
+				}
+				$.dialog.alert(rs.info);
+				return false;
+			});
 			return false;
 		},
+		/**
+		 * 自定义产品立即订购
+		 * @参数 title 产品名称
+		 * @参数 price 价格 
+		 * @参数 qty 数量
+		 * @参数 thumb 缩略图
+		**/
 		onebuy2: function(title,price,qty,thumb){
 			var url = this._addurl2(title,price,qty,thumb);
 			if(!url){
 				return false;
 			}
-			var rs = $.phpok.json(url+"&_clear=1");
-			if(rs.status){
-				$.phpok.go(get_url('cart','checkout'));
-				return true;
-			}
-			$.dialog.alert(rs.info);
+			$.phpok.json(url+"&_clear=1",function(data){
+				if(data.status){
+					$.phpok.go(get_url('cart','checkout','id[]='+data.info));
+					return true;
+				}
+				$.dialog.alert(data.info);
+				return false;
+			});
 			return false;
 		},
+		/**
+		 * 系统产品立即订购
+		 * @参数 id 产品ID
+		 * @参数 qty 数量
+		**/
 		onebuy: function(id,qty){
 			var url = this._addurl(id,qty);
-			var rs = $.phpok.json(url+"&_clear=1");
-			if(rs.status){
-				$.phpok.go(get_url('cart','checkout'));
-				return true;
+			if(!url){
+				return false;
 			}
-			$.dialog.alert(rs.info);
+			$.phpok.json(url+"&_clear=1",function(data){
+				if(data.status){
+					$.phpok.go(get_url('cart','checkout','id[]='+data.info));
+					return true;
+				}
+				$.dialog.alert(data.info);
+				return false;
+			});
 			return false;
 		},
 		_addurl2: function(title,price,qty,thumb){
@@ -109,9 +144,31 @@
 			}
 			return url;
 		},
+		//取得选中的产品价格
+		price:function()
+		{
+			var ids = $.checkbox.join();
+			if(!ids){
+				$.dialog.alert(p_lang('请选择要进入结算的产品'),function(){
+					$("#total_price").text('--.--');
+				});
+				return true;
+			}
+			var url = api_url('cart','price','id='+$.str.encode(ids));
+			$.phpok.json(url,function(data){
+				if(data.status){
+					$("#total_price").html(data.info.price);
+					return true;
+				}
+				$("#total_price").text('--.--');
+				$.dialog.alert(data.info);
+				return false;
+			});
+		},
 		//更新产品数量
 		//id为购物车自动生成的ID号（不是产品ID号，请注意）
-		update: function(id,showtip){
+		update: function(id,showtip)
+		{
 			var qty = $("#qty_"+id).val();
 			if(!qty || parseInt(qty) < 1){
 				$.dialog.alert("购物车产品数量不能为空");
@@ -137,15 +194,15 @@
 		//计算购物车数量
 		//这里使用异步Ajax处理
 		total:function(func){
-			var url = api_url('cart','total');
-			$.phpok.json(url,function(rs){
+			$.phpok.json(api_url('cart','total'),function(rs){
 				if(rs.status && rs.info){
 					$("#head_cart_num").html(rs.info);
 					if(func && func != 'undefined'){
 						(func)(rs);
 					}
 				}
-			})
+			});
+			return false;
 		},
 		//产品增加操作
 		//id为购物车里的ID，不是产品ID
@@ -181,19 +238,38 @@
 		//删除产品信息
 		//id为购物车自动生成的ID号（不是产品ID号，请注意）
 		del: function(id){
-			var t = $("#title_"+id).text();
-			$.dialog.confirm(p_lang('确定删除产品：')+t+"<br />"+p_lang('删除后是不能恢复的！'),function(){
-				var url = api_url('cart','delete','id='+id);
-				var rs = $.phpok.json(url);
-				if(rs.status){
-					$.phpok.reload();
-					return true;
+			if(!id || id == 'undefined'){
+				var id = $.checkbox.join();
+				if(!id){
+					$.dialog.alert(p_lang('请选择要删除的产品'));
+					return false;
 				}
-				if(!rs.info){
-					rs.info = p_lang('删除失败');
+				var tmplist = id.split(',');
+				var title = [];
+				for(var i in tmplist){
+					var t = $("#title_"+tmplist[i]).text();
+					if(t){
+						title.push(t);
+					}
 				}
-				$.dialog.alert(rs.info);
-				return false;
+				var tip = p_lang('确定要删除产品<br><span style="color:red">{title}</span><br>删除后不能恢复',title.join("<br/>"));
+			}else{
+				title = $("#title_"+id).text();
+				var tip = p_lang('确定要删除产品<br><span style="color:red">{title}</span><br>删除后不能恢复',title);
+			}
+			$.dialog.confirm(tip,function(){
+				var url = api_url('cart','delete','id='+$.str.encode(id));
+				$.phpok.json(url,function(data){
+					if(data.status){
+						$.phpok.reload();
+						return true;
+					}
+					if(!data.info){
+						data.info = p_lang('删除失败');
+					}
+					$.dialog.alert(data.info);
+					return false;
+				});
 			});
 		}
 	};

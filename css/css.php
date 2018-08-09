@@ -31,6 +31,7 @@ if($type == 'admin'){
 
 //后台弹窗口
 if($type == 'open'){
+	$file[] = 'icomoon.css';
 	$file[] = 'open.css';
 	$file[] = 'artdialog.css';
 	$file[] = 'form.css';
@@ -41,6 +42,7 @@ if($type == 'open'){
 
 //后台桌面窗口
 if($type == 'default'){
+	$file[] = 'icomoon.css';
 	$file[] = 'admin.css';
 	$file[] = 'artdialog.css';
 	//使用 selectpage 下拉菜单

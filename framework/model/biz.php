@@ -18,7 +18,7 @@ class biz_model_base extends phpok_model
 
 	public function unitlist()
 	{
-		$xmlfile = $this->dir_root."data/xml/unit.xml";
+		$xmlfile = $this->dir_data."xml/unit.xml";
 		if(!file_exists($xmlfile)){
 			return false;
 		}

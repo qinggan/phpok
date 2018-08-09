@@ -18,68 +18,12 @@ if(!defined("PHPOK_SET")){
 
 class db_pdo_mysql extends db
 {
-	private $host = '127.0.0.1';
-	private $user = 'root';
-	private $pass = '';
-	private $port = 3306;
-	private $socket = '';
 	private $type = PDO::FETCH_ASSOC;
 
 	public function __construct($config=array())
 	{
 		parent::__construct($config);
-		$this->config($config);
-	}
-
-	public function config($config)
-	{
-		parent::config($config);
-		$this->host = $config['host'] ? $config['host'] : '127.0.0.1';
-		$this->user = $config['user'] ? $config['user'] : 'root';
-		$this->pass = $config['pass'] ? $config['pass'] : '';
-		$this->port = $config['port'] ? $config['port'] : 3306;
-		$this->socket = $config['socket'] ? $config['socket'] : '';
-	}
-
-
-	public function host($host='')
-	{
-		if($host){
-			$this->host = $host;
-		}
-		return $this->host;
-	}
-
-	public function user($user='')
-	{
-		if($user){
-			$this->user = $user;
-		}
-		return $this->user;
-	}
-
-	public function pass($pass='')
-	{
-		if($pass){
-			$this->pass = $pass;
-		}
-		return $this->pass;
-	}
-
-	public function port($port='')
-	{
-		if($port){
-			$this->port = $port;
-		}
-		return $this->port;
-	}
-
-	public function socket($socket='')
-	{
-		if($socket){
-			$this->socket = $socket;
-		}
-		return $this->socket;
+		$this->kec("`","`");
 	}
 
 	public function type($type='')
@@ -92,6 +36,9 @@ class db_pdo_mysql extends db
 		return $this->type;
 	}
 
+	/**
+	 * 数据库链接
+	**/
 	public function connect()
 	{
 		$this->_time();
@@ -112,7 +59,9 @@ class db_pdo_mysql extends db
 		return true;
 	}
 
-	//检测连接
+	/**
+	 * 检测连接
+	**/
 	private function check_connect()
 	{
 		if(!$this->conn || !is_object($this->conn)){
@@ -127,6 +76,16 @@ class db_pdo_mysql extends db
 			$this->error('数据库连接失败');
 		}
 		return true;
+	}
+
+	/**
+	 * 结束连接
+	**/
+	public function __destruct()
+	{
+		if($this->conn && is_object($this->conn)){
+			$this->conn = null;
+		}
 	}
 
 	//定义基本的变量信息
@@ -159,9 +118,24 @@ class db_pdo_mysql extends db
 		return $this->query;
 	}
 
-	public function get_all($sql,$primary="")
+	/**
+	 * 获取列表数据
+	 * @参数 $sql 要查询的SQL
+	 * @参数 $primary 绑定主键
+	**/
+	public function get_all($sql,$primary='')
 	{
-		$this->query($sql);
+		if($sql){
+			$false = $this->cache_false($primary.'-'.$sql);
+			if($false){
+				return false;
+			}
+			if($this->cache_get($primary.'-'.$sql)){
+				return $this->cache_get($primary.'-'.$sql);
+			}
+			$this->query($sql);
+		}
+		
 		if(!$this->query || !is_object($this->query)){
 			return false;
 		}
@@ -176,12 +150,33 @@ class db_pdo_mysql extends db
 		}
 		$this->query->closeCursor();
 		$this->_time();
+		if(!$rs || count($rs)<1){
+			$this->cache_false_save($primary.'-'.$sql);
+			return false;
+		}
+		if($this->cache_need($primary.'-'.$sql)){
+			$this->cache_save($primary.'-'.$sql,$rs);
+		}
+		$this->cache_first($primary.'-'.$sql);
 		return $rs;
 	}
 
+	/**
+	 * 获取一条数据
+	 * @参数 $sql 要执行的SQL
+	**/
 	public function get_one($sql="")
 	{
-		$this->query($sql);
+		if($sql){
+			$false = $this->cache_false($sql);
+			if($false){
+				return false;
+			}
+			if($this->cache_get($sql)){
+				return $this->cache_get($sql);
+			}
+			$this->query($sql);
+		}
 		if(!$this->query || !is_object($this->query)){
 			return false;
 		}
@@ -189,104 +184,32 @@ class db_pdo_mysql extends db
 		$rs = $this->query->fetch($this->type);
 		$this->query->closeCursor();
 		$this->_time();
+		if(!$rs){
+			$this->cache_false_save($sql);
+			return false;
+		}
+		//检测是否需要缓存
+		if($this->cache_need($sql)){
+			$this->cache_save($sql,$rs);
+		}
+		$this->cache_first($sql);
 		return $rs;
 	}
 
-	//返回最后插入的ID
+	/**
+	 * 返回最后插入的ID
+	**/
 	public function insert_id()
 	{
 		$this->check_connect();
 		return $this->conn->lastInsertId();
 	}
 
-	//写入操作
-	public function insert($sql,$tbl='',$type='insert')
-	{
-		if(is_array($sql) && $tbl){
-			return $this->insert_array($sql,$tbl,$type);
-		}
-		$this->query($sql);
-		return $this->insert_id();
-	}
-
-	public function insert_array($data,$tbl,$type="insert")
-	{
-		if(!$tbl || !$data || !is_array($data)){
-			return false;
-		}
-		if(substr($tbl,0,strlen($this->prefix)) != $this->prefix){
-			$tbl = $this->prefix.$tbl;
-		}
-		$type = strtolower($type);
-		$sql = $type == 'insert' ? "INSERT" : "REPLACE";
-		$sql.= " INTO ".$tbl." ";
-		$sql_fields = array();
-		$sql_val = array();
-		foreach($data as $key=>$value){
-			$sql_fields[] = "`".$key."`";
-			$sql_val[] = "'".$value."'";
-		}
-		$sql.= "(".(implode(",",$sql_fields)).") VALUES(".(implode(",",$sql_val)).")";
-		return $this->insert($sql);
-	}
-
-	//更新操作
-	public function update($data,$tbl='',$condition='')
-	{
-		if(is_array($data) && $tbl && $condition){
-			return $this->update_array($data,$tbl,$condition);
-		}
-		return $this->query($data);
-	}
-
-	//删除操作
-	public function delete($table,$condition='')
-	{
-		if(!$condition || !$table){
-			return false;
-		}
-		if(is_array($condition)){
-			$sql_fields = array();
-			foreach($condition as $key=>$value){
-				$sql_fields[] = "`".$key."`='".$value."' ";
-			}
-			$condition = implode(" AND ",$sql_fields);
-			if(!$condition){
-				return false;
-			}
-		}
-		if(substr($table,0,strlen($this->prefix)) != $this->prefix){
-			$table = $this->prefix.$table;
-		}
-		$sql = "DELETE FROM ".$table." WHERE ".$condition;
-		return $this->query($sql);
-	}
-
-	//更新数据
-	public function update_array($data='',$table='',$condition='')
-	{
-		if(!$data || !$table || !$condition || !is_array($data) || !is_array($condition)){
-			return false;
-		}
-		if(substr($table,0,strlen($this->prefix)) != $this->prefix){
-			$table = $this->prefix.$table;
-		}
-		$sql = "UPDATE ".$table." SET ";
-		$sql_fields = array();
-		foreach($data as $key=>$value){
-			$sql_fields[] = "`".$key."`='".$value."'";
-		}
-		$sql.= implode(",",$sql_fields);
-		$sql_fields = array();
-		foreach($condition as $key=>$value){
-			$sql_fields[] = "`".$key."`='".$value."' ";
-		}
-		$sql .= " WHERE ".implode(" AND ",$sql_fields);
-		return $this->query($sql);
-	}
 
 	/**
-	 * 计算数量
+	 * 返回行数
+	 * @参数 $sql 要执行的SQL语句
+	 * @参数 $is_count 是否计算数量，仅限 sql 中使用 count() 时有效
 	**/
 	public function count($sql="",$is_count=true)
 	{
@@ -306,6 +229,10 @@ class db_pdo_mysql extends db
 		return false;
 	}
 
+	/**
+	 * 返回被筛选出来的字段数目
+	 * @参数 $sql 要执行的SQL语句
+	**/
 	public function num_fields($sql="")
 	{
 		if($sql){
@@ -317,9 +244,15 @@ class db_pdo_mysql extends db
 		return false;
 	}
 
-	public function list_fields($table)
+	/**
+	 * 显示表字段，仅限字段名，没有字段属性
+	 * @参数 $table 表名
+	 * @参数 $prefix 是否检查数据表前缀
+	 * @返回 无值或表字段数组
+	**/
+	public function list_fields($table,$prefix=true)
 	{
-		if(substr($table,0,strlen($this->prefix)) != $this->prefix){
+		if($prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
 			$table = $this->prefix.$table;
 		}
 		$rs = $this->get_all("SHOW COLUMNS FROM ".$table);
@@ -332,10 +265,14 @@ class db_pdo_mysql extends db
 		return $rslist;
 	}
 
-	//取得明细的字段管理
-	public function list_fields_more($table)
+	/**
+	 * 取得明细的字段管理
+	 * @参数 $table 表名
+	 * @参数 $check_prefix 是否检查数据表前缀
+	**/
+	public function list_fields_more($table,$check_prefix=true)
 	{
-		if(substr($table,0,strlen($this->prefix)) != $this->prefix){
+		if($check_prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
 			$table = $this->prefix.$table;
 		}
 		$rs = $this->get_all("SHOW COLUMNS FROM ".$table);
@@ -352,7 +289,9 @@ class db_pdo_mysql extends db
 		return $rslist;
 	}
 
-	//显示表明细
+	/**
+	 * 显示数据库表
+	**/
 	public function list_tables()
 	{
 		$list = $this->get_all("SHOW TABLES");
@@ -367,40 +306,31 @@ class db_pdo_mysql extends db
 		return $rslist;
 	}
 
-	//显示表名
+	/**
+	 * 显示表名
+	 * @参数 $table_list 数组，整个数据库中的表
+	 * @参数 $i 顺序ID
+	**/
 	public function table_name($table_list,$i)
 	{
 		return $table_list[$i];
 	}
 
+	/**
+	 * 字符转义
+	 * @参数 $char 要转义的字符
+	**/
 	public function escape_string($char)
 	{
 		if(!$char){
 			return false;
 		}
 		return addslashes($char);
-		//$this->check_connect();
-		//return $this->conn->quote($char);
-	}
-
-	//PHPOK中常用的简洁高效的SQL生成查询，仅适合单表查询
-	public function phpok_one($tbl,$condition="",$fields="*")
-	{
-		if(substr($table,0,strlen($this->prefix)) != $this->prefix){
-			$table = $this->prefix.$table;
-		}
-		$sql = "SELECT ".$fields." FROM ".$table;
-		if($condition){
-			$sql .= " WHERE ".$condition;
-		}
-		return $this->get_one($sql);
 	}
 
 	/**
 	 * 取得MySQL版本号
 	 * @参数 $type 支持server和client两种类型
-	 * @返回 
-	 * @更新时间 
 	**/
 	public function version($type='server')
 	{
@@ -409,5 +339,132 @@ class db_pdo_mysql extends db
 		}else{
 			return $this->conn->getAttribute(PDO::ATTR_CLIENT_VERSION);
 		}
+	}
+
+	/**
+	 * 创建主表操作
+	 * @参数 $tblname 表名称
+	 * @参数 $pri_id 主键ID
+	 * @参数 $note 表摘要
+	 * @参数 $engine 引挈，默认是 InnoDB
+	**/
+	public function create_table_main($tblname,$pri_id='',$note='',$engine='')
+	{
+		if(!$engine){
+			$engine = 'InnoDB';
+		}
+		if(!$pri_id){
+			$pri_id = 'id';
+		}
+		$sql  = "CREATE TABLE IF NOT EXISTS `".$tblname."`(`".$pri_id."` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',";
+		$sql .= "PRIMARY KEY (`".$pri_id."`) ) ";
+		$sql .= "ENGINE=".$engine." DEFAULT CHARACTER SET utf8 COMMENT='".$note."' AUTO_INCREMENT=1;";
+		return $this->query($sql);
+	}
+
+	/**
+	 * 增加或修改表字段
+	 * @参数 $tblname 表名称，带前缀
+	 * @参数 $data 要更新的表信息，包括字段有：id 表ID，type类型，length长度，unsigned是否无符号，notnull是否非空，default默认值，comment备注
+	 * @参数 $old 旧表字段ID，如果检查不能，表示新增
+	**/
+	public function update_table_fields($tblname,$data,$old='')
+	{
+		if(!$tblname || !$data || !is_array($data)){
+			return false;
+		}
+		$check = $this->list_fields_more($tblname,false);
+		if(!$check){
+			return false;
+		}
+		if(!$oldid){
+			$old = $data['id'];
+		}
+		if(!$data['type']){
+			$data['type'] = 'varchar';
+		}
+		$sql = "ALTER TABLE `".$tblname."` ";
+		if($check[$old]){
+			$sql .= "CHANGE `".$old."` `".$data['id']."` ";
+		}else{
+			$sql .= "ADD `".$data['id']."` ";
+		}
+		$sql .= strtoupper($data['type']);
+		if($data['type'] == 'varchar'){
+			$sql .= "(255)";
+		}else{
+			if($data['length']){
+				$sql.= "(".$data['length'].")";
+			}
+
+		}
+		$sql .= " ";
+		if($data['unsigned']){
+			$sql .= "UNSIGNED ";
+		}
+		if($data['notnull']){
+			$sql .= "NOT NULL ";
+			if($data['default'] != ''){
+				$sql .= "DEFAULT '".$data['default']."' ";
+			}else{
+				if($data['type'] == 'varchar'){
+					$sql .= "DEFAULT '' ";
+				}
+			}
+		}else{
+			$sql .= "NULL ";
+		}
+		if($data['comment']){
+			$sql .= "COMMENT '".$data['comment']."' ";
+		}
+		return $this->query($sql);
+	}
+
+	/**
+	 * 创建更新索引
+	 * @参数 $tblname 表名
+	 * @参数 $indexname 索引名，也可以是字段名
+	 * @参数 $fields 字段名，支持字段数组，留空使用索引名
+	 * @参数 $old 删除旧索引
+	**/
+	public function update_table_index($tblname,$indexname,$fields='',$old='')
+	{
+		$sql = "ALTER TABLE ".$tblname." ";
+		if($old){
+			$sql .= "DROP INDEX `".$old."`,";
+		}
+		if(!$fields){
+			$fields = $indexname;
+		}
+		if(is_array($fields)){
+			$fields = implode("`,`",$fields);
+		}
+		$sql .= "ADD INDEX `".$indexname."`(`".$fields."`)";
+		return $this->query($sql);
+	}
+
+	/**
+	 * 删除表字段
+	 * @参数 $tblname 表名称
+	 * @参数 $id 要删除的字段
+	**/
+	public function delete_table_fields($tblname,$id)
+	{
+		$sql = "ALTER TABLE ".$tblname." DROP `".$id."`";
+		return $this->query($sql);
+	}
+
+	/**
+	 * 删除表操作
+	 * @参数 $table 表名称，要求带前缀
+	 * @参数 $check_prefix 是否加前缀
+	**/
+	public function delete_table($table,$check_prefix=true)
+	{
+		if($check_prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
+			$table = $this->prefix.$table;
+		}
+		$sql = "DROP TABLE IF EXISTS `".$table."`";
+		return $this->query($sql);
 	}
 }

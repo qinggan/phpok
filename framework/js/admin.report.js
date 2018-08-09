@@ -12,7 +12,7 @@
 		select_project:function(val)
 		{
 			if(!val || val == 'undefined'){
-				$("div[data-id=line-x],div[data-id=line-y],div[data-id=line-z]").hide();
+				$("li[data-id=line-x],li[data-id=line-y],li[data-id=line-z]").hide();
 				return true;
 			}
 			if(val && val != 'undefined'){
@@ -23,7 +23,7 @@
 						return false;
 					}
 					if(!data.info){
-						$("div[data-id=line-x],div[data-id=line-y]").hide();
+						$("li[data-id=line-x],li[data-id=line-y]").hide();
 						return true;
 					}
 					if(data.info.x){
@@ -33,8 +33,8 @@
 							xhtml += '<option value="'+i+'">'+x[i]+'</option>';
 						}
 						xhtml += '</select>';
-						$("div[data-id=line-x] .content").html(xhtml);
-						$("div[data-id=line-x]").show();
+						$("li[data-id=line-x]").html(xhtml);
+						$("li[data-id=line-x]").show();
 					}
 					if(data.info.y){
 						var y = data.info.y;
@@ -44,16 +44,21 @@
 							yhtml += '<li><label><input type="checkbox" name="y[]" value="'+i+'"/>'+y[i]+'</label></li>';
 						}
 						yhtml += '</ul>';
-						$("div[data-id=line-y] .content").html(yhtml);
-						$("div[data-id=line-y]").show();
+						$("li[data-id=line-y]").html(yhtml);
+						$("li[data-id=line-y]").show();
 					}
 					if(data.info.z){
-						$("div[data-id=line-z]").show();
+						$("li[data-id=line-z]").show();
 					}else{
-						$("div[data-id=line-z]").hide();
+						$("li[data-id=line-z]").hide();
 					}
 				});
 			}
 		}
 	}
 })(jQuery);
+
+$(document).ready(function(){
+	laydate.render({elem:'#startdate'});
+	laydate.render({elem:'#stopdate'});
+});

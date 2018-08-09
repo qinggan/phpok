@@ -52,7 +52,7 @@ class cate_control extends phpok_control
 			$ext_module = "cate-".$id;
 			$extlist = $this->model('ext')->ext_all($ext_module);
 			if(!$rs['parent_id']){
-				$ext2 = $this->lib('xml')->read($this->dir_root.'data/xml/cate_extfields_'.$id.'.xml');
+				$ext2 = $this->lib('xml')->read($this->dir_data.'xml/cate_extfields_'.$id.'.xml');
 				if($ext2['fid']){
 					$this->assign('ext2',explode(",",$ext2['fid']));
 				}
@@ -69,11 +69,11 @@ class cate_control extends phpok_control
 			if($parent_id && !$this->session->val('admin-add-cate')){
 				$root_id = $parent_id;
 				$this->model('cate')->get_root_id($root_id,$parent_id);
-				$ext2 = $this->lib('xml')->read($this->dir_root.'data/xml/cate_extfields_'.$root_id.'.xml');
+				$ext2 = $this->lib('xml')->read($this->dir_data.'xml/cate_extfields_'.$root_id.'.xml');
 				if($ext2['fid']){
 					$tmplist = explode(",",$ext2['fid']);
 					foreach($tmplist as $key=>$value){
-						$tmp = $this->model('fields')->get_one($value);
+						$tmp = $this->model('fields')->default_one($value);
 						if($tmp){
 							unset($tmp['id']);
 							$this->session->assign('admin-add-cate.'.$tmp['identifier'],$tmp);
@@ -248,7 +248,7 @@ class cate_control extends phpok_control
 			$extfields = $this->get('_extfields');
 			if($extfields){
 				$extfields = implode(",",$extfields);
-				$this->lib('xml')->save(array('fid'=>$extfields),$this->dir_root.'data/xml/cate_extfields_'.$id.'.xml');
+				$this->lib('xml')->save(array('fid'=>$extfields),$this->dir_data.'xml/cate_extfields_'.$id.'.xml');
 			}
 		}
 		$this->success(P_Lang('分类信息配置成功'),$this->url("cate"));

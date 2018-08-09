@@ -289,6 +289,7 @@ class order_model_base extends phpok_model
 		if($rs['ext']){
 			$rs['ext'] = unserialize($rs['ext']);
 		}
+		return $rs;
 	}
 
 	/**
@@ -328,11 +329,20 @@ class order_model_base extends phpok_model
 		if(!$data){
 			return false;
 		}
-		if(!$data['who'] && $this->session->val('user_name')){
-			$data['who'] = $this->session->val('user_name');
-		}
 		if(!$data['addtime']){
 			$data['addtime'] = $this->time;
+		}
+		if($this->app_id != 'admin' && $this->session->val('user_id')){
+			$data['user_id'] = $this->session->val('user_id');
+			if(!$data['who']){
+				$data['who'] = $this->session->val('user_name');
+			}
+		}
+		if($this->app_id == 'admin'){
+			$data['admin_id'] = $this->session->val('admin_id');
+			if(!$data['who']){
+				$data['who'] = $this->session->val('admin_account');
+			}
 		}
 		return $this->db->insert_array($data,'order_log');
 	}
@@ -367,9 +377,45 @@ class order_model_base extends phpok_model
 		if(!$order_id){
 			return false;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."order_payment WHERE order_id='".$order_id."'";
+		$condition = "";
 		if($payment_id){
-			$sql .= " AND payment_id='".$payment_id."' ";
+			$condition = "payment_id='".$payment_id."' ";
+		}
+		return $this->_order_payment($order_id,$condition);
+	}
+
+	public function delete_not_end_order($order_id)
+	{
+		if(!$order_id){
+			return false;
+		}
+		$sql = "DELETE FROM ".$this->db->prefix."order_payment WHERE order_id='".$order_id."' AND dateline<1";
+		$this->db->query($sql);
+		return true;
+	}
+
+	/**
+	 * 取得订单中的未完工的支付方式信息
+	 * @参数 $order_id 订单ID
+	 * @参数 $payment_id 支付方式ID，此项用于订单中有多条支付方式
+	**/
+	public function order_payment_notend($order_id,$payment_id=0)
+	{
+		if(!$order_id){
+			return false;
+		}
+		$condition = "dateline<1";
+		if($payment_id){
+			$condition .= " AND payment_id='".$payment_id."' ";
+		}
+		return $this->_order_payment($order_id,$condition);
+	}
+
+	protected function _order_payment($id,$condition="")
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."order_payment WHERE order_id='".$id."'";
+		if($condition){
+			$sql .= " AND ".$condition;
 		}
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
@@ -439,12 +485,26 @@ class order_model_base extends phpok_model
 	**/
 	public function paid_price($order_id)
 	{
-		$sql = "SELECT SUM(price) totalprice FROM ".$this->db->prefix."order_payment WHERE order_id='".$order_id."' AND dateline>0";
-		$rs = $this->db->get_one($sql);
+		$rs = $this->get_one($order_id);
 		if(!$rs){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."order_payment WHERE order_id='".$order_id."' AND dateline>0";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
 			return 0;
 		}
-		return $rs['totalprice'];
+		$paid_price = 0;
+		foreach($rslist as $key=>$value){
+			if(!$value['price']){
+				continue;
+			}
+			$currency_id = (isset($value['currency_id']) && $value['currency_id']) ? $value['currency_id'] : $rs['currency_id'];
+			$currency_rate = (isset($value['currency_rate']) && $value['currency_rate']) ? $value['currency_rate'] : 0;
+			$price_val = price_format_val($value['price'],$currency_id,$rs['currency_id'],$rs['currency_rate'],$currency_rate);
+			$paid_price += floatval($price_val);
+		}
+		return $paid_price;
 	}
 
 	/**
@@ -457,9 +517,8 @@ class order_model_base extends phpok_model
 	{
 		$paid_price = $this->paid_price($order_id);
 		$rs = $this->get_one($order_id);
-		$price = $rs['price'];
-		if(round($paid_price,2) != round($price,2)){
-			return round(($price - $paid_price),4);
+		if(round($paid_price,2) != round($rs['price'],2)){
+			return round(($rs['price'] - $paid_price),4);
 		}
 		return '0.00';
 	}
@@ -599,7 +658,10 @@ class order_model_base extends phpok_model
 				$sn .= str_pad($total,3,'0',STR_PAD_LEFT);
 			}
 			if($value == 'id'){
-				$maxid = $this->model('order')->maxid();
+				//$sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA='".$this->db->database()."' AND TABLE_NAME ='".$this->db->prefix."order'";
+				$sql = "SELECT max(id) FROM ".$this->db->prefix."order";
+				$maxid = $this->db->count($sql);
+				$maxid++;
 				$sn .= str_pad($maxid,5,'0',STR_PAD_LEFT);
 			}
 			//包含会员信息
@@ -675,5 +737,17 @@ class order_model_base extends phpok_model
 			}
 		}
 		return $integral;
+	}
+
+
+	public function log_list($order_id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."order_log WHERE order_id='".$order_id."' ORDER BY addtime ASC,id ASC";
+		return $this->db->get_all($sql);
+	}
+
+	public function log_all($order_id)
+	{
+		return $this->log_list($order_id);
 	}
 }

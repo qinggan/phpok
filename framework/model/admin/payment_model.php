@@ -118,8 +118,7 @@ class payment_model extends payment_model_base
 
 	public function group_set_default($id,$site_id=0)
 	{
-		if(!$id)
-		{
+		if(!$id){
 			return false;
 		}
 		$condition = $site_id ? 'site_id IN(0,'.$site_id.')' : 'site_id=0';

@@ -62,7 +62,7 @@ class pca_form extends _init_auto
 		}else{
 			$rs['content'] = array('p'=>'','c'=>'','a'=>'');
 		}
-		$province = $this->lib('xml')->read($this->dir_root.'data/xml/provinces.xml');
+		$province = $this->lib('xml')->read($this->dir_data.'xml/provinces.xml');
 		$this->assign('_province',$province['province']);
 		$this->assign('_rs',$rs);
 		return $this->fetch($this->dir_phpok.'form/html/pca_admin_tpl.html','abs-file');
@@ -79,10 +79,9 @@ class pca_form extends _init_auto
 				$rs['content'] = array('p'=>'','c'=>'','a'=>'');
 			}
 		}
-		$province = $this->lib('xml')->read($this->dir_root.'data/xml/provinces.xml');
+		$province = $this->lib('xml')->read($this->dir_data.'xml/provinces.xml');
 		$this->assign('_province',$province['province']);
 		$this->assign('_rs',$rs);
 		return $this->fetch($this->dir_phpok.'form/html/pca_www_tpl.html','abs-file');
 	}
 }
-?>

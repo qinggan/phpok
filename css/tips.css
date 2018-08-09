@@ -1,27 +1,16 @@
-body{font-size:12px;font-family:"Verdana","Microsoft Yahei","Geneva","sans-serif","Arial","Tahoma","HELVETICA";}
-.body{margin:100px auto auto auto;max-width:550px;width:96%;border:1px solid #8F8F8F;}
-.body .tips{height:70px;}
-.body .tips .title{margin-left:70px;font-weight:bold;height:20px;padding-top:15px;}
-.body .tips .note{margin-left:70px;height:30px;}
-.body .tips .txt{margin-left:70px;padding-top:10px;line-height:25px;font-weight:bold;}
-.body .notice{background:url("../images/notice.jpg") 20px center no-repeat;}
-.body .ok{background:url("../images/success.jpg") 20px center no-repeat;}
-.body .success{background:url("../images/success.jpg") 20px center no-repeat;}
-.body .error{background:url("../images/error.jpg") 20px center no-repeat;}
-.debug_time{width:550px;margin:2px auto;}
+body{font-size:16px;font-family:"Microsoft Yahei","Verdana","Geneva","sans-serif","Arial","Tahoma","HELVETICA";}
+.body{margin:7% auto;max-width:600px;width:96%;}
+.body .tips{line-height:170%}
+.body .tips .title{margin-left:50px;font-weight:bold;}
+.body .tips .note{margin-left:50px;color:gray;}
+.body .tips .txt{margin-left:50px;font-weight:500;min-height:36px;line-height:200%}
+.body .notice{background:url("../images/skins/icons/question.png") left center no-repeat;}
+.body .ok{background:url("../images/skins/icons/succeed.png") left center no-repeat;}
+.body .success{background:url("../images/skins/icons/succeed.png") left center no-repeat;}
+.body .error{background:url("../images/skins/icons/error.png") left center no-repeat;}
+.debug_time{width:600px;margin:2px auto;}
 
 .red{color:red;}
-
-input.btn{
-	background:url("../images/button.png") 0 -124px no-repeat;
-	width:74px;
-	height:31px;
-	border:0;
-	margin:0;
-	padding:0;
-	line-height:27px;
-	text-align:center;
-}
 
 .foot{width:550px;margin:2px auto;padding:7px 5px;font-family:"Tahoma","Arial";line-height:22px;height:40px;color:#929292;}
 .foot a{color:#929292;}

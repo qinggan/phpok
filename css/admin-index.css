@@ -3,12 +3,25 @@
 body,ol,ul,h1,h2,h3,h4,h5,h6,p,th,td,dl,dd,form,fieldset,legend,input,textarea,select{margin:0;padding:0}
 body{font-size:12px;font-family:"Verdana","Arial","Microsoft Yahei","sans-serif","Tahoma";background:#f9f9f9;-webkit-text-size-adjust:100%;overflow-y:scroll;_margin:0; _height:100%;}
 a{color:#014;text-decoration:none}
-a:hover{color:#cd0200;text-decoration:underline}
+a:hover{color:#cd0200}
 em{font-style:normal}
 li{list-style:none}
 img{border:0;vertical-align:middle}
 table{border-collapse:collapse;border-spacing:0}
 p{word-wrap:break-word}
+
+select{padding:3px;}
+select {
+  border: solid 1px #acacac;
+  appearance:none;
+  -moz-appearance:none;
+  -webkit-appearance:none;
+  background: url("../images/arrow-select.png") no-repeat scroll right center transparent;
+  padding-right: 14px !important;
+}
+select::-ms-expand { display: none; }
+
+
 .fl{ float:left;}
 .fr{ float:right;}
 .clear{ clear:both;}
@@ -76,10 +89,10 @@ p{word-wrap:break-word}
 .head_web  .web_add{ width:23px; height:24px; border:1px solid #182C44; border-left:0; float:left; background:url('../images/create.jpg') no-repeat; display:block;}
 
 .head_tab{ position:absolute; height:27px; bottom:0; left:220px;}
-.head_tab li{ float:left; margin-left:10px; cursor:pointer; border-radius:3px 3px 0 0; background:#2a4567; border:1px solid #182c44; padding:0 15px; line-height:26px; border-bottom:0; color:#e0e0e0;}
+.head_tab li{ float:left; margin-left:10px; cursor:pointer; border-radius:3px 3px 0 0; background:#2a4567; border:1px solid #182c44; padding:0 15px; line-height:26px; border-bottom:0; color:#e0e0e0;position: relative;}
 .head_tab li.on{background:#3030a2;}
 
-.content{ width:100%; padding:55px 0 10px 0; background:#eeedeb;}
+.content{margin:10px;}
 .c_left{ width:160px; margin-left:10px; overflow:hidden; float:left;}
 .c_left li{ height:35px; border-bottom:1px solid #395e8d; background:#2a4567;position: relative;}
 .c_left li a{ display:block; height:35px; line-height:35px; color:#fff; white-space:nowrap; overflow:hidden;}
@@ -103,7 +116,7 @@ p{word-wrap:break-word}
 .index_chat dd a span{ color:#ff0000;}
 .index_chat dd a:hover{ background:#3f6e93; color:#fff; text-decoration:none; }
 
-.index_main{ overflow:hidden;margin-right:10px;}
+.index_main{ overflow:hidden;}
 .sub_box{ background:#fff; border:1px solid #dddddd; padding:15px; margin-bottom:10px;}
 .sub_box .title{ height:40px; border-bottom:1px solid #dddddd; margin-bottom:5px; }
 .sub_box .maintain{ padding:0 5px; height:38px; line-height:38px; border-bottom:3px solid #e16700; color:#e16700; font-size:20px;display:inline-block;}

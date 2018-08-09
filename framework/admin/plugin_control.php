@@ -1,12 +1,14 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/plugin_control.php
-	Note	: 插件中心
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-12-08 10:04
-***********************************************************/
+/**
+ * 插件中心
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年06月26日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class plugin_control extends phpok_control
 {
@@ -24,13 +26,13 @@ class plugin_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rslist = $this->model('plugin')->get_all();
 		if($rslist){
 			foreach($rslist as $key=>$value){
 				$extconfig = false;
-				if(file_exists($this->dir_plugin.$value['id'].'/setting.php')){
+				if(is_file($this->dir_plugin.$value['id'].'/setting.php')){
 					$extconfig = true;
 				}
 				$value['extconfig'] = $extconfig;
@@ -48,11 +50,6 @@ class plugin_control extends phpok_control
 			}
 			$this->assign('not_install',$not_install);
 		}
-		$array = array("identifier"=>'zipfile',"form_type"=>'upload');
-		$array['upload_type'] = 'update';
-		$this->lib('form')->cssjs($array);
-		$upload = $this->lib('form')->format($array);
-		$this->assign('upload_html',$upload);
 		$this->view("plugin_index");
 	}
 
@@ -150,19 +147,19 @@ class plugin_control extends phpok_control
 	public function save_f()
 	{
 		if(!$this->popedom["config"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id");
 		if(!$id){
-			error(P_Lang('未指定ID'),$this->url('plugin'),'error');
+			$this->error(P_Lang('未指定ID'),$this->url('plugin'));
 		}
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs){
-			error(P_Lang('数据记录不存在'),$this->url('plugin'),'error');
+			$this->error(P_Lang('数据记录不存在'),$this->url('plugin'));
 		}
 		$title = $this->get('title');
 		if(!$title){
-			error(P_Lang('插件名称不能为空'),$this->url('plugin','config','id='.$id),'error');
+			$this->error(P_Lang('插件名称不能为空'),$this->url('plugin','config','id='.$id));
 		}
 		$note = $this->get('note');
 		$taxis = $this->get("taxis",'int');
@@ -179,7 +176,7 @@ class plugin_control extends phpok_control
 				$cls->save();
 			}
 		}
-		error(P_Lang('{title}设置成功',array('title'=>' <span class="red">'.$rs['title'].'</span> ')),$this->url("plugin"),'ok');
+		$this->success(P_Lang('{title}设置成功',array('title'=>' <span class="red">'.$rs['title'].'</span> ')),$this->url("plugin"));
 	}
 
 	/**
@@ -209,36 +206,36 @@ class plugin_control extends phpok_control
 		if(!$id){
 			$filename = $this->get('filename');
 			if(!$filename){
-				$this->json(P_Lang('附件不存在'));
+				$this->error(P_Lang('附件不存在'));
 			}
 		}else{
 			$rs = $this->model('res')->get_one($id);
 			if(!$rs){
-				$this->json(P_Lang('附件不存在'));
+				$this->error(P_Lang('附件不存在'));
 			}
 			$filename = $rs['filename'];
 		}
 		$tmp = strtolower(substr($filename,-4));
 		if($tmp != '.zip'){
-			$this->json(P_Lang('非ZIP文件不支持在线解压'));
+			$this->error(P_Lang('非ZIP文件不支持在线解压'));
 		}
 		if(!file_exists($this->dir_root.$filename)){
-			$this->json(P_Lang('文件不存在'));
+			$this->error(P_Lang('文件不存在'));
 		}
 		$info = $this->lib('phpzip')->zip_info($this->dir_root.$filename);
 		$info = current($info);
 		if(!$info['filename']){
-			$this->json(P_Lang('插件有异常'));
+			$this->error(P_Lang('插件有异常'));
 		}
 		$info = explode('/',$info['filename']);
 		if(!$info[0]){
-			$this->json(P_Lang('插件有异常'));
+			$this->error(P_Lang('插件有异常'));
 		}
 		if(file_exists($this->dir_root.'plugins/'.$info[0])){
-			$this->json(P_Lang('插件已存在，不允许重复解压'));
+			$this->error(P_Lang('插件已存在，不允许重复解压'));
 		}
 		$this->lib('phpzip')->unzip($this->dir_root.$filename,$this->dir_root.'plugins/');
-		$this->json(true);
+		$this->success();
 	}
 
 	/**
@@ -314,15 +311,15 @@ class plugin_control extends phpok_control
 	public function uninstall_f()
 	{
 		if(!$this->popedom["install"]){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id");
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs){
-			$this->json(P_Lang('数据记录不存在'));
+			$this->error(P_Lang('数据记录不存在'));
 		}
 		if(file_exists($this->dir_root.'plugins/'.$id.'/uninstall.php')){
 			include_once($this->dir_root.'plugins/'.$id.'/uninstall.php');
@@ -334,7 +331,7 @@ class plugin_control extends phpok_control
 			}
 		}
 		$this->model('plugin')->delete($id);
-		$this->json(P_Lang('插件卸载成功'),true);
+		$this->success();
 	}
 
 	/**
@@ -343,15 +340,15 @@ class plugin_control extends phpok_control
 	public function status_f()
 	{
 		if(!$this->popedom["install"]){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id");
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs){
-			$this->json(P_Lang('数据记录不存在'));
+			$this->error(P_Lang('数据记录不存在'));
 		}
 		$status = $rs["status"] ? 0 : 1;
 		$this->model('plugin')->update_status($id,$status);
@@ -365,7 +362,7 @@ class plugin_control extends phpok_control
 				$cls->status();
 			}
 		}
-		$this->json($status,true,true,false);
+		$this->success($status);
 	}
 
 	/**
@@ -405,6 +402,16 @@ class plugin_control extends phpok_control
 		$this->exec_f();
 	}
 
+	public function upload_f()
+	{
+		$array = array("identifier"=>'zipfile',"form_type"=>'upload');
+		$array['upload_type'] = 'update';
+		$this->lib('form')->cssjs($array);
+		$upload = $this->lib('form')->format($array);
+		$this->assign('upload_html',$upload);
+		$this->view('plugin_upload');
+	}
+
 	/**
 	 * 导出插件
 	**/
@@ -417,7 +424,7 @@ class plugin_control extends phpok_control
 		if(!file_exists($this->dir_root.'plugins/'.$id)){
 			$this->error(P_Lang('插件不存在'),$this->url('plugin'));
 		}
-		$zipfile = $this->dir_root.'data/cache/'.$id.'.zip';
+		$zipfile = $this->dir_cache.$id.'.zip';
 		$this->lib('phpzip')->set_root($this->dir_root.'plugins/');
 		$this->lib('phpzip')->zip($this->dir_root.'plugins/'.$id,$zipfile);
 		ob_end_clean();
@@ -592,12 +599,12 @@ class plugin_control extends phpok_control
 	{
 		$title = $this->get('title');
 		if(!$title){
-			$this->json(P_Lang('插件名称不能为空'));
+			$this->error(P_Lang('插件名称不能为空'));
 		}
 		$id = $this->get('id','system');
 		if($id){
 			if(strpos($id,'_') !== false){
-				$this->json(P_Lang('插件标识不支持下划线'));
+				$this->error(P_Lang('插件标识不支持下划线'));
 			}
 			$id = strtolower($id);
 		}else{
@@ -605,7 +612,7 @@ class plugin_control extends phpok_control
 		}
 		//检测插件文件夹是否存在
 		if(file_exists($this->dir_root.'plugins/'.$id)){
-			$this->json(P_Lang('插件标识已被使用，请重新设置'));
+			$this->error(P_Lang('插件标识已被使用，请重新设置'));
 		}		
 		$note = $this->get('note');
 		$author = $this->get('author');
@@ -630,7 +637,7 @@ class plugin_control extends phpok_control
 			$content = '<?php'."\n".$this->php_note_title($id,$value,$title,$author)."\n".$this->php_demo($id,$value);
 			$this->lib('file')->vim($content,$this->dir_root.'plugins/'.$id.'/'.$value.'.php');
 		}
-		$this->json(true);
+		$this->success();
 	}
 
 	private function _get_iconlist($type)

@@ -40,7 +40,7 @@ class admin_model extends admin_model_base
 	public function session_lock()
 	{
 		$info = 'lock-session-'.$this->session->sessid();
-		$this->lib('file')->vi($this->time,$this->dir_root.'data/cache/'.$info.'.php');
+		$this->lib('file')->vi($this->time,$this->dir_cache.$info.'.php');
 		return true;
 	}
 
@@ -59,7 +59,7 @@ class admin_model extends admin_model_base
 	public function ip_lock()
 	{
 		$info = 'lock-ip-'.$this->lib('common')->ip();
-		$this->lib('file')->vi($this->time,$this->dir_root.'data/cache/'.$info.'.php');
+		$this->lib('file')->vi($this->time,$this->dir_cache.$info.'.php');
 		return true;
 	}
 
@@ -80,16 +80,16 @@ class admin_model extends admin_model_base
 	public function account_lock($name)
 	{
 		$info = 'lock-admin-'.$name;
-		$this->lib('file')->vi($this->time,$this->dir_root.'data/cache/'.$info.'.php');
+		$this->lib('file')->vi($this->time,$this->dir_cache.$info.'.php');
 		return true;
 	}
 
 	public function lock_delete($user)
 	{
-		$this->lib('file')->rm($this->dir_root.'data/cache/lock-admin-'.$user.'.php');
-		$this->lib('file')->rm($this->dir_root.'data/cache/lock-ip-'.$this->lib('common')->ip().'.php');
-		$this->lib('file')->rm($this->dir_root.'data/cache/lock-session-'.$this->session->sessid().'.php');
-		$this->lib('file')->rm($this->dir_root.'data/cache/lock-'.$this->session->sessid().'-admin.php');
+		$this->lib('file')->rm($this->dir_cache.'lock-admin-'.$user.'.php');
+		$this->lib('file')->rm($this->dir_cache.'lock-ip-'.$this->lib('common')->ip().'.php');
+		$this->lib('file')->rm($this->dir_cache.'lock-session-'.$this->session->sessid().'.php');
+		$this->lib('file')->rm($this->dir_cache.'lock-'.$this->session->sessid().'-admin.php');
 		return true;
 	}
 
@@ -103,10 +103,10 @@ class admin_model extends admin_model_base
 			$locktime = 7200;
 		}
 		$time = $this->time - $locktime;
-		if(!file_exists($this->dir_root.'data/cache/'.$info.'.php')){
+		if(!file_exists($this->dir_cache.$info.'.php')){
 			return false;
 		}
-		$dateline = $this->lib('file')->cat($this->dir_root.'data/cache/'.$info.'.php');
+		$dateline = $this->lib('file')->cat($this->dir_cache.$info.'.php');
 		$unlock_time = $dateline + $locktime;
 		return array('dateline'=>$dateline,'unlock_time'=>$unlock_time);
 	}

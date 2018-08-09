@@ -17,7 +17,7 @@ class ueditor_control extends phpok_control
 
 	private function load_config()
 	{
-		$config = $this->lib('file')->cat($this->dir_root.'data/config.json');
+		$config = $this->lib('file')->cat($this->dir_data.'config.json');
 		$config = preg_replace("/\/\*[\s\S]+?\*\//","",$config);
 		$config = $this->lib('json')->decode($config);
 		$config['imageCompressEnable'] = false;
@@ -295,6 +295,10 @@ class ueditor_control extends phpok_control
 		if($gd_rs){
 			$condition .= " AND e.gd_id='".$gd_rs["id"]."' ";
 			$is_gd = true;
+		}
+		$keywords = $this->get('keywords');
+		if($keywords){
+			$condition .= " AND (res.filename LIKE '%".$keywords."%' OR res.title LIKE '%".$keywords."%') ";
 		}
 		$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize,$is_gd);
 		if(!$rslist){

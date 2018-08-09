@@ -15,15 +15,46 @@ class gateway_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function get_one($id)
+	/**
+	 * 获取网关信息
+	 * @参数 $id 网关ID
+	 * @参数 $type 网关类型，目前仅支持 email 和 sms 两个，当为 true 或 false 时，表示 chkstatus
+	 * @参数 $chkstatus 是否验证必填信息项目
+	**/
+	public function get_one($id,$type='',$chkstatus=false)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."gateway WHERE id='".$id."'";
+		if($type && is_string($type)){
+			$sql .= " AND type='".$type."'";
+		}
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
 		}
 		if($rs['ext']){
 			$rs['ext'] = unserialize($rs['ext']);
+		}
+		if(isset($type) && is_bool($type)){
+			$chkstatus = $type;
+		}
+		if($chkstatus){
+			$param = $this->code_one($rs['type'],$rs['code']);
+			if(!$param['code']){
+				return false;
+			}
+			$chk_status = true;
+			foreach($param['code'] as $key=>$value){
+				if($value['required'] && $value['required'] != 'false' && $value['required'] != '0'){
+					$tmpid = $rs['ext'][$key];
+					if($tmpid == ''){
+						$chk_status = false;
+						break;
+					}
+				}
+			}
+			if(!$chk_status){
+				return false;
+			}
 		}
 		return $rs;
 	}
@@ -46,9 +77,8 @@ class gateway_model_base extends phpok_model
 		if(!$param['code']){
 			return false;
 		}
-		$code = $param['code'];
 		$chk_status = true;
-		foreach($code as $key=>$value){
+		foreach($param['code'] as $key=>$value){
 			if($value['required'] && $value['required'] != 'false' && $value['required'] != '0'){
 				$tmpid = $rs['ext'][$key];
 				if($tmpid == ''){
@@ -100,17 +130,17 @@ class gateway_model_base extends phpok_model
 	public function save_temp($info,$gid,$uid=0)
 	{
 		$file = 'gateway_'.$gid.'_'.$uid.'_'.$this->site_id.'.php';
-		return $this->lib('file')->vi($info,$this->dir_root.'data/cache/'.$file);
+		return $this->lib('file')->vi($info,$this->dir_cache.$file);
 	}
 
 	//读取临时数据
 	public function read_temp($gid,$uid=0)
 	{
 		$file = 'gateway_'.$gid.'_'.$uid.'_'.$this->site_id.'.php';
-		if(!file_exists($this->dir_root.'data/cache/'.$file)){
+		if(!file_exists($this->dir_cache.$file)){
 			return false;
 		}
-		$info = $this->lib('file')->cat($this->dir_root.'data/cache/'.$file);
+		$info = $this->lib('file')->cat($this->dir_cache.$file);
 		if(!$info || !trim($info)){
 			return false;
 		}
@@ -120,7 +150,7 @@ class gateway_model_base extends phpok_model
 	public function delete_temp($gid,$uid=0)
 	{
 		$file = 'gateway_'.$gid.'_'.$uid.'_'.$this->site_id.'.php';
-		$this->lib('file')->rm($this->dir_root.'data/cache/'.$file);
+		$this->lib('file')->rm($this->dir_cache.$file);
 		return true;
 	}
 }

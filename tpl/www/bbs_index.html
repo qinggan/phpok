@@ -1,32 +1,32 @@
 <!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
-<div class="wrap bbs_index">
-	<!-- catelist pid=$page_rs.id catelist_ext=1 -->
-	<!-- loop from=$list.sublist key=$key value=$value id=$tmpid -->
-	<div class="bd"{if !$tmpid.index} style="margin-top:10px;"{/if}>
-		<a href="{$value.url}" title="{$value.title}"><h3>{$value.title}</h3></a>
-		<div class="info">
-			<table width="100%">
-			<tr>
-				<td class="thumb"><img src="{$value.thumb ? $value.thumb.filename : 'images/bbs.png'}"></td>
-				<td class="note">
+<div class="main" style="padding:6px 0;">
+	<!-- if $page_rs.banner -->
+	<div class="banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
+	<!-- /if -->
+	<div class="am-panel-group">
+		<!-- catelist pid=$page_rs.id catelist_ext=1 -->
+		<!-- loop from=$list.sublist key=$key value=$value id=$tmpid -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">
+				 <h3 class="am-panel-title"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></h3>
+			</div>
+			<div class="am-g am-panel-bd">
+				<div class="am-u-sm-1"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb ? $value.thumb.filename : 'images/bbs.png'}" alt="{$value.title}" /></a></div>
+				<div class="am-u-sm-4">
+					<div class="am-title"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></div>
 					<!-- if $value.note -->{func nl2br $value.note}<!-- else -->暂无摘要<!-- /if -->
-				</td>
-				<td class="total">
-					<!-- php:$total = phpok('_total','pid='.$page_rs.id.'&cateid='.$value.id) -->
-					{$total}
-				</td>
-				<td class="last">
+				</div>
+				<div class="am-u-sm-1 am-text-center"><!-- php:$total = phpok('_total','pid='.$page_rs.id.'&cateid='.$value.id) -->{$total}</div>
+				<div class="am-u-sm-6">
 					<!-- arclist pid=$page_rs.id cateid=$value.id psize=3 -->
 					<!-- loop from=$list.rslist key=$k value=$v -->
-					<div><a href="{$v.url}" title="{$v.title}">{func phpok_cut $v.title 70 …}</a>
+					<div><a href="{$v.url}" title="{$v.title}">{func phpok_cut $v.title 70 …}</a></div>
 					<!-- /loop -->
 					<!-- if !$list.rslist -->无主题<!-- /if -->
-				</td>
-			</tr>
-			</table>
+				</div>
+			</div>
 		</div>
+		<!-- /loop -->
 	</div>
-	<!-- /loop -->
 </div>
-
 <!-- include tpl=foot -->

@@ -16,7 +16,7 @@
  */
 function createLinkstring($para) {
 	$arg  = "";
-	while (list ($key, $val) = each ($para)) {
+	foreach($para as $key=>$val){
 		$arg.=$key."=".$val."&";
 	}
 	//去掉最后一个&字符
@@ -52,9 +52,11 @@ function createLinkstringUrlencode($para) {
  */
 function paraFilter($para) {
 	$para_filter = array();
-	while (list ($key, $val) = each ($para)) {
-		if($key == "sign" || $key == "sign_type" || $val == "")continue;
-		else	$para_filter[$key] = $para[$key];
+	foreach($para as $key=>$val){
+		if($key == "sign" || $key == "sign_type" || $val == ""){
+			continue;
+		}
+		$para_filter[$key] = $para[$key];
 	}
 	return $para_filter;
 }

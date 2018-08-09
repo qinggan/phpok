@@ -20,6 +20,7 @@ a{color:#000;text-decoration: none;}
 .h33{height:33px;}
 .hide{display:none;}
 .hidden{display:none;}
+.phpok-copy{cursor:default;}
 
 td{word-break:break-all;}
 
@@ -55,6 +56,7 @@ select {
   -moz-appearance:none;
   -webkit-appearance:none;
   background: url("../images/arrow-select.png") no-repeat scroll right center transparent;
+  background-color:#fff;
   padding-right: 14px !important;
 }
 select::-ms-expand { display: none; }
@@ -76,7 +78,7 @@ input.button,input.btn,input.ext_btn{
 	margin:0 0 0 3px;
 	padding:1px 6px;
 	text-align:center;
-	background:#ECECEC url("../images/btn_bg.jpg") center center repeat-x;
+	background:#ECECEC;
 	color:#000;
 }
 input.button:hover,input.btn:hover,input.ext_btn:hover{border-color:#7EB4EA;background:#E3F0FC;}
@@ -88,18 +90,23 @@ input.search{
 	height:25px;
 }
 
-input.submit{
+input.submit {
 	margin:0;
-	padding:0;
-	height:31px;
-	width:100px;
 	text-align:center;
-	background:url("../images/button.png") left top no-repeat;
+	border:1px solid #D14836;
+	background:#D74937;
+	padding:3px 20px;
+	min-height:30px;
+	min-width:100px;
 	color:#fff;
-	border:0;
-	line-height:25px;
+	font-weight:bold;
+	border-radius:4px;
+	line-height:200%;
 }
-input.submit:hover{background-position:0 -31px;}
+input.submit:hover{
+	border:1px solid #B0281A;
+	box-shadow:0 1px 1px rgba(0,0,0,0.1);
+}
 
 
 .cate_line{width:24px;background:url("../images/cate_line.gif") center center repeat-y;}
@@ -116,12 +123,13 @@ ul.piclist li .taxis_input{width:40px;bottom:2px;position:absolute;height:22px;m
 ul.piclist li .idd{display:block;width:auto;position:absolute;top:2px;left:2px;padding:1px 3px;background:#FFF;color:#000;border:1px solid #000;}
 .main{position:relative;margin:0 3px;padding:0;}
 
-div.list{margin-top:3px;}
+div.list,table.list2{margin-top:3px;}
+div.list td,table.list2 td{padding:3px;}
 /* 附件列表 － 文本 */
-table.list{border-collapse:collapse;}
-table.list th{padding:0;border-bottom:2px solid #E5E5E5;height:25px;background:#D1D1D1;}
-table.list th.lft{text-align:left;}
-table.list tr:nth-child(2n+1){background:#F1F1F1}
+table.list,table.list2{border-collapse:collapse;}
+table.list th,table.list2 th{padding:0;border-bottom:2px solid #E5E5E5;height:25px;background:#D1D1D1;}
+table.list th.lft,table.list2 th.left{text-align:left;}
+table.list tr:nth-child(2n+1),table.list2 tr:nth-child(2n+1){background:#F1F1F1}
 table.list tr:hover{background:#2A2A2A;color:#fff;}
 table.list tr:hover a{color:#fff;}
 

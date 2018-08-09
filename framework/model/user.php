@@ -196,6 +196,19 @@ class user_model_base extends phpok_model
 		return $this->db->count($sql);
 	}
 
+	/**
+	 * 检测账号是否冲突
+	 * @参数 $name 账号名称
+	 * @参数 $id 会员ID，表示不包含这个会员ID
+	**/
+	public function chk_email($email,$id=0)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE email='".$email."' ";
+		if($id){
+			$sql.= " AND id!='".$id."' ";
+		}
+		return $this->db->get_one($sql);
+	}
 
 	/**
 	 * 检测账号是否冲突
@@ -218,9 +231,9 @@ class user_model_base extends phpok_model
 	**/
 	public function fields_all($condition="",$pri_id="")
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."user_fields ";
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ftype='user' ";
 		if($condition){
-			$sql .= " WHERE ".$condition;
+			$sql .= " AND ".$condition;
 		}
 		$sql.= " ORDER BY taxis ASC,id DESC";
 		return $this->db->get_all($sql,$pri_id);
@@ -241,7 +254,7 @@ class user_model_base extends phpok_model
 	**/
 	public function field_one($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."user_fields WHERE id='".$id."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
 
@@ -492,18 +505,17 @@ class user_model_base extends phpok_model
 			$this->session->assign('user_name',$rs['user']);
 			$this->session->assign('user_gid',$rs['group_id']);
 			return true;
-		}else{
-			return false;
 		}
+		return false;
 	}
 
 	/**
 	 * 生成验证串
 	 * @参数 $uid 会员ID
 	**/
-	public function token_create($uid)
+	public function token_create($uid,$keyid='')
 	{
-		if(!$uid){
+		if(!$uid || !$keyid){
 			return false;
 		}
 		$sql = "SELECT id,group_id,user,pass FROM ".$this->db->prefix."user WHERE id='".$uid."'";
@@ -512,7 +524,8 @@ class user_model_base extends phpok_model
 			return false;
 		}
 		$code = md5($uid.'-'.$rs['user'].'-'.$rs['pass']);
-		$array = array('user_id'=>$uid,'user_chk'=>$code);
+		$array = array('id'=>$uid,'code'=>$code);
+		$this->lib('token')->keyid($keyid);
 		return $this->lib('token')->encode($array);
 	}
 
@@ -596,5 +609,24 @@ class user_model_base extends phpok_model
 	{
 		$sql = "UPDATE ".$this->db->prefix."user SET status='".$status."' WHERE id='".$id."'";
 		return $this->db->query($sql);
+	}
+
+	//邮箱登录
+	function user_email($email,$uid=0)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE email='".$email."'";
+		if($uid){
+			$sql .= " AND id != '".$uid."'";
+		}
+		return $this->db->get_one($sql);
+	}
+
+	public function user_mobile($mobile,$uid=0)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE mobile='".$mobile."'";
+		if($uid){
+			$sql .= " AND id != '".$uid."'";
+		}
+		return $this->db->get_one($sql);
 	}
 }

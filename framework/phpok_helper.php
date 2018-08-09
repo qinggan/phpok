@@ -17,9 +17,9 @@ function phpok_cut($string,$length=255,$dot="")
 	return $GLOBALS['app']->lib("string")->cut($string,$length,$dot);
 }
 
-function G($id)
+function G($id,$type='safe')
 {
-	return $GLOBALS['app']->get($id);
+	return $GLOBALS['app']->get($id,$type);
 }
 
 function str_rand($length=10)//随机字符，参数是长度
@@ -203,7 +203,10 @@ if(!function_exists("file_put_contents"))
 	}
 }
 
-# 加密，参数pass为明文密码
+/**
+ * 字串不可逆加密（加盐模式）
+ * @参数 $pass 要加密的字串
+**/
 function password_create($pass)
 {
 	$password = md5($pass);
@@ -212,9 +215,12 @@ function password_create($pass)
 	return $newpass;
 }
 
-//验证密码
-//参数pass是明文密码
-//参数password是加密后的密码
+/**
+ * 密码验证，基于MD5实现，支持三种加密：32位长度，16位长度，32位加盐模式
+ * @参数 $pass 原文，即明文密码
+ * @参数 $password 要比较的字串，即加密后的密码
+ * @参数 
+**/
 function password_check($pass,$password)
 {
 	if(!$password || !$pass) return false;
@@ -222,10 +228,22 @@ function password_check($pass,$password)
 	if($list[1]){
 		$chkpass = strlen($pass) != 32 ? md5($pass.$list[1]) : $pass;
 		return $chkpass == $list[0] ? true : false;
-	}else{
-		$chkpass = strlen($pass) != 32 ? md5($pass) : $pass;
-		return $chkpass == $password ? true : false;
 	}
+	if(strlen($pass) == 32){
+		if($pass == $password){
+			return true;
+		}
+		return false;
+	}
+	if(strlen($password) == 16){
+		$tmp = substr(md5($pass),8,16);
+		if($tmp == $password){
+			return true;
+		}
+		return false;
+	}
+	$chkpass = strlen($pass) != 32 ? md5($pass) : $pass;
+	return $chkpass == $password ? true : false;
 }
 
 //格式化获取扩展数据的内容
@@ -251,93 +269,96 @@ function ext_value($rs)
 	return $val;
 }
 
-//内容图片本地化操作
+/**
+ * 内容图片本地化操作
+**/
 function phpok_img_local($content)
 {
-	if(!$content) return false;
+	if(!$content){
+		return false;
+	}
 	preg_match_all("/<img\s*.+\s*src\s*=\s*[\"|']?\s*([^>\"'\s]+?)[\"|'| ]?.*[\/]?>/isU",$content,$matches);
 	$list = $matches[1];
-	if(!$list || count($list)<1) return $content;
+	if(!$list || count($list)<1){
+		return $content;
+	}
+	global $app;
 	$list = array_unique($list);
 	$url_list = array();
-	$local_url = $GLOBALS['app']->get_url();
+	$local_url = $app->get_url();
 	$local_url_length = strlen($local_url);
 	$local_url_parse = parse_url($local_url);
-	if(!$local_url_parse["port"])
-	{
+	if(!$local_url_parse["port"]){
 		$local_url_parse["port"] = $local_url_parse["scheme"] == "http" ? "80" : "443";
 	}
 	$pic_type_list = array("gif","png","jpg","jpeg");
-	//取得附件配置
-	$cate_rs = $GLOBALS['app']->model("res")->cate_default();
-	///
+	$cate_rs = $app->model("res")->cate_default();
 	$folder = $cate_rs["root"];
-	if($cate_rs["folder"] && $cate_rs["folder"] != "/")
-	{
-		$folder .= date($cate_rs["folder"],$GLOBALS['app']->time);
+	if($cate_rs["folder"] && $cate_rs["folder"] != "/"){
+		$folder .= date($cate_rs["folder"],$app->time);
 	}
-	if(!file_exists($folder))
-	{
-		$GLOBALS['app']->lib("file")->make($folder);
+	if(!file_exists($folder)){
+		$app->lib("file")->make($folder);
 	}
-	if(substr($folder,-1) != "/") $folder .= "/";
-	if(substr($folder,0,1) == "/") $folder = substr($folder,1);
-	if($folder)
-	{
+	if(substr($folder,-1) != "/"){
+		$folder .= "/";
+	}
+	if(substr($folder,0,1) == "/"){
+		$folder = substr($folder,1);
+	}
+	if($folder){
 		$folder = str_replace("//","/",$folder);
 	}
-	$save_folder = $GLOBALS['app']->dir_root.$folder;
-	foreach($list AS $key=>$value)
-	{
+	$save_folder = $app->dir_root.$folder;
+	foreach($list as $key=>$value){
 		$value = trim($value);
-		if(!$value) continue;
+		if(!$value){
+			continue;
+		}
 		$tmp = substr($value,0,7);
 		$tmp = strtolower($tmp);
-		if($tmp == "file://" && $tmp != "http://" && $tmp != "https:/") continue;
+		if($tmp == "file://" && $tmp != "http://" && $tmp != "https:/"){
+			continue;
+		}
 		$tmp = parse_url($value);
-		if(!$tmp["port"])
-		{
+		if(!$tmp["port"]){
 			$tmp["port"] = $tmp["scheme"] == "http" ? "80" : "443";
 		}
-		if($tmp["host"] == $local_url_parse["host"])
-		{
-			//判断网址是否符合要求
-			if(substr($value,0,$local_url_length) == $local_url)
-			{
+		if($tmp["host"] == $local_url_parse["host"]){
+			if(substr($value,0,$local_url_length) == $local_url){
 				$new_url = substr($value,$local_url_length);
-			}
-			else
-			{
+			}else{
 				$new_url = $value;
-				if($tmp["port"] == $local_url_parse['port'])
-				{
+				if($tmp["port"] == $local_url_parse['port']){
 					$del_url = $tmp["scheme"]."://".$tmp["host"];
-					if($tmp["port"] != "80" && $tmp["port"] != "443")
-					{
+					if($tmp["port"] != "80" && $tmp["port"] != "443"){
 						$del_url .= ":".$tmp["port"];
 					}
 					$del_url_length = strlen($del_url);
-					if(substr($value,0,$del_url_length) == $del_url)
-					{
+					if(substr($value,0,$del_url_length) == $del_url){
 						$new_url = substr($value,$del_url_length);
 					}
 				}
 			}
 			$url_list[] = array("old_url"=>$value,"new_url"=>$new_url);
-		}
-		else
-		{
+		}else{
 			$tmp = explode(".",$value);
 			$ext_id = count($tmp) - 1;
 			$ext = $tmp[$ext_id];
-			if(!$ext) $ext = "png";
+			if(!$ext){
+				$ext = "png";
+			}
 			$ext = strtolower($ext);
-			if(!in_array($ext,$pic_type_list)) $ext = "png";
-			$content_img = $GLOBALS['app']->lib("html")->get_content($value);
-			if(!$content_img) continue;
+			if(!in_array($ext,$pic_type_list)){
+				$ext = "png";
+			}
+			$content_img = $app->lib("html")->get_content($value);
+			if(!$content_img){
+				continue;
+			}
 			//文件名
-			$filename = $GLOBALS['app']->time."_".$key.".".$ext;
-			$GLOBALS['app']->lib("file")->save_pic($content_img,$save_folder.$filename);
+			$filename = $app->time."_".$key.".".$ext;
+			$app->lib("file")->save_pic($content_img,$save_folder.$filename);
 			unset($content_img);
 			//生成记录
 			$array = array();
@@ -346,34 +367,29 @@ function phpok_img_local($content)
 			$array["name"] = $filename;
 			$array["ext"] = $ext;
 			$array["filename"] = $folder.$filename;
-			$array["addtime"] = $GLOBALS['app']->time;
-			$array["title"] = str_replace(".".$ext,"",$GLOBALS['app']->lib('string')->to_utf8(basename($value)));
+			$array["addtime"] = $app->time;
+			$array["title"] = str_replace(".".$ext,"",$app->lib('string')->to_utf8(basename($value)));
 			$img_ext = getimagesize($save_folder.$filename);
 			$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
 			$array["attr"] = serialize($my_ext);
-			$array["session_id"] = $GLOBALS['app']->session->sessid();
-			$insert_id = $GLOBALS['app']->model("res")->save($array);
-			$ico = $GLOBALS['app']->lib("gd")->thumb($array["filename"],$insert_id);
-			if(!$ico)
-			{
+			$array["session_id"] = $app->session->sessid();
+			$insert_id = $app->model("res")->save($array);
+			$ico = $app->lib("gd")->thumb($array["filename"],$insert_id);
+			if(!$ico){
 				$ico = "images/filetype-large/".$ext.".jpg";
-				if(!file_exists($ico))
-				{
+				if(!file_exists($ico)){
 					$ico = "images/filetype-large/unknow.jpg";
 				}
-			}
-			else
-			{
+			}else{
 				$ico = $folder.$ico;
 			}
 			$tmp = array();
 			$tmp["ico"] = $ico;
-			$GLOBALS['app']->model("res")->save($tmp,$insert_id);
+			$app->model("res")->save($tmp,$insert_id);
 			$url_list[] = array("old_url"=>$value,"new_url"=>$folder.$filename);
 		}
 	}
-	foreach($url_list AS $key=>$value)
-	{
+	foreach($url_list as $key=>$value){
 		$content = str_replace($value["old_url"],$value["new_url"],$content);
 	}
 	return $content;
@@ -459,18 +475,65 @@ function ext_delete($myid)
 	return $GLOBALS['app']->model("ext")->del($myid);
 }
 
-//产品价格格式化
-//val，值
-//currency_id，当前值对应的货币ID
-//show_id，要显示的货币ID
-function price_format($val='',$currency_id='',$show_id=0)
+/**
+ * 价格格式化
+ * @参数 $val 要格式化的价格
+ * @参数 $currency_id 当前货币ID，如果为浮点值，表示当前汇率，支持数组
+ * @参数 $show_id 输出货币ID，支持数组
+ * @参数 $show_rate 输出货币对应的汇率
+ * @参数 $currency_rate 当前货币的汇率
+**/
+function price_format($val='',$currency_id='',$show_id=0,$show_rate=0,$currency_rate=0)
 {
-	//当显示为后台时
-	if($GLOBALS['app']->app_id == 'admin' && !$show_id){
+	global $app;
+	if($currency_id){
+		if(is_array($currency_id)){
+			$currency = $currency_id;
+			$currency_id = $currency['id'];
+			if(!$show_id){
+				$show_id = $currency_id;
+			}
+			if(!$currency_rate || $currency_rate < 0.00000001){
+				$currency_rate = $currency['val'];
+			}
+		}else{
+			if(strpos($currency_id,'.') !== false){
+				if($currency_id>0){
+					$currency_rate = $currency_id;
+				}
+				unset($currency_id);
+			}else{
+				$currency = $app->model('currency')->get_one($currency_id);
+				if(!$currency_rate || $currency_rate < 0.00000001){
+					$currency_rate = $currency['val'];
+				}
+			}
+		}
+	}
+	if($show_id){
+		if(is_array($show_id)){
+			$show = $show_id;
+			$show_id = $show['id'];
+			if(!$show_rate || $show_rate < 0.00000001){
+				$show_rate = $show['val'];
+			}
+		}else{
+			if(strpos($show_id,'.') !== false){
+				$show_rate = $show_id;
+				unset($show_id);
+			}else{
+				$show = $app->model('currency')->get_one($show_id);
+				if(!$show_rate || $show_rate < 0.00000001){
+					$show_rate = $show['val'];
+				}
+			}
+		}
+	}
+	if($app->app_id == 'admin' && !$show_id){
 		$show_id = $currency_id;
 	}else{
 		if(!$show_id){
-			$show_id = $GLOBALS['app']->site['currency_id'];
+			$show_id = $app->site['currency_id'];
 		}
 		if(!$show_id){
 			$show_id = $currency_id;
@@ -482,30 +545,77 @@ function price_format($val='',$currency_id='',$show_id=0)
 	if(!$currency_id){
 		$currency_id = $show_id;
 	}
-	$currency = $GLOBALS['app']->model('currency')->get_list('id');
-	if(!$currency[$currency_id] || !$currency[$show_id]){
-		return false;
+	if(!$show){
+		$show = $app->model('currency')->get_one($show_id);
 	}
 	if(!$val){
 		$val = '0';
 	}
-	$rs = $currency[$show_id];
-	if($show_id != $currency_id){
-		$old_rs = $currency[$currency_id];
-		$val = ($val/$old_rs['val']) * $rs['val'];
+	if($show_id != $currency_id && $currency_rate>0){
+		$val = ($val/$currency_rate) * $show_rate;
 	}
 	$val = number_format($val,2,".","");
-	$string = $rs['symbol_left'].$val.$rs['symbol_right'];
+	$string = $show['symbol_left'].$val.$show['symbol_right'];
 	return $string;
 }
 
-function price_format_val($val='',$currency_id='',$show_id=0)
+/**
+ * 价格格式化，仅显示值
+ * @参数 $val 要格式化的价格
+ * @参数 $currency_id 当前货币ID，如果为浮点值，表示当前汇率，支持数组
+ * @参数 $show_id 输出货币ID，支持数组
+ * @参数 $show_rate 输出货币对应的汇率
+ * @参数 $currency_rate 当前货币的汇率
+**/
+function price_format_val($val='',$currency_id='',$show_id=0,$show_rate=0,$currency_rate=0)
 {
-	if($GLOBALS['app']->app_id == 'admin' && !$show_id){
+	global $app;
+	if($currency_id){
+		if(is_array($currency_id)){
+			$currency = $currency_id;
+			$currency_id = $currency['id'];
+			if(!$show_id){
+				$show_id = $currency_id;
+			}
+			if(!$currency_rate || $currency_rate < 0.00000001){
+				$currency_rate = $currency['val'];
+			}
+		}else{
+			if(strpos($currency_id,'.') !== false){
+				$currency_rate = $currency_id;
+				unset($currency_id);
+			}else{
+				$currency = $app->model('currency')->get_one($currency_id);
+				if(!$currency_rate || $currency_rate < 0.00000001){
+					$currency_rate = $currency['val'];
+				}
+			}
+		}
+	}
+	if($show_id){
+		if(is_array($show_id)){
+			$show = $show_id;
+			$show_id = $show['id'];
+			if(!$show_rate || $show_rate < 0.00000001){
+				$show_rate = $show['val'];
+			}
+		}else{
+			if(strpos($show_id,'.') !== false){
+				$show_rate = $show_id;
+				unset($show_id);
+			}else{
+				$show = $app->model('currency')->get_one($show_id);
+				if(!$show_rate || $show_rate < 0.00000001){
+					$show_rate = $show['val'];
+				}
+			}
+		}
+	}
+	if($app->app_id == 'admin' && !$show_id){
 		$show_id = $currency_id;
 	}else{
 		if(!$show_id){
-			$show_id = $GLOBALS['app']->site['currency_id'];
+			$show_id = $app->site['currency_id'];
 		}
 		if(!$show_id){
 			$show_id = $currency_id;
@@ -517,17 +627,11 @@ function price_format_val($val='',$currency_id='',$show_id=0)
 	if(!$currency_id){
 		$currency_id = $show_id;
 	}
-	$currency = $GLOBALS['app']->model('currency')->get_list('id');
-	if(!$currency[$currency_id] || !$currency[$show_id]){
-		return false;
-	}
 	if(!$val){
 		$val = '0';
 	}
-	$rs = $currency[$show_id];
-	if($show_id != $currency_id){
-		$old_rs = $currency[$currency_id];
-		$val = ($val/$old_rs['val']) * $rs['val'];
+	if($show_id != $currency_id && $currency_rate>0){
+		$val = ($val/$currency_rate) * $show_rate;
 	}
 	$val = number_format($val,2,".","");
 	return $val;
@@ -535,24 +639,16 @@ function price_format_val($val='',$currency_id='',$show_id=0)
 
 function content_format($value,$type="ext")
 {
-	if($value['form_type'] == "cate" && $value["content"])
-	{
+	if($value['form_type'] == "cate" && $value["content"]){
 		$tmplist = $GLOBALS['app']->model("list")->catelist($value["content"]);
 		$value["content"] = $tmplist[$value["content"]];
-	}
-	elseif($value["form_type"] == "upload" && $value["content"])
-	{
-		if(is_array($value["content"]))
-		{
-			if($value["content"]["id"])
-			{
+	}elseif($value["form_type"] == "upload" && $value["content"]){
+		if(is_array($value["content"])){
+			if($value["content"]["id"]){
 				$tmp = $value["content"]["id"];
-			}
-			else
-			{
+			}else{
 				$tmp = array();
-				foreach($value["content"] AS $k=>$v)
-				{
+				foreach($value["content"] AS $k=>$v){
 					$tmp[] = $v["id"];
 				}
 				$tmp = implode(",",$tmp);
@@ -561,17 +657,13 @@ function content_format($value,$type="ext")
 		}
 		$tmplist = $GLOBALS['app']->model("res")->reslist($value["content"]);
 		$ext = $value["ext"] ? unserialize($value["ext"]) : array("is_multiple"=>false);
-		if($ext["is_multiple"])
-		{
+		if($ext["is_multiple"]){
 			$tmp = explode(",",$value["content"]);
-			foreach($tmp AS $kk=>$vv)
-			{
+			foreach($tmp as $kk=>$vv){
 				$tmp[$kk] = $tmplist[$vv];
 			}
 			$value["content"] = $tmp;
-		}
-		else
-		{
+		}else{
 			$value["content"] = $tmplist[$value["content"]];
 		}
 	}
@@ -580,8 +672,12 @@ function content_format($value,$type="ext")
 
 function phpok_filesize($size,$is_file=true)
 {
-	if($is_file) $size = file_exists($size) ? filesize($size) : 0;
-	if(!$size) return "0 KB";
+	if($is_file){
+		$size = file_exists($size) ? filesize($size) : 0;
+	}
+	if(!$size){
+		return "0 KB";
+	}
 	return $GLOBALS['app']->lib("trans")->num_format($size);
 }
 
@@ -674,26 +770,25 @@ function phpok_opt($id,$ext="")
 		$condition .= " AND parent_id='0'";
 	}
 	$all = $GLOBALS['app']->model("opt")->opt_all($condition);
-	if(!$all) return false;
+	if(!$all){
+		return false;
+	}
 	return $all;
 }
 
 function phpok_decode($string,$id="")
 {
-	if(!$string) return false;
+	if(!$string){
+		return false;
+	}
 	$t = unserialize($string);
-	if(!$id)
-	{
+	if(!$id){
 		return $t;
 	}
-	if($id == "url")
-	{
+	if($id == "url"){
 		return $t[$GLOBALS['app']->site["url_type"]];
 	}
-	else
-	{
-		return $t[$id];
-	}
+	return $t[$id];
 }
 
 //WEB前台通用模板，如果您的程序比较复杂，请自己写Head
@@ -719,18 +814,7 @@ function tpl_head($array=array())
 	if($array['seo_title']){
 		$seo['title'] = $array['seo_title'];
 	}
-	if($array['keywords']){
-		$seo['keywords'] = $array['keywords'];
-	}
-	if($array['description']){
-		$seo['description'] = $array['description'];
-	}
-	if($seo['keywords']){
-		$html .= '<meta name="keywords" content="'.$seo['keywords'].'" />'."\n\t";
-	}
-	if($seo['description']){
-		$html .= '<meta name="description" content="'.$seo['description'].'" />'."\n\t";
-	}
+	
 	if($app->site['meta']){
 		$app->site['meta'] = trim(str_replace(array("\t","\r"),"",$app->site['meta']));
 		if($app->site['meta']){
@@ -765,6 +849,18 @@ function tpl_head($array=array())
 	}
 	$headtitle = implode($app->config['seo']['line'],$headtitle);
 	$html .= '<title>'.trim($headtitle).'</title>'."\n\t";
+	if($array['keywords']){
+		$seo['keywords'] = $array['keywords'];
+	}
+	if($array['description']){
+		$seo['description'] = $array['description'];
+	}
+	if($seo['keywords'] && trim($seo['keywords'])){
+		$html .= '<meta name="keywords" content="'.$seo['keywords'].'" />'."\n\t";
+	}
+	if($seo['description'] && trim($seo['description'])){
+		$html .= '<meta name="description" content="'.$seo['description'].'" />'."\n\t";
+	}
 	if(substr($app->url,-1) != '/'){
 		$app->url .= "/";
 	}
@@ -828,12 +924,11 @@ function tpl_head($array=array())
 		}
 	}
 	$html .= phpok_head_js();
-	if(!$array['mobile']){
-		$html .= '<!--[if IE]>'."\n\t";
-		$html .= '<script type="text/javascript" src="'.$app->url.'js/html5.js" charset="utf-8"></script>'."\n\t";
-		$html .= '<![endif]-->'."\n\t";
+	$close = true;
+	if(isset($array['close']) && !$array['close']){
+		$close = false;
 	}
-	if(isset($array['close']) && $array['close']){
+	if($close){
 		ob_start();
 		$app->plugin_html_ap("phpokhead");
 		$html .= ob_get_contents();
@@ -912,12 +1007,30 @@ function license_date()
 
 
 //PHPOK日志存储，可用于调试
-function phpok_log($info='',$mask=false)
+function phpok_log($info='')
 {
-	if($info && (is_array($info) || is_object($info))){
-		$mask = true;
+	global $app;
+	if(!$info){
+		$info = '没有提示内容';
 	}
-	$GLOBALS['app']->model('log')->save($info,$mask);
+	if(is_array($info) || is_object($info)){
+		$info = print_r($info,true);
+	}
+	$info = trim($info);
+	$date = date("Ymd",$app->time);
+	if(!file_exists($app->dir_data.'log'.$date.'.php')){
+		file_put_contents($app->dir_data.'log'.$date.'.php',"<?php exit();?>\n");
+	}
+	$handle = fopen($app->dir_data.'log'.$date.'.php','ab');
+	$info2 = '---start---Time:'.date("H:i:s",$app->time).'---------------------'."\n";
+	$info2.= 'APP_ID: '.$app->app_id."\n";
+	$info2.= 'CTRL_ID: '.$app->ctrl."\n";
+	$info2.= 'FUNC_ID: '.$app->func."\n";
+	$info2.= 'INFO:'."\n";
+	$info2.= $info."\n";
+	$info2.= '---end---'."\n";
+	fwrite($handle,$info2);
+	fclose($handle);
 }
 
 //邮箱合法性验证
@@ -986,7 +1099,7 @@ function opt_rslist($type='default',$group_id=0,$info='')
 	}
 	//读子分类信息
 	if($type == 'cate'){
-		$tmplist = $GLOBALS['app']->model('cate')->catelist_sonlist($group_id,false,0);
+		$tmplist = $GLOBALS['app']->model('cate')->catelist_sonlist($group_id,false);
 		if(!$tmplist) return false;
 		$rslist = array();
 		foreach($tmplist as $key=>$value){
@@ -1011,6 +1124,7 @@ function phpok_call_api_url($phpok,$param='',$tpl='')
 	}
 	$ext = $tpl ? 'tpl='.rawurlencode($tpl) : '';
 	$info = array('id'=>$phpok,'param'=>$param);
+	$GLOBALS['app']->lib('token')->keyid($GLOBALS['app']->site['api_code']);
 	$token = $GLOBALS['app']->lib('token')->encode($info);
 	if($ext){
 		$ext .= "&";

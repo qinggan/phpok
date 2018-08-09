@@ -31,8 +31,8 @@ class site_model_base extends phpok_model
 		if(!$rs){
 			return false;
 		}
-		if(file_exists($this->dir_root.'data/xml/site_'.$id.'.xml')){
-			$tmp = $this->lib('xml')->read($this->dir_root.'data/xml/site_'.$id.'.xml');
+		if(file_exists($this->dir_data.'xml/site_'.$id.'.xml')){
+			$tmp = $this->lib('xml')->read($this->dir_data.'xml/site_'.$id.'.xml');
 			if($tmp){
 				$rs = array_merge($tmp,$rs);
 			}
@@ -136,9 +136,9 @@ class site_model_base extends phpok_model
 	public function order_status_all($sort=false)
 	{
 		$site_id = $this->app_id == 'admin' ? $this->session->val('admin_site_id') : $this->site['id'];
-		$file = $this->dir_root.'data/xml/order_status_'.$site_id.'.xml';
+		$file = $this->dir_data.'xml/order_status_'.$site_id.'.xml';
 		if(!file_exists($file)){
-			$file = $this->dir_root.'data/xml/order_status.xml';
+			$file = $this->dir_data.'xml/order_status.xml';
 		}
 		if(!file_exists($file)){
 			return false;
@@ -157,7 +157,7 @@ class site_model_base extends phpok_model
 		return $tmplist;
 	}
 
-	private function status_sort($a,$b)
+	protected function status_sort($a,$b)
 	{
 		if($a['taxis'] == $b['taxis']){
 			return 0;
@@ -174,9 +174,9 @@ class site_model_base extends phpok_model
 	public function price_status_all($sort=false)
 	{
 		$site_id = $this->app_id == 'admin' ? $this->session->val('admin_site_id') : $this->site['id'];
-		$file = $this->dir_root.'data/xml/price_status_'.$site_id.'.xml';
+		$file = $this->dir_data.'xml/price_status_'.$site_id.'.xml';
 		if(!file_exists($file)){
-			$file = $this->dir_root.'data/xml/price_status.xml';
+			$file = $this->dir_data.'xml/price_status.xml';
 		}
 		if(!file_exists($file)){
 			return false;
@@ -250,8 +250,8 @@ class site_model_base extends phpok_model
 		if(!$rs){
 			return false;
 		}
-		if(file_exists($this->dir_root.'data/xml/site_'.$id.'.xml')){
-			$tmp = $this->lib('xml')->read($this->dir_root.'data/xml/site_'.$id.'.xml');
+		if(file_exists($this->dir_data.'xml/site_'.$id.'.xml')){
+			$tmp = $this->lib('xml')->read($this->dir_data.'xml/site_'.$id.'.xml');
 			if($tmp){
 				$rs = array_merge($tmp,$rs);
 			}
@@ -281,9 +281,9 @@ class site_model_base extends phpok_model
 			$tmp2["all-".$value["id"]] = $value["identifier"];
 		}
 		$tmp = implode("','",$tmp);
-		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.module FROM ".$this->db->prefix."ext ext ";
+		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.ftype FROM ".$this->db->prefix."fields ext ";
 		$sql.= "JOIN ".$this->db->prefix."extc extc ON(ext.id=extc.id) ";
-		$sql.= "WHERE ext.module IN('".$tmp."') ORDER BY ext.taxis ASC,ext.id DESC";
+		$sql.= "WHERE ext.ftype IN('".$tmp."') ORDER BY ext.taxis ASC,ext.id DESC";
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist){
 			$this->cache->save($cache_id,$rs);
@@ -291,10 +291,10 @@ class site_model_base extends phpok_model
 		}
 		$info = false;
 		foreach($rslist AS $key=>$value){
-			if(!$tmp2[$value["module"]]){
+			if(!$tmp2[$value["ftype"]]){
 				continue;
 			}
-			$rs[$tmp2[$value["module"]]][$value["identifier"]] = $this->lib('form')->show($value);
+			$rs[$tmp2[$value["ftype"]]][$value["identifier"]] = $this->lib('form')->show($value);
 		}
 		$this->cache->save($cache_id,$rs);
 		return $rs;
@@ -360,6 +360,9 @@ class site_model_base extends phpok_model
 		return true;
 	}
 
+	/**
+	 * 保留字符
+	**/
 	public function reserved()
 	{
 		$reserved = array('js','ajax','inp');
@@ -375,6 +378,12 @@ class site_model_base extends phpok_model
 			$basename = basename($value);
 			$basename = str_replace("_control.php",'',$basename);
 			$reserved[] = $basename;
+		}
+		$install = $this->model('appsys')->installed();
+		if($install){
+			foreach($install as $key=>$value){
+				$reserved[] = $key;
+			}
 		}
 		$reserved = array_unique($reserved);
 		return $reserved;

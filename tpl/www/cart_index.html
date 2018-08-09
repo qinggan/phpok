@@ -1,68 +1,77 @@
-<!-- php:$cssfile = "css/style.css,artdialog.css,css/usercp.css" -->
-<!-- head title="购物车 - 购物车" css=$cssfile extjs="jquery.artdialog.js" js="js/global.js" html5=true -->
-<body>
-<header style="width:auto;min-width:980px;border-bottom:1px solid #ccc;margin-bottom:10px;">
-	<div class="top">
-		<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" /></a></div>
-		<div class="right">
-			<div style="line-height:60px;margin-right:10px;">
-			<a href="{$sys.url}">返回首页</a>
+<!-- include tpl=head title=购物车 -->
+<script type="text/javascript">
+function cart_checkout()
+{
+	var id = $.checkbox.join();
+	if(!id){
+		$.dialog.alert('未指定要结算的产品');
+		return false;
+	}
+	return true;
+}
+</script>
+<div class="main">
+	<!-- include tpl=block/breadcrumb -->
+	<form method="post" action="{url ctrl=cart func=checkout/}" class="am-form" onsubmit="return cart_checkout()">
+	<table class="am-table am-table-bordered am-table-centered">
+		<thead>
+			<tr>
+				<th colspan="2">图片</th>
+				<th class="am-text-left">名称</th>
+				<th width="80px">数量</th>
+				<th>售价</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+			<tr>
+				<td><input type="checkbox" name="id[]" id="id_{$value.id}" value="{$value.id}" checked onchange="$.cart.price()" /></td>
+				<td>
+					<!-- if $value.tid -->
+					<a href="{url id=$value.tid/}" title="{$value.title}" target="_blank"><img src="{$value.thumb ? $value.thumb : 'images/nopic.png'}" width="80px" border="0" alt="{$value.title}" /></a>
+					<!-- else -->
+					<img src="{$value.thumb ? $value.thumb : 'images/nopic.png'}" width="80px" border="0" alt="{$value.title}" />
+					<!-- /if -->
+				</td>
+				<td class="am-text-left">
+					<!-- if $value.tid -->
+					<a href="{url id=$value.tid/}" title="{$value.title}" target="_blank"><h3 id="title_{$value.id}">{$value.title}</h3></a>
+					<!-- else -->
+					<h3 id="title_{$value.id}">{$value.title}</h3>
+					<!-- /if -->
+					<!-- loop from=$value._attrlist key=$k value=$v id=$tmpid -->
+					<div>{$v.title}：{$v.content}</div>
+					<!-- /loop -->
+					<div>单价：{func price_format $value.price $value.currency_id}</div>
+				</td>
+				<td>
+					<div><input type="number" class="qty" min="1" name="qty_{$value.id}" id="qty_{$value.id}" value="{$value.qty}" onchange="$.cart.update('{$value.id}')" /></div>
+				</td>
+				<td class="am-text-danger">{func price_format $value.price*$value.qty $value.currency_id}</td>
+			</tr>
+			<!-- /loop -->
+			<tr>
+				<td colspan="5" class="am-text-right">当前选中的产品价格是：<span class="am-text-danger" id="total_price">{$price}</span></td>
+				
+			</tr>
+		</tbody>
+	</table>
+	<div class="am-g">
+		<div class="am-u-sm-6">
+			<div class="am-btn-group">
+				<input type="button" value="全选" onclick="$.checkbox.all();$.cart.price()" class="am-btn am-btn-default am-btn-xs" />
+				<input type="button" value="全不选" onclick="$.checkbox.none();$.cart.price()" class="am-btn am-btn-default am-btn-xs" />
+				<input type="button" value="反选" onclick="$.checkbox.anti();$.cart.price()" class="am-btn am-btn-default am-btn-xs" />
 			</div>
+			<input type="button" value="批量删除" onclick="$.cart.del()" class="am-btn am-btn-danger am-btn-xs" />
+		</div>
+		<div class="am-u-sm-6 am-text-middle">
+			<button type="submit" class="am-btn am-btn-primary am-btn-lg am-fr">
+				去结算
+				<span class="am-icon-angle-double-right"></span>
+			</button>
 		</div>
 	</div>
-	<div class="clear"></div>
-</header>
-
-<div class="main">
-	<div class="table_lc">
-	<table width="100%">
-	<tr>
-		<th>图片</th>
-		<th class="lft">产品信息</th>
-		<th>价格</th>
-		<th>购买数量</th>
-		<th>操作</th>
-	</tr>
-	<!-- loop from=$rslist key=$key value=$value -->
-	<tr>
-		<td class="center">
-			<!-- if $value.tid -->
-			<a href="{url id=$value.tid/}" title="{$value.title}" target="_blank"><img src="{$value.thumb ? $value.thumb : 'images/nopic.png'}" width="100px" border="0" alt="{$value.title}" /></a>
-			<!-- else -->
-			<img src="{$value.thumb ? $value.thumb : 'images/nopic.png'}" width="100px" border="0" alt="{$value.title}" />
-			<!-- /if -->
-		</td>
-		<td>
-			<h3 id="title_{$value.id}">{$value.title}</h3>
-			<!-- loop from=$value._attrlist key=$k value=$v id=$tmpid -->
-			<div>{$v.title}：{$v.content}</div>
-			<!-- /loop -->
-			<div>售价：{func price_format $value.price $value.currency_id}</div>
-		</td>
-		<td class="center price">{func price_format $value.price*$value.qty $value.currency_id}</td>
-		<td class="center">
-			<table style="border:0;width:auto;" align="center">
-			<tr>
-				<td style="border:0;"><div class="plus_minus minus" onclick="$.cart.minus('{$value.id}',1)"></div></td>
-				<td style="border:0;"><input type="text" class="qty" name="qty_{$value.id}" id="qty_{$value.id}" value="{$value.qty}" /> <input type="button" value=" 更新 " onclick="$.cart.update('{$value.id}')" /></td>
-				<td style="border:0;"><div class="plus_minus plus" onclick="$.cart.plus('{$value.id}',1)"></div></td>
-			</tr>
-			</table>
-		</td>
-		<td class="center">
-			<input type="button" value=" 删除 " onclick="$.cart.del({$value.id})" />
-		</td>
-	</tr>
-	<!-- /loop -->
-	</table>
-	</div>
-	<div class="space"></div>
-	<table width="100%">
-	<tr>
-		<td><a href="{url id=product/}" title=""><img src="images/gotopro.gif" border="0" alt="返回继续购物" /></a></td>
-		<td align="right"><img src="images/checkout.gif" border="0" alt="去结算" class="hand" onclick="$.phpok.go(get_url('cart','checkout'))" /></td>
-	</tr>
-	</table>
-	<div class="space"></div>
+	</form>
 </div>
-<!-- include tpl=foot -->
+<!-- include tpl=footer -->

@@ -56,7 +56,7 @@ class ext_model extends ext_model_base
 
 	public function ext_delete($id,$module)
 	{
-		$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id='".$id."'";
+		$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$id."'";
 		$this->db->query($sql);
 		$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$id."'";
 		$this->db->query($sql);
@@ -65,12 +65,12 @@ class ext_model extends ext_model_base
 
 	public function delete($val,$module,$type="id")
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE `".$type."`='".$val."' AND module='".$module."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE `".$type."`='".$val."' AND ftype='".$module."'";
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
 		}
-		$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id='".$rs['id']."'";
+		$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$rs['id']."'";
 		$this->db->query($sql);
 		$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$rs['id']."'";
 		$this->db->query($sql);
@@ -81,43 +81,46 @@ class ext_model extends ext_model_base
 	public function save($data,$id=0)
 	{
 		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"ext",array("id"=>$id));
+		if(!isset($data['ftype']) && isset($data['module'])){
+			$data['ftype'] = $data['module'];
 		}
-		else
-		{
-			return $this->db->insert_array($data,"ext");
+		if(isset($data['module'])){
+			unset($data['module']);
+		}
+		if($id){
+			return $this->db->update_array($data,"fields",array("id"=>$id));
+		}else{
+			return $this->db->insert_array($data,"fields");
 		}
 	}
 
-	//删除表单
+	/**
+	 * 删除表单
+	 * @参数 $module 对应 qinggan_fields 表里的 ftype 值
+	**/
 	public function del($module)
 	{
-		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='".$module."'";
+		$sql = "SELECT id FROM ".$this->db->prefix."fields WHERE ftype='".$module."'";
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist) return true;
-		foreach($rslist AS $key=>$value)
-		{
+		foreach($rslist as $key=>$value){
 			$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$value["id"]."'";
 			$this->db->query($sql);
 		}
-		$sql = "DELETE FROM ".$this->db->prefix."ext WHERE module='".$module."'";
+		$sql = "DELETE FROM ".$this->db->prefix."fields WHERE ftype='".$module."'";
 		return $this->db->query($sql);
 	}
 
 	public function get_from_identifier($identifier,$module)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE identifier='".$identifier."' AND module='".$module."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE identifier='".$identifier."' AND ftype='".$module."'";
 		return $this->db->get_one($sql);
 	}
 
 	public function ext_next_taxis($module)
 	{
-		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."ext WHERE module='".$module."'";
+		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."fields WHERE ftype='".$module."' AND taxis<255";
 		$rs = $this->db->get_one($sql);
 		return $this->return_next_taxis($rs);
 	}
 }
-
-?>

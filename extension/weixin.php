@@ -23,7 +23,7 @@ class weixin_lib
 	
 	public function __construct()
 	{
-		$this->datadir = ROOT.'data/';
+		$this->datadir = ROOT.'_data/';
 	}
 
 	public function get_data()
@@ -330,6 +330,28 @@ class weixin_lib
 		$url = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=".rawurlencode($info['ticket']);
 		$info = $this->curl($url);
 		return $info;
+	}
+
+	/**
+	 * 上传图文消息里的图片，返回内嵌网址 URL
+	 * @参数 
+	 * @参数 
+	 * @参数 
+	**/
+	public function upimg($file,$root='')
+	{
+		$extension = pathinfo($file,PATHINFO_EXTENSION);
+		$type = 'image/jpg';
+		if($extension == 'png'){
+			$type = 'image/png';
+		}
+		if($extension == 'gif'){
+			$type = 'image/gif';
+		}
+		$data = array("media" => "@".realpath($root.$file), 'form-data' => array('filename'=>$file,'content-type'=>$type,'filelength'=>filesize($file)));
+		if(class_exists('CURLFile')){
+			$data['media'] = new CURLFile ( realpath ( $root.$file ),$type );
+		}
 	}
 
 	public function upload($file,$root='')

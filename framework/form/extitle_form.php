@@ -77,6 +77,13 @@ class extitle_form extends _init_auto
 		if(!$module){
 			return P_Lang('模块信息不存在，请检查');
 		}
+		if($rs['form_is_single']){
+			$rs['form_maxcount'] = 1;
+		}else{
+			if(!$rs['form_maxcount']){
+				$rs['form_maxcount'] = 9999;
+			}
+		}
 		$this->assign("_rs",$rs);
 		$this->assign("_id",$rs['id']);
 		$this->assign("_identifier",$rs['identifier']);
@@ -171,8 +178,18 @@ class extitle_form extends _init_auto
 	**/
 	public function content_format($field,$content,$project,$module,$empty_reback=false)
 	{
-		$this->assign('_id',$field['id']);
-		$this->assign('_identifier',$field['identifier']);
+		if($field['ext'] && is_string($field['ext'])){
+			$tmp = unserialize($field['ext']);
+			$field = array_merge($tmp,$field);
+			unset($tmp,$field['ext']);
+			if($field['form_is_single']){
+				$field['form_maxcount'] = 1;
+			}else{
+				if(!$field['form_maxcount']){
+					$field['form_maxcount'] = 9999;
+				}
+			}
+		}
 		if($field['form_show_editing']){
 			$ext = array('form_show_editing'=>$field['form_show_editing'],'form_true_delete'=>$field['form_true_delete']);
 			$ext['form_pid'] = $field['form_pid'];

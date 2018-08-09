@@ -1,0 +1,40 @@
+<!-- php:$title= $cate_rs ? $cate_rs.title.' - '.$page_rs.title : $page_rs.title -->
+<!-- include tpl=head title=$title menutitle=$page_rs.title -->
+<div class="main">
+	<!-- if $page_rs.banner -->
+	<div class="banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
+	<!-- /if -->
+	<ol class="breadcrumb">
+		<li>Position：<a href="{$sys.url}" title="{$config.title}">Home</a></li>
+		<li><a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a></li>
+		<!-- if $cate_rs -->
+		<li><a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a></li>
+		<!-- /if -->
+	</ol>
+	<div class="left">
+		<!-- include tpl=block/catelist pid=$page_rs.id cid=$cate_rs.id title=$page_rs.title -->
+		<!-- include tpl=block/contact -->
+		<!-- include tpl=block/hot_article -->
+	</div>
+	<div class="right">
+		<ul class="download">
+			<!-- loop from=$rslist key=$key value=$value -->
+			<li>
+				<div class="softInfo">
+					<p class="title"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></p>
+					<p class="desc">{$value.note}</p>
+					<p class="info">Size: <font class="infoVal">{$value.fsize}</font>&nbsp;&nbsp;Date: <font class="infoVal">{func date Y-m-d $value.dateline}</font></p>
+				</div>
+				<!-- if $value.dfile && $session.user_id -->
+				<div class="downloadbtn"><a href="{url ctrl=download id=$value.dfile.id/}" title="{$value.file.title}"></a></div>
+				<!-- else -->
+				<div class="downloadbtn">Please login</div>
+				<!-- /if -->
+				<div class="clear"></div>
+			</li>
+			<!-- /loop -->
+		</ul>
+		<!-- include tpl=block_pagelist -->
+	</div>
+</div>
+<!-- include tpl=foot -->

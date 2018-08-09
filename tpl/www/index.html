@@ -1,7 +1,7 @@
-<!-- include tpl=head highlight=1 css="css/index.css" -->
+<!-- include tpl=head highlight=1 -->
 <!-- php:$list = phpok('picplayer') -->
 <!-- if $list.total -->
-<div class="banner" style="margin-bottom:20px;">
+<div class="banner">
 	<div class="bd">
 		<ul>
 			<!-- loop from=$list.rslist key=$key value=$value -->
@@ -23,60 +23,73 @@ $(document).ready(function(){
 });
 </script>
 <!-- /if -->
-<div class="index">
-	<div class="line1">
-		<!-- php:$list = phpok('news','fields=id','psize=10') -->
-		<!-- if $list.total -->
-		<div class="pfw">
-			<h3>{$list.project.title}<small>{$list.project.entitle}</small><a href="{$list.project.url}" class="more">更多</a></h3>
-			<ul class="artlist">
-				<!-- loop from=$list.rslist key=$key value=$value -->
-				<li><a href="{$value.url}" title="{$value.title}">{func phpok_cut $value.title 15 …}</a></li>
-				<!-- /loop -->
-			</ul>
+<section class="main">
+	<div class="am-g am-g-collapse">
+		<div class="am-u-lg-3">
+			<!-- php:$list = phpok('news') -->
+			<div class="am-panel am-panel-default">
+				<div class="am-panel-hd">
+					<h3 class="am-panel-title">{$list.project.title}<a href="{$list.project.url}" class="more">更多 <span class="am-icon-angle-right"></span><span class="am-icon-angle-right"></span></a></h3>
+				</div>
+				<div class="am-panel-bd">
+					<ul class="am-list arclist">
+						<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+						<li class="am-g am-list-item-dated">
+							<a href="{$value.url}" title="{$value.title}" class="am-list-item-hd ">{$value.title}</a><span class="am-list-date">{func date Y-m-d $value.dateline}</span>
+						</li>
+						<!-- /loop -->
+					</ul>
+				</div>
+			</div>
 		</div>
-		<!-- /if -->
-	</div>
-	<div class="line2">
 		<!-- php:$about = phpok('aboutus') -->
-		<div class="pfw">
-			<h3>{$about.title}<a href="{$about.url}" class="more">更多</a></h3>
-			<div class="about"><img src="{$about.pic}" width="150" height="120" />{$about.note}</div>
+		<div class="am-u-lg-6 index-about" style="padding-left:0.5em;padding-right:.5em;">
+			<div class="am-panel am-panel-default">
+				<div class="am-panel-hd">
+					<h3 class="am-panel-title">{$about.title}<a href="{$about.url}" class="more">更多 <span class="am-icon-angle-right"></span><span class="am-icon-angle-right"></span></a></h3>
+				</div>
+				<div class="am-panel-bd clearfix">
+					<img src="{$about.pic}" class="thumb" alt="{$about.title}" />{$about.note}
+				</div>
+			</div>
+		</div>
+		<div class="am-u-lg-3">
+			<!-- include tpl=block/contact showmore=true -->
 		</div>
 	</div>
-	<div class="line3"><!-- include tpl=block/contact showmore=1 --></div>
-</div>
-<div class="plist">
 	<!-- php:$list = phpok('new_products') -->
-	<h3><span>{$list.project.title}</span></h3>
-	<div class="prolist">
-	<ul>
+	<div data-am-widget="titlebar" class="am-titlebar am-titlebar-default">
+		<h2 class="am-titlebar-title ">{$list.project.title}</h2>
+		<nav class="am-titlebar-nav"><a href="{$list.project.url}">更多 <span class="am-icon-angle-right"></span><span class="am-icon-angle-right"></span></a></nav>
+	</div>
+	<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-5 am-gallery-bordered">
 		<!-- loop from=$list.rslist key=$key value=$value -->
 		<li>
-			<div class="img"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.title}" /></a></div>
-			<div class="title"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></div>
-			<!-- if $list.project.is_biz -->
-			<div class="price">价格：<span>{func price_format $value.price $value.currency_id}</span></div>
-			<!-- /if -->
+			<div class="am-gallery-item">
+				<a href="{$value.url}" title="{$value.title}">
+					<img src="{$value.thumb.gd.thumb}" alt="{$value.title}" />
+					 <h3 class="am-gallery-title">{$value.title}</h3>
+					<!-- if $list.project.is_biz --><div class="am-gallery-desc red">{func price_format $value.price $value.currency_id}</div><!-- /if -->
+				</a>
+			</div>
 		</li>
 		<!-- /loop -->
 	</ul>
-	</div>
-</div>
-<script type="text/javascript">
-$(document).ready(function(){
-	$(".prolist").slide({'mainCell':'ul','effect':"leftLoop",'autoPlay':true,'vis':5});
-});
-</script>
-<div class="cooper">
 	<!-- php:$list = phpok('link') -->
-	<div class="pfw">
-		<h3>{$list.project.title}<a href="{url ctrl=post id=$list.project.identifier/}" class="more">申请友情链接</a></h3>
-		<div class="link">
+	<div class="am-panel am-panel-default mt10">
+		<div class="am-panel-hd">
+			<h3 class="am-panel-title">
+				{$list.project.title}
+				<a href="{url ctrl=post id=$list.project.identifier/}" class="more">申请友情链接 <span class="am-icon-angle-right"></span><span class="am-icon-angle-right"></span></a>
+			</h3>
+		</div>
+		
+		<div class="am-panel-bd link">
 			<!-- loop from=$list.rslist key=$key value=$value -->
 			<a href="{$value.link}" target="{$value.target}" title="{$value.title}">{$value.title}</a>
 			<!-- /loop -->
 		</div>
 	</div>
-</div>
+</section>
+
 <!-- include tpl=foot -->

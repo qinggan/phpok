@@ -1,5 +1,4 @@
 <!-- include tpl=head -->
-<script type="text/javascript" src="js/laydate/laydate.js"></script>
 <div class="tips">
 	<div class="action"><a href="javascript:$.admin_res.edit_local();void(0);">{lang编辑器图片配置}</a></div>
 	<div class="action"><a href="javascript:$.admin_res.update_pl_pictures();void(0);">{lang图片全部更新}</a></div>
@@ -19,100 +18,39 @@
 </div>
 <div class="tips" id="adv_search">
 	<form method="post" action="{url ctrl=res/}">
-	<table width="100%">
-	<tr>
-		<td width="50%">
-			<div class="table">
-				<div class="title">
-					{lang关键字：}
-					<span class="note">{lang填写附件名称关键字}</span>
-				</div>
-				<div class="content"><input type="text" id="keywords" name="keywords" class="long" value="{$keywords}" /></div>
-			</div>
-		</td>
-		<td>
-			<div class="table">
-				<div class="title">
-					{lang附件分类：}
-				</div>
-				<div class="content">
-					<select id="cate_id" name="cate_id">
-						<option value="0">{lang不限}</option>
-						<!-- $catelist AS $key=>$value -->
-						<option value="{$value.id}"{if $cate_id == $value.id} selected{/if}>{$value.title}</option>
-						<!-- /if -->
-					</select>
-				</div>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<div class="table">
-				<div class="title">
-					{lang时间范围：}
-					<span class="note">{lang左侧是开始时间，右边是结束时间}</span>
-				</div>
-				<div class="content">
-					<table cellpadding="0" cellspacing="0">
-					<tr>
-						<td><input type="text" id="start_date" name="start_date" value="{$start_date}" placeholder="{lang开始时间}" onfocus="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" /></td>
-						<td>&nbsp; - &nbsp;</td>
-						<td><input type="text" id="stop_date" name="stop_date" value="{$stop_date}" placeholder="{lang结束时间}" onfocus="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" /></td>
-					</tr>
-					</table>
-				</div>
-			</div>
-			
-		</td>
-		<td>
-			<div class="table">
-				<div class="content">
-					<input type="submit" value="开始搜索" class="submit" />
-				</div>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2">
-			<div class="table">
-				<div class="title">
-					{lang附件类型：}
-					<span class="note">{lang勾选要搜索的附件类型，如果有未列出来的附件类型，请在编辑框中输入，多种附件类型用逗号隔开}</span>
-				</div>
-				<div class="content">
-					<table>
-					<tr>
-						<td><label><input type="checkbox" id="type_jpg" name="ext[]" value="jpg"{if $ext && in_array('jpg',$ext)} checked{/if} /> JPG</label></td>
-						<td><label><input type="checkbox" id="type_gif" name="ext[]" value="gif"{if $ext && in_array('gif',$ext)} checked{/if} /> GIF</label></td>
-						<td><label><input type="checkbox" id="type_png" name="ext[]" value="png"{if $ext && in_array('png',$ext)} checked{/if} /> PNG</label></td>
-						<td><label><input type="checkbox" id="type_rar" name="ext[]" value="rar"{if $ext && in_array('rar',$ext)} checked{/if} /> RAR</label></td>
-						<td><label><input type="checkbox" id="type_zip" name="ext[]" value="zip"{if $ext && in_array('zip',$ext)} checked{/if} /> ZIP</label></td>
-						<td><label><input type="checkbox" id="type_flv" name="ext[]" value="flv"{if $ext && in_array('flv',$ext)} checked{/if} /> FLV</label></td>
-						<td><label><input type="checkbox" id="type_swf" name="ext[]" value="swf"{if $ext && in_array('swf',$ext)} checked{/if} /> SWF</label></td>
-						<td><label><input type="checkbox" id="type_mp3" name="ext[]" value="mp3"{if $ext && in_array('mp3',$ext)} checked{/if} /> MP3</label></td>
-					</tr>
-					<tr>
-						<td>&nbsp;  &nbsp; {lang其他：}</td>
-						<td colspan="7"><input type="text" id="myext" name="myext" value="{$myext}" class="long" /></td>
-					</tr>
-					</table>
-				</div>
-			</div>
-		</td>
-	</tr>
-	</table>
+	<ul class="layout" style="margin:10px 0;">
+		<li>
+			<select id="cate_id" name="cate_id">
+				<option value="0">{lang请选择附件分类}</option>
+				<!-- $catelist AS $key=>$value -->
+				<option value="{$value.id}"{if $cate_id == $value.id} selected{/if}>{$value.title}</option>
+				<!-- /if -->
+			</select>
+		</lid>
+		<li>
+			<select id="filetype" name="filetype">
+			<option value="">{lang请选择附件类型}</option>
+			<!-- loop from=$filetypes key=$key value=$value id=$tmpid -->
+			<option value="{$value}"{if $filetype == $value} selected{/if}>{func strtoupper $value}</option>
+			<!-- /loop -->
+			</select>
+		</li>
+		<li><input type="text" id="keywords" name="keywords" placeholder="{lang输入关键字}" value="{$keywords}" /></li>
+		<li><input type="text" id="start_date" name="start_date" class="w150" placeholder="{lang开始时间}" value="{$start_date}" /></li>
+		<li><input type="text" id="stop_date" name="stop_date" class="w150" placeholder="{lang结束时间}" value="{$stop_date}" /></li>
+		<li><input type="submit" value="{lang搜索}" class="phpok-btn" /></li>
+	</ul>
 	</form>
 </div>
 <style type="text/css">
 .thumb{float:left;width:144px;margin:3px 5px;padding:1px;border:1px solid #ccc;border-radius:3px;position:relative;z-index:1;}
-.thumb div.checkbox{position:absolute;left:2px;top:2px;z-index:2;}
+.thumb div.checkbox{position:absolute;left:2px;top:2px;z-index:2;background:#fff;border:1px solid #ccc;padding-right:5px;border-radius:3px;}
 </style>
 
-<ul class="attrlist clearfix" id="attr2list">
+<div class="attrlist clearfix" id="attr2list">
 	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-	<div class="thumb">
-		<div class="checkbox"><input type="checkbox" name="attrid[]" id="attrid_{$value.id}" value="{$value.id}" /></div>
+	<div class="thumb" id="thumb_{$value.id}">
+		<div class="checkbox"><input type="checkbox" name="attrid[]" id="attrid_{$value.id}" value="{$value.id}" /> {$value.id}</div>
 		<label for="attrid_{$value.id}"><div style="text-align:center;"><img src="{$value.ico}" width="100" height="100" /></div></label>
 		<div class="file-action" style="text-align:center;"><div class="button-group">
 			<input type="button" value="{lang修改}" class="phpok-btn" onclick="$.admin_res.modify('{$value.id}')" />
@@ -122,7 +60,7 @@
 	</div>
 	<!-- /loop -->
 	<div class="clear"></div>
-</ul>
+</div>
 
 <div class="table">
 <table width="100%">

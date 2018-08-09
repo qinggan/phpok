@@ -77,7 +77,7 @@ class cookie_lib
 	public function set($name, $value, $expire_time=0)
 	{
 		$cookie_name = $this->_name($name);
-		$cookie_expire = time() + ($expire? $expire : $this->_expire);
+		$cookie_expire = time() + ($expire_time? $expire_time : $this->expire_time);
 		$cookie_value = $this->_pack($value, $cookie_expire);
 		$cookie_value = $this->_authcode($cookie_value, 'ENCODE');
 		if($cookie_name && $cookie_value && $cookie_expire){

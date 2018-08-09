@@ -26,9 +26,9 @@ class vcode_lib
 		$this->count = 4;
 		$rand = mt_rand(0,1);
 		$this->btype = $rand ? '_bg_line' : '_bg_imagesetpixel';
-		if(file_exists($this->root.'data/font/airbus_special.ttf')){
-			$this->font = $this->root.'data/font/airbus_special.ttf';
-		}
+		/*if(file_exists($this->root.'_data/font/airbus_special.ttf')){
+			$this->font = $this->root.'_data/font/airbus_special.ttf';
+		}*/
 	}
 
 	public function width($width=76)

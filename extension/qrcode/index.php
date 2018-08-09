@@ -48,6 +48,11 @@ class qrcode_lib extends _init_lib
 		return $this->font;
 	}
 
+	public function png($data)
+	{
+		QRcode::png($data,false,'L',10,2);
+	}
+
 	public function create($string='',$filename='',$extinfo='')
 	{
 		if(!$string || !$filename){

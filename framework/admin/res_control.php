@@ -25,21 +25,27 @@ class res_control extends phpok_control
 		if(!$pageid){
 			$pageid = 1;
 		}
-		$psize = 150;
+		$psize = $this->config['psize'] * 5;
 		$pageurl = $this->url('res');
 		$offset = ($pageid - 1) * $psize;
 		$catelist = $this->model('res')->cate_all();
 		if($catelist){
+			$filetypes = array();
 			foreach($catelist as $key=>$value){
 				$types = explode(",",$value['filetypes']);
 				$tmp = array();
 				foreach($types as $k=>$v){
 					$tmp[] = "*.".$v;
+					$filetypes[] = $v;
 				}
 				$value['typeinfos'] = implode(" , ",$tmp);
 				$catelist[$key] = $value;
 			}
+			$filetypes = array_unique($filetypes);
+		}else{
+			$filetypes = array('jpg','gif','png','rar','zip');
 		}
+		$this->assign('filetypes',$filetypes);
 		$this->assign("catelist",$catelist);
 		$condition = "1=1";
 		$tmp_c = $this->condition($condition,$pageurl);
@@ -79,16 +85,15 @@ class res_control extends phpok_control
 
 	public function set_f()
 	{
-		$backurl = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : $this->url('res');
 		$this->assign("home_url",$error_url);
 		$id = $this->get("id","int");
 		if(!$id){
-			error(P_Lang('未指定ID'),$backurl,"error");
+			$this->error(P_Lang('未指定ID'));
 		}
 		$this->assign("id",$id);
 		$rs = $this->model('res')->get_one($id,true);
 		if(!$rs){
-			error(P_Lang('附件不存在'),$backurl,"error");
+			$this->error(P_Lang('附件不存在'));
 		}
 		$this->assign("id",$id);
 		$this->assign("rs",$rs);
@@ -96,8 +101,76 @@ class res_control extends phpok_control
 		$this->addjs('js/webuploader/admin.upload.js');
 		$content = form_edit('note',$rs['note'],'editor','width=650&height=250&etype=simple');
 		$this->assign('content',$content);
-		$this->assign('backurl',$backurl);
+		$filesize = filesize($this->dir_root.$rs['filename']);
+		if($rs['filename'] && file_exists($this->dir_root.$rs['filename']) && $rs['ext'] && in_array($rs['ext'],array('jpg','gif','png','jpeg')) && $filesize > 102400){
+			$this->assign('resize',true);
+			$this->assign('filesize',$this->lib('common')->num_format($filesize));
+		}
 		$this->view("res_manage");
+	}
+
+	/**
+	 * 修改附件信息
+	**/
+	public function setok_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$title = $this->get('title');
+		if(!$title){
+			$this->error(P_Lang('附件标题不能为空'));
+		}
+		$note = $this->get('note','html');
+		$this->model('res')->save(array('title'=>$title,'note'=>$note),$id);
+		$this->success();
+	}
+
+	public function resize_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('res')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('附件信息不存在'));
+		}
+		if(!is_file($this->dir_root.$rs['filename'])){
+			$this->error(P_Lang('附件不存在'));
+		}
+		if(!$rs['ext'] || ($rs['ext'] && !in_array(strtolower($rs['ext']),array('jpg','gif','png','jpeg')))){
+			$this->error(P_Lang('要压缩的图片仅支持JPG，GIF，PNG，JPEG'));
+		}
+		$ext = strtolower($rs['ext']);
+		$imginfo = getimagesize($this->dir_root.$rs['filename']);
+		$img_x = $imginfo[0];
+		$img_y = $imginfo[1];
+		$width = $this->get('width','int');
+		$ptype = $this->get('ptype','int');
+		$this->lib('gd')->isgd(true);
+		$this->lib('gd')->filename($this->dir_root.$rs['filename']);
+		if(!$width){
+			$width = $img_x;
+			$height = $img_y;
+		}else{
+			if($width > $img_x){
+				$width = $img_x;
+			}
+			$height = intval(($width * $img_y) / $img_x);
+		}
+		$this->lib('gd')->SetCut(false);
+		$this->lib('gd')->SetWH($width,$height);
+		if($ext && in_array($ext,array('jpg','jpeg')) && $ptype){
+			$this->lib('gd')->Set('quality',$ptype);
+		}
+		$picfile = $this->lib('gd')->Create($rs['filename'],$rs['id']);
+		$this->lib('file')->mv($this->dir_root.$rs['folder'].$picfile,$this->dir_root.$rs['filename']);
+		$array = array('width'=>$width,'height'=>$height);
+		$data = array('attr'=>serialize($array));
+		$this->model('res')->save($data,$rs['id']);
+		$this->success();
 	}
 
 	/**
@@ -221,41 +294,65 @@ class res_control extends phpok_control
 		return array("condition"=>$condition,"pageurl"=>$pageurl);
 	}
 
-	function update_pl_f()
+	/**
+	 * 批量更新图片
+	**/
+	public function update_pl_f()
 	{
 		if(!$this->popedom["pl"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id");
 		if(!$id){
-			error(P_Lang('未指定要操作的附件'));
+			$this->error(P_Lang('未指定要操作的附件'));
 		}
 		$psize = 1;
 		$pageid = $this->get("pageid","int");
 		$pageid = intval($pageid);
 		$ext_list = array("jpg","gif","png","jpeg");
 		if($id == 'all'){
-			$condition = "1=1";
-			$reslist = $this->model('res')->get_list($condition,$pageid,1);
-			if(!$reslist){
-				error(P_Lang('附件信息更新完毕，共更新数量：{pageid}，点击右上角关闭窗口^_^',array('pageid'=>"<span class='red'>".$pageid."</span>")));
+			$start_id = $this->get('start_id','int');
+			if($start_id && !$pageid){
+				$total = $this->model('res')->get_count("id>='".$start_id."'");
+				if($total){
+					$pageid = $total;
+				}
 			}
-			$rs = current($reslist);
-			$myurl = $this->url("res","update_pl") ."&id=all&pageid=".($pageid+1);
+			$reslist = $this->model('res')->get_list("1=1",$pageid,8);
+			if(!$reslist){
+				$this->success(P_Lang('附件信息更新完毕，共更新数量：{pageid}，点击右上角关闭窗口^_^',array('pageid'=>"<span class='red'>".$pageid."</span>")));
+			}
+			$tmplist = array();
+			$filesize = 0;
+			foreach($reslist as $key=>$value){
+				if(file_exists($this->dir_root.$value['filename'])){
+					$filesize += filesize($this->dir_root.$value['filename']);
+					if($filesize >= (2 * 1024 * 1024)){
+						break;
+					}
+					$tmplist[$key] = $value;
+				}
+			}
+			foreach($tmplist as $key=>$value){
+				$this->gd_update($value['id']);
+				$pageid++;
+			}
+			$myurl = $this->url("res","update_pl") ."&id=all&pageid=".$pageid;
 		}else{
 			$myurl = $this->url("res","update_pl") ."&id=".rawurlencode($id)."&pageid=".($pageid+1);
 			$list = explode(",",$id);
 			if(!$list[$pageid]){
-				error(P_Lang('附件信息更新完毕，共更新数量：{pageid}，点击右上角关闭窗口^_^',array('pageid'=>"<span class='red'>".count($list)."</span>")));
+				$this->success(P_Lang('附件信息更新完毕，共更新数量：{pageid}，点击右上角关闭窗口^_^',array('pageid'=>"<span class='red'>".count($list)."</span>")));
 			}
 			$rs = $this->model('res')->get_one($list[$pageid]);
 			if(!$rs){
-				error(P_Lang("附件更新中，当前ID：{pageid} 不存在附件",array('pageid'=>$list[$pageid])),$myurl,'notice');
+				$this->error(P_Lang("附件更新中，当前ID：{pageid} 不存在附件",array('pageid'=>$list[$pageid])),$myurl);
 			}
+			$this->gd_update($rs['id']);
 		}
-		$this->gd_update($rs['id']);
+		
 		$total = $pageid+1;
-		error(P_Lang('附件更新中，当前已更新数量：{total}',array('total'=>"<span class='red'><strong>".$total."</strong></span>")),$myurl,'notice',1);
+		$this->tip(P_Lang('附件更新中，当前已更新数量：{total}',array('total'=>"<span class='red'><strong>".$total."</strong></span>")),$myurl,0.3);
 	}
 
 	private function gd_update($id)

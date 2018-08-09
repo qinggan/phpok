@@ -1,55 +1,63 @@
-<!-- head title=$title css="css/login.css,artdialog.css" extjs="jquery.artdialog.js" html5=true -->
-<body>
+<!-- include tpl=header -->
 <script type="text/javascript">
 var open_vcode = '{$is_vcode}';
-$(document).ready(function(){
-	$('#login-form').submit(function(){
-		$(this).ajaxSubmit({
-			url:api_url('login','save'),
-			type:'post',
-			dataType:'json',
-			success:function(rs){
-				if(rs.status == 'ok'){
-					$.dialog.alert('您已成功登录',function(){
-						top.$.phpok.reload();
-					},'succeed');
-				}else{
-					if(!rs.content){
-						rs.content = '登录失败';
-					}
-					$.dialog.alert(rs.content,function(){
-						if(open_vcode == '1'){
-							$("#_chkcode").val('');
-							$("#vcode").phpok_vcode();
-						}
-					},'error');
-					return false;
-				}
+function save()
+{
+	$('#login-form').ajaxSubmit({
+		url:api_url('login','save'),
+		type:'post',
+		dataType:'json',
+		success:function(rs){
+			if(rs.status){
+				$.dialog.alert('您已成功登录',function(){
+					top.$.phpok.reload();
+				},'succeed');
+				return true;
 			}
-		});
-		return false;
+			if(!rs.info){
+				rs.info = '登录失败';
+			}
+			$.dialog.alert(rs.info,function(){
+				if(open_vcode == '1'){
+					$("#_chkcode").val('');
+					$("#vcode").phpok_vcode();
+				}
+			},'error');
+			return false;
+		}
 	});
-});
+	return false;
+}
 </script>
-<div class="box">
-	<form method="post" id="login-form">
- 		<input type="hidden" name="post_date" id="post_date" value="{func date 'Y-m-d H:i:s' $sys.time}" />
-		<input type="hidden" name="pdip" id="pdip" value="<?php echo oIp() ?>" />
-		<dd><label>账号：</label><input class="input" type="text" name="user" /><div class="clear"></div></dd>
-		<dd><label>密码：</label><input class="input" type="password" name="pass" /><div class="clear"></div></dd>
-		<!-- if $is_vcode -->
-		<dd><label>验证码：</label><input class="vcode"  type="text" name="_chkcode" id="_chkcode" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" /><div class="clear"></div></dd>
-		<script type="text/javascript">
-		$(document).ready(function(){
-			$("#vcode").phpok_vcode();
-			$("#vcode").click(function(){
-				$(this).phpok_vcode();
-			});
+<div style="padding:10px;">
+<form method="post" id="login-form" class="am-form" onsubmit="return false">
+	<div class="am-form-group">
+		<input type="text" name="user" id="user" value="{$accout}" autocomplete="off" placeholder="输入账号/邮箱/手机号" />
+    </div>
+
+    <div class="am-form-group">
+		<input class="input" type="password" name="pass" id="pass" autocomplete="off" placeholder="输入登录密码" />
+	</div>
+	<!-- if $is_vcode -->
+	<div class="am-form-group">
+		<div class="am-g am-g-collapse">
+			<div class="am-u-sm-6">
+				<input class="vcode"  type="text" name="_chkcode" autocomplete="off" id="_chkcode" placeholder="输入验证码" />
+			</div>
+			<div class="am-u-sm-6">
+				<img src="" border="0" align="absmiddle" id="vcode" class="hand" style="margin-top:5px;" />
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#vcode").phpok_vcode();
+		$("#vcode").click(function(){
+			$(this).phpok_vcode();
 		});
-		</script>
-		<!-- /if -->
-		<dd class="submit"><input class="button blue" type="submit" value="登录" name=""></dd>
-	</form>
+	});
+	</script>
+	<!-- /if -->
+</form>
 </div>
-</body>
-</html>
+<!-- include tpl=footer -->

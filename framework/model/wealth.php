@@ -127,7 +127,7 @@ class wealth_model_base extends phpok_model
 	**/
 	public function goal_userlist()
 	{
-		$xmlfile = $this->dir_root.'data/xml/user_agent.xml';
+		$xmlfile = $this->dir_data.'xml/user_agent.xml';
 		if(!file_exists($xmlfile)){
 			return array('user'=>'用户','introducer'=>'一级推荐人','introducer2'=>'二级推荐人','introducer3'=>'三级推荐人');
 		}
@@ -440,6 +440,43 @@ class wealth_model_base extends phpok_model
 				$this->save_info($array);
 			}
 		}
+		return true;
+	}
+
+	/**
+	 * 手动增加或减去财富
+	 * @参数 $wid 财富ID，支持数字ID或标识
+	 * @参数 $uid 目标会员ID，仅支持数字
+	 * @参数 $val 要增加多少，为负数时表示减去
+	 * @参数 $note 备注
+	**/
+	public function save_val($wid,$uid,$val=0,$note='')
+	{
+		if(!$wid || !$uid || !$val || !$note){
+			return false;
+		}
+		if(is_numeric($wid)){
+			$rs = $this->get_one($wid,'id');
+		}else{
+			$rs = $this->get_one($wid,'identifier');
+		}
+		if(!$rs){
+			return false;
+		}
+		$log = $this->_data($note);
+		$log['status'] = 1;
+		$log['rule_id'] = 0;
+		$log['wid'] = $rs['id'];
+		$log['goal_id'] = $uid;
+		$log['val'] = round($val,$rs['dnum']);
+		$this->save_log($log);
+		$get_val = $this->get_val($uid,$rs['id']);
+		$val2 = $get_val + $val;
+		if($val2<0){
+			$val2 = 0;
+		}
+		$array = array('wid'=>$rs['id'],'lasttime'=>$this->time,'uid'=>$uid,'val'=>$val2);
+		$this->save_info($array);
 		return true;
 	}
 

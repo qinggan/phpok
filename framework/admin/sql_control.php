@@ -145,16 +145,16 @@ class sql_control extends phpok_control
 					}
 				}
 			}
-			$this->lib('file')->vi($html,$this->dir_root.'data/'.$backfilename.".php");//存储数据
-			$this->lib('file')->vi("-- PHPOK4 Full 数据备份\n\n",$this->dir_root.'data/'.$backfilename."_tmpdata.php");
+			$this->lib('file')->vi($html,$this->dir_data.$backfilename.".php");//存储数据
+			$this->lib('file')->vi("-- PHPOK4 Full 数据备份\n\n",$this->dir_data.$backfilename."_tmpdata.php");
 			$this->success(P_Lang('表结构备份成功，正在执行下一步'),$url);
 		}
 		$url .= "&backfilename=".$backfilename;
 		$startid = $this->get("startid","int");
 		$dataid = $this->get("dataid",'int');
-		if(($startid + 1)> count($idlist) && file_exists($this->dir_root.'data/'.$backfilename.'_tmpdata.php')){
-			$newfile = $this->dir_root.'data/'.$backfilename.'_'.$dataid.'.php';
-			$this->lib('file')->mv($this->dir_root.'data/'.$backfilename.'_tmpdata.php',$newfile);
+		if(($startid + 1)> count($idlist) && file_exists($this->dir_data.$backfilename.'_tmpdata.php')){
+			$newfile = $this->dir_data.$backfilename.'_'.$dataid.'.php';
+			$this->lib('file')->mv($this->dir_data.$backfilename.'_tmpdata.php',$newfile);
 			$this->success(P_Lang('数据备份成功'),$this->url('sql','backlist'));
 		}
 		$pageid = $this->get("pageid",'int');
@@ -234,17 +234,17 @@ class sql_control extends phpok_control
 		}
 		$url .= "&startid=".$new_startid."&pageid=".$pageid;
 		$fsize = 0;
-		if(!file_exists($this->dir_root.'data/'.$backfilename.'_tmpdata.php')){
+		if(!file_exists($this->dir_data.$backfilename.'_tmpdata.php')){
 			$tmpinfo = "\n-- Create time:".date("Y-m-d H:i:s",$this->time)."\n";
-			$this->lib('file')->vi($tmpinfo,$this->dir_root.'data/'.$backfilename.'_tmpdata.php','file');
+			$this->lib('file')->vi($tmpinfo,$this->dir_data.$backfilename.'_tmpdata.php','file');
 		}
-		$this->lib('file')->vi(addslashes($msg),$this->dir_root.'data/'.$backfilename.'_tmpdata.php','','ab');
-		$fsize = filesize($this->dir_root.'data/'.$backfilename.'_tmpdata.php');
+		$this->lib('file')->vi(addslashes($msg),$this->dir_data.$backfilename.'_tmpdata.php','','ab');
+		$fsize = filesize($this->dir_data.$backfilename.'_tmpdata.php');
 		$update_dataid = false;
 		if($fsize >= 2097152 || !$idlist[$new_startid]){
 			$update_dataid = true;
-			$newfile = $this->dir_root.'data/'.$backfilename.'_'.intval($dataid).'.php';
-			$this->lib('file')->mv($this->dir_root.'data/'.$backfilename.'_tmpdata.php',$newfile);
+			$newfile = $this->dir_data.$backfilename.'_'.intval($dataid).'.php';
+			$this->lib('file')->mv($this->dir_data.$backfilename.'_tmpdata.php',$newfile);
 		}
 		if($update_dataid){
 			$url .= "&dataid=".(intval($dataid)+1);
@@ -264,9 +264,9 @@ class sql_control extends phpok_control
 		if(!$this->popedom['list'] && !$this->session->val('admin_rs.if_system')){
 			$this->error(P_Lang('您没有权限执行此操作'),$this->url('sql'));
 		}
-		$filelist = $this->lib('file')->ls($this->dir_root.'data/');
+		$filelist = $this->lib('file')->ls($this->dir_data);
 		if(!$filelist){
-			$this->error(P_Lang('空数据，请检查目录：data/'),$this->url("sql"));
+			$this->error(P_Lang('空数据，请检查目录：_data/'),$this->url("sql"));
 		}
 		$tmplist = array();
 		$i=0;
@@ -313,9 +313,9 @@ class sql_control extends phpok_control
 		if(!$id){
 			$this->error(P_Lang('没有指定备份文件'),$this->url('sql','backlist'));
 		}
-		$filelist = $this->lib('file')->ls($this->dir_root.'data/');
+		$filelist = $this->lib('file')->ls($this->dir_data);
 		if(!$filelist){
-			$this->error(P_Lang('空数据，请检查目录：data/'),$this->url("sql"));
+			$this->error(P_Lang('空数据，请检查目录：_data/'),$this->url("sql"));
 		}
 		$idlen = strlen($id);
 		foreach($filelist AS $key=>$value){
@@ -340,7 +340,7 @@ class sql_control extends phpok_control
 		if(!$id){
 			$this->error(P_Lang('没有指定备份文件'),$this->url('sql','backlist'));
 		}
-		$backfile = $this->dir_root.'data/sql'.$id.'.php';
+		$backfile = $this->dir_data.'sql'.$id.'.php';
 		if(!file_exists($backfile)){
 			$this->error(P_Lang('备份文件不存在'),$this->url('sql','backlist'));
 		}
@@ -386,14 +386,14 @@ class sql_control extends phpok_control
 			$this->error(P_Lang('没有指定备份文件'),$this->url('sql','backlist'));
 		}
 		$startid = $this->get('startid','int');
-		$backfile = $this->dir_root.'data/sql'.$id.'_'.$startid.'.php';
+		$backfile = $this->dir_data.'sql'.$id.'_'.$startid.'.php';
 		if(!file_exists($backfile)){
 			$this->success(P_Lang('数据恢复完成'),$this->url('sql','backlist'));
 		}
 		$msg = $this->lib('file')->cat($backfile);
 		$this->format_sql($msg);
 		$new_startid = $startid + 1;
-		$newfile = $this->dir_root.'data/sql'.$id.'_'.$new_startid.'.php';
+		$newfile = $this->dir_data.'sql'.$id.'_'.$new_startid.'.php';
 		if(!file_exists($newfile)){
 			$this->success(P_Lang('数据恢复完成'),$this->url('sql','backlist'));
 		}

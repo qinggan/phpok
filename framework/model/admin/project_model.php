@@ -49,6 +49,17 @@ class project_model extends project_model_base
 		return $this->db->query($sql);
 	}
 
+	/**
+	 * 设置隐藏或显示
+	 * @参数 $id 项目ID
+	 * @参数 $hidden 1表示隐藏，0表示显示
+	**/
+	public function set_hidden($id,$hidden=0)
+	{
+		$sql = "UPDATE ".$this->db->prefix."project SET hidden='".$hidden."' WHERE id='".$id."'";
+		return $this->db->query($sql);
+	}
+
 	//更新排序
 	public function update_taxis($id,$taxis="0")
 	{
@@ -69,13 +80,20 @@ class project_model extends project_model_base
 			return false;
 		}
 		if($rs['module']){
+			$table_list = $this->db->list_tables();
 			$module = $this->model('module')->get_one($rs['module']);
 			if($module['mtype']){
-				$sql = "DELETE FROM ".$this->db->prefix.$rs['module']." WHERE project_id='".$id."'";
-				$this->db->query($sql);
+				$tmp = $this->db->prefix.$rs['module'];
+				if(in_array($tmp,$table_list)){
+					$sql = "DELETE FROM ".$tmp." WHERE project_id='".$id."'";
+					$this->db->query($sql);
+				}
 			}else{
-				$sql = "DELETE FROM ".$this->db->prefix."list_".$rs['module']." WHERE project_id=".$id;
-				$this->db->query($sql);
+				$tmp = $this->db->prefix."list_".$rs['module'];
+				if(in_array($tmp,$table_list)){
+					$sql = "DELETE FROM ".$tmp." WHERE project_id=".$id;
+					$this->db->query($sql);
+				}
 				$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
 				$this->db->query($sql);
 				$sql = "DELETE FROM ".$this->db->prefix."list_biz WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
@@ -85,18 +103,16 @@ class project_model extends project_model_base
 				$sql = "DELETE FROM ".$this->db->prefix."list WHERE project_id=".$id;
 				$this->db->query($sql);
 			}
-			
-			
 		}
 
 		//删除项目扩展
-		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='project-".$id."'";
+		$sql = "SELECT id FROM ".$this->db->prefix."fields WHERE ftype='project-".$id."'";
 		$extlist = $this->db->get_all($sql);
 		if($extlist){
-			foreach($extlist AS $key=>$value){
+			foreach($extlist as $key=>$value){
 				$this->db->query("DELETE FROM ".$this->db->prefix."extc WHERE id='".$value['id']."'");
 			}
-			$this->db->query("DELETE FROM ".$this->db->prefix."ext WHERE module='project-".$id."'");
+			$this->db->query("DELETE FROM ".$this->db->prefix."fields WHERE ftype='project-".$id."'");
 		}
 		$sql = "DELETE FROM ".$this->db->prefix."project WHERE id='".$id."'";
 		$this->db->query($sql);

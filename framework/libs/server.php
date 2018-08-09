@@ -105,7 +105,7 @@ class server_lib
 		$format = $system ? 'system' : 'safe';
 		foreach($info as $key=>$value){
 			$tmp = $app->format($value,$format);
-			if(!$tmp){
+			if($tmp == ''){
 				unset($info[$key]);
 			}
 		}

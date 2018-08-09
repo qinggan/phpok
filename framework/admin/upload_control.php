@@ -162,15 +162,7 @@ class upload_control extends phpok_control
 	**/
 	public function editopen_f()
 	{
-		$id = $this->get('id','int');
-		if(!$id){
-			error(P_Lang('未指定ID'));
-		}
-		$rs = $this->model('res')->get_one($id);
-		$note = form_edit('note',$rs['note'],'editor','width=650&height=250&etype=simple');
-		$this->assign('rs',$rs);
-		$this->assign('note',$note);
-		$this->view("res_editopen");
+		return $this->control('res')->set_f();
 	}
 
 	/**

@@ -15,13 +15,7 @@
 	background-color: white;
 
 	border: 1px solid #ccc;
-	-webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
 
-	box-shadow:         0px 1px 1px rgba(0,0,0,0.075) inset;
-	-moz-box-shadow:    0px 1px 1px rgba(0,0,0,0.075) inset;
-	-webkit-box-shadow: 0px 1px 1px rgba(0,0,0,0.075) inset;
 	margin: 0px !important;
 	/* width: 320px; */
 	
@@ -109,7 +103,6 @@ div.sp_clear_btn.sp_align_right {
  * Results
  */
 .sp_result_area {
-	/* background-color: transparent; */
 	background-color: white;
     border: 1px solid #D6D7D7;
 	display: none;
@@ -117,8 +110,7 @@ div.sp_clear_btn.sp_align_right {
 	margin: 0;
 	padding: 0;
 	position: absolute;
-	z-index: 100;
-	width: 300px;
+	z-index: 9999;
 }
 div.sp_result_area.shadowDown{
     box-shadow: 0px 3px 12px rgba(0,0,0,0.2);

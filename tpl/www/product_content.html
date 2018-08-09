@@ -1,5 +1,5 @@
 <!-- php:$title= $rs.title.' - '.$cate_rs.title.' - '.$page_rs.title -->
-<!-- include tpl=head title=$title menutitle=$page_rs.title css="css/product.css" js="js/jquery.zoombie.js" -->
+<!-- include tpl=head title=$title menutitle=$page_rs.title js="js/jquery.zoombie.js" -->
 <script type="text/javascript">
 function attr_select(id,aid)
 {
@@ -64,137 +64,120 @@ $(document).ready(function(){
 	<!-- if $page_rs.banner -->
 	<div class="banner"><img src="{$page_rs.banner.filename}" alt="{$page_rs.title}" /></div>
 	<!-- /if -->
-	<ol class="breadcrumb">
-		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
-		<li><a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a></li>
-		<!-- if $cate_parent_rs -->
-		<li><a href="{$cate_parent_rs.url}" title="{$cate_parent_rs.title}">{$cate_parent_rs.title}</a></li>
-		<!-- /if -->
-		<!-- if $cate_rs -->
-		<li><a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a></li>
-		<!-- /if -->
-		<li>{$rs.title}</li>
-	</ol>
-	<div class="left">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="left am-panel-group">
 		<!-- include tpl=block/catelist pid=$page_rs.id cid=$cate_rs.id title=$page_rs.title -->
 		<!-- include tpl=block/contact -->
 		<!-- include tpl=block/hot_article -->
 	</div>
 	<div class="right">
-		<div class="pro_left">
-			<div class="proimg">
-				<div class="product_img" id="product_img">
-					<ul class="big">
-						<!-- if !$rs.pictures && $rs.thumb -->
-						<li><img src="{$rs.thumb.gd.thumb}" _src="{$rs.thumb.gd.auto}" border="0" alt="{$value.title}" /></li>
-						<!-- /if -->
-						<!-- loop from=$rs.pictures key=$key value=$value -->
-						<li><img src="{$value.gd.thumb}" _src="{$value.gd.auto}" border="0" alt="{$value.title}" /></li>
-						<!-- /loop -->
-					</ul>
-					<ul class="hd">
-						<!-- if !$rs.pictures && $rs.thumb -->
-						<li href="{$rs.thumb.gd.auto}" thumb="{$rs.thumb.gd.thumb}"></li>
-						<!-- /if -->
-						<!-- loop from=$rs.pictures key=$key value=$value -->
-						<li href="{$value.gd.auto}" thumb="{$value.gd.thumb}"></li>
-						<!-- /loop -->
-					</ul>
-				</div>
-			</div>
-			<div style="text-align:center;line-height:170%;"><img src="images/zoom.png" /> 鼠标按住图片可看放大效果</div>
-			<!-- if $config.share.baidu -->
-			<div style="margin-top:5px;">{$config.share.baidu}</div>
-			<!-- /if -->
-		</div>
-		<div class="info">
-			<h1>{$rs.title}</h1>
-			<ul class="alist">
-				<li><em>查看次数：</em>{$rs.hits}</li>
-				<li><em>添加时间：</em>{func date Y-m-d $rs.dateline}</li>
-				<li style="padding:0;"><hr /></li>
-				<!-- loop from=$rs.attrlist key=$key value=$value -->
-				<li>
-					<em>{$value.title}：</em>
-					<input type="hidden" name="attr" id="attr_{$value.id}" value="" />
-					<div style="margin-bottom:5px;">
-						<ul class="attr">
-							<!-- loop from=$value.rslist key=$k value=$v id=$tmpid -->
-							<li><div class="attr" name="attr{$value.id}" data="{$v.id}" price="{$v.price}" weight="{$v.weight}" volume="{$v.volume}" onclick="attr_select('{$v.id}','{$value.id}')">{$v.title}</div></li>
+		<div class="am-g">
+			<div class="am-u-sm-5">
+				<div class="proimg">
+					<div class="product_img" id="product_img">
+						<ul class="big">
+							<!-- if !$rs.pictures && $rs.thumb -->
+							<li><img src="{$rs.thumb.gd.thumb}" _src="{$rs.thumb.gd.auto}" border="0" alt="{$value.title}" /></li>
+							<!-- /if -->
+							<!-- loop from=$rs.pictures key=$key value=$value -->
+							<li><img src="{$value.gd.thumb}" _src="{$value.gd.auto}" border="0" alt="{$value.title}" /></li>
 							<!-- /loop -->
 						</ul>
-						<div class="clear"></div>
+						<ul class="hd">
+							<!-- if !$rs.pictures && $rs.thumb -->
+							<li href="{$rs.thumb.gd.auto}" thumb="{$rs.thumb.gd.thumb}"></li>
+							<!-- /if -->
+							<!-- loop from=$rs.pictures key=$key value=$value -->
+							<li href="{$value.gd.auto}" thumb="{$value.gd.thumb}"></li>
+							<!-- /loop -->
+						</ul>
 					</div>
-				</li>
-				<!-- /loop -->
-				<li>
-					<em>购买数量：</em>
-					<table>
-					<tr>
-						<td class="numbg" id="minus">-</td>
-						<td><input name="buycount" id="buycount" value="1" type="text" class="numtxt" /></td>
-						<td class="numbg" id="plus">+</td>
-					</tr>
-					</table>
-				</li>
-				<li>
-					<em>价格：</em>
-					<span class="price" style="color:red;font-size:16px;" id="showprice">{func price_format $rs.price $rs.currency_id}</span>
-				</li>
-				<li>
-					<a href="javascript:$.cart.add('{$rs.id}',$('#buycount').val());void(0);"><img src="images/buy-btn.jpg" width="157" height="33" /></a>
-					
-				</li>
-				<li style="margin-top:10px;"><input type="button" value="立即购买" onclick="$.cart.onebuy('{$rs.id}',$('#buycount').val())" style="border:1px solid #c40000;background:#ffeded;color:#c40000;padding:0;margin:0;width:156px;height:33px;line-height:30px;" /></li>
-			</ul>
+				</div>
+				<div style="text-align:center;line-height:170%;"><img src="images/zoom.png" /> 鼠标按住图片可看放大效果</div>
+				<!-- if $config.share.baidu -->
+				<div style="margin-top:5px;">{$config.share.baidu}</div>
+				<!-- /if -->
+			</div>
+			<div class="am-u-sm-7">
+				<h1>{$rs.title}</h1>
+				<ul class="am-list am-list-static">
+					<li>
+						<div class="am-g">
+							<div class="am-u-sm-4"><b>查看次数</b></div>
+							<div class="am-u-sm-8">{$rs.hits}</div>
+						</div>
+					</li>
+					<li>
+						<div class="am-g">
+							<div class="am-u-sm-4"><b>添加时间</b></div>
+							<div class="am-u-sm-8">{func time_format $rs.dateline}</div>
+						</div>
+					</li>
+					<!-- loop from=$rs.attrlist key=$key value=$value -->
+					<li>
+						<div class="am-g">
+							<div class="am-u-sm-4"><b>{$value.title}</b></div>
+							<div class="am-u-sm-8">
+								<input type="hidden" name="attr" id="attr_{$value.id}" value="" />
+								<!-- loop from=$value.rslist key=$k value=$v id=$tmpid -->
+								<div class="attr" name="attr{$value.id}" data="{$v.id}" price="{$v.price}" weight="{$v.weight}" volume="{$v.volume}" onclick="attr_select('{$v.id}','{$value.id}')">{$v.title}</div>
+								<!-- /loop -->
+							</div>
+						</div>
+					</li>
+					<!-- /loop -->
+					<li>
+						<div class="am-g">
+							<div class="am-u-sm-4"><b>购买数量：</b></div>
+							<div class="am-u-sm-8 am-form">
+								<input name="buycount" id="buycount" value="1" type="number" min="1" />
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="am-g">
+							<div class="am-u-sm-4"><b>价格</b></div>
+							<div class="am-u-sm-8"><span class="price" style="color:red;font-size:16px;" id="showprice">{func price_format $rs.price $rs.currency_id}</span></div>
+						</div>
+					</li>
+				</ul>
+				<div>
+					<button type="button" class="am-btn am-btn-primary" onclick="$.cart.add('{$rs.id}',$('#buycount').val())"><i class="am-icon-shopping-cart"></i> 加入购物车</button>
+					<button type="button" class="am-btn am-btn-secondary am-fr" onclick="$.cart.onebuy('{$rs.id}',$('#buycount').val())"><i class="am-icon-check"></i> 立即购买</button>
+				</div>
+			</div>
+		</div>
+		<div class="pro_left">
+			
 		</div>
 		<div class="clear"></div>
-		<div class="pro_detail">
-			<ul class="pro_title">
-				<!-- if $rs.content --><li>商品介绍</li><!-- /if -->
-				<!-- if $rs.pictures --><li>商品图集</li><!-- /if -->
-				<!-- if $rs.parameter --><li>规格参数</li><!-- /if -->
-				<!-- if $rs.package --><li>包装清单</li><!-- /if -->
-				<li>售后保障</li>
-				<!-- if $page_rs.comment_status --><li>商品评价</li><!-- /if -->
+		<div class="am-tabs"  data-am-tabs="{noSwipe: 1}">
+			<ul class="am-tabs-nav am-nav am-nav-tabs">
+				<li class="am-active"><a href="#content-intro">商品介绍</a></li>
+				<!-- if $rs.pictures --><li><a href="#content-pictures">商品图集</a></li><!-- /if -->
+				<!-- if $rs.package --><li><a href="#content-package">包装清单</a></li><!-- /if -->
+				<li><a href="#content-protection">售后保障</a></li>
+				<!-- if $page_rs.comment_status --><li><a href="#content-comment">商品评价</a></li><!-- /if -->
 			</ul>
-			<div class="pro_txt">
-				<!-- if $rs.content --><div class="content">{$rs.content}</div><!-- /if -->
+			<div class="am-tabs-bd">
+				<div class="am-tab-panel am-fade am-in am-active" id="content-intro">{$rs.content}</div>
 				<!-- if $rs.pictures -->
-				<div class="content">
+				<div class="am-tab-panel am-fade" id="content-pictures">
 					<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
 					<p align="center"><img src="{$value.gd.auto}" border="0" /></p>
 					<!-- /loop -->
 				</div>
 				<!-- /if -->
-				<!-- if $rs.parameter -->
-				<div class="content">
-					<table width="100%">
-					<!-- loop from=$rs.parameter key=$key value=$value id=$tmpid -->
-					<tr>
-						<th width="25%">{$key}</th>
-						<td>{$value}</td>
-					</tr>
-					<!-- /loop -->
-					</table>
-				</div>
-				<!-- /if -->
 				<!-- if $rs.package -->
-				<div class="content">{func nl2br $rs.package}</div>
+				<div class="am-tab-panel am-fade" id="content-package">{func nl2br $rs.package}</div>
 				<!-- /if -->
-				<div class="content"><!-- php:$t = phpok('after-sale-protection') -->{$t.content}</div>
+				<div class="am-tab-panel am-fade" id="content-protection"><!-- php:$t = phpok('after-sale-protection') -->{$t.content}</div>
 				<!-- if $page_rs.comment_status -->
-				<div class="content"><!-- include tpl=block_comment tid=$rs.id --></div>
+				<div class="am-tab-panel am-fade" id="content-comment"><!-- include tpl=block/comment tid=$rs.id --></div>
 				<!-- /if -->
 			</div>
 		</div>
-		<script type="text/javascript">
-		$(document).ready(function(){
-			jQuery(".pro_detail").slide({titCell:".pro_title li",mainCell:".pro_txt",'titOnClassName':'current','trigger':'click'});
-		});
-		</script>
 	</div>
-
 </div>
 
 <!-- include tpl=foot -->

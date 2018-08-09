@@ -1,6 +1,6 @@
 <!-- include tpl=head menutitle=网站首页 title=会员登录 -->
 <script type="text/javascript">
-var open_vcode = '{$sys.is_vcode && function_exists("imagecreate") ? 1 : 0}';
+var open_vcode = '{$is_vcode}';
 $(document).ready(function(){
 	$("#login-form").submit(function(){
 		$(this).ajaxSubmit({
@@ -8,7 +8,7 @@ $(document).ready(function(){
 			'type':'post',
 			'dataType':'json',
 			'success':function(rs){
-				if(rs.status == 'ok'){
+				if(rs.status){
 					var url = $("input[name=_back]").val();
 					if(!url){
 						url = "{url ctrl=usercp/}";
@@ -17,7 +17,7 @@ $(document).ready(function(){
 						$.phpok.go(url);
 					},'succeed');
 				}else{
-					$.dialog.alert(rs.content);
+					$.dialog.alert(rs.info);
 					return false;
 				}
 			}
@@ -31,7 +31,7 @@ $(document).ready(function(){
 		<input type="hidden" name="_back" value="{$_back}" />
 		<label>账号：<input class="input" type="text" name="user" placeholder="请填写账号/手机号/邮箱" /></label>
 		<label>密码：<input class="input" type="password" name="pass" placeholder="请输入登录密码" /></label>
-		<!-- if $sys.is_vcode && function_exists('imagecreate') -->
+		<!-- if $is_vcode -->
 		<label>验证码：
 			<input class="vcode"  type="text" name="_chkcode" id="_chkcode" data-role="none" />
 			<img src="" border="0" align="absmiddle" id="vcode" />

@@ -7,7 +7,9 @@ debug = true
 gzip = true
 
 ;开发模式，1/true启用，0/false禁用
-develop = true
+;设置为 false 后，后台如果需要自定义字段，需要到管理员那里临时打开
+;当 debug 为 false 时，此项即为 false
+develop = false
 
 ;取得控制器的ID
 ctrl_id = c
@@ -39,8 +41,10 @@ timezone = Asia/Shanghai
 ;时间调节，单位是秒
 timetuning = 0
 
-;参数Token，不在使用 session 的时候可以使用此项替代
-token_id = token
+;会员 Token 标识，不在使用 session 的时候可以使用此项替代，任何接口返回，只要是会员登录后都会传输一个变量userToken
+;注意，由于历史原因，请慎用 token 这个变量
+;启用此项需要后台开始密钥
+token_id = userToken
 
 ;启用SQL远程执行，建议禁用，1/true启用，0/false禁用
 api_remote_sql = false
@@ -62,19 +66,13 @@ autoload_js = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.min.js,jquery
 get_domain_method = SERVER_NAME
 
 ;是否多语言选择
-multiple_language = false
+multiple_language = true
 
 ;是否启用 opcache，仅限 debug 为 false 时有效
 opcache = true
 
-;[www]
-;网页端是否需要会员验证，1/true启用，0/false禁用
-;is_login = false
-
-;[api]
-;接口是否需要会员验证，1/true启用，0/false禁用
-;is_login = false
-
+;是否强制启用 HTTPS，默认不强制，如果您使用 nginx+apache 多模式组合，可能检测 https 失败，可以在这里设置强制
+force_https = 0
 
 [mobile]
 ;启用或禁用手机端，1/true启用，0/false禁用
@@ -137,3 +135,4 @@ getid = callback
 
 ;如果上述未设置 getid 或 内容为空，则使用默认函数
 default = callback
+

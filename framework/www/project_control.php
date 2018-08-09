@@ -237,10 +237,16 @@ class project_control extends phpok_control
 			$dt['attr'] = $attr;
 		}
 		$this->plugin("system_www_arclist",$rs,$m_rs);
-		if($this->tpl->val('dt')){
-			$dt = array_merge($dt,$this->tpl->val('dt'));
+		$dt_ext = $this->tpl->val('dt');
+		if($dt_ext){
+			if($dt_ext['sqlext']){
+				$dt['sqlext'] = $dt['sqlext'] ? $dt['sqlext'].' AND '.$dt_ext['sqlext'] : $dt_ext['sqlext'];
+				unset($dt_ext['sqlext']);
+			}
+			$dt = array_merge($dt,$dt_ext);
 		}
 		$info = $this->call->phpok('_arclist',$dt);
+		$this->assign('dt',$dt);
 		$this->assign("pageid",$pageid);
 		$this->assign("psize",$dt['psize']);
 		$this->assign("pageurl",$pageurl);

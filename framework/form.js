@@ -310,7 +310,7 @@ function go_to_page_action()
 		page = 1;
 	}
 	var url = window.location.href;
-	url = url.replace(/&pageid=\d/g,"");
+	url = url.replace(/&pageid=\d+/g,"");
 	url += "&pageid="+$.str.encode(page);
 	$.phpok.go(url);
 }
@@ -563,9 +563,23 @@ function go_to_page_action()
 		/**
 		 * 快速添加主题
 		 * @参数 fid 字段ID
+		 * @参数 input_id 表单字段名
+		 * @参数 maxcount 最大数量，默认为1
 		**/
-		extitle_quickadd:function(fid)
+		extitle_quickadd:function(fid,input_id,maxcount)
 		{
+			if(!maxcount || maxcount == 'undefined'){
+				maxcount = 1;
+			}
+			var str = $("input[name="+input_id+"]").val();
+			if(str && str != 'undefined'){
+				var list = str.split(",");
+				var total = list.length;
+				if(total >= maxcount){
+					$.dialog.alert(p_lang('超出系统限制添加的数量'));
+					return false;
+				}
+			}
 			var url = get_url('form','quickadd','id='+fid);
 			$.dialog.open(url,{
 				'title':p_lang('添加'),
@@ -611,9 +625,40 @@ function go_to_page_action()
 			});
 		},
 
-		extitle_list:function(fid)
+		extitle_list:function(fid,input_id,maxcount,ext)
 		{
-			var url = get_url('form','quicklist','id='+fid);
+			if(!maxcount || maxcount == 'undefined'){
+				maxcount = 1;
+			}
+			var str = $("input[name="+input_id+"]").val();
+			if(str && str != 'undefined'){
+				var list = str.split(",");
+				var total = list.length;
+				if(total >= maxcount){
+					$.dialog.alert(p_lang('超出系统限制添加的数量'));
+					return false;
+				}
+			}
+			var url = get_url('form','quicklist','id='+fid+"&maxcount="+maxcount);
+			if(ext && ext != 'undefined'){
+				var list = ext.split(',');
+				var is_ok = true;
+				for(var i in list){
+					var val = $("#"+list[i]).val();
+					if(val == ''){
+						is_ok = false;
+						var title = $("#form_html_"+list[i]+" .title").html();
+						title = title.replace(/<span.+>.+<\/span>/g,'');
+						title = title.replace("：",'');
+						$.dialog.alert('请先选择：'+title);
+						break;
+					}
+					url += "&ext["+list[i]+"]="+$.str.encode(val);
+				}
+				if(!is_ok){
+					return false;
+				}
+			}
 			$.dialog.open(url,{
 				'title':p_lang('选择'),
 				'width':'90%',
@@ -640,10 +685,7 @@ function go_to_page_action()
 				if(data.status){
 					if(data.info){
 						$("#"+identifier+"_edit_preview").html(data.info);
-					}else{
-						//
 					}
-					
 					return true;
 				}
 				return true;
@@ -671,11 +713,20 @@ function go_to_page_action()
 		 * @参数 pid 项目ID
 		 * @参数 identifier 要更新的标识内容
 		**/
-		extitle_select_action:function(id,pid,identifier)
+		extitle_select_action:function(id,pid,identifier,maxcount)
 		{
+			if(!maxcount || maxcount == 'undefined'){
+				maxcount = 9999;
+			}
+			maxcount = parseInt(maxcount);
 			var opener = $.dialog.opener;
 			var content = opener.$("#"+identifier).val();
 			if(content){
+				var tmp = content.split(",");
+				if(tmp.length >= maxcount){
+					$.dialog.alert(p_lang('超出系统限制添加的数量'));
+					return false;
+				}
 				content = content+","+id;
 				var list = content.split(",");
 				var rs = $.unique(list);

@@ -31,6 +31,68 @@
 				},'okVal':p_lang('保存'),'cancel':true
 			});
 		},
+		create:function()
+		{
+			$.dialog({
+				'title':p_lang('创建一个新的插件'),
+				'width':'400px',
+				'height':'220px',
+				'lock':true,
+				'content':document.getElementById('create_plugin_html'),
+				'ok':function(){
+					var url = get_url('plugin','create');
+					var title = $("#plugin_name").val();
+					if(!title){
+						$.dialog.alert(p_lang('插件名称不能为空'));
+						return false;
+					}
+					url += "&title="+$.str.encode(title);
+					var id = $("#plugin_id").val();
+					if(id){
+						url += "&id="+$.str.encode(id);
+					}
+					var note = $("#plugin_note").val();
+					if(note){
+						url += "&note="+$.str.encode(note);
+					}
+					var author = $("#plugin_author").val();
+					if(author){
+						url += "&author="+$.str.encode(author);
+					}
+					$.phpok.json(url,function(rs){
+						if(rs.status){
+							$.dialog.alert(p_lang('插件创建成功，请根据实际情况编写插件扩展'),function(){
+								$.phpok.reload();
+							},'succeed');
+							return true;
+						}
+						$.dialog.alert(rs.info);
+						return false;
+					});
+				},
+				'cancel':true
+			});
+		},
+		install:function(id)
+		{
+			var url = get_url("plugin","install") + "&id="+$.str.encode(id);
+			$.phpok.go(url);
+		},
+		uninstall:function(id,title)
+		{
+			$.dialog.confirm(p_lang('确定要卸载插件 {title} 吗？<br>卸载后相应的功能都不能使用','<span class="red">'+title+'</span>'),function(){
+				var url = get_url('plugin','uninstall','id='+$.str.encode(id));
+				$.phpok.json(url,function(rs){
+					if(rs.status){
+						$.dialog.tips(p_lang('卸载成功…'));
+						$.phpok.reload();
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				})
+			});
+		},
 		config:function(id,title){
 			var url = get_url('plugin','extconfig','id='+id);
 			$.dialog.open(url,{
@@ -49,9 +111,35 @@
 				},'cancel':true
 			});
 		},
+		upload:function()
+		{
+			var url = get_url('plugin','upload');
+			$.dialog.open(url,{
+				'title':p_lang('上传插件'),
+				'width':'500px',
+				'height':'150px',
+				'lock':true,
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.save();
+					return false;
+				},
+				'okVal':p_lang('开始上传'),
+				'cancel':true
+			})
+		},
 		setting:function(id)
 		{
 			$.phpok.go(get_url('plugin','setting','id='+id));
+		},
+		tozip:function(id)
+		{
+			var url = get_url('plugin','zip','id='+id);
+			$.phpok.go(url);
 		},
 		einfo:function(val)
 		{

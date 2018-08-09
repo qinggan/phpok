@@ -1,11 +1,13 @@
-/***********************************************************
-	Filename: .css
-	Note	: 后台专用CSS，已合并，后台只用一个CSS文件
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2014年1月7日
-***********************************************************/
+/**
+ * 后台常用样式
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年05月31日
+**/
+
 /* 后台全局样式 */
 html{font-size:12px;font-family:"Verdana","Arial","Microsoft Yahei","sans-serif","Tahoma";margin:0;padding:0;}
 body{margin:3px;padding:0;overflow-y:scroll;_margin:0; _height:100%;}
@@ -19,14 +21,19 @@ select {
   -moz-appearance:none;
   -webkit-appearance:none;
   background:url("../images/arrow-select.png") no-repeat scroll right center transparent;
+  background-color:#fff;
   padding-right: 14px !important;
 }
 select::-ms-expand { display: none; }
 textarea{border:1px solid #E5E5E5;}
+input[type="number"]{
+	-moz-appearance: textfield;
+}
 
 /* 自定义常用样式 */
 .lft{text-align:left;}
-.f_right{float:right;}
+.f_right,.fr{float:right;}
+.fl{float:left;}
 .clear{clear:both; height:0; margin:0; padding:0; width:0; border:none; overflow:hidden;font-size:0;}
 .red{color:red;}
 .darkblue{color:darkblue;}
@@ -52,6 +59,7 @@ textarea{border:1px solid #E5E5E5;}
 .pleft{padding-left:24px;}
 .extcate{line-height:180%;color:gray;}
 .extcate a{color:gray;}
+.phpok-copy{cursor:default;}
 
 
 
@@ -67,7 +75,7 @@ textarea{border:1px solid #E5E5E5;}
 .top_search{position:relative;background:#F5F5F5;border-bottom:1px solid #E5E5E5;min-width:980px;}
 
 .main{margin:0 auto;padding:0;position:relative;}
-.main .tips{border:1px solid #E5E5E5;background:#F5F5F5;padding-left:12px;line-height:25px;margin-top:3px;}
+.main .tips{border:1px solid #E5E5E5;background:#F5F5F5;padding:3px 3px 3px 12px;line-height:25px;margin-top:3px;}
 .main .tips:after{clear:both;height:0;line-height:0;content:'.';display: block;visibility: hidden;overflow:hidden;}
 .main .tips .left{float:left;}
 .main .tips p{margin:1px 0;}
@@ -82,10 +90,7 @@ textarea{border:1px solid #E5E5E5;}
 .foot{text-align:left;padding:7px 5px;line-height:22px;color:#929292;margin-bottom:60px;}
 .foot a{color:#929292;}
 .foot .foot_right{float:right;text-align:right;display:block;height:40px;line-height:40px;font-weight:bold;font-size:14px;}
-/* 管理员个人中心 */
-ul.admin_panel{list-style:none;margin:0;padding:0;}
-ul.admin_panel li{float:left;margin-right:10px;width:100px;height:31px;background:url("../images/button.png") 0 -62px no-repeat;text-align:center;margin-top:10px;line-height:29px;cursor:pointer;}
-ul.admin_panel li.hover{background-position:0 -93px;}
+
 
 .list{margin:5px 3px 0 0;}
 .list th{padding:0;border-bottom:2px solid #E5E5E5;height:25px;background:#D1D1D1;}
@@ -112,6 +117,15 @@ ul.admin_panel li.hover{background-position:0 -93px;}
 .list2 tr.sub:hover{background:#2D2D2D}
 .list2 tr.sub:hover td{color:#fff}
 .list2 tr.sub:hover td a{color:#fff}
+
+
+table.list2{margin-top:3px;}
+table.list2 td{padding:3px;}
+table.list2{border-collapse:collapse;}
+table.list2 th{padding:0;border-bottom:2px solid #E5E5E5;height:25px;background:#D1D1D1;}
+table.list2 th.left{text-align:left;}
+table.list2 tr:nth-child(2n+1){background:#F1F1F1}
+
 
 .table{padding:2px 10px 2px 0;margin:1px 5px 0 15px;cursor:default;}
 .table:after{clear:both;height:0;visibility:hidden;display: block;}
@@ -165,7 +179,7 @@ input.submit,input.button,input.btn,input.ext_btn{
 	margin:0 0 0 3px;
 	padding:2px 6px;
 	text-align:center;
-	background:#ECECEC url("../images/btn_bg.jpg") center center repeat-x;
+	background:#ECECEC;
 	color:#000;
 }
 input.submit{color:darkred;font-weight:bold;}
@@ -174,17 +188,20 @@ input.submit:hover,input.button:hover,input.btn:hover,input.ext_btn:hover{border
 /* 提交按钮自定义 */
 input.submit2 {
 	margin:0;
-	padding:0;
 	text-align:center;
-	background:url("../images/button.png") left top no-repeat;
-	width:100px;
-	height:31px;
-	border:0;
+	border:1px solid #D14836;
+	background:#D74937;
+	padding:3px 20px;
+	min-height:30px;
+	min-width:100px;
 	color:#fff;
 	font-weight:bold;
+	border-radius:4px;
+	line-height:200%;
 }
 input.submit2:hover{
-	background-position:0 -31px;
+	border:1px solid #B0281A;
+	box-shadow:0 1px 1px rgba(0,0,0,0.1);
 }
 
 input.button2{
@@ -194,7 +211,9 @@ input.button2{
 	border:1px solid #D9D9D9;
 	font-weight:bold;
 	cursor:default;
+	border-radius:4px;
 }
+
 input.button2:hover{
 	background:#F1F1F1;
 	border-color:#C6C6C6;
@@ -213,11 +232,31 @@ td.id{text-align:center;}
 .tips_ajax{padding:20px;}
 
 /*常用按钮图标*/
-a.icon{background:url("../images/icons.gif") no-repeat;width:16px;height:16px;display:block;float:left;margin-left:3px;margin-right:2px;cursor:pointer;}
+a.icon{
+	width:16px;
+	height:16px;
+	display:block;
+	float:left;
+	margin-left:3px;
+	margin-right:2px;
+	cursor:pointer;
+	font-family:'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	font-size:12px;
+	text-transform: none;
+	line-height: 150%;
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+a.icon:hover{text-decoration:none;color:red;}
 a.add{background-position:0 0;}
-a.edit{background-position:-16px 0;}
-a.delete{background-position:-32px 0;}
-a.del2{background-position:-16px -32px;}
+a.edit:before{content:"\e601"}
+a.delete:before{content:"\e682"}
+a.del2:before{content:"\ea0d"}
 a.attr{background-position:-48px 0;}
 a.field{background-position:-48px 0;}
 a.none{background-position:right -70px;}
@@ -236,7 +275,27 @@ a.copy{background-position:-64px -48px;}
 a.end{margin-right:0;}
 a.space{background:none;cursor:default;}
 
-a.ico{background:url('../images/ico.png') left bottom no-repeat;width:16px;height:16px;display:block;cursor:pointer;float:left;margin:0 2px 0 3px;}
+a.ico {
+	width:16px;
+	height:16px;
+	display:block;
+	cursor:pointer;
+	float:left;
+	margin:0 2px 0 3px;
+	font-family:'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	font-size:12px;
+	text-transform: none;
+	line-height: 150%;
+	text-align:center;
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+a.ico:hover{text-decoration:none;color:red;}
 a.ico.comment{background-position:0 0;}
 a.ico.add{background-position:0 -16px;}
 a.ico.edit{background-position:0 -32px;}
@@ -244,9 +303,13 @@ a.ico.delete{background-position:0 -48px;}
 a.ico.copy{background-position:0 -64px;}
 a.ico.code{background-position:0 -80px;}
 a.ico.attr{background-position:0 -96px;}
-a.ico.page{background-position:0 -112px;}
+a.ico.page:before {
+  content: "\e60e";
+}
 a.ico.key{background-position:0 -144px;}
-a.ico.go{background-position:0 -176px;}
+a.ico.go:before {
+  content: "\e688";
+}
 a.ico.address{background-position:0 -192px}
 a.ico.invoice{background-position:0 -208px}
 a.ico.space{background:none;cursor:default;}
@@ -333,9 +396,10 @@ input.cate_taxis{width:65px;text-align:center;height:22px;line-height:22px;margi
 
 /* 网站内容维护 */
 ul.project{list-style:none;margin:0;padding:0;position: relative;}
-ul.project li{float:left;width:100px;height:80px;cursor:pointer;margin:10px 0 0 10px;position:relative;z-index:2;padding-top:2px;border:1px solid #fff;border-radius:5px;}
-ul.project li.hover{background:#EBEBEB;border:1px solid #EBEBEB;}
-ul.project li div.img{width:48px;height:52px;margin:0 0 0 26px;position:relative;}
+ul.project li{float:left;cursor:pointer;margin:20px 20px 0 20px;padding:10px 20px;position:relative;z-index:2;border:1px solid #fff;border-radius:5px;text-align:center;}
+ul.project li:hover{background:#EFEFEF;border:1px solid #ECECEC;}
+ul.project li div.img{margin:0;position:relative;}
+ul.project li div.img img{width:48px;}
 ul.project li div.txt{text-align:center;overflow:hidden;height:24px;line-height:24px;}
 em.toptip{float:right;display:block;min-width:16px;height:16px;border-radius:8px;background:red;color:#fff;text-align:center;line-height:16px;font-style:normal;}
 ul.project li em{position:absolute;top:5px;right:5px;}
@@ -586,7 +650,7 @@ table.ext_upload td.ext_res div.ext_action input.ext_btn{
 	margin:0 0 0 3px;
 	padding:1px 6px;
 	text-align:center;
-	background:#ECECEC url("../images/btn_bg.jpg") center center repeat-x;
+	background:#ECECEC;
 	color:#000;
 }
 table.ext_upload td.ext_res div.ext_action input.ext_submit{
@@ -594,7 +658,7 @@ table.ext_upload td.ext_res div.ext_action input.ext_submit{
 	margin:0 0 0 3px;
 	padding:1px 6px;
 	text-align:center;
-	background:#ECECEC url("../images/btn_bg2.jpg") center center repeat-x;
+	background:#ECECEC;
 	color:#000;
 }
 table.ext_upload td.ext_res div.ext_action input.ext_taxis{
@@ -614,7 +678,7 @@ table.ext_upload input.submit,input.button,input.btn,input.ext_btn{
 	padding:0 6px;
 	line-height:23px;
 	text-align:center;
-	background:#ECECEC url("../images/btn_bg.jpg") center center repeat-x;
+	background:#ECECEC;
 	color:#000;
 }
 table.ext_upload input.submit{color:darkred;font-weight:bold;}

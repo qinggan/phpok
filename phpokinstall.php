@@ -12,7 +12,8 @@ error_reporting(E_ALL ^ E_NOTICE);
 define('PHPOK_SET',true);
 define("ROOT",str_replace("\\","/",dirname(__FILE__))."/");
 define('DIR_CONFIG',ROOT.'_config/');
-define('DIR_CACHE',ROOT.'data/cache/');
+define('DIR_CACHE',ROOT.'_cache/');
+define('DIR_DATA',ROOT.'_data/');
 if(file_exists(ROOT.'version.php')){
 	include(ROOT.'version.php');
 }
@@ -252,21 +253,20 @@ class install
 			$status = false;
 		}
 		echo '<tr><td class="lft">文件：_config/db.ini.php</td><td>写入</td><td>'.$info.'</td></tr>';
-		//data/
-		touch(ROOT.'data/'.$tmpfile);
+		//_data/
+		touch(DIR_DATA.$tmpfile);
 		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(ROOT.'data/'.$tmpfile)){
+		if(!file_exists(DIR_DATA.$tmpfile)){
 			$dir_info = '<span class="red">不可写</span>';
 			$status = false;
 		}else{
-			if(!is_readable(ROOT.'data/'.$tmpfile)){
+			if(!is_readable(DIR_DATA.$tmpfile)){
 				$dir_info = '<span class="red">不可读</span>';
 				$status = false;
 			}
-			unlink(ROOT.'data/'.$tmpfile);
+			unlink(DIR_DATA.$tmpfile);
 		}
-		echo '<tr><td class="lft">目录：data/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		//data/cache/
+		echo '<tr><td class="lft">目录：_data/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
 		touch(DIR_CACHE.$tmpfile);
 		$dir_info = '<span class="darkblue">读写</span>';
 		if(!file_exists(DIR_CACHE.$tmpfile)){
@@ -279,63 +279,63 @@ class install
 			}
 			unlink(DIR_CACHE.$tmpfile);
 		}
-		echo '<tr><td class="lft">目录：data/cache/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		//data/session/
-		touch(ROOT.'data/session/'.$tmpfile);
+		echo '<tr><td class="lft">目录：_cache/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
+		//_data/session/
+		touch(DIR_DATA.'session/'.$tmpfile);
 		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(ROOT.'data/session/'.$tmpfile)){
+		if(!file_exists(DIR_DATA.'session/'.$tmpfile)){
 			$dir_info = '<span class="red">不可写</span>';
 			$status = false;
 		}else{
-			if(!is_readable(ROOT.'data/session/'.$tmpfile)){
+			if(!is_readable(DIR_DATA.'session/'.$tmpfile)){
 				$dir_info = '<span class="red">不可读</span>';
 				$status = false;
 			}
-			unlink(ROOT.'data/session/'.$tmpfile);
+			unlink(DIR_DATA.'session/'.$tmpfile);
 		}
-		echo '<tr><td class="lft">目录：data/session/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		//data/tpl_admin/
-		touch(ROOT.'data/tpl_admin/'.$tmpfile);
+		echo '<tr><td class="lft">目录：_data/session/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
+		//_data/tpl_admin/
+		touch(DIR_DATA.'tpl_admin/'.$tmpfile);
 		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(ROOT.'data/tpl_admin/'.$tmpfile)){
+		if(!file_exists(DIR_DATA.'tpl_admin/'.$tmpfile)){
 			$dir_info = '<span class="red">不可写</span>';
 			$status = false;
 		}else{
-			if(!is_readable(ROOT.'data/tpl_admin/'.$tmpfile)){
+			if(!is_readable(DIR_DATA.'tpl_admin/'.$tmpfile)){
 				$dir_info = '<span class="red">不可读</span>';
 				$status = false;
 			}
-			unlink(ROOT.'data/tpl_admin/'.$tmpfile);
+			unlink(DIR_DATA.'tpl_admin/'.$tmpfile);
 		}
-		echo '<tr><td class="lft">目录：data/tpl_admin/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		//data/tpl_www/
-		touch(ROOT.'data/tpl_www/'.$tmpfile);
+		echo '<tr><td class="lft">目录：_data/tpl_admin/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
+		//_data/tpl_www/
+		touch(DIR_DATA.'tpl_www/'.$tmpfile);
 		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(ROOT.'data/tpl_www/'.$tmpfile)){
+		if(!file_exists(DIR_DATA.'tpl_www/'.$tmpfile)){
 			$dir_info = '<span class="red">不可写</span>';
 			$status = false;
 		}else{
-			if(!is_readable(ROOT.'data/tpl_www/'.$tmpfile)){
+			if(!is_readable(DIR_DATA.'tpl_www/'.$tmpfile)){
 				$dir_info = '<span class="red">不可读</span>';
 				$status = false;
 			}
-			unlink(ROOT.'data/tpl_www/'.$tmpfile);
+			unlink(DIR_DATA.'tpl_www/'.$tmpfile);
 		}
-		echo '<tr><td class="lft">目录：data/tpl_www/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		//data/update/
-		touch(ROOT.'data/update/'.$tmpfile);
+		echo '<tr><td class="lft">目录：_data/tpl_www/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
+		//_data/update/
+		touch(DIR_DATA.'update/'.$tmpfile);
 		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(ROOT.'data/update/'.$tmpfile)){
+		if(!file_exists(DIR_DATA.'update/'.$tmpfile)){
 			$dir_info = '<span class="red">不可写</span>';
 			$status = false;
 		}else{
-			if(!is_readable(ROOT.'data/update/'.$tmpfile)){
+			if(!is_readable(DIR_DATA.'update/'.$tmpfile)){
 				$dir_info = '<span class="red">不可读</span>';
 				$status = false;
 			}
-			unlink(ROOT.'data/update/'.$tmpfile);
+			unlink(DIR_DATA.'update/'.$tmpfile);
 		}
-		echo '<tr><td class="lft">目录：data/update/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
+		echo '<tr><td class="lft">目录：_data/update/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
 		touch(ROOT.'res/'.$tmpfile);
 		$dir_info = '<span class="darkblue">读写</span>';
 		if(!file_exists(ROOT.'res/'.$tmpfile)){
@@ -894,7 +894,7 @@ EOT;
 
 }
 
-if(file_exists(ROOT.'data/install.lock')){
+if(file_exists(DIR_DATA.'install.lock')){
 	error('已安装过，不能重复安装');
 }
 
@@ -1000,7 +1000,7 @@ if($step == 'save'){
 	$info['email'] = $install->get('admin_email',false);
 	$info['pass'] = $install->get('admin_newpass',false);
 	$info['demo'] = $install->get('demo','int');
-	$handle = fopen(ROOT.'data/install.lock.php','wb');
+	$handle = fopen(DIR_DATA.'install.lock.php','wb');
 	fwrite($handle,'<?php'."\n");
 	foreach($info as $key=>$value){
 		$value = str_replace('"','',$value);
@@ -1018,7 +1018,7 @@ if($step == 'ajax_importsql'){
 	include(ROOT.'framework/engine/db/'.$file.'.php');
 	$dbname = 'db_'.$file;
 	$db = new $dbname($config['db']);
-	$sqlist = $install->lib('file')->ls(ROOT.'data/install/');
+	$sqlist = $install->lib('file')->ls(DIR_DATA.'install/');
 	if(!$sqlist){
 		error("安装SQL文件不存在，请检查");
 	}
@@ -1056,9 +1056,9 @@ if($step == 'ajax_initdata'){
 	$dbname = 'db_'.$file;
 	$db = new $dbname($config['db']);
 	//安装测试数据
-	$file = ROOT."data/install.lock.php";
+	$file = DIR_DATA."install.lock.php";
 	if(!file_exists($file)){
-		exit("配置文件data/install.lock.php不存在");
+		exit("配置文件 _data/install.lock.php 不存在");
 	}
 	include($file);
 	//更新站点信息
@@ -1080,7 +1080,7 @@ if($step == 'ajax_initdata'){
 				}
 			}
 		}
-		$string  = 'module,module_fields,list,list_cate,list_biz,list_attr,reply,project,plugins,res,res_ext,tag,tag_stat,phpok,ext,extc,all,cate,user,user_ext,user_relation,';
+		$string  = 'module,fields,list,list_cate,list_biz,list_attr,reply,project,plugins,res,res_ext,tag,tag_stat,phpok,ext,extc,all,cate,user,user_ext,user_relation,';
 		$string .= 'wealth_info,wealth_log,session,payment_log,order_product,order_price,order_payment,order_log,order_invoice,order_express,order_address,order,log,fav,express,';
 		$string .= 'cart,cart_product';
 		$tmplist = explode(",",$string);
@@ -1108,7 +1108,7 @@ if($step == 'ajax_iadmin'){
 	include(ROOT.'framework/engine/db/'.$file.'.php');
 	$dbname = 'db_'.$file;
 	$db = new $dbname($config['db']);
-	$file = ROOT."data/install.lock.php";
+	$file = DIR_DATA."install.lock.php";
 	if(file_exists($file)){
 		include($file);
 		$sql = "TRUNCATE ".$db->prefix."adm";
@@ -1123,11 +1123,11 @@ if($step == 'ajax_iadmin'){
 	exit('ok');
 }
 if($step == 'ajax_clearcache'){
-	unlink(ROOT."data/install.lock.php");
+	unlink(DIR_DATA."install.lock.php");
 	exit('ok');
 }
 if($step == 'ajax_endok'){
-	touch(ROOT."data/install.lock");
+	touch(DIR_DATA."install.lock");
 	exit('ok');
 }
 ?>

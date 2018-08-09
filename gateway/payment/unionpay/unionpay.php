@@ -1,12 +1,14 @@
 <?php
-/*****************************************************************************************
-	文件： payment/unionpay.php
-	备注： 银联支付
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年08月28日 10时28分
-*****************************************************************************************/
+/**
+ * 银联支付
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年04月02日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class unionpay_lib
 {
@@ -17,6 +19,7 @@ class unionpay_lib
 	private $cert_file;
 	private $cert_pwd = '0000';
 	private $verify_file;
+	
 	public function __construct()
 	{
 		$this->form_params = array(
@@ -33,6 +36,11 @@ class unionpay_lib
 		);
 	}
 
+	/**
+	 * 定义自定义参数
+	 * @参数 $id 参数名称
+	 * @参数 $val 参数值
+	**/
 	public function form_param($id='',$val='')
 	{
 		$array = array('certId','frontUrl','backUrl','channelType','merId','orderId','txnTime','txnAmt','reqReserved','signature');
@@ -48,7 +56,15 @@ class unionpay_lib
 		$this->form_params[$id] = $val;
 	}
 
-	public function param($id,$val='')
+	/**
+	 * 返回参数
+	**/
+	public function params()
+	{
+		return $this->form_params;
+	}
+
+	public function param($id='',$val='')
 	{
 		$this->param[$id] = $val;
 	}
@@ -111,12 +127,12 @@ class unionpay_lib
 		$html .= '<head>'."\n";
 		$html .= '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'."\n";
 		$html .= '</head>'."\n";
-		$html .= '<body  onload="javascript:document.pay_form.submit();">'."\n";
+		$html .= '<body onload="javascript:document.pay_form.submit();">'."\n";
 		$html .= '<form id="pay_form" name="pay_form" action="'.$this->param['form_url'].'" method="post">'."\n";
 		foreach($this->form_params as $key=>$value){
 			$html .= '<input type="hidden" name="'.$key.'" value="'.$value.'" />'."\n";
 		}
-		$html .= '<input type="submit" type="hidden" />'."\n".'</form>'."\n";
+		$html .= '<input type="submit" type="submit" />'."\n".'</form>'."\n";
 		$html .= '</body>'."\n".'</html>';
 		return $html;
 	}
@@ -195,4 +211,3 @@ class unionpay_lib
 		return $cert_id;
 	}
 }
-?>

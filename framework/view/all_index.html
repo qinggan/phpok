@@ -1,51 +1,47 @@
-<!-- inc:head -->
+<!-- include tpl=head -->
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#project li").each(function(i){
 		$(this).click(function(){
 			var url = $(this).attr("href");
-			if(url){
-				$.phpok.go(url);
-			}else{
-				alert("未指定动作！");
-				return false;
+			var txt = $(this).text();
+			if(txt == '' || $.trim(txt) == ''){
+				txt = $(this).attr('title');
 			}
+			if(url){
+				$.win(txt,url);
+				return true;
+			}
+			return false;
 		});
 	});
 });
 </script>
-<div class="tips clearfix">
-	<!-- if $popedom.gset -->
-	<div class="action"><a href="{echo admin_url('all','gset')}">添加</a></div>
-	<!-- /if -->
-	您当前的位置：全局维护，调试代码 <span class="red">{</span>debug $config<span class="red">}</span>，此处信息更新后，需要手动清空缓存后才能生效
-</div>
 <ul class="project" id="project">
 	<!-- if $popedom.site -->
-	<li title="配置网站信息，包括网址域名，布全局关键字等" href="{echo admin_url('all','setting')}">
+	<li title="{lang配置网站信息，包括网址域名，布全局关键字等}" href="{url ctrl=all func=setting/}">
 		<div class="img"><img src="images/ico/setting.png" class="ie6png"/></div>
-		<div class="txt">网站信息</div>
+		<div class="txt">{lang网站信息}</div>
 	</li>
 	<!-- /if -->
 	<!-- if $popedom.domain -->
-	<li title="网站可以绑定的域名" href="{echo admin_url('all','domain')}">
+	<li title="{lang网站可以绑定的域名}" href="{url ctrl=all func=domain/}">
 		<div class="img"><img src="images/ico/alias.png" class="ie6png" /></div>
-		<div class="txt">网站域名</div>
-	</li>
-	<!-- /if -->
-	<!-- if $rs.email_server && $rs.email_account && $rs.email_pass -->
-	<li title="测试Email邮件发送" href="{echo admin_url('all','email')}">
-		<div class="img"><img src="images/ico/email.png" class="ie6png" /></div>
-		<div class="txt">测试邮件</div>
+		<div class="txt">{lang网站域名}</div>
 	</li>
 	<!-- /if -->
 	<!-- if $popedom.gset || $popedom.set -->
-	<!-- foreach($rslist AS $key=>$value) -->
-	<li title="{$value.title}" href="{echo admin_url('all','set')}&id={$value.id}">
+	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	<li title="{$value.title}" href="{url ctrl=all func=set id=$value.id/}">
 		<div class="img"><img src="{$value.ico}" class="ie6png" /></div>
-		<div class="txt">{$value.title}</div>
+		<div class="txt">{func P_Lang $value.title}</div>
 	</li>
-	<!-- /foreach -->
+	<!-- /loop -->
+	<!-- /if -->
+	<!-- if $popedom.gset -->
+	<li title="{lang添加全局}" onclick="$.admin_all.group()" style="border: 1px dashed #cacaca;padding:20px;">
+		<div class="img"><img src="images/plus.png" class="ie6png" /></div>
+	</li>
 	<!-- /if -->
 </ul>
 <div class="clear"></div>

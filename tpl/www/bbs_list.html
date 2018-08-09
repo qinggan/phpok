@@ -2,44 +2,45 @@
 <!-- include tpl=head title=$title menutitle=$page_rs.title -->
 
 <!-- include file=bbs_list.php -->
-<div class="wrap mb10">
-	<ol class="breadcrumb">
-		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
-		<li><a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a></li>
-		<!-- if $cate_rs -->
-		<li><a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a></li>
-		<!-- /if -->
-	</ol>
-	<div class="bbsbox table_lc" style="border:0;">
-		<table width="100%" cellspacing="0" cellpadding="0">
-		<tr>
-			<th>标题</th>
-			<th>发帖人</th>
-			<th class="width84">查看次数</th>
-			<th class="width95">最后操作时间</th>
-		</tr>
-		<!-- loop from=$rslist key=$key value=$value -->
-		<tr>
-			<td class="width715"><em class="bbs-icon {$value._icon}"></em><a href="{$value.url}">{$value.title}</a></td>
-			<td class="width84">{$value._author}</td>
-			<td class="width84">{$value.hits}</td>
-			<td class="width95">{$value._lastdate}</td>
-		</tr>
-		<!-- /loop -->
-		</table>
-	</div>
-	<table width="100%">
-	<tr>
-		<td>
-			<!-- if $session.user_id -->
-			<input type="button" value="发布新主题" onclick="$.phpok.go('{url ctrl=post id=$page_rs.identifier cateid=$cate_rs.id/}')" class="button blue" />
-			<!-- else -->
-			<a href="{url ctrl=login _back=$backurl/}" class="red">仅限会员才有发布权限，请先登录或注册<a>
+<div class="main">
+	<!-- if $cate_rs.banner || $page_rs.banner -->
+	<div class="banner"><img src="{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}" alt="{$title}" /></div>
+	<!-- /if -->
+	<!-- include tpl=block/breadcrumb -->
+	<table class="am-table am-table-bordered am-table-striped am-table-hover" style="margin-bottom:0;">
+		<thead>
+			<tr>
+				<th>论坛主题</th>
+				<th class="am-text-center">发帖人</th>
+				<th class="am-text-center">点击数</th>
+				<th class="am-text-center">时间</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- loop from=$rslist key=$key value=$value -->
+			<tr>
+				<td><em class="{$value._icon} am-icon-fw"></em><a href="{$value.url}">{$value.title}</a></td>
+				<td class="am-text-center">{$value._author}</td>
+				<td class="am-text-center">{$value.hits}</td>
+				<td class="am-text-center">{$value._lastdate}</td>
+			</tr>
+			<!-- /loop -->
+			<!-- if !$rslist -->
+			<tr>
+				<td colspan="4"><div style="padding:30px;text-align: center;">暂无主题</div></td>
 			<!-- /if -->
-		</td>
-		<td><!-- include tpl=block_pagelist --></td>
-	</tr>
+		</tbody>
 	</table>
+	<div class="am-g am-g-collapse">
+		<div class="am-u-sm-3" style="margin-top:1.5rem;">
+			<!-- if $session.user_id -->
+			<a class="am-btn am-btn-primary" href="{url ctrl=post id=$page_rs.identifier cateid=$cate_rs.id/}">发布新主题</a>
+			<!-- else -->
+			<a class="am-btn am-btn-danger"  href="{url ctrl=login _back=$cate_rs.url/}" class="red">仅限会员才有发布权限，请先登录或注册</a>
+			<!-- /if -->
+		</div>
+		<div class="am-u-sm-9"><!-- include tpl=block/pagelist --></div>
+	</div>
 </div>
 
 <!-- include tpl=foot -->

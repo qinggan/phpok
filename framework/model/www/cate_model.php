@@ -1,16 +1,19 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/model/www/cate.php
-	备注： 前端分类读取
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2014年11月05日 10时47分
-*****************************************************************************************/
+/**
+ * 前端分类读取
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年02月04日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class cate_model extends cate_model_base
 {
-	function __construct()
+	private $tmpdata = array();
+	public function __construct()
 	{
 		parent::__construct();
 	}
@@ -74,6 +77,10 @@ class cate_model extends cate_model_base
 			$siteid = $this->site_id;
 		}
 		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE site_id='".$siteid."' AND status=1 ORDER BY taxis ASC,id DESC";
+		$cache_id = $this->cache->id('www'.$sql);
+		if($this->tmpdata && $this->tmpdata[$cache_id]){
+			return $this->tmpdata[$cache_id];
+		}
 		$rslist = $this->db->get_all($sql,'id');
 		if(!$rslist){
 			return false;
@@ -88,6 +95,7 @@ class cate_model extends cate_model_base
 				$rslist[$key] = $value;
 			}
 		}
+		$this->tmpdata[$cache_id] = $rslist;
 		return $rslist;
 	}
 

@@ -74,10 +74,11 @@ class cart_model_base extends phpok_model
 	/**
 	 * 取得购物车信息
 	 * @参数 $cart_id 购物车ID，留空使用系统的$this->_id
+	 * @参数 $condition fixed 条件查询，当为数组时表示多个ID，当为数字时表示单个ID
 	 * @返回 false 或购物车里的产品信息
 	 * @更新时间 2016年08月19日
 	**/
-	public function get_all($cart_id='')
+	public function get_all($cart_id='',$condition='')
 	{
 		if(!$cart_id){
 			$cart_id = $this->_id;
@@ -85,12 +86,23 @@ class cart_model_base extends phpok_model
 				return false;
 			}
 		}
+		if($condition && is_numeric($condition)){
+			$condition = "id='".$condition."'";
+		}
+		if($condition && is_array($condition)){
+			if($condition){
+				$condition = "id IN(".implode(",",$condition).")";
+			}
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."cart_product WHERE cart_id='".$cart_id."'";
+		if($condition && is_string($condition)){
+			$sql .= " AND ".$condition;
+		}
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist){
 			return false;
 		}
-		foreach($rslist AS $key=>$value){
+		foreach($rslist as $key=>$value){
 			if($value['ext']){
 				$value['_attrlist'] = $this->product_ext_to_array($value['ext'],$value['tid']);
 				$rslist[$key] = $value;
@@ -174,9 +186,22 @@ class cart_model_base extends phpok_model
 	/**
 	 * 删除购物车信息
 	 * @参数 $cart_id 购物车ID
+	 * @参数 $ids 要删除的产品ID，数组
 	**/
-	public function delete($cart_id)
+	public function delete($cart_id,$ids='')
 	{
+		$condition = '';
+		if($ids && is_numeric($ids)){
+			$condition = "id='".$ids."'";
+		}
+		if($ids && is_array($ids)){
+			$condition = "id IN(".implode(",",$ids).")";
+		}
+		if($condition){
+			$sql = "DELETE FROM ".$this->db->prefix."cart_product WHERE cart_id='".$cart_id."' AND ".$condition;
+			$this->db->query($sql);
+			return true;
+		}
 		$sql = "DELETE FROM ".$this->db->prefix."cart WHERE id='".$cart_id."'";
 		$this->db->query($sql);
 		$sql = "DELETE FROM ".$this->db->prefix."cart_product WHERE cart_id='".$cart_id."'";

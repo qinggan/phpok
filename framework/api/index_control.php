@@ -23,6 +23,27 @@ class index_control extends phpok_control
 		$this->json(true);
 	}
 
+	public function site_f()
+	{
+		$this->config('is_ajax',true);
+		if(!$this->site['api_code']){
+			$this->error(P_Lang("系统未启用接口功能"));
+		}
+		unset($this->site['api_code']);
+		$id = $this->get('id');
+		if(!$id){
+			$id = 'title';
+		}
+		$data = array();
+		$list = explode(",",$id);
+		foreach($list as $key=>$value){
+			if($this->site[$value]){
+				$data[$value] = $this->site[$value];
+			}
+		}
+		$this->success($data);
+	}
+
 	public function token_f()
 	{
 		$this->config('is_ajax',true);
@@ -156,5 +177,14 @@ class index_control extends phpok_control
 			$this->json($info,true);
 		}
 		$this->json($list,true);
+	}
+
+	public function qrcode_f()
+	{
+		$data = $this->get('data');
+		if(!$data){
+			$this->error(P_Lang('未指定生成的二维码数据'));
+		}
+		$this->lib('qrcode')->png($data);
 	}
 }

@@ -1,84 +1,49 @@
-<!-- include tpl=head title="收货地址 - 个人中心" -->
-<script type="text/javascript">
-function address_default(id)
-{
-	var url = api_url('usercp','address_default','id='+id);
-	$.phpok.json(url,function(){
-		$.phpok.reload();
-	});
-}
-function address_delete(id)
-{
-	$.dialog.confirm('确定要删除这个地址吗？',function(){
-		var url = api_url('usercp','address_delete','id='+id);
-		$.phpok.json(url,function(){
-			$.phpok.reload();
-		})
-	})
-}
-function address_setting(id)
-{
-	var url = get_url('usercp','address_setting');
-	if(id>0){
-		url += "&id="+id;
-		var title = '{lang编辑地址}';
-	}else{
-		var title = '{lang添加地址}';
-	}
-	$.dialog.open(url,{
-		'title':title,
-		'lock':true,
-		'width':'600px',
-		'height':'310px',
-		'ok':function(){
-			var iframe = this.iframe.contentWindow;
-			if (!iframe.document.body) {
-				alert('iframe还没加载完毕呢');
-				return false;
-			};
-			iframe.save();
-			return false;
-		},'okVal':title,
-		'cancel':function(){
-			return true;
-		}
-	});
-}
-</script>
-<div class="cp">
-	<div class="left"><!-- include tpl=block_usercp --></div>
+<!-- php:$title = "收货地址 - 会员中心" --><!-- include tpl=head title=$title -->
+<div class="main">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="left"><!-- include tpl=block/usercp_nav --></div>
 	<div class="right">
-		<div class="pfw mbottom10">
-			<h3>收货地址
-				<!-- if $total<30 -->
-				<a href="javascript:address_setting(0);void(0)" class="more">添加地址</a>
-				<!-- /if -->
-			</h3>
-			<table class="list" width="100%">
-			<tr>
-				<th width="80px">收件人</th>
-				<th class="lft">地址</th>
-				<th>联系方式</th>
-				<th>&nbsp;</th>
-			</tr>
-			<!-- loop from=$rslist key=$key value=$value -->
-			<tr{if $rslist_id.num%2 == ''} class="o-dark"{else} class="o-white"{/if}>
-				<td height="26" class="center">{$value.fullname}</td>
-				<td>{$value.province}<!-- if $value.province != $value.city -->{$value.city}<!-- /if -->{$value.county}-{$value.address}</td>
-				<td class="center">{$value.mobile}<!-- if $value.mobile && $value.tel --> / <!-- /if -->{$value.tel}</td>
-				<td align="center">
-					<a href="javascript:address_setting('{$value.id}');void(0);">编辑</a>
-					<a href="javascript:address_delete('{$value.id}');void(0);">删除</a>
-					<!-- if !$value.is_default -->
-					<a href="javascript:address_default('{$value.id}');void(0);">设为默认</a>
-					<!-- else -->
-					<span class="red">默认地址</span>
-					<!-- /if -->
-				</td>
-			</tr>
-			<!-- /loop -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">收货地址</div>
+			<table class="am-table am-table-centered am-table-hover ">
+				<thead>
+					<tr>
+						<th colspan="2">收件人</th>
+						<th class="am-text-left">地址</th>
+						<th>联系方式</th>
+						<th style="width:200px">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- loop from=$rslist key=$key value=$value -->
+					<tr>
+						<td>#{$value.id}</td>
+						<td>{$value.fullname}</td>
+						<td class="am-text-left">{$value.province}<!-- if $value.province != $value.city -->{$value.city}<!-- /if -->{$value.county}-{$value.address}</td>
+						<td>{$value.mobile}<!-- if $value.mobile && $value.tel --> / <!-- /if -->{$value.tel}</td>
+						<td>
+							<div class="am-btn-group">
+								<button type="button" onclick="$.address.edit('{$value.id}')" class="am-btn am-btn-default am-btn-xs">编辑</button>
+								<button type="button" onclick="$.address.del('{$value.id}')" class="am-btn am-btn-danger am-btn-xs">删除</button>
+								<!-- if !$value.is_default -->
+								<button type="button" onclick="$.address.set_default('{$value.id}')" class="am-btn am-btn-primary am-btn-xs">设为默认</button>
+								<!-- else -->
+								<button type="button" class="am-btn am-btn-default am-btn-xs" disabled>默认地址</button>
+								<!-- /if -->
+							</div>
+						</td>
+					</tr>
+					<!-- /loop -->
+				</tbody>
 			</table>
 		</div>
+		
+		
+		<!-- if $total < 30 -->
+		<div class="am-panel-bd am-text-center">
+			<button type="button" onclick="$.address.add()" class="am-btn am-btn-primary">添加地址</button>
+		</div>
+		<!-- /if -->
 	</div>
 	<div class="clear"></div>
 </div>

@@ -35,10 +35,42 @@
 			$.dialog.open(get_url("me","setting"),{
 				"title":p_lang('修改管理员信息'),
 				"width":600,
-				"height":500,
+				"height":260,
 				"lock":true,
 				'move':false,
-				'is_max':false
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.$.admin_me.setting_submit();
+					return false;
+				},
+				'okVal':p_lang('提交保存'),
+				'cancel':true
+			});
+		},
+		pass:function()
+		{
+			
+			$.dialog.open(get_url("me","pass"),{
+				"title":p_lang('管理员密码修改'),
+				"width":500,
+				"height":240,
+				"lock":true,
+				'move':false,
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.$.admin_me.pass_submit();
+					return false;
+				},
+				'okVal':p_lang('提交保存'),
+				'cancel':true
 			});
 		},
 		logout:function()
@@ -114,73 +146,25 @@
 	}
 })(jQuery);
 
-//添加站点信息
-function add_site()
-{
-	$.admin_index.site();
-}
-
 
 $(document).ready(function(){
-	$.admin_index.pendding();
-	//判断是否显示
-	$(window).click(function(e){
-		var e = e || window.event;
-		var obj = e.srcElement || e.target;
-		if(obj.id == 'top-menu-a'){
-			var is_hidden = $("#top-menu").is(":hidden");
-			if(is_hidden){
-				$('#top-menu').show();
-			}else{
-				$('#top-menu').hide();
-				$(".second_ul").hide();
-			}
-		}else{
-			$('#top-menu').hide();
-			$(".second_ul").hide();
-		}
-	});
-	$("li[name=subtree]").mouseover(function(){
-		$(".second_ul").hide();
-		$(".second_ul",this).show();
-	});
-	$(document).keydown(function(e){
-		if (e.keyCode == 8){
+	//监听事件
+	window.addEventListener("message",function(e){
+		if(e.origin != window.location.origin){
 			return false;
 		}
-	});
-	//自定义右键
-	var r_menu = [[{
-		'text':p_lang('刷新网页'),
-		'func':function(){
-			$.phpok.reload();
+		if(e.data == 'close'){
+			$('.aui_close').click();
+			return true;
 		}
-	},{
-		'text': p_lang('清空缓存'),
-		'func': function() {
-			$.admin_index.clear();
-		}    
-	},{
-		'text':p_lang('修改我的信息'),
-		'func':function(){
-			$.admin_index.me();
-		}
-	},{
-		'text': p_lang('显示桌面'),
-		'func': function() {
-			$.desktop.tohome();
-		}    
-	}],[{
-		'text':p_lang('关于PHPOK'),
-		'func':function(){
-			$.dialog({
-				'title':p_lang('关于PHPOK'),
-				'lock':true,
-				'drag':false,
-				'fixed':true,
-				'content':'PHPOK企业站系统采用PHP+MySQL架构，基于LGPL协议开源并且免费。<br />本程序支持分类，项目，站点信息，模块等数据自定义<br />程序无任何内置广告代码<br />在使用过程序中，有任何问题，均可以登录 <a href="http://www.phpok.com/help.html" target="_blank" class="red">www.phpok.com/help.html</a> 查阅<br />如果您认可并打算捐助我们，点这里查看我们的收款账号：<a href="http://www.phpok.com/pay.html" target="_blank"style="color:red;">www.phpok.com/pay.html</a>'
-			});
-		}
-	}]];
-	$(window).smartMenu(r_menu,{'textLimit':8});
+	}, false);
+	
+
+	$.admin_index.pendding();
+	layui.config({
+	  	base: webroot+'static/admin/' //静态资源所在路径
+	}).extend({
+		index: 'lib/index' //主入口模块
+	}).use('index');
 });
+

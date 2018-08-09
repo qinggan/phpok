@@ -15,8 +15,12 @@
 			</li>
 			<!-- /if -->
 		<!-- /loop -->
+		<!-- if $total_page > 5 -->
+		
+		
 		<li><input type="number" name="go_to_page" id="go_to_page" value="{func G pageid}" class="short" min="0" max="{$total_page}"  /></li>
 		<li><input type="button" value="GO" onclick="go_to_page_action()" /></li>
+		<!-- /if -->
 	</ul>
 </div>
 <!-- /if -->

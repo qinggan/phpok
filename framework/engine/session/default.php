@@ -17,7 +17,9 @@ class session_default extends session
 	{
 		parent::__construct($config);
 		$this->config($config);
-		$this->save_path($this->path_dir);
+		if($this->path_dir){
+			$this->save_path($this->path_dir);
+		}
 		$this->start();
 	}
 

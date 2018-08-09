@@ -27,7 +27,18 @@ class usercp_control extends phpok_control
 	//会员个人中心
 	public function index_f()
 	{
-		$this->assign('rs',$this->user);
+		$user = $this->model('user')->get_one($this->session->val('user_id'));
+		$this->assign('rs',$user);
+		$this->assign('user',$user);
+
+		//读取最新下单信息
+		$condition = "user_id='".$this->session->val('user_id')."'";
+		$rslist = $this->model('order')->get_list($condition,0,10);
+		$this->assign('rslist',$rslist);
+		//读取会员上传的最新附件
+		$reslist = $this->model('res')->get_list($condition,0,10);
+		$this->assign('reslist',$reslist);
+		//
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
 			$tplfile = 'usercp';
@@ -38,10 +49,10 @@ class usercp_control extends phpok_control
 	//修改个人资料
 	public function info_f()
 	{
-		$rs = $this->user;
+		$rs = $this->model('user')->get_one($this->session->val('user_id'));
 		$group_rs = $this->group_rs;
 		//读取扩展属性
-		$condition = 'is_edit=1';
+		$condition = 'is_front=1';
 		if($group_rs['fields']){
 			$tmp = explode(",",$group_rs['fields']);
 			$condition .= " AND identifier IN('".(implode("','",$tmp))."')";
@@ -79,6 +90,8 @@ class usercp_control extends phpok_control
 	//修改密码
 	public function passwd_f()
 	{
+		$rs = $this->model('user')->get_one($this->session->val('user_id'));
+		$this->assign('rs',$rs);
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
 			$tplfile = 'usercp_passwd';
@@ -244,6 +257,9 @@ class usercp_control extends phpok_control
 		$this->view($tplfile);
 	}
 
+	/**
+	 * 添加或是修改地址信息
+	**/
 	public function address_setting_f()
 	{
 		$id = $this->get('id','int');
@@ -262,32 +278,6 @@ class usercp_control extends phpok_control
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,'address2');
 		if(!$tplfile){
 			$tplfile = 'usercp_address_setting';
-		}
-		$this->view($tplfile);
-	}
-
-	public function fav_f()
-	{
-		$total = $this->model('fav')->get_total($_SESSION['user_id']);
-		if($total){
-			$pageurl = $this->url('usercp','fav');
-			$pageid = $this->get($this->config['pageid'],'int');
-			if(!$pageid){
-				$pageid = 1;
-			}
-			$psize = $this->config['psize'] ? $this->config['psize'] : 30;
-			$offset = ($pageid-1) * $psize;
-			$rslist = $this->model('fav')->get_list($_SESSION['user_id'],$offset,$psize);
-			$this->assign('rslist',$rslist);
-			$this->assign('pageurl',$pageurl);
-			$this->assign('offset',$offset);
-			$this->assign('psize',$psize);
-			$this->assign('pageid',$pageid);
-			$this->assign('total',$total);
-		}
-		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
-		if(!$tplfile){
-			$tplfile = 'usercp_fav';
 		}
 		$this->view($tplfile);
 	}

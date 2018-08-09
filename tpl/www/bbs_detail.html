@@ -1,102 +1,118 @@
 <!-- php:$title = $rs.title.' - '.$cate_rs.title.' - '.$page_rs.title -->
 <!-- include tpl=head title=$title menutitle=$page_rs.title -->
 
-
 <!-- include file=bbs_content -->
-<div class="wrap mb10">
-	<ol class="breadcrumb">
-		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
-		<li><a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a></li>
-		<!-- if $cate_rs -->
-		<li><a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a></li>
-		<!-- /if -->
-		<li>{$rs.title}</li>
-	</ol>
-
-	<div class="bbsdetail">
-		<dl>
-			<dt><img src="{$rs.user_id.avatar ? $rs.user_id.avatar : 'images/avatar_huge.gif'}" border="0" alt="{$rs.user_id.user ? $rs.user_id.user : '访客'}" /><br />{$rs.user_id.user ? $rs.user_id.user : '访客'}</dt>
-			<dd>
-				<div class="Remarks">
-					<div class="postmessage">
-						<h3>{$rs.title}</h3>
-						{$rs.content}
+<div class="main">
+	<!-- if $cate_rs.banner || $page_rs.banner -->
+	<div class="banner"><img src="{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}" alt="{$title}" /></div>
+	<!-- /if -->
+	<!-- include tpl=block/breadcrumb -->
+	<ul class="am-comments-list">
+		<!-- if $pageid == 1 -->
+		<li class="am-comment">
+			<a href="{url ctrl=user id=$rs.user.id/}" title="查看{$rs.user.user}的主页"><img class="am-comment-avatar" alt="{$rs.user.nickname ? $rs.user.nickname : $rs.user.user}" src="{$rs.user.avatar ? $rs.user.avatar : 'images/avatar.gif'}" /></a>
+			<div class="am-comment-main">
+				<div class="am-comment-hd">
+					<div class="am-comment-meta">
+						<a href="{url ctrl=user id=$rs.user.id/}" class="am-comment-author">{$rs.user.nickname ? $rs.user.nickname : $rs.user.user}</a>于 <time>{func time_format $rs.dateline}</time> 发布主题：<b>{$rs.title}</b>
 					</div>
-					<div class="moddiv">楼主</div>
 				</div>
-				<div class="bgshuxing">
-					发帖时间：<b>{func time_format $rs.dateline}</b> | 查看数：<b>{$rs.hits}</b>
-					<!-- if $rs.replydate -->
-					| 最后回复时间：<b>{func time_format $rs.replydate}</b>
-					<!-- /if -->
-				</div>
-			</dd>
-		</dl>
-		<!-- php:$list = phpok_reply($rs.id,5) -->
-		<!-- loop from=$list.list key=$key value=$value id=listId -->
-		<dl>
-			<dt><img src="{$value.uid.avatar ? $value.uid.avatar : 'images/avatar_huge.gif'}" alt="{$value.uid.user ? $value.uid.user : '访客'}" /></dt>
-			<dd>
-				<div class="Remarks">
-					<div class="postmessage">{$value.content}</div>
-					<div class="moddiv"><span class="nickname">{$value.uid.user ? $value.uid.user :'游客'}</span>发表于{func time_format $value.addtime}</div>
-				</div>
-			</dd>
-		</dl>
-		<!-- /loop -->
-		<!-- if $list.total > 5 -->
-		<!-- php:$pagelist = phpok_page($rs.url,$list.total,$list.pageid,$list.psize,"always=1") -->
-		<div class="Pages">
-			<ul>
-				<!-- loop from=$pagelist key=$key value=$value -->
-				<li{if $value.status} class="current"{/if}><a href="{$value.url}" title="{$value.title}">{$value.title}</a></li>
-				<!-- /loop -->
-			</ul>
-		</div>
+				<div class="am-comment-bd">{$rs.content}<div class="am-fr gray">楼主</div></div>
+			</div>
+		</li>
 		<!-- /if -->
+		<!-- loop from=$comment.rslist key=$key value=$value id=tmpid -->
+		<li class="am-comment">
+			<a href="{url ctrl=user id=$value.uid.id/}" target="_blank">
+				<img src="{$value.uid.avatar}" class="am-comment-avatar" width="48" height="48" />
+			</a>
+			<div class="am-comment-main">
+				<div class="am-comment-hd">
+					<div class="am-comment-meta">
+						<a href="{url ctrl=user id=$value.uid.id/}" target="_blank" class="am-comment-author">{$value.uid.user}</a> 于 <time>{func time_format $value.addtime}</time> 回复
+					</div>
+				</div>
+				<div class="am-comment-bd">
+					{$value.content}
+					<div class="am-fr gray">{$value._layer}</div>
+				</div>
+			</div>
+		</li>
+		<!-- if $value.adm_content && $value.adm_time -->
+		<li class="am-comment am-comment-flip am-comment-highlight">
+			<img src="images/adminer.png" class="am-comment-avatar" width="48" height="48" />
+			<div class="am-comment-main">
+				<div class="am-comment-hd">
+					<div class="am-comment-meta">
+						管理员回复于<time>{func time_format $value.adm_time}</time>
+					</div>
+				</div>
+				<div class="am-comment-bd">
+					{$value.adm_content}
+				</div>
+			</div>
+		</li>
+		<!-- /if -->
+		<!-- /loop -->
 		<!-- if $session.user_id -->
-		<script type="text/javascript">
-		$(document).ready(function(){
-			$("#comment_post").submit(function(){
-				$(this).ajaxSubmit({
-					'url':api_url('comment','save','id={$rs.id}'),
-					'type':'post',
-					'dataType':'json',
-					'success':function(rs){
-						if(rs.status != 'ok')
-						{
-							alert(rs.content);
-							return false;
-						}
-						else
-						{
-							alert('您的回复已成功提交');
-							$.phpok.reload();
-							return true;
-						}
-					}
-				});
-				return false;
-			});
-		});
-		</script>
-		<dl>
-			<dt><img src="{$session.user_rs.avatar ? $session.user_rs.avatar : 'images/avatar_huge.gif'}" alt="{$session.user_name}" /></dt>
-			<dd>
-				<div class="Remarks" style="margin:0;padding:0;border:0;">
-					<form method="post" id="comment_post">
-					<textarea name="comment" id="comment" class="textarea" style="width:98%"></textarea>
-					<input name="" type="submit" class="bbsbtn hover" value="提交" />
+		
+		
+		<li class="am-comment">
+			<img src="{$comment.avatar}" class="am-comment-avatar" width="48" height="48" />
+			<div class="am-comment-main">
+				<div class="am-comment-hd">
+					<div class="am-comment-meta">
+						提交新回复<!-- if $comment.total -->，当前已有 {$comment.total} 条回复<!-- /if -->
+					</div>
+				</div>
+				<div class="am-comment-bd">
+					<form method="post" id="comment-post" class="am-form">
+						<input type="hidden" name="id" id="id" value="{$tid ? $tid : $rs.id}" />
+						<!-- if $comment.uid -->
+						<div class="am-form-group">{func form_edit comment $comment.content editor width=100%&height=150&btns[image]=1}</div>
+						<!-- else -->
+						<div class="am-form-group">
+							<textarea rows="5" name="comment" id="comment" placeholder="填写评论信息" style="resize: none;"></textarea>
+						</div>
+						<!-- /if -->
+						<!-- if $is_vcode -->
+						<div class="am-g am-form-group am-g-collapse">
+							<div class="am-u-sm-2"><input class="vcode"  type="text" name="_chkcode" id="_chkcode" placeholder="请填写验证码" /></div>
+							<div class="am-u-sm-4" style="padding-left:10px;padding-top:5px;"><img src="" border="0" align="absmiddle" id="vcode" class="hand" /></div>
+							<div class="am-u-sm-6"></div>
+						</div>
+						<script type="text/javascript">
+						$(document).ready(function(){
+							$("#vcode").phpok_vcode();
+							$("#vcode").click(function(){
+								$(this).phpok_vcode();
+							});
+						});
+						</script>
+						<!-- /if -->
+						<div>
+							<input name="" type="submit" class="am-btn am-btn-primary" value="提交" />
+						</div>
 					</form>
 				</div>
-			</dd>
-		</dl>
+			</div>
+		</li>
+		<!-- else -->
+		<li class="am-comment">
+			<img src="{$comment.avatar}" class="am-comment-avatar" width="48" height="48" />
+			<div class="am-comment-main">
+				<div class="am-comment-hd">
+					<div class="am-comment-meta">
+						提交新回复<!-- if $comment.total -->，当前已有 {$comment.total} 条回复<!-- /if -->
+					</div>
+				</div>
+				<div class="am-comment-bd">
+					<div style="padding:20px;text-align:center">请先 <a href="{url ctrl=login _back=$rs.url/}" title="会员登录">登录</a> 或 <a href="{url ctrl=register _back=$rs.url/}" title="新会员注册">注册</a></div>
+				</div>
+			</div>
+		</li>
 		<!-- /if -->
-		
-		<div class="bbspage">
-			<a href="javascript:history.go(-1);void(0);" class="bbspagebtn hover">返回上一页</a>
-			<a href="{url ctrl=post/}&id={$page_rs.identifier}&cateid={$cate_rs.id}" class="bbspagebtn hover">发布新帖</a>
-		</div>
-	</div>
+	</ul>
+	<!-- include tpl=block/pagelist pageurl=$rs.url total=$comment.total pageid=$comment.pageid psize=$comment.psize -->
 </div>
 <!-- include tpl=foot -->

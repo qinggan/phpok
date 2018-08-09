@@ -1,66 +1,119 @@
-<!-- include tpl=head -->
+<!-- php:$title = "在线付款（".$rs.sn."） - 我的订单 - 会员中心" -->
+<!-- include tpl=head title=$title -->
 <div class="main">
-<form method="post" action="{if $session.user_id}{url ctrl=payment func=create id=$rs.id/}{else}{url ctrl=payment func=create sn=$rs.sn passwd=$rs.passwd/}{/if}">
-<div class="pfw mt10">
-	<h3>订单信息</h3>
-	<div class="payment">
-		<ul>
-			<li>订单编号：{$rs.sn}</li>
-			<li>支付金额：<span class="red">{func price_format $rs.price $rs.currency_id}</span></li>
-		</ul>
-	</div>
-</div>
-<!-- if $integral -->
-<div class="pfw mt10">
-	<h3>积分抵扣</h3>
-	<div class="payment">
-		<ul>
-			<!-- loop from=$integral key=$key value=$value -->
-			<li><label>您当前的{$value.title}有<span class="red">{$value.val}</span>{$value.unit}，最多可抵现金<span class="red">{func price_format $value.price}</span>，您准备支出 <input type="text" name="integral_val[{$key}]" value="" class="price" />{$value.unit}（请填写100的整数倍数据，暂不支持小数）</label></li>
-			<!-- /loop -->
-		</ul>
-	</div>
-</div>
-<!-- /if -->
-<!-- loop from=$paylist key=$key value=$value -->
-<!-- if $value.paylist -->
-<div class="pfw mt10">
-	<h3>{$value.title}</h3>
-	<div class="payment">
-		<ul>
-			<!-- loop from=$value.paylist key=$k value=$v -->
-			<!-- if $v.wap == 0 -->
-			<li><label><input name="payment" type="radio" value="{$v.id}"{if $v.id == $config.biz_payment} checked{/if} />{$v.title}</label></li>
-			<!-- /if -->
-			<!-- /loop -->
-		</ul>
-	</div>
-</div>
-<!-- /if -->
-<!-- /loop -->
-<!-- if $balance -->
-<div class="pfw mt10">
-	<h3>余额支付</h3>
-	<div class="payment">
-		<ul>
-			<!-- loop from=$balance key=$key value=$value -->
-			<li><label><input name="payment" type="radio" value="{$value.identifier}" data-price="{$rs.price}" data-balance="{$value.price}" />您当前的{$value.title}有<span class="red">{$value.val}</span>{$value.unit}
-				<!-- if $rs.price > $value.price -->
-				，您的余额不够，请<a href="{url ctrl=payment id=$value.id/}"><b>在线充值</b></a>
+	<!-- include tpl=block/breadcrumb -->
+	<div class="am-panel-group">
+		<form method="post" class="am-form" action="{if $session.user_id}{url ctrl=payment func=create id=$rs.id/}{else}{url ctrl=payment func=create sn=$rs.sn passwd=$rs.passwd/}{/if}">
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">订单信息</div>
+			<ul class="am-list am-list-static">
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">订单编号</div>
+						<div class="am-u-sm-8">{$rs.sn}</div>
+					</div>
+				</li>
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">订单金额</div>
+						<div class="am-u-sm-8 am-text-primary">{func price_format $rs.price $rs.currency_id}</div>
+					</div>
+				</li>
+				<!-- if $price_paid -->
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">已付款</div>
+						<div class="am-u-sm-8 am-text-primary">{func price_format $price_paid $rs.currency_id}</div>
+					</div>
+				</li>
 				<!-- /if -->
-			</label></li>
-			<!-- /loop -->
-		</ul>
+				<!-- if $price_unpaid -->
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">还需付款</div>
+						<div class="am-u-sm-8 am-text-danger">{func price_format $price_unpaid $rs.currency_id}</div>
+					</div>
+				</li>
+				<!-- /if -->
+			</ul>
+		</div>
+		<!-- if $integral -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">积分抵扣，仅支持100的整数倍，不支持小数</div>
+			<ul class="am-list am-list-static">
+				<!-- loop from=$integral key=$key value=$value -->
+			    <li>
+				    <div class="am-g">
+					    <div class="am-u-sm-9" style="margin-top:9px;">您当前的 <span class="am-text-danger">{$value.title}</span> 有 <span class="am-text-danger">{$value.val}</span>{$value.unit}，最多可抵现金<span class="red">{func price_format $value.price}</span></div>
+					    <div class="am-u-sm-2">
+						    <table>
+						    	<tr>
+						    		<td style="width:50px;text-align:right;">支出：</td>
+						    		<td><input type="text" name="integral_val[{$key}]" /></td>
+						    		<td>&nbsp;{$value.unit}</td>
+						    	</tr>
+						    </table>
+						    
+						    
+					    </div>
+				    </div>
+			    </li>
+			    <!-- /loop -->
+			</ul>
+		</div>
+		<!-- /if -->
+		<!-- if $paylist || $balance -->
+		<div class="am-panel">
+			<div class="am-panel-bd">
+				<div class="am-tabs" data-am-tabs>
+					<ul class="am-tabs-nav am-nav am-nav-tabs">
+						<li style="line-height:1.6;padding:0.4rem 1rem;">请选择支付方式：</li>
+						<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+						<li{if !$tmpid.index} class="am-active"{/if}><a href="javascript:void(0);">{$value.title}</a></li>
+						<!-- /loop -->
+						<!-- if $balance -->
+						<li{if !$paylist} class="am-active"{/if}><a href="javascript:void(0);">余额支付</a></li>
+						<!-- /if -->
+					</ul>
+					<div class="am-tabs-bd">
+						<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+						<div class="am-tab-panel am-fade{if !$tmpid.index} am-in am-active{/if}">
+							<!-- loop from=$value.paylist key=$k value=$v id=$idxx -->
+							<div class="am-radio">
+								<label><input type="radio" name="payment" value="{$v.id}"{if !$tmpid.index && !$idxx.index} checked{/if}/>{$v.title}</label>
+							</div>
+							<!-- /loop -->
+						</div>
+						<!-- /loop -->
+						<div class="am-tab-panel am-fade">
+							<!-- loop from=$balance key=$key value=$value -->
+							<div class="am-radio">
+								<label><input name="payment" type="radio" value="{$value.identifier}" data-price="{$price_val}" data-balance="{$value.price}" />您当前的{$value.title}有<span class="red">{$value.val}</span>{$value.unit}
+								<!-- if $price_val > $value.price -->
+								，您的余额不够，请 <a href="{url ctrl=payment id=$value.id/}" target="_blank"><b>在线充值</b></a>
+								<!-- /if -->
+								</label>
+							</div>
+							<!-- /loop -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /if -->
+		<div style="margin-top:10px;">
+			<div class="am-g">
+				<div class="am-u-sm-4">
+					<a href="{url ctrl=order func=info sn=$rs.sn passwd=$rs.passwd/}" class="am-btn am-btn-default">返回订单列表</a>
+					
+				</div>
+				<div class="am-u-sm-4">
+					<input type="submit" value="确认付款" class="am-btn am-btn-primary am-fr" />
+				</div>
+			</div>
+			
+		</div>
+		</form>
 	</div>
-</div>
-<!-- /if -->
-<div class="paymenbtn mt10">
-	<table width="100%">
-	<tr>
-		<td><input type="submit" value="" class="paybtn" /></td>
-	</tr>
-	</table>
-</div>
-</form>
 </div>
 <!-- include tpl=foot -->

@@ -70,6 +70,11 @@ class sysmenu_model_base extends phpok_model
 		}
 		foreach($tmp_list AS $key=>$value){
 			if($value["parent_id"]){
+				$ctrl = 'CORE/admin/'.$value['appfile'].'_control.php';
+				if(is_dir($this->dir_app.$value['appfile'])){
+					$ctrl = 'APP/'.$value['appfile'].'/admin.control.php';
+				}
+				$value['_ctrlfile'] = $ctrl;
 				$rslist[$value["parent_id"]]["sublist"][$value["id"]] = $value;
 			}
 		}

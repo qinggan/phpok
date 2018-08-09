@@ -36,11 +36,11 @@ class unionpay_submit
 		$payment->txn_sub_type($this->param['param']['txn_sub_type']);
 		$payment->form_param('merId',$this->param['param']['mer_id']);
 		$payment->form_param('reqReserved',$this->order['passwd']);
-		$currency = $this->app->model('currency')->get_one($this->order['currency_id']);
-		if($currency && ($currency['code_num'] != '165' || $currency['code'] != 'CNY')){
-			$payment->form_param('currencyCode',$currency['code_num']);
+		$sn = $this->order['id'];
+		if(strlen($sn) < 8){
+			$sn = str_pad($sn,8,'0',STR_PAD_LEFT);
 		}
-		$payment->form_param('orderId',$this->order['sn']);
+		$payment->form_param('orderId',$sn);
 		$payment->form_param('txnTime',date("YmdHis",$this->app->time));
 		$return_url = $this->app->url('payment','notice','id='.$this->order['id'],'www',true);
 		$payment->form_param('frontUrl',$return_url);
@@ -54,4 +54,3 @@ class unionpay_submit
 		}
 	}
 }
-?>

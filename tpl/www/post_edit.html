@@ -19,7 +19,7 @@ $(document).ready(function(){
 			var chkcode = $("#_chkcode").val();
 			if(!chkcode){
 				$.dialog.alert('验证码不能为空');
-				$("#_vcode").phpok_vcode();
+				$("#update_vcode").phpok_vcode();
 				return false;
 			}
 		}
@@ -30,12 +30,15 @@ $(document).ready(function(){
 			'success':function(rs){
 				if(rs.status == 'ok'){
 					$.dialog.alert('内容编辑成功',function(){
-						$.phpok.go('{url ctrl=usercp func=list id=$page_rs.identifier/}');
+						window.close();
+						window.opener.location.reload();
 					});
 				}else{
 					$.dialog.alert(rs.content,function(){
-						$("#_vcode").phpok_vcode();
-						$("#_chkcode").val('');
+						if(is_vcode == 'true'){
+							$("#update_vcode").phpok_vcode();
+							$("#_chkcode").val('');
+						}
 					});
 					return false;
 				}
@@ -45,63 +48,60 @@ $(document).ready(function(){
 	});
 });
 </script>
-<div class="wrap mb10">
-	<div class="bbsbox">
-		<div class="bbstitle">
-			<span class="width715">{$page_rs.title}</span>
-		</div>
-		<form method="post" id="post_submit">
-		<input type="hidden" name="id" value="{$page_rs.identifier}" />
-		<input type="hidden" name="tid" value="{$rs.id}" />
-		<div class="publish">
-			<table>
-			<tr>
-				<td class="l_title" valign="top">{$page_rs.alias_title ? $page_rs.alias_title : '主题'}：</td>
-				<td class="td"><input name="title" id="title" type="text" class="r_input" value="{$rs.title}" /></td>
-			</tr>
+<div class="main">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="am-panel am-panel-default">
+		<div class="am-panel-hd">编辑</div>
+		<div class="am-panel-bd">
+			<form method="post" id="post_submit" class="am-form">
+			<input type="hidden" name="id" id="id" value="{$page_rs.identifier}" />
+			<input type="hidden" name="tid" value="{$rs.id}" />
+			<div class="am-g am-form-group">
+				<label class="am-u-sm-2" for="title">{$page_rs.alias_title ? $page_rs.alias_title : '主题'}</label>
+				<div class="am-u-sm-10"><input type="text" name="title" id="title" value="{$rs.title}" /></div>
+			</div>
 			<!-- if $catelist -->
-			<tr>
-				<td class="l_title" valign="top">分类：</td>
-				<td class="td">
-					<select name="cate_id" id="cate_id" style="padding:3px;">
+			<div class="am-g am-form-group">
+				<label class="am-u-sm-2" for="title">分类</label>
+				<div class="am-u-sm-10">
+					<select name="cate_id" id="cate_id">
 						<option value="">请选择分类……</option>
 						<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
 						<option value="{$value.id}"{if $cate_rs.id == $value.id} selected{/if}>{$value._space}{$value.title}</option>
 						<!-- /loop -->
 					</select>
-				</td>
-			</tr>
+				</div>
+			</div>
 			<!-- /if -->
 			<!-- loop from=$extlist key=$key value=$value -->
-			<tr>
-				<td class="l_title" valign="top">{$value.title}：</td>
-				<td class="td">{$value.html} {$value.note}</td>
-			</tr>
+			<div class="am-g am-form-group">
+				<label class="am-u-sm-2" for="{$value.identifier}">{$value.title}</label>
+				<div class="am-u-sm-10">{$value.html}</div>
+			</div>
 			<!-- /loop -->
 			<!-- if $is_vcode -->
-			<tr>
-				<td class="l_title" valign="top">验证码：</td>
-				<td class="td">
-					<input class="vcode"  type="text" name="_chkcode" id="_chkcode" />
-					<img src="" border="0" align="absmiddle" id="_vcode" class="hand" />
-					<script type="text/javascript">
-					$(document).ready(function(){
-						$("#_vcode").phpok_vcode();
-						$("#_vcode").click(function(){
-							$(this).phpok_vcode();
-						});
+			<div class="am-g am-form-group">
+				<label class="am-u-sm-2" for="_chkcode">验证码：</label>
+				<div class="am-u-sm-4"><input type="text" name="_chkcode" id="_chkcode" class="vcode" /></div>
+				<div class="am-u-sm-6"><img src="" border="0" align="absmiddle" id="update_vcode" class="hand"></div>
+				<script type="text/javascript">
+				$(document).ready(function(){
+					$("#update_vcode").phpok_vcode();
+					//更新点击时操作
+					$("#update_vcode").click(function(){
+						$(this).phpok_vcode();
 					});
-					</script>
-				</td>
-			</tr>
+				});
+				</script>
+			</div>
 			<!-- /if -->
-			<tr>
-				<td>&nbsp;</td>
-				<td><input name="" type="submit" class="bbsbtn" value="发布" /></td>
-			</tr>
-			</table>
+			<div class="am-g am-form-group">
+				<div class="am-u-sm-2">&nbsp;</div>
+				<div class="am-u-sm-10"><input type="submit" value=" 提交 " class="am-btn am-btn-primary" /></div>
+			</div>
+			
+			</form>
 		</div>
-		</form>
 	</div>
 </div>
 

@@ -21,12 +21,6 @@ class order_model extends order_model_base
 		return $this->db->get_one($sql);
 	}
 
-	public function log_all($order_id)
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."order_log WHERE order_id='".$order_id."' ORDER BY addtime ASC,id ASC";
-		return $this->db->get_all($sql);
-	}
-
 	public function log_delete($order_id,$order_express_id,$who='')
 	{
 		$sql = "DELETE FROM ".$this->db->prefix."order_log WHERE order_id='".$order_id."' ";
@@ -47,5 +41,3 @@ class order_model extends order_model_base
 		return $this->db->query($sql);
 	}
 }
-
-?>

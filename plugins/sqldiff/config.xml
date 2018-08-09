@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-	<title>数据库比较工具</title>
-	<desc>用于比较两个不同的数据库表结构的不同</desc>
-	<author>phpok.com</author>
-	<version>1.0</version>
-</root>

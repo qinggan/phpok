@@ -1,29 +1,29 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/logout_control.php
-	Note	: 退出操作
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年04月25日 10时28分
-***********************************************************/
+/**
+ * 管理员退出
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年05月30日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class logout_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 	}
 
-	function index_f()
+	public function index_f()
 	{
-		$admin_name = $_SESSION["admin_account"];
-		foreach($_SESSION as $key=>$value){
-			if(substr($key,0,5) == 'admin' && $key != 'admin_lang_id'){
-				unset($_SESSION[$key]);
-			}
-		}
-		error(P_Lang('管理员{admin_name}成功退出',array('admin_name'=>'<span class="red">'.$admin_name.'</span>')),$this->url('login'),'ok');
+		$name = $this->session->val('admin_account');
+		$this->session->unassign('admin_id');
+		$this->session->unassign('admin_account');
+		$this->session->unassign('admin_rs');
+		$this->session->unassign('adm_develop');
+		$this->success(P_Lang('管理员{admin_name}成功退出',array('admin_name'=>' <span class="red">'.$name.'</span> ')),$this->url('login'));
 	}
 }
-?>

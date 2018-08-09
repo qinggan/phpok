@@ -213,7 +213,7 @@ class reply_model_base extends phpok_model
 		}else{
 			$sql.= "l.identifier='".$id."' AND l.site_id='".$this->site_id."'";
 		}
-		$sql.= " AND l.status=1 AND p.status=1";
+		$sql.= " AND p.status=1";
 		return $this->db->get_one($sql);
 	}
 }

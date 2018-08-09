@@ -246,6 +246,7 @@ class payment_control extends phpok_control
 		if(is_numeric($payment)){
 			$payment = intval($payment);
 			$payment_rs = $this->model('payment')->get_one($payment);
+			$currency_id = $payment_rs['currency'] ? $payment_rs['currency']['id'] : $rs['currency_id'];
 		}else{
 			if(!$userid){
 				$this->error(P_Lang('非会员不支持余额支付功能'));
@@ -263,7 +264,8 @@ class payment_control extends phpok_control
 				$this->error(P_Lang('您的余额不足，请先充值或使用其他方式支付'),$error_url);
 			}
 		}
-		$array = array('type'=>'order','price'=>$price,'currency_id'=>$rs['currency_id'],'sn'=>$rs['sn']);
+		
+		$array = array('type'=>'order','price'=>price_format_val($price,$rs['currency_id'],$currency_id),'currency_id'=>$currency_id,'sn'=>$rs['sn']);
 		$array['content'] = $array['title'] = P_Lang('订单：{sn}',array('sn'=>$rs['sn']));
 		$array['payment_id'] = $payment;
 		$array['dateline'] = $this->time;
@@ -271,28 +273,21 @@ class payment_control extends phpok_control
 		if(!is_numeric($payment)){
 			$array['ext'] = serialize(array('wealth'=>$payment_rs['id']));
 		}
-		$chk = $this->model('payment')->log_check($rs['sn'],'order');
-		if($chk){
-			$insert_id = $chk['id'];
-			$this->model('payment')->log_update($array,$chk['id']);
-		}else{
-			$insert_id = $this->model('payment')->log_create($array);
-			if(!$insert_id){
-				$this->error(P_Lang('支付记录创建失败，请联系管理员'),$order_url);
-			}
+		//删除未完成的支付日志
+		$this->model('payment')->log_delete_notstatus($rs['sn'],'order');
+		$insert_id = $this->model('payment')->log_create($array);
+		if(!$insert_id){
+			$this->error(P_Lang('支付记录创建失败，请联系管理员'),$order_url);
 		}
 		$this->model('order')->update_order_status($rs['id'],'unpaid');
 		//增加order_payment
 		$array = array('order_id'=>$rs['id'],'payment_id'=>$payment);
 		$array['title'] = $payment_rs['title'];
-		$array['price'] = $price;
+		$array['price'] = price_format_val($price,$rs['currency_id'],$currency_id);
+		$array['currency_id'] = $currency_id;
 		$array['startdate'] = $this->time;
-		$order_payment = $this->model('order')->order_payment($rs['id'],$payment);
-		if(!$order_payment){
-			$this->model('order')->save_payment($array);
-		}else{
-			$this->model('order')->save_payment($array,$order_payment['id']);
-		}
+		$this->model('order')->delete_not_end_order($rs['id']);
+		$this->model('order')->save_payment($array);
 		$this->success(P_Lang('成功创建支付链，请稍候，即将为您跳转支付页面…'),$this->url('payment','submit','id='.$insert_id));
 	}
 
@@ -422,6 +417,15 @@ class payment_control extends phpok_control
 		if($log['status']){
 			$this->error(P_Lang('订单已支付过了，不能再次执行'));
 		}
+		if($log['type'] == 'order'){
+			$orderinfo = $this->model('order')->get_one($log['sn'],'sn');
+			$paid_price = $this->model('order')->paid_price($orderinfo['id']);
+			$unpaid_price = $this->model('order')->unpaid_price($orderinfo['id']);
+			$this->assign('paid_price',$paid_price);
+			$this->assign('unpaid_price',$unpaid_price);
+			$this->assign('orderinfo',$orderinfo);
+		}
+		
 		if($log['payment_id'] && is_numeric($log['payment_id'])){
 			$payment_rs = $this->model('payment')->get_one($log['payment_id']);
 			if(!$payment_rs){
@@ -542,7 +546,13 @@ class payment_control extends phpok_control
 		if(!$sn){
 			exit('error');
 		}
-		$rs = $this->model('payment')->log_check($sn);
+		if(strpos($sn,'-') !== false){
+			$tmp = explode("-",$sn);
+			$sn = $tmp[0];
+			$rs = $this->model('payment')->log_one($tmp[1]);
+		}else{
+			$rs = $this->model('payment')->log_check_notstatus($sn);
+		}
 		if(!$rs){
 			exit('error');
 		}

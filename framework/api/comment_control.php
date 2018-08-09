@@ -202,12 +202,16 @@ class comment_control extends phpok_control
 		$array["session_id"] = $sessid;
 		$array["content"] = $content;
 		$array['order_id'] = $order_id;
-		$this->model("reply")->save($array);
+		$insert_id = $this->model("reply")->save($array);
 		$update = array("replydate"=>$this->time);
 		$this->model("list")->save($update,$tid);
 		//评论送积分
 		if($uid && $array["status"]){
 			$this->model('wealth')->add_integral($tid,$uid,'comment',P_Lang('评论：{title}',array('title'=>$rs['title'])));
+		}
+		if($project_rs && $project_rs['etpl_comment_admin'] || $project_rs['etpl_comment_user']){
+			$param = 'id='.$insert_id;
+			$this->model('task')->add_once('comment',$param);
 		}
 		$this->json(true);
 	}

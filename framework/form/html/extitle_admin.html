@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_pid,form_field_used,form_show_editing,form_true_delete" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_pid,form_field_used,form_show_editing,form_true_delete,form_is_single,form_maxcount,form_input_val" />
 <div class="table">
 	<div class="title">{lang选择关联的项目}：</div>
 	<div class="content">
@@ -43,5 +43,25 @@
 			<li><label><input type="checkbox" name="form_field_used[]" value="{$key}"{if $form_field_used && in_array($key,$form_field_used)} checked{/if} />{$value.title}</label></li>
 			<!-- /loop -->
 		</ul>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang主题模式}：<span class="note">{lang单选模式仅支持一条且不用循环读取，列表模式需要设置数量且只能循环读取}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="form_is_single" value="1"{if $rs.form_is_single} checked{/if} onclick="$._configForm.extitle('form_is_single',this.value,'{$eid}','{$etype}')" />{lang单选模式}</label></li>
+			<li><label><input type="radio" name="form_is_single" value="0"{if !$rs.form_is_single} checked{/if} onclick="$._configForm.extitle('form_is_single',this.value,'{$eid}','{$etype}')" />{lang列表模式}</label></li>
+			<li id="form_maxcount_li"{if $rs.form_is_single} class="hide"{/if}><input type="text" name="form_maxcount" id="form_maxcount" value="{$rs.form_maxcount ? $rs.form_maxcount : 20}" class="short center" /></li>
+		</ul>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang筛选参数字段}：<span class="note">{lang仅限单选及单选下拉，不支持模糊搜索，多个字段用英文逗号隔开}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="form_input_val" id="form_input_val" value="{$rs.form_input_val}" class="w99" />
 	</div>
 </div>

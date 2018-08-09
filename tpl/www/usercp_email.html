@@ -1,4 +1,4 @@
-<!-- include tpl=head title="修改邮箱 - 个人中心" -->
+<!-- php:$title = "修改邮箱 - 会员中心" --><!-- include tpl=head title=$title -->
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#userinfo_email").submit(function(){
@@ -77,45 +77,52 @@ function send_email()
 }
 </script>
 <!-- /if -->
-<div class="cp">
-	<div class="left"><!-- include tpl=block_usercp --></div>
-	<div class="right">
-		<div class="pfw mbottom10">
-			<h3>邮箱修改</h3>
-			<form method="post" id="userinfo_email">
-			<div class="table">
-				<div class="l"><span class="red">*</span> 会员密码：</div>
-				<input type="password" name="pass" id="pass" value="" class="input" />
-			</div>
-			<div class="table">
-				<div class="l"><span class="red">*</span> 原邮箱：</div>
-				<input type="text" name="oldemail" id="oldemail" value="{$rs.email}" class="input" disabled />
-			</div>
-			<div class="table">
-				<div class="l"><span class="red">*</span> 新邮箱：</div>
-				<input type="text" name="email" id="email" value="" class="input" />
-				<!-- if $sendemail -->
-				<input type="button" value="发送验证码" onclick="send_email()" class="button blue" id="email_send_status" />
+<div class="main">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="left"><!-- include tpl=block/usercp_nav --></div>
+	<div class="right am-panel-group">
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">邮箱修改</div>
+			<div class="am-panel-bd">
+				<form class="am-form am-form-horizontal" method="post" id="userinfo_email">
+				<div class="am-form-group">
+					<label for="pass" class="am-u-sm-2 am-form-label">会员密码</label>
+					<div class="am-u-sm-10"><input type="password" name="pass" id="pass" /></div>
+				</div>
+				<!-- if $rs.email -->
+				<div class="am-form-group">
+					<label for="oldemail" class="am-u-sm-2 am-form-label">原邮箱</label>
+					<div class="am-u-sm-10"><input type="text" name="oldemail" id="oldemail" value="{$rs.email}" disabled /></div>
+				</div>
 				<!-- /if -->
+				<div class="am-form-group">
+					<label for="email" class="am-u-sm-2 am-form-label">新邮箱</label>
+					<div class="am-u-sm-{$sendemail ? 8 : 10}"><input type="text" name="email" id="email" /></div>
+					<!-- if $sendemail -->
+					<div class="am-u-sm-2"><input type="button" value="发送验证码" onclick="send_email()" class="am-btn am-btn-default" id="email_send_status" /></div>
+					<!-- /if -->
+				</div>
+				<!-- if $sendemail -->
+				<div class="am-form-group">
+					<label for="chkcode" class="am-u-sm-2 am-form-label">验证码</label>
+					<div class="am-u-sm-10"><input type="text" name="chkcode" id="chkcode" /></div>
+				</div>
+				<!-- /if -->
+				<div class="am-form-group">
+					<label class="am-u-sm-2 am-form-label"></label>
+					<div class="am-u-sm-10"><input type="submit" id="phpok_submit" value="提 交" class="am-btn am-btn-primary"></div>
+				</div>
+				</form>
 			</div>
-			<!-- if $sendemail -->
-			<div class="table">
-				<div class="l"><span class="red">*</span> 验证码：</div>
-				<input type="text" name="chkcode" class="input" />
-			</div>
-			<!-- /if -->
-			<div class="table">
-				<div class="l">&nbsp;</div>
-				<input type="submit" id="phpok_submit" value="提 交" class="button blue">
-			</div>
-			</form>
 		</div>
-		<div class="pfw mbottom10">
-			<h3>友情说明</h3>
-			<ul class="tip">
-				<li>邮箱修改需要您提供会员密码认证</li>
-				<li>请确填写有效的邮箱，国内用户建议使用126邮箱或QQ邮箱</li>
-			</ul>
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">友情说明</div>
+			<div class="am-panel-bd">
+				<ul class="tip">
+					<li>邮箱修改需要您提供会员密码认证</li>
+					<li>请确填写有效的邮箱，国内用户建议使用126邮箱或QQ邮箱</li>
+				</ul>
+			</div>
 		</div>
 	</div>
 	<div class="clear"></div>

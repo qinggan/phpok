@@ -34,7 +34,7 @@ class paypal_submit
         $paypal->set_value("amount",$price);
 		$currency = $this->param['currency']['code'];
 		$paypal->set_value("currency",$currency);
-		$paypal->set_value("ordersn",$this->order["sn"]);
+		$paypal->set_value("ordersn",$this->order["sn"].'-'.$this->order['id']);
 		$paypal->set_value("action_url",$this->param['param']["action"]);
 		$paypal->set_value("return_url",$return_url);//成功返回
 		$paypal->set_value("cancel_return",$cancel_url);//取消退出

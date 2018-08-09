@@ -206,6 +206,72 @@ class register_control extends phpok_control
 		$this->json(P_Lang('注册成功，等待管理员验证'),true);
 	}
 
+    /**
+     *发送短信验证码
+    **/
+    public function sms_f()
+    {
+        $smstpl = $this->site['login_type_sms'];
+        if(!$smstpl){
+	        $this->error(P_Lang('短信验证码模板未指定'));
+        }
+        $mobile = $this->get('mobile');
+        if(!$mobile){
+            $this->error(P_Lang('手机号不能为空'));
+        }
+        if(!$this->lib('common')->tel_check($mobile,'mobile')){
+            $this->error(P_Lang('手机号不符合格式要求'));
+        }
+        $chk = $this->model('user')->user_mobile($mobile);
+        if($chk){
+            $this->json(P_Lang('手机号已被使用，请更换其他手机号'));
+        }
+        $code = $this->session->val('register_code');
+        if($code){
+            $time = $this->session->val('register_code_time');
+            $chktime = $this->time - 60;
+            if($time && $time > $chktime){
+                $this->error(P_Lang('验证码已发送，请等待一分钟后再获取'));
+            }
+        }
+        $this->gateway('type','sms');
+        $this->gateway('param','default');
+        if(!$this->gateway('check')){
+            $this->error(P_Lang('网关参数信息未配置'));
+        }
+        $code = $this->model('gateway')->code_one($this->gateway['param']['type'],$this->gateway['param']['code']);
+        if(!$code){
+            $this->error(P_Lang('网关配置错误，请联系工作人员'));
+        }
+        if($code['code']){
+            foreach($code['code'] as $key=>$value){
+                if($value['required'] && $value['required'] == 'true' && !$this->gateway['param']['ext'][$key]){
+                    $this->error(P_Lang('网关配置不完整，请联系工作人员'));
+                }
+            }
+        }
+        $tpl = $this->model('email')->tpl($smstpl);
+        if(!$tpl){
+            $this->error(P_Lang('短信验证模板获取失败，请检查'));
+        }
+        if(!$tpl['content']){
+            $this->error(P_Lang('短信模板内容为空，请联系管理员'));
+        }
+        $tplcontent = strip_tags($tpl['content']);
+        if(!$tplcontent){
+            $this->error(P_Lang('短信模板内容是空的，请联系管理员'));
+        }
+        $info = $this->lib("vcode")->word();
+        $this->assign('code',$info);
+        $this->assign('mobile',$mobile);
+        $content = $this->fetch($tplcontent,'msg');
+        $title = $this->fetch($tpl['title'],'msg');
+        $this->session->assign('register_code',$info);
+        $this->session->assign('register_code_time',$this->time);
+        $this->gateway('exec',array('mobile'=>$mobile,'content'=>$content,'title'=>$title,'identifier'=>$tpl['identifier']));
+        $this->success();
+    }
+
 	/**
 	 * 检测验证串是否正确，正确则跳转到注册页
 	 * @参数 _chkcode 验证码，防止机器人注册

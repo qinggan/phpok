@@ -1,0 +1,81 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function save()
+{
+	var obj = $.dialog.opener;
+	$("#postsave").ajaxSubmit({
+		'url':get_url("site",'admin_order_status_save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.alert('数据保存成功',function(){
+					obj.$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+			}
+		}
+	});
+	return false;
+}
+</script>
+<form method="post" id="postsave" onsubmit="return false">
+<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
+<!-- if !$id -->
+<div class="table">
+	<div class="title">
+		{lang标识}：
+		<span class="note">{lang请填写标识信息，仅限字母，数字及下划线，且要求首字字母}</span>
+	</div>
+	<div class="content"><input type="text" id="identifier" name="identifier" class="default" /></div>
+</div>
+
+<!-- /if -->
+<div class="table">
+	<div class="title">
+		{lang状态说明}
+		<span class="note">{lang填写这个状态的文本说明，以方便管理}</span>
+	</div>
+	<div class="content"><input type="text" id="title" name="title" value="{$rs.title}" class="default" /></div>
+</div>
+
+<div class="table">
+	<div class="title">
+		状态：
+		<span class="note">设置是否使用</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="status" value="1"{if $rs.status} checked{/if} />启用</label></li>
+			<li><label><input type="radio" name="status" value="0"{if !$rs.status} checked{/if} />禁用</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		前台订单状态对接：
+		<span class="note">设置好关联后，只需设置后台订单状态，就可以实现前台后台状态对接</span>
+	</div>
+	<div class="content">
+		<select name="ostatus" style="width:100%">
+		<option value="">请选择订单状态</option>
+		<!-- loop from=$olist key=$key value=$value id=$tmpid -->
+		<option value="{$key}"{if $rs.ostatus == $key} selected{/if}>{$value}</option>
+		<!-- /loop -->
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		订单状态顺序：
+		<span class="note">值越小越往前排，最小值为0</span>
+	</div>
+	<div class="content">
+		<input type="text" name="taxis" id="taxis" value="{$rs.taxis}" class="short" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot_open -->

@@ -24,19 +24,16 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 $hour = 6;
 if($rslist){
 	foreach($rslist as $key=>$value){
-		$icon = $value['toplevel'] ? 'bbs-icon-top'.$value['toplevel'] : 'bbs-icon-common';
+		$icon = $value['toplevel'] ? 'am-icon-angle-double-up'.$value['toplevel'] : 'am-icon-angle-right';
 		$time = $value['replydate'] ? $value['replydate'] : $value['dateline'];
 		if(($time + $hour * 3600) > $sys['time']){
-			$icon = 'bbs-icon-new';
+			$icon = 'am-icon-angle-double-right am-primary';
 		}
 		$value['_icon'] = $icon;
 		$value['_user'] = $value['user'] ? $value['user'] : array('user'=>'佚名');
 		$value['_author'] = $value['_user']['user'];
 		$value['_author_url'] = $value['user_id'] ? $app->url('user','info','id='.$value['user_id']) : '';
-		$value['_lastdate'] = $value['replydate'] ? date("Y-m-d",$value['replydate']) : date("Y-m-d",$value['dateline']);
+		$value['_lastdate'] = $value['replydate'] ? time_format($value['replydate']) : time_format($value['dateline']);
 		$rslist[$key] = $value;
 	}
-}
-if(!$session['user_id']){
-	$backurl = $cate_rs ? $cate_rs['url'] : $page_rs['url'];
 }

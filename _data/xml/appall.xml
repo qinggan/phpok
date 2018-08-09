@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<fav>
+		<title><![CDATA[收藏夹]]></title>
+		<status>
+			<admin><![CDATA[1]]></admin>
+			<api><![CDATA[1]]></api>
+			<www><![CDATA[1]]></www>
+		</status>
+		<install><![CDATA[install.php]]></install>
+		<uninstall><![CDATA[uninstall.php]]></uninstall>
+	</fav>
+</root>

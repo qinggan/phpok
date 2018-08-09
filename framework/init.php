@@ -10,7 +10,6 @@
  * @时间 2016年07月21日
 **/
 
-
 /**
  * 安全限制
 **/
@@ -81,25 +80,26 @@ run_memory();
 **/
 function debug_time()
 {
+	global $app;
 	$time = run_time(true);
 	$memory = run_memory(true);
-	$sql_db_count = $GLOBALS['app']->db->sql_count();
-	$sql_db_time = $GLOBALS['app']->db->sql_time();
-	$cache_count = $GLOBALS['app']->cache->count();
-	$cache_time = $GLOBALS['app']->cache->time();
+	$sql_db_count = $app->db->sql_count();
+	$sql_db_time = $app->db->sql_time();
+	$cache_count = $app->cache->count();
+	$cache_time = $app->cache->time();
 	$string = '运行{total}秒，内存使用{mem_total}，数据库执行{sql_count}次，';
 	$string.= '用时{sql_time}秒，缓存执行{cache_count}次，用时{cache_time}秒';
 	$array = array('total'=>$time,'mem_total'=>$memory);
-	$array['sql_count']=$GLOBALS['app']->db->sql_count();
-	$array['sql_time'] = $GLOBALS['app']->db->sql_time();
-	$array['cache_count'] = $GLOBALS['app']->cache->count();
-	$array['cache_time'] = $GLOBALS['app']->cache->time();
+	$array['sql_count']= $app->db->sql_count();
+	$array['sql_time'] = $app->db->sql_time();
+	$array['cache_count'] = $app->cache->count();
+	$array['cache_time'] = $app->cache->time();
 	$string = P_Lang($string,$array);
-	$db_debug = $GLOBALS['app']->db->debug();
+	$db_debug = $app->db->debug();
 	if($db_debug && is_string($db_debug)){
 		$string .= $db_debug;
 	}
-	$cache_debug = $GLOBALS['app']->cache->debug();
+	$cache_debug = $app->cache->debug();
 	if($cache_debug){
 		$string .= $cache_debug;
 	}
@@ -138,6 +138,7 @@ class _init_phpok
 	public $dir_config = './_config/';
 	public $dir_extension = './_extension/';
 	public $dir_plugin = './_plugins/';
+	public $dir_app = './_app/';
 
 	/**
 	 * 定义引挈，在P4中，将MySQL，Cache，Session设为三个引挈（后续版本可能会改动）
@@ -247,7 +248,7 @@ class _init_phpok
 
 	private $_libs = array();
 
-	public $ctrol_param = array();
+	private $_dataParams = array();
 
 	/**
 	 * 构造函数，用于初化一些数据
@@ -270,6 +271,21 @@ class _init_phpok
 	**/
 	final public function config($id,$val='',$type='system')
 	{
+		if($id == 'debug' && is_bool($val)){
+			if($val){
+				if(function_exists('opcache_reset')){
+					ini_set('opcache.enable',false);
+				}
+				ini_set('display_errors','on');
+				error_reporting(E_ALL ^ E_NOTICE);
+			}else{
+				error_reporting(0);
+				if(isset($this->config) && isset($this->config['opcache']) && function_exists('opcache_reset')){
+					ini_set('opcache.enable',$this->config['opcache']);
+				}
+			}
+			return true;
+		}
 		if($type == 'system'){
 			$this->$id = $val;
 		}
@@ -278,6 +294,91 @@ class _init_phpok
 		}
 		if($type == 'site'){
 			$this->site[$id] = $val;
+		}
+		return true;
+	}
+
+	final public function data($var,$val='')
+	{
+		if($val == ''){
+			if(strpos($var,'.') === false){
+				return $this->_dataParams[$var];
+			}
+			$list = explode(".",$var);
+			if(!isset($this->_dataParams[$list[0]]) || !is_array($this->_dataParams[$list[0]])){
+				return false;
+			}
+			$tmp = $this->_dataParams[$list[0]];
+			foreach($list as $key=>$value){
+				if($key<1){
+					continue;
+				}
+				if(!isset($tmp[$value])){
+					$tmp = false;
+					break;
+				}else{
+					$tmp = $tmp[$value];
+				}
+			}
+			return $tmp;
+		}
+		if(strpos($var,'.') !== true){
+			$this->_dataParams[$var] = $val;
+			return true;
+		}
+		$list = explode(".",$var);
+		krsort($list);
+		$tmp = array();
+		$total = count($list);
+		$i=0;
+		foreach($list as $key=>$value){
+			if($i<1){
+				$tmp[$value] = $val;
+			}else{
+				if(($i+1) == $total){
+					if(isset($this->_dataParams[$value])){
+						$this->_dataParams[$value] = array_merge($this->_dataParams[$value],$tmp);
+					}else{
+						$this->_dataParams[$value] = $tmp;
+					}
+				}else{
+					$ok = array();
+					$ok[$value] = $tmp;
+					$tmp = $ok;
+				}
+			}
+			$i++;
+		}
+		return true;
+	}
+
+	final public function undata($var)
+	{
+		if(!$var){
+			return false;
+		}
+		if(strpos($var,'.') === false){
+			unset($this->_dataParams[$var]);
+			return true;
+		}
+		$list = explode(".",$var);
+		$total = count($list);
+		$list = explode(".",$var);
+		krsort($list);
+		$i=0;
+		foreach($list as $key=>$value){
+			if($i<1){
+				$tmp = array();
+			}else{
+				if(($i+1) == $total){
+					$this->_dataParams[$value] = $tmp;
+				}else{
+					$ok = array();
+					$ok[$value] = $tmp;
+					$tmp = $ok;
+				}
+			}
+			$i++;
 		}
 		return true;
 	}
@@ -300,6 +401,7 @@ class _init_phpok
 		$this->config["url"] = $this->url;
 		$this->config['app_id'] = $this->app_id;
 		$this->config['time'] = $this->time;
+		$this->config['webroot'] = $this->dir_webroot;	
 		$this->assign("sys",$this->config);
 		$this->phpok_seo($this->site);
 		$this->assign("config",$this->site);
@@ -330,13 +432,17 @@ class _init_phpok
 	public function language($langid='default')
 	{
 		$multiple_language = isset($this->config['multiple_language']) ? $this->config['multiple_language'] : false;
-		include_once($this->dir_phpok.'language.php');
-		$this->language = new phpok_language($langid);
-		$this->language->status($multiple_language);
-		$this->language->folder($this->dir_root.'langs');
-		$this->language->id($this->app_id);
-		$this->language->pomo($this->dir_extension);
-		unset($multiple_language);
+		if(!$multiple_language){
+			include_once($this->dir_phpok.'language.php');
+			$this->language = new phpok_language($langid);
+			$this->language->status($multiple_language);
+			$this->language->folder($this->dir_root.'langs');
+			$this->language->id($this->app_id);
+			$this->language->pomo($this->dir_extension);
+			unset($multiple_language);
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -351,7 +457,10 @@ class _init_phpok
 		if(!$this->language){
 			$this->language($this->langid);
 		}
-		return $this->language->format($info,$var);
+		if($this->language){
+			return $this->language->format($info,$var);
+		}
+		return $this->_lang_format($info,$var);
 	}
 
 	private function _lang_format($info,$var='')
@@ -379,7 +488,7 @@ class _init_phpok
 			$tpl_rs = array();
 			$tpl_rs["id"] = "1";
 			$tpl_rs["dir_tpl"] = substr($this->dir_phpok,strlen($this->dir_root))."/view/";
-			$tpl_rs["dir_cache"] = $this->dir_root."data/tpl_admin/";
+			$tpl_rs["dir_cache"] = $this->dir_data."tpl_admin/";
 			$tpl_rs["dir_php"] = $this->dir_root;
 			$tpl_rs["dir_root"] = $this->dir_root;
 			$tpl_rs["refresh_auto"] = true;
@@ -514,7 +623,7 @@ class _init_phpok
 		if($site_rs && $rs){
 			$tpl_rs = array('id'=>$rs['id'],'dir_root'=>$this->dir_root);
 			$tpl_rs["dir_tpl"] = $rs["folder"] ? "tpl/".$rs["folder"]."/" : "tpl/www/";
-			$tpl_rs["dir_cache"] = $this->dir_root."data/tpl_www/";
+			$tpl_rs["dir_cache"] = $this->dir_data."tpl_www/";
 			$tpl_rs["dir_php"] = $rs['phpfolder'] ? $this->dir_root.$rs['phpfolder'].'/' : $this->dir_root.'phpinc/';
 			if($rs["folder_change"]){
 				$tpl_rs["path_change"] = $rs["folder_change"];
@@ -549,6 +658,9 @@ class _init_phpok
 	**/
 	protected function is_https()
 	{
+		if($this->config['force_https']){
+			return true;
+		}
 		return $this->lib('server')->https();
 	}
 
@@ -648,7 +760,7 @@ class _init_phpok
 	**/
 	public function control($name,$appid='')
 	{
-		if($appid && !in_array($appid,array('www','api','www'))){
+		if($appid && !in_array($appid,array('www','api','admin'))){
 			$appid = $this->app_id;
 		}
 		if(!$appid){
@@ -663,7 +775,8 @@ class _init_phpok
 			return false;
 		}
 		include_once($file);
-		$this->$class_name = new $class_name();
+		$class_name2 = $name.'_control';
+		$this->$class_name = new $class_name2();
 		return $this->$class_name;
 	}
 
@@ -685,9 +798,14 @@ class _init_phpok
 		if($this->$class_base && is_object($this->$class_base)){
 			return $this->$class_base;
 		}
+		//检查是否有 phpok5 使用的类
+		$model_file = $this->dir_app.$name.'/model.php';
+		if(is_file($model_file)){
+			return $this->_model_phpok5($name);
+		}
 		$basefile = $this->dir_phpok.'model/'.$name.'.php';
 		if(!file_exists($basefile)){
-			$this->_error("Model基础类：".$name." 不存在，请检查");
+			$this->error_404("Model基础类：".$name." 不存在，请检查");
 		}
 		include($basefile);
 		$extfile = $this->dir_phpok.'model/'.$this->app_id.'/'.$name.'_model.php';
@@ -697,6 +815,22 @@ class _init_phpok
 			return $this->$class_name;
 		}
 		$this->$class_base = new $class_base();
+		return $this->$class_base;
+	}
+
+	private function _model_phpok5($name)
+	{
+		$class_name = $name."_model";
+		$class_base = $name."_model_base";
+		include($this->dir_app.$name.'/model.php');
+		if(is_file($this->dir_app.$name.'/'.$this->app_id.'.model.php')){
+			include($this->dir_app.$name.'/'.$this->app_id.'.model.php');
+			$tmp = 'phpok\app\model\\'.$name.'\\'.$this->app_id.'_model';
+			$this->$class_name = new $tmp();
+			return $this->$class_name;
+		}
+		$tmp = 'phpok\app\model\\'.$name.'\model';
+		$this->$class_base = new $tmp();
 		return $this->$class_base;
 	}
 
@@ -850,7 +984,7 @@ class _init_phpok
 			}
 		}
 		if(file_exists($this->dir_config.$this->app_id.'.ini.php')){
-			$ext = parse_ini_file($this->dir_config.$this->app_id.'.ini.php');
+			$ext = parse_ini_file($this->dir_config.$this->app_id.'.ini.php',true);
 			if($ext && is_array($ext)){
 				$config = array_merge($config,$ext);
 				unset($ext);
@@ -862,7 +996,6 @@ class _init_phpok
 		if(file_exists($this->dir_root.'config.php')){
 			include_once($this->dir_root.'config.php');
 		}
-
 		if($config['debug']){
 			if(function_exists('opcache_reset')){
 				ini_set('opcache.enable',false);
@@ -928,7 +1061,7 @@ class _init_phpok
 	**/
 	final public function root_url()
 	{
-		$http_type = $this->lib('server')->https() ? 'https://' : 'http://';
+		$http_type = $this->is_https() ? 'https://' : 'http://';
 		$port = $this->lib('server')->port();
 		$myurl = $this->lib('server')->domain($this->config['get_domain_method']);
 		if(!$myurl){
@@ -962,13 +1095,21 @@ class _init_phpok
 	 */
 	private function init_constant()
 	{
-		//配置网站根目录
+		//配置程序根目录
 		if(!defined("ROOT")){
 			define("ROOT",str_replace("\\","/",dirname(__FILE__))."/../");
 		}
 		$this->dir_root = ROOT;
 		if(substr($this->dir_root,-1) != "/"){
 			$this->dir_root .= "/";
+		}
+		//配置访问根目录
+		if(!defined("WEBROOT")){
+			define("WEBROOT",'/');
+		}
+		$this->dir_webroot = WEBROOT;
+		if(substr($this->dir_webroot,-1) != "/"){
+			$this->dir_webroot .= "/";
 		}
 		//配置框架根目录
 		if(!defined("FRAMEWORK")){
@@ -991,6 +1132,10 @@ class _init_phpok
 				$this->$name .= "/";
 			}
 		}
+		if(!defined('OKAPP')){
+			define('OKAPP',ROOT.'_app/');
+		}
+		$this->dir_app = OKAPP;
 		//定义APP_ID
 		if(!defined("APP_ID")){
 			define("APP_ID","www");
@@ -1152,6 +1297,19 @@ class _init_phpok
 	}
 
 	/**
+	 * 视图输出，这是针对 phpok5 版写的，实现不同的路径的模板文件识别，不适合插件
+	 * @参数 $file 相对文件
+	**/
+	final public function display($file)
+	{
+		$tplfile = $this->dir_app.$this->ctrl.'/tpl/'.$file.'.html';
+		if(file_exists($tplfile)){
+			$this->view($tplfile,'abs-file');
+		}
+		$this->view($file);
+	}
+
+	/**
 	 * 输出HTML信息
 	 * @参数 $file 字符串，指定的模板文件，支持不带后缀的模板名称，也支持完整的模板名称，也支持HTML内容，具体受参数$type影响
 	 * @参数 $type 字符串，支持 file：不带后缀的模板名，file-ext：带后缀的模板名，
@@ -1234,6 +1392,52 @@ class _init_phpok
 		exit($html);
 	}
 
+	private function _userToken()
+	{
+		$me = false;
+		if($this->session->val('user_id')){
+			$me = $this->model('user')->get_one($this->session->val('user_id'));
+			if($me){
+				$this->data('me',$me);
+				$this->assign('me',$me);
+			}
+		}
+		if(!$me && !$this->site['api_code']){
+			return false;
+		}
+		if($me && $this->site['api_code']){
+			$token = $this->model('user')->token_create($me['id'],$this->site['api_code']);
+			$this->data('meToken',$token);
+			return $me;
+		}
+		$tokenId = $this->config['token_id'] ? $this->config['token_id'] : 'userToken';
+		$token = $this->get($tokenId,'html');
+		if(!$token){
+			return false;
+		}
+		$this->lib('token')->keyid($this->site['api_code']);
+		$info = $this->lib('token')->decode($token);
+		if(!$info || !is_array($info)){
+			return false;
+		}
+		if(!$info['id'] || !$info['code']){
+			return false;
+		}
+		$chkstatus = $this->model('user')->token_check($info['id'],$info['code']);
+		if(!$chkstatus){
+			return false;
+		}
+		$me = $this->model('user')->get_one($this->session->val('user_id'));
+		if(!$me){
+			return false;
+		}
+		$newToken = $this->lib('token')->encode(array('id'=>$info['id'],'code'=>$info['code']));
+		$this->data('meToken',$newToken);
+		$this->data('me',$me);
+		$this->assign('me',$me);
+		return $me;
+	}
+
 	/**
 	 * 执行应用，三个入口（前端，接口，后台）都是从这里执行，进行初始化处理
 	 * token 及 user_id 在 phpok5.0 中将剥离，不会放在核心引挈里
@@ -1242,31 +1446,11 @@ class _init_phpok
 	{
 		$this->init_assign();
 		$this->init_plugin();
-		$func_name = "action_".$this->app_id;
 		if($this->app_id == 'admin'){
 			$this->action_admin();
 			exit;
 		}
-		if($this->session->val('user_id')){
-			$this->user = $this->model('user')->get_one($this->session->val('user_id'));
-			if($this->app_id == 'www' && $this->user){
-				$this->assign('user',$this->user);
-			}
-		}
-		$id = $this->config['token_id'] ? $this->config['token_id'] : 'token';
-		$token = $this->get($id,'html');
-		if($token && !$this->session->val('user_id')){
-			$info = $this->lib('token')->decode($token);
-			if($info && is_array($info) && $info['user_id'] && $info['user_chk']){
-				$chk_status = $this->model('user')->token_check($info['user_id'],$info['user_chk']);
-				if($chkstatus){
-					$this->user = $this->model('user')->get_one($info['user_id']);
-					$this->assign('user',$this->user);
-					$this->token = $this->lib('token')->encode(array('user_id'=>$info['user_id'],'user_chk'=>$info['user_chk']));
-					$this->assign('token',$token);
-				}
-			}
-		}
+		$this->_userToken();
 		if($this->app_id == 'api'){
 			$this->action_api();
 			exit;
@@ -1291,52 +1475,61 @@ class _init_phpok
 		$this->_action($ctrl,$func);
 	}
 
+	private function _route()
+	{
+		$data = array();
+		$uri = $this->lib('server')->uri();
+		$docu = $this->lib('server')->me();
+		if($this->lib('server')->path_info()){
+			$docu = substr($docu,0,-(strlen($this->lib('server')->path_info())));
+		}
+		$array = explode("/",$docu);
+		$docu = '/';
+		$count = count($array);
+		if($count>1){
+			foreach($array as $key=>$value){
+				$value = trim($value);
+				if($value && ($key+1) < $count){
+					$docu .= $value.'/';
+				}
+			}
+		}
+		if($docu != '/' && substr($uri,0,strlen($docu)) == $docu){
+			$uri = substr($uri,(strlen($docu)-1));
+		}
+		$script_name = $this->lib('server')->phpfile();
+		if('/'.$script_name == substr($uri,0,(strlen($script_name)+1))){
+			$uri = substr($uri,(strlen($script_name)+1));
+		}
+		$data['script'] = $script_name;
+		$query_string = $this->lib('server')->query();
+		if($query_string){
+			$uri = str_replace('?'.$query_string,'',$uri);
+			$data['query'] = $query_string;
+			$get = parse_str($query_string);
+			$this->data('get',$get);
+		}
+		if($uri != '/' && strlen($uri)>2){
+			if(substr($uri,0,1) == '/'){
+				$uri = substr($uri,1);
+			}
+			if(substr($uri,-1) == '/'){
+				$uri = substr($uri,0,-1);
+			}
+		}
+		$data['url'] = $uri;
+		$data['folder'] = $docu;
+		$this->data('uri',$data);
+		$this->model('rewrite')->uri_format($uri);
+	}
+
 	/**
 	 * 前台入口处理
 	**/
 	private function action_www()
 	{
-		//判断是否有PATH_INFO;
-		if($this->site['url_type'] == 'rewrite' && $this->lib('server')->uri()){
-			$uri = $this->lib('server')->uri();
-			$docu = $this->lib('server')->me();
-			if($this->lib('server')->path_info()){
-				$docu = substr($docu,0,-(strlen($this->lib('server')->path_info())));
-			}
-			$array = explode("/",$docu);
-			$docu = '/';
-			$count = count($array);
-			if($count>1){
-				foreach($array as $key=>$value){
-					$value = trim($value);
-					if($value && ($key+1) < $count){
-						$docu .= $value.'/';
-					}
-				}
-			}
-			if($docu != '/' && substr($uri,0,strlen($docu)) == $docu){
-				$uri = substr($uri,(strlen($docu)-1));
-			}
-			$script_name = $this->lib('server')->phpfile();
-			if('/'.$script_name == substr($uri,0,(strlen($script_name)+1))){
-				$uri = substr($uri,(strlen($script_name)+1));
-			}
-			$query_string = $this->lib('server')->query();
-			if($query_string){
-				$uri = str_replace('?'.$query_string,'',$uri);
-			}
-			if($uri != '/' && strlen($uri)>2){
-				if(substr($uri,0,1) == '/'){
-					$uri = substr($uri,1);
-				}
-				if(substr($uri,-1) == '/'){
-					$uri = substr($uri,0,-1);
-				}
-			}
-			if($uri != '/'){
-				$this->model('rewrite')->uri_format($uri);
-			}
-		}
+		$this->model('site')->site_id($this->site['id']);
+		$this->_route();
 		$id = $this->get('id');
 		$ctrl = $this->get($this->config["ctrl_id"],"system");
 		$func = '';
@@ -1344,7 +1537,7 @@ class _init_phpok
 			$ctrl = $id;
 			$reserved = $this->model('site')->reserved();
 			if(!in_array($id,$reserved)){
-				$ctrl = intval($id)>0 ? 'content' : $this->model('id')->get_ctrl($id,$this->site['id']);
+				$ctrl = is_numeric($id) ? 'content' : $this->model('id')->get_ctrl($id,$this->site['id']);
 				if(!$ctrl){
 					$this->error_404();
 				}
@@ -1353,14 +1546,13 @@ class _init_phpok
 				$cate = $this->get('cate','system');
 				if($cate == 'add' || $cate == 'edit'){
 					$func = $cate;
+					unset($_GET['cate']);
 				}
 			}
 		}
-		//如果没有Ctrl，将读取 index 控制器
 		if(!$ctrl){
 			$ctrl = 'index';
 		}
-		//如果没有Func,将使用 index 
 		if(!$func){
 			$func = $this->get($this->config["func_id"],"system");
 		}
@@ -1369,24 +1561,27 @@ class _init_phpok
 		}
 		//针对乱七八糟的网址，或是路径进行清理
 		if($ctrl == 'index' && $func == 'index'){
-			$uri = $this->lib('server')->uri();
-			if(!$uri){
-				$uri = '/';
-			}
-			$query = $this->lib('server')->query();
+			$uri = $this->data('uri.url');
+			$query = $this->data('uri.query');
 			if($query){
-				$uri = str_replace('?'.$query,'',$uri);
+				$params = $this->config['get_params'] ? explode(",",$this->config['get_params']) : array('uid','phpfile','siteId','_langid');
+				parse_str($query,$tmp);
+				foreach(($tmp ? $tmp : array())  as $key=>$value){
+					if(in_array($key,$params)){
+						unset($tmp[$key]);
+					}
+				}
+				if($tmp && is_array($tmp) && count($tmp)>0){
+					$this->error_404(P_Lang('您的请求信息不正确，请检查（无效参数）'));
+				}
 			}
+			$docu = $this->data('uri.folder');
+			$script_name = $this->data('uri.script');
 			$exit = false;
-			if(file_exists($this->dir_root.$uri)){
+			if(is_file($this->dir_root.$uri)){
 				$exit = true;
 			}
 			$uri = str_replace(array('index.html','index.htm',$this->config['www_file'],'index'),'',$uri);
-			$script_name = $this->lib('server')->phpfile();
-			$docu = $this->lib('server')->me();
-			if($this->lib('server')->path_info()){
-				$docu = substr($docu,0,-(strlen($this->lib('server')->path_info())));
-			}
 			$basename = basename($docu);
 			$folder = $docu;
 			if($basename){
@@ -1396,10 +1591,9 @@ class _init_phpok
 				}
 			}
 			if($uri && $uri != '/' && $folder && $uri != $folder && !$exit){
-				$this->error_404();
+				$this->error_404(P_Lang('您的请求信息不正确，请检查（无效路由）'));
 			}
 		}
-		$this->model('site')->site_id($this->site['id']);
 		$this->_action($ctrl,$func);
 	}
 
@@ -1417,14 +1611,15 @@ class _init_phpok
 			$func = "index";
 		}
 		if($ctrl != 'login' && !$this->config['develop']){
-			if(!$this->lib('server')->referer()){
+			$referer = $this->lib('server')->referer();
+			if(!$referer && !$this->session->val('admin_id')){
 				$ctrl='login';
 				$func = 'index';
-				$this->session->destroy();
 				$this->_location($this->url('login'));
-			}else{
-				$info = parse_url($this->lib('server')->referer());
+			}
+			if($referer){
 				$chk = parse_url($this->url);
+				$info = parse_url($referer);
 				if($info['host'] != $chk['host']){
 					$ctrl = 'login';
 					$func = 'index';
@@ -1515,24 +1710,15 @@ class _init_phpok
 			}
 		}
 		
-		$dir_root = $this->dir_phpok.$this->app_id.'/';
-		if($ctrl == 'js' || $ctrl == 'ajax' || $ctrl == "inp"){
-			$dir_root = $this->dir_phpok;
-		}
-		//加载应用文件
-		if(!file_exists($dir_root.$ctrl.'_control.php')){
-			$this->_error('应用文件：'.$ctrl.'_control.php 不存在，请检查');
-		}
-		include($dir_root.$ctrl.'_control.php');
 		if(file_exists($this->dir_phpok.$this->app_id."/global.func.php")){
 			include($this->dir_phpok.$this->app_id."/global.func.php");
 		}
 		//前台后台都支持自定义加载的 global.func.php
-		if(file_exists($this->dir_root."plugins/global.func.php")){
-			include($this->dir_root."plugins/global.func.php");
+		if(file_exists($this->dir_plugin."global.func.php")){
+			include($this->dir_plugin."global.func.php");
 		}
-		if(file_exists($this->dir_root."extension/global.func.php")){
-			include($this->dir_root."extension/global.func.php");
+		if(file_exists($this->dir_extension."global.func.php")){
+			include($this->dir_extension."global.func.php");
 		}
 		if(file_exists($this->dir_root."gateway/global.func.php")){
 			include($this->dir_root."gateway/global.func.php");
@@ -1540,14 +1726,73 @@ class _init_phpok
 		//允许用户自定义加载 global.func.php 文件
 		//前台及接口支持二个地方加载，分别是：data，phpinc
 		if($this->app_id != 'admin'){
-			if(file_exists($this->dir_root."data/global.func.php")){
-				include($this->dir_root."data/global.func.php");
+			if(file_exists($this->dir_data."global.func.php")){
+				include($this->dir_data."global.func.php");
 			}
 			if(file_exists($this->dir_root."phpinc/global.func.php")){
 				include($this->dir_root."phpinc/global.func.php");
 			}
 		}
-		//执行应用
+
+		//--- 增加 phpok5 写法
+		if(file_exists($this->dir_app.'global.func.php')){
+			include($this->dir_app."global.func.php");
+		}
+		if(file_exists($this->dir_app.$this->app_id.'.func.php')){
+			include($this->dir_app.$this->app_id.".func.php");
+		}
+		$handle = opendir($this->dir_app);
+		$array = array();
+		$protected_ctrl = array();
+		while(false !== ($myfile = readdir($handle))){
+			if($myfile == '.' || $myfile == '..'){
+				continue;
+			}
+			if(substr($myfile,0,1) != '.'){
+				$protected_ctrl[] = $myfile;
+			}
+			if(is_file($this->dir_app.$myfile.'/global.func.php')){
+				include($this->dir_app.$myfile.'/global.func.php');
+			}
+			if(is_file($this->dir_app.$myfile.'/'.$this->app_id.'.func.php')){
+				include($this->dir_app.$myfile.'/'.$this->app_id.'.func.php');
+			}
+		}
+		$this->model('url')->protected_ctrl($protected_ctrl);
+		closedir($handle);
+
+		//自动运行的函数
+		if($this->config[$this->app_id]["autoload_func"]){
+			$list = explode(",",$this->config[$this->app_id]["autoload_func"]);
+			foreach($list as $key=>$value){
+				if(function_exists($value)){
+					$value();
+				}
+			}
+			unset($list);
+		}
+		
+		$appfile = $this->dir_app.$ctrl.'/'.$this->app_id.'.control.php';
+		if($appfile && file_exists($appfile)){
+			$this->_action_phpok5($appfile,$ctrl,$func);
+		}
+		//--- 结束 phpok5 写法
+		// 兼容旧版 phpok4 写法
+		$this->_action_phpok4($ctrl,$func);
+	}
+
+	private function _action_phpok4($ctrl,$func)
+	{
+		$dir_root = $this->dir_phpok.$this->app_id.'/';
+		if($ctrl == 'js' || $ctrl == 'ajax' || $ctrl == "inp"){
+			$dir_root = $this->dir_phpok;
+		}
+		//加载应用文件
+		if(!file_exists($dir_root.$ctrl.'_control.php')){
+			$this->error_404('应用文件：'.$ctrl.'_control.php 不存在，请检查');
+		}
+		include($dir_root.$ctrl.'_control.php');
+
 		$app_name = $ctrl."_control";
 		$this->ctrl = $ctrl;
 		$this->func = $func;
@@ -1556,26 +1801,43 @@ class _init_phpok
 		if(!in_array($func_name,get_class_methods($cls))){
 			$this->_error("控制器 ".$ctrl." 不存在方法 ".$func_name);
 		}
-		//自动运行的函数
-		if($this->config[$this->app_id]["autoload_func"]){
-			$list = explode(",",$this->config["autoload_func"]);
-			foreach($list as $key=>$value){
-				if(function_exists($value)){
-					$value();
-				}
-			}
-			unset($list);
+		$this->config['ctrl'] = $ctrl;
+		$this->config['func'] = $func;
+		$this->config['time'] = $this->time;
+		$this->config['webroot'] = $this->dir_webroot;
+		$this->assign('sys',$this->config);
+		$this->plugin('phpok-before');
+		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-before');
+		if($this->app_id == 'www' && !$this->site['status'] && !$this->session->val('admin_id')){
+			$this->error($this->site["content"]);
+		}
+		$cls->$func_name();
+		exit;
+	}
+
+	private function _action_phpok5($appfile,$ctrl,$func)
+	{
+		include($appfile);
+		$this->ctrl = $ctrl;
+		$this->func = $func;
+		$name = 'phpok\app\control\\'.$ctrl.'\\'.$this->app_id.'_control';
+		$cls = new $name();
+		$func_name = $func."_f";
+		if(!in_array($func_name,get_class_methods($cls))){
+			$this->_error("控制器 ".$ctrl." 不存在方法 ".$func_name);
 		}
 		$this->config['ctrl'] = $ctrl;
 		$this->config['func'] = $func;
 		$this->config['time'] = $this->time;
+		$this->config['webroot'] = $this->dir_webroot;
 		$this->assign('sys',$this->config);
 		$this->plugin('phpok-before');
-		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-before');
-		if($this->app_id == 'www' && !$this->site['status'] && !$_SESSION['admin_id']){
+		$this->plugin('ap-'.$ctrl.'-'.$func.'-before');
+		if($this->app_id == 'www' && !$this->site['status'] && !$this->session->val('admin_id')){
 			$this->error($this->site["content"]);
 		}
 		$cls->$func_name();
+		exit;
 	}
 
 	/**
@@ -1700,8 +1962,18 @@ class _init_phpok
 			header('Content-Type:application/json; charset=utf-8');
 			exit($this->lib('json')->encode(array('status'=>false,'info'=>P_Lang('404错误'))));
 		}
+		if($ajax && is_string($ajax)){
+			$this->tpl->assign('info',$ajax);
+		}
 		if($this->tpl->check_exists('404')){
-			$this->view('404');
+			$this->tpl->display('404');
+			exit;
+		}
+		echo '<h1>404错误</h1>';
+		if($ajax && is_string($ajax)){
+			echo "<p>".$ajax.'</p>';
+		}else{
+			echo '<p>您要访问的页面不存在</p>';
 		}
 		exit;
 	}
@@ -1778,7 +2050,7 @@ class _init_phpok
 			header('Content-Type:application/json; charset=utf-8');
             exit($this->lib('json')->encode($data));
         }
-        if($ajax && is_int($ajax)){
+        if($ajax && (is_int($ajax) || is_float($ajax))){
 	        $this->assign('time',$ajax);
         }
         if($url){
@@ -2064,6 +2336,11 @@ class phpok_model extends _init_auto
 	public $site_id = 0;
 
 	/**
+	 * 缓冲区，用于即时缓存信息，同一条SQL多次请求时直接从缓冲区获取，注意需要手动更新数据
+	**/
+	protected $_buffer = array();
+
+	/**
 	 * 动态加载Model
 	 * @参数 $id 为空用于继承父构造函数，不为空时动态加载其他model类，即实现了多个model的互相调用
 	**/
@@ -2109,6 +2386,24 @@ class phpok_model extends _init_auto
 		}else{
 			return 5;
 		}
+	}
+
+	/**
+	 * 获取或保存缓冲区信息
+	 * @参数 $sql 缓冲区标识
+	 * @参数 $data 要保存的缓存信息
+	**/
+	protected function _buffer($sql,$data='')
+	{
+		$id = "sql".md5($sql);
+		if(isset($data) && $data != ''){
+			$this->_buffer[$id] = $data;
+			return true;
+		}
+		if(isset($this->_buffer[$id])){
+			return $this->_buffer[$id];
+		}
+		return false;
 	}
 }
 
@@ -2188,7 +2483,7 @@ class phpok_plugin extends _init_auto
 		if(!$file){
 			return false;
 		}
-		return $this->fetch($file,'abs-file');
+		return $this->tpl->fetch($file,'abs-file');
 	}
 
 	/**
@@ -2215,7 +2510,8 @@ class phpok_plugin extends _init_auto
 	{
 		$file = $this->_tplfile($name,$id);
 		if($file){
-			$this->view($file,'abs-file');
+			$this->tpl->display($file,'abs-file');
+			exit;
 		}
 	}
 

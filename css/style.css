@@ -1,4 +1,4 @@
-﻿/* 后台全局样式 */
+/* 后台全局样式 */
 html{font-size:12px;font-family:"Microsoft Yahei","宋体","Arial","Tahoma";margin:0;padding:0;}
 body{margin:0 auto;padding:0;width:1200px;}
 img{border:0 none;margin:0;padding:0;}
@@ -95,10 +95,6 @@ a:hover{text-decoration:underline;color:darkblue;}
 .foot{text-align:left;border-top:1px solid #ccc;padding:7px 5px;font-family:"Tahoma","Arial";line-height:22px;height:40px;color:#929292;}
 .foot a{color:#929292;}
 .foot .foot_right{float:right;text-align:right;display:block;height:40px;line-height:40px;font-weight:bold;font-size:14px;}
-/* 管理员个人中心 */
-ul.admin_panel{list-style:none;margin:0;padding:0;}
-ul.admin_panel li{float:left;margin-right:10px;width:100px;height:31px;background:url("../images/button.png") 0 -62px no-repeat;text-align:center;margin-top:10px;line-height:29px;cursor:pointer;}
-ul.admin_panel li.hover{background-position:0 -93px;}
 
 .list{margin-top:5px;margin-right:0;}
 .list th{padding:0;border-bottom:2px solid #E5E5E5;height:25px;background:#D1D1D1;}
@@ -159,7 +155,7 @@ input.submit,input.button,input.btn,input.ext_btn{
 	margin:0 0 0 3px;
 	padding:2px 6px;
 	text-align:center;
-	background:#ECECEC url("../images/btn_bg.jpg") center center repeat-x;
+	background:#ECECEC;
 	color:#000;
 }
 input.submit{color:darkred;font-weight:bold;}
@@ -179,11 +175,29 @@ td.id{text-align:center;}
 .tips_ajax{padding:20px;}
 
 /*常用按钮图标*/
-a.icon{background:url("../images/icons.gif") no-repeat;width:16px;height:16px;display:block;float:left;margin-left:3px;margin-right:2px;cursor:pointer;}
+a.icon{
+	width:16px;
+	height:16px;
+	display:block;
+	float:left;
+	margin-left:3px;
+	margin-right:2px;
+	cursor:pointer;
+	font-family:'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
 a.add{background-position:0 0;}
-a.edit{background-position:-16px 0;}
-a.delete{background-position:-32px 0;}
-a.del2{background-position:-16px -32px;}
+a.edit:before{content:"\e601"}
+a.delete:before{content:"\e685"}
+a.del2:before{content:"\e685"}
 a.attr{background-position:-48px 0;}
 a.field{background-position:-48px 0;}
 a.none{background-position:right -70px;}

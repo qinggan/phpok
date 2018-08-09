@@ -20,6 +20,12 @@ class index_control extends phpok_control
 
 	public function index_f()
 	{
+		$this->_index();
+		$this->view('index');
+	}
+
+	private function _index()
+	{
 		if(!$this->license_code){
 			$this->license = "LGPL";
 		}
@@ -38,15 +44,15 @@ class index_control extends phpok_control
 		$this->assign("license",$code);
 		$this->assign("version",$this->version);
 		$sitelist = $this->model('site')->get_all_site();
-		if(!$_SESSION['admin_rs']['if_system']){
+		if(!$this->session->val('admin_rs.if_system')){
 			foreach($sitelist as $key=>$value){
-				$chk_popedom = $this->model('popedom')->site_popedom($value['id'],$_SESSION['admin_id']);
+				$chk_popedom = $this->model('popedom')->site_popedom($value['id'],$this->session->val('admin_id'));
 				if(!$chk_popedom){
 					unset($sitelist[$key]);
 				}
 			}
 			if(!$sitelist){
-				error(P_Lang('没有找到相关权限，请联系管理员'));
+				$this->error(P_Lang('没有找到相关权限，请联系管理员'));
 			}
 		}
 		$this->assign('sitelist',$sitelist);
@@ -85,6 +91,10 @@ class index_control extends phpok_control
 				continue;
 			}
 			foreach($value["sublist"] as $k=>$v){
+				if($v['appfile'] == 'all' || $v['appfile'] == 'list'){
+					unset($value['sublist'][$k]);
+					continue;
+				}
 				if(!in_array($v['appfile'],$ftmp) && !$_SESSION['admin_rs']['if_system'] && $popedom_m[$v['id']]){
 					if(!$popedom_m || !$popedom_m[$v['id']] || !is_array($popedom_m[$v['id']]) || count($popedom_m[$v["id"]])<1){
 						unset($value["sublist"][$k]);
@@ -120,7 +130,9 @@ class index_control extends phpok_control
 			}
 			$menulist[$key] = $value;
 		}
-		$this->assign('menulist',$menulist);
+		if($this->session->val('admin_rs.if_system') && $this->session->val('adm_develop')){
+			$this->assign('menulist',$menulist);
+		}
 		//检测插件列表有没有快捷图标
 		$plugin_mlist = $plugin_alist = $plugin_glist = array();
 		if($this->plugin && is_array($this->plugin)){
@@ -152,14 +164,14 @@ class index_control extends phpok_control
 				}
 			}
 		}
-		$iconlist = false;
-		if($menulist){
+		$iconlist = array();
+		if($menulist && !$this->session->val('adm_develop')){
 			foreach($menulist as $key=>$value){
 				if(!$value['sublist']){
 					continue;
 				}
 				foreach($value['sublist'] as $k=>$v){
-					if(!$v['icon']){
+					if(!$v['icon'] || $v['appfile'] == 'list' || $v['appfile'] == 'all'){
 						continue;
 					}
 					$iconlist[] = $v;
@@ -181,11 +193,30 @@ class index_control extends phpok_control
 		$this->list_setting($plugin_glist);
 		if($this->config['multiple_language']){
 			$langlist = $this->model('lang')->get_list();
+			if($langlist){
+				$language = '简体中文';
+				foreach($langlist as $key=>$value){
+					if($key == $this->session->val('admin_lang_id')){
+						$language = $value;
+						break;
+					}
+				}
+				$this->assign('language',$language);
+			}
 			$this->assign('langlist',$langlist);
 		}
-		$this->view("index");
+		$logo = ($this->site['adm_logo29'] && is_file($this->site['adm_logo29'])) ? $this->site['adm_logo29'] : 'images/admin.svg';
+		$this->assign('logo',$logo);
 	}
 
+	/**
+	 * 默认首页
+	**/
+	public function homepage_f()
+	{
+		$this->_index();
+		$this->view('homepage');
+	}
 	public function all_setting_f()
 	{
 		$info = $this->all_info();
@@ -386,10 +417,10 @@ class index_control extends phpok_control
 			$this->lib('async')->start($taskurl);
 		}
 		//远程检查更新
-		if(file_exists($this->dir_root.'data/update.php')){
-			include($this->dir_root.'data/update.php');
+		if(file_exists($this->dir_data.'update.php')){
+			include($this->dir_data.'update.php');
 			$time = 0;
-			if(file_exists($this->dir_root.'data/update.time')){
+			if(file_exists($this->dir_data.'update.time')){
 				$time = $this->lib('file')->cat($this->dir_data.'update.time');
 			}
 			$check = false;
@@ -424,4 +455,5 @@ class index_control extends phpok_control
 		}
 		$this->success($list);
 	}
+
 }

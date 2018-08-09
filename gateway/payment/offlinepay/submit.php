@@ -13,7 +13,6 @@ class offlinepay_submit
 	private $order;
 	private $param;
 	private $obj;
-	//order，订单信息
 	public function __construct($order,$param)
 	{
 		$this->param = $param;
@@ -33,4 +32,3 @@ class offlinepay_submit
 		$app->view($this->param['param']['tplfile']);
 	}
 }
-?>

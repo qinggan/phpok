@@ -229,4 +229,52 @@ class plugin_model extends plugin_model_base
 		}
 		return $list;
 	}
+
+	/**
+	 * 执行SQL
+	 * @参数 $sql 要执行的SQL
+	 * @参数 $isfile 是否文件，有判断布尔值，如果是数组，会覆盖第三个参数
+	 * @参数 $breaktables 忽略的表
+	**/
+	public function loadsql($sql='',$isfile=false,$breaktables=array())
+	{
+		if($isfile && is_bool($isfile) && !file_exists($sql)){
+			return false;
+		}
+		if($isfile && is_bool($isfile)){
+			$sql = file_get_contents($sql);
+		}
+		if($isfile && is_array($isfile)){
+			$breaktables = $isfile;
+		}
+		$sql = str_replace("\r","\n",$sql);
+		if($this->db->prefix != 'qinggan_'){
+			$sql = str_replace("qinggan_",$this->db->prefix,$sql);
+		}
+		$ret = array();
+		$num = 0;
+		foreach(explode(";\n", trim($sql)) as $query){
+			$queries = explode("\n", trim($query));
+			foreach($queries as $query){
+				$ret[$num] .= $query[0] == '#' || $query[0].$query[1] == '--' ? '' : $query;
+			}
+			$num++;
+		}
+		foreach($ret as $query){
+			$query = trim($query);
+			if(!$query){
+				continue;
+			}
+			if($breaktables && count($breaktables)>0 && is_array($breaktables) && strpos(strtolower($query),'create table') !== false){
+				foreach($breaktables as $k=>$v){
+					if(strpos($query,$v) !== true){
+						$this->db->query($sql);
+					}
+				}
+			}else{
+				$this->db->query($query);
+			}
+		}
+		return true;
+	}
 }

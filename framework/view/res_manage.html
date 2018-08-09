@@ -1,23 +1,26 @@
 <!-- include tpl=head -->
+<!-- if $sys.ctrl != 'res' -->
+<script type="text/javascript" src="{url ctrl=js func=ext js=admin.res.js /}"></script>
+<!-- /if -->
 <script type="text/javascript">
 function save()
 {
 	var obj = art.dialog.opener;
 	$("#editopen").ajaxSubmit({
-		'url':get_url('upload','editopen_save','id={$rs.id}'),
+		'url':get_url('res','setok'),
 		'type':'post',
 		'dataType':'json',
 		'success':function(rs){
-			if(rs.status == 'ok'){
-				$.dialog.alert('附件信息修改成功',function(){
-					obj.$.phpok.reload();
-				},'succeed');
-			}else{
-				$.dialog.alert(rs.content);
-				return false;
+			if(rs.status){
+				$.dialog.close();
+				$.dialog.tips(p_lang('附件信息修改成功'));
+				return true;
 			}
+			$.dialog.alert(rs.info);
+			return false;
 		}
 	});
+	return true;
 }
 function download_it(id)
 {
@@ -85,14 +88,51 @@ $(document).ready(function(){
 <!-- if $rs.attr && $rs.attr.width && $rs.attr.height -->
 <div class="table">
 	<div class="title">
-		附件宽高：
-		<span class="note">此参数不允许人工修改，系统自动读取</span>
+		{lang附件宽高}
+		<span class="note">{lang此参数不允许人工修改，系统自动读取}</span>
 	</div>
 	<div class="content">
-		<input type="text" disabled name="attr[width]" value="{$rs.attr.width}" class="short" /> &#215; <input type="text" disabled name="attr[height]" value="{$rs.attr.height}" class="short" />
+		<table>
+		<tr>
+			<td><input type="text" disabled name="attr[width]" value="{$rs.attr.width}" class="short" /></td>
+			<td>&#215;</td>
+			<td><input type="text" disabled name="attr[height]" value="{$rs.attr.height}" class="short" /></td>
+			<!-- if $resize -->
+			<!-- if $rs.ext == 'jpg' || $rs.ext == 'jpeg' -->
+			<td>
+				<select id="ptype">
+					<option value="60">{lang较小文件}</option>
+					<option value="80" selected>{lang较大文件}</option>
+					<option value="100">{lang百分百精度}</option>
+				</select>
+			</td>
+			<!-- /if -->
+			<td>
+				<select id="resize">
+					<option value="0">{lang默认宽高}</option>
+					<!-- if $rs.attr.width > 2048 -->
+					<option value="2048">{lang限宽}2048</option>
+					<!-- /if -->
+					<!-- if $rs.attr.width > 1024 -->
+					<option value="1024">{lang限宽}1024</option>
+					<!-- /if -->
+					<!-- if $rs.attr.width > 800 -->
+					<option value="800">{lang限宽}800</option>
+					<!-- /if -->
+				</select>
+			</td>
+			<td><input type="button" value="{lang压缩图片}" onclick="$.admin_res.zipit('{$rs.id}','{$rs.ext}')" class="phpok-btn" /></td>
+			<!-- /if -->
+		</tr>
+		</table>
 	</div>
+	<!-- if $resize && $filesize -->
+	<div>{lang当前文件大小是} <span class="red">{$filesize}</span></div>
+	<!-- /if -->
 </div>
 <!-- /if -->
+
+
 
 <div class="table">
 	<div class="title">

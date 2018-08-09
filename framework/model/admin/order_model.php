@@ -66,26 +66,6 @@ class order_model extends order_model_base
 		return $this->db->query($sql);
 	}
 
-	public function log_save($data)
-	{
-		if(!$data){
-			return false;
-		}
-		if(!$data['who']){
-			$adminer = $this->model('admin')->get_one($_SESSION['admin_id']);
-			$who = $adminer['fullname'] ? $adminer['fullname'].'('.$adminer['account'].')' : $adminer['account'];
-			$data['who'] = $who;
-		}
-		$data['addtime'] = $this->time;
-		return $this->db->insert_array($data,'order_log');
-	}
-
-	public function log_list($order_id)
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."order_log WHERE order_id='".$order_id."' ORDER BY addtime ASC,id ASC";
-		return $this->db->get_all($sql);
-	}
-
 	public function get_list($condition='',$offset=0,$psize=30)
 	{
 		$sql = " SELECT o.*,u.user FROM ".$this->db->prefix."order o ";
@@ -119,11 +99,20 @@ class order_model extends order_model_base
 			}
 			unset($tmplist);
 		}
-		$sql = "SELECT order_id,SUM(price) paid FROM ".$this->db->prefix."order_payment WHERE order_id IN(".$ids.") AND dateline>0 GROUP BY order_id";
-		$tmplist = $this->db->get_all($sql,'order_id');
+		$sql = "SELECT * FROM ".$this->db->prefix."order_payment WHERE order_id IN(".$ids.") AND dateline>0";
+		$tmplist = $this->db->get_all($sql);
 		if($tmplist){
+			$paid_list = array();
+			foreach($tmplist as $key=>$value){
+				$currency_id = (isset($value['currency_id']) && $value['currency_id']) ? $value['currency_id'] : $rslist[$value['order_id']]['currency_id'];
+				if(!isset($paid_list[$value['order_id']])){
+					$paid_list[$value['order_id']] = 0;
+				}
+				$tmp = price_format_val($value['price'],$currency_id,$rslist[$value['order_id']]['currency_id']);
+				$paid_list[$value['order_id']] += floatval($tmp);
+			}
 			foreach($rslist as $key=>$value){
-				$value['paid'] = $tmplist[$value['id']] ? $tmplist[$value['id']]['paid'] : 0;
+				$value['paid'] = $paid_list[$value['id']] ? $paid_list[$value['id']] : 0;
 				$value['unpaid'] = round(($value['price'] - $value['paid']),4);
 				$rslist[$key] = $value;
 			}

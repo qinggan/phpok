@@ -128,17 +128,14 @@ function search_set(val){
 		<span class="note">{lang指定该字段的搜索类型，使用区间搜索需要设置分隔符}</span>
 	</div>
 	<div class="content">
-		<table>
-		<tr>
-			<td><label><input type="radio" name="search" value="0" checked onclick="search_set(0)" />{lang不支持搜索}</label></td>
-			<td><label><input type="radio" name="search" value="1" onclick="search_set(1)" />{lang完全匹配搜索}</label></td>
-			<td><label><input type="radio" name="search" value="2" onclick="search_set(2)" />{lang部分匹配搜索}</label></td>
-			<td><label><input type="radio" name="search" value="3" onclick="search_set(3)" />{lang区间搜索}</label></td>
-			<td id="search_separator_html"  style="display:none">
-				<input type="text" name="search_separator" id="search_separator" class="short" value="{$rs.search_separator}" placeholder="{lang分隔符}" />
-			</td>
-		</tr>
-		</table>
+		<ul class="layout">
+			<li><label><input type="radio" name="search" value="0"{if !$rs.search} checked{/if} onclick="search_set(0)" />{lang不支持搜索}</label></li>
+			<li><label><input type="radio" name="search" value="1"{if $rs.search == 1} checked{/if} onclick="search_set(1)" />{lang完全匹配搜索}</label></li>
+			<li><label><input type="radio" name="search" value="2"{if $rs.search == 2} checked{/if} onclick="search_set(2)" />{lang部分匹配搜索}</label></li>
+			<li><label><input type="radio" name="search" value="3"{if $rs.search == 3} checked{/if} onclick="search_set(3)" />{lang区间搜索}</label></li>
+			<li id="search_separator_html" {if !$rs.search || $rs.search != 3}style="display:none"{/if}><input type="text" name="search_separator" id="search_separator" class="short" value="{$rs.search_separator}" placeholder="{lang分隔符}" /></li>
+		</ul>
+		<div class="clear"></div>
 	</div>
 </div>
 </form>

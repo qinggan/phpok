@@ -46,10 +46,10 @@ class inp_control extends phpok_control
 		if(!$file){
 			$this->json(P_Lang('未指定XML文件'));
 		}
-		if(!file_exists($this->dir_root.'data/xml/'.$file.'.xml')){
+		if(!file_exists($this->dir_data.'xml/'.$file.'.xml')){
 			$this->json(P_Lang('XML文件不存在'));
 		}
-		$info = $this->lib('xml')->read($this->dir_root.'data/xml/'.$file.'.xml');
+		$info = $this->lib('xml')->read($this->dir_data.'xml/'.$file.'.xml');
 		$this->json($info,true);
 	}
 

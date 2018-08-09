@@ -14,6 +14,7 @@ class upload_lib
 {
 	private $folder = 'res/';
 	private $dir_root = '/';
+	private $dir_cache = '/';
 	private $file_type = 'jpg,png,gif,zip,rar,jpeg';
 	private $cateid = 0;
 	private $up_error;
@@ -23,6 +24,7 @@ class upload_lib
 	{
 		global $app;
 		$this->dir_root = $app->dir_root;
+		$this->dir_cache = $app->dir_cache;
 		$this->up_error = array(
 			 0 => P_Lang('上传成功'),
 			 1 => P_Lang('上传的文件超过了 php.ini 中 upload_max_filesize 选项限制的值'),
@@ -115,7 +117,7 @@ class upload_lib
 	/**
 	 * 上传ZIP文件
 	 * @参数 $input，表单名
-	 * @参数 $folder，存储目录，为空使用data/cache/
+	 * @参数 $folder，存储目录，为空使用_cache
 	 * @返回 数组，上传状态status及保存的路径
 	 * @更新时间 2016年07月18日
 	**/
@@ -126,7 +128,7 @@ class upload_lib
 		}
 		//如果未指定存储文件夹，则使用
 		if(!$folder){
-			$folder = 'data/cache/';
+			$folder = $this->dir_cache;
 		}
 		$this->cateid = 0;
 		$this->set_dir($folder);
@@ -180,7 +182,7 @@ class upload_lib
 	    $tmpname = $app->format($tmpname);
 		$tmpid = 'u_'.md5($tmpname);
 		$ext = $this->file_ext($tmpname);
-		$out_tmpfile = $this->dir_root.'data/cache/'.$tmpid.'_'.$chunk;
+		$out_tmpfile = $this->dir_cache.$tmpid.'_'.$chunk;
 		if (!$out = @fopen($out_tmpfile.".parttmp", "wb")) {
 			return array('status'=>'error','error'=>P_Lang('无法打开输出流'));
 		}
@@ -203,7 +205,7 @@ class upload_lib
 		$index = 0;
 		$done = true;
 		for($index=0;$index<$chunks;$index++) {
-		    if (!file_exists($this->dir_root.'data/cache/'.$tmpid.'_'.$index.".part") ) {
+		    if (!file_exists($this->dir_cache.$tmpid.'_'.$index.".part") ) {
 		        $done = false;
 		        break;
 		    }
@@ -217,14 +219,14 @@ class upload_lib
 	    }
 	    if(flock($out,LOCK_EX)){
 	        for($index=0;$index<$chunks;$index++) {
-	            if (!$in = @fopen($this->dir_root.'data/cache/'.$tmpid.'_'.$index.'.part','rb')){
+	            if (!$in = @fopen($this->dir_cache.$tmpid.'_'.$index.'.part','rb')){
 	                break;
 	            }
 	            while ($buff = fread($in, 4096)) {
 	                fwrite($out, $buff);
 	            }
 	            @fclose($in);
-	            $app->lib('file')->rm($this->dir_root.'data/cache/'.$tmpid."_".$index.".part");
+	            $app->lib('file')->rm($this->dir_cache.$tmpid."_".$index.".part");
 	        }
 	        flock($out,LOCK_UN);
 	    }
@@ -253,7 +255,7 @@ class upload_lib
 			$chunks = 1;
 		}
 		$tmpid = 's_'.md5($tmpname);
-		$out_tmpfile = $this->dir_root.'data/cache/'.$tmpid.'_'.$chunk;
+		$out_tmpfile = $this->dir_cache.$tmpid.'_'.$chunk;
 		if (!$out = @fopen($out_tmpfile.".parttmp", "wb")) {
 			return array('status'=>'error','error'=>P_Lang('无法打开输出流'));
 		}
@@ -269,7 +271,7 @@ class upload_lib
 		$index = 0;
 		$done = true;
 		for($index=0;$index<$chunks;$index++) {
-		    if (!file_exists($this->dir_root.'data/cache/'.$tmpid.'_'.$index.".part") ) {
+		    if (!file_exists($this->dir_cache.$tmpid.'_'.$index.".part") ) {
 		        $done = false;
 		        break;
 		    }
@@ -283,14 +285,14 @@ class upload_lib
 	    }
 	    if(flock($out,LOCK_EX)){
 	        for($index=0;$index<$chunks;$index++) {
-	            if (!$in = @fopen($this->dir_root.'data/cache/'.$tmpid.'_'.$index.'.part','rb')){
+	            if (!$in = @fopen($this->dir_cache.$tmpid.'_'.$index.'.part','rb')){
 	                break;
 	            }
 	            while ($buff = fread($in, 4096)) {
 	                fwrite($out, $buff);
 	            }
 	            @fclose($in);
-	            $app->lib('file')->rm($this->dir_root.'data/cache/'.$tmpid."_".$index.".part");
+	            $app->lib('file')->rm($this->dir_cache.$tmpid."_".$index.".part");
 	        }
 	        flock($out,LOCK_UN);
 	    }

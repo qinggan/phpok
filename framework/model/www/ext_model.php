@@ -19,19 +19,16 @@ class ext_model extends ext_model_base
 	//读取分类下的全部扩展
 	public function cate()
 	{
-		$sql = "SELECT e.*,c.content content_val FROM ".$this->db->prefix."ext e ";
+		$sql = "SELECT e.*,c.content content_val FROM ".$this->db->prefix."fields e ";
 		$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(e.id=c.id) ";
-		$sql.= "WHERE e.module='cate-%' ";
+		$sql.= "WHERE e.ftype='cate-%' ";
 		$sql.= "ORDER BY e.taxis asc,id DESC";
 		$rslist = $this->db->get_all($sql,'id');
-		if(!$rslist)
-		{
+		if(!$rslist){
 			return false;
 		}
-		foreach($rslist AS $key=>$value)
-		{
-			if($value['content_val'])
-			{
+		foreach($rslist as $key=>$value){
+			if($value['content_val']){
 				$value["content"] = $value['content_val'];
 			}
 			unset($value['content_val']);
@@ -39,14 +36,11 @@ class ext_model extends ext_model_base
 		}
 		$rslist = $this->_format($rslist);
 		$tmplist = false;
-		foreach($rslist as $key=>$value)
-		{
-			if($value['form_type'] == 'url' && $value['content'])
-			{
+		foreach($rslist as $key=>$value){
+			if($value['form_type'] == 'url' && $value['content']){
 				$tmplist['_url'] = $value['content'];
 			}
-			if($value['form_type'] == 'editor')
-			{
+			if($value['form_type'] == 'editor'){
 				$value['content'] = $this->lib('ubb')->to_html($value['content'],false);
 			}
 			$tmplist[$value['module']][$value['identifier']] = $value['content'];

@@ -1,77 +1,81 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/admin/payment_control.php
-	备注： 支付管理工具，用于管理接口信息
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2014年4月22日
-*****************************************************************************************/
+/**
+ * 支付管理工具，用于管理接口信息
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年05月09日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class payment_control extends phpok_control
 {
-	public $popedom;
+	private $popedom;
 	
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 		$this->popedom = appfile_popedom("payment");
 		$this->assign("popedom",$this->popedom);
 	}
 
-	//读取所有可用的支付接口
-	function index_f()
+	/**
+	 * 读取所有可用的支付接口
+	**/
+	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		//取得符合要求的全部组
 		$rslist = $this->model('payment')->group_all($_SESSION['admin_site_id']);
-		if($rslist)
-		{
-			foreach($rslist AS $key=>$value)
-			{
+		if($rslist){
+			foreach($rslist as $key=>$value){
 				$rslist[$key]['paylist'] = $this->model('payment')->get_all("p.gid=".$value['id']);
 			}
 			$this->assign('rslist',$rslist);
 		}
 		$codelist = $this->model('payment')->code_all();
 		$this->assign('codelist',$codelist);
-		
 		$this->view('payment_index');
 	}
 
-	//设置支付组信息
-	function groupset_f()
+	/**
+	 * 设置支付组信息
+	**/
+	public function groupset_f()
 	{
 		$id = $this->get('id','int');
 		if($id){
 			if(!$this->popedom["groupedit"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$rs = $this->model('payment')->group_one($id);
 			$this->assign('rs',$rs);
 			$this->assign('id',$id);
 		}else{
 			if(!$this->popedom["groupadd"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		$this->view('payment_groupset');
 	}
 
-	//存储支付组信息
-	function groupsave_f()
+	/**
+	 * 存储支付组信息，返回JSON数据
+	**/
+	public function groupsave_f()
 	{
 		$id = $this->get('id','int');
 		$popedom_id = $id ? 'groupedit' : 'groupadd';
 		if(!$this->popedom[$popedom_id]){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$title = $this->get('title');
-		if(!$title)
-		{
-			$this->json(P_Lang('名称不能为空'));
+		if(!$title){
+			$this->error(P_Lang('名称不能为空'));
 		}
 		$data = array('site_id'=>$_SESSION['admin_site_id'],'title'=>$title);
 		$data['taxis'] = $this->get('taxis','int');
@@ -80,16 +84,16 @@ class payment_control extends phpok_control
 		$insert = $this->model('payment')->groupsave($data,$id);
 		if(!$insert){
 			$tip = $id ? P_Lang('编辑失败') : P_Lang('添加失败');
-			$this->json($tip);
+			$this->error($tip);
 		}
 		if($id){
 			$insert = $id;
 		}
 		$default = $this->get('is_default','int');
 		if($default){
-			$this->model('payment')->group_set_default($insert,$_SESSION['admin_site_id']);
+			$this->model('payment')->group_set_default($insert,$this->session->val('admin_site_id'));
 		}
-		$this->json(true,true);
+		$this->success();
 	}
 
 

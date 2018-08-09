@@ -15,6 +15,7 @@ class phpok_call extends _init_auto
 {
 	private $mlist;
 	private $phpoklist;
+	private $_cache;
 	public function __construct()
 	{
 		parent::__construct();
@@ -26,7 +27,14 @@ class phpok_call extends _init_auto
 	private function load_phpoklist($id,$siteid=0)
 	{
 		$this->model('call')->site_id($siteid);
-		return $this->model('call')->one($id);
+		if($this->_cache && $this->_cache[$id]){
+			return $this->_cache[$id];
+		}
+		$this->_cache = $this->model('call')->all($siteid,'identifier');
+		if($this->_cache && $this->_cache[$id]){
+			return $this->_cache[$id];
+		}
+		return false;
 	}
 
 	private function _phpok_sys_func()
@@ -40,6 +48,7 @@ class phpok_call extends _init_auto
 		$array[] = 'subtitle';
 		$array[] = 'comment';
 		$array[] = 'sql';
+		$array[] = 'condition';
 		return $array;
 	}
 
@@ -119,6 +128,29 @@ class phpok_call extends _init_auto
 		return $this->$func($call_rs,$cache_id);
 	}
 
+	//生成查询条件
+	private function _condition($rs)
+	{
+		if($rs['project'] && is_array($rs['project'])){
+			$project = $rs['project'];
+			unset($rs['project']);
+		}else{
+			$project = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
+			if(!$project || !$project['status'] || !$project['module']){
+				return false;
+			}
+		}
+		if(!$project){
+			return false;
+		}
+		if($rs['module_fields'] && is_array($rs['module_fields'])){
+			$flist = $rs['module_fields'];
+			unset($rs['module_fields']);
+		}else{
+			$flist = $this->model('module')->fields_all($project['module']);
+		}
+		return $this->_arc_condition($rs,$flist,$project);
+	}
 	//自定义SQL
 	private function _sql($rs,$cache_id='')
 	{
@@ -710,7 +742,8 @@ class phpok_call extends _init_auto
 		if(!$tmpid){
 			return false;
 		}
-		$arc = $this->model('content')->get_one($tmpid);
+		$need_status = $param['not_status'] ? false : true;
+		$arc = $this->model('content')->get_one($tmpid,$need_status);
 		if(!$arc){
 			return false;
 		}
@@ -765,9 +798,9 @@ class phpok_call extends _init_auto
 		//如果未绑定网址
 		if(!$arc['url']){
 			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
-			$tmpext = 'project='.$project['identifier'];
+			$tmpext = '';
 			if($cate){
-				$tmpext .= "&cate=".$cate['identifier']."&cateid=".$cate['id'];
+				$tmpext = "cate=".$cate['identifier']."&cateid=".$cate['id'];
 			}
 			$arc['url'] = $this->url($url_id,'',$tmpext,'www');
 		}
@@ -777,25 +810,30 @@ class phpok_call extends _init_auto
 			return $arc;
 		}
 		$cate['url'] = $this->url($project['identifier'],$cate['identifier'],'','www');
+		$tmplist = array();
+		foreach($arc['_catelist'] as $key=>$value){
+			$tmplist[] = 'cate-'.$value['id'];
+		}
+		$tmplist = array_unique($tmplist);
+		$tmplist = $this->model('ext')->get_all($tmplist,true);
+		if(!$tmplist){
+			foreach($arc['_catelist'] as $key=>$value){
+				$arc['_catelist'][$key]['url'] = $this->url($project['identifier'],$value['identifier'],'','www');
+			}
+			return $arc;
+		}
+		//执行
 		foreach($arc['_catelist'] as $k=>$v){
-			$cate_tmp = $this->model('ext')->ext_all('cate-'.$v['id'],true);
+			$cate_tmp = isset($tmplist['cate-'.$v['id']]) ? $tmplist['cate-'.$v['id']] : false;
 			if(!$cate_tmp){
+				$arc['_catelist'][$k]['url'] = $this->url($project['identifier'],$v['identifier'],'','www');
 				continue;
 			}
-			foreach($cate_tmp as $key=>$value){
-				$cate_ext[$value['identifier']] = $this->lib('form')->show($value);
-				if($value['form_type'] == 'url' && $value['content']){
-					$value['content'] = unserialize($value['content']);
-					$arc['_catelist'][$k]['url'] = $value['content']['default'];
-					if($this->site['url_type'] == 'rewrite' && $value['content']['rewrite']){
-						$arc['_catelist'][$k]['url'] = $value['content']['rewrite'];
-					}
-				}
-				$arc['_catelist'][$k][$value['identifier']] = $cate_ext[$value['identifier']];
+			$tmp = array_merge($cate_tmp,$v);
+			if(!$tmp['url']){
+				$tmp['url'] = $this->url($project['identifier'],$value['identifier'],'','www');
 			}
-			if(!$arc['_catelist'][$k]['url']){
-				$arc['_catelist'][$k]['url'] = $this->url($project['identifier'],$value['identifier'],'','www');
-			}
+			$arc['_catelist'][$k] = $tmp;
 		}
 		return $arc;
 	}
@@ -900,24 +938,21 @@ class phpok_call extends _init_auto
 		if(!$cate_all){
 			return false;
 		}
-		foreach($cate_all as $k=>$v){
-			$cate_tmp = $this->model('ext')->ext_all('cate-'.$v['id'],true);
-			if($cate_tmp){
-				$cate_ext = array();
-				foreach($cate_tmp as $key=>$value){
-					$cate_ext[$value['identifier']] = $this->lib('form')->show($value);
-					if($value['form_type'] == 'url' && $value['content']){
-						$value['content'] = unserialize($value['content']);
-						$v['url'] = $value['content']['default'];
-						if($this->site['url_type'] == 'rewrite' && $value['content']['rewrite']){
-							$v['url'] = $value['content']['rewrite'];
-						}
-					}
+		$tmplist = array();
+		foreach($cate_all as $key=>$value){
+			$tmplist[] = 'cate-'.$value['id'];
+		}
+		$tmplist = array_unique($tmplist);
+		$tmplist = $this->model('ext')->get_all($tmplist,true);
+		if($tmplist){
+			foreach($cate_all as $k=>$v){
+				$cate_tmp = isset($tmplist['cate-'.$v['id']]) ? $tmplist['cate-'.$v['id']] : false;
+				if(!$cate_tmp){
+					continue;
 				}
-				$v = array_merge($cate_ext,$v);
-				unset($cate_ext,$cate_tmp);
+				$v = array_merge($cate_tmp,$v);
+				$cate_all[$k] = $v;
 			}
-			$cate_all[$k] = $v;
 		}
 		$this->model('data')->cate_sublist($list,$project_rs['cate'],$cate_all,$project_rs['identifier']);
 		if(!$list || !is_array($list) || count($list)<1){
@@ -968,24 +1003,14 @@ class phpok_call extends _init_auto
 			unset($rs);
 			return false;
 		}
-		//增加扩展分类
-		$cate_tmp = $this->model('ext')->ext_all('cate-'.$rs['cateid'],true);
-		//格式化扩展内容
-		if($cate_tmp){
-			foreach($cate_tmp as $key=>$value){
-				$cate_ext[$value['identifier']] = $this->lib('form')->show($value);
-				if($value['form_type'] == 'url' && $value['content']){
-					$value['content'] = unserialize($value['content']);
-					$cate['url'] = $value['content']['default'];
-					if($this->site['url_type'] == 'rewrite' && $value['content']['rewrite']){
-						$cate['url'] = $value['content']['default'];
-					}
-				}
-			}
-			$cate = array_merge($cate_ext,$cate);
-			unset($cate_ext,$cate_tmp);
+		$extlist = $this->model('ext')->get_all_like('cate');
+		if($extlist && $extlist['cate-'.$rs['cateid']]){
+			$cate = array_merge($extlist['cate-'.$rs['cateid']],$cate);
 		}
 		if($cate['url']){
+			if($cache_id){
+				$this->cache->save($cache_id,$cate);
+			}
 			return $cate;
 		}
 		if(!$rs['pid'] && $rs['phpok']){
@@ -1190,34 +1215,41 @@ class phpok_call extends _init_auto
 		if(!$cate_all){
 			return false;
 		}
-		$list = false;
+		$list = array();
+		$tmplist = array();
+		foreach($cate_all as $key=>$value){
+			$tmplist[] = 'cate-'.$value['id'];
+		}
+		$tmplist = array_unique($tmplist);
+		$tmplist = $this->model('ext')->get_all($tmplist,true);
+		if(!$tmplist){
+			foreach($cate_all as $k=>$v){
+				if($v['parent_id'] != $rs['cateid']){
+					continue;
+				}
+				if(!$v['url'] && $project){
+					$v['url'] = $this->url($project['identifier'],$v['identifier']);
+				}
+				$list[$k] = $v;
+			}
+			return $list;
+		}
 		foreach($cate_all as $k=>$v){
 			if($v['parent_id'] != $rs['cateid']){
 				continue;
 			}
-			
-			$cate_tmp = $this->model('ext')->ext_all('cate-'.$v['id'],true);
+
+			$cate_tmp = isset($tmplist['cate-'.$v['id']]) ? $tmplist['cate-'.$v['id']] : false;
 			if($cate_tmp){
-				foreach($cate_tmp as $key=>$value){
-					$cate_ext[$value['identifier']] = $this->lib('form')->show($value);
-					if($value['form_type'] == 'url' && $value['content']){
-						$value['content'] = unserialize($value['content']);
-						$v['url'] = $value['content']['default'];
-						if($this->site['url_type'] == 'rewrite' && $value['content']['rewrite']){
-							$v['url'] = $value['content']['rewrite'];
-						}
-					}
-				}
-				$v = array_merge($cate_ext,$v);
+				$v = array_merge($cate_tmp,$v);
 				if(!$v['url'] && $project){
 					$v['url'] = $this->url($project['identifier'],$v['identifier']);
 				}
-				unset($cate_ext,$cate_tmp);
 			}
 			$list[$k] = $v;
 		}
 		if($cache_id){
-			$this->cache->save($cache_id,$array);
+			$this->cache->save($cache_id,$list);
 		}
 		return $list;
 	}

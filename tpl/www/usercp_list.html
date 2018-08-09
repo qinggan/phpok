@@ -1,33 +1,39 @@
 <!-- php:$title = $page_rs.title.' - 会员中心' -->
 <!-- include tpl=head title=$title menutitle=会员中心 -->
-<div class="cp">
-	<div class="left"><!-- include tpl=block_usercp --></div>
+<div class="main">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="left"><!-- include tpl=block/usercp_nav --></div>
 	<div class="right">
-		<div class="pfw mbottom10">
-			<h3>{$page_rs.title}<a href="{url ctrl=post id=$id/}" class="more">添加</a></h3>
-			<div class="table_lc" style="margin:5px 5px 0 5px;">
-			<table width="100%">
-			<tr>
-				<th>ID</th>
-				<th class="lft">{$page_rs.alias_title ? $page_rs.alias_title : '主题'}</th>
-				<th width="50px">状态</th>
-				<th width="77px">操作</th>
-			</tr>
-			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-			<tr>
-				<td align="center">{$value.id}</td>
-				<td>
-					<a href="{$value.url}" target="_blank">{$value.title}</a><br />
-					<span class="gray">发布时间：{func time_format $value.dateline}，查看次数：{$value.hits}</span>
-				</td>
-				<td align="center"><!-- if $value.status -->正常<!-- else --><span class="red">审核中</span><!-- /if --></td>
-				<td align="center"><input type="button" value="编辑" class="button blue" onclick="$.phpok.go('{url ctrl=post func=edit id=$value.id/}')" /></td>
-			</tr>
-			<!-- /loop -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">{$page_rs.title}</div>
+			<table class="am-table am-table-centered am-table-hover">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th class="am-text-left">{$page_rs.alias_title ? $page_rs.alias_title : '主题'}</th>
+						<th>状态</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+					<tr>
+						<td>{$value.id}</td>
+						<td class="am-text-left">
+							<a href="{$value.url}" target="_blank">{$value.title}</a><br />
+							<span class="gray">发布时间：{func time_format $value.dateline}，查看次数：{$value.hits}</span>
+						</td>
+						<td><!-- if $value.status -->正常<!-- else --><span class="am-text-danger">审核中</span><!-- /if --></td>
+						<td><a href="{url ctrl=post func=edit id=$value.id/}" class="am-btn am-btn-secondary am-btn-xs" target="_blank">编辑</a></td>
+					</tr>
+					<!-- /loop -->
+				</tbody>
 			</table>
-			</div>
-			<!-- include tpl=block_pagelist -->
 		</div>
+		<div style="padding:10px;text-align:center">
+			<a href="{url ctrl=post id=$id/}" target="_blank" class="am-btn am-btn-primary">添加</a>
+		</div>
+		<!-- include tpl=block/pagelist -->
 	</div>
 	<div class='clear'></div>
 </div>

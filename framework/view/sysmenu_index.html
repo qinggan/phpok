@@ -1,5 +1,4 @@
 <!-- include tpl=head -->
-<link rel="stylesheet" type="text/css" href="css/icomoon.css" />
 <div class="tips">
 	{lang您当前的位置：}
 	<a href="{url ctrl=system/}">{lang核心配置}</a>
@@ -34,7 +33,7 @@
 	<!-- loop from=$value.sublist key=$k value=$v id=$tmpid2 -->
 	<tr class="sub">
 		<td><div class="pleft">{$v.title}</div></td>
-		<td>&nbsp;framework/admin/{$v.appfile}_control.php</td>
+		<td>&nbsp;{$v._ctrlfile}</td>
 		<td class="center"><input type="button" value="{if $v.status}{lang启用}{else}{lang禁用}{/if}" class="phpok-btn"{if $popedom.status} onclick="$.admin_system.set_status({$v.id},this)"{else} onclick="$.dialog.alert('{lang您没有权限执行此功能}')"{/if} /></td>
 		<td><input type="button" class="phpok-btn" id="icon_status_{$v.id}" value="{if $v.icon}{lang显示}{else}{lang隐藏}{/if}" data-icon="{$v.icon}" onclick="$.admin_system.icon_hs('{$v.id}')" /> <i{if $v.icon} class="hand icon-{$v.icon}"{/if} id="icon_{$v.id}" style="font-size:16px;" onclick="$.admin_system.set_icon('{$v.id}')"></i></td>
 		<td class="center"><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$v.id}">{$v.taxis}</div></td>

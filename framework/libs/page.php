@@ -48,13 +48,13 @@ class page_lib
 
 	public function half($half=5)
 	{
-		$this->half = $half;
+		$this->half = intval($half);
 		return $this->half;
 	}
 
 	public function psize($psize=20)
 	{
-		$this->psize = $psize;
+		$this->psize = intval($psize);
 		return $this->psize;
 	}
 
@@ -221,8 +221,8 @@ class page_lib
 		if($num){
 			$this->num = $num;
 		}
-		if($psize){
-			$this->psize = $psize;
+		if($psize && intval($psize)){
+			$this->psize = intval($psize);
 		}
 		if(!$url || !$total){
 			return false;

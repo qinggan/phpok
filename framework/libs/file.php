@@ -103,13 +103,23 @@ class file_lib
 	 * 存储php等源码文件，不会写入安全保护
 	 * @参数 $content 要保存的内容
 	 * @参数 $file 保存的地址
-	 * @返回 true
+	 * @参数 $type 写入模式，wb 表示完全写入，ab 表示追加写入
 	**/
 	public function vim($content,$file,$type="wb")
 	{
 		$this->make($file,"file");
-		$this->_write($content,$file,$type);
-		return true;
+		return $this->_write($content,$file,$type);
+	}
+
+	/**
+	 * 保存数据别名，不改写任何东西
+	 * @参数 $content 要保存的内容
+	 * @参数 $file 保存的地址
+	 * @参数 $type 写入模式，wb 表示完全写入，ab 表示追加写入
+	**/
+	public function save($content,$file,$type='wb')
+	{
+		return $this->vim($content,$file,$type);
 	}
 
 	/**

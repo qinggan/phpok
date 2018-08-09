@@ -1,10 +1,7 @@
-<!-- php:$cssfile = $css ? "css/style.css,artdialog.css,".$css : "css/style.css,artdialog.css" -->
-<!-- php:$jsfile = $js ? "js/global.js,".$js : "js/global.js" -->
-<!-- head title=$title css=$cssfile extjs="jquery.artdialog.js" js=$jsfile html5=true -->
-<body>
+<!-- include tpl=header title=$title -->
 <header>
 	<div class="top">
-		<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" /></a></div>
+		<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" width="240px" /></a></div>
 		<div class="right">
 			<nav class="top">
 				<a href="{url ctrl=cart/}" title="购物车">购物车 <span class="red">(<span id="head_cart_num">0</span>)</span></a> | 
@@ -15,9 +12,14 @@
 				<!-- /if -->
 				<span id="top_html_user_login"></span>
 			</nav>
-			<form method="post" action="{url ctrl=search/}" onsubmit="return top_search();">
-				<input name="keywords" value="{$keywords}" id="top-keywords" type="text" class="input" placeholder="请输入关键字" />
-				<input name="" type="submit" class="btn" value="" />
+			<form class="am-form-inline" id="top-search-form" method="post" action="{url ctrl=search/}" onsubmit="return top_search()">
+				<div class="am-form-group">
+					<input name="keywords" value="{$keywords}" id="top-keywords" type="text" class="am-form-field" placeholder="请输入关键字" />
+				</div>
+				<button type="submit" class="am-btn am-btn-primary">
+					<i class="am-icon-search"></i>
+					搜索
+				</button>
 			</form>
 		</div>
 	</div>
@@ -25,10 +27,10 @@
 		<div class="menu">
 		<ul>
 			<!-- php:$list = phpok('menu') -->
-			<!-- loop from=$list.rslist key=$key value=$value id=mindex -->
-			<li{if $highlight == $mindex.num || $menutitle == $value.title} class="current"{/if}>
+			<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+			<li{if $highlight == $tmpid.num || $menutitle == $value.title} class="current"{/if}>
 				<dl>
-					<dt{if $value.sonlist} class="arrow"{/if}><a href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a></dt>
+					<dt><a href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a><!-- if $value.sonlist --> <span class="am-icon-angle-down"></span><!-- /if --></dt>
 					<!-- loop from=$value.sonlist key=$k value=$v -->
 					<dd><a href="{$v.url}" title="{$v.title}" target="{$v.target}">{$v.title}</a></dd>
 					<!-- /loop -->

@@ -62,7 +62,7 @@ class auto_control extends phpok_control
 	{
 		$pid = $this->get('pid');
 		$uid = $this->session->val('admin_id');
-		$filename = $this->dir_data.'cache/autosave_'.$uid.'_'.$pid.'.php';
+		$filename = $this->dir_cache.'autosave_'.$uid.'_'.$pid.'.php';
 		$this->lib('file')->rm($filename);
 		$data = isset($_POST) ? serialize($_POST) : '';
 		if($data){

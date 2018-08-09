@@ -90,6 +90,7 @@ class rewrite_model_base extends phpok_model
 		if($tmp && is_array($tmp)){
 			foreach($tmp as $key=>$value){
 				$_GET[$key] = $value;
+				$this->data('get.'.$key,$value);
 			}
 		}
 		return true;
@@ -101,9 +102,9 @@ class rewrite_model_base extends phpok_model
 		if($this->rlist && is_array($this->rlist)){
 			return $this->rlist;
 		}
-		$file = $this->dir_root.'data/xml/rewrite_'.$this->site_id.'.xml';
+		$file = $this->dir_data.'xml/rewrite_'.$this->site_id.'.xml';
 		if(!file_exists($file)){
-			$file = $this->dir_root.'data/xml/rewrite.xml';
+			$file = $this->dir_data.'xml/rewrite.xml';
 			if(!file_exists($file)){
 				return false;
 			}

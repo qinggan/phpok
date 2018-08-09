@@ -18,7 +18,7 @@ $url .= "?";
 foreach($data as $key=>$value){
 	$url .= $key.'='.rawurlencode($value).'&';
 }
-$smsfile = $this->dir_root.'data/'.$rs['type'].'-'.$rs['code'].'-'.$rs['id'].'-smskey.php';
+$smsfile = $this->dir_data.$rs['type'].'-'.$rs['code'].'-'.$rs['id'].'-smskey.php';
 $update = $this->get('update');
 if($update){
 	

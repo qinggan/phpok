@@ -125,8 +125,8 @@ class task_model_base extends phpok_model
 	 */
 	public function set_title_status()
 	{
-		if(file_exists($this->dir_root.'data/cache/tasklock.php')){
-			$time = filemtime($this->dir_root.'data/cache/tasklock.php');
+		if(file_exists($this->dir_cache.'tasklock.php')){
+			$time = filemtime($this->dir_cache.'tasklock.php');
 			if( ($time + 3600) > $this->time ){
 				return true;
 			}
@@ -134,7 +134,7 @@ class task_model_base extends phpok_model
 		$sql = "UPDATE ".$this->db->prefix."list SET hidden=0 WHERE status=1 AND hidden=2";
 		$sql.= " AND dateline<='".$this->time."' AND site_id='".$this->site_id."'";
 		$this->db->query($sql,false);
-		$this->lib('file')->vi($this->time,$this->dir_root.'data/cache/tasklock.php');
+		$this->lib('file')->vi($this->time,$this->dir_cache.'tasklock.php');
 		return true;
 	}
 

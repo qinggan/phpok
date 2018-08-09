@@ -131,7 +131,7 @@ class rewrite_model extends rewrite_model_base
 			}
 			$data[$key] = $value;
 		}
-		$this->lib('xml')->save($data,$this->dir_root.'data/xml/rewrite_'.$this->site_id.'.xml','url');
+		$this->lib('xml')->save($data,$this->dir_data.'xml/rewrite_'.$this->site_id.'.xml','url');
 		return true;
 	}
 }

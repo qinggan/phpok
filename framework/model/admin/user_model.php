@@ -51,7 +51,7 @@ class user_model extends user_model_base
 		$fields[] = 'wealth';
 		$fields[] = 'introducer';
 		$fields[] = 'title';
-		$sql = "SELECT identifier FROM ".$this->db->prefix."user_fields";
+		$sql = "SELECT identifier FROM ".$this->db->prefix."fields WHERE ftype='user'";
 		$tmplist = $this->db->get_all($sql);
 		if($tmplist){
 			foreach($tmplist as $key=>$value){
@@ -114,7 +114,7 @@ class user_model extends user_model_base
 		$field = $rs["identifier"];
 		$sql = "ALTER TABLE ".$this->db->prefix."user_ext DROP `".$field."`";
 		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."user_fields WHERE id='".$id."'";
+		$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
 
@@ -139,7 +139,7 @@ class user_model extends user_model_base
 	**/
 	public function user_next_taxis()
 	{
-		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."user_fields WHERE taxis<255";
+		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."fields WHERE ftype='user' AND taxis<255";
 		$rs = $this->db->get_one($sql);
 		return $this->return_next_taxis($rs);
 	}
@@ -154,10 +154,15 @@ class user_model extends user_model_base
 		if(!$data || !is_array($data)){
 			return false;
 		}
+		$data['ftype'] = 'user';
+		if(isset($data['is_edit'])){
+			$data['is_front'] = $data['is_edit'];
+			unset($data['is_edit']);
+		}
 		if($id){
-			return $this->db->update_array($data,"user_fields",array("id"=>$id));
+			return $this->db->update_array($data,"fields",array("id"=>$id));
 		}else{
-			return $this->db->insert_array($data,"user_fields");
+			return $this->db->insert_array($data,"fields");
 		}
 	}
 

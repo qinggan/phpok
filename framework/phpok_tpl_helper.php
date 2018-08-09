@@ -37,16 +37,6 @@ function phpok($id='',$ext="")
 	return $GLOBALS['app']->call->phpok($id,$param);
 }
 
-function fav_count($title_id=0)
-{
-	return $GLOBALS['app']->model('fav')->title_fav_count($title_id);
-}
-
-function fav_check($title_id=0)
-{
-	return $GLOBALS['app']->model('fav')->chk($title_id,$_SESSION['user_id']);
-}
-
 function token($data)
 {
 	if(!$data){

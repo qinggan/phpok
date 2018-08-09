@@ -1,0 +1,67 @@
+<!-- include tpl=head title=微信扫码支付 -->
+<input type="hidden" name="logid" id="logid" value="{$order.id}" />
+<input type="hidden" name="sn" id="sn" value="{$rs.sn}" />
+<div class="main" style="width:500px;margin:10px auto;">
+	<div class="am-panel am-panel-default">
+		<div class="am-panel-hd">订单信息</div>
+		<ul class="am-list am-list-static">
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">订单编号</div>
+					<div class="am-u-sm-8">{$order.sn}</div>
+				</div>
+			</li>
+			<!-- if $orderinfo -->
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">订单金额</div>
+					<div class="am-u-sm-8 am-text-primary">{func price_format $orderinfo.price $orderinfo.currency_id}</div>
+				</div>
+			</li>
+			<!-- /if -->
+			<!-- if $paid_price -->
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">已付金额</div>
+					<div class="am-u-sm-8">{func price_format $paid_price $order.currency_id}</div>
+				</div>
+			</li>
+			<!-- /if -->
+			<!-- if $unpaid_price -->
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">还需付款</div>
+					<div class="am-u-sm-8 am-text-danger">{func price_format $unpaid_price $order.currency_id}</div>
+				</div>
+			</li>
+			<!-- /if -->
+		</ul>
+	</div>
+	<div style="text-align:center;padding:10px;"><img src="api.php?f=qrcode&data={func rawurlencode $info.code_url}" border="0" /></div>
+</div>
+<script type="text/javascript">
+function pending()
+{
+	var url = api_url('payment','query','sn='+$("#sn").val());
+	$.phpok.json("{$ajaxurl}",function(data){
+		if(data.status == 'ok'){
+			url = get_url('payment','show','id='+$("#logid").val());
+			$.phpok.go(url);
+			return true;
+		}else{
+			window.setTimeout("pending()", 3000);
+		}
+	})
+}
+$(document).ready(function(){
+	window.setTimeout("pending()", 5000);
+});
+
+//禁止后退
+window.history.forward(1);   
+history.pushState(null, null, document.URL);
+window.addEventListener('popstate', function () {
+    history.pushState(null, null, document.URL);
+});
+</script>
+<!-- include tpl=foot -->

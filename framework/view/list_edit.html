@@ -1,6 +1,5 @@
 <!-- include tpl=head -->
 <script type="text/javascript" src="{func include_js list.js}"></script>
-<script type="text/javascript" src="js/selectpage.min.js"></script>
 <div class="tips">
 	{lang您当前的位置：}{lang内容管理}
 	<!-- if $pid -->
@@ -21,15 +20,13 @@
 </ul>
 
 <form method="post" id="_listedit" onsubmit="return $.admin_list_edit.save()">
-<input type="hidden" id="_root_cate" value="{$p_rs.cate}" />
-<input type="hidden" id="_root_cate_multiple" value="{$p_rs.cate_multiple}" />
 <input type="hidden" name="id" id="id" value="{$id}" />
 <input type="hidden" name="pid" id="pid" value="{$pid}" />
 <input type="hidden" name="parent_id" id="parent_id" value="{$parent_id}" />
 <div id="main_setting">
 	<div class="table">
 		<div class="title">
-			<!-- if $p_rs.alias_title -->{$p_rs.alias_title}<!-- else -->{lang主题}<!-- /if --> <span class="note">{lang不能超过80个汉字}<!-- if $p_rs.note -->，{$p_rs.alias_note}<!-- /if --></span>
+			<!-- if $p_rs.alias_title -->{$p_rs.alias_title}<!-- else -->{lang主题}<!-- /if --> <span class="note">{lang不能超过80个汉字}<!-- if $p_rs.alias_note -->，{$p_rs.alias_note}<!-- /if --></span>
 		</div>
 		<div class="content">
 			<input type="text" name="title" id="title" value="{$rs.title}" class="title" />
@@ -125,8 +122,10 @@
 	<div class="table clearfix" id="form_html_{$value.identifier}">
 		<div class="title">
 			{$value.title}：
-			<span class="note">{$value.note}
-				<!-- if $popedom.ext && $value.is_edit -->
+			<span class="note">
+				<!-- if $value.is_edit --><span class="darkblue i">{$value.identifier}</span><!-- /if -->
+				{$value.note}
+				<!-- if $popedom.ext && $value.is_edit && $session.adm_develop -->
 				<!-- if $ext_module != 'add-list' -->
 				<a class="icon edit" onclick="ext_edit('{$value.identifier}','{$ext_module}')"></a>
 				<!-- /if -->
@@ -137,7 +136,7 @@
 		<div class="content">{$value.html}</div>
 	</div>
 	<!-- /loop -->
-	<!-- if $popedom.ext -->
+	<!-- if $popedom.ext && $session.adm_develop -->
 	<div class="table">
 		<div class="content">
 			<ul class="layout">
@@ -325,12 +324,15 @@
 			<input type="text" id="sort" name="sort" value="{$rs.sort}" />
 		</div>
 	</div>
+	<!-- if $p_rs.is_userid -->
 	<div class="table">
 		<div class="title">
 			{lang绑定会员}<span class="note">{lang绑定会员功能，允许会员对主题进行修改或删除，需要开放发布权限}</span>
 		</div>
 		<div class="content">{func form_edit user_id $rs.user_id user}</div>
 	</div>
+	<!-- /if -->
+	<!-- if $p_rs.is_tpl_content -->
 	<div class="table">
 		<div class="title">
 			{lang自定义内容模板}<span class="note">{lang为空将使用} <span class="red">{$p_rs.tpl_content ? $p_rs.tpl_content : $p_rs.identifier.'_content'}</span></span>
@@ -347,6 +349,7 @@
 			</ul>
 		</div>
 	</div>
+	<!-- /if -->
 </div>
 
 <!-- if $p_rs.is_seo -->

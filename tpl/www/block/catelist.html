@@ -1,12 +1,18 @@
-<div class="pfw mb10">
-	<h3>{$title}</h3>
-	<!-- catelist pid=$pid -->
-	<dl class="catelist">
+<!-- catelist pid=$pid -->
+<!-- if $list && $list.tree -->
+<div class="am-panel am-panel-default">
+	<div class="am-panel-hd">
+		<h3 class="am-panel-title">{$title ? $title : $page_rs.title}</h3>
+	</div>
+	<ul class="am-list">
 		<!-- loop from=$list.tree key=$key value=$value id=$tmpid -->
-		<dt{if $value.id == $cid} class="on"{/if}><a href="{$value.url}" title="{$value.title}">{$value.title}</a></dt>
-		<!-- loop from=$value.sublist key=$k value=$v id=$tmpid2 -->
-		<dd{if $v.id == $cid} class="on"{/if}><a href="{$v.url}" title="{$v.title}">{$v.title}</a></dd>
+		<li><a href="{$value.url}" title="{$value.title}"{if $cid == $value.id} class="am-active"{/if}><i class='am-icon-angle-right'></i> {$value.title}</a></li>
+			<!-- if $value.id == $cid || $cate_rs.parent_id == $value.id -->
+			<!-- loop from=$value.sublist key=$k value=$v id=$idxx -->
+			<li><a href="{$v.url}" title="{$v.title}"{if $cid == $v.id} class="am-active"{/if} style="padding-left:2em;"><i class='am-icon-angle-right'></i> {$v.title}</a></li>
+			<!-- /loop -->
+			<!-- /if -->
 		<!-- /loop -->
-		<!-- /loop -->
-	</dl>
+	</ul>
 </div>
+<!-- /if -->

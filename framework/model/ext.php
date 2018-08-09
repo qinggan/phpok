@@ -19,7 +19,7 @@ class ext_model_base extends phpok_model
 	function check_identifier($identifier,$module)
 	{
 		if(!$identifier || !$module) return false;
-		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE identifier='".$identifier."' AND module='".$module."'";
+		$sql = "SELECT id FROM ".$this->db->prefix."fields WHERE identifier='".$identifier."' AND ftype='".$module."'";
 		return ($this->db->get_one($sql) ? true : false);
 	}
 
@@ -30,11 +30,11 @@ class ext_model_base extends phpok_model
 	**/
 	public function ext_all($module,$show_content=true)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE module='".$module."' ORDER BY taxis ASC,id DESC";
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ftype='".$module."' ORDER BY taxis ASC,id DESC";
 		if($show_content){
-			$sql = "SELECT e.*,c.content content_val FROM ".$this->db->prefix."ext e ";
+			$sql = "SELECT e.*,c.content content_val FROM ".$this->db->prefix."fields e ";
 			$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(e.id=c.id) ";
-			$sql.= "WHERE e.module='".$module."' ";
+			$sql.= "WHERE e.ftype='".$module."' ";
 			$sql.= "ORDER BY e.taxis asc,id DESC";
 		}
 		$rslist = $this->db->get_all($sql);
@@ -80,9 +80,9 @@ class ext_model_base extends phpok_model
 	}
 
 	# 取得单个字段的配置
-	function get_one($id)
+	public function get_one($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."ext WHERE id='".$id."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
 
@@ -90,16 +90,16 @@ class ext_model_base extends phpok_model
 	//取得所有扩展选项信息
 	function get_all($id,$mult = false)
 	{
-		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.module FROM ".$this->db->prefix."ext ext ";
+		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.ftype FROM ".$this->db->prefix."fields ext ";
 		$sql.= "JOIN ".$this->db->prefix."extc extc ON(ext.id=extc.id) ";
 		if($mult){
 			if(is_array($id)){
 				$id = implode(",",$id);
 			}
 			$id = str_replace(",","','",$id);
-			$sql .= " WHERE ext.module IN('".$id."')";
+			$sql .= " WHERE ext.ftype IN('".$id."')";
 		}else{
-			$sql .= " WHERE ext.module='".$id."'";
+			$sql .= " WHERE ext.ftype='".$id."'";
 		}
 		$sql .= ' ORDER BY ext.taxis ASC,ext.id DESC';
 		$rslist = $this->db->get_all($sql);
@@ -107,9 +107,9 @@ class ext_model_base extends phpok_model
 			return false;
 		}
 		$rs = array();
-		foreach($rslist AS $key=>$value){
+		foreach($rslist as $key=>$value){
 			if($mult){
-				$rs[$value["module"]][$value["identifier"]] = $this->lib('form')->show($value);
+				$rs[$value["ftype"]][$value["identifier"]] = $this->lib('form')->show($value);
 			}else{
 				$rs[$value["identifier"]] = $this->lib('form')->show($value);
 			}
@@ -117,17 +117,17 @@ class ext_model_base extends phpok_model
 		return $rs;
 	}
 
-	function get_all_like($id)
+	public function get_all_like($id)
 	{
-		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.module FROM ".$this->db->prefix."ext ext ";
+		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.ftype FROM ".$this->db->prefix."fields ext ";
 		$sql.= "JOIN ".$this->db->prefix."extc extc ON(ext.id=extc.id) ";
-		$sql.= "WHERE ext.module LIKE '".$id."%' ORDER BY ext.taxis ASC,ext.id DESC";
+		$sql.= "WHERE ext.ftype LIKE '".$id."%' ORDER BY ext.taxis ASC,ext.id DESC";
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist) return false;
 		$list = false;
 		foreach($rslist AS $key=>$value)
 		{
-			$list[$value["module"]][$value["identifier"]] = content_format($value);
+			$list[$value["ftype"]][$value["identifier"]] = content_format($value);
 		}
 		return $list;
 	}

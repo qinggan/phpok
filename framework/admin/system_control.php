@@ -1,12 +1,14 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/system_control.php
-	Note	: 核心配置
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2015年12月26日 01时28分
-***********************************************************/
+/**
+ * 核心配置
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 4.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年06月03日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class system_control extends phpok_control
 {
@@ -14,32 +16,32 @@ class system_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
-		$this->model("sysmenu");
 		$this->popedom = appfile_popedom("system");
 		$this->assign("popedom",$this->popedom);
-		$this->model("popedom");
 	}
 
 	//核心配置列表页，这里显示全部，不分页
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$rslist = $this->model('sysmenu')->get_all($_SESSION["admin_site_id"]);
+		$rslist = $this->model('sysmenu')->get_all($this->session->val('admin_site_id'));
 		$this->assign("rslist",$rslist);
 		$desktop_show_type = $this->model('sysmenu')->desktop_setting('show_desktop');
 		$this->view("sysmenu_index");
 	}
 
-	# 添加子项目
+	/**
+	 * 添加子项目
+	**/
 	public function set_f()
 	{
 		$id = $this->get("id","int");
 		$pid = $this->get("pid","int");
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$rs = $this->model('sysmenu')->get_one($id);
 			$this->assign("id",$id);
@@ -49,19 +51,29 @@ class system_control extends phpok_control
 			$this->assign("popedom_list",$popedom_list);
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		if($pid){
 			$parent_list = $this->model('sysmenu')->get_list(0,0);
 			$this->assign("parent_list",$parent_list);
 			$this->assign("pid",$pid);
-			$list = $this->lib('file')->ls($this->dir_phpok."admin");
+			//读取目录
 			$dirlist = array();
-			foreach($list AS $key=>$value){
+			$list = $this->lib('file')->ls($this->dir_app);
+			if($list){
+				foreach($list as $key=>$value){
+					$tmp = basename($value);
+					if(file_exists($value.'/'.$this->app_id.'.control.php')){
+						$dirlist[] = array('id'=>$tmp,'title'=>'Control: '.$tmp);
+					}
+				}
+			}
+			$list = $this->lib('file')->ls($this->dir_phpok."admin");
+			foreach($list as $key=>$value){
 				$tmp = str_replace("_control.php","",strtolower(basename($value)));
 				if(strpos($tmp,".func.php") === false){
-					$dirlist[$key] = array("id"=>$tmp,"title"=>basename($value));
+					$dirlist[] = array("id"=>$tmp,"title"=>basename($value));
 				}
 			}
 			$this->assign("dirlist",$dirlist);

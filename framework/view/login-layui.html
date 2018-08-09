@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="Expires" content="wed, 26 feb 1997 08:21:57 gmt" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<title>{lang管理员登录}</title>
+	<meta name="author" content="phpok.com" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<link rel="stylesheet" href="{$sys.webroot}static/admin/layui/css/layui.css" media="all">
+	<link rel="stylesheet" href="{$sys.webroot}static/admin/style/admin.css" media="all">
+	<link rel="stylesheet" href="{$sys.webroot}static/admin/style/login.css" media="all">
+	<script src="{$sys.webroot}static/admin/layui/layui.js"></script>
+	<script type="text/javascript" src="{url ctrl=js ext=admin.login.js /}"></script>
+</head>
+<body>
+	<div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="display: none;">
+		<div class="layadmin-user-login-main">
+			<div class="layadmin-user-login-box layadmin-user-login-header">
+				 <h2>{$config.title}</h2>
+
+				<p>
+					<img src="{$config.adm_logo180 ? $config.adm_logo180 : 'images/login.svg'}" border="0" alt="{$config.title}" height="50px" />
+				</p>
+			</div>
+			<div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+				<form method="post" id="post_save" onsubmit="return $.admin_login.ok()">
+					<!-- if $multiple_language -->
+					<div class="layui-form-item">
+						<label class="layadmin-user-login-icon layui-icon layui-icon-website" for="langid"></label>
+						<select name="langid" id="langid" onchange="$.admin_login.language(this.value)">
+							<!-- loop from=$langlist key=$key value=$value -->
+							<option value="{$key}" {if $key==$langid} selected{/if}>{$value}</option>
+							<!-- /loop -->
+						</select>
+					</div>
+					<!-- /if -->
+					<div class="layui-form-item">
+						<label class="layadmin-user-login-icon layui-icon layui-icon-username" for="LAY-user-login-username"></label>
+						<input type="text" name="user" id="LAY-user-login-username" lay-verify="required" placeholder="{lang管理员账号}" class="layui-input">
+					</div>
+					<div class="layui-form-item">
+						<label class="layadmin-user-login-icon layui-icon layui-icon-password" for="LAY-user-login-password"></label>
+						<input type="password" name="pass" id="LAY-user-login-password" lay-verify="required" placeholder="{lang管理员密码}" class="layui-input">
+					</div>
+					<!-- if $vcode -->
+					<div class="layui-form-item">
+						<div class="layui-row">
+							<div class="layui-col-xs7">
+								<label class="layadmin-user-login-icon layui-icon layui-icon-vercode" for="LAY-user-login-vercode"></label>
+								<input type="text" name="_code" id="LAY-user-login-vercode" lay-verify="required" placeholder="{lang验证码}" class="layui-input">
+							</div>
+							<div class="layui-col-xs5">
+								<div style="margin-left: 10px;margin-top:5px;">
+									<img src="images/blank.gif" border="0" align="absmiddle" style="cursor:pointer;" id="src_code">
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- /if -->
+					<div class="layui-form-item">
+						<button class="layui-btn layui-btn-fluid" type="submit" lay-submit lay-filter="LAY-user-login-submit">登 入</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

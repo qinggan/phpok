@@ -27,7 +27,7 @@ class module_model extends module_model_base
 
 	public function fields_next_taxis($mid)
 	{
-		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."module_fields WHERE module_id='".$mid."' AND taxis<255";
+		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."fields WHERE ftype='".$mid."' AND taxis<255";
 		$rs = $this->db->get_one($sql);
 		return $this->return_next_taxis($rs);
 	}
@@ -94,7 +94,7 @@ class module_model extends module_model_base
 		if(!$rs){
 			return false;
 		}
-		$table = $this->get_one($rs['module_id']);
+		$table = $this->get_one($rs['ftype']);
 		if(!$this->chk_tbl_exists($table['id'],$table['mtype'])){
 			return false;
 		}
@@ -127,15 +127,14 @@ class module_model extends module_model_base
 			return false;
 		}
 		$rs = $this->field_one($id);
-		$table = $this->get_one($rs['module_id']);
+		$table = $this->get_one($rs['ftype']);
 		$tblname = $table['mtype'] ? $this->db->prefix.$table['id'] : $this->db->prefix."list_".$table['id'];
 		$idlist = $this->db->list_fields($tblname,false);
 		if($idlist && in_array($rs['identifier'],$idlist)){
 			$this->db->delete_table_fields($tblname,$rs['identifier']);
 		}
-		$sql = "DELETE FROM ".$this->db->prefix."module_fields WHERE id='".$id."'";
-		$this->db->query($sql);
-		return true;
+		$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$id."'";
+		return $this->db->query($sql);
 	}
 
 	/**
@@ -174,7 +173,7 @@ class module_model extends module_model_base
 			$this->db->query($sql);
 		}
 		//删除扩展字段
-		$sql = "DELETE FROM ".$this->db->prefix."module_fields WHERE module_id='".$id."'";
+		$sql = "DELETE FROM ".$this->db->prefix."fields WHERE ftype='".$id."'";
 		$this->db->query($sql);
 		//删除记录
 		$sql = "DELETE FROM ".$this->db->prefix."module WHERE id='".$id."'";
@@ -209,10 +208,16 @@ class module_model extends module_model_base
 		if(!$data || !is_array($data)){
 			return false;
 		}
-		if($id){
-			return $this->db->update_array($data,"module_fields",array("id"=>$id));
+		if($data['module_id'] && !isset($data['ftype'])){
+			$data['ftype'] = $data['module_id'];
 		}
-		return $this->db->insert_array($data,"module_fields");
+		if(isset($data['module_id'])){
+			unset($data['module_id']);
+		}
+		if($id){
+			return $this->db->update_array($data,"fields",array("id"=>$id));
+		}
+		return $this->db->insert_array($data,"fields");
 	}
 
 	/**

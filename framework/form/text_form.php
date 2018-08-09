@@ -136,6 +136,14 @@ class text_form extends _init_auto
 				$rs['form_style'] = 'width:99%';
 			}
 		}
+		if($rs['form_btn'] || $rs['ext_quick_words']){
+			if($rs['form_style'] && strpos($rs['form_style'],'width') === false){
+				$rs['form_style'] .= ";width:500px";
+			}
+			if(!$rs['form_style']){
+				$rs['form_style'] = 'width:500px';
+			}
+		}
 		$this->assign('_rs',$rs);
 		$this->assign('_laydate',$_laydate);
 		return $this->fetch($this->dir_phpok."form/html/text_admin_tpl.html",'abs-file');

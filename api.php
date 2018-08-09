@@ -24,9 +24,19 @@ define("APP_ID","api");
 define("ROOT",str_replace("\\","/",dirname(__FILE__))."/");
 
 /**
+ * 网页根目录
+**/
+define('WEBROOT','.');
+
+/**
  * 定义框架目录
 **/
 define("FRAMEWORK",ROOT."framework/");
+
+/**
+ * 定义数据文件目录
+**/
+define('DATA',ROOT.'_data/');
 
 /**
  * 定义配置文件目录
@@ -36,12 +46,12 @@ define('CONFIG',ROOT.'_config/');
 /**
  * 定义缓存目录
 **/
-define('CACHE',ROOT.'data/cache/');
+define('CACHE',ROOT.'_cache/');
 
 /**
- * 定义数据文件目录
+ * 定义 APP 目录，该目录用于系统应用程序读取，仅限官方扩展开发应用
 **/
-define('DATA',ROOT.'data/');
+define('OKAPP',ROOT.'_app/');
 
 /**
  * 定义扩展库目录
@@ -57,4 +67,3 @@ define('PLUGIN',ROOT.'plugins/');
  * 引入初始化文件
 **/
 require(FRAMEWORK.'init.php');
-?>

@@ -6,18 +6,18 @@
 		<!-- if $list_id.num == $list_id.total --><br /><!-- else --> | <!-- /if -->
 		<!-- /loop -->
 		{$config.copyright.content}
-		<!-- if $sys.debug --><div class="debug">{func debug_time}</div><!-- /if -->
+		<div class="debug">{func debug_time}</div>
 	</div>
 </div>
 <!-- php:$list = phpok('kefu') -->
 <!-- if $list.project && $list.rslist -->
-<div id="right-float-box" class="im_floatonline">
-	<div class="float-box-content">
-		<div class="toptitle">{$list.project.title}</div>
-		<div class="addlist">
-			<ul>
+<div class="im_floatonline">
+	<div class="am-panel am-panel-primary">
+		<div class="am-panel-hd center">{$list.project.title}</div>
+		<div class="am-panel-bd">
+			<ul class="am-list">
 				<!-- loop from=$list.rslist key=$key value=$value -->
-				<li>{$value.title}<br /><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes"><img border="0" src="//wpa.qq.com/pa?p=2:{$value.qq}:51" alt="点击这里给我发消息" title="点击这里给我发消息"/></a></li>
+				<li>{$value.title} <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes"><img border="0" src="//wpa.qq.com/pa?p=2:{$value.qq}:51" alt="点击这里给我发消息" title="点击这里给我发消息"/></a></li>
 				<!-- /loop -->
 				<!-- if $list.project.barcode -->
 				<li><img src="{$list.project.barcode.filename}" width="80px" alt="{$list.project.title}" /></li>
@@ -27,16 +27,4 @@
 	</div>
 </div>
 <!-- /if -->
-{func phpok_head_css}
-{func phpok_head_js}
-<script type="text/javascript">
-$(document).ready(function(){
-	//window.setTimeout(function(){
-	//	$.phpok.json(api_url('task'),function(rs){return true;});
-	//}, 2000);
-	//更新购物车产品数量
-	$.cart.total();
-});
-</script>
-</body>
-</html>
+<!-- include tpl=footer -->

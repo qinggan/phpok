@@ -1,11 +1,22 @@
-/***********************************************************
-	文件：.css
-	备注：弹出窗口样式
-	版本：4.0
-	网站：www.phpok.com
-	作者：qinggan <qinggan@188.com>
-	日期：2014年5月20日
-***********************************************************/
+/**
+ * 多窗口样式，
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年06月23日
+**/
+.phpok-taskbar{position: relative;}
+.phpok-taskbar-close{
+	position: absolute;
+	top: -5px;
+	right: -5px;
+	background: #e25959 url('images/close.svg') center center no-repeat;
+	background-size: 90%;
+	width: 16px;
+	height: 16px;
+}
 .phpok-win {
 	width:100%;
 	z-index:999;
@@ -86,12 +97,11 @@
 .phpok-win .window .title div.button ul{margin:0;padding:0;list-style:none;}
 .phpok-win .window .title div.button ul li{ float:left; margin-left:2px;list-style:none;}
 .phpok-win .window .title div.button ul li a:hover{ background-color:#0000FF;}
-.phpok-win .window .title div.button ul li.w900 a{ width:20px; height:20px; background:url('images/w900.png') center center no-repeat; display:block;}
-.phpok-win .window .title div.button ul li.refresh a{ width:20px; height:20px; background:url('images/refresh.png') center center no-repeat; display:block;}
-.phpok-win .window .title div.button ul li.min a{ width:18px; height:20px; background:url('images/button.png') 5px -108px no-repeat; display:block;}
-.phpok-win .window .title div.button ul li.max-max a{ width:20px; height:20px; background:url('images/button.png') 5px -34px no-repeat; display:block;}
-.phpok-win .window .title div.button ul li.max a{ width:20px; height:20px; background:url('images/button.png') 5px -76px no-repeat; display:block;}
-.phpok-win .window .title div.button ul li.close a{ width:45px; height:20px; background:url('images/button.png') 19px 7px no-repeat #c75050; display:block;}
+.phpok-win .window .title div.button ul li.refresh a{ width:20px; height:20px; background:url('images/refresh.svg') center center no-repeat;background-size:90%; display:block;}
+.phpok-win .window .title div.button ul li.min a{ width:18px; height:20px; background:url('images/minus.svg') center center no-repeat;background-size:90%; display:block;}
+.phpok-win .window .title div.button ul li.max-max a{ width:20px; height:20px; background:url('images/max.svg') center center no-repeat;background-size:90%; display:block;}
+.phpok-win .window .title div.button ul li.max a{ width:20px; height:20px; background:url('images/restore.svg') center center no-repeat;background-size:90%; display:block;}
+.phpok-win .window .title div.button ul li.close a{ width:45px; height:20px; background:url('images/close.svg') center center no-repeat #c75050; background-size:auto 90%; display:block;}
 .phpok-win .window .title div.button ul li.close a:hover{ background-color:#e25959;}
 
 

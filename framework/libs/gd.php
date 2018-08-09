@@ -88,6 +88,7 @@ class gd_lib
 		if(!$isgd || !function_exists('imagecreate')){
 			$this->isgd = false;
 		}
+		@ini_set('memory_limit','256M');
 	}
 
 	/**

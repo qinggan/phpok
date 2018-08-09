@@ -135,7 +135,6 @@ button.button_{$_rs.identifier}:hover {
 	<div class="_select">
 		<!-- if $_rs.upload_ios -->
 		<div id="{$_rs.identifier}_picker"></div>
-		<div class="_note">{lang支持格式有：}{$_rs.upload_type.swfupload}<!-- if $_rs.note -->，{$_rs.note}<!-- /if --></div>
 		<!-- else -->
 		<ul style="list-style:none;margin:0;padding:0;display:block;clear:both;">
 			<li style="float:left;list-style:none;margin:0;padding:0;"><div id="{$_rs.identifier}_picker"></div></li>
@@ -143,9 +142,8 @@ button.button_{$_rs.identifier}:hover {
 			<li style="float:left;margin:0 10px;padding:0"><button id="select_res_{$_rs.identifier}" type="button" class="button_{$_rs.identifier}">{lang选择}{$_rs.upload_type.title}</button></li>
 			<!-- /if -->
 		</ul>
-		<div style="clear:both;height:24px;line-height:24px;font-size:14px;color:gray;">{lang支持格式有：}{$_rs.upload_type.swfupload}<!-- if $_rs.note -->，{$_rs.note}<!-- /if --></div>
 		<!-- /if -->
-		
+		<div class="clear"></div>
 	</div>
 	<div class="_progress" id="{$_rs.identifier}_progress"></div>
 	<div class="_list" id="{$_rs.identifier}_list"></div>
@@ -158,7 +156,6 @@ $(document).ready(function(){
 	$.dialog.data('upload-{$_rs.identifier}','');
 	obj_{$_rs.identifier} = new $.www_upload({
 		'id':'{$_rs.identifier}',
-		'swf':'{#js#}/webuploader/uploader.swf',
 		'server':'{url ctrl=upload func=save cateid=$_rs.cate_id/}',
 		'pick':{'id':'#{$_rs.identifier}_picker','multiple':{$_rs.is_multiple ? 'true' : 'false'},'innerHTML':'{lang选择本地文件}'},
 		'resize':false,

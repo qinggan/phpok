@@ -2,14 +2,14 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	var toolbars_{$_rs.id} = [[
-		'fullscreen','removeformat','source', '|',
+		'removeformat','source', '|',
 		'bold', 'italic', 'underline', 'strikethrough','|',
 		'superscript', 'subscript','|',
 		'justifyleft', 'justifycenter', 'justifyright', '|',
 		'insertorderedlist', 'insertunorderedlist','forecolor',  '|',
 		'indent', 'horizontal','blockquote','|',
 		'link', 'unlink','|',
-		{if $_rs.btns.image}'simpleupload','insertimage','imagenone', 'imageleft', 'imageright', 'imagecenter','|',{/if}
+		{if $_rs.btns.image}'simpleupload','insertimage','|',{/if}
 		{if $_rs.btns.video}'insertvideo',{/if}
 		{if $_rs.btns.file}'attachment',{/if}
 		{if $_rs.btns.spechars}'spechars',{/if}
@@ -34,8 +34,8 @@ $(document).ready(function(){
 		,'sourceEditorFirst':false
 		,'readonly':false
 		,'pasteplain':true
-		,'autoFloatEnabled':false
-		,'autoHeightEnabled':false
+		,'autoFloatEnabled':{$_rs.is_float ? 'true' : 'false'}
+		,'autoHeightEnabled':true
 		,'imagePopup':false
 		{if $_rs.btns.page},'pageBreakTag':'[:page:]'{/if}
 		,'textarea':'{$_rs.identifier}'

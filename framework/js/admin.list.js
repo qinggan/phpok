@@ -70,35 +70,18 @@
 			$("input[name=tag]").val(old+""+cut_identifier+""+val);
 			return true;
 		},
-		sort:function(obj)
+		sort:function(obj,id)
 		{
-			var id = $(obj).attr("data");
-			var old = $(obj).text();
-			$.dialog.prompt(p_lang('请输入新的排序值，仅支持数字'),function(val){
-				if(!val || !$.trim(val)){
-					$.dialog.alert(p_lang('排序值不能为空'));
-					return false;
-				}
-				val = $.trim(val);
-				val = parseInt(val);
-				if(val == old){
+			var val = $(obj).val();
+			var url = get_url('list','content_sort','sort['+id+']='+val.toString());
+			$.phpok.json(url,function(data){
+				if(data.status == 'ok'){
+					$.dialog.tips(p_lang('排序更新成功')).follow($(obj)[0]);
 					return true;
 				}
-				var url = get_url('list','content_sort','sort['+id+']='+val.toString());
-				$.phpok.json(url,function(data){
-					if(data.status == 'ok'){
-						$(obj).text(val);
-						$("#taxis_"+id).addClass('status1');
-						window.setTimeout(function(){
-							$("#taxis_"+id).removeClass('status1');
-						}, 1000);
-						return true;
-					}else{
-						$.dialog.alert(rs.content);
-						return false;
-					}
-				})
-			},old);
+				$.dialog.alert(data.content);
+				return false;
+			})
 		}
 	};
 
@@ -241,6 +224,18 @@
 	$(document).ready(function(){
 		win_resize();
 		$(window).resize(win_resize);
+		$("input[name=taxis]").on('keyup',function(){
+			var val = $(this).val();
+			val = val.replace(/[^0-9-]+/,'');
+			$(this).val(val);
+			//this.value= ($(this).val()).replace();
+		}).on('keydown',function(){
+			var val = $(this).val();
+			val = val.replace(/[^0-9-]+/,'');
+			$(this).val(val);
+		}).on('focus',function(){
+			$(this).select();
+		});
 	});
 	
 })(jQuery);

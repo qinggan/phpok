@@ -1,4 +1,4 @@
-<!-- include tpl=head title="修改头像 - 个人中心" -->
+<!-- php:$title="修改头像 - 会员中心" --><!-- include tpl=head title=$title -->
 <link rel="stylesheet" type="text/css" href="{#js#}/webuploader/webuploader.css" />
 <link href="css/imgareaselect/default.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="{#js#}/webuploader/webuploader.min.js"></script>
@@ -66,64 +66,70 @@ function save_thumb()
 	var h = $('#h').val();
 	var thumb_id = $("#thumb_id").val();
 	if(!thumb_id){
-		alert('未上传图片');
+		$.dialog.alert('未上传图片');
 		return false;
 	}
 	if(x1=="" || y1=="" || x2=="" || y2=="" || w=="" || h==""){
-		alert("未设置裁剪框！");
+		$.dialog.alert("未设置裁剪框！");
 		return false;
-	}else{
-		var url = get_url('usercp','avatar_cut');
-		url += "&thumb_id="+thumb_id;
-		url += "&x1="+x1;
-		url += "&y1="+y1;
-		url += "&x2="+x2;
-		url += "&y2="+y2;
-		url += "&x1="+x1;
-		url += "&w="+w;
-		url += "&h="+h;
-		//存储并更新图片
-		var rs = $.phpok.json(url);
-		if(rs.status == "ok"){
-			alert('头像更新成功');
-			window.location.reload();
-			return true;
-		}else{
-			alert(rs.content);
-		}
 	}
+	var url = get_url('usercp','avatar_cut');
+	url += "&thumb_id="+thumb_id;
+	url += "&x1="+x1;
+	url += "&y1="+y1;
+	url += "&x2="+x2;
+	url += "&y2="+y2;
+	url += "&x1="+x1;
+	url += "&w="+w;
+	url += "&h="+h;
+	//存储并更新图片
+	$.phpok.json(url,function(rs){
+		if(rs.status == "ok"){
+			$.dialog.alert('头像更新成功',function(){
+				$.phpok.reload();
+			},'succeed');
+			return true;
+		}
+		$.dialog.alert(rs.content);
+		return false;
+	});
 }
 </script>
-<div class="cp">
-	<div class="left"><!-- include tpl=block_usercp --></div>
-	<div class="right">
-		<div class="pfw mbottom10">
-			<h3>当前头像</h3>
-			<div class="table" style="padding:10px;">
-				<img src="{$rs.avatar ? $rs.avatar : 'images/avatar_huge.gif'}" width="150px" border="0" />
+<div class="main">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="left"><!-- include tpl=block/usercp_nav --></div>
+	<div class="right am-panel-group">
+		<!-- if $rs.avatar -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">当前头像</div>
+			<div class="am-panel-bd am-text-center">
+				<img src="{$rs.avatar}"  border="0" style="max-width:100%" />
 			</div>
 		</div>
-		<div class="pfw mbottom10">
-			<h3>修改头像</h3>
-			<div class="table">
-				<div style="margin:10px;">
-					<div id="thelist" class="uploader-list"></div>
-					<div class="_progress" id="upload_progress"></div>
-					<div class="btns">
-						<div id="btn_picture"></div>
+		<!-- /if -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">修改图像</div>
+			<div class="am-panel-bd">
+				<div class="table">
+					<div style="margin:10px;">
+						<div id="thelist" class="uploader-list"></div>
+						<div class="_progress" id="upload_progress"></div>
+						<div class="btns">
+							<div id="btn_picture"></div>
+						</div>
 					</div>
+					<div style="display:none;margin:10px;padding:10px;border:1px solid #ccc;background:#efefef;" id="show_cut">
+						<div><img src="about:blank" width="500" alt="原图" id="thumbnail" /></div>
+						<div style="padding:10px"><input type="button" class="am-btn am-btn-primary" onclick="save_thumb()" value=" 保存图片 " /></div>
+					</div>
+					<input type="hidden" name="thumb_id" value="" id="thumb_id" />
+					<input type="hidden" name="x1" value="" id="x1" />
+					<input type="hidden" name="y1" value="" id="y1" />
+					<input type="hidden" name="x2" value="" id="x2" />
+					<input type="hidden" name="y2" value="" id="y2" />
+					<input type="hidden" name="w" value="" id="w" />
+					<input type="hidden" name="h" value="" id="h" />
 				</div>
-				<div style="display:none;margin:10px;padding:10px;border:1px solid #ccc;background:#efefef;" id="show_cut">
-					<div><img src="about:blank" width="500" alt="原图" id="thumbnail" /></div>
-					<div style="padding:10px"><input type="button" onclick="save_thumb()" value=" 保存图片 " /></div>
-				</div>
-				<input type="hidden" name="thumb_id" value="" id="thumb_id" />
-				<input type="hidden" name="x1" value="" id="x1" />
-				<input type="hidden" name="y1" value="" id="y1" />
-				<input type="hidden" name="x2" value="" id="x2" />
-				<input type="hidden" name="y2" value="" id="y2" />
-				<input type="hidden" name="w" value="" id="w" />
-				<input type="hidden" name="h" value="" id="h" />
 			</div>
 		</div>
 	</div>
@@ -133,8 +139,6 @@ function save_thumb()
 $(document).ready(function(){
 	var uploader = WebUploader.create({
 		auto: true,
-		swf: webroot + '{#js#}/webuploader/uploader.swf',
-		// 文件接收服务端。
 		server: api_url('upload','save'),
 		compress: {width:800,height:800,quality:90,compressSize:200},
 		pick: {'id':'#btn_picture','innerHTML':'选择本地图片'},
@@ -181,8 +185,9 @@ $(document).ready(function(){
 			$("#thumb_id").val(info.id);
 			ready_cut(width,height);
 		}else{
-			alert(data.content);
-			$("#show_cut").hide();
+			$.dialog.alert(data.content,function(){
+				$("#show_cut").hide();
+			});
 		}
 	});
 });

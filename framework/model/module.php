@@ -10,6 +10,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class module_model_base extends phpok_model
 {
+	private $_cache;
 	public function __construct()
 	{
 		parent::model();
@@ -37,13 +38,22 @@ class module_model_base extends phpok_model
 		if(!$module_id){
 			return false;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."module_fields WHERE module_id='".$module_id."' ORDER BY taxis ASC,id DESC";
-		return $this->db->get_all($sql,$pri_id);
+		$cache_id = 'fields_all_'.$module_id.'_'.$pri_id;
+		if(isset($this->_cache[$cache_id])){
+			return $this->_cache[$cache_id];
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ftype='".$module_id."' ORDER BY taxis ASC,id DESC";
+		$rslist = $this->db->get_all($sql,$pri_id);
+		if($rslist){
+			$this->_cache[$cache_id] = $rslist;
+			return $rslist;
+		}
+		return false;
 	}
 
 	public function f_all($condition='')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."module_fields ";
+		$sql = "SELECT * FROM ".$this->db->prefix."fields ";
 		if($condition){
 			$sql .= " WHERE ".$condition." ";
 		}
@@ -79,7 +89,7 @@ class module_model_base extends phpok_model
 	**/
 	public function field_one($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."module_fields WHERE id='".$id."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
 }

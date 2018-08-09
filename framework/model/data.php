@@ -151,16 +151,14 @@ class data_model_base extends phpok_model
 	//读取扩展内容，未格式化
 	private function _ext_info($module)
 	{
-		$sql = "SELECT e.identifier,c.content FROM ".$this->db->prefix."ext e ";
-		$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(e.id=c.id) WHERE e.module='".$module."'";
+		$sql = "SELECT e.identifier,c.content FROM ".$this->db->prefix."fields e ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(e.id=c.id) WHERE e.ftype='".$module."'";
 		$rslist = $this->db->get_all($sql);
-		if(!$rslist)
-		{
+		if(!$rslist){
 			return false;
 		}
 		$list = array();
-		foreach($rslist AS $key=>$value)
-		{
+		foreach($rslist as $key=>$value){
 			$list[$value['identifier']] = $value['content'];
 		}
 		return $list;
@@ -471,18 +469,15 @@ class data_model_base extends phpok_model
 		return $rs;
 	}
 
-	function module_field($mid)
+	public function module_field($mid)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."module_fields WHERE module_id='".$mid."' ORDER BY taxis ASC,id DESC";
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ftype='".$mid."' ORDER BY taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql,'identifier');
-		if(!$rslist)
-		{
+		if(!$rslist){
 			return false;
 		}
-		foreach($rslist as $key=>$value)
-		{
-			if($value['ext'])
-			{
+		foreach($rslist as $key=>$value){
+			if($value['ext']){
 				$value['ext'] = unserialize($value['ext']);
 			}
 			$rslist[$key] = $value;
@@ -509,46 +504,42 @@ class data_model_base extends phpok_model
 	//获取项目，分类的扩展信息
 	public function ext_all($id,$baseinfo='')
 	{
-		$sql = "SELECT ext.ext,ext.identifier,ext.form_type,c.content FROM ".$this->db->prefix."ext ext ";
+		$sql = "SELECT ext.ext,ext.identifier,ext.form_type,c.content FROM ".$this->db->prefix."fields ext ";
 		$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(ext.id=c.id) ";
-		$sql.= "WHERE ext.module='".$id."'";
+		$sql.= "WHERE ext.ftype='".$id."'";
 		$rslist = $this->db->get_all($sql,'identifier');
-		if(!$rslist)
-		{
+		if(!$rslist){
 			unset($sql);
 			return false;
 		}
 		$res = '';
 		$type = substr($id,0,4) == "cate" ? 'c' : 'p';
-		foreach($rslist AS $key=>$value)
-		{
+		foreach($rslist as $key=>$value){
 			//当内容表单为网址时
-			if($value['form_type'] == 'url' && $value['content'])
-			{
+			if($value['form_type'] == 'url' && $value['content']){
 				$value['content'] = unserialize($value['content']);
 				$url = $this->site['url_type'] == 'rewrite' ? $value['content']['rewrite'] : $value['content']['default'];
-				if(!$url) $url = $value['content']['default'];
+				if(!$url){
+					$url = $value['content']['default'];
+				}
 				$value['content'] = $url;
 				//绑定扩展自定义url
-				if(!$rslist['url']) $rslist['url'] = array('form_type'=>'text','content'=>$url);
-			}
-			elseif($value['form_type'] == 'upload' && $value['content'])
-			{
-				$tmp = explode(',',$value['content']);
-				foreach($tmp AS $k=>$v)
-				{
-					$v = intval($v);
-					if($v) $res[] = $v;
+				if(!$rslist['url']){
+					$rslist['url'] = array('form_type'=>'text','content'=>$url);
 				}
-			}
-			elseif($value['form_type'] == 'editor' && $value['content'])
-			{
-				if($value['ext'])
-				{
+			}elseif($value['form_type'] == 'upload' && $value['content']){
+				$tmp = explode(',',$value['content']);
+				foreach($tmp as $k=>$v){
+					$v = intval($v);
+					if($v){
+						$res[] = $v;
+					}
+				}
+			}elseif($value['form_type'] == 'editor' && $value['content']){
+				if($value['ext']){
 					$value['ext'] = unserialize($value['ext']);
 				}
-				if($value['ext'] && $value['ext']['inc_tag'])
-				{
+				if($value['ext'] && $value['ext']['inc_tag']){
 					$value['content'] = $this->_tag_format($value['content'],$type.$baseinfo['id']);
 				}
 				$value['content'] = str_replace('[:page:]','',$value['content']);

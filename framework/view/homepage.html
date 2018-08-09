@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="Expires" content="wed, 26 feb 1997 08:21:57 GMT" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title><!-- if $config.title -->{$config.title} - <!-- /if -->{lang后台管理}</title>
+	<link rel="stylesheet" type="text/css" href="{#css#}/css.php?type=admin" />
+	<script type="text/javascript" src="{url ctrl=js ext=admin.all/}"></script>
+	<!-- plugin head -->
+</head>
+<body>
+<div class="content">
+	<div class="index_main"{if !$iconlist} style="margin-left:10px"{/if}>
+		<!-- if $all_info -->
+		<div class="sub_box" id="all_setting">
+			<div class="box_item">
+				<ul>
+					<!-- if $all_popedom.site -->
+					<li><a title="{lang配置网站信息，包括网址域名，布全局关键字等}" href="javascript:$.win('{lang网站信息}','{url ctrl=all func=setting/}');void(0);">
+						<div class="top_img"><img src="images/ico/setting.png" alt="{lang网站信息}" class="ie6png" width="48" height="48" /></div>
+						<div class="name">{lang网站信息}</div></a>
+					</li>
+						<!-- if $show_vcode_setting -->
+						<li><a title="{lang验证码开启或关闭设置}" href="javascript:$.win('{lang验证码配置}','{url ctrl=all func=vcode/}');void(0);">
+							<div class="top_img"><img src="images/ico/setting2.png" alt="{lang验证码配置}" class="ie6png" width="48" height="48" /></div>
+							<div class="name">{lang验证码}</div></a>
+						</li>
+						<!-- /if -->
+					<!-- /if -->
+					<!-- if $all_popedom.domain -->
+					<li><a title="{lang网站可以绑定的域名}" href="javascript:$.win('{lang网站域名}','{url ctrl=all func=domain/}');void(0);">
+						<div class="top_img"><img src="images/ico/alias.png" alt="{lang网站域名}" class="ie6png" width="48" height="48" /></div>
+						<div class="name">{lang网站域名}</div></a>
+					</li>
+					<!-- /if -->
+					<!-- if $site_popedom.order && $config.biz_status -->
+					<li><a title="{lang订单常规配置}" href="javascript:$.win('{lang订单常规配置}','{url ctrl=site func=order_status/}');void(0);">
+						<div class="top_img"><img src="images/ico/shopping_setting.png" alt="{lang订单常规配置}" class="ie6png" width="48" height="48" /></div>
+						<div class="name">{lang订单常规配置}</div></a>
+					</li>
+					<!-- /if -->
+					<!-- loop from=$plugin_alist key=$key value=$value id=$tmpid -->
+					<li><a title="{$value.title}" href="javascript:$.win('{$value.title}','{$value.url}');void(0);">
+						<div class="top_img"><img src="{$value.ico}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
+						<div class="name">{$value.title}</div></a>
+					</li>
+					<!-- /loop -->
+					<!-- if $all_popedom.gset || $all_popedom.set -->
+					<!-- foreach($all_rslist AS $key=>$value) -->
+					<li><a title="{$value.title}" href="javascript:$.win('{$value.title}','{url ctrl=all func=set id=$value.id/}');void(0);">
+						<div class="top_img"><img src="{$value.ico}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
+						<div class="name">{$value.title}</div></a>
+					</li>
+					<!-- /foreach -->
+					<!-- if $session.admin_rs.if_system && $session.adm_develop --><li class="plus" onclick="$.admin_all.group()"></li><!-- /if -->
+					<!-- /if -->
+				</ul>
+			</div>
+		</div>
+		<!-- /if -->
+		<!-- if $list_rslist -->
+		<div class="sub_box" id="list_setting">
+			<div class="title"><span class="maintain">{lang内容管理}</span></div>
+			<div class="box_item">
+				<ul>
+					<!-- loop from=$list_rslist key=$key value=$value -->
+					<li pid="{$value.id}"><a title="{$value.title}" href="javascript:$.win('{$value.title}','{$value.url}');void(0);">
+						<div class="top_img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
+						<div class="name">{$value.nick_title ? $value.nick_title : $value.title}</div></a>
+					</li>
+					<!-- /loop -->
+				</ul>
+			</div>
+		</div>
+		<!-- /if -->
+		<div class="clear"></div>
+	</div>
+	<!-- plugin body -->
+	<div class="clear"></div>
+</div>
+<!-- plugin foot -->
+<div class="foot">
+	<div class="foot_left">
+		<!-- if $app->license_powered -->
+		Powered by <a href="http://www.phpok.com" target="_blank">phpok.com</a>,
+		<!-- /if -->
+		CopyRight &copy; {$license_site} {func license_date}, All Right Reserved.
+		<br />{func debug_time}
+	</div>
+	<div class="foot_right"><span class="darkblue">{$license}</span>{lang，版本：}{$version}</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	var r_menu = [[{
+		'text':'{lang刷新}',
+		'func':function(){
+			$.phpok.reload();
+		}
+	}],[{
+		'text':"{lang清空缓存}",
+		'func': function() {top.$.admin_index.clear();}
+	},{
+		'text':'{lang修改我的信息}',
+		'func':function(){top.$.admin_index.me();}
+	},{
+		'text':'{lang访问前台首页}',
+		'func':function(){
+			var url = "{$sys.www_file}?siteId={$session.admin_site_id}";
+			url = $.phpok.nocache(url);
+			window.open(url);
+		}
+	}],[{
+		'text': "{lang帮助说明}",
+		'func': function() {
+			top.$("a[layadmin-event=about]").click();
+			return true;
+		}
+	}]];
+	$(window).smartMenu(r_menu,{
+		'name':'smart',
+		'textLimit':8
+	});
+});
+</script>
+
+</body>
+</html>

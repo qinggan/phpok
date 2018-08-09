@@ -1,4 +1,4 @@
-<!-- include tpl=head menutitle=网站首页 title=会员登录 -->
+<!-- include tpl=header title=会员登录 -->
 <script type="text/javascript">
 var open_vcode = '{$is_vcode}';
 function check_input()
@@ -23,37 +23,52 @@ function check_input()
 	return true;
 }
 </script>
-<div class="login-reg">
-	<dl class="box">
-		<dt>登录</dt>
-		<form method="post" id="login-form" onsubmit="return check_input()" action="{url ctrl=login func=ok/}">
-		<input type="hidden" name="_back" value="{$_back}" />
-	    <input type="hidden" name="post_date" id="post_date" value="{func date 'Y-m-d H:i:s' $sys.time}" />
-	    <input type="hidden" name="pdip" id="pdip" value="{func phpok_ip}" />
-		<dd><label>账号：</label><input class="input" type="text" name="user" /><div class="clear"></div></dd>
-		<dd><label>密码：</label><input class="input" type="password" name="pass" /><div class="clear"></div></dd>
-		<!-- if $is_vcode -->
-		<dd><label>验证码：</label><input class="vcode"  type="text" name="_chkcode" id="_chkcode" /><img src="" border="0" align="absmiddle" id="vcode" class="hand" /><div class="clear"></div></dd>
-		<script type="text/javascript">
-		$(document).ready(function(){
-			$("#vcode").phpok_vcode();
-			$("#vcode").click(function(){
-				$(this).phpok_vcode();
+<div class="main main-single main-login am-animation-scale-up">
+	<form class="am-form" onsubmit="return check_input()" method="post" action="{url ctrl=login func=ok/}">
+		<input type="hidden" name="_back" id="_back" value="{$_back}" />
+		<fieldset>
+			<legend>会员登录</legend>
+			<div class="am-form-group">
+				<label for="doc-ipt-email-1">账号</label>
+				<input type="text" class="" id="doc-ipt-email-1" name="user" placeholder="请输入账号/邮箱/手机号" />
+			</div>
+			<div class="am-form-group">
+				<label for="doc-ipt-pwd-1">密码</label>
+				<input type="password" id="doc-ipt-pwd-1" name="pass" placeholder="请输入密码" />
+			</div>
+			<!-- if $is_vcode -->
+			<div class="am-form-group">
+				<label for="_chkcode">验证码 <img src="" border="0" align="absmiddle" id="vcode" class="hand" /></label>
+				<input type="text" name="_chkcode" id="_chkcode" placeholder="请输入图片上的数字" />
+				
+			</div>
+			<script type="text/javascript">
+			$(document).ready(function(){
+				$("#vcode").phpok_vcode();
+				$("#vcode").click(function(){
+					$(this).phpok_vcode();
+				});
 			});
-		});
-		</script>
-		<!-- /if -->
-		<dd class="submit"><input class="button blue" type="submit" value="登录" name=""></dd>
-		</form>
-	</dl>
-	<dl class="box note">
-		<dt>说明</dt>
-		<!-- if $logintype.email --><dd>邮件登录，<a href="{url ctrl=login type=email/}" title="会员邮件登录">请点这里</a></dd><!-- /if -->
-		<!-- if $logintype.sms --><dd>手机短信登录，<a href="{url ctrl=login type=sms/}" title="手机短信登录">请点这里</a></dd><!-- /if -->
-		<!-- if $logintype.sms || $logintype.email --><dd>如果您忘记密码，您可以点这里<a href="{url ctrl=login func=getpass/}" title="找回密码功能">找回密码？</a></dd><!-- /if -->
-		<dd>您还不是我们的会员，请点这里<a href="{url ctrl=register/}" title="注册会员">注册</a></dd>
-		
-	</dl>
-	<div class="clear"></div>
+			</script>
+			<!-- /if -->
+			<div class="am-form-group">
+				<button type="submit" class="am-btn am-btn-primary">登录</button>
+				<div class="am-fr">
+					<a href="{$sys.url}" class="am-btn am-btn-default am-btn-xs">返回首页</a>
+				</div>
+			</div>
+			<div class="am-form-group">
+				<a href="{url ctrl=register/}" class="am-btn am-btn-warning am-btn-xs"><i class="am-icon-user"></i> 新会员注册</a>
+				<!-- if $login_sms --><a href="{url ctrl=login func=sms/}" class="am-btn am-btn-default am-btn-xs"><i class="am-icon-mobile"></i> 短信登录</a><!-- /if -->
+				<!-- if $login_email --><a href="{url ctrl=login func=email/}" class="am-btn am-btn-default am-btn-xs"><i class="am-icon-envelope-o"></i> 邮件登录</a><!-- /if -->
+				<!-- if $login_sms || $login_email --><a href="{url ctrl=login func=getpass/}" class="am-btn am-btn-default am-btn-xs"><i class="am-icon-refresh"></i> 找回密码</a><!-- /if -->
+			</div>
+		</fieldset>
+	</form>
 </div>
-<!-- include tpl=foot -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("body").css('background-color','#EFEFEF');
+});
+</script>
+<!-- include tpl=footer -->

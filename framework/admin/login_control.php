@@ -30,21 +30,19 @@ class login_control extends phpok_control
 		}
 		$vcode = ($this->config["is_vcode"] && function_exists("imagecreate")) ? true : false;
 		$this->assign("vcode",$vcode);
-		$langlist = $this->model('lang')->get_list();
-		$this->assign('langlist',$langlist);
-		$this->assign('langid',$this->session->val('admin_lang_id'));
-		$logo = 'images/login-logo.png';
-		if($this->site['adm_logo180'] && file_exists($this->site['adm_logo180'])){
-			$logo = $this->site['adm_logo180'];
+		$multiple_language = isset($this->config['multiple_language']) ? $this->config['multiple_language'] : false;
+		if($multiple_language){
+			$langlist = $this->model('lang')->get_list();
+			$this->assign('langlist',$langlist);
+			$this->assign('langid',$this->session->val('admin_lang_id'));
 		}
-		$this->assign('logo',$logo);
-		$this->assign('multiple_language',(isset($this->config['multiple_language']) ? $this->config['multiple_language'] : false));
+		$this->assign('multiple_language',$multiple_language);
 		$this->view('login');
 	}
 
 	private function lock_action($user='',$error_add=false)
 	{
-		$lockfile = $this->dir_root.'data/cache/lock-'.$this->session->sessid().'-admin.php';
+		$lockfile = $this->dir_cache.'lock-'.$this->session->sessid().'-admin.php';
 		if(!file_exists($lockfile)){
 			$lock_count = 0;
 			$lock_time = $this->time;
@@ -120,11 +118,11 @@ class login_control extends phpok_control
 		$this->lock_action($user,false);
 		
 		//检查 2 小时内该账户是否有系统锁定
-		/*$check = $this->model('admin')->account_lock_check($user);
+		$check = $this->model('admin')->account_lock_check($user);
 		if($check){
 			$time = date("Y-m-d H:i:s",$check['unlock_time']);
 			$this->error(P_Lang('管理员账户系统锁定，解锁时间是 {time}',array('time'=>$time)));
-		}*/
+		}
 		
 		$pass = $this->get('pass');
 		if(!$pass){
@@ -138,13 +136,12 @@ class login_control extends phpok_control
 				$this->error(P_Lang('验证码不能为空'));
 			}
 			$code = md5(strtolower($code));
-			if($code != $this->session->val('vcode_admin')){
+			if($code != $this->session->val('vcode')){
 				$this->lock_action($user,true);
 				$this->error(P_Lang('验证码填写不正确'));
 			}
 			$this->session->unassign('vcode_admin');
 		}
-		
 		
 		$rs = $this->model('admin')->get_one_from_name($user);
 		if(!$rs){
@@ -176,6 +173,9 @@ class login_control extends phpok_control
 		$this->session->assign('admin_id',$rs['id']);
 		$this->session->assign('admin_account',$rs['account']);
 		$this->session->assign('admin_rs',$rs);
+		if($this->config['develop']){
+			$this->session->assign('adm_develop',true);
+		}
 		//删除锁定
 		$this->model('admin')->lock_delete($rs['account']);
 		//

@@ -1,6 +1,5 @@
 <!-- inc:head -->
 <script type="text/javascript" src="{func include_js list.js}"></script>
-<script type="text/javascript" src="js/laydate/laydate.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	top.$.desktop.title('{$rs.title}');
@@ -36,12 +35,16 @@ $(document).ready(function(){
 		$(this).removeClass("hover");
 	}).click(function(){
 		var url = $(this).attr("href");
-		if(url){
-			$.phpok.go(url);
-		}else{
-			alert("未指定动作！");
-			return false;
+		var txt = $(this).text();
+		if(txt == '' || $.trim(txt) == ''){
+			txt = $(this).attr('title');
 		}
+		if(url){
+			$.win(txt,url);
+			return true;
+		}
+		$.dialog.alert(p_lang('未指定动作'));
+		return false;
 	});
 });
 </script>
@@ -59,16 +62,6 @@ $(document).ready(function(){
 
 <!-- if $rs.module -->
 <div class="tips">
-	{lang您当前的位置：}{lang内容管理}
-	<!-- loop from=$plist key=$key value=$value id=plist_id -->
-	&raquo; <a href="{url ctrl=list func=action id=$value.id/}" title="{$value.title}">{$value.nick_title ? $value.nick_title : $value.title}</a>
-	<!-- /loop -->
-	<!-- if $show_parent_catelist -->
-	&raquo; <a href="{url ctrl=list func=action id=$pid cateid=$show_parent_catelist/}">{$parent_cate_rs.title}</a>
-	<!-- /if -->
-	<!-- if $keywords -->
-	&raquo; <span class="red">{$keywords}</span>
-	<!-- /if -->
 	<!-- if $popedom.set || $session.admin_rs.if_system -->
 	<div class="action"><a href="javascript:$.phpok_list.set({$pid});void(0);">{lang编辑项目}</a></div>
 	<!-- /if -->
@@ -193,16 +186,17 @@ $(document).ready(function(){
 		<th style="width:150px">{$value}</th>
 		<!-- elseif $key == "hits" -->
 		<th style="width:50px">{lang点击}</th>
+		<!-- elseif $key == "sort" -->
+		<th style="width:80px">{lang排序}</th>
 		<!-- else -->
 		<th class="lft">{$value}</th>
 		<!-- /if -->
 	<!-- /loop -->
-	<th style="width:80px">{lang排序}</th>
-	<th style="width:30px">&nbsp;</th>
+	
 	<th>&nbsp;</th>
 </tr>
 <!-- php:$tmp_m = 0 -->
-<!-- foreach($rslist AS $key=>$value) -->
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 <!-- php:$tmp_m++ -->
 <tr id="list_{$value.id}" title="{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}: {$value.title}&#10;{lang发布日期}: {echo date('Y-m-d H:i:s',$value[dateline])}">
 	<td class="center"><input type="checkbox" name="ids[]" id="id_{$value.id}" value="{$value.id}" /></td>
@@ -250,6 +244,8 @@ $(document).ready(function(){
 		<td class="center">{func date "Y-m-d H:i" $value.dateline}</td>
 		<!-- elseif $k == "hits" -->
 		<td class="center">{$value.hits}</td>
+		<!-- elseif $k == 'sort' -->
+		<td class="center"><input type="text" name="taxis" value="{$value.sort}" class="center short" tabindex="{$tmp_m}" onchange="$.phpok_list.sort(this,'{$value.id}')" /></td>
 		<!-- elseif $k == "user_id" -->
 		<td>{$value._user ? $value._user : '-'}</td>
 		<!-- else -->
@@ -269,8 +265,7 @@ $(document).ready(function(){
 			<!-- /if -->
 		<!-- /if -->
 	<!-- /loop -->
-	<td class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}" onclick="$.phpok_list.sort(this)">{$value.sort}</td>
-	<td class="center"><span id="taxis_{$value.id}"></span></td>
+	
 	<td>
 		<div class="button-group">
 			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=list func=edit id=$value.id/}')" class="phpok-btn" /><!-- /if -->
@@ -326,6 +321,8 @@ $(document).ready(function(){
 			<td class="center">{echo date("Y-m-d H:i",$vv[dateline])}</td>
 			<!-- elseif $k == "hits" -->
 			<td class="center">{$vv.hits}</td>
+			<!-- elseif $k == 'sort' -->
+			<td class="center"><input type="text" name="taxis" value="{$vv.sort}" class="center short" tabindex="{$tmp_m}" onchange="$.phpok_list.sort(this,'{$vv.id}')" /></td>
 			<!-- elseif $k == 'user_id' -->
 			<td>{$vv._user ? $vv._user : '-'}</td>
 			<!-- else -->
@@ -345,8 +342,6 @@ $(document).ready(function(){
 				<!-- /if -->
 			<!-- /if -->
 		<!-- /loop -->
-		<td class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$vv.id}" onclick="$.phpok_list.sort(this)">{$vv.sort}</td>
-		<td class="center"><span id="taxis_{$vv.id}"></span></td>
 		<td>
 			<div class="button-group">
 				<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=list func=edit id=$vv.id/}')" class="phpok-btn" /><!-- /if -->
@@ -356,7 +351,7 @@ $(document).ready(function(){
 		</td>
 	</tr>
 	<!-- /loop -->
-<!-- /foreach -->
+<!-- /loop -->
 </table>
 </div>
 <!-- /if -->

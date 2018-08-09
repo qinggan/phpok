@@ -21,6 +21,7 @@ class url_model_base extends phpok_model
 	protected $nocache = '';
 	private $protected_id = array('js','ajax','inp');
 	private $url_appid = 'www';
+	private $tmpdata = array();
 	public $urltype = 'default';
 	
 	public function __construct()
@@ -89,12 +90,19 @@ class url_model_base extends phpok_model
 	public function protected_ctrl($info='')
 	{
 		if(!$info){
-			$info = array("js",'ajax','inp');
+			return $this->protected_id;
 		}
 		if(is_string($info)){
 			$info = explode(",",$info);
 		}
-		$this->protected_id = $info;
+		if($this->protected_id){
+			$tmp = array_merge($this->protected_id,$info);
+			$tmp = array_unique($tmp);
+			$this->protected_id = $tmp;
+		}else{
+			$this->protected_id = $info;
+		}
+		return $this->protected_id;
 	}
 
 	public function url_default($ctrl='index',$func='index',$ext='')
@@ -180,9 +188,9 @@ class url_model_base extends phpok_model
 					$data['pageid'] = $func;
 				}
 			}else{
-				$rule_id = 'project';
-				if($this->get_from_identifier($ctrl,'list')){
-					$rule_id = 'content';
+				$rule_id = 'content';
+				if($this->get_from_identifier($ctrl,'project')){
+					$rule_id = 'project';
 				}
 				$data['ctrl'] = $rule_id;
 				$data['id'] = $ctrl;
@@ -232,7 +240,7 @@ class url_model_base extends phpok_model
 		$forbid = array('ctrl','func','cate','cateid','cate_id','cid','module','mid','project');
 		foreach($data as $key=>$value){
 			if(strpos($url,'['.$key.']') !== false){
-				$url = str_replace('['.$key.']',$value,$url);
+				$url = str_replace('['.$key.']',rawurlencode($value),$url);
 			}else{
 				if(!in_array($key,$forbid)){
 					$extlist[$key] = $value;
@@ -412,7 +420,16 @@ class url_model_base extends phpok_model
 		if(!$sql){
 			return false;
 		}
-		return $this->db->get_one($sql);
+		$cache_id = $this->cache->id($sql);
+		if($this->tmpdata && $this->tmpdata[$cache_id]){
+			return $this->tmpdata[$cache_id];
+		}
+		$info = $this->db->get_one($sql);
+		if(!$info){
+			return false;
+		}
+		$this->tmpdata[$cache_id] = $info;
+		return $info;
 	}
 
 
@@ -454,5 +471,3 @@ class url_model_base extends phpok_model
 	}
 
 }
-
-?>

@@ -52,12 +52,55 @@ function edit_price(code)
 		}
 	});
 }
+function admin_add_it()
+{
+	var url = get_url('site','admin_status_set');
+	$.dialog.open(url,{
+		'title':p_lang('添加状态'),
+		'lock':true,
+		'width':'450px',
+		'height':'300px',
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal':p_lang('提交保存'),
+		'cancel':true
+	})
+}
+function admin_edit_it(id)
+{
+	var url = get_url('site','admin_status_set',"id="+id);
+	$.dialog.open(url,{
+		'title':p_lang('编辑状态') + " #"+id,
+		'lock':true,
+		'width':'450px',
+		'height':'300px',
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal':p_lang('提交保存'),
+		'cancel':true
+	})
+}
 </script>
 <ul class="group">
-	<li class="on" onclick="$.admin.group(this)" name="status">{lang订单状态}</li>
-	<li onclick="$.admin.group(this)" name="price">{lang订单价格方案}</li>
+	<li{if !$type || $type=='status'} class="on"{/if} onclick="$.phpok.go('{url ctrl=site func=order_status type=status/}')" name="status">{lang前台订单状态}</li>
+	<li{if $type && $type == 'adm_status'} class="on"{/if} onclick="$.phpok.go('{url ctrl=site func=order_status type=adm_status/}')" name="adm_status">{lang后台订单状态}</li>
+	<li{if $type && $type == 'price'} class="on"{/if} onclick="$.phpok.go('{url ctrl=site func=order_status type=price/}')" name="price">{lang订单价格方案}</li>
 </ul>
-<div id="status_setting" style="padding:0 10px">
+<div id="status_setting"{if $type && $type != 'status'} class="hide"{/if} style="padding:0 10px">
 	<table width="100%" cellpadding="0" cellspacing="0" class="list">
 	<tr>
 		<th class="lft">标识</th>
@@ -97,7 +140,30 @@ function edit_price(code)
 	<!-- /loop -->
 	</table>
 </div>
-<div id="price_setting" class="hide" style="padding:0 10px">
+
+<div id="adm_status_setting"{if !$type || $type != 'adm_status'} class="hide"{/if} style="padding:0 10px">
+	<table width="100%" cellpadding="0" cellspacing="0" class="list">
+	<tr>
+		<th class="lft">标识</th>
+		<th>排序</th>
+		<th class="lft">名称</th>
+		<th class="lft">前台订单状态</th>
+		<th>状态</th>
+		<th><input type="button" value="添加" onclick="admin_add_it()" class="phpok-btn" /></th>
+	</tr>
+	<!-- loop from=$admin_statuslist key=$key value=$value -->
+	<tr>
+		<td>{$value.identifier}</td>
+		<td class="center">{$value.taxis}</td>
+		<td>{$value.title}</td>
+		<td>{$value.ostatus}</td>
+		<td class="center"><!-- if $value.status -->{lang启用}<!-- else --><span class="red">禁用</span><!-- /if --></td>
+		<td class="center"><input type="button" value="{lang编辑}" onclick="admin_edit_it('{$value.identifier}')" class="phpok-btn" /></td>
+	</tr>
+	<!-- /loop -->
+	</table>
+</div>
+<div id="price_setting"{if !$type || $type != 'price'} class="hide"{/if} style="padding:0 10px">
 	<table width="100%" cellpadding="0" cellspacing="0" class="list">
 	<tr>
 		<th class="lft" width="100">标识</th>

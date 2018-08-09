@@ -1,0 +1,59 @@
+<!-- include tpl=head -->
+<div class="tips">
+	<div class="left">
+		&raquo; {lang收藏夹管理}
+	</div>
+	<div class="left" style="margin-left:10px;">
+		<form method="post" action="{url ctrl=fav/}">
+		<ul class="layout">
+			<li>
+				<select id="stype" name="stype">
+					<option value="0">{lang模糊搜索}</option>
+					<option value="1"{if $stype} selected{/if}>{lang精确搜索}</option>
+				</select>
+			</li>
+			<li>
+				<select id="keytype" name="keytype">
+					<option value="title">{lang标题}</option>
+					<option value="note"{if $keytype == 'note'} selected{/if}>{lang摘要}</option>
+					<option value="user"{if $keytype == 'user'} selected{/if}>{lang会员账号}</option>
+					<option value="email"{if $keytype == 'email'} selected{/if}>{lang会员Email}</option>
+					<option value="mobile"{if $keytype == 'mobile'} selected{/if}>{lang会员手机号}</option>
+				</select>
+			</li>
+			<li><input type="text" name="keywords" id="keywords" value="{$keywords}" /></li>
+			<li><input type="submit" value="{lang搜索}" class="phpok-btn" /></li>
+		</ul>
+		</form>
+	</div>
+</div>
+<div class="list">
+<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<tr>
+	<th width="50px">ID</th>
+	<th class="lft">{lang标题}</th>
+	<th>{lang会员账号}</th>
+	<th>{lang收藏时间}</th>
+	<th></th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<tr data-id="{$value.id}">
+	<td class="center">{$value.id}</td>
+	<td>
+		<!-- if $value.thumb --><a href="{$value.thumb}" target="_blank"><img src="{$value.thumb}" width="50px" valign="absmiddle" /></a><!-- /if -->
+		{$value.title}
+	</td>
+	<td class="center">{$value.user}</td>
+	<td class="center">{func time_format $value.addtime}</td>
+	<td class="center">
+		<div class="button-group">
+			<input type="button" value="{lang访问}" onclick="$.phpok.open('{$sys.www_file}?id={$value.lid}')" class="phpok-btn" />
+			<input type="button" value="{lang删除}" onclick="$.admin_fav.del('{$value.id}')" class="phpok-btn" />
+		</div>
+	</td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<!-- include tpl=pagelist -->
+<!-- include tpl=foot -->

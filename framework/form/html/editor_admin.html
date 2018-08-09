@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="height,is_code:checkbox,is_read:checkbox,inc_tag:checkbox,paste_text,btns" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="height,is_code:checkbox,is_read:checkbox,inc_tag:checkbox,paste_text,btns,is_float:checkbox" />
 <div class="table">
 	<div class="title">
 		{lang编辑器最小高度设置}：
@@ -36,8 +36,8 @@
 	</div>
 	<div class="content">
 		<ul class="layout">
-			<li><label><input type="radio" name="paste_text"{if !$rs.paste_text} checked{/if}>{lang带格式粘贴}</label></li>
-			<li><label><input type="radio" name="paste_text"{if $rs.paste_text} checked{/if}>{lang纯文本粘贴}</label></li>
+			<li><label><input type="radio" name="paste_text" value="0"{if !$rs.paste_text} checked{/if}>{lang带格式粘贴}</label></li>
+			<li><label><input type="radio" name="paste_text" value="1"{if $rs.paste_text} checked{/if}>{lang纯文本粘贴}</label></li>
 		</ul>
 	</div>
 </div>
@@ -50,6 +50,7 @@
 		<ul class="layout">
 			<li><label><input type="checkbox" name="is_code" id="is_code"{if $rs.is_code} checked{/if}>{lang显示源码}</label></li>
 			<li><label><input type="checkbox" name="is_read" id="is_read"{if $rs.is_read} checked{/if}>{lang只读}</label></li>
+			<li><label><input type="checkbox" name="is_float" id="is_float"{if $rs.is_float} checked{/if}>{lang编辑器浮动}</label></li>
 			<li><label><input type="checkbox" name="inc_tag" id="inc_tag"{if $rs.inc_tag} checked{/if}>{lang标签信息格式化到内容}</label></li>
 		</ul>
 		<div class="clear"></div>

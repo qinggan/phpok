@@ -130,7 +130,7 @@ class user_control extends phpok_control
 		$this->assign("total",$count);
 		$this->assign("rslist",$rslist);
 		$this->assign("pagelist",$pagelist);
-		$list = $this->lib('xml')->read($this->dir_root.'data/xml/admin_user.xml');
+		$list = $this->lib('xml')->read($this->dir_data.'xml/admin_user.xml');
 		$this->assign("arealist",$list);
 
 		$grouplist = $this->model('usergroup')->get_all("","id");
@@ -354,7 +354,7 @@ class user_control extends phpok_control
 		}
 		$this->assign("used_list",$used_list);
 		if($this->popedom["set"]){
-			$fields_list = $this->model('fields')->get_all();
+			$fields_list = $this->model('fields')->default_all();
 			$this->assign("fields_list",$fields_list);
 			if($fields_list && $used_list){
 				$main_key = $this->model('user')->fields();
@@ -386,7 +386,7 @@ class user_control extends phpok_control
 		if(!$id){
 			$this->error(P_Lang('未指定ID'));
 		}
-		$rs = $this->model('fields')->get_one($id);
+		$rs = $this->model('fields')->default_one($id);
 		if(!$rs){
 			$this->error(P_Lang('字段内容不存在'));
 		}
@@ -488,7 +488,7 @@ class user_control extends phpok_control
 		$array["content"] = $this->get("content");
 		$array["taxis"] = $this->get("taxis","int");
 		$array["ext"] = ($ext && count($ext)>0) ? serialize($ext) : "";
-		$array["is_edit"] = $this->get("is_edit","int");
+		$array["is_front"] = $this->get("is_front","int");
 		if($id){
 			$this->model('user')->fields_save($array,$id);
 			$this->success();

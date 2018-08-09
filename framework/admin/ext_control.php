@@ -144,7 +144,7 @@ class ext_control extends phpok_control
 			$this->json(P_Lang('未指哪个模型要添加扩展字段'));
 		}
 		$list = explode("-",$module);
-		$rs = $this->model('fields')->get_one($id);
+		$rs = $this->model('fields')->default_one($id);
 		if(!$rs){
 			$this->json(P_Lang('常用字段不存在'));
 		}

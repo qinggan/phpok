@@ -28,16 +28,19 @@ $(document).ready(function(){
 		$(this).removeClass("hover");
 	}).click(function(){
 		var url = $(this).attr("href");
-		if(url){
-			$.phpok.go(url);
-		}else{
-			alert("未指定动作！");
-			return false;
+		var txt = $(this).text();
+		if(txt == '' || $.trim(txt) == ''){
+			txt = $(this).attr('title');
 		}
+		if(url){
+			$.win(txt,url);
+			return true;
+		}
+		$.dialog.alert(p_lang('未指定动作'));
+		return false;
 	});
 });
 </script>
-<div class="tips"><span class="red">{$rs.title}</span> 子项信息，请点击进入修改</div>
 <ul class="project" id="project">
 	<!-- loop from=$project_list key=$key value=$value -->
 	<li id="project_{$value.id}" title="{$value.title}" status="{$value.status}" href="{url ctrl=list func=action id=$value.id/}">

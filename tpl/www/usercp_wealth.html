@@ -1,4 +1,5 @@
-<!-- include tpl=head title="会员财富 - 个人中心" -->
+<!-- php:$title ="我的财富 - 会员中心"  -->
+<!-- include tpl=head title=$title -->
 <script type="text/javascript">
 function payit(id,title)
 {
@@ -12,32 +13,32 @@ function payit(id,title)
 	},10).title('在线充值');
 }
 </script>
-<div class="cp">
-	<div class="left"><!-- include tpl=block_usercp --></div>
+<div class="main">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="left"><!-- include tpl=block/usercp_nav --></div>
 	<div class="right">
-		<div class="table_lc">
-		<table width="100%">
-		<tr>
-			<th class="lft">名称</th>
-			<th width="77px">操作</th>
-		</tr>
-		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-		<tr>
-			<td>
-				<div><b>{$value.title}</b>，您当前有 <span class="red">{$value.val}</span> {$value.unit}</div>
-				<!-- if $value.ifpay -->
-				<div class="gray">充值比例：1元人民币 = {$value.pay_ratio} {$value.unit}</div>
-				<!-- /if -->
-				<!-- if $value.ifcash && !$value.ifpay -->
-				<div class="gray">抵现比例：100{$value.unit} = {$value.cash_ratio}元人民币，可用于抵扣购物金额</div>
-				<!-- /if -->
-			</td>
-			<td align="center">
-			<!-- if $value.ifpay --><input type="button" value="充值" class="button blue" onclick="payit('{$value.id}','{$value.title}')" /><!-- /if -->
-			</td>
-		</tr>
-		<!-- /loop -->
-		</table>
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">我的财富</div>
+			<table class="am-table">
+				<tbody>
+					<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+					<tr>
+						<td>
+							<div><b>{$value.title}</b>，您当前有 <span class="red">{$value.val}</span> {$value.unit}</div>
+							<!-- if $value.ifpay -->
+							<div class="gray">充值比例：1元人民币 = {$value.pay_ratio} {$value.unit}</div>
+							<!-- /if -->
+							<!-- if $value.ifcash && !$value.ifpay -->
+							<div class="gray">抵现比例：100{$value.unit} = {$value.cash_ratio}元人民币，可用于抵扣购物金额</div>
+							<!-- /if -->
+						</td>
+						<td class="am-text-center">
+							<!-- if $value.ifpay --><input type="button" value="充值" class="am-btn am-btn-primary am-btn-sm" onclick="payit('{$value.id}','{$value.title}')" /><!-- /if -->
+						</td>
+					</tr>
+					<!-- /loop -->
+				</tbody>
+			</table>
 		</div>
 	</div>
 	<div class="clear"></div>

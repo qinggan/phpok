@@ -35,13 +35,29 @@ class module_control extends phpok_control
 		$this->view("module_index");
 	}
 
-	function set_f()
+	public function set_f()
 	{
-		if(!$this->popedom["set"]) error(P_Lang('您没有权限执行此操作'));
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get('id','int');
 		if($id){
 			$this->assign("id",$id);
 			$rs = $this->model('module')->get_one($id);
+			$layout = !$rs['mtype'] ? array("hits","dateline") : array();
+			if($rs["layout"]){
+				$layout = explode(",",$rs["layout"]);
+			}
+			$this->assign("layout",$layout);
+			$used_list = $this->model('module')->fields_all($id,"identifier");
+			if($used_list){
+				foreach($used_list as $key=>$value){
+					$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
+					$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
+					$used_list[$key] = $value;
+				}
+			}
+			$this->assign("used_list",$used_list);
 		}else{
 			$taxis = $this->model('module')->module_next_taxis();
 			$rs = array('taxis'=>$taxis);
@@ -125,7 +141,7 @@ class module_control extends phpok_control
 		if($list){
 			foreach($list AS $key=>$value){
 				unset($value["id"]);
-				$value["module_id"] = $new_id;
+				$value["ftype"] = $new_id;
 				if($value["ext"]){
 					$value["ext"] = stripslashes($value["ext"]);
 				}
@@ -163,9 +179,15 @@ class module_control extends phpok_control
 		$taxis = $this->get("taxis","int");
 		$array = array("title"=>$title,"note"=>$note,"taxis"=>$taxis);
 		if($id){
+			$layout = $this->get("layout");
+			if($layout && is_array($layout)){
+				$array['layout'] = implode(",",$layout);
+			}else{
+				$array['layout'] = '';
+			}
 			$this->model('module')->save($array,$id);
 		}else{
-			$array["layout"] = "hits,dateline";
+			$array["layout"] = "hits,dateline,sort";
 			$array['mtype'] = $this->get('mtype','int');
 			$id = $this->model('module')->save($array);
 		}
@@ -196,7 +218,7 @@ class module_control extends phpok_control
 		$this->assign("id",$id);
 		$this->assign("rs",$rs);
 		$condition = "area LIKE '%module%'";
-		$fields_list = $this->model('fields')->get_all($condition,"identifier");
+		$fields_list = $this->model('fields')->default_all();
 		if($fields_list){
 			foreach($fields_list as $key=>$value){
 				$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
@@ -246,7 +268,7 @@ class module_control extends phpok_control
 			$this->error(P_Lang('模型不存在'));
 		}
 		//取得fid的内容信息
-		$f_rs = $this->model('fields')->get_one($fid);
+		$f_rs = $this->model('fields')->default_one($fid);
 		if(!$f_rs){
 			$this->error(P_Lang('字段不存在'));
 		}
@@ -589,10 +611,10 @@ class module_control extends phpok_control
 			$rs['_fields'] = $tmplist;
 		}
 		//将数据写成XML
-		$tmpfile = $this->dir_root.'data/cache/module.xml';
+		$tmpfile = $this->dir_cache.'module.xml';
 		$this->lib('xml')->save($rs,$tmpfile);
-		$this->lib('phpzip')->set_root($this->dir_root.'data/cache/');
-		$zipfile = $this->dir_root.'data/cache/'.$this->time.'.zip';
+		$this->lib('phpzip')->set_root($this->dir_cache);
+		$zipfile = $this->dir_cache.$this->time.'.zip';
 		$this->lib('phpzip')->zip($tmpfile,$zipfile);
 		$this->lib('file')->rm($tmpfile);
 		//下载zipfile
@@ -617,11 +639,11 @@ class module_control extends phpok_control
 		if(!file_exists($this->dir_root.$zipfile)){
 			$this->error(P_Lang('ZIP文件不存在'));
 		}
-		$this->lib('phpzip')->unzip($this->dir_root.$zipfile,$this->dir_root.'data/cache/');
-		if(!file_exists($this->dir_root.'data/cache/module.xml')){
+		$this->lib('phpzip')->unzip($this->dir_root.$zipfile,$this->dir_cache);
+		if(!file_exists($this->dir_cache.'module.xml')){
 			$this->error(P_Lang('导入模块失败，请检查解压缩是否成功'));
 		}
-		$rs = $info = $this->lib('xml')->read($this->dir_root.'data/cache/module.xml',true);
+		$rs = $info = $this->lib('xml')->read($this->dir_cache.'module.xml',true);
 		if(!$rs){
 			$this->error(P_Lang('XML内容解析异常'));
 		}
@@ -650,7 +672,7 @@ class module_control extends phpok_control
 				$this->model('module')->create_fields($value['id']);
 			}
 		}
-		$this->lib('file')->rm($this->dir_root.'data/cache/module.xml');
+		$this->lib('file')->rm($this->dir_cache.'module.xml');
 		$this->lib('file')->rm($this->dir_root.$zipfile);
 		$this->success();
 	}

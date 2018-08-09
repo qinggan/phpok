@@ -49,18 +49,18 @@ class usercp_control extends phpok_control
 		if(!$group_rs){
 			$this->json(P_Lang('会员组不存在'));
 		}
-		$condition = 'is_edit=1';
+		$condition = 'is_front=1';
 		if($group_rs['fields']){
 			$tmp = explode(",",$group_rs['fields']);
 			$condition .= " AND identifier IN('".(implode("','",$tmp))."')";
 		}
 		$ext_list = $this->model('user')->fields_all($condition,"id");
 		if($ext_list){
-			$ext = "";
+			$ext = array();
 			foreach($ext_list as $key=>$value){
 				$ext[$value['identifier']] = $this->lib('form')->get($value);
 			}
-			if($ext){
+			if($ext && count($ext)>0){
 				$this->model('user')->update_ext($ext,$this->u_id);
 			}
 		}
@@ -92,9 +92,15 @@ class usercp_control extends phpok_control
 	//更新会员密码功能
 	public function passwd_f()
 	{
-		$oldpass = $this->get("oldpass");
-		if(!$oldpass){
-			$this->json(P_Lang('旧密码不能为空'));
+		$user = $this->model('user')->get_one($this->u_id);
+		if($user['pass']){
+			$oldpass = $this->get("oldpass");
+			if(!$oldpass){
+				$this->json(P_Lang('旧密码不能为空'));
+			}
+			if(!password_check($oldpass,$user["pass"])){
+				$this->json(P_Lang('旧密码输入错误'));
+			}
 		}
 		$newpass = $this->get("newpass");
 		$chkpass = $this->get("chkpass");
@@ -110,11 +116,7 @@ class usercp_control extends phpok_control
 		if($newpass != $chkpass){
 			$this->json(P_Lang('新旧密码不一致'));
 		}
-		$user = $this->model('user')->get_one($this->u_id);
-		if(!password_check($oldpass,$user["pass"])){
-			$this->json(P_Lang('旧密码输入错误'));
-		}
-		if($oldpass == $newpass){
+		if($oldpass && $oldpass == $newpass){
 			$this->json(P_Lang('新旧密码不能一样'));
 		}
 		$password = password_create($newpass);
@@ -523,7 +525,7 @@ class usercp_control extends phpok_control
 			$this->error(P_Lang('未指定要修改的字段'));
 		}
 		$list = explode(",",$fields);
-		$flist = $this->model('user')->fields_all("is_edit=1");
+		$flist = $this->model('user')->fields_all("is_front=1");
 		if(!$flist){
 			$this->error(P_Lang('没有可编辑的字段'));
 		}

@@ -134,11 +134,15 @@ class order_model extends order_model_base
 		return true;
 	}
 
-	function product_delete($id)
+	public function product_delete($id)
 	{
-		if(!$id) return false;
+		if(!$id){
+			return false;
+		}
 		$rs = $this->product_one($id);
-		if(!$rs) return false;
+		if(!$rs){
+			return false;
+		}
 		$oid = $rs['order_id'];
 		//删除产品
 		$sql = "DELETE FROM ".$this->db->prefix."order_product WHERE id='".$id."'";
@@ -155,28 +159,4 @@ class order_model extends order_model_base
 		if(!$id) return false;
 		return $this->db->get_one("SELECT * FROM ".$this->db->prefix."order_product WHERE id='".$id."'");
 	}
-
-
-	public function log_save($data)
-	{
-		if(!$data){
-			return false;
-		}
-		if(!$data['who'] && $_SESSION['user_id']){
-			$user = $this->model('user')->get_one($_SESSION['user_id']);
-			$data['who'] = $user['user'];
-		}
-		if(!$data['addtime']){
-			$data['addtime'] = $this->time;
-		}
-		return $this->db->insert_array($data,'order_log');
-	}
-
-	public function log_list($order_id)
-	{
-		$sql = "SELECT id,addtime,who,note FROM ".$this->db->prefix."order_log WHERE order_id='".$order_id."' ORDER BY addtime ASC,id ASC";
-		return $this->db->get_all($sql);
-	}
 }
-
-?>

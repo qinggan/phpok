@@ -43,10 +43,10 @@ class wxpay_submit
 			$order = $app->model('order')->get_one($this->order['sn'],'sn');
 			$data['attach'] = $order['passwd'];
 		}
-		$data['body'] = '订单：'.$this->order['sn'];
-		//$data['detail'] = '{"goods_detail":[{"goods_id":"'.md5($this->order['sn']).'","goods_name":"订单：'.$this->order['sn'].'","quantity":1,"price":'.intval($this->order['price']*100).'}]}';
-		$data['out_trade_no'] = $this->order['sn'];
-		$data['total_fee'] = intval($this->order['price']*100);
+		$price = price_format_val($this->order['price'],$this->order['currency_id'],$this->param['currency']['id']);
+		$data['body'] = '订单：'.$this->order['sn'].'-'.$this->order['id'];
+		$data['out_trade_no'] = $this->order['sn'].'-'.$this->order['id'];
+		$data['total_fee'] = intval($price*100);
 		$data['notify_url'] = $this->baseurl."gateway/payment/wxpay/notify_url.php";
 		$info = $wxpay->create($data);
 		if(!$info){
@@ -55,64 +55,29 @@ class wxpay_submit
 		if(strtolower($info['result_code']) == 'fail'){
 			$app->error($info['err_code'].'：'.$info['err_code_des']);
 		}
+		$app->assign('info',$info);
+		$app->assign('data',$data);
+		$app->assign('order',$this->order);
+		$app->assign('price_rmb',$price);
+		$rs = $app->model('order')->get_one($this->order['sn'],'sn');
+		$app->assign('rs',$rs);
+		$ajaxurl = $app->url('payment','query','sn='.$this->order['sn'].'-'.$this->order['id'],'api');
+		$app->assign('ajaxurl',$ajaxurl);
 		if($wxpay->trade_type() == 'wap'){
-			$this->head('启动微信支付');
 			$config = $wxpay->get_jsapi_param($info);
+			$app->assign('wxconfig',$config);
 			$string = 'appid='.$config['appId'].'&timestamp='.$config['timeStamp'].'&noncestr='.$config['nonceStr'];
 			$string.= "&package=WAP&prepayid=".$config['prepay_id']."&sign=".$config['sign'];
 			$url = "weixin://wap/pay?".rawurlencode($string);
-			echo '<script type="text/javascript">'."\n";
-			echo 'window.open("'.$url.'")';
-			echo '</script>';
-			$this->foot();
+			$app->assign('wxpay_link',$url);
+			$app->tpl->display("payment/wxpay/submit_wap");
 		}
 		if($wxpay->trade_type() == 'jsapi'){
-			$this->head();
 			$config = $wxpay->get_jsapi_param($info);
-			$apiurl = $GLOBALS['app']->url('payment','query','sn='.$this->order['sn'],'api');
-			$gourl = $GLOBALS['app']->url('order','info','sn='.$this->order['sn'],'www');
-			echo <<<EOT
-<script type="text/javascript" src="//res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
-<script type="text/javascript">
-function callpay()
-{
-	wx.config({
-        debug: false,
-        appId: '{$config[appId]}', // 必填，公众号的唯一标识
-        timestamp:'{$config[timeStamp]}' , // 必填，生成签名的时间戳
-        nonceStr: '{$config[nonceStr]}', // 必填，生成签名的随机串
-        signature: '{$config[sign]}',// 必填，签名，见附录1
-        jsApiList: ['chooseWXPay'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-    });
-    wx.ready(function(){
-        wx.chooseWXPay({
-            timestamp: '{$config[timeStamp]}', // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-            nonceStr: '{$config[nonceStr]}', // 支付签名随机串，不长于 32 位
-            package: '{$config[package]}', // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
-            signType: 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-            paySign: '{$config[paySign]}', // 支付签名
-            success: function (res) {
-	            var rs = $.phpok.json('{$apiurl}');
-	            if(rs.status == 'ok'){
-		            $.phpok.go("{$gourl}");
-	            }else{
-		            alert(rs.content);
-		            return false;
-	            }
-            }
-        });
-    });
-}
-$(document).ready(function(){
-	callpay();
-});
-</script>
-EOT;
+			$app->assign('wxconfig',$config);
+			$app->tpl->display("payment/wxpay/submit_jsapi");
 		}elseif($wxpay->trade_type() == 'native'){
-			$this->head('请用微信扫一扫');
-			echo '<div class="main"><h3>请用微信扫一扫</h3>';
-			echo '<div class="qrcode"><img src="'.$this->baseurl.'gateway/payment/wxpay/qrcode.php?data='.$info['code_url'].'" border="0" /></div></div>';
-			$this->foot();
+			$app->tpl->display('payment/wxpay/submit_qrcode');
 		}
 	}
 

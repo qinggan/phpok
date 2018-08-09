@@ -329,6 +329,9 @@ $(document).ready(function(){
 	</div>
 	</div>
 
+	<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
+	<input type="hidden" data-name="emailtpl" value="{$value.identifier}" data-title="{$value.title}" data-note="{$value.note}" data-orderby="{$tmpid.num}" />
+	<!-- /loop -->
 	<div id="email_set_post_status"{if !$rs.post_status} style="display:none"{/if}>
 	<div class="table">
 		<div class="title">
@@ -336,12 +339,7 @@ $(document).ready(function(){
 			<span class="note">{lang仅限启用：前台发布 后有效}</span>
 		</div>
 		<div class="content">
-			<select name="etpl_admin">
-				<option value="">{lang不通知管理员}</option>
-				<!-- loop from=$emailtpl key=$key value=$value -->
-				<option value="{$value.identifier}"{if $rs.etpl_admin == $value.identifier} selected{/if}>{lang通知管理员模板：}{$value.title}</option>
-				<!-- /loop -->
-			</select>
+			<input type="text" name="etpl_admin" id="etpl_admin" value="{$rs.etpl_admin}" class="long"{if !$rs.etpl_admin} placeholder="不通知"{/if} />
 		</div>
 	</div>
 	<div class="table">
@@ -350,12 +348,7 @@ $(document).ready(function(){
 			<span class="note">{lang仅限启用：发布且已登录会员后有效}</span>
 		</div>
 		<div class="content">
-			<select name="etpl_user">
-				<option value="">{lang不通知会员}</option>
-				<!-- loop from=$emailtpl key=$key value=$value -->
-				<option value="{$value.identifier}"{if $rs.etpl_user == $value.identifier} selected{/if}>{lang通知会员模板：}{$value.title}</option>
-				<!-- /loop -->
-			</select>
+			<input type="text" name="etpl_user" id="etpl_user" value="{$rs.etpl_user}" class="long"{if !$rs.etpl_user} placeholder="不通知"{/if} />
 		</div>
 	</div>
 	</div>
@@ -367,12 +360,7 @@ $(document).ready(function(){
 			<span class="note">{lang仅限启用：评论后有效}</span>
 		</div>
 		<div class="content">
-			<select name="etpl_comment_admin">
-				<option value="">{lang不通知管理员}</option>
-				<!-- loop from=$emailtpl key=$key value=$value -->
-				<option value="{$value.identifier}"{if $rs.etpl_comment_admin == $value.identifier} selected{/if}>{lang通知管理员模板：}{$value.title}</option>
-				<!-- /loop -->
-			</select>
+			<input type="text" name="etpl_comment_admin" id="etpl_comment_admin" value="{$rs.etpl_comment_admin}" class="long"{if !$rs.etpl_comment_admin} placeholder="不通知"{/if} />
 		</div>
 	</div>
 	<div class="table">
@@ -381,12 +369,7 @@ $(document).ready(function(){
 			<span class="note">{lang仅限启用：评论且已登录会员有效}</span>
 		</div>
 		<div class="content">
-			<select name="etpl_comment_user">
-				<option value="">{lang不通知会员}</option>
-				<!-- loop from=$emailtpl key=$key value=$value -->
-				<option value="{$value.identifier}"{if $rs.etpl_comment_user == $value.identifier} selected{/if}>{lang通知会员模板：}{$value.title}</option>
-				<!-- /loop -->
-			</select>
+			<input type="text" name="etpl_comment_user" id="etpl_comment_user" value="{$rs.etpl_comment_user}" class="long"{if !$rs.etpl_comment_user} placeholder="不通知"{/if} />
 		</div>
 	</div>
 	</div>

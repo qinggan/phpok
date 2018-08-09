@@ -102,6 +102,7 @@ class list_model extends list_model_base
 			return false;
 		}
 		unset($rs["id"]);
+		$rs['dateline'] = $this->time;
 		$insert_id = $this->db->insert_array($rs,"list");
 		if(!$insert_id){
 			return false;
@@ -141,7 +142,7 @@ class list_model extends list_model_base
 				$this->db->insert_array($value,'list_attr','replace');
 			}
 		}
-		return true;
+		return $insert_id;
 	}
 
 	public function list_cate_add($cateid,$tid)
@@ -208,7 +209,7 @@ class list_model extends list_model_base
 			$fields = array_merge($fields,$f5);
 		}
 		if($id){
-			$sql = "SELECT identifier FROM ".$this->db->prefix."ext WHERE module='list-".$id."'";
+			$sql = "SELECT identifier FROM ".$this->db->prefix."fields WHERE ftype='list-".$id."'";
 			$f6 = $this->db->get_all($sql);
 			if($f6){
 				$tmp = array();

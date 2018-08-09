@@ -70,8 +70,8 @@ class ulang_control extends phpok_control
 
 	public function unzip_f()
 	{
-		echo '1<br />';
-		echo $this->lib('phpzip')->unzip($this->dir_root.'data/tmp.zip','data/update/');
+		echo '<br />';
+		echo $this->lib('phpzip')->unzip($this->dir_data.'tmp.zip',$this->dir_data.'update/');
 		echo 'ok';
 	}
 
@@ -87,14 +87,14 @@ class ulang_control extends phpok_control
 			$clist[] = 'cate-'.$value['id'];
 			echo 'Cate '.$value['id'].'<br />';
 		}
-		$sql = "SELECT id,module FROM ".$this->db->prefix."ext WHERE module LIKE 'cate-%'";
+		$sql = "SELECT id,module FROM ".$this->db->prefix."fields WHERE ftype LIKE 'cate-%'";
 		$rslist = $this->db->get_all($sql);
 		if($rslist){
 			foreach($rslist as $key=>$value){
 				if(!in_array($value['module'],$clist)){
 					$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$value['id']."'";
 					$this->db->query($sql);
-					$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id='".$value['id']."'";
+					$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$value['id']."'";
 					$this->db->query($sql);
 					echo 'Delete cate '.$value['id'].'<br />';
 				}
@@ -115,14 +115,14 @@ class ulang_control extends phpok_control
 			$clist[] = 'project-'.$value['id'];
 			echo 'project '.$value['id'].'<br />';
 		}
-		$sql = "SELECT id,module FROM ".$this->db->prefix."ext WHERE module LIKE 'project-%'";
+		$sql = "SELECT id,module FROM ".$this->db->prefix."fields WHERE ftype LIKE 'project-%'";
 		$rslist = $this->db->get_all($sql);
 		if($rslist){
 			foreach($rslist as $key=>$value){
 				if(!in_array($value['module'],$clist)){
 					$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$value['id']."'";
 					$this->db->query($sql);
-					$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id='".$value['id']."'";
+					$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$value['id']."'";
 					$this->db->query($sql);
 					echo 'Delete project '.$value['id'].'<br />';
 				}
@@ -143,14 +143,14 @@ class ulang_control extends phpok_control
 			$clist[] = 'all-'.$value['id'];
 			echo 'all '.$value['id'].'<br />';
 		}
-		$sql = "SELECT id,module FROM ".$this->db->prefix."ext WHERE module LIKE 'all-%'";
+		$sql = "SELECT id,module FROM ".$this->db->prefix."fields WHERE ftype LIKE 'all-%'";
 		$rslist = $this->db->get_all($sql);
 		if($rslist){
 			foreach($rslist as $key=>$value){
 				if(!in_array($value['module'],$clist)){
 					$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$value['id']."'";
 					$this->db->query($sql);
-					$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id='".$value['id']."'";
+					$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$value['id']."'";
 					$this->db->query($sql);
 					echo 'Delete all '.$value['id'].'<br />';
 				}

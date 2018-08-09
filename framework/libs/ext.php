@@ -654,7 +654,7 @@ class ext_lib
 	//读取会员扩展模板字段内容信息
 	function user_fields()
 	{
-		$sql = "SELECT * FROM ".$GLOBALS['app']->db->prefix."user_fields ORDER BY taxis ASC,id DESC";
+		$sql = "SELECT * FROM ".$GLOBALS['app']->db->prefix."fields WHERE ftype='user' ORDER BY taxis ASC,id DESC";
 		$rslist = $GLOBALS['app']->db->get_all($sql);
 		return $rslist;
 	}

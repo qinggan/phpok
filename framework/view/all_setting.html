@@ -288,41 +288,38 @@ function rand_click()
 			</ul>
 		</div>
 	</div>
-	<!-- if $gateway_email -->
-	<div class="table">
-		<div class="title">
-			{lang邮件验证码模板：}<span class="note">{lang请配置好邮件验证码模板，不然系统无法支持邮件验证码登录}</span>
-		</div>
-		<div class="content">
-			<select name="login_type_email">
-				<option value="">{lang请选择…}</option>
-				<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
-				<!-- if substr($value.identifier,0,4) != 'sms_' -->
-				<option value="{$value.identifier}"{if $rs.login_type_email == $value.identifier} selected{/if}>{lang模板：}{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
-				<!-- /if -->
-				<!-- /loop -->
-			</select>
-		</div>
-	</div>
-	<!-- /if -->
-	<!-- if $gateway_sms -->
-	<div class="table">
-		<div class="title">
-			{lang短信验证码模板：}<span class="note">{lang请配置好短信验证码模板，不然系统无法支持短信验证码登录}</span>
-		</div>
-		<div class="content">
-			<select name="login_type_sms">
-				<option value="">{lang请选择…}</option>
-				<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
-				<!-- if substr($value.identifier,0,4) == 'sms_' -->
-				<option value="{$value.identifier}"{if $rs.login_type_sms == $value.identifier} selected{/if}>{lang短信模板：}{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
-				<!-- /if -->
-				<!-- /loop -->
-			</select>
-		</div>
-	</div>
-	<!-- /if -->
 </div>
+<!-- if $gateway_email -->
+<div class="table">
+	<div class="title">
+		{lang邮件验证码模板：}<span class="note">{lang请配置好邮件验证码模板，不然系统无法支持邮件验证码登录或注册}</span>
+	</div>
+	<div class="content">
+		<select name="login_type_email">
+			<option value="">{lang请选择…}</option>
+			<!-- loop from=$email_tplist key=$key value=$value id=$tmpid -->
+			<option value="{$value.identifier}"{if $rs.login_type_email == $value.identifier} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
+			<!-- /loop -->
+		</select>
+	</div>
+</div>
+<!-- /if -->
+<!-- if $gateway_sms -->
+<div class="table">
+	<div class="title">
+		{lang短信验证码模板：}<span class="note">{lang请配置好短信验证码模板，不然系统无法支持短信登录或注册}</span>
+	</div>
+	<div class="content">
+		<select name="login_type_sms">
+			<option value="">{lang请选择…}</option>
+			<!-- loop from=$sms_tplist key=$key value=$value id=$tmpid -->
+			<option value="{$value.identifier}"{if $rs.login_type_sms == $value.identifier} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
+			<!-- /loop -->
+		</select>
+	</div>
+</div>
+<!-- /if -->
+
 <div class="table">
 	<div class="title">
 		{lang后台LOGO}

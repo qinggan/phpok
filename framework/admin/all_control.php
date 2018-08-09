@@ -74,11 +74,29 @@ class all_control extends phpok_control
 			$rs['login_type'] = 0;
 		}
 		$this->assign('gateway_email',$gateway_email);
+		if($gateway_email){
+			$_etpl = array();
+			foreach($emailtpl as $key=>$value){
+				if(substr($value['identifier'],0,4) != 'sms_'){
+					$_etpl[$key] = $value;
+				}
+			}
+			$this->assign('email_tplist',$_etpl);
+		}
 		$gateway_sms = $this->model('gateway')->get_default('sms');
 		if(!$gateway_sms && $rs['login_type'] && $rs['login_type'] == 'sms'){
 			$rs['login_type'] = 0;
 		}
 		$this->assign('gateway_sms',$gateway_sms);
+		if($gateway_sms){
+			$_etpl = array();
+			foreach($emailtpl as $key=>$value){
+				if(substr($value['identifier'],0,4) == 'sms_'){
+					$_etpl[$key] = $value;
+				}
+			}
+			$this->assign('sms_tplist',$_etpl);
+		}
 
 		$this->assign("rs",$rs);
 		$this->view("all_setting");
@@ -497,7 +515,7 @@ class all_control extends phpok_control
 	function gset_save_f()
 	{
 		if(!$this->popedom["gset"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		$title = $this->get("title");
@@ -510,7 +528,7 @@ class all_control extends phpok_control
 			$error_url .= "&id=".$id;
 		}
 		if($chk != "ok"){
-			error(P_Lang($chk),$error_url,"error");
+			$this->error(P_Lang($chk));
 		}
 		$array = array();
 		$array["title"] = $title;
@@ -519,7 +537,7 @@ class all_control extends phpok_control
 		$array["identifier"] = $identifier;
 		$array["site_id"] = $_SESSION["admin_site_id"];
 		$this->model('site')->all_save($array,$id);
-		error(P_Lang('扩展组配置成功'),$this->url("all"),'ok');
+		$this->success();
 	}
 
 	private function all_check($identifier,$id=0)
@@ -556,16 +574,16 @@ class all_control extends phpok_control
 	public function set_f()
 	{
 		if(!$this->popedom["set"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
-			error(P_Lang('未指定ID'),$this->url("all"));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$this->assign("id",$id);
 		$rs = $this->model('site')->all_one($id);
 		if(!$rs){
-			error(P_Lang('全局配置不存在'),$this->url("all"));
+			$this->error(P_Lang('全局配置不存在'));
 		}
 		$this->assign("rs",$rs);
 		$ext_module = "all-".$id;
@@ -573,10 +591,10 @@ class all_control extends phpok_control
 		$extlist = $this->model('ext')->ext_all($ext_module);
 		if($extlist){
 			$tmp = false;
-			foreach($extlist AS $key=>$value){
+			foreach($extlist as $key=>$value){
 				if($value["ext"]){
 					$ext = unserialize($value["ext"]);
-					foreach($ext AS $k=>$v){
+					foreach($ext as $k=>$v){
 						$value[$k] = $v;
 					}
 				}
@@ -591,36 +609,36 @@ class all_control extends phpok_control
 	public function ext_save_f()
 	{
 		if(!$this->popedom["set"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		if(!$id){
-			error(P_Lang('未指定ID'),$this->url("all"));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('site')->all_one($id);
 		if(!$rs){
-			error(P_Lang('全局配置不存在'),$this->url("all"));
+			$this->error(P_Lang('全局配置不存在'));
 		}
 		ext_save("all-".$id);
-		$this->model('temp')->clean("all-".$id,$_SESSION["admin_id"]);
-		error(P_Lang('扩展全局内容设置成功'),$this->url("all"));
+		$this->model('temp')->clean("all-".$id,$this->session->val('admin_id'));
+		$this->success(P_Lang('扩展全局内容设置成功'),$this->url("all"));
 	}
 
 	public function ext_gdelete_f()
 	{
 		if(!$this->popedom["gset"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		if(!$id){
-			error(P_Lang('未指定ID'),$this->url("all"));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('site')->all_one($id);
 		if($rs["is_system"]){
-			error(P_Lang('系统模块不允许删除'),$this->url("all"),"error");
+			$this->error(P_Lang('系统模块不允许删除'));
 		}
 		$this->model('site')->ext_delete($id);
-		error(P_Lang('全局配置删除成功'),$this->url("all"),"ok");
+		$this->success();
 	}
 
 	public function email_f()
@@ -630,4 +648,3 @@ class all_control extends phpok_control
 		$this->view("all_email");
 	}
 }
-?>

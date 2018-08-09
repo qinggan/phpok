@@ -157,7 +157,11 @@ class session
 				$tmp[$value] = $val;
 			}else{
 				if(($i+1) == $total){
-					$_SESSION[$value] = $tmp;
+					if(isset($_SESSION[$value])){
+						$_SESSION[$value] = array_merge($_SESSION[$value],$tmp);
+					}else{
+						$_SESSION[$value] = $tmp;
+					}
 				}else{
 					$ok = array();
 					$ok[$value] = $tmp;

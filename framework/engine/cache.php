@@ -14,7 +14,7 @@ class cache
 	protected $status = true;
 	protected $prefix = 'qinggan_';
 	protected $keyfile = '';
-	protected $folder = 'data/cache/';
+	protected $folder = '../_cache/';
 	protected $key_id;
 	protected $key_list;
 	protected $debug = false;
@@ -30,7 +30,7 @@ class cache
 		$this->debug = $config['debug'] ? true : false;
 		$this->timeout = $config['timeout'] ? $config['timeout'] : 1800;
 		$this->prefix = $config["prefix"] ? $config["prefix"] : "qinggan_";
-		$this->folder = $config['folder'] ? $config['folder'] : 'data/cache/';
+		$this->folder = $config['folder'] ? $config['folder'] : '../_cache/';
 		ksort($config);
 		$this->key_id = md5($this->prefix."_".serialize($config));
 		$this->key_list = array();

@@ -27,7 +27,7 @@ class update_control extends phpok_control
 			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
 		$update = array('online'=>true,'zip'=>true);
-		$setfile = $this->dir_root.'data/update.php';
+		$setfile = $this->dir_data.'update.php';
 		$uconfig = array();
 		if(file_exists($setfile)){
 			include($setfile);
@@ -46,7 +46,7 @@ class update_control extends phpok_control
 
 	public function set_f()
 	{
-		$setfile = $this->dir_root.'data/update.php';
+		$setfile = $this->dir_data.'update.php';
 		$uconfig = array();
 		if(file_exists($setfile)){
 			include($setfile);
@@ -58,7 +58,7 @@ class update_control extends phpok_control
 	//存储配置
 	public function save_f()
 	{
-		$setfile = $this->dir_root.'data/update.php';
+		$setfile = $this->dir_data.'update.php';
 		$uconfig = array();
 		if(file_exists($setfile)){
 			include($setfile);
@@ -70,7 +70,7 @@ class update_control extends phpok_control
 		if(!$uconfig['onlyid']){
 			$uconfig['onlyid'] = $this->_onlyid();
 		}
-		$this->lib('file')->vi($uconfig,$this->dir_root.'data/update.php','uconfig');
+		$this->lib('file')->vi($uconfig,$this->dir_data.'update.php','uconfig');
 		error(P_Lang('升级环境配置成功'),$this->url('update'),'ok');
 	}
 
@@ -103,8 +103,8 @@ class update_control extends phpok_control
 		if(!$rs['content'] || count($rs['content']) < 1)	{
 			error(P_Lang('没有符合您要求的升级包'),$this->url('update'),'error');
 		}
-		if(file_exists($this->dir_root.'data/update.php')){
-			include($this->dir_root.'data/update.php');
+		if(file_exists($this->dir_data.'update.php')){
+			include($this->dir_data.'update.php');
 			$this->assign('uconfig',$uconfig);
 		}
 		$rslist = array();
@@ -140,7 +140,7 @@ class update_control extends phpok_control
 		if(!file_exists($this->dir_root.$zipfile)){
 			$this->error(P_Lang('ZIP文件不存在'));
 		}
-		$this->lib('phpzip')->unzip($this->dir_root.$zipfile,'data/update/');
+		$this->lib('phpzip')->unzip($this->dir_root.$zipfile,$this->dir_data.'update/');
 		$info = $this->update_load();
 		if(!$info || (is_array($info) && $info['status'] == 'error')){
 			$this->error($info['content']);
@@ -152,11 +152,11 @@ class update_control extends phpok_control
 	private function update_load($verinfo='')
 	{
 		$list = array();
-		$this->lib('file')->deep_ls($this->dir_root.'data/update/',$list);
+		$this->lib('file')->deep_ls($this->dir_data.'update/',$list);
 		if(!$list || count($list) < 1){
 			return array('status'=>'error','content'=>P_Lang('没有升级文件内容'));
 		}
-		$strlen = strlen($this->dir_root."data/update/");
+		$strlen = strlen($this->dir_data."update/");
 		$delfile = false;
 		$sqlfile = array();
 		foreach($list as $key=>$value){
@@ -237,11 +237,11 @@ class update_control extends phpok_control
 			}
 		}
 		//运行PHP文件，以实现高级的PHP更新操作
-		if(file_exists($this->dir_root."data/update/run.php")){
-			include($this->dir_root.'data/update/run.php');
+		if(file_exists($this->dir_data."update/run.php")){
+			include($this->dir_data.'update/run.php');
 		}
-		$this->lib('file')->rm($this->dir_root.'data/update/');
-		$list = $this->lib('file')->ls($this->dir_root.'data/update/');
+		$this->lib('file')->rm($this->dir_data.'update/');
+		$list = $this->lib('file')->ls($this->dir_data.'update/');
 		if($list && count($list)>0){
 			foreach($list as $key=>$value){
 				$this->lib('file')->rm($value,'folder');
@@ -254,12 +254,12 @@ class update_control extends phpok_control
 
 	private function update_table()
 	{
-		if(!file_exists($this->dir_root.'data/update/table.sql')){
+		if(!file_exists($this->dir_data.'update/table.sql')){
 			return false;
 		}
 		//创建新表临时
 		$prefix = 'tmp_'.$this->db->prefix;
-		$sqlcontent = file_get_contents($this->dir_root.'data/update/table.sql');
+		$sqlcontent = file_get_contents($this->dir_data.'update/table.sql');
 		$sqlcontent = str_replace('qinggan_',$prefix,$sqlcontent);
 		$this->sql_run($sqlcontent);
 		//比较新表结果
@@ -350,16 +350,16 @@ class update_control extends phpok_control
 		$html.= "\t".'<version>'.trim($version).'</version>'."\n";
 		$html.= "\t".'<time>'.date("Y-m-d H:i:s",$this->time).'</time>'."\n";
 		$html.= '</phpok>';
-		file_put_contents($this->dir_root.'data/update.xml',$html);
+		file_put_contents($this->dir_data.'update.xml',$html);
 		if(is_writeable($this->dir_root.'version.php') && file_exists($this->dir_data.'version.tpl')){
 			$info = file_get_contents($this->dir_data.'version.tpl');
 			$info = str_replace('{version}',trim($version),$info);
 			$info = str_replace('{updatetime}',date("Y年m月d日 H时i分s秒",$this->time),$info);
 			file_put_contents($this->dir_root.'version.php',$info);
 		}
-		$this->lib('file')->rm($this->dir_root.'data/tpl_admin/');
-		$this->lib('file')->rm($this->dir_root.'data/tpl_www/');
-		$this->lib('file')->rm($this->dir_root.'data/cache/');
+		$this->lib('file')->rm($this->dir_data.'tpl_admin/');
+		$this->lib('file')->rm($this->dir_data.'tpl_www/');
+		$this->lib('file')->rm($this->dir_cache);
 		return true;
 	}
 
@@ -380,9 +380,9 @@ class update_control extends phpok_control
 			$this->json(P_Lang('升级失败，升级包内容为空'));
 		}
 		$info = base64_decode($rs['content']);
-		file_put_contents($this->dir_root.'data/tmp.zip',$info);
-		$this->lib('phpzip')->unzip($this->dir_root.'data/tmp.zip','data/update/');
-		$this->lib('file')->rm($this->dir_root.'data/tmp.zip');
+		file_put_contents($this->dir_data.'tmp.zip',$info);
+		$this->lib('phpzip')->unzip($this->dir_data.'tmp.zip',$this->dir_data.'update/');
+		$this->lib('file')->rm($this->dir_data.'tmp.zip');
 		$verinfo = substr($file,0,1).".".substr($file,1,1).".".substr($file,2);
 		$info = $this->update_load($verinfo);
 		if(!$info || (is_array($info) && $info['status'] == 'error')){
@@ -426,11 +426,10 @@ class update_control extends phpok_control
 
 	public function check_f()
 	{
-		if(!file())
-		if(file_exists($this->dir_root.'data/update.php')){
-			include($this->dir_root.'data/update.php');
+		if(file_exists($this->dir_data.'update.php')){
+			include($this->dir_data.'update.php');
 			$time = 0;
-			if(file_exists($this->dir_root.'data/update.time')){
+			if(file_exists($this->dir_data.'update.time')){
 				$time = $this->lib('file')->cat($this->dir_data.'update.time');
 			}
 			$check = false;
@@ -449,15 +448,15 @@ class update_control extends phpok_control
 	{
 		$check = false;
 		$time = 0;
-		if(file_exists($this->dir_root.'data/update.time')){
-			$time = file_get_contents($this->dir_root.'data/update.time');
+		if(file_exists($this->dir_data.'update.time')){
+			$time = file_get_contents($this->dir_data.'update.time');
 		}
 		if($time < $this->time && ($this->time - $this->config['update']['time'] * 86400) > $time){
 			$check = true;
 		}
 		if($check){
 			//更新检测时间
-			file_put_contents($this->dir_root.'data/update.time',$this->time);
+			file_put_contents($this->dir_data.'update.time',$this->time);
 			exit($this->service(1));
 		}
 		$this->json(P_Lang('跳过检测'));
@@ -465,19 +464,19 @@ class update_control extends phpok_control
 
 	private function service($type=0,$urlext='')
 	{
-		if(!file_exists($this->dir_root.'data/update.php')){
+		if(!file_exists($this->dir_data.'update.php')){
 			return $this->json(P_Lang('未配置升级服务器'),false,false);
 		}
 		$uconfig = array();
-		include($this->dir_root.'data/update.php');
+		include($this->dir_data.'update.php');
 		if(!$uconfig['status']){
 			return $this->json(P_Lang('在线升级功能未启用'),false,false);
 		}
 		if(!$uconfig['server']){
 			return $this->json(P_Lang('未配置升级服务器'),false,false);
 		}
-		if(file_exists($this->dir_root.'data/update.xml')){
-			$info = $this->lib('xml')->read($this->dir_root.'data/update.xml',true);
+		if(file_exists($this->dir_data.'update.xml')){
+			$info = $this->lib('xml')->read($this->dir_data.'update.xml',true);
 			$info['time'] = $info['time'] ? strtotime($info['time']) : 0;
 		}else{
 			$info['version'] = $this->version;

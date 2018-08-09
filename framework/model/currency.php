@@ -13,6 +13,7 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class currency_model_base extends phpok_model
 {
+	private $_cache;
 	/**
 	 * 构造函数
 	**/
@@ -40,6 +41,15 @@ class currency_model_base extends phpok_model
 	**/
 	public function get_one($id,$field_id='id')
 	{
+		if($field_id == 'id'){
+			if($this->_cache && $this->_cache[$id]){
+				return $this->_cache[$id];
+			}
+			$this->_cache = $this->get_list('id');
+			if($this->_cache && $this->_cache[$id]){
+				return $this->_cache[$id];
+			}
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."currency WHERE ".$field_id."='".$id."'";
 		return $this->db->get_one($sql);
 	}

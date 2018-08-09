@@ -17,7 +17,7 @@ class ueditor_control extends phpok_control
 
 	private function load_config()
 	{
-		$config = $this->lib('file')->cat($this->dir_root.'data/config.json');
+		$config = $this->lib('file')->cat($this->dir_data.'config.json');
 		$config = preg_replace("/\/\*[\s\S]+?\*\//","",$config);
 		$config = $this->lib('json')->decode($config);
 		$config['imageCompressEnable'] = false;

@@ -301,18 +301,18 @@ class cate_model_base extends phpok_model
 	**/
 	public function cate_delete($id)
 	{
-		//删除主表信息
 		$sql = "DELETE FROM ".$this->db->prefix."cate WHERE id='".$id."'";
 		$this->db->query($sql);
-		//Update内容信息
 		$sql = "UPDATE ".$this->db->prefix."list SET cate_id=0 WHERE cate_id='".$id."'";
 		$this->db->query($sql);
-		//删除扩展表信息
-		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='cate-".$id."'";
+		$sql = "SELECT id FROM ".$this->db->prefix."fields WHERE ftype='cate-".$id."'";
 		$rslist = $this->db->get_all($sql,'id');
 		if($rslist){
 			$idlist = array_keys($rslist);
 			$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id IN(".implode(',',$idlist).")";
+			$this->db->query($sql);
+			//删除当前分类的扩展
+			$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id IN(".implode(',',$idlist).")";
 			$this->db->query($sql);
 		}
 		return true;

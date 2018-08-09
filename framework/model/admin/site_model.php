@@ -47,13 +47,13 @@ class site_model extends site_model_base
 		if($id){
 			$this->db->update_array($data,"site",array("id"=>$id));
 			if($xmldata){
-				$this->lib('xml')->save($xmldata,$this->dir_root.'data/xml/site_'.$id.'.xml');
+				$this->lib('xml')->save($xmldata,$this->dir_data.'xml/site_'.$id.'.xml');
 			}
 			return true;
 		}else{
 			$insert_id = $this->db->insert_array($data,"site");
 			if($insert_id && $xmldata){
-				$this->lib('xml')->save($xmldata,$this->dir_root.'data/xml/site_'.$insert_id.'.xml');
+				$this->lib('xml')->save($xmldata,$this->dir_data.'xml/site_'.$insert_id.'.xml');
 			}
 			return $insert_id;
 		}
@@ -142,14 +142,14 @@ class site_model extends site_model_base
 		if(!$module){
 			return false;
 		}
-		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='".$module."'";
+		$sql = "SELECT id FROM ".$this->db->prefix."fields WHERE ftype='".$module."'";
 		$rslist = $this->db->get_all($sql,"id");
 		if($rslist){
 			$id_array = array_keys($rslist);
 			$ids = implode(",",$id_array);
 			$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id IN(".$ids.")";
 			$this->db->query($sql);
-			$sql = "DELETE FROM ".$this->db->prefix."ext WHERE id IN(".$ids.")";
+			$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id IN(".$ids.")";
 			$this->db->query($sql);
 		}
 		return true;
@@ -369,7 +369,7 @@ class site_model extends site_model_base
 		}
 		$rslist = $this->price_status_all();
 		$rslist[$id] = $data;
-		$file = $this->dir_root.'data/xml/price_status_'.$this->site_id.'.xml';
+		$file = $this->dir_data.'xml/price_status_'.$this->site_id.'.xml';
 		$this->lib('xml')->save($rslist,$file);
 		return true;
 	}
@@ -396,7 +396,7 @@ class site_model extends site_model_base
 		}
 		$rslist = $this->order_status_all();
 		$rslist[$id] = $data;
-		$file = $this->dir_root.'data/xml/order_status_'.$this->site_id.'.xml';
+		$file = $this->dir_data.'xml/order_status_'.$this->site_id.'.xml';
 		$this->lib('xml')->save($rslist,$file);
 	}
 
@@ -421,7 +421,7 @@ class site_model extends site_model_base
 			}
 		}
 		//读别名
-		$file = $this->dir_root.'data/xml/site_alias.xml';
+		$file = $this->dir_data.'xml/site_alias.xml';
 		if(!file_exists($file)){
 			return $rslist;
 		}
@@ -444,7 +444,7 @@ class site_model extends site_model_base
 		if(!$rslist){
 			return false;
 		}
-		$file = $this->dir_root.'data/xml/site_alias.xml';
+		$file = $this->dir_data.'xml/site_alias.xml';
 		$tmplist = $this->lib('xml')->read($file,true);
 		if($tmplist){
 			$tmplist['a'.$id] = $title;
@@ -463,6 +463,64 @@ class site_model extends site_model_base
 		}
 		return $this->lib('xml')->save($tmplist,$file);
 	}
-}
 
-?>
+	public function admin_order_status_all($sort=false)
+	{
+		$file = $this->dir_data.'xml/admin_order_status_'.$this->site_id.'.xml';
+		if(!file_exists($file)){
+			$file = $this->dir_data.'xml/admin_order_status.xml';
+		}
+		if(!file_exists($file)){
+			return false;
+		}
+		$taxis = 100;
+		$tmplist = $this->lib('xml')->read($file);
+		if($tmplist && $sort){
+			$rslist = array();
+			foreach($tmplist as $key=>$value){
+				$value['identifier'] = $key;
+				$rslist[] = $value;
+			}
+			usort($rslist,array($this,'status_sort'));
+			return $rslist;
+		}
+		return $tmplist;
+	}
+
+	/**
+	 * 管理员状态读取
+	 * @参数 $id 读取标识
+	**/
+	public function admin_order_status_one($id)
+	{
+		$rslist = $this->admin_order_status_all();
+		if(!$rslist){
+			return false;
+		}
+		if($rslist[$id]){
+			$rs = $rslist[$id];
+			$rs['id'] = $id;
+			return $rs;
+		}
+		return false;
+	}
+
+	/**
+	 * 更新管理员内部订单状态
+	 * @参数 $data 状态信息
+	 * @参数 $id 要更新的ID
+	**/
+	public function admin_order_status_update($data,$id=0)
+	{
+		if(!$id || !$data){
+			return false;
+		}
+		$rslist = $this->admin_order_status_all();
+		if(!$rslist){
+			$rslist = array();
+		}
+		$rslist[$id] = $data;
+		$file = $this->dir_data.'xml/admin_order_status_'.$this->site_id.'.xml';
+		$this->lib('xml')->save($rslist,$file);
+	}
+}

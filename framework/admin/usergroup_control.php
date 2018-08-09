@@ -62,7 +62,7 @@ class usergroup_control extends phpok_control
 		if($rslist){
 			foreach($rslist as $key=>$value){
 				if(!$value['module']) continue;
-				$tmplist = $this->model('module')->f_all("identifier='account' AND module_id=".$value['module']);
+				$tmplist = $this->model('module')->f_all("identifier='account' AND ftype=".$value['module']);
 				if(!$tmplist) continue;
 				$reglist[] = $value;
 			}

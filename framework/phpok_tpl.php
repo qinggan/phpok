@@ -21,7 +21,7 @@ class phpok_template
 {
 	public $tpl_id = 1;
 	public $dir_tpl = "tpl/";
-	public $dir_cache = "data/cache/";
+	public $dir_cache = "../_cache/";
 	public $dir_php = "./";
 	public $dir_root = "./";
 	public $path_change = "";
@@ -91,6 +91,10 @@ class phpok_template
 				$this->tpl_value[$key] = $value;
 			}
 		}else{
+			if(isset($val) && !$val && isset($this->tpl_value[$var])){
+				unset($this->tpl_value[$var]);
+				return true;
+			}
 			$this->tpl_value[$var] = $val;
 		}
 	}
@@ -168,7 +172,7 @@ class phpok_template
 		if($this->path_change){
 			$tmp_path_list = explode(",",$this->path_change);
 			$tmp_path_list = array_unique($tmp_path_list);
-			foreach($tmp_path_list AS $key=>$value){
+			foreach($tmp_path_list as $key=>$value){
 				$value = trim($value);
 				if($value == ''){
 					continue;
@@ -352,7 +356,7 @@ class phpok_template
 		if($this->path_change && $path_format){
 			$tmp_path_list = explode(",",$this->path_change);
 			$tmp_path_list = array_unique($tmp_path_list);
-			foreach($tmp_path_list AS $key=>$value){
+			foreach($tmp_path_list as $key=>$value){
 				$value = trim($value);
 				if(!$value){
 					continue;
@@ -837,6 +841,7 @@ class phpok_template
 		}
 		$php  = '<?php $'.$id.'["num"] = 0;';
 		$php .= $rs["from"].'=is_array('.$rs["from"].') ? '.$rs["from"].' : array();';
+		$php .= '$'.$id.' = array();';
 		$php .= '$'.$id.'["total"] = count('.$rs["from"].');';
 		if(!$rs["index"]){
 			$rs["index"] = 0;

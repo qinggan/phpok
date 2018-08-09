@@ -66,20 +66,19 @@ function phpok_status(id,url)
 {
 	if(!url || url == "undefined" || !id) return false;
 	url += "&id="+$.str.encode(id);
-	var rs = json_ajax(url);
-	if(rs.status == "ok")
-	{
-		if(!rs.content) rs.content = '0';
-		var oldvalue = $("#status_"+id).attr("value");
-		var old_cls = "status"+oldvalue;
-		$("#status_"+id).removeClass(old_cls).addClass("status"+rs.content);
-		$("#status_"+id).attr("value",rs.content);
-	}
-	else
-	{
-		alert(rs.content);
+	$.phpok.json(url,function(rs){
+		if(rs.status && rs.status != 'error'){
+			var info = (rs.info && rs.info != 'undefined') ? rs.info : (rs.content ? rs.content : '0');
+			var oldvalue = $("#status_"+id).attr('value');
+			var old_cls = "status"+oldvalue;
+			$("#status_"+id).removeClass(old_cls).addClass("status"+info);
+			$("#status_"+id).attr("value",info);
+			return true;
+		}
+		var info = (rs.info && rs.info != 'undefined') ? rs.info : (rs.content ? rs.content : 'Error');
+		alert(info);
 		return false;
-	}
+	})
 }
 
 /* 通用表单自动存储 */
@@ -125,7 +124,7 @@ function phpok_pic_view(id)
 	}else{
 		top.$.dialog({
 			'title':'预览',
-			'content':'<img src="'+url+'" border="0" />',
+			'content':'<img src="'+url+'" border="0" style="max-width:500px" />',
 			'lock':true,
 			'ok':function(){},
 			'height':350,
@@ -307,19 +306,21 @@ function ext_edit(id,module)
 	};
 })(jQuery);
 
+$(document).ready(function(){
+	var clipboard = new Clipboard('.phpok-copy');
+
+	clipboard.on('success', function(e) {
+		$.dialog.tips(p_lang('复制成功'));
+		e.clearSelection();
+	});
+	clipboard.on('error', function(e) {
+		$.dialog.tips(p_lang('复制失败'));
+	});
+});
 $(document).keydown(function(e){
-	if(e.keyCode==8){
-		var keyEvent = false;
-		var d = e.srcElement || e.target;
-		var tag_name = d.tagName.toUpperCase();
-		var tag_type = d.type.toUpperCase();
-		if((tag_name == 'INPUT' && (tag_type == 'TEXT' || tag_type == 'PASSWORD')) || tag_name == 'TEXTAREA'){
-			keyEvent = d.readOnly||d.disabled;
-		}else{
-			keyEvent=true;
-		}
-		if(keyEvent){
-			e.preventDefault();
-		}
-	}
+	window.history.forward(1);   
+	history.pushState(null, null, document.URL);
+	window.addEventListener('popstate', function () {
+	    history.pushState(null, null, document.URL);
+	});
 });

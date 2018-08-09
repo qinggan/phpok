@@ -60,6 +60,20 @@ class payment_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
+	/**
+	 * 检查订单是否有未支付日志
+	 * @参数 $sn 订单标识
+	 * @参数 $type 类型
+	**/
+	public function log_check_notstatus($sn,$type='')
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."payment_log WHERE sn='".$sn."' AND status=0";
+		if($type){
+			$sql .= " AND type='".$type."'";
+		}
+		return $this->db->get_one($sql);
+	}
+
 	public function log_update($data,$id=0)
 	{
 		if(!$id || !$data || !is_array($data)){
@@ -72,6 +86,12 @@ class payment_model_base extends phpok_model
 	{
 		if(!$data || !is_array($data)){
 			return false;
+		}
+		if(is_numeric($data['currency_id'])){
+			if(!$data['currency_rate'] || $data['currency_rate'] < 0.00000001){
+				$currency = $this->model('currency')->get_one($data['currency_id']);
+				$data['currency_rate'] = $currency['val'];
+			}
 		}
 		return $this->db->insert_array($data,'payment_log');
 	}
@@ -88,4 +108,20 @@ class payment_model_base extends phpok_model
 		return $this->db->query($sql);
 	}
 
+	/**
+	 * 删除未支付完成的支付请求
+	 * @参数 $sn 订单编号
+	 * @参数 $type 订单类型
+	**/
+	public function log_delete_notstatus($sn,$type='')
+	{
+		if(!$sn){
+			return false;
+		}
+		$sql = "DELETE FROM ".$this->db->prefix."payment_log WHERE sn='".$sn."' AND status=0";
+		if($type){
+			$sql .= " AND type='".$type."'";
+		}
+		return $this->db->query($sql);
+	}
 }

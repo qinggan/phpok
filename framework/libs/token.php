@@ -10,10 +10,16 @@
  * @时间 2017年09月28日
 **/
 
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class token_lib
 {
-	private $keyid;
+	private $keyid = '';
 	private $keyc_length = 6;
 	private $keya;
 	private $keyb;
@@ -22,10 +28,7 @@ class token_lib
 	
 	public function __construct()
 	{
-		global $app;
-		$this->_keyid();
-		$this->config();
-		$this->time = $app->time;
+		$this->time = time();
 	}
 
 	/**
@@ -49,23 +52,6 @@ class token_lib
 		}
 		$this->keya = md5(substr($this->keyid, 0, 16));
 		$this->keyb = md5(substr($this->keyid, 16, 16));
-	}
-
-	/**
-	 * 创建一个KEY-ID
-	**/
-	private function _keyid()
-	{
-		global $app;
-		if($app->site && $app->site['api_code']){
-			$api_code = $app->site['api_code'];
-			unset($app);
-		}else{
-			$api_code = $app->session->val('phpok-site-api-code') ? $app->session->val('phpok-site-api-code') : uniqid(time(), true);
-			$app->session->assign('phpok-site-api-code',$api_code);
-		}
-		$this->keyid = strtolower(md5($api_code));
-		return true;
 	}
 
 	/**

@@ -130,8 +130,8 @@ class freight_control extends phpok_control
 		$this->assign('area',$area);
 		$this->assign('fid',$fid);
 		//读取当前省市表信息
-		$prolist = $this->lib('xml')->read($this->dir_root.'data/xml/provinces.xml');
-		$citylist = $this->lib('xml')->read($this->dir_root.'data/xml/cities.xml');
+		$prolist = $this->lib('xml')->read($this->dir_data.'xml/provinces.xml');
+		$citylist = $this->lib('xml')->read($this->dir_data.'xml/cities.xml');
 		if(!$prolist && !$citylist){
 			error(P_Lang('数据异常，省市表信息不存在'),'','error');
 		}

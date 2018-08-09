@@ -1,0 +1,55 @@
+<!-- include tpl=head_open -->
+<div id="upload_plugin_html">
+	<div style="width:450px;height:80px;">
+		<div id="zipfile_picker"></div>
+		<div class="_progress" id="zipfile_progress"></div>
+	</div>
+</div>
+
+<script type="text/javascript">
+var obj_zipfile;
+var obj = art.dialog.opener;
+$(document).ready(function(){
+	obj_zipfile = new $.admin_upload({
+		'id':'zipfile',
+		'server':'{url ctrl=upload func=zip/}',
+		'pick':{'id':'#zipfile_picker','multiple':false,'innerHTML':'{lang选择本地文件}'},
+		'resize':false,
+		'multiple':"false",
+		"formData":{'{func session_name}':'{func session_id}'},
+		'fileVal':'upfile',
+		'disableGlobalDnd':true,
+		'compress':false,
+		'auto':false,
+		'sendAsBinary':true,
+		'accept':{'title':'压缩包(*.zip)','extensions':'zip'},
+		'fileSingleSizeLimit':'204800000',
+		'success':function(file,data){
+			//执行在线解压
+			var url = get_url('plugin','unzip','filename='+$.str.encode(data.content));
+			$.dialog.tips("正在解压插件，请稍候…",2);
+			var rs = $.phpok.json(url,function(rs){
+				if(rs.status){
+					$.dialog.alert('插件导入成功，请执行安装',function(){
+						obj.$.phpok.reload();
+					},'succeed');
+					return true;
+				}
+				$.dialog.alert(rs.info);
+				return false;
+			});
+		}
+	});
+});
+function save()
+{
+	var f = $("#zipfile_progress .phpok-upfile-list").length;
+	if(f<1){
+		$.dialog.alert('请选择要上传的文件');
+		return false;
+	}
+	obj_zipfile.uploader.upload();
+	return false;
+}
+</script>
+<!-- include tpl=foot_open -->

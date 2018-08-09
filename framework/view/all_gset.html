@@ -1,41 +1,27 @@
-<!-- inc:head -->
-<script type="text/javascript" src="{echo add_js('all.js')}"></script>
-<div class="tips">
-	您当前的位置：
-	<a href="{echo admin_url('all')}">全局维护</a>
-	<!-- if $id -->
-	&raquo; 编辑全局参数
-	<!-- else -->
-	&raquo; 添加全局
-	<!-- /if -->
-</div>
-<form method="post" action="{echo admin_url('all','gset_save')}" onsubmit="return g_ext_check();">
+<!-- include tpl=head_open -->
+<form method="post" id="post_save" onsubmit="return false">
 <input type="hidden" id="id" name="id" value="{$id}" />
 <div class="table">
 	<div class="title">
-		名称：
-		<span class="note">用于后台阅读，尽量简短，建议不超过5个汉字</span></span>
+		{lang名称}
+		<span class="note">{lang用于后台阅读，尽量简短，建议不超过5个汉字}</span></span>
 	</div>
 	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><input type="text" id="title" name="title" class="default" value="{$rs.title}" /></td>
-			<td><div id="title_note"></div></td>
-		</tr>
-		</table>
+		<input type="text" id="title" name="title" class="w99" value="{$rs.title}" />
 	</div>
 </div>
 <div class="table">
 	<div class="title">
-		标识：
-		<span class="note">限<span class="red">字母、数字、下划线或中划线，且必须是字母开头</span></span>
+		{lang标识}
+		<span class="note">{lang限字母、数字、下划线或中划线，且必须是字母开头}</span>
 	</div>
 	<div class="content"><input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" /></div>
 </div>
 
 <div class="table">
 	<div class="title">
-		图标：
+		{lang图标}
+		<span class="note">{lang必填，需要确认一个图标}</span>
 	</div>
 	<div class="content">
 		<ul class="layout">
@@ -56,24 +42,17 @@
 
 <div class="table">
 	<div class="title">
-		状态：
-		<span class="note">是否在前台网页启用</span>
+		{lang状态}
+		<span class="note">{lang是否在前台网页启用}</span>
 	</div>
 	<div class="content">
 		<table cellpadding="0" cellspacing="0">
 		<tr>
-			<td><label for="status_0"><input type="radio" name="status" id="status_0" value="0"{if $id && !$rs[status]} checked{/if} />不启用</label></td>
-			<td><label for="status_1"><input type="radio" name="status" id="status_1" value="1"{if !$id || $rs[status]} checked{/if} />启用</label></td>
+			<td><label for="status_0"><input type="radio" name="status" id="status_0" value="0"{if $id && !$rs[status]} checked{/if} />{lang不启用}</label></td>
+			<td><label for="status_1"><input type="radio" name="status" id="status_1" value="1"{if !$id || $rs[status]} checked{/if} />{lang启用}</label></td>
 		</tr>
 		</table>
 	</div>
 </div>
-
-<div class="submit-info">
-	<input type="submit" value="{lang提交}" class="submit2" />
-	<!-- if $id && !$rs.is_system -->
-	<input type="button" value="{lang删除}" class="button2" onclick="ext_g_delete({$id})"/>
-	<!-- /if -->
-</div>
 </form>
-<!-- inc:foot -->
+<!-- include tpl=foot_open -->

@@ -69,7 +69,7 @@ class list_model_base extends phpok_model
 	**/
 	public function ext_fields($mid,$prefix="ext",$condition='')
 	{
-		$sql = "SELECT identifier FROM ".$this->db->prefix."module_fields WHERE module_id='".$mid."'";
+		$sql = "SELECT identifier FROM ".$this->db->prefix."fields WHERE ftype='".$mid."'";
 		if($condition){
 			$sql .= " AND ".$condition;
 		}
@@ -137,7 +137,7 @@ class list_model_base extends phpok_model
 		{
 			$cid_list[$value["cate_id"]] = $value["cate_id"];
 		}
-		$m_rs = $GLOBALS['app']->lib('ext')->module_fields($mid);
+		$m_rs = $this->lib('ext')->module_fields($mid);
 		if($m_rs){
 			foreach($rslist AS $key=>$value){
 				foreach($value AS $k=>$v){
@@ -582,82 +582,117 @@ class list_model_base extends phpok_model
 	**/
 	public function get_next($id)
 	{
-		return $this->next_prev($id,'next');
-	}
-
-	/**
-	 * 取得上一主题ID
-	 * @参数 $id 当前主题ID
-	 * @返回 数字或false
-	 * @更新时间 2017年02月24日
-	**/
-	public function get_prev($id)
-	{
-		return $this->next_prev($id,'prev');
-	}
-
-	private function next_prev($id,$type='prev')
-	{
-		$rs = $this->call_one($id);
-		if(!$rs || !$rs['status'] || !$rs['project_id']){
+		if(!$id){
 			return false;
+		}
+		if(is_array($id)){
+			$rs = $id;
+			$id = $rs['id'];
+		}else{
+			$rs = $this->call_one($id);
+			if(!$rs || !$rs['status'] || !$rs['project_id']){
+				return false;
+			}
 		}
 		$project = $this->model('project')->get_one($rs['project_id'],false);
 		if(!$project || !$project['status']){
 			return false;
 		}
-		$data = $this->_project_format_orderby($project['orderby']);
-		$sql = "SELECT l.id FROM ".$this->db->prefix."list l ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$project['module']." ext ON(l.id=ext.id) ";
-		if($rs['cate_id']){
-			$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
-		}
-		$sql.= " WHERE l.status='1' AND l.hidden='0' ";
-		if($rs['cate_id']){
-			$sql .= " AND (l.cate_id='".$rs['cate_id']."' OR lc.cate_id='".$rs['cate_id']."') ";
-		}
-		if($rs['project_id']){
-			$sql .= " AND l.project_id='".$rs['project_id']."' ";
-		}
-		if($rs['module_id']){
-			$sql .= " AND l.module_id='".$rs['module_id']."' ";
-		}
-		$sql .= " AND l.site_id='".$rs['site_id']."' ";
-		$orderby = $condition = array();
-		$symbol = $type == 'prev' ? '<' : '>';
-		foreach($data as $key=>$value){
-			if($type == 'prev'){
-				$orderby[] = $value['id']." ".$value['type'];
-			}else{
-				$orderby[] = $value['id']." ".($value['type'] == 'DESC' ? 'ASC' : 'DESC');
+		$orderby = $project['orderby'] ? $project['orderby'] : 'l.id DESC';
+		$orderby_list = $this->_project_format_orderby($orderby);
+		$sql = $this->_np_sql($rs,$project,$orderby_list);
+		$sql .= " AND l.id>".$id;
+		$orderby = '';
+		foreach($orderby_list as $key=>$value){
+			if($orderby){
+				$orderby .= ",";
 			}
-			
-			if(!$value['field'] || !$rs[$value['field']]){
-				continue;
-			}
-			$tmp = $rs[$value['field']];
-			$condition[] = $value['id'].$symbol.(is_numeric($tmp) ? $tmp : "'".$tmp."'");
+			$orderby .= $value['id']." ".($value['type'] == 'DESC' ? 'ASC' : 'DESC');
 		}
-		$orderby = implode(",",$orderby);
-		$newid = 0;
-		foreach($condition as $key=>$value){
-			$tmpsql = $sql." AND ".$value." ORDER BY ".$orderby." LIMIT 1";
-			$tmp = $this->db->get_one($tmpsql);
-			if($tmp && $tmp['id'] != $rs['id']){
-				$newid = $tmp['id'];
-				break;
-			}
-		}
-		if(!$newid){
+		$sql .= " ORDER BY ".$orderby." LIMIT 1";
+		$tmp = $this->db->get_one($sql);
+		if(!$tmp || ($tmp && $tmp['id'] == $id)){
 			return false;
 		}
-		return $newid;
+		return $tmp['id'];
 	}
 
+	/**
+	 * 取得上一主题ID
+	 * @参数 $id 当前主题ID 或主题内容
+	 * @返回 数字或false
+	 * @更新时间 2017年02月24日
+	**/
+	public function get_prev($id)
+	{
+		if(!$id){
+			return false;
+		}
+		if(is_array($id)){
+			$rs = $id;
+			$id = $rs['id'];
+		}else{
+			$rs = $this->call_one($id);
+			if(!$rs || !$rs['status'] || !$rs['project_id']){
+				return false;
+			}
+		}
+		$project = $this->model('project')->get_one($rs['project_id'],false);
+		if(!$project || !$project['status']){
+			return false;
+		}
+		$orderby = $project['orderby'] ? $project['orderby'] : 'l.id DESC';
+		$orderby_list = $this->_project_format_orderby($orderby);
+		$sql = $this->_np_sql($rs,$project,$orderby_list);
+		$sql .= " AND l.id<".$id;
+		$sql .= " ORDER BY ".$orderby." LIMIT 1";
+		$tmp = $this->db->get_one($sql);
+		if(!$tmp || ($tmp && $tmp['id'] == $id)){
+			return false;
+		}
+		return $tmp['id'];
+	}
+
+	private function _np_sql($rs,$project,$orderby_list)
+	{
+		$sql = "SELECT l.id FROM ".$this->db->prefix."list l ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$project['module']." ext ON(l.id=ext.id) ";
+		if($rs['cate_id'] && $project['cate_multiple']){
+			$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+		}
+		if($project['is_biz'] && $orderby_list){
+			$is_biz = false;
+			foreach($orderby_list as $key=>$value){
+				if(strpos($value['id'],'b.') !== false){
+					$is_biz = true;
+					break;
+				}
+			}
+			if($is_biz){
+				$sql .= " LEFT JOIN ".$this->db->prefix."list_biz b ON(l.id=b.id) ";
+			}
+		}
+		$sql.= " WHERE l.status=1 AND l.hidden=0 ";
+		if($rs['cate_id']){
+			if($project['cate_multiple']){
+				$sql .= " AND (l.cate_id=".$rs['cate_id']." OR lc.cate_id=".$rs['cate_id'].") ";
+			}else{
+				$sql .= " AND l.cate_id=".$rs['cate_id'];
+			}
+		}
+		if($rs['project_id']){
+			$sql .= " AND l.project_id=".$rs['project_id']." ";
+		}
+		if($rs['module_id']){
+			$sql .= " AND l.module_id=".$rs['module_id']." ";
+		}
+		$sql .= " AND l.site_id=".$rs['site_id']." ";
+		return $sql;
+	}
 
 	function attr_list()
 	{
-		$xmlfile = $this->dir_root."data/xml/attr.xml";
+		$xmlfile = $this->dir_data."xml/attr.xml";
 		if(!file_exists($xmlfile)){
 			$array = array("h"=>"头条","c"=>"推荐","a"=>"特荐");
 			return $array;
@@ -866,14 +901,14 @@ class list_model_base extends phpok_model
 		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id='".$id."'";
 		$this->db->query($sql);
 		//删除主题自身的扩展字段
-		$sql = "SELECT id FROM ".$this->db->prefix."ext WHERE module='list-".$id."'";
+		$sql = "SELECT id FROM ".$this->db->prefix."fields WHERE ftype='list-".$id."'";
 		$tmplist = $this->db->get_all($sql);
 		if($tmplist){
 			foreach($tmplist as $key=>$value){
 				$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$value['id']."'";
 				$this->db->query($sql);
 			}
-			$sql = "DELETE FROM ".$this->db->prefix."ext WHERE module='list-".$id."'";
+			$sql = "DELETE FROM ".$this->db->prefix."fields WHERE ftype='list-".$id."'";
 			$this->db->query($sql);
 		}
 		return true;

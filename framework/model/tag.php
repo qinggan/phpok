@@ -261,14 +261,14 @@ class tag_model_base extends phpok_model
 	public function config($data='')
 	{
 		if($data && is_array($data)){
-			$this->lib('xml')->save($data,$this->dir_root.'data/xml/tag_config_'.$this->site_id.'.xml');
+			$this->lib('xml')->save($data,$this->dir_data.'xml/tag_config_'.$this->site_id.'.xml');
 			return true;
 		}
-		if(file_exists($this->dir_root.'data/xml/tag_config_'.$this->site_id.'.xml')){
-			return $this->lib('xml')->read($this->dir_root.'data/xml/tag_config_'.$this->site_id.'.xml');
+		if(file_exists($this->dir_data.'xml/tag_config_'.$this->site_id.'.xml')){
+			return $this->lib('xml')->read($this->dir_data.'xml/tag_config_'.$this->site_id.'.xml');
 		}
-		if(file_exists($this->dir_root.'data/xml/tag_config.xml')){
-			return $this->lib('xml')->read($this->dir_root.'data/xml/tag_config.xml');
+		if(file_exists($this->dir_data.'xml/tag_config.xml')){
+			return $this->lib('xml')->read($this->dir_data.'xml/tag_config.xml');
 		}
 		return array('separator'=>',','count'=>10);
 	}

@@ -37,6 +37,7 @@ class alipay_submit
 	//创建订单
 	function submit()
 	{
+		global $app;
         $notify_url = $this->baseurl."gateway/payment/alipay/notify_url.php";
         $return_url = $GLOBALS['app']->url('payment','notice','id='.$this->order['id'],'www',true);
         $show_url = $GLOBALS['app']->url('payment','show','id='.$this->order['id'],'www',true);
@@ -49,7 +50,7 @@ class alipay_submit
 				"notify_url"	=> $notify_url,
 				"return_url"	=> $return_url,
 				"seller_email"	=> $this->param['param']['email'],
-				"out_trade_no"	=> $this->order['sn'],
+				"out_trade_no"	=> $this->order['sn'].'-'.$this->order['id'],
 				"subject"	=> $this->order['title'],
 				"body"	=> $this->order['content'],
 				"show_url"	=> $show_url,
@@ -61,7 +62,7 @@ class alipay_submit
 			$parameter['logistics_fee'] = '0.00';
 			$parameter['logistics_type'] = 'EXPRESS';
 			$parameter['logistics_payment'] = 'SELLER_PAY';
-			$address = $GLOBALS['app']->model('order')->address_shipping($this->order['id']);
+			$address = $app->model('order')->address_shipping($this->order['id']);
 			if(!$address){
 				$address = array('province'=>'未知','city'=>'未知','county'=>'未知');
 				$address['address'] = '未知';
@@ -89,15 +90,10 @@ class alipay_submit
 		$alipay_config['transport']    = 'http';
 		//建立请求
 		$alipaySubmit = new AlipaySubmit($alipay_config);
-		echo '<!DOCTYPE html>'."\n";
-		echo '<html>'."\n";
-		echo '<head>'."\n\t";
-		echo '<meta charset="utf-8" />'."\n\t";
-		echo '<title>付款中</title>'."\n";
-		echo '</head>'."\n<body>\n";
-		echo $alipaySubmit->buildRequestForm($parameter,"get", "确认");
-		echo "\n".'</body>'."\n</html>";
-		exit;
+		$params = $alipaySubmit->buildRequestPara($parameter);
+		$app->tpl->assign('alipay_config',$alipay_config);
+		$app->tpl->assign('postdata',$params);
+		$app->tpl->assign('order',$this->order);
+		$app->tpl->display('payment/alipay_submit');
 	}
 }
-?>

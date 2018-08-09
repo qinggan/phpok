@@ -25,3 +25,12 @@
 		}
 	}
 })(jQuery);
+
+$(document).ready(function(){
+	laydate.render({elem:'#date_start'});
+	laydate.render({elem:'#date_stop'});
+	console.log(func_id);
+	if(func_id == 'index'){
+		top.$.desktop.title(p_lang('订单管理'));
+	}
+});

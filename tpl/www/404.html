@@ -30,7 +30,7 @@ h1{font-size:44px; color:#0188DE; padding:20px 0px 20px 0px;}
 
 <div id="page" style="border-style:dashed;border-color:#e4e4e4;line-height:30px;">
 	<h1>(404)抱歉，找不到此页面~</h1>
-	<font color="#666666">你请求访问的页面，暂时找不到，我们建议你返回首页官网进行浏览，谢谢！</font><br /><br />
+	<font color="#666666"><!-- if $info -->{$info}<!-- else -->你请求访问的页面，暂时找不到，我们建议你返回首页官网进行浏览，谢谢！<!-- /if --></font><br /><br />
 	<div class="button">
 		<a href="{$sys.url}" title="进入官网">进入官网</a>
 	</div>

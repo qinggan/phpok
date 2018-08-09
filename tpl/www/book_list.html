@@ -15,7 +15,8 @@ $(document).ready(function(){
 			$.dialog.alert('邮箱不能为空');
 			return false;
 		}
-		if(!$('#content').val()){
+		var content = UE.getEditor('content').getContentTxt();
+		if(!content){
 			$.dialog.alert('留言内容不能为空');
 			return false;
 		}
@@ -45,73 +46,70 @@ $(document).ready(function(){
 	<!-- if $page_rs.banner -->
 	<div class="banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
 	<!-- /if -->
-	<ol class="breadcrumb">
-		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
-		<li><a href="{$page_rs.url}" title="{$page_rs.title}">{$page_rs.title}</a></li>
-		<!-- if $cate_rs -->
-		<li><a href="{$cate_rs.url}" title="{$cate_rs.title}">{$cate_rs.title}</a></li>
-		<!-- /if -->
-	</ol>
-	<div class="left">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="left am-panel-group">
 		<!-- include tpl=block/contact -->
 		<!-- include tpl=block/hot_products -->
 	</div>
-	<div class="right">
-		<div class="pfw book mb10">
-			<h3>发布新留言</h3>
-			<div class="content mess">
-				<form method="post" id="book_post">
+	<div class="right am-panel-group">
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">发布新留言</div>
+			<div class="am-panel-bd">
+				<form method="post" id="book_post" class="am-form">
 				<input type="hidden" name="id" id="id" value="{$page_rs.identifier}" />
 				<!-- fields pid=$page_rs.id fields_format=1 in_title=1 -->
-				<table width="100%">
 				<!-- loop from=$list key=$key value=$value -->
-				<!-- if $value.identifier != 'adm_reply' -->
-				<tr>
-					<td width="150px" align="right" valign="top">{$value.title}：</td>
-					<td class="td">{$value.html}</td>
-				</tr>
-				<!-- /if -->
+				<div class="am-g am-form-group">
+					<label class="am-u-sm-2" for="{$value.identifier}">{$value.title}</label>
+					<div class="am-u-sm-10">{$value.html}</div>
+				</div>
 				<!-- /loop -->
 				<!-- if $sys.is_vcode && function_exists("imagecreate") -->
-				<tr>
-					<td align="right" valign="top">验证码：</td>
-					<td class="td">
-						<table cellpadding="0" cellspacing="0" width="180px">
-						<tr>
-							<td><input type="text" name="_chkcode" id="_chkcode" class="vcode" /></td>
-							<td align="right"><img src="" border="0" align="absmiddle" id="update_vcode" class="hand"></td>
-						</tr>
-						</table>
-						<script type="text/javascript">
-						$(document).ready(function(){
-							$("#update_vcode").phpok_vcode();
-							//更新点击时操作
-							$("#update_vcode").click(function(){
-								$(this).phpok_vcode();
-							});
+				<div class="am-g am-form-group">
+					<label class="am-u-sm-2" for="_chkcode">验证码</label>
+					<div class="am-u-sm-4"><input type="text" name="_chkcode" id="_chkcode" class="vcode" /></div>
+					<div class="am-u-sm-6"><img src="" border="0" align="absmiddle" id="update_vcode" class="hand"></div>
+					<script type="text/javascript">
+					$(document).ready(function(){
+						$("#update_vcode").phpok_vcode();
+						//更新点击时操作
+						$("#update_vcode").click(function(){
+							$(this).phpok_vcode();
 						});
-						</script>
-					</td>
-				</tr>
+					});
+					</script>
+				</div>
 				<!-- /if -->
-				<tr>
-					<td>&nbsp;</td>
-					<td><input type="submit" value=" 提交 " class="submit" /></td>
-				</tr>
-				</table>
+				<div class="am-g am-form-group">
+					<div class="am-u-sm-2">&nbsp;</div>
+					<div class="am-u-sm-10"><input type="submit" value=" 提交 " class="am-btn am-btn-primary" /></div>
+				</div>
+				
 				</form>
 			</div>
 		</div>
+
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-		<div class="pfw{if $tmpid.num != $tmpid.total} mb10{/if}">
-			<h3>{$value.title}<small>（{func time_format $value.dateline}）</small></h3>
-			<div class="content">{$value.content}</div>
-			<!-- if $value.adm_reply -->
-			<div class="adm_reply"><div class="adminer">管理员回复：</div>{$value.adm_reply}</div>
-			<!-- /if -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">{$value.title}<small class="am-fr gray">发布时间：{func time_format $value.dateline}</small></div>
+			<div class="am-panel-bd">
+				<div class="content">
+					{$value.content}
+					<!-- if $value.pic -->
+					<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered" data-am-gallery="{  }">
+						<!-- loop from=$value.pic key=$k value=$v id=$idxx -->
+						<li><div class="am-gallery-item"><a href="{$v.gd.auto}" target="_blank"><img src="{$v.gd.thumb}" /></a></div></li>
+						<!-- /loop -->
+					</ul>
+					<!-- /if -->
+				</div>
+				<!-- if $value.adm_reply -->
+				<div class="adm_reply"><div class="adminer">管理员回复：</div>{$value.adm_reply}</div>
+				<!-- /if -->
+			</div>
 		</div>
 		<!-- /loop -->
-		<!-- include tpl=block_pagelist -->
+		<!-- include tpl=block/pagelist -->
 	</div>
 </div>
 <!-- include tpl=foot -->

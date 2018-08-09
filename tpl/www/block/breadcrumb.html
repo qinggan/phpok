@@ -1,0 +1,96 @@
+<ol class="am-breadcrumb am-breadcrumb-slash">
+	<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}" class="am-icon-home">首页</a></li>
+	<!-- if $parent_rs -->
+	<li><a href="{$parent_rs.url}">{$parent_rs.title}</a></li>
+	<!-- /if -->
+	<!-- if $page_rs && $sys.ctrl != 'usercp' && $sys.ctrl != 'post' -->
+	<li{if !$cate_rs && !$rs} class="am-active"{/if}><a href="{url id=$page_rs.identifier/}">{$page_rs.title}</a></li>
+	<!-- /if -->
+	<!-- if $cate_parent_rs && $cate_parent_rs.id != $page_rs.cate -->
+	<li><a href="{$cate_parent_rs.url}">{$cate_parent_rs.title}</a></li>
+	<!-- /if -->
+	<!-- if $cate_rs && $cate_rs.id != $page_rs.cate  && $sys.ctrl != 'usercp' && $sys.ctrl != 'post' -->
+	<li{if !$rs} class="am-active"{/if}><a href="{$cate_rs.url}">{$cate_rs.title}</a></li>
+	<!-- /if -->
+	<!-- if $rs && $sys.ctrl == 'content' -->
+	<li class="am-active"><a href="{$rs.url}" title="{$rs.title}">{$rs.title}</a></li>
+	<!-- /if -->
+	<!-- if $sys.ctrl == 'cart' -->
+		<li{if $sys.func == 'index'} class="am-active"{/if}><a href="{url ctrl=cart/}" title="购物车">购物车</a></li>
+		<!-- if $sys.func == 'checkout' -->
+		<li class="am-active">结算</li>
+		<!-- /if -->
+	<!-- /if -->
+	<!-- if $sys.ctrl == 'search' -->
+		<li{if !$keywords} class="am-active"{/if}><a href="{url ctrl=search/}" title="搜索">搜索</a></li>
+		<!-- if $keywords -->
+		<li class="am-active">搜索关键字：{$keywords}</li>
+		<!-- /if -->
+	<!-- /if -->
+	<!-- if $sys.ctrl == 'tag' -->
+		<li class="am-active">标签：{$rs.title}</li>
+	<!-- /if -->
+	<!-- if $session.user_id && $sys.ctrl == 'usercp' -->
+		<li{if $sys.func == 'index'} class="am-active"{/if}><a href="{url ctrl=usercp/}">会员中心</a></li>
+		<!-- if $sys.func == 'info' -->
+		<li class="am-active"><a href="{url ctrl=usercp func=info/}">个人资料</a></li>
+		<!-- elseif $sys.func == 'avatar' -->
+		<li class="am-active"><a href="{url ctrl=usercp func=avatar/}">更换头像</a></li>
+		<!-- elseif $sys.func == 'address' -->
+		<li class="am-active"><a href="{url ctrl=usercp func=address/}">收货地址</a></li>
+		<!-- elseif $sys.func == 'fav' -->
+		<li class="am-active"><a href="{url ctrl=usercp func=fav/}">收藏夹</a></li>
+		<!-- elseif $sys.func == 'passwd' -->
+		<li class="am-active"><a href="{url ctrl=usercp func=passwd/}">修改密码</a></li>
+		<!-- elseif $sys.func == 'mobile' -->
+		<li class="am-active"><a href="{url ctrl=usercp func=mobile/}">修改手机号</a></li>
+		<!-- elseif $sys.func == 'email' -->
+		<li class="am-active"><a href="{url ctrl=usercp func=email/}">修改邮箱</a></li>
+		<!-- elseif $sys.func == 'wealth' -->
+		<li class="am-active"><a href="{url ctrl=usercp func=wealth/}">我的财富</a></li>
+		<!-- elseif $sys.func == 'introducer' -->
+		<li class="am-active"><a href="{url ctrl=usercp func=introducer/}">推荐分享</a></li>
+		<!-- elseif $sys.func == 'list' && $page_rs -->
+		<li class="am-active"><a href="{url ctrl=usercp func=list id=$page_rs.identifier/}">{$page_rs.title}</a></li>
+		<!-- /if -->
+	<!-- /if -->
+	<!-- if $session.user_id && $sys.ctrl == 'payment' -->
+		<li><a href="{url ctrl=usercp/}">会员中心</a></li>
+		<!-- if $sys.func == 'index' -->
+		<li class="am-active"><a href="{url ctrl=payment/}">在线充值</a></li>
+		<!-- /if -->
+	<!-- /if -->
+	<!-- if $session.user_id && $sys.ctrl == 'order' -->
+		<li><a href="{url ctrl=usercp/}">会员中心</a></li>
+		<!-- if $sys.func == 'index' -->
+		<li class="am-active"><a href="{url ctrl=order/}">我的订单</a></li>
+		<!-- elseif $sys.func == 'info' -->
+		<li><a href="{url ctrl=order/}">我的订单</a></li>
+		<li class="am-active"><a href="{url ctrl=order func=info id=$rs.id/}">订单明细（{$rs.sn}）</a></li>
+		<!-- elseif $sys.func == 'payment' -->
+		<li><a href="{url ctrl=order/}">我的订单</a></li>
+		<li><a href="{url ctrl=order func=info id=$rs.id/}">订单明细（{$rs.sn}）</a></li>
+		<li class="am-active">在线付款</li>
+		<!-- /if -->
+	<!-- /if -->
+	<!-- if !$session.user_id && $sys.ctrl == 'order' -->
+		<!-- if $sys.func == 'info' -->
+		<li>会员中心</li>
+		<li>我的订单</li>
+		<li class="am-active"><a href="{url ctrl=order func=info sn=$rs.sn passwd=$rs.passwd/}">订单明细（{$rs.sn}）</a></li>
+		<!-- elseif $sys.func == 'payment' -->
+		<li>会员中心</li>
+		<li>我的订单</li>
+		<li><a href="{url ctrl=order func=info sn=$rs.sn passwd=$rs.passwd/}">订单明细（{$rs.sn}）</a></li>
+		<li class="am-active">在线付款</li>
+		<!-- /if -->
+	<!-- /if -->
+	<!-- if $session.user_id && $sys.ctrl == 'post' -->
+		<li><a href="{url ctrl=usercp/}">会员中心</a></li>
+		<li><a href="{url ctrl=usercp func=list id=$page_rs.identifier/}">{$page_rs.title}</a></li>
+		<li class="am-active"><!-- if $sys.func == 'edit' -->编辑<!-- else -->发布<!-- /if --></li>
+	<!-- /if -->
+	<!-- loop from=$leader key=$key value=$value id=$tmpid -->
+	<li><!-- if $value.url --><a href="{$value.url}">{$value.title}</a><!-- else -->{$value.title}<!-- /if --></li>
+	<!-- /loop -->
+</ol>

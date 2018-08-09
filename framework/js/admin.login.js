@@ -1,11 +1,13 @@
-/***********************************************************
-	Filename: {phpok}/js/admlogin.js
-	Note	: 管理员登录页涉及到的JS
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2014年1月6日
-***********************************************************/
+/**
+ * 管理员登录页
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年08月07日
+**/
+
 //验证码
 function login_code(appid)
 {

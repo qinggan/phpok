@@ -93,7 +93,7 @@
 				url = get_url('upload','delete','id='+id);
 				$.phpok.json(url,function(rs){
 					if(rs.status == 'ok'){
-						$.phpok.reload();
+						$("#thumb_"+id).remove();
 						return true;
 					}
 					$.dialog.alert(rs.content);
@@ -110,7 +110,7 @@
 				'title':p_lang('预览附件信息'),
 				'width':'700px',
 				'height':'400px',
-				'lock':true,
+				'lock':false,
 				'button': [{
 					'name': p_lang('下载原文件'),
 					'callback': function () {
@@ -127,10 +127,13 @@
 		**/
 		update_pl_pictures:function()
 		{
-			$.dialog.confirm(p_lang('确定要全部更新图片吗？执行此操作占用时间很长，程序会新开桌面，请不要关闭这个页面'),function(){
+			$.dialog.prompt(p_lang('请输入要开始更新的图片数字ID<br/>默认表示更新全部图片（会占用比较多的时间）'),function(val){
 				var url = get_url("res","update_pl","id=all");
+				if(parseInt(val)>0){
+					url +="&start_id="+val;
+				}
 				top.$.win(p_lang('附件批量更新中'),url,{'is_max':true,'win_max':false,'width':600,'height':400});
-			});
+			},0).title(p_lang('批量更新图片规格'));
 		},
 		/**
 		 * 添加附件
@@ -217,6 +220,32 @@
 					});
 				}
 			});
+		},
+		zipit:function(id,ext)
+		{
+			$.dialog.confirm(p_lang('确定初始化当前文件原图大小吗？'),function(){
+				var width = $("#resize").val();
+				var url = get_url('res','resize','id='+id+'&width='+width);
+				if(ext == 'jpg' || ext == 'jpeg'){
+					url += "&ptype="+$("#ptype").val();
+				}
+				var tip = $.dialog.tips(p_lang('正在初始化图片，请稍候…'));
+				$.phpok.json(url,function(data){
+					tip.close();
+					if(data.status){
+						$.dialog.tips('图片初始化成功');
+						$.phpok.reload();
+						return true;
+					}
+					$.dialog.alert(data.info);
+					return false;
+				})
+			});
 		}
 	}
 })(jQuery);
+
+$(document).ready(function(){
+	laydate.render({elem:'#start_date'});
+	laydate.render({elem:'#stop_date'});
+});

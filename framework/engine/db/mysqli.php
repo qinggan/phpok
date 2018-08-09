@@ -18,91 +18,13 @@ if(!defined("PHPOK_SET")){
 
 class db_mysqli extends db
 {
-	private $host = '127.0.0.1';
-	private $user = 'root';
-	private $pass = '';
-	private $port = 3306;
-	private $socket = '';
 	private $type = MYSQLI_ASSOC;
 
 	public function __construct($config=array())
 	{
 		parent::__construct($config);
-		$this->config($config);
-	}
-
-	/**
-	 * 初始数据库连接参数，用于更换数据库服务器使用
-	 * @参数 $config 数组
-	**/
-	public function config($config)
-	{
-		parent::config($config);
-		$this->host = $config['host'] ? $config['host'] : '127.0.0.1';
-		$this->user = $config['user'] ? $config['user'] : 'root';
-		$this->pass = $config['pass'] ? $config['pass'] : '';
-		$this->port = $config['port'] ? $config['port'] : 3306;
-		$this->socket = $config['socket'] ? $config['socket'] : '';
-	}
-
-	/**
-	 * 数据库服务器
-	 * @参数 $host 指定数据库服务器
-	**/
-	public function host($host='')
-	{
-		if($host){
-			$this->host = $host;
-		}
-		return $this->host;
-	}
-
-	/**
-	 * 数据库账号
-	 * @参数 $user 账号名称
-	**/
-	public function user($user='')
-	{
-		if($user){
-			$this->user = $user;
-		}
-		return $this->user;
-	}
-
-	/**
-	 * 数据库密码
-	 * @参数 $pass 密码
-	**/
-	public function pass($pass='')
-	{
-		if($pass){
-			$this->pass = $pass;
-		}
-		return $this->pass;
-	}
-
-	/**
-	 * 数据库端口
-	 * @参数 $port 端口，必须是数字
-	**/
-	public function port($port='')
-	{
-		if($port && is_numeric($port)){
-			$this->port = $port;
-		}
-		return $this->port;
-	}
-
-	/**
-	 * Socket 套接字，使应用程序能够读写与收发通讯协定（protocol）与资料的程序
-	 * @参数 $socket 指定 socket 文件
-	**/
-	public function socket($socket='')
-	{
-		if($socket){
-			$this->socket = $socket;
-		}
-		return $this->socket;
+		//定义MySQL的保留字转义符
+		$this->kec("`","`");
 	}
 
 	/**
@@ -139,7 +61,9 @@ class db_mysqli extends db
 		return $this->conn;
 	}
 
-	//检测链接是否存在
+	/**
+	 * 检测链接是否存在
+	**/
 	private function check_connect()
 	{
 		if(!$this->conn || !is_object($this->conn)){
@@ -155,6 +79,9 @@ class db_mysqli extends db
 		}
 	}
 
+	/**
+	 * 析构函数，结束链接
+	**/
 	public function __destruct()
 	{
 		if($this->conn && is_object($this->conn)){
@@ -162,6 +89,9 @@ class db_mysqli extends db
 		}
 	}
 
+	/**
+	 * 设置参数
+	**/
 	public function set($name,$value)
 	{
 		if($name == "rs_type" || $name == 'type'){
@@ -172,6 +102,9 @@ class db_mysqli extends db
 		}
 	}
 
+	/**
+	 * 执行SQL
+	**/
 	public function query($sql,$loadcache=true)
 	{
 		if($loadcache){
@@ -194,16 +127,28 @@ class db_mysqli extends db
 		return $this->query;
 	}
 
+	/**
+	 * 获取列表数据
+	 * @参数 $sql 要查询的SQL
+	 * @参数 $primary 绑定主键
+	**/
 	public function get_all($sql='',$primary="")
 	{
 		if($sql){
+			$false = $this->cache_false($primary.'-'.$sql);
+			if($false){
+				return false;
+			}
+			if($this->cache_get($primary.'-'.$sql)){
+				return $this->cache_get($primary.'-'.$sql);
+			}
 			$this->query($sql);
 		}
 		if(!$this->query || !is_object($this->query)){
 			return false;
 		}
 		$this->_time();
-		$rs = false;
+		$rs = array();
 		while($rows = mysqli_fetch_array($this->query,$this->type)){
 			if($primary){
 				$rs[$rows[$primary]] = $rows;
@@ -213,12 +158,31 @@ class db_mysqli extends db
 		}
 		mysqli_free_result($this->query);
 		$this->_time();
+		if(!$rs || count($rs)<1){
+			$this->cache_false_save($primary.'-'.$sql);
+			return false;
+		}
+		if($this->cache_need($primary.'-'.$sql)){
+			$this->cache_save($primary.'-'.$sql,$rs);
+		}
+		$this->cache_first($primary.'-'.$sql);
 		return $rs;
 	}
 
-	public function get_one($sql="")
+	/**
+	 * 获取一条数据
+	 * @参数 $sql 要执行的SQL
+	**/
+	public function get_one($sql='')
 	{
 		if($sql){
+			$false = $this->cache_false($sql);
+			if($false){
+				return false;
+			}
+			if($this->cache_get($sql)){
+				return $this->cache_get($sql);
+			}
 			$this->query($sql);
 		}
 		if(!$this->query || !is_object($this->query)){
@@ -228,104 +192,29 @@ class db_mysqli extends db
 		$rs = mysqli_fetch_array($this->query,$this->type);
 		mysqli_free_result($this->query);
 		$this->_time();
+		if(!$rs){
+			$this->cache_false_save($sql);
+			return false;
+		}
+		if($this->cache_need($sql)){
+			$this->cache_save($sql,$rs);
+		}
+		$this->cache_first($sql);
 		return $rs;
 	}
 
-	//返回最后插入的ID
+	/**
+	 * 返回最后插入的ID
+	**/
 	public function insert_id()
 	{
-		$this->check_connect();
 		return mysqli_insert_id($this->conn);
 	}
 
-	//写入操作
-	public function insert($sql,$tbl='',$type='insert')
-	{
-		if(is_array($sql) && $tbl){
-			return $this->insert_array($sql,$tbl,$type);
-		}
-		$this->query($sql);
-		return $this->insert_id();
-	}
-
-	public function insert_array($data,$tbl,$type="insert")
-	{
-		if(!$tbl || !$data || !is_array($data)){
-			return false;
-		}
-		if(substr($tbl,0,strlen($this->prefix)) != $this->prefix){
-			$tbl = $this->prefix.$tbl;
-		}
-		$type = strtolower($type);
-		$sql = $type == 'insert' ? "INSERT" : "REPLACE";
-		$sql.= " INTO ".$tbl." ";
-		$sql_fields = array();
-		$sql_val = array();
-		foreach($data as $key=>$value){
-			$sql_fields[] = "`".$key."`";
-			$sql_val[] = "'".$value."'";
-		}
-		$sql.= "(".(implode(",",$sql_fields)).") VALUES(".(implode(",",$sql_val)).")";
-		return $this->insert($sql);
-	}
-
-	//更新操作
-	public function update($data,$tbl='',$condition='')
-	{
-		if(is_array($data) && $tbl && $condition){
-			return $this->update_array($data,$tbl,$condition);
-		}
-		return $this->query($data);
-	}
-
-	//删除操作
-	public function delete($table,$condition='')
-	{
-		if(!$condition || !$table){
-			return false;
-		}
-		if(is_array($condition)){
-			$sql_fields = array();
-			foreach($condition as $key=>$value){
-				$sql_fields[] = "`".$key."`='".$value."' ";
-			}
-			$condition = implode(" AND ",$sql_fields);
-			if(!$condition){
-				return false;
-			}
-		}
-		if(substr($table,0,strlen($this->prefix)) != $this->prefix){
-			$table = $this->prefix.$table;
-		}
-		$sql = "DELETE FROM ".$table." WHERE ".$condition;
-		return $this->query($sql);
-	}
-
-	//更新数据
-	public function update_array($data='',$table='',$condition='')
-	{
-		if(!$data || !$table || !$condition || !is_array($data) || !is_array($condition)){
-			return false;
-		}
-		if(substr($table,0,strlen($this->prefix)) != $this->prefix){
-			$table = $this->prefix.$table;
-		}
-		$sql = "UPDATE ".$table." SET ";
-		$sql_fields = array();
-		foreach($data as $key=>$value){
-			$sql_fields[] = "`".$key."`='".$value."'";
-		}
-		$sql.= implode(",",$sql_fields);
-		$sql_fields = array();
-		foreach($condition as $key=>$value){
-			$sql_fields[] = "`".$key."`='".$value."' ";
-		}
-		$sql .= " WHERE ".implode(" AND ",$sql_fields);
-		return $this->query($sql);
-	}
-
 	/**
-	 * 计算数量
+	 * 返回行数
+	 * @参数 $sql 要执行的SQL语句
+	 * @参数 $is_count 是否计算数量，仅限 sql 中使用 count() 时有效
 	**/
 	public function count($sql="",$is_count=true)
 	{
@@ -345,6 +234,10 @@ class db_mysqli extends db
 		return false;
 	}
 
+	/**
+	 * 返回被筛选出来的字段数目
+	 * @参数 $sql 要执行的SQL语句
+	**/
 	public function num_fields($sql="")
 	{
 		if($sql){
@@ -359,12 +252,12 @@ class db_mysqli extends db
 	/**
 	 * 显示表字段，仅限字段名，没有字段属性
 	 * @参数 $table 表名
-	 * @参数 $check_prefix 是否检查数据表前缀
+	 * @参数 $prefix 是否检查数据表前缀
 	 * @返回 无值或表字段数组
 	**/
-	public function list_fields($table,$check_prefix=true)
+	public function list_fields($table,$prefix=true)
 	{
-		if($check_prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
+		if($prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
 			$table = $this->prefix.$table;
 		}
 		$rs = $this->get_all("SHOW COLUMNS FROM ".$table);
@@ -379,6 +272,8 @@ class db_mysqli extends db
 
 	/**
 	 * 取得明细的字段管理
+	 * @参数 $table 表名
+	 * @参数 $check_prefix 是否检查数据表前缀
 	**/
 	public function list_fields_more($table,$check_prefix=true)
 	{
@@ -416,6 +311,20 @@ class db_mysqli extends db
 		return $rslist;
 	}
 
+	/**
+	 * 显示表名
+	 * @参数 $table_list 数组，整个数据库中的表
+	 * @参数 $i 顺序ID
+	**/
+	public function table_name($table_list,$i)
+	{
+		return $table_list[$i];
+	}
+
+	/**
+	 * 字符转义
+	 * @参数 $char 要转义的字符
+	**/
 	public function escape_string($char)
 	{
 		if(!$char){
@@ -424,7 +333,6 @@ class db_mysqli extends db
 		$this->check_connect();
 		return mysqli_escape_string($this->conn,$char);
 	}
-
 
 	/**
 	 * 取得数据库服务版本
@@ -440,99 +348,16 @@ class db_mysqli extends db
 	}
 
 	/**
-	 * 存储过程执行，返回多个结果集
-	 * @参数 $sql 要执行的存储过程
-	 * @参数 $out 返回的结果集变量处理，多个变量用英文逗号隔开
-	**/
-	public function call_more($sql,$out='')
-	{
-		mysqli_multi_query($this->conn,$sql);
-		if(!$out){
-			$out = array();
-		}
-		if(is_string($out)){
-			$out = explode(",",$out);
-		}
-		$data = array();
-		$i=0;
-		do{
-			$id = $out[$i] ? $out[$i] : $i;
-			if($result = mysqli_store_result($this->conn)){
-				while($row = mysqli_fetch_assoc($result)){
-					$data[$id][] = $row;
-				}
-				mysqli_free_result($result);
-			}
-			if (!mysqli_more_results($this->conn)){
-				break;
-			}
-			$i++;
-		}while(mysqli_next_result($this->conn));
-		if($data && count($data)>0){
-			return $data;
-		}
-		return false;
-	}
-
-	/**
-	 * 存储过程执行，返回一条结果集
-	 * @参数 $sql 要执行的存储过程的语句
-	 * @参数 $out 返回的变量，如果out为空，直接返回
-	**/
-	public function call($sql,$out='')
-	{
-		$this->query($sql,false);
-		if($out && !is_bool($out)){
-			$tmp = array();
-			if(is_string($out)){
-				$out = explode(",",$out);
-			}
-			foreach($out as $key=>$value){
-				$value = str_replace('@','',$value);
-				$tmp[] = '@'.$value;
-			}
-			$sql = "SELECT ".implode(",",$tmp);
-			$this->query($sql,false);
-			return $this->get_one();
-		}
-		return $this->get_one();
-	}
-
-	/**
-	 * 存储过程执行，返回一个结果集的多条
-	 * @参数 $sql 要执行的SQL
-	 * @参数 $out 返回值，多个值用英文逗号隔开
-	**/
-	public function call_list($sql,$out='')
-	{
-		$this->query($sql,false);
-		if($out && is_string($out)){
-			$tmp = array();
-			if(is_string($out)){
-				$out = explode(",",$out);
-			}
-			foreach($out as $key=>$value){
-				$value = str_replace('@','',$value);
-				$tmp[] = '@'.$value;
-			}
-			$sql = "SELECT ".implode(",",$tmp);
-			$this->query($sql,false);
-			return $this->get_all();
-		}
-		return $this->get_all();
-	}
-
-	/**
 	 * 创建主表操作
 	 * @参数 $tblname 表名称
 	 * @参数 $pri_id 主键ID
 	 * @参数 $note 表摘要
-	 * @参数 $engine 引挈，默认是 MYISAM
+	 * @参数 $engine 引挈，默认是 InnoDB
 	**/
 	public function create_table_main($tblname,$pri_id='',$note='',$engine='')
 	{
 		if(!$engine){
-			$engine = 'MYISAM';
+			$engine = 'InnoDB';
 		}
 		if(!$pri_id){
 			$pri_id = 'id';

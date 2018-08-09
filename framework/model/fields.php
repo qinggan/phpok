@@ -1,13 +1,13 @@
 <?php
 /**
- * 常用字段增删查改
+ * 字段增删查改
  * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @时间 2017年06月13日
+ * @时间 2018年05月18日
 **/
 
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
@@ -18,25 +18,47 @@ class fields_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function get_one($id,$identifier='id')
+	
+	/**
+	 * 读取 qigngan_fields 表下的一条字段配置信息，返回的 ext 信息已经自动转成数组
+	 * @参数 $id 主键ID
+	**/
+	public function one($id)
 	{
-		$filename = $this->dir_data.'xml/fields/'.$id.'.xml';
-		if(!file_exists($filename)){
+		if(!$id || !intval($id)){
 			return false;
 		}
-		return $this->lib('xml')->read($filename);
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id=".intval($id);
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		if($rs['ext']){
+			$rs['ext'] = unserialize($rs['ext']);
+		}
+		return $rs;
 	}
 
-	public function get_all()
+	/**
+	 * 读取模块下的所有扩展字段信息，返回的 ext 信息已自动转成数组模式
+	 * @参数 $ftype 模块ID 或 模块类型
+	 * @参数 $primary 自定义 key 键，默认为空，支持 id 和 identifier
+	**/
+	public function flist($ftype,$primary='')
 	{
-		$flist = $this->lib('file')->ls($this->dir_data.'xml/fields/');
-		if(!$flist){
+		if(!$ftype){
 			return false;
 		}
-		$rslist = array();
-		foreach($flist as $key=>$value){
-			$rs = $this->lib('xml')->read($value);
-			$rslist[$rs['identifier']] = $rs;
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ftype='".$ftype."' ORDER BY taxis ASC,id DESC";
+		$rslist = $this->db->get_all($sql,$primary);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			if($value['ext']){
+				$value['ext'] = unserialize($value['ext']);
+				$rslist[$key] = $value;
+			}
 		}
 		return $rslist;
 	}
@@ -53,6 +75,9 @@ class fields_model_base extends phpok_model
 			$words = explode(",",$words);
 		}
 		$rslist = $this->get_all();
+		if(!$rslist){
+			return false;
+		}
 		foreach($rslist as $key=>$value){
 			if(in_array($key,$words)){
 				unset($rslist[$key]);
@@ -132,32 +157,6 @@ class fields_model_base extends phpok_model
 		}
 	}
 
-	/**
-	 * 保存常用字段
-	 * @参数 $data 要保存的数据信息
-	**/
-	public function save($data,$id=0)
-	{
-		if(!$data || !is_array($data)){
-			return false;
-		}
-		if($data['ext'] && is_string($data['ext'])){
-			$data['ext'] = unserialize($data['ext']);
-		}
-		$filename = $this->dir_data.'xml/fields/'.$data['identifier'].'.xml';
-		$this->lib('xml')->save($data,$filename);
-		return true;
-	}
-
-	//删除字段
-	public function delete($id)
-	{
-		$filename = $this->dir_data.'xml/fields/'.$id.'.xml';
-		if(file_exists($filename)){
-			$this->lib('file')->rm($filename);
-		}
-		return true;
-	}
 
 	//取得数据表字段设置的字段类型
 	function type_all()

@@ -11,8 +11,9 @@ id = PHPSESSION
 ;会话超时时间，单位是秒
 timeout = 3600
 
-;会员临时文件存储目录，默认是 data/session/，变量 {dir_data}，{dir_cache}，{dir_root}
-path = "{dir_data}session/"
+;会员临时文件存储目录，默认是 _data/session/，变量 {dir_data}，{dir_cache}，{dir_root}
+;path = "{dir_data}session/"
+path = ""
 
 ;会员自动运行方法，经测试目前仅用于为 sql
 methods = "auto_start:db"

@@ -1,4 +1,4 @@
-<!-- include tpl=head title="我的推荐 - 个人中心" -->
+<!-- php:$title = "我的推荐 - 会员中心" --><!-- include tpl=head title=$title -->
 <script type="text/javascript">
 function relation_reload(val)
 {
@@ -9,23 +9,29 @@ function relation_reload(val)
 	$.phpok.go(url);
 }
 </script>
-<div class="cp">
-	<div class="left"><!-- include tpl=block_usercp --></div>
-	<div class="right">
-		<div class="pfw mbottom10">
-			<h3>推广链接</h3>
-			<div style="padding:10px;text-align:center;">{$vlink}</div>
+<div class="main">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="left"><!-- include tpl=block/usercp_nav --></div>
+	<div class="right am-panel-group">
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">推广链接</div>
+			<div class="am-panel-bd">
+				{$vlink}
+			</div>
 		</div>
-		<div class="pfw mbottom10">
-			<h3>友情说明</h3>
-			<ul class="tip">
-				<li>您可以把推广链接放到您适合的文章里嵌入，也可以发给好友分享</li>
-			</ul>
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">友情说明</div>
+			<div class="am-panel-bd">
+				<ul>
+					<li>您可以把推广链接放到您适合的文章里嵌入，也可以发给好友分享</li>
+				</ul>
+			</div>
 		</div>
+		
 		<!-- if $monthlist -->
-		<div class="pfw mbottom10">
-			<h3>月统计</h3>
-			<div style="padding:10px;">
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">月统计</div>
+			<div class="am-panel-bd am-form">
 				<select onchange="relation_reload(this.value)">
 				<option value="">请选择</option>
 				<!-- loop from=$monthlist key=$key value=$value id=$tmpid -->
@@ -36,28 +42,29 @@ function relation_reload(val)
 		</div>
 		<!-- /if -->
 		<!-- if $rslist -->
-		<h3>我推荐的会员</h3>
-		<div class="table_lc">
-			<table width="100%" cellpadding="0" cellspacing="0">
-			<tr>
-				<th>会员账号</th>
-				<th>注册时间</th>
-				<th>姓名</th>
-			</tr>
-			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-			
-			
-			<tr>
-				<td class="center">{$value.user}</td>
-				<td class="center">{func time_format $value.regtime}</td>
-				<td class="center">{$value.fullname}</td>
-			</tr>
-			<!-- /loop -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">我推荐的会员</div>
+			<table class="am-table am-table-centered am-table-hover">
+				<thead>
+					<tr>
+						<th>会员账号</th>
+						<th>注册时间</th>
+						<th>姓名</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+					<tr>
+						<td>{$value.user}</td>
+						<td>{func time_format $value.regtime}</td>
+						<td>{$value.fullname}</td>
+					</tr>
+					<!-- /loop -->
+				</tbody>
 			</table>
 		</div>
-			
 		<!-- /if -->
-		<!-- if $total --><!-- include tpl=block_pagelist --><!-- /if -->
+		<!-- include tpl=block/pagelist -->
 	</div>
 	<div class="clear"></div>
 </div>
