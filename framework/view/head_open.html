@@ -5,6 +5,9 @@
 	<meta name="author" content="phpok.com" />
 	<meta http-equiv="expires" content="wed, 26 feb 1997 08:21:57 gmt"> 
 	<title>{$config.title}</title>
+	<!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
 	<link rel="stylesheet" type="text/css" href="{#css#}/css.php?type=open&version={:VERSION}" />
 	{func phpok_head_css}
 	<!-- php:$js_ext = 'admin.'.$sys.ctrl.'.js' -->

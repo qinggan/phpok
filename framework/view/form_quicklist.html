@@ -12,7 +12,7 @@ function form_check_search()
 <div class="center" style="padding:10px;">
 	<form method="post" action="{url ctrl=form func=quicklist id=$id/}" onsubmit="return form_check_search()">
 	<input type="text" name="keywords" id="keywords" value="{$keywords}" />
-	<input type="submit" value="{lang搜索}" class="phpok-btn" />
+	<input type="submit" value="{lang搜索}" class="layui-btn" />
 	</form>
 </div>
 <div class="list">
@@ -45,8 +45,8 @@ function form_check_search()
 	<!-- /loop -->
 	<td class="center">
 		<div class="button-group">
-			<input type="button" value="{lang查看}" onclick="$.admin_form.view('{$value.id}','{$p_rs.id}')" class="phpok-btn" />
-			<input type="button" value="{lang选择}" onclick="$.phpokform.extitle_select_action('{$value.id}','{$id}','{$identifier}','{$maxcount}')" class="phpok-btn" />
+			<input type="button" value="{lang查看}" onclick="$.admin_form.view('{$value.id}','{$p_rs.id}')" class="layui-btn" />
+			<input type="button" value="{lang选择}" onclick="$.phpokform.extitle_select_action('{$value.id}','{$id}','{$identifier}','{$maxcount}')" class="layui-btn" />
 		</div>
 	</td>
 </tr>

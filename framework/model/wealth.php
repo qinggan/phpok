@@ -521,4 +521,20 @@ class wealth_model_base extends phpok_model
 		}
 		return false;
 	}
+
+	public function log_list($condition='',$offset=0,$psize=30)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."wealth_log ";
+		if($condition){
+			$sql .= "WHERE ".$condition." ";
+		}
+		$sql.= "ORDER BY dateline DESC,id DESC LIMIT ".$offset.",".$psize;
+		return $this->db->get_all($sql);
+	}
+
+	public function log_one($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."wealth_log WHERE id='".$id."'";
+		return $this->db->get_one($sql);
+	}
 }

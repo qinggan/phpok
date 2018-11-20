@@ -1,4 +1,4 @@
-<!-- include tpl=head -->
+<!-- include tpl=head_lay -->
 <div class="hide" id="express_select_info">
 <select id="code">
 	<!-- loop from=$codelist key=$key value=$value -->
@@ -45,34 +45,49 @@ function delete_it(id)
 	});
 }
 </script>
-<div class="tips">
-	{lang当前位置：}{lang物流管理}
-	<div class="action"><a href="javascript:add_it();void(0);">添加物流</a></div>
-	<div class="clear"></div>
-</div>
-<table width="100%" cellpadding="0" cellspacing="0" class="list">
-<tr>
-	<th>ID</th>
-	<th class="lft">物流</th>
-	<th class="lft">公司名称</th>
-	<th class="lft">官方网站</th>
-	<th class="lft">接口</th>
-	<th>&nbsp;</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value -->
-<tr>
-	<td class="center">{$value.id}</td>
-	<td id="title_{$value.id}">{$value.title}</td>
-	<td>{$value.company}</td>
-	<td><a href="{$value.url}" target="_blank">{$value.homepage}</a></td>
-	<td>{$codelist[$value.code][title]}</td>
-	<td>
-		<div class="button-group">
-			<input type="button" value="{lang编辑}" onclick="edit_it('{$value.id}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="phpok-btn" />
+<div class="layui-card">
+	<div class="layui-card-header " style="visibility: visible;">
+		<div>{lang物流管理}</div>
+	</div>
+
+	<div class="layui-card-body">
+
+		<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
+			<button class="layui-btn" onclick="add_it();">
+				<i class="layui-icon">&#xe608;</i> {lang添加物流}
+			</button>
 		</div>
-	</td>
-</tr>
-<!-- /loop -->
-</table>
-<!-- include tpl=foot -->
+
+		<table class="layui-table">
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>物流</th>
+				<th>公司名称</th>
+				<th>官方网站</th>
+				<th>接口</th>
+				<th>&nbsp;</th>
+			</tr>
+			</thead>
+			<tbody>
+			<!-- loop from=$rslist key=$key value=$value -->
+			<tr>
+				<td>{$value.id}</td>
+				<td id="title_{$value.id}">{$value.title}</td>
+				<td>{$value.company}</td>
+				<td><a href="{$value.url}" target="_blank">{$value.homepage}</a></td>
+				<td>{$codelist[$value.code][title]}</td>
+				<td>
+					<div class="layui-btn-group">
+						<input type="button" value="{lang编辑}" onclick="edit_it('{$value.id}')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="layui-btn layui-btn-sm" />
+					</div>
+				</td>
+			</tr>
+			<!-- /loop -->
+			</tbody>
+		</table>
+	</div>
+
+</div>
+<!-- include tpl=foot_lay -->

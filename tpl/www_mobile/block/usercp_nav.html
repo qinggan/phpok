@@ -1,0 +1,38 @@
+<div class="am-panel-group">
+	<div class="am-panel am-panel-default">
+		<div class="am-panel-hd">个人中心</div>
+		<ul class="am-list">
+			<li><a href="{url ctrl=usercp/}"{if $sys.ctrl == 'usercp' && $sys.func == 'index'} class="am-active"{/if}><i class="am-icon-home am-icon-fw"></i> 会员首页</a></li>
+			<li><a href="{url ctrl=usercp func=info/}"{if $sys.func == 'info'} class="am-active"{/if}><i class="am-icon-user am-icon-fw"></i> 个人资料</a></li>
+			<li><a href="{url ctrl=usercp func=avatar/}"{if $sys.func == 'avatar'} class="am-active"{/if}><i class="am-icon-photo am-icon-fw"></i> 修改头像</a></li>
+			<li><a href="{url ctrl=usercp func=address/}"{if $sys.func == 'address'} class="am-active"{/if}><i class="am-icon-map-marker am-icon-fw"></i> 收货地址</a></li>
+			<li><a href="{url ctrl=fav/}"{if $sys.ctrl == 'fav'} class="am-active"{/if}><i class="am-icon-heart am-icon-fw"></i> 收藏夹</a></li>
+		</ul>
+	</div>
+	<div class="am-panel am-panel-default">
+		<div class="am-panel-hd">安全设置</div>
+		<ul class="am-list">
+			<li><a href="{url ctrl=usercp func=passwd/}"{if $sys.func == 'passwd'} class="am-active"{/if}><i class="am-icon-lock am-icon-fw"></i> 修改密码</a></li>
+			<li><a href="{url ctrl=usercp func=mobile/}"{if $sys.func == 'mobile'} class="am-active"{/if}><i class="am-icon-phone am-icon-fw"></i> 修改手机</a></li>
+			<li><a href="{url ctrl=usercp func=email/}"{if $sys.func == 'email'} class="am-active"{/if}><i class="am-icon-envelope-o am-icon-fw"></i> 修改邮箱</a></li>
+		</ul>
+	</div>
+	<div class="am-panel am-panel-default">
+		<div class="am-panel-hd">交易及财富</div>
+		<ul class="am-list">
+			<li><a href="{url ctrl=usercp func=wealth/}"{if $sys.func == 'wealth'} class="am-active"{/if}><i class="am-icon-money am-icon-fw"></i> 我的财富</a></li>
+			<li><a href="{url ctrl=payment/}"{if $sys.ctrl == 'payment' && $sys.func == 'index'} class="am-active"{/if}><i class="am-icon-credit-card am-icon-fw"></i> 在线充值</a></li>
+			<li><a href="{url ctrl=order/}"{if $sys.ctrl == 'order'} class="am-active"{/if}><i class="am-icon-gift am-icon-fw"></i> 我的订单</a></li>
+		</ul>
+	</div>
+	<div class="am-panel am-panel-default">
+		<div class="am-panel-hd">营销及其他</div>
+		<ul class="am-list">
+			<li><a href="{url ctrl=usercp func=introducer/}"{if $sys.func == 'introducer'} class="am-active"{/if}><i class="am-icon-send am-icon-fw"></i> 推荐链接</a></li>
+			<!-- php:$list = usercp_project() -->
+			<!-- loop from=$list key=$key value=$value -->
+			<li><a href="{url ctrl=usercp func=list id=$value.identifier/}"{if $sys.func == 'list' && $id == $value.identifier} class="am-active"{/if}><i class="am-icon-arrow-circle-o-right  am-icon-fw"></i> {$value.title}</a></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>

@@ -30,7 +30,9 @@ class project_model_base extends phpok_model
 	//取得项目信息
 	public function get_one($id,$ext=true)
 	{
-		if(!$id || !intval($id)) return false;
+		if(!$id || !intval($id)){
+			return false;
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".intval($id);
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
@@ -150,15 +152,13 @@ class project_model_base extends phpok_model
 
 	function get_all($site_id=0,$pid=0,$condition="",$pri_id="")
 	{
-		$sql = "SELECT p.*,m.title project_module_title FROM ".$this->db->prefix."project p ";
+		$sql = "SELECT p.*,m.title project_module_title,m.mtype FROM ".$this->db->prefix."project p ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."module m ON(p.module=m.id) ";
 		$sql.= " WHERE p.parent_id='".$pid."' ";
-		if($site_id)
-		{
+		if($site_id){
 			$sql.= " AND p.site_id='".$site_id."' ";
 		}
-		if($condition)
-		{
+		if($condition){
 			$sql .= " AND ".$condition;
 		}
 		$sql.= " ORDER BY p.taxis ASC,p.id DESC";
@@ -187,10 +187,8 @@ class project_model_base extends phpok_model
 	function get_sublist(&$list,$pid=0,$site_id=0,$space="",$condition='')
 	{
 		$rslist = $this->get_all($site_id,$pid,$condition);
-		if($rslist)
-		{
-			foreach($rslist AS $key=>$value)
-			{
+		if($rslist){
+			foreach($rslist as $key=>$value){
 				$value["space"] = $space ? $space."├─ " : '';
 				$list[] = $value;
 				$newspace = $space."　　";

@@ -1,4 +1,4 @@
-<!-- include tpl=head -->
+<!-- include tpl=head_lay -->
 <script type="text/javascript">
 function update_taxis(val,id)
 {
@@ -32,64 +32,62 @@ $(document).ready(function(){
 	});
 });
 </script>
-
-<div class="tips">
-	<div class="action"><a href="javascript:$.admin_module.field_create('{$id}');void(0);" title="添加字段">添加字段</a></div>
-	您当前的位置：
-	<a href="{url ctrl=module/}">模块管理</a>
-	&raquo; <span class="red">{$rs.title}</span>字段管理器
-</div>
-
-<!-- if $used_list -->
-<div class="list">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th class="id">ID</th>
-	<th class="lft">&nbsp;字段名</th>
-	<th class="lft">名称</th>
-	<th class="lft">备注</th>
-	<th>字段类型</th>
-	<th>表单</th>
-	<th>格式化</th>
-	<th class="lft">排序</th>
-	<th></th>
-</tr>
-<!-- loop from=$used_list key=$key value=$value id=$tmpid -->
-<tr>
-	<td class="center">{$value.id}</td>
-	<td>{$value.identifier}</td>
-	<td>{$value.title}</td>
-	<td>{$value.note}</td>
-	<td class="center">{$value.field_type_name}</td>
-	<td class="center">{$value.form_type_name}</td>
-	<td class="center">{$value.format_type_name}</td>
-	<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
-	<td>
-		<div class="button-group">
-			<input type="button" value="{lang编辑}" onclick="$.admin_module.field_edit('{$value.id}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="$.admin_module.field_del('{$value.id}','{$value.title}')" class="phpok-btn" />
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang列表}
+		<div class="fr">
+			<input type="button" value="{lang添加字段}" onclick="$.admin_module.field_create('{$id}')" class="layui-btn layui-btn-sm" />
 		</div>
-	</td>
-</tr>
-<!-- /loop -->
-</table>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+			<tr>
+				<th class="id">ID</th>
+				<th>{lang字段名}</th>
+				<th>{lang名称}</th>
+				<th>{lang备注}</th>
+				<th>{lang字段类型}</th>
+				<th>{lang表单}</th>
+				<th>{lang格式化}</th>
+				<th class="center">{lang排序}</th>
+				<th></th>
+			</tr>
+		</thead>
+		<!-- loop from=$used_list key=$key value=$value id=$tmpid -->
+		<tr>
+			<td class="center">{$value.id}</td>
+			<td>{$value.identifier}</td>
+			<td>{$value.title}</td>
+			<td>{$value.note}</td>
+			<td>{$value.field_type_name}</td>
+			<td>{$value.form_type_name}</td>
+			<td>{$value.format_type_name}</td>
+			<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang编辑}" onclick="$.admin_module.field_edit('{$value.id}')" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.admin_module.field_del('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm" />
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
 </div>
-<!-- /if -->
 <!-- if $fields_list -->
-<div class="tips">常见字段快速添加</div>
-<ul class="layout fields_quick_add">
+<ul class="layui-row layui-col-space15">
 	<!-- loop from=$fields_list key=$key value=$value id=$tmpid -->
-	<li>
-		<div class="left">
-			<div class="title">{$value.title}</div>
-			<div class="gray i">{$value.identifier}</div>
-		</div>
-		<div class="right">
-			<input type="button" value="{lang添加}" onclick="$.admin_module.field_add('{$id}','{$value.identifier}')" class="phpok-btn" />
-		</div>
-	</li>
+	<div class="layui-col-md3">
+      <div class="layui-card color-hover">
+        <div class="layui-card-body ">
+          {$value.title}<br />{$value.identifier}<span class=" layuiadmin-badge"> <input type="button" value="{lang添加}" onclick="$.admin_module.field_add('{$id}','{$value.identifier}')" class="layui-btn  layui-btn-sm" /></span> 
+        </div>
+      </div>
+    </div>
 	<!-- /loop -->
 </ul>
 <!-- /if -->
 
-<!-- include tpl=foot -->
+
+<!-- include tpl=foot_lay -->

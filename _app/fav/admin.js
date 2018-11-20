@@ -23,4 +23,10 @@
 			});
 		}
 	}
+	$(document).ready(function(){
+		layui.use(['laydate','form'],function () {
+	        layui.laydate.render({elem:'#startdate'});
+	        layui.laydate.render({elem:'#stopdate'});
+	    });
+	});
 })(jQuery);

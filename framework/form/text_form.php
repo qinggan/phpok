@@ -136,7 +136,7 @@ class text_form extends _init_auto
 				$rs['form_style'] = 'width:99%';
 			}
 		}
-		if($rs['form_btn'] || $rs['ext_quick_words']){
+		if(($rs['form_btn'] && $rs['form_btn'] != 'color') || $rs['ext_quick_words']){
 			if($rs['form_style'] && strpos($rs['form_style'],'width') === false){
 				$rs['form_style'] .= ";width:500px";
 			}

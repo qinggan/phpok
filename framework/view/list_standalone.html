@@ -1,73 +1,100 @@
-<!-- include tpl=head -->
+<!-- include tpl=head_lay -->
 <!-- include tpl=list_project_sublist -->
 
-<div class="tips">
-	{lang您当前的位置：}{lang内容管理}
-	<!-- loop from=$plist key=$key value=$value id=plist_id -->
-	&raquo; <a href="{url ctrl=list func=action id=$value.id/}" title="{$value.title}">{$value.nick_title ? $value.nick_title : $value.title}</a>
-	<!-- /loop -->
-	<!-- if $keywords -->
-	&raquo; <span class="red">{$keywords}</span>
-	<!-- /if -->
-	<!-- if $popedom.set || $session.admin_rs.if_system -->
-	<div class="action"><a href="javascript:$.phpok_list.set({$pid});void(0);">{lang编辑项目}</a></div>
-	<!-- /if -->
-	<!-- if $popedom.add -->
-	<div class="action"><a href="{url ctrl=list func=edit2 pid=$pid/}">{lang添加内容}</a></div>
-	<!-- /if -->
-	<span id="AP_ACTION_HTML" title="插件节点，后台内容列表管理栏面包屑"></span>
+<!-- if $rs.module && $search_list -->
+<div class="layui-card" id="search_html"{if !$keywords} style="display:none"{/if}>
+	<div class="layui-card-header">{lang搜索}</div>
+	<div class="layui-card-body">
+		<form method="post" class="layui-form" action="{url ctrl=list func=action id=$pid/}">
+		<div class="layui-form-item phpok-search">
+			<!-- loop from=$search_list key=$key value=$value id=$tmpid -->
+			<div class="layui-inline">
+				<label class="layui-form-label">{$value.title}</label>
+				<div class="layui-input-block">
+					<input type="text" name="keywords[{$value.identifier}]" class="layui-input"{if $keywords} value="{$keywords[$value.identifier]}"{/if} placeholder="{if $value.search == 1}{lang仅支持精确搜索}{else}{lang支持模糊搜索}{/if}" />
+				</div>
+			</div>
+			<!-- /loop -->
+			<div class="layui-inline">
+				<label class="layui-form-label">&nbsp;</label>
+				<div class="layui-input-block">
+					<input type="submit" value="{lang提交搜索}" class="layui-btn layui-btn-normal" />
+					<input type="button" value="{lang取消搜索}" onclick="$.phpok.go('{url ctrl=list func=action id=$rs.id/}')" class="layui-btn layui-btn-primary" />
+				</div>
+			</div>
+		</div>
+		</form>
+	</div>
 </div>
+<!-- /if -->
+
 
 <!-- if $rs.admin_note -->
-<div class="tips clearfix">{$rs.admin_note}</div>
-<!-- /if -->
-
-
-<!-- if $rslist -->
-<div class="list clearfix">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th>&nbsp;</th>
-	<!-- loop from=$layout key=$key value=$value -->
-	<th class="lft">{$value}</th>
-	<!-- /loop -->
-	<th width="120px">&nbsp;</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<tr id="list_{$value.id}">
-	<td class="center">{$value.id}</td>
-	
-	<!-- loop from=$layout key=$k value=$v -->
-		<!-- if is_array($value[$k])  -->
-			<!-- php:$c_list = $value[$k]['_admin'] -->
-			<!-- if $c_list.type == 'pic' -->
-			<td><img src="{$c_list.info}" width="28px" height="28px" border="0" class="hand" onclick="preview_attr('{$c_list.id}')" style="border:1px solid #dedede;padding:1px;" /></td>
-			<!-- else -->
-				<!-- if is_array($c_list.info) -->
-				<td>{echo implode(' / ',$c_list.info)}</td>
-				<!-- else -->
-				<td>{$c_list.info ? $c_list.info : '-'}</td>
-				<!-- /if -->
-			<!-- /if -->
-		<!-- else -->
-		<td>{$value[$k] ? $value[$k] : '-'}</td>
-		<!-- /if -->
-	<!-- /loop -->
-	<td>
-		<div class="button-group">
-			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=list func=edit2 id=$value.id pid=$pid/}')" class="phpok-btn" /><!-- /if -->
-			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_list.single_delete('{$pid}','{$value.id}')" class="phpok-btn" /><!-- /if -->
-		</div>
-	</td>
-</tr>
-<!-- /loop -->
-</table>
+<div class="layui-card">
+	<div class="layui-card-body">{$rs.admin_note}</div>
 </div>
 <!-- /if -->
-<!-- include tpl=pagelist -->
-<script type="text/javascript">
-$(document).ready(function(){
-	top.$.desktop.title('{$rs.title}');
-});
-</script>
-<!-- include tpl=foot -->
+
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang列表}
+		<span id="AP_ACTION_HTML"></span>
+		<div class="layui-btn-group fr">
+			<!-- if $popedom.add -->
+			<button class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.win('{$rs.title}_{lang添加内容}','{url ctrl=list func=edit2 pid=$pid/}')"><span class="layui-icon">&#xe654;</span>{lang添加内容}</button>
+			<!-- /if -->
+			<!-- if $rs.module && $search_list -->
+			<button class="layui-btn layui-btn-sm" onclick="$.admin.hide_show('search_html')"><span class="layui-icon">&#xe615;</span>{lang搜索}</button>
+			<!-- /if -->
+			<!-- if $popedom.set || $session.admin_rs.if_system -->
+			<button class="layui-btn layui-btn-sm" onclick="$.phpok_list.set({$pid})"><span class="layui-icon">&#xe642;</span>{lang编辑项目}</button>
+			<!-- /if -->
+		</div>
+	</div>
+	<!-- if $rslist -->
+	
+	
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>&nbsp;</th>
+			<!-- loop from=$layout key=$key value=$value -->
+			<th class="lft">{$value}</th>
+			<!-- /loop -->
+			<th width="120px">&nbsp;</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr id="list_{$value.id}">
+			<td class="center">{$value.id}</td>
+			<!-- loop from=$layout key=$k value=$v -->
+				<!-- if is_array($value[$k])  -->
+					<!-- php:$c_list = $value[$k]['_admin'] -->
+					<!-- if $c_list.type == 'pic' -->
+					<td><img src="{$c_list.info}" width="28px" height="28px" border="0" class="hand" onclick="preview_attr('{$c_list.id}')" style="border:1px solid #dedede;padding:1px;" /></td>
+					<!-- else -->
+						<!-- if is_array($c_list.info) -->
+						<td>{echo implode(' / ',$c_list.info)}</td>
+						<!-- else -->
+						<td>{$c_list.info ? $c_list.info : '-'}</td>
+						<!-- /if -->
+					<!-- /if -->
+				<!-- else -->
+				<td>{$value[$k] ? $value[$k] : '-'}</td>
+				<!-- /if -->
+			<!-- /loop -->
+			<td>
+				<div class="layui-btn-group">
+					<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.win('{$rs.title}_{lang编辑}_#{$value.id}','{url ctrl=list func=edit2 id=$value.id pid=$pid/}')" class="layui-btn layui-btn-sm" /><!-- /if -->
+					<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_list.single_delete('{$pid}','{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" /><!-- /if -->
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<div align="center"><!-- include tpl=pagelist --></div>
+	</div>
+	<!-- /if -->
+</div>
+<!-- include tpl=foot_lay -->

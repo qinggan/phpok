@@ -64,6 +64,7 @@ function update_func(val)
 				html += '<option value="'+i+'">'+lst[i]+'</option>';
 			}
 			$("#func_select").html(html);
+            form.render('select');
 		}
 	})
 }

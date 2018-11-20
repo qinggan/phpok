@@ -1,26 +1,27 @@
 <!-- if $pagelist -->
-<div class="pagelist">
-	<ul>
+<div class="layui-box layui-laypage layui-laypage-default">
 		<!-- loop from=$pagelist key=$key value=$value id=$idx -->
 			<!-- if $value.type != 'opt' -->
-			<li><a{if $value.url} href="{$value.url}"{/if} {if $value.status} class="current"{/if}>{$value.title}</a></li>
+
+				<!-- if $value.type == 'add' -->
+				<span>{$value.title}</span>
+				<!-- else -->
+				<a{if $value.url} href="{$value.url}"{/if} {if $value.status} class="current"{/if}>{$value.title}</a>
+				<!-- /if -->
+
 			<!-- /if -->
 			<!-- if $value.type == 'opt' -->
-			<li>
 				<select onchange="$.phpok.go('{$value.url}'+this.value)">
 					<!-- loop from=$value.title key=$k value=$v id=$idxx -->
 					<option value="{$v.value}"{if $v.status} selected{/if}>{$v.title}</option>
 					<!-- /loop -->
 				</select>
-			</li>
 			<!-- /if -->
 		<!-- /loop -->
 		<!-- if $total_page > 5 -->
 		
-		
-		<li><input type="number" name="go_to_page" id="go_to_page" value="{func G pageid}" class="short" min="0" max="{$total_page}"  /></li>
-		<li><input type="button" value="GO" onclick="go_to_page_action()" /></li>
+		<input type="number" name="go_to_page" id="go_to_page" value="{func G pageid}" class="short" min="0" max="{$total_page}"  />
+		<input type="button" value="GO" onclick="go_to_page_action()" />
 		<!-- /if -->
-	</ul>
 </div>
 <!-- /if -->

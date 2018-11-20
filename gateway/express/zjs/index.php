@@ -34,11 +34,11 @@ curl_setopt($ch, CURLOPT_REFERER, "http://www.zjs.com.cn/"); //构造来路
 // 3. 执行并获取HTML文档内容
 $output = curl_exec($ch);
 if(!$output){
-	$this->json('远程获取数据失败');
+	return array('content'=>P_Lang('远程获取数据失败'));
 }
 $curl_info = curl_getinfo($ch);
 if($curl_info['http_code'] != '200'){
-	$this->json('远程获取数据失败');
+	return array('content'=>P_Lang('远程获取数据失败'));
 }
 curl_close($ch);
 $output=str_replace(array('&lt;', '&gt;'), array('<','>'),$output);
@@ -46,7 +46,7 @@ $xmlinfo = $this->lib('xml')->read(trim($output),false);
 if(!$xmlinfo){
 	$output=substr($output,79);
 	$output=str_replace('</string>','',$output);
-	$this->json($output);
+	return array('content'=>$output);
 }
 if($xmlinfo['BatchQueryResponse']){
 	$xmlinfo = $xmlinfo['BatchQueryResponse'];

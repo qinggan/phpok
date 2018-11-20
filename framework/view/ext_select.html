@@ -1,16 +1,24 @@
-<select id="_tmp_select_add" style="padding:3px">
-	<option value="">请选择扩展字段…</option>
-	<!-- loop from=$rslist key=$key value=$value -->
-	<option value="{$value.identifier}">{$value.title} - {$value.identifier}</option>
-	<!-- /loop -->
-</select>
-<input type="button" value="添加" onclick="_update_select_add()" class="button2" />
+<div class="layui-row layui-col-space10">
+	<div class="layui-col-md6">
+		<select id="_tmp_select_add" style="padding:3px">
+			<option value="">请选择扩展字段…</option>
+			<!-- loop from=$rslist key=$key value=$value -->
+			<option value="{$value.identifier}">{$value.title} - {$value.identifier}</option>
+			<!-- /loop -->
+		</select>
+	</div>
+	<div class="layui-col-md6">
+		<div class="layui-btn-group">
+			<input type="button" value="{lang添加}" onclick="_update_select_add()" class="layui-btn" />
+			<input type="button" value="{lang标准创建扩展字段}" onclick="ext_add('{$module}')" class="layui-btn" />
+		</div>
+	</div>
+</div>
 <script type="text/javascript">
 function _update_select_add()
 {
 	var val = $("#_tmp_select_add").val();
-	if(!val)
-	{
+	if(!val){
 		$.dialog.alert('请选择要添加的扩展');
 		return false;
 	}

@@ -71,9 +71,7 @@ class login_control extends phpok_control
 		if(!password_check($pass,$user_rs["pass"])){
 			$this->error(P_Lang('登录密码不正确'));
 		}
-		$this->session->assign('user_id',$user_rs['id']);
-		$this->session->assign('user_gid',$user_rs['group_id']);
-		$this->session->assign('user_name',$user_rs['user']);
+		$this->model('user')->update_session($user_rs['id']);
 		$this->model('wealth')->login($user_rs['id'],P_Lang('会员登录'));
 		$this->success($this->session->sessid());
 	}
@@ -108,9 +106,9 @@ class login_control extends phpok_control
 			if(!$this->lib('common')->email_check($email)){
 				$this->error(P_Lang('Email地址不符合要求'));
 			}
-			$checkcode = $this->session->val('vcode_email');
+			
+			$this->model('vcode')->type('email');
 			$user_rs = $this->model('user')->get_one($email,'email',false,false);
-			$expire_time = 600;
 		}else{
 			$mobile = $this->get('mobile');
 			if(!$mobile){
@@ -119,9 +117,8 @@ class login_control extends phpok_control
 			if(!$this->lib('common')->tel_check($mobile,'mobile')){
 				$this->error(P_Lang('手机号不符合格式要求'));
 			}
-			$checkcode = $this->session->val('vcode_sms');
+			$this->model('vcode')->type('sms');
 			$user_rs = $this->model('user')->get_one($mobile,'mobile',false,false);
-			$expire_time = 1800;
 		}
 		if(!$user_rs){
 			$this->error(P_Lang('用户信息不存在'));
@@ -132,19 +129,13 @@ class login_control extends phpok_control
 		if($user_rs['status'] == '2'){
 			$this->error(P_Lang('会员账号被管理员锁定，不能使用取回密码功能，请联系管理员'));
 		}
-		if(!$checkcode){
-			$this->error(P_Lang('请先获取验证码'));
-		}
 		$code = $this->get('_chkcode');
 		if(!$code){
 			$this->error(P_Lang('验证码不能为空'));
 		}
-		if($checkcode != $code){
-			$this->error(P_Lang('验证码填写不正确'));
-		}
-		$time = $this->session->val('vcode_time');
-		if(!$time || ($this->time - $time) > $expire_time){
-			$this->error(P_Lang('验证码已失败，请重新获取'));
+		$data = $this->model('vcode')->check($code);
+		if(!$data){
+			$this->error($this->model('vcode')->error_info());
 		}
 		$newpass = $this->get('newpass');
 		if(!$newpass){
@@ -159,8 +150,6 @@ class login_control extends phpok_control
 		}
 		$pass = password_create($newpass);
 		$this->model('user')->update_password($pass,$user_rs['id']);
-		$this->session->unassign('vcode_'.$type_id);
-		$this->session->unassign('vcode_time');
 		$this->success();
 	}
 
@@ -179,7 +168,7 @@ class login_control extends phpok_control
 	}
 
 	/**
-	 * 短信验证码登录，此项登录不需要图形再输入图形验证码，验证码有效期时间是10分钟，超过10分钟验证码会失效
+	 * 短信验证码登录，此项登录不需要图形再输入图形验证码，验证码有效期时间是10分钟
 	 * @参数 type 执行方式，当为getcode表示取得验证码，其他为登录验证
 	 * @参数 mobile 手机号
 	 * @参数 _chkcode 验证码（type不为空时有效）
@@ -202,31 +191,14 @@ class login_control extends phpok_control
 		if(!$code){
 			$this->error(P_Lang('验证码不能为空'));
 		}
-		$checkcode = $this->session->val('vcode_sms');
-		if(!$checkcode){
-			$checkcode = $rs['code'];
+		$this->model('vcode')->type('sms');
+		$data = $this->model('vcode')->check($code);
+		if(!$data){
+			$this->error($this->model('vcode')->error_info());
 		}
-		if(!$checkcode){
-			$this->error(P_Lang('验证码信息不存在，请重新获取'));
-		}
-		$time = $this->session->val('vcode_time');
-		if($checkcode != $code){
-			$this->error(P_Lang('验证码填写不正确'));
-		}
-		$codetime = $time + 600;
-		if($codetime < $this->time){
-			$this->session->unassign('vcode_sms');
-			$this->session->unassign('vcode_time');
-			$this->error(P_Lang('验证码已过期，请重新获取'));
-		}
-		$this->model('user')->update_code('',$rs['id']);
-		$this->session->assign('user_id',$rs['id']);
-		$this->session->assign('user_gid',$rs['group_id']);
-		$this->session->assign('user_name',$rs['user']);
+		$this->model('user')->update_session($rs['id']);
 		$this->model('wealth')->login($rs['id'],P_Lang('会员登录'));
-		$this->session->unassign('vcode_sms');
-		$this->session->unassign('vcode_time');
-		$this->success();
+		$this->success($this->session->sessid());
 	}
 
 	/**
@@ -253,25 +225,13 @@ class login_control extends phpok_control
 		if(!$code){
 			$this->error(P_Lang('验证码不能为空'));
 		}
-		$vcode = $this->session->val('vcode_email');
-		$time = $this->session->val('vcode_time');
-		if(!$vcode){
-			$this->error(P_Lang('验证码不存在，请重新获取'));
+		$this->model('vcode')->type('email');
+		$data = $this->model('vcode')->check($code);
+		if(!$data){
+			$this->error($this->model('vcode')->error_info());
 		}
-		if($vcode != $code){
-			$this->error(P_Lang('验证码填写不正确'));
-		}
-		$codetime = $time + 1800;
-		if($codetime < $this->time){
-			$this->model('user')->update_code('',$rs['id']);
-			$this->error(P_Lang('验证码已过期，请重新获取'));
-		}
-		$this->session->assign('user_id',$rs['id']);
-		$this->session->assign('user_gid',$rs['group_id']);
-		$this->session->assign('user_name',$rs['user']);
+		$this->model('user')->update_session($rs['id']);
 		$this->model('wealth')->login($rs['id'],P_Lang('会员登录'));
-		$this->session->unassign('vcode_email');
-		$this->session->unassign('vcode_time');
 		$this->success();
 	}
 }

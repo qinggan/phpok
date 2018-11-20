@@ -11,6 +11,36 @@
 	$.admin_project = {
 
 		/**
+		 * 项目编辑保存
+		**/
+		save:function(id)
+		{
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
+			$("#"+id).ajaxSubmit({
+				'url':get_url('project','save'),
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					if(rs.status){
+						var tip = $("#id").val() ? p_lang('项目信息编辑成功') : p_lang('项目信息创建成功');
+						$.dialog.tips(tip,function(){
+							$.admin.reload(get_url('project'));
+							$.admin.close();
+						}).lock();
+						return false;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
+			return false;
+		},
+
+		/**
 		 * 模块选择时执行触发
 		**/
 		module_change:function(obj)
@@ -22,9 +52,12 @@
 				return true;
 			}
 			$("#tmp_orderby_btn,#tmp_orderby_btn2").html('');
+			//清除字段
+			//$("#tmp_fields_btn").html('');
 			var c = '';
+			var f = '';
 			if(mtype == 1){
-				c += '<input type="button" value="ID" onclick="phpok_admin_orderby(\'orderby2\',\'id\')" class="phpok-btn" />';
+				c += '<input type="button" value="ID" onclick="phpok_admin_orderby(\'orderby2\',\'id\')" class="layui-btn layui-btn-sm" />';
 			}
 			$.phpok.json(get_url('project','mfields','id='+val),function(rs){
 				if(!rs.status){
@@ -34,12 +67,20 @@
 				if(rs.info){
 					var list = rs.info;
 					for(var i in list){
-						if(mtype == 1){
-							c += '<input type="button" value="'+list[i].title+'" onclick="phpok_admin_orderby(\'orderby2\',\''+list[i].identifier+'\')" class="phpok-btn"/>';
-						}else{
-							c += '<input type="button" value="'+list[i].title+'" onclick="phpok_admin_orderby(\'orderby\',\'ext.'+list[i].identifier+'\')" class="phpok-btn"/>';
+						if(list[i].type == 'varchar'){
+							if(mtype == 1){
+								c += '<input type="button" value="'+list[i].title+'" onclick="phpok_admin_orderby(\'orderby2\',\''+list[i].identifier+'\')" class="layui-btn layui-btn-sm"/>';
+							}else{
+								c += '<input type="button" value="'+list[i].title+'" onclick="phpok_admin_orderby(\'orderby\',\'ext.'+list[i].identifier+'\')" class="layui-btn layui-btn-sm"/>';
+							}
 						}
+						f += '<input type="button" value="'+list[i].title+'" onclick="$.admin_project.fields_add(\''+list[i].identifier+'\')" class="layui-btn layui-btn-sm"/>';
 					}
+				}
+				if(f && f != ''){
+					f += '<input type="button" value="'+p_lang('全部')+'" class="layui-btn layui-btn-sm layui-btn-normal" onclick="$.admin_project.fields_add(\'*\')" />';
+					f += '<input type="button" value="'+p_lang('不读扩展')+'" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.admin_project.fields_add(\'id\')" />';
+					$("#tmp_fields_btn").html(f).show();
 				}
 				if(mtype == 1){
 					$("#tmp_orderby_btn2").html(c);
@@ -50,6 +91,25 @@
 				}
 				return true;
 			});
+		},
+		fields_add:function(val)
+		{
+			if(val == '*' || val == 'id'){
+				$("#list_fields").val(val);
+				return true;
+			}
+			var tmp = $("#list_fields").val();
+			if(tmp == '*' || tmp == 'id'){
+				$("#list_fields").val(val);
+				return true;
+			}
+			var n = tmp;
+			if(tmp){
+				n += ',';
+			}
+			n += val;
+			$("#list_fields").val(n);
+			return true;
 		},
 		del:function(id)
 		{
@@ -107,8 +167,33 @@
 				$.dialog.alert(p_lang('自定义扩展字段操作只能选择一个'));
 				return false;
 			}
-			$.phpok.go(get_url('project','content','id='+id));
+			$.win(p_lang('扩展字段')+"_"+$("#id_"+id).attr("data-title"),get_url('project','content','id='+id));
 			return true;
+		},
+		extinfo_save:function(id)
+		{
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
+			$("#"+id).ajaxSubmit({
+				'url':get_url('project','content_save'),
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					if(rs.status){
+						$.dialog.tips(p_lang('数据保存成功'),function(){
+							$.admin.reload(get_url('project'));
+							$.admin.close();
+						}).lock();
+						return false;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
+			return false;
 		},
 		export:function()
 		{
@@ -215,7 +300,29 @@
 				$.dialog.alert(data.info);
 				return false;
 			})
+		},
+		ext_help:function()
+		{
+			top.$.dialog({
+				'title':p_lang('扩展项帮助说明'),
+				'content':document.getElementById('ext_help'),
+				'lock':true,
+				'width':'700px',
+				'height':'500px',
+				'padding':'0 10px'
+			})
 		}
-	}
+	};
+
+	$(document).ready(function(){
+		if($("#_quick_insert").length>0){
+			var module = $("#_quick_insert").attr("data-module");
+			var url = get_url('ext','select','type=project&module='+$.str.encode(module));
+			$.phpok.ajax(url,function(rs){
+				$("#_quick_insert").html(rs);
+				layui.form.render();
+			});
+		}
+	});
 })(jQuery);
 

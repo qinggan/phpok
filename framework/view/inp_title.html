@@ -27,7 +27,7 @@ function show_list()
 			c += '<tr>';
 			c += '<td>['+lst[i]['id']+']'+lst[i]['title']+'</td>';
 			if(multi == 1){
-				c += '<td class="center"><input type="button" value="删除" onclick="delete_input(\''+lst[i]['id']+'\')" class="phpok-btn" /></td>'
+				c += '<td class="center"><input type="button" value="删除" onclick="delete_input(\''+lst[i]['id']+'\')" class="layui-btn" /></td>'
 			}
 			c += '</tr>';
 			var t = "#list_"+lst[i]['id'];
@@ -109,7 +109,7 @@ function check_search()
 	<form method="post" action="{$formurl}" onsubmit="return check_search()">
 		搜索关键字：
 		<input type="text" name="keywords" value="{$keywords}" />
-		<input type="submit" value="搜索" class="phpok-btn" />
+		<input type="submit" value="搜索" class="layui-btn" />
 	</form>
 </div>
 <div id="selected_list" class="list hide"></div>
@@ -124,9 +124,9 @@ function check_search()
 	<td>[{$value.id}]{$value.title}</td>
 	<td class="center">
 		<!-- if $multi -->
-		<input type="button" value="添加" onclick="add_input('{$value.id}')" class="phpok-btn" />
+		<input type="button" value="添加" onclick="add_input('{$value.id}')" class="layui-btn" />
 		<!-- else -->
-		<input type="button" value="选择" onclick="single_input('{$value.id}')" class="phpok-btn" />
+		<input type="button" value="选择" onclick="single_input('{$value.id}')" class="layui-btn" />
 		<!-- /if -->
 	</td>
 </tr>

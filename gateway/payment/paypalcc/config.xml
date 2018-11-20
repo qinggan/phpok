@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>Payapl信用卡支付</title>
+	<note>基于Paypal的信用卡快捷支付方式</note>
+	<code>
+		<api_username>
+			<title><![CDATA[API账号]]></title>
+			<note>使用快捷支付需要设置API账号</note>
+			<type>text</type>
+			
+		</api_username>
+		<api_password>
+			<title><![CDATA[API密码]]></title>
+			<note>使用快捷支付需要设置API密码</note>
+			<type>text</type>
+		</api_password>
+		<api_signature>
+			<title><![CDATA[API签名]]></title>
+			<note>使用快捷支付需要设置API签名</note>
+			<type>text</type>
+		</api_signature>
+		<act_type>
+			<title>运行模式</title>
+			<note><![CDATA[本地测试时请选择测试环境，正式运行后请选择生产环境]]></note>
+			<type>radio</type>
+			<option>
+				<demo>测试环境</demo>
+				<product>生产环境</product>
+			</option>
+			<default>product</default>
+		</act_type>
+	</code>
+</root>

@@ -224,36 +224,44 @@ function phpok_ip()
 //网址，下划线分割字符法
 function phpok_url($rs)
 {
-	if(!$rs) return false;
-	if(is_string($rs)) parse_str($rs,$rs);
+	if(!$rs){
+		return false;
+	}
+	if(is_string($rs)){
+		parse_str($rs,$rs);
+	}
 	$ctrl = $func = $id = $appid = "";
-	if($rs["ctrl"]) $ctrl = $rs["ctrl"];
-	if($rs["func"]) $func = $rs["func"];
-	if($rs["id"]) $id = $rs["id"];
-	if($rs['appid']) $appid = $rs['appid'];
-	if(!$ctrl && !$id) return false;
-	if(!$ctrl)
-	{
+	if($rs["ctrl"]){
+		$ctrl = $rs["ctrl"];
+	}
+	if($rs["func"]){
+		$func = $rs["func"];
+	}
+	if($rs["id"]){
+		$id = $rs["id"];
+	}
+	if($rs['appid']){
+		$appid = $rs['appid'];
+	}
+	if(!$ctrl && !$id){
+		return false;
+	}
+	if(!$ctrl){
 		$ctrl = $id;
 		$id = "";
 	}
 	$tmp = array();
-	foreach($rs AS $key=>$value)
-	{
-		if(!in_array($key,array("ctrl","id","func",'appid')))
-		{
-			if($key == '_nocache' && $value != 'false' && $value != '0')
-			{
-				$tmp[] = '_noCache=0.'.$GLOBALS['app']->time.rand(1000,9999);
-			}
-			else
-			{
-				$tmp[] = $key."=".rawurlencode($value);
-			}
+	foreach($rs as $key=>$value){
+		if(in_array($key,array("ctrl","id","func",'appid'))){
+			continue;
+		}
+		if($key == '_nocache' && $value && $value != 'false' && $value != '0'){
+			$tmp[] = '_noCache=0.'.$GLOBALS['app']->time.rand(1000,9999);
+		}else{
+			$tmp[] = $key."=".rawurlencode($value);
 		}
 	}
-	if($ctrl && $id && $id != $ctrl)
-	{
+	if($ctrl && $id && $id != $ctrl){
 		$tmp[] = "id=".rawurlencode($rs["id"]);
 	}
 	$string = ($tmp && count($tmp)>0) ? implode("&",$tmp) : "";

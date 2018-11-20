@@ -40,6 +40,9 @@ p{word-wrap:break-word}
 .clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
 .clearfix{*+height:1%;}
 
+/* 购物车 */
+#head_cart_num{display:inline-block;min-width:16px;line-height:16px;border-radius:50%;background-color:red;color:#fff;text-align: center;font-size:0.7em;}
+
 
 /* 布局页面 */
 .main{margin:0 auto;width:1200px;position:relative;}
@@ -58,8 +61,6 @@ div.pfw h3{line-height:30px;font-size:1.2em;font-weight:500;margin:0;padding:0 0
 div.pfw h3 small{font-size:12px;color:#fff;font-weight:normal;padding-left:4px;font-style:italic;}
 div.pfw h3 .more{display:block;float:right;height:30px;line-height:30px;padding-right:8px;font-weight:normal;font-size:12px;background:url('../images/arrow-right.png') right center no-repeat;margin-right:5px;color:#fff;}
 div.pfw .content{margin:5px;font-size:1em;line-height: 1.5em;}
-div.pfw .adm_reply {margin:4px 0 0 0;font-size:1em;line-height:180%;border-top:1px solid #ccc;padding:5px 5px 5px 88px;position:relative;background:#fafafa;}
-div.pfw .adm_reply .adminer{position:absolute;left:5px;color:darkred;}
 
 	/* 文章列表 */
 	div.pfw ul.artlist{list-style:none;margin:0;padding:0 0 5px 0;}
@@ -217,3 +218,9 @@ div.attr.selected{border:1px solid red;}
 .address .pca:after{clear:both;content:'.';display: block;visibility: hidden;height:0;line-height:0;font-size:0;}
 .address select{width:30%;float:left;}
 .address select + select{margin-left:3px;}
+
+
+/* 留言回复 */
+.adm_reply {margin:4px 0 0 0;font-size:1em;line-height:180%;border-top:1px solid #ccc;padding:5px;position:relative;background:#fafafa;}
+.adm_reply .adminer{color:darkred;}
+.adm_reply p{margin:5px 0;text-indent:2em;}

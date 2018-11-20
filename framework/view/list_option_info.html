@@ -1,19 +1,20 @@
 <div class="list">
-<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<table class="layui-table" lay-size="sm">
+<thead>
 <tr>
-	<th class="center" style="min-width:100px;">{$rs.title}</th>
-	<th colspan="4" class="center" style="background:#fff;min-width:420px;">
-		<select id="attr_{$rs.id}_opt" style="width:90%" onchange="$.admin_list_edit.attr_option_quickadd('{$rs.id}',this.value)">
+	<th class="center" style="min-width:120px;">{$rs.title}</th>
+	<th colspan="4" class="center">
+		<select id="attr_{$rs.id}_opt" lay-ignore style="width:90%" onchange="$.admin_list_edit.attr_option_quickadd('{$rs.id}',this.value)">
 			<option value="">{lang请选择…}</option>
 			<!-- loop from=$optlist key=$key value=$value id=$tmpid -->
 			<option value="{$value.id}">{$value.title}</option>
 			<!-- /loop -->
 		</select>
 	</th>
-	<th style="background:#fff;text-align:center;">
-		<div class="button-group" style="margin-top:5px;">
-			<input type="button" value="{lang添加}" onclick="$.admin_list_edit.attr_option_add('{$rs.id}')" class="phpok-btn" />
-			<input type="button" value="{lang删除属性}" onclick="$.admin_list_edit.attr_remove('{$rs.id}')" class="phpok-btn" />
+	<th class="center" style="min-width:120px;">
+		<div class="layui-btn-group">
+			<input type="button" value="{lang添加}" onclick="$.admin_list_edit.attr_option_add('{$rs.id}')" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang删除}" onclick="$.admin_list_edit.attr_remove('{$rs.id}')" class="layui-btn layui-btn-sm" />
 		</div>
 	</th>
 </tr>
@@ -25,18 +26,21 @@
 	<th class="center">{lang排序}</th>
 	<th class="center">{lang操作}</th>
 </tr>
+</thead>
+<tbody>
 <!-- loop from=$rslist key=$key value=$value id=$idx -->
 <tr name="attr_{$rs.id}" id="attr_{$rs.id}_{$value.vid}" data-name="{$value.title}">
 	<td class="center">
 		<input type="hidden" name="_attr_{$rs.id}[]" value="{$value.vid}" />
 		{$value.title}
 	</td>
-	<td class="center"><input type="text" name="_attr_weight_{$rs.id}[{$value.vid}]" value="{$value.weight}" class="short center" /></td>
-	<td class="center"><input type="text" name="_attr_volume_{$rs.id}[{$value.vid}]" value="{$value.volume}" class="short center" /></td>
-	<td class="center"><input type="text" name="_attr_price_{$rs.id}[{$value.vid}]" value="{func round $value.price 2}" class="center" style="width:100px" /></td>
-	<td class="center"><input type="text" name="_attr_taxis_{$rs.id}[{$value.vid}]" value="{$value.taxis}" class="short center" /></td>
-	<td class="center"><input type="button" value="{lang删除}" onclick="$.admin_list_edit.attr_option_delete('{$rs.id}','{$value.vid}')" class="phpok-btn" /></td>
+	<td class="center"><input type="text" name="_attr_weight_{$rs.id}[{$value.vid}]" value="{$value.weight}" class="layui-input" /></td>
+	<td class="center"><input type="text" name="_attr_volume_{$rs.id}[{$value.vid}]" value="{$value.volume}" class="layui-input" /></td>
+	<td class="center"><input type="text" name="_attr_price_{$rs.id}[{$value.vid}]" value="{func round $value.price 2}" class="layui-input" /></td>
+	<td class="center"><input type="text" name="_attr_taxis_{$rs.id}[{$value.vid}]" value="{$value.taxis}" class="layui-input" /></td>
+	<td class="center"><input type="button" value="{lang删除}" onclick="$.admin_list_edit.attr_option_delete('{$rs.id}','{$value.vid}')" class="layui-btn layui-btn-sm" /></td>
 </tr>
 <!-- /loop -->
+</tbody>
 </table>
 </div>

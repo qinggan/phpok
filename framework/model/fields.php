@@ -74,7 +74,7 @@ class fields_model_base extends phpok_model
 		if(is_string($words)){
 			$words = explode(",",$words);
 		}
-		$rslist = $this->get_all();
+		$rslist = $this->_all();
 		if(!$rslist){
 			return false;
 		}
@@ -86,6 +86,21 @@ class fields_model_base extends phpok_model
 		if(!$rslist){
 			return false;
 		}
+		return $rslist;
+	}
+
+	private function _all()
+	{
+		$flist = $this->lib('file')->ls($this->dir_data.'xml/fields/');
+		if(!$flist){
+			return false;
+		}
+		$rslist = array();
+		foreach($flist as $key=>$value){
+			$rs = $this->lib('xml')->read($value);
+			$rslist[$rs['identifier']] = $rs;
+		}
+		ksort($rslist);
 		return $rslist;
 	}
 

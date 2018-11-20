@@ -7,6 +7,36 @@
 <!-- plugin foot -->
 <script type="text/javascript">
 $(document).ready(function(){
+	var r_menu_in_copy = [{
+		'text':p_lang('复制'),
+		'func':function(){
+			var info = $("#smart-phpok-copy-html").val();
+			if(window.clipboardData && info != ''){
+				window.clipboardData.setData("Text", info);
+				$.dialog.tips(p_lang('文本复制成功，请按 CTRL+V 粘贴'));
+				return true;
+			}
+			if(document.execCommand && info != ''){
+				$("#smart-phpok-copy-html").focus().select();
+				document.execCommand("copy",false,null);
+				$.dialog.tips(p_lang('文本复制成功，请按 CTRL+V 粘贴'));
+				return true;
+			}
+			$.dialog.tips(p_lang('复制失败，请按 CTRL+C 进行复制操作'));
+			return true;
+		}
+	},{
+		'text':p_lang('刷新'),
+		'func':function(){
+			$.phpok.reload();
+		}
+	}];
+	var r_menu_not_copy = [{
+		'text':p_lang('刷新'),
+		'func':function(){
+			$.phpok.reload();
+		}
+	}];
 	var r_menu = [[{
 		'text':'{lang刷新}',
 		'func':function(){
@@ -14,16 +44,19 @@ $(document).ready(function(){
 		}
 	}],[{
 		'text':"{lang清空缓存}",
-		'func': function() {top.phpok_admin_clear();}
+		'func': function() {
+			top.$.admin_index.clear();
+		}
 	},{
 		'text':'{lang修改我的信息}',
-		'func':function(){top.phpok_admin_control();}
+		'func':function(){
+			top.$.admin_index.me();
+		}
 	},{
 		'text':'{lang访问网站首页}',
 		'func':function(){
 			var url = "{$sys.www_file}?siteId={$session.admin_site_id}";
-			url = $.phpok.nocache(url);
-			window.open(url);
+			$.phpok.open(url,false);
 		}
 	}],[{
 		'text':'{lang网页属性}',
@@ -43,42 +76,53 @@ $(document).ready(function(){
 			});
 		}
 	},{
-		'text': "{lang新窗口打开}",
+		'text': "{lang新标签打开}",
 		'func': function() {
 			var url = window.location.href;
-			//去除随机数
-			url = url.replace(/\_noCache=[0-9\.]+/g,'');
-			if(url.substr(-1) == '&' || url.substr(-1) == '?'){
-				url = url.substr(0,url.length-1);
+			url = $.phpok.nocache(url);
+			var title = top.$(".layui-this").find("span").text();
+			if(!title){
+				title = $("title").text();
+				if(!title){
+					title = "#";
+				}
 			}
-			window.open(url);
-		}    
-	},{
-		'text': "{lang显示桌面}",
-		'func': function() {top.$.desktop.tohome();}
+			$.win(title,url);
+		}
 	}],[{
 		'text': "{lang帮助说明}",
 		'func': function() {
-			var url = window.location.href;
-			//去除随机数
-			url = url.replace(/\_noCache=[0-9\.]+/g,'');
-			if(url.substr(-1) == '&' || url.substr(-1) == '?'){
-				url = url.substr(0,url.length-1);
-			}
-			var tip = '{lang网址：}'+url+'<br /><div style="text-indent:36px"><a href="'+url+'" target="_blank" class="red">{lang新窗口打开}</a></div>';
-			tip += '<div style="text-indent:36px">{lang复制请按快捷键：CTRL+C，粘贴请使用：CTRL+V}</div>';
-			top.$.dialog({
-				'title':'{lang帮助说明}',
-				'content':tip,
-				'lock':true,
-				'drag':false,
-				'fixed':true
-			});
+			top.$("a[layadmin-event=about]").click();
 		}
 	}]];
 	$(window).smartMenu(r_menu,{
 		'name':'smart',
-		'textLimit':8
+		'textLimit':8,
+		'beforeShow':function(){
+			$.smartMenu.remove();
+			r_menu[0] = r_menu_not_copy;
+			if(!document.queryCommandSupported('copy')){
+				return true;
+			}
+			var info = window.getSelection ?  (window.getSelection()).toString() : (document.selection.createRange ? document.selection.createRange().text : '');
+			if(info == '' && $("input[type=text]:focus").length>0){
+				obj = $("input[type=text]:focus")[0];
+				info = obj.value.substring(obj.selectionStart,obj.selectionEnd);
+			}
+			if(info == '' && $("textarea:focus").length>0){
+				obj = $("textarea:focus")[0];
+				info = obj.value.substring(obj.selectionStart,obj.selectionEnd);
+			}
+			if(info){
+				info = info.replace(/<.+>/g,'');
+			}
+			if(info != ''){
+				$("#smart-phpok-copy-html").remove();
+				var html = '<input type="text" id="smart-phpok-copy-html" value="'+info+'" style="position:absolute;left:-9999px;top:-9999px;" />'
+				$('body').append(html);
+				r_menu[0] = r_menu_in_copy;
+			}
+		}
 	});
 });
 </script>

@@ -30,6 +30,11 @@
 		},
 		setting_save:function()
 		{
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
 			var opener = $.dialog.opener;
 			var url = get_url('appsys','setting_save');
 			$("#post_save").ajaxSubmit({

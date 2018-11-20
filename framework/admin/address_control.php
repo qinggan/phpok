@@ -37,9 +37,16 @@ class address_control extends phpok_control
 		}else{
 			$pageurl = $this->url('address','open','tpl='.$tpl);
 		}
-		$type = $this->get('type');
+		
 		$keywords = $this->get('keywords');
-		$this->_index($pageurl,$type,$keywords);
+		if($keywords && !is_array($keywords)){
+			$type = $this->get('type');
+			$keywords = array($type=>$keywords);
+		}
+		$status = $this->_index($pageurl,$keywords);
+		if(!$status){
+			$this->tip(P_Lang('该会员还没有设置地址信息'));
+		}
 		$this->view($tpl);
 	}
 
@@ -56,7 +63,13 @@ class address_control extends phpok_control
 		$pageurl = $this->url('address');
 		$type = $this->get('type');
 		$keywords = $this->get('keywords');
-		$this->_index($pageurl,$type,$keywords);
+		if(!$keywords && !is_array($keywords)){
+			$type = $this->get('type');
+			if($type){
+				$keywords = array($type=>$keywords);
+			}
+		}
+		$this->_index($pageurl,$keywords);
 		$this->view("address_list");
 	}
 
@@ -73,40 +86,65 @@ class address_control extends phpok_control
 		$this->success($rs);
 	}
 
-	private function _index($pageurl='',$type='',$keywords='')
+	private function _index($pageurl='',$keywords='')
 	{
-		$condition = "";
-		if($type && $keywords){
-			$this->assign('type',$type);
+		$condition = "1=1";
+		if($keywords && is_array($keywords)){
 			$this->assign('keywords',$keywords);
-			$condition = "a.".$type." LIKE '%".$keywords."%'";
-			if($type == 'user'){
-				$condition = "u.user LIKE '%".$keywords."%'";
-			}elseif($type == 'user_id'){
-				$condition = "a.user_id='".$keywords."'";
+			if($keywords['user']){
+				$tmplist = array("u.user='".$keywords['user']."'");
+				$tmplist[] = "u.email='".$keywords['user']."'";
+				$tmplist[] = "u.mobile='".$keywords['user']."'";
+				$condition .= " AND (".implode(" OR ",$tmplist).")";
+				$pageurl .= "&keywords[user]=".rawurlencode($keywords['user']);
 			}
-			$pageurl .= "&type=".$type."&keywords=".rawurlencode($keywords);
-			$this->assign('pageurl',$pageurl);
+			if($keywords['user_id']){
+				$condition .= " AND a.user_id='".$keywords['user_id']."'";
+				$pageurl .= "&keywords[user_id]=".rawurlencode($keywords['user_id']);
+			}
+			if($keywords['address']){
+				$tmplist = array("a.country LIKE '%".$keywords['address']."%'");
+				$tmplist[] = "a.province LIKE '%".$keywords['address']."%'";
+				$tmplist[] = "a.city LIKE '%".$keywords['address']."%'";
+				$tmplist[] = "a.county LIKE '%".$keywords['address']."%'";
+				$tmplist[] = "a.address LIKE '%".$keywords['address']."%'";
+				$condition .= " AND (".implode(" OR ",$tmplist).")";
+				$pageurl .= "&keywords[address]=".rawurlencode($keywords['address']);
+			}
+			if($keywords['contact']){
+				$tmplist = array("a.email LIKE '%".$keywords['contact']."%'");
+				$tmplist[] = "a.tel LIKE '%".$keywords['contact']."%'";
+				$tmplist[] = "a.mobile LIKE '%".$keywords['contact']."%'";
+				$condition .= " AND (".implode(" OR ",$tmplist).")";
+				$pageurl .= "&keywords[contact]=".rawurlencode($keywords['contact']);
+			}
+			if($keywords['fullname']){
+				$condition .= " AND a.fullname='".$keywords['user_id']."'";
+				$pageurl .= "&keywords[user_id]=".rawurlencode($keywords['user_id']);
+			}
 		}
+		$this->assign('pageurl',$pageurl);
 		$total = $this->model('address')->count($condition);
-		if($total>0){
-			$pageid = $this->get($this->config['pageid'],'int');
-			if(!$pageid){
-				$pageid = 1;
-			}
-			$psize = $this->config['psize'] ? $this->config['psize'] : 30;
-			$offset = ($pageid-1) * $psize;
-			$rslist = $this->model('address')->get_list($condition,$offset,$psize);
-			$this->assign('rslist',$rslist);
-			$this->assign('total',$total);
-			$this->assign('pageid',$pageid);
-			$this->assign('psize',$psize);
-			$this->assign('offset',$offset);
-			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
-			$string.= '&add='.P_Lang('数量：').'(total)/(psize)&always=1';
-			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-			$this->assign("pagelist",$pagelist);
+		if(!$total){
+			return false;
 		}
+		$pageid = $this->get($this->config['pageid'],'int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
+		$offset = ($pageid-1) * $psize;
+		$rslist = $this->model('address')->get_list($condition,$offset,$psize);
+		$this->assign('rslist',$rslist);
+		$this->assign('total',$total);
+		$this->assign('pageid',$pageid);
+		$this->assign('psize',$psize);
+		$this->assign('offset',$offset);
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+		$string.= '&add='.P_Lang('数量：').'(total)/(psize)&always=1';
+		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+		$this->assign("pagelist",$pagelist);
+		return true;
 	}
 
 	public function set_f()

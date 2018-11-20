@@ -1,30 +1,37 @@
-<!-- include tpl=head_open -->
-<div class="list">
-<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<!-- include tpl=head_lay -->
+<table class="layui-table">
+<thead>
 <tr>
-	<th width="50px">{langID}</th>
-	<th>{lang会员账号}</th>
+	<th width="30px">{langID}</th>
 	<th>{lang收件人}</th>
-	<th>{lang手机号}</th>
-	<th>{lang电话}</th>
-	<th>{lang邮箱}</th>
-	<th></th>
+	<th>{lang联系方式}</th>
+	<th>{lang地址}</th>
+	<td>{lang操作}</td>
 </tr>
+</thead>
+<tbody>
 <!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 <tr>
-	<td class="center" rowspan="2" style="border-bottom:1px solid #ccc;">{$value.id}</td>
-	<td class="center">{$value.user}</td>
-	<td class="center" style="padding:5px;">{$value.fullname}</td>
-	<td class="center">{$value.mobile}</td>
-	<td class="center">{$value.tel}</td>
-	<td class="center">{$value.email}</td>
-	<td class="center" rowspan="2" style="border-bottom:1px solid #ccc;"><input type="button" class="phpok-btn" value="{lang使用此地址}" onclick="$.admin_address.order('{$value.id}')" /></td>
-</tr>
-<tr>
-	<td colspan="5" style="text-align:left;border-bottom:1px solid #ccc;padding:5px;">{$value.country}/{$value.province}/{$value.city}/{$value.county} {$value.address}</td>
+	<td>{$value.id}</td>
+	<td>
+		{$value.fullname}
+	<td>
+		<!-- if $value.mobile --><div class="layui-icon icon-mobile"> {$value.mobile}</div><!-- /if -->
+		<!-- if $value.email --><div class="layui-icon icon-envelope" style="margin-top:7px"> {$value.email}</div><!-- /if -->
+		<!-- if $value.tel --><div class="layui-icon icon-phone" style="margin-top:7px"> {$value.tel}</div><!-- /if -->
+	</td>
+	<td>
+		{$value.country}
+		<!-- if $value.province != $value.city -->/ {$value.province}<!-- /if -->
+		<!-- if $value.city != $value.county && $value.city -->/ {$value.city}<!-- /if -->
+		<!-- if $value.county -->/ {$value.county}<!-- /if -->
+		/ {$value.address}
+		<!-- if $value.is_default --><span class="layui-badge-rim">{lang默认}</span><!-- /if -->
+	</td>
+	<td><input type="button" class="layui-btn layui-btn-sm" value="{lang使用此地址}" onclick="$.admin_address.order('{$value.id}')" /></td>
 </tr>
 <!-- /loop -->
+</tbody>
 </table>
-</div>
-<!-- if $pagelist --><div class="table"><!-- include tpl=pagelist --></div><!-- /if -->
-<!-- include tpl=foot_open -->
+<!-- if $pagelist && $total > $psize --><!-- include tpl=pagelist --><!-- /if -->
+<!-- include tpl=foot_lay -->

@@ -123,9 +123,9 @@ class user_model extends user_model_base
 		if(!$rs || $rs['status'] != 1){
 			return false;
 		}
-		$_SESSION["user_id"] = $uid;
-		$_SESSION["user_rs"] = $rs;
-		$_SESSION["user_name"] = $rs["user"];
+		$this->session->assign('user_id',$rs['id']);
+		$this->session->assign('user_gid',$rs['group_id']);
+		$this->session->assign('user_name',$rs['user']);
 		return true;
 	}
 

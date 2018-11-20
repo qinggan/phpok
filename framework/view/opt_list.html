@@ -1,4 +1,4 @@
-<!-- include tpl=head -->
+<!-- include tpl=head_lay -->
 <script type="text/javascript">
 var optconfig = {
 	'width':'400px',
@@ -7,68 +7,79 @@ var optconfig = {
 	'group_id':'{$group_id}'
 }
 </script>
-<div class="tips">
-	{lang您当前的位置：}
-	<a href="{url ctrl=opt/}">{lang选项维护}</a>
-	&raquo; <a href="{url ctrl=opt func=list group_id=$group_id/}">{lang选项组}【<span class="red">{$rs.title}</span>】</a>
-	<!-- loop from=$lead_list key=$key value=$value id=$tmpid -->	
-	&raquo; <a href="{url ctrl=opt func=list pid=$value.id/}"><span class="red">{$value.title}</span></a>
-	<!-- /loop -->
-	&raquo; {lang内容维护}
-	<!-- if $popedom.set -->
-	<div class="action"><a href="javascript:$.admin_opt.opt_import('{$group_id}','{$pid}',false);void(0);">{lang导入}</a></div>
-	<!-- if $_export --><div class="action"><a href="javascript:$.admin_opt.opt_export('{$group_id}','{$pid}',false);void(0);">{lang导出}</a></div><!-- /if -->
-	<div class="action"><a href="javascript:$.phpok_opt(optconfig).create({'okVal':'{lang添加}'});void(0);">{lang添加内容}</a></div>
-	<!-- /if -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang维护}
+		<!-- if $popedom.set -->
+		<div class="layui-btn-group fr">
+			<input type="button" value="{lang添加内容}" onclick="$.phpok_opt(optconfig).create({'okVal':'{lang添加}'})" class="layui-btn layui-btn-sm" />
+			<!-- if $_export -->
+			<input type="button" value="{lang导出}" onclick="$.admin_opt.opt_export('{$group_id}','{$pid}',false)" class="layui-btn layui-btn-sm" />
+			<!-- /if -->
+			<input type="button" value="{lang导入}" onclick="$.admin_opt.opt_import('{$group_id}','{$pid}',false)" class="layui-btn layui-btn-sm" />
+		</div>
+		<!-- /if -->
+	</div>
+	<div class="layui-container layui-card-body">
+		<table class="layui-table" lay-even>
+		<thead>
+			<tr>
+				<th class="center" width="40">ID</th>
+				<th>{lang值}</th>
+				<th>{lang显示}</th>
+				<th width="80">{lang排序}</th>
+				<th ></th>
+				
+			</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr id="opt_{$value.id}">
+			<td class="center">{$value.id}</td>
+			<td>{$value.val}</td>
+			<td>{$value.title}</td>
+			<td>{$value.taxis}</td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang子项}" onclick="$.win('{lang子项}_{$value.title}','{url ctrl=opt func=list pid=$value.id/}');" class="layui-btn  layui-btn-sm" />
+					<!-- if $popedom.set -->
+					<input type="button" value="{lang导入}"  onclick="$.admin_opt.opt_import('{$group_id}','{$value.id}')" class="layui-btn  layui-btn-sm" />
+					<!-- if $value._export --><input type="button" value="{lang导出}" onclick="$.admin_opt.opt_export('{$group_id}','{$value.id}',true)" class="layui-btn  layui-btn-sm" /><!-- /if -->
+					<input type="button" value="{lang编辑}" onclick="$.phpok_opt(optconfig).edit({$value.id},{'okVal':'{lang修改}'})" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.admin_opt.opt_delete({$value.id},'{$value.title}')" class="layui-btn  layui-btn-sm" />
+					<!-- /if -->
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
 </div>
 <div id="html-edit-content" class="hide">
-	<div class="table inline">
-		<div class="title"><span class="red">*</span> {lang显示：}</div>
-		<div class="content"><input type="text" name="title" id="opt_title" /></div>
-		<div class="clear"></div>
-	</div>
-	<div class="table inline">
-		<div class="title"><span class="red">*</span> {lang值：}</div>
-		<div class="content"><input type="text" name="val" id="opt_val" /></div>
-		<div class="clear"></div>
-	</div>
-	<div class="table inline">
-		<div class="title">{lang排序：}</div>
-		<div class="content"><input type="text" name="taxis" id="opt_taxis" class="short" /></div>
-		<div class="clear"></div>
-	</div>
-</div>
-<div class="list">
-<input type="hidden" id="parent_0" value="{$pid}" />
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th class="id">ID</th>
-	<th class="lft">{lang值}</th>
-	<th class="lft">{lang显示}</th>
-	<th width="80">{lang排序}</th>
-	<th></th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value -->
-<tr{if $rslist_id.num%2 == ""} class="list"{/if} id="opt_{$value.id}">
-	<td class="center">{$value.id}</td>
-	<td>{$value.val}</td>
-	<td>{$value.title}</td>
-	<td class="center gray">{$value.taxis}</td>
-	<td class="center">
-		<div class="button-group">
-			<input type="button" value="{lang子项}" onclick="$.phpok.go('{url ctrl=opt func=list pid=$value.id/}')" class="phpok-btn" />
-			<!-- if $popedom.set -->
-			<input type="button" value="{lang导入}" onclick="$.admin_opt.opt_import('{$group_id}','{$value.id}')" class="phpok-btn" />
-			<!-- if $value._export --><input type="button" value="{lang导出}" onclick="$.admin_opt.opt_export('{$group_id}','{$value.id}',true)" class="phpok-btn" /><!-- /if -->
-			<input type="button" value="{lang编辑}" onclick="$.phpok_opt(optconfig).edit({$value.id},{'okVal':'{lang修改}'})" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="$.admin_opt.opt_delete({$value.id},'{$value.title}')" class="phpok-btn" />
-			<!-- /if -->
+	<div class="layui-form">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<span class="red">*</span> {lang显示}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="title" class="layui-input" id="opt_title" />
+			</div>
 		</div>
-	</td>
-</tr>
-<!-- /loop -->
-</table>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<span class="red">*</span> {lang值}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="val" id="opt_val" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang排序}</label>
+			<div class="layui-input-inline">
+				<input type="text" name="taxis" id="opt_taxis" class="layui-input" />
+			</div>
+		</div>
+	</div>
 </div>
-<!-- include tpl=pagelist -->
+<input type="hidden" id="parent_0" value="{$pid}" />
 
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

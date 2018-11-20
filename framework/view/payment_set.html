@@ -1,183 +1,165 @@
-<!-- include tpl=head title=$title -->
-<script type="text/javascript" src="{func include_js payment.js}"></script>
-<div class="tips clearfix">
-	当前位置：<a href="{url ctrl=payment/}" title="支付管理">支付管理</a>
-	&raquo; <!-- if $id -->编辑<!-- else -->添加新<!-- /if -->支付信息，当前使用的支付引挈是：<span class="red">{$extlist.title}</span>
-</div>
-<form method="post" action="{url ctrl=payment func=save/}" onsubmit="return check_payment_set()">
-<!-- if $id -->
-<input type="hidden" name="id" id="id" value="{$id}" />
-<!-- /if -->
-<input type="hidden" name="code" id="code" value="{$code}" />
-<div class="table">
-	<div class="title">
-		支付名称：
-		<span class="note">设置一个支付名称，该名称在前台会显示出来</span>
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang当前使用的支付方式} <span class="red">{$extlist.title}</span>
 	</div>
-	<div class="content">
-		<input type="text" id="title" name="title" class="default" value="{$rs.title}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		所属组：
-		<span class="note">设置支付所属组，此项不能为空</span>
-	</div>
-	<div class="content">
-		<select name="gid" id="gid">
-			<!-- loop from=$grouplist key=$key value=$value -->
-			<option value="{$value.id}"{if $gid == $value.id} selected{/if}>{$value.title}{if $value.is_wap} - 手机端{/if}</option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		状态：
-		<span class="note">只有启用此项，前台支付才能生效</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="radio" name="status" value="1"{if $rs.status} checked{/if} />启用</label></td>
-			<td><label><input type="radio" name="status" value="0"{if !$rs.status} checked{/if} />禁用</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		手机端使用：
-		<span class="note">启用后将允许在手机端使用该支付接口</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="radio" name="wap" value="1"{if $rs.wap} checked{/if} />启用</label></td>
-			<td><label><input type="radio" name="wap" value="0"{if !$rs.wap} checked{/if} />禁用</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		支付货币类型：
-		<span class="note">设置该支付方式使用的货币类型，仅支会单选，不清楚请选择：人民币</span>
-	</div>
-	<div class="content">
-		<select name="currency">
-			<option value="CNY">{lang默认}</option>
-			<!-- loop from=$currency_list key=$key value=$value -->
-			<option value="{$value.code}"{if $rs.currency == $value.code} selected{/if}>{$value.title}（汇率：{$value.val}）</option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang支付图片一}
-		<span class="note">{lang设置该支付接口的小图，建议使用正方形小图}</span>
-	</div>
-	<div class="content">
-		{func form_edit logo1 $rs.logo1 text form_btn=image&width=500}
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		{lang支付图片二}
-		<span class="note">{lang设置该支付图片，建议使用长方形，如160x50之类的}</span>
-	</div>
-	<div class="content">
-		{func form_edit logo2 $rs.logo2 text form_btn=image&width=500}
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		{lang支付图片三}
-		<span class="note">{lang这个图片一般是大图，适用于一些需要大图的场合}</span>
-	</div>
-	<div class="content">
-		{func form_edit logo3 $rs.logo3 text form_btn=image&width=500}
-	</div>
-</div>
-
-<!-- loop from=$extlist.code key=$key value=$value -->
-<!-- php:$valinfo = ($rs['param'] && $rs['param'][$key]) ? $rs['param'][$key] : $value.default -->
-<div class="table">
-	<div class="title">
-		{$value.title}：
-		<span class="note">{$value.note}</span>
-	</div>
-	<div class="content">
-		<!-- if $value.type == 'radio' -->
-		<table cellspacing="0" cellpadding="0">
-		<tr>
-			<!-- loop from=$value.option key=$k value=$v -->
-			<td><label><input type="radio" name="{$code}_{$key}" value="{$k}"{if $valinfo == $k} checked{/if} />{$v}</label></td>
-			<!-- /loop -->
-		</tr>
-		</table>
-		<!-- elseif $value.type == 'select' -->
-		<select name="{$code}_{$key}" id="{$code}_{$key}">
-			<option value="">{lang请选择…}</option>
-			<!-- loop from=$value.option key=$k value=$v -->
-			<option value="{$k}"{if $valinfo == $k} selected{/if}>{$v}</option>
-			<!-- /loop -->
-		</select>
-		<!-- elseif $value.type == 'checkbox' -->
-		<!-- php:$valinfo = $valinfo ? explode(',',$valinfo) : array() -->
-		<table cellspacing="0" cellpadding="0">
-		<tr>
-			<!-- loop from=$value.option key=$k value=$v -->
-			<td><label><input type="checkbox" name="{$code}_{$k}" value="{$k}"{if in_array($k,$valinfo)} checked{/if} />{$v}</label></td>
-			<!-- /loop -->
-		</tr>
-		</table>
-		<!-- else -->
-			<!-- php:$input_name = $code.'_'.$key -->
-			<!-- if $value.typebtn == 'file' -->
-			{func form_edit $input_name $valinfo text form_btn=file&width=500}
-			<!-- elseif $value.typebtn == 'image' -->
-			{func form_edit $input_name $valinfo text form_btn=image&width=500}
-			<!-- elseif $value.typebtn == 'video' -->
-			{func form_edit $input_name $valinfo text form_btn=video&width=500}
-			<!-- else -->
-			<input type="text" id="{$code}_{$key}" name="{$code}_{$key}" class="long" value="{$valinfo}" />
-				<!-- if $value.typebtn == 'tpl' -->
-				<input type="button" value="{lang选择}" onclick="phpok_tpl_open('{$code}_{$key}')" class="btn" />
-				<input type="button" value="{lang清空}" onclick="$('#{$code}_{$key}').val('');" class="btn" />
-				<!-- /if -->
-			<!-- /if -->
+	<div class="layui-container layui-card-body">
+		<form method="post" class="layui-form" action="{url ctrl=payment func=save/}" onsubmit="return $.admin_payment.check()">
+		<!-- if $id -->
+		<input type="hidden" name="id" id="id" value="{$id}" />
 		<!-- /if -->
+		<input type="hidden" name="code" id="code" value="{$code}" />
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang支付名称}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
+			</div>
+			<div class="layui-input-block mtop">{lang设置一个支付名称，该名称在前台会显示出来}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang所属组}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select name="gid" id="gid">
+					<!-- loop from=$grouplist key=$key value=$value -->
+					<option value="{$value.id}"{if $gid == $value.id} selected{/if}>{$value.title}{if $value.is_wap} - 手机端{/if}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置支付所属组，此项不能为空}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang状态}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="status" value="1"{if $rs.status} checked{/if} title="{lang启用}" />
+				<input type="radio" name="status" value="0"{if !$rs.status} checked{/if} title="{lang禁用}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang只有启用此项，前台支付才能生效}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang手机端使用}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="wap" value="1"{if $rs.wap} checked{/if} title="{lang启用}" />
+				<input type="radio" name="wap" value="0"{if !$rs.wap} checked{/if} title="{lang禁用}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang启用后将允许在手机端使用该支付接口}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang货币类型}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select name="currency">
+					<option value="CNY">{lang默认}</option>
+					<!-- loop from=$currency_list key=$key value=$value -->
+					<option value="{$value.code}"{if $rs.currency == $value.code} selected{/if}>{$value.title}_{lang汇率}_{$value.val}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang仅支持单选，不清楚请选择：人民币}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang图片一}
+			</label>
+			<div class="layui-input-inline default-auto">
+				{func form_edit logo1 $rs.logo1 text form_btn=image&width=500}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置该支付接口的小图，建议使用正方形小图}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang图片二}
+			</label>
+			<div class="layui-input-inline default-auto">
+				{func form_edit logo2 $rs.logo2 text form_btn=image&width=500}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置该支付图片，建议使用长方形，如160x50之类的}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang图片三}
+			</label>
+			<div class="layui-input-inline default-auto">
+				{func form_edit logo3 $rs.logo3 text form_btn=image&width=500}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang这个图片一般是大图，适用于一些需要大图的场合}</div>
+		</div>
+		<!-- loop from=$extlist.code key=$key value=$value -->
+		<!-- php:$valinfo = ($rs['param'] && $rs['param'][$key]) ? $rs['param'][$key] : $value.default -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{$value.title}
+			</label>
+			<div class="layui-input-block">
+				<!-- if $value.type == 'radio' -->
+					<!-- loop from=$value.option key=$k value=$v -->
+					<input type="radio" name="{$code}_{$key}" value="{$k}"{if $valinfo == $k} checked{/if} title="{$v}" />
+					<!-- /loop -->
+				<!-- elseif $value.type == 'select' -->
+				<select name="{$code}_{$key}" id="{$code}_{$key}">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$value.option key=$k value=$v -->
+					<option value="{$k}"{if $valinfo == $k} selected{/if}>{$v}</option>
+					<!-- /loop -->
+				</select>
+				<!-- elseif $value.type == 'checkbox' -->
+				<!-- php:$valinfo = $valinfo ? explode(',',$valinfo) : array() -->
+					<!-- loop from=$value.option key=$k value=$v -->
+					<input type="checkbox" name="{$code}_{$k}" value="{$k}"{if in_array($k,$valinfo)} checked{/if} title="{$v}" />
+					<!-- /loop -->
+				<!-- else -->
+					<!-- php:$input_name = $code.'_'.$key -->
+					<!-- if $value.typebtn == 'file' -->
+					{func form_edit $input_name $valinfo text form_btn=file&width=500}
+					<!-- elseif $value.typebtn == 'image' -->
+					{func form_edit $input_name $valinfo text form_btn=image&width=500}
+					<!-- elseif $value.typebtn == 'video' -->
+					{func form_edit $input_name $valinfo text form_btn=video&width=500}
+					<!-- else -->
+					<input type="text" id="{$code}_{$key}" name="{$code}_{$key}" class="layui-input" value="{$valinfo}" />
+						<!-- if $value.typebtn == 'tpl' -->
+						<input type="button" value="{lang选择}" onclick="phpok_tpl_open('{$code}_{$key}')" class="btn" />
+						<input type="button" value="{lang清空}" onclick="$('#{$code}_{$key}').val('');" class="btn" />
+						<!-- /if -->
+					<!-- /if -->
+				<!-- /if -->
+			</div>
+			<!-- if $value.note --><div class="layui-input-block mtop">{$value.note}</div><!-- /if -->
+		</div>
+		<!-- /loop -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang排序}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" id="taxis" name="taxis" class="layui-input" value="{$id ? $rs.taxis : 255}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang值范围在0-255，越小越往前靠，默认为255}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="{lang说明性信息，如此支付方案的限额，注意事项}">&#xe702;</i>
+				{lang摘要}
+			</label>
+			<div class="layui-input-block">
+				{func form_edit note $rs.note editor width=700&height=300&etype=simple&btn_image=1}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">&nbsp;</label>
+			<div class="layui-input-inline default-auto">
+				<input type="submit" value="{lang提交}" class="submit2" />
+			</div>
+		</div>
+		</form>
 	</div>
 </div>
-<!-- /loop -->
-<div class="table">
-	<div class="title">
-		排序：
-		<span class="note">值范围在0-255，越小越往前靠，默认为255</span>
-	</div>
-	<div class="content">
-		<input type="text" id="taxis" name="taxis" class="short" value="{$id ? $rs.taxis : 255}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		摘要说明：
-		<span class="note">说明性信息，如此支付方案的限额，注意事项</span>
-	</div>
-	<div class="content">
-		{func form_edit note $rs.note editor width=700&height=300&etype=simple&btn_image=1}
-	</div>
-</div>
-
-<div class="table">
-	<div class="content">
-		<input type="submit" value="提 交" class="submit2" />
-	</div>
-</div>
-</form>
-
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

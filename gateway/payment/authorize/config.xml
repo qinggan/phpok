@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title><![CDATA[Authorize 信用卡接口引挈]]></title>
+	<code>
+		<env>
+			<title><![CDATA[运行环境]]></title>
+			<note><![CDATA[设置支付的PID，您可以登录支付宝商家服务查询]]></note>
+			<type>radio</type>
+			<option>
+				<test><![CDATA[测试环境]]></test>
+				<product><![CDATA[生产环境]]></product>
+			</option>
+			<default>product</default>
+		</env>
+		<name>
+			<title><![CDATA[接口ID]]></title>
+			<note><![CDATA[由接口商提供的 API LOGIN ID]]></note>
+			<type>text</type>
+		</name>
+		<transactionKey>
+			<title><![CDATA[密钥]]></title>
+			<note><![CDATA[由接口供应商提供的：transaction Key]]></note>
+			<type>text</type>
+		</transactionKey>
+	</code>
+</root>

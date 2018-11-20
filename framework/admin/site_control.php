@@ -1,13 +1,21 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/site_control.php
-	Note	: 站点管理器
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年10月8日
-***********************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * 站点管理器
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年08月27日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class site_control extends phpok_control
 {
 	public function __construct()
@@ -20,7 +28,7 @@ class site_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rslist = $this->model('site')->get_all_site();
 		$this->assign("rslist",$rslist);
@@ -142,8 +150,20 @@ class site_control extends phpok_control
 		//价格状态
 		$pricelist = $this->model('site')->price_status_all(true);
 		$this->assign('pricelist',$pricelist);
-		$type = $this->get('type');
-		$this->assign('type',$type);
+
+		
+		//管理员内部状态
+		$admin_statuslist = $this->model('site')->admin_order_status_all(true);
+		if($admin_statuslist){
+			$statuslist = $this->model('order')->status_list();
+			foreach($admin_statuslist as $key=>$value){
+				if($statuslist[$value['ostatus']]){
+					$value['ostatus'] = $statuslist[$value['ostatus']];
+					$admin_statuslist[$key] = $value;
+				}
+			}
+		}
+		$this->assign('admin_statuslist',$admin_statuslist);
 		$this->view('site_order_status');
 	}
 
@@ -173,7 +193,7 @@ class site_control extends phpok_control
 	public function order_status_save_f()
 	{
 		if(!$this->popedom["order"]){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id');
 		if(!$id){
@@ -181,7 +201,7 @@ class site_control extends phpok_control
 		}
 		$title = $this->get('title');
 		if(!$title){
-			$this->json(P_Lang('未指定状态名称'));
+			$this->error(P_Lang('未指定状态名称'));
 		}
 		$array = array('title'=>$title);
 		$array['status'] = $this->get('status','int');
@@ -191,13 +211,34 @@ class site_control extends phpok_control
 		$array['sms_tpl_admin'] = $this->get('sms_tpl_admin');
 		$array['taxis'] = $this->get('taxis','int');
 		$this->model('site')->order_status_update($array,$id);
-		$this->json(true);
+		$this->success();
+	}
+
+	public function edit_price_f()
+	{
+		if(!$this->popedom["order"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$list = $this->model('site')->price_status_all();
+		if(!$list){
+			$this->error(P_Lang('没有价格数据'));
+		}
+		if(!$list[$id]){
+			$this->error(P_Lang('参数不对'));
+		}
+		$this->assign('rs',$list[$id]);
+		$this->assign('id',$id);
+		$this->view("site_price_status");
 	}
 
 	public function price_status_save_f()
 	{
 		if(!$this->popedom["order"]){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id');
 		if(!$id){
@@ -205,14 +246,14 @@ class site_control extends phpok_control
 		}
 		$title = $this->get('title');
 		if(!$title){
-			$this->json(P_Lang('未指定名称'));
+			$this->error(P_Lang('未指定名称'));
 		}
 		$array = array('title'=>$title);
 		$array['status'] = $this->get('status','int');
 		$array['action'] = $this->get('action');
 		$array['taxis'] = $this->get('taxis','int');
 		$this->model('site')->price_status_update($array,$id);
-		$this->json(true);
+		$this->success();
 	}
 
 	public function alias_f()
@@ -228,5 +269,75 @@ class site_control extends phpok_control
 		$this->model('site')->alias_save($alias,$id);
 		$this->json(true);
 	}
+
+	/**
+	 * 设置后台管理员订单
+	**/
+	public function admin_status_set_f()
+	{
+		if(!$this->popedom["order"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id');
+		if($id){
+			$this->assign('id',$id);
+			$rs = $this->model('site')->admin_order_status_one($id);
+			if($rs){
+				$this->assign('rs',$rs);
+			}
+		}
+		$olist = $this->model('order')->status_list();
+		$this->assign('olist',$olist);
+		$this->view('site_admin_order_set');
+	}
+
+	/**
+	 * 后台管理员订单状态配置
+	**/
+	public function admin_order_status_save_f()
+	{
+		$this->config('is_ajax',true);
+		if(!$this->popedom["order"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id','system');
+		if(!$id){
+			$identifier = $this->get('identifier','system');
+			if(!$identifier){
+				$this->error(P_Lang('未指定标识或标识不符合规定要求'));
+			}
+			$tlist = $this->model('site')->admi_order_status_all();
+			if(isset($tlist[$identifier])){
+				$this->error(P_Lang('标识已被使用，请重新设置一个'));
+			}
+			$id = $identifier;
+		}
+		$title = $this->get('title');
+		if(!$title){
+			$this->error(P_Lang('未指定名称'));
+		}
+		$array = array('title'=>$title);
+		$array['status'] = $this->get('status','int');
+		$array['taxis'] = $this->get('taxis','int');
+		$array['ostatus'] = $this->get('ostatus');
+		$this->model('site')->admin_order_status_update($array,$id);
+		$this->success();
+	}
+
+	/**
+	 * 删除后台管理员订单状态
+	**/
+	public function admin_order_status_delete_f()
+	{
+		$this->config('is_ajax',true);
+		if(!$this->popedom["order"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id','system');
+		if(!$id){
+			$this->error(P_Lang('未指定要删除的ID'));
+		}
+		$this->model('site')->admin_order_status_delete($id);
+		$this->success();
+	}
 }
-?>

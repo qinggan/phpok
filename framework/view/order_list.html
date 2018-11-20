@@ -1,135 +1,159 @@
-<!-- include tpl=head -->
-<script type="text/javascript" src="{func add_js order.js}"></script>
-
-<div class="tips">
-	<table width="100%" cellpadding="0" cellspacing="0" height="100%">
-	<tr>
-		<td>&raquo; <a href="{url ctrl=order/}" title="">{lang订单列表}</a></td>
-		<td>
-		</td>
-		<td align="right">
-			<div class="action"><a href="{url ctrl=order func=set/}">{lang创建新订单}</a></div>
-		</div>
-	</tr>
-	</table>
-</div>
-<div class="tips">
-	<form method="post" action="{url ctrl=order/}">
-	<div style="float:left;width:800px;">
-		<div><table>
-		<tr>
-			
-			<td>
-				<select name="status">
-				<option value="">{lang订单状态…}</option>
-				<!-- loop from=$statuslist key=$key value=$value id=$tmpid -->
-				<option value="{$key}"{if $key == $status} selected{/if}>{$value}</option>
-				<!-- /loop -->
-				</select>
-			</td>
-			
-			<td>&nbsp; &nbsp;{lang时间：}</td>
-			<td><input type="text" name="date_start" id="date_start" value="{$date_start}" placeholder="{lang开始时间}" style="width:110px;" /></td>
-			<td>{lang至}</td>
-			<td><input type="text" name="date_stop" id="date_stop" value="{$date_stop}" placeholder="{lang结束时间}" style="width:110px;" /></td>
-			<td>&nbsp; &nbsp;{lang价格：}</td>
-			<td><input type="text" name="price_min" value="{$price_min}" placeholder="{lang最低价格}" style="width:110px;" /></td>
-			<td>{lang至}</td>
-			<td><input type="text" name="price_max" value="{$price_max}" placeholder="{lang最高价格}" style="width:110px;" /></td>
-		</tr>
-		</table></div>
-		<table>
-		<tr>
-			<!-- if $paylist -->
-			<td>
-				<select name="paytype" >
-				<option value="">{lang支付方式…}</option>
-				<optgroup label="PC端">
-					<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
-					<!-- if !$value.wap -->
-					<option value="{$value.id}"{if $paytype == $value.id} selected{/if}>{$value.title}</option>
-					<!-- /if -->
-					<!-- /loop -->
-				</optgroup>
-				<optgroup label="手机端">
-					<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
-					<!-- if $value.wap -->
-					<option value="{$value.id}"{if $paytype == $value.id} selected{/if}>{$value.title}</option>
-					<!-- /if -->
-					<!-- /loop -->
-				</optgroup>
-				</select>
-			</td>
-			<!-- /if -->
-			<td>
-				<select name="keytype" onchange="update_keywords(this.value)">
-				<option value="">{lang检索类型…}</option>
-				<option value="sn"{if $keytype == 'sn'} selected{/if}>{lang订单编号}</option>
-				<option value="user"{if $keytype == 'user'} selected{/if}>{lang会员账号}</option>
-				<option value="email"{if $keytype == 'email'} selected{/if}>{lang订单邮箱}</option>
-				<option value="protitle"{if $keytype == 'protitle'} selected{/if}>{lang产品名称}</option>
-				</select>
-			</td>
-			<td><input type="text" id="keywords" name="keywords" class="default" value="{$keywords}"{if $keytype == 'time'} onfocus="laydate()"{/if} /></td>
-		</tr>
-		</table>
+<!-- include tpl=head_lay -->
+<div class="layui-card{if !$keywords && !$status && !$date_start && !$date_stop && !$price_min && !$price_max && !$paytype} hide{/if}" id="search_html">
+	<div class="layui-card-header">
+		{lang搜索}
 	</div>
-	<div style="float:left;width:20%;margin-top:25px;"><input type="submit" value="{lang搜索}" class="submit2" /></div>
-	</form>
-	<div class="clear"></div>
-</div>
-
-<table width="100%" class="list" cellpadding="0" cellspacing="0">
-<tr>
-	<th width="70px">ID</th>
-	<th class="lft">&nbsp;订单号</th>
-	<th class="lft">&nbsp;会员</th>
-	<th class="lft">&nbsp;金额</th>
-	<th class="lft">&nbsp;已付</th>
-	<th class="lft">&nbsp;未付</th>
-	<th>状态</th>
-	<th class="lft">&nbsp;支付方式</th>
-	<th width="170px">下单时间</th>
-	<th class="lft">操作</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-
-<tr>
-	<td align="center" data-id="{$value.id}" data-unpaid="{$value.unpaid}">{$value.id}</td>
-	<td>{$value.sn}</td>
-	<td><!-- if $value.user -->{$value.user}<!-- else --><span class="red">{lang访客}</span><!-- /if --></td>
-	<td>{func price_format $value.price $value.currency_id $value.currency_id}</td>
-	<td>{func price_format $value.paid $value.currency_id $value.currency_id}</td>
-	<td{if $value.unpaid} class="red"{/if} data-unpaid-text="{$value.id}">{func price_format $value.unpaid $value.currency_id $value.currency_id}</td>
-	<td align="center" class="status">{$value.status_title}</td>
-	<td><!-- if $value.pay_title -->{$value.pay_title}<!-- else --><span class="gray">{lang未设置}</span><!-- /if --></td>
-	<td align="center">{func time_format $value.addtime}</td>
-	<td>
-		<div class="button-group">
-			<input type="button" value="{lang查看}" onclick="order_info_show('{$value.id}','{$value.sn}')" class="phpok-btn" />
-			<!-- if $value.status != 'end' && $value.status != 'cancel' && $value.status != 'stop' -->
-				<!-- if $popedom.modify -->
-				<input type="button" value="{lang编辑}" onclick="order_edit({$value.id})" class="phpok-btn" />
-				<input type="button" value="{lang付款}" onclick="order_payment({$value.id},'{$value.sn}')" class="phpok-btn" />
-				<input type="button" value="{lang物流}" onclick="order_express({$value.id},'{$value.sn}')" class="phpok-btn" />
-				<!-- /if -->
-				<!-- if $value.status != 'cancel' && $popedom.cancel -->
-				<input type="button" value="{lang取消}" onclick="order_cancel({$value.id},'{$value.sn}')" class="phpok-btn" />
-				<!-- /if -->
-				<!-- if $value.status != 'stop' && $popedom.stop -->
-				<input type="button" value="{lang结束}" onclick="order_stop({$value.id},'{$value.sn}')" class="phpok-btn" />
-				<!-- /if -->
-				<!-- if $value.status != 'end' && $popedom.end -->
-				<input type="button" value="{lang完成}" onclick="order_end({$value.id},'{$value.sn}')" class="phpok-btn" />
-				<!-- /if -->
+	<div class="layui-card-body">
+		<form method="post" class="layui-form" action="{func admin_url order}">
+		<div class="layui-form-item">
+			<div class="layui-inline">
+				<label class="layui-form-label">{lang订单状态}</label>
+				<div class="layui-input-inline">
+					<select name="status">
+						<option value="">{lang订单状态…}</option>
+						<!-- loop from=$statuslist key=$key value=$value id=$tmpid -->
+						<option value="{$key}"{if $key == $status} selected{/if}>{$value}</option>
+						<!-- /loop -->
+					</select>
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">{lang时间}</label>
+				<div class="layui-input-inline" style="width: 120px;">
+					<input type="text" name="date_start" value="{$date_start}" id="date_start" placeholder="{lang开始时间}" autocomplete="off" class="layui-input">
+				</div>
+				<div class="layui-form-mid">-</div>
+				<div class="layui-input-inline" style="width: 120px;">
+					<input type="text" name="date_stop" value="{$date_stop}" id="date_stop" placeholder="{lang结束时间}" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">{lang价格}</label>
+				<div class="layui-input-inline" style="width: 90px;">
+					<input type="text" name="price_min" value="{$price_min}" id="price_min" placeholder="{lang最低价格}" autocomplete="off" class="layui-input">
+				</div>
+				<div class="layui-form-mid">-</div>
+				<div class="layui-input-inline" style="width: 90px;">
+					<input type="text" name="price_max" value="{$price_max}" id="price_max" placeholder="{lang最高价格}" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<!-- if $paylist -->
+			<div class="layui-inline">
+				<label class="layui-form-label">{lang支付方式}</label>
+				<div class="layui-input-inline">
+					<select name="paytype" >
+						<option value="">{lang支付方式…}</option>
+						<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+						<optgroup label="{$value.title}{if $value.wap}_{lang手机端}{/if}">
+							<!-- loop from=$value.rslist key=$k value=$v id=$idxx -->
+							<option value="{$v.id}"{if $paytype == $v.id} selected{/if}>{$v.title}<!-- if $v.wap -->_{lang手机端}<!-- /if --></option>
+							<!-- /loop -->
+						</optgroup>
+						<!-- /loop -->
+					</select>
+				</div>
+			</div>
 			<!-- /if -->
-			<!-- if $popedom.delete -->
-			<input type="button" value="{lang删除}" onclick="order_delete({$value.id},'{$value.sn}')" class="phpok-btn" />
-			<!-- /if -->
+			<div class="layui-inline">
+				<label class="layui-form-label">{lang检索类型}</label>
+				<div class="layui-input-inline">
+					<select name="keytype" onchange="update_keywords(this.value)">
+						<option value="">{lang检索类型…}</option>
+						<option value="sn"{if $keytype == 'sn'} selected{/if}>{lang订单编号}</option>
+						<option value="user"{if $keytype == 'user'} selected{/if}>{lang会员账号}</option>
+						<option value="email"{if $keytype == 'email'} selected{/if}>{lang订单邮箱}</option>
+						<option value="protitle"{if $keytype == 'protitle'} selected{/if}>{lang产品名称}</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">{lang关键字}</label>
+				<div class="layui-input-inline" style="width: 300px;">
+					<input type="text" id="keywords" name="keywords" class="layui-input" value="{$keywords}"{if $keytype == 'time'} onfocus="laydate()"{/if} />
+				</div>
+			</div>
+			<div class="layui-inline">
+				<button class="layui-btn layui-btn-sm" lay-submit>
+					<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+					{lang搜索}
+				</button>
+				<a href="{url ctrl=order/}" class="layui-btn layui-btn-sm layui-btn-danger">
+					{lang取消搜索}
+				</a>
+			</div>
 		</div>
-	</td>
-</tr>
-<!-- /loop -->
-</table>
-<!-- include tpl=pagelist -->
-<!-- include tpl=foot -->
+		</form>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang列表}
+		<div class="layui-btn-group fr">
+			<input type="button" value="{lang搜索}" onclick="$.admin.hide_show('search_html')" class="layui-btn layui-btn-sm layui-btn-warm" />
+			<input type="button" value="{lang创建新订单}" onclick="$.win('{lang创建新订单}','{url ctrl=order func=set/}')" class="layui-btn layui-btn-sm" />
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th></th>
+			<th colspan="2">{lang订单ID/订单号}</th>
+			<th>{lang会员}</th>
+			<th>{lang金额}</th>
+			<th>{lang已付}</th>
+			<th>{lang未付}</th>
+			<th>{lang状态}</th>
+			<th>{lang支付方式}</th>
+			<th>{lang下单时间}</th>
+			<th>{lang操作}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr id="edit_{$value.id}">
+			<td align="center" data-id="{$value.id}" data-sn="{$value.sn}" data-unpaid="{$value.unpaid}" data-status="{$value.status}"><input type="checkbox" value="{$value.id}" id="order_id_{$value.id}" lay-ignore /></td>
+			<td><label for="order_id_{$value.id}">{$value.id}</label></td>
+			<td><label for="order_id_{$value.id}">{$value.sn}</label></td>
+			<td><!-- if $value.user -->{$value.user}<!-- else --><span class="red">{lang访客}</span><!-- /if --></td>
+			<td>{func price_format $value.price $value.currency_id $value.currency_id}</td>
+			<td>{func price_format $value.paid $value.currency_id $value.currency_id}</td>
+			<td{if $value.unpaid} class="red"{/if} data-unpaid-text="{$value.id}"><!-- if $value.unpaid -->{func price_format $value.unpaid $value.currency_id $value.currency_id}<!-- /if --></td>
+			<td class="status">{$value.status_title}</td>
+			<td><!-- if $value.pay_title -->{$value.pay_title}<!-- else --><span class="gray">{lang未设置}</span><!-- /if --></td>
+			<td>{func time_format $value.addtime}</td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang查看}" onclick="$.admin_order.show('{$value.id}')" class="layui-btn  layui-btn-xs" />
+					<!-- if $popedom.modify -->
+					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑订单}_#{$value.id}','{url ctrl=order func=set id=$value.id/}')" class="layui-btn  layui-btn-xs" />	
+					<!-- /if -->
+					<!-- if $popedom.delete -->
+					<input type="button" value="{lang删除}" onclick="$.admin_order.del({$value.id},'{$value.sn}')" class="layui-btn  layui-btn-xs" />
+					<!-- /if -->
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<ul class="layout">
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_all()" />
+					<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_none()" />
+					<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_anti()" />
+				</div>
+			</li>
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang付款}" onclick="$.admin_order.payment()" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang物流}" onclick="$.admin_order.express()" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang取消}" onclick="$.admin_order.cancel()" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang结束}" onclick="$.admin_order.stop()" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang完成}" onclick="$.admin_order.finish()" class="layui-btn  layui-btn-sm" />
+				</div>
+			</li>
+		</ul>
+		<div align="center"><!-- include tpl=pagelist --></div>
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

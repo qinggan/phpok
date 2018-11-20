@@ -38,25 +38,25 @@
 				</div>
 			</div>
 		</li>
-		<!-- if $value.adm_content && $value.adm_time -->
-		<li class="am-comment am-comment-flip am-comment-highlight">
-			<img src="images/adminer.png" class="am-comment-avatar" width="48" height="48" />
-			<div class="am-comment-main">
-				<div class="am-comment-hd">
-					<div class="am-comment-meta">
-						管理员回复于<time>{func time_format $value.adm_time}</time>
+			<!-- if $value.adm_reply -->
+			<!-- loop from=$value.adm_reply key=$k value=$v id=$idxx -->
+			<li class="am-comment am-comment-flip am-comment-highlight">
+				<img src="images/adminer.png" class="am-comment-avatar" width="48" height="48" />
+				<div class="am-comment-main">
+					<div class="am-comment-hd">
+						<div class="am-comment-meta">
+							管理员回复于<time>{func time_format $v.addtime}</time>
+						</div>
+					</div>
+					<div class="am-comment-bd">
+						{$v.content}
 					</div>
 				</div>
-				<div class="am-comment-bd">
-					{$value.adm_content}
-				</div>
-			</div>
-		</li>
-		<!-- /if -->
+			</li>
+			<!-- /loop -->
+			<!-- /if -->
 		<!-- /loop -->
 		<!-- if $session.user_id -->
-		
-		
 		<li class="am-comment">
 			<img src="{$comment.avatar}" class="am-comment-avatar" width="48" height="48" />
 			<div class="am-comment-main">
@@ -67,7 +67,8 @@
 				</div>
 				<div class="am-comment-bd">
 					<form method="post" id="comment-post" class="am-form">
-						<input type="hidden" name="id" id="id" value="{$tid ? $tid : $rs.id}" />
+						<input type="hidden" name="tid" value="{$tid ? $tid : $rs.id}" />
+						<input type="hidden" name="vtype" value="title" />
 						<!-- if $comment.uid -->
 						<div class="am-form-group">{func form_edit comment $comment.content editor width=100%&height=150&btns[image]=1}</div>
 						<!-- else -->

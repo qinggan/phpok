@@ -539,10 +539,10 @@ class res_model_base extends phpok_model
 	public function edit_pic_list($condition="",$offset=0,$psize=30,$gd=false)
 	{
 		if($gd){
-			$sql = "SELECT e.filename,res.id,res.title,res.ico,res.addtime FROM ".$this->db->prefix."res_ext e ";
+			$sql = "SELECT e.filename,res.id,res.title,res.ico,res.addtime,res.attr FROM ".$this->db->prefix."res_ext e ";
 			$sql.= "JOIN ".$this->db->prefix."res res ON(e.res_id=res.id) ";
 		}else{
-			$sql = "SELECT res.filename,res.id,res.title,res.ico,res.addtime FROM ".$this->db->prefix."res res ";
+			$sql = "SELECT res.filename,res.id,res.title,res.ico,res.addtime,res.attr FROM ".$this->db->prefix."res res ";
 		}
 		if($condition){
 			$sql.= " WHERE ".$condition." ";

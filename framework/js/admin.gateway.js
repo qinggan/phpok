@@ -9,36 +9,36 @@
 **/
 function add_it(id)
 {
-	var url = get_url('gateway','getlist','id='+id);
-	var rs = $.phpok.json(url);
-	if(rs.status == 'ok'){
-		var content = '<select id="code">';
-		for(var i in rs.content){
-			content += '<option value="'+rs.content[i].id+'">'+rs.content[i].title;
-			if(rs.content[i].note){
-				content += ' / '+rs.content[i].note+'';
-			}
-			content += '</option>';
-		}
-		content += '</select>';
-		$.dialog({
-			'title': '网关选择器',
-			'lock':true,
-			'content':content,
-			'cancel':function(){return true;},
-			'cancelVal':'取消',
-			'okVal':'提交',
-			'ok':function(){
-				var code = $("#code").val();
-				var url = get_url('gateway','set','type='+id+"&code="+code);
-				$.phpok.go(url);
-				return true;
-			}
-		});
-	}else{
-		$.dialog.alert(rs.content);
-		return false;
-	}
+    var url = get_url('gateway','getlist','id='+id);
+    var rs = $.phpok.json(url);
+    if(rs.status == 'ok'){
+        var content = '<select id="code">';
+        for(var i in rs.content){
+            content += '<option value="'+rs.content[i].id+'">'+rs.content[i].title;
+            if(rs.content[i].note){
+                content += ' / '+rs.content[i].note+'';
+            }
+            content += '</option>';
+        }
+        content += '</select>';
+        $.dialog({
+            'title': '网关选择器',
+            'lock':true,
+            'content':content,
+            'cancel':function(){return true;},
+            'cancelVal':'取消',
+            'okVal':'提交',
+            'ok':function(){
+                var code = $("#code").val();
+                var url = get_url('gateway','set','type='+id+"&code="+code);
+                $.phpok.go(url);
+                return true;
+            }
+        });
+    }else{
+        $.dialog.alert(rs.content);
+        return false;
+    }
 }
 function update_taxis(val,id)
 {

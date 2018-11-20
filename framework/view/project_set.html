@@ -1,677 +1,495 @@
-<!-- include tpl=head -->
-<script type="text/javascript">
-
-function cate_add(title)
-{
-	var url = get_url('cate',"add");
-	$.dialog.open(url,{
-		"title":title,
-		"width":"700px",
-		"height":"300px",
-		"lock":true,
-		"win_max":false,
-		"win_min":false,
-		'move':false
-	});
-}
-
-function set_biz()
-{
-	var status = $("#is_biz").is(':checked');
-	if(status){
-		$("#use_biz_setting").show();
-	}else{
-		$("#use_biz_setting").hide();
-	}
-}
-
-function set_post_status()
-{
-	var status = $("#post_status").is(':checked');
-	if(status){
-		$("#email_set_post_status").show();
-		$("li[name=f_post]").show();
-	}else{
-		$("#email_set_post_status").hide();
-		$("li[name=f_post]").find('input').attr("checked",false);
-		$("li[name=f_post]").hide();
-	}
-}
-
-function set_comment_status()
-{
-	var status = $("#comment_status").is(':checked');
-	if(status){
-		$("#email_set_comment_status").show();
-		$("li[name=f_reply]").show();
-	}else{
-		$("#email_set_comment_status").hide();
-		$("li[name=f_reply]").find('input').attr("checked",false);
-		$("li[name=f_reply]").hide();
-	}
-}
-$(document).ready(function(){
-	$("#{$ext_module}").submit(function(){
-		$(this).ajaxSubmit({
-			'url':"{url ctrl=project func=save/}",
-			'type':'post',
-			'dataType':'json',
-			'success':function(rs){
-				if(rs.status == 'ok'){
-					var tip = $("#id").val() ? '{lang项目信息编辑成功}' : '{lang项目信息创建成功}';
-					$.dialog.alert(tip,function(){
-						$.phpok.go('{url ctrl=project/}');
-					},'succeed');
-				}else{
-					$.dialog.alert(rs.content);
-					return false;
-				}
-			}
-		});
-		return false;
-	});
-});
-</script>
-<div class="tips">
-	{lang您当前的位置：}
-	<a href="{url ctrl=project/}">{lang项目管理}</a>
-	&raquo; <!-- if $id -->{lang编辑项目}<!-- else -->{lang添加项目}<!-- end -->
-</div>
-<ul class="group">
-	<li class="on" onclick="$.admin.group(this)" name="main">{lang基本}</li>
-	<li onclick="$.admin.group(this)" name="admin">{lang扩展}</li>
-	<li onclick="$.admin.group(this)" name="seo">{langSEO优化}</li>
-</ul>
-
-<form method="post" id="{$ext_module}">
-<input type="hidden" id="id" name="id" value="{$id}" />
-<div id="main_setting">
-<div class="table">
-	<div class="title">
-		{lang名称：}
-		<span class="note">{lang设置名称，该名称将在网站前台导航中使用}</span>
-	</div>
-	<div class="content"><input type="text" id="title" name="title" class="default" value="{$rs.title}" /></div>
-</div>
-
-<div class="table">
-	<div class="title">
-		{lang项目别名：}
-		<span class="note">{lang此别名功能仅限在后台使用，用于显示在按钮上，一般不要超过6个汉字}</span>
-	</div>
-	<div class="content">
-		<input type="text" id="nick_title" name="nick_title" class="default" value="{$rs.nick_title}" />
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		{lang排序：}
-		<span class="note">{lang自定义排序，值越小越往前靠}</span>
-	</div>
-	<div class="content"><input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis ? $rs.taxis : '255'}" /></div>
-</div>
-
-<div class="table">
-	<div class="title">
-		{lang项目属性：}
-		<span class="note">{lang设置项目的一些功能，如停用，隐藏，打勾表示启用这个功能}</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="checkbox" name="lock"{if !$rs.status} checked{/if} />锁定<span class="gray i">（勾选此项后，前台将停用）</span></label></td>
-			<td><label><input type="checkbox" name="hidden"{if $rs.hidden} checked{/if} />隐藏</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		{lang父栏目：}
-		<span class="note">{lang实现父子栏目可以实现数据交叉使用}</span>
-	</div>
-	<div class="content">
-		<select id="parent_id" name="parent_id">
-		<option value="0">{lang设为父栏目}</option>
-		<!-- loop from=$parent_list key=$key value=$value -->
-		<!-- if $rs.id != $value.id -->
-		<option value="{$value.id}"{if $rs.parent_id == $value.id} selected{/if}>{$value.title}</option>
-		<!-- /if -->
-		<!-- /loop -->
-		</select>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang标识：}
-		<span class="note">{lang限}<span class="red">{lang字母、数字、下划线或中划线且必须是字母开头，}</span>{lang首页专用请设置为}<span class="red">index</span></span>
-	</div>
-	<div class="content">
-		<input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" />
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		{lang绑定模块：}
-		<span class="note">{lang实现类似新闻，产品等多条项目信息，绑定成功后建议不要修改，以防止数据混乱！}</span>
-	</div>
-	<div class="content">
-		<select id="module" name="module" onchange="$.admin_project.module_change(this)">
-		<option value="0">{lang不关联模块}</option>
-		<!-- loop from=$module_list key=$key value=$value id=module_list_id -->
-		<option value="{$value.id}"{if $value.id == $rs.module} selected{/if} data-mtype="{$value.mtype}">{$value.title}</option>
-		<!-- /loop -->
-		</select>
-	</div>
-</div>
-<div id="module_set2" class="hidden">
-	<div class="table">
-		<div class="title">
-			{lang默认主题数：}
-			<span class="note">{lang设置每页默认的主题数量}</span>
-		</div>
-		<div class="content">
-			<input type="text" id="psize2" name="psize2" value="{$rs.psize ? $rs.psize : 30}" class="short" />
-		</div>
-	</div>
-
-	<div class="table">
-		<div class="title">
-			{lang数据排序：}
-			<span class="note">{lang设置好默认排序，有利于网站的管理（前后台一致）}</span>
-		</div>
-		<div class="content">
-			<input type="text" id="orderby2" name="orderby2" class="long" value="{$rs.orderby ? $rs.orderby : 'id DESC'}" />
-			<input type="button" value="{lang清空}" class="phpok-btn" onclick="$('input[name=orderby2]').val('')" />
-			<div style="display:block;margin-top:5px;">
-				<div class="button-group" id="tmp_orderby_btn2">
-					<input type="button" value="ID" onclick="phpok_admin_orderby('orderby2','id')" class="phpok-btn" />
-				</div>
+<!-- include tpl=head_lay -->
+<form method="post" id="{$ext_module}" class="layui-form" onsubmit="return $.admin_project.save('{$ext_module}')">
+<!-- if $id --><input type="hidden" id="id" name="id" value="{$id}" /><!-- /if -->
+<div class="layui-card">
+	<div class="layui-card-header">{lang基本信息}</div>
+	<div class="layui-container layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang名称}</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
 			</div>
+			<div class="layui-input-inline auto gray">{lang设置名称，该名称将在网站前台导航中使用}</div>
 		</div>
-		<div class="clear"></div>
-	</div>
-</div>
-
-<div id="module_set" class="hidden">
-	<div class="table">
-		<div class="title">
-			{lang主题别名：}
-			<span class="note">{lang在使用模块时，会有一个必填选项，即主题，您可在这里设置别名}</span>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang项目别名}</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="nick_title" name="nick_title" class="layui-input" value="{$rs.nick_title}" />
+			</div>
+			<div class="layui-input-inline auto gray">{lang此别名功能仅限在后台使用，用于显示在按钮上，一般不要超过6个汉字}</div>
 		</div>
-		<div class="content">
-			<input type="text" id="alias_title" name="alias_title" class="default" value="{$rs.alias_title}" />
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang排序}</label>
+			<div class="layui-input-inline">
+				<input type="text" id="taxis" name="taxis" class="layui-input" value="{$rs.taxis ? $rs.taxis : '255'}" />
+			</div>
+			<div class="layui-input-inline auto gray">{lang自定义排序，值越小越往前靠}</div>
 		</div>
-	</div>
-
-	<div class="table">
-		<div class="title">
-			{lang主题备注：}
-			<span class="note">{lang同上}</span>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang项目属性}</label>
+			<div class="layui-input-inline default-auto">
+				<input type="checkbox" name="lock"{if !$rs.status} checked{/if} title="{lang锁定}" class="layui-tips" lay-tips="{lang勾选此项后，前台将停用}" />
+				<input type="checkbox" name="hidden"{if $rs.hidden} checked{/if} title="{lang隐藏}" />
+			</div>
+			<div class="layui-input-inline auto gray">{lang设置项目的一些功能，如停用，隐藏，打勾表示启用这个功能}</div>
 		</div>
-		<div class="content">
-			<input type="text" id="alias_note" name="alias_note" class="long" value="{$rs.alias_note}" />
-		</div>
-	</div>
-
-	<div class="table">
-		<div class="title">
-			{lang扩展项：}
-			<span class="note">{lang请根据实际情况设置相应的扩展项，勾选表示启用}</span>
-		</div>
-		<div class="content">
-		<table class="list" cellspacing="0" style="padding:1px;border:1px solid #ccc;">
-		<tr>
-			<td><input type="checkbox" name="is_attr" id="is_attr"{if $rs.is_attr} checked{/if} /></td>
-			<td><label for="is_attr">{lang主题属性}</label></td>
-			<td class="gray i">{lang相当于给主题增加标签，如精华，推荐，热荐等}</td>
-		</tr>
-		<!-- if $config.biz_status -->
-		<tr>
-			<td><input type="checkbox" name="is_biz" id="is_biz"{if $rs.is_biz} checked{/if} onclick="set_biz()" /></td>
-			<td><label for="is_biz">{lang电子商务}</label></td>
-			<td class="gray i">{lang启用此项，该主题将支持交易功能}</td>
-		</tr>
-		<!-- /if -->
-		<tr>
-			<td><input type="checkbox" name="is_search" id="is_search"{if $rs.is_search} checked{/if} /></td>
-			<td><label for="is_search">{lang搜索}</label></td>
-			<td class="gray i">{lang勾选此项后，该项目在前台将支持搜索}</td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="is_tag" id="is_tag"{if $rs.is_tag} checked{/if} /></td>
-			<td><label for="is_tag">{lang标签}</label></td>
-			<td class="gray i">{lang允许用户自定义标签内容，以方便网站优化}</td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="subtopics" id="subtopics"{if $rs.subtopics} checked{/if} /></td>
-			<td><label for="subtopics">{lang下级主题}</label></td>
-			<td class="gray i">{lang启用此项，主题将支持二级，多用于二级导航}</td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="post_status" id="post_status"{if $rs.post_status} checked{/if} onclick="set_post_status()" /></td>
-			<td><label for="post_status">{lang发布}</label></td>
-			<td class="gray i">{lang勾选此项，被授权的用户可以在前台有发布权限}</td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="comment_status" id="comment_status"{if $rs.comment_status} checked{/if} onclick="set_comment_status()" /></td>
-			<td><label for="comment_status">{lang评论}</label></td>
-			<td class="gray i">{lang即回复功能，勾选后被授权的用户将支持回复，静态页无效}</td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="is_userid" id="is_userid"{if $rs.is_userid} checked{/if} /></td>
-			<td><label for="is_userid">{lang绑定会员}</label></td>
-			<td class="gray i">{lang允许主题绑定相应的会员，会员在个人中心可以编辑相关主题，要求启用发布功能后，编辑才有效}</td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="is_tpl_content" id="is_tpl_content"{if $rs.is_tpl_content} checked{/if} /></td>
-			<td><label for="is_tpl_content">{lang自定义模板}</label></td>
-			<td class="gray i">{lang后台添加主题后允许绑定模板，此项仅限后台管理员操作}</td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="is_seo" id="is_seo"{if $rs.is_seo} checked{/if} /></td>
-			<td><label for="is_seo">{lang自定义SEO}</label></td>
-			<td class="gray i">{lang允许管理员针对主题自定义相关的SEO信息}</td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="is_identifier" id="is_identifier"{if $rs.is_identifier} checked{/if} /></td>
-			<td><label for="is_identifier">{lang自定义标识}</label></td>
-			<td class="gray i">{lang启用此项后，允许管理员针对添加的主题设定一个标识，更便于用户记住及SEO优化}</td>
-		</tr>
-		</table>
-		</div>
-	</div>
-
-	<div id="use_biz_setting"{if !$rs.is_biz || !$config.biz_status} style="display:none"{/if}>
-	<div class="table">
-		<div class="title">
-			{lang货币默认类型：}
-			<span class="note">{lang此项主要是方便后台管理员添加产品时，默认使用的货币}</span>
-		</div>
-		<div class="content">
-			<select name="currency_id" id="currency_id">
-				<option value="">{lang请选择……}</option>
-				<!-- loop from=$currency_list key=$key value=$value -->
-				<option value="{$value.id}"{if $rs.currency_id == $value.id} selected{/if}>{$value.title}/{lang标识：}{$value.code}/{lang汇率：}{$value.val}</option>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang父级栏目}</label>
+			<div class="layui-input-inline default-auto">
+				<select id="parent_id" name="parent_id">
+				<option value="0">{lang设为父栏目}</option>
+				<!-- loop from=$parent_list key=$key value=$value -->
+				<!-- if $rs.id != $value.id -->
+				<option value="{$value.id}"{if $rs.parent_id == $value.id} selected{/if}>{$value.title}</option>
+				<!-- /if -->
 				<!-- /loop -->
-			</select>
+				</select>
+			</div>
+			<div class="layui-input-inline auto gray">{lang实现父子栏目可以实现数据交叉使用}</div>
 		</div>
-	</div>
-	<div class="table">
-		<div class="title">
-			{lang运费模板}：
-			<span class="note">{lang请选择这个项目的运费计算方式}</span>
-		</div>
-		<div class="content">
-			<select name="freight" id="freight">
-				<option value="">{lang请选择运费计算方式……}</option>
-				<!-- loop from=$freight key=$key value=$value -->
-				<option value="{$value.id}"{if $rs.freight == $value.id} selected{/if}>{$value.title}</option>
-				<!-- /loop -->
-			</select>
-		</div>
-	</div>
-	<div class="table">
-		<div class="title">
-			{lang自定义产品属性：}
-			<span class="note">{lang启用此项后，将允许设定可选产品的一些属性，如颜色，款式，支持价格浮动}</span>
-		</div>
-		<div class="content">
-			<ul class="layout">
-				<li><label><input type="radio" name="biz_attr" value="0"{if !$rs.biz_attr} checked{/if} />不使用</label></li>
-				<li><label><input type="radio" name="biz_attr" value="1"{if $rs.biz_attr} checked{/if} />使用</label></li>
-			</ul>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang标识}</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="identifier" name="identifier" class="layui-input" value="{$rs.identifier}" />
+			</div>
+			<div class="layui-input-inline auto" id="HTML-POINT-PHPOK-IDENTIFIER"></div>
 			<div class="clear"></div>
+			<div class="layui-input-block mtop">{lang限}<span class="red">{lang字母、数字、下划线或中划线且必须是字母开头，}</span>{lang首页专用请设置为}<span class="red">index</span></div>
 		</div>
-	</div>
-	</div>
-
-	<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
-	<input type="hidden" data-name="emailtpl" value="{$value.identifier}" data-title="{$value.title}" data-note="{$value.note}" data-orderby="{$tmpid.num}" />
-	<!-- /loop -->
-	<div id="email_set_post_status"{if !$rs.post_status} style="display:none"{/if}>
-	<div class="table">
-		<div class="title">
-			{lang发布通知管理员邮件模板：}
-			<span class="note">{lang仅限启用：前台发布 后有效}</span>
+		<div class="layui-form-item">
+			<label class="layui-form-label title">{lang绑定模块}</label>
+			<div class="layui-input-inline auto">
+				<select id="module" name="module" onchange="$.admin_project.module_change(this)"lay-ignore>
+				<option value="0">{lang不关联模块}</option>
+				<!-- loop from=$module_list key=$key value=$value id=module_list_id -->
+				<option value="{$value.id}"{if $value.id == $rs.module} selected{/if} data-mtype="{$value.mtype}">{$value.title}</option>
+				<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-input-inline auto gray">{lang实现类似新闻，产品等多条项目信息，绑定成功后建议不要修改，以防止数据混乱！}</div>
 		</div>
-		<div class="content">
-			<input type="text" name="etpl_admin" id="etpl_admin" value="{$rs.etpl_admin}" class="long"{if !$rs.etpl_admin} placeholder="不通知"{/if} />
-		</div>
-	</div>
-	<div class="table">
-		<div class="title">
-			{lang发布通知会员邮件模板：}
-			<span class="note">{lang仅限启用：发布且已登录会员后有效}</span>
-		</div>
-		<div class="content">
-			<input type="text" name="etpl_user" id="etpl_user" value="{$rs.etpl_user}" class="long"{if !$rs.etpl_user} placeholder="不通知"{/if} />
-		</div>
-	</div>
-	</div>
-
-	<div id="email_set_comment_status"{if !$rs.comment_status} style="display:none"{/if}>
-	<div class="table">
-		<div class="title">
-			{lang评论通知管理员邮件模板：}
-			<span class="note">{lang仅限启用：评论后有效}</span>
-		</div>
-		<div class="content">
-			<input type="text" name="etpl_comment_admin" id="etpl_comment_admin" value="{$rs.etpl_comment_admin}" class="long"{if !$rs.etpl_comment_admin} placeholder="不通知"{/if} />
-		</div>
-	</div>
-	<div class="table">
-		<div class="title">
-			{lang评论通知会员邮件模板：}
-			<span class="note">{lang仅限启用：评论且已登录会员有效}</span>
-		</div>
-		<div class="content">
-			<input type="text" name="etpl_comment_user" id="etpl_comment_user" value="{$rs.etpl_comment_user}" class="long"{if !$rs.etpl_comment_user} placeholder="不通知"{/if} />
-		</div>
-	</div>
-	</div>
-
-	<div class="table">
-		<div class="title">
-			{lang默认主题数：}
-			<span class="note">{lang设置每页默认的主题数量}</span>
-		</div>
-		<div class="content">
-			<input type="text" id="psize" name="psize" value="{$rs.psize ? $rs.psize : 30}" class="short" />
-		</div>
-	</div>
-
-	<div class="table">
-		<div class="title">
-			{lang数据排序：}
-			<span class="note">{lang设置好默认排序，有利于网站的管理（前后台一致）}</span>
-		</div>
-		<div class="content">
-			<input type="text" id="orderby" name="orderby" class="long" value="{$rs.orderby ? $rs.orderby : 'l.sort ASC,l.dateline DESC,l.id DESC'}" />
-			<input type="button" value="{lang清空}" class="phpok-btn" onclick="$('#orderby').val('')" />
-			<div style="display:block;margin-top:5px;">
-				<div class="button-group">
-					<input type="button" value="{lang点击}" onclick="phpok_admin_orderby('orderby','l.hits')" class="phpok-btn" />
-					<input type="button" value="{lang时间}" onclick="phpok_admin_orderby('orderby','l.dateline')" class="phpok-btn" />
-					<input type="button" value="{lang回复时间}" onclick="phpok_admin_orderby('orderby','l.replydate')" class="phpok-btn" />
-					<input type="button" value="ID" onclick="phpok_admin_orderby('orderby','l.id')" class="phpok-btn" />
-					<input type="button" value="{lang人工}" onclick="phpok_admin_orderby('orderby','l.sort')" class="phpok-btn" />
+		<div id="module_set2" class="hidden">
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang默认主题数}</label>
+				<div class="layui-input-inline default-auto">
+					<input type="text" id="psize2" name="psize2" value="{$rs.psize ? $rs.psize : 30}" class="layui-input" />
 				</div>
-				<div id="tmp_orderby_btn" class="button-group" style="margin-left:10px;"></div>
+				<div class="layui-input-inline auto gray">{lang设置每页默认的主题数量}</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang数据排序}
+				</label>
+				<div class="layui-input-block">
+					<ul class="layout">
+						<li class="long"><input type="text" id="orderby2" name="orderby2" class="layui-input" value="{$rs.orderby ? $rs.orderby : 'id DESC'}" /></li>
+						<li><input type="button" value="{lang清空}" class="layui-btn layui-btn-danger" onclick="$('input[name=orderby2]').val('')" /></li>
+					</ul>
+				</div>
+				<div class="layui-input-block mtop">
+					<div class="layui-btn-group" id="tmp_orderby_btn2">
+						<input type="button" value="ID" onclick="phpok_admin_orderby('orderby2','id')" class="layui-btn layui-btn-sm" />
+					</div>
+				</div>
+				<div class="layui-input-block">{lang设置好默认排序，有利于网站的管理（前后台一致）}</div>
 			</div>
 		</div>
-		<div class="clear"></div>
-	</div>
-	<script type="text/javascript">
-	function refresh_catelist()
-	{
-		var url = get_url("project","rootcate");
-		url = url.replace(/&amp;/g,"&");
-		$.ajax({
-			url:url
-			,cache:false
-			,async:true
-			,dataType:"json"
-			,success:function(rs){
-				if(rs.status == "ok")
-				{
-					var info = '<option value="0">{lang不关联分类}</option>';
-					var lst = rs.content;
-					for(var i in lst)
-					{
-						info += '<option value="'+lst[i]['id']+'">'+lst[i]['title']+'</option>';
-					}
-					$("#cate").html(info);
-				}
-			}
-		});
-	}
-	function update_show_select(val)
-	{
-		if(val && val != 'undefined' && val != '0'){
-			$("#cate_multiple_set").show();
-		}else{
-			$("#cate_multiple_set").hide();
-		}
-	}
-	</script>
-	<div class="table">
-		<div class="title">
-			{lang关联根分类：}
-			<span class="note">{lang启用此项后，添加内容时，需要选对相对应的分类，且不能为空}</span>
-		</div>
-		<div class="content">
-			<select id="cate" name="cate" onchange="update_show_select(this.value)">
-			<option value="0">{lang不关联分类}</option>
-			<!-- loop from=$catelist key=$key value=$value id=catelist_id -->
-			<option value="{$value.id}"{if $value.id == $rs.cate} selected{/if}>{$value.title}</option>
-			<!-- /loop -->
-			</select>
-			<input type="button" value="{lang添加根分类}" onclick="cate_add(this.value)" />
-		</div>
-	</div>
-	<div class="table" id="cate_multiple_set"{if !$rs.cate} style="display:none"{/if}>
-		<div class="title">
-			{lang分类选项：}
-			<span class="note">请设置分类是否支持多选</span>
-		</div>
-		<div class="content">
-			<table>
-			<tr>
-				<td><label><input type="radio" name="cate_multiple" value="0"{if !$rs.cate_multiple} checked{/if} />单选</label></td>
-				<td><label><input type="radio" name="cate_multiple" value="1"{if $rs.cate_multiple} checked{/if} />多选</label></td>
-			</tr>
-			</table>
-		</div>
-	</div>
-</div>
 
-<div class="table">
-	<div class="title">
-		{lang后台权限：}
-		<span class="note">{lang权限可选项可登录官网查阅帮助手册，}
-			<a href="javascript:$.input.checkbox_all('mylayout');void(0);" class='n'>{lang全选}</a>
-			<a href="javascript:$.input.checkbox_none('mylayout');void(0);" class='n'>{lang全不选}</a>
-			<a href="javascript:$.input.checkbox_anti('mylayout');void(0);" class='n'>{lang反选}</a>
-		</span>
-	</div>
-	<div class="content">
-		<ul class="layout" id="mylayout">
-			<!-- loop from=$popedom_list key=$kk value=$vv -->
-			<li><label><input type="checkbox" name="_popedom[]" value="{$vv.id}"{if $popedom_list2 && in_array($vv.identifier,$popedom_list2)} checked{/if} /> {$vv.title}</label></li>
-			<!-- /loop -->
-		</ul>
-		<div class="clear"></div>
-	</div>
-</div>
+		<div id="module_set" class="hidden">
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang主题别名}</label>
+				<div class="layui-input-inline default-auto">
+					<input type="text" id="alias_title" name="alias_title" class="layui-input" value="{$rs.alias_title}" />
+				</div>
+				<div class="layui-input-inline auto gray">{lang在使用模块时，会有一个必填选项，即主题，您可在这里设置别名}</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang主题备注}</label>
+				<div class="layui-input-inline long">
+					<input type="text" id="alias_note" name="alias_note" class="layui-input" value="{$rs.alias_note}" />
+				</div>
+				<div class="layui-input-inline auto gray">{lang针对主题的别名设置相应的备注信息}</div>
+			</div>
+			<div class="layui-form-item">
+				<div id="ext_help" class="hide">
+					<table class="layui-table">
+						<thead>
+						<tr>
+							<th>扩展项</th>
+							<th>备注</th>
+						</tr>
+						</thead>
+						<tr>
+							<td>{lang主题属性}</td>
+							<td>{lang相当于给主题增加标签，如精华，推荐，热荐等}</td>
+						</tr>
+						<tr>
+							<td>{lang搜索}</td>
+							<td>{lang勾选此项后，该项目在前台将支持搜索}</td>
+						</tr>
+						<tr>
+							<td>{lang标签}</td>
+							<td>{lang允许用户自定义标签内容，以方便网站优化}</td>
+						</tr>
+						<tr>
+							<td>{lang下级主题}</td>
+							<td>{lang启用此项，主题将支持二级，多用于二级导航}</td>
+						</tr>
+						<tr>
+							<td>{lang发布}</td>
+							<td>{lang勾选此项，被授权的用户可以在前台有发布权限}</td>
+						</tr>
+						<tr>
+							<td>{lang评论}</td>
+							<td>{lang即回复功能，勾选后被授权的用户将支持回复，静态页无效}</td>
+						</tr>
+						<tr>
+							<td>{lang绑定会员}</td>
+							<td>{lang允许主题绑定相应的会员，会员在个人中心可以编辑相关主题，要求启用发布功能后，编辑才有效}</td>
+						</tr>
+						<tr>
+							<td>{lang自定义模板}</td>
+							<td>{lang后台添加主题后允许绑定模板，此项仅限后台管理员操作}</td>
+						</tr>
+						<tr>
+							<td>{lang自定义SEO}</td>
+							<td>{lang允许管理员针对主题自定义相关的SEO信息}</td>
+						</tr>
+						<tr>
+							<td>{lang自定义标识}</td>
+							<td>{lang启用此项后，允许管理员针对添加的主题设定一个标识，更便于用户记住及SEO优化}</td>
+						</tr>
+						<!-- if $config.biz_status -->
+						<tr>
+							<td>{lang电子商务}</td>
+							<td>{lang启用此项，该主题将支持交易功能}</td>
+						</tr>
+						<!-- /if -->
+					</table>
+					
+				</div>
+				<label class="layui-form-label"><i class="layui-icon hand" onclick="$.admin_project.ext_help()">&#xe702;</i> {lang扩展项}</label>
+				<div class="layui-input-inline" style="width:80%;">
+					<ul>
+						<li class="layui-col-md3"><input type="checkbox" name="is_attr" title="{lang主题属性}" class="layui-tips" id="is_attr"{if $rs.is_attr} checked{/if} /></li>
+						<li class="layui-col-md3"><input type="checkbox" name="is_search" title="{lang搜索}" id="is_search"{if $rs.is_search} checked{/if} /></li>
+						<li class="layui-col-md3"><input type="checkbox" name="is_tag" title="{lang标签}" id="is_tag"{if $rs.is_tag} checked{/if} /></li>
+						<li class="layui-col-md3"><input type="checkbox" name="subtopics" title="{lang下级主题}" id="subtopics"{if $rs.subtopics} checked{/if} /></li>
+						<li class="layui-col-md3"><input type="checkbox" name="is_userid" title="{lang绑定会员}" id="is_userid"{if $rs.is_userid} checked{/if} /></li>
+						<li class="layui-col-md3"><input type="checkbox" name="post_status" title="{lang发布}" id="post_status"{if $rs.post_status} checked{/if} /></li>
+						<li class="layui-col-md3"><input type="checkbox" name="comment_status" title="{lang评论}" id="comment_status"{if $rs.comment_status} checked{/if} /></li>
+						<li class="layui-col-md3"><input type="checkbox" name="is_tpl_content" title="{lang自定义模板}" id="is_tpl_content"{if $rs.is_tpl_content} checked{/if} /></li>
+						<li class="layui-col-md3"><input type="checkbox" name="is_seo" title="{lang自定义SEO}" id="is_seo"{if $rs.is_seo} checked{/if} /></li>
+						<li class="layui-col-md3"><input type="checkbox" name="is_identifier" title="{lang自定义标识}" id="is_identifier"{if $rs.is_identifier} checked{/if} /></li>
+						<!-- if $config.biz_status -->
+						<li class="layui-col-md3"><input type="checkbox" name="is_biz" title="{lang电子商务}" id="is_biz"{if $rs.is_biz} checked{/if} /></li>
+						<!-- /if -->
+					</ul>
+				</div>
+			</div>
+			<div id="use_biz_setting"{if !$rs.is_biz || !$config.biz_status} style="display:none"{/if}>
+				<div class="layui-form-item">
+					<label class="layui-form-label">{lang货币默认类型}</label>
+					<div class="layui-input-inline default-auto">
+						<select name="currency_id" id="currency_id">
+							<option value="">{lang请选择……}</option>
+							<!-- loop from=$currency_list key=$key value=$value -->
+							<option value="{$value.id}"{if $rs.currency_id == $value.id} selected{/if}>{$value.title}/{lang标识：}{$value.code}/{lang汇率：}{$value.val}</option>
+							<!-- /loop -->
+						</select>
+					</div>
+					<div class="layui-input-inline auto gray">{lang此项主要是方便后台管理员添加产品时，默认使用的货币}</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">{lang运费模板}</label>
+					<div class="layui-input-inline default-auto">
+						<select name="freight" id="freight">
+							<option value="">{lang请选择运费计算方式……}</option>
+							<!-- loop from=$freight key=$key value=$value -->
+							<option value="{$value.id}"{if $rs.freight == $value.id} selected{/if}>{$value.title}</option>
+							<!-- /loop -->
+						</select>
+					</div>
+					<div class="layui-input-inline auto gray">{lang请选择这个项目的运费计算方式}</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">{lang电商属性}</label>
+					<div class="layui-input-inline default-auto">
+						<input type="radio" name="biz_attr" value="0"{if !$rs.biz_attr} checked{/if} title="{lang不使用}" />
+						<input type="radio" name="biz_attr" value="1"{if $rs.biz_attr} checked{/if} title="{lang使用}" />
+					</div>
+					<div class="layui-input-inline auto gray">{lang启用此项后，将允许设定可选产品的一些属性，如颜色，款式，支持价格浮动}</div>
+				</div>
+			</div>
 
-<div class="table">
-	<div class="title">
-		{lang前台权限：}
-		<span class="note">{lang设置前台用户组可操作的权限}</span>
-	</div>
-	<div class="content">
-		<div class="list" style="">
-		<table cellpadding="0" cellspacing="0" style="padding:1px;border:1px solid #ccc;">
-		<!-- loop from=$grouplist key=$key value=$value -->
-		<tr id="group_{$value.id}">
-			<td><div style="text-indent:5px;">{$value.space}{$value.title}</div></td>
-			<td width="180px" align="center">
-				<input type="button" value="{lang全选}" onclick="$.input.checkbox_all('group_{$value.id}')" />
-				<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none('group_{$value.id}')" />
-				<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti('group_{$value.id}')" />
-			</td>
-			<td>
-				<ul class="layout">
-					<li><label><input type="checkbox" name="p_read_{$value.id}"{if $value.popedom.read} checked{/if} /> {lang阅读}</label></li>
-					<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><label><input type="checkbox" name="p_post_{$value.id}"{if $value.popedom.post} checked{/if} /> {lang发布}</label></li>
-					<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><label><input type="checkbox" name="p_post1_{$value.id}"{if $value.popedom.post1} checked{/if} /> {lang发布免审核}</label></li>
-					<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><label><input type="checkbox" name="p_reply_{$value.id}"{if $value.popedom.reply} checked{/if} /> {lang回复}</label></li>
-					<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><label><input type="checkbox" name="p_reply1_{$value.id}"{if $value.popedom.reply1} checked{/if} /> {lang回复免审核}</label></li>
+			<div id="email_set_post_status"{if !$rs.post_status} style="display:none"{/if}>
+				<div class="layui-form-item">
+					<label class="layui-form-label"><i class="layui-icon layui-tips" lay-tips="{lang发布通知管理员及会员的邮件模板}">&#xe702;</i> {lang发布模板}</label>
+					<div class="layui-input-block">
+						<select id="etpl_admin" name="etpl_admin">
+							<option value="">{lang发布信息_管理员不通知}</option>
+							<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
+							<option value="{$value.identifier}"{if $rs.etpl_admin == $value.identifier} selected{/if}>{lang发布信息_管理员模板}_{$value.title}_{$value.identifier}<!-- if $value.note -->_{$value.note}<!-- /if --></option>
+							<!-- /loop -->
+						</select>
+					</div>
+					<div class="layui-input-block" style="margin-top:10px;">
+						<select id="etpl_user" name="etpl_user">
+							<option value="">{lang发布信息_会员不通知}</option>
+							<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
+							<option value="{$value.identifier}"{if $rs.etpl_user == $value.identifier} selected{/if}>{lang发布信息_会员模板}_{$value.title}_{$value.identifier}<!-- if $value.note -->_{$value.note}<!-- /if --></option>
+							<!-- /loop -->
+						</select>
+					</div>
+					<div class="layui-input-block gray">{lang通知管理员仅限启用【前台发布】后有效，通知会员仅限启用【前台发布】且已登录会员后有效}</div>
+				</div>
+			</div>
+
+			<div id="email_set_comment_status"{if !$rs.comment_status} style="display:none"{/if}>
+				<div class="layui-form-item">
+					<label class="layui-form-label"><i class="layui-icon layui-tips" lay-tips="{lang评论通知管理员及会员的邮件模板}">&#xe702;</i> {lang评论模板}</label>
+					<div class="layui-input-block">
+						<select id="etpl_comment_admin" name="etpl_comment_admin">
+							<option value="">{lang回复信息_管理员不通知}</option>
+							<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
+							<option value="{$value.identifier}"{if $rs.etpl_comment_admin == $value.identifier} selected{/if}>{lang回复信息_管理员模板}_{$value.title}_{$value.identifier}<!-- if $value.note -->_{$value.note}<!-- /if --></option>
+							<!-- /loop -->
+						</select>
+					</div>
+					<div class="layui-input-block" style="margin-top:10px;">
+						<select id="etpl_comment_user" name="etpl_comment_user">
+							<option value="">{lang回复信息_会员不通知}</option>
+							<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
+							<option value="{$value.identifier}"{if $rs.etpl_comment_user == $value.identifier} selected{/if}>{lang回复信息_会员模板}_{$value.title}_{$value.identifier}<!-- if $value.note -->_{$value.note}<!-- /if --></option>
+							<!-- /loop -->
+						</select>
+					</div>
+					<div class="layui-input-block gray">{lang通知管理员仅限启用【评论】后有效，通知会员仅限启用【评论】且已登录会员后有效}</div>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang默认主题数}</label>
+				<div class="layui-input-inline">
+					<input type="text" id="psize" name="psize" value="{$rs.psize ? $rs.psize : 30}" class="layui-input" />
+				</div>
+				<div class="layui-input-inline auto gray">{lang设置每页默认的主题数量}</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang数据排序}</label>
+				<div class="layui-input-block">
+					<input type="text" id="orderby" name="orderby" class="layui-input" value="{$rs.orderby ? $rs.orderby : 'l.sort ASC,l.dateline DESC,l.id DESC'}" />
+				</div>
+				<div class="layui-input-block" style="margin-top:10px;">
+					<div class="button-group">
+						<input type="button" value="{lang清空}" class="phpok-btn" onclick="$('#orderby').val('')" />
+						<input type="button" value="{lang点击}" onclick="phpok_admin_orderby('orderby','l.hits')" class="phpok-btn" />
+						<input type="button" value="{lang时间}" onclick="phpok_admin_orderby('orderby','l.dateline')" class="phpok-btn" />
+						<input type="button" value="{lang回复时间}" onclick="phpok_admin_orderby('orderby','l.replydate')" class="phpok-btn" />
+						<input type="button" value="ID" onclick="phpok_admin_orderby('orderby','l.id')" class="phpok-btn" />
+						<input type="button" value="{lang人工}" onclick="phpok_admin_orderby('orderby','l.sort')" class="phpok-btn" />
+					</div>
+					<div id="tmp_orderby_btn" class="button-group" style="margin-left:10px;"></div>
+				</div>
+				<div class="layui-input-block auto">{lang设置好默认排序，有利于网站的管理/前后台一致}</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang列表读取}</label>
+				<div class="layui-input-block">
+					<input type="text" id="list_fields" name="list_fields" class="layui-input" value="{$rs.list_fields}" />
+				</div>
+				<div class="layui-input-block" style="margin-top:10px;">
+					<div class="layui-btn-group" id="tmp_fields_btn">
+						<input type="button" value="{lang清空}" class="layui-btn layui-btn-sm layui-btn-normal" onclick="$('#list_fields').val('')" />
+					</div>
+				</div>
+				<div class="layui-input-block auto">{lang当绑定了模块后，读取列表的数据默认为全部，请根据实际情况来设置，最多不能超过200字符}</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang关联根分类}</label>
+				<div class="layui-input-inline auto">
+					<select id="cate" name="cate" onchange="update_show_select(this.value)" lay-ignore>
+					<option value="0">{lang不关联分类}</option>
+					<!-- loop from=$catelist key=$key value=$value id=catelist_id -->
+					<option value="{$value.id}"{if $value.id == $rs.cate} selected{/if}>{$value.title}</option>
+					<!-- /loop -->
+					</select>
+					<input type="button" value="{lang添加根分类}" onclick="cate_add(this.value)" class="phpok-btn" />
+				</div>
+				<div class="layui-input-inline auto gray">{lang启用此项后，添加内容时，需要选对相对应的分类，且不能为空}</div>
+			</div>
+			
+
+			<div id="cate_multiple_set"{if !$rs.cate} class="hide"{/if}>
+				<div class="layui-form-item">
+					<label class="layui-form-label"><i class="layui-icon layui-tips" lay-tips="{lang设置分类是单选模式还是多选模式}">&#xe702;</i> {lang分类选项}</label>
+					<div class="layui-input-inline auto">
+						<input type="radio" name="cate_multiple" value="0"{if !$rs.cate_multiple} checked{/if} title="{lang单选}" />
+						<input type="radio" name="cate_multiple" value="1"{if $rs.cate_multiple} checked{/if} title="{lang多选}" />
+					</div>
+					<div class="layui-input-inline auto gray"></div>
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang后台权限}</label>
+			<div class="layui-input-block">
+				<ul class="layout" id="mylayout">
+					<!-- loop from=$popedom_list key=$kk value=$vv -->
+					<li><input type="checkbox" name="_popedom[]" lay-skin="primary" title="{$vv.title}" value="{$vv.id}"{if $popedom_list2 && in_array($vv.identifier,$popedom_list2)} checked{/if} /></li>
+					<!-- /loop -->
 				</ul>
-			</td>
-		</tr>
-		<!-- /loop -->
-		</table>
+			</div>
+			<div class="layui-input-block mtop">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang全选}" onclick="$.input.checkbox_all('mylayout')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none('mylayout')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti('mylayout')" class="layui-btn layui-btn-sm" />
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang前台权限}</label>
+			<!-- loop from=$grouplist key=$key value=$value id=$idx -->
+			<div class="layui-input-block{if $idx.index} mtop{/if}" id="group_{$value.id}">
+				<ul class="layout">
+					<li style="margin-top:5px;min-width:80px;overflow:hidden;text-align:right;">{$value.title}</li>
+					<li style="margin-top:5px;">
+						<div class="button-group">
+							<input type="button" value="{lang全选}" class="phpok-btn" onclick="$.input.checkbox_all('group_{$value.id}')" />
+							<input type="button" value="{lang全不选}" class="phpok-btn" onclick="$.input.checkbox_none('group_{$value.id}')" />
+							<input type="button" value="{lang反选}" class="phpok-btn" onclick="$.input.checkbox_anti('group_{$value.id}')" />
+						</div>
+					</li>
+					<li><input type="checkbox" name="p_read_{$value.id}"{if $value.popedom.read} checked{/if} title="{lang阅读}" /></li>
+					<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><input type="checkbox" name="p_post_{$value.id}"{if $value.popedom.post} checked{/if} title="{lang发布}" /></li>
+					<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><input type="checkbox" name="p_post1_{$value.id}"{if $value.popedom.post1} checked{/if} title="{lang发布免审核}" /></li>
+					<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><input type="checkbox" name="p_reply_{$value.id}"{if $value.popedom.reply} checked{/if} title="{lang回复}" /></li>
+					<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><input type="checkbox" name="p_reply1_{$value.id}"{if $value.popedom.reply1} checked{/if} title="{lang回复免审核}" /></li>
+				</ul>
+			</div>
+			<!-- /loop -->
 		</div>
 	</div>
 </div>
-
-</div>
-<div id="admin_setting" class="hide">
-
-<div class="table">
-	<div class="title">
-		{lang封面模板：}
-		<span class="note">{lang设定此模板将启用封面功能，不启用留空，不绑定模块时，此项不能为空}</span>
-	</div>
-	<div class="content">
-		<table>
-		<tr>
-			<td><input type="text" id="tpl_index" name="tpl_index" class="default" value="{$rs.tpl_index}" /></td>
-			<td>
-				<div class="button-group">
-					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_index')" class="phpok-btn" />
-					<input type="button" value="{lang清空}" onclick="$('#tpl_index').val('');" class="phpok-btn" />
+<div class="layui-card">
+	<div class="layui-card-header">{lang扩展信息}</div>
+	<div class="layui-container layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang封面模板}</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="tpl_index" name="tpl_index" class="layui-input" value="{$rs.tpl_index}" />
+			</div>
+			<div class="layui-input-inline auto gray">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_index')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang清空}" onclick="$('#tpl_index').val('');" class="layui-btn layui-btn-sm" />
 				</div>
-			</td>
-		</tr>
-		</table>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang列表模板：}
-		<span class="note">{lang仅限于绑定模块后才能生效}</span>
-	</div>
-	<div class="content">
-		<table>
-		<tr>
-			<td><input type="text" id="tpl_list" name="tpl_list" class="default" value="{$rs.tpl_list}" /></td>
-			<td>
-				<div class="button-group">
-					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_list')" class="phpok-btn" />
-					<input type="button" value="{lang清空}" onclick="$('#tpl_list').val('');" class="phpok-btn" />
+			</div>
+			<div class="layui-input-inline auto gray">{lang设定此模板将启用封面功能，不启用留空}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang列表模板}</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="tpl_list" name="tpl_list" class="layui-input" value="{$rs.tpl_list}" />
+			</div>
+			<div class="layui-input-inline auto">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_list')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang清空}" onclick="$('#tpl_list').val('');" class="layui-btn layui-btn-sm" />
 				</div>
-			</td>
-		</tr>
-		</table>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang内容模板：}
-		<span class="note">{lang仅限于绑定模块后才能生效}</span>
-	</div>
-	<div class="content">
-		<table>
-		<tr>
-			<td><input type="text" id="tpl_content" name="tpl_content" class="default" value="{$rs.tpl_content}" /></td>
-			<td>
-				<div class="button-group">
-					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_content')" class="phpok-btn" />
-					<input type="button" value="{lang清空}" onclick="$('#tpl_content').val('');" class="phpok-btn" />
+			</div>
+			<div class="layui-input-inline auto gray">{lang仅限于绑定模块后才能生效}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang内容模板}</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="tpl_content" name="tpl_content" class="layui-input" value="{$rs.tpl_content}" />
+			</div>
+			<div class="layui-input-inline auto">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_content')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang清空}" onclick="$('#tpl_content').val('');" class="layui-btn layui-btn-sm" />
 				</div>
-			</td>
-		</tr>
-		</table>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang发布模板：}
-		<span class="note">{lang仅限于绑定模块且启用发布功能后有效}</span>
-	</div>
-	<div class="content">
-		<table>
-		<tr>
-			<td><input type="text" id="post_tpl" name="post_tpl" class="default" value="{$rs.post_tpl}" /></td>
-			<td>
-				<div class="button-group">
-					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('post_tpl')" class="phpok-btn" />
-					<input type="button" value="{lang清空}" onclick="$('#post_tpl').val('');" class="phpok-btn" />
+			</div>
+			<div class="layui-input-inline auto gray">{lang仅限于绑定模块后才能生效}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang发布模板}</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="post_tpl" name="post_tpl" class="layui-input" value="{$rs.post_tpl}" />
+			</div>
+			<div class="layui-input-inline auto">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('post_tpl')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang清空}" onclick="$('#post_tpl').val('');" class="layui-btn layui-btn-sm" />
 				</div>
-			</td>
-		</tr>
-		</table>
+			</div>
+			<div class="layui-input-inline auto">{lang仅限于绑定模块且启用发布功能后有效}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label layui-tips" lay-tips="{lang请选择一个直观的图标，大小为：48x48，建议使用PNG格式}">{lang图标}</label>
+			<div class="layui-input-block default-auto">
+				<ul class="layout">
+					<!-- loop from=$icolist key=$key value=$value -->
+					<li class="mbtm layui-tips" lay-tips="{func basename $value}"><input type="radio" name="ico" value="{$value}"{if $rs.ico == $value} checked{/if} title='<img src="{$value}" alt="{func basename $value}" />' />
+					</li>
+					<!-- /loop -->
+					<div class="clear"></div>
+				</ul>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label layui-tips" lay-tips="{lang将显示在内容管理布局区那里，用于提示编辑人员注意事项}">{lang后台备注}</label>
+			<div class="layui-input-block">
+				{$note_content}
+			</div>
+		</div>
+		
 	</div>
 </div>
-
-<div class="table">
-	<div class="title">
-		{lang图标：}
-		<span class="note">{lang请选择一个直观的图标，大小为：48x48，建议使用PNG格式}</span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<!-- loop from=$icolist key=$key value=$value -->
-			<li><label title="{func basename $value}">
-				<table>
-				<tr>
-					<td><input type="radio" name="ico" value="{$value}"{if $rs.ico == $value} checked{/if} /></td>
-					<td><img src="{$value}" alt="{func basename $value}" /></td>
-				</tr>
-				</table>
-			</label></li>
-			<!-- /loop -->
-			<div class="clear"></div>
-		</ul>
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		{lang后台备注说明：}
-		<span class="note">{lang将显示在内容管理布局区那里，用于提示编辑人员注意事项}</span>
-	</div>
-	<div class="content">{$note_content}</div>
-</div>
-
-</div>
-<div id="seo_setting" class="hide">
-<div class="table">
-	<div class="title">
-		{langSEO标题：}
-		<span class="note">{lang设置此标题后，网站Title将会替代默认定义的，不能超过85个汉字}</span>
-	</div>
-	<div class="content">
-		<input type="text" id="seo_title" name="seo_title" class="long" value="{$rs.seo_title}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{langSEO关键字：}
-		<span class="note">{lang多个关键字用英文逗号或英文竖线隔开}</span>
-	</div>
-	<div class="content">
-		<input type="text" id="seo_keywords" name="seo_keywords" class="long" value="{$rs.seo_keywords}" />
+<div class="layui-card">
+	<div class="layui-card-header">{langSEO优化}</div>
+	<div class="layui-container layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">{langSEO标题}</label>
+			<div class="layui-input-block">
+				<input type="text" id="seo_title" name="seo_title" class="layui-input" value="{$rs.seo_title}" />
+			</div>
+			<div class="layui-input-block mtop">{lang设置此标题后，网站 Title 将会替代默认定义的，不能超过85个汉字}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{langSEO关键字}</label>
+			<div class="layui-input-block">
+				<input type="text" id="seo_keywords" name="seo_keywords" class="layui-input" value="{$rs.seo_keywords}" />
+			</div>
+			<div class="layui-input-block mtop">{lang多个关键字用英文逗号或英文竖线隔开}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{langSEO描述}</label>
+			<div class="layui-input-block">
+				<textarea name="seo_desc" id="seo_desc" class="layui-textarea">{$rs.seo_desc}</textarea>
+			</div>
+			<div class="layui-input-block mtop">{lang简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang标签}</label>
+			<div class="layui-input-block">
+				<input type="text" id="tag" name="tag" class="layui-input" value="{$rs.tag}" />
+			</div>
+			<div class="layui-input-block mtop">
+				{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">&nbsp;</label>
+			<div class="layui-input-inline default-auto">
+				<input type="submit" value="{lang提交保存}" class="layui-btn layui-btn-danger" />
+			</div>
+			<div class="layui-input-inline auto gray"></div>
+		</div>
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		{langSEO描述：}
-		<span class="note">{lang简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字}</span>
-	</div>
-	<div class="content">
-		<textarea name="seo_desc" id="seo_desc" class="long">{$rs.seo_desc}</textarea>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang标签：}
-		<span class="note">{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}</span>
-	</div>
-	<div class="content">
-		<input type="text" id="tag" name="tag" class="long" value="{$rs.tag}" />
-	</div>
-</div>
-</div>
-<div class="clear"></div>
-<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
 </form>
 
 
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

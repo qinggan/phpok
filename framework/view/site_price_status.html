@@ -1,0 +1,47 @@
+<!-- include tpl=head_open -->
+<form method="post" id="postsave" onsubmit="return false">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<div class="table">
+	<div class="title">
+		{lang名称}
+	</div>
+	<div class="content"><input type="text" id="title" name="title" value="{$rs.title}" class="w99" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang动作}
+		<span class="note">{lang请选择加价或减价，一般仅限优惠才是减价格，其他的都是加价格}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="action" value="add"{if !$rs.action || $rs.action == 'add'} checked{/if} />{lang价格上升}</label></li>
+			<li><label><input type="radio" name="action" value="less"{if $rs.action == 'less'} checked{/if} />{lang价格下调}</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang状态}
+		<span class="note">{lang设置是否使用}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="status" value="1"{if $rs.status} checked{/if} />{lang启用}</label></li>
+			<li><label><input type="radio" name="status" value="0"{if !$rs.status} checked{/if} />{lang禁用}</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang状态顺序}
+		<span class="note">{lang请保持唯一，以确保客户能正常显示}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="taxis" id="taxis" value="{$rs.taxis}" class="short" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot_open -->

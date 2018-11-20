@@ -1,7 +1,6 @@
 <?php
 /**
  * PHPOK框架入口引挈文件，请不要改动此文件
- * @package phpok
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -13,7 +12,9 @@
 /**
  * 安全限制
 **/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
 
 /**
  * 强制使用UTF-8编码
@@ -22,6 +23,8 @@ header("Content-type: text/html; charset=utf-8");
 header("Cache-control: no-cache,no-store,must-revalidate");
 header("Pramga: no-cache"); 
 header("Expires: -1");
+header("X-Frame-Options: sameorigin");
+//setcookie("phpokcom", "test", null, null, null, null, true);
 
 /**
  * 计算执行的时间
@@ -87,8 +90,8 @@ function debug_time()
 	$sql_db_time = $app->db->sql_time();
 	$cache_count = $app->cache->count();
 	$cache_time = $app->cache->time();
-	$string = '运行{total}秒，内存使用{mem_total}，数据库执行{sql_count}次，';
-	$string.= '用时{sql_time}秒，缓存执行{cache_count}次，用时{cache_time}秒';
+	$string = '运行 {total} 秒，内存使用 {mem_total}，数据库执行 {sql_count} 次，';
+	$string.= '用时 {sql_time} 秒，缓存执行 {cache_count} 次，用时 {cache_time} 秒';
 	$array = array('total'=>$time,'mem_total'=>$memory);
 	$array['sql_count']= $app->db->sql_count();
 	$array['sql_time'] = $app->db->sql_time();
@@ -544,7 +547,7 @@ class _init_phpok
 	public function init_site()
 	{
 		if($this->app_id == "admin"){
-			if($_SESSION['admin_site_id']){
+			if($this->session->val('admin_site_id')){
 				$site_rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
 			}else{
 				$site_rs = $this->model("site")->get_one_default();
@@ -560,15 +563,21 @@ class _init_phpok
 		if(!$domain){
 			$this->_error('无法获取网站域名信息，请检查环境是否支持$_SERVER["SERVER_NAME"]或$_SERVER["HTTP_HOST"]');
 		}
-		if(!$site_id){
-			$site_id = $domain;
-			if(!$site_id){
-				$this->_error('站点信息获取失败');
-			}
-		}
-		$site_rs = $this->model('site')->site_info($site_id);
+		$site_rs = $this->model('site')->site_info(($site_id ? $site_id : $domain));
 		if(!$site_rs && $this->app_id == 'www'){
 			$this->_error('网站信息不存在或未启用');
+		}
+		if(!$site_rs['is_default']){
+			$site_default = $this->model('site')->get_one_default();
+			$tmplist = array();
+			if($site_default && $site_default['_domain']){
+				foreach($site_default['_domain'] as $key=>$value){
+					$tmplist[] = $value['domain'];
+				}
+			}
+			if(in_array($domain,$tmplist)){
+				define("PHPOK_SITE_ID",$site_rs['id']);
+			}
 		}
 		$url_type = $this->is_https() ? 'https://' : 'http://';
 		if($this->app_id == 'www'){
@@ -577,15 +586,6 @@ class _init_phpok
 				if(!$this->is_mobile && $this->config['mobile']['autocheck']){
 					$this->is_mobile = $this->is_mobile();
 				}
-			}
-			if(is_numeric($site_id) && $site_rs['domain'] && $site_rs['domain'] != $domain){
-				$url = $url_type.$site_rs['domain'].$site_rs['dir'];
-				if(substr($url,-1) != '/'){
-					$url .= '/';
-				}
-				$url .= $this->config['www_file'];
-				$this->_location($url);
-				exit;
 			}
 			if($site_rs['_mobile']){
 				if($site_rs['_mobile']['domain'] == $domain){
@@ -778,6 +778,11 @@ class _init_phpok
 		$class_name2 = $name.'_control';
 		$this->$class_name = new $class_name2();
 		return $this->$class_name;
+	}
+
+	public function ctrl($name,$appid='')
+	{
+		return $this->control($name,$appid);
 	}
 
 	/**
@@ -2046,7 +2051,9 @@ class _init_phpok
 			$data = is_array($ajax) ? $ajax : array();
 			$data['info'] = $info;
 			$data['status'] = $status;
-			$data['url'] = $url;
+			if($url){
+				$data['url'] = $url;
+			}
 			header('Content-Type:application/json; charset=utf-8');
             exit($this->lib('json')->encode($data));
         }
@@ -2054,6 +2061,13 @@ class _init_phpok
 	        $this->assign('time',$ajax);
         }
         if($url){
+	        if(defined('PHPOK_SITE_ID')){
+		        if(strpos($url,'?') === false){
+					$url .= "?siteId=".PHPOK_SITE_ID;
+				}else{
+					$url .= "&siteId=".PHPOK_SITE_ID;
+				}
+	        }
 	        $this->assign('url',$url);
         }
         $this->assign('title',($status ? P_Lang('操作成功') : P_Lang('操作失败')));
@@ -2112,7 +2126,7 @@ class _init_phpok
 		}
 		$this->site['seo'] = $seo;
 		$this->assign("seo",$seo);
-		unset($seo);
+		return $seo;
 	}
 
 	/**

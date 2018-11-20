@@ -43,6 +43,11 @@ $(document).ready(function(){
 });
 function save()
 {
+	if(typeof(CKEDITOR) != "undefined"){
+		for(var i in CKEDITOR.instances){
+			CKEDITOR.instances[i].updateElement();
+		}
+	}
 	var f = $("#zipfile_progress .phpok-upfile-list").length;
 	if(f<1){
 		$.dialog.alert('请选择要上传的文件');

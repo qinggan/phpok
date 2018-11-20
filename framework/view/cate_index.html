@@ -1,77 +1,72 @@
-<!-- inc:head -->
+<!-- include tpl=head_lay -->
 <script type="text/javascript" src="{echo add_js('cate.js')}"></script>
-<script type="text/javascript">
-function cate_delete(id)
-{
-	$.dialog.confirm("{lang确定要删除此分类吗？}",function(){
-		var url = get_url("cate","delete");
-		url += "&id="+id;
-		var rs = $.phpok.json(url);
-		if(rs.status == "ok"){
-			$.phpok.reload();
-		}else{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	});
-}
-
-</script>
-<div class="tips clearfix">
-	<!-- if $popedom.add -->
-	<div class="action"><a href="{echo admin_url('cate','set')}">{lang添加根分类}</a></div>
-	<!-- /if -->
-	{lang您当前的位置：}
-	<a href="{echo admin_url('fields')}">{lang栏目管理}</a>
-	&raquo; {lang栏目列表}
-</div>
-<div class="cate_list clearfix">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th class="id">ID</th>
-	<th width="30">&nbsp;</th>
-	<th class="title">{lang分类名称}</th>
-	<th width="80">{lang排序}</th>
-	<th width="50">&nbsp;</th>
-	<th class="lft" width="200">{lang操作}</th>
-</tr>
-<!-- run:$tab_i = 0; -->
-<!-- foreach($rslist AS $key=>$value) -->
-<!-- run:$tab_i++ -->
-<tr{if $key%2 == ""} class="list"{/if}>
-	<td class="center gray">{$value.id}</td>
-	<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="phpok_status({$value.id},'{url ctrl=cate func=status/}')"{else} style="cursor: default;"{/if} value="{$value.status}"></span></td>
-	<td>
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<!-- for($i=1;$i<$value[_layer];$i++) -->
-			<td class="cate_line">&nbsp;</td>
-			<!-- /for -->
-			<!-- if $value[_layer]>0 -->
-				<td class="cate_middle">&nbsp;</td>
-			<!-- /if -->
-			<td><label for="id_{$value.id}">{$value.title}<span class="gray i">（{$value.identifier}）</span></label></td>
-		</tr>
-		</table>
-	</td>
-	<td class="center"><input type="text" id="taxis_{$value.id}" class="cate_taxis" value="{$value.taxis}" tabindex="{$tab_i}" onblur="update_taxis('{$value.id}')" /></td>
-	<td id="taxis_submit_{$value.id}">&nbsp;</td>
-	<td>
-		<div class="button-group">
-			<!-- if $popedom.add -->
-			<input type="button" value="{lang添加子分类}" onclick="$.phpok.go('{url ctrl=cate func=set parent_id=$value.id/}')" class="phpok-btn" />
-			<!-- /if -->
-			<!-- if $popedom.modify -->
-			<input type="button" value="{lang修改}" onclick="$.phpok.go('{url ctrl=cate func=set id=$value.id/}')" class="phpok-btn" />
-			<!-- /if -->
-			<!-- if $popedom.delete -->
-			<input type="button" value="{lang删除}" onclick="cate_delete('{$value.id}')" class="phpok-btn" />
-			<!-- /if -->
+<div class="layui-card">
+	<div class="layui-card-header ">
+		{lang分类列表}
+		<div class="fr">
+			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加根分类}','{url ctrl=cate func=set/}')">
+				<i class="layui-icon">&#xe608;</i> {lang添加根分类}
+			</button>
 		</div>
-		
-	</td>
-</tr>
-<!-- /foreach -->
-</table>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table" lay-size="sm">
+			<colgroup>
+				<col width="80">
+				<col width="80">
+				<col>
+				<col width="80">
+				<col width="210">
+			</colgroup>
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>状态</th>
+				<th>{lang分类名称}</th>
+				<th>{lang排序}</th>
+				<th>{lang操作}</th>
+			</tr>
+			</thead>
+			<tbody>
+			<!-- run:$tab_i = 0; -->
+			<!-- loop from=$rslist key=$key value=$value -->
+			<!-- run:$tab_i++ -->
+			<tr>
+				<td>{$value.id}</td>
+				<td>
+					<input type="button" id="status_{$value.id}" value="{if $value.status}{lang启用}{else}{lang停用}{/if}" {if $popedom.status} onclick="phpok_status({$value.id},'{url ctrl=cate func=status/}')"{else} disabled{/if} class="layui-btn layui-btn-sm {if !$value.status} layui-btn-danger{/if}" />
+				</td>
+				<td>
+					<div>
+						<!-- for($i=1;$i<$value[_layer];$i++) -->
+						<span class="cate_line"></span>
+						<!-- /for -->
+						<!-- if $value[_layer]>0 -->
+						<span class="cate_middle">&nbsp;</span>
+						<!-- /if -->
+						<span class="cate_txt"><label for="id_{$value.id}">{$value.title}<span class="gray i">（{$value.identifier}）</span></label></span>
+					</div>
+				</td>
+				<td><input type="text" id="taxis_{$value.id}" class="layui-input" value="{$value.taxis}" tabindex="{$tab_i}" onblur="update_taxis('{$value.id}')" /></td>
+				<td>
+					<div class="layui-btn-group">
+						<!-- if $popedom.add -->
+						<input type="button" value="{lang添加子分类}" onclick="$.win('{lang添加分类}','{url ctrl=cate func=set parent_id=$value.id/}')" class="layui-btn layui-btn-sm" />
+						<!-- /if -->
+						<!-- if $popedom.modify -->
+						<input type="button" value="{lang修改}" onclick="$.win('{lang修改分类}_#{$value.id}','{url ctrl=cate func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
+						<!-- /if -->
+						<!-- if $popedom.delete -->
+						<input type="button" value="{lang删除}" onclick="$.admin_cate.del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+						<!-- /if -->
+					</div>
+
+				</td>
+			</tr>
+			<!-- /loop -->
+			</tbody>
+		</table>
+	</div>
+
 </div>
-<!-- inc:foot -->
+<!-- include tpl=foot_lay -->

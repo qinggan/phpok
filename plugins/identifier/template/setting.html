@@ -1,0 +1,60 @@
+<div class="tips help">
+	<p>锟铻提供拼音，简拼接口</p>
+	<p>有道云提供中文翻译成英文的接口</p>
+</div>
+<div class="table">
+	<div class="title">
+		有道是否启用 HTTPS <span class="note">请根据需要是否启用有道的 https 请求</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="youdao_https" value="0"{if !$rs.param.youdao_https} checked{/if} />禁用</label></li>
+			<li><label><input type="radio" name="youdao_https" value="1"{if $rs.param.youdao_https} checked{/if} />启用</label></li>
+		</ul>
+	</div>
+</div>
+<script type="text/javascript">
+function show_help()
+{
+	$.dialog({
+		'title':'查看帮助',
+		'content':'<div>请到官网：<a href="https://www.phpok.com/" target="_blank">www.phpok.com</a></div> 登录会员，然后以会员的身份查看接口帮助<br/><img src="plugins/identifier/images/phpok-help.jpg" width="100%" />',
+		'lock':true,
+		'width':'500px',
+		'close':true
+	})
+}
+</script>
+<div class="table">
+	<div class="title">
+		有道应用 ID：<span class="note">可在有道智云应用管理中看到，官网：<a href="http://ai.youdao.com/" target="_blank">http://ai.youdao.com</a></span>
+	</div>
+	<div class="content">
+		<input type="text" name="youdao_appid" value="{$rs.param.youdao_appid}" class="long" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		有道应用密钥：<span class="note">同上，可在有道智云应用中看到</span>
+	</div>
+	<div class="content">
+		<input type="text" name="youdao_appkey" value="{$rs.param.youdao_appkey}" class="long" />
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		锟铻 APPID：<span class="note">PHPOK官网提供的接口ID <a href="javascript:show_help();void(0)">请点这里查看</a></span>
+	</div>
+	<div class="content">
+		<input type="text" name="phpok_appid" value="{$rs.param.phpok_appid}" class="long" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		有道应用密钥：<span class="note">同上，可在有道智云应用中看到</span>
+	</div>
+	<div class="content">
+		<input type="text" name="phpok_appkey" value="{$rs.param.phpok_appkey}" class="long" />
+	</div>
+</div>

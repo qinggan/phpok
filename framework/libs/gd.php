@@ -610,16 +610,22 @@ class gd_lib
 	 * @参数 $filename 文件名
 	 * @参数 $id 文件ID，也是缩略图文件名
 	**/
-	public function thumb($filename,$id)
+	public function thumb($filename,$id,$width=200,$height=200)
 	{
 		if(!$filename || !$id){
 			return false;
+		}
+		if(!$width){
+			$width = 200;
+		}
+		if(!$height){
+			$height = 200;
 		}
 		$this->isgd(true);
 		$this->filename($filename);
 		$this->SetCut(true);
 		$this->Filler("FFFFFF");
-		$this->SetWH(200,200);
+		$this->SetWH($width,$height);
 		$newfile = "_".$id;
 		return $this->Create($filename,$newfile);
 	}

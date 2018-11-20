@@ -24,9 +24,8 @@ class call_control extends phpok_control
 
 	function phpok_autoload()
 	{
-		$site_id = $_SESSION["admin_site_id"];
+		$site_id = $this->session->val('admin_site_id');
 		$this->model('call')->site_id($site_id);
-		
 		$this->model('call')->psize($psize);
 		$this->psize = $psize;
 	}
@@ -34,7 +33,7 @@ class call_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$this->phpok_autoload();
 		$psize = $this->config["psize"] ? $this->config["psize"] : 20;
@@ -167,11 +166,11 @@ class call_control extends phpok_control
 	{
 		$pid = $this->get("pid","int");
 		if(!$pid){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$p_rs = $this->model('project')->get_one($pid,false);
 		if(!$p_rs['module']){
-			$this->json(P_Lang('未绑定模块'));
+			$this->error(P_Lang('未绑定模块'));
 		}
 		$module = $this->model('module')->get_one($p_rs['module']);
 		$rslist = $this->model('module')->fields_all($p_rs['module']);
@@ -179,7 +178,7 @@ class call_control extends phpok_control
 		$this->assign('mtype',$module['mtype']);
 		$info = $this->fetch("phpok_ajax_fields");
 		$order = $this->fetch("phpok_ajax_orderby");
-		$this->json(array('need'=>$info,'orderby'=>$order,'attr'=>$p_rs['is_attr'],'rslist'=>$rslist,'mtype'=>$module['mtype'],'sub'=>$p_rs['']),true);
+		$this->success(array('need'=>$info,'orderby'=>$order,'attr'=>$p_rs['is_attr'],'rslist'=>$rslist,'mtype'=>$module['mtype'],'sub'=>$p_rs['']),true);
 	}
 
 	private function check_identifier($identifier)
@@ -209,22 +208,28 @@ class call_control extends phpok_control
 	{
 		$id = $this->get("id","int");
 		$this->phpok_autoload();
+		$title = $this->get("title");
 		$array = array();
-		$error_url = $this->url("call","set");
 		if(!$id){
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
+			}
+			if(!$title){
+				$this->error(P_Lang('标题不能为空'),$error_url);
 			}
 			$identifier = $this->get("identifier");
 			$chk = $this->check_identifier($identifier);
 			if($chk != "ok"){
-				error($chk,$error_url,"error");
+				$this->error($chk,$error_url);
 			}
 			$array["identifier"] = $identifier;
-			$array["site_id"] = $_SESSION["admin_site_id"];
+			$array["site_id"] = $this->session->val('admin_site_id');
 		}else{
 			if(!$this->popedom["modify"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
+			}
+			if(!$title){
+				$this->error(P_Lang('标题不能为空'),$error_url);
 			}
 			$identifier = $this->get('identifier','system');
 			$rs = $this->model('call')->get_one($id);
@@ -234,15 +239,10 @@ class call_control extends phpok_control
 			if($identifier != $rs['identifier']){
 				$chk = $this->check_identifier($identifier);
 				if($chk != "ok"){
-					error($chk,$error_url,"error");
+					$this->error($chk,$error_url);
 				}
 			}
 			$array['identifier'] = $identifier;
-			$error_url .= "&id=".$id;
-		}
-		$title = $this->get("title");
-		if(!$title){
-			error(P_Lang('备注不能为空'),$error_url,"error");
 		}
 		$array["title"] = $title;
 		$array["pid"] = $this->get("pid","int");
@@ -269,20 +269,24 @@ class call_control extends phpok_control
 		$ext['title_id'] = $this->get('title_id');
 		$array['ext'] = serialize($ext);
 		$id = $this->model('call')->save($array,$id);
-		error(P_Lang('数据调用中心配置成功'),$this->url("call"),"ok");
+		$this->success();
 	}
 
+	/**
+	 * 删除数据调用
+	 * @参数 id 要删除的调用ID
+	**/
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$this->model('call')->del($id);
-		$this->json(P_Lang('删除成功'),true);
+		$this->success();
 	}
 
 	//取得模块的扩展字段

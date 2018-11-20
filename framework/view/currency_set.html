@@ -1,109 +1,98 @@
-<!-- include tpl=head title="货币及汇率管理" -->
-<script type="text/javascript" src="{func add_js currency.js}"></script>
-<div class="tips">
-	您当前的位置：
-	<a href="{echo admin_url('currency')}">货币管理</a>
-	&raquo; <!-- if $id -->编辑<!-- else -->添加<!-- /if -->货币信息
+<!-- include tpl=head_lay -->
+<link rel="stylesheet" href="{$sys.webroot}static/admin/style/extadmin.css" media="all">
+<style>
+	.layui-form-label{width: 10%}
+</style>
+<div class="layui-card">
+	<div class="layui-card-header">
+		<!-- if $id -->{lang编辑货币信息}<!-- else -->{lang添加货币信息}<!-- /if -->
+	</div>
+	<form method="post" action="{func admin_url currency setok}" onsubmit="return check_save()">
+		<div class="layui-card-body layui-form">
+			<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
+				<button type="button" class="layui-btn layuiadmin-btn-list" onclick="$.phpok.go('{url ctrl=currency/}')">返回</button>
+			</div>
+			<!-- if $id -->
+			<input type="hidden" name="id" id="id" value="{$id}" />
+			<!-- /if -->
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang名称}</label>
+				<div class="layui-input-inline" style="width: 450px">
+					<input type="text" id="title" required lay-verify="required" name="title" value="{$rs.title}" autocomplete="off" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					{lang该项主要用于后台管理，您可以使用您习惯的语言来编写}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang货币代号}</label>
+				<div class="layui-input-inline" style="width: 450px">
+					<input type="text" id="code" name="code" required lay-verify="required" value="{$rs.code}" autocomplete="off" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					{lang设置货币的标识，国际标准为三个大写的字母}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang数字代号}</label>
+				<div class="layui-input-inline" style="width: 450px">
+					<input type="text" id="code_num" name="code_num" required lay-verify="required" value="{$rs.code_num}" autocomplete="off" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					{lang设置货币的数字代码，国际标准为三个数字}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang汇率}</label>
+				<div class="layui-input-inline" style="width: 450px">
+					<input type="text" id="val" name="val" required lay-verify="required" value="{$rs.val}" autocomplete="off" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					{lang设置该货币的汇率，一般情况是以美元为1.00000的变化，不熟悉的朋友请登录官网查看帮助}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-inline" style="width: 100%">
+					<label class="layui-form-label">货币显示格式化</label>
+					<div class="layui-input-inline" style="width: 100px;">
+						<input type="text" id="symbol_left" name="symbol_left" value="{$rs.symbol_left}" autocomplete="off" class="layui-input">
+					</div>
+					<div class="layui-form-mid">{func rand 10 99}.{func rand 10 99}</div>
+					<div class="layui-input-inline" style="width: 100px;">
+						<input type="text" id="symbol_right" name="symbol_right"value="{$rs.symbol_right}" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">状态</label>
+				<div class="layui-input-block">
+					<input type="checkbox" name="status" lay-text="启用|停用" value="1" {if $rs.status} checked{end} lay-skin="switch">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">是否显示</label>
+				<div class="layui-input-block">
+					<input type="checkbox" name="hidden" lay-text="显示|隐藏" value="1" {if $rs.hidden} checked{end} lay-skin="switch">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang排序}</label>
+				<div class="layui-input-inline">
+					<input type="text" id="taxis" name="taxis" value="{$rs.taxis ? $rs.taxis : 255}" autocomplete="off" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					{lang设置排序，最大值不超过255，最小值为0，值越小越往前靠}
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item layui-layout-admin">
+			<div class="layui-input-block">
+				<div class="layui-footer"  style="left: 0;z-index:10">
+					<button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</div>
+	</form>
 </div>
-<form method="post" action="{func admin_url currency setok}" onsubmit="return check_save()">
-<input type="hidden" name="id" id="id" value="{$id}" />
-<div class="table">
-	<div class="title">
-		名称：
-		<span class="note">该项主要用于后台管理，您可以使用您习惯的语言来编写</span>
-	</div>
-	<div class="content">
-		<input type="text" id="title" name="title" class="long" value="{$rs.title}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		货币代号：
-		<span class="note">设置货币的标识，国际标准为三个大写的字母</span>
-	</div>
-	<div class="content">
-		<input type="text" id="code" name="code" class="default" value="{$rs.code}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		数字代号：
-		<span class="note">设置货币的数字代码，国际标准为三个数字</span>
-	</div>
-	<div class="content">
-		<input type="text" id="code_num" name="code_num" class="default" value="{$rs.code_num}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		汇率：
-		<span class="note">设置该货币的汇率，一般情况是以美元为1.00000的变化，不熟悉的朋友请登录官网查看帮助</span>
-	</div>
-	<div class="content">
-		<input type="text" id="val" name="val" class="default" value="{$rs.val}" />
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		货币显示格式化：
-		<span class="note">设置货币的左侧和右侧显示信息</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><input type="text" id="symbol_left" name="symbol_left" class="short" value="{$rs.symbol_left}" style="text-align:right;" /></td>
-			<td>&nbsp;{func rand 10 99}.{func rand 10 99}&nbsp;</td>
-			<td><input type="text" id="symbol_right" name="symbol_right" class="short" value="{$rs.symbol_right}" style="text-align: left;" /></td>
-		</tr>
-		</table>
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		状态：
-		<span class="note">暂停使用现有货币策略，请选择禁用，返之为使用</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="radio" name="status" value="1"{if $rs.status} checked{end} /> 使用</label></td>
-			<td><label><input type="radio" name="status" value="0"{if !$rs.status} checked{end} /> 禁用</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		是否显示：
-		<span class="note">启用隐藏功能后，前台将不会显示给用户让用户选择</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="radio" name="hidden" value="1"{if $rs.hidden} checked{end} /> 隐藏</label></td>
-			<td><label><input type="radio" name="hidden" value="0"{if !$rs.hidden} checked{end} /> 显示</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		排序：
-		<span class="note">值越小越往前排，最大为255，最小为1</span>
-	</div>
-	<div class="content">
-		<input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis ? $rs.taxis : 255}" />
-	</div>
-</div>
-
-<div class="table">
-	<div class="content">
-		<input type="submit" value="提 交" class="submit2" />
-	</div>
-</div>
-</form>
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

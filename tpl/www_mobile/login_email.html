@@ -1,0 +1,111 @@
+<!-- include tpl=header menutitle=网站首页 title=会员登录 -->
+<script type="text/javascript">
+var maxtime = 300;
+var email_send_lock = false;
+var win_time_out;
+function update_send_email_loading()
+{
+	maxtime--;
+	if(maxtime < 1){
+		$("#email_send_status").val('发送邮件验证码');
+		email_send_lock = false;
+		maxtime = 300;
+		window.clearInterval(win_time_out);
+		return true;
+	}
+	var tips = "验证码已发送("+maxtime+")";
+	$("#email_send_status").val(tips);
+}
+
+function check_input()
+{
+	var email = $("input[name=email]").val();
+	if(!email){
+		$.dialog.alert('邮箱不能为空','','error');
+		return false;
+	}
+	var code = $("input[name=_chkcode]").val();
+	if(!code){
+		$.dialog.alert('验证码不能为空','','error');
+		return false;
+	}
+	var url = api_url('login','email','email='+email+"&_chkcode="+code);
+	$.phpok.json(url,function(rs){
+		if(rs.status){
+			var backurl = $("input[name=_back]").val();
+			if(!backurl){
+				backurl = webroot;
+			}
+			$.phpok.go(backurl);
+			return false;
+		}
+		$.dialog.alert(rs.info,true,'error');
+		return false;
+	});
+	
+	return false;
+}
+function send_email()
+{
+	if(email_send_lock){
+		$.dialog.alert('验证码已发送，请五分钟后再执行');
+		return false;
+	}
+	var url = api_url('vcode','email');
+	var email = $("#email").val();
+	if(!email){
+		$.dialog.alert('邮箱不能为空');
+		return false;
+	}
+	url += "&email="+$.str.encode(email);
+	$.dialog.tips("请稍候…");
+	update_send_email_loading();
+	$.phpok.json(url,function(rs){
+		if(rs.status){
+			maxtime = 300;
+			email_send_lock = true;
+			
+			win_time_out = window.setInterval("update_send_email_loading()",1000);
+			return true;
+		}
+		$.dialog.alert(rs.info);
+		$("#email_send_status").val('发送邮件验证码');
+		return false;
+	})
+}
+</script>
+<div class="main main-single main-login am-animation-scale-up">
+	<form class="am-form" onsubmit="return check_input()" method="post">
+		<input type="hidden" name="_back" id="_back" value="{$_back}" />
+		<fieldset>
+			<legend>邮件验证登录</legend>
+			<div class="am-form-group">
+				<label for="mobile">邮箱 Email</label>
+				<div class="am-g am-g-collapse">
+					<div class="am-u-sm-6"><input type="text" id="email" name="email" placeholder="请输入邮箱" /></div>
+					<div class="am-u-sm-1"></div>
+					<div class="am-u-sm-5"><input type="button" value="发送邮件验证码" onclick="send_email()" class="am-btn am-btn-default" id="email_send_status" /></div>
+				</div>
+			</div>
+			<div class="am-form-group">
+				<label for="_chkcode">邮件验证码</label>
+				<input type="text" name="_chkcode" id="_chkcode" placeholder="请输入邮箱收到的验证码" />
+			</div>
+			<div class="am-form-group">
+				<button type="submit" class="am-btn am-btn-primary" id="login_submit">登录</button>
+			</div>
+			<div class="am-form-group">
+				<a href="{$sys.url}" class="am-btn am-btn-default am-btn-xs">返回首页</a>
+				<a href="{url ctrl=login/}" class="am-btn am-btn-default am-btn-xs"><i class="am-icon-user"></i> 账号密码登录</a>
+				<!-- if $login_sms --><a href="{url ctrl=login func=sms/}" class="am-btn am-btn-default am-btn-xs"><i class="am-icon-mobile"></i> 短信登录</a><!-- /if -->
+			</div>
+		</fieldset>
+	</form>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$("body").css('background-color','#EFEFEF');
+});
+</script>
+<!-- include tpl=footer -->

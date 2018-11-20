@@ -97,23 +97,23 @@ class user_control extends phpok_control
 		if(!$psize){
 			$psize = 30;
 		}
-		$keywords = $this->get("keywords");
-		$keytype = $this->get('keytype');
-		if(!$keytype){
-			$keytype = 'user';
-		}
 		$page_url = $this->url("user");
 		$condition = "1=1";
-		if($keywords){
-			$this->assign("keywords",$keywords);
-			$this->assign("keytype",$keytype);
+		$keywords = $this->get('keywords');
+		if($keywords && is_array($keywords)){
 			$tmparray = array('email','user','mobile');
-			if(in_array($keytype,$tmparray)){
-				$condition .= " AND u.".$keytype." LIKE '%".$keywords."%'";
-			}else{
-				$condition .= " AND e.".$keytype." LIKE '%".$keywords."%'";
+			foreach($keywords as $key=>$value){
+				if(!$value || !trim($value)){
+					continue;
+				}
+				if(in_array($key,$tmparray)){
+					$condition .= " AND u.".$key." LIKE '%".$value."%' ";
+				}else{
+					$condition .= " AND e.".$keytype." LIKE '%".$keywords."%' ";
+				}
+				$page_url .= "&keywords[".$key."]=".rawurlencode($value);
 			}
-			$page_url.="&keywords=".rawurlencode($keywords)."&keytype=".rawurlencode($keytype);
+			$this->assign("keywords",$keywords);
 		}
 		$group_id = $this->get('group_id','int');
 		if($group_id){
@@ -248,53 +248,98 @@ class user_control extends phpok_control
 	public function setok_f()
 	{
 		$id = $this->get("id","int");
+		$popedom_id = $id ? 'modify' : 'add';
+		if(!$this->popedom[$popedom_id]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$array = array();
 		$array["user"] = $this->get("user");
+		if(!$array["user"]){
+			$this->error(P_Lang('会员账号不允许为空'));
+		}
+		$rs_name = $this->model('user')->chk_name($array["user"],$id);
+		if($rs_name){
+			$this->error(P_Lang('会员账号已经存在'));
+		}
 		$array['avatar'] = $this->get('avatar');
 		$array['email'] = $this->get('email');
+		if($array['email']){
+			if(!$this->lib('common')->email_check($array['email'])){
+				$this->error(P_Lang('邮箱填写不正确'));
+			}
+			$chk = $this->model('user')->get_one($array['email'],'email');
+			if($id){
+				if($chk && $chk['id'] != $id){
+					$this->error(P_Lang('邮箱已被占用'));
+				}
+			}else{
+				if($chk){
+					$this->error(P_Lang('邮箱已被占用'));
+				}
+			}
+		}
 		$array['mobile'] = $this->get('mobile');
+		if($array['mobile']){
+			if(!$this->lib('common')->tel_check($array['mobile'])){
+				$this->error(P_Lang('手机号填写不正确'));
+			}
+			$chk = $this->model('user')->get_one($array['mobile'],'mobile');
+			if($id){
+				if($chk && $chk['id'] != $id){
+					$this->error(P_Lang('手机号已被占用'));
+				}
+			}else{
+				if($chk){
+					$this->error(P_Lang('手机号已被占用'));
+				}
+			}
+		}
 		$pass = $this->get("pass");
 		if($pass){
 			$array["pass"] = password_create($pass);
 		}else{
 			if(!$id){
-				$array["pass"] = password_create("123456");
+				$this->error(P_Lang('密码不能为空'));
 			}
 		}
-		$popedom_id = $id ? 'modify' : 'add';
-		if(!$this->popedom[$popedom_id]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
-		}
+
 		$array["group_id"] = $this->get("group_id","int");
 		if($this->popedom["status"]){
 			$array["status"] = $this->get("status","int");
 		}
 		$regtime = $this->get("regtime","time");
-		if(!$regtime) $regtime = $this->time;
+		if(!$regtime){
+			$regtime = $this->time;
+		}
 		$array["regtime"] = $regtime;
-		//存储扩展表信息
-		$insert_id = $this->model('user')->save($array,$id);
-		//读取扩展字段
+		if($id){
+			$this->model('user')->save($array,$id);
+			$insert_id = $id;
+		}else{
+			$insert_id = $this->model('user')->save($array);
+		}
  		$ext_list = $this->model('user')->fields_all();
  		$tmplist = array();
  		$tmplist["id"] = $insert_id;
-		foreach(($ext_list ? $ext_list : array()) AS $key=>$value){
-			$val = ext_value($value);
-			if($value["ext"]){
-				$ext = unserialize($value["ext"]);
-				foreach($ext AS $k=>$v){
-					$value[$k] = $v;
+ 		if($ext_list){
+	 		foreach($ext_list as $key=>$value){
+		 		$val = ext_value($value);
+		 		if($value['ext'] && is_string($value['ext'])){
+			 		$ext = unserialize($value["ext"]);
+			 		foreach($ext as $k=>$v){
+						$value[$k] = $v;
+					}
+		 		}
+		 		if($value["form_type"] == "password"){
+					$content = $rs[$value["identifier"]] ? $rs[$value["identifier"]] : $value["content"];
+					$val = ext_password_format($val,$content,$value["password_type"]);
 				}
-			}
-			if($value["form_type"] == "password"){
-				$content = $rs[$value["identifier"]] ? $rs[$value["identifier"]] : $value["content"];
-				$val = ext_password_format($val,$content,$value["password_type"]);
-			}
-			$tmplist[$value["identifier"]] = $val;
-		}
+				$tmplist[$value["identifier"]] = $val;
+	 		}
+ 		}
 		$this->model('user')->save_ext($tmplist);
 		$note = $id ? P_Lang('会员编辑成功') : P_Lang('新会员添加成功');
-		error($note,$this->url("user"),"ok");
+		$this->success($note,$this->url('user'));
 	}
 
 	public function ajax_status_f()

@@ -1,12 +1,14 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/model/admin/payment_model.php
-	备注： 管理付款信息方案
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2014年4月23日
-*****************************************************************************************/
+/**
+ * 管理付款信息
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年09月26日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class payment_model extends payment_model_base
 {
@@ -28,9 +30,9 @@ class payment_model extends payment_model_base
 		return $this->db->get_all($sql,'id');		
 	}
 
-	function get_all($condition="",$pri='')
+	public function get_all($condition="",$pri='')
 	{
-		$sql = "SELECT p.* FROM ".$this->db->prefix."payment p LEFT JOIN ".$this->db->prefix."payment_group g ON(p.gid=g.id) ";
+		$sql = "SELECT p.*,g.title group_title,g.is_wap group_wap FROM ".$this->db->prefix."payment p LEFT JOIN ".$this->db->prefix."payment_group g ON(p.gid=g.id) ";
 		$sql.= "WHERE g.site_id='".$this->site_id."' ";
 		if($condition){
 			$sql .= " AND ".$condition;
@@ -40,7 +42,7 @@ class payment_model extends payment_model_base
 	}
 
 	//付款方案option
-	function opt_all($site_id=0)
+	public function opt_all($site_id=0)
 	{
 		$condition = $site_id ? "site_id IN(0,".$site_id.")" : "site_id=0";
 		$sql = "SELECT * FROM ".$this->db->prefix."payment_group WHERE ".$condition." ";
@@ -66,7 +68,7 @@ class payment_model extends payment_model_base
 	}
 
 	//获取本站系统中存储的所有支付引挈
-	function code_all()
+	public function code_all()
 	{
 		//读取目录下的
 		$handle = opendir($this->dir_root.'gateway/payment');
@@ -89,7 +91,7 @@ class payment_model extends payment_model_base
 	}
 
 	//取得当前Code信息
-	function code_one($id)
+	public function code_one($id)
 	{
 		$rs = array('id'=>$id,'dir'=>$this->dir_root.'gateway/payment/'.$id);
 		$xmlfile = $this->dir_root.'gateway/payment/'.$id.'/config.xml';
@@ -104,7 +106,7 @@ class payment_model extends payment_model_base
 	}
 
 	//存储组信息
-	function groupsave($data,$id=0)
+	public function groupsave($data,$id=0)
 	{
 		if(!$data || !is_array($data)){
 			return false;
@@ -171,5 +173,3 @@ class payment_model extends payment_model_base
 		return $this->db->query($sql);
 	}
 }
-
-?>

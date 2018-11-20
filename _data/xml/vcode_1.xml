@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<system>
 		<title><![CDATA[系统设置]]></title>
@@ -9,95 +9,114 @@
 			</login>
 			<register>
 				<title><![CDATA[注册]]></title>
-				<status><![CDATA[1]]></status>
+				<status><![CDATA[]]></status>
 			</register>
 			<getpass>
-				<title><![CDATA[密码取回]]></title>
+				<title><![CDATA[忘记密码]]></title>
 				<status><![CDATA[1]]></status>
 			</getpass>
 		</list>
 	</system>
 	<p-43>
-		<title><![CDATA[资讯中心]]></title>
 		<list>
 			<add>
-				<title><![CDATA[添加]]></title>
-				<status><![CDATA[1]]></status>
+				<status><![CDATA[]]></status>
 			</add>
 			<edit>
-				<title><![CDATA[修改]]></title>
 				<status><![CDATA[1]]></status>
 			</edit>
 			<comment>
-				<title><![CDATA[评论]]></title>
 				<status><![CDATA[1]]></status>
 			</comment>
 		</list>
 	</p-43>
-	<p-142>
-		<title><![CDATA[友情链接]]></title>
+	<p-45>
 		<list>
 			<add>
-				<title><![CDATA[添加]]></title>
+				<status><![CDATA[]]></status>
+			</add>
+			<edit>
+				<status><![CDATA[1]]></status>
+			</edit>
+			<comment>
+				<status><![CDATA[1]]></status>
+			</comment>
+		</list>
+	</p-45>
+	<p-96>
+		<list>
+			<add>
 				<status><![CDATA[1]]></status>
 			</add>
 			<edit>
-				<title><![CDATA[修改]]></title>
-				<status><![CDATA[]]></status>
+				<status><![CDATA[1]]></status>
 			</edit>
 			<comment>
-				<title><![CDATA[评论]]></title>
+				<status><![CDATA[1]]></status>
+			</comment>
+		</list>
+	</p-96>
+	<p-142>
+		<list>
+			<add>
+				<status><![CDATA[1]]></status>
+			</add>
+			<edit>
+				<status><![CDATA[1]]></status>
+			</edit>
+			<comment>
 				<status><![CDATA[1]]></status>
 			</comment>
 		</list>
 	</p-142>
-	<p-96>
-		<title><![CDATA[在线留言]]></title>
+	<p-144>
 		<list>
 			<add>
-				<title><![CDATA[添加]]></title>
 				<status><![CDATA[1]]></status>
 			</add>
 			<edit>
-				<title><![CDATA[修改]]></title>
 				<status><![CDATA[1]]></status>
 			</edit>
 			<comment>
-				<title><![CDATA[评论]]></title>
-				<status><![CDATA[]]></status>
+				<status><![CDATA[1]]></status>
 			</comment>
 		</list>
-	</p-96>
-	<p-152>
-		<title><![CDATA[论坛BBS]]></title>
+	</p-144>
+	<p-151>
 		<list>
 			<add>
-				<title><![CDATA[添加]]></title>
-				<status><![CDATA[]]></status>
+				<status><![CDATA[1]]></status>
 			</add>
 			<edit>
-				<title><![CDATA[修改]]></title>
-				<status><![CDATA[]]></status>
+				<status><![CDATA[1]]></status>
 			</edit>
 			<comment>
-				<title><![CDATA[评论]]></title>
-				<status><![CDATA[]]></status>
+				<status><![CDATA[1]]></status>
+			</comment>
+		</list>
+	</p-151>
+	<p-152>
+		<list>
+			<add>
+				<status><![CDATA[1]]></status>
+			</add>
+			<edit>
+				<status><![CDATA[1]]></status>
+			</edit>
+			<comment>
+				<status><![CDATA[1]]></status>
 			</comment>
 		</list>
 	</p-152>
 	<p-386>
-		<title><![CDATA[银行汇款]]></title>
 		<list>
 			<add>
-				<title><![CDATA[添加]]></title>
 				<status><![CDATA[1]]></status>
 			</add>
 			<edit>
-				<title><![CDATA[修改]]></title>
 				<status><![CDATA[1]]></status>
 			</edit>
 			<comment>
-				<title><![CDATA[评论]]></title>
 				<status><![CDATA[1]]></status>
 			</comment>
 		</list>

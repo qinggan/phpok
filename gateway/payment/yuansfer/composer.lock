@@ -1,0 +1,110 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "0587539a3ef773bf5d0c91113d5fc6dc",
+    "packages": [
+        {
+            "name": "nategood/httpful",
+            "version": "0.2.20",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nategood/httpful.git",
+                "reference": "c1cd4d46a4b281229032cf39d4dd852f9887c0f6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nategood/httpful/zipball/c1cd4d46a4b281229032cf39d4dd852f9887c0f6",
+                "reference": "c1cd4d46a4b281229032cf39d4dd852f9887c0f6",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Httpful": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nate Good",
+                    "email": "me@nategood.com",
+                    "homepage": "http://nategood.com"
+                }
+            ],
+            "description": "A Readable, Chainable, REST friendly, PHP HTTP Client",
+            "homepage": "http://github.com/nategood/httpful",
+            "keywords": [
+                "api",
+                "curl",
+                "http",
+                "requests",
+                "rest",
+                "restful"
+            ],
+            "time": "2015-10-26T16:11:30+00:00"
+        },
+        {
+            "name": "yuansfer/yuansfer-php-sdk",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yuansfer/yuansfer-php-sdk.git",
+                "reference": "00e4a03c55fb216d15cb8576260081187a168548"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yuansfer/yuansfer-php-sdk/zipball/00e4a03c55fb216d15cb8576260081187a168548",
+                "reference": "00e4a03c55fb216d15cb8576260081187a168548",
+                "shasum": ""
+            },
+            "require": {
+                "nategood/httpful": "^0.2.20",
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Yuansfer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Feng Hao",
+                    "email": "flyinghail@msn.com"
+                }
+            ],
+            "description": "Yuansfer PHP SDK",
+            "homepage": "https://www.yuansfer.com/",
+            "keywords": [
+                "sdk",
+                "yuansfer"
+            ],
+            "time": "2018-07-17T13:14:38+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

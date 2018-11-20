@@ -41,7 +41,7 @@ class call_model extends call_model_base
 
 	public function get_list($condition="",$offset=0,$psize=30)
 	{
-		$sql = "SELECT ok.id,ok.title,ok.pid,ok.type_id,ok.identifier,ok.status,ok.cateid,p.title project,c.title cate FROM ".$this->db->prefix."phpok ok LEFT JOIN ".$this->db->prefix."project p ON(ok.pid=p.id) LEFT JOIN ".$this->db->prefix."cate c ON(ok.cateid=c.id) WHERE ok.site_id='".$this->site_id."' ";
+		$sql = "SELECT ok.id,ok.title,ok.pid,ok.type_id,ok.identifier,ok.status,ok.cateid,ok.is_api,p.title project,c.title cate FROM ".$this->db->prefix."phpok ok LEFT JOIN ".$this->db->prefix."project p ON(ok.pid=p.id) LEFT JOIN ".$this->db->prefix."cate c ON(ok.cateid=c.id) WHERE ok.site_id='".$this->site_id."' ";
 		if($condition){
 			$sql .= " AND ".$condition." ";
 		}

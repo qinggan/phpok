@@ -1,0 +1,5 @@
+/* pages/error/index.wxss */
+.body{margin:15% auto;width:96%;}
+.body .tips{line-height:170%}
+.body .tips .txt{text-align:center;}
+

@@ -1,64 +1,53 @@
-<!-- include tpl=head title="修改头像 - 个人中心" -->
-<link rel="stylesheet" type="text/css" href="{#js#}/webuploader/webuploader.css" />
-<div role="main" class="ui-content">
-	<div class="ui-body ui-body-a ui-corner-all">
-		<h3>当前使用的头像</h3>
-		<img src="{$rs.avatar ? $rs.avatar : 'images/user_default.png'}" border="0" style="max-width:100%;" />
+<!-- include tpl=head title=修改头像 css="css/image-clip.css,css/clip.css?t=4" js="js/fileinput.js,js/exif.js,js/image-clip.js" -->
+<div class="usercp">
+<div class="clip-content">
+	<div class="upload-container choose-gallery">
+		<div class="upload-pretty button-three-dimen">
+			<input type="file" id="targetImg">本地上传
+		</div>
 	</div>
-	<div class="ui-body ui-body-a ui-corner-all" style="margin-top:10px;">
-		<h3>上传新头像</h3>
-		<table width="100%">
-		<tr>
-			<td style="padding:10px;">
-				<div id="uploader" class="wu-example">
-					<!--用来存放文件信息-->
-					<div id="thelist" class="uploader-list"></div>
-					<div class="btns">
-						<div id="btn_picture"></div>
-					</div>
-				</div>
-			</td>
-		</tr>
-		</table>
+	<div class="upload-container choose-camera">
+		<div class="upload-pretty button-three-dimen">
+			<input type="file" id="targetImgCamera" capture="camera">手机拍摄
+		</div>
 	</div>
+
+	<div class="img-clip"></div>
+	<nav class="clip-action nav-bar nav-bar-tab hidden">
+		<a class="tab-item" id="btn-reload">
+			<i class="am-icon-reply am-icon-fw"></i>
+		</a>
+		<a class="tab-item " id="btn-rotate-anticlockwise">
+			<i class="am-icon-undo am-icon-fw"></i>
+		</a>
+		<a class="tab-item " id="btn-rotate-clockwise">
+			<i class="am-icon-repeat am-icon-fw"></i>
+		</a>
+		<a class="tab-item" id="btn-maxrect">
+			<i class="am-icon-expand am-icon-fw"></i>
+		</a>
+		<a class="tab-item" id="btn-verify">
+			<i class="am-icon-check am-icon-fw"></i>
+		</a>
+	</nav>
 </div>
-<script type="text/javascript" src="{#js#}/webuploader/webuploader.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-	var uploader = WebUploader.create({
-		auto: true,
-		swf: webroot + '{#js#}/webuploader/uploader.swf',
-		// 文件接收服务端。
-		server: api_url('upload','save'),
-		compress: false,
-		pick: '#btn_picture',
-		fileVal: 'upfile',
-		formdata:{
-			'{func session_name}':'{func session_id}'
-		},
-		accept: {
-			title: '图片',
-			extensions: 'gif,jpg,jpeg,bmp,png',
-			mimeTypes: 'image/*'
-		},
-		resize: false
-	});
-	uploader.on('uploadSuccess',function(file,data){
-		if(data.status == 'ok'){
-			var url = api_url('usercp','avatar','data='+$.str.encode(data.content.filename));
-			var rs = $.phpok.json(url);
-			if(rs.status == 'ok'){
-				$.dialog.alert('您的头像更新成功',function(){
-					$.phpok.reload();
-				},'succeed');
-			}else{
-				$.dialog.alert(rs.content);
-				return false;
-			}
-		}else{
-			$.dialog.alert(data.content);
-		}
-	});
-});
-</script>
-<!-- include tpl=foot -->
+
+<div class="show-content hidden">
+	<div class="img-wrap">
+		<img class="show-img" data-preview-src="" data-preview-group="2"></img>
+	</div>
+
+	<nav class="nav-bar nav-bar-tab">
+		<a class="tab-item" id="btn-back">
+			<i class="am-icon-reply am-icon-fw"></i>
+		</a>
+		<a class="tab-item" id="btn-detail">
+			<i class="am-icon-info-circle am-icon-fw"></i>
+		</a>
+		<a class="tab-item" id="btn-save">
+			<i class="am-icon-check am-icon-fw"></i>
+		</a>
+	</nav>
+</div>
+<script type="text/javascript" src="js/usercp_avatar.js"></script>
+<!-- include tpl=footer -->

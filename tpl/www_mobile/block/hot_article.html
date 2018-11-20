@@ -1,0 +1,18 @@
+<!-- php:$list = phpok('news','psize=15') -->
+<!-- if $list.total -->
+<div class="am-panel am-panel-default">
+	<div class="am-panel-hd">
+		<h3 class="am-panel-title">最新资讯<a href="{$list.project.url}" class="more">更多</a></h3>
+	</div>
+	<div class="am-list-news-bd">
+	<ul class="am-list" style="margin-bottom:0;">
+		<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+		<li class="am-g am-list-item-dated" style="padding-left:5px;">
+			<a href="{$value.url}" class="am-list-item-hd ">{$value.title}</a>
+			<span class="am-list-date">{func date Y-m-d $value.dateline}</span>
+		</li>
+		<!-- /loop -->
+	</ul>
+	</div>
+</div>
+<!-- /if -->

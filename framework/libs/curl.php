@@ -282,9 +282,16 @@ class curl_lib
 		return $this->user_agent;
 	}
 
-	public function post_data($id,$value='')
+	public function post_data($id='',$value='')
 	{
-		$this->post_data[$id] = $value;
+		if($id){
+			if($value != ''){
+				$this->post_data[$id] = $value;
+			}else{
+				$this->post_data = $id;
+			}
+		}
+		return $this->post_data;
 	}
 
 	/**
@@ -394,9 +401,14 @@ class curl_lib
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		if($this->is_post && $this->post_data){
 			curl_setopt($curl,CURLOPT_POST,true);
-			$post = http_build_query($this->post_data);
-			curl_setopt($curl,CURLOPT_POSTFIELDS,$post);
-			$this->set_header('Content-length',strlen($post));
+			if(is_array($this->post_data)){
+				$post = http_build_query($this->post_data);
+				curl_setopt($curl,CURLOPT_POSTFIELDS,$post);
+				$this->set_header('Content-length',strlen($post));
+			}else{
+				curl_setopt($curl,CURLOPT_POSTFIELDS,$this->post_data);
+				$this->set_header('Content-length',strlen($this->post_data));
+			}
 		}else{
 			curl_setopt($curl, CURLOPT_HTTPGET,true);
 		}
@@ -481,6 +493,9 @@ class curl_lib
 		}
 		$separator = '/\r\n\r\n|\n\n|\r\r/';
 		list($this->http_header, $this->http_body) = preg_split($separator, $content, 2);
+		if($this->http_body){
+			$this->http_body = $this->_bom($this->http_body);
+		}
 		$this->http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 		curl_close($curl);
 		if($this->http_code == 301 || $this->http_code == 302){
@@ -556,14 +571,21 @@ class curl_lib
 			$info = $this->error('内容为空','json');
 			return json_decode($info,true);
 		}
-		$this->http_body = trim($this->http_body);
-		if(substr($this->http_body,0,1) != '{' || substr($this->http_body,-1) != "}"){
+		if(substr($this->http_body,0,1) != '{'){
 			$info = $this->error('非 JSON 数据','json');
 			return json_decode($info,true);
 		}
-		$info = json_decode($this->http_body,true);
-		if(!isset($info['status'])){
-			$info['status'] = true;
+		return json_decode($this->http_body,true);
+	}
+
+	private function _bom($info)
+	{
+		$info = trim($info);
+		$a1 = substr($info, 0, 1);
+		$a2 = substr($info, 1, 1);
+		$a3 = substr($info, 2, 1);
+		if(ord($a1) == 239 && ord($a2) == 187 && ord($a3) == 191){
+			return substr($info,3);
 		}
 		return $info;
 	}
@@ -582,7 +604,6 @@ class curl_lib
 		if(!$this->http_body){
 			return $this->error('内容为空','xml');
 		}
-		$this->http_body = trim($this->http_body);
 		return $this->http_body;
 	}
 

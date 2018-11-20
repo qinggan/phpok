@@ -217,6 +217,22 @@ class index_control extends phpok_control
 		$this->_index();
 		$this->view('homepage');
 	}
+
+	/**
+	 * 模式切换
+	**/
+	public function develop_f()
+	{
+		$val = $this->get('val','int');
+		if($val){
+			$this->session->assign('adm_develop',true);
+		}else{
+			$this->session->unassign('adm_develop');
+		}
+		$this->success();
+	}
+
+	
 	public function all_setting_f()
 	{
 		$info = $this->all_info();
@@ -365,34 +381,17 @@ class index_control extends phpok_control
 	**/
 	public function pendding_f()
 	{
+		$this->config('is_ajax',true);
 		$list = false;
 		//读取未操作的主题
 		$rslist = $this->model('list')->pending_info($this->session->val('admin_site_id'));
 		if($rslist){
 			foreach($rslist as $key=>$value){
-				if(!$value['parent_id']){
-					$url = $this->url("list","action","id=".$value["pid"]);
-					$list['project_'.$value['pid']] = array("title"=>$value["title"],"total"=>$value["total"],"url"=>$url,'id'=>$value['pid']);
-				}
-			}
-			//合并子项目提示
-			foreach($rslist as $key=>$value){
-				if(!$value['total'] || !$value['parent_id']){
+				if(!$value['total']){
 					continue;
 				}
-				if($list['project_'.$value['parent_id']]){
-					$list['project_'.$value['parent_id']]['total'] += $value['total'];
-				}else{
-					$url = $this->url("list","action","id=".$value["pid"]);
-					$list['project_'.$value['parent_id']] = array("title"=>$value["title"],"total"=>$value["total"],"url"=>$url,'id'=>$value['parent_id']);
-				}
-			}
-			if($list){
-				foreach($list as $key=>$value){
-					if(!$value['total']){
-						unset($list[$key]);
-					}
-				}
+				$url = $this->url("list","action","id=".$value["pid"]);
+				$list['project_'.$value['pid']] = array("title"=>$value["title"],"total"=>$value["total"],"url"=>$url,'id'=>$value['pid']);
 			}
 		}
 		//读取未审核的会员信息

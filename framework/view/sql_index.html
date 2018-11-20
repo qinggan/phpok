@@ -1,60 +1,75 @@
-<!-- include tpl=head -->
-<div class="tips clearfix">
-	{lang您当前的位置：}<a href="{url ctrl=sql/}" title="{lang数据库管理}">{lang数据库管理}</a>
-	<div class="action"><a href="{url ctrl=sql func=backlist/}">{lang已备份列表}</a></div>
-</div>
-<table width="100%" cellpadding="0" cellspacing="0" class="list">
-<tr>
-	<th class="id">{lang选项}</th>
-	<th>{lang表名}</th>
-	<th>{lang引挈}</th>
-	<th>{lang字符集}</th>
-	<th class="lft">&nbsp;{lang记录数}</th>
-	<th class="lft">&nbsp;{lang大小}</th>
-	<th>{lang更新时间}</th>
-	<th class="lft">&nbsp;{lang碎片}</th>
-	<th>&nbsp;</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value -->
-<tr>
-	<td align="center"><input type="checkbox" id="tbl_{$value.Name}" name="tbl[]" {if $value.free} sign="free"{/if} value="{$value.Name}" /></td>
-	<td><label for="tbl_{$value.Name}">{$value.Name}<!-- if $value.Comment --><span class="gray i">（{$value.Comment}）</span><!-- /if --></label></td>
-	<td align="center">{$value.Engine}</td>
-	<td align="center">{$value.Collation}</td>
-	<td>{$value.Rows}</td>
-	<td>{$value.length}</td>
-	<td align="center">{$value.Update_time ? $value.Update_time : $value.Create_time}</td>
-	<td{if $value.free} style="background:red;"{/if}>{$value.free}</td>
-	<td>
-		<div class="button-group">
-			<input type="button" value="{lang明细}" onclick="$.admin_sql.show('{$value.Name}')" class="phpok-btn" />
-			<!-- if $value.delete -->
-			<input type="button" value="{lang删除}" onclick="$.admin_sql.tbl_delete('{$value.Name}')" class="phpok-btn" />
+<!-- include tpl=head_lay -->
+<script type="text/javascript">
+layui.use('form')
+</script>
+<div class="layui-card">
+	<div class="layui-card-header " style="visibility: visible;">
+		<div>数据库管理</div>
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
+				<button class="layui-btn" onclick="parent.layui.index.openTabsPage('{url ctrl=sql func=backlist/}','已备份列表')">{lang已备份列表}</button>
+		</div>
+		<table class="layui-table layui-form">
+				<thead>
+				<tr>
+					<th class="id">{lang选项}</th>
+					<th>{lang表名}</th>
+					<th>{lang引挈}</th>
+					<th>{lang字符集}</th>
+					<th class="lft">&nbsp;{lang记录数}</th>
+					<th class="lft">&nbsp;{lang大小}</th>
+					<th>{lang更新时间}</th>
+					<th class="lft">&nbsp;{lang碎片}</th>
+					<th>&nbsp;</th>
+				</tr>
+				</thead>
+				<tbody>
+				<!-- loop from=$rslist key=$key value=$value -->
+				<tr id="edit_{$value.id}">
+					<td align="center">
+						<input type="checkbox" id="tbl_{$value.Name}" name="tbl[]" {if $value.free} sign="free"{/if} value="{$value.Name}" lay-skin="primary"/></td>
+					<td>{$value.Name}<!-- if $value.Comment -->（{$value.Comment})<!-- /if --></td>
+					<td>{$value.Engine}</td>
+					<td>{$value.Collation}</td>
+					<td>{$value.Rows}</td>
+					<td>{$value.length}</td>
+					<td >{$value.Update_time ? $value.Update_time : $value.Create_time}</td>
+					<td{if $value.free} style="background:red;"{/if}>{$value.free}</td>
+					<td>
+						<div class="layui-btn-group">
+							<input type="button" value="{lang明细}" onclick="$.admin_sql.show('{$value.Name}')" class="layui-btn  layui-btn-sm" />
+							<!-- if $value.delete -->
+							<input type="button" value="{lang删除}" onclick="$.admin_rewrite.del('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm" />
+							<!-- /if -->
+						</div>
+					</td>
+				</tr>
+				<!-- /loop -->
+				</tbody>
+			</table>
+
+		<div style="margin:10px;">
+			<div class="layui-btn-group test-table-operate-btn">
+				<input type="button" value="{lang全选}" onclick="$.input.checkbox_all()" class="layui-btn  layui-btn-sm" />
+				<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none()" class="layui-btn  layui-btn-sm" />
+				<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti()" class="layui-btn  layui-btn-sm" />
+				<input type="button" value="{lang只选择有碎片}" onclick="$.admin_sql.select_free()" class="layui-btn  layui-btn-sm" />
+			</div>
+			<div class="layui-btn-group test-table-operate-btn">
+				<!-- if $popedom.optimize || $popedom.repair || $popedom.create -->
+				<!-- if $popedom.optimize -->
+				<input type="button" value="{lang优化}" onclick="$.admin_sql.optimize()" class="layui-btn  layui-btn-sm" />
+				<!-- /if -->
+				<!-- if $popedom.repair -->
+				<input type="button" value="{lang修复}" onclick="$.admin_sql.repair()" class="layui-btn  layui-btn-sm" />
+				<!-- /if -->
+				<!-- if $popedom.create -->
+				<input type="button" value="{lang备份}" onclick="$.admin_sql.backup()" class="layui-btn  layui-btn-sm" />
+				<!-- /if -->
+			</div>
 			<!-- /if -->
 		</div>
-	</td>
-</tr>
-<!-- /loop -->
-</table>
-<div style="margin:10px;">
-	<div class="button-group">
-		<input type="button" value="{lang全选}" onclick="$.input.checkbox_all()" class="phpok-btn" />
-		<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none()" class="phpok-btn" />
-		<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti()" class="phpok-btn" />
-		<input type="button" value="{lang只选择有碎片}" onclick="$.admin_sql.select_free()" class="phpok-btn" />
 	</div>
-	<!-- if $popedom.optimize || $popedom.repair || $popedom.create -->
-	<div class="button-group">
-		<!-- if $popedom.optimize -->
-		<input type="button" value="{lang优化}" onclick="$.admin_sql.optimize()" class="phpok-btn" />
-		<!-- /if -->
-		<!-- if $popedom.repair -->
-		<input type="button" value="{lang修复}" onclick="$.admin_sql.repair()" class="phpok-btn" />
-		<!-- /if -->
-		<!-- if $popedom.create -->
-		<input type="button" value="{lang备份}" onclick="$.admin_sql.backup()" class="phpok-btn" />
-		<!-- /if -->
-	</div>
-	<!-- /if -->
 </div>
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

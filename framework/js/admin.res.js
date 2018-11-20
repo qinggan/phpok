@@ -31,6 +31,11 @@
 		**/
 		edit_local_save:function()
 		{
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
 			var opener = $.dialog.opener;
 			$("#post_save").ajaxSubmit({
 				'url':get_url('res','setting_remote_to_local_save'),
@@ -74,9 +79,9 @@
 				var url = get_url("res","delete_pl") + "&id="+$.str.encode(id);
 				$.phpok.json(url,function(rs){
 					if(rs.status == 'ok'){
-						$.dialog.alert(p_lang('批量删除附件操作成功'),function(){
+						$.dialog.tips(p_lang('批量删除附件操作成功'),function(){
 							$.phpok.reload();
-						},'succeed');
+						}).lock();
 						return true;
 					}
 					$.dialog.alert(rs.content);
@@ -93,7 +98,9 @@
 				url = get_url('upload','delete','id='+id);
 				$.phpok.json(url,function(rs){
 					if(rs.status == 'ok'){
-						$("#thumb_"+id).remove();
+						$.dialog.tips(p_lang('附件删除成功'),function(){
+							$("#thumb_"+id).remove();
+						}).lock();
 						return true;
 					}
 					$.dialog.alert(rs.content);
@@ -242,10 +249,22 @@
 				})
 			});
 		}
+		
 	}
+	$(document).ready(function(){
+		layui.use('laydate',function(){
+			var laydate = layui.laydate;
+			if($("#start_date").length > 0){
+				laydate.render({
+                    elem: '#start_date',
+                });
+			}
+			if($("#stop_date").length > 0){
+                laydate.render({
+                    elem: '#stop_date',
+                });
+			}
+		});
+		
+	});
 })(jQuery);
-
-$(document).ready(function(){
-	laydate.render({elem:'#start_date'});
-	laydate.render({elem:'#stop_date'});
-});

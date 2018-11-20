@@ -60,12 +60,9 @@ class vcode_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('没有安装短信发送引挈，请先安装并设置默认'),$backurl);
 		}
-		$vcode = $this->session->val('vcode_sms');
-		$time = $this->session->val('vcode_time');
-		if($vcode && $time){
-			if( ($time + 60) > $this->time){
-				$this->error(P_Lang('禁止频繁发送验证码，请于一分钟后请求'));
-			}
+		$data = $this->model('vcode')->create('sms',4);
+		if(!$data){
+			$this->error($this->model('vcode')->error_info());
 		}
 		$this->gateway('type','sms');
 		$this->gateway('param',$rs['id']);
@@ -92,10 +89,7 @@ class vcode_control extends phpok_control
 		if(!$tpl){
 			$this->error(P_Lang('短信模板不存在'));
 		}
-		$info = $this->lib("vcode")->word();
-		$this->session->assign('vcode_sms',$info);
-		$this->session->assign('vcode_time',$this->time);
-		$this->assign('code',$info);
+		$this->assign('code',$data['code']);
 		$this->assign('mobile',$mobile);
 		$content = $tpl['content'] ? $this->fetch($tpl['content'],'msg') : '';
 		if($content){
@@ -135,13 +129,6 @@ class vcode_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('没有安装邮件发送引挈，请先安装并设置默认'),$backurl);
 		}
-		$vcode = $this->session->val('vcode_email');
-		$time = $this->session->val('vcode_time');
-		if($vcode && $time){
-			if( ($time + 300) > $this->time){
-				$this->error(P_Lang('禁止频繁发送验证码，请于五分钟后请求'));
-			}
-		}
 		$this->gateway('type','email');
 		$this->gateway('param',$rs['id']);
 		if(!$this->gateway('check')){
@@ -163,6 +150,10 @@ class vcode_control extends phpok_control
 				$this->error(P_Lang('网关配置不完整，请联系工作人员'));
 			}
 		}
+		$data = $this->model('vcode')->create('email',6);
+		if(!$data){
+			$this->error($this->model('vcode')->error_info());
+		}
 		$tpltitle = P_Lang('获取验证码');
 		$tplcontent = P_Lang('您的验证码是：').'{$code}';
 		if($tplid){
@@ -174,14 +165,11 @@ class vcode_control extends phpok_control
 				$tpltitle = $tpl['title'];
 			}
 		}
-		$info = $this->lib("vcode")->word();
-		$this->assign('code',$info);
+		$this->assign('code',$data['code']);
 		$this->assign('email',$email);
 		$title = $this->fetch($tpltitle,'msg');
 		$content = $this->fetch($tplcontent,'msg');
 		$this->gateway('exec',array('email'=>$email,'content'=>$content,'title'=>$title));
-		$this->session->assign('vcode_email',$info);
-		$this->session->assign('vcode_time',$this->time);
 		$this->success();
 	}
 }

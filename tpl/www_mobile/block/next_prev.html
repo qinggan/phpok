@@ -1,0 +1,19 @@
+<hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+<ul class="am-avg-sm-1">
+	<li>上一主题：
+		<!-- php:$prev = phpok_prev($rs) -->
+		<!-- if $prev -->
+		<a href="{$prev.url}" title="{$prev.title}">{$prev.title}</a>
+		<!-- else -->
+		没有了
+		<!-- /if -->
+	</li>
+	<li>下一主题：
+		<!-- php:$next = phpok_next($rs) -->
+		<!-- if $next -->
+		<a href="{$next.url}" title="{$next.title}">{$next.title}</a>
+		<!-- else -->
+		没有了
+		<!-- /if -->
+	</li>
+</ul>

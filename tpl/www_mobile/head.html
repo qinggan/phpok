@@ -1,19 +1,43 @@
-<!-- head title=$title css="css/jquery.mobile.css,css/style.css,artdialog.css" js="js/jquery.mobile.js" html5=true close=false mobile=true -->
-</head>
-<body>
-<div data-role="page" id="page">
-	<div data-role="panel" id="menu" data-position="right" data-display="overlay">
-		<ul data-role="listview" data-icon="false">
-			<!-- php:$list = phpok('menu') -->
-			<!-- loop from=$list.rslist key=$key value=$value -->
-			<li><a href="{$value.url}" target="{$value.target}" title="{$value.title}"{if $menutitle == $value.title} style="color:darkblue;"{/if}>{$value.title}</a>
-			</li>
-			<!-- /loop -->
-		</ul>
+<!-- include tpl=header title=$title css=$css js=$js -->
+<header data-am-widget="header" class="am-header am-header-default">
+	<div class="am-header-left am-header-nav">
+		<!-- if $showhome -->
+		<a href="{$sys.url}"><i class="am-icon-home am-icon-fw am-icon-sm"></i></a>
+		<!-- elseif $sys.ctrl == 'index' -->
+		<a href="{url ctrl=search/}"><i class="am-icon-search am-icon-fw"></i></a>
+		<!-- else -->
+		<a href="javascript:window.history.go(-1);void(0);"><i class="am-icon-angle-left am-icon-fw"></i></a>
+		<!-- /if -->
 	</div>
-<div data-role="header" data-position="fixed">
-	<h1>{$title ? $title : $config.title}</h1>
-	<a href="{url ctrl=cart/}" class="ui-btn ui-corner-all ui-shadow ui-icon-cart ui-btn-icon-left ui-btn-icon-notext" id="head_cart_num"></a>
-	<a href="#menu" class="ui-btn ui-shadow ui-corner-all ui-btn-icon-left ui-icon-bars  ui-btn-icon-notext">菜单</a>
-</div>
-<div dat-role="content" id="body-content">
+	<h1 class="am-header-title">
+		<!-- if $title -->
+		{$title}
+		<!-- else -->
+			<!-- if $config.logo_mobile --><img src="{$config.logo_mobile}" /><!-- else -->{$config.title}<!-- /if -->
+		<!-- /if -->
+	</h1>
+	<div class="am-header-right am-header-nav"></div>
+</header>
+<nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1" data-am-menu-offcanvas>
+	<a href="javascript:void(0)" class="am-menu-toggle"> <i class="am-menu-toggle-icon am-icon-bars"></i></a>
+	<div class="am-offcanvas">
+		<div class="am-offcanvas-bar">
+			<ul class="am-menu-nav am-avg-sm-1">
+				<!-- php:$list = phpok('menu') -->
+				<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+				<li{if $value.sonlist} class="am-parent"{/if}>
+					<a href="{if !$value.sonlist}{$value.url}{else}javascript:void(0);{/if}"{if $value.title == $menutitle} class="am-active"{/if}>{$value.title}</a>
+					<!-- if $value.sonlist -->
+					<ul class="am-menu-sub am-collapse">
+						<!-- if $value.link --><li><a href="{$value.url}">{$value.title}</a></li><!-- /if -->
+						<!-- loop from=$value.sonlist key=$k value=$v -->
+						<li{if $v.title == $menutitle} class="am-active"{/if}><a href="{$v.url}" title="{$v.title}" target="{$v.target}">{$v.title}</a></li>
+						<!-- /loop -->
+					</ul>
+					<!-- /if -->
+				</li>
+				<!-- /loop -->
+			</ul>
+		</div>
+	</div>
+</nav>

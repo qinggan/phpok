@@ -1,12 +1,42 @@
-<!-- include tpl=head title=下载文件 menutitle=$page_rs.title -->
-<!-- php:$link = $app->url('download','','id='.$rs.dfile.id.'&title='.rawurlencode($rs.title)) -->
-<div role="main" class="ui-content">
-	<div class="content">
-		<div class="title">请点击按钮下载文件：<span class="red">{$rs.title}</span></div>
-		<fieldset class="ui-grid-a">
-		    <div class="ui-block-a"><input type="button" value="点击下载" data-theme="b" onclick="$.phpok.go('{$link}')" /></div>
-		    <div class="ui-block-b"><input type="button" value="返回列表" data-theme="a" onclick="$.phpok.go('{$page_rs.url}')"></div>
-		</fieldset>
+<!-- include tpl=head title=$cate_rs.title menutitle=$page_rs.title -->
+<div class="main">
+	<div class="am-g">
+		<!-- if $rs.thumb -->
+		<div class="am-u-sm-12">
+			<img src="{$rs.thumb.gd.auto}" alt="{$rs.title}" width="100%" class="am-radius" />
+		</div>
+		<!-- /if -->
+		<div class="am-u-sm-12">
+			<h2>{$rs.title}</h2>
+			<ul class="am-list am-list-static">
+				<!-- if $rs.fsize -->
+				<li><span>软件大小：</span>{$rs.fsize}</li>
+				<!-- /if -->
+				<!-- if $rs.version -->
+				<li><span>软件版本：</span>{$rs.version}</li>
+				<!-- /if -->
+				<!-- if $rs.author -->
+				<li><span>开发作者：</span>{$rs.author}<!-- if $rs.website --> &nbsp; <a href="{$rs.website}" target="_blank" class="red" style="display:inline;" title="访问{$rs.author}">访问官网</a><!-- /if --></li>
+				<!-- /if -->
+			</ul>
+			<!-- if !$rs.onlyuser || ($rs.onlyuser && $session.user_id) -->
+			<a href="{if $rs.dfile}{url ctrl=download id=$rs.dfile.id/}{else}{$rs.dlink}{/if}" class="am-btn am-btn-primary am-radius" target="_blank" style="padding-right:1em;">下载附件</a>
+			<!-- else -->
+			<a class="am-btn am-btn-danger am-radius" href="{url ctrl=login _back=$rs.url/}" style="padding-right:1em;">请先登录</a>
+			<!-- /if -->
+		</div>
 	</div>
+	<hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+	<!-- if $rs.content -->
+	<article class="am-article">
+		<div class="am-article-bd">
+			<div class="content">{$rs.content}</div>
+		</div>
+	</article>
+	<!-- /if -->
+	<!-- include tpl=block/next_prev -->
+	<!-- if $page_rs.comment_status -->
+		<!-- include tpl=block/comment tid=$rs.id -->
+	<!-- /if -->
 </div>
 <!-- include tpl=foot -->

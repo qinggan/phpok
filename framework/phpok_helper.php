@@ -126,32 +126,13 @@ function array_return($content,$status=false)
 //	error：状态为错误
 function error($tips="",$url="",$type="notice",$time=2)
 {
-	if(!$tips && !ob_get_contents())
-	{
+	if(!$tips && !ob_get_contents()){
 		header("Location:".$url);
 		exit;
 	}
-	if(!$url && !$tips)
-	{
-		//操作异常，传递空参数！
+	if(!$url && !$tips){
 		$GLOBALS['app']->error("操作异常，没有传递任何有效参数！");
 	}
-	if($url)
-	{
-		if(strpos($url,'_noCache=') === false)
-		{
-			$url .= strpos($url,'?') === false ? '?' : '&';
-			$url .= "_noCache=0.".rand(10000,999999);
-		}
-		else
-		{
-			$url = preg_replace("/\_noCache=[0-9\.]+/is",'_noCache=0.'.rand(10000,999999),$url);
-		}
-	}
-	$GLOBALS['app']->assign("url",$url);
-	$GLOBALS['app']->assign("tips",$tips);
-	$GLOBALS['app']->assign("type",$type);
-	$GLOBALS['app']->assign("time",$time);
 	if($type == 'error'){
 		$GLOBALS['app']->error($tips,$url,$time);
 	}else{
@@ -162,45 +143,6 @@ function error($tips="",$url="",$type="notice",$time=2)
 		$GLOBALS['app']->success($tips,$url,$time);
 	}
 	exit;
-}
-
-//虚弹窗口提示用的
-function error_open($tips,$type="notice",$btn="")
-{
-	if(!$btn && !$tips)
-	{
-		//操作异常，传递空参数！
-		$GLOBALS['app']->error("操作异常，没有传递任何有效参数！");
-	}
-	$GLOBALS['app']->assign("tips",$tips);
-	$GLOBALS['app']->assign("type",$type);
-	$GLOBALS['app']->assign("btn",$btn);
-	$GLOBALS['app']->tpl->path_change("");//禁用解析CSS
-	$GLOBALS['app']->view($GLOBALS['app']->dir_phpok."view/tips_open.html","abs-file");
-	exit;
-}
-
-
-# 以下函数是考虑旧版本的应用
-if(!function_exists("file_get_contents"))
-{
-	function file_get_contents($file)
-	{
-		if(!$file) return false;
-		return implode("",file($file));
-	}
-}
-
-if(!function_exists("file_put_contents"))
-{
-	function file_put_contents($filename,$data="")
-	{
-		if(!$filename) return false;
-		$handle = fopen($filename,"wb");
-		fwrite($handle,$data);
-		fclose($handle);
-		return true;
-	}
 }
 
 /**
@@ -867,8 +809,12 @@ function tpl_head($array=array())
 	$html .= '<meta name="toTop" content="true" />'."\n\t";
 	$html .= '<base href="'.$app->url.'" />'."\n\t";
 	$cssjs_debug = $app->config['debug'] ? '?_noCache=0.'.rand(1000,9999) : '';
-	if($array['ico'] && file_exists($app->dir_root.$array['ico'])){
-		$html .= '<link rel="shortcut icon" type="image/x-icon" href="'.$app->url.$array['ico'].$cssjs_debug.'" />'."\n\t";
+	$ico = ($array['ico'] && file_exists($app->dir_root.$array['ico'])) ? $array['ico'] : '';
+	if(!$ico && $app->config['favicon']){
+		$ico = $app->config['favicon'];
+	}
+	if($ico){
+		$html .= '<link rel="shortcut icon" href="'.$app->url.$ico.$cssjs_debug.'" />'."\n\t";
 	}
 	if($array["css"]){
 		$tmp = explode(",",$array['css']);

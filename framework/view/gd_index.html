@@ -1,55 +1,62 @@
-<!-- include tpl=head -->
-<div class="tips">
-	{lang您当前的位置：}<a href="{url ctrl=gd/}" title="{lang图片方案}">{lang图片方案}</a>
-	&raquo; {lang列表}
-	<div class="action"><a href="{url ctrl=gd func=set/}">{lang添加方案}</a></div>
-	<div class="action" id="gd_filename"><a href="javascript:$.admin_gd.tofile()">{lang编辑器使用原文件}</a></div>
-	<div class="clear"></div>
-</div>
-<div class="list">
-<table width="100%" cellpadding="0" cellspacing="0" class="list">
-<tr>
-	<th class="id">ID</th>
-	<th>{lang标识串}</th>
-	<th>{lang宽} &#215; {lang高}</th>
-	<th>{lang生成方式}</th>
-	<th>{lang编辑器支持}</th>
-	<th class="status">{lang水印}</th>
-	<th class="action">{lang操作}</th>
-</tr>
-<!-- php:$is_editor = false -->
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<tr>
-	<td class="center">{$value.id}</td>
-	<td class="center">{$value.identifier}</td>
-	<td class="center">{$value.width} x {$value.height}</td>
-	<td class="center">{$value.cut_type ? P_Lang('裁剪法') : P_Lang('缩放法')}</td>
-	<td class="center">
-		<!-- if $value.editor -->
-		<!-- php:$is_editor = true -->
-		<span class="red">{lang默认}</span>
-		<!-- else -->
-		<input type="button" value="{lang设为默认}" class="btn" onclick="$.admin_gd.editor('{$value.id}')" />
-		<!-- /if -->
-	</td>
-	<td class="center"><!-- if $value.mark_picture --><span class="darkblue">{lang有}</span><!-- else -->{lang无}<!-- /if --></td>
-	<td>
-		<!-- if $popedom.modify || $popedom.delete -->
-		<div class="button-group">
-			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=gd func=set id=$value.id/}')" class="phpok-btn" /><!-- /if -->
-			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_gd.del('{$value.id}')" class="phpok-btn" /><!-- /if -->
+<!-- include tpl=head_lay -->
+<script src="{func add_js 'admin.fields.js'}"></script>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang图片方案}
+		<div class="layui-btn-group fr">
+			<input type="button" value="{lang编辑器使用原文件}" onclick="$.admin_gd.tofile()" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang添加GD方案}" onclick="$.win('{lang添加GD方案}','{url ctrl=gd func=set/}')" class="layui-btn layui-btn-sm" />
 		</div>
-		<!-- /if -->
-	</td>
-</tr>
-<!-- /loop -->
-</table>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>{lang标识串}</th>
+			<th>{lang宽} &#215; {lang高}</th>
+			<th>{lang生成方式}</th>
+			<th>{lang编辑器支持}</th>
+			<th>{lang水印}</th>
+			<th width="140">{lang操作}</th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- php:$is_editor = false -->
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.id}</td>
+			<td>{$value.identifier}</td>
+			<td>
+				<!-- if !$value.width && !$value.height -->
+				{lang保留原宽高}
+				<!-- else -->
+					<!-- if $value.width -->{$value.width}<!-- else -->{lang默认}<!-- /if --> &#215;
+					<!-- if $value.height -->{$value.height}<!-- else -->{lang默认}<!-- /if -->
+				<!-- /if -->
+			</td>
+			<td><!-- if $value.cut_type -->{lang裁剪法}<!-- else -->{lang缩放法}<!-- /if --></td>
+			<td>
+				<!-- if $value.editor -->
+				<span class="red">{lang默认}</span>
+				<!-- else -->
+				<input type="button" value="{lang设为默认}" class="layui-btn layui-btn-sm" onclick="$.admin_gd.editor('{$value.id}')" />
+				<!-- /if -->
+			</td>
+			<td class="center"><!-- if $value.mark_picture --><span class="darkblue">{lang有}</span><!-- else -->{lang无}<!-- /if --></td>
+			<td>
+				<!-- if $popedom.modify || $popedom.delete -->
+				<div class="layui-btn-group">
+					<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="parent.layui.index.openTabsPage('{url ctrl=gd func=set id=$value.id/}','{lang编辑方案}');" class="layui-btn layui-btn-sm" /><!-- /if -->
+					<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_gd.del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" /><!-- /if -->
+				</div>
+				<!-- /if -->
+			</td>
+		</tr>
+		<!-- /loop -->
+		</tbody>
+		</table>		
+	</div>
 </div>
-<!-- if !$is_editor -->
-<script type="text/javascript">
-$(document).ready(function(){
-	$("#gd_filename").show();
-});
-</script>
-<!-- /if -->
-<!-- include tpl=foot -->
+
+<!-- include tpl=foot_lay -->

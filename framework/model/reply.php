@@ -26,41 +26,16 @@ class reply_model_base extends phpok_model
 	**/
 	public function get_all($condition="",$offset=0,$psize=30)
 	{
-		$sql = "SELECT l.* FROM ".$this->db->prefix."list l ";
+		$sql = "SELECT * FROM ".$this->db->prefix."reply ";
 		if($condition){
 			$sql.= " WHERE ".$condition;
 		}
-		$sql .= " ORDER BY l.replydate DESC,l.id DESC ";
+		$sql .= " ORDER BY addtime DESC,id DESC ";
 		if($psize && $psize>0){
 			$offset = intval($offset);
 			$sql.= " LIMIT ".$offset.",".$psize;
 		}
-		$rslist = $this->db->get_all($sql,"id");
-		if(!$rslist){
-			return false;
-		}
-		$idlist = array_keys($rslist);
-		$reply_list = $this->total_status(implode(",",$idlist));
-		if($reply_list){
-			foreach($reply_list AS $key=>$value){
-				$rslist[$key]["checked"] = $value["checked"];
-				$rslist[$key]["uncheck"] = $value["uncheck"];
-			}
-		}
-		return $rslist;
-	}
-
-	/**
-	 * 回复数
-	 * @参数 $condition 查询条件
-	**/
-	public function get_all_total($condition="")
-	{
-		$sql = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
-		if($condition){
-			$sql.= " WHERE ".$condition;
-		}
-		return $this->db->count($sql);
+		return $this->db->get_all($sql,"id");
 	}
 
 	/**
@@ -109,7 +84,71 @@ class reply_model_base extends phpok_model
 			$offset = intval($offset);
 			$sql .= " LIMIT ".$offset.",".$psize;
 		}
-		return $this->db->get_all($sql,$pri);
+		$rslist = $this->db->get_all($sql,'id');
+		if(!$rslist){
+			return false;
+		}
+		$rslist = $this->_reply($rslist);
+		$rslist = $this->_res($rslist,true);
+		return $rslist;
+	}
+
+	protected function _reply($rslist)
+	{
+		$ids = array_keys($rslist);
+		$ids = implode(",",$ids);
+		$sql = "SELECT id,content,addtime,admin_id,parent_id FROM ".$this->db->prefix."reply WHERE parent_id IN(".$ids.") AND admin_id>0 ORDER BY addtime ASC,id ASC";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return $rslist;
+		}
+		foreach($tmplist as $key=>$value){
+			if(!$rslist[$value['parent_id']]['adm_reply']){
+				$rslist[$value['parent_id']]['adm_reply'] = array();
+			}
+			$rslist[$value['parent_id']]['adm_reply'][] = $value;
+		}
+		return $rslist;
+	}
+
+	/**
+	 * 评论中的附件
+	 * @参数 $rslist 回复数据，数组格式
+	**/
+	protected function _res($rslist,$ext=false)
+	{
+		$ids = array();
+		foreach($rslist as $key=>$value){
+			if($value['res']){
+				$ids[] = $value['res'];
+			}
+		}
+		if(!$ids){
+			return $rslist;
+		}
+		$ids = implode(",",$ids);
+		$list = explode(",",$ids);
+		$list = array_unique($list);
+		$ids = implode(",",$list);
+		$reslist = $this->model('res')->get_list_from_id($ids,$ext);
+		if(!$reslist){
+			return $rslist;
+		}
+		foreach($rslist as $key=>$value){
+			if(!$value['res']){
+				continue;
+			}
+			$tmp = explode(",",$value['res']);
+			$tmplist = array();
+			foreach($tmp as $k=>$v){
+				if($v && $reslist[$v]){
+					$tmplist[$v] = $reslist[$v];
+				}
+			}
+			$value['res'] = $tmplist;
+			$rslist[$key] = $value;
+		}
+		return $rslist;
 	}
 
 	/**
@@ -215,5 +254,12 @@ class reply_model_base extends phpok_model
 		}
 		$sql.= " AND p.status=1";
 		return $this->db->get_one($sql);
+	}
+
+	public function adm_reply($id)
+	{
+		$id = intval($id);
+		$sql = "SELECT id,addtime,content,admin_id FROM ".$this->db->prefix."reply WHERE parent_id=".$id." AND admin_id!=0 ORDER BY addtime ASC,id ASC";
+		return $this->db->get_all($sql);
 	}
 }

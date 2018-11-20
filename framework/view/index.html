@@ -8,6 +8,9 @@
 	<meta http-equiv="Cache-Control" content="no-cache" />
 	<title><!-- if $config.title -->{$config.title}_<!-- /if -->{lang后台管理}</title>
 	<meta name="renderer" content="webkit" />
+	<!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta name="phpok-copyright" content="{$license}" />
 	<meta name="phpok-version" content="{$version}" />
@@ -17,7 +20,7 @@
 	<link rel="stylesheet" href="{$sys.webroot}static/admin/style/admin.css" media="all">
 	<link rel="stylesheet" type="text/css" href="{#css#}/artdialog.css" />
 	<script type="text/javascript" src="{$sys.webroot}static/admin/layui/layui.js"></script>
-	<script type="text/javascript" src="{url ctrl=js ext=admin.index.js /}"></script>
+	<script type="text/javascript" src="{url ctrl=js /}"></script>
 	<!-- plugin head -->
 </head>
 <body class="layui-layout-body">
@@ -29,12 +32,6 @@
 					<li class="layui-nav-item layadmin-flexible" lay-unselect>
 						<a href="javascript:;" layadmin-event="flexible" title="{lang侧边伸缩}"> <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
 						</a>
-					</li>
-					<li class="layui-nav-item layui-hide-xs" lay-unselect>
-						<a href="javascript:;" layadmin-event="theme" title="{lang更换后台配色}"> <i class="layui-icon layui-icon-theme"></i> {lang后台配色}</a>
-					</li>
-					<li class="layui-nav-item layui-hide-xs" lay-unselect>
-						<a href="javascript:;" layadmin-event="note" title="{lang本地记事本，仅限当前浏览器使用}"> <i class="layui-icon layui-icon-note"></i> {lang便签}</a>
 					</li>
 					<li class="layui-nav-item" lay-unselect>
 						<a href="javascript:;" layadmin-event="refresh" title="{lang刷新}"><i class="layui-icon layui-icon-refresh-3"></i> {lang刷新}</a>
@@ -51,20 +48,20 @@
 						<a href="javascript:;" layadmin-event="fullscreen"> <i class="layui-icon layui-icon-screen-full"></i> {lang全屏}</a>
 					</li>
 					<!-- if $sitelist && count($sitelist)>1 -->
-					<li class="layui-nav-item" lay-unselect>
+					<li class="layui-nav-item layui-hide-xs" lay-unselect>
 						<a href="javascript:;"> <cite>{$config.title}</cite></a>
 						<dl class="layui-nav-child">
 							<!-- loop from=$sitelist key=$key value=$value id=$tmpid -->
-							<dd><a href="{url ctrl=index func=site id=$value.id/}">{$value.title}</a></dd>
+							<dd><a href="{url ctrl=index func=site id=$value.id/}">{$value.id} - {$value.title}</a></dd>
 							<!-- /loop -->
 						</dl>
 					</li>
+					<!-- /loop -->
 					<!-- if $session.admin_rs.if_system && $session.adm_develop -->
-					<li class="layui-nav-item" lay-unselect>
-						<a href="javascript:$.admin_index.site();void(0);" class="layui-icon layui-icon-add-1" title="{lang添加新站点}"></a>
+					<li class="layui-nav-item layui-hide-xs" lay-unselect>
+						<a href="javascript:$.admin_index.site();void(0);" title="{lang添加新站点}"><i class="layui-icon layui-icon-add-1"></i> {lang添加站点}</a>
 					</li>
 					<!-- /if -->
-					<!-- /loop -->
 					<!-- if $sys.multiple_language && $langlist -->
 					<li class="layui-nav-item" lay-unselect>
 						<a href="javascript:;"><cite id="lang_title">{$language}</cite></a>
@@ -80,8 +77,14 @@
 						<dl class="layui-nav-child">
 							<dd><a href="javascript:$.admin_index.me();void(0);">基本资料</a></dd>
 							<dd><a href="javascript:$.admin_index.pass();void(0);">修改密码</a></dd>
-							<hr>
-							<dd onclick="$.admin_index.logout()" style="text-align: center;"><a>退出</a></dd>
+							<!-- if !$sys.develop -->
+								<!-- if $session.adm_develop -->
+								<dd><a href="javascript:$.admin_index.develop(0);void(0);">应用模式</a></dd>
+								<!-- else -->
+								<dd><a href="javascript:$.admin_index.develop(1);void(0);">开发模式</a></dd>
+								<!-- /if -->
+							<!-- /if -->
+							<dd><a href="javascript:$.admin_index.logout();void(0);">退出</a></dd>
 						</dl>
 					</li>
 					<li class="layui-nav-item layui-hide-xs" lay-unselect> <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
@@ -104,23 +107,66 @@
 			                <cite>{lang后台首页}</cite>
 			              </a>
 			            </li>
-			            <li data-name="app" class="layui-nav-item">
-			              <a href="javascript:;" lay-href="{url ctrl=list/}">
+			            <!-- if $list_rslist && !$session.adm_develop -->
+			            <li data-name="list" class="layui-nav-item">
+			              <a href="javascript:;" lay-tips="{lang内容管理}" lay-direction="2">
+			                <i class="layui-icon layui-icon-app"></i>
+			                <cite>{lang内容管理}</cite>
+			              </a>
+			              <dl class="layui-nav-child">
+								<!-- loop from=$list_rslist key=$key value=$value id=$idx -->
+								<dd pid="{$value.id}" data-name="project_{$value.id}"> <a lay-href="{$value.url}" lay-text="{$value.title}">{$value.nick_title ? $value.nick_title : $value.title}</a></dd>
+								<!-- /loop -->
+						  </dl>
+			            </li>
+			            <!-- /if -->
+			            <!-- if $all_info && !$session.adm_develop -->
+			            <li data-name="all" class="layui-nav-item">
+			              <a href="javascript:;" lay-tips="{lang全局管理}" lay-direction="2">
+			                <i class="layui-icon layui-icon-util"></i>
+			                <cite>{lang全局管理}</cite>
+			              </a>
+			              <dl class="layui-nav-child">
+								<!-- if $all_popedom.site -->
+								<dd data-name="config_site"> <a lay-href="{url ctrl=all func=setting/}">{lang网站信息}</a></dd>
+								<!-- /if -->
+								<!-- if $show_vcode_setting -->
+								<dd data-name="config_vcode"> <a lay-href="{url ctrl=all func=vcode/}">{lang验证码配置}</a></dd>
+								<!-- /if -->
+								<!-- if $all_popedom.domain -->
+								<dd data-name="config_domain"> <a lay-href="{url ctrl=all func=domain/}">{lang网站域名}</a></dd>
+								<!-- /if -->
+								<!-- if $site_popedom.order && $config.biz_status -->
+								<dd data-name="config_order_status"> <a lay-href="{url ctrl=site func=order_status/}">{lang订单常规配置}</a></dd>
+								<!-- /if -->
+								<!-- loop from=$plugin_alist key=$key value=$value id=$tmpid -->
+								<dd data-name="plugin_{$value.id}"> <a lay-href="{$value.url}">{$value.title}</a></dd>
+								<!-- /loop -->
+								<!-- if $all_popedom.gset || $all_popedom.set -->
+								<!-- loop from=$all_rslist key=$key value=$value id=$tmpid -->
+								<dd data-name="all_{$value.id}"> <a lay-href="{url ctrl=all func=set id=$value.id/}">{$value.title}</a></dd>
+								<!-- /loop -->
+								<!-- /if -->
+						  </dl>
+			            </li>
+			            <!-- /if -->
+			            <!-- if $session.adm_develop -->
+			            <li data-name="list" class="layui-nav-item">
+			              <a href="javascript:;" lay-href="{url ctrl=list/}" lay-text="{lang内容管理}">
 			                <i class="layui-icon layui-icon-app"></i>
 			                <cite>{lang内容管理}</cite>
 			              </a>
 			            </li>
-			            <li data-name="app" class="layui-nav-item">
-			              <a href="javascript:;" lay-href="{url ctrl=all/}">
+			            <li data-name="all" class="layui-nav-item">
+			              <a href="javascript:;" lay-tips="{lang全局管理}" lay-href="{url ctrl=all/}" lay-direction="2">
 			                <i class="layui-icon layui-icon-util"></i>
 			                <cite>{lang全局管理}</cite>
 			              </a>
 			            </li>
+			            <!-- /if -->
 			            <!-- loop from=$iconlist key=$key value=$value id=$tmpid -->
-			            
-			            
-			            <li data-name="{$value.icon}" class="layui-nav-item">
-			              <a href="javascript:;" lay-href="{$value.url}">
+			            <li data-name="{$value.appfile}" class="layui-nav-item">
+			              <a href="javascript:;" lay-href="{$value.url}" lay-text="{func P_Lang $value.title}">
 			                <i class="icon-{$value.icon}" style="margin-left:-24px;padding-right:6px;"></i>
 			                <cite>{func P_Lang $value.title}</cite>
 			              </a>
@@ -133,7 +179,7 @@
 							</a>
 							<dl class="layui-nav-child">
 								<!-- loop from=$value.sublist key=$k value=$v id=$idxx -->
-								<dd data-name="submenu-{$v.id}"> <a lay-href="{$v.url}">{func P_Lang $v.title}</a></dd>
+								<dd data-name="{$v.appfile}"> <a lay-href="{$v.url}" lay-text="{func P_Lang $v.title}">{func P_Lang $v.title}</a></dd>
 								<!-- /loop -->
 							</dl>
 						</li>
@@ -179,5 +225,12 @@
 	</div>
 	<!-- plugin body -->
 	<!-- plugin foot -->
+	<script type="text/javascript">
+	layui.config({
+	  	base: webroot+'static/admin/' //静态资源所在路径
+	}).extend({
+	    index:'lib/index'
+	}).use(['index']);
+	</script>
 </body>
 </html>

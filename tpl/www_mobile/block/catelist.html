@@ -1,0 +1,19 @@
+<!-- catelist pid=$pid -->
+<!-- if $list.tree -->
+<nav data-am-widget="menu" class="am-menu am-menu-stack">
+	<ul class="am-menu-nav am-avg-sm-1">
+		<!-- loop from=$list.tree key=$key value=$value id=$tmpid -->
+		<li{if $value.sublist} class="am-parent"{/if}>
+			<a href="{if $value.sublist}javascript:void(0);{else}{$value.url}{/if}"{if $cate_rs && $cate_rs.id == $value.id} class="am-active"{/if}>{$value.title}</a>
+			<!-- if $value.sublist -->
+			<ul class="am-menu-sub am-collapse">
+				<!-- loop from=$value.sublist key=$k value=$v id=$idxx -->
+				<li><a href="{$v.url}" title="{$v.title}"{if $cate_rs && $cate_rs.id == $v.id} class="am-active"{/if}>{$v.title}</a></li>
+				<!-- /loop -->
+			</ul>
+			<!-- /if -->
+		</li>
+		<!-- /loop -->
+	</ul>
+</nav>
+<!-- /if -->

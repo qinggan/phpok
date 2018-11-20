@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<demo>
+		<title><![CDATA[测试]]></title>
+		<status><![CDATA[1]]></status>
+		<taxis><![CDATA[10]]></taxis>
+		<ostatus><![CDATA[create]]></ostatus>
+	</demo>
+</root>

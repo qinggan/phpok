@@ -137,16 +137,40 @@ class wealth_control extends phpok_control
 		}
 		$val = abs($val);
 		$type = $this->get('type');
+		$from_uid = $this->get('from_uid');
+		$vouch_user_id = 0;
+		if($from_uid == 'vouch'){
+			$vouch_user_id = $this->get('vouch','int');
+			if(!$vouch_user_id){
+				$this->json('未指定推荐人');
+			}
+		}
+		if($from_uid == 'other'){
+			$tmp = $this->get('username');
+			if(!$tmp){
+				$this->json('请填写会员账号');
+			}
+			$tmp_rs = $this->model('user')->chk_name($tmp);
+			if(!$tmp_rs){
+				$this->json('会员不存在');
+			}
+			$vouch_user_id = $tmp_rs['id'];
+		}
+		$time = $this->time;
+		$dateline = $this->get('dateline');
+		if($dateline){
+			$time = strtotime($dateline);
+		}
 		if($type && $type == '-'){
 			$savelogs = array('wid'=>$wid,'goal_id'=>$uid,'mid'=>0,'val'=>'-'.$val);
 			$savelogs['appid'] = $this->app_id;
-			$savelogs['dateline'] = $this->time;
-			$savelogs['user_id'] = 0;
-			$savelogs['admin_id'] = $_SESSION['admin_id'];
+			$savelogs['dateline'] = $time;
+			$savelogs['user_id'] = $vouch_user_id;
+			$savelogs['admin_id'] = $this->session->val('admin_id');
 			$savelogs['ctrlid'] = 'wealth';
 			$savelogs['funcid'] = 'val';
 			$savelogs['url'] = 'admin.php...';
-			$savelogs['note'] = $note ? P_Lang('管理员操作：').$note : P_Lang('管理员操作');
+			$savelogs['note'] = $note ? $note : P_Lang('管理员操作');
 			$savelogs['status'] = 1;
 			$data = array('wid'=>$wid,'uid'=>$uid,'lasttime'=>$this->time);
 			$user_val = $this->model('wealth')->get_val($uid,$wid);
@@ -167,13 +191,13 @@ class wealth_control extends phpok_control
 			//增加日志记录
 			$savelogs = array('wid'=>$wid,'goal_id'=>$uid,'mid'=>0,'val'=>$val);
 			$savelogs['appid'] = $this->app_id;
-			$savelogs['dateline'] = $this->time;
-			$savelogs['user_id'] = 0;
-			$savelogs['admin_id'] = $_SESSION['admin_id'];
+			$savelogs['dateline'] = $time;
+			$savelogs['user_id'] = $vouch_user_id;
+			$savelogs['admin_id'] = $this->session->val('admin_id');
 			$savelogs['ctrlid'] = 'wealth';
 			$savelogs['funcid'] = 'val';
 			$savelogs['url'] = 'admin.php...';
-			$savelogs['note'] = $note ? P_Lang('管理员操作：').$note : P_Lang('管理员操作');
+			$savelogs['note'] = $note ? $note : P_Lang('管理员操作');
 			$savelogs['status'] = 1;
 			$data = array('wid'=>$wid,'uid'=>$uid,'lasttime'=>$this->time);
 			$this->model('wealth')->save_log($savelogs);

@@ -1,0 +1,14 @@
+<!-- php:$contactus = phpok('contactus') -->
+<div class="am-panel am-panel-default">
+	<div class="am-panel-hd">
+		<h3 class="am-panel-title">{$contactus.title}<!-- if $showmore --><a href="{$contactus.url}" class="am-fr more">更多 <span class="am-icon-angle-right"></span></a><!-- /if --></h3>
+	</div>
+	<ul class="am-list am-list-static">
+		<!-- if $contactus.company --><li><i class="am-icon-home am-icon-fw"></i> {$contactus.company}</li><!-- /if -->
+		<!-- if $contactus.address --><li><i class="am-icon-location-arrow am-icon-fw"></i> {$contactus.address}</li><!-- /if -->
+		<!-- if $contactus.email --><li><i class="am-icon-at am-icon-fw"></i> {$contactus.email}</li><!-- /if -->
+		<!-- if $contactus.zipcode --><li><i class="am-icon-envelope-o am-icon-fw"></i> {$contactus.zipcode}</li><!-- /if -->
+		<!-- if $contactus.tel --><li><i class="am-icon-mobile am-icon-fw"></i> {$contactus.tel}</li><!-- /if -->
+		<!-- if $contactus.fullname --><li><i class="am-icon-user am-icon-fw"></i> {$contactus.fullname}</li><!-- /if -->
+	</ul>
+</div>

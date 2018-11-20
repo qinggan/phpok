@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Expires" content="wed, 26 feb 1997 08:21:57 gmt" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <title><!-- if $title -->{$title} - <!-- /if -->{$site_info.title ? $site_info.title : $config.title}_{lang后台管理}</title>
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="phpok-copyright" content="{$license}" />
+    <meta name="phpok-version" content="{$version}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
+    <link rel="stylesheet" href="static/admin/layui/css/layui.css" media="all" />
+    <link rel="stylesheet" href="static/admin/style/admin.css" media="all" />
+    <link rel="stylesheet" href="static/admin/style/extadmin.css" media="all" />
+    <link rel="stylesheet" href="{#css#}/smartmenu.css" media="all" />
+    <link rel="stylesheet" href="{#css#}/artdialog.css" media="all" />
+    <link rel="stylesheet" href="{#css#}/icomoon.css" />
+    <link rel="stylesheet" href="{#css#}/extadmin.css" />
+    {func phpok_head_css}
+    <script type="text/javascript" src="static/admin/layui/layui.js"></script>
+    <!-- php:$js_ext = 'admin.'.$sys.ctrl.'.js,admin.'.$sys.ctrl.'-'.$sys.func.'.js' -->
+    <script type="text/javascript" src="{url ctrl=js ext=$js_ext/}"></script>
+    <script type="text/javascript" src="{#js#}/global.admin.js"></script>
+	{func phpok_head_js}
+    <!-- plugin head -->
+</head>
+<body>
+<div class="layui-fluid"{if $nopadding} style="padding:0;"{/if}>

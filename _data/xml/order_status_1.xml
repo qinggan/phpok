@@ -1,77 +1,76 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<create>
-		<title>创建订单</title>
-		<status>1</status>
-		<email_tpl_user></email_tpl_user>
-		<email_tpl_admin></email_tpl_admin>
-		<sms_tpl_user>sms_order_create</sms_tpl_user>
-		<taxis>10</taxis>
-		<next>unpaid,cancel,stop</next>
+		<title><![CDATA[创建订单]]></title>
+		<status><![CDATA[1]]></status>
+		<email_tpl_user><![CDATA[]]></email_tpl_user>
+		<email_tpl_admin><![CDATA[]]></email_tpl_admin>
+		<sms_tpl_user><![CDATA[sms_order_create]]></sms_tpl_user>
+		<sms_tpl_admin><![CDATA[]]></sms_tpl_admin>
+		<taxis><![CDATA[10]]></taxis>
 	</create>
 	<unpaid>
-		<title>等待付款</title>
-		<status>1</status>
-		<email_tpl_user></email_tpl_user>
-		<email_tpl_admin></email_tpl_admin>
-		<sms_tpl_user></sms_tpl_user>
-		<taxis>20</taxis>
-		<next>paid,cancel,stop</next>
+		<title><![CDATA[等待付款]]></title>
+		<status><![CDATA[1]]></status>
+		<email_tpl_user><![CDATA[]]></email_tpl_user>
+		<email_tpl_admin><![CDATA[]]></email_tpl_admin>
+		<sms_tpl_user><![CDATA[]]></sms_tpl_user>
+		<taxis><![CDATA[20]]></taxis>
+		<next><![CDATA[paid,cancel,stop]]></next>
 	</unpaid>
 	<paid>
-		<title>付款完成</title>
-		<status>1</status>
-		<email_tpl_user>order_user_paid</email_tpl_user>
-		<email_tpl_admin>order_admin_paid</email_tpl_admin>
-		<sms_tpl_user>sms_order_paid</sms_tpl_user>
-		<sms_tpl_admin>sms_paid_admin</sms_tpl_admin>
-		<taxis>40</taxis>
-		<next>shipping,cancel,stop</next>
+		<title><![CDATA[付款完成]]></title>
+		<status><![CDATA[1]]></status>
+		<email_tpl_user><![CDATA[order_user_paid]]></email_tpl_user>
+		<email_tpl_admin><![CDATA[order_admin_paid]]></email_tpl_admin>
+		<sms_tpl_user><![CDATA[sms_order_paid]]></sms_tpl_user>
+		<sms_tpl_admin><![CDATA[sms_paid_admin]]></sms_tpl_admin>
+		<taxis><![CDATA[40]]></taxis>
+		<next><![CDATA[shipping,cancel,stop]]></next>
 	</paid>
 	<shipping>
-		<title>正在发货</title>
-		<status>1</status>
-		<email_tpl_user>order_admin</email_tpl_user>
-		<email_tpl_admin></email_tpl_admin>
-		<sms_tpl_user>sms_order_shipped</sms_tpl_user>
-		<taxis>70</taxis>
-		<next>received</next>
-		<nextact>received</nextact>
+		<title><![CDATA[正在发货]]></title>
+		<status><![CDATA[0]]></status>
+		<email_tpl_user><![CDATA[order_admin]]></email_tpl_user>
+		<email_tpl_admin><![CDATA[]]></email_tpl_admin>
+		<sms_tpl_user><![CDATA[sms_order_shipped]]></sms_tpl_user>
+		<sms_tpl_admin><![CDATA[]]></sms_tpl_admin>
+		<taxis><![CDATA[70]]></taxis>
 	</shipping>
 	<received>
-		<title>客户签收</title>
-		<status>1</status>
-		<email_tpl_user></email_tpl_user>
-		<email_tpl_admin>order_admin_recerved</email_tpl_admin>
-		<sms_tpl_user></sms_tpl_user>
-		<taxis>80</taxis>
-		<next>end</next>
-		<nextact>end</nextact>
+		<title><![CDATA[客户签收]]></title>
+		<status><![CDATA[1]]></status>
+		<email_tpl_user><![CDATA[]]></email_tpl_user>
+		<email_tpl_admin><![CDATA[order_admin_recerved]]></email_tpl_admin>
+		<sms_tpl_user><![CDATA[]]></sms_tpl_user>
+		<taxis><![CDATA[80]]></taxis>
+		<next><![CDATA[end]]></next>
+		<nextact><![CDATA[end]]></nextact>
 	</received>
 	<stop>
-		<title>订单结束</title>
-		<status>1</status>
-		<email_tpl_user></email_tpl_user>
-		<email_tpl_admin></email_tpl_admin>
-		<sms_tpl_user></sms_tpl_user>
-		<taxis>90</taxis>
-		<next>end</next>
+		<title><![CDATA[订单结束]]></title>
+		<status><![CDATA[1]]></status>
+		<email_tpl_user><![CDATA[]]></email_tpl_user>
+		<email_tpl_admin><![CDATA[]]></email_tpl_admin>
+		<sms_tpl_user><![CDATA[]]></sms_tpl_user>
+		<taxis><![CDATA[90]]></taxis>
+		<next><![CDATA[end]]></next>
 	</stop>
 	<cancel>
-		<title>订单取消</title>
-		<status>1</status>
-		<email_tpl_user></email_tpl_user>
-		<email_tpl_admin></email_tpl_admin>
-		<sms_tpl_user></sms_tpl_user>
-		<taxis>100</taxis>
-		<next>end</next>
+		<title><![CDATA[订单取消]]></title>
+		<status><![CDATA[1]]></status>
+		<email_tpl_user><![CDATA[]]></email_tpl_user>
+		<email_tpl_admin><![CDATA[]]></email_tpl_admin>
+		<sms_tpl_user><![CDATA[]]></sms_tpl_user>
+		<taxis><![CDATA[100]]></taxis>
+		<next><![CDATA[end]]></next>
 	</cancel>
 	<end>
-		<title>订单完成</title>
-		<status>1</status>
-		<email_tpl_user></email_tpl_user>
-		<email_tpl_admin></email_tpl_admin>
-		<sms_tpl_user></sms_tpl_user>
-		<taxis>110</taxis>
+		<title><![CDATA[订单完成]]></title>
+		<status><![CDATA[1]]></status>
+		<email_tpl_user><![CDATA[]]></email_tpl_user>
+		<email_tpl_admin><![CDATA[]]></email_tpl_admin>
+		<sms_tpl_user><![CDATA[]]></sms_tpl_user>
+		<taxis><![CDATA[110]]></taxis>
 	</end>
 </root>

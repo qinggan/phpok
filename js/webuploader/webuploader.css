@@ -12,17 +12,19 @@
 .webuploader-pick {
 	position: relative;
 	display: inline-block;
-	background:#eee;
-	border:1px solid #ACACAC;
-	line-height:21px;
-	padding:0px 5px;
+	background:#1E9FFF;
+	border-radius:2px;
+	line-height:30px;
+	padding:0px 10px;
 	text-align: center;
 	overflow: hidden;
-	color:#000;
+	color:#fff;
+	-webkit-appearance: none;
+	transition: all .3s;
+	-webkit-transition: all .3s;
 }
 .webuploader-pick-hover {
-	border-color:#7EB4EA;
-	background-color:#E3F0FC;
+	opacity: 0.8;
 }
 
 .webuploader-pick-disable {

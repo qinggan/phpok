@@ -195,8 +195,12 @@
 		//这里使用异步Ajax处理
 		total:function(func){
 			$.phpok.json(api_url('cart','total'),function(rs){
-				if(rs.status && rs.info){
-					$("#head_cart_num").html(rs.info);
+				if(rs.status){
+					if(rs.info){
+						$("#head_cart_num").html(rs.info).show();
+					}else{
+						$("#head_cart_num").html('0').hide();
+					}
 					if(func && func != 'undefined'){
 						(func)(rs);
 					}

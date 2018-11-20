@@ -39,42 +39,6 @@ function appfile_set(val)
 	}
 }
 
-//添加一行
-function add_trtd()
-{
-	var count = $("#popedom tr").length;
-	var n_id = "tbl_"+(count+1).toString();
-	var html = '<tr id="'+n_id+'">';
-	html += '<td align="center"><input type="button" value="删除" class="btn" onclick="del_trtd(\''+n_id+'\')" /></td>';
-	html += '<td align="center"><input type="text" name="popedom_title_add[]" style="width:180px" /></td>';
-	html += '<td align="center"><input type="text" name="popedom_identifier_add[]" style="width:140px" /></td>';
-	html += '<td align="center"><input type="text" name="popedom_taxis_add[]" class="short" /></td>';
-	html += '</tr>';
-	$("#popedom").append(html);
-}
-
-function del_trtd(id)
-{
-	$("#"+id).remove();
-}
-
-function popedom_del(id)
-{
-	//删除权限
-	var url = get_url("system","delete_popedom")+"&id="+id;
-	var rs = json_ajax(url);
-	if(rs.status == "ok")
-	{
-		$("#popedom_"+id).remove();
-		return true;
-	}
-	else
-	{
-		if(!rs.content) rs.content = "删除失败";
-		$.dialog.alert(rs.content);
-		return false;
-	}
-}
 
 function delete_sysmenu(id,title)
 {

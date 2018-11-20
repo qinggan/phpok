@@ -26,7 +26,7 @@ class textarea_form extends _init_auto
 			//$width = $rs['width']>500 ? $rs['width'].'px' : '905px';
 			$width = '100%';
 			$height = intval($rs['height']) ? intval($rs['height']) : '100';
-			$html .= '<textarea name="'.$rs["identifier"].'" id="'.$rs["identifier"].'" phpok_id="textarea" ';
+			$html .= '<textarea name="'.$rs["identifier"].'" id="'.$rs["identifier"].'" phpok_id="textarea" class="layui-textarea" ';
 			$html .= 'style="'.$rs["form_style"].';width:'.$width.';height:'.$height.'px"';
 			$html .= ' placeholder="'.$rs['note'].'">'.$rs["content"].'</textarea>';
 			return $html;
@@ -34,7 +34,7 @@ class textarea_form extends _init_auto
 			$width = intval($rs['width']) ? intval($rs['width']).'px' : '100%';
 			$height = intval($rs['height']) ? intval($rs['height']).'px' : '100px';
 			$html  = '<table style="border:0;margin:0;padding:0" cellpadding="0" cellspacing="0"><tr><td>';
-			$html .= '<textarea name="'.$rs["identifier"].'" id="'.$rs["identifier"].'" phpok_id="textarea" ';
+			$html .= '<textarea name="'.$rs["identifier"].'" id="'.$rs["identifier"].'" phpok_id="textarea" class="layui-textarea" ';
 			$html .= 'style="'.$rs["form_style"].';width:'.$width.';height:'.$height.'"';
 			$html .= ' placeholder="'.$rs['note'].'">'.$rs["content"].'</textarea>';
 			$html .= "</td></tr></table>";

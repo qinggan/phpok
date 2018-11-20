@@ -1,47 +1,42 @@
-<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
-<style type="text/css">
-.imgs{margin-bottom:5px;text-align:center;}
-.imgs img{max-width:320px}
-</style>
-<script type="text/javascript" src="js/jquery.lazyload.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-	$("#infoimg img").lazyload({
-		'placeholder':'images/grey.gif',
-		'effect':'fadeIn',
-		'threshold':50
-	});
-});
-</script>
-<div role="main" class="ui-content">
-	<div class="ui-body ui-body-a ui-corner-all">
-		<h3>{$rs.title}</h3>
-		<div class="info" id="infoimg">
-			<!-- loop from=$rs.pictures key=$key value=$value -->
-				<!-- if $value.ext == 'gif' -->
-				<div class="imgs"><img src="images/grey.gif" original="{$value.filename}" border="0" width="98%" /></div>
-				<!-- else -->
-				<div class="imgs"><img src="images/grey.gif" original="{$value.gd.auto}" border="0" width="98%" /></div>
-				<!-- /if -->
-			<!-- /loop -->
-		</div>
-		<div class="content">{$rs.content}</div>
-	</div>
-</div>
-
-<!-- php:$prev = phpok_prev($rs) -->
-<!-- php:$next = phpok_next($rs) -->
-<!-- if $prev || $next -->
+<!-- include tpl=head title=$cate_rs.title menutitle=$page_rs.title -->
 <div class="main">
-	<ul data-role="listview">
-		<!-- if $prev -->
-		<li data-icon="arrow-l"><a href="{$prev.url}">上一主题：{$prev.title}</a></li>
-		<!-- /if -->
-		<!-- if $next -->
-		<li data-icon="arrow-r"><a href="{$next.url}">下一主题：{$next.title}</a></li>
-		<!-- /if -->
-	</ul>
-</div>
-<!-- /if -->
+	<article class="am-article">
+		<div class="am-article-hd">
+			<h1 class="am-article-title">{$rs.title}</h1>
+			<p class="am-article-meta">
+				发布日期：<span>{func time_format $rs.dateline}</span><br />
+				浏览次数：<span id="lblVisits">{$rs.hits}</span>
+				<!-- if $rs.tag -->
+				<br />关键字：
+					<!-- loop from=$rs.tag key=$key value=$value -->
+					<a href="{$value.url}" title="{$value.alt}" target="{$value.target}" style="color:#999;">{$value.title}</a>
+					<!-- /loop -->
+				<!-- /if -->
+			</p>
+		</div>
+		<div class="am-article-bd">
+			<!-- if $rs.note --><p class="am-article-lead">{func nl2br $rs.note}</p><!-- /if -->
+			<!-- if $rs.pictures -->
+			<div data-am-widget="slider" class="am-slider am-slider-c3" data-am-slider='{"controlNav":false}'>
+				<ul class="am-slides">
+					<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
+					<li>
+						<img src="{$value.gd.auto}" />
+						<div class="am-slider-desc"><div class="am-slider-counter"><span class="am-active">{$tmpid.num}</span>/{$tmpid.total}</div>{$value.title}</div>
+					</li>
+					<!-- /loop -->
+				</ul>
+			</div>
 
+			<!-- /if -->
+			<!-- if $rs.content -->
+			<div class="content">{$rs.content}</div>
+			<!-- /if -->
+		</div>
+	</article>
+	<!-- include tpl=block/next_prev -->
+	<!-- if $page_rs.comment_status -->
+		<!-- include tpl=block/comment tid=$rs.id -->
+	<!-- /if -->
+</div>
 <!-- include tpl=foot -->

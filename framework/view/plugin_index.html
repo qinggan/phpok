@@ -1,87 +1,112 @@
-<!-- include tpl=head -->
+<!-- include tpl=head_lay -->
 <div id="create_plugin_html" style="display:none">
-	<div class="table">
-		<div class="title">
-			{lang插件名称}
-			<span class="note">{lang设置插件的名称}</span>
+	<div class="layui-fluid">
+		<div class="layui-form">
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang插件名称}</label>
+				<div class="layui-input-inline" style="width: 350px;">
+					<input type="text" id="plugin_name" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">{lang设置插件的名称}</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang插件标识}</label>
+				<div class="layui-input-inline" style="width: 350px;">
+					<input type="text" id="plugin_id" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">{lang限英文字母和数字，为空由系统生成32位长度字串}</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang插件功能}</label>
+				<div class="layui-input-inline" style="width: 350px;">
+					<input type="text" id="plugin_note" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">{lang简单一句话描述这个插件做什么}</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang开发者}</label>
+				<div class="layui-input-inline" style="width: 350px;">
+					<input type="text" id="plugin_author" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">{lang设置这个插件的开发人员或团队}</div>
+			</div>
 		</div>
-		<div class="content"><input type="text" id="plugin_name" class="default" /></div>
-	</div>
-	<div class="table">
-		<div class="title">
-			{lang插件标识}
-			<span class="note">{lang限英文字母和数字，为空由系统生成32位长度字串}</span>
-		</div>
-		<div class="content"><input type="text" id="plugin_id" class="default" /></div>
-	</div>
-	<div class="table">
-		<div class="title">
-			{lang插件功能}
-			<span class="note">{lang简单一句话描述这个插件做什么}</span>
-		</div>
-		<div class="content"><input type="text" id="plugin_note" class="default" /></div>
-	</div>
-	<div class="table">
-		<div class="title">
-			{lang开发者}
-			<span class="note">{lang设置这个插件的开发人员或团队}</span>
-		</div>
-		<div class="content"><input type="text" id="plugin_author" class="default" /></div>
 	</div>
 </div>
-<div class="tips">
-	{lang您当前的位置：}<a href="{url ctrl=plugin/}">{lang插件列表}</a>
-	&raquo; {lang已安装的插件}
-	<!-- if $popedom.install --><div class="action"><a href="javascript:$.admin_plugin.upload();void(0);">{lang本地上传插件}</a></div><!-- /if -->
-	<div class="action"><a href="javascript:$.admin_plugin.create();void(0);">{lang创建插件}</a></div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang已安装的插件}
+		<div class="layui-btn-group fr">
+			<button class="layui-btn layui-btn-sm" onclick="$.admin_plugin.create()">
+				<i class="layui-icon">&#xe608;</i> {lang创建插件}
+			</button>
+			<button class="layui-btn layui-btn-sm" onclick="$.admin_plugin.upload()">
+				<i class="layui-icon">&#xe67c;</i> {lang本地上传插件}
+			</button>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table" lay-size="sm">
+			<thead>
+			<tr>
+				<th>{lang状态}</th>
+				<th>{lang名称}</th>
+				<th class="center">{lang排序}</th>
+				<th>{lang操作}</th>
+			</tr>
+			</thead>
+			<tbody>
+			<!-- loop from=$rslist key=$key value=$value -->
+			<tr>
+				<td>
+					<span class="status{$value.status}" id="status_{$key}" onclick="$.admin_plugin.status('{$key}')" value="{$value.status}"></span>
+				</td>
+				<td>{$value.title} <!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></td>
+				<td class="center pointer" onclick="$.admin_plugin.taxis('{$value.id}','{$value.taxis}')">{$value.taxis}</td>
+				<td>
+					<div class="layui-btn-group">
+						<!-- if $popedom.config -->
+						<!-- if $value.extconfig --><input type="button" value="{lang配置}" class="layui-btn layui-btn-sm" onclick="$.admin_plugin.config('{$key}','{$value.title}')" /><!-- /if -->
+						<input type="button" value="{lang管理}" class="layui-btn layui-btn-sm" onclick="$.admin_plugin.setting('{$key}')" />
+						<input type="button" value="{lang导出}" class="layui-btn layui-btn-sm" onclick="plugin_zip('{$key}')" />
+						<!-- /if -->
+						<!-- if $popedom.uninstall -->
+						<input type="button" value="{lang卸载}" class="layui-btn layui-btn-sm" onclick="$.admin_plugin.uninstall('{$key}','{$value.title}')" />
+						<!-- /if -->
+					</div>
+				</td>
+			</tr>
+			<!-- /loop -->
+			</tbody>
+		</table>
+	</div>
 </div>
-<div class="list">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th width="20px">&nbsp;</th>
-	<th width="100px">{lang标识}</th>
-	<th>{lang名称}</th>
-	<th width="40px">{lang排序}</th>
-	<th>&nbsp;</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value -->
-<tr{if $rslist_id.num%2 == ""} class="list"{/if}>
-	<td class="center">
-		<div class="status{$value.status}" id="status_{$key}" {if $popedom.status}onclick="phpok_status('{$key}','{func admin_url plugin status}')"{else} style="cursor: default;"{/if} value="{$value.status}"></div>
-	</td>
-	<td class="center">{$key}</td>
-	<td>{$value.title} <!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></td>
-	<td class="center pointer" onclick="$.admin_plugin.taxis('{$value.id}','{$value.taxis}')">{$value.taxis}</td>
-	<td align="right">
-		<div class="button-group">
-			<!-- if $popedom.config -->
-				<!-- if $value.extconfig --><input type="button" value="{lang配置}" class="phpok-btn" onclick="$.admin_plugin.config('{$key}','{$value.title}')" /><!-- /if -->
-				<input type="button" value="{lang管理}" class="phpok-btn" onclick="$.admin_plugin.setting('{$key}')" />
-				<input type="button" value="{lang导出}" class="phpok-btn" onclick="$.admin_plugin.tozip('{$key}')" />
-			<!-- /if -->
-			<!-- if $popedom.uninstall -->
-			<input type="button" value="{lang卸载}" class="phpok-btn" onclick="$.admin_plugin.uninstall('{$key}','{$value.title}')" />
-			<!-- /if -->
-		</div>
-	</td>
-</tr>
-<!-- /loop -->
-</table>
+<!-- if $popedom.install -->
+<div class="layui-card">
+	<div class="layui-card-header">{lang未安装插件}</div>
+	<div class="layui-card-body">
+		<table class="layui-table" lay-size="sm">
+			<thead>
+			<tr>
+				<th>{lang名称}</th>
+				<th>{lang标识}</th>
+				<th>{lang摘要}</th>
+				<th>{lang操作}</th>
+			</tr>
+			</thead>
+			<tbody>
+			<!-- loop from=$not_install key=$key value=$value -->
+			<tr>
+				<td>{$value.title}</td>
+				<td>{$key}</td>
+				<td>{$value.note ? $value.note : $value.desc}</td>
+				<td><input  type="button" value="{lang安装}" onclick="$.admin_plugin.install('{$key}','{$value.title}')" class="layui-btn  layui-btn-sm"></td>
+			</tr>
+			<!-- /loop -->
+			</tbody>
+		</table>
+	</div>
 </div>
-<!-- if $popedom.install && $not_install -->
-<div class="tips">{lang未安装插件}</div>
-<ul class="layout fields_quick_add">
-	<!-- loop from=$not_install key=$key value=$value id=$tmpid -->
-	<li>
-		<div>
-			<div class="title">{$value.title}</div>
-			<div class="gray i" style="height:44px;overflow:hidden;"><!-- if $value.note || $value.desc -->{$value.note ? $value.note : $value.desc}<!-- /if --></div>
-		</div>
-		<div align="right">
-			<i class="gray">{$key}</i> <input type="button" value="{lang安装}" onclick="$.admin_plugin.install('{$key}')" class="phpok-btn" />
-		</div>
-	</li>
-	<!-- /loop -->
-</ul>
 <!-- /if -->
-<!-- include tpl=foot -->
+
+<!-- include tpl=foot_lay -->

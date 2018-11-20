@@ -5,12 +5,12 @@
 	<td>{lang复制操作}</td>
 	<td>
 		<div class="button-group">
-			<input type="button" value="{lang名称}" class="phpok-btn phpok-copy" data-clipboard-text="{$rs.title}" title="{$rs.title}" />
-			<input type="button" value="{lang文件名}" class="phpok-btn phpok-copy" data-clipboard-text="{$rs.name}" title="{$rs.name}" />
-			<input type="button" value="{lang扩展名}" class="phpok-btn phpok-copy" data-clipboard-text="{$rs.ext}" title="{$rs.ext}" />
-			<input type="button" value="{lang目录}" class="phpok-btn phpok-copy" data-clipboard-text="{$rs.folder}" title="{$rs.folder}" />
-			<input type="button" value="{lang目录+文件名}" class="phpok-btn phpok-copy" data-clipboard-text="{$rs.filename}" title="{$rs.filename}" />
-			<input type="button" value="{lang附件地址}" class="phpok-btn phpok-copy" data-clipboard-text="{$sys.url}{$rs.filename}" title="{$sys.url}{$rs.filename}" />
+			<input type="button" value="{lang名称}" class="layui-btn phpok-copy" data-clipboard-text="{$rs.title}" title="{$rs.title}" />
+			<input type="button" value="{lang文件名}" class="layui-btn phpok-copy" data-clipboard-text="{$rs.name}" title="{$rs.name}" />
+			<input type="button" value="{lang扩展名}" class="layui-btn phpok-copy" data-clipboard-text="{$rs.ext}" title="{$rs.ext}" />
+			<input type="button" value="{lang目录}" class="layui-btn phpok-copy" data-clipboard-text="{$rs.folder}" title="{$rs.folder}" />
+			<input type="button" value="{lang目录+文件名}" class="layui-btn phpok-copy" data-clipboard-text="{$rs.filename}" title="{$rs.filename}" />
+			<input type="button" value="{lang附件地址}" class="layui-btn phpok-copy" data-clipboard-text="{$sys.url}{$rs.filename}" title="{$sys.url}{$rs.filename}" />
 		</div>
 	</td>
 </tr>
@@ -46,7 +46,7 @@
 <table>
 <tr>
 	<td>&nbsp;</td>
-	<td><input type="button" value="点这里下载" class="phpok-btn" onclick="window.open('{$rs.filename}')" /></td>
+	<td><input type="button" value="点这里下载" class="layui-btn" onclick="window.open('{$rs.filename}')" /></td>
 </tr>
 </table>
 </div>

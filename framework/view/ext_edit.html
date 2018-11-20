@@ -2,6 +2,11 @@
 <script type="text/javascript">
 function save()
 {
+	if(typeof(CKEDITOR) != "undefined"){
+		for(var i in CKEDITOR.instances){
+			CKEDITOR.instances[i].updateElement();
+		}
+	}
 	var obj = art.dialog.opener;
 	$("#modify").ajaxSubmit({
 		'url':get_url('ext','save','id={$module}{if $tid}&tid={$tid}{/if}{if $tmpid}&tmpid={$tmpid}{/if}'),

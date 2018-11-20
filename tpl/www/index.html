@@ -78,15 +78,12 @@ $(document).ready(function(){
 	<!-- php:$list = phpok('link') -->
 	<div class="am-panel am-panel-default mt10">
 		<div class="am-panel-hd">
-			<h3 class="am-panel-title">
-				{$list.project.title}
-				<a href="{url ctrl=post id=$list.project.identifier/}" class="more">申请友情链接 <span class="am-icon-angle-right"></span><span class="am-icon-angle-right"></span></a>
-			</h3>
+			<h3 class="am-panel-title">{$list.project.title}</h3>
 		</div>
 		
 		<div class="am-panel-bd link">
 			<!-- loop from=$list.rslist key=$key value=$value -->
-			<a href="{$value.link}" target="{$value.target}" title="{$value.title}">{$value.title}</a>
+			<a href="{$value.linkurl}" target="{$value.target}" title="{$value.sitename}">{$value.sitename}</a>
 			<!-- /loop -->
 		</div>
 	</div>

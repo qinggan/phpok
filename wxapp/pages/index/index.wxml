@@ -1,0 +1,35 @@
+<import src="../../wxParse/wxParse.wxml" />
+<view wx:if="{{banner_url}}">
+    <swiper class="tui-swiper" indicator-dots="{{player_config.indicatorDots}}" vertical="{{player_config.vertical}}" autoplay="{{player_config.autoplay}}" interval="{{player_config.interval}}" duration="{{player_config.duration}}" indicator-color="#fff"
+        indicator-active-color="red">
+        <block wx:for="{{banner_url}}" wx:key="index">
+            <swiper-item>
+                <block wx:if="{{item}}">
+                    <image class="tui-img" src="{{item}}" mode="aspectFill" />
+                </block>
+            </swiper-item>
+        </block>
+    </swiper>
+</view>
+
+<view wx:if="{{aboutus.title}}">
+    <view class="tui-h3 center">{{aboutus.title}}</view>
+    <view class="tui-content tui-p" style="padding-top:0;">
+        <template is="wxParse" data="{{wxParseData:article.nodes}}" />
+    </view>
+</view>
+
+<view wx:if="{{products.title}}">
+    <view class="tui-h3 center">{{products.title}}</view>
+    <view class="tui-row" style="padding-top:0">
+        <view class="tui-col tui-col-2" wx:for="{{products.rslist}}" wx:key="key">
+            <navigator url="{{item.url}}">
+                <view class="gallery-box">
+                    <image class="gallery-img" src="{{item.picture}}"></image>
+                    <text class="gallery-text">{{item.title}}</text>
+                </view>
+            </navigator>
+        </view>
+    </view>
+	<view style="margin:0 10px;text-align:center;"><navigator url="../list/index" open-type="switchTab"> 查看更多 </navigator></view>
+</view>

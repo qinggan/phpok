@@ -1,0 +1,26 @@
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="height,btns" />
+<div class="table">
+	<div class="title">
+		{lang编辑器最小高度设置}：
+		<span class="note">{lang只需要填写数字，宽度强制为百分百}</span>
+	</div>
+	<div class="content"><input type="text" name="height" id="height" value="{$rs.height}" class="short" /> px</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang编辑器扩展按钮}：
+		<span class="note">{lang请根据实际情况需要设置编辑器扩展按钮}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li style="width:17%"><label><input type="checkbox" name="btns[image]"{if $rs.btns && $rs.btns.image} checked{/if}>{lang图片}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[table]"{if $rs.btns && $rs.btns.table} checked{/if}>{lang表格}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[emotion]"{if $rs.btns && $rs.btns.emotion} checked{/if}>{lang表情}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[spechars]"{if $rs.btns && $rs.btns.spechars} checked{/if}>{lang符号}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[paragraph]"{if $rs.btns && $rs.btns.paragraph} checked{/if}>{lang段落}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[fontsize]"{if $rs.btns && $rs.btns.fontsize} checked{/if}>{lang字号}</label></li>
+			<li style="width:17%"><label><input type="checkbox" name="btns[fontfamily]"{if $rs.btns && $rs.btns.fontfamily} checked{/if}>{lang字体}</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>

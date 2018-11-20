@@ -123,10 +123,25 @@ class ext_control extends phpok_control
 	{
 		$type = $this->get("type");
 		$this->assign("type",$type);
-		$rslist = $this->model('fields')->fields_list('',0,999,$type);
+		$forbidden = "id,identifier,site_id,title,project_id,module_id";
+		$forbid = $this->get('forbid');
+		if($forbid){
+			$forbidden .= ",".$forbid;
+		}
+		$forbid_list = explode(",",$forbidden);
+		$rslist = $this->model('fields')->default_all();
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				if(in_array($key,$forbid_list)){
+					unset($rslist[$key]);
+				}
+			}
+			if($rslist){
+				$this->assign("rslist",$rslist);
+			}
+		}
 		$module = $this->get("module");
 		$this->assign("module",$module);
-		$this->assign("rslist",$rslist);
 		$this->view("ext_select");
 	}
 

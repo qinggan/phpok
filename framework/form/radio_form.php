@@ -19,14 +19,14 @@ class radio_form extends _init_auto
 	{
 		$opt_list = $this->model('opt')->group_all();
 		$this->assign('opt_list',$opt_list);
-		$rslist = $this->model('project')->get_all_project($_SESSION['admin_site_id']);
+		$rslist = $this->model('project')->get_all_project($this->session->val('admin_site_id'));
 		if($rslist){
 			$p_list = $m_list = array();
 			foreach($rslist AS $key=>$value){
 				if(!$value["parent_id"]){
 					$p_list[] = $value;
 				}
-				if($value["module"]){
+				if($value["module"] && !$value['mtype']){
 					$m_list[] = $value;
 				}
 			}

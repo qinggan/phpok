@@ -1,58 +1,68 @@
-<!-- include tpl=head -->
-<script type="text/javascript">
-function mail_delete(id,title)
-{
-	$.dialog.confirm("确定要删除标识 <span class='red'>"+title+"</span> 的模板内容吗?<br />删除后不能正常发送通知",function(){
-		var url = get_url("email","del")+"&id="+id;
-		var rs = $.phpok.json(url);
-		if(rs.status == "ok"){
-			$.phpok.reload();
-		}else{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	});
-}
-</script>
-<div class="tips">
-	<!-- if $popedom.add -->
-	<div class="action"><a href="{url ctrl=email func=set type=email/}">{lang添加邮件模板}</a></div>
-	<div class="action"><a href="{url ctrl=email func=set type=sms/}">{lang添加短信模板}</a></div>
-	<!-- /if -->
-	{lang当前位置：}
-	<a href="{url ctrl=email/}">{lang通知内容管理}</a>
-	&raquo; {lang列表} <span class="gray i">{lang短信模板以标识：}<b class="red">sms_</b> {lang开头}{lang，}{lang发送的内容不带样式}</span>
-</div>
-<div class="list">
-	<table width="100%" cellpadding="0" cellspacing="0">
-	<tr>
-		<th class="id">ID</th>
-		<th class="lft">{lang标题头}</th>
-		<th width="80">{lang类型}</th>
-		<th width="200px" class="lft">{lang标识}</th>
-		<!-- if $popedom.modify || $popedom.delete --><th width="120px">{lang操作}</th><!-- /if -->
-	</tr>
-	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-	<tr title="{$value.note}">
-		<td align="center">{$value.id}</td>
-		<td>{$value.title}<!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></td>
-		<td align="center"><!-- if substr($value.identifier,0,4) == 'sms_' -->{lang短信}<!-- else -->{lang邮件}<!-- /if --></td>
-		<td>{$value.identifier}</td>
-		<!-- if $popedom.modify || $popedom.delete -->
-		<td class="center">
-			<div class="button-group">
-				<!-- if $popedom.modify -->
-				<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=email func=set id=$value.id/}')" class="phpok-btn" />
-				<!-- /if -->
-				<!-- if $popedom.delete -->
-				<input type="button" value="{lang删除}" onclick="mail_delete('{$value.id}','{$value.identifier}')" class="phpok-btn" />
-				<!-- /if -->
-			</div>
-		</td>
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang通知内容管理}
+		<!-- if $popedom.add -->
+		<div class="layui-btn-group fr">
+			<button class="layui-btn layui-btn-sm" onclick="$.phpok.go('{url ctrl=email func=set type=email/}')"> <i class="layui-icon">&#xe608;</i>{lang邮件模版}</button>
+			<button class="layui-btn layui-btn-sm" onclick="$.phpok.go('{url ctrl=email func=set type=sms/}')"> <i class="layui-icon">&#xe608;</i>{lang短信模版}</button>
+		</div>
 		<!-- /if -->
-	</tr>
-	<!-- /loop -->
-	</table>
+	</div>
+
+	<div class="layui-container layui-card-body">
+		<blockquote class="layui-elem-quote">
+			{lang短信模板以标识} <b class="layui-bg-red">sms_</b> {lang开头}{lang，}{lang发送的内容不带样式}
+		</blockquote>
+		<table class="layui-table">
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>{lang标题头}</th>
+				<th>{lang类型}</th>
+				<th>{lang标识}</th>
+				<!-- if $popedom.modify || $popedom.delete --><th>{lang操作}</th><!-- /if -->
+			</tr>
+			</thead>
+			<tbody>
+			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+			<tr title="{$value.note}">
+				<td>{$value.id}</td>
+				<td>{$value.title}<!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></td>
+				<td align="center"><!-- if substr($value.identifier,0,4) == 'sms_' -->{lang短信}<!-- else -->{lang邮件}<!-- /if --></td>
+				<td>{$value.identifier}</td>
+				<!-- if $popedom.modify || $popedom.delete -->
+				<td>
+					<div class="layui-btn-group">
+						<!-- if $popedom.modify -->
+						<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=email func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
+						<!-- /if -->
+						<!-- if $popedom.delete -->
+						<input type="button" value="{lang删除}" onclick="mail_delete('{$value.id}','{$value.identifier}')" class="layui-btn layui-btn-sm" />
+						<!-- /if -->
+					</div>
+				</td>
+				<!-- /if -->
+			</tr>
+			<!-- /loop -->
+			</tbody>
+		</table>
+		<!-- include tpl=pagelist -->
+	</div>
 </div>
-<!-- include tpl=pagelist -->
-<!-- include tpl=foot -->
+<script type="text/javascript">
+    function mail_delete(id,title)
+    {
+        $.dialog.confirm("确定要删除标识 <span class='red'>"+title+"</span> 的模板内容吗?<br />删除后不能正常发送通知",function(){
+            var url = get_url("email","del")+"&id="+id;
+            var rs = $.phpok.json(url);
+            if(rs.status == "ok"){
+                $.phpok.reload();
+            }else{
+                $.dialog.alert(rs.content);
+                return false;
+            }
+        });
+    }
+</script>
+<!-- include tpl=foot_lay -->

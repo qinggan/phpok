@@ -522,5 +522,28 @@ class site_model extends site_model_base
 		$rslist[$id] = $data;
 		$file = $this->dir_data.'xml/admin_order_status_'.$this->site_id.'.xml';
 		$this->lib('xml')->save($rslist,$file);
+		return true;
+	}
+
+	public function admin_order_status_delete($id='')
+	{
+		if(!$id){
+			return false;
+		}
+		$rslist = $this->admin_order_status_all();
+		if(!$rslist){
+			return false;
+		}
+		if(!$rslist[$id]){
+			return false;
+		}
+		unset($rslist[$id]);
+		$file = $this->dir_data.'xml/admin_order_status_'.$this->site_id.'.xml';
+		if(!$rslist && file_exists($file)){
+			$this->lib('file')->rm($file);
+			return true;
+		}
+		$this->lib('xml')->save($rslist,$file);		
+		return true;
 	}
 }

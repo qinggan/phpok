@@ -35,8 +35,8 @@
 		{
 			$.dialog({
 				'title':p_lang('创建一个新的插件'),
-				'width':'400px',
-				'height':'220px',
+				'width':'880px',
+				'height':'280px',
 				'lock':true,
 				'content':document.getElementById('create_plugin_html'),
 				'ok':function(){
@@ -214,6 +214,23 @@
 					return false;
 				})
 			},old);
+		},
+		status:function(id)
+		{
+			var url = get_url('plugin','status','id='+id);
+			$.phpok.json(url,function(rs){
+				if(rs.status){
+					if(rs.info == 1){
+						$("#status_"+id).removeClass("status0").addClass("status1");
+					}else{
+						$("#status_"+id).removeClass("status1").addClass("status0");
+					}
+					$("#status_"+id).val(rs.info);
+					return true;
+				}
+				$.dialog.alert(rs.info);
+				return false;
+			})
 		}
 	}
 })(jQuery);

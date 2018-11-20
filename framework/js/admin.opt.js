@@ -217,6 +217,8 @@
 				'content':content,
 				'init':function(){
 					$("input[name=taxis]").val(config.taxis);
+					$("input[name=title]").val('');
+					$("input[name=val]").val('');
 				},
 				'lock':true,
 				'ok':function(){

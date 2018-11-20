@@ -249,17 +249,7 @@ function minus_price(id)
 	$("#ext_price_"+id).remove();
 }
 
-function preview_attr(id)
-{
-	var url = get_url("res_action","preview") + "&id="+id;
-	$.dialog.open(url,{
-		title: "预览",
-		lock : true,
-		width: "700px",
-		height: "70%",
-		resize: true
-	});
-}
+
 
 function update_select()
 {

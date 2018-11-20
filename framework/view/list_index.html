@@ -1,46 +1,4 @@
 <!-- include tpl=head -->
-<script type="text/javascript" src="{echo add_js('list.js')}"></script>
-<script type="text/javascript">
-var lockTo;
-function pendding_info()
-{
-	window.clearTimeout(lockTo);
-	$.phpok.json(get_url('index','pendding'),function(rs){
-		$("em.toptip").remove();
-		if(rs.status && rs.info){
-			var list = rs.info;
-			var html = '<em class="toptip">{total}</em>';
-			var total = 0;
-			for(var key in list){
-				if(parseInt(list[key]['id']) > 0){
-					$("li[id=project_"+list[key]['id']+"]").append(html.replace('{total}',list[key]['total']));
-				}
-			}
-			lockTo = window.setTimeout("pendding_info()", 60000);
-		}else{
-			lockTo = window.setTimeout("pendding_info()", 180000);
-		}
-	});
-}
-
-$(document).ready(function(){
-	pendding_info();
-	$("#project li").mouseover(function(){
-		$(this).addClass("hover");
-	}).mouseout(function(){
-		$(this).removeClass("hover");
-	}).click(function(){
-		var url = $(this).attr("href");
-		var txt = $(this).text();
-		if(url){
-			$.win(txt,url);
-			return true;
-		}
-		$.dialog.alert(p_lang('未指定动作'));
-		return false;
-	});
-});
-</script>
 <ul class="project" id="project">
 	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 	<li id="project_{$value.id}" title="{$value.title}" status="{$value.status}" href="{url ctrl=list func=action id=$value.id/}">
@@ -52,4 +10,4 @@ $(document).ready(function(){
 	<!-- /loop -->
 </ul>
 <div class="clear"></div>
-<!-- inc:foot -->
+<!-- include tpl=foot -->

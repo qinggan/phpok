@@ -1,45 +1,55 @@
-<!-- inc:head -->
-<script type="text/javascript" src="{func include_js all.js}"></script>
-<div class="tips">
-	{lang您当前的位置：}
-	<a href="{url ctrl=all/}">{lang全局维护}</a>
-	&raquo; {lang网站域名}
-</div>
-
-<div class="list">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th class="id">ID</th>
-	<th width="400">{lang域名}</th>
-	<th>{lang操作}</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value -->
-<tr>
-	<td class="center">{$value.id}</td>
-	<td><input type="text" id="domain_{$value.id}" value="{$value.domain}" class="default" /></td>
-	<td>
-		<div class="button-group">
-			<input type="button" value="{lang更新}" onclick="domain_update({$value.id})" class="phpok-btn" />
-			<!-- if $value.id != $rs.domain_id -->
-				<input type="button" value="{lang设主域名}" class="phpok-btn" onclick="domain_default({$value.id})" />
-				<!-- if $value.is_mobile -->
-				<input type="button" value="{lang取消手机版专用}" class="phpok-btn" onclick="unset_mobile({$value.id})" />
-				<!-- else -->
-				<input type="button" value="{lang设为手机版专用}" class="phpok-btn" onclick="set_mobile({$value.id})" />
-				<!-- /if -->
-				<input type="button" value="{lang删除}" class="phpok-btn" onclick="domain_delete({$value.id})" />
-			<!-- /if -->
+<!-- include tpl=head_lay -->
+<div class="layui-row layui-col-space15">
+	<div class="layui-col-md12">
+		<div class="layui-card">
+			<div class="layui-card-header">{lang网站域名维护}</div>
+			<div class="layui-card-body">
+				<table class="layui-table">
+					<colgroup>
+						<col width="150">
+						<col width="500">
+						<col>
+					</colgroup>
+					<thead>
+					<tr>
+						<th>ID</th>
+						<th>{lang域名}</th>
+						<th>{lang操作}</th>
+					</tr>
+					</thead>
+					<tbody>
+					<!-- loop from=$rslist key=$key value=$value -->
+					<tr>
+						<td>{$value.id}</td>
+						<td><input type="text" id="domain_{$value.id}" value="{$value.domain}" class="layui-input" /></td>
+						<td>
+							<div class="layui-btn-group">
+								<input type="button" value="{lang更新}" id="domain_{$value.id}_submit" onclick="$.admin_all.domain_update({$value.id})" class="layui-btn" />
+								<input type="button" value="{lang删除}" class="layui-btn" onclick="$.admin_all.domain_delete({$value.id})" />
+								<!-- if $value.id != $rs.domain_id -->
+								<input type="button" value="{lang设主域名}" class="layui-btn" onclick="$.admin_all.domain_default({$value.id})" />
+									<!-- if $value.is_mobile -->
+									<input type="button" value="{lang取消手机版专用}" class="layui-btn" onclick="$.admin_all.domain_mobile({$value.id},0)" />
+									<!-- else -->
+									<input type="button" value="{lang设为手机版专用}" class="layui-btn" onclick="$.admin_all.domain_mobile({$value.id},1)" />
+									<!-- /if -->
+								<!-- /if -->
+							</div>
+						</td>
+					</tr>
+					<!-- /loop -->
+					<tr>
+						<td>{lang添加}</td>
+						<td><input type="text" id="domain_0" class="layui-input" /></td>
+						<td>
+							<input type="button" value="{lang添加}" id="domain_0_submit" class="layui-btn" onclick="$.admin_all.domain_add()" />
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
-	</td>
-</tr>
-<!-- /foreach -->
-<tr>
-	<td class="center">{lang添加}</td>
-	<td><input type="text" id="domain_0" class="default" /></td>
-	<td><input type="button" value="{lang添加}" class="phpok-btn" onclick="domain_add()" /></td>
-</tr>
-</table>
+	</div>
 </div>
 
-
-<!-- inc:foot -->
+<!-- include tpl=foot_lay -->

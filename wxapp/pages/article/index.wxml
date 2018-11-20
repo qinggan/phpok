@@ -1,0 +1,5 @@
+<import src="../../template/list.wxml"/>
+<view class="tui-list-box">
+  <template wx:for="{{rslist}}" is="list" data="{{item}}" wx:key="{{index}}"></template>
+</view>
+

@@ -1,0 +1,5 @@
+<view class="body">
+	<view class="tips error">
+		<view class="txt">{{info}}</view>
+	</view>
+</view>

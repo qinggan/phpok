@@ -1,0 +1,72 @@
+<!-- include tpl=head title=在线充值 -->
+<script type="text/javascript">
+function checksubmit()
+{
+	var wid = $("#wealth").val();
+	if(!wid){
+		$.dialog.alert('未指定充值目标');
+		return false;
+	}
+	var price = $("#wealth").val();
+	if(!price){
+		$.dialog.alert('没有填写充值金额');
+		return false;
+	}
+	var payment_id = $("input[name=payment]:checked").val();
+	if(!payment_id){
+		$.dialog.alert('请选择支付方式');
+		return false;
+	}
+	return true;
+}
+</script>
+<form class="am-form am-form-horizontal" method="post" action="{url ctrl=payment func=create type=recharge/}" onsubmit="return checksubmit()">
+<div class="am-form-group">
+	<label for="wealth" class="am-u-sm-12 am-form-label">充值目标</label>
+	<div class="am-u-sm-12">
+		<select name="wealth" id="wealth" style="padding:3px;">
+			<!-- if $id && $rs -->
+			<option value="{$rs.id}">{$rs.title} / 充值比：1元 = {$rs.pay_ratio}{$rs.unit}</option>
+			<!-- else -->
+			<!-- loop from=$rslist key=$k value=$v id=$tmpid -->
+			<option value="{$v.id}">{$v.title} / 充值比：1元 = {$v.pay_ratio}{$v.unit}</option>
+			<!-- /loop -->
+			<!-- /if -->
+		</select>
+	</div>
+</div>
+<div class="am-form-group">
+	<label for="price" class="am-u-sm-12 am-form-label">充值金额</label>
+	<div class="am-u-sm-6"><input type="text" name="price" id="price" value="{$price}" onchange="checkmoney()" /></div>
+	<div class="am-u-sm-6">元</div>
+</div>
+<!-- if $paylist -->
+<div class="am-form-group">
+	<label class="am-u-sm-12 am-form-label">请选择支付方式</label>
+	<div class="am-u-sm-12">
+		<div class="am-tabs" data-am-tabs>
+			<ul class="am-tabs-nav am-nav am-nav-tabs">
+				<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+				<li{if !$tmpid.index} class="am-active"{/if}><a href="javascript:void(0);">{$value.title}</a></li>
+				<!-- /loop -->
+			</ul>
+			<div class="am-tabs-bd">
+				<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+				<div class="am-tab-panel am-fade{if !$tmpid.index} am-in am-active{/if}">
+					<!-- loop from=$value.paylist key=$k value=$v id=$idxx -->
+					<div class="am-radio">
+						<label><input type="radio" name="payment" value="{$v.id}"{if !$tmpid.index && !$idxx.index} checked{/if}/>{$v.title}</label>
+					</div>
+					<!-- /loop -->
+				</div>
+				<!-- /loop -->
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /if -->
+<div class="am-form-group">
+	<div class="am-u-sm-12"><input type="submit" value="提交充值" class="am-btn am-btn-block am-btn-primary" /></div>
+</div>
+</form>
+<!-- include tpl=foot -->

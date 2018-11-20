@@ -1,34 +1,21 @@
 <!-- include tpl=head title=订单中心 -->
-<script type="text/javascript">
-$(document).ready(function(){
-	$(".o-dark").mouseover(function(){
-		$(this).addClass('o-dark-over');
-	}).mouseout(function(){
-		$(this).removeClass('o-dark-over');
-	});
-	$(".o-white").mouseover(function(){
-		$(this).addClass('o-white-over');
-	}).mouseout(function(){
-		$(this).removeClass('o-white-over');
-	});
-});
-</script>
-<div role="main" class="ui-content">
-	<ul data-role="listview" data-inset="true" style="margin:0;">
-		<!-- loop from=$rslist key=$key value=$value -->
-		<li data-role="list-divider">{$value.sn}<span class="ui-li-count">{func price_format $value.price $value.currency_id $value.currency_id}</span></li>
-		
-		<li>
-			<a href="{url ctrl=order func=info id=$value.id/}">
-			<p>状态：<span class="red">{$value.status_info}</span></p>
-			<!-- if $value.email --><p>邮箱：{$value.email}</p><!-- /if -->
-			<p>下单时间：{func time_format $value.addtime}</p>
-			<!-- if $value.note --><p>备注：{$value.note}</p><!-- /if -->
-			</a>
-		</li>
-		<!-- /loop -->
-	</ul>
-	<!-- include tpl=pagelist -->
+<div class="am-panel-group am-margin-xs">
+	<!-- loop from=$rslist key=$key value=$value -->
+	<div class="am-panel am-panel-default">
+		<div class="am-panel-hd">#{$value.sn}</div>
+		<div class="am-panel-bd">
+			<div>时间：{func time_format $value.addtime}</div>
+			<div>数量：{$value.qty}</div>
+			<div>金额：{func price_format $value.price $value.currency_id $value.currency_id}</div>
+			<div>状态：{$value.status_info}</div>
+		</div>
+		<div class="am-panel-footer">
+			<a href="{url ctrl=order func=info id=$value.id/}" class="am-btn am-btn-primary am-btn-xs">查看明细</a>
+		</div>
+	</div>
+	<!-- /loop -->
+	
+	<!-- include tpl=block/pagelist -->
 </div>
 
 <!-- include tpl=foot -->

@@ -185,18 +185,15 @@ function tips(content,time,id)
 function count(id)
 {
 	var t = typeof id;
-	if(t == 'string') return id.length;
-	if(t == 'object')
-	{
+	if(t == 'string'){
+		return id.length;
+	}
+	if(t == 'object'){
 		var n = 0;
-		for(var i in id)
-		{
+		for(var i in id){
 			n++;
 		}
 		return n;
 	}
 	return false;
 }
-
-
-

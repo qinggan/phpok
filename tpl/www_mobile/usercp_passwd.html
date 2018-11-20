@@ -1,4 +1,4 @@
-<!-- include tpl=head title="修改个人密码 - 个人中心" -->
+<!-- include tpl=head title=密码修改 -->
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#userinfo_password").submit(function(){
@@ -7,45 +7,54 @@ $(document).ready(function(){
 			'dataType':'json',
 			'url':api_url('usercp','passwd'),
 			'success':function(rs){
-				if(rs.status == 'ok'){
-					$.dialog.alert("您的密码更新成功",function(){
-						$.phpok.reload();
-					},'succeed');
-				}else{
-					$.dialog.alert(rs.content);
-					return false;
+				if(rs.status){
+					$.dialog.tips("您的密码更新成功",function(){
+						$.phpok.go(get_url('usercp'))
+					}).lock();
+					return true;
 				}
+				$.dialog.alert(rs.info);
+				return false;
 			}
 		});
 		return false;
 	});
 });
 </script>
-<div role="main" class="ui-content">
-	<div class="ui-body ui-body-a ui-corner-all">
-		<h3>密码修改</h3>
-		<form method="post" id="userinfo_password">
-		<label>
-			<span class="red">*</span> 旧密码：
-			<input type="password" name="oldpass" id="oldpass" value="" class="input" />
-		</label>
-		<label>
-			<span class="red">*</span> 新密码：
-			<input type="password" name="newpass" id="newpass" value="" class="input" />
-		</label>
-		<label>
-			<span class="red">*</span> 确认新密码：
-			<input type="password" name="chkpass" id="chkpass" value="" class="input" />
-		</label>
-		<input type="submit" id="phpok_submit" value="提 交" data-theme="b"/>
-		</form>
+<div class="main">
+	<div class="right am-panel-group">
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">密码修改</div>
+			<div class="am-panel-bd">
+				<form method="post" id="userinfo_password" class="am-form am-form-horizontal">
+				<!-- if $rs.pass -->
+				<div class="am-form-group">
+					<label for="oldpass" class="am-u-sm-12 am-form-label">旧密码</label>
+					<div class="am-u-sm-12"><input type="password" name="oldpass" id="oldpass" /></div>
+				</div>
+				<!-- /if -->
+				<div class="am-form-group">
+					<label for="newpass" class="am-u-sm-12 am-form-label"> 新密码</label>
+					<div class="am-u-sm-12"><input type="password" name="newpass" id="newpass" /></div>
+				</div>
+				<div class="am-form-group">
+					<label for="chkpass" class="am-u-sm-12 am-form-label">确认新密码</label>
+					<div class="am-u-sm-12"><input type="password" name="chkpass" id="chkpass" /></div>
+				</div>
+				<div class="am-form-group">
+					<div class="am-u-sm-12"><input type="submit" id="phpok_submit" value="提 交" class="am-btn am-btn-block am-btn-primary"></div>
+				</div>
+				</form>
+			</div>
+		</div>
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">友情说明</div>
+			<div class="am-panel-bd">
+				密码长度不能小于6位数，为保证您数据的安全，密码建议您使用：字母+数字+大小写混合
+			</div>
+		</div>
 	</div>
-	<div class="ui-body ui-body-a ui-corner-all" style="margin-top:5px;">
-		<h3>友情说明</h3>
-		<ul class="tip">
-			<li>密码长度不能小于6位数</li>
-			<li>为保证您数据的安全，密码建议您使用：字母+数字+大小写混合</li>
-		</ul>
-	</div>
+	<div class="clear"></div>
 </div>
+
 <!-- include tpl=foot -->

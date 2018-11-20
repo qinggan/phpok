@@ -1,39 +1,48 @@
-<!-- include tpl=head -->
-<script type="text/javascript" src="{func add_js call.js}"></script>
-<div class="tips">
-	<!-- if $popedom.add -->
-	<div class="action"><a href="{url ctrl=call func=set/}">{lang添加调用}</a></div>
-	<!-- /if -->
-	{lang您当前的位置：}<a href="{url ctrl=call/}" title="{lang调用列表}">{lang调用列表}</a>
-</div>
-<div class="list">
-<table class="list" width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th class="w50">ID</th>
-	<th class="lft">{lang名称}</th>
-	<th class="lft">{lang类型}</th>
-	<th class="lft">{lang关联的项目}</th>
-	<th class="lft">{lang关联的分类}</th>
-	<th class="lft">{lang参数变量}</th>
-	<th width="110">&nbsp;</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<tr>
-	<td class="center">{$value.id}</td>
-	<td>{$value.title}</td>
-	<td>{$phpok_type_list[$value.type_id][title]}</td>
-	<td>{$value.project ? $value.project : '-'}</td>
-	<td>{$value.cate ? $value.cate : '-'}</td>
-	<td>{$value.identifier}</td>
-	<td>
-		<div class="button-group">
-			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=call func=set id=$value.id/}')" class="phpok-btn" /><!-- /if -->
-			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="call_del('{$value.id}','{$value.title}')" class="phpok-btn" /><!-- /if -->
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header ">
+		{lang列表}
+		<div class="fr">
+			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加新调用}','{url ctrl=call func=set/}')">
+				<i class="layui-icon">&#xe608;</i> {lang添加调用}
+			</button>
 		</div>
-	</td>
-</tr>
-<!-- /loop -->
-</table>
+	</div>
+
+	<div class="layui-card-body">
+		<table class="layui-table">
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>{lang名称}</th>
+				<th>{lang类型}</th>
+				<th>{lang关联的项目}</th>
+				<th>{lang关联的分类}</th>
+				<th>{lang参数变量}</th>
+				<th width="150">{lang操作}</th>
+			</tr>
+			</thead>
+			<tbody>
+			<!-- loop from=$rslist key=$key value=$value -->
+			<tr id="edit_{$value.id}">
+				<td>{$value.id}</td>
+				<td>{$value.title}<!-- if $value.is_api --> <i class="red"><small>{lang远程}</small></i><!-- /if --></td>
+				<td>{$phpok_type_list[$value.type_id][title]}</td>
+				<td>{$value.project ? $value.project : '-'}</td>
+				<td>{$value.cate ? $value.cate : '-'}</td>
+				<td>{$value.identifier}</td>
+				<td>
+					<div class="layui-btn-group">
+						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.win('{lang编辑调用}','{url ctrl=call func=set id=$value.id/}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
+						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_call.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" /><!-- /if -->
+					</div>
+				</td>
+			</tr>
+			<!-- /loop -->
+			</tbody>
+		</table>
+		<!-- if $total && $total>$psize --><div class="center"><!-- include tpl=pagelist --></div><!-- /if -->
+	</div>
 </div>
-<div class="table"><!-- include tpl=pagelist --></div>
-<!-- include tpl=foot -->
+
+<!-- include tpl=foot_lay -->

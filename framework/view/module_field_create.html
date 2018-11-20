@@ -19,6 +19,11 @@ function field_form_opt(val,eid)
 
 function save()
 {
+	if(typeof(CKEDITOR) != "undefined"){
+		for(var i in CKEDITOR.instances){
+			CKEDITOR.instances[i].updateElement();
+		}
+	}
 	return $.admin_module.field_addok('{$mid}');
 }
 </script>
@@ -42,7 +47,7 @@ function save()
 			<li><input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" /></li>
 			<li>
 				<div class="button-group">
-					<input type="button" value="{lang随机生成}" onclick="$('#identifier').val($.phpok.rand(10,'letter'))" class="phpok-btn" />
+					<input type="button" value="{lang随机生成}" onclick="$('#identifier').val($.phpok.rand(10,'letter'))" class="layui-btn" />
 				</div>
 			</li>
 		</ul>		

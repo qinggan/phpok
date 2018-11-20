@@ -70,12 +70,12 @@ class checkbox_form extends _init_auto
 		$html = '<ul class="ext_checkbox clearfix">';
 		foreach($rslist AS $key=>$value){
 			$html .= '<li><label>';
-			$html .= '<input type="checkbox" name="'.$rs['identifier'].'[]" value="'.$value['val'].'"';
+			$html .= '<input type="checkbox" lay-ignore name="'.$rs['identifier'].'[]" value="'.$value['val'].'"';
 			if($value && $rs['content'] && in_array($value['val'],$rs['content']))
 			{
 				$html .= ' checked';
 			}
-			$html .= '>'.$value['title'];
+			$html .= '> '.$value['title'];
 			$html .= '</label></li>';
 		}
 		$html .= '</ul><div class="clear"></div>';

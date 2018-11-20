@@ -120,6 +120,9 @@ class url_model_base extends phpok_model
 			}
 			$url .= "&".$ext;
 		}
+		if(defined('PHPOK_SITE_ID')){
+			$url .= "&siteId=".PHPOK_SITE_ID;
+		}
 		return $url;
 	}
 
@@ -143,6 +146,13 @@ class url_model_base extends phpok_model
 				$url .= "?_noCache=".$this->nocache;
 			}else{
 				$url .= "&_noCache=".$this->nocache;
+			}
+		}
+		if(defined('PHPOK_SITE_ID')){
+			if(strpos($url,'?') === false){
+				$url .= "?siteId=".PHPOK_SITE_ID;
+			}else{
+				$url .= "&siteId=".PHPOK_SITE_ID;
 			}
 		}
 		return $url;
@@ -253,6 +263,13 @@ class url_model_base extends phpok_model
 		if($extlist && count($extlist)>0){
 			$tmp = http_build_query($extlist);
 			$url .= "?".$tmp;
+		}
+		if(defined('PHPOK_SITE_ID')){
+			if(strpos($url,'?') === false){
+				$url .= "?siteId=".PHPOK_SITE_ID;
+			}else{
+				$url .= "&siteId=".PHPOK_SITE_ID;
+			}
 		}
 		return $url;
 	}

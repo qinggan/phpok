@@ -58,10 +58,10 @@ function delete_it(id)
 	<td><!-- if $value.ifcash -->支持 <span class="gray i">（兑换：100{$value.unit}={$value.cash_ratio}元）</span><!-- else -->不支持<!-- /if --></td>
 	<td class="center">
 		<div class="button-group">
-			<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=wealth func=set id=$value.id/}')" class="phpok-btn" />
-			<input type="button" value="{lang执行规则}" onclick="$.phpok.go('{url ctrl=wealth func=rule id=$value.id/}')" class="phpok-btn" />
-			<input type="button" value="{lang财富列表}" onclick="$.phpok.go('{url ctrl=wealth func=info id=$value.id/}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=wealth func=set id=$value.id/}')" class="layui-btn" />
+			<input type="button" value="{lang执行规则}" onclick="$.phpok.go('{url ctrl=wealth func=rule id=$value.id/}')" class="layui-btn" />
+			<input type="button" value="{lang财富列表}" onclick="$.phpok.go('{url ctrl=wealth func=info id=$value.id/}')" class="layui-btn" />
+			<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="layui-btn" />
 		</div>
 	</td>
 </tr>

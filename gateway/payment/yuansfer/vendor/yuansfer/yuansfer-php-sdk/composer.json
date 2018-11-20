@@ -1,0 +1,33 @@
+{
+  "name": "yuansfer/yuansfer-php-sdk",
+  "description": "Yuansfer PHP SDK",
+  "license": "Apache-2.0",
+  "keywords": ["yuansfer", "sdk"],
+  "homepage": "https://www.yuansfer.com/",
+  "authors": [
+    {
+      "name": "Feng Hao",
+      "email": "flyinghail@msn.com"
+    }
+  ],
+  "type": "library",
+  "support": {
+    "issues": "https://github.com/yuansfer/yuansfer-php-sdk/issues",
+    "source": "https://github.com/yuansfer/yuansfer-php-sdk"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/yuansfer/yuansfer-php-sdk.git"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Yuansfer\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=5.3",
+    "nategood/httpful": "^0.2.20"
+  }
+}

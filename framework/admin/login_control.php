@@ -37,6 +37,8 @@ class login_control extends phpok_control
 			$this->assign('langid',$this->session->val('admin_lang_id'));
 		}
 		$this->assign('multiple_language',$multiple_language);
+		$logo = $this->site['adm_logo180'] ? $this->site['adm_logo180'] : 'images/login.svg';
+		$this->assign('logo',$logo);
 		$this->view('login');
 	}
 

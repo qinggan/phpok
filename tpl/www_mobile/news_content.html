@@ -1,36 +1,33 @@
-<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
-<div data-role="navbar">
-	<ul>
-		<!-- catelist pid=$page_rs.id -->
-		<!-- loop from=$list.sublist key=$key value=$value -->
-		<li><a href="{$value.url}"{if $cate_rs.id == $value.id} class="ui-btn-active"{/if}>{$value.title}</a></li>
-		<!-- /loop -->
-	</ul>
-</div>
-<div role="main" class="ui-content">
-	<div class="ui-body ui-body-a ui-corner-all">
-		<h3>{$rs.title}</h3>
-		<div class="content">{$rs.content}</div>
-		<!-- if $pagelist -->
-		<div style="margin-top:5px;">
-			<div data-role="controlgroup" data-type="horizontal" data-mini="true">
-				<!-- loop from=$pagelist key=$key value=$value -->
-				<a class="ui-btn ui-corner-all{if $value.status} ui-btn-active{/if}" href="{$value.url}" style="text-overflow:clip;">{$value.title}</a>
-				<!-- /loop -->
-			</div>
+<!-- include tpl=head title=$cate_rs.title menutitle=$page_rs.title -->
+<!-- include tpl=block/catelist pid=$page_rs.id -->
+<div class="main">
+	<article class="am-article">
+		<div class="am-article-hd">
+			<h1 class="am-article-title">{$rs.title}</h1>
+			<p class="am-article-meta">
+				发布日期：<span>{func time_format $rs.dateline}</span><br />
+				浏览次数：<span id="lblVisits">{$rs.hits}</span>
+				<!-- if $rs.tag -->
+				<br />关键字：
+					<!-- loop from=$rs.tag key=$key value=$value -->
+					<a href="{$value.url}" title="{$value.alt}" target="{$value.target}" style="color:#999;">{$value.title}</a>
+					<!-- /loop -->
+				<!-- /if -->
+			</p>
 		</div>
-		<!-- /if -->
-		<input type="button" value="加入收藏" onclick="fav_add('{$rs.id}',this)" />
-		<ul class="np">
-			<!-- php:$prev = phpok_prev($rs) -->
-			<!-- if $prev -->
-			<li><a href="{$prev.url}"><b>上一主题：</b>{$prev.title}</a></li>
+		<div class="am-article-bd">
+			<!-- if $rs.note --><p class="am-article-lead">{func nl2br $rs.note}</p><!-- /if -->
+			<div class="content">{$rs.content}</div>
+			<!-- if $session.user_id -->
+			<div style="padding:10px;" class="am-text-center">
+				<input type="button" value="{if fav_check($rs.id) }已收藏{else}加入收藏{/if}" class="am-btn am-btn-primary" onclick="$.phpok_app_fav.act('{$rs.id}',this)" />
+			</div>
 			<!-- /if -->
-			<!-- php:$next = phpok_next($rs) -->
-			<!-- if $next -->
-			<li><a href="{$next.url}"><b>下一主题：</b>{$next.title}</a></li>
-			<!-- /if -->
-		</ul>
-	</div>
+		</div>
+	</article>
+	<!-- include tpl=block/next_prev -->
+	<!-- if $page_rs.comment_status -->
+		<!-- include tpl=block/comment tid=$rs.id -->
+	<!-- /if -->
 </div>
 <!-- include tpl=foot -->

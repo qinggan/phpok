@@ -169,29 +169,29 @@ class admin_control extends phpok_control
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		if($id == $this->session->val('admin_id')){
-			$this->json(P_Lang('您不能删除自己'));
+			$this->error(P_Lang('您不能删除自己'));
 		}
 		$rs = $this->model('admin')->get_one($id);
 		if(!$rs){
-			$this->json(P_Lang('管理员信息不存在'));
+			$this->error(P_Lang('管理员信息不存在'));
 		}
 		
 		if($rs['if_system'] && !$this->session->val('admin_rs.if_system')){
-			$this->json(P_Lang('非系统管理员不能删除系统管理员'));
+			$this->error(P_Lang('非系统管理员不能删除系统管理员'));
 		}
 		$exit = $this->check_system($id);
 		if($exit != "ok"){
-			$this->json($exit);
+			$this->error($exit);
 		}
 		$this->model('admin')->delete($id);
-		$this->json(true);
+		$this->success();
 	}
 
 	/**
@@ -242,35 +242,34 @@ class admin_control extends phpok_control
 	{
 		$id = $this->get("id","int");
 		if($id && $id == $this->session->val('admin_id')){
-			$this->error(P_Lang('您不能操作自己的信息'),$this->url("admin"));
+			$this->error(P_Lang('您不能操作自己的信息'));
 		}
-		$errurl = $id ? $this->url('admin','set','id='.$id) : $this->url('admin','set');
 		if($id){
 			if(!$this->popedom["modify"]){
-				$this->error(P_Lang('您没有权限执行此操作'),$this->url("admin"));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}else{
 			if(!$this->popedom["add"]){
-				$this->error(P_Lang('您没有权限执行此操作'),$this->url("admin"));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		$account = $this->get("account");
 		if(!$account){
-			$this->error(P_Lang('账号不能为空'),$errurl);
+			$this->error(P_Lang('账号不能为空'));
 		}
-		$check_str = $this->check_account($account,$id);
-		if($check_str != "ok"){
-			$this->error($check_str,$errurl);
+		$rs = $this->model('admin')->check_account($account,$id);
+		if($rs){
+			$this->error(P_Lang('账号已经存在'.$account));
 		}
 		$array = array();
 		$array["account"] = $account;
 		$pass = $this->get("pass");
 		if(!$pass && !$id){
-			$this->error(P_Lang('密码不能为空'),$errurl);
+			$this->error(P_Lang('密码不能为空'));
 		}
 		if($pass){
 			if(strlen($pass) < 5){
-				$this->error(P_Lang('密码长度不能少于4位'),$errurl);
+				$this->error(P_Lang('密码长度不能少于4位'));
 			}
 			$array["pass"] = password_create($pass);
 		}
@@ -279,21 +278,19 @@ class admin_control extends phpok_control
 			$array["status"] = $this->get("status","int");
 		}
 		$if_system = $this->get("if_system","int");
-		if(!$_SESSION["admin_rs"]["if_system"]){
+		if(!$this->session->val('admin_rs.if_system')){
 			$if_system = 0;
 		}
 		$array["if_system"] = $if_system;
-		$is_edit = false;
 		if($id){
 			$st = $this->model('admin')->save($array,$id);
 			if(!$st){
-				$this->error(P_Lang('管理员信息更新失败，请检查'),$errurl);
+				$this->error(P_Lang('管理员信息更新失败，请检查'));
 			}
-			$is_edit = true;
 		}else{
 			$id = $this->model('admin')->save($array);
 			if(!$id){
-				$this->error(P_Lang('管理员信息添加失败，请检查'),$errurl);
+				$this->error(P_Lang('管理员信息添加失败，请检查'));
 			}
 		}
 		$this->model('admin')->clear_popedom($id);
@@ -304,8 +301,7 @@ class admin_control extends phpok_control
 				$this->model('admin')->save_popedom($popedom,$id);
 			}
 		}
-		$tip = $is_edit ? P_Lang('管理员信息编辑成功') : P_Lang('管理员账号添加成功');
-		$this->success($tip,$this->url('admin'));
+		$this->success();
 	}
 
 	/**
@@ -315,22 +311,21 @@ class admin_control extends phpok_control
 	public function status_f()
 	{
 		if(!$this->popedom['status']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		if($id == $this->session->val('admin_id')){
-			$this->json(P_Lang('您不能操作自己的信息'));
+			$this->error(P_Lang('您不能操作自己的信息'));
 		}
 		$rs = $this->model('admin')->get_one($id);
 		$status = $rs["status"] ? 0 : 1;
 		$action = $this->model('admin')->update_status($id,$status);
 		if(!$action){
-			$this->json(P_Lang('更新状态失败'));
-		}else{
-			$this->json($status,true);
+			$this->error(P_Lang('更新状态失败'));
 		}
+		$this->success($status);
 	}
 }

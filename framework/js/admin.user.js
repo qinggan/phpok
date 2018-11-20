@@ -127,6 +127,11 @@
 		**/
 		field_save:function()
 		{
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
 			var opener = $.dialog.opener;
 			var obj = $.dialog.tips(p_lang('正在保存数据…'),100);
 			$("#post_save").ajaxSubmit({
@@ -144,6 +149,32 @@
 					return false;
 				}
 			});
+		},
+
+		save:function()
+		{
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
+			$("#post_save").ajaxSubmit({
+				'url':get_url('user','setok'),
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					if(rs.status){
+						$.dialog.alert(rs.info,function(){
+							$.admin.reload(get_url('user'));
+							$.admin.close();
+						},'succeed');
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
+			return false;
 		}
 	}
 })(jQuery);

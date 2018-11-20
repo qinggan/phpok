@@ -1,0 +1,57 @@
+{
+    "pages": [
+        "pages/index/index",
+        "pages/logs/logs",
+        "pages/list/index",
+        "pages/content/index",
+        "pages/about/index",
+        "pages/error/index",
+        "pages/contact/index",
+        "pages/article/index"
+    ],
+    "tabBar": {
+        "color": "#205696",
+        "selectedColor": "#E87719",
+        "backgroundTextStyle":"dark",
+        "borderStyle": "black",
+        "backgroundColor": "#F7F7FA",
+        "list": [
+            {
+                "pagePath": "pages/index/index",
+                "iconPath": "images/home.png",
+                "selectedIconPath": "images/selected/home.png",
+                "text": "首页"
+            },
+            {
+                "pagePath": "pages/about/index",
+                "iconPath": "images/about_fill.png",
+                "selectedIconPath": "images/selected/about_fill.png",
+                "text": "关于"
+            },
+            {
+                "pagePath": "pages/article/index",
+                "iconPath": "images/bbs.png",
+                "selectedIconPath": "images/selected/bbs.png",
+                "text": "资讯"
+            },
+            {
+                "pagePath": "pages/list/index",
+                "iconPath": "images/zhifeiji.png",
+                "selectedIconPath": "images/selected/zhifeiji.png",
+                "text": "产品"
+            },
+            {
+                "pagePath": "pages/contact/index",
+                "iconPath": "images/tel.png",
+                "selectedIconPath": "images/selected/tel.png",
+                "text": "联系"
+            }
+        ]
+    },
+    "window": {
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#000000",
+        "navigationBarTitleText": "PHPOK",
+        "navigationBarTextStyle": "white"
+    }
+}

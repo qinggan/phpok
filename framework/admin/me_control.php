@@ -102,22 +102,6 @@ class me_control extends phpok_control
 		$this->model('admin')->save($array,$this->session->val('admin_id'));
 		$info = $this->model('admin')->get_one($this->session->val('admin_id'),'id');
 		$this->session->assign('admin_rs',$info);
-		//检测开发模式
-		$develop = $this->session->val('adm_develop');
-		$reload = false;
-		if(!$this->config['develop']){
-			$adm_develop = $this->get('adm_develop','int');
-			if(($develop && !$adm_develop) || (!$develop && $adm_develop)){
-				$reload = true;
-			}
-			if($adm_develop){
-				$this->session->assign('adm_develop',$adm_develop);
-			}else{
-				$this->session->unassign('adm_develop');
-			}
-		}else{
-			$this->session->assign('adm_develop',true);
-		}
-		$this->success($reload);
+		$this->success();
 	}
 }

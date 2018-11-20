@@ -21,15 +21,20 @@ class json_lib
 	 * 将数组转成JSON数据
 	 * @参数 $var 要转换的数据
 	 * @参数 $unicode 是否转换中文等非字母数据
+	 * @参数 $pretty 设置为true时表示优雅输出，可视效果
 	**/
-	public function encode($var,$unicode=true)
+	public function encode($var,$unicode=true,$pretty=false)
 	{
-		if(function_exists("json_encode")){
-			if(!$unicode){
-				return json_encode($var,JSON_UNESCAPED_UNICODE);
-			}else{
-				return json_encode($var);
+		if(!$unicode){
+			if($pretty){
+				return json_encode($var,JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 			}
+			return json_encode($var,JSON_UNESCAPED_UNICODE);
+		}else{
+			if($pretty){
+				return json_encode($var,JSON_PRETTY_PRINT);
+			}
+			return json_encode($var);
 		}
 	}
 

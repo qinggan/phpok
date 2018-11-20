@@ -89,12 +89,12 @@ $(document).ready(function(){
 <input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs_content}" />
 <table cellpadding="0" cellspacing="0" border="0">
 <tr>
-	<td><input type="text" id="title_{$_rs.identifier}" name="title_{$_rs.identifier}" disabled /></td>
+	<td><input type="text" id="title_{$_rs.identifier}" class="layui-input" name="title_{$_rs.identifier}" disabled /></td>
 	<td>&nbsp;</td>
 	<td>
-		<div class="button-group" style="padding-top:3px;">
-			<input type="button" value="{lang选择会员}" id="_phpok_button_user_{$_rs.identifier}" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="$('#{$_rs.identifier}').val('');$('#title_{$_rs.identifier}').val('')" class="phpok-btn" />
+		<div class="layui-btn-group">
+			<input type="button" value="{lang选择会员}" id="_phpok_button_user_{$_rs.identifier}" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang删除}" onclick="$('#{$_rs.identifier}').val('');$('#title_{$_rs.identifier}').val('')" class="layui-btn layui-btn-sm" />
 		</div>
 	</td>
 </tr>

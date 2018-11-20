@@ -1,85 +1,89 @@
-<!-- include tpl=head -->
-<div class="tips">
-	<!-- if $popedom.set -->
-	<div class="action"><a href="{url ctrl=project func=set/}">{lang添加项目}</a></div>
-		<!-- if $session.adm_develop -->
-		<div class="action"><a href="javascript:$.admin_project.import_xml();void(0);">{lang项目导入}</a></div>
-		<!-- /if -->
-	<!-- /if -->
-	{lang您当前的位置：}
-	<a href="{echo admin_url('project')}">{lang项目管理}</a>
-	&raquo; {lang项目列表}
-</div>
-<div class="list">
-<table width="100%" cellspacing="0" cellpadding="0">
-<tr>
-	<th class="w33"></th>
-	<th class="id">ID</th>
-	<th class="w33">&nbsp;</th>
-	<th class="lft">{lang项目名称}</th>
-	<th class="lft">{lang标识串}</th>
-	<th class="lft">{lang模块}</th>
-	<th width="65">{lang排序}</th>
-	<!-- if $popedom.set -->
-	<th style="width:220px;">&nbsp;</th>
-	<!-- /if -->
-</tr>
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<tr id="project_{$value.id}">
-	<td class="center"><input type="checkbox" value="{$value.id}" data-name="id" id="id_{$value.id}" /></td>
-	<td class="center gray" height="24px">{$value.id}</td>
-	<td class="center"><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="$.admin_project.set_status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
-	<td><label for="id_{$value.id}">{$value.space}{$value.title}<!-- if $value.nick_title --><span class="gray i"> ({$value.nick_title})</span><!-- /if --><!-- if $value.hidden --><span class="red i">{lang（隐藏）}</span><!-- /if --></label></td>
-	<td>{$value.identifier}</td>
-	<td>{$value.project_module_title ? $value.project_module_title : '-'}</td>
-	<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
-	<!-- if $popedom.set -->
-	<td class="center">
-		<div class="button-group">
-			<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=project func=set id=$value.id/}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="$.admin_project.del('{$value.id}')" class="phpok-btn" />
-			<!-- if !$value.parent_id -->
-			<input type="button" value="{lang添加子项}" class="phpok-btn" onclick="$.phpok.go('{url ctrl=project func=set pid=$value.id/}')" />
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang项目}
+		<!-- if $popedom.set -->
+		<div class="layui-btn-group fr">
+			<input type="button" value="{lang添加项目}" onclick="$.win('{lang添加项目}','{url ctrl=project func=set/}')" class="layui-btn layui-btn-sm" />
+			<!-- if $session.adm_develop -->
+			<input type="button" onclick="$.admin_project.import_xml()" value="{lang项目导入}" class="layui-btn layui-btn-sm" />
 			<!-- /if -->
 		</div>
-	</td>
-	<!-- /if -->
-</tr>
-<!-- /loop -->
-</table>
-</div>
-
-<!-- if $popedom.set -->
-<div class="table">
-	<ul class="layout">
-		<li>
-			<div class="button-group">
-				<input type="button" value="{lang全选}" class="phpok-btn" onclick="$.input.checkbox_all()" />
-				<input type="button" value="{lang全不选}" class="phpok-btn" onclick="$.input.checkbox_none()" />
-				<input type="button" value="{lang反选}" class="phpok-btn" onclick="$.input.checkbox_anti()" />
-			</div>
-		</li>
+		<!-- /if -->
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table" lay-size="sm">
+		<thead>
+		<tr>
+			<!-- if $popedom.set -->
+			<th width="30px"></th>
+			<!-- /if -->
+			<th width="70px" class="center">ID</th>
+			<th width="30px">&nbsp;</th>
+			<th>{lang项目名称}</th>
+			<th>{lang标识串}</th>
+			<th>{lang模块}</th>
+			<th width="65" class="center">{lang排序}</th>
+			<!-- if $popedom.set -->
+			<th width="220px">&nbsp;</th>
+			<!-- /if -->
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr id="project_{$value.id}">
+			<!-- if $popedom.set -->
+			<td class="center"><input type="checkbox" value="{$value.id}" data-name="id" id="id_{$value.id}" data-title="{$value.title}" /></td>
+			<!-- /if -->
+			<td class="center gray" height="24px">{$value.id}</td>
+			<td class="center"><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="$.admin_project.set_status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
+			<td><label for="id_{$value.id}">{$value.space}{$value.title}<!-- if $value.nick_title --><span class="gray i"> ({$value.nick_title})</span><!-- /if --><!-- if $value.hidden --><span class="red i">{lang（隐藏）}</span><!-- /if --></label></td>
+			<td>{$value.identifier}</td>
+			<td>{$value.project_module_title ? $value.project_module_title : '-'}</td>
+			<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
+			<!-- if $popedom.set -->
+			<td class="center">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑}_#{$value.id}','{url ctrl=project func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.admin_project.del('{$value.id}')" class="layui-btn layui-btn-sm" />
+					<!-- if !$value.parent_id -->
+					<input type="button" value="{lang添加子项}" class="layui-btn layui-btn-sm" onclick="$.win('{lang添加子项}_#{$value.id}','{url ctrl=project func=set pid=$value.id/}')" />
+					<!-- /if -->
+				</div>
+			</td>
+			<!-- /if -->
+		</tr>
+		<!-- /loop -->
+		</table>
 		<!-- if $popedom.set -->
-		<li>
-			<div class="button-group">
-				<input type="button" value="{lang禁用}" onclick="$.admin_project.set_lock(0)" class="phpok-btn" />
-				<input type="button" value="{lang启用}" onclick="$.admin_project.set_lock(1)" class="phpok-btn" />
-				<input type="button" value="{lang显示}" onclick="$.admin_project.set_hidden(0)" class="phpok-btn" />
-				<input type="button" value="{lang隐藏}" onclick="$.admin_project.set_hidden(1)" class="phpok-btn" />
-			</div>
-		</li>
+		<ul class="layout">
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang全选}" class="layui-btn layui-btn-sm" onclick="$.input.checkbox_all()" />
+					<input type="button" value="{lang全不选}" class="layui-btn layui-btn-sm" onclick="$.input.checkbox_none()" />
+					<input type="button" value="{lang反选}" class="layui-btn layui-btn-sm" onclick="$.input.checkbox_anti()" />
+				</div>
+			</li>
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang禁用}" onclick="$.admin_project.set_lock(0)" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang启用}" onclick="$.admin_project.set_lock(1)" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang显示}" onclick="$.admin_project.set_hidden(0)" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang隐藏}" onclick="$.admin_project.set_hidden(1)" class="layui-btn layui-btn-sm" />
+				</div>
+			</li>
+			
+			<!-- if $session.adm_develop -->
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang扩展字段}" onclick="$.admin_project.extinfo()" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang复制}" onclick="$.admin_project.copy()" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang导出}" onclick="$.admin_project.export()" class="layui-btn layui-btn-sm" />
+				</div>
+			</li>
+			<!-- /if -->
+		</ul>
 		<!-- /if -->
-		<!-- if $session.adm_develop -->
-		<li>
-			<div class="button-group">
-				<input type="button" value="{lang扩展字段}" onclick="$.admin_project.extinfo()" class="phpok-btn" />
-				<input type="button" value="{lang复制}" onclick="$.admin_project.copy()" class="phpok-btn" />
-				<input type="button" value="{lang导出}" onclick="$.admin_project.export()" class="phpok-btn" />
-			</div>
-		</li>
-		<!-- /if -->
-	</ul>
+	</div>
 </div>
-<!-- /if -->
 
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

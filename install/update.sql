@@ -52,3 +52,9 @@ DROP TABLE IF EXISTS `qinggan_ext`;
 
 -- 2018年05月18日 删除会员扩展字段表
 DROP TABLE IF EXISTS `qinggan_user_fields`;
+
+-- 2018年10月19日
+ALTER TABLE `qinggan_project`  ADD `list_fields` VARCHAR(255) NOT NULL COMMENT '列表读取长度，如为空读全部' ;
+
+-- 2018年10月21日
+ALTER TABLE `qinggan_reply`  ADD `title` VARCHAR(255) NOT NULL COMMENT '评论标题，留空从主题中读取' ;

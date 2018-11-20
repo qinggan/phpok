@@ -1,91 +1,55 @@
-<!-- include tpl=head_open -->
-<script type="text/javascript" src="{func include_js}"></script>
-<div class="help">
-	<div class="title red">
-		{$title_rs.title}
-		<span class="darkblue i">（发布时间：{echo date("Y-m-d H:i:s",$title_rs.dateline)}）</span>
-	</div>
-	<!-- if $title_rs.content -->
-	<div class="content">{func phpok_cut $title_rs.content 255 …}</div>
-	<!-- /if -->
-</div>
-<script type="text/javascript">
-function save()
-{
-	var url = get_url('reply','edit_save','id={$id}');
-	var star = $("input[name=star]:checked").val();
-	if(!star){
-		$.dialog.alert('{lang星级评等不能为空}');
-		return false;
-	}
-	url += "&star="+star;
-	var content = edit_content.getContent();
-	if(!content){
-		$.dialog.alert("内容不能为空");
-		return false;
-	}
-	url += "&content="+$.str.encode(content);
-	var status = $("input[name=status]:checked").val();
-	url += "&status="+status;
-	var info = $.phpok.json(url);
-	if(info.status == 'ok'){
-		return true;
-	}else{
-		$.dialog.alert(info.content);
-		return false;
-	}
-}
-</script>
-<form method="post" onsubmit="return false">
-<div class="table">
-	<div class="title">
-		评论星级：
-		<span class="note">设置该评论的星级数，默认为3星</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="1">
-		<tr>
-			<td><input type="radio" name="star" id="star_1" value="1"{if $rs.star == 1} checked{/if}></td>
-			<td><label for="star_1">一星</label></td>
-			<td>&nbsp;</td>
-			<td><input type="radio" name="star" id="star_2" value="2"{if $rs.star == 2} checked{/if}></td>
-			<td><label for="star_2">二星</label></td>
-			<td>&nbsp;</td>
-			<td><input type="radio" name="star" id="star_3" value="3"{if $rs.star == 3 || !$rs.star} checked{/if}></td>
-			<td><label for="star_3">三星</label></td>
-			<td>&nbsp;</td>
-			<td><input type="radio" name="star" id="star_4" value="4"{if $rs.star == 4} checked{/if}></td>
-			<td><label for="star_4">四星</label></td>
-			<td>&nbsp;</td>
-			<td><input type="radio" name="star" id="star_5" value="5"{if $rs.star == 5} checked{/if}></td>
-			<td><label for="star_5">五星</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		评论内容：
-		<span class="note">一般情况不用修改。</span>
-	</div>
-	<div class="content">{$edit_content}</div>
-</div>
-<div class="table">
-	<div class="title">
-		审核：
-		<span class="note"></span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="1">
-		<tr>
-			<td><input type="radio" name="status" id="status_0" value="0"{if !$rs.status} checked{/if}></td>
-			<td><label for="status_0" class="red">未审核</label></td>
-			<td>&nbsp;</td>
-			<td><input type="radio" name="status" id="status_1" value="1"{if $rs.status} checked{/if}></td>
-			<td><label for="status_1">已审核</label></td>
-		</tr>
-		</table>
+<!-- include tpl=head_lay nopadding=true -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<input type="hidden" name="id" value="{$id}" />
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="help">
+			<div class="title red">
+				{$rs.title}
+				<!-- if $title_rs --><span class="darkblue i">{lang发布时间} {func date 'Y-m-d H:i:s' $title_rs.dateline}</span><!-- /if -->
+			</div>
+			<!-- if $title_rs && $title_rs.content -->
+			<div class="content">{func phpok_cut $title_rs.content 255 …}</div>
+			<!-- /if -->
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang评论星级}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="star" id="star_1" value="1"{if $rs.star == 1} checked{/if} title="{lang一星}" />
+				<input type="radio" name="star" id="star_2" value="2"{if $rs.star == 2} checked{/if} title="{lang二星}">
+				<input type="radio" name="star" id="star_3" value="3"{if !$rs.star || $rs.star == 3} checked{/if} title="{lang三星}">
+				<input type="radio" name="star" id="star_4" value="4"{if $rs.star == 4} checked{/if} title="{lang四星}">
+				<input type="radio" name="star" id="star_5" value="5"{if $rs.star == 5} checked{/if} title="{lang五星}">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang附件图片}
+			</label>
+			<div class="layui-input-block">
+				{$res_content}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang评论内容}
+			</label>
+			<div class="layui-input-block">
+				{$edit_content}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang审核状态}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="status" id="status_0" value="0"{if !$rs.status} checked{/if} title="{lang未审核}" />
+				<input type="radio" name="status" id="status_1" value="1"{if $rs.status} checked{/if} title="{lang已审核}" />
+			</div>
+		</div>
 	</div>
 </div>
 </form>
-<!-- inc:foot_open -->
+<!-- include tpl=foot_lay -->

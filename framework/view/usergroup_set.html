@@ -1,174 +1,158 @@
-<!-- inc:head -->
-<script type="text/javascript">
-function to_submit()
-{
-	var title = $("#title").val();
-	if(!title)
-	{
-		$.dialog.alert("会员组名称不能为空");
-		return false;
-	}
-}
-</script>
-<div class="tips">
-	<a href="{echo admin_url('usergroup')}" title="会员组">会员组</a>
-	&raquo; {if $id}编辑{else}添加新{/if}会员组
-</div>
-<div class="tips">
-	要启用【邀请码注册】和【邮箱验证注册】功能，您需要：
-	<ol>
-		<li>创建一个项目（假设为regcheck）</li>
-		<li>项目必须绑定一个模块【假设为注册验证】</li>
-		<li>绑定的模块里必须有字段：<span class="red">account（会员账号字段）</span>
-	</ol>
-	<div class="clear"></div>
-</div>
-
-<form method="post" action="{url ctrl=usergroup func=setok id=$id/}" onsubmit="return to_submit();">
-<div class="table">
-	<div class="title">
-		名称：
-		<span class="note">设置会员组的名称</span>
+<!-- include tpl=head_lay -->
+<link rel="stylesheet" href="{$sys.webroot}static/admin/style/extadmin.css" media="all">
+<div class="layui-card">
+	<div class="layui-card-header">
+		<!-- if $id -->{lang编辑会员组}<!-- else -->{lang添加新会员组}<!-- /if -->
 	</div>
-	<div class="content">
-		<input type="text" id="title" name="title" class="default" value="{$rs.title}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		注册审核：
-		<span class="note"></span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="radio" name="register_status" value="1" {if $rs.register_status == '1'} checked{/if} />免审核 </label></td>
-			<!-- if $reglist -->
-			<td><label><input type="radio" name="register_status" value="email" {if $rs.register_status == 'email'} checked{/if} />邮箱验证注册 </label></td>
-			<td><label><input type="radio" name="register_status" value="code" {if $rs.register_status == 'code'} checked{/if} />邀请码验证 </label></td>
+	<form method="post" action="{url ctrl=usergroup func=setok id=$id/}" onsubmit="return to_submit();">
+		<div class="layui-card-body layui-form">
+			<blockquote class="layui-elem-quote">
+				要启用【邀请码注册】和【邮箱验证注册】功能，您需要：
+				<ol style="margin-left: 20px">
+					<li>创建一个项目（假设为regcheck）</li>
+					<li>项目必须绑定一个模块【假设为注册验证】</li>
+					<li>绑定的模块里必须有字段：<span class="red">account（会员账号字段）</span>
+				</ol>
+			</blockquote>
+			<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
+				<button type="button" class="layui-btn layuiadmin-btn-list" onclick="$.phpok.go('{url ctrl=admin/}')">返回</button>
+			</div>
+			<!-- if $id -->
+			<input type="hidden" name="id" id="id" value="{$id}" />
 			<!-- /if -->
-			<td><label><input type="radio" name="register_status" value="0" {if !$rs.register_status} checked{/if} />人工审核 </label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-<!-- if $reglist -->
-<div class="table">
-	<div class="title">
-		验证库：
-		<span class="note">仅限启用验证后才有效</span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<!-- loop from=$reglist key=$key value=$value -->
-			<li><label><input type="radio" name="tbl_id" value="{$value.id}"{if $rs.tbl_id == $value.id} checked{/if}>{$value.title}</label></li>
-			<!-- /loop -->
-			<li><label><input type="radio" name="tbl_id" value="0"{if !$rs.tbl_id} checked{/if} />不使用</label></li>
-		</ul>
-		<div class="clear"></div>
-	</div>
-</div>
-<!-- /if -->
-<div class="table">
-	<div class="title">
-		开放供选择：
-		<span class="note">设置是否开放此组供用户选择（启用后允许用户自行选择会员组）</span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<li><label><input type="radio" name="is_open"{if $rs.is_open} checked{/if} value="1" /> 是</label></li>
-			<li><label><input type="radio" name="is_open"{if !$rs.is_open} checked{/if} value="0" /> 否</label></li>
-		</ul>
-		<div class="clear"></div>
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		权限设置：
-		<span class="note">合理设置权限，可以更有效控制站点信息，注意，静态页无效！</span>
-	</div>
-	<div class="content">
-		<div class="list" style="border:1px solid #ccc;width:800px;">
-		<table cellpadding="0" cellspacing="0" width="100%" style="padding:1px;">
-		<tr>
-			<th class="lft" width="190">&nbsp;</th>
-			<th align="right" colspan="2">
-				<input type="button" value="全部可读" onclick="$('input[data=read]').attr('checked',true);" />
-				<input type="button" value="全部不可读" onclick="$('input[data=read]').attr('checked',false);" />
-			</th>
-		</tr>
-		<!-- loop from=$project_list key=$key value=$value -->
-		<tr id="project_{$value.id}">
-			<td><div style="text-indent:5px;">{$value.space}{$value.title}</div></td>
-			<td width="180px" align="center">
-				<input type="button" value="全选" onclick="$.input.checkbox_all('project_{$value.id}')" />
-				<input type="button" value="全不选" onclick="$.input.checkbox_none('project_{$value.id}')" />
-				<input type="button" value="反选" onclick="$.input.checkbox_anti('project_{$value.id}')" />
-			</td>
-			<td>
-				<ul class="layout">
-					<li><label><input type="checkbox" name="popedom[]" data="read" value="read:{$value.id}"{if $popedom_users && in_array('read:'.$value.id,$popedom_users)} checked{/if} /> 阅读</label></li>
-					<!-- if $value.module -->
-						<!-- if $value.post_status -->
-						<li><label><input type="checkbox" name="popedom[]" value="post:{$value.id}"{if $popedom_users && in_array('post:'.$value.id,$popedom_users)} checked{/if} /> 发布</label></li>
-						<li><label><input type="checkbox" name="popedom[]" value="post1:{$value.id}"{if $popedom_users && in_array('post1:'.$value.id,$popedom_users)} checked{/if} /> 发布免审核</label></li>
-						<!-- /if -->
-						<!-- if $value.comment_status -->
-						<li><label><input type="checkbox" name="popedom[]" value="reply:{$value.id}"{if $popedom_users && in_array('reply:'.$value.id,$popedom_users)} checked{/if} /> 回复</label></li>
-						<li><label><input type="checkbox" name="popedom[]" value="reply1:{$value.id}"{if $popedom_users && in_array('reply1:'.$value.id,$popedom_users)} checked{/if} /> 回复免审核</label></li>
-						<!-- /if -->
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang名称}</label>
+				<div class="layui-input-inline" style="width: 450px">
+					<input type="text" id="title" required lay-verify="required" name="title" value="{$rs.title}" autocomplete="off" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					{lang设置会员组的名称}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang注册审核}</label>
+				<div class="layui-input-inline" style="width: 500px;">
+					<input type="radio" name="register_status" value="1" {if $rs.register_status == '1'} checked{/if} />
+					<!-- if $reglist -->
+					<input type="radio" name="register_status" title="邮箱验证注册" value="email" {if $rs.register_status == 'email'} checked{/if} />
+					<input type="radio" name="register_status" title="邀请码验证" value="code" {if $rs.register_status == 'code'} checked{/if} />
 					<!-- /if -->
-				</ul>
-			</td>
-		</tr>
-		<!-- /loop -->
-		</table>
+					<input type="radio" name="register_status" title="人工审核" value="0" {if !$rs.register_status} checked{/if} />
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					{lang系统管理员是最高级别管理也是开发管理员，可管理整个平台所有功能}
+				</div>
+			</div>
+			<!-- if $reglist -->
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang验证库}</label>
+				<div class="layui-input-inline" style="width: 500px;">
+					<!-- loop from=$reglist key=$key value=$value -->
+					<input type="radio" name="tbl_id" title="{$value.title}" value="{$value.id}"{if $rs.tbl_id == $value.id} checked{/if}>
+					<!-- /loop -->
+					<input type="radio" name="tbl_id" title="不使用" value="0"{if !$rs.tbl_id} checked{/if} />
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					{lang仅限启用验证后才有效}
+				</div>
+			</div>
+			<!-- /if -->
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang开放供选择}</label>
+				<div class="layui-input-inline" style="width: 300px;">
+					<input type="checkbox" id="is_open" name="is_open" value="{$rs.is_open}" {if !$rs.is_open} checked{/if} lay-skin="switch">
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					{lang设置是否开放此组供用户选择（启用后允许用户自行选择会员组）}
+				</div>
+			</div>
+			<div class="layui-col-md12" style="margin-bottom: 20px;">
+				<div class="layui-card">
+					<div class="layui-card-header layui-bg-cyan">
+						{lang权限设置}
+						<div class="layui-btn-group" style="right: 15px;line-height: initial;position: absolute;top: 50%; margin-top: -17px;">
+							<input type="button" class="layui-btn layui-btn-sm" value="全部可读" onclick="$('input[data=read]').prop('checked',true);layui.form.render('checkbox')" />
+							<input type="button" class="layui-btn layui-btn-sm" value="全部不可读" onclick="$('input[data=read]').prop('checked',false);layui.form.render('checkbox')" />
+						</div>
+					</div>
+					<div class="layui-card-body">
+						<!-- loop from=$project_list key=$key value=$value -->
+						<div class="layui-form-item" id="site_p_{$v.id}">
+							<label class="layui-form-label">{$v.space}{$v.title}</label>
+							<div class="layui-input-inline" style="width: auto">
+								<div class="layui-btn-group">
+									<input type="button" class="layui-btn layui-btn-sm" value="{lang全选}" onclick="$.input.checkbox_all('project_{$v.id}')" />
+									<input type="button" class="layui-btn layui-btn-sm" value="{lang全不选}" onclick="$.input.checkbox_none('project_{$v.id}')" />
+									<input type="button" class="layui-btn layui-btn-sm" value="{lang反选}" onclick="$.input.checkbox_anti('project_{$v.id}')" />
+								</div>
+								<input type="checkbox" name="popedom[]" data="read" title="阅读"  value="read:{$value.id}"{if $popedom_users && in_array('read:'.$value.id,$popedom_users)} checked{/if} />
+								<!-- if $value.module -->
+								<!-- if $value.post_status -->
+								<input type="checkbox" name="popedom[]" title="发布" value="post:{$value.id}"{if $popedom_users && in_array('post:'.$value.id,$popedom_users)} checked{/if} />
+								<input type="checkbox" name="popedom[]" title="发布免审核" value="post1:{$value.id}"{if $popedom_users && in_array('post1:'.$value.id,$popedom_users)} checked{/if} />
+								<!-- /if -->
+								<!-- if $value.comment_status -->
+								<input type="checkbox" name="popedom[]" title="回复" value="reply:{$value.id}"{if $popedom_users && in_array('reply:'.$value.id,$popedom_users)} checked{/if} />
+								<input type="checkbox" name="popedom[]" title="回复免审核" value="reply1:{$value.id}"{if $popedom_users && in_array('reply1:'.$value.id,$popedom_users)} checked{/if} />
+								<!-- /if -->
+								<!-- /if -->
+							</div>
+						</div>
+						<!-- /loop -->
+					</div>
+				</div>
+			</div>
+			<div class="layui-form-item layui-clear">
+				<label class="layui-form-label">{lang会员字段}</label>
+				<div class="layui-input-inline" style="width: 500px;"  id="user_fields_ul">
+					<!-- loop from=$all_fields_list key=$key value=$value -->
+					<input type="checkbox" name="fields_list[]" title="{$value.title}" value="{$value.identifier}"{if $fields_list && in_array($value.identifier,$fields_list)} checked{/if} />
+					<!-- /loop -->
+				</div>
+				<div class="layui-input-inline" style="width:300px">
+					<div class="layui-btn-group">
+						<input type="button" class="layui-btn" value="全选" onclick="$.input.checkbox_all('user_fields_ul')"/>
+						<input type="button" class="layui-btn" value="全不选" onclick="$.input.checkbox_none('user_fields_ul')"/>
+						<input type="button" class="layui-btn" value="反选" onclick="$.input.checkbox_anti('user_fields_ul')"/>
+					</div>
+				</div>
+			</div>
+			{$extlist.content.content}
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang排序}</label>
+				<div class="layui-input-inline">
+					<input type="text" id="taxis" name="taxis" value="{$rs.taxis ? $rs.taxis : 255}" autocomplete="off" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					{lang设置排序，最大值不超过255，最小值为0，值越小越往前靠}
+				</div>
+			</div>
 		</div>
-	</div>
+		<div class="layui-form-item layui-layout-admin">
+			<div class="layui-input-block">
+				<div class="layui-footer"  style="left: 0;z-index:10">
+					<button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</div>
+	</form>
 </div>
-
-
-<div class="table">
-	<div class="title">
-		会员字段：
-		<span class="note">
-			<input type="button" value="全选" onclick="$.input.checkbox_all('user_fields_ul')" />
-			<input type="button" value="全不选" onclick="$.input.checkbox_none('user_fields_ul')" />
-			<input type="button" value="反选" onclick="$.input.checkbox_anti('user_fields_ul')" />
-		</span>
-	</div>
-	<div class="content">
-		<ul class="layout" id="user_fields_ul">
-			<!-- loop from=$all_fields_list key=$key value=$value -->
-			<li><label><input type="checkbox" name="fields_list[]" value="{$value.identifier}"{if $fields_list && in_array($value.identifier,$fields_list)} checked{/if} />{$value.title}</label></li>
-			<!-- /loop -->
-		</ul>
-		<div class="clear"></div>
-	</div>
-</div>
-
-{$extlist.content.content}
-
-<div class="table">
-	<div class="title">
-		排序：
-		<span class="note">设置排序，最大值不超过255，最小值为0，值越小越往前靠</span>
-	</div>
-	<div class="content">
-		<input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis ? $rs.taxis : 255}" />
-	</div>
-</div>
-
-<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
-</form>
-
 <script type="text/javascript">
-$(document).ready(function(){
-	//检测是否有自动保存的表单
-	autofill("{$ext_module}");
-	//通过Ajax加载自定义表单选项
-	ext_fields("{$ext_module}","{$extlist.content.words}","1","usergroup");
-});
+    function to_submit()
+    {
+        var title = $("#title").val();
+        if(!title)
+        {
+            $.dialog.alert("会员组名称不能为空");
+            return false;
+        }
+    }
+    $(document).ready(function(){
+        //检测是否有自动保存的表单
+        //autofill("{$ext_module}");
+        //通过Ajax加载自定义表单选项
+        //ext_fields("{$ext_module}","{$extlist.content.words}","1","usergroup");
+    });
 </script>
-<!-- inc:foot -->
+<!-- include tpl=foot_lay -->

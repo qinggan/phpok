@@ -696,7 +696,7 @@
 		top.layui.index.openTabsPage(url, title);
 		return true;
 		//检查是否窗口已存在
-		var open_id = false;
+		/*var open_id = false;
 		$("ul#phpok-taskbar li").each(function(i){
 			var txt = $(this).text();
 			if(txt == title){
@@ -742,7 +742,7 @@
 		}
 		$.desktop.init(opt);
 		$.desktop.win_id();
-		$.desktop.win();
+		$.desktop.win();*/
 	};
 	$.win2 = {
 		init:function(opts){

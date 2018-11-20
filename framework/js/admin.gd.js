@@ -65,6 +65,11 @@
 		**/
 		save:function()
 		{
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
 			$("#gdsetting").ajaxSubmit({
 				'url':get_url('gd','save'),
 				'type':'post',

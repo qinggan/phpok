@@ -9,6 +9,7 @@
 **/
 ;(function($){
 	$.admin_all = {
+		//样式
 		setting_style:function(site_id)
 		{
 			var tpl_id = $("#tpl_id").val();
@@ -53,8 +54,44 @@
 				'cancel':true,'cancelVal':p_lang('关闭')
 			})
 		},
+		//保存全局信息
+		save:function()
+		{
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
+			$("#setting").ajaxSubmit({
+				'url':get_url('all','save'),
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					if(rs.status){
+						layer.msg(p_lang('数据信息保存成功'));
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
+			return false;
+		},
+		/**
+		 * 随机码
+		**/
+		rand:function()
+		{
+			var info = $.phpok.rand(16,'all');
+			$("#api_code").val(info);
+		},
 		ext_save:function()
 		{
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
 			$("#post_save").ajaxSubmit({
 				'url':get_url('all','ext_save'),
 				'type':'post',
@@ -99,6 +136,11 @@
 		},
 		group_set:function()
 		{
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
 			var opener = $.dialog.opener;
 			$("#post_save").ajaxSubmit({
 				'url':get_url('all','gset_save'),
@@ -107,7 +149,7 @@
 				'success':function(rs){
 					if(rs.status){
 						//刷新父级标签
-						var all_seturl = get_url('all')+'&_noCache';
+						var all_seturl = get_url('all');
 						var home_url = get_url('index','homepage');
 						var id = $("#id").val();
 						var this_url = '';
@@ -116,6 +158,9 @@
 						}
 						top.$("#LAY_app_tabsheader li").each(function(i){
 							var layid = $(this).attr('lay-attr');
+							if(layid){
+								layid = layid.replace(/\&\_noCache=[0-9\.]+/g,'');
+							}
 							var chk = webroot+layid;
 							if(chk.indexOf(all_seturl) != -1 || chk.indexOf(home_url) != -1){
 								top.$('.layadmin-iframe').eq(i)[0].contentWindow.location.reload(true);
@@ -124,7 +169,7 @@
 								$(this).find("span").text($("#title").val());
 							}
 						});
-						$.dialog.tips(p_lang('保存操作成功，请手动关闭当前标签并刷新父标签'));
+						$.dialog.tips(p_lang('保存操作成功'));
 						window.setTimeout(function(){
 							$.dialog.close();
 						}, 1000);
@@ -162,15 +207,150 @@
 					return false;
 				})
 			});
+		},
+		domain_default:function(id)
+		{
+			var url = get_url("all","domain_default","id="+id);
+			$.phpok.json(url,function(rs){
+				if(rs.status){
+					layer.msg(p_lang('主域名设置成功'),{time:1500},function(){
+						$.phpok.reload();
+					})
+					return true;
+				}
+				layer.alert(rs.info);
+				return false;
+			});
+		},
+		domain_add:function()
+		{
+			var domain = $("#domain_0").val();
+			if(!this._domain_check(domain)){
+				return false;
+			}
+			var url = get_url("all","domain_save","domain="+$.str.encode(domain));
+			$.phpok.json(url,function(rs){
+				if(rs.status){
+					$.dialog.tips(p_lang('域名添加成功'),function(){
+						$.phpok.reload();
+					});
+					return true;
+				}
+				$.dialog.alert(rs.info);
+				return false;
+			});
+		},
+		domain_update:function(id)
+		{
+			var domain = $("#domain_"+id).val();
+			if(!this._domain_check(domain)){
+				return false;
+			}
+			var url = get_url("all","domain_save","id="+id+"&domain="+$.str.encode(domain));
+			$.phpok.json(url,function(rs){
+				if(rs.status){
+					layer.msg(p_lang('域名更新成功'));
+					return true;
+				}
+				layer.alert(rs.info);
+				return false;
+			});
+		},
+		domain_delete:function(id)
+		{
+			layer.confirm(p_lang('确定要删除此域名吗'),function(){
+				var url = get_url("all","domain_delete")+"&id="+id;
+				$.phpok.json(url,function(rs){
+					if(rs.status){
+						$.phpok.reload();
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				});
+			});
+		},
+		domain_mobile:function(id,act_mobile)
+		{
+			var url = get_url('all','domain_mobile','act_mobile='+act_mobile+'&id='+id);
+			$.phpok.json(url,function(data){
+				if(data.status){
+					$.phpok.reload();
+					return true;
+				}
+				layer.alert(data.info);
+				return false;
+			})
+		},
+		vcode_save:function()
+		{
+			$('#post_save').ajaxSubmit({
+				'url':get_url('all','vcode_save'),
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					if(rs.status){
+						layer.msg(p_lang('验证码信息配置保存成功'));
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
+			return false;
+		},
+		//域名规则测试
+		_domain_check:function(domain)
+		{
+			if(!domain || domain == 'undefined'){
+				$.dialog.alert(p_lang('域名不能为空'));
+				return false;
+			}
+			domain = domain.toLowerCase();
+			if(domain.substr(0,7) == "http://" || domain.substr(0,8) == "https://"){
+				$.dialog.alert(p_lang('域名不能以http://或https://开头'));
+				return false;
+			}
+			var chk = new RegExp('/');
+			if(chk.test(domain)){
+				$.dialog.alert(p_lang('域名填写不正确'));
+				return false;
+			}
+			return true;
 		}
 	};	
 	$(document).ready(function(){
-		if($("#_quick_insert").length > 0){
-			var url = get_url('ext','select','type=all&module='+$("#_mode").val());
-			$.phpok.ajax(url,function(data){
-				$("#_quick_insert").html(data);
+		if($("form.layui-form").length>0){
+			layui.use('form',function(){
+				layui.form.render();
 			})
 		}
-	});
+		if($("#_quick_insert").length > 0){
+			var url = get_url('ext','select','type=all');
+			url += '&module='+$("#_quick_insert").attr('data-id');
+			var forbid='';
+			$("input[data-name=fields]").each(function(){
+				var val = $(this).val();
+				if(val){
+					if(forbid){
+						forbid += ",";
+					}
+					forbid += val;
+				}
+			});
+			if(forbid){
+				url += "&forbid="+$.str.encode(forbid);
+			}
+			$.phpok.ajax(url,function(data){
+				$("#_quick_insert").html(data);
+				layui.form.render();
+			})
+		}
+		$(".layui-input").bind("keyup",function(e){
+			if(e.keyCode == 13){
+				var id = $(this).attr('id');
+				$("#"+id+"_submit").click();
+			}
+		});
+    });
 })(jQuery);
-

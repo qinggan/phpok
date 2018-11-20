@@ -1,32 +1,41 @@
-<!-- include tpl=head -->
-<style type="text/css">
-div.txt{line-height:30px;overflow:hidden;font-weight:bold;text-indent:1em;}
-</style>
-<div class="tips">
-	{lang您当前的位置：}
-	<a href="{url ctrl=opt/}">{lang选项维护}</a>
-	&raquo; {lang选项组维护（维护扩展表单的多项选择属性，包括复选框，单选框，下拉菜单等）}
-	<!-- if $popedom.set -->
-	<div class="action"><a href="javascript:$.admin_opt.opt_import();void(0);">{lang导入项目}</a></div>
-	<div class="action"><a href="javascript:$.admin_opt.group_add();void(0);">{lang添加新组}</a></div>
-	<!-- /if -->
-</div>
-<div style="margin:0 5px;">
-<ul class="attrlist">
-	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-	<li>
-		<div class="txt">{$value.title}</div>
-		<div class="button-group">
-			<input type="button" value="{lang内容}" onclick="$.admin_opt.opt_list('{$value.id}')" class="phpok-btn" />
-			<!-- if $popedom.set -->
-			<input type="button" value="{lang导入}" onclick="$.admin_opt.opt_import('{$value.id}')" class="phpok-btn" />
-			<!-- if $value._export --><input type="button" value="{lang导出}" onclick="$.admin_opt.opt_export('{$value.id}',true)" class="phpok-btn" /><!-- /if -->
-			<input type="button" value="{lang编辑}" onclick="$.admin_opt.group_edit('{$value.id}','{$value.title}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="$.admin_opt.group_delete('{$value.id}','{$value.title}')" class="phpok-btn" />
-			<!-- /if -->
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang表单选项}
+		<div class="layui-btn-group fr">
+			<input type="button" value="{lang添加新组}" onclick="$.admin_opt.group_add()" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang导入项目}" onclick="$.admin_opt.opt_import()" class="layui-btn layui-btn-sm" />
 		</div>
-	</li>
-	<!-- /loop -->
-</ul>
+	</div>
+	<div class="layui-container layui-card-body">
+		<table lay-even class="layui-table">
+		<thead>
+		<tr>
+			<th width="30">ID</th>
+			<th>{lang名称}</th>
+			<th><i class="layui-icon layui-tips" lay-tips="{lang仅限用户自定义字段使用多选时有效，留空使用英文竖线}">&#xe702;</i> {lang连字符}</th>
+			<th></th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.id}</td>
+			<td>{$value.title}</td>
+			<td><!-- if $value.link_symbol -->{$value.link_symbol}<!-- /if --></td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang内容}" onclick="$.win('{lang内容}_{$value.title}','{url ctrl=opt func=list group_id=$value.id/}');" class="layui-btn  layui-btn-sm" />
+					<!-- if $popedom.set -->
+					<input type="button" value="{lang导入}" onclick="$.admin_opt.opt_import('{$value.id}')" class="layui-btn  layui-btn-sm" />
+					<!-- if $value._export --><input type="button" value="{lang导出}" onclick="$.admin_opt.opt_export('{$value.id}',true)" class="layui-btn  layui-btn-sm" /><!-- /if -->
+					<input type="button" value="{lang编辑}" onclick="$.admin_opt.group_edit('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.admin_opt.group_delete('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm" />
+					<!-- /if -->
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
 </div>
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

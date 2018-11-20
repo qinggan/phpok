@@ -1,159 +1,131 @@
-<!-- include tpl=head title=核心设置 -->
-<script type="text/javascript" src="{echo add_js('sysmenu.js')}"></script>
-<div class="tips">
-	{lang您当前的位置：}
-	<a href="{echo admin_url('system')}">{lang核心配置}</a>
-	<!-- if $id -->
-	&raquo; {lang编辑应用}
-	<!-- else -->
-	&raquo; {lang添加应用}
-	<!-- /if -->
-</div>
-<form method="post" id="ext_post" action="{echo admin_url('system','save')}">
-<input type="hidden" id="id" name="id" value="{$id}" />
-<div class="table">
-	<div class="title">
-		{lang名称：}
-		<span class="note">{lang设置应用的名称，该名称将在后台左侧/头部显示}</span>
-	</div>
-	<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
-</div>
-<!-- if $parent_list -->
-<div class="table">
-	<div class="title">
-		{lang上级项目：}
-		<span class="note">{lang设置上级项目}</span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<!-- loop from=$parent_list key=$key value=$value id=$tmpid -->
-			<li><label><input type="radio" name="parent_id" value="{$value.id}"{if $value.id == $pid} checked{/if} />{$value.title}</label></li>
-			<!-- /loop -->
-		</ul>
-	</div>
-</div>
-<script type="text/javascript">
-$(document).ready(function() {
-	$(".dropdown dt").click(function() {
-		$(".dropdown dd ul").toggle();
-	});
-				
-	$(".dropdown dd ul li").click(function() {
-		var text = $(this).html();
-		$(".dropdown dt span").html(text);
-		$(".dropdown dd ul").hide();
-		$("#icon").val($(this).find("span.value").html());
-	});
-	$(document).bind('click', function(e) {
-		var $clicked = $(e.target);
-		if (! $clicked.parents().hasClass("dropdown"))
-			$(".dropdown dd ul").hide();
-	});
-});
-</script>
-<style type="text/css">
-.dropdown{margin:0;padding:0;}
-.dropdown dd, .dropdown dt, .dropdown ul { margin:0px; padding:0px; }
-.dropdown dd { position:relative; }
-.dropdown dt:hover { color:#5d4617; border: 1px solid #E5E5E5; }
-.dropdown dt{display:block; padding-right:20px; border:1px solid #E5E5E5; width:180px; height:27px;}
-.dropdown dt span { cursor:pointer; display:block; padding:5px; }
-.dropdown dd ul { background:#fff; border:1px solid #E5E5E5; color:#000; display:none; left:0px; padding:5px 0px; position:absolute; top:2px; width:auto; min-width:200px; list-style:none;height:300px;overflow-y:scroll; }
-.dropdown span.value { display:none; }
-.dropdown dd ul li{ padding:5px; display:block; }
-.dropdown dd ul li:hover { background-color:#d0c9af; }
-</style>
-<div class="table">
-	<div class="title">
-		{lang快捷图标：}
-		<span class="note">{lang启用快捷图标后，将在桌面显示相应的快捷链接}</span>
-	</div>
-	<div class="content">
-		<input type="hidden" name="icon" id="icon" value="{$rs.icon}" />
-		<dl class="dropdown">
-			<dt><span><!-- if $rs.icon --><i class="icon-{$rs.icon}" style="font-size:16px;"></i> {$rs.icon}<!-- else -->不使用图标<!-- /if --></span></dt>
-			<dd>
-			<ul>
-				<li>不使用图标<span class="value"></span></li>
-				<!-- loop from=$iconlist key=$key value=$value id=$tmpid -->
-				<li><i class="icon-{$value}" style="font-size:16px;"></i> {$value}<span class="value">{$value}</span></li>
-				<!-- /loop -->
-			</ul>
-			</dd>
-		</dl>
-	</div>
-</div>
-<!-- /if -->
-
-<!-- if $pid && $dirlist -->
-<div class="table">
-	<div class="title">
-		{lang控制层：}
-		<span class="note">{lang请不要随意修改，不熟请设为：}<span class="red">list_control.php</span></span>
-	</div>
-	<div class="content">
-		<select name="appfile" id="appfile">
-			<!-- foreach($dirlist AS $key=>$value) -->
-			<option value="{$value.id}"{if $value.id == $rs.appfile} selected="selected"{/if}>{$value.title}</option>
-			<!-- /foreach -->
-		</select>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang执行方法：}
-		<span class="note">{lang请选择要执行的方法动作，不熟悉请留空}</span>
-	</div>
-	<div class="content"><input type="text" id="func" name="func" class="long" value="{$rs.func}" /></div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang扩展参数：}
-		<span class="note">{lang不清楚的请留空}</span>
-	</div>
-	<div class="content"><input type="text" id="ext" name="ext" class="long" value="{$rs.ext}" /></div>
-</div>
-<!-- /if -->
-<div class="table">
-	<div class="title">
-		{lang排序：}
-		<span class="note">{lang自定义排序，值越小越往前靠}</span>
-	</div>
-	<div class="content"><input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis}" /></div>
-</div>
-<!-- if $session.admin_rs.if_system -->
-	<div class="table">
-		<div class="title">
-			{lang配置权限：}
-			<span class="note">
-				{lang此项用于二次扩展开发时使用，对各个功能的权限分配，不熟悉请阅读官网帮助}
-				<input type="button" value="添加" class="btn" onclick="add_trtd()" />
-			</span>
+<!-- include tpl=head_lay title=核心设置 -->
+<div class="layui-card">
+	<div class="layui-container layui-card-body">
+		<form method="post" id="ext_post" action="{echo admin_url('system','save')}" class="layui-form">
+		<input type="hidden" id="id" name="id" value="{$id}" />
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang名称}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置应用的名称，该名称将在后台左侧/头部显示}</div>
 		</div>
-		<div class="content">
-			<div class="list">
-			<table id="popedom" cellpadding="0" cellspacing="1" style="border:1px solid #ccc;width:auto;">
-			<tr>
-				<th width="72">{lang删}</th>
-				<th width="200">{lang名称}</th>
-				<th width="160">{lang标识}</td>
-				<th width="90">{lang排序}</td>
-			</tr>
-			<!-- loop from=$popedom_list key=$key value=$value -->
-			<tr id="popedom_{$value.id}">
-				<td align="center"><input type="button" value="{lang删除}" class="btn" onclick="popedom_del('{$value.id}')" /></td>
-				<td align="center"><input type="text" name="popedom_title_{$value.id}" value="{$value.title}" style="width:180px" /></td>
-				<td align="center"><input type="text" name="popedom_identifier_{$value.id}" value="{$value.identifier}" style="width:140px" /></td>
-				<td align="center"><input type="text" name="popedom_taxis_{$value.id}" value="{$value.taxis}" class="short" /></td>
-			</tr>
-			<!-- /loop -->
-			</table>
+		<!-- if $parent_list -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang上级项目}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select name="parent_id">
+				     <!-- loop from=$parent_list key=$key value=$value id=$tmpid -->
+				     <option value="{$value.id}" {if $value.id == $pid} selected = "selected"{/if}  >{$value.title}</option>
+				     <!-- /loop -->
+			    </select>
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置上级项目}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang快捷图标}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="hidden" name="icon" id="icon"  value="{$rs.icon}" />
+				<dl class="dropdown">
+					<dt><span><!-- if $rs.icon --><i class="icon-{$rs.icon}" style="font-size:16px;"></i> {$rs.icon}<!-- else -->不使用图标<!-- /if --></span></dt>
+					<dd>
+					<ul>
+						<li>不使用图标<span class="value"></span></li>
+						<!-- loop from=$iconlist key=$key value=$value id=$tmpid -->
+						<li><i class="icon-{$value}" style="font-size:16px;"></i> {$value}<span class="value">{$value}</span></li>
+						<!-- /loop -->
+					</ul>
+					</dd>
+				</dl>
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang启用快捷图标后，将在桌面显示相应的快捷链接}</div>
+		</div>
+		<!-- /if -->
+
+		<!-- if $pid && $dirlist -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang控制层}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select name="appfile" id="appfile" lay-verify="required" >
+					<!-- loop from=$dirlist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $value.id == $rs.appfile} selected="selected"{/if}>{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang请不要随意修改，不熟请设为}<span class="red">list_control.php</span></div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang执行方法}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="func" name="func" class="layui-input" value="{$rs.func}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang请选择要执行的方法动作，不熟悉请留空}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang扩展参数}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="ext" name="ext" class="layui-input" value="{$rs.ext}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang不清楚的请留空}</div>
+		</div>
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang排序}
+			</label>
+			<div class="layui-input-inline short-auto">
+				<input type="text" id="taxis" name="taxis" class="layui-input" value="{$rs.taxis}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang自定义排序，值越小越往前靠，最大不超过255}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="{lang此项用于二次扩展开发时使用，对各个功能的权限分配，不熟悉请阅读官网帮助}">&#xe702;</i>
+				{lang配置权限}
+			</label>
+			<div class="layui-input-inline long-auto">
+				<table id="popedom" class="layui-table">
+				<thead>	
+				<tr>
+					<th>{lang名称}</th>
+					<th>{lang标识}</td>
+					<th>{lang排序}</td>
+					<th><input type="button" value="{lang添加}" class="layui-btn layui-btn-xs" onclick="add_trtd()" /></th>
+				</tr>
+				</thead>
+				<!-- loop from=$popedom_list key=$key value=$value -->
+				<tr id="popedom_{$value.id}">
+					<td align="center"><input type="text" name="popedom_title_{$value.id}" value="{$value.title}" class="layui-input" /></td>
+					<td align="center"><input type="text" name="popedom_identifier_{$value.id}" value="{$value.identifier}" class="layui-input" /></td>
+					<td align="center"><input type="text" name="popedom_taxis_{$value.id}" value="{$value.taxis}" class="layui-input" /></td>
+					<td align="center"><input type="button" value="{lang删除}" class="layui-btn layui-btn-xs layui-btn-danger" onclick="popedom_del('{$value.id}')" /></td>
+				</tr>
+				<!-- /loop -->
+				</table>
 			</div>
 		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				&nbsp;
+			</label>
+			<div class="layui-input-block">
+				<input value="{lang提交}" type="submit" class="layui-btn">
+				<input type="button" value="{lang返回}" onclick="$.phpok.go('{url ctrl=system/}')" class="layui-btn layui-btn-normal" />
+			</div>
+		</div>
+		</form>
 	</div>
-<!-- /if -->
-
-<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
-</form>
-
-<!-- inc:foot -->
+</div>
+<!-- include tpl=foot_lay -->

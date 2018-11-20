@@ -8,7 +8,7 @@
  * @日期 2017年03月22日
 **/
 ;(function($){
-	$.admin_upload = function(options){
+	 $.admin_upload = function(options){
 		var self = this;
 		var defaults = {
 			'id':'upload',

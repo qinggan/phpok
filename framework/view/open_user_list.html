@@ -6,46 +6,39 @@ var obj = $.dialog.opener;
 function show_list()
 {
 	cid = $.dialog.data('phpok_user_{$id}');
-	if(cid == "undefined" || cid == "0" || cid == "")
-	{
+	if(cid == "undefined" || cid == "0" || cid == ""){
 		return false;
 	}
 	$("li[name=list]").show();
 	var url = get_url("inp")+"&type=user&content="+$.str.encode(cid);
-	var rs = $.phpok.json(url);
-	if(rs.status == "ok")
-	{
-		var lst = rs.content;
-		var c = "";
-		for(var i in lst)
-		{
-			c += '<li id="user_{$id}_'+lst[i]['id']+'">';
-			c += '<div>'+lst[i]['user']+' <a href="javascript:delete_input(\''+lst[i]['id']+'\');void(0);" title="删除"><img src="images/page_delete.png" border="0" alt="" /></a></div>';
-			c += '</li>';
-			$("#user_"+lst[i]['id']).hide();
+	$.phpok.json(url,function(data){
+		if(data.status == 'ok'){
+			var lst = data.content;
+			var c = "";
+			for(var i in lst){
+				c += '<li id="user_{$id}_'+lst[i]['id']+'">';
+				c += '<div>'+lst[i]['user']+' <a href="javascript:delete_input(\''+lst[i]['id']+'\');void(0);" title="删除"><img src="images/page_delete.png" border="0" alt="" /></a></div>';
+				c += '</li>';
+				$("#user_"+lst[i]['id']).hide();
+			}
+			$("#selected_list").html(c).show();
+			$.dialog.data("phpok_user_{$id}",cid);
+			return true;
 		}
-		$("#selected_list").html(c).show();
-		$.dialog.data("phpok_user_{$id}",cid);
-	}
-	else
-	{
 		$("#selected_list").hide();
 		$.dialog.removeData("phpok_user_{$id}");
-	}
+	});
 }
 function add_input(val)
 {
-	if(multi)
-	{
+	if(multi){
 		var old_c = $.dialog.data('phpok_user_{$id}');
 		var c = (old_c && old_c != 'undefined') ? old_c+","+val : val;
 		var lst = c.split(",");
 		lst = $.unique(lst);
 		$.dialog.data('phpok_user_{$id}',lst.join(","));
 		show_list();
-	}
-	else
-	{
+	}else{
 		obj.$("#{$id}").val(val);
 		obj.action_{$id}_show();
 		$.dialog.removeData("phpok_user_{$id}");
@@ -54,36 +47,27 @@ function add_input(val)
 }
 function delete_input(val)
 {
-	if(multi)
-	{
+	if(multi){
 		var old_c = $.dialog.data('phpok_user_{$id}');
-		if(!old_c)
-		{
+		if(!old_c){
 			return true;
 		}
 		var lst = old_c.split(",");
 		var n_list = new Array();
 		var m=0;
-		for(var i=0;i<lst.length;i++)
-		{
-			if(lst[i] != val)
-			{
+		for(var i=0;i<lst.length;i++){
+			if(lst[i] != val){
 				n_list[m] = lst[i];
 				m++;
 			}
 		}
-		if(n_list.length<1)
-		{
+		if(n_list.length<1){
 			$.dialog.removeData("phpok_user_{$id}");
-		}
-		else
-		{
+		}else{
 			var str = n_list.join(",");
 			$.dialog.data("phpok_user_{$id}",str);
 		}
-	}
-	else
-	{
+	}else{
 		$.dialog.removeData("phpok_user_{$id}");
 	}
 	show_list();
@@ -131,7 +115,7 @@ $(document).ready(function(){
 	<td>{$value.user}</td>
 	<td id="email_{$value.id}">{$value.email}</td>
 	<td id="mobile_{$value.id}">{$value.mobile}</td>
-	<td><input type="button" value="选择" onclick="add_input('{$value.id}')" class="phpok-btn" /></td>
+	<td><input type="button" value="选择" onclick="add_input('{$value.id}')" class="layui-btn" /></td>
 </tr>
 <!-- /loop -->
 </table>

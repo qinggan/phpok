@@ -75,7 +75,7 @@
 			var val = $(obj).val();
 			var url = get_url('list','content_sort','sort['+id+']='+val.toString());
 			$.phpok.json(url,function(data){
-				if(data.status == 'ok'){
+				if(data.status){
 					$.dialog.tips(p_lang('排序更新成功')).follow($(obj)[0]);
 					return true;
 				}
@@ -89,6 +89,11 @@
 		single_save:function()
 		{
 			var loading_action;
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
 			$("#_listedit").ajaxSubmit({
 				'url':get_url('list','single_save'),
 				'type':'post',
@@ -109,7 +114,8 @@
 					var id = $("#id").val();
 					if(id){
 						$.dialog.alert(p_lang('内容信息修改成功'),function(){
-							$.phpok.go(url);
+							$.admin.reload(url);
+							$.admin.close(url);
 						},'succeed');
 						return false;
 					}
@@ -117,11 +123,13 @@
 						'icon':'succeed',
 						'content':p_lang('内容添加操作成功，请选择继续添加或返回列表'),
 						'ok':function(){
+							$.admin.reload(url);
 							$.phpok.reload();
 						},
 						'okVal':p_lang('继续添加'),
 						'cancel':function(){
-							$.phpok.go(url);
+							$.admin.reload(url);
+							$.admin.close(url);
 						},
 						'cancelVal':p_lang('返回列表'),
 						'lock':true
@@ -177,14 +185,6 @@
 		},
 
 		/**
-		 * 发布时间
-		**/
-		show_date:function()
-		{
-			laydate({elem:"#dateline",istime: true,format: 'YYYY-MM-DD hh:mm:ss'});
-		},
-
-		/**
 		 * 快速添加扩展字段
 		**/
 		update_select_add:function(module)
@@ -207,23 +207,42 @@
 				'height':'650px',
 				'ok':true
 			});
+		},
+		//取用或禁用状态
+		status:function(id)
+		{
+			var url = get_url("list","content_status","id="+id);
+			$.phpok.json(url,function(data){
+				if(!data.status){
+					$.dialog.alert(data.info);
+					return false;
+				}
+				var old_value = $("#status_"+id).attr("value");
+				var new_value = old_value == '1' ? '0' : '1';
+				$("#status_"+id).removeClass('status'+old_value).addClass("status"+new_value).attr('value',new_value);
+				//更新Message
+				$.phpok.message('pendding');
+			})
 		}
 	};
 
-	function win_resize()
-	{
-		var width = $('.main .tips').width();
-		if(width>=1000){
-			var main1_width = width - 320;
-			$(".main1").css('width',main1_width+"px").css('float','left');
-			$(".main2").css('width','300px').css('float','right');
-		}else{
-			$(".main1,.main2").css('width',width+"px").css("float",'none');
-		}
-	}
 	$(document).ready(function(){
-		win_resize();
-		$(window).resize(win_resize);
+		if($("form.layui-form").length>0){
+			layui.use(['form','laydate'],function(){
+				var laydate = layui.laydate;
+				if($("#dateline_start").length > 0){
+					laydate.render({
+	                    elem: '#dateline_start',
+	                });
+				}
+				if($("#dateline_stop").length > 0){
+	                laydate.render({
+	                    elem: '#dateline_stop',
+	                });
+				}
+				layui.form.render();
+			});
+		}
 		$("input[name=taxis]").on('keyup',function(){
 			var val = $(this).val();
 			val = val.replace(/[^0-9-]+/,'');
@@ -240,3 +259,14 @@
 	
 })(jQuery);
 
+function preview_attr(id)
+{
+	var url = get_url("res_action","preview") + "&id="+id;
+	$.dialog.open(url,{
+		title: p_lang('预览'),
+		lock : true,
+		width: "700px",
+		height: "70%",
+		resize: true
+	});
+}

@@ -37,17 +37,17 @@ class reply_control extends phpok_control
 		}
 		$pageurl = $this->url("reply");
 		$status = $this->get("status","int");
-		$condition = "l.replydate>0 ";
+		$condition = "admin_id=0 ";
 		if($status){
 			$n_status = $status == 1 ? "1" : "0";
-			$condition .= "AND r.status=".$n_status." ";
+			$condition .= "AND status=".$n_status." ";
 			$pageurl .= "&status=".$status; 
 			$this->assign("status",$status);
 		}
 		//关键字
 		$keywords = $this->get("keywords");
 		if($keywords){
-			$condition .= "AND (l.title LIKE '%".$keywords."%' OR r.content LIKE '%".$keywords."%' OR r.adm_content LIKE '%".$keywords."%') ";
+			$condition .= "AND (title LIKE '%".$keywords."%' OR content LIKE '%".$keywords."%') ";
 			$pageurl .= "&keywords=".rawurlencode($keywords);
 			$this->assign("keywords",$keywords);
 		}
@@ -56,17 +56,15 @@ class reply_control extends phpok_control
 			$pageid = 1;
 		}
 		$psize = $this->config["psize"] ? $this->config["psize"] : 30;
-		$total = $this->model('reply')->get_all_total($condition);
+		$total = $this->model('reply')->get_total($condition);
 		if($total>0){
 			$offset = ($pageid-1) * $psize;
 			$rslist = $this->model('reply')->get_all($condition,$offset,$psize);
 			$this->assign("rslist",$rslist);
-			if($total>$psize){
-				$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
-				$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-				$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-				$this->assign("pagelist",$pagelist);
-			}
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+			$this->assign("pagelist",$pagelist);
 		}
 		$this->assign("total",$total);
 		$this->view("reply_index");
@@ -158,7 +156,7 @@ class reply_control extends phpok_control
 		$this->assign("rslist",$rslist);
 		if($total>$psize){
 			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
-			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$string.= '&add='.P_Lang('数量').' (total)/(psize) '.P_Lang('页码').' (num)/(total_page)&always=1';
 			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 			$this->assign("pagelist",$pagelist);
 		}
@@ -174,21 +172,20 @@ class reply_control extends phpok_control
 	public function status_f()
 	{
 		if(!$this->popedom['status']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('reply')->get_one($id);
-		$status = $this->get("status","int");
-		$status = $status ? 1 : 0;
+		$status = $rs['status'] ? 0 : 1;
 		$array = array("status"=>$status);
 		$this->model('reply')->save($array,$id);
-		if($status && $rs['tid'] && $rs['uid']){
+		if($status && $rs['tid'] && $rs['uid'] && ($rs['vtype'] == 'title' || $rs['vtype'] == 'order')){
 			$this->model('wealth')->add_integral($rs['tid'],$rs['uid'],'comment',P_Lang('管理员审核评论#{id}',array('id'=>$id)));
 		}
-		$this->json("OK",true);
+		$this->success($status);
 	}
 
 	/**
@@ -200,14 +197,14 @@ class reply_control extends phpok_control
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$this->model('reply')->delete($id);
-		$this->json(true);
+		$this->success();
 	}
 
 	/**
@@ -220,17 +217,22 @@ class reply_control extends phpok_control
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
-		if(!$id) error_open(P_Lang('未指定ID'));
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
 		$rs = $this->model('reply')->get_one($id);
 		if(!$rs){
-			error_open(P_Lang('数据记录不存在'));
+			$this->error(P_Lang('数据记录不存在'));
 		}
 		$this->assign("id",$id);
 		$this->assign("rs",$rs);
-		$title_rs = $this->model('list')->get_one($rs["tid"]);
-		$this->assign("title_rs",$title_rs);
+		if($rs['tid'] && in_array($rs['vtype'],array('title','order'))){
+			$title_rs = $this->model('list')->get_one($rs["tid"]);
+			$this->assign("title_rs",$title_rs);
+		}
 		$edit_content = form_edit('content',$rs['content'],'editor','width=680&height=180');
 		$this->assign('edit_content',$edit_content);
+		$this->assign('res_content',form_edit('pictures',$rs['res'],'upload','is_multiple=1'));
 		$this->view("reply_content");
 	}
 
@@ -245,18 +247,19 @@ class reply_control extends phpok_control
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$array = array();
 		$array["star"] = $this->get("star","int");
 		$array["content"] = $this->get("content",'html');
 		$array["status"] = $this->get("status","int");
+		$array['res'] = $this->get('pictures');
 		$this->model('reply')->save($array,$id);
 		$rs = $this->model('reply')->get_one($id);
 		if($array["status"] && $rs['tid'] && $rs['uid']){
 			$this->model('wealth')->add_integral($rs['tid'],$rs['uid'],'comment',P_Lang('管理员编辑评论#{id}',array('id'=>$rs['id'])));
 		}
-		$this->json(true);
+		$this->success();
 	}
 
 	/**
@@ -267,17 +270,21 @@ class reply_control extends phpok_control
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			error(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('reply')->get_one($id);
 		if(!$rs){
-			error(P_Lang('数据记录不存在'));
+			$this->error(P_Lang('数据记录不存在'));
 		}
 		$this->assign("id",$id);
 		$this->assign("rs",$rs);
-		$title_rs = $this->model('list')->get_one($rs["tid"]);
-		$this->assign("title_rs",$title_rs);
-		$edit_content = form_edit('content',$rs['adm_content'],'editor','width=680&height=300');
+		$rslist = $this->model('reply')->adm_reply($id);
+		$this->assign('rslist',$rslist);
+		if($rs['tid'] && in_array($rs['vtype'],array('title','order'))){
+			$title_rs = $this->model('list')->get_one($rs["tid"]);
+			$this->assign("title_rs",$title_rs);
+		}
+		$edit_content = form_edit('content','','editor','width=680&height=300');
 		$this->assign('edit_content',$edit_content);
 		$this->view("reply_adm");
 	}
@@ -286,14 +293,15 @@ class reply_control extends phpok_control
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$array = array();
-		$array["adm_content"] = $this->get("content","html");
-		$array["adm_time"] = $this->time;
-		$this->model('reply')->save($array,$id);
-		$this->json(true);
+		$array["content"] = $this->get("content","html");
+		$array["addtime"] = $this->time;
+		$array['admin_id'] = $this->session->val('admin_id');
+		$array['parent_id'] = $id;
+		$array['status'] = 1;
+		$this->model('reply')->save($array);
+		$this->success();
 	}
-	
 }
-?>

@@ -31,6 +31,11 @@
 				$.dialog.alert(p_lang('新旧密码是一样的，不能执行此操作'));
 				return false;
 			}
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
 			$("#post_save").ajaxSubmit({
 				'url':get_url('me','pass_submit'),
 				'type':'post',
@@ -57,12 +62,7 @@
 				'dataType':'json',
 				'success':function(rs){
 					if(rs.status){
-						console.log(rs)
 						$.dialog.tips(p_lang('管理员信息操作成功'));
-						if(rs.info == true){
-							top.$.phpok.reload();
-							return true;
-						}
 						window.setTimeout(function(){
 							$.dialog.close();
 						}, 1000);

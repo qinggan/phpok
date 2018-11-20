@@ -133,7 +133,7 @@ function phpok_title_delete_single(id)
 {
 	$("#"+id).val("");
 	$("#title_"+id).hide();
-	$("#phpok-btn-"+id+"-delete").hide();
+	$("#layui-btn-"+id+"-delete").hide();
 }
 
 //删除多个主题关联
@@ -374,7 +374,7 @@ function go_to_page_action()
 		**/
 		laydate_button:function(id,type)
 		{
-			laydate.render({
+			layui.laydate.render({
 				elem:'#'+id,
 				type:type,
 				show: true,

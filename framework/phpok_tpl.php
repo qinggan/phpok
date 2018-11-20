@@ -641,12 +641,16 @@ class phpok_template
 			return false;
 		}
 		$array = array();
-		foreach($list AS $key=>$value){
+		foreach($list as $key=>$value){
 			$value = $this->str_format($value);
 			if(substr($value,0,1) != '$'){
 				$value = "'".$value."'";
 			}
 			$array[] = "'".$key."'=>".$value;
+			if($key == "ctrl" && $value == "'js'"){
+				$array[] = "'_ctrl'=>'".$GLOBALS['app']->config['ctrl']."'";
+				$array[] = "'_func'=>'".$GLOBALS['app']->config['func']."'";
+			}
 		}
 		return '<?php echo phpok_url(array('.implode(",",$array).'));?>';
 	}

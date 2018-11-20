@@ -1,0 +1,128 @@
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang参数配置}
+	</div>
+	<div class="layui-container layui-card-body">
+		<!-- if $update_wxapp_json -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang写入配置}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="write_app_json" value="0" checked title="{lang禁止}" />
+				<input type="radio" name="write_app_json" value="1" title="{lang启用}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang系统检测到小程序开发目录，如需要同时更新请点击启用}</div>
+		</div>
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang小程序名称}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="title" value="{$rs.title}" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang填写不超过八个字的小程序名称}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang标题颜色}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="top_txtcolor" value="black"{if !$rs.top_txtcolor || $rs.top_txtcolor == 'black'} checked{/if} title="{lang黑色}" />
+				<input type="radio" name="top_txtcolor" value="white"{if $rs.top_txtcolor == 'white'} checked{/if} title="{lang白色}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang头部背景色}
+			</label>
+			<div class="layui-input-inline auto">
+				{$top_bgcolor}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang请注意背景色不要和标题颜色一样}</div>
+		</div>
+		
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang标签栏参数，即tabBar基本参数}
+	</div>
+	<div class="layui-container layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang文字颜色}
+			</label>
+			<div class="layui-input-inline default-auto">
+				{$text_color}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置标签栏上的默认文字颜色}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang高亮颜色}
+			</label>
+			<div class="layui-input-inline default-auto">
+				{$text_color_highlight}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置标签栏上的文字颜色}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang背景色}
+			</label>
+			<div class="layui-input-inline default-auto">
+				{$tab_bgcolor}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置标签栏背景色}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang边框}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="radio" name="tab_bordercolor" value="black"{if !$rs.tab_bordercolor || $rs.tab_bordercolor == 'black'} checked{/if} title="{lang黑色}" />
+				<input type="radio" name="tab_bordercolor" value="white"{if $rs.tab_bordercolor == 'white'} checked{/if} title="{lang白色}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置标签边框，仅支持黑和白}</div>
+		</div>
+	</div>
+</div>
+
+<!-- loop from=$list key=$key value=$value id=$tmpid -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		导航栏 #{$tmpid.num}
+	</div>
+	<div class="layui-container layui-card-body">
+		<!-- loop from=$value key=$k value=$v id=$idxx -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{$v.title}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<!-- if $v.html -->
+				{$v.html}
+				<!-- else -->
+				<select name="page_{$key}">
+				<!-- loop from=$pagelist key=$kk value=$vv id=$idxxx -->
+				<option value="{$vv}"{if $vv == $v.val} selected{/if}>{$vv}</option>
+				<!-- /loop -->
+				</select>
+				<!-- /if -->
+			</div>
+			<div class="layui-input-inline auto gray lh38">{$v.note}</div>
+		</div>
+		<!-- /loop -->
+		
+	</div>
+</div>
+<!-- /loop -->
+
+<div class="submit-info"><div class="layui-container"><input type="submit" value="{lang提交}" class="submit2" /></div></div>
+</form>
+<br /><br /><br /><br />
+<!-- include tpl=foot_lay -->

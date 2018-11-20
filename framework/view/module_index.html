@@ -1,51 +1,48 @@
-<!-- include tpl=head -->
-<div class="tips">
-	<!-- if $popedom.set -->
-	<div class="action"><a href="javascript:$.admin_module.create();void(0);">添加模块</a></div>
-	<div class="action"><a href="javascript:$.admin_module.input();void(0);">模块导入</a></div>
-	<!-- /if -->
-	您当前的位置：
-	<a href="{url ctrl=module/}">模块管理</a>
-	&raquo; 模块列表<!-- if $rslist --><span class="red">({func count $rslist})</span><!-- /if -->
-</div>
-<div class="list">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th width="50px">ID</th>
-	<th width="30px">&nbsp;</th>
-	<th class="lft">名称</th>
-	<th>运行模式</th>
-	<th>排序</th>
-	<th>操作</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<tr>
-	<td align="center">{$value.id}</td>
-	<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="$.admin_module.status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
-	<td><label for="tid_{$value.id}">{$value.title}<!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></label></td>
-	<td class="center"><!-- if $value.mtype -->独立<!-- else -->集成<!-- /if --></td>
-	<td class="center"><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}" onclick="$.admin_module.taxis('{$value.id}','{$value.taxis}')">{$value.taxis}</div></td>
-	<td class="center">
-		<!-- if $popedom.set -->
-		<div class="button-group">
-			<input type="button" value="{lang编辑}" onclick="$.admin_module.edit('{$value.id}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="$.admin_module.del('{$value.id}','{$value.title}')" class="phpok-btn" />
-			<input type="button" value="{lang字段管理}" onclick="$.phpok.go('{url ctrl=module func=fields id=$value.id/}')" class="phpok-btn" />
-			<input type="button" value="{lang复制模块}" onclick="$.admin_module.copy('{$value.id}','{$value.title}')" class="phpok-btn" />
-			<input type="button" value="{lang导出}" onclick="$.admin_module.export('{$value.id}')" class="phpok-btn" />
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header ">
+		{lang模块管理}
+		<div class="layui-btn-group fr">
+			<input type="button" value="{lang模块导入}" onclick="$.admin_module.input()" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang添加模块}" onclick="$.admin_module.create()" class="layui-btn layui-btn-sm" />
 		</div>
-		<!-- /if -->
-	</td>
-</tr>
-<!-- /loop -->
-</table>
+	</div>
+	<div class="layui-card-body">
+	    <table class="layui-table">
+		    <thead>
+		        <tr>
+		            <th>ID</th>
+		            <th width="30">{lang状态}</th>
+		            <th>{lang名称}</th>
+		            <th>{lang运行模式}</th>
+		            <th>{lang排序}</th>
+		            <th><div class="layui-table-cell laytable-cell-1-status" align="center"><span>操作</span></div></th>
+		        </tr>
+	        </thead>
+	        <!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	        <tr>
+	            <td>{$value.id}</td>
+	            <td class="center"><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="$.admin_module.status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
+	            <td><label for="tid_{$value.id}">{$value.title}<!-- if $value.note --><span
+	                            class="gray i">（{$value.note}）</span><!-- /if --></label></td>
+	            <td><!-- if $value.mtype -->{lang独立}<!-- else -->{lang集成}<!-- /if --></td>
+	            <td>
+	                <div class="gray hand" title="{lang点击调整排序}" name="taxis" data="{$value.id}" onclick="$.admin_module.taxis('{$value.id}','{$value.taxis}')">{$value.taxis}</div>
+	            </td>
+	            <td class="center">
+	                <!-- if $popedom.set -->
+	                <div class="layui-btn-group">
+	                    <input type="button" value="{lang编辑}" onclick="$.admin_module.edit('{$value.id}')" class="layui-btn  layui-btn-sm"/>
+	                    <input type="button" value="{lang删除}" onclick="$.admin_module.del('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm"/>
+	                    <input type="button" value="{lang字段管理}" onclick="$.win('{lang字段管理}_{$value.title}_#{$value.id}','{url ctrl=module func=fields id=$value.id/}');" class="layui-btn layui-btn-sm"/>
+	                    <input type="button" value="{lang复制模块}" onclick="$.admin_module.copy('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm"/>
+	                    <input type="button" value="{lang导出}" onclick="$.admin_module.export('{$value.id}')" class="layui-btn  layui-btn-sm"/>
+	                </div>
+	                <!-- /if -->
+	            </td>
+	        </tr>
+	        <!-- /loop -->
+	    </table>
+	</div>
 </div>
-<div class="tips">
-	<ul>
-		<li>模块功能用于扩展主题字段</li>
-		<li class="red">模块支持导入导出，仅限基本配置，如关联其他数据，请手动再配置</li>
-	</ul>
-	<div class="clear"></div>
-</div>
-
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

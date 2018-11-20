@@ -187,7 +187,7 @@ class open_control extends phpok_control
 			$p_rs = $this->model('project')->get_one($pid);
 			$type = $this->get("type");
 			if(!$p_rs){
-				error_open(P_Lang('项目不存在'));
+				$this->error(P_Lang('项目不存在'));
 			}
 			if($type == "cate" && $p_rs["cate"]){
 				$catelist = $this->model("cate")->get_all($p_rs['site_id'],1,$p_rs['cate']);

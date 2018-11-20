@@ -1,10 +1,15 @@
-<!-- include tpl=head -->
+<!-- include tpl=head_lay nopadding=true -->
 <!-- if $sys.ctrl != 'res' -->
 <script type="text/javascript" src="{url ctrl=js func=ext js=admin.res.js /}"></script>
 <!-- /if -->
 <script type="text/javascript">
 function save()
 {
+	if(typeof(CKEDITOR) != "undefined"){
+		for(var i in CKEDITOR.instances){
+			CKEDITOR.instances[i].updateElement();
+		}
+	}
 	var obj = art.dialog.opener;
 	$("#editopen").ajaxSubmit({
 		'url':get_url('res','setok'),
@@ -28,30 +33,105 @@ function download_it(id)
 	$.phpok.go(url);
 }
 </script>
+<div class="layui-card">
+	<div class="layui-card-body">
+		<form method="post" id="editopen" class="layui-form" onsubmit="return false;">
+		<input type="hidden" id="id" name="id" value="{$rs.id}" />
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="{lang设置附件的名称，以方便管理}">&#xe702;</i>
+				{lang附件名称}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38"><input type="button" value="下载" onclick="download_it('{$rs.id}')" class="layui-btn" /></div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang覆盖上传}
+			</label>
+			<div class="layui-input-block">
+				<div id="upload_picker"></div>
+				<div id="upload_progress"></div>
+			</div>
+			<div class="layui-input-block mtop">
+				{lang使用此功能将直接覆盖上传原来附件信息，请慎用} {lang仅限} <span class="red b">{$rs.ext}</span>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang上传时间}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" id="addtime" name="addtime" value="{echo date('Y-m-d H:i:s',$rs[addtime])}" class="layui-input" disabled />
+			</div>
+			<div class="layui-input-block mtop">{lang不支持修改，上传后自动生成}</div>
+		</div>
 
-<form method="post" id="editopen" onsubmit="return false;">
-<input type="hidden" id="id" name="id" value="{$rs.id}" />
-<div class="table">
-	<div class="title">
-		附件名称：
-		<span class="note">设置附件的名称，以方便管理</span>
-	</div>
-	<div class="content">
-		<input type="text" id="title" name="title" class="default" value="{$rs.title}" />
-		<input type="button" value="下载" onclick="download_it('{$rs.id}')" class="btn" />
-	</div>
-</div>
 
-<div class="table">
-	<div class="title">
-		覆盖上传文件：
-		<span class="note">使用此功能将直接覆盖上传原来附件信息，请慎用，仅限上传 <span class="red b">{$rs.ext}</span> 附件</span>
+		<!-- if $rs.attr && $rs.attr.width && $rs.attr.height -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang附件宽高}
+			</label>
+			<div class="layui-input-block">
+				<table>
+				<tr>
+					<td><input type="text" disabled name="attr[width]" value="{$rs.attr.width}" class="short" /></td>
+					<td>&#215;</td>
+					<td><input type="text" disabled name="attr[height]" value="{$rs.attr.height}" class="short" /></td>
+					<!-- if $resize -->
+					<!-- if $rs.ext == 'jpg' || $rs.ext == 'jpeg' -->
+					<td>
+						<div style="margin-left:10px;">
+						<select id="ptype">
+							<option value="60">{lang较小文件}</option>
+							<option value="80" selected>{lang较大文件}</option>
+							<option value="100">{lang百分百精度}</option>
+						</select>
+						</div>
+					</td>
+					<!-- /if -->
+					<td>
+						<div style="margin-left:10px;">
+						<select id="resize">
+							<option value="0">{lang默认宽高}</option>
+							<!-- if $rs.attr.width > 2048 -->
+							<option value="2048">{lang限宽}2048</option>
+							<!-- /if -->
+							<!-- if $rs.attr.width > 1024 -->
+							<option value="1024">{lang限宽}1024</option>
+							<!-- /if -->
+							<!-- if $rs.attr.width > 800 -->
+							<option value="800">{lang限宽}800</option>
+							<!-- /if -->
+						</select>
+						</div>
+					</td>
+					<td><div style="margin-left:10px;"><input type="button" value="{lang压缩图片}" onclick="$.admin_res.zipit('{$rs.id}','{$rs.ext}')" class="layui-btn" /></div></td>
+					<!-- /if -->
+				</tr>
+				</table>
+			</div>
+			<div class="layui-input-block mtop">
+				{lang此参数不允许人工修改，系统自动读取}
+			</div>
+			<!-- if $resize && $filesize -->
+			<div class="layui-input-block mtop">{lang当前文件大小是} <span class="red">{$filesize}</span></div>
+			<!-- /if -->
+		</div>
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang附件说明}
+			</label>
+			<div class="layui-input-block">
+				{$content}
+			</div>
+			<div class="layui-input-block mtop">{lang如需对此附件进行说明，可在这里编写}</div>
+		</div>
 	</div>
-	<div class="content"><div id="upload_picker"></div></div>
-</div>
-
-<div class="table">
-	<div class="content" id="upload_progress"></div>
 </div>
 
 <script type="text/javascript">
@@ -75,72 +155,6 @@ $(document).ready(function(){
 });
 </script>
 
-<div class="table">
-	<div class="title">
-		附件上传时间：
-		<span class="note">不支持修改，上传后自动生成</span>
-	</div>
-	<div class="content">
-		<input type="text" id="addtime" name="addtime" value="{echo date('Y-m-d H:i:s',$rs[addtime])}" disabled />
-	</div>
-</div>
-
-<!-- if $rs.attr && $rs.attr.width && $rs.attr.height -->
-<div class="table">
-	<div class="title">
-		{lang附件宽高}
-		<span class="note">{lang此参数不允许人工修改，系统自动读取}</span>
-	</div>
-	<div class="content">
-		<table>
-		<tr>
-			<td><input type="text" disabled name="attr[width]" value="{$rs.attr.width}" class="short" /></td>
-			<td>&#215;</td>
-			<td><input type="text" disabled name="attr[height]" value="{$rs.attr.height}" class="short" /></td>
-			<!-- if $resize -->
-			<!-- if $rs.ext == 'jpg' || $rs.ext == 'jpeg' -->
-			<td>
-				<select id="ptype">
-					<option value="60">{lang较小文件}</option>
-					<option value="80" selected>{lang较大文件}</option>
-					<option value="100">{lang百分百精度}</option>
-				</select>
-			</td>
-			<!-- /if -->
-			<td>
-				<select id="resize">
-					<option value="0">{lang默认宽高}</option>
-					<!-- if $rs.attr.width > 2048 -->
-					<option value="2048">{lang限宽}2048</option>
-					<!-- /if -->
-					<!-- if $rs.attr.width > 1024 -->
-					<option value="1024">{lang限宽}1024</option>
-					<!-- /if -->
-					<!-- if $rs.attr.width > 800 -->
-					<option value="800">{lang限宽}800</option>
-					<!-- /if -->
-				</select>
-			</td>
-			<td><input type="button" value="{lang压缩图片}" onclick="$.admin_res.zipit('{$rs.id}','{$rs.ext}')" class="phpok-btn" /></td>
-			<!-- /if -->
-		</tr>
-		</table>
-	</div>
-	<!-- if $resize && $filesize -->
-	<div>{lang当前文件大小是} <span class="red">{$filesize}</span></div>
-	<!-- /if -->
-</div>
-<!-- /if -->
-
-
-
-<div class="table">
-	<div class="title">
-		附件说明：
-		<span class="note">如需对此附件进行说明，可在这里编写</span>
-	</div>
-	<div class="content">{$content}</div>
-</div>
 
 </form>
-<!-- include tpl=foot_open -->
+<!-- include tpl=foot_lay -->

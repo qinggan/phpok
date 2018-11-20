@@ -12,9 +12,12 @@
 	<!-- if $seo.description --><meta name="description" content="{$seo.description}" /><!-- /if -->
 	<meta name="toTop" content="true" />
 	<base href="{$sys.url}" />
-	<link rel="stylesheet" type="text/css" href="css/amazeui.min.css" />
+	<link rel="stylesheet" type="text/css" href="//cdn.phpok.com/amazeui/2.7.2/amazeui.min.css" />
 	<link rel="stylesheet" type="text/css" href="{#css#}/artdialog.css" />
 	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
 	<!-- if $css -->
 	<!-- php:$csslist = explode(",",$css) -->
 	<!-- loop from=$csslist key=$key value=$value id=$tmpid -->
@@ -22,7 +25,7 @@
 	<!-- /loop -->
 	<!-- /if -->
 	<script type="text/javascript" src="{url ctrl=js ext=jquery.artdialog/}" charset="utf-8"></script>
-	<script type="text/javascript" src="js/amazeui.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="//cdn.phpok.com/amazeui/2.7.2/amazeui.min.js" charset="utf-8"></script>
 	<script type="text/javascript" src="js/global.js" charset="utf-8"></script>
 	<!-- if $js -->
 	<!-- php:$jslist = explode(",",$js) -->

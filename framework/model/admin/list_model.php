@@ -359,4 +359,49 @@ class list_model extends list_model_base
 		}
 		return $rslist;
 	}
+
+	public function pending_info($site_id=0)
+	{
+		$sql = " SELECT count(l.id) total,p.title,p.id pid,p.parent_id FROM ".$this->db->prefix."list l ";
+		$sql.= " JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
+		$sql.= " WHERE l.status!=1 AND l.site_id='".$site_id."' AND p.status=1 ";
+		$sql.= " GROUP BY l.project_id";
+		$tmplist = $this->db->get_all($sql,'pid');
+		if(!$tmplist){
+			return false;
+		}
+		$idlist = array();
+		foreach($tmplist as $key=>$value){
+			if($value['parent_id']){
+				$idlist[] = $value['parent_id'];
+			}
+		}
+		$keys = array_keys($tmplist);
+		$ids = array_diff($idlist,$keys);
+		if($ids){
+			$sql = "SELECT title,id as pid,parent_id FROM ".$this->db->prefix."project WHERE id IN(".implode(",",$ids).")";
+			$tlist = $this->db->get_all($sql);
+			if($tlist){
+				foreach($tlist as $key=>$value){
+					$value['total'] = 0;
+					$tmplist[$value['pid']] = $value;
+				}
+			}
+		}
+		foreach($tmplist as $key=>$value){
+			if(!$value['parent_id']){
+				$tmp_total = 0;
+				foreach($tmplist as $k=>$v){
+					if($v['parent_id'] && $v['parent_id'] == $value['pid']){
+						$tmp_total += $v['total'];
+					}
+				}
+				if($tmp_total){
+					$value['total'] = $value['total'] + $tmp_total;
+				}
+			}
+			$tmplist[$key] = $value;
+		}
+		return $tmplist;
+	}
 }

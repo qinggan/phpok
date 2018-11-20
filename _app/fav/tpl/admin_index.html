@@ -1,59 +1,112 @@
-<!-- include tpl=head -->
-<div class="tips">
-	<div class="left">
-		&raquo; {lang收藏夹管理}
-	</div>
-	<div class="left" style="margin-left:10px;">
-		<form method="post" action="{url ctrl=fav/}">
-		<ul class="layout">
-			<li>
-				<select id="stype" name="stype">
-					<option value="0">{lang模糊搜索}</option>
-					<option value="1"{if $stype} selected{/if}>{lang精确搜索}</option>
-				</select>
-			</li>
-			<li>
-				<select id="keytype" name="keytype">
-					<option value="title">{lang标题}</option>
-					<option value="note"{if $keytype == 'note'} selected{/if}>{lang摘要}</option>
-					<option value="user"{if $keytype == 'user'} selected{/if}>{lang会员账号}</option>
-					<option value="email"{if $keytype == 'email'} selected{/if}>{lang会员Email}</option>
-					<option value="mobile"{if $keytype == 'mobile'} selected{/if}>{lang会员手机号}</option>
-				</select>
-			</li>
-			<li><input type="text" name="keywords" id="keywords" value="{$keywords}" /></li>
-			<li><input type="submit" value="{lang搜索}" class="phpok-btn" /></li>
-		</ul>
-		</form>
-	</div>
-</div>
-<div class="list">
-<table width="100%" class="list" cellpadding="0" cellspacing="0">
-<tr>
-	<th width="50px">ID</th>
-	<th class="lft">{lang标题}</th>
-	<th>{lang会员账号}</th>
-	<th>{lang收藏时间}</th>
-	<th></th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<tr data-id="{$value.id}">
-	<td class="center">{$value.id}</td>
-	<td>
-		<!-- if $value.thumb --><a href="{$value.thumb}" target="_blank"><img src="{$value.thumb}" width="50px" valign="absmiddle" /></a><!-- /if -->
-		{$value.title}
-	</td>
-	<td class="center">{$value.user}</td>
-	<td class="center">{func time_format $value.addtime}</td>
-	<td class="center">
-		<div class="button-group">
-			<input type="button" value="{lang访问}" onclick="$.phpok.open('{$sys.www_file}?id={$value.lid}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="$.admin_fav.del('{$value.id}')" class="phpok-btn" />
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">{lang搜索}</div>
+	<div class="layui-card-body">
+		<div class="layui-form layuiadmin-card-header-auto">
+			<form method="post" action="{url ctrl=fav/}">
+			<div class="layui-form-item">
+				<div class="layui-inline">
+					<label class="layui-form-label">{lang会员账号}</label>
+					<div class="layui-input-inline">
+						<input type="text" name="keywords[user]" value="{$keywords.user}" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">{lang会员Email}</label>
+					<div class="layui-input-inline">
+						<input type="text" name="keywords[email]" value="{$keywords.email}" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">{lang会员手机号}</label>
+					<div class="layui-input-inline">
+						<input type="text" name="keywords[mobile]" value="{$keywords.mobile}" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">{lang标题}</label>
+					<div class="layui-input-inline">
+						<input type="text" name="keywords[title]" value="{$keywords.title}" class="layui-input" />
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">{lang摘要}</label>
+					<div class="layui-input-inline">
+						<input type="text" name="keywords[note]" value="{$keywords.note}" class="layui-input" />
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">{lang缩略图名称}</label>
+					<div class="layui-input-inline">
+						<input type="text" name="keywords[thumb]" value="{$keywords.thumb}" class="layui-input" />
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">{lang开始时间}</label>
+					<div class="layui-input-inline">
+						<input type="text" name="startdate" id="startdate" value="{$startdate}" class="layui-input" />
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">{lang结束时间}</label>
+					<div class="layui-input-inline">
+						<input type="text" name="stopdate" id="stopdate" value="{$stopdate}" class="layui-input" />
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label"></label>
+					<div class="layui-input-inline">
+						<input type="submit" value="{lang搜索}" class="layui-btn" />
+					</div>
+				</div>
+			</div>
+			</form>
 		</div>
-	</td>
-</tr>
-<!-- /loop -->
-</table>
+	</div>
 </div>
-<!-- include tpl=pagelist -->
-<!-- include tpl=foot -->
+<div class="layui-card">
+	<div class="layui-card-header">{lang收藏列表}</div>
+	<div class="layui-card-body">
+		<table width="100%" class="layui-table">
+		<colgroup>
+			<col width="50">
+			<col>
+			<col width="150">
+			<col width="170">
+			<col>
+		</colgroup>
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th class="lft">{lang标题}</th>
+			<th>{lang会员账号}</th>
+			<th>{lang收藏时间}</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr data-id="{$value.id}">
+			<td class="center">{$value.id}</td>
+			<td>
+				<!-- if $value.thumb --><a href="{$value.thumb}" target="_blank"><img src="{$value.thumb}" width="50px" valign="absmiddle" /></a><!-- /if -->
+				{$value.title}
+			</td>
+			<td class="center">{$value.user}</td>
+			<td class="center">{func time_format $value.addtime}</td>
+			<td class="center">
+				<div class="layui-btn-group">
+					<button class="layui-btn layui-btn-sm" onclick="$.phpok.open('{$sys.www_file}?id={$value.lid}')">{lang访问}</button>
+					<button class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.admin_fav.del('{$value.id}')">删除</button>
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</tbody>
+		</table>
+		<!-- include tpl=pagelist -->
+	</div>
+</div>
+
+
+<!-- include tpl=foot_lay -->

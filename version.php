@@ -6,7 +6,7 @@
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
- * @时间 2017年12月06日
+ * @时间 2018年09月18日 22时42分43秒
 **/
 
 /**
@@ -16,4 +16,4 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-define("VERSION","5.0.000");
+define("VERSION","5.0.0");

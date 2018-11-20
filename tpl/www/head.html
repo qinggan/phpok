@@ -1,10 +1,10 @@
 <!-- include tpl=header title=$title -->
 <header>
 	<div class="top">
-		<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" width="240px" /></a></div>
+		<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" width="300px" /></a></div>
 		<div class="right">
 			<nav class="top">
-				<a href="{url ctrl=cart/}" title="购物车">购物车 <span class="red">(<span id="head_cart_num">0</span>)</span></a> | 
+				<a href="{url ctrl=cart/}" title="购物车">购物车 <span id="head_cart_num">0</span></a> | 
 				<!-- if $session.user_id -->
 				<a href="{url ctrl=usercp/}">个人中心</a> | <a href="javascript:$.user.logout('{$session.user_name}');void(0)">退出</a>
 				<!-- else -->

@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<root>
+	<title>标识串自动生成工具</title>
+	<desc>实现将“title”字段的表单数据翻译符合系统要求的标识串</desc>
+	<author>phpok.com</author>
+	<version>1.0</version>
+</root>

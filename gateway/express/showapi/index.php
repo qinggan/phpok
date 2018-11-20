@@ -50,19 +50,19 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_HEADER, 0);
 $output = curl_exec($ch);
 if(!$output){
-	$this->json('远程获取数据失败');
+	return array('content'=>P_Lang('远程获取数据失败'));
 }
 $curl_info = curl_getinfo($ch);
 if($curl_info['http_code'] != '200'){
-	$this->json('远程获取数据失败');
+	return array('content'=>P_Lang('远程获取数据失败'));
 }
 curl_close($ch);
 $tmplist = $this->lib('json')->decode($output);
 if(!$tmplist){
-	$this->json('检索异常');
+	return array('content'=>P_Lang('检索异常'));
 }
 if($tmplist['showapi_res_code']){
-	$this->json($tmplist['showapi_res_error']);
+	return array('content'=>$tmplist['showapi_res_error']);
 }
 $array = array('is_end'=>false);
 //-1 待查询 0 查询异常 1 暂无记录 2 在途中 3 派送中 4 已签收 5 用户拒签 6 疑难件 7 无效单 8 超时单 9 签收失败 10 退回
@@ -71,7 +71,7 @@ if($tmplist['showapi_res_body'] && $tmplist['showapi_res_body']['status'] && in_
 	$array['is_end'] = true;
 }
 if(!$tmplist['showapi_res_body']['status']){
-	$this->json('查询结果异常');
+	return array('content'=>P_Lang('查询结果异常'));
 }
 if($tmplist['showapi_res_body'] && $tmplist['showapi_res_body']['data']){
 	$array['content'] = array();

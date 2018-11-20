@@ -31,7 +31,7 @@ var edit_config_{$_rs.id} = {
 	 'UEDITOR_HOME_URL':webroot+'js/ueditor/'
 	,'serverUrl':get_url('ueditor')
 	,'toolbars':toolbars_{$_rs.id}
-	{if $_rs.btns.info},'labelMap':{'phpokinfo':'ä¸»é¢˜åº“'}{/if}
+	{if $_rs.btns.info},'labelMap':{'phpokinfo':'Ö÷Ìâ¿â'}{/if}
     ,'initialFrameWidth':'100%'
     ,'allowDivTransToP': false
     ,'initialFrameHeight':'{$_rs.height}'
@@ -40,6 +40,7 @@ var edit_config_{$_rs.id} = {
 	,'pasteplain':{$_rs.paste_text ? 'true' : 'false'}
 	,'autoFloatEnabled':true
 	,'autoHeightEnabled':true
+	,'zIndex':99
 	{if $_rs.btns.page},'pageBreakTag':'[:page:]'{/if}
 	,'textarea':'{$_rs.identifier}'
 	{if $_rs.btns.info},'iframeUrlMap':{'phpokinfo':get_url('ueditor','info')}{/if}

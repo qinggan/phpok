@@ -18,6 +18,10 @@ var webroot = "{$sys.url}";
 var apifile = "{$sys.api_file}";
 var wwwfile = "{$sys.www_file}";
 var adminfile = "{$sys.admin_file}";
+var phpok_site_id = "{$phpok_site_id}";
+var site_id = "{$site_id}";
+var session_name = '{func session_name}';
+
 
 /**
  * 常规基础变量结束
@@ -70,6 +74,9 @@ lang["{$key}"] = "{$value}";
 			if(ext){
 				url += is_wen ? ("?"+ext) : ("&"+ext);
 			}
+			if(phpok_site_id && site_id && phpok_site_id != site_id){
+				url += is_wen ? ("?siteId="+phpok_site_id) : ("&siteId="+phpok_site_id);
+			}
 			return url;
 		},
 		plugin:function(id,efunc,ext,file)
@@ -83,6 +90,9 @@ lang["{$key}"] = "{$value}";
 			}
 			if(ext){
 				url += "&"+ext;
+			}
+			if(phpok_site_id && site_id && phpok_site_id != site_id){
+				url += "&siteId="+phpok_site_id;
 			}
 			return url;
 		}

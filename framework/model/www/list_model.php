@@ -29,5 +29,3 @@ class list_model extends list_model_base
 		return $rs['hits'];
 	}
 }
-
-?>

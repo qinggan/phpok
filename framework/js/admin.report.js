@@ -12,7 +12,7 @@
 		select_project:function(val)
 		{
 			if(!val || val == 'undefined'){
-				$("li[data-id=line-x],li[data-id=line-y],li[data-id=line-z]").hide();
+				$("div[data-id=line-x],div[data-id=line-y],div[data-id=line-z]").hide();
 				return true;
 			}
 			if(val && val != 'undefined'){
@@ -23,42 +23,49 @@
 						return false;
 					}
 					if(!data.info){
-						$("li[data-id=line-x],li[data-id=line-y]").hide();
+						$("div[data-id=line-x],div[data-id=line-y]").addClass('hide');
 						return true;
 					}
 					if(data.info.x){
 						var x = data.info.x;
-						var xhtml = '<select name="x"><option value="">'+p_lang('请选择…')+'</option>';
+						var xhtml = '<option value="">'+p_lang('请选择…')+'</option>';
 						for(var i in x){
 							xhtml += '<option value="'+i+'">'+x[i]+'</option>';
 						}
-						xhtml += '</select>';
-						$("li[data-id=line-x]").html(xhtml);
-						$("li[data-id=line-x]").show();
+						$("div[data-id=line-x] div.layui-input-inline select").html(xhtml);
+						$("div[data-id=line-x]").removeClass('hide');
 					}
 					if(data.info.y){
 						var y = data.info.y;
-						var yhtml = '<ul class="layout">';
+						var yhtml = '';
 						//var yhtml = '<select name="x"><option value="">'+p_lang('请选择统计项目…')+'</option>';
 						for(var i in y){
-							yhtml += '<li><label><input type="checkbox" name="y[]" value="'+i+'"/>'+y[i]+'</label></li>';
+							yhtml += '<input type="checkbox" title="'+y[i]+'" name="y[]" value="'+i+'"/>';
 						}
-						yhtml += '</ul>';
-						$("li[data-id=line-y]").html(yhtml);
-						$("li[data-id=line-y]").show();
+						$("div[data-id=line-y]").html(yhtml);
+						$("div[data-id=line-y]").removeClass('hide');
 					}
 					if(data.info.z){
-						$("li[data-id=line-z]").show();
+						$("div[data-id=line-z]").removeClass('hide');
 					}else{
-						$("li[data-id=line-z]").hide();
+						$("div[data-id=line-z]").addClass('hide');
 					}
 				});
+
+				layui.form.render()
 			}
 		}
 	}
+	$(document).ready(function(){
+		layui.use(['laydate','form'],function () {
+	        layui.laydate.render({elem:'#startdate'});
+	        layui.laydate.render({elem:'#stopdate'});
+	        layui.form.on('select(type)',function (data) {
+	            $.admin_report.select_project(data.value);
+	            setTimeout("layui.form.render()",200);
+	        })
+	    });
+	});
 })(jQuery);
 
-$(document).ready(function(){
-	laydate.render({elem:'#startdate'});
-	laydate.render({elem:'#stopdate'});
-});
+

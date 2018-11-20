@@ -240,8 +240,8 @@ html {
 	background:0 0
 }
 .layui-side-menu .layui-nav .layui-nav-item a {
-	height:40px;
-	line-height:40px;
+	height:26px;
+	line-height:26px;
 	padding-left:45px;
 	padding-right:30px
 }
@@ -253,13 +253,16 @@ html {
 	background:0 0
 }
 .layui-side-menu .layui-nav .layui-nav-itemed>.layui-nav-child {
-	padding:5px 0
+	padding:5px 0;
+}
+.layui-side-menu .layui-nav .layui-nav-itemed>.layui-nav-child dd{
+	padding:5px 0;
 }
 .layui-side-menu .layui-nav .layui-nav-item .layui-icon {
 	position:absolute;
 	top:50%;
 	left:20px;
-	margin-top:-19px
+	margin-top:-13px
 }
 .layui-side-menu .layui-nav .layui-nav-child .layui-nav-child {
 	background:0 0!important

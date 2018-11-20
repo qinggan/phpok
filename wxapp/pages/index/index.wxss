@@ -1,0 +1,22 @@
+/**index.wxss**/
+.tui-row {
+	padding: 5px;
+}
+.gallery-box {
+	padding: 5px;
+	text-align:center;
+}
+.gallery-img {
+	width: 200rpx;
+	height: 200rpx;
+}
+.gallery-text {
+	display: block;
+	text-align: center;
+	font-size: 30rpx;
+	height: 80rpx;
+	line-height: 80rpx;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}

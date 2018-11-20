@@ -85,7 +85,7 @@
 			$.phpok.json(get_url("index","clear"),function(data){
 				obj.close();
 				if(data.status){
-					$.dialog.alert(p_lang('缓存清空完成'));
+					layer.msg(p_lang('缓存清空完成'));
 					return true;
 				}
 				$.dialog.alert(rs.info);
@@ -99,34 +99,38 @@
 		pendding:function()
 		{
 			$.phpok.json(get_url('index','pendding'),function(rs){
-				$("em.toptip").remove();
+				$("span.layui-badge").remove();
+				$.cookie.del('badge');
 				if(rs.status && rs.info){
 					var list = rs.info;
-					var html = '<em class="toptip">{total}</em>';
+					var html = '<span class="layui-badge">{total}</span>';
 					var total = 0;
+					var pid_info = '';
 					for(var key in list){
 						if(key == 'update_action'){
 							$.admin_index.update();
 						}else{
 							if(list[key]['id'] == 'user' || list[key]['id'] == 'reply' || list[key]['id'] == 'update'){
-								$("li[appfile="+list[key]['id']+"] a").append(html.replace('{total}',list[key]['total']));
+								$("li[data-name="+list[key]['id']+"] a,dd[data-name="+list[key]['id']+"] a").append(html.replace('{total}',list[key]['total']));
 							}else{
-								$("li[pid="+list[key]['id']+"] a").append(html.replace('{total}',list[key]['total']));
+								if(pid_info){
+									pid_info += ",";
+								}
+								pid_info += list[key]['id']+":"+list[key]['total'];
 								total = parseInt(total) + parseInt(list[key]['total']);
+								$("dd[pid="+list[key]['id']+"] a").append(html.replace('{total}',list[key]['total']));
 							}
 						}
 					}
-					if(total>0){
-						$("li[appfile=list] a").append(html.replace('{total}',total));
+					if(pid_info != ''){
+						$.cookie.set('badge',pid_info);
 					}
-					window.setTimeout(function(){
-						$.admin_index.pendding();
-					}, 10000);
-				}else{
-					window.setTimeout(function(){
-						$.admin_index.pendding();
-					}, 12000);
+					
+					if(total>0){
+						$("li[data-name=list] a").eq(0).append(html.replace('{total}',total));
+					}
 				}
+				$.phpok.message('badge',true);
 			});
 		},
 		update:function()
@@ -142,6 +146,30 @@
 					});
 				}
 			});
+		},
+		develop:function(val)
+		{
+			if(val == 1){
+				$.dialog.tips(p_lang('正在切换到开发模式，请稍候…'));
+				$.phpok.json(get_url('index','develop','val=1'),function(data){
+					if(data.status){
+						$.phpok.reload();
+						return true;
+					}
+					$.dialog.alert(data.info);
+					return false;
+				});
+			}else{
+				$.dialog.tips(p_lang('正在切换到应用模式，请稍候…'));
+				$.phpok.json(get_url('index','develop','val=0'),function(data){
+					if(data.status){
+						$.phpok.reload();
+						return true;
+					}
+					$.dialog.alert(data.info);
+					return false;
+				});
+			}
 		}
 	}
 })(jQuery);
@@ -149,6 +177,13 @@
 
 $(document).ready(function(){
 	//监听事件
+	document.addEventListener("keydown", function (e) {
+	    if(e.keyCode==116) {
+	        e.preventDefault();
+	        $('a[layadmin-event=refresh]').click();
+	        //要做的其他事情
+	    }
+	}, false);
 	window.addEventListener("message",function(e){
 		if(e.origin != window.location.origin){
 			return false;
@@ -157,14 +192,34 @@ $(document).ready(function(){
 			$('.aui_close').click();
 			return true;
 		}
+		if(e.data == 'pendding'){
+			$.admin_index.pendding();
+		}
 	}, false);
-	
-
 	$.admin_index.pendding();
-	layui.config({
-	  	base: webroot+'static/admin/' //静态资源所在路径
-	}).extend({
-		index: 'lib/index' //主入口模块
-	}).use('index');
+	
+	//自定义右键
+	var r_menu = [[{
+		'text':p_lang('刷新网页'),
+		'func':function(){
+			$.phpok.reload();
+		}
+	},{
+		'text': p_lang('清空缓存'),
+		'func': function() {
+			$.admin_index.clear();
+		}    
+	},{
+		'text':p_lang('修改我的信息'),
+		'func':function(){
+			$.admin_index.me();
+		}
+	}],[{
+		'text':p_lang('关于PHPOK'),
+		'func':function(){
+			$("a[layadmin-event=about]").click();
+		}
+	}]];
+	$(window).smartMenu(r_menu,{'textLimit':8});
 });
 

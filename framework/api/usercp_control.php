@@ -1,53 +1,38 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/api/usercp_control.php
-	Note	: 会员中心数据存储
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年11月5日
-***********************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * 会员中心数据存储
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年10月27日
+**/
+
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class usercp_control extends phpok_control
 {
 	private $u_id; //会员ID
-	private $u_name; //会员名字
-	private $is_client = false;//判断是否客户端
 	public function __construct()
 	{
 		parent::control();
-		$token = $this->get('token');
-		if($token){
-			$info = $this->lib('token')->decode($token);
-			if(!$info || !$info['user_id'] || !$info['user_name']){
-				$this->json(P_Lang('您还没有登录，请先登录或注册'));
-			}
-			$this->u_id = $info['user_id'];
-			$this->u_name = $info['user_name'];
-			$this->is_client = true;
-		}else{
-			if(!$_SESSION['user_id']){
-				$this->json(P_Lang('您还没有登录，请先登录或注册'));
-			}
-			$this->u_id = $_SESSION['user_id'];
-			$this->u_name = $_SESSION['user_name'];
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('您还没有登录，请先登录或注册'));
 		}
+		$this->u_id = $this->session->val('user_id');
 	}
 
 	/**
 	 * 存储个人数据
-	 * @参数 
-	 * @参数 
-	 * @参数 
-	 * @参数 
-	 * @返回 
-	 * @更新时间 
 	**/
 	public function info_f()
 	{
 		$group_rs = $this->model('usergroup')->group_rs($this->u_id);
 		if(!$group_rs){
-			$this->json(P_Lang('会员组不存在'));
+			$this->error(P_Lang('会员组不存在'));
 		}
 		$condition = 'is_front=1';
 		if($group_rs['fields']){
@@ -64,15 +49,42 @@ class usercp_control extends phpok_control
 				$this->model('user')->update_ext($ext,$this->u_id);
 			}
 		}
-		if(!$this->is_client){
-			$this->model('user')->update_session($this->u_id);
-		}
-		$this->json(true);
+		$this->success();
 	}
 
-	//更新会员头像
+	/**
+	 * 更新会员头像
+	**/
 	public function avatar_f()
 	{
+		$type = $this->get('type');
+		if($type == 'base64'){
+			$data = $this->get('data');
+			if(!$data){
+				$this->error(P_Lang('图片内容不能为空'));
+			}
+			$tmp = explode(",",$data);
+			$content = base64_decode(substr($data,strlen($tmp[0])));
+			$info = explode(";",$tmp[0]);
+			$ext = 'png';
+			if($info[0]){
+				$tmp = explode("/",$info[0]);
+				if($tmp[1]){
+					$ext = $tmp[1];
+				}
+			}
+			if($ext == 'jpeg'){
+				$ext = 'jpg';
+			}
+			$save_pic = 'res/user/'.$this->u_id.'.'.$ext;
+			$this->lib('file')->rm($this->dir_root.$save_pic);
+			$this->lib('file')->save_pic($content,$this->dir_root.$save_pic);
+			//生成正方式
+			$this->lib('gd')->thumb($this->dir_root.$save_pic,$this->u_id,100,100);
+			$this->lib('file')->mv('res/user/_'.$this->u_id.'.'.$ext,$save_pic);
+			$this->model('user')->update_avatar($save_pic,$this->u_id);
+			$this->success();
+		}
 		$data = $this->get('data');
 		if(!$data){
 			$this->json(P_Lang('头像图片地址不能为空'));
@@ -89,214 +101,128 @@ class usercp_control extends phpok_control
 		$this->json(true);
 	}
 
-	//更新会员密码功能
+	/**
+	 * 更新会员密码功能
+	**/
 	public function passwd_f()
 	{
 		$user = $this->model('user')->get_one($this->u_id);
 		if($user['pass']){
 			$oldpass = $this->get("oldpass");
 			if(!$oldpass){
-				$this->json(P_Lang('旧密码不能为空'));
+				$this->error(P_Lang('旧密码不能为空'));
 			}
 			if(!password_check($oldpass,$user["pass"])){
-				$this->json(P_Lang('旧密码输入错误'));
+				$this->error(P_Lang('旧密码输入错误'));
 			}
 		}
 		$newpass = $this->get("newpass");
 		$chkpass = $this->get("chkpass");
 		if(!$newpass || !$chkpass){
-			$this->json(P_Lang('新密码不能为空'));
+			$this->error(P_Lang('新密码不能为空'));
 		}
 		if(strlen($newpass) < 6){
-			$this->json(P_Lang('密码不符合要求，密码长度不能小于6位'));
+			$this->error(P_Lang('密码不符合要求，密码长度不能小于6位'));
 		}
 		if(strlen($newpass) > 20){
-			$this->json(P_Lang('密码不符合要求，密码长度不能超过20位'));
+			$this->error(P_Lang('密码不符合要求，密码长度不能超过20位'));
 		}
 		if($newpass != $chkpass){
-			$this->json(P_Lang('新旧密码不一致'));
+			$this->error(P_Lang('新旧密码不一致'));
 		}
 		if($oldpass && $oldpass == $newpass){
-			$this->json(P_Lang('新旧密码不能一样'));
+			$this->error(P_Lang('新旧密码不能一样'));
 		}
 		$password = password_create($newpass);
 		$this->model('user')->update_password($password,$this->u_id);
-		if(!$this->is_client){
-			$this->model('user')->update_session($this->u_id);
-		}
-		$this->json(true);
+		$this->model('user')->update_session($this->u_id);
+		$this->success();
 	}
 
-	//更新会员手机
+	/**
+	 * 更新会员手机
+	**/
 	public function mobile_f()
 	{
 		$pass = $this->get('pass');
 		if(!$pass){
-			$this->json(P_Lang('密码不能为空'));
+			$this->error(P_Lang('密码不能为空'));
 		}
 		$newmobile = $this->get("mobile");
 		if(!$newmobile){
-			$this->json(P_Lang('新手机号码不能为空'));
+			$this->error(P_Lang('新手机号码不能为空'));
 		}
 		$user = $this->model('user')->get_one($this->u_id);
-		//密码验证
 		if(!password_check($pass,$user['pass'])){
-			$this->json(P_Lang('密码填写错误'));
+			$this->error(P_Lang('密码填写错误'));
 		}
 		if($user['mobile'] == $newmobile){
-			$this->json(P_Lang('新旧手机号码不能一样'));
+			$this->error(P_Lang('新旧手机号码不能一样'));
 		}
 		$uid = $this->model('user')->uid_from_mobile($newmobile,$this->u_id);
 		if($uid){
-			$this->json(P_Lang('手机号码已被使用'));
+			$this->error(P_Lang('手机号码已被使用'));
 		}
 		$server = $this->model('gateway')->get_default('sms');
 		if($server){
 			$chkcode = $this->get('chkcode');
 			if(!$chkcode){
-				$this->json(P_Lang('验证码不能为空'));
+				$this->error(P_Lang('验证码不能为空'));
 			}
-			$tmpcode = $this->model('gateway')->read_temp($server['id'],$this->u_id);
-			if($tmpcode != $chkcode){
-				$this->json(P_Lang('验证码填写不正确'));
+			$check = $this->model('vcode')->check($chkcode);
+			if(!$check){
+				$this->error($this->model('vcode')->error_info());
 			}
-			//删除临时数据
-			$this->model('gateway')->delete_temp($server['id'],$this->u_id);
+			$this->model('vcode')->delete();
 		}
 		$this->model('user')->update_mobile($newmobile,$this->u_id);
-		if(!$this->is_client){
-			$this->model('user')->update_session($this->u_id);
-		}
-		$this->json(true);
+		$this->success();
 	}
 
-	public function smscode_f()
-	{
-		$server = $this->model('gateway')->get_default('sms');
-		if(!$server){
-			$this->json(P_Lang('未配置好短信发送网关，不支持此操作'));
-		}
-		$mobile = $this->get('mobile');
-		if(!$mobile){
-			$this->json(P_Lang('手机号不能为空'));
-		}
-		if(!$this->lib('common')->tel_check($mobile,'mobile')){
-			$this->json(P_Lang('手机号格式不正确'));
-		}
-		$chk = $this->model('user')->user_mobile($mobile,$this->u_id);
-		if($chk){
-			$this->json(P_Lang('手机号已被使用，请更换其他手机号'));
-		}
-		$user = $this->model('user')->get_one($this->u_id);
-		if($mobile == $user['mobile']){
-			$this->json(P_Lang('手机号与当前使用是一致的，不需要修改'));
-		}
-		$code = rand(1000,9999);
-		$info = $this->model('email')->tpl('sms_code');
-		if(!$info){
-			$this->json(P_Lang('未设置手机验证码模板sms_code，请联系管理员'));
-		}
-		$this->assign('mobile',$mobile);
-		$this->assign('code',$code);
-		$this->assign('user',$user);
-		$fullname = $user['fullname'] ? $user['fullname'] : $user['user'];
-		$content = $this->fetch($info['content'],'content');
-		$title = $this->fetch($info['title'],'content');
-		$data = array('content'=>$content,'mobile'=>$mobile,'fullname'=>$fullname,'title'=>$title);
-		$this->model('gateway')->save_temp($code,$server['id'],$this->u_id);
-		$action = $this->model('gateway')->action($server,$data);
-		if($action){
-			$this->json(true);
-		}
-		$this->json(P_Lang('短信发送异常，请稍等看是否有收到短信'));
-	}
-	
-	//更新会员邮箱
+	/**
+	 * 更新会员邮箱
+	**/
 	public function email_f()
 	{
 		$pass = $this->get('pass');
 		if(!$pass){
-			$this->json(P_Lang('密码不能为空'));
+			$this->error(P_Lang('密码不能为空'));
 		}
 		$email = $this->get("email");
 		if(!$email){
-			$this->json(P_Lang('新邮箱不能为空'));
+			$this->error(P_Lang('新邮箱不能为空'));
 		}
 		//判断邮箱是否合法
 		$chk = $this->lib('common')->email_check($email);
 		if(!$chk){
-			$this->json(P_Lang('邮箱格式不正确，请重新填写'));
+			$this->error(P_Lang('邮箱格式不正确，请重新填写'));
 		}
 		$user = $this->model('user')->get_one($this->u_id);
 		if($user['email'] == $email){
-			$this->json(P_Lang('新旧邮箱不能一样'));
+			$this->error(P_Lang('新旧邮箱不能一样'));
 		}
 		$chk = $this->model('user')->uid_from_email($email,$this->u_id);
 		if($chk){
-			$this->json(P_Lang('邮箱已被使用，请更换其他邮箱'));
+			$this->error(P_Lang('邮箱已被使用，请更换其他邮箱'));
 		}
 		$server = $this->model('gateway')->get_default('email');
 		if($server){
 			$chkcode = $this->get('chkcode');
 			if(!$chkcode){
-				$this->json(P_Lang('验证码不能为空'));
+				$this->error(P_Lang('验证码不能为空'));
 			}
-			$tmpcode = $this->model('gateway')->read_temp($server['id'],$this->u_id);
-			if($tmpcode != $chkcode){
-				$this->json(P_Lang('验证码填写不正确'));
+			$check = $this->model('vcode')->check($chkcode);
+			if(!$check){
+				$this->error($this->model('vcode')->error_info());
 			}
-			//删除临时数据
-			$this->model('gateway')->delete_temp($server['id'],$this->u_id);
+			$this->model('vcode')->delete();
 		}
 		$this->model('user')->save(array('email'=>$email),$this->u_id);
-		if(!$this->is_client){
-			$this->model('user')->update_session($this->u_id);
-		}
-		$this->json(true);
+		$this->model('user')->update_session($this->u_id);
+		$this->success();
 	}
 
-	public function emailcode_f()
-	{
-		$server = $this->model('gateway')->get_default('email');
-		if(!$server){
-			$this->json(P_Lang('未配置好邮件发送网关，不支持此操作'));
-		}
-		$email = $this->get('email');
-		if(!$email){
-			$this->json(P_Lang('邮箱不能为空'));
-		}
-		if(!$this->lib('common')->email_check($email)){
-			$this->json(P_Lang('邮箱格式不正确'));
-		}
-		$chk = $this->model('user')->uid_from_email($email,$this->u_id);
-		if($chk){
-			$this->json(P_Lang('邮箱已被使用，请更换其他邮箱'));
-		}
-		$user = $this->model('user')->get_one($this->u_id);
-		if($email == $user['email']){
-			$this->json(P_Lang('邮箱与当前使用是一致的，不需要修改'));
-		}
-		$code = rand(1000,9999);
-		//取得邮件模板
-		$info = $this->model('email')->tpl('email_code');
-		if(!$info){
-			$this->json(P_Lang('未设置邮件验证码模板email_code，请联系管理员'));
-		}
-		$this->assign('email',$email);
-		$this->assign('code',$code);
-		$this->assign('user',$user);
-		$fullname = $user['fullname'] ? $user['fullname'] : $user['user'];
-		$title = $this->fetch($info['title'],'content');
-		$content = $this->fetch($info['content'],'content');
-		$data = array('title'=>$title,'content'=>$content,'email'=>$email,'fullname'=>$fullname);
-		$action = $this->model('gateway')->action($server,$data);
-		if($action){
-			$this->model('gateway')->save_temp($code,$server['id'],$this->u_id);
-			$this->json(true);
-		}
-		$this->json(P_Lang('邮件发送失败，请检查'));
-	}
-	
+
 	//更新发票信息
 	public function invoice_f()
 	{
@@ -312,9 +238,7 @@ class usercp_control extends phpok_control
 			$this->json(P_Lang('发票抬头不能为空'));
 		}
 		$this->model('user')->update_invoice_title($invoice_title,$this->u_id);
-		if(!$this->is_client){
-			$this->model('user')->update_session($this->u_id);
-		}
+		$this->model('user')->update_session($this->u_id);
 		$this->json(true);
 	}
 

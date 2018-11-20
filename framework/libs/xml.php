@@ -78,6 +78,13 @@ class xml_lib
 		return true;
 	}
 
+	public function to_xml($data,$ekey='')
+	{
+		$string = '';
+		$this->_array_to_string($string,$data,"\t",$ekey);
+		return $string;
+	}
+
 	private function _array_to_string(&$string,$data,$space="",$ekey='')
 	{
 		foreach($data as $key=>$value){

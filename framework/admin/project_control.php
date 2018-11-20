@@ -201,9 +201,11 @@ class project_control extends phpok_control
 		}
 		$list = array();
 		foreach($rslist AS $key=>$value){
+			$type = "text";
 			if($value["field_type"] != "longtext" && $value["field_type"] != "longblob" && $value["field_type"] != "text"){
-				$list[] = array("id"=>$value["id"],"identifier"=>$value["identifier"],"title"=>$value["title"]);
+				$type = "varchar";
 			}
+			$list[] = array("id"=>$value["id"],"identifier"=>$value["identifier"],"title"=>$value["title"],'type'=>$type);
 		}
 		$this->success($list);
 	}
@@ -258,7 +260,7 @@ class project_control extends phpok_control
 	public function save_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		$title = $this->get("title");
@@ -275,11 +277,11 @@ class project_control extends phpok_control
 		$tpl_content = $this->get("tpl_content");
 		$taxis = $this->get("taxis","int");
 		if(!$title){
-			$this->json(P_Lang('名称不能为空'));
+			$this->error(P_Lang('名称不能为空'));
 		}
 		$check_rs = $this->check_identifier($identifier,$id,$this->session->val('admin_site_id'));
 		if($check_rs != "ok"){
-			$this->json($check_rs);
+			$this->error($check_rs);
 		}
 		$array = array();
 		if(!$id){
@@ -335,6 +337,7 @@ class project_control extends phpok_control
 		$array['tag'] = $this->get('tag');
 		$array['biz_attr'] = $this->get('biz_attr');
 		$array['freight'] = $this->get('freight');
+		$array['list_fields'] = $this->get('list_fields');
 		$ok_url = $this->url("project");
 		$c_rs = $this->model('sysmenu')->get_one_condition("appfile='list' AND parent_id>0");
 		$gid = $c_rs["id"];
@@ -342,7 +345,7 @@ class project_control extends phpok_control
 		if($id){
 			$action = $this->model('project')->save($array,$id);
 			if(!$action){
-				$this->json(P_Lang('编辑失败'));
+				$this->error(P_Lang('编辑失败'));
 			}
 			$rs = $this->model('project')->get_one($id);
 			$popedom = $this->get("_popedom","int");
@@ -375,7 +378,7 @@ class project_control extends phpok_control
 		}else{
 			$id = $this->model('project')->save($array);
 			if(!$id){
-				$this->json(P_Lang('添加失败'));
+				$this->error(P_Lang('添加失败'));
 			}
 			$popedom = $this->get("_popedom","int");
 			if($popedom && is_array($popedom)){
@@ -397,7 +400,7 @@ class project_control extends phpok_control
 		}
 		$this->_save_user_group($id);
 		$this->_save_tag($id);
-		$this->json(true);
+		$this->success();
 	}
 
 	/**
@@ -463,20 +466,20 @@ class project_control extends phpok_control
 	public function content_save_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$title = $this->get("title");
 		if(!$title){
-			$this->json(P_Lang('名称不能为空'));
+			$this->error(P_Lang('名称不能为空'));
 		}
 		$array = array("title"=>$title);
 		$this->model('project')->save($array,$id);
 		ext_save("project-".$id);
-		$this->json(true);
+		$this->success();
 	}
 
 	/**

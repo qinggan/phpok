@@ -13,30 +13,23 @@ if(!defined("PHPOK_SET")){
 class project_control extends phpok_control
 {
 	private $user_groupid;
+	private $user_group;
 	private $token_info;
 	private $rlist;
 	public function __construct()
 	{
 		parent::control();
 		$this->config('is_ajax',true);
-		//$GLOBALS['app']->is_ajax = true;
-		$token = $this->get('token');
-		$groupid = 0;
-		if($token){
-			$this->token_info = $this->lib('token')->decode($token);
-			$groupid = $this->model('usergroup')->group_id($this->token_info['user_id']);
+		if($this->session->val('user_id')){
+			$group_rs = $this->model('usergroup')->get_one($this->session->val('user_id'));
+		}else{
+			$group_rs = $this->model('usergroup')->get_default(true);
 		}
-		if(!$groupid){
-			$group_rs = $this->model('usergroup')->get_guest(1);
-			if(!$group_rs){
-				$this->error(P_Lang('游客组未配置'));
-			}
-			$groupid = $group_rs['id'];
+		if(!$group_rs){
+			$this->error(P_Lang('会员组获取异常，请检查'));
 		}
-		if(!$groupid){
-			$this->error(P_Lang('会员组获取异常'));
-		}
-		$this->user_groupid = $groupid;
+		$this->user_groupid = $group_rs['id'];
+		$this->user_group = $group_rs;
 	}
 
 	//栏目
@@ -211,7 +204,7 @@ class project_control extends phpok_control
 		}
 		$fields = $this->get('fields');
 		if(!$fields){
-			$fields = 'id';
+			$fields = '*';
 		}
 		$dt['fields'] = $fields;
 		$info = $this->call->phpok('_arclist',$dt);
@@ -219,36 +212,10 @@ class project_control extends phpok_control
 		if(!$info['rslist']){
 			$this->error(P_Lang('已是最后一条数据'));
 		}
-		$rslist = array();
-		$funclist = $this->get('_func');
-		if($funclist){
-			foreach($funclist as $key=>$value){
-				$funclist[$key] = explode(",",$value);
-			}
-			foreach($info['rslist'] as $key=>$value){
-				foreach($value as $k=>$v){
-					if($funclist[$k] && $v && $funclist[$k][0]== 'cut'){
-						if($k == 'title'){
-							$value['_title'] = phpok_cut($v,$funclist[$k][1],($funclist[$k][2] ? '…' : ''));
-						}else{
-							$value[$k] = phpok_cut($v,$funclist[$k][1],($funclist[$k][2] ? '…' : ''));
-						}
-						
-					}
-					if($k == 'dateline' && $v && $funclist[$k][0] == 'date'){
-						$value['_dateline'] = time_format($v);
-					}
-				}
-				$rslist[$key] = $value;
-			}
-		}else{
-			$rslist = $info['rslist'];
-		}
 		$this->rlist['pageid'] = $pageid;
 		$this->rlist['psize'] = $psize;
 		$this->rlist['pageurl'] = $pageurl;
-		$this->rlist['total'] = $total;
-		$this->rlist['rslist'] = $rslist;
-		unset($rslist,$total,$pageurl,$psize,$pageid,$rs,$parent_rs);
+		$this->rlist['total'] = $info['total'];
+		$this->rlist['rslist'] = $info['rslist'];
 	}
 }

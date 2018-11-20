@@ -1,0 +1,88 @@
+<!-- php:$pageid = G('pageid') -->
+<!-- php:$pageid = $pageid ? $pageid : 1 -->
+<!-- php:$comment = phpok('_comment','tid='.$tid.'&pageid='.$pageid.'&psize=10') -->
+<ul class="am-comments-list am-comments-list-flip">
+	<li class="am-comment">
+		<img src="{$comment.avatar}" class="am-comment-avatar" width="48" height="48" />
+		<div class="am-comment-main">
+			<div class="am-comment-hd">
+				<div class="am-comment-meta">
+					提交新评论<!-- if $comment.total -->，当前已有 {$comment.total} 条评论<!-- /if -->
+				</div>
+			</div>
+			<div class="am-comment-bd">
+				<form method="post" id="comment-post" class="am-form">
+					<input type="hidden" name="tid" value="{$tid ? $tid : $rs.id}" />
+					<input type="hidden" name="vtype" value="{$vtype ? $vtype : 'title'}" />
+					<!-- if $comment.uid -->
+					<div class="am-form-group">{func form_edit comment $comment.content editor width=100%&height=150&btns[image]=1}</div>
+					<!-- else -->
+					<div class="am-form-group">
+						<textarea rows="5" name="comment" id="comment" placeholder="填写评论信息" style="resize: none;"></textarea>
+					</div>
+					<!-- /if -->
+					<div class="am-form-group">
+						{func form_edit pictures $comment.res upload is_multiple=1}
+					</div>
+					<!-- if $is_vcode -->
+					<div class="am-g am-form-group am-g-collapse">
+						<div class="am-u-sm-6"><input class="vcode"  type="text" name="_chkcode" id="_chkcode" placeholder="请填写验证码" /></div>
+						<div class="am-u-sm-6" style="padding-left:10px;padding-top:5px;"><img src="" border="0" align="absmiddle" id="vcode" class="hand" /></div>
+					</div>
+					<script type="text/javascript">
+					$(document).ready(function(){
+						$("#vcode").phpok_vcode();
+						$("#vcode").click(function(){
+							$(this).phpok_vcode();
+						});
+					});
+					</script>
+					<!-- /if -->
+					<div>
+						<input name="" type="submit" class="am-btn am-btn-primary" value="提交" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</li>
+	<!-- loop from=$comment.rslist key=$key value=$value id=tmpid -->
+	<li class="am-comment">
+		<a href="{url ctrl=user id=$value.uid.id/}" target="_blank">
+			<img src="{$value.uid.avatar}" class="am-comment-avatar" width="48" height="48" />
+		</a>
+		<div class="am-comment-main">
+			<div class="am-comment-hd">
+				<div class="am-comment-meta">
+					<a href="{url ctrl=user id=$value.uid.id/}" target="_blank" class="am-comment-author">{$value.uid.user}</a>评论于<time>{func time_format $value.addtime}</time>
+				</div>
+			</div>
+			<div class="am-comment-bd">
+				{$value.content}
+				<!-- if $value.res -->
+				<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-imgbordered" data-am-gallery="{pureview: 1}">
+					<!-- loop from=$value.res key=$k value=$v id=$idxx -->
+					<li><div class="am-gallery-item"><img src="{$v.ico}" alt="{$v.title}" data-rel="{$v.gd.auto.filename}" /></div></li>
+					<!-- /loop -->
+				</ul>
+				<!-- /if -->
+			</div>
+		</div>
+	</li>
+	<!-- loop from=$value.adm_reply key=$k value=$v id=$idxx -->
+	<li class="am-comment am-comment-flip am-comment-highlight">
+		<img src="images/adminer.png" class="am-comment-avatar" width="48" height="48" />
+		<div class="am-comment-main">
+			<div class="am-comment-hd">
+				<div class="am-comment-meta">
+					管理员回复于<time>{func time_format $v.addtime}</time>
+				</div>
+			</div>
+			<div class="am-comment-bd">
+				{$v.content}
+			</div>
+		</div>
+	</li>
+	<!-- /loop -->
+	<!-- /loop -->
+</ul>
+<!-- include tpl=block/pagelist pageurl=$rs.url total=$comment.total pageid=$comment.pageid psize=$comment.$psize -->

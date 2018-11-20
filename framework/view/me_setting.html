@@ -27,18 +27,5 @@
 		<input type="text" id="email" name="email" class="w99" value="{$rs.email}" />
 	</div>
 </div>
-<!-- if !$sys.develop -->
-<div class="table">
-	<div class="title">
-		{lang临时开发模式} <span class="note">{lang仅限配置文件关闭开发模式后，需要临时打开时使用}</span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<li><label><input type="radio" name="adm_develop" value="0"{if !$session.adm_develop} checked{/if} />{lang禁用}</label></li>
-			<li><label><input type="radio" name="adm_develop" value="1"{if $session.adm_develop} checked{/if} />{lang启用}</label></li>
-		</ul>
-	</div>
-</div>
-<!-- /if -->
 </form>
 <!-- include tpl=foot_open -->

@@ -60,7 +60,7 @@ class post_control extends phpok_control
 		$array["title"] = $this->get("title");
 		if(!$array['title']){
 			$tip = $project_rs['alias_title'] ? $project_rs['alias_title'] : P_Lang('主题');
-			$this->json(P_Lang('{title}不能为空',array('title'=>$note)));
+			$this->json(P_Lang('{title}不能为空',array('title'=>$tip)));
 		}
 		$tid = $this->get('tid','int');
 		$vcode_act = 'add';

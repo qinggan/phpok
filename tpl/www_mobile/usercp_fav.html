@@ -1,29 +1,20 @@
-<!-- include tpl=head title="收藏夹 - 个人中心" -->
-<script type="text/javascript">
-function fav_delete(id)
-{
-	$.dialog.confirm('确定要删除这条收藏记录吗？',function(){
-		var url = api_url('fav','delete','id='+id);
-		$.phpok.json(url,function(){
-			$.phpok.reload();
-		});
-	})
-}
-</script>
-<div role="main" class="ui-content">
-	<ul data-role="listview" data-split-icon="delete" data-inset="true" style="margin:0;">
-		<!-- if !$rslist -->
-		<li><p style="text-align:center;">暂无收藏信息</p></li>
-		<!-- /if -->
-		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-		<li>
-			<a href="{url id=$value.lid/}" target="_blank">
-			<h2>{$value.title}</h2>
-			<p><b>收藏时间：</b>{func time_format $value.addtime}</p></a>
-			<a href="javascript:fav_delete('{$value.id}');void(0);"></a>
-		</li>
-		<!-- /loop -->
-	</ul>
-	<!-- include tpl=pagelist -->
+<!-- include tpl=head title=收藏夹 -->
+<div class="am-margin-xs">
+	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	<div class="am-panel am-panel-default">
+		<div class="am-panel-hd">
+			#{$value.id}
+			<div class="am-btn-group am-fr">
+				<button type="button" onclick="$.phpok.go('{url id=$value.lid/}')" class="am-btn am-btn-default am-btn-xs">访问</button>
+				<button type="button" onclick="$.phpok_app_fav.del('{$value.id}')" class="am-btn am-btn-danger am-btn-xs">删除</button>
+			</div>
+		</div>
+		<div class="am-panel-bd">{$value.title}</div>
+		<footer class="am-panel-footer">{func time_format $value.addtime}</footer>
+	</div>
+	<!-- /loop -->
+	
+	<!-- include tpl=block/pagelist -->
 </div>
+
 <!-- include tpl=foot -->

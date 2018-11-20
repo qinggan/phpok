@@ -1,44 +1,78 @@
-<!-- include tpl=head menutitle=网站首页 -->
-<div role="main" class="ui-content">
-	<!-- php:$list = phpok('picplayer') -->
-	
-	<div class="home_banner" id="home_banner">
-		<ul class="pro_ul">
-			<!-- loop from=$list.rslist key=$key value=$value -->
-			<!-- php:$height = ($value.pic && $value.pic.attr && $value.pic.attr.width) ? intval(($value.pic.attr.height * 310)/$value.pic.attr.width) : 0 -->
-			<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{#images#}/blank.gif" alt="{$value.title}" _src="{$value.pic.gd.auto}"{if $height} height="{$height}"{/if} /></a></li>
-			<!-- /loop -->
-		</ul>
-	</div>
-	<script type="text/javascript">
-	$(document).ready(function(){
-		TouchSlide({
-			slideCell:"#home_banner",
-			mainCell:".pro_ul", 
-			effect:"leftLoop",
-			autoPlay:true,
-			switchLoad:"_src"
-		});
-	});
-	</script>
-	<!-- php:$arc = phpok('aboutus') -->
-	<div class="ui-body ui-body-a ui-corner-all" onclick="$.phpok.go('{$arc.url}')" style="margin-bottom:5px;">
-		<h3>{$arc.title}</h3>
-		<div class="content"><img src="{$arc.pic}" width="80" align="left" style="margin:5px 5px 0 0;" />{$arc.note}</div>
-	</div>
-	<!-- php:$list = phpok('new_products') -->
-	<ul class="pictures">
+<!-- include tpl=head highlight=1 -->
+<!-- php:$list = phpok('picplayer') -->
+<!-- if $list.total -->
+<div data-am-widget="slider" class="am-slider am-slider-a5" data-am-slider='{"directionNav":false}'>
+	<ul class="am-slides">
 		<!-- loop from=$list.rslist key=$key value=$value -->
-		<li><a href="{$value.url}"><img src="{$value.thumb.gd.thumb}" alt="{$value.title}" width="150" border="0" /><br />{$value.m_title}</a></li>
-		<!-- /loop -->
-	</ul>
-	<div class="clear"></div>
-	<!-- php:$list = phpok('news','psize=5') -->
-	<ul data-role="listview" data-inset="true" style="margin-top:5px;">
-		<li data-role="list-divider" data-theme="b"><h1>{$list.project.title}</h1></li>
-		<!-- loop from=$list.rslist key=$key value=$value -->
-		<li><a href="{$value.url}">{$value.title}</a></li>
+		<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{$value.pic.filename}" alt="{$value.title}" /></a></li>
 		<!-- /loop -->
 	</ul>
 </div>
+<!-- /if -->
+<!-- php:$list = phpok('new_products') -->
+<!-- if $list.rslist -->
+<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-5 am-gallery-bordered">
+	<!-- loop from=$list.rslist key=$key value=$value -->
+	<li>
+		<div class="am-gallery-item">
+			<a href="{$value.url}" title="{$value.title}">
+				<img src="{$value.thumb.gd.thumb}" alt="{$value.title}" />
+				 <h3 class="am-gallery-title">{$value.title}</h3>
+				<!-- if $list.project.is_biz --><div class="am-gallery-desc red">{func price_format $value.price $value.currency_id}</div><!-- /if -->
+			</a>
+		</div>
+	</li>
+	<!-- /loop -->
+</ul>
+<!-- /if -->
+<!-- php:$about = phpok('aboutus') -->
+<div data-am-widget="titlebar" class="am-titlebar am-titlebar-multi" >
+    <h2 class="am-titlebar-title ">{$about.title}</h2>
+    <nav class="am-titlebar-nav">
+        <a href="{$about.url}">更多 <span class="am-icon-angle-right"></span><span class="am-icon-angle-right"></span></a>
+    </nav>
+</div>
+<article class="am-article" style="padding:0.5em;">
+	<div class="am-article-bd">
+		<!-- if $about.pic -->
+		<div style="padding:0.5em;">
+			<img src="{$about.pic}" alt="{$about.title}" style="max-width:100%"/>
+		</div>
+		<!-- /if -->
+		{$about.note}
+	</div>
+</article>
+<!-- php:$list = phpok('news') -->
+<div class="am-panel am-panel-default" style="margin:0 0.5em">
+	<div class="am-panel-hd">
+		<h3 class="am-panel-title">{$list.project.title}</h3>
+	</div>
+	<div class="am-panel-bd">
+		<ul class="am-list">
+			<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+			<li class="am-g am-list-item-dated">
+				<a href="{$value.url}" title="{$value.title}" class="am-list-item-hd ">{$value.title}</a><span class="am-list-date">{func date Y-m-d $value.dateline}</span>
+			</li>
+			<!-- /loop -->
+		</ul>
+		<a class="am-btn am-btn-danger" href="{$list.project.url}">查看更多</a>
+	</div>
+</div>
+<div style="margin:0.5em">
+	<!-- include tpl=block/contact showmore=true -->
+</div>
+
+<!-- php:$list = phpok('link') -->
+<div class="am-panel am-panel-default" style="margin:0 0.5em;">
+	<div class="am-panel-hd">
+		<h3 class="am-panel-title">{$list.project.title}</h3>
+	</div>
+	
+	<div class="am-panel-bd link">
+		<!-- loop from=$list.rslist key=$key value=$value -->
+		<a href="{$value.linkurl}" target="{$value.target}" title="{$value.sitename}">{$value.sitename}</a>
+		<!-- /loop -->
+	</div>
+</div>
+
 <!-- include tpl=foot -->

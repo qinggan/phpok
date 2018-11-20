@@ -53,7 +53,7 @@ class upload_control extends phpok_control
 	 * @参数 $input_name，表单ID，默认是upfile
 	 * @参数 $cateid，附件保存到哪个分类下
 	**/
-	private function upload_base($input_name='upfile',$cateid=0)
+	public function upload_base($input_name='upfile',$cateid=0)
 	{
 		$rs = $this->lib('upload')->getfile($input_name,$cateid);
 		if($rs['status'] != 'ok'){

@@ -1,162 +1,99 @@
-<!-- include tpl=head title=评论管理 -->
-
-<script type="text/javascript">
-function subsearch()
-{
-	var url = get_url("reply");
-	var status = $("#status").val();
-	if(status>0)
-	{
-		url += "&status="+status;
-	}
-	var keywords = $("#keywords").val();
-	if(keywords)
-	{
-		url += "&keywords="+$.str.encode(keywords);
-	}
-	direct(url);
-}
-function to_view(id,title)
-{
-	var url = get_url("reply","list","tid="+id);
-	$.dialog.open(url,{
-		'title':'{lang评论：}'+title,
-		'lock':true,
-		'width':'90%',
-		'height':'90%',
-		'cancel':function(){return true;}
-	});
-}
-</script>
-<div class="tips" id="tips">
-	<table cellpadding="0" cellspacing="0" height="100%" width="100%">
-	<tr>
-		<td>您当前的位置：<a href="{func admin_url reply}" title="内容管理">评论管理</a></td>
-		<td align="right">
-			搜索：
-			<select name="status" id="status">
-				<option value="0">全部</option>
-				<option value="1"{if $status == 1} selected{/if}>已审核</option>
-				<option value="2"{if $status && $status != 1} selected{/if}>未审核</option>
-			</select>
-			<input type="text" name="keywords" id="keywords" value="{$keywords}" style="margin-top:3px;" />
-			<input type="button" value="搜索" class="btn" onclick="subsearch();" />
-		</td>
-		<td>&nbsp;</td>
-	</tr>
-	</table>
-</div>
-
-<!-- loop from=$rslist key=$key value=$value -->
-<div class="comment">
-	<div class="content" id="tmp_{$value.id}">
-		<div class="id">#{$value.id} </div>
-		<!-- if $value.list_id -->
-		<div class="linksymbol"><b class="darkblue">主题：</b><a href="{$sys.www_file}?id={$value.list_id}" target="_blank">{$value.l_title}</a></div>
-		<!-- /if -->
-		<!-- if $value.p_title -->
-		<div class="linksymbol"><b class="darkblue">项目：</b>{$value.p_title}</div>
-		<!-- /if -->
-		<!-- if $value.c_title -->
-		<div class="linksymbol"><b class="darkblue">分类：</b>{$value.c_title}</div>
-		<!-- /if -->
-		<!-- if $value.o_title -->
-		<div class="linksymbol"><b class="darkblue">订单：</b>{$value.o_title}</div>
-		<!-- /if -->
-		<div class="info"><span class="darkblue">评论内容：</span>{$value.content}</div>
-		<!-- if $value.adm_content -->
-		<fieldset class="adm-reply">
-			<legend>管理员回复时间：{func date Y-m-d $value.adm_time}</legend>
-			{$value.adm_content}
-		</fieldset>
-		<!-- /if -->
-	</div>
-	<table width="100%">
-	<tr>
-		<td>
-			发布人：
-			<!-- if $value.uid && is_array($value.uid) -->
-			<span class="darkblue b">{$value.uid.user}</span>
-			<!-- else -->
-			游客
-			<!-- /if -->
-			，IP：{$value.ip}
-			，发布时间：{echo date("Y-m-d H:i:s",$value.addtime)}
-			，星级：{$value.star}星
-		</td>
-		<td align="right">
-			<div class="button-group">
-				<!-- if $value.sublist -->
-				<input type="button" value="显示评论的回复" class="phpok-btn" id="show_hide_c_{$value.id}" onclick="$.admin_reply.sublist({$value.id})" />
-				<!-- /if -->
-				<!-- if $value.status -->
-				<input type="button" value="已审核" onclick="$.admin_reply.status({$value.id},0)" class="phpok-btn" />
-				<!-- else -->
-				<input type="button" value="未审核" class="phpok-btn" onclick="$.admin_reply.status({$value.id},1)" style="color:red;" />
-				<!-- /if -->
-				<input type="button" value="管理员回复" onclick="$.admin_reply.adm({$value.id})" class="phpok-btn" />
-				<input type="button" value="修改" onclick="$.admin_reply.edit({$value.id})" class="phpok-btn" />
-				<input type="button" value="删除" onclick="$.admin_reply.del({$value.id})" class="phpok-btn" />
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header" style="line-height:38px;height:46px;padding-top:7px;">
+		<form method="post" action="{url ctrl=reply/}" class="layui-form">		
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang搜索}	
+			</label>
+			<div class="layui-input-inline">
+				<select  name="status" id="status" >
+					<option value="0">{lang全部}</option>
+					<option value="1"{if $status == 1} selected{/if}>{lang已审核}</option>
+					<option value="2"{if $status && $status != 1} selected{/if}>{lang未审核}</option>
+				</select>
 			</div>
-		</td>
-	</tr>
-	</table>
-</div>
-<!-- if $value.sublist -->
-<fieldset class="sub_comment hide" id="comment_reply_{$value.id}">
-	<legend>针对该评论的回复</legend>
-	<!-- loop from=$value.sublist key=$kk value=$vv -->
-		<div class="comment">
-			<div class="content cate_{$value_sublist_id.index%9}" id="tmp_{$vv.id}">
-				<span class="darkblue b">ID：{$vv.id} 内容：</span>{func nl2br $vv.content}
-				<!-- if $vv.adm_content -->
-				<fieldset class="adm-reply">
-					<legend>管理员回复时间：{func date Y-m-d $vv.adm_time}</legend>
-					{$vv.adm_content}
-				</fieldset>
-				<!-- /if -->
+			<div class="layui-input-inline">
+				<input type="text" id="keywords" name="keywords" placeholder="{lang输入关键字}" value="{$keywords}" class="layui-input">
 			</div>
-			<table width="100%">
-			<tr>
-				<td>
-					发布人：
-					<!-- if $vv.uid && is_array($vv.uid) -->
-					<span class="darkblue b">{$vv.user}</span>
-					<!-- else -->
-					游客
-					<!-- /if -->
-					，IP：{$vv.ip}
-					，发布时间：{echo date("Y-m-d H:i:s",$vv.addtime)}
-					，星级：{$vv.star}星
-				</td>
-				<td align="right">
-					<div class="button-group">
-						<!-- if $popedom.status -->
-							<!-- if $vv.status -->
-							<input type="button" value="已审核" onclick="to_status({$vv.id},0)" class="phpok-btn" />
-							<!-- else -->
-							<input type="button" value="未审核" class="phpok-btn" onclick="to_status({$vv.id},1)" style="color:red;" />
-							<!-- /if -->
-						<!-- /if -->
-						<!-- if $popedom.reply -->
-						<input type="button" value="管理员回复" onclick="to_reply({$vv.id})" class="phpok-btn" />
-						<!-- /if -->
-						<!-- if $popedom.modify -->
-						<input type="button" value="修改" onclick="to_edit({$vv.id})" class="phpok-btn" />
-						<!-- /if -->
-						<!-- if $popedom.delete -->
-						<input type="button" value="删除" onclick="to_delete({$vv.id})" class="phpok-btn" />
-						<!-- /if -->
-					</div>
-				</td>
-			</tr>
-			</table>
+			<div class="layui-inline">
+				<input type="submit" value="{lang搜索}" class="layui-btn layui-btn-sm" />
+				<input type="button" value="{lang取消搜索}" class="layui-btn layui-btn-sm" onclick="$.phpok.go('{url ctrl=reply/}')" />
+			</div>
 		</div>
-	<!-- /loop -->
-</fieldset>
-<!-- /if -->
-<!-- /loop -->
-
-<!-- if $pagelist --><div class="table"><!-- include tpl=pagelist --></div><!-- /if -->
-
-<!-- include tpl=foot -->
+		</form>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th width="20"></th>
+			<th>{lang主题}</th>
+			<th>{lang星数}</th>
+			<th>{lang图片}</th>
+			<th>{lang时间}</th>
+			<th width="160"></th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr data-id="replylist_{$value.id}">
+			<td>{$value.id}</td>
+			<td>
+				<span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="$.admin_reply.status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span>
+			</td>
+			<td>
+				<!-- if $value.star == 1 --><div class="layui-tips" lay-tips="{lang一星}">★☆☆☆☆</div><!-- /if -->
+				<!-- if $value.star == 2 --><div class="layui-tips" lay-tips="{lang二星}">★★☆☆☆</div><!-- /if -->
+				<!-- if $value.star == 3 --><div class="layui-tips" lay-tips="{lang三星}">★★★☆☆</div><!-- /if -->
+				<!-- if $value.star == 4 --><div class="layui-tips" lay-tips="{lang四星}">★★★★☆</div><!-- /if -->
+				<!-- if $value.star == 5 --><div class="layui-tips" lay-tips="{lang五星}">★★★★★</div><!-- /if -->
+			</td>
+			<td>
+				<div><!-- if $value.vtype == 'title' -->
+				[{lang主题}]
+				<a href="{$sys.www_file}?id={$value.tid}" target="_blank">{$value.title}</a>
+				<!-- else -->
+					<!-- if $value.vtype == 'project' -->[{lang项目}]<!-- /if -->
+					<!-- if $value.vtype == 'cate' -->[{lang分类}]<!-- /if -->
+					<!-- if $value.vtype == 'order' -->[{lang订单}]<!-- /if -->
+					{$value.title}
+				<!-- /if -->
+				<!-- if $value.parent_id --><div class="red">[{lang引用}]</div><!-- /if -->
+				</div>
+				<div>[{lang内容}] {func phpok_cut $value.content 150}</div>
+			</td>
+			<td>
+				<!-- loop from=$value.res key=$k value=$v id=$idxx -->
+				<img src="{$v.ico}" width="60px" class="hand" onclick="$.admin_reply.preview_attr({$v.id})" />
+				<!-- /loop -->
+			</td>
+			<td>{func date 'Y-m-d H:i:s' $value.addtime}</td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang新回复}" onclick="$.admin_reply.adm({$value.id})" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang修改}" onclick="$.admin_reply.edit({$value.id})" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.admin_reply.del({$value.id})" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</td>
+		</tr>
+		<!-- loop from=$value.adm_reply key=$k value=$v id=$idxx -->
+		<tr data-id="replylist_{$value.id}" id="adm_reply_{$v.id}">
+			<td colspan="6">
+				<span class="red">{lang管理员回复} - {$idxx.num}</span>
+				<small class="gray">{lang回复时间} {func date 'Y-m-d H:i:s' $value.addtime}</small>
+				{$v.content}
+			</td>
+			<td>
+				<!-- if ($popedom.delete && $v.admin_id == $session.admin_id) || $session.admin_rs.if_system -->
+				<input type="button" value="{lang删除}" onclick="$.admin_reply.del({$v.id},'reply')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				<!-- /if -->
+			</td>
+		</tr>
+		<!-- /loop -->
+		<!-- /loop -->
+		</table>
+		<div class="center"><!-- include tpl=pagelist --></div>
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

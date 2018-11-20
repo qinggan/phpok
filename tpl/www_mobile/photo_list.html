@@ -1,22 +1,20 @@
-<!-- include tpl=head title=$rs.title menutitle=$page_rs.title -->
-<div data-role="navbar">
-	<ul>
-		<!-- catelist pid=$page_rs.id -->
-		<!-- loop from=$list.sublist key=$key value=$value -->
-		<li><a href="{$value.url}"{if $cate_rs.id == $value.id} class="ui-btn-active"{/if}>{$value.title}</a></li>
-		<!-- /loop -->
-	</ul>
-</div>
-
+<!-- php:$title= $cate_rs ? $cate_rs.title : $page_rs.title -->
+<!-- include tpl=head title=$title menutitle=$page_rs.title -->
+<!-- include tpl=block/catelist pid=$page_rs.id -->
 <div class="main">
-	<ul class="pictures">
+	<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered" data-am-gallery="{  }">
 		<!-- loop from=$rslist key=$key value=$value -->
-		<li style="height:150px;"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.title}" width="150px" height="150px" border="0" /></a></li>
+		<li>
+			<div class="am-gallery-item">
+				<a href="{$value.url}" title="{$value.title}">
+					<img src="{$value.thumb.gd.thumb}" alt="{$value.title}" />
+					<h3 class="am-gallery-title">{$value.title}</h3>
+					<div class="am-gallery-desc">{func time_format $value.dateline}</div>
+				</a>
+			</div>
+		</li>
 		<!-- /loop -->
 	</ul>
-	<div class="clear"></div>
-	<!-- include tpl=pagelist -->
+	<!-- include tpl=block/pagelist -->
 </div>
-
-
 <!-- include tpl=foot -->

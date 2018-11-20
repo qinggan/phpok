@@ -1,11 +1,12 @@
-/***********************************************************
-	Filename: {phpok}js/global.admin.js
-	Note	: 后台公共JS
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年9月12日
-***********************************************************/
+/**
+ * 后台公共JS
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @网站 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @日期 2018年09月16日
+**/
 function alt_open(id,note)
 {
 	if(!id || id == "undefined") return false;
@@ -69,14 +70,20 @@ function phpok_status(id,url)
 	$.phpok.json(url,function(rs){
 		if(rs.status && rs.status != 'error'){
 			var info = (rs.info && rs.info != 'undefined') ? rs.info : (rs.content ? rs.content : '0');
-			var oldvalue = $("#status_"+id).attr('value');
-			var old_cls = "status"+oldvalue;
-			$("#status_"+id).removeClass(old_cls).addClass("status"+info);
-			$("#status_"+id).attr("value",info);
+			if(info == 1){
+                var status_css="";
+                var old_cls = "layui-btn-danger";
+                $("#status_"+id).val("启用");
+            }else{
+                var status_css="layui-btn-danger";
+                var old_cls = "";
+                $("#status_"+id).val("停用");
+            }
+			$("#status_"+id).removeClass(old_cls).addClass(status_css);
 			return true;
 		}
 		var info = (rs.info && rs.info != 'undefined') ? rs.info : (rs.content ? rs.content : 'Error');
-		alert(info);
+		layer.alert(info);
 		return false;
 	})
 }
@@ -302,18 +309,156 @@ function ext_edit(id,module)
 			//显示当前的
 			$(obj).addClass('on');
 			$("#"+val+"_setting").show();
+		},
+		//基于父级窗口执行的badge，具体查看 admin.index.js
+		badge:function()
+		{
+			$("em.toptip").remove();
+			var badge = $.cookie.get('badge');
+			if(badge){
+				var list = badge.split(",");
+				for(var i in list){
+					var tmp = (list[i]).split(":");
+					$("li[pid="+tmp[0]+"] a").append('<em class="toptip">'+tmp[1]+'</em>');
+					$("li[id=project_"+tmp[0]+"]").append('<em class="toptip">'+tmp[1]+'</em>');
+				}
+				return true;
+			}
+			return true;
+		},
+		//搜索框是否显示
+		hide_show:function(id)
+		{
+			if(!id || id == 'undefined'){
+				return false;
+			}
+			if(id.substr(0,1) != '#' && id.substr(0,1) !='.'){
+				id = '#'+id;
+			}
+			if($(id).is(':hidden')){
+				$(id).show();
+				return true;
+			}
+			$(id).hide();
+			return true;
+		},
+
+		/**
+		 * 刷新父标签窗口
+		 * @参数 url 要刷新的父标签网址
+		**/
+		reload:function(url)
+		{
+			top.$("#LAY_app_tabsheader li").each(function(i){
+				if(!$(this).hasClass('layui-this')){
+					var layid = $(this).attr('lay-attr');
+					if(layid){
+						layid = layid.replace(/\&\_noCache=[0-9\.]+/g,'');
+					}
+					var chk = webroot+layid;
+					if(chk.indexOf(url) != -1){
+						top.$('.layadmin-iframe').eq(i)[0].contentWindow.location.reload(true);
+					}
+				}
+			});
+		},
+
+		/**
+		 * 跳转到标签页
+		 * @参数 url 要跳转的标签页
+		**/
+		goto_tab:function(url)
+		{
+			var li_num = 0;
+			top.$("#LAY_app_tabsheader li").each(function(i){
+				if(!$(this).hasClass('layui-this')){
+					var layid = $(this).attr('lay-attr');
+					if(layid){
+						layid = layid.replace(/\&\_noCache=[0-9\.]+/g,'');
+					}
+					var chk = webroot+layid;
+					if(chk.indexOf(url) != -1 && li_num<1){
+						li_num = i;
+					}
+				}
+			});
+			if(li_num>0){
+				top.$("#LAY_app_tabsheader li").eq(li_num).click();
+			}
+		},
+
+		/**
+		 * 关闭当前窗口
+		**/
+		close(url)
+		{
+			var self = this;
+			window.setTimeout(function(){
+				top.layui.admin.events.closeThisTabs();
+				if(url && url != 'undefined'){
+					self.goto_tab(url);
+				}
+			},500);
+		},
+
+		title:function(title,url)
+		{
+			top.$("#LAY_app_tabsheader li").each(function(i){
+				if(url && url != 'undefined'){
+					var layid = $(this).attr('lay-attr');
+					if(layid){
+						layid = layid.replace(/\&\_noCache=[0-9\.]+/g,'');
+					}
+					var chk = webroot+layid;
+					if(chk.indexOf(url) != -1){
+						$(this).find("span").html(title);
+					}
+				}else{
+					if($(this).hasClass('layui-this')){
+						$(this).find("span").html(title);
+					}
+				}
+			});
+		},
+
+		/**
+		 * 随机码
+		**/
+		rand:function(id)
+		{
+			if(!id || id == 'undefine'){
+				id = 'identifier';
+			}
+			if(id.substr(0,1) != '.' && id.substr(0,1) != '#'){
+				id = '#'+id;
+			}
+			$(id).val($.phpok.rand(2,'letter')+""+$.phpok.rand(8,'fixed'));
+		},
+
+		card:function(obj)
+		{
+			var t = $(obj).parent().find('.layui-card-body');
+			if(t.is(":hidden")){
+				t.toggle(function(){
+					$(obj).find("i.layui-icon").removeClass('layui-icon-right').addClass('layui-icon-down');
+				});
+				
+			}else{
+				t.toggle(function(){
+					$(obj).find("i.layui-icon").removeClass('layui-icon-down').addClass('layui-icon-right');
+				});
+			}
 		}
 	};
 })(jQuery);
 
 $(document).ready(function(){
 	var clipboard = new Clipboard('.phpok-copy');
-
-	clipboard.on('success', function(e) {
+	clipboard.on('success', function(e){
 		$.dialog.tips(p_lang('复制成功'));
 		e.clearSelection();
 	});
-	clipboard.on('error', function(e) {
+	clipboard.on('error', function(e){
 		$.dialog.tips(p_lang('复制失败'));
 	});
 });

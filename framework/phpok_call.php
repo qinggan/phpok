@@ -1370,7 +1370,7 @@ class phpok_call extends _init_auto
 		}
 		$pageid = ($rs['pageid'] && intval($rs['pageid'])) ? intval($rs['pageid']) : 1;
 		$offset = ($pageid-1) * $psize;
-		$condition = "tid='".$id."' AND parent_id='0' ";
+		$condition = "tid=".intval($id)." AND admin_id=0 ";
 		$array = array('avatar'=>'images/avatar.gif','uid'=>0,'user'=>P_Lang('游客'));
 		if($this->session->val('user_id')){
 			$user = $this->model('user')->get_one($this->session->val('user_id'),'id',false,false);

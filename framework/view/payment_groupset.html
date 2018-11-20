@@ -1,74 +1,66 @@
-<!-- include tpl=head -->
-<div class="tips clearfix">
-	您当前位置：<a href="{url ctrl=payment/}" title="支付管理">支付管理</a>
-	&raquo; <a href="{url ctrl=payment/}" title="方案列表">方案列表</a>
-	&raquo; <!-- if $id -->编辑支付方案<!-- else -->添加支付方案<!-- /if -->
-</div>
-<form method="post" id="post_save" onsubmit="return $.admin_payment.group_save()">
-<!-- if $id -->
-<input type="hidden" name="id" id="id" value="{$id}" />
-<!-- /if -->
-<div class="table">
-	<div class="title">
-		组名称：
-		<span class="note">设置支付组的名称，请根据您的站点语言来编写相应的组名称</span>
-	</div>
-	<div class="content">
-		<input type="text" id="title" name="title" class="default" value="{$rs.title}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		组状态：
-		<span class="note">禁用组后，其组下列的支付方案将不生效</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="radio" name="status" value="1"{if $rs.status} checked{/if} />启用</label></td>
-			<td><label><input type="radio" name="status" value="0"{if !$rs.status} checked{/if} />禁用</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		排序：
-		<span class="note">范围控制在0-255，值越小越往前排，默认为255</span>
-	</div>
-	<div class="content">
-		<input type="text" id="taxis" name="taxis" class="short" value="{$id ? $rs.taxis : 255}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		默认组：
-		<span class="note">启用默认组功能后，其他其将显示为可选类型</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="radio" name="is_default" value="1"{if $rs.is_default} checked{/if} />启用</label></td>
-			<td><label><input type="radio" name="is_default" value="0"{if !$rs.is_default} checked{/if} />禁用</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		手机端：
-		<span class="note">指定支付组使用范围，手机或PC</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="radio" name="is_wap" value="1"{if $rs.is_wap} checked{/if} />手机端</label></td>
-			<td><label><input type="radio" name="is_wap" value="0"{if !$rs.is_wap} checked{/if} />电脑端</label></td>
-		</tr>
-		</table>
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-container layui-card-body">
+		<form method="post" id="post_save" onsubmit="return $.admin_payment.group_save()" class="layui-form">
+		<!-- if $id -->
+		<input type="hidden" name="id" id="id" value="{$id}" />
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang组名称}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" id="title" name="title" value="{$rs.title}" class="layui-input" >
+			</div>
+			<div class="layui-input-block mtop">{lang设置支付组的名称，请根据您的站点需求设置相应的组名称}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="{lang禁用组后，其组下列的支付方案将不生效}">&#xe702;</i>
+				{lang状态}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="status" value="1" {if $rs.status} checked{/if} title="{lang启用}">
+				<input type="radio" name="status" value="0" {if !$rs.status} checked{/if} title="{lang禁用}">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang排序}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" id="taxis" name="taxis" value="{$id ? $rs.taxis : 255}" class="layui-input" >
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang范围控制在0-255，值越小越往前排，默认为255}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="{lang启用默认组功能后，其他其将显示为可选类型}">&#xe702;</i>
+				{lang默认组}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="is_default" value="1"{if $rs.is_default} checked{/if} title="{lang启用}">
+				<input type="radio" name="is_default" value="0"{if !$rs.is_default} checked{/if} title="{lang禁用}">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="{lang指定支付组使用范围，手机或PC}">&#xe702;</i>
+				{lang范围}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="is_wap" value="1"{if $rs.is_wap} checked{/if} title="{lang手机端}">
+				<input type="radio" name="is_wap" value="0"{if !$rs.is_wap} checked{/if} title="{lang电脑端}">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">&nbsp;</label>
+			<div class="layui-input-block">
+				<input type="submit" class="layui-btn" value="{lang提交保存}" />
+				<input type="button" value="{lang返回上一步}" onclick="$.phpok.go('{url ctrl=payment/}')" class="layui-btn layui-btn-danger am-fr" />
+			</div>
+		</div>
+		</form>
 	</div>
 </div>
-<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
-</form>
-
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

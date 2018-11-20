@@ -1,13 +1,28 @@
 <!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
-
-<div role="main" class="ui-content">
-<ul data-role="listview" data-inset="true" data-divider-theme="a" style="margin:0;">
-	<li data-role="list-divider">{$page_rs.title}</li>
-	<!-- catelist pid=$page_rs.id catelist_ext=1 -->
-	<!-- loop from=$list.sublist key=$key value=$value -->
-	<li><a href="{$value.url}" title="{$value.title}">{$value.title}<span class="ui-li-count"><!-- php:$total = phpok('_total','pid='.$page_rs.id.'&cateid='.$value.id) -->{$total}</span></a></li>
-	<!-- /loop -->
-</ul>
+<div class="main">
+	<div class="am-panel-group">
+		<!-- catelist pid=$page_rs.id catelist_ext=1 -->
+		<!-- loop from=$list.sublist key=$key value=$value id=$tmpid -->
+		
+		<div class="am-panel am-panel-default">
+			
+			<div class="am-panel-hd">
+				<a href="{$value.url}" title="{$value.title}">
+				<h3 class="am-panel-title">
+					{$value.title}
+					<i class="am-icon-angle-right am-icon-fw am-fr"></i>
+				</h3>
+				</a>
+			</div>
+			<!-- if $value.note -->
+			<div class="am-g am-panel-bd">
+				{func nl2br $value.note}
+			</div>
+			<!-- /if -->
+			
+		</div>
+		
+		<!-- /loop -->
+	</div>
 </div>
-
 <!-- include tpl=foot -->

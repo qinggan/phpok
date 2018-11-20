@@ -1,0 +1,20 @@
+<!-- php:$list = phpok('hot_products') -->
+<!-- if $list.total -->
+<div class="am-panel am-panel-default">
+	<div class="am-panel-hd">
+		<h3 class="am-panel-title">热门产品</h3>
+	</div>
+	<div data-am-widget="slider" class="am-slider am-slider-c3" data-am-slider='{"controlNav":false}'>
+		<ul class="am-slides">
+			<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+			<li>
+				<a href="{$value.url}" title="{$value.title}">
+					<img src="{$value.thumb.gd.thumb}" alt="{$value.title}" />
+					<div class="am-slider-desc"><div class="am-slider-counter"><span class="am-active">{$tmpid.num}</span>/{$tmpid.total}</div>{$value.title}</div>
+				</a>
+			</li>
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>
+<!-- /if -->

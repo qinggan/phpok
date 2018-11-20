@@ -36,6 +36,14 @@ class js_control extends phpok_control
 		if($autoload_js){
 			$ext = $ext ? $ext.",".$autoload_js : $autoload_js;
 		}
+		$myctrl = $this->get('_ctrl');
+		$myfunc = $this->get('_func');
+		if($myctrl && is_file($this->dir_phpok.'js/'.$this->app_id.'.'.$myctrl.'.js')){
+			$ext = $ext ? $ext.",".$this->app_id.'.'.$myctrl.'.js' : $this->app_id.'.'.$myctrl.'.js';
+		}
+		if($myctrl && $myfunc && is_file($this->dir_phpok.'js/'.$this->app_id.'.'.$myctrl.'-'.$myfunc.'.js')){
+			$ext = $ext ? $ext.",".$this->app_id.'.'.$myctrl.'-'.$myfunc.'.js' : $this->app_id.'.'.$myctrl.'-'.$myfunc.'.js';
+		}
 		if(!$ext && !$_ext){
 			exit;
 		}
@@ -185,6 +193,17 @@ class js_control extends phpok_control
 		}
 		$jquery = $this->lib('file')->cat($file);
 		$this->assign('jquery',$jquery);
+		if($this->app_id == 'www'){
+			if(defined('PHPOK_SITE_ID')){
+				$this->assign('phpok_site_id',PHPOK_SITE_ID);
+			}else{
+				$this->assign('phpok_site_id',$this->site['id']);
+			}
+			$this->assign('site_id',$this->site['id']);
+		}elseif($this->app_id == 'admin'){
+			$this->assign('phpok_site_id',$this->session->val('admin_site_id'));
+			$this->assign('site_id',$this->session->val('admin_site_id'));
+		}
 		$this->tpl->output($this->dir_phpok.'system.js','abs-file',false);
 	}
 

@@ -9,11 +9,14 @@
 	<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<title><!-- if $title -->{$title} - <!-- /if -->{$site_info.title ? $site_info.title : $config.title}_{lang后台管理}</title>
+	<!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
 	<link rel="stylesheet" type="text/css" href="{#css#}/css.php?version={:VERSION}" />
 	{func phpok_head_css}
 	<!-- php:$js_ext = 'admin.'.$sys.ctrl.'.js,admin.'.$sys.ctrl.'-'.$sys.func.'.js' -->
-	<script type="text/javascript" src="js/laydate/laydate.js"></script>
 	<script type="text/javascript" src="{url ctrl=js ext=$js_ext/}"></script>
+	<script type="text/javascript" src="js/laydate/laydate.js"></script>
 	{func phpok_head_js}
 	<!-- plugin head -->
 </head>

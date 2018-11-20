@@ -1,9 +1,61 @@
-<!-- include tpl=head title=支付管理 -->
-<script type="text/javascript" src="{func include_js payment.js}"></script>
-<div class="tips clearfix">
-	您当前位置：<a href="{url ctrl=payment/}" title="支付管理">支付管理</a> &raquo; <a href="{url ctrl=payment/}" title="方案列表">方案列表</a>
-	<div class="action"><a href="{url ctrl=payment func=groupset /}">创建组</a></div>
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang支付管理}
+		<div class="fr">
+			<a href="{url ctrl=payment func=groupset /}" class="layui-btn layui-btn-sm" >{lang创建组}</a>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>{lang名称}</th>
+			<th>{lang排序}</th>
+			<th>{lang操作}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<thead>
+		<tr>
+			<td>{$value.title}
+				<!-- if !$value.status --> <span class="gray i">{lang停用}</span><!-- /if -->
+				<!-- if $value.is_wap --><span class="red">{lang手机端}</span><!-- /if -->
+			</td>
+			<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}" onclick="$.admin_payment.taxis(this)" type="group">{$value.taxis}</div></td>
+			<td>
+				<div class="layui-btn-group">
+					<!-- if $popedom.groupedit --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=payment func=groupset id=$value.id/}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
+					<!-- if $popedom.groupdelete --><input type="button" value="{lang删除}" onclick="$.admin_payment.group_delete('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
+					<!-- if $popedom.add --><input type="button" value="添加支付方案" onclick="$.admin_payment.add('{$value.id}')" class="layui-btn  layui-btn-sm layui-btn-danger" /><!-- /if -->
+				</div>
+			</td>
+		</tr>
+		</thead>
+		<!-- loop from=$value.paylist key=$k value=$v -->
+		<tr>
+			<td>
+				<div style="padding-left:2em;">{$v.title}
+					<!-- if !$v.status --><span class="gray i">{lang停用}</span><!-- /if -->
+					<!-- if $v.wap --><span class="red">{lang手机端}</span><!-- /if -->
+				</div>
+			</td>
+			<td>
+				<div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$v.id}" onclick="$.admin_payment.taxis(this)" type="payment">{$v.taxis}</div>
+			</td>
+			<td>
+				<div class="layui-btn-group">
+					<!-- if $popedom.edit --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=payment func=set id=$v.id/}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
+					<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_payment.del('{$v.id}','{$v.title}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
+				</div>
+			</td>
+		</tr>	
+		<!-- /loop -->
+		<!-- /loop -->
+		</table>
+	</div>
 </div>
+
 <div class="hide" id="payment_select_info">
 <select id="code">
 	<!-- loop from=$codelist key=$key value=$value -->
@@ -11,78 +63,4 @@
 	<!-- /loop -->
 </select>
 </div>
-<script type="text/javascript">
-function update_taxis(val,id,type)
-{
-	var url = get_url('payment','taxis','type='+type+"&id="+id+"&taxis="+val);
-	$.ajax({
-		'url':url,
-		'dataType':'json',
-		'cache':false,
-		'async':true,
-		'beforeSend': function (XMLHttpRequest){
-			XMLHttpRequest.setRequestHeader("request_type","ajax");
-		},
-		'success':function(rs){
-			if(rs.status == 'ok'){
-				$.phpok.reload();
-			}else{
-				$.dialog.alert(rs.content);
-				return false;
-			}
-		}
-	});
-}
-$(document).ready(function(){
-	$("div[name=taxis]").click(function(){
-		var oldval = $(this).text();
-		var id = $(this).attr('data');
-		var type = $(this).attr("type");
-		$.dialog.prompt('{lang请填写新的排序：}',function(val){
-			if(val != oldval){
-				update_taxis(val,id,type);
-			}
-		},oldval);
-	});
-});
-</script>
-<div class="list2">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th class="lft">&nbsp;名称</th>
-	<th>排序</th>
-	<th class="lft"><div style="padding-left:10px;">操作</div></th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value -->
-<tr class="list">
-	<td>{$value.title}<!-- if !$value.status --><span class="gray i">（停用）</span><!-- /if --><!-- if $value.is_wap --><span class="red">（手机端）</span><!-- /if --></td>
-	<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}" type="group">{$value.taxis}</div></td>
-	<td>
-		<div class="button-group">
-			<!-- if $popedom.groupedit --><input type="button" value="{lang编辑}" onclick="group_edit('{$value.id}')" class="phpok-btn" /><!-- /if -->
-			<!-- if $popedom.groupdelete --><input type="button" value="{lang删除}" onclick="group_delete('{$value.id}','{$value.title}')" class="phpok-btn" /><!-- /if -->
-			<!-- if $popedom.add --><input type="button" value="添加支付方案" onclick="payment_add('{$value.id}')" class="phpok-btn" /><!-- /if -->
-		</div>
-	</td>
-</tr>
-	<!-- loop from=$value.paylist key=$k value=$v -->
-	<tr>
-		<td><div style="padding-left:24px;">{$v.title}<!-- if !$v.status --><span class="gray i">（停用）</span><!-- /if --><!-- if $v.wap --><span class="red">（手机端）</span><!-- /if --></div></td>
-		<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$v.id}" type="payment">{$v.taxis}</div></td>
-		<td>
-			<div class="button-group">
-				<!-- if $popedom.edit --><input type="button" value="{lang编辑}" onclick="payment_edit('{$v.id}')" class="phpok-btn" /><!-- /if -->
-				<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="payment_delete('{$v.id}','{$v.title}')" class="phpok-btn" /><!-- /if -->
-			</div>
-		</td>
-	</tr>	
-	<!-- /loop -->
-<!-- /loop -->
-</table>
-</div>
-<script type="text/javascript">
-$(document).ready(function(){
-	top.$.desktop.title('支付方案列表');
-});
-</script>
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

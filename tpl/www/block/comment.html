@@ -12,7 +12,8 @@
 			</div>
 			<div class="am-comment-bd">
 				<form method="post" id="comment-post" class="am-form">
-					<input type="hidden" name="id" id="id" value="{$tid ? $tid : $rs.id}" />
+					<input type="hidden" name="tid" value="{$tid ? $tid : $rs.id}" />
+					<input type="hidden" name="vtype" value="{$vtype ? $vtype : 'title'}" />
 					<!-- if $comment.uid -->
 					<div class="am-form-group">{func form_edit comment $comment.content editor width=100%&height=150&btns[image]=1}</div>
 					<!-- else -->
@@ -20,6 +21,9 @@
 						<textarea rows="5" name="comment" id="comment" placeholder="填写评论信息" style="resize: none;"></textarea>
 					</div>
 					<!-- /if -->
+					<div class="am-form-group">
+						{func form_edit pictures $comment.res upload is_multiple=1}
+					</div>
 					<!-- if $is_vcode -->
 					<div class="am-g am-form-group am-g-collapse">
 						<div class="am-u-sm-2"><input class="vcode"  type="text" name="_chkcode" id="_chkcode" placeholder="请填写验证码" /></div>
@@ -55,24 +59,31 @@
 			</div>
 			<div class="am-comment-bd">
 				{$value.content}
+				<!-- if $value.res -->
+				<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-imgbordered" data-am-gallery="{pureview: 1}">
+					<!-- loop from=$value.res key=$k value=$v id=$idxx -->
+					<li><div class="am-gallery-item"><img src="{$v.ico}" alt="{$v.title}" data-rel="{$v.gd.auto.filename}" /></div></li>
+					<!-- /loop -->
+				</ul>
+				<!-- /if -->
 			</div>
 		</div>
 	</li>
-	<!-- if $value.adm_content && $value.adm_time -->
+	<!-- loop from=$value.adm_reply key=$k value=$v id=$idxx -->
 	<li class="am-comment am-comment-flip am-comment-highlight">
 		<img src="images/adminer.png" class="am-comment-avatar" width="48" height="48" />
 		<div class="am-comment-main">
 			<div class="am-comment-hd">
 				<div class="am-comment-meta">
-					管理员回复于<time>{func time_format $value.adm_time}</time>
+					管理员回复于<time>{func time_format $v.addtime}</time>
 				</div>
 			</div>
 			<div class="am-comment-bd">
-				{$value.adm_content}
+				{$v.content}
 			</div>
 		</div>
 	</li>
-	<!-- /if -->
+	<!-- /loop -->
 	<!-- /loop -->
 </ul>
 <!-- include tpl=block/pagelist pageurl=$rs.url total=$comment.total pageid=$comment.pageid psize=$comment.$psize -->

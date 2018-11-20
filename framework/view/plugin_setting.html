@@ -1,37 +1,52 @@
-<!-- include tpl=head -->
-<div class="tips">
-	<div class="left">
-		{lang当前位置：}<a href="{url ctrl=plugin/}">{lang插件中心}</a>
-		&raquo; <a href="{url ctrl=plugin func=setting id=$id/}">{$rs.title}</a>
-		&raquo; {lang插件快捷图标设置}
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header " style="visibility: visible;">
+		<div>{lang插件快捷图标设置}</div>
 	</div>
-	<div class="action"><a href="javascript:$.admin_plugin.icon('{$id}','','{lang添加图标}');void(0);">{lang添加图标}</a></div>
-</div>
 
-<div class="list">
-<table width="100%" class="list" cellpadding="0" cellspacing="0">
-<tr>
-	<th>标题</th>
-	<th>显示区域</th>
-	<th>执行方法</th>
-	<th>排序</th>
-	<th width="150px">操作</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value id=$idx -->
-<tr>
-	<td class="center">{$value.title}</td>
-	<td class="center">{$value.position}</td>
-	<td class="center">{$value.efunc_title}<!-- if $value.efunc_title != $value.efunc --> / {$value.efunc}<!-- /if --></td>
-	<td class="center">{$value.taxis}</td>
-	<td class="center">
-		<div class="button-group">
-			<input type="button" value="{lang修改}" onclick="$.admin_plugin.icon('{$id}','{$value.id}','{lang修改图标}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="$.admin_plugin.icon_del('{$id}','{$value.id}','{$value.title}')" class="phpok-btn" />
+	<div class="layui-card-body">
+
+		<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
+			<button class="layui-btn" onclick="$.admin_plugin.icon('{$id}','','{lang添加图标}');">
+				<i class="layui-icon">&#xe608;</i> {lang添加图标}
+			</button>
 		</div>
-	</td>
-</tr>
-<!-- /loop -->
-</table>
-</div>
 
-<!-- include tpl=foot -->
+		<table class="layui-table">
+			<colgroup>
+				<col>
+				<col>
+				<col>
+				<col>
+				<col width="140">
+			</colgroup>
+			<thead>
+			<tr>
+				<th>标题</th>
+				<th>显示区域</th>
+				<th>执行方法</th>
+				<th>排序</th>
+				<th width="150px">操作</th>
+			</tr>
+			</thead>
+			<tbody>
+			<!-- loop from=$rslist key=$key value=$value id=$idx -->
+			<tr>
+				<td class="center">{$value.title}</td>
+				<td class="center">{$value.position}</td>
+				<td class="center">{$value.efunc_title}<!-- if $value.efunc_title != $value.efunc --> / {$value.efunc}<!-- /if --></td>
+				<td class="center">{$value.taxis}</td>
+				<td class="center">
+					<div class="layui-btn-group">
+						<input type="button" value="{lang修改}" onclick="$.admin_plugin.icon('{$id}','{$value.id}','{lang修改图标}')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang删除}" onclick="$.admin_plugin.icon_del('{$id}','{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
+					</div>
+				</td>
+			</tr>
+			<!-- /loop -->
+			</tbody>
+		</table>
+	</div>
+
+</div>
+<!-- include tpl=foot_lay -->

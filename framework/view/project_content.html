@@ -1,91 +1,60 @@
-<!-- include tpl=head -->
-<script type="text/javascript">
-$(document).ready(function(){
-	$("#{$ext_module}").submit(function(){
-		$(this).ajaxSubmit({
-			'url':"{url ctrl=project func=content_save/}",
-			'type':'post',
-			'dataType':'json',
-			'success':function(rs){
-				if(rs.status == 'ok'){
-					$.dialog.alert("{lang数据保存成功}",function(){$.phpok.reload();},'succeed');
-				}else{
-					$.dialog.alert(rs.content);
-				}
-			}
-		});
-		return false;
-	});
-});
-</script>
-<div class="tips">
-	{lang您当前的位置：}
-	<a href="{echo admin_url('project')}">{lang项目管理}</a>
-	&raquo; {lang项目内容编辑及字段扩展}
-</div>
-
-<form method="post" id="{$ext_module}">
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="{$ext_module}" onsubmit="return $.admin_project.extinfo_save('{$ext_module}')">
 <input type="hidden" id="id" name="id" value="{$id}" />
-<div class="table">
-	<div class="title">
-		{lang名称：}
-		<span class="note">{lang设置名称，该名称将在网站前台导航中使用}</span>
-	</div>
-	<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
-</div>
-
-<!-- loop from=$extlist key=$key value=$value -->
-<div class="table">
-	<div class="title">
-		<table cellspacing="0" cellpadding="0">
-		<tr>
-			<td height="25">{$value.title}<span class="darkblue">[{$value.identifier}]</span>：</td>
-			<td><span class="note">{$value.note}</span></td>
-			<!-- if $popedom.ext -->
-			<td><a class="icon edit" onclick="ext_edit('{$value.identifier}','{$ext_module}')"></a></td>
-			<td><a class="icon delete" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')"></a></td>
-			<!-- /if -->
-		</tr>
-		</table>
-	</div>
-	<div class="content">{$value.html}</div>
-</div>
-<!-- /loop -->
-
-
-<!-- if $popedom.ext -->
-<div class="table">
-	<div class="content">
-		<span id="_quick_insert"></span>
-		<script type="text/javascript">
-		$(document).ready(function(){
-			$.ajax({
-				'url':"{url ctrl=ext func=select type=project module=$ext_module/}",
-				'dataType':'html',
-				'cache':false,
-				'async':true,
-				'beforeSend': function (XMLHttpRequest){
-					XMLHttpRequest.setRequestHeader("request_type","html");
-				},
-				'success':function(rs){
-					$("#_quick_insert").html(rs);
-				}
-			});
-		});
-		</script>
-		<input type="button" value="{lang标准创建扩展字段}" onclick="ext_add('{$ext_module}')" class="button2" />
+<div class="layui-card">
+	<div class="layui-card-header">{lang扩展字段}</div>
+	<div class="layui-container layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang名称}</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
+			</div>
+			<div class="layui-input-inline auto gray">{lang设置名称，该名称将在网站前台导航中使用}</div>
+		</div>
+		<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
+		<div class="layui-form-item">
+			<label class="layui-form-label title">
+				<!-- if $value.note --><i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i><!-- /if -->
+				{$value.title}
+				<div class="darkblue"><small>[{$value.identifier}]</small></div>
+			</label>
+			<div class="layui-input-inline default-auto">{$value.html}</div>
+			<div class="layui-input-inline auto">
+				<div class="layui-btn-group">
+					<!-- if $popedom.ext && $session.adm_develop -->
+					<!-- if $ext_module != 'add-cate' -->
+					<input type="button" value="{lang编辑}" class="layui-btn layui-btn-xs" onclick="ext_edit('{$value.identifier}','{$ext_module}')" />
+					<!-- /if -->
+					<input type="button" value="{lang删除}" class="layui-btn layui-btn-xs layui-btn-normal" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')" />
+					<!-- /if -->
+				</div>
+			</div>
+		</div>
+		<!-- /loop -->
+		<!-- if $popedom.ext -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang扩展字段}</label>
+			<div class="layui-input-inline long" id="_quick_insert" data-module="{$ext_module}"></div>
+		</div>
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">&nbsp;</label>
+			<div class="layui-input-inline default-auto">
+				<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-normal" />
+			</div>
+		</div>
+		
 	</div>
 </div>
-<!-- /if -->
 
 
 
 <div class="table">
 	<div class="content">
 		<br />
-		<input type="submit" value="{lang提交}" class="submit2" />
+		
 		<br />
 	</div>
 </div>
 </form>
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

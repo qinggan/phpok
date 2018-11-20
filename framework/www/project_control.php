@@ -178,7 +178,7 @@ class project_control extends phpok_control
 			unset($keywords);
 		}
 		if($ext && is_array($ext)){
-			foreach($ext AS $key=>$value){
+			foreach($ext as $key=>$value){
 				if($key && $value){
 					$dt['e_'.$key] = $value;
 					$pageurl .= "ext[".$key."]=".rawurlencode($value)."&";
@@ -235,6 +235,9 @@ class project_control extends phpok_control
 		$dt['is_list'] = 1;
 		if($attr){
 			$dt['attr'] = $attr;
+		}
+		if($rs['list_fields']){
+			$dt['fields'] = $rs['list_fields'];
 		}
 		$this->plugin("system_www_arclist",$rs,$m_rs);
 		$dt_ext = $this->tpl->val('dt');

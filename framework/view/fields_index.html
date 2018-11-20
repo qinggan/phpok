@@ -1,37 +1,52 @@
-<!-- include tpl=head -->
-<div class="tips">
-	<!-- if $popedom.add -->
-	<div class="action"><a href="javascript:$.admin_fields.set();void(0);">添加新字段</a></div>
-	<!-- /if -->
-	您当前的位置：
-	<a href="{url ctrl=fields/}">常用字段管理</a>
-	&raquo; 字段列表
-</div>
-<div class="list">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th class="lft" style="text-indent:12px;">名称</th>
-	<th>字段名</th>
-	<th>字段类型</th>
-	<th>表单类型</th>
-	<!-- if $popedom.modify || $popedom.delete --><th class="action">操作</th><!-- /if -->
-</tr>
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<tr title="{$value.note}">
-	<td style="text-indent:16px;">{$value.title}</td>
-	<td class="center">{$value.identifier}</td>
-	<td class="center">{$value.field_type_name}</td>
-	<td class="center">{$value.form_type_name}</td>
-	<!-- if $popedom.modify || $popedom.delete -->
-	<td>
-		<div class="button-group">
-			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.admin_fields.set('{$value.identifier}')" class="phpok-btn" /><!-- /if -->
-			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_fields.del('{$value.identifier}')" class="phpok-btn" /><!-- /if -->
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header " style="visibility: visible;">
+		<div>{lang常用字段管理}</div>
+	</div>
+
+	<div class="layui-card-body">
+
+		<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
+			<button class="layui-btn" onclick="$.admin_fields.set();">
+				<i class="layui-icon">&#xe608;</i> {lang添加新字段}
+			</button>
 		</div>
-	</td>
-	<!-- /if -->
-</tr>
-<!-- /loop -->
-</table>
+		<table class="layui-table">
+			<colgroup>
+				<col>
+				<col>
+				<col>
+				<col>
+				<col width="140">
+			</colgroup>
+			<thead>
+			<tr>
+				<th>{lang名称}</th>
+				<th>{lang字段名}</th>
+				<th><div>{lang字段类型}</div></th>
+				<th><div>{lang表单类型}</div></th>
+				<!-- if $popedom.modify || $popedom.delete --><th class="action">{lang操作}</th><!-- /if -->
+			</tr>
+			</thead>
+			<tbody>
+			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+			<tr id="admin_tr_{$value.id}">
+				<td>{$value.title}</td>
+				<td>{$value.identifier}</td>
+				<td>{$value.field_type_name}</td>
+				<td>{$value.form_type_name}</td>
+				<!-- if $popedom.modify || $popedom.delete -->
+				<td>
+					<div class="button-group">
+						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.admin_fields.set('{$value.identifier}')" class="layui-btn layui-btn-sm" /><!-- /if -->
+						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_fields.del('{$value.identifier}')" class="layui-btn layui-btn-sm" /><!-- /if -->
+					</div>
+				</td>
+				<!-- /if -->
+			</tr>
+			<!-- /loop -->
+			</tbody>
+		</table>
+	</div>
 </div>
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

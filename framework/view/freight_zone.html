@@ -79,8 +79,8 @@ $(document).ready(function(){
 	<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 	<td>
 		<div class="button-group">
-			<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=freight func=zone_setting id=$value.id/}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="phpok-btn" />
+			<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=freight func=zone_setting id=$value.id/}')" class="layui-btn" />
+			<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="layui-btn" />
 		</div>
 	</td>
 </tr>

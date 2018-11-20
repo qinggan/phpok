@@ -1,7 +1,12 @@
-<!-- include tpl=head_open -->
+<!-- include tpl=head_lay nopadding=true -->
 <script type="text/javascript">
 function save()
 {
+	if(typeof(CKEDITOR) != "undefined"){
+		for(var i in CKEDITOR.instances){
+			CKEDITOR.instances[i].updateElement();
+		}
+	}
 	var opener = $.dialog.opener;
 	var obj = opener.$("#{$identifier}");
 	var tip = $.dialog.tips(p_lang('正在保存数据…'),100);
@@ -42,26 +47,30 @@ function save()
 <form method="post" id="post_save" onsubmit="return false">
 <input type="hidden" name="pid" id="pid" value="{$pid}" />
 <!-- if $rs && $rs.id --><input type="hidden" name="tid" id="tid" value="{$rs.id}" /><!-- /if -->
-<!-- if !$m_rs.mtype -->
-<div class="table clearfix">
-	<div class="title">
-		<!-- if $p_rs.alias_title -->{$p_rs.alias_title}：<!-- else -->{lang主题}：<!-- /if -->
-		<span class="note">{lang此项必填}<!-- if $p_rs.alias_note -->，{$p_rs.alias_note}<!-- /if --></span>
-	</div>
-	<div class="content">
-		<input type="text" name="title" id="title" value="{$rs.title}" class="w99" />
+<div class="layui-card">
+	<div class="layui-card-body">
+		<!-- if !$m_rs.mtype -->
+		<div class="table clearfix">
+			<div class="title">
+				<!-- if $p_rs.alias_title -->{$p_rs.alias_title}：<!-- else -->{lang主题}：<!-- /if -->
+				<span class="note">{lang此项必填}<!-- if $p_rs.alias_note -->，{$p_rs.alias_note}<!-- /if --></span>
+			</div>
+			<div class="content">
+				<input type="text" name="title" id="title" value="{$rs.title}" class="w99" />
+			</div>
+		</div>
+		<!-- /if -->
+		<!-- loop from=$extlist key=$key value=$value id=extlist_id -->
+		<div class="table clearfix" id="form_html_{$value.identifier}">
+			<div class="title">
+				{$value.title}：
+				<!-- if $value.note --><span class="note">{$value.note}</span><!-- /if -->
+			</div>
+			<div class="content">{$value.html}</div>
+			<div class="clear"></div>
+		</div>
+		<!-- /loop -->
 	</div>
 </div>
-<!-- /if -->
-<!-- loop from=$extlist key=$key value=$value id=extlist_id -->
-<div class="table clearfix" id="form_html_{$value.identifier}">
-	<div class="title">
-		{$value.title}：
-		<!-- if $value.note --><span class="note">{$value.note}</span><!-- /if -->
-	</div>
-	<div class="content">{$value.html}</div>
-	<div class="clear"></div>
-</div>
-<!-- /loop -->
 </form>
-<!-- include tpl=foot_open -->
+<!-- include tpl=foot_lay -->

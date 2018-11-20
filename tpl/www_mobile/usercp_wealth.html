@@ -1,0 +1,58 @@
+<!-- include tpl=head title=我的财富 -->
+<div class="am-modal am-modal-prompt" tabindex="-1" id="my-prompt">
+	<div class="am-modal-dialog">
+		<div class="am-modal-hd">充值</div>
+		<div class="am-modal-bd">
+			请输入要充值的金额<br />仅支持整数，最小充值1元
+			<input type="text" class="am-modal-prompt-input">
+		</div>
+		<div class="am-modal-footer">
+			<span class="am-modal-btn" data-am-modal-cancel>取消</span>
+			<span class="am-modal-btn" data-am-modal-confirm>提交</span>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(function() {
+  $('#doc-prompt-toggle').on('click', function() {
+    
+  });
+});
+function payit(id,title)
+{
+	$('#my-prompt').modal({
+		relatedTarget: this,
+		onConfirm: function(e) {
+			if(e.data < 1){
+				$.dialog.alert('充值金额不能少于1元');
+				return false;
+			}
+			var url = get_url('payment','index','id='+id+"&price="+$.str.encode(e.data));
+			$.phpok.go(url);
+		},
+		onCancel:true
+	});
+}
+</script>
+<div class="am-panel-group am-margin-xs">
+	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	<div class="am-panel am-panel-default">
+		<div class="am-panel-hd">
+			{$value.title}
+			
+		</div>
+		<div class="am-panel-bd">
+			<div>您当前有 <span class="red"><!-- if $value.val -->{$value.val}<!-- else -->0<!-- /if --></span> {$value.unit}</div>
+			<!-- if $value.ifpay -->
+			<div class="gray">充值比例：1元人民币 = {$value.pay_ratio} {$value.unit}</div>
+			<!-- /if -->
+			<!-- if $value.ifcash && !$value.ifpay -->
+			<div class="gray">抵现比例：100{$value.unit} = {$value.cash_ratio}元人民币，可用于抵扣购物金额</div>
+			<!-- /if -->
+			<!-- if $value.ifpay --><div><input type="button" value="充值" class="am-btn am-btn-primary am-btn-sm" onclick="payit('{$value.id}','{$value.title}')" /></div><!-- /if -->
+		</div>
+	</div>
+	<!-- /loop -->
+</div>
+<!-- include tpl=foot -->

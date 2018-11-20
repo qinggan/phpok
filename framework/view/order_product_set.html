@@ -1,0 +1,128 @@
+<!-- include tpl=head_lay nopadding=true -->
+<div class="layui-card">
+	<div class="layui-card-body">
+		<form method="post" id="post_save" class="layui-form">
+		<input type="hidden" name="id" id="id" value="{$rs.id}" />
+		<input type="hidden" name="tid" id="tid" value="{$rs.tid}" />
+		<input type="hidden" name="order_id" id="order_id" value="{$order.id}" />
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang产品名称}
+			</label>
+			<div class="layui-input-inline long-auto">
+				<input type="text" name="title" value="{$rs.title}" class="layui-input" />
+			</div>
+			<div class="layui-input-line">
+				<input type="button" value="{lang选择}" onclick="$.admin_order.prolist()" class="layui-btn" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang产品类型}
+			</label>
+			<div class="layui-input-inline auto">
+				<ul class="layout">
+					<li><input type="radio" name="is_virtual" value="0"{if !$rs.is_virtual} checked{/if} title="{lang实物}" onclick="$.admin_order.product_virtual(0)" /></li>
+					<li><input type="radio" name="is_virtual" value="1"{if $rs.is_virtual} checked{/if} title="{lang虚拟或服务}" onclick="$.admin_order.product_virtual(1)" /></li>
+				</ul>
+			</div>
+			<div class="layui-input-inline auto gray lh38"></div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang单价}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="price" value="{$rs.price}" class="layui-input" />
+			</div>
+			<!-- if $currency -->
+			<div class="layui-input-inline auto lh38" id="currency_info" data-id="{$currency.id}">
+				{$currency.title} {$currency.code} {lang汇率} {$currency.val}
+			</div>
+			<!-- /if -->
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang数量}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="qty" value="{$rs.qty}" class="layui-input" />
+			</div>
+			<label class="layui-form-label">
+				{lang计量单位}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="unit" value="{$rs.unit}" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang图片}
+			</label>
+			<div class="layui-input-inline default-auto">
+				{func form_edit thumb $rs.thumb text form_btn=image&form_style=width:400px}
+			</div>
+			<div class="layui-input-inline auto gray lh38"></div>
+		</div>
+		<div class="layui-form-item{if $rs.is_virtual} hide{/if}" id="product_not_virtual">
+			<label class="layui-form-label">
+				{lang重量}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="weight" value="{$rs.weight}" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto lh38 gray">
+				Kg
+			</div>
+			<label class="layui-form-label">
+				{lang体积}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="volume" value="{$rs.volume}" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto lh38 gray">
+				M<sup>3</sup>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang扩展属性}
+			</label>
+			<div class="layui-input-block" id="ext_html">
+				<!-- if !$rs.ext -->
+				<div style="margin:2px 0">
+					<ul class="layout">
+						<li><input type="text" name="extkey[]" class="layui-input" /></li>
+						<li class="layui-form-mid">：</li>
+						<li><input type="text" name="extval[]" class="layui-input default" /></li>
+						<li><input type="button" value=" + " onclick="$.admin_order.ext_create()" class="layui-btn" /></li>
+					</ul>
+				</div>
+				<!-- /if -->
+				<!-- loop from=$rs.ext key=$key value=$value id=$tmpid -->
+				<div style="margin:2px 0">
+					<ul class="layout">
+						<li><input type="text" name="extkey[]" value="{$value.title}" class="layui-input" /></li>
+						<li class="layui-form-mid">：</li>
+						<li><input type="text" name="extval[]" value="{$value.content}" class="layui-input default" /></li>
+						<!-- if !$tmpid.index -->
+						<li><input type="button" value=" + " onclick="$.admin_order.ext_create()" class="layui-btn" /></li>
+						<!-- else -->
+						
+						<li><input type="button" value=" - " onclick="$.admin_order.ext_delete(this)" class="layui-btn" /></li>
+						<!-- /if -->
+					</ul>
+				</div>
+				<!-- /loop -->
+			</div>
+		</div>
+		
+		
+		
+		
+		</form>
+	</div>
+</div>
+
+
+<!-- include tpl=foot_lay -->

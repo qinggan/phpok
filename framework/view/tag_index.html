@@ -1,50 +1,53 @@
-<!-- include tpl=head title=标签管理 -->
-<div class="tips">
-	{lang您当前的位置：}
-	<a href="{url ctrl=tag/}">{lang标签管理}</a>
-	&raquo; {lang标签列表}
-	<!-- if $popedom.add --><div class="action"><a href="javascript:$.phpok_tag.add();void(0);">添加标签</a></div><!-- /if -->
-	<!-- if $session.admin_rs.if_system --><div class="action"><a href="javascript:$.phpok_tag.config();void(0);">配置标签</a></div><!-- /if -->
-</div>
-<div class="list">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-	<th class="id">ID</th>
-	<th class="lft" width="160">名称</th>
-	<th class="lft" width="160">链接提示文字</th>
-	<th class="lft">自定义网址</th>
-	<th width="95">是否新窗口</th>
-	<th width="95">全局性</th>
-	<th width="70">替换次数</th>
-	<th width="90">主题数</th>
-	<th width="90">点击数</th>
-	<th class="action">操作</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value -->
-<tr id="edit_{$value.id}">
-	<td class="center">{$value.id}</td>
-	<td>{$value.title}</td>
-	<td>{$value.alt ? $value.alt : '-'}</td>
-	<td>{$value.url ? $value.url : '-'}</td>
-	<td class="center">
-		<!-- if $value.target --><span class="red">新窗口</span><!-- else --><span class="darkblue">当前窗口</span><!-- /if -->
-	</td>
-	<td class="center">
-		<!-- if $value.is_global --><span class="darkblue">全局可用</span><!-- else -->-<!-- /if -->
-	</td>
-	<td class="center">{$value.replace_count}</td>
-	<td class="center">{$value.count ? $value.count : 0}</td>
-	<td class="center">{$value.hits ? $value.hits : 0}</td>
-	<td>
-		<div class="button-group">
-			<input type="button" value="{lang编辑}" onclick="$.phpok_tag.edit('{$value.id}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="$.phpok_tag.del('{$value.id}','{$value.title}')" class="phpok-btn" />
+<!-- include tpl=head_lay title=标签管理 -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang列表}
+		<!-- if $session.admin_rs.if_system || $popedom.add -->
+		<div class="layui-btn-group fr">
+			<!-- if $session.admin_rs.if_system --><button class="layui-btn layui-btn-sm" onclick="$.phpok_tag.config();void(0);">{lang配置标签}</button><!-- /if -->
+			<!-- if $popedom.add --><button class="layui-btn layui-btn-sm" onclick="$.phpok_tag.add();void(0);">{lang添加标签}</button><!-- /if -->
 		</div>
-	</td>
-</tr>
-<!-- /loop -->
-</table>
+		<!-- /if -->
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th width="70">ID</th>
+			<th>{lang名称}/{lang网址}</th>
+			<th>{lang提示文字}</th>
+			<th width="95">{lang是否新窗口}</th>
+			<th width="95">{lang全局性}</th>
+			<th width="70" class="center">{lang替换次数}</th>
+			<th width="90" class="center">{lang主题数}</th>
+			<th width="90" class="center">{lang点击数}</th>
+			<th>{lang操作}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr id="edit_{$value.id}">
+			<td>{$value.id}</td>
+			<td>{$value.title}<!-- if $value.url --><br />{$value.url}<!-- /if --></td>
+			<td>{$value.alt ? $value.alt : '-'}</td>
+			<td>
+				<!-- if $value.target --><span class="red">{lang新窗口}</span><!-- else --><span class="darkblue">{lang当前窗口}</span><!-- /if -->
+			</td>
+			<td>
+				<!-- if $value.is_global --><span class="darkblue">{lang全局可用}</span><!-- else -->-<!-- /if -->
+			</td>
+			<td class="center">{$value.replace_count}</td>
+			<td class="center">{$value.count ? $value.count : 0}</td>
+			<td class="center">{$value.hits ? $value.hits : 0}</td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang编辑}" onclick="$.phpok_tag.edit('{$value.id}')" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.phpok_tag.del('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm" />
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<div align="center"><!-- include tpl=pagelist --></div>
+	</div>
 </div>
-<!-- include tpl=pagelist -->
-
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

@@ -46,16 +46,16 @@ class options_control extends phpok_control
 		$id = $this->get('id','int');
 		if($id){
 			if(!$this->popedom['modify']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}else{
 			if(!$this->popedom['add']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		$title = $this->get('title');
 		if(!$title){
-			$this->json(P_Lang('名称不能为空'));
+			$this->error(P_Lang('名称不能为空'));
 		}
 		$taxis = $this->get('taxis');
 		if(!$taxis){
@@ -68,25 +68,25 @@ class options_control extends phpok_control
 		if(!$id){
 			$insert_id = $this->model('options')->save(array('title'=>$title,'taxis'=>$taxis));
 			if(!$insert_id){
-				$this->json(P_Lang('添加失败'));
+				$this->error(P_Lang('添加失败'));
 			}
-			$this->json($insert_id,true);
+			$this->success($insert_id);
 		}
 		$this->model('options')->save(array('title'=>$title,'taxis'=>$taxis),$id);
-		$this->json(true);
+		$this->success();
 	}
 
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$this->model('options')->delete($id);
-		$this->json(true);
+		$this->success();
 	}
 
 	public function list_f()
@@ -125,18 +125,18 @@ class options_control extends phpok_control
 		if(!$id){
 			$aid = $this->get('aid');
 			if(!$aid){
-				$this->json(P_Lang('未指定属性ID'));
+				$this->error(P_Lang('未指定属性ID'));
 			}
 		}else{
 			$rs = $this->model('options')->value_one($id);
 			if(!$rs){
-				$this->json(P_Lang('属性参数有错误'));
+				$this->error(P_Lang('属性参数有错误'));
 			}
 			$aid = $rs['aid'];
 		}
 		$title = $this->get('title');
 		if(!$title){
-			$this->json(P_Lang('名称不能为空'));
+			$this->error(P_Lang('名称不能为空'));
 		}
 		$taxis = $this->get('taxis');
 		if(!$taxis){
@@ -149,20 +149,19 @@ class options_control extends phpok_control
 		$array['val'] = $this->get('val');
 		if($id){
 			$this->model('options')->save_values($array,$id);
-			$this->json(true);
-		}else{
-			$insert_id = $this->model('options')->save_values($array);
-			$this->json($insert_id,true);
+			$this->success();
 		}
+		$insert_id = $this->model('options')->save_values($array);
+		$this->success($insert_id);
 	}
 
 	public function delete_values_f()
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$this->model('options')->delete_values($id);
-		$this->json(true);
+		$this->success();
 	}
 }

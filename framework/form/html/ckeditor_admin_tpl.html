@@ -1,0 +1,37 @@
+<textarea id="{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}">{$_rs.content}</textarea>
+<script type="text/javascript">
+$(document).ready(function(){
+	CKEDITOR.config.extraPlugins = 'imglist';
+	//CKEDITOR.config.extraPlugins = 'simage';
+	var toolbars = [[
+		'Source','Find','Undo','Redo','RemoveFormat','-',
+		'Paste', 'PasteText', 'PasteFromWord','-',
+		'Bold','Italic','Underline','Strike','Subscript','Superscript','-',
+		'TextColor', 'BGColor','Blockquote','NumberedList', 'BulletedList','HorizontalRule','-',
+		'JustifyLeft','JustifyCenter','JustifyRight','-',
+		{if $_rs.btns.fontfamily}'Font',{/if}
+		{if $_rs.btns.paragraph}'Format',{/if}
+		{if $_rs.btns.fontsize}'FontSize',{/if}
+		{if $_rs.btns.paragraph || $_rs.btns.fontfamily || $_rs.btns.fontsize}'-',{/if}
+		'Outdent', 'Indent','-',
+		'Link', 'Unlink', 'Anchor','-',
+		
+		{if $_rs.btns.image}'Image','imglist',{/if}
+		{if $_rs.btns.table}'Table',{/if}
+		{if $_rs.btns.emotion}'Smiley',{/if}
+		{if $_rs.btns.spechars}'SpecialChar',{/if}
+		{if $_rs.btns.page}'PageBreak',{/if}
+		'-',
+		'About'
+	]];
+	CKEDITOR.replace('{$_rs.identifier}',{
+		'height':'{$_rs.height}',
+		'toolbar_Full':toolbars,
+		'toolbar':'Full',
+		'autoUpdateElement':true,
+		'colorButton_enableMore':false,
+		'phpok_Dialog_OBJ':$.dialog,
+		'phpok_Images_URL':get_url('ckeditor','images')
+	});	
+});
+</script>

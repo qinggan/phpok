@@ -107,7 +107,9 @@ class list_control extends phpok_control
 		}
 		$this->assign("plist",$plist);
 		$cateid = $this->get("cateid");
-		if(!$cateid) $cateid = $rs["cate"];
+		if(!$cateid){
+			$cateid = $rs["cate"];
+		}
 		if($cateid && $rs["cate"]){
 			$show_parent_catelist = $cateid != $rs["cate"] ? $cateid : false;
 			$catelist = $this->model('cate')->get_sonlist($cateid);
@@ -262,8 +264,18 @@ class list_control extends phpok_control
 		$this->assign("m_rs",$module);
 		$m_list = $this->model('module')->fields_all($mid,"identifier");
 		$layout_list = array();
-		foreach($layout as $key=>$value){
-			$layout_list[$value] = $m_list[$value]["title"];
+		
+		if($m_list){
+			foreach($layout as $key=>$value){
+				$layout_list[$value] = $m_list[$value]["title"];
+			}
+			$search_list = array();
+			foreach($m_list as $key=>$value){
+				if($value['search'] && ($value['search'] == 1 || $value['search'] == 2)){
+					$search_list[] = $value;
+				}
+			}
+			$this->assign('search_list',$search_list);
 		}
 		$this->assign("ext_list",$m_list);
 		$this->assign("layout",$layout_list);
@@ -282,6 +294,20 @@ class list_control extends phpok_control
 		$offset = ($pageid-1) * $psize;
 		$condition = "site_id='".$project['site_id']."' AND project_id='".$project['id']."'";
 		$pageurl = $this->url("list","action","id=".$pid);
+		$keywords = $this->get('keywords');
+		if($keywords){
+			$this->assign('keywords',$keywords);
+			if($m_list){
+				foreach($m_list as $key=>$value){
+					$_condition = $this->model('form')->search($value,$keywords[$value['identifier']],false);
+					if($_condition){
+						$condition .= " AND (".$_condition.") ";
+						$pageurl .= "&keywords[".$value['identifier']."]=".rawurlencode($keywords[$value['identifier']]);
+					}
+				}
+			}
+		}
+
 		$keytype = $this->get('keytype');
 		$keywords = $this->get("keywords");
 		if($keytype && $keywords && trim($keywords)){
@@ -305,14 +331,14 @@ class list_control extends phpok_control
 	private function content_list($project_rs)
 	{
 		if(!$project_rs){
-			error(P_Lang('项目信息不能为空'),'','error');
+			$this->error(P_Lang('项目信息不能为空'));
 		}
 		$pid = $project_rs["id"];
 		$mid = $project_rs["module"];
 		$site_id = $project_rs["site_id"];
 		$orderby = $project_rs["orderby"];
 		if(!$pid || !$mid || !$site_id){
-			error(P_Lang('数据异常'),'','error');
+			$this->error(P_Lang('数据异常'));
 		}
 		//读取电商数据
 		$this->model('list')->is_biz(($project_rs['is_biz'] ? true : false));
@@ -348,15 +374,20 @@ class list_control extends phpok_control
 		}
 		if(!$this->config["pageid"]) $this->config["pageid"] = "pageid";
 		$pageid = $this->get($this->config["pageid"],"int");
-		if(!$pageid) $pageid = 1;
+		if(!$pageid){
+			$pageid = 1;
+		}
 		$offset = ($pageid-1) * $psize;
 		$condition = "l.site_id='".$site_id."' AND l.project_id='".$pid."' AND l.parent_id='0' ";
 		$pageurl = $this->url("list","action","id=".$pid);
-		$cateid = $this->get("cateid","int");
-		if($cateid){
-			$cate_rs = $this->model('cate')->get_one($cateid);
+		$keywords = $this->get('keywords');
+		if($keywords){
+			$this->assign('keywords',$keywords);
+		}
+		if($keywords && $keywords['cateid'] && $project_rs['cate']){
+			$cate_rs = $this->model('cate')->get_one($keywords['cateid']);
 			$catelist = array($cate_rs);
-			$this->model('cate')->get_sublist($catelist,$cateid);
+			$this->model('cate')->get_sublist($catelist,$keywords['cateid']);
 			$cate_id_list = array();
 			foreach($catelist as $key=>$value){
 				$cate_id_list[] = $value["id"];
@@ -368,92 +399,84 @@ class list_control extends phpok_control
 				$condition .= " AND l.cate_id IN(".$cate_idstring.")";
 			}
 			
-			$pageurl .= "&cateid=".$cateid;
-			$this->assign("cateid",$cateid);
-		}else{
-			if(!$_SESSION['admin_rs']['if_system'] && $project_rs['cate']){
-				$cate_rs = $this->model('cate')->get_one($project_rs['cate']);
-				$catelist = array($cate_rs);
-				$this->model('cate')->get_sublist($catelist,$project_rs['cate']);
-				$cate_id_list = array();
-				foreach($catelist as $key=>$value){
-					$cate_id_list[] = $value["id"];
-				}
-				$cate_idstring = implode(",",$cate_id_list);
-				if($project_rs['cate_multiple']){
-					$condition .= " AND lc.cate_id IN(".$cate_idstring.")";
-				}else{
-					$condition .= " AND l.cate_id IN(".$cate_idstring.")";
+			$pageurl .= "&keywords[cateid]=".$keywords['cateid'];
+		}
+		if($keywords && $keywords['title']){
+			$tmp_condition = array();
+			$tmp = str_replace(' ','%',$keywords['title']);
+			$tmp_condition[] = "l.title LIKE '%".$tmp."%'";
+			if($project_rs['is_seo']){
+				$tmp_condition[] = "l.seo_title LIKE '%".$tmp."%'";
+				$tmp_condition[] = "l.seo_keywords LIKE '%".$tmp."%'";
+				$tmp_condition[] = "l.seo_desc LIKE '%".$tmp."%'";
+			}
+			if($project['is_identifier']){
+				$tmp_condition[] = "l.identifier LIKE '%".$tmp."%'";
+			}
+			$condition .= " AND (".implode(" OR ",$tmp_condition).") ";
+			$pageurl .= "&keywords[title]=".rawurlencode($keywords['title']);
+		}
+		if($keywords && $keywords['tag'] && $project_rs['is_tag']){
+			$keywords['tag'] = str_replace("，",",",$keywords['tag']);
+			$tmplist = explode(",",$keywords['tag']);
+			$tmp_condition = array();
+			foreach($tmplist as $key=>$value){
+				$tmp_condition[] = "l.tag LIKE '%".$value."%'";
+			}
+			$condition .= " AND (".implode(" OR ",$tmp_condition).") ";
+			$pageurl .= "&keywords[tag]=".rawurlencode($keywords['tag']);
+		}
+		if($keywords && $keywords['user'] && $project_rs['is_userid']){
+			$keywords['user'] = str_replace("，",",",$keywords['user']);
+			$tmplist = explode(",",$keywords['user']);
+			$tmp_condition = array();
+			foreach($tmplist as $key=>$value){
+				$tmp_condition[] = "u.user LIKE '%".$value."%'";
+				$tmp_condition[] = "u.email LIKE '%".$value."%'";
+				$tmp_condition[] = "u.mobile LIKE '%".$value."%'";
+			}
+			$condition .= " AND (".implode(" OR ",$tmp_condition).") ";
+			$pageurl .= "&keywords[user]=".rawurlencode($keywords['user']);
+		}
+		if($keywords && $m_list){
+			foreach($m_list as $key=>$value){
+				$_condition = $this->model('form')->search($value,$keywords[$value['identifier']]);
+				if($_condition){
+					$condition .= " AND (".$_condition.") ";
+					$pageurl .= "&keywords[".$value['identifier']."]=".rawurlencode($keywords[$value['identifier']]);
 				}
 			}
 		}
-		$keytype = $this->get('keytype');
-		if(!$keytype){
-			$keytype = 'title';
+		if($keywords && $keywords['attr']){
+			$condition .= " AND FIND_IN_SET('".$keywords['attr']."',l.attr) ";
+			$pageurl .= "&keywords[attr]=".rawurlencode($keywords['attr']);
 		}
-		$keywords = $this->get("keywords");
-		if($keywords && trim($keywords)){
-			$keywords = trim($keywords);
-			$main_keytype = array('title','tag','seo_title','seo_keywords','seo_desc','identifier');
-			if(in_array($keytype,$main_keytype)){
-				$condition .= " AND l.".$keytype." LIKE '%".$keywords."%' ";
-			}elseif($keytype == 'user'){
-				$condition .= " AND u.user LIKE '%".$keywords."%'";
-			}else{
-				$condition .= " AND ext.".$keytype." LIKE '%".$keywords."%'";
-			}
-			$pageurl .= "&keywords=".rawurlencode($keywords)."&keytype=".rawurlencode($keytype);
-			$this->assign("keywords",$keywords);
-			$this->assign("keytype",$keytype);
-		}
-		$dateline_start = $this->get('dateline_start');
-		if($dateline_start){
-			$tmp = strtotime($dateline_start);
+		if($keywords && $keywords['dateline_start']){
+			$tmp = strtotime($keywords['dateline_start']);
 			if($tmp){
 				$condition .= " AND l.dateline>=".$tmp." ";
-				$this->assign('dateline_start',$dateline_start);
-				$pageurl .= "&dateline_start=".rawurlencode($dateline_start);
+				$pageurl .= "&keywords[dateline_start]=".rawurlencode($keywords['dateline_start']);
 			}
 		}
-		$dateline_stop = $this->get('dateline_stop');
-		if($dateline_stop){
-			$tmp = strtotime($dateline_stop);
+		if($keywords && $keywords['dateline_stop']){
+			$tmp = strtotime($keywords['dateline_stop']);
 			if($tmp){
 				$condition .= " AND l.dateline<=".$tmp." ";
-				$this->assign('dateline_stop',$dateline_stop);
-				$pageurl .= "&dateline_stop=".rawurlencode($dateline_stop);
+				$pageurl .= "&keywords[dateline_stop]=".rawurlencode($keywords['dateline_stop']);
 			}
 		}
-		$attr = $this->get("attr");
-		if($attr){
-			if(is_array($attr) && count($attr)>0){
-				$attr_list = array();
-				foreach($attr as $key=>$value){
-					$attr_list[] = "l.attr LIKE '%".$attr."%'";
-					$pageurl .= "&attr[]=".$value;
-				}
-				$attr_string = implode(" OR ",$attr_list);
-				$condition .= " AND (".$attr_string.") ";
-				$this->assign("attr",$attr);
-			}else{
-				$condition .= " AND l.attr LIKE '%".$attr."%'";
-				$pageurl .= "&attr=".$attr;
-				$this->assign("attr",array($attr));
-			}
-		}
-		$status = $this->get('status');
-		if($status){
-			if($status == 1){
+		if($keywords && $keywords['status']){
+			if($keywords['status'] == 1){
 				$condition .= ' AND l.status=1 ';
 			}else{
 				$condition .= ' AND l.status=0 ';
 			}
-			$pageurl .= "&status=".$status;
-			$this->assign('status',$status);
+			$pageurl .= "&keywords[status]=".$keywords['status'];
 		}
+
 		$orderby_search = $this->get('orderby_search');
-		if($orderby_search){
-			switch($orderby_search){
+		if($keywords && $keywords['orderby_search']){
+			switch($keywords['orderby_search']){
 				case "hits_hot":
 					$orderby = "l.hits DESC,l.sort ASC,l.id DESC";
 					break;
@@ -485,8 +508,7 @@ class list_control extends phpok_control
 					$orderby = "l.id ASC";
 					break;
 			}
-			$this->assign('orderby_search',$orderby_search);
-			$pageurl .= "&orderby_search=".$orderby_search;
+			$pageurl .= "&keywords[orderby_search]=".$keywords['orderby_search'];
 		}
 		//取得列表信息
 		$total = $this->model('list')->get_total($mid,$condition);
@@ -705,6 +727,10 @@ class list_control extends phpok_control
 				}
 				$this->assign('currency',$currency);
 			}
+			if($p_rs['freight']){
+				$freight = $this->model('freight')->get_one($p_rs['freight']);
+				$this->assign('freight',$freight);
+			}
 			if($p_rs['biz_attr']){
 				$biz_attrlist = $this->model('options')->get_all();
 				if($biz_attrlist){
@@ -757,9 +783,7 @@ class list_control extends phpok_control
 			}
 			
 		}
-		//增加JS和CSS
-		$this->addjs('js/laydate/laydate.js');
-		
+	
 
 		// 扩展字段管理
 		if($this->popedom['ext']){
@@ -943,6 +967,9 @@ class list_control extends phpok_control
 	 		$ext_cate = $this->get('ext_cate_id');
 	 		if(!$ext_cate){
 		 		$ext_cate = array($cate_id);
+	 		}else{
+		 		$ext_cate = array_merge($ext_cate,array($cate_id));
+		 		$ext_cate = array_unique($ext_cate);
 	 		}
 	 		$this->model('list')->save_ext_cate($id,$ext_cate);
  		}
@@ -1069,29 +1096,32 @@ class list_control extends phpok_control
 		$this->success();
 	}
 
+	/**
+	 * 主题审核，通过主题原来的状态取1或0
+	 * @参数 id 主题ID
+	**/
 	public function content_status_f()
 	{
 		$id = $this->get("id","int");
 		if(!$id){
-			$this->json(P_Lang('没有指定ID'));
+			$this->error(P_Lang('没有指定ID'));
 		}
 		$rs = $this->model('list')->get_one($id);
 		$this->popedom_auto($rs['project_id']);
 		if(!$this->popedom["status"]){
-			$this->json("您没有启用/禁用权限");
+			$this->error("您没有启用/禁用权限");
 		}
 		$status = $rs["status"] ? 0 : 1;
 		$action = $this->model('list')->update_status($id,$status);
 		if(!$action){
-			$this->json(P_Lang('操作失败，请检查SQL语句'));
-		}else{
-			if($status && $rs['user_id']){
-				$this->model('wealth')->add_integral($id,$rs['user_id'],'post',P_Lang('管理员操作审核主题发布#{id}',array('id'=>$rs['id'])));
-			}
-			//执行插件接入点
-			$this->plugin("ap-list-status",$id);
-			$this->json($status,true);
+			$this->error(P_Lang('操作失败，请检查SQL语句'));
 		}
+		if($status && $rs['user_id']){
+			$this->model('wealth')->add_integral($id,$rs['user_id'],'post',P_Lang('管理员操作审核主题发布#{id}',array('id'=>$rs['id'])));
+		}
+		//执行插件接入点
+		$this->plugin("ap-list-status",$id);
+		$this->success($status);
 	}
 
 	//执行动作
@@ -1127,18 +1157,19 @@ class list_control extends phpok_control
 		$this->json(P_Lang('操作成功'),true);
 	}
 
+	/**
+	 * 内容排序
+	**/
 	public function content_sort_f()
 	{
 		$sort = $this->get('sort');
-		if(!$sort || !is_array($sort))
-		{
-			$this->json(P_Lang('更新排序失败'));
+		if(!$sort || !is_array($sort)){
+			$this->error(P_Lang('更新排序失败'));
 		}
-		foreach($sort as $key=>$value)
-		{
+		foreach($sort as $key=>$value){
 			$this->model('list')->update_sort($key,$value);
 		}
-		$this->json(P_Lang('更新排序成功'),true);
+		$this->success();
 	}
 
 	public function move_cate_f()
@@ -1356,20 +1387,19 @@ class list_control extends phpok_control
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			error(P_Lang('未指定ID'),'','error');
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('list')->get_one($id);
 		if(!$rs){
-			error(P_Lang('数据不存在'),'','error');
+			$this->error(P_Lang('数据不存在'));
 		}
 		$this->popedom_auto($rs['project_id']);
 		if(!$this->popedom['comment']){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$this->assign("rs",$rs);
 		$pageurl = $this->url("list","comment","id=".$id);
-		$condition = "tid='".$id."' AND parent_id=0";
-		$keywords = $this->get("keywords");
+		$condition = "tid='".$id."' AND admin_id=0";
 		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid){
 			$pageid = 1;
@@ -1378,52 +1408,14 @@ class list_control extends phpok_control
 		$total = $this->model('reply')->get_total($condition);
 		if($total>0){
 			$offset = ($pageid-1) * $psize;
-			$rslist = $this->model('reply')->get_list($condition,$offset,$psize,"id");
-			if($rslist){
-				$uidlist = array();
-				foreach($rslist as $key=>$value){
-					if($value["uid"]){
-						$uidlist[] = $value["uid"];
-					}
-				}
-				$idlist = array_keys($rslist);
-				$condition = "tid='".$tid."' AND parent_id IN(".implode(",",$idlist).")";
-				$sublist = $this->model('reply')->get_list($condition,0,0);
-				if($sublist){
-					foreach($sublist as $key=>$value){
-						if($value["uid"]) $uidlist[] = $value["uid"];
-						$rslist[$value["parent_id"]]["sublist"][$value["id"]] = $value;
-					}
-				}
-				if($uidlist && count($uidlist)>0){
-					$uidlist = array_unique($uidlist);
-					$ulist = $this->model('user')->get_all_from_uid(implode(",",$uidlist),'id');
-					if(!$ulist) $ulist = array();
-					foreach($rslist as $key=>$value){
-						if($value["uid"]){
-							$value["uid"] = $ulist[$value["uid"]];
-						}
-						if($value["sublist"]){
-							foreach($value["sublist"] as $k=>$v){
-								if($v){
-									$v["uid"] = $ulist[$v["uid"]];
-								}
-								$value["sublist"][$k] = $v;
-							}
-						}
-						$rslist[$key] = $value;
-					}
-				}
-				$this->assign("rslist",$rslist);
-			}
-			if($total>$psize){
-				$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
-				$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-				$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-				$this->assign("pagelist",$pagelist);
-			}
-			$this->assign("total",$total);
+			$rslist = $this->model('reply')->get_all($condition,$offset,$psize);
+			$this->assign("rslist",$rslist);
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+			$this->assign("pagelist",$pagelist);
 		}
+		$this->assign("total",$total);
 		$this->view("list_comment");
 	}
 

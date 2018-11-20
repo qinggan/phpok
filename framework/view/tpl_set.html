@@ -1,149 +1,99 @@
-<!-- include tpl=head -->
+<!-- include tpl=head_lay -->
 <script type="text/javascript">
-function set_folder(val)
-{
-	var str = $("#folder_change").val();
-	if(!str || str == "undefined")
-	{
-		$("#folder_change").val(val);
-		return true;
-	}
-	if(str == val)
-	{
-		$("#folder_change").val("");
-		return true;
-	}
-	var list = str.split(",");
-	if($.inArray(val,list) > 0)
-	{
-		var nlist = new Array();
-		var m = 0;
-		for(var i in list)
-		{
-			if(list[i] != val)
-			{
-				nlist[m] = list[i];
-				m++;
-			}
-		}
-		str = nlist.join(",");
-		$("#folder_change").val(str);
-		return true;
-	}
-	str += ","+val;
-	$("#folder_change").val(str);
-	return true;	
-}
 function check_save()
 {
-	var title = $("#title").val();
-	if(!title)
-	{
-		$.dialog.alert("名称不能为空");
-		return false;
-	}
-	var folder = $("#folder").val();
-	if(!folder)
-	{
-		$.dialog.alert("文件夹不能为空");
-		return false;
-	}
-	var ext = $("#ext").val();
-	if(!ext)
-	{
-		$.dialog.alert("后缀不允许为空");
-		return false;
-	}
+	
 	return true;
 }
 </script>
-<div class="tips">
-	<div class="action"><a href="{func admin_url tpl}">返回风格列表</a></div>
-	&raquo; {$id ? '编辑' : '添加新'}风格信息
-</div>
-
-<form method="post" action="{url ctrl=tpl func=save/}" onsubmit="return check_save()">
+<form method="post" id="post_save" class="layui-form" onsubmit="return $.admin_tpl.save()">
 <input type="hidden" name="id" id="id" value="{$id}" />
-<div class="table">
-	<div class="title">
-		风格方案名称：
-		<span class="note">设置风格的名称，支持各种语言，此名称仅用于管理</span>
-	</div>
-	<div class="content">
-		<input type="text" id="title" name="title" class="long" value="{$rs.title}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		风格开发人员：
-		<span class="note">设置风格的开发人员名称，团体请填写团体名称，尊重设计师及其劳动果实</span>
-	</div>
-	<div class="content">
-		<input type="text" id="author" name="author" class="default" value="{$rs.author}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		文件夹：
-		<span class="note">请风格根目录tpl/下创建相应的文件夹名称（文件夹<span class="red">名称支持字母，数字及下划线</span>）</span>
-	</div>
-	<div class="content">
-		<input type="text" id="folder" name="folder" class="default" value="{$rs.folder}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		刷新参数：
-		<span class="note">设置是否自动判断刷新和是否使用强制刷新</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label><input type="checkbox" name="refresh_auto" id="refresh_auto" {if $rs.refresh_auto} checked{/if} /> 自动刷新</label></td>
-			<td>&nbsp; &nbsp;</td>
-			<td><label><input type="checkbox" name="refresh" id="refresh" {if $rs.refresh} checked{/if} /> 强制刷新</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		目录改写：
-		<span class="note">多个目录用英文逗号隔开，点按钮添加再点一次删除（Linux下大小写有区分）</span>
-	</div>
-	<div class="content">
-		<div><input type="text" id="folder_change" name="folder_change" class="long" value="{$rs.folder_change}" /></div>
-		<div style="margin-top:5px;">
-			<input type="button" value="CSS" onclick="set_folder('css')" class="btn" />
-			<input type="button" value="Style" onclick="set_folder('style')" class="btn" />
-			<input type="button" value="Js" onclick="set_folder('js')" class="btn" />
-			<input type="button" value="JavaScript" onclick="set_folder('javascript')" class="btn" />
-			<input type="button" value="Script" onclick="set_folder('script')" class="btn" />
-			<input type="button" value="Images" onclick="set_folder('images')" class="btn" />
-			<input type="button" value="Image" onclick="set_folder('image')" class="btn" />
-			<input type="button" value="清空" onclick="$('#folder_change').val('');" class="btn" />
+<div class="layui-card">
+	<div class="layui-container layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang风格名称}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置风格的名称，支持各种语言，此名称仅用于管理}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang开发人员}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="author" name="author" class="layui-input" value="{$rs.author}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置风格的开发人员名称，团体请填写团体名称}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang文件夹}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" id="folder" name="folder" class="layui-input" value="{$rs.folder}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang请风格根目录tpl下创建相应的文件夹名称}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang刷新参数}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="checkbox" lay-skin="primary" name="refresh_auto" id="refresh_auto" {if $rs.refresh_auto} checked{/if} title="{lang自动刷新}" />
+				<input type="checkbox" lay-skin="primary" name="refresh" id="refresh" {if $rs.refresh} checked{/if} title="{lang强制刷新}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置是否自动判断刷新和是否使用强制刷新}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang目录改写}
+			</label>
+			<div class="layui-input-block">
+				<div><input type="text" id="folder_change" name="folder_change" class="layui-input" value="{$rs.folder_change}" /></div>
+				<div class="layui-btn-group" style="margin-top:5px;">
+					<input type="button" value="CSS" onclick="$.admin_tpl.set_folder('css')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="Style" onclick="$.admin_tpl.set_folder('style')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="Js" onclick="$.admin_tpl.set_folder('js')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="JavaScript" onclick="$.admin_tpl.set_folder('javascript')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="Script" onclick="$.admin_tpl.set_folder('script')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="Images" onclick="$.admin_tpl.set_folder('images')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="Image" onclick="$.admin_tpl.set_folder('image')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="清空" onclick="$('#folder_change').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+				</div>
+			</div>
+			<div class="layui-input-block mtop">{lang多个目录用英文逗号隔开，点按钮添加再点一次删除（Linux下大小写有区分）}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{langPHP目录}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" id="phpfolder" name="phpfolder" class="layui-input" value="{$rs.phpfolder}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang指定可执行PHP的文件目录，在模板中使用} <span class="red">&lt;!-- include file=php-filename --&gt;</span></div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang模板后缀名}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" id="ext" name="ext" class="layui-input" value="{$rs.ext}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang推荐您使用php作为模板后缀名，可以防止别人下载模板，为空使用html}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="submit" value="{lang提交}" class="submit2" />
+			</div>
 		</div>
 		
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		PHP文件目录：
-		<span class="note">指定可执行PHP的文件目录，在模板中使用<span class="red">&lt;!-- include file=PHP文件名 --&gt;</span></span>
-	</div>
-	<div class="content">
-		<input type="text" id="phpfolder" name="phpfolder" class="default" value="{$rs.phpfolder}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		模板后缀名：
-		<span class="note">推荐您使用php作为模板后缀名，可以防止别人下载模板，为空使用html</span>
-	</div>
-	<div class="content">
-		<input type="text" id="ext" name="ext" class="default" value="{$rs.ext}" />
-	</div>
-</div>
-<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
 </form>
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

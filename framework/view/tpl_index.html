@@ -1,40 +1,51 @@
-<!-- include tpl=head -->
-<div class="tips">
-	<!-- if $popedom.set -->
-	<div class="action"><a href="{url ctrl=tpl func=set/}">{lang添加风格}</a></div>
-	<!-- /if -->
-	&raquo; {lang风格方案管理}{lang（风格管理支持多站点运行，手机版请在此风格文件夹名称上输入_mobile）}
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang风格方案管理}
+		<div class="fr">
+		<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加规则}','{url ctrl=tpl func=set/}')">
+			<i class="layui-icon">&#xe608;</i> {lang添加风格}
+		</button>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<blockquote class="layui-elem-quote">
+			{lang风格管理支持多站点运行，手机版请在此风格文件夹名称上输入_mobile}
+		</blockquote>
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>{lang名称}</th>
+			<th>{lang目录}</th>
+			<th>{lang文件夹改写}</th>
+			<th width="190">{lang操作}</th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr>
+			<td>{$value.id}</td>
+			<td>{$value.title}<!-- if $value.author --> <span class="gray i">（{$value.author}）</span><!-- /if --></td>
+			<td>tpl/{$value.folder}/</td>
+			<td>{$value.folder_change ? $value.folder_change : '空'}</td>
+			<td>
+				<div class="layui-btn-group">
+					<!-- if $popedom.filelist -->
+					<input type="button" value="{lang文件管理}" onclick="$.admin_tpl.tpl_filelist({$value.id})" class="layui-btn layui-btn-sm" />
+					<!-- /if -->
+					<!-- if $popedom.set -->
+					<input type="button" value="{lang编辑}" onclick="$.admin_tpl.tpl_set({$value.id})" class="layui-btn layui-btn-sm" />
+					<!-- /if -->
+					<!-- if $popedom.delete -->
+					<input type="button" value="{lang删除}" onclick="$.admin_tpl.tpl_delete({$value.id},'{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+					<!-- /if -->
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</tbody>
+		</table>
+	</div>
 </div>
-<div class="list">
-	<table width="100%" cellpadding="0" cellspacing="0" class="list">
-	<tr>
-		<th>ID</th>
-		<th>{lang名称}</th>
-		<th>{lang目录}</th>
-		<th>{lang文件夹改写}</th>
-		<th>&nbsp;</th>
-	</tr>
-	<!-- loop from=$rslist key=$key value=$value -->
-	<tr>
-		<td align="center">{$value.id}</td>
-		<td>{$value.title}<!-- if $value.author --> <span class="gray i">（{$value.author}）</span><!-- /if --></td>
-		<td align="center">tpl/{$value.folder}/</td>
-		<td align="center">{$value.folder_change ? $value.folder_change : '空'}</td>
-		<td align="right">
-			<div class="button-group">
-				<!-- if $popedom.filelist -->
-				<input type="button" value="{lang文件管理}" onclick="$.admin_tpl.tpl_filelist({$value.id})" class="phpok-btn" />
-				<!-- /if -->
-				<!-- if $popedom.set -->
-				<input type="button" value="{lang编辑}" onclick="$.admin_tpl.tpl_set({$value.id})" class="phpok-btn" />
-				<!-- /if -->
-				<!-- if $popedom.delete -->
-				<input type="button" value="{lang删除}" onclick="$.admin_tpl.tpl_delete({$value.id},'{$value.title}')" class="phpok-btn" />
-				<!-- /if -->
-			</div>
-		</td>
-	</tr>
-	<!-- /loop -->
-	</table>
-</div>
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

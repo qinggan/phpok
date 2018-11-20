@@ -1,0 +1,40 @@
+<table id="prolist" class="layui-table">
+<thead>
+<tr class="prolist">
+	<th width="90px" class="center">{lang产品图片}</th>
+	<th>{lang产品名称}</th>
+	<th class="center">{lang类型}</th>
+	<th class="center">{lang单价}</th>
+	<th class="center">{lang数量}</th>
+	<th class="center"><input type="button" value="{lang增加产品}" onclick="$.admin_order_set.add()" class="layui-btn layui-btn-sm" /></th>
+</tr>
+</thead>
+<!-- loop from=$rslist key=$key value=$value -->
+<tr id="product_{$value.id}">
+	<td class="center"><img src="{$value.thumb ? $value.thumb : 'images/picture_default.png'}" class="hand" width="80px" height="80px" border="0" /></td>
+	<td>
+		<div>{$value.title}</div>
+		<!-- if $value.weight -->
+		<div class="gray">{lang重量} {$value.weight} Kg</div>
+		<!-- /if -->
+		<!-- if $value.weight -->
+		<div class="gray">{lang体积} {$value.volume} M<sup>3</sup></div>
+		<!-- /if -->
+		<!-- loop from=$value.ext key=$k value=$v id=$idxx -->
+		<div class="gray">{$v.title} - {$v.content}</div>
+		<!-- /loop -->
+		<!-- if $value.note -->
+		<div class="gray">{lang备注} - {$value.note}</div>
+		<!-- /if -->
+	</td>
+	<td class="center"><!-- if $value.is_virtual -->{lang服务}<!-- else -->{lang实物}<!-- /if --></td>
+	<td class="center">{func price_format $value.price $rs.currency_id}</td>
+
+	<td class="center">{$value.qty}</td>
+	<td class="center">
+		<div><input type="button" value="{lang编辑}" onclick="$.admin_order_set.edit('{$value.id}')" class="layui-btn layui-btn-sm" /></div>
+		<div class="mtop"><input type="button" value="{lang删除}" onclick="$.admin_order_set.del('{$value.id}')" class="layui-btn layui-btn-sm" /></div>
+	</td>
+</tr>
+<!-- /loop -->
+</table>				

@@ -4,9 +4,9 @@
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
- * @版本 4.x
+ * @版本 5.x
  * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
- * @时间 2018年01月12日
+ * @时间 2018年09月16日
 **/
 
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
@@ -108,7 +108,7 @@ class cate_control extends phpok_control
 		$parentlist = $this->model('cate')->get_all($this->session->val('admin_site_id'));
 		$parentlist = $this->model('cate')->cate_option_list($parentlist);
 		$this->assign("parentlist",$parentlist);
-		$extfields = $this->model('fields')->fields_list('',0,999,'cate');
+		$extfields = $this->model('fields')->default_all();
 		$this->assign("extfields",$extfields);
 
 		$tag_config = $this->model('tag')->config();
@@ -278,23 +278,23 @@ class cate_control extends phpok_control
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$idlist = $this->model('cate')->get_son_id_list($id);
 		if($idlist){
-			$this->json(P_Lang('存在子栏目，不能直接删除，请先删除相应的子栏目'));
+			$this->error(P_Lang('存在子栏目，不能直接删除，请先删除相应的子栏目'));
 		}
 		$check_rs = $this->model('project')->chk_cate($id);
 		if($check_rs){
-			$this->json(P_Lang('分类使用中，请先删除'));
+			$this->error(P_Lang('分类使用中，请先删除'));
 		}
 		$this->model('cate')->cate_delete($id);
 		$this->model('tag')->stat_delete('c'.$id,"title_id");
-		$this->json(P_Lang('删除成功'),true);
+		$this->success();
 	}
 
 	/**

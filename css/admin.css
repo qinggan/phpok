@@ -29,6 +29,10 @@ textarea{border:1px solid #E5E5E5;}
 input[type="number"]{
 	-moz-appearance: textfield;
 }
+input[name=identifier]{
+	ime-mode:disabled;
+}
+
 
 /* 自定义常用样式 */
 .lft{text-align:left;}

@@ -1,42 +1,37 @@
-<!-- include tpl=head_open -->
-<script type="text/javascript" src="{func include_js}"></script>
-<div class="help">
-	<div class="title red">
-		{$title_rs.title}
-		<span class="darkblue i">（发布时间：{echo date("Y-m-d H:i:s",$title_rs.dateline)}）</span>
+<!-- include tpl=head_lay nopadding=true -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<input type="hidden" name="id" value="{$rs.id}" />
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang评论内容}
+			</label>
+			<div class="layui-input-block" style="border:1px dotted #ccc;padding:10px;">
+				{$rs.content}
+			</div>
+			<div class="layui-input-block mtop">{lang评论时间} {func date 'Y-m-d H:i:s' $rs.addtime}</div>
+		</div>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang回复}_{$tmpid.num}
+			</label>
+			<div class="layui-input-block" style="border:1px dotted #ccc;padding:10px;">
+				{$value.content}
+			</div>
+			<div class="layui-input-block mtop">{lang回复时间} {func date 'Y-m-d H:i:s' $value.addtime}</div>
+		</div>
+		<!-- /loop -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang新回复}
+			</label>
+			<div class="layui-input-block">
+				{$edit_content}
+			</div>
+		</div>
 	</div>
-	<!-- if $title_rs.content -->
-	<div class="content">{func phpok_cut $title_rs.content 255 …}</div>
-	<!-- /if -->
 </div>
-<!-- if $rs -->
-<div class="help">
-	<div class="content">
-		<span class="red">评论内容：</span>{$rs.content}
-		<span class="darkblue i">（评论时间：{echo date("Y-m-d H:i:s",$rs.addtime)}）</span>
-	</div>
-</div>
-<!-- /if -->
-<script type="text/javascript">
-function save()
-{
-	var c = edit_content.getContent();
-	if(!c){
-		$.dialog.alert("内容不能为空");
-		return false;
-	}
-	url = get_url('reply','adm_save','id={$id}');
-	url += "&content="+$.str.encode(c);
-	var info = $.phpok.json(url);
-	if(info.status == 'ok'){
-		return true;
-	}else{
-		$.dialog.alert(info.content);
-		return false;
-	}
-}
-</script>
-<form method="post" onsubmit="return false">
-<div style="margin:3px auto;">{$edit_content}</div>
 </form>
-<!-- inc:foot_open -->
+<!-- include tpl=foot_lay -->

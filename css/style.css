@@ -362,12 +362,12 @@ ul.attrlist li .ipt input.res_btn{width:45px;height:23px;border:1px solid #ccc;b
 
 
 /* 网上提供的多浏览器下支持的按钮 */
-.phpok-btn{display:inline-block; border-width:1px 0; border-color:#bbbbbb; border-style:solid; vertical-align:middle;}
-.phpok-btn .b{float:left; background:#e3e3e3; border-width:0 1px; border-color:#bbbbbb; border-style:solid; margin:0 -1px; position:relative;font-weight:normal;}
-.phpok-btn .c{display:block; line-height:0.6em; background:#f9f9f9; border-bottom:2px solid #eeeeee;}
-.phpok-btn .d{display:block; padding:0.1em 0.6em; margin-top:-0.7em; cursor:default;}
-.phpok-btn:hover{border-color:#0033CC;}
-.phpok-btn:hover .b{border-color:#0033CC;}
+.layui-btn{display:inline-block; border-width:1px 0; border-color:#bbbbbb; border-style:solid; vertical-align:middle;}
+.layui-btn .b{float:left; background:#e3e3e3; border-width:0 1px; border-color:#bbbbbb; border-style:solid; margin:0 -1px; position:relative;font-weight:normal;}
+.layui-btn .c{display:block; line-height:0.6em; background:#f9f9f9; border-bottom:2px solid #eeeeee;}
+.layui-btn .d{display:block; padding:0.1em 0.6em; margin-top:-0.7em; cursor:default;}
+.layui-btn:hover{border-color:#0033CC;}
+.layui-btn:hover .b{border-color:#0033CC;}
 
 /* 评论 */
 .comment{margin:3px auto;position:relative;}

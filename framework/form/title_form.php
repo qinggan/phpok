@@ -17,7 +17,7 @@ class title_form extends _init_auto
 
 	public function phpok_config()
 	{
-		$opt_list = $this->model("project")->get_all_project($site_id,"p.module>0");
+		$opt_list = $this->model("project")->get_all_project($site_id,"p.module>0 AND m.mtype!=1");
 		$this->assign("opt_list",$opt_list);
 		$this->view($this->dir_phpok.'form/html/title_admin.html','abs-file');
 	}

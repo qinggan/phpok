@@ -1,0 +1,90 @@
+<!-- php:$title = '订单（'.$rs.sn.'）评论' -->
+<!-- include tpl=head title=$title -->
+<script type="text/javascript">
+function save_comment(tid)
+{
+	var url = api_url('comment','save','id='+tid+"&order_id={$rs.id}");
+	var comment = $("#comment_"+tid).val();
+	if(!comment){
+		$.dialog.alert('评论内容不能为空',function(){},'error');
+		return false;
+	}
+	url += '&comment='+$.str.encode(comment);
+	var rs = $.phpok.json(url);
+	if(rs.status == 'ok'){
+		$.dialog.alert('感谢您提交的评论',function(){
+			$.phpok.reload();
+		},'succeed');
+	}else{
+		$.dialog.alert(rs.content);
+		return false;
+	}
+}
+</script>
+<div class="cp">
+	<ol class="breadcrumb">
+		<li>您现在的位置：<a href="{$sys.url}" title="{$config.title}">首页</a></li>
+		<li><a href="{url ctrl=usercp/}" title="会员中心">会员中心</a></li>
+		<li><a href="{url ctrl=order/}" title="订单列表">订单列表</a></li>
+		<li><a href="{url ctrl=order func=info id=$rs.id/}" title="订单：{$rs.sn}">订单{$rs.sn}</a></li>
+		<li><a href="{url ctrl=order func=comment id=$rs.id/}" title="评论">评论</a></li>
+	</ol>
+	<div class="left"><!-- include tpl=block/usercp_nav --></div>
+	<div class="right">
+		
+		<!-- loop from=$rslist key=$key value=$value -->
+		<div class="table_lc" style="margin-bottom:5px;">
+		<table width="100%">
+		<tr>
+			<th>图片</th>
+			<th class="lft">产品信息</th>
+			<th>购买数量</th>
+			<th>价格</th>
+		</tr>
+		
+		<tr>
+			<td align="center">
+				<!-- if $value.thumb && file_exists($value.thumb) -->
+				<img src="{$value.thumb}" width="80" height="80" border="0" />
+				<!-- else -->
+				<img src="{#images#}/blank.gif" width="80" height="80" border="0" />
+				<!-- /if -->
+			</td>
+			<td>
+				<h4 id="title_{$value.id}">{$value.title}</h4>
+				<!-- loop from=$value.ext key=$k value=$v id=$tmpid -->
+				<div>{$v.title}：{$v.content}</div>
+				<!-- /loop -->
+				<div>售价：{func price_format $value.price $rs.currency_id $rs.currency_id}</div>
+			</td>
+			<td class="center">{$value.qty}</td>
+			<td class="center price">{func price_format $value.price*$value.qty $rs.currency_id $rs.currency_id}</td>
+		</tr>
+			<!-- loop from=$value.comment key=$k value=$v id=$tmpid2 -->
+			<tr>
+				<td align="center">评论#{$tmpid2.num}<br />{func time_format $v.addtime}</td>
+				<td colspan="3">
+					<div class="content">{$v.content}</div>
+					<!-- if $v.adm_reply -->
+					<div class="adm_reply"><div class="adminer">管理员回复：</div>{$v.adm_reply}</div>
+					<!-- /if -->
+				</td>
+			</tr>
+			<!-- /loop -->
+			<tr>
+				<form method="post" onsubmit="return save_comment('{$value.tid}')">
+				<td align="center">发表评论</td>
+				<td colspan="2">
+					<textarea name="comment" id="comment_{$value.tid}" style="width:100%;height:60px;resize:none;"></textarea>
+				</td>
+				<td align="center"><input type="submit" value="提交评论" class="button blue" /></td>
+				</form>
+			</tr>
+		
+		</table>
+		</div>
+		<!-- /loop -->
+	</div>
+	<div class="clear"></div>
+</div>
+<!-- include tpl=foot -->

@@ -1,23 +1,29 @@
 <div class="list">
-<table width="100%" class="list" cellpadding="0" cellspacing="0">
+<table class="layui-table">
+<thead>
 <tr>
-	<th width="180px">ID</th>
+	<th>ID</th>
 	<!-- loop from=$layout key=$key value=$value id=$tmpid -->
 	<th class="lft">{$value}</th>
 	<!-- /loop -->
 	<th width="60px">{lang排序}</th>
-	<th id="{$_rs.identifier}_action_buttons">
-		<div class="button-group" style="padding:2px 0 0 0;">
-			<!-- if !$_true_delete --><input type="button" value="{lang选择}" onclick="$.phpokform.extitle_list('{$_rs.id}','{$_rs.identifier}',{$_rs.form_maxcount},'{$_rs.form_input_val}')" class="phpok-btn" /><!-- /if -->
-			<input type="button" value="{lang添加}" onclick="$.phpokform.extitle_quickadd('{$_rs.id}','{$_rs.identifier}',{$_rs.form_maxcount})" class="phpok-btn" />
+	<th id="{$_rs.identifier}_action_buttons" width="120" style="text-align:center;">
+		<!-- if !$_true_delete -->
+		<div class="layui-btn-group" style="padding:2px 0 0 0;">
+			<input type="button" value="{lang选择}" onclick="$.phpokform.extitle_list('{$_rs.id}','{$_rs.identifier}',{$_rs.form_maxcount},'{$_rs.form_input_val}')" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang添加}" onclick="$.phpokform.extitle_quickadd('{$_rs.id}','{$_rs.identifier}',{$_rs.form_maxcount})" class="layui-btn layui-btn-sm" />
 		</div>
+		<!-- else -->
+		<input type="button" value="{lang添加}" onclick="$.phpokform.extitle_quickadd('{$_rs.id}','{$_rs.identifier}',{$_rs.form_maxcount})" class="layui-btn layui-btn-sm" />
+		<!-- /if -->
 	</th>
 </tr>
+</thead>
 <!-- loop from=$rslist key=$key value=$value id=$idx -->
 <tr>
 	<td class="center">{$value.id}</td>
 	<!-- loop from=$layout key=$k value=$v id=$idxx -->
-	<td class="lft">{$value[$k]}</td>
+	<td>{$value[$k]}</td>
 	<!-- /loop -->
 	<td align="center" data-value="{$idx.num}" data-total="{$idx.total}" data-id="{$value.id}" data-name="taxis-{$_rs.identifier}-{$_rs.id}">
 		<div class="button-group">
@@ -30,9 +36,9 @@
 		</div>
 	</td>
 	<td class="center">
-		<div class="button-group">
-			<input type="button" value="{lang编辑}" onclick="$.phpokform.extitle_quickedit('{$value.id}','{$_rs.id}')" class="phpok-btn" />
-			<input type="button" value="{lang删除}" onclick="$.phpokform.extitle_delete('{$value.id}','{$_rs.id}','{$_rs.identifier}')" class="phpok-btn" />
+		<div class="layui-btn-group">
+			<input type="button" value="{lang编辑}" onclick="$.phpokform.extitle_quickedit('{$value.id}','{$_rs.id}')" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang删除}" onclick="$.phpokform.extitle_delete('{$value.id}','{$_rs.id}','{$_rs.identifier}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 		</div>
 	</td>
 </tr>

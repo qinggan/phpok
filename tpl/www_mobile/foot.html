@@ -1,28 +1,53 @@
-	</div>
-	<div data-role="footer" data-position="fixed" style="padding-bottom:0;">
-		<div data-role="navbar" class="ui-body-a" data-overlay-theme="a">
-		<ul>
-			<li><a href="{$sys.url}" data-icon="home"{if $sys.ctrl == 'index'} data-theme="b"{/if}>首页</a></li>
-			<li><a href="{url id=aboutus/}" data-icon="info"{if $sys.ctrl == 'content' && $page_rs.identifier == 'about'} data-theme="b"{/if}>关于</a></li>
-			<li><a href="{url ctrl=post id=book/}" data-icon="edit"{if $sys.ctrl == 'post' && $page_rs.identifier == 'book'} data-theme="b"{/if}>留言</a></li>
-			<li><a href="javascript:void(0);" onclick="kfonline()" data-icon="phone" id="kfonline-btn">客服</a></li>
-			<li><a href="{if $session.user_id}{url ctrl=usercp/}{else}{url ctrl=login/}{/if}" data-icon="user"{if $sys.ctrl == 'usercp' || $sys.ctrl == 'order'}  data-theme="b"{/if}>会员</a></li>
-		</ul>
-		</div>
-	</div>
-	<div id="popupkf" style="display:none;">
+<div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default " id="">
+	<ul class="am-navbar-nav am-cf am-avg-sm-4">
+		<li>
+			<a href="{$sys.url}"> <span class="am-icon-home"></span> <span class="am-navbar-label">首页</span>
+			</a>
+		</li>
+		<!-- php:$contactus = phpok('contactus') -->
+		<!-- if $contactus.tel -->
+		<li>
+			<a href="tel:{$contactus.tel}"> <span class="am-icon-phone"></span> <span class="am-navbar-label">电话</span>
+			</a>
+		</li>
+		<!-- /if -->
+		<li>
+			<div class="cart">
+			<a href="{url ctrl=cart/}"> <i class="am-icon-shopping-cart"></i> <span class="am-navbar-label">购物车 <span id="head_cart_num">0</span></span></a>
+			</div>
+		</li>
+		<!-- if $session.user_id -->
+		<li>
+			<a href="{url ctrl=usercp/}"> <i class="am-icon-user"></i> <span class="am-navbar-label">会员</span></a>
+		</li>
+		<!-- else -->
+		<li>
+			<a href="{url ctrl=login/}"> <i class="am-icon-paper-plane"></i> <span class="am-navbar-label">登录</span></a>
+		</li>
+		<!-- /if -->
+		<li>
+			<a href="{url ctrl=search/}"> <i class="am-icon-search"></i> <span class="am-navbar-label">站内搜索</span></a>
+		</li>
+		<!-- if !$session.user_id -->
+		<li>
+			<a href="{url ctrl=register/}"> <i class="am-icon-user-plus"></i> <span class="am-navbar-label">注册</span></a>
+		</li>
+		<!-- /if -->
+
 		<!-- php:$list = phpok('kefu') -->
-		<ul class="kfonline">
-			<!-- loop from=$list.rslist key=$key value=$value -->
-			<li class="qq"><a href="http://wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes" target="_blank">{$value.title}（{$value.qq}）</a></li>
-			<!-- /loop -->
-			<!-- php:$list = phpok('contactus') -->
-			<!-- if $list && $list.tel -->
-			<li class="phone"><a href="tel:{$list.tel}">客服电话：{$list.tel}</a></li>
-			<!-- /if -->
-		</ul>
-	</div>
+		<!-- loop from=$list.rslist key=$key value=$value -->
+		<li>
+			<a href="http://wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes" target="{$value.target}"> <span class="am-icon-qq"></span> <span class="am-navbar-label">{$value.title}</span></a>
+		</li>
+		<!-- /loop -->
+		<li data-am-navbar-qrcode>
+			<a href="###"> <span class="am-icon-qrcode"></span>  <span class="am-navbar-label">二维码</span></a>
+		</li>
+		<li data-am-navbar-share>
+			<a href="###"> <span class="am-icon-share-square-o"></span> <span class="am-navbar-label">分享</span>
+			</a>
+		</li>
+	</ul>
 </div>
-<script type="text/javascript" src="js/global.js"></script>
-</body>
-</html>
+
+<!-- include tpl=footer -->

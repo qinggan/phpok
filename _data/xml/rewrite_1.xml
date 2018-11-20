@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<url>
-		<id><![CDATA[0088058f6c348a285227215154691df8]]></id>
+		<id><![CDATA[65a71ab040cfbf93315b98ec2baf90b0]]></id>
 		<title><![CDATA[首页]]></title>
 		<rule><![CDATA[index\.html$]]></rule>
 		<val><![CDATA[index.php]]></val>
@@ -12,7 +12,7 @@
 		<sort><![CDATA[100]]></sort>
 	</url>
 	<url>
-		<id><![CDATA[2f1f172e8c066020907dca5278270df9]]></id>
+		<id><![CDATA[0e847f08dc6d057ba4ece3a3ed0b3cf9]]></id>
 		<title><![CDATA[订单明细（带密）]]></title>
 		<rule><![CDATA[order\/info\/([a-z0-9A-Z\_\-]+)\/([a-z0-9A-Z\_\-]+)\.html$]]></rule>
 		<val><![CDATA[index.php?c=order&f=info&sn=$1&passwd=$2]]></val>
@@ -23,7 +23,40 @@
 		<sort><![CDATA[105]]></sort>
 	</url>
 	<url>
-		<id><![CDATA[d628e19d2ee1afd96b933e9a54b0f017]]></id>
+		<id><![CDATA[0cdbd0e4ea8c13e6a1c9f5309561cdb6]]></id>
+		<title><![CDATA[会员订单明细]]></title>
+		<rule><![CDATA[order\/info\/([a-zA-Z][a-z0-9A-Z\_\-]+)\.html$]]></rule>
+		<val><![CDATA[index.php?c=order&f=info&sn=$1]]></val>
+		<format><![CDATA[order/info/[sn].html]]></format>
+		<ctrl><![CDATA[order]]></ctrl>
+		<func><![CDATA[info]]></func>
+		<var><![CDATA[sn]]></var>
+		<sort><![CDATA[110]]></sort>
+	</url>
+	<url>
+		<id><![CDATA[cf17c11fbba3794444932d8b93362bfd]]></id>
+		<title><![CDATA[会员订单明细]]></title>
+		<rule><![CDATA[order\/info\/([a-zA-Z][a-z0-9A-Z\_\-]+)\.html$]]></rule>
+		<val><![CDATA[index.php?c=order&f=info&sn=$1]]></val>
+		<format><![CDATA[order/info/[sn].html]]></format>
+		<ctrl><![CDATA[order]]></ctrl>
+		<func><![CDATA[info]]></func>
+		<var><![CDATA[sn]]></var>
+		<sort><![CDATA[110]]></sort>
+	</url>
+	<url>
+		<id><![CDATA[cf17c11fbba3794444932d8b93362bfd]]></id>
+		<title><![CDATA[会员订单明细]]></title>
+		<rule><![CDATA[order\/info\/([a-zA-Z][a-z0-9A-Z\_\-]+)\.html$]]></rule>
+		<val><![CDATA[index.php?c=order&f=info&sn=$1]]></val>
+		<format><![CDATA[order/info/[sn].html]]></format>
+		<ctrl><![CDATA[order]]></ctrl>
+		<func><![CDATA[info]]></func>
+		<var><![CDATA[sn]]></var>
+		<sort><![CDATA[110]]></sort>
+	</url>
+	<url>
+		<id><![CDATA[8872e11fe97394b1b4a8653bb54b5fc0]]></id>
 		<title><![CDATA[会员订单明细]]></title>
 		<rule><![CDATA[order\/info\/([a-zA-Z][a-z0-9A-Z\_\-]+)\.html$]]></rule>
 		<val><![CDATA[index.php?c=order&f=info&sn=$1]]></val>
@@ -43,6 +76,28 @@
 		<func><![CDATA[info]]></func>
 		<var><![CDATA[id]]></var>
 		<sort><![CDATA[115]]></sort>
+	</url>
+	<url>
+		<id><![CDATA[79362eb38b905593922280e6e5b59b22]]></id>
+		<title><![CDATA[会员订单明细]]></title>
+		<rule><![CDATA[order\/info\/([0-9]+)\.html$]]></rule>
+		<val><![CDATA[index.php?c=order&f=info&id=$1]]></val>
+		<format><![CDATA[order/info/[id].html]]></format>
+		<ctrl><![CDATA[order]]></ctrl>
+		<func><![CDATA[info]]></func>
+		<var><![CDATA[id]]></var>
+		<sort><![CDATA[115]]></sort>
+	</url>
+	<url>
+		<id><![CDATA[3d9ab8f26ed0d9251e5e90ffa921d81b]]></id>
+		<title><![CDATA[创建订单]]></title>
+		<rule><![CDATA[order\/create\.html$]]></rule>
+		<val><![CDATA[index.php?c=order&f=create]]></val>
+		<format><![CDATA[order/create.html]]></format>
+		<ctrl><![CDATA[order]]></ctrl>
+		<func><![CDATA[create]]></func>
+		<var><![CDATA[]]></var>
+		<sort><![CDATA[116]]></sort>
 	</url>
 	<url>
 		<id><![CDATA[a16013fa422cd9e4a3dca5073c2e030a]]></id>
@@ -67,7 +122,7 @@
 		<sort><![CDATA[118]]></sort>
 	</url>
 	<url>
-		<id><![CDATA[709ca43435f17523a81660bb2be619bf]]></id>
+		<id><![CDATA[eea1de3b94e19e84d99a220ed15421e6]]></id>
 		<title><![CDATA[购物下单相关]]></title>
 		<rule><![CDATA[cart\/([a-zA-Z][a-z0-9A-Z\_\-]+)\.html$]]></rule>
 		<val><![CDATA[index.php?c=cart&f=$1]]></val>
@@ -237,7 +292,29 @@
 		<sort><![CDATA[200]]></sort>
 	</url>
 	<url>
+		<id><![CDATA[faa4df0e7a6a9d65f71b231189d359c4]]></id>
+		<title><![CDATA[项目及内容]]></title>
+		<rule><![CDATA[([a-zA-Z0-9\_\-]+)\.html$]]></rule>
+		<val><![CDATA[index.php?id=$1]]></val>
+		<format><![CDATA[[id].html]]></format>
+		<ctrl><![CDATA[content|project]]></ctrl>
+		<func><![CDATA[]]></func>
+		<var><![CDATA[id]]></var>
+		<sort><![CDATA[205]]></sort>
+	</url>
+	<url>
 		<id><![CDATA[ecc377057403566e1a81465025a5d864]]></id>
+		<title><![CDATA[项目及内容]]></title>
+		<rule><![CDATA[([a-zA-Z0-9\_\-]+)\.html$]]></rule>
+		<val><![CDATA[index.php?id=$1]]></val>
+		<format><![CDATA[[id].html]]></format>
+		<ctrl><![CDATA[content|project]]></ctrl>
+		<func><![CDATA[]]></func>
+		<var><![CDATA[id]]></var>
+		<sort><![CDATA[205]]></sort>
+	</url>
+	<url>
+		<id><![CDATA[faa4df0e7a6a9d65f71b231189d359c4]]></id>
 		<title><![CDATA[项目及内容]]></title>
 		<rule><![CDATA[([a-zA-Z0-9\_\-]+)\.html$]]></rule>
 		<val><![CDATA[index.php?id=$1]]></val>

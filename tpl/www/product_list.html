@@ -11,6 +11,60 @@
 		<!-- include tpl=block/hot_article -->
 	</div>
 	<div class="right">
+		<style type="text/css">
+		ul.demo{list-style:none;margin:5px 0;padding:3px 3px 3px 120px;border:1px solid #ccc;}
+		ul.demo:after{clear:both;height:0;line-height:0;content:'.';display: block;visibility: hidden;}
+		ul.demo li{float:left;padding:1px 10px;line-height:200%;}
+		ul.demo li:first-child{width:100px;text-align:right;margin-left:-120px;}
+		ul.demo li.on{color:darkred;}
+		ul.demo li.on a{color:darkred;}
+		</style>
+		<script type="text/javascript">
+		function filter_submit(url,id,val,cutype)
+		{
+			if(!url || !id || url == 'undefined' || id == 'undefined' || !val || val == 'undefined'){
+				return false;
+			}
+			if(!cutype || cutype == 'undefined'){
+				cutype = ',';
+			}
+			url += (url.indexOf('?') > -1) ? '&' : '?';
+			var str = '';
+			var is_delete = false;
+			$("#filter_"+id+" li.on").each(function(i){
+				var info = $(this).attr('data-val');
+				if(info && info != val){
+					if(str != ''){
+						str += cutype+""+info;
+					}else{
+						str = info;
+					}
+				}
+				if(info && info == val){
+					is_delete = true;
+				}
+			});
+			if(str != '' && !is_delete){
+				str += cutype+""+val;
+			}
+			if(str == '' && !is_delete){
+				str = val;
+			}
+			if(str != ''){
+				url += "ext["+id+"]="+$.str.encode(str);
+			}
+			$.phpok.go(url);
+		}
+		</script>
+		<!-- loop from=$filter key=$key value=$value id=$tmpid -->
+		<ul class="demo" id="filter_{$value.identifier}">
+		    <li>{$value.title}：</li>
+		    <li{if $value.highlight} class="on"{/if}><a href="{$value.url}">不限</a></li>
+		    <!-- loop from=$value.list key=$k value=$v id=$tmpid2 -->
+		    <li{if $v.highlight} class="on"{/if} data-val="{$v.val}"><a href="{if $value.multiple}javascript:filter_submit('{$value.url}','{$value.identifier}','{$v.val}','{$value.cutype}');void(0);{else}{$v.url}{/if}">{$v.title}</a></li>
+		    <!-- /loop -->
+		</ul>
+		<!-- /loop -->
 		<ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
 			<!-- loop from=$rslist key=$key value=$value -->
 			<li>

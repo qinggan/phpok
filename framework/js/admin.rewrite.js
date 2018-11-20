@@ -14,10 +14,10 @@
 			url = get_url('rewrite','taxis','id='+id+"&sort="+val);
 			$.phpok.json(url,function(rs){
 				if(rs.status){
-					$.dialog.tips(p_lang('排序变更成功，请手动刷新'));
+					layer.msg(p_lang('排序变更成功，请手动刷新'));
 					return true;
 				}
-				$.dialog.alert(rs.info);
+				layer.alert(rs.info);
 				return false;
 			});
 		},
@@ -33,15 +33,15 @@
 		},
 		del:function(id,title)
 		{
-			$.dialog.confirm(p_lang('确定要删除这条规则吗？{title}',"<span class='red'>"+title+"</span>"),function(){
+			layer.confirm(p_lang('确定要删除这条规则吗？{title}',"<span class='red'>"+title+"</span>"),function(){
 				var url = get_url('rewrite','delete','id='+id);
 				$.phpok.json(url,function(rs){
 					if(rs.status){
-						$.dialog.tips(p_lang('规则删除成功'));
+						layer.msg(p_lang('规则删除成功'));
 						$("#edit_"+id).remove();
 						return true;
 					}
-					$.dialog.alert(rs.info);
+					layer.alert(rs.info);
 					return false;
 				});
 			});
@@ -51,11 +51,13 @@
 			var url = get_url('rewrite','copy','id='+id);
 			var rs = $.phpok.json(url,function(rs){
 				if(rs.status){
-					$.dialog.tips(p_lang('复制伪静态页链接成功'));
-					$.phpok.reload();
+					layer.msg(p_lang('复制伪静态页链接成功'));
+					setTimeout(function () {
+						$.phpok.reload();
+                    },500);
 					return true;
 				}
-				$.dialog.alert(rs.info);
+				layer.alert(rs.info);
 				return false;
 			});
 		}
@@ -66,7 +68,7 @@ $(document).ready(function(){
 	$("div[name=taxis]").click(function(){
 		var oldval = $(this).text();
 		var id = $(this).attr('data');
-		$.dialog.prompt(p_lang('请填写新的排序'),function(val){
+		layer.prompt(p_lang('请填写新的排序'),function(val){
 			if(val != oldval){
 				$.admin_rewrite.taxis(val,id);
 			}

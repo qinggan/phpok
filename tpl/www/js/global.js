@@ -89,13 +89,13 @@ function logout(t)
 				'type':'post',
 				'dataType':'json',
 				'success':function(rs){
-					if(rs.status == 'ok'){
+					if(rs.status){
 						$.dialog.alert('感谢您提交的评论',function(){
 							$.phpok.reload();
 						},'succeed');
 						return true;
 					}
-					$.dialog.alert(rs.content);
+					$.dialog.alert(rs.info);
 					return false;
 				}
 			});

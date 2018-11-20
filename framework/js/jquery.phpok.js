@@ -64,13 +64,23 @@
 		 * @参数 url 目标网址
 		 * @参数 obj 执行方法，为空或未设置，则返回HTML代码，此时为同步请求
 		**/
-		ajax:function(url,obj)
+		ajax:function(url,obj,postData)
 		{
 			if(!url){
 				return false;
 			}
 			var cls = {'url':url,'cache':false,'dataType':'html'};
-			cls.beforeSend = function(XMLHttpRequest){XMLHttpRequest.setRequestHeader("request_type","ajax");};
+			if(postData && postData != 'undefined'){
+				cls.data = postData;
+				cls.type = 'post';
+			}
+			cls.beforeSend = function(request){
+				request.setRequestHeader("request_type","ajax");
+				request.setRequestHeader("phpok_ajax",1);
+				if(session_name && session_name != 'undefined'){
+					request.setRequestHeader(session_name,$.cookie.get(session_name));
+				}
+			};
 			if(!obj || obj == 'undefined'){
 				cls.async = false;
 				return $.ajax(cls).responseText;
@@ -84,14 +94,25 @@
 		 * @参数 url 目标网址
 		 * @参数 obj 执行方法，为空或未设置，则返回JSON对象，此时为同步请求
 		**/
-		json:function(url,obj)
+		json:function(url,obj,postData)
 		{
 			if(!url){
 				return false;
 			}
 			var self = this;
 			var cls = {'url':url,'cache':false,'dataType':'json'};
-			cls.beforeSend = function(XMLHttpRequest){XMLHttpRequest.setRequestHeader("request_type","ajax");};
+			if(postData && postData != 'undefined'){
+				cls.data = postData;
+				cls.type = 'post';
+			}
+			cls.beforeSend = function(request){
+				request.setRequestHeader("request_type","ajax");
+				request.setRequestHeader("phpok_ajax",1);
+				request.setRequestHeader("content-type","application/json");
+				if(session_name && session_name != 'undefined'){
+					request.setRequestHeader(session_name,$.cookie.get(session_name));
+				}
+			};
 			if(!obj || obj == 'undefined'){
 				cls.async = false;
 				var info = $.ajax(cls).responseText;
@@ -162,10 +183,26 @@
 		 * 向顶层发送消息
 		 * @参数 info 要发送的文本消息，注意，仅限文本
 		**/
-		message:function(info)
+		message:function(info,url)
 		{
 			try{
-				window.top.postMessage(info,top.window.location.origin);
+				if(url && url != 'undefined'){
+					
+					$("iframe").each(function(i){
+						var src = $(this).attr('src');
+						if(typeof url == 'boolean'){
+							var obj = $(this)[0].contentWindow;
+							obj.postMessage(info,window.location.origin);
+						}else{
+							if(url.indexOf(src) != -1){
+								var obj = $(this)[0].contentWindow;
+								obj.postMessage(info,url)
+							}
+						}
+					});
+				}else{
+					window.top.postMessage(info,top.window.location.origin);
+				}
 			} catch (error) {
 				console.log(error);
 				return false;
@@ -229,6 +266,7 @@
 		{
 			var obj = this._obj(id);
 			obj.prop('checked',true);
+            window.setTimeout("layui.form.render('checkbox')",100);
 			return true;
 		},
 
@@ -240,6 +278,7 @@
 		{
 			var obj = this._obj(id);
 			obj.removeAttr('checked');
+            window.setTimeout("layui.form.render('checkbox')",100);
 			return true;
 		},
 
@@ -260,6 +299,7 @@
 					num++;
 				}
 			});
+            window.setTimeout("layui.form.render('checkbox')",100)
 			return true;
 		},
 
@@ -276,6 +316,7 @@
 				}else{
 					$(this).prop('checked',true);
 				}
+				window.setTimeout("layui.form.render('checkbox')",100)
 			});
 		},
 
@@ -435,10 +476,6 @@
 		{
 			return $.str.identifier(id);
 		}
-		//func1:function(id){
-		//},
-		//func2:function(id){
-		//}
 	});
 
 })(jQuery);

@@ -1,7 +1,6 @@
 <?php
 /**
  * 评论信息
- * @package phpok\api
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -117,102 +116,192 @@ class comment_control extends phpok_control
 
 	/**
 	 * 存储评论信息
+	 * @参数 vtype 评论类型，仅支持：title 主题，project 项目，cate 分类，order 订单，留空或是没有获取成功则读取主题
+	 * @参数 tid 主题ID，当type为title时此项必填，当为order时， tid指为订单中的具体某个产品
+	 * @参数 _chkcode 验证码，仅限评论为主题时有效，其他的评论必须是会员
+	 * @参数 parent_id 父级评论ID
+	 * @参数 star 评论等级，留空默认为3
+	 * @参数 comment 评论内容，会员评论时支持HTML，游客仅支持文本
+	 * @参数 pictures 评论的时候上传的一些图片，或附件
+	 * @参数 order_id 订单ID
 	**/
 	public function save_f()
 	{
-		$tid = $this->get('tid','int');
-		if(!$tid){
-			$tid = $this->get('id','int');
+		$type = $this->get('vtype');
+		if(!$type){
+			$type = 'title';
 		}
-		if(!$tid){
-			$this->json(P_Lang('未指定主题'));
+		if(!$type || !in_array($type,array('title','project','cate','order'))){
+			$this->error(P_Lang('评论类型不对，请检查'));
 		}
+		$data = array('vtype'=>$type);
 		$uid = $this->session->val('user_id');
-		$rs = $this->model('list')->call_one($tid);
-		//判断是否需要验证码
-		if($this->model('site')->vcode($rs['project_id'],'comment')){
-			$code = $this->get('_chkcode');
-			if(!$code){
-				$this->json(P_Lang('验证码不能为空'));
-			}
-			$code = md5(strtolower($code));
-			if($code != $this->session->val('vcode')){
-				$this->json(P_Lang('验证码填写不正确'));
-			}
-			$this->session->unassign('vcode');
+		if($uid){
+			$data['uid'] = $uid;
 		}
-		$order_id = $this->get('order_id','int');
-		if($order_id){
-			if(!$uid){
-				$this->json(P_Lang('非会员不能评论'));
+		$user_groupid = $this->model('usergroup')->group_id($uid);
+		if(!$user_groupid){
+			$this->error(P_Lang('无法获取用户组信息，请检查'));
+		}
+		$parent_id = $this->get("parent_id","int");
+		if($parent_id){
+			$data['parent_id'] = $parent_id;
+		}
+		$data["ip"] = $this->lib('common')->ip();
+		$data["addtime"] = $this->time;
+		$data["star"] = $this->get('star','int');
+		if(!$data['star']){
+			$data['star'] = 3;
+		}
+		$data["session_id"] = $this->session->sessid();
+		$_clearVcode = false;
+		if($type == 'title'){
+			$tid = $this->get('tid','int');
+			if(!$tid && !$parent_id){
+				$this->error(P_Lang('未指定要评论主题'));
 			}
-			$rs = $this->model('order')->get_one($order_id);
-			if(!$rs){
-				$this->json(P_Lang('订单信息不存在'));
-			}
-			if($rs['user_id'] != $uid){
-				$this->json(P_Lang('您没有权限对此订单产品进行评论'));
-			}
-			$plist = $this->model('order')->product_list($order_id);
-			if(!$plist){
-				$this->json(P_Lang('订单中没有指定的产品'));
-			}
-			$check = false;
-			foreach($plist as $key=>$value){
-				if($value['tid'] == $tid){
-					$check = true;
+			if(!$tid && $parent_id){
+				$comment = $this->model('reply')->get_one($parent_id);
+				if(!$comment || !$comment['tid']){
+					$this->error(P_Lang('未指定要评论主题'));
 				}
+				$tid = $comment['tid'];
 			}
-			if(!$check){
-				$this->json(P_Lang('订单中没有此产品'));
-			}
-		}else{
-			$sessid = $this->session->sessid();
-			$chk = $this->model('reply')->check_time($tid,$uid,$sessid);
-			if(!$chk){
-				$this->json(P_Lang('30秒内同一主题只能回复一次'));
+			$rs = $this->model('list')->call_one($tid);
+			if(!$rs){
+				$this->error(P_Lang('要评论的主题不存在'));
 			}
 			$project_rs = $this->model('project')->get_one($rs['project_id'],false);
 			if(!$project_rs['comment_status']){
-				$this->json(P_Lang('未启用评论功能'));
+				$this->error(P_Lang('未启用评论功能'));
 			}
-		}
-		$parent_id = $this->get("parent_id","int");
-		if($this->session->val('user_id')){
-			$content = $this->get('comment','html');
-			$tmp = strip_tags($content);
-			if(!$tmp){
-				$this->json(P_Lang("评论内容不能为空"));
+			$data['tid'] = $rs['id'];
+			$data['title'] = $rs['title'];
+			if($this->model('site')->vcode($rs['project_id'],'comment')){
+				$code = $this->get('_chkcode');
+				if(!$code){
+					$this->error(P_Lang('验证码不能为空'));
+				}
+				$code = md5(strtolower($code));
+				if($code != $this->session->val('vcode')){
+					$this->error(P_Lang('验证码填写不正确'));
+				}
+				$_clearVcode = true;
 			}
-		}else{
-			$content = $this->get("comment");
+			$array["status"] = $this->model('popedom')->val($rs['project_id'],$user_groupid,'reply1');
+			$sessid = $this->session->sessid();
+			$chk = $this->model('reply')->check_time($tid,$uid,$data["session_id"]);
+			if(!$chk){
+				$this->error(P_Lang('30秒内同一主题只能回复一次'));
+			}
+		}elseif($type == 'order'){
+			if(!$uid){
+				$this->error(P_Lang('非会员不能对订单进行评论'));
+			}
+			$order_id = $this->get('order_id','int');
+			if(!$order_id){
+				$this->error(P_Lang('未指定订单ID'));
+			}
+			$order = $this->model('order')->get_one($order_id);
+			if(!$order){
+				$this->error(P_Lang('订单信息不存在'));
+			}
+			if($order['user_id'] != $uid){
+				$this->error(P_Lang('您没有权限对此订单产品进行评论'));
+			}
+			$data['order_id'] = $order_id;
+			$tid = $this->get('tid','int');
+			if($tid){
+				$plist = $this->model('order')->product_list($order_id);
+				if(!$plist){
+					$this->error(P_Lang('订单中没有指定的产品'));
+				}
+				$check = false;
+				$rs = array();
+				foreach($plist as $key=>$value){
+					if($value['tid'] == $tid){
+						$check = true;
+						$rs = $value;
+						break;
+					}
+				}
+				if(!$check){
+					$this->error(P_Lang('订单中没有此产品'));
+				}
+				$data['title'] = '#'.$order['sn'].'_'.$rs['title'];
+			}else{
+				$data['title'] = P_Lang('订单编号').'#'.$order['sn'];
+			}
+			$data["status"] = 0;
+		}elseif($type == 'project'){
+			if(!$uid){
+				$this->error(P_Lang('非会员不能对项目进行评论'));
+			}
+			$tid = $this->get('tid','int');
+			if(!$tid && !$parent_id){
+				$this->error(P_Lang('未指定哪个项目'));
+			}
+			if(!$tid && $parent_id){
+				$comment = $this->model('reply')->get_one($parent_id);
+				if(!$comment || !$comment['tid']){
+					$this->error(P_Lang('未指定要评论的项目'));
+				}
+				$tid = $comment['tid'];
+			}
+			$project_rs = $this->model('project')->get_one($tid,false);
+			if(!$project_rs){
+				$this->error(P_Lang('项目不存在'));
+			}
+			$data['title'] = $project_rs['title'];
+			$data["status"] = 0;
+		}elseif($type == 'cate'){
+			if(!$uid){
+				$this->error(P_Lang('非会员不能对分类进行评论'));
+			}
+			$tid = $this->get('tid','int');
+			if(!$tid && !$parent_id){
+				$this->error(P_Lang('未指定分类'));
+			}
+			if(!$tid && $parent_id){
+				$comment = $this->model('reply')->get_one($parent_id);
+				if(!$comment || !$comment['tid']){
+					$this->error(P_Lang('未指定要评论的项目'));
+				}
+				$tid = $comment['tid'];
+			}
+			$cate_rs = $this->model('cate')->get_one($tid,'id',false);
+			if(!$cate_rs){
+				$this->error(P_Lang('分类不存在'));
+			}
+			$data['title'] = $cate_rs['title'];
+			$data["status"] = 0;
 		}
+		$content = $uid ? $this->get('comment','html') : $this->get('comment');
 		if(!$content){
-			$this->json(P_Lang("评论内容不能为空"));
+			$this->error(P_Lang('评论内容不能为空'));
 		}
-		$star = $this->get("star",'int');
-		$array = array();
-		$array["tid"] = $tid;
-		$array["parent_id"] = $parent_id;
-		$array["star"] = $star;
-		$array["uid"] = $uid;
-		$array["ip"] = $this->lib('common')->ip();
-		$array["addtime"] = $this->time;
-		$array["status"] = $this->model('popedom')->val($rs['project_id'],$this->user_groupid,'reply1');
-		$array["session_id"] = $sessid;
-		$array["content"] = $content;
-		$array['order_id'] = $order_id;
-		$insert_id = $this->model("reply")->save($array);
-		$update = array("replydate"=>$this->time);
-		$this->model("list")->save($update,$tid);
+		$data['content'] = $content;
+		$data['res'] = $this->get('pictures'); //绑定附件，如果用户有上传附件，仅支持jpg,gif,png,zip,rar
+		$insert_id = $this->model("reply")->save($data);
+		if(!$insert_id){
+			$this->error(P_Lang('评论保存失败，请联系管理员'));
+		}
+		if($_clearVcode){
+			$this->session->unassign('vcode');
+		}
+		if($tid && in_array($type,array('title','order'))){
+			$update = array("replydate"=>$this->time);
+			$this->model("list")->save($update,$tid);
+		}
 		//评论送积分
-		if($uid && $array["status"]){
+		if($tid && $uid && $data["status"]){
 			$this->model('wealth')->add_integral($tid,$uid,'comment',P_Lang('评论：{title}',array('title'=>$rs['title'])));
 		}
+		//增加通知任务
 		if($project_rs && $project_rs['etpl_comment_admin'] || $project_rs['etpl_comment_user']){
 			$param = 'id='.$insert_id;
 			$this->model('task')->add_once('comment',$param);
 		}
-		$this->json(true);
+		$this->success();
 	}
 }

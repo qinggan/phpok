@@ -18,9 +18,31 @@ class index_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->site['api_code']){
-			$this->json(P_Lang("系统未启用接口功能"));
+			$this->error(P_Lang("系统未启用接口功能"));
 		}
-		$this->json(true);
+		$data = array('ctrl_id'=>$this->config['ctrl_id']);
+		$data['func_id'] = $this->config['func_id'];
+		$data['site_id'] = $this->site['id'];
+		$data['session_name'] = $this->session->sid();
+		$data['session_val'] = $this->session->sessid();
+		$wxAppConfig = $this->get('wxAppConfig');
+		$clear_url = $this->config['url'].'wxapp/';
+		if($wxAppConfig && is_file($this->dir_data.'wxappconfig.php')){
+			include_once($this->dir_data.'wxappconfig.php');
+			if($wxconfig && $wxconfig['rslist']){
+				foreach($wxconfig['rslist'] as $key=>$value){
+					if($value['thumb']){
+						$value['thumb'] = str_replace($clear_url,'',$value['thumb']);
+					}
+					if($value['thumb_selected']){
+						$value['thumb_selected'] = str_replace($clear_url,'',$value['thumb_selected']);
+					}
+					$wxconfig['rslist'][$key] = $value;
+				}
+			}
+			$data['wxconfig'] = $wxconfig;
+		}
+		$this->success($data);
 	}
 
 	public function site_f()

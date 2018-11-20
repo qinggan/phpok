@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>圆支付接口引挈</title>
+	<note><![CDATA[客户订制版]]></note>
+	<code>
+		<merchantNo>
+			<title>商户号</title>
+			<note>圆支付接口提供商提供的商户号</note>
+			<type>text</type>
+		</merchantNo>
+		<storeNo>
+			<title>店铺号</title>
+			<note>圆支付接口提供商提供的店铺编号</note>
+			<type>text</type>
+		</storeNo>
+		<yuansferToken>
+			<title>密钥</title>
+			<note>用于生成签名的密钥</note>
+			<type>text</type>
+		</yuansferToken>
+		<ptype>
+			<title>运行环境</title>
+			<note>确保平台是正式运行还是测试</note>
+			<type>radio</type>
+			<option>
+				<demo>测试环境</demo>
+				<product>正式运行</product>
+			</option>
+			<default>product</default>
+		</ptype>
+		<paylist>
+			<title>支付方式</title>
+			<note>请选择使用支付宝，微信或是银联支付</note>
+			<type>select</type>
+			<option>
+				<alipay>支付宝</alipay>
+				<wechatpay>微信支付</wechatpay>
+				<unionpay>银联支付</unionpay>
+			</option>
+			<default></default>
+		</paylist>
+	</code>
+</root>

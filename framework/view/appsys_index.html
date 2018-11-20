@@ -1,49 +1,57 @@
-<!-- include tpl=head -->
-<div class="tips">
-	<div class="left">
-		{lang您当前的位置：}{lang应用管理器} &raquo; {lang已安装应用}
-	</div>
-	<!-- if $popedom.setting -->
-	<div class="action"><a href="javascript:$.admin_appsys.setting();void(0)">{lang配置环境}</a></div>
-	<!-- /if -->
-	<!-- if $popedom.remote -->
-	<div class="action"><a href="javascript:$.admin_appsys.remote();void(0)">{lang更新远程数据}</a></div>
-	<!-- /if -->
-</div>
-<div class="list">
-<table width="100%" class="list" cellpadding="0" cellspacing="0">
-<tr>
-	<th width="60px">{lang标识}</th>
-	<th class="lft">{lang名称}</th>
-	<th>{lang后台管理}</th>
-	<th>{lang前台}</th>
-	<th>{lang接口}</th>
-	<th>{lang安装状态}</th>
-	<th>&nbsp;</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<tr>
-	<td class="center">{$key}</td>
-	<td id="{$key}_title">{$value.title}</td>
-	<td class="center">
-		<!-- if $value.status && $value.status.admin -->支持<!-- else --><span class="gray">不支持</span><!-- /if -->
-	</td>
-	<td class="center">
-		<!-- if $value.status && $value.status.www -->支持<!-- else --><span class="gray">不支持</span><!-- /if -->
-	</td>
-	<td class="center">
-		<!-- if $value.status && $value.status.api -->支持<!-- else --><span class="gray">不支持</span><!-- /if -->
-	</td>
-	<td class="center"><!-- if $value.installed --><span class="gray">已安装</span><!-- else --><span class="red">未安装</span><!-- /if --></td>
-	<td class="center">
-		<!-- if $value.installed -->
-		<input type="button" value="{lang卸载}" onclick="$.admin_appsys.uninstall('{$key}')" class="phpok-btn" />
-		<!-- else -->
-		<input type="button" value="{lang安装}" onclick="$.admin_appsys.install('{$key}')" class="phpok-btn" />
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang列表}
+		<!-- if $popedom.setting || $popedom.remote -->
+		<div class="layui-btn-group test-table-operate-btn fr">
+			<!-- if $popedom.setting -->
+			<button class="layui-btn layui-btn-sm" onclick="$.admin_appsys.setting()"><i class="layui-icon">&#xe716;</i> {lang配置环境}</button>
+			<!-- /if -->
+			<!-- if $popedom.remote -->
+			<button class="layui-btn layui-btn-sm" onclick="$.admin_appsys.remote()"><i class="layui-icon">&#xe601;</i> {lang更新远程数据}</button>
+			<!-- /if -->
+		</div>
 		<!-- /if -->
-	</td>
-</tr>
-<!-- /loop -->
-</table>
+	</div>
+	
+	<div class="layui-card-body">
+		
+		<table class="layui-table">
+			<thead>
+				<tr>
+					<th>{lang标识}</th>
+					<th>{lang名称}</th>
+					<th>{lang后台管理}</th>
+					<th>{lang前台}</th>
+					<th>{lang接口}</th>
+					<th>{lang安装状态}</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+			<tr>
+				<td class="center">{$key}</td>
+				<td id="{$key}_title">{$value.title}</td>
+				<td class="center">
+					<!-- if $value.status && $value.status.admin -->{lang支持}<!-- else --><span class="gray">{lang不支持}</span><!-- /if -->
+				</td>
+				<td class="center">
+					<!-- if $value.status && $value.status.www -->{lang支持}<!-- else --><span class="gray">{lang不支持}</span><!-- /if -->
+				</td>
+				<td class="center">
+					<!-- if $value.status && $value.status.api -->{lang支持}<!-- else --><span class="gray">{lang不支持}</span><!-- /if -->
+				</td>
+				<td class="center"><!-- if $value.installed --><span class="gray">{lang已安装}</span><!-- else --><span class="red">{lang未安装}</span><!-- /if --></td>
+				<td class="center">
+					<!-- if $value.installed -->
+					<input type="button" value="{lang卸载}" onclick="$.admin_appsys.uninstall('{$key}')" class="layui-btn  layui-btn-sm" />
+					<!-- else -->
+					<input type="button" value="{lang安装}" onclick="$.admin_appsys.install('{$key}')" class="layui-btn  layui-btn-sm" />
+					<!-- /if -->
+				</td>
+			</tr>
+			<!-- /loop -->
+		</table>
+	</div>
 </div>
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

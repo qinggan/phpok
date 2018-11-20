@@ -1,0 +1,63 @@
+<!-- include tpl=header -->
+<script type="text/javascript">
+var open_vcode = '{$is_vcode}';
+function save()
+{
+	$('#login-form').ajaxSubmit({
+		url:api_url('login','save'),
+		type:'post',
+		dataType:'json',
+		success:function(rs){
+			if(rs.status){
+				$.dialog.alert('您已成功登录',function(){
+					top.$.phpok.reload();
+				},'succeed');
+				return true;
+			}
+			if(!rs.info){
+				rs.info = '登录失败';
+			}
+			$.dialog.alert(rs.info,function(){
+				if(open_vcode == '1'){
+					$("#_chkcode").val('');
+					$("#vcode").phpok_vcode();
+				}
+			},'error');
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+<div style="padding:10px;">
+<form method="post" id="login-form" class="am-form" onsubmit="return false">
+	<div class="am-form-group">
+		<input type="text" name="user" id="user" value="{$accout}" autocomplete="off" placeholder="输入账号/邮箱/手机号" />
+    </div>
+
+    <div class="am-form-group">
+		<input class="input" type="password" name="pass" id="pass" autocomplete="off" placeholder="输入登录密码" />
+	</div>
+	<!-- if $is_vcode -->
+	<div class="am-form-group">
+		<div class="am-g am-g-collapse">
+			<div class="am-u-sm-6">
+				<input class="vcode"  type="text" name="_chkcode" autocomplete="off" id="_chkcode" placeholder="输入验证码" />
+			</div>
+			<div class="am-u-sm-6">
+				<img src="" border="0" align="absmiddle" id="vcode" class="hand" style="margin-top:5px;" />
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#vcode").phpok_vcode();
+		$("#vcode").click(function(){
+			$(this).phpok_vcode();
+		});
+	});
+	</script>
+	<!-- /if -->
+</form>
+</div>
+<!-- include tpl=footer -->

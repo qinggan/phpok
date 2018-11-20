@@ -1,0 +1,25 @@
+<!-- php:$title = '关键字：'.$keywords -->
+<!-- include tpl=head title=$title -->
+<div class="main">
+	<div data-am-widget="list_news" class="am-list-news am-list-news-default">
+		<div class="am-list-news-bd">
+			<ul class="am-list">
+				<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+				
+				<li class="am-g am-list-item-desced{if $value.thumb} am-list-item-thumbed am-list-item-thumb-left{/if}">
+					<!-- if $value.thumb -->
+					<div class="am-u-sm-2 am-list-thumb"><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" alt="{$value.title}" /></a></div>
+					<!-- /if -->
+					<div class="{if $value.thumb} am-u-sm-10{/if} am-list-main">
+						 <h3 class="am-list-item-hd"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></h3>
+						<div class="am-list-item-text">{$value.note ? phpok_cut($value.note,120,'…') : phpok_cut($value.content,120,'…')}</div>
+					</div>
+				</li>
+				<!-- /loop -->
+			</ul>
+		</div>
+	</div>
+	<!-- include tpl=block/pagelist -->
+</div>
+<br /><br /><br /><br />
+<!-- include tpl=foot -->

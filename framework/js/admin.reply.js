@@ -24,62 +24,100 @@
 						alert(p_lang('iframe还没加载完毕呢'));
 						return false;
 					};
-					var status = iframe.save();
-					if(status){
-						$.dialog.alert(p_lang('管理员回复操作成功'),function(){
-							$.phpok.reload();
-						},'succeed');
-					}
+					iframe.$.admin_reply.adm_save();
 					return false;
 				},okVal:p_lang('管理员回复')
-				,cancel:function(){return true;}
+				,cancel:true
+			});
+		},
+		adm_save:function()
+		{
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
+			var opener = $.dialog.opener;
+			var lock_status = $.dialog.tips(p_lang('正在保存数据，请稍候…')).lock();
+			$("#post_save").ajaxSubmit({
+				'url':get_url('reply','adm_save'),
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					lock_status.close();
+					if(rs.status){
+						$.dialog.tips('操作成功',function(){
+							opener.$.phpok.reload();
+						}).lock();
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
 			});
 		},
 		status:function(id,status)
 		{
-			var url = get_url("reply","status","id="+id+"&status="+status);
-			if(status == 0){
-				$.dialog.confirm(p_lang('确定要关闭这条评论吗，关闭后前台是不会显示的'),function(){
-					var rs = $.phpok.json(url);
-					if(rs.status == "ok"){
-						$.phpok.reload();
-					}else{
-						$.dialog.alert(rs.content);
-						return false;
+			$.phpok.json(get_url("reply","status","id="+id),function(rs){
+				if(rs.status){
+					if(!rs.info){
+						rs.info = '0';
 					}
-				});
-			}else{
-				var rs = $.phpok.json(url);
-				if(rs.status == "ok"){
-					$.phpok.reload();
-				}else{
-					$.dialog.alert(rs.content);
-					return false;
+					var oldvalue = $("#status_"+id).attr("value");
+					var old_cls = "status"+oldvalue;
+					$("#status_"+id).removeClass(old_cls).addClass("status"+rs.info);
+					$("#status_"+id).attr("value",rs.info);
+					$.phpok.message('pendding');
+					return true;
 				}
-			}
+				$.dialog.alert(rs.info);
+				return false;
+			});
 		},
-		sublist:function(id)
+		del:function(id,ifadm)
 		{
-			if($("#comment_reply_"+id).is(":hidden")){
-				$("#comment_reply_"+id).show();
-				$("#show_hide_c_"+id).val("隐藏评论的回复");
+			if(ifadm && ifadm != 'undefined'){
+				var tip = p_lang('确定要删除这条管理员回复信息吗？');
 			}else{
-				$("#comment_reply_"+id).hide();
-				$("#show_hide_c_"+id).val("显示评论的回复");
+				var tip = p_lang('确定要删除ID为{id}的评论吗?删除后是不能恢复！<br/>评论有回复将一起被删除'," <strong class='red'>"+id+"</strong> ");
 			}
-		},
-		del:function(id)
-		{
-			
-			$.dialog.confirm(p_lang('确定要删除ID为{id}的评论吗?删除后是不能恢复的！<br/>如果此评论有回复将一起被删除'," <strong class='red'>"+id+"</strong> "),function(){
+			$.dialog.confirm(tip,function(){
 				var url = get_url("reply","delete","id="+id);
-				var rs = $.phpok.json(url);
-				if(rs.status == "ok"){
-					$.phpok.reload();
-				}else{
-					$.dialog.alert(rs.content);
+				var rs = $.phpok.json(url,function(rs){
+					if(rs.status){
+						$.phpok.message('pendding');
+						if(ifadm && ifadm != 'undefined'){
+							$("#adm_reply_"+id).remove();
+						}else{
+							$("tr[data-id=replylist_"+id+"]").remove();
+						}
+						$.dialog.tips(p_lang('操作成功')).lock();
+						return true;
+					}
+					$.dialog.alert(rs.info);
 					return false;
-				}
+				});
+			});
+		},
+		/**
+		 * 附件预览
+		**/
+		preview_attr:function(id)
+		{
+			$.dialog.open(get_url('upload','preview','id='+id),{
+				'title':p_lang('预览附件信息'),
+				'width':'700px',
+				'height':'400px',
+				'lock':false,
+				'button': [{
+					'name': p_lang('下载原文件'),
+					'callback': function () {
+						$.phpok.open(get_url('res','download','id='+id));
+						return false;
+					},
+				}],
+				'okVal':p_lang('关闭'),
+				'ok':true
 			});
 		},
 		edit:function(id)
@@ -97,16 +135,37 @@
 						alert(p_lang('iframe还没加载完毕呢'));
 						return false;
 					};
-					var status = iframe.save();
-					if(status){
-						$.dialog.alert(p_lang('评论信息修改成功'),function(){
-							$.phpok.reload();
-						},'succeed');
-					}
+					iframe.$.admin_reply.edit_ok();
 					return false;
 				},okVal:p_lang('修改评论')
-				,cancel:function(){return true;}
+				,cancel:true
 			});
+		},
+		edit_ok:function()
+		{
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
+			var opener = $.dialog.opener;
+			$("#post_save").ajaxSubmit({
+				'url':get_url('reply','edit_save'),
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					if(rs.status){
+						$.phpok.message('pendding');
+						$.dialog.tips(p_lang('操作成功'),function(){
+							opener.$.phpok.reload();
+						}).lock();
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
+			return false;
 		}
 	}
 })(jQuery);

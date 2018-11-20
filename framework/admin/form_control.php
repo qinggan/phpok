@@ -369,6 +369,13 @@ class form_control extends phpok_control
 		$this->assign('m_rs',$module);
 		$mlist = $this->model('module')->fields_all($module['id'],"identifier");
 		$pageurl = $this->url('form','quicklist','id='.$id);
+		$ext = $this->get('ext');
+		if($ext && is_array($ext)){
+			foreach($ext as $key=>$value){
+				$pageurl .= "&ext[".$key."]=".rawurlencode($value);
+			}
+			$this->assign('ext',$ext);
+		}
 		$psize = $this->config["psize"] ? $this->config["psize"] : "30";
 		if($project['psize'] && $project['psize'] > $psize){
 			$psize = $project['psize'];

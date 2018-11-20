@@ -141,7 +141,7 @@ class param_form extends _init_auto
 				$html = '无 <b>'.implode("/",$info['title']).'</b> 内容';
 			}
 
-			$html = '<input type="button" value="'.implode("/",$info['title']).'" class="phpok-btn" onclick="$.dialog.alert(\''.$html.'\');" />';
+			$html = '<input type="button" value="'.implode("/",$info['title']).'" class="layui-btn" onclick="$.dialog.alert(\''.$html.'\');" />';
 			return $html;
 		}else{
 			

@@ -56,8 +56,7 @@ class opt_model_base extends phpok_model
 	public function opt_list($condition="",$offset=0,$psize=20)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."opt WHERE 1=1 ";
-		if($condition)
-		{
+		if($condition){
 			$sql .= " AND ".$condition;
 		}
 		$sql .= " ORDER BY taxis ASC";

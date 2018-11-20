@@ -44,6 +44,11 @@ var autosave_handle;
 			var id = $("#id").val();
 			var pcate = $("#_root_cate").val();
 			var pcate_multiple = $("#_root_cate_multiple").val();
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
 			$("#_listedit").ajaxSubmit({
 				'url':get_url('list','ok'),
 				'type':'post',
@@ -63,7 +68,12 @@ var autosave_handle;
 						}
 						if(id){
 							$.dialog.alert(p_lang('内容信息修改成功'),function(){
-								$.phpok.go(url);
+								$.phpok.message('pendding');
+								$.admin.reload(url);
+								//关闭当前窗口
+								window.setTimeout(function(){
+									top.layui.admin.events.closeThisTabs();
+								}, 500);
 							},'succeed');
 							return true;
 						}
@@ -71,13 +81,20 @@ var autosave_handle;
 							'icon':'succeed',
 							'content':p_lang('内容添加操作成功，请选择继续添加或返回列表'),
 							'ok':function(){
+								$.phpok.message('pendding');
+								$.admin.reload(url);
 								$.phpok.reload();
 							},
 							'okVal':p_lang('继续添加'),
 							'cancel':function(){
-								$.phpok.go(url);
+								$.phpok.message('pendding');
+								$.admin.reload(url);
+								//关闭当前窗口
+								window.setTimeout(function(){
+									top.layui.admin.events.closeThisTabs();
+								}, 500);
 							},
-							'cancelVal':p_lang('返回列表'),
+							'cancelVal':p_lang('关闭窗口'),
 							'lock':true
 						});
 						return true;
@@ -222,6 +239,7 @@ var autosave_handle;
 			$.phpok.json(url,function(data){
 				if(data.status){
 					$("#_biz_attr_"+id).html(data.info);
+					layui.form.render();
 					return true;
 				}
 				$.dialog.alert(data.info);
@@ -285,11 +303,11 @@ var autosave_handle;
 			var taxis = count > 0 ? parseInt(count+1) * 5 : 5;
 			var html = '<tr name="attr_'+id+'" id="attr_'+id+'_'+val+'" data-name="'+text+'">';
 			html += '<td class="center"><input type="hidden" name="_attr_'+id+'[]" value="'+val+'" />'+text+'</td>';
-			html += '<td class="center"><input type="text" name="_attr_weight_'+id+'['+val+']" value="0" class="short center" /></td>';
-			html += '<td class="center"><input type="text" name="_attr_volume_'+id+'['+val+']" value="0" class="short center" /></td>';
-			html += '<td class="center"><input type="text" name="_attr_price_'+id+'['+val+']" value="0" class="center" style="width:100px" /></td>';
-			html += '<td class="center"><input type="text" name="_attr_taxis_'+id+'['+val+']" value="'+taxis+'" class="short center" /></td>'
-			html += '<td class="center"><input type="button" value="'+p_lang('删除')+'" onclick="$.admin_list_edit.attr_option_delete(\''+id+'\',\''+val+'\')" class="phpok-btn" /></td>';
+			html += '<td class="center"><input type="text" name="_attr_weight_'+id+'['+val+']" value="0" class="layui-input" /></td>';
+			html += '<td class="center"><input type="text" name="_attr_volume_'+id+'['+val+']" value="0" class="layui-input" /></td>';
+			html += '<td class="center"><input type="text" name="_attr_price_'+id+'['+val+']" value="" class="layui-input" /></td>';
+			html += '<td class="center"><input type="text" name="_attr_taxis_'+id+'['+val+']" value="'+taxis+'" class="layui-input" /></td>'
+			html += '<td class="center"><input type="button" value="'+p_lang('删除')+'" onclick="$.admin_list_edit.attr_option_delete(\''+id+'\',\''+val+'\')" class="layui-btn layui-btn-sm" /></td>';
 			html += '</tr>';
 			if($("tr[name=attr_"+id+"]").length > 0){
 				$("tr[name=attr_"+id+"]").last().after(html);
@@ -333,44 +351,21 @@ $(document).keypress(function(e){
 
 });
 $(document).ready(function(){
+
 	
 	//仅在添加主题时执行自动保存操作
-	var id = $("#id").val();
+	/*var id = $("#id").val();
 	if(!id || id == '0' || id == 'undefined'){
 		autosave_handle = window.setTimeout(function(){
 			$.admin_list_edit.autosave();
 		}, 60000);
-	}
+	}*/
 
-	//完善扩展分类设置
-	if($("#ext_cate_id").length > 0){
-		var tag_data = new Array();
-		$("input[name=_ext_cateid]").each(function(i){
-			var id = $(this).val();
-			var name = $(this).attr("data-name");
-			var space = $(this).attr("data-space");
-			var orderby = parseInt($(this).attr("data-orderby"));
-			tag_data[i] = {'id':id,'name':name,'space':space,'orderby':orderby};
-		});
-		$('#ext_cate_id').selectPage({
-		    showField : 'name',
-		    keyField : 'id',
-		    selectOnly : true,
-		    pagination : false,
-		    listSize : 20,
-		    multiple : true,
-		    orderBy:['orderby'],
-		    data : tag_data,
-		    multipleControlbar:false,
-		    formatItem : function(data){
-		        return data.space + '' + data.name;
-		    }
-		});
-	}
 
 	//加载产品属性
 	if($("#_biz_attr").length > 0){
 		$.admin_list_edit.attr_load();
 	}
-	
+
+
 });

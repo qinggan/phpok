@@ -1,71 +1,52 @@
-<!-- include tpl=head -->
-<script type="text/javascript">
-function admin_delete(id,title)
-{
-	$.dialog.confirm("{lang确定要删除管理员} <span class='red'>"+title+"</span> {lang吗?}",function(){
-		var url = get_url("admin","delete") +"&id="+id;
-		var rs = json_ajax(url);
-		if(rs.status != "ok")
-		{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-		else
-		{
-			$("#admin_tr_"+id).remove();
-		}
-	});
-}
-function set_status(id)
-{
-	var url = get_url("admin","status") + '&id='+id;
-	var rs = json_ajax(url);
-	if(rs.status == "ok")
-	{
-		if(!rs.content) rs.content = '0';
-		var oldvalue = $("#status_"+id).attr("value");
-		var old_cls = "status"+oldvalue;
-		$("#status_"+id).removeClass(old_cls).addClass("status"+rs.content).attr("value",rs.content);
-	}
-	else
-	{
-		$.dialog.alert(rs.content);
-		return false;
-	}
-}
-function admin_edit(id)
-{
-	var url = get_url("admin","set") + '&id='+id;
-	direct(url);
-}
-$(document).ready(function(){
-	top.$.desktop.title('{lang管理员维护}');
-});
-</script>
-<div class="tips clearfix">
-	<!-- if $popedom.add --><div class="action"><a href="{echo admin_url('admin','set')}">{lang添加管理员}</a></div><!-- /if -->
-	{lang您当前的位置：}<a href="{func admin_url admin}" title="{lang管理员列表}">{lang管理员列表}</a>
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header ">
+		{lang管理员列表}
+		<div class="fr">
+			<a lay-href="{url ctrl=admin func=set/}" lay-text="{lang添加管理员}" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe608;</i> {lang添加管理员}</a>
+		</div>
+	</div>
+
+	<div class="layui-card-body">
+		<table class="layui-table">
+			<colgroup>
+				<col>
+				<col>
+				<col>
+				<col>
+				<col width="140">
+			</colgroup>
+			<thead>
+			<tr>
+				<th>{langID}</th>
+				<th>{lang状态}</th>
+				<th>{lang账号}</th>
+				<th>{lang邮箱}</th>
+				<th>{lang操作}</th>
+			</tr>
+			</thead>
+			<tbody>
+			<!-- loop from=$rslist key=$key value=$value -->
+			<tr id="admin_tr_{$value.id}">
+				<td>{$value.id}</td>
+				<td>
+					<input type="button" id="status_{$value.id}" value="{if $value.status}{lang启用}{else}{lang停用}{/if}" onclick="$.admin_admin.status({$value.id})" class="layui-btn layui-btn-sm {if !$value.status} layui-btn-danger{/if}" />
+				</td>
+				<td><div style="padding-left:7px">{$value.account}<!-- if $value.if_system --><span class="red i">{lang（系统管理员）}</span><!-- /if --></div></td>
+				<td><div style="padding-left:7px">{$value.email}</div></td>
+				<td width="50">
+					<!-- if $popedom.modify -->
+					<input type="button" value="{lang编辑}" class="layui-btn layui-btn-sm {if $value.id == $session.admin_id} layui-btn-disabled{/if}" {if $value.id == $session.admin_id} disabled title="你不能编辑自己的信息"{/if} onclick="$.admin_admin.set({$value.id})" />
+					<!-- /if -->
+					<!-- if $popedom.delete -->
+					<input type="button" value="{lang删除}" class="layui-btn layui-btn-sm {if $value.if_system && $value.id == $session.admin_id} layui-btn-disabled{/if}" {if $value.id != $session.admin_id}onclick="$.admin_admin.del('{$value.id}','{$value.account}')"{else}disabled title="你不能删除管理员或自己的信息"{/if} />
+					<!-- /if -->
+				</td>
+			</tr>
+			<!-- /loop -->
+			</tbody>
+		</table>
+	</div>
+
 </div>
-<div class="list">
-	<table width="100%" cellpadding="0" cellspacing="0" class="list">
-	<tr>
-		<th width="50">{langID}</th>
-		<th width="30">{lang状态}</th>
-		<th class="lft"><div style="padding-left:7px;">{lang账号}</div></th>
-		<th class="lft"><div style="padding-left:7px;">{lang邮箱}</div></th>
-		<th class="lft" colspan="2"><div style="padding-left:7px;">{lang操作}</div></th>
-	</tr>
-	<!-- loop from=$rslist key=$key value=$value -->
-	<tr id="admin_tr_{$value.id}">
-		<td align="center">{$value.id}</td>
-		<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="set_status({$value.id})"{else} style="cursor:default;"{/if} value="{$value.status}"></span></td>
-		<td><div style="padding-left:7px">{$value.account}<!-- if $value.if_system --><span class="red i">{lang（系统管理员）}</span><!-- /if --></div></td>
-		<td><div style="padding-left:7px">{$value.email}</div></td>
-		<td width="50"><!-- if $popedom.modify --><input type="button" value="{lang编辑}" class="btn" onclick="admin_edit({$value.id})" /><!-- /if --></td>
-		<td width="50"><!-- if $popedom.delete --><input type="button" value="{lang删除}" class="btn" {if !$value.if_system && $value.id != $session.admin_id}onclick="admin_delete('{$value.id}','{$value.account}')"{else}onclick="$.dialog.alert('{lang系统管理员或您自己不能删除}')"{/if} /><!-- /if --></td>
-	</tr>
-	<!-- /loop -->
-	</table>
-</div>
-<div class="table"><!-- include tpl=pagelist --></div>
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

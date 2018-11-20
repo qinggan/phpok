@@ -1,28 +1,35 @@
-<!-- include tpl=head -->
-<div class="tips clearfix">
-	{lang您当前的位置：}<a href="{url ctrl=sql/}" title="{lang数据库管理}">{lang数据库管理}</a>
-	&raquo; {lang已备份列表}
-</div>
-<table width="100%" cellpadding="0" cellspacing="0" class="list">
-<tr>
-	<th class="lft">&nbsp;{lang备份文件}</th>
-	<th class="lft">&nbsp;{lang大小}</th>
-	<th>{lang备份时间}</th>
-	<th class="lft">&nbsp; {lang操作}</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value -->
-<tr>
-	<td>{$value.filename}</td>
-	<td>{$value.size_str}</td>
-	<td align="center">{$value.time}</td>
-	<td>
-		<div class="button-group">
-			<input type="button" value="恢复这个备份" onclick="$.admin_sql.recover('{$value.id}')" class="phpok-btn" />
-			<input type="button" value="删除" onclick="$.admin_sql.del('{$value.id}')" class="phpok-btn" />
-		</div>
-	</td>
-</tr>
-<!-- /loop -->
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header " style="visibility: visible;">
+		<div>数据库备份列表</div>
+	</div>
+	<div class="layui-card-body">
+<table class="layui-table">
+			<!--<colgroup>  .<col width="150"> <col width="200"> <col> </colgroup>-->
+			<thead>
+			<tr>
+				<th class="lft">&nbsp;{lang备份文件}</th>
+				<th class="lft">&nbsp;{lang大小}</th>
+				<th>{lang备份时间}</th>
+				<th class="lft">&nbsp; {lang操作}</th>
+			</tr>
+			</thead>
+			<tbody>
+			<!-- loop from=$rslist key=$key value=$value -->
+			<tr >
+				<td>{$value.filename}</td>
+				<td>{$value.size_str}</td>
+				<td align="center">{$value.time}</td>
+				<td>
+					<div class="layui-btn-group">
+						<input type="button" value="恢复这个备份" onclick="$.admin_sql.recover('{$value.id}')" class="layui-btn  layui-btn-sm" />
+						<input type="button" value="删除" onclick="$.admin_sql.del('{$value.id}')" class="layui-btn  layui-btn-sm" />
+					</div>
+				</td>
+			</tr>
+			<!-- /loop -->
+			</tbody>
 </table>
-
-<!-- include tpl=foot -->
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

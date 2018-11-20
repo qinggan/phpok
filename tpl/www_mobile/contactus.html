@@ -1,0 +1,91 @@
+<!-- include tpl=head title=$rs.title menutitle=$page_rs.title -->
+<!-- if $page_rs.banner -->
+<div data-am-widget="slider" class="am-slider am-slider-a5" data-am-slider='{"directionNav":false}'>
+	<ul class="am-slides">
+		<li><img src="{$page_rs.banner.gd.auto}" alt="{$rs.title}" /></li>
+	</ul>
+</div>
+<!-- /if -->
+<div class="main">
+	<div class="am-panel am-panel-default">
+		<div class="am-panel-hd">
+			<h3 class="am-panel-title">{$page_rs.title}</h3>
+		</div>
+		<ul class="am-list">
+			<!-- arclist pid=$page_rs.id psize=100 fields=id -->
+			<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+			<li><a href="{$value.url}" title="{$value.title}"{if $rs.id == $value.id} class="am-active"{/if}><i class='am-icon-angle-right'></i> {$value.title}</a></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+	<!-- include tpl=block/contact -->
+	<article class="am-article">
+		<div class="am-article-bd content">
+			{$rs.content}
+			<div id="dituContent" style="height:350px"></div>
+		</div>
+	</article>
+</div>
+<script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&s=1&ak=5dKTKKGmwAcUXfxr1NcuXPifTqdIQvV0"></script>
+<script type="text/javascript">
+	// 百度地图API功能
+	var mp = new BMap.Map("dituContent");
+	mp.centerAndZoom(new BMap.Point(114.046751,22.624071), 18);
+	mp.addControl(new BMap.NavigationControl());
+    // 复杂的自定义覆盖物
+    function ComplexCustomOverlay(point, text, mouseoverText){
+    	this._point = point;
+    	this._text = text;
+    	this._overText = mouseoverText;
+    }
+    ComplexCustomOverlay.prototype = new BMap.Overlay();
+    ComplexCustomOverlay.prototype.initialize = function(map){
+    	this._map = map;
+    	var div = this._div = document.createElement("div");
+    	div.style.position = "absolute";
+    	div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
+    	//div.style.backgroundColor = "none";
+    	div.style.border = "none";
+    	//div.style.color = "none";
+    	div.style.height = "18px";
+    	div.style.padding = "0";
+    	div.style.lineHeight = "18px";
+    	div.style.whiteSpace = "nowrap";
+    	div.style.MozUserSelect = "none";
+    	div.style.fontSize = "12px"
+    	var span = this._span = document.createElement("span");
+    	div.appendChild(span);
+    	span.appendChild(document.createTextNode(this._text));
+    	var that = this;
+ 
+    	var arrow = this._arrow = document.createElement("div");
+    	arrow.style.background = "url(images/icon_map.png) ";
+    	arrow.style.position = "absolute";
+    	arrow.style.width = "24px";
+    	arrow.style.height = "32px";
+    	arrow.style.top = "12px";
+    	arrow.style.left = "16px";
+    	arrow.style.overflow = "hidden";
+    	div.appendChild(arrow);
+
+
+
+    	mp.getPanes().labelPane.appendChild(div);
+
+    	return div;
+
+    }
+    ComplexCustomOverlay.prototype.draw = function(){
+    	var map = this._map;
+    	var pixel = map.pointToOverlayPixel(this._point);
+    	this._div.style.left = pixel.x - 35 + "px";
+    	this._div.style.top  = pixel.y - 30 + "px";
+    }
+    var txt = "", mouseoverTxt = "";
+
+    var myCompOverlay = new ComplexCustomOverlay(new BMap.Point(114.046828,22.624133), " ",mouseoverTxt);
+
+    mp.addOverlay(myCompOverlay);
+</script>
+
+<!-- include tpl=foot -->

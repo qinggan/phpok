@@ -1,73 +1,97 @@
-<!-- include tpl=head -->
-<div class="tips">
-	<div class="left">
-		<form method="post" action="{url ctrl=address/}" style="padding:0;margin:0;">
-		<ul class="layout" style="margin:7px 5px 2px -5px;">
-			<li>
-				<select name="type">
-				<option value="fullname">{lang姓名}</option>
-				<option value="mobile"{if $type == 'mobile'} selected{/if}>{lang手机号}</option>
-				<option value="tel"{if $type == 'tel'} selected{/if}>{lang电话}</option>
-				<option value="email"{if $type == 'email'} selected{/if}>{lang邮箱}</option>
-				<option value="country"{if $type == 'country'} selected{/if}>{lang国家}</option>
-				<option value="province"{if $type == 'country'} selected{/if}>{lang省份}</option>
-				<option value="city"{if $type == 'country'} selected{/if}>{lang城市}</option>
-				<option value="county"{if $type == 'country'} selected{/if}>{lang县区}</option>
-				<option value="address"{if $type == 'country'} selected{/if}>{lang详细地址}</option>
-				<option value="user_id"{if $type == 'user_id'} selected{/if}>{lang会员ID}</option>
-				<option value="user"{if $type == 'user'} selected{/if}>{lang会员账号}</option>
-				</select>
-			</li>
-			<li>
-				<input type="text" name="keywords" value="{$keywords}" class="default" style="width:200px" />
-			</li>
-			<li>
-				<div class="button-group">
-					<input type="submit" class="phpok-btn" value="{lang搜索}" />
-					<input type="button" value="{lang查看全部地址}" onclick="$.phpok.go('{url ctrl=address/}')" class="phpok-btn" />
-					<input type="button" value="{lang添加新地址}" onclick="$.phpok.go('{url ctrl=address func=set/}')" class="phpok-btn" />
+<!-- include tpl=head_lay -->
+<div class="layui-card" id="search_html"{if !$keywords} style="display:none"{/if}>
+	<div class="layui-card-header">{lang搜索}</div>
+	<div class="layui-card-body">
+		<div class="layui-form layuiadmin-card-header-auto">
+			<form method="post" action="{url ctrl=address/}">
+			<div class="layui-form-item">
+				<div class="layui-inline">
+					<label class="layui-form-label layui-icon layui-icon-tips" lay-tips="{lang包括会员的账号，邮箱及手机号，不支持模糊搜索}"> {lang会员}</label>
+					<div class="layui-input-inline">
+						<input type="text" name="keywords[user]" value="{$keywords.user}" class="layui-input">
+					</div>
 				</div>
-			</li>
-		</ul>
-		</form>
+				<div class="layui-inline">
+					<label class="layui-form-label layui-icon layui-icon-tips" lay-tips="{lang支持模糊搜索，可以填写国家，省份，城市及地址明细信息}"> {lang地址}</label>
+					<div class="layui-input-inline">
+						<input type="text" name="keywords[address]" value="{$keywords.address}" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label layui-icon layui-icon-tips" lay-tips="{lang包括地址库里的手机，固定电话及Email，不支持模糊搜索}"> {lang联系方式}</label>
+					<div class="layui-input-inline">
+						<input type="text" name="keywords[contact]" value="{$keywords.contact}" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label layui-icon layui-icon-tips" lay-tips="{lang地址库里的联系人姓名，不支持模糊搜索}"> {lang姓名}</label>
+					<div class="layui-input-inline">
+						<input type="text" name="keywords[fullname]" value="{$keywords.fullname}" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-inline">
+					<input type="submit" value="{lang搜索}" class="layui-btn" />
+					<input type="button" value="{lang取消搜索}" class="layui-btn layui-btn-primary" onclick="$.phpok.go('{url ctrl=address/}')" />
+				</div>
+			</div>
+			</form>
+		</div>
 	</div>
 </div>
-
-<div class="list">
-<table width="100%" class="list" cellpadding="0" cellspacing="0">
-<tr>
-	<th width="50px">{langID}</th>
-	<th>{lang会员账号}</th>
-	<th>{lang收件人}</th>
-	<th>{lang手机号}</th>
-	<th>{lang电话}</th>
-	<th>{lang邮箱}</th>
-	<th width="120"></th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<tr>
-	<td class="center" rowspan="2">{$value.id}</td>
-	<td class="center" rowspan="2" style="border-right:1px solid #efefef;">{$value.user}</td>
-	<td class="center" style="padding:5px;">{$value.fullname}</td>
-	<td class="center">{$value.mobile}</td>
-	<td class="center">{$value.tel}</td>
-	<td class="center">{$value.email}</td>
-	<td class="center" rowspan="2">
-		<!-- if $popedom.modify || $popedom.delete -->
-		
-		
-		<div class="button-group">
-			<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=address func=set id=$value.id/}')" class="phpok-btn" /><!-- /if -->
-			<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="address_delete('{$value.id}')" class="phpok-btn" /><!-- /if -->
+<div class="layui-card">
+	<div class="layui-card-header clearfix">{lang列表}
+		<div class="layui-btn-group fr">
+			<button class="layui-btn layui-btn-sm" onclick="$.admin_address.add()">
+				<i class="layui-icon">&#xe654;</i>
+				{lang添加}
+			</button>
+			<button class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.admin.hide_show('search_html')">
+				<i class="layui-icon">&#xe615;</i>
+				{lang搜索}
+			</button>
 		</div>
-		<!-- /if -->
-	</td>
-</tr>
-<tr>
-	<td colspan="4" style="text-align:left;border-right:0;border-left:0;padding:5px;">{$value.country}/{$value.province}/{$value.city}/{$value.county} {$value.address}</td>
-</tr>
-<!-- /loop -->
-</table>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+			<thead>
+				<tr>
+					<th width="50">ID</th>
+					<th>{lang会员}</th>
+					<th>{lang姓名}</th>
+					<th>{lang地址}</th>
+					<th>{lang联系方式}</th>
+					<th>{lang邮编}</th>
+					<th>{lang操作}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+				<tr id="address_{$value.id}">
+					<td>{$value.id}</td>
+					<td>{$value.user}</td>
+					<td>{$value.fullname}</td>
+					<td>
+						{$value.country}
+						<!-- if $value.province != $value.city -->/ {$value.province}<!-- /if -->
+						<!-- if $value.city != $value.county && $value.city -->/ {$value.city}<!-- /if -->
+						<!-- if $value.county -->/ {$value.county}<!-- /if -->
+						/ {$value.address}
+						<!-- if $value.is_default --><span class="layui-badge-rim">{lang默认}</span><!-- /if -->
+					</td>
+					<td>
+						<!-- if $value.mobile --><div class="layui-icon icon-mobile"> {$value.mobile}</div><!-- /if -->
+						<!-- if $value.email --><div class="layui-icon icon-envelope" style="margin-top:7px"> {$value.email}</div><!-- /if -->
+						<!-- if $value.tel --><div class="layui-icon icon-phone" style="margin-top:7px"> {$value.tel}</div><!-- /if -->
+					</td>
+					<td>{$value.zipcode}</td>
+					<td>
+						<button class="layui-btn layui-btn-sm" onclick="$.admin_address.edit('{$value.id}')">{lang编辑}</button>
+						<button class="layui-btn layui-btn-danger layui-btn-sm" onclick="$.admin_address.del('{$value.id}')">{lang删除}</button>
+					</td>
+				</tr>
+				<!-- /loop -->
+			</tbody>
+		</table>
+	</div>
 </div>
-<!-- if $pagelist --><div class="table"><!-- include tpl=pagelist --></div><!-- /if -->
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

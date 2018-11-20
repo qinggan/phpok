@@ -146,7 +146,7 @@ class install
 
 	public function foot()
 	{
-		echo '<div class="footer">Powered By phpok.com 版权所有 &copy; 2005-2017, All right reserved.</div>'."\n";
+		echo '<div class="footer">Powered By phpok.com 版权所有 &copy; 2005-2018, All right reserved.</div>'."\n";
 		echo '</body>'."\n";
 		echo '</html>';
 		exit;
@@ -158,7 +158,7 @@ class install
 		echo '<div class="tips_txt">';
 		echo '<p>本系统采用PHP+MySQL编写，这里对系统环境进行简单测试，请保证下列文件或目录可读写(Unix和Linux服务器请设置以下文件夹的属性为777，文件属性为666）：星号 <span style="color:red">*</span> 表示任意值</p></div></div>';
 		$status = true;
-		if(!function_exists('mysql_connect') && !function_exists('mysqli_connect')){
+		if(!function_exists('mysqli_connect')){
 			$mysql_status = '<span class="red">不支持</span>';
 			$status = false;
 		}else{
@@ -411,9 +411,6 @@ class install
 		$site = root_url();
 		$site['title'] = "PHPOK企业站";
 		$optlist = '<select name="file" id="file">';
-		if(function_exists("mysql_close")){
-			$optlist .= '<option value="mysql">使用MySQL连接数据库</option>';
-		}
 		if(function_exists("mysqli_close")){
 			$optlist .= '<option value="mysqli" selected>使用MySQLi连接数据库</option>';
 		}
@@ -586,11 +583,7 @@ function check_connect(isin)
 				<input type="text" class="infor_input" name="dir" id="dir" value="{$site['dir']}" />
 				<p class="tips_p">根目录请设为/</p>
 			</li>
-			<li><span class="l_name">演示数据：</span>
-				<label style="margin-right:10px;float:left;"><input type="radio" name="demo" value="1" checked/> 有</label>
-				<label style="margin-right:10px;float:left;"><input type="radio" name="demo" value="0"/> 无</label>
-				<p class="tips_p">不熟悉的用户建议安装演示数据</p>
-			</li>
+			<input type="hidden" name="demo" value="1" />
         </ul>
     </div>   
 </div>
@@ -953,8 +946,14 @@ if($step == 'checkdb'){
 	$config = array('host'=>$host,'user'=>$user,'pass'=>$pass,'port'=>$port,'data'=>$data);
 	include(ROOT.'framework/engine/db/'.$file.'.php');
 	$dbname = 'db_'.$file;
-	$config['db']['debug'] = true;
+	$config['debug'] = true;
 	$db = new $dbname($config);
+	if(!$db){
+		$array['content'] = '数据库类不存在，请检查';
+		exit(json_encode($array));
+	}
+	$db->error_type = "json";
+	$db->connect();
 	if($db->error || $db->error_id){
 		$array['content'] = '错误ID:'.$db->error_id.',错误信息:'.$db->error;
 		exit(json_encode($array));

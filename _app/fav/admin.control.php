@@ -33,33 +33,44 @@ class admin_control extends \phpok_control
 			$this->error(P_Lang('您没有查看权限'));
 		}
 		$keywords = $this->get('keywords');
-		$keytype = $this->get('keytype');
 		$condition = '1=1';
 		$pageurl = $this->url('fav');
-		if($keywords && $keytype){
-			$stype = $this->get('stype','int');
-			if($keytype == 'title' || $keytype == 'note' || $keytype == 'thumb'){
-				if($stype){
-					$condition .= " AND f.".$keytype."='".$keywords."'";
-				}else{
-					$keywords = str_replace(' ','%',$keywords);
-					$condition .= " AND f.".$keytype." LIKE '%".$keywords."%'";
-				}
-			}elseif($keytype == 'user' || $keytype == 'email' || $keytype == 'mobile'){
-				if($stype){
-					$condition .= " AND u.".$keytype."='".$keywords."'";
-				}else{
-					$keywords = str_replace(' ','%',$keywords);
-					$condition .= " AND u.".$keytype." LIKE '%".$keywords."%'";
-				}
+		if($keywords && is_array($keywords)){
+			if(isset($keywords['title']) && $keywords['title'] != ''){
+				$condition .= " AND f.title LIEK '%".$keywords['title']."%'";
+				$pageurl .= "&keywords[title]=".rawurlencode($keywords['title']);
 			}
-			$pageurl .= "&keytype=".$keytype."&keywords=".rawurlencode($keywords);
-			if($stype){
-				$pageurl .= "&stype=".$stype;
+			if(isset($keywords['note']) && $keywords['note'] != ''){
+				$condition .= " AND f.note LIEK '%".$keywords['note']."%'";
+				$pageurl .= "&keywords[note]=".rawurlencode($keywords['note']);
 			}
-			$this->assign('keytype',$keytype);
+			if(isset($keywords['thumb']) && $keywords['thumb'] != ''){
+				$condition .= " AND f.thumb LIEK '%".$keywords['thumb']."%'";
+				$pageurl .= "&keywords[thumb]=".rawurlencode($keywords['thumb']);
+			}
+			if(isset($keywords['user']) && $keywords['user'] != ''){
+				$condition .= " AND u.user='".$keywords['user']."'";
+				$pageurl .= "&keywords[user]=".rawurlencode($keywords['user']);
+			}
+			if(isset($keywords['email']) && $keywords['email'] != ''){
+				$condition .= " AND u.email='".$keywords['email']."'";
+				$pageurl .= "&keywords[email]=".rawurlencode($keywords['email']);
+			}
+			if(isset($keywords['mobile']) && $keywords['mobile'] != ''){
+				$condition .= " AND u.mobile='".$keywords['user']."'";
+				$pageurl .= "&keywords[mobile]=".rawurlencode($keywords['mobile']);
+			}
 			$this->assign('keywords',$keywords);
-			$this->assign('stype',$stype);
+		}
+		$startdate = $this->get('startdate');
+		if($startdate && strtotime($startdate)>0){
+			$condition .= " AND f.addtime>=".strtotime($startdate);
+			$pageurl .= "&startdate=".rawurlencode($startdate);
+		}
+		$stopdate = $this->get('stopdate');
+		if($stopdate && strtotime($stopdate)>0){
+			$condition .= " AND f.addtime<=".strtotime($stopdate);
+			$pageurl .= "&stopdate=".rawurlencode($stopdate);
 		}
 		$total = $this->model('fav')->get_count($condition);
 		if($total){

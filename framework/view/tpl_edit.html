@@ -1,9 +1,9 @@
-<!-- include tpl=head_open -->
+<!-- include tpl=head_lay nopadding=true -->
 <link rel="stylesheet" href="js/codemirror/codemirror.css">
 <script type="text/javascript" src="js/codemirror/codemirror.js"></script>
 <style type="text/css">
-.CodeMirror{border:1px solid #ccc;}
-.CodeMirror-scroll{width:100%;height:100%;}
+.CodeMirror{border:0px solid #ccc;height:auto;}
+.CodeMirror-scroll{height:auto;overflow-y: hidden;overflow-x: auto;}
 </style>
 <script type="text/javascript">
 var code_editor,delay
@@ -26,7 +26,7 @@ function save()
 		'dataType':'json',
 		'success':function(rs){
 			if(rs.status){
-				$.dialog.tips('{lang代码保存成功}').position('49%','10px')
+				$.dialog.tips('{lang代码保存成功}').lock();
 				return true;
 			}
 			$.dialog.alert(rs.info);
@@ -39,8 +39,10 @@ function save()
 <input type="hidden" name="id" value="{$id}" />
 <input type="hidden" name="folder" value="{$folder}" />
 <input type="hidden" name="title" value="{$title}" />
-<div style="margin-top:3px;">
-	<textarea id="content" name="content">{$content}</textarea>
+<div class="layui-card">
+	<div class="layui-card-body" style="padding:0">
+		<textarea id="content" name="content">{$content}</textarea>
+	</div>
 </div>
 </form>
-<!-- include tpl=foot_open -->
+<!-- include tpl=foot_lay -->

@@ -7,7 +7,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<title><!-- if $config.title -->{$config.title} - <!-- /if -->{lang后台管理}</title>
 	<link rel="stylesheet" type="text/css" href="{#css#}/css.php?type=admin" />
-	<script type="text/javascript" src="{url ctrl=js ext=admin.all/}"></script>
+	<script type="text/javascript" src="{url ctrl=js ext=admin.all,admin.homepage/}"></script>
 	<!-- plugin head -->
 </head>
 <body>
@@ -91,39 +91,5 @@
 	</div>
 	<div class="foot_right"><span class="darkblue">{$license}</span>{lang，版本：}{$version}</div>
 </div>
-<script type="text/javascript">
-$(document).ready(function(){
-	var r_menu = [[{
-		'text':'{lang刷新}',
-		'func':function(){
-			$.phpok.reload();
-		}
-	}],[{
-		'text':"{lang清空缓存}",
-		'func': function() {top.$.admin_index.clear();}
-	},{
-		'text':'{lang修改我的信息}',
-		'func':function(){top.$.admin_index.me();}
-	},{
-		'text':'{lang访问前台首页}',
-		'func':function(){
-			var url = "{$sys.www_file}?siteId={$session.admin_site_id}";
-			url = $.phpok.nocache(url);
-			window.open(url);
-		}
-	}],[{
-		'text': "{lang帮助说明}",
-		'func': function() {
-			top.$("a[layadmin-event=about]").click();
-			return true;
-		}
-	}]];
-	$(window).smartMenu(r_menu,{
-		'name':'smart',
-		'textLimit':8
-	});
-});
-</script>
-
 </body>
 </html>

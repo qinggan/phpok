@@ -57,7 +57,7 @@ function cate_check()
 
 function show_submit(id)
 {
-	//var html = '<input type="button" class="phpok-btn" value="提交" onclick="update_taxis('+id+')" />';
+	//var html = '<input type="button" class="layui-btn" value="提交" onclick="update_taxis('+id+')" />';
 	//$("#taxis_submit_"+id).html(html);
 }
 

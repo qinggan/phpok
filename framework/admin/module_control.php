@@ -415,11 +415,12 @@ class module_control extends phpok_control
 
 	public function field_edit_f()
 	{
-		if(!$this->popedom["set"]) error_open(P_Lang('您没有权限执行此操作'));
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
-		if(!$id)
-		{
-			error_open(P_Lang('未指定ID'));
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('module')->field_one($id);
 		$this->assign("rs",$rs);

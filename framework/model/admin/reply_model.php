@@ -61,49 +61,13 @@ class reply_model extends reply_model_base
 	**/
 	public function get_all($condition="",$offset=0,$psize=30)
 	{
-		$sql  = "SELECT r.*,l.title l_title,l.id list_id,l.project_id l_pid,p.title p_title,c.title c_title,o.sn o_title,o.id order_id FROM ".$this->db->prefix."reply r ";
-		$sql .= "LEFT JOIN ".$this->db->prefix."list l ON(r.vtype='title' AND r.tid=l.id) ";
-		$sql .= "LEFT JOIN ".$this->db->prefix."project p ON(r.vtype='project' AND r.tid=p.id) ";
-		$sql .= "LEFT JOIN ".$this->db->prefix."cate c ON(r.vtype='cate' AND r.tid=c.id) ";
-		$sql .= "LEFT JOIN ".$this->db->prefix."order o ON(r.vtype='order' AND r.tid=o.id) ";
-		if($condition){
-			$sql .= "WHERE ".$condition." ";
-		}
-		$sql .= "ORDER BY r.id DESC LIMIT ".$offset.",".$psize;
-		$rslist = $this->db->get_all($sql);
+		$rslist = parent::get_all($condition,$offset,$psize);
 		if(!$rslist){
 			return false;
 		}
-		$pictures = '';
-		foreach($rslist as $key=>$value){
-			if(!$value['pictures']){
-				continue;
-			}
-			if($pictures){
-				$pictures .= ",";
-			}
-			$pictures .= $value['pictures'];
-		}
-		if(!$pictures){
-			return $rslist;
-		}
-		$idlist = explode(",",$pictures);
-		$idlist = array_unique($idlist);
-		$pictures = implode(",",$idlist);
-		$sql = "SELECT id,ico,filename,ext";
-	}
-
-	public function get_all_total($condition='')
-	{
-		$sql = "SELECT count(r.id) FROM ".$this->db->prefix."reply r ";
-		$sql .= "LEFT JOIN ".$this->db->prefix."list l ON(r.vtype='title' AND r.tid=l.id) ";
-		$sql .= "LEFT JOIN ".$this->db->prefix."project p ON(r.vtype='project' AND r.tid=p.id) ";
-		$sql .= "LEFT JOIN ".$this->db->prefix."cate c ON(r.vtype='cate' AND r.tid=c.id) ";
-		$sql .= "LEFT JOIN ".$this->db->prefix."order o ON(r.vtype='order' AND r.tid=o.id) ";
-		if($condition){
-			$sql .= "WHERE ".$condition." ";
-		}
-		return $this->db->count($sql);
+		$rslist = $this->_res($rslist);
+		$rslist = $this->_reply($rslist);
+		return $rslist;
 	}
 
 	/**

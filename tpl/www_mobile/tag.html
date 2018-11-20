@@ -1,0 +1,44 @@
+<!-- php:$title = "Tag:".$rs.title -->
+<!-- include tpl=head title=$title -->
+<div class="main">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="left am-panel-group">
+		<!-- include tpl=block/contact -->
+		<!-- include tpl=block/hot_products -->
+	</div>
+	<div class="right">
+		<div data-am-widget="list_news" class="am-list-news am-list-news-default" style="margin:0;">
+			<div class="am-list-news-hd am-cf">
+				 <h2>标签：{$rs.title}</h2>
+			</div>
+			<div class="am-list-news-bd">
+				<ul class="am-list">
+					<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+					<!-- if $value.thumb -->
+					<li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left">
+						<div class="am-u-sm-2 am-list-thumb">
+							<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.ico}" alt="{$value.title}" /></a>
+						</div>
+						<div class=" am-u-sm-10 am-list-main">
+							<h3 class="am-list-item-hd"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></h3>
+							<span class="am-list-date">发布时间：{func time_format $value.dateline}，查看次数：{$value.hits}</span>
+							<div class="am-list-item-text" style="max-height:6.5em;">{$value.note ? phpok_cut($value.note,300,'…') : phpok_cut($value.content,300,'…')}</div>
+						</div>
+					</li>
+					<!-- else -->
+					<li class="am-g am-list-item-desced">
+						<div class=" am-list-main">
+							<h3 class="am-list-item-hd"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></h3>
+							<span class="am-list-date">发布时间：{func time_format $value.dateline}，查看次数：{$value.hits}</span>
+							<div class="am-list-item-text">{$value.note ? phpok_cut($value.note,225,'…') : phpok_cut($value.content,225,'…')}</div>
+						</div>
+					</li>
+					<!-- /if -->
+					<!-- /loop -->
+				</ul>
+			</div>
+			<!-- include tpl=block/pagelist -->
+		</div>
+	</div>
+</div>
+<!-- include tpl=foot -->

@@ -1,43 +1,49 @@
-<!-- include tpl=head -->
-<script type="text/javascript" src="{func include_js all.js}"></script>
-<form method="post" id="post_save" onsubmit="return $.admin_all.ext_save()">
+<!-- include tpl=head_lay -->
+<form method="post" id="post_save" class="layui-form" onsubmit="return $.admin_all.ext_save()">
 <input type="hidden" id="id" name="id" value="{$id}" />
-<!-- loop from=$extlist key=$key value=$value -->
-<div class="table">
-	<div class="title">
-		<table cellspacing="0" cellpadding="0">
-		<tr>
-			<td height="25">{$value.title}<span class="darkblue">[{$value.identifier}]</span> </td>
-			<td><span class="note">{$value.note}</span></td>
-			<!-- if $popedom.ext && $session.adm_develop -->
-			<td><a class="icon edit" onclick="ext_edit('{$value.identifier}','{$ext_module}')"></a></td>
-			<td><a class="icon delete" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')"></a></td>
-			<!-- /if -->
-		</tr>
-		</table>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang内容}_{lang标识} <span class="darkblue">{$rs.identifier}</span>
+		<!-- if $popedom.gset && $session.adm_develop -->
+		<div class="layui-btn-group fr">
+			<input type="button" value="{lang维护设置}" onclick="$.admin_all.group({$id})" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang删除}" onclick="$.admin_all.group_delete({$id})" class="layui-btn layui-btn-sm layui-btn-danger" />
+		</div>
+		<!-- /if -->
 	</div>
-	<div class="content">{$value.html}</div>
-</div>
-<!-- /loop -->
-
-
-<!-- if $popedom.ext && $session.adm_develop -->
-<div class="table">
-	<div class="content">
-		<input type="hidden" id="_mode" value="{$ext_module}" />
-		<span id="_quick_insert"></span>
-		<input type="button" value="{lang标准创建扩展字段}" onclick="ext_add('{$ext_module}')" class="button2" />
+	<div class="layui-container layui-card-body">
+		<!-- loop from=$extlist key=$key value=$value -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{$value.title}
+				<div class="darkblue"><small>{$value.identifier}</small></div>
+				<!-- if $popedom.ext && $session.adm_develop -->
+				<div class="layui-btn-group ext_edit">
+					<input type="button" value="{lang编辑}" class="layui-btn layui-btn-xs" onclick="ext_edit('{$value.identifier}','{$ext_module}')" />
+					<input type="button" value="{lang删除}" class="layui-btn layui-btn-xs layui-btn-normal" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')" />
+				</div>
+				<!-- /if -->
+			</label>
+			<div class="layui-input-block">{$value.html}</div>
+			<!-- if $value.note --><div class="layui-input-block mtop">{$value.note}</div><!-- /if -->
+		</div>
+		<!-- /loop -->
+		<!-- if $popedom.ext && $session.adm_develop -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang扩展}
+			</label>
+			<div class="layui-input-inline long" id="_quick_insert" data-id="{$ext_module}"></div>
+		</div>
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">&nbsp;</label>
+			<div class="layui-input-inline default-auto">
+				<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-normal" />
+			</div>
+		</div>
 	</div>
 </div>
-<!-- /if -->
-<div class="submit-info">
-	<input type="submit" value="{lang提交}" class="submit2" />
-	<!-- if $popedom.gset && $session.adm_develop -->
-	<div class="button-group fr">
-		<input type="button" value="{lang维护设置}" onclick="$.admin_all.group({$id})" class="phpok-btn" />
-		<input type="button" value="{lang删除}" onclick="$.admin_all.group_delete({$id})" class="phpok-btn" />
-	</div>
-	<!-- /if -->
-</div>
+<input type="hidden" data-name="fields" value="{$value.identifier}" disabled />
 </form>
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

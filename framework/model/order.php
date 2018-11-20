@@ -236,7 +236,7 @@ class order_model_base extends phpok_model
 		if(!$rslist){
 			return false;
 		}
-		foreach($rslist AS $key=>$value){
+		foreach($rslist as $key=>$value){
 			if($value['ext']){
 				$value['ext'] = unserialize($value['ext']);
 			}

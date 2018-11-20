@@ -154,13 +154,22 @@ class server_lib
 		if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
 			return true;
 		}
+		if(isset($_SERVER['HTTP_REQUEST_TYPE']) && strtolower($_SERVER['HTTP_REQUEST_TYPE']) == 'ajax'){
+			return true;
+		}
 		if(isset($_SERVER['request_type']) && strtolower($_SERVER['request_type']) == 'ajax'){
 			return true;
 		}
 		if(isset($_SERVER['phpok_ajax']) || isset($_SERVER['is_ajax'])){
 			return true;
 		}
+		if(isset($_SERVER['HTTP_PHPOK_AJAX']) || isset($_SERVER['HTTP_IS_AJAX'])){
+			return true;
+		}
 		if(isset($_POST['ajax_submit']) || isset($_GET['ajax_submit'])){
+			return true;
+		}
+		if(isset($_SERVER['CONTENT_TYPE']) && strpos(strtolower($_SERVER['CONTENT_TYPE']),'json') !== false){
 			return true;
 		}
 		return false;

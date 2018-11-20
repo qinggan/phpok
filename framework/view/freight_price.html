@@ -1,6 +1,12 @@
 <!-- include tpl=head -->
 <script type="text/javascript">
-function save(){
+function save()
+{
+	if(typeof(CKEDITOR) != "undefined"){
+		for(var i in CKEDITOR.instances){
+			CKEDITOR.instances[i].updateElement();
+		}
+	}
 	//var obj = $.dialog.opener;
 	$("#setsubmit").ajaxSubmit({
 		'url':get_url('freight','price_save','fid={$fid}'),

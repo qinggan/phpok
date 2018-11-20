@@ -26,7 +26,15 @@ class session
 			$this->config($config);
 		}
 		session_name($this->sid);
-		$session_id = isset($_POST[$id]) ? $_POST[$id] : (isset($_GET[$id]) ? $_GET[$id] : (isset($_COOKIE[$id]) ? $_COOKIE[$id] : ''));
+		if(isset($_POST[$this->sid]) || isset($_GET[$this->sid])){
+			$session_id = $_POST[$this->sid] ? $_POST[$this->sid] : $_GET[$this->sid];
+		}elseif($_COOKIE[$this->sid] || $_SERVER[$this->sid]){
+			$session_id = $_COOKIE[$this->sid] ? $_COOKIE[$this->sid] : $_SERVER[$this->sid];
+		}elseif($_COOKIE['HTTP_'.$this->sid] || $_SERVER['HTTP_'.$this->sid]){
+			$session_id = $_COOKIE['HTTP_'.$this->sid] ? $_COOKIE['HTTP_'.$this->sid] : $_SERVER['HTTP_'.$this->sid];
+		}else{
+			$session_id = '';
+		}
 		if($session_id && preg_match("/^[a-z0-9A-Z\_\-]+$/u",$session_id)){
 			session_id($session_id);
 			$this->sessid($session_id);
