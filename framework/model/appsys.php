@@ -11,6 +11,8 @@
 
 class appsys_model_base extends phpok_model
 {
+	private $iList;
+	private $local_all;
 	public function __construct()
 	{
 		parent::model();
@@ -37,26 +39,56 @@ class appsys_model_base extends phpok_model
 	**/
 	public function get_all()
 	{
-		if(!is_file($this->dir_data.'xml/appall.xml')){
-			return false;
+		$rslist = array();
+		if(is_file($this->dir_data.'xml/appall.xml')){
+			$tmplist = $this->lib('xml')->read($this->dir_data.'xml/appall.xml',true);
+			if($tmplist){
+				$rslist = $tmplist;
+			}
 		}
-		$rslist = $this->lib('xml')->read($this->dir_data.'xml/appall.xml',true);
-		if(!$rslist){
-			return false;
-		}
-		if(!is_file($this->dir_data.'xml/app.xml')){
-			return $rslist;
-		}
-		$install = $this->installed();
-		if(!$install){
-			return $rslist;
-		}
-		foreach($rslist as $key=>$value){
-			if($install[$key]){
-				$rslist[$key]['installed'] = true;
+		$install = $this->local_list();
+		if($install){
+			foreach($rslist as $key=>$value){
+				if($install[$key]){
+					if($install[$key]['installed']){
+						$rslist[$key]['installed'] = true;
+					}
+					$rslist[$key]['local'] = true;
+				}
+			}
+			foreach($install as $key=>$value){
+				if(!$rslist[$key]){
+					$value['local'] = true;
+					$rslist[$key] = $value;
+				}
 			}
 		}
 		return $rslist;
+	}
+
+	public function local_list()
+	{
+		if($this->local_all){
+			return $this->local_all;
+		}
+		$list = $this->lib('file')->ls($this->dir_app);
+		if(!$list){
+			return false;
+		}
+		$install = array();
+		foreach($list as $key=>$value){
+			if(!is_dir($value)){
+				continue;
+			}
+			if(!is_file($value.'/config.xml')){
+				continue;
+			}
+			$info = $this->lib('xml')->read($value.'/config.xml',true);
+			$tmpid = basename($value);
+			$install[$tmpid] = $info;
+		}
+		$this->local_all = $install;
+		return $this->local_all;
 	}
 
 	/**
@@ -64,20 +96,22 @@ class appsys_model_base extends phpok_model
 	**/
 	public function installed()
 	{
-		$install = $this->lib('xml')->read($this->dir_data.'xml/app.xml',true);
-		if(!$install){
+		if($this->iList){
+			return $this->iList;
+		}
+		$local_all = $this->local_list();
+		if(!$local_all){
 			return false;
 		}
-		foreach($install as $key=>$value){
-			if(!is_file($this->dir_app.$key.'/config.xml')){
+		$list = array();
+		foreach($local_all as $key=>$value){
+			if($value['installed']){
+				$list[$key] = $value;
 				continue;
 			}
-			$info = $this->lib('xml')->read($this->dir_app.$key.'/config.xml',true);
-			if($info){
-				$install[$key] = array_merge($info,$value);
-			}
 		}
-		return $install;
+		$this->iList = $list;
+		return $this->iList;
 	}
 
 	public function get_one($id)
@@ -85,8 +119,11 @@ class appsys_model_base extends phpok_model
 		if(!$id){
 			return false;
 		}
-		$all = $this->installed();
+		$all = $this->local_list();
 		if(!$all){
+			if(is_file($this->dir_app.$id.'/config.xml')){
+				return $this->lib('xml')->read($this->dir_app.$id.'/config.xml',true);
+			}
 			return false;
 		}
 		if($all[$id]){
@@ -104,23 +141,14 @@ class appsys_model_base extends phpok_model
 		if(!$all){
 			return false;
 		}
-		$list = array();
-		foreach($all as $key=>$value){
-			if($key == $id){
-				continue;
+		//变成未安装模式
+		if(is_file($this->dir_app.$id.'/config.xml')){
+			$info = $this->lib('xml')->read($this->dir_app.$id.'/config.xml',true);
+			if(isset($info['installed'])){
+				unset($info['installed']);
 			}
-			$tmparray = array('title'=>$value['title']);
-			$tmparray['status']['admin'] = $value['status']['admin'];
-			$tmparray['status']['api'] = $value['status']['api'];
-			$tmparray['status']['www'] = $value['status']['www'];
-			$list[$key] = $tmparray;
+			$this->lib('xml')->save($info,$this->dir_app.$id.'/config.xml');
 		}
-		if(!$list){
-			$this->lib('file')->rm($this->dir_data.'xml/app.xml');
-		}else{
-			$this->lib('xml')->save($list,$this->dir_data.'xml/app.xml');
-		}
-		$this->lib('file')->rm($this->dir_app.$id,'folder');
 		return true;
 	}
 
@@ -131,18 +159,54 @@ class appsys_model_base extends phpok_model
 		if(is_file($this->dir_app.$id.'/config.xml')){
 			$info = $this->lib('xml')->read($this->dir_app.$id.'/config.xml',true);
 		}
-		$array = array('title'=>($info['title'] ? $info['title'] : $id));
-		if($info['status']){
-			$array['status']['www'] = $info['status']['www'];
-			$array['status']['admin'] = $info['status']['admin'];
-			$array['status']['api'] = $info['status']['api'];
-		}
-		$all = $this->installed();
-		if(!$all){
-			$all = array($id=>$array);
-		}
-		$all[$id] = $array;
-		$this->lib('xml')->save($all,$this->dir_data.'xml/app.xml');
+		$info['installed'] = true;
+		$this->lib('xml')->save($info,$this->dir_app.$id.'/config.xml');
 		return true;
+	}
+
+	public function backup_all($is_group=false)
+	{
+		$list = $this->lib('file')->ls($this->dir_data.'zip');
+		if(!$list){
+			return false;
+		}
+		$rslist = array();
+		foreach($list as $key=>$value){
+			if(!is_file($value)){
+				continue;
+			}
+			$tmp = basename($value);
+			if(substr(strtolower($tmp),-3) != 'zip'){
+				continue;
+			}
+			$date = date("Y-m-d",filemtime($value));
+			$tmp = substr($tmp,0,-4);
+			$tmplist = explode("-",$tmp);
+			$tmpid = $tmp;
+			if(count($tmplist) == 1){
+				$tmpid = $tmp;
+			}elseif(count($tmplist) == 2){
+				$tmpid = $tmplist[0];
+			}else{
+				$last = end($tmplist);
+				if(is_numeric($last)){
+					$tmpid = substr($tmp,0,-(strlen($last)+1));
+					$date = substr($last,0,4).'-'.substr($last,4,2).'-'.substr($last,-2);
+				}
+			}
+			$array = array('zip'=>basename($value),'date'=>$date);
+			if($is_group){
+				if(!$rslist[$tmpid]){
+					$rslist[$tmpid] = array(0=>$array);
+				}else{
+					$rslist[$tmpid][] = $array;
+				}
+			}else{
+				$array['identifier'] = $tmpid;
+				$array['id'] = $tmp;
+				$rslist[] = $array;
+			}
+		}
+		return $rslist;
 	}
 }

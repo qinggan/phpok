@@ -22,7 +22,10 @@ class user_control extends phpok_control
 	{
 		$uid = $this->get("uid");
 		if(!$uid){
-			error(P_Lang('未指定会员信息'));
+			$this->error(P_Lang('未指定会员信息'));
+		}
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('游客无法查看会员信息'));
 		}
 		$user_rs = $this->model('user')->get_one($uid);
 		$this->assign("user_rs",$user_rs);

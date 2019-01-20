@@ -5,11 +5,14 @@
 		<!-- if $popedom.setting || $popedom.remote -->
 		<div class="layui-btn-group test-table-operate-btn fr">
 			<!-- if $popedom.setting -->
+			<button class="layui-btn layui-btn-sm" onclick="$.admin_appsys.add()"><i class="layui-icon">&#xe654;</i>{lang创建应用}</button>
+			<button class="layui-btn layui-btn-sm" onclick="$.admin_appsys.import_zip()"><i class="layui-icon">&#xe653;</i>{lang导入应用}</button>
 			<button class="layui-btn layui-btn-sm" onclick="$.admin_appsys.setting()"><i class="layui-icon">&#xe716;</i> {lang配置环境}</button>
 			<!-- /if -->
 			<!-- if $popedom.remote -->
 			<button class="layui-btn layui-btn-sm" onclick="$.admin_appsys.remote()"><i class="layui-icon">&#xe601;</i> {lang更新远程数据}</button>
 			<!-- /if -->
+			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang应用备份列表}','{url ctrl=appsys func=backup_list/}')"><i class="layui-icon">&#xe623;</i> {lang备份列表}</button>
 		</div>
 		<!-- /if -->
 	</div>
@@ -19,19 +22,19 @@
 		<table class="layui-table">
 			<thead>
 				<tr>
-					<th>{lang标识}</th>
 					<th>{lang名称}</th>
-					<th>{lang后台管理}</th>
-					<th>{lang前台}</th>
-					<th>{lang接口}</th>
-					<th>{lang安装状态}</th>
-					<th>&nbsp;</th>
+					<th>{lang标识}</th>
+					<th class="center">{lang后台管理}</th>
+					<th class="center">{lang前台}</th>
+					<th class="center">{lang接口}</th>
+					<th class="center">{lang安装状态}</th>
+					<th></th>
 				</tr>
 			</thead>
 			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 			<tr>
-				<td class="center">{$key}</td>
-				<td id="{$key}_title">{$value.title}</td>
+				<td id="{$key}_title">{$value.title}<!-- if $value.local --><span class="red"> / {lang本地}</span><!-- /if --></td>
+				<td>{$key}</td>
 				<td class="center">
 					<!-- if $value.status && $value.status.admin -->{lang支持}<!-- else --><span class="gray">{lang不支持}</span><!-- /if -->
 				</td>
@@ -42,12 +45,23 @@
 					<!-- if $value.status && $value.status.api -->{lang支持}<!-- else --><span class="gray">{lang不支持}</span><!-- /if -->
 				</td>
 				<td class="center"><!-- if $value.installed --><span class="gray">{lang已安装}</span><!-- else --><span class="red">{lang未安装}</span><!-- /if --></td>
-				<td class="center">
-					<!-- if $value.installed -->
-					<input type="button" value="{lang卸载}" onclick="$.admin_appsys.uninstall('{$key}')" class="layui-btn  layui-btn-sm" />
-					<!-- else -->
-					<input type="button" value="{lang安装}" onclick="$.admin_appsys.install('{$key}')" class="layui-btn  layui-btn-sm" />
-					<!-- /if -->
+				<td>
+					<div class="layui-btn-group">
+						<input type="button" value="{lang备份}" onclick="$.admin_appsys.backup_zip('{$key}')" class="layui-btn layui-btn-sm" />
+						<!-- if $value.local -->
+						<input type="button" value="{lang代码编辑}" onclick="$.admin_appsys.filelist('{$key}','{$value.title}')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang导出}" onclick="$.admin_appsys.export_zip('{$key}')" class="layui-btn layui-btn-sm" />
+						<!-- /if -->
+						<!-- if $value.installed -->
+						<input type="button" value="{lang卸载}" onclick="$.admin_appsys.uninstall('{$key}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+						<!-- else -->
+						<input type="button" value="{lang安装}" onclick="$.admin_appsys.install('{$key}')" class="layui-btn layui-btn-sm" />
+							<!-- if $value.local -->
+							<input type="button" value="{lang删除}" onclick="$.admin_appsys.delete_apps('{$key}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+							<!-- /if -->
+						
+						<!-- /if -->
+					</div>
 				</td>
 			</tr>
 			<!-- /loop -->

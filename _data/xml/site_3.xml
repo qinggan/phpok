@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<logo_mobile><![CDATA[]]></logo_mobile>
+	<login_type><![CDATA[0]]></login_type>
+	<login_type_email><![CDATA[]]></login_type_email>
+	<login_type_sms><![CDATA[]]></login_type_sms>
+	<biz_status><![CDATA[0]]></biz_status>
+	<biz_freight><![CDATA[0]]></biz_freight>
+	<biz_main_service><![CDATA[0]]></biz_main_service>
+	<favicon><![CDATA[res/201810/22/1d9863126a21fac2.png]]></favicon>
+</root>

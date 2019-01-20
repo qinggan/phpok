@@ -45,6 +45,10 @@ class radio_form extends _init_auto
 
 	public function phpok_format($rs,$appid='admin')
 	{
+		if($rs['ext'] && is_string($rs['ext'])){
+			$tmp = unserialize($rs['ext']);
+			$rs = array_merge($tmp,$rs);
+		}
 		if(!$rs["option_list"]){
 			$rs['option_list'] = 'default:0';
 		}

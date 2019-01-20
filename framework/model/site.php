@@ -99,6 +99,17 @@ class site_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
+	public function site_domain($siteId,$is_mobile=0)
+	{
+		$sql = "SELECT domain FROM ".$this->db->prefix."site_domain WHERE site_id='".$siteId."'";
+		$sql.= " AND is_mobile='".intval($is_mobile)."'";
+		$tmp = $this->db->get_one($sql);
+		if(!$tmp){
+			return false;
+		}
+		return $tmp['domain'];
+	}
+
 	public function all_one($id)
 	{
 		if(!$id) return false;

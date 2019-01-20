@@ -84,7 +84,7 @@ class cate_model_base extends phpok_model
 			return $this->db->get_one($sql);
 		}
 	}
-	
+
 	/**
 	 * 取得全部分类信息
 	 * @参数 $site_id 站点ID
@@ -159,7 +159,7 @@ class cate_model_base extends phpok_model
 			return false;
 		}
 		$rslist = array();
-		foreach($list AS $key=>$value){
+		foreach($list as $key=>$value){
 			$value["_space"] = "";
 			for($i=0;$i<$value["_layer"];$i++){
 				$value["_space"] .= "&nbsp; &nbsp;│";
@@ -181,7 +181,7 @@ class cate_model_base extends phpok_model
 		$sql = "SHOW FIELDS FROM ".$this->db->prefix."cate";
 		$rslist = $this->db->get_all($sql);
 		if($rslist){
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				$idlist[] = $value["Field"];
 			}
 		}
@@ -223,7 +223,7 @@ class cate_model_base extends phpok_model
 		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE parent_id='".$id."'";
 		$rslist = $this->db->get_all($sql);
 		if($rslist){
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				$value["space"] = $space ? $space."├ " : "";
 				$list[] = $value;
 				$newspace = $space ."　　";
@@ -275,13 +275,13 @@ class cate_model_base extends phpok_model
 		$rslist = $this->db->get_all($sql);
 		if($rslist){
 			$idlist = array();
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				$list[] = $value["id"];
 				$idlist[] = $value['id'];
 			}
 			$idstring = implode(",",$idlist);
 			$this->get_sonlist_id($list,$idstring,$status);
-		}		
+		}
 	}
 
 	/**
@@ -393,7 +393,7 @@ class cate_model_base extends phpok_model
 		$idlist = array_keys($rslist);
 		$total = count($idlist);
 		$clist = array();
-		foreach($idlist AS $key=>$value){
+		foreach($idlist as $key=>$value){
 			$clist[] = "cate-".$value;
 		}
 		$cateinfo = implode(",",$clist);

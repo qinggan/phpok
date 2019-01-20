@@ -188,7 +188,7 @@ class comment_control extends phpok_control
 				}
 				$_clearVcode = true;
 			}
-			$array["status"] = $this->model('popedom')->val($rs['project_id'],$user_groupid,'reply1');
+			$data["status"] = $this->model('popedom')->val($rs['project_id'],$user_groupid,'reply1');
 			$sessid = $this->session->sessid();
 			$chk = $this->model('reply')->check_time($tid,$uid,$data["session_id"]);
 			if(!$chk){

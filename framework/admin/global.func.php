@@ -174,7 +174,7 @@ function phpok_sys_menu()
 	// 现在计算子页的高亮
 	if($menu_id && $menu_id == $first_id){
 		ob_clean();
-		header("Location:".admin_url("index"));
+		header("Location:".$GLOBALS['app']->url("index"));
 		exit();
 	}
 	if($menu_id && in_array($menu_id,$tmp_id_list)){
@@ -185,7 +185,7 @@ function phpok_sys_menu()
 		if($rs["identifier"]){
 			$ext .= "&identifier=".$rs["identifier"];
 		}
-		$url = admin_url($rs["appfile"],$rs["func"],$ext);
+		$url = $GLOBALS['app']->url($rs['appfile'],$rs['func'],$ext);
 		ob_clean();
 		header("Location:".$url);
 		exit;

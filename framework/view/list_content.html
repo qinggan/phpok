@@ -188,12 +188,12 @@
 		<!-- php:$tmp_m = 0 -->
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 		<!-- php:$tmp_m++ -->
-		<tr id="list_{$value.id}" class="layui-tips" lay-tips="{$rs.alias_title ? $rs.alias_title : '主题'}：{$value.title}<br/>{lang发布日期}：{func date 'Y-m-d H:i:s' $value.dateline}">
+		<tr id="list_{$value.id}" class="layui-tips" title="{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}: {$value.title}&#10;{lang发布日期}: {func date 'Y-m-d H:i:s' $value.dateline}">
 			<td class="center"><input type="checkbox" name="ids[]" id="id_{$value.id}" value="{$value.id}" /></td>
 			<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="$.admin_list.status({$value.id})"{else} style="cursor: default;"{/if} value="{$value.status}"></span></td>
 			<td class="center">{$value.id}</td>
 			<td><label for="id_{$value.id}">
-				{$value.title}
+				<a href="{$sys.url}?id={$value.id}" target="_blank" title="{lang前台访问}">{$value.title}</a>
 				<!-- if $value.attr -->
 					<!-- php:$attr = explode(",",$value['attr']) -->
 					<!-- loop from=$attr key=$attr_k value=$attr_v -->
@@ -276,12 +276,12 @@
 		</tr>
 			<!-- loop from=$value.sonlist key=$kk value=$vv -->
 			<!-- php:$tmp_m++ -->
-			<tr id="list_{$vv.id}" class="layui-tips" lay-tips="{$rs.alias_title ? $rs.alias_title : '主题'}：{$vv.title}<br/>{lang发布日期}：{func date 'Y-m-d H:i:s' $vv.dateline}">
+			<tr id="list_{$vv.id}" class="layui-tips" title="{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}: {$vv.title}&#10;{lang发布日期}: {func date 'Y-m-d H:i:s' $vv.dateline}">
 				<td class="center"><input type="checkbox" name="ids[]" id="id_{$vv.id}" value="{$vv.id}" /></td>
 				<td><span class="status{$vv.status}" id="status_{$vv.id}" {if $popedom.status}onclick="$.admin_list.status({$vv.id})"{else} style="cursor: default;"{/if} value="{$vv.status}"></span></td>
 				<td class="center">{$vv.id}</td>
 				<td><label for="id_{$vv.id}">
-					&nbsp; &nbsp; ├─ {$vv.title}
+					&nbsp; &nbsp; ├─ <a href="{$sys.url}?id={$vv.id}" target="_blank" title="{lang前台访问}">{$vv.title}</a>
 					<!-- if $vv.attr -->
 						<!-- php:$attr = explode(",",$vv['attr']) -->
 						<!-- loop from=$attr key=$attr_k value=$attr_v -->

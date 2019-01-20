@@ -7,58 +7,102 @@
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
  * @日期 2016年11月17日
 **/
-function add_it(id)
-{
-    var url = get_url('gateway','getlist','id='+id);
-    var rs = $.phpok.json(url);
-    if(rs.status == 'ok'){
-        var content = '<select id="code">';
-        for(var i in rs.content){
-            content += '<option value="'+rs.content[i].id+'">'+rs.content[i].title;
-            if(rs.content[i].note){
-                content += ' / '+rs.content[i].note+'';
-            }
-            content += '</option>';
-        }
-        content += '</select>';
-        $.dialog({
-            'title': '网关选择器',
-            'lock':true,
-            'content':content,
-            'cancel':function(){return true;},
-            'cancelVal':'取消',
-            'okVal':'提交',
-            'ok':function(){
-                var code = $("#code").val();
-                var url = get_url('gateway','set','type='+id+"&code="+code);
-                $.phpok.go(url);
-                return true;
-            }
-        });
-    }else{
-        $.dialog.alert(rs.content);
-        return false;
-    }
-}
-function update_taxis(val,id)
-{
-	$.ajax({
-		'url':get_url('gateway','sort','sort['+id+']='+val),
-		'dataType':'json',
-		'cache':false,
-		'async':true,
-		'beforeSend': function (XMLHttpRequest){
-			XMLHttpRequest.setRequestHeader("request_type","ajax");
+;(function($){
+	$.admin_gateway = {
+		add:function(id)
+		{
+			var url = get_url('gateway','getlist','id='+id);
+			$.phpok.json(url,function(rs){
+				if(!rs.status || (rs.status && rs.status == 'error')){
+					var tip = rs.info ? rs.info : rs.content;
+					$.dialog.alert(tip);
+					return false;
+				}
+				var content = '<select id="code">';
+				for(var	i in rs.content){
+					content	+= '<option	value="'+rs.content[i].id+'" data-title="'+rs.content[i].title+'">'+rs.content[i].title;
+					if(rs.content[i].note){
+						content	+= ' / '+rs.content[i].note+'';
+					}
+					content	+= '</option>';
+				}
+				content += '</select>';
+				var obj = $.dialog({
+					'title': p_lang('网关选择器'),
+					'lock':true,
+					'content':content,
+					'cancel':true,
+					'okVal':p_lang('提交'),
+					'ok':function(){
+						var	code = $("#code").val();
+						var text = $("#code").find('option:selected').attr('data-title');
+						var	url	= get_url('gateway','set','type='+id+"&code="+code);
+						$.win(p_lang('网关路由')+"_"+text,url);
+						obj.close();
+						return true;
+					}
+				});
+				return true;
+			});
 		},
-		'success':function(rs){
-			if(rs.status == 'ok'){
+		set_default:function(id)
+		{
+			var url = get_url('gateway','default','id='+id);
+			var rs = $.phpok.json(url,function(rs){
+				if(!rs.status || (rs.status && rs.status == 'error')){
+					var tip = rs.info ? rs.info : rs.content;
+					$.dialog.alert(tip);
+					return false;
+				}
 				$.phpok.reload();
-			}else{
-				$.dialog.alert(rs.content);
+				return true;
+			});
+		},
+		taxis:function(val,id)
+		{
+			$.phpok.json(get_url('gateway','sort','sort['+id+']='+val),function(rs){
+				if(!rs.status || (rs.status && rs.status == 'error')){
+					var tip = rs.info ? rs.info : rs.content;
+					$.dialog.alert(tip);
+					return false;
+				}
+				$.phpok.reload();
+				return true;
+			});
+		},
+		save:function()
+		{
+			var title = $("#title").val();
+			if(!title){
+				$.dialog.alert('名称不能为空');
 				return false;
 			}
+			$("#post_save").ajaxSubmit({
+				'url':get_url('gateway','save'),
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					if(rs.status){
+						var id = $("#id").val();
+						var tip = (id && id != 'undefined') ? p_lang('编辑网关信息成功') : p_lang('添加网关信息成功');
+						$.dialog.alert(tip,function(){
+							$.admin.reload(get_url('gateway'));
+							$.admin.close(get_url('gateway'));
+						},'succeed');
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
+			return false;
 		}
-	});
+	}
+})(jQuery);
+
+function update_taxis(val,id)
+{
+
 }
 function update_status(id,val)
 {
@@ -84,17 +128,7 @@ function update_status(id,val)
 		}
 	}
 }
-function update_default(id)
-{
-	var url = get_url('gateway','default','id='+id);
-	var rs = $.phpok.json(url);
-	if(rs.status == 'ok'){
-		$.phpok.reload();
-	}else{
-		$.dialog.alert(rs.content);
-		return false;
-	}
-}
+
 function delete_it(id,title)
 {
 	$.dialog.confirm('确定要删除网关：<span class="red">'+title+"</span> 吗？删除后是不能恢复的",function(){
@@ -135,9 +169,9 @@ $(document).ready(function(){
 	$("div[name=taxis]").click(function(){
 		var oldval = $(this).text();
 		var id = $(this).attr('data');
-		$.dialog.prompt('请填写新的排序',function(val){
+		$.dialog.prompt(p_lang('请填写新的排序'),function(val){
 			if(val != oldval){
-				update_taxis(val,id);
+				$.admin_gateway.taxis(val,id);
 			}
 		},oldval);
 	});

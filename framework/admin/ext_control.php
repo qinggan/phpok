@@ -98,7 +98,7 @@ class ext_control extends phpok_control
 				$this->json(P_Lang('标识串不符合验证要求，请检查'));
 			}
 			if($_SESSION['admin-'.$id] && $_SESSION['admin-'.$id][$identifier]){
-				$this->json(P_Lang('标识串已被使用'));
+				$this->json(P_Lang('标识符已被使用'));
 			}
 		}else{
 			$identifier = $tmpid;
@@ -166,14 +166,14 @@ class ext_control extends phpok_control
 		if($list[0] == "add"){
 			$tmp = 'admin-'.$module;
 			if($this->session->val($tmp) && $this->session->val($tmp.'.'.$id)){
-				$this->json(P_Lang('标识已被使用，不能重复使用'));
+				$this->json(P_Lang('标识已被使用'));
 			}
 			$this->session->assign($tmp.'.'.$id,$rs);
 			$this->json(true);
 		}
 		$chk_rs = $this->model('ext')->check_identifier($rs["identifier"],$module);
 		if($chk_rs){
-			$this->json(P_Lang('标识已被使用，不能重复使用'));
+			$this->json(P_Lang('标识已被使用'));
 		}
 		$array = array();
 		$array["module"] = $module;

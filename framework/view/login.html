@@ -11,56 +11,78 @@
 	<!-- if $config.favicon -->
 	<link rel="shortcut icon" href="{$config.favicon}" />
 	<!-- /if -->
-	<link rel="stylesheet" type="text/css" href="css/login.css" />
 	<link rel="stylesheet" type="text/css" href="css/artdialog.css" />
-	<script type="text/javascript" src="{url ctrl=js ext=admin.login.js /}"></script>
+	<link href="js/slick/slick-theme.css" rel="stylesheet"/>
+	<link href="js/slick/slick.css" rel="stylesheet"/>
+	<script type="text/javascript" src="{url ctrl=js func=mini ext=jquery.phpok.js,jquery.form.min.js,jquery.artdialog.js,admin.login.js /}"></script>
+	<script src="js/slick/slick.js" type="text/javascript"></script>
 </head>
 <body>
-<div class="top">
-	<div class="logo"><img src="{$logo}" border="0" alt="{$config.title}" /></div>
+<!-- 轮播图 -->
+<div class="c-banner">
+	<div class="c-wrap">
+		<div class="c-item" style="background: url('images/login/1.jpg') no-repeat;background-size:cover;"></div>
+		<div class="c-textBox"><p class="c-text">如切如磋，如琢如磨</p></div>
+	</div>
+	<div class="c-wrap">
+		<div class="c-item" style="background: url('images/login/2.jpg') no-repeat;background-size:cover;"></div>
+		<div class="c-textBox"><p class="c-text">四季轮转，云卷云舒</p></div>
+	</div>
+	<div class="c-wrap">
+		<div class="c-item" style="background: url('images/login/3.jpg') no-repeat;background-size:cover;"></div>
+		<div class="c-textBox"><p class="c-text">大美中华，君之功也</p></div>
+	</div>
+	<div class="c-wrap">
+		<div class="c-item" style="background: url('images/login/4.jpg') no-repeat;background-size:cover;"></div>
+		<div class="c-textBox"><p class="c-text">他山之石，可以攻玉</p></div>
+	</div>
 </div>
-<div class="main">
-	<div class="box">
-		<form method="post" id="adminlogin" onsubmit="return admlogin()">
-		<table width="360" border="0" align="center" cellpadding="0" cellspacing="0">
-		<tr>
-			<td height="30">{lang管理员账号}</td>
-			<td colspan="2"><!-- if $multiple_language -->{lang语言}<!-- /if --></td>
-		</tr>
-		<tr>
-			<td height="40"><input name="user" type="text" class="user user_bg1" tabindex="1" /></td>
-			<td colspan="2">
-				<!-- if $multiple_language -->
-				<select name="langid" id="langid" onchange="update_lang(this.value)" style="padding:3px;border:1px solid #7ea3b8;height:27px;">
-					<!-- loop from=$langlist key=$key value=$value -->
-					<option value="{$key}"{if $key == $langid} selected{/if}>{$value}</option>
-					<!-- /loop -->
-				</select>
-				<!-- /if -->
-			</td>
-		</tr>
-			<tr>
-				<td width="209" height="30">{lang管理员密码}</td>
-				<td colspan="2"><!-- if $vcode -->{lang验证码}<!-- /if --></td>
-			</tr>
-			<tr>
-				<td height="40"><input name="pass" type="password" class="user user_bg2" tabindex="2" /></td>
-				<!-- if $vcode -->
-				<td width="72"><input name="_code" type="text" class="user user_bg3" id="code_id" tabindex="3" /></td>
-				<td width="79"><img src="images/blank.gif" border="0" align="absmiddle" style="cursor:pointer;" id="src_code"></td>
-				<!-- /if -->
-			</tr>
-		<tr>
-			<td height="50" colspan="3"><input type="submit" value="{lang管理员登录}" class="but" /></td>
-		</tr>
-		<tr>
-			<td height="30" colspan="3">{lang"推荐使用：傲游/谷歌/火狐/IE9-12等浏览器访问本系统"}</td>
-		</tr>
-		</table>
+<!-- if $multiple_language && $langlist -->
+<div id="c-language">
+	<div class="c-select clear">
+		<p class="c-text fl">{$langlist[$session.admin_lang_id]}</p>
+		<i class="c-triangle fr"></i>
+	</div>
+	<ul class="c-option">
+		<!-- loop from=$langlist key=$key value=$value id=$tmpid -->
+		<li><a href="javascript:update_lang('{$key}');void(0)">{$value}</a></li>
+		<!-- /loop -->
+	</ul>
+</div>
+<!-- /if -->
+<div id="c-content">
+	<div class="c-wrap clear">
+		<form class="c-form fr" id="adminlogin" onsubmit="return admlogin()">
+			<p class="c-title">Welcome</p>
+			<div class="c-user">
+				<span></span>
+				<input type="text" name="user" tabindex="1" placeholder="{lang请输入您的账号}">
+			</div>
+			<!-- 密码 -->
+			<div class="c-password">
+				<span></span>
+				<input type="password" name="pass" tabindex="2" placeholder="{lang请输入您的密码}">
+			</div>
+			<!-- if $vcode -->
+			<div class="c-code">
+				<span></span>
+				<input type="text" name="_code" tabindex="3" placeholder="{lang验证码}">
+				<div class="c-img">
+					<img src="images/blank.gif" style="cursor:pointer;" id="src_code">
+				</div>
+			</div>
+			<!-- /if -->
+			<div class="c-btn">
+				<button type="submit">{lang管理员登录}</button>
+			</div>
 		</form>
 	</div>
-	<div class="bottom"></div>
 </div>
+<!-- if $logo -->
+<div style="margin:35px;">
+	<div class="logo"><img src="{$logo}" border="0" alt="{$config.title}" style="width:300px;" /></div>
+</div>
+<!-- /if -->
 <!-- if $vcode -->
 <script type="text/javascript">
 $(document).ready(function(){

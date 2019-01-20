@@ -1,7 +1,6 @@
 <?php
 /**
  * 地址库相关操作
- * @package phpok\api
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -45,6 +44,32 @@ class address_control extends phpok_control
 			$rslist[$key] = $value;
 		}
 		$this->success($rslist);	
+	}
+
+	public function all_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('您还未登录，请先登录'));
+		}
+		$rslist = $this->model('user')->address_all($this->session->val('user_id'));
+		if(!$rslist){
+			$this->error(P_Lang('会员暂无收货地址信息'));
+		}
+		$total = count($rslist);
+		$default = $first = array();
+		foreach($rslist as $key=>$value){
+			if($key<1){
+				$first = $value;
+			}
+			if($value['is_default']){
+				$default = $value;
+			}
+		}
+		if(!$default){
+			$default = $first;
+		}
+		$array = array('total'=>$total,'rs'=>$default,'rslist'=>$rslist);
+		$this->success($array);
 	}
 
 	/**

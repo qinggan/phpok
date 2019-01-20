@@ -18,7 +18,7 @@ class gateway_model_base extends phpok_model
 	/**
 	 * 获取网关信息
 	 * @参数 $id 网关ID
-	 * @参数 $type 网关类型，目前仅支持 email 和 sms 两个，当为 true 或 false 时，表示 chkstatus
+	 * @参数 $type 网关类型，当为 true 或 false 时，表示 chkstatus
 	 * @参数 $chkstatus 是否验证必填信息项目
 	**/
 	public function get_one($id,$type='',$chkstatus=false)
@@ -112,6 +112,12 @@ class gateway_model_base extends phpok_model
 			$rs['manage'] = $tmp['manage'];
 		}
 		return $rs;
+	}
+
+	public function all($type)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."gateway WHERE type='".$type."' ORDER BY is_default DESC,taxis ASC,id DESC";
+		return $this->db->get_all($sql);
 	}
 
 

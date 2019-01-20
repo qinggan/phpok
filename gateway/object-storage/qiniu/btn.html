@@ -1,0 +1,92 @@
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs.content}" />
+<input type="hidden" id="{$_rs.identifier}_status" value="" />
+<style type="text/css">
+.{$_rs.identifier}_thumb{float:left;width:144px;margin:3px 5px;padding:1px;border:1px solid #ccc;border-radius:3px;position:relative;}
+.{$_rs.identifier}_thumb .sort{position:absolute;right:5px;top:5px;}
+.{$_rs.identifier}_thumb .sort input.taxis{width:40px;border:1px solid #ccc;border-radius:3px;height:22px;text-align:center;padding:3px;}
+</style>
+<div class="_e_upload">
+	<div class="_select">
+		<table>
+		<tr>
+			<td><div id="{$_rs.identifier}_picker"></div></td>
+			<td><div><input type="button" class="layui-btn layui-btn-sm" value="{lang选择}{$_rs.upload_type.title}" onclick="$.phpokform.upload_select('{$_rs.identifier}','{$_rs.cate_id}',{$_rs.is_multiple ? 'true' : 'false'})" class="layui-btn layui-btn-sm button" /></div></td>
+			<td id="{$_rs.identifier}_sort" style="display:none">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang排序}" class="layui-btn layui-btn-sm" onclick="$.phpokform.upload_sort('{$_rs.identifier}')" />
+					<input type="button" value="{lang自然排序}" class="layui-btn layui-btn-sm" onclick="$.phpokform.upload_sort('{$_rs.identifier}','title')" />
+				</div>
+			</td>
+		</tr>
+		</table>
+	</div>
+	<div class="_progress" id="{$_rs.identifier}_progress"></div>
+	<div class="_list" id="{$_rs.identifier}_list"></div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+var obj_{$_rs.identifier};
+var map_{$_rs.identifier} = new Map();
+$(document).ready(function(){
+	//清空本地存储，防止异常删除
+	$.phpok.undata('upload-{$_rs.identifier}');
+	obj_{$_rs.identifier} = new $.admin_upload({
+		'id':'{$_rs.identifier}',
+		'server':'{$qiniu_server_url}',
+		'cateid':'{$_rs.cate_id}',
+		'pick':{'id':'#{$_rs.identifier}_picker','multiple':{$_rs.is_multiple ? 'true' : 'false'},'innerHTML':'<span class="layui-icon">&#xe67c;</span> {lang选择本地文件}'},
+		'resize':false,
+		'multiple':"{$_rs.is_multiple ? 'true' : 'false'}",
+		'formData':{'token':'{$_token}'},
+		'fileVal':'file',
+		'disableGlobalDnd':true,
+		'compress':{$_rs.upload_compress},
+		'auto':true,
+		'sendAsBinary':false,
+		'chunkSize':4*1024*1024,
+		'accept':{'title':'{$_rs.upload_type.title}({$_rs.upload_type.swfupload})','extensions':'{$_rs.upload_type.ext}'},
+		'fileSingleSizeLimit':'{$_rs.upload_type.maxsize*100}',
+		'success':function(file,data){
+			if(parseInt(file.size) <= parseInt(uploader.options.chunkSize)) {
+				$.phpok_qiniu_gateway.upload_complete(file,data);
+			} else {
+				$.phpok_qiniu_gateway.makefile(map_{$_rs.identifier}.get(file.name),file,true);
+			}
+		},
+		'before_send':function(block,data,headers){
+			var opts = {
+				'server':'{$qiniu_server_url}',
+				'token':'{$_token}',
+				'gateway_id':'{$gateway_rs.id}',
+				'cate_id':'{$_rs.cate_id}',
+				'multiple':{$_rs.is_multiple ? 'true' : 'false'},
+				'fid':'{$_rs.identifier}',
+				'link':'{$qiniu_view_url}'
+			}
+			$.phpok_qiniu_gateway.config(opts);
+			if (parseInt(block.file.size) <= parseInt(uploader.options.chunkSize)) {
+	            uploader.options.chunked = false;
+	            uploader.options.sendAsBinary = false;
+			} else {
+				headers['Authorization'] = 'UpToken ' + '{$_token}';
+				headers['Content-Type'] = 'application/octet-stream';
+				uploader.options.chunked = true;
+				uploader.options.server = uploader.options.server + "/mkblk/" + (block.end - block.start);
+				uploader.options.sendAsBinary = true;
+				uploader.options.formData = false;
+			}
+		},
+		'file_queued':function(file)
+		{
+			
+			var ctx = new Array();
+			map_{$_rs.identifier}.set(file.name, ctx);
+		},
+		'upload_accept':function(block,ret)
+		{
+			map_{$_rs.identifier}.get(block.file.name)[block.chunk] = ret.ctx;
+		}
+	});
+	$.phpokform.upload_showhtml('{$_rs.identifier}',{$_rs.is_multiple ? true : false});
+});
+</script>

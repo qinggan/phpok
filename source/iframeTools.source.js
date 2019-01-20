@@ -7,7 +7,7 @@
  * This is licensed under the GNU LGPL, version 2.1 or later.
  * For details, see: http://creativecommons.org/licenses/LGPL/2.1/
  */
- 
+
 ;(function ($, window, artDialog, undefined) {
 
 var _topDialog, _proxyDialog, _zIndex,
@@ -23,8 +23,8 @@ $(function () {
 	// 不支持怪异模式，请用主流的XHTML1.0或者HTML5的DOCTYPE申明
 	&& alert('artDialog Error: document.compatMode === "BackCompat"');
 });
-	
-	
+
+
 /** 获取 artDialog 可跨级调用的最高层的 window 对象 */
 var _top = artDialog.top = function () {
 	var top = window,
@@ -35,18 +35,18 @@ var _top = artDialog.top = function () {
 		} catch (e) {
 			return false;
 		};
-		
+
 		return window[name].artDialog
 		// 框架集无法显示第三方元素
 		&& doc.getElementsByTagName('frameset').length === 0;
 	};
-	
+
 	if (test('top')) {
 		top = window.top;
 	} else if (test('parent')) {
 		top = window.parent;
 	};
-	
+
 	return top;
 }();
 artDialog.parent = _top; // 兼容v4.1之前版本，未来版本将删除此
@@ -72,7 +72,7 @@ artDialog.data = function (name, value) {
 	var top = artDialog.top,
 		cache = top[_data] || {};
 	top[_data] = cache;
-	
+
 	if (value !== undefined) {
 		cache[name] = value;
 	} else {
@@ -95,7 +95,7 @@ artDialog.removeData = function (name) {
 /** 跨框架普通对话框 */
 artDialog.through = _proxyDialog = function () {
 	var api = _topDialog.apply(this, arguments);
-		
+
 	// 缓存从当前 window（可能为iframe）调出所有跨框架对话框，
 	// 以便让当前 window 卸载前去关闭这些对话框。
 	// 因为iframe注销后也会从内存中删除其创建的对象，这样可以防止回调函数报错
@@ -125,68 +125,68 @@ _top !== window && $(window).bind('unload', function () {
  */
 artDialog.open = function (url, options, cache) {
 	options = options || {};
-	
+
 	var api, DOM,
 		$content, $main, iframe, $iframe, $idoc, iwin, ibody,
 		top = artDialog.top,
 		initCss = 'position:absolute;left:-9999em;top:-9999em;border:none 0;background:transparent',
 		loadCss = 'width:100%;height:100%;border:none 0';
-		
+
 	if (cache === false) {
 		var ts = + new Date,
 			ret = url.replace(/([?&])_=[^&]*/, "$1_=" + ts );
 		url = ret + ((ret === url) ? (/\?/.test(url) ? "&" : "?") + "_=" + ts : "");
 	};
-		
+
 	var load = function () {
 		var iWidth, iHeight,
 			loading = DOM.content.find('.aui_loading'),
 			aConfig = api.config;
-			
+
 		$content.addClass('aui_state_full');
-		
+
 		loading && loading.hide();
-		
+
 		try {
 			iwin = iframe.contentWindow;
 			$idoc = $(iwin.document);
 			ibody = iwin.document.body;
 		} catch (e) {// 跨域
 			iframe.style.cssText = loadCss;
-			
+
 			aConfig.follow
 			? api.follow(aConfig.follow)
 			: api.position(aConfig.left, aConfig.top);
-			
+
 			options.init && options.init.call(api, iwin, top);
 			options.init = null;
 			return;
 		};
-		
+
 		// 获取iframe内部尺寸
 		iWidth = aConfig.width === 'auto'
 		? $idoc.width() + (_isIE6 ? 0 : parseInt($(ibody).css('marginLeft')))
 		: aConfig.width;
-		
+
 		iHeight = aConfig.height === 'auto'
 		? $idoc.height()
 		: aConfig.height;
-		
+
 		// 适应iframe尺寸
 		setTimeout(function () {
 			iframe.style.cssText = loadCss;
 		}, 0);// setTimeout: 防止IE6~7对话框样式渲染异常
 		api.size(iWidth, iHeight);
-		
+
 		// 调整对话框位置
 		aConfig.follow
 		? api.follow(aConfig.follow)
 		: api.position(aConfig.left, aConfig.top);
-		
+
 		options.init && options.init.call(api, iwin, top);
 		options.init = null;
 	};
-		
+
 	var config = {
 		zIndex: _zIndex(),
 		init: function () {
@@ -194,46 +194,46 @@ artDialog.open = function (url, options, cache) {
 			DOM = api.DOM;
 			$main = DOM.main;
 			$content = DOM.content;
-			
+
 			iframe = api.iframe = top.document.createElement('iframe');
 			iframe.src = url;
 			iframe.name = 'Open' + api.config.id;
 			iframe.style.cssText = initCss;
 			iframe.setAttribute('frameborder', 0, 0);
 			iframe.setAttribute('allowTransparency', true);
-			
+
 			$iframe = $(iframe);
 			api.content().appendChild(iframe);
 			iwin = iframe.contentWindow;
-			
+
 			try {
 				iwin.name = iframe.name;
 				artDialog.data(iframe.name + _open, api);
 				artDialog.data(iframe.name + _opener, window);
 			} catch (e) {};
-			
+
 			$iframe.bind('load', load);
 		},
 		close: function () {
 			$iframe.css('display', 'none').unbind('load', load);
-			
+
 			if (options.close && options.close.call(this, iframe.contentWindow, top) === false) {
 				return false;
 			};
 			$content.removeClass('aui_state_full');
-			
+
 			// 重要！需要重置iframe地址，否则下次出现的对话框在IE6、7无法聚焦input
 			// IE删除iframe后，iframe仍然会留在内存中出现上述问题，置换src是最容易解决的方法
 			$iframe[0].src = 'about:blank';
 			$iframe.remove();
-			
+
 			try {
 				artDialog.removeData(iframe.name + _open);
 				artDialog.removeData(iframe.name + _opener);
 			} catch (e) {};
 		}
 	};
-	
+
 	// 回调函数第一个参数指向iframe内部window对象
 	if (typeof options.ok === 'function') config.ok = function () {
 		return options.ok.call(api, iframe.contentWindow, top);
@@ -241,13 +241,13 @@ artDialog.open = function (url, options, cache) {
 	if (typeof options.cancel === 'function') config.cancel = function () {
 		return options.cancel.call(api, iframe.contentWindow, top);
 	};
-	
+
 	delete options.content;
 
 	for (var i in options) {
 		if (config[i] === undefined) config[i] = options[i];
 	};
-	
+
 	return _proxyDialog(config);
 };
 
@@ -283,31 +283,31 @@ _top != window && $(document).bind('mousedown', function () {
 artDialog.load = function(url, options, cache){
 	cache = cache || false;
 	var opt = options || {};
-		
+
 	var config = {
 		zIndex: _zIndex(),
 		init: function(here){
 			var api = this,
 				aConfig = api.config;
-			
+
 			$.ajax({
 				url: url,
 				success: function (content) {
 					api.content(content);
-					opt.init && opt.init.call(api, here);		
+					opt.init && opt.init.call(api, here);
 				},
 				cache: cache
 			});
-			
+
 		}
 	};
-	
+
 	delete options.content;
-	
+
 	for (var i in opt) {
 		if (config[i] === undefined) config[i] = opt[i];
 	};
-	
+
 	return _proxyDialog(config);
 };
 
@@ -316,11 +316,16 @@ artDialog.load = function(url, options, cache){
  * 警告
  * @param	{String}	消息内容
  */
-artDialog.alert = function (content, callback) {
+artDialog.alert = function (content, callback,icon) {
+	if(typeof callback === 'string'){
+		icon = callback;
+		callback = true;
+	}
+	icon = icon || 'warning';
 	return _proxyDialog({
 		id: 'Alert',
 		zIndex: _zIndex(),
-		icon: 'warning',
+		icon: icon,
 		fixed: true,
 		lock: true,
 		content: content,
@@ -364,7 +369,7 @@ artDialog.confirm = function (content, yes, no) {
 artDialog.prompt = function (content, yes, value) {
 	value = value || '';
 	var input;
-	
+
 	return _proxyDialog({
 		id: 'Prompt',
 		zIndex: _zIndex(),
@@ -435,35 +440,35 @@ $(function () {
 		dragEvent = event.prototype,
 		mask = document.createElement('div'),
 		style = mask.style;
-		
+
 	style.cssText = 'display:none;position:' + positionType + ';left:0;top:0;width:100%;height:100%;'
 	+ 'cursor:move;filter:alpha(opacity=0);opacity:0;background:#FFF';
-		
+
 	document.body.appendChild(mask);
 	dragEvent._start = dragEvent.start;
 	dragEvent._end = dragEvent.end;
-	
+
 	dragEvent.start = function () {
 		var DOM = artDialog.focus.DOM,
 			main = DOM.main[0],
 			iframe = DOM.content[0].getElementsByTagName('iframe')[0];
-		
+
 		dragEvent._start.apply(this, arguments);
 		style.display = 'block';
 		style.zIndex = artDialog.defaults.zIndex + 3;
-		
+
 		if (positionType === 'absolute') {
 			style.width = $window.width() + 'px';
 			style.height = $window.height() + 'px';
 			style.left = $document.scrollLeft() + 'px';
 			style.top = $document.scrollTop() + 'px';
 		};
-		
+
 		if (iframe && main.offsetWidth * main.offsetHeight > 307200) {
 			main.style.visibility = 'hidden';
 		};
 	};
-	
+
 	dragEvent.end = function () {
 		var dialog = artDialog.focus;
 		dragEvent._end.apply(this, arguments);

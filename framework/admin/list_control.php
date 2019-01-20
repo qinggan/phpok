@@ -319,8 +319,9 @@ class list_control extends phpok_control
 		$total = $this->model('list')->single_count($mid,$condition);
 		if($total > 0){
 			$rslist = $this->model('list')->single_list($mid,$condition,$offset,$psize,$project['orderby']);
-			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
-			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$string = P_Lang("home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=数量：(total)/(psize)，页码：(num)/(total_page)&always=1");
+			//$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+			//$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
 			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 			$this->assign("pagelist",$pagelist);
 			$this->assign("rslist",$rslist);
@@ -860,6 +861,9 @@ class list_control extends phpok_control
 		}
 		//更新标识串
  		$array['identifier'] = $this->get("identifier");
+ 		if(!$array['identifier'] && $p_rs['is_identifier'] == 2){
+	 		$this->json(P_Lang('自定义标识不能为空，此项是系统设置必填项'));
+ 		}
  		if($array['identifier']){
 	 		$check = $this->check_identifier($array['identifier'],$id,$p_rs["site_id"]);
 	 		if($check != 'ok'){
@@ -878,14 +882,23 @@ class list_control extends phpok_control
 			if($array["tag"]){
 				$array["tag"] = preg_replace("/(\x20{2,})/"," ",$array["tag"]);
 			}
+			if(!$array['tag'] && $p_rs['is_tag'] == 2){
+				$this->json(P_Lang('Tag标签不能为空'));
+			}
 		}else{
 			$array['tag'] = '';
 		}
 		if($p_rs['is_userid']){
 			$array['user_id'] = $this->get('user_id','int');
+			if(!$array['user_id'] && $p_rs['is_userid'] == 2){
+				$this->json(P_Lang('会员账号不能为空'));
+			}
 		}
 		if($p_rs['is_tpl_content']){
 			$array['tpl'] = $this->get('tpl');
+			if(!$array['tpl'] && $p_rs['is_tpl_content'] == 2){
+				$this->json(P_Lang('自定义内容模板不能为空'));
+			}
 		}else{
 			$array['tpl'] = '';
 		}
@@ -899,14 +912,26 @@ class list_control extends phpok_control
 			$array["status"] = $this->get("status","int");
 		}
 		$array["hidden"] = $this->get("hidden","int");
+		$crontab = 0;
 		if($dateline > $this->time && $array['status']){
 			$array['hidden'] = 2;
+			//加入定时取消操作
+			$crontab = $dateline;
 		}
 		$array["hits"] = $this->get("hits","int");
 		$array["sort"] = $this->get("sort","int");
 		$array["seo_title"] = $this->get("seo_title");
 		$array["seo_keywords"] = $this->get("seo_keywords");
 		$array["seo_desc"] = $this->get("seo_desc");
+		if(!$array["seo_title"] && $p_rs['is_seo'] == 3){
+			$this->json(P_Lang('SEO标题不能为空'));
+		}
+		if(!$array["seo_keywords"] && $p_rs['is_seo'] == 3){
+			$this->json(P_Lang('SEO关键字不能为空'));
+		}
+		if(!$array["seo_desc"] && $p_rs['is_seo'] == 3){
+			$this->json(P_Lang('SEO描述不能为空'));
+		}
 		
 		$array["project_id"] = $p_rs['id'];
 		$array["module_id"] = $p_rs["module"];
@@ -923,6 +948,21 @@ class list_control extends phpok_control
  		if(!$id){
 	 		$this->json(P_Lang('存储数据失败，请检查'));
  		}
+ 		$crontab_list = $this->lib('file')->ls($this->dir_data.'crontab');
+ 		if($crontab_list){
+	 		foreach($crontab_list as $key=>$value){
+		 		$tmp = basename($value);
+		 		$tmp = str_replace('.php','',$tmp);
+		 		$tmplist = explode("-",$tmp);
+		 		if(!$tmplist || count($tmplist) != 2 || $tmplist[1] != $id){
+			 		continue;
+		 		}
+		 		$this->lib('file')->rm($value);
+	 		}
+ 		}
+ 		if($crontab){
+	 		$this->lib('file')->vi($id,$this->dir_data.'crontab/'.$crontab.'-'.$id.'.php');
+ 		}
  		//保存电商信息
  		if($p_rs['is_biz']){
 	 		$biz = array('price'=>$this->get('price','float'),'currency_id'=>$this->get('currency_id','int'));
@@ -933,9 +973,11 @@ class list_control extends phpok_control
 	 		$biz['is_virtual'] = $this->get('is_virtual','int');
 	 		$this->model('list')->biz_save($biz);
 	 		if($p_rs['biz_attr']){
+		 		//删除现有属性
 		 		$attr = $this->get('_biz_attr');
 		 		if($attr){
 			 		$tmplist = explode(",",$attr);
+			 		$tmps = array();
 			 		foreach($tmplist as $key=>$value){
 				 		$attr_vid_list = $this->get("_attr_".$value);
 				 		$attr_weight_list = $this->get('_attr_weight_'.$value);
@@ -945,7 +987,7 @@ class list_control extends phpok_control
 				 		if(!$attr_vid_list || !is_array($attr_vid_list)){
 					 		continue;
 				 		}
-				 		$tmps = array();
+				 		
 				 		foreach($attr_vid_list as $k=>$v){
 					 		$tmp = array('aid'=>$value,'vid'=>$v);
 					 		$tmp['price'] = isset($attr_price_list[$v]) ? $attr_price_list[$v] : 0;
@@ -955,9 +997,11 @@ class list_control extends phpok_control
 					 		$tmps[] = $tmp;
 					 		unset($tmp);
 				 		}
-				 		$this->model('list')->biz_attr_update($tmps,$id);
-				 		unset($tmps);
 			 		}
+			 		$this->model('list')->biz_attr_update($tmps,$id);
+				 	unset($tmps);
+		 		}else{
+			 		$this->model('list')->biz_attr_delete($id);
 		 		}
 	 		}
  		}

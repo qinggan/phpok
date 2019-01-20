@@ -63,8 +63,15 @@ class usercp_control extends phpok_control
 			if(!$data){
 				$this->error(P_Lang('图片内容不能为空'));
 			}
+			if(strpos($data,',') === false){
+				$this->error(P_Lang('附片格式不正确'));
+			}
 			$tmp = explode(",",$data);
-			$content = base64_decode(substr($data,strlen($tmp[0])));
+			$tmpinfo = substr($data,strlen($tmp[0]));
+			$content = base64_decode($tmpinfo);
+			if($content == $tmpinfo){
+				$this->error(P_Lang('不是合法的图片文件'));
+			}
 			$info = explode(";",$tmp[0]);
 			$ext = 'png';
 			if($info[0]){
@@ -72,6 +79,9 @@ class usercp_control extends phpok_control
 				if($tmp[1]){
 					$ext = $tmp[1];
 				}
+			}
+			if(!in_array($ext,array('jpg','png','gif','jpeg'))){
+				$this->error(P_Lang('上传的文件格式不附合系统要求'));
 			}
 			if($ext == 'jpeg'){
 				$ext = 'jpg';
@@ -242,73 +252,30 @@ class usercp_control extends phpok_control
 		$this->json(true);
 	}
 
-	//更新地址信息
+	/**
+	 * 获取会员的收货地址信息
+	**/
 	public function address_f()
 	{
-		$id = $this->get('id','int');
-		if($id){
-			$rs = $this->model('address')->get_one($id);
-			if(!$rs){
-				$this->json(P_Lang('地址信息不存在'));
+		$rslist = $this->model('user')->address_all($this->session->val('user_id'));
+		if(!$rslist){
+			$this->error(P_Lang('会员暂无收货地址信息'));
+		}
+		$total = count($rslist);
+		$default = $first = array();
+		foreach($rslist as $key=>$value){
+			if($key<1){
+				$first = $value;
 			}
-			if($rs['user_id'] != $this->u_id){
-				$this->json(P_Lang('地址信息与账号不匹配'));
-			}
-		}
-		$data = array();
-		$data['type_id'] = $this->get('type') == 'billing' ? 'billing' : 'shipping';
-		$data['fullname'] = $this->get('fullname');
-		if(!$data['fullname']){
-			$this->json(P_Lang('姓名不能为空'));
-		}
-		$data['gender'] = $this->get('gender','int');
-		$data['country'] = $this->get('country');
-		if(!$data['country']){
-			$data['country'] = '中国';
-		}
-		$data['province'] = $this->get('province');
-		if(!$data['province']){
-			$this->json(P_Lang('请选择收件人省份信息'));
-		}
-		$data['city'] = $this->get('city');
-		$data['county'] = $this->get('county');
-		$data['address'] = $this->get('address');
-		if(!$data['address']){
-			$this->json(P_Lang('请填写地址信息，要求尽可能详细'));
-		}
-		$data['zipcode'] = $this->get('zipcode');
-		if(!$data['zipcode']){
-			$this->json(P_Lang('邮编不能为空'));
-		}
-		$data['tel'] = $this->get('tel');
-		$data['mobile'] = $this->get('mobile');
-		if(!$data['tel'] && !$data['mobile']){
-			$this->json(P_Lang('请填写联系电话或手机号'));
-		}
-		if($data['tel']){
-			$type = substr($data['tel'],0,3) == '400' ? '400' : 'tel';
-			if(!$this->lib('common')->tel_check($data['tel'],$type)){
-				$this->json(P_Lang('电话填写不正确，请规范填写，如：0755-123456789 或 400123456'));
+			if($value['is_default']){
+				$default = $value;
 			}
 		}
-		if($data['mobile']){
-			$type = substr($data['mobile'],0,3) == '400' ? '400' : 'mobile';
-			if(!$this->lib('common')->tel_check($data['mobile'],$type)){
-				$this->json(P_Lang('手机填写不正确，请规范填写，要求以13，15，17，18开头的11位数字 或 400 电话'));
-			}
+		if(!$default){
+			$default = $first;
 		}
-		if($id){
-			if($rs['type_id'] != $data['type_id']){
-				$this->json(P_Lang('地址类型不匹配'));
-			}
-			$this->model('address')->save($data,$id);
-			$this->json(P_Lang('地址信息更新成功'),true);
-		}
-		$insert_id = $this->model('address')->save($data);
-		if(!$insert_id){
-			$this->json(P_Lang('地址信息创建存储失败'));
-		}
-		$this->json(P_Lang('地址信息创建成功'),true);
+		$array = array('total'=>$total,'rs'=>$default,'rslist'=>$rslist);
+		$this->success($array);
 	}
 
 	public function address_default_f()
@@ -373,6 +340,70 @@ class usercp_control extends phpok_control
 		}
 		$this->model('user')->address_save($array,$id);
 		$this->json(true);
+	}
+
+	/**
+	 * PHPOK5版会员收货地址保存
+	**/
+	public function address_save_f()
+	{
+		$id = $this->get('id','int');
+		$array = array();
+		if($id){
+			$chk = $this->model('user')->address_one($id);
+			if(!$chk || $chk['user_id'] != $this->u_id){
+				$this->error(P_Lang('您没有权限执行此操作'));
+			}
+		}else{
+			$array['user_id'] = $this->u_id;
+		}
+		$country = $this->get('country');
+		if(!$country){
+			$country = '中国';
+		}
+		$array['country'] = $country;
+		$array['province'] = $this->get('pca_p');
+		$array['city'] = $this->get('pca_c');
+		$array['county'] = $this->get('pca_a');
+		$array['fullname'] = $this->get('fullname');
+		if(!$array['fullname']){
+			$this->json(P_Lang('收件人姓名不能为空'));
+		}
+		$array['address'] = $this->get('address');
+		$array['mobile'] = $this->get('mobile');
+		$array['tel'] = $this->get('tel');
+		if(!$array['mobile'] && !$array['tel']){
+			$this->error(P_Lang('手机或固定电话必须有填写一项'));
+		}
+		if($array['mobile']){
+			if(!$this->lib('common')->tel_check($array['mobile'],'mobile')){
+				$this->error(P_Lang('手机号格式不对，请填写11位数字'));
+			}
+		}
+		if($array['tel']){
+			if(!$this->lib('common')->tel_check($array['tel'],'tel')){
+				$this->error(P_Lang('电话格式不对'));
+			}
+		}
+		$array['email'] = $this->get('email');
+		if($array['email']){
+			if(!$this->lib('common')->email_check($array['email'])){
+				$this->error(P_Lang('邮箱格式不对'));
+			}
+		}
+		if($id){
+			$this->model('user')->address_save($array,$id);
+		}else{
+			$id = $this->model('user')->address_save($array);
+			if(!$id){
+				$this->error(P_Lang('地址添加失败'));
+			}
+		}
+		$is_default = $this->get('is_default','checkbox');
+		if($is_default){
+			$this->model('user')->address_default($id);
+		}
+		$this->success($id);
 	}
 
 	public function address_delete_f()

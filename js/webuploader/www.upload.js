@@ -48,7 +48,7 @@
             $(self.id+"_progress").append('<div id="phpok-upfile-' + file.id + '" class="phpok-upfile-list">' +
 				'<div class="title">' + file.name + ' <span class="status">等待上传…</span></div>' +
 				'<div class="progress"><span>&nbsp;</span></div>' +
-				'<div class="cancel" id="phpok-upfile-cancel-'+file.id+'"></div>' + 
+				'<div class="cancel" id="phpok-upfile-cancel-'+file.id+'"></div>' +
 			'</div>' );
 			$("#phpok-upfile-"+file.id+" .cancel").click(function(){
 				uploader.removeFile(file,true);
@@ -171,8 +171,8 @@
 			var html = '<div class="'+opts.id+'_thumb" name="_elist">';
 			html += '<div style="text-align:center;"><img src="'+rs.ico+'" width="100" height="100" /></div>';
 			html += '<div class="file-action" style="text-align:center;"><div class="button-group">';
-			html += '	<input type="button" value="预览" class="layui-btn" onclick="obj_'+opts.id+'.preview(\''+rs.id+'\')" />';
-			html += '	<input type="button" value="删除" class="layui-btn" onclick="obj_'+opts.id+'.del(\''+rs.id+'\')" /></div>';
+			html += '	<input type="button" value="预览" class="phpok-btn" onclick="obj_'+opts.id+'.preview(\''+rs.id+'\')" />';
+			html += '	<input type="button" value="删除" class="phpok-btn" onclick="obj_'+opts.id+'.del(\''+rs.id+'\')" /></div>';
 			html += '</div></div>';
 			html += '</div>';
 			return html;

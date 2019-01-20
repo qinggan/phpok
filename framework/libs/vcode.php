@@ -139,4 +139,3 @@ class vcode_lib
 		return array(hexdec($color[1].$color[2]),hexdec($color[3].$color[4]),hexdec($color[5].$color[6]));
 	}
 }
-?>

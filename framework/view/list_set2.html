@@ -22,16 +22,20 @@ $(document).ready(function(){
 	});
 });
 </script>
-<div class="tips"><span class="red">{$rs.title}</span> 子项信息，请点击进入修改</div>
-<ul class="project" id="project">
-	<!-- loop from=$project_list key=$key value=$value -->
-	<li id="project_{$value.id}" title="{$value.title}" status="{$value.status}" href="{url ctrl=list func=action id=$value.id/}">
-		<div class="img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" /></div>
-		<div class="txt" id="txt_{$value.id}">{$value.nick_title ? $value.nick_title : $value.title}</div>
-	</li>
-	<!-- /loop -->
-</ul>
-<div class="clear"></div>
+<div class="layui-card">
+	<div class="layui-card-header">{lang子项信息，请点击操作}</div>
+	<div class="layui-card-body">
+		<ul class="project" id="project">
+			<!-- loop from=$project_list key=$key value=$value -->
+			<li id="project_{$value.id}" title="{$value.title}" status="{$value.status}" href="{url ctrl=list func=action id=$value.id/}">
+				<div class="img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" /></div>
+				<div class="txt" id="txt_{$value.id}">{$value.nick_title ? $value.nick_title : $value.title}</div>
+			</li>
+			<!-- /loop -->
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
 <!-- /if -->
 <script type="text/javascript">
 function save()
@@ -60,7 +64,7 @@ function save()
 <form method="post" class="layui-form" id="post_save" onsubmit="return save()">
 <input type="hidden" id="id" name="id" value="{$id}" />
 <div class="layui-card">
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -129,8 +133,13 @@ function save()
 		</div>
 	</div>
 </div>
-<div class="submit-info"><div class="layui-container"><input type="submit" value="{lang提交}" class="submit2" /></div></div>
-
+<div class="clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
 </form>
 
 <!-- include tpl=foot_lay -->

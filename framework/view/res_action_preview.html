@@ -15,21 +15,21 @@
 			<i>{lang原图}</i>
 			<div class="button-group">
 				<input type="button" value="{lang复制相对地址}" data-clipboard-text="{$rs.filename}" class="layui-btn phpok-copy" />
-				<input type="button" value="{lang复制完整地址}" data-clipboard-text="{$sys.url}{$rs.filename}" class="layui-btn phpok-copy" />
+				<!-- if $file_is_local --><input type="button" value="{lang复制完整地址}" data-clipboard-text="{$sys.url}{$rs.filename}" class="layui-btn phpok-copy" /><!-- /if -->
 			</div>
 		</li>
 		<li class="picture"><img src="{$rs.filename}"/></li>
-		<!-- foreach($rs.gd AS $key=>$value) -->
+		<!-- loop from=$rs.gd key=$key value=$value id=$tmpid -->
 		<li>
 			<i>{lang生成图} <span class="red">{$key}</span></i>
 			<div class="button-group">
-				<input type="button" value="{lang复制相对地址}" data-clipboard-text="{$value.filename}" class="layui-btn phpok-copy" />
-				<input type="button" value="{lang复制完整地址}" data-clipboard-text="{$sys.url}{$value.filename}" class="layui-btn phpok-copy" />
+				<input type="button" value="{lang复制相对地址}" data-clipboard-text="{$value}" class="layui-btn phpok-copy" />
+				<!-- if $file_is_local --><input type="button" value="{lang复制完整地址}" data-clipboard-text="{$sys.url}{$value}" class="layui-btn phpok-copy" /><!-- /if -->
 			</div>
 
 		</li>
-		<li class="picture"><img src="{$value.filename}"/></li>
-		<!-- /foreach -->
+		<li class="picture"><img src="{$value}"/></li>
+		<!-- /loop -->
 		<!-- elseif $type == "video" -->
 		<li class="video"><video src="{$rs.filename}" controls="controls" style="width:100%;height:300px;">您的浏览器不支持 video 标签。</video></li>
 		<!-- /if -->

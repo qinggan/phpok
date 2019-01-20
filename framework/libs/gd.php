@@ -239,11 +239,11 @@ class gd_lib
 	/**
 	 * 根据提供图片生成新图片
 	 * @参数 $source 源图必须含有路径
-	 * @参数 $newpic 新图只能使用源图的路径
-	 * @返回 
-	 * @更新时间 
+	 * @参数 $newpic 新图名称
+	 * @参数 $folder 新图片自定义的地址，留空使用源图的地址
+	 * @更新时间 2019年1月20日
 	**/
-	public function Create($source="",$newpic="")
+	public function Create($source="",$newpic="",$folder='')
 	{
 		if(!$this->isgd){
 			return false;
@@ -256,6 +256,9 @@ class gd_lib
 			return false;
 		}
 		$this->filepath = substr($source,0,-(strlen(basename($source))));# 文件目录
+		if($folder){
+			$this->filepath = $folder;
+		}
 		if($newpic){
 			$newpic = str_replace(array(".jpg",".gif",".png",".jpeg"),"",$newpic);
 		}

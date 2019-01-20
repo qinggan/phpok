@@ -86,7 +86,7 @@ class alipay_notify
 		if($this->order['type'] == 'recharge' && $alipay['goal']){
 			$app->model('wealth')->recharge($this->order['id']);
 		}
-		$app->plugin('payment-notify',$this->order['id']);
+		$GLOBALS['app']->plugin('payment-notify',$this->order['id']);
 		exit('success');
 	}
 }

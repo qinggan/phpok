@@ -124,7 +124,7 @@ class system_control extends phpok_control
 		if(!$this->popedom[$popedom_id]){
 			error(P_Lang('您没有权限执行此操作'),'','error');
 		}
-		$error_url = admin_url("system","set");
+		$error_url = $this->url("system","set");
 		if($id) $error_url .= "&id=".$id;
 		$title = $this->get("title");
 		if(!$title){

@@ -2,7 +2,7 @@
 <form id="setting" class="layui-form" onsubmit="return $.admin_all.save()">
 <div class="layui-card ">
 	<div class="layui-card-header">{lang基本设置}</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang网站名称}
@@ -75,7 +75,7 @@
 </div>
 <div class="layui-card">
 	<div class="layui-card-header">{lang扩展信息}</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang网站状态}</label>
 			<div class="layui-input-inline auto">
@@ -232,7 +232,7 @@
 
 <div class="layui-card">
 	<div class="layui-card-header">{lang电子商务}</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang电子商务}</label>
 			<div class="layui-input-inline auto">
@@ -243,7 +243,8 @@
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang电商特点}</label>
 			<div class="layui-input-inline auto">
-				<input type="checkbox" name="biz_status" lay-skin="switch" value="1" lay-text="{lang服务}|{lang实物}" {if $rs.biz_status} checked{/if}>
+				<input type="radio" name="biz_main_service" value="1" title="{lang服务}" {if $rs.biz_main_service} checked{/if}>
+				<input type="radio" name="biz_main_service" value="0" title="{lang实物}" {if !$rs.biz_main_service} checked{/if}>
 			</div>
 			<div class="layui-input-inline auto gray lh38">{lang请勾选实物或服务，以方便在录入产品时优先选中项}</div>
 		</div>
@@ -310,7 +311,7 @@
 </div>
 <div class="layui-card">
 	<div class="layui-card-header">{langSEO优化}</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		<div id="seo_setting">
 			
 			<div class="layui-form-item">
@@ -351,7 +352,7 @@
 </div>
 <div class="layui-card">
 	<div class="layui-card-header">{lang上传配置}</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang游客上传}
@@ -372,6 +373,12 @@
 		</div>
 	</div>
 </div>
-<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存配置}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
 </form>
 <!-- include tpl=foot_lay -->

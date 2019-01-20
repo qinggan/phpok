@@ -61,11 +61,29 @@ class cart_control extends phpok_control
 	}
 
 	/**
+	 * 购物车产品加入成功后，跳转的页面
+	 * @参数 $id 加入成功后返回的 qinggan_cart_product 表里的主键ID
+	 * @参数 $product_id 产品，即 qinggan_list 表中的ID，在购物车里，统一叫产品ID
+	**/
+	public function success_f()
+	{
+		$product_id = $this->get('product_id','int');
+		$id = $this->get('id','int');
+		$this->assign('product_id',$product_id);
+		$this->assign('id',$id);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'cart_success';
+		}
+		$this->view($tplfile);
+	}
+
+	/**
 	 * 购物车结算页，生成订单并进行支付
 	**/
 	public function checkout_f()
 	{
-		$id = $this->get('id');
+		$id = $this->get('id','int');
 		if(!$id){
 			$this->error(P_Lang('未指定要结算的产品ID'),$this->url('cart'));
 		}

@@ -137,7 +137,11 @@ class tpl_control extends phpok_control
 		$myurl = $this->url("tpl","list","id=".$id);
 		$rslist = $dirlist = array();
 		$rs_i = $dir_i = 0;
-		foreach($tpl_list AS $key=>$value){
+		$edit_array = array("html","php","js","css","asp","jsp","tpl","dwt","aspx","htm","txt","xml");
+		$pic_array = array("gif","png","jpeg","jpg");
+		$this->assign("edit_array",$edit_array);
+		$this->assign("pic_array",$pic_array);
+		foreach($tpl_list as $key=>$value){
 			$bname = basename($value);
 			$type = is_dir($value) ? "dir" : "file";
 			if(is_dir($value)){
@@ -157,7 +161,8 @@ class tpl_control extends phpok_control
 						$type = file_exists($typefile) ? $tmp_ext : "unknown";
 					}
 				}
-				$rslist[] = array("filename"=>$value,"title"=>$bname,"date"=>$date,"type"=>$type);
+				$tmp = array("filename"=>$value,"title"=>$bname,"date"=>$date,"type"=>$type);
+				$rslist[] = $tmp;
 				$rs_i++;
 			}
 		}
@@ -167,8 +172,6 @@ class tpl_control extends phpok_control
 		if($rs_i > 0){
 			$this->assign("rslist",$rslist);
 		}
-		$this->assign("edit_array",array("html","php","js","css","asp","jsp","tpl","dwt","aspx","htm","txt"));
-		$this->assign("pic_array",array("gif","png","jpeg","jpg"));
 		$this->assign("id",$id);
 		$this->view("tpl_list");
 	}
@@ -336,26 +339,33 @@ class tpl_control extends phpok_control
 	public function edit_f()
 	{
 		if(!$this->popedom["filelist"]){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		if(!$id){
-			$this->json(P_Lang('未指定风格ID'));
+			$this->error(P_Lang('未指定风格ID'));
 		}
 		$rs = $this->model('tpl')->get_one($id);
 		if(!$rs){
-			$this->json(P_Lang('风格信息不存在'));
+			$this->error(P_Lang('风格信息不存在'));
 		}
 		if(!$rs["folder"]){
-			$this->json(P_Lang('未设置风格文件夹'));
+			$this->error(P_Lang('未设置风格文件夹'));
 		}
 		$folder = $this->get("folder");
 		if(!$folder) $folder = "/";
 		$title = $this->get("title");
 		$file = $this->dir_root."tpl/".$rs["folder"].$folder.$title;
 		if(!file_exists($file)){
-			$this->json(P_Lang('文件（夹）不存在'));
+			$this->error(P_Lang('文件不存在'));
 		}
+		$is_edit = true;
+		if(!is_writable($file)){
+			$tips = P_Lang('文件无法写法，不支持在线编辑');
+			$this->assign('tips',$tips);
+			$is_edit = false;
+		}
+		$this->assign('is_edit',$is_edit);
 		$content = $this->lib('file')->cat($file);
 		$content = str_replace(array("&lt;",'&gt;'),array("&amp;lt;","&amp;gt;"),$content);
 		$content = str_replace(array('<','>'),array('&lt;','&gt;'),$content);
@@ -394,6 +404,9 @@ class tpl_control extends phpok_control
 		$file = $this->dir_root."tpl/".$rs["folder"].$folder.$title;
 		if(!file_exists($file)){
 			$this->error(P_Lang('文件不存在'));
+		}
+		if(!is_writable($file)){
+			$this->error(P_Lang('文件无法写法，不支持在线编辑'));
 		}
 		$content = $this->get("content","html_js");
 		$this->lib('file')->vim($content,$file);

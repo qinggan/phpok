@@ -28,11 +28,6 @@ function str_rand($length=10)//随机字符，参数是长度
 	return $GLOBALS['app']->lib('common')->str_rand($length);
 }
 
-function admin_url($ctrl,$func="",$ext="")
-{
-	return $GLOBALS['app']->url($ctrl,$func,$ext);
-}
-
 /**
  * 执行SQL操作
  * @参数 $db DB引挈，这里直接从外部引入
@@ -1088,3 +1083,107 @@ function token_userid()
 	return $GLOBALS['app']->lib('token')->encode($info);
 }
 
+/**
+ * 视频链接自动解析成真实地址
+ * @参数 $url
+**/
+function phpok_video_url($url,$type="html")
+{
+	if(!$url){
+		return false;
+	}
+	global $app;
+	return $app->lib('video_url')->format($url,$type);
+}
+
+function phpok_sitelist($notin=false)
+{
+	global $app;
+	$sitelist = $app->model('site')->get_all_site();
+	if(!$sitelist){
+		return false;
+	}
+	$langlist = $app->model('lang')->get_list();
+	foreach($sitelist as $key=>$value){
+		if(!$value['status']){
+			unset($sitelist[$key]);
+			continue;
+		}
+		if($value['id'] == $app->site['id'] && $notin){
+			unset($sitelist[$key]);
+			continue;
+		}
+		if($langlist && $langlist[$value['lang']]){
+			$value['lang_title'] = $langlist[$value['lang']];
+			$sitelist[$key] = $value;
+		}
+	}
+	return $sitelist;
+}
+
+//智能使用CDN
+function phpok_cdn()
+{
+	global $app;
+	if(!$app->config['cdn']){
+		return 'static/cdn/';
+	}
+	$time = $config['time'] ? $config['time'] : 3600;
+	$config = $app->config['cdn'];
+	if(!$config['status'] || !$config['server']){
+		$folder = $config['folder'] ? $config['folder'] : 'static/cdn/';
+		if(substr($folder,-1) != '/'){
+			$folder .= '/';
+		}
+		return $folder;
+	}
+	$info = $app->lib('file')->cat($app->dir_data.'phpok-cdn-status.php');
+	$remote_check_status = false;
+	if(!$info){
+		$remote_check_status = true;
+	}
+	if($info && !$remote_check_status){
+		$tmp = explode("|",$info);
+		if($tmp[1] == 'false'){
+			$folder = $config['folder'] ? $config['folder'] : 'static/cdn/';
+			if(substr($folder,-1) != '/'){
+				$folder .= '/';
+			}
+			return $folder;
+		}
+		if(($tmp[0] + $time) > $app->time){
+			$remote_check_status = true;
+		}
+	}
+	$use_cdn = false;
+	if($remote_check_status){
+		$url = $config['https'] ? 'https://' : 'http://';
+		$url.= $config['server'];
+		if($config['ip']){
+			$app->lib('curl')->host_ip($config['ip']);
+		}
+		$app->lib('curl')->connect_timeout(2);
+		$content = $app->lib('curl')->get_content($url);
+		$http_code = $app->lib('curl')->http_code();
+		if($content && $http_code == '200'){
+			$info = $app->time.'|true';
+			$use_cdn = true;
+		}else{
+			$info = $app->time.'|false';
+		}
+		$app->lib('file')->vi($info,$app->dir_data.'phpok-cdn-status.php');
+	}
+	if($use_cdn){
+		$url = $config['https'] ? 'https://' : 'http://';
+		$url.= $config['server'];
+		if(substr($url,-1) != '/'){
+			$url .= "/";
+		}
+		return $url;
+	}
+	$folder = $config['folder'] ? $config['folder'] : 'static/cdn/';
+	if(substr($folder,-1) != '/'){
+		$folder .= '/';
+	}
+	return $folder;
+}

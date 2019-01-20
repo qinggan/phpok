@@ -44,11 +44,14 @@ class order_control extends phpok_control
 		$offset = ($pageid-1) * $psize;
 		$condition = "user_id='".$this->session->val('user_id')."'";
 		$pageurl = $this->url('order');
+		$status = $this->get('status');
+		if($status){
+			$tmp = explode(",",$status);
+			$condition .= " AND status IN('".implode("','",$tmp)."')";
+			$pageurl = $this->url('order','','status='.rawurlencode($status));
+			$this->assign('status',$status);
+		}
 		$total = $this->model('order')->get_count($condition);
-		$this->assign('pageid',$pageid);
-		$this->assign('pageurl',$pageurl);
-		$this->assign('total',$total);
-		$this->assign('psize',$psize);
 		if($total){
 			$rslist = $this->model('order')->get_list($condition,$offset,$psize);
 			foreach ($rslist as $key => $value){
@@ -67,6 +70,10 @@ class order_control extends phpok_control
 		        }
             }
 			$this->assign('rslist',$rslist);
+			$this->assign('pageid',$pageid);
+			$this->assign('pageurl',$pageurl);
+			$this->assign('total',$total);
+			$this->assign('psize',$psize);
 		}
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
@@ -308,5 +315,105 @@ class order_control extends phpok_control
 			$tplfile = 'order_comment';
 		}
 		$this->view($tplfile);
+	}
+
+	/**
+	 * 获取物流信息
+	 * @参数 $id 订单ID号
+	 * @参数 $sn 订单SN码
+	 * @参数 $passwd 订单密码
+	 * @参数 $sort 值为ASC或DESC
+	**/
+	public function logistics_f()
+	{
+		$id = $this->get('id','int');
+		if($id){
+			if(!$this->session->val('user_id')){
+				$this->error(P_Lang('非会员不能执行此操作'));
+			}
+			$rs = $this->model('order')->get_one($id);
+			if(!$rs){
+				$this->error(P_Lang('订单不存在'));
+			}
+			if($rs['user_id'] != $this->session->val('user_id')){
+				$this->error(P_Lang('您没有权限操作此订单'));
+			}
+		}else{
+			$sn = $this->get('sn');
+			$passwd = $this->get('passwd');
+			if(!$sn || !$passwd){
+				$this->error(P_Lang('参数不完整，不能执行此操作'));
+			}
+			$rs = $this->model('order')->get_one($sn,'sn');
+			if(!$rs){
+				$this->error(P_Lang('订单不存在'));
+			}
+			if($rs['passwd'] != $passwd){
+				$this->error(P_Lang('订单密码不正确'));
+			}
+		}
+		if($this->session->val('user_id')){
+			$error_url = $this->url('order','info','id='.$rs['id']);
+		}else{
+			$error_url = $this->url('order','info','sn='.$rs['sn'].'&passwd='.$rs['passwd']);
+		}
+		
+		if(!$rs['status']){
+			$this->error(P_Lang('订单状态异常，请联系客服'),$error_url);
+		}
+		$array = array('create','unpaid');
+		if(in_array($rs['status'],$array)){
+			$this->error(P_Lang('仅限已支付的订单才能查看物流'),$error_url);
+		}
+		$is_virtual = true;
+		$plist = $this->model('order')->product_list($rs['id']);
+		if(!$plist){
+			$this->error(P_Lang('这是一张空白订单，没有产品，无法获得物流信息'),$error_url);
+		}
+		foreach($plist as $key=>$value){
+			if(!$value['is_virtual']){
+				$is_virtual = false;
+				break;
+			}
+		}
+		if($is_virtual){
+			$this->error(P_Lang('服务类订单没有物流信息'),$error_url);
+		}
+		$express_list = $this->model('order')->express_all($rs['id']);
+		if(!$express_list){
+			$this->error(P_Lang('订单还未录入物流信息'),$error_url);
+		}
+		//更新远程链接
+		$rslist = array();
+		foreach($express_list as $key=>$value){
+			$value['express_info'] = $this->model('express')->get_one($value['express_id']);
+			$url = $this->url('express','remote','id='.$value['id'],'api',true);
+			if($this->config['self_connect_ip']){
+				$this->lib('curl')->host_ip($this->config['self_connect_ip']);
+			}
+			$this->lib('curl')->connect_timeout(5);
+			$this->lib('curl')->get_content($url);
+			$rslist[$value['id']] = $value;
+		}
+		$loglist = $this->model('order')->log_list($rs['id']);
+		if(!$loglist){
+			$this->error(P_Lang('订单中找不到相关物流信息，请联系客服'),$error_url);
+		}
+		foreach($loglist as $key=>$value){
+			if(!$value['order_express_id']){
+				continue;
+			}
+			$rslist[$value['order_express_id']]['rslist'][] = $value;
+		}
+		$sort = $this->get('sort');
+		if($sort && strtoupper($sort) == 'DESC'){
+			foreach($rslist as $key=>$value){
+				krsort($value['rslist']);
+				$rslist[$key] = $value;
+			}
+		}
+		$this->assign('rslist',$rslist);
+		$this->assign('rs',$rs);
+		$this->view('order_logistics');
 	}
 }

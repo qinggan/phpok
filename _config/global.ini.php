@@ -1,7 +1,7 @@
 ;<?php exit("<h1>Access Denied</h1>");?>
 
 ;是否调试，1/true启用，0/false禁用
-debug = true
+debug = false
 
 ;压缩传缩，1/true启用，0/false禁用
 gzip = true
@@ -99,7 +99,7 @@ excludejs = ""
 
 [seo]
 ; SEO分割线，注意空格
-line = " - "
+line = "_"
 
 ;SEO优化模式，{title}，即传过来的标题值，{seo} 是内置的 SEO 标题，{sitename} 即是网站名称
 format = "{title}-{sitename}-{seo}"
@@ -136,3 +136,21 @@ getid = callback
 ;如果上述未设置 getid 或 内容为空，则使用默认函数
 default = callback
 
+[cdn]
+;是否开启 CDN 静态资源库
+status = true
+
+;CDN服务器地址
+server = 'cdn.phpok.com'
+
+;IP地址，用于检测CDN时响应过长造成
+ip = ""
+
+;是否启用https
+https = false
+
+;多久检测CDN连接情况，单位是秒
+time = 3600
+
+;连接失败，指向目录地址
+folder = "static/cdn"

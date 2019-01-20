@@ -56,6 +56,9 @@ class project_control extends phpok_control
 		if($id){
 			$this->assign("id",$id);
 			$rs = $this->model('project')->get_one($id);
+			if(!$rs['ico']){
+				$rs['ico'] = 'images/ico/default.png';
+			}
 			$this->assign("rs",$rs);
 			$ext_module = "project-".$id;
 		}else{
@@ -64,8 +67,9 @@ class project_control extends phpok_control
 			$parent_id = $this->get("pid");
 			$rs["parent_id"] = $parent_id;
 			$rs['taxis'] = $this->model('project')->project_next_sort($parent_id);
+			$rs['ico'] = 'images/ico/default.png';
 			$this->assign("rs",$rs);
-		}		
+		}
 		$parent_list = $this->model('project')->get_all($this->session->val('admiin_site_id'),0);
 		$this->assign("parent_list",$parent_list);
 		$this->assign("ext_module",$ext_module);
@@ -89,8 +93,6 @@ class project_control extends phpok_control
 			}
 			$this->assign("emailtpl",$emailtpl);
 		}
-		
-
 		$c_rs = $this->model('sysmenu')->get_one_condition("appfile='list' AND parent_id>0");
 		$gid = $c_rs["id"];
 		unset($c_rs);
@@ -106,13 +108,9 @@ class project_control extends phpok_control
 				$this->assign("popedom_list2",$m_plist);
 			}
 		}
-		$note_content = form_edit('admin_note',$rs['admin_note'],"editor","btn_image=1&height=300");
+		$note_content = form_edit('admin_note',$rs['admin_note'],"editor","btn[image]=1&height=180");
 		$this->assign('note_content',$note_content);
-		$icolist = $this->lib('file')->ls('images/ico/');
-		if(($rs['ico'] && !in_array($rs['ico'],$icolist)) || !$rs['ico']){
-			$rs['ico'] = 'images/ico/default.png';
-		}
-		$this->assign('icolist',$icolist);
+		
 		$grouplist = $this->model('usergroup')->get_all("status=1");
 		if($grouplist){
 			foreach($grouplist as $key=>$value){
@@ -318,7 +316,7 @@ class project_control extends phpok_control
 		$array["seo_desc"] = $this->get("seo_desc");
 		$array["subtopics"] = $this->get("subtopics",'checkbox');
 		$array["is_search"] = $this->get("is_search",'checkbox');
-		$array["is_tag"] = $this->get("is_tag",'checkbox');
+		$array["is_tag"] = $this->get("is_tag",'int');
 		$array["is_biz"] = $this->get("is_biz",'checkbox');
 		$array["currency_id"] = $this->get("currency_id",'int');
 		$array["admin_note"] = $this->get("admin_note","html");
@@ -330,10 +328,10 @@ class project_control extends phpok_control
 		$array['etpl_comment_admin'] = $this->get('etpl_comment_admin');
 		$array['etpl_comment_user'] = $this->get('etpl_comment_user');
 		$array['is_attr'] = $this->get('is_attr','checkbox');
-		$array['is_userid'] = $this->get('is_userid','checkbox');
-		$array['is_tpl_content'] = $this->get('is_tpl_content','checkbox');
-		$array['is_seo'] = $this->get('is_seo','checkbox');
-		$array['is_identifier'] = $this->get('is_identifier','checkbox');
+		$array['is_userid'] = $this->get('is_userid','int');
+		$array['is_tpl_content'] = $this->get('is_tpl_content','int');
+		$array['is_seo'] = $this->get('is_seo','int');
+		$array['is_identifier'] = $this->get('is_identifier','int');
 		$array['tag'] = $this->get('tag');
 		$array['biz_attr'] = $this->get('biz_attr');
 		$array['freight'] = $this->get('freight');
@@ -860,5 +858,21 @@ class project_control extends phpok_control
 			$this->model('project')->set_hidden(intval($value),$hidden);
 		}
 		$this->success();
+	}
+
+	public function icolist_f()
+	{
+		$icolist = $this->lib('file')->ls('images/ico/');
+		if(!file_exists($this->dir_root.'res/ico/')){
+			$this->lib('file')->make($this->dir_root.'res/ico/');
+		}
+		$tmplist = $this->lib('file')->ls('res/ico/');
+		if($tmplist){
+			$icolist = array_merge($icolist,$tmplist);
+		}
+		$this->assign('icolist',$icolist);
+		$this->lib('form')->cssjs(array('form_type'=>'upload'));
+		$this->addjs('js/webuploader/admin.upload.js');
+		$this->view('project_icolist');
 	}
 }

@@ -1,14 +1,14 @@
 <!-- include tpl=head_lay -->
+<form method="post" class="layui-form" action="{url ctrl=payment func=save/}" onsubmit="return $.admin_payment.check()">
+<!-- if $id -->
+<input type="hidden" name="id" id="id" value="{$id}" />
+<!-- /if -->
+<input type="hidden" name="code" id="code" value="{$code}" />
 <div class="layui-card">
 	<div class="layui-card-header">
 		{lang当前使用的支付方式} <span class="red">{$extlist.title}</span>
 	</div>
-	<div class="layui-container layui-card-body">
-		<form method="post" class="layui-form" action="{url ctrl=payment func=save/}" onsubmit="return $.admin_payment.check()">
-		<!-- if $id -->
-		<input type="hidden" name="id" id="id" value="{$id}" />
-		<!-- /if -->
-		<input type="hidden" name="code" id="code" value="{$code}" />
+	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang支付名称}
@@ -153,13 +153,15 @@
 				{func form_edit note $rs.note editor width=700&height=300&etype=simple&btn_image=1}
 			</div>
 		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">&nbsp;</label>
-			<div class="layui-input-inline default-auto">
-				<input type="submit" value="{lang提交}" class="submit2" />
-			</div>
-		</div>
-		</form>
 	</div>
 </div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang取消返回}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.phpok.go('{url ctrl=payment/}')" />
+	</div>
+</div>
+
+</form>
 <!-- include tpl=foot_lay -->

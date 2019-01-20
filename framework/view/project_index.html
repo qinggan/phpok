@@ -41,10 +41,10 @@
 			<td>{$value.project_module_title ? $value.project_module_title : '-'}</td>
 			<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 			<!-- if $popedom.set -->
-			<td class="center">
+			<td>
 				<div class="layui-btn-group">
 					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑}_#{$value.id}','{url ctrl=project func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang删除}" onclick="$.admin_project.del('{$value.id}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.admin_project.del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 					<!-- if !$value.parent_id -->
 					<input type="button" value="{lang添加子项}" class="layui-btn layui-btn-sm" onclick="$.win('{lang添加子项}_#{$value.id}','{url ctrl=project func=set pid=$value.id/}')" />
 					<!-- /if -->

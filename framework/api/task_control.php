@@ -20,6 +20,8 @@ class task_control extends phpok_control
 	{
 		//解除锁定
 		$this->model('task')->unlock();
+		//指定未来时间发布，自动写入到计划任务上来
+		$this->crontab_title();
 		//获取计划任务
 		$rslist = $this->model('task')->get_all();
 		if(!$rslist){
@@ -73,6 +75,46 @@ class task_control extends phpok_control
 		}
 		return true;
 	}
-}
 
-?>
+	/**
+	 * 检测 _data/crontab/文件夹下有没有相应的文件
+	**/
+	private function crontab_title()
+	{
+		//检测锁定缓存文件
+		if(!is_file($this->dir_cache.'ttime.php')){
+			$time = $this->lib('file')->cat($this->dir_cache.'ttime.php');
+		}else{
+			$time = $this->time - 400;
+		}
+		if(($time + 300)>$this->time){
+			return false;
+		}
+		$list = $this->lib('file')->ls($this->dir_data.'crontab');
+		if(!$list){
+			return false;
+		}
+		$idlist = array();
+		foreach($list as $key=>$value){
+			$basename = basename($value);
+			$basename = str_replace(".php",'',$basename);
+			$tmp = explode("-",$basename);
+			if(!$tmp || count($tmp) != 2 || !is_numeric($tmp[0])){
+				$this->lib('file')->rm($value);
+				continue;
+			}
+			if($tmp[0] > $this->time){
+				continue;
+			}
+			$idlist[] = intval($tmp[1]);
+			$this->lib('file')->rm($value);
+		}
+		if(!$idlist || count($idlist)<1){
+			return false;
+		}
+		$ids = implode(",",$idlist);
+		$this->model('list')->update_field($ids,"hidden",'0');
+		$this->lib('file')->vi($this->time,$this->dir_cache.'ttime.php');
+		return true;
+	}
+}

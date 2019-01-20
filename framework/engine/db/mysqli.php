@@ -84,6 +84,7 @@ class db_mysqli extends db
 	**/
 	public function __destruct()
 	{
+		parent::__destruct();
 		if($this->conn && is_object($this->conn)){
 			mysqli_close($this->conn);
 		}
@@ -118,9 +119,7 @@ class db_mysqli extends db
 		}
 		$tmptime = $this->_time();
 		$this->_count();
-		if($this->debug){
-			$this->debug($sql,$tmptime);
-		}
+		$this->debug($sql,$tmptime);
 		if(mysqli_error($this->conn)){
 			$this->error(mysqli_error($this->conn).', '.$sql,mysqli_errno($this->conn));
 		}

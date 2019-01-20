@@ -313,6 +313,9 @@ class phpok_call extends _init_auto
 			$rslist = $list;
 			unset($list);
 		}
+		$this->data('rslist',$rslist);
+		$this->node('PHPOK_arclist',$rslist,$array['project']['id']);
+		$rslist = $this->data('rslist');
 		if(!$rs['is_list']){
 			$array['rs'] = current($rslist);
 		}else{

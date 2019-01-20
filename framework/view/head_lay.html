@@ -15,20 +15,16 @@
     <!-- if $config.favicon -->
 	<link rel="shortcut icon" href="{$config.favicon}" />
 	<!-- /if -->
-    <link rel="stylesheet" href="static/admin/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="{#css#}/css.php?type={$csstype ? $csstype : 'admin'}" />
+    <link rel="stylesheet" href="static/admin/layui/{#css#}/layui.css" media="all" />
     <link rel="stylesheet" href="static/admin/style/admin.css" media="all" />
-    <link rel="stylesheet" href="static/admin/style/extadmin.css" media="all" />
-    <link rel="stylesheet" href="{#css#}/smartmenu.css" media="all" />
-    <link rel="stylesheet" href="{#css#}/artdialog.css" media="all" />
-    <link rel="stylesheet" href="{#css#}/icomoon.css" />
-    <link rel="stylesheet" href="{#css#}/extadmin.css" />
+    <link rel="stylesheet" href="{#css#}/extadmin.css" media="all" />
     {func phpok_head_css}
     <script type="text/javascript" src="static/admin/layui/layui.js"></script>
     <!-- php:$js_ext = 'admin.'.$sys.ctrl.'.js,admin.'.$sys.ctrl.'-'.$sys.func.'.js' -->
-    <script type="text/javascript" src="{url ctrl=js ext=$js_ext/}"></script>
-    <script type="text/javascript" src="{#js#}/global.admin.js"></script>
+    <script type="text/javascript" src="{url ctrl=js _ctrl=$sys.ctrl _func=$sys.func ext=$js_ext/}"></script>
 	{func phpok_head_js}
     <!-- plugin head -->
 </head>
-<body>
+<body{if $overflowy} style="overflow-y:hidden"{/if}>
 <div class="layui-fluid"{if $nopadding} style="padding:0;"{/if}>

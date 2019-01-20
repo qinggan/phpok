@@ -24,7 +24,7 @@ class list_model_base extends phpok_model
 		parent::model();
 	}
 
-		/**
+	/**
 	 * 是否启用电商
 	 * @参数 $is_biz true 或 false
 	**/
@@ -151,7 +151,7 @@ class list_model_base extends phpok_model
 		$cid_string = implode(",",$cid_list);
 		if($cid_string){
 			$catelist = $GLOBALS['app']->lib('ext')->cate_list($cid_string);
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				if($value["cate_id"]){
 					$value["cate_id"] = $catelist[$value["cate_id"]];
 					$rslist[$key] = $value;
@@ -307,7 +307,7 @@ class list_model_base extends phpok_model
 			if(!$flist){
 				return $rs;
 			}
-			foreach($flist AS $key=>$value){
+			foreach($flist as $key=>$value){
 				$content = $ext_rs[$value['identifier']];
 				$content = $this->lib('ext')->content_format($value,$content);
 				$rs[$value['identifier']] = $content;
@@ -316,7 +316,7 @@ class list_model_base extends phpok_model
 		return $rs;
 	}
 
-	function call_one($id)
+	public function call_one($id)
 	{
 		if(!$id) return false;
 		$sql = "SELECT * FROM ".$this->db->prefix."list l ";
@@ -324,7 +324,7 @@ class list_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
-	function get_ext($mid,$id)
+	public function get_ext($mid,$id)
 	{
 		if(!$mid || !$id) return false;
 		$sql = "SELECT * FROM ".$this->db->prefix."list_".$mid." WHERE id='".$id."'";
@@ -333,7 +333,7 @@ class list_model_base extends phpok_model
 		return $rs;
 	}
 
-	function get_ext_list($mid,$id)
+	public function get_ext_list($mid,$id)
 	{
 		if(!$mid || !$id) return false;
 		$sql = "SELECT * FROM ".$this->db->prefix."list_".$mid." WHERE id IN(".$id.")";
@@ -352,6 +352,18 @@ class list_model_base extends phpok_model
 		}else{
 			return $this->db->insert_array($data,"list");
 		}
+	}
+
+	public function update_field($ids,$field,$val=0)
+	{
+		if(!$field || !$ids){
+			return false;
+		}
+		if(is_array($ids)){
+			$ids = implode(",",$ids);
+		}
+		$sql = "UPDATE ".$this->db->prefix."list SET ".$field."='".$val."' WHERE id IN(".$ids.")";
+		return $this->db->query($sql);
 	}
 
 	/**
@@ -690,7 +702,7 @@ class list_model_base extends phpok_model
 		return $sql;
 	}
 
-	function attr_list()
+	public function attr_list()
 	{
 		$xmlfile = $this->dir_data."xml/attr.xml";
 		if(!file_exists($xmlfile)){
@@ -879,6 +891,8 @@ class list_model_base extends phpok_model
 		}
 		//删除扩展主题信息
 		if($mid){
+			//删除附件
+			$this->delete_res($id,$mid);
 			$sql = "DELETE FROM ".$this->db->prefix."list_".$mid." WHERE id='".$id."'";
 			$this->db->query($sql);
 		}
@@ -902,6 +916,59 @@ class list_model_base extends phpok_model
 				$this->db->query($sql);
 			}
 			$sql = "DELETE FROM ".$this->db->prefix."fields WHERE ftype='list-".$id."'";
+			$this->db->query($sql);
+		}
+		return true;
+	}
+
+	/**
+	 * 删除模块下的附件信息
+	 * @参数 $id 主题ID
+	 * @参数 $mid 模块ID，为0时，尝试从主题中获取
+	**/
+	public function delete_res($id,$mid=0)
+	{
+		if(!$mid){
+			$sql = "SELECT module_id FROM ".$this->db->prefix."list WHERE id='".$id."'";
+			$rs = $this->db->get_one($sql);
+			if(!$rs){
+				return false;
+			}
+			$mid = $rs['module_id'];
+		}
+		if(!$mid){
+			return false;
+		}
+		$module = $this->model('module')->get_one($mid);
+		if(!$module){
+			return false;
+		}
+		$table = $module['mtype'] ? $mid : "list_".$mid;
+		$sql = "SELECT * FROM ".$this->db->prefix.$table." WHERE id='".$id."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		$flist = $this->model('module')->fields_all($mid);
+		if(!$flist){
+			return false;
+		}
+		foreach($flist as $key=>$value){
+			if($value['form_type'] != 'upload'){
+				continue;
+			}
+			if(!$rs[$value['identifier']]){
+				continue;
+			}
+			$tmp = explode($rs[$value['identifier']]);
+			if($tmp){
+				foreach($tmp as $k=>$v){
+					if($v && intval($v)){
+						$this->model('res')->delete(intval($v));
+					}
+				}
+			}
+			$sql = "UPDATE ".$this->db->prefix.$table." SET ".$value['identifier']."='' WHERE id='".$id."'";
 			$this->db->query($sql);
 		}
 		return true;

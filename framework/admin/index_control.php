@@ -215,7 +215,82 @@ class index_control extends phpok_control
 	public function homepage_f()
 	{
 		$this->_index();
+		//读取统计
+		$all = $this->model('list')->status_all($this->session->val('admin_site_id'));
+		$this->assign('all_status',$all);
+		//读取服务器信息
+		$list = $this->_serverInfo();
+		if($list && count($list)>10){
+			$serverlist = array();
+			foreach($list as $key=>$value){
+				if($key<10){
+					$serverlist[] = $value;
+				}else{
+					break;
+				}
+			}
+			$this->assign('serverlist',$serverlist);
+		}else{
+			$this->assign('serverlist',$list);
+		}
 		$this->view('homepage');
+	}
+
+	private function _serverInfo()
+	{
+		$list = array();
+		if(function_exists('phpversion')){
+			$list[]=array(P_Lang('PHP版本'),phpversion());
+		}
+		if(function_exists('zend_version')){
+			$list[]=array(P_Lang('Zend引擎版本'),zend_version());
+		}
+		$list[]=array(P_Lang('MySQL服务端'),$this->db->version());
+		$list[]=array(P_Lang('MySQL客户端'),$this->db->version('client'));
+		if($this->config['debug']){
+			$list[] = array(P_Lang('PHPOK调试'),P_Lang('开启，建议正式运行时关闭'),'color:red;font-weight:bold;',P_Lang('修改_config/global.ini.php，将 debug 设为 false 即可'));
+		}
+		if($this->config['develop']){
+			$list[] = array(P_Lang('PHPOK开发模式'),P_Lang('开启，建议正式运行时关闭'),'color:red;font-weight:bold;',P_Lang('修改_config/global.ini.php，将 develop 设为 false 即可'));
+		}
+		if(isset($_SERVER['SERVER_SOFTWARE'])){
+			$list[]=array(P_Lang('服务器软件'),$_SERVER['SERVER_SOFTWARE']);
+		}
+		$list[] = array(P_Lang('IP地址'),$this->lib('common')->ip());
+		if(isset($_SERVER['HTTP_HOST']) || isset($_SERVER['SERVER_NAME'])){
+			$list[]=array(P_Lang('域名'),$_SERVER['HTTP_HOST'] ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME']);
+		}		
+		$list[]=array(P_Lang('协议端口'),$_SERVER['SERVER_PROTOCOL'].' '.$_SERVER['SERVER_PORT']);
+		$list[]=array(P_Lang('服务器时间'),date('Y-m-d H:i:s',$this->time));
+		if(function_exists('get_current_user')){
+			$list[]=array(P_Lang('当前系统用户'),get_current_user());
+		}
+		if(function_exists('php_uname')){
+			$list[]=array(P_Lang('操作系统'),php_uname('s').' '.php_uname('r').' '.php_uname('v'));
+		}
+		if(function_exists('php_sapi_name')){
+			$list[]=array(P_Lang('PHP运行模式'),php_sapi_name());
+		}
+		if(strtoupper(ini_get("display_errors")) == 'ON'){
+			$list[]=array(P_Lang('报错模式'),P_Lang('开启，正式运行建议关闭'),'color:red;font-weight:bold;',P_Lang('修改 php.ini 文件，将 display_errors 值改为 Off 即可'));
+		}else{
+			$list[]=array(P_Lang('报错模式'),P_Lang('关闭'),'color:darkblue;');
+		}
+		$list[]=array(P_Lang('POST提交限制'),ini_get('post_max_size'));
+		$list[]=array(P_Lang('上传大小限制'),ini_get('upload_max_filesize'));
+		if(ini_get('max_execution_time')){
+			$list[]=array(P_Lang('脚本超时时间'),ini_get('max_execution_time').P_Lang('秒'),'color:red;font-weight:bold;');
+		}
+		
+		if (ini_get("safe_mode")==0){
+			$list[]=array(P_Lang('安全模式'),P_Lang('关闭'));
+		}else{
+			$list[]=array(P_Lang('安全模式'),P_Lang('开启'));
+		}
+		if (function_exists('memory_get_usage')){
+			$list[]=array(P_Lang('当前使用内存'),$this->lib('common')->num_format(memory_get_usage()));
+		}
+		return $list;
 	}
 
 	/**
@@ -453,6 +528,25 @@ class index_control extends phpok_control
 			$this->success();
 		}
 		$this->success($list);
+	}
+
+	public function info_f()
+	{
+		$showphp = $this->get('php','int');
+		$this->assign('showphp',$showphp);
+		if(function_exists('phpinfo')){
+			$this->assign('showphpinfo',true);
+			if($showphp){
+				phpinfo();
+				exit;
+			}
+		}else{
+			$this->assign('showphpinfo',false);
+		}
+		$list = $this->_serverInfo();
+		
+		$this->assign('list',$list);
+		$this->view('index_server_info');
 	}
 
 }

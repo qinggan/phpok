@@ -17,7 +17,7 @@ class lang_model_base extends phpok_model
 		parent::model();
 	}
 
-	function get_list()
+	public function get_list()
 	{
 		$langlist = array("cn"=>"简体中文");
 		if(is_file($this->dir_data."xml/langs.xml")){

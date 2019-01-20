@@ -87,7 +87,7 @@ class text_form extends _init_auto
 	{
 		$_laydate = false;
 		if($rs['format'] == 'time'){
-			$format = $rs['form_btn'] == "datetime" ? "Y-m-d H:i" : "Y-m-d";
+			$format = $rs['form_btn'] == "datetime" ? "Y-m-d H:i:m" : "Y-m-d";
 			$time = $rs['content'] ? $rs['content'] : $this->time;
 			$rs['content'] = date($format,$time);
 		}
@@ -127,16 +127,7 @@ class text_form extends _init_auto
 			}
 			$rs['ext_quick_words'] = $tmp;
 		}
-		//检查是否有设置宽度
-		if(!$rs['form_btn'] && !$rs['ext_quick_words']){
-			if($rs['form_style'] && strpos($rs['form_style'],'width') === false){
-				$rs['form_style'] .= ";width:99%";
-			}
-			if(!$rs['form_style']){
-				$rs['form_style'] = 'width:99%';
-			}
-		}
-		if(($rs['form_btn'] && $rs['form_btn'] != 'color') || $rs['ext_quick_words']){
+		if($rs['form_btn'] && $rs['form_btn'] != 'color'){
 			if($rs['form_style'] && strpos($rs['form_style'],'width') === false){
 				$rs['form_style'] .= ";width:500px";
 			}

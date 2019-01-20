@@ -64,6 +64,11 @@ define('EXTENSION',ROOT.'extension/');
 define('PLUGIN',ROOT.'plugins/');
 
 /**
+ * 定义网关路由目录
+**/
+define('GATEWAY',ROOT.'gateway/');
+
+/**
  * 引入初始化文件
 **/
 require(FRAMEWORK.'init.php');

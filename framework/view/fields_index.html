@@ -1,24 +1,13 @@
 <!-- include tpl=head_lay -->
 <div class="layui-card">
-	<div class="layui-card-header " style="visibility: visible;">
-		<div>{lang常用字段管理}</div>
-	</div>
-
-	<div class="layui-card-body">
-
-		<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
-			<button class="layui-btn" onclick="$.admin_fields.set();">
-				<i class="layui-icon">&#xe608;</i> {lang添加新字段}
-			</button>
+	<div class="layui-card-header">
+		{lang常用字段管理}
+		<div class="fr">
+			<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_fields.set();"><i class="layui-icon">&#xe608;</i> {lang添加新字段}</button>
 		</div>
+	</div>
+	<div class="layui-card-body">
 		<table class="layui-table">
-			<colgroup>
-				<col>
-				<col>
-				<col>
-				<col>
-				<col width="140">
-			</colgroup>
 			<thead>
 			<tr>
 				<th>{lang名称}</th>
@@ -37,9 +26,9 @@
 				<td>{$value.form_type_name}</td>
 				<!-- if $popedom.modify || $popedom.delete -->
 				<td>
-					<div class="button-group">
+					<div class="layui-btn-group">
 						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.admin_fields.set('{$value.identifier}')" class="layui-btn layui-btn-sm" /><!-- /if -->
-						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_fields.del('{$value.identifier}')" class="layui-btn layui-btn-sm" /><!-- /if -->
+						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_fields.del('{$value.identifier}')" class="layui-btn layui-btn-sm layui-btn-danger" /><!-- /if -->
 					</div>
 				</td>
 				<!-- /if -->

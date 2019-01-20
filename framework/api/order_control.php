@@ -266,4 +266,176 @@ class order_control extends phpok_control
 		}
 		$this->json($rs,true);
 	}
+
+	/**
+	 * 订单取消
+	 * @参数 $id 订单ID号
+	 * @参数 $sn 订单SN码
+	 * @参数 $passwd 订单密码
+	**/
+	public function cancel_f()
+	{
+		$rs = $this->_get_order();
+		if(!$rs['status']){
+			$this->error(P_Lang('订单状态异常，请联系客服'));
+		}
+		$array = array('create','unpaid');
+		if(!in_array($rs['status'],$array)){
+			$this->error(P_Lang('仅限订单未支付才能取消订单'));
+		}
+		//更新订单日志
+		$this->model('order')->update_order_status($rs['id'],'cancel');
+		
+		$who = '';
+		if($rs['user_id']){
+			$user = $this->model('user')->get_one($rs['user_id']);
+			$who = $user['user'];
+		}else{
+			$address = $this->model('order')->address($rs['id']);
+			if($address){
+				$who = $address['fullname'];
+			}
+		}
+		$log = array('order_id'=>$rs['id']);
+		$log['addtime'] = $this->time;
+		if($who){
+			$log['who'] = $who;
+		}
+		$log['note'] = P_Lang('会员取消订单');
+		$log['user_id'] = $rs['user_id'];
+		$this->model('order')->log_save($log);
+		$this->success();
+	}
+
+	/**
+	 * 确认收货
+	 * @参数 $id 订单ID号
+	 * @参数 $sn 订单SN码
+	 * @参数 $passwd 订单密码
+	**/
+	public function received_f()
+	{
+		$rs = $this->_get_order();
+		if(!$rs['status']){
+			$this->error(P_Lang('订单状态异常，请联系客服'));
+		}
+		$array = array('shipping','paid');
+		if(!in_array($rs['status'],$array)){
+			$this->error(P_Lang('订单仅限已付款或已发货状态下能确认收货'));
+		}
+		$this->model('order')->update_order_status($rs['id'],'received');
+		$who = '';
+		if($rs['user_id']){
+			$user = $this->model('user')->get_one($rs['user_id']);
+			$who = $user['user'];
+		}else{
+			$address = $this->model('order')->address($rs['id']);
+			if($address){
+				$who = $address['fullname'];
+			}
+		}
+		$log = array('order_id'=>$rs['id']);
+		$log['addtime'] = $this->time;
+		if($who){
+			$log['who'] = $who;
+		}
+		$log['note'] = P_Lang('会员确认订单已收');
+		$log['user_id'] = $rs['user_id'];
+		$this->model('order')->log_save($log);
+		$this->success();
+	}
+
+	/**
+	 * 获取物流信息
+	 * @参数 $id 订单ID号
+	 * @参数 $sn 订单SN码
+	 * @参数 $passwd 订单密码
+	 * @参数 $sort 值为ASC或DESC
+	**/
+	public function logistics_f()
+	{
+		$rs = $this->_get_order();
+		if(!$rs['status']){
+			$this->error(P_Lang('订单状态异常，请联系客服'));
+		}
+		$array = array('create','unpaid');
+		if(in_array($rs['status'],$array)){
+			$this->error(P_Lang('仅限已支付的订单才能查看物流'));
+		}
+		$is_virtual = true;
+		$plist = $this->model('order')->product_list($rs['id']);
+		if(!$plist){
+			$this->error(P_Lang('这是一张空白订单，没有产品，无法获得物流信息'));
+		}
+		foreach($plist as $key=>$value){
+			if(!$value['is_virtual']){
+				$is_virtual = false;
+				break;
+			}
+		}
+		if($is_virtual){
+			$this->error(P_Lang('服务类订单没有物流信息'));
+		}
+		$express_list = $this->model('order')->express_all($rs['id']);
+		if(!$express_list){
+			$this->error(P_Lang('订单还未录入物流信息'));
+		}
+		foreach($express_list as $key=>$value){
+			$url = $this->url('express','remote','id='.$value['id'],'api',true);
+			if($this->config['self_connect_ip']){
+				$this->lib('curl')->host_ip($this->config['self_connect_ip']);
+			}
+			$this->lib('curl')->connect_timeout(5);
+			$this->lib('curl')->get_content($url);
+		}
+		$loglist = $this->model('order')->log_list($rs['id']);
+		if(!$loglist){
+			$this->error(P_Lang('订单中找不到相关物流信息，请联系客服'),$error_url);
+		}
+		foreach($loglist as $key=>$value){
+			if(!$value['order_express_id']){
+				continue;
+			}
+			$rslist[$value['order_express_id']]['rslist'][] = $value;
+		}
+		$sort = $this->get('sort');
+		if($sort && strtoupper($sort) == 'DESC'){
+			foreach($rslist as $key=>$value){
+				krsort($value['rslist']);
+				$rslist[$key] = $value;
+			}
+		}
+		$this->success($rslist);
+	}
+
+	private function _get_order()
+	{
+		$id = $this->get('id','int');
+		if($id){
+			if(!$this->session->val('user_id')){
+				$this->error(P_Lang('非会员不能执行此操作'));
+			}
+			$rs = $this->model('order')->get_one($id);
+			if(!$rs){
+				$this->error(P_Lang('订单不存在'));
+			}
+			if($rs['user_id'] != $this->session->val('user_id')){
+				$this->error(P_Lang('您没有权限操作此订单'));
+			}
+		}else{
+			$sn = $this->get('sn');
+			$passwd = $this->get('passwd');
+			if(!$sn || !$passwd){
+				$this->error(P_Lang('参数不完整，不能执行此操作'));
+			}
+			$rs = $this->model('order')->get_one($sn,'sn');
+			if(!$rs){
+				$this->error(P_Lang('订单不存在'));
+			}
+			if($rs['passwd'] != $passwd){
+				$this->error(P_Lang('订单密码不正确'));
+			}
+		}
+		return $rs;
+	}
 }

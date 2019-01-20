@@ -101,11 +101,16 @@ class res_control extends phpok_control
 		$this->addjs('js/webuploader/admin.upload.js');
 		$content = form_edit('note',$rs['note'],'editor','width=650&height=250&etype=simple');
 		$this->assign('content',$content);
-		$filesize = filesize($this->dir_root.$rs['filename']);
-		if($rs['filename'] && file_exists($this->dir_root.$rs['filename']) && $rs['ext'] && in_array($rs['ext'],array('jpg','gif','png','jpeg')) && $filesize > 102400){
-			$this->assign('resize',true);
-			$this->assign('filesize',$this->lib('common')->num_format($filesize));
+		$is_local = false;
+		if($this->model('res')->is_local($rs['filename'])){
+			$filesize = filesize($this->dir_root.$rs['filename']);
+			if($rs['filename'] && file_exists($this->dir_root.$rs['filename']) && $rs['ext'] && in_array($rs['ext'],array('jpg','gif','png','jpeg')) && $filesize > 102400){
+				$this->assign('resize',true);
+				$this->assign('filesize',$this->lib('common')->num_format($filesize));
+			}
+			$is_local = true;
 		}
+		$this->assign('file_is_local',$is_local);
 		$this->view("res_manage");
 	}
 
@@ -318,7 +323,7 @@ class res_control extends phpok_control
 					$pageid = $total;
 				}
 			}
-			$reslist = $this->model('res')->get_list("1=1",$pageid,8);
+			$reslist = $this->model('res')->get_list("filename NOT LIKE 'http%//%'",$pageid,8);
 			if(!$reslist){
 				$this->success(P_Lang('附件信息更新完毕，共更新数量：{pageid}，点击右上角关闭窗口^_^',array('pageid'=>"<span class='red'>".$pageid."</span>")));
 			}
@@ -327,14 +332,17 @@ class res_control extends phpok_control
 			foreach($reslist as $key=>$value){
 				if(file_exists($this->dir_root.$value['filename'])){
 					$filesize += filesize($this->dir_root.$value['filename']);
+					$tmplist[$key] = $value;
 					if($filesize >= (2 * 1024 * 1024)){
 						break;
 					}
-					$tmplist[$key] = $value;
 				}
 			}
+			if(!$tmplist || count($tmplist)<1){
+				$this->success(P_Lang('附件信息更新完毕，共更新数量：{pageid}，点击右上角关闭窗口^_^',array('pageid'=>"<span class='red'>".$pageid."</span>")));
+			}
 			foreach($tmplist as $key=>$value){
-				$this->gd_update($value['id']);
+				$this->model('res')->gd_update($value['id']);
 				$pageid++;
 			}
 			$myurl = $this->url("res","update_pl") ."&id=all&pageid=".$pageid;
@@ -348,80 +356,11 @@ class res_control extends phpok_control
 			if(!$rs){
 				$this->error(P_Lang("附件更新中，当前ID：{pageid} 不存在附件",array('pageid'=>$list[$pageid])),$myurl);
 			}
-			$this->gd_update($rs['id']);
+			$this->model('res')->gd_update($rs['id']);
 		}
 		
 		$total = $pageid+1;
 		$this->tip(P_Lang('附件更新中，当前已更新数量：{total}',array('total'=>"<span class='red'><strong>".$total."</strong></span>")),$myurl,0.3);
-	}
-
-	private function gd_update($id)
-	{
-		if(!$id){
-			return false;
-		}
-		$rs = $this->model('res')->get_one($id);
-		if(!$rs){
-			return false;
-		}
-		if($rs['ico'] && substr($rs['ico'],0,7) != 'images/' && is_file($rs['ico'])){
-			$this->lib('file')->rm($this->dir_root.$rs['ico']);
-		}
-		$this->model('res')->ext_delete($id);
-		if($rs['cate_id']){
-			$cate_rs = $this->model('rescate')->get_one($rs['cate_id']);
-			if(!$cate_rs){
-				$cate_rs = $this->model('rescate')->get_default();
-			}
-		}else{
-			$cate_rs = $this->model('rescate')->get_default();
-		}
-		if(!$cate_rs){
-			$cate_rs = array('ico'=>1,'gdall'=>1,'gdtypes'=>'');
-		}
-		$arraylist = array('png','gif','jpeg','jpg');
-		if($cate_rs['ico'] && in_array($rs['ext'],$arraylist)){
-			$ico = $this->lib('gd')->thumb($this->dir_root.$rs["filename"],$id);
-			if(!$ico){
-				$ico = "images/filetype-large/".$rs["ext"].".jpg";
-				if(!file_exists($this->dir_root.$ico)){
-					$ico = "images/filetype-large/unknown.jpg";
-				}
-			}else{
-				$ico = $rs['folder'].$ico;
-			}
-			$this->model('res')->save(array('ico'=>$ico),$id);
-		}else{
-			$ico = "images/filetype-large/".$rs["ext"].".jpg";
-			if(!file_exists($this->dir_root.$ico)){
-				$ico = "images/filetype-large/unknown.jpg";
-			}
-			$this->model('res')->save(array('ico'=>$ico),$id);
-		}
-		//判断是否有GD图案
-		$gdlist = $this->model('gd')->get_all('id');
-		if(!$gdlist){
-			return true;
-		}
-		if(!$cate_rs['gdtypes'] && !$cate_rs['gdall']){
-			return true;
-		}
-		$gdtypes = $cate_rs['gdall'] ? array_keys($gdlist) : explode(",",$cate_rs['gdtypes']);
-		foreach($gdlist as $key=>$value){
-			if(!in_array($value['id'],$gdtypes)){
-				continue;
-			}
-			$array = array();
-			$array["res_id"] = $id;
-			$array["gd_id"] = $value["id"];
-			$array["filetime"] = $this->time;
-			$gd_tmp = $this->lib('gd')->gd($this->dir_root.$rs["filename"],$id,$value);
-			if($gd_tmp){
-				$array["filename"] = $rs["folder"].$gd_tmp;
-				$this->model('res')->save_ext($array);
-			}
-		}
-		return true;
 	}
 
 

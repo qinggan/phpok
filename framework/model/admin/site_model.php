@@ -262,7 +262,12 @@ class site_model extends site_model_base
 			$tmpids = array();
 			foreach($tmplist as $key=>$value){
 				if($value['module']){
-					$sql = "DELETE FROM ".$this->db->prefix."list_".$value['module']." WHERE site_id='".$id."'";
+					$m_rs = $this->model('module')->get_one($value['module']);
+					if($m_rs['mtype']){
+						$sql = "DELETE FROM ".$this->db->prefix.$value['module']." WHERE site_id='".$id."'";
+					}else{
+						$sql = "DELETE FROM ".$this->db->prefix."list_".$value['module']." WHERE site_id='".$id."'";
+					}
 					$this->db->query($sql);
 				}
 				$tmpids[] = $value['id'];

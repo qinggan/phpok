@@ -21,7 +21,7 @@ class rescate_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rslist = $this->model('rescate')->get_all();
 		$this->assign('rslist',$rslist);
@@ -47,6 +47,9 @@ class rescate_control extends phpok_control
 		$this->assign('rs',$rs);
 		$gdlist = $this->model('gd')->get_all();
 		$this->assign('gdlist',$gdlist);
+		//读取接口列表
+		$osslist = $this->model('gateway')->all('object-storage');
+		$this->assign('osslist',$osslist);
 		$this->view('rescate_set');
 	}
 
@@ -55,26 +58,26 @@ class rescate_control extends phpok_control
 		$id = $this->get('id','int');
 		if(!$id){
 			if(!$this->popedom['add']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}else{
 			if(!$this->popedom['modify']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		$title = $this->get('title');
 		if(!$title){
-			$this->json(P_Lang('附件分类名称不能为空'));
+			$this->error(P_Lang('附件分类名称不能为空'));
 		}
 		$root = $this->get('root');
 		if(!$root){
-			$this->json(P_Lang('附件存储目录不能为空'));
+			$this->error(P_Lang('附件存储目录不能为空'));
 		}
 		if($root == '/'){
-			$this->json(P_Lang('不支持使用/作为根目录'));
+			$this->error(P_Lang('不支持使用/作为根目录'));
 		}
-		if(!preg_match("/[a-z0-9\_\/]+/",$root)){
-			$this->json(P_Lang('文件夹不符合系统要求，只支持：小写字母、数字、下划线及斜杠'));
+		if(!preg_match("/[a-z0-9\_\/\-]+/",$root)){
+			$this->error(P_Lang('文件夹不符合系统要求，只支持：小写字母、数字、下划线、中划线及斜杠'));
 		}
 		if(substr($root,0,1) == "/"){
 			$root = substr($root,1);
@@ -84,7 +87,7 @@ class rescate_control extends phpok_control
 		}
 		$filetypes = $this->get('filetypes');
 		if(!$filetypes){
-			$this->json(P_Lang('附件类型不能为空'));
+			$this->error(P_Lang('附件类型不能为空'));
 		}
 		$list_filetypes = explode(",",$filetypes);
 		foreach($list_filetypes as $key=>$value){
@@ -100,12 +103,11 @@ class rescate_control extends phpok_control
 		$filetypes = implode(",",$list_filetypes);
 		$typeinfo = $this->get('typeinfo');
 		if(!$typeinfo){
-			$this->json(P_Lang('附件类型说明不能为空'));
+			$this->error(P_Lang('附件类型说明不能为空'));
 		}
-		$maxinfo = str_replace(array('K','M','KB','MB','GB','G'),'',get_cfg_var('upload_max_filesize')) * 1024;
 		$filemax = $this->get('filemax','int');
-		if(!$filemax || ($filemax && $filemax>$maxinfo)){
-			$filemax = $maxinfo;
+		if(!$filemax){
+			$filemax = 1024 * 100;
 		}
 		$data = array('title'=>$title,'root'=>$root,'filetypes'=>$filetypes,'typeinfo'=>$typeinfo,'filemax'=>$filemax);
 		$data['folder'] = $this->get('folder');
@@ -118,8 +120,11 @@ class rescate_control extends phpok_control
 		}
 		$data['ico'] = $this->get('ico','int');
 		$data['is_default'] = $this->get('is_default','int');
+		$data['etype'] = $this->get('etype','int');
+		$data['compress'] = $this->get('compress','int');
+		$data['upload_binary'] = $this->get('upload_binary','int');
 		$this->model('rescate')->save($data,$id);
-		$this->json(true);
+		$this->success();
 	}
 
 	/**

@@ -68,46 +68,6 @@ class order_model extends order_model_base
 		return ($rs['id']+1);
 	}
 
-	function save($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"order",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"order");
-		}
-	}
-
-	//存储商品信息
-	function save_product($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"order_product",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"order_product");
-		}
-	}
-
-	function save_address($data,$id=0)
-	{
-		if(!$data || !is_array($data)) return false;
-		if($id)
-		{
-			return $this->db->update_array($data,"order_address",array("id"=>$id));
-		}
-		else
-		{
-			return $this->db->insert_array($data,"order_address");
-		}
-	}
-
 	function address_shipping($id)
 	{
 		if(!$id) return false;

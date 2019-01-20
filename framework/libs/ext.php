@@ -134,49 +134,19 @@ class ext_lib
 	function res_list($id)
 	{
 		$id = $this->safe_format($id);
-		if(!$id) return false;
-		$rslist = $GLOBALS['app']->model('res')->get_list_from_id($id,true);
-		if(!$rslist) return false;
-		foreach($rslist as $key=>$value)
-		{
-			if($value["gd"]){
-				$tmp = array();
-				foreach($value['gd'] as $k=>$v){
-					$tmp[$v['identifier']] = $v['filename'];
-				}
-				$value["gd"] = $tmp;
-			}
-			$rslist[$key] = $value;
+		if(!$id){
+			return false;
 		}
-		return $rslist;
+		return $GLOBALS['app']->model('res')->get_list_from_id($id,true);
 	}
 
 	//取得单个附件信息
 	function res_info($id)
 	{
-		if(!$id) return false;
-		$sql = "SELECT * FROM ".$GLOBALS['app']->db->prefix."res WHERE id='".$id."'";
-		$rs = $GLOBALS['app']->db->get_one($sql);
-		if(!$rs) return false;
-		$ext_type = array("jpg","gif","png","jpeg");
-		if($rs["ext"] && in_array($rs["ext"],$ext_type))
-		{
-			$sql = "SELECT gd.identifier,ext.filename FROM ".$GLOBALS['app']->db->prefix."res_ext ext ";
-			$sql.= " JOIN ".$GLOBALS['app']->db->prefix."gd gd ON(ext.gd_id=gd.id) ";
-			$sql.= " WHERE ext.res_id='".$id."'";
-			$rslist = $GLOBALS['app']->db->get_all($sql);
-			if($rslist)
-			{
-				foreach($rslist AS $key=>$value)
-				{
-					if($value["identifier"] && $value["filename"])
-					{
-						$rs["gd"][$value["identifier"]] = $value["filename"];
-					}
-				}
-			}
+		if(!$id){
+			return false;
 		}
-		return $rs;
+		return $GLOBALS['app']->model('res')->get_one($id,true);
 	}
 
 	//取得会员列表

@@ -30,25 +30,41 @@ class js_control extends phpok_control
 			echo $this->lib('file')->cat($this->dir_phpok."admin.form.js");
 			echo "\n";
 		}
-		$ext = $this->get("ext");
-		$_ext = $this->get('_ext');
+		$list = array();
+		$ext = $this->get("ext","safe_text");
+		if($ext){
+			$tmp = explode(",",$ext);
+			foreach($tmp as $key=>$value){
+				if($value && trim($value)){
+					$list[] = $value;
+				}
+			}
+		}
 		$autoload_js = $this->config["autoload_js"];
 		if($autoload_js){
-			$ext = $ext ? $ext.",".$autoload_js : $autoload_js;
+			$tmp = explode(",",$autoload_js);
+			foreach($tmp as $key=>$value){
+				if($value && trim($value)){
+					$list[] = $value;
+				}
+			}
 		}
 		$myctrl = $this->get('_ctrl');
 		$myfunc = $this->get('_func');
 		if($myctrl && is_file($this->dir_phpok.'js/'.$this->app_id.'.'.$myctrl.'.js')){
-			$ext = $ext ? $ext.",".$this->app_id.'.'.$myctrl.'.js' : $this->app_id.'.'.$myctrl.'.js';
+			$list[] = $this->app_id.'.'.$myctrl.'.js';
 		}
 		if($myctrl && $myfunc && is_file($this->dir_phpok.'js/'.$this->app_id.'.'.$myctrl.'-'.$myfunc.'.js')){
-			$ext = $ext ? $ext.",".$this->app_id.'.'.$myctrl.'-'.$myfunc.'.js' : $this->app_id.'.'.$myctrl.'-'.$myfunc.'.js';
+			$list[] = $this->app_id.'.'.$myctrl.'-'.$myfunc.'.js';
 		}
-		if(!$ext && !$_ext){
-			exit;
+		if($this->app_id == 'admin' && $myctrl){
+			$list[] = $myctrl.'/admin.js';
 		}
-		$list = ($ext && is_string($ext)) ? explode(",",$ext) : ($ext ? $ext : array());
-		if($this->app_id != 'admin'){
+		if($this->app_id == 'admin' && $myctrl && $myfunc){
+			$list[] = $myctrl.'/admin.'.$myfunc.'.js';
+		}
+		//自动装载前端下的js
+		if($this->app_id == 'www'){
 			$tlist = $this->model('url')->protected_ctrl();
 			if($tlist){
 				foreach($tlist as $key=>$value){
@@ -59,12 +75,13 @@ class js_control extends phpok_control
 			}
 		}
 		$list = array_unique($list);
+		$_ext = $this->get('_ext');
 		if($_ext){
 			$forbid_ext = is_string($_ext) ? explode(",",$_ext) : $_ext;
 			$list = array_diff($list,$forbid_ext);
-			if(!$list){
-				exit;
-			}
+		}
+		if(!$list){
+			exit;
 		}
 		if($this->app_id == 'admin'){
 			$this->load_ext($list,true);
@@ -113,40 +130,18 @@ class js_control extends phpok_control
 			if(strtolower(substr($value,-3)) != '.js'){
 				$value .= '.js';
 			}
-			if($is_admin){
-				$tmp = explode(".",$value);
-				$file = '';
-				if($tmp[0] && $tmp[0] == $this->app_id && $tmp[1] && $tmp[1] != 'js'){
-					$tmplist = explode("-",$tmp[1]);
-					if($tmplist[1] && is_file($this->dir_app.$tmplist[0].'/'.$tmp[0].'.'.$tmplist[1].'.js')){
-						$file = $this->dir_app.$tmplist[0].'/'.$tmp[0].'.'.$tmplist[1].'.js';
-					}else{
-						$file = $this->dir_app.$tmp[1].'/'.$tmp[0].'.js';
-					}
+			$tmplist = array($this->dir_root.'js/'.$value);
+			$tmplist[] = $this->dir_phpok.'js/'.$value;
+			$tmplist[] = $this->dir_app.$value;
+			$file = '';
+			foreach($tmplist as $k=>$v){
+				if(is_file($v)){
+					$file = $v;
+					break;
 				}
-				if(!$file || !is_file($file)){
-					$file = $this->dir_phpok.'js/'.$value;
-					if(!is_file($file)){
-						$file = $this->dir_root."js/".$value;
-					}
-					if(!is_file($file)){
-						continue;
-					}
-				}
-			}else{
-				$tmplist = array($this->dir_root.'js/'.$value);
-				$tmplist[] = $this->dir_phpok.'js/'.$value;
-				$tmplist[] = $this->dir_app.$value;
-				$file = '';
-				foreach($tmplist as $k=>$v){
-					if(is_file($v)){
-						$file = $v;
-						break;
-					}
-				}
-				if(!$file){
-					continue;
-				}
+			}
+			if(!$file){
+				continue;
 			}
 			if($file && is_file($file)){
 				echo "\n";
@@ -154,7 +149,9 @@ class js_control extends phpok_control
 				echo "\n";
 			}
 			if($value == 'jquery.artdialog.js'){
+				echo "\n";
 				$this->js_artdialog_global_config();
+				echo "\n";
 			}
 		}
 	}

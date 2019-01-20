@@ -1,80 +1,41 @@
-<!-- include tpl=head title=在线升级 -->
-<div class="tips">
-	您当前的位置：
-	<a href="{url ctrl=update/}">程序升级</a>
-	&raquo; 在线升级 &nbsp;
-	<span class="red">升级说明：</span>请确保网站程序目录及子目录可写
-</div>
-<script type="text/javascript">
-var lock = false;
-function start_update()
-{
-	$("#start_id").attr("disabled",true).val('正在升级……');
-	ok_start();
-}
-function ok_start()
-{
-	var is_end = true;
-	$(".mylist").each(function(i){
-		var name = $(this).attr("name");
-		var t = 'my_'+name;
-		if($("#"+t).text() == '-' && !lock)
-		{
-			is_end = false;
-			lock = true;
-			update_load_file(name);
-		}
-	});
-	if(is_end){
-		$.dialog.alert('升级成功',function(){
-			top.window.location.reload();
-		},'succeed');
-	}
-}
-function update_load_file(name)
-{
-	var url = get_url('update','file','file='+name);
-	url = url.replace(/&amp;/g,"&");
-	$.ajax({
-		'url'		: url,
-		'cache'		: false,
-		'async'		: true,
-		'dataType'	: 'json',
-		'success'	: function(rs){
-			if(rs.status == 'ok'){
-				$("#my_"+name).html('&#8730;').css("color","blue");
-				lock = false;
-				ok_start();
-			}else{
-				$("#my_"+name).html('&#215;').css("color","red");
-			}
-			lock = false;
-		}
-	});
-}
-</script>
-<div class="list">
-	<table width="100%" cellpadding="0" cellspacing="0" class="list">
-	<tr id="myupdate">
-		<th width="150px">版本</th>
-		<th class="lft">&nbsp;程序打包时间</th>
-		<th class="lft">&nbsp;大小</th>
-		<th>类型</th>
-		<th width="40px">状态</th>
-	</tr>
-	<!-- loop from=$rslist key=$key value=$value -->
-	<tr>
-		<td align="center" height="25px">{$value.version}</td>
-		<td align="left" class="mylist" name="{$value.id}">{$value.time}</td>
-		<td align="left">{$value.size}</td>
-		<td align="center">{$value.type}</td>
-		<td align="center" class="red" id="my_{$value.id}">-</td>
-	</tr>
-	<!-- /loop -->
-	</table>
-	<div style="padding-top:5px;padding-left:150px;">
-		<input type="button" value="开始升级" onclick="start_update()" id="start_id" class="btn" />
-		<span id="notice_info" style="padding-left:10px;color:red;"></span>
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang升级说明：请确保网站程序目录及子目录可写}
+		<div class="fr">
+			<button type="button" onclick="$.phpok.go('{url ctrl=update/}')" class="layui-btn layui-btn-sm">
+				<i class="layui-icon">&#xe65c;</i> {lang返回}
+			</button>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<tr id="myupdate">
+			<th width="150px">版本</th>
+			<th>&nbsp;程序打包时间</th>
+			<th>&nbsp;大小</th>
+			<th>类型</th>
+			<th width="40px">状态</th>
+		</tr>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr>
+			<td align="center" height="25px">{$value.version}</td>
+			<td align="left" class="mylist" name="{$value.id}">{$value.time}</td>
+			<td align="left">{$value.size}</td>
+			<td align="center">{$value.type}</td>
+			<td align="center" class="red" id="my_{$value.id}">-</td>
+		</tr>
+		<!-- /loop -->
+		</table>
 	</div>
 </div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="button" id="start_id" onclick="start_update()" value="{lang开始更新}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang返回}" class="layui-btn layui-btn-lg" onclick="$.phpok.go(get_url('update'))" />
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+
 <!-- include tpl=foot -->

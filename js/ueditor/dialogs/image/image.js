@@ -64,7 +64,7 @@
             case 'online':
                 setAlign(editor.getOpt('imageManagerInsertAlign'));
                 onlineImage = onlineImage || new OnlineImage('imageList');
-                onlineImage.reset();               
+                onlineImage.reset();
                 break;
         }
     }
@@ -858,7 +858,7 @@
                 this.isLoadingData = true;
                 var url = editor.getActionUrl(editor.getOpt('imageManagerActionName')),
                     isJsonp = utils.isCrossDomainUrl(url);
-                var keywords = $("#keywords").val(); 
+                var keywords = $("#keywords").val();
                 if(keywords && keywords != 'undefined'){
 	                if(url.indexOf('?') == -1){
 		                url += '?keywords='+encodeURIComponent(keywords);
@@ -919,6 +919,8 @@
                     img.width = 113;
                     img.setAttribute('src', urlPrefix + list[i].ico + (list[i].ico.indexOf('?') == -1 ? '?noCache=':'&noCache=') + (+new Date()).toString(36) );
                     img.setAttribute('_src', list[i].url);
+                    img.setAttribute('alt', list[i].title);
+                    img.setAttribute('title', list[i].title);
                     domUtils.addClass(icon, 'icon');
 
                     item.appendChild(img);
@@ -960,10 +962,11 @@
                 if (domUtils.hasClass(lis[i], 'selected')) {
                     var img = lis[i].firstChild,
                         src = img.getAttribute('_src');
+                        alt = img.getAttribute('alt');
                     list.push({
                         src: src,
                         _src: src,
-                        alt: src.substr(src.lastIndexOf('/') + 1),
+                        alt: alt,
                         floatStyle: align
                     });
                 }

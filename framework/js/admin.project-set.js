@@ -61,7 +61,7 @@ function refresh_catelist()
 {
 	$.phpok.json(get_url("project","rootcate"),function(rs){
 		if(rs.status == "ok"){
-			var info = '<option value="0">{lang不关联分类}</option>';
+			var info = '<option value="0">'+p_lang('不关联分类')+'</option>';
 			var lst = rs.content;
 			for(var i in lst){
 				info += '<option value="'+lst[i]['id']+'">'+lst[i]['title']+'</option>';

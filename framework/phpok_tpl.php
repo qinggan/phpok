@@ -24,14 +24,16 @@ class phpok_template
 	public $dir_cache = "../_cache/";
 	public $dir_php = "./";
 	public $dir_root = "./";
+	public $dir_tplroot = 'tpl/';
 	public $path_change = "";
 	public $refresh_auto = true;
 	public $refresh = false;
 	public $tpl_ext = "html";
 	public $html_head = '<?php if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");} ?>';
 	public $tpl_value;
-
 	private $cache_config;
+	private $web_folder;
+	private $is_mobile = false;
 
 	public function __construct($config=array())
 	{
@@ -52,6 +54,15 @@ class phpok_template
 		}
 		if($config["dir_tpl"]){
 			$this->dir_tpl = $config["dir_tpl"];
+			$tmp = basename($this->dir_tpl);
+			if(substr($tmp,-7) == '_mobile'){
+				$tmp = substr($tmp,0,-7);
+				$this->is_mobile = true;
+			}
+			$this->web_folder = $tmp;
+		}
+		if($config['dir_tplroot']){
+			$this->dir_tplroot = $config['dir_tplroot'];
 		}
 		if($config["dir_cache"]){
 			$this->dir_cache = $config["dir_cache"];
@@ -246,48 +257,91 @@ class phpok_template
 	**/
 	private function compiling($compiling_id,$tpl,$type="file",$path_format=true)
 	{
-		//判断是否刷新
 		$is_refresh = false;
-		if(!file_exists($this->dir_cache.$compiling_id) || $this->refresh){
+		if(!is_file($this->dir_cache.$compiling_id) || $this->refresh){
 			$is_refresh = true;
 		}
-		if($type !="file" && $type != "file-ext" && $type != "abs-file"){
+		if(!in_array($type,array('file','file-ext','abs-file'))){
 			$is_refresh = true;
 		}
-		if(!$is_refresh && ($type == "file" || $type == "file-ext" || $type == "abs-file")){
-			if($type == "file"){
-				$tplfile = $this->dir_root.$this->dir_tpl.$tpl.".".$this->tpl_ext;
-				if(!file_exists($tplfile) && basename($this->dir_tpl) != 'www'){
-					$tplfile = $this->dir_root.'tpl/www/'.$tpl.'.html';
-				}
-			}elseif($type == "file-ext"){
-				$tplfile = $this->dir_root.$this->dir_tpl.$tpl;
-				if(!file_exists($tplfile) && basename($this->dir_tpl) != 'www'){
-					$tplfile = $this->dir_root.'tpl/www/'.$tpl;
-				}
-			}else{
-				$tplfile = $tpl;
+		if(in_array($type,array('file','file-ext','abs-file'))){
+			$tplfile = $this->_getfile($tpl,$type);
+			if(!$tplfile && $this->refresh_auto){
+				$this->error(P_Lang('模板文件[tplfile]不存在',array('tplfile'=>$tpl)));
 			}
-			if($this->refresh_auto){
-				if(!file_exists($tplfile)){
-					$this->error(P_Lang('模板文件[tplfile]不存在',array('tplfile'=>basename($tpl))));
-				}
-				if(filemtime($tplfile) > filemtime($this->dir_cache.$compiling_id)){
+			if(!$is_refresh){
+				$time = filemtime($this->dir_cache.$compiling_id);
+				if($this->refresh_auto && filemtime($tplfile) > $time){
 					$is_refresh = true;
+					unset($time);
 				}
 			}
 		}
 		if(!$is_refresh){
 			return true;
 		}
-		$html_content = $this->get_content($tpl,$type);
-		if($html_content){
-			$php_content = $this->html_to_php($html_content,$path_format);
-			$newarray = array('<?php echo $app->plugin_html_ap("phpokhead");?></head>','<?php echo $app->plugin_html_ap("phpokbody");?></body>');
-			$php_content = str_replace(array('</head>','</body>'),$newarray,$php_content);
-			file_put_contents($this->dir_cache.$compiling_id,$this->html_head.$php_content);
+		if($tplfile && in_array($type,array('file','file-ext','abs-file'))){
+			$html_content = file_get_contents($tplfile);
+		}else{
+			$html_content = $tpl;
 		}
+		if(!$html_content){
+			$this->error(P_Lang('不支持空内容是模板，请检查'));
+		}
+		$php_content = $this->html_to_php($html_content,$path_format);
+		$newarray = array('<?php echo $app->plugin_html_ap("phpokhead");?></head>','<?php echo $app->plugin_html_ap("phpokbody");?></body>');
+		$php_content = str_replace(array('</head>','</body>'),$newarray,$php_content);
+		file_put_contents($this->dir_cache.$compiling_id,$this->html_head.$php_content);
 		return true;
+	}
+
+	private function _getfile($tpl,$type='file')
+	{
+		if($type == 'abs-file'){
+			return $tpl;
+		}
+		if(!in_array($type,array('file','file-ext'))){
+			return $tpl;
+		}
+		$file = $tpl;
+		if($type == 'file'){
+			$file = $tpl.'.'.$this->tpl_ext;
+		}
+		$tplfile = $this->dir_root.$this->dir_tpl.$file;
+		if(is_file($tplfile)){
+			return $tplfile;
+		}
+		if($this->is_mobile){
+			$tplfile = $this->dir_root.$this->dir_tplroot.'/'.$this->web_folder.'/'.$file;
+			if(is_file($tplfile)){
+				return $tplfile;
+			}
+			if(substr($file,-4) != 'html'){
+				$tmplist = explode(".",$file);
+				if(count($tmplist) > 2){
+					$file = substr($file,0,-(strlen(end($tmplist))+1)).'.html';
+				}else{
+					$file = $tmplist[0].'.html';
+				}
+			}
+			$tplfile = $this->dir_root.$this->dir_tplroot.'/www_mobile/'.$file;
+			if(is_file($tplfile)){
+				return $tplfile;
+			}
+		}
+		if(substr($file,-4) != 'html'){
+			$tmplist = explode(".",$file);
+			if(count($tmplist) > 2){
+				$file = substr($file,0,-(strlen(end($tmplist))+1)).'.html';
+			}else{
+				$file = $tmplist[0].'.html';
+			}
+		}
+		$tplfile = $this->dir_root.$this->dir_tplroot.'/www/'.$file;
+		if(is_file($tplfile)){
+			return $tplfile;
+		}
+		return false;
 	}
 
 	/**
@@ -593,8 +647,8 @@ class phpok_template
 			return false;
 		}
 		$string = "";
-		foreach($rs AS $key=>$value){
-			if($key != "tpl" && $key != "file"){
+		foreach($rs as $key=>$value){
+			if($key != "tpl" && $key != "file" && $key != "_type"){
 				if(substr($value,0,1) != '$'){
 					$value = '"'.$value.'"';
 				}
@@ -610,8 +664,12 @@ class phpok_template
 				$string .= '<?php include($this->dir_php."'.$rs['file'].'");?>';
 			}
 		}
+		$type = 'file';
+		if($rs['_type'] && in_array($rs['_type'],array('file','file-ext','content','msg','abs-file'))){
+			$type = $rs['_type'];
+		}
 		if($rs["tpl"]){
-			$string .= '<?php $this->output("'.$rs["tpl"].'","file"); ?>';
+			$string .= '<?php $this->output("'.$rs["tpl"].'","'.$type.'"); ?>';
 		}
 		return $string;
 	}
@@ -647,10 +705,6 @@ class phpok_template
 				$value = "'".$value."'";
 			}
 			$array[] = "'".$key."'=>".$value;
-			if($key == "ctrl" && $value == "'js'"){
-				$array[] = "'_ctrl'=>'".$GLOBALS['app']->config['ctrl']."'";
-				$array[] = "'_func'=>'".$GLOBALS['app']->config['func']."'";
-			}
 		}
 		return '<?php echo phpok_url(array('.implode(",",$array).'));?>';
 	}
@@ -966,7 +1020,7 @@ class phpok_template
 				$need_dollar = array();
 			}
 		}
-		foreach($list AS $key=>$value){
+		foreach($list as $key=>$value){
 			$value = trim($value);
 			if($value){
 				$str = explode("=",$value);
@@ -980,30 +1034,6 @@ class phpok_template
 			}
 		}
 		return $rs;
-	}
-
-	/**
-	 * 取得模板的内容
-	**/
-	private function get_content($tpl,$type="file")
-	{
-		if(!$tpl){
-			return false;
-		}
-		if($type == "content" || $type == "msg"){
-			return $tpl;
-		}
-		if($type == "file"){
-			$tplfile = $this->dir_root.$this->dir_tpl.$tpl.".".$this->tpl_ext;
-		}elseif($type == "file-ext"){
-			$tplfile = $this->dir_root.$this->dir_tpl.$tpl;
-		}else{
-			$tplfile = $tpl;
-		}
-		if(!file_exists($tplfile)){
-			$this->error("模板文件：".basename($tplfile)." 不存在！");
-		}
-		return file_get_contents($tplfile);
 	}
 
 	/**

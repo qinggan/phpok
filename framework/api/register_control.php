@@ -169,15 +169,6 @@ class register_control extends phpok_control
 			}
 		}
 		$this->model('user')->save_ext($ext);
-		if($array['status']){
-			$rs = $this->model('user')->get_one($uid);
-			$this->session->assign('user_id',$rs['id']);
-			$this->session->assign('user_gid',$rs['group_id']);
-			$this->session->assign('user_name',$rs['user']);
-			//注册审核通过后赠送积分
-			$this->model('wealth')->register($uid,P_Lang('会员注册'));
-			$this->json(P_Lang('注册成功，已自动登录，请稍候…'),true);
-		}
 		if(!$group_rs["tbl_id"] && !$group_rs['register_status']){
 			$this->json(P_Lang('注册成功，等待管理员验证'),true);
 		}
@@ -195,6 +186,169 @@ class register_control extends phpok_control
 			$ext['account'] = $user;
 			$this->model('list')->update_ext($ext,$project['module'],$info['id']);
 			$this->model('user')->set_status($uid,1);
+			$rs = $this->model('user')->get_one($uid);
+			$this->session->assign('user_id',$rs['id']);
+			$this->session->assign('user_gid',$rs['group_id']);
+			$this->session->assign('user_name',$rs['user']);
+			//注册审核通过后赠送积分
+			$this->model('wealth')->register($uid,P_Lang('会员注册'));
+			$this->json(P_Lang('注册成功，已自动登录，请稍候…'),true);
+		}
+		if($array['status']){
+			$rs = $this->model('user')->get_one($uid);
+			$this->session->assign('user_id',$rs['id']);
+			$this->session->assign('user_gid',$rs['group_id']);
+			$this->session->assign('user_name',$rs['user']);
+			//注册审核通过后赠送积分
+			$this->model('wealth')->register($uid,P_Lang('会员注册'));
+			$this->json(P_Lang('注册成功，已自动登录，请稍候…'),true);
+		}
+		$this->json(P_Lang('注册成功，等待管理员验证'),true);
+	}
+
+	/**
+	 * 注册提交成功信息
+	 * @参数 
+	 * @参数 
+	 * @参数 
+	**/
+	public function ok_f()
+	{
+		if($this->session->val('user_id')){
+			$this->error(P_Lang('您已是本站会员，不能执行这个操作'));
+		}
+		if($this->model('site')->vcode('system','register')){
+			$code = $this->get('_chkcode');
+			if(!$code){
+				$this->error(P_Lang('验证码不能为空'));
+			}
+			$code = md5(strtolower($code));
+			if($code != $this->session->val('vcode')){
+				$this->error(P_Lang('验证码填写不正确'));
+			}
+			$this->session->unassign('vcode');
+		}
+		//检测会员账号
+		$user = $this->get("user");
+		if(!$user){
+			$this->json(P_Lang('账号不能为空'));
+		}
+		$safelist = array("'",'"','/','\\',';','&',')','(');
+		foreach($safelist as $key=>$value){
+			if(strpos($user,$value) !== false){
+				$this->json(P_Lang('会员账号不允许包含字符串：{string}',array('string'=>$value)));
+			}
+		}
+		$chk = $this->model('user')->chk_name($user);
+		if($chk){
+			$this->json(P_Lang('会员账号已存用'));
+		}
+		$newpass = $this->get('newpass');
+		if(!$newpass){
+			$this->json(P_Lang('密码不能为空'));
+		}
+		$chkpass = $this->get('chkpass');
+		if(!$chkpass){
+			$this->json(P_Lang('确认密码不能为空'));
+		}
+		if($newpass != $chkpass){
+			$this->json(P_Lang('两次输入的密码不一致'));
+		}
+		$email = $this->get('email');
+		$mobile = $this->get('mobile');
+		if($email){
+			$chk = $this->lib('common')->email_check($email);
+			if(!$chk){
+				$this->json(P_Lang('邮箱不合法'));
+			}
+			$chk = $this->model('user')->user_email($email);
+			if($chk){
+				$this->json(P_Lang('邮箱已注册'));
+			}
+		}
+		if($mobile){
+			$chk = $this->lib('common')->tel_check($mobile);
+			if(!$chk){
+				$this->json(P_Lang('手机号不合法'));
+			}
+			$chk = $this->model('user')->user_mobile($mobile);
+			if($chk){
+				$this->json(P_Lang('手机号已注册'));
+			}
+		}
+		
+		$array = array();
+		$array["user"] = $user;
+		$array["pass"] = password_create($newpass);
+		$array['email'] = $email;
+		$array['mobile'] = $mobile;
+		$group_id = $this->get("group_id","int");
+		if($group_id){
+			$group_rs = $this->model("usergroup")->get_one($group_id);
+			if(!$group_rs || !$group_rs['status']){
+				$group_id = 0;
+			}
+		}
+		if(!$group_id){
+			$group_rs = $this->model('usergroup')->get_default();
+			if(!$group_rs || !$group_rs["status"]){
+				$this->json(P_Lang('注册失败，网站未开放注册权限'));
+			}
+			$group_id = $group_rs["id"];
+		}
+		if(!$group_id){
+			$this->json(P_Lang('注册失败，网站未开放注册权限'));
+		}
+		if(!$group_rs["is_default"] && !$group_rs["is_open"]){
+			$this->json(P_Lang('注册失败，网站未开放注册权限'));
+		}
+		$array["group_id"] = $group_id;
+		$array["status"] = $group_rs["register_status"] ? 1 : 0;
+		$array["regtime"] = $this->time;
+		$uid = $this->model('user')->save($array);
+		if(!$uid){
+			$this->json(P_Lang('注册失败，请联系管理员'));
+		}
+		if($uid){
+			if($this->session->val('introducer')){
+				$this->model('user')->save_relation($uid,$this->session->val('introducer'));
+			}
+		}
+		$extlist = $this->model('user')->fields_all();
+		$ext = array();
+		$ext["id"] = $uid;
+		if($extlist){
+			foreach($extlist AS $key=>$value){
+				$ext[$value["identifier"]] = ext_value($value);
+			}
+		}
+		$this->model('user')->save_ext($ext);
+		if(!$group_rs["tbl_id"] && !$group_rs['register_status']){
+			$this->json(P_Lang('注册成功，等待管理员验证'),true);
+		}
+		$project = $this->model('project')->get_one($group_rs['tbl_id'],false);
+		if(!$project['module']){
+			$this->json(P_Lang('注册成功，等待管理员验证'),true);
+		}
+		$code = $this->get('_code');
+		if(!$code){
+			$this->json(P_Lang('注册成功，等待管理员验证'),true);
+		}
+		$info = $this->model('list')->get_one_condition("l.title='".$code."'",$project['module']);
+		if($info){
+			$ext = array('site_id'=>$info['site_id'],'project_id'=>$info['project_id']);
+			$ext['account'] = $user;
+			$this->model('list')->update_ext($ext,$project['module'],$info['id']);
+			$this->model('user')->set_status($uid,1);
+			$rs = $this->model('user')->get_one($uid);
+			$this->session->assign('user_id',$rs['id']);
+			$this->session->assign('user_gid',$rs['group_id']);
+			$this->session->assign('user_name',$rs['user']);
+			//注册审核通过后赠送积分
+			$this->model('wealth')->register($uid,P_Lang('会员注册'));
+			$this->json(P_Lang('注册成功，已自动登录，请稍候…'),true);
+		}
+		if($array['status']){
 			$rs = $this->model('user')->get_one($uid);
 			$this->session->assign('user_id',$rs['id']);
 			$this->session->assign('user_gid',$rs['group_id']);

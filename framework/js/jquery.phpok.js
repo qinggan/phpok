@@ -108,7 +108,9 @@
 			cls.beforeSend = function(request){
 				request.setRequestHeader("request_type","ajax");
 				request.setRequestHeader("phpok_ajax",1);
-				request.setRequestHeader("content-type","application/json");
+				if(!postData || postData == 'undefined'){
+					request.setRequestHeader("content-type","application/json");
+				}
 				if(session_name && session_name != 'undefined'){
 					request.setRequestHeader(session_name,$.cookie.get(session_name));
 				}
@@ -118,7 +120,15 @@
 				var info = $.ajax(cls).responseText;
 				return self.json_decode(info);
 			}
-			cls.success = function(rs){(obj)(rs)};
+			if(typeof obj == 'boolean'){
+				cls.success = function(rs){
+					return true;
+				}
+			}else{
+				cls.success = function(rs){
+					(obj)(rs);
+				};
+			}
 			$.ajax(cls);
 		},
 
@@ -138,7 +148,7 @@
 			return url;
 		},
 
-		
+
 		json_encode:function(obj)
 		{
 			if(!obj || obj == 'undefined'){
@@ -147,7 +157,7 @@
 			return JSON.stringify(obj);
 		},
 
-		
+
 		json_decode:function(str)
 		{
 			if(!str || str == 'undefined'){
@@ -187,7 +197,7 @@
 		{
 			try{
 				if(url && url != 'undefined'){
-					
+
 					$("iframe").each(function(i){
 						var src = $(this).attr('src');
 						if(typeof url == 'boolean'){
@@ -207,6 +217,22 @@
 				console.log(error);
 				return false;
 			}
+		},
+		data:function(id,val)
+		{
+			if(val && val != 'undefined'){
+				localStorage.setItem(id,val);
+				return true;
+			}
+			var info = localStorage.getItem(id);
+			if(!info || info == 'undefined'){
+				return false;
+			}
+			return info;
+		},
+		undata:function(id)
+		{
+			localStorage.removeItem(id);
 		}
 	};
 
@@ -214,7 +240,7 @@
 	 * JSON字串与对象转换操作
 	**/
 	$.json = {
-		
+
 		/**
 		 * 字符串转对象
 		 * @参数 str 要转化的字符串
@@ -408,7 +434,7 @@
 	/**
 	 * 由PHPOK编写的基于jQuery的Cookie操作
 	 * 读取cookie信息 $.cookie.get("变量名");
-	 * 设置cookie信息 
+	 * 设置cookie信息
 	 * 删除Cookie信息 $.cookie.del("变量名");
 	**/
 	$.cookie = {
@@ -442,8 +468,8 @@
 		 * @参数 cookieName 变量名
 		 * @参数 cookieValue 变量内容
 		 * @参数 DayValue 过期时间，默认是1天，单位是天
-		 * @返回 
-		 * @更新时间 
+		 * @返回
+		 * @更新时间
 		**/
 		set: function(cookieName,cookieValue,DayValue)
 		{
@@ -466,7 +492,7 @@
 			var expire = "";
 			expire = new Date((new Date()).getTime() - 1 );
 			expire = "; expires=" + expire.toGMTString();
-			document.cookie = cookieName + "=" + escape("") +";path=/"+ expire;		
+			document.cookie = cookieName + "=" + escape("") +";path=/"+ expire;
 			cookieName = expire = null;
 		}
 	};
@@ -497,19 +523,19 @@ function identifier(str)
 		{
 			return $.checkbox.all(id);
 		},
-		
+
 		//全不选，调用方法：$.input.checkbox_none(id);
 		checkbox_none: function(id)
 		{
 			return $.checkbox.none(id);
 		},
-		
+
 		//每次选5个（total默认值为5） $.input.checkbox_not_all(id,5);
 		checkbox_not_all: function(id,total)
 		{
 			return $.checkbox.more(id,total);
 		},
-		
+
 		//反选，调用方法：$.input.checkbox_anti(id);
 		checkbox_anti: function(id)
 		{

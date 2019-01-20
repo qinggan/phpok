@@ -1,5 +1,4 @@
 <!-- include tpl=head_lay -->
-<link rel="stylesheet" type="text/css" href="{#css#}/artdialog.css"/>
 <div class="layui-card">
     <div class="layui-card-header">
 	    {lang搜索}
@@ -66,40 +65,28 @@
         </style>
     </div>
 </div>
-
-<div class="layui-row layui-col-space10 demo-list layui-form">
+<div class="layui-row layui-col-space10 layui-form checkbox">
     <!-- loop from=$rslist key=$key value=$value id=$tmpid -->
     <div class="layui-col-sm6 layui-col-md4 layui-col-lg3" id="thumb_{$value.id}">
         <div class="layui-card">
+	        <div class="layui-card-header">
+		        <input type="checkbox" name="attrid[]" title="{$value.title}" id="attrid_{$value.id}" value="{$value.id}" lay-skin="primary"/>
+		        <!-- if $value.download -->, {lang下载次数} {$value.download} {lang次}<!-- /if -->
+			</div>
             <div class="layui-card-body layui-clear">
-                <div class="layadmin-contact-box">
-                    <div class="layui-col-md4 layui-col-sm6">
-                        <div class="layadmin-text-center">
-                            <div class="checkbox">
-                                <input type="checkbox" name="attrid[]" title="{$value.id}" id="attrid_{$value.id}" value="{$value.id}" lay-skin="primary"/>
-                            </div>
-                            <label for="attrid_{$value.id}" class="checkbox_one"><img src="{$value.ico}" width=95%></label>
-                        </div>
-                    </div>
-                    <div class="layui-col-md8 layadmin-padding-left20 layui-col-sm6">
-                        <div class="layadmin-address ">
-	                        <div>
-                            {lang名称} {$value.title}
-                            <br>
-                            {lang文件名} {$value.name}
-                            <br>
-                            {lang存储目录} {$value.folder}
-                            <br>
-                            {lang上传时间}：{func date "Y-m-d H:i:s" $value.addtime}
-                            <br>
-                            {lang下载次数}：{$value.download}
-                            </div>
-                            <div class="layui-btn-group test-table-operate-btn">
-                                <input type="button" value="{lang修改}" class="layui-btn  layui-btn-sm" onclick="$.admin_res.modify('{$value.id}')"/>
-                                <input type="button" value="{lang预览}" class="layui-btn  layui-btn-sm" onclick="$.admin_res.preview_attr('{$value.id}')"/>
-                                <input type="button" value="{lang删除}" class="layui-btn  layui-btn-sm" onclick="$.admin_res.file_delete('{$value.id}')"/>
-                            </div>
-                        </div>
+                <div class="layui-row layui-col-space10">
+                    <div class="layui-col-sm3"><img src="{$value.ico}" width="100%" /></div>
+                    <div class="layui-col-sm9">
+						<div>
+							{lang文件名} {$value.name}
+							<!-- if $value.folder --><br>{lang存储目录} {$value.folder}<!-- /if -->
+							<br>{lang上传时间} {func date "Y-m-d H:i:s" $value.addtime}
+						</div>
+						<div class="layui-btn-group">
+							<input type="button" value="{lang修改}" class="layui-btn layui-btn-sm" onclick="$.admin_res.modify('{$value.id}')"/>
+							<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.admin_res.preview_attr('{$value.id}')"/>
+							<input type="button" value="{lang删除}" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.admin_res.file_delete('{$value.id}')"/>
+						</div>
                     </div>
                 </div>
             </div>
@@ -107,38 +94,22 @@
     </div>
     <!-- /loop -->
 </div>
-
-
-
-<div class="table">
-    <table width="100%">
-        <tr>
-            <td>
-                <div class="layui-btn-group test-table-operate-btn">
-                    <input type="button" value="{lang全选}"
-                           onclick="$.input.checkbox_all('.checkbox input[type=checkbox]')"
-                           class="layui-btn  layui-btn-sm"/>
-                    <input type="button" value="{lang全不选}"
-                           onclick="$.input.checkbox_none('.checkbox input[type=checkbox]')"
-                           class="layui-btn  layui-btn-sm"/>
-                    <input type="button" value="{lang反选}"
-                           onclick="$.input.checkbox_anti('.checkbox input[type=checkbox]')"
-                           class="layui-btn  layui-btn-sm"/>
-                </div>
-                <div class="layui-btn-group test-table-operate-btn">
-                    <input type="button" value="{lang移动分类}" onclick="$.admin_res.move_cate()"
-                           class="layui-btn  layui-btn-sm"/>
-                    <input type="button" value="{lang更新图片}" onclick="$.admin_res.pl_update()"
-                           class="layui-btn  layui-btn-sm"/>
-                    <input type="button" value="{lang删除}" onclick="$.admin_res.pl_delete()"
-                           class="layui-btn  layui-btn-sm"/>
-                </div>
-            </td>
-            <td align="right"><!-- include tpl=pagelist --></td>
-        </tr>
-    </table>
-
+<div class="layui-row">
+	<div class="layui-col-sm6">
+		<div class="layui-btn-group">
+			<input type="button" value="{lang全选}" onclick="$.input.checkbox_all('.checkbox input[type=checkbox]')" class="layui-btn layui-btn-sm"/>
+			<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none('.checkbox input[type=checkbox]')" class="layui-btn layui-btn-sm"/>
+			<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti('.checkbox input[type=checkbox]')" class="layui-btn layui-btn-sm"/>
+		</div>
+		<div class="layui-btn-group">
+			<input type="button" value="{lang移动分类}" onclick="$.admin_res.move_cate()" class="layui-btn  layui-btn-sm"/>
+			<input type="button" value="{lang更新图片}" onclick="$.admin_res.pl_update()" class="layui-btn  layui-btn-sm"/>
+			<input type="button" value="{lang删除}" onclick="$.admin_res.pl_delete()" class="layui-btn  layui-btn-sm"/>
+		</div>
+	</div>
+	<div class="layui-col-sm6" style="text-align:right;"><!-- include tpl=pagelist --></div>
 </div>
+
 <script type="text/javascript">
     layui.use('form', function () {
         $('.checkbox_one').on('click', function () {

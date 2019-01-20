@@ -1,98 +1,104 @@
 <!-- include tpl=head_lay -->
-<link rel="stylesheet" href="{$sys.webroot}static/admin/style/extadmin.css" media="all">
-<style>
-	.layui-form-label{width: 10%}
-</style>
 <div class="layui-card">
 	<div class="layui-card-header">
 		<!-- if $id -->{lang编辑货币信息}<!-- else -->{lang添加货币信息}<!-- /if -->
+		<div class="fr">
+			<button type="button" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.phpok.go('{url ctrl=currency/}')">{lang返回}</button>
+		</div>
 	</div>
-	<form method="post" action="{func admin_url currency setok}" onsubmit="return check_save()">
-		<div class="layui-card-body layui-form">
-			<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
-				<button type="button" class="layui-btn layuiadmin-btn-list" onclick="$.phpok.go('{url ctrl=currency/}')">返回</button>
+	<div class="layui-card-body">
+		<form method="post" class="layui-form" action="{url ctrl=currency func=setok/}" onsubmit="return check_save()">
+		<!-- if $id -->
+		<input type="hidden" name="id" id="id" value="{$id}" />
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang名称}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="title" required lay-verify="required" name="title" value="{$rs.title}" autocomplete="off" class="layui-input" />
 			</div>
-			<!-- if $id -->
-			<input type="hidden" name="id" id="id" value="{$id}" />
-			<!-- /if -->
-			<div class="layui-form-item">
-				<label class="layui-form-label">{lang名称}</label>
-				<div class="layui-input-inline" style="width: 450px">
-					<input type="text" id="title" required lay-verify="required" name="title" value="{$rs.title}" autocomplete="off" class="layui-input" />
-				</div>
-				<div class="layui-form-mid layui-word-aux">
-					{lang该项主要用于后台管理，您可以使用您习惯的语言来编写}
-				</div>
+			<div class="layui-input-inline auto gray lh38">{lang用于后台管理，使用您习惯的语言来编写}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang货币代号}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="code" name="code" required lay-verify="required" value="{$rs.code}" autocomplete="off" class="layui-input" />
 			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">{lang货币代号}</label>
-				<div class="layui-input-inline" style="width: 450px">
-					<input type="text" id="code" name="code" required lay-verify="required" value="{$rs.code}" autocomplete="off" class="layui-input" />
-				</div>
-				<div class="layui-form-mid layui-word-aux">
-					{lang设置货币的标识，国际标准为三个大写的字母}
-				</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置货币的标识，国际标准为三个大写的字母}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang数字代号}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="code_num" name="code_num" required lay-verify="required" value="{$rs.code_num}" autocomplete="off" class="layui-input" />
 			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">{lang数字代号}</label>
-				<div class="layui-input-inline" style="width: 450px">
-					<input type="text" id="code_num" name="code_num" required lay-verify="required" value="{$rs.code_num}" autocomplete="off" class="layui-input" />
-				</div>
-				<div class="layui-form-mid layui-word-aux">
-					{lang设置货币的数字代码，国际标准为三个数字}
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">{lang汇率}</label>
-				<div class="layui-input-inline" style="width: 450px">
-					<input type="text" id="val" name="val" required lay-verify="required" value="{$rs.val}" autocomplete="off" class="layui-input" />
-				</div>
-				<div class="layui-form-mid layui-word-aux">
-					{lang设置该货币的汇率，一般情况是以美元为1.00000的变化，不熟悉的朋友请登录官网查看帮助}
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<div class="layui-inline" style="width: 100%">
-					<label class="layui-form-label">货币显示格式化</label>
-					<div class="layui-input-inline" style="width: 100px;">
-						<input type="text" id="symbol_left" name="symbol_left" value="{$rs.symbol_left}" autocomplete="off" class="layui-input">
-					</div>
-					<div class="layui-form-mid">{func rand 10 99}.{func rand 10 99}</div>
-					<div class="layui-input-inline" style="width: 100px;">
-						<input type="text" id="symbol_right" name="symbol_right"value="{$rs.symbol_right}" autocomplete="off" class="layui-input">
-					</div>
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">状态</label>
-				<div class="layui-input-block">
-					<input type="checkbox" name="status" lay-text="启用|停用" value="1" {if $rs.status} checked{end} lay-skin="switch">
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">是否显示</label>
-				<div class="layui-input-block">
-					<input type="checkbox" name="hidden" lay-text="显示|隐藏" value="1" {if $rs.hidden} checked{end} lay-skin="switch">
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">{lang排序}</label>
-				<div class="layui-input-inline">
-					<input type="text" id="taxis" name="taxis" value="{$rs.taxis ? $rs.taxis : 255}" autocomplete="off" class="layui-input" />
-				</div>
-				<div class="layui-form-mid layui-word-aux">
-					{lang设置排序，最大值不超过255，最小值为0，值越小越往前靠}
-				</div>
+			<div class="layui-input-inline auto gray lh38">
+				{lang设置货币的数字代码，国际标准为三个数字}
 			</div>
 		</div>
-		<div class="layui-form-item layui-layout-admin">
-			<div class="layui-input-block">
-				<div class="layui-footer"  style="left: 0;z-index:10">
-					<button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
-					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
-				</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang汇率}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="val" name="val" required lay-verify="required" value="{$rs.val}" autocomplete="off" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				{lang设置该货币的汇率，一般情况是以美元为1.00000为基础}
 			</div>
 		</div>
-	</form>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang格式化}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" id="symbol_left" name="symbol_left" value="{$rs.symbol_left}" autocomplete="off" class="layui-input">
+			</div>
+			<div class="layui-form-mid">{func rand 10 99}.{func rand 10 99}</div>
+			<div class="layui-input-inline short">
+				<input type="text" id="symbol_right" name="symbol_right"value="{$rs.symbol_right}" autocomplete="off" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang状态}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="status" value="1"{if $rs.status} checked{/if} title="{lang启用}" />
+				<input type="radio" name="status" value="0"{if !$rs.status} checked{/if} title="{lang禁用}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang是否显示}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="checkbox" name="hidden" lay-text="{lang显示}|{lang隐藏}" value="1" {if $rs.hidden} checked{end} lay-skin="switch">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang排序}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" id="taxis" name="taxis" value="{$rs.taxis ? $rs.taxis : 255}" autocomplete="off" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				{lang设置排序，最大值不超过255，最小值为0，值越小越往前靠}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label"></label>
+			<div class="layui-input-inline auto">
+				<button class="layui-btn" type="submit">立即提交</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			</div>
+		</div>
+		</form>
+	</div>
 </div>
 <!-- include tpl=foot_lay -->

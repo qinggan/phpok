@@ -14,6 +14,10 @@ define("ROOT",str_replace("\\","/",dirname(__FILE__))."/");
 define('DIR_CONFIG',ROOT.'_config/');
 define('DIR_CACHE',ROOT.'_cache/');
 define('DIR_DATA',ROOT.'_data/');
+define('DATA',ROOT.'_data/');
+if(function_exists("date_default_timezone_set")){
+	date_default_timezone_set('Asia/Shanghai');
+}
 if(file_exists(ROOT.'version.php')){
 	include(ROOT.'version.php');
 }
@@ -146,7 +150,7 @@ class install
 
 	public function foot()
 	{
-		echo '<div class="footer">Powered By phpok.com 版权所有 &copy; 2005-2018, All right reserved.</div>'."\n";
+		echo '<div class="footer">Powered By phpok.com 版权所有 &copy; 2005-'.date("Y").', All right reserved.</div>'."\n";
 		echo '</body>'."\n";
 		echo '</html>';
 		exit;
@@ -166,9 +170,9 @@ class install
 		}
 		echo '<table width="980" border="0" cellspacing="0" cellpadding="0" class="tablebox">';
 		echo '<tr class="head_bg"><td>&nbsp;</td><td>PHPOK最低要求</td><td>PHPOK最佳配置</td><td>当前环境检测</td></tr>';
-		echo '<tr><td class="lft">PHP版本</td><td>5.2.17</td><td>5.5.x</td><td>'.PHP_VERSION.'</td></tr>';
+		echo '<tr><td class="lft">PHP版本</td><td>5.3.x</td><td>5.6.x</td><td>'.PHP_VERSION.'</td></tr>';
 		echo '<tr><td class="lft">附件上传</td><td>2M+</td><td>10M+</td><td>'.get_cfg_var('upload_max_filesize').'</td></tr>';
-		echo '<tr><td class="lft">MYSQL支持</td><td>5.0.x</td><td>5.5.x</td><td>'.$mysql_status.'</td></tr>';
+		echo '<tr><td class="lft">MYSQL支持</td><td>5.1.x</td><td>5.5.x</td><td>'.$mysql_status.'</td></tr>';
 		$curl = $this->func_check('curl_close');
 		if(!$curl['status']){
 			$status = false;
@@ -583,7 +587,11 @@ function check_connect(isin)
 				<input type="text" class="infor_input" name="dir" id="dir" value="{$site['dir']}" />
 				<p class="tips_p">根目录请设为/</p>
 			</li>
-			<input type="hidden" name="demo" value="1" />
+			<li><span class="l_name">演示数据：</span>
+				<label style="margin-right:10px;float:left;"><input type="radio" name="demo" value="1" checked/> 有</label>
+				<label style="margin-right:10px;float:left;"><input type="radio" name="demo" value="0"/> 无</label>
+				<p class="tips_p">不熟悉的用户建议安装演示数据</p>
+			</li>
         </ul>
     </div>   
 </div>
@@ -1079,7 +1087,7 @@ if($step == 'ajax_initdata'){
 				}
 			}
 		}
-		$string  = 'module,fields,list,list_cate,list_biz,list_attr,reply,project,plugins,res,res_ext,tag,tag_stat,phpok,ext,extc,all,cate,user,user_ext,user_relation,';
+		$string  = 'module,fields,list,list_cate,list_biz,list_attr,reply,project,plugins,res,tag,tag_stat,phpok,ext,extc,all,cate,user,user_ext,user_relation,';
 		$string .= 'wealth_info,wealth_log,session,payment_log,order_product,order_price,order_payment,order_log,order_invoice,order_express,order_address,order,log,fav,express,';
 		$string .= 'cart,cart_product';
 		$tmplist = explode(",",$string);

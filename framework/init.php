@@ -98,14 +98,6 @@ function debug_time()
 	$array['cache_count'] = $app->cache->count();
 	$array['cache_time'] = $app->cache->time();
 	$string = P_Lang($string,$array);
-	$db_debug = $app->db->debug();
-	if($db_debug && is_string($db_debug)){
-		$string .= $db_debug;
-	}
-	$cache_debug = $app->cache->debug();
-	if($cache_debug){
-		$string .= $cache_debug;
-	}
 	return $string;
 }
 
@@ -422,8 +414,7 @@ class _init_phpok
 		$this->langid = $langid;
 		
 		if($multiple_language){
-			
-			$this->language($langid);
+			$this->language($this->langid);
 		}
 	}
 
@@ -435,7 +426,7 @@ class _init_phpok
 	public function language($langid='default')
 	{
 		$multiple_language = isset($this->config['multiple_language']) ? $this->config['multiple_language'] : false;
-		if(!$multiple_language){
+		if($multiple_language){
 			include_once($this->dir_phpok.'language.php');
 			$this->language = new phpok_language($langid);
 			$this->language->status($multiple_language);
@@ -546,6 +537,8 @@ class _init_phpok
 	**/
 	public function init_site()
 	{
+		$site_id = $this->get("siteId","int");
+		$this->url = $this->root_url($site_id);
 		if($this->app_id == "admin"){
 			if($this->session->val('admin_site_id')){
 				$site_rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
@@ -558,7 +551,6 @@ class _init_phpok
 			$this->site = $site_rs;
 			return true;
 		}
-		$site_id = $this->get("siteId","int");
 		$domain = $this->lib('server')->domain($this->config['get_domain_method']);
 		if(!$domain){
 			$this->_error('无法获取网站域名信息，请检查环境是否支持$_SERVER["SERVER_NAME"]或$_SERVER["HTTP_HOST"]');
@@ -575,7 +567,7 @@ class _init_phpok
 					$tmplist[] = $value['domain'];
 				}
 			}
-			if(in_array($domain,$tmplist)){
+			if(in_array($domain,$tmplist) && !defined( 'PHPOK_SITE_ID' )){
 				define("PHPOK_SITE_ID",$site_rs['id']);
 			}
 		}
@@ -603,6 +595,15 @@ class _init_phpok
 					}
 				}
 			}
+			if($site_id && is_numeric($site_id) && $site_rs['domain'] && $site_rs['domain'] != $domain){
+				$url = $url_type.$site_rs['domain'].$site_rs['dir'];
+				if(substr($url,-1) != '/'){
+					$url .= '/';
+				}
+				$url .= $this->config['www_file'];
+				$this->_location($url);
+				exit;
+			}
 		}
 		$tplid = $site_rs['tpl_id'];
 		if($this->session->val('tpl_id')){
@@ -622,7 +623,15 @@ class _init_phpok
 		}
 		if($site_rs && $rs){
 			$tpl_rs = array('id'=>$rs['id'],'dir_root'=>$this->dir_root);
+			$tpl_rs['dir_tplroot'] = 'tpl/';
 			$tpl_rs["dir_tpl"] = $rs["folder"] ? "tpl/".$rs["folder"]."/" : "tpl/www/";
+			if($this->dir_webroot && $this->dir_webroot != '.' && $this->dir_webroot != './'){
+				$tmp = $this->dir_webroot;
+				if(substr($tmp,-1) != '/'){
+					$tmp .= '/';
+				}
+				$tpl_rs["dir_tpl"] = $tmp.$tpl_rs["dir_tpl"];
+			}
 			$tpl_rs["dir_cache"] = $this->dir_data."tpl_www/";
 			$tpl_rs["dir_php"] = $rs['phpfolder'] ? $this->dir_root.$rs['phpfolder'].'/' : $this->dir_root.'phpinc/';
 			if($rs["folder_change"]){
@@ -770,8 +779,11 @@ class _init_phpok
 		if($this->$class_name && is_object($this->$class_name)){
 			return $this->$class_name;
 		}
+		if(is_file($this->dir_app.$name.'/'.$appid.'.control.php')){
+			return $this->_ctrl_phpok5($name,$appid);
+		}
 		$file = $this->dir_phpok.'/'.$appid.'/'.$name.'_control.php';
-		if(!file_exists($file)){
+		if(!is_file($file)){
 			return false;
 		}
 		include_once($file);
@@ -823,6 +835,15 @@ class _init_phpok
 		return $this->$class_base;
 	}
 
+	private function _ctrl_phpok5($name,$appid)
+	{
+		include_once($this->dir_app.$name.'/'.$appid.'.control.php');
+		$class_name = $appid.'_'.$name.'_control';
+		$tmp = 'phpok\app\control\\'.$name.'\\'.$appid.'_control';
+		$this->$class_name = new $tmp();
+		return $this->$class_name;
+	}
+
 	private function _model_phpok5($name)
 	{
 		$class_name = $name."_model";
@@ -872,6 +893,40 @@ class _init_phpok
 		foreach($this->plugin as $key=>$value){
 			if(in_array($ap,$value['method'])){
 				$value['obj']->$ap($param);
+			}
+		}
+		return true;
+	}
+
+	final public function node($ap,$param='')
+	{
+		if(!$ap){
+			return false;
+		}
+		$ap = str_replace("-","_",$ap);//替换节点的中划线为下划线
+		$applist = $this->model('appsys')->installed();
+		if(!$applist){
+			return false;
+		}
+		$count = func_num_args();
+		if($count>2){
+			$tmp = array(0=>$param);
+			for($i=2;$i<$count;$i++){
+				$val = func_get_arg($i);
+				$tmp[($i-1)] = $val;
+			}
+			foreach($applist as $key=>$value){
+				$obj = $this->ctrl($key);
+				if($obj && method_exists($obj,$ap)){
+					call_user_func_array(array($obj, $ap),$tmp);
+				}
+			}
+			return true;
+		}
+		foreach($applist as $key=>$value){
+			$obj = $this->ctrl($key);
+			if($obj && method_exists($obj,$ap)){
+				$obj->$ap($param);
 			}
 		}
 		return true;
@@ -1029,7 +1084,6 @@ class _init_phpok
 			$config['get_domain_method'] = 'SERVER_NAME';
 		}
 		$this->config = $config;
-		$this->url = $this->root_url();
 		unset($config);
 	}
 
@@ -1064,11 +1118,16 @@ class _init_phpok
 	/**
 	 * 自动生成网址，系统自带
 	**/
-	final public function root_url()
+	final public function root_url($siteId=0)
 	{
 		$http_type = $this->is_https() ? 'https://' : 'http://';
 		$port = $this->lib('server')->port();
-		$myurl = $this->lib('server')->domain($this->config['get_domain_method']);
+		if($siteId){
+			$myurl = $this->model('site')->site_domain($siteId,$this->is_mobile);
+		}
+		if(!$myurl){
+			$myurl = $this->lib('server')->domain($this->config['get_domain_method']);
+		}
 		if(!$myurl){
 			$this->_error('无法获取网站域名信息，请检查环境是否支持$_SERVER["SERVER_NAME"]或$_SERVER["HTTP_HOST"]');
 		}
@@ -1113,7 +1172,10 @@ class _init_phpok
 			define("WEBROOT",'/');
 		}
 		$this->dir_webroot = WEBROOT;
-		if(substr($this->dir_webroot,-1) != "/"){
+		if($this->dir_webroot == '.'){
+			$this->dir_webroot = '';
+		}
+		if($this->dir_webroot && substr($this->dir_webroot,-1) != "/"){
 			$this->dir_webroot .= "/";
 		}
 		//配置框架根目录
@@ -1124,7 +1186,7 @@ class _init_phpok
 		if(substr($this->dir_phpok,-1) != "/"){
 			$this->dir_phpok .= "/";
 		}
-		$list = array('cache','config','data','extension','plugin');
+		$list = array('cache','config','data','extension','plugin','gateway');
 		$extlist = array();
 		foreach($list as $key=>$value){
 			$tmp = strtoupper($value);
@@ -1240,18 +1302,49 @@ class _init_phpok
 		$msg = stripslashes($msg);
 		//格式化处理内容
 		switch ($type){
-			case 'safe':$msg = str_replace(array("\\","'",'"',"<",">"),array("&#92;","&#39;","&quot;","&lt;","&gt;"),$msg);break;
-			case 'system':$msg = !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u",$msg) ? false : $msg;break;
-			case 'id':$msg = !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u",$msg) ? false : $msg;break;
-			case 'checkbox':$msg = strtolower($msg) == 'on' ? 1 : $this->format($msg,'safe');break;
-			case 'int':$msg = intval($msg);break;
-			case 'intval':$msg = intval($msg);break;
-			case 'float':$msg = floatval($msg);break;
-			case 'floatval':$msg = floatval($msg);break;
-			case 'time':$msg = strtotime($msg);break;
-			case 'html':$msg = $this->lib('string')->safe_html($msg,$this->url);break;
-			case 'func':$msg = function_exists($ext) ? $ext($msg) : false;break;
-			case 'text':$msg = strip_tags($msg);break;
+			case 'safe':
+				$msg = str_replace(array("\\","'",'"',"<",">"),array("&#92;","&#39;","&quot;","&lt;","&gt;"),$msg);
+			break;
+			case 'safe_text':
+				$msg = strip_tags($msg);
+				$msg = str_replace(array("\\","'",'"',"<",">"),'',$msg);
+			break;
+			case 'system':
+				$msg = !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u",$msg) ? false : $msg;
+			break;
+			case 'id':
+				$msg = !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u",$msg) ? false : $msg;
+			break;
+			case 'checkbox':
+				$msg = strtolower($msg) == 'on' ? 1 : $this->format($msg,'safe');
+			break;
+			case 'int':
+				$msg = intval($msg);
+			break;
+			case 'intval':
+				$msg = intval($msg);
+			break;
+			case 'float':
+				$msg = floatval($msg);
+			break;
+			case 'floatval':
+				$msg = floatval($msg);
+			break;
+			case 'time':
+				$msg = strtotime($msg);
+			break;
+			case 'html':
+				$msg = $this->lib('string')->safe_html($msg,$this->url);
+			break;
+			case 'func':
+				$msg = function_exists($ext) ? $ext($msg) : false;
+			break;
+			case 'text':
+				$msg = strip_tags($msg);
+			break;
+			default:
+				$msg = str_replace(array("\\","'",'"',"<",">"),array("&#92;","&#39;","&quot;","&lt;","&gt;"),$msg);
+			break;
 		}
 		if($msg){
 			$msg = addslashes($msg);
@@ -1685,35 +1778,6 @@ class _init_phpok
 				$this->_location($go_url);
 			}
 		}
-		if($this->app_id == 'api'){
-			$is_login = isset($this->config['is_login']) ? $this->config['is_login'] : false;
-			if(isset($this->config[$this->app_id]['is_login'])){
-				$is_login = $this->config[$this->app_id]['is_login'];
-			}
-			$is_login = $this->config[$this->app_id]['is_login'] ? true : false;
-			$token = $this->get($this->config['token_id'],'html');
-			if($is_login && !in_array($ctrl,$reserved)){
-				if(!$token){
-					$this->error(P_Lang('Token信息获取失败'));
-				}
-				if(!$this->site['api_code']){
-					$this->error(P_Lang('站点密钥未配置成功'));
-				}
-				$this->lib('token')->keyid($this->site['api_code']);
-				$info = $this->lib('token')->decode($token);
-				if(!$info || !is_array($info)){
-					$this->error(P_Lang('请先登录，获取 Token 数据'));
-				}
-				if(!$info['user_id'] || !$info['user_chk']){
-					$this->error(P_Lang('未登录，不能执行此操作'));
-				}
-				$chk_status = $this->model('user')->token_check($info['user_id'],$info['user_chk']);
-				if(!$chk_status){
-					$this->error(P_Lang('验证不能通过，请重新登录'));
-				}
-				$this->token = $this->lib('token')->encode(array('user_id'=>$info['user_id'],'user_chk'=>$info['user_chk']));
-			}
-		}
 		
 		if(file_exists($this->dir_phpok.$this->app_id."/global.func.php")){
 			include($this->dir_phpok.$this->app_id."/global.func.php");
@@ -1746,25 +1810,20 @@ class _init_phpok
 		if(file_exists($this->dir_app.$this->app_id.'.func.php')){
 			include($this->dir_app.$this->app_id.".func.php");
 		}
-		$handle = opendir($this->dir_app);
-		$array = array();
+		$apps = $this->model('appsys')->installed();
 		$protected_ctrl = array();
-		while(false !== ($myfile = readdir($handle))){
-			if($myfile == '.' || $myfile == '..'){
-				continue;
-			}
-			if(substr($myfile,0,1) != '.'){
-				$protected_ctrl[] = $myfile;
-			}
-			if(is_file($this->dir_app.$myfile.'/global.func.php')){
-				include($this->dir_app.$myfile.'/global.func.php');
-			}
-			if(is_file($this->dir_app.$myfile.'/'.$this->app_id.'.func.php')){
-				include($this->dir_app.$myfile.'/'.$this->app_id.'.func.php');
+		if($apps){
+			foreach($apps as $key=>$value){
+				$protected_ctrl[] = $key;
+				if(is_file($this->dir_app.$key.'/global.func.php')){
+					include_once($this->dir_app.$key.'/global.func.php');
+				}
+				if(is_file($this->dir_app.$key.'/'.$this->app_id.'.func.php')){
+					include_once($this->dir_app.$key.'/'.$this->app_id.'.func.php');
+				}
 			}
 		}
 		$this->model('url')->protected_ctrl($protected_ctrl);
-		closedir($handle);
 
 		//自动运行的函数
 		if($this->config[$this->app_id]["autoload_func"]){
@@ -1781,8 +1840,6 @@ class _init_phpok
 		if($appfile && file_exists($appfile)){
 			$this->_action_phpok5($appfile,$ctrl,$func);
 		}
-		//--- 结束 phpok5 写法
-		// 兼容旧版 phpok4 写法
 		$this->_action_phpok4($ctrl,$func);
 	}
 
@@ -2160,8 +2217,10 @@ class _init_phpok
 		if($action == 'param'){
 			if($param == 'default'){
 				$info = $this->model('gateway')->get_default($this->gateway['type']);
-			}else{
+			}elseif(is_numeric($param)){
 				$info = $this->model('gateway')->get_one($param);
+			}else{
+				$info = $param;
 			}
 			if($info){
 				$this->gateway['param'] = $info;
@@ -2171,21 +2230,22 @@ class _init_phpok
 		if($action == 'extinfo'){
 			$this->gateway['extinfo'] = $param;
 		}
-		if($action == 'exec'){
+		if($action == 'exec' || substr($action,-4) == '.php'){
 			if(!$this->gateway['param']){
 				return false;
 			}
+			$file = $action == 'exec' ? 'exec.php' : $action;
 			$rs = $this->gateway['param'];
 			$extinfo = $this->gateway['extinfo'];
-			if(!$extinfo && $param){
-				$extinfo = $param;
-			}
-			$file = $this->dir_root.'gateway/'.$this->gateway['param']['type'].'/'.$this->gateway['param']['code'].'/exec.php';
+			$exec_file = $this->dir_gateway.''.$this->gateway['param']['type'].'/'.$this->gateway['param']['code'].'/'.$file;
 			$info = false;
-			if(file_exists($file)){
-				$info = include $file;
+			if(file_exists($exec_file)){
+				$info = include $exec_file;
 			}
 			if($param == 'json'){
+				if(!$info){
+					$this->error();
+				}
 				exit($this->lib('json')->encode($info));
 			}else{
 				return $info;
@@ -2219,7 +2279,7 @@ class _init_auto
 	**/
 	public function __call($method,$param)
 	{
-		if(method_exists($GLOBALS['app'],$method)){
+		if($method && method_exists($GLOBALS['app'],$method)){
 			return call_user_func_array(array($GLOBALS['app'],$method),$param);
 		}else{
 			$lst = explode("_",$method);

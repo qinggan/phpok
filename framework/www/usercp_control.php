@@ -1,15 +1,19 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/www/usercp_control.php
-	Note	: 用户控制面板
-	Version : 3.0
-	Author  : qinggan
-	Update  : 2013年07月01日 06时14分
-***********************************************************/
+/**
+ * 用户控制面板
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年12月04日
+**/
+
 class usercp_control extends phpok_control
 {
 	public $group_rs;
 	public $user_rs;
+	private $user;
 	public function __construct()
 	{
 		parent::control();
@@ -18,6 +22,7 @@ class usercp_control extends phpok_control
 			$errurl = $this->url('login','',$this->url('usercp'));
 			$this->error(P_Lang('未登录会员不能执行此操作'),$errurl);
 		}
+		$this->user = $this->model('user')->get_one($user_id);
 		$this->group_rs = $this->model('usergroup')->group_rs($user_id);
 		if(!$this->group_rs){
 			$this->error(P_Lang('您的账号有异常：无法获取相应的会员组信息，请联系管理员'));

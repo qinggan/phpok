@@ -45,8 +45,11 @@ function download_it(id)
 			<div class="layui-input-inline default-auto">
 				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
 			</div>
+			<!-- if $file_is_local -->
 			<div class="layui-input-inline auto gray lh38"><input type="button" value="下载" onclick="download_it('{$rs.id}')" class="layui-btn" /></div>
+			<!-- /if -->
 		</div>
+		<!-- if $file_is_local -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang覆盖上传}
@@ -59,6 +62,7 @@ function download_it(id)
 				{lang使用此功能将直接覆盖上传原来附件信息，请慎用} {lang仅限} <span class="red b">{$rs.ext}</span>
 			</div>
 		</div>
+		<!-- /if -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang上传时间}
@@ -133,7 +137,7 @@ function download_it(id)
 		</div>
 	</div>
 </div>
-
+<!-- if $file_is_local -->
 <script type="text/javascript">
 $(document).ready(function(){
 	obj_upload = new $.admin_upload({
@@ -154,7 +158,8 @@ $(document).ready(function(){
 	});
 });
 </script>
+<!-- /if -->
 
 
 </form>
-<!-- include tpl=foot_lay -->
+<!-- include tpl=foot_lay is_open=true -->

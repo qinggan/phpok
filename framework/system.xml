@@ -63,7 +63,7 @@
 		</param>
 		<pca>
 			<title><![CDATA[省市县联动]]></title>
-			<note><![CDATA[即将被放弃的表单类型，请不要使用]]></note>
+			<note><![CDATA[仅限国内使用，同时也用于物流应用]]></note>
 		</pca>
 	</form>
 	<field>

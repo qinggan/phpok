@@ -20,10 +20,11 @@ class weixin_lib
 	private $error = '';
 	private $openid = '';//目标用户的open ID
 	private $account = '';//微信公众号原始账号
+    private $datadir;
 	
 	public function __construct()
 	{
-		$this->datadir = ROOT.'_data/';
+		$this->datadir = ROOT.'data/';
 	}
 
 	public function get_data()
@@ -98,6 +99,44 @@ class weixin_lib
 		exit;
 	}
 
+    public function news_xml($newsArray)
+    {
+        if(!is_array($newsArray)){
+            return '';
+        }
+        $itemTpl = <<<EOT
+<item>
+    <Title><![CDATA[%s]]></Title>
+    <Description><![CDATA[%s]]></Description>
+    <PicUrl><![CDATA[%s]]></PicUrl>
+    <Url><![CDATA[%s]]></Url>
+</item>
+EOT;
+        $item_str = "";
+        $i = 1;
+        foreach ($newsArray as $item){
+            if($i > 8){
+                break;
+            }
+            $item_str .= sprintf($itemTpl, $item['title'], $item['note'], rawurldecode($item['thumb']), rawurldecode($item['url']));
+            $i++;
+        }
+        $xmlTpl = <<<EOT
+<xml>
+    <ToUserName><![CDATA[%s]]></ToUserName>
+    <FromUserName><![CDATA[%s]]></FromUserName>
+    <CreateTime><![CDATA[%s]]></CreateTime>
+    <MsgType><![CDATA[news]]></MsgType>
+    <ArticleCount><![CDATA[%s]]></ArticleCount>
+    <Articles>
+    $item_str
+    </Articles>
+</xml>
+EOT;
+        $result = sprintf($xmlTpl, $this->openid, $this->account, time(), count($newsArray));
+        return $result;
+    }
+
 	public function image_xml($content='',$picurl='')
 	{
 		if(!$content){
@@ -149,7 +188,6 @@ class weixin_lib
 	//获取access_token
 	public function access_token()
 	{
-		$token = '';
 		$cachefile = $this->datadir.'weixin_access_token.php';
 		$ctime = time() - 7000;
 		if(file_exists($cachefile) && filemtime($cachefile) > $ctime){
@@ -218,7 +256,7 @@ class weixin_lib
 					}
 				}
 			}
-			curl_setopt($curl,CURLOPT_POST,true);
+			curl_setopt($curl,CURLOPT_POST,1);
 			curl_setopt($curl,CURLOPT_POSTFIELDS,$post);
 		}else{
 			curl_setopt($curl, CURLOPT_HTTPGET,true);
@@ -236,7 +274,7 @@ class weixin_lib
 			}
 			curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
 		}
-		if($post){
+		if($post && is_string($post)){
 			$length = strlen($post);
 			$header[] = 'Content-length: '.$length;
 		}
@@ -268,7 +306,7 @@ class weixin_lib
 			$matches = array();
 			preg_match('/Location:(.*?)\n/', $http_header, $matches);
 			$url = @parse_url(trim(array_pop($matches)));
-			if (!$url) return $data;
+			if (!$url) return ;
 			$new_url = $url['scheme'] . '://' . $url['host'] . $url['path']
 			. (isset($url['query']) ? '?' . $url['query'] : '');
 			$new_url = stripslashes($new_url);
@@ -330,55 +368,6 @@ class weixin_lib
 		$url = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=".rawurlencode($info['ticket']);
 		$info = $this->curl($url);
 		return $info;
-	}
-
-	/**
-	 * 上传图文消息里的图片，返回内嵌网址 URL
-	 * @参数 
-	 * @参数 
-	 * @参数 
-	**/
-	public function upimg($file,$root='')
-	{
-		$extension = pathinfo($file,PATHINFO_EXTENSION);
-		$type = 'image/jpg';
-		if($extension == 'png'){
-			$type = 'image/png';
-		}
-		if($extension == 'gif'){
-			$type = 'image/gif';
-		}
-		$data = array("media" => "@".realpath($root.$file), 'form-data' => array('filename'=>$file,'content-type'=>$type,'filelength'=>filesize($file)));
-		if(class_exists('CURLFile')){
-			$data['media'] = new CURLFile ( realpath ( $root.$file ),$type );
-		}
-	}
-
-	public function upload($file,$root='')
-	{
-		$extension = pathinfo($file,PATHINFO_EXTENSION);
-		$type = 'image/jpg';
-		if($extension == 'png'){
-			$type = 'image/png';
-		}
-		if($extension == 'gif'){
-			$type = 'image/gif';
-		}
-		$data = array("media" => "@".realpath($root.$file), 'form-data' => array('filename'=>$file,'content-type'=>$type,'filelength'=>filesize($file)));
-		if(class_exists('CURLFile')){
-			$data['media'] = new CURLFile ( realpath ( $root.$file ),$type );
-		}
-        $info = $this->curl("https://api.weixin.qq.com/cgi-bin/media/upload?access_token=".$this->access_token()."&type=image",$data,'upload');
-        if(!$info){
-	        $this->error('上传临时素材失败');
-	        return false;
-        }
-        $info = json_decode($info,true);
-		if($info['errcode']){
-			$this->error($info['errcode'].':'.$info['errmsg']);
-			return false;
-		}
-		return array('id'=>$info['media_id'],'time'=>$info['created_at']);
 	}
 
 	public function jsapi_ticket()
@@ -443,4 +432,402 @@ class weixin_lib
 	{
 		return md5(time().rand(100,999));
 	}
+
+    /**
+     * 获取素材列表
+     */
+    public function get_material_count()
+    {
+        $url = "https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token=".$this->access_token();
+        if($this->debug){
+            phpok_log($url);
+        }
+        $info = $this->curl($url);
+        if(!$info){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg'].'异常：获取数据失败');
+            }
+            return false;
+        }
+        $info = json_decode($info,true);
+        if($info['errcode'] || $info['errmsg'] != 'ok'){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg']);
+            }
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return $info;
+    }
+
+    /**
+     * 获取素材列表
+     * @param $type string 素材类型
+     * @param $offset int 开始位置
+     * @param $count int 条数
+     * @return bool|mixed|void
+     */
+    public function get_material_list($type,$offset='0',$count=20)
+    {
+        $data = [
+            'type'      => $type,
+            'offset'    => $offset,
+            'count'     => $count
+        ];
+        $url = "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=".$this->access_token();
+        if($this->debug){
+            phpok_log($url);
+        }
+        $info = $this->curl($url,json_encode($data,JSON_UNESCAPED_UNICODE));
+        if(!$info){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg'].'异常：获取数据失败');
+            }
+            return false;
+        }
+        $info = json_decode($info,true);
+        if($info['errcode'] || ($info['errmsg'] && $info['errmsg'] != 'ok')){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg']);
+            }
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return $info;
+	}
+
+    /**
+     * 添加图文素材
+     * @param $articles
+     * @return bool|array
+     */
+    public function add_news($articles)
+    {
+        if($articles && is_array($articles)){
+            $articles = json_encode($articles,JSON_UNESCAPED_UNICODE);
+            //$data = rawurldecode($data);
+        }
+        $url = 'https://api.weixin.qq.com/cgi-bin/material/add_news?access_token='.$this->access_token();
+        phpok_log($url);
+        $info = $this->curl($url,$articles);
+        if(!$info){
+            return false;
+        }
+        $info = json_decode($info,true);
+        if($info['errcode']){
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return $info;
+	}
+
+    /**
+     * 更新图文素材
+     * @param $media_id
+     * @param $index
+     * @param $articles
+     * @return bool|mixed
+     */
+    public function update_news($media_id,$index,$articles)
+    {
+        $data = [
+            "media_id"  => $media_id,
+            "index"     => $index,
+            'articles'  => $articles
+        ];
+        $url = 'https://api.weixin.qq.com/cgi-bin/material/update_news?access_token='.$this->access_token();
+        $result = $this->curl($url,json_encode($data));
+        if(!$result){
+            if($this->debug){
+                phpok_log($result['errcode'].':'.$result['errmsg'].'异常：获取数据失败');
+            }
+            return false;
+        }
+        $info = json_decode($result,true);
+        if($info['errcode'] || $info['errmsg'] != 'ok'){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg']);
+            }
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return $info;
+	}
+	
+    /**
+     * 新增素材
+     * @param $file_info
+     * @return bool|mixed
+     */
+    public function add_material($file_info,$type,$root='',$is_forever=0,$file_type='image'){
+        $url = "https://api.weixin.qq.com/cgi-bin/media/upload?access_token=".$this->access_token();
+        if ($is_forever){
+            $url = 'https://api.weixin.qq.com/cgi-bin/material/add_material?access_token='.$this->access_token().'&type='.$file_type;
+        }
+        $data= [
+            "media" => "@".realpath($root.$file_info['filename']),
+            'form-data'=> [
+                'filename'      => $file_info['filename'],
+                'content-type'  => $type,
+                'filelength'    => filesize($file_info['filename'])
+            ]
+        ];
+        if(class_exists('CURLFile')){
+            $data['media'] = new CURLFile ( realpath ( $root.$file_info['filename'] ),$type );
+        }
+        $result = $this->curl($url,$data);
+        if(!$result){
+            $this->error('上传素材失败');
+            return false;
+        }
+        $info = json_decode($result,true);
+        if($info['errcode'] || ($info['errmsg'] && $info['errmsg'] != 'ok')){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg']);
+            }
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return $info;
+    }
+
+    public function get_material($media_id,$is_forever=0)
+    {
+        $url = "https://api.weixin.qq.com/cgi-bin/media/get?access_token=".$this->access_token();
+        if ($is_forever){
+            $url = 'https://api.weixin.qq.com/cgi-bin/material/get_material?access_token='.$this->access_token();
+        }
+        $data= array('media_id'=>$media_id);
+        $result = $this->curl($url,json_encode($data));
+        if(!$result){
+            $this->error('获取素材失败');
+            return false;
+        }
+        $info = json_decode($result,true);
+        if($info['errcode'] || ($info['errmsg'] && $info['errmsg'] != 'ok')){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg']);
+            }
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return $info;
+    }
+    
+    public function uploadimg($file,$root='')
+    {
+        $extension = pathinfo($file,PATHINFO_EXTENSION);
+        $type = 'image/jpg';
+        if($extension == 'png'){
+            $type = 'image/png';
+        }
+        if($extension == 'gif'){
+            $type = 'image/gif';
+        }
+        $data = array("media" => "@".realpath($file), 'form-data' => array('filename'=>$root.'/'.$file,'content-type'=>$type,'filelength'=>filesize($file)));
+        if(class_exists('CURLFile')){
+            $data['media'] = new CURLFile (realpath($file),$type);
+        }
+        $info = $this->curl("https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=".$this->access_token()."&type=image",$data,'upload');
+        if(!$info){
+            $this->error('上传图片素材失败');
+            return false;
+        }
+        $info = json_decode($info,true);
+        if($info['errcode']){
+            $this->error($info['errcode'].':'.$info['errmsg']);
+            return false;
+        }
+        if(!$info['url']){
+            return false;
+        }
+        return $info['url'];
+    }
+
+    /**
+     * 删除永久素材
+     * @param $media_id int 素材id
+     * @return bool|string
+     */
+    public function del_material($media_id){
+        $url = 'https://api.weixin.qq.com/cgi-bin/material/del_material?access_token='.$this->access_token();
+        $data= array('media_id'=>$media_id);
+        $result = $this->curl($url,json_encode($data));
+        phpok_log($result);
+        if ($result){
+            $info = json_decode($result,true);
+            if($info['errcode']!=0){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * 群发消息
+     * @param $touser array 用户openid
+     * @param $msgtype string 消息类型
+     * @param $text array 消息内容
+     */
+    public function send_text($touser,$msgtype,$content)
+    {
+        $data = [
+            'touser'    => $touser,
+            'msgtype'   => $msgtype,
+            $msgtype    => $content
+        ];
+        $url = 'https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token='.$this->access_token();
+        $result = $this->curl($url,json_encode($data,JSON_UNESCAPED_UNICODE));
+        if(!$result){
+            if($this->debug){
+                phpok_log($result['errcode'].':'.$result['errmsg'].'异常：获取数据失败');
+            }
+            return false;
+        }
+        $info = json_decode($result,true);
+        if($info['errcode'] || $info['errmsg'] != 'ok'){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg']);
+            }
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return $info;
+    }
+
+    /**
+     * 修改模版消息所属行业行业
+     * @param $industry_id1 主行业
+     * @param $industry_id2 副行业
+     */
+    public function set_industry($industry_id1,$industry_id2)
+    {
+        $data = [
+            'industry_id1'    => $industry_id1,
+            'industry_id2'   => $industry_id2,
+        ];
+        $url = 'https://api.weixin.qq.com/cgi-bin/template/api_set_industry?access_token='.$this->access_token();
+        $result = $this->curl($url,json_encode($data,JSON_UNESCAPED_UNICODE));
+        if(!$result){
+            if($this->debug){
+                phpok_log($result['errcode'].':'.$result['errmsg'].'异常：获取数据失败');
+            }
+            return false;
+        }
+        $info = json_decode($result,true);
+        if($info['errcode'] || $info['errmsg'] != 'ok'){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg']);
+            }
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return $info;
+    }
+
+    /**
+     * 获取设置的行业信息
+     */
+    public function get_industry()
+    {
+        $url = 'https://api.weixin.qq.com/cgi-bin/template/get_industry?access_token='.$this->access_token();
+        $result = $this->curl($url);
+        if(!$result){
+            if($this->debug){
+                phpok_log($result['errcode'].':'.$result['errmsg'].'异常：获取数据失败');
+            }
+            return false;
+        }
+        $info = json_decode($result,true);
+        if($info['errcode'] || $info['errmsg'] != 'ok'){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg']);
+            }
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return $info;
+    }
+
+    /**
+     * 获取模板列表
+     */
+    public function get_all_template()
+    {
+        $url = 'https://api.weixin.qq.com/cgi-bin/template/get_all_private_template?access_token='.$this->access_token();
+        $result = $this->curl($url);
+        if(!$result){
+            if($this->debug){
+                phpok_log($result['errcode'].':'.$result['errmsg'].'异常：获取数据失败');
+            }
+            return false;
+        }
+        $info = json_decode($result,true);
+        if($info['errcode']){
+            phpok_log($info);
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg']);
+            }
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return $info;
+    }
+
+    /**
+     * 删除模版
+     * @param $template_id 模版ID
+     * @return bool|array
+     */
+    public function del_template($template_id)
+    {
+        $data = [
+            'template_id'    => $template_id,
+        ];
+        $url = 'https://api.weixin.qq.com/cgi-bin/template/get_industry?access_token='.$this->access_token();
+        $result = $this->curl($url,json_encode($data,JSON_UNESCAPED_UNICODE));
+        if(!$result){
+            if($this->debug){
+                phpok_log($result['errcode'].':'.$result['errmsg'].'异常：获取数据失败');
+            }
+            return false;
+        }
+        $info = json_decode($result,true);
+        if($info['errcode'] || $info['errmsg'] != 'ok'){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg']);
+            }
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 发送模版消息
+     * @param $message array 模板消息
+     * @return bool|array
+     */
+    public function send_template($message)
+    {
+        $url = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token='.$this->access_token();
+        $result = $this->curl($url,json_encode($message,JSON_UNESCAPED_UNICODE));
+        if(!$result){
+            if($this->debug){
+                phpok_log($result['errcode'].':'.$result['errmsg'].'异常：获取数据失败');
+            }
+            return false;
+        }
+        $info = json_decode($result,true);
+        if($info['errcode'] || $info['errmsg'] != 'ok'){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg']);
+            }
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return true;
+    }
+
+
 }

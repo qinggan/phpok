@@ -108,9 +108,7 @@ class db_sqlite extends db
 		}
 		$tmptime = $this->_time();
 		$this->_count();
-		if($this->debug){
-			$this->debug($sql,$tmptime);
-		}
+		$this->debug($sql,$tmptime);
 		if($errid = $this->conn->lastErrorCode()){
 			$this->error($this->conn->lastErrorMsg(),$errid);
 		}

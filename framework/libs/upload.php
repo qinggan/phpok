@@ -146,6 +146,34 @@ class upload_lib
 		return $rs;
 	}
 
+	/**
+	 * 上传图片文件
+	**/
+	public function imgfile($input,$folder='')
+	{
+		if(!$input){
+			return array('status'=>'error','content'=>P_Lang('未指定表单名称'));
+		}
+		//如果未指定存储文件夹，则使用
+		if(!$folder){
+			$folder = $this->dir_cache;
+		}
+		$this->cateid = 0;
+		$this->set_dir($folder);
+		$this->set_type('jpg,png,gif,jpeg');
+		$this->cate = array('id'=>0,'filemax'=>104857600,'root'=>$folder,'folder'=>'/','filetypes'=>'jpg,gif,png,jpeg');
+		if(isset($_FILES[$input])){
+			$rs = $this->_upload($input);
+		}else{
+			$rs = $this->_save($input);
+		}
+		if($rs['status'] != 'ok'){
+			return $rs;
+		}
+		$rs['cate'] = $this->cate;
+		return $rs;
+	}
+
 	private function file_ext($tmpname)
 	{
 		$ext = pathinfo($tmpname,PATHINFO_EXTENSION);

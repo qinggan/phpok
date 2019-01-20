@@ -45,7 +45,7 @@ class phpok_language
 		if(!file_exists($folder.'/pomo/mo.php')){
 			return false;
 		}
-		include_once($folder.'/pomo/mo.php');
+		include_once($folder.'pomo/mo.php');
 	}
 
 	/**
@@ -200,7 +200,6 @@ class phpok_language
 			$this->_status = false;
 			return false;
 		}
-		//include_once($this->_folder.'/pomo/mo.php');
 		//pomo文件读取
 		$lang = new \NOOP_Translations;
 		$mo = new \MO();

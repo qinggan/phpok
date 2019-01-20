@@ -54,8 +54,7 @@ class call_control extends phpok_control
 		$this->assign("rslist",$rslist);
 		$total = $this->model('call')->get_count($condition);
 		$this->assign("total",$total);
-		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
-		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+		$string = P_Lang("home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=数量：(total)/(psize)，页码：(num)/(total_page)&always=1");
 		$pagelist = phpok_page($pageurl,$total,$pageid,$this->psize,$string);
 		$this->assign("pagelist",$pagelist);
 		$attrlist = $this->model('list')->attr_list();

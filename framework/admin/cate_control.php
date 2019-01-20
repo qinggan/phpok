@@ -66,7 +66,7 @@ class cate_control extends phpok_control
 			$extlist = $this->session->val('admin-add-cate');
 			$taxis = $this->model('cate')->cate_next_taxis($parent_id);
 			$this->assign('rs',array('taxis'=>$taxis));
-			if($parent_id && !$this->session->val('admin-add-cate')){
+			if($parent_id){
 				$root_id = $parent_id;
 				$this->model('cate')->get_root_id($root_id,$parent_id);
 				$ext2 = $this->lib('xml')->read($this->dir_data.'xml/cate_extfields_'.$root_id.'.xml');
@@ -86,7 +86,7 @@ class cate_control extends phpok_control
 		$used_fields = array();
 		if($extlist){
 			$tmp = false;
-			foreach($extlist AS $key=>$value){
+			foreach($extlist as $key=>$value){
 				if($value["ext"]){
 					$ext = is_string($value['ext']) ? unserialize($value["ext"]) : $value['ext'];
 					if(!$ext){
@@ -133,16 +133,16 @@ class cate_control extends phpok_control
 	public function status_f()
 	{
 		if(!$this->popedom['status']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('cate')->cate_info($id,false);
 		$content = $rs['status'] ? 0 : 1;
 		$this->model('cate')->save(array('status'=>$content),$id);
-		$this->json($content,true);
+		$this->success($content);
 	}
 
 	/**
@@ -249,6 +249,8 @@ class cate_control extends phpok_control
 			if($extfields){
 				$extfields = implode(",",$extfields);
 				$this->lib('xml')->save(array('fid'=>$extfields),$this->dir_data.'xml/cate_extfields_'.$id.'.xml');
+			}else{
+				$this->lib('file')->rm($this->dir_data.'xml/cate_extfields_'.$id.'.xml');
 			}
 		}
 		$this->success(P_Lang('分类信息配置成功'),$this->url("cate"));
@@ -345,7 +347,7 @@ class cate_control extends phpok_control
 		}
 		$check = $this->model('id')->check_id($sign,$this->session->val('admin_site_id'),$id);
 		if($check){
-			$this->json(P_Lang('标识已被使用，请检查'));
+			$this->json(P_Lang('标识已被使用'));
 		}
 		$this->json("标识正常，可以使用",true);
 	}

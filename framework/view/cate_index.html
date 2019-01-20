@@ -11,20 +11,13 @@
 	</div>
 	<div class="layui-card-body">
 		<table class="layui-table" lay-size="sm">
-			<colgroup>
-				<col width="80">
-				<col width="80">
-				<col>
-				<col width="80">
-				<col width="210">
-			</colgroup>
 			<thead>
 			<tr>
-				<th>ID</th>
-				<th>状态</th>
+				<th width="40">ID</th>
+				<th width="20"></th>
 				<th>{lang分类名称}</th>
-				<th>{lang排序}</th>
-				<th>{lang操作}</th>
+				<th width="80">{lang排序}</th>
+				<th width="210">{lang操作}</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -34,7 +27,7 @@
 			<tr>
 				<td>{$value.id}</td>
 				<td>
-					<input type="button" id="status_{$value.id}" value="{if $value.status}{lang启用}{else}{lang停用}{/if}" {if $popedom.status} onclick="phpok_status({$value.id},'{url ctrl=cate func=status/}')"{else} disabled{/if} class="layui-btn layui-btn-sm {if !$value.status} layui-btn-danger{/if}" />
+					<span id="status_{$value.id}" onclick="$.admin_cate.status({$value.id})" class="status{$value.status}" value="{$value.status}"></span>
 				</td>
 				<td>
 					<div>

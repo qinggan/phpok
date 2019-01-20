@@ -193,21 +193,13 @@ class ueditor_control extends phpok_control
 		{
 			$condition .= " AND session_id='".$this->session->sess_id()."' ";
 		}
-		$is_gd = false;
 		$gd_rs = $this->model('gd')->get_editor_default();
-		if($gd_rs)
-		{
-			$condition .= " AND e.gd_id='".$gd_rs["id"]."' ";
-			$is_gd = true;
-		}
-		$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize,$is_gd);
-		if(!$rslist)
-		{
+		$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize,$gd_rs);
+		if(!$rslist){
 			$this->_stop(P_Lang('图片数据内容为空'));
 		}
 		$piclist = array();
-		foreach($rslist as $key=>$value)
-		{
+		foreach($rslist as $key=>$value){
 			$tmp = array('url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime']);
 			$piclist[] = $tmp;
 		}
@@ -251,18 +243,14 @@ class ueditor_control extends phpok_control
 		$folder = $config['imagePathFormat'];
 		$input_name = $config['imageFieldName'];
 		$rs = $this->upload_base($input_name,$folder,$config['cateid']);
-		if(!$rs || $rs['status'] != 'ok')
-		{
+		if(!$rs || $rs['status'] != 'ok'){
 			$this->_stop(P_Lang('图片上传失败'));
 		}
 		$gd_rs = $this->model('gd')->get_editor_default();
-		if($gd_rs)
-		{
-			$ext_rs = $this->model('res')->get_gd_pic($rs['id']);
-			$filename = ($ext_rs && $ext_rs[$gd_rs['identifier']]) ? $ext_rs[$gd_rs['identifier']]['filename'] : $rs['filename'];
-		}
-		else
-		{
+		if($gd_rs){
+			$ext_rs = $this->model('res')->get_one($rs['id'],true);
+			$filename = ($ext_rs && $ext_rs['gd'][$gd_rs['identifier']]) ? $ext_rs['gd'][$gd_rs['identifier']] : $rs['filename'];
+		}else{
 			$filename = $rs['filename'];
 		}
 		$data = array('title'=>$rs['title'],'url'=>$filename,'original'=>$rs['title']);

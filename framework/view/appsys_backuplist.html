@@ -1,0 +1,27 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>{lang标识}</th>
+			<th>{lang文件名}</th>
+			<th>{lang备份时间}</th>
+			<th>{lang操作}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.identifier}</td>
+			<td>{$value.zip}</td>
+			<td>{$value.date}</td>
+			<td>
+				<button type="button" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.admin_appsys.backup_delete('{$value.zip}')">{lang删除}</button>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+</div>
+
+<!-- include tpl=foot_lay -->

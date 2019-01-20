@@ -37,16 +37,40 @@ class list_model extends list_model_base
 
 	public function biz_attr_update($data,$id)
 	{
-		$aids = array();
-		foreach($data as $key=>$value){
-			$aids[] = $value['aid'];
+		$sql = "SELECT id,aid,vid FROM ".$this->db->prefix."list_attr WHERE tid='".$id."'";
+		$rslist = $this->db->get_all($sql,'id');
+		if($rslist){
+			$u_list = array();
+			foreach($data as $key=>$value){
+				foreach($rslist as $k=>$v){
+					if($v['aid'] == $value['aid'] && $v['vid'] == $value['vid']){
+						$data[$key]['id'] = $v['id'];
+						$u_list[] = $v['id'];
+					}
+				}
+			}
+			if($u_list){
+				$u_list = array_unique($u_list);
+				$all_ids = array_keys($rslist);
+				$diff = array_diff($all_ids,$u_list);
+			}else{
+				$diff = array_keys($rslist);
+			}
+			if($diff){
+				$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE id IN(".implode(",",$diff).")";
+				$this->db->query($sql);
+			}
 		}
-		$aids = array_unique($aids);
-		$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE tid='".$id."' AND aid IN(".implode(",",$aids).")";
-		$this->db->query($sql);
 		foreach($data as $key=>$value){
-			$value['tid'] = $id;
-			$this->db->insert_array($value,'list_attr');
+			if($value['id']){
+				$tmpid = $value['id'];
+				unset($value['id']);
+				$this->db->update_array($value,'list_attr',array('id'=>$tmpid));
+				unset($tmpid);
+			}else{
+				$value['tid'] = $id;
+				$this->db->insert_array($value,'list_attr');
+			}
 		}
 		return true;
 	}
@@ -403,5 +427,23 @@ class list_model extends list_model_base
 			$tmplist[$key] = $value;
 		}
 		return $tmplist;
+	}
+
+	public function status_all($site_id=0)
+	{
+		$sql = "SELECT count(id) as total,project_id as id FROM ".$this->db->prefix."list WHERE site_id='".$site_id."' GROUP BY project_id";
+		$rslist = $this->db->get_all($sql,'id');
+		if($rslist){
+			$ids = array_keys($rslist);
+			$sql = "SELECT id,title FROM ".$this->db->prefix."project WHERE id IN(".implode(",",$ids).")";
+			$tmplist = $this->db->get_all($sql,'id');
+			if($tmplist){
+				foreach($rslist as $key=>$value){
+					$value['title'] = $tmplist[$value['id']]['title'];
+					$rslist[$key] = $value;
+				}
+			}
+		}
+		return $rslist;
 	}
 }

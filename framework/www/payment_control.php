@@ -514,8 +514,8 @@ class payment_control extends phpok_control
 			$this->error(P_Lang('订单信息不存在'),$this->url('index'));
 		}
 		if($rs['type'] == 'order'){
-			//$order = $this->model('order')->get_one_from_sn($rs['sn']);
-			$url = $this->url('order','info','sn='.$rs['sn']);
+			$order = $this->model('order')->get_one_from_sn($rs['sn']);
+			$url = $this->url('order','info','sn='.$rs['sn'].'&passwd='.$order['passwd']);
 		}elseif($rs['type'] == 'recharge'){
 			$url = $this->url('usercp','wealth','sn='.$rs['sn']);
 		}else{

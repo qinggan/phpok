@@ -100,7 +100,7 @@ class tenpay_notify
 		if($this->order['type'] == 'recharge' && $tenpay['goal']){
 			$app->model('wealth')->recharge($this->order['id']);
 		}
-		$app->plugin('payment-notify',$this->order['id']);
+		$GLOBALS['app']->plugin('payment-notice',$this->order['id']);
 		exit('success');
 	}
 }

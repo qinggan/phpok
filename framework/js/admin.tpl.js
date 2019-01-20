@@ -133,7 +133,10 @@
 		
 		edit:function(id,folder,title)
 		{
-			var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title);
+			var url = get_url('tpl','edit','id='+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title));
+			$.win(p_lang('编辑')+"_"+title,url);
+			
+			/*var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title);
 			var title = p_lang('编辑文件：{title} 在线编辑请确保文件有写入权限','<span class="red">'+title+'</span>');
 			$.dialog.open(get_url("tpl","edit",url_ext),{
 				'width':'1000px',
@@ -152,7 +155,7 @@
 				'okVal':p_lang('保存代码'),
 				'cancel':true,
 				'cancelVal':p_lang('取消并关闭窗口')
-			});
+			});*/
 		},
 		
 		open_select:function(id,val)

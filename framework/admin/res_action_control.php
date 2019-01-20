@@ -74,6 +74,11 @@ class res_action_control extends phpok_control
 			$rs = $this->model('res')->get_one($id);
 			$file = $rs["filename"];
 		}
+		$ext = substr($file,-4);
+		$ext = strtolower($ext);
+		if($ext != '.mp4' && $ext != 'webp'){
+			$this->error(P_Lang('系统暂时只支持MP4/WebP视频预览'));
+		}
 		$this->assign("file",$file);
 		$this->view("res_action_video");
 	}
@@ -97,7 +102,11 @@ class res_action_control extends phpok_control
 		}
 		$this->assign("type",$type);
 		$this->assign("rs",$rs);
+		$is_local = false;
+		if($this->model('res')->is_local($rs['filename'])){
+			$is_local = true;
+		}
+		$this->assign('file_is_local',$is_local);
 		$this->view("res_action_preview");
 	}
 }
-?>

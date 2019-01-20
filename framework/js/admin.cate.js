@@ -77,6 +77,22 @@
 				return false;
 			}
 			ext_add2(val,id);
+		},
+		status:function(id)
+		{
+			var url = get_url('cate','status','id='+id);
+			$.phpok.json(url,function(rs){
+				if(rs.status){
+					if(rs.info == '1'){
+						$("#status_"+id).removeClass("status0").addClass("status1");
+					}else{
+						$("#status_"+id).removeClass("status1").addClass("status0");
+					}
+					return true;
+				}
+				$.dialog.alert(rs.info);
+				return false;
+			});
 		}
 	}
 	$(document).ready(function(){

@@ -57,10 +57,10 @@ class yuansfer_notice
 			}
 		}
 		//充值操作
-		if($this->order['type'] == 'recharge' && $alipay['goal']){
+		if($this->order['type'] == 'recharge'){
 			$app->model('wealth')->recharge($this->order['id']);
 		}
-		$app->plugin('payment-notice',$this->order['id']);
+		$GLOBALS['app']->plugin('payment-notice',$this->order['id']);
 		return true;
 	}
 }

@@ -6,11 +6,9 @@ function phpok_input(val)
 	var obj = $.dialog.opener;
 	obj.obj_{$id}.open_action(val);
 	var content = obj.$("#{$id}").val();
-	if(content)
-	{
+	if(content){
 		var list = content.split(",");
-		for(var i in list)
-		{
+		for(var i in list){
 			$("#attr_"+list[i]).addClass("hover");
 		}
 	}
@@ -44,18 +42,16 @@ function add_input(id)
 {
 	var obj = $.dialog.opener;
 	obj.$("#{$id}").val(id);
-	obj.obj_{$id}.showhtml();
+	obj.$.phpokform.upload_showhtml('{$id}',false);
 	$.dialog.close();
 }
 function add_select(id){
 	var obj = $.dialog.opener;
 	var old = obj.$("#{$id}").val();
 	if($("#addfile_"+id).prop("checked")){
-		$("#addfile_"+id).prop('checked',false);
-		var act = 'delete';
-	}else{
-		$("#addfile_"+id).prop('checked',true);
 		var act = 'add';
+	}else{
+		var act = 'delete';
 	}
 	if(act == 'add'){
 		var info = (old && old != 'undefined') ? old+","+id : id;
@@ -63,10 +59,9 @@ function add_select(id){
 		list = $.unique(list);
 		info = list.join(",");
 		obj.$("#{$id}").val(info);
-		obj.obj_{$id}.showhtml();
+		obj.$.phpokform.upload_showhtml('{$id}',true);
 		return true;
 	}
-	console.log(id+"----"+old);
 	if(id == old){
 		obj.$("#{$id}").val('');
 		obj.obj_{$id}.showhtml();
@@ -83,7 +78,7 @@ function add_select(id){
 	}
 	old = nlist.join(',');
 	obj.$("#{$id}").val(old);
-	obj.obj_{$id}.showhtml();
+	obj.$.phpokform.upload_showhtml('{$id}',true);
 	return true;
 }
 </script>
@@ -114,21 +109,23 @@ function add_select(id){
 </div>
 <ul class="filelist">
 	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-	<li{if $multiple} onclick="add_select('{$value.id}')" id="li_{$value.id}"{else} onclick="add_input('{$value.id}')"{/if}>
+	<li{if !$multiple} onclick="add_input('{$value.id}')" class="hand"{/if}>
+		<label>
 		<div class="li_bg">
-		<div class="ico">
-			<img src="{$value.ico}" class="img" />
-			<!-- if $multiple -->
-			<div class="checkbox"><input type="checkbox" name="addfile[]" id="addfile_{$value.id}" value="{$value.id}" /></div>
-			<!-- /if -->
+			<div class="ico">
+				<img src="{$value.ico}" class="img" />
+				<!-- if $multiple -->
+				<div class="checkbox"><input type="checkbox" name="addfile[]"{if $multiple} onclick="add_select('{$value.id}')"{/if} id="addfile_{$value.id}" value="{$value.id}" /></div>
+				<!-- /if -->
+			</div>
+			<div class="note">
+				<div class="info">名称：{$value.title}</div>
+				<div class="info">添加：{func date "Y-m-d H:i:s" $value.addtime}</div>
+				<div class="info">属性：{$value.attr ? $value.attr.width.' x '.$value.attr.height : '-'}</div>
+			</div>
+			<div class="clear"></div>
 		</div>
-		<div class="note">
-			<div class="info">名称：{$value.title}</div>
-			<div class="info">添加：{func date "Y-m-d H:i:s" $value.addtime}</div>
-			<div class="info">属性：{$value.attr ? $value.attr.width.' x '.$value.attr.height : '-'}</div>
-		</div>
-		<div class="clear"></div>
-		</div>
+		</label>
 	</li>
 	<!-- /loop -->
 	<div class="clear"></div>

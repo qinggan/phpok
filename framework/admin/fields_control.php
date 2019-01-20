@@ -108,7 +108,7 @@ class fields_control extends phpok_control
 			//检测标识是否存在
 			$chk = $this->model('fields')->default_one($identifier);
 			if($chk){
-				$this->error(P_Lang('标识已被使用，请重新设置标识'));
+				$this->error(P_Lang('标识已被使用'));
 			}
 		}
 		$title = $this->get("title");

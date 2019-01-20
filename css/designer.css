@@ -1,0 +1,35 @@
+/**
+ * 可视化设计器样式
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年12月12日
+**/
+.ok-margin{margin:10px;}
+.ok-margin + .ok-margin{margin-top:5px;margin-bottom:5px}
+.ok-margin-top{margin-top:10px;}
+
+.ok-layout{width:100%;background:#fff;margin:0;padding:0;height:100%}
+.ok-layout .ok-left{
+	width:240px;
+	overflow:hidden;
+	float:left;
+	background:#ddd;
+	height:100%;
+}
+.ok-layout .ok-right{
+	float:right;
+	width:240px;
+	overflow:hidden;
+	height:100%;
+	background:#ddd;
+}
+.ok-layout .ok-center{width:calc(100% - 480px);float:left;height:100%;background:#efefef;}
+.ok-layout .ok-page{margin:10px;width:98%;background:#fff;min-height:500px;}
+
+
+/*左侧UL设置*/
+.ok-left ul.ok{list-style:none;margin:0;padding:0;}
+.ok-left ul.ok li{margin:3px;float:left;}

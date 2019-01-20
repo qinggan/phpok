@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<title><![CDATA[分享代码]]></title>
+	<identifier><![CDATA[code]]></identifier>
+	<field_type><![CDATA[longtext]]></field_type>
+	<note><![CDATA[填写百度分享代码或是其他平台的分享代码脚本]]></note>
+	<form_type><![CDATA[code_editor]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[html_js]]></format>
+	<content><![CDATA[]]></content>
+	<ext>
+		<width><![CDATA[800]]></width>
+		<height><![CDATA[150]]></height>
+	</ext>
+</root>

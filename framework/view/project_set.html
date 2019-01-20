@@ -3,7 +3,7 @@
 <!-- if $id --><input type="hidden" id="id" name="id" value="{$id}" /><!-- /if -->
 <div class="layui-card">
 	<div class="layui-card-header">{lang基本信息}</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang名称}</label>
 			<div class="layui-input-inline default-auto">
@@ -128,10 +128,6 @@
 							<td>{lang勾选此项后，该项目在前台将支持搜索}</td>
 						</tr>
 						<tr>
-							<td>{lang标签}</td>
-							<td>{lang允许用户自定义标签内容，以方便网站优化}</td>
-						</tr>
-						<tr>
 							<td>{lang下级主题}</td>
 							<td>{lang启用此项，主题将支持二级，多用于二级导航}</td>
 						</tr>
@@ -142,22 +138,6 @@
 						<tr>
 							<td>{lang评论}</td>
 							<td>{lang即回复功能，勾选后被授权的用户将支持回复，静态页无效}</td>
-						</tr>
-						<tr>
-							<td>{lang绑定会员}</td>
-							<td>{lang允许主题绑定相应的会员，会员在个人中心可以编辑相关主题，要求启用发布功能后，编辑才有效}</td>
-						</tr>
-						<tr>
-							<td>{lang自定义模板}</td>
-							<td>{lang后台添加主题后允许绑定模板，此项仅限后台管理员操作}</td>
-						</tr>
-						<tr>
-							<td>{lang自定义SEO}</td>
-							<td>{lang允许管理员针对主题自定义相关的SEO信息}</td>
-						</tr>
-						<tr>
-							<td>{lang自定义标识}</td>
-							<td>{lang启用此项后，允许管理员针对添加的主题设定一个标识，更便于用户记住及SEO优化}</td>
 						</tr>
 						<!-- if $config.biz_status -->
 						<tr>
@@ -173,20 +153,16 @@
 					<ul>
 						<li class="layui-col-md3"><input type="checkbox" name="is_attr" title="{lang主题属性}" class="layui-tips" id="is_attr"{if $rs.is_attr} checked{/if} /></li>
 						<li class="layui-col-md3"><input type="checkbox" name="is_search" title="{lang搜索}" id="is_search"{if $rs.is_search} checked{/if} /></li>
-						<li class="layui-col-md3"><input type="checkbox" name="is_tag" title="{lang标签}" id="is_tag"{if $rs.is_tag} checked{/if} /></li>
 						<li class="layui-col-md3"><input type="checkbox" name="subtopics" title="{lang下级主题}" id="subtopics"{if $rs.subtopics} checked{/if} /></li>
-						<li class="layui-col-md3"><input type="checkbox" name="is_userid" title="{lang绑定会员}" id="is_userid"{if $rs.is_userid} checked{/if} /></li>
 						<li class="layui-col-md3"><input type="checkbox" name="post_status" title="{lang发布}" id="post_status"{if $rs.post_status} checked{/if} /></li>
 						<li class="layui-col-md3"><input type="checkbox" name="comment_status" title="{lang评论}" id="comment_status"{if $rs.comment_status} checked{/if} /></li>
-						<li class="layui-col-md3"><input type="checkbox" name="is_tpl_content" title="{lang自定义模板}" id="is_tpl_content"{if $rs.is_tpl_content} checked{/if} /></li>
-						<li class="layui-col-md3"><input type="checkbox" name="is_seo" title="{lang自定义SEO}" id="is_seo"{if $rs.is_seo} checked{/if} /></li>
-						<li class="layui-col-md3"><input type="checkbox" name="is_identifier" title="{lang自定义标识}" id="is_identifier"{if $rs.is_identifier} checked{/if} /></li>
 						<!-- if $config.biz_status -->
 						<li class="layui-col-md3"><input type="checkbox" name="is_biz" title="{lang电子商务}" id="is_biz"{if $rs.is_biz} checked{/if} /></li>
 						<!-- /if -->
 					</ul>
 				</div>
 			</div>
+		
 			<div id="use_biz_setting"{if !$rs.is_biz || !$config.biz_status} style="display:none"{/if}>
 				<div class="layui-form-item">
 					<label class="layui-form-label">{lang货币默认类型}</label>
@@ -317,7 +293,6 @@
 				</div>
 				<div class="layui-input-inline auto gray">{lang启用此项后，添加内容时，需要选对相对应的分类，且不能为空}</div>
 			</div>
-			
 
 			<div id="cate_multiple_set"{if !$rs.cate} class="hide"{/if}>
 				<div class="layui-form-item">
@@ -371,9 +346,87 @@
 		</div>
 	</div>
 </div>
+
 <div class="layui-card">
 	<div class="layui-card-header">{lang扩展信息}</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang自定义标识}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select id="is_identifier" name="is_identifier">
+				<option value="0">{lang不使用}</option>
+				<option value="1"{if $rs.is_identifier == 1} selected{/if}>{lang启用非必填}</option>
+				<option value="2"{if $rs.is_identifier == 2} selected{/if}>{lang启用且必填}</option>
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang启用此项后，允许管理员针对添加的主题设定一个标识，更便于用户记住及SEO优化}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang自定义模板}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select id="is_tpl_content" name="is_tpl_content">
+				<option value="0">{lang不使用}</option>
+				<option value="1"{if $rs.is_tpl_content == 1} selected{/if}>{lang启用非必填}</option>
+				<option value="2"{if $rs.is_tpl_content == 2} selected{/if}>{lang启用且必填}</option>
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang后台添加主题后允许绑定模板，此项仅限后台管理员操作}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang绑定会员}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select id="is_userid" name="is_userid">
+				<option value="0">{lang不使用}</option>
+				<option value="1"{if $rs.is_userid == 1} selected{/if}>{lang启用非必填}</option>
+				<option value="2"{if $rs.is_userid == 2} selected{/if}>{lang启用且必填}</option>
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang允许主题绑定相应的会员，会员在个人中心可以编辑相关主题，要求启用发布功能后，编辑才有效}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{langTag标签}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select id="is_tag" name="is_tag">
+				<option value="0">{lang不使用}</option>
+				<option value="1"{if $rs.is_tag == 1} selected{/if}>{lang启用非必填}</option>
+				<option value="2"{if $rs.is_tag == 2} selected{/if}>{lang启用且必填}</option>
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang允许用户自定义标签内容，以方便网站优化}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang自定义SEO}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select id="is_seo" name="is_seo">
+				<option value="0">{lang不使用}</option>
+				<option value="1"{if $rs.is_seo == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
+				<option value="2"{if $rs.is_seo == 2} selected{/if}>{lang启用非必填，默认显示}</option>
+				<option value="3"{if $rs.is_seo == 3} selected{/if}>{lang启用且必填}</option>
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang允许管理员针对主题自定义相关的SEO信息}
+			</div>
+		</div>
+			
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang封面模板}</label>
 			<div class="layui-input-inline default-auto">
@@ -382,7 +435,7 @@
 			<div class="layui-input-inline auto gray">
 				<div class="layui-btn-group">
 					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_index')" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang清空}" onclick="$('#tpl_index').val('');" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang清空}" onclick="$('#tpl_index').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
 				</div>
 			</div>
 			<div class="layui-input-inline auto gray">{lang设定此模板将启用封面功能，不启用留空}</div>
@@ -395,7 +448,7 @@
 			<div class="layui-input-inline auto">
 				<div class="layui-btn-group">
 					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_list')" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang清空}" onclick="$('#tpl_list').val('');" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang清空}" onclick="$('#tpl_list').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
 				</div>
 			</div>
 			<div class="layui-input-inline auto gray">{lang仅限于绑定模块后才能生效}</div>
@@ -408,7 +461,7 @@
 			<div class="layui-input-inline auto">
 				<div class="layui-btn-group">
 					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_content')" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang清空}" onclick="$('#tpl_content').val('');" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang清空}" onclick="$('#tpl_content').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
 				</div>
 			</div>
 			<div class="layui-input-inline auto gray">{lang仅限于绑定模块后才能生效}</div>
@@ -421,35 +474,45 @@
 			<div class="layui-input-inline auto">
 				<div class="layui-btn-group">
 					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('post_tpl')" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang清空}" onclick="$('#post_tpl').val('');" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang清空}" onclick="$('#post_tpl').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
 				</div>
 			</div>
 			<div class="layui-input-inline auto">{lang仅限于绑定模块且启用发布功能后有效}</div>
 		</div>
+		
 		<div class="layui-form-item">
-			<label class="layui-form-label layui-tips" lay-tips="{lang请选择一个直观的图标，大小为：48x48，建议使用PNG格式}">{lang图标}</label>
-			<div class="layui-input-block default-auto">
-				<ul class="layout">
-					<!-- loop from=$icolist key=$key value=$value -->
-					<li class="mbtm layui-tips" lay-tips="{func basename $value}"><input type="radio" name="ico" value="{$value}"{if $rs.ico == $value} checked{/if} title='<img src="{$value}" alt="{func basename $value}" />' />
-					</li>
-					<!-- /loop -->
-					<div class="clear"></div>
-				</ul>
+			<label class="layui-form-label">
+				{lang图标}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="ico" id="ico" value="{$rs.ico}" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择图标}" onclick="$.admin_project.icolist()" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang预览}" onclick="$.phpokform.text_button_image_preview('ico')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang清空}" onclick="$('#ico').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+				</div>
+			</div>
+			<div class="layui-form-mid">
+				{lang请选择一个直观的图标，大小为：48x48，建议使用PNG格式}
 			</div>
 		</div>
+		
 		<div class="layui-form-item">
 			<label class="layui-form-label layui-tips" lay-tips="{lang将显示在内容管理布局区那里，用于提示编辑人员注意事项}">{lang后台备注}</label>
 			<div class="layui-input-block">
 				{$note_content}
 			</div>
 		</div>
-		
 	</div>
 </div>
 <div class="layui-card">
-	<div class="layui-card-header">{langSEO优化}</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-header hand" onclick="$.admin.card(this)">
+		{langSEO优化}
+		<i class="layui-icon layui-icon-right"></i>
+	</div>
+	<div class="layui-card-body hide">
 		<div class="layui-form-item">
 			<label class="layui-form-label">{langSEO标题}</label>
 			<div class="layui-input-block">
@@ -480,15 +543,15 @@
 				{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}
 			</div>
 		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">&nbsp;</label>
-			<div class="layui-input-inline default-auto">
-				<input type="submit" value="{lang提交保存}" class="layui-btn layui-btn-danger" />
-			</div>
-			<div class="layui-input-inline auto gray"></div>
-		</div>
 	</div>
 </div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交保存}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+<div class="submit-info-clear"></div>
 </form>
 
 

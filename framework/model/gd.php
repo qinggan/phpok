@@ -32,6 +32,4 @@ class gd_model_base extends phpok_model
 		$sql = "SELECT * FROM ".$this->db->prefix."gd WHERE editor='1'";
 		return $this->db->get_one($sql);
 	}
-
 }
-?>

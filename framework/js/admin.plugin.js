@@ -132,9 +132,9 @@
 				'cancel':true
 			})
 		},
-		setting:function(id)
+		setting:function(id,index)
 		{
-			$.phpok.go(get_url('plugin','setting','id='+id));
+			$.win(p_lang('插件管理')+"_#"+index,get_url('plugin','setting','id='+id));
 		},
 		tozip:function(id)
 		{

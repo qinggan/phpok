@@ -214,13 +214,8 @@ class ueditor_control extends phpok_control
 			$this->_stop(P_Lang('没有可用的附件'));
 		}
 		$condition = "res.id IN(".implode(",",$idlist).")";
-		$is_gd = false;
 		$gd_rs = $this->model('gd')->get_editor_default();
-		if($gd_rs){
-			$condition .= " AND e.gd_id='".$gd_rs["id"]."' ";
-			$is_gd = true;
-		}
-		$piclist = $this->model('res')->edit_pic_list($condition,0,999,$is_gd);
+		$piclist = $this->model('res')->edit_pic_list($condition,0,999,$gd_rs);
 		if(!$piclist){
 			$this->_stop(P_Lang('没有可用的附件'));
 		}
@@ -290,23 +285,21 @@ class ueditor_control extends phpok_control
 		$offset = $this->get('start','int');
 		$psize = $this->get('size','int');
 		$condition = "res.ext IN ('gif','jpg','png','jpeg') ";
-		$is_gd = false;
 		$gd_rs = $this->model('gd')->get_editor_default();
-		if($gd_rs){
-			$condition .= " AND e.gd_id='".$gd_rs["id"]."' ";
-			$is_gd = true;
-		}
 		$keywords = $this->get('keywords');
 		if($keywords){
 			$condition .= " AND (res.filename LIKE '%".$keywords."%' OR res.title LIKE '%".$keywords."%') ";
 		}
-		$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize,$is_gd);
+		$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize);
 		if(!$rslist){
 			$this->_stop(P_Lang('图片数据内容为空'));
 		}
 		$piclist = array();
 		foreach($rslist as $key=>$value){
-			$tmp = array('url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime'],'title'=>$value['title']);
+			$tmp = array('url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime'],'title'=>$value['title'],'original'=>$value['title']);
+			if($gd_rs && $value['gd'][$gd_rs['identifier']]){
+				$tmp['url'] = $value['gd'][$gd_rs['identifier']];
+			}
 			$piclist[] = $tmp;
 		}
 		$data = array('list'=>$piclist,'start'=>$offset,'size'=>$psize);

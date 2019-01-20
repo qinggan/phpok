@@ -1,5 +1,5 @@
 /**
- * 兼容4.x扩展CSS
+ * Layui后台模板自定义兼容及4.x扩展CSS
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -7,6 +7,11 @@
  * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
  * @时间 2018年09月13日
 **/
+
+/* 系统样式改写兼容 */
+* html .clearfix{zoom: 1;}
+*:first-child + html .clearfix{zoom: 1;}
+body{overflow-x: hidden;}
 select{padding:3px;}
 select {
   border: solid 1px #D2D2D2;
@@ -21,6 +26,144 @@ select {
 input[type="number"] {
     -moz-appearance: textfield;
 }
+
+/* LayUI 后台框架样式改写-开始 */
+.layui-layout-admin .layui-body {
+	background:#fff;
+}
+.layui-side-menu .layui-nav .layui-nav-item a {
+	height:26px;
+	line-height:26px;
+}
+.layui-side-menu .layui-nav .layui-nav-itemed>.layui-nav-child dd{
+	padding:5px 0;
+}
+.layui-side-menu .layui-nav .layui-nav-item .layui-icon {
+	margin-top:-13px
+}
+.layadmin-side-shrink .layui-layout-admin .layui-logo {
+	width:60px;
+	background-image:url("../images/logo.svg");
+	background-size:80%;
+	background-repeat:no-repeat;
+	background-position: center;
+}
+.layui-form-label{
+	overflow:hidden;
+	width:150px;
+}
+.layui-input-block{margin-left:180px;}
+
+
+
+.layui-card-header .fr .layui-icon{
+	line-height:180%;
+	position:static;
+	right:auto;
+	vertical-align: middle;
+}
+.layui-form .layui-form-item .long{
+	width: 500px;
+}
+.layui-form .layui-form-item .w99{
+	width:99%
+}
+.layui-form .layui-form-item select[multiple]{
+	height:120px;
+}
+.layui-form .layui-form-item .long-auto{
+	width:auto;
+	min-width:500px;
+}
+.layui-form .layui-form-item .long textarea{
+	height:80px;
+}
+.layui-form .layui-form-item .default{
+	width: 350px;
+}
+.layui-form .layui-form-item .auto{
+	width: auto;
+}
+.layui-form .layui-form-item .default-auto{
+	width:auto;
+	min-width:350px;
+}
+.layui-form .layui-form-item .layui-input-inline.short{
+	width:100px;
+}
+.layui-form .layui-form-item .title{
+	padding-top:0;
+}
+.layui-laypage>a:hover{
+	text-decoration:none
+}
+.layui-color-blue {
+	color:#1E9FFF;
+}
+.layui-col-offset01{
+	margin-left: 5%;
+}
+.layui-mg-bottom7{
+	margin-bottom: 7px;
+}
+.layui-form .layui-disabled{
+	background: #eee;
+	color: #666!important;
+}
+.layui-form [lay-ignore] {
+
+    display: initial !important;
+
+}
+/* LayUI 后台样式框架改写-结束*/
+
+.red{color:red;}
+.fr{float:right;}
+.fl{float:left;}
+.hand{cursor: pointer;}
+.darkblue{color:darkblue;}
+.gray{color:gray;}
+.center{text-align:center !important;}
+.mtop{margin-top:10px;}
+.mbtm{margin-bottom:10px;}
+.lh38{line-height:38px;}
+.lh30{line-height:30px;}
+.clear{
+	clear:both;
+	height:0;
+	margin:0;
+	padding:0;
+	width:0;
+	border:none;
+	overflow:hidden;
+	font-size:0;
+}
+.clearfix:after{
+	visibility:hidden;
+	display:block;
+	font-size:0;
+	clear:both;
+	height:0;
+	line-height:0;
+	margin:0;
+	padding:0;
+}
+.hide{display:none;}
+.phpok-search .layui-inline{min-width:310px;}
+
+
+.ext_edit{
+	position: absolute;
+	right:0;
+	top:0;
+	z-index:99999;
+	padding:5px;
+	border:1px solid #ccc;
+	border-radius:2px;
+	background:#eee;
+}
+.layui-form-item:hover .ext_edit{display:block;}
+
 
 .status0,.status1,.status2
 {
@@ -37,13 +180,6 @@ input[type="number"] {
 .status0{background-image:url('../images/status0.png');}
 .status1{background-image:url('../images/status1.png');}
 .status2{background-image:url('../images/status2.png');}
-
-
-ul.layout{list-style:none;margin:0;padding:0;}
-ul.layout li{float:left;margin-right:5px;line-height:24px;}
-ul.layout li label{vertical-align:middle;}
-ul.layout li label input{margin-top:-1px;vertical-align:middle;}
-ul.layout:after{clear:both;content:'.';display:block;visibility:hidden;height:0;overflow:hidden;}
 
 
 ul.project{list-style:none;margin:0;padding:0;position: relative;}
@@ -178,17 +314,16 @@ div.table .content ul.lang li{margin-bottom:3px;}
     border-bottom-left-radius: 0;
 }
 input.phpok-btn[type=text]{margin:0;padding:0}
-input.short{width:55px;border:1px solid #E5E5E5;height:25px;line-height:25px;font-size:18px;font-weight:normal;}
+input.short{width:55px;border:1px solid #E5E5E5;font-size:18px;font-weight:normal;}
 input[name=identifier]{ime-mode:disabled}
 
 .cate_line{float:left;display:block;height: 28px;padding: 0;margin: 0;width:2em;background:url("../images/cate_line.gif") center center repeat-y;}
 .cate_middle{float:left;display:block;height: 28px;padding: 0;margin: 0;width:2em;background:url("../images/cate_middle.gif") center center no-repeat;}
 .cate_txt{float:left;display:block;height: 28px;line-height:28px;}
 
+div.submit-info-clear{height:66px;content:' ';line-height:0;font-size:0;display:block;visibility: hidden;clear:both;}
 div.submit-info{position:fixed;bottom:0px;background:#fff;border-bottom:1px solid #fff;border-top:1px solid #BFBFBF;width:100%;display:block;margin-left:-15px;padding:10px 0;z-index:9999}
 div.submit-info:after{content:'.';height:0;line-height:0;font-size:0;display: block;visibility: hidden;clear:both;}
-div.submit-info input:first-child{margin-left:200px;}
-div.submit-info input + input:last-child{float:right;margin-right:15px;}
 
 input.submit2 {
 	margin:0;

@@ -59,8 +59,8 @@
 		<table width="100%" class="layui-table" lay-size="sm">
 		<thead>
 		<tr>
-			<th width="50px">ID</th>
-			<th width="35px">&nbsp;</th>
+			<th align="center">ID</th>
+			<th width="20px">&nbsp;</th>
 			<th width="35px"></th>
 			<!-- loop from=$arealist key=$key value=$value -->
 			<th class="lft">{func P_Lang $value}</th>
@@ -68,8 +68,8 @@
 			<!-- loop from=$wlist key=$key value=$value id=$tmpid -->
 			<th class="lft" style="min-width:100px;">{$value.title}</th>
 			<!-- /loop -->
-			<th width="130px">{lang注册时间}</th>
-			<th></th>
+			<th width="120px">{lang注册时间}</th>
+			<th style="min-width:104px;"></th>
 		</tr>
 		</thead>
 		<!-- $rslist AS $key=>$value -->
@@ -105,12 +105,12 @@
 			<!-- /loop -->
 			<td>{func date 'Y-m-d H:i' $value.regtime}</td>
 			<td>
-				<div class="button-group">
-					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑会员}_#{$value.id}','{url ctrl=user func=set id=$value.id/}')" class="phpok-btn" />
+				<div class="layui-btn-group">
+					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑会员}_#{$value.id}','{url ctrl=user func=set id=$value.id/}')" class="layui-btn layui-btn-xs" />
 					<!-- if $config.biz_status -->
-					<input type="button" value="{lang地址库}" onclick="$.admin_user.address({$value.id})" class="phpok-btn" />
+					<input type="button" value="{lang地址}" onclick="$.admin_user.address({$value.id})" class="layui-btn layui-btn-xs" />
 					<!-- /if -->
-					<input type="button" value="{lang删除}" onclick="del({$value.id},'{$value.user}')" class="phpok-btn" />
+					<input type="button" value="{lang删除}" onclick="del({$value.id},'{$value.user}')" class="layui-btn layui-btn-xs layui-btn-danger" />
 				</div>
 			</td>
 		</tr>

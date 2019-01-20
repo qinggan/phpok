@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="p_name,p_type,p_width,p_add,p_name_type" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="p_name,p_type,p_width,p_add" />
 <div class="table">
 	<div class="title">
 		{lang参数列表：}
@@ -40,28 +40,5 @@
 			<li><label><input type="radio" name="p_add" value="yes"{if !$rs.p_add || $rs.p_add != 'no'} checked{/if} />{lang支持}</label></li>
 			<li><label><input type="radio" name="p_add" value="no"{if $rs.p_add && $rs.p_add == 'no'} checked{/if} />{lang不支持}</label></li>
 		</ul>
-	</div>
-</div>
-<div class="table{if !$rs.p_type} hide{/if}" id="p_name_type_html">
-	<div class="title">
-		{lang文本框属性：}<span class="note">{lang与参数名称一一对应。多个属性值用英文逗号分割，仅限列表模式有效}</span>
-	</div>
-	<div class="content">
-		<table>
-		<tr>
-			<td><input type="text" name="p_name_type" id="p_name_type" value="{$rs.p_name_type}" class="default" /></td>
-			<td>
-				<div class="button-group">
-					<input type="button" value="{lang日期}" onclick="$.phpokform.param_type_setting('date','p_name_type')" class="layui-btn" />
-					<input type="button" value="{lang颜色}" onclick="$.phpokform.param_type_setting('color','p_name_type')" class="layui-btn" />
-					<input type="button" value="{lang无}" onclick="$.phpokform.param_type_setting('default','p_name_type')" class="layui-btn" />
-					<input type="button" value="{lang清空}" onclick="$('#p_name_type').val('');" class="layui-btn" />
-				</div>
-			</td>
-		</tr>
-		</table>
-		
-		
-		
 	</div>
 </div>

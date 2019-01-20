@@ -1,45 +1,34 @@
 <!-- include tpl=head_lay -->
 <div class="layui-card">
-	<div class="layui-card-header " style="visibility: visible;">
-		<div>{lang资源分类列表}</div>
-	</div>
-	<div class="layui-card-body">
-
-		<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
-			<button class="layui-btn" onclick="$.phpok.go('{url ctrl=rescate func=set/}');">
+	<div class="layui-card-header">
+		{lang资源分类列表}
+		<div class="fr">
+			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang创建资源分类}','{url ctrl=rescate func=set/}');">
 				<i class="layui-icon">&#xe608;</i> {lang创建资源分类}
 			</button>
 		</div>
-
+	</div>
+	<div class="layui-card-body">
 		<table class="layui-table">
-			<colgroup>
-				<col>
-				<col>
-				<col>
-				<col>
-				<col>
-				<col>
-				<col width="120">
-			</colgroup>
 			<thead>
 			<tr>
 				<th>ID</th>
-				<th>名称</th>
-				<th>目录</th>
-				<th>附件类型</th>
-				<th>是否默认</th>
-				<th>GD方案</th>
-				<th>操作</th>
+				<th>{lang名称}</th>
+				<th>{lang目录}</th>
+				<th>{lang附件类型}</th>
+				<th>{lang是否默认}</th>
+				<th>{langGD方案}</th>
+				<th width="120">{lang操作}</th>
 			</tr>
 			</thead>
 			<tbody>
 			<!-- loop from=$rslist key=$key value=$value -->
 			<tr>
-				<td align="center">{$value.id}</td>
+				<td>{$value.id}</td>
 				<td>{$value.title}</td>
 				<td>{$value.root}{$rs.folder}</td>
 				<td>{$value.filetypes}</td>
-				<td align="center"><!-- if $value.is_default --><span class="darkblue">{lang是}</span><!-- else -->{lang否}<!-- /if --></td>
+				<td><!-- if $value.is_default --><span class="darkblue">{lang是}</span><!-- else -->{lang否}<!-- /if --></td>
 				<td>
 					<!-- if $value.gdall -->
 					<span class="darkblue">{lang全部}</span>
@@ -49,8 +38,8 @@
 				</td>
 				<td>
 					<div class="layui-btn-group">
-						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=rescate func=set id=$value.id/}')" class="layui-btn layui-btn-sm" /><!-- /if -->
-						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="delete_rescate('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" /><!-- /if -->
+						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.win('{lang编辑附件分类}_#{$value.id}','{url ctrl=rescate func=set id=$value.id/}')" class="layui-btn layui-btn-sm" /><!-- /if -->
+						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_rescate.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" /><!-- /if -->
 					</div>
 				</td>
 			</tr>
@@ -59,22 +48,4 @@
 		</table>
 	</div>
 </div>
-<script type="text/javascript">
-    function delete_rescate(id,title)
-    {
-        $.dialog.confirm('确定要删除这个附件分类吗？<span class="red">'+title+'</span>',function(){
-            var url = '{url ctrl=rescate func=delete/}&id='+id;
-            $.phpok.json(url,function(rs){
-                if(rs.status == 'ok'){
-                    $.dialog.alert('删除成功',function(){
-                        $.phpok.reload();
-                    },'succeed');
-                }else{
-                    $.dialog.alert(rs.content);
-                    return false;
-                }
-            });
-        });
-    }
-</script>
 <!-- include tpl=foot_lay -->

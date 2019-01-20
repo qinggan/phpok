@@ -316,7 +316,7 @@ function go_to_page_action()
 }
 
 ;(function($){
-	
+
 	var config = {
 		'id':'phpok',
 		'content':'',
@@ -354,6 +354,224 @@ function go_to_page_action()
 				});
 			},'');
 		},
+		//图片预览
+		upload_preview:function(id)
+		{
+			$.dialog.open(get_url('upload','preview','id='+id),{
+				'title':p_lang('预览附件信息'),
+				'width':'700px',
+				'height':'400px',
+				'lock':true,
+				'button': [{
+					'name': p_lang('下载原文件'),
+					'callback': function () {
+						$.phpok.open(get_url('res','download','id='+id));
+						return false;
+					},
+				}],
+				'okVal':p_lang('关闭'),
+				'ok':true
+			});
+		},
+		upload_update:function(id)
+		{
+			$.dialog.open(get_url('upload','editopen','id='+id),{
+				'title':p_lang('编辑附件信息'),
+				'width':'700px',
+				'height':'400px',
+				'lock':true,
+				'okVal':p_lang('提交'),
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert(p_lang('iframe还没加载完毕呢'));
+						return false;
+					};
+					iframe.save();
+					return false;
+				},
+				'cancelVal':p_lang('取消修改'),
+				'cancel':function(){}
+			});
+		},
+		upload_delete:function(identifier,id)
+		{
+			var fid = identifier;
+			if(fid.substr(0,1) != '#' && fid.substr(0,1) != '.'){
+				fid = '#'+fid;
+			}
+			var content = $(fid).val();
+			if(!content || content == "undefined"){
+				return true;
+			}
+			//删除单个附件
+			if(content == id){
+				$(fid).val("");
+				$(fid+"_list").fadeOut().html('');
+				this.upload_remote_delete(identifier,id);
+				return true;
+			}
+			var list = content.split(",");
+			var newlist = new Array();
+			var new_i = 0;
+			for(var i=0;i<list.length;i++){
+				if(list[i] != id){
+					newlist[new_i] = list[i];
+					new_i++;
+				}
+			}
+			content = newlist.join(",");
+			$(fid).val(content);
+			this.upload_remote_delete(identifier,id);
+			this.upload_showhtml(identifier,true);
+		},
+		upload_showhtml:function(identifier,multiple)
+		{
+			var self = this;
+			var fid = identifier;
+			if(fid.substr(0,1) != '#' && fid.substr(0,1) != '.'){
+				fid = '#'+fid;
+			}
+			var id = $(fid).val();
+			if(!id){
+				$(fid+"_list").html('').fadeOut();
+				return false;
+			}
+			var url = get_url('upload','thumbshow','id='+$.str.encode(id));
+			$.phpok.json(url,function(rs){
+				if(rs.status != 'ok'){
+					$(fid).val('');
+					$(fid+"_list").html('').fadeOut();
+					return true;
+				}
+				var html = '';
+				var index_i = 1;
+				for(var i in rs.content){
+					html += self.upload_html(identifier,rs.content[i],index_i,multiple);
+					index_i++;
+				}
+				$(fid+"_list").html(html).show();
+				if(!html){
+					$(fid+"_list").html('').fadeOut();
+					$(fid+"_sort").hide();
+				}else{
+					if(multiple){
+						$(fid+"_sort").show();
+					} else {
+						$(fid+"_sort").hide();
+					}
+				}
+				return true;
+			});
+		},
+		upload_html:function(identifier,rs,i,multiple)
+		{
+			var fid = identifier;
+			if(fid.substr(0,1) != '#' && fid.substr(0,1) != '.'){
+				fid = '#'+fid;
+			}
+			var html = '<div class="'+identifier+'_thumb" name="_elist">';
+			if(multiple){
+				html += '<div class="sort"><input type="text" class="taxis" value="'+i+'" data="'+rs.id+'" title="'+rs.title+'" onclick="$(this).select()" tabindex="'+i+'" /></div>';
+			}
+			html += '<div style="text-align:center;"><img src="'+rs.ico+'" width="100" height="100" /></div>';
+			html += '<div class="file-action" style="text-align:center;"><div class="button-group">';
+			html += '	<input type="button" value="'+p_lang('修改')+'" class="phpok-btn" onclick="$.phpokform.upload_update(\''+rs.id+'\')" />';
+			html += '	<input type="button" value="'+p_lang('预览')+'" class="phpok-btn" onclick="$.phpokform.upload_preview(\''+rs.id+'\')" />';
+			html += '	<input type="button" value="'+p_lang('删除')+'" class="phpok-btn" onclick="$.phpokform.upload_delete(\''+identifier+'\',\''+rs.id+'\')" /></div>';
+			html += '</div></div>';
+			html += '</div>';
+			return html;
+		},
+		upload_remote_delete:function(identifier,id)
+		{
+			var tmp = $.phpok.data('upload-'+identifier)
+			if(!tmp || tmp == 'undefined'){
+				return true;
+			}
+			var delete_status = false;
+			if(tmp != id){
+				var list = tmp.split(',');
+				var newlist = new Array();
+				var new_i = 0;
+				for(var i=0;i<list.length;i++){
+					if(list[i] != id){
+						newlist[new_i] = list[i];
+						new_i++;
+					}else{
+						delete_status = true;
+					}
+				}
+				content = newlist.join(",");
+				$.phpok.data('upload-'+identifier,content);
+			} else {
+				delete_status = true;
+				$.phpok.undata('upload-'+identifier);
+			}
+			if(delete_status){
+				var url = get_url('upload','delete','id='+id);
+				$.phpok.json(url,function(){
+					return true;
+				});
+			}
+		},
+		upload_select:function(identifier,cate_id,multiple)
+		{
+			var ml = (multiple && multiple != 'undefined' && multiple != 'false') ? 1 : 0;
+			var url = get_url('open','upload','id='+identifier+"&multiple="+ml);
+			if(cate_id && cate_id != 'undefined'){
+				url += "&cate_id="+cate_id;
+			}
+			var t = "{$_rs.is_multiple ? 'true' : 'false'}";
+			var old = $("#"+identifier).val();
+			var doc_width = $(document).width();
+			if(ml == 1){
+				if(old){
+					$.phpok.data('select-'+identifier,old);
+				}
+				$.dialog.open(url,{
+					'title': p_lang('资源管理器'),
+					'lock' : true,
+					'width': '64%',
+					'height': '80%',
+					'ok': true,
+					'okVal':p_lang('关闭')
+				});
+				return true;
+			}
+			if(old){
+				url += "&selected="+old;
+			}
+			$.dialog.open(url,{
+				'title':p_lang('资源管理器'),
+				'width': '64%',
+				'height': '80%',
+				'lock' : true
+			});
+		},
+		upload_sort:function(identifier,type)
+		{
+			var t = [];
+			$("#"+identifier+"_list .taxis").each(function(i){
+				if(type == 'title'){
+					var val = $(this).attr('title');
+				}else{
+					var val = $(this).val();
+				}
+				var data = $(this).attr("data");
+				t.push({"id":val,"data":data});
+			});
+			t = t.sort(function(a,b){
+				return parseInt(a['id']) > parseInt(b['id']) ? 1 : -1
+			});
+			var list = new Array();
+			for(var i in t){
+				list[i] = t[i]['data'];
+			}
+			var val = list.join(",");
+			$("#"+identifier).val(val);
+			this.upload_showhtml(identifier,true);
+		},
 		param_type_setting:function(val,id){
 			var old = $("#"+id).val();
 			if(old){
@@ -368,7 +586,7 @@ function go_to_page_action()
 				$("#p_name_type_html").hide();
 			}
 		},
-		
+
 		/**
 		 * 文本框旁边的日期按钮控件
 		**/
@@ -491,8 +709,8 @@ function go_to_page_action()
 			$.dialog.open(url,{
 				title: p_lang('视频预览'),
 				lock: true,
-				width: '700px',
-				height: '430px',
+				width: '670px',
+				height: '510px',
 				ok:true
 			});
 		},

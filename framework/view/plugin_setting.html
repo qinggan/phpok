@@ -1,25 +1,21 @@
 <!-- include tpl=head_lay -->
 <div class="layui-card">
-	<div class="layui-card-header " style="visibility: visible;">
-		<div>{lang插件快捷图标设置}</div>
+	<div class="layui-card-header ">
+		{lang插件快捷图标设置}
+		<div class="fr">
+		<button class="layui-btn layui-btn-sm" onclick="$.admin_plugin.icon('{$id}','','{lang添加图标}');">
+			<i class="layui-icon">&#xe608;</i> {lang添加图标}
+		</button>
+		</div>
 	</div>
 
 	<div class="layui-card-body">
 
 		<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
-			<button class="layui-btn" onclick="$.admin_plugin.icon('{$id}','','{lang添加图标}');">
-				<i class="layui-icon">&#xe608;</i> {lang添加图标}
-			</button>
+			
 		</div>
 
 		<table class="layui-table">
-			<colgroup>
-				<col>
-				<col>
-				<col>
-				<col>
-				<col width="140">
-			</colgroup>
 			<thead>
 			<tr>
 				<th>标题</th>
@@ -32,14 +28,14 @@
 			<tbody>
 			<!-- loop from=$rslist key=$key value=$value id=$idx -->
 			<tr>
-				<td class="center">{$value.title}</td>
-				<td class="center">{$value.position}</td>
-				<td class="center">{$value.efunc_title}<!-- if $value.efunc_title != $value.efunc --> / {$value.efunc}<!-- /if --></td>
-				<td class="center">{$value.taxis}</td>
-				<td class="center">
+				<td>{$value.title}</td>
+				<td>{$value.position}</td>
+				<td>{$value.efunc_title}<!-- if $value.efunc_title != $value.efunc --> / {$value.efunc}<!-- /if --></td>
+				<td>{$value.taxis}</td>
+				<td>
 					<div class="layui-btn-group">
-						<input type="button" value="{lang修改}" onclick="$.admin_plugin.icon('{$id}','{$value.id}','{lang修改图标}')" class="layui-btn layui-btn-sm" />
-						<input type="button" value="{lang删除}" onclick="$.admin_plugin.icon_del('{$id}','{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang修改}" onclick="$.admin_plugin.icon('{$id}','{$value.id}','{lang修改}')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang删除}" onclick="$.admin_plugin.icon_del('{$id}','{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 					</div>
 				</td>
 			</tr>

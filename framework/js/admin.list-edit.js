@@ -64,16 +64,13 @@ var autosave_handle;
 						var url = get_url('list','action','id='+$("#pid").val());
 						if(pcate>0){
 							var cateid = $("#cate_id").val();
-							url += "&cateid="+cateid;
+							url += "&keywords[cateid]="+cateid;
 						}
 						if(id){
 							$.dialog.alert(p_lang('内容信息修改成功'),function(){
 								$.phpok.message('pendding');
 								$.admin.reload(url);
-								//关闭当前窗口
-								window.setTimeout(function(){
-									top.layui.admin.events.closeThisTabs();
-								}, 500);
+								$.admin.close(url);
 							},'succeed');
 							return true;
 						}
@@ -89,10 +86,7 @@ var autosave_handle;
 							'cancel':function(){
 								$.phpok.message('pendding');
 								$.admin.reload(url);
-								//关闭当前窗口
-								window.setTimeout(function(){
-									top.layui.admin.events.closeThisTabs();
-								}, 500);
+								$.admin.close(url);
 							},
 							'cancelVal':p_lang('关闭窗口'),
 							'lock':true
@@ -352,7 +346,7 @@ $(document).keypress(function(e){
 });
 $(document).ready(function(){
 
-	
+
 	//仅在添加主题时执行自动保存操作
 	/*var id = $("#id").val();
 	if(!id || id == '0' || id == 'undefined'){

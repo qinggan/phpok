@@ -1,11 +1,14 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/usergroup_control.php
-	Note	: 会员组管理
-	Version : 3.1
-	Author  : qinggan
-	Update  : 2011-03-13
-***********************************************************/
+/**
+ * 会员组管理
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年12月23日
+**/
+
 class usergroup_control extends phpok_control
 {
 	private $popedom;
@@ -20,7 +23,7 @@ class usergroup_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rslist = $this->model('usergroup')->get_all();
 		$this->assign("rslist",$rslist);
@@ -34,7 +37,7 @@ class usergroup_control extends phpok_control
 		$read_popedom_list = $reply_popedom_list = array();
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$rs = $this->model('usergroup')->get_one($id);
 			if($rs['popedom']){
@@ -48,7 +51,7 @@ class usergroup_control extends phpok_control
 			$ext_module = "usergroup-".$id;
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$ext_module = "add-usergroup";
 		}
@@ -100,7 +103,7 @@ class usergroup_control extends phpok_control
 		$error_url = $this->url("usergroup","set");
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$error_url .= "&id=".$id;
 			$rs = $this->model('usergroup')->get_one($id);
@@ -113,16 +116,16 @@ class usergroup_control extends phpok_control
 			}
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		if(!$title){
-			error(P_Lang('组名称不允许为空'),$error_url,"error");
+			$this->error(P_Lang('组名称不允许为空'),$error_url);
 		}
 		$array["title"] = $title;
 		$popedom = $this->get('popedom','checkbox');
 		if($popedom){
-			$array['popedom'][$_SESSION['admin_site_id']] = implode(",",$popedom);
+			$array['popedom'][$this->session->val('admin_site_id')] = implode(",",$popedom);
 		}
 		$array['popedom'] = serialize($array['popedom']);
 		$array["is_open"] = $this->get("is_open","int");
@@ -130,88 +133,85 @@ class usergroup_control extends phpok_control
 		$array["register_status"] = $this->get("register_status");
 		$array["tbl_id"] = $this->get("tbl_id","int");
 		$fields_list = $this->get("fields_list");
-		if($fields_list && is_array($fields_list))
-		{
-			if(in_array("all",$fields_list))
-			{
+		if($fields_list && is_array($fields_list)){
+			if(in_array("all",$fields_list)){
 				$array["fields"] = "";
-			}
-			else
-			{
+			}else{
 				$array["fields"] = implode(",",$fields_list);
 			}
 		}
-		if($id)
-		{
+		if($id){
 			$this->model('usergroup')->save($array,$id);
 			//存储扩展字段
 			ext_save("usergroup-".$id);
-			$this->model('temp')->clean("usergroup-".$id,$_SESSION["admin_id"]);
-		}
-		else
-		{
+			$this->model('temp')->clean("usergroup-".$id,$this->session->val('admin_id'));
+			$tip = P_Lang('会员组编辑成功');
+		}else{
 			$id = $this->model('usergroup')->save($array);
-			if($id)
-			{
+			if($id){
 				ext_save("add-usergroup-ext-id",true,"usergroup-".$id);
-				$this->model('temp')->clean("add-usergroup-ext-id",$_SESSION["admin_id"]);
+				$this->model('temp')->clean("add-usergroup-ext-id",$this->session->val('admin_id'));
 			}
+			$tip = P_Lang('会员组添加成功');
 		}
-		error(P_Lang('会员组信息添加/存储成功'),$this->url("usergroup"),"ok");
+		$this->success($tip,$this->url('usergroup'));
 	}
 
-	public function ajax_del_f()
+	public function delete_f()
 	{
-		if(!$this->popedom["delete"]) exit(P_Lang('您没有权限执行此操作'));
+		if(!$this->popedom["delete"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("id","int");
 		if(!$id){
-			exit(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('usergroup')->get_one($id);
 		if(!$rs){
-			exit(P_Lang('数据记录不存在'));
+			$this->error(P_Lang('数据记录不存在'));
 		}
 		if($rs["is_default"]){
-			exit(P_Lang('默认会员组不能删除'));
+			$this->error(P_Lang('默认会员组不能删除'));
 		}
 		if($rs["is_guest"]){
-			exit(P_Lang('默认游客组不能删除'));
+			$this->error(P_Lang('默认游客组不能删除'));
 		}
 		$this->model('usergroup')->del($id);
-		exit("ok");
+		$this->success();
 	}
+
 
 	public function default_f()
 	{
-		if(!$_SESSION["admin_rs"]["if_system"]){
-			exit(P_Lang('您没有权限执行此操作'));
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		if(!$id){
-			exit(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$this->model('usergroup')->set_default($id);
-		exit("ok");
+		$this->success();
 	}
 
 	public function guest_f()
 	{
-		if(!$_SESSION["admin_rs"]["if_system"]){
-			exit(P_Lang('您没有权限执行此操作'));
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		if(!$id){
-			exit(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('usergroup')->get_one($id);
 		if(!$rs){
-			exit(P_Lang('数据记录不存在'));
+			$this->error(P_Lang('数据记录不存在'));
 		}
 		if($rs["is_default"]){
-			exit(P_Lang('默认会员组不能设为游客组'));
+			$this->error(P_Lang('默认会员组不能设为游客组'));
 		}
 		$this->model('usergroup')->set_guest($id);
-		exit("ok");
+		$this->success();
 	}
 
 	public function status_f()

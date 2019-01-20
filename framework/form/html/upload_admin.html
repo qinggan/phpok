@@ -1,91 +1,27 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="cate_id,cate_custom,is_multiple,upload_type,upload_name,upload_binary,upload_compress,upload_compress_wh" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="cate_id,is_multiple" />
 <div class="table">
 	<div class="title">
-		{lang上传属性：}
-		<span class="note">{lang针对文件上传进行一些设置和限制}</span>
+		{lang附件分类} <span class="note">{lang选择附件所属分类，注意不同分类上传不同类型的文件}</span>
 	</div>
 	<div class="content">
-		<table>
-		<tr>
-			<td>
-				<select id="cate_id" name="cate_id" onchange="phpok_form_upload_attr_cate_id()" style="width:250px;">
-					<option value="">{lang默认存储到…}</option>
-					<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
-					<option value="{$value.id}"{if $rs.cate_id == $value.id} selected{/if} data-type="{$value.filetypes}">{$value.title}</option>
-					<!-- /loop -->
-				</select>
-			</td>
-			<td>
-				<select id="is_multiple" name="is_multiple" style="width:250px;">
-					<option value="0">{lang单附件上传}</option>
-					<option value="1"{if $rs.is_multiple} selected{/if}>{lang多附件上传}</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<select id="upload_binary" name="upload_binary" style="width:250px;">
-					<option value="0">{lang传统上传方式}</option>
-					<option value="1"{if $rs.upload_binary} selected{/if}>{lang使用二进制上传}</option>
-				</select>
-			</td>
-			<td>
-				<select id="cate_custom" name="cate_custom" style="width:250px;">
-					<option value="0">{lang固定分类}</option>
-					<option value="1"{if $rs.cate_custom} selected{/if}>{lang分类自定义}</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<select id="upload_compress" name="upload_compress" style="width:250px;">
-					<option value="0">{lang不压缩图片}</option>
-					<option value="1"{if $rs.upload_compress} selected{/if}>{lang压缩图片上传}</option>
-				</select>
-			</td>
-			<td>
-				<select id="upload_compress_wh" name="upload_compress_wh" style="width:250px;">
-					<option value="500">{lang压缩图片仅当宽或高不小于} 500px</option>
-					<option value="600">{lang压缩图片仅当宽或高不小于} 600px</option>
-					<option value="700">{lang压缩图片仅当宽或高不小于} 700px</option>
-					<option value="800">{lang压缩图片仅当宽或高不小于} 800px</option>
-					<option value="900">{lang压缩图片仅当宽或高不小于} 900px</option>
-					<option value="1000">{lang压缩图片仅当宽或高不小于} 1000px</option>
-					<option value="1100">{lang压缩图片仅当宽或高不小于} 1100px</option>
-					<option value="1200">{lang压缩图片仅当宽或高不小于} 1200px</option>
-					<option value="1300">{lang压缩图片仅当宽或高不小于} 1300px</option>
-					<option value="1400">{lang压缩图片仅当宽或高不小于} 1400px</option>
-					<option value="1500">{lang压缩图片仅当宽或高不小于} 1500px</option>
-					<option value="1600">{lang压缩图片仅当宽或高不小于} 1600px</option>
-					<option value="1700">{lang压缩图片仅当宽或高不小于} 1700px</option>
-					<option value="1800">{lang压缩图片仅当宽或高不小于} 1800px</option>
-				</select>
-			</td>
-		</tr>
-		</table>
-		
-		
-		<div class="clear"></div>
+		<select id="cate_id" name="cate_id" class="w99">
+			<option value="">{lang默认存储到…}</option>
+			<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+			<option value="{$value.id}"{if $rs.cate_id == $value.id} selected{/if}>
+				{$value.title}<!-- if $value.filetypes -->({$value.filetypes})<!-- /if --><!-- if $value.etype -->_{lang云存储}<!-- else -->_{lang根目录}/{$value.root}{$value.folder}<!-- /if -->
+			</option>
+			<!-- /loop -->
+		</select>
 	</div>
 </div>
 <div class="table">
 	<div class="title">
-		{lang附件上传类型：}<span class="note">{lang请设置附件上传的类型，未设置将仅支持图片上传，多种类型用英文逗号隔开}</span>
+		{lang附件数量}<span class="note"></span>
 	</div>
 	<div class="content">
-		<input type="text" name="upload_type" id="upload_type" class="long" value="{$ext.upload_type}" />
+		<ul class="layout">
+			<li><label><input type="radio" name="is_multiple" value="0"{if !$rs.is_multiple} checked{/if} />{lang单附件上传}</label></li>
+			<li><label><input type="radio" name="is_multiple" value="1"{if $rs.is_multiple} checked{/if} />{lang多附件上传}</label></li>
+		</ul>
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		{lang附件别名：}<span class="note">{lang此别名用于资源选项框显示}</span>
-	</div>
-	<div class="content">
-		<input type="text" name="upload_name" id="upload_name" value="{$ext.upload_name}" class="default" />
-	</div>
-</div>
-<script type="text/javascript">
-$(document).ready(function(){
-	phpok_form_upload_attr_cate_id();
-});
-</script>

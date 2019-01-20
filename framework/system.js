@@ -21,6 +21,10 @@ var adminfile = "{$sys.admin_file}";
 var phpok_site_id = "{$phpok_site_id}";
 var site_id = "{$site_id}";
 var session_name = '{func session_name}';
+var session_id = '{func session_id}';
+
+//是否启用电调
+var biz_status = '{$config.biz_status}';
 
 
 /**
@@ -31,7 +35,6 @@ var session_name = '{func session_name}';
 /**
  * 加载语言包
  */
-
 var lang = new Array();
 
 <!-- loop from=$langs key=$key value=$value id=$tmpid -->

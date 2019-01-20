@@ -89,7 +89,7 @@
 	<div class="layui-card-header">
 		{lang列表}
 		<div class="layui-btn-group fr">
-			<input type="button" value="{lang搜索}" onclick="$.admin.hide_show('search_html')" class="layui-btn layui-btn-sm layui-btn-warm" />
+			<input type="button" value="{lang搜索}" onclick="$.admin.hide_show('search_html')" class="layui-btn layui-btn-sm" />
 			<input type="button" value="{lang创建新订单}" onclick="$.win('{lang创建新订单}','{url ctrl=order func=set/}')" class="layui-btn layui-btn-sm" />
 		</div>
 	</div>
@@ -128,7 +128,7 @@
 					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑订单}_#{$value.id}','{url ctrl=order func=set id=$value.id/}')" class="layui-btn  layui-btn-xs" />	
 					<!-- /if -->
 					<!-- if $popedom.delete -->
-					<input type="button" value="{lang删除}" onclick="$.admin_order.del({$value.id},'{$value.sn}')" class="layui-btn  layui-btn-xs" />
+					<input type="button" value="{lang删除}" onclick="$.admin_order.del({$value.id},'{$value.sn}')" class="layui-btn  layui-btn-xs layui-btn-danger" />
 					<!-- /if -->
 				</div>
 			</td>

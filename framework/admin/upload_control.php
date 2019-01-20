@@ -47,6 +47,28 @@ class upload_control extends phpok_control
 		$this->json($rs['filename'],true);
 	}
 
+	/**
+	 * 上传图片
+	**/
+	public function img_f()
+	{
+		$folder = $this->get('folder');
+		if(!$folder){
+			$this->json(P_Lang('未指附件路径'));
+		}
+		if(substr($folder,0,1) == '/'){
+			$this->json(P_Lang('目标路径不能以/开头'));
+		}
+		if(!is_dir($this->dir_root.$folder)){
+			$this->json(P_Lang('目标文件夹不存在'));
+		}
+		$rs = $this->lib('upload')->imgfile('upfile',$folder);
+		if($rs['status'] != 'ok'){
+			$this->json($rs['error']);
+		}
+		$this->json($rs['filename'],true);
+	}
+
 
 	/**
 	 * 基础上传

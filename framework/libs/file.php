@@ -434,14 +434,12 @@ class file_lib
 			$title.= '.'.$ext;
 		}
 		ob_end_clean();
+		set_time_limit(0);
+		header("Content-type: applicatoin/octet-stream");
 		header("Date: ".gmdate("D, d M Y H:i:s",time())." GMT");
 		header("Last-Modified: ".gmdate("D, d M Y H:i:s",time())." GMT");
 		header("Content-Encoding: none");
-		if(isset($_SERVER["HTTP_USER_AGENT"]) && preg_match("/Firefox/",$_SERVER["HTTP_USER_AGENT"])){
-			header("Content-Disposition: attachment; filename*=\"utf8''".rawurlencode($title)."\"");
-		}else{
-			header("Content-Disposition: attachment; filename=".rawurlencode($title));
-		}
+		header("Content-Disposition: attachment; filename=".rawurlencode($title)."; filename*=utf-8''".rawurlencode($title));
 		header("Accept-Ranges: bytes");
 		$range = 0;
 		$size2 = $filesize -1;

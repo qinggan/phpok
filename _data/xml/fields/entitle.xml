@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<title><![CDATA[英文标题]]></title>
+	<identifier><![CDATA[entitle]]></identifier>
+	<field_type><![CDATA[varchar]]></field_type>
+	<note><![CDATA[适用于项目名称显示英文标题使用]]></note>
+	<form_type><![CDATA[text]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[safe]]></format>
+	<content><![CDATA[]]></content>
+	<ext>
+		<form_btn><![CDATA[]]></form_btn>
+		<ext_format><![CDATA[]]></ext_format>
+		<ext_quick_words><![CDATA[]]></ext_quick_words>
+		<ext_quick_type><![CDATA[]]></ext_quick_type>
+		<ext_include_3><![CDATA[0]]></ext_include_3>
+	</ext>
+</root>

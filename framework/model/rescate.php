@@ -89,4 +89,37 @@ class rescate_model_base extends phpok_model
 		$sql = "SELECT * FROM ".$this->db->prefix."res_cate ORDER BY id ASC";
 		return $this->db->get_all($sql);
 	}
+
+	/**
+	 * 获取存储类别样式
+	**/
+	public function etypes_all()
+	{
+		
+		$list = $this->lib('file')->ls($this->dir_gateway.'object-storage/');
+		if(!$list){
+			return false;
+		}
+		$rslist = array();
+		foreach($list as $key=>$value){
+			$file = $value.'/config.xml';
+			if(!is_file($file)){
+				continue;
+			}
+			$info = $this->lib('xml')->read($file);
+			if(!$info){
+				continue;
+			}
+			$rslist[basename($value)] = $info;
+		}
+		if(!$rslist || count($rslist)<1){
+			return false;
+		}
+		return $rslist;
+	}
+
+	public function etypes_one($id)
+	{
+		//
+	}
 }

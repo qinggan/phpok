@@ -1,85 +1,69 @@
 <!-- include tpl=head_lay -->
-<style>
-	.layui-card-header .layui-icon {
-		line-height: initial;
-		position: absolute;
-		right: 0px;
-		top: 22%;
-		margin-top: -7px;
-	}
-</style>
 <div class="layui-card">
-	<div class="layui-form layui-card-header layuiadmin-card-header-auto">
-		<form method="post">
+	<div class="layui-card-header" style="min-height:53px;line-height:53px;height:auto;">
+		<form method="post" class="layui-form">
 		<div class="layui-form-item">
 			<div class="layui-inline">
-				<label class="layui-form-label">{lang项目}</label>
-				<div class="layui-input-inline">
-					<select name="type" lay-filter="type">
-						<option value="">{lang请选择…}</option>
-						<!-- loop from=$plist key=$key value=$value id=$tmpid -->
-						<option value="{$key}"{if $type == $key} selected{/if}>{$value}</option>
-						<!-- /loop -->
-					</select>
-				</div>
+				<select name="type" lay-filter="type">
+					<option value="">{lang统计类型…}</option>
+					<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+					<option value="{$key}"{if $type == $key} selected{/if}>{$value}</option>
+					<!-- /loop -->
+				</select>
 			</div>
 			<div class="layui-inline {if !$xlist}hide{/if}" data-id="line-x">
-				<label class="layui-form-label">{lang统计频次}</label>
-				<div class="layui-input-inline">
-					<select name="x">
-						<option value="">{lang请选择…}</option>
-						<!-- loop from=$xlist key=$key value=$value id=$tmpid -->
-						<option value="{$key}"{if $x == $key} selected{/if}>{$value}</option>
-						<!-- /loop -->
-					</select>
-				</div>
+				<select name="x">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$xlist key=$key value=$value id=$tmpid -->
+					<option value="{$key}"{if $x == $key} selected{/if}>{$value}</option>
+					<!-- /loop -->
+				</select>
 			</div>
 			<div class="layui-inline {if !$ylist}hide{/if}" data-id="line-y">
-				<label class="layui-form-label">{lang统计选项}</label>
-				<div class="layui-input-inline"  style="width: auto">
-					<!-- loop from=$ylist key=$key value=$value id=$tmpid -->
-					<input type="checkbox" name="y[]" title="{$value}" class="layui-input" value="{$key}"{if $y && is_array($y) && in_array($key,$y) } checked{/if} />
-					<!-- /loop -->
-				</div>
+				<ul class="layout">
+				<!-- loop from=$ylist key=$key value=$value id=$tmpid -->
+				<li><input type="checkbox" name="y[]" lay-ignore value="{$key}"{if $y && is_array($y) && in_array($key,$y) } checked{/if} /> {$value}</li>
+				<!-- /loop -->
+				</ul>
 			</div>
 			<div class="layui-inline {if !$zlist}hide{/if}" data-id="line-z">
-				<label class="layui-form-label" style="padding: 15px 35px 0px 15px">{lang计算方式}<i style="top: 68%;" class="layui-icon layui-icon-tips" lay-tips="{lang仅限扩展字段有效}" lay-offset="-10"></i></label>
-				<div class="layui-input-inline" style="width: 160px;">
-					<input type="radio" name="data_mode" title="{lang数量计算（Count）}" class="layui-input" value="count"{if !$data_mode || $data_mode == 'count'} checked{/if} />
-				</div>
-				<div class="layui-input-inline" style="width: 150px;">
-					<input type="radio" name="data_mode" title="{lang和计算（SUM）}" class="layui-input" value="sum"{if $data_mode && $data_mode == 'sum'} checked{/if} />
-				</div>
+				<select name="data_mode">
+					<option value="">{lang计算方式…}</option>
+					<option value="count"{if $data_mode == 'count'} selected{/if}>{lang数量计算（Count）}</option>
+					<option value="sum"{if $data_mode == 'sum'} selected{/if}>{lang和计算（SUM）}</option>
+				</select>
 			</div>
 			<div class="layui-inline">
-				<label class="layui-form-label">{lang时间范围}</label>
-				<div class="layui-input-inline" style="width: 140px;">
-					<input type="text" name="startdate" id="startdate" class="layui-input" value="{$startdate}" placeholder="开始时间" />
+				<div class="layui-input-inline" style="width:140px">
+					<input type="text" name="startdate" id="startdate" class="layui-input" value="{$startdate}" placeholder="{lang开始时间}" />
 				</div>
 				<div class="layui-form-mid">~</div>
-				<div class="layui-input-inline" style="width: 140px;">
-					<input type="text" name="stopdate" id="stopdate" class="layui-input" value="{$stopdate}" placeholder="结束时间" />
+				<div class="layui-input-inline" style="width:140px">
+					<input type="text" name="stopdate" id="stopdate" class="layui-input" value="{$stopdate}" placeholder="{lang结束时间}" />
 				</div>
 			</div>
 			<div class="layui-inline">
-				<label class="layui-form-label">{lang图表模式}</label>
 				<div class="layui-input-inline">
 					<select name="chart">
-						<option value="">{lang请选择…}</option>
+						<option value="">{lang图表模式…}</option>
 						<option value="line"{if $chart == 'line'} selected{/if}>{lang折线图}</option>
 						<option value="bar"{if $chart == 'bar'} selected{/if}>{lang柱状图}</option>
 					</select>
 				</div>
 			</div>
 			<div class="layui-inline">
-				<button type="submit" class="layui-btn layuiadmin-btn-list" lay-submit lay-filter="LAY-app-contlist-search">
-					<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>统计
+				<button type="submit" class="layui-btn layui-btn-sm" >
+					{lang开始统计}
 				</button>
 			</div>
 		</div>
 		</form>
 	</div>
+	<!-- if $y_title || $rslist -->
 	<div class="layui-card-body">
+		<!-- if $chart -->
+		<div id="chart_main" class="layui-carousel" data-anim="fade" lay-filter="LAY-index-normcol" lay-anim="fade" style="width: 100%; height: 420px;"></div>
+		<!-- /if -->
 		<table class="layui-table">
 			<thead>
 			<tr>
@@ -100,8 +84,8 @@
 			<!-- /loop -->
 			</tbody>
 		</table>
-		<div id="chart_main" class="layui-carousel" data-anim="fade" lay-filter="LAY-index-normcol" lay-anim="fade" style="width: 100%; height: 420px;"></div>
 	</div>
+	<!-- /if -->
 </div>
 <!-- if $chart -->
 <script type="text/javascript">

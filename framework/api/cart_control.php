@@ -121,10 +121,6 @@ class cart_control extends phpok_control
 			if(is_array($rs[$thumb_id])){
 				$array['thumb'] = $rs[$thumb_id]['filename'];
 			}
-			$gd_id = $this->config['cart']['gd_id'] ? $this->config['cart']['gd_id'] : '';
-			if($gd_id && is_array($rs[$thumb_id]) && $rs[$thumb_id]['gd'] && $rs[$thumb_id]['gd'][$gd_id]){
-				$array['thumb'] = $rs[$thumb_id]['gd'][$gd_id];
-			}
 		}
 		$array['title'] = $rs['title'];
 		$array['is_virtual'] = $rs['is_virtual'];

@@ -8,7 +8,7 @@
 	<div class="layui-card-header">
 		{lang主要信息}
 	</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				<i class="layui-icon layui-tips" lay-tips="{lang这里创建的订单编号不受网站信息里规则限制，是随机的，请慎用}">&#xe702;</i>
@@ -169,12 +169,13 @@
 		</div>
 	</div>
 </div>
+
 <div class="layui-card">
 	<div class="layui-card-header hand" onclick="$.admin.card(this)">
 		{lang收件人信息}
 		<i class="layui-icon layui-icon-right"></i>
 	</div>
-	<div class="layui-container layui-card-body hide">
+	<div class="layui-card-body hide">
 		<input type="hidden" name="s-id" value="{$shipping.id}" />
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -267,7 +268,7 @@
 		{lang操作日志}
 		<i class="layui-icon layui-icon-right"></i>
 	</div>
-	<div class="layui-container layui-card-body hide">
+	<div class="layui-card-body hide">
 		<table class="layui-table">
 			<thead>
 			<tr>

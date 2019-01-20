@@ -93,26 +93,9 @@ class ext_model extends ext_model_base
 		{
 			$list['res'] = array_unique($list['res']);
 			$ids = implode(",",$list['res']);
-			$sql = "SELECT * FROM ".$this->db->prefix."res WHERE id IN(".$ids.")";
-			$reslist = $this->db->get_all($sql,'id');
-			if($reslist)
-			{
-				$sql = "SELECT ext.res_id,ext.gd_id,ext.filename,gd.identifier FROM ".$this->db->prefix."res_ext ext ";
-				$sql.= "LEFT JOIN ".$this->db->prefix."gd gd ON(ext.gd_id=gd.id) ";
-				$sql.= "WHERE ext.res_id IN(".$ids.")";
-				$elist = $this->db->get_all($sql);
-				if($elist)
-				{
-					foreach($elist as $key=>$value)
-					{
-						$reslist[$value['res_id']]['gd'][$value['identifier']] = $value['filename'];
-					}
-				}
-			}
-			$list['res'] = $reslist;
+			$list['res'] = $this->model('res')->get_list_from_id($ids,true);
 		}
-		if($list['title'])
-		{
+		if($list['title']){
 			$list['title'] = array_unique($list['title']);
 			$ids = implode(",",$list['title']);
 			$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id IN(".$ids.") AND status=1";

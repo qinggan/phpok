@@ -82,7 +82,7 @@ class wxpay_query
 			if($this->order['type'] == 'recharge' && $ext['goal']){
 				$app->model('wealth')->recharge($this->order['id']);
 			}
-			$app->plugin('payment-notify',$this->order['id']);
+			$GLOBALS['app']->plugin('payment-notice',$this->order['id']);
 			$array = array('status'=>$data['trade_state']);
 			$app->json($array,true);
 		}

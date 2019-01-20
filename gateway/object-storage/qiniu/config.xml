@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>七牛云存储</title>
+	<note>直接上传文件到七牛云，并现实增删查改操作</note>
+	<code>
+		<appkey>
+			<title>密钥AK</title>
+			<note><![CDATA[设置七牛云的密钥 AccessKey]]></note>
+			<type>text</type>
+			<required>true</required>
+		</appkey>
+		<appsecret>
+			<title>密钥SK</title>
+			<note><![CDATA[设置七牛云的密钥 SecretKey]]></note>
+			<type>text</type>
+			<required>true</required>
+		</appsecret>
+		<bucket>
+			<title>存储空间名称</title>
+			<type>text</type>
+			<note>填写七牛云的存储空间名称</note>
+			<required>true</required>
+		</bucket>
+		<server_url>
+			<title>上传服务器地址</title>
+			<note><![CDATA[上传空间对应的上传地址，建议使用客户端上传地址，<a href="https://developer.qiniu.com/kodo/manual/1671/region-endpoint">点此查看</a>]]></note>
+			<type>text</type>
+			<required>true</required>
+		</server_url>
+		<view_url>
+			<title>资源访问域名</title>
+			<note><![CDATA[请填写您上传的附件要访问的域名]]></note>
+			<type>text</type>
+			<required>true</required>
+		</view_url>
+	</code>
+</root>

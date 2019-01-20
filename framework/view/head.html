@@ -12,7 +12,7 @@
 	<!-- if $config.favicon -->
 	<link rel="shortcut icon" href="{$config.favicon}" />
 	<!-- /if -->
-	<link rel="stylesheet" type="text/css" href="{#css#}/css.php?version={:VERSION}" />
+	<link rel="stylesheet" type="text/css" href="{#css#}/css.php?type=admin&version={:VERSION}" />
 	{func phpok_head_css}
 	<!-- php:$js_ext = 'admin.'.$sys.ctrl.'.js,admin.'.$sys.ctrl.'-'.$sys.func.'.js' -->
 	<script type="text/javascript" src="{url ctrl=js ext=$js_ext/}"></script>

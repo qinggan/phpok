@@ -1,19 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8" />
-	<meta http-equiv="Expires" content="wed, 26 feb 1997 08:21:57 GMT" />
-	<meta http-equiv="Pragma" content="no-cache" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<title><!-- if $config.title -->{$config.title} - <!-- /if -->{lang后台管理}</title>
-	<link rel="stylesheet" type="text/css" href="{#css#}/css.php?type=admin" />
-	<script type="text/javascript" src="{url ctrl=js ext=admin.all,admin.homepage/}"></script>
-	<!-- plugin head -->
-</head>
-<body>
-<div class="content">
-	<div class="index_main"{if !$iconlist} style="margin-left:10px"{/if}>
-		<!-- if $all_info -->
+<!-- include tpl=head_lay csstype=default -->
+<script type="text/javascript" src="{url ctrl=js func=ext js=admin.all.js /}"></script>
+<!-- if $all_info -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang全局信息}
+	</div>
+	<div class="layui-card-body">
 		<div class="sub_box" id="all_setting">
 			<div class="box_item">
 				<ul>
@@ -38,7 +30,7 @@
 					<!-- if $site_popedom.order && $config.biz_status -->
 					<li><a title="{lang订单常规配置}" href="javascript:$.win('{lang订单常规配置}','{url ctrl=site func=order_status/}');void(0);">
 						<div class="top_img"><img src="images/ico/shopping_setting.png" alt="{lang订单常规配置}" class="ie6png" width="48" height="48" /></div>
-						<div class="name">{lang订单常规配置}</div></a>
+						<div class="name">{lang订单配置}</div></a>
 					</li>
 					<!-- /if -->
 					<!-- loop from=$plugin_alist key=$key value=$value id=$tmpid -->
@@ -59,10 +51,17 @@
 				</ul>
 			</div>
 		</div>
-		<!-- /if -->
+	</div>
+</div>
+<!-- /if -->
+<!-- if $list_rslist -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		<h3>{lang内容管理}</h3>
+	</div>
+	<div class="layui-card-body">
 		<!-- if $list_rslist -->
 		<div class="sub_box" id="list_setting">
-			<div class="title"><span class="maintain">{lang内容管理}</span></div>
 			<div class="box_item">
 				<ul>
 					<!-- loop from=$list_rslist key=$key value=$value -->
@@ -75,21 +74,67 @@
 			</div>
 		</div>
 		<!-- /if -->
-		<div class="clear"></div>
 	</div>
-	<!-- plugin body -->
-	<div class="clear"></div>
 </div>
-<!-- plugin foot -->
+<!-- /if -->
+<!-- if $all_status -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang内容统计}
+	</div>
+	<div class="layui-card-body">
+		<ul class="layui-row layui-col-space10 layadmin-backlog">
+			<!-- loop from=$all_status key=$key value=$value id=$tmpid -->
+			<li class="layui-col-xs6 layui-col-sm4 layui-col-md2">
+				<a href="javascript:$.win('{$value.title}','{url ctrl=list func=action id=$value.id/}');void(0)" class="layadmin-backlog-body">
+					<h3>{$value.title}</h3>
+					<p><cite>{$value.total}</cite></p>
+				</a>
+			</li>
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>
+<!-- /if -->
+<style type="text/css">
+.server_left{text-align:right;height:30px;}
+.server_right{overflow:hidden;text-overflow : ellipsis;height:30px;white-space:nowrap}
+</style>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang主机环境}
+		<div class="fr">
+			<input type="button" value="查看更多" onclick="$.win('{lang主机信息}','{url ctrl=index func=info/}')" class="layui-btn layui-btn-sm layui-btn-normal" />
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-row layui-col-space15">
+			<!-- loop from=$serverlist key=$key value=$value id=$tmpid -->
+			<div class="layui-col-sm6 layui-col-md3 server_left">
+				<!-- if $value[3] --><i class="layui-icon layui-tips" lay-tips="{$value[3]}">&#xe702;</i><!-- /if -->
+				{$value[0]}
+			</div>
+			<div class="layui-col-sm6 layui-col-md3 server_right"{if $value[2]} style="{$value[2]}"{/if}>
+				{$value[1]}
+			</div>
+			<!-- /loop -->
+		</div>
+		<br />
+	</div>
+</div>
+<!-- plugin body -->
 <div class="foot">
 	<div class="foot_left">
 		<!-- if $app->license_powered -->
 		Powered by <a href="http://www.phpok.com" target="_blank">phpok.com</a>,
 		<!-- /if -->
 		CopyRight &copy; {$license_site} {func license_date}, All Right Reserved.
-		<br />{func debug_time}
+		<!-- if $sys.debug --><br />{func debug_time}<!-- /if -->
 	</div>
-	<div class="foot_right"><span class="darkblue">{$license}</span>{lang，版本：}{$version}</div>
+	<div class="foot_right">{$license} Version {$version}</div>
+	<div class="clear"></div>
 </div>
+</div>
+<!-- plugin foot -->
 </body>
 </html>

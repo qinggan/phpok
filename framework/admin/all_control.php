@@ -98,7 +98,7 @@ class all_control extends phpok_control
 			}
 			$this->assign('sms_tplist',$_etpl);
 		}
-		$code_editor_info = form_edit('emta',$rs['meta'],'code_editor','width=650&height=200');
+		$code_editor_info = form_edit('meta',$rs['meta'],'code_editor','width=650&height=200');
 		$this->assign('code_editor_info',$code_editor_info);
 		$this->assign("rs",$rs);
 		$this->view("all_setting");
@@ -333,6 +333,13 @@ class all_control extends phpok_control
 				if(!$plist[$tmpid]){
 					unset($vcodelist[$key]);
 				}
+			}
+		}else{
+			foreach($vcodelist as $key=>$value){
+				if($key == 'system'){
+					continue;
+				}
+				unset($vcodelist[$key]);
 			}
 		}
 		$this->assign('vcodelist',$vcodelist);

@@ -17,31 +17,10 @@ class data_model_base extends phpok_model
 
 	private function _res_info($id)
 	{
-		if(!$id)
-		{
+		if(!$id){
 			return false;
 		}
-		//通过数据库读取数据
-		$sql = "SELECT * FROM ".$this->db->prefix."res WHERE id=".intval($id);
-		$rs = $this->db->get_one($sql);
-		if(!$rs)
-		{
-			return false;
-		}
-		$sql = "SELECT ext.res_id,ext.filename,gd.identifier FROM ".$this->db->prefix."res_ext ext ";
-		$sql.= "JOIN ".$this->db->prefix."gd gd ON(ext.gd_id=gd.id) ";
-		$sql.= "WHERE ext.res_id=".intval($id);
-		$extlist = $this->db->get_all($sql);
-		if($extlist)
-		{
-			foreach($extlist AS $key=>$value)
-			{
-				$rs['gd'][$value['identifier']] = $value['filename'];
-			}
-			unset($extlist);
-		}
-		unset($sql);
-		return $rs;
+		return $this->model('res')->get_one(intval($id),true);
 	}
 
 
@@ -584,26 +563,15 @@ class data_model_base extends phpok_model
 	//读取附件信息
 	private function _res_info2($id)
 	{
-		if(!$id) return false;
-		if(is_string($id)) $id = array($id);
+		if(!$id){
+			return false;
+		}
+		if(is_string($id)){
+			$id = array($id);
+		}
 		$id = array_unique($id);
 		$id = implode(',',$id);
-		$sql = "SELECT id,name,filename,addtime,title,note,download FROM ".$this->db->prefix."res WHERE id IN(".$id.")";
-		$reslist = $this->db->get_all($sql,'id');
-		if(!$reslist) return false;
-		$sql = "SELECT ext.res_id,ext.filename,gd.identifier FROM ".$this->db->prefix."res_ext ext ";
-		$sql.= "JOIN ".$this->db->prefix."gd gd ON(ext.gd_id=gd.id) ";
-		$sql.= "WHERE ext.res_id IN(".$id.")";
-		$extlist = $this->db->get_all($sql);
-		if($extlist)
-		{
-			foreach($extlist AS $key=>$value)
-			{
-				$reslist[$value["res_id"]]["gd"][$value['identifier']] = $value['filename'];
-			}
-			unset($extlist);
-		}
-		return $reslist;
+		return $this->model('res')->get_list_from_id($id,true);
 	}
 
 	//格式化单列信息

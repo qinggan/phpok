@@ -80,7 +80,7 @@
 			$.dialog.open(get_url("user","field_edit","id="+id),{
 				"title" : p_lang('编辑字段属性'),
 				"width" : "700px",
-				"height" : "600px",
+				"height" : "80%",
 				"resize" : false,
 				"lock" : true,
 				'ok':function(){
@@ -105,7 +105,7 @@
 			$.dialog.open(get_url("user","field_edit"),{
 				"title" : p_lang('添加会员字段'),
 				"width" : "700px",
-				"height" : "600px",
+				"height" : "80%",
 				"resize" : false,
 				"lock" : true,
 				'ok':function(){

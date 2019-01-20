@@ -13,39 +13,20 @@
 		/**
 		 * 增加一行
 		 * @参数 identifier 表单字段标识
-		 * @参数 p_name_type 文本框属性，这里支持：日期，颜色
 		 * @参数 width 文本框宽度
 		**/
-		add_line:function(identifier,p_name_type,width)
+		add_line:function(identifier,width)
 		{
-			var tlist = false;
-			if(p_name_type && p_name_type != 'undefined' && isNaN(p_name_type)){
-				tlist = p_name_type.split(',');
-			}
-			if(p_name_type && p_name_type != 'undefined' && !isNaN(p_name_type)){
-				width = p_name_type;
-			}
 			var td_count = ($("#"+identifier+"_tbl tr:eq(0) th")).length - 1;
 			var html = '<tr>';
-			html += '<td><input type="button" value="'+p_lang('删除')+'" onclick="$.phpok_form_param.delete_line(this)" class="btn" /></td>';
-			var jscolor_reload = false;
+			html += '<td><input type="button" value="'+p_lang('删除')+'" onclick="$.phpok_form_param.delete_line(this)" class="layui-btn layui-btn-sm layui-btn-danger" /></td>';
 			for(var i=0;i<td_count;i++){
 				html += '<td><input type="text" name="'+identifier+'_body[]"';
-				if(tlist && tlist[i] && tlist[i] != 'default'){
-					if(tlist[i] == 'date'){
-						html += ' onclick="laydate(this)" class="short"';
-					}else{
-						html += ' class="short color {pickerClosable:true,pickerPosition:\'right\',required:false}"';
-						jscolor_reload = true;
-					}
-				}
+				html += ' class="layui-input"';
 				html += ' style="width:99%" /></td>';
 			}
 			html += '</tr>';
 			$("#"+identifier+"_tbl").append(html);
-			if(jscolor_reload){
-				jscolor.init();
-			}
 		},
 		delete_line:function(obj)
 		{
@@ -54,7 +35,7 @@
 		},
 		delete_one:function(identifier,obj)
 		{
-			var idx = $('th').index($(obj).parent().parent());
+			var idx = $('th').index($(obj).parent());
 			$("#"+identifier+"_tbl tr").each(function(){
 				$(this).find('td:eq('+idx+')').remove();
 			});
@@ -67,14 +48,14 @@
 			}
 			var val = $("#ele_"+identifier).val();
 			var th = '<th>';
-			th += '<input type="text" name="'+identifier+'_title[]" class="short" style="width:'+width+'px;" value="'+val+'" />';
-			th += '<input type="button" value="'+p_lang('删除')+'" onclick="$.phpok_form_param.delete_one(\''+identifier+'\',this)"/>';
+			th += '<input type="text" name="'+identifier+'_title[]" class="layui-input short" style="width:'+width+'px;float:left;" value="'+val+'" />';
+			th += '<div style="position: absolute;top:5px;right:5px;" title="'+p_lang('删除')+'" onclick="$.phpok_form_param.delete_one(\''+identifier+'\',this)"><i class="layui-icon layui-icon-close-fill"></i></div>'
 			th += '</th>';
 			$("#"+identifier+"_tbl tr:eq(0)").append(th);
 			//定制列
 			$("#"+identifier+"_tbl tr").each(function(i){
 				if(i>0){
-					var td = '<td><input type="text" name="'+identifier+'_body[]" class="short" style="width:'+width+'px;" value="" /></td>';
+					var td = '<td><input type="text" name="'+identifier+'_body[]" class="layui-input short" style="width:'+width+'px;" value="" /></td>';
 					$(this).append(td);
 				}
 			});
@@ -84,9 +65,9 @@
 		{
 			var val = $("#ele_"+identifier).val();
 			var html = '<div style="margin-bottom:10px;"><ul class="layout">';
-			html += '<li><input type="text" name="'+identifier+'_title[]" value="'+val+'"/></li>';
-			html += '<li><input type="text" name="'+identifier+'_body[]"/></li>';
-			html += '<li><input type="button" value="'+p_lang('删除')+'" class="button" onclick="$.phpok_form_param.delete_line_single(this)" /></li>';
+			html += '<li><input type="text" name="'+identifier+'_title[]" class="layui-input" value="'+val+'"/></li>';
+			html += '<li><input type="text" name="'+identifier+'_body[]" class="layui-input" /></li>';
+			html += '<li style="margin-top:3px;"><input type="button" value="'+p_lang('删除')+'" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.phpok_form_param.delete_line_single(this)" /></li>';
 			html += '</ul><div class="clear"></div></div>';
 			$("#list_"+identifier).append(html);
 			$("#ele_"+identifier).val('');

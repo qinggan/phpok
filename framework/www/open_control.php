@@ -92,7 +92,7 @@ class open_control extends phpok_control
 		# 取得附件类型
 		$config = $this->model('res')->type_list("type");
 		$this->assign("attr_list",$config);
-		$pageurl = admin_url("open","input") ."&id=".$id;
+		$pageurl = $this->url('open','input','id='.$id);
 		$type = $this->get("type");
 		$type_s = $type;
 		if($type == "image" || $type == "picture"){

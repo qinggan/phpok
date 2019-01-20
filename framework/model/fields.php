@@ -129,19 +129,18 @@ class fields_model_base extends phpok_model
 	//判断字段是否被使用了
 	function is_has_sign($identifier,$id=0)
 	{
-		if(!$identifier) return true;
+		if(!$identifier){
+			return true;
+		}
 		$sql = "SELECT identifier FROM ".$this->db->prefix."fields WHERE identifier='".$identifier."' ";
-		if($id)
-		{
+		if($id){
 			$sql .= " AND id !='".$id."' ";
 		}
 		$rs = $this->db->get_one($sql);
-		if($rs)
-		{
+		if($rs){
 			return true;
 		}
-		# 检查核心表的字段ID
-		$idlist = array("title","phpok","identifier");
+		$idlist = array("title","phpok","identifier","app");
 		$idlist = $this->_rslist("list",$idlist);
 		if($idlist){
 			$idlist = array_unique($idlist);

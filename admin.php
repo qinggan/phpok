@@ -64,7 +64,10 @@ define('EXTENSION',ROOT.'extension/');
 **/
 define('PLUGIN',ROOT.'plugins/');
 
-
+/**
+ * 定义网关路由目录
+**/
+define('GATEWAY',ROOT.'gateway/');
 
 
 /**

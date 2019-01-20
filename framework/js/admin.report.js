@@ -32,16 +32,17 @@
 						for(var i in x){
 							xhtml += '<option value="'+i+'">'+x[i]+'</option>';
 						}
-						$("div[data-id=line-x] div.layui-input-inline select").html(xhtml);
+						$("div[data-id=line-x] select").html(xhtml);
 						$("div[data-id=line-x]").removeClass('hide');
 					}
 					if(data.info.y){
 						var y = data.info.y;
-						var yhtml = '';
+						var yhtml = '<ul class="layout">';
 						//var yhtml = '<select name="x"><option value="">'+p_lang('请选择统计项目…')+'</option>';
 						for(var i in y){
-							yhtml += '<input type="checkbox" title="'+y[i]+'" name="y[]" value="'+i+'"/>';
+							yhtml += '<li><label><input type="checkbox" name="y[]" lay-ignore value="'+i+'"/> '+y[i]+'</label></li>';
 						}
+						yhtml += '</ul>';
 						$("div[data-id=line-y]").html(yhtml);
 						$("div[data-id=line-y]").removeClass('hide');
 					}
@@ -62,7 +63,7 @@
 	        layui.laydate.render({elem:'#stopdate'});
 	        layui.form.on('select(type)',function (data) {
 	            $.admin_report.select_project(data.value);
-	            setTimeout("layui.form.render()",200);
+	            window.setTimeout("layui.form.render()",200);
 	        })
 	    });
 	});

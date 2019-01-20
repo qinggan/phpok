@@ -1,7 +1,7 @@
 <!-- include tpl=head_lay -->
 <div class="layui-card">
 	<div class="layui-card-header"><!-- if $id -->{lang编辑规则}<!-- else -->{lang添加规则}<!-- /if --></div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_call.save('post_save')">
 		<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}"/><!-- /if -->
 		<div class="layui-form-item">

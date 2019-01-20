@@ -1,14 +1,14 @@
 <div id="{$_rs.identifier}_html"></div>
-<select name="{$_rs.identifier}_p" id="{$_rs.identifier}_p" onchange="read_city_{$_rs.identifier}()">
+<select name="{$_rs.identifier}_p" id="{$_rs.identifier}_p" lay-ignore onchange="read_city_{$_rs.identifier}()">
 	<option value="" province_id=''>请选择…</option>
 	<!-- loop from=$_province key=$key value=$value id=$tmpid -->
 	<option value="{$value.val}"{if $_rs.content.p == $value.val} selected{/if} province_id="{$value.attr.id}">{$value.val}</option>
 	<!-- /loop -->
 </select>
-<select name="{$_rs.identifier}_c" id="{$_rs.identifier}_c" onchange="read_county_{$_rs.identifier}()" style="display:none" data="{$_rs.content.c}">
+<select name="{$_rs.identifier}_c" id="{$_rs.identifier}_c" lay-ignore onchange="read_county_{$_rs.identifier}()" style="display:none" data="{$_rs.content.c}">
 	<option value="" city_id=''>请选择…</option>
 </select>
-<select name="{$_rs.identifier}_a" id="{$_rs.identifier}_a" style="display:none" data="{$_rs.content.a}">
+<select name="{$_rs.identifier}_a" id="{$_rs.identifier}_a" lay-ignore style="display:none" data="{$_rs.content.a}">
 	<option value="" area_id=''>请选择…</option>
 </select>
 <script type="text/javascript">

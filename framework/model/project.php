@@ -27,20 +27,31 @@ class project_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
-	//取得项目信息
+	/**
+	 * 取得项目信息
+	 * @参数 $id 标识ID，可以是主键，也可以是标识
+	 * @参数 $ext 是否加载扩展
+	**/
 	public function get_one($id,$ext=true)
 	{
-		if(!$id || !intval($id)){
+		if(!$id){
 			return false;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".intval($id);
+		if(is_numeric($id)){
+			$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".intval($id);
+		}else{
+			$condition = "site_id='".$this->site_id."' AND identifier='".$id."'";
+			$sql = "SELET * FROM ".$this->db->prefix."project WHERE ".$condition;
+		}
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
 		}
-		if($ext){
-			$ext_rs = $GLOBALS['app']->model("ext")->get_all("project-".$id);
-			if($ext_rs) $rs = array_merge($ext_rs,$rs);
+		if($ext && is_bool($ext)){
+			$ext_rs = $this->model("ext")->get_all("project-".$id);
+			if($ext_rs){
+				$rs = array_merge($ext_rs,$rs);
+			}
 		}
 		return $rs;
 	}
@@ -107,8 +118,7 @@ class project_model_base extends phpok_model
 	function get_one_condition($condition="")
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE 1=1 ";
-		if($condition)
-		{
+		if($condition){
 			$sql .= " AND ".$condition;
 		}
 		return $this->db->get_one($sql);

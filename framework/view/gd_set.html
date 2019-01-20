@@ -1,11 +1,11 @@
 <!-- include tpl=head_lay -->
 <script type="text/javascript" src="{#js#}/jscolor/jscolor.js"></script>
+<form method="post" class="layui-form" id='gdsetting' onsubmit="return $.admin_gd.save()">
+<!-- if $id -->
+<input type="hidden" id="id" name="id" value="{$id}" />
+<!-- /if -->
 <div class="layui-card">
-	<div class="layui-card-body layui-container">
-		<form method="post" class="layui-form" id='gdsetting' onsubmit="return $.admin_gd.save()">
-		<!-- if $id -->
-		<input type="hidden" id="id" name="id" value="{$id}" />
-		<!-- /if -->
+	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang标识}
@@ -120,16 +120,19 @@
 				{lang背景颜色}
 			</label>
 			<div class="layui-input-inline default-auto">
-				<input type="text" id="bgcolor" name="bgcolor" value="{$rs.bgcolor}" class="color {pickerClosable:true}" />
+				<input type="text" id="bgcolor" name="bgcolor" value="{$rs.bgcolor}" class="layui-input color {pickerClosable:true}" />
 			</div>
 			<div class="layui-input-inline auto gray lh38">{lang即填充色，默认为白色}</div>
-		</div>
-		<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
-		
-		</form>
+		</div>		
+	</div>
+</div>
+<div class="clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
 	</div>
 </div>
 
-
-
+</form>
 <!-- include tpl=foot_lay -->

@@ -1,0 +1,30 @@
+<!-- include tpl=head_lay nopadding=true -->
+<form method="post" id="post_save" onsubmit="return false">
+<div class="layui-card">
+	<div class="layui-card-body">
+		<ul class="layout">
+			<!-- loop from=$icolist key=$key value=$value -->
+			<li class="mbtm">
+				<label><input type="radio" name="ico" value="{$value}"{if $rs.ico == $value} checked{/if} />
+				<img src="{$value}" alt="{func basename $value}" /></label>
+			</li>
+			<!-- /loop -->
+			<div id="phpok_upload" class="clear"></div>
+		</ul>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang上传新图标，请上传的图标符合：48*48 或 96*96}
+	</div>
+	<div class="layui-card-body">
+		<table width="100%">
+		<tr>
+			<td width="150px"><div id="upload_picker"></div></td>
+			<td><div id="upload_progress"></div></td>
+		</tr>
+		</table>
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_lay is_open=true -->

@@ -118,6 +118,7 @@ class authorize_submit
 		if($this->order['type'] == 'recharge'){
 			$this->app->model('wealth')->recharge($this->order['id']);
 		}
+		$GLOBALS['app']->plugin('payment-notice',$this->order['id']);
         $this->app->success();
 	}
 }

@@ -49,29 +49,33 @@
 		<table class="layui-table" lay-size="sm">
 			<thead>
 			<tr>
+				<th>{lang序号}</th>
 				<th>{lang状态}</th>
+				<th>{lang标识}</th>
 				<th>{lang名称}</th>
 				<th class="center">{lang排序}</th>
 				<th>{lang操作}</th>
 			</tr>
 			</thead>
 			<tbody>
-			<!-- loop from=$rslist key=$key value=$value -->
+			<!-- loop from=$rslist key=$key value=$value id=$idx -->
 			<tr>
+				<td>{$idx.num}</td>
 				<td>
 					<span class="status{$value.status}" id="status_{$key}" onclick="$.admin_plugin.status('{$key}')" value="{$value.status}"></span>
 				</td>
+				<td>{$key}</td>
 				<td>{$value.title} <!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></td>
 				<td class="center pointer" onclick="$.admin_plugin.taxis('{$value.id}','{$value.taxis}')">{$value.taxis}</td>
 				<td>
 					<div class="layui-btn-group">
 						<!-- if $popedom.config -->
 						<!-- if $value.extconfig --><input type="button" value="{lang配置}" class="layui-btn layui-btn-sm" onclick="$.admin_plugin.config('{$key}','{$value.title}')" /><!-- /if -->
-						<input type="button" value="{lang管理}" class="layui-btn layui-btn-sm" onclick="$.admin_plugin.setting('{$key}')" />
-						<input type="button" value="{lang导出}" class="layui-btn layui-btn-sm" onclick="plugin_zip('{$key}')" />
+						<input type="button" value="{lang管理}" class="layui-btn layui-btn-sm" onclick="$.admin_plugin.setting('{$key}','{$idx.num}')" />
+						<input type="button" value="{lang导出}" class="layui-btn layui-btn-sm" onclick="$.admin_plugin.tozip('{$key}')" />
 						<!-- /if -->
 						<!-- if $popedom.uninstall -->
-						<input type="button" value="{lang卸载}" class="layui-btn layui-btn-sm" onclick="$.admin_plugin.uninstall('{$key}','{$value.title}')" />
+						<input type="button" value="{lang卸载}" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.admin_plugin.uninstall('{$key}','{$value.title}')" />
 						<!-- /if -->
 					</div>
 				</td>

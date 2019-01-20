@@ -4,7 +4,7 @@
 <!-- if $id --><input type="hidden" id="id" name="id" value="{$id}" /><!-- /if -->
 <div class="layui-card">
 	<div class="layui-card-header">{lang基本设置}</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang分类名称}</label>
 			<div class="layui-input-block">
@@ -87,7 +87,7 @@
 </div>
 <div class="layui-card">
 	<div class="layui-card-header">{lang分类属性}</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang默认主题数}</label>
 			<div class="layui-input-inline">
@@ -135,7 +135,7 @@
 </div>
 <div class="layui-card">
 	<div class="layui-card-header">{langSEO优化}</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">{langSEO标题}</label>
 			<div class="layui-input-inline long">
@@ -153,7 +153,7 @@
 		<div class="layui-form-item">
 			<label class="layui-form-label">{langSEO描述}</label>
 			<div class="layui-input-inline long">
-				<textarea name="seo_desc" id="seo_desc" class="layui-input">{$rs.seo_desc}</textarea>
+				<textarea name="seo_desc" id="seo_desc" class="layui-textarea">{$rs.seo_desc}</textarea>
 			</div>
 			<div class="layui-input-inline auto">{lang简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字}</div>
 		</div>
@@ -164,10 +164,13 @@
 			</div>
 			<div class="layui-input-inline auto">{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}</div>
 		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">&nbsp;</label>
-			<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" />
-		</div>
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
 	</div>
 </div>
 </form>

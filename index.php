@@ -63,6 +63,12 @@ define('EXTENSION',ROOT.'extension/');
 **/
 define('PLUGIN',ROOT.'plugins/');
 
+/**
+ * 定义网关路由目录
+**/
+define('GATEWAY',ROOT.'gateway/');
+
+
 
 /**
  * 检测是否已安装，如未安装跳转到安装页面，建议您在安装成功后去除这个判断。

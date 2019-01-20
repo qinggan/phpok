@@ -23,10 +23,10 @@ $file = array();
 
 //后台首页
 if($type == 'admin'){
-	$file[] = 'admin-index.css';
-	$file[] = 'window.css';
 	$file[] = 'artdialog.css';
 	$file[] = 'icomoon.css';
+	$file[] = 'smartmenu.css';
+	$file[] = 'admin.css';
 }
 
 //后台弹窗口
@@ -42,12 +42,12 @@ if($type == 'open'){
 
 //后台桌面窗口
 if($type == 'default'){
-	$file[] = 'icomoon.css';
-	$file[] = 'admin.css';
+	$file[] = 'admin-index.css';
+	$file[] = 'window.css';
 	$file[] = 'artdialog.css';
-	//使用 selectpage 下拉菜单
-	$file[] = 'selectpage.css';
+	$file[] = 'icomoon.css';
 }
+
 $file = array_unique($file);
 foreach($file as $key=>$value){
 	$value = basename($value);

@@ -39,7 +39,10 @@ class gateway_model extends gateway_model_base
 	{
 		$file = $this->dir_root.'gateway/config.xml';
 		if(!file_exists($file)){
-			return array('sms'=>P_Lang('短信网关'),'email'=>P_Lang('Email邮件'));
+			$tmplist = array('sms'=>P_Lang('短信'));
+			$tmplist['email'] = P_Lang('Email邮件');
+			$tmplist['object-storage'] = P_Lang('对象存储');
+			return $tmplist;
 		}
 		return $this->lib('xml')->read($file);
 	}

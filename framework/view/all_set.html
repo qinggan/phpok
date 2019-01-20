@@ -11,7 +11,7 @@
 		</div>
 		<!-- /if -->
 	</div>
-	<div class="layui-container layui-card-body">
+	<div class="layui-card-body">
 		<!-- loop from=$extlist key=$key value=$value -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -36,14 +36,16 @@
 			<div class="layui-input-inline long" id="_quick_insert" data-id="{$ext_module}"></div>
 		</div>
 		<!-- /if -->
-		<div class="layui-form-item">
-			<label class="layui-form-label">&nbsp;</label>
-			<div class="layui-input-inline default-auto">
-				<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-normal" />
-			</div>
-		</div>
 	</div>
 </div>
 <input type="hidden" data-name="fields" value="{$value.identifier}" disabled />
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+
 </form>
 <!-- include tpl=foot_lay -->

@@ -343,7 +343,9 @@
 			}
 			$.phpok.ajax(url,function(data){
 				$("#_quick_insert").html(data);
-				layui.form.render();
+				layui.use('form',function(){
+					layui.form.render();
+				})
 			})
 		}
 		$(".layui-input").bind("keyup",function(e){

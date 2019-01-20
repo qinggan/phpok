@@ -59,6 +59,11 @@ class xml_lib
 		return $this->$func($data,$file,$ekey);
 	}
 
+	public function write($data,$file='',$ekey='')
+	{
+		return $this->save($data,$file,$ekey);
+	}
+
 	private function write_phpok($data,$file,$ekey='')
 	{
 		$dir = pathinfo($file,PATHINFO_DIRNAME);

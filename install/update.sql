@@ -58,3 +58,15 @@ ALTER TABLE `qinggan_project`  ADD `list_fields` VARCHAR(255) NOT NULL COMMENT '
 
 -- 2018年10月21日
 ALTER TABLE `qinggan_reply`  ADD `title` VARCHAR(255) NOT NULL COMMENT '评论标题，留空从主题中读取' ;
+
+-- 2019年1月8日
+ALTER TABLE `qinggan_order` ADD `confirm_time` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '系统自动确认收货时间';
+
+-- 2019年1月13日
+ALTER TABLE `qinggan_res_cate` ADD `etype` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '0本地存储，其他数据则调用不同的网关存储';
+
+-- 2019年1月18日
+ALTER TABLE `qinggan_res_cate` ADD `upload_binary` TINYINT( 1 ) NOT NULL DEFAULT '0' COMMENT '0传统上传，1二进制上传',ADD `compress` INT NOT NULL DEFAULT '0' COMMENT '0不压缩，大于0的数值表示宽高超过时就压缩到这个值内';
+
+-- 2019年1月20日
+ALTER TABLE `qinggan_res` CHANGE `ico` `ico` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'ICO图标文件';

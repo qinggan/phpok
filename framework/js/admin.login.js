@@ -43,8 +43,47 @@ function update_lang(val)
 	$.phpok.go(url);
 }
 
+
+function cLanguage() {
+	var l = $("#c-language");
+	var s = l.find(".c-select");
+	var o = l.find(".c-option");
+	var aA = s.find("a");
+	s.click(function(event){
+		event.stopPropagation()
+		if (l.hasClass("open")) {
+			l.removeClass("open");
+			o.slideUp();
+		}else{
+			l.addClass("open");
+			o.slideDown();
+		}
+	});
+
+	/*aA.click(function(event){
+		event.stopPropagation()
+		l.removeClass("open");
+		o.slideUp();
+	});*/
+	$(window).click(function(){
+		l.removeClass("open");
+		o.slideUp();
+	})
+}
+
 $(document).ready(function(){
 	if (self.location != top.location){
 		top.location = self.location;
 	}
+	$('.c-banner').slick({
+		dots: false,
+		slidesToShow: 1,
+		slidesToScroll: 1,
+		fade:true,
+		speed:1500,
+		autoplay: true,
+		arrows: false,
+		autoplaySpeed: 3000
+	});
+	cLanguage();
 });

@@ -179,34 +179,29 @@ function phpok_reply($id,$psize=10,$orderby="ASC",$vouch=false)
 	$rslist = $GLOBALS['app']->model('reply')->get_list($condition,$offset,$psize,"",$order);
 	//读子主题
 	$idlist = $userlist = array();
-	foreach($rslist AS $key=>$value)
-	{
+	foreach($rslist as $key=>$value){
 		if($value["uid"]) $userlist[] = $value["uid"];
 		$idlist[] = $value["id"];
 	}
 	
 	//获取会员信息
-	if($userlist && count($userlist)>0)
-	{
+	if($userlist && count($userlist)>0){
 		$userlist = array_unique($userlist);
 		$user_idstring = implode(",",$userlist);
 		$condition = "u.status='1' AND u.id IN(".$user_idstring.")";
 		$tmplist = $GLOBALS['app']->model('user')->get_list($condition,0,0);
-		if($tmplist)
-		{
+		if($tmplist){
 			$userlist = array();
-			foreach($tmplist AS $key=>$value)
-			{
+			foreach($tmplist as $key=>$value){
 				$userlist[$value["id"]] = $value;
 			}
 			$tmplist = "";
 		}
 	}
 	//整理回复列表
-	foreach($rslist AS $key=>$value)
+	foreach($rslist as $key=>$value)
 	{
-		if($value["uid"] && $userlist)
-		{
+		if($value["uid"] && $userlist){
 			$value["uid"] = $userlist[$value["uid"]];
 		}
 		$rslist[$key] = $value;
@@ -266,6 +261,69 @@ function phpok_url($rs)
 	}
 	$string = ($tmp && count($tmp)>0) ? implode("&",$tmp) : "";
 	return $GLOBALS['app']->url($ctrl,$func,$string,$appid);
+}
+
+if(!function_exists('www_url')){
+	function www_url($ctrl='index',$func='index',$ext='',$baseurl=true)
+	{
+		return $GLOBALS['app']->url($ctrl,$func,$ext,'www',$baseurl);
+	}
+}
+
+if(!function_exists('www_plugin_url')){
+	function www_plugin_url($id='index',$exec='index',$ext='',$baseurl=true)
+	{
+		$string = "id=".$id;
+		if($exec && $exec != 'index'){
+			$string .= "&exec=".$exec;
+		}
+		if($ext){
+			$string .= "&".$ext;
+		}
+		return $GLOBALS['app']->url('plugin','exec',$string,'www',$baseurl);
+	}
+}
+
+if(!function_exists('api_url')){
+	function api_url($ctrl='index',$func='index',$ext='',$baseurl=true)
+	{
+		return $GLOBALS['app']->url($ctrl,$func,$ext,'api',$baseurl);
+	}
+}
+
+if(!function_exists('api_plugin_url')){
+	function api_plugin_url($id='index',$exec='index',$ext='',$baseurl=true)
+	{
+		$string = "id=".$id;
+		if($exec && $exec != 'index'){
+			$string .= "&exec=".$exec;
+		}
+		if($ext){
+			$string .= "&".$ext;
+		}
+		return $GLOBALS['app']->url('plugin','exec',$string,'api',$baseurl);
+	}
+}
+
+if(!function_exists('admin_url')){
+	function admin_url($ctrl,$func="",$ext="",$baseurl=false)
+	{
+		return $GLOBALS['app']->url($ctrl,$func,$ext,'admin',$baseurl);
+	}
+}
+
+if(!function_exists('admin_plugin_url')){
+	function admin_plugin_url($id='index',$exec='index',$ext='',$baseurl=false)
+	{
+		$string = "id=".$id;
+		if($exec && $exec != 'index'){
+			$string .= "&exec=".$exec;
+		}
+		if($ext){
+			$string .= "&".$ext;
+		}
+		return $GLOBALS['app']->url('plugin','exec',$string,'admin',$baseurl);
+	}
 }
 
 //读取会员拥有发布的权限信息

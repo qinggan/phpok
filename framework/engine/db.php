@@ -46,6 +46,9 @@ class db
 	private $count = 0;
 	private $time_tmp = 0;
 	private $_sqlist = array();
+	private $_slowlist = array();
+	private $slow_status = false;
+	private $slow_time = 1;
 	public $prefix = 'qinggan_';
 	public $error_type = 'exit';
 	
@@ -65,8 +68,43 @@ class db
 		$this->port = $config['port'] ? $config['port'] : 3306;
 		$this->socket = $config['socket'] ? $config['socket'] : '';
 		$this->cache = $config['cache'] ? $config['cache'] : false;
+		$this->slow_status = $config['slow'] ? $config['slow'] : false;
+		$this->slow_time = $config['slow_time'] ? floatval($config['slow_time']) : 1;
 		if($config['client_url']){
 			$this->client_url = $config['client_url'];
+		}
+	}
+
+	//写入调试日志
+	public function __destruct()
+	{
+		if($this->_slowlist){
+			$file = DATA.'log/'.date("Ymd").'_slow.log.php';
+			if(!is_file($file)){
+				$content = "<?php die('forbidden'); ?>\n";
+				file_put_contents($file,$content);
+			}
+			$info = '';
+			foreach($this->_slowlist as $key=>$value){
+				$info .= $value['dateline'];
+				$info .= '|=phpok=|'.$value['time'];
+				$info .= '|=phpok=|'.$value['sql']."\n";
+			}
+			file_put_contents($file,$info,FILE_APPEND);
+		}
+		if($this->_sqlist){
+			$file = DATA.'log/'.date("Ymd").'_debug.log.php';
+			if(!is_file($file)){
+				$content = "<?php die('forbidden'); ?>\n";
+				file_put_contents($file,$content);
+			}
+			$info = '';
+			foreach($this->_sqlist as $key=>$value){
+				$info .= $value['count'];
+				$info .= '|=phpok=|'.$value['time'];
+				$info .= '|=phpok=|'.$value['sql']."\n";
+			}
+			file_put_contents($file,$info,FILE_APPEND);
 		}
 	}
 
@@ -198,6 +236,18 @@ class db
 	}
 
 	/**
+	 * 报错类型
+	 * @参数 $type 仅支持 exit 和 json 两个字串
+	**/
+	public function error_type($type='')
+	{
+		if($type){
+			$this->error_type = $type;
+		}
+		return $this->error_type;
+	}
+
+	/**
 	 * 自定义错误
 	 * @参数 $error 错误信息
 	 * @参数 $errid 错误ID
@@ -211,7 +261,7 @@ class db
 		}
 		if($this->error_type == 'json'){
 			$array = array('status'=>'error','content'=>$info);
-			exit(json_encode($array));
+			exit(json_encode($array,JSON_UNESCAPED_UNICODE));
 		}else{
 			echo $info;
 			exit;
@@ -219,7 +269,7 @@ class db
 	}
 
 	/**
-	 * 输出调试
+	 * 调试，2018年11月24日后不再支持即时输出，改为写日志
 	 * @参数 $sql SQL语句
 	 * @参数 $time 当前SQL运行时间
 	**/
@@ -228,6 +278,12 @@ class db
 		if(isset($sql) && is_bool($sql)){
 			$this->debug = $sql;
 			return $this->debug;
+		}
+		if($this->slow_status){
+			$this->_slow($sql,$time);
+		}
+		if(!$this->debug){
+			return true;
 		}
 		if($sql && trim($sql)){
 			$sql = trim($sql);
@@ -240,31 +296,24 @@ class db
 			}
 			return true;
 		}
-		if(!$this->debug){
+	}
+
+	private function _slow($sql,$time)
+	{
+		if($time < $this->slow_time){
 			return true;
 		}
-		$html  = '<style type="text/css">'."\n";
-		$html .= 'table.debug{border-collapse:collapse;border:1px solid #000;width:100%;height:auto;margin:10px auto;background:#fff;padding:0;font-size:12px;}'."\n";
-		$html .= 'table.debug tr th{background:#ccc;color:#000;text-align:center;font-weight:bold;padding:3px;border:1px solid #000;}'."\n";
-		$html .= 'table.debug tr td{text-align:center;padding:3px;background:#fff;color:#000;border:1px solid #000;}'."\n";
-		$html .= 'table.debug tr td:first-child{text-align:left;table-layout: fixed;word-break: break-all; word-wrap: break-word}'."\n";
-		$html .= 'table.debug tr:hover td{background:#efefef;}'."\n";
-		$html .= '</style>'."\n";
-		$html .= '<table class="debug">'."\n";
-		$html .= '<tr>'."\n";
-		$html .= '	<th>SQL</th>'."\n";
-		$html .= '	<th>Count</th>'."\n";
-		$html .= '	<th>Time</th>'."\n";
-		$html .= '</tr>'."\n";
-		foreach($this->_sqlist as $key=>$value){
-			$html .= '<tr>'."\n";
-			$html .= '	<td>'.$value['sql'].'</td>'."\n";
-			$html .= '	<td>'.$value['count'].'</td>'."\n";
-			$html .= '	<td>'.$value['time'].'</td>'."\n";
-			$html .= '</tr>'."\n";
+		$sql = trim($sql);
+		$this->_slowlist[] = array('sql'=>$sql,'dateline'=>time(),'time'=>$time);
+		return true;
+	}
+
+	public function slowlist()
+	{
+		if(!$this->_slowlist){
+			return false;
 		}
-		$html .= '</table>';
-		return $html;
+		return $this->_slowlist;
 	}
 
 	public function conn()

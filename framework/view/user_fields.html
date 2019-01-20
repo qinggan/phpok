@@ -1,58 +1,66 @@
-<!-- include tpl=head -->
-<div class="tips">
-	{lang您当前的位置：}
-	<a href="{url ctrl=user func=fields/}">{lang会员字段管理}</a>
-	<div class="action"><a href="javascript:$.admin_user.field_add();void(0)">{lang添加会员字段}</a></div>
-</div>
-
-<!-- if $used_list -->
-<div class="list">
-	<table width="100%" cellpadding="0" cellspacing="0">
-	<tr>
-		<th class="lft">{lang字段名}</th>
-		<th class="lft">{lang名称}</th>
-		<th class="lft">{lang字段类型}</th>
-		<th class="lft">{lang表单类型}</th>
-		<th class="lft">{lang备注}</th>
-		<th class="lft">{lang排序}</th>
-		<!-- if $popedom.set --><th>{lang操作}</th><!-- /if -->
-	</tr>
-	<!-- loop from=$used_list key=$key value=$value id=$tmpid -->
-	<tr>
-		<td>{$value.identifier}</td>
-		<td>{$value.title}</td>
-		<td>{$value.field_type_name}</td>
-		<td>{$value.form_type_name}</td>
-		<td>{$value.note}</td>
-		<td>{$value.taxis}</td>
-		<!-- if $popedom.set -->
-		<td>
-			<div class="button-group">
-				<input type="button" value="{lang修改}" onclick="$.admin_user.field_edit('{$value.id}')" class="layui-btn" />
-				<input type="button" value="{lang删除}" onclick="$.admin_user.field_delete('{$value.id}','{$value.title}')" class="layui-btn" />
-			</div>
-		</td>
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		<input type="button" value="{lang添加会员字段}" onclick="$.admin_user.field_add()" class="layui-btn layui-btn-sm" />
+	</div>
+	<div class="layui-card-body">
+		<!-- if $used_list -->
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>{lang字段名}</th>
+			<th>{lang名称}</th>
+			<th>{lang字段类型}</th>
+			<th>{lang表单类型}</th>
+			<th>{lang备注}</th>
+			<th>{lang排序}</th>
+			<!-- if $popedom.set --><th style="text-align:center;width:120px;">{lang操作}</th><!-- /if -->
+		</tr>
+		</thead>
+		<!-- loop from=$used_list key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.identifier}</td>
+			<td>{$value.title}</td>
+			<td>{$value.field_type_name}</td>
+			<td>{$value.form_type_name}</td>
+			<td>{$value.note}</td>
+			<td>{$value.taxis}</td>
+			<!-- if $popedom.set -->
+			<td align="center">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang编辑}" onclick="$.admin_user.field_edit('{$value.id}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.admin_user.field_delete('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</td>
+			<!-- /if -->
+		</tr>
+		<!-- /loop -->
+		</table>
 		<!-- /if -->
-	</tr>
-	<!-- /loop -->
-	</table>
+	</div>
+</div>
+<!-- if $fields_list -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang常见字段快速添加}
+	</div>
+	<div class="layui-card-body">
+		<ul class="layout fields_quick_add">
+			<!-- loop from=$fields_list key=$key value=$value id=$tmpid -->
+			<li>
+				<div class="left">
+					<div class="title">{$value.title}</div>
+					<div class="gray i">{$value.identifier}</div>
+				</div>
+				<div class="right">
+					<input type="button" value="{lang添加}" onclick="$.admin_user.field_quick_add('{$value.identifier}')" class="layui-btn layui-btn-sm" />
+				</div>
+				<div class="clear"></div>
+			</li>
+			<!-- /loop -->
+		</ul>
+	</div>
 </div>
 <!-- /if -->
-<!-- if $fields_list -->
-<div class="tips">{lang常见字段快速添加}</div>
-<ul class="layout fields_quick_add">
-	<!-- loop from=$fields_list key=$key value=$value id=$tmpid -->
-	<li>
-		<div class="left">
-			<div class="title">{$value.title}</div>
-			<div class="gray i">{$value.identifier}</div>
-		</div>
-		<div class="right">
-			<input type="button" value="{lang添加}" onclick="$.admin_user.field_quick_add('{$value.identifier}')" class="layui-btn" />
-		</div>
-	</li>
-	<!-- /loop -->
-</ul>
-<!-- /if -->
 
-<!-- inc:foot -->
+<!-- include tpl=foot_lay -->

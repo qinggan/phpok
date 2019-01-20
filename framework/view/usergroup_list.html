@@ -1,191 +1,71 @@
 <!-- include tpl=head_lay -->
-<script type="text/javascript">
-    function to_del(id)
-    {
-        if(!id)
-        {
-            $.dialog.alert("操作非法");
-            return false;
-        }
-        var q = confirm("确定要删除此会员组吗？删除后是不能恢复的");
-        if(q != 0)
-        {
-            var url = get_url("usergroup","ajax_del") + "&id="+id;
-            var msg = get_ajax(url);
-            if(!msg) msg = "error: 操作非法";
-            if(msg == "ok")
-            {
-                $.phpok.reload();
-            }
-            else
-            {
-                $.dialog.alert(msg);
-                return false;
-            }
-        }
-    }
-
-    function to_modify(id)
-    {
-        var url = get_url("usergroup","set","id="+id);
-        $.phpok.go(url);
-    }
-
-    function set_default(id,title)
-    {
-        $.dialog.confirm("确定要将组 <span class='red'>"+title+"</span> 设置为会员默认组吗?<br />设置成功后，新注册会员将自定使用此组功能",function(){
-            var url = get_url("usergroup","default")+"&id="+id;
-            var rs = get_ajax(url);
-            if(rs == "ok")
-            {
-                direct(window.location.href);
-            }
-            else
-            {
-                $.dialog.alert(rs);
-                return false;
-            }
-        });
-    }
-    function set_guest(id,title)
-    {
-        $.dialog.confirm("确定要将组 <span class='red'>"+title+"</span> 设置为游客组吗?<br />设置成功后，来访者将调用此组权限信息",function(){
-            var url = get_url("usergroup","guest")+"&id="+id;
-            var rs = get_ajax(url);
-            if(rs == "ok")
-            {
-                direct(window.location.href);
-            }
-            else
-            {
-                $.dialog.alert(rs);
-                return false;
-            }
-        });
-    }
-    function set_status(id)
-    {
-        var val = $("#status_"+id).val();
-        if(val == 1)
-        {
-            $.dialog.confirm("确定要禁用此会员组信息吗?<br />禁用后，该组会员不能登录，请慎用",function(){
-                var url = get_url("usergroup","status")+"&id="+id+"&status=0";
-                var rs = get_ajax(url);
-                if(rs == "ok")
-                {
-                    direct(window.location.href);
-                }
-                else
-                {
-                    $.dialog.alert(rs);
-                    return false;
-                }
-            });
-        }
-        else
-        {
-            var url = get_url("usergroup","status")+"&id="+id+"&status=1";
-            var rs = get_ajax(url);
-            if(rs == "ok")
-            {
-                direct(window.location.href);
-            }
-            else
-            {
-                $.dialog.alert(rs);
-                return false;
-            }
-        }
-    }
-
-
-</script>
 <div class="layui-card">
-	<div class="layui-card-header " style="visibility: visible;">
-		<div>{lang会员组列表}</div>
-	</div>
-
-	<div class="layui-card-body">
-
-		<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
-			<button class="layui-btn" onclick="$.phpok.go('{url ctrl=usergroup func=set/}');">
+	<div class="layui-card-header">
+		{lang会员组列表}
+		<div class="fr">
+			<button class="layui-btn layui-btn-sm" onclick="$.admin_usergroup.add()">
 				<i class="layui-icon">&#xe608;</i> {lang添加会员组}
 			</button>
 		</div>
-
-		<table class="layui-table">
-			<colgroup>
-				<col>
-				<col>
-				<col>
-				<col>
-				<col>
-				<col>
-				<col width="140">
-			</colgroup>
-			<thead>
-			<tr>
-				<th>组ID</th>
-				<th>&nbsp;</th>
-				<th>组名称</th>
-				<th>默认组</th>
-				<th>游客组</th>
-				<th>排序</th>
-				<th>操作</th>
-			</tr>
-			</thead>
-			<tbody>
-			<!-- loop from=$rslist key=$key value=$value -->
-			<tr>
-				<td align='center' class="tc_left" height="30px">{$value.id}</td>
-				<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="set_status({$value.id})"{else}style="cursor: default;"{/if} value="{$value.status}"></span></td>
-				<td align='left' class="tc_right">&nbsp;{$value.title}<!-- if $value.is_open --><span class="darkblue i"> (开放选择)</span><!-- /if --></td>
-				<td align="center">
-					<!-- if $value.is_default -->
-					<span class="red">默认会员组</span>
-					<!-- else -->
-					<!-- if $value.is_guest -->
-					-
-					<!-- else -->
-					<!-- if $session.admin_rs.if_system -->
-					<input type="button" value="设为默认" onclick="set_default('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
-					<!-- else -->
-					-
-					<!-- /if -->
-					<!-- /if -->
-					<!-- /if -->
-				</td>
-				<td align="center">
-					<!-- if $value.is_guest -->
-					<span class="darkblue">游客组</span>
-					<!-- else -->
-					<!-- if $value.is_default -->
-					-
-					<!-- else -->
-					<!-- if $session.admin_rs.if_system -->
-					<input type="button" value="设为游客组" onclick="set_guest('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
-					<!-- else -->
-					-
-					<!-- /if -->
-					<!-- /if -->
-					<!-- /if -->
-				</td>
-				<td align="center">{$value.taxis}</td>
-				<td align="center" class="tc_right">
-					<div class="layui-btn-group">
-						<!-- if $popedom.modify -->
-						<input type="button" value="编辑" class="layui-btn layui-btn-sm" onclick="to_modify('{:$value[id]}')" />
-						<!-- /if -->
-						<!-- if $popedom.delete -->
-						<input type="button" value="删除" class="layui-btn layui-btn-sm" onclick="to_del('{:$value[id]}')" />
-						<!-- /if -->
-					</div>
-				</td>
-			</tr>
-			<!-- /loop -->
-			</tbody>
-		</table>
 	</div>
-
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th class="center">组ID</th>
+			<th width="20px"></th>
+			<th>{lang组名称}</th>
+			<th>{lang审核机制}</th>
+			<th class="center">{lang排序}</th>
+			<th{lang>操作}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr>
+			<td align='center'>{$value.id}</td>
+			<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="$.admin_usergroup.status({$value.id})"{else}style="cursor: default;"{/if} value="{$value.status}"></span></td>
+			<td>
+				{$value.title}
+				<!-- if $value.is_open -->
+				/ <span class="darkblue i">{lang开放选择}</span>
+				<!-- /if -->
+				<!-- if $value.is_default -->
+				/ <span class="red">{lang默认会员组}</span>
+				<!-- /if -->
+				<!-- if $value.is_guest -->
+				/ <span class="red">{lang游客组}</span>
+				<!-- /if -->
+			</td>
+			<td>
+				<!-- if $value.register_status == 'email' -->
+				{lang邮件验证}
+				<!-- elseif $value.register_status == 'code' -->
+				{lang邀请码验证}
+				<!-- elseif $value.register_status -->
+				{lang自动审核}
+				<!-- else -->
+				{lang人工审核}
+				<!-- /if -->
+			</td>
+			<td align="center">{$value.taxis}</td>
+			<td>
+				<div class="layui-btn-group">
+					<!-- if $popedom.modify -->
+					<input type="button" value="{lang编辑}" class="layui-btn layui-btn-sm" onclick="$.admin_usergroup.modify('{:$value[id]}')" />
+					<!-- /if -->
+					<!-- if !$value.is_default && !$value.is_guest && $session.admin_rs.if_system -->
+					<input type="button" value="{lang设默认组}" onclick="$.admin_usergroup.set_default('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang设游客组}" onclick="$.admin_usergroup.guest('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
+					<!-- /if -->
+					<!-- if $popedom.delete -->
+					<input type="button" value="{lang删除}" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.admin_usergroup.del('{:$value[id]}')" />
+					<!-- /if -->
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		
+	</div>
 </div>
 <!-- include tpl=foot_lay -->

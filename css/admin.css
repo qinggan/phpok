@@ -13,7 +13,7 @@ html{font-size:12px;font-family:"Verdana","Arial","Microsoft Yahei","sans-serif"
 body{margin:3px;padding:0;overflow-y:scroll;_margin:0; _height:100%;}
 img{border:0 none;margin:0;padding:0;}
 a{text-decoration:none;color:#000;}
-a:hover{text-decoration:underline;color:darkblue;}
+a:hover{color:darkblue;}
 select{padding:3px;}
 select {
   border: solid 1px #acacac;
@@ -160,8 +160,8 @@ select.single{width:99%;padding:3px;}
 /* 常用表单 */
 input[type=text],input[type=password]{
 	border:1px solid #E5E5E5;
-	height:25px;
-	line-height:25px;
+	height:38px;
+	line-height:38px;
 	font-size:18px;
 	font-weight:normal;
 }
@@ -368,7 +368,7 @@ div.error{height:30px;line-height:30px;background:url("../images/error_24.png") 
 .pagelist ul li a.current{background:#E4E4E4;border:1px solid #ccc;text-decoration:none;}
 
 ul.layout{list-style:none;margin:0;padding:0;}
-ul.layout li{float:left;margin-right:5px;line-height:24px;}
+ul.layout li{float:left;margin-right:10px;line-height:24px;}
 ul.layout li label{vertical-align:middle;}
 ul.layout li label input{margin-top:-1px;vertical-align:middle;}
 ul.layout:after{clear:both;content:'.';display:block;visibility:hidden;height:0;overflow:hidden;}
@@ -816,10 +816,8 @@ ul.group .on,ul.group li.hover
 .biz_attr .options{margin:10px;padding:5px;}
 
 
-div.submit-info{position:fixed;bottom:0px;background:#F0F0F0;border-bottom:1px solid #fff;border-top:1px solid #BFBFBF;width:100%;margin-left:-3px;padding:10px 0 8px 0;z-index:1299;}
+div.submit-info{position:fixed;bottom:0px;background:#F0F0F0;border-bottom:1px solid #fff;border-top:1px solid #BFBFBF;width:100%;margin-left:-3px;padding:10px 0 8px 0;z-index:1299;text-align:center;}
 div.submit-info:after{content:'.';height:0;line-height:0;font-size:0;display: block;visibility: hidden;clear:both;}
-div.submit-info input{margin-left:10px;}
-div.submit-info input[type=button]:last-child{float:right;margin-right:10px;}
 input.extkey{width:100px;padding-right:3px;text-align:right;}
 
 ul.fields_quick_add{margin:0 10px;}

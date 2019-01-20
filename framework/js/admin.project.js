@@ -311,6 +311,26 @@
 				'height':'500px',
 				'padding':'0 10px'
 			})
+		},
+		icolist:function()
+		{
+			$.dialog.open(get_url('project','icolist'),{
+				'title':p_lang('选择图标'),
+				'lock':true,
+				'width':'700px',
+				'height':'60%',
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.save();
+					return false;
+				},
+				'okVal':'提交',
+				'cancel':true
+			})
 		}
 	};
 

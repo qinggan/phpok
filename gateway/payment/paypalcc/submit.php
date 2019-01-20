@@ -85,6 +85,10 @@ class paypalcc_submit
 				}
 			}
 		}
+		if($this->order['type'] == 'recharge'){
+			$app->model('wealth')->recharge($this->order['id']);
+		}
+		$GLOBALS['app']->plugin('payment-notice',$this->order['id']);
 		$app->success();
 	}
 }

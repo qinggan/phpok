@@ -1,0 +1,65 @@
+<!-- include tpl=head_lay nopadding=true -->
+<script type="text/javascript">
+var code_editor,delay
+var is_edit = '{$is_edit ? 1 : 0}'
+$(document).ready(function(){
+	code_editor = CodeMirror.fromTextArea(document.getElementById("content"),{
+		lineNumbers		: true,
+		matchBrackets	: true,
+		lineWrapping	: true,
+		indentWithTabs	: true,
+		indentUnit		: 4
+	});
+	$("#post_save").submit(function(){
+		if(is_edit != '1'){
+			$.dialog.alert(p_lang('不支持在线保存'));
+			return false;
+		}
+		code_editor.save();
+		$(this).ajaxSubmit({
+			'url':get_url('appsys','file_edit_save'),
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status){
+					$.dialog.tips(p_lang('代码保存成功'),function(){
+						var url = get_url("appsys","filelist","id="+$("input[name=id]").val());
+						$.admin.close(url);
+					}).lock();
+					return true;
+				}
+				$.dialog.alert(rs.info);
+				return false;
+			}
+		});
+		return false;
+	});
+});
+</script>
+<form method="post" id="post_save">
+<input type="hidden" name="id" value="{$id}" />
+<input type="hidden" name="folder" value="{$folder}" />
+<input type="hidden" name="title" value="{$title}" />
+<div class="layui-card">
+	<!-- if $tips -->
+	<div class="layui-card-header red center">
+		<b>{$tips}</b>
+	</div>
+	<!-- /if -->
+	<div class="layui-card-body" style="padding:0;margin:0;">
+		<textarea id="content" name="content">{$content}</textarea>
+	</div>
+</div>
+
+
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<!-- if $is_edit --><input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" /><!-- /if -->
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+
+</form>
+
+<!-- include tpl=foot_lay is_open=true -->

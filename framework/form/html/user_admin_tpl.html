@@ -3,27 +3,32 @@
 function action_{$_rs.identifier}_show()
 {
 	var tmp_id = $("#{$_rs.identifier}").val();
-	if(tmp_id)
-	{
-		var url = get_url("inp")+"&type=user&content="+$.str.encode(tmp_id);
-		var rs = json_ajax(url);
-		if(rs.status == "ok")
-		{
+	if(!tmp_id){
+		$("#{$_rs.identifier}_div").html('');
+		return true;
+	}
+	var url = get_url('inp','','type=user&content='+$.str.encode(tmp_id));
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
 			var lst = rs.content;
 			var c = '';
 			var m = 1;
-			for(var i in lst)
-			{
+			for(var i in lst){
 				var class_cate_id = "cate_"+(m%9).toString();
 				c += '<li id="{$_rs.identifier}_div_'+lst[i]['id']+'">';
-				c += '<div class="cate '+class_cate_id+'"><a href="javascript:phpok_user_preview(\''+lst[i]['id']+'\');void(0);">'+lst[i]['user']+'</a></div>';
-				c += '<div class="cate_add"><a href="javascript:phpok_user_delete(\'{$_rs.identifier}\',\''+lst[i]['id']+'\');void(0);" title="删除"><img src="images/page_delete.png" border="0" alt="" /></a></div>';
+				c += '<div class="layui-btn-group">';
+				c += '<input type="button" value="'+lst[i]['user']+'" onclick="phpok_user_preview(\''+lst[i]['id']+'\')" class="layui-btn layui-btn-xs" />';
+				c += '<input type="button" value="'+p_lang('删除')+'" onclick="phpok_user_delete(\'{$_rs.identifier}\',\''+lst[i]['id']+'\')" class="layui-btn layui-btn-xs layui-btn-danger" />';
+				c += '</div>';
 				c += '</li>';
 				m++;
 			}
 			$("#{$_rs.identifier}_div").html(c);
+			return true;
 		}
-	}
+		$.dialog.alert(rs.content);
+		return false;
+	});
 }
 $(document).ready(function(){
 	$("#_phpok_button_user_{$_rs.identifier}").click(function(){
@@ -48,11 +53,9 @@ $(document).ready(function(){
 });
 </script>
 <input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs_content}" />
-<ul class="layout_user">
-	<li style="margin-top:5px;"><input id="_phpok_button_user_{$_rs.identifier}" type="button" value="请选择" class="button" /></li>
-	<div id="{$_rs.identifier}_div" class="user_selected_div"></div>
-	<div class="clear"></div>
-</ul>
+<input id="_phpok_button_user_{$_rs.identifier}" type="button" value="{lang请选择会员}" class="layui-btn layui-btn-sm" />
+<ul class="layout" id="{$_rs.identifier}_div" style="margin-top:5px;"></ul>
+<div class="clear"></div>
 <!-- else -->
 <script type="text/javascript">
 function action_{$_rs.identifier}_show()

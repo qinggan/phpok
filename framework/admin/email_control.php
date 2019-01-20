@@ -153,7 +153,7 @@ class email_control extends phpok_control
 		}
 		$rs = $this->model('email')->get_identifier($identifier,$id);
 		if($rs){
-			$this->json(P_Lang('标识串已被使用'));
+			$this->json(P_Lang('标识符已被使用'));
 		}
 		$this->json(true);
 	}

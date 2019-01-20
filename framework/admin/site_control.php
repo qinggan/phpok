@@ -308,7 +308,7 @@ class site_control extends phpok_control
 			}
 			$tlist = $this->model('site')->admi_order_status_all();
 			if(isset($tlist[$identifier])){
-				$this->error(P_Lang('标识已被使用，请重新设置一个'));
+				$this->error(P_Lang('标识已被使用'));
 			}
 			$id = $identifier;
 		}

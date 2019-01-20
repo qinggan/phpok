@@ -54,3 +54,4 @@ port = "6379"
 
 ;缓存Key前缀，防止生成的Key重复
 prefix = "qinggan_"
+

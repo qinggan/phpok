@@ -1,9 +1,9 @@
 <!-- if $_ptype -->
 <div class="param">
-	<div style="float:left;margin-right:10px;">
+	<div class="clearfix">
 		<!-- if $_param_edit -->
 			<!-- if $_pname -->
-			<div style="margin-bottom:5px;">
+			<div style="margin-bottom:5px;float:left;">
 				<select name="ele_{$_rs.identifier}" id="ele_{$_rs.identifier}">
 					<option value="">请选择…</option>
 					<!-- loop from=$_pname key=$key value=$value -->
@@ -14,25 +14,27 @@
 			<!-- else -->
 			<input type="hidden" name="ele_{$_rs.identifier}" id="ele_{$_rs.identifier}" value="" />
 			<!-- /if -->
-			<div style="margin-bottom:5px;"><input type="button" value="添加一列" class="button" onclick="$.phpok_form_param.add_ele_mul('{$_rs.identifier}','{$_rs.width}')" /></div>
+			<div style="margin:3px 0 5px 5px;float:left;"><input type="button" value="添加一列" class="layui-btn layui-btn-sm" onclick="$.phpok_form_param.add_ele_mul('{$_rs.identifier}','{$_rs.width}')" /></div>
 		<!-- /if -->
-		<input type="button" value="添加一行" class="btn" onclick="$.phpok_form_param.add_line('{$_rs.identifier}','{$_rs.p_name_type}','{$_rs.width}')" />
+		<div style="margin:3px 0 5px 5px;float:left;"><input type="button" value="添加一行" class="layui-btn layui-btn-sm" onclick="$.phpok_form_param.add_line('{$_rs.identifier}','{$_rs.p_name_type}','{$_rs.width}')" /></div>
 	</div>
-	<div id="list_{$_rs.identifier}" style="float:left;">
-		<table class="list" style="border:1px solid #ccc;margin:0;" cellpadding="0" cellspacing="1" id="{$_rs.identifier}_tbl">
+	<div id="list_{$_rs.identifier}">
+		<table class="layui-table" id="{$_rs.identifier}_tbl">
+		<thead>
 		<tr>
 			<th width="50">操作</th>
 			<!-- loop from=$_rslist.title key=$key value=$value -->
 				<!-- if $_param_edit -->
 				<th>
-					<input type="text" name="{$_rs.identifier}_title[]" style="width:{$_rs.p_width}px;" value="{$value}" />
-					<input type="button" value="{lang删除}" onclick="$.phpok_form_param.delete_one('{$_rs.identifier}',this)"/>
+					<input type="text" name="{$_rs.identifier}_title[]" class="layui-input" style="width:{$_rs.p_width}px;" value="{$value}" />
+					<div style="position: absolute;top:5px;right:5px;" title="{lang删除}" onclick="$.phpok_form_param.delete_one('{$_rs.identifier}',this)"><i class="layui-icon layui-icon-close-fill"></i></div>
 				</th>
 				<!-- else -->
 				<th style="width:{$_rs.p_width}px;">{$value}<input type="hidden" name="{$_rs.identifier}_title[]" value="{$value}" /></th>
 				<!-- /if -->
 			<!-- /loop -->
 		</tr>
+		</thead>
 		<!-- loop from=$_rslist.content key=$key value=$value -->
 		<tr>
 			<td><input type="button" value="{lang删除}" onclick="$.phpok_form_param.delete_line(this)" class="btn" /></td>
@@ -50,7 +52,7 @@
 	<!-- if $_param_edit -->
 	<div style="margin-bottom:10px;">
 		<!-- if $_pname -->
-		<select name="ele_{$_rs.identifier}" id="ele_{$_rs.identifier}">
+		<select name="ele_{$_rs.identifier}" id="ele_{$_rs.identifier}" lay-ignore>
 			<option value="">请选择…</option>
 			<!-- loop from=$_pname key=$key value=$value -->
 			<option value="{$value}">{$value}</option>
@@ -59,7 +61,7 @@
 		<!-- else -->
 		<input type="hidden" name="ele_{$_rs.identifier}" id="ele_{$_rs.identifier}" value="" />
 		<!-- /if -->
-		<input type="button" value="{lang添加属性}" class="button" onclick="$.phpok_form_param.add_ele_single('{$_rs.identifier}','{$_rs.width}')" />
+		<input type="button" value="{lang添加属性}" class="layui-btn layui-btn-sm" onclick="$.phpok_form_param.add_ele_single('{$_rs.identifier}','{$_rs.width}')" />
 	</div>
 	<!-- /if -->
 	<div id="list_{$_rs.identifier}">
@@ -67,12 +69,12 @@
 		<div style="margin-bottom:10px;">
 			<ul class="layout">
 				<!-- if $_param_edit -->
-				<li><input type="text" name="{$_rs.identifier}_title[]" value="{$value}"/></li>
+				<li><input type="text" name="{$_rs.identifier}_title[]" class="layui-input" value="{$value}"/></li>
 				<!-- else -->
-				<li style="border:1px solid #ccc;text-align: center;background:#efefef;width:90px;">{$value}<input type="hidden" name="{$_rs.identifier}_title[]" id="" value="{$value}" /></li>
+				<li><input type="button" value="{$value}" class="layui-input layui-btn-sm layui-btn-primary" /><input type="hidden" name="{$_rs.identifier}_title[]" id="" value="{$value}" /></li>
 				<!-- /if -->
-				<li><input type="text" name="{$_rs.identifier}_body[]" value="{$_rslist.content[$key]}"/></li>
-				<!-- if $_param_edit --><li><input type="button" value="{lang删除}" class="button" onclick="$.phpok_form_param.delete_line_single(this)" /></li><!-- /if -->
+				<li><input type="text" name="{$_rs.identifier}_body[]" class="layui-input" value="{$_rslist.content[$key]}"/></li>
+				<!-- if $_param_edit --><li><input type="button" value="{lang删除}" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.phpok_form_param.delete_line_single(this)" /></li><!-- /if -->
 			</ul>
 			<div class="clear"></div>
 		</div>

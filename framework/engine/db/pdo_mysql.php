@@ -112,9 +112,7 @@ class db_pdo_mysql extends db
 		}
 		$tmptime = $this->_time();
 		$this->_count();
-		if($this->debug){
-			$this->debug($sql,$tmptime);
-		}
+		$this->debug($sql,$tmptime);
 		return $this->query;
 	}
 

@@ -1,0 +1,32 @@
+<!-- include tpl=head_lay -->
+<style type="text/css">
+.layui-form-label{width:30%;text-align: right;}
+</style>
+<div class="layui-card">
+	<div class="layui-card-body">
+		<!-- loop from=$list key=$key value=$value id=$tmpid -->
+		<div class="layui-form-item">
+			<label class="layui-form-label" >
+				<!-- if $value[3] --><i class="layui-icon layui-tips" lay-tips="{$value[3]}">&#xe702;</i><!-- /if -->
+				{$value[0]}
+			</label>
+			<div class="layui-form-mid"{if $value[2]} style="{$value[2]}"{/if}>
+				{$value[1]}
+			</div>
+		</div>
+		<!-- /loop -->
+		<!-- if $showphpinfo -->
+		<div class="layui-form-item">
+			<label class="layui-form-label" >
+				{lang查看PHPInfo}
+			</label>
+			<div class="layui-form-mid">
+				<a href="javascript:$.phpok.open('{url ctrl=index func=info php=1/}');void(0)">PHPInfo</a>
+			</div>
+		</div>
+		<!-- /if -->
+		
+	</div>
+</div>
+
+<!-- include tpl=foot_lay is_open=true -->

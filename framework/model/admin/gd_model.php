@@ -29,17 +29,6 @@ class gd_model extends gd_model_base
 
 	public function delete($id,$root_dir='')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."res_ext WHERE gd_id='".$id."'";
-		$rslist = $this->db->get_all($sql);
-		if($rslist){
-			foreach($rslist AS $key=>$value){
-				if($value["filename"] && file_exists($root_dir.$value["filename"]) && is_file($root_dir.$value["filename"])){
-					@unlink($root_dir.$value["filename"]);
-				}
-			}
-		}
-		$sql = "DELETE FROM ".$this->db->prefix."res_ext WHERE gd_id='".$id."'";
-		$this->db->query($sql);
 		$sql = "DELETE FROM ".$this->db->prefix."gd WHERE id='".$id."'";
 		$this->db->query($sql);
 		return true;

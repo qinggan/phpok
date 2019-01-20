@@ -1,0 +1,52 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<!-- if $folder && $folder != '/' -->
+	<div class="layui-card-header">
+		<div class="fr">
+			<button class="layui-btn layui-btn-sm" onclick="history.go(-1)"><i class="layui-icon">&#xe603;</i>{lang返回上一级}</button>
+		</div>
+	</div>
+	<!-- /if -->
+	<div class="layui-card-body">
+		<blockquote class="layui-elem-quote">
+			<!-- php:$tmp = '_app/'.$id.'/'.$folder -->
+			{lang要实现在线编辑和上传功能，请确保 [folder] 下的文件有写入权限|folder:$tmp}
+		</blockquote>
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th width="40">&nbsp;</th>
+			<th>{lang名称}</th>
+			<th width="150px">{lang时间}</th>
+			<th>&nbsp;</th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- loop from=$dirlist key=$key value=$value -->
+		<tr>
+			<td align="center"><img src="images/filetype/dir.gif" border="0" alt="{lang文件夹}"></td>
+			<td colspan="2">{$value.title}</td>
+			<td><input type="button" value="{lang进入}" onclick="$.phpok.go('{$value.url}')" class="layui-btn layui-btn-sm" /></td>
+		</tr>
+		<!-- /loop -->
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr>
+			<td align="center"><img src="images/filetype/{$value.type}.gif" border="0" alt="文件：{$value.title}"></td>
+			<td>{$value.title}</td>
+			<td>{$value.date}</td>
+			<td>
+				<!-- if in_array($value.type,$edit_array) -->
+				<input type="button" value="{lang编辑}" onclick="$.admin_appsys.file_edit('{$id}','{$folder}','{$value.title}')" class="layui-btn layui-btn-sm" />
+				<!-- elseif in_array($value.type,$pic_array) -->
+				<input type="button" value="{lang查看}" onclick="$.admin_appsys.file_view('{$id}/{$folder}{$value.title}')" class="layui-btn layui-btn-sm" />
+				<!-- else -->
+				<input type="button" value="{lang下载}" onclick="$.admin_appsys.file_download('{$id}','{$folder}','{$value.title}')" class="layui-btn layui-btn-sm" />
+				<!-- /if -->
+			</td>
+		</tr>
+		<!-- /loop -->
+		</tbody>
+		</table>
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

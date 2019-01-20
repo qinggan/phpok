@@ -307,4 +307,21 @@ class common_lib
 		}
 		return $scill;
 	}
+
+	public function urlsafe_b64encode($string)
+	{
+		$data = base64_encode($string);
+		$data = str_replace(array('+','/','='),array('-','_',''),$data);
+		return $data;
+	}
+
+	public function urlsafe_b64decode($str)
+	{
+		$data = str_replace(array('-','_'),array('+','/'),$str);
+		$mod4 = strlen($data) % 4;
+		if($mod4){
+			$data .= substr('====', $mod4);
+		}
+		return base64_decode($data);
+	}
 }

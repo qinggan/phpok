@@ -39,8 +39,8 @@ class alipay_submit
 	{
 		global $app;
         $notify_url = $this->baseurl."gateway/payment/alipay/notify_url.php";
-        $return_url = $GLOBALS['app']->url('payment','notice','id='.$this->order['id'],'www',true);
-        $show_url = $GLOBALS['app']->url('payment','show','id='.$this->order['id'],'www',true);
+        $return_url = $app->url('payment','notice','id='.$this->order['id'],'www',true);
+        $show_url = $app->url('payment','show','id='.$this->order['id'],'www',true);
         $currency_id = $this->param['currency'] ? $this->param['currency']['id'] : $this->order['currency_id'];
         $total_fee = price_format_val($this->order['price'],$this->order['currency_id'],$currency_id);
 		$parameter = array(
@@ -76,6 +76,20 @@ class alipay_submit
 			$parameter['receive_zip'] = $address['zipcode'];
 			$parameter['receive_phone'] = $address['tel'];
 			$parameter['receive_mobile'] = $address['mobile'];
+		}elseif($this->param['param']['ptype'] == 'create_forex_trade' || $this->param['param']['ptype'] == 'create_forex_trade_wap'){
+			$currency_rs = $app->model('currency')->get_one($currency_id);
+			if($currency_rs['code'] == 'CNY'){
+				$parameter['rmb_fee'] = $total_fee;
+			}else{
+				$parameter['total_fee'] = $total_fee;
+			}
+			$parameter['currency'] = $currency_rs['code'];
+			if($this->param['param']['envtype'] == 'product_n'){
+				$parameter['product_code'] = 'NEW_OVERSEAS_SELLER';
+				if($this->param['param']['ptype'] == 'create_forex_trade_wap'){
+					$parameter['product_code'] = 'NEW_WAP_OVERSEAS_SELLER';
+				}
+			}
 		}else{
 			$parameter['total_fee'] = $total_fee;
 			$parameter['anti_phishing_key'] = '';
@@ -94,6 +108,11 @@ class alipay_submit
 		$app->tpl->assign('alipay_config',$alipay_config);
 		$app->tpl->assign('postdata',$params);
 		$app->tpl->assign('order',$this->order);
+		$form_url = $this->param['param']['envtype'] == 'demo' ? 'https://mapi.alipaydev.com/gateway.do' : 'https://mapi.alipay.com/gateway.do';
+		if($this->param['param']['envtype'] == 'product_n'){
+			$form_url = 'https://intlmapi.alipay.com/gateway.do';
+		}
+		$app->tpl->assign('form_url',$form_url);
 		$app->tpl->display('payment/alipay_submit');
 	}
 }

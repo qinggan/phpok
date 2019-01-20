@@ -56,19 +56,6 @@
 			</comment>
 		</list>
 	</p-96>
-	<p-142>
-		<list>
-			<add>
-				<status><![CDATA[1]]></status>
-			</add>
-			<edit>
-				<status><![CDATA[1]]></status>
-			</edit>
-			<comment>
-				<status><![CDATA[1]]></status>
-			</comment>
-		</list>
-	</p-142>
 	<p-144>
 		<list>
 			<add>
@@ -111,7 +98,7 @@
 	<p-386>
 		<list>
 			<add>
-				<status><![CDATA[1]]></status>
+				<status><![CDATA[]]></status>
 			</add>
 			<edit>
 				<status><![CDATA[1]]></status>
