@@ -133,7 +133,7 @@ function logout(t)
 				'cancel':true
 			})
 		},
-		
+
 		edit:function(id)
 		{
 			var width = '500px',height = '500px';
@@ -160,7 +160,7 @@ function logout(t)
 				'cancel':true
 			});
 		},
-		
+
 		del:function(id)
 		{
 			$.dialog.confirm(p_lang('确定要删除这个地址吗？地址ID {id}',"#"+id),function(){
@@ -178,6 +178,10 @@ function logout(t)
 					$.phpok.reload();
 				})
 			});
+		},
+		address_select:function(id)
+		{
+			//
 		}
 	}
 })(jQuery);

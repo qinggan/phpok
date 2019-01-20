@@ -219,4 +219,20 @@ $(document).ready(function(){
 		});
 	}
 
+	$(".floatbar .weixin").hover(function(){
+		var src = $(this).find(".wxpic").attr("data-filename");
+		var html = '<img src="'+src+'" border="0" />';
+		$(this).find('.wxpic').html(html).show();
+	},function(){
+		$(this).find('.wxpic').hide();
+	});
+
+	//异步定时通知
+	window.setTimeout(function(){
+		$.phpok.json(api_url('task'),true);
+	}, 800);
+
+	if(biz_status && biz_status != 'undefined' && biz_status == '1'){
+		$.cart.total();
+	}
 });

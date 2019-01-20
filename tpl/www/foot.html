@@ -6,25 +6,24 @@
 		<!-- if $list_id.num == $list_id.total --><br /><!-- else --> | <!-- /if -->
 		<!-- /loop -->
 		{$config.copyright.content}
-		<div class="debug">{func debug_time}</div>
 	</div>
 </div>
 <!-- php:$list = phpok('kefu') -->
 <!-- if $list.project && $list.rslist -->
-<div class="im_floatonline">
-	<div class="am-panel am-panel-primary">
-		<div class="am-panel-hd center">{$list.project.title}</div>
-		<div class="am-panel-bd">
-			<ul class="am-list">
-				<!-- loop from=$list.rslist key=$key value=$value -->
-				<li>{$value.title} <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes"><img border="0" src="//wpa.qq.com/pa?p=2:{$value.qq}:51" alt="点击这里给我发消息" title="点击这里给我发消息"/></a></li>
-				<!-- /loop -->
-				<!-- if $list.project.barcode -->
-				<li><img src="{$list.project.barcode.filename}" width="80px" alt="{$list.project.title}" /></li>
-				<!-- /if -->
-			</ul>
+<div class="floatbar">
+	<div class="am-g" style="max-width:1200px;">
+		<!-- loop from=$list.rslist key=$key value=$value -->
+		<!-- if $value.qtype == 'qq' -->
+		<div class="am-u-sm-3 am-u-xx-centered"><a target="_blank" href="//wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes" title="点击这里给我发消息">{$value.title}（QQ：{$value.qq}） <img border="0" src="images/qq.png" alt="点击这里给我发消息" style="width:32px;"/></a></div>
+		<!-- else -->
+		<div class="am-u-sm-3 am-u-xx-centered weixin">
+			<a href="javascript:void(0);">{$value.title}（微信：{$value.weixin}） <img border="0" src="images/weixin.png" alt="鼠标移到这里查看二维码" style="width:32px;"/></a>
+			<div class="wxpic" data-filename="{$value.qrcode.filename}"></div>
 		</div>
+		<!-- /if -->
+		<!-- /loop -->
 	</div>
 </div>
+<div style="height:50px;clear:both;">&nbsp;</div>
 <!-- /if -->
 <!-- include tpl=footer -->

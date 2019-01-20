@@ -36,7 +36,7 @@
 		</ul>
 	</div>
 
-	<form method="post" action="https://mapi.alipay.com/gateway.do?_input_charset={$alipay_config.input_charset}">
+	<form method="post" action="{$form_url}?_input_charset={$alipay_config.input_charset}">
 	<!-- loop from=$postdata key=$key value=$value id=$tmpid -->
 	<input type="hidden" name="{$key}" value="{$value}" />
 	<!-- /loop -->

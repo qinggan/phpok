@@ -23,7 +23,7 @@ $(document).ready(function(){
 });
 </script>
 <!-- /if -->
-<section class="main">
+<section class="main" style="margin:10px auto;">
 	<div class="am-g am-g-collapse">
 		<div class="am-u-lg-3">
 			<!-- php:$list = phpok('news') -->
@@ -62,13 +62,14 @@ $(document).ready(function(){
 		<h2 class="am-titlebar-title ">{$list.project.title}</h2>
 		<nav class="am-titlebar-nav"><a href="{$list.project.url}">更多 <span class="am-icon-angle-right"></span><span class="am-icon-angle-right"></span></a></nav>
 	</div>
-	<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-5 am-gallery-bordered">
+	<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-5 am-gallery-bordered products">
 		<!-- loop from=$list.rslist key=$key value=$value -->
 		<li>
 			<div class="am-gallery-item">
 				<a href="{$value.url}" title="{$value.title}">
 					<img src="{$value.thumb.gd.thumb}" alt="{$value.title}" />
-					 <h3 class="am-gallery-title">{$value.title}</h3>
+					<!-- if $value.apps && $value.apps.coupon --><div class="discount"><img src="{$value.apps.coupon.rs.pic1}" /></div><!-- /if -->
+					<h3 class="am-gallery-title">{$value.title}</h3>
 					<!-- if $list.project.is_biz --><div class="am-gallery-desc red">{func price_format $value.price $value.currency_id}</div><!-- /if -->
 				</a>
 			</div>

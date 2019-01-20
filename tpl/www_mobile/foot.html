@@ -26,26 +26,7 @@
 		</li>
 		<!-- /if -->
 		<li>
-			<a href="{url ctrl=search/}"> <i class="am-icon-search"></i> <span class="am-navbar-label">站内搜索</span></a>
-		</li>
-		<!-- if !$session.user_id -->
-		<li>
-			<a href="{url ctrl=register/}"> <i class="am-icon-user-plus"></i> <span class="am-navbar-label">注册</span></a>
-		</li>
-		<!-- /if -->
-
-		<!-- php:$list = phpok('kefu') -->
-		<!-- loop from=$list.rslist key=$key value=$value -->
-		<li>
-			<a href="http://wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes" target="{$value.target}"> <span class="am-icon-qq"></span> <span class="am-navbar-label">{$value.title}</span></a>
-		</li>
-		<!-- /loop -->
-		<li data-am-navbar-qrcode>
-			<a href="###"> <span class="am-icon-qrcode"></span>  <span class="am-navbar-label">二维码</span></a>
-		</li>
-		<li data-am-navbar-share>
-			<a href="###"> <span class="am-icon-share-square-o"></span> <span class="am-navbar-label">分享</span>
-			</a>
+			<a href="{url ctrl=search/}"> <i class="am-icon-search"></i> <span class="am-navbar-label">搜索</span></a>
 		</li>
 	</ul>
 </div>

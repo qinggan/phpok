@@ -18,7 +18,7 @@
 .content table {border: 1px solid #ddd;border-collapse: collapse;display: table;}
 .content table td {border: 1px solid #ddd;padding: 5px 10px;}
 .content table th {border: 1px solid #ddd;background-color: #f7f7f7;padding: 5px 10px;}
-
+.content img{max-width:100%}
 
 /* 产品详细页 开始 */
 div.attr{border:1px solid #ccc;margin-bottom:5px;line-height:26px;padding:3px 10px;cursor:pointer;}

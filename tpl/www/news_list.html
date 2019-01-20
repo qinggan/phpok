@@ -26,7 +26,9 @@
 						<div class=" am-u-sm-10 am-list-main">
 							<h3 class="am-list-item-hd"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></h3>
 							<span class="am-list-date">发布时间：{func time_format $value.dateline}，查看次数：{$value.hits}</span>
-							<div class="am-list-item-text" style="max-height:6.5em;">{$value.note ? phpok_cut($value.note,300,'…') : phpok_cut($value.content,300,'…')}</div>
+							<!-- if $value.note -->
+							<div class="am-list-item-text" style="max-height:6.5em;">{func nl2br $value.note}</div>
+							<!-- /if -->
 						</div>
 					</li>
 					<!-- else -->
@@ -34,7 +36,9 @@
 						<div class=" am-list-main">
 							<h3 class="am-list-item-hd"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></h3>
 							<span class="am-list-date">发布时间：{func time_format $value.dateline}，查看次数：{$value.hits}</span>
-							<div class="am-list-item-text">{$value.note ? phpok_cut($value.note,225,'…') : phpok_cut($value.content,225,'…')}</div>
+							<!-- if $value.note -->
+							<div class="am-list-item-text">{func nl2br $value.note}</div>
+							<!-- /if -->
 						</div>
 					</li>
 					<!-- /if -->

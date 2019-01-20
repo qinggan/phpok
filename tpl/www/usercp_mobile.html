@@ -7,14 +7,14 @@ $(document).ready(function(){
 			'dataType':'json',
 			'url':api_url('usercp','mobile'),
 			'success':function(rs){
-				if(rs.status == 'ok'){
+				if(rs.status){
 					$.dialog.alert("您的手机更新成功",function(){
 						$.phpok.reload();
 					},'succeed');
-				}else{
-					$.dialog.alert(rs.content);
-					return false;
+					return true;
 				}
+				$.dialog.alert(rs.info);
+				return false;
 			}
 		});
 		return false;
@@ -46,7 +46,7 @@ function send_sms()
 		$.dialog.alert('验证码已发送，请一分钟后再执行');
 		return false;
 	}
-	var url = api_url('usercp','smscode');
+	var url = api_url('vcode','sms');
 	var mobile = $("#mobile").val();
 	if(!mobile){
 		$.dialog.alert('手机号不能为空');
@@ -55,24 +55,15 @@ function send_sms()
 	url += "&mobile="+mobile;
 	$.dialog.tips("正在执行中，请稍候…");
 	update_send_sms_loading();
-	$.ajax({
-		'url':url,
-		'dataType':'json',
-		'cache':false,
-		'async':true,
-		'beforeSend': function (XMLHttpRequest){
-			XMLHttpRequest.setRequestHeader("request_type","ajax");
-		},
-		'success':function(rs){
-			if(rs.status == 'ok'){
-				maxtime = 60;
-				sms_send_lock = true;
-				win_time_out = setInterval("update_send_sms_loading()",1000);
-			}else{
-				$.dialog.alert(rs.content);
-				$("#sms_send_status").val('发送验证码');
-			}
+	$.phpok.json(url,function(rs){
+		if(rs.status){
+			maxtime = 60;
+			sms_send_lock = true;
+			win_time_out = setInterval("update_send_sms_loading()",1000);
+			return true;
 		}
+		$.dialog.alert(rs.info);
+		$("#sms_send_status").val('发送验证码');
 	});
 }
 </script>

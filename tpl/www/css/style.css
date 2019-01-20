@@ -116,7 +116,7 @@ header nav.menu ul li:hover dd:hover{background:#0c79b1;}
 header nav.menu ul li.current{ background:#e0690c;}
 
 /*轮播*/
-.banner{position:relative;width:1200px;margin:10px auto;}
+.banner{position:relative;width:1200px;margin:10px auto 0 auto;}
 .banner .bd ul{list-style:none;margin:0;padding:0}
 .banner .bd ul li{text-align:center;}
 .banner .bd ul li img{min-width:1200px;width:100%;}
@@ -128,7 +128,7 @@ header nav.menu ul li.current{ background:#e0690c;}
 
 /* 首页 */
 
-.index-about .thumb{float:left;margin-right:10px;}
+.index-about .thumb{float:left;margin-right:10px;max-width:300px;}
 .index-about p{margin:0;text-indent:2em;}
 
 
@@ -145,11 +145,6 @@ header nav.menu ul li.current{ background:#e0690c;}
 /* 友情链接 */
 .link{ padding:10px; line-height:30px;}
 .link a{ margin-right:10px;}
-
-
-/* 在线客服样式 */
-.im_floatonline{position:fixed; right:10px; top:150px;z-index:1999}
-.im_floatonline li{text-align:center;border:0;}
 
 
 .m_box{ overflow:hidden; margin-bottom:10px;}
@@ -224,3 +219,31 @@ div.attr.selected{border:1px solid red;}
 .adm_reply {margin:4px 0 0 0;font-size:1em;line-height:180%;border-top:1px solid #ccc;padding:5px;position:relative;background:#fafafa;}
 .adm_reply .adminer{color:darkred;}
 .adm_reply p{margin:5px 0;text-indent:2em;}
+
+
+/* 页脚客服 */
+.floatbar {
+	border-top:#e0690c 2px solid;
+	left: 0px;
+	padding-top:8px;
+	margin: 0px auto;
+	width: 100%;
+	bottom: 0px! important;
+	position: fixed;
+	height:50px;
+	z-index:99999;
+	background:#0e90d2;
+}
+.floatbar .weixin{position: relative;}
+.floatbar .wxpic{display:none;position:absolute;left:50%;margin-left:-60px;top:-130px;}
+.floatbar .wxpic img{width:120px;height:120px;border:1px solid #000;padding:5px;background:#fff;}
+.floatbar a{color:#fff;}
+
+
+.weixin_product{position: relative;}
+.weixin_product .wxpic{display:none;position:absolute;left:50%;margin-left:-60px;top:-130px;}
+.weixin_product .wxpic img{width:120px;height:120px;border:1px solid #000;padding:5px;background:#fff;}
+
+ul.products li{position: relative;}
+.discount{width:60px;height:60px;overflow:hidden;position: absolute;right:0;top:0}
+.discount img{width:100%;}
