@@ -1,0 +1,19 @@
+<!-- php:$title= $cate_rs ? $cate_rs.title : $page_rs.title -->
+<!-- include tpl=head title=$title menutitle=$page_rs.title -->
+<div class="main">
+	<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered" data-am-gallery="{  }">
+		<!-- loop from=$rslist key=$key value=$value -->
+		<li>
+			<div class="am-gallery-item">
+				<a href="{$value.url}" title="{$value.title}">
+					<img src="{$value.thumb.gd.thumb}" alt="{$value.title}" />
+					<h3 class="am-gallery-title">{$value.title}</h3>
+					<div class="am-gallery-desc">{func time_format $value.dateline}</div>
+				</a>
+			</div>
+		</li>
+		<!-- /loop -->
+	</ul>
+	<!-- include tpl=block/pagelist -->
+</div>
+<!-- include tpl=foot -->
