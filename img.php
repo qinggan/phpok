@@ -68,12 +68,14 @@ $rs = phpok_decode($token);
 if(!$rs || !is_array($rs) || !$rs['url']){
 	phpok_error('error');
 }
-$ext = strtolower(substr($rs['url'],-4));
-if(!in_array($ext,array('.jpg','.gif','.png','jpeg'))){
-	phpok_error('only');
+$ext = $rs['ext'];
+if(!$ext){
+	$ext = strtolower(substr($rs['url'],-4));
+	if(!in_array($ext,array('.jpg','.gif','.png','jpeg'))){
+		phpok_error('only');
+	}
+	$ext = str_replace('.','',$ext);
 }
-$ext = str_replace('.','',$ext);
-$cache_id = md5($token).'.'.$ext;
 if(!is_file(ROOT.$rs['url'])){
 	phpok_error('info');
 }
@@ -81,6 +83,40 @@ if(!is_file(ROOT.$rs['url'])){
 if(filesize(ROOT.$rs['url']) >= (4*1024*1024)){
 	phpok_error('max');
 }
+
+if($rs['_id'] && $rs['folder']){
+	include FRAMEWORK.'libs/file.php';
+	$obj_file = new file_lib();
+	$obj_file->make(ROOT.$rs['folder']);
+	$cache_id = $rs['folder'].$rs['_id'].'.'.$ext;
+	if(!is_file(ROOT.$cache_id) && !function_exists('imagecreate')){
+		phpok_header($ext);
+		echo file_get_contents(ROOT.$rs['url']);
+		exit;
+	}
+	if(!is_file(ROOT.$cache_id) && function_exists('imagecreate')){
+		include FRAMEWORK.'libs/gd.php';
+		$gd = new gd_lib();
+		$gd->isgd(true);
+		$gd->filename(ROOT.$rs['url']);
+		$gd->Filler($rs["bgcolor"]);
+		if($rs["width"] && $rs["height"] && $rs["cut_type"]){
+			$gd->SetCut(true);
+		}else{
+			$gd->SetCut(false);
+		}
+		$gd->SetWH($rs["width"],$rs["height"]);
+		$gd->CopyRight($rs["mark_picture"],$rs["mark_position"],$rs["trans"]);
+		if($rs["quality"]){
+			$gd->Set('quality',$rs['quality']);
+		}
+		$gd->Create(ROOT.$rs['url'],$rs['_id'].'.'.$ext,ROOT.$rs['folder']);
+	}
+	phpok_header($ext);
+	echo file_get_contents(ROOT.$cache_id);
+	exit;
+}
+$cache_id = md5($token).'.'.$ext;
 if(!is_file(CACHE.$cache_id) && !function_exists('imagecreate')){
 	phpok_header($ext);
 	echo file_get_contents(ROOT.$rs['url']);
