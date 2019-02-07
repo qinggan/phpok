@@ -9,7 +9,7 @@
 **/
 var app = getApp();
 
-var cookie = {
+var data = {
 	set:function(name,val='')
 	{
 		if(!name || name == 'undefined'){
@@ -50,6 +50,9 @@ var call = {
 			this.name = name;
 		}
 		if (param_id && param_id != 'undefined' && param_val && param_val != 'undefined'){
+			if(!tmp[name] || tmp[name] == 'undefined'){
+				tmp[name] = {};
+			}
 			tmp[name][param_id] = param_val;
 			this.name = name;
 		}
@@ -94,6 +97,10 @@ var call = {
 			return this.data;
 		}
 		return false;
+	},
+	reset:function()
+	{
+		this.data = {};
 	}
 }
 
@@ -101,7 +108,7 @@ var call = {
 var dialog = {
 	tips:function(info,obj)
 	{
-		wx.showToast({  
+		wx.showToast({
             'title':info,
             'icon': 'none',
             'mask':true,
@@ -172,7 +179,7 @@ var dialog = {
 			ok_func = time;
 			cancel_func = success_func;
 		}
-		
+
 		wx.showLoading({
 			'title':title,
 			'mask':true,
@@ -262,6 +269,10 @@ var format = {
 			return '0'+val.toString();
 		}
 		return val.toString();
+	},
+	price:function(val)
+	{
+		return parseFloat(val).toFixed(2);
 	}
 }
 module.exports = {

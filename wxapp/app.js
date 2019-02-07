@@ -1,5 +1,5 @@
 //app.js
-var kunwu = require('phpok.js');
+var $ = require('phpok.js');
 
 App({
 	okConfig:{
@@ -62,8 +62,8 @@ App({
 
 	/**
 	 * 跳转到 tabBar 页面
-	 * @参数 url 
-	 * @参数 
+	 * @参数 url
+	 * @参数
 	**/
 	totab:function(url,close)
 	{
@@ -107,7 +107,7 @@ App({
 		}
 		return url;
 	},
-	
+
 	api_plugin_url:function(id,exec,ext)
 	{
 		var extlink = 'id='+id;
@@ -126,22 +126,34 @@ App({
 		}
 		return this.api_url('plugin','exec',extlink);
 	},
-	
+
 	json:function(url,obj,post_data)
 	{
 		if(!url){
 			return false;
 		}
+		var tmpid = url;
+		if(post_data && post_data != 'undefined' && typeof post_data != boolean){
+			tmpid += "_" + JSON.stringify(post_data);
+		}
+		var info = $.cookie.get(tmpid);
+		var time = $.cookie.get(tmpid+"_time");
+		var now = parseInt(Date.parse(new Date())/1000);
+		if(info && time && (time+3600)>now){
+			(obj)(info);
+			this.json_async(url,post_data);
+			return true;
+		}
 		var header_obj = {
 			'content-type':'application/json'
 		}
-		var session_name = kunwu.cookie.get('session_name');
-		var session_val = kunwu.cookie.get('session_val');
+		var session_name = $.cookie.get('session_name');
+		var session_val = $.cookie.get('session_val');
 		if(session_name && session_name != 'undefined' && session_val && session_val != 'undefined'){
 			header_obj[session_name] = session_val;
 		}
 		var method_type = 'GET';
-		if(post_data && post_data != 'undefined'){
+		if(post_data && post_data != 'undefined' && typeof post_data != boolean){
 			method_type = 'POST';
 		}else{
 			post_data = {};
@@ -152,11 +164,55 @@ App({
 			'method':method_type,
 			'data':post_data,
 			'success':function(rs){
+				//存储数据
+				if(rs.status){
+					var info = $.cookie.set(tmpid, rs);
+					var time = $.cookie.set(tmpid + "_time", now);
+				}
 				(obj)(rs.data);
 			}
 		});
 	},
-	
+
+	json_async:function(url,post_data)
+	{
+		var header_obj = {
+			'content-type': 'application/json'
+		}
+		var session_name = $.cookie.get('session_name');
+		var session_val = $.cookie.get('session_val');
+		if (session_name && session_name != 'undefined' && session_val && session_val != 'undefined') {
+			header_obj[session_name] = session_val;
+		}
+		var method_type = 'GET';
+		if (post_data && post_data != 'undefined') {
+			method_type = 'POST';
+		} else {
+			post_data = {};
+		}
+		wx.request({
+			'url': url,
+			'header': header_obj,
+			'method': method_type,
+			'data': post_data,
+			'success': function (rs) {
+				if(!rs.status){
+					$.dialog.tips('获取数据失败');
+					return true;
+				}
+				//存储数据
+				var tmpid = url;
+				if (post_data && post_data != 'undefined') {
+					tmpid += "_" + JSON.stringify(post_data);
+				}
+				var now = parseInt(Date.parse(new Date()) / 1000);
+				var info = $.cookie.set(tmpid,rs);
+				var time = $.cookie.set(tmpid + "_time",now);
+				return true;
+			}
+		});
+	},
+
 	phpok:function(name,obj)
 	{
 		if(!name || name == 'undefined'){
@@ -176,7 +232,7 @@ App({
 		}
 		info = info.replace(/<\/?[^>]*>/g,''); //去除HTML tag
 	},
-	
+
     //启动时操作
     onLaunch: function() {
 		this.load_siteconfig();
@@ -191,7 +247,7 @@ App({
         //
     },
     onError: function(error) {
-        kunwu.dialog.alert('错误：' + error);
+        $.dialog.alert('错误：' + error);
     },
 
     onPageNotFound: function(obj) {
@@ -227,13 +283,13 @@ App({
 		var that = this;
 		this.json(that.okConfig.url+"?siteId="+that.okConfig.site_id+"&wxAppConfig=1", function (rs) {
 			if (!rs.status) {
-				kunwu.dialog.tips(rs.info);
+				$.dialog.tips(rs.info);
 				return false;
 			}
 			that.okConfig.ctrl_id = rs.info.ctrl_id;
 			that.okConfig.func_id = rs.info.func_id;
-			kunwu.cookie.set('session_name', rs.info.session_name);
-			kunwu.cookie.set('session_val', rs.info.session_val);
+			$.cookie.set('session_name', rs.info.session_name);
+			$.cookie.set('session_val', rs.info.session_val);
 			//初始化全局信息操作
 			that.okConfig.wxconfig = rs.info.wxconfig;
 			that.okConfig.status = true;
