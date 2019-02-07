@@ -128,7 +128,7 @@ function logout(t)
 				'cancel':true
 			})
 		},
-		
+
 		edit:function(id)
 		{
 			var url = get_url('usercp','address_setting','id='+id);
@@ -150,7 +150,7 @@ function logout(t)
 				'cancel':true
 			});
 		},
-		
+
 		del:function(id)
 		{
 			$.dialog.confirm(p_lang('确定要删除这个地址吗？地址ID {id}',"#"+id),function(){

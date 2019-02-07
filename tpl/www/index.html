@@ -29,13 +29,13 @@ $(document).ready(function(){
 			<!-- php:$list = phpok('news') -->
 			<div class="am-panel am-panel-default">
 				<div class="am-panel-hd">
-					<h3 class="am-panel-title">{$list.project.title}<a href="{$list.project.url}" class="more">更多 <span class="am-icon-angle-right"></span><span class="am-icon-angle-right"></span></a></h3>
+					<h3 class="am-panel-title"{if $list.project.style} style="{$list.project.style}"{/if}>{$list.project.title}<a href="{$list.project.url}" class="more">更多 <span class="am-icon-angle-right"></span><span class="am-icon-angle-right"></span></a></h3>
 				</div>
 				<div class="am-panel-bd">
 					<ul class="am-list arclist">
 						<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
 						<li class="am-g am-list-item-dated">
-							<a href="{$value.url}" title="{$value.title}" class="am-list-item-hd ">{$value.title}</a><span class="am-list-date">{func date Y-m-d $value.dateline}</span>
+							<a href="{$value.url}" title="{$value.title}" class="am-list-item-hd"{if $value.style} style="{$value.style}"{/if}>{$value.title}</a><span class="am-list-date">{func date Y-m-d $value.dateline}</span>
 						</li>
 						<!-- /loop -->
 					</ul>
@@ -46,7 +46,7 @@ $(document).ready(function(){
 		<div class="am-u-lg-6 index-about" style="padding-left:0.5em;padding-right:.5em;">
 			<div class="am-panel am-panel-default">
 				<div class="am-panel-hd">
-					<h3 class="am-panel-title">{$about.title}<a href="{$about.url}" class="more">更多 <span class="am-icon-angle-right"></span><span class="am-icon-angle-right"></span></a></h3>
+					<h3 class="am-panel-title"{if $about.style} style="{$about.style}"{/if}>{$about.title}<a href="{$about.url}" class="more">更多 <span class="am-icon-angle-right"></span><span class="am-icon-angle-right"></span></a></h3>
 				</div>
 				<div class="am-panel-bd clearfix">
 					<img src="{$about.pic}" class="thumb" alt="{$about.title}" />{$about.note}
@@ -59,7 +59,7 @@ $(document).ready(function(){
 	</div>
 	<!-- php:$list = phpok('new_products') -->
 	<div data-am-widget="titlebar" class="am-titlebar am-titlebar-default">
-		<h2 class="am-titlebar-title ">{$list.project.title}</h2>
+		<h2 class="am-titlebar-title "{if $list.project.style} style="{$list.project.style}"{/if}>{$list.project.title}</h2>
 		<nav class="am-titlebar-nav"><a href="{$list.project.url}">更多 <span class="am-icon-angle-right"></span><span class="am-icon-angle-right"></span></a></nav>
 	</div>
 	<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-5 am-gallery-bordered products">
@@ -69,7 +69,7 @@ $(document).ready(function(){
 				<a href="{$value.url}" title="{$value.title}">
 					<img src="{$value.thumb.gd.thumb}" alt="{$value.title}" />
 					<!-- if $value.apps && $value.apps.coupon --><div class="discount"><img src="{$value.apps.coupon.rs.pic1}" /></div><!-- /if -->
-					<h3 class="am-gallery-title">{$value.title}</h3>
+					<h3 class="am-gallery-title"{if $value.style} style="{$value.style}"{/if}>{$value.title}</h3>
 					<!-- if $list.project.is_biz --><div class="am-gallery-desc red">{func price_format $value.price $value.currency_id}</div><!-- /if -->
 				</a>
 			</div>
@@ -79,7 +79,7 @@ $(document).ready(function(){
 	<!-- php:$list = phpok('link') -->
 	<div class="am-panel am-panel-default mt10">
 		<div class="am-panel-hd">
-			<h3 class="am-panel-title">{$list.project.title}</h3>
+			<h3 class="am-panel-title"{if $list.project.style} style="{$list.project.style}"{/if}>{$list.project.title}</h3>
 		</div>
 		
 		<div class="am-panel-bd link">
