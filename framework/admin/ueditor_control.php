@@ -288,7 +288,7 @@ class ueditor_control extends phpok_control
 		$gd_rs = $this->model('gd')->get_editor_default();
 		$keywords = $this->get('keywords');
 		if($keywords){
-			$condition .= " AND (res.filename LIKE '%".$keywords."%' OR res.title LIKE '%".$keywords."%') ";
+			$condition .= " AND (res.filename LIKE '%".$keywords."%' OR res.title LIKE '%".$keywords."%' OR res.id='".$keywords."') ";
 		}
 		$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize);
 		if(!$rslist){
@@ -346,7 +346,7 @@ class ueditor_control extends phpok_control
 		if($gd_rs)
 		{
 			$ext_rs = $this->model('res')->get_gd_pic($rs['id']);
-			$filename = ($ext_rs && $ext_rs[$gd_rs['identifier']]) ? $ext_rs[$gd_rs['identifier']]['filename'] : $rs['filename'];
+			$filename = ($ext_rs && $ext_rs[$gd_rs['identifier']]) ? $ext_rs[$gd_rs['identifier']] : $rs['filename'];
 		}
 		else
 		{

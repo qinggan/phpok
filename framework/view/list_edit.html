@@ -5,12 +5,25 @@
 <input type="hidden" name="pid" id="pid" value="{$pid}" />
 <input type="hidden" name="parent_id" id="parent_id" value="{$parent_id}" />
 <div class="layui-card">
-	<div class="layui-card-header">{lang主要信息}</div>
+	<div class="layui-card-header">
+		{lang主要信息}
+		<div class="fr">
+			<label id="auto_save_tip"><input type="checkbox" onclick="$.admin_list_edit.autosave_checkbox(this)" lay-ignore /> <span>{lang开启自动保存功能}</span></label>
+		</div>
+	</div>
 	<div class="layui-card-body">
+		<input type="hidden" name="style" id="style" value="{$rs.style}" />
 		<div class="layui-form-item">
 			<label class="layui-form-label"><!-- if $p_rs.alias_title -->{$p_rs.alias_title}<!-- else -->{lang主题}<!-- /if --></label>
 			<div class="layui-input-block">
-				<input type="text" name="title" id="title" value="{$rs.title}" class="layui-input" placeholder="{lang不能超过80个汉字}<!-- if $p_rs.alias_note -->，{$p_rs.alias_note}<!-- /if -->" />
+				<div class="layui-col-md9">
+					<input type="text" name="title" id="title" value="{$rs.title}" class="layui-input"{if $rs.style} style="{$rs.style}"{/if} placeholder="{lang不能超过80个汉字}{if $p_rs.alias_note}，{$p_rs.alias_note}{/if}" />
+				</div>
+				<div class="layui-col-md2" style="margin-left:10px;margin-top:3px;">
+					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_list.style_setting('style','title')">
+						<i class="layui-icon">&#xe64e;</i> {lang样式}
+					</button>
+				</div>
 			</div>
 		</div>		
 		<!-- if $attrlist && $p_rs.is_attr -->
@@ -32,7 +45,9 @@
 			<div class="layui-input-inline auto" id="HTML-POINT-PHPOK-IDENTIFIER">
 				<input type="button" value="{lang随机码}" onclick="$.admin.rand()" class="layui-btn layui-btn-sm" />
 			</div>
-			<div class="layui-input-inline auto gray">{lang仅支持字母、数字、下划线或中划线且必须是字母开头}</div>
+			<div class="layui-form-mid">
+				{lang仅支持字母、数字、下划线或中划线且必须是字母开头}
+			</div>
 		</div>
 		<!-- /if -->
 		
@@ -47,9 +62,10 @@
 					<!-- /loop -->
 				</select>
 			</div>
-			<div class="layui-input-inline auto gray">{lang主分类不能为空}</div>
+			<div class="layui-form-mid">{lang主分类不能为空}</div>
 		</div>
 		<!-- /if -->
+		
 		<!-- if $p_rs.cate && $p_rs.cate_multiple -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang扩展分类}</label>
@@ -66,11 +82,9 @@
 		<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				<!-- if $value.note -->
-				<i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i>
-				<!-- /if -->
 				{$value.title}
 			</label>
+			<!-- if $value.note --><div class="layui-input-block gray" style="line-height:38px;">{$value.note}</div><!-- /if -->
 			<div class="layui-input-block">
 				{$value.html}
 				<!-- if $popedom.ext && $value.is_edit && $session.adm_develop -->
@@ -434,7 +448,7 @@
 </div>
 <div class="submit-info">
 	<div class="layui-container center">
-		<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="submit" value="{lang保存}" class="layui-btn layui-btn-lg layui-btn-danger" />
 		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
 	</div>
 </div>

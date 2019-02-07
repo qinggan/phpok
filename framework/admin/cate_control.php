@@ -218,6 +218,7 @@ class cate_control extends phpok_control
 		$array['seo_keywords'] = $this->get('seo_keywords');
 		$array['seo_desc'] = $this->get('seo_desc');
 		$array['tag'] = $this->get('tag');
+		$array['style'] = $this->get('style');
 		if(!$id){
 			$array["site_id"] = $this->session->val('admin_site_id');
 			$id = $this->model('cate')->save($array);

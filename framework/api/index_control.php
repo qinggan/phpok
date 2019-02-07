@@ -42,6 +42,9 @@ class index_control extends phpok_control
 			}
 			$data['wxconfig'] = $wxconfig;
 		}
+		$tmpinfo = $this->site;
+		unset($tmpinfo['api_code']);
+		$data['site'] = $tmpinfo;
 		$this->success($data);
 	}
 

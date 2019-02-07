@@ -1,5 +1,5 @@
 <!-- if $_rs.is_multiple -->
-<select name="{$_rs.identifier}[]" id="{$_rs.identifier}" multiple="true" style="{$_rs.style};width:300px;">
+<select name="{$_rs.identifier}[]" id="{$_rs.identifier}" lay-ignore multiple="true" style="{$_rs.style};width:300px;">
 	<!-- foreach($_rslist AS $key=>$value) -->
 	<option value="{$value.val}"{if in_array($value["val"],$_rs["content"])} selected{/if}>{$value.title}</option>	
 	<!-- /foreach -->
@@ -13,11 +13,11 @@
 	<div id="{$_rs.identifier}_html"></div>
 	<script type="text/javascript">
 	$(document).ready(function(){
-		$.phpok_form_select.change('{$_group_id}','{$_rs.identifier}','{$_rs.content}');
+		$.phpok_form_select.change('{$_group_id}','{$_rs.identifier}','{$_rs.content}','{$_group_type}');
 	});
 	</script>
 	<!-- else -->
-	<select id="{$_rs.identifier}" name="{$_rs.identifier}">
+	<select id="{$_rs.identifier}" name="{$_rs.identifier}" lay-ignore>
 		<!-- if $_rs.empty_val -->
 		<option value="">{$_rs.empty_val}</option>
 		<!-- /if -->

@@ -143,11 +143,12 @@ class sql_control extends phpok_control
 							$html .= "INSERT INTO ".$sql_prefix."adm VALUES('".implode("','",$v)."');\n";
 						}
 					}
+					$html .= "\n";
 				}
 			}
 			$this->lib('file')->vi($html,$this->dir_data.$backfilename.".php");//存储数据
-			$this->lib('file')->vi("-- PHPOK4 Full 数据备份\n\n",$this->dir_data.$backfilename."_tmpdata.php");
-			$this->success(P_Lang('表结构备份成功，正在执行下一步'),$url);
+			$this->lib('file')->vi("-- PHPOK5 Full 数据备份\n\n",$this->dir_data.$backfilename."_tmpdata.php");
+			$this->success(P_Lang('表结构备份成功，正在执行下一步'),$url,0.5);
 		}
 		$url .= "&backfilename=".$backfilename;
 		$startid = $this->get("startid","int");
@@ -160,15 +161,15 @@ class sql_control extends phpok_control
 		$pageid = $this->get("pageid",'int');
 		$table = $idlist[$startid];//指定表
 		//判断如果是管理员表，则跳到下一步
-		if($table == $sql_prefix."adm" || $table == $sql_prefix."session"){
+		if($table == $sql_prefix."adm" || $table == $sql_prefix."session" || $table == $sql_prefix."log"){
 			$url .= "&startid=".($startid+1)."&pageid=".$pageid."&dataid=".$dataid;
-			$this->success(P_Lang('数据表{table}已备份完成！正在进行下一步操作，请稍候！',array('table'=>' <span class="red">'.$table.'</span> ')),$url);
+			$this->success(P_Lang('数据表{table}已备份完成！正在进行下一步操作，请稍候！',array('table'=>' <span class="red">'.$table.'</span> ')),$url,0.5);
 		}
 		$psize = 100;
 		$total = $this->model('sql')->table_count($table);
 		if($total<1){
 			$url .= "&startid=".($startid+1)."&pageid=".$pageid."&dataid=".$dataid;
-			$this->success(P_Lang('数据表{table}已备份完成！正在进行下一步操作，请稍候！',array('table'=>' <span class="red">'.$table.'</span> ')),$url);
+			$this->success(P_Lang('数据表{table}已备份完成！正在进行下一步操作，请稍候！',array('table'=>' <span class="red">'.$table.'</span> ')),$url,0.5);
 		}
 		if($psize >= $total){
 			$rslist = $this->model('sql')->getsql($table,0,'all');
@@ -253,7 +254,7 @@ class sql_control extends phpok_control
 			$this->success(P_Lang('数据备份成功'),$this->url('sql','backlist'));
 		}
 		$tmparray = array('pageid'=>' <span class="red">'.($dataid+1).'</span> ','table'=>' <span class="red">'.$idlist[$startid].'</span> ');
-		$this->success(P_Lang('正在备份数据，当前第{pageid}个文件，正在备{table}相关数据',$tmparray),$url);
+		$this->success(P_Lang('正在备份数据，当前第{pageid}个文件，正在备{table}相关数据',$tmparray),$url,0.5);
 	}
 
 	/**
@@ -262,11 +263,11 @@ class sql_control extends phpok_control
 	public function backlist_f()
 	{
 		if(!$this->popedom['list'] && !$this->session->val('admin_rs.if_system')){
-			$this->error(P_Lang('您没有权限执行此操作'),$this->url('sql'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$filelist = $this->lib('file')->ls($this->dir_data);
 		if(!$filelist){
-			$this->error(P_Lang('空数据，请检查目录：_data/'),$this->url("sql"));
+			$this->error(P_Lang('空数据，请检查目录：_data/'));
 		}
 		$tmplist = array();
 		$i=0;
@@ -281,7 +282,7 @@ class sql_control extends phpok_control
 			}
 		}
 		if(!$tmplist){
-			$this->error(P_Lang('没有相备份数据'),$this->url('sql'));
+			$this->error(P_Lang('没有相备份数据'));
 		}
 		foreach($tmplist as $key=>$value){
 			foreach($filelist as $k=>$v){
@@ -344,11 +345,7 @@ class sql_control extends phpok_control
 		if(!file_exists($backfile)){
 			$this->error(P_Lang('备份文件不存在'),$this->url('sql','backlist'));
 		}
-		$session_string = '';
-		if($this->config['engine']['session']['file'] == 'sql'){
-			$session_string = session_encode();
-			$session_id = $this->session->sessid();
-		}
+		$session_id = $this->session->sessid();
 		$session = $_SESSION;
 		$msg = $this->lib('file')->cat($backfile);
 		$this->format_sql($msg);
@@ -363,12 +360,9 @@ class sql_control extends phpok_control
 				$session['admin_id'] = $insert_id;
 			}
 		}
-		if($session_string && $session_id){
-			$this->model('sql')->update_session($session_id,$session_string);
-		}
 		//更新相应的SESSION信息，防止被退出
 		$_SESSION = $session;
-		$this->success(P_Lang('表结构数据修复成功，正在修复内容数据，请稍候！'),$this->url('sql','recover_data','id='.$id."&startid=0"));
+		$this->success(P_Lang('表结构数据恢复成功，正在恢复内容数据，请稍候…'),$this->url('sql','recover_data','id='.$id."&startid=0"));
 	}
 
 	/**

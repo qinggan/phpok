@@ -104,7 +104,7 @@ class fields_model_base extends phpok_model
 		return $rslist;
 	}
 
-	function fields_count($words,$type="")
+	public function fields_count($words,$type="")
 	{
 		if(!$words) $words = "id,identifier";
 		$sql = "SELECT count(id) FROM ".$this->db->prefix."fields ";
@@ -119,7 +119,7 @@ class fields_model_base extends phpok_model
 		return $this->db->count($sql);
 	}
 
-	function get_list($id)
+	public function get_list($id)
 	{
 		if(!$id) return false;
 		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id IN(".$id.") ORDER BY taxis ASC,id DESC";
@@ -127,7 +127,7 @@ class fields_model_base extends phpok_model
 	}
 
 	//判断字段是否被使用了
-	function is_has_sign($identifier,$id=0)
+	public function is_has_sign($identifier,$id=0)
 	{
 		if(!$identifier){
 			return true;
@@ -190,5 +190,19 @@ class fields_model_base extends phpok_model
 	public function list_fields()
 	{
 		return $this->db->list_fields('list');
-	}	
+	}
+
+	public function get_all($condition='',$offset=0,$psize=30,$pri='')
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."fields ";
+		if($condition){
+			$sql .= " WHERE ".$condition;
+		}
+		$sql.= " ORDER BY taxis ASC,id DESC ";
+		if($psize && intval($psize)){
+			$offset = intval($offset);
+			$sql .= " LIMIT ".$offset.",".intval($psize);
+		}
+		return $this->db->get_all($sql,$pri);
+	}
 }

@@ -193,11 +193,11 @@
 			<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="$.admin_list.status({$value.id})"{else} style="cursor: default;"{/if} value="{$value.status}"></span></td>
 			<td class="center">{$value.id}</td>
 			<td><label for="id_{$value.id}">
-				<a href="{$sys.url}?id={$value.id}" target="_blank" title="{lang前台访问}">{$value.title}</a>
+				<a href="{$sys.url}?id={$value.id}" target="_blank" title="{lang前台访问}" style="{$value.style}">{$value.title}</a>
 				<!-- if $value.attr -->
 					<!-- php:$attr = explode(",",$value['attr']) -->
 					<!-- loop from=$attr key=$attr_k value=$attr_v -->
-					<a href="{echo admin_url('list','action')}&id={$pid}&attr={$attr_v}" class="gray">[{$attrlist[$attr_v]}]</a>
+					<a href="{url ctrl=list func=action id=$pid/}&keywords[attr]={$attr_v}" class="gray">[{$attrlist[$attr_v]}]</a>
 					<!-- /loop -->
 				<!-- /if -->
 				<!-- if $value.identifier -->
@@ -211,9 +211,9 @@
 				<!-- /if -->
 				<!-- if $clist && $clist[$value.id] -->
 				<div class="extcate">
-					分类：
+					{lang分类}
 					<!-- loop from=$clist[$value.id] key=$ck value=$cv -->
-					<a href="{url ctrl=list func=action id=$pid cateid=$cv/}" class="i">{$cateall[$cv]}</a> 
+					<a href="{url ctrl=list func=action id=$pid/}&keywords[cateid]={$cv}" class="i">{$cateall[$cv]}</a> 
 					<!-- /loop -->
 				</div>
 				<!-- /if -->
@@ -222,7 +222,7 @@
 			<!-- if $rs.cate -->
 			<td class="gray center">
 				<!-- if $value.cate_id && is_array($value.cate_id) -->
-				<a href="{echo admin_url('list','action')}&id={$pid}&cateid={$value.cate_id.id}">{$value.cate_id.title}</a>
+				<a href="{url ctrl=list func=action id=$pid/}&keywords[cateid]={$value.cate_id.id}">{$value.cate_id.title}</a>
 				<!-- else -->
 				{lang未设分类}
 				<!-- /if -->
@@ -255,7 +255,6 @@
 					<!-- /if -->
 				<!-- /if -->
 			<!-- /loop -->
-			
 			<td>
 				<div class="layui-btn-group">
 					<!-- if $popedom.modify -->
@@ -281,11 +280,11 @@
 				<td><span class="status{$vv.status}" id="status_{$vv.id}" {if $popedom.status}onclick="$.admin_list.status({$vv.id})"{else} style="cursor: default;"{/if} value="{$vv.status}"></span></td>
 				<td class="center">{$vv.id}</td>
 				<td><label for="id_{$vv.id}">
-					&nbsp; &nbsp; ├─ <a href="{$sys.url}?id={$vv.id}" target="_blank" title="{lang前台访问}">{$vv.title}</a>
+					&nbsp; &nbsp; ├─ <a href="{$sys.url}?id={$vv.id}" target="_blank" title="{lang前台访问}" style="{$vv.style}">{$vv.title}</a>
 					<!-- if $vv.attr -->
 						<!-- php:$attr = explode(",",$vv['attr']) -->
 						<!-- loop from=$attr key=$attr_k value=$attr_v -->
-						[{$attrlist[$attr_v]}]
+						<a href="{url ctrl=list func=action id=$pid/}&keywords[attr]={$attr_v}" class="gray">[{$attrlist[$attr_v]}]</a>
 						<!-- /loop -->
 					<!-- /if -->
 					<!-- if $vv.identifier -->
@@ -301,7 +300,7 @@
 					<div class="extcate">
 						分类：
 						<!-- loop from=$clist[$vv.id] key=$ck value=$cv -->
-						<a href="{url ctrl=list func=action id=$pid cateid=$cv/}" class="i">{$cateall[$cv]}</a> 
+						<a href="{url ctrl=list func=action id=$pid/}&keywords[cateid]={$cv}" class="i">{$cateall[$cv]}</a> 
 						<!-- /loop -->
 					</div>
 					<!-- /if -->
@@ -310,9 +309,9 @@
 				<!-- if $rs.cate -->
 				<td class="gray center">
 					<!-- if $vv.cate_id && is_array($vv.cate_id) -->
-					<a href="{echo admin_url('list','action')}&id={$pid}&cateid={$vv.cate_id.id}">{$vv.cate_id.title}</a>
+					<a href="{url ctrl=list func=action id=$pid/}&keywords[cateid]={$vv.cate_id.id}">{$vv.cate_id.title}</a>
 					<!-- else -->
-					未设分类
+					{lang未设分类}
 					<!-- /if -->
 				<!-- /if -->
 				<!-- loop from=$layout key=$k value=$v -->

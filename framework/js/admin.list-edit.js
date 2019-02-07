@@ -10,29 +10,94 @@
 var autosave_handle;
 
 ;(function($){
+	var count_down;
 	$.admin_list_edit = {
+
+		autosave_checkbox:function(obj)
+		{
+			var that = this;
+			if($(obj).is(":checked")){
+				$(obj).parent().find('span').html(p_lang('已功能自动保存功能，当前剩余{seconds}秒',' <b style="color:red;">300</b> '));
+				count_down = window.setTimeout(function(){
+					that.autosave_countdown(obj);
+				}, 1000);
+			}else{
+				$(obj).parent().find('span').html(p_lang('开启自动保存功能'));
+				window.clearTimeout(count_down);
+			}
+		},
+
+		autosave_countdown:function(obj)
+		{
+			window.clearTimeout(count_down);
+			var that = this;
+			var num = $(obj).parent().find("b").text();
+			if(!num || num == 'undefined'){
+				return false;
+			}
+			num = parseInt(num);
+			if(num < 1){
+				this.autosave(obj);
+				return true;
+			}
+			num--;
+			$(obj).parent().find("b").text(num);
+			window.setTimeout(function(){
+				that.autosave_countdown(obj);
+			}, 1000);
+		},
 
 		/**
 		 * 自动保存
 		**/
-		autosave:function()
+		autosave:function(obj)
 		{
-			window.clearTimeout(autosave_handle);
+			window.clearTimeout(count_down);
+			var that = this;
+			var id = $("#id").val();
+			if(typeof(CKEDITOR) != "undefined"){
+				for(var i in CKEDITOR.instances){
+					CKEDITOR.instances[i].updateElement();
+				}
+			}
+			//忽略标题
+			var title = $("#title").val();
+			if(!title){
+				var tmp = {};
+				tmp.seconds = ' <b style="color:red;">300</b> ';
+				$(obj).parent().find('span').html(p_lang('标题未填写，跳过自动保存，距下一次自动保存剩余{seconds}秒',tmp));
+				count_down = window.setTimeout(function(){
+					that.autosave_countdown(obj);
+				}, 1000);
+				return true;
+			}
 			$("#_listedit").ajaxSubmit({
-				'url':get_url('auto','list'),
+				'url':get_url('list','ok','_autosave=1'),
 				'type':'post',
 				'dataType':'json',
 				'success':function(rs){
-					if(rs.status){
-						$.dialog.tips('数据已临时保存').position('50%','1px');
-						// 每隔 5 分钟自动保存一次数据
-						autosave_handle = window.setTimeout(function(){
-							$.admin_list_edit.autosave();
-						}, 300000);
+					if(rs.status != 'ok'){
+						$.dialog.alert(p_lang('自动保存失败，原因：{info}',rs.content));
+						$(obj).parent().find('span').html(p_lang('重新开始计算自动保存，当前剩余{seconds}秒',' <b style="color:red;">300</b> '));
+						count_down = window.setTimeout(function(){
+							that.autosave_countdown(obj);
+						}, 1000);
+						return false;
 					}
+					//将增加变成修改
+					if(!id || id == 'undefined' && id == '0'){
+						$("#id").val(rs.content);
+					}
+					var tmp = {};
+					tmp.date = ' <i class="darkblue">'+(new Date()).toString()+'</i> ';
+					tmp.seconds = ' <b style="color:red;">300</b> ';
+					$(obj).parent().find('span').html(p_lang('数据于{date}自动保存，距下一次自动保存剩余{seconds}秒',tmp));
+					count_down = window.setTimeout(function(){
+						that.autosave_countdown(obj);
+					}, 1000);
+					return true;
 				}
 			});
-			return false;
 		},
 
 		/**
@@ -113,12 +178,12 @@ var autosave_handle;
 				}
 				var url = get_url('options','save','title='+$.str.encode(name));
 				$.phpok.json(url,function(data){
-					if(data.status == 'ok'){
+					if(data.status){
 						self.attrlist_load();
-						self.attr_add(data.content);
+						self.attr_add(data.info);
 						return true;
 					}
-					$.dialog.alert(data.content);
+					$.dialog.alert(data.info);
 					return false;
 				})
 			});
@@ -325,11 +390,11 @@ var autosave_handle;
 				}
 				var url = get_url('options','save_values','aid='+id+'&title='+$.str.encode(name));
 				$.phpok.json(url,function(data){
-					if(data.status == 'ok'){
-						self.attr_option_html(id,data.content,name);
+					if(data.status){
+						self.attr_option_html(id,data.info,name);
 						return true;
 					}
-					$.dialog.alert(data.content);
+					$.dialog.alert(data.info);
 					return false;
 				})
 			});

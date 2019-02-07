@@ -248,8 +248,12 @@
 					return false;
 				})
 			});
+		},
+		clear_files:function()
+		{
+			$.win(p_lang('清理未使用文件'),get_url('res','clear'));
 		}
-		
+
 	}
 	$(document).ready(function(){
 		layui.use('laydate',function(){
@@ -265,6 +269,6 @@
                 });
 			}
 		});
-		
+
 	});
 })(jQuery);

@@ -1,15 +1,21 @@
 <!-- include tpl=head_lay -->
+<form method="post" id="post_save" class="layui-form" onsubmit="return $.admin_user.save()">
+<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
 <div class="layui-card">
 	<div class="layui-card-body">
-		<form method="post" id="post_save" class="layui-form" onsubmit="return $.admin_user.save()">
-		<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang会员头像}
+				{lang会员组}
 			</label>
-			<div class="layui-input-block">
-				{func form_edit avatar $rs.avatar text form_btn=image&width=500}
+			<div class="layui-input-inline default-auto">
+				<select id="group_id" name="group_id"  lay-filter="usergroup">
+				<option value="0">{lang请选择会员组…}</option>
+				<!-- loop from=$grouplist key=$key value=$value -->
+				<option value="{$value.id}"{if $value.id == $group_id} selected{/if} data-fields="{$value.fields}">{$value.title}</option>
+				<!-- /loop -->
+				</select>
 			</div>
+			<div class="layui-input-inline auto gray lh38">{lang请选择会员所属主要身份}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -18,19 +24,24 @@
 			<div class="layui-input-inline default-auto">
 				<input type="text" id="user" name="user" class="layui-input" value="{$rs.user}" />
 			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<input type="button" value="{lang随机生成}" onclick="$('#user').val($.phpok.rand(6,'letter'))" class="layui-btn layui-btn-sm" />
+			</div>
 			<div class="layui-input-inline auto gray lh38">{lang请填写会员账号，必须保证唯一，建议使用邮箱作为账号}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang会员密码}
 			</label>
-			<div class="layui-input-inline">
+			<div class="layui-input-inline default-auto">
 				<input type="text" id="pass" name="pass" class="layui-input" value="" />
 			</div>
-			<div class="layui-input-inline auto">
-				<input type="button" value="{lang随机生成}" onclick="$('#pass').val($.phpok.rand(10,'fixed'))" class="layui-btn" />
+			<div class="layui-input-inline auto gray lh38">
+				<input type="button" value="{lang随机生成}" onclick="$('#pass').val($.phpok.rand(10,'fixed'))" class="layui-btn layui-btn-sm" />
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang设置会员的密码，此项不能为空}</div>
+			<div class="layui-form-mid">
+				{lang设置会员的密码，此项不能为空}
+			</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -51,17 +62,11 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang会员组}
+				{lang会员头像}
 			</label>
-			<div class="layui-input-inline default-auto">
-				<select id="group_id" name="group_id"  lay-filter="usergroup">
-				<option value="0">{lang请选择会员组…}</option>
-				<!-- loop from=$grouplist key=$key value=$value -->
-				<option value="{$value.id}"{if $value.id == $group_id} selected{/if} data-fields="{$value.fields}">{$value.title}</option>
-				<!-- /loop -->
-				</select>
+			<div class="layui-input-block">
+				{func form_edit avatar $rs.avatar text form_btn=image&width=500}
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang请选择会员所属主要身份}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -94,16 +99,16 @@
 			</div>
 		</div>
 		
-		<!-- /loop -->
-		<div class="layui-form-item">
-			<label class="layui-form-label">&nbsp;</label>
-			<div class="layui-input-inline default-auto">
-				<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" />
-				<input type="button" value="{lang取消}" onclick="$.admin.close()" class="layui-btn layui-btn-primary fr" />
-			</div>
-		</div>
-		</form>
+		<!-- /loop -->	
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
 	</div>
 </div>
 
+</form>
 <!-- include tpl=foot_lay -->

@@ -281,24 +281,30 @@ class gd_lib
 	}
 
 	/**
-	 * 获取图片的相关数据
+	 * 获取图片的相关数据，修正微信图片识别格式不正确问题
 	 * @参数 $picture 图片地址
 	 * @返回 
-	 * @更新时间 
+	 * @更新时间 2019年2月6日
 	**/
 	public function GetImgInfo($picture="")
 	{
 		if(!$picture || !file_exists($picture)){
 			return false;
 		}
+		$tmp = strtolower(basename($picture));
+		$ext = substr($tmp,-3);
 		$infos = getimagesize($picture);
 		$info["width"] = $infos[0];
 		$info["height"] = $infos[1];
 		$info["type"] = $infos[2];
 		$info["ext"] = $infos[2] == 1 ? "gif" : ($infos[2] == 2 ? "jpg" : "png");
+		if($ext && in_array($ext,array('jpg','gif','png'))){
+			$info['ext'] = $ext;
+		}
 		$info["name"] = substr(basename($picture),0,strrpos(basename($picture),"."));
 		return $info;
 	}
+
 
 	/**
 	 * 判断设置的位置是否正确

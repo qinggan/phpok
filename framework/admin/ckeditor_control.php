@@ -45,11 +45,11 @@ class ckeditor_control extends phpok_control
 		}
 		$psize = $this->config['psize'];
 		$offset = ($pageid - 1) * $psize;
-		$condition = "res.ext IN ('gif','jpg','png','jpeg') ";
+		$condition = "ext IN ('gif','jpg','png','jpeg') ";
 		$gd_rs = $this->model('gd')->get_editor_default();
 		$keywords = $this->get('keywords');
 		if($keywords){
-			$condition .= " AND (res.filename LIKE '%".$keywords."%' OR res.title LIKE '%".$keywords."%') ";
+			$condition .= " AND (filename LIKE '%".$keywords."%' OR title LIKE '%".$keywords."%') ";
 		}
 		$total = $this->model('res')->edit_pic_total($condition,$gd_rs);
 		if($total){

@@ -23,8 +23,9 @@ header("Content-type: text/html; charset=utf-8");
 header("Cache-control: no-cache,no-store,must-revalidate");
 header("Pramga: no-cache"); 
 header("Expires: -1");
-header("X-Frame-Options: sameorigin");
-//setcookie("phpokcom", "test", null, null, null, null, true);
+
+//防止被Iframe嵌套
+//header("X-Frame-Options: sameorigin");
 
 /**
  * 计算执行的时间
@@ -553,7 +554,11 @@ class _init_phpok
 		}
 		$domain = $this->lib('server')->domain($this->config['get_domain_method']);
 		if(!$domain){
-			$this->_error('无法获取网站域名信息，请检查环境是否支持$_SERVER["SERVER_NAME"]或$_SERVER["HTTP_HOST"]');
+			$tmp = strtoupper($this->config['get_domain_method']) == 'HTTP_HOST' ? 'SERVER_NAME' : 'HTTP_HOST';
+			$domain = $this->lib('server')->domain($tmp);
+			if(!$domain){
+				$this->_error('无法获取网站域名信息，请检查环境是否支持$_SERVER["SERVER_NAME"]或$_SERVER["HTTP_HOST"]');
+			}
 		}
 		$site_rs = $this->model('site')->site_info(($site_id ? $site_id : $domain));
 		if(!$site_rs && $this->app_id == 'www'){
@@ -1686,6 +1691,27 @@ class _init_phpok
 				$folder = substr($docu,0,-(strlen($basename)));
 				if($uri && substr($uri,-(strlen($basename))) == $basename){
 					$uri = substr($uri,0,-(strlen($basename)));
+				}
+			}
+			//解决当图片不存在，尝试通过PHP自动创建
+			$tmp = strtolower(substr($uri,-4));
+			if(in_array($tmp,array('.jpg','.gif','.png','jpeg')) && substr($uri,0,11) == 'res/_cache/'){
+				$tmp = substr($uri,11);
+				$tmp = explode("/",$tmp);
+				$gdinfo = $this->model('gd')->get_one($tmp[0],'identifier');
+				if($gdinfo){
+					$tmp = explode('.',$tmp[2]);
+					$res = $this->model('res')->get_one($tmp[0]);
+					if($res){
+						$gdinfo['url'] = $res['filename'];
+						$gdinfo['_id'] = $res['id'];
+						$gdinfo['ext'] = $res['ext'];
+						$gdinfo['folder'] = 'res/_cache/'.$gdinfo['identifier'].'/'.substr($res['id'],0,2).'/';
+						$this->model('res')->img_create($gdinfo);
+						header("Content-type: image/".$res['ext']);
+						echo file_get_contents($this->dir_root.$uri);
+						exit;
+					}
 				}
 			}
 			if($uri && $uri != '/' && $folder && $uri != $folder && !$exit){

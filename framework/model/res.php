@@ -46,15 +46,15 @@ class res_model_base extends phpok_model
 		}
 		//判断附件方案
 		$list = array("jpg","gif","png","jpeg");
-		if(!$rs['ico'] && in_array($rs['ext'],$list)){
-			$rs['ico'] = $this->get_ico($rs['filename']);
+		if(in_array($rs['ext'],$list)){
+			$rs['ico'] = $this->get_ico($rs);
 		}
 		if(!in_array($rs["ext"],$list) || !$is_ext || !$this->gdlist || count($this->gdlist)<1){
 			return $rs;
 		}
 		if($this->is_local($rs['filename'])){
 			foreach($this->gdlist as $key=>$value){
-				$rs['gd'][$value['identifier']] = $this->local_url($rs['filename'],$value);
+				$rs['gd'][$value['identifier']] = $this->local_url($rs,$value);
 			}
 			return $rs;
 		}
@@ -101,7 +101,7 @@ class res_model_base extends phpok_model
 		if(!$id){
 			return false;
 		}
-		$sql  = "SELECT res.id,res.cate_id,res.filename,cate.etype FROM ".$this->db->prefix."res res ";
+		$sql  = "SELECT res.*,cate.etype FROM ".$this->db->prefix."res res ";
 		$sql .= "LEFT JOIN ".$this->db->prefix."res_cate cate ON(res.cate_id=cate.id) WHERE res.id IN(".$id.")";
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist){
@@ -111,7 +111,7 @@ class res_model_base extends phpok_model
 		foreach($rslist as $key=>$value){
 			if($this->is_local($value['filename'])){
 				foreach($this->gdlist as $k=>$v){
-					$list[$value['id']][$v['identifier']] = $this->local_url($value['filename'],$v);
+					$list[$value['id']][$v['identifier']] = $this->local_url($value,$v);
 				}
 			}else{
 				if($value['etype']){
@@ -149,7 +149,7 @@ class res_model_base extends phpok_model
 		}
 		$gdinfo = $this->gdlist[$gd_id];
 		if($this->is_local($rs['filename'])){
-			$filename = $this->local_url($rs['filename'],$gdinfo);
+			$filename = $this->local_url($rs,$gdinfo);
 			return array('res_id'=>$res_id,'gd_id'=>$gd_id,'filename'=>$filename,'filetime'=>$rs['addtime']);
 		}
 		$cate = $this->model('rescate')->get_one($rs['cate_id']);
@@ -181,8 +181,8 @@ class res_model_base extends phpok_model
 			return false;
 		}
 		$list = array("jpg","gif","png","jpeg");
-		if(!$rs['ico'] && in_array($rs['ext'],$list)){
-			$rs['ico'] = $this->get_ico($rs['filename']);
+		if(in_array($rs['ext'],$list)){
+			$rs['ico'] = $this->get_ico($rs);
 		}
 		return $rs;
 	}
@@ -210,8 +210,8 @@ class res_model_base extends phpok_model
 			}
 			foreach($rslist as $key=>$value){
 				$value["attr"] = $value["attr"] ? unserialize($value["attr"]) : "";
-				if(!$value['ico'] && in_array($value['ext'],$extlist)){
-					$value['ico'] = $this->get_ico($value['filename']);
+				if(in_array($value['ext'],$extlist)){
+					$value['ico'] = $this->get_ico($value);
 				}
 				$rslist[$key] = $value;
 			}
@@ -227,8 +227,8 @@ class res_model_base extends phpok_model
 		foreach($rslist as $key=>$value){
 			$value["gd"] = $extlist[$value["id"]];
 			$value["attr"] = $value["attr"] ? unserialize($value["attr"]) : "";
-			if(!$value['ico'] && in_array($value['ext'],$extlist)){
-				$value['ico'] = $this->get_ico($value['filename']);
+			if(in_array($value['ext'],$extlist)){
+				$value['ico'] = $this->get_ico($value);
 			}
 			$tmplist[] = $value;
 		}
@@ -257,8 +257,8 @@ class res_model_base extends phpok_model
 		if(!$is_ext){
 			foreach($rslist as $key=>$value){
 				$value["attr"] = $value["attr"] ? unserialize($value["attr"]) : "";
-				if(!$value['ico'] && in_array($value['ext'],$extlist)){
-					$value['ico'] = $this->get_ico($value['filename']);
+				if(in_array($value['ext'],$extlist)){
+					$value['ico'] = $this->get_ico($value);
 				}
 				$rslist[$key] = $value;
 			}
@@ -269,8 +269,8 @@ class res_model_base extends phpok_model
 		foreach($rslist as $key=>$value){
 			$value["gd"] = $extlist[$value["id"]];
 			$value["attr"] = $value["attr"] ? unserialize($value["attr"]) : "";
-			if(!$value['ico'] && in_array($value['ext'],$extlist)){
-				$value['ico'] = $this->get_ico($value['filename']);
+			if(in_array($value['ext'],$extlist)){
+				$value['ico'] = $this->get_ico($value);
 			}
 			$rslist[$key] = $value;
 		}
@@ -335,9 +335,16 @@ class res_model_base extends phpok_model
 		}
 		if($this->is_local($rs['filename'])){
 			$this->lib('file')->rm($this->dir_root.$rs['filename']);
-		}
-		if($rs["ico"] && $this->is_local($rs['ico']) && substr($rs["ico"],0,7) != "images/"){
-			$this->lib('file')->rm($this->dir_root.$rs['ico']);
+			$folder = 'res/_cache/_ico/'.substr($rs['id'],0,2).'/';
+			if(is_file($this->dir_root.$folder.$rs['id'].'.'.$rs['ext'])){
+				$this->lib('file')->rm($this->dir_root.$folder.$rs['id'].'.'.$rs['ext']);
+			}
+			foreach($this->gdlist as $key=>$value){
+				$folder = 'res/_cache/'.$value['identifier'].'/'.substr($rs['id'],0,2).'/';
+				if(is_file($this->dir_root.$folder.$rs['id'].'.'.$rs['ext'])){
+					$this->lib('file')->rm($this->dir_root.$folder.$rs['id'].'.'.$rs['ext']);
+				}
+			}
 		}
 		//删除远程附件
 		if($rs['etype']){
@@ -363,7 +370,15 @@ class res_model_base extends phpok_model
 		if($id){
 			return $this->db->update_array($data,"res",array("id"=>$id));
 		}else{
-			return $this->db->insert_array($data,"res");
+			$insert_id = $this->db->insert_array($data,"res");
+			if(!$insert_id){
+				return false;
+			}
+			$data['id'] = $insert_id;
+			//生成缩略图及附件规格图片
+			$this->get_ico($data);
+			$this->get_gd_pic($insert_id,false);
+			return $insert_id;
 		}
 	}
 
@@ -587,11 +602,11 @@ class res_model_base extends phpok_model
 		$ids = array();
 		foreach($rslist as $key=>$value){
 			if(!$value['ico'] && in_array($value['ext'],$extlist) && $this->is_local($value['filename'])){
-				$value['ico'] = $this->get_ico($value['filename']);
+				$value['ico'] = $this->get_ico($value);
 			}
 			if($this->is_local($value['filename'])){
 				foreach($this->gdlist as $k=>$v){
-					$value['gd'][$v['identifier']] = $this->local_url($value['filename'],$v);
+					$value['gd'][$v['identifier']] = $this->local_url($value,$v);
 				}
 			}else{
 				if($value['etype']){
@@ -658,7 +673,7 @@ class res_model_base extends phpok_model
 		foreach($rslist as $key=>$value){
 			if($this->is_local($value['filename'])){
 				foreach($this->gdlist as $k=>$v){
-					$rslist[$key]['gd'][$v['identifier']] = $this->local_url($value['filename'],$v);
+					$rslist[$key]['gd'][$v['identifier']] = $this->local_url($value,$v);
 				}
 			}else{
 				if($value['etype']){
@@ -708,7 +723,12 @@ class res_model_base extends phpok_model
 			return true;
 		}
 		if($this->is_local($rs['filename'])){
-			$ico = $this->get_ico($rs['filename']);
+			$this->get_ico($rs);
+			if($this->gdlist){
+				foreach($this->gdlist as $key=>$value){
+					$this->local_url($rs,$value);
+				}
+			}
 			$sql = "UPDATE ".$this->db->prefix."res SET ico='".$ico."' WHERE id='".$id."'";
 			$this->db->query($sql);
 			return true;
@@ -725,18 +745,26 @@ class res_model_base extends phpok_model
 		return true;
 	}
 
-	public function get_ico($filename,$width=200,$height=200,$cutype=1,$qty=80)
+	public function get_ico($rs,$width=200,$height=200,$cutype=1,$qty=80)
 	{
-		if(!$this->is_local($filename)){
+		if(!$this->is_local($rs['filename'])){
 			return false;
 		}
-		$tmp = array('url'=>$filename);
+		$folder = 'res/_cache/_ico/'.substr($rs['id'],0,2).'/';
+		if(is_file($this->dir_root.$folder.$rs['id'].'.'.$rs['ext'])){
+			return $folder.$rs['id'].'.'.$rs['ext'];
+		}
+		$tmp = array('url'=>$rs['filename']);
 		$tmp['width'] = $width;
 		$tmp['height'] = $height;
 		$tmp['cut_type'] = $cutype;
 		$tmp['quality'] =$qty;
 		$tmp['bgcolor'] = 'FFFFFF';
-		return 'img.php?token='.$this->lib('common')->urlsafe_b64encode(serialize($tmp));
+		$tmp['_id'] = $rs['id'];
+		$tmp['folder'] = $folder;
+		$tmp['ext'] = $rs['ext'];
+		return $this->img_create($tmp);
+		//return 'img.php?token='.$this->lib('common')->urlsafe_b64encode(serialize($tmp));
 	}
 
 	/**
@@ -801,11 +829,48 @@ class res_model_base extends phpok_model
 		return $this->lib('xml')->read($file);
 	}
 
-	private function local_url($file,$gdinfo)
+	private function local_url($rs,$gdinfo)
 	{
-		$gdinfo['url'] = $file;
-		$token = serialize($gdinfo);
-		$url = 'img.php?token='.$this->lib('common')->urlsafe_b64encode($token);
-		return $url;
+		if(!$this->is_local($rs['filename'])){
+			return false;
+		}
+		$gdinfo['url'] = $rs['filename'];
+		$gdinfo['_id'] = $rs['id'];
+		$gdinfo['ext'] = $rs['ext'];
+		$gdinfo['folder'] = 'res/_cache/'.$gdinfo['identifier'].'/'.substr($rs['id'],0,2).'/';
+		if(is_file($this->dir_root.$gdinfo['folder'].$rs['id'].'.'.$rs['ext'])){
+			return $gdinfo['folder'].$rs['id'].'.'.$rs['ext'];
+		}
+		return $this->img_create($gdinfo);
+	}
+
+	public function img_create($gdinfo)
+	{
+		if($gdinfo['folder']){
+			$this->lib('file')->make($this->dir_root.$gdinfo['folder']);
+		}
+		$this->lib('gd')->isgd(true);
+		$this->lib('gd')->filename($this->dir_root.$gdinfo['url']);
+		$this->lib('gd')->Filler($gdinfo["bgcolor"]);
+		if($gdinfo["width"] && $gdinfo["height"] && $gdinfo["cut_type"]){
+			$this->lib('gd')->SetCut(true);
+		}else{
+			$this->lib('gd')->SetCut(false);
+		}
+		$this->lib('gd')->SetWH($gdinfo["width"],$gdinfo["height"]);
+		$this->lib('gd')->CopyRight($gdinfo["mark_picture"],$gdinfo["mark_position"],$gdinfo["trans"]);
+		if($gdinfo["quality"]){
+			$this->lib('gd')->Set('quality',$gdinfo['quality']);
+		}
+		$ext = $gdinfo['ext'];
+		if(!$ext){
+			$ext = strtolower(substr($gdinfo['url'],-4));
+			if(!in_array($ext,array('.jpg','.gif','.png','jpeg'))){
+				return $gdinfo['url'];
+			}
+			$ext = str_replace('.','',$ext);
+		}
+		$this->lib('gd')->Create($this->dir_root.$gdinfo['url'],$gdinfo['_id'].'.'.$ext,$this->dir_root.$gdinfo['folder']);
+		return $gdinfo['folder'].$gdinfo['_id'].'.'.$ext;
 	}
 }

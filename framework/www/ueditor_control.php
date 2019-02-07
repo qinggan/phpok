@@ -253,7 +253,7 @@ class ueditor_control extends phpok_control
 		}else{
 			$filename = $rs['filename'];
 		}
-		$data = array('title'=>$rs['title'],'url'=>$filename,'original'=>$rs['title']);
+		$data = array('title'=>$rs['title'],'url'=>$filename,'original'=>$filename);
 		$this->_stop(true,$data);
 	}
 

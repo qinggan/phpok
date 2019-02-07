@@ -69,7 +69,7 @@ class content_control extends phpok_control
 		//如果未绑定网址
 		if(!$rs['url']){
 			$url_id = $rs['identifier'] ? $rs['identifier'] : $rs['id'];
-			$tmpext = '&project='.$project['identifier'];
+			$tmpext = 'project='.$project['identifier'];
 			if($project['cate'] && $rs['cate_id']){
 				$tmpext.= '&cateid='.$rs['cate_id'];
 			}

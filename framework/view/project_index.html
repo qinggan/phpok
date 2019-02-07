@@ -25,7 +25,7 @@
 			<th>{lang模块}</th>
 			<th width="65" class="center">{lang排序}</th>
 			<!-- if $popedom.set -->
-			<th width="220px">&nbsp;</th>
+			<th width="228px">&nbsp;</th>
 			<!-- /if -->
 		</tr>
 		</thead>
@@ -36,7 +36,7 @@
 			<!-- /if -->
 			<td class="center gray" height="24px">{$value.id}</td>
 			<td class="center"><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="$.admin_project.set_status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
-			<td><label for="id_{$value.id}">{$value.space}{$value.title}<!-- if $value.nick_title --><span class="gray i"> ({$value.nick_title})</span><!-- /if --><!-- if $value.hidden --><span class="red i">{lang（隐藏）}</span><!-- /if --></label></td>
+			<td><label for="id_{$value.id}" style="{$value.style}">{$value.space}{$value.title}<!-- if $value.nick_title --><span class="gray i"> ({$value.nick_title})</span><!-- /if --><!-- if $value.hidden --><span class="red i">{lang（隐藏）}</span><!-- /if --></label></td>
 			<td>{$value.identifier}</td>
 			<td>{$value.project_module_title ? $value.project_module_title : '-'}</td>
 			<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
@@ -45,6 +45,7 @@
 				<div class="layui-btn-group">
 					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑}_#{$value.id}','{url ctrl=project func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
 					<input type="button" value="{lang删除}" onclick="$.admin_project.del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+					<input type="button" value="{lang扩展字段}" onclick="$.admin_project.extinfo('{$value.id}')" class="layui-btn layui-btn-sm" />
 					<!-- if !$value.parent_id -->
 					<input type="button" value="{lang添加子项}" class="layui-btn layui-btn-sm" onclick="$.win('{lang添加子项}_#{$value.id}','{url ctrl=project func=set pid=$value.id/}')" />
 					<!-- /if -->
@@ -75,7 +76,6 @@
 			<!-- if $session.adm_develop -->
 			<li>
 				<div class="layui-btn-group">
-					<input type="button" value="{lang扩展字段}" onclick="$.admin_project.extinfo()" class="layui-btn layui-btn-sm" />
 					<input type="button" value="{lang复制}" onclick="$.admin_project.copy()" class="layui-btn layui-btn-sm" />
 					<input type="button" value="{lang导出}" onclick="$.admin_project.export()" class="layui-btn layui-btn-sm" />
 				</div>

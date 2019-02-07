@@ -4,10 +4,16 @@
 <div class="layui-card">
 	<div class="layui-card-header">{lang基本信息}</div>
 	<div class="layui-card-body">
+		<input type="hidden" name="style" id="style" value="{$rs.style}" />
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang名称}</label>
 			<div class="layui-input-inline default-auto">
-				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
+				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" style="{$rs.style}" />
+			</div>
+			<div class="layui-input-inline auto">
+				<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_project.style_setting('style','title')">
+					<i class="layui-icon">&#xe64e;</i> {lang样式}
+				</button>
 			</div>
 			<div class="layui-input-inline auto gray">{lang设置名称，该名称将在网站前台导航中使用}</div>
 		</div>

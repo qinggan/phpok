@@ -336,6 +336,7 @@ class project_control extends phpok_control
 		$array['biz_attr'] = $this->get('biz_attr');
 		$array['freight'] = $this->get('freight');
 		$array['list_fields'] = $this->get('list_fields');
+		$array['style'] = $this->get('style');
 		$ok_url = $this->url("project");
 		$c_rs = $this->model('sysmenu')->get_one_condition("appfile='list' AND parent_id>0");
 		$gid = $c_rs["id"];

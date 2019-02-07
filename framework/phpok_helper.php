@@ -1044,7 +1044,7 @@ function opt_rslist($type='default',$group_id=0,$info='')
 		if(!$tmplist) return false;
 		$rslist = array();
 		foreach($tmplist as $key=>$value){
-			$tmp = array("val"=>$value['id'],"title"=>$value['title']);
+			$tmp = array("val"=>$value['id'],"title"=>$value['title'],'parent_id'=>$value['parent_id']);
 			$rslist[] = $tmp;
 		}
 		return $rslist;

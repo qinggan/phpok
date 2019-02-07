@@ -1,15 +1,12 @@
 <!-- include tpl=head_lay -->
-<script type="text/javascript">
-layui.use('form')
-</script>
 <div class="layui-card">
-	<div class="layui-card-header " style="visibility: visible;">
-		<div>数据库管理</div>
+	<div class="layui-card-header">
+		数据库管理
+		<div class="fr">
+			<button type="button" class="layui-btn layui-btn-sm" onclick="$.win('{lang已备份列表}','{url ctrl=sql func=backlist/}')">{lang已备份列表}</button>
+		</div>
 	</div>
 	<div class="layui-card-body">
-		<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
-				<button class="layui-btn" onclick="parent.layui.index.openTabsPage('{url ctrl=sql func=backlist/}','已备份列表')">{lang已备份列表}</button>
-		</div>
 		<table class="layui-table layui-form">
 				<thead>
 				<tr>

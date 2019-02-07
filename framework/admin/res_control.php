@@ -1,12 +1,14 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/res_control.php
-	Note	: 资源管理器
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-12-27 12:02
-***********************************************************/
+/**
+ * 资源管理器
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2019年2月6日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class res_control extends phpok_control
 {
@@ -61,6 +63,11 @@ class res_control extends phpok_control
 		$this->assign("pagelist",$pagelist);
 		$myurl = $pageurl ."&".$this->config["pageid"]."=".$pageid;
 		$this->view("res_index");
+	}
+
+	public function clear_f()
+	{
+		$this->view('res_clear');
 	}
 
 	public function add_f()
@@ -429,5 +436,55 @@ class res_control extends phpok_control
 		$data['domain2'] = $this->get('domain2');
 		$this->model('res')->remote_config($data);
 		$this->success();
+	}
+
+	/**
+	 * 检测获取最小ID，最大ID及数量
+	**/
+	public function clearlist_f()
+	{
+		$condition = "1=1";
+		$start_date = $this->get('start_date');
+		if($start_date){
+			$condition = " AND addtime>=".strtotime($start_date);
+		}
+		$stop_date = $this->get('stop_date');
+		if($stop_date){
+			$condition .= " AND addtime<=".strtotime($stop_date);
+		}
+		$id_start = $this->get('id_start','int');
+		if($id_start){
+			$condition .= " AND id>=".$id_start;
+		}
+		$id_stop = $this->get('id_stop','int');
+		if($id_stop){
+			$condition .= " AND id<=".$id_stop;
+		}
+		$rs = $this->model('res')->admin_clearlist($condition);
+		if(!$rs){
+			$this->error(P_Lang('暂无附件信息'));
+		}
+		$this->success($rs);
+	}
+
+	/**
+	 * 一个个附件检测是否已被使用
+	**/
+	public function check_f()
+	{
+		$id_start = $this->get('id_start','int');
+		$id_stop = $this->get('id_stop','int');
+		$rs = $this->model('res')->admin_res_info($id_start,$id_stop);
+		if(!$rs){
+			$this->success('end');
+		}
+		$status = $this->model('res')->admin_check($rs);
+		$rs['addtime_format'] = time_format($rs['addtime']);
+		if($status){
+			$rs['status'] = true;
+			$this->success($rs);
+		}
+		$rs['status'] = false;
+		$this->success($rs);
 	}
 }

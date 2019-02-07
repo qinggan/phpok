@@ -382,4 +382,28 @@ class open_control extends phpok_control
 		$this->assign("pagelist",$pagelist);
 		$this->view("open_user_list2");
 	}
+
+	/**
+	 * 样式生成器
+	 * @参数 id 要保存的样式ID
+	 * @参数 vid 要应用到的效果ID
+	**/
+	public function style_f()
+	{
+		$id = $this->get('id');
+		$vid = $this->get('vid');
+		if(!$id){
+			$id = 'style';
+		}
+		if(!$vid){
+			$vid = 'title';
+		}
+		$this->assign('id',$id);
+		$this->assign('vid',$vid);
+		$html = form_edit('color','','text','form_btn=color&form_style=width:100px&ext_include_3=1');
+		$this->assign('colorhtml',$html);
+		$html = form_edit('bgcolor','','text','form_btn=color&form_style=width:100px&ext_include_3=1');
+		$this->assign('bgcolorhtml',$html);
+		$this->view('open_style');
+	}
 }

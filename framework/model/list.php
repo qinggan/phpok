@@ -960,7 +960,7 @@ class list_model_base extends phpok_model
 			if(!$rs[$value['identifier']]){
 				continue;
 			}
-			$tmp = explode($rs[$value['identifier']]);
+			$tmp = explode(',',$rs[$value['identifier']]);
 			if($tmp){
 				foreach($tmp as $k=>$v){
 					if($v && intval($v)){

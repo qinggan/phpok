@@ -13,22 +13,24 @@
 		</div>
 		<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
 		<div class="layui-form-item">
-			<label class="layui-form-label title">
-				<!-- if $value.note --><i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i><!-- /if -->
+			<label class="layui-form-label">
 				{$value.title}
 				<div class="darkblue"><small>[{$value.identifier}]</small></div>
 			</label>
-			<div class="layui-input-inline default-auto">{$value.html}</div>
-			<div class="layui-input-inline auto">
+			<!-- if $value.note --><div class="layui-input-block gray" style="line-height:38px;">{$value.note}</div><!-- /if -->
+			<div class="layui-input-block">
+				{$value.html}
+			</div>
+			<!-- if $popedom.ext && $session.adm_develop -->
+			<div class="layui-input-block mtop">
 				<div class="layui-btn-group">
-					<!-- if $popedom.ext && $session.adm_develop -->
 					<!-- if $ext_module != 'add-cate' -->
 					<input type="button" value="{lang编辑}" class="layui-btn layui-btn-xs" onclick="ext_edit('{$value.identifier}','{$ext_module}')" />
 					<!-- /if -->
 					<input type="button" value="{lang删除}" class="layui-btn layui-btn-xs layui-btn-normal" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')" />
-					<!-- /if -->
 				</div>
 			</div>
+			<!-- /if -->
 		</div>
 		<!-- /loop -->
 		<!-- if $popedom.ext -->
@@ -37,24 +39,16 @@
 			<div class="layui-input-inline long" id="_quick_insert" data-module="{$ext_module}"></div>
 		</div>
 		<!-- /if -->
-		<div class="layui-form-item">
-			<label class="layui-form-label">&nbsp;</label>
-			<div class="layui-input-inline default-auto">
-				<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-normal" />
-			</div>
-		</div>
-		
+	
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
 	</div>
 </div>
 
-
-
-<div class="table">
-	<div class="content">
-		<br />
-		
-		<br />
-	</div>
-</div>
 </form>
 <!-- include tpl=foot_lay -->

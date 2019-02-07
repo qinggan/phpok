@@ -1,13 +1,12 @@
 <?php
 /**
  * URL网址生成
- * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @时间 2017年10月01日
+ * @时间 2019年2月6日
 **/
 
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
@@ -22,6 +21,7 @@ class url_model_base extends phpok_model
 	private $protected_id = array('js','ajax','inp');
 	private $url_appid = 'www';
 	private $tmpdata = array();
+	private $clear_params = array('project');
 	public $urltype = 'default';
 	
 	public function __construct()
@@ -70,6 +70,17 @@ class url_model_base extends phpok_model
 		return $this->nocache;
 	}
 
+	public function clear_params($params='')
+	{
+		if($params && is_string($params)){
+			$params = explode(",",$params);
+		}
+		if($params && is_array($params) && count($params) > 0){
+			$this->clear_params = $params;
+		}
+		return $this->clear_params;
+	}
+
 	public function url($ctrl='index',$func='index',$ext='')
 	{
 		if($this->url_appid == 'www' && $this->urltype == 'rewrite'){
@@ -114,11 +125,16 @@ class url_model_base extends phpok_model
 		if($func && preg_match("/^[a-z0-9A-Z\_\-]+$/u",$func)){
 			$url .= substr($func,0,1) == "&" ? $func : '&cate='.$func;
 		}
-		if($ext && $ext != "&"){
-			if(substr($ext,0,1) == "&"){
-				$ext = substr($ext,1);
+		if($ext){
+			$url_parse_str = $this->url_parse_str($ext);
+			if($url_parse_str){
+				foreach($url_parse_str as $key=>$value){
+					if($this->clear_params && in_array($key,$this->clear_params)){
+						continue;
+					}
+					$url .= "&".$key."=".rawurlencode($value);
+				}
 			}
-			$url .= "&".$ext;
 		}
 		if(defined('PHPOK_SITE_ID')){
 			$url .= "&siteId=".PHPOK_SITE_ID;
@@ -136,7 +152,15 @@ class url_model_base extends phpok_model
 			$url .= $this->func_id.'='.$func.'&';
 		}
 		if($ext){
-			$url .= $ext;
+			$url_parse_str = $this->url_parse_str($ext);
+			if($url_parse_str){
+				foreach($url_parse_str as $key=>$value){
+					if($this->clear_params && in_array($key,$this->clear_params)){
+						continue;
+					}
+					$url .= $key."=".rawurlencode($value)."&";
+				}
+			}
 		}
 		if(substr($url,-1) == "&" || substr($url,-1) == "?"){
 			$url = substr($url,0,-1);
@@ -156,6 +180,21 @@ class url_model_base extends phpok_model
 			}
 		}
 		return $url;
+	}
+
+	public function url_parse_str($info)
+	{
+		if(!$info){
+			return false;
+		}
+		if(substr($info,0,1) == '&'){
+			$info = substr($info,1);
+		}
+		if(substr($info,-1) == '&'){
+			$info = substr($info,0,-1);
+		}
+		parse_str($info,$list);
+		return $list;
 	}
 
 

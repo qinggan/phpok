@@ -37,7 +37,7 @@
 						<!-- if $value[_layer]>0 -->
 						<span class="cate_middle">&nbsp;</span>
 						<!-- /if -->
-						<span class="cate_txt"><label for="id_{$value.id}">{$value.title}<span class="gray i">（{$value.identifier}）</span></label></span>
+						<span class="cate_txt"><label for="id_{$value.id}" style="{$value.style}">{$value.title}<span class="gray i">（{$value.identifier}）</span></label></span>
 					</div>
 				</td>
 				<td><input type="text" id="taxis_{$value.id}" class="layui-input" value="{$value.taxis}" tabindex="{$tab_i}" onblur="update_taxis('{$value.id}')" /></td>
@@ -53,7 +53,6 @@
 						<input type="button" value="{lang删除}" onclick="$.admin_cate.del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 						<!-- /if -->
 					</div>
-
 				</td>
 			</tr>
 			<!-- /loop -->

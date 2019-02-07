@@ -1,7 +1,6 @@
 <?php
 /**
  * 购物车接口请求相关
- * @package phpok\api
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -25,6 +24,27 @@ class cart_control extends phpok_control
 	{
 		parent::control();
 		$this->cart_id = $this->model('cart')->cart_id($this->session->sessid(),$this->session->val('user_id'));
+	}
+
+	/**
+	 * 取得购物车列表
+	**/
+	public function index_f()
+	{
+		$rslist = $this->model('cart')->get_all($this->cart_id);
+		if(!$rslist){
+			$this->success('empty');
+		}
+		$totalprice = 0;
+		$_date = date("Ymd",$this->time);
+		foreach($rslist as $key=>$value){
+			$totalprice += price_format_val($value['price'] * $value['qty'],$this->site['currency_id']);
+			$value['_checked'] = ($value['dateline'] && date("Ymd",$value['dateline']) == $_date) ? true : false;
+			$rslist[$key] = $value;
+		}
+		$price = price_format_val($totalprice,$this->site['currency_id']);
+		$data = array('rslist'=>$rslist,'price'=>$price);
+		$this->success($data);
 	}
 
 	/**
