@@ -16,9 +16,16 @@
 		 * @参数 identifier 变量标识
 		 * @参数 val 选中的值
 		**/
-		change:function(groupid,identifier,val)
+		change:function(groupid,identifier,val,type)
 		{
-			var url = api_url('opt','index','group_id='+groupid+"&identifier="+identifier+"&val="+$.str.encode(val));
+			var ext = "group_id="+groupid+"&identifier="+identifier;
+			if(val){
+				ext += "&val="+$.str.encode(val);
+			}
+			var url = api_url('opt','index',ext);
+			if(type && type == 'cate'){
+				url = api_url('opt','cate',ext);
+			}
 			$.phpok.ajax(url,function(data){
 				$("#"+identifier+"_html").html(data);
 			})

@@ -827,7 +827,15 @@
                 if (li.tagName.toLowerCase() == 'li') {
                     if (domUtils.hasClass(li, 'selected')) {
                         domUtils.removeClasses(li, 'selected');
+                        $(li).find('input').hide();
                     } else {
+                        //计算
+                        var tmp_i = 1;
+                        var obj = $(li).parent().find('li.selected');
+                        obj.each(function(i){
+	                        tmp_i++;
+                        });
+                        $(li).find('input').val(tmp_i).show();
                         domUtils.addClass(li, 'selected');
                     }
                 }
@@ -910,6 +918,14 @@
                     item = document.createElement('li');
                     img = document.createElement('img');
                     icon = document.createElement('span');
+                    icon.setAttribute('title',list[i].title);
+                    var css = 'background-color:rgba(255,255,255,0.8);color:#000;margin:3px;padding:3px;text-overflow:clip;overflow:hidden;white-space:nowrap';
+                    var html = '<div style="'+css+'">';
+                    //添加隐藏的排序
+                    html += '<input type="text" id="taxis_'+i+'" style="width:30px;text-align:center;display:none;" /> ';
+                    html += list[i].title+'</div>';
+                    icon.innerHTML = html;
+
 
                     domUtils.on(img, 'load', (function(image){
                         return function(){
@@ -925,6 +941,7 @@
 
                     item.appendChild(img);
                     item.appendChild(icon);
+
                     this.list.insertBefore(item, this.clearFloat);
                 }
             }
@@ -958,19 +975,26 @@
         },
         getInsertList: function () {
             var i, lis = this.list.children, list = [], align = getAlign();
+            var tmplist = {};
             for (i = 0; i < lis.length; i++) {
                 if (domUtils.hasClass(lis[i], 'selected')) {
                     var img = lis[i].firstChild,
-                        src = img.getAttribute('_src');
-                        alt = img.getAttribute('alt');
-                    list.push({
-                        src: src,
+                        src = img.getAttribute('_src'),
+                        alt = img.getAttribute('alt'),
+                        title = img.getAttribute('title'),
+                        taxis = $(lis[i]).find('input').val();
+                    var tmp = {
+	                    src: src,
                         _src: src,
                         alt: alt,
+                        title:title,
                         floatStyle: align
-                    });
+                    };
+                    tmplist[taxis] = tmp;
                 }
-
+            }
+            for(var i in tmplist){
+	            list.push(tmplist[i]);
             }
             return list;
         }
