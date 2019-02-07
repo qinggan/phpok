@@ -1,156 +1,156 @@
 ;<?php exit("<h1>Access Denied</h1>");?>
 
-;�Ƿ���ԣ�1/true���ã�0/false����
+;是否调试，1/true启用，0/false禁用
 debug = false
 
-;ѹ��������1/true���ã�0/false����
+;压缩传缩，1/true启用，0/false禁用
 gzip = true
 
-;����ģʽ��1/true���ã�0/false����
-;����Ϊ false �󣬺�̨�����Ҫ�Զ����ֶΣ���Ҫ������Ա������ʱ��
-;�� debug Ϊ false ʱ�����Ϊ false
+;开发模式，1/true启用，0/false禁用
+;设置为 false 后，后台如果需要自定义字段，需要到管理员那里临时打开
+;当 debug 为 false 时，此项即为 false
 develop = false
 
-;ȡ�ÿ�������ID
+;取得控制器的ID
 ctrl_id = c
 
-;ȡ��Ӧ�÷�����ID
+;取得应用方法的ID
 func_id = f
 
-;��̨���
+;后台入口
 admin_file = admin.php
 
-;��վ��ҳ������һ�㲻�޸ģ�������ҳҪ�����������Ÿ���
+;网站首页，这里一般不修改，除非首页要另外制作，才改名
 www_file = index.php
 
-;API�ӿ�
+;API接口
 api_file = api.php
 
-;��֤����ʾ��1/true���ã�0/false����
+;验证码显示，1/true启用，0/false禁用
 is_vcode = true
 
-;ÿҳ��ʾ����
+;每页显示数量
 psize = 20
 
-;��ҳID
+;分页ID
 pageid = pageid
 
-;ʱ������
+;时区调节
 timezone = Asia/Shanghai
 
-;ʱ����ڣ���λ����
+;时间调节，单位是秒
 timetuning = 0
 
-;��Ա Token ��ʶ������ʹ�� session ��ʱ�����ʹ�ô���������κνӿڷ��أ�ֻҪ�ǻ�Ա��¼�󶼻ᴫ��һ������userToken
-;ע�⣬������ʷԭ�������� token �������
-;���ô�����Ҫ��̨��ʼ��Կ
+;会员 Token 标识，不在使用 session 的时候可以使用此项替代，任何接口返回，只要是会员登录后都会传输一个变量userToken
+;注意，由于历史原因，请慎用 token 这个变量
+;启用此项需要后台开始密钥
 token_id = userToken
 
-;����SQLԶ��ִ�У�������ã�1/true���ã�0/false����
+;启用SQL远程执行，建议禁用，1/true启用，0/false禁用
 api_remote_sql = false
 
-;����ʱ�䣬��ε�¼�����ϵͳ������ʱ�䣬��λ��Сʱ�����ջ�δ����������2Сʱ
+;锁定时间，多次登录错误后被系统锁定的时间，单位是小时，留空或未设置则锁定2小时
 lock_time = 2
 
-;��������ﵽ���ٴκ�ִ��������¼
+;错误次数达到多少次后执行锁定登录
 lock_error_count = 6
 
-;��Ա��¼��֤��1/true���ã�0/false���ã����Ҫʵ�ֻ�Ա��¼���ܲ鿴���뽫��ֵ��Ϊ true �� 1
+;会员登录验证，1/true启用，0/false禁用，如果要实现会员登录才能查看，请将此值设为 true 或 1
 is_login = false
 
-;����JS�����࣬��� js ��Ӣ�Ķ��Ÿ�����������·�������ȶ�ȡ framework/js/ Ŀ¼����ζ�ȡ js/ Ŀ¼
-;��ģ���У���Ҫ���� {url ctrl=js /}����Ȼ������Ч��Ĭ�ϼ� js/ Ŀ¼�µ� jquery.js �ļ���������ָ��ģ�� js Ŀ¼�з� jquery.js �ļ����Ƕ�ȡ
+;公共JS加载类，多个 js 用英文逗号隔开，不考虑路径，优先读取 framework/js/ 目录，其次读取 js/ 目录
+;在模板中，需要增加 {url ctrl=js /}，不然此项无效，默认加 js/ 目录下的 jquery.js 文件，可以在指定模板 js 目录中放 jquery.js 文件覆盖读取
 autoload_js = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.min.js,jquery.json.min.js"
 
-;��ȡ������ʽ��Apache �û�����ʹ�� SERVER_NAME��Nginx �û�����ʹ�� HTTP_HOST
+;获取域名方式，Apache 用户建议使用 SERVER_NAME，Nginx 用户建议使用 HTTP_HOST
 get_domain_method = SERVER_NAME
 
-;�Ƿ������ѡ��
+;是否多语言选择
 multiple_language = true
 
-;�Ƿ����� opcache������ debug Ϊ false ʱ��Ч
+;是否启用 opcache，仅限 debug 为 false 时有效
 opcache = true
 
-;�Ƿ�ǿ������ HTTPS��Ĭ�ϲ�ǿ�ƣ������ʹ�� nginx+apache ��ģʽ��ϣ����ܼ�� https ʧ�ܣ���������������ǿ��
+;是否强制启用 HTTPS，默认不强制，如果您使用 nginx+apache 多模式组合，可能检测 https 失败，可以在这里设置强制
 force_https = 0
 
 [mobile]
-;���û�����ֻ��ˣ�1/true���ã�0/false����
+;启用或禁用手机端，1/true启用，0/false禁用
 status = true
 
-;�Զ�����Ƿ��ֻ��ˣ�1/true���ã�0/false����
+;自动检测是否手机端，1/true启用，0/false禁用
 autocheck = true
 
-;Ĭ��Ϊ�ֻ��棬Ϊ���㿪����Ա��ʽ������ΪĬ�Ϻ�����ҳ��Ҳ��չʾ�ֻ��棬1/true���ã�0/false����
+;默认为手机版，为方便开发人员调式，设置为默认后，在网页上也会展示手机版，1/true启用，0/false禁用
 default = false
 
-;�ֻ����Զ����ص� js����� autoload_js �����������Ӳ���
+;手机版自动加载的 js，配合 autoload_js 参数进行增加操作
 includejs = "jquery.touchslide.js"
 
-;�ֻ���Ҫȥ�� js����� autoload_js �������н��ü��ز���
+;手机版要去除 js，配合 autoload_js 参数进行禁用加载操作
 excludejs = "jquery.superslide.js"
 
 [pc]
-;���Զ��Զ����ص� js����� autoload_js �����������Ӳ���
+;电脑端自动加载的 js，配合 autoload_js 参数进行增加操作
 includejs = ""
 
-;���Զ�Ҫȥ�� js����� autoload_js �������н��ü��ز���
+;电脑端要去除 js，配合 autoload_js 参数进行禁用加载操作
 excludejs = ""
 
 [seo]
-; SEO�ָ��ߣ�ע��ո�
+; SEO分割线，注意空格
 line = "_"
 
-;SEO�Ż�ģʽ��{title}�����������ı���ֵ��{seo} �����õ� SEO ���⣬{sitename} ������վ����
+;SEO优化模式，{title}，即传过来的标题值，{seo} 是内置的 SEO 标题，{sitename} 即是网站名称
 format = "{title}-{sitename}-{seo}"
 
 [order]
 price = "product,shipping,fee,discount"
 
 [cart]
-;���ﳵ���ͼƬ����ϵͳ���ĸ��ֶ�
+;购物车里的图片来字系统中哪个字段
 thumb_id = "thumb"
-;Ҫ����ĵ����ﳵ���ͼƬ���ĸ� GD ���������մ�ԭͼ
+;要保存的到购物车里的图片是哪个 GD 方案，留空存原图
 gd_id = ""
 
 [fav]
-;�ղؼ����ͼƬ��ȡ�����ղ�����ʱ�������⵽������ָ����ͼƬ�ֶΣ���ͼƬ�浽�ղؼе�����ͼ����
+;收藏夹里的图片获取，即收藏主题时，如果检测到主题有指定的图片字段，将图片存到收藏夹的缩略图中来
 thumb_id = "thumb"
 
-;�ղؼ��л�ȡ��ժҪ�������������ȡ
+;收藏夹中获取的摘要从文章中哪里获取
 note_id = "content"
 
 [async]
-;��PHP������ִ���첽�ƻ�����
-;������Ŀռ䲻֧�ִ����Ҫ���ã�������Ӧ��HTMLģ����д�붨ʱ�ƻ������������ӣ������˴���Ϊ false
+;在PHP程序中执行异步计划任务
+;如果您的空间不支持此项或要禁用，请在相应的HTML模板里写入定时计划任务请求链接，并将此处设为 false
 status = false
 
-;���Ƶ�ʣ���λ�Ƿ��ӣ�����С��1
+;检查频率，单位是分钟，不能小于1
 interval_times = 5
 
 [jsonp]
-;Զ�̿����ȡ����
-;Get���Ĳ���ID
+;远程跨域获取数据
+;Get到的参数ID
 getid = callback
 
-;�������δ���� getid �� ����Ϊ�գ���ʹ��Ĭ�Ϻ���
+;如果上述未设置 getid 或 内容为空，则使用默认函数
 default = callback
 
 [cdn]
-;�Ƿ��� CDN ��̬��Դ��
+;是否开启 CDN 静态资源库
 status = true
 
-;CDN��������ַ
+;CDN服务器地址
 server = 'cdn.phpok.com'
 
-;IP��ַ�����ڼ��CDNʱ��Ӧ�������
+;IP地址，用于检测CDN时响应过长造成
 ip = ""
 
-;�Ƿ�����https
+;是否启用https
 https = false
 
-;��ü��CDN�����������λ����
+;多久检测CDN连接情况，单位是秒
 time = 3600
 
-;����ʧ�ܣ�ָ��Ŀ¼��ַ
+;连接失败，指向目录地址
 folder = "static/cdn"

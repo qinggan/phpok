@@ -1,49 +1,49 @@
 ;<?php exit("<h1>Access Denied</h1>");?>
 
-; ֧�� mysqli pdo_mysql��PHP����5.3����û�����ʹ��mysqli��pdo_mysql
-; http ģʽ��Ҫ���� libs/curl.php �� libs/token.php �ļ�����ģʽ��Ҫ Server ����ϣ����ܱȽ���
-; ��ע�� http ģʽ��������׶�
+; 支持 mysqli pdo_mysql，PHP大于5.3版的用户建议使用mysqli或pdo_mysql
+; http 模式需要调用 libs/curl.php 和 libs/token.php 文件，此模式需要 Server 端配合，功能比较弱
+; 请注意 http 模式还在试验阶段
 file = "mysqli"
 
-; ���ݿ����������������дlocalhost��127.0.0.1
-; ��ʹ�� http ʱ��������д�������� IP�������ڽ���޷��ϱ���������
+; 数据库服务器，本地请填写localhost或127.0.0.1
+; 当使用 http 时，这里填写服务器的 IP，可用于解决无法认别域名问题
 host = "192.168.1.59"
 ;host = "127.0.0.1"
 
-; ���ݿ�������Ķ˿ںţ�Ĭ����3306
-; ʹ�� http ģʽ������Ч
+; 数据库服务器的端口号，默认是3306
+; 使用 http 模式此项无效
 port = "3306"
 
-; �������ݿ���˺�
-; ʹ�� http ģʽʱ����������֤�˺ţ�����Ҫ������
+; 连接数据库的账号
+; 使用 http 模式时，这里是认证账号，不需要请留空
 user = "phpok5"
 ;user = "root"
 
-; �������ݿ������
-; ʹ�� http ģʽʱ�Ļ�����֤������Ҫ������
+; 连接数据库的密码
+; 使用 http 模式时的基本验证，不需要请留空
 pass = "aoRO_AdnPOZj"
 ;pass = "root"
 
-; ���ݿ�����
-; ʹ�� sqlite �� pdo_sqlite ʱ������д���ݿ���Ե�ַ��Ҫȷ���ļ�����
-; ʹ�� mysqli �� pdo_mysql ʱ������д���ݿ�����
+; 数据库名称
+; 使用 sqlite 或 pdo_sqlite 时，请填写数据库相对地址，要确保文件存在
+; 使用 mysqli 或 pdo_mysql 时，请填写数据库名称
 data = "phpok5"
 
-; ���ݱ�ǰ׺��ʵ��ͬһ�����ݿⰲװ��ͬ�汾����Ĭ��ʹ�� qinggan_
-; ʹ�� http ģʽʱ��ע�����ɵ� SQL �ļ��Ჹ��ǰ׺
+; 数据表前缀，实现同一个数据库安装不同版本程序，默认使用 qinggan_
+; 使用 http 模式时，注意生成的 SQL 文件会补上前缀
 prefix = "qinggan_"
 
-; ʹ��ͨ�����ӣ�������������Mysql��Linux��һ����/tmp/mysql.sock�������ж����������û�ʹ�ã�
+; 使用通道连接（即不走网卡，Mysql在Linux下一般是/tmp/mysql.sock，建议有独立主机的用户使用）
 socket = ""
 
-; �Ƿ���ԣ����ϵͳ��debugΪtrueʱ�����ӡ������ҳ��ִ�е�SQL���
+; 是否调试，配合系统的debug为true时，会打印出整个页面执行的SQL语句
 debug = true
 
-; ��ʱ���棬��Ӧ�ô�����С��ѯ���ظ���ѯ��һ�㲻�ÿ�����
+; 即时缓存，适应用大量的小查询（重复查询，一般不用开启）
 cache = false
 
-;����ѯ��¼
+;慢查询记录
 slow = true
 
-;����ѯʱ�䣬��λ���룬֧��С���㣬��0.05
+;慢查询时间，单位是秒，支持小数点，如0.05
 slow_time = 0.05

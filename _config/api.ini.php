@@ -2,7 +2,5 @@
 
 ;is_vcode = true
 
-; API 接口生成的图片如果异常，可在这里关闭 gzip 模式
+; API 鎺ュ彛鐢熸垚鐨勫浘鐗囧鏋滃紓甯革紝鍙湪杩欓噷鍏抽棴 gzip 妯″紡
 gzip = false
-
-debug = true

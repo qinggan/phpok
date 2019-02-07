@@ -1,6 +1,6 @@
 ;<?php exit("<h1>Access Denied</h1>");?>
-;¸²¸Ç global.ini.php ÀïµÄÅäÖÃ£¬´ËÏî½öÓÃÓÚ www ÏÂÊ¹ÓÃ
+;è¦†ç›– global.ini.php é‡Œçš„é…ç½®ï¼Œæ­¤é¡¹ä»…ç”¨äº www ä¸‹ä½¿ç”¨
 autoload_js = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.min.js,jquery.json.min.js,global.www.js,jquery.superslide.js,jquery.artdialog.js,jquery.cart.js"
 
-;Ê×Ò³°²È«²ÎÊı£¬²»·ûºÏÕâĞ©²ÎÊıµÄ£¬Ö±½Ó±¨ 404 ´íÎó
+;é¦–é¡µå®‰å…¨å‚æ•°ï¼Œä¸ç¬¦åˆè¿™äº›å‚æ•°çš„ï¼Œç›´æ¥æŠ¥ 404 é”™è¯¯
 get_params = 'uid,phpfile,siteId,_langid,_noCache'

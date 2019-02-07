@@ -1,9 +1,6 @@
 ;<?php exit("<h1>Access Denied</h1>");?>
-;¸²¸Ç global.ini.php ÀïµÄÅäÖÃ£¬´ËÏî½öÓÃÓÚ admin ÏÂÊ¹ÓÃ
+;è¦†ç›– global.ini.php é‡Œçš„é…ç½®ï¼Œæ­¤é¡¹ä»…ç”¨äº admin ä¸‹ä½¿ç”¨
 autoload_js = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.min.js,jquery.json.min.js,jquery.artdialog.js,jquery.desktop.js,global.admin.js,jquery.smartmenu.js,selectpage.min.js,clipboard.min.js"
 
-;Òş²ØÏÕÖ¤ÂëÅäÖÃ£¬ÉèÖÃÎª TRUE ºó£¬ÑéÖ¤ÂëÅäÖÃ°´Å¥½«²»ÏÔÊ¾
+;éšè—é™©è¯ç é…ç½®ï¼Œè®¾ç½®ä¸º TRUE åï¼ŒéªŒè¯ç é…ç½®æŒ‰é’®å°†ä¸æ˜¾ç¤º
 hide_vcode_setting = false
-
-
-debug = true
