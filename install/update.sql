@@ -70,3 +70,12 @@ ALTER TABLE `qinggan_res_cate` ADD `upload_binary` TINYINT( 1 ) NOT NULL DEFAULT
 
 -- 2019年1月20日
 ALTER TABLE `qinggan_res` CHANGE `ico` `ico` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'ICO图标文件';
+
+-- 2019年1月26日
+ALTER TABLE `qinggan_list`  ADD `style` VARCHAR(255) NOT NULL COMMENT 'CSS样式';
+
+-- 2019年1月26日
+ALTER TABLE `qinggan_project`  ADD `style` VARCHAR(255) NOT NULL COMMENT 'CSS样式';
+
+-- 2019年1月26日
+ALTER TABLE `qinggan_cate`  ADD `style` VARCHAR(255) NOT NULL COMMENT 'CSS样式';
