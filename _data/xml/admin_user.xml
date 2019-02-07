@@ -3,4 +3,5 @@
 	<user><![CDATA[账号]]></user>
 	<email><![CDATA[邮箱]]></email>
 	<mobile><![CDATA[手机号]]></mobile>
+	<cate><![CDATA[分类]]></cate>
 </root>

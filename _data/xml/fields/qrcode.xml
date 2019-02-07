@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<title><![CDATA[二维码]]></title>
+	<identifier><![CDATA[qrcode]]></identifier>
+	<field_type><![CDATA[varchar]]></field_type>
+	<note><![CDATA[请上传二维码图片，规格建议200x200]]></note>
+	<form_type><![CDATA[upload]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[safe]]></format>
+	<content><![CDATA[]]></content>
+	<ext>
+		<cate_id><![CDATA[1]]></cate_id>
+		<is_multiple><![CDATA[0]]></is_multiple>
+	</ext>
+</root>
