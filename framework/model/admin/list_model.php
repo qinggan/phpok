@@ -292,130 +292,28 @@ class list_model extends list_model_base
 		return $rslist;
 	}
 
-
-	/**
-	 * 获取主题列表
-	 * @参数 $mid，模块ID，数值
-	 * @参数 $condition，查询条件
-	 * @参数 $offset，查询起始位置，默认是0
-	 * @参数 $psize，查询条数，默认是0，表示不限制
-	 * @参数 $orderby，排序
-	 * @返回 数组，查询结果集，扩展字段内容已经格式化
-	**/
-	public function get_list($mid,$condition="",$offset=0,$psize=0,$orderby="")
+	public function pending_info($site_id=0)
 	{
-		if(!$mid){
-			return false;
-		}
-		if(!$orderby){
-			$orderby = " l.sort DESC,l.dateline DESC,l.id DESC ";
-		}
-		$fields_list = $this->db->list_fields('list');
-		$field = "l.id";
-		if($this->is_user || ($condition && strpos($condition,'u.') !== false) || strpos($orderby,'u.') !== false){
-			$field .= ",u.user _user";
-		}
-		foreach($fields_list as $key=>$value){
-			if($value == 'id' || !$value){
-				continue;
-			}
-			$field .= ",l.".$value;
-		}
-		$module = $this->model('module')->get_one($mid);
-		if($module && $module['layout']){
-			$tmp = explode(",",$module['layout']);
-			$field_ext = $this->ext_fields($mid,'ext',"identifier IN('".implode("','",$tmp)."')");
-			if($field_ext){
-				$field .= ",".$field_ext;
-			}
-		}
-		
-		if($this->is_biz || ($condition && strpos($condition,'b.') !== false) || strpos($orderby,'b.') !== false){
-			$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit";
-		}
-		$linksql = " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id AND l.project_id=ext.project_id) ";
-		if($this->is_user || ($condition && strpos($condition,'u.') !== false) || strpos($orderby,'u.') !== false){
-			$linksql .= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id AND u.status=1) ";
-		}
-		if($this->is_biz || ($condition && strpos($condition,'b.') !== false) || strpos($orderby,'b.') !== false){
-			$linksql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
-		}
-		if($this->multiple_cate || ($condition && strpos($condition,'lc.') !== false) || strpos($orderby,'lc.') !== false){
-			$linksql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
-		}
-		$sql  = "SELECT ".$field." FROM ".$this->db->prefix."list l ".$linksql;
-		if($condition){
-			$sql .= " WHERE ".$condition." ";
-		}
-		$sql .= " ORDER BY ".$orderby;
-		if($psize && is_numeric($psize) && intval($psize)){
-			$offset = intval($offset);
-			$sql.= " LIMIT ".$offset.",".$psize;
-		}
-		$rslist = $this->db->get_all($sql,"id");
+		$sql = "SELECT count(l.id) total,l.project_id pid FROM ".$this->db->prefix."list l ";
+		$sql.= " WHERE l.status!=1 AND l.site_id='".$site_id."'";
+		$sql.= " GROUP BY l.project_id";
+		$rslist = $this->db->get_all($sql,'pid');
 		if(!$rslist){
 			return false;
 		}
-		$cid_list = array();
+		$idlist = array_keys($rslist);
+		$sql = "SELECT title,id,parent_id FROM ".$this->db->prefix."project WHERE id IN(".implode(",",$idlist).")";
+		$tlist = $this->db->get_all($sql);
+		if($tlist){
+			foreach($tlist as $key=>$value){
+				$rslist[$value['id']]['title'] = $value['title'];
+				$rslist[$value['id']]['parent_id'] = $value['parent_id'];
+			}
+		}
 		foreach($rslist as $key=>$value){
-			$cid_list[$value["cate_id"]] = $value["cate_id"];
-		}
-		$m_rs = $this->lib('ext')->module_fields($mid);
-		if($m_rs){
-			foreach($rslist as $key=>$value){
-				foreach($value as $k=>$v){
-					if($m_rs[$k]){
-						$value[$k] = $this->lib('ext')->content_format($m_rs[$k],$v);
-					}
-				}
-				$rslist[$key] = $value;
-			}
-		}
-		$cid_string = implode(",",$cid_list);
-		if($cid_string){
-			$catelist = $this->lib('ext')->cate_list($cid_string);
-			foreach($rslist AS $key=>$value){
-				if($value["cate_id"]){
-					$value["cate_id"] = $catelist[$value["cate_id"]];
-					$rslist[$key] = $value;
-				}
-			}
-		}
-		return $rslist;
-	}
-
-	public function pending_info($site_id=0)
-	{
-		$sql = " SELECT count(l.id) total,p.title,p.id pid,p.parent_id FROM ".$this->db->prefix."list l ";
-		$sql.= " JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
-		$sql.= " WHERE l.status!=1 AND l.site_id='".$site_id."' AND p.status=1 ";
-		$sql.= " GROUP BY l.project_id";
-		$tmplist = $this->db->get_all($sql,'pid');
-		if(!$tmplist){
-			return false;
-		}
-		$idlist = array();
-		foreach($tmplist as $key=>$value){
-			if($value['parent_id']){
-				$idlist[] = $value['parent_id'];
-			}
-		}
-		$keys = array_keys($tmplist);
-		$ids = array_diff($idlist,$keys);
-		if($ids){
-			$sql = "SELECT title,id as pid,parent_id FROM ".$this->db->prefix."project WHERE id IN(".implode(",",$ids).")";
-			$tlist = $this->db->get_all($sql);
-			if($tlist){
-				foreach($tlist as $key=>$value){
-					$value['total'] = 0;
-					$tmplist[$value['pid']] = $value;
-				}
-			}
-		}
-		foreach($tmplist as $key=>$value){
 			if(!$value['parent_id']){
 				$tmp_total = 0;
-				foreach($tmplist as $k=>$v){
+				foreach($rslist as $k=>$v){
 					if($v['parent_id'] && $v['parent_id'] == $value['pid']){
 						$tmp_total += $v['total'];
 					}
@@ -424,9 +322,9 @@ class list_model extends list_model_base
 					$value['total'] = $value['total'] + $tmp_total;
 				}
 			}
-			$tmplist[$key] = $value;
+			$rslist[$key] = $value;
 		}
-		return $tmplist;
+		return $rslist;
 	}
 
 	public function status_all($site_id=0)

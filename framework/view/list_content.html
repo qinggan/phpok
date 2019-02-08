@@ -124,6 +124,24 @@
 				</div>
 			</div>
 			<div class="layui-inline">
+				<label class="layui-form-label">ID</label>
+				<div class="layui-input-block">
+					<ul class="layout">
+						<li class="layui-form-mid">
+							<select name="keywords[_id]" lay-ignore>
+								<option value="0">{lang等于} =</option>
+								<option value="1">{lang大于} &gt;</option>
+								<option value="2">{lang小于} &lt;</option>
+							</select>
+						</li>
+						<li><input type="text" name="keywords[id]" value="{$keywords[id]}" /></li>
+					</ul>
+					
+					
+				</div>
+			</div>
+			
+			<div class="layui-inline">
 				<label class="layui-form-label">&nbsp;</label>
 				<div class="layui-input-block">
 					<input type="submit" value="{lang提交搜索}" class="layui-btn layui-btn-normal" />

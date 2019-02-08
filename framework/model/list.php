@@ -16,6 +16,8 @@ class list_model_base extends phpok_model
 	protected $is_biz = false;
 	protected $is_user = false;
 	protected $multiple_cate = false;
+	protected $_total = 0;
+	protected $_primary_id_asc = true; //ID递减，设为false时表示ID递增
 	/**
 	 * 构造函数，继承父Model
 	**/
@@ -101,6 +103,9 @@ class list_model_base extends phpok_model
 		if(!$mid){
 			return false;
 		}
+		if($this->_total > 100000 && $offset > 10000){
+			return $this->_get_list($mid,$condition,$offset,$psize,$orderby);
+		}
 		$fields_list = $this->db->list_fields('list');
 		$field = "l.id,u.user _user";
 		foreach($fields_list as $key=>$value){
@@ -113,12 +118,16 @@ class list_model_base extends phpok_model
 		if($field_ext){
 			$field .= ",".$field_ext;
 		}
-		$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit";
-		$sql = "SELECT ".$field." FROM ".$this->db->prefix."list l ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id AND l.project_id=ext.project_id) ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id AND u.status=1) ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+		$linksql  = " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id AND l.project_id=ext.project_id) ";
+		$linksql .= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id) ";
+		if($this->is_biz || ($condition && strpos($condition,'b.') !== false) || strpos($orderby,'b.') !== false){
+			$linksql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
+			$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit";
+		}
+		if($this->multiple_cate || ($condition && strpos($condition,'lc.') !== false) || strpos($orderby,'lc.') !== false){
+			$linksql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+		}
+		$sql = "SELECT ".$field." FROM ".$this->db->prefix."list l ".$linksql;
 		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
@@ -131,18 +140,24 @@ class list_model_base extends phpok_model
 			$sql.= " LIMIT ".$offset.",".$psize;
 		}
 		$rslist = $this->db->get_all($sql,"id");
-		if(!$rslist) return false;
+		if(!$rslist){
+			return false;
+		}
+		return $this->_list_format($mid,$rslist);
+	}
+
+	private function _list_format($mid,$rslist)
+	{
 		$cid_list = array();
-		foreach($rslist AS $key=>$value)
-		{
+		foreach($rslist as $key=>$value){
 			$cid_list[$value["cate_id"]] = $value["cate_id"];
 		}
 		$m_rs = $this->lib('ext')->module_fields($mid);
 		if($m_rs){
-			foreach($rslist AS $key=>$value){
-				foreach($value AS $k=>$v){
+			foreach($rslist as $key=>$value){
+				foreach($value as $k=>$v){
 					if($m_rs[$k]){
-						$value[$k] = $GLOBALS['app']->lib('ext')->content_format($m_rs[$k],$v);
+						$value[$k] = $this->lib('ext')->content_format($m_rs[$k],$v);
 					}
 				}
 				$rslist[$key] = $value;
@@ -150,7 +165,7 @@ class list_model_base extends phpok_model
 		}
 		$cid_string = implode(",",$cid_list);
 		if($cid_string){
-			$catelist = $GLOBALS['app']->lib('ext')->cate_list($cid_string);
+			$catelist = $this->lib('ext')->cate_list($cid_string);
 			foreach($rslist as $key=>$value){
 				if($value["cate_id"]){
 					$value["cate_id"] = $catelist[$value["cate_id"]];
@@ -159,6 +174,96 @@ class list_model_base extends phpok_model
 			}
 		}
 		return $rslist;
+	}
+
+	private function _get_list($mid,$condition='',$offset=0,$psize=20,$orderby='')
+	{
+		$sql = "SELECT l.id FROM ".$this->db->prefix."list l ";
+		if($condition){
+			if(strpos($condition,'ext.') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ";
+				$sql.= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
+			}
+			if(strpos($condition,'u.') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id) ";
+			}
+			if(strpos($condition,'b.') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
+			}
+			if(strpos($condition,'lc.') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+			}
+			$sql .= " WHERE ".$condition;
+		}
+		if(!$orderby){
+			$orderby = " l.sort DESC,l.dateline DESC,l.id DESC ";
+		}
+		$sql .= " ORDER BY ".$orderby." LIMIT ".$offset.",1";
+		$main = $this->db->get_one($sql);
+		if(!$main){
+			return false;
+		}
+		$this->_primary_id_asc_checking($orderby);
+		if($condition){
+			$condition .= " AND l.id".($this->_primary_id_asc ? '>=' : '<=').''.$main['id']." ";
+		}else{
+			$condition = " l.id".($this->_primary_id_asc ? '>=' : '<=').''.$main['id']." ";
+		}
+		$fields_list = $this->db->list_fields('list');
+		$field = "l.id,u.user _user";
+		foreach($fields_list as $key=>$value){
+			if($value == 'id' || !$value){
+				continue;
+			}
+			$field .= ",l.".$value;
+		}
+		$field_ext = $this->ext_fields($mid,'ext');
+		if($field_ext){
+			$field .= ",".$field_ext;
+		}
+		$linksql  = " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id AND l.project_id=ext.project_id) ";
+		$linksql .= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id) ";
+		if($this->is_biz || ($condition && strpos($condition,'b.') !== false) || strpos($orderby,'b.') !== false){
+			$linksql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
+			$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit";
+		}
+		if($this->multiple_cate || ($condition && strpos($condition,'lc.') !== false) || strpos($orderby,'lc.') !== false){
+			$linksql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+		}
+		$sql = "SELECT ".$field." FROM ".$this->db->prefix."list l ".$linksql;
+		if($condition){
+			$sql .= " WHERE ".$condition;
+		}
+		$sql .= " ORDER BY ".$orderby." ";
+		if($psize && intval($psize)){
+			$sql.= " LIMIT ".$psize;
+		}
+		$rslist = $this->db->get_all($sql,"id");
+		if(!$rslist){
+			return false;
+		}
+		return $this->_list_format($mid,$rslist);
+	}
+
+	private function _primary_id_asc_checking($orderby='')
+	{
+		$orderby = trim($orderby);
+		$list = explode(",",$orderby);
+		foreach($list as $key=>$value){
+			$tmp = strtolower($value);
+			if(!$value || !trim($value)){
+				continue;
+			}
+			$value = trim($value);
+			if($value == 'l.id desc'){
+				$this->_primary_id_asc = true;
+				break;
+			}
+			if($value == 'l.id asc'){
+				$this->_primary_id_asc = false;
+			}
+		}
+		return $this->_primary_id_asc;
 	}
 
 	/**
@@ -188,7 +293,8 @@ class list_model_base extends phpok_model
 			}
 			$sql .= " WHERE ".$condition;
 		}
-		return $this->db->count($sql);
+		$this->_total = $this->db->count($sql);
+		return $this->_total;
 	}
 
 	/**
@@ -777,6 +883,9 @@ class list_model_base extends phpok_model
 
 	public function arc_all($project,$condition='',$field='*',$offset=0,$psize=0,$orderby='')
 	{
+		if($this->_total > 100000 && $offset > 10000){
+			return $this->_arc_all($project,$condition,$field,$offset,$psize,$orderby);
+		}
 		$sql  = " SELECT ".$field." FROM ".$this->db->prefix."list l ";
 		$sql .= " JOIN ".$this->db->prefix."list_".$project['module']." ext ";
 		$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
@@ -799,6 +908,70 @@ class list_model_base extends phpok_model
 		if(!$rslist){
 			return false;
 		}
+		return $this->_arc_list_format($rslist,$project);
+	}
+
+	private function _arc_all($project,$condition='',$field='*',$offset=0,$psize=0,$orderby='')
+	{
+		$sql = "SELECT l.id FROM ".$this->db->prefix."list l ";
+		if($condition){
+			if(strpos($condition,'ext.') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."list_".$project['module']." ext ";
+				$sql.= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";
+			}
+			if(strpos($condition,'u.') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id) ";
+			}
+			if(strpos($condition,'b.') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
+			}
+			if(strpos($condition,'lc.') !== false){
+				$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+			}
+			$sql .= " WHERE ".$condition;
+		}
+		if(!$orderby){
+			$orderby = " l.sort DESC,l.dateline DESC,l.id DESC ";
+		}
+		$sql .= " ORDER BY ".$orderby." LIMIT ".$offset.",1";
+		$main = $this->db->get_one($sql);
+		if(!$main){
+			return false;
+		}
+		$this->_primary_id_asc_checking($orderby);
+		if($condition){
+			$condition .= " AND l.id".($this->_primary_id_asc ? '>=' : '<=').''.$main['id']." ";
+		}else{
+			$condition = " l.id".($this->_primary_id_asc ? '>=' : '<=').''.$main['id']." ";
+		}
+
+		$linksql = " LEFT JOIN ".$this->db->prefix."list_".$project['module']." ext ON(l.id=ext.id AND l.project_id=ext.project_id) ";
+		if(($condition && strpos($condition,'u.') !== false) || strpos($orderby,'u.') !== false){
+			$linksql .= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id AND u.status=1) ";
+		}
+		if($project['is_biz']){
+			$linksql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
+		}
+		if($project['cate'] && $project['cate_multiple']){
+			$linksql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+		}
+		$sql = "SELECT ".$field." FROM ".$this->db->prefix."list l ".$linksql;
+		if($condition){
+			$sql .= " WHERE ".$condition;
+		}
+		$sql .= " ORDER BY ".$orderby." ";
+		if($psize && intval($psize)){
+			$sql.= " LIMIT ".$psize;
+		}
+		$rslist = $this->db->get_all($sql,"id");
+		if(!$rslist){
+			return false;
+		}
+		return $this->_arc_list_format($rslist,$project);
+	}
+
+	private function _arc_list_format($rslist,$project)
+	{
 		//ulist，会员信息
 		//clist，分类信息
 		//elist，扩展主题信息
@@ -879,7 +1052,8 @@ class list_model_base extends phpok_model
 			}
 			$sql .= " WHERE ".$condition." ";
 		}
-		return $this->db->count($sql);
+		$this->_total = $this->db->count($sql);
+		return $this->_total;
 	}
 
 	public function delete($id,$mid=0)

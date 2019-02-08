@@ -25,7 +25,7 @@ header("Pramga: no-cache");
 header("Expires: -1");
 
 //防止被Iframe嵌套
-//header("X-Frame-Options: sameorigin");
+header("X-Frame-Options: sameorigin");
 
 /**
  * 计算执行的时间

@@ -386,6 +386,16 @@ class list_control extends phpok_control
 		if($keywords){
 			$this->assign('keywords',$keywords);
 		}
+		if($keywords && $keywords['id'] && intval($keywords['id'])){
+			if($keywords['_id'] == 1){
+				$condition .= " AND l.id>".intval($keywords['id'])." ";
+			}elseif($keywords['_id'] == 2){
+				$condition .= " AND l.id<".intval($keywords['id'])." ";
+			}else{
+				$condition .= " AND l.id=".intval($keywords['id'])." ";
+			}
+			$pageurl .= "&keywords[id]=".$keywords['id']."&keywords[_id]=".$keywords['_id'];
+		}
 		if($keywords && $keywords['cateid'] && $project_rs['cate']){
 			$cate_rs = $this->model('cate')->get_one($keywords['cateid']);
 			$catelist = array($cate_rs);

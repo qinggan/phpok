@@ -419,6 +419,8 @@ class index_control extends phpok_control
 		$this->lib('file')->rm($this->dir_data."tpl_www/");
 		$this->lib('file')->rm($this->dir_data."tpl_admin/");
 		$this->lib('file')->rm($this->dir_cache);
+		//清除附件生成的缓存
+		$this->lib('file')->rm($this->dir_root.'res/_cache/');
 		//清空SESSION过期的SESSION文件
 		$list = $this->lib('file')->ls($this->dir_data.'session/');
 		if($list){

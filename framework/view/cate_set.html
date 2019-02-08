@@ -20,9 +20,12 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">{lang标识}</label>
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="{lang字母、数字、下划线或中划线且必须是字母开头}">&#xe702;</i>
+				{lang标识}
+			</label>
 			<div class="layui-input-inline default">
-				<input type="text" id="identifier" name="identifier" class="layui-input" value="{$rs.identifier}" placeholder="{lang字母、数字、下划线或中划线且必须是字母开头}" />
+				<input type="text" id="identifier" name="identifier" class="layui-input" value="{$rs.identifier}" />
 			</div>
 			<div class="layui-input-inline auto" id="HTML-POINT-PHPOK-IDENTIFIER"></div>
 		</div>
