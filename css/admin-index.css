@@ -2,7 +2,7 @@
 /* CSS Document */
 body,ol,ul,h1,h2,h3,h4,h5,h6,p,th,td,dl,dd,form,fieldset,legend,input,textarea,select{margin:0;padding:0}
 body{font-size:12px;font-family:"Verdana","Arial","Microsoft Yahei","sans-serif","Tahoma";background:#f9f9f9;-webkit-text-size-adjust:100%;overflow-y:scroll;_margin:0; _height:100%;}
-a{color:#014;text-decoration:none}
+a{color:#014;text-decoration:none;outline:none;}
 a:hover{color:#cd0200}
 em{font-style:normal}
 li{list-style:none}
@@ -122,8 +122,10 @@ select::-ms-expand { display: none; }
 .sub_box .maintain{ padding:0 5px; height:38px; line-height:38px; border-bottom:3px solid #e16700; color:#e16700; font-size:20px;display:inline-block;}
 .sub_box .management{ padding:0 5px; height:38px; line-height:38px; border-bottom:3px solid #1e5696; color:#1e5696; font-size:20px;display:inline-block;}
 .sub_box .box_item{ overflow:hidden;}
-.sub_box .box_item li{ width:100px; height:100px; float:left; margin:0px 5px 10px;position:relative;}
-.sub_box .box_item li:hover{ background:url(../images/item_bg.jpg) no-repeat;}
+.sub_box .box_item li{ width:100px; height:100px; float:left; margin:0px 5px 10px;position:relative;border:1px solid #fff;}
+.sub_box .box_item li .qlink_edit_btn{position: absolute;right:0;top:0;display:none;}
+.sub_box .box_item li:hover{ border:1px solid #CACACA;background-color:#f9f9f9;}
+.sub_box .box_item li:hover .qlink_edit_btn{display: block;}
 .sub_box .box_item li .top_img{ width:48px; height:48px; padding:15px 26px 8px; display:block;}
 .sub_box .box_item li .name{ width:98px; font-size:14px; color:#333px; display:block; text-align:center;}
 .sub_box .box_item li a:hover{ text-decoration:none;}

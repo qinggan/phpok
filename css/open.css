@@ -1,7 +1,7 @@
 html{font-size:14px;font-family:"Microsoft Yahei","宋体","Arial","Tahoma";margin:0;padding:0;background:#FFFFFF;}
 body{margin:3px;padding:0;overflow-y:auto;}
 
-a{color:#000;text-decoration: none;}
+a{color:#000;text-decoration: none;outline:none;}
 .i{font-style:italic;}
 .n{font-style:normal;}
 .center{text-align:center;}

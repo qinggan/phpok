@@ -2,7 +2,7 @@
 html{font-size:12px;font-family:"Microsoft Yahei","宋体","Arial","Tahoma";margin:0;padding:0;}
 body{margin:0 auto;padding:0;width:1200px;}
 img{border:0 none;margin:0;padding:0;}
-a{text-decoration:none;color:#000;}
+a{text-decoration:none;color:#000;outline:none;}
 a:hover{text-decoration:underline;color:darkblue;}
 
 /* 自定义常用样式 */
