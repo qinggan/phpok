@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<title><![CDATA[文件管理]]></title>
+	<status>
+		<admin><![CDATA[1]]></admin>
+		<www><![CDATA[]]></www>
+		<api><![CDATA[1]]></api>
+	</status>
+	<install><![CDATA[install.php]]></install>
+	<uninstall><![CDATA[uninstall.php]]></uninstall>
+	<installed><![CDATA[1]]></installed>
+</root>

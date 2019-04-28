@@ -1,0 +1,50 @@
+<!-- include tpl=head_lay overflowy=true -->
+<div id="upload_plugin_html">
+	<div style="width:450px;height:80px;">
+		<div id="zipfile_picker"></div>
+		<div class="_progress" id="zipfile_progress"></div>
+	</div>
+</div>
+
+<script type="text/javascript">
+var obj_zipfile;
+var obj = art.dialog.opener;
+$(document).ready(function(){
+	obj_zipfile = new $.admin_upload({
+		'id':'zipfile',
+		'server':'{url ctrl=filemanage func=upload folder=$folder/}',
+		'pick':{'id':'#zipfile_picker','multiple':false,'innerHTML':'{lang选择本地文件}'},
+		'resize':false,
+		'multiple':"false",
+		"formData":{'{func session_name}':'{func session_id}'},
+		'fileVal':'upfile',
+		'disableGlobalDnd':true,
+		'compress':false,
+		'auto':false,
+		'sendAsBinary':true,
+		'accept':{'title':'文件(*.*)','extensions':'{$filetypes}'},
+		'fileSingleSizeLimit':'204800000',
+		'success':function(file,data){
+			console.log(file);
+			console.log(data);
+			if(data.status){
+				obj.$.phpok.reload();
+				return true;
+			}
+			$.dialog.alert(data.info);
+			return false;
+		}
+	});
+});
+function save()
+{
+	var f = $("#zipfile_progress .phpok-upfile-list").length;
+	if(f<1){
+		$.dialog.alert('请选择要上传的文件');
+		return false;
+	}
+	obj_zipfile.uploader.upload();
+	return false;
+}
+</script>
+<!-- include tpl=foot_lay is_open=true -->

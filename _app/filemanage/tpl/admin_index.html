@@ -1,0 +1,84 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		<div class="layui-btn-group fl">
+			<input type="button" value="目录：" class="layui-btn layui-btn-sm" />
+			<!-- loop from=$leadlist key=$key value=$value id=$tmpid -->
+			<input type="button" value="{$value.title} /" onclick="$.phpok.go('{$value.url}')" class="layui-btn layui-btn-sm layui-btn-normal" style="border-left:0;" />
+			
+			<!-- /loop -->
+			
+		</div>
+		<div class="layui-btn-group fr">
+			<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.add_folder('{$folder}')">
+				{lang创建文件夹}
+			</button>
+			<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.add_file('{$folder}')">
+				{lang创建文件}
+			</button>
+			<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.upfile('{$folder}')">
+				{lang上传文件}
+			</button>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<blockquote class="layui-elem-quote">
+			{lang要实现在线编辑和上传功能，请确保 [folder] 下的文件有写入权限|folder:$folder}<br />
+			{lang请注意，本功能没有考虑任何安全问题，也没有考虑特殊情况，因此请注意使用，建议请使用专业人员来处理}<br />
+			{lang支持在线编辑的文件格式：}
+			<!-- loop from=$edit_array key=$key value=$value id=$tmpid -->
+			<!-- if $tmpid.index -->，<!-- /if --><span class="red">{$value}</span>
+			<!-- /loop -->
+		</blockquote>
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th width="40">&nbsp;</th>
+			<th>{lang名称}</th>
+			<th width="150px">{lang时间}</th>
+			<th width="180px">&nbsp;</th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- loop from=$dirlist key=$key value=$value -->
+		<tr id="{$value.id}">
+			<td align="center"><a href="{$value.url}"><img src="images/filetype/dir.gif" border="0" alt="{lang文件夹}" /></a></td>
+			<td colspan="2"><a href="{$value.url}">{$value.title}</a></td>
+			<td>
+				<div class="layui-btn-group">
+					<!-- if $popedom.edit -->
+					<input type="button" value="{lang改名}" onclick="$.admin_filemanage.folder_rename('{$folder}','{$value.title}')" class="layui-btn layui-btn-sm" />
+					<!-- /if -->
+					<input type="button" value="{lang进入}" onclick="$.phpok.go('{$value.url}')" class="layui-btn layui-btn-sm" />
+					<!-- if $popedom.delete -->
+					<input type="button" value="{lang删除}" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.admin_filemanage.del('{$value.id}','{$folder}','{$value.title}')" />
+					<!-- /if -->
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr id="{$value.id}">
+			<td align="center"><img src="images/filetype/{$value.type}.gif" border="0" alt="文件：{$value.title}"></td>
+			<td>{$value.title}</td>
+			<td>{$value.date}</td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang改名}" onclick="$.admin_filemanage.file_rename('{$folder}','{$value.title}')" class="layui-btn layui-btn-sm" />
+					<!-- if in_array($value.type,$edit_array) -->
+					<input type="button" value="{lang编辑}" onclick="$.admin_filemanage.edit('{$folder}','{$value.title}')" class="layui-btn layui-btn-sm" />
+					<!-- elseif in_array($value.type,$pic_array) -->
+					<input type="button" value="{lang查看}" onclick="$.admin_filemanage.view('{$sys.url}{$folder}{$value.title}')" class="layui-btn layui-btn-sm" />
+					<!-- else -->
+					<input type="button" value="{lang下载}" onclick="$.admin_filemanage.download('{$folder}','{$value.title}')" class="layui-btn layui-btn-sm" />
+					<!-- /if -->
+					<input type="button" value="{lang删除}" onclick="$.admin_filemanage.del('{$value.id}','{$folder}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</tbody>
+		</table>
+	</div>
+</div>
+<!-- include tpl=foot_lay -->
