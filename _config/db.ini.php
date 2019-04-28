@@ -7,8 +7,7 @@ file = "mysqli"
 
 ; 数据库服务器，本地请填写localhost或127.0.0.1
 ; 当使用 http 时，这里填写服务器的 IP，可用于解决无法认别域名问题
-host = "192.168.1.59"
-;host = "127.0.0.1"
+host = "127.0.0.1"
 
 ; 数据库服务器的端口号，默认是3306
 ; 使用 http 模式此项无效
@@ -16,13 +15,11 @@ port = "3306"
 
 ; 连接数据库的账号
 ; 使用 http 模式时，这里是认证账号，不需要请留空
-user = "phpok5"
-;user = "root"
+user = "root"
 
 ; 连接数据库的密码
 ; 使用 http 模式时的基本验证，不需要请留空
-pass = "aoRO_AdnPOZj"
-;pass = "root"
+pass = "root"
 
 ; 数据库名称
 ; 使用 sqlite 或 pdo_sqlite 时，请填写数据库相对地址，要确保文件存在
@@ -37,13 +34,13 @@ prefix = "qinggan_"
 socket = ""
 
 ; 是否调试，配合系统的debug为true时，会打印出整个页面执行的SQL语句
-debug = true
+debug = false
 
 ; 即时缓存，适应用大量的小查询（重复查询，一般不用开启）
 cache = false
 
 ;慢查询记录
-slow = true
+slow = false
 
 ;慢查询时间，单位是秒，支持小数点，如0.05
-slow_time = 0.05
+slow_time = 0.02

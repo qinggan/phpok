@@ -1,7 +1,7 @@
 ;<?php exit("<h1>Access Denied</h1>");?>
 
 ;是否调试，1/true启用，0/false禁用
-debug = false
+debug = true
 
 ;压缩传缩，1/true启用，0/false禁用
 gzip = true
@@ -66,13 +66,25 @@ autoload_js = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.min.js,jquery
 get_domain_method = SERVER_NAME
 
 ;是否多语言选择
-multiple_language = true
+multiple_language = false
 
 ;是否启用 opcache，仅限 debug 为 false 时有效
 opcache = true
 
 ;是否强制启用 HTTPS，默认不强制，如果您使用 nginx+apache 多模式组合，可能检测 https 失败，可以在这里设置强制
 force_https = 0
+
+;防止被 Iframe 嵌套，开启此项目
+;DENY 表示页面不允被嵌套
+;SAMEORIGIN 表示页面只能被本站页面嵌入到iframe或者frame中
+;ALLOW-FROM uri 表示页面允许frame或frame加载，其中uri 是指具体的网站域名
+iframe_options = 'SAMEORIGIN'
+
+;跨域请求数据，设为 false 表示禁止跨域数据请求，设为 true 表示允许跨域
+cross_domain = false
+
+;允许跨域的域名，为 * 号表示允许所有，单独域名：www.phpok.com 写法
+cross_domain_origin = '*';
 
 [mobile]
 ;启用或禁用手机端，1/true启用，0/false禁用
