@@ -15,7 +15,7 @@ if(!defined("PHPOK_SET")){
 /**
 * 授权方式，支持LGPL，PBIZ，CBIZ，三种模式，PBIZ，表示个人商业授权，CBIZ表示企业商业授权
 */
-define("LICENSE","LGPL");
+define("LICENSE","PBIZ");
 
 /**
 * 授权时间
@@ -41,4 +41,3 @@ define("LICENSE_NAME","phpok.com");
 * 显示开发者信息，即Powered by信息
 */
 define("LICENSE_POWERED",true);
-?>

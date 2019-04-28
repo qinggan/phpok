@@ -517,8 +517,8 @@ function check_connect(isin)
 	url += "&data="+encodeURIComponent(data);
 	var info = $.ajax({'url':url,'dataType':'html','cache':false,'async':false}).responseText;
 	var rs = $.parseJSON(info);
-	if(rs.status != 'ok'){
-		jQuery.dialog.alert(rs.content);
+	if(!rs.status){
+		jQuery.dialog.alert(rs.info);
 		return false;
 	}
 	if(!isin || isin == 'undefined'){
@@ -923,14 +923,14 @@ if($step == 'install'){
 	$install->foot();
 }
 if($step == 'checkdb'){
-	$array = array('status'=>'error','content'=>'正在执行中');
+	$array = array('status'=>false,'info'=>'正在执行中');
 	$file = $install->get('file',false);
 	if(!$file){
 		$file = 'mysql';
 	}
 	$host = $install->get('host',false);
 	if(!$host){
-		$array['content'] = '数据库服务器不能为空';
+		$array['info'] = '数据库服务器不能为空';
 		exit(json_encode($array));
 	}
 	$port = $install->get('port',false);
@@ -942,12 +942,12 @@ if($step == 'checkdb'){
 	$chkpass = $install->get('chkpass',false);
 	$data = $install->get('data',false);
 	if(!$user){
-		$array['content'] = '数据库用户不能为空';
+		$array['info'] = '数据库用户不能为空';
 		exit(json_encode($array));
 	}
 	if($pass && $chkpass){
 		if($pass != $chkpass){
-			$array['content'] = '两次密码输入不一致';
+			$array['info'] = '两次密码输入不一致';
 			exit(json_encode($array));
 		}
 	}
@@ -957,17 +957,17 @@ if($step == 'checkdb'){
 	$config['debug'] = true;
 	$db = new $dbname($config);
 	if(!$db){
-		$array['content'] = '数据库类不存在，请检查';
+		$array['info'] = '数据库类不存在，请检查';
 		exit(json_encode($array));
 	}
 	$db->error_type = "json";
 	$db->connect();
 	if($db->error || $db->error_id){
-		$array['content'] = '错误ID:'.$db->error_id.',错误信息:'.$db->error;
+		$array['info'] = '错误ID:'.$db->error_id.',错误信息:'.$db->error;
 		exit(json_encode($array));
 	}
-	$array['status'] = 'ok';
-	$array['content'] = '成功';
+	$array['status'] = true;
+	$array['info'] = '成功';
 	exit(json_encode($array));
 }
 if($step == 'save'){
