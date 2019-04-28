@@ -11,7 +11,9 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class wxpay_lib
 {
 	private $appid = '';
+	private $sub_appid = '';
 	private $mch_id = '';
+	private $sub_mch_id = '';
 	private $app_key = '';
 	private $app_secret = '';
 	private $pem_cert = '';
@@ -56,6 +58,14 @@ class wxpay_lib
 		return $this->appid;
 	}
 
+	public function sub_appid($val='')
+	{
+		if($val){
+			$this->sub_appid = $val;
+		}
+		return $this->sub_appid;
+	}
+
 	public function nonce_str()
 	{
 		return $this->nonce_str;
@@ -67,6 +77,14 @@ class wxpay_lib
 			$this->mch_id = $val;
 		}
 		return $this->mch_id;
+	}
+
+	public function sub_mch_id($val='')
+	{
+		if($val){
+			$this->sub_mch_id = $val;
+		}
+		return $this->sub_mch_id;
 	}
 
 	public function app_key($val='')
@@ -161,7 +179,7 @@ class wxpay_lib
 	public function get_openid()
 	{
 		if (!isset($_GET['code'])){
-			$baseUrl = urlencode('http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+			$baseUrl = urlencode('https://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
 			$url = $this->__CreateOauthUrlForCode($baseUrl);
 			header("Location: $url");
 			exit;
@@ -290,6 +308,12 @@ class wxpay_lib
 			$data['spbill_create_ip'] = '0.0.0.0';
 		}
 		$data['trade_type'] = strtoupper($this->trade_type());
+		if($this->sub_mch_id){
+			$data['sub_mch_id'] = $this->sub_mch_id;
+		}
+		if($this->sub_appid){
+			$data['sub_appid'] = $this->sub_appid;
+		}
 		$sign = $this->create_sign($data);
 		$data['sign'] = $sign;
 		$xml = $this->ToXml($data);

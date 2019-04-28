@@ -22,8 +22,8 @@
 			<type>radio</type>
 			<option>
 				<demo>测试环境</demo>
-				<product>生成环境</product>
-				<product_n>生成环境（新）</product_n>
+				<product>生产环境</product>
+				<product_n>生产环境（新）</product_n>
 			</option>
 			<note>新生成环境使用接口 https://intlmapi.alipay.com/gateway.do</note>
 			<default>product</default>

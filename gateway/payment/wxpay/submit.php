@@ -30,8 +30,12 @@ class wxpay_submit
 		$wxpay = new wxpay_lib();
 		$wxpay->config($this->param['param']);
 		$data = array();
-		if($wxpay->trade_type() == 'jsapi'){
-			$openid = $wxpay->get_openid();
+		if($wxpay->trade_type() == 'jsapi' || $wxpay->trade_type() == 'miniprogram'){
+			if($wxpay->trade_type() == 'miniprogram'){
+				$openid = $app->session->val('wx_openid');
+			}else{
+				$openid = $wxpay->get_openid();
+			}
 			if(!$openid){
 				exit('获取OpenId失败，请检查 '.$wxpay->errmsg());
 			}
@@ -43,11 +47,31 @@ class wxpay_submit
 			$order = $app->model('order')->get_one($this->order['sn'],'sn');
 			$data['attach'] = $order['passwd'];
 		}
+		$rs = $app->model('order')->get_one($this->order['sn'],'sn');
+		$app->assign('rs',$rs);
 		$price = price_format_val($this->order['price'],$this->order['currency_id'],$this->param['currency']['id']);
 		$data['body'] = '订单：'.$this->order['sn'].'-'.$this->order['id'];
 		$data['out_trade_no'] = $this->order['sn'].'-'.$this->order['id'];
 		$data['total_fee'] = intval($price*100);
 		$data['notify_url'] = $this->baseurl."gateway/payment/wxpay/notify_url.php";
+		//针对小程序的操作
+		if($wxpay->trade_type() == 'miniprogram'){
+			$wxpay->trade_type('jsapi');
+			$info = $wxpay->create($data);
+			if(!$info){
+				$app->error('支付出错，请联系管理员');
+			}
+			$app->assign('info',$info);
+			$app->assign('data',$data);
+			$app->assign('order',$this->order);
+			$app->assign('price_rmb',$price);
+			$config = $wxpay->get_jsapi_param($info);
+			$app->assign('wxconfig',$config);
+			$ajaxurl = $app->url('payment','query','sn='.$this->order['sn'].'-'.$this->order['id'],'api');
+			$app->assign('ajaxurl',$ajaxurl);
+			$app->tpl->display("payment/wxpay/submit_miniprogram");
+			exit;
+		}
 		$info = $wxpay->create($data);
 		if(!$info){
 			$app->error('支付出错，请联系管理员');
@@ -59,8 +83,6 @@ class wxpay_submit
 		$app->assign('data',$data);
 		$app->assign('order',$this->order);
 		$app->assign('price_rmb',$price);
-		$rs = $app->model('order')->get_one($this->order['sn'],'sn');
-		$app->assign('rs',$rs);
 		$ajaxurl = $app->url('payment','query','sn='.$this->order['sn'].'-'.$this->order['id'],'api');
 		$app->assign('ajaxurl',$ajaxurl);
 		if($wxpay->trade_type() == 'wap'){
@@ -78,6 +100,10 @@ class wxpay_submit
 			$app->tpl->display("payment/wxpay/submit_jsapi");
 		}elseif($wxpay->trade_type() == 'native'){
 			$app->tpl->display('payment/wxpay/submit_qrcode');
+		}elseif($wxpay->trade_type() == 'miniprogram'){
+			$wxpay->trade_type('jsapi');
+			$app->assign('wxconfig',$config);
+			$app->tpl->display("payment/wxpay/submit_miniprogram");
 		}
 	}
 
