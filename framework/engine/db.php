@@ -260,7 +260,7 @@ class db
 			$info = P_Lang('SQL执行错误，请检查');
 		}
 		if($this->error_type == 'json'){
-			$array = array('status'=>'error','content'=>$info);
+			$array = array('status'=>false,'info'=>$info);
 			exit(json_encode($array,JSON_UNESCAPED_UNICODE));
 		}else{
 			echo $info;

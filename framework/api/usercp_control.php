@@ -24,6 +24,27 @@ class usercp_control extends phpok_control
 		}
 		$this->u_id = $this->session->val('user_id');
 	}
+	
+	public function index_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能获取个人信息'));
+		}
+		$user = $this->model('user')->get_one($this->session->val('user_id'));
+		if(!$user){
+			$this->error(P_Lang('会员信息不存在'));
+		}
+		if(!$user['status']){
+			$this->error(P_Lang('会员信息未审核通过'));
+		}
+		if($user['status'] == 2){
+			$this->error(P_Lang('会员已被禁用，请联系管理员'));
+		}
+		if(isset($user['pass'])){
+			unset($user['pass']);
+		}
+		$this->success($user);
+	}
 
 	/**
 	 * 存储个人数据
@@ -501,5 +522,27 @@ class usercp_control extends phpok_control
 			$this->success();
 		}
 		$this->error(P_Lang('没有接收到参数及值'));
+	}
+	
+	//获取推荐人信息
+	public function relation_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能查看我的推荐用户'));
+		}
+		$pageid = $this->get('pageid','int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->get('psize','int');
+		if(!$psize){
+			$psize = $this->config['psize'] ? $this->config['psize'] : 20;
+		}
+		$offset = ($pageid-1) * $psize;
+		$rslist = $this->model('user')->list_relation($this->session->val('user_id'),$offset,$psize);
+		if(!$rslist){
+			$this->error(P_Lang('没有找到推荐人信息'));
+		}
+		$this->success($rslist);
 	}
 }

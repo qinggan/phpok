@@ -163,10 +163,8 @@ class order_control extends phpok_control
 			$this->error(P_Lang('订单已取消，不能执行此操作'));
 		}
 		$statuslist = $this->model('order')->status_list();
-		$this->model('order')->update_order_status($id,$act,$statuslist[$act]);
-		if($act == 'end'){
-			$this->model('wealth')->order($id,P_Lang('订单完成赚送积分'));
-		}
+		$this->model('order')->update_order_status($id,'end',$statuslist['end']);
+		$this->model('wealth')->order($id,P_Lang('订单完成赚送积分'));
 		$this->success();
 	}
 
@@ -193,7 +191,7 @@ class order_control extends phpok_control
 			$this->error(P_Lang('订单已取消，不能执行此操作'));
 		}
 		$statuslist = $this->model('order')->status_list();
-		$this->model('order')->update_order_status($id,$act,$statuslist[$act]);
+		$this->model('order')->update_order_status($id,'stop',$statuslist['stop']);
 		$this->success();
 	}
 
@@ -224,6 +222,10 @@ class order_control extends phpok_control
 			$this->error(P_Lang('订单已结束，不能执行取消操作'));
 		}
 		$note = $this->get('note');
+		if(!$note){
+			$statuslist = $this->model('order')->status_list();
+			$note = $statuslist['cancel'];
+		}
 		$this->model('order')->update_order_status($id,'cancel',$note);
 		$this->success();
 	}
@@ -697,6 +699,28 @@ class order_control extends phpok_control
 			$param = 'id='.$order_id."&status=".$main['status'];
 			$this->model('task')->add_once('order',$param);
 		}
+		$this->success();
+	}
+	
+	public function status_f()
+	{
+		$id = $this->get('id','int');
+		$status = $this->get('status');
+		if(!$status){
+			$this->error('未指定订单状态');
+		}
+		$old = $this->model('order')->get_one($id);
+		if(!$old){
+			$this->error(P_Lang('订单信息不存在'));
+		}
+		if($old['status'] == $status){
+			$this->error('订单状态一致，不需要修改');
+		}
+		$main = array('status'=>$status);
+		$statuslist = $this->model('order')->status_list();
+		$main['status_title'] = $statuslist[$main['status']] ? $statuslist[$main['status']] : '';
+		$this->model('order')->save($main,$id);
+		$this->model('order')->update_order_status($id,$main['status'],$main['status_title']);
 		$this->success();
 	}
 

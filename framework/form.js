@@ -592,12 +592,47 @@ function go_to_page_action()
 		**/
 		laydate_button:function(id,type)
 		{
-			layui.laydate.render({
-				elem:'#'+id,
-				type:type,
-				show: true,
-	    		closeStop: '#btn_'+id+'_'+type
+			layui.use('laydate',function(){
+				var laydate = layui.laydate;
+				laydate.render({
+					elem:'#'+id,
+					type:type,
+					show: true,
+					trigger: 'click',
+					closeStop: '#btn_'+id+'_'+type
+				});
 			});
+		},
+
+		/**
+		 * 格式化日期
+		**/
+		laydate_format:function(id,type)
+		{
+			var info = $("#"+id).val();
+			if(!info){
+				return false;
+			}
+			info = info.replace("年",'-');
+			info = info.replace("月",'-');
+			info = info.replace("日",'');
+			info = info.replace("时",'-');
+			info = info.replace("分",'-');
+			info = info.replace("秒",'');
+			if(type == 'date'){
+				var tmp = info.replace('/','-');
+				if(tmp != info){
+					var list = info.split('/');
+					if((list[0]).length != 4){
+						info = list[2]+'-'+list[0]+'-'+list[1];
+					}
+				}
+			}
+			if(type == 'datetime'){
+				info = info.replace('/','-');
+			}
+			$("#"+id).val(info);
+			return true;
 		},
 		/**
 		 * 清空文本框内容

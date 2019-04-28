@@ -61,7 +61,6 @@ class content_control extends phpok_control
 			if($parent_rs['tpl_content']){
 				$tplfile[8] = $parent_rs['tpl_content'];
 			}
-			$this->phpok_seo($parent_rs);
 		}
 		$rs['tag'] = $this->model('tag')->tag_list($rs['id'],'list');
 		$rs = $this->content_format($rs);
@@ -83,7 +82,6 @@ class content_control extends phpok_control
 			}
 		}
 		$this->assign('page_rs',$project);
-		$this->phpok_seo($project);
 		
 		if($rs['tpl']){
 			$tplfile[0] = $rs['tpl'];
@@ -97,7 +95,6 @@ class content_control extends phpok_control
 				$this->error(P_Lang('根分类信息不存在或未启用'),$this->url,5);
 			}
 			$this->assign('cate_root_rs',$cate_root_rs);
-			$this->phpok_seo($cate_root_rs);
 			if($cate_root_rs['tpl_content']){
 				$tplfile[6] = $cate_root_rs['tpl_content'];
 			}
@@ -112,13 +109,11 @@ class content_control extends phpok_control
 					$this->error(P_Lang('父级分类信息不存在或未启用'),$this->url,5);
 				}
 				$this->assign('cate_parent_rs',$cate_parent_rs);
-				$this->phpok_seo($cate_parent_rs);
 				if($cate_parent_rs['tpl_content']){
 					$tplfile[5] = $cate_parent_rs['tpl_content'];
 				}
 			}
 			$this->assign("cate_rs",$cate_rs);
-			$this->phpok_seo($cate_rs);
 			if($cate_rs['tpl_content']){
 				$tplfile[4] = $cate_rs['tpl_content'];
 			}
@@ -137,7 +132,9 @@ class content_control extends phpok_control
 		}
 		$this->model('list')->add_hits($rs["id"]);
 		$rs['hits'] = $this->model('list')->get_hits($rs['id']);
-		$this->phpok_seo($rs);
+		$this->data('arc',$rs);
+		$this->node('PHPOK_arc');
+		$rs = $this->data('arc');
 		$this->assign("rs",$rs);
 		//判断这个主题是否支持评论及评论验证码
 		if($project['comment_status']){

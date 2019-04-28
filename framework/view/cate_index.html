@@ -2,11 +2,27 @@
 <script type="text/javascript" src="{echo add_js('cate.js')}"></script>
 <div class="layui-card">
 	<div class="layui-card-header ">
-		{lang分类列表}
+		<!-- if $navlist -->
+			<a href="{url ctrl=cate/}">{lang根分类}</a>
+			<!-- loop from=$navlist key=$key value=$value id=$tmpid -->
+			/ <a href="{url ctrl=cate func=index parent_id=$value.id/}">
+				{$value.title}
+				<span class="gray i">{$value.id}</span>
+			</a>
+			<!-- /loop -->
+		<!-- else -->
+		{lang根分类}
+		<!-- /if -->
 		<div class="fr">
+			<!-- if $rs -->
+			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加子分类}_#{$value.id}','{url ctrl=cate func=set parent_id=$rs.id/}')">
+				<i class="layui-icon">&#xe608;</i> {lang添加子分类}
+			</button>
+			<!-- else -->
 			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加根分类}','{url ctrl=cate func=set/}')">
 				<i class="layui-icon">&#xe608;</i> {lang添加根分类}
 			</button>
+			<!-- /if -->
 		</div>
 	</div>
 	<div class="layui-card-body">
@@ -16,35 +32,27 @@
 				<th width="40">ID</th>
 				<th width="20"></th>
 				<th>{lang分类名称}</th>
+				<th>{lang标识}</th>
+				<th>{lang子类数量}</th>
 				<th width="80">{lang排序}</th>
 				<th width="210">{lang操作}</th>
 			</tr>
 			</thead>
 			<tbody>
-			<!-- run:$tab_i = 0; -->
 			<!-- loop from=$rslist key=$key value=$value -->
-			<!-- run:$tab_i++ -->
 			<tr>
 				<td>{$value.id}</td>
 				<td>
 					<span id="status_{$value.id}" onclick="$.admin_cate.status({$value.id})" class="status{$value.status}" value="{$value.status}"></span>
 				</td>
-				<td>
-					<div>
-						<!-- for($i=1;$i<$value[_layer];$i++) -->
-						<span class="cate_line"></span>
-						<!-- /for -->
-						<!-- if $value[_layer]>0 -->
-						<span class="cate_middle">&nbsp;</span>
-						<!-- /if -->
-						<span class="cate_txt"><label for="id_{$value.id}" style="{$value.style}">{$value.title}<span class="gray i">（{$value.identifier}）</span></label></span>
-					</div>
-				</td>
+				<td style="{$value.style}">{$value.title}</td>
+				<td>{$value.identifier}</td>
+				<td><!-- if $value.total -->{$value.total}<!-- else --><span class="red">0</span><!-- /if --></td>
 				<td><input type="text" id="taxis_{$value.id}" class="layui-input" value="{$value.taxis}" tabindex="{$tab_i}" onblur="update_taxis('{$value.id}')" /></td>
 				<td>
 					<div class="layui-btn-group">
 						<!-- if $popedom.add -->
-						<input type="button" value="{lang添加子分类}" onclick="$.win('{lang添加分类}','{url ctrl=cate func=set parent_id=$value.id/}')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang子分类}" onclick="$.phpok.go('{url ctrl=cate func=index parent_id=$value.id/}')" class="layui-btn layui-btn-sm layui-btn-normal" />
 						<!-- /if -->
 						<!-- if $popedom.modify -->
 						<input type="button" value="{lang修改}" onclick="$.win('{lang修改分类}_#{$value.id}','{url ctrl=cate func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />

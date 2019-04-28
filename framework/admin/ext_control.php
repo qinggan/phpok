@@ -90,7 +90,7 @@ class ext_control extends phpok_control
 		}
 		$tmpid = $this->get('tmpid');
 		if(!$tmpid){
-			$identifier = $this->get('identifier');
+			$identifier = $this->get('identifier','system');
 			if(!$identifier){
 				$this->json(P_Lang('未指定标识串'));
 			}

@@ -21,13 +21,26 @@ class cate_model_base extends phpok_model
 		parent::model();
 	}
 
+	public function get_root_id(&$rootid,$id)
+	{
+		$rs = $this->get_one($id);
+		if($rs){
+			if(!$rs['parent_id']){
+				$rootid = $id;
+			}else{
+				$this->get_root_id($rootid,$rs['parent_id']);
+			}
+		}
+	}
+	
 	/**
 	 * 取得单条分类信息
 	 * @参数 $id 主键或是指定的字段名对应的值
 	 * @参数 $field 字段名，支持id，identifier
 	 * @参数 $ext 是否读取扩展数据
+	 * @参数 $is_edit 是否可编辑，如果为否，表示输出格式化后的信息，如果为是，输出原始信息
 	**/
-	public function get_one($id,$field="id",$ext=true)
+	public function get_one($id,$field="id",$ext=true,$is_edit=false)
 	{
 		if(!$id){
 			return false;
@@ -38,11 +51,41 @@ class cate_model_base extends phpok_model
 			return false;
 		}
 		if($ext){
+			//绑定了模块的操作
+			if($rs['parent_id']){
+				$rootid = $rs['parent_id'];
+				$this->get_root_id($rootid,$rs['parent_id']);
+				$info = $this->get_one($rootid);
+				if($info && $info['module_id']){
+					$flist = $this->model('module')->fields_all($info['module_id']);
+					if($flist){
+						$fields = array();
+						foreach($flist as $key=>$value){
+							$fields[] = $value['identifier'];
+						}
+						$sql = "SELECT ".implode(",",$fields)." FROM ".$this->db->prefix."cate_".$info['module_id']." WHERE id='".$rs['id']."'";
+						$ext = $this->db->get_one($sql);
+						if($ext){
+							if($is_edit){
+								$rs = array_merge($ext,$rs);
+							}else{
+								foreach($flist as $key=>$value){
+									$rs[$value['identifier']] = $this->lib('form')->show($value,$ext[$value['identifier']]);
+								}
+							}
+						}
+					}
+				}
+			}
 			$tmplist = $this->model('ext')->ext_all('cate-'.$rs['id'],true);
 			if($tmplist){
 				$ext_rs = array();
 				foreach($tmplist as $key=>$value){
-					$ext_rs[$value['identifier']] = content_format($value);
+					if($is_edit){
+						$ext_rs[$value['identifier']] = $value['content'];
+					}else{
+						$ext_rs[$value['identifier']] = $this->lib('form')->show($value);
+					}
 				}
 				if($ext_rs){
 					$rs = array_merge($rs,$ext_rs);
@@ -257,6 +300,25 @@ class cate_model_base extends phpok_model
 	}
 
 	/**
+	 * 递归获取父级分类信息
+	 * @参数 $list 父级分类信息
+	 * @参数 $id 当前分类ID
+	 * @参数 $status 状态，设为1时表示只读审核过的分类
+	 * @参数 $ext 是否获取扩展信息
+	**/
+	public function parent_list(&$list,$id=0,$status=0,$ext=false)
+	{
+		$rs = $this->get_one($id,'id',$ext,false);
+		if($status && !$rs['status']){
+			return false;
+		}
+		$list[] = $rs;
+		if($rs['parent_id']){
+			$this->parent_list($list,$rs['parent_id'],$status,$ext);
+		}
+	}
+
+	/**
 	 * 读取子分类ID信息
 	 * @参数 $list 存储目标
 	 * @参数 $id 父级分类ID，多个分类ID用英文逗号隔开
@@ -285,6 +347,30 @@ class cate_model_base extends phpok_model
 	}
 
 	/**
+	 * 取得子分类的数量
+	 * @参数 $ids 分类ID，多个分类用英文逗号隔开，支持数组
+	**/
+	public function count_sublist($ids = 0)
+	{
+		if(!$ids){
+			$ids = 0;
+		}
+		if($ids && is_array($ids)){
+			$ids = implode(",",$ids);
+		}
+		$sql = "SELECT count(id) as total,parent_id FROM ".$this->db->prefix."cate WHERE parent_id IN(".$ids.") GROUP BY parent_id";
+		$rs = $this->db->get_all($sql);
+		if(!$rs){
+			return false;
+		}
+		$rslist = array();
+		foreach($rs as $key=>$value){
+			$rslist[$value['parent_id']] = $value['total'];
+		}
+		return $rslist;
+	}
+
+	/**
 	 * 更新排序
 	 * @参数 $id 分类ID
 	 * @参数 $taxis 排序值
@@ -301,6 +387,16 @@ class cate_model_base extends phpok_model
 	**/
 	public function cate_delete($id)
 	{
+		$rs = $this->get_one($id);
+		if($rs['parent_id']){
+			$rootid = $rs['parent_id'];
+			$this->get_root_id($rootid,$rs['parent_id']);
+			$root = $this->get_one($rootid);
+			if($root['module_id']){
+				$sql = "DELETE FROM ".$this->db->prefix."cate_".$root['module_id']." WHERE id='".$rs['id']."'";
+				$this->db->query($sql);
+			}
+		}
 		$sql = "DELETE FROM ".$this->db->prefix."cate WHERE id='".$id."'";
 		$this->db->query($sql);
 		$sql = "UPDATE ".$this->db->prefix."list SET cate_id=0 WHERE cate_id='".$id."'";
@@ -357,7 +453,7 @@ class cate_model_base extends phpok_model
 
 	/**
 	 * 前台调用当前分类下的子分类
-	 * @参数 $cid 父级分类ID，多个分类ID用英文逗号隔开
+	 * @参数 $cid 父级分类ID
 	 * @参数 $ext 是否读取扩展数据
 	 * @参数 $status 1为仅读审核过的
 	**/
@@ -407,6 +503,41 @@ class cate_model_base extends phpok_model
 		return $rslist;
 	}
 
+	public function catelist_extlist($mid,$format=true)
+	{
+		$flist = $this->model('module')->fields_all($mid);
+		if(!$flist){
+			return false;
+		}
+		$fields = array("id");
+		foreach($flist as $key=>$value){
+			$fields[] = $value['identifier'];
+		}
+		$sql = "SELECT ".implode(",",$fields)." FROM ".$this->db->prefix."cate_".$mid;
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		if(!$format){
+			$rslist = array();
+			foreach($tmplist as $key=>$value){
+				$rslist[$value['id']] = $value;
+			}
+			return $rslist;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			foreach($flist as $k=>$v){
+				if($value[$v['identifier']] == ''){
+					continue;
+				}
+				$value[$v['identifier']] = $this->lib('form')->show($v,$value[$v['identifier']]);
+			}
+			$rslist[$value['id']] = $value;
+		}
+		return $rslist;
+	}
+
 	/**
 	 * 递归获取分类信息
 	 * @参数 $array 存储目标
@@ -429,11 +560,11 @@ class cate_model_base extends phpok_model
 	 * 读取主题下绑定的扩展分类信息
 	 * @参数 $id 主题ID
 	**/
-	public function ext_catelist($id)
+	public function ext_catelist($id,$pri="id")
 	{
 		$sql = "SELECT c.* FROM ".$this->db->prefix."list_cate lc JOIN ".$this->db->prefix."cate c ON(lc.cate_id=c.id) ";
 		$sql.= "WHERE lc.id='".$id."' AND c.status=1 ORDER BY c.taxis ASC,c.id DESC";
-		return $this->db->get_all($sql,'id');
+		return $this->db->get_all($sql,$pri);
 	}
 
 	/**

@@ -231,7 +231,6 @@
 					if(rs.status){
 						$.dialog.tips(p_lang('数据保存成功'),function(){
 							$.admin.reload(get_url('project'));
-							$.admin.close();
 						}).lock();
 						return false;
 					}

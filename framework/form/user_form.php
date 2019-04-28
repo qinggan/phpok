@@ -51,39 +51,45 @@ class user_form extends _init_auto
 			return false;
 		}
 		if($appid == 'admin'){
-			if($ext['is_multiple']){
-				$condition = "u.id IN(".$rs['content'].") AND status=1";
-				$rslist = $this->model('user')->get_list($condition,0,999);
-				if(!$rslist){
-					return false;
-				}
-				$uinfo = array();
-				foreach($rslist as $key=>$value){
-					$uinfo[] = $value['user'];
-				}
-				return implode(' / ',$uinfo);
-			}else{
-				$uinfo = $this->model('user')->get_one($rs['content']);
-				if($uinfo){
-					return $uinfo['user'];
-				}
+			return $this->_admin_show($rs,$ext);
+		}
+		return $this->_www_show($rs,$ext);
+	}
+
+	private function _www_show($rs,$ext)
+	{
+		if($ext && is_array($ext) && $ext['is_multiple']){
+			$rslist = $this->model('user')->get_list($condition,0,999);
+			if(!$rslist){
 				return false;
 			}
-		}else{
-			if($ext['is_multiple']){
-				$rslist = $this->model('user')->get_list($condition,0,999);
-				if(!$rslist){
-					return false;
-				}
-				return $rslist;
-			}else{
-				$uinfo = $this->model('user')->get_one($rs['content']);
-				if(!$uinfo){
-					return false;
-				}
-				return $uinfo;
-			}
+			return $rslist;
 		}
+		$uinfo = $this->model('user')->get_one($rs['content']);
+		if(!$uinfo){
+			return false;
+		}
+		return $uinfo;
+	}
+
+	private function _admin_show($rs,$ext)
+	{
+		if($ext && is_array($ext) && $ext['is_multiple']){
+			$condition = "u.id IN(".$rs['content'].") AND status=1";
+			$rslist = $this->model('user')->get_list($condition,0,999);
+			if(!$rslist){
+				return false;
+			}
+			$uinfo = array();
+			foreach($rslist as $key=>$value){
+				$uinfo[] = $value['user'];
+			}
+			return implode(' / ',$uinfo);
+		}
+		$uinfo = $this->model('user')->get_one($rs['content']);
+		if($uinfo){
+			return $uinfo['user'];
+		}
+		return false;
 	}
 }
-?>

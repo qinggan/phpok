@@ -18,23 +18,6 @@ class cate_model extends cate_model_base
 		parent::__construct();
 	}
 
-	//读取当前分类信息
-	public function get_one($id,$field="id",$ext=true)
-	{
-		$cate_all = $this->cate_all($this->site_id);
-		if(!$cate_all){
-			return false;
-		}
-		$rs = false;
-		foreach($cate_all as $key=>$value){
-			if($value[$field] == $id){
-				$rs = $value;
-				break;
-			}
-		}
-		return $rs;
-	}
-
 	//前端读取分类，带格式化
 	public function get_all($site_id=0,$status=0,$pid=0)
 	{
@@ -140,24 +123,4 @@ class cate_model extends cate_model_base
 		}
 		return $rslist;
 	}
-
-	public function get_root_id($id)
-	{
-		$rs = $this->get_one($id);
-		if(!$rs)
-		{
-			return false;
-		}
-		if(!$rs['parent_id'])
-		{
-			return $rs['id'];
-		}
-		else
-		{
-			return $this->get_root_id($rs['parent_id']);
-		}
-	}
-	
 }
-
-?>

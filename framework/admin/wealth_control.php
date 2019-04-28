@@ -255,33 +255,33 @@ class wealth_control extends phpok_control
 		$array = array();
 		if($id){
 			if(!$this->popedom['modify']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}else{
 			if(!$this->popedom['add']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$array['site_id'] = $_SESSION['admin_site_id'];
 		}
 		$array['title'] = $this->get('title');
 		if(!$array['title']){
-			$this->json(P_Lang('名称不能为空'));
+			$this->error(P_Lang('名称不能为空'));
 		}
 		$array['identifier'] = $this->get('identifier');
 		if(!$array['identifier']){
-			$this->json(P_Lang('标识不能为空'));
+			$this->error(P_Lang('标识不能为空'));
 		}
 		$array['identifier'] = $this->format($array['identifier'],'system');
 		if(!$array['identifier']){
-			$this->json(P_Lang('标识不符合系统要求'));
+			$this->error(P_Lang('标识不符合系统要求'));
 		}
 		$chk = $this->model('wealth')->chk_identifier($array['identifier'],$id);
 		if($chk){
-			$this->json(P_Lang('标识已被使用'));
+			$this->error(P_Lang('标识已被使用'));
 		}
 		$array['unit'] = $this->get('unit');
 		if(!$array['unit']){
-			$this->json(P_Lang('计量单位不能为空'));
+			$this->error(P_Lang('计量单位不能为空'));
 		}
 		$array['dnum'] = $this->get('dnum','int');
 		$array['ifpay'] = $this->get('ifpay');
@@ -306,7 +306,7 @@ class wealth_control extends phpok_control
 		$array['taxis'] = $this->get('taxis','int');
 		$array['min_val'] = $this->get('min_val','float');
 		$this->model('wealth')->save($array,$id);
-		$this->json(true);
+		$this->success();
 	}
 
 	/**
@@ -315,17 +315,17 @@ class wealth_control extends phpok_control
 	**/
 	public function status_f()
 	{
+		if(!$this->popedom['status']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
-		}
-		if(!$this->popedom['status']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('wealth')->get_one($id);
 		$status = $rs['status'] ? 0 : 1;
 		$this->model('wealth')->update_status($id,$status);
-		$this->json($status,true);
+		$this->success($status);
 	}
 
 	/**
@@ -334,15 +334,15 @@ class wealth_control extends phpok_control
 	**/
 	public function delete_f()
 	{
+		if(!$this->popedom['delete']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
-		}
-		if(!$this->popedom['delete']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$this->model('wealth')->delete($id);
-		$this->json(true);
+		$this->success();
 	}
 
 	/**

@@ -287,4 +287,3 @@ class project_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 }
-?>

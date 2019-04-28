@@ -53,15 +53,16 @@ class res_control extends phpok_control
 		$tmp_c = $this->condition($condition,$pageurl);
 		$condition = $tmp_c["condition"];
 		$pageurl = $tmp_c["pageurl"];
-		$rslist = $this->model('res')->get_list($condition,$offset,$psize);
-		$this->assign("rslist",$rslist);
 		$total = $this->model('res')->get_count($condition);
-		$this->assign("total",$total);
-		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
-		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-		$this->assign("pagelist",$pagelist);
-		$myurl = $pageurl ."&".$this->config["pageid"]."=".$pageid;
+		if($total){
+			$rslist = $this->model('res')->get_list($condition,$offset,$psize);
+			$this->assign("rslist",$rslist);
+			$this->assign("total",$total);
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+			$this->assign("pagelist",$pagelist);
+		}
 		$this->view("res_index");
 	}
 
@@ -486,5 +487,81 @@ class res_control extends phpok_control
 		}
 		$rs['status'] = false;
 		$this->success($rs);
+	}
+
+	public function editor_update_all_f()
+	{
+		$pageid = $this->get('pageid','int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = 30;
+		$offset = ($pageid-1) * $psize;
+		$condition = "ext IN('jpg','gif','png','jpeg')";
+		$total = $this->model('res')->get_count($condition);
+		if(!$total){
+			$this->error('附件为空，请检查');
+		}
+		$all_page = intval($total/$psize);
+		if($total%$psize){
+			$all_page++;
+		}
+		$rslist = $this->model('res')->get_list($condition,$offset,$psize,true);
+		if(!$rslist){
+			$this->success('附件信息已更新完成，请手动关闭');
+		}
+		$gdinfo = $this->model('gd')->get_editor_default();
+		$o2n = array();
+		if($gdinfo){
+			foreach($rslist as $key=>$value){
+				if(!$value['gd'][$gdinfo['identifier']]){
+					continue;
+				}
+				//更换原图路径到新图片路径
+				$o2n[] = array('old'=>$value['filename'],'new'=>$value['gd'][$gdinfo['identifier']]);
+				//更换GD类的图片到新图片路径
+				if(!$value['gd']){
+					continue;
+				}
+				foreach($value['gd'] as $k=>$v){
+					if($k == $gdinfo['identifier']){
+						continue;
+					}
+					$o2n[] = array('old'=>$v,'new'=>$value['gd'][$gdinfo['identifier']]);
+				}
+			}
+		}else{
+			foreach($rslist as $key=>$value){
+				if(!$value['gd']){
+					continue;
+				}
+				foreach($value['gd'] as $k=>$v){
+					$o2n[] = array('old'=>$v,'new'=>$value['filename']);
+				}
+			}
+		}
+		if(!$o2n || count($o2n)<1){
+			$this->error('没有附件要执行批量处理');
+		}
+		unset($rslist);
+		$sql = "SELECT f.*,m.mtype,m.tbl FROM ".$this->db->prefix."fields f LEFT JOIN ".$this->db->prefix."module m ";
+		$sql.= " ON(f.ftype=m.id) WHERE f.form_type IN('editor','ckeditor') AND (f.ftype+0)>0";
+		$flist = $this->db->get_all($sql);
+		if(!$flist){
+			$this->error(P_Lang('没有符合要求的扩展字段'));
+		}
+		foreach($flist as $key=>$value){
+			$tbl = $value['mtype'] ? $this->db->prefix.$value['ftype'] : $this->db->prefix.$value['tbl'].'_'.$value['ftype'];
+			foreach($o2n as $k=>$v){
+				$sql = "UPDATE ".$tbl." SET ".$value['identifier']."=replace(".$value['identifier'].",'".$v['old']."','".$v['new']."')";
+				$this->db->query($sql);
+			}
+		}
+		$oldpage = $pageid;
+		$pageid++;
+		$tmp = array('pageid'=>'<span style="color:red">'.$oldpage.'</span>');
+		$tmp['allpage'] = '<span style="color:red">'.$all_page.'</span>';
+		$url = $this->url('res','editor_update_all','pageid='.$pageid);
+		$this->success(P_Lang('正在更新编辑框附件，当前已更新第 {pageid} 页，共有 {allpage} 页',$tmp),$url,0.3);
 	}
 }

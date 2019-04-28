@@ -85,6 +85,7 @@ class appsys_control extends phpok_control
 		if($server['ip']){
 			$this->lib('curl')->host_ip($server['ip']);
 		}
+		$url .= "?code=".md5(strtoupper(LICENSE_CODE)).'&domain='.rawurlencode(LICENSE_SITE);
 		$data = $this->lib('curl')->get_json($url);
 		if(!$data){
 			$this->error(P_Lang('远程更新数据失败'));
@@ -629,6 +630,13 @@ class appsys_control extends phpok_control
 		$content .= $this->_php_notes(P_Lang('公共方法'),$note,$author);
 		$content .= $this->_php_safe();
 		$this->lib('file')->vim($content,$this->dir_app.$identifier.'/global.func.php');
+		//创建节点接入文件，此文件用于数据的接入
+		$content  = $this->_php_head();
+		$content .= $this->_php_notes(P_Lang('接入节点'),$note,$author);
+		$content .= $this->_php_namespace_nodes($identifier);
+		$content .= $this->_php_safe();
+		$content .= $this->_php_nodes($identifier);
+		$this->lib('file')->vim($content,$this->dir_app.$identifier.'/nodes.php');
 		$this->success();
 	}
 
@@ -655,6 +663,12 @@ class appsys_control extends phpok_control
 	private function _php_namespace($identifier,$type='control')
 	{
 		$info = 'namespace phpok\\\app\\\\'.$type.'\\\\'.$identifier.';'."\n";
+		return $info;
+	}
+
+	private function _php_namespace_nodes($identifier)
+	{
+		$info = 'namespace phpok\\\app\\\\'.$identifier.';'."\n";
 		return $info;
 	}
 
@@ -727,6 +741,38 @@ class appsys_control extends phpok_control
 			$info .= '		$this->display(\''.$type.'_index\');'."\n";
 		}
 		$info .= '	}'."\n";
+		$info .= '}'."\n";
+		return $info;
+	}
+
+	private function _php_nodes($identifier='')
+	{
+		$info  = 'class nodes_phpok extends \\\_init_auto'."\n";
+		$info .= '{'."\n";
+		$info .= '	public function __construct()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		parent::__construct();'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function PHPOK_arclist()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//这里开始编写PHP代码'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function PHPOK_arc()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//这里开始编写PHP代码'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function PHPOK_project()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//这里开始编写PHP代码'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function PHPOK_catelist()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//这里开始编写PHP代码'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function PHPOK_cate()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//这里开始编写PHP代码'."\n";
+		$info .= '	}'."\n\n";
 		$info .= '}'."\n";
 		return $info;
 	}

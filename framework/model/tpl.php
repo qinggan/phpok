@@ -67,7 +67,7 @@ class tpl_model_base extends phpok_model
 		return $this->db->query($sql);
 	}
 
-	public function tpl_info($id)
+	public function tpl_info($id,$is_mobile=false)
 	{
 		$rs = $this->get_one($id);
 		if(!$rs){
@@ -83,13 +83,13 @@ class tpl_model_base extends phpok_model
 		$tpl_rs["refresh_auto"] = $rs["refresh_auto"] ? true : false;
 		$tpl_rs["refresh"] = $rs["refresh"] ? true : false;
 		$tpl_rs["tpl_ext"] = $rs["ext"] ? $rs["ext"] : "html";
-		if($this->is_mobile){
+		if($is_mobile){
 			$tpl_rs["id"] = $rs["id"]."_mobile";
 			$tplfolder = $rs["folder"] ? $rs["folder"]."_mobile" : "www_mobile";
 			if(!file_exists($this->dir_root."tpl/".$tplfolder)){
 				$tplfolder = $rs["folder"] ? $rs["folder"] : "www";
 			}
-			$tpl_rs["dir_tpl"] = "tpl/".$tplfolder;
+			$tpl_rs["dir_tpl"] = "tpl/".$tplfolder."/";
 		}
 		$tpl_rs['langid'] = $this->session->val($this->app_id.'_lang_id');
 		return $tpl_rs;

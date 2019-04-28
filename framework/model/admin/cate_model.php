@@ -27,6 +27,28 @@ class cate_model extends cate_model_base
 		}
 	}
 
+	/**
+	 * 保存扩展表信息
+	 * @参数 $data 数组，一维
+	 * @参数 $mid 模块ID
+	**/
+	public function save_ext($data,$mid)
+	{
+		if(!$data || !is_array($data) || !$mid){
+			return false;
+		}
+		if($data['id']){
+			$sql = "SELECT id FROM ".$this->db->prefix."cate_".$mid." WHERE id='".$data['id']."'";
+			$chk = $this->db->get_one($sql);
+			if($chk){
+				unset($data['id']);
+				$this->db->update_array($data,'cate_'.$mid,array('id'=>$chk['id']));
+				return true;
+			}
+		}
+		return $this->db->insert_array($data,"cate_".$mid,"replace");
+	}
+
 	public function cate_next_taxis($parent_id=0)
 	{
 		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."cate WHERE site_id='".$this->site_id."' AND parent_id='".$parent_id."'";
@@ -34,17 +56,23 @@ class cate_model extends cate_model_base
 		return $this->return_next_taxis($rs);
 	}
 
-	public function get_root_id(&$rootid,$id)
+	public function cate_include_modules($mids)
 	{
-		$rs = $this->get_one($id);
-		if($rs){
-			if(!$rs['parent_id']){
-				$rootid = $id;
-			}else{
-				$this->get_root_id($rootid,$rs['parent_id']);
-			}
+		if(!$mids){
+			return false;
 		}
+		if(is_array($mids)){
+			$mids = implode(",",$mids);
+		}
+		$sql = "SELECT id,title,module_id FROM ".$this->db->prefix."cate WHERE module_id IN(".$mids.")";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$rslist[$value['module_id']][$value['id']] = $value['title'];
+		}
+		return $rslist;
 	}
 }
-
-?>

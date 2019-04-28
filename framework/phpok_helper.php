@@ -782,9 +782,34 @@ function tpl_head($array=array())
 			}else{
 				unset($headtitle[$key]);
 			}
+		}elseif($value == '{cate}'){
+			if($array['cate']){
+				$headtitle[$key] = $array['cate'];
+			}else{
+				$tmp = $GLOBALS['app']->tpl->val('cate_rs');
+				if($tmp){
+					$headtitle[$key] = $tmp['title'];
+					unset($tmp);
+				}else{
+					unset($headtitle[$key]);
+				}
+			}
+		}elseif($value == '{project}'){
+			if($array['project']){
+				$headtitle[$key] = $array['project'];
+			}else{
+				$tmp = $GLOBALS['app']->tpl->val('page_rs');
+				if($tmp){
+					$headtitle[$key] = $tmp['title'];
+					unset($tmp);
+				}else{
+					unset($headtitle[$key]);
+				}
+			}
 		}
 	}
-	$headtitle = implode($app->config['seo']['line'],$headtitle);
+	$headtitle = implode('-',$headtitle);
+	$headtitle = str_replace('-',$app->config['seo']['line'],$headtitle);
 	$html .= '<title>'.trim($headtitle).'</title>'."\n\t";
 	if($array['keywords']){
 		$seo['keywords'] = $array['keywords'];

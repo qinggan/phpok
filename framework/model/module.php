@@ -1,12 +1,14 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/model/module.php
-	Note	: 模型管理维护
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-11-29 21:06
-***********************************************************/
+/**
+ * 模型管理维护
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2019年3月18日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class module_model_base extends phpok_model
 {
@@ -16,14 +18,14 @@ class module_model_base extends phpok_model
 		parent::model();
 	}
 
-	public function get_all($status=0)
+	public function get_all($status=0,$pri='')
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."module ";
 		if($status){
 			$sql .= " WHERE status='".$status."' ";
 		}
 		$sql.= " ORDER BY taxis ASC,id DESC";
-		return $this->db->get_all($sql);
+		return $this->db->get_all($sql,$pri);
 	}
 
 	public function get_one($id)
@@ -62,7 +64,7 @@ class module_model_base extends phpok_model
 	}
 
 	//检查表是否存在
-	public function chk_tbl_exists($id,$mtype=0)
+	public function chk_tbl_exists($id,$mtype=0,$tbl='')
 	{
 		if(!$id){
 			return false;
@@ -71,7 +73,10 @@ class module_model_base extends phpok_model
 		if(!$mlist){
 			return false;
 		}
-		$tblname = $mtype ? $this->db->prefix.$id : $this->db->prefix."list_".$id;
+		if(!$tbl){
+			$tbl = "list";
+		}
+		$tblname = $mtype ? $this->db->prefix.$id : $this->db->prefix.$tbl."_".$id;
 		if(in_array($tblname,$mlist)){
 			return true;
 		}
@@ -91,5 +96,16 @@ class module_model_base extends phpok_model
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id='".$id."'";
 		return $this->db->get_one($sql);
+	}
+
+	/**
+	 * 可扩展的集成模块
+	**/
+	public function tblist()
+	{
+		$list = array();
+		$list['list'] = P_Lang('主题');
+		$list['cate'] = P_Lang('分类');
+		return $list;
 	}
 }

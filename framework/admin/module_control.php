@@ -1,12 +1,14 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/module_control.php
-	Note	: 模块管理器
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-11-29 20:21
-***********************************************************/
+/**
+ * 模块管理器
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2019年3月3日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class module_control extends phpok_control
 {
@@ -28,9 +30,39 @@ class module_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rslist = $this->model('module')->get_all();
+		if($rslist){
+			$projects = $cates = array();
+			foreach($rslist as $key=>$value){
+				if($value['tbl'] == 'cate'){
+					$cates[] = $value['id'];
+				}else{
+					$projects[] = $value['id'];
+				}
+			}
+			if($projects){
+				$plist = $this->model('project')->projects_include_modules($projects);
+				if($plist){
+					foreach($rslist as $key=>$value){
+						if($plist[$value['id']]){
+							$rslist[$key]['link'] = $plist[$value['id']];
+						}
+					}
+				}
+			}
+			if($cates){
+				$clist = $this->model('cate')->cates_include_modules($cates);
+				if($clist){
+					foreach($rslist as $key=>$value){
+						if($clist[$value['id']]){
+							$rslist[$key]['link'] = $clist[$value['id']];
+						}
+					}
+				}
+			}
+		}
 		$this->assign("rslist",$rslist);
 		$this->view("module_index");
 	}
@@ -63,6 +95,13 @@ class module_control extends phpok_control
 			$rs = array('taxis'=>$taxis);
 		}
 		$this->assign("rs",$rs);
+		$tblist = $this->model('module')->tblist();
+		$this->assign('tblist',$tblist);
+		$tblid = 'list';
+		if($rs && $rs['tbl']){
+			$tblid = $rs['tbl'];
+		}
+		$this->assign('tblid',$tblid);
 		$this->view("module_set");
 	}
 
@@ -179,26 +218,50 @@ class module_control extends phpok_control
 		$taxis = $this->get("taxis","int");
 		$array = array("title"=>$title,"note"=>$note,"taxis"=>$taxis);
 		if($id){
+			$old = $this->model('module')->get_one($id);
 			$layout = $this->get("layout");
 			if($layout && is_array($layout)){
 				$array['layout'] = implode(",",$layout);
 			}else{
 				$array['layout'] = '';
 			}
+			$array["mtype"] = $this->get('mtype','int');
+			$array['tbl'] = $this->get('tbl');
+			if($array['mtype'] != $old['mtype'] || $array['tbl'] != $old['tbl']){
+				//检测是否已被使用了
+				$chk = $this->model('project')->projects_include_modules($id);
+				if($chk){
+					$this->error(P_Lang('模块已使用，不允许更换类型'));
+				}
+			}
+			if($array['mtype']){
+				$array['tbl'] = 'list';
+			}
 			$this->model('module')->save($array,$id);
+			$oldtbl = $old['mtype'] ? $id : $old['tbl'].'_'.$id;
+			$mytbl = $oldtbl;
+			if($array["mtype"] != $old['mtype']){
+				$mytbl = $array["mtype"] ? $id : $array['tbl'].'_'.$id;
+			}else{
+				if(!$array['mtype']){
+					$mytbl = $array['tbl'].'_'.$id;
+				}
+			}
+			if($oldtbl != $newtbl){
+				$this->model('module')->rename_tbl($oldtbl,$mytbl);
+			}
 		}else{
 			$array["layout"] = "hits,dateline,sort";
-			$array['mtype'] = $this->get('mtype','int');
+			$array["mtype"] = $this->get("mtype",'int');
+			if(!$array['mtype']){
+				$array['tbl'] = $this->get('tbl');
+			}
 			$id = $this->model('module')->save($array);
 		}
 		if(!$id){
 			$this->error(P_Lang('数据存储失败，请检查'));
 		}
-		$rs = $this->model('module')->get_one($id);
-		$tbl_exists = $this->model('module')->chk_tbl_exists($id,$rs['mtype']);
-		if(!$tbl_exists){
-			$this->model('module')->create_tbl($id);
-		}
+		$this->model('module')->create_tbl($id);
 		$this->success();
 	}
 
@@ -296,21 +359,25 @@ class module_control extends phpok_control
 			$tmp_array["ext"] = serialize($f_rs['ext']);
 		}
 		$this->model('module')->fields_save($tmp_array);
-		//更新扩展表信息
-		$tbl_exists = $this->model('module')->chk_tbl_exists($id,$rs['mtype']);
+
+		$tbl_exists = $this->model('module')->chk_tbl_exists($id,$rs['mtype'],$rs['tbl']);
 		if(!$tbl_exists){
 			$this->model('module')->create_tbl($id);
-			$tbl_exists2 = $this->model('module')->chk_tbl_exists($id,$rs['mtype']);
+			$tbl_exists2 = $this->model('module')->chk_tbl_exists($id,$rs['mtype'],$rs['tbl']);
 			if(!$tbl_exists2){
-				$this->error(P_Lang('模块创建表失败，请检查'));
+				$this->error(P_Lang('模块：[title]创建表失败',array('title'=>$rs['title'])));
 			}
 		}
 		$list = $this->model('module')->fields_all($id);
 		if($list){
 			foreach($list as $key=>$value){
+				if($flist && in_array($value['identifier'],$flist)){
+					continue;
+				}
 				$this->model('module')->create_fields($value['id']);
 			}
 		}
+
 		$this->success();
 	}
 
@@ -481,6 +548,7 @@ class module_control extends phpok_control
 		}
 		$array = array();
 		$array["title"] = $title;
+		$array['field_type'] = $this->get('field_type');
 		$array["note"] = $this->get("note");
 		$array["form_type"] = $this->get("form_type");
 		$array["form_style"] = $this->get("form_style","html");
@@ -527,12 +595,13 @@ class module_control extends phpok_control
 			$this->error(P_Lang('phpok是系统禁用字符，请不要使用'));
 		}
 		if(!$rs['mtype']){
-			$flist = $this->model('fields')->tbl_fields('list');
+			$tbl = $rs['tbl'] ? $rs['tbl'] : 'list';
+			$flist = $this->model('fields')->tbl_fields($tbl);
 			if($flist && in_array($identifier,$flist)){
 				$this->json(P_Lang('字符已经存在'));
 			}
 		}
-		$tblname = $rs['mtype'] ? $mid : 'list_'.$mid;
+		$tblname = $rs['mtype'] ? $mid : $rs['tbl'].'_'.$mid;
 		$flist = $this->model('fields')->tbl_fields($tblname);
 		if($flist && in_array($identifier,$flist)){
 			$this->error(P_Lang('字符在扩展表中已使用'));
@@ -564,10 +633,10 @@ class module_control extends phpok_control
 		}
 		$array['ext'] = ($ext && count($ext)>0) ? serialize($ext) : "";
 		$this->model('module')->fields_save($array);
-		$tbl_exists = $this->model('module')->chk_tbl_exists($mid,$rs['mtype']);
+		$tbl_exists = $this->model('module')->chk_tbl_exists($mid,$rs['mtype'],$rs['tbl']);
 		if(!$tbl_exists){
 			$this->model('module')->create_tbl($mid);
-			$tbl_exists2 = $this->model('module')->chk_tbl_exists($mid,$rs['mtype']);
+			$tbl_exists2 = $this->model('module')->chk_tbl_exists($mid,$rs['mtype'],$rs['tbl']);
 			if(!$tbl_exists2){
 				$this->error(P_Lang('模块：[title]创建表失败',array('title'=>$rs['title'])));
 			}

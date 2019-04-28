@@ -69,7 +69,7 @@ class freight_model_base extends phpok_model
 	public function price_one($zid,$val)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."freight_price WHERE zid='".$zid."' AND CAST(unit_val AS DECIMAL)<=".floatval($val)." ";
-		$sql.= " ORDER BY unit_val DESC LIMIT 1";
+		$sql.= " ORDER BY unit_val+0 DESC LIMIT 1";
 		$rs = $this->db->get_one($sql);
 		if($rs){
 			return $rs['price'];
@@ -78,5 +78,3 @@ class freight_model_base extends phpok_model
 	}
 
 }
-
-?>

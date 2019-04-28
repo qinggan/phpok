@@ -16,12 +16,6 @@ class list_model extends list_model_base
 		parent::__construct();
 	}
 
-	public function add_hits($id)
-	{
-		$sql = "UPDATE ".$this->db->prefix."list SET hits=hits+1 WHERE id='".$id."'";
-		return $this->db->query($sql,false);
-	}
-
 	public function get_hits($id)
 	{
 		$sql = "SELECT hits FROM ".$this->db->prefix."list WHERE id='".$id."'";

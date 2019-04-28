@@ -38,30 +38,59 @@ class module_model extends module_model_base
 	**/
 	public function create_tbl($id)
 	{
+		if(!$id){
+			return false;
+		}
 		$rs = $this->get_one($id);
 		if(!$rs){
 			return false;
 		}
-		$tblname = $rs['mtype'] ? $this->db->prefix.$id : $this->db->prefix."list_".$id;
-		$pri_id = 'id';
-		$note = $rs['title'];
-		$this->db->create_table_main($tblname,$pri_id,$note);
-		//创建 site_id 字段
-		$data = array('id'=>'site_id','type'=>'MEDIUMINT','unsigned'=>true,'notnull'=>true,'default'=>'0');
-		$data['comment'] = '网站ID';
-		$this->db->update_table_fields($tblname,$data);
-		$data = array('id'=>'project_id','type'=>'MEDIUMINT','unsigned'=>true,'notnull'=>true,'default'=>'0');
-		$data['comment'] = '项目ID';
-		$this->db->update_table_fields($tblname,$data);
+		$tblname = $rs['tbl'] ? $this->db->prefix.$rs['tbl']."_".$id : $this->db->prefix."list_".$id;
 		if($rs['mtype']){
-			//创建 site_id 对应的索引
-			$this->db->update_table_index($tblname,'site_id_index',array('site_id','project_id'));
-		}else{
-			$data = array('id'=>'cate_id','type'=>'MEDIUMINT','unsigned'=>true,'notnull'=>true,'default'=>'0');
-			$data['comment'] = '主分类ID';
-			$this->db->update_table_fields($tblname,$data);
-			//创建 site_id 对应的索引
-			$this->db->update_table_index($tblname,'site_id_index',array('site_id','project_id','cate_id'));
+			$tblname = $this->db->prefix.$id;
+		}
+		//检测表是否存在
+		$list = $this->db->list_tables();
+		if(!in_array($tblname,$list)){
+			$pri_id = 'id';
+			$note = $rs['title'];
+			$this->db->create_table_main($tblname,$pri_id,$note);
+			$list = $this->db->list_tables();
+		}
+		if(in_array($tblname,$list)){
+			$fields = $this->db->list_fields($tblname,false);
+			if(!in_array('site_id',$fields)){
+				$data = array('id'=>'site_id','type'=>'MEDIUMINT','unsigned'=>true,'notnull'=>true,'default'=>'0');
+				$data['comment'] = '网站ID';
+				$this->db->update_table_fields($tblname,$data);
+			}
+			if(!in_array('project_id',$fields)){
+				$data = array('id'=>'project_id','type'=>'MEDIUMINT','unsigned'=>true,'notnull'=>true,'default'=>'0');
+				$data['comment'] = '项目ID';
+				$this->db->update_table_fields($tblname,$data);
+			}
+			if(!in_array('cate_id',$fields)){
+				$data = array('id'=>'cate_id','type'=>'MEDIUMINT','unsigned'=>true,'notnull'=>true,'default'=>'0');
+				$data['comment'] = '主分类ID';
+				$this->db->update_table_fields($tblname,$data);
+			}
+		}
+		//检查索引是否有建
+		$keys = $this->db->list_keys($tblname,false);
+		if(!$keys){
+			$keys = array();
+		}
+		if(!$keys['site_id']){
+			$this->db->update_table_index($tblname,'site_id','site_id');
+		}
+		if(!$keys['site_project']){
+			$this->db->update_table_index($tblname,'site_project',array('site_id','project_id'));
+		}
+		if(!$keys['site_cate']){
+			$this->db->update_table_index($tblname,'site_cate',array('site_id','cate_id'));
+		}
+		if(!$keys['project_cate']){
+			$this->db->update_table_index($tblname,'project_cate',array('site_id','project_id','cate_id'));
 		}
 		return true;
 	}
@@ -95,10 +124,10 @@ class module_model extends module_model_base
 			return false;
 		}
 		$table = $this->get_one($rs['ftype']);
-		if(!$this->chk_tbl_exists($table['id'],$table['mtype'])){
+		if(!$this->chk_tbl_exists($table['id'],$table['mtype'],$table['tbl'])){
 			return false;
 		}
-		$tblname = $table['mtype'] ? $this->db->prefix.$table['id'] : $this->db->prefix."list_".$table['id'];
+		$tblname = $table['mtype'] ? $this->db->prefix.$table['id'] : $this->db->prefix.$table['tbl']."_".$table['id'];
 		$data = array('id'=>$rs['identifier'],'type'=>$rs['field_type'],'unsigned'=>false);
 		$data['notnull'] = true;
 		if($rs['field_type'] == 'date' || $rs['field_type'] == 'datetime'){
@@ -128,7 +157,7 @@ class module_model extends module_model_base
 		}
 		$rs = $this->field_one($id);
 		$table = $this->get_one($rs['ftype']);
-		$tblname = $table['mtype'] ? $this->db->prefix.$table['id'] : $this->db->prefix."list_".$table['id'];
+		$tblname = $table['mtype'] ? $this->db->prefix.$table['id'] : $this->db->prefix.$table['tbl']."_".$table['id'];
 		$idlist = $this->db->list_fields($tblname,false);
 		if($idlist && in_array($rs['identifier'],$idlist)){
 			$this->db->delete_table_fields($tblname,$rs['identifier']);
@@ -148,9 +177,9 @@ class module_model extends module_model_base
 		}
 		$rs = $this->get_one($id);
 		
-		$tblname = $rs['mtype'] ? $this->db->prefix.$id : $this->db->prefix."list_".$id;
+		$tblname = $rs['mtype'] ? $this->db->prefix.$id : $this->db->prefix.$rs['tbl']."_".$id;
 		$this->db->delete_table($tblname,false);
-		if(!$rs['mtype']){
+		if(!$rs['mtype'] && $rs['tbl'] == 'list'){
 			$sql = "SELECT id FROM ".$this->db->prefix."list WHERE module_id='".$id."'";
 			$rslist = $this->db->get_all($sql);
 			if($rslist){
@@ -170,6 +199,10 @@ class module_model extends module_model_base
 			}
 			//更新项目信息
 			$sql = "UPDATE ".$this->db->prefix."project SET module='0' WHERE module='".$id."'";
+			$this->db->query($sql);
+		}
+		if(!$rs['mtype'] && $rs['tbl'] == 'cate'){
+			$sql = "UPDATE ".$this->db->prefix."cate SET module_id=0 WHERE module_id='".$rs['id']."'";
 			$this->db->query($sql);
 		}
 		//删除扩展字段
@@ -234,5 +267,23 @@ class module_model extends module_model_base
 			return $this->db->update_array($data,"module",array("id"=>$id));
 		}
 		return $this->db->insert_array($data,"module");
+	}
+
+	/**
+	 * 重命名数据表
+	**/
+	public function rename_tbl($old,$new='',$include_prefix=false)
+	{
+		if(!$old || !$new || $old == $new){
+			return false;
+		}
+		$oldname = $include_prefix ? $old : $this->db->prefix.$old;
+		$newname = $include_prefix ? $new : $this->db->prefix.$new;
+		$list = $this->db->list_tables();
+		if(!in_array($oldname,$list)){
+			return false;
+		}
+		$sql = "RENAME TABLE ".$oldname." TO ".$newname;
+		$this->db->query($sql);
 	}
 }

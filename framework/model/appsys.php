@@ -13,9 +13,11 @@ class appsys_model_base extends phpok_model
 {
 	private $iList;
 	private $local_all;
+	private $cacheid = '';
 	public function __construct()
 	{
 		parent::model();
+		$this->cacheid = $this->cache->id('appsys_cache.php');
 	}
 
 	/**
@@ -71,6 +73,12 @@ class appsys_model_base extends phpok_model
 		if($this->local_all){
 			return $this->local_all;
 		}
+		if($this->cacheid){
+			$this->local_all = $this->cache->get($this->cacheid);
+			if($this->local_all){
+				return $this->local_all;
+			}
+		}
 		$list = $this->lib('file')->ls($this->dir_app);
 		if(!$list){
 			return false;
@@ -88,6 +96,9 @@ class appsys_model_base extends phpok_model
 			$install[$tmpid] = $info;
 		}
 		$this->local_all = $install;
+		if($this->cacheid){
+			$this->cache->save($this->cacheid,$install);
+		}
 		return $this->local_all;
 	}
 
@@ -149,6 +160,9 @@ class appsys_model_base extends phpok_model
 			}
 			$this->lib('xml')->save($info,$this->dir_app.$id.'/config.xml');
 		}
+		if($this->cacheid){
+			$this->cache->delete($this->cacheid);
+		}
 		return true;
 	}
 
@@ -161,6 +175,9 @@ class appsys_model_base extends phpok_model
 		}
 		$info['installed'] = true;
 		$this->lib('xml')->save($info,$this->dir_app.$id.'/config.xml');
+		if($this->cacheid){
+			$this->cache->delete($this->cacheid);
+		}
 		return true;
 	}
 

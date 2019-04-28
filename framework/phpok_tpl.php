@@ -1079,10 +1079,21 @@ class phpok_template
 
 	private function _read_config($id)
 	{
+		global $app;
+		if(strpos(basename($this->dir_tpl),'mobile') !== false){
+			if($this->cache_config['mobile_'.$id]){
+				return $this->cache_config['mobile_'.$id];
+			}
+			$rs = $app->model('tpl')->tpl_info($id,true);
+			if(!$rs){
+				return false;
+			}
+			$this->cache_config['mobile_'.$id] = $rs;
+			return $rs;
+		}
 		if($this->cache_config[$id]){
 			return $this->cache_config[$id];
 		}
-		global $app;
 		$rs = $app->model('tpl')->tpl_info($id);
 		if(!$rs){
 			return false;

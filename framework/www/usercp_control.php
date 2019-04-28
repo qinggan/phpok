@@ -185,6 +185,16 @@ class usercp_control extends phpok_control
 			exit;
 		}
 		$dt = array('pid'=>$project_rs['id'],'user_id'=>$_SESSION['user_id']);
+		if($project_rs['cate']){
+			$cate = $this->get('cate');
+			$cateid = $this->get('cateid','int');
+			if($cate){
+				$dt['cate'] = $cate;
+			}
+			if($cateid){
+				$dt['cateid'] = $cateid;
+			}
+		}
 		//读取符合要求的内容
 		$pageurl = $this->url('usercp','list','id='.$id);
 		$pageid = $this->get($this->config['pageid'],'int');

@@ -169,6 +169,14 @@ class register_control extends phpok_control
 			}
 		}
 		$this->model('user')->save_ext($ext);
+		if($group_rs["register_status"]){
+			$this->session->assign('user_id',$uid);
+			$this->session->assign('user_gid',$group_id);
+			$this->session->assign('user_name',$user);
+			//注册审核通过后赠送积分
+			$this->model('wealth')->register($uid,P_Lang('会员注册'));
+			$this->json(P_Lang('注册成功，已自动登录，请稍候…'),true);
+		}
 		if(!$group_rs["tbl_id"] && !$group_rs['register_status']){
 			$this->json(P_Lang('注册成功，等待管理员验证'),true);
 		}

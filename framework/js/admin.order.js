@@ -324,6 +324,38 @@
 				});
 			});
 		},
+		set_order:function(id,status)
+		{
+			var html = '<select id="ostatus">'+$("#statuslist select").html()+"</select>";
+			$.dialog({
+				'id':'openstatus',
+				'title':p_lang('订单')+"_#"+id,
+				'content':html,
+				'init':function(){
+					$("#ostatus").find("option[value="+status+"]").attr("selected",true);
+				},
+				'lock':true,
+				'width':'300px',
+				'height':'100px',
+				'ok':function(){
+					var st = $("#ostatus").val();
+					var url = get_url('order','status','id='+id+"&status="+st);
+					$.phpok.json(url,function(rs){
+						if(!rs.status){
+							$.dialog.alert(rs.info);
+							return false;
+						}
+						$.dialog.tips(p_lang('订单已操作成功'),function(){
+							$.phpok.reload();
+						}).lock();
+						return true;
+					});
+				},
+				'okVal':p_lang('修改'),
+				'cancel':true,
+				'cancelVal':p_lang('取消')
+			});
+		},
 		finish:function()
 		{
 			var id = $.checkbox.join();

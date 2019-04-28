@@ -122,6 +122,12 @@ class cart_model_base extends phpok_model
 		$sql = "SELECT * FROM ".$this->db->prefix."cart_product WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
+	
+	public function cart_one($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."cart WHERE id='".$id."'";
+		return $this->db->get_one($sql);
+	}
 
 	/**
 	 * 更新购物车里的产品数量

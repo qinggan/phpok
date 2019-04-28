@@ -207,6 +207,9 @@ class index_control extends phpok_control
 		}
 		$logo = ($this->site['adm_logo29'] && is_file($this->site['adm_logo29'])) ? $this->site['adm_logo29'] : 'images/admin.svg';
 		$this->assign('logo',$logo);
+		if($this->site['adm_logo50']){
+			$this->assign('logo2',$this->site['adm_logo50']);
+		}
 	}
 
 	/**
@@ -233,6 +236,9 @@ class index_control extends phpok_control
 		}else{
 			$this->assign('serverlist',$list);
 		}
+		//读取快捷链接
+		$qlink = $this->model('qlink')->get_all();
+		$this->assign('qlink',$qlink);
 		$this->view('homepage');
 	}
 
@@ -410,29 +416,69 @@ class index_control extends phpok_control
 		return true;
 	}
 
+	public function cache_f()
+	{
+		$this->view('index_cache');
+	}
+
 	/**
 	 * 清空缓存，包括过时的购物车，及Data目录下的Session文件
 	**/
 	public function clear_f()
 	{
-		$this->model('cart')->clear_expire_cart();
-		$this->lib('file')->rm($this->dir_data."tpl_www/");
-		$this->lib('file')->rm($this->dir_data."tpl_admin/");
-		$this->lib('file')->rm($this->dir_cache);
-		//清除附件生成的缓存
-		$this->lib('file')->rm($this->dir_root.'res/_cache/');
-		//清空SESSION过期的SESSION文件
-		$list = $this->lib('file')->ls($this->dir_data.'session/');
-		if($list){
-			foreach($list as $key=>$value){
-				if(filesize($value)>0 && (filemtime($value) + $this->session->timeout()) > $this->time){
-					continue;
+		$type = $this->get('type');
+		if($type == 'cart' || $type == 'all'){
+			$this->model('cart')->clear_expire_cart();
+		}
+		if($type == 'file' || $type == 'all'){
+			$this->lib('file')->rm($this->dir_cache);
+		}
+		if($type == 'compile' || $type == 'all'){
+			$this->lib('file')->rm($this->dir_data."tpl_www/");
+			$this->lib('file')->rm($this->dir_data."tpl_admin/");
+		}
+		if($type == 'log' || $type == 'all'){
+			$this->lib('file')->rm($this->dir_data."log/");
+			$list = $this->lib('file')->ls($this->dir_data);
+			if($list){
+				foreach($list as $key=>$value){
+					$tmp = basename($value);
+					if(substr($tmp,0,3) == 'log' && substr($tmp,-4) == '.php' && is_file($value)){
+						$this->lib('file')->rm($value);
+					}
 				}
-				$this->lib('file')->rm($value);
 			}
 		}
-		$this->cache->clear();
-		$this->json(true);
+		if($type == 'session' || $type == 'all'){
+			$list = $this->lib('file')->ls($this->dir_data.'session/');
+			if($list){
+				foreach($list as $key=>$value){
+					if(filesize($value)>0 && (filemtime($value) + $this->session->timeout()) > $this->time){
+						continue;
+					}
+					$this->lib('file')->rm($value);
+				}
+			}
+		}
+		//清理更新后自定义扩展异常Bug
+		if($type == 'u_error'){
+			$sql = "SELECT id FROM ".$this->db->prefix."extc";
+			$tmplist = $this->db->get_all($sql);
+			if($tmplist){
+				foreach($tmplist as $key=>$value){
+					$sql = "SELECT ftype FROM ".$this->db->prefix."fields WHERE id='".$value['id']."'";
+					$tmp = $this->db->get_one($sql);
+					if($tmp){
+						$sql = "DELETE FROM ".$this->db->prefix."fields WHERE ftype='".$tmp['ftype']."' AND id !='".$value['id']."'";
+						$this->db->query($sql);
+					}
+				}
+			}
+		}
+		if($type == 'other' || $type == 'all'){
+			$this->cache->clear();
+		}
+		$this->success();
 	}
 
 	/**
@@ -551,4 +597,89 @@ class index_control extends phpok_control
 		$this->view('index_server_info');
 	}
 
+
+	public function qlink_f()
+	{
+		$id = $this->get('id');
+		if($id){
+			$rs = $this->model('qlink')->get_one($id);
+			$this->assign('rs',$rs);
+			$this->assign('id',$id);
+		}
+		$dirlist = array();
+		$list = $this->lib('file')->ls($this->dir_app);
+		if($list){
+			foreach($list as $key=>$value){
+				$tmp = basename($value);
+				if(is_file($value.'/'.$this->app_id.'.control.php')){
+					$dirlist[] = array('id'=>$tmp,'title'=>$tmp);
+				}
+			}
+		}
+		$list = $this->lib('file')->ls($this->dir_phpok."admin");
+		foreach($list as $key=>$value){
+			$tmp = str_replace("_control.php","",strtolower(basename($value)));
+			if(strpos($tmp,".func.php") === false){
+				$dirlist[] = array("id"=>$tmp,"title"=>basename($value));
+			}
+		}
+		$this->assign("ctrlist",$dirlist);
+		$this->view('index_qlink');
+	}
+
+	public function funclist_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有配置权限'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定控制器'));
+		}
+		$ctrlfile = '';
+		if(is_file($this->dir_app.$id.'/'.$this->app_id.'.control.php')){
+			$ctrlfile = $this->dir_app.$id.'/'.$this->app_id.'.control.php';
+		}
+		if(!$ctrlfile && is_file($this->dir_phpok.$this->app_id.'/'.$id.'_control.php')){
+			$ctrlfile = $this->dir_phpok.$this->app_id.'/'.$id.'_control.php';
+		}
+		if(!$ctrlfile){
+			$this->error(P_Lang('控制器不存在'));
+		}
+		$list = $this->model('qlink')->func_list($ctrlfile);
+		if($list){
+			$this->success($list);
+		}
+		$this->success();
+	}
+
+	public function qlink_save_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有配置权限'));
+		}
+		$id = $this->get('id','system');
+		if(!$id){
+			$id = 'qlink-'.$this->time.rand(0,999);
+		}
+		$data = array('id'=>$id);
+		$data['title'] = $this->get('title');
+		$data['link'] = $this->get('link');
+		$data['ico'] = $this->get('ico');
+		$this->model('qlink')->save($data);
+		$this->success();
+	}
+
+	public function qlink_delete_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有删除权限'));
+		}
+		$id = $this->get('id','system');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$this->model('qlink')->delete($id);
+		$this->success();
+	}
 }

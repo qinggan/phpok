@@ -10,7 +10,12 @@ $(document).ready(function(){
 		matchBrackets	: true,
 		lineWrapping	: true,
 		indentWithTabs	: true,
-		indentUnit		: 4
+		indentUnit		: 4,
+		extraKeys: {
+			'Ctrl-S': function(){
+				$('#save_button').click();
+			}
+		}
 	});
 	$("#post_save").submit(function(){
 		if(is_edit != '1'){
@@ -24,10 +29,7 @@ $(document).ready(function(){
 			'dataType':'json',
 			'success':function(rs){
 				if(rs.status){
-					$.dialog.tips(p_lang('代码保存成功'),function(){
-						var url = get_url("tpl","list","id="+$("input[name=id]").val());
-						$.admin.close(url);
-					}).lock();
+					$.dialog.tips(p_lang('代码保存成功')).follow($("#save_button")[0]);
 					return true;
 				}
 				$.dialog.alert(rs.info);
@@ -57,7 +59,7 @@ $(document).ready(function(){
 <div class="submit-info-clear"></div>
 <div class="submit-info">
 	<div class="layui-container center">
-		<!-- if $is_edit --><input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" /><!-- /if -->
+		<!-- if $is_edit --><input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" id="save_button" /><!-- /if -->
 		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
 	</div>
 </div>

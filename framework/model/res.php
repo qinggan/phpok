@@ -204,7 +204,7 @@ class res_model_base extends phpok_model
 		}
 		$sql .= " ORDER BY addtime DESC,id DESC LIMIT ".$offset.",".$psize;
 		if(!$is_ext){
-			$rslist = $this->db->get_all($sql);
+			$rslist = $this->db->get_all($sql);			
 			if(!$rslist){
 				return false;
 			}
@@ -750,9 +750,15 @@ class res_model_base extends phpok_model
 		if(!$this->is_local($rs['filename'])){
 			return false;
 		}
+		if($rs['ico']){
+			return $rs['ico'];
+		}
 		$folder = 'res/_cache/_ico/'.substr($rs['id'],0,2).'/';
 		if(is_file($this->dir_root.$folder.$rs['id'].'.'.$rs['ext'])){
-			return $folder.$rs['id'].'.'.$rs['ext'];
+			$ico = $folder.$rs['id'].'.'.$rs['ext'];
+			$sql = "UPDATE ".$this->db->prefix."res SET ico='".$ico."' WHERE id='".$rs['id']."'";
+			$this->db->query($sql);
+			return $ico;
 		}
 		$tmp = array('url'=>$rs['filename']);
 		$tmp['width'] = $width;
@@ -763,8 +769,10 @@ class res_model_base extends phpok_model
 		$tmp['_id'] = $rs['id'];
 		$tmp['folder'] = $folder;
 		$tmp['ext'] = $rs['ext'];
-		return $this->img_create($tmp);
-		//return 'img.php?token='.$this->lib('common')->urlsafe_b64encode(serialize($tmp));
+		$ico = $this->img_create($tmp);
+		$sql = "UPDATE ".$this->db->prefix."res SET ico='".$ico."' WHERE id='".$rs['id']."'";
+		$this->db->query($sql);
+		return $ico;
 	}
 
 	/**

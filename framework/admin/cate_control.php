@@ -28,8 +28,47 @@ class cate_control extends phpok_control
 		if(!$this->popedom["list"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$rslist = $this->model('cate')->get_all($this->session->val('admin_site_id'));
+		$parent_id = $this->get('parent_id','int');
+		if(!$parent_id){
+			$rslist = $this->model('cate')->root_catelist($this->session->val('admin_site_id'));
+			if($rslist){
+				$ids = array_keys($rslist);
+				$total_list = $this->model('cate')->count_sublist($ids);
+				if($total_list){
+					foreach($rslist as $key=>$value){
+						if($total_list[$value['id']]){
+							$value['total'] = $total_list[$value['id']];
+						}
+						$rslist[$key] = $value;
+					}
+				}
+			}
+			$this->assign("rslist",$rslist);
+			$this->view("cate_index");
+		}
+		$rs = $this->model('cate')->get_one($parent_id);
+		$this->assign('rs',$rs);
+		$rslist = $this->model('cate')->catelist_sonlist($rs['id'],false,false);
+		if($rslist){
+			$ids = array_keys($rslist);
+			$total_list = $this->model('cate')->count_sublist($ids);
+			if($total_list){
+				foreach($rslist as $key=>$value){
+					if($total_list[$value['id']]){
+						$value['total'] = $total_list[$value['id']];
+					}
+					$rslist[$key] = $value;
+				}
+			}
+		}
 		$this->assign("rslist",$rslist);
+		$navlist = array();
+		$navlist[] = $rs;
+		if($rs['parent_id']){
+			$this->model('cate')->parent_list($navlist,$rs['parent_id'],false,false);
+		}
+		krsort($navlist);
+		$this->assign('navlist',$navlist);
 		$this->view("cate_index");
 	}
 
@@ -57,9 +96,26 @@ class cate_control extends phpok_control
 					$this->assign('ext2',explode(",",$ext2['fid']));
 				}
 			}
+			if(!$rs['parent_id']){
+				$module = $this->model('module')->get_all();
+				if($module){
+					$mlist = array();
+					foreach($module as $key=>$value){
+						if(!$value['mtype'] && $value['tbl'] == 'cate'){
+							$mlist[] = $value;
+							continue;
+						}
+					}
+					if($mlist && count($mlist)>0){
+						$this->assign('mlist',$mlist);
+					}
+				}
+			}
+			$parent_id = $rs['parent_id'];
+			$this->assign('parent_id',$rs['parent_id']);
 		}else{
 			if(!$this->popedom["add"]){
-				$this->error(P_Lang('您没有权限执行此操作'),$this->url('cate'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$this->assign("parent_id",$parent_id);
 			$ext_module = "add-cate";
@@ -80,6 +136,21 @@ class cate_control extends phpok_control
 						}
 					}
 					$extlist = $this->session->val('admin-add-cate');
+				}
+			}else{
+				//读取模块
+				$module = $this->model('module')->get_all();
+				if($module){
+					$mlist = array();
+					foreach($module as $key=>$value){
+						if(!$value['mtype'] && $value['tbl'] == 'cate'){
+							$mlist[] = $value;
+							continue;
+						}
+					}
+					if($mlist && count($mlist)>0){
+						$this->assign('mlist',$mlist);
+					}
 				}
 			}
 		}
@@ -113,6 +184,27 @@ class cate_control extends phpok_control
 
 		$tag_config = $this->model('tag')->config();
 		$this->assign('tag_config',$tag_config);
+		if($parent_id){
+			$root_id = $parent_id;
+			$this->model('cate')->get_root_id($root_id,$parent_id);
+			$cate_root = $this->model('cate')->get_one($root_id);
+			if($cate_root['module_id']){
+				$ext_list = $this->model('module')->fields_all($cate_root["module_id"]);
+				$clist = array();
+				foreach(($ext_list ? $ext_list : array()) as $key=>$value){
+					if($value["ext"] && is_string($value['ext'])){
+						$ext = unserialize($value["ext"]);
+						$value = array_merge($value,($ext ? $ext : array()));
+					}
+					$idlist[] = strtolower($value["identifier"]);
+					if($rs[$value["identifier"]] != ''){
+						$value["content"] = $rs[$value["identifier"]];
+					}
+					$clist[] = $this->lib('form')->format($value);
+				}
+				$this->assign("clist",$clist);
+			}
+		}
 		$this->view("cate_set");
 	}
 
@@ -194,7 +286,9 @@ class cate_control extends phpok_control
 		$title = $this->get("title");
 		$identifier = $this->get("identifier");
 		$error_url = $this->url("cate","set");
-		if($id) $error_url .= "&id=".$id;
+		if($id){
+			$error_url .= "&id=".$id;
+		}
 		if(!$identifier){
 			$this->error(P_Lang('标识不能为空'),$error_url);
 		}
@@ -220,6 +314,9 @@ class cate_control extends phpok_control
 		$array['tag'] = $this->get('tag');
 		$array['style'] = $this->get('style');
 		if(!$id){
+			if(!$parent_id){
+				$array['module_id'] = $this->get('module_id','int');
+			}
 			$array["site_id"] = $this->session->val('admin_site_id');
 			$id = $this->model('cate')->save($array);
 			if(!$id){
@@ -235,12 +332,19 @@ class cate_control extends phpok_control
 			$son_cate_list = array();
 			$this->son_cate_list($son_cate_list,$id);
 			if(in_array($parent_id,$son_cate_list)){
-				error(P_Lang('不允许将分类迁移至此分类下的子分类'),$error_url,"error");
+				$this->error(P_Lang('不允许将分类迁移至此分类下的子分类'),$error_url,"error");
 			}
 			$array["parent_id"] = $parent_id;
+			if(!$parent_id){
+				$module_id = $this->get('module_id','int');
+				if($rs['module_id'] && $module_id != $rs['module_id'] && count($son_cate_list)>0){
+					$this->error(P_Lang('分类已存在子分类，不允许更换模块'));
+				}
+				$array['module_id'] = $module_id;
+			}
 			$update = $this->model('cate')->save($array,$id);
 			if(!$update){
-				error(P_Lang('分类更新失败'),$error_url);
+				$this->error(P_Lang('分类更新失败'),$error_url);
 			}
 			ext_save("cate-".$id);
 		}
@@ -252,6 +356,30 @@ class cate_control extends phpok_control
 				$this->lib('xml')->save(array('fid'=>$extfields),$this->dir_data.'xml/cate_extfields_'.$id.'.xml');
 			}else{
 				$this->lib('file')->rm($this->dir_data.'xml/cate_extfields_'.$id.'.xml');
+			}
+		}
+		//保存模块内的扩展字段
+		if($parent_id && $id){
+			$root_id = $parent_id;
+			$this->model('cate')->get_root_id($root_id,$parent_id);
+			$cate_root = $this->model('cate')->get_one($root_id);
+			if($cate_root['module_id']){
+				$ext_list = $this->model('module')->fields_all($cate_root["module_id"]);
+		 		$tmplist = array();
+		 		$tmplist["id"] = $id;
+		 		$tmplist["site_id"] = $cate_root["site_id"];
+		 		$tmplist["project_id"] = 0;
+		 		$tmplist["cate_id"] = $id;
+		 		if(!$ext_list){
+			 		$ext_list = array();
+		 		}
+				foreach($ext_list as $key=>$value){
+					if($rs[$value['identifier']]){
+						$value['content'] = $rs[$value['identifier']];
+					}
+					$tmplist[$value["identifier"]] = $this->lib('form')->get($value);
+				}
+				$this->model('cate')->save_ext($tmplist,$cate_root["module_id"]);
 			}
 		}
 		$this->success(P_Lang('分类信息配置成功'),$this->url("cate"));
@@ -268,7 +396,7 @@ class cate_control extends phpok_control
 	{
 		$list = $this->model('cate')->get_son_id_list($id);
 		if($list){
-			foreach($list AS $key=>$value){
+			foreach($list as $key=>$value){
 				$son_cate_list[] = $value;
 			}
 			$this->son_cate_list($son_cate_list,implode(",",$list));

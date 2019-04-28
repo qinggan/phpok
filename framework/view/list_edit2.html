@@ -7,12 +7,20 @@
 		<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				<!-- if $value.note -->
-				<i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i>
-				<!-- /if -->
 				{$value.title}
 			</label>
-			<div class="layui-input-block">{$value.html}</div>
+			<!-- if $value.note --><div class="layui-input-block gray" style="line-height:38px;">{$value.note}</div><!-- /if -->
+			<div class="layui-input-block">
+				{$value.html}
+				<!-- if $popedom.ext && $value.is_edit && $session.adm_develop -->
+				<div class="layui-btn-group">
+					<!-- if $ext_module != 'add-list' -->
+					<input type="button" value="{lang编辑}" class="layui-btn layui-btn-xs" onclick="ext_edit('{$value.identifier}','{$ext_module}')" />
+					<!-- /if -->
+					<input type="button" value="{lang删除}" class="layui-btn layui-btn-xs layui-btn-danger" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')" />
+				</div>
+				<!-- /if -->
+			</div>
 		</div>
 		<!-- /loop -->
 		<div class="layui-form-item">

@@ -1,6 +1,6 @@
 <!-- if $_laydate -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" onchange="$.phpokform.laydate_format('{$_rs.identifier}','{$_rs.form_btn}')" lay-key="laydate_{$_rs.identifier}" /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
 			<input type="button" value="{$_laydate_button}" class="layui-btn layui-btn-sm" id="btn_{$_rs.identifier}_{$_rs.form_btn}" onclick="$.phpokform.laydate_button('{$_rs.identifier}','{$_rs.form_btn}')" />

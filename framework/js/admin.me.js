@@ -19,22 +19,22 @@
 			}
 			var newpass = $("#newpass").val();
 			var chkpass = $("#chkpass").val();
-			if(!newpass){
-				$.dialog.alert(p_lang('新密码不能为空'));
+			var vpass = $("#vpass").val();
+			if(!newpass && !vpass){
+				$.dialog.alert(p_lang('新密码或二次密码至少有一项不能为空'));
 				return false;
 			}
-			if(newpass != chkpass){
+			if(newpass && newpass != chkpass){
 				$.dialog.alert(p_lang('两次输入的密码不一致'));
 				return false;
 			}
-			if(oldpass == newpass){
+			if(newpass && oldpass == newpass){
 				$.dialog.alert(p_lang('新旧密码是一样的，不能执行此操作'));
 				return false;
 			}
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
+			if(vpass && oldpass && oldpass == vpass){
+				$.dialog.alert(p_lang('二次密码不能和旧密码一样'));
+				return false;
 			}
 			$("#post_save").ajaxSubmit({
 				'url':get_url('me','pass_submit'),
@@ -42,7 +42,7 @@
 				'dataType':'json',
 				'success':function(rs){
 					if(rs.status){
-						$.dialog.tips(p_lang('密码修改成功，下次登录请使用新密码'));
+						$.dialog.tips(p_lang('修改操作成功，下次登录或二次验证请使用新设置的密码'));
 						window.setTimeout(function(){
 							$.dialog.close();
 						}, 1000);
@@ -62,6 +62,12 @@
 				'dataType':'json',
 				'success':function(rs){
 					if(rs.status){
+						if(rs.info == 1){
+							$.dialog.alert(p_lang('管理员信息修改成功，请重新登录'),function(){
+								$.phpok.go(get_url('logout'));
+							},'succeed');
+							return true;
+						}
 						$.dialog.tips(p_lang('管理员信息操作成功'));
 						window.setTimeout(function(){
 							$.dialog.close();

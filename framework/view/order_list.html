@@ -8,7 +8,7 @@
 		<div class="layui-form-item">
 			<div class="layui-inline">
 				<label class="layui-form-label">{lang订单状态}</label>
-				<div class="layui-input-inline">
+				<div class="layui-input-inline" id="statuslist">
 					<select name="status">
 						<option value="">{lang订单状态…}</option>
 						<!-- loop from=$statuslist key=$key value=$value id=$tmpid -->
@@ -118,7 +118,9 @@
 			<td>{func price_format $value.price $value.currency_id $value.currency_id}</td>
 			<td>{func price_format $value.paid $value.currency_id $value.currency_id}</td>
 			<td{if $value.unpaid} class="red"{/if} data-unpaid-text="{$value.id}"><!-- if $value.unpaid -->{func price_format $value.unpaid $value.currency_id $value.currency_id}<!-- /if --></td>
-			<td class="status">{$value.status_title}</td>
+			<td class="status">
+				<input type="button" value="{$value.status_title}" onclick="$.admin_order.set_order('{$value.id}','{$value.status}')" class="layui-btn  layui-btn-xs" />
+			</td>
 			<td><!-- if $value.pay_title -->{$value.pay_title}<!-- else --><span class="gray">{lang未设置}</span><!-- /if --></td>
 			<td>{func time_format $value.addtime}</td>
 			<td>

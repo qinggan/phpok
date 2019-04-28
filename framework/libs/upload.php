@@ -174,13 +174,16 @@ class upload_lib
 		return $rs;
 	}
 
-	private function file_ext($tmpname)
+	private function file_ext($tmpname,$chk=true)
 	{
 		$ext = pathinfo($tmpname,PATHINFO_EXTENSION);
 		if(!$ext){
 			return false;
 		}
 		$ext = strtolower($ext);
+		if(!$chk){
+			return $ext;
+		}
 		$filetypes = "jpg,gif,png";
 		if($this->cate && $this->cate['filetypes']){
 			$filetypes .= ",".$this->cate['filetypes'];
@@ -263,7 +266,7 @@ class upload_lib
 	    return array('title'=>$title,'ext'=>$ext,'filename'=>$outfile,'folder'=>$this->folder,'status'=>'ok');
 	}
 
-	private function _save($input)
+	private function _save($input,$chk=true)
 	{
 		global $app;
 		$basename = substr(md5(time().uniqid()),9,16);
@@ -273,7 +276,7 @@ class upload_lib
 		if(!$tmpname){
 			$tmpname = uniqid($input.'_');
 		}
-		$ext = $this->file_ext($tmpname);
+		$ext = $this->file_ext($tmpname,$chk);
 		if(!$ext){
 			return array('status'=>'error','error'=>P_Lang('附件类型不符合要求'));
 		}
@@ -362,15 +365,18 @@ class upload_lib
 	 * 附件上传
 	 * @参数 $inputname 上传表单名
 	**/
-	public function upload($inputname)
+	public function upload($inputname,$folder='')
 	{
 		if(!$inputname){
 			return array('status'=>'error','content'=>P_Lang('未指定表单名称'));
 		}
+		if($folder){
+			$this->set_dir($folder);
+		}
 		if(isset($_FILES[$inputname])){
 			return $this->_upload($inputname);
 		}
-		return $this->_save($inputname);
+		return $this->_save($inputname,false);
 	}
 
 	public function get_folder()

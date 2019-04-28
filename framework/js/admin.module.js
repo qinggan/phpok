@@ -170,7 +170,7 @@
 				'title':p_lang('模块添加'),
 				'lock':true,
 				'width':'650px',
-				'height':'400px',
+				'height':'368px',
 				'ok':function(){
 					var iframe = this.iframe.contentWindow;
 					if (!iframe.document.body) {
@@ -182,10 +182,11 @@
 				},
 				'okVal':p_lang('保存'),
 				'cancelVal':p_lang('取消'),
-				'cancel':true
+				'cancel':true,
+				'resize':true
 			});
 		},
-		
+
 		/**
 		 * 模块导入
 		**/

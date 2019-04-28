@@ -1,0 +1,67 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang注意：不清楚内部链接控制器及方法的使用，请参考帮助手册}
+	</div>
+	<div class="layui-card-body">
+		<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+		<!-- if $id -->
+		<input type="hidden" name="id" value="{$id}" />
+		<!-- /if -->
+		
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang名称}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="title" class="layui-input" value="{$rs.title}" />
+			</div>
+			<div class="layui-form-mid layui-word-aux">
+				{lang不要超过四个汉字}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang链接}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="link" id="link" value="{$rs.link}" class="layui-input" />
+			</div>
+			<div class="layui-input-block mtop">
+				<ul class="layout">
+					<li>
+						<select id="ctrl_file" lay-ignore onchange="ctrl_to_func(this.value)">
+							<option value="">{lang请选择控制器…}</option>
+							<!-- loop from=$ctrlist key=$key value=$value id=$tmpid -->
+							<option value="{$value.id}">{$value.title}</option>
+							<!-- /loop -->
+						</select>
+					</li>
+					<li id="func_file_html" style="display:none;">
+						<select id="func_file" lay-ignore onchange="ctrl_func_create()">
+							<option value="">{lang请选择方法…}</option>
+						</select>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang图标}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="ico" id="ico" value="{$rs.ico}" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择图标}" onclick="$.admin_index.icolist()" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang预览}" onclick="$.phpokform.text_button_image_preview('ico')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang清空}" onclick="$('#ico').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+				</div>
+			</div>
+		</div>
+		</form>
+	</div>
+</div>
+
+<!-- include tpl=foot_lay is_open=1 -->

@@ -246,6 +246,9 @@ class all_control extends phpok_control
 		$array['biz_main_service'] = $this->get('biz_main_service','int');
 		//2018年10月25日
 		$array['favicon'] = $this->get('favicon');
+		//2019年4月10日
+		$array['adm_logo50'] = $this->get('adm_logo50');
+
 		$this->model('site')->save($array,$this->session->val('admin_site_id'));
 		$this->success(P_Lang('网站信息更新完成'),$this->url("all","setting"));
 	}

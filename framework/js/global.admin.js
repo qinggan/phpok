@@ -444,7 +444,7 @@ function ext_edit(id,module)
 				t.toggle(function(){
 					$(obj).find("i.layui-icon").removeClass('layui-icon-right').addClass('layui-icon-down');
 				});
-				
+
 			}else{
 				t.toggle(function(){
 					$(obj).find("i.layui-icon").removeClass('layui-icon-down').addClass('layui-icon-right');
@@ -500,7 +500,9 @@ $(document).ready(function(){
 		}
 	}],[{
 		'text':p_lang('清空缓存'),
-		'func': function() {top.$.admin_index.clear();}
+		'func': function() {
+			top.$.win(p_lang('清空缓存'),get_url('index','cache'));
+		}
 	},{
 		'text':p_lang('访问网站首页'),
 		'func':function(){
@@ -510,7 +512,7 @@ $(document).ready(function(){
 			}else{
 				window.open(webroot);
 			}
-			
+
 		}
 	}],[{
 		'text':p_lang('网页属性'),
@@ -539,7 +541,7 @@ $(document).ready(function(){
 				url = url.substr(0,url.length-1);
 			}
 			window.open(url);
-		}    
+		}
 	}],[{
 		'text': p_lang('帮助说明'),
 		'func': function() {
@@ -577,7 +579,7 @@ $(document).ready(function(){
 	});
 });
 $(document).keydown(function(e){
-	window.history.forward(1);   
+	window.history.forward(1);
 	history.pushState(null, null, document.URL);
 	window.addEventListener('popstate', function () {
 	    history.pushState(null, null, document.URL);

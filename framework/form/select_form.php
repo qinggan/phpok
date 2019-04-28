@@ -30,7 +30,7 @@ class select_form extends _init_auto
 		$rslist = $this->model("project")->get_all_project($_SESSION["admin_site_id"]);
 		if($rslist){
 			$p_list = $m_list = array();
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				if(!$value["parent_id"]){
 					$p_list[] = $value;
 				}
@@ -92,6 +92,11 @@ class select_form extends _init_auto
 		}
 		if((!$rs['content'] || !is_array($rs['content'])) && $rs['is_multiple']){
 			$rs['content'] = array();
+		}
+		if(!$rs['is_multiple'] && is_array($rs['content']) && $opt_list[0] == 'opt'){
+			$opt_rs = $this->model('opt')->group_one($opt_list[1]);
+			$symbol = $opt_rs['link_symbol'] ? $opt_rs['link_symbol'] : ',';
+			$rs['content'] = implode($symbol,$rs['content']);
 		}
 		$this->assign("_is_step",$is_step);
 		$this->assign('_group_id',$group_id);

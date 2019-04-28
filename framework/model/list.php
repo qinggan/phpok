@@ -1236,4 +1236,10 @@ class list_model_base extends phpok_model
 		}
 		return implode(",",$tmp);
 	}
+
+	public function add_hits($id)
+	{
+		$sql = "UPDATE ".$this->db->prefix."list SET hits=hits+1 WHERE id='".$id."'";
+		return $this->db->query($sql,false);
+	}	
 }

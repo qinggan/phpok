@@ -18,6 +18,33 @@ class tag_model_base extends phpok_model
 		parent::model();
 	}
 
+	//针对多主题的 Tag 处理
+	public function list_all($ids,$site_id=0)
+	{
+		if($site_id){
+			$this->site_id = $site_id;
+		}
+		if(!$ids){
+			return false;
+		}
+		if($ids && is_array($ids)){
+			$ids = implode("','",$ids);
+		}
+		$sql = "SELECT t.*,s.title_id FROM ".$this->db->prefix."tag_stat s ";
+		$sql.= " JOIN ".$this->db->prefix."tag t ON(s.tag_id=t.id) ";
+		$sql.= " WHERE s.title_id IN('".$ids."') AND site_id='".$this->site_id."' ORDER BY LENGTH(t.title) DESC";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		$list = $this->tag_array_html($rslist);
+		$rslist = array();
+		foreach($list as $key=>$value){
+			$rslist[$value['title_id']][$value['id']] = $value;
+		}
+		return $rslist;
+	}
+
 	/**
 	 * 根据指定主题下的可能用到的标签，其中 $type 为主题/分类/项目时，本身读不到标签时会尝试读取系统设置的分类/项目/站点里的标签
 	 * @参数 $id 指主题ID或是项目ID或是分类ID或是站点ID
@@ -87,10 +114,8 @@ class tag_model_base extends phpok_model
 
 	private function tag_array_html($rslist)
 	{
-		foreach($rslist as $key=>$value)
-		{
+		foreach($rslist as $key=>$value){
 			$value['target'] = $value['target'] ? '_blank' : '_self';
-			//$url = $this->url('tag','','title='.rawurlencode($value['title']));
 			$url = $value['url'] ? $value['url'] : $this->url('tag','','title='.rawurlencode($value['title']));
 			$alt = $value['alt'] ? $value['alt'] : $value['title'];
 			$rslist[$key]['html'] = '<a href="'.$url.'" title="'.$alt.'" target="'.$value['target'].'" class="tag">'.$value['title'].'</a>';
@@ -163,8 +188,7 @@ class tag_model_base extends phpok_model
 		$sql.= " JOIN ".$this->db->prefix."tag t ON(s.tag_id=t.id) ";
 		$sql.= " WHERE s.title_id='".$id."' ORDER BY LENGTH(t.title) DESC";
 		$rslist = $this->db->get_all($sql);
-		if(!$rslist)
-		{
+		if(!$rslist){
 			return false;
 		}
 		return $rslist;

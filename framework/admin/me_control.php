@@ -42,7 +42,6 @@ class me_control extends phpok_control
 	**/
 	public function pass_submit_f()
 	{
-		$this->config('is_ajax',true);
 		$oldpass = $this->get("oldpass");
 		if(!$oldpass){
 			$this->error(P_Lang('管理员密码验证不能为空'));
@@ -55,17 +54,30 @@ class me_control extends phpok_control
 			$this->error(P_Lang("管理员密码不正确"));
 		}
 		$newpass = $this->get("newpass");
-		if(!$newpass){
-			$this->error(P_Lang('新密码不能为空'));
+		$array = array();
+		if($newpass){
+			$chkpass = $this->get("chkpass");
+			if(!$chkpass){
+				$this->error(P_Lang('确认密码不能为空'));
+			}
+			if($newpass != $chkpass){
+				$this->error(P_Lang("两次输入的新密码不一致"));
+			}
+			$array['pass'] = password_create($newpass);
 		}
-		$chkpass = $this->get("chkpass");
-		if(!$chkpass){
-			$this->error(P_Lang('确认密码不能为空'));
+		$vpass = $this->get('vpass');
+		if($vpass){
+			if($vpass == $oldpass){
+				$this->error(P_Lang('二次密码不能和旧密码一样'));
+			}
+			if($newpass && $vpass == $newpass){
+				$this->error(P_Lang('二次密码不能和新密码一样'));
+			}
+			$array['vpass'] = md5(md5($vpass));
 		}
-		if($newpass != $chkpass){
-			$this->error(P_Lang("两次输入的新密码不一致"));
+		if(!$array['pass'] && !$array['vpass']){
+			$this->error(P_Lang('密码或是二次密码至少要填写一个'));
 		}
-		$array = array('pass'=>password_create($newpass));
 		$this->model('admin')->save($array,$this->session->val('admin_id'));
 		$info = $this->model('admin')->get_one($this->session->val('admin_id'),'id');
 		$this->session->assign('admin_rs',$info);

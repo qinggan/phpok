@@ -1,48 +1,39 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/www/search_control.php
-	Note	: 搜索
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-04-20 23:51
-***********************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * 搜索结果
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2019年2月25日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class search_control extends phpok_control
 {
 	public function __construct()
 	{
 		parent::control();
 	}
-
+	
 	public function index_f()
 	{
-		//查询
 		$keywords = $this->get('keywords');
-		if($keywords){
-			$keywords = str_replace(array("　","，",",","｜","|","、","/","\\","／","＼","+","＋")," ",$keywords);
-			$keywords = trim($keywords);
-			if($keywords){
-				$this->load_search($keywords);
-			}
-		}
-		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
-		if(!$tplfile){
-			$tplfile = 'search_index';
-		}
-		$this->view($tplfile);
-	}
-
-	private function load_search($keywords)
-	{
 		if(!$keywords){
-			return false;
+			$this->error(P_Lang('请输入要搜索的关键字'));
 		}
 		//取得符合搜索的项目
 		$condition = "status=1 AND hidden=0 AND is_search !=0 AND module>0";
 		$list = $this->model('project')->project_all($this->site['id'],'id',$condition);
 		if(!$list){
-			$this->error(P_Lang('您的网站没有允许可以搜索的信息'),$this->url,10);
+			$this->error(P_Lang('您的网站没有允许可以搜索的信息'));
 		}
 		$pids = $mids = $projects = array();
 		foreach($list as $key=>$value){
@@ -72,28 +63,21 @@ class search_control extends phpok_control
 		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
 		$offset = ($pageid-1) * $psize;
 		$idlist = $this->model('search')->id_list($condition,$offset,$psize);
+		$r = array('keywords'=>$keywords);
 		if($idlist){
 			$rslist = array();
-			foreach($idlist as $key=>$value){
+			foreach($idlist AS $key=>$value){
 				$info = $this->call->phpok('_arc',array('title_id'=>$value['id'],'site'=>$this->site['id']));
 				if($info){
 					$info['_title'] = str_replace($klist,$kwlist,$info['title']);
 					$rslist[] = $info;
 				}
 			}
-			$this->assign("rslist",$rslist);
+			$r['rslist'] = $rslist;
 		}
-		$pageurl = $this->url('search','','keywords='.rawurlencode($keywords));
-		$this->assign("pageurl",$pageurl);
-		$this->assign("total",$total);
-		$this->assign("pageid",$pageid);
-		$this->assign("psize",$psize);
-		$this->assign("keywords",$keywords);
-		$tplfile = $this->model('site')->tpl_file($this->ctrl,'list');
-		if(!$tplfile){
-			$tplfile = 'search_list';
-		}
-		$this->view($tplfile);
-		exit;
+		$r['total'] = $total;
+		$r['pageid'] = $pageid;
+		$r['psize'] = $psize;
+		$this->success($r);
 	}
 }

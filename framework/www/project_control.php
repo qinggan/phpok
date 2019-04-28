@@ -40,7 +40,6 @@ class project_control extends phpok_control
 			$this->error(P_Lang('您没有阅读权限，请联系网站管理员'));
 		}
 		$project = $this->call->phpok('_project',array('pid'=>$pid));
-		$this->phpok_seo($project);
 		$this->assign("page_rs",$project);
 		if($project['parent_id']){
 			$parent_rs = $this->call->phpok('_project',array('pid'=>$project['parent_id']));
@@ -131,7 +130,6 @@ class project_control extends phpok_control
 					$this->error(P_Lang('分类已停用，请联系管理员'));
 				}
 				$this->assign('cate_rs',$cate_rs);
-				$this->phpok_seo($cate_rs);
 				if($cate_rs['tpl_list'] && $this->tpl->check_exists($cate_rs['tpl_list'])){
 					$tplfile = $cate_rs['tpl_list'];
 				}

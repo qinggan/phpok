@@ -9,9 +9,6 @@
 			<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_tpl.add_file('{$id}','{$folder}','{$rs.ext}')">
 				{lang创建模板文件}
 			</button>
-			<button type="button" class="layui-btn layui-btn-sm" onclick="parent.layui.admin.events.closeThisTabs();">
-				{lang返回}
-			</button>
 			<!-- if $folder != "/" -->
 			<button type="button" class="layui-btn layui-btn-sm" onclick="$.phpok.go('{echo admin_url(\'tpl\',\'list\')}&id={$id}')">
 				{lang点此返回根目录}

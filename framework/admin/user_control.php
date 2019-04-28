@@ -106,11 +106,8 @@ class user_control extends phpok_control
 				if(!$value || !trim($value)){
 					continue;
 				}
-				if(in_array($key,$tmparray)){
-					$condition .= " AND u.".$key." LIKE '%".$value."%' ";
-				}else{
-					$condition .= " AND e.".$keytype." LIKE '%".$keywords."%' ";
-				}
+				$tmpe = in_array($key,$tmparray) ? 'u' : 'e';
+				$condition .= " AND ".$tmpe.".".$key." LIKE '%".$key."%' ";
 				$page_url .= "&keywords[".$key."]=".rawurlencode($value);
 			}
 			$this->assign("keywords",$keywords);

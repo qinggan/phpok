@@ -287,6 +287,22 @@ class db_pdo_mysql extends db
 		return $rslist;
 	}
 
+	public function list_keys($table,$check_prefix=true)
+	{
+		if($check_prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
+			$table = $this->prefix.$table;
+		}
+		$rs = $this->get_all("SHOW KEYS FROM ".$table);
+		if(!$rs){
+			return false;
+		}
+		$tmp = array();
+		foreach($rs as $key=>$value){
+			$tmp[strtolower($value['Key_name'])][$value['Seq_in_index']] = $value['Column_name'];
+		}
+		return $tmp;
+	}
+
 	/**
 	 * 显示数据库表
 	**/

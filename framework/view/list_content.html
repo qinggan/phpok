@@ -211,7 +211,7 @@
 			<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="$.admin_list.status({$value.id})"{else} style="cursor: default;"{/if} value="{$value.status}"></span></td>
 			<td class="center">{$value.id}</td>
 			<td><label for="id_{$value.id}">
-				<a href="{$sys.url}?id={$value.id}" target="_blank" title="{lang前台访问}" style="{$value.style}">{$value.title}</a>
+				{$value.title}
 				<!-- if $value.attr -->
 					<!-- php:$attr = explode(",",$value['attr']) -->
 					<!-- loop from=$attr key=$attr_k value=$attr_v -->
@@ -275,6 +275,9 @@
 			<!-- /loop -->
 			<td>
 				<div class="layui-btn-group">
+					<!-- if $rs.is_front -->
+					<input type="button" value="{lang查看}" onclick="$.phpok.open('{$sys.www_file}?id={$value.id}')" class="layui-btn layui-btn-sm layui-btn-normal" />
+					<!-- /if -->
 					<!-- if $popedom.modify -->
 					<input type="button" value="{lang编辑}" onclick="top.$.win('{$rs.title}_{lang编辑}_#{$value.id}','{url ctrl=list func=edit id=$value.id/}')" class="layui-btn layui-btn-sm" />
 					<!-- /if -->
@@ -360,6 +363,9 @@
 				<!-- /loop -->
 				<td>
 					<div class="layui-btn-group">
+						<!-- if $rs.is_front -->
+						<input type="button" value="{lang查看}" onclick="$.phpok.open('{$sys.www_file}?id={$vv.id}')" class="layui-btn layui-btn-sm layui-btn-normal" />
+						<!-- /if -->
 						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="top.$.win('{$rs.title}_{lang编辑}_#{$vv.id}','{url ctrl=list func=edit id=$vv.id/}')" class="layui-btn layui-btn-sm" /><!-- /if -->
 						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="content_del('{$vv.id}')" class="layui-btn layui-btn-sm layui-btn-danger" /><!-- /if -->
 						<!-- if $popedom.comment && ($rs.comment_status || $comments[$vv.id]) -->

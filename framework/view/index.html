@@ -23,6 +23,11 @@
 	<script type="text/javascript" src="{url ctrl=js _ctrl=index _func=index /}"></script>
 	<!-- plugin head -->
 </head>
+<!-- if $logo2 -->
+<style type="text/css">
+.layadmin-side-shrink .layui-layout-admin .layui-logo{background-image:url('{$logo2}');}
+</style>
+<!-- /if -->
 <body class="layui-layout-body">
 	<div id="LAY_app">
 		<div class="layui-layout layui-layout-admin">
@@ -73,7 +78,7 @@
 					</li>
 					<!-- /if -->
 					<li class="layui-nav-item" lay-unselect>
-						<a href="javascript:;"> <cite>{$session.admin_account}</cite></a>
+						<a href="javascript:;"> <cite><!-- if $session.admin_rs && $session.admin_rs.fullname -->{$session.admin_rs.fullname}<!-- else -->{$session.admin_account}<!-- /if --></cite></a>
 						<dl class="layui-nav-child">
 							<dd><a href="javascript:$.admin_index.me();void(0);">基本资料</a></dd>
 							<dd><a href="javascript:$.admin_index.pass();void(0);">修改密码</a></dd>

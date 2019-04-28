@@ -1,71 +1,58 @@
 <!-- include tpl=head_lay -->
 <div class="layui-card">
-	<div class="layui-card-header " style="visibility: visible;">
-		<div>{lang多站点维护}</div>
+	<div class="layui-card-header ">
+		{lang多站点维护}
+		<div class="fr">
+			<button class="layui-btn layui-btn-sm" onclick="$.phpok_site.add()">
+				<i class="layui-icon">&#xe608;</i> {lang添加新站点}
+			</button>
+		</div>
 	</div>
 
 	<div class="layui-card-body">
-
 		<blockquote class="layui-elem-quote">
 			{lang本系统支持多站点多语言模式，所有站点可以通过代码来实现跳转：} <span class="layui-bg-red">{#{#}$sys.url{#}#}?siteId=站点ID</span><br>
 			{lang要开启多语言功能，请在 _config/global.ini.php 里开启 multiple_language=true} <br>
 			{lang站点列表（别名用于后台管理，在前台并不调用）}
 		</blockquote>
-
-		<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
-			<button class="layui-btn" onclick="$.phpok_site.add();void(0);">
-				<i class="layui-icon">&#xe608;</i> {lang添加新站点}
-			</button>
-		</div>
-
 		<table class="layui-table">
-			<colgroup>
-				<col>
-				<col>
-				<col>
-				<col>
-				<col>
-				<col width="240">
-			</colgroup>
-			<thead>
-			<tr>
-				<th>{lang站点ID}</th>
-				<th>{lang名称}</th>
-				<th>{lang目录}</th>
-				<th>{lang别名}</th>
-				<th>{lang域名}</th>
-				<th>&nbsp;</th>
-			</tr>
-			</thead>
-			<tbody>
-			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-			<tr>
-				<td>{$value.id}</td>
-				<td>
-					{$value.title}
-					<!-- if $value.is_default -->
-					<span class="layui-bg-green">({lang默认站点})</span>
+		<thead>
+		<tr>
+			<th>{lang站点ID}</th>
+			<th>{lang名称}</th>
+			<th>{lang目录}</th>
+			<th>{lang别名}</th>
+			<th>{lang域名}</th>
+			<th>&nbsp;</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.id}</td>
+			<td>
+				{$value.title}
+				<!-- if $value.is_default -->
+				<span class="layui-bg-green">({lang默认站点})</span>
+				<!-- /if -->
+			</td>
+			<td>{$value.dir}</td>
+			<td>
+				<input type="button" value="{$value.alias ? $value.alias : '无别名，点击设置'}" onclick="$.phpok_site.alias('{$value.id}','{$value.alias}')" class="layui-btn layui-btn-sm" />
+			</td>
+			<td>{$value.dlist_string}</td>
+			<td>
+				<div class="layui-btn-group">
+					<!-- if !$value.is_default && $popedom.default -->
+					<input type="button" value="{lang设为默认站点}" onclick="$.phpok_site.set_default('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
 					<!-- /if -->
-				</td>
-				<td>{$value.dir}</td>
-				<td>
-					<input type="button" value="{$value.alias ? $value.alias : '无别名，点击设置'}" onclick="$.phpok_site.alias('{$value.id}','{$value.alias}')" class="layui-btn layui-btn-sm" />
-				</td>
-				<td>{$value.dlist_string}</td>
-				<td>
-					<div class="layui-btn-group">
-						<!-- if !$value.is_default && $popedom.default -->
-						<input type="button" value="{lang设为默认站点}" onclick="$.phpok_site.set_default('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
-						<!-- /if -->
-						<!-- if $popedom.delete && !$value.is_default -->
-						<input type="button" value="{lang删除}" onclick="$.phpok_site.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
-						<!-- /if -->
-						<input type="button" value="{lang复制链接}" onclick="" class="layui-btn layui-btn-sm site-url-copy"  data-clipboard-text="{#{#}$sys.url{#}#}?siteId={$value.id}" />
-					</div>
-				</td>
-			</tr>
-			<!-- /loop -->
-			</tbody>
+					<!-- if $popedom.delete && !$value.is_default -->
+					<input type="button" value="{lang删除}" onclick="$.phpok_site.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
+					<!-- /if -->
+					<input type="button" value="{lang复制链接}" onclick="" class="layui-btn layui-btn-sm site-url-copy"  data-clipboard-text="{#{#}$sys.url{#}#}?siteId={$value.id}" />
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
 		</table>
 	</div>
 </div>

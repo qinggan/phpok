@@ -29,17 +29,44 @@
 			</div>
 			<div class="layui-input-inline auto" id="HTML-POINT-PHPOK-IDENTIFIER"></div>
 		</div>
+		<!-- if $parent_id -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang父级分类}</label>
 			<div class="layui-input-block">
 				<select name="parent_id" id="parent_id">
-					<option value="0">{lang设置为根分类}</option>
 					<!-- loop from=$parentlist key=$key value=$value id=$tmpid -->
 					<option value="{$value.id}"{if $value.id == $parent_id} selected{/if}>{$value._space}{$value.title}</option>
 					<!-- /loop -->
 				</select>
 			</div>
 		</div>
+		<!-- else -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang模块}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select name="module_id" id="module_id">
+					<option value="">{lang请选择模块}</option>
+					<!-- loop from=$mlist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $value.id == $rs.module_id} selected{/if}>{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang绑定模块后，如果已添加了子分类，绑定的模块不能更新}
+			</div>
+		</div>
+		<!-- /if -->
+		<!-- loop from=$clist key=$key value=$value id=$tmpid -->
+		<div class="layui-form-item">
+			<label class="layui-form-label" style="padding-top:0;">
+				{$value.title}<div class="darkblue"><small>[{$value.identifier}]</small></div>
+			</label>
+			<!-- if $value.note --><div class="layui-input-block gray" style="line-height:38px;">{$value.note}</div><!-- /if -->
+			<div class="layui-input-block">{$value.html}</div>
+		</div>
+		<!-- /loop -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang排序}</label>
 			<div class="layui-input-inline">
@@ -166,7 +193,7 @@
 			<div class="layui-input-inline long">
 				<textarea name="seo_desc" id="seo_desc" class="layui-textarea">{$rs.seo_desc}</textarea>
 			</div>
-			<div class="layui-input-inline auto">{lang简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字}</div>
+			<div class="layui-input-inline auto">{lang简单描述该主题信息，不支持HTML，不能超过85个汉字}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang标签Tag}</label>

@@ -203,7 +203,7 @@ class phpok_call extends _init_auto
 		$this->model('list')->multiple_cate(0);
 		if($project['cate']){
 			$this->model('list')->multiple_cate($project['cate_multiple']);
-		}		
+		}
 		if($project['cate'] || $rs['cateid']){
 			$cateid = $rs['cateid'] ? $rs['cateid'] : $project['cate'];
 			$cate = $this->_cate(array("pid"=>$rs['pid'],"cateid"=>$cateid,'site'=>$rs['site']));
@@ -268,7 +268,9 @@ class phpok_call extends _init_auto
 			}
 			return $array;
 		}
+		$ids = array();
 		foreach($rslist as $key=>$value){
+			$ids[] = $value['id'];
 			foreach($nlist as $k=>$v){
 				$myval = $this->lib('form')->show($v,$value[$k]);
 				if($v['form_type'] == 'url' && $value[$k]){
@@ -297,6 +299,14 @@ class phpok_call extends _init_auto
 			}
 			$rslist[$key] = $value;
 		}
+		//格式化标签组件
+		$tag_all = $this->model('tag')->list_all($ids,$rs['site']);
+		if($tag_all){
+			foreach($rslist as $key=>$value){
+				$value['tag'] = $tag_all[$value['id']] ? $tag_all[$value['id']] : array();
+				$rslist[$key] = $value;
+			}
+		}
 		if($rs['in_sub'] && strtolower($rs['in_sub']) != 'false'){
 			$list = array();
 			foreach($rslist as $key=>$value){
@@ -314,7 +324,8 @@ class phpok_call extends _init_auto
 			unset($list);
 		}
 		$this->data('rslist',$rslist);
-		$this->node('PHPOK_arclist',$rslist,$array['project']['id']);
+		$this->data('pid',$array['project']['id']);
+		$this->node('PHPOK_arclist');
 		$rslist = $this->data('rslist');
 		if(!$rs['is_list']){
 			$array['rs'] = current($rslist);
@@ -461,7 +472,7 @@ class phpok_call extends _init_auto
 				}
 				if($value['search'] == 2){
 					if($value['form_type'] == 'title' && !is_numeric($rs[$tmpid])){
-						$tmp = $this->model('id')->id($rs[$tmpid],$this->site_id,true);
+						$tmp = $this->model('id')->id($rs[$tmpid],$rs['site'],true);
 						if($tmp && $tmp['type'] == 'content'){
 							$condition .= " AND ".$value['identifier']." LIKE '%".$tmp['id']."%' ";
 						}
@@ -521,23 +532,33 @@ class phpok_call extends _init_auto
 			if($tmp['type'] == 'cate') $rs['cateid'] = $tmp['id'];
 		}
 		if($rs['cateid']){
-			$cate_all = $this->model('cate')->cate_all($rs['site']);
-			$array = array($rs['cateid']);
-			$this->model('cate')->cate_ids($array,$rs['cateid'],$cate_all);
-			if($project && $project['cate']){
+			if(strpos($rs['cateid'],',') !== false){
 				if($project['cate_multiple']){
-					$condition .= " AND lc.cate_id IN(".implode(",",$array).") ";
+					$condition .= " AND lc.cate_id IN(".$rs['cateid'].") ";
 				}else{
-					$condition .= " AND l.cate_id IN(".implode(",",$array).") ";
+					$condition .= " AND l.cate_id IN(".$rs['cateid'].") ";
 				}
 			}else{
-				$condition .= " AND (lc.cate_id IN(".implode(",",$array).") OR l.cate_id IN(".implode(",",$array).")) ";
+				$cate_all = $this->model('cate')->cate_all($rs['site']);
+				$array = array($rs['cateid']);
+				$this->model('cate')->cate_ids($array,$rs['cateid'],$cate_all);
+				if($project && $project['cate']){
+					if($project['cate_multiple']){
+						$condition .= " AND lc.cate_id IN(".implode(",",$array).") ";
+					}else{
+						$condition .= " AND l.cate_id IN(".implode(",",$array).") ";
+					}
+				}else{
+					$condition .= " AND (lc.cate_id IN(".implode(",",$array).") OR l.cate_id IN(".implode(",",$array).")) ";
+				}
 			}
 			unset($cate_all,$array);
 		}
 		//绑定某个会员
 		if($rs['user_id']){
-			if(is_array($rs['user_id'])) $rs['user_id'] = implode(",",$rs['user_id']);
+			if(is_array($rs['user_id'])){
+				$rs['user_id'] = implode(",",$rs['user_id']);
+			}
 			$condition .= strpos($rs['user_id'],",") === false ? " AND l.user_id='".$rs['user_id']."'" : " AND l.user_id IN(".$rs['user_id'].")";
 		}
 		if($rs['attr']){
@@ -666,9 +687,6 @@ class phpok_call extends _init_auto
 				if($value['ext']){
 					$value['ext'] = unserialize($value['ext']);
 				}
-				/*if($value['ext'] && $value['ext']['inc_tag']){
-					$value['content'] = $this->_tag_format($value['content'],$type.$baseinfo['id']);
-				}*/
 				$value['content'] = str_replace('[:page:]','',$value['content']);
 				$value['content'] = $this->lib('ubb')->to_html($value['content'],false);
 			}
@@ -757,6 +775,9 @@ class phpok_call extends _init_auto
 		if(!$arc['module_id']){
 			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
 			$arc['url'] = $this->url($url_id,'','project='.$project['identifier'],'www');
+			$this->data('arc',$arc);
+			$this->node('PHPOK_arc');
+			$arc = $this->data('arc');
 			return $arc;
 		}
 		//读取这个主题可能涉及到的Tag
@@ -765,6 +786,9 @@ class phpok_call extends _init_auto
 		if(!$flist){
 			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
 			$arc['url'] = $this->url($url_id,'','project='.$project['identifier'],'www');
+			$this->data('arc',$arc);
+			$this->node('PHPOK_arc');
+			$arc = $this->data('arc');
 			return $arc;
 		}
 		$taglist = array('tag'=>$arc['tag'],'list'=>array('title'=>$arc['title']));
@@ -810,6 +834,9 @@ class phpok_call extends _init_auto
 		//读取分类树
 		$arc['_catelist'] = $this->model('cate')->ext_catelist($arc['id']);
 		if(!$arc['_catelist']){
+			$this->data('arc',$arc);
+			$this->node('PHPOK_arc');
+			$arc = $this->data('arc');
 			return $arc;
 		}
 		$cate['url'] = $this->url($project['identifier'],$cate['identifier'],'','www');
@@ -823,6 +850,9 @@ class phpok_call extends _init_auto
 			foreach($arc['_catelist'] as $key=>$value){
 				$arc['_catelist'][$key]['url'] = $this->url($project['identifier'],$value['identifier'],'','www');
 			}
+			$this->data('arc',$arc);
+			$this->node('PHPOK_arc');
+			$arc = $this->data('arc');
 			return $arc;
 		}
 		//执行
@@ -838,6 +868,9 @@ class phpok_call extends _init_auto
 			}
 			$arc['_catelist'][$k] = $tmp;
 		}
+		$this->data('arc',$arc);
+		$this->node('PHPOK_arc');
+		$arc = $this->data('arc');
 		return $arc;
 	}
 
@@ -942,10 +975,29 @@ class phpok_call extends _init_auto
 			return false;
 		}
 		$tmplist = array();
+		$mids = array();
 		foreach($cate_all as $key=>$value){
 			$tmplist[] = 'cate-'.$value['id'];
+			if($value['module_id']){
+				$mids[] = $value['module_id'];
+			}
 		}
-		$tmplist = array_unique($tmplist);
+		if($mids && count($mids)>0){
+			$mids = array_unique($mids);
+			foreach($mids as $key=>$value){
+				$tmplist = $this->model('cate')->catelist_extlist($value,true);
+				if($tmplist){
+					foreach($cate_all as $k=>$v){
+						if($tmplist[$v['id']]){
+							$cate_all[$k] = array_merge($tmplist[$v['id']],$v);
+						}
+					}
+				}
+			}
+		}
+		if($tmplist){
+			$tmplist = array_unique($tmplist);
+		}
 		$tmplist = $this->model('ext')->get_all($tmplist,true);
 		if($tmplist){
 			foreach($cate_all as $k=>$v){
@@ -1154,7 +1206,7 @@ class phpok_call extends _init_auto
 		if(!$rs['pid']){
 			return false;
 		}
-		$rslist = $this->model('project')->get_all($rs['site'],$rs['pid'],'p.status=1','id');
+		$rslist = $this->model('project')->get_all($rs['site'],$rs['pid'],'p.status=1 AND p.hidden=0','id');
 		if(!$rslist){
 			return false;
 		}

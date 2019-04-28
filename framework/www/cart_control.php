@@ -83,7 +83,7 @@ class cart_control extends phpok_control
 	**/
 	public function checkout_f()
 	{
-		$id = $this->get('id','int');
+		$id = $this->get('id');
 		if(!$id){
 			$this->error(P_Lang('未指定要结算的产品ID'),$this->url('cart'));
 		}
@@ -128,6 +128,7 @@ class cart_control extends phpok_control
 			$this->_address();
 		}
 		$pricelist = $this->model('site')->price_status_all(true);
+		$discount = 0;
 		if($pricelist){
 			foreach($pricelist as $key=>$value){
 				if(!$value['status']){
@@ -156,18 +157,37 @@ class cart_control extends phpok_control
 					}
 				}
 				if($value['identifier'] == 'discount'){
-					unset($pricelist[$key]);
-					continue;
+					$this->data("cart_id",$this->cart_id);
+					$this->node('PHPOK_cart_coupon');
+					$tmp = $this->data('cart_coupon');
+					if(!$tmp){
+						unset($pricelist[$key]);
+						continue;
+					}
+					if($tmp['min_price'] > $totalprice){
+						unset($pricelist[$key]);
+						continue;
+					}
+					if(!$tmp['discount_type']){
+						$tmp_price = round($totalprice * $tmp['discount_val'] / 100,2);
+					}else{
+						$tmp_price = $tmp['discount_val'];
+					}
+					$value['price'] = price_format(-$tmp_price,$this->site['currency_id']);
+					$value['price_val'] = -$tmp_price;
+					$discount = -$tmp_price;
+					$pricelist[$key] = $value;
+					$this->assign('coupon_code',$tmp['code']);
 				}
 			}
 		}
 		$this->assign('pricelist',$pricelist);
 		if($freight_price){
-			$price = price_format(($totalprice+$freight_price),$this->site['currency_id']);
-			$price_val = price_format_val(($totalprice+$freight_price),$this->site['currency_id']);
+			$price = price_format(($totalprice+$freight_price+$discount),$this->site['currency_id']);
+			$price_val = price_format_val(($totalprice+$freight_price+$discount),$this->site['currency_id']);
 		}else{
-			$price = price_format($totalprice,$this->site['currency_id']);
-			$price_val = price_format_val($totalprice,$this->site['currency_id']);
+			$price = price_format($totalprice+$discount,$this->site['currency_id']);
+			$price_val = price_format_val($totalprice+$discount,$this->site['currency_id']);
 		}
 		$this->assign('price',$price);
 		$this->assign('price_val',$price_val);

@@ -151,21 +151,27 @@
 							<td>{lang启用此项，该主题将支持交易功能}</td>
 						</tr>
 						<!-- /if -->
+						<tr>
+							<td>{lang前台访问}</td>
+							<td>{lang启用后，可直接在后台里点击进入前台，使用动态地址}</td>
+						</tr>
 					</table>
 					
 				</div>
 				<label class="layui-form-label"><i class="layui-icon hand" onclick="$.admin_project.ext_help()">&#xe702;</i> {lang扩展项}</label>
 				<div class="layui-input-inline" style="width:80%;">
-					<ul>
-						<li class="layui-col-md3"><input type="checkbox" name="is_attr" title="{lang主题属性}" class="layui-tips" id="is_attr"{if $rs.is_attr} checked{/if} /></li>
-						<li class="layui-col-md3"><input type="checkbox" name="is_search" title="{lang搜索}" id="is_search"{if $rs.is_search} checked{/if} /></li>
-						<li class="layui-col-md3"><input type="checkbox" name="subtopics" title="{lang下级主题}" id="subtopics"{if $rs.subtopics} checked{/if} /></li>
-						<li class="layui-col-md3"><input type="checkbox" name="post_status" title="{lang发布}" id="post_status"{if $rs.post_status} checked{/if} /></li>
-						<li class="layui-col-md3"><input type="checkbox" name="comment_status" title="{lang评论}" id="comment_status"{if $rs.comment_status} checked{/if} /></li>
+					<ul class="layout">
+						<li><input type="checkbox" name="is_attr" title="{lang主题属性}" class="layui-tips" id="is_attr"{if $rs.is_attr} checked{/if} /></li>
+						<li><input type="checkbox" name="is_search" title="{lang搜索}" id="is_search"{if $rs.is_search} checked{/if} /></li>
+						<li><input type="checkbox" name="subtopics" title="{lang下级主题}" id="subtopics"{if $rs.subtopics} checked{/if} /></li>
+						<li><input type="checkbox" name="post_status" title="{lang发布}" id="post_status"{if $rs.post_status} checked{/if} /></li>
+						<li><input type="checkbox" name="comment_status" title="{lang评论}" id="comment_status"{if $rs.comment_status} checked{/if} /></li>
 						<!-- if $config.biz_status -->
-						<li class="layui-col-md3"><input type="checkbox" name="is_biz" title="{lang电子商务}" id="is_biz"{if $rs.is_biz} checked{/if} /></li>
+						<li><input type="checkbox" name="is_biz" title="{lang电子商务}" id="is_biz"{if $rs.is_biz} checked{/if} /></li>
 						<!-- /if -->
+						<li><input type="checkbox" name="is_front" title="{lang前台访问}" id="is_front"{if $rs.is_front} checked{/if} /></li>
 					</ul>
+					<div class="clear"></div>
 				</div>
 			</div>
 		

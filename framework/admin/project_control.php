@@ -322,6 +322,7 @@ class project_control extends phpok_control
 		$array["admin_note"] = $this->get("admin_note","html");
 		$array['post_status'] = $this->get('post_status','checkbox');
 		$array['comment_status'] = $this->get('comment_status','checkbox');
+		$array['is_front'] = $this->get('is_front','checkbox');
 		$array['post_tpl'] = $this->get('post_tpl');
 		$array['etpl_admin'] = $this->get('etpl_admin');
 		$array['etpl_user'] = $this->get('etpl_user');

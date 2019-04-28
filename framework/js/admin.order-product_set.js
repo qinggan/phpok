@@ -46,6 +46,7 @@ function load_product(id)
 			$.dialog.alert(rs.info);
 			return false;
 		}
+		$("input[name=tid]").val(id);
 		$("input[name=title]").val(rs.info.title);
 		$("input[name=price]").val(rs.info.price);
 		$("input[name=qty]").val(1);

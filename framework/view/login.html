@@ -38,14 +38,14 @@
 	</div>
 </div>
 <!-- if $multiple_language && $langlist -->
-<div id="c-language">
+<div id="c-language" data-lang="{$session.admin_lang_id}">
 	<div class="c-select clear">
 		<p class="c-text fl">{$langlist[$session.admin_lang_id]}</p>
 		<i class="c-triangle fr"></i>
 	</div>
 	<ul class="c-option">
 		<!-- loop from=$langlist key=$key value=$value id=$tmpid -->
-		<li><a href="javascript:update_lang('{$key}');void(0)">{$value}</a></li>
+		<li data-lang="{$key}"><a href="javascript:update_lang('{$key}');void(0)">{$value}</a></li>
 		<!-- /loop -->
 	</ul>
 </div>
@@ -86,7 +86,9 @@
 <!-- if $vcode -->
 <script type="text/javascript">
 $(document).ready(function(){
-	login_code('admin');
+	window.setTimeout(function(){
+		login_code('admin');
+	}, 500);
 	$("#src_code").click(function(){
 		login_code('admin');
 	})

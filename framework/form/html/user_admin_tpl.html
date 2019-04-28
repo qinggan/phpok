@@ -53,7 +53,7 @@ $(document).ready(function(){
 });
 </script>
 <input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs_content}" />
-<input id="_phpok_button_user_{$_rs.identifier}" type="button" value="{lang请选择会员}" class="layui-btn layui-btn-sm" />
+<input id="_phpok_button_user_{$_rs.identifier}" type="button" value="{lang请选择会员}" class="layui-btn layui-btn-sm" /><!-- if $_rs.note --> <span class="gray i">{$_rs.note}</span><!-- /if -->
 <ul class="layout" id="{$_rs.identifier}_div" style="margin-top:5px;"></ul>
 <div class="clear"></div>
 <!-- else -->

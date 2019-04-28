@@ -10,12 +10,12 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class tag_control extends phpok_control
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::control();
 	}
 
-	function index_f()
+	public function index_f()
 	{
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
@@ -38,7 +38,9 @@ class tag_control extends phpok_control
 		//读取列表
 		$total = $this->model('tag')->get_total($rs['id']);
 		$pageid = $this->get($this->config['pageid'],'int');
-		if(!$pageid) $pageid = 1;
+		if(!$pageid){
+			$pageid = 1;
+		}
 		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
 		$offset = ($pageid-1) * $psize;
 		$idlist = $this->model('tag')->id_list($rs['id'],$offset,$psize);
@@ -47,22 +49,33 @@ class tag_control extends phpok_control
 			exit;
 		}
 		$rslist = false;
-		foreach($idlist AS $key=>$value){
+		foreach($idlist as $key=>$value){
+			$tmp = '';
 			if(substr($value['id'],0,1) == 'p'){
 				$tmp = substr($value['id'],1);
-				$rslist[] = $this->call->phpok('_project',array('pid'=>$tmp));
+				$tmp = $this->call->phpok('_project',array('pid'=>$tmp));
+				if($tmp){
+					$rslist[] = $tmp;
+				}
 			}elseif(substr($value['id'],0,1) == 'c'){
 				$tmp = substr($value['id'],1);
-				$cate_rs = $this->model('cate')->get_one($tmp,$this->site['id']);
+				$cate_rs = $this->model('cate')->get_one($tmp);
 				if($cate_rs['parent_id']){
-					$root_cate_id = $this->model('cate')->get_root_id($cate_rs['parent_id']);
+					$root_cate_id = $cate_rs['parent_id'];
+					$this->model('cate')->get_root_id($root_cate_id,$cate_rs['parent_id']);
 				}else{
 					$root_cate_id = $cate_rs['id'];
 				}
 				$project_info = $this->model('project')->get_one_condition("cate='".$root_cate_id."' AND status=1");
-				$rslist[] = $this->call->phpok('_cate',array('pid'=>$project_info['id'],'cateid'=>$tmp));
+				$tmp = $this->call->phpok('_cate',array('pid'=>$project_info['id'],'cateid'=>$tmp));
+				if($tmp){
+					$rslist[] = $tmp;
+				}
 			}else{
-				$rslist[] = $this->call->phpok('_arc',array('title_id'=>$value['id']));
+				$tmp = $this->call->phpok('_arc',array('title_id'=>$value['id']));
+				if($tmp){
+					$rslist[] = $tmp;
+				}
 			}
 		}
 		$this->assign("rslist",$rslist);

@@ -11,42 +11,50 @@
 				<ul>
 					<!-- if $all_popedom.site -->
 					<li><a title="{lang配置网站信息，包括网址域名，布全局关键字等}" href="javascript:$.win('{lang网站信息}','{url ctrl=all func=setting/}');void(0);">
-						<div class="top_img"><img src="images/ico/setting.png" alt="{lang网站信息}" class="ie6png" width="48" height="48" /></div>
-						<div class="name">{lang网站信息}</div></a>
+							<div class="top_img"><img src="images/ico/setting.png" alt="{lang网站信息}" class="ie6png" width="48" height="48" /></div>
+							<div class="name">{lang网站信息}</div>
+						</a>
 					</li>
-						<!-- if $show_vcode_setting -->
-						<li><a title="{lang验证码开启或关闭设置}" href="javascript:$.win('{lang验证码配置}','{url ctrl=all func=vcode/}');void(0);">
+					<!-- if $show_vcode_setting -->
+					<li><a title="{lang验证码开启或关闭设置}" href="javascript:$.win('{lang验证码配置}','{url ctrl=all func=vcode/}');void(0);">
 							<div class="top_img"><img src="images/ico/setting2.png" alt="{lang验证码配置}" class="ie6png" width="48" height="48" /></div>
-							<div class="name">{lang验证码}</div></a>
-						</li>
-						<!-- /if -->
+							<div class="name">{lang验证码}</div>
+						</a>
+					</li>
+					<!-- /if -->
 					<!-- /if -->
 					<!-- if $all_popedom.domain -->
 					<li><a title="{lang网站可以绑定的域名}" href="javascript:$.win('{lang网站域名}','{url ctrl=all func=domain/}');void(0);">
-						<div class="top_img"><img src="images/ico/alias.png" alt="{lang网站域名}" class="ie6png" width="48" height="48" /></div>
-						<div class="name">{lang网站域名}</div></a>
+							<div class="top_img"><img src="images/ico/alias.png" alt="{lang网站域名}" class="ie6png" width="48" height="48" /></div>
+							<div class="name">{lang网站域名}</div>
+						</a>
 					</li>
 					<!-- /if -->
 					<!-- if $site_popedom.order && $config.biz_status -->
 					<li><a title="{lang订单常规配置}" href="javascript:$.win('{lang订单常规配置}','{url ctrl=site func=order_status/}');void(0);">
-						<div class="top_img"><img src="images/ico/shopping_setting.png" alt="{lang订单常规配置}" class="ie6png" width="48" height="48" /></div>
-						<div class="name">{lang订单配置}</div></a>
+							<div class="top_img"><img src="images/ico/shopping_setting.png" alt="{lang订单常规配置}" class="ie6png" width="48"
+								 height="48" /></div>
+							<div class="name">{lang订单配置}</div>
+						</a>
 					</li>
 					<!-- /if -->
 					<!-- loop from=$plugin_alist key=$key value=$value id=$tmpid -->
 					<li><a title="{$value.title}" href="javascript:$.win('{$value.title}','{$value.url}');void(0);">
-						<div class="top_img"><img src="{$value.ico}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
-						<div class="name">{$value.title}</div></a>
+							<div class="top_img"><img src="{$value.ico}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
+							<div class="name">{$value.title}</div>
+						</a>
 					</li>
 					<!-- /loop -->
 					<!-- if $all_popedom.gset || $all_popedom.set -->
 					<!-- foreach($all_rslist AS $key=>$value) -->
 					<li><a title="{$value.title}" href="javascript:$.win('{$value.title}','{url ctrl=all func=set id=$value.id/}');void(0);">
-						<div class="top_img"><img src="{$value.ico}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
-						<div class="name">{$value.title}</div></a>
+							<div class="top_img"><img src="{$value.ico}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
+							<div class="name">{$value.title}</div>
+						</a>
 					</li>
 					<!-- /foreach -->
-					<!-- if $session.admin_rs.if_system && $session.adm_develop --><li class="plus" onclick="$.admin_all.group()"></li><!-- /if -->
+					<!-- if $session.admin_rs.if_system && $session.adm_develop -->
+					<li class="plus" onclick="$.admin_all.group()"></li><!-- /if -->
 					<!-- /if -->
 				</ul>
 			</div>
@@ -54,26 +62,42 @@
 	</div>
 </div>
 <!-- /if -->
-<!-- if $list_rslist -->
+<!-- if $list_rslist || $qlink -->
 <div class="layui-card">
 	<div class="layui-card-header">
 		<h3>{lang内容管理}</h3>
 	</div>
 	<div class="layui-card-body">
-		<!-- if $list_rslist -->
 		<div class="sub_box" id="list_setting">
 			<div class="box_item">
 				<ul>
 					<!-- loop from=$list_rslist key=$key value=$value -->
 					<li pid="{$value.id}"><a title="{$value.title}" href="javascript:$.win('{$value.title}','{$value.url}');void(0);">
-						<div class="top_img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
-						<div class="name">{$value.nick_title ? $value.nick_title : $value.title}</div></a>
+							<div class="top_img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
+							<div class="name">{$value.nick_title ? $value.nick_title : $value.title}</div>
+						</a>
 					</li>
 					<!-- /loop -->
+					<!-- loop from=$qlink key=$key value=$value id=$tmpid -->
+					<li pid="{$value.id}">
+						<!-- if $session.admin_rs.if_system && $session.adm_develop -->
+						<div class="layui-btn-group qlink_edit_btn">
+							<input type="button" value="编辑" onclick="$.admin_index.quick_link('{$value.id}')" class="layui-btn layui-btn-xs" />
+							<input type="button" value="删除" onclick="$.admin_index.quick_link_delete('{$value.id}')" class="layui-btn layui-btn-xs layui-btn-danger" />
+						</div>
+						<!-- /if -->
+						<a title="{$value.title}" href="javascript:$.win('{$value.title}','{$value.link}');void(0);">
+							<div class="top_img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
+							<div class="name">{$value.title}</div>
+						</a>
+					</li>
+					<!-- /loop -->
+					<!-- if $session.admin_rs.if_system && $session.adm_develop -->
+					<li class="plus" onclick="$.admin_index.quick_link()"></li>
+					<!-- /if -->
 				</ul>
 			</div>
 		</div>
-		<!-- /if -->
 	</div>
 </div>
 <!-- /if -->
@@ -97,8 +121,17 @@
 </div>
 <!-- /if -->
 <style type="text/css">
-.server_left{text-align:right;height:30px;}
-.server_right{overflow:hidden;text-overflow : ellipsis;height:30px;white-space:nowrap}
+	.server_left {
+		text-align: right;
+		height: 30px;
+	}
+
+	.server_right {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		height: 30px;
+		white-space: nowrap
+	}
 </style>
 <div class="layui-card">
 	<div class="layui-card-header">
@@ -114,27 +147,27 @@
 				<!-- if $value[3] --><i class="layui-icon layui-tips" lay-tips="{$value[3]}">&#xe702;</i><!-- /if -->
 				{$value[0]}
 			</div>
-			<div class="layui-col-sm6 layui-col-md3 server_right"{if $value[2]} style="{$value[2]}"{/if}>
-				{$value[1]}
+			<div class="layui-col-sm6 layui-col-md3 server_right" {if $value[2]} style="{$value[2]}" {/if}> {$value[1]} </div>
+			 <!-- /loop -->
 			</div>
-			<!-- /loop -->
+			<br />
 		</div>
-		<br />
 	</div>
-</div>
-<!-- plugin body -->
-<div class="foot">
-	<div class="foot_left">
-		<!-- if $app->license_powered -->
-		Powered by <a href="http://www.phpok.com" target="_blank">phpok.com</a>,
-		<!-- /if -->
-		CopyRight &copy; {$license_site} {func license_date}, All Right Reserved.
-		<!-- if $sys.debug --><br />{func debug_time}<!-- /if -->
+	<!-- plugin body -->
+	<div class="foot">
+		<div class="foot_left">
+			<!-- if $app->license_powered -->
+			Powered by <a href="http://www.phpok.com" target="_blank">phpok.com</a>,
+			<!-- /if -->
+			CopyRight &copy; {$license_site} {func license_date}, All Right Reserved.
+			<!-- if $sys.debug --><br />{func debug_time}
+			<!-- /if -->
+		</div>
+		<div class="foot_right">{$license} Version {$version}</div>
+		<div class="clear"></div>
 	</div>
-	<div class="foot_right">{$license} Version {$version}</div>
-	<div class="clear"></div>
-</div>
 </div>
 <!-- plugin foot -->
 </body>
+
 </html>

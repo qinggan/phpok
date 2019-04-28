@@ -1,31 +1,33 @@
-<!-- include tpl=head_open -->
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
 <form method="post" id="post_save" onsubmit="return false">
-<div class="table">
-	<div class="title">
-		{lang管理员账号}
-		<span class="note">{lang请慎用修改管理员账号，修改后要求重新登录}</span>
-	</div>
-	<div class="content">
-		<input type="text" id="name" name="name" class="w99" value="{$rs.account}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang管理员姓名}
-		<span class="note">{lang请填写管理员的姓名，姓名为空时使用账号作姓名}</span>
-	</div>
-	<div class="content">
-		<input type="text" id="fullname" name="fullname" class="w99" value="{$rs.fullname}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang邮箱}
-		<span class="note">{lang用于接收邮件通知，不设置表示不接收邮件通知，建议您设置有效的邮箱}</span>
-	</div>
-	<div class="content">
-		<input type="text" id="email" name="email" class="w99" value="{$rs.email}" />
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang管理员账号}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">账号修改后需要重新登录</div>
+			<div class="layui-input-block">
+				<input type="text" id="name" name="name" class="layui-input" value="{$rs.account}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang管理员姓名}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" id="fullname" name="fullname" class="layui-input" value="{$rs.fullname}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang邮箱}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" id="email" name="email" class="layui-input" value="{$rs.email}" />
+			</div>
+		</div>
 	</div>
 </div>
 </form>
-<!-- include tpl=foot_open -->
+<!-- include tpl=foot_lay is_open=true -->

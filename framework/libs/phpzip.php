@@ -195,7 +195,7 @@ class phpzip_lib
 			$byte  = @fread($zip, 1);
 			$bytes = ($bytes << 8) | Ord($byte);
 			$pos++;
-			if($bytes == 0x504b0506){ break; }
+			if(substr(dechex($bytes),-8,8) == '504b0506'){ break; }
 		}
 		 
 		$data = unpack('vdisk/vdisk_start/vdisk_entries/ventries/Vsize/Voffset/vcomment_size', fread($zip, 18));

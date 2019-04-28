@@ -132,7 +132,19 @@ class url_model_base extends phpok_model
 					if($this->clear_params && in_array($key,$this->clear_params)){
 						continue;
 					}
-					$url .= "&".$key."=".rawurlencode($value);
+					if($value == ''){
+						continue;
+					}
+					if(is_array($value)){
+						foreach($value as $k=>$v){
+							if($v == ''){
+								continue;
+							}
+							$url.="&".$key."[".$k."]=".rawurlencode($v);
+						}
+					}elseif($value != ''){
+						$url .= "&".$key."=".rawurlencode($value);
+					}
 				}
 			}
 		}
@@ -149,7 +161,11 @@ class url_model_base extends phpok_model
 			$url .= $this->ctrl_id.'='.$ctrl.'&';
 		}
 		if($func && $func != 'index'){
-			$url .= $this->func_id.'='.$func.'&';
+			if(strpos($func,'=') !== false){
+				$url .= $func.'&';
+			}else{
+				$url .= $this->func_id.'='.$func.'&';
+			}
 		}
 		if($ext){
 			$url_parse_str = $this->url_parse_str($ext);

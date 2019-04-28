@@ -139,5 +139,25 @@ class project_model extends project_model_base
 		$rs = $this->db->get_one($sql);
 		return $this->return_next_taxis($rs);
 	}
+
+	public function projects_include_modules($mids)
+	{
+		if(!$mids){
+			return false;
+		}
+		if(is_array($mids)){
+			$mids = implode(",",$mids);
+		}
+		$sql = "SELECT id,title,module FROM ".$this->db->prefix."project WHERE module IN(".$mids.")";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$rslist[$value['module']][$value['id']] = $value['title'];
+		}
+		return $rslist;
+	}
 	
 }

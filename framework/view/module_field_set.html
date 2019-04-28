@@ -45,7 +45,18 @@ function save()
 	</div>
 	<div class="content"><input type="text" id="note" name="note" class="w99" value="{$rs.note}" /></div>
 </div>
-
+<div class="table">
+	<div class="title">
+		{lang字段类型：}<span class="note">{lang请慎重选择，不建议修改}</span>
+	</div>
+	<div class="content">
+		<select name="field_type" id="field_type" class="w99">
+			<!-- loop from=$field_list key=$key value=$value -->
+			<option value="{$key}"{if $rs.field_type == $key} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
+			<!-- /loop -->
+		</select>
+	</div>
+</div>
 <div class="table">
 	<div class="title">
 		{lang表单类型：}

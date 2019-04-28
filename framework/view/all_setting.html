@@ -176,24 +176,6 @@
 				<!-- /if -->
 			</div>
 		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				<i class="layui-icon layui-tips" lay-tips="{lang显示在后台管理左上方的LOGO}">&#xe702;</i>
-				{lang后台Logo}
-			</label>
-			<div class="layui-input-inline default-auto">
-				{func form_edit adm_logo29 $rs.adm_logo29 text form_btn=image}
-			</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				<i class="layui-icon layui-tips" lay-tips="{lang显示在居中登录框上，建议使用PNG透明图片}">&#xe702;</i>
-				{lang登录Logo}
-			</label>
-			<div class="layui-input-inline default-auto">
-				{func form_edit adm_logo180 $rs.adm_logo180 text form_btn=image}
-			</div>
-		</div>
 
 		<!-- if $gateway_email -->
 		<div class="layui-form-item">
@@ -373,6 +355,43 @@
 		</div>
 	</div>
 </div>
+<!-- if LICENSE != 'LGPL' -->
+
+
+<div class="layui-card">
+	<div class="layui-card-header">{lang后台自定义Logo}</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang左侧栏大图}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang显示在后台管理左上方的LOGO，图片规格是220x50，建议上传PNG格式}</div>
+			<div class="layui-input-block">
+				{func form_edit adm_logo29 $rs.adm_logo29 text form_btn=image}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang左侧栏小图}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang显示缩小后的Logo，规格是：50x50，建议上传PNG格式}</div>
+			<div class="layui-input-block">
+				{func form_edit adm_logo50 $rs.adm_logo50 text form_btn=image}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang登录页}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang显示在登录页上，建议使用PNG透明图片，图片规格是300x75}</div>
+			<div class="layui-input-block">
+				{func form_edit adm_logo180 $rs.adm_logo180 text form_btn=image}
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /if -->
+
 <div class="submit-info-clear"></div>
 <div class="submit-info">
 	<div class="layui-container center">

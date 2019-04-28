@@ -26,7 +26,6 @@ class index_control extends phpok_control
 		if($tmp){
 			$pid = $tmp['id'];
 			$page_rs = $this->call->phpok('_project',array('pid'=>$pid));
-			$this->phpok_seo($page_rs);
 			$this->assign("page_rs",$page_rs);
 			if($page_rs["tpl_index"] && $this->tpl->check_exists($page_rs["tpl_index"])){
 				$tplfile = $page_rs["tpl_index"];

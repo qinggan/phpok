@@ -54,6 +54,46 @@
 		</tr>
 		<!-- /if -->
 		</table>
+		<!-- if $shipping -->
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th colspan="3">{lang收件人信息}</th>
+		</tr>
+		</thead>
+		<tr>
+			<td>
+				{$shipping.fullname}
+				<!-- if $shipping.mobile -->
+				/ {lang手机号} {$shipping.mobile}
+				<!-- /if -->
+				<!-- if $shipping.tel -->
+				/ {lang电话} {$shipping.tel}
+				<!-- /if -->
+				<!-- if $shipping.email -->
+				/ {langEmail} {$shipping.email}
+				<!-- /if -->
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<!-- if $shipping.country != '中国' -->{$shipping.country} / <!-- /if -->
+				{$shipping.province}
+				<!-- if $shipping.city -->
+				{$shipping.city}
+				<!-- /if -->
+				<!-- if $shipping.county -->
+				{$shipping.county}
+				<!-- /if -->
+				{$shipping.address}
+				<!-- if $shipping.zipcode -->
+				/ {lang邮编} {$shipping.zipcode}
+				<!-- /if -->
+			</td>
+		</tr>
+		</table>
+		<!-- /if -->
+		
 		<table class="layui-table">
 		<thead>
 		<tr>

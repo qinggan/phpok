@@ -123,6 +123,9 @@ class content_control extends phpok_control
 				$rs['attrlist'][$key] = $value;
 			}
 		}
+		$this->data('arc',$rs);
+		$this->node('PHPOK_arc');
+		$rs = $this->data('arc');
 		$data_info['rs'] = $rs;
 		$data_info['seo'] = $this->site["seo"];
 		//判断这个主题是否支持评论及评论验证码

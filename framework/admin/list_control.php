@@ -352,9 +352,10 @@ class list_control extends phpok_control
 		$layout = $m_list = array();
 		$m_rs = $this->model('module')->get_one($mid);
 		$m_list = $this->model('module')->fields_all($mid,"identifier");
-		if($m_rs["layout"]) $layout = explode(",",$m_rs["layout"]);
+		if($m_rs["layout"]){
+			$layout = explode(",",$m_rs["layout"]);
+		}
 		$this->assign("m_rs",$m_rs);
-		//布局
 		$layout_list = array();
 		foreach($layout as $key=>$value){
 			if($value == "hits"){
@@ -374,7 +375,9 @@ class list_control extends phpok_control
 		if($project_rs['psize'] && $project_rs['psize'] > $psize){
 			$psize = $project_rs['psize'];
 		}
-		if(!$this->config["pageid"]) $this->config["pageid"] = "pageid";
+		if(!$this->config["pageid"]){
+			$this->config["pageid"] = "pageid";
+		}
 		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid){
 			$pageid = 1;
@@ -555,8 +558,10 @@ class list_control extends phpok_control
 			$this->assign("pagelist",$pagelist);
 			$this->assign("rslist",$rslist);
 		}
-		$attrlist = $this->model('list')->attr_list();
-		$this->assign("attrlist",$attrlist);
+		if($project_rs['is_attr']){
+			$attrlist = $this->model('list')->attr_list();
+			$this->assign("attrlist",$attrlist);
+		}
 		return true;
 	}
 
@@ -661,11 +666,11 @@ class list_control extends phpok_control
 		$this->popedom_auto($pid);
 		$popedom_id = $id ? 'modify' : 'add';
 		if(!$this->popedom[$popedom_id]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$p_rs = $this->model('project')->get_one($pid);
 		if(!$p_rs){
-			error(P_Lang('操作异常'),$this->url("list"),"error");
+			$this->error(P_Lang('项目不存在'));
 		}
 		$m_rs = $this->model('module')->get_one($p_rs["module"]);
 		//读取扩展属性
@@ -677,7 +682,7 @@ class list_control extends phpok_control
 				$value = array_merge($value,($ext ? $ext : array()));
 			}
 			$idlist[] = strtolower($value["identifier"]);
-			if($rs[$value["identifier"]]){
+			if($rs[$value["identifier"]] != ''){
 				$value["content"] = $rs[$value["identifier"]];
 			}
 			$extlist[] = $this->lib('form')->format($value);
@@ -858,7 +863,7 @@ class list_control extends phpok_control
 		$_autosave = $this->get('_autosave','int');
 		$array = array();
 		$title = $this->get("title");
-		if(!$title){
+		if($title == ''){
 			$this->json(P_Lang('内容的主题不能为空'));
 		}
 		$array["title"] = $title;

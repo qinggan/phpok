@@ -26,7 +26,7 @@ class freight_control extends phpok_control
 		$this->assign('rslist',$rslist);
 		$taxis = $rslist ? (count($rslist)+1) * 10 : 10;
 		$this->assign('taxis',$taxis);
-		$typelist = array('weight'=>P_Lang('重量'),'volume'=>P_Lang('体积'),'number'=>P_Lang('数量'),'fixed'=>P_Lang('固定值'));
+		$typelist = array('weight'=>P_Lang('重量'),'volume'=>P_Lang('体积'),'number'=>P_Lang('数量'),'fixed'=>P_Lang('固定值'),'price'=>P_Lang('价格'));
 		$this->assign('typelist',$typelist);
 		$currency_list = $this->model('currency')->get_list();
 		$this->assign('currency_list',$currency_list);
@@ -226,7 +226,7 @@ class freight_control extends phpok_control
 		if(!$fid){
 			$this->error('未指定模板ID');
 		}
-		$typelist = array('weight'=>P_Lang('重量'),'volume'=>P_Lang('体积'),'number'=>P_Lang('数量'),'fixed'=>P_Lang('固定值'));
+		$typelist = array('weight'=>P_Lang('重量'),'volume'=>P_Lang('体积'),'number'=>P_Lang('数量'),'fixed'=>P_Lang('固定值'),'price'=>P_Lang('价格'));
 		$rs = $this->model('freight')->get_one($fid);
 		$rs['type_title'] = $typelist[$rs['type']];
 		$this->assign('rs',$rs);
@@ -255,6 +255,8 @@ class freight_control extends phpok_control
 			$step = '0.5';
 		}elseif($rs['type'] == 'volume'){
 			$step = '0.01';
+		}elseif($rs['type'] == 'price'){
+			$step = '10';
 		}
 		$this->assign('step',$step);
 		$this->view('freight_price');

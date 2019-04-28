@@ -183,13 +183,10 @@ class wealth_model extends wealth_model_base
 		if($val2 < 0){
 			$val2 = 0;
 		}
-		$sql = "UPDATE ".$this->db->prefix."wealth_info SET val='".$val2."',lasttime='".$this->time."' ";
-		$sql.= "WHERE uid='".$rs['goal_id']."' AND wid='".$rs['wid']."'";
-		$this->db->query($sql);
+		$array = array('wid'=>$rs['wid'],'lasttime'=>$this->time,'uid'=>$rs['goal_id'],'val'=>$val2);
+		$this->save_info($array);
 		$sql = "UPDATE ".$this->db->prefix."wealth_log SET status=1 WHERE id='".$id."'";
 		$this->db->query($sql);
 		return true;
 	}
 }
-
-?>

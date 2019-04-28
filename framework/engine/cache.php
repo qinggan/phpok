@@ -91,12 +91,10 @@ class cache
 	public function save($id,$content='')
 	{
 		if(!$id || $content === '' || !$this->status){
-			echo "<pre>".print_r(88888,true)."</pre>";
 			return false;
 		}
 		$this->_time();
 		$content = serialize($content);
-		//echo "<pre>".print_r($content,true)."</pre>////////";
 		$file = $this->folder.$id.".php";
 		file_put_contents($file,'<?php exit();?>'.$content);
 		$this->_time();

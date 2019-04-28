@@ -60,11 +60,6 @@ function cLanguage() {
 		}
 	});
 
-	/*aA.click(function(event){
-		event.stopPropagation()
-		l.removeClass("open");
-		o.slideUp();
-	});*/
 	$(window).click(function(){
 		l.removeClass("open");
 		o.slideUp();
@@ -86,4 +81,15 @@ $(document).ready(function(){
 		autoplaySpeed: 3000
 	});
 	cLanguage();
+	if($("#c-language").length>0){
+		var langid = $("#c-language").attr("data-lang");
+		if(langid == 'default'){
+			langid = 'cn';
+			update_lang(langid);
+		}
+		if(!langid){
+			langid = $("#c-language .c-option li:eq(0)").attr('data-lang');
+			update_lang(langid);
+		}
+	}
 });

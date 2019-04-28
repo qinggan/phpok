@@ -1,0 +1,121 @@
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<div class="layui-card">
+	<div class="layui-container layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang基础缓存}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="button" class="layui-btn layui-btn-sm" data-name="cache" onclick="$.admin_index.clear('compile',this)" value="{lang清空编译缓存}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang清理模板编译后的即时生成缓存文件}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang文件缓存}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="button" class="layui-btn layui-btn-sm" data-name="cache" onclick="$.admin_index.clear('file',this)" value="{lang清空文件缓存}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang清理 _cache/ 目录下的缓存文件}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang日志}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="button" class="layui-btn layui-btn-sm" data-name="cache" onclick="$.admin_index.clear('log',this)" value="{lang清空日志缓存}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang系统生成的日志及调试日志}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang购物车}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="button" class="layui-btn layui-btn-sm" data-name="cache" onclick="$.admin_index.clear('cart',this)" value="{lang清空购物车}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang清理购物车里的缓存信息，请慎用}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{langSession}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="button" class="layui-btn layui-btn-sm" data-name="cache" onclick="$.admin_index.clear('session',this)" value="{lang清理用户Session}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang主要是清理过期Session数据}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang更新异常}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="button" class="layui-btn layui-btn-sm" data-name="cache" onclick="$.admin_index.clear('u_error',this)" value="{lang清理更新异常}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang主要是清理更新过程中出现异常的数据}
+			</div>
+		</div>
+		<!-- if $sys.engine && $sys.engine.cache && $sys.engine.cache.file != 'default' -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang其他}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="button" class="layui-btn layui-btn-sm" data-name="cache" onclick="$.admin_index.clear('other',this)" value="{lang清理组件缓存}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang清理其他接口缓存的数据，需要接口引挈提供}
+			</div>
+		</div>
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				&nbsp;
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="button" class="layui-btn layui-btn-sm layui-btn-danger" data-name="cache" onclick="$.admin_index.clear('all',this)" value="{lang一键清理全部}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang系统会清除全部缓存}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				&nbsp;
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="$.win('{lang批量更新附件}','{url ctrl=res func=update_pl id=all/}')" value="{lang更新附件}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang系统会在新窗口打开，把所有附件执行一次更新}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				&nbsp;
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="button" class="layui-btn layui-btn-sm" onclick="$.admin_index.editor_resinfo()" value="{lang更新编辑框附件}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang检测所有可视化编辑器，替换成当前默认规则的图片，将在新窗口打开}
+			</div>
+		</div>
+	</div>
+</div>
+
+</form>
+<!-- include tpl=foot_lay -->

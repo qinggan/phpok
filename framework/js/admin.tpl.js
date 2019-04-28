@@ -11,12 +11,12 @@
 	$.admin_tpl = {
 		rename:function(id,folder,title,notice)
 		{
-			layer.prompt(notice,function(val){
+			$.dialog.prompt(notice,function(val){
 				if(!val || val == undefined){
 					val = title;
 				}
 				if(val == title){
-					layer.alert("新旧名称一样");
+					$.dialog.alert("新旧名称一样");
 					return false;
 				}
 				var url = get_url("tpl","rename","id="+id+"&folder="+$.str.encode(folder)+"&old="+$.str.encode(title)+"&title="+$.str.encode(val));
@@ -25,7 +25,7 @@
 						$.phpok.reload();
 						return true;
 					}
-					layer.alert(rs.info);
+					$.dialog.alert(rs.info);
 					return false;
 				})
 			},title);
@@ -33,9 +33,9 @@
 		
 		del:function(id,folder,title)
 		{
-			layer.confirm(p_lang('确定要删除文件（夹）{title}吗？<br>删除后是不能恢复的！','<span class="red">'+title+'</span> '),function(){
+			$.dialog.confirm(p_lang('确定要删除文件（夹）{title}吗？<br>删除后是不能恢复的！','<span class="red">'+title+'</span> '),function(){
 				if(!title){
-					layer.alert("操作异常！");
+					$.dialog.alert("操作异常！");
 					return false;
 				}
 				var url = get_url("tpl","delfile","id="+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title));
@@ -44,7 +44,7 @@
 						$.phpok.reload();
 						return true;
 					}
-					layer.alert(rs.info);
+					$.dialog.alert(rs.info);
 					return false;
 				})
 			});
@@ -71,9 +71,9 @@
 		
 		add_folder:function(id,folder)
 		{
-			layer.prompt(p_lang('请填写要创建的文件夹名称，<span class="red">仅支持数字，字母及下划线</span>：'),function(val){
+			$.dialog.prompt(p_lang('请填写要创建的文件夹名称，<span class="red">仅支持数字，字母及下划线</span>：'),function(val){
 				if(!val || val == "undefined"){
-					layer.alert("文件夹名称不能为空");
+					$.dialog.alert("文件夹名称不能为空");
 					return false;
 				}
 				var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&type=folder&title="+$.str.encode(val);
@@ -83,7 +83,7 @@
 						$.phpok.reload();
 						return true;
 					}
-					layer.alert(rs.info);
+					$.dialog.alert(rs.info);
 					return false;
 				});
 			});
@@ -95,9 +95,9 @@
 				ext = 'html';
 			}
 			var tip = p_lang('填写要创建的文件名，<span class="red">仅持数字，字母，下划线及点</span>：');
-			layer.prompt(tip,function(val){
+			$.dialog.prompt(tip,function(val){
 				if(!val || val == "undefined"){
-					layer.alert("文件名称不能为空");
+					$.dialog.alert("文件名称不能为空");
 					return false;
 				}
 				var extlen = -(ext.length + 1);
@@ -112,7 +112,7 @@
 						$.phpok.reload();
 						return true;
 					}
-					layer.alert(rs.info);
+					$.dialog.alert(rs.info);
 					return false;
 				});
 			});
@@ -121,7 +121,7 @@
 		view:function(url)
 		{
 			var html = '<img src="'+url+'" border="0" />';
-			layer.through({
+			$.dialog.through({
 				title: p_lang('预览图片'),
 				lock: true,
 				content:html,
@@ -135,27 +135,6 @@
 		{
 			var url = get_url('tpl','edit','id='+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title));
 			$.win(p_lang('编辑')+"_"+title,url);
-			
-			/*var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title);
-			var title = p_lang('编辑文件：{title} 在线编辑请确保文件有写入权限','<span class="red">'+title+'</span>');
-			$.dialog.open(get_url("tpl","edit",url_ext),{
-				'width':'1000px',
-				'height':'700px',
-				'lock':true,
-				'title':title,
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert('iframe还没加载完毕呢');
-						return false;
-					};
-					iframe.save();
-					return false;
-				},
-				'okVal':p_lang('保存代码'),
-				'cancel':true,
-				'cancelVal':p_lang('取消并关闭窗口')
-			});*/
 		},
 		
 		open_select:function(id,val)
@@ -174,7 +153,7 @@
 		tpl_delete:function(id,title)
 		{
 			var tip = p_lang('确定要删除{title}吗？<br>删除后请手动删除相应文件目录',' <span class="red b">'+title+'</span> ');
-			layer.confirm(tip,function(){
+			$.dialog.confirm(tip,function(){
 				var url = get_url("tpl","delete","id="+id);
 				$.phpok.json(url,function(rs){
 					if(rs.status){
@@ -183,7 +162,7 @@
 						}).lock();
 						return true;
 					}
-					layer.alert(rs.content);
+					$.dialog.alert(rs.content);
 					return false;
 				});
 			});

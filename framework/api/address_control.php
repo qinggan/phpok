@@ -4,7 +4,7 @@
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
- * @版本 4.x
+ * @版本 5.x
  * @许可 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
  * @时间 2017年06月04日
 **/
@@ -44,6 +44,25 @@ class address_control extends phpok_control
 			$rslist[$key] = $value;
 		}
 		$this->success($rslist);	
+	}
+	
+	public function one_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('您还未登录，请先登录'));
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定地址ID'));
+		}
+		$rs = $this->model('address')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('地址信息不存在'));
+		}
+		if($rs['user_id'] != $this->session->val('user_id')){
+			$this->error(P_Lang('您没有权限获得此地址信息'));
+		}
+		$this->success($rs);
 	}
 
 	public function all_f()
@@ -147,8 +166,15 @@ class address_control extends phpok_control
 		if(!$id){
 			$data['user_id' ] = $this->session->val('user_id');
 		}
-		$this->model('user')->address_save($data,$id);
-		$this->success();
+		$insert_id = $this->model('user')->address_save($data,$id);
+		if(!$id){
+			$id = $insert_id;
+		}
+		$default = $this->get('default','int');
+		if($default){
+			$this->model('user')->address_default($id);
+		}
+		$this->success($id);
 	}
 
 	/**
@@ -166,6 +192,9 @@ class address_control extends phpok_control
 		$rs = $this->model('user')->address_one($id);
 		if($rs['user_id'] != $this->session->val('user_id')){
 			$this->error(P_Lang('您没有权限执行当前操作'));
+		}
+		if($rs['is_default']){
+			$this->error(P_Lang('默认地址不能删除'));
 		}
 		$this->model('user')->address_delete($id);
 		$this->success();
@@ -191,3 +220,4 @@ class address_control extends phpok_control
 		$this->success();
 	}
 }
+
