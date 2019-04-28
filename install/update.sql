@@ -79,3 +79,25 @@ ALTER TABLE `qinggan_project`  ADD `style` VARCHAR(255) NOT NULL COMMENT 'CSS样
 
 -- 2019年1月26日
 ALTER TABLE `qinggan_cate`  ADD `style` VARCHAR(255) NOT NULL COMMENT 'CSS样式';
+
+-- 2019年2月12日
+ALTER TABLE `qinggan_cart` ADD `coupon_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '优惠码ID（仅当优惠码有效时体现）';
+
+-- 2019年2月13日
+ALTER TABLE `qinggan_coupon` ADD `note` VARCHAR( 255 ) NOT NULL COMMENT '摘要说明';
+
+
+-- 2019年2月14日
+ALTER TABLE `qinggan_project`  ADD `is_front` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '是否直接访问前台' ;
+
+-- 2019年2月27日
+ALTER TABLE `qinggan_freight` CHANGE `type` `type` ENUM('weight','volume','number','fixed','price') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'weight' COMMENT 'weight重量volume体积number数量fixed固定值price价格';
+
+-- 2019年3月3日
+ALTER TABLE `qinggan_module`  ADD `tbl` VARCHAR(255) NOT NULL DEFAULT 'list' COMMENT '关联主表，默认是list' ;
+
+-- 2019年3月18日
+ALTER TABLE `qinggan_cate`  ADD `module_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '模块ID' ;
+
+-- 2019年3月27日
+ALTER TABLE `qinggan_cart_product`  ADD `apps` VARCHAR(255) NOT NULL COMMENT '应用管理器' ;
