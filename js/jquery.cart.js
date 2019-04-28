@@ -142,6 +142,16 @@
 				}
 				url += "&ext="+attr;
 			}
+			//增加优惠方案
+			if($("select[data-name=apps]").length>0){
+				$("select[data-name=apps]").each(function(i){
+					var val = $(this).val();
+					var name = $(this).attr("data-id");
+					if(val && val != 'undefined' && name){
+						url += "&"+name+"_id="+$.str.encode(val);
+					}
+				});
+			}
 			return url;
 		},
 		//取得选中的产品价格
