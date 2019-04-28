@@ -43,6 +43,16 @@ function callpay()
 		            alert(rs.content);
 		            return false;
 	            })
+            },
+            cancel: function(res) {
+				$.dialog.alert('取消支付成功，如需支付请到订单中心发起',function(){
+					$.phpok.go(get_url('payment','show','id='+$("#logid").val()));
+				});
+            },
+            fail: function(res) {
+				$.dialog.alert('支付失败',function(){
+					$.phpok.go(get_url('payment','show','id='+$("#logid").val()));
+				});
             }
         });
     });

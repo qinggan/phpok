@@ -1,6 +1,7 @@
 <!-- php:$title= $rs.title.' - '.$cate_rs.title.' - '.$page_rs.title -->
 <!-- include tpl=head title=$title menutitle=$page_rs.title js="js/jquery.zoombie.js" -->
 <script type="text/javascript">
+var price_base = '{$rs.price}';
 function attr_select(id,aid)
 {
 	$("#attr_"+aid).val(id);
@@ -18,7 +19,7 @@ function attr_select(id,aid)
 			$(this).removeClass('selected');
 		}
 	});
-	var price = '{$rs.price}';
+	var price = price_base;
 	$("input[name=attr]").each(function(i){
 		var val = $(this).val();
 		if(val){
@@ -28,6 +29,17 @@ function attr_select(id,aid)
 			}
 		}
 	});
+	var url = api_url('cart','price_format','price='+$.str.encode(price));
+	$.phpok.json(url,function(rs){
+		if(rs.status){
+			$("#showprice").html(rs.info);
+		}
+	});
+}
+function update_apps(name)
+{
+	var price = $("#"+name+"_id").find("option:selected").attr("data-price");
+	price_base = price;
 	var url = api_url('cart','price_format','price='+$.str.encode(price));
 	$.phpok.json(url,function(rs){
 		if(rs.status){
@@ -113,6 +125,39 @@ $(document).ready(function(){
 							<div class="am-u-sm-8">{func time_format $rs.dateline}</div>
 						</div>
 					</li>
+					<!-- if $rs.tag -->
+					<li>
+						<div class="am-g">
+							<div class="am-u-sm-4"><b>标签</b></div>
+							<div class="am-u-sm-8">
+								<!-- loop from=$rs.tag key=$key value=$value id=$tmpid -->
+								<!-- if $value.index -->，<!-- /if --><a href="{$value.url}">{$value.title}</a>
+								<!-- /loop -->
+							</div>
+						</div>						
+					</li>
+					<!-- /if -->
+					<!-- loop from=$rs.apps key=$key value=$value id=$tmpid -->
+					<li>
+						<div class="am-g">
+							<div class="am-u-sm-4"><b>{$value.me.title}</b></div>
+							<div class="am-u-sm-8">
+								<select name="{$key}_id" id="{$key}_id" data-name="apps" data-id="{$key}" onchange="update_apps('{$key}')">
+									<!-- loop from=$value.list key=$k value=$v id=$idxx -->
+									<option value="{$value.id}" data-price="{$v.price}"{if $value.rs.id == $v.id} selected{/if}>{$v.title}</option>
+									<!-- /loop -->
+								</select>
+							</div>
+						</div>
+					</li>
+					<!-- if $value.rs -->
+					<script type="text/javascript">
+					$(document).ready(function(){
+						update_apps('{$key}');
+					});
+					</script>
+					<!-- /if -->
+					<!-- /loop -->
 					<!-- loop from=$rs.attrlist key=$key value=$value -->
 					<li>
 						<div class="am-g">
@@ -146,9 +191,6 @@ $(document).ready(function(){
 					<button type="button" class="am-btn am-btn-secondary am-fr" onclick="$.cart.onebuy('{$rs.id}',$('#buycount').val())"><i class="am-icon-check"></i> 立即购买</button>
 				</div>
 			</div>
-		</div>
-		<div class="pro_left">
-			
 		</div>
 		<div class="clear"></div>
 		<div class="am-tabs"  data-am-tabs="{noSwipe: 1}">

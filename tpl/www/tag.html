@@ -21,16 +21,24 @@
 						</div>
 						<div class=" am-u-sm-10 am-list-main">
 							<h3 class="am-list-item-hd"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></h3>
+							<!-- if $value.dateline || $value.hits -->
 							<span class="am-list-date">发布时间：{func time_format $value.dateline}，查看次数：{$value.hits}</span>
+							<!-- /if -->
+							<!-- if $value.note || $value.content -->
 							<div class="am-list-item-text" style="max-height:6.5em;">{$value.note ? phpok_cut($value.note,300,'…') : phpok_cut($value.content,300,'…')}</div>
+							<!-- /if -->
 						</div>
 					</li>
 					<!-- else -->
 					<li class="am-g am-list-item-desced">
 						<div class=" am-list-main">
 							<h3 class="am-list-item-hd"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></h3>
+							<!-- if $value.dateline || $value.hits -->
 							<span class="am-list-date">发布时间：{func time_format $value.dateline}，查看次数：{$value.hits}</span>
+							<!-- /if -->
+							<!-- if $value.note || $value.content -->
 							<div class="am-list-item-text">{$value.note ? phpok_cut($value.note,225,'…') : phpok_cut($value.content,225,'…')}</div>
+							<!-- /if -->
 						</div>
 					</li>
 					<!-- /if -->

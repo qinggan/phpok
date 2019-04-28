@@ -220,6 +220,8 @@ div.attr.selected{border:1px solid red;}
 .adm_reply .adminer{color:darkred;}
 .adm_reply p{margin:5px 0;text-indent:2em;}
 
+.im_floatonline{position: fixed;right:10px;top:40%;width:150px;}
+.im_floatonline .kf a{text-align:center;}
 
 /* 页脚客服 */
 .floatbar {

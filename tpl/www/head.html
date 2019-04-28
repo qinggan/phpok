@@ -9,7 +9,7 @@
 				<a href="{$sys.url}?siteId={$value.id}" title="{$value.title}">{$value.lang_title ? $value.lang_title : $value.title}</a> |
 				<!-- /loop -->
 				<!-- if $config.biz_status -->
-				<a href="{url ctrl=cart/}" title="购物车">购物车 <span id="head_cart_num">0</span></a> | 
+				<a href="{url ctrl=cart/}" title="购物车">购物车 <span id="head_cart_num" style="display:none;">0</span></a> | 
 				<!-- /if -->
 				
 				<!-- if $session.user_id -->

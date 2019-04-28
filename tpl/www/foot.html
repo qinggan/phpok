@@ -6,10 +6,13 @@
 		<!-- if $list_id.num == $list_id.total --><br /><!-- else --> | <!-- /if -->
 		<!-- /loop -->
 		{$config.copyright.content}
+		<!-- if $sys.debug --><div align="center">{func debug_time}</div><!-- /if -->
 	</div>
+	
 </div>
 <!-- php:$list = phpok('kefu') -->
 <!-- if $list.project && $list.rslist -->
+<!-- if $list.project.isbottom -->
 <div class="floatbar">
 	<div class="am-g" style="max-width:1200px;">
 		<!-- loop from=$list.rslist key=$key value=$value -->
@@ -25,5 +28,27 @@
 	</div>
 </div>
 <div style="height:50px;clear:both;">&nbsp;</div>
+<!-- else -->
+<div class="im_floatonline">
+	<div class="am-panel am-panel-primary">
+		<div class="am-panel-hd center">{$list.project.title}</div>
+		<div class="am-panel-bd">
+			<ul class="am-list">
+				<!-- loop from=$list.rslist key=$key value=$value -->
+				<!-- if $value.qtype == 'qq' -->
+				<li class="kf"><a target="_blank" href="//wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes" title="点击这里给我发消息"><img border="0" src="images/qq.png" alt="点击这里给我发消息" style="width:32px;"/> {$value.title} </a></li>
+				<!-- else -->
+				<li class="kf">
+					<a href="javascript:void(0);" title="微信号：{$value.weixin}"><img border="0" src="images/weixin.png" style="width:32px;"/> {$value.title}</a>
+					<div align="center" style="padding-bottom:1em;"><img src="{$value.qrcode.filename}" style="width:80%;"/></div>
+				</li>
+				<!-- /if -->
+				<!-- /loop -->
+			</ul>
+		</div>
+	</div>
+</div>
 <!-- /if -->
+<!-- /if -->
+
 <!-- include tpl=footer -->

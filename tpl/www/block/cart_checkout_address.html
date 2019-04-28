@@ -71,23 +71,23 @@
 			<div class="am-u-sm-10"><input type="email" id="email" name="email" value="{$rs.email}" placeholder="用来接收订单提醒邮件，便于您及时了解订单状态" /></div>
 		</div>
 	</div>
-</div>
-<script type="text/javascript">
-var old_province = '';
-var old_city = '';
-function monitor_address()
-{
-	var p = $("#pca_p").val();
-	var c = $("#pca_c").val();
-	if(p && c && (p != old_province || c != old_city)){
-		load_freight();
-		old_province = p;
-		old_city = c;
+	<script type="text/javascript">
+	var old_province = '';
+	var old_city = '';
+	function monitor_address()
+	{
+		var p = $("#pca_p").val();
+		var c = $("#pca_c").val();
+		if(p && c && (p != old_province || c != old_city)){
+			load_freight();
+			old_province = p;
+			old_city = c;
+		}
+		window.setTimeout('monitor_address()',1000);
 	}
-	window.setTimeout('monitor_address()',1000);
-}
-$(document).ready(function(){
-	monitor_address();
-});
-</script>
+	$(document).ready(function(){
+		monitor_address();
+	});
+	</script>
+</div>
 <!-- /if -->

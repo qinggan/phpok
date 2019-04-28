@@ -7,12 +7,12 @@ $(document).ready(function(){
 			'dataType':'json',
 			'url':api_url('usercp','email'),
 			'success':function(rs){
-				if(rs.status == 'ok'){
+				if(rs.status){
 					$.dialog.alert("您的邮箱更新成功",function(){
 						$.phpok.reload();
 					},'succeed');
 				}else{
-					$.dialog.alert(rs.content);
+					$.dialog.alert(rs.info);
 					return false;
 				}
 			}

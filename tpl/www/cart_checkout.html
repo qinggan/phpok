@@ -71,6 +71,25 @@ function load_freight()
 		return false;
 	})
 }
+function update_coupon()
+{
+	var code = $("#coupon").val();
+	if(!code){
+		$.dialog.alert('优惠码不能为空');
+		return false;
+	}
+	var url = api_url('coupon','use','code='+$.str.encode(code));
+	var tip = $.dialog.tips('正在检测优惠码，请稍候…',100).lock();
+	$.phpok.json(url,function(rs){
+		tip.close();
+		if(!rs.status){
+			$.dialog.alert(rs.info);
+			return false;
+		}
+		$.phpok.reload();
+		return true;
+	})
+}
 </script>
 <div class="main">
 	<!-- include tpl=block/breadcrumb -->
@@ -150,6 +169,16 @@ function load_freight()
 					</tr>
 				</tbody>
 			</table>
+		</div>
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">优惠码</div>
+			<div class="am-panel-bd">
+				<div class="am-g am-g-collapse">
+					<div class="am-u-sm-2"><input type="text" name="coupon" id="coupon" value="{$coupon_code}" /></div>
+					<div class="am-u-sm-1"><input type="button" value="执行优惠" onclick="update_coupon()" class="am-btn am-btn-default" /></div>
+					<div class="am-u-sm-8" id="coupon_tips"></div>
+				</div>
+			</div>
 		</div>
 		<div class="am-panel am-panel-default">
 			<div class="am-panel-hd">留言，填写您对购买的商品特别要求，不能超过80字</div>

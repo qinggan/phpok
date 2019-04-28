@@ -7,11 +7,11 @@ $(document).ready(function(){
 			url: api_url('usercp','info'),
 			dataType:'json',
 			success: function(rs){
-				if(rs.status == 'ok'){
+				if(rs.status){
 					$.dialog.tips("您的信息更新成功").lock();
 					return true;
 				}
-				$.dialog.alert(rs.content);
+				$.dialog.alert(rs.info);
 				return false;
 			}
 		});

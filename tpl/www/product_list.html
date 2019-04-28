@@ -66,6 +66,7 @@
 		</ul>
 		<!-- /loop -->
 		<ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails products">
+			
 			<!-- loop from=$rslist key=$key value=$value -->
 			<li>
 				<a href="{$value.url}" title="{$value.title}"><img class="am-thumbnail" src="{$value.thumb.gd.thumb}" alt="{$value.title}" style="margin-bottom:0;" /></a>
@@ -76,7 +77,6 @@
 				  <div class="am-u-sm-8 am-text-truncate"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></div>
 				  <!-- if $page_rs.is_biz --><div class="am-u-sm-4 red">{func price_format $value.price $value.currency_id}</div><!-- /if -->
 				</div>
-				
 			</li>
 			<!-- /loop -->
 		</ul>

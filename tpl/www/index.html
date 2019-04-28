@@ -5,7 +5,7 @@
 	<div class="bd">
 		<ul>
 			<!-- loop from=$list.rslist key=$key value=$value -->
-			<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{#images#}/blank.gif" _src="{$value.pic.filename}" alt="{$value.title}" /></a></li>
+			<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{$value.pic.filename}" alt="{$value.title}" /></a></li>
 			<!-- /loop -->
 		</ul>
 	</div>
@@ -19,7 +19,7 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function(){
-	$(".banner").slide({'autoPlay':true,'switchLoad':'_src','mainCell':'.bd ul'});
+	$(".banner").slide({'autoPlay':true,'mainCell':'.bd ul'});
 });
 </script>
 <!-- /if -->
