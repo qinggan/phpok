@@ -24,7 +24,7 @@ class weixin_lib
 	
 	public function __construct()
 	{
-		$this->datadir = ROOT.'data/';
+		$this->datadir = ROOT.'_data/';
 	}
 
 	public function get_data()
