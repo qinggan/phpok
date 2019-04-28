@@ -29,11 +29,7 @@ class admin_control extends \phpok_control
 
 	public function index_f()
 	{
-		$rs = array();
-		if(is_file($this->dir_data.'wxappconfig.php')){
-			include_once($this->dir_data.'wxappconfig.php');
-			$rs = $wxconfig;
-		}
+		$rs = $this->model('wxappconfig')->get_one();
 		$load_app_json = false;
 		if(file_exists($this->dir_root.'wxapp/app.json')){
 			$this->assign('update_wxapp_json',true);
@@ -128,6 +124,14 @@ class admin_control extends \phpok_control
 	public function save_f()
 	{
 		$data = array();
+		$data['wxapp_id'] = $this->get('wxapp_id');
+		if(!$data['wxapp_id']){
+			$this->error(P_Lang('小程序的AppID不能为空'));
+		}
+		$data['wxapp_secret'] = $this->get('wxapp_secret');
+		if(!$data['wxapp_secret']){
+			$this->error(P_Lang('小程序密钥不能为空'));
+		}
 		$data['title'] = $this->get('title');
 		$data['top_bgcolor'] = $this->get('top_bgcolor');
 		$data['top_txtcolor'] = $this->get('top_txtcolor');
@@ -156,7 +160,7 @@ class admin_control extends \phpok_control
 			$tmplist[$i] = $tmp;
 		}
 		$data['rslist'] = $tmplist;
-		$this->lib('file')->vi($data,$this->dir_data.'wxappconfig.php','wxconfig');
+		$this->model('wxappconfig')->save($data);
 		if(file_exists($this->dir_root.'wxapp/app.json')){
 			$write_app_json = $this->get('write_app_json','int');
 			if($write_app_json){
@@ -203,6 +207,9 @@ class admin_control extends \phpok_control
 		$clear_url = $this->config['url'].'wxapp/';
 		if($data['rslist'] && is_array($data['rslist'])){
 			foreach($data['rslist'] as $key=>$value){
+				if(!$value['title']){
+					continue;
+				}
 				if($value['title']){
 					$info['tabBar']['list'][$key]['text'] = $value['title'];
 				}

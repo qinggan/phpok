@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<title><![CDATA[小程序参数]]></title>
 	<status>
-		<admin>1</admin>
-		<api>1</api>
-		<www>0</www>
+		<admin><![CDATA[1]]></admin>
+		<api><![CDATA[1]]></api>
+		<www><![CDATA[0]]></www>
 	</status>
-	<installed>1</installed>
+	<installed><![CDATA[1]]></installed>
 </root>
