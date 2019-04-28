@@ -1,0 +1,60 @@
+<!-- include tpl=head -->
+<link rel="stylesheet" type="text/css" href="js/codemirror/codemirror.css" />
+<script type="text/javascript" src="js/codemirror/codemirror.js"></script>
+<style type="text/css">
+.CodeMirror{border:1px solid #ccc;}
+.CodeMirror-scroll{width:650px;height:180px;}
+</style>
+<script type="text/javascript">
+function save()
+{
+	var obj = $.dialog.opener;
+	$("#postsave").ajaxSubmit({
+		'url':get_url('plugin','exec','id=collection&exec=edit_save&lid={$lid}'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status == 'ok'){
+				$.dialog.alert("内容信息编辑成功",function(){
+					obj.$.phpok.reload();
+				},'succeed');				
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		}
+	});
+	return false;
+}
+</script>
+<form method="post" id="postsave">
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<div class="table">
+	<div class="title">
+		{$value.title}
+		<span class="note">字段标识是：<span class="red">{$value.identifier}</span></span>
+	</div>
+	<div class="content">
+		<textarea name="{$value.identifier}" id="info_{$value.id}"{if $value._type == 'input'} style="width:650px;height:20px;"{/if}>{$value.content}</textarea>
+	</div>
+	<!-- if $value._type != 'input' -->
+	<script type="text/javascript">
+	$(document).ready(function(){
+		var c_{$value.id} = CodeMirror.fromTextArea(document.getElementById("info_{$value.id}"),{
+			lineNumbers		: true,
+			matchBrackets	: true,
+			lineWrapping	: true,
+			indentWithTabs	: true,
+			indentUnit		: 4,
+			onChange		: function(n){
+				$("#info_{$value.id}").val(c_{$value.id}.getValue());
+			}
+		});
+	});
+	</script>
+	<!-- /if -->
+</div>
+<!-- /loop -->
+</form>
+
+<!-- include tpl=foot_open -->

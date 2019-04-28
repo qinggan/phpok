@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>采集器</title>
+	<desc>实现网站基本信息采集，适用于网站迁移</desc>
+	<author>phpok.com</author>
+	<version>20190421</version>
+</root>

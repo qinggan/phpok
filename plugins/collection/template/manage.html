@@ -1,0 +1,294 @@
+<!-- include tpl=head_lay -->
+<script type="text/javascript">
+function eval_js(time,js)
+{
+	time = parseFloat(time);
+	if(time < 0.01){
+		eval(js);
+	}else{
+		if(time < 10){
+			time = time*1000;
+		}
+		window.setTimeout(js,time);
+	}
+}
+function collection_tags(id)
+{
+	var url = get_plugin_url('collection','collection_tags_list','tid='+id);
+	$.win('编辑字段_#'+id,url);
+}
+
+function collection_test(id)
+{
+	var url = get_plugin_url('collection','collection_test','tid='+id);
+	$.win("测试采集_#"+id,url);
+	return false;
+}
+
+function collection_del(id)
+{
+	$.dialog.confirm("确定要删除该采集项目吗？删除后，所有该项目下的数据都会被清空",function(){
+		var url = '{url ctrl=plugin func=exec id=collection exec=collection_del/}&tid='+id;
+		var rs = $.phpok.json(url);
+		if(rs.status == 'ok'){
+			$.dialog.alert('删除成功',function(){
+				$.phpok.reload();
+			},'succeed');
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
+}
+
+function cj_url()
+{
+	var id = $.input.checkbox_join();
+	if(!id){
+		$.dialog.alert("请选择要执行的项目！");
+		return false;
+	}
+	var idlist = id.split(",");
+	var start_count = $("#start_count").val();
+	if(!idlist[start_count] || idlist[start_count] == "undefined"){
+		$.dialog.alert("采集完成，请检查");
+		$("#collection_status").html("");
+		$("#start_count").attr("value","0");
+		return false;
+	}
+	var tid = idlist[start_count];
+	var subject = $("#project_title_"+tid).html();
+	var listurl = $("#project_url_"+tid).attr("value");
+	if(listurl){
+		listurl = $.trim(listurl);
+	}
+	if(!listurl){
+		$.dialog.alert("采集项目："+subject+" 没有找到列表页网址，请配置！");
+		return false;
+	}
+	listurl = listurl.replace(/\r/g);
+	var list_url_array = listurl.split("\n");
+	var start_count_tid = $("#start_count_"+tid).val();
+	if(!list_url_array[start_count_tid] || list_url_array[start_count_tid] == "undefined"){
+		$("#collection_status").html("采集项目：<span class='red'>"+subject+"</span> 列表已采集完毕，正在进入下一个项目，请稍候…");
+		$("#start_count").val((parseInt(start_count)+1));
+		$("#start_count_"+tid).val("0");
+		eval_js(1,cj_url);
+		return false;
+	}
+	var url = get_url('plugin','exec','id=collection&exec=url2&tid='+tid+"&listurl="+$.str.encode(list_url_array[start_count_tid]));
+	$("#collection_status").html("采集网址："+list_url_array[start_count_tid]);
+	$.phpok.json(url,function(rs){
+		var note = '<span class="'+(rs.status == 'ok' ? 'darkblue' : 'red')+'">'+rs.content+'</span>';
+		$("#collection_status").html(note);
+		$("#start_count_"+tid).attr("value",(parseInt(start_count_tid)+1));
+		eval_js(1,cj_url);
+		return true;
+	})
+}
+
+function cj_content()
+{
+	var id = $.input.checkbox_join();
+	if(!id){
+		$.dialog.alert("请选择要执行的项目！");
+		return false;
+	}
+	var idlist = id.split(",");
+	var start_count = $("#start_count").val();
+	if(!idlist[start_count] || idlist[start_count] == "undefined"){
+		$.dialog.alert("采集完成，请检查");
+		$("#collection_status").html("");
+		$("#start_count").val('0');
+		return false;
+	}
+	var tid = idlist[start_count];
+	
+	var url = get_url("plugin",'exec','id=collection&exec=content2&cid='+tid);
+	$("#collection_status").html("开始采集数据");
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			if(rs.content == 'end'){
+				var subject = $("project_title_"+tid).html();
+				$("#collection_status").html('项目：<span class="red">'+subject+'</span> 执行完成，正在执行下一步操作，请稍候…');
+				$("#start_count").val((parseInt(start_count)+1));
+			}else{
+				$("#collection_status").html(rs.content);
+			}
+			eval_js(1,cj_content);
+		}else{
+			$("#collection_status").html(rs.content);
+		}
+	})
+}
+
+function cj_post()
+{
+	var id = $.input.checkbox_join();
+	if(!id){
+		$.dialog.alert("请选择要执行的项目！");
+		return false;
+	}
+	var qc = confirm("确定要执行发布吗？在执行发布过程中，请不要关闭浏览器！");
+	if(qc == "0"){
+		return false;
+	}
+	var gourl = "{url ctrl=plugin func=exec id=collection exec=post_save/}&cid="+$.str.encode(id);
+	$.phpok.go(gourl);
+}
+
+function collection_copy(id)
+{
+	$.dialog({
+		'title':'复制采集项目',
+		'content':document.getElementById('copy_to_action'),
+		'ok':function(){
+			var url = '{url ctrl=plugin func=exec id=collection exec=collection_copy/}&tid='+id;
+			var project_id = $("#copy_project_id").val();
+			if(!project_id){
+				$.dialog.alert('请选择存储目标');
+				return false;
+			}
+			if(!$("#cate_id_html2").is(":hidden")){
+				var cateid = $("#cateid").val();
+				if(!cateid){
+					$.dialog.alert('请选择分类');
+					return false;
+				}
+			}
+			url += "&project_id="+project_id+"&cateid="+cateid;
+			var rs = $.phpok.json(url);
+			if(rs.status == 'ok'){
+				$.dialog.alert('采集项目复制成功',function(){
+					$.phpok.reload();
+				},'succeed');
+			}else{
+				$.dialog.alert(rs.content);
+				return false;
+			}
+		},'okVal':'复制项目',
+		'cancel':function(){
+			return true;
+		},'cancelVal':'取消操作'
+	});
+}
+function update_cate(val)
+{
+	if(!val || val == 'undefined'){
+		$("#cate_id_html2").hide();
+		return false;
+	}
+	var url = get_url('plugin','exec','id=collection&exec=catelist&pid='+val);
+	$.phpok.json(url,function(rs){
+		if(rs.status != 'ok'){
+			$.dialog.alert(rs.content);
+			$("#cate_id_html").html('');
+			$("#cate_id_html2").hide();
+			return false;
+		}
+		//没有相应的分类
+		if(!rs.content || rs.content == 'undefined'){
+			$("#cate_id_html").html('');
+			$("#cate_id_html2").hide();
+			return false;
+		}
+		var lst = rs.content;
+		var html = '<select name="cateid" id="cateid">';
+		html += '<option value="">请选择分类…</option>';
+		for(var i in lst){
+			html += '<option value="'+lst[i].id+'">'+lst[i]._space+' '+lst[i].title+'</option>';
+		}
+		html += '</select>';
+		$("#cate_id_html").html(html);
+		$("#cate_id_html2").show();
+		return true;
+	});
+}
+
+</script>
+<div style="display:none;" id="copy_to_action">
+	<div class="table">
+		<div class="title">
+			复制目标项目：
+			<span class="note">请选择要保存到的项目</span>
+		</div>
+		<div class="content">
+			<select id="copy_project_id" onchange="update_cate(this.value)">
+				<option value="">请选择…</option>
+				<!-- loop from=$projectlist key=$key value=$value id=$tmpid -->
+				<option value="{$value.id}">{$value.title}</option>
+				<!-- /loop -->
+			</select>
+		</div>
+	</div>
+	<div class="table" id="cate_id_html2" style="display:none">
+		<div class="title">
+			请设置分类：
+			<span class="note"></span>
+		</div>
+		<div class="content" id="cate_id_html"></div>
+	</div>
+</div>
+<input type="hidden" id="start_count" value="0" />
+<input type="hidden" id="subid" value="0" />
+<div class="layui-card">
+	<div class="layui-card-header">
+		采集信息管理
+		<div class="fr">
+			<button type="button" onclick="$.win('添加采集项目','{url ctrl=plugin func=exec id=collection exec=collection_set/}')" class="layui-btn layui-btn-sm">
+				<i class="layui-icon"></i> 添加采集项目
+			</button>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th width="20"></th>
+			<th width="50">ID</th>
+			<th>主题</th>
+			<th>项目/分类</th>
+			<th>站点</th>
+			<th></th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td class="center"><input type="checkbox" value="{$value.id}" id="m_{$value.id}" />
+				<input type="hidden" id="project_url_{$value.id}" value="{$value.listurl}" />
+				<input type="hidden" id="start_count_{$value.id}" value="0" />
+			</td>
+			<td>{$value.id}</td>
+			<td><label for="m_{$value.id}" id="project_title_{$value.id}">{$value.title}</label></td>
+			<td>{$value.p_title}<!-- if $value.c_title --> / {$value.c_title}<!-- /if --></td>
+			<td>{$value.linkurl}</td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" class="layui-btn layui-btn-sm" value="字段" onclick="collection_tags('{$value.id}')" />
+					<input type="button" class="layui-btn layui-btn-sm" value="测试" onclick="collection_test('{$value.id}')" />
+					<input type="button" class="layui-btn layui-btn-sm" value="内容" onclick="$.win('{$value.title}_#{$value.id}','{url ctrl=plugin func=exec id=collection exec=collection_list tid=$value.id/}')" />
+					<input type="button" class="layui-btn layui-btn-sm" value="编辑" onclick="$.win('编辑采集项目_#{$value.id}','{url ctrl=plugin func=exec id=collection exec=collection_set tid=$value.id/}')" />
+					<input type="button" class="layui-btn layui-btn-sm" value="复制" onclick="collection_copy('{$value.id}')" />
+					<input type="button" class="layui-btn layui-btn-sm layui-btn-danger" value="删除" onclick="collection_del('{$value.id}')" />
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<div class="layui-btn-group">
+			<input type="button" value="全选" onclick="$.input.checkbox_all()" class="layui-btn layui-btn-sm" />
+			<input type="button" value="全不选" onclick="$.input.checkbox_none()" class="layui-btn layui-btn-sm" />
+			<input type="button" value="反选" onclick="$.input.checkbox_anti()" class="layui-btn layui-btn-sm"/>
+			<input type="button" value="采网址" onclick="cj_url()" class="layui-btn layui-btn-sm"/>
+			<input type="button" value="采内容" onclick="cj_content()" class="layui-btn layui-btn-sm"/>
+			<input type="button" value="发布内容" onclick="cj_post()" class="layui-btn layui-btn-sm"/>
+			<input type="button" value="未采集内容" onclick="$.phpok.go('{url ctrl=plugin func=exec id=collection exec=collection_list status=3/}')" class="layui-btn layui-btn-sm"/>
+			<div class="layui-btn layui-btn-sm layui-btn-normal">执行进度：<span class="darkblue" id="collection_status"></span></div>
+		</div>
+		<div class="clear"></div>
+		<div align="center"><!-- include tpl=pagelist --></div>
+	</div>
+</div>
+
+
+<!-- include tpl=foot_lay -->

@@ -1,0 +1,382 @@
+<!-- include tpl=head_lay -->
+<link rel="stylesheet" type="text/css" href="js/codemirror/codemirror.css" />
+<script type="text/javascript" src="js/codemirror/codemirror.js"></script>
+<script type="text/javascript">
+function to_submit()
+{
+	var name = $("#title").val();
+	if(!name){
+		$.dialog.alert("主题不允许为空");
+		return false;
+	}
+	var linkurl = $("#linkurl").val;
+	if(!linkurl){
+		$.dialog.alert("网址不允许为空");
+		return false;
+	}
+	$("#phpok_submit").attr('disabled',true);
+	return true;
+}
+
+function collect_creat()
+{
+	var thisurl = $("#longurl").val();
+	if(!thisurl){
+		$.dialog.alert("请选设置网址！");
+		return false;
+	}
+	if(thisurl.indexOf("[pageid]")>0){
+		var start_count = parseInt($("#start_count").val());
+		var end_count = parseInt($("#end_count").val());
+		var string_array = new Array();
+		var m = 0;
+		if(start_count <= end_count){
+			for(var i=start_count;i<=end_count;i++){
+				string_array[m] = thisurl.replace(/\[pageid\]/g,i);
+				m++;
+			}
+		}else{
+			for(var i=start_count;i>=end_count;i--){
+				string_array[m] = thisurl.replace(/\[pageid\]/g,i);
+				m++;
+			}
+		}
+		var string = string_array.join("\n");
+		$("#listurl").val(string);
+	}else{
+		$("#listurl").val(thisurl);
+	}
+}
+function update_cate(val)
+{
+	if(!val || val == 'undefined'){
+		$("#cate_id_html").html('').hide();
+		return true;
+	}
+	var cateid = "{$rs.cateid}";
+	var url = get_url('plugin','exec','id=collection&exec=catelist&pid='+val);
+	$.phpok.json(url,function(rs){
+		if(rs.status != 'ok'){
+			$("#cate_id_html").html(rs.content).show().css("color",'red');
+			return true;
+		}
+		//没有相应的分类
+		if(!rs.content || rs.content == 'undefined'){
+			$("#cate_id_html").html('').hide();
+			return true;
+		}
+		var lst = rs.content;
+		var html = '<select name="cateid" id="cateid" lay-ignore>';
+		html += '<option value="">请选择分类…</option>';
+		for(var i in lst){
+			html += '<option value="'+lst[i].id+'"';
+			if(cateid && lst[i].id == cateid){
+				html += ' selected';
+			}
+			html += '>'+lst[i]._space+' '+lst[i].title+'</option>';
+		}
+		html += '</select>';
+		$("#cate_id_html").html(html).show().css('color','#000');
+	});
+}
+
+function tolink_create()
+{
+	$.dialog({
+		'title':'网址生成器',
+		'content':document.getElementById('linkurls'),
+		'lock':false,
+		'ok':function(){
+			collect_creat();
+		},
+		'okVal':'创建网址',
+		'padding':0,
+		'cancel':true
+	});
+}
+
+function update_proxy(val)
+{
+	if(val == 1){
+		$("#porxy_setting").show();
+	}else{
+		$("#porxy_setting").hide();
+	}
+}
+
+$(document).ready(function(){
+	var pid = "{$rs.project_id}";
+	if(pid){
+		update_cate(pid);
+	}
+	$("#form_submit").submit(function(){
+		$(this).ajaxSubmit({
+			'url':"{url ctrl=plugin func=exec id=collection exec=collection_setok/}",
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status == 'ok'){
+					$.dialog.alert('操作成功',function(){
+						$.admin.reload(get_plugin_url('collection'));
+						if(!$("#tid").val() || $("#tid").val()<1){
+							$.admin.close();
+						}
+					},'succeed');
+					return false;
+				}
+				$.dialog.alert(rs.content);
+			}
+		});
+		return false;
+	});
+});
+</script>
+<style type="text/css">
+.CodeMirror{border:1px solid #ccc;}
+.CodeMirror-scroll{width:400px;height:150px;}
+</style>
+<div id="linkurls" style="display:none;">
+<div class="layui-card" style="border:0;width:660px;">
+	<div class="layui-card-body layui-form">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				网址
+			</label>
+			<div class="layui-input-block">
+				<input type="text" id="longurl" class="layui-input" />
+			</div>
+			<div class="layui-input-block mtop">
+				<div class="layui-btn-group">
+					<input type="button" value="复制分页页码" data-clipboard-text="[pageid]" class="layui-btn layui-btn-sm phpok-copy" />
+					<input type="button" value="清空" onclick="$('#longurl').val('')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				开始值
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" id="start_count" value="1" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				填写页码开始值
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				结束值
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" id="end_count" value="10" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				填写页码结束值
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<form method="post" class="layui-form" id="form_submit">
+<!-- if $tid --><input type="hidden" name="tid" id="tid" value="{$tid}" /><!-- /if -->
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<span class="red">*</span> 主题
+			</label>
+			<div class="layui-input-inline long">
+				<input type="text" name="title" id="title" value="{$rs.title}" class="layui-input">
+			</div>
+			<div class="layui-form-mid">
+				设定一个主题，方便管理
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<span class="red">*</span> 网址
+			</label>
+			<div class="layui-input-inline long">
+				<input type="text" name="linkurl" id="linkurl" value="{$rs.linkurl}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				采集的网址必须以http://开头，以/结尾
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				网站编码
+			</label>
+			<div class="layui-input-inline">
+				<select name="url_charset">
+					<option value="utf-8">UTF-8编码</option>
+					<option value="gbk"{if $rs.url_charset == "gbk"} selected{/if}>GBK编码</option>
+					<option value="big5"{if $rs.url_charset == "big5"} selected{/if}>BIG5</option>
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				仅支持三种编码，如无法满足要求，建议您使用第三方采集器。GB2312编码的网站可选用GBK
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<span class="red">*</span> 发布目标
+			</label>
+			<div class="layui-input-block">
+				<ul class="layout">
+					<li>
+						<select name="project_id" id="project_id" onchange="update_cate(this.value)" lay-ignore>
+							<option value="">请选择发布目标</option>
+							<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+							<option value="{$value.id}"{if $value.id == $rs.project_id} selected{/if}>{$value.title}</option>
+							<!-- /loop -->
+						</select>
+					</li>
+					<li id="cate_id_html"></li>
+				</ul>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<span class="red">*</span> 列表页地址
+				<input type="button" value="网址生成器" onclick="tolink_create()" class="layui-btn layui-btn-sm" />
+			</label>
+			<div class="layui-input-block">
+				<textarea id="listurl" name="listurl" style="width:600px;height:200px;max-width:600px;min-width:600px;">{$rs.listurl}</textarea>
+			</div>
+			<div class="layui-input-block mtop">
+				多个列表地址换行填写，需要完整带有http://或https://链接，网址太多请通过【网址生成器】创建
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				采集范围
+				<div class="mtop">
+					<input type="button" value="复制（*）" data-clipboard-text="(*)" class="layui-btn layui-btn-sm phpok-copy" />
+				</div>
+			</label>
+			<div class="layui-input-inline default-auto">
+				<textarea name="list_tags_start" id="list_tags_start" style="width:400px;height:150px;">{$rs.list_tags_start}</textarea>
+			</div>
+			<div class="layui-form-mid">
+				-
+			</div>
+			<div class="layui-input-inline default-auto">
+				<textarea name="list_tags_end" id="list_tags_end" style="width:400px;height:150px;">{$rs.list_tags_end}</textarea>
+			</div>
+			<div class="clear"></div>
+			<div class="layui-input-block mtop">
+				支持 <span class="red">(*)</span> 表示任意值
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				网址包含
+			</label>
+			<div class="layui-input-block">
+				<input type="text" id="url_tags" name="url_tags" value="{$rs.url_tags}" class="layui-input" />
+			</div>
+			<div class="layui-input-block mtop">
+				设置内容网址必须包含哪些字符，多个字符用 “<span class="red">|</span>” 分隔，不限设置为空
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				压缩传输
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="is_gzip" value="0"{if !$rs || !$rs.is_gzip} checked{/if} title="禁用" />
+				<input type="radio" name="is_gzip" value="1"{if $rs.is_gzip} checked{/if} title="启用" />
+			</div>
+			<div class="layui-form-mid">
+				一般情况下，都是需要启用的！我们推荐您启用此功能
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				代理
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="is_proxy" value="0"{if !$rs || !$rs.is_proxy} checked{/if} onclick="update_proxy(0)" title="禁用" />
+				<input type="radio" name="is_proxy" value="1"{if $rs.is_proxy} checked{/if} onclick="update_proxy(1)" title="启用" />  
+			</div>
+			<div class="layui-form-mid">
+				本采集器仅支持HTTP代理，仅适用于当无法直接访问时使用
+			</div>
+		</div>
+		
+		<div{if !$rs || !$rs.is_proxy} class="hide"{/if} id="porxy_setting">
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					代理服务器
+				</label>
+				<div class="layui-input-inline default-auto">
+					<input type="text" id="proxy_service" name="proxy_service" value="{$rs.proxy_service}" class="layui-input" />
+				</div>
+				<div class="layui-form-mid">
+					填写服务器，格式如：<span class="red">http://192.168.1.100:8080</span>，注意端口号
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					代理账号
+				</label>
+				<div class="layui-input-inline default-auto">
+					<input type="text" id="proxy_user" name="proxy_user" value="{$rs.proxy_user}" class="layui-input" />
+				</div>
+				<div class="layui-form-mid">
+					如果代理服务器需要登录账号，请在这里设置
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					代理密码
+				</label>
+				<div class="layui-input-inline default-auto">
+					<input type="text" id="proxy_pass" name="proxy_pass" value="{$rs.proxy_pass}" class="layui-input" />
+				</div>
+				<div class="layui-form-mid">
+					同上，如需要密码，请设置，返之留空
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+		<span style="padding-left:2em;color:#ccc;">保存不会关闭页面，请手动关闭</span>
+	</div>
+</div>
+
+</form>
+<script type="text/javascript">
+$(document).ready(function(){
+	var delay;
+	var code_editor_list_tags_start = CodeMirror.fromTextArea(document.getElementById("list_tags_start"),{
+		lineNumbers		: true,
+		matchBrackets	: true,
+		lineWrapping	: true,
+		indentWithTabs	: true,
+		indentUnit		: 4,
+		onChange		: function(n){
+			$("#list_tags_start").val(code_editor_list_tags_start.getValue());
+		}
+	});
+	var code_editor_list_tags_end = CodeMirror.fromTextArea(document.getElementById("list_tags_end"),{
+		lineNumbers		: true,
+		matchBrackets	: true,
+		lineWrapping	: true,
+		indentWithTabs	: true,
+		indentUnit		: 4,
+		onChange		: function(n){
+			$("#list_tags_end").val(code_editor_list_tags_end.getValue());
+		}
+	});
+});
+</script>
+<!-- include tpl=foot -->
