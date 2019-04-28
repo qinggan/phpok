@@ -9,7 +9,7 @@
 **/
 var app = getApp();
 
-var data = {
+var cookie = {
 	set:function(name,val='')
 	{
 		if(!name || name == 'undefined'){
@@ -40,21 +40,22 @@ var call = {
 			return false;
 		}
 		var tmp = {}
-		if(param_id && param_id != 'undefined' && (!param_val || param_val == 'undefined')){
-			tmp[this.name] = {};
-			tmp[this.name][name] = param_id;
-			this.name = name;
-		}
-		if((!param_id || param_id == 'undefined') && (!param_val || param_val == 'undefined')){
-			tmp[name] = {};
-			this.name = name;
-		}
-		if (param_id && param_id != 'undefined' && param_val && param_val != 'undefined'){
+		if(!param_val || param_val == 'undefined'){
+			if(!param_id || param_id == 'undefined'){
+				tmp[name] = {};
+				this.name = name;
+			}else{
+				if(this.data[this.name]){
+					tmp = this.data;
+				}
+				tmp[this.name][name] = param_id;
+			}
+		}else{
 			if(!tmp[name] || tmp[name] == 'undefined'){
 				tmp[name] = {};
+				this.name = name;
 			}
 			tmp[name][param_id] = param_val;
-			this.name = name;
 		}
 		var all = this.extend(this.data,tmp,true);
 		this.data = all;
@@ -111,7 +112,6 @@ var dialog = {
 		wx.showToast({
             'title':info,
             'icon': 'none',
-            'mask':true,
             'success':function(){
 	            if(obj && obj != 'undefined' && typeof obj == 'function'){
 		            (obj)();
@@ -211,6 +211,17 @@ var dialog = {
 	}
 }
 
+var str = {
+	encode:function(info)
+	{
+		return encodeURIComponent(info);
+	},
+	decode:function(info)
+	{
+		return decodeURIComponent(info);
+	}
+}
+
 var format = {
 	date:function(dateline)
 	{
@@ -279,5 +290,6 @@ module.exports = {
 	cookie:cookie,
 	call:call,
 	dialog:dialog,
-	format:format
+	format:format,
+	str:str
 }
