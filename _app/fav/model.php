@@ -39,8 +39,11 @@ class model extends \phpok_model
 	**/
 	public function get_all($condition='',$offset=0,$psize=30)
 	{
-		$sql = "SELECT f.*,u.user FROM ".$this->db->prefix."fav f ";
+		$sql = "SELECT f.*,u.user,p.title project_title,p.identifier project_identifier,c.title cate_title,c.identifier cate_identifier FROM ".$this->db->prefix."fav f ";
 		$sql.= "LEFT JOIN ".$this->db->prefix."user u ON(f.user_id=u.id) ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."list l ON(f.lid=l.id) ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."cate c ON(l.cate_id=c.id) ";
 		if($condition){
 			$sql .= " WHERE ".$condition." ";
 		}
