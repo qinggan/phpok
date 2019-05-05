@@ -337,7 +337,7 @@
 			h5:     ['class', 'style'],
 			h6:     ['class', 'style'],
 			header: [],
-			hr:     [],
+			hr:     ['class', 'style','noshade','size'],
 			i:      ['class', 'style'],
 			iframe: ['width','height','src','_src','class','loadingclass','alt','title','style','frameborder'],
 			img:    ['src', 'alt', 'title', 'width', 'height', 'id', '_src', 'loadingclass', 'class','_url','style'],

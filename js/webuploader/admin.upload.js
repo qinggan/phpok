@@ -68,8 +68,8 @@
 			}
 		});
 		uploader.on('uploadProgress',function(file,percent){
-			if(opts.loading && opts.loading != 'undefined'){
-				(opts.loading)(file,percent);
+			if(self.opts.loading && self.opts.loading != 'undefined'){
+				(self.opts.loading)(file,percent);
 			}
 			var $li = $('#phpok-upfile-'+file.id),
 			$percent = $li.find('.progress span');
