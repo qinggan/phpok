@@ -24,7 +24,7 @@
 							<span class="gray">发布时间：{func time_format $value.dateline}，查看次数：{$value.hits}</span>
 						</td>
 						<td><!-- if $value.status -->正常<!-- else --><span class="am-text-danger">审核中</span><!-- /if --></td>
-						<td><a href="{url ctrl=post func=edit id=$value.id/}" class="am-btn am-btn-secondary am-btn-xs" target="_blank">编辑</a></td>
+						<td><a href="{url ctrl=post func=edit id=$value.id/}" class="am-btn am-btn-warning am-btn-xs" target="_blank">编辑</a></td>
 					</tr>
 					<!-- /loop -->
 				</tbody>

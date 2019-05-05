@@ -7,7 +7,7 @@
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="-1" />
 	<meta name="renderer" content="webkit">
-	<title><!-- if $title -->{$title}_<!-- /if -->{$config.title}<!-- if $seo.title -->_{$seo.title}<!-- /if --></title>
+	<title><!-- if $title -->{$title}_<!-- /if --><!-- if $seo.title -->{$seo.title}_<!-- /if -->{$config.title}</title>
 	<!-- if $seo.keywords --><meta name="keywords" content="{$seo.keywords}" /><!-- /if -->
 	<!-- if $seo.description --><meta name="description" content="{$seo.description}" /><!-- /if -->
 	<meta name="toTop" content="true" />

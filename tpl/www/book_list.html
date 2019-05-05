@@ -1,4 +1,7 @@
-<!-- include tpl=head title=$page_rs.title menutitle=$page_rs.title -->
+<!-- include tpl=head menutitle=$page_rs.title -->
+<!-- if $page_rs.banner -->
+<div class="banner" style="background-image:url('{$page_rs.banner.filename}');"><img src="{#images#}/blank.gif" alt="{$page_rs.title}" /></div>
+<!-- /if -->
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#book_post").submit(function(){
@@ -43,15 +46,8 @@ $(document).ready(function(){
 });
 </script>
 <div class="main">
-	<!-- if $page_rs.banner -->
-	<div class="banner"><img src="{$page_rs.banner.filename}" width="980" alt="{$title}" /></div>
-	<!-- /if -->
 	<!-- include tpl=block/breadcrumb -->
-	<div class="left am-panel-group">
-		<!-- include tpl=block/contact -->
-		<!-- include tpl=block/hot_products -->
-	</div>
-	<div class="right am-panel-group">
+	<div class="am-panel-group">
 		<div class="am-panel am-panel-default">
 			<div class="am-panel-hd">发布新留言</div>
 			<div class="am-panel-bd">

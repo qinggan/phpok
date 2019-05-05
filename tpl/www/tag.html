@@ -27,6 +27,14 @@
 							<!-- if $value.note || $value.content -->
 							<div class="am-list-item-text" style="max-height:6.5em;">{$value.note ? phpok_cut($value.note,300,'…') : phpok_cut($value.content,300,'…')}</div>
 							<!-- /if -->
+							<!-- if $value.tag -->
+							<div class="am-list-item-text">
+								标签：
+								<!-- loop from=$value.tag key=$k value=$v id=$idxx -->
+								{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+								<!-- /loop -->
+							</div>
+							<!-- /if -->
 						</div>
 					</li>
 					<!-- else -->
@@ -38,6 +46,14 @@
 							<!-- /if -->
 							<!-- if $value.note || $value.content -->
 							<div class="am-list-item-text">{$value.note ? phpok_cut($value.note,225,'…') : phpok_cut($value.content,225,'…')}</div>
+							<!-- /if -->
+							<!-- if $value.tag -->
+							<div class="am-list-item-text">
+								标签：
+								<!-- loop from=$value.tag key=$k value=$v id=$idxx -->
+								{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+								<!-- /loop -->
+							</div>
 							<!-- /if -->
 						</div>
 					</li>

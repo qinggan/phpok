@@ -15,7 +15,7 @@ a:hover{color:#E77718;}
 em{font-style:normal}
 img{border:0;vertical-align:middle}
 table{border-collapse:collapse;border-spacing:0}
-p{word-wrap:break-word}
+p{word-wrap:break-word;font-size:1.1em;}
 .fl{ float:left;}
 .fr{ float:right;}
 .cl,.clear{ clear:both;height:0;line-height:0;content:'.';display:block;visibility:hidden;}
@@ -40,6 +40,66 @@ p{word-wrap:break-word}
 .clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
 .clearfix{*+height:1%;}
 
+/*变更AmaeUI默认信息*/
+.am-panel-primary{
+	border-color:#1f5796
+}
+.am-panel-primary > .am-panel-hd{
+	background-color:#1f5796;
+	border-color:#1f5796	
+}
+.am-btn-primary{
+	background-color:#1f5796;
+	border-color:#1f5796
+}
+.am-list > li > a.am-active, .am-list > li > a.am-active:focus, .am-list > li > a.am-active:hover{
+	background-color:#1f5796;
+	border-color:#1f5796
+}
+.am-pagination > .am-active > a, .am-pagination > .am-active > a:focus, .am-pagination > .am-active > a:hover, .am-pagination > .am-active > span, .am-pagination > .am-active > span:focus, .am-pagination > .am-active > span:hover{
+	background-color:#1f5796;
+	border-color:#1f5796
+}
+.am-slider-c3 .am-slider-counter{
+	background-color:#1f5796;
+}
+.am-comment-highlight .am-comment-avatar, .am-comment-secondary .am-comment-avatar{
+	border-color:#1f5796
+}
+.am-comment-highlight .am-comment-main, .am-comment-secondary .am-comment-main{
+	border-color:#1f5796
+}
+.am-comment-highlight.am-comment-flip .am-comment-main::before, .am-comment-secondary.am-comment-flip .am-comment-main::before{
+	border-left-color:#1f5796
+}
+
+.am-titlebar{margin-top:0;}
+.am-panel{margin-bottom:0;}
+.am-panel-title .more{float:right;font-weight:normal;}
+.am-panel-bd{padding:0.5rem;}
+.am-panel-bd .am-list{margin-bottom:0;}
+.am-panel-bd .am-list li:first-child{border-top:0;}
+.am-panel-bd .am-list li:last-child{border-bottom:0;}
+
+.am-thumbnail{margin-bottom:0.5em;}
+.am-titlebar-default .am-titlebar-title{color:#1f5796}
+.am-titlebar-default .am-titlebar-title::before{border-color:#1f5796}
+.am-titlebar-default a{color:#1f5796}
+
+
+/* Banner 图片，限宽高*/
+.banner{width:100%;min-width:1200px;background-position: center;background-size:cover;background-repeat:no-repeat;}
+.banner img{width:100%;height:500px;}
+.am-slider-a1 .am-control-nav li a{width:24px;height:24px;background-color:#1f5796}
+.am-slider-a1 .am-control-nav li a.am-active {
+    background-color: #e0690c;
+    cursor: default;
+}
+.am-slider-a1 .am-control-nav{bottom:10px;}
+.am-slider-c2 .am-control-nav{bottom:18px;}
+.am-slider-c2 .am-control-nav li a{width:12px;height:12px;}
+
+
 /* 购物车 */
 #head_cart_num{display:inline-block;min-width:16px;line-height:16px;border-radius:50%;background-color:red;color:#fff;text-align: center;font-size:0.7em;}
 
@@ -49,7 +109,6 @@ p{word-wrap:break-word}
 .main:after{content:".";display:block;height:0;clear:both;visibility:hidden}
 .main div.left{width:260px;float:left;}
 .main div.right{width:920px;float:right;}
-.main .banner img{width:100%;}
 .main-single{margin:5% auto;background:#fff;padding:20px 0;border:1px solid #ccc;border-radius:5px;}
 .main-login{margin:10% auto;width:500px;padding:20px;}
 
@@ -103,7 +162,7 @@ header div.top .logo{float:left;}
 header div.top .right{float:right;}
 header div.top nav.top{height:26px; line-height:26px; text-align:right; color:#666;display:block;}
 
-header nav.menu{width:100%;margin:0; height:40px;line-height:40px; background:#0e90d2;list-style:none;position:relative;z-index:1799;}
+header nav.menu{width:100%;margin:0; height:40px;line-height:40px; background:#1f5796;list-style:none;position:relative;z-index:1799;}
 header nav.menu div.menu{width:1200px;margin:0 auto;}
 header nav.menu ul{width:1200px;list-style:none;margin:0;padding:0;position:absolute;z-index:1800;}
 header nav.menu ul li{ float:left;position:relative;width:12.5%;overflow:hidden;}
@@ -116,14 +175,8 @@ header nav.menu ul li:hover dd:hover{background:#0c79b1;}
 header nav.menu ul li.current{ background:#e0690c;}
 
 /*轮播*/
-.banner{position:relative;width:1200px;margin:10px auto 0 auto;}
-.banner .bd ul{list-style:none;margin:0;padding:0}
-.banner .bd ul li{text-align:center;}
-.banner .bd ul li img{min-width:1200px;width:100%;}
-.banner .hd{position:absolute;bottom:10px;right:10px;text-align:center}
-.banner .hd ul{list-style:none;margin:0;padding:0}
-.banner .hd ul li{width:24px;height:24px;background:#000;display:inline-block;+display:inline;zoom:1;margin:0 1px;cursor:pointer;line-height:24px;font-size:0.8em}
-.banner .hd ul li.on{background:darkred;color:#fff}
+.index-banner li{text-align:center;background-repeat:no-repeat;background-position: center;background-size:cover;}
+.index-banner li img{width:100%;height:500px;}
 
 
 /* 首页 */
@@ -133,14 +186,6 @@ header nav.menu ul li.current{ background:#e0690c;}
 
 
 
-/* 改写 amazeui 的样式 */
-.am-titlebar{margin-top:0;}
-.am-panel{margin-bottom:0;}
-.am-panel-title .more{float:right;font-weight:normal;}
-.am-panel-bd{padding:0.5rem;}
-.am-panel-bd .am-list{margin-bottom:0;}
-.am-panel-bd .am-list li:first-child{border-top:0;}
-.am-panel-bd .am-list li:last-child{border-bottom:0;}
 
 /* 友情链接 */
 .link{ padding:10px; line-height:30px;}
@@ -246,6 +291,14 @@ div.attr.selected{border:1px solid red;}
 .weixin_product .wxpic{display:none;position:absolute;left:50%;margin-left:-60px;top:-130px;}
 .weixin_product .wxpic img{width:120px;height:120px;border:1px solid #000;padding:5px;background:#fff;}
 
+
+h2.title {text-align:center;height:200%;color:#e0690c;font-size:2.4em;font-weight:400;margin:0.8em auto;background:url('../images/h2_background.png') center center no-repeat;}
+h2.title small{font-size:0.6em;color:#ddd;font-weight:lighter;display: block;}
+
+
 ul.products li{position: relative;}
+ul.products li .am-title{margin-top:0;height:2em;}
 .discount{width:60px;height:60px;overflow:hidden;position: absolute;right:0;top:0}
 .discount img{width:100%;}
+
+/* 资讯 */

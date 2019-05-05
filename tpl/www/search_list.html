@@ -19,6 +19,14 @@
 						<div class="{if $value.thumb} am-u-sm-10{/if} am-list-main">
 							 <h3 class="am-list-item-hd"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></h3>
 							<div class="am-list-item-text">{$value.note ? phpok_cut($value.note,120,'…') : phpok_cut($value.content,120,'…')}</div>
+							<!-- if $value.tag -->
+							<div class="am-list-item-text">
+								标签：
+								<!-- loop from=$value.tag key=$k value=$v id=$idxx -->
+								{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+								<!-- /loop -->
+							</div>
+							<!-- /if -->
 						</div>
 					</li>
 					<!-- /loop -->
