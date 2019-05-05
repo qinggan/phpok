@@ -1,13 +1,21 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/admin/express_control.php
-	备注： 物流平台管理
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年09月05日 16时44分
-*****************************************************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * 物流平台管理
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2019年4月30日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class express_control extends phpok_control
 {
 	private $popedom;
@@ -21,7 +29,7 @@ class express_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rslist = $this->model('express')->get_all();
 		if($rslist){
@@ -47,7 +55,7 @@ class express_control extends phpok_control
 		$id = $this->get('id','int');
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('您没有权限执行此操作'),$this->url('express'),'error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$rs = $this->model('express')->get_one($id);
 			if($rs['ext']){
@@ -59,11 +67,11 @@ class express_control extends phpok_control
 			$code = $rs['code'];
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),$this->url('express'),'error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$code = $this->get('code');
 			if(!$code){
-				error(P_Lang('未指定接口引挈'),$this->url('express'),'error');
+				$this->error(P_Lang('未指定接口引挈'));
 			}
 			$this->assign('code',$code);
 		}
@@ -74,43 +82,48 @@ class express_control extends phpok_control
 		$this->view('express_set');
 	}
 
+	/**
+	 * 保存物流接口信息
+	**/
 	public function save_f()
 	{
 		$id = $this->get('id','int');
 		$array = array();
 		if($id){
 			if(!$this->popedom['modify']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$rs = $this->model('express')->get_one($id);
 			$code = $rs['code'];
 		}else{
 			if(!$this->popedom['add']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$code = $this->get('code');
 			if(!$code){
-				$this->json('未指定接口引挈');
+				$this->error('未指定接口引挈');
 			}
 			$array['code'] = $code;
 			$array['site_id'] = $_SESSION['admin_site_id'];
 		}
 		$array['title'] = $this->get('title');
 		if(!$array['title']){
-			$this->json(P_Lang('请填写物流快递名称'));
+			$this->error(P_Lang('请填写物流快递名称'));
 		}
 		$array['company'] = $this->get('company');
 		$array['homepage'] = $this->get('homepage');
+		$array['logo'] = $this->get('logo');
+		$array['content'] = $this->get('content','html');
 		$array['rate']  = $this->get('rate','int');
 		$codeinfo = $this->model('express')->code_one($code);
 		if($codeinfo['code'] && is_array($codeinfo['code'])){
 			$ext = array();
-			foreach($codeinfo['code'] AS $key=>$value){
+			foreach($codeinfo['code'] as $key=>$value){
 				if($value['type'] != 'checkbox'){
 					$ext[$key] = $this->get($code."_".$key);
 				}else{
 					$tmp = array();
-					foreach($value['option'] AS $k=>$v){
+					foreach($value['option'] as $k=>$v){
 						$tmp_name = $code."_".$k;
 						if(isset($_POST[$tmp_name])){
 							$tmp[] = $k;
@@ -122,21 +135,19 @@ class express_control extends phpok_control
 			$array['ext'] = serialize($ext);
 		}
 		$this->model('express')->save($array,$id);
-		$this->json(true);
+		$this->success();
 	}
 
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$this->model('express')->delete($id);
-		$this->json(true);
+		$this->success();
 	}
 }
-
-?>

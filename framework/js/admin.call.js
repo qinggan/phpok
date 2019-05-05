@@ -172,6 +172,23 @@
 					return false;
 				})
 			});
+		},
+		status:function(id)
+		{
+			$.phpok.json(get_url("call","status","id="+id),function(rs){
+				if(rs.status){
+					if(!rs.info){
+						rs.info = '0';
+					}
+					var oldvalue = $("#status_"+id).attr("value");
+					var old_cls = "status"+oldvalue;
+					$("#status_"+id).removeClass(old_cls).addClass("status"+rs.info);
+					$("#status_"+id).attr("value",rs.info);
+					return true;
+				}
+				$.dialog.alert(rs.info);
+				return false;
+			});
 		}
 	}
 })(jQuery);

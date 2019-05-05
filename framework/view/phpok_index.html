@@ -14,6 +14,7 @@
 			<thead>
 			<tr>
 				<th>ID</th>
+				<th></th>
 				<th>{lang名称}</th>
 				<th>{lang类型}</th>
 				<th>{lang关联的项目}</th>
@@ -26,6 +27,7 @@
 			<!-- loop from=$rslist key=$key value=$value -->
 			<tr id="edit_{$value.id}">
 				<td>{$value.id}</td>
+				<td class="center"><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.modify}onclick="$.admin_call.status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
 				<td>{$value.title}<!-- if $value.is_api --> <i class="red"><small>{lang远程}</small></i><!-- /if --></td>
 				<td>{$phpok_type_list[$value.type_id][title]}</td>
 				<td>{$value.project ? $value.project : '-'}</td>
@@ -34,7 +36,7 @@
 				<td>
 					<div class="layui-btn-group">
 						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.win('{lang编辑调用}','{url ctrl=call func=set id=$value.id/}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
-						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_call.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" /><!-- /if -->
+						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_call.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" /><!-- /if -->
 					</div>
 				</td>
 			</tr>

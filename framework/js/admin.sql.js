@@ -112,7 +112,7 @@
 			$.dialog.open(url,{
 				'title':p_lang('查看表 {tbl} 明细',tbl),
 				'lock':true,
-				'width':'500px',
+				'width':'750px',
 				'height':'500px',
 				'cancel':true
 			});

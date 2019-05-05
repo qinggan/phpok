@@ -1,123 +1,152 @@
-<!-- include tpl=head -->
-<div class="tips">
-	{lang当前位置：}<a href="{url ctrl=express/}">{lang物流快递}</a>
-	&raquo; <!-- if $id -->{lang编辑物流}<!-- else -->{lang添加物流}<!-- /if -->
-	<div class="clear"></div>
-</div>
+<!-- include tpl=head_lay -->
 <script type="text/javascript">
 function submit_save()
 {
-	$("#postsave").ajaxSubmit({
-		'url':get_url('express','save','id={$id}&code={$code}'),
-		'type':'post',
-		'dataType':'json',
-		'success':function(rs){
-			if(rs.status == 'ok'){
-				$.phpok.go(get_url('express'));
-			}else{
-				$.dialog.alert(rs.content);
-				return false;
-			}
-		}
-	});
+	
 }
-$(document).ready(function(){
-	$("#postsave").submit(function(){
-		submit_save();
-		return false;
-	});
-});
 </script>
-<form method="post" id="postsave">
-<div class="table">
-	<div class="title">
-		物流快递名称
-		<span class="note">填写常用的名称，如顺丰快递，中通快递等易识别名称</span>
+<form method="post" class="layui-form" id="postsave" onsubmit="return $.admin_express.save()">
+<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
+<input type="hidden" name="code" id="code" value="{$code}" />
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang当前使用接口} <span class="red">{$extlist.title}</span>
 	</div>
-	<div class="content"><input type="text" id="title" name="title" value="{$rs.title}" class="default" /></div>
-</div>
-<div class="table">
-	<div class="title">
-		公司名称
-		<span class="note">填写该物流或快递所属公司全称</span>
-	</div>
-	<div class="content"><input type="text" id="company" name="company" class="default" value="{$rs.company}" /></div>
-</div>
-<div class="table">
-	<div class="title">
-		官方网站
-		<span class="note">请填写官方网站，建议以http://开头</span>
-	</div>
-	<div class="content"><input type="text" id="homepage" name="homepage" class="default" value="{$rs.homepage}" /></div>
-</div>
-<!-- loop from=$extlist.code key=$key value=$value -->
-<!-- php:$valinfo = $rs.ext[$key] ? $rs.ext[$key] : $value.default -->
-<div class="table">
-	<div class="title">
-		{$value.title}：
-		<span class="note">{$value.note}</span>
-	</div>
-	<div class="content">
-		<!-- if $value.type == 'radio' -->
-		<table cellspacing="0" cellpadding="0">
-		<tr>
-			<!-- loop from=$value.option key=$k value=$v -->
-			<td><label><input type="radio" name="{$code}_{$key}" value="{$k}"{if $valinfo == $k} checked{/if} />{$v}</label></td>
-			<!-- /loop -->
-		</tr>
-		</table>
-		<!-- elseif $value.type == 'select' -->
-		<select name="{$code}_{$key}" id="{$code}_{$key}">
-			<option value="">请选择…</option>
-			<!-- loop from=$value.option key=$k value=$v -->
-			<option value="{$k}"{if $valinfo == $k} selected{/if}>{$v}</option>
-			<!-- /loop -->
-		</select>
-		<!-- elseif $value.type == 'checkbox' -->
-		<!-- php:$valinfo = $valinfo ? explode(',',$valinfo) : array() -->
-		<table cellspacing="0" cellpadding="0">
-		<tr>
-			<!-- loop from=$value.option key=$k value=$v -->
-			<td><label><input type="checkbox" name="{$code}_{$k}" value="{$k}"{if in_array($k,$valinfo)} checked{/if} />{$v}</label></td>
-			<!-- /loop -->
-		</tr>
-		</table>
-		<!-- else -->
-			<!-- php:$input_name = $code.'_'.$key -->
-			<!-- if $value.typebtn == 'file' -->
-			{func form_edit $input_name $valinfo text form_btn=file&width=500}
-			<!-- elseif $value.typebtn == 'image' -->
-			{func form_edit $input_name $valinfo text form_btn=image&width=500}
-			<!-- elseif $value.typebtn == 'video' -->
-			{func form_edit $input_name $valinfo text form_btn=video&width=500}
-			<!-- else -->
-			<input type="text" id="{$code}_{$key}" name="{$code}_{$key}" class="long" value="{$valinfo}" />
-			<!-- /if -->
-		<!-- /if -->
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang物流名称}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="title" id="title" value="{$rs.title}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang填写常用的名称，如顺丰快递，中通快递等易识别名称}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang公司名}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="company" name="company" class="layui-input" value="{$rs.company}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang填写该物流或快递所属公司全称}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang官方网站}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="homepage" name="homepage" class="layui-input" value="{$rs.homepage}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang请填写官方网站，建议以http://或https://开头}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				Logo
+			</label>
+			<div class="layui-input-inline default-auto">
+				{func form_edit logo $rs.logo text form_btn=image}
+			</div>
+			<div class="layui-form-mid">
+				{lang请上传物流快递Logo}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang公司介绍}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang介绍该物流公司的一些情况}</div>
+			<div class="layui-input-block">
+				{func form_edit content $rs.content editor height=360&btn_image=1}
+			</div>
+		</div>
 	</div>
 </div>
-<!-- /loop -->
-<div class="table">
-	<div class="title">
-		订单动态查询频率：
-		<span class="note">请选择间隔多长时间进行物流查询，以保证数据高效</span>
+<!-- if $extlist.code -->
+
+
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang接口涉及到的参数}
 	</div>
-	<div class="content">
-		<ul class="layout">
-			<li><label><input type="radio" name="rate" value="2"{if $rs.rate == 2} checked{/if} />2小时</label></li>
-			<li><label><input type="radio" name="rate" value="4"{if $rs.rate == 4} checked{/if} />4小时</label></li>
-			<li><label><input type="radio" name="rate" value="6"{if $rs.rate == 6} checked{/if} />6小时</label></li>
-			<li><label><input type="radio" name="rate" value="8"{if $rs.rate == 8} checked{/if} />8小时</label></li>
-			<li><label><input type="radio" name="rate" value="10"{if $rs.rate == 10 || !$rs.rate} checked{/if} />10小时</label></li>
-		</ul>
-		<div class="clear"></div>
+	<div class="layui-card-body">
+		<!-- loop from=$extlist.code key=$key value=$value -->
+		<!-- php:$valinfo = ($rs['ext'] && $rs['ext'][$key]) ? $rs['ext'][$key] : $value.default -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{$value.title}
+			</label>
+			<div class="layui-input-block">
+				<!-- if $value.type == 'radio' -->
+					<!-- loop from=$value.option key=$k value=$v -->
+					<input type="radio" name="{$code}_{$key}" value="{$k}"{if $valinfo == $k} checked{/if} title="{$v}" />
+					<!-- /loop -->
+				<!-- elseif $value.type == 'select' -->
+				<select name="{$code}_{$key}" id="{$code}_{$key}">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$value.option key=$k value=$v -->
+					<option value="{$k}"{if $valinfo == $k} selected{/if}>{$v}</option>
+					<!-- /loop -->
+				</select>
+				<!-- elseif $value.type == 'checkbox' -->
+				<!-- php:$valinfo = $valinfo ? explode(',',$valinfo) : array() -->
+					<!-- loop from=$value.option key=$k value=$v -->
+					<input type="checkbox" name="{$code}_{$k}" value="{$k}"{if in_array($k,$valinfo)} checked{/if} title="{$v}" />
+					<!-- /loop -->
+				<!-- else -->
+					<!-- php:$input_name = $code.'_'.$key -->
+					<!-- if $value.typebtn == 'file' -->
+					{func form_edit $input_name $valinfo text form_btn=file&width=500}
+					<!-- elseif $value.typebtn == 'image' -->
+					{func form_edit $input_name $valinfo text form_btn=image&width=500}
+					<!-- elseif $value.typebtn == 'video' -->
+					{func form_edit $input_name $valinfo text form_btn=video&width=500}
+					<!-- else -->
+					<input type="text" id="{$code}_{$key}" name="{$code}_{$key}" class="layui-input" value="{$valinfo}" />
+						<!-- if $value.typebtn == 'tpl' -->
+						<input type="button" value="{lang选择}" onclick="phpok_tpl_open('{$code}_{$key}')" class="btn" />
+						<input type="button" value="{lang清空}" onclick="$('#{$code}_{$key}').val('');" class="btn" />
+						<!-- /if -->
+					<!-- /if -->
+				<!-- /if -->
+			</div>
+			<!-- if $value.note --><div class="layui-input-block mtop">{$value.note}</div><!-- /if -->
+		</div>
+		<!-- /loop -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang查询频率}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="radio" name="rate" value="2"{if $rs.rate == 2} checked{/if} title="{lang两小时}" />
+				<input type="radio" name="rate" value="4"{if $rs.rate == 4} checked{/if} title="{lang四小时}" />
+				<input type="radio" name="rate" value="6"{if $rs.rate == 6} checked{/if} title="{lang六小时}" />
+				<input type="radio" name="rate" value="8"{if $rs.rate == 8} checked{/if} title="{lang八小时}" />
+				<input type="radio" name="rate" value="10"{if $rs.rate == 10 || !$rs.rate} checked{/if} title="{lang十小时}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang请选择间隔多长时间进行物流查询，以保证数据高效}
+			</div>
+		</div>
+		
 	</div>
 </div>
-<div class="table">
-	<div class="content">
-		<input type="submit" value="提 交" class="submit2" />
+<!-- /if -->
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+		<!-- if $id --><span style="padding-left:2em;color:#ccc;">保存不会关闭页面，请手动关闭</span><!-- /if -->
 	</div>
 </div>
+
 </form>
 
-<!-- include tpl=foot -->
+<!-- include tpl=foot_lay -->

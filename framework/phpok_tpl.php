@@ -156,7 +156,7 @@ class phpok_template
 	 * @参数 $type 类型，可选值为：file 指相对路径，不带后缀，file-ext 指相对路径，带后缀，content 或 msg 指纯模板内容，abs-file 指带后缀的绝对路径
 	 * @参数 $path_format 是否格式化
 	**/
-	public function output($tpl,$type="file",$path_format=true)
+	public function output($tpl,$type="file",$path_format=true,$phpinc_status=true)
 	{
 		if(!$tpl){
 			$this->error(P_Lang('模板信息为空'));
@@ -196,6 +196,13 @@ class phpok_template
 		}
 		$varlist = (is_array($GLOBALS))?array_merge($GLOBALS,$this->tpl_value):$this->tpl_value;
 		extract($varlist);
+		//自动加载 phpinc 下的一些文件
+		if($GLOBALS['app']->app_id == 'www' && $phpinc_status){
+			$phpincfile = $this->dir_php.'phpok-'.$GLOBALS['app']->ctrl.'.php';
+			if(is_file($phpincfile)){
+				include_once($phpincfile);
+			}
+		}		
 		include($this->dir_cache.$comp_id);
 	}
 
@@ -669,7 +676,7 @@ class phpok_template
 			$type = $rs['_type'];
 		}
 		if($rs["tpl"]){
-			$string .= '<?php $this->output("'.$rs["tpl"].'","'.$type.'"); ?>';
+			$string .= '<?php $this->output("'.$rs["tpl"].'","'.$type.'",true,false); ?>';
 		}
 		return $string;
 	}

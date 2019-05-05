@@ -116,7 +116,7 @@ class tag_model_base extends phpok_model
 	{
 		foreach($rslist as $key=>$value){
 			$value['target'] = $value['target'] ? '_blank' : '_self';
-			$url = $value['url'] ? $value['url'] : $this->url('tag','','title='.rawurlencode($value['title']));
+			$url = $value['url'] ? $value['url'] : $this->url('tag','','title='.rawurlencode($value['title']),'www');
 			$alt = $value['alt'] ? $value['alt'] : $value['title'];
 			$rslist[$key]['html'] = '<a href="'.$url.'" title="'.$alt.'" target="'.$value['target'].'" class="tag">'.$value['title'].'</a>';
 			$rslist[$key]['target'] = $value['target'];
@@ -125,6 +125,30 @@ class tag_model_base extends phpok_model
 			$rslist[$key]['replace_count'] = $value['replace_count'];
 			$rslist[$key]['title_id'] = $value['title_id'];
 			$rslist[$key]['id'] = $value['id'];
+		}
+		return $rslist;
+	}
+
+	public function tag_html($tag='')
+	{
+		if(!$tag){
+			return false;
+		}
+		if(is_string($tag)){
+			$tag = str_replace(array(",","，",'、',"|","/","　"),"|",$tag);
+			$tag = explode("|",$tag);
+		}
+		$rslist = array();
+		foreach($tag as $key=>$value){
+			if(!$value || !trim($value)){
+				continue;
+			}
+			$tmp = array('target'=>'_blank');
+			$tmp['title'] = trim($value);
+			$tmp['alt'] = trim($value);
+			$tmp['url'] = $this->url('tag','','title='.rawurlencode(trim($value)),'www');
+			$tmp['html'] = '<a href="'.$tmp['url'].'" title="'.trim($value).'" target="'.$tmp['target'].'" class="tag">'.trim($value).'</a>';
+			$rslist[] = $tmp;
 		}
 		return $rslist;
 	}
@@ -159,8 +183,7 @@ class tag_model_base extends phpok_model
 	private function get_tag_from_cate(&$rslist,$id)
 	{
 		$rslist = $this->get_record_from_stat('c'.$id);
-		if($rslist)
-		{
+		if($rslist){
 			return $rslist;
 		}
 		$pcate = $this->_parent_cate($id);

@@ -49,5 +49,3 @@ class call_model extends call_model_base
 		return $this->db->get_all($sql);
 	}
 }
-
-?>

@@ -21,7 +21,6 @@ class index_control extends phpok_control
 		if(!$tplfile){
 			$tplfile = 'index';
 		}
-		//检测是否有指定
 		$tmp = $this->model('id')->id('index',$this->site['id'],true);
 		if($tmp){
 			$pid = $tmp['id'];

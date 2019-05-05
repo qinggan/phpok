@@ -171,6 +171,7 @@ class content_control extends phpok_control
 			if($value['form_type'] == 'editor'){
 				if(is_array($rs[$value['identifier']])){
 					$rs[$value['identifier'].'_pagelist'] = $rs[$value['identifier']]['pagelist'];
+					$rs['_'.$value['identifier']] = $rs[$value['identifier']]['list'];
 					$rs[$value['identifier']] = $rs[$value['identifier']]['content'];
 				}
 				if($value['ext'] && $rs['tag']){

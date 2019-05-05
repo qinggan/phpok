@@ -107,22 +107,24 @@ class editor_form extends _init_auto
 			return $this->lib('string')->cut($rs['content'],100);
 		}else{
 			if(!$rs['pageid']) $rs['pageid'] = 1;
+			$rs['content'] = $this->lib('ubb')->to_html($rs['content'],false);
 			$lst = explode('[:page:]',$rs['content']);
 			$total = count($lst);
 			if($total<=1){
-				return $this->lib('ubb')->to_html($rs['content'],false);
+				return $rs['content'];
 			}
+			$tmp = array();
+			$array = array();
+			for($i=0;$i<$total;$i++){
+				$array[$i] = $i+1;
+			}
+			$tmp['pagelist'] = $array;
 			$t = $rs['pageid']-1;
 			if($lst[$t]){
-				$array = array();
-				for($i=0;$i<$total;$i++){
-					$array[$i] = $i+1;
-				}
-				$lst[$t] = $this->lib('ubb')->to_html($lst[$t],false);
-				return array('pagelist'=>$array,'content'=>$lst[$t]);
+				$tmp['content'] = $lst[$t];
 			}
-			return $this->lib('ubb')->to_html($lst[0]);
+			$tmp['list'] = $lst;
+			return $tmp;
 		}
 	}
 }
-?>

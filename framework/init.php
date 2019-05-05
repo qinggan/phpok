@@ -1481,10 +1481,7 @@ class _init_phpok
 		header("Last-Modified: Mon, 26 Jul 1997 05:00:00  GMT");
 		header("Cache-control: no-cache,no-store,must-revalidate,max-age=3");
 		header("Pramga: no-cache");
-		//优化SEO
-		if($this->app_id == 'www'){
-			$this->phpok_seo();
-		}
+		$this->phpok_seo();
 		$this->tpl->display($file,$type,$path_format);
 	}
 
@@ -2224,27 +2221,74 @@ class _init_phpok
 	}
 
 	/**
-	 * 针对PHPOK4前台执行SEO优化
+	 * 针对PHPOK前台执行SEO优化
 	**/
-	final public function phpok_seo()
+	final public function phpok_seo($rs='')
 	{
-		if($this->config['ctrl'] == 'content'){
+		if(!$rs && $this->config['ctrl'] == 'content'){
 			$rs = $this->tpl->val('rs');
-		}
-		if($this->config['ctrl'] == 'project'){
-			$rs = $this->tpl->val('cate_rs');
-			if(!$rs){
-				$rs = $this->tpl->val('page_rs');
+			if($rs['seo_title']){
+				$this->assign('title',false);
+			}else{
+				$title = $rs['title'];
+				if($rs['cate_id']){
+					$cate_rs = $this->tpl->val('cate_rs');
+					if($cate_rs){
+						$title .= "-".$cate_rs['title'];
+					}
+					$cate_parent_rs = $this->tpl->val('cate_parent_rs');
+					if($cate_parent_rs){
+						$title .= "-".$cate_parent_rs['title'];
+					}
+				}
+				$page_rs = $this->tpl->val('page_rs');
+				$title .= "-".$page_rs['title'];
+				$this->assign('title',str_replace('-',$this->config['seo']['line'],$title));
 			}
 		}
-		if($this->config['ctrl'] != 'content' && $this->config['ctrl'] != 'project'){
-			$rs = $this->site;
+		if(!$rs && $this->config['ctrl'] == 'project'){
+			$page_rs = $this->tpl->val('page_rs');
+			$cate_rs = $this->tpl->val('cate_rs');				
+			if($cate_rs){
+				$rs = $cate_rs;
+				if($cate_rs['seo_title']){
+					$this->assign('title',false);
+				}else{
+					$title = $cate_rs['title'];
+					$cate_parent_rs = $this->tpl->val('cate_parent_rs');
+					if($cate_parent_rs){
+						$title .= '-'.$cate_parent_rs['title'];
+					}
+					$title .= "-".$page_rs['title'];
+					$this->assign('title',str_replace('-',$this->config['seo']['line'],$title));
+				}
+			}else{
+				$rs = $page_rs;
+				if($page_rs['seo_title']){
+					$this->assign('title',false);
+				}else{
+					$title .= $page_rs['title'];
+					$parent_rs = $this->tpl->val('parent_rs');
+					if($parent_rs){
+						$title.= '-'.$parent_rs['title'];
+					}
+					$this->assign('title',str_replace('-',$this->config['seo']['line'],$title));
+				}
+			}
 		}
 		if(!$rs || !is_array($rs)){
 			return false;
 		}
+		$old = $this->tpl->val('seo');
 		$seo = array();
+		
 		$seo['title'] = $rs['seo_title'];
+		if($this->config['seo'] && $this->config['seo']['inherit'] && !$rs['seo_keywords']){
+			$rs['seo_keywords'] = $old['keywords'];
+		}
+		if($this->config['seo'] && $this->config['seo']['inherit'] && !$rs['seo_desc']){
+			$rs['seo_desc'] = $old['description'];
+		}
 		$seo['keywords'] = $rs['seo_keywords'];
 		$seo['description'] = $rs['seo_desc'];
 		$this->site['seo'] = $seo;

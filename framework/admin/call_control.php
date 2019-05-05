@@ -313,5 +313,21 @@ class call_control extends phpok_control
 		$this->json($list,true);
 	}
 
+	public function status_f()
+	{
+		if(!$this->popedom["modify"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get("id","int");
+		if(!$id){
+			$this->error(P_Lang('没有指定ID'));
+		}
+		$rs = $this->model('call')->get_one($id);
+		$status = $rs["status"] ? 0 : 1;
+		$action = $this->model('call')->set_status($id,$status);
+		if(!$action){
+			$this->error(P_Lang('操作失败，请检查SQL语句'));
+		}
+		$this->success($status);
+	}
 }
-?>

@@ -462,16 +462,21 @@ class index_control extends phpok_control
 		}
 		//清理更新后自定义扩展异常Bug
 		if($type == 'u_error'){
-			$sql = "SELECT id FROM ".$this->db->prefix."extc";
+			$sql = "SELECT * FROM ".$this->db->prefix."fields";
 			$tmplist = $this->db->get_all($sql);
-			if($tmplist){
-				foreach($tmplist as $key=>$value){
-					$sql = "SELECT ftype FROM ".$this->db->prefix."fields WHERE id='".$value['id']."'";
-					$tmp = $this->db->get_one($sql);
-					if($tmp){
-						$sql = "DELETE FROM ".$this->db->prefix."fields WHERE ftype='".$tmp['ftype']."' AND id !='".$value['id']."'";
-						$this->db->query($sql);
-					}
+			if(!$tmplist){
+				$this->success();
+			}
+			$sql = "SELECT id FROM ".$this->db->prefix."extc";
+			$idlist = $this->db->get_all($sql,'id');
+			$ids = $idlist ? array_keys($idlist) : array();
+			foreach($tmplist as $key=>$value){
+				if(is_numeric($value['ftype'])){
+					continue;
+				}
+				if(!in_array($value['id'],$ids)){
+					$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$value['id']."'";
+					$this->db->query($sql);
 				}
 			}
 		}

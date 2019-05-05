@@ -808,6 +808,7 @@ class phpok_call extends _init_auto
 			if($value['form_type'] == 'editor'){
 				if(is_array($arc[$value['identifier']])){
 					$arc[$value['identifier'].'_pagelist'] = $arc[$value['identifier']]['pagelist'];
+					$arc['_'.$value['identifier']] = $arc[$value['identifier']]['list'];
 					$arc[$value['identifier']] = $arc[$value['identifier']]['content'];
 				}
 				if($value['ext']){
@@ -818,9 +819,6 @@ class phpok_call extends _init_auto
 					}
 				}
 			}
-		}
-		if($arc['tag']){
-			$arc['tag'] = $this->model('tag')->tag_filter($taglist,$arc['id'],'list');
 		}
 		//如果未绑定网址
 		if(!$arc['url']){
@@ -911,6 +909,7 @@ class phpok_call extends _init_auto
 				if($value['form_type'] == 'editor'){
 					if(is_array($project_ext[$value['identifier']])){
 						$project_ext[$value['identifier'].'_pagelist'] = $project_ext[$value['identifier']]['pagelist'];
+						$project_ext['_'.$value['identifier']] = $project_ext[$value['identifier']]['list'];
 						$project_ext[$value['identifier']] = $project_ext[$value['identifier']]['content'];
 					}
 					if($value['ext']){
@@ -1057,6 +1056,9 @@ class phpok_call extends _init_auto
 		if(!$cate){
 			unset($rs);
 			return false;
+		}
+		if($cate['tag']){
+			$cate['tag'] = $this->model('tag')->tag_html($cate['tag']);
 		}
 		$extlist = $this->model('ext')->get_all_like('cate');
 		if($extlist && $extlist['cate-'.$rs['cateid']]){
