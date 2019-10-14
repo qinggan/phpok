@@ -68,20 +68,7 @@ class admin_control extends \phpok_control
 		$this->assign('tab_bgcolor',$tab_bgcolor);
 		$top_bgcolor = form_edit('top_bgcolor',$rs['top_bgcolor'],'text','form_btn=color&ext_include_3=1');
 		$this->assign('top_bgcolor',$top_bgcolor);
-		//菜单项
-		$rslist = array();
-		for($i=0;$i<5;$i++){
-			$tmp = array('title'=>$rs['rslist'][$i]['title'],'thumb'=>$rs['rslist'][$i]['thumb']);
-			$tmp['thumb_selected'] = $rs['rslist'][$i]['thumb_selected'];
-			$tmp['param'] = $rs['rslist'][$i]['param'];
-			if($load_app_json){
-				$tmp['title'] = $info['tabBar']['list'][$i]['text'];
-				$tmp['thumb'] = $this->config['url'].'wxapp/'.$info['tabBar']['list'][$i]['iconPath'];
-				$tmp['thumb_selected'] = $this->config['url'].'wxapp/'.$info['tabBar']['list'][$i]['selectedIconPath'];
-				$tmp['page'] = $info['tabBar']['list'][$i]['pagePath'];
-			}
-			$rslist[$i] = $tmp;
-		}
+
 		if($load_app_json){
 			$tmplist = $info['pages'];
 			foreach($tmplist as $key=>$value){
@@ -92,31 +79,6 @@ class admin_control extends \phpok_control
 			}
 			$this->assign('pagelist',$tmplist);
 		}
-		$list = array();
-		foreach($rslist as $key=>$value){
-			$tmplist = array();
-			$html = form_edit('title_'.$key,$value['title'],'text');
-			$tmp = array('title'=>P_Lang('栏目名称'),'html'=>$html,'note'=>P_Lang('导航文字不要超过4个中文字'));
-			$tmplist[0] = $tmp;
-			$html = form_edit('thumb_'.$key,$value['thumb'],'text','form_btn=image&form_style=width:345px');
-			$tmp = array('title'=>P_Lang('默认图标'),'html'=>$html,'note'=>P_Lang('显示的图标，规格81x81'));
-			$tmplist[1] = $tmp;
-			$html = form_edit('thumb_selected_'.$key,$value['thumb_selected'],'text','form_btn=image&form_style=width:345px');
-			$tmp = array('title'=>P_Lang('高亮图标'),'html'=>$html,'note'=>P_Lang('高亮当前标签用到的图标，规格81x81'));
-			$tmplist[2] = $tmp;
-			if($key>0){
-				$html = form_edit('param_'.$key,$value['param'],'text');
-				$note = P_Lang('article及list支持项目标识，about及contact支持文章的标识或ID');
-				$tmp = array('title'=>P_Lang('参数'),'html'=>$html,'note'=>$note);
-				$tmplist[3] = $tmp;
-				if($load_app_json){
-					$tmp = array('title'=>P_Lang('执行'),'html'=>'','note'=>P_Lang('选择要执行的文件'),'val'=>$value['page']);
-					$tmplist[4] = $tmp;
-				}
-			}
-			$list[$key] = $tmplist;
-		}
-		$this->assign('list',$list);
 		$this->assign('rs',$rs);
 		$this->display('admin_index');
 	}

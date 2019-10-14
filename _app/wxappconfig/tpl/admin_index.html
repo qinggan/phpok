@@ -110,37 +110,15 @@
 	</div>
 </div>
 
-<!-- loop from=$list key=$key value=$value id=$tmpid -->
-<div class="layui-card">
-	<div class="layui-card-header">
-		导航栏 #{$tmpid.num}
-	</div>
-	<div class="layui-container layui-card-body">
-		<!-- loop from=$value key=$k value=$v id=$idxx -->
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{$v.title}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<!-- if $v.html -->
-				{$v.html}
-				<!-- else -->
-				<select name="page_{$key}">
-				<!-- loop from=$pagelist key=$kk value=$vv id=$idxxx -->
-				<option value="{$vv}"{if $vv == $v.val} selected{/if}>{$vv}</option>
-				<!-- /loop -->
-				</select>
-				<!-- /if -->
-			</div>
-			<div class="layui-input-inline auto gray lh38">{$v.note}</div>
-		</div>
-		<!-- /loop -->
-		
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+		<span style="padding-left:2em;color:#ccc;">保存不会关闭页面，请手动关闭</span>
 	</div>
 </div>
-<!-- /loop -->
 
-<div class="submit-info"><div class="layui-container"><input type="submit" value="{lang提交}" class="submit2" /></div></div>
 </form>
-<br /><br /><br /><br />
+
 <!-- include tpl=foot_lay -->

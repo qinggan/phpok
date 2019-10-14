@@ -72,6 +72,8 @@ class api_control extends \phpok_control
 		$array = array();
 		$array['session_name'] = $this->session->sid();
 		$array['session_val'] = $this->session->sessid();
+		$this->session->assign('wx_openid',$openid);
+		$this->session->assign('is_miniprogram',true);
 		$array['login_status'] = true;
 		$this->success($array);
 	}
@@ -103,7 +105,8 @@ class api_control extends \phpok_control
 		if(!$info['openid']){
 			$this->error(P_Lang('获取会员的OpenID为空'));
 		}
-		$this->session->assign('wx_open_id',$info['openid']);
+		$this->session->assign('wx_openid',$info['openid']);
+		$this->session->assign('is_miniprogram',true);
 		$this->success($info['openid']);
 	}
 	
@@ -136,6 +139,20 @@ class api_control extends \phpok_control
 		}
 		$ext = array('id'=>$insert_id);
 		$this->model('user')->save_ext($ext);
+		//获取推荐人
+		if($this->session->val('introducer')){
+			$relaction_id = $this->session->val('introducer');
+		}
+		$code = $this->get('code');//推荐码
+		if($code){
+			$tmp = $this->model('user')->get_one($code,'code',false,false);
+			if($tmp){
+				$relaction_id = $tmp[id];
+			}
+		}
+		if($relaction_id){
+			$this->model('user')->save_relation($insert_id,$relaction_id);
+		}
 		$data['uid'] = $insert_id;
 		$this->model('wxappconfig')->save_user($data);
 		return $insert_id;

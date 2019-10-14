@@ -36,18 +36,36 @@ class model extends \phpok_model
 	public function get_user($openid,$unionid='')
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."weixin_user WHERE openid='".$openid."'";
+		$rs = $this->db->get_one($sql);
+		if($rs){
+			return $rs;
+		}
 		if($unionid){
 			$sql = "SELECT * FROM ".$this->db->prefix."weixin_user WHERE unionid='".$unionid."'";
+			return $this->db->get_one($sql);
 		}
-		return $this->db->get_one($sql);
+		return false;
 	}
 	
 	public function save_user($data)
 	{
-		$chk = $this->get_user($data['openid'],$data['unionid']);
-		if($chk){
-			return $this->db->update_array($data,'weixin_user',array('openid'=>$chk['openid']));
+		if($data['unionid']){
+			$sql = "SELECT * FROM ".$this->db->prefix."weixin_user WHERE unionid='".$data['unionid']."'";
+			$list = $this->db->get_all($sql);
+			if($list){
+				foreach($list as $key=>$value){
+					$tmpdata = $data;
+					unset($data['openid']);
+					$this->db->update_array($tmpdata,'weixin_user',array('id'=>$value['id']));
+				}
+			}
 		}
-		return $this->db->insert_array($data,'weixin_user');
+		//--检查OpenID
+		$sql = "SELECT * FROM ".$this->db->prefix."weixin_user WHERE openid='".$data['openid']."'";
+		$rs = $this->db->get_one($sql);
+		if($rs){
+			return $this->db->update_array($data,'weixin_user',array('id'=>$rs['id']));
+		}
+		$this->db->insert_array($data,'weixin_user');
 	}
 }
