@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<title><![CDATA[收藏夹]]></title>
 	<status>
-		<admin>1</admin>
-		<api>1</api>
-		<www>1</www>
+		<admin><![CDATA[1]]></admin>
+		<api><![CDATA[1]]></api>
+		<www><![CDATA[1]]></www>
 	</status>
 	<install><![CDATA[install.php]]></install>
 	<uninstall><![CDATA[uninstall.php]]></uninstall>
-	<installed>1</installed>
+	<installed><![CDATA[1]]></installed>
 </root>
