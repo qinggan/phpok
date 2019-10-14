@@ -18,6 +18,12 @@
 		<action>add</action>
 		<taxis>3</taxis>
 	</fee>
+	<tax>
+		<title>税费</title>
+		<status>0</status>
+		<action>add</action>
+		<taxis>3</taxis>
+	</tax>
 	<discount>
 		<title>优惠价格</title>
 		<status>1</status>

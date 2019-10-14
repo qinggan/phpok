@@ -5,4 +5,5 @@ autoload_js = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.min.js,jquery
 ;隐藏险证码配置，设置为 TRUE 后，验证码配置按钮将不显示
 hide_vcode_setting = false
 
-debug = true
+;显示环境配置信息，设为 false 则隐藏
+show_env = false

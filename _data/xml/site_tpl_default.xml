@@ -68,6 +68,18 @@
 		<title><![CDATA[在线充值页]]></title>
 		<default><![CDATA[payment_index]]></default>
 	</payment-index>
+	<payment-notice-success>
+		<title><![CDATA[付款成功提示]]></title>
+		<default><![CDATA[payment_notice_success]]></default>
+	</payment-notice-success>
+	<payment-notice-error>
+		<title><![CDATA[付款失败提示]]></title>
+		<default><![CDATA[payment_notice_error]]></default>
+	</payment-notice-error>
+	<payment-index>
+		<title><![CDATA[在线充值页]]></title>
+		<default><![CDATA[payment_index]]></default>
+	</payment-index>
 	<register-index>
 		<title><![CDATA[会员注册页]]></title>
 		<default><![CDATA[register]]></default>

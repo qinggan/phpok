@@ -63,7 +63,7 @@ is_login = false
 autoload_js = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.min.js,jquery.json.min.js"
 
 ;获取域名方式，Apache 用户建议使用 SERVER_NAME，Nginx 用户建议使用 HTTP_HOST
-get_domain_method = SERVER_NAME
+get_domain_method = HTTP_HOST
 
 ;是否多语言选择
 multiple_language = false
@@ -113,11 +113,25 @@ excludejs = ""
 ; SEO分割线，注意空格
 line = "_"
 
+;是否继承上一级SEO，设为true会一层层递归进来
+inherit = false
+
 ;SEO优化模式，{title}，即传过来的标题值，{seo} 是内置的 SEO 标题，{sitename} 即是网站名称
 format = "{title}-{sitename}-{seo}"
 
 [order]
-price = "product,shipping,fee,discount"
+;价格选项
+;product 产品价格
+;shipping 运费
+;fee 手续费
+;tax 税费
+;discount 打扰优惠
+;discount-shipping 运费打折
+price = "product,shipping,discount-shipping,fee,discount,tax"
+
+;地址，国内用户一般只需要使用shipping地址，即收货地址
+;海外用户还会用到billing地址，即账单地址(正常情况默认账单地址和收货地址是一样的)
+address = "shipping,billing"
 
 [cart]
 ;购物车里的图片来字系统中哪个字段
@@ -156,10 +170,10 @@ status = true
 server = 'cdn.phpok.com'
 
 ;IP地址，用于检测CDN时响应过长造成
-ip = ""
+ip = "124.225.167.225"
 
 ;是否启用https
-https = false
+https = true
 
 ;多久检测CDN连接情况，单位是秒
 time = 3600

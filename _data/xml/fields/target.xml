@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<title><![CDATA[网址打开方式]]></title>
+	<title><![CDATA[打开方式]]></title>
 	<identifier><![CDATA[target]]></identifier>
 	<field_type><![CDATA[varchar]]></field_type>
 	<note><![CDATA[请选择是在新窗口或是当前窗口打开网址]]></note>
