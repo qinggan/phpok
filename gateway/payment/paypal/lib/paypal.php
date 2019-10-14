@@ -168,7 +168,7 @@ class paypal_payment
 			return false;
 		}
 		$price = str_replace(array('&#x2e;','&#x2c;','&#x20;'),array('.',',',' '),$price);
-		$data = array('price'=>$price,'sn'=>$sn);
+		$data = array('price'=>round($price,2),'sn'=>$sn);
 		$md5sign = $this->md5sign($data);
 		if($md5sign != $checkcode){
 			return false;
@@ -186,13 +186,11 @@ class paypal_payment
 			$data = $tmp;
 			unset($tmp);
 		}
-		//reset($data);
-		//sort($data);
 		$string = 'phpok';
 		foreach($data as $key=>$value){
 			$string .= '-'.trim(strtolower($key)).'-'.trim(strtolower($value));
 		}
-		return md5($string.$this->action_url.$this->payid.$this->pdt);
+		$info = md5($string.$this->action_url.$this->payid.$this->pdt);
+		return $info;
 	}
 }
-?>

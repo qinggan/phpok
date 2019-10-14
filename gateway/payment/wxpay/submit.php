@@ -24,7 +24,7 @@ class wxpay_submit
 		include "wxpay.php";
 	}
 
-	public function submit()
+	public function submit($json=false)
 	{
 		global $app;
 		$wxpay = new wxpay_lib();
@@ -69,6 +69,17 @@ class wxpay_submit
 			$app->assign('wxconfig',$config);
 			$ajaxurl = $app->url('payment','query','sn='.$this->order['sn'].'-'.$this->order['id'],'api');
 			$app->assign('ajaxurl',$ajaxurl);
+			if($json){
+				$array = array('appId'=>$config['appId']);
+				$array['timeStamp'] = $config['timeStamp'];
+				$array['nonceStr'] = $config['nonceStr'];
+				$array['paySign'] = $config['paySign'];
+				$array['logId'] = $order['id'];
+				$array['order_id'] = $rs['id'];
+				$array['snId'] = $this->order['sn'].'-'.$this->order['id'];
+				$array['prepay_id'] = $info['prepay_id'];
+				$app->success($array);
+			}
 			$app->tpl->display("payment/wxpay/submit_miniprogram");
 			exit;
 		}
@@ -85,14 +96,12 @@ class wxpay_submit
 		$app->assign('price_rmb',$price);
 		$ajaxurl = $app->url('payment','query','sn='.$this->order['sn'].'-'.$this->order['id'],'api');
 		$app->assign('ajaxurl',$ajaxurl);
-		if($wxpay->trade_type() == 'wap'){
-			$config = $wxpay->get_jsapi_param($info);
-			$app->assign('wxconfig',$config);
-			$string = 'appid='.$config['appId'].'&timestamp='.$config['timeStamp'].'&noncestr='.$config['nonceStr'];
-			$string.= "&package=WAP&prepayid=".$config['prepay_id']."&sign=".$config['sign'];
-			$url = "weixin://wap/pay?".rawurlencode($string);
-			$app->assign('wxpay_link',$url);
-			$app->tpl->display("payment/wxpay/submit_wap");
+		//H5支付
+		if($wxpay->trade_type() == 'mweb'){
+			$notice_url = $app->url('payment','notice','id='.$this->order['id'],'www',true);
+			$url = $info['mweb_url']."&redirect_url=".rawurlencode($notice_url);
+			$app->_location($url);
+			exit;
 		}
 		if($wxpay->trade_type() == 'jsapi'){
 			$config = $wxpay->get_jsapi_param($info);
@@ -103,7 +112,7 @@ class wxpay_submit
 		}elseif($wxpay->trade_type() == 'miniprogram'){
 			$wxpay->trade_type('jsapi');
 			$app->assign('wxconfig',$config);
-			$app->tpl->display("payment/wxpay/submit_miniprogram");
+			$app->tpl->display($app->tpl->dir_tplroot."payment/wxpay/submit_miniprogram.html",'abs-file');
 		}
 	}
 

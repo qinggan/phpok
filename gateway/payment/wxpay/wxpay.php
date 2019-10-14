@@ -284,6 +284,30 @@ class wxpay_lib
 		return $rs;
 	}
 
+	public function getIp()
+	{
+		if(!empty($_SERVER["HTTP_CLIENT_IP"]))
+		{
+			$cip = $_SERVER["HTTP_CLIENT_IP"];
+		}
+		else if(!empty($_SERVER["HTTP_X_FORWARDED_FOR"]))
+		{
+			$cip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+		}
+		else if(!empty($_SERVER["REMOTE_ADDR"]))
+		{
+			$cip = $_SERVER["REMOTE_ADDR"];
+		}
+		else
+		{
+			$cip = '';
+		}
+		preg_match("/[\d\.]{7,15}/", $cip, $cips);
+		$cip = isset($cips[0]) ? $cips[0] : 'unknown';
+		unset($cips);
+		return $cip;
+	}
+
 	//创建订单
 	public function create($data)
 	{
@@ -300,10 +324,12 @@ class wxpay_lib
 			$this->errmsg('统一支付接口中，缺少必填参数openid！trade_type为JSAPI时，openid为必填参数！');
 			return false;
 		}
-		$data['appid'] = $this->appid;
+		if($this->appid){
+			$data['appid'] = $this->appid;
+		}
 		$data['mch_id'] = $this->mch_id;
 		$data['nonce_str'] = $this->nonce_str;
-		$data['spbill_create_ip'] = $GLOBALS['app']->lib('common')->ip();
+		$data['spbill_create_ip'] = $this->getIp();
 		if(!$data['spbill_create_ip']){
 			$data['spbill_create_ip'] = '0.0.0.0';
 		}
@@ -509,5 +535,22 @@ class wxpay_lib
 		}
 		return true;
 	}
+
+	public function wxAppParameters($data)
+	{
+		if(!$data || !$data['appid'] || !$data['prepay_id']){
+			$this->errmsg('参数错误');
+			return false;
+		}
+		$values = array();
+		$time = time();
+		$values['appid'] = $data['appid'];
+		$values['partnerid'] = $data['partnerid'];
+		$values['prepayid'] = $data['prepay_id'];
+		$values['package'] = "Sign=WXPay";
+		$values['timestamp'] = $this->time_stamp;
+		$values['noncestr'] = $this->nonce_str;
+		$values['sign'] = $this->create_sign($values,true);
+		return json_encode($values);
+	}
 }
-?>

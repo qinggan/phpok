@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title><![CDATA[AsiaBill 支付]]></title>
+	<code>
+		<mer_no>
+			<title>商户号</title>
+			<type>text</type>
+		</mer_no>
+		<gateway_no>
+			<title>网关号</title>
+			<note>即网关接入号</note>
+			<type>text</type>
+		</gateway_no>
+		<sign_key>
+			<title>密钥</title>
+			<note>用于签名使用</note>
+			<type>text</type>
+		</sign_key>
+		<utype>
+			<title>类型</title>
+			<note>支持Iframe和跳转两种模式</note>
+			<type>radio</type>
+			<option>
+				<iframe>内嵌</iframe>
+				<direct>跳转</direct>
+			</option>
+			<default>iframe</default>
+		</utype>
+		<action>
+			<title>服务模式</title>
+			<note><![CDATA[测试：https://pay.asiabill.com/TestInterface/V2，正式：https://pay.asiabill.com/Interface/V2]]></note>
+			<type>text</type>
+		</action>
+	</code>
+</root>

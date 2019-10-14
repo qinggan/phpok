@@ -1,0 +1,96 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<script type="text/javascript">
+var alisms_id = '{$rs.id}';
+function update_tplcode(val)
+{
+	$("#content").val('');
+	if(!val || val == 'undefined'){
+		return true;
+	}
+	var url = get_url('gateway','extmanage','update=2&type=ajax&id='+alisms_id+'&manageid=send');
+	url += "&tplcode="+val;
+	$.phpok.json(url,function(data){
+		if(data.status){
+			$("#content").val(data.info);
+		}
+	});
+	return true;
+}
+function sendsms()
+{
+	$("#submit2").attr('disabled',true);
+	$('#sendsmssubmit').ajaxSubmit({
+		'type':'post',
+		'dataType':'json',
+		'url':get_url('gateway','extmanage','update=1&type=ajax&id='+alisms_id+'&manageid=send'),
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.alert('短信发送成功',function(){$.phpok.reload()},'succeed');
+			}else{
+				$("#submit2").attr('disabled',false);
+				$.dialog.alert(rs.info);
+			}
+		}
+	});
+	return false;
+}
+</script>
+<form method="post" id="sendsmssubmit" class="layui-form" onsubmit="return sendsms()">
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				手机号
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="mobile" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				提交接收人的手机号，仅支持一个手机号
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				短信模板
+			</label>
+			<div class="layui-input-inline">
+				<select name="tplcode" lay-filter="tplcode">
+					<option value="">请选择…</option>
+					<!-- loop from=$smslist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}">模板：{$value.title}<!-- if $value.note -->/{$value.note}<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				标签/ID必须是接口提供方设置好的
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				变量设置
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">请根据实际情况设置模板变量对应的内容</div>
+			<div class="layui-input-block">
+				<textarea name="content" id="content" class="layui-textarea"></textarea>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info" style="margin-left:0;">
+	<div class="layui-container center">
+		<input type="submit" value="{lang发短信}" class="layui-btn" id="submit2" />
+	</div>
+</div>
+</form>
+<script type="text/javascript">
+$(document).ready(function(){
+	layui.use('form',function(){
+		var form = layui.form;
+		form.on('select(tplcode)',function(data){
+			update_tplcode(data.value)
+		});
+	});
+});
+</script>
+<!-- include tpl=foot_lay is_open=true -->

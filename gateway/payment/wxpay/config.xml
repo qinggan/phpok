@@ -34,7 +34,7 @@
 			<option>
 				<native>原生扫码支付</native>
 				<jsapi>公众号支付</jsapi>
-				<wap>H5支付</wap>
+				<mweb>H5支付</mweb>
 				<miniprogram>小程序支付</miniprogram>
 			</option>
 			<default>native</default>

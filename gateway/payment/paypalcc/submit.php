@@ -47,9 +47,11 @@ class paypalcc_submit
 		$paypal->api_password($this->payment_config['param']['api_password']);
 		$paypal->api_signature($this->payment_config['param']['api_signature']);
 		$cc_data = $app->get('cc_data');
-		if($cc_data){
-			$paypal->cc($cc_data);
+		if(!$cc_data){
+			$app->view("payment/paypalcc/submit");
+			exit;
 		}
+		$paypal->cc($cc_data);
 		//如果订单付款成功
 		$rs = $paypal->submit();
 		if(!$rs || !is_array($rs)){

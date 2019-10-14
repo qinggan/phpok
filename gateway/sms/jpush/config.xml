@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>极光短信</title>
+	<note>官网（https://www.jiguang.cn/）</note>
+	<code>
+		<app_key>
+			<title>AppKey</title>
+			<note><![CDATA[请到极光开发者平台上查看就用的 AppKey 信息]]></note>
+			<type>text</type>
+			<required>true</required>
+		</app_key>
+		<master_secret>
+			<title><![CDATA[Master Secret]]></title>
+			<note><![CDATA[用于服务器端 API 调用时与 AppKey 配合使用达到鉴权的目的，请保管好 Master Secret 防止外泄。]]></note>
+			<type>text</type>
+			<required>true</required>
+		</master_secret>
+		<master_secret>
+			<title><![CDATA[Master Secret]]></title>
+			<note><![CDATA[用于服务器端 API 调用时与 AppKey 配合使用达到鉴权的目的，请保管好 Master Secret 防止外泄。]]></note>
+			<type>text</type>
+			<required>true</required>
+		</master_secret>
+		<sign>
+			<title><![CDATA[签名ID]]></title>
+			<note><![CDATA[因运营商要求，每条短信都必须有相应的签名以表明自身身份，请到开发平台上获取]]></note>
+			<type>text</type>
+			<required>true</required>
+		</sign>
+	</code>
+	<manage>
+		<send>
+			<title>发短信</title>
+			<exec>sendsms</exec>
+			<type>page</type>
+		</send>
+		<readme>
+			<title>帮助说明</title>
+			<exec>readme</exec>
+			<type>page</type>
+		</readme>
+	</manage>
+</root>

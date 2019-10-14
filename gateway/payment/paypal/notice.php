@@ -30,9 +30,10 @@ class paypal_notice
 		}
 		$paypal = new paypal_payment($this->param['param']["payid"],$this->param['param']["at"]);
 		$paypal->set_value("action_url",$this->param['param']["action"]);
-		$price = $app->get('mc_gross');
-		$sn = $app->get('invoice');
-		$checkcode = $app->get('custom');
+		$price = $app->get('amt');
+		$sn = $app->get('item_number');
+		$checkcode = $app->get('cm');
+		$tx = $app->get('tx');
 		if(!$checkcode || !$price || !$sn){
 			return false;
 		}
@@ -40,23 +41,17 @@ class paypal_notice
 		if(!$chk){
 			return false;
 		}
-		$payment_status = $app->get('payment_status');
+		$payment_status = $app->get('st');
 		if($payment_status != 'Completed'){
 			return false;
 		}
+		$info = $_GET;
+		unset($info['c'],$info['f'],$info['id']);
+		if($info['_noCache']){
+			unset($info['_noCache']);
+		}
 		$p_array = $this->order['ext'] ? unserialize($this->order['ext']) : array();
-		$p_array['txn_id'] = $app->get('txn_id');
-		$p_array['txn_type'] = $app->get('txn_type');
-		$p_array['mc_fee'] = $app->get('mc_fee');
-		$p_array['mc_currency'] = $app->get('mc_currency');
-		$p_array['mc_gross'] = $price;
-		$p_array['payer_email'] = $app->get('payer_email');
-		$p_array['first_name'] = $app->get('first_name');
-		$p_array['last_name'] = $app->get('last_name');
-		$p_array['payer_business_name'] = $app->get('payer_business_name');
-		$p_array['payer_status'] = $app->get('payer_status');
-		$p_array['exchange_rate'] = $app->get('exchange_rate');
-		$p_array['payment_date'] = $app->get('payment_date');
+		$p_array = array_merge($p_array,$info);
 		$array = array('status'=>1,'ext'=>serialize($p_array));
 		$app->db->update_array($array,'payment_log',array('id'=>$this->order['id']));
 		if($this->order['type'] == 'order'){
@@ -81,4 +76,3 @@ class paypal_notice
 		return true;
 	}
 }
-?>
