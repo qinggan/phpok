@@ -113,6 +113,25 @@ input[type="number"] {
     display: initial !important;
 
 }
+
+.layui-layout-admin .layui-layout-left .layui-nav-item{
+	margin:0 10px;
+}
+.layui-nav .layui-nav-item a{
+	padding:0 10px;
+}
+
+.layui-btn-group .layui-btn:first-child{
+	border-radius:0;
+}
+
+.layui-btn-group .layui-btn:last-child{
+	border-radius:0;
+}
+
+
+
+
 /* LayUI 后台样式框架改写-结束*/
 
 .red{color:red;}
@@ -147,8 +166,7 @@ input[type="number"] {
 	padding:0;
 }
 .hide{display:none;}
-.phpok-search .layui-inline{min-width:310px;}
-
+.phpok-search .layui-inline{min-width:310px;width:20%;}
 
 .ext_edit{
 	position: absolute;

@@ -21,7 +21,6 @@ table.aui_border, table.aui_dialog {
 }
 .aui_header, .aui_buttons button {
 	font: 12px/1.11 'Microsoft Yahei', Tahoma, Arial, Helvetica, STHeiti;
-	-o-font-family: Tahoma, Arial;
 }
 .aui_title {
 	overflow:hidden;
@@ -94,9 +93,9 @@ table.aui_border, table.aui_dialog {
 	overflow:visible;
 	color: #444;
 	border: solid 1px #D8DADA;
-	border-radius: 4px;
 	background: #f5f5f5;
 }
+
 .aui_buttons button::-moz-focus-inner {
 	border:0;
 	padding:0;
@@ -117,11 +116,13 @@ table.aui_border, table.aui_dialog {
 	opacity:.5;
 	box-shadow:none;
 }
+
 button.aui_state_highlight {
 	color: #FFF;
 	border: solid 1px #3887ED;
 	background: #458FEE;
 }
+
 button.aui_state_highlight:hover {
 	color:#FFF;
 	border: solid 1px #2C6DC3;
@@ -131,7 +132,6 @@ button.aui_state_highlight:hover {
 /* common end */
  .aui_inner {
 	background:#FFF;
-	border-radius:5px;
 }
 .aui_nw, .aui_ne, .aui_sw, .aui_se {
 	width:8px;
@@ -157,7 +157,6 @@ button.aui_state_highlight:hover {
 	height:44px;
 	border-top:1px solid #ededed;
 	border-bottom:1px solid #ededed;
-	border-radius:5px 5px 0 0;
 	font-weight:bold;
 }
 
@@ -194,7 +193,6 @@ button.aui_state_highlight:hover {
 .aui_buttons {
 	background-color:#f5f5f5;
 	border-top:solid 1px #ededed;
-	border-radius:0 0 5px 5px;
 }
 .aui_state_noTitle .aui_nw, .aui_state_noTitle .aui_ne, .aui_state_noTitle .aui_sw, .aui_state_noTitle .aui_se {
 	width:3px;

@@ -106,8 +106,7 @@ input[name=identifier]{
 .list tr.end{background:none}
 .list td{cursor:default;max-width:400px;overflow:hidden;word-break:break-all}
 .list td.hover{background:#F3F3F3;}
-.list tr:hover td{background:#2A2A2A;color:#fff;}
-.list tr:hover td a{color:#fff;}
+.list tr:hover td{background:#F5F5F5;}
 
 
 .list2{margin:5px 3px 0 0;}
