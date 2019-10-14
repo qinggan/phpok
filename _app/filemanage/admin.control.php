@@ -142,13 +142,13 @@ class admin_control extends \phpok_control
 		$this->assign("title",$title);
 		//加载编辑器
 		$cdnUrl = phpok_cdn();
-		$this->addcss($cdnUrl.'codemirror/5.42.2/lib/codemirror.css');
-		$this->addjs($cdnUrl.'codemirror/5.42.2/lib/codemirror.js');
-		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/css/css.js');
-		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/javascript/javascript.js');
-		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/htmlmixed/htmlmixed.js');
-		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/php/php.js');
-		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/xml/xml.js');
+		$this->addcss($cdnUrl.'codemirror/5.42.2/lib/codemirror.css?response-content-type=text/css');
+		$this->addjs($cdnUrl.'codemirror/5.42.2/lib/codemirror.js?response-content-type=application/x-javascript');
+		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/css/css.js?response-content-type=application/x-javascript');
+		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/javascript/javascript.js?response-content-type=application/x-javascript');
+		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/htmlmixed/htmlmixed.js?response-content-type=application/x-javascript');
+		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/php/php.js?response-content-type=application/x-javascript');
+		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/xml/xml.js?response-content-type=application/x-javascript');
 		$this->display("admin_edit");
 	}
 
