@@ -56,7 +56,7 @@
 			});
         }
         uploader.onUploadProgress = function(file,percent){
-	        if(self.opts.loading && self.opts.loading != 'undefined'){
+	        if(self.opts && self.opts.loading && self.opts.loading != 'undefined'){
 				(self.opts.loading)(file,percent);
 			}
 	        var $li = $('#phpok-upfile-'+file.id),

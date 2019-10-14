@@ -1,0 +1,221 @@
+<!-- include tpl=header title="Place Order" -->
+<script type="text/javascript">
+var user_id = "{$session.user_id}";
+</script>
+<div id="content">
+	<div id="main" class="bgColor">
+		<div class="container clear">
+			<!-- 支付流程 -->
+			<ul class="liucheng clear">
+				<li class="fl active">
+					<div class="number">01</div>
+					<p class="text">Shipping</p>
+				</li>
+				<li class="active">
+					<div class="number">02</div>
+					<p class="text">Order Review</p>
+				</li>
+				<li class="fr active">
+					<div class="number">03</div>
+					<p class="text">Payment</p>
+				</li>
+			</ul>
+			<form method="post" id="post_save" onsubmit="return order_create()">
+			<input type="hidden" name="email" id="email" value="{$session.cart_email}" />
+			<div class="leftBox2 fl">
+				<div class="lcBox1">
+					<h4 class="bTitle clear">01. Shipping</h4>
+					<!-- loop from=$address key=$key value=$value id=$tmpid -->
+					<!-- loop from=$value key=$k value=$v id=$idxx -->
+					<input type="hidden" name="{$key}-{$k}" id="{$key}-{$k}" value="{$v}" />
+					<!-- /loop -->
+					<div class="d1">
+						<p class="title">{func ucwords $key} address</p>
+						<div class="textBox">
+							<p class="name">{$value.firstname} {$value.lastname}</p>
+							<p>{$value.address}</p>
+							<!-- if $value.address2 --><p>{$value.address2}</p><!-- /if -->
+							<p><!-- if $value.city -->{$value.city}, <!-- /if --><!-- if $value.province -->{$value.province}, <!-- /if --> {$value.country}</p>
+							<p>{$value.zipcode}</p>
+							<p>{$value.mobile}</p>
+						</div>
+					</div>
+					<!-- /loop -->
+				</div>
+
+				<div class="form2">
+					<h4 class="bTitle clear">02. Order Review</h4>
+					<div class="titleBox clear">
+						<p class="title fl">Item(s) in Cart ( {$qty} )</p>
+					</div>
+					<ul class="list">
+						<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+						<li>
+							<div class="cTable">
+								<div class="imgBox">
+									<img src="{$value.thumb ? $value.thumb : 'images/nopic.png'}" alt="{$value.title}" />
+								</div>
+								<div class="textBox">
+									<p class="title">{$value.title}</p>
+									<p>Quantity: {$value.qty}</p>
+								</div>
+								<div class="priceBox">
+									<p class="price">${func number_format $value.price*$value.qty 0 . ,}</p>
+								</div>
+							</div>
+						</li>
+						<!-- /loop -->
+					</ul>
+
+					<div class="coupon">
+						<div class="box1 clear">
+							<input type="text" value="{$coupon_code}" placeholder="Gift card or discount code" id="coupon">
+							<p class="btn" onclick="update_coupon()">Apply</p>
+						</div>
+					</div>
+
+					<div class="tBox">
+						<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
+						<p class="clear{if $value.identifier == 'fee' || $value.identifier == 'discount'} cRed{/if}">{$value.title} : <span><!-- if $value.price -->${func number_format $value.price_val 0 . ,}<!-- else -->$0<!-- /if --></span></p>
+						<!-- /loop -->
+					</div>
+
+					<p class="total">Total :<span>{$price}</span></p>
+					<p class="mianze">By clicking "Place Order" , you confirm that you have read and agreed to our <a href="{$config.ext.terms}" target="_blank">Terms of Use</a> and <a href="{$config.ext.privacy_link}" target="_blank">Privacy Policy.</a></p>
+					<a href="javascript:void(0);" class="btn2 bgColor666">CONTINUE TO PAYMENT</a>
+				</div>
+				<div class="form3">
+					<div class="wrap">
+						<h4 class="bTitle">03. Payment Method</h4>
+						
+						<div class="box1 active unique">
+							<div class="tBox clear">
+								<div class="lBox fl">
+									<p class="title">Credit Card</p>
+									<p class="lp2">We accept Visa, MasterCard, JCB</p>
+								</div>
+								<div class="rBox fr">
+									<img src="images/c1.jpg" alt="">
+									<img src="images/c2.jpg" alt="">
+									<img src="images/c3.jpg" alt="">
+									<img src="images/c4.jpg" alt="">
+								</div>
+							</div>
+							<div class="bBox clear">
+								<div class="lBox fl" style="width:100%">
+									<p class="title clear"><span>Secure and Encrypted</span></p>
+									<div class="imgBox">
+										<img src="images/c1.jpg" alt="">
+										<img src="images/c2.jpg" alt="">
+										<img src="images/c3.jpg" alt="">
+										<img src="images/c4.jpg" alt="">
+									</div>
+									<div class="div1">
+										<p class="p2">Card number <i>*</i></p>
+										<input type="text" name="creditCardNumber" id="creditCardNumber">
+									</div>
+									<div class="div2 clear">
+										<div class="sBox">
+											<p class="p2">MM <i>*</i></p>
+											<select name="expDateMonth" id="expDateMonth">
+												<option value=""></option>
+												<option value="">1</option>
+												<option value="">2</option>
+												<option value="">3</option>
+												<option value="">4</option>
+												<option value="">5</option>
+												<option value="">6</option>
+												<option value="">7</option>
+												<option value="">8</option>
+												<option value="">9</option>
+												<option value="">10</option>
+												<option value="">11</option>
+												<option value="">12</option>
+											</select>
+										</div>
+										<div class="sBox sCenter">
+											<p class="p2">YY <i>*</i></p>
+											<select name="expDateYear" id="expDateYear">
+												<option value=""></option>
+												<!-- loop from=$yearlist key=$key value=$value id=$tmpid -->
+												<option value="{$value}">{$value}</option>
+												<!-- /loop -->
+											</select>
+										</div>
+										<div class="sBox iBox">
+											<p class="p2">CVV <i>*</i></p>
+											<input type="text" name="cvv2Number" id="cvv2Number">
+											<div class="shuoming">
+												<span>i</span>
+												<div class="clear">
+													<img src="images/sm1.png" alt="">
+													<img src="images/sm2.png" alt="">
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="div1">
+										<p class="p2">Cardholder Name <i>*</i></p>
+										<input type="text" name="fullname" id="fullname">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="box2">
+							<div class="tBox clear">
+								<div class="lBox fl">
+									<p class="title">PayPal</p>
+									<p class="lp2">You will be redirected to PayPal after placing order</p>
+								</div>
+								<div class="rBox fr">
+									<img src="images/paypal.jpg" alt="">
+								</div>
+							</div>
+						</div>
+					</div>
+					<input type="submit" value="PLACE ORDER" class="submit" style="cursor:pointer;" />
+				</div>
+
+			</div>
+			</form>
+
+			<div class="rightBox2 fr">
+				<div class="wrap">
+					<h4 class="bTitle clear">Order Summary <span>({$qty})</span></h4>
+					<ul class="list">
+						<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+						
+						<li>
+							<div class="cTable">
+								<div class="imgBox">
+									<img src="{$value.thumb ? $value.thumb : 'images/nopic.png'}" alt="{$value.title}" />
+								</div>
+								<div class="textBox">
+									<p class="title">{$value.title}</p>
+									<p>${func price_format2 $value.price $value.currency_id} X {$value.qty}</p>
+								</div>
+								<div class="priceBox">
+									<p class="price">${func price_format2 $value.price*$value.qty $value.currency_id}</p>
+								</div>
+							</div>
+						</li>
+						<!-- /loop -->
+					</ul>
+
+
+					<div class="box">
+						<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
+						<p class="clear{if $value.identifier == 'fee' || $value.identifier == 'discount'} cRed{/if}">{$value.title} : <span><!-- if $value.price_val -->${func number_format $value.price_val 0 . ,}<!-- else -->$0<!-- /if --></span></p>
+						<!-- /loop -->
+					</div>
+
+					<p class="total clear">Total :<span>{$price}</span></p>
+
+				</div>
+				<p class="bottomText">Shopping on qysea.com is safe and secure, your personal details are strictly protected.</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- include tpl=foot -->

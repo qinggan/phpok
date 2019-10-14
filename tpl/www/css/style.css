@@ -86,6 +86,12 @@ p{word-wrap:break-word;font-size:1.1em;}
 .am-titlebar-default .am-titlebar-title::before{border-color:#1f5796}
 .am-titlebar-default a{color:#1f5796}
 
+.am-breadcrumb{
+	font-size:100%;
+	margin-top:0.5em;
+	margin-bottom:1em;
+}
+
 
 /* Banner 图片，限宽高*/
 .banner{width:100%;min-width:1200px;background-position: center;background-size:cover;background-repeat:no-repeat;}
@@ -162,7 +168,7 @@ header div.top .logo{float:left;}
 header div.top .right{float:right;}
 header div.top nav.top{height:26px; line-height:26px; text-align:right; color:#666;display:block;}
 
-header nav.menu{width:100%;margin:0; height:40px;line-height:40px; background:#1f5796;list-style:none;position:relative;z-index:1799;}
+header nav.menu{width:100%;margin:0; height:48px;line-height:48px; background:#1f5796;list-style:none;position:relative;z-index:1799;}
 header nav.menu div.menu{width:1200px;margin:0 auto;}
 header nav.menu ul{width:1200px;list-style:none;margin:0;padding:0;position:absolute;z-index:1800;}
 header nav.menu ul li{ float:left;position:relative;width:12.5%;overflow:hidden;}

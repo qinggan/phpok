@@ -1,30 +1,6 @@
 <!-- include tpl=header title=会员登录 -->
-<script type="text/javascript">
-var open_vcode = '{$is_vcode}';
-function check_input()
-{
-	var user = $("input[name=user]").val();
-	if(!user){
-		$.dialog.alert('账号不能为空','','error');
-		return false;
-	}
-	var pass = $("input[name=pass]").val();
-	if(!pass){
-		$.dialog.alert('密码不能为空','','error');
-		return false;
-	}
-	if(open_vcode == '1'){
-		var chkcode = $("#_chkcode").val();
-		if(!chkcode){
-			$.dialog.alert('验证码不能为空','','error');
-			return false;
-		}
-	}
-	return true;
-}
-</script>
 <div class="main main-single main-login am-animation-scale-up">
-	<form class="am-form" onsubmit="return check_input()" method="post" action="{url ctrl=login func=ok/}">
+	<form class="am-form" onsubmit="return $.user.login_ok()" method="post" id="login-submit">
 		<input type="hidden" name="_back" id="_back" value="{$_back}" />
 		<fieldset>
 			<legend>会员登录</legend>

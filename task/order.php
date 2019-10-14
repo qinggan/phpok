@@ -15,7 +15,13 @@ $order = $this->model('order')->get_one($param['id']);
 if(!$order){
 	return false;
 }
+//订单信息
 $this->assign('order',$order);
+//订单产品信息
+$rslist = $this->model('order')->product_list($order['id']);
+$this->assign('rslist',$rslist);
+
+
 $sql = "SELECT tid FROM ".$this->db->prefix."order_product WHERE order_id='".$order['id']."' AND tid>0 LIMIT 1";
 $tmpchk = $this->db->get_one($sql);
 if($tmpchk && $tmpchk['tid']){
@@ -26,12 +32,17 @@ if($tmpchk && $tmpchk['tid']){
 	}
 }
 
+//订单状态信息
 $status_list = $this->model('site')->order_status_all();
 if(!$status_list || !$status_list[$param['status']]){
 	return false;
 }
 $status = $status_list[$param['status']];
 $this->assign('status',$status);
+
+//订单物流信息
+$express_list = $this->model('order')->express_info_all($order['id']);
+$this->assign('express_list',$express_list);
 
 //通知会员
 if($status['email_tpl_user']){

@@ -31,7 +31,7 @@ function attr_select(id,aid)
 			}
 		}
 	});
-	var url = api_url('cart','price_format','price='+$.str.encode(price));
+	var url = api_url('index','price','price='+$.str.encode(price)+"&from={$rs.currency_id}&to={$config.currency_id}&symbol=1");
 	$.phpok.json(url,function(rs){
 		if(rs.status){
 			$("#showprice").html(rs.info);
@@ -181,7 +181,7 @@ $(document).ready(function(){
 					<li>
 						<div class="am-g">
 							<div class="am-u-sm-4"><b>价格</b></div>
-							<div class="am-u-sm-8"><span class="price" style="color:red;font-size:16px;" id="showprice">{func price_format $rs.price $rs.currency_id}</span></div>
+							<div class="am-u-sm-8"><span class="price" style="color:red;font-size:16px;" id="showprice">{func price_format $rs.price $rs.currency_id $config.currency_id}</span></div>
 						</div>
 					</li>
 				</ul>

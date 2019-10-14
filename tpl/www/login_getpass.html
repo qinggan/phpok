@@ -48,34 +48,6 @@ function update_send_email_loading()
 	$("#email_send_status").val(tips);
 }
 
-function check_input()
-{
-	var email = $("input[name=email]").val();
-	if(!email){
-		$.dialog.alert('邮箱不能为空','','error');
-		return false;
-	}
-	var code = $("input[name=_chkcode]").val();
-	if(!code){
-		$.dialog.alert('验证码不能为空','','error');
-		return false;
-	}
-	var url = api_url('login','email','email='+email+"&_chkcode="+code);
-	$.phpok.json(url,function(rs){
-		if(rs.status){
-			var backurl = $("input[name=_back]").val();
-			if(!backurl){
-				backurl = webroot;
-			}
-			$.phpok.go(backurl);
-			return false;
-		}
-		$.dialog.alert(rs.info,true,'error');
-		return false;
-	});
-	
-	return false;
-}
 function send_email()
 {
 	if(email_send_lock){
@@ -123,42 +95,6 @@ function update_send_sms_loading()
 	}
 	var tips = "验证码已发送("+maxtime+")";
 	$("#mobile_send_status").val(tips);
-}
-
-function check_input()
-{
-	$("#login_submit").attr("disabled",true);
-	var act = $.dialog.tips('正在登录，请稍候…');
-	var mobile = $("input[name=mobile]").val();
-	if(!mobile){
-		$("#login_submit").attr("disabled",false);
-		act.close();
-		$.dialog.alert('手机号不能为空','','error');
-		return false;
-	}
-	var code = $("input[name=_chkcode]").val();
-	if(!code){
-		$("#login_submit").attr("disabled",false);
-		act.close();
-		$.dialog.alert('验证码不能为空','','error');
-		return false;
-	}
-	var url = api_url('login','sms','mobile='+mobile+"&_chkcode="+code);
-	$.phpok.json(url,function(rs){
-		$("#login_submit").attr("disabled",false);
-		act.close();
-		if(rs.status){
-			var backurl = $("input[name=_back]").val();
-			if(!backurl){
-				backurl = webroot;
-			}
-			$.phpok.go(backurl);
-			return true;
-		}
-		$.dialog.alert(rs.info,true,'error');
-		return false;
-	});
-	return false;
 }
 
 function send_sms()

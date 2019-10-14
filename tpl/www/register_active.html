@@ -1,0 +1,70 @@
+<!-- include tpl=header title=会员激活 -->
+<script type="text/javascript">
+function register_active()
+{
+	$("#register-active").ajaxSubmit({
+		'url':api_url('register','active'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.tips('会员激活成功',function(){
+					$.phpok.go(get_url('index'));
+				}).lock();
+				return false;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+<div class="main main-single main-login am-animation-scale-up">
+	<div class="am-g">
+		<div class="am-u-sm-12">
+			<form class="am-form am-form-horizontal" method="post" id="register-active" onsubmit="return register_active()">
+			<fieldset>
+				<legend>会员激活</legend>
+				<div class="am-form-group">
+					<label for="_code" class="am-u-sm-3 am-form-label">激活码：</label>
+					<div class="am-u-sm-9">
+						<input class="input" type="text" name="code" id="code" value="{$code}" placeholder="填写您收到的激活码" />
+					</div>
+				</div>
+				<div class="am-form-group">
+					<label for="user" class="am-u-sm-3 am-form-label">账号：</label>
+					<div class="am-u-sm-9">
+						<input class="input" type="text" name="user" id="user" value="{$rs.user}" placeholder="填写要激活的账号" />
+					</div>
+				</div>
+				<div class="am-form-group">
+					<label for="newpass" class="am-u-sm-3 am-form-label">密码：</label>
+					<div class="am-u-sm-9">
+						<input class="input" type="password" name="newpass" id="newpass" placeholder="设置密码，要求不少于6位，建议数字 + 字母" />
+					</div>
+				</div>
+				<div class="am-form-group">
+					<label for="chkpass" class="am-u-sm-3 am-form-label">确认密码：</label>
+					<div class="am-u-sm-9">
+						<input class="input" type="password" name="chkpass" id="chkpass" placeholder="再次输入上面的密码" />
+					</div>
+				</div>
+			    <div class="am-form-group">
+					<div class="am-u-sm-3"></div>
+					<div class="am-u-sm-9">
+						<button type="submit" class="am-btn am-btn-primary">确认激活</button>
+						<a href="{$sys.url}" class="am-btn am-btn-default am-fr">返回首页</a>
+					</div>
+				</div>
+			</fieldset>
+			</form>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("body").css('background-color','#EFEFEF');
+});
+</script>
+<!-- include tpl=footer -->

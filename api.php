@@ -69,6 +69,11 @@ define('PLUGIN',ROOT.'plugins/');
 define('GATEWAY',ROOT.'gateway/');
 
 /**
+ * 强制输入为JSON格式
+**/
+define('IS_AJAX',true);
+
+/**
  * 引入初始化文件
 **/
 require(FRAMEWORK.'init.php');

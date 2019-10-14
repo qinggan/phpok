@@ -74,7 +74,7 @@
 				<!-- /if -->
 				<div class="am-g am-g-collapse">
 				  <div class="am-u-sm-8 am-text-truncate"><a href="{$value.url}" title="{$value.title}">{$value.title}</a></div>
-				  <!-- if $page_rs.is_biz --><div class="am-u-sm-4 red">{func price_format $value.price $value.currency_id}</div><!-- /if -->
+				  <!-- if $page_rs.is_biz --><div class="am-u-sm-4 red">{func price_format $value.price $value.currency_id $config.currency_id}</div><!-- /if -->
 				</div>
 			</li>
 			<!-- /loop -->

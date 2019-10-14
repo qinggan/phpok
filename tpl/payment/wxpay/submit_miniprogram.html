@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta name="renderer" content="webkit">
+	<title>在线支付</title>
+	<meta name="toTop" content="true" />
+	<base href="{$sys.url}" />
+	<!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
+	<script type="text/javascript" src="{url ctrl=js ext=jquery.artdialog/}" charset="utf-8"></script>
+	<script type="text/javascript" src="//res.wx.qq.com/open/{#js#}/jweixin-1.4.0.js"></script>
+</head>
+<body>
+<input type="hidden" name="logid" id="logid" value="{$order.id}" />
+<input type="hidden" name="sn" id="sn" value="{$rs.sn}" />
+<script type="text/javascript">
+function pending()
+{
+	var url = api_url('payment','query','sn='+$("#sn").val());
+	$.phpok.json("{$ajaxurl}",function(data){
+		if(data.status == 'ok'){
+			url = get_url('payment','show','id='+$("#logid").val());
+			$.phpok.go(url);
+			return true;
+		}else{
+			window.setTimeout("pending()", 3000);
+		}
+	})
+}
+
+function callpay()
+{
+	var appId = '{$wxconfig.appId}';
+    var timestamp = '{$wxconfig.timeStamp}';
+    var nonceStr = '{$wxconfig.nonceStr}';
+    var signature = '{$wxconfig.paySign}';
+    var logId = '{$order.id}';
+    wx.miniProgram.navigateTo({
+		url:'/pages/wxpay/index?appId='+$.str.encode(appId)+"&timeStamp="+$.str.encode(timestamp)+"&nonceStr="+$.str.encode(nonceStr)+"&prepay_id={$info.prepay_id}&id="+logId+"&sign="+$.str.encode(signature)+"&order_id={$order.order_id}";
+	});
+}
+
+$(document).ready(function(){
+	window.setTimeout("pending()", 5000);
+	callpay();
+});
+</script>
+</body>
+</html>

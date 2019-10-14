@@ -101,3 +101,75 @@ ALTER TABLE `qinggan_cate`  ADD `module_id` INT UNSIGNED NOT NULL DEFAULT '0' CO
 
 -- 2019年3月27日
 ALTER TABLE `qinggan_cart_product`  ADD `apps` VARCHAR(255) NOT NULL COMMENT '应用管理器' ;
+
+
+-- 2019年4月30日
+ALTER TABLE `qinggan_express` ADD `logo` VARCHAR(255) NOT NULL COMMENT '物流快递公司的Logo' AFTER `homepage`;
+ALTER TABLE `qinggan_express` ADD `content` TEXT NOT NULL COMMENT '公司介绍';
+
+-- 2019年5月10日
+ALTER TABLE `qinggan_cart_product` ADD `parent_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID，不为0表示这是一个捆绑销售';
+
+-- 2019年5月12日
+ALTER TABLE `qinggan_user_group` ADD `tpl_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '通知模板ID' AFTER `tbl_id`;
+
+ALTER TABLE `qinggan_order_address` ADD `type` VARCHAR(255) NOT NULL DEFAULT 'shipping' COMMENT '地址类型，shipping表示收货地址，billing表示账单地址' AFTER `zipcode`;
+
+ALTER TABLE `qinggan_order_address` ADD `address2` VARCHAR(255) NOT NULL COMMENT '第二行地址，适用于第一行地址太多补全' AFTER `address`;
+
+ALTER TABLE `qinggan_order_address` ADD `firstname` VARCHAR(255) NOT NULL COMMENT '名字' AFTER `fullname`, ADD `lastname` VARCHAR(255) NOT NULL COMMENT '姓氏' AFTER `firstname`;
+
+-- 2019年5月18日
+ALTER TABLE `qinggan_order_address` ADD `country_code` VARCHAR(255) NOT NULL COMMENT '国家代码' AFTER `country`;
+
+-- 2019年7月14日
+ALTER TABLE `qinggan_res` ADD `mime_type` VARCHAR(255) NOT NULL COMMENT '附件类型';
+
+-- 2019年7月26日
+ALTER TABLE `qinggan_list_biz` CHANGE `price` `price` DECIMAL(15,4) NOT NULL DEFAULT '0' COMMENT '价格';
+ALTER TABLE `qinggan_list_attr` CHANGE `price` `price` DECIMAL(15,4) NOT NULL DEFAULT '0' COMMENT '增减价格值';
+
+-- 2019年8月4日
+ALTER TABLE `qinggan_order` CHANGE `price` `price` DECIMAL( 15, 4 ) NOT NULL DEFAULT '0.0000' COMMENT '金额';
+
+ALTER TABLE `qinggan_order_payment` CHANGE `price` `price` DECIMAL( 15, 4 ) NOT NULL DEFAULT '0.0000' COMMENT '支付金额';
+
+ALTER TABLE `qinggan_order_price` CHANGE `price` `price` DECIMAL( 15, 4 ) NOT NULL DEFAULT '0.0000' COMMENT '金额，-号表示优惠';
+
+ALTER TABLE `qinggan_order_product` CHANGE `price` `price` DECIMAL( 15, 4 ) NOT NULL DEFAULT '0.0000' COMMENT '产品单价';
+
+ALTER TABLE `qinggan_payment_log` CHANGE `price` `price` DECIMAL( 15, 4 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '价格';
+
+-- 2019年9月1日
+ALTER TABLE `qinggan_wealth_rule` ADD `group_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限制，其他限制这条规则仅在此会员组下的会员有效';
+ALTER TABLE `qinggan_wealth_rule` ADD `uids` VARCHAR(255) NOT NULL COMMENT '多个会员ID用英文逗号隔开';
+ALTER TABLE `qinggan_wealth_rule` ADD `qty_type` VARCHAR(255) NOT NULL DEFAULT 'order' COMMENT 'order指订单数，product指产品数';
+ALTER TABLE `qinggan_wealth_rule` ADD `qty` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限，其他值是在订单数量或产品数量值';
+ALTER TABLE `qinggan_wealth_rule` ADD `price_type` VARCHAR(255) NOT NULL DEFAULT 'order' COMMENT 'order指订单价格，product指产品价格';
+ALTER TABLE `qinggan_wealth_rule` ADD `price` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限，其他值指订单或产品价格时有效';
+ALTER TABLE `qinggan_wealth_rule` ADD `project_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限制，其他值限制项目';
+ALTER TABLE `qinggan_wealth_rule` ADD `title_id` VARCHAR( 255 ) NOT NULL COMMENT '主题限制，多个主题用英文逗号隔开，建议不超过30个主题';
+
+-- 2019年9月2日
+ALTER TABLE `qinggan_wealth_rule` ADD `goal_group_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限，其他限制目标会员组ID';
+ALTER TABLE `qinggan_wealth_rule` ADD `goal_uids` VARCHAR(255) NOT NULL COMMENT '目标会员ID，多个会员ID用英文逗号隔开';
+
+-- 2019年9月3日
+ALTER TABLE `qinggan_project` ADD `is_api` INT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0接口不可访问，1可访问';
+
+-- 2019年9月9日
+ALTER TABLE `qinggan_order_address` ADD `address2` VARCHAR(255) NOT NULL COMMENT '楼层房号';
+ALTER TABLE `qinggan_order_address` ADD `type` VARCHAR(255) NOT NULL DEFAULT 'shipping' COMMENT '地址类型，shipping收货地址，billing账单地址';
+ALTER TABLE `qinggan_order_address` ADD `firstname` VARCHAR(255) NOT NULL COMMENT '名字';
+ALTER TABLE `qinggan_order_address` ADD `lastname` VARCHAR(255) NOT NULL COMMENT '姓氏';
+
+ALTER TABLE `qinggan_user_address` ADD `address2` VARCHAR(255) NOT NULL COMMENT '楼层房号';
+ALTER TABLE `qinggan_user_address` ADD `firstname` VARCHAR(255) NOT NULL COMMENT '名字';
+ALTER TABLE `qinggan_user_address` ADD `lastname` VARCHAR(255) NOT NULL COMMENT '姓氏';
+
+
+-- 2019年9月17日
+ALTER TABLE `qinggan_wealth_rule` ADD `if_stop` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不中止，1中止';
+
+-- 2019年10月06日
+ALTER TABLE `qinggan_all` ADD `is_api` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0禁用API，1启用API';

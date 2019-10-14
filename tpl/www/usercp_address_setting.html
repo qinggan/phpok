@@ -4,19 +4,19 @@ function save()
 {
 	var id = $("#id").val();
 	$("#setsubmit").ajaxSubmit({
-		'url':api_url('usercp','address_setting'),
+		'url':api_url('address','save'),
 		'type':'post',
 		'dataType':'json',
 		'success':function(rs){
-			if(rs.status == 'ok'){
+			if(rs.status){
 				var tip = id ? '{lang地址信息修改成功}' : '{lang地址信息添加成功}';
 				$.dialog.alert(tip,function(){
 					top.$.phpok.reload();
 				},'succeed');
-			}else{
-				$.dialog.alert(rs.content);
-				return false;
+				return true;
 			}
+			$.dialog.alert(rs.content);
+			return false;
 		}
 	});
 	return false;

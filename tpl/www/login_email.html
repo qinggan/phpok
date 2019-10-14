@@ -51,7 +51,7 @@ function send_email()
 		$.dialog.alert('验证码已发送，请五分钟后再执行');
 		return false;
 	}
-	var url = api_url('vcode','email');
+	var url = api_url('vcode','email','act=login');
 	var email = $("#email").val();
 	if(!email){
 		$.dialog.alert('邮箱不能为空');

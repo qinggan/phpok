@@ -11,15 +11,14 @@ function check_register()
 		return false;
 	}
 	$("#register-form").ajaxSubmit({
-		'url':get_url('register','save'),
+		'url':api_url('register','save'),
 		'type':'post',
 		'dataType':'json',
 		'success':function(rs){
 			if(rs.status){
-				var info = rs.info ? rs.info : '会员注册成功';
-				$.dialog.alert(info,function(){
+				$.dialog.tips('会员注册成功',function(){
 					$.phpok.go(get_url('index'));
-				},'succeed');
+				}).lock();
 				return false;
 			}
 			$.dialog.alert(rs.info);

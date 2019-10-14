@@ -1,0 +1,18 @@
+<!-- include tpl=header -->
+<div id="content">
+	<div id="commonBox">
+		<div class="cTextBox unique">
+			<img src="images/shibai.png" alt="">
+			<h4 class="title">Oops, your order payment failed!</h4>
+			<div class="text">
+				<p>Dear {$address.shipping.firstname}, Your Order Number is <a href="{url ctrl=order func=info id=$order.id/}">{$order.sn}</a> Please go to "<a href="{url ctrl=order/}">my orders</a>", and continue to complete the payment.</p>
+				<p>If this is your first time to purchasing our products, we have registered your login account with (<span>{$order.email}</span> email address). Please check for our email in your inbox to confirm and change your password.</p>
+			</div>
+			<div class="btnBox">
+				<a href="{url ctrl=order func=info sn=$order.sn passwd=$order.passwd/}" class="btn1">View order</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- include tpl=foot -->

@@ -59,7 +59,7 @@ function send_sms()
 		$.dialog.alert('验证码已发送，请一分钟后再执行');
 		return false;
 	}
-	var url = api_url('vcode','sms');
+	var url = api_url('vcode','sms','act=login');
 	var mobile = $("#mobile").val();
 	if(!mobile){
 		$.dialog.alert('手机号不能为空');

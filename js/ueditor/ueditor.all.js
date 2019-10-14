@@ -6931,13 +6931,11 @@ var fillCharReg = new RegExp(domUtils.fillChar, 'g');
                     'var _tmpScript = document.getElementById(\'_initialScript\');_tmpScript.parentNode.removeChild(_tmpScript);</script></html>';
                 container.appendChild(domUtils.createElement(document, 'iframe', {
                     id: 'ueditor_' + me.uid,
+                    name:'ueditor_' + me.uid,
                     width: "100%",
                     height: "100%",
                     frameborder: "0",
-                    //先注释掉了，加的原因忘记了，但开启会直接导致全屏模式下内容多时不会出现滚动条
-//                    scrolling :'no',
-                    src: 'javascript:void(function(){document.open();' + (options.customDomain && document.domain != location.hostname ?  'document.domain="' + document.domain + '";' : '') +
-                        'document.write("' + html + '");document.close();}())'
+                    src:"about:blank"
                 }));
                 container.style.overflow = 'hidden';
                 //解决如果是给定的百分比，会导致高度算不对的问题
@@ -6951,6 +6949,10 @@ var fillCharReg = new RegExp(domUtils.fillChar, 'g');
                         options.minFrameHeight = options.initialFrameHeight = container.offsetHeight;
                         container.style.height = options.initialFrameHeight + 'px';
                     }
+                    var frame = document.getElementById('ueditor_' + me.uid);
+					frame.contentWindow.document.open();
+					frame.contentWindow.document.write(html);
+					frame.contentWindow.document.close();
                 })
             }
         },
@@ -16519,6 +16521,7 @@ UE.plugins['video'] = function (){
                     ' src="' + me.options.UEDITOR_HOME_URL+'themes/default/images/spacer.gif" style="background:url('+me.options.UEDITOR_HOME_URL+'themes/default/images/videologo.gif) no-repeat center center; border:1px solid gray;'+(align ? 'float:' + align + ';': '')+'" />'
                 break;
             case 'embed':
+            	//str = '<iframe class="' + classname + '" src="' + utils.html(url) + '" width="' + width  + '" height="' + height  + '" '+(align ? ' style="float:' + align + '"': '')+' frameborder=0 allowfullscreen></iframe>';
                 str = '<embed type="application/x-shockwave-flash" class="' + classname + '" pluginspage="http://www.macromedia.com/go/getflashplayer"' +
                     ' src="' +  utils.html(url) + '" width="' + width  + '" height="' + height  + '"'  + (align ? ' style="float:' + align + '"': '') +
                     ' wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true" >';

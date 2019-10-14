@@ -14,10 +14,6 @@ function check_it()
 				var ext = parseInt(user_id) > 0 ? 'id='+rs.info.id : 'sn='+rs.info.sn+"&passwd="+rs.info.passwd;
 				var payment = $("input[name=payment]:checked").val();
 				if(payment){
-					
-				}
-				
-				if(payment){
 					ext += '&payment='+payment.toString();
 					$("input[data-name=integral]").each(function(i){
 						var name = $(this).attr('data-key');

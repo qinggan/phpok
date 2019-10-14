@@ -18,7 +18,7 @@
 				<img class="am-thumbnail" src="{$value.thumb.gd.thumb}" alt="{$value.title}" />
 				<!-- if $value.apps && $value.apps.coupon --><div class="discount"><img src="{$value.apps.coupon.rs.pic1}" /></div><!-- /if -->
 				<h3 class="am-title"{if $value.style} style="{$value.style}"{/if}>{$value.title}</h3>
-				<!-- if $products.project.is_biz --><div class="am-desc red">{func price_format $value.price $value.currency_id}</div><!-- /if -->
+				<!-- if $products.project.is_biz --><div class="am-desc red">{func price_format $value.price $value.currency_id $config.currency_id}</div><!-- /if -->
 			</a>
 		</li>
 		<!-- /loop -->

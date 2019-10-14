@@ -1,0 +1,19 @@
+<!-- include tpl=header -->
+<!-- 内容 -->
+<div id="content">
+	<div id="commonBox">
+		<div class="cTextBox unique">
+			<img src="images/ws.png" alt="">
+			<h4 class="title">Thank you for your order！</h4>
+			<div class="text">
+				<p>Dear {$address.shipping.firstname}, Your Order Number is <a href="{url ctrl=order func=info id=$order.id/}">{$order.sn}</a>. A confirmation email was sent to <span>{$order.email}</span>.</p>
+				<p>Your Account has been charged <span>{func price_format $order.price $order.currency_id}</span>. We will notify you as the items are dispatched.</p>
+				<p>If you need to change your shipping address, please contact <a href="mailto:service@qysea.com">service@qysea.com</a></p>
+			</div>
+			<div class="btnBox">
+				<a href="{url ctrl=order func=info sn=$order.sn passwd=$order.passwd/}" class="btn1">View Order</a>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- include tpl=foot -->
