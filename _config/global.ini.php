@@ -1,7 +1,7 @@
 ;<?php exit("<h1>Access Denied</h1>");?>
 
 ;是否调试，1/true启用，0/false禁用
-debug = true
+debug = false
 
 ;压缩传缩，1/true启用，0/false禁用
 gzip = true
@@ -117,7 +117,10 @@ line = "_"
 inherit = false
 
 ;SEO优化模式，{title}，即传过来的标题值，{seo} 是内置的 SEO 标题，{sitename} 即是网站名称
-format = "{title}-{sitename}-{seo}"
+format = "{title}-{seo}-{sitename}"
+
+;启用SEO标题时，是否包含title信息
+in_title = false
 
 [order]
 ;价格选项
