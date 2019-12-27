@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>百度地图地址编码</title>
+	<desc>将地址转换为坐标并且前端显示</desc>
+	<author>phpok</author>
+	<version>1.0</version>
+</root>

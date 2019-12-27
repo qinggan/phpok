@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<plugin>
+		<title><![CDATA[百度地图]]></title>
+		<efunc><![CDATA[set_config]]></efunc>
+		<taxis><![CDATA[10]]></taxis>
+		<type><![CDATA[all]]></type>
+		<icon><![CDATA[coordinate.png]]></icon>
+		<id><![CDATA[dd7b64184af8a2191db5be56052583b5]]></id>
+	</plugin>
+</root>

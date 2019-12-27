@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html style="height:100%">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="expires" content="wed, 26 feb 1997 08:21:57 gmt"> 
+	<title>百度地图</title>
+	<script type="text/javascript" src="{url ctrl=js /}" charset="utf-8"></script>
+	<script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak={$plugin.bmap.param.apikey}"></script>
+	<script type="text/javascript" src="plugins/bmap/jquery.baidu_map.js" ></script>
+	<style type="text/css">
+	.map-content{font-size:12px;}
+	</style>
+</head>
+<body style="margin:0;padding:0;height:100%;overflow:hidden;">
+<div id="Bmap" style="width:100%;height:100%;"></div>
+<script type="text/javascript">
+new BaiduMap({
+    id: "Bmap",
+    title: {
+        text: "{$plugin.bmap.param.company}",
+        className: "map-title"
+    },
+    content: {
+        className: "map-content",
+        text: ["地址：{$plugin.bmap.param.address}", "电话：{$plugin.bmap.param.tel}"]
+    },
+    point: {
+        lng: "{$plugin.bmap.param.lng}",
+        lat: "{$plugin.bmap.param.lat}"
+    },
+    level: 18,
+    zoom: false,
+    type: ["地图", "卫星", "三维"],
+    width: 320,
+    height: 70,
+    icon: {
+        url: "plugins/bmap/ps.png",
+        width: 19,
+        height: 25
+    }
+});
+</script>
