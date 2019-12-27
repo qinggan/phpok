@@ -1,35 +1,14 @@
--- phpMyAdmin SQL Dump
--- version 4.7.8
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: 2019-10-14 13:28:43
--- 服务器版本： 5.5.53
--- PHP Version: 7.2.4
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 
---
--- Database: `phpok5`
---
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_77`
---
-
-CREATE TABLE `qinggan_77` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_77` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
   `sitename` varchar(255) NOT NULL DEFAULT '' COMMENT '网站名称',
@@ -37,27 +16,52 @@ CREATE TABLE `qinggan_77` (
   `target` varchar(255) NOT NULL DEFAULT '_blank' COMMENT '链接目标',
   `logo` varchar(255) NOT NULL DEFAULT '' COMMENT '网站LOGO',
   `tel` varchar(255) NOT NULL DEFAULT '' COMMENT '联系电话',
-  `taxis` varchar(255) NOT NULL DEFAULT '' COMMENT '排序'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='友情链接';
-
---
--- 转存表中的数据 `qinggan_77`
---
+  `taxis` varchar(255) NOT NULL DEFAULT '' COMMENT '排序',
+  PRIMARY KEY (`id`),
+  KEY `site_id_index` (`site_id`,`project_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='友情链接';
 
 INSERT INTO `qinggan_77` (`id`, `site_id`, `project_id`, `sitename`, `linkurl`, `target`, `logo`, `tel`, `taxis`) VALUES
-(1, 1, 389, '锟铻科技', 'https://www.phpok.com', '_blank', '1329', '0755-23776246', ''),
+(1, 1, 389, '锟铻科技', 'https://www.phpok.com', '_blank', '', '0755-23776246', '0'),
 (2, 1, 389, '启邦动互', 'https://www.sz-qibang.com/', '_blank', '1332', '13724259054', '20'),
 (3, 1, 389, '联迅网络', 'http://www.17tengfei.com/', '_blank', '1333', '0755-36890218', '30'),
 (4, 1, 389, '求学网', 'https://www.7139.com/', '_blank', '1334', '13235908186', '40');
 
--- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `qinggan_85` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `etype` int(11) NOT NULL DEFAULT '0' COMMENT '类型',
+  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '文本内容',
+  `picture` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
+  `fontsize` varchar(255) NOT NULL DEFAULT '' COMMENT '字号大小',
+  `color` varchar(255) NOT NULL DEFAULT '' COMMENT '文字颜色',
+  `style` longtext NOT NULL COMMENT '样式',
+  `pleft` varchar(255) NOT NULL DEFAULT '' COMMENT '左位置',
+  `ptop` varchar(255) NOT NULL DEFAULT '' COMMENT '上位置',
+  `delaytime` int(11) NOT NULL DEFAULT '0' COMMENT '延迟时间',
+  `duration` varchar(255) NOT NULL DEFAULT '0' COMMENT '持续时间',
+  `woffset` int(11) NOT NULL DEFAULT '0' COMMENT '动画距离',
+  `iteration` int(11) NOT NULL DEFAULT '0' COMMENT '执行次数',
+  `effect` varchar(255) NOT NULL DEFAULT '0' COMMENT '动画效果',
+  `linkurl` varchar(255) NOT NULL DEFAULT '' COMMENT '自定义链接',
+  `target` varchar(255) NOT NULL DEFAULT '_self' COMMENT '打开方式',
+  `fontweight` varchar(255) NOT NULL DEFAULT '400' COMMENT '加粗规格',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`),
+  KEY `site_project` (`site_id`,`project_id`),
+  KEY `site_cate` (`site_id`,`cate_id`),
+  KEY `project_cate` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='过渡动画';
 
---
--- 表的结构 `qinggan_adm`
---
+INSERT INTO `qinggan_85` (`id`, `site_id`, `project_id`, `cate_id`, `etype`, `title`, `picture`, `fontsize`, `color`, `style`, `pleft`, `ptop`, `delaytime`, `duration`, `woffset`, `iteration`, `effect`, `linkurl`, `target`, `fontweight`) VALUES
+(1, 1, 440, 0, 0, '测试进场动画', '1337', '24px', '#FF0000', '', '30%', '10%', 2, '5', 10, 2, 'slideInRight', '', '_self', '400'),
+(2, 1, 440, 0, 1, '支持那一份坚持！', '1413', '', '', 'margin-left:-626px', '50%', '20%', 2, '5', 0, 0, 'slideInRight', '', '_self', '400'),
+(3, 1, 440, 0, 0, 'Support PHPOK, Support Your Mind', '', '50px', '#FFFFFF', '', '30%', '60%', 6, '10', 30, 10, 'bounce', '', '_self', '700');
 
-CREATE TABLE `qinggan_adm` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '管理员ID，系统自增',
+CREATE TABLE IF NOT EXISTS `qinggan_adm` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '管理员ID，系统自增',
   `account` varchar(50) NOT NULL COMMENT '管理员账号',
   `pass` varchar(100) NOT NULL COMMENT '管理员密码',
   `email` varchar(50) NOT NULL COMMENT '管理员邮箱',
@@ -65,76 +69,47 @@ CREATE TABLE `qinggan_adm` (
   `if_system` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '系统管理员',
   `vpass` varchar(50) NOT NULL COMMENT '二次验证密码，两次MD5加密',
   `fullname` varchar(100) NOT NULL COMMENT '姓名',
-  `close_tip` varchar(255) NOT NULL COMMENT '关闭窗口前弹出的提示'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='管理员信息';
-
---
--- 转存表中的数据 `qinggan_adm`
---
+  `close_tip` varchar(255) NOT NULL COMMENT '关闭窗口前弹出的提示',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='管理员信息';
 
 INSERT INTO `qinggan_adm` (`id`, `account`, `pass`, `email`, `status`, `if_system`, `vpass`, `fullname`, `close_tip`) VALUES
 (1, 'admin', '101d9fd14b31a93b06a10421f14dd023:21', 'qinggan@188.com', 1, 1, '14e1b600b1fd579f47433b88e8d85291', '', '');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_adm_popedom`
---
-
-CREATE TABLE `qinggan_adm_popedom` (
+CREATE TABLE IF NOT EXISTS `qinggan_adm_popedom` (
   `id` int(10) UNSIGNED NOT NULL COMMENT '管理员ID',
-  `pid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '权限ID，对应popedom表里的id'
+  `pid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '权限ID，对应popedom表里的id',
+  PRIMARY KEY (`id`,`pid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='管理员权限分配表';
-
---
--- 转存表中的数据 `qinggan_adm_popedom`
---
 
 INSERT INTO `qinggan_adm_popedom` (`id`, `pid`) VALUES
 (4, 2),
 (4, 3),
 (4, 26);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_all`
---
-
-CREATE TABLE `qinggan_all` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_all` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `identifier` varchar(100) NOT NULL COMMENT '标识串',
   `title` varchar(200) NOT NULL COMMENT '分类名称',
   `ico` varchar(255) NOT NULL COMMENT '图标',
   `is_system` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0普通１系统',
-  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '是否前台调用'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='分类管理';
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '是否前台调用',
+  `is_api` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0禁用API，1启用API',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=138 DEFAULT CHARSET=utf8 COMMENT='分类管理';
 
---
--- 转存表中的数据 `qinggan_all`
---
+INSERT INTO `qinggan_all` (`id`, `site_id`, `identifier`, `title`, `ico`, `is_system`, `status`, `is_api`) VALUES
+(4, 1, 'copyright', '页脚版权', 'images/ico/copyright.png', 0, 1, 0),
+(37, 1, 'code', '代码脚本', 'images/ico/tag.png', 0, 1, 0);
 
-INSERT INTO `qinggan_all` (`id`, `site_id`, `identifier`, `title`, `ico`, `is_system`, `status`) VALUES
-(4, 1, 'copyright', '页脚版权', 'images/ico/copyright.png', 0, 1),
-(37, 1, 'code', '代码脚本', 'images/ico/tag.png', 0, 1);
-
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_attr`
---
-
-CREATE TABLE `qinggan_attr` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_attr` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
   `title` varchar(100) NOT NULL COMMENT '属性名称',
-  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='产品属性';
-
---
--- 转存表中的数据 `qinggan_attr`
---
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='产品属性';
 
 INSERT INTO `qinggan_attr` (`id`, `site_id`, `title`, `taxis`) VALUES
 (1, 1, '颜色', 5),
@@ -144,24 +119,16 @@ INSERT INTO `qinggan_attr` (`id`, `site_id`, `title`, `taxis`) VALUES
 (11, 1, '9999', 25),
 (12, 1, '演示测试用的', 30);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_attr_values`
---
-
-CREATE TABLE `qinggan_attr_values` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_attr_values` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `aid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '属性ID',
   `title` varchar(200) NOT NULL COMMENT '参数名称',
   `pic` varchar(200) NOT NULL COMMENT '参数图片',
   `taxis` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '排序',
-  `val` varchar(255) NOT NULL COMMENT '值'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='属性参数管理';
-
---
--- 转存表中的数据 `qinggan_attr_values`
---
+  `val` varchar(255) NOT NULL COMMENT '值',
+  PRIMARY KEY (`id`),
+  KEY `aid` (`aid`)
+) ENGINE=MyISAM AUTO_INCREMENT=44 DEFAULT CHARSET=utf8 COMMENT='属性参数管理';
 
 INSERT INTO `qinggan_attr_values` (`id`, `aid`, `title`, `pic`, `taxis`, `val`) VALUES
 (1, 1, '红色', '', 10, 'red'),
@@ -189,35 +156,23 @@ INSERT INTO `qinggan_attr_values` (`id`, `aid`, `title`, `pic`, `taxis`, `val`) 
 (42, 1, 'ok9999', '', 55, ''),
 (43, 12, '加一条', '', 5, '');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_cart`
---
-
-CREATE TABLE `qinggan_cart` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
+CREATE TABLE IF NOT EXISTS `qinggan_cart` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
   `session_id` varchar(255) NOT NULL COMMENT 'SESSION_ID号',
   `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示游客',
   `addtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `coupon_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '优惠码ID（仅当优惠码有效时体现）'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='购物车';
-
---
--- 转存表中的数据 `qinggan_cart`
---
+  `coupon_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '优惠码ID（仅当优惠码有效时体现）',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 COMMENT='购物车';
 
 INSERT INTO `qinggan_cart` (`id`, `session_id`, `user_id`, `addtime`, `coupon_id`) VALUES
-(13, 'ov4fbjgnln1k9dndui6nd5re5d', 0, 1571059675, 0);
+(55, 'm4t7e0si106c4ap8raq6gsgim2', 0, 1577076993, 0),
+(56, 'lk8hi3j5qubn7hdctocg9blia2', 0, 1577078250, 0),
+(57, '54mj7cr3d04k7t2n5vrc1h1h63', 0, 1577082755, 0),
+(58, '0crlvkhb2fkt6crk5p67siljc7', 0, 1577089666, 0);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_cart_product`
---
-
-CREATE TABLE `qinggan_cart_product` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
+CREATE TABLE IF NOT EXISTS `qinggan_cart_product` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
   `cart_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '购物车ID号',
   `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `title` varchar(255) NOT NULL COMMENT '产品名称',
@@ -231,17 +186,12 @@ CREATE TABLE `qinggan_cart_product` (
   `unit` varchar(50) NOT NULL COMMENT '单位',
   `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后操作时间',
   `apps` varchar(255) NOT NULL COMMENT '应用管理器',
-  `parent_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID，不为0表示这是一个捆绑销售'
+  `parent_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID，不为0表示这是一个捆绑销售',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='购物车里的产品信息';
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_cate`
---
-
-CREATE TABLE `qinggan_cate` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_cate` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `parent_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID，0为根分类',
   `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不使用1正常使用',
@@ -256,16 +206,15 @@ CREATE TABLE `qinggan_cate` (
   `identifier` varchar(255) NOT NULL COMMENT '分类标识串',
   `tag` varchar(255) NOT NULL COMMENT '自身Tag设置',
   `style` varchar(255) NOT NULL COMMENT 'CSS样式',
-  `module_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '模块ID'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='分类管理';
-
---
--- 转存表中的数据 `qinggan_cate`
---
+  `module_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '模块ID',
+  PRIMARY KEY (`id`),
+  KEY `parent_id` (`parent_id`),
+  KEY `site_id` (`site_id`,`status`)
+) ENGINE=MyISAM AUTO_INCREMENT=687 DEFAULT CHARSET=utf8 COMMENT='分类管理';
 
 INSERT INTO `qinggan_cate` (`id`, `site_id`, `parent_id`, `status`, `title`, `taxis`, `tpl_list`, `tpl_content`, `psize`, `seo_title`, `seo_keywords`, `seo_desc`, `identifier`, `tag`, `style`, `module_id`) VALUES
 (7, 1, 0, 1, '新闻资讯', 10, '', '', 0, '', '', '', 'information', '', 'text-decoration:on;', 0),
-(8, 1, 7, 1, '公司新闻', 10, '', '', 0, '', '', '', 'company', '公司,新闻', '', 0),
+(8, 1, 7, 1, '公司新闻', 10, '', '', 0, '', '', '', 'company', '新闻,公司', '', 0),
 (68, 1, 7, 1, '行业新闻', 25, '', '', 0, '', '', '', 'industry', '', '', 0),
 (70, 1, 0, 1, '产品分类', 20, '', '', 0, '', '', '', 'chanpinfenlei', '', '', 0),
 (154, 1, 0, 1, '图集相册', 30, '', '', 0, '', '', '', 'album', '', '', 0),
@@ -284,18 +233,12 @@ INSERT INTO `qinggan_cate` (`id`, `site_id`, `parent_id`, `status`, `title`, `ta
 (216, 1, 168, 1, '苹果', 50, '', '', 0, '', '', '', 'apple', '', '', 0),
 (219, 1, 70, 1, '产品分类三', 30, '', '', 0, '', '', '', 'chanpinfenleisan', '', '', 0),
 (582, 1, 168, 1, '小米', 10, '', '', 0, '', '', '', 'xiaomi', '', '', 0),
-(583, 1, 168, 1, '魅族', 20, '', '', 0, '', '', '', 'meizu', '', '', 0),
+(583, 1, 168, 1, '魅族', 20, '', '', 0, '', '', '', 'meizu', '公司', '', 0),
 (584, 1, 168, 1, '华为', 30, '', '', 0, '', '', '', 'huawei', '', '', 0),
 (585, 1, 168, 1, 'Vivo', 40, '', '', 0, '', '', '', 'vivo', '', '', 0);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_currency`
---
-
-CREATE TABLE `qinggan_currency` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '货币ID',
+CREATE TABLE IF NOT EXISTS `qinggan_currency` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '货币ID',
   `code` varchar(3) NOT NULL COMMENT '货币标识，仅限三位数的大写字母',
   `val` decimal(13,8) UNSIGNED NOT NULL COMMENT '货币转化',
   `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
@@ -304,12 +247,9 @@ CREATE TABLE `qinggan_currency` (
   `symbol_right` varchar(24) NOT NULL COMMENT '价格右侧',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0不使用1使用',
   `hidden` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不隐藏1隐藏',
-  `code_num` varchar(5) NOT NULL COMMENT '币种数值'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='货币管理';
-
---
--- 转存表中的数据 `qinggan_currency`
---
+  `code_num` varchar(5) NOT NULL COMMENT '币种数值',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='货币管理';
 
 INSERT INTO `qinggan_currency` (`id`, `code`, `val`, `taxis`, `title`, `symbol_left`, `symbol_right`, `status`, `hidden`, `code_num`) VALUES
 (1, 'CNY', '6.16989994', 10, '人民币', '', '元', 1, 0, '165'),
@@ -319,24 +259,15 @@ INSERT INTO `qinggan_currency` (`id`, `code`, `val`, `taxis`, `title`, `symbol_l
 (5, 'GBP', '0.64529997', 50, '英镑', '￡', '', 1, 0, '826'),
 (7, 'AUD', '1.00000000', 60, '澳币', 'A$', '', 1, 0, '036');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_email`
---
-
-CREATE TABLE `qinggan_email` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_email` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID，0表示全部网站',
   `identifier` varchar(255) NOT NULL COMMENT '发送标识',
   `title` varchar(200) NOT NULL COMMENT '邮件主题',
   `content` text NOT NULL COMMENT '邮件内容',
-  `note` varchar(255) NOT NULL COMMENT '备注'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='邮件内容';
-
---
--- 转存表中的数据 `qinggan_email`
---
+  `note` varchar(255) NOT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=100 DEFAULT CHARSET=utf8 COMMENT='邮件内容';
 
 INSERT INTO `qinggan_email` (`id`, `site_id`, `identifier`, `title`, `content`, `note`) VALUES
 (4, 1, 'register_code', '获取会员注册资格', '<p>您好，{$email}</p><p>您将注册成为网站【{$config.title} 】会员，请点击下面的地址，进入下一步注册：</p><p><br/></p><blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\"><p><a href=\"{$link}\" target=\"_blank\">{$link}</a></p><p>（此链接24小时内有效）</p></blockquote><p><br/></p><p><br/></p><p>感谢您对本站的关注，茫茫人海中，能有缘走到一起。</p>', ''),
@@ -358,16 +289,11 @@ INSERT INTO `qinggan_email` (`id`, `site_id`, `identifier`, `title`, `content`, 
 (35, 1, 'sms_sendcloud_code', '4575', 'code:{$code}', 'SendCloud使用的验证码'),
 (36, 1, 'sms_aliyun_test', 'SMS_49105038', 'customer:{$user.user}', '阿里云短信测试'),
 (37, 1, 'sms_61825160', 'SMS_61825160', 'code:{$code}', '阿里云：验证码'),
-(38, 1, 'email_toall', '您的留言 #{$rs.id}，管理员已经回复', '', '留言回复通知');
+(38, 1, 'email_toall', '您的留言 #{$rs.id}，管理员已经回复', '', '留言回复通知'),
+(99, 1, 'sms_yuntongxun', '487959', '1:{$code}\r\n2:5分钟', '容联云通迅');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_express`
---
-
-CREATE TABLE `qinggan_express` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_express` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `site_id` int(11) NOT NULL DEFAULT '0' COMMENT '站点ID，为0所有站点使用',
   `title` varchar(255) NOT NULL COMMENT '名称',
   `company` varchar(255) NOT NULL COMMENT '公司名称',
@@ -376,30 +302,18 @@ CREATE TABLE `qinggan_express` (
   `code` varchar(100) NOT NULL COMMENT '接口标识，用于读取logistics文件夹下的接口文件',
   `rate` int(11) NOT NULL DEFAULT '6' COMMENT '查询频率，用于减少请求',
   `ext` text NOT NULL COMMENT '扩展数据保存',
-  `content` text NOT NULL COMMENT '公司介绍'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='快递平台管理';
-
---
--- 转存表中的数据 `qinggan_express`
---
+  `content` text NOT NULL COMMENT '公司介绍',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='快递平台管理';
 
 INSERT INTO `qinggan_express` (`id`, `site_id`, `title`, `company`, `homepage`, `logo`, `code`, `rate`, `ext`, `content`) VALUES
 (4, 1, '顺丰速运', '顺丰速运(集团)有限公司', 'http://www.sf-express.com/', '', 'showapi', 4, 'a:3:{s:6:\"app_id\";s:5:\"93566\";s:10:\"app_secret\";s:32:\"00f8505d3d164dbfa3b11c34d9ff9c0a\";s:7:\"app_com\";s:8:\"shunfeng\";}', '');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_extc`
---
-
-CREATE TABLE `qinggan_extc` (
+CREATE TABLE IF NOT EXISTS `qinggan_extc` (
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '内容值ID，对应ext表中的id',
-  `content` longtext NOT NULL COMMENT '内容文本'
+  `content` longtext NOT NULL COMMENT '内容文本',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='扩展字段内容维护';
-
---
--- 转存表中的数据 `qinggan_extc`
---
 
 INSERT INTO `qinggan_extc` (`id`, `content`) VALUES
 (836, '<p>Powered By phpok.com 版权所有 © 2004-2019, All right reserved.</p>'),
@@ -432,32 +346,28 @@ INSERT INTO `qinggan_extc` (`id`, `content`) VALUES
 (1115, 'Products'),
 (1116, '1392'),
 (1117, 'About Us'),
-(1118, '1393');
+(1118, '1393'),
+(1221, '1'),
+(1222, '2500'),
+(1223, '500');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_fav`
---
-
-CREATE TABLE `qinggan_fav` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_fav` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `user_id` int(10) UNSIGNED NOT NULL COMMENT '会员ID',
   `thumb` varchar(255) NOT NULL COMMENT '缩略图',
   `title` varchar(255) NOT NULL COMMENT '标题',
   `note` varchar(255) NOT NULL COMMENT '摘要',
   `addtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `lid` int(11) NOT NULL COMMENT '关联主题'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员收藏夹';
+  `lid` int(11) NOT NULL COMMENT '关联主题',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='会员收藏夹';
 
--- --------------------------------------------------------
+INSERT INTO `qinggan_fav` (`id`, `user_id`, `thumb`, `title`, `note`, `addtime`, `lid`) VALUES
+(1, 23, '', '开发模式及应用模式的切换', '在 PHPOK5 版本中，我们正式引入了【开发模式】及【应用模式】两个概念。开发模式顾名思义，就是用于网站开发过程中要用到的，如增加模块，扩展字段等等功能。这些功能更适…', 1575706535, 1936);
 
---
--- 表的结构 `qinggan_fields`
---
-
-CREATE TABLE `qinggan_fields` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '字段ID，自增',
+CREATE TABLE IF NOT EXISTS `qinggan_fields` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '字段ID，自增',
   `ftype` varchar(255) NOT NULL COMMENT '模型ID，当为数字时表示模块ID，非数表示其他模型的ID',
   `title` varchar(255) NOT NULL COMMENT '字段名称',
   `identifier` varchar(50) NOT NULL COMMENT '字段标识串',
@@ -472,21 +382,16 @@ CREATE TABLE `qinggan_fields` (
   `is_front` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0前端不可用1前端可用',
   `search` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0不支持搜索1完全匹配搜索2模糊匹配搜索3区间搜索',
   `search_separator` varchar(10) NOT NULL COMMENT '分割符，仅限区间搜索时有效',
-  `form_class` varchar(255) NOT NULL COMMENT '自定义表单Class'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='字段管理器';
-
---
--- 转存表中的数据 `qinggan_fields`
---
+  `form_class` varchar(255) NOT NULL COMMENT '自定义表单Class',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1224 DEFAULT CHARSET=utf8 COMMENT='字段管理器';
 
 INSERT INTO `qinggan_fields` (`id`, `ftype`, `title`, `identifier`, `field_type`, `note`, `form_type`, `form_style`, `format`, `content`, `taxis`, `ext`, `is_front`, `search`, `search_separator`, `form_class`) VALUES
 (82, '22', '缩略图', 'thumb', 'int', '', 'upload', '', 'safe', '', 10, 'a:2:{s:7:\"cate_id\";s:1:\"1\";s:11:\"is_multiple\";s:1:\"0\";}', 0, 0, '', ''),
-(83, '22', '内容', 'content', 'longtext', '', 'editor', '', 'html_js', '', 30, 'a:8:{s:6:\"height\";s:3:\"360\";s:7:\"is_code\";s:0:\"\";s:7:\"is_read\";s:0:\"\";s:7:\"inc_tag\";s:0:\"\";s:10:\"paste_text\";s:1:\"0\";s:4:\"btns\";a:13:{s:5:\"image\";s:2:\"on\";s:4:\"info\";s:2:\"on\";s:5:\"video\";s:2:\"on\";s:4:\"file\";s:2:\"on\";s:4:\"page\";s:2:\"on\";s:5:\"table\";s:2:\"on\";s:7:\"emotion\";s:2:\"on\";s:3:\"map\";s:2:\"on\";s:8:\"spechars\";s:2:\"on\";s:10:\"insertcode\";s:2:\"on\";s:9:\"paragraph\";s:2:\"on\";s:8:\"fontsize\";s:2:\"on\";s:10:\"fontfamily\";s:2:\"on\";}s:8:\"is_float\";s:1:\"1\";s:11:\"auto_height\";s:1:\"1\";}', 0, 0, '', ''),
-(84, '23', '链接', 'link', 'longtext', '设置导航链接', 'url', '', 'safe', '', 90, 'a:1:{s:5:\"width\";s:3:\"500\";}', 0, 0, '', ''),
-(85, '23', '链接方式', 'target', 'varchar', '设置是否在新窗口打开', 'radio', '', 'safe', '_self', 100, 'a:1:{s:11:\"option_list\";s:5:\"opt:6\";}', 0, 0, '', ''),
+(83, '22', '内容', 'content', 'longtext', '', 'editor', '', 'html_js', '', 255, 'a:8:{s:6:\"height\";s:3:\"360\";s:7:\"is_code\";s:0:\"\";s:7:\"is_read\";s:0:\"\";s:7:\"inc_tag\";s:1:\"1\";s:10:\"paste_text\";s:1:\"0\";s:4:\"btns\";a:13:{s:5:\"image\";s:2:\"on\";s:4:\"info\";s:2:\"on\";s:5:\"video\";s:2:\"on\";s:4:\"file\";s:2:\"on\";s:4:\"page\";s:2:\"on\";s:5:\"table\";s:2:\"on\";s:7:\"emotion\";s:2:\"on\";s:3:\"map\";s:2:\"on\";s:8:\"spechars\";s:2:\"on\";s:10:\"insertcode\";s:2:\"on\";s:9:\"paragraph\";s:2:\"on\";s:8:\"fontsize\";s:2:\"on\";s:10:\"fontfamily\";s:2:\"on\";}s:8:\"is_float\";s:1:\"1\";s:11:\"auto_height\";s:1:\"1\";}', 0, 0, '', ''),
 (88, '24', '图片', 'pictures', 'varchar', '设置产品的图片，支持多图，上传规格为500x500', 'upload', '', 'safe', '', 50, 'a:3:{s:7:\"cate_id\";s:1:\"1\";s:11:\"is_multiple\";s:1:\"1\";s:11:\"upload_auto\";s:1:\"1\";}', 0, 0, '', ''),
-(92, '21', '链接', 'link', 'longtext', '', 'text', '', 'safe', '', 90, 'a:2:{s:8:\"form_btn\";s:3:\"url\";s:5:\"width\";s:3:\"500\";}', 0, 0, '', ''),
-(93, '21', '链接方式', 'target', 'varchar', '设置是否在新窗口打开', 'radio', '', 'safe', '_blank', 100, 'a:3:{s:11:\"option_list\";s:5:\"opt:6\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";b:0;}', 0, 0, '', ''),
+(92, '21', '链接', 'link', 'longtext', '如果【子级动画】有内容，此项无效', 'text', '', 'safe', '', 90, 'a:5:{s:8:\"form_btn\";s:3:\"url\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(93, '21', '链接方式', 'target', 'varchar', '设置是否在新窗口打开，仅限链接有效时使用', 'radio', '', 'safe', '_blank', 100, 'a:3:{s:11:\"option_list\";s:5:\"opt:6\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";s:0:\"\";}', 0, 0, '', ''),
 (131, '40', '内容', 'content', 'longtext', '', 'editor', '', 'html', '', 255, 'a:7:{s:5:\"width\";s:3:\"800\";s:6:\"height\";s:3:\"360\";s:7:\"is_code\";s:0:\"\";s:7:\"is_read\";s:0:\"\";s:7:\"inc_tag\";s:0:\"\";s:10:\"paste_text\";s:0:\"\";s:4:\"btns\";a:6:{s:5:\"image\";s:1:\"1\";s:4:\"info\";s:1:\"1\";s:10:\"insertcode\";s:1:\"1\";s:9:\"paragraph\";s:1:\"1\";s:8:\"fontsize\";s:1:\"1\";s:10:\"fontfamily\";s:1:\"1\";}}', 0, 0, '', ''),
 (141, '46', '姓名', 'fullname', 'varchar', '', 'text', '', 'safe', '', 10, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 1, 0, '', ''),
 (142, '46', '邮箱', 'email', 'varchar', '', 'text', '', 'safe', '', 130, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 1, 0, '', ''),
@@ -506,7 +411,7 @@ INSERT INTO `qinggan_fields` (`id`, `ftype`, `title`, `identifier`, `field_type`
 (238, '66', '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 30, 'a:3:{s:7:\"cate_id\";s:1:\"1\";s:11:\"is_multiple\";s:1:\"0\";s:11:\"upload_auto\";s:1:\"1\";}', 1, 0, '', ''),
 (239, '68', '缩略图', 'thumb', 'varchar', '请上传300x300规格的图片，文件大小建议不超过100KB', 'upload', '', 'safe', '', 30, 'a:3:{s:7:\"cate_id\";s:1:\"1\";s:11:\"is_multiple\";s:1:\"0\";s:11:\"upload_auto\";s:1:\"1\";}', 0, 0, '', ''),
 (240, '68', '图片', 'pictures', 'varchar', '支持多图，建议上传500x500或600x600规格的图片', 'upload', '', 'safe', '', 50, 'a:3:{s:7:\"cate_id\";s:1:\"1\";s:11:\"is_multiple\";s:1:\"1\";s:11:\"upload_auto\";s:1:\"1\";}', 0, 0, '', ''),
-(903, '21', '手机版图片', 'picmobile', 'int', '仅用于手机版或是公众号或是小程序中，图片宽高要求是：360x240', 'upload', '', 'safe', '', 30, 'a:2:{s:7:\"cate_id\";s:1:\"1\";s:11:\"is_multiple\";s:1:\"0\";}', 0, 0, '', ''),
+(903, '21', '手机版图片', 'picmobile', 'int', '仅用于手机版或是公众号或是小程序中，图片宽高要求是：720x400', 'upload', '', 'safe', '', 30, 'a:2:{s:7:\"cate_id\";s:1:\"1\";s:11:\"is_multiple\";s:1:\"0\";}', 0, 0, '', ''),
 (1115, 'project-45', '英文标题', 'entitle', 'varchar', '适用于项目名称显示英文标题使用', 'text', '', 'safe', '', 0, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
 (1116, 'list-1757', '公司图片地址', 'map', '200', '请上传一张 800x330 规格的静态地图图片', 'upload', '', 'safe', '', 84, 'a:2:{s:7:\"cate_id\";s:1:\"1\";s:11:\"is_multiple\";s:1:\"0\";}', 0, 0, '', ''),
 (267, '68', '内容', 'content', 'longtext', '', 'editor', '', 'html', '', 255, 'a:7:{s:5:\"width\";s:3:\"950\";s:6:\"height\";s:3:\"360\";s:7:\"is_code\";s:0:\"\";s:7:\"is_read\";s:0:\"\";s:7:\"inc_tag\";s:0:\"\";s:10:\"paste_text\";s:0:\"\";s:4:\"btns\";a:3:{s:5:\"image\";s:1:\"1\";s:9:\"paragraph\";s:1:\"1\";s:8:\"fontsize\";s:1:\"1\";}}', 0, 0, '', ''),
@@ -516,11 +421,6 @@ INSERT INTO `qinggan_fields` (`id`, `ftype`, `title`, `identifier`, `field_type`
 (288, '24', '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 20, 'a:3:{s:7:\"cate_id\";s:1:\"1\";s:11:\"is_multiple\";s:1:\"0\";s:11:\"upload_auto\";s:1:\"1\";}', 0, 0, '', ''),
 (293, '24', '内容', 'content', 'longtext', '', 'editor', '', 'html', '', 255, 'a:8:{s:5:\"width\";s:3:\"950\";s:6:\"height\";s:3:\"360\";s:7:\"is_code\";s:0:\"\";s:7:\"is_read\";s:0:\"\";s:5:\"etype\";s:4:\"full\";s:7:\"inc_tag\";s:0:\"\";s:10:\"paste_text\";s:0:\"\";s:4:\"btns\";a:4:{s:5:\"image\";s:1:\"1\";s:9:\"paragraph\";s:1:\"1\";s:8:\"fontsize\";s:1:\"1\";s:10:\"fontfamily\";s:1:\"1\";}}', 0, 0, '', ''),
 (1117, 'project-87', '英文标题', 'entitle', 'varchar', '适用于项目名称显示英文标题使用', 'text', '', 'safe', '', 0, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
-(297, '75', '姓名', 'fullname', 'varchar', '请填写汇款人的姓名', 'text', '', 'safe', '', 10, 'a:4:{s:8:\"form_btn\";s:0:\"\";s:5:\"width\";s:3:\"300\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";}', 1, 0, '', ''),
-(298, '75', '手机号', 'mobile', 'varchar', '请填写汇款人的手机号', 'text', '', 'safe', '', 20, 'a:4:{s:8:\"form_btn\";s:0:\"\";s:5:\"width\";s:3:\"300\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";}', 1, 0, '', ''),
-(299, '75', '汇款金额', 'bankprice', 'varchar', '请填写您汇款的金额，建议多汇几分，以示区别', 'text', '', 'safe', '', 30, 'a:4:{s:8:\"form_btn\";s:0:\"\";s:5:\"width\";s:3:\"300\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";}', 1, 0, '', ''),
-(300, '75', '摘要', 'note', 'longtext', '填写您的备注或汇款银行上的备注信息', 'textarea', '', 'safe', '', 40, 'a:2:{s:5:\"width\";s:3:\"600\";s:6:\"height\";s:2:\"80\";}', 1, 0, '', ''),
-(301, '75', '汇款银行', 'bankname', 'varchar', '请填写您汇款的银行', 'text', '', 'safe', '', 5, 'a:4:{s:8:\"form_btn\";s:0:\"\";s:5:\"width\";s:3:\"300\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";}', 1, 0, '', ''),
 (389, '65', '附件链接', 'dlink', 'varchar', '请填写外部附件链接，注意必须附件为空此项才有效', 'text', '', 'safe', '', 65, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
 (390, '65', '限制会员可下载', 'onlyuser', 'int', '', 'radio', '', 'safe', '', 70, 'a:3:{s:11:\"option_list\";s:5:\"opt:4\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";s:0:\"\";}', 0, 0, '', ''),
 (849, 'cate-206', '摘要', 'note', 'longtext', '简要文字描述', 'textarea', '', 'safe', '', 20, 'a:2:{s:5:\"width\";s:3:\"600\";s:6:\"height\";s:2:\"80\";}', 0, 0, '', ''),
@@ -565,27 +465,62 @@ INSERT INTO `qinggan_fields` (`id`, `ftype`, `title`, `identifier`, `field_type`
 (1097, 'all-37', '统计代码', 'statjs', '200', '用于填写分享的代码，这里的代码是不可见的', 'code_editor', '', 'html_js', '', 20, 'a:2:{s:5:\"width\";s:3:\"800\";s:6:\"height\";s:3:\"200\";}', 0, 0, '', ''),
 (1118, 'project-390', '通栏图片', 'banner', 'varchar', '', 'upload', '', 'safe', '', 0, 'a:8:{s:7:\"cate_id\";s:1:\"1\";s:11:\"cate_custom\";s:1:\"0\";s:11:\"is_multiple\";s:1:\"0\";s:11:\"upload_type\";s:11:\"png,jpg,gif\";s:11:\"upload_name\";s:6:\"图片\";s:13:\"upload_binary\";s:1:\"0\";s:15:\"upload_compress\";s:1:\"0\";s:18:\"upload_compress_wh\";s:3:\"500\";}', 0, 0, '', ''),
 (1134, 'user', '姓名', 'fullname', 'varchar', '', 'text', '', 'safe', '', 5, 'a:4:{s:8:\"form_btn\";s:0:\"\";s:5:\"width\";s:3:\"300\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";}', 0, 0, '', ''),
-(1135, '22', '演示', 'demo', 'longtext', '', 'param', '', 'safe', '', 35, 'a:4:{s:6:\"p_name\";s:49:\"保单号\n险种名称\n险种编号\n佣金\n底薪\";s:6:\"p_type\";s:1:\"1\";s:7:\"p_width\";s:0:\"\";s:5:\"p_add\";s:2:\"no\";}', 0, 0, '', ''),
-(1137, 'user', '性别', 'gender', 'int', '', 'radio', '', 'int', '0', 10, 'a:3:{s:11:\"option_list\";s:5:\"opt:1\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";s:0:\"\";}', 1, 0, '', '');
+(1140, '22', '网站', 'linksite', 'varchar', '填写网站或作者名称', 'text', '', 'safe', '', 40, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1137, 'user', '性别', 'gender', 'int', '', 'radio', '', 'int', '0', 10, 'a:3:{s:11:\"option_list\";s:5:\"opt:1\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";s:0:\"\";}', 1, 0, '', ''),
+(1139, '22', '来源', 'linkurl', 'varchar', '请填写链接地址，外链请输入http://或https://', 'text', '', 'safe', '', 35, 'a:5:{s:8:\"form_btn\";s:3:\"url\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1142, '85', '类型', 'etype', 'int', '请选择要调用的类型信息', 'radio', '', 'safe', '0', 5, 'a:3:{s:11:\"option_list\";s:0:\"\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";s:26:\"0:文字\n1:图片\n2:按钮\";}', 0, 0, '', ''),
+(1143, '85', '文本内容', 'title', 'varchar', '仅支持一行，不能超过80个汉字', 'text', '', 'safe', '', 10, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1144, '85', '图片', 'picture', 'varchar', '仅支持一个附件，为确保效果，建议使用PNG透明', 'upload', '', 'safe', '', 30, 'a:2:{s:7:\"cate_id\";s:1:\"1\";s:11:\"is_multiple\";s:1:\"0\";}', 0, 0, '', ''),
+(1145, '85', '字号大小', 'fontsize', 'varchar', '仅使用文本有效', 'radio', '', 'safe', '', 20, 'a:3:{s:11:\"option_list\";s:0:\"\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";s:39:\"18px\n22px\n28px\n30px\n36px\n40px\n50px\n60px\";}', 0, 0, '', ''),
+(1146, '85', '文字颜色', 'color', 'varchar', '请选择文本颜色', 'text', '', 'safe', '', 25, 'a:5:{s:8:\"form_btn\";s:5:\"color\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"1\";}', 0, 0, '', ''),
+(1147, '85', '样式', 'style', 'longtext', '自动定义 CSS 样式，需要您对 CSS 代码有过了解，仅支持简单的 CSS', 'text', '', 'safe', '', 255, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1148, '85', '左位置', 'pleft', 'varchar', '请设置该信在当前轮播图层的相对距离左边距离，仅支持数字', 'text', '', 'safe', '', 35, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:35:\"10%\n15%\n20%\n25%\n30%\n35%\n40%\n45%\n50%\";s:14:\"ext_quick_type\";s:4:\"none\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1149, '85', '上位置', 'ptop', 'varchar', '距离当前轮播相对上部位置距离', 'text', '', 'safe', '', 40, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:35:\"10%\n15%\n20%\n25%\n30%\n35%\n40%\n45%\n50%\";s:14:\"ext_quick_type\";s:4:\"none\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1150, '85', '延迟时间', 'delaytime', 'int', '请选择要延迟的时间，设为0表示不延迟', 'radio', '', 'int', '0', 45, 'a:3:{s:11:\"option_list\";s:0:\"\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";s:102:\"0:不延迟\n1:一秒\n2:两秒\n3:三秒\n4:四秒\n5:五秒\n6:六秒\n7:七秒\n8:八秒\n9:九秒\n10:十秒\";}', 0, 0, '', ''),
+(1151, '85', '持续时间', 'duration', 'varchar', '动画持缓时间，默认为0表示不设置', 'text', '', 'safe', '0', 50, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:90:\"1:一秒\n2:两秒\n3:三秒\n4:四秒\n5:五秒\n6:六秒\n7:七秒\n8:八秒\n9:九秒\n10:十秒\";s:14:\"ext_quick_type\";s:4:\"none\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1152, '85', '动画距离', 'woffset', 'int', '元素的位置露出后距离底部多少像素执行', 'text', '', 'int', '0', 55, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:48:\"0:不限\n10:10px\n20:20px\n30:30px\n40:40px\n50:50px\";s:14:\"ext_quick_type\";s:4:\"none\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1153, '85', '执行次数', 'iteration', 'int', '', 'radio', '', 'safe', '0', 60, 'a:3:{s:11:\"option_list\";s:0:\"\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";s:99:\"0:默认\n1:一次\n2:两次\n3:三次\n4:四次\n5:五次\n6:六次\n7:七次\n8:八次\n9:九次\n10:十次\";}', 0, 0, '', ''),
+(1154, '85', '动画效果', 'effect', 'varchar', '请选择要使用的动画效果', 'select', '', 'safe', '0', 65, 'a:5:{s:11:\"option_list\";s:0:\"\";s:11:\"is_multiple\";s:1:\"0\";s:5:\"width\";s:0:\"\";s:10:\"ext_select\";s:2149:\"0:无动效果\nrollIn:从左到右、顺时针滚动、透明度从100%变化至设定值\nbounceIn:从原位置出现，由小变大超出设定值，再变小小于设定值，再回归设定值、透明度从100%变化至设定值\nbounceInUp:从下往上、窜上来以后会向上超出一部分然后弹回去、透明度为设定值不变\nbounceInDown:从上往下、掉下来以后会向下超出一部分然后弹跳一下、透明度为设定值不变\nbounceInLeft:从左往右、移过来以后会向右超出一部分然后往左弹一下、透明度为设定值不变\nbounceInRight:从右往左、移过来以后会向左超出一部分然后往右弹一下、透明度为设定值不变\nslideInUp:从下往上、上来后固定到设定位置、透明度为设定值不变（up是从下往上）（如果元素在最下面，会撑开盒子高度）\nslideInDown:从上往下、上来后固定到设定位置、透明度为设定值不变\nslideInLeft:从左往右、上来后固定到设定位置、透明度为设定值不变（left却是从左往右）\nslideInRight:从右往左、上来后固定到设定位置、透明度为设定值不变\nlightSpeedIn:从右往左、头部先向右倾斜，又向左倾斜，最后变为原来的形状、透明度从100%变化至设定值\npulse:原位置放大一点点在缩小至原本大小、透明度为设定值不变（配合动画执行次数属性效果更佳）\nflipInX:原位置后仰前栽、透明度从100%变化至设定值\nflipInY:原位置左右旋动、透明度从100%变化至设定值\nbounce:上下抖动、透明度为设定值不变（配合动画执行次数和动画持续时间属性可以实现剧烈抖动亦或是慢慢抖）\nshake:左右抖动、透明度为设定值不变（配合动画执行次数和动画持续时间属性可以实现剧烈抖动亦或是慢慢抖）\nswing:从右往左、头部先向右倾斜，又向左倾斜，最后变为原来的形状、透明度为设定值不变\nbounceInU:原位置不变、直接从不显示到显示（无过过渡效果）\nwobble:原位置不变、类似于一个人站在那左右晃头、透明度为设定值不变\";s:9:\"empty_val\";s:0:\"\";}', 0, 0, '', ''),
+(1155, '21', '动画效果', 'effect', 'varchar', '进场动画效果', 'select', '', 'safe', '', 105, 'a:5:{s:11:\"option_list\";s:0:\"\";s:11:\"is_multiple\";s:1:\"0\";s:5:\"width\";s:0:\"\";s:10:\"ext_select\";s:2152:\"0:无动画效果\nrollIn:从左到右、顺时针滚动、透明度从100%变化至设定值\nbounceIn:从原位置出现，由小变大超出设定值，再变小小于设定值，再回归设定值、透明度从100%变化至设定值\nbounceInUp:从下往上、窜上来以后会向上超出一部分然后弹回去、透明度为设定值不变\nbounceInDown:从上往下、掉下来以后会向下超出一部分然后弹跳一下、透明度为设定值不变\nbounceInLeft:从左往右、移过来以后会向右超出一部分然后往左弹一下、透明度为设定值不变\nbounceInRight:从右往左、移过来以后会向左超出一部分然后往右弹一下、透明度为设定值不变\nslideInUp:从下往上、上来后固定到设定位置、透明度为设定值不变（up是从下往上）（如果元素在最下面，会撑开盒子高度）\nslideInDown:从上往下、上来后固定到设定位置、透明度为设定值不变\nslideInLeft:从左往右、上来后固定到设定位置、透明度为设定值不变（left却是从左往右）\nslideInRight:从右往左、上来后固定到设定位置、透明度为设定值不变\nlightSpeedIn:从右往左、头部先向右倾斜，又向左倾斜，最后变为原来的形状、透明度从100%变化至设定值\npulse:原位置放大一点点在缩小至原本大小、透明度为设定值不变（配合动画执行次数属性效果更佳）\nflipInX:原位置后仰前栽、透明度从100%变化至设定值\nflipInY:原位置左右旋动、透明度从100%变化至设定值\nbounce:上下抖动、透明度为设定值不变（配合动画执行次数和动画持续时间属性可以实现剧烈抖动亦或是慢慢抖）\nshake:左右抖动、透明度为设定值不变（配合动画执行次数和动画持续时间属性可以实现剧烈抖动亦或是慢慢抖）\nswing:从右往左、头部先向右倾斜，又向左倾斜，最后变为原来的形状、透明度为设定值不变\nbounceInU:原位置不变、直接从不显示到显示（无过过渡效果）\nwobble:原位置不变、类似于一个人站在那左右晃头、透明度为设定值不变\";s:9:\"empty_val\";s:0:\"\";}', 0, 0, '', ''),
+(1156, '21', '子级动画', 'subani', 'varchar', '最多不能超过五个动画效果', 'extitle', '', 'safe', '', 40, 'a:7:{s:8:\"form_pid\";s:3:\"440\";s:15:\"form_field_used\";a:13:{i:0;s:5:\"etype\";i:1;s:5:\"title\";i:2;s:8:\"fontsize\";i:3;s:5:\"color\";i:4;s:7:\"picture\";i:5;s:5:\"pleft\";i:6;s:4:\"ptop\";i:7;s:9:\"delaytime\";i:8;s:8:\"duration\";i:9;s:7:\"woffset\";i:10;s:9:\"iteration\";i:11;s:6:\"effect\";i:12;s:5:\"style\";}s:17:\"form_show_editing\";a:4:{i:0;s:5:\"etype\";i:1;s:5:\"title\";i:2;s:8:\"fontsize\";i:3;s:7:\"picture\";}s:16:\"form_true_delete\";s:1:\"1\";s:14:\"form_is_single\";s:1:\"0\";s:13:\"form_maxcount\";s:1:\"5\";s:14:\"form_input_val\";s:0:\"\";}', 0, 0, '', ''),
+(1157, '85', '自定义链接', 'linkurl', 'varchar', '请填写链接地址，外链请输入http://或https://', 'text', '', 'safe', '', 70, 'a:4:{s:8:\"form_btn\";s:3:\"url\";s:5:\"width\";s:3:\"500\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";}', 0, 0, '', ''),
+(1158, '85', '打开方式', 'target', 'varchar', '请选择是在新窗口或是当前窗口打开网址', 'radio', '', '', '_self', 75, 'a:3:{s:11:\"option_list\";s:5:\"opt:6\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";s:0:\"\";}', 0, 0, '', ''),
+(1159, '97', '缩略图', 'thumb', 'varchar', '请准备400x300，或200x150规格的图片，其他规格不符合要求', 'upload', '', 'safe', '', 5, 'a:8:{s:7:\"cate_id\";s:1:\"1\";s:11:\"cate_custom\";s:1:\"0\";s:11:\"is_multiple\";s:1:\"0\";s:11:\"upload_type\";s:11:\"png,jpg,gif\";s:11:\"upload_name\";s:6:\"图片\";s:13:\"upload_binary\";s:1:\"0\";s:15:\"upload_compress\";s:1:\"0\";s:18:\"upload_compress_wh\";s:3:\"500\";}', 0, 0, '', ''),
+(1160, '97', '文章来源', 'linksite', 'varchar', '请填写来源网站的名称', 'text', 'width:200px', 'safe', '', 15, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:74:\"中国站长站\n开源中国\n起点中文网\n百度\n阿里巴巴\n博客园\";s:14:\"ext_quick_type\";s:4:\"none\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1161, '97', '来源网址', 'linkurl', 'varchar', '请填写链接地址，外部链接地址以 // 开头', 'text', '', 'safe', '', 20, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1162, '97', '责编', 'editor', 'varchar', '填写主要编辑人员', 'text', '', 'safe', '', 25, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1163, '97', '摘要', 'note', 'longtext', '简要文字描述', 'editor', '', 'html', '', 30, 'a:7:{s:6:\"height\";s:3:\"200\";s:7:\"is_code\";s:0:\"\";s:7:\"is_read\";s:0:\"\";s:7:\"inc_tag\";s:0:\"\";s:10:\"paste_text\";s:1:\"0\";s:4:\"btns\";a:2:{s:7:\"emotion\";s:2:\"on\";s:8:\"spechars\";s:2:\"on\";}s:8:\"is_float\";s:0:\"\";}', 0, 0, '', ''),
+(1164, '97', '内容', 'content', 'longtext', '', 'editor', '', 'html_js', '', 255, 'a:8:{s:6:\"height\";s:3:\"600\";s:7:\"is_code\";s:0:\"\";s:7:\"is_read\";s:0:\"\";s:7:\"inc_tag\";s:0:\"\";s:10:\"paste_text\";s:1:\"1\";s:4:\"btns\";a:7:{s:5:\"image\";s:2:\"on\";s:5:\"table\";s:2:\"on\";s:7:\"emotion\";s:2:\"on\";s:8:\"spechars\";s:2:\"on\";s:10:\"insertcode\";s:2:\"on\";s:9:\"paragraph\";s:2:\"on\";s:8:\"fontsize\";s:2:\"on\";}s:8:\"is_float\";s:1:\"1\";s:11:\"auto_height\";s:1:\"1\";}', 0, 0, '', ''),
+(1165, '97', '缩略图', 'thumb', 'varchar', '请准备400x300，或200x150规格的图片，其他规格不符合要求', 'upload', '', 'safe', '', 5, 'a:8:{s:7:\"cate_id\";s:1:\"1\";s:11:\"cate_custom\";s:1:\"0\";s:11:\"is_multiple\";s:1:\"0\";s:11:\"upload_type\";s:11:\"png,jpg,gif\";s:11:\"upload_name\";s:6:\"图片\";s:13:\"upload_binary\";s:1:\"0\";s:15:\"upload_compress\";s:1:\"0\";s:18:\"upload_compress_wh\";s:3:\"500\";}', 0, 0, '', ''),
+(1166, '97', '文章来源', 'linksite', 'varchar', '请填写来源网站的名称', 'text', 'width:200px', 'safe', '', 15, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:74:\"中国站长站\n开源中国\n起点中文网\n百度\n阿里巴巴\n博客园\";s:14:\"ext_quick_type\";s:4:\"none\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1167, '97', '来源网址', 'linkurl', 'varchar', '请填写链接地址，外部链接地址以 // 开头', 'text', '', 'safe', '', 20, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1168, '97', '责编', 'editor', 'varchar', '填写主要编辑人员', 'text', '', 'safe', '', 25, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1169, '97', '摘要', 'note', 'longtext', '简要文字描述', 'editor', '', 'html', '', 30, 'a:7:{s:6:\"height\";s:3:\"200\";s:7:\"is_code\";s:0:\"\";s:7:\"is_read\";s:0:\"\";s:7:\"inc_tag\";s:0:\"\";s:10:\"paste_text\";s:1:\"0\";s:4:\"btns\";a:2:{s:7:\"emotion\";s:2:\"on\";s:8:\"spechars\";s:2:\"on\";}s:8:\"is_float\";s:0:\"\";}', 0, 0, '', ''),
+(1170, '97', '内容', 'content', 'longtext', '', 'editor', '', 'html_js', '', 255, 'a:8:{s:6:\"height\";s:3:\"600\";s:7:\"is_code\";s:0:\"\";s:7:\"is_read\";s:0:\"\";s:7:\"inc_tag\";s:0:\"\";s:10:\"paste_text\";s:1:\"1\";s:4:\"btns\";a:7:{s:5:\"image\";s:2:\"on\";s:5:\"table\";s:2:\"on\";s:7:\"emotion\";s:2:\"on\";s:8:\"spechars\";s:2:\"on\";s:10:\"insertcode\";s:2:\"on\";s:9:\"paragraph\";s:2:\"on\";s:8:\"fontsize\";s:2:\"on\";}s:8:\"is_float\";s:1:\"1\";s:11:\"auto_height\";s:1:\"1\";}', 0, 0, '', ''),
+(1171, '97', '缩略图', 'thumb', 'varchar', '请准备400x300，或200x150规格的图片，其他规格不符合要求', 'upload', '', 'safe', '', 5, 'a:8:{s:7:\"cate_id\";s:1:\"1\";s:11:\"cate_custom\";s:1:\"0\";s:11:\"is_multiple\";s:1:\"0\";s:11:\"upload_type\";s:11:\"png,jpg,gif\";s:11:\"upload_name\";s:6:\"图片\";s:13:\"upload_binary\";s:1:\"0\";s:15:\"upload_compress\";s:1:\"0\";s:18:\"upload_compress_wh\";s:3:\"500\";}', 0, 0, '', ''),
+(1172, '97', '文章来源', 'linksite', 'varchar', '请填写来源网站的名称', 'text', 'width:200px', 'safe', '', 15, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:74:\"中国站长站\n开源中国\n起点中文网\n百度\n阿里巴巴\n博客园\";s:14:\"ext_quick_type\";s:4:\"none\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1173, '97', '来源网址', 'linkurl', 'varchar', '请填写链接地址，外部链接地址以 // 开头', 'text', '', 'safe', '', 20, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1174, '97', '责编', 'editor', 'varchar', '填写主要编辑人员', 'text', '', 'safe', '', 25, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1175, '97', '摘要', 'note', 'longtext', '简要文字描述', 'editor', '', 'html', '', 30, 'a:7:{s:6:\"height\";s:3:\"200\";s:7:\"is_code\";s:0:\"\";s:7:\"is_read\";s:0:\"\";s:7:\"inc_tag\";s:0:\"\";s:10:\"paste_text\";s:1:\"0\";s:4:\"btns\";a:2:{s:7:\"emotion\";s:2:\"on\";s:8:\"spechars\";s:2:\"on\";}s:8:\"is_float\";s:0:\"\";}', 0, 0, '', ''),
+(1176, '97', '内容', 'content', 'longtext', '', 'editor', '', 'html_js', '', 255, 'a:8:{s:6:\"height\";s:3:\"600\";s:7:\"is_code\";s:0:\"\";s:7:\"is_read\";s:0:\"\";s:7:\"inc_tag\";s:0:\"\";s:10:\"paste_text\";s:1:\"1\";s:4:\"btns\";a:7:{s:5:\"image\";s:2:\"on\";s:5:\"table\";s:2:\"on\";s:7:\"emotion\";s:2:\"on\";s:8:\"spechars\";s:2:\"on\";s:10:\"insertcode\";s:2:\"on\";s:9:\"paragraph\";s:2:\"on\";s:8:\"fontsize\";s:2:\"on\";}s:8:\"is_float\";s:1:\"1\";s:11:\"auto_height\";s:1:\"1\";}', 0, 0, '', ''),
+(1213, '78', '视频文件', 'mp4', 'varchar', '仅限MP4的视频', 'upload', '', 'safe', '', 40, 'a:8:{s:7:\"cate_id\";s:2:\"24\";s:11:\"cate_custom\";s:1:\"0\";s:11:\"is_multiple\";s:1:\"0\";s:11:\"upload_type\";s:3:\"mp4\";s:11:\"upload_name\";s:6:\"视频\";s:13:\"upload_binary\";s:1:\"0\";s:15:\"upload_compress\";s:1:\"0\";s:18:\"upload_compress_wh\";s:3:\"500\";}', 0, 0, '', ''),
+(1214, '78', '内容', 'content', 'longtext', '', 'editor', '', 'html', '', 255, 'a:7:{s:5:\"width\";s:3:\"950\";s:6:\"height\";s:3:\"360\";s:7:\"is_code\";s:0:\"\";s:7:\"is_read\";s:0:\"\";s:7:\"inc_tag\";s:0:\"\";s:10:\"paste_text\";s:0:\"\";s:4:\"btns\";a:3:{s:5:\"image\";s:1:\"1\";s:9:\"paragraph\";s:1:\"1\";s:8:\"fontsize\";s:1:\"1\";}}', 0, 0, '', ''),
+(1223, 'project-41', '切换时间', 'delaytime', '200', '单位毫秒；切换效果持续时间（一次切换效果执行所用的时间长度）。', 'text', '', 'int', '500', 15, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:24:\"500\n600\n700\n800\n900\n1000\";s:14:\"ext_quick_type\";s:4:\"none\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1220, '85', '加粗规格', 'fontweight', 'varchar', '选择加粗规格，100-900，其中400等于 normal，700等于 bold', 'radio', '', 'safe', '400', 23, 'a:3:{s:11:\"option_list\";s:0:\"\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";s:35:\"100\n200\n300\n400\n500\n600\n700\n800\n900\";}', 0, 0, '', ''),
+(1221, 'project-41', '是否循环', 'pnloop', '200', '前/后按钮是否继续循环，若为false则当翻动到最前/后页时，前/后按钮点击无效', 'radio', '', 'int', '', 5, 'a:3:{s:11:\"option_list\";s:5:\"opt:4\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";s:0:\"\";}', 0, 0, '', ''),
+(1222, 'project-41', '等待时间', 'intertime', '200', '单侠毫秒；自动运行间隔。', 'text', '', 'int', '2500', 10, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:19:\"2500\n3000\n5000\n7000\";s:14:\"ext_quick_type\";s:4:\"none\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1212, '78', '视频地址', 'video', 'varchar', '系统支持识别优酷，QQ，Youtube，请填写完整的地址', 'text', '', 'safe', '', 35, 'a:5:{s:8:\"form_btn\";s:0:\"\";s:10:\"ext_format\";s:0:\"\";s:15:\"ext_quick_words\";s:0:\"\";s:14:\"ext_quick_type\";s:0:\"\";s:13:\"ext_include_3\";s:1:\"0\";}', 0, 0, '', ''),
+(1211, '78', '缩略图', 'thumb', 'varchar', '请上传300x300规格的图片，文件大小建议不超过100KB', 'upload', '', 'safe', '', 30, 'a:3:{s:7:\"cate_id\";s:1:\"1\";s:11:\"is_multiple\";s:1:\"0\";s:11:\"upload_auto\";s:1:\"1\";}', 0, 0, '', '');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_freight`
---
-
-CREATE TABLE `qinggan_freight` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '运费模板ID，自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_freight` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '运费模板ID，自增ID',
   `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `title` varchar(100) NOT NULL COMMENT '模板名称，便于后台管理',
   `type` enum('weight','volume','number','fixed','price') NOT NULL DEFAULT 'weight' COMMENT 'weight重量volume体积number数量fixed固定值',
   `currency_id` int(11) NOT NULL DEFAULT '0' COMMENT '货币ID',
-  `taxis` int(11) NOT NULL DEFAULT '0' COMMENT '排序'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='物流运费模板管理';
-
---
--- 转存表中的数据 `qinggan_freight`
---
+  `taxis` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='物流运费模板管理';
 
 INSERT INTO `qinggan_freight` (`id`, `site_id`, `title`, `type`, `currency_id`, `taxis`) VALUES
 (1, 1, '计重运费模板', 'weight', 1, 10),
@@ -594,21 +529,12 @@ INSERT INTO `qinggan_freight` (`id`, `site_id`, `title`, `type`, `currency_id`, 
 (4, 1, '固定运费模板', 'fixed', 1, 40),
 (5, 1, '基于价格模板', 'price', 1, 50);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_freight_price`
---
-
-CREATE TABLE `qinggan_freight_price` (
+CREATE TABLE IF NOT EXISTS `qinggan_freight_price` (
   `zid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '区域ID',
   `unit_val` varchar(20) NOT NULL COMMENT '单位量，如0.5kg，或1个或1立方米，取决于系统设定',
-  `price` varchar(50) NOT NULL DEFAULT '0' COMMENT '运费价格，最低为0，不能为负数'
+  `price` varchar(50) NOT NULL DEFAULT '0' COMMENT '运费价格，最低为0，不能为负数',
+  PRIMARY KEY (`zid`,`unit_val`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='单位体积价格';
-
---
--- 转存表中的数据 `qinggan_freight_price`
---
 
 INSERT INTO `qinggan_freight_price` (`zid`, `unit_val`, `price`) VALUES
 (1, '1', '10'),
@@ -647,24 +573,16 @@ INSERT INTO `qinggan_freight_price` (`zid`, `unit_val`, `price`) VALUES
 (25, '100', '10'),
 (25, '10000', '0');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_freight_zone`
---
-
-CREATE TABLE `qinggan_freight_zone` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_freight_zone` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `fid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '运费模板ID',
   `title` varchar(100) NOT NULL COMMENT '名称',
   `taxis` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '排序',
   `note` varchar(255) NOT NULL COMMENT '简单说明该区域信息',
-  `area` longtext NOT NULL COMMENT '省份+城市'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='运费模板区域设置';
-
---
--- 转存表中的数据 `qinggan_freight_zone`
---
+  `area` longtext NOT NULL COMMENT '省份+城市',
+  PRIMARY KEY (`id`),
+  KEY `fid` (`fid`)
+) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COMMENT='运费模板区域设置';
 
 INSERT INTO `qinggan_freight_zone` (`id`, `fid`, `title`, `taxis`, `note`, `area`) VALUES
 (1, 3, '华东', 10, '包括省市有上海，江苏，浙江，安徽，江西', 'a:5:{s:9:\"上海市\";a:1:{s:9:\"上海市\";b:1;}s:9:\"江苏省\";a:13:{s:9:\"南京市\";b:1;s:9:\"无锡市\";b:1;s:9:\"徐州市\";b:1;s:9:\"常州市\";b:1;s:9:\"苏州市\";b:1;s:9:\"南通市\";b:1;s:12:\"连云港市\";b:1;s:9:\"淮安市\";b:1;s:9:\"盐城市\";b:1;s:9:\"扬州市\";b:1;s:9:\"镇江市\";b:1;s:9:\"泰州市\";b:1;s:9:\"宿迁市\";b:1;}s:9:\"浙江省\";a:11:{s:9:\"杭州市\";b:1;s:9:\"宁波市\";b:1;s:9:\"温州市\";b:1;s:9:\"嘉兴市\";b:1;s:9:\"湖州市\";b:1;s:9:\"绍兴市\";b:1;s:9:\"金华市\";b:1;s:9:\"衢州市\";b:1;s:9:\"舟山市\";b:1;s:9:\"台州市\";b:1;s:9:\"丽水市\";b:1;}s:9:\"安徽省\";a:17:{s:9:\"合肥市\";b:1;s:9:\"芜湖市\";b:1;s:9:\"蚌埠市\";b:1;s:9:\"淮南市\";b:1;s:12:\"马鞍山市\";b:1;s:9:\"淮北市\";b:1;s:9:\"铜陵市\";b:1;s:9:\"安庆市\";b:1;s:9:\"黄山市\";b:1;s:9:\"滁州市\";b:1;s:9:\"阜阳市\";b:1;s:9:\"宿州市\";b:1;s:9:\"巢湖市\";b:1;s:9:\"六安市\";b:1;s:9:\"亳州市\";b:1;s:9:\"池州市\";b:1;s:9:\"宣城市\";b:1;}s:9:\"江西省\";a:11:{s:9:\"南昌市\";b:1;s:12:\"景德镇市\";b:1;s:9:\"萍乡市\";b:1;s:9:\"九江市\";b:1;s:9:\"新余市\";b:1;s:9:\"鹰潭市\";b:1;s:9:\"赣州市\";b:1;s:9:\"吉安市\";b:1;s:9:\"宜春市\";b:1;s:9:\"抚州市\";b:1;s:9:\"上饶市\";b:1;}}'),
@@ -681,14 +599,8 @@ INSERT INTO `qinggan_freight_zone` (`id`, `fid`, `title`, `taxis`, `note`, `area
 (24, 4, '偏远地区', 20, '', 'a:1:{s:24:\"新疆维吾尔自治区\";a:18:{s:15:\"乌鲁木齐市\";b:1;s:15:\"克拉玛依市\";b:1;s:15:\"吐鲁番地区\";b:1;s:12:\"哈密地区\";b:1;s:21:\"昌吉回族自治州\";b:1;s:27:\"博尔塔拉蒙古自治州\";b:1;s:27:\"巴音郭楞蒙古自治州\";b:1;s:15:\"阿克苏地区\";b:1;s:33:\"克孜勒苏柯尔克孜自治州\";b:1;s:12:\"喀什地区\";b:1;s:12:\"和田地区\";b:1;s:24:\"伊犁哈萨克自治州\";b:1;s:12:\"塔城地区\";b:1;s:15:\"阿勒泰地区\";b:1;s:12:\"石河子市\";b:1;s:12:\"阿拉尔市\";b:1;s:15:\"图木舒克市\";b:1;s:12:\"五家渠市\";b:1;}}'),
 (25, 5, '华南', 10, '', 'a:4:{s:9:\"福建省\";a:9:{s:9:\"福州市\";b:1;s:9:\"厦门市\";b:1;s:9:\"莆田市\";b:1;s:9:\"三明市\";b:1;s:9:\"泉州市\";b:1;s:9:\"漳州市\";b:1;s:9:\"南平市\";b:1;s:9:\"龙岩市\";b:1;s:9:\"宁德市\";b:1;}s:9:\"广东省\";a:21:{s:9:\"广州市\";b:1;s:9:\"韶关市\";b:1;s:9:\"深圳市\";b:1;s:9:\"珠海市\";b:1;s:9:\"汕头市\";b:1;s:9:\"佛山市\";b:1;s:9:\"江门市\";b:1;s:9:\"湛江市\";b:1;s:9:\"茂名市\";b:1;s:9:\"肇庆市\";b:1;s:9:\"惠州市\";b:1;s:9:\"梅州市\";b:1;s:9:\"汕尾市\";b:1;s:9:\"河源市\";b:1;s:9:\"阳江市\";b:1;s:9:\"清远市\";b:1;s:9:\"东莞市\";b:1;s:9:\"中山市\";b:1;s:9:\"潮州市\";b:1;s:9:\"揭阳市\";b:1;s:9:\"云浮市\";b:1;}s:21:\"广西壮族自治区\";a:14:{s:9:\"南宁市\";b:1;s:9:\"柳州市\";b:1;s:9:\"桂林市\";b:1;s:9:\"梧州市\";b:1;s:9:\"北海市\";b:1;s:12:\"防城港市\";b:1;s:9:\"钦州市\";b:1;s:9:\"贵港市\";b:1;s:9:\"玉林市\";b:1;s:9:\"百色市\";b:1;s:9:\"贺州市\";b:1;s:9:\"河池市\";b:1;s:9:\"来宾市\";b:1;s:9:\"崇左市\";b:1;}s:9:\"海南省\";a:2:{s:9:\"海口市\";b:1;s:9:\"三亚市\";b:1;}}');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_gateway`
---
-
-CREATE TABLE `qinggan_gateway` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_gateway` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID，为0表示所有站点可用',
   `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不可用1可用',
   `is_default` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1表示默认使用',
@@ -697,24 +609,12 @@ CREATE TABLE `qinggan_gateway` (
   `title` varchar(255) NOT NULL COMMENT '名称',
   `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序',
   `note` varchar(255) NOT NULL COMMENT '功能备注',
-  `ext` text NOT NULL COMMENT '扩展参数'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='第三方网关路由引挈';
+  `ext` text NOT NULL COMMENT '扩展参数',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='第三方网关路由引挈';
 
---
--- 转存表中的数据 `qinggan_gateway`
---
-
-INSERT INTO `qinggan_gateway` (`id`, `site_id`, `status`, `is_default`, `type`, `code`, `title`, `taxis`, `note`, `ext`) VALUES
-(2, 1, 1, 1, 'email', 'sendcloud', 'SendCloud邮件发送', 5, '', 'a:5:{s:8:\"api_user\";s:8:\"phpokcom\";s:7:\"api_key\";s:16:\"gdMH23CczgNE51AU\";s:8:\"fullname\";s:12:\"锟铻科技\";s:5:\"email\";s:15:\"admin@phpok.org\";s:8:\"label_id\";s:6:\"118347\";}');
-
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_gd`
---
-
-CREATE TABLE `qinggan_gd` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID号',
+CREATE TABLE IF NOT EXISTS `qinggan_gd` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
   `identifier` varchar(100) NOT NULL COMMENT '标识串',
   `width` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '图片宽度',
   `height` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '图片高度',
@@ -724,25 +624,16 @@ CREATE TABLE `qinggan_gd` (
   `quality` tinyint(3) UNSIGNED NOT NULL DEFAULT '100' COMMENT '图片生成质量，默认是100',
   `bgcolor` varchar(10) NOT NULL DEFAULT 'FFFFFF' COMMENT '补白背景色，默认是白色',
   `trans` tinyint(3) UNSIGNED NOT NULL DEFAULT '65' COMMENT '透明度',
-  `editor` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0普通1默认插入编辑器'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='上传图片自动生成方案';
-
---
--- 转存表中的数据 `qinggan_gd`
---
+  `editor` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0普通1默认插入编辑器',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='上传图片自动生成方案';
 
 INSERT INTO `qinggan_gd` (`id`, `identifier`, `width`, `height`, `mark_picture`, `mark_position`, `cut_type`, `quality`, `bgcolor`, `trans`, `editor`) VALUES
 (2, 'thumb', 320, 320, '', 'bottom-right', 1, 80, 'FFFFFF', 0, 0),
 (12, 'auto', 0, 0, '', 'bottom-right', 0, 80, 'FFFFFF', 0, 1);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list`
---
-
-CREATE TABLE `qinggan_list` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
+CREATE TABLE IF NOT EXISTS `qinggan_list` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
   `parent_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0为根主题，其他ID对应list表的id字段',
   `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
   `module_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '模块ID',
@@ -750,6 +641,7 @@ CREATE TABLE `qinggan_list` (
   `site_id` mediumint(8) UNSIGNED NOT NULL COMMENT '网站ID',
   `title` varchar(255) NOT NULL COMMENT '主题',
   `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `lastdate` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后修改时间',
   `sort` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未审核，1已审核',
   `hidden` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0显示，1隐藏',
@@ -764,97 +656,67 @@ CREATE TABLE `qinggan_list` (
   `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示管理员发布',
   `identifier` varchar(255) NOT NULL COMMENT '内容标识串',
   `integral` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '财富基于，用于计算财富的基础量',
-  `style` varchar(255) NOT NULL COMMENT 'CSS样式'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='内容主表';
+  `style` varchar(255) NOT NULL COMMENT 'CSS样式',
+  PRIMARY KEY (`id`),
+  KEY `project_id` (`project_id`),
+  KEY `site_id` (`site_id`,`identifier`,`status`)
+) ENGINE=MyISAM AUTO_INCREMENT=3387 DEFAULT CHARSET=utf8 COMMENT='内容主表';
 
---
--- 转存表中的数据 `qinggan_list`
---
+INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_id`, `site_id`, `title`, `dateline`, `lastdate`, `sort`, `status`, `hidden`, `hits`, `tpl`, `seo_title`, `seo_keywords`, `seo_desc`, `tag`, `attr`, `replydate`, `user_id`, `identifier`, `integral`, `style`) VALUES
+(3366, 0, 0, 78, 390, 1, '测试视频', 1566978869, 1566978869, 0, 1, 0, 1, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(1276, 0, 0, 21, 41, 1, '支持PHPOK，支持心中的那一份支持', 1394008409, 1577089160, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(1277, 0, 0, 21, 41, 1, '10年产品发展，稳定，健全的企业服务系统', 1394008434, 1577076936, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(1278, 0, 0, 21, 41, 1, '三网合一，一站式服务', 1394008456, 1577076968, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(1285, 0, 0, 46, 96, 1, '测试留言', 1399239571, 1399239571, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(1305, 0, 0, 64, 148, 1, '在线客服', 1409747629, 1409747629, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(1311, 0, 204, 66, 152, 1, '测试论坛功能', 1412391521, 1412391521, 0, 1, 0, 11, '', '', '', '', '', '', 0, 23, '', 0, ''),
+(1334, 0, 204, 66, 152, 1, '测试888', 1413063267, 1413063267, 0, 1, 0, 14, '', '', '', '', '', '', 0, 23, '', 0, ''),
+(1933, 0, 68, 22, 43, 1, '学编程，PHP是最好的入门手段', 1543242302, 1543242302, 0, 1, 0, 5, '', '', 'php,php框架', '', 'php,php框架,公司', '', 0, 0, '', 0, ''),
+(1934, 0, 8, 22, 43, 1, 'PHPOK5变更日志', 1543242635, 1543242635, 0, 1, 0, 31, '', '', '小程序', '', '小程序', '', 1576027100, 0, '', 0, ''),
+(1935, 0, 8, 22, 43, 1, '升级包制作', 1545921787, 1545921787, 0, 1, 0, 7, '', '', 'update', '', 'update', '', 0, 23, '', 0, ''),
+(1936, 0, 8, 22, 43, 1, '开发模式及应用模式的切换', 1545881802, 1545881802, 0, 1, 0, 13, '', '', '', '', '资讯,新闻', '', 0, 23, '', 0, ''),
+(1427, 0, 0, 64, 148, 1, '在线客服', 1446469762, 1446469762, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(1753, 0, 582, 24, 45, 1, '小米(MI) 小米5 全网通4G手机 双卡双待', 1452570664, 1452570664, 0, 1, 0, 58, '', '', '', '', '', '', 1535092409, 0, '', 0, ''),
+(1756, 0, 0, 40, 87, 1, '公司简介', 1458467228, 1458467228, 10, 1, 0, 254, '', '', '', '', '企业', '', 0, 0, 'aboutus', 0, ''),
+(1757, 0, 0, 40, 87, 1, '联系我们', 1458474081, 1458474081, 40, 1, 0, 82, 'contactus', '', '', '', '联系', '', 0, 0, 'contactus', 0, ''),
+(1758, 0, 0, 40, 87, 1, '发展历程', 1458486519, 1458486519, 20, 1, 0, 79, '', '', '', '', '发展历程', '', 0, 0, 'development-course', 0, ''),
+(1760, 0, 583, 24, 45, 1, '魅族 MX5 移动联通双4G手机 双卡双待', 1458626730, 1458626730, 0, 1, 0, 271, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(1761, 0, 584, 24, 45, 1, '华为 P7 移动4G手机', 1458667195, 1458667195, 0, 1, 0, 50, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(1762, 0, 585, 24, 45, 1, 'vivo Xplay5 全网通4G手机 4GB+128GB 双卡双待', 1458668060, 1458668060, 0, 1, 0, 83, '', '', '', '', '', '', 1480393813, 0, '', 0, ''),
+(1763, 0, 216, 24, 45, 1, 'Apple iPhone 5SE 16G 移动联通电信4G手机', 1458669038, 1458669038, 0, 1, 0, 542, '', '', '', '', '新闻,公司', '', 1535073464, 0, '', 0, ''),
+(1765, 0, 211, 68, 144, 1, 'Apple iPhone 5SE', 1458701924, 1458701924, 0, 1, 0, 0, '', '', '', '', '公司', '', 0, 0, '', 0, ''),
+(1766, 0, 211, 68, 144, 1, 'vivo Xplay5', 1458701947, 1458701947, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(1767, 0, 211, 68, 144, 1, '华为P7', 1458701998, 1458701998, 0, 1, 0, 4, '', '', '', '', '公司', '', 0, 0, '', 0, ''),
+(1768, 0, 211, 68, 144, 1, '魅族MX5', 1458702037, 1458702037, 0, 1, 0, 8, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(1769, 0, 211, 68, 144, 1, '小米5', 1458702065, 1458702065, 0, 1, 0, 31, '', '', '', '', '公司', '', 1523955465, 0, '', 0, ''),
+(1854, 0, 204, 66, 152, 1, '测试新主题999', 1498026275, 1498026275, 0, 1, 0, 115, '', '', '', '', '', '', 1542435156, 23, '', 0, ''),
+(1869, 0, 0, 46, 96, 1, 'fasdfasdfasdf', 1523951240, 1523951240, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(1870, 0, 206, 66, 152, 1, '测试上传图片功能999', 1524195487, 1524195487, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0, ''),
+(1996, 0, 68, 22, 43, 1, '节能减排，绿色环保卫主题，倡导节约型社会发展，使用生物发电', 1367942400, 1367942400, 0, 1, 0, 50, '', '', '节能减排,玻璃幕墙', '', '节能减排,玻璃幕墙,公司', '', 0, 0, '', 0, ''),
+(1997, 0, 68, 22, 43, 1, 'htaccess 配置文档', 1556831723, 1556831723, 0, 1, 0, 10, '', '', 'htaccess,文件目录', '', 'htaccess,文件目录', '', 0, 0, '', 0, ''),
+(3384, 0, 8, 22, 43, 1, '网站设计中的百度地图异步加载', 1479027392, 1479027392, 0, 1, 0, 32, '', '', '百度地图', '开始一直使用Google地图，原因之一是Google地图的灰色系与我们大部分项目的设计风格相符，后来由于Google被屏蔽，很多相关资源请求都很慢，还有打不开，所以考虑再三，决定使用百度地图。', '脚本,网站设计,api,地图api', '', 0, 0, '', 0, '');
 
-INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_id`, `site_id`, `title`, `dateline`, `sort`, `status`, `hidden`, `hits`, `tpl`, `seo_title`, `seo_keywords`, `seo_desc`, `tag`, `attr`, `replydate`, `user_id`, `identifier`, `integral`, `style`) VALUES
-(520, 0, 0, 23, 42, 1, '网站首页', 1380942032, 10, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(712, 0, 0, 23, 42, 1, '关于我们', 1383355821, 20, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(713, 0, 0, 23, 42, 1, '资讯中心', 1383355842, 30, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(714, 0, 0, 23, 42, 1, '产品展示', 1383355849, 40, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(716, 0, 0, 23, 42, 1, '在线留言', 1383355870, 60, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(3366, 0, 0, 78, 390, 1, '测试视频', 1566978869, 0, 1, 0, 1, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(760, 713, 0, 23, 42, 1, '公司新闻', 1383815715, 10, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(761, 713, 0, 23, 42, 1, '行业新闻', 1383815736, 20, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1254, 712, 0, 23, 42, 1, '发展历程', 1392375210, 26, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1256, 0, 0, 23, 42, 1, '图集相册', 1392375722, 70, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1276, 0, 0, 21, 41, 1, '支持PHPOK，支持心中的那一份支持', 1394008409, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1277, 0, 0, 21, 41, 1, '10年产品发展，稳定，健全的企业服务系统', 1394008434, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1278, 0, 0, 21, 41, 1, '三网合一，一站式服务', 1394008456, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1285, 0, 0, 46, 96, 1, '测试留言', 1399239571, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1298, 0, 0, 23, 42, 1, '下载中心', 1409552212, 80, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1299, 0, 0, 23, 42, 1, '论坛BBS', 1409552219, 90, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1300, 0, 0, 23, 147, 1, '公司简介', 1409554964, 10, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1301, 0, 0, 23, 147, 1, '发展历程', 1409554975, 20, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1302, 0, 0, 23, 147, 1, '新闻中心', 1409554988, 30, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1303, 0, 0, 23, 147, 1, '在线留言', 1409554999, 40, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1304, 0, 0, 23, 147, 1, '联系我们', 1409555008, 50, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1305, 0, 0, 64, 148, 1, '在线客服', 1409747629, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1311, 0, 204, 66, 152, 1, '测试论坛功能', 1412391521, 0, 1, 0, 11, '', '', '', '', '', '', 0, 23, '', 0, ''),
-(1334, 0, 204, 66, 152, 1, '测试888', 1413063267, 0, 1, 0, 14, '', '', '', '', '', '', 0, 23, '', 0, ''),
-(1933, 0, 68, 22, 43, 1, '学编程，PHP是最好的入门手段', 1543242302, 0, 1, 0, 5, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1934, 0, 8, 22, 43, 1, 'PHPOK5变更日志', 1543242635, 0, 1, 0, 5, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1935, 0, 8, 22, 43, 1, '升级包制作', 1545921787, 0, 1, 0, 5, '', '', '', '', '', '', 0, 23, '', 0, ''),
-(1936, 0, 8, 22, 43, 1, '开发模式及应用模式的切换', 1545881802, 0, 1, 0, 11, '', '', '', '', '资讯,新闻', '', 0, 23, '', 0, ''),
-(1427, 0, 0, 64, 148, 1, '在线客服', 1446469762, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1753, 0, 582, 24, 45, 1, '小米(MI) 小米5 全网通4G手机 双卡双待', 1452570664, 0, 1, 0, 56, '', '', '', '', '', '', 1535092409, 0, '', 0, ''),
-(1756, 0, 0, 40, 87, 1, '公司简介', 1458467228, 10, 1, 0, 229, '', '', '', '', '公司,企业', '', 0, 0, 'aboutus', 0, ''),
-(1757, 0, 0, 40, 87, 1, '联系我们', 1458474081, 40, 1, 0, 58, 'contactus', '', '', '', '联系,公司', '', 0, 0, 'contactus', 0, ''),
-(1758, 0, 0, 40, 87, 1, '发展历程', 1458486519, 20, 1, 0, 63, '', '', '', '', '发展历程', '', 0, 0, 'development-course', 0, ''),
-(1760, 0, 583, 24, 45, 1, '魅族 MX5 移动联通双4G手机 双卡双待', 1458626730, 0, 1, 0, 269, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1761, 0, 584, 24, 45, 1, '华为 P7 移动4G手机', 1458667195, 0, 1, 0, 46, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1762, 0, 585, 24, 45, 1, 'vivo Xplay5 全网通4G手机 4GB+128GB 双卡双待', 1458668060, 0, 1, 0, 82, '', '', '', '', '', '', 1480393813, 0, '', 0, ''),
-(1763, 0, 216, 24, 45, 1, 'Apple iPhone 5SE 16G 移动联通电信4G手机', 1458669038, 0, 1, 0, 516, '', '', '', '', '公司,资讯', '', 1535073464, 0, '', 0, ''),
-(1765, 0, 211, 68, 144, 1, 'Apple iPhone 5SE', 1458701924, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1766, 0, 211, 68, 144, 1, 'vivo Xplay5', 1458701947, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1767, 0, 211, 68, 144, 1, '华为P7', 1458701998, 0, 1, 0, 4, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1768, 0, 211, 68, 144, 1, '魅族MX5', 1458702037, 0, 1, 0, 7, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1769, 0, 211, 68, 144, 1, '小米5', 1458702065, 0, 1, 0, 29, '', '', '', '', '', '', 1523955465, 0, '', 0, ''),
-(1854, 0, 204, 66, 152, 1, '测试新主题999', 1498026275, 0, 1, 0, 114, '', '', '', '', '', '', 1542435156, 23, '', 0, ''),
-(1855, 0, 200, 65, 151, 1, '主题复制', 1516290172, 0, 1, 0, 45, '', '', '', '', '', '', 1523963359, 0, '', 0, ''),
-(1869, 0, 0, 46, 96, 1, 'fasdfasdfasdf', 1523951240, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1870, 0, 206, 66, 152, 1, '测试上传图片功能999', 1524195487, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0, ''),
-(1932, 0, 0, 23, 147, 1, '视频库', 1543073221, 60, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(1996, 0, 68, 22, 43, 1, '节能减排，绿色环保卫主题，倡导节约型社会发展，使用生物发电', 1367942400, 0, 1, 0, 49, '', '', '', '', '公司,资讯,新闻', '', 0, 0, '', 0, ''),
-(1997, 0, 68, 22, 43, 1, 'htaccess 配置文档', 1556831723, 0, 1, 0, 10, '', '', '', '', '', '', 0, 0, '', 0, '');
-
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_21`
---
-
-CREATE TABLE `qinggan_list_21` (
+CREATE TABLE IF NOT EXISTS `qinggan_list_21` (
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
   `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `link` longtext NOT NULL COMMENT '链接',
-  `target` varchar(255) NOT NULL DEFAULT '_self' COMMENT '链接方式',
+  `target` varchar(255) NOT NULL DEFAULT '_blank' COMMENT '链接方式',
   `pic` int(11) NOT NULL COMMENT '图片',
-  `picmobile` int(11) NOT NULL COMMENT '手机版图片'
+  `picmobile` int(11) NOT NULL COMMENT '手机版图片',
+  `effect` varchar(255) NOT NULL DEFAULT '' COMMENT '动画效果',
+  `subani` varchar(255) NOT NULL DEFAULT '' COMMENT '子级动画',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='图片播放器';
 
---
--- 转存表中的数据 `qinggan_list_21`
---
+INSERT INTO `qinggan_list_21` (`id`, `site_id`, `project_id`, `cate_id`, `link`, `target`, `pic`, `picmobile`, `effect`, `subani`) VALUES
+(1276, 1, 41, 0, 'https://www.phpok.com', '_blank', 1411, 0, '0', '2,3'),
+(1277, 1, 41, 0, 'https://www.phpok.com', '_blank', 1389, 1409, 'bounceInDown', ''),
+(1278, 1, 41, 0, 'https://www.phpok.com', '_blank', 1388, 1408, 'bounceInRight', '');
 
-INSERT INTO `qinggan_list_21` (`id`, `site_id`, `project_id`, `cate_id`, `link`, `target`, `pic`, `picmobile`) VALUES
-(1276, 1, 41, 0, 'https://www.phpok.com', '_blank', 1390, 0),
-(1277, 1, 41, 0, 'https://www.phpok.com', '_blank', 1389, 0),
-(1278, 1, 41, 0, 'https://www.phpok.com', '_blank', 1388, 1344);
-
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_22`
---
-
-CREATE TABLE `qinggan_list_22` (
+CREATE TABLE IF NOT EXISTS `qinggan_list_22` (
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
@@ -863,103 +725,57 @@ CREATE TABLE `qinggan_list_22` (
   `content` longtext NOT NULL COMMENT '内容',
   `note` longtext NOT NULL COMMENT '摘要',
   `plugin_vote` int(11) NOT NULL DEFAULT '0' COMMENT '插件投票统计-plugin-vote',
-  `demo` longtext NOT NULL COMMENT '演示'
+  `linkurl` varchar(255) NOT NULL DEFAULT '' COMMENT '来源',
+  `linksite` varchar(255) NOT NULL DEFAULT '' COMMENT '网站',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文章资讯';
 
---
--- 转存表中的数据 `qinggan_list_22`
---
+INSERT INTO `qinggan_list_22` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `content`, `note`, `plugin_vote`, `linkurl`, `linksite`) VALUES
+(1933, 1, 43, 68, 0, '<h2>学习前</h2><p>互联网是一门新兴产业，它的升级版：物联网，更是还在摸索中。当然，这个基本上和我们没有太多的关系（或者说目前和我们没有太多的关系）。</p><p>我们目前要做的，学好一门编程语言，用它来赚钱，养家糊口，这是一份目前看来相对的比较体面的工作。</p><h2>选择PHP</h2><p>选择PHP来做编程学习，最重要的一点就是入门槛低，请不要小看这一点，这就意味着我们这些文化水平稍低比较差的（初中，高中，中专，大专等），稍稍用点心也可以比较容易的学习并理解。据了解，中国每年超过900万学子参加高考，也同时每年都有六七百万毕业生（看下图），就业绝对是一个很严峻的问题。每年有那么多的学子毕业，还有大批像我们早早就入社会的一大群人。国家再如何用心做事，也需要我们自己努力充实自己才行。</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;</p><p style=\"text-align:center\"><img src=\"https://www.phpok.com/res/201810/23/auto_10163.jpg\" alt=\"clip_image002\" title=\"clip_image002\" width=\"402\" height=\"222\"/></p><h2>学习PHP几个阶段</h2><h3>第一阶段、学习前端知识，通过套站巩固基础知识</h3><p>Web前端开发技术主要包括三个要素：HTML、CSS和JavaScript！</p><p>学习\n HTML，CSS 应该先跟著书仔细、扎实的学一遍。然后就需要做大量的练习，做各种常规的、奇怪的、大量的布局练习来捆固、理解自己的知识。而学习 \nJavascript 首先要知道这门语言可以做什么，不能做什么，擅长做什么，不擅长做什么！在这一阶段，我们只需要记住大部分 Javascript\n 函数，做一些练习就可以了。</p><p>注意一点，WEB前端技术很零碎，HTML里的标识语言都是相互通用的，这时候，千万千万不要僵硬的记住这个标记符合是做什么，那个符号是做什么，当时你还不清楚的时候，一切以Div为王，总不会错。当然，更重要的一点就是：不要死记硬背。</p><p>当我们熟悉了这些知识点后，我们要做的就是实践，唯有通过实践，我们才能真正的巩固知识点。如何实践，最经典最实用，能使人快速进步的莫过于套站。</p><p>广告一下：PHPOK系统是一套流行的CMS系统软件，采用PHP+MySQL制作，开源自由，免费商用。并且官网上提供了大量的帮助文档及视频教程。极适合新手入门学习套站。</p><h3>第二阶段、开发插件，小小提升</h3><p>当我们经历了苦逼的套板几个月后，我们会发现，市面上大量的CMS系统并不能完全满足各个行业的需要。好在绝大多数据CMS系统都有开放了插件接口（OK系统也提供了噢），这时候我们要做的就是，参考官方手册提供的文档，自己写几个插件，像OK系统默认缺少地图插件。这时候我们就要在自己的理解基础上来完善了。这就是我们在学习PHP编程的第一个小进步！</p><h3>第三阶段、给现有CMS系统的核心模块扩展功能</h3><p>当我们有了一定的积累后，我们会越来越不满足原有CMS提供的功能，插件也满足不了我们了，这时候我们可以尝试写一些系统的功能模块对接进来。其实到了这一阶段后，基本上已经是一个老程序员了，当然我们可能还不是一个真正的大牛（会被吹成大牛，别当真就是了，吹牛嘛，谁较真谁就输了），但能满足市场上绝大多数企业的工作要求。</p><h3>第四阶段、自己开发框架，学习一门新的语言</h3><p>不是PHPer喜欢造轮子，而是不造轮子，PHPer会越来越迷茫！</p><p>而造轮子，是所有PHPer想要真正深入所必须走的一条路。因为只有造了一个轮子后，我们才会总结，才有可能往技术主管，技术团队负责人走。</p><p>深入PHPer的另一条路子就是再学一门编程语言，编程思维理解到位了，再学一门新的编程是可以很快的，不快，超慢，甚至看不懂，可以侧面反应我们对编程的认知还不够深刻，需要我们再接再厉。</p><h3>第五阶段、技术之外</h3><p>技术已不再是技术，这时候走的是架构师，是统筹，是分析，等等。说实话，我也还没有到位，所以只是简单的说下。</p>', '学习前互联网是一门新兴产业，它的升级版：物联网，更是还在摸索中。当然，这个基本上和我们没有太多的关系（或者说目前和我们没有太多的关系）。我们目前要做的，学好一门', 0, '', ''),
+(1399, 1, 43, 68, 0, '<p ></p><ul><li >PTFE膜材&mdash;&mdash;耐久性强，使用寿命在30年以上</li><li >PTFE膜材&mdash;&mdash;是永久性建筑的首选材料</li><li >PTFE膜材&mdash;&mdash;超自洁，防火材料</li><li >PTFE膜材&mdash;&mdash;专业化的加工工艺，严格的施工规程<br /> 膜结构建筑中最常用的膜材料。PTFE膜材料是指在极细的玻璃纤维（3微米）编织成的基布上涂上PTFE（聚四氟乙烯）树脂而形成的复合材料。PVC膜材料是指在聚酯纤维编织的基布上涂上PVC（聚氟乙烯）树脂而形成的复合材料。</li></ul>', '', 0, '', ''),
+(1400, 1, 43, 68, 0, '<p ></p><ul><li >PTFE膜材&mdash;&mdash;耐久性强，使用寿命在30年以上</li><li >PTFE膜材&mdash;&mdash;是永久性建筑的首选材料</li><li >PTFE膜材&mdash;&mdash;超自洁，防火材料</li><li >PTFE膜材&mdash;&mdash;专业化的加工工艺，严格的施工规程<br /> 膜结构建筑中最常用的膜材料。PTFE膜材料是指在极细的玻璃纤维（3微米）编织成的基布上涂上PTFE（聚四氟乙烯）树脂而形成的复合材料。PVC膜材料是指在聚酯纤维编织的基布上涂上PVC（聚氟乙烯）树脂而形成的复合材料。</li></ul>', '', 0, '', ''),
+(1401, 1, 43, 68, 0, '<p ></p><pid=\"MyContent\"><p>  2020年东京奥运会和残奥会筹备委员会公布了作为东京奥运会主会场的新国立竞技场的概念图。</p><p>　　国际奥委会全会当地时间9月7日在阿根廷首都布宜诺斯艾利斯投票选出2020年夏季奥运会的主办城市。日本东京最终击败西班牙马德里和土耳其伊斯坦布尔，获得2020年夏季奥运会举办权。</p><p></p><p ></p><p align=\"center\"><img id=\"23416362\" align=\"center\" src=\"res/201509/02/1441090082_0_293.jpg\" width=\"602\" height=\"276\" md5=\"\" alt=\"\" /></p><p align=\"center\"></p><p ></p><p align=\"center\"><img id=\"23416363\" align=\"center\" src=\"res/201509/02/1441090082_1_175.jpg\" width=\"600\" height=\"353\" md5=\"\" alt=\"\" /></p><p align=\"center\"></p><p ></p><p align=\"center\"><img id=\"23416364\" align=\"center\" src=\"res/201509/02/1441090082_2_260.jpg\" width=\"598\" height=\"353\" md5=\"\" alt=\"\" /></p><p align=\"center\"></p><p align=\"center\"></p><p >据了解，日本新国家体育场效果图是由东京奥运会审查委员会从全球募集的众多设计图中评选而出，该设计图出自的伊拉克女建筑家扎哈-哈迪德之手，从效果图来看，日本新国家体育场外观采用了全新的流线型设计，审查委员会给予了&ldquo;内部空间感强烈，与东京都城市空间相呼应&rdquo;、&ldquo;可开闭式天窗增加了体育场的实用性&rdquo;等高度评价。</p><p >根据计算，日本新国家体育场的扩建总花费将达到1300亿日元（约人民币78亿元），预计竣工时间为2019年3月，该体育场作为2020年东京奥运会比赛主会场，届时奥运会的开幕式、闭幕式、足球、田径等项目都将在该会场举行。</p><p ></p><p></p><p></p><p></p><p></p></p><p ></p>', '', 0, '', ''),
+(1402, 1, 43, 68, 0, '<p ><span >2014年，建筑节能与科技工作按照党中央、国务院关于深化改革的总体要求，围绕贯彻落实党的十八大、十八届三中全会关于生态文明建设的战略部署和住房城乡建设领域中心工作，创新机制、整合资源、提高效率、突出重点、以点带面，积极探索集约、智能、绿色、低碳的新型城镇化发展道路，着力抓好建筑节能和绿色建筑发展，努力发挥科技对提升行业发展水平的支撑和引领作用。</span></p><p >　　大力推进绿色建筑发展 实施&ldquo;建筑能效提升工程&rdquo;</p><p >　　研究制订&ldquo;建筑能效提升工程路线图&rdquo;，明确中长期发展目标、原则、总体思路和策略以及政策取向，为制订&ldquo;十三五&rdquo;建筑节能规划奠定基础。</p><p >　　继续抓好《绿色建筑行动方案》的贯彻落实工作。继续实施绿色生态城区示范，加大绿色建筑和绿色基础设施建设推广力度，强化质量管理。重点做好政府办公建筑、政府投资的学校、医院、保障性住房等公益性建筑强制执行绿色建筑标准工作。</p><p >　　稳步提升新建建筑节能质量和水平。做好新修订发布的民用建筑节能设计标准贯彻实施工作。加大抓好新建建筑在施工阶段执行标准的监管力度。总结国际国内先进经验，开展高标准建筑节能示范区试点。强化民用建筑规划阶段节能审查、节能评估、民用建筑节能信息公示、能效测评标识等制度。</p><p >　　继续开展既有居住建筑节能改造。确保完成北方采暖区既有居住建筑供热计量及节能改造1.7亿平方米以上，督促完成节能改造的既有居住建筑全部实行供热计量收费。力争完成夏热冬冷地区既有居住建筑节能改造1800万平方米以上。</p><p >　　提高公共建筑节能运行管理与改造水平。进一步做好省级公共建筑能耗动态监测平台建设工作。推动学校、医院等公益性行业和大型公共建筑节能运行与管理。指导各地分类制订公共建筑能耗限额标准，研究建立基于能耗限额的公共建筑节能管理制度。加快推行合同能源管理。积极探索能效交易等节能新机制。<img src=\"res/201509/02/1441090074_0_254.jpg\" border=\"0\" alt=\"\" /></p><p >　　推进区域性可再生能源建筑规模化应用。总结光伏建筑一体化示范项目经验，扩大自发自用光伏建筑应用规模。继续抓好可再生能源示范省、市、县(区)工作，推动资源条件具备的省(区、市)针对成熟的可再生能源应用技术尽快制定强制性推广政策。</p><p >　　加强和完善绿色建筑评价管理工作。修订印发《绿色建筑评价标识管理办法》和《绿色建筑评价技术细则》。加大对绿色建筑标识评价的指导监督力度，加强绿色建筑评价标准贯彻实施培训，引导和支持地方出台鼓励绿色建筑发展的政策措施。</p><p ><span >转载钢构之窗</span></p>', '', 0, '', ''),
+(1403, 1, 43, 68, 0, '<p ><span >建筑钢结构的发展揭开城市发展新篇章</span></p><p ><br /><br /> 建筑钢结构产业的发展是我国经济实力和科技水平快速发展的具体体现。近年来，在高层重型钢结构、大跨度空间钢结构、轻钢结构、钢-混凝土组合结构、钢结构住宅的共同发展推动下，我国城市经济快速发展。这些钢结构的广泛运用展示和证明了它的建筑魅力，以及无限的发展空间。<br /><br /><strong>　　高层重型钢结构成为城市的重要标志<br /></strong><br />高层钢结构建筑是一个国家经济实力和科技水平的反映，也往往被当作是一个城市的重要标志性建筑。在超高层建筑中往往采用部分钢结构或全钢结构建造，超高层建筑的发展体现了我国建筑科技水平、材料工业水平和综合技术水平的提高。</p><p ><img src=\"res/201509/02/1441090069_0_873.jpg\" alt=\"\" /></p><p >　　建筑钢结构揭开城市发展新篇章</p><p >　　从20世纪80年代至今我国已建成和在建高层钢结构达80多幢，总面积约600万平方米，钢材用量60多万吨。高层、超高层建筑的楼板和屋盖具有很大的平面刚度，是竖向钢柱与剪力墙或筒体的平面抗侧力构件，能使钢柱与各竖向构件起到变形协调作用。北京和上海新建和在建高层钢结构房屋数量超过了10幢。如上海环球金融中心101层，高492米，用钢量6.5万吨，中关村金融中心建筑面积11万平方米，高度为150米，用钢量1.5万吨。今后，全国每年将有200万平方米至300万平方米高层钢结构建筑施工，用钢量约45万吨。<br /><br /><strong>　　大跨度空间钢结构持续发展</strong><br /><br />近年来，以网架和网壳为代表的空间结构继续大量发展，不仅用于民用建筑，而且用于工业厂房、候机楼、体育馆、大剧院、博物馆等。开发空间钢结构的新材料、新结构、新技术、新节点、新工艺，实现大跨度与超大跨度空间钢结构的抗风抗震工程建设。展望未来，应在重点、热点、难点的科技领域开拓和发展各类新型、适用、美观的空间钢结构，并且无论在使用范围、结构型式、安装施工工法等方面均具有中国建筑结构的特色。如杭州、成都、西安、长春、上海、北京、武汉、济南、郑州等地的飞机航站楼、机库、会展中心等建筑，都采用圆钢管、矩型钢管制作为空间桁架、拱架及斜拉网架结构，其新颖和富有现代特色的风格使它们成为所在中心城市的标志性建筑。<br /><br />据中国钢结构协会空间结构分会统计：网架和网壳的生产已趋于平稳状态，每年建造1500座，约250万平方米，用钢约7万吨，悬索和膜结构目前处于发展阶段，用量还不大，专家预计每年将以20%的速度增加。随着我国经济建设的蓬勃发展和人民生活水平的不断提高，根据实际需要将在我国研究、设计、制作和安装150米至200米，甚至将大于200米的大跨度与超跨度的空间钢结构。</p><p ><strong>　揭开轻</strong><strong>钢结构</strong><strong>新的篇章</strong><br /><br />轻钢结构是相对于重钢结构而言的，其类型有门式刚架、拱型波纹钢屋盖结构等，用钢量（不含钢筋用量）一般为每平方米30公斤。门式刚架房屋跨度一般不超过40米，个别达到70多米，单跨或多跨均用，以单层为主，也可用于二层或三层建筑，拱型波纹钢屋盖结构跨度一般为8米，每平方米自重仅为20公斤，每年增长约100万平方米，用钢4万吨。门式刚架和拱型波纹钢屋盖都有相应的设计施工规程、专用软件和通用图集。<br /><br />自进入20世纪90年代以来，我国钢结构建筑的发展十分迅速，特别是一些代表城市标志性高层建筑的建成，为钢结构在我国的发展揭开了新的一页。如世界第三高的金茂大厦已竣工，现已投入运营。据了解，世界第一高度的上海浦东环球金融中心，高460米，建筑面积为31万平方米，现正在加紧建设中。由外商投资的大连总统大厦，正在加紧筹建之中，共95层，建成后其高度将名列世界前茅。</p><p ></p><p ><img src=\"res/201509/02/1441090069_1_435.jpg\" alt=\"\" /></p><p >　　建筑钢结构的发展 揭开城市发展新篇章</p><p ><br /><br />轻钢结构的发展则更是如火如荼，特别在工业厂房的建设中则更为迅猛。从钢结构制造加施工企业数量的大幅增长就可见一斑，如上海市的钢结构制造和施工单位已由原来的几十家发展到现在的400多家，仅上海的宝钢地区就有近百家的钢结构制造厂。<br /><br /><strong>　　钢-混凝土组合结构发展迅速</strong><br /><br />钢-混凝土组合结构是充分发挥钢材和混凝土两种材料各自优点的合理组合，不但具有优良的静、动力工作性能，而且能大量节约钢材、降低工程造价和加快施工进度，同时，对环境污染也较小，符合我国建筑结构发展的方向。<br /><br />钢-混凝土组合结构在我国发展十分迅速，已广泛应用于冶金、造船、电力、交通等部门的建筑中，并以迅猛的势头进入桥梁工程和高层、超高层建筑中。<br /><br />我国已采用钢-混凝土组合结构建成了许多大型的公路拱桥，如广州丫鬓沙大桥，桥长360米，重庆万州长江大桥，跨度420米，前者为钢管混凝土拱桥，后者为劲性钢管混凝土骨架拱桥。全国建成的组合结构拱桥已超过300座。在高层建筑方面，建成了全部采用组合结构的超高层建筑--深圳赛格广场大厦，高291.6米，属世界最高的钢-混凝土组合结构。全国已建成的采用组合结构的高层建筑也已超过40幢。<br /><br />钢-混凝土组合中的薄壁型钢主要有百叶薄壁型钢和装配式薄壁型钢等形式。其中，许多类型均能与混凝土有效地结合，共同承受外界弯矩和剪力，有的类型为装配式截面，布置较为灵活，可适用于不同截面尺寸的轻钢组合梁，并可作为标准型材批量生产，但在浇混凝土之前必须用框架固定其形状，有的为箱形薄壁型钢截面，与混凝土的粘结性能较差，一般只起到模板的作用。此外，还可根据实际需要，在薄壁型钢混凝土梁中配置一定数量的纵向钢筋，以进一步提高其抗弯刚度和极限承载力。<br /><br /><strong>　　钢结构住宅的发展走向</strong><br /><br />钢结构住宅具有强度高、自重轻、抗震性能好、施工速度快、结构构件尺寸小、工业化程度高的特点，同时钢结构又是可重复利用的绿色环保材料，因此钢结构住宅符合国家产业政策的推广项目。随着国家禁用实心粘土砖和限制使用空心粘土砖政策的推出，加快住宅产业化进程、积极推广钢结构住宅体系已迫在眉睫。但我国的钢结构住宅尚处于探索起步阶段，这种体系在钢结构防火、梁柱节点做法、楼板形式、配套墙体材料、经济性及市场可接受程度上尚有许多不完善之处。<br /><br />因此，发挥钢结构住宅的自身优势，可提高住宅的综合效益：一是用钢结构建造的住宅重量是钢筋混凝土住宅重量的1/2左右，可满足住宅大开间的需要，使用率也比钢筋混凝土住宅提高4%左右。二是抗震性能好，其延性优于钢筋混凝土。从国内外震后调查结果看，钢结构住宅建筑倒塌数量是最少的。三是钢结构构件、墙板及有关部品都在工厂制作，其质量可靠，尺寸精确，安装方便，易与相关部品配合，因此，不仅减少了现场工作量，而且也缩短了施工工期。钢结构住宅工地实质上是工厂产品的组装和集成场所，再补充少量无法在工厂进行的工序项目，符合产业化的要求。四是钢结构住宅是环保型的建筑，可以回收循环利用，污染很少，符合推进住宅产业化和发展节能省地型住宅的国家政策。</p><p ></p>', '', 0, '', ''),
+(1404, 1, 43, 68, 0, '<p ><p id=\"zoom2\"><p><font3 face=\"Verdana\"></font3>2013中国上海国际膜结构应用与工程技术展览</p><p><font3 face=\"Verdana\"></font3>同期举办：第二十四届中国国际绿色建筑建材博览会<br /> 第十五届中国上海国际园林、景观及别墅配套设施展览会<br /> 时间：2013年8月15日-17日 地点：上海新国际博览中心（龙阳路2345号）<br /><span class=\"Apple-converted-space\"></span><br /> 组织单位： 协办单位：<br /> 中国膜结构建筑行业专委会 上海市城乡建设和交通委员会<br /> 中国钢结构协会空间结构分会 中国房地产企业管理协会<br /> 中国风景园林绿化协会 上海市房地产协 <br /> 上海市园林景观学会 媒体推广：<br /> 香港博亚国际展览集团 中国膜结构网<br /> 承办单位： 《别墅》杂志<span class=\"Apple-converted-space\"></span><br /> 上海京慕展览策划有限公司《景观设计》杂志<br /><span class=\"Apple-converted-space\"></span><br /> 目前，在全球范围内索膜结构无论在工程界还是在科研领域均处于热潮中。近年来，我国建筑市场对索膜建筑技术的需求明显有大幅度增长的趋势，国外各大著名索膜技术专业公司纷纷登陆我国，刺激了我国索膜建筑事业的发展。现代建筑环境是现代城市，现代文化与社会，现代人的生活和观念的综合表象。展现人的个性化，自娱性和多元性环境空间方面，膜结构以其独具魅力的建筑形式，必将会在环境建设中得到越来越广泛的应用。由于新材料、新形式的不断出现，膜结构具有强大的生命力，必将是21世纪建筑结构发展的主流。它的应用范围不仅限于体育或展览建筑，已向房屋建筑的各个方面扩展，因而具有广阔的发展前景。在中国，膜结构的开发与研究还刚刚起步，因此当务之急是学习并引进国外先进技术，开发生产我国自己的膜材，解决设计中存在的问题，膜结构在中国也将会得到越来越多的应用。故此，特举办&ldquo;2013中国上海国际膜结构应用与工程技术展览会&rdquo;，为行业搭建一次合作、交流的平台。</p></p></p>', '', 0, '', ''),
+(1405, 1, 43, 68, 0, '<p ><imgborder=\"0\" alt=\"\" width=\"913\" height=\"4495\" src=\"res/201509/02/1441090048_0_167.png\" /></p>', '', 0, '', ''),
+(1406, 1, 43, 68, 0, '<p >住建部发布了《城镇污水再生利用技术指南(试行)》(以下简称《技术指南》)用以指导城镇污水处理再生利用的规划、设施建设运行和管理。《技术指南》涵盖城镇污水再生利用技术路线、城镇污水再生处理技术、城镇污水再生处理工艺方案、城镇污水再生利用工程建设与设施运行维护、城镇污水再生利用风险管理等内容。</p><p ><strong >　　污水再生处理技术：常规处理、深度处理和消毒</strong></p><p >　　《技术指南》详细介绍了城镇污水再生处理技术，主要包括常规处理、深度处理和消毒。常规处理包括一级处理、二级处理和二级强化处理。主要功能为去除SS、溶解性有机物和营养盐(氮、磷)。深度处理包括混凝沉淀、介质过滤(含生物过滤)、膜处理、氧化等单元处理技术及其组合技术，主要功能为进一步去除二级(强化)处理未能完全去除的水中有机污染物、SS、色度、嗅味和矿化物等。消毒是再生水生产环节的必备单元，可采用液氯、氯气、次氯酸盐、二氧化氯、紫外线、臭氧等技术或其组合技术。</p><p >　　《技术指南》强调，城市污水再生处理系统应优先发挥常规处理在氮磷去除方面的功能，一般情况下应避免在深度处理中专门脱氮。</p><p ><strong >　　单元处理技术有机组合 保证不同用途水质要求</strong></p><p >　　《技术指南》指出，再生水的主要用途包括工业、景观环境、绿地灌溉、农田灌溉、城市杂用和地下水回灌等。污水再生处理工艺方案应根据不同用途的水质要求，选择不同的单元技术进行组合，并考虑工艺的可行性、整体流程的合理性、工程投资与运行成本以及运行管理方便程度等多方面因素，同时宜具有一定的前瞻性。《技术指南》针对各种不同用途给出了具体的工艺方案建议。对于向服务区域内多用户供水的城镇污水再生处理设施，供水水质应符合用水量最大的用户的水质要求;个别水质要求更高的用户，可自行增加处理措施，直至达到其水质要求。</p><p ><strong >　　风险管理核心：保证城镇污水再生利用的水质安全</strong></p><p >　　《技术指南》在城镇污水再生利用风险管理中强调，城镇污水再生利用必须保证再生水水源水质水量的可靠、稳定与安全，水源宜优先选用生活污水或不包含重污染工业废水在内的城市污水。要加强对污水接入城镇排水管网的许可管理，禁止含重金属、有毒有害有机物和病原微生物超标的工业或医疗等污水进入排水管网。</p><p >　　城镇污水再生利用的核心问题是水质安全。污水再生处理、存储及输配设施运营单位应具备相应的水质检测能力。另外，应制定针对重大事故和突发事件的应急预案，建立相应的应急管理体系，并按规定定期开展培训和演练。</p><p ><strong >　　城镇污水再生利用工程建设与设施运行维护</strong></p><p >　　在工程建设方面，《技术指南》指出，工程建设包括再生处理设施、再生水储存设施及再生水输配管网的建设，《技术指出》对选址、设计、设备选择、施工、验收等环节均提出指导建议。</p><p >　　在设施运行维护管理方面，《技术指南》指出，污水再生处理设施运营单位应加强对来水水质的日常监测，应依据污水排放&mdash;污水处理&mdash;再生水利用三者之间的水质关系，以及再生水用途和水质要求，建立水源水质控制目标。同时，应定期对储存设施进行检查，防止再生水泄漏或污染物入渗;定期对存储的再生水水质、水量进行监测，防止水质恶化;再生水作为城市河道或其他景观水系用水时，在汛期时，应服从统一调度，确保排水排涝畅通。</p><p ><strong >　　城镇污水再生利用 要合理布局统筹规划</strong></p><p >　　城镇污水再生利用规划是城镇排水与污水处理规划的重要内容。《技术指南》指出，污水处理厂的建设应考虑再生利用的需求，统一规划、统筹建设，对于暂时没有再生水需求的地方可以在污水处理厂规划过程中预留深度处理设施位置和接口。污水再生处理、储存和输配设施的布局应综合考虑水源和再生水用户的分布，统筹规划。再生水可通过压力管网、河道或供水车等方式输送至用户，管网的布置形式可选择环状或枝状管网，枝状管网末端需设置泄水设施;应考虑输配过程的加压、消毒及维护抢修站点用地等。再生水的储存和输配可充分利用城市景观水系。</p><p ><span >来源：中国污水处理工程网</span></p>', '', 0, '', ''),
+(1407, 1, 43, 68, 0, '<p ><span >摘　要: 本文主要介绍了选择中小规模城市污水处理厂工艺流程的依据、原则和方法, 并根据不同的条件推荐了适用的工艺流程。</span></p><p >关键词: 城市污水处理; 工艺流程; 原则; 方法</p><p ><br />1　前言</p><p >根据我国发展规划, 2010 年全国设市城市和建制镇的污水平均处理率不低于50% , 设市城市的污水处理率不低于60% , 重点城市的污水处理率不低于70%。为了引导城市污水处理及污染防治技术的发展, 加快城市污水处理设施的建设, 2000 年5 月国家建设部、环境保护局和科技部联合印发了《城市污水处理及污染防治技术政策》。本文将结合该政策的内容, 主要研究日处理能力为10 万m 3 以下, 特别是1～ 5 万m 3.d 规模的城市污水处理厂适用的各种处理工艺流程的比较和选择, 从而确定不同条件下适用的较优工艺流程。</p><p >1　中小规模城市污水处理厂工艺流程概述</p><p >二级生物处理指利用水中的微生物来去除污水中的碳源有机物, 二级强化生物处理是指除利用微生物来去除污水中的碳源有机物外, 还需去除污水中的<span class=\"keyword\">氮</span>和磷。城市污水二级及二级强化处理一般以好氧生物处理为主, 好氧处理可分为活性污泥法和生物膜法两大类。<br />活性污泥法是利用河川自净原理, 人工创建的生化净化污水处理方法。中小规模城市污水厂适用的方法主要有AB 法、SBR 法、氧化沟法、AO 法、 A 2O 法、水解好氧法等。</p><p >生物膜法是利用土壤自净原理发展起来的, 通过附着在各种载体上的生物膜来处理污水的好氧生物处理法, 主要包括生物转盘、生物滤池和生物接触氧化法等工艺。</p><p >2　污水处理工艺流程选择的依据和原则</p><p >2. 1　污水处理级别的确定</p><p >选择污水处理工艺流程时首先应按受纳水体的性质确定出水水质要求, 并依此确定处理级别, 排水应达到国家排放标准(GB8978- 1996)。<br />设市城市和重点流域及水资源保护区的建制镇必须建设二级污水处理设施; 受纳水体为封闭或半封闭水体时, 为防治富营养化, 城市污水应进行二级强化处理, 增强除磷脱<span class=\"keyword\">氮</span>的效果; 非重点流域和非水源保护区的建制镇, 根据当地的经济条件和水污染控制要求, 可先行一级强化处理, 分期实现二级处理。</p><p >2. 2　工艺流程选择应考虑的技术因素</p><p >处理规模; 进水水质特性, 重点考虑有机物负荷、<span class=\"keyword\">氮</span>磷含量; 出水水质要求, 重点考虑对<span class=\"keyword\">氮</span>磷的要求以及回用要求; 各种污染物的去除率; 气候等自然条件, 北方地区应考虑低温条件下稳定运行; 污泥的特性和用途。 2. 3　工艺流程选择应考虑的技术经济因素〔3〕批准的占地面积, 征地价格; 基建投资; 运行成本; 自动化水平, 操作难易程度, 当地运行<span class=\"keyword\">管</span>理能力。</p><p >2. 4　工艺流程选择的原则</p><p >保证出水水质达到要求; 处理效果稳定, 技术成熟可靠、先进适用; 降低基建投资和运行费用, 节省电耗; 减小占地面积; 运行<span class=\"keyword\">管</span>理方便, 运转灵活; 污泥需达到稳定; 适应当地的具体情况; 可积极稳妥地选用污水处理新技术。</p><p >3　污水处理工艺流程的比较和选择方法〔2、3、4、5〕</p><p >在选定污水处理工艺流程时可以采用下面介绍的一种或几种比较方法。</p><p >3. 1　技术比较</p><p >在方案初选时可以采用定性的技术比较, 城市污水处理工艺应根据处理规模、水质特性、排放方式和水质要求、受纳水体的环境功能以及当地的用地、气候、经济等实际情况和要求, 经全面的技术比较和初步经济比较后优选确定。</p><p >方案选择比较时需要考虑的主要技术经济指标包括: 处理单位水量投资、削减单位污染物投资、处理单位水量电耗和成本、削减单位污染物电耗和成本、占地面积、运行性能可靠性、<span class=\"keyword\">管</span>理维护难易程度、总体环境效益等。</p><p >定性比较时可以采用有定论的结论和经验值等, 而不必进行详细计算。几种常用生物处理方法的比较见表1。</p><img alt=\"\" src=\"res/201509/02/1441090034_0_765.jpg\"/><p ><br />3. 2　经济比较</p><p >在选定最终采用的工艺流程时, 应选择2～ 3 种工艺流程进行全面的定量化的经济比较。可以采用年成本法或净现值法进行比较。</p><p >3. 2. 1　年成本法。将各方案的基建投资和年经营费用按标准投资收益率, 考虑复利因素后, 换算成使用年限内每年年末等额偿付的成本- 年成本, 比较年成本最低者为经济可取的方案。</p><p >3. 2. 2　净现值法。将工程使用整个年限内的收益和成本(包括投资和经营费) 按照适当的贴现率折算为基准年的现值, 收益与成本现行总值的差额即净现值, 净现值大的方案较优。</p><p >3. 2. 3　多目标决策法。多目标决策是根据模糊决策的概念, 采用定性和定量相结合的系统评价法。按工程特点确定评价指标, 一般可以采用5 分制评分, 效益最好的为5 分, 最差的为1 分。同时, 按评价指标的重要性进行级差量化处理(加权) , 分为极重要、很重要、重要、应考虑、意义不大五级。取意义不大权重为1 级, 依次按2n- 1 进级, 再按加权数算出评价总分, 总分最高的为多目标系统的最佳方案。评价指标项目及权重应根据项目具体情况合理确定。</p><p >例如确定某城市污水处理厂工艺流程时采用了表2 所示的评价指标及权重:</p><img alt=\"\" src=\"res/201509/02/1441090034_1_947.jpg\"/><p >进行工艺流程选择时, 可以先根据污水处理厂的建设规模, 进水水质特点和排放所要求的处理程度, 排除不适用的处理工艺, 初选2～ 3 种流程, 然后再针对初选的处理工艺进行全面的技术经济对比后确定最终的工艺流程。</p><p >4　中小规模城市污水厂处理工艺流程选择的探讨〔6、7、8〕</p><p >4. 1　根据进水有机物负荷选择处理工艺</p><p >进水BOD5 负荷较高(如&gt; 250m g.L ) 或生化性能较差时, 可以采用AB 法或水解- 生物接触氧化法、水解- SBR 法等; 进水BOD5 负荷较低时可以采用SBR 法或常规活性污泥法等。</p><p >4. 2　根据处理级别选择处理工艺</p><p >二级处理工艺可选用氧化沟法、SBR 法、水解好氧法、AB 法和生物滤池法等成熟工艺技术, 也可选用常规活性污泥法; 二级强化处理要求除磷脱<span class=\"keyword\">氮</span>, 工艺流程除可以选用AO 法、A 2O 法外, 也可选用具有除磷脱<span class=\"keyword\">氮</span>效果的氧化沟法、CA SS 法和水解- 接触氧化法等; 在投资有限的非重点流域县城, 可以先建设一级强化处理厂, 采用水解工艺、生物絮凝吸附(即AB 法的A 段) 和混凝沉淀等物化强化一级处理, 待资金等条件成熟后再续建后续生物处理工艺, 形成水解好氧法、AB 法等完整工艺。</p><p >4. 3　根据回用要求选择处理工艺</p><p >严重缺水地区要求污水回用率较高, 应选择 BOD5 和SS 去除率高的污水处理工艺, 例如采用氧化沟或SBR 工艺, 使BOD5 和SS 均达到20m g.L 以下甚至更低, 则回用处理只需要直接过滤就可以达到生活杂用水标准, 整个污水处理及回用厂流程非常简捷、经济。</p><p >如果出水将在相当长的时期内用于农灌, 解决缺水问题, 则处理目标可以以去除有机物为主, 适当保留肥效。</p><p >4. 4　根据气候条件选择处理工艺</p><p >冰冻期长的寒冷地区应选用水下曝气装置, 而不宜采用表面曝气; 生物处理设施需建在室内时, 应采用占地面积小的工艺, 如UN ITAN K 等; 水解池对水温变化有较好的适应性, 在低水温条件下运行稳定, 北方寒冷地区可选择水解池作为预处理; 较温暖的地区可选择各种氧化沟和SBR 法。</p><p >4. 5　根据占地面积选择处理工艺</p><p >地价贵、用地紧张的地区可采用SBR 工艺(尤其是UN TAN K) ; 在有条件的地区可利用荒地、闲地等可利用的条件, 采用各种类型的土地处理和稳定塘等自然净化技术, 但在北方寒冷地区不宜采用。用水解池作为稳定塘的预处理, 可以改善污水的生化性能, 减小稳定塘的面积。</p><p >4. 6　根据基建投资选择处理工艺</p><p >为了节省投资, 应尽量采用国内成熟的, 设备国产化率较高的工艺。</p><p >基建投资较小的处理工艺有水解- SBR 法、 SBR 法及其变型、水解- 活性污泥法等。用水解池作预处理可以提高对有机物的去除率, 并改善后续二级处理构筑物污水的生化性能, 可使总的停留时间比常规法少30%。采用水解- 好氧处理工艺高效节能, 其出水水质优于常规活性污泥法。<br />氧化沟法在用于以去除碳源污染物为目的二级处理时, 与各种活性污泥法相比, 优势不明显, 但用于还须去除<span class=\"keyword\">氮</span>磷的二级强化处理时, 则投资和运行费用明显降低。</p><p >4. 7　根据运行费用选择处理工艺</p><p >节省运行费用的途径有降低电耗、减少污泥量、减少操作<span class=\"keyword\">管</span>理人员等。电耗较低的流程有自然净化、氧化沟、生物滤池、水解好氧法等, 污泥量较少的有氧化沟和SBR 等, 自动化程度高、<span class=\"keyword\">管</span>理简单的流程有SBR 等。综合比较, 在基建费相当的条件下, 运行费用较低的处理方法有氧化沟、SBR、水解好氧法等。</p><p >4. 8　污泥处理</p><p >中小规模城市污水处理厂产生的污泥可进行堆肥处理和综合利用, 采用延时曝气的氧化沟法、SBR 法等技术的污水处理设施, 污泥需达到稳定化。</p><p >4. 9　可以推广应用的新工艺</p><p >在尽量采用成熟可靠工艺流程的同时, 也要研究开发适用于北方地区中小污水厂的新工艺, 或审慎采用国内外新开发的高效经济的先进工艺技术。城市污水处理新工艺应向简单、高效、经济的方向发展, 各类构筑物从工艺和结构上都应向合建一体化发展。</p><p >目前可以重点考虑应用和推广使用的流程有一体化氧化沟技术、CA SS 、UN ITAN K 和膜法等。</p><p >5　结束语</p><p >城市污水处理工艺应根据污水水质特性、排放水质要求, 以及当地的用地、气候、经济等实际情况, 经全面的技术经济比较后优选确定。处理水量在10 万m 3 以下的城市污水处理厂可以优先考虑的处理工艺有水解- SBR 法、SBR 法、氧化沟法、AB 法、水解- 接触氧化法、AO 法等, 如果条件适宜也可采用稳定塘等自然净化工艺。来源：谷腾水网</p><pid=\"leftDiv\" ><pid=\"left2\" class=\"itemFloat\" ><br /></p></p><pid=\"rightDiv\" ><pid=\"right2\" class=\"itemFloat\" ><br /></p></p><p></p>', '', 0, '', ''),
+(1408, 1, 43, 68, 0, '<p ><p ><pclass=\"MsoNormal\" align=\"left\"><span >钢结构因其自身优点，在桥梁、工业厂房、高层建筑等现代建筑中得到广泛应用。在大量的工程建设过程中，钢结构工程也暴露出不少质量通病。本文主要针对辽宁近年来在钢结构主体验收及竣工验收中的常见问题及整改措施谈一些看法。</span></p><pclass=\"MsoNormal\" align=\"center\"><b ><span >一、钢结构工程施工过程中的部分问题及解决方法</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><b ><span lang=\"EN-US\">1</span></b><b ><span >、构件的生产制作问题</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><span >门式钢架所用的板件很薄，最薄可用到</span><st1:chmetcnv w:st=\"on\" tcsc=\"0\" numbertype=\"1\" negative=\"False\" hasspace=\"False\" sourcevalue=\"4\" unitname=\"毫米\"><span lang=\"EN-US\">4</span><span >毫米</span></st1:chmetcnv><span >。多薄板的下料应首选剪切方式而避免用火焰切割。因为用火焰切割会使板边产生很大的波浪变形。目前</span><span lang=\"EN-US\">H</span><span >型钢的焊接大多数厂家均采用埋弧自动焊或半自动焊。如果控制不好宜发生焊接变形，使构件弯曲或扭曲。</span></p><pclass=\"MsoNormal\" align=\"left\"><b ><span lang=\"EN-US\">2</span></b><b ><span >、柱脚安装问题</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(1)</span><span >预埋件</span><span lang=\"EN-US\">(</span><span >锚栓</span><span lang=\"EN-US\">)</span><span >问题现象：整体或布局偏移；标高有误；丝扣未采取保护措施。直接造成钢柱底板螺栓孔不对位，造成丝扣长度不够。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >措施：钢结构施工单位协同土建施工单位一起完成预埋件工作，混凝土浇捣之前。必须复核相关尺寸及固定牢固。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(2)</span><span >锚栓不垂直现象：框架柱柱脚底板水平度差，锚栓不垂直，基础施工后预埋锚栓水平误差偏大。柱子安装后不在一条直线上，东倒西歪，使房屋外观很难看，给钢柱安装带来误差，结构受力受到影响，不符合施工验收规范要求。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >措施：锚栓安装应坚持先将底板用下部调整螺栓调平，再用无收缩砂浆二次灌浆填实，国外此法施工。所以锚栓施工时，可采用出钢筋或者角钢等固定锚栓。焊成笼状，完善支撑，或采取其他一些有效措施，避免浇灌基础混凝土时锚栓移一位。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(3)</span><span >锚栓连接问题现象：柱脚锚栓未拧紧，垫板未与底板焊接；部分未露</span><span lang=\"EN-US\">2</span><span >～</span><span lang=\"EN-US\">3</span><span >个丝扣的锚栓。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >措施：应采取焊接锚杆与螺帽；在化学锚栓外部，应加厚防火涂料与隔热处理，以防失火时影响锚固性能；应补测基础沉降观测资料。</span></p><pclass=\"MsoNormal\" align=\"left\"><b ><span lang=\"EN-US\">3</span></b><b ><span >、连接问题</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(1)</span><span >高强螺栓连接</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >螺栓装备面不符合要求，造成螺栓不好安装，或者螺栓紧固的程度不符合设计要求。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >原因分析：</span></p><pclass=\"MsoNormal\" align=\"left\"><span >①表面有浮锈、油污等杂质，螺栓孔璧有毛刺、焊瘤等。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >②螺栓安装面虽经处理仍有缺陷。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >解决方法：</span></p><pclass=\"MsoNormal\" align=\"left\"><span >①高强螺栓表面浮锈、油污以及螺栓孔璧毛病，应逐个清理干净。使用前必须经防锈处理，使拼装用的螺栓，不得在正式拼装时使用。螺栓应由专人保管和发放。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >②处理装配面应考虑到施工安装顺序，防止重复进行，并尽量在吊装之前处理。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >螺栓丝扣损伤，螺杆不能自由旋入螺母，影响螺栓的装配。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >原因分析：丝扣严重锈蚀。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >解决方法：</span></p><pclass=\"MsoNormal\" align=\"left\"><span >①使用前螺栓应进行挑选，清洗除锈后作预配。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >②丝扣损伤的螺栓不能做临时螺栓使用，严禁强行打进螺孔。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >③预先选配的螺栓组件应按套存放，使用时不得互换。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(2)</span><span >现场焊缝现象：质量难以保证；设计要求全焊透的一、二级焊缝未采用超声波探伤；楼面主梁与柱未施焊；未采用引弧板施焊。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >解决方法：钢结构施焊前，对焊条的合格证进行检查，按设计要求选用焊含条，按说明书和操作规程要求使用焊条，焊缝表面不得有裂纹、焊瘤，一、二级焊缝不得有气孔、夹渣、弧坑裂纹，一级焊缝不得有咬边、未满焊等缺陷，一、二级焊缝按要求进行无损检测，在规定的焊缝及部位要检查焊工的钢印。不合格的焊缝不得擅自处理，定出修改工艺后再处理，同一部位的焊缝返修次数不宜超过两次。</span></p><pclass=\"MsoNormal\" align=\"left\"><b ><span lang=\"EN-US\">4</span></b><b ><span >、构件的变形问题</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(1)</span><span >构件在运输时发生变形，出现死弯或缓弯，造成构件无法进行安装。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >原因分析：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >构件制作时因焊接产生的变形，一般呈现缓弯。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >构件待运时，支垫点不合理，如上下垫木不垂直等或堆放场地发生沉陷，使构件产生死弯或缓变形。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">3)</span><span >构件运输中因碰撞而产生变形，一般呈现死弯。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >预防措施：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >构件制作时，采用减小焊接变形的措施。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >组装焊接中，采用反方向变形等措施，组装顺序应服从焊接顺序，使用组装胎具，设置足够多的支架，防止变形。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">3)</span><span >待运及运输中，注意垫点的合理配置。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >解决方法：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >构件死弯变形，一般采用机械矫正法治理。即用千斤顶或其他工具矫正或辅以氧乙炔火焰烤后矫正。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >结构发生缓弯变形时，采取氧乙炔火焰加热矫正。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(2)</span><span >钢梁构件拼装后全长扭曲超过允许值，造成钢梁的安装质量不良。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >原因分析：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >拼接工艺不合理。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >拼装节点尺寸不符合设计要求。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >解决方法：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >拼装构件要设拼装工作台，定为焊时要将构件底面找平，防止翘曲。拼装工作台应各支点水平，组焊中要防止出现焊接变形。尤其是梁段或梯道的最后组装，要在定位焊后调整变形，注意节点尺寸要符合设计，否则易造成构件扭曲。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >自身刚性较差的构件，翻身施焊前要进行加固，构件翻身后也应进行找平，否则构件焊后无法矫正。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(3)</span><span >构件起拱，数值大干或小于设计数值。构件起拱数值小时，安装后梁下挠；起拱数值大时，易产生挤面标高超标。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >原因分析：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >构件尺寸不符合设计要求。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >架设过程中，未根据实测值与计算值的出入进行修正。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">3)</span><span >跨径小的桥梁，起拱度较小，拼装时忽视。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >解决方法：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >严格按钢结构构件制作允许偏差进行各步检验。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >在架设过程中，杆件且装完毕，以及工地接头施工结束后，都进行上拱度测量，并在施工中对其他进行调整。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">3)</span><span >在小拼装过程，应严格控制累计偏差，注意采取措施，消除焊接收缩量的影响。</span></p><pclass=\"MsoNormal\" align=\"left\"><b ><span lang=\"EN-US\">5</span></b><b ><span >、钢结构安装问题</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(1)</span><span >钢柱底脚有空隙预控措施钢柱吊装前，应严格控制基础标高，测量准确，并按其测量值对基础表面仔细找平；如采用二次灌浆法，在柱脚底板开浇灌孔</span><span lang=\"EN-US\">(</span><span >兼作排气孔</span><span lang=\"EN-US\">)</span><span >，利用钢垫板将钢柱底部不平处垫平，并预先按设计标高安置好柱脚支座钢板，然后采取二次灌浆。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(2)</span><span >钢柱位移预控措施浇筑混凝土基础前，应用定型卡盘将预埋螺栓按设计位置卡住，以防浇灌混凝土时发生位移；柱低钢板预留孔应放大样，确定孔位后再作预留孔。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(3)</span><span >柱垂直偏差过大预控措施钢柱应按计算的吊挂点吊装就位，且必须采用二点以上的吊装方法，吊装时应进行临时固定，以防吊装变形；柱就位后应及时增设临时支撑；对垂直偏差，应在固定前予以修正。</span></p><pclass=\"MsoNormal\" align=\"center\"><b ><span >二、结论</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><span >只有在施工管理过程中，加强对技术人员、工人对规范标准和操作规程的培训学习，切实做好开工前的准备，加强施工过程中的质量控制和监督检查，积极发挥施工、监理等各方面的作用，做好各分项工程的工序验收工作，才能保证钢结构工程的整体质量。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\"><o:p></o:p></span></p><pclass=\"MsoNormal\" align=\"left\"><span >信息来源：中国焊接网</span><spanlang=\"EN-US\"><o:p></o:p></span></p></p></p>', '', 0, '', ''),
+(1409, 1, 43, 68, 0, '<p ></p><p ></p><p >绿色建筑评价标准<br />　　<br />　　1、在建筑的全寿命周期内，最大限度地节约资源(节能、节地、节水、节材)、保护环境和减少污染，为人们提供健康、适用和高效的使用空间，与自然和谐共生的建筑。<br />　　<br />　　2、节能能源：充分利用太阳能，采用节能的建筑围护结构以及采暖和空调，减少采暖和空调的使用。根据自然通风的原理设置风冷系统，使建筑能够有效地利用夏季的主导风向。建筑采用适应当地气候条件的平面形式及总体布局<br />　　<br />　　3、可再生能源：指从自然界获取的、可以再生的非化石能源，包括风能、太阳能、水能、生物质能、地热能和海洋能等。<br />　　<br />　　4、节约资源：在建筑设计、建造和建筑材料的选择中，均考虑资源的合理使用和处置。要减少资源的使用，力求使资源可再生利用。节约水资源，包括绿化的节约用水。<br />　　<br />　　5、可再利用材料：指在不改变所回收物质形态的前提下进行材料的直接再利用，或经过再组合、再修复后再利用的材料。<br />　　<br />　　6、可再循环利用材料：指已经无法进行再利用的产品通过改变其物质形态，生产成为另一种材料，使其加入物质的多次循环利用过程中的材料。<br />　　<br />　　7、以节约和适用的原则确定绿色建筑标准。<br />　　<br />　　8、绿色建筑建设应选用质量合格并符合使用要求的材料和产品，严禁使用国家或地方管理部门禁止、限制和淘汰的材料和产品。<br />　　<br />　　9、回归自然：绿色建筑外部要强调与周边环境相融合，和谐一致、动静互补，做到保护自然生态环境。<br />　　<br />　　10：建筑场地选址无洪灾、泥石流及含氡土壤的威胁，建筑场地安全范围内无电磁辐射危害和火、爆、有毒物质等危险源。<br />　　<br />　　11、住区建筑布局保证室内外的日照环境、采光和通风的要求，满足《城市居住区规划设计规范》GB50180中有关住宅建筑日照标准的要求。<br />　　<br />　　12、绿化种植适应当地气候和土壤条件的乡土植物，选用少维护、耐候性强、病虫害少，对人体无害的植物。<br />　　<br />　　13、建筑内部不使用对人体有害的建筑材料和装修材料。<br />　　<br />　　14、绿色建筑应尽量采用天然材料。建筑中采用的木材、树皮、竹材、石块、石灰、油漆等，要经过检验处理，确保对人体无害。<br />　　<br />　　良好的居住环境对室内和室外的要求都很高，绿色建筑能给人舒适和健康的生活居住环境，绿色建筑的建造并不等于高价和高成本，也不仅仅限于新建筑，最主要的是要环保、无害。</p><p ></p><p >　来源:0731房产网综合整理</p>', '', 0, '', ''),
+(1410, 1, 43, 68, 0, '<p ><strong>美国回收材料打造&ldquo;资源保护屋&rdquo;</strong><p>　　美国政府的《超级基金法》规定&ldquo;任何生产有工业废弃物的企业，必须自行妥善处理，不得擅自随意倾卸&rdquo;。该法规从源头上限制了建筑垃圾的产生量，促使各企业自觉寻求建筑垃圾资源化利用途径。</p><p>　　近一段时间以来，美国住宅营造商协会开始推广一种&ldquo;资源保护屋&rdquo;，其墙壁就是用回收的轮胎和铝合金废料建成的，屋架所用的大部分钢料是从建筑工地上回收来的，所用的板材是锯末和碎木料加上20%的聚乙烯制成，屋面的主要原料是旧的报纸和纸板箱。这种住宅不仅积极利用了废弃的金属、木料、纸板等回收材料，而且比较好地解决了住房紧张和环境保护之间的矛盾。</p><p>　<strong>　法国将废物整体管起来</strong></p><p>　　法国CSTB公司是欧洲首屈一指的&ldquo;废物及建筑业&rdquo;集团，专门统筹在欧洲的&ldquo;废物及建筑业&rdquo;业务。公司提出的废物管理整体方案有两大目标：一是通过对新设计建筑产品的环保特性进行研究，从源头控制工地废物的产量；二是在施工、改善及清拆工程中，对工地废物的生产及收集作出预测评估，以确定相关回收应用程序，从而提升废物管理层次。</p><p>　　该公司以强大的数据库为基础，使用软件工具对建筑垃圾进行从产生到处理的全过程分析控制，以协助相关机构针对建筑物使用寿命期的不同阶段作出决策。例如，可评估建筑产品的整体环保性能；可依据有关执行过程、维修类别，以及不同的建筑物清拆类型，对某种产品所产生的废物量进行评估；可向顾问人员、总承建商，以及承包机构(客户)，就某一产品或产品系列对环保及健康的影响提供相关概览资料；可以对废物管理所需的程序及物料作出预测；可根据废物的最终用途或质量制订运输方案；就任何使用&ldquo;再造&rdquo;原料的新工艺，在技术、经济及环境方面的可行性作出评定，而且可估计产品的性能。</p><p><strong>　　荷兰有效分类建筑垃圾</strong></p><p>　　在荷兰，目前已有70%的建筑废物可以被循环再利用，但是荷兰政府希望将这一比例增加到90%。因此，他们制定了一系列法律，建立限制废物的倾卸处理、强制再循环运行的质量控制制度。荷兰建筑废物循环再利用的重要副产品是筛砂。由于砂很容易被污染，其再利用是有限制的。针对于此，荷兰采用了砂再循环网络，由拣分公司负责有效筛砂，即依照其污染水平进行分类，储存干净的砂，清理被污染的砂。</p><p>　　总体来讲，上述这些国家大多施行的是&ldquo;建筑垃圾源头削减策略&rdquo;，即在建筑垃圾形成之前，就通过科学管理和有效的控制措施将其减量化；对于产生的建筑垃圾则采用科学手段，使其具有再生资源的功能。</p><p>　　而对于已经过预处理的建筑垃圾，还有一些国家则运往&ldquo;再资源化处理中心&rdquo;，采用焚烧法进行集中处理，如德国西门子公司开发的干馏燃烧垃圾处理工艺，可使垃圾中的各种可再生材料十分干净地被分离出来，实现回收再利用，对于处理过程中产生的燃气则用于发电，每吨垃圾经干馏燃烧处理后仅剩下2到3公斤的有害重金属物质，从而有效地解决了垃圾占用大片耕地的问题。</p><p><strong>　　日本立法实现建筑垃圾循环利用</strong></p><p>　　由于国土面积小、资源相对匮乏，日本的构造原料价格比欧洲都要高。因此日本人将建筑垃圾视为&ldquo;建筑副产品&rdquo;，十分重视将其作为可再生资源而重新开发利用。比如港埠设施，以及其他改造工程的基础设施配件，都可以利用再循环的石料，代替相当数量的自然采石场砾石材料。</p><p>　　1977年，日本政府就制定了《再生骨料和再生混凝土使用规范》，并相继在各地建立了以处理混凝土废弃物为主的再生加工厂，生产再生水泥和再生骨料。1991年，日本政府又制定了《资源重新利用促进法》，规定建筑施工过程中产生的渣土、混凝土块、沥青混凝土块、木材、金属等建筑垃圾，必须送往&ldquo;再资源化设施&rdquo;进行处理。日本对于建筑垃圾的主导方针是：尽可能不从施工现场排出建筑垃圾；建筑垃圾要尽可能重新利用；对于重新利用有困难的则应适当予以处理</p></p>', '', 0, '', ''),
+(1411, 1, 43, 68, 0, '<p >深圳宝安国际机场 T3 航站楼概念方案为美国兰德隆布朗公司和杨莫岚设计公司联合体设计，在此方案的基础上，通过国际招标，选定意大利 mFUKSASarch 建筑事务所的建筑方案，北京市建筑设计研究院中标为国内配合单位。在 2006~2008年期间，扩建工程指挥部进行了填海工程，以配合 T3航站楼的建设。T3航站楼南北长 1128m、东西宽 640m，建筑面积达55 万平方米左右，为目前国内最大单体面<br />积的航站楼之一。 T3 航站楼主体结构采用钢筋混凝土框架结构，整个航站楼的混凝土结构共分为 10 块。屋顶为不规则曲面，采用网壳结构。屋顶结构共分七块，包括主指廊D、次指廊G和H、交叉指廊C、过渡区B以及大厅A。典型屋顶结构的特点如下：<br />（1） 主指廊D块和次指廊G、 H块屋顶 这三部分屋顶网壳均采用斜交斜放的双层筒壳， 网壳曲面延伸到二层楼面 （标<br />高4.4m），与下部混凝土支承结构对应，屋顶结构每隔18m设一支座铰接于混凝土异形柱，并且在与支座对应的屋顶部位，<br />设置两片加强桁架作为主要受力体系。沿结构横向剖面，支座间距均为44.8m，主指廊最宽处为61.1m左右，次指廊最宽处<br />为 54.9m 左右。网壳主网格尺寸为 5.4m，为配合屋顶幕墙的需要，还布置有加密的檩条，檩条与主网格之间铰接。因屋顶<br />曲面造型的需要， 沿筒壳纵向和横向均变厚度，主指廊 （D块） 网壳最厚处为8.8m， 次指廊（G和H块） 网壳最厚处为4.2m。<br />因筒壳面内刚度较大且筒壳较长，为减小屋顶的温度内力，沿筒壳的纵向布置了弹簧支座。同时弹簧支座也减小了由于屋顶<br />分块和混凝土分块不对应、下部混凝土和上部筒壳变形不一致造成的上、下部相互影响。 <br />（2）交叉指廊C块屋顶 交叉指廊部分的屋顶由主指廊和次指廊屋顶交叉形成， 也是采用带加强桁架的斜交斜放网壳<br />结构。其中主指廊方向屋顶长度为162m，包括4榀落在2层楼面上（标高＋4.4m）的加强桁架；次指廊方向长度为199m，包括 10 榀落在 2 层楼面上的加强桁架。另外沿主指廊方向存在 108m 跨度的室内大厅，为此在室内大厅布置了 4 个落在三层楼面（标高+8.8m）的摇摆柱，在摇摆柱上方沿主指廊方向设置了两榀加强桁架。为提高结构刚度、减小关键加强桁架的内力（红色虚线圈出<br />的为加强桁架），设置16根水平拉杆将加强桁架与3层楼面的混凝土结<br />构拉接。 <br />（3）大厅屋顶A块 大厅屋顶跨越E、A和F共三块混凝土结构，东西方向长约640m，南北方向宽约320m，投影面积约为12.3万m2。屋顶支承结构的柱网为36m&times;36m和36m&times;27m两种，由钢筒体、框架柱、<br />摇摆柱以及一榀加强拱架组成屋顶支承体系，承担屋顶的竖向荷载、水平荷载以及幕墙的各种荷载。这里的框架柱均下端与混凝土结构铰接、上端与屋顶网架刚接，这种柱子的受力特点也与柱子下端横截面小、上端横截面大的截面形式一致。屋顶结构采用斜交斜放曲面网架，网格尺寸5.4m，网架高度3.6m。另外与屋顶支承体系的柱网配合，还设有正交正放加强桁架，加强桁架的网格尺寸为4.5m。 目前该工程正在设计中，还有很多问题需要研究，例如满足建筑外观要求、具有一定减震、减小温度内力作用的弹簧铰<br />支座。在长 640m、宽 320m的大厅区采用钢筒体+上端刚接、下端铰接的框架柱+摇摆柱的结构体系，有很多问题都是未遇<br />见的、其设计标准也需要进行性能化研究。</p><p ></p><p ></p><p ><em>转载</em></p>', '', 0, '', ''),
+(1412, 1, 43, 68, 0, '<p ><img src=\"res/201509/02/1441090016_0_396.jpg\" border=\"0\" alt=\"\" /></p>', '', 0, '', ''),
+(1413, 1, 43, 68, 0, '<p >在新中国成立60周年之际，建设科技正处于大发展的阶段。在科学发展观指导下，可持续发展的理念日益深入人心，建设行业的各领域无不突出着节能的宗旨，建筑节能成为当今建设科技发展的重要主题，并不断进步，与建筑节能有关的科学技术取得了丰硕成果。高度重视建筑节能，正是今天建设科技和建设行业的一大特点。<p>　<strong>　21世纪建设科技的主旋律</strong></p><p>　　我国的建筑节能，起步于上世纪80年代。改革开放后，建筑业在墙体改革及新型墙体材料方面有了发展。与此同时，一批高能耗的高档旅馆、公寓和商场出现了。如何在发展中降低建筑能耗，使之与当时能源供应较紧缺的现状相协调，成为相关部门关注的重点。为此，建筑节能工作首先从减少采暖能耗开始，1986年建设部颁布了《民用建筑节能设计标准》，要求新建居住建筑，在1980年当地通用设计能耗水平基础上节能30%%，《民用建筑节能设计标准》是我国第一部建筑节能设计标准，它的颁布，开启了我国建筑节能新阶段。以它提出的指标为目标，建筑节能的设计、节能技术纷纷发展起来，一系列的标准和法规先后制定。</p><p>　　20世纪90年代，建筑节能的地位进一步提高，节能工作有效开展。1990年，建设部提出&ldquo;节能、节水、节材、节地&rdquo;的战略目标。1994年在《中国21世纪议程》中，建筑节能作为项目之一被郑重提出;从1994年起，国家对北方节能建筑实施免征固定资产投资方向调节税，一批节能小区相继建成。1995年《民用建筑节能设计标准》修订并于次年执行，修订后的《民用建筑节能设计标准》将第二阶段建筑节能指标提高到50%%。同年，建设部发布《建筑节能&ldquo;九五&rdquo;计划和2010年规划》，这个专门的规划以及1996年9月建设部发布的《建筑节能技术政策》和《市政公用事业节能技术政策》，为其后建筑节能的发展明确了方向，同时也表明建筑节能地位的空前提高。建筑节能的地位最终由1998年1月1日实施的《中华人民共和国节约能源法》确定下来，建筑节能成为这部法律中明确规定的内容。</p><p>　　21世纪的到来，在科学发展观的指引下，建设领域明确了必须走资源节约型、环境友好型的新型工业化道路，建设科技工作将&ldquo;四节一环保&rdquo;作为科技攻关的主要方向，取得了明显效果。目前我国已初步建立起了以节能50%%为目标的建筑节能设计标准体系，部分地区执行更高的65%节能标准。2008年《民用建筑能效测评标识管理暂行办法》、《民用建筑节能条例》等施行，《民用建筑节能条例》的颁布，标志着我国民用建筑节能标准体系已基本形成，基本实现对民用建筑领域的全面覆盖。</p><p>　　在国务院办公厅《2009年节能减排工作安排》中规定，2009年底施工阶段执行节能强制性标准比例提高到90%以上。除新建建筑外，既有建筑的节能改造也有效开展起来，并取得了一批成果和经验。而兼顾土地资源节约、室内环境优化、居住人的健康、节能节水节材等方面的目标绿色建筑，成为新世纪建筑节能发展的亮点。</p><p><strong>　　建筑节能技术飞速发展</strong></p><p>　　在建筑节能逐步成为建设科技主旋律的过程中，相关的节能技术也有了长足进步。</p><p>　　在建设部组织下，&ldquo;九五&rdquo;期间实施了&ldquo;2000年小康型城乡住宅科技产业工程&rdquo;，&ldquo;十五&rdquo;期间组织实施了&ldquo;小城镇科技发展重大专项&rdquo;、&ldquo;居住区与小城镇建设关键技术研究&rdquo;、&ldquo;绿色建筑关键技术研究&rdquo;等，&ldquo;十一五&rdquo;期间实施了&ldquo;建筑节能关键技术研究与示范&rdquo;、&ldquo;现代建筑设计与施工关键技术研究&rdquo;、&ldquo;既有建筑综合改造关键技术研究与示范&rdquo;、&ldquo;可再生能源与建筑集成技术研究与示范&rdquo;等项目，这些科研攻关项目的组织实施，使一系列建筑节能的重大、关键、共性技术得到突破，形成了一大批科技成果。</p><p>　　建筑节能的各项技术都达到很高水平。</p><p>　　降低建筑能耗，首先要从围护结构、外墙、屋面、外门窗来实现。墙体改革的调查研究开始于上世纪70年代，80年代以来，新型墙体材料和高保温材料不断涌现，混凝土空心砌块、聚苯乙烯泡沫板等材料，逐渐替代了传统墙体材料，在建筑节能中发挥了重要作用。同时，我国广泛开展研究建筑外墙保温技术，近年来，各种外墙外保温技术系统日益成熟并在工程中应用，显示出良好前景。</p><p>　　此外还有建筑门窗。门窗传热系数的高低，决定了能耗的高低，要降低能耗，就必须提高门窗的热工性能，增加门窗的隔热保温性能。近20年来，为满足节能需求，外窗玻璃产品及工艺水平迅速发展，由之前采用普通单层玻璃、双层玻璃发展到中空、充气、LOW-E玻璃，塑钢型材、钢化玻璃等也广泛应用，取代了传统的钢窗和铝合金门窗。</p><p>　　建筑能耗的降低，还有赖于暖通技术和设备。为实现采暖系统的节能，上世纪80年代我国研发了平衡供暖技术及其产品、锅炉运行管理技术与产品。在散热器方面，上世纪90年代以来各种新型散热器纷纷得到开发，这些新产品比传统的铸铁散热器，具有金属热强度高、散热性能好、承压能力高、造型美观、工艺性好、安装方便等优点。</p><p>　　进入新世纪后，随着既有建筑节能改造的开展，供热改革成为建筑节能的重要内容。为适应改革的需要，室温可调和采暖计量收费技术及产品有了进一步的发展。采暖系统的单管顺流系统变为双管系统，散热器恒温阀及热表的应用已经十分普及。</p><p>　　技术是保证建筑节能得以实现的关键，多年来我国建筑节能技术的发展，让人们对&ldquo;十一五&rdquo;期间实现建筑节能1.6亿吨标准煤的目标充满信心。</p><p><strong>　　绿色建筑成果丰硕</strong></p><p>　　绿色建筑是生态环境与建筑有机结合，在建筑生命周期内最大限度地节约资源、保护环境，为人们提供高效、舒适空间的建筑。近10年来，绿色节能建筑成为建筑节能中的一大亮点，体现了新世纪建筑节能更高的追求目标。</p><p>　　进入21世纪后，绿色建筑评价体系逐步建立，保证了绿色建筑的健康发展。2001年建设部住宅产业化促进中心编制了《绿色生态住宅小区建设要点与技术导则》，2004年建设部针对北京奥运会，开展了&ldquo;绿色奥运建筑评估体系&rdquo;课题研究，形成了我国第一套绿色建筑项目标准。同年8月建设部颁布实施《全国绿色建筑创新奖管理办法》，次年，首届全国绿色建筑创新奖揭晓，40个项目获得此项殊荣，中国在推进智能与绿色建筑方面迈出了坚实的一步。2005年，历时5年编制完成的《绿色建筑技术导则》颁布施行，自此，绿色建筑的评定有了明确依据。&ldquo;十五&rdquo;期间，重点攻关计划&ldquo;绿色建筑规划设计导则和评估体系研究&rdquo;项目完成。2006年，建设部组织编制了《绿色建筑评价标准》。2007年8月，《绿色建筑评价技术细则》和《绿色建筑评价标识管理办法》出台，2008年6月住房和城乡建设部为进一步规范和细化绿色建筑评价标识工作，根据评价标识工作实际情况，编制了《绿色建筑评价技术细则补充说明(规划设计部分)》，制定了《绿色建筑评价标识使用规定》，进一步完善了绿色建筑设计评价标识的申报评价程序。</p><p>　　一系列工作，建立了适合我国国情的绿色建筑评价体系，有力地推动了绿色建筑技术发展。经过多年的攻关和研究，绿色建筑形成了六大技术体系评价标准：节地与室外环境、节能与能源利用、节水与水资源利用、节材与材料资源利用、室内环境质量及运营管理。通过对建筑的节能、节水、节地、节材和室内环境的具体性能进行实测，给出数据，实现定量化检测标准，达到标准的即为绿色建筑。</p><p>　　2008年8月，住房城乡建设部建筑节能与科技司向首批绿色建筑设计评价标识项目颁发了证书，上海世博会世博中心工程等6个项目获得了行业主管部门认可的第一批绿色建筑设计评价标识，标志着由政府部门主导的绿色建筑评价正式启动，结束了我国依赖国外标准进行绿色建筑评价的历史。</p><p>　　回顾建筑节能的历程，可以看到，这项利国利民的事业，紧跟时代步伐，取得了举世瞩目的成就。而这一切，没有党和政府的重视，是不可想象的。也正因此，人们完全有理由对建筑节能的前景充满信心。</p><p></p></p>', '', 0, '', ''),
+(1414, 1, 43, 68, 0, '<p ><p align=\"center\"><img title=\"8月30日拍摄的世博轴膜结构工程（局部）。 8月30日，上海世博园区世博轴膜结构工程全面完成。世博轴工程采用全新建筑形式，其屋顶设计为长约840米、宽约97米的巨型索膜结构，形如蓝天下的朵朵白云，并在整个索膜覆盖的结构中设置了6个巨型圆锥状钢结构&ldquo;阳光谷&rdquo;，让自然光透过&ldquo;阳光谷&rdquo;倾泻而下，满足部分地下空间的采光，体现环保和节约的理念。据介绍，世博轴索膜结构厚度仅为1毫米，使用寿命可达30年。新华社发 \"height=\"175\" src=\"res/201509/02/1441090001_0_548.jpg\" width=\"402\" alt=\"\" /></p><p> 8月30日拍摄的世博轴膜结构工程（局部）。 8月30日，上海世博园区世博轴膜结构工程全面完成。世博轴工程采用全新建筑形式，其屋顶设计为长约840米、宽约97米的巨型索膜结构，形如蓝天下的朵朵白云，并在整个索膜覆盖的结构中设置了6个巨型圆锥状钢结构&ldquo;阳光谷&rdquo;，让自然光透过&ldquo;阳光谷&rdquo;倾泻而下，满足部分地下空间的采光，体现环保和节约的理念。据介绍，世博轴索膜结构厚度仅为1毫米，使用寿命可达30年。新华社发</p><p align=\"center\"><img title=\" 8月30日拍摄的世博轴膜结构工程全景（拼图）。 新华社发\" src=\"res/201509/02/1441090001_1_697.jpg\" alt=\"\" /></p></p>', '', 0, '', ''),
+(1415, 1, 43, 68, 0, '<p ></p><ul><li >PTFE膜材&mdash;&mdash;耐久性强，使用寿命在30年以上</li><li >PTFE膜材&mdash;&mdash;是永久性建筑的首选材料</li><li >PTFE膜材&mdash;&mdash;超自洁，防火材料</li><li >PTFE膜材&mdash;&mdash;专业化的加工工艺，严格的施工规程<br /> 膜结构建筑中最常用的膜材料。PTFE膜材料是指在极细的玻璃纤维（3微米）编织成的基布上涂上PTFE（聚四氟乙烯）树脂而形成的复合材料。PVC膜材料是指在聚酯纤维编织的基布上涂上PVC（聚氟乙烯）树脂而形成的复合材料。</li></ul>', '', 0, '', ''),
+(1416, 1, 43, 68, 0, '<p><strong><span >  <span >ETFE建筑</span></span></strong><span ><span >膜</span><span >材是一种乙烯</span><span >-</span><span >四氟乙烯的共聚物</span><span >.ETFE膜材的厚度通常小于0.20mm，是一种透明膜材.</span></span></p><p><span ><span >   用ETFE原料制成的膜材料替代传统的玻璃和其他高分子采光板用于大型建筑物的屋面或墙体材料，显示出无可比拟的优势。</span></span></p><p><span ><span > ETFE膜使用寿命至少为25-35年,</span><span > ETFE</span><span >膜达到</span><span >B1</span><span >、</span><span >DIN4102防火等级标准，燃烧时也不会滴落。且该膜质量很轻，每平方米只有0.15-0.35公斤。这种特点使其即使在由于烟、火引起的膜融化情况下也具有相当的优势。</span></span></p><p><span ><span > 与玻璃不同的是ETFE具有很好的隔热介质，单层膜可以在无色膜材上印刷不同图案，可调节室内光线。</span></span></p><p><p ><img src=\"res/201509/02/1441090077_0_111.jpg\" border=\"0\" alt=\"\" /></p><p ><img src=\"res/201509/02/1441090077_1_885.jpg\" border=\"0\" alt=\"\" /></p></p>', '', 0, '', ''),
+(1417, 1, 43, 68, 0, '<p class=\"MsoNormal\" ><b><span lang=\"EN-US\" >2014</span></b><b><span >第三届中国（广州）国际建筑钢结构、空间结构及金属材料设备展览会</span></b><b><span lang=\"EN-US\" ><o:p></o:p></span></b></p><p class=\"MsoNormal\" ><b><span lang=\"EN-US\" >The 3<sup>rd</sup><st1:country-region w:st=\"on\">China</st1:country-region>(<st1:city w:st=\"on\">Guangzhou</st1:city>) International Exhibition for<st1:place w:st=\"on\"><st1:placename w:st=\"on\">Steel</st1:placename><st1:placename w:st=\"on\">Construction &amp; Metal</st1:placename><st1:placetype w:st=\"on\">Building</st1:placetype></st1:place>Materials<o:p></o:p></span></b></p><p class=\"MsoNormal\" ><span >地点：中国进出口商品交易会&middot;琶洲展馆<span lang=\"EN-US\"></span></span><b><span >时间</span></b><span >：<st1:chsdate w:st=\"on\" isrocdate=\"False\" islunardate=\"False\" day=\"12\" month=\"5\" year=\"2014\"><span lang=\"EN-US\">2014</span>年<span lang=\"EN-US\">5</span>月<span lang=\"EN-US\">12</span>日</st1:chsdate><span lang=\"EN-US\">-14</span>日</span></p><p class=\"MsoNormal\" ><b><span lang=\"EN-US\" ><o:p></o:p></span></b></p><pclass=\"Section1\" ><p class=\"MsoNormal\" align=\"left\" ><v:line id=\"_x0000_s1026\" strokeweight=\"1.5pt\" to=\"549.7pt,3.1pt\" from=\"-7.95pt,3.1pt\" ></v:line><b><span >主办单位：<span lang=\"EN-US\"><o:p></o:p></span></span></b></p><p class=\"MsoNormal\" align=\"left\" ><span >亚洲建筑技术联盟协会<span lang=\"EN-US\"></span>中国市政工程协会<span lang=\"EN-US\"></span>中国贸促会建设行业分会集成建筑委员会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >广东省空间结构学会<span lang=\"EN-US\"></span>粤港经济合作交流促进会<span lang=\"EN-US\"></span>香港鸿威展览集团<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><b><span >协办单位：<span lang=\"EN-US\"><o:p></o:p></span></span></b></p><p class=\"MsoNormal\" align=\"left\" ><span >中国贸促会建设行业分会国际交流中心<span lang=\"EN-US\"></span>东莞市建筑金属结构行业协会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><b><span >国际机构：</span></b><span lang=\"EN-US\" ><o:p></o:p></span></p><p class=\"MsoNormal\" align=\"left\" ><span >美国钢结构协会<span lang=\"EN-US\"></span>澳大利亚钢结构协会<span lang=\"EN-US\"></span>加拿大钢结构协会<span lang=\"EN-US\"></span>韩国钢结构协会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >智利钢结构协会<span lang=\"EN-US\"></span>日本钢结构协会<span lang=\"EN-US\"></span>墨西哥钢结构协会<span lang=\"EN-US\"></span>新西兰钢结构协会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >新加坡钢结构协会<span lang=\"EN-US\"></span>法国驻广州总领事馆商务处<span lang=\"EN-US\"></span>美国钢铁协会<span lang=\"EN-US\"></span>欧洲钢结构协会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >新西兰驻广州总领事馆<span lang=\"EN-US\"></span>新西兰大型工程研究会<span lang=\"EN-US\"></span>西班牙安达卢西亚自治区政府贸促会上海代表处<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >尼日利亚联邦共和国驻上海总领事馆<span lang=\"EN-US\"></span>日本建筑钢骨协会<span lang=\"EN-US\"></span>丹麦未来产业化可持续建筑和城市发展组织</span><span lang=\"EN-US\" ><o:p></o:p></span></p><p class=\"MsoNormal\" align=\"left\" ><b><span >承办单位：<span lang=\"EN-US\"><o:p></o:p></span></span></b></p><p class=\"MsoNormal\" ><span >广州市鸿威展览服务有限公司<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" ><b><span >支持单位：<span lang=\"EN-US\"><o:p></o:p></span></span></b></p><p class=\"MsoNormal\" align=\"left\" ><span >广东省住房和城乡建设厅<span lang=\"EN-US\"></span>浙江省钢结构行业协会<span lang=\"EN-US\"></span>江苏省建筑钢结构混凝土协会钢结构分会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >四川省金属结构行业协会<span lang=\"EN-US\"></span>辽宁省建筑金属结构协会<span lang=\"EN-US\"></span>福建建筑业协会金属结构与建材分会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >安徽省钢结构协会<span lang=\"EN-US\"></span>河南省钢结构协会<span lang=\"EN-US\"></span>山西省土建学会空间结构专业委员会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >香港建筑金属结构协会<span lang=\"EN-US\"></span>澳门金属结构协会<span lang=\"EN-US\"></span>山东省勘察设计协会钢结构分会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >上海市金属结构行业协会<span lang=\"EN-US\"></span>天津市钢结构学会<span lang=\"EN-US\"></span>北京市建设工程物资协会钢结构分会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><b><span >支持媒体：<span lang=\"EN-US\"><o:p></o:p></span></span></b></p><p class=\"MsoNormal\" align=\"left\" ><span >广东电视台、南方电视台、中国建设报、中华建筑报、建筑时报、广东建设报、羊城晚报、新浪地产、搜房网、中国钢结构网、中国钢结构资讯网、钢结构在线、中国生态环境与节能建设网、建筑钢结构网、钢结构网、广东建设信息网、钢构之窗、《钢结构》杂志、《中国住宅设施》、《中国钢结构产业》、《钢结构资源》、商务时报品牌钢构周刊、《钢结构与设备》杂志<span lang=\"EN-US\">...</span>各协会（学会）刊物及网站等一百多家海内外媒体<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><b><span lang=\"EN-US\" ><o:p></o:p></span></b></p></p><p ><b><span lang=\"EN-US\" ><br clear=\"all\"/></span></b></p><p class=\"MsoNormal\" align=\"center\" ><b><i><span >以钢代木，保护地球生态资源；以钢代砼，促进绿色环保建筑</span></i></b></p><p ><span ><p class=\"MsoNormal\" ><strong>参展范围<o:p></o:p></strong></p><p class=\"MsoNormal\" ><span >1、钢结构及钢铁产品，包括建筑金属结构、钢结构、轻钢结构、重钢结构、海洋结构、预应力结构、钢砼组合结构、空间网架结构、拉膜结构等空间结构；重钢、轻钢、H型钢、无缝钢管、工字型钢、冷弯型钢、特殊钢材等；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >2、建筑钢结构板材、板件，包括中厚板、压型板、采光板、夹芯板、不锈钢薄板、镜面板、艺术板、镀钛板、彩色涂层板等板材；不锈钢棒、线、管材等；彩钢、钢结构预制品等；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >3、钢结构连接产品和设备，包括各种固件锚栓及标准和非标准紧固件，螺栓，栓钉，铆钉，锚夹具；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >4、建筑钢结构安全防护工业体系，包括涂料、防腐、保温、隔热、防水、防火耐火产品及防爆技术；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >5、新型住宅房屋技术及配套装饰、装修产品类：新型房屋设计、建设单位、新型结构产品、墙体、屋面、门窗、龙骨、幕墙、楼层板、吊顶、遮阳系统、通风设备；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >6、铝合金、塑钢、非金属装饰性材料及相关技术和设备类：铝合金、塑钢、复合材料等装饰性构件和板材、玻璃制品；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >7、立体车库设备、钢结构门业；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >8、金属钢结构加工配套设备及检测设备类，包括各种成型加工设备、焊接设备、焊接材料、切割、铸造、数控技术及五金电动工具、施工安装机具、喷涂设备、涂锈设备、钢材检验、探伤设备等；桥梁、塔桅、容器、管道的制造加工设备；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >9、计算机设计、分析、计算与CAD绘图软件类：各类钢结构设计、分析、计算软件；项目管理、投标及工程预算软件；加工中心与结构样图CAD工作站等；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >10、节能节地型建筑（钢结构住宅试点工程、实验基地）；钢结构领域新成果（名人、名企、名项目）；钢结构工程招标；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >11、设计及施工展示（大型场馆、会议中心、大型公共建筑的设计技术及方案，大型施工公司示范工程）；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >12、建筑设计及房地产项目规划设计区：建筑设计院所、优秀建筑设计项目、优秀房地产规划项目、技术咨询单位样板工程</span></p></span></p>', '', 0, '', ''),
+(1418, 1, 43, 68, 0, '<p ></p><h2>青口镇文体中心外立面膜结构工程（重新招标）</h2><pclass=\"gg-xl-fbsj\">来源：中国国际招标网 发布时间：2014.02.21</p><!--div class=\"gg-jdb\"><img src=\"res/201509/02/1441090066_0_157.gif\" width=\"292\" height=\"82\"/></a></div--><!--有权限--><pclass=\"gg-conte\"><p ><palign=\"left\">招 标 公 告</p><palign=\"left\">1. 招标条件</p><palign=\"left\">本招标项目青口镇文体中心外立面膜结构工程（重新招标）已由闽侯县发展和改革局以侯发改审批[2013]44号批准建设，项目业主为闽侯县青口镇人民政府，建设资金来自财政拨款，招标人为闽侯县青口镇小城镇综合改革建设试点指挥部，委托的招标代理单位为福建省闽建工程造价咨询有限公司。项目已具备招标条件，现对该项目的设计、施工进行国内公开招标。</p><palign=\"left\">2. 项目概况和招标范围</p><palign=\"left\">2.1. 建设地点：青口镇壶山村；</p><palign=\"left\">2.2. 工程建设规模：青口镇文体中心的综合馆气枕包覆面积约5300㎡，游泳馆气枕包覆面积约3300㎡，综合馆和游泳馆中部PTFE雨棚覆盖面积约2000㎡；最高控制价为18845308元 ；</p><palign=\"left\">2.3. 招标范围和内容： 青口镇文体中心外立面膜结构工程施工，内容包括 ETFE 充气膜 结构、PTFE雨棚的二次深化设计、材料供应、膜结构工程制作及安装等全部相关工程施工 ，具体详见工程量清单和施工图纸；</p><palign=\"left\">2.4. 工期要求：总工期：150个日历天；其中各关键节点的工期要求为：无；</p><palign=\"left\">2.5. 工程质量要求：符合设计、国家工程施工质量验收规范合格标准；</p><palign=\"left\">2.6. 本项目（标段）招标有关的单位：</p><palign=\"left\">2.6.1. 咨询单位：福建省闽建工程造价咨询有限公司；</p><palign=\"left\">2.6.2.设计单位：城市建设研究院；</p><palign=\"left\">2.6.3.代建单位：无 ；</p><palign=\"left\">2.6.4.监理单位：待定。</p><palign=\"left\">3. 投标人资格要求及审查办法</p><palign=\"left\">3.1.本招标项目要求投标人具备建设行政主管部门核发有效的三级及以上钢结构工程专业承包施工资质和《施工企业安全生产许可证》；投标人同时具备中国钢结构协会空间结构分会核发有效的膜结构工程设计二级及以上资质和膜结构工程承包二级及以上资质。</p><palign=\"left\">3.2.投标人拟担任本招标项目的项目经理应具备有效的不低于二级建筑工程专业注册建造师执业资格(含临时执业证书)注册建造师执业资格，并持有有效的安全生产考核合格证书（B证）；依据闽建筑[2013]41号和闽建筑[2014]6号文规定：（1）已按规定在2013年12月31日前提出延续注册申请或者已办理完延续注册的二级临时注册建造师；已按规定在2014年2月28日前提出延续注册申请或者已办理完延续注册的一级建造师临时注册建造师；（2）已提出申请但还未办理完成延续注册的二级及以上临时注册建造师，投标人应在投标文件中附有省住房和城乡建设厅行政服务中心出具的延续注册受理单证明并加盖投标人公章，否则按资格审查不合格处理。</p><palign=\"left\">3.3. 本招标项目 接受 联合体投标，自愿组成联合体的应由 具备 三级及以上钢结构工程专业承包施工资质 的企业为主办方，且各方均应具备承担招标项目的相应资质条件，相同专业单位组成的联合体的，按照资质等级较低的单位确定资质等级。</p><palign=\"left\">3.4.投标人&ldquo;类似工程业绩&rdquo;要求：投标人至少有1项业绩；&ldquo;类似工程业绩&rdquo;是指（下同）：自本招标公告发布之日的前5年内（不含发布招标公告当日）完成的并经竣工验收合格的单项合同工程造价不少于500万元的ETFE充气膜结构工程的国内（不含港澳台地区）施工项目。注：根据闽建筑（2011）39号文要求，本招标项目（工程）所称的类似工程业绩应符合以下条件之一：（1）在福建省行政区域内完成的业绩或抢险救灾中由福建省组织在省外完成的业绩；（2）在福建省外完成的业绩，必须是通过互联网且不需任何权限即可在工程所在地的建设行政主管部门政务网站查询得到，而且查询到的数据应能满足本招标项目（工程）的要求。</p><palign=\"left\">3.5. 投标人应在人员、设备、资金等方面具有承担本招标项目（标段）施工的能力，具体要求详见招标文件；</p><palign=\"left\">3.6. 本招标项目招标人对投标人的资格审查采用的方式：资格后审。</p><palign=\"left\">3.7. 投标时，投标人和拟派本工程项目管理班子成员没有因违法违规被有关行政监督部门取消或限制本招标项目的投标。</p><palign=\"left\">3.8.投标人具备已通过年检合格有效的企业法人营业执照，企业注册资本金金额应超过3769062元（即本项目最高控制价&times;20%的金额）。</p><palign=\"left\">4. 招标文件的获取</p><palign=\"left\">4.1. 凡有意参加投标者，请于 2014 年 2 月 24 日至 2014 年 2 月 28日（法定公休日、法定节假日除外），每天上午 9 时 00 分至 12 时 00 分，下午 13 时 00 分至 16 时 30 分（北京时间，下同），到<u>闽侯县建设工程交易中心</u> 福建省闽建工程造价咨询有限公司 <u>代表处（地址：闽侯县科技中心内闽侯县行政服务中心负一楼</u> ） 购买招标文件；</p><palign=\"left\">4.2. 招标文件每份售价 200元，（含工程量清单、工程控制价、电子光盘等），售后不退。投标人若需要购买本项目施工图纸的，可向招标人提出申请，招标人在三个工作日内提供购买的施工图纸，图纸售价不高于《福建省物价局转发国家计委关于印发</p><palign=\"left\">5. 评标办法</p><palign=\"left\">本招标项目采用的评标办法： 经评审的最低投标价中标法 。</p><palign=\"left\">6. 投标保证金的提交</p><palign=\"left\">6.1. 投标保证金提交的时间：投标截止时间之前；</p><palign=\"left\">6.2.投标保证金提交的方式：从投标人企业基本账户以电汇或银行转账的形式汇达投标保证金指定账户；或按榕建招[2013]38号文规定交存年度投标保证金；</p><palign=\"left\">6.3. 投标保证金提交的金额：人民币叁拾陆万元。</p><palign=\"left\">7. 投标文件的递交</p><palign=\"left\">7.1. 投标文件递交的截止时间（投标截止时间）： 2014 年 3 月 18 日 10 时 00 分，提交地点为闽侯县建设工程交易中心本项目开标室 ；<u>在递交纸质投标文件的同时，投标人拟派出的委托代理人出示授权委托书原件和身份证原件，项目经理应当持注册建造师执业证书（或建造师临时执业证书）原件、身份证原件、购买招标文件凭证（一份凭证仅代表一个投标人）原件到场核验登记，否则其投标文件将不予接收。</u></p><palign=\"left\">7.2. 逾期送达的或未送达指定地点或投标文件密封不符合规定要求的投标文件，招标人不予受理。</p><palign=\"left\">8. 发布公告的媒介</p><palign=\"left\">本次招标公告同时在 福建招标与采购网（ http://www.fjbid.gov.cn ） 、福州市建设工程招标投标网（ www.fzztb .org）、闽侯招标网（www.mhztb.com）及闽侯县建设工程交易中心公示栏 上发布。</p><palign=\"left\">9. 联系方式</p><palign=\"left\">招标人：闽侯县青口镇小城镇综合改革建设试点指挥部；</p><palign=\"left\">地址：闽侯县青口镇工业路1号，邮编：350119；</p><palign=\"left\">电 话：0591-22770987</p><palign=\"left\">联系人：林主任。</p><palign=\"left\">招标代理机构：福建省闽建工程造价咨询有限公司</p><palign=\"left\">地址：福州市工业路451号鼓楼科技商务中心大厦六层，邮编：350002；</p><palign=\"left\">电话：0591-87605650-819，传真：0591-87623982；</p><palign=\"left\">联系人：林工。</p><palign=\"left\">投标保证金银行帐号：</p><palign=\"left\">开户银行：民生银行福州闽侯支行；</p><palign=\"left\">帐户名称：闽侯县建设工程交易中心；</p><palign=\"left\">帐 号：1516 0142 1000 0041 。</p><palign=\"left\">（应在汇款凭证上注明&ldquo;闽侯房建招2014011&rdquo;投标保证金，如因投标人汇款凭证未注明项目招标编号造成银行无法识别投标保证金到账情况或识别错误的，其责任由投标人自行承担。）</p><palign=\"left\">交易中心名称： 闽侯县建设工程交易中心 ；</p><palign=\"left\">电 话： 0591-22063699 ；</p><palign=\"left\">地 址： 闽侯县科技中心内闽侯县行政服务中心负一楼 。</p></p></p>', '', 0, '', ''),
+(1419, 1, 43, 68, 0, '<p ><br class=\"Apple-interchange-newline\" /><p align=\"center\"></p><center><imgid=\"597978\" title=\"\" border=\"0\" align=\"center\" src=\"res/201509/02/1441090061_0_691.jpg\" sourcename=\"本地文件\" sourcedescription=\"编辑提供的本地文件\" alt=\"\" /></center><p></p><p></p><p >大连体育场，2754个气枕附着在体育新城中心体育场周围的钢结构桁架上，白天或夜晚在阳光或LED灯的照射下，蓝白相间的膜气枕将会形成海浪翻滚的大景观，将把本市这座海滨城市的特点充分展现在世人面前。据了解，中心体育场外膜结构工程将在5月底全部完工。昨天，记者走进中心体育场进行了一番探访。</p><p >蓝白相间的条块将中心体育场从空中&ldquo;包裹&rdquo;起来，远看，犹如大海中的波浪在翻滚。蓝色条块就像蓝色的海面一样，白色条块象征翻滚着的白色浪花。近看，在偌大的圆形体育场四周布满了脚手架，蓝色条块和白色条块由众多气枕组成，将圆形的体育场在纵向也形成圆弧形状，若一幢巨型战鼓悬于半空。</p><p >进入体育场内部，看台上坐椅林立，广场上的塑胶跑道和中间的绿色球场已经显现出来。往上看，圆穹形的膜结构将看台全部覆盖。&ldquo;观看比赛时，自然是风吹不着，雨淋不到。 &rdquo;中心体育场外膜结构工程施工单位，是曾参与北京水立方膜结构工程施工的本市民营企业大连伟霖膜结构工程有限公司，该公司高级工程师刘昌伟说，大连中心体育场还有内膜，将会从内部把眼前的纵横交错的钢结构桁架全部包裹起来。</p><p >目前，仅有西南部接近1万平方米的外膜结构还没有完工。本月底外膜结构将全部完工。</p></p>', '', 0, '', ''),
+(1420, 1, 43, 68, 0, '<p ><p><b>膜结构</b><span >主要适用场所：体育场馆,体育场看台,主席台,相关遮阳遮雨膜结构; 高速公路收费站,加油站,停车场,公交站台,机场,地铁站,游乐园,休闲广场,观景台,舞台空,停车场膜结构；小区入口、车库入口、通道走廊、城市标志入口；高速公路收费站空间膜结构、加油站膜结构、博览会展厅膜结构、购物中心、售货亭、商业步行街、批发中心、临时会场张拉膜结构、休闲场所张拉膜结构景观膜结构、泳池遮阳膜，景观膜结构、大门出入张拉膜、小品膜、标志性膜结构建筑等。</span></p><p><span class=\"Apple-converted-space\"></span><br /></p><p><imgborder=\"0\" width=\"675\" height=\"670\" alt=\"\" src=\"res/201509/02/1441090045_0_444.jpg\" /></p><p><p >膜结构主要适用场所：运动场、体育馆、体育看台张拉膜结构; 博物馆张拉膜、音乐广场索膜结构、游乐园、休闲广场张拉膜结构、观景台张拉膜、舞台空间膜结构、停车场膜结构；高速公路收费站空间膜结构、加油站膜结构、博览会展厅膜结构、购物中心、售货亭、商业步行街、批发中心、临时会场张拉膜结构、休闲场所张拉膜结构景观膜结构、泳池遮阳膜，景观膜结构、大门出入张拉膜、小品膜、标志性膜结构建筑等。</p><p ></p><p ></p><p ></p></p></p>', '', 0, '', ''),
+(1421, 1, 43, 68, 0, '<p ></p><ul><li >PTFE膜材&mdash;&mdash;耐久性强，使用寿命在30年以上</li><li >PTFE膜材&mdash;&mdash;是永久性建筑的首选材料</li><li >PTFE膜材&mdash;&mdash;超自洁，防火材料</li><li >PTFE膜材&mdash;&mdash;专业化的加工工艺，严格的施工规程<br /> 膜结构建筑中最常用的膜材料。PTFE膜材料是指在极细的玻璃纤维（3微米）编织成的基布上涂上PTFE（聚四氟乙烯）树脂而形成的复合材料。PVC膜材料是指在聚酯纤维编织的基布上涂上PVC（聚氟乙烯）树脂而形成的复合材料。</li></ul>', '', 0, '', ''),
+(1422, 1, 43, 68, 0, '<p ></p><pid=\"MyContent\"><p>  2020年东京奥运会和残奥会筹备委员会公布了作为东京奥运会主会场的新国立竞技场的概念图。</p><p>　　国际奥委会全会当地时间9月7日在阿根廷首都布宜诺斯艾利斯投票选出2020年夏季奥运会的主办城市。日本东京最终击败西班牙马德里和土耳其伊斯坦布尔，获得2020年夏季奥运会举办权。</p><p></p><p ></p><p align=\"center\"><img id=\"23416362\" align=\"center\" src=\"res/201509/02/1441090082_0_293.jpg\" width=\"602\" height=\"276\" md5=\"\" alt=\"\" /></p><p align=\"center\"></p><p ></p><p align=\"center\"><img id=\"23416363\" align=\"center\" src=\"res/201509/02/1441090082_1_175.jpg\" width=\"600\" height=\"353\" md5=\"\" alt=\"\" /></p><p align=\"center\"></p><p ></p><p align=\"center\"><img id=\"23416364\" align=\"center\" src=\"res/201509/02/1441090082_2_260.jpg\" width=\"598\" height=\"353\" md5=\"\" alt=\"\" /></p><p align=\"center\"></p><p align=\"center\"></p><p >据了解，日本新国家体育场效果图是由东京奥运会审查委员会从全球募集的众多设计图中评选而出，该设计图出自的伊拉克女建筑家扎哈-哈迪德之手，从效果图来看，日本新国家体育场外观采用了全新的流线型设计，审查委员会给予了&ldquo;内部空间感强烈，与东京都城市空间相呼应&rdquo;、&ldquo;可开闭式天窗增加了体育场的实用性&rdquo;等高度评价。</p><p >根据计算，日本新国家体育场的扩建总花费将达到1300亿日元（约人民币78亿元），预计竣工时间为2019年3月，该体育场作为2020年东京奥运会比赛主会场，届时奥运会的开幕式、闭幕式、足球、田径等项目都将在该会场举行。</p><p ></p><p></p><p></p><p></p><p></p></p><p ></p>', '', 0, '', ''),
+(1934, 1, 43, 8, 1335, '<p>改变：后台集成流行的前端框架LayUI</p><p>新增：CKEditor（未完善，不建议使用）</p><p>完善：项目列表获取自定义字段</p><p>完善：扩展字段维护管理（合并会员扩展字段库，全站扩展字段库，及模块字段库）</p><p>优化：右键操作，实现复制粘贴</p><p>完善：购物车功能系统</p><p>完善：订单系统及订单扩展系统（包括订单产品下的属性扩展）</p><p>完善：扩展主题功能（以实现复杂功能交互）</p><p>完善：项目开发模式，后续功能项目将以新的模式开发并使用</p><p>完善：接口开发，实现与小程序对接</p><p>新增：小程序通用模板</p><p>新增：小程序项目配置（通过升级无法获取，请全新安装）</p><p>完善：资源管理器</p><p>优化：核心代码，以兼容PHPOK4与PHPOK5的运行</p><p>新增：项目功能管理器（实现功能的增删操作）</p><p>完善：插件管理器</p><p>新增：站点信息可配置站点的收藏夹图标（即Favicon，使用Png格式图片）</p><p>新增：内部控制器互相引用（基本上是程序员二次开发才会用得到）</p><p>完善：上传的大图可以执行压缩操作</p><p>完善：角标提示操作</p><p>这里特别说明一下：升级到当前版本前，您做好备份准备（会改动数据库表信息，会覆盖 _config/ 目录信息）</p>', '改变：后台集成流行的前端框架LayUI新增：CKEditor（未完善，不建议使用）完善：项目列表获取自定义字段完善：扩展字段维护管理（合并会员扩展字段库，全站扩展字段库，及模', 0, '', '');
+INSERT INTO `qinggan_list_22` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `content`, `note`, `plugin_vote`, `linkurl`, `linksite`) VALUES
+(1935, 1, 43, 8, 1348, '<h2>结构</h2><p>将要升级的文件按原目录结构存放</p><p style=\"text-align: left;\"><img src=\"https://www.phpok.com/res/201810/19/auto_10158.png\" title=\"图片\" alt=\"图片\"/></p><p>和程序要一起打包的文件有：</p><blockquote><p>version.txt：版本信息</p><p>delete.txt：要删除的文件清单（一行一个文件）</p><p>table.sql：新版的数据表结构文件，用于执行比较新旧版本数据结构，并调整更改</p><p>update.sql：要执行的SQL文件（单独执行）</p><p>run.php：如果升级涉及到比较复杂的操作，可以在这里写PHP文件引入执行<br/></p></blockquote><h2>升级原理顺序<br/></h2><ol style=\"list-style-type: decimal;\" class=\" list-paddingleft-2\"><li><p>远程获取升级包数据</p></li><li><p>将 ZIP 压缩包下载到 _data 目录下</p></li><li><p>将下载好的压缩包解压到 _data/update/ 目录下</p></li><li><p>归纳整理文件（主要是收集：version.txt，delete.txt，table.sql，update.sql，run.php）</p></li><li><p>将 framework 这个目录的文件及文件夹移到现有程序的核心框架（可能用户会因为安全原因改名）</p></li><li><p>移动其他目录文件（或创建目录）</p></li><li><p>删除delete.txt清单中的文件【非必须】</p></li><li><p>执行 table.sql 操作（比较表结构，更新到最新的表结构）【非必须】</p></li><li><p>运行 update.sql 或是其他的 sql 文件【非必须】</p></li><li><p>运行 run.php 执行复杂的升级操作【非必须】</p></li><li><p>删除 _data/update/ 下的文件</p></li><li><p>基于 version.txt 更新版本记录</p></li></ol><h2>特别说明</h2><p>table.sql 必须是完整的数据表结构，才能进行升级比较，基本上这个操作比较复杂，不推荐使用</p><p>delete.txt 主要是删除文件操作，除非涉及到安全漏洞，一般我们没必要执行删除操作</p><p>update.sql 这里执行的SQL是不进行判断的，如果涉及到升级一关失败了，可能会出错（除非SQL里有写好相应的判断）</p><p>run.php 重点在这里，这个文件意味着可以完全嵌入执行PHP，可以用PHP来写数据表的增删查改，也支持文件的删除，也支持数据表结构的更新等等！一般OK程序的升级都会有这个的（纯文件覆盖更新连这个都可以忽略的）</p>', '结构将要升级的文件按原目录结构存放和程序要一起打包的文件有：version.txt：版本信息delete.txt：要删除的文件清单（一行一个文件）table.sql：新版的数据表结构文件，用', 0, '', ''),
+(1936, 1, 43, 8, 0, '<p>在 PHPOK5 版本中，我们正式引入了【开发模式】及【应用模式】两个概念。</p><p><br/></p><h2>开发模式</h2><p>顾名思义，就是用于网站开发过程中要用到的，如增加模块，扩展字段等等功能。这些功能更适合开发者对整个平台的设置，切换后效果如下，功能完整，操作比较复杂。</p><p><img src=\"https://www.phpok.com/res/201810/19/auto_10154.png\" title=\"图片\" alt=\"图片\"/><br/></p><h2>应用模式</h2><p>适用于网站做好后，需要在网站里填充内容的。</p><p><img src=\"https://www.phpok.com/res/201810/19/auto_10155.png\" title=\"图片\" alt=\"图片\"/></p><p>两都最主要的区别在于：应用模式下，不能自己扩展字段！</p><h2>开启模式切换</h2><p>配置文件：_config/global.ini.php 设置参数</p><div><div class=\"syntaxhighlighter  bash\"><pre class=\"brush:bash;toolbar:true\">develop&nbsp;=&nbsp;true</pre><p>如果此项设置为 false，后台只有应用模式！</p></div></div><p>强列建议网站上线后将此项设置为 false</p>', '在 PHPOK5 版本中，我们正式引入了【开发模式】及【应用模式】两个概念。开发模式顾名思义，就是用于网站开发过程中要用到的，如增加模块，扩展字段等等功能。这些功能更适', 0, '', ''),
+(1996, 1, 43, 68, 0, '<p>当前，实现节能减排目标面临的形势十分严峻。2006年以来，全国上下加强了节能减排工作，国务院发布了加强节能工作的决定，制定了促进节能减排的一系列政策措施，各地区、各部门相继做出了工作部署，节能减排工作取得了积极进展。但是，2006年全国没有实现年初确定的节能降耗和污染减排的目标，加大了“十一五”后四年节能减排工作的难度。更为严峻的是，2007年一季度，工业特别是高耗能、高污染行业增长过快，占全国工业能耗和二氧化硫排放近70％的电力、钢铁、有色、建材、石油加工、化工等六大行业增长20．6％，同比加快6．6个百分点。与此同时，各方面工作仍存在认识不到位、责任不明确、措施不配套、政策不完善、投入不落实、协调不得力等问题。这种状况如不及时扭转，不仅2007年节能减排工作难以取得明显进展，“十一五”节能减排的总体目标也将难以实现。<br/>　　在我国，建筑能耗占总能耗的27%以上，而且还在以每年1个百分点的速度增加。建设部统计数字显示，我国每年城乡建设新建房屋建筑面积近20亿平方米，其中80%以上为高能耗建筑；既有建筑近400亿平方米，95%以上是高能耗建筑。建筑能耗占全国总能耗的比例将从现在的27.6%快速上升到33%以上。我国新建建筑已经基本实现按节能标准设计，比例高达95.7%，而施工阶段执行节能设计标准的比例仅为53.8%。<br/>　　在不少城市，为了美观和气派，主要街区的写字楼都是玻璃幕墙，还兴建了不少大型的穹顶建筑作为公共设施。夏季紫外线照射强烈，造成光污染，冬天不挡寒，一年四季不得不开放大功率的空调来调节气温，冬天要先于其他建筑保暖，夏天要先于其他建筑供冷。据不完全统计，全国现有玻璃幕墙（非节能玻璃）面积已超过900多万平方米，而且呈持续发展趋势。玻璃幕墙在带来所谓美观的同时，也带来了能耗的成倍增长。<br/>　　国家统计局的初步统计数据表明，2007年中国能源消费总量比2006年增长7.8%。2007年我国能源消费总量26.5亿吨标准煤，增幅略有回落，比2006年增幅下降了1.5个百分点。但同时，我国能源消费总量仍然庞大，节能减排形势依然严峻。</p>', '当前，实现节能减排目标面临的形势十分严峻。2006年以来，全国上下加强了节能减排工作，国务院发布了加强节能工作的决定，制定了促进节能减排的一系列政策措施，各地区、各部门相继做出了工作部署，节能减排工作取得了积极进展。但是，2006年全国没有实现年初确定的节能降耗和污染减排的目标，加大了“十一五”后四年节能减排工作的难度。更为严', 0, '', ''),
+(1997, 1, 43, 68, 0, '<h3>htaccess是什么？</h3><p>.htaccess文件(或者&quot;分布式配置文件&quot;）,全称是Hypertext \nAccess(超文本入口)。它提供了针对目录改变配置的方法，在一个特定的文档目录中放置一个包含一个或多个指令的文件， \n以作用于此目录及其所有子目录。并且子目录中的指令会覆盖更高级目录或者主服务器配置文件中的指令。</p><p>通过htaccess文件，可以帮我们实现：网页301重定向、自定义404错误页面、改变文件扩展名、允许/阻止特定的用户或者目录的访问、禁止目录列表、配置默认文档等功能。</p><p>Unix、Linux系统或者是任何版本的Apache Web服务器都是支持.htaccess的，但是有的主机服务商可能不允许你自定义自己的.htaccess文件。</p><p><br/></p>', 'htaccess是什么？.htaccess文件(或者&quot;分布式配置文件&quot;）,全称是Hypertext \nAccess(超文本入口)。它提供了针对目录改变配置的方法，在一个特定的文档目录中放置一个包含一个或多个指令的文件， \n以作用于此目录及其所有子目录。并且子目录中的指令会覆盖更高级目录或者主服务器配置文件中的指令。通过htaccess文件，可以帮我们实现：网', 0, '', ''),
+(3384, 1, 43, 8, 0, '<p>时隔将近一年，忘却了很多东西，终究还是放不下这个博客，再次走上不归路。</p><p>由于地图的应用越来越多，在生活中所起的作用越来越大，我们的项目对地图也青睐有加。</p><p>开始一直使用Google地图，原因之一是Google地图的灰色系与我们大部分项目的设计风格相符，后来由于Google被屏蔽，很多相关资源请求都很慢，还有打不开，所以考虑再三，决定使用百度地图。</p><p>百度地图开放的API提供了很强大的功能，如果不是专业开发地图相关项目，可能大部分都用不上，用的较多应该就是标注了。</p><p><br/></p><p>百度地图API示例：http://developer.baidu.com/map/jsdemo.htm#a1_1</p><p>在调用百度API之前需要申请一个密钥，在调用的时候需要用到。</p><p>申请地址：http://developer.baidu.com/map/jshome.htm</p><p><br/></p><p>当资源准备好了，给网页中添加以下代码即可调用成功：</p><p><br/></p><p><br/></p><p><br/></p><pre class=\"brush:js;toolbar:false;\">//&nbsp;百度地图API功能\nvar&nbsp;map&nbsp;=&nbsp;new&nbsp;BMap.Map(&quot;map&quot;);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;创建Map实例,\nvar&nbsp;point&nbsp;=&nbsp;new&nbsp;BMap.Point(116.404,&nbsp;39.915);&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;创建点坐标\nmap.centerAndZoom(point,15);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;初始化地图,设置中心点坐标和地图级别。\nmap.enableScrollWheelZoom();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//启用滚轮放大缩小</pre><p><br/></p><p>上面的代码在地图API示例中都存在，其中new BMap.Map(&quot;map&quot;)中的&quot;map&quot;是需要显示地图的元素id：</p><p><br/></p><div></div><p><br/></p><p>直接在浏览器地址中输入:</p><p>http://api.map.baidu.com/api?v=2.0&amp;ak=1.2</p><p>得到的是这样一段代码：</p><pre class=\"brush:js;toolbar:false;\">(function(){&nbsp;window.BMap_loadScriptTime&nbsp;=&nbsp;(new&nbsp;Date).getTime();&nbsp;document.write(&#39;\n&#39;);})();</pre><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p>执行到该js时就会请求很多地图资源，无疑是给网站增加了很大的负荷，有可能用户根本就不看你的地图，可你却浪费了人家的时间。</p><p>同步加载方式比较简单粗暴，对于喜欢文艺范的朋友来说，需要变得优雅一点。</p><p><br/></p><p>百度API还支持异步加载</p><p><br/></p><p><br/></p><pre class=\"brush:as3;toolbar:false;\">function&nbsp;setMap()&nbsp;{\n&nbsp;&nbsp;var&nbsp;map&nbsp;=&nbsp;new&nbsp;BMap.Map(&quot;map&quot;);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;创建Map实例,\n&nbsp;&nbsp;var&nbsp;point&nbsp;=&nbsp;new&nbsp;BMap.Point(116.404,&nbsp;39.915);&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;创建点坐标\n&nbsp;&nbsp;map.centerAndZoom(point,15);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;初始化地图,设置中心点坐标和地图级别。\n&nbsp;&nbsp;map.enableScrollWheelZoom();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//启用滚轮放大缩小\n}\nfunction&nbsp;loadScript()&nbsp;{\n&nbsp;var&nbsp;script&nbsp;=&nbsp;document.createElement(&quot;script&quot;);&nbsp;//创建script标签\n&nbsp;script.src&nbsp;=&nbsp;&quot;http://api.map.baidu.com/api?v=1.2&amp;callback=setMap&quot;;&nbsp;//异步加载的关键\n&nbsp;document.body.appendChild(script);&nbsp;//添加到页面\n}\nwindow.onload&nbsp;=&nbsp;loadScript;&nbsp;//当页面加载完毕，加载百度地图</pre><p><br/></p><p><br/></p><p><br/></p><p>在上面这段代码中，script.src链接中，有一个callback属性，后面跟着要执行的方法，当js加载完毕时，执行setMap方法，但是有个问题，setMap方法必须是全局可见，是一个全局变量，这是不是有点坑，别急，优雅肯定要进行到底的。</p><p>这里就可以根据自己的需求，什么时候需要加载地图，什么时候调用loadScript方法，比如说当页面滚动到地图容器时再加载地图。</p><p>好了，把script.src的属性添加到浏览器地址栏，发现会显示以下代码：</p><p><br/></p><p><br/></p><pre class=\"brush:js;toolbar:false;\">(function(){&nbsp;\n&nbsp;&nbsp;window.BMap_loadScriptTime&nbsp;=&nbsp;(new&nbsp;Date).getTime();&nbsp;\n&nbsp;&nbsp;window.BMap=window.BMap||{};\n&nbsp;&nbsp;window.BMap.apiLoad=function(){\n&nbsp;&nbsp;&nbsp;&nbsp;delete&nbsp;window.BMap.apiLoad;\n&nbsp;&nbsp;&nbsp;&nbsp;if(typeof&nbsp;setMap==&quot;function&quot;){&nbsp;setMap();&nbsp;}\n&nbsp;&nbsp;};\n&nbsp;&nbsp;var&nbsp;s=document.createElement(&#39;script&#39;);\n&nbsp;&nbsp;s.src=&#39;http://api.map.baidu.com/getscript?v=1.2&amp;ak=&amp;services=&amp;t=20130716024057&#39;;\n&nbsp;&nbsp;document.body.appendChild(s);\n&nbsp;&nbsp;var&nbsp;link=document.createElement(&#39;link&#39;);\n&nbsp;&nbsp;link.setAttribute(&#39;rel&#39;,&#39;stylesheet&#39;);\n&nbsp;&nbsp;link.setAttribute(&#39;type&#39;,&#39;text/css&#39;);\n&nbsp;&nbsp;link.setAttribute(&#39;href&#39;,&nbsp;&#39;http://api.map.baidu.com/res/12/bmap.css&#39;);\n&nbsp;&nbsp;document.getElementsByTagName(&#39;head&#39;)[0].appendChild(link);\n})();</pre><p><br/></p><p><br/></p><p>是否顿时有一种豁然开朗的感觉，刚刚那句代码实际上干了这么多事，分别加载了js和css资源，同时处理了callback函数。</p><p>现在我们就可以自己写上面这段代码，请求相关的数据，callback函数也就不会受到全局可见的限制了，妈妈再也不用担心callback函数找不到家了。</p><p>关于百度地图的异步加载问题，就到此结束，下一章将分析一下如何添加富标注。</p><p><br/></p><p><br/></p><p><br/></p>', '时隔将近一年，忘却了很多东西，终究还是放不下这个博客，再次走上不归路。由于地图的应用越来越多，在生活中所起的作用越来越大，我们的项目对地图也青睐有加。开始一直使用Google地图，原因之一是Google地图的灰色系与我们大部分项目的设计风格相符，后来由于Google被屏蔽，很多相关资源请求都很慢，还有打不开，所以考虑再三，决定使用百度地', 0, 'https://www.sumaart.com/share/611.html', '素马设计');
 
-INSERT INTO `qinggan_list_22` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `content`, `note`, `plugin_vote`, `demo`) VALUES
-(1933, 1, 43, 68, 0, '<h2>学习前</h2><p>互联网是一门新兴产业，它的升级版：物联网，更是还在摸索中。当然，这个基本上和我们没有太多的关系（或者说目前和我们没有太多的关系）。</p><p>我们目前要做的，学好一门编程语言，用它来赚钱，养家糊口，这是一份目前看来相对的比较体面的工作。</p><h2>选择PHP</h2><p>选择PHP来做编程学习，最重要的一点就是入门槛低，请不要小看这一点，这就意味着我们这些文化水平稍低比较差的（初中，高中，中专，大专等），稍稍用点心也可以比较容易的学习并理解。据了解，中国每年超过900万学子参加高考，也同时每年都有六七百万毕业生（看下图），就业绝对是一个很严峻的问题。每年有那么多的学子毕业，还有大批像我们早早就入社会的一大群人。国家再如何用心做事，也需要我们自己努力充实自己才行。</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;</p><p style=\"text-align:center\"><img src=\"https://www.phpok.com/res/201810/23/auto_10163.jpg\" alt=\"clip_image002\" title=\"clip_image002\" width=\"402\" height=\"222\"/></p><h2>学习PHP几个阶段</h2><h3>第一阶段、学习前端知识，通过套站巩固基础知识</h3><p>Web前端开发技术主要包括三个要素：HTML、CSS和JavaScript！</p><p>学习\n HTML，CSS 应该先跟著书仔细、扎实的学一遍。然后就需要做大量的练习，做各种常规的、奇怪的、大量的布局练习来捆固、理解自己的知识。而学习 \nJavascript 首先要知道这门语言可以做什么，不能做什么，擅长做什么，不擅长做什么！在这一阶段，我们只需要记住大部分 Javascript\n 函数，做一些练习就可以了。</p><p>注意一点，WEB前端技术很零碎，HTML里的标识语言都是相互通用的，这时候，千万千万不要僵硬的记住这个标记符合是做什么，那个符号是做什么，当时你还不清楚的时候，一切以Div为王，总不会错。当然，更重要的一点就是：不要死记硬背。</p><p>当我们熟悉了这些知识点后，我们要做的就是实践，唯有通过实践，我们才能真正的巩固知识点。如何实践，最经典最实用，能使人快速进步的莫过于套站。</p><p>广告一下：PHPOK系统是一套流行的CMS系统软件，采用PHP+MySQL制作，开源自由，免费商用。并且官网上提供了大量的帮助文档及视频教程。极适合新手入门学习套站。</p><h3>第二阶段、开发插件，小小提升</h3><p>当我们经历了苦逼的套板几个月后，我们会发现，市面上大量的CMS系统并不能完全满足各个行业的需要。好在绝大多数据CMS系统都有开放了插件接口（OK系统也提供了噢），这时候我们要做的就是，参考官方手册提供的文档，自己写几个插件，像OK系统默认缺少地图插件。这时候我们就要在自己的理解基础上来完善了。这就是我们在学习PHP编程的第一个小进步！</p><h3>第三阶段、给现有CMS系统的核心模块扩展功能</h3><p>当我们有了一定的积累后，我们会越来越不满足原有CMS提供的功能，插件也满足不了我们了，这时候我们可以尝试写一些系统的功能模块对接进来。其实到了这一阶段后，基本上已经是一个老程序员了，当然我们可能还不是一个真正的大牛（会被吹成大牛，别当真就是了，吹牛嘛，谁较真谁就输了），但能满足市场上绝大多数企业的工作要求。</p><h3>第四阶段、自己开发框架，学习一门新的语言</h3><p>不是PHPer喜欢造轮子，而是不造轮子，PHPer会越来越迷茫！</p><p>而造轮子，是所有PHPer想要真正深入所必须走的一条路。因为只有造了一个轮子后，我们才会总结，才有可能往技术主管，技术团队负责人走。</p><p>深入PHPer的另一条路子就是再学一门编程语言，编程思维理解到位了，再学一门新的编程是可以很快的，不快，超慢，甚至看不懂，可以侧面反应我们对编程的认知还不够深刻，需要我们再接再厉。</p><h3>第五阶段、技术之外</h3><p>技术已不再是技术，这时候走的是架构师，是统筹，是分析，等等。说实话，我也还没有到位，所以只是简单的说下。</p>', '1、 本文仅作者个人观点，请不要对号入座或上纲上线。\n2、 本文比较适合已在社会上工作，又想学习编程首选', 0, ''),
-(1399, 1, 43, 68, 0, '<p ></p><ul><li >PTFE膜材&mdash;&mdash;耐久性强，使用寿命在30年以上</li><li >PTFE膜材&mdash;&mdash;是永久性建筑的首选材料</li><li >PTFE膜材&mdash;&mdash;超自洁，防火材料</li><li >PTFE膜材&mdash;&mdash;专业化的加工工艺，严格的施工规程<br /> 膜结构建筑中最常用的膜材料。PTFE膜材料是指在极细的玻璃纤维（3微米）编织成的基布上涂上PTFE（聚四氟乙烯）树脂而形成的复合材料。PVC膜材料是指在聚酯纤维编织的基布上涂上PVC（聚氟乙烯）树脂而形成的复合材料。</li></ul>', '', 0, ''),
-(1400, 1, 43, 68, 0, '<p ></p><ul><li >PTFE膜材&mdash;&mdash;耐久性强，使用寿命在30年以上</li><li >PTFE膜材&mdash;&mdash;是永久性建筑的首选材料</li><li >PTFE膜材&mdash;&mdash;超自洁，防火材料</li><li >PTFE膜材&mdash;&mdash;专业化的加工工艺，严格的施工规程<br /> 膜结构建筑中最常用的膜材料。PTFE膜材料是指在极细的玻璃纤维（3微米）编织成的基布上涂上PTFE（聚四氟乙烯）树脂而形成的复合材料。PVC膜材料是指在聚酯纤维编织的基布上涂上PVC（聚氟乙烯）树脂而形成的复合材料。</li></ul>', '', 0, ''),
-(1401, 1, 43, 68, 0, '<p ></p><pid=\"MyContent\"><p>  2020年东京奥运会和残奥会筹备委员会公布了作为东京奥运会主会场的新国立竞技场的概念图。</p><p>　　国际奥委会全会当地时间9月7日在阿根廷首都布宜诺斯艾利斯投票选出2020年夏季奥运会的主办城市。日本东京最终击败西班牙马德里和土耳其伊斯坦布尔，获得2020年夏季奥运会举办权。</p><p></p><p ></p><p align=\"center\"><img id=\"23416362\" align=\"center\" src=\"res/201509/02/1441090082_0_293.jpg\" width=\"602\" height=\"276\" md5=\"\" alt=\"\" /></p><p align=\"center\"></p><p ></p><p align=\"center\"><img id=\"23416363\" align=\"center\" src=\"res/201509/02/1441090082_1_175.jpg\" width=\"600\" height=\"353\" md5=\"\" alt=\"\" /></p><p align=\"center\"></p><p ></p><p align=\"center\"><img id=\"23416364\" align=\"center\" src=\"res/201509/02/1441090082_2_260.jpg\" width=\"598\" height=\"353\" md5=\"\" alt=\"\" /></p><p align=\"center\"></p><p align=\"center\"></p><p >据了解，日本新国家体育场效果图是由东京奥运会审查委员会从全球募集的众多设计图中评选而出，该设计图出自的伊拉克女建筑家扎哈-哈迪德之手，从效果图来看，日本新国家体育场外观采用了全新的流线型设计，审查委员会给予了&ldquo;内部空间感强烈，与东京都城市空间相呼应&rdquo;、&ldquo;可开闭式天窗增加了体育场的实用性&rdquo;等高度评价。</p><p >根据计算，日本新国家体育场的扩建总花费将达到1300亿日元（约人民币78亿元），预计竣工时间为2019年3月，该体育场作为2020年东京奥运会比赛主会场，届时奥运会的开幕式、闭幕式、足球、田径等项目都将在该会场举行。</p><p ></p><p></p><p></p><p></p><p></p></p><p ></p>', '', 0, ''),
-(1402, 1, 43, 68, 0, '<p ><span >2014年，建筑节能与科技工作按照党中央、国务院关于深化改革的总体要求，围绕贯彻落实党的十八大、十八届三中全会关于生态文明建设的战略部署和住房城乡建设领域中心工作，创新机制、整合资源、提高效率、突出重点、以点带面，积极探索集约、智能、绿色、低碳的新型城镇化发展道路，着力抓好建筑节能和绿色建筑发展，努力发挥科技对提升行业发展水平的支撑和引领作用。</span></p><p >　　大力推进绿色建筑发展 实施&ldquo;建筑能效提升工程&rdquo;</p><p >　　研究制订&ldquo;建筑能效提升工程路线图&rdquo;，明确中长期发展目标、原则、总体思路和策略以及政策取向，为制订&ldquo;十三五&rdquo;建筑节能规划奠定基础。</p><p >　　继续抓好《绿色建筑行动方案》的贯彻落实工作。继续实施绿色生态城区示范，加大绿色建筑和绿色基础设施建设推广力度，强化质量管理。重点做好政府办公建筑、政府投资的学校、医院、保障性住房等公益性建筑强制执行绿色建筑标准工作。</p><p >　　稳步提升新建建筑节能质量和水平。做好新修订发布的民用建筑节能设计标准贯彻实施工作。加大抓好新建建筑在施工阶段执行标准的监管力度。总结国际国内先进经验，开展高标准建筑节能示范区试点。强化民用建筑规划阶段节能审查、节能评估、民用建筑节能信息公示、能效测评标识等制度。</p><p >　　继续开展既有居住建筑节能改造。确保完成北方采暖区既有居住建筑供热计量及节能改造1.7亿平方米以上，督促完成节能改造的既有居住建筑全部实行供热计量收费。力争完成夏热冬冷地区既有居住建筑节能改造1800万平方米以上。</p><p >　　提高公共建筑节能运行管理与改造水平。进一步做好省级公共建筑能耗动态监测平台建设工作。推动学校、医院等公益性行业和大型公共建筑节能运行与管理。指导各地分类制订公共建筑能耗限额标准，研究建立基于能耗限额的公共建筑节能管理制度。加快推行合同能源管理。积极探索能效交易等节能新机制。<img src=\"res/201509/02/1441090074_0_254.jpg\" border=\"0\" alt=\"\" /></p><p >　　推进区域性可再生能源建筑规模化应用。总结光伏建筑一体化示范项目经验，扩大自发自用光伏建筑应用规模。继续抓好可再生能源示范省、市、县(区)工作，推动资源条件具备的省(区、市)针对成熟的可再生能源应用技术尽快制定强制性推广政策。</p><p >　　加强和完善绿色建筑评价管理工作。修订印发《绿色建筑评价标识管理办法》和《绿色建筑评价技术细则》。加大对绿色建筑标识评价的指导监督力度，加强绿色建筑评价标准贯彻实施培训，引导和支持地方出台鼓励绿色建筑发展的政策措施。</p><p ><span >转载钢构之窗</span></p>', '', 0, ''),
-(1403, 1, 43, 68, 0, '<p ><span >建筑钢结构的发展揭开城市发展新篇章</span></p><p ><br /><br /> 建筑钢结构产业的发展是我国经济实力和科技水平快速发展的具体体现。近年来，在高层重型钢结构、大跨度空间钢结构、轻钢结构、钢-混凝土组合结构、钢结构住宅的共同发展推动下，我国城市经济快速发展。这些钢结构的广泛运用展示和证明了它的建筑魅力，以及无限的发展空间。<br /><br /><strong>　　高层重型钢结构成为城市的重要标志<br /></strong><br />高层钢结构建筑是一个国家经济实力和科技水平的反映，也往往被当作是一个城市的重要标志性建筑。在超高层建筑中往往采用部分钢结构或全钢结构建造，超高层建筑的发展体现了我国建筑科技水平、材料工业水平和综合技术水平的提高。</p><p ><img src=\"res/201509/02/1441090069_0_873.jpg\" alt=\"\" /></p><p >　　建筑钢结构揭开城市发展新篇章</p><p >　　从20世纪80年代至今我国已建成和在建高层钢结构达80多幢，总面积约600万平方米，钢材用量60多万吨。高层、超高层建筑的楼板和屋盖具有很大的平面刚度，是竖向钢柱与剪力墙或筒体的平面抗侧力构件，能使钢柱与各竖向构件起到变形协调作用。北京和上海新建和在建高层钢结构房屋数量超过了10幢。如上海环球金融中心101层，高492米，用钢量6.5万吨，中关村金融中心建筑面积11万平方米，高度为150米，用钢量1.5万吨。今后，全国每年将有200万平方米至300万平方米高层钢结构建筑施工，用钢量约45万吨。<br /><br /><strong>　　大跨度空间钢结构持续发展</strong><br /><br />近年来，以网架和网壳为代表的空间结构继续大量发展，不仅用于民用建筑，而且用于工业厂房、候机楼、体育馆、大剧院、博物馆等。开发空间钢结构的新材料、新结构、新技术、新节点、新工艺，实现大跨度与超大跨度空间钢结构的抗风抗震工程建设。展望未来，应在重点、热点、难点的科技领域开拓和发展各类新型、适用、美观的空间钢结构，并且无论在使用范围、结构型式、安装施工工法等方面均具有中国建筑结构的特色。如杭州、成都、西安、长春、上海、北京、武汉、济南、郑州等地的飞机航站楼、机库、会展中心等建筑，都采用圆钢管、矩型钢管制作为空间桁架、拱架及斜拉网架结构，其新颖和富有现代特色的风格使它们成为所在中心城市的标志性建筑。<br /><br />据中国钢结构协会空间结构分会统计：网架和网壳的生产已趋于平稳状态，每年建造1500座，约250万平方米，用钢约7万吨，悬索和膜结构目前处于发展阶段，用量还不大，专家预计每年将以20%的速度增加。随着我国经济建设的蓬勃发展和人民生活水平的不断提高，根据实际需要将在我国研究、设计、制作和安装150米至200米，甚至将大于200米的大跨度与超跨度的空间钢结构。</p><p ><strong>　揭开轻</strong><strong>钢结构</strong><strong>新的篇章</strong><br /><br />轻钢结构是相对于重钢结构而言的，其类型有门式刚架、拱型波纹钢屋盖结构等，用钢量（不含钢筋用量）一般为每平方米30公斤。门式刚架房屋跨度一般不超过40米，个别达到70多米，单跨或多跨均用，以单层为主，也可用于二层或三层建筑，拱型波纹钢屋盖结构跨度一般为8米，每平方米自重仅为20公斤，每年增长约100万平方米，用钢4万吨。门式刚架和拱型波纹钢屋盖都有相应的设计施工规程、专用软件和通用图集。<br /><br />自进入20世纪90年代以来，我国钢结构建筑的发展十分迅速，特别是一些代表城市标志性高层建筑的建成，为钢结构在我国的发展揭开了新的一页。如世界第三高的金茂大厦已竣工，现已投入运营。据了解，世界第一高度的上海浦东环球金融中心，高460米，建筑面积为31万平方米，现正在加紧建设中。由外商投资的大连总统大厦，正在加紧筹建之中，共95层，建成后其高度将名列世界前茅。</p><p ></p><p ><img src=\"res/201509/02/1441090069_1_435.jpg\" alt=\"\" /></p><p >　　建筑钢结构的发展 揭开城市发展新篇章</p><p ><br /><br />轻钢结构的发展则更是如火如荼，特别在工业厂房的建设中则更为迅猛。从钢结构制造加施工企业数量的大幅增长就可见一斑，如上海市的钢结构制造和施工单位已由原来的几十家发展到现在的400多家，仅上海的宝钢地区就有近百家的钢结构制造厂。<br /><br /><strong>　　钢-混凝土组合结构发展迅速</strong><br /><br />钢-混凝土组合结构是充分发挥钢材和混凝土两种材料各自优点的合理组合，不但具有优良的静、动力工作性能，而且能大量节约钢材、降低工程造价和加快施工进度，同时，对环境污染也较小，符合我国建筑结构发展的方向。<br /><br />钢-混凝土组合结构在我国发展十分迅速，已广泛应用于冶金、造船、电力、交通等部门的建筑中，并以迅猛的势头进入桥梁工程和高层、超高层建筑中。<br /><br />我国已采用钢-混凝土组合结构建成了许多大型的公路拱桥，如广州丫鬓沙大桥，桥长360米，重庆万州长江大桥，跨度420米，前者为钢管混凝土拱桥，后者为劲性钢管混凝土骨架拱桥。全国建成的组合结构拱桥已超过300座。在高层建筑方面，建成了全部采用组合结构的超高层建筑--深圳赛格广场大厦，高291.6米，属世界最高的钢-混凝土组合结构。全国已建成的采用组合结构的高层建筑也已超过40幢。<br /><br />钢-混凝土组合中的薄壁型钢主要有百叶薄壁型钢和装配式薄壁型钢等形式。其中，许多类型均能与混凝土有效地结合，共同承受外界弯矩和剪力，有的类型为装配式截面，布置较为灵活，可适用于不同截面尺寸的轻钢组合梁，并可作为标准型材批量生产，但在浇混凝土之前必须用框架固定其形状，有的为箱形薄壁型钢截面，与混凝土的粘结性能较差，一般只起到模板的作用。此外，还可根据实际需要，在薄壁型钢混凝土梁中配置一定数量的纵向钢筋，以进一步提高其抗弯刚度和极限承载力。<br /><br /><strong>　　钢结构住宅的发展走向</strong><br /><br />钢结构住宅具有强度高、自重轻、抗震性能好、施工速度快、结构构件尺寸小、工业化程度高的特点，同时钢结构又是可重复利用的绿色环保材料，因此钢结构住宅符合国家产业政策的推广项目。随着国家禁用实心粘土砖和限制使用空心粘土砖政策的推出，加快住宅产业化进程、积极推广钢结构住宅体系已迫在眉睫。但我国的钢结构住宅尚处于探索起步阶段，这种体系在钢结构防火、梁柱节点做法、楼板形式、配套墙体材料、经济性及市场可接受程度上尚有许多不完善之处。<br /><br />因此，发挥钢结构住宅的自身优势，可提高住宅的综合效益：一是用钢结构建造的住宅重量是钢筋混凝土住宅重量的1/2左右，可满足住宅大开间的需要，使用率也比钢筋混凝土住宅提高4%左右。二是抗震性能好，其延性优于钢筋混凝土。从国内外震后调查结果看，钢结构住宅建筑倒塌数量是最少的。三是钢结构构件、墙板及有关部品都在工厂制作，其质量可靠，尺寸精确，安装方便，易与相关部品配合，因此，不仅减少了现场工作量，而且也缩短了施工工期。钢结构住宅工地实质上是工厂产品的组装和集成场所，再补充少量无法在工厂进行的工序项目，符合产业化的要求。四是钢结构住宅是环保型的建筑，可以回收循环利用，污染很少，符合推进住宅产业化和发展节能省地型住宅的国家政策。</p><p ></p>', '', 0, ''),
-(1404, 1, 43, 68, 0, '<p ><p id=\"zoom2\"><p><font3 face=\"Verdana\"></font3>2013中国上海国际膜结构应用与工程技术展览</p><p><font3 face=\"Verdana\"></font3>同期举办：第二十四届中国国际绿色建筑建材博览会<br /> 第十五届中国上海国际园林、景观及别墅配套设施展览会<br /> 时间：2013年8月15日-17日 地点：上海新国际博览中心（龙阳路2345号）<br /><span class=\"Apple-converted-space\"></span><br /> 组织单位： 协办单位：<br /> 中国膜结构建筑行业专委会 上海市城乡建设和交通委员会<br /> 中国钢结构协会空间结构分会 中国房地产企业管理协会<br /> 中国风景园林绿化协会 上海市房地产协 <br /> 上海市园林景观学会 媒体推广：<br /> 香港博亚国际展览集团 中国膜结构网<br /> 承办单位： 《别墅》杂志<span class=\"Apple-converted-space\"></span><br /> 上海京慕展览策划有限公司《景观设计》杂志<br /><span class=\"Apple-converted-space\"></span><br /> 目前，在全球范围内索膜结构无论在工程界还是在科研领域均处于热潮中。近年来，我国建筑市场对索膜建筑技术的需求明显有大幅度增长的趋势，国外各大著名索膜技术专业公司纷纷登陆我国，刺激了我国索膜建筑事业的发展。现代建筑环境是现代城市，现代文化与社会，现代人的生活和观念的综合表象。展现人的个性化，自娱性和多元性环境空间方面，膜结构以其独具魅力的建筑形式，必将会在环境建设中得到越来越广泛的应用。由于新材料、新形式的不断出现，膜结构具有强大的生命力，必将是21世纪建筑结构发展的主流。它的应用范围不仅限于体育或展览建筑，已向房屋建筑的各个方面扩展，因而具有广阔的发展前景。在中国，膜结构的开发与研究还刚刚起步，因此当务之急是学习并引进国外先进技术，开发生产我国自己的膜材，解决设计中存在的问题，膜结构在中国也将会得到越来越多的应用。故此，特举办&ldquo;2013中国上海国际膜结构应用与工程技术展览会&rdquo;，为行业搭建一次合作、交流的平台。</p></p></p>', '', 0, ''),
-(1405, 1, 43, 68, 0, '<p ><imgborder=\"0\" alt=\"\" width=\"913\" height=\"4495\" src=\"res/201509/02/1441090048_0_167.png\" /></p>', '', 0, ''),
-(1406, 1, 43, 68, 0, '<p >住建部发布了《城镇污水再生利用技术指南(试行)》(以下简称《技术指南》)用以指导城镇污水处理再生利用的规划、设施建设运行和管理。《技术指南》涵盖城镇污水再生利用技术路线、城镇污水再生处理技术、城镇污水再生处理工艺方案、城镇污水再生利用工程建设与设施运行维护、城镇污水再生利用风险管理等内容。</p><p ><strong >　　污水再生处理技术：常规处理、深度处理和消毒</strong></p><p >　　《技术指南》详细介绍了城镇污水再生处理技术，主要包括常规处理、深度处理和消毒。常规处理包括一级处理、二级处理和二级强化处理。主要功能为去除SS、溶解性有机物和营养盐(氮、磷)。深度处理包括混凝沉淀、介质过滤(含生物过滤)、膜处理、氧化等单元处理技术及其组合技术，主要功能为进一步去除二级(强化)处理未能完全去除的水中有机污染物、SS、色度、嗅味和矿化物等。消毒是再生水生产环节的必备单元，可采用液氯、氯气、次氯酸盐、二氧化氯、紫外线、臭氧等技术或其组合技术。</p><p >　　《技术指南》强调，城市污水再生处理系统应优先发挥常规处理在氮磷去除方面的功能，一般情况下应避免在深度处理中专门脱氮。</p><p ><strong >　　单元处理技术有机组合 保证不同用途水质要求</strong></p><p >　　《技术指南》指出，再生水的主要用途包括工业、景观环境、绿地灌溉、农田灌溉、城市杂用和地下水回灌等。污水再生处理工艺方案应根据不同用途的水质要求，选择不同的单元技术进行组合，并考虑工艺的可行性、整体流程的合理性、工程投资与运行成本以及运行管理方便程度等多方面因素，同时宜具有一定的前瞻性。《技术指南》针对各种不同用途给出了具体的工艺方案建议。对于向服务区域内多用户供水的城镇污水再生处理设施，供水水质应符合用水量最大的用户的水质要求;个别水质要求更高的用户，可自行增加处理措施，直至达到其水质要求。</p><p ><strong >　　风险管理核心：保证城镇污水再生利用的水质安全</strong></p><p >　　《技术指南》在城镇污水再生利用风险管理中强调，城镇污水再生利用必须保证再生水水源水质水量的可靠、稳定与安全，水源宜优先选用生活污水或不包含重污染工业废水在内的城市污水。要加强对污水接入城镇排水管网的许可管理，禁止含重金属、有毒有害有机物和病原微生物超标的工业或医疗等污水进入排水管网。</p><p >　　城镇污水再生利用的核心问题是水质安全。污水再生处理、存储及输配设施运营单位应具备相应的水质检测能力。另外，应制定针对重大事故和突发事件的应急预案，建立相应的应急管理体系，并按规定定期开展培训和演练。</p><p ><strong >　　城镇污水再生利用工程建设与设施运行维护</strong></p><p >　　在工程建设方面，《技术指南》指出，工程建设包括再生处理设施、再生水储存设施及再生水输配管网的建设，《技术指出》对选址、设计、设备选择、施工、验收等环节均提出指导建议。</p><p >　　在设施运行维护管理方面，《技术指南》指出，污水再生处理设施运营单位应加强对来水水质的日常监测，应依据污水排放&mdash;污水处理&mdash;再生水利用三者之间的水质关系，以及再生水用途和水质要求，建立水源水质控制目标。同时，应定期对储存设施进行检查，防止再生水泄漏或污染物入渗;定期对存储的再生水水质、水量进行监测，防止水质恶化;再生水作为城市河道或其他景观水系用水时，在汛期时，应服从统一调度，确保排水排涝畅通。</p><p ><strong >　　城镇污水再生利用 要合理布局统筹规划</strong></p><p >　　城镇污水再生利用规划是城镇排水与污水处理规划的重要内容。《技术指南》指出，污水处理厂的建设应考虑再生利用的需求，统一规划、统筹建设，对于暂时没有再生水需求的地方可以在污水处理厂规划过程中预留深度处理设施位置和接口。污水再生处理、储存和输配设施的布局应综合考虑水源和再生水用户的分布，统筹规划。再生水可通过压力管网、河道或供水车等方式输送至用户，管网的布置形式可选择环状或枝状管网，枝状管网末端需设置泄水设施;应考虑输配过程的加压、消毒及维护抢修站点用地等。再生水的储存和输配可充分利用城市景观水系。</p><p ><span >来源：中国污水处理工程网</span></p>', '', 0, ''),
-(1407, 1, 43, 68, 0, '<p ><span >摘　要: 本文主要介绍了选择中小规模城市污水处理厂工艺流程的依据、原则和方法, 并根据不同的条件推荐了适用的工艺流程。</span></p><p >关键词: 城市污水处理; 工艺流程; 原则; 方法</p><p ><br />1　前言</p><p >根据我国发展规划, 2010 年全国设市城市和建制镇的污水平均处理率不低于50% , 设市城市的污水处理率不低于60% , 重点城市的污水处理率不低于70%。为了引导城市污水处理及污染防治技术的发展, 加快城市污水处理设施的建设, 2000 年5 月国家建设部、环境保护局和科技部联合印发了《城市污水处理及污染防治技术政策》。本文将结合该政策的内容, 主要研究日处理能力为10 万m 3 以下, 特别是1～ 5 万m 3.d 规模的城市污水处理厂适用的各种处理工艺流程的比较和选择, 从而确定不同条件下适用的较优工艺流程。</p><p >1　中小规模城市污水处理厂工艺流程概述</p><p >二级生物处理指利用水中的微生物来去除污水中的碳源有机物, 二级强化生物处理是指除利用微生物来去除污水中的碳源有机物外, 还需去除污水中的<span class=\"keyword\">氮</span>和磷。城市污水二级及二级强化处理一般以好氧生物处理为主, 好氧处理可分为活性污泥法和生物膜法两大类。<br />活性污泥法是利用河川自净原理, 人工创建的生化净化污水处理方法。中小规模城市污水厂适用的方法主要有AB 法、SBR 法、氧化沟法、AO 法、 A 2O 法、水解好氧法等。</p><p >生物膜法是利用土壤自净原理发展起来的, 通过附着在各种载体上的生物膜来处理污水的好氧生物处理法, 主要包括生物转盘、生物滤池和生物接触氧化法等工艺。</p><p >2　污水处理工艺流程选择的依据和原则</p><p >2. 1　污水处理级别的确定</p><p >选择污水处理工艺流程时首先应按受纳水体的性质确定出水水质要求, 并依此确定处理级别, 排水应达到国家排放标准(GB8978- 1996)。<br />设市城市和重点流域及水资源保护区的建制镇必须建设二级污水处理设施; 受纳水体为封闭或半封闭水体时, 为防治富营养化, 城市污水应进行二级强化处理, 增强除磷脱<span class=\"keyword\">氮</span>的效果; 非重点流域和非水源保护区的建制镇, 根据当地的经济条件和水污染控制要求, 可先行一级强化处理, 分期实现二级处理。</p><p >2. 2　工艺流程选择应考虑的技术因素</p><p >处理规模; 进水水质特性, 重点考虑有机物负荷、<span class=\"keyword\">氮</span>磷含量; 出水水质要求, 重点考虑对<span class=\"keyword\">氮</span>磷的要求以及回用要求; 各种污染物的去除率; 气候等自然条件, 北方地区应考虑低温条件下稳定运行; 污泥的特性和用途。 2. 3　工艺流程选择应考虑的技术经济因素〔3〕批准的占地面积, 征地价格; 基建投资; 运行成本; 自动化水平, 操作难易程度, 当地运行<span class=\"keyword\">管</span>理能力。</p><p >2. 4　工艺流程选择的原则</p><p >保证出水水质达到要求; 处理效果稳定, 技术成熟可靠、先进适用; 降低基建投资和运行费用, 节省电耗; 减小占地面积; 运行<span class=\"keyword\">管</span>理方便, 运转灵活; 污泥需达到稳定; 适应当地的具体情况; 可积极稳妥地选用污水处理新技术。</p><p >3　污水处理工艺流程的比较和选择方法〔2、3、4、5〕</p><p >在选定污水处理工艺流程时可以采用下面介绍的一种或几种比较方法。</p><p >3. 1　技术比较</p><p >在方案初选时可以采用定性的技术比较, 城市污水处理工艺应根据处理规模、水质特性、排放方式和水质要求、受纳水体的环境功能以及当地的用地、气候、经济等实际情况和要求, 经全面的技术比较和初步经济比较后优选确定。</p><p >方案选择比较时需要考虑的主要技术经济指标包括: 处理单位水量投资、削减单位污染物投资、处理单位水量电耗和成本、削减单位污染物电耗和成本、占地面积、运行性能可靠性、<span class=\"keyword\">管</span>理维护难易程度、总体环境效益等。</p><p >定性比较时可以采用有定论的结论和经验值等, 而不必进行详细计算。几种常用生物处理方法的比较见表1。</p><img alt=\"\" src=\"res/201509/02/1441090034_0_765.jpg\"/><p ><br />3. 2　经济比较</p><p >在选定最终采用的工艺流程时, 应选择2～ 3 种工艺流程进行全面的定量化的经济比较。可以采用年成本法或净现值法进行比较。</p><p >3. 2. 1　年成本法。将各方案的基建投资和年经营费用按标准投资收益率, 考虑复利因素后, 换算成使用年限内每年年末等额偿付的成本- 年成本, 比较年成本最低者为经济可取的方案。</p><p >3. 2. 2　净现值法。将工程使用整个年限内的收益和成本(包括投资和经营费) 按照适当的贴现率折算为基准年的现值, 收益与成本现行总值的差额即净现值, 净现值大的方案较优。</p><p >3. 2. 3　多目标决策法。多目标决策是根据模糊决策的概念, 采用定性和定量相结合的系统评价法。按工程特点确定评价指标, 一般可以采用5 分制评分, 效益最好的为5 分, 最差的为1 分。同时, 按评价指标的重要性进行级差量化处理(加权) , 分为极重要、很重要、重要、应考虑、意义不大五级。取意义不大权重为1 级, 依次按2n- 1 进级, 再按加权数算出评价总分, 总分最高的为多目标系统的最佳方案。评价指标项目及权重应根据项目具体情况合理确定。</p><p >例如确定某城市污水处理厂工艺流程时采用了表2 所示的评价指标及权重:</p><img alt=\"\" src=\"res/201509/02/1441090034_1_947.jpg\"/><p >进行工艺流程选择时, 可以先根据污水处理厂的建设规模, 进水水质特点和排放所要求的处理程度, 排除不适用的处理工艺, 初选2～ 3 种流程, 然后再针对初选的处理工艺进行全面的技术经济对比后确定最终的工艺流程。</p><p >4　中小规模城市污水厂处理工艺流程选择的探讨〔6、7、8〕</p><p >4. 1　根据进水有机物负荷选择处理工艺</p><p >进水BOD5 负荷较高(如&gt; 250m g.L ) 或生化性能较差时, 可以采用AB 法或水解- 生物接触氧化法、水解- SBR 法等; 进水BOD5 负荷较低时可以采用SBR 法或常规活性污泥法等。</p><p >4. 2　根据处理级别选择处理工艺</p><p >二级处理工艺可选用氧化沟法、SBR 法、水解好氧法、AB 法和生物滤池法等成熟工艺技术, 也可选用常规活性污泥法; 二级强化处理要求除磷脱<span class=\"keyword\">氮</span>, 工艺流程除可以选用AO 法、A 2O 法外, 也可选用具有除磷脱<span class=\"keyword\">氮</span>效果的氧化沟法、CA SS 法和水解- 接触氧化法等; 在投资有限的非重点流域县城, 可以先建设一级强化处理厂, 采用水解工艺、生物絮凝吸附(即AB 法的A 段) 和混凝沉淀等物化强化一级处理, 待资金等条件成熟后再续建后续生物处理工艺, 形成水解好氧法、AB 法等完整工艺。</p><p >4. 3　根据回用要求选择处理工艺</p><p >严重缺水地区要求污水回用率较高, 应选择 BOD5 和SS 去除率高的污水处理工艺, 例如采用氧化沟或SBR 工艺, 使BOD5 和SS 均达到20m g.L 以下甚至更低, 则回用处理只需要直接过滤就可以达到生活杂用水标准, 整个污水处理及回用厂流程非常简捷、经济。</p><p >如果出水将在相当长的时期内用于农灌, 解决缺水问题, 则处理目标可以以去除有机物为主, 适当保留肥效。</p><p >4. 4　根据气候条件选择处理工艺</p><p >冰冻期长的寒冷地区应选用水下曝气装置, 而不宜采用表面曝气; 生物处理设施需建在室内时, 应采用占地面积小的工艺, 如UN ITAN K 等; 水解池对水温变化有较好的适应性, 在低水温条件下运行稳定, 北方寒冷地区可选择水解池作为预处理; 较温暖的地区可选择各种氧化沟和SBR 法。</p><p >4. 5　根据占地面积选择处理工艺</p><p >地价贵、用地紧张的地区可采用SBR 工艺(尤其是UN TAN K) ; 在有条件的地区可利用荒地、闲地等可利用的条件, 采用各种类型的土地处理和稳定塘等自然净化技术, 但在北方寒冷地区不宜采用。用水解池作为稳定塘的预处理, 可以改善污水的生化性能, 减小稳定塘的面积。</p><p >4. 6　根据基建投资选择处理工艺</p><p >为了节省投资, 应尽量采用国内成熟的, 设备国产化率较高的工艺。</p><p >基建投资较小的处理工艺有水解- SBR 法、 SBR 法及其变型、水解- 活性污泥法等。用水解池作预处理可以提高对有机物的去除率, 并改善后续二级处理构筑物污水的生化性能, 可使总的停留时间比常规法少30%。采用水解- 好氧处理工艺高效节能, 其出水水质优于常规活性污泥法。<br />氧化沟法在用于以去除碳源污染物为目的二级处理时, 与各种活性污泥法相比, 优势不明显, 但用于还须去除<span class=\"keyword\">氮</span>磷的二级强化处理时, 则投资和运行费用明显降低。</p><p >4. 7　根据运行费用选择处理工艺</p><p >节省运行费用的途径有降低电耗、减少污泥量、减少操作<span class=\"keyword\">管</span>理人员等。电耗较低的流程有自然净化、氧化沟、生物滤池、水解好氧法等, 污泥量较少的有氧化沟和SBR 等, 自动化程度高、<span class=\"keyword\">管</span>理简单的流程有SBR 等。综合比较, 在基建费相当的条件下, 运行费用较低的处理方法有氧化沟、SBR、水解好氧法等。</p><p >4. 8　污泥处理</p><p >中小规模城市污水处理厂产生的污泥可进行堆肥处理和综合利用, 采用延时曝气的氧化沟法、SBR 法等技术的污水处理设施, 污泥需达到稳定化。</p><p >4. 9　可以推广应用的新工艺</p><p >在尽量采用成熟可靠工艺流程的同时, 也要研究开发适用于北方地区中小污水厂的新工艺, 或审慎采用国内外新开发的高效经济的先进工艺技术。城市污水处理新工艺应向简单、高效、经济的方向发展, 各类构筑物从工艺和结构上都应向合建一体化发展。</p><p >目前可以重点考虑应用和推广使用的流程有一体化氧化沟技术、CA SS 、UN ITAN K 和膜法等。</p><p >5　结束语</p><p >城市污水处理工艺应根据污水水质特性、排放水质要求, 以及当地的用地、气候、经济等实际情况, 经全面的技术经济比较后优选确定。处理水量在10 万m 3 以下的城市污水处理厂可以优先考虑的处理工艺有水解- SBR 法、SBR 法、氧化沟法、AB 法、水解- 接触氧化法、AO 法等, 如果条件适宜也可采用稳定塘等自然净化工艺。来源：谷腾水网</p><pid=\"leftDiv\" ><pid=\"left2\" class=\"itemFloat\" ><br /></p></p><pid=\"rightDiv\" ><pid=\"right2\" class=\"itemFloat\" ><br /></p></p><p></p>', '', 0, ''),
-(1408, 1, 43, 68, 0, '<p ><p ><pclass=\"MsoNormal\" align=\"left\"><span >钢结构因其自身优点，在桥梁、工业厂房、高层建筑等现代建筑中得到广泛应用。在大量的工程建设过程中，钢结构工程也暴露出不少质量通病。本文主要针对辽宁近年来在钢结构主体验收及竣工验收中的常见问题及整改措施谈一些看法。</span></p><pclass=\"MsoNormal\" align=\"center\"><b ><span >一、钢结构工程施工过程中的部分问题及解决方法</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><b ><span lang=\"EN-US\">1</span></b><b ><span >、构件的生产制作问题</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><span >门式钢架所用的板件很薄，最薄可用到</span><st1:chmetcnv w:st=\"on\" tcsc=\"0\" numbertype=\"1\" negative=\"False\" hasspace=\"False\" sourcevalue=\"4\" unitname=\"毫米\"><span lang=\"EN-US\">4</span><span >毫米</span></st1:chmetcnv><span >。多薄板的下料应首选剪切方式而避免用火焰切割。因为用火焰切割会使板边产生很大的波浪变形。目前</span><span lang=\"EN-US\">H</span><span >型钢的焊接大多数厂家均采用埋弧自动焊或半自动焊。如果控制不好宜发生焊接变形，使构件弯曲或扭曲。</span></p><pclass=\"MsoNormal\" align=\"left\"><b ><span lang=\"EN-US\">2</span></b><b ><span >、柱脚安装问题</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(1)</span><span >预埋件</span><span lang=\"EN-US\">(</span><span >锚栓</span><span lang=\"EN-US\">)</span><span >问题现象：整体或布局偏移；标高有误；丝扣未采取保护措施。直接造成钢柱底板螺栓孔不对位，造成丝扣长度不够。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >措施：钢结构施工单位协同土建施工单位一起完成预埋件工作，混凝土浇捣之前。必须复核相关尺寸及固定牢固。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(2)</span><span >锚栓不垂直现象：框架柱柱脚底板水平度差，锚栓不垂直，基础施工后预埋锚栓水平误差偏大。柱子安装后不在一条直线上，东倒西歪，使房屋外观很难看，给钢柱安装带来误差，结构受力受到影响，不符合施工验收规范要求。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >措施：锚栓安装应坚持先将底板用下部调整螺栓调平，再用无收缩砂浆二次灌浆填实，国外此法施工。所以锚栓施工时，可采用出钢筋或者角钢等固定锚栓。焊成笼状，完善支撑，或采取其他一些有效措施，避免浇灌基础混凝土时锚栓移一位。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(3)</span><span >锚栓连接问题现象：柱脚锚栓未拧紧，垫板未与底板焊接；部分未露</span><span lang=\"EN-US\">2</span><span >～</span><span lang=\"EN-US\">3</span><span >个丝扣的锚栓。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >措施：应采取焊接锚杆与螺帽；在化学锚栓外部，应加厚防火涂料与隔热处理，以防失火时影响锚固性能；应补测基础沉降观测资料。</span></p><pclass=\"MsoNormal\" align=\"left\"><b ><span lang=\"EN-US\">3</span></b><b ><span >、连接问题</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(1)</span><span >高强螺栓连接</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >螺栓装备面不符合要求，造成螺栓不好安装，或者螺栓紧固的程度不符合设计要求。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >原因分析：</span></p><pclass=\"MsoNormal\" align=\"left\"><span >①表面有浮锈、油污等杂质，螺栓孔璧有毛刺、焊瘤等。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >②螺栓安装面虽经处理仍有缺陷。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >解决方法：</span></p><pclass=\"MsoNormal\" align=\"left\"><span >①高强螺栓表面浮锈、油污以及螺栓孔璧毛病，应逐个清理干净。使用前必须经防锈处理，使拼装用的螺栓，不得在正式拼装时使用。螺栓应由专人保管和发放。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >②处理装配面应考虑到施工安装顺序，防止重复进行，并尽量在吊装之前处理。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >螺栓丝扣损伤，螺杆不能自由旋入螺母，影响螺栓的装配。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >原因分析：丝扣严重锈蚀。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >解决方法：</span></p><pclass=\"MsoNormal\" align=\"left\"><span >①使用前螺栓应进行挑选，清洗除锈后作预配。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >②丝扣损伤的螺栓不能做临时螺栓使用，严禁强行打进螺孔。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >③预先选配的螺栓组件应按套存放，使用时不得互换。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(2)</span><span >现场焊缝现象：质量难以保证；设计要求全焊透的一、二级焊缝未采用超声波探伤；楼面主梁与柱未施焊；未采用引弧板施焊。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >解决方法：钢结构施焊前，对焊条的合格证进行检查，按设计要求选用焊含条，按说明书和操作规程要求使用焊条，焊缝表面不得有裂纹、焊瘤，一、二级焊缝不得有气孔、夹渣、弧坑裂纹，一级焊缝不得有咬边、未满焊等缺陷，一、二级焊缝按要求进行无损检测，在规定的焊缝及部位要检查焊工的钢印。不合格的焊缝不得擅自处理，定出修改工艺后再处理，同一部位的焊缝返修次数不宜超过两次。</span></p><pclass=\"MsoNormal\" align=\"left\"><b ><span lang=\"EN-US\">4</span></b><b ><span >、构件的变形问题</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(1)</span><span >构件在运输时发生变形，出现死弯或缓弯，造成构件无法进行安装。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >原因分析：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >构件制作时因焊接产生的变形，一般呈现缓弯。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >构件待运时，支垫点不合理，如上下垫木不垂直等或堆放场地发生沉陷，使构件产生死弯或缓变形。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">3)</span><span >构件运输中因碰撞而产生变形，一般呈现死弯。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >预防措施：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >构件制作时，采用减小焊接变形的措施。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >组装焊接中，采用反方向变形等措施，组装顺序应服从焊接顺序，使用组装胎具，设置足够多的支架，防止变形。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">3)</span><span >待运及运输中，注意垫点的合理配置。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >解决方法：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >构件死弯变形，一般采用机械矫正法治理。即用千斤顶或其他工具矫正或辅以氧乙炔火焰烤后矫正。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >结构发生缓弯变形时，采取氧乙炔火焰加热矫正。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(2)</span><span >钢梁构件拼装后全长扭曲超过允许值，造成钢梁的安装质量不良。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >原因分析：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >拼接工艺不合理。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >拼装节点尺寸不符合设计要求。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >解决方法：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >拼装构件要设拼装工作台，定为焊时要将构件底面找平，防止翘曲。拼装工作台应各支点水平，组焊中要防止出现焊接变形。尤其是梁段或梯道的最后组装，要在定位焊后调整变形，注意节点尺寸要符合设计，否则易造成构件扭曲。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >自身刚性较差的构件，翻身施焊前要进行加固，构件翻身后也应进行找平，否则构件焊后无法矫正。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(3)</span><span >构件起拱，数值大干或小于设计数值。构件起拱数值小时，安装后梁下挠；起拱数值大时，易产生挤面标高超标。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >原因分析：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >构件尺寸不符合设计要求。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >架设过程中，未根据实测值与计算值的出入进行修正。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">3)</span><span >跨径小的桥梁，起拱度较小，拼装时忽视。</span></p><pclass=\"MsoNormal\" align=\"left\"><span >解决方法：</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">1)</span><span >严格按钢结构构件制作允许偏差进行各步检验。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">2)</span><span >在架设过程中，杆件且装完毕，以及工地接头施工结束后，都进行上拱度测量，并在施工中对其他进行调整。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">3)</span><span >在小拼装过程，应严格控制累计偏差，注意采取措施，消除焊接收缩量的影响。</span></p><pclass=\"MsoNormal\" align=\"left\"><b ><span lang=\"EN-US\">5</span></b><b ><span >、钢结构安装问题</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(1)</span><span >钢柱底脚有空隙预控措施钢柱吊装前，应严格控制基础标高，测量准确，并按其测量值对基础表面仔细找平；如采用二次灌浆法，在柱脚底板开浇灌孔</span><span lang=\"EN-US\">(</span><span >兼作排气孔</span><span lang=\"EN-US\">)</span><span >，利用钢垫板将钢柱底部不平处垫平，并预先按设计标高安置好柱脚支座钢板，然后采取二次灌浆。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(2)</span><span >钢柱位移预控措施浇筑混凝土基础前，应用定型卡盘将预埋螺栓按设计位置卡住，以防浇灌混凝土时发生位移；柱低钢板预留孔应放大样，确定孔位后再作预留孔。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\">(3)</span><span >柱垂直偏差过大预控措施钢柱应按计算的吊挂点吊装就位，且必须采用二点以上的吊装方法，吊装时应进行临时固定，以防吊装变形；柱就位后应及时增设临时支撑；对垂直偏差，应在固定前予以修正。</span></p><pclass=\"MsoNormal\" align=\"center\"><b ><span >二、结论</span><span lang=\"EN-US\"><o:p></o:p></span></b></p><pclass=\"MsoNormal\" align=\"left\"><span >只有在施工管理过程中，加强对技术人员、工人对规范标准和操作规程的培训学习，切实做好开工前的准备，加强施工过程中的质量控制和监督检查，积极发挥施工、监理等各方面的作用，做好各分项工程的工序验收工作，才能保证钢结构工程的整体质量。</span></p><pclass=\"MsoNormal\" align=\"left\"><span lang=\"EN-US\"><o:p></o:p></span></p><pclass=\"MsoNormal\" align=\"left\"><span >信息来源：中国焊接网</span><spanlang=\"EN-US\"><o:p></o:p></span></p></p></p>', '', 0, ''),
-(1409, 1, 43, 68, 0, '<p ></p><p ></p><p >绿色建筑评价标准<br />　　<br />　　1、在建筑的全寿命周期内，最大限度地节约资源(节能、节地、节水、节材)、保护环境和减少污染，为人们提供健康、适用和高效的使用空间，与自然和谐共生的建筑。<br />　　<br />　　2、节能能源：充分利用太阳能，采用节能的建筑围护结构以及采暖和空调，减少采暖和空调的使用。根据自然通风的原理设置风冷系统，使建筑能够有效地利用夏季的主导风向。建筑采用适应当地气候条件的平面形式及总体布局<br />　　<br />　　3、可再生能源：指从自然界获取的、可以再生的非化石能源，包括风能、太阳能、水能、生物质能、地热能和海洋能等。<br />　　<br />　　4、节约资源：在建筑设计、建造和建筑材料的选择中，均考虑资源的合理使用和处置。要减少资源的使用，力求使资源可再生利用。节约水资源，包括绿化的节约用水。<br />　　<br />　　5、可再利用材料：指在不改变所回收物质形态的前提下进行材料的直接再利用，或经过再组合、再修复后再利用的材料。<br />　　<br />　　6、可再循环利用材料：指已经无法进行再利用的产品通过改变其物质形态，生产成为另一种材料，使其加入物质的多次循环利用过程中的材料。<br />　　<br />　　7、以节约和适用的原则确定绿色建筑标准。<br />　　<br />　　8、绿色建筑建设应选用质量合格并符合使用要求的材料和产品，严禁使用国家或地方管理部门禁止、限制和淘汰的材料和产品。<br />　　<br />　　9、回归自然：绿色建筑外部要强调与周边环境相融合，和谐一致、动静互补，做到保护自然生态环境。<br />　　<br />　　10：建筑场地选址无洪灾、泥石流及含氡土壤的威胁，建筑场地安全范围内无电磁辐射危害和火、爆、有毒物质等危险源。<br />　　<br />　　11、住区建筑布局保证室内外的日照环境、采光和通风的要求，满足《城市居住区规划设计规范》GB50180中有关住宅建筑日照标准的要求。<br />　　<br />　　12、绿化种植适应当地气候和土壤条件的乡土植物，选用少维护、耐候性强、病虫害少，对人体无害的植物。<br />　　<br />　　13、建筑内部不使用对人体有害的建筑材料和装修材料。<br />　　<br />　　14、绿色建筑应尽量采用天然材料。建筑中采用的木材、树皮、竹材、石块、石灰、油漆等，要经过检验处理，确保对人体无害。<br />　　<br />　　良好的居住环境对室内和室外的要求都很高，绿色建筑能给人舒适和健康的生活居住环境，绿色建筑的建造并不等于高价和高成本，也不仅仅限于新建筑，最主要的是要环保、无害。</p><p ></p><p >　来源:0731房产网综合整理</p>', '', 0, ''),
-(1410, 1, 43, 68, 0, '<p ><strong>美国回收材料打造&ldquo;资源保护屋&rdquo;</strong><p>　　美国政府的《超级基金法》规定&ldquo;任何生产有工业废弃物的企业，必须自行妥善处理，不得擅自随意倾卸&rdquo;。该法规从源头上限制了建筑垃圾的产生量，促使各企业自觉寻求建筑垃圾资源化利用途径。</p><p>　　近一段时间以来，美国住宅营造商协会开始推广一种&ldquo;资源保护屋&rdquo;，其墙壁就是用回收的轮胎和铝合金废料建成的，屋架所用的大部分钢料是从建筑工地上回收来的，所用的板材是锯末和碎木料加上20%的聚乙烯制成，屋面的主要原料是旧的报纸和纸板箱。这种住宅不仅积极利用了废弃的金属、木料、纸板等回收材料，而且比较好地解决了住房紧张和环境保护之间的矛盾。</p><p>　<strong>　法国将废物整体管起来</strong></p><p>　　法国CSTB公司是欧洲首屈一指的&ldquo;废物及建筑业&rdquo;集团，专门统筹在欧洲的&ldquo;废物及建筑业&rdquo;业务。公司提出的废物管理整体方案有两大目标：一是通过对新设计建筑产品的环保特性进行研究，从源头控制工地废物的产量；二是在施工、改善及清拆工程中，对工地废物的生产及收集作出预测评估，以确定相关回收应用程序，从而提升废物管理层次。</p><p>　　该公司以强大的数据库为基础，使用软件工具对建筑垃圾进行从产生到处理的全过程分析控制，以协助相关机构针对建筑物使用寿命期的不同阶段作出决策。例如，可评估建筑产品的整体环保性能；可依据有关执行过程、维修类别，以及不同的建筑物清拆类型，对某种产品所产生的废物量进行评估；可向顾问人员、总承建商，以及承包机构(客户)，就某一产品或产品系列对环保及健康的影响提供相关概览资料；可以对废物管理所需的程序及物料作出预测；可根据废物的最终用途或质量制订运输方案；就任何使用&ldquo;再造&rdquo;原料的新工艺，在技术、经济及环境方面的可行性作出评定，而且可估计产品的性能。</p><p><strong>　　荷兰有效分类建筑垃圾</strong></p><p>　　在荷兰，目前已有70%的建筑废物可以被循环再利用，但是荷兰政府希望将这一比例增加到90%。因此，他们制定了一系列法律，建立限制废物的倾卸处理、强制再循环运行的质量控制制度。荷兰建筑废物循环再利用的重要副产品是筛砂。由于砂很容易被污染，其再利用是有限制的。针对于此，荷兰采用了砂再循环网络，由拣分公司负责有效筛砂，即依照其污染水平进行分类，储存干净的砂，清理被污染的砂。</p><p>　　总体来讲，上述这些国家大多施行的是&ldquo;建筑垃圾源头削减策略&rdquo;，即在建筑垃圾形成之前，就通过科学管理和有效的控制措施将其减量化；对于产生的建筑垃圾则采用科学手段，使其具有再生资源的功能。</p><p>　　而对于已经过预处理的建筑垃圾，还有一些国家则运往&ldquo;再资源化处理中心&rdquo;，采用焚烧法进行集中处理，如德国西门子公司开发的干馏燃烧垃圾处理工艺，可使垃圾中的各种可再生材料十分干净地被分离出来，实现回收再利用，对于处理过程中产生的燃气则用于发电，每吨垃圾经干馏燃烧处理后仅剩下2到3公斤的有害重金属物质，从而有效地解决了垃圾占用大片耕地的问题。</p><p><strong>　　日本立法实现建筑垃圾循环利用</strong></p><p>　　由于国土面积小、资源相对匮乏，日本的构造原料价格比欧洲都要高。因此日本人将建筑垃圾视为&ldquo;建筑副产品&rdquo;，十分重视将其作为可再生资源而重新开发利用。比如港埠设施，以及其他改造工程的基础设施配件，都可以利用再循环的石料，代替相当数量的自然采石场砾石材料。</p><p>　　1977年，日本政府就制定了《再生骨料和再生混凝土使用规范》，并相继在各地建立了以处理混凝土废弃物为主的再生加工厂，生产再生水泥和再生骨料。1991年，日本政府又制定了《资源重新利用促进法》，规定建筑施工过程中产生的渣土、混凝土块、沥青混凝土块、木材、金属等建筑垃圾，必须送往&ldquo;再资源化设施&rdquo;进行处理。日本对于建筑垃圾的主导方针是：尽可能不从施工现场排出建筑垃圾；建筑垃圾要尽可能重新利用；对于重新利用有困难的则应适当予以处理</p></p>', '', 0, ''),
-(1411, 1, 43, 68, 0, '<p >深圳宝安国际机场 T3 航站楼概念方案为美国兰德隆布朗公司和杨莫岚设计公司联合体设计，在此方案的基础上，通过国际招标，选定意大利 mFUKSASarch 建筑事务所的建筑方案，北京市建筑设计研究院中标为国内配合单位。在 2006~2008年期间，扩建工程指挥部进行了填海工程，以配合 T3航站楼的建设。T3航站楼南北长 1128m、东西宽 640m，建筑面积达55 万平方米左右，为目前国内最大单体面<br />积的航站楼之一。 T3 航站楼主体结构采用钢筋混凝土框架结构，整个航站楼的混凝土结构共分为 10 块。屋顶为不规则曲面，采用网壳结构。屋顶结构共分七块，包括主指廊D、次指廊G和H、交叉指廊C、过渡区B以及大厅A。典型屋顶结构的特点如下：<br />（1） 主指廊D块和次指廊G、 H块屋顶 这三部分屋顶网壳均采用斜交斜放的双层筒壳， 网壳曲面延伸到二层楼面 （标<br />高4.4m），与下部混凝土支承结构对应，屋顶结构每隔18m设一支座铰接于混凝土异形柱，并且在与支座对应的屋顶部位，<br />设置两片加强桁架作为主要受力体系。沿结构横向剖面，支座间距均为44.8m，主指廊最宽处为61.1m左右，次指廊最宽处<br />为 54.9m 左右。网壳主网格尺寸为 5.4m，为配合屋顶幕墙的需要，还布置有加密的檩条，檩条与主网格之间铰接。因屋顶<br />曲面造型的需要， 沿筒壳纵向和横向均变厚度，主指廊 （D块） 网壳最厚处为8.8m， 次指廊（G和H块） 网壳最厚处为4.2m。<br />因筒壳面内刚度较大且筒壳较长，为减小屋顶的温度内力，沿筒壳的纵向布置了弹簧支座。同时弹簧支座也减小了由于屋顶<br />分块和混凝土分块不对应、下部混凝土和上部筒壳变形不一致造成的上、下部相互影响。 <br />（2）交叉指廊C块屋顶 交叉指廊部分的屋顶由主指廊和次指廊屋顶交叉形成， 也是采用带加强桁架的斜交斜放网壳<br />结构。其中主指廊方向屋顶长度为162m，包括4榀落在2层楼面上（标高＋4.4m）的加强桁架；次指廊方向长度为199m，包括 10 榀落在 2 层楼面上的加强桁架。另外沿主指廊方向存在 108m 跨度的室内大厅，为此在室内大厅布置了 4 个落在三层楼面（标高+8.8m）的摇摆柱，在摇摆柱上方沿主指廊方向设置了两榀加强桁架。为提高结构刚度、减小关键加强桁架的内力（红色虚线圈出<br />的为加强桁架），设置16根水平拉杆将加强桁架与3层楼面的混凝土结<br />构拉接。 <br />（3）大厅屋顶A块 大厅屋顶跨越E、A和F共三块混凝土结构，东西方向长约640m，南北方向宽约320m，投影面积约为12.3万m2。屋顶支承结构的柱网为36m&times;36m和36m&times;27m两种，由钢筒体、框架柱、<br />摇摆柱以及一榀加强拱架组成屋顶支承体系，承担屋顶的竖向荷载、水平荷载以及幕墙的各种荷载。这里的框架柱均下端与混凝土结构铰接、上端与屋顶网架刚接，这种柱子的受力特点也与柱子下端横截面小、上端横截面大的截面形式一致。屋顶结构采用斜交斜放曲面网架，网格尺寸5.4m，网架高度3.6m。另外与屋顶支承体系的柱网配合，还设有正交正放加强桁架，加强桁架的网格尺寸为4.5m。 目前该工程正在设计中，还有很多问题需要研究，例如满足建筑外观要求、具有一定减震、减小温度内力作用的弹簧铰<br />支座。在长 640m、宽 320m的大厅区采用钢筒体+上端刚接、下端铰接的框架柱+摇摆柱的结构体系，有很多问题都是未遇<br />见的、其设计标准也需要进行性能化研究。</p><p ></p><p ></p><p ><em>转载</em></p>', '', 0, ''),
-(1412, 1, 43, 68, 0, '<p ><img src=\"res/201509/02/1441090016_0_396.jpg\" border=\"0\" alt=\"\" /></p>', '', 0, ''),
-(1413, 1, 43, 68, 0, '<p >在新中国成立60周年之际，建设科技正处于大发展的阶段。在科学发展观指导下，可持续发展的理念日益深入人心，建设行业的各领域无不突出着节能的宗旨，建筑节能成为当今建设科技发展的重要主题，并不断进步，与建筑节能有关的科学技术取得了丰硕成果。高度重视建筑节能，正是今天建设科技和建设行业的一大特点。<p>　<strong>　21世纪建设科技的主旋律</strong></p><p>　　我国的建筑节能，起步于上世纪80年代。改革开放后，建筑业在墙体改革及新型墙体材料方面有了发展。与此同时，一批高能耗的高档旅馆、公寓和商场出现了。如何在发展中降低建筑能耗，使之与当时能源供应较紧缺的现状相协调，成为相关部门关注的重点。为此，建筑节能工作首先从减少采暖能耗开始，1986年建设部颁布了《民用建筑节能设计标准》，要求新建居住建筑，在1980年当地通用设计能耗水平基础上节能30%%，《民用建筑节能设计标准》是我国第一部建筑节能设计标准，它的颁布，开启了我国建筑节能新阶段。以它提出的指标为目标，建筑节能的设计、节能技术纷纷发展起来，一系列的标准和法规先后制定。</p><p>　　20世纪90年代，建筑节能的地位进一步提高，节能工作有效开展。1990年，建设部提出&ldquo;节能、节水、节材、节地&rdquo;的战略目标。1994年在《中国21世纪议程》中，建筑节能作为项目之一被郑重提出;从1994年起，国家对北方节能建筑实施免征固定资产投资方向调节税，一批节能小区相继建成。1995年《民用建筑节能设计标准》修订并于次年执行，修订后的《民用建筑节能设计标准》将第二阶段建筑节能指标提高到50%%。同年，建设部发布《建筑节能&ldquo;九五&rdquo;计划和2010年规划》，这个专门的规划以及1996年9月建设部发布的《建筑节能技术政策》和《市政公用事业节能技术政策》，为其后建筑节能的发展明确了方向，同时也表明建筑节能地位的空前提高。建筑节能的地位最终由1998年1月1日实施的《中华人民共和国节约能源法》确定下来，建筑节能成为这部法律中明确规定的内容。</p><p>　　21世纪的到来，在科学发展观的指引下，建设领域明确了必须走资源节约型、环境友好型的新型工业化道路，建设科技工作将&ldquo;四节一环保&rdquo;作为科技攻关的主要方向，取得了明显效果。目前我国已初步建立起了以节能50%%为目标的建筑节能设计标准体系，部分地区执行更高的65%节能标准。2008年《民用建筑能效测评标识管理暂行办法》、《民用建筑节能条例》等施行，《民用建筑节能条例》的颁布，标志着我国民用建筑节能标准体系已基本形成，基本实现对民用建筑领域的全面覆盖。</p><p>　　在国务院办公厅《2009年节能减排工作安排》中规定，2009年底施工阶段执行节能强制性标准比例提高到90%以上。除新建建筑外，既有建筑的节能改造也有效开展起来，并取得了一批成果和经验。而兼顾土地资源节约、室内环境优化、居住人的健康、节能节水节材等方面的目标绿色建筑，成为新世纪建筑节能发展的亮点。</p><p><strong>　　建筑节能技术飞速发展</strong></p><p>　　在建筑节能逐步成为建设科技主旋律的过程中，相关的节能技术也有了长足进步。</p><p>　　在建设部组织下，&ldquo;九五&rdquo;期间实施了&ldquo;2000年小康型城乡住宅科技产业工程&rdquo;，&ldquo;十五&rdquo;期间组织实施了&ldquo;小城镇科技发展重大专项&rdquo;、&ldquo;居住区与小城镇建设关键技术研究&rdquo;、&ldquo;绿色建筑关键技术研究&rdquo;等，&ldquo;十一五&rdquo;期间实施了&ldquo;建筑节能关键技术研究与示范&rdquo;、&ldquo;现代建筑设计与施工关键技术研究&rdquo;、&ldquo;既有建筑综合改造关键技术研究与示范&rdquo;、&ldquo;可再生能源与建筑集成技术研究与示范&rdquo;等项目，这些科研攻关项目的组织实施，使一系列建筑节能的重大、关键、共性技术得到突破，形成了一大批科技成果。</p><p>　　建筑节能的各项技术都达到很高水平。</p><p>　　降低建筑能耗，首先要从围护结构、外墙、屋面、外门窗来实现。墙体改革的调查研究开始于上世纪70年代，80年代以来，新型墙体材料和高保温材料不断涌现，混凝土空心砌块、聚苯乙烯泡沫板等材料，逐渐替代了传统墙体材料，在建筑节能中发挥了重要作用。同时，我国广泛开展研究建筑外墙保温技术，近年来，各种外墙外保温技术系统日益成熟并在工程中应用，显示出良好前景。</p><p>　　此外还有建筑门窗。门窗传热系数的高低，决定了能耗的高低，要降低能耗，就必须提高门窗的热工性能，增加门窗的隔热保温性能。近20年来，为满足节能需求，外窗玻璃产品及工艺水平迅速发展，由之前采用普通单层玻璃、双层玻璃发展到中空、充气、LOW-E玻璃，塑钢型材、钢化玻璃等也广泛应用，取代了传统的钢窗和铝合金门窗。</p><p>　　建筑能耗的降低，还有赖于暖通技术和设备。为实现采暖系统的节能，上世纪80年代我国研发了平衡供暖技术及其产品、锅炉运行管理技术与产品。在散热器方面，上世纪90年代以来各种新型散热器纷纷得到开发，这些新产品比传统的铸铁散热器，具有金属热强度高、散热性能好、承压能力高、造型美观、工艺性好、安装方便等优点。</p><p>　　进入新世纪后，随着既有建筑节能改造的开展，供热改革成为建筑节能的重要内容。为适应改革的需要，室温可调和采暖计量收费技术及产品有了进一步的发展。采暖系统的单管顺流系统变为双管系统，散热器恒温阀及热表的应用已经十分普及。</p><p>　　技术是保证建筑节能得以实现的关键，多年来我国建筑节能技术的发展，让人们对&ldquo;十一五&rdquo;期间实现建筑节能1.6亿吨标准煤的目标充满信心。</p><p><strong>　　绿色建筑成果丰硕</strong></p><p>　　绿色建筑是生态环境与建筑有机结合，在建筑生命周期内最大限度地节约资源、保护环境，为人们提供高效、舒适空间的建筑。近10年来，绿色节能建筑成为建筑节能中的一大亮点，体现了新世纪建筑节能更高的追求目标。</p><p>　　进入21世纪后，绿色建筑评价体系逐步建立，保证了绿色建筑的健康发展。2001年建设部住宅产业化促进中心编制了《绿色生态住宅小区建设要点与技术导则》，2004年建设部针对北京奥运会，开展了&ldquo;绿色奥运建筑评估体系&rdquo;课题研究，形成了我国第一套绿色建筑项目标准。同年8月建设部颁布实施《全国绿色建筑创新奖管理办法》，次年，首届全国绿色建筑创新奖揭晓，40个项目获得此项殊荣，中国在推进智能与绿色建筑方面迈出了坚实的一步。2005年，历时5年编制完成的《绿色建筑技术导则》颁布施行，自此，绿色建筑的评定有了明确依据。&ldquo;十五&rdquo;期间，重点攻关计划&ldquo;绿色建筑规划设计导则和评估体系研究&rdquo;项目完成。2006年，建设部组织编制了《绿色建筑评价标准》。2007年8月，《绿色建筑评价技术细则》和《绿色建筑评价标识管理办法》出台，2008年6月住房和城乡建设部为进一步规范和细化绿色建筑评价标识工作，根据评价标识工作实际情况，编制了《绿色建筑评价技术细则补充说明(规划设计部分)》，制定了《绿色建筑评价标识使用规定》，进一步完善了绿色建筑设计评价标识的申报评价程序。</p><p>　　一系列工作，建立了适合我国国情的绿色建筑评价体系，有力地推动了绿色建筑技术发展。经过多年的攻关和研究，绿色建筑形成了六大技术体系评价标准：节地与室外环境、节能与能源利用、节水与水资源利用、节材与材料资源利用、室内环境质量及运营管理。通过对建筑的节能、节水、节地、节材和室内环境的具体性能进行实测，给出数据，实现定量化检测标准，达到标准的即为绿色建筑。</p><p>　　2008年8月，住房城乡建设部建筑节能与科技司向首批绿色建筑设计评价标识项目颁发了证书，上海世博会世博中心工程等6个项目获得了行业主管部门认可的第一批绿色建筑设计评价标识，标志着由政府部门主导的绿色建筑评价正式启动，结束了我国依赖国外标准进行绿色建筑评价的历史。</p><p>　　回顾建筑节能的历程，可以看到，这项利国利民的事业，紧跟时代步伐，取得了举世瞩目的成就。而这一切，没有党和政府的重视，是不可想象的。也正因此，人们完全有理由对建筑节能的前景充满信心。</p><p></p></p>', '', 0, ''),
-(1414, 1, 43, 68, 0, '<p ><p align=\"center\"><img title=\"8月30日拍摄的世博轴膜结构工程（局部）。 8月30日，上海世博园区世博轴膜结构工程全面完成。世博轴工程采用全新建筑形式，其屋顶设计为长约840米、宽约97米的巨型索膜结构，形如蓝天下的朵朵白云，并在整个索膜覆盖的结构中设置了6个巨型圆锥状钢结构&ldquo;阳光谷&rdquo;，让自然光透过&ldquo;阳光谷&rdquo;倾泻而下，满足部分地下空间的采光，体现环保和节约的理念。据介绍，世博轴索膜结构厚度仅为1毫米，使用寿命可达30年。新华社发 \"height=\"175\" src=\"res/201509/02/1441090001_0_548.jpg\" width=\"402\" alt=\"\" /></p><p> 8月30日拍摄的世博轴膜结构工程（局部）。 8月30日，上海世博园区世博轴膜结构工程全面完成。世博轴工程采用全新建筑形式，其屋顶设计为长约840米、宽约97米的巨型索膜结构，形如蓝天下的朵朵白云，并在整个索膜覆盖的结构中设置了6个巨型圆锥状钢结构&ldquo;阳光谷&rdquo;，让自然光透过&ldquo;阳光谷&rdquo;倾泻而下，满足部分地下空间的采光，体现环保和节约的理念。据介绍，世博轴索膜结构厚度仅为1毫米，使用寿命可达30年。新华社发</p><p align=\"center\"><img title=\" 8月30日拍摄的世博轴膜结构工程全景（拼图）。 新华社发\" src=\"res/201509/02/1441090001_1_697.jpg\" alt=\"\" /></p></p>', '', 0, ''),
-(1415, 1, 43, 68, 0, '<p ></p><ul><li >PTFE膜材&mdash;&mdash;耐久性强，使用寿命在30年以上</li><li >PTFE膜材&mdash;&mdash;是永久性建筑的首选材料</li><li >PTFE膜材&mdash;&mdash;超自洁，防火材料</li><li >PTFE膜材&mdash;&mdash;专业化的加工工艺，严格的施工规程<br /> 膜结构建筑中最常用的膜材料。PTFE膜材料是指在极细的玻璃纤维（3微米）编织成的基布上涂上PTFE（聚四氟乙烯）树脂而形成的复合材料。PVC膜材料是指在聚酯纤维编织的基布上涂上PVC（聚氟乙烯）树脂而形成的复合材料。</li></ul>', '', 0, ''),
-(1416, 1, 43, 68, 0, '<p><strong><span >  <span >ETFE建筑</span></span></strong><span ><span >膜</span><span >材是一种乙烯</span><span >-</span><span >四氟乙烯的共聚物</span><span >.ETFE膜材的厚度通常小于0.20mm，是一种透明膜材.</span></span></p><p><span ><span >   用ETFE原料制成的膜材料替代传统的玻璃和其他高分子采光板用于大型建筑物的屋面或墙体材料，显示出无可比拟的优势。</span></span></p><p><span ><span > ETFE膜使用寿命至少为25-35年,</span><span > ETFE</span><span >膜达到</span><span >B1</span><span >、</span><span >DIN4102防火等级标准，燃烧时也不会滴落。且该膜质量很轻，每平方米只有0.15-0.35公斤。这种特点使其即使在由于烟、火引起的膜融化情况下也具有相当的优势。</span></span></p><p><span ><span > 与玻璃不同的是ETFE具有很好的隔热介质，单层膜可以在无色膜材上印刷不同图案，可调节室内光线。</span></span></p><p><p ><img src=\"res/201509/02/1441090077_0_111.jpg\" border=\"0\" alt=\"\" /></p><p ><img src=\"res/201509/02/1441090077_1_885.jpg\" border=\"0\" alt=\"\" /></p></p>', '', 0, ''),
-(1417, 1, 43, 68, 0, '<p class=\"MsoNormal\" ><b><span lang=\"EN-US\" >2014</span></b><b><span >第三届中国（广州）国际建筑钢结构、空间结构及金属材料设备展览会</span></b><b><span lang=\"EN-US\" ><o:p></o:p></span></b></p><p class=\"MsoNormal\" ><b><span lang=\"EN-US\" >The 3<sup>rd</sup><st1:country-region w:st=\"on\">China</st1:country-region>(<st1:city w:st=\"on\">Guangzhou</st1:city>) International Exhibition for<st1:place w:st=\"on\"><st1:placename w:st=\"on\">Steel</st1:placename><st1:placename w:st=\"on\">Construction &amp; Metal</st1:placename><st1:placetype w:st=\"on\">Building</st1:placetype></st1:place>Materials<o:p></o:p></span></b></p><p class=\"MsoNormal\" ><span >地点：中国进出口商品交易会&middot;琶洲展馆<span lang=\"EN-US\"></span></span><b><span >时间</span></b><span >：<st1:chsdate w:st=\"on\" isrocdate=\"False\" islunardate=\"False\" day=\"12\" month=\"5\" year=\"2014\"><span lang=\"EN-US\">2014</span>年<span lang=\"EN-US\">5</span>月<span lang=\"EN-US\">12</span>日</st1:chsdate><span lang=\"EN-US\">-14</span>日</span></p><p class=\"MsoNormal\" ><b><span lang=\"EN-US\" ><o:p></o:p></span></b></p><pclass=\"Section1\" ><p class=\"MsoNormal\" align=\"left\" ><v:line id=\"_x0000_s1026\" strokeweight=\"1.5pt\" to=\"549.7pt,3.1pt\" from=\"-7.95pt,3.1pt\" ></v:line><b><span >主办单位：<span lang=\"EN-US\"><o:p></o:p></span></span></b></p><p class=\"MsoNormal\" align=\"left\" ><span >亚洲建筑技术联盟协会<span lang=\"EN-US\"></span>中国市政工程协会<span lang=\"EN-US\"></span>中国贸促会建设行业分会集成建筑委员会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >广东省空间结构学会<span lang=\"EN-US\"></span>粤港经济合作交流促进会<span lang=\"EN-US\"></span>香港鸿威展览集团<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><b><span >协办单位：<span lang=\"EN-US\"><o:p></o:p></span></span></b></p><p class=\"MsoNormal\" align=\"left\" ><span >中国贸促会建设行业分会国际交流中心<span lang=\"EN-US\"></span>东莞市建筑金属结构行业协会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><b><span >国际机构：</span></b><span lang=\"EN-US\" ><o:p></o:p></span></p><p class=\"MsoNormal\" align=\"left\" ><span >美国钢结构协会<span lang=\"EN-US\"></span>澳大利亚钢结构协会<span lang=\"EN-US\"></span>加拿大钢结构协会<span lang=\"EN-US\"></span>韩国钢结构协会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >智利钢结构协会<span lang=\"EN-US\"></span>日本钢结构协会<span lang=\"EN-US\"></span>墨西哥钢结构协会<span lang=\"EN-US\"></span>新西兰钢结构协会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >新加坡钢结构协会<span lang=\"EN-US\"></span>法国驻广州总领事馆商务处<span lang=\"EN-US\"></span>美国钢铁协会<span lang=\"EN-US\"></span>欧洲钢结构协会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >新西兰驻广州总领事馆<span lang=\"EN-US\"></span>新西兰大型工程研究会<span lang=\"EN-US\"></span>西班牙安达卢西亚自治区政府贸促会上海代表处<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >尼日利亚联邦共和国驻上海总领事馆<span lang=\"EN-US\"></span>日本建筑钢骨协会<span lang=\"EN-US\"></span>丹麦未来产业化可持续建筑和城市发展组织</span><span lang=\"EN-US\" ><o:p></o:p></span></p><p class=\"MsoNormal\" align=\"left\" ><b><span >承办单位：<span lang=\"EN-US\"><o:p></o:p></span></span></b></p><p class=\"MsoNormal\" ><span >广州市鸿威展览服务有限公司<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" ><b><span >支持单位：<span lang=\"EN-US\"><o:p></o:p></span></span></b></p><p class=\"MsoNormal\" align=\"left\" ><span >广东省住房和城乡建设厅<span lang=\"EN-US\"></span>浙江省钢结构行业协会<span lang=\"EN-US\"></span>江苏省建筑钢结构混凝土协会钢结构分会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >四川省金属结构行业协会<span lang=\"EN-US\"></span>辽宁省建筑金属结构协会<span lang=\"EN-US\"></span>福建建筑业协会金属结构与建材分会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >安徽省钢结构协会<span lang=\"EN-US\"></span>河南省钢结构协会<span lang=\"EN-US\"></span>山西省土建学会空间结构专业委员会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >香港建筑金属结构协会<span lang=\"EN-US\"></span>澳门金属结构协会<span lang=\"EN-US\"></span>山东省勘察设计协会钢结构分会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><span >上海市金属结构行业协会<span lang=\"EN-US\"></span>天津市钢结构学会<span lang=\"EN-US\"></span>北京市建设工程物资协会钢结构分会<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><b><span >支持媒体：<span lang=\"EN-US\"><o:p></o:p></span></span></b></p><p class=\"MsoNormal\" align=\"left\" ><span >广东电视台、南方电视台、中国建设报、中华建筑报、建筑时报、广东建设报、羊城晚报、新浪地产、搜房网、中国钢结构网、中国钢结构资讯网、钢结构在线、中国生态环境与节能建设网、建筑钢结构网、钢结构网、广东建设信息网、钢构之窗、《钢结构》杂志、《中国住宅设施》、《中国钢结构产业》、《钢结构资源》、商务时报品牌钢构周刊、《钢结构与设备》杂志<span lang=\"EN-US\">...</span>各协会（学会）刊物及网站等一百多家海内外媒体<span lang=\"EN-US\"><o:p></o:p></span></span></p><p class=\"MsoNormal\" align=\"left\" ><b><span lang=\"EN-US\" ><o:p></o:p></span></b></p></p><p ><b><span lang=\"EN-US\" ><br clear=\"all\"/></span></b></p><p class=\"MsoNormal\" align=\"center\" ><b><i><span >以钢代木，保护地球生态资源；以钢代砼，促进绿色环保建筑</span></i></b></p><p ><span ><p class=\"MsoNormal\" ><strong>参展范围<o:p></o:p></strong></p><p class=\"MsoNormal\" ><span >1、钢结构及钢铁产品，包括建筑金属结构、钢结构、轻钢结构、重钢结构、海洋结构、预应力结构、钢砼组合结构、空间网架结构、拉膜结构等空间结构；重钢、轻钢、H型钢、无缝钢管、工字型钢、冷弯型钢、特殊钢材等；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >2、建筑钢结构板材、板件，包括中厚板、压型板、采光板、夹芯板、不锈钢薄板、镜面板、艺术板、镀钛板、彩色涂层板等板材；不锈钢棒、线、管材等；彩钢、钢结构预制品等；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >3、钢结构连接产品和设备，包括各种固件锚栓及标准和非标准紧固件，螺栓，栓钉，铆钉，锚夹具；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >4、建筑钢结构安全防护工业体系，包括涂料、防腐、保温、隔热、防水、防火耐火产品及防爆技术；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >5、新型住宅房屋技术及配套装饰、装修产品类：新型房屋设计、建设单位、新型结构产品、墙体、屋面、门窗、龙骨、幕墙、楼层板、吊顶、遮阳系统、通风设备；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >6、铝合金、塑钢、非金属装饰性材料及相关技术和设备类：铝合金、塑钢、复合材料等装饰性构件和板材、玻璃制品；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >7、立体车库设备、钢结构门业；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >8、金属钢结构加工配套设备及检测设备类，包括各种成型加工设备、焊接设备、焊接材料、切割、铸造、数控技术及五金电动工具、施工安装机具、喷涂设备、涂锈设备、钢材检验、探伤设备等；桥梁、塔桅、容器、管道的制造加工设备；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >9、计算机设计、分析、计算与CAD绘图软件类：各类钢结构设计、分析、计算软件；项目管理、投标及工程预算软件；加工中心与结构样图CAD工作站等；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >10、节能节地型建筑（钢结构住宅试点工程、实验基地）；钢结构领域新成果（名人、名企、名项目）；钢结构工程招标；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >11、设计及施工展示（大型场馆、会议中心、大型公共建筑的设计技术及方案，大型施工公司示范工程）；<o:p></o:p></span></p><p class=\"MsoNormal\" ><span >12、建筑设计及房地产项目规划设计区：建筑设计院所、优秀建筑设计项目、优秀房地产规划项目、技术咨询单位样板工程</span></p></span></p>', '', 0, ''),
-(1418, 1, 43, 68, 0, '<p ></p><h2>青口镇文体中心外立面膜结构工程（重新招标）</h2><pclass=\"gg-xl-fbsj\">来源：中国国际招标网 发布时间：2014.02.21</p><!--div class=\"gg-jdb\"><img src=\"res/201509/02/1441090066_0_157.gif\" width=\"292\" height=\"82\"/></a></div--><!--有权限--><pclass=\"gg-conte\"><p ><palign=\"left\">招 标 公 告</p><palign=\"left\">1. 招标条件</p><palign=\"left\">本招标项目青口镇文体中心外立面膜结构工程（重新招标）已由闽侯县发展和改革局以侯发改审批[2013]44号批准建设，项目业主为闽侯县青口镇人民政府，建设资金来自财政拨款，招标人为闽侯县青口镇小城镇综合改革建设试点指挥部，委托的招标代理单位为福建省闽建工程造价咨询有限公司。项目已具备招标条件，现对该项目的设计、施工进行国内公开招标。</p><palign=\"left\">2. 项目概况和招标范围</p><palign=\"left\">2.1. 建设地点：青口镇壶山村；</p><palign=\"left\">2.2. 工程建设规模：青口镇文体中心的综合馆气枕包覆面积约5300㎡，游泳馆气枕包覆面积约3300㎡，综合馆和游泳馆中部PTFE雨棚覆盖面积约2000㎡；最高控制价为18845308元 ；</p><palign=\"left\">2.3. 招标范围和内容： 青口镇文体中心外立面膜结构工程施工，内容包括 ETFE 充气膜 结构、PTFE雨棚的二次深化设计、材料供应、膜结构工程制作及安装等全部相关工程施工 ，具体详见工程量清单和施工图纸；</p><palign=\"left\">2.4. 工期要求：总工期：150个日历天；其中各关键节点的工期要求为：无；</p><palign=\"left\">2.5. 工程质量要求：符合设计、国家工程施工质量验收规范合格标准；</p><palign=\"left\">2.6. 本项目（标段）招标有关的单位：</p><palign=\"left\">2.6.1. 咨询单位：福建省闽建工程造价咨询有限公司；</p><palign=\"left\">2.6.2.设计单位：城市建设研究院；</p><palign=\"left\">2.6.3.代建单位：无 ；</p><palign=\"left\">2.6.4.监理单位：待定。</p><palign=\"left\">3. 投标人资格要求及审查办法</p><palign=\"left\">3.1.本招标项目要求投标人具备建设行政主管部门核发有效的三级及以上钢结构工程专业承包施工资质和《施工企业安全生产许可证》；投标人同时具备中国钢结构协会空间结构分会核发有效的膜结构工程设计二级及以上资质和膜结构工程承包二级及以上资质。</p><palign=\"left\">3.2.投标人拟担任本招标项目的项目经理应具备有效的不低于二级建筑工程专业注册建造师执业资格(含临时执业证书)注册建造师执业资格，并持有有效的安全生产考核合格证书（B证）；依据闽建筑[2013]41号和闽建筑[2014]6号文规定：（1）已按规定在2013年12月31日前提出延续注册申请或者已办理完延续注册的二级临时注册建造师；已按规定在2014年2月28日前提出延续注册申请或者已办理完延续注册的一级建造师临时注册建造师；（2）已提出申请但还未办理完成延续注册的二级及以上临时注册建造师，投标人应在投标文件中附有省住房和城乡建设厅行政服务中心出具的延续注册受理单证明并加盖投标人公章，否则按资格审查不合格处理。</p><palign=\"left\">3.3. 本招标项目 接受 联合体投标，自愿组成联合体的应由 具备 三级及以上钢结构工程专业承包施工资质 的企业为主办方，且各方均应具备承担招标项目的相应资质条件，相同专业单位组成的联合体的，按照资质等级较低的单位确定资质等级。</p><palign=\"left\">3.4.投标人&ldquo;类似工程业绩&rdquo;要求：投标人至少有1项业绩；&ldquo;类似工程业绩&rdquo;是指（下同）：自本招标公告发布之日的前5年内（不含发布招标公告当日）完成的并经竣工验收合格的单项合同工程造价不少于500万元的ETFE充气膜结构工程的国内（不含港澳台地区）施工项目。注：根据闽建筑（2011）39号文要求，本招标项目（工程）所称的类似工程业绩应符合以下条件之一：（1）在福建省行政区域内完成的业绩或抢险救灾中由福建省组织在省外完成的业绩；（2）在福建省外完成的业绩，必须是通过互联网且不需任何权限即可在工程所在地的建设行政主管部门政务网站查询得到，而且查询到的数据应能满足本招标项目（工程）的要求。</p><palign=\"left\">3.5. 投标人应在人员、设备、资金等方面具有承担本招标项目（标段）施工的能力，具体要求详见招标文件；</p><palign=\"left\">3.6. 本招标项目招标人对投标人的资格审查采用的方式：资格后审。</p><palign=\"left\">3.7. 投标时，投标人和拟派本工程项目管理班子成员没有因违法违规被有关行政监督部门取消或限制本招标项目的投标。</p><palign=\"left\">3.8.投标人具备已通过年检合格有效的企业法人营业执照，企业注册资本金金额应超过3769062元（即本项目最高控制价&times;20%的金额）。</p><palign=\"left\">4. 招标文件的获取</p><palign=\"left\">4.1. 凡有意参加投标者，请于 2014 年 2 月 24 日至 2014 年 2 月 28日（法定公休日、法定节假日除外），每天上午 9 时 00 分至 12 时 00 分，下午 13 时 00 分至 16 时 30 分（北京时间，下同），到<u>闽侯县建设工程交易中心</u> 福建省闽建工程造价咨询有限公司 <u>代表处（地址：闽侯县科技中心内闽侯县行政服务中心负一楼</u> ） 购买招标文件；</p><palign=\"left\">4.2. 招标文件每份售价 200元，（含工程量清单、工程控制价、电子光盘等），售后不退。投标人若需要购买本项目施工图纸的，可向招标人提出申请，招标人在三个工作日内提供购买的施工图纸，图纸售价不高于《福建省物价局转发国家计委关于印发</p><palign=\"left\">5. 评标办法</p><palign=\"left\">本招标项目采用的评标办法： 经评审的最低投标价中标法 。</p><palign=\"left\">6. 投标保证金的提交</p><palign=\"left\">6.1. 投标保证金提交的时间：投标截止时间之前；</p><palign=\"left\">6.2.投标保证金提交的方式：从投标人企业基本账户以电汇或银行转账的形式汇达投标保证金指定账户；或按榕建招[2013]38号文规定交存年度投标保证金；</p><palign=\"left\">6.3. 投标保证金提交的金额：人民币叁拾陆万元。</p><palign=\"left\">7. 投标文件的递交</p><palign=\"left\">7.1. 投标文件递交的截止时间（投标截止时间）： 2014 年 3 月 18 日 10 时 00 分，提交地点为闽侯县建设工程交易中心本项目开标室 ；<u>在递交纸质投标文件的同时，投标人拟派出的委托代理人出示授权委托书原件和身份证原件，项目经理应当持注册建造师执业证书（或建造师临时执业证书）原件、身份证原件、购买招标文件凭证（一份凭证仅代表一个投标人）原件到场核验登记，否则其投标文件将不予接收。</u></p><palign=\"left\">7.2. 逾期送达的或未送达指定地点或投标文件密封不符合规定要求的投标文件，招标人不予受理。</p><palign=\"left\">8. 发布公告的媒介</p><palign=\"left\">本次招标公告同时在 福建招标与采购网（ http://www.fjbid.gov.cn ） 、福州市建设工程招标投标网（ www.fzztb .org）、闽侯招标网（www.mhztb.com）及闽侯县建设工程交易中心公示栏 上发布。</p><palign=\"left\">9. 联系方式</p><palign=\"left\">招标人：闽侯县青口镇小城镇综合改革建设试点指挥部；</p><palign=\"left\">地址：闽侯县青口镇工业路1号，邮编：350119；</p><palign=\"left\">电 话：0591-22770987</p><palign=\"left\">联系人：林主任。</p><palign=\"left\">招标代理机构：福建省闽建工程造价咨询有限公司</p><palign=\"left\">地址：福州市工业路451号鼓楼科技商务中心大厦六层，邮编：350002；</p><palign=\"left\">电话：0591-87605650-819，传真：0591-87623982；</p><palign=\"left\">联系人：林工。</p><palign=\"left\">投标保证金银行帐号：</p><palign=\"left\">开户银行：民生银行福州闽侯支行；</p><palign=\"left\">帐户名称：闽侯县建设工程交易中心；</p><palign=\"left\">帐 号：1516 0142 1000 0041 。</p><palign=\"left\">（应在汇款凭证上注明&ldquo;闽侯房建招2014011&rdquo;投标保证金，如因投标人汇款凭证未注明项目招标编号造成银行无法识别投标保证金到账情况或识别错误的，其责任由投标人自行承担。）</p><palign=\"left\">交易中心名称： 闽侯县建设工程交易中心 ；</p><palign=\"left\">电 话： 0591-22063699 ；</p><palign=\"left\">地 址： 闽侯县科技中心内闽侯县行政服务中心负一楼 。</p></p></p>', '', 0, ''),
-(1419, 1, 43, 68, 0, '<p ><br class=\"Apple-interchange-newline\" /><p align=\"center\"></p><center><imgid=\"597978\" title=\"\" border=\"0\" align=\"center\" src=\"res/201509/02/1441090061_0_691.jpg\" sourcename=\"本地文件\" sourcedescription=\"编辑提供的本地文件\" alt=\"\" /></center><p></p><p></p><p >大连体育场，2754个气枕附着在体育新城中心体育场周围的钢结构桁架上，白天或夜晚在阳光或LED灯的照射下，蓝白相间的膜气枕将会形成海浪翻滚的大景观，将把本市这座海滨城市的特点充分展现在世人面前。据了解，中心体育场外膜结构工程将在5月底全部完工。昨天，记者走进中心体育场进行了一番探访。</p><p >蓝白相间的条块将中心体育场从空中&ldquo;包裹&rdquo;起来，远看，犹如大海中的波浪在翻滚。蓝色条块就像蓝色的海面一样，白色条块象征翻滚着的白色浪花。近看，在偌大的圆形体育场四周布满了脚手架，蓝色条块和白色条块由众多气枕组成，将圆形的体育场在纵向也形成圆弧形状，若一幢巨型战鼓悬于半空。</p><p >进入体育场内部，看台上坐椅林立，广场上的塑胶跑道和中间的绿色球场已经显现出来。往上看，圆穹形的膜结构将看台全部覆盖。&ldquo;观看比赛时，自然是风吹不着，雨淋不到。 &rdquo;中心体育场外膜结构工程施工单位，是曾参与北京水立方膜结构工程施工的本市民营企业大连伟霖膜结构工程有限公司，该公司高级工程师刘昌伟说，大连中心体育场还有内膜，将会从内部把眼前的纵横交错的钢结构桁架全部包裹起来。</p><p >目前，仅有西南部接近1万平方米的外膜结构还没有完工。本月底外膜结构将全部完工。</p></p>', '', 0, ''),
-(1420, 1, 43, 68, 0, '<p ><p><b>膜结构</b><span >主要适用场所：体育场馆,体育场看台,主席台,相关遮阳遮雨膜结构; 高速公路收费站,加油站,停车场,公交站台,机场,地铁站,游乐园,休闲广场,观景台,舞台空,停车场膜结构；小区入口、车库入口、通道走廊、城市标志入口；高速公路收费站空间膜结构、加油站膜结构、博览会展厅膜结构、购物中心、售货亭、商业步行街、批发中心、临时会场张拉膜结构、休闲场所张拉膜结构景观膜结构、泳池遮阳膜，景观膜结构、大门出入张拉膜、小品膜、标志性膜结构建筑等。</span></p><p><span class=\"Apple-converted-space\"></span><br /></p><p><imgborder=\"0\" width=\"675\" height=\"670\" alt=\"\" src=\"res/201509/02/1441090045_0_444.jpg\" /></p><p><p >膜结构主要适用场所：运动场、体育馆、体育看台张拉膜结构; 博物馆张拉膜、音乐广场索膜结构、游乐园、休闲广场张拉膜结构、观景台张拉膜、舞台空间膜结构、停车场膜结构；高速公路收费站空间膜结构、加油站膜结构、博览会展厅膜结构、购物中心、售货亭、商业步行街、批发中心、临时会场张拉膜结构、休闲场所张拉膜结构景观膜结构、泳池遮阳膜，景观膜结构、大门出入张拉膜、小品膜、标志性膜结构建筑等。</p><p ></p><p ></p><p ></p></p></p>', '', 0, ''),
-(1421, 1, 43, 68, 0, '<p ></p><ul><li >PTFE膜材&mdash;&mdash;耐久性强，使用寿命在30年以上</li><li >PTFE膜材&mdash;&mdash;是永久性建筑的首选材料</li><li >PTFE膜材&mdash;&mdash;超自洁，防火材料</li><li >PTFE膜材&mdash;&mdash;专业化的加工工艺，严格的施工规程<br /> 膜结构建筑中最常用的膜材料。PTFE膜材料是指在极细的玻璃纤维（3微米）编织成的基布上涂上PTFE（聚四氟乙烯）树脂而形成的复合材料。PVC膜材料是指在聚酯纤维编织的基布上涂上PVC（聚氟乙烯）树脂而形成的复合材料。</li></ul>', '', 0, ''),
-(1422, 1, 43, 68, 0, '<p ></p><pid=\"MyContent\"><p>  2020年东京奥运会和残奥会筹备委员会公布了作为东京奥运会主会场的新国立竞技场的概念图。</p><p>　　国际奥委会全会当地时间9月7日在阿根廷首都布宜诺斯艾利斯投票选出2020年夏季奥运会的主办城市。日本东京最终击败西班牙马德里和土耳其伊斯坦布尔，获得2020年夏季奥运会举办权。</p><p></p><p ></p><p align=\"center\"><img id=\"23416362\" align=\"center\" src=\"res/201509/02/1441090082_0_293.jpg\" width=\"602\" height=\"276\" md5=\"\" alt=\"\" /></p><p align=\"center\"></p><p ></p><p align=\"center\"><img id=\"23416363\" align=\"center\" src=\"res/201509/02/1441090082_1_175.jpg\" width=\"600\" height=\"353\" md5=\"\" alt=\"\" /></p><p align=\"center\"></p><p ></p><p align=\"center\"><img id=\"23416364\" align=\"center\" src=\"res/201509/02/1441090082_2_260.jpg\" width=\"598\" height=\"353\" md5=\"\" alt=\"\" /></p><p align=\"center\"></p><p align=\"center\"></p><p >据了解，日本新国家体育场效果图是由东京奥运会审查委员会从全球募集的众多设计图中评选而出，该设计图出自的伊拉克女建筑家扎哈-哈迪德之手，从效果图来看，日本新国家体育场外观采用了全新的流线型设计，审查委员会给予了&ldquo;内部空间感强烈，与东京都城市空间相呼应&rdquo;、&ldquo;可开闭式天窗增加了体育场的实用性&rdquo;等高度评价。</p><p >根据计算，日本新国家体育场的扩建总花费将达到1300亿日元（约人民币78亿元），预计竣工时间为2019年3月，该体育场作为2020年东京奥运会比赛主会场，届时奥运会的开幕式、闭幕式、足球、田径等项目都将在该会场举行。</p><p ></p><p></p><p></p><p></p><p></p></p><p ></p>', '', 0, ''),
-(1934, 1, 43, 8, 1335, '<p>改变：后台集成流行的前端框架LayUI</p><p>新增：CKEditor（未完善，不建议使用）</p><p>完善：项目列表获取自定义字段</p><p>完善：扩展字段维护管理（合并会员扩展字段库，全站扩展字段库，及模块字段库）</p><p>优化：右键操作，实现复制粘贴</p><p>完善：购物车功能系统</p><p>完善：订单系统及订单扩展系统（包括订单产品下的属性扩展）</p><p>完善：扩展主题功能（以实现复杂功能交互）</p><p>完善：项目开发模式，后续功能项目将以新的模式开发并使用</p><p>完善：接口开发，实现与小程序对接</p><p>新增：小程序通用模板</p><p>新增：小程序项目配置（通过升级无法获取，请全新安装）</p><p>完善：资源管理器</p><p>优化：核心代码，以兼容PHPOK4与PHPOK5的运行</p><p>新增：项目功能管理器（实现功能的增删操作）</p><p>完善：插件管理器</p><p>新增：站点信息可配置站点的收藏夹图标（即Favicon，使用Png格式图片）</p><p>新增：内部控制器互相引用（基本上是程序员二次开发才会用得到）</p><p>完善：上传的大图可以执行压缩操作</p><p>完善：角标提示操作</p><p>这里特别说明一下：升级到当前版本前，您做好备份准备（会改动数据库表信息，会覆盖 _config/ 目录信息）</p>', '改变：后台集成流行的前端框架LayUI\n新增：CKEditor（未完善，不建议使用）\n完善：项目列表获取自定义字段\n优化：右键操作，实现复制粘贴\n完善：购物车功能系统', 0, '');
-INSERT INTO `qinggan_list_22` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `content`, `note`, `plugin_vote`, `demo`) VALUES
-(1935, 1, 43, 8, 1348, '<h2>结构</h2><p>将要升级的文件按原目录结构存放</p><p style=\"text-align: left;\"><img src=\"https://www.phpok.com/res/201810/19/auto_10158.png\" title=\"图片\" alt=\"图片\"/></p><p>和程序要一起打包的文件有：</p><blockquote><p>version.txt：版本信息</p><p>delete.txt：要删除的文件清单（一行一个文件）</p><p>table.sql：新版的数据表结构文件，用于执行比较新旧版本数据结构，并调整更改</p><p>update.sql：要执行的SQL文件（单独执行）</p><p>run.php：如果升级涉及到比较复杂的操作，可以在这里写PHP文件引入执行<br/></p></blockquote><h2>升级原理顺序<br/></h2><ol style=\"list-style-type: decimal;\" class=\" list-paddingleft-2\"><li><p>远程获取升级包数据</p></li><li><p>将 ZIP 压缩包下载到 _data 目录下</p></li><li><p>将下载好的压缩包解压到 _data/update/ 目录下</p></li><li><p>归纳整理文件（主要是收集：version.txt，delete.txt，table.sql，update.sql，run.php）</p></li><li><p>将 framework 这个目录的文件及文件夹移到现有程序的核心框架（可能用户会因为安全原因改名）</p></li><li><p>移动其他目录文件（或创建目录）</p></li><li><p>删除delete.txt清单中的文件【非必须】</p></li><li><p>执行 table.sql 操作（比较表结构，更新到最新的表结构）【非必须】</p></li><li><p>运行 update.sql 或是其他的 sql 文件【非必须】</p></li><li><p>运行 run.php 执行复杂的升级操作【非必须】</p></li><li><p>删除 _data/update/ 下的文件</p></li><li><p>基于 version.txt 更新版本记录</p></li></ol><h2>特别说明</h2><p>table.sql 必须是完整的数据表结构，才能进行升级比较，基本上这个操作比较复杂，不推荐使用</p><p>delete.txt 主要是删除文件操作，除非涉及到安全漏洞，一般我们没必要执行删除操作</p><p>update.sql 这里执行的SQL是不进行判断的，如果涉及到升级一关失败了，可能会出错（除非SQL里有写好相应的判断）</p><p>run.php 重点在这里，这个文件意味着可以完全嵌入执行PHP，可以用PHP来写数据表的增删查改，也支持文件的删除，也支持数据表结构的更新等等！一般OK程序的升级都会有这个的（纯文件覆盖更新连这个都可以忽略的）</p>', '讲解PHPOK的升级包制作过程', 0, ''),
-(1936, 1, 43, 8, 0, '<p>在 PHPOK5 版本中，我们正式引入了【开发模式】及【应用模式】两个概念。</p><p><br/></p><h2>开发模式</h2><p>顾名思义，就是用于网站开发过程中要用到的，如增加模块，扩展字段等等功能。这些功能更适合开发者对整个平台的设置，切换后效果如下，功能完整，操作比较复杂。</p><p><img src=\"https://www.phpok.com/res/201810/19/auto_10154.png\" title=\"图片\" alt=\"图片\"/><br/></p><h2>应用模式</h2><p>适用于网站做好后，需要在网站里填充内容的。</p><p><img src=\"https://www.phpok.com/res/201810/19/auto_10155.png\" title=\"图片\" alt=\"图片\"/></p><p>两都最主要的区别在于：应用模式下，不能自己扩展字段！</p><h2>开启模式切换</h2><p>配置文件：_config/global.ini.php 设置参数</p><div><div class=\"syntaxhighlighter  bash\"><pre class=\"brush:bash;toolbar:true\">develop&nbsp;=&nbsp;true</pre><p>如果此项设置为 false，后台只有应用模式！</p></div></div><p>强列建议网站上线后将此项设置为 false</p>', '在 PHPOK5 版本中，我们正式引入了【开发模式】及【应用模式】两个概念。\n应用模式用于常规维护，开发模式主要用于开发人员调试参数', 0, ''),
-(1996, 1, 43, 68, 0, '<p>当前，实现节能减排目标面临的形势十分严峻。2006年以来，全国上下加强了节能减排工作，国务院发布了加强节能工作的决定，制定了促进节能减排的一系列政策措施，各地区、各部门相继做出了工作部署，节能减排工作取得了积极进展。但是，2006年全国没有实现年初确定的节能降耗和污染减排的目标，加大了“十一五”后四年节能减排工作的难度。更为严峻的是，2007年一季度，工业特别是高耗能、高污染行业增长过快，占全国工业能耗和二氧化硫排放近70％的电力、钢铁、有色、建材、石油加工、化工等六大行业增长20．6％，同比加快6．6个百分点。与此同时，各方面工作仍存在认识不到位、责任不明确、措施不配套、政策不完善、投入不落实、协调不得力等问题。这种状况如不及时扭转，不仅2007年节能减排工作难以取得明显进展，“十一五”节能减排的总体目标也将难以实现。<br/>　　在我国，建筑能耗占总能耗的27%以上，而且还在以每年1个百分点的速度增加。建设部统计数字显示，我国每年城乡建设新建房屋建筑面积近20亿平方米，其中80%以上为高能耗建筑；既有建筑近400亿平方米，95%以上是高能耗建筑。建筑能耗占全国总能耗的比例将从现在的27.6%快速上升到33%以上。我国新建建筑已经基本实现按节能标准设计，比例高达95.7%，而施工阶段执行节能设计标准的比例仅为53.8%。<br/>　　在不少城市，为了美观和气派，主要街区的写字楼都是玻璃幕墙，还兴建了不少大型的穹顶建筑作为公共设施。夏季紫外线照射强烈，造成光污染，冬天不挡寒，一年四季不得不开放大功率的空调来调节气温，冬天要先于其他建筑保暖，夏天要先于其他建筑供冷。据不完全统计，全国现有玻璃幕墙（非节能玻璃）面积已超过900多万平方米，而且呈持续发展趋势。玻璃幕墙在带来所谓美观的同时，也带来了能耗的成倍增长。<br/>　　国家统计局的初步统计数据表明，2007年中国能源消费总量比2006年增长7.8%。2007年我国能源消费总量26.5亿吨标准煤，增幅略有回落，比2006年增幅下降了1.5个百分点。但同时，我国能源消费总量仍然庞大，节能减排形势依然严峻。</p>', '当前，实现节能减排目标面临的形势十分严峻。2006年以来，全国上下加强了节能减排工作，国务院发布了加强节能工作的决定，制定了促进节能减排的一系列政策措施，各地区、各', 0, ''),
-(1997, 1, 43, 68, 0, '<h3>htaccess是什么？</h3><p>.htaccess文件(或者&quot;分布式配置文件&quot;）,全称是Hypertext \nAccess(超文本入口)。它提供了针对目录改变配置的方法，在一个特定的文档目录中放置一个包含一个或多个指令的文件， \n以作用于此目录及其所有子目录。并且子目录中的指令会覆盖更高级目录或者主服务器配置文件中的指令。</p><p>通过htaccess文件，可以帮我们实现：网页301重定向、自定义404错误页面、改变文件扩展名、允许/阻止特定的用户或者目录的访问、禁止目录列表、配置默认文档等功能。</p><p>Unix、Linux系统或者是任何版本的Apache Web服务器都是支持.htaccess的，但是有的主机服务商可能不允许你自定义自己的.htaccess文件。</p><p><br/></p>', '.htaccess文件(或者&quot;分布式配置文件&quot;）,全称是Hypertext Access(超文本入口)。它提供了针对目录改变配置的方法，在一个特定的文档目录中放置一个包含一个或多个指令的文件， 以作用于此目录及其所有子目录。并且子目录中的指令会覆盖更高级目录或者主服务器配置文件中的指令。通过htaccess文件，可以帮我们实现：网页301重定向、自定义404错误页面、改变文件扩展名、允许/阻止特定的用户或者目录的访问、禁止目录列表、配置默认文档等功能。', 0, '');
-
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_23`
---
-
-CREATE TABLE `qinggan_list_23` (
-  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
-  `link` longtext NOT NULL COMMENT '链接',
-  `target` varchar(255) NOT NULL DEFAULT '_self' COMMENT '链接方式'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='导航';
-
---
--- 转存表中的数据 `qinggan_list_23`
---
-
-INSERT INTO `qinggan_list_23` (`id`, `site_id`, `project_id`, `cate_id`, `link`, `target`) VALUES
-(520, 1, 42, 0, 'a:2:{s:7:\"default\";s:9:\"index.php\";s:7:\"rewrite\";s:10:\"index.html\";}', '_self'),
-(712, 1, 42, 0, 'a:2:{s:7:\"default\";s:20:\"index.php?id=aboutus\";s:7:\"rewrite\";s:12:\"aboutus.html\";}', '_self'),
-(713, 1, 42, 0, 'a:2:{s:7:\"default\";s:17:\"index.php?id=news\";s:7:\"rewrite\";s:9:\"news.html\";}', '_self'),
-(714, 1, 42, 0, 'a:2:{s:7:\"default\";s:20:\"index.php?id=product\";s:7:\"rewrite\";s:12:\"product.html\";}', '_self'),
-(716, 1, 42, 0, 'a:2:{s:7:\"default\";s:17:\"index.php?id=book\";s:7:\"rewrite\";s:9:\"book.html\";}', '_self'),
-(760, 1, 42, 0, 'a:2:{s:7:\"default\";s:30:\"index.php?id=news&cate=company\";s:7:\"rewrite\";s:17:\"news/company.html\";}', '_self'),
-(761, 1, 42, 0, 'a:2:{s:7:\"default\";s:31:\"index.php?id=news&cate=industry\";s:7:\"rewrite\";s:18:\"news/industry.html\";}', '_self'),
-(1254, 1, 42, 0, 'a:2:{s:7:\"default\";s:31:\"index.php?id=development-course\";s:7:\"rewrite\";s:23:\"development-course.html\";}', '_self'),
-(1256, 1, 42, 0, 'a:2:{s:7:\"default\";s:18:\"index.php?id=photo\";s:7:\"rewrite\";s:10:\"photo.html\";}', '_self'),
-(1298, 1, 42, 0, 'a:2:{s:7:\"default\";s:28:\"index.php?id=download-center\";s:7:\"rewrite\";s:20:\"download-center.html\";}', '_self'),
-(1299, 1, 42, 0, 'a:2:{s:7:\"default\";s:16:\"index.php?id=bbs\";s:7:\"rewrite\";s:8:\"bbs.html\";}', '_self'),
-(1300, 1, 147, 0, 'a:2:{s:7:\"default\";s:21:\"index.php?id=about-us\";s:7:\"rewrite\";s:13:\"about-us.html\";}', '_self'),
-(1301, 1, 147, 0, 'a:2:{s:7:\"default\";s:31:\"index.php?id=development-course\";s:7:\"rewrite\";s:23:\"development-course.html\";}', '_self'),
-(1302, 1, 147, 0, 'a:2:{s:7:\"default\";s:17:\"index.php?id=news\";s:7:\"rewrite\";s:9:\"news.html\";}', '_self'),
-(1303, 1, 147, 0, 'a:2:{s:7:\"default\";s:17:\"index.php?id=book\";s:7:\"rewrite\";s:9:\"book.html\";}', '_self'),
-(1304, 1, 147, 0, 'a:2:{s:7:\"default\";s:22:\"index.php?id=contactus\";s:7:\"rewrite\";s:14:\"contactus.html\";}', '_self'),
-(1932, 1, 147, 0, 'a:2:{s:7:\"default\";s:19:\"index.php?id=videos\";s:7:\"rewrite\";s:11:\"videos.html\";}', '_self');
-
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_24`
---
-
-CREATE TABLE `qinggan_list_24` (
+CREATE TABLE IF NOT EXISTS `qinggan_list_24` (
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
   `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `pictures` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
   `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
-  `content` longtext NOT NULL COMMENT '内容'
+  `content` longtext NOT NULL COMMENT '内容',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='产品';
-
---
--- 转存表中的数据 `qinggan_list_24`
---
 
 INSERT INTO `qinggan_list_24` (`id`, `site_id`, `project_id`, `cate_id`, `pictures`, `thumb`, `content`) VALUES
 (1753, 1, 45, 582, '1011,1010,1012', '1013', '<p>小米手机！<br/></p>'),
@@ -968,36 +784,22 @@ INSERT INTO `qinggan_list_24` (`id`, `site_id`, `project_id`, `cate_id`, `pictur
 (1762, 1, 45, 585, '1021,1022,1023,1024', '1021', '<h4>双曲面屏幕</h4><p>vivo Xplay5采用了双曲面屏幕，屏幕两侧有较大的弧度，曲面的屏幕会使屏幕呈现出无边的视觉效果。</p><p>vivo Xplay5专为曲面侧屏设计了侧屏来电提醒、解锁。</p><p><br/></p><h4>侧面解锁</h4><p>解锁方面，用户在进行图标滑动至曲面屏部分时会发生明显的「变形」，当在锁屏界面滑动解锁时，手机的曲面屏会有相当明显的光晕效果。</p><p>侧屏来电提醒：当手机反扣放在桌面时，如果手机来电时，双侧曲面屏也会散发波浪光影提醒用户来电信息。</p><p><br/></p><h4>智慧引擎</h4><p>智慧引擎优化主要分为内存加速和处理器加速。根据用户的使用情况选择性地智能加载部分常用应用，并调高这些常用应用的优先级，减小被回收的几率。另外，vivo 还优化了系统代码，大幅度降低系统的内存占用，并针对性地做了缓存碎片和内存的闲时动态回收，进而腾出更多的内存空间供用户使用。</p><p><br/></p><h4>分屏多任务</h4><p>vivo Xplay5配备了分屏多任务功能。在用户进行看电影，游戏，看书时，微信QQ聊天时不需进行切换，手机可以自动分屏为功能屏幕，一边聊微信，一边看电影。</p><p>但是现在分屏多任务支持的软件还有限，如果支持更多软件，分屏功能将会更实用。</p><p><br/></p><h4>128GB存储和3600mAh</h4><p>vivo Xplay5和vivo Xplay5旗舰版均配备了128GB的存储空间和3600mAH，提供更大和更长的续航选择。</p>'),
 (1763, 1, 45, 216, '1025,1026,1027,1028', '1027', '<p>iPhone SE是美国苹果公司推出的一款新的4英寸iPhone智能手机，该手机基本上是2013年发布的iPhone 5s的升级版本。苹果公司将该款产品命名为：iPhone SE，这意味着iPhone升级版本的名称将首次不带数字。</p><p><br/></p><p>iPhone SE由苹果公司于美国时间2016年3月21日13点在美国加州库比蒂诺总部举行发布会正式发布。 iPhone SE有玫瑰金色，有一个嵌入不锈钢标志。正面和背面底部有玻璃镜面。iPhone SE外观与iPhone 5s基本一致。iPhone SE 16G和64G的美国市场售价分别为399和499美元，中国首发售价分别为3288元4088元。</p><p><br/></p>');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_40`
---
-
-CREATE TABLE `qinggan_list_40` (
+CREATE TABLE IF NOT EXISTS `qinggan_list_40` (
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
   `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
-  `content` longtext NOT NULL COMMENT '内容'
+  `content` longtext NOT NULL COMMENT '内容',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关于我们';
-
---
--- 转存表中的数据 `qinggan_list_40`
---
 
 INSERT INTO `qinggan_list_40` (`id`, `site_id`, `project_id`, `cate_id`, `content`) VALUES
 (1756, 1, 87, 0, '<p>深圳市锟铻科技有限公司（简称<strong>锟铻科技</strong>）是一家从事 互联网+ 规划、咨询、开发及运营的综合服务商，致力于互联网市场的探索与研究，推动企业电子商务转型发展。<strong><br/></strong></p><p><strong>互联网+ 强大企业</strong></p><p>专注企业\n 互联网+ 发展，将互联网思维植入传统企业，帮 助企业搭建属于自己的互联网经营平台，引领商业新生态 \n的变革，帮助企业做大做强。我们为每个客户提供专业化 和定制化的互联网+方案，坚持以客户需求为导向，竭力 \n为客户带来最大的商业价值。相信我们是您值得信赖的合作伙伴！</p><p><strong>一体化服务</strong></p><p>整体设计 我们为企业提供“品牌包装、网站建设、运营推广”一体 化整体设计，并运用新的思想，新的技术，帮助企业实现二次腾飞。专业的技术力量及丰富的运营经验深受广大客 户的认可。</p><p><strong>价值观</strong></p><p>有偿服务，利人利己 无私开源，共同发展</p><p><strong>目标</strong></p><p>助力客户成就梦想 完善自我，更上一层楼</p>'),
 (1757, 1, 87, 0, '<p>我们一直在努力提升项目质量及效率，一切的一切都是为客户提供更放心的服务！</p><p><strong>公司</strong>：深圳市锟铻科技有限公司</p><p><strong>电话</strong>：0755-23776246</p><p><strong>邮箱</strong>：admin@phpok.com</p><p><strong>网址</strong>：<a href=\"https://www.phpok.com\" target=\"_self\">www.phpok.com</a></p><p><strong><br/></strong></p><p><strong>办公地址</strong>：广东深圳龙华新区民治大道325号东边商务大楼13层1309室</p><p><strong><span style=\"line-height: 24px;\">地铁</span></strong><span style=\"line-height: 24px;\">：5号线，民治地铁站D出口<span style=\"line-height: 24px;\"></span></span></p><p><strong>公交车（民治小学站）</strong>：302路&nbsp;302区间线&nbsp;316路&nbsp;324路&nbsp;333路&nbsp;334路&nbsp;334路区间线&nbsp;336路&nbsp;339路&nbsp;352路&nbsp;620路&nbsp;621路&nbsp;76路区间线&nbsp;B657路&nbsp;B690路&nbsp;M213路（原787路）&nbsp;M262路&nbsp;M282路&nbsp;M302路&nbsp;M344路&nbsp;M365路&nbsp;M372路&nbsp;M391路&nbsp;M392路&nbsp;高峰专线13号&nbsp;口岸观光线（观光3线）</p>'),
 (1758, 1, 87, 0, '<table width=\"100%\"><tbody><tr class=\"firstRow\"><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><strong style=\"text-align: -webkit-right; white-space: normal; color: rgb(153, 0, 0);\">2019年03月</strong></td><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"left\">PHPOK5.2发布<br/></td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><strong style=\"text-align: -webkit-right; white-space: normal; color: rgb(153, 0, 0);\">2019年01月</strong></td><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"left\">PHPOK5.1发布<br/></td></tr><tr><td valign=\"middle\" align=\"right\"><strong style=\"text-align: -webkit-right; white-space: normal; color: rgb(153, 0, 0);\">2018年11月</strong></td><td valign=\"middle\" align=\"left\">PHPOK5.0发布<br/></td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><strong style=\"text-align: -webkit-right; white-space: normal; color: rgb(153, 0, 0);\">2018年05月</strong></td><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"left\">PHPOK4.9发布<br/></td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><strong style=\"text-align: -webkit-right; white-space: normal; color: rgb(153, 0, 0);\">2018年01月</strong></td><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"left\">OKLite1.2发布<br/></td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><strong style=\"text-align: -webkit-right; white-space: normal; color: rgb(153, 0, 0);\">2017年10月</strong></td><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"left\">PHPOK4.8发布<br/></td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><strong style=\"text-align: -webkit-right; white-space: normal; color: rgb(153, 0, 0);\">2017年03月</strong></td><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"left\">PHPOK4.7发布<br/></td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><strong style=\"text-align: -webkit-right; white-space: normal; color: rgb(153, 0, 0);\">2016年10月</strong></td><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"left\">PHPOK4.6发布</td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><strong style=\"color: rgb(153, 0, 0); text-align: -webkit-right; white-space: normal;\">2016年04月</strong></td><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"left\">PHPOK4.5发布</td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><strong style=\"color: rgb(153, 0, 0); text-align: -webkit-right; white-space: normal;\">2016年01月</strong></td><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"left\">OKLite1.1发布</td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);\"><strong>2015年10月</strong></span></td><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"left\">PHPOK4.4发布</td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0); font-weight: bold; text-align: -webkit-right;\">2015年06月</span></td><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"left\">PHPOK4.3发布</td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0); font-weight: bold; text-align: -webkit-right;\">2015年03月</span></td><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"left\">PHPOK手册新鲜出炉</td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0); font-weight: bold; text-align: -webkit-right;\">2014年10月</span></td><td colspan=\"1\" rowspan=\"1\">PHPOK4.2发布并成立公司<strong>深圳市锟铻科技有限公司</strong></td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0); font-weight: bold; text-align: -webkit-right;\">2014年08月</span></td><td colspan=\"1\" rowspan=\"1\">PHPOK4.1发布</td></tr><tr><td colspan=\"1\" rowspan=\"1\" valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0); font-weight: bold; text-align: -webkit-right;\">2014年01月</span></td><td colspan=\"1\" rowspan=\"1\">PHPOK4.0发布<br/></td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2011年12月</span></td><td>PHPOK3.4版发布（后台更换为桌面式）</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2011年09月</span></td><td>phpok3.3完整版发布</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2010年08月</span></td><td>PHPOK3.0完整版发布</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2008年09月</span></td><td>PHPOK3.0精简版发布</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2008年05月</span></td><td>PHPOK2.2发布（稳定版本）</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2008年03月</span></td><td>PHPOK2.0发布</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2007年05月</span></td><td>qgweb5.2发布，同时更名为：PHPOK1.0.0版！</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2007年01月</span></td><td>qgweb5.0发布（首次实现多语言多风格功能）</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2006年10月</span></td><td>qgweb4.2发布（GBK）</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2006年08月</span></td><td>qgweb4.1发布（UTF）</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2006年08月</span></td><td>团队决定开发进销存管理系统</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2006年06月</span></td><td>qgweb4.0发布</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2005年11月</span></td><td>qgWeb3.0发布（分企业版及个人版）</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2005年08月</span></td><td>工作室论坛开通</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2005年07月</span></td><td>qgWeb1.0发布</td></tr><tr><td valign=\"middle\" align=\"right\"><span style=\"color: rgb(153, 0, 0);font-weight: bold;\">2005年04月</span></td><td>qgWeb0.54版发布</td></tr></tbody></table>');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_46`
---
-
-CREATE TABLE `qinggan_list_46` (
+CREATE TABLE IF NOT EXISTS `qinggan_list_46` (
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
@@ -1006,24 +808,16 @@ CREATE TABLE `qinggan_list_46` (
   `email` varchar(255) NOT NULL DEFAULT '' COMMENT '邮箱',
   `content` longtext NOT NULL COMMENT '内容',
   `adm_reply` longtext NOT NULL COMMENT '管理员回复',
-  `pic` varchar(255) NOT NULL DEFAULT '' COMMENT '图片'
+  `pic` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='留言模块';
-
---
--- 转存表中的数据 `qinggan_list_46`
---
 
 INSERT INTO `qinggan_list_46` (`id`, `site_id`, `project_id`, `cate_id`, `fullname`, `email`, `content`, `adm_reply`, `pic`) VALUES
 (1285, 1, 96, 0, '测试留言', '测试留言', '测试留言', '', ''),
 (1869, 1, 96, 0, 'fasfasdfasdf', 'fasdfasdfasdf', '<p>fasdfasdfasdfasdfadf<br/></p>', '<p>测试回复~<br/></p>', '');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_64`
---
-
-CREATE TABLE `qinggan_list_64` (
+CREATE TABLE IF NOT EXISTS `qinggan_list_64` (
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
@@ -1031,24 +825,16 @@ CREATE TABLE `qinggan_list_64` (
   `qq` varchar(255) NOT NULL DEFAULT '' COMMENT '客服QQ',
   `qtype` varchar(255) NOT NULL DEFAULT 'qq' COMMENT '客服类型',
   `weixin` varchar(255) NOT NULL DEFAULT '' COMMENT '微信号',
-  `qrcode` varchar(255) NOT NULL DEFAULT '' COMMENT '微信二维码'
+  `qrcode` varchar(255) NOT NULL DEFAULT '' COMMENT '微信二维码',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='客服';
-
---
--- 转存表中的数据 `qinggan_list_64`
---
 
 INSERT INTO `qinggan_list_64` (`id`, `site_id`, `project_id`, `cate_id`, `qq`, `qtype`, `weixin`, `qrcode`) VALUES
 (1305, 1, 148, 0, '40782502', 'qq', '', ''),
 (1427, 1, 148, 0, '', 'weixin', 'phpok83', '1348');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_65`
---
-
-CREATE TABLE `qinggan_list_65` (
+CREATE TABLE IF NOT EXISTS `qinggan_list_65` (
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
@@ -1062,35 +848,25 @@ CREATE TABLE `qinggan_list_65` (
   `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
   `dfile` varchar(255) NOT NULL DEFAULT '' COMMENT '附件',
   `dlink` varchar(255) NOT NULL DEFAULT '' COMMENT '附件链接',
-  `onlyuser` int(11) NOT NULL DEFAULT '0' COMMENT '限制会员可下载'
+  `onlyuser` int(11) NOT NULL DEFAULT '0' COMMENT '限制会员可下载',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='资源下载';
 
---
--- 转存表中的数据 `qinggan_list_65`
---
-
-INSERT INTO `qinggan_list_65` (`id`, `site_id`, `project_id`, `cate_id`, `note`, `fsize`, `content`, `version`, `website`, `author`, `thumb`, `dfile`, `dlink`, `onlyuser`) VALUES
-(1855, 1, 151, 200, '实现主题复制功能，做模板时很适用噢', '5KB', '<p>实现主题复制功能，做模板时很适用噢</p>', '1.0', 'https://www.phpok.com', 'phpok.com', '1344', '', '', 1);
-
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_66`
---
-
-CREATE TABLE `qinggan_list_66` (
+CREATE TABLE IF NOT EXISTS `qinggan_list_66` (
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
   `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `content` longtext NOT NULL COMMENT '内容',
   `toplevel` varchar(255) NOT NULL DEFAULT '0' COMMENT '置顶',
-  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图'
+  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`),
+  KEY `site_project` (`site_id`,`project_id`),
+  KEY `site_cate` (`site_id`,`cate_id`),
+  KEY `project_cate` (`site_id`,`project_id`,`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='论坛BBS';
-
---
--- 转存表中的数据 `qinggan_list_66`
---
 
 INSERT INTO `qinggan_list_66` (`id`, `site_id`, `project_id`, `cate_id`, `content`, `toplevel`, `thumb`) VALUES
 (1311, 1, 152, 204, '<p>测试论坛功能</p>', '', ''),
@@ -1098,25 +874,17 @@ INSERT INTO `qinggan_list_66` (`id`, `site_id`, `project_id`, `cate_id`, `conten
 (1854, 1, 152, 204, '<p>测试新主题测试新主题测试新主题测试新主题测试新主题</p>', '', '1040'),
 (1870, 1, 152, 206, '<p>嘿嘿~~~<br/></p>', '', '1314');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_68`
---
-
-CREATE TABLE `qinggan_list_68` (
+CREATE TABLE IF NOT EXISTS `qinggan_list_68` (
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
   `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
   `pictures` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
-  `content` longtext NOT NULL COMMENT '内容'
+  `content` longtext NOT NULL COMMENT '内容',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='图集相册';
-
---
--- 转存表中的数据 `qinggan_list_68`
---
 
 INSERT INTO `qinggan_list_68` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `pictures`, `content`) VALUES
 (1765, 1, 144, 211, '1025', '1025,1028,1027,1026', ''),
@@ -1125,68 +893,34 @@ INSERT INTO `qinggan_list_68` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`
 (1768, 1, 144, 211, '1015', '1015,1017,1016', ''),
 (1769, 1, 144, 211, '1013', '1011,1012,1010', '');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_75`
---
-
-CREATE TABLE `qinggan_list_75` (
-  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
-  `fullname` varchar(255) NOT NULL DEFAULT '' COMMENT '姓名',
-  `mobile` varchar(255) NOT NULL DEFAULT '' COMMENT '手机号',
-  `bankprice` varchar(255) NOT NULL DEFAULT '' COMMENT '汇款金额',
-  `note` longtext NOT NULL COMMENT '摘要',
-  `bankname` varchar(255) NOT NULL DEFAULT '' COMMENT '汇款银行'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='银行汇款';
-
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_78`
---
-
-CREATE TABLE `qinggan_list_78` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_list_78` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
   `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
   `content` longtext NOT NULL COMMENT '内容',
   `video` varchar(255) NOT NULL DEFAULT '' COMMENT '视频地址',
-  `mp4` varchar(255) NOT NULL DEFAULT '' COMMENT '视频文件'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='视频库';
-
---
--- 转存表中的数据 `qinggan_list_78`
---
+  `mp4` varchar(255) NOT NULL DEFAULT '' COMMENT '视频文件',
+  PRIMARY KEY (`id`),
+  KEY `site_id_index` (`site_id`,`project_id`,`cate_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3367 DEFAULT CHARSET=utf8 COMMENT='视频库';
 
 INSERT INTO `qinggan_list_78` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `content`, `video`, `mp4`) VALUES
 (3366, 1, 390, 0, '1398', '', '', '1399');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_attr`
---
-
-CREATE TABLE `qinggan_list_attr` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_list_attr` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `aid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '属性组ID',
   `vid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '参数ID',
   `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '增减价格值',
   `weight` float NOT NULL DEFAULT '0' COMMENT '重量增减',
   `volume` float NOT NULL DEFAULT '0' COMMENT '体积增减值，带-号为减值',
-  `taxis` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '排序'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='主题属性';
-
---
--- 转存表中的数据 `qinggan_list_attr`
---
+  `taxis` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '排序',
+  PRIMARY KEY (`id`),
+  KEY `tid` (`tid`)
+) ENGINE=MyISAM AUTO_INCREMENT=84 DEFAULT CHARSET=utf8 COMMENT='主题属性';
 
 INSERT INTO `qinggan_list_attr` (`id`, `tid`, `aid`, `vid`, `price`, `weight`, `volume`, `taxis`) VALUES
 (10, 1306, 3, 7, '5.0000', 0, 0, 10),
@@ -1221,25 +955,16 @@ INSERT INTO `qinggan_list_attr` (`id`, `tid`, `aid`, `vid`, `price`, `weight`, `
 (78, 1762, 8, 37, '3200.0000', 0, 0, 10),
 (77, 1762, 8, 34, '0.0000', 0, 0, 5);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_biz`
---
-
-CREATE TABLE `qinggan_list_biz` (
+CREATE TABLE IF NOT EXISTS `qinggan_list_biz` (
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '产品ID',
   `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '价格',
   `currency_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '货币ID',
   `weight` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '重量，单位是Kg',
   `volume` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '体积，单位立方米',
   `unit` varchar(50) NOT NULL COMMENT '单位',
-  `is_virtual` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0实物1虚拟产品'
+  `is_virtual` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0实物1虚拟产品',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='电子商务';
-
---
--- 转存表中的数据 `qinggan_list_biz`
---
 
 INSERT INTO `qinggan_list_biz` (`id`, `price`, `currency_id`, `weight`, `volume`, `unit`, `is_virtual`) VALUES
 (1253, '300.0000', 1, 0, 0, '', 0),
@@ -1278,20 +1003,13 @@ INSERT INTO `qinggan_list_biz` (`id`, `price`, `currency_id`, `weight`, `volume`
 (1977, '3288.0000', 1, 0, 0, '台', 1),
 (1984, '0.0000', 1, 0, 0, '', 0);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_list_cate`
---
-
-CREATE TABLE `qinggan_list_cate` (
+CREATE TABLE IF NOT EXISTS `qinggan_list_cate` (
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `cate_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID'
+  `cate_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
+  PRIMARY KEY (`id`,`cate_id`),
+  KEY `id` (`id`),
+  KEY `cate_id` (`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='主题绑定的分类';
-
---
--- 转存表中的数据 `qinggan_list_cate`
---
 
 INSERT INTO `qinggan_list_cate` (`id`, `cate_id`) VALUES
 (1311, 204),
@@ -1309,23 +1027,17 @@ INSERT INTO `qinggan_list_cate` (`id`, `cate_id`) VALUES
 (1768, 211),
 (1769, 211),
 (1854, 204),
-(1855, 200),
 (1870, 206),
 (1933, 68),
 (1934, 8),
 (1935, 8),
 (1936, 8),
 (1996, 68),
-(1997, 68);
+(1997, 68),
+(3384, 8);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_log`
---
-
-CREATE TABLE `qinggan_log` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_log` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `note` varchar(255) NOT NULL COMMENT '日志摘要',
   `url` varchar(255) NOT NULL COMMENT '请求网址',
   `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '执行时间',
@@ -1337,62 +1049,113 @@ CREATE TABLE `qinggan_log` (
   `ip` varchar(255) NOT NULL COMMENT '登录IP',
   `referer` varchar(255) NOT NULL COMMENT '来源网址',
   `mask` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0表示系统日志，1表示手动断点日志用于调试',
-  `session_id` varchar(255) NOT NULL COMMENT 'SESSION_ID'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='日志记录';
-
---
--- 转存表中的数据 `qinggan_log`
---
+  `session_id` varchar(255) NOT NULL COMMENT 'SESSION_ID',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=47 DEFAULT CHARSET=utf8 COMMENT='日志记录';
 
 INSERT INTO `qinggan_log` (`id`, `note`, `url`, `dateline`, `app_id`, `ctrl`, `func`, `admin_id`, `user_id`, `ip`, `referer`, `mask`, `session_id`) VALUES
-(1, '未指定产品', 'http://localhost/phpok/index.php?c=plugin&f=exec&id=compare&exec=products', 1567776086, 'www', 'plugin', 'exec', 0, 0, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'rjsm3rqu7u5av62v3r4p4s18ut'),
-(2, '管理员登录成功', 'http://localhost/phpok/admin.php?c=login&f=ok', 1569393420, 'admin', 'login', 'ok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=login&_noCache=0.1569393415', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(3, '会员组编辑成功', 'http://localhost/phpok/admin.php?c=usergroup&f=setok', 1569403779, 'admin', 'usergroup', 'setok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=usergroup&f=set&id=2', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(4, '会员编辑成功', 'http://localhost/phpok/admin.php?c=user&f=setok', 1569404013, 'admin', 'user', 'setok', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=user&f=set&id=38&_noCache=0.1569404006', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(5, '添加成功', 'http://localhost/phpok/admin.php?c=payment&f=save&_noCache=0.1569412120', 1569412191, 'admin', 'payment', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=payment&f=set&gid=1&code=paypalcc', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(6, '999.00元', 'http://localhost/phpok/api.php?f=price&price=999.0000&from=1&to=1&symbol=1&_=1569412377535', 1569412379, 'api', 'index', 'price', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(7, '1,099.00元', 'http://localhost/phpok/api.php?f=price&price=1099&from=1&to=1&symbol=1&_=1569412377537', 1569412382, 'api', 'index', 'price', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1761', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(8, '1', 'http://localhost/phpok/api.php?c=cart&f=total&_=1569412384135', 1569412384, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=cart&f=checkout&id[]=1', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(9, '成功创建支付链，请稍候，即将为您跳转支付页面…', 'http://localhost/phpok/index.php?c=payment&f=create&id=6&payment=39', 1569412388, 'www', 'payment', 'create', 0, 23, '::1', 'http://localhost/phpok/index.php?c=cart&f=checkout&id[]=1', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(10, '错误代码：81002，错误信息：Method Specified is not Supported', 'http://localhost/phpok/index.php?c=payment&f=submit&id=6&_noCache=0.1569412388', 1569412391, 'www', 'payment', 'submit', 0, 23, '::1', 'http://localhost/phpok/index.php?c=payment&f=create&id=6&payment=39', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(11, '3,288.00元', 'http://localhost/phpok/api.php?f=price&price=3288.0000&from=1&to=1&symbol=1&_=1569415785209', 1569415792, 'api', 'index', 'price', 0, 23, '::1', 'http://localhost/phpok/index.php?id=1763', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(12, '10', 'http://localhost/phpok/api.php?c=cart&f=total&_=1569415794902', 1569415795, 'api', 'cart', 'total', 0, 23, '::1', 'http://localhost/phpok/index.php?c=cart&f=checkout&id[]=2', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(13, '成功创建支付链，请稍候，即将为您跳转支付页面…', 'http://localhost/phpok/index.php?c=payment&f=create&id=7&payment=15', 1569415798, 'www', 'payment', 'create', 0, 23, '::1', 'http://localhost/phpok/index.php?c=cart&f=checkout&id[]=2', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(14, '会员信息不存在', 'http://localhost/phpok/api.php?c=login&f=save', 1569415957, 'api', 'login', 'save', 0, 0, '127.0.0.1', 'http://localhost/phpok/index.php?c=login&_noCache=0.1569415933', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(15, '6,898.00元', 'http://localhost/phpok/api.php?f=price&price=6898&from=1&to=1&symbol=1&_=1569415999907', 1569416004, 'api', 'index', 'price', 0, 42, '127.0.0.1', 'http://localhost/phpok/index.php?id=1762', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(16, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_=1569416009990', 1569416010, 'api', 'cart', 'total', 0, 42, '127.0.0.1', 'http://localhost/phpok/index.php?c=cart&f=checkout&id[]=3', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(17, '手机号或邮箱必须有一个不为空', 'http://localhost/phpok/api.php?c=order&f=create', 1569416011, 'api', 'order', 'create', 0, 42, '127.0.0.1', 'http://localhost/phpok/index.php?c=cart&f=checkout&id[]=3', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(18, '应用 usercp 不存在方法 address_setting_f', 'http://localhost/phpok/api.php?c=usercp&f=address_setting', 1569416029, 'api', 'usercp', 'address_setting', 0, 42, '127.0.0.1', 'http://localhost/phpok/index.php?c=usercp&f=address_setting', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(19, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_=1569416168280', 1569416168, 'api', 'cart', 'total', 0, 42, '127.0.0.1', 'http://localhost/phpok/index.php?c=usercp&f=address_setting', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(20, '省份信息不能为空', 'http://localhost/phpok/api.php?c=address&f=save', 1569416180, 'api', 'address', 'save', 0, 42, '127.0.0.1', 'http://localhost/phpok/index.php?c=usercp&f=address_setting', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(21, '3', 'http://localhost/phpok/api.php?c=cart&f=total&_=1569416332336', 1569416333, 'api', 'cart', 'total', 0, 42, '127.0.0.1', 'http://localhost/phpok/index.php?c=cart&f=checkout&id[]=3', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd'),
-(22, '成功创建支付链，请稍候，即将为您跳转支付页面…', 'http://localhost/phpok/index.php?c=payment&f=create&id=8&payment=15', 1569416418, 'www', 'payment', 'create', 0, 42, '127.0.0.1', 'http://localhost/phpok/index.php?c=cart&f=checkout&id[]=3', 0, 'm86ir8ib08v6rvv7p8d3ru4hcd');
+(1, '您当前是最新版本，不需要再升级', 'http://localhost/phpok/admin.php?c=update&f=check&_=1575630367897', 1575630369, 'admin', 'update', 'check', 1, 0, '::1', 'http://localhost/phpok/admin.php', 0, 'uha7r0avf6u0ek72ddlj9h8045'),
+(2, '附件信息获取失败，可能已经删除，请检查', 'http://localhost/phpok/admin.php?c=upload&f=thumbshow&id=1344&_=1575697969319', 1575697971, 'admin', 'upload', 'thumbshow', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1278', 0, '0e76o1qgiej9tmtq8on0m3hf02'),
+(3, '无分类', 'http://localhost/phpok/admin.php?c=call&f=cate_list&id=41', 1575698142, 'admin', 'call', 'cate_list', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=call&f=set&id=290', 0, '0e76o1qgiej9tmtq8on0m3hf02'),
+(4, '未指定ID', 'http://localhost/phpok/admin.php?c=upload&f=thumbshow&id=0&_=1575698285933', 1575698286, 'admin', 'upload', 'thumbshow', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1277', 0, '0e76o1qgiej9tmtq8on0m3hf02'),
+(5, '应用 usercp 不存在方法 address_setting_f', 'http://localhost/phpok/api.php?c=usercp&f=address_setting', 1576066966, 'api', 'usercp', 'address_setting', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=address_setting', 0, 'c0m8a1dsc9ugsd9355vi3o8a34'),
+(6, '姓名不能为空', 'http://localhost/phpok/api.php?c=address&f=save', 1576067419, 'api', 'address', 'save', 0, 23, '::1', 'http://localhost/phpok/index.php?c=usercp&f=address_setting', 0, 'c0m8a1dsc9ugsd9355vi3o8a34'),
+(7, '未登录会员不能执行此操作', 'http://192.168.1.88/phpok/index.php?c=usercp&f=address', 1576067430, 'www', 'usercp', 'address', 0, 0, '192.168.1.88', '', 0, '19270p29ksc4ulmrapuk135dd6'),
+(8, '应用 usercp 不存在方法 address_delete_f', 'http://192.168.1.88/phpok/api.php?c=usercp&f=address_delete&id=4&_=1576067463862', 1576067474, 'api', 'usercp', 'address_delete', 0, 23, '192.168.1.88', 'http://192.168.1.88/phpok/index.php?c=usercp&f=address', 0, '19270p29ksc4ulmrapuk135dd6'),
+(9, '默认地址不能删除', 'http://192.168.1.88/phpok/api.php?c=address&f=delete&id=4&_=1576067701987', 1576067705, 'api', 'address', 'delete', 0, 23, '192.168.1.88', 'http://192.168.1.88/phpok/index.php?c=usercp&f=address', 0, '19270p29ksc4ulmrapuk135dd6'),
+(10, '旧密码不能为空', 'http://192.168.1.88/phpok/api.php?c=usercp&f=passwd', 1576068818, 'api', 'usercp', 'passwd', 0, 23, '192.168.1.88', 'http://192.168.1.88/phpok/index.php?c=usercp&f=passwd', 0, '19270p29ksc4ulmrapuk135dd6'),
+(11, '应用未安装或未启用', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=code&code=0338wDlE1PFbT80SwbnE1iyClE18wDlm', 1576072458, 'api', 'index', 'index', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, '5omlqs8fth0iniejmof1foipe4'),
+(12, '应用未安装或未启用', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=code&code=043FurCc0eFlHA1we3Ac0rcyCc0FurCE', 1576072562, 'api', 'index', 'index', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, '2iq7gkv5tkphmdmogs6be3lfp4'),
+(13, '应用未安装或未启用', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=code&code=043CuMU50qA0NC15e8W50JQOU50CuMUI', 1576072753, 'api', 'index', 'index', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, '6p1a1bpjulp518vr57fviqm7b2'),
+(14, '应用未安装或未启用', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=code&code=023Vbqji26HM4B0JgDli2obzji2VbqjK', 1576074228, 'api', 'index', 'index', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, '1f3hrtjn0ee1qooogklkabggq7'),
+(15, '40029: invalid code, hints: [ req_id: nKfF5ZyFe-4Ny3sA ]', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=login&code=023t1M4u0Ry0fj1XsK1u0mVq4u0t1M4i', 1576074451, 'api', 'wxappconfig', 'login', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, '0aclrrifdjavnrm5gmnh6f3lo7'),
+(16, '订单未结束，暂不支持评论', 'http://localhost/phpok/index.php?c=order&f=comment&id=11', 1576113686, 'www', 'order', 'comment', 0, 23, '::1', 'http://localhost/phpok/index.php?c=order&_noCache=0.1576113659', 0, '8le1kv5n7uvucrij814uutkc06'),
+(17, '40029: invalid code, hints: [ req_id: vigFC0yFe-QplQ ]', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=login&code=0335ERrp1ZL6gj0RLrsp1RdYrp15ERrN', 1576230216, 'api', 'wxappconfig', 'login', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, '0aclrrifdjavnrm5gmnh6f3lo7'),
+(18, '40029: invalid code, hints: [ req_id: OJHF7qaLRa-fbN.Ca ]', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=login&code=043R9U4n1lObeq0nIQ2n1yrL4n1R9U42', 1576499455, 'api', 'wxappconfig', 'login', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, '0aclrrifdjavnrm5gmnh6f3lo7'),
+(19, '未启用API或前台可访问', 'http://192.168.1.88/phpok/api.php?siteId=1&c=content&f=index&id=1756', 1576518137, 'api', 'content', 'index', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, 'uv0vmv2um05c7lr8cf5ndhvtq2'),
+(20, '未绑定Code信息，无法登录', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=login', 1576573874, 'api', 'wxappconfig', 'login', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, 'uv0vmv2um05c7lr8cf5ndhvtq2'),
+(21, '未绑定Code信息，无法登录', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=login', 1576574623, 'api', 'wxappconfig', 'login', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, 'uv0vmv2um05c7lr8cf5ndhvtq2'),
+(22, '未绑定Code信息，无法登录', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=login', 1576574694, 'api', 'wxappconfig', 'login', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, 'uv0vmv2um05c7lr8cf5ndhvtq2'),
+(23, '未绑定Code信息，无法登录', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=login', 1576574818, 'api', 'wxappconfig', 'login', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, 'uv0vmv2um05c7lr8cf5ndhvtq2'),
+(24, '未绑定Code信息，无法登录', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=login', 1576574964, 'api', 'wxappconfig', 'login', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, 'uv0vmv2um05c7lr8cf5ndhvtq2'),
+(25, '没有提示内容', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=login', 1576574992, 'api', 'wxappconfig', 'login', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 1, 'uv0vmv2um05c7lr8cf5ndhvtq2'),
+(26, '未绑定Code信息，无法登录', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=login', 1576575275, 'api', 'wxappconfig', 'login', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, 'uv0vmv2um05c7lr8cf5ndhvtq2'),
+(27, '40029: invalid code, hints: [ req_id: RiiFA5yFe-hsHUda ]', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=login', 1576575381, 'api', 'wxappconfig', 'login', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, 'uv0vmv2um05c7lr8cf5ndhvtq2'),
+(28, '40029: invalid code, hints: [ req_id: siiFpz4ce-eJ ]', 'http://192.168.1.88/phpok/api.php?siteId=1&c=wxappconfig&f=login', 1576575449, 'api', 'wxappconfig', 'login', 0, 0, '192.168.1.88', 'https://servicewechat.com/wxbae7f811391c47b2/devtools/page-frame.html', 0, 'uv0vmv2um05c7lr8cf5ndhvtq2'),
+(29, '应用 safecheck 不存在方法 local_f', 'http://localhost/phpok/admin.php?c=safecheck&f=local&_=1576864378022', 1576864384, 'admin', 'safecheck', 'local', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=safecheck&menu_id=109', 0, 'jiicr1af18im493nuvbvq6r6v0'),
+(30, '未指定ID', 'http://localhost/phpok/admin.php?c=upload&f=thumbshow&id=0&_=1577074167950', 1577074169, 'admin', 'upload', 'thumbshow', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1276', 0, 'm4t7e0si106c4ap8raq6gsgim2'),
+(31, '上传的文件异常', 'http://localhost/phpok/admin.php?c=upload&f=save&PHPSESSION=m4t7e0si106c4ap8raq6gsgim2&id=WU_FILE_0&name=1.jpg&type=image%2Fjpeg&lastModifiedDate=2019%2F12%2F23+%E4%B8%8B%E5%8D%8812%3A09%3A48&size=185368&chunks=2&chunk=0&cateid=1', 1577074188, 'admin', 'upload', 'save', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1276', 0, 'm4t7e0si106c4ap8raq6gsgim2'),
+(32, '未指定ID', 'http://localhost/phpok/admin.php?c=upload&f=thumbshow&id=0&_=1577074419677', 1577074420, 'admin', 'upload', 'thumbshow', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1276', 0, 'm4t7e0si106c4ap8raq6gsgim2'),
+(33, '未指定ID', 'http://localhost/phpok/admin.php?c=upload&f=thumbshow&id=0&_=1577075226367', 1577075227, 'admin', 'upload', 'thumbshow', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1276', 0, 'm4t7e0si106c4ap8raq6gsgim2'),
+(34, '未指定ID', 'http://localhost/phpok/admin.php?c=upload&f=thumbshow&id=0&_=1577076613770', 1577076615, 'admin', 'upload', 'thumbshow', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1276', 0, 'm4t7e0si106c4ap8raq6gsgim2'),
+(35, '未指定ID', 'http://192.168.1.88/phpok/admin.php?c=upload&f=thumbshow&id=0&_=1577082845765', 1577082847, 'admin', 'upload', 'thumbshow', 1, 0, '192.168.1.161', 'http://192.168.1.88/phpok/admin.php?c=list&f=edit&id=1276', 0, '54mj7cr3d04k7t2n5vrc1h1h63'),
+(36, '未指定ID', 'http://192.168.1.88/phpok/admin.php?c=upload&f=thumbshow&id=0&_=1577083178165', 1577083180, 'admin', 'upload', 'thumbshow', 1, 0, '192.168.1.161', 'http://192.168.1.88/phpok/admin.php?c=list&f=edit&id=1276', 0, '54mj7cr3d04k7t2n5vrc1h1h63'),
+(37, '二次验证不通过，请检查', 'http://192.168.1.88/phpok/api.php?c=filemanage&f=check&code=123465&_=1577083307262', 1577083311, 'api', 'filemanage', 'check', 0, 0, '192.168.1.161', 'http://192.168.1.88/phpok/admin.php?c=filemanage&menu_id=105', 0, '54mj7cr3d04k7t2n5vrc1h1h63'),
+(38, 'Array\n(\n    [thumb] => Array\n        (\n            [ftype] => 97\n            [title] => 缩略图\n            [identifier] => thumb\n            [field_type] => varchar\n            [note] => 请准备400x300，或200x150规格的图片，其他规格不符合要求\n            [form_type] => upload\n  ', 'http://localhost/phpok/admin.php?c=module&f=import&zipfile=_cache%2F01f28c083a9f8a3f.zip&_=1577086974323', 1577086980, 'admin', 'module', 'import', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=import', 1, '0crlvkhb2fkt6crk5p67siljc7'),
+(39, 'Array\n(\n    [ftype] => 89\n    [title] => 缩略图\n    [identifier] => thumb\n    [field_type] => varchar\n    [note] => 请准备400x300，或200x150规格的图片，其他规格不符合要求\n    [form_type] => upload\n    [form_style] => \n    [format] => safe\n    [content] => \n    [taxis] => 5\n    ', 'http://localhost/phpok/admin.php?c=module&f=import&zipfile=_cache%2F01f28c083a9f8a3f.zip&_=1577086974323', 1577086980, 'admin', 'module', 'import', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=import', 1, '0crlvkhb2fkt6crk5p67siljc7'),
+(40, 'Array\n(\n    [ftype] => 89\n    [title] => 文章来源\n    [identifier] => linksite\n    [field_type] => varchar\n    [note] => 请填写来源网站的名称\n    [form_type] => text\n    [form_style] => width:200px\n    [format] => safe\n    [content] => \n    [taxis] => 15\n    [ext] => a', 'http://localhost/phpok/admin.php?c=module&f=import&zipfile=_cache%2F01f28c083a9f8a3f.zip&_=1577086974323', 1577086980, 'admin', 'module', 'import', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=import', 1, '0crlvkhb2fkt6crk5p67siljc7'),
+(41, 'Array\n(\n    [ftype] => 89\n    [title] => 来源网址\n    [identifier] => linkurl\n    [field_type] => varchar\n    [note] => 请填写链接地址，外部链接地址以 // 开头\n    [form_type] => text\n    [form_style] => \n    [format] => safe\n    [content] => \n    [taxis] => 20\n    [ext] => a:', 'http://localhost/phpok/admin.php?c=module&f=import&zipfile=_cache%2F01f28c083a9f8a3f.zip&_=1577086974323', 1577086980, 'admin', 'module', 'import', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=import', 1, '0crlvkhb2fkt6crk5p67siljc7'),
+(42, 'Array\n(\n    [ftype] => 89\n    [title] => 责编\n    [identifier] => editor\n    [field_type] => varchar\n    [note] => 填写主要编辑人员\n    [form_type] => text\n    [form_style] => \n    [format] => safe\n    [content] => \n    [taxis] => 25\n    [ext] => a:5:{s:8:\"form_btn', 'http://localhost/phpok/admin.php?c=module&f=import&zipfile=_cache%2F01f28c083a9f8a3f.zip&_=1577086974323', 1577086980, 'admin', 'module', 'import', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=import', 1, '0crlvkhb2fkt6crk5p67siljc7'),
+(43, 'Array\n(\n    [ftype] => 89\n    [title] => 摘要\n    [identifier] => note\n    [field_type] => longtext\n    [note] => 简要文字描述\n    [form_type] => editor\n    [form_style] => \n    [format] => html\n    [content] => \n    [taxis] => 30\n    [ext] => a:7:{s:6:\"height\";s', 'http://localhost/phpok/admin.php?c=module&f=import&zipfile=_cache%2F01f28c083a9f8a3f.zip&_=1577086974323', 1577086980, 'admin', 'module', 'import', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=import', 1, '0crlvkhb2fkt6crk5p67siljc7'),
+(44, 'Array\n(\n    [ftype] => 89\n    [title] => 内容\n    [identifier] => content\n    [field_type] => longtext\n    [note] => \n    [form_type] => editor\n    [form_style] => \n    [format] => html_js\n    [content] => \n    [taxis] => 255\n    [ext] => a:8:{s:6:\"height\";', 'http://localhost/phpok/admin.php?c=module&f=import&zipfile=_cache%2F01f28c083a9f8a3f.zip&_=1577086974323', 1577086980, 'admin', 'module', 'import', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=import', 1, '0crlvkhb2fkt6crk5p67siljc7'),
+(45, 'Array\n(\n    [thumb] => Array\n        (\n            [ftype] => 97\n            [title] => 缩略图\n            [identifier] => thumb\n            [field_type] => varchar\n            [note] => 请准备400x300，或200x150规格的图片，其他规格不符合要求\n            [form_type] => upload\n  ', 'http://localhost/phpok/admin.php?c=module&f=import&zipfile=_cache%2F3fe3b296e333e580.zip&_=1577087326674', 1577087330, 'admin', 'module', 'import', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=module&f=import', 1, '0crlvkhb2fkt6crk5p67siljc7'),
+(46, '未指定ID', 'http://localhost/phpok/admin.php?c=upload&f=thumbshow&id=0&_=1577089150576', 1577089150, 'admin', 'upload', 'thumbshow', 1, 0, '::1', 'http://localhost/phpok/admin.php?c=list&f=edit&id=1276', 0, '0crlvkhb2fkt6crk5p67siljc7');
 
--- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `qinggan_menu` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID，主键',
+  `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
+  `group_id` varchar(255) NOT NULL COMMENT '菜单组ID',
+  `parent_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID，支持无限级菜单',
+  `title` varchar(255) NOT NULL COMMENT '菜单名称',
+  `type` varchar(255) NOT NULL COMMENT '类型，project指项目，cate指分类，content指内容，link自定义',
+  `project_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `list_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `link` varchar(255) NOT NULL COMMENT '自定义链接，最长不能超过255',
+  `target` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0当前页，1新窗口',
+  `is_userid` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0游客，1仅限会员',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，最大255，值越小越往前靠',
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未审，1正常',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`group_id`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='菜单管理';
 
---
--- 表的结构 `qinggan_module`
---
+INSERT INTO `qinggan_menu` (`id`, `site_id`, `group_id`, `parent_id`, `title`, `type`, `project_id`, `cate_id`, `list_id`, `link`, `target`, `is_userid`, `taxis`, `status`) VALUES
+(1, 1, 'top', 0, '网站首页', 'link', 0, 0, 0, 'index.php', 0, 0, 5, 1),
+(2, 1, 'top', 0, '关于我们', 'content', 87, 0, 1756, '', 0, 0, 10, 1),
+(3, 1, 'top', 2, '发展历程', 'content', 87, 0, 1758, '', 0, 0, 10, 1),
+(4, 1, 'top', 2, '公司简介', 'content', 87, 0, 1756, '', 0, 0, 5, 1),
+(5, 1, 'top', 0, '资讯中心', 'project', 43, 0, 0, '', 0, 0, 15, 1),
+(6, 1, 'top', 5, '公司新闻', 'cate', 43, 8, 0, '', 0, 0, 5, 1),
+(7, 1, 'top', 5, '行业新闻', 'cate', 43, 68, 0, '', 0, 0, 10, 1),
+(8, 1, 'top', 0, '产品展示', 'project', 45, 0, 0, '', 0, 0, 20, 1),
+(9, 1, 'top', 0, '在线留言', 'project', 96, 0, 0, '', 0, 0, 25, 1),
+(10, 1, 'top', 0, '图集相册', 'project', 144, 0, 0, '', 0, 0, 30, 1),
+(11, 1, 'top', 0, '下载中心', 'project', 151, 0, 0, '', 0, 0, 35, 1),
+(12, 1, 'top', 0, '论坛BBS', 'project', 152, 0, 0, '', 0, 0, 40, 1),
+(13, 1, 'bottom', 0, '网站首页', 'link', 0, 0, 0, 'index.php', 0, 0, 5, 1),
+(14, 1, 'bottom', 0, '公司简介', 'content', 87, 0, 1756, '', 0, 0, 10, 1),
+(15, 1, 'bottom', 0, '发展历程', 'content', 87, 0, 1758, '', 0, 0, 15, 1),
+(16, 1, 'bottom', 0, '资讯中心', 'project', 43, 0, 0, '', 0, 0, 20, 1),
+(17, 1, 'bottom', 0, '在线留言', 'project', 96, 0, 0, '', 0, 0, 25, 1),
+(18, 1, 'bottom', 0, '视频库', 'project', 390, 0, 0, '', 0, 0, 30, 1),
+(19, 1, 'bottom', 0, '联系我们', 'content', 87, 0, 1757, '', 0, 0, 35, 1);
 
-CREATE TABLE `qinggan_module` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID号',
+CREATE TABLE IF NOT EXISTS `qinggan_module` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
   `title` varchar(255) NOT NULL COMMENT '模块名称',
   `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不使用1使用',
   `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '模块排序',
   `note` varchar(255) NOT NULL COMMENT '模块说明',
   `layout` text NOT NULL COMMENT '布局',
   `mtype` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0联合模块，1独立模块',
-  `tbl` varchar(255) NOT NULL DEFAULT 'list' COMMENT '关联主表'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='模块管理，每创建一个模块自动创建一个表';
-
---
--- 转存表中的数据 `qinggan_module`
---
+  `tbl` varchar(255) NOT NULL DEFAULT 'list' COMMENT '关联主表',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=95 DEFAULT CHARSET=utf8 COMMENT='模块管理，每创建一个模块自动创建一个表';
 
 INSERT INTO `qinggan_module` (`id`, `title`, `status`, `taxis`, `note`, `layout`, `mtype`, `tbl`) VALUES
 (21, '图片轮播', 1, 20, '适用于图片播放器，图片友情链接', 'sort,pic,picmobile,link,target', 0, 'list'),
 (22, '文章资讯', 1, 10, '适用于新闻，文章之类', 'hits,dateline,sort,thumb', 0, 'list'),
-(23, '自定义链接', 1, 30, '适用于导航，页脚文本导航，文字友情链接', 'sort,link,target', 0, 'list'),
 (24, '产品', 1, 40, '适用于电子商务中产品展示模型', 'hits,dateline,sort,thumb', 0, 'list'),
 (40, '单页信息', 1, 60, '适用于公司简介，联系我们', 'hits,dateline,sort', 0, 'list'),
 (46, '留言模块', 1, 90, '', 'dateline,sort,fullname,email,content', 0, 'list'),
@@ -1400,34 +1163,26 @@ INSERT INTO `qinggan_module` (`id`, `title`, `status`, `taxis`, `note`, `layout`
 (65, '资源下载', 1, 70, '', 'hits,dateline,sort,fsize,version,onlyuser,thumb', 0, 'list'),
 (66, '论坛BBS', 1, 50, '', '', 0, 'list'),
 (68, '图集相册', 1, 80, '', 'hits,dateline,sort,thumb', 0, 'list'),
-(75, '银行汇款', 1, 140, '', 'dateline,user_id,bankname,fullname,mobile,bankprice', 0, 'list'),
 (77, '友情链接', 1, 145, '', 'sitename,linkurl,target,logo,tel', 1, 'list'),
-(78, '视频库', 1, 85, '', 'hits,dateline,sort,thumb', 0, 'list');
+(78, '视频库', 1, 85, '', 'hits,dateline,sort,thumb', 0, 'list'),
+(85, '过渡动画', 1, 150, '仅用于自定义动画过渡效果', 'hits,dateline,sort', 1, 'list');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_opt`
---
-
-CREATE TABLE `qinggan_opt` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
+CREATE TABLE IF NOT EXISTS `qinggan_opt` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
   `group_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '组ID',
   `parent_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID',
   `title` varchar(255) NOT NULL COMMENT '名称',
   `val` varchar(255) NOT NULL COMMENT '值',
-  `taxis` int(10) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='表单列表选项';
-
---
--- 转存表中的数据 `qinggan_opt`
---
+  `taxis` int(10) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
+  PRIMARY KEY (`id`),
+  KEY `group_id` (`group_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=15134 DEFAULT CHARSET=utf8 COMMENT='表单列表选项';
 
 INSERT INTO `qinggan_opt` (`id`, `group_id`, `parent_id`, `title`, `val`, `taxis`) VALUES
 (1, 1, 0, '未设置', '0', 30),
 (2, 1, 0, '男', '1', 10),
 (17, 4, 0, '是', '1', 10),
-(18, 4, 0, '否', '', 20),
+(18, 4, 0, '否', '0', 20),
 (21, 6, 0, '当前窗口', '_self', 10),
 (22, 6, 0, '新窗口', '_blank', 20),
 (23, 7, 0, '启用', '1', 10),
@@ -6431,21 +6186,12 @@ INSERT INTO `qinggan_opt` (`id`, `group_id`, `parent_id`, `title`, `val`, `taxis
 (15132, 20, 0, 'QQ客服', 'qq', 10),
 (15133, 20, 0, '微信客服', 'weixin', 20);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_opt_group`
---
-
-CREATE TABLE `qinggan_opt_group` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID ',
+CREATE TABLE IF NOT EXISTS `qinggan_opt_group` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID ',
   `title` varchar(100) NOT NULL COMMENT '名称，用于后台管理',
-  `link_symbol` varchar(10) NOT NULL COMMENT '连接字符，未设置使用英文竖线'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='可选菜单管理器';
-
---
--- 转存表中的数据 `qinggan_opt_group`
---
+  `link_symbol` varchar(10) NOT NULL COMMENT '连接字符，未设置使用英文竖线',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COMMENT='可选菜单管理器';
 
 INSERT INTO `qinggan_opt_group` (`id`, `title`, `link_symbol`) VALUES
 (1, '性别', ''),
@@ -6459,14 +6205,8 @@ INSERT INTO `qinggan_opt_group` (`id`, `title`, `link_symbol`) VALUES
 (19, '中国省市县信息', '|'),
 (20, '客服类型', '');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_order`
---
-
-CREATE TABLE `qinggan_order` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
+CREATE TABLE IF NOT EXISTS `qinggan_order` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
   `sn` varchar(255) NOT NULL COMMENT '订单编号，唯一值',
   `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示游客',
   `addtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '添加时间',
@@ -6480,31 +6220,27 @@ CREATE TABLE `qinggan_order` (
   `ext` text NOT NULL COMMENT '扩展内容信息，可用于存储一些扩展信息',
   `note` text NOT NULL COMMENT '摘要',
   `email` varchar(255) NOT NULL COMMENT '邮箱，用于接收通知',
-  `mobile` varchar(50) NOT NULL COMMENT '手机号，用于短信发送'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单中心';
-
---
--- 转存表中的数据 `qinggan_order`
---
+  `mobile` varchar(50) NOT NULL COMMENT '手机号，用于短信发送',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ordersn` (`sn`)
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='订单中心';
 
 INSERT INTO `qinggan_order` (`id`, `sn`, `user_id`, `addtime`, `price`, `currency_id`, `currency_rate`, `status`, `status_title`, `endtime`, `passwd`, `ext`, `note`, `email`, `mobile`) VALUES
 (1, 'P2019090243U00038001', 38, 1567413680, '5298.0000', 1, '1.00000000', 'unpaid', '等待付款', 0, '0c90e4ce5bb03e5a35de24e21a1adf06', '', '', '', '15818533971'),
 (2, 'P2019090925U00023001', 23, 1568010013, '4587.0000', 1, '1.00000000', 'unpaid', '等待付款', 0, 'debde84c3ef3c2714f71f2e85108e551', '', '', '40782502@qq.com', '15818533971'),
 (3, 'P2019092355U00023001', 23, 1569224466, '6898.0000', 1, '1.00000000', 'unpaid', '等待付款', 0, 'cd1ec19400a7b5da6e27694b9301c261', '', '', 'addd@demo.com', '15818533971'),
 (4, 'P2019092332U00023002', 23, 1569225036, '1118.0100', 2, '1.00000000', 'unpaid', '等待付款', 0, 'ef2ce68ddabdfd9908a2b898ccb387a4', '', '', 'addd@demo.com', '15818533971'),
-(5, 'P2019092348U00023003', 23, 1569225611, '3698.0000', 1, '6.16989994', 'cancel', '订单取消', 1569417700, 'bfb4f461af9274d509cbe5d823380a7d', '', '', 'addd@demo.com', '15818533971'),
+(5, 'P2019092348U00023003', 23, 1569225611, '3698.0000', 1, '6.16989994', 'unpaid', '等待付款', 1569417700, 'bfb4f461af9274d509cbe5d823380a7d', '', '', 'addd@demo.com', '15818533971'),
 (6, 'P2019092586U00023001', 23, 1569412388, '1099.0000', 1, '6.16989994', 'unpaid', '等待付款', 0, '1ca037c9b841932ad3659fe7057f826e', '', '', '40782502@qq.com', '15818533971'),
 (7, 'P2019092564U00023002', 23, 1569415798, '32880.0000', 1, '6.16989994', 'received', '客户签收', 0, '22758c62317911b7f14339348bc4f1a6', '', '', '40782502@qq.com', '15818533971'),
-(8, 'P2019092556U00042003', 42, 1569416418, '20694.0000', 1, '6.16989994', 'shipping', '正在发货', 0, 'fc37a392ad78bad2b55013033a4f8811', '', '', '', '15818533975');
+(8, 'P2019092556U00042003', 42, 1569416418, '20694.0000', 1, '6.16989994', 'shipping', '正在发货', 0, 'fc37a392ad78bad2b55013033a4f8811', '', '', '', '15818533975'),
+(9, 'P2019112449U00023001', 23, 1574586460, '8397.0000', 1, '6.16989994', 'unpaid', '等待付款', 0, 'b1369515547aaefae2c89cd7984dba01', '', '', '', '15818533971'),
+(10, 'P2019113098U00023001', 23, 1575119348, '4560.0000', 1, '6.16989994', 'unpaid', '等待付款', 0, '5a78ddf94fa27b33684c8a7d9be5f497', '', '', '40782502@qq.com', '15818533971'),
+(11, 'P2019120130U00023001', 23, 1575212075, '7875.0000', 1, '6.16989994', 'unpaid', '等待付款', 0, '4dbac2bfa7e1d5de2e6b0ae43f2f8662', '', '', '40782502@qq.com', '15818533971'),
+(12, 'P2019121115U00023001', 23, 1576068779, '4697.0000', 1, '6.16989994', 'unpaid', '等待付款', 0, 'c1494f8cc2ce638436d0f8656364c75b', '', '', 'admin@phpok.com', '15818533971');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_order_address`
---
-
-CREATE TABLE `qinggan_order_address` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_order_address` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID',
   `country` varchar(255) NOT NULL DEFAULT '中国' COMMENT '国家',
   `country_code` varchar(255) NOT NULL COMMENT '国家代码',
@@ -6520,12 +6256,9 @@ CREATE TABLE `qinggan_order_address` (
   `firstname` varchar(255) NOT NULL COMMENT '名字',
   `lastname` varchar(255) NOT NULL COMMENT '姓氏',
   `zipcode` varchar(50) NOT NULL COMMENT '邮编',
-  `type` varchar(255) NOT NULL DEFAULT 'shipping' COMMENT '地址类型，shipping表示收货地址，billing表示账单地址'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单地址库';
-
---
--- 转存表中的数据 `qinggan_order_address`
---
+  `type` varchar(255) NOT NULL DEFAULT 'shipping' COMMENT '地址类型，shipping表示收货地址，billing表示账单地址',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COMMENT='订单地址库';
 
 INSERT INTO `qinggan_order_address` (`id`, `order_id`, `country`, `country_code`, `province`, `city`, `county`, `address`, `address2`, `mobile`, `tel`, `email`, `fullname`, `firstname`, `lastname`, `zipcode`, `type`) VALUES
 (1, 1, '中国', '', '内蒙古自治区', '赤峰市', '阿鲁科尔沁旗', '演示地址', '', '15818533971', '', '', 'seika', '', '', '', 'shipping'),
@@ -6537,16 +6270,14 @@ INSERT INTO `qinggan_order_address` (`id`, `order_id`, `country`, `country_code`
 (7, 5, '中国', '', '广东省', '深圳市', '龙华区', '磊', '', '15818533971', '407825556666', 'addd@demo.com', 'OK', '', '', '40782502', 'shipping'),
 (8, 5, '中国', '', '', '', '', '', '', '', '', '', '', '', '', '', 'billing'),
 (9, 8, '中国', '', '山西省', '太原市', '小店区', 'adfasdfasdfasd', '', '15818533975', '', '', 'demo', '', '', '', 'shipping'),
-(10, 8, '中国', '', '', '', '', '', '', '', '', '', '', '', '', '', 'billing');
+(10, 8, '中国', '', '', '', '', '', '', '', '', '', '', '', '', '', 'billing'),
+(11, 9, '中国', '', '天津市', '天津市', '和平区', 'fasdfasdfasdf', '', '15818533971', '', '', '苏相锟', '', '', '', 'shipping'),
+(12, 9, '中国', '', '', '', '', '', '', '', '', '', '', '', '', '', 'billing'),
+(13, 12, '中国', '', '辽宁省', '沈阳市', '和平区', 'demo', '', '15818533971', '', 'admin@phpok.com', 'seika', '', '', '', 'shipping'),
+(14, 12, '中国', '', '', '', '', '', '', '', '', '', '', '', '', '', 'billing');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_order_express`
---
-
-CREATE TABLE `qinggan_order_express` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_order_express` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID号',
   `express_id` int(11) NOT NULL DEFAULT '0' COMMENT '物流ID号',
   `code` varchar(255) NOT NULL COMMENT '物流查询编码，可用于查询快递进度',
@@ -6555,43 +6286,35 @@ CREATE TABLE `qinggan_order_express` (
   `title` varchar(255) NOT NULL COMMENT '快递名称',
   `homepage` varchar(255) NOT NULL COMMENT '快递官网',
   `company` varchar(255) NOT NULL COMMENT '快递的公司全称',
-  `is_end` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未结束1已结束'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单中涉及到的物流分配';
+  `is_end` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未结束1已结束',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='订单中涉及到的物流分配';
 
--- --------------------------------------------------------
+INSERT INTO `qinggan_order_express` (`id`, `order_id`, `express_id`, `code`, `addtime`, `last_query_time`, `title`, `homepage`, `company`, `is_end`) VALUES
+(1, 8, 4, '0002', 1573263448, 0, '顺丰速运', 'http://www.sf-express.com/', '顺丰速运(集团)有限公司', 0),
+(2, 8, 4, '0003', 1573263456, 0, '顺丰速运', 'http://www.sf-express.com/', '顺丰速运(集团)有限公司', 0);
 
---
--- 表的结构 `qinggan_order_invoice`
---
-
-CREATE TABLE `qinggan_order_invoice` (
+CREATE TABLE IF NOT EXISTS `qinggan_order_invoice` (
   `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID号',
   `type` varchar(100) NOT NULL COMMENT '发票类型',
   `title` varchar(255) NOT NULL COMMENT '发票抬头',
   `content` text NOT NULL COMMENT '发票内容',
-  `note` text NOT NULL COMMENT '发票的备注信息'
+  `note` text NOT NULL COMMENT '发票的备注信息',
+  PRIMARY KEY (`order_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单发票';
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_order_log`
---
-
-CREATE TABLE `qinggan_order_log` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_order_log` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID',
   `order_express_id` int(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT '定单中的物流ID',
   `addtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '操作时间',
   `who` varchar(255) NOT NULL COMMENT '操作人名称（可以是公司名称，也可以是用户名，可以是物流等）',
   `note` text NOT NULL COMMENT '操作内容',
   `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID',
-  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '管理员ID'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单日志，用于了解当前的订单处理进度';
-
---
--- 转存表中的数据 `qinggan_order_log`
---
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '管理员ID',
+  PRIMARY KEY (`id`),
+  KEY `order_id` (`order_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COMMENT='订单日志，用于了解当前的订单处理进度';
 
 INSERT INTO `qinggan_order_log` (`id`, `order_id`, `order_express_id`, `addtime`, `who`, `note`, `user_id`, `admin_id`) VALUES
 (1, 1, 0, 1567413680, 'demo', '订单创建成功，订单编号：P2019090243U00038001', 38, 0),
@@ -6612,16 +6335,20 @@ INSERT INTO `qinggan_order_log` (`id`, `order_id`, `order_express_id`, `addtime`
 (16, 8, 0, 1569416418, 'demi123', '订单（P2019092556U00042003）状态变更为：等待付款', 42, 0),
 (17, 8, 0, 1569417686, '管理员：admin', '订单（P2019092556U00042003）状态变更为：正在发货', 0, 1),
 (18, 7, 0, 1569417692, '管理员：admin', '订单（P2019092564U00023002）状态变更为：客户签收', 0, 1),
-(19, 5, 0, 1569417700, '管理员：admin', '订单（P2019092348U00023003）状态变更为：订单取消', 0, 1);
+(19, 5, 0, 1569417700, '管理员：admin', '订单（P2019092348U00023003）状态变更为：订单取消', 0, 1),
+(20, 5, 0, 1574056070, 'admin', '订单（P2019092348U00023003）状态变更为：等待付款', 23, 0),
+(21, 9, 0, 1574586460, 'admin', '订单创建成功，订单编号：P2019112449U00023001', 23, 0),
+(22, 9, 0, 1574586460, 'admin', '订单（P2019112449U00023001）状态变更为：等待付款', 23, 0),
+(23, 10, 0, 1575119348, 'admin', '订单创建成功，订单编号：P2019113098U00023001', 23, 0),
+(24, 10, 0, 1575119348, 'admin', '使用积分抵扣27.00元，共消耗积分2700点', 23, 0),
+(25, 10, 0, 1575119348, 'admin', '订单（P2019113098U00023001）状态变更为：等待付款', 23, 0),
+(26, 11, 0, 1575212075, 'admin', '订单创建成功，订单编号：P2019120130U00023001', 23, 0),
+(27, 11, 0, 1575212075, 'admin', '订单（P2019120130U00023001）状态变更为：等待付款', 23, 0),
+(28, 12, 0, 1576068779, 'admin', '订单创建成功，订单编号：P2019121115U00023001', 23, 0),
+(29, 12, 0, 1576068779, 'admin', '订单（P2019121115U00023001）状态变更为：等待付款', 23, 0);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_order_payment`
---
-
-CREATE TABLE `qinggan_order_payment` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_order_payment` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID',
   `payment_id` varchar(255) NOT NULL DEFAULT '0' COMMENT '支付方式ID，数字表示网上业务支付，字母为财富支付',
   `title` varchar(255) NOT NULL COMMENT '支付方式名称',
@@ -6630,39 +6357,32 @@ CREATE TABLE `qinggan_order_payment` (
   `currency_rate` decimal(13,8) UNSIGNED NOT NULL DEFAULT '0.00000000' COMMENT '货币汇率',
   `startdate` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '开始支付操作',
   `dateline` int(11) NOT NULL DEFAULT '0' COMMENT '支付时间',
-  `ext` text NOT NULL COMMENT '其他常用扩展信息'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单支付';
-
---
--- 转存表中的数据 `qinggan_order_payment`
---
+  `ext` text NOT NULL COMMENT '其他常用扩展信息',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='订单支付';
 
 INSERT INTO `qinggan_order_payment` (`id`, `order_id`, `payment_id`, `title`, `price`, `currency_id`, `currency_rate`, `startdate`, `dateline`, `ext`) VALUES
 (1, 1, '15', '支付宝', '5298.0000', 1, '0.00000000', 1567413681, 0, ''),
 (2, 2, '15', '支付宝', '4587.0000', 1, '0.00000000', 1568010013, 0, ''),
 (3, 3, '15', '支付宝', '6898.0000', 1, '0.00000000', 1569224466, 0, ''),
 (4, 4, '15', '支付宝', '6898.0100', 1, '0.00000000', 1569225036, 0, ''),
-(5, 5, '15', '支付宝', '3698.0000', 1, '0.00000000', 1569225611, 0, ''),
+(10, 5, '15', '支付宝', '3698.0000', 1, '0.00000000', 1574056070, 0, ''),
 (6, 6, '39', '信用卡支付', '178.1200', 2, '0.00000000', 1569412388, 0, ''),
 (7, 7, '15', '支付宝', '32880.0000', 1, '0.00000000', 1569415798, 0, ''),
-(8, 8, '15', '支付宝', '20694.0000', 1, '0.00000000', 1569416418, 0, '');
+(8, 8, '15', '支付宝', '20694.0000', 1, '0.00000000', 1569416418, 0, ''),
+(11, 9, '39', '信用卡支付', '1360.9600', 2, '0.00000000', 1574586460, 0, ''),
+(13, 10, '0', '', '4560.0000', 1, '6.16989994', 1575119384, 0, ''),
+(14, 11, '15', '支付宝', '7875.0000', 1, '0.00000000', 1575212075, 0, ''),
+(15, 12, '40', '支付宝', '4697.0000', 1, '0.00000000', 1576068779, 0, '');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_order_price`
---
-
-CREATE TABLE `qinggan_order_price` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
+CREATE TABLE IF NOT EXISTS `qinggan_order_price` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
   `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID号',
   `code` varchar(255) NOT NULL COMMENT '编码',
-  `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '金额，-号表示优惠'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单金额明细清单';
-
---
--- 转存表中的数据 `qinggan_order_price`
---
+  `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '金额，-号表示优惠',
+  PRIMARY KEY (`id`),
+  KEY `order_id` (`order_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=73 DEFAULT CHARSET=utf8 COMMENT='订单金额明细清单';
 
 INSERT INTO `qinggan_order_price` (`id`, `order_id`, `code`, `price`) VALUES
 (1, 1, 'product', '5298.0000'),
@@ -6712,16 +6432,34 @@ INSERT INTO `qinggan_order_price` (`id`, `order_id`, `code`, `price`) VALUES
 (45, 8, 'fee', '0.0000'),
 (46, 8, 'discount', '0.0000'),
 (47, 8, 'discount-shipping', '0.0000'),
-(48, 8, 'tax', '0.0000');
+(48, 8, 'tax', '0.0000'),
+(49, 9, 'product', '8397.0000'),
+(50, 9, 'shipping', '0.0000'),
+(51, 9, 'fee', '0.0000'),
+(52, 9, 'discount', '0.0000'),
+(53, 9, 'discount-shipping', '0.0000'),
+(54, 9, 'tax', '0.0000'),
+(55, 10, 'product', '4587.0000'),
+(56, 10, 'shipping', '0.0000'),
+(57, 10, 'fee', '0.0000'),
+(58, 10, 'discount', '-27.0000'),
+(59, 10, 'discount-shipping', '0.0000'),
+(60, 10, 'tax', '0.0000'),
+(61, 11, 'product', '7875.0000'),
+(62, 11, 'shipping', '0.0000'),
+(63, 11, 'fee', '0.0000'),
+(64, 11, 'discount', '0.0000'),
+(65, 11, 'discount-shipping', '0.0000'),
+(66, 11, 'tax', '0.0000'),
+(67, 12, 'product', '4697.0000'),
+(68, 12, 'shipping', '0.0000'),
+(69, 12, 'fee', '0.0000'),
+(70, 12, 'discount', '0.0000'),
+(71, 12, 'discount-shipping', '0.0000'),
+(72, 12, 'tax', '0.0000');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_order_product`
---
-
-CREATE TABLE `qinggan_order_product` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
+CREATE TABLE IF NOT EXISTS `qinggan_order_product` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
   `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID号',
   `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `title` varchar(255) NOT NULL COMMENT '产品名称',
@@ -6733,12 +6471,9 @@ CREATE TABLE `qinggan_order_product` (
   `volume` varchar(50) NOT NULL COMMENT '体积',
   `unit` varchar(50) NOT NULL COMMENT '单位',
   `note` varchar(255) NOT NULL COMMENT '备注',
-  `is_virtual` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0实物1虚拟或服务'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单的产品信息';
-
---
--- 转存表中的数据 `qinggan_order_product`
---
+  `is_virtual` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0实物1虚拟或服务',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='订单的产品信息';
 
 INSERT INTO `qinggan_order_product` (`id`, `order_id`, `tid`, `title`, `price`, `qty`, `thumb`, `ext`, `weight`, `volume`, `unit`, `note`, `is_virtual`) VALUES
 (1, 1, 1762, 'vivo Xplay5 全网通4G手机 4GB+128GB 双卡双待', '5298.0000', 1, 'res/201603/23/fceefc0374ff1ef2.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"绿色\";s:3:\"val\";s:5:\"green\";}i:1;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:7:\"32G ROM\";s:3:\"val\";s:5:\"MZ32G\";}}', '0', '0', '', '', 0),
@@ -6748,16 +6483,17 @@ INSERT INTO `qinggan_order_product` (`id`, `order_id`, `tid`, `title`, `price`, 
 (5, 5, 1762, 'vivo Xplay5 全网通4G手机 4GB+128GB 双卡双待', '3698.0000', 1, 'res/201603/23/fceefc0374ff1ef2.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"金色\";s:3:\"val\";s:4:\"gold\";}i:1;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:7:\"16G ROM\";s:3:\"val\";s:5:\"MZ16G\";}}', '0', '0', '', '', 0),
 (6, 6, 1761, '华为 P7 移动4G手机', '1099.0000', 1, 'res/201603/23/c941c40778124f2c.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"黑色\";s:3:\"val\";s:5:\"black\";}i:1;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:7:\"32G ROM\";s:3:\"val\";s:5:\"MZ32G\";}}', '0', '0', '台', '', 1),
 (7, 7, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', '3288.0000', 10, 'res/201603/23/1548d11e0a50ee55.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"蓝色\";s:3:\"val\";s:4:\"blue\";}i:1;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:7:\"16G ROM\";s:3:\"val\";s:5:\"MZ16G\";}}', '0', '0', '台', '', 1),
-(8, 8, 1762, 'vivo Xplay5 全网通4G手机 4GB+128GB 双卡双待', '6898.0000', 3, 'res/201603/23/fceefc0374ff1ef2.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"金色\";s:3:\"val\";s:4:\"gold\";}i:1;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:7:\"64G ROM\";s:3:\"val\";s:3:\"64G\";}}', '0', '0', '', '', 0);
+(8, 8, 1762, 'vivo Xplay5 全网通4G手机 4GB+128GB 双卡双待', '6898.0000', 3, 'res/201603/23/fceefc0374ff1ef2.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"金色\";s:3:\"val\";s:4:\"gold\";}i:1;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:7:\"64G ROM\";s:3:\"val\";s:3:\"64G\";}}', '0', '0', '', '', 0),
+(9, 9, 1762, 'vivo Xplay5 全网通4G手机 4GB+128GB 双卡双待', '6898.0000', 1, 'res/201603/23/fceefc0374ff1ef2.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"红色\";s:3:\"val\";s:3:\"red\";}i:1;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:7:\"64G ROM\";s:3:\"val\";s:3:\"64G\";}}', '0', '0', '', '', 0),
+(10, 9, 1760, '魅族 MX5 移动联通双4G手机 双卡双待', '1499.0000', 1, 'res/201603/22/c329c62e183765ad.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"灰色\";s:3:\"val\";s:4:\"gray\";}i:1;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:7:\"16G ROM\";s:3:\"val\";s:5:\"MZ16G\";}}', '0', '0', '', '', 0),
+(11, 10, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', '4587.0000', 1, 'res/201603/23/1548d11e0a50ee55.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"蓝色\";s:3:\"val\";s:4:\"blue\";}i:1;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:7:\"32G ROM\";s:3:\"val\";s:5:\"MZ32G\";}}', '0', '0', '台', '', 1),
+(12, 11, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', '3288.0000', 1, 'res/201603/23/1548d11e0a50ee55.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"红色\";s:3:\"val\";s:3:\"red\";}i:1;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:7:\"16G ROM\";s:3:\"val\";s:5:\"MZ16G\";}}', '0', '0', '台', '', 1),
+(13, 11, 1763, 'Apple iPhone 5SE 16G 移动联通电信4G手机', '4587.0000', 1, 'res/201603/23/1548d11e0a50ee55.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"蓝色\";s:3:\"val\";s:4:\"blue\";}i:1;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:7:\"32G ROM\";s:3:\"val\";s:5:\"MZ32G\";}}', '0', '0', '台', '', 1),
+(14, 12, 1761, '华为 P7 移动4G手机', '1099.0000', 2, 'res/201603/23/c941c40778124f2c.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"黑色\";s:3:\"val\";s:5:\"black\";}i:1;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:7:\"32G ROM\";s:3:\"val\";s:5:\"MZ32G\";}}', '0', '0', '台', '', 1),
+(15, 12, 1753, '小米(MI) 小米5 全网通4G手机 双卡双待', '2499.0000', 1, 'res/201603/22/6e32b648bf93b490.jpg', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"版本\";s:7:\"content\";s:31:\"标准版(3G RAM+32G ROM)标配\";s:3:\"val\";s:4:\"2499\";}i:1;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:6:\"黑色\";s:3:\"val\";s:5:\"black\";}}', '0', '0', '', '', 0);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_payment`
---
-
-CREATE TABLE `qinggan_payment` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID号',
+CREATE TABLE IF NOT EXISTS `qinggan_payment` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
   `gid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '付款组',
   `code` varchar(100) NOT NULL COMMENT '标识ID',
   `title` varchar(255) NOT NULL COMMENT '主题',
@@ -6769,49 +6505,33 @@ CREATE TABLE `qinggan_payment` (
   `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
   `note` text NOT NULL COMMENT '付款注意事项说明',
   `param` text NOT NULL COMMENT '参数',
-  `wap` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0PC端1手机端'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='支付方案';
-
---
--- 转存表中的数据 `qinggan_payment`
---
+  `wap` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0PC端1手机端',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=41 DEFAULT CHARSET=utf8 COMMENT='支付方案';
 
 INSERT INTO `qinggan_payment` (`id`, `gid`, `code`, `title`, `currency`, `logo1`, `logo2`, `logo3`, `status`, `taxis`, `note`, `param`, `wap`) VALUES
-(15, 1, 'alipay', '支付宝', 'CNY', '', '', '', 1, 10, '', 'a:5:{s:3:\"pid\";s:16:\"2088802450390810\";s:3:\"key\";s:32:\"8xju4peh4hsi871rueme1vthdnsymigd\";s:5:\"email\";s:15:\"admin@phpok.com\";s:7:\"envtype\";s:7:\"product\";s:5:\"ptype\";s:25:\"create_direct_pay_by_user\";}', 0),
-(19, 1, 'wxpay', '微信支付', 'CNY', '', '', '', 1, 20, '', 'a:11:{s:5:\"appid\";s:18:\"wxd61676fe9d7468ed\";s:6:\"mch_id\";s:10:\"1283067101\";s:7:\"app_key\";s:32:\"a6d5b10386897dab7f605228a1d04c43\";s:10:\"app_secret\";s:32:\"5239321d1305a4786f23cd106f5ab479\";s:11:\"device_info\";s:3:\"WEB\";s:10:\"trade_type\";s:6:\"native\";s:8:\"pem_cert\";s:0:\"\";s:7:\"pem_key\";s:0:\"\";s:6:\"pem_ca\";s:0:\"\";s:10:\"proxy_host\";s:7:\"0.0.0.0\";s:10:\"proxy_port\";s:0:\"\";}', 0),
-(39, 1, 'paypalcc', '信用卡支付', 'USD', '', '', '', 1, 30, '', 'a:4:{s:12:\"api_username\";s:21:\"asd51313_api1.163.com\";s:12:\"api_password\";s:16:\"DJ7KJSF72BPERJ7V\";s:13:\"api_signature\";s:56:\"A32NyknQJxhaA60C.Pwvq2LML1XNAJATOxJHBa2UjmEIAdC.lTku7Zwe\";s:8:\"act_type\";s:7:\"product\";}', 0);
+(15, 1, 'alipay', '支付宝', 'CNY', '', '', '', 1, 10, '', 'a:5:{s:3:\"pid\";s:16:\"2088802450390810\";s:3:\"key\";s:5:\"*****\";s:5:\"email\";s:15:\"admin@phpok.com\";s:7:\"envtype\";s:7:\"product\";s:5:\"ptype\";s:25:\"create_direct_pay_by_user\";}', 0),
+(19, 1, 'wxpay', '微信支付', 'CNY', '', '', '', 1, 20, '', 'a:11:{s:6:\"mch_id\";s:10:\"1283067101\";s:7:\"app_key\";s:6:\"******\";s:5:\"appid\";s:18:\"wxd61676fe9d7468ed\";s:10:\"app_secret\";s:32:\"5239321d1305a4786f23cd106f5ab479\";s:11:\"device_info\";s:3:\"WEB\";s:10:\"trade_type\";s:6:\"native\";s:8:\"pem_cert\";s:0:\"\";s:7:\"pem_key\";s:0:\"\";s:6:\"pem_ca\";s:0:\"\";s:10:\"proxy_host\";s:7:\"0.0.0.0\";s:10:\"proxy_port\";s:0:\"\";}', 0),
+(39, 1, 'paypalcc', '信用卡支付', 'USD', '', '', '', 1, 30, '', 'a:4:{s:12:\"api_username\";s:21:\"asd51313_api1.163.com\";s:12:\"api_password\";s:16:\"DJ7KJSF72BPERJ7V\";s:13:\"api_signature\";s:4:\"****\";s:8:\"act_type\";s:7:\"product\";}', 0),
+(40, 10, 'alipay', '支付宝', 'CNY', '', '', '', 1, 255, '', 'a:5:{s:3:\"pid\";s:16:\"2088802450390810\";s:3:\"key\";s:5:\"*****\";s:5:\"email\";s:15:\"admin@phpok.com\";s:7:\"envtype\";s:7:\"product\";s:5:\"ptype\";s:25:\"create_direct_pay_by_user\";}', 1);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_payment_group`
---
-
-CREATE TABLE `qinggan_payment_group` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_payment_group` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `site_id` int(11) NOT NULL DEFAULT '0' COMMENT '站点ID，为0表示全部',
   `title` varchar(255) NOT NULL COMMENT '付款组名称',
   `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不启用1启用',
   `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
   `is_default` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1默认组0普通组',
-  `is_wap` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0是PC端，1是手机端'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='付款组管理';
-
---
--- 转存表中的数据 `qinggan_payment_group`
---
+  `is_wap` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0是PC端，1是手机端',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='付款组管理';
 
 INSERT INTO `qinggan_payment_group` (`id`, `site_id`, `title`, `status`, `taxis`, `is_default`, `is_wap`) VALUES
-(1, 1, '快捷支付', 1, 10, 0, 0);
+(1, 1, '快捷支付', 1, 10, 0, 0),
+(10, 1, '快捷支付', 1, 20, 0, 1);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_payment_log`
---
-
-CREATE TABLE `qinggan_payment_log` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_payment_log` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `sn` varchar(255) NOT NULL COMMENT '支付编号',
   `type` varchar(100) NOT NULL COMMENT 'order订单,recharge充值other其他',
   `payment_id` varchar(255) NOT NULL DEFAULT '0' COMMENT '支付方式，为数字时表示payment表中的主要支付方式，为字母数字混合表示财富付款',
@@ -6823,31 +6543,30 @@ CREATE TABLE `qinggan_payment_log` (
   `currency_rate` decimal(13,8) UNSIGNED NOT NULL DEFAULT '0.00000000' COMMENT '货币汇率',
   `content` varchar(255) NOT NULL COMMENT '内容',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未支付成功1已支付成功',
-  `ext` text NOT NULL COMMENT '扩展'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='支付日志';
-
---
--- 转存表中的数据 `qinggan_payment_log`
---
+  `ext` text NOT NULL COMMENT '扩展',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COMMENT='支付日志';
 
 INSERT INTO `qinggan_payment_log` (`id`, `sn`, `type`, `payment_id`, `title`, `dateline`, `user_id`, `price`, `currency_id`, `currency_rate`, `content`, `status`, `ext`) VALUES
 (1, 'P2019090243U00038001', 'order', '15', '订单：P2019090243U00038001', 1567413681, 38, '5298.00', 1, '6.16989994', '订单：P2019090243U00038001', 0, ''),
 (2, 'P2019090925U00023001', 'order', '15', '订单：P2019090925U00023001', 1568010013, 23, '4587.00', 1, '6.16989994', '订单：P2019090925U00023001', 0, ''),
 (3, 'P2019092355U00023001', 'order', '15', '订单：P2019092355U00023001', 1569224466, 23, '6898.00', 1, '6.16989994', '订单：P2019092355U00023001', 0, ''),
 (4, 'P2019092332U00023002', 'order', '15', '订单：P2019092332U00023002', 1569225036, 23, '6898.01', 1, '6.16989994', '订单：P2019092332U00023002', 0, ''),
-(5, 'P2019092348U00023003', 'order', '15', '订单：P2019092348U00023003', 1569225611, 23, '3698.00', 1, '6.16989994', '订单：P2019092348U00023003', 0, ''),
+(10, 'P2019092348U00023003', 'order', '15', '订单：P2019092348U00023003', 1574056070, 23, '3698.00', 1, '6.16989994', '订单：P2019092348U00023003', 0, ''),
 (6, 'P2019092586U00023001', 'order', '39', '订单：P2019092586U00023001', 1569412388, 23, '178.12', 2, '1.00000000', '订单：P2019092586U00023001', 0, ''),
 (7, 'P2019092564U00023002', 'order', '15', '订单：P2019092564U00023002', 1569415798, 23, '32880.00', 1, '6.16989994', '订单：P2019092564U00023002', 0, ''),
-(8, 'P2019092556U00042003', 'order', '15', '订单：P2019092556U00042003', 1569416418, 42, '20694.00', 1, '6.16989994', '订单：P2019092556U00042003', 0, '');
+(8, 'P2019092556U00042003', 'order', '15', '订单：P2019092556U00042003', 1569416418, 42, '20694.00', 1, '6.16989994', '订单：P2019092556U00042003', 0, ''),
+(11, 'P2019112449U00023001', 'order', '39', '订单：P2019112449U00023001', 1574586460, 23, '1360.96', 2, '1.00000000', '订单：P2019112449U00023001', 0, ''),
+(13, 'P2019113098U00023001', 'order', '0', '订单：P2019113098U00023001', 1575119384, 23, '4560.00', 1, '6.16989994', '订单：P2019113098U00023001', 0, ''),
+(14, 'CZ5de26a43e8442', 'recharge', '19', '在线充值', 1575119427, 23, '1.00', 1, '6.16989994', '充值编号：CZ5de26a43e8442', 0, 'a:1:{s:4:\"goal\";s:1:\"1\";}'),
+(15, 'CZ5de26a4b37b4c', 'recharge', '15', '在线充值', 1575119435, 23, '1.00', 1, '6.16989994', '充值编号：CZ5de26a4b37b4c', 0, 'a:1:{s:4:\"goal\";s:1:\"1\";}'),
+(16, 'P2019120130U00023001', 'order', '15', '订单：P2019120130U00023001', 1575212075, 23, '7875.00', 1, '6.16989994', '订单：P2019120130U00023001', 0, ''),
+(17, 'P2019121115U00023001', 'order', '40', '订单：P2019121115U00023001', 1576068779, 23, '4697.00', 1, '6.16989994', '订单：P2019121115U00023001', 0, ''),
+(18, 'CZ5df196095ffa4', 'recharge', '39', '在线充值', 1576113673, 23, '10.00', 1, '6.16989994', '充值编号：CZ5df196095ffa4', 0, 'a:1:{s:4:\"goal\";s:1:\"1\";}');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_phpok`
---
-
-CREATE TABLE `qinggan_phpok` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID号',
+CREATE TABLE IF NOT EXISTS `qinggan_phpok` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
   `title` varchar(255) NOT NULL COMMENT '标题',
   `pid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
   `type_id` varchar(255) NOT NULL COMMENT '调用类型',
@@ -6857,12 +6576,10 @@ CREATE TABLE `qinggan_phpok` (
   `cateid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
   `ext` text NOT NULL COMMENT '扩展属性',
   `is_api` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不支持API调用，1支持',
-  `sqlinfo` text NOT NULL COMMENT 'SQL语句'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='数据调用中心';
-
---
--- 转存表中的数据 `qinggan_phpok`
---
+  `sqlinfo` text NOT NULL COMMENT 'SQL语句',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `identifier` (`identifier`,`site_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=352 DEFAULT CHARSET=utf8 COMMENT='数据调用中心';
 
 INSERT INTO `qinggan_phpok` (`id`, `title`, `pid`, `type_id`, `identifier`, `site_id`, `status`, `cateid`, `ext`, `is_api`, `sqlinfo`) VALUES
 (18, '网站首页图片播放', 41, 'arclist', 'picplayer', 1, 1, 0, 'a:15:{s:5:\"psize\";s:1:\"5\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:1:\"*\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
@@ -6881,19 +6598,13 @@ INSERT INTO `qinggan_phpok` (`id`, `title`, `pid`, `type_id`, `identifier`, `sit
 (97, '图集相册', 144, 'arclist', 'tujixiangce', 1, 1, 154, 'a:13:{s:5:\"psize\";s:1:\"6\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:9:\"ext.thumb\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:4:\"cate\";s:0:\"\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
 (98, '产品展示', 45, 'catelist', 'catelist', 1, 1, 70, 'a:23:{s:5:\"psize\";b:0;s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:7:\"in_text\";i:0;s:4:\"attr\";b:0;s:11:\"fields_need\";b:0;s:3:\"tag\";b:0;s:8:\"keywords\";b:0;s:7:\"orderby\";b:0;s:4:\"cate\";b:0;s:8:\"cate_ext\";i:0;s:12:\"catelist_ext\";i:0;s:11:\"project_ext\";i:0;s:11:\"sublist_ext\";i:0;s:10:\"parent_ext\";i:0;s:13:\"fields_format\";i:0;s:8:\"user_ext\";i:0;s:4:\"user\";b:0;s:12:\"userlist_ext\";i:0;s:6:\"in_sub\";i:0;s:10:\"in_project\";i:0;s:7:\"in_cate\";i:0;s:8:\"title_id\";b:0;}', 0, ''),
 (99, '下载中心', 151, 'arclist', 'xiazaizhongxin', 1, 1, 197, 'a:13:{s:5:\"psize\";s:2:\"10\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:9:\"ext.dfile\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:4:\"cate\";s:0:\"\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
-(104, '资讯中心', 43, 'arclist', 'titlelist', 1, 1, 7, 'a:13:{s:5:\"psize\";s:2:\"10\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:4:\"cate\";s:0:\"\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
+(104, '资讯中心', 43, 'arclist', 'titlelist', 1, 1, 7, 'a:15:{s:5:\"psize\";s:2:\"10\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:1:\"*\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 1, ''),
 (105, '资讯中心', 43, 'catelist', 'news_catelist', 1, 1, 7, 'a:13:{s:5:\"psize\";i:0;s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:4:\"cate\";s:0:\"\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
 (280, '联系我们', 87, 'arc', 'contactus', 1, 1, 0, 'a:13:{s:5:\"psize\";i:0;s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:4:\"cate\";s:0:\"\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:6:\"in_sub\";i:0;s:8:\"title_id\";s:9:\"contactus\";}', 0, ''),
 (282, '热门产品', 45, 'arclist', 'hot_products', 1, 1, 70, 'a:15:{s:5:\"psize\";s:1:\"5\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:9:\"ext.thumb\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:11:\"l.hits DESC\";s:6:\"fields\";s:5:\"thumb\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
 (351, '新闻+图片', 43, 'arclist', 'news-pictures', 1, 1, 7, 'a:15:{s:5:\"psize\";s:1:\"4\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:9:\"ext.thumb\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:5:\"thumb\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, '');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_plugins`
---
-
-CREATE TABLE `qinggan_plugins` (
+CREATE TABLE IF NOT EXISTS `qinggan_plugins` (
   `id` varchar(100) NOT NULL COMMENT '插件ID，仅限字母，数字及下划线',
   `title` varchar(255) NOT NULL COMMENT '插件名称',
   `author` varchar(255) NOT NULL COMMENT '开发者',
@@ -6901,37 +6612,24 @@ CREATE TABLE `qinggan_plugins` (
   `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0禁用1使用',
   `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '值越小越往前靠',
   `note` varchar(255) NOT NULL COMMENT '摘要说明',
-  `param` text NOT NULL COMMENT '参数'
+  `param` text NOT NULL COMMENT '参数',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='插件管理器';
-
---
--- 转存表中的数据 `qinggan_plugins`
---
 
 INSERT INTO `qinggan_plugins` (`id`, `title`, `author`, `version`, `status`, `taxis`, `note`, `param`) VALUES
 ('identifier', '标识串自动生成工具', 'phpok.com', '1.0', 1, 20, '实现将“title”字段的表单数据翻译符合系统要求的标识串', 'a:5:{s:12:\"youdao_appid\";s:16:\"1c924b4b01cb16f2\";s:13:\"youdao_appkey\";s:32:\"4vAE9hTCrSwnUF9DzApH3aNlj6a0KgCm\";s:12:\"youdao_https\";i:0;s:11:\"phpok_appid\";s:1:\"3\";s:12:\"phpok_appkey\";s:16:\"vhDsxyZSsHnBeXlV\";}'),
-('copy', '主题复制', 'phpok.com', '1.0', 1, 60, '用于复制多个主题，以实现快速填充内容使用', 'a:1:{s:9:\"max_count\";s:1:\"5\";}'),
-('bmap', '百度地图地址编码', 'phpok', '1.0', 1, 40, '将地址转换为坐标并且前端显示', 'a:7:{s:7:\"address\";s:63:\"广东深圳龙华区民治大道东边商务大楼13层1309室\";s:6:\"apikey\";s:32:\"5dKTKKGmwAcUXfxr1NcuXPifTqdIQvV0\";s:3:\"tel\";s:13:\"0755-23776246\";s:3:\"lng\";s:18:\"114.04688851014728\";s:3:\"lat\";s:17:\"22.62414183037918\";s:8:\"address2\";s:0:\"\";s:7:\"company\";s:33:\"深圳市锟铻科技有限公司\";}'),
-('compare', '产品比较工具', 'phpok.com', '1.0', 1, 70, '比较产品参数信息', 'a:1:{s:3:\"pid\";s:2:\"45\";}');
+('bmap', '百度地图地址编码', 'phpok', '1.0', 1, 40, '将地址转换为坐标并且前端显示', 'a:7:{s:7:\"address\";s:63:\"广东深圳龙华区民治大道东边商务大楼13层1309室\";s:6:\"apikey\";s:32:\"5dKTKKGmwAcUXfxr1NcuXPifTqdIQvV0\";s:3:\"tel\";s:13:\"0755-23776246\";s:3:\"lng\";s:18:\"114.04688851014728\";s:3:\"lat\";s:17:\"22.62414183037918\";s:8:\"address2\";s:0:\"\";s:7:\"company\";s:33:\"深圳市锟铻科技有限公司\";}');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_popedom`
---
-
-CREATE TABLE `qinggan_popedom` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '权限ID，即自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_popedom` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '权限ID，即自增ID',
   `gid` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属组ID，对应sysmenu表中的ID',
   `pid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID，仅在list中有效',
   `title` varchar(255) NOT NULL COMMENT '名称，如：添加，修改等',
   `identifier` varchar(255) NOT NULL COMMENT '字符串，如add，modify等',
-  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='权限明细';
-
---
--- 转存表中的数据 `qinggan_popedom`
---
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序',
+  PRIMARY KEY (`id`),
+  KEY `gid` (`gid`)
+) ENGINE=MyISAM AUTO_INCREMENT=1791 DEFAULT CHARSET=utf8 COMMENT='权限明细';
 
 INSERT INTO `qinggan_popedom` (`id`, `gid`, `pid`, `title`, `identifier`, `taxis`) VALUES
 (2, 19, 0, '配置全局', 'gset', 10),
@@ -7008,11 +6706,6 @@ INSERT INTO `qinggan_popedom` (`id`, `gid`, `pid`, `title`, `identifier`, `taxis
 (145, 20, 41, '修改', 'modify', 40),
 (146, 20, 41, '删除', 'delete', 50),
 (147, 20, 41, '启用/禁用', 'status', 60),
-(148, 20, 42, '查看', 'list', 10),
-(149, 20, 42, '添加', 'add', 30),
-(150, 20, 42, '修改', 'modify', 40),
-(151, 20, 42, '删除', 'delete', 50),
-(152, 20, 42, '启用/禁用', 'status', 60),
 (153, 20, 43, '查看', 'list', 10),
 (154, 20, 43, '添加', 'add', 30),
 (155, 20, 43, '修改', 'modify', 40),
@@ -7085,12 +6778,6 @@ INSERT INTO `qinggan_popedom` (`id`, `gid`, `pid`, `title`, `identifier`, `taxis
 (640, 54, 0, '排序', 'taxis', 60),
 (647, 55, 0, '查看', 'list', 10),
 (648, 55, 0, '更新HTML', 'create', 20),
-(651, 20, 147, '查看', 'list', 10),
-(652, 20, 147, '编辑', 'set', 20),
-(653, 20, 147, '添加', 'add', 30),
-(654, 20, 147, '修改', 'modify', 40),
-(655, 20, 147, '删除', 'delete', 50),
-(656, 20, 147, '启用/禁用', 'status', 60),
 (657, 20, 148, '查看', 'list', 10),
 (658, 20, 148, '编辑', 'set', 20),
 (659, 20, 148, '添加', 'add', 30),
@@ -7426,14 +7113,6 @@ INSERT INTO `qinggan_popedom` (`id`, `gid`, `pid`, `title`, `identifier`, `taxis
 (1310, 20, 45, '编辑', 'set', 20),
 (1311, 20, 45, '扩展', 'ext', 70),
 (1312, 20, 45, '评论', 'comment', 80),
-(1337, 20, 386, '查看', 'list', 10),
-(1338, 20, 386, '编辑', 'set', 20),
-(1339, 20, 386, '添加', 'add', 30),
-(1340, 20, 386, '修改', 'modify', 40),
-(1341, 20, 386, '删除', 'delete', 50),
-(1342, 20, 386, '启用/禁用', 'status', 60),
-(1343, 20, 386, '扩展', 'ext', 70),
-(1344, 20, 386, '评论', 'comment', 80),
 (1345, 34, 0, '取消', 'cancel', 70),
 (1346, 34, 0, '结束', 'stop', 80),
 (1347, 34, 0, '完成', 'end', 90),
@@ -7665,16 +7344,28 @@ INSERT INTO `qinggan_popedom` (`id`, `gid`, `pid`, `title`, `identifier`, `taxis
 (1761, 106, 0, '查看', 'list', 10),
 (1762, 106, 0, '删除', 'delete', 10),
 (1771, 107, 0, '查看', 'list', 10),
-(1772, 107, 0, '设置', 'setting', 20);
+(1772, 107, 0, '设置', 'setting', 20),
+(1773, 108, 0, '查看', 'list', 10),
+(1774, 108, 0, '添加', 'add', 20),
+(1775, 108, 0, '修改', 'modify', 30),
+(1776, 108, 0, '审核', 'status', 40),
+(1777, 108, 0, '删除', 'delete', 50),
+(1778, 108, 0, '组管理', 'group', 60),
+(1779, 109, 0, '查看', 'list', 10),
+(1780, 109, 0, '配置', 'setting', 20),
+(1781, 109, 0, '检测', 'checking', 30),
+(1782, 109, 0, '删除', 'delete', 40),
+(1783, 20, 440, '查看', 'list', 10),
+(1784, 20, 440, '编辑', 'set', 20),
+(1785, 20, 440, '添加', 'add', 30),
+(1786, 20, 440, '修改', 'modify', 40),
+(1787, 20, 440, '删除', 'delete', 50),
+(1788, 20, 440, '启用/禁用', 'status', 60),
+(1789, 20, 440, '扩展', 'ext', 70),
+(1790, 20, 440, '评论', 'comment', 80);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_project`
---
-
-CREATE TABLE `qinggan_project` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID，也是应用ID',
+CREATE TABLE IF NOT EXISTS `qinggan_project` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID，也是应用ID',
   `parent_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '上一级ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL COMMENT '网站ID',
   `module` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '指定模型ID，为0表页面空白',
@@ -7722,38 +7413,29 @@ CREATE TABLE `qinggan_project` (
   `list_fields` varchar(255) NOT NULL COMMENT '列表读取长度，如为空读全部',
   `style` varchar(255) NOT NULL COMMENT 'CSS样式',
   `is_front` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否直接访问前台',
-  `is_api` int(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0接口不可访问，1可访问'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='项目管理器';
-
---
--- 转存表中的数据 `qinggan_project`
---
+  `is_api` int(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0接口不可访问，1可访问',
+  PRIMARY KEY (`id`),
+  KEY `parent_id` (`parent_id`),
+  KEY `site_id` (`site_id`,`status`)
+) ENGINE=MyISAM AUTO_INCREMENT=443 DEFAULT CHARSET=utf8 COMMENT='项目管理器';
 
 INSERT INTO `qinggan_project` (`id`, `parent_id`, `site_id`, `module`, `cate`, `title`, `nick_title`, `taxis`, `status`, `tpl_index`, `tpl_list`, `tpl_content`, `is_identifier`, `ico`, `orderby`, `alias_title`, `alias_note`, `psize`, `uid`, `identifier`, `seo_title`, `seo_keywords`, `seo_desc`, `subtopics`, `is_search`, `is_tag`, `is_biz`, `is_userid`, `is_tpl_content`, `is_seo`, `currency_id`, `admin_note`, `hidden`, `post_status`, `comment_status`, `post_tpl`, `etpl_admin`, `etpl_user`, `etpl_comment_admin`, `etpl_comment_user`, `is_attr`, `tag`, `cate_multiple`, `biz_attr`, `freight`, `list_fields`, `style`, `is_front`, `is_api`) VALUES
 (41, 0, 1, 21, 0, '图片播放器', '', 20, 1, '', '', '', 0, 'images/ico/picplayer.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'picture-player', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0),
-(42, 0, 1, 23, 0, '导航菜单', '', 30, 1, '', '', '', 0, 'images/ico/menu.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '导航名称', '', 30, 0, 'menu', '', '', '', 1, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0),
-(43, 0, 1, 22, 7, '资讯中心', '', 12, 1, '', '', '', 1, 'images/ico/article.png', 'l.id DESC', '新闻主题', '', 20, 0, 'news', '', '', '', 0, 1, 1, 0, 1, 0, 1, 0, '', 0, 0, 1, '', '', '', '', 'register_code', 0, '', 0, 0, 0, 'note,thumb', '', 1, 1),
-(45, 0, 1, 24, 70, '产品展示', '', 50, 1, '', '', '', 0, 'images/ico/product.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '产品名称', '', 12, 0, 'product', '', '', '', 0, 1, 1, 1, 0, 0, 0, 1, '', 0, 0, 1, '', '', '', '', '', 1, '', 0, 1, 1, '', '', 0, 0),
-(87, 0, 1, 40, 0, '关于我们', '', 15, 1, '', '', 'about_content', 2, 'images/ico/about.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'about', '', '', '', 0, 0, 2, 0, 0, 1, 2, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0),
+(43, 0, 1, 22, 7, '资讯中心', '', 12, 1, '', '', '', 1, 'images/ico/article.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '新闻主题', '', 20, 0, 'news', '', '', '', 0, 1, 1, 0, 1, 0, 1, 0, '', 0, 0, 1, '', '', '', '', 'register_code', 0, '', 0, 0, 0, 'note,thumb', '', 1, 1),
+(45, 0, 1, 24, 70, '产品展示', '', 50, 1, '', '', '', 0, 'images/ico/product.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '产品名称', '', 12, 0, 'product', '', '', '', 0, 1, 1, 1, 0, 0, 0, 1, '', 0, 0, 1, '', '', '', '', '', 1, '', 0, 1, 1, '', '', 1, 0),
+(87, 0, 1, 40, 0, '关于我们', '', 15, 1, '', '', 'about_content', 2, 'images/ico/about.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'about', '', '', '', 0, 0, 2, 0, 0, 1, 2, 0, '', 0, 0, 0, '', '', '', '', '', 0, '公司', 0, 0, 0, '', '', 1, 1),
 (96, 0, 1, 46, 0, '在线留言', '', 70, 1, '', '', '', 0, 'images/ico/comment.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '留言主题', '', 30, 0, 'book', '', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 1, 1, '', 'project_save', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0),
 (144, 0, 1, 68, 154, '图集相册', '', 90, 1, '', '', '', 0, 'images/ico/photo.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'photo', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 1, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0),
-(147, 42, 1, 23, 0, '页脚导航', '', 35, 1, '', '', '', 0, 'images/ico/menu.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'footer-navigation', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0),
 (148, 0, 1, 64, 0, '在线客服', '', 130, 1, '', '', '', 0, 'images/ico/qq.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '客服类型', '', 30, 0, 'kefu', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0),
 (150, 0, 1, 0, 0, '售后保障', '', 60, 1, '', '', '', 0, 'images/ico/paper.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'shouhoukouzhang', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0),
 (151, 0, 1, 65, 197, '下载中心', '', 100, 1, '', 'download_list', 'download_content', 0, 'images/ico/cloud.png', 'l.sort DESC,l.dateline DESC,l.id DESC', '附件名称', '', 30, 0, 'download-center', '', '', '', 0, 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 1, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0),
 (152, 0, 1, 66, 201, '论坛BBS', '', 110, 1, 'bbs_index', 'bbs_list', 'bbs_detail', 0, 'images/ico/forum.png', 'ext.toplevel DESC,l.replydate DESC,l.dateline DESC,l.id DESC', '讨论主题', '', 30, 0, 'bbs', '', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 1, 1, 'bbs_fabu', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0),
-(386, 0, 1, 75, 0, '银行汇款', '', 140, 1, '', '', '', 0, 'images/ico/bank.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '订单编号', '', 30, 0, 'yinxinghuikuan', '', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 1, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0),
 (389, 0, 1, 77, 0, '友情链接', '', 145, 1, '', '', '', 0, 'images/ico/link.png', 'taxis ASC,id DESC', '', '', 30, 0, 'links', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0),
-(390, 0, 1, 78, 0, '视频库', '', 150, 1, '', '', '', 0, '', 'l.sort ASC,l.dateline DESC,l.id DESC', '视频名称', '', 30, 0, 'videos', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, 'thumb', '', 0, 0);
+(390, 0, 1, 78, 0, '视频库', '', 150, 1, '', '', '', 0, '', 'l.sort ASC,l.dateline DESC,l.id DESC', '视频名称', '', 30, 0, 'videos', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, 'thumb', '', 0, 0),
+(440, 41, 1, 85, 0, '动画', '', 5, 1, '', '', '', 0, 'images/ico/default.png', 'id DESC', '', '', 30, 0, 'picplay-animation', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_reply`
---
-
-CREATE TABLE `qinggan_reply` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_reply` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `parent_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父回复ID',
   `vouch` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '推荐评论',
@@ -7770,17 +7452,17 @@ CREATE TABLE `qinggan_reply` (
   `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0为评论，非零绑定订单ID',
   `res` varchar(255) NOT NULL COMMENT '附件ID，多个附件用英文逗号隔开',
   `vtype` varchar(255) NOT NULL DEFAULT 'title' COMMENT '主题类型，titlte表示列表中的主题，project表示项目，cate表示分类',
-  `title` varchar(255) NOT NULL COMMENT '评论标题，留空从主题中读取'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='主题评论表';
+  `title` varchar(255) NOT NULL COMMENT '评论标题，留空从主题中读取',
+  PRIMARY KEY (`id`),
+  KEY `tid` (`tid`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='主题评论表';
 
--- --------------------------------------------------------
+INSERT INTO `qinggan_reply` (`id`, `tid`, `parent_id`, `vouch`, `star`, `uid`, `ip`, `addtime`, `status`, `session_id`, `content`, `admin_id`, `adm_content`, `adm_time`, `order_id`, `res`, `vtype`, `title`) VALUES
+(2, 1934, 0, 0, 3, 0, '::1', 1576027038, 0, 'c0m8a1dsc9ugsd9355vi3o8a34', '看下排序', 0, '', 0, 0, '', 'title', 'PHPOK5变更日志'),
+(3, 1934, 0, 0, 3, 0, '::1', 1576027100, 0, 'c0m8a1dsc9ugsd9355vi3o8a34', '这个排序可以不！', 0, '', 0, 0, '1410', 'title', 'PHPOK5变更日志');
 
---
--- 表的结构 `qinggan_res`
---
-
-CREATE TABLE `qinggan_res` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '资源ID',
+CREATE TABLE IF NOT EXISTS `qinggan_res` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '资源ID',
   `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
   `folder` varchar(255) NOT NULL COMMENT '存储目录',
   `name` varchar(255) NOT NULL COMMENT '资源文件名',
@@ -7795,12 +7477,10 @@ CREATE TABLE `qinggan_res` (
   `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID，当该ID为时检则sesson_id，如不相同则不能删除 ',
   `download` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '下载次数',
   `admin_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '管理员ID',
-  `mime_type` varchar(255) NOT NULL COMMENT '附件类型'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='资源ID';
-
---
--- 转存表中的数据 `qinggan_res`
---
+  `mime_type` varchar(255) NOT NULL COMMENT '附件类型',
+  PRIMARY KEY (`id`),
+  KEY `ext` (`ext`)
+) ENGINE=MyISAM AUTO_INCREMENT=1414 DEFAULT CHARSET=utf8 COMMENT='资源ID';
 
 INSERT INTO `qinggan_res` (`id`, `cate_id`, `folder`, `name`, `ext`, `filename`, `ico`, `addtime`, `title`, `attr`, `note`, `session_id`, `user_id`, `download`, `admin_id`, `mime_type`) VALUES
 (1010, 1, 'res/201603/22/', '671d21cb49401430.jpg', 'jpg', 'res/201603/22/671d21cb49401430.jpg', 'res/_cache/_ico/10/1010.jpg', 1458626175, '小米5-2', 'a:2:{s:5:\"width\";i:720;s:6:\"height\";i:420;}', '', '', 0, 0, 1, ''),
@@ -7822,28 +7502,25 @@ INSERT INTO `qinggan_res` (`id`, `cate_id`, `folder`, `name`, `ext`, `filename`,
 (1027, 1, 'res/201603/23/', '1548d11e0a50ee55.jpg', 'jpg', 'res/201603/23/1548d11e0a50ee55.jpg', 'res/_cache/_ico/10/1027.jpg', 1458669513, 'iphone5se-3', 'a:2:{s:5:\"width\";i:600;s:6:\"height\";i:600;}', '', '', 0, 0, 1, ''),
 (1028, 1, 'res/201603/23/', 'e2bb1c4c3a4bc11b.jpg', 'jpg', 'res/201603/23/e2bb1c4c3a4bc11b.jpg', 'res/_cache/_ico/10/1028.jpg', 1458669514, 'iphone5se-4', 'a:2:{s:5:\"width\";i:600;s:6:\"height\";i:600;}', '', '', 0, 0, 1, ''),
 (1329, 1, 'res/201810/12/', '7eb2d67e0d6f4e4e.png', 'png', 'res/201810/12/7eb2d67e0d6f4e4e.png', 'res/_cache/_ico/13/1329.png', 1539348181, 'email', 'a:2:{s:5:\"width\";i:645;s:6:\"height\";i:135;}', '', '', 0, 0, 1, ''),
-(1332, 1, 'res/201810/20/', 'a215b25354c4e315.png', 'png', 'res/201810/20/a215b25354c4e315.png', 'res/_cache/_ico/13/1332.png', 1540005311, 'sz-qibang', 'a:2:{s:5:\"width\";i:162;s:6:\"height\";i:50;}', '', '', 0, 0, 1, ''),
-(1333, 1, 'res/201810/20/', '039409ed2f1c4047.png', 'png', 'res/201810/20/039409ed2f1c4047.png', 'res/_cache/_ico/13/1333.png', 1540005565, '0ee4382032a75ac4', 'a:2:{s:5:\"width\";i:300;s:6:\"height\";i:80;}', '', '', 0, 0, 1, ''),
-(1334, 1, 'res/201810/20/', '9fb47c26c9cd374d.gif', 'gif', 'res/201810/20/9fb47c26c9cd374d.gif', 'res/_cache/_ico/13/1334.gif', 1540005633, 'logo', 'a:2:{s:5:\"width\";i:160;s:6:\"height\";i:48;}', '', '', 0, 0, 1, ''),
 (1335, 1, 'res/201810/22/', 'f17db511ed562c8f.jpg', 'jpg', 'res/201810/22/f17db511ed562c8f.jpg', 'res/_cache/_ico/13/1335.jpg', 1540175064, '400', 'a:2:{s:5:\"width\";i:400;s:6:\"height\";i:400;}', '', 'omo7g6kbecejqji9hoirq39n82', 0, 0, 0, ''),
 (1337, 1, 'res/201810/22/', '1d9863126a21fac2.png', 'png', 'res/201810/22/1d9863126a21fac2.png', 'res/_cache/_ico/13/1337.png', 1540176004, 'favicon', 'a:2:{s:5:\"width\";i:32;s:6:\"height\";i:32;}', '', 'omo7g6kbecejqji9hoirq39n82', 0, 0, 0, ''),
-(1344, 1, 'res/201811/02/', 'dd05848db3a9e721.jpg', 'jpg', 'res/201811/02/dd05848db3a9e721.jpg', 'res/_cache/_ico/13/1344.jpg', 1541163511, 'phpok', 'a:2:{s:5:\"width\";i:360;s:6:\"height\";i:240;}', '', '', 0, 0, 1, ''),
 (1348, 1, 'res/201812/03/', 'a71542aeec072ffd.jpg', 'jpg', 'res/201812/03/a71542aeec072ffd.jpg', 'res/_cache/_ico/13/1348.jpg', 1543771005, 'weixin-phpok', 'a:2:{s:5:\"width\";i:564;s:6:\"height\";i:564;}', '', '', 0, 0, 1, ''),
 (1393, 1, 'res/201905/03/', '1e4025813c825243.jpg', 'jpg', 'res/201905/03/1e4025813c825243.jpg', 'res/_cache/_ico/13/1393.jpg', 1556835944, 'banner4', 'a:2:{s:5:\"width\";i:1920;s:6:\"height\";i:500;}', '', '', 0, 1, 1, ''),
 (1388, 1, 'res/201905/03/', 'dd2f274138f69196.jpg', 'jpg', 'res/201905/03/dd2f274138f69196.jpg', 'res/_cache/_ico/13/1388.jpg', 1556818449, 'banner1', 'a:2:{s:5:\"width\";i:1920;s:6:\"height\";i:500;}', '', '', 0, 0, 1, ''),
 (1389, 1, 'res/201905/03/', '7555b7be52541ff0.jpg', 'jpg', 'res/201905/03/7555b7be52541ff0.jpg', 'res/_cache/_ico/13/1389.jpg', 1556818886, 'banner2', 'a:2:{s:5:\"width\";i:1920;s:6:\"height\";i:500;}', '', '', 0, 0, 1, ''),
 (1390, 1, 'res/201905/03/', 'e714a8fb54d281a3.jpg', 'jpg', 'res/201905/03/e714a8fb54d281a3.jpg', 'res/_cache/_ico/13/1390.jpg', 1556818978, 'banner3', 'a:2:{s:5:\"width\";i:1920;s:6:\"height\";i:500;}', '', '', 0, 1, 1, ''),
 (1391, 1, 'res/201905/03/', '536df8e440865a64.jpg', 'jpg', 'res/201905/03/536df8e440865a64.jpg', 'res/_cache/_ico/13/1391.jpg', 1556833323, '公司', 'a:2:{s:5:\"width\";i:500;s:6:\"height\";i:305;}', '', '', 0, 0, 1, ''),
-(1392, 1, 'res/201905/03/', 'b6ba2d6ef5140afe.jpg', 'jpg', 'res/201905/03/b6ba2d6ef5140afe.jpg', 'res/_cache/_ico/13/1392.jpg', 1556834503, '地图', 'a:2:{s:5:\"width\";i:770;s:6:\"height\";i:300;}', '', '', 0, 1, 1, '');
+(1392, 1, 'res/201905/03/', 'b6ba2d6ef5140afe.jpg', 'jpg', 'res/201905/03/b6ba2d6ef5140afe.jpg', 'res/_cache/_ico/13/1392.jpg', 1556834503, '地图', 'a:2:{s:5:\"width\";i:770;s:6:\"height\";i:300;}', '', '', 0, 1, 1, ''),
+(1407, 1, 'res/201912/07/', 'd11e60715f6c8d36.jpg', 'jpg', 'res/201912/07/d11e60715f6c8d36.jpg', 'res/_cache/_ico/14/1407.jpg', 1575698117, 'banner1_mobile', 'a:2:{s:5:\"width\";i:720;s:6:\"height\";i:480;}', '', '', 0, 0, 1, 'image/jpeg'),
+(1408, 1, 'res/201912/07/', '8a01806dee184991.jpg', 'jpg', 'res/201912/07/8a01806dee184991.jpg', 'res/_cache/_ico/14/1408.jpg', 1575698250, 'banner1_mobile', 'a:2:{s:5:\"width\";i:720;s:6:\"height\";i:400;}', '', '', 0, 0, 1, 'image/jpeg'),
+(1409, 1, 'res/201912/07/', '6d7be1d8ca9110b2.jpg', 'jpg', 'res/201912/07/6d7be1d8ca9110b2.jpg', 'res/_cache/_ico/14/1409.jpg', 1575698478, 'banner2_mobile', 'a:2:{s:5:\"width\";i:720;s:6:\"height\";i:400;}', '', '', 0, 0, 1, 'image/jpeg'),
+(1410, 1, 'res/201912/11/', '467cfc02ebc34949.jpg', 'jpg', 'res/201912/11/467cfc02ebc34949.jpg', 'res/_cache/_ico/14/1410.jpg', 1576027097, '防火墙', 'a:2:{s:5:\"width\";i:400;s:6:\"height\";i:300;}', '', 'c0m8a1dsc9ugsd9355vi3o8a34', 0, 0, 0, 'image/jpeg'),
+(1411, 1, 'res/201912/23/', '104cf4a334e8e7bf.jpg', 'jpg', 'res/201912/23/104cf4a334e8e7bf.jpg', 'res/_cache/_ico/14/1411.jpg', 1577074189, '1', 'a:2:{s:5:\"width\";i:1920;s:6:\"height\";i:500;}', '', '', 0, 0, 1, 'image/jpeg'),
+(1412, 1, 'res/201912/23/', '3fabd2ca75446fe3.png', 'png', 'res/201912/23/3fabd2ca75446fe3.png', 'res/_cache/_ico/14/1412.png', 1577074218, '2', 'a:2:{s:5:\"width\";i:1920;s:6:\"height\";i:500;}', '', '', 0, 0, 1, 'image/png'),
+(1413, 1, 'res/201912/23/', 'd7b2dbe442b38e6b.png', 'png', 'res/201912/23/d7b2dbe442b38e6b.png', 'res/_cache/_ico/14/1413.png', 1577074531, '2', 'a:2:{s:5:\"width\";i:1313;s:6:\"height\";i:145;}', '', '', 0, 0, 1, 'image/png');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_res_cate`
---
-
-CREATE TABLE `qinggan_res_cate` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '资源分类ID',
+CREATE TABLE IF NOT EXISTS `qinggan_res_cate` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '资源分类ID',
   `title` varchar(255) NOT NULL COMMENT '分类名称',
   `root` varchar(255) NOT NULL DEFAULT '/' COMMENT '存储目录',
   `folder` varchar(255) NOT NULL DEFAULT 'Ym/d/' COMMENT '存储目录格式',
@@ -7856,39 +7533,25 @@ CREATE TABLE `qinggan_res_cate` (
   `filemax` int(10) UNSIGNED NOT NULL DEFAULT '2' COMMENT '上传文件大小限制',
   `etype` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0本地存储，其他数据则调用不同的网关存储',
   `upload_binary` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0传统上传，1二进制上传',
-  `compress` int(11) NOT NULL DEFAULT '0' COMMENT '0不压缩，大于0的数值表示宽高超过时就压缩到这个值内'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='资源分类存储';
-
---
--- 转存表中的数据 `qinggan_res_cate`
---
+  `compress` int(11) NOT NULL DEFAULT '0' COMMENT '0不压缩，大于0的数值表示宽高超过时就压缩到这个值内',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=utf8 COMMENT='资源分类存储';
 
 INSERT INTO `qinggan_res_cate` (`id`, `title`, `root`, `folder`, `is_default`, `filetypes`, `typeinfo`, `gdtypes`, `gdall`, `ico`, `filemax`, `etype`, `upload_binary`, `compress`) VALUES
 (1, '图片', 'res/', 'Ym/d/', 1, 'png,jpg,gif', '图片', '', 1, 1, 2000, 0, 0, 0),
 (11, '压缩软件', 'res/soft/', 'Y/', 0, 'rar,zip', '压缩包', '', 0, 0, 2000, 0, 0, 0),
-(20, 'Excel', 'res/excel', '', 0, 'xls,xlsx', 'Excel文件', '', 0, 0, 2048, 0, 0, 0),
+(20, 'Excel', 'res/excel/', '', 0, 'xls,xlsx', 'Excel文件', '', 1, 1, 2048, 0, 0, 0),
 (24, '视频', 'res/', 'Ym/d/', 0, 'mp4,mpeg,webp,avi,flv', '视频', '', 0, 0, 2048, 0, 0, 0);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_session`
---
-
-CREATE TABLE `qinggan_session` (
+CREATE TABLE IF NOT EXISTS `qinggan_session` (
   `id` varchar(32) NOT NULL COMMENT 'session_id',
   `data` varchar(20485) NOT NULL COMMENT 'session 内容，最多只能放20K',
-  `lasttime` int(10) UNSIGNED NOT NULL COMMENT '时间'
+  `lasttime` int(10) UNSIGNED NOT NULL COMMENT '时间',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='SESSION操作';
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_site`
---
-
-CREATE TABLE `qinggan_site` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '应用ID',
+CREATE TABLE IF NOT EXISTS `qinggan_site` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '应用ID',
   `domain_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '默认域名ID',
   `title` varchar(255) NOT NULL COMMENT '网站名称',
   `dir` varchar(255) NOT NULL DEFAULT '/' COMMENT '安装目录，以/结尾',
@@ -7915,44 +7578,27 @@ CREATE TABLE `qinggan_site` (
   `biz_sn` varchar(255) NOT NULL COMMENT '订单号生成规则',
   `biz_payment` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '默认支付方式',
   `upload_guest` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '游客上传权限',
-  `upload_user` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员上传权限'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='网站管理';
-
---
--- 转存表中的数据 `qinggan_site`
---
+  `upload_user` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员上传权限',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='网站管理';
 
 INSERT INTO `qinggan_site` (`id`, `domain_id`, `title`, `dir`, `status`, `content`, `is_default`, `tpl_id`, `url_type`, `logo`, `meta`, `currency_id`, `register_status`, `register_close`, `login_status`, `login_close`, `adm_logo29`, `adm_logo180`, `lang`, `api`, `api_code`, `seo_title`, `seo_keywords`, `seo_desc`, `biz_sn`, `biz_payment`, `upload_guest`, `upload_user`) VALUES
 (1, 1, '锟铻科技', '/phpok/', 1, '网站关闭测试', 1, 1, 'default', 'res/201810/12/7eb2d67e0d6f4e4e.png', '', 1, 1, '网站关闭测试', 1, '网站关闭测试', '', '', 'cn', 0, 'wMbo#qAhsafg@c15', '网站建设_企业网站建设_PHPOK网站建设_PHPOK企业网站建设', '网站建设,企业网站建设,PHPOK网站建设,PHPOK企业网站建设', '高效的企业网站建设系统，可实现高定制化的企业网站电商系统，实现企业网站到电子商务企业网站。定制功能更高，操作更简单！', 'prefix[P]-year-month-date-rand-user-number', 0, 1, 1);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_site_domain`
---
-
-CREATE TABLE `qinggan_site_domain` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_site_domain` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `site_id` mediumint(8) UNSIGNED NOT NULL COMMENT '网站ID',
   `domain` varchar(255) NOT NULL COMMENT '域名信息',
-  `is_mobile` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1此域名强制为手机版'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='网站指定的域名';
-
---
--- 转存表中的数据 `qinggan_site_domain`
---
+  `is_mobile` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1此域名强制为手机版',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='网站指定的域名';
 
 INSERT INTO `qinggan_site_domain` (`id`, `site_id`, `domain`, `is_mobile`) VALUES
 (1, 1, 'localhost', 0);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_sysmenu`
---
-
-CREATE TABLE `qinggan_sysmenu` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID号',
+CREATE TABLE IF NOT EXISTS `qinggan_sysmenu` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
   `parent_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID，0为根菜单',
   `title` varchar(100) NOT NULL COMMENT '分类名称',
   `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态0禁用1正常',
@@ -7963,12 +7609,9 @@ CREATE TABLE `qinggan_sysmenu` (
   `ext` varchar(255) NOT NULL COMMENT '表单扩展',
   `if_system` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0常规项目，1系统项目',
   `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0表示全局网站',
-  `icon` varchar(255) NOT NULL COMMENT '图标路径'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='PHPOK后台系统菜单';
-
---
--- 转存表中的数据 `qinggan_sysmenu`
---
+  `icon` varchar(255) NOT NULL COMMENT '图标路径',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=110 DEFAULT CHARSET=utf8 COMMENT='PHPOK后台系统菜单';
 
 INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, `taxis`, `func`, `identifier`, `ext`, `if_system`, `site_id`, `icon`) VALUES
 (1, 0, '设置', 1, 'setting', 50, '', '', '', 1, 0, ''),
@@ -7983,10 +7626,10 @@ INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, 
 (13, 3, '会员列表', 1, 'user', 10, '', '', '', 0, 0, 'newtab'),
 (14, 3, '会员组', 1, 'usergroup', 20, '', '', '', 0, 0, ''),
 (16, 4, '插件中心', 1, 'plugin', 30, '', '', '', 0, 0, 'newtab'),
-(18, 5, '分类管理', 1, 'cate', 30, '', '', '', 0, 0, 'newtab'),
+(18, 5, '分类管理', 1, 'cate', 30, '', '', '', 0, 0, 'folder'),
 (19, 5, '全局内容', 1, 'all', 10, '', '', '', 0, 0, ''),
 (20, 5, '内容管理', 1, 'list', 20, '', '', '', 0, 0, ''),
-(22, 5, '资源管理', 1, 'res', 60, '', '', '', 0, 0, 'newtab'),
+(22, 5, '资源管理', 1, 'res', 60, '', '', '', 0, 0, 'attachment'),
 (23, 5, '数据调用', 1, 'call', 40, '', '', '', 0, 0, ''),
 (25, 3, '会员字段', 1, 'user', 30, 'fields', '', '', 0, 0, ''),
 (27, 1, '项目管理', 1, 'project', 10, '', '', '', 0, 0, 'newtab'),
@@ -8000,7 +7643,7 @@ INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, 
 (45, 4, '程序升级', 1, 'update', 10, '', '', '', 0, 0, 'newtab'),
 (52, 2, '付款方案', 1, 'payment', 20, '', '', '', 0, 0, ''),
 (57, 1, '数据库管理', 1, 'sql', 100, '', '', '', 0, 0, ''),
-(58, 5, '标签管理', 1, 'tag', 70, '', '', '', 0, 0, ''),
+(58, 5, '标签管理', 1, 'tag', 70, '', '', '', 0, 0, 'tags'),
 (59, 1, '伪静态页规则', 1, 'rewrite', 70, '', '', '', 0, 0, ''),
 (62, 4, '附件分类管理', 1, 'rescate', 120, '', '', '', 0, 0, ''),
 (63, 4, '图片规格方案', 1, 'gd', 130, '', '', '', 0, 0, ''),
@@ -8017,81 +7660,121 @@ INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, 
 (98, 1, '微信小程序', 1, 'wxappconfig', 120, '', '', '', 0, 1, ''),
 (105, 5, '文件管理', 1, 'filemanage', 255, '', '', '', 0, 0, 'newtab'),
 (106, 5, '收藏夹管理', 1, 'fav', 255, '', '', '', 0, 0, ''),
-(107, 5, '脏字过滤', 1, 'dirtywords', 255, '', '', '', 0, 0, 'newtab');
+(107, 5, '脏字过滤', 1, 'dirtywords', 255, '', '', '', 0, 0, 'newtab'),
+(108, 5, '菜单导航', 1, 'menu', 90, '', '', '', 0, 1, 'menu'),
+(109, 5, '安全检测', 1, 'safecheck', 255, '', '', '', 0, 0, 'newtab');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_tag`
---
-
-CREATE TABLE `qinggan_tag` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT 'id',
+CREATE TABLE IF NOT EXISTS `qinggan_tag` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
   `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
+  `identifier` varchar(255) NOT NULL COMMENT '标识',
   `title` varchar(255) NOT NULL COMMENT '名称',
   `url` varchar(255) NOT NULL COMMENT '关键字网址',
   `target` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0原窗口打开，1新窗口打开',
   `hits` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '点击次数',
   `alt` varchar(255) NOT NULL COMMENT '链接里的提示',
   `is_global` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否全局状态1是0否',
-  `replace_count` tinyint(4) NOT NULL DEFAULT '3' COMMENT '替换次数'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关键字管理器';
+  `replace_count` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '替换次数',
+  `seo_title` varchar(255) NOT NULL COMMENT 'SEO标题',
+  `seo_keywords` varchar(255) NOT NULL COMMENT 'SEO关键字',
+  `seo_desc` varchar(255) NOT NULL COMMENT 'SEO描述',
+  `tpl` varchar(255) NOT NULL COMMENT '模板名称',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 COMMENT='关键字管理器';
 
---
--- 转存表中的数据 `qinggan_tag`
---
+INSERT INTO `qinggan_tag` (`id`, `site_id`, `identifier`, `title`, `url`, `target`, `hits`, `alt`, `is_global`, `replace_count`, `seo_title`, `seo_keywords`, `seo_desc`, `tpl`) VALUES
+(1, 1, '', '新闻', '', 0, 2, '', 0, 3, '', '', '', ''),
+(2, 1, '', '资讯', '', 0, 12, '', 0, 3, '', '', '', ''),
+(3, 1, '', '公司', '', 0, 50, '', 0, 3, '', '', '', ''),
+(6, 1, '', '联系', '', 0, 0, '', 0, 3, '', '', '', ''),
+(7, 1, '', '发展历程', '', 0, 2, '', 0, 3, '', '', '', ''),
+(8, 1, '', '企业', '', 0, 2, '', 0, 3, '', '', '', ''),
+(9, 1, '', '编程语言', '', 0, 0, '', 0, 3, '', '', '', ''),
+(10, 1, '', 'php', '', 0, 0, '', 0, 3, '', '', '', ''),
+(11, 1, '', 'php框架', '', 0, 0, '', 0, 3, '', '', '', ''),
+(12, 1, '', 'htaccess', '', 0, 0, '', 0, 3, '', '', '', ''),
+(13, 1, '', '文件目录', '', 0, 0, '', 0, 3, '', '', '', ''),
+(14, 1, '', '节能减排', '', 0, 0, '', 0, 3, '', '', '', ''),
+(15, 1, '', '玻璃幕墙', '', 0, 0, '', 0, 3, '', '', '', ''),
+(16, 1, '', 'update', '', 0, 0, '', 0, 3, '', '', '', ''),
+(17, 1, '', '数据表', '', 0, 0, '', 0, 3, '', '', '', ''),
+(18, 1, '', 'delete', '', 0, 0, '', 0, 3, '', '', '', ''),
+(19, 1, '', '小程序', '', 0, 0, '', 0, 3, '', '', '', ''),
+(20, 1, '', 'border', '', 0, 0, '', 0, 0, '', '', '', ''),
+(21, 1, '', '[db:标签]', '', 0, 0, '', 0, 0, '', '', '', ''),
+(22, 1, '', '交互体验', '', 0, 0, '', 0, 0, '', '', '', ''),
+(23, 1, '', '脚本', '', 0, 0, '', 0, 0, '', '', '', ''),
+(24, 1, '', '网站设计', '', 0, 0, '', 0, 0, '', '', '', ''),
+(25, 1, '', 'api', '', 0, 0, '', 0, 0, '', '', '', ''),
+(26, 1, '', '地图api', '', 0, 0, '', 0, 0, '', '', '', ''),
+(27, 1, '', 'websocket', '', 0, 1, '', 0, 0, '', '', '', ''),
+(28, 1, '', '前端开发', '', 0, 2, '', 0, 3, '', '', '', ''),
+(29, 1, '', '前端工程师', '', 0, 0, '', 0, 0, '', '', '', ''),
+(30, 1, '', '前端', '', 0, 0, '', 0, 0, '', '', '', ''),
+(31, 1, '', '响应式布局', '', 0, 0, '', 0, 0, '', '', '', ''),
+(32, 1, '', '网站建设', '', 0, 0, '', 0, 0, '', '', '', '');
 
-INSERT INTO `qinggan_tag` (`id`, `site_id`, `title`, `url`, `target`, `hits`, `alt`, `is_global`, `replace_count`) VALUES
-(1, 1, '新闻', '', 0, 2, '', 0, 3),
-(2, 1, '资讯', '', 0, 12, '', 0, 3),
-(3, 1, '公司', '', 0, 23, '', 0, 3),
-(6, 1, '联系', '', 0, 0, '', 0, 3),
-(7, 1, '发展历程', '', 0, 0, '', 0, 3),
-(8, 1, '企业', '', 0, 1, '', 0, 3);
+CREATE TABLE IF NOT EXISTS `qinggan_tag_node` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `tag_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '关联的TagID',
+  `identifier` varchar(255) NOT NULL COMMENT '标识变量名，在同一个标签里不能重复',
+  `title` varchar(255) NOT NULL COMMENT '节点名称',
+  `psize` int(11) NOT NULL DEFAULT '0' COMMENT '默认文章数，用于未指定时自动读取的数量',
+  `ids` text NOT NULL COMMENT '文章ID，多个ID用英文逗号隔开',
+  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '为1表示读列表，为0表示随机从ids里选择一篇读取（如果有多个）',
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未启用，1启用',
+  `pid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '值越小越往前排，最大不超过255',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='标签节点管理器';
 
--- --------------------------------------------------------
+INSERT INTO `qinggan_tag_node` (`id`, `tag_id`, `identifier`, `title`, `psize`, `ids`, `type`, `status`, `pid`, `cid`, `taxis`) VALUES
+(1, 3, 'hot', '公司热门', 10, '1996,1855,1767', 1, 1, 0, 0, 10),
+(3, 3, 'demo', '演示节点', 0, '', 0, 0, 43, 8, 20);
 
---
--- 表的结构 `qinggan_tag_stat`
---
-
-CREATE TABLE `qinggan_tag_stat` (
+CREATE TABLE IF NOT EXISTS `qinggan_tag_stat` (
   `title_id` varchar(200) NOT NULL COMMENT '主题ID，以p开头的表示项目ID，以c开头的表示分类ID',
-  `tag_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'TAG标签ID'
+  `tag_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'TAG标签ID',
+  PRIMARY KEY (`title_id`,`tag_id`),
+  KEY `title_id` (`title_id`),
+  KEY `tag_id` (`tag_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Tag主题统计';
 
---
--- 转存表中的数据 `qinggan_tag_stat`
---
-
 INSERT INTO `qinggan_tag_stat` (`title_id`, `tag_id`) VALUES
-('1756', 3),
 ('1756', 8),
-('1757', 3),
 ('1757', 6),
 ('1758', 7),
-('1763', 2),
+('1763', 1),
 ('1763', 3),
+('1765', 3),
+('1767', 3),
+('1769', 3),
+('1933', 3),
+('1933', 10),
+('1933', 11),
+('1934', 19),
+('1935', 16),
 ('1936', 1),
 ('1936', 2),
-('1996', 1),
-('1996', 2),
 ('1996', 3),
+('1996', 14),
+('1996', 15),
+('1997', 12),
+('1997', 13),
+('3384', 23),
+('3384', 24),
+('3384', 25),
+('3384', 26),
+('c583', 3),
 ('c598', 1),
-('c598', 3),
 ('c628', 1),
-('c628', 3),
 ('c8', 1),
-('c8', 3);
+('c8', 3),
+('p87', 3);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_task`
---
-
-CREATE TABLE `qinggan_task` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_task` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `year` varchar(9) NOT NULL COMMENT '年份',
   `month` varchar(5) NOT NULL COMMENT '月',
   `day` varchar(5) NOT NULL COMMENT '日',
@@ -8103,17 +7786,12 @@ CREATE TABLE `qinggan_task` (
   `action` varchar(100) NOT NULL COMMENT '执行动作脚本',
   `param` varchar(255) NOT NULL COMMENT '参数',
   `only_once` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1表示仅执行一次',
-  `is_lock` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未锁定1已锁定'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='计划任务';
+  `is_lock` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未锁定1已锁定',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 COMMENT='计划任务';
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_tpl`
---
-
-CREATE TABLE `qinggan_tpl` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_tpl` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `title` varchar(100) NOT NULL COMMENT '模板名称',
   `author` varchar(100) NOT NULL COMMENT '开发者名称',
   `folder` varchar(100) NOT NULL DEFAULT 'www' COMMENT '模板目录',
@@ -8121,24 +7799,15 @@ CREATE TABLE `qinggan_tpl` (
   `refresh` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1强制刷新0普通刷新',
   `ext` varchar(20) NOT NULL DEFAULT 'html' COMMENT '后缀',
   `folder_change` varchar(255) NOT NULL COMMENT '更改目录',
-  `phpfolder` varchar(200) NOT NULL COMMENT 'PHP执行文件目录'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='模板管理';
-
---
--- 转存表中的数据 `qinggan_tpl`
---
+  `phpfolder` varchar(200) NOT NULL COMMENT 'PHP执行文件目录',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='模板管理';
 
 INSERT INTO `qinggan_tpl` (`id`, `title`, `author`, `folder`, `refresh_auto`, `refresh`, `ext`, `folder_change`, `phpfolder`) VALUES
 (1, '默认风格', 'phpok.com', 'www', 1, 0, 'html', 'css,images,js', 'phpinc');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_user`
---
-
-CREATE TABLE `qinggan_user` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID，即会员ID',
+CREATE TABLE IF NOT EXISTS `qinggan_user` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID，即会员ID',
   `group_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主要会员组',
   `user` varchar(100) NOT NULL COMMENT '会员账号',
   `pass` varchar(100) NOT NULL COMMENT '会员密码',
@@ -8147,30 +7816,20 @@ CREATE TABLE `qinggan_user` (
   `email` varchar(200) NOT NULL COMMENT '邮箱，可用于取回密码',
   `mobile` varchar(50) NOT NULL COMMENT '手机或电话',
   `code` varchar(255) NOT NULL COMMENT '验证串，可用于取回密码',
-  `avatar` varchar(255) NOT NULL COMMENT '会员头像'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员管理';
-
---
--- 转存表中的数据 `qinggan_user`
---
+  `avatar` varchar(255) NOT NULL COMMENT '会员头像',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=45 DEFAULT CHARSET=utf8 COMMENT='会员管理';
 
 INSERT INTO `qinggan_user` (`id`, `group_id`, `user`, `pass`, `status`, `regtime`, `email`, `mobile`, `code`, `avatar`) VALUES
 (23, 2, 'admin', '2f276632df95f2d6c6db7255a6e94e26:94', 1, 1438668082, '40782502@qq.com', '15818533971', '', 'res/201810/22/f17db511ed562c8f.jpg'),
-(32, 2, 'demo-1', '2b2c8c9d7b9ed3155d4dc1a9d4003d41:fe', 1, 1546503259, '1@demo.com', '', '', ''),
-(33, 2, '苏相锟', 'f506da923501ed87e4641e8026d426d9:05', 1, 1551967549, '', '', '', 'http://thirdwx.qlogo.cn/mmopen/vi_32/oAdEUk0YiaJbcy3qFdxTkVFRopniarKvSbGtvrVOu9SKTJm0ajeg0rfPibBsicFicbsO0P4XzjyFthqPkbDpw4f5KNg/132'),
 (37, 2, 'admin@phpok.com', '419ab91a3c49f8b15bfdb28592f7a76c:e5', 1, 1566972682, 'admin@phpok.com', '', 'bcse52mm', ''),
 (36, 2, '18926769302', 'ef8d3823014e45d7572664fbaf99dfe6:57', 1, 1566972593, '', '18926769302', '', ''),
 (38, 7, 'demo', 'a2dfda1cfa563508ac27f4f7796d7aef:0a', 1, 1566974736, '', '', 'cwr55aih', ''),
-(42, 2, 'demi123', 'd720f00b6b1d6260632ba8537ab67a83:b1', 1, 1569415931, 'demo@dddd.com', '15818533975', '', '');
+(42, 2, 'demi123', 'd720f00b6b1d6260632ba8537ab67a83:b1', 1, 1569415931, 'demo@dddd.com', '15818533975', '', ''),
+(44, 2, '苏相锟', '', 1, 1576576085, '', '', '', 'https://wx.qlogo.cn/mmopen/vi_32/JQmleeDm3g17Ao1BhARuZApCP3fiarVF7InlklETplrkicM0PoUDBDs3Aa538lB5OiczMey7g66sa04iblZP0hDp1g/132');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_user_address`
---
-
-CREATE TABLE `qinggan_user_address` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_user_address` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID',
   `country` varchar(255) NOT NULL DEFAULT '中国' COMMENT '国家',
   `province` varchar(255) NOT NULL COMMENT '省信息',
@@ -8185,53 +7844,34 @@ CREATE TABLE `qinggan_user_address` (
   `zipcode` varchar(50) NOT NULL COMMENT '邮编',
   `is_default` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1表示默认地址，0为常规',
   `firstname` varchar(255) NOT NULL COMMENT '名字',
-  `lastname` varchar(255) NOT NULL COMMENT '姓氏'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员地址库';
-
---
--- 转存表中的数据 `qinggan_user_address`
---
+  `lastname` varchar(255) NOT NULL COMMENT '姓氏',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='会员地址库';
 
 INSERT INTO `qinggan_user_address` (`id`, `user_id`, `country`, `province`, `city`, `county`, `address`, `address2`, `mobile`, `tel`, `email`, `fullname`, `zipcode`, `is_default`, `firstname`, `lastname`) VALUES
-(1, 23, '中国', '天津市', '天津市', '和平区', 'fasdfasdfasdf', '', '15818533971', '', '', '苏相锟', '', 0, '', ''),
 (5, 26, '中国', '福建', '', '', 'dd', '', '15818533971', '0755-23776246', 'demo@demo.com', '你好啊', '518000', 0, '', ''),
-(4, 23, '中国', '广东省', '深圳市', '龙华区', '磊', '', '15818533971', '407825556666', 'addd@demo.com', 'OK', '40782502', 1, '', ''),
+(4, 23, '中国', '广东省', '深圳市', '龙华区', '磊', '', '15818533971', '407825556666', 'addd@demo.com', 'OK', '40782502', 0, '', ''),
 (6, 38, '中国', '内蒙古自治区', '赤峰市', '阿鲁科尔沁旗', '演示地址', '', '15818533971', '', '', 'seika', '', 0, '', ''),
-(7, 42, '中国', '山西省', '太原市', '小店区', 'adfasdfasdfasd', '', '15818533975', '', '', 'demo', '', 0, '', '');
+(7, 42, '中国', '山西省', '太原市', '小店区', 'adfasdfasdfasd', '', '15818533975', '', '', 'demo', '', 0, '', ''),
+(8, 23, '中国', '辽宁省', '沈阳市', '和平区', 'demo', '', '15818533971', '', 'admin@phpok.com', 'seika', '', 1, '', '');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_user_ext`
---
-
-CREATE TABLE `qinggan_user_ext` (
+CREATE TABLE IF NOT EXISTS `qinggan_user_ext` (
   `id` int(10) UNSIGNED NOT NULL COMMENT '会员ID',
   `fullname` varchar(255) NOT NULL DEFAULT '' COMMENT '姓名',
-  `gender` int(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '性别'
+  `gender` int(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '性别',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员扩展字段';
 
---
--- 转存表中的数据 `qinggan_user_ext`
---
-
 INSERT INTO `qinggan_user_ext` (`id`, `fullname`, `gender`) VALUES
-(23, '苏相锟', 0),
-(32, '', 0),
+(23, '苏相锟', 1),
 (37, '', 0),
 (36, '', 0),
 (38, '', 0),
-(33, 'demo', 1),
-(42, '', 0);
+(42, '', 0),
+(44, '', 0);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_user_group`
---
-
-CREATE TABLE `qinggan_user_group` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '会员组ID',
+CREATE TABLE IF NOT EXISTS `qinggan_user_group` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '会员组ID',
   `title` varchar(255) NOT NULL COMMENT '会员组名称',
   `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '1' COMMENT '0不使用1使用',
   `is_default` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1为会员注册默认组',
@@ -8242,46 +7882,27 @@ CREATE TABLE `qinggan_user_group` (
   `tbl_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '关联验证串项目',
   `tpl_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '通知模板ID',
   `fields` text NOT NULL COMMENT '会员字段，多个字段用英文逗号隔开',
-  `popedom` longtext NOT NULL COMMENT '权限，包括读写及评论审核'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员组信息管理';
-
---
--- 转存表中的数据 `qinggan_user_group`
---
+  `popedom` longtext NOT NULL COMMENT '权限，包括读写及评论审核',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT='会员组信息管理';
 
 INSERT INTO `qinggan_user_group` (`id`, `title`, `status`, `is_default`, `is_guest`, `is_open`, `taxis`, `register_status`, `tbl_id`, `tpl_id`, `fields`, `popedom`) VALUES
-(2, '普通会员', 1, 1, 0, 0, 10, '0', 0, 34, 'fullname,gender', 'a:1:{i:1;s:185:\"read:43,read:87,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,post:152,post1:152,reply:152,reply1:152,read:148,read:386,post:386,read:389,read:390\";}'),
-(3, '游客组', 1, 0, 1, 0, 200, '', 0, 0, '', 'a:1:{i:1;s:154:\"read:43,read:87,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,read:148,read:386,post:386,read:389,read:390,read:439\";}'),
-(7, 'VIP会员', 1, 0, 0, 0, 255, '1', 0, 0, 'fullname,gender', 'a:1:{i:1;s:223:\"read:43,read:87,read:41,read:42,read:147,read:45,read:150,read:96,post:96,post1:96,reply:96,reply1:96,read:144,read:151,read:152,post:152,post1:152,reply:152,reply1:152,read:148,read:386,post:386,post1:386,read:389,read:390\";}');
+(2, '普通会员', 1, 1, 0, 0, 10, '0', 0, 34, 'fullname,gender', 'a:1:{i:1;s:194:\"read:43,read:87,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,post:152,post1:152,reply:152,reply1:152,read:148,read:386,post:386,read:389,read:390,read:440\";}'),
+(3, '游客组', 1, 0, 1, 0, 200, '', 0, 0, '', 'a:1:{i:1;s:163:\"read:43,read:87,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,read:148,read:386,post:386,read:389,read:390,read:439,read:440\";}'),
+(7, 'VIP会员', 1, 0, 0, 0, 255, '1', 0, 0, 'fullname,gender', 'a:1:{i:1;s:232:\"read:43,read:87,read:41,read:42,read:147,read:45,read:150,read:96,post:96,post1:96,reply:96,reply1:96,read:144,read:151,read:152,post:152,post1:152,reply:152,reply1:152,read:148,read:386,post:386,post1:386,read:389,read:390,read:440\";}');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_user_relation`
---
-
-CREATE TABLE `qinggan_user_relation` (
+CREATE TABLE IF NOT EXISTS `qinggan_user_relation` (
   `uid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '用户ID',
   `introducer` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '介绍人ID',
   `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '介绍时间'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员介绍关系图';
 
---
--- 转存表中的数据 `qinggan_user_relation`
---
-
 INSERT INTO `qinggan_user_relation` (`uid`, `introducer`, `dateline`) VALUES
 (38, 37, 1566974736),
 (39, 37, 1567577613);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_wealth`
---
-
-CREATE TABLE `qinggan_wealth` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '财富ID',
+CREATE TABLE IF NOT EXISTS `qinggan_wealth` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '财富ID',
   `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
   `title` varchar(100) NOT NULL COMMENT '财产名称',
   `identifier` varchar(100) NOT NULL COMMENT '标识，仅限英文字符',
@@ -8294,49 +7915,31 @@ CREATE TABLE `qinggan_wealth` (
   `ifcash` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '是否抵现，即允许财富当现金使用',
   `cash_ratio` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '抵现比例，即100财富值可抵用多少元',
   `ifcheck` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否审核，为1时表示获取到的财富需要管理员审核后才行',
-  `min_val` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '最低使用值'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='财富类型';
-
---
--- 转存表中的数据 `qinggan_wealth`
---
+  `min_val` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '最低使用值',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='财富类型';
 
 INSERT INTO `qinggan_wealth` (`id`, `site_id`, `title`, `identifier`, `unit`, `dnum`, `ifpay`, `pay_ratio`, `status`, `taxis`, `ifcash`, `cash_ratio`, `ifcheck`, `min_val`) VALUES
-(1, 1, '积分', 'integral', '点', 2, 0, 0, 1, 10, 1, 1, 0, 100);
+(1, 1, '积分', 'integral', '点', 2, 1, 100, 1, 10, 1, 1, 0, 100);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_wealth_info`
---
-
-CREATE TABLE `qinggan_wealth_info` (
+CREATE TABLE IF NOT EXISTS `qinggan_wealth_info` (
   `wid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '方案ID',
   `uid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID或会员ID或分类ID或项目ID',
   `lasttime` int(11) NOT NULL DEFAULT '0' COMMENT '最后一次更新时间',
-  `val` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '最小财富为0，不考虑负数情况'
+  `val` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '最小财富为0，不考虑负数情况',
+  PRIMARY KEY (`wid`,`uid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='财富内容';
 
---
--- 转存表中的数据 `qinggan_wealth_info`
---
-
 INSERT INTO `qinggan_wealth_info` (`wid`, `uid`, `lasttime`, `val`) VALUES
-(1, 23, 1569663880, 2803),
+(1, 23, 1576202872, 141),
 (1, 42, 1569415999, 6),
 (1, 37, 1567417019, 150),
 (1, 0, 1566974736, 5),
 (1, 36, 1566972593, 50),
 (1, 38, 1567417019, 82);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_wealth_log`
---
-
-CREATE TABLE `qinggan_wealth_log` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+CREATE TABLE IF NOT EXISTS `qinggan_wealth_log` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `wid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '财富ID',
   `rule_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '规则ID',
   `goal_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '目标会员ID',
@@ -8350,12 +7953,9 @@ CREATE TABLE `qinggan_wealth_log` (
   `ctrlid` varchar(100) NOT NULL COMMENT '控制器ID',
   `funcid` varchar(100) NOT NULL COMMENT '方法ID',
   `url` varchar(255) NOT NULL COMMENT '执行的URL',
-  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未审核1已审核'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='财富获取或消耗日志';
-
---
--- 转存表中的数据 `qinggan_wealth_log`
---
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未审核1已审核',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=112 DEFAULT CHARSET=utf8 COMMENT='财富获取或消耗日志';
 
 INSERT INTO `qinggan_wealth_log` (`id`, `wid`, `rule_id`, `goal_id`, `mid`, `val`, `note`, `appid`, `dateline`, `user_id`, `admin_id`, `ctrlid`, `funcid`, `url`, `status`) VALUES
 (1, 1, 5, 23, '', 5, '会员登录', 'www', 1525283874, 23, 0, 'login', 'ok', '', 1),
@@ -8449,16 +8049,21 @@ INSERT INTO `qinggan_wealth_log` (`id`, `wid`, `rule_id`, `goal_id`, `mid`, `val
 (93, 1, 21, 23, '', 5, '会员登录', 'api', 1567491407, 23, 0, 'login', 'save', '', 1),
 (94, 1, 12, 23, '1997', 1, '阅读#1997', 'api', 1567497241, 23, 0, 'content', 'index', '', 1),
 (95, 1, 21, 23, '', 5, '会员登录', 'api', 1568009978, 23, 0, 'login', 'save', '', 1),
-(100, 1, 21, 23, '', 5, '会员登录', 'api', 1569663880, 23, 0, 'login', 'save', '', 1);
+(100, 1, 21, 23, '', 5, '会员登录', 'api', 1569663880, 23, 0, 'login', 'save', '', 1),
+(101, 1, 12, 23, '3383', 1, '阅读#3383', 'www', 1574058936, 23, 0, 'content', 'index', '', 1),
+(102, 1, 13, 23, '3383', 5, '管理员审核评论#1', 'admin', 1574058964, 0, 1, 'reply', 'status', '', 1),
+(103, 1, 21, 23, '', 5, '会员登录', 'api', 1574586447, 23, 0, 'login', 'save', '', 1),
+(104, 1, 21, 23, '', 5, '会员登录', 'api', 1575119302, 23, 0, 'login', 'save', '', 1),
+(105, 1, 0, 23, '0', -2700, '财富（积分）抵现', 'www', 1575119348, 23, 0, 'payment', 'create', 'index.php', 1),
+(106, 1, 21, 23, '', 5, '会员登录', 'api', 1575192636, 23, 0, 'login', 'save', '', 1),
+(107, 1, 21, 23, '', 5, '会员登录', 'api', 1575706369, 23, 0, 'login', 'save', '', 1),
+(108, 1, 12, 23, '1935', 1, '阅读#1935', 'www', 1575706473, 23, 0, 'content', 'index', '', 1),
+(109, 1, 12, 23, '1936', 1, '阅读#1936', 'www', 1575706526, 23, 0, 'content', 'index', '', 1),
+(110, 1, 21, 23, '', 5, '会员登录', 'api', 1576066947, 23, 0, 'login', 'save', '', 1),
+(111, 1, 21, 23, '', 5, '会员登录', 'api', 1576202872, 23, 0, 'login', 'save', '', 1);
 
--- --------------------------------------------------------
-
---
--- 表的结构 `qinggan_wealth_rule`
---
-
-CREATE TABLE `qinggan_wealth_rule` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT '规则ID',
+CREATE TABLE IF NOT EXISTS `qinggan_wealth_rule` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '规则ID',
   `wid` int(10) UNSIGNED NOT NULL COMMENT '财产ID',
   `action` varchar(255) NOT NULL COMMENT '触发动作',
   `val` varchar(255) NOT NULL DEFAULT '0' COMMENT '值，负值表示减，大于0表示加，支持计算如price*2',
@@ -8474,12 +8079,9 @@ CREATE TABLE `qinggan_wealth_rule` (
   `title_id` varchar(255) NOT NULL COMMENT '主题限制，多个主题用英文逗号隔开，建议不超过30个主题',
   `goal_group_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限，其他限制目标会员组ID',
   `goal_uids` varchar(255) NOT NULL COMMENT '目标会员ID，多个会员ID用英文逗号隔开',
-  `if_stop` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不中止，1中止'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='财富生成规则';
-
---
--- 转存表中的数据 `qinggan_wealth_rule`
---
+  `if_stop` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不中止，1中止',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COMMENT='财富生成规则';
 
 INSERT INTO `qinggan_wealth_rule` (`id`, `wid`, `action`, `val`, `goal`, `taxis`, `group_id`, `uids`, `qty_type`, `qty`, `price_type`, `price`, `project_id`, `title_id`, `goal_group_id`, `goal_uids`, `if_stop`) VALUES
 (2, 1, 'register', '50', 'user', 10, 0, '', 'order', 0, 'order', 0, 0, '', 0, '', 0),
@@ -8498,810 +8100,28 @@ INSERT INTO `qinggan_wealth_rule` (`id`, `wid`, `action`, `val`, `goal`, `taxis`
 (22, 1, 'login', '100', 'introducer', 36, 7, '', 'order', 0, 'order', 0, 0, '', 7, '', 0),
 (23, 1, 'login', '75', 'introducer', 37, 7, '', 'order', 0, 'order', 0, 0, '', 2, '', 0);
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `qinggan_77`
---
-ALTER TABLE `qinggan_77`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id_index` (`site_id`,`project_id`);
-
---
--- Indexes for table `qinggan_adm`
---
-ALTER TABLE `qinggan_adm`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_adm_popedom`
---
-ALTER TABLE `qinggan_adm_popedom`
-  ADD PRIMARY KEY (`id`,`pid`);
-
---
--- Indexes for table `qinggan_all`
---
-ALTER TABLE `qinggan_all`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_attr`
---
-ALTER TABLE `qinggan_attr`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_attr_values`
---
-ALTER TABLE `qinggan_attr_values`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `aid` (`aid`);
-
---
--- Indexes for table `qinggan_cart`
---
-ALTER TABLE `qinggan_cart`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_cart_product`
---
-ALTER TABLE `qinggan_cart_product`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_cate`
---
-ALTER TABLE `qinggan_cate`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `parent_id` (`parent_id`),
-  ADD KEY `site_id` (`site_id`,`status`);
-
---
--- Indexes for table `qinggan_currency`
---
-ALTER TABLE `qinggan_currency`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_email`
---
-ALTER TABLE `qinggan_email`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_express`
---
-ALTER TABLE `qinggan_express`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_extc`
---
-ALTER TABLE `qinggan_extc`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_fav`
---
-ALTER TABLE `qinggan_fav`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `qinggan_fields`
---
-ALTER TABLE `qinggan_fields`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_freight`
---
-ALTER TABLE `qinggan_freight`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_freight_price`
---
-ALTER TABLE `qinggan_freight_price`
-  ADD PRIMARY KEY (`zid`,`unit_val`);
-
---
--- Indexes for table `qinggan_freight_zone`
---
-ALTER TABLE `qinggan_freight_zone`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fid` (`fid`);
-
---
--- Indexes for table `qinggan_gateway`
---
-ALTER TABLE `qinggan_gateway`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_gd`
---
-ALTER TABLE `qinggan_gd`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_list`
---
-ALTER TABLE `qinggan_list`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `project_id` (`project_id`),
-  ADD KEY `site_id` (`site_id`,`identifier`,`status`);
-
---
--- Indexes for table `qinggan_list_21`
---
-ALTER TABLE `qinggan_list_21`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
-
---
--- Indexes for table `qinggan_list_22`
---
-ALTER TABLE `qinggan_list_22`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
-
---
--- Indexes for table `qinggan_list_23`
---
-ALTER TABLE `qinggan_list_23`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
-
---
--- Indexes for table `qinggan_list_24`
---
-ALTER TABLE `qinggan_list_24`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
-
---
--- Indexes for table `qinggan_list_40`
---
-ALTER TABLE `qinggan_list_40`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
-
---
--- Indexes for table `qinggan_list_46`
---
-ALTER TABLE `qinggan_list_46`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
-
---
--- Indexes for table `qinggan_list_64`
---
-ALTER TABLE `qinggan_list_64`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
-
---
--- Indexes for table `qinggan_list_65`
---
-ALTER TABLE `qinggan_list_65`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
-
---
--- Indexes for table `qinggan_list_66`
---
-ALTER TABLE `qinggan_list_66`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`),
-  ADD KEY `site_project` (`site_id`,`project_id`),
-  ADD KEY `site_cate` (`site_id`,`cate_id`),
-  ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
-
---
--- Indexes for table `qinggan_list_68`
---
-ALTER TABLE `qinggan_list_68`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
-
---
--- Indexes for table `qinggan_list_75`
---
-ALTER TABLE `qinggan_list_75`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
-
---
--- Indexes for table `qinggan_list_78`
---
-ALTER TABLE `qinggan_list_78`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id_index` (`site_id`,`project_id`,`cate_id`);
-
---
--- Indexes for table `qinggan_list_attr`
---
-ALTER TABLE `qinggan_list_attr`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `tid` (`tid`);
-
---
--- Indexes for table `qinggan_list_biz`
---
-ALTER TABLE `qinggan_list_biz`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_list_cate`
---
-ALTER TABLE `qinggan_list_cate`
-  ADD PRIMARY KEY (`id`,`cate_id`),
-  ADD KEY `id` (`id`),
-  ADD KEY `cate_id` (`cate_id`);
-
---
--- Indexes for table `qinggan_log`
---
-ALTER TABLE `qinggan_log`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_module`
---
-ALTER TABLE `qinggan_module`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_opt`
---
-ALTER TABLE `qinggan_opt`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `group_id` (`group_id`);
-
---
--- Indexes for table `qinggan_opt_group`
---
-ALTER TABLE `qinggan_opt_group`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_order`
---
-ALTER TABLE `qinggan_order`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `ordersn` (`sn`);
-
---
--- Indexes for table `qinggan_order_address`
---
-ALTER TABLE `qinggan_order_address`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_order_express`
---
-ALTER TABLE `qinggan_order_express`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_order_invoice`
---
-ALTER TABLE `qinggan_order_invoice`
-  ADD PRIMARY KEY (`order_id`);
-
---
--- Indexes for table `qinggan_order_log`
---
-ALTER TABLE `qinggan_order_log`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `order_id` (`order_id`);
-
---
--- Indexes for table `qinggan_order_payment`
---
-ALTER TABLE `qinggan_order_payment`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_order_price`
---
-ALTER TABLE `qinggan_order_price`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `order_id` (`order_id`);
-
---
--- Indexes for table `qinggan_order_product`
---
-ALTER TABLE `qinggan_order_product`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_payment`
---
-ALTER TABLE `qinggan_payment`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_payment_group`
---
-ALTER TABLE `qinggan_payment_group`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_payment_log`
---
-ALTER TABLE `qinggan_payment_log`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `qinggan_phpok`
---
-ALTER TABLE `qinggan_phpok`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `identifier` (`identifier`,`site_id`);
-
---
--- Indexes for table `qinggan_plugins`
---
-ALTER TABLE `qinggan_plugins`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_popedom`
---
-ALTER TABLE `qinggan_popedom`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `gid` (`gid`);
-
---
--- Indexes for table `qinggan_project`
---
-ALTER TABLE `qinggan_project`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `parent_id` (`parent_id`),
-  ADD KEY `site_id` (`site_id`,`status`);
-
---
--- Indexes for table `qinggan_reply`
---
-ALTER TABLE `qinggan_reply`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `tid` (`tid`);
-
---
--- Indexes for table `qinggan_res`
---
-ALTER TABLE `qinggan_res`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `ext` (`ext`);
-
---
--- Indexes for table `qinggan_res_cate`
---
-ALTER TABLE `qinggan_res_cate`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_session`
---
-ALTER TABLE `qinggan_session`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_site`
---
-ALTER TABLE `qinggan_site`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_site_domain`
---
-ALTER TABLE `qinggan_site_domain`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `site_id` (`site_id`);
-
---
--- Indexes for table `qinggan_sysmenu`
---
-ALTER TABLE `qinggan_sysmenu`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_tag`
---
-ALTER TABLE `qinggan_tag`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_tag_stat`
---
-ALTER TABLE `qinggan_tag_stat`
-  ADD PRIMARY KEY (`title_id`,`tag_id`),
-  ADD KEY `title_id` (`title_id`),
-  ADD KEY `tag_id` (`tag_id`);
-
---
--- Indexes for table `qinggan_task`
---
-ALTER TABLE `qinggan_task`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_tpl`
---
-ALTER TABLE `qinggan_tpl`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_user`
---
-ALTER TABLE `qinggan_user`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_user_address`
---
-ALTER TABLE `qinggan_user_address`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_user_ext`
---
-ALTER TABLE `qinggan_user_ext`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_user_group`
---
-ALTER TABLE `qinggan_user_group`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_wealth`
---
-ALTER TABLE `qinggan_wealth`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_wealth_info`
---
-ALTER TABLE `qinggan_wealth_info`
-  ADD PRIMARY KEY (`wid`,`uid`);
-
---
--- Indexes for table `qinggan_wealth_log`
---
-ALTER TABLE `qinggan_wealth_log`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `qinggan_wealth_rule`
---
-ALTER TABLE `qinggan_wealth_rule`
-  ADD PRIMARY KEY (`id`);
-
---
--- 在导出的表使用AUTO_INCREMENT
---
-
---
--- 使用表AUTO_INCREMENT `qinggan_77`
---
-ALTER TABLE `qinggan_77`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=5;
-
---
--- 使用表AUTO_INCREMENT `qinggan_adm`
---
-ALTER TABLE `qinggan_adm`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '管理员ID，系统自增', AUTO_INCREMENT=2;
-
---
--- 使用表AUTO_INCREMENT `qinggan_all`
---
-ALTER TABLE `qinggan_all`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=138;
-
---
--- 使用表AUTO_INCREMENT `qinggan_attr`
---
-ALTER TABLE `qinggan_attr`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=13;
-
---
--- 使用表AUTO_INCREMENT `qinggan_attr_values`
---
-ALTER TABLE `qinggan_attr_values`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=44;
-
---
--- 使用表AUTO_INCREMENT `qinggan_cart`
---
-ALTER TABLE `qinggan_cart`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=14;
-
---
--- 使用表AUTO_INCREMENT `qinggan_cart_product`
---
-ALTER TABLE `qinggan_cart_product`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=4;
-
---
--- 使用表AUTO_INCREMENT `qinggan_cate`
---
-ALTER TABLE `qinggan_cate`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=687;
-
---
--- 使用表AUTO_INCREMENT `qinggan_currency`
---
-ALTER TABLE `qinggan_currency`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '货币ID', AUTO_INCREMENT=9;
-
---
--- 使用表AUTO_INCREMENT `qinggan_email`
---
-ALTER TABLE `qinggan_email`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=99;
-
---
--- 使用表AUTO_INCREMENT `qinggan_express`
---
-ALTER TABLE `qinggan_express`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=7;
-
---
--- 使用表AUTO_INCREMENT `qinggan_fav`
---
-ALTER TABLE `qinggan_fav`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID';
-
---
--- 使用表AUTO_INCREMENT `qinggan_fields`
---
-ALTER TABLE `qinggan_fields`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '字段ID，自增', AUTO_INCREMENT=1138;
-
---
--- 使用表AUTO_INCREMENT `qinggan_freight`
---
-ALTER TABLE `qinggan_freight`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '运费模板ID，自增ID', AUTO_INCREMENT=6;
-
---
--- 使用表AUTO_INCREMENT `qinggan_freight_zone`
---
-ALTER TABLE `qinggan_freight_zone`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=26;
-
---
--- 使用表AUTO_INCREMENT `qinggan_gateway`
---
-ALTER TABLE `qinggan_gateway`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=4;
-
---
--- 使用表AUTO_INCREMENT `qinggan_gd`
---
-ALTER TABLE `qinggan_gd`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=13;
-
---
--- 使用表AUTO_INCREMENT `qinggan_list`
---
-ALTER TABLE `qinggan_list`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=3368;
-
---
--- 使用表AUTO_INCREMENT `qinggan_list_78`
---
-ALTER TABLE `qinggan_list_78`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=3367;
-
---
--- 使用表AUTO_INCREMENT `qinggan_list_attr`
---
-ALTER TABLE `qinggan_list_attr`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=84;
-
---
--- 使用表AUTO_INCREMENT `qinggan_log`
---
-ALTER TABLE `qinggan_log`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=23;
-
---
--- 使用表AUTO_INCREMENT `qinggan_module`
---
-ALTER TABLE `qinggan_module`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=83;
-
---
--- 使用表AUTO_INCREMENT `qinggan_opt`
---
-ALTER TABLE `qinggan_opt`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=15134;
-
---
--- 使用表AUTO_INCREMENT `qinggan_opt_group`
---
-ALTER TABLE `qinggan_opt_group`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID ', AUTO_INCREMENT=21;
-
---
--- 使用表AUTO_INCREMENT `qinggan_order`
---
-ALTER TABLE `qinggan_order`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=9;
-
---
--- 使用表AUTO_INCREMENT `qinggan_order_address`
---
-ALTER TABLE `qinggan_order_address`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=11;
-
---
--- 使用表AUTO_INCREMENT `qinggan_order_express`
---
-ALTER TABLE `qinggan_order_express`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID';
-
---
--- 使用表AUTO_INCREMENT `qinggan_order_log`
---
-ALTER TABLE `qinggan_order_log`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=20;
-
---
--- 使用表AUTO_INCREMENT `qinggan_order_payment`
---
-ALTER TABLE `qinggan_order_payment`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=9;
-
---
--- 使用表AUTO_INCREMENT `qinggan_order_price`
---
-ALTER TABLE `qinggan_order_price`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=49;
-
---
--- 使用表AUTO_INCREMENT `qinggan_order_product`
---
-ALTER TABLE `qinggan_order_product`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=9;
-
---
--- 使用表AUTO_INCREMENT `qinggan_payment`
---
-ALTER TABLE `qinggan_payment`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=40;
-
---
--- 使用表AUTO_INCREMENT `qinggan_payment_group`
---
-ALTER TABLE `qinggan_payment_group`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=10;
-
---
--- 使用表AUTO_INCREMENT `qinggan_payment_log`
---
-ALTER TABLE `qinggan_payment_log`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=9;
-
---
--- 使用表AUTO_INCREMENT `qinggan_phpok`
---
-ALTER TABLE `qinggan_phpok`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=352;
-
---
--- 使用表AUTO_INCREMENT `qinggan_popedom`
---
-ALTER TABLE `qinggan_popedom`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '权限ID，即自增ID', AUTO_INCREMENT=1773;
-
---
--- 使用表AUTO_INCREMENT `qinggan_project`
---
-ALTER TABLE `qinggan_project`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID，也是应用ID', AUTO_INCREMENT=440;
-
---
--- 使用表AUTO_INCREMENT `qinggan_reply`
---
-ALTER TABLE `qinggan_reply`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID';
-
---
--- 使用表AUTO_INCREMENT `qinggan_res`
---
-ALTER TABLE `qinggan_res`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '资源ID', AUTO_INCREMENT=1404;
-
---
--- 使用表AUTO_INCREMENT `qinggan_res_cate`
---
-ALTER TABLE `qinggan_res_cate`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '资源分类ID', AUTO_INCREMENT=29;
-
---
--- 使用表AUTO_INCREMENT `qinggan_site`
---
-ALTER TABLE `qinggan_site`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '应用ID', AUTO_INCREMENT=4;
-
---
--- 使用表AUTO_INCREMENT `qinggan_site_domain`
---
-ALTER TABLE `qinggan_site_domain`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=4;
-
---
--- 使用表AUTO_INCREMENT `qinggan_sysmenu`
---
-ALTER TABLE `qinggan_sysmenu`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=108;
-
---
--- 使用表AUTO_INCREMENT `qinggan_tag`
---
-ALTER TABLE `qinggan_tag`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id', AUTO_INCREMENT=9;
-
---
--- 使用表AUTO_INCREMENT `qinggan_task`
---
-ALTER TABLE `qinggan_task`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=39;
-
---
--- 使用表AUTO_INCREMENT `qinggan_tpl`
---
-ALTER TABLE `qinggan_tpl`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=5;
-
---
--- 使用表AUTO_INCREMENT `qinggan_user`
---
-ALTER TABLE `qinggan_user`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID，即会员ID', AUTO_INCREMENT=43;
-
---
--- 使用表AUTO_INCREMENT `qinggan_user_address`
---
-ALTER TABLE `qinggan_user_address`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=8;
-
---
--- 使用表AUTO_INCREMENT `qinggan_user_group`
---
-ALTER TABLE `qinggan_user_group`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '会员组ID', AUTO_INCREMENT=8;
-
---
--- 使用表AUTO_INCREMENT `qinggan_wealth`
---
-ALTER TABLE `qinggan_wealth`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '财富ID', AUTO_INCREMENT=6;
-
---
--- 使用表AUTO_INCREMENT `qinggan_wealth_log`
---
-ALTER TABLE `qinggan_wealth_log`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=101;
-
---
--- 使用表AUTO_INCREMENT `qinggan_wealth_rule`
---
-ALTER TABLE `qinggan_wealth_rule`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '规则ID', AUTO_INCREMENT=24;
-COMMIT;
+CREATE TABLE IF NOT EXISTS `qinggan_weixin_user` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `openid` varchar(255) NOT NULL COMMENT '主键',
+  `uid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID',
+  `token` varchar(255) NOT NULL COMMENT '会员token',
+  `lastlogin` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后一次登录时间',
+  `token_refresh` varchar(255) NOT NULL COMMENT '用于定时刷新token的刷新token',
+  `token_time` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后一次刷新token的时间',
+  `headimg` varchar(255) NOT NULL COMMENT '头像图片',
+  `nickname` varchar(255) NOT NULL COMMENT '昵称',
+  `country` varchar(255) NOT NULL COMMENT '国家',
+  `province` varchar(255) NOT NULL COMMENT '省份',
+  `city` varchar(255) NOT NULL COMMENT '城市',
+  `sex` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1男2女0未知',
+  `unionid` varchar(255) NOT NULL COMMENT '有关注公众号才有此数据',
+  `language` varchar(255) NOT NULL COMMENT '语言标识',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='微信会员';
+
+INSERT INTO `qinggan_weixin_user` (`id`, `openid`, `uid`, `token`, `lastlogin`, `token_refresh`, `token_time`, `headimg`, `nickname`, `country`, `province`, `city`, `sex`, `unionid`, `language`) VALUES
+(2, 'ow2f74hwVaG0pT3mub5ha3JuFRkw', 44, '', 1576576085, '', 0, 'https://wx.qlogo.cn/mmopen/vi_32/JQmleeDm3g17Ao1BhARuZApCP3fiarVF7InlklETplrkicM0PoUDBDs3Aa538lB5OiczMey7g66sa04iblZP0hDp1g/132', '苏相锟', 'China', 'Guangdong', 'Shenzhen', 1, 'ogr4FxNFyCBAdUJBZ_X0VIBX3fnk', ''),
+(3, '', 44, '', 0, '', 0, 'https://wx.qlogo.cn/mmopen/vi_32/JQmleeDm3g17Ao1BhARuZApCP3fiarVF7InlklETplrkicM0PoUDBDs3Aa538lB5OiczMey7g66sa04iblZP0hDp1g/132', '苏相锟', 'China', 'Guangdong', 'Shenzhen', 1, 'ogr4FxNFyCBAdUJBZ_X0VIBX3fnk', '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
