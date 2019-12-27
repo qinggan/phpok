@@ -23,6 +23,22 @@ class api_control extends \phpok_control
 	{
 		parent::control();
 	}
+
+	public function code_f()
+	{
+		$code = $this->get('code');
+		if(!$code){
+			$this->error(P_Lang('未绑定Code信息，无法登录'));
+		}
+		$rs = $this->model('wxappconfig')->get_one();
+		if(!$rs){
+			$this->error(P_Lang('小程序服务端参数没有配置好，请联系管理员'));
+		}
+		if(!$rs['wxapp_id'] || !$rs['wxapp_secret']){
+			$this->error(P_Lang('小程序ID或密钥未配置好，请联系管理员配置'));
+		}
+		$this->success();
+	}
 	
 	public function login_f()
 	{

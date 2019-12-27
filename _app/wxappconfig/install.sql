@@ -14,5 +14,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_weixin_user` (
   `city` varchar(255) NOT NULL COMMENT '城市',
   `sex` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1男2女0未知',
   `unionid` varchar(255) NOT NULL COMMENT '有关注公众号才有此数据',
+  `language` varchar(255) NOT NULL COMMENT '语言标识',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='微信会员' AUTO_INCREMENT=1 ;
