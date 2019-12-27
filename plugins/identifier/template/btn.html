@@ -6,7 +6,7 @@ function youdao_translate()
 		$.dialog.alert("无法取到要转拼音的内容！");
 		return false;
 	}
-	var url = api_url('plugin','','id={$pinfo.id}&exec=fanyi&q='+$.str.encode(c));
+	var url = api_plugin_url('identifier','fanyi','q='+$.str.encode(c));
 	$.phpok.json(url,function(rs){
 		if(rs.status){
 			$("#identifier").val(rs.info);
