@@ -18,6 +18,7 @@ class check_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		$this->config('is_ajax',true);
 	}
 
 	/**

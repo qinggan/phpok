@@ -304,9 +304,6 @@ class phpok_template
 
 	private function _getfile($tpl,$type='file')
 	{
-		if($type == 'abs-file'){
-			return $tpl;
-		}
 		if(!in_array($type,array('file','file-ext'))){
 			return $tpl;
 		}
@@ -436,21 +433,21 @@ class phpok_template
 		//语言包替换
 		$content = preg_replace_callback('/\{lang\s*(.+)\}/isU',array($this,'lang_replace'),$content);
 		//内置标签替换
-		$content = preg_replace_callback('/(\{|<!--\s*)(arclist|arc|subcate|catelist|cate|project|sublist|parent|plist|fields|user|userlist)[:]*([\w\$]*)\s+(.+)(\}|\s*-->)/isU',array($this,'data_php'),$content);
-		$content = preg_replace_callback('/(\{|<!--\s*)\/(arclist|arc|catelist|cateinfo|subcate|project|sublist)[:]*([a-zA-Z\_0-9\$]*)(\}|\s*-->)/isU',array($this,'undata_php'),$content);
-		$content = preg_replace_callback('/(\{|<!--\s*)unset\s*(:|\(|=)\s*([^\)]+)[\)]*(\}|\}|\s*-->)/isU',array($this,'undata_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*)(arclist|arc|subcate|catelist|cate|project|sublist|parent|plist|fields|user|userlist)[:]*([\w\$]*)\s+(.+)\s*(\}|-->)/isU',array($this,'data_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*)\/(arclist|arc|catelist|cateinfo|subcate|project|sublist)[:]*([a-zA-Z\_0-9\$]*)\s*(\}|-->)/isU',array($this,'undata_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*)unset\s*(:|\(|=)\s*([^\)]+)[\)]*\s*(\}|-->)/isU',array($this,'undata_php'),$content);
 		//循环语法
-		$content = preg_replace_callback('/(\{|<!--\s*)\$([a-zA-Z0-9_\$\[\]\'\\\"\.\-]{1,60})\s+AS\s+(.+)(\}|\s*-->)/isU',array($this,'_foreach_php_ex_doller'),$content);
-		$content = preg_replace_callback('/(\{|<!--\s*)foreach\s*\(\s*(.+)\s+AS\s+(.+)\s*\)\s*(\}|\s*-->)/isU',array($this,'_foreach_php_in_doller'),$content);
-		$content = preg_replace_callback('/(\{|<!--\s*)loop\s+(.+)(\}|\s*-->)/isU',array($this,'_loop_php'),$content);
-		$content = preg_replace_callback('/(\{|<!--\s*)(while|for)\s*\(\s*(.+)\s*\)\s*(\}|\s*-->)/isU',array($this,'_for_while_php'),$content);
-		$content = preg_replace_callback('/(\{|<!--\s*)(while|for)\s+(.+)(\}|\s*-->)/isU',array($this,'_for_while_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*)\$([a-zA-Z0-9_\$\[\]\'\\\"\.\-]{1,60})\s+AS\s+(.+)\s*(\}|-->)/isU',array($this,'_foreach_php_ex_doller'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*)foreach\s*\(\s*(.+)\s+AS\s+(.+)\s*\)\s*(\}|-->)/isU',array($this,'_foreach_php_in_doller'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*)loop\s+(.+)\s*(\}|-->)/isU',array($this,'_loop_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*)(while|for)\s*\(\s*(.+)\s*\)\s*(\}|-->)/isU',array($this,'_for_while_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*)(while|for)\s+(.+)\s*(\}|-->)/isU',array($this,'_for_while_php'),$content);
 		//条件判断
-		$content = preg_replace_callback('/(\{|<!--\s*)(if|else\s*if)\s*\(\s*(.+)\s*\)\s*(\}|\s*-->)/isU',array($this,'_if_php'),$content);
-		$content = preg_replace_callback('/(\{|<!--\s*)(if|else\s*if)\s+(.+)(\}|\s*-->)/isU',array($this,'_if_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*)(if|else\s*if)\s*\(\s*(.+)\s*\)\s*(\}|-->)/isU',array($this,'_if_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*)(if|else\s*if)\s+(.+)\s*(\}|-->)/isU',array($this,'_if_php'),$content);
 		//文件包含
-		$content = preg_replace_callback('/(\{|<!--\s*)include\s+(.+)(\}|\s*-->)/isU',array($this,'_include_php'),$content);
-		$content = preg_replace_callback('/(\{|<!--\s*)inc\s*(:|=)\s*(.+)(\}|\s*-->)/isU',array($this,'_inc_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*)include\s+(.+)\s*(\}|-->)/isU',array($this,'_include_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*)inc\s*(:|=)\s*(.+)\s*(\}|-->)/isU',array($this,'_inc_php'),$content);
 		//单行PHP代码
 		$content = preg_replace_callback('/(\{|<!--)\s*(run|php)\s*(:|\s+)\s*(.+)\s*(\}|-->)/isU',array($this,'_php_runing'),$content);
 		//PHPOK4的网址写法
@@ -535,14 +532,10 @@ class phpok_template
 			return false;
 		}
 		$string = $string[1];
-		$string = stripslashes(trim($string));
-		$string = preg_replace_callback("/[\"|']{1}(.+)[\"|']{1}/isU",array($this,'url_encode'),$string);
-		$string = preg_replace("/(\x20{2,})/"," ",$string);
-		$string = str_replace(" ","&",$string);
-		parse_str($string,$list);
+		$list = $this->str_to_list($string);
 		$tmpc = "";
 		if($list){
-			foreach($list AS $key=>$value){
+			foreach($list as $key=>$value){
 				$value = $this->str_format($value);
 				if($value == 'true' || $value == 'false' || (is_numeric($value) && $value < 65536)){
 					$list[$key] = "'".$key."'=>".$value;
@@ -1015,10 +1008,10 @@ class phpok_template
 			return false;
 		}
 		$string = stripslashes(trim($string));
-		$string = $this->str_format($string);
 		$string = preg_replace_callback("/[\"|']{1}(.+)[\"|']{1}/isU",array($this,'url_encode'),$string);
-		$string = preg_replace("/(\x20{2,})/"," ",$string);# 去除多余空格，只保留一个空格
-		$list = explode(" ",$string); # 格式化为数组
+		$string = preg_replace("/(\x20{2,})/"," ",$string);
+		$string = str_replace(" ","&",$string);
+		parse_str($string,$list);
 		$rs = array();
 		if($need_dollar && !is_array($need_dollar)){
 			$need_dollar = explode(",",$need_dollar);
@@ -1030,14 +1023,8 @@ class phpok_template
 		foreach($list as $key=>$value){
 			$value = trim($value);
 			if($value){
-				$str = explode("=",$value);
-				$str_key = strtolower($str[0]);
-				$str_value = $str[1];
-				if($str_key && $str_value){
-					$str_value = rawurldecode($str_value);
-					$str_value = in_array($str_key,$need_dollar) ? $this->str_format($str_value,true) : $this->str_format($str_value,false);
-					$rs[$str_key] = $str_value;
-				}
+				$value = in_array($key,$need_dollar) ? $this->str_format($value,true) : $this->str_format($value,false);
+				$rs[$key] = $value;
 			}
 		}
 		return $rs;

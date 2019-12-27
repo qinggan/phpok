@@ -79,11 +79,6 @@
 		**/
 		field_addok:function(mid)
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			var obj = art.dialog.opener;
 			$("#form_save").ajaxSubmit({
 				'url':get_url('module','field_addok','mid='+mid),
@@ -135,11 +130,6 @@
 		**/
 		set_save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			var obj = art.dialog.opener;
 			$("#module_submit_post").ajaxSubmit({
 				'url':get_url('module','save'),
@@ -296,11 +286,6 @@
 
 		layout_save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			var obj = art.dialog.opener;
 			$("#module_layout_save").ajaxSubmit({
 				'url':get_url('module','layout_save'),

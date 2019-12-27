@@ -15,11 +15,6 @@
 		**/
 		save:function(id)
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			$("#"+id).ajaxSubmit({
 				'url':get_url('project','save'),
 				'type':'post',
@@ -218,11 +213,6 @@
 		},
 		extinfo_save:function(id)
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			$("#"+id).ajaxSubmit({
 				'url':get_url('project','content_save'),
 				'type':'post',

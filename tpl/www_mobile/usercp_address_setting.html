@@ -1,30 +1,6 @@
 <!-- include tpl=header -->
-<script type="text/javascript">
-function save()
-{
-	var id = $("#id").val();
-	$("#setsubmit").ajaxSubmit({
-		'url':api_url('usercp','address_setting'),
-		'type':'post',
-		'dataType':'json',
-		'success':function(rs){
-			if(rs.status == 'ok'){
-				var tip = id ? '{lang地址信息修改成功}' : '{lang地址信息添加成功}';
-				$.dialog.alert(tip,function(){
-					top.$.phpok.reload();
-				},'succeed');
-			}else{
-				$.dialog.alert(rs.content);
-				return false;
-			}
-		}
-	});
-	return false;
-}
-</script>
 <div class="main" style="padding:10px;width:auto;">
-	<form method="post" id="setsubmit" onsubmit="return false;" class="am-form">
-	<input type="hidden" name="id" id="id" value="{$id}" />
+	<form method="post" id="setsubmit" onsubmit="return false" class="am-form">
 	<input type="hidden" name="country" id="country" value="{$rs.country ? $rs.country : '中国'}" />
 	<div class="am-form-group">
 	  <label for="fullname">收件人</label>

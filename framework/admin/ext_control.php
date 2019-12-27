@@ -26,7 +26,7 @@ class ext_control extends phpok_control
 	{
 		$id = $this->get('id');
 		if(!$id){
-			error(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$taxis = $this->model('ext')->ext_next_taxis($id);
 		$this->assign('taxis',$taxis);
@@ -39,18 +39,18 @@ class ext_control extends phpok_control
 	{
 		$id = $this->get('id');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$info = explode("-",$id);
 		$array = array();
 		$array['title'] = $this->get("title");
 		if(!$array['title']){
-			$this->json(P_Lang('未指定标题'));
+			$this->error(P_Lang('未指定标题'));
 		}
 		$array['note'] = $this->get("note");
 		$array['form_type'] = $this->get("form_type");
 		if(!$array['form_type']){
-			$this->json(P_Lang('未选择配置表单类型'));
+			$this->error(P_Lang('未选择配置表单类型'));
 		}
 		$array['form_style'] = $this->get("form_style","html");
 		$array['content'] = $this->get("content","html");
@@ -77,35 +77,35 @@ class ext_control extends phpok_control
 			if(!$tid){
 				$identifier = $this->get('identifier');
 				if(!$identifier){
-					$this->json(P_Lang('未指定标识串'));
+					$this->error(P_Lang('未指定标识串'));
 				}
 				if(!$this->model('ext')->check_identifier_add($identifier,$info[1])){
-					$this->json(P_Lang('标识串不符合要求，请检查'));
+					$this->error(P_Lang('标识串不符合要求，请检查'));
 				}
 				$array['identifier'] = $identifier;
 			}
 			$array['module'] = $id;
 			$this->model('ext')->save($array,$tid);
-			$this->json(true);
+			$this->success();
 		}
 		$tmpid = $this->get('tmpid');
 		if(!$tmpid){
 			$identifier = $this->get('identifier','system');
 			if(!$identifier){
-				$this->json(P_Lang('未指定标识串'));
+				$this->error(P_Lang('未指定标识串'));
 			}
 			if(!$this->model('ext')->check_identifier_add($identifier,$info[1])){
-				$this->json(P_Lang('标识串不符合验证要求，请检查'));
+				$this->error(P_Lang('标识串不符合验证要求，请检查'));
 			}
 			if($_SESSION['admin-'.$id] && $_SESSION['admin-'.$id][$identifier]){
-				$this->json(P_Lang('标识符已被使用'));
+				$this->error(P_Lang('标识符已被使用'));
 			}
 		}else{
 			$identifier = $tmpid;
 		}
 		$array['identifier'] = $identifier;
 		$_SESSION['admin-'.$id][$identifier] = $array;
-		$this->json(true);
+		$this->success();
 	}
 
 	public function float_f()
@@ -153,28 +153,29 @@ class ext_control extends phpok_control
 		$id = $this->get("id");
 		$module = $this->get("module","system");
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		if(!$module){
-			$this->json(P_Lang('未指哪个模型要添加扩展字段'));
+			$this->error(P_Lang('未指哪个模型要添加扩展字段'));
 		}
 		$list = explode("-",$module);
 		$rs = $this->model('fields')->default_one($id);
 		if(!$rs){
-			$this->json(P_Lang('常用字段不存在'));
+			$this->error(P_Lang('常用字段不存在'));
 		}
 		if($list[0] == "add"){
 			$tmp = 'admin-'.$module;
 			if($this->session->val($tmp) && $this->session->val($tmp.'.'.$id)){
-				$this->json(P_Lang('标识已被使用'));
+				$this->error(P_Lang('标识已被使用'));
 			}
 			$this->session->assign($tmp.'.'.$id,$rs);
-			$this->json(true);
+			$this->success();
 		}
 		$chk_rs = $this->model('ext')->check_identifier($rs["identifier"],$module);
 		if($chk_rs){
-			$this->json(P_Lang('标识已被使用'));
+			$this->error(P_Lang('标识已被使用'));
 		}
+		$taxis = $this->model('ext')->ext_next_taxis($module);
 		$array = array();
 		$array["module"] = $module;
 		$array["title"] = $rs['title'];
@@ -185,7 +186,7 @@ class ext_control extends phpok_control
 		$array["form_style"] = $rs["form_style"];
 		$array["format"] = $rs["format"];
 		$array["content"] = $rs["content"];
-		$array["taxis"] = $rs["taxis"];
+		$array["taxis"] = $taxis;
 		if($rs['ext']){
 			if(is_array($rs['ext'])){
 				$rs['ext'] = serialize($rs['ext']);
@@ -195,7 +196,7 @@ class ext_control extends phpok_control
 			$array['ext'] = $rs['ext'];
 		}
 		$this->model('ext')->save($array);
-		$this->json(true);
+		$this->success();
 	}
 
 	public function delete_f()
@@ -203,20 +204,20 @@ class ext_control extends phpok_control
 		$id = $this->get("id");
 		$module = $this->get("module");
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		if(!$module){
-			$this->json(P_Lang('未指哪个模型要添加扩展字段'));
+			$this->error(P_Lang('未指哪个模型要添加扩展字段'));
 		}
 		$list = explode("-",$module);
 		if($list[0] == "add"){
 			if($_SESSION['admin-'.$module] && $_SESSION['admin-'.$module][$id]){
 				unset($_SESSION['admin-'.$module][$id]);
 			}
-			$this->json(true);
+			$this->success();
 		}
 		$this->model('ext')->delete($id,$module,'identifier');
-		$this->json(true);
+		$this->success();
 	}
 
 	public function load_f()

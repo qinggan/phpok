@@ -116,7 +116,9 @@ class gateway_model_base extends phpok_model
 
 	public function all($type)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."gateway WHERE type='".$type."' ORDER BY is_default DESC,taxis ASC,id DESC";
+		$sql  = "SELECT * FROM ".$this->db->prefix."gateway WHERE type='".$type."' ";
+		$sql .= " AND site_id='".$this->site_id."' ";
+		$sql .= " ORDER BY is_default DESC,taxis ASC,id DESC";
 		return $this->db->get_all($sql);
 	}
 

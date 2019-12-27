@@ -64,10 +64,11 @@ function p_lang(str,info)
 		}
 		str = lang[str];
 		if(typeof info == 'string' || typeof info == 'number'){
-			return str.replace(/\{\w+\}/,info);
+			return str.replace(/(\{|\[)\w+?(\}|\])/,info);
 		}
 		for(var i in info){
 			str = str.replace('{'+i+'}',info[i]);
+			str = str.replace('['+i+']',info[i]);
 		}
 		return str;
 	}
@@ -75,10 +76,12 @@ function p_lang(str,info)
 		return str;
 	}
 	if(typeof info == 'string' || typeof info == 'number'){
-		return str.replace(/\{\w+\}/,info);
+		return str.replace(/(\{|\[)\w+?(\}|\])/,info);
+		//return str.replace(/\{\w+\}/,info);
 	}
 	for(var i in info){
 		str = str.replace('{'+i+'}',info[i]);
+		str = str.replace('['+i+']',info[i]);
 	}
 	return str;
 }

@@ -2,34 +2,29 @@
 <script type="text/javascript">
 function save()
 {
-	if(typeof(CKEDITOR) != "undefined"){
-		for(var i in CKEDITOR.instances){
-			CKEDITOR.instances[i].updateElement();
-		}
-	}
 	var obj = art.dialog.opener;
 	$("#modify").ajaxSubmit({
-		'url':get_url('ext','save','id={$module}{if $tid}&tid={$tid}{/if}{if $tmpid}&tmpid={$tmpid}{/if}'),
+		'url':get_url('ext','save'),
 		'type':'post',
 		'dataType':'json',
 		'success':function(rs){
-			if(rs.status == 'ok')
-			{
+			if(rs.status){
 				$.dialog.alert('字段编辑成功',function(){
 					obj.$.dialog.close();
 					obj.$.phpok.reload();
 				},'succeed');
+				return true;
 			}
-			else
-			{
-				$.dialog.alert(rs.content);
-				return false;
-			}
+			$.dialog.alert(rs.info);
+			return false;
 		}
 	});
 }
 </script>
 <form method="post" id="modify">
+<input type="hidden" name="id" id="id" value="{$module}" />
+<!-- if $tid --><input type="hidden" name="tid" id="tid" value="{$tid}" /><!-- /if -->
+<!-- if $tmpid --><input type="hidden" name="tmpid" id="tmpid" value="{$tmpid}" /><!-- /if -->
 <div class="table">
 	<div class="title">
 		字段名称：
@@ -120,4 +115,4 @@ $(document).ready(function(){
 	_phpok_form_opt("{$rs.form_type}","form_type_ext","{$rs.id}");
 });
 </script>
-<!-- inc:foot_open -->
+<!-- include tpl=foot_open -->

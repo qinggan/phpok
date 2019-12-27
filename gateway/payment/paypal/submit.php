@@ -26,13 +26,14 @@ class paypal_submit
 	//执行提交按钮
 	public function submit()
 	{
+		echo '<!DOCTYPE html><html><head><title>Paypal</title></head><body>'
         $htmlbutton  = $this->get_html();
 		$htmlbutton .= "\n";
 		$htmlbutton .= '<script type="text/javascript">'."\n";
 		$htmlbutton .= 'document.getElementById("paypalform").submit();'."\n";
 		$htmlbutton .= '</script>'."\n";
-		$GLOBALS['app']->assign('htmlinfo',$htmlbutton);
-		$GLOBALS['app']->view('payment/to_payment');
+		echo $htmlbutton;
+		echo '</body></html>';
 		exit;
 	}
 

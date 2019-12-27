@@ -126,9 +126,9 @@ function check_save()
 	</div>
 	<div class="content">
 		<select name="format" id="format">
-			<!-- foreach($format_list AS $key=>$value) -->
+			<!-- loop from=$format_list key=$key value=$value id=$tmpid -->
 			<option value="{$key}"{if $rs.format == $key} selected{/if}>{$value}</option>
-			<!-- /foreach -->
+			<!-- /loop -->
 		</select>
 	</div>
 </div>

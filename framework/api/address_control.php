@@ -14,6 +14,7 @@ class address_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		$this->config('is_ajax',true);
 	}
 
 	public function index_f()
@@ -45,8 +46,8 @@ class address_control extends phpok_control
 		}
 		$this->success($rslist);	
 	}
-	
-	public function one_f()
+
+	public function info_f()
 	{
 		if(!$this->session->val('user_id')){
 			$this->error(P_Lang('您还未登录，请先登录'));
@@ -63,6 +64,11 @@ class address_control extends phpok_control
 			$this->error(P_Lang('您没有权限获得此地址信息'));
 		}
 		$this->success($rs);
+	}
+	
+	public function one_f()
+	{
+		$this->info_f();
 	}
 
 	public function all_f()
@@ -89,14 +95,6 @@ class address_control extends phpok_control
 		}
 		$array = array('total'=>$total,'rs'=>$default,'rslist'=>$rslist);
 		$this->success($array);
-	}
-
-	/**
-	 * 获取会员地址列表别名
-	**/
-	public function list_f()
-	{
-		$this->index_f();
 	}
 
 	/**
@@ -128,6 +126,15 @@ class address_control extends phpok_control
 			$province = $this->get('province');
 			$city = $this->get('city');
 			$county = $this->get('county');
+			if(!$province){
+				$province = $this->get('pca_p');
+			}
+			if(!$city){
+				$city = $this->get('pca_c');
+			}
+			if(!$county){
+				$county = $this->get('pca_a');
+			}
 		}else{
 			$tmp = explode("/",$pca);
 			$province = $tmp[0];

@@ -33,7 +33,7 @@ $(document).ready(function(){
 	    ,'initialFrameHeight':'{$_rs.height}'
 		,'sourceEditorFirst':false
 		,'readonly':false
-		,'pasteplain':true
+		,'pasteplain':{if $_rs.btns.image}false{else}true{/if}
 		,'autoFloatEnabled':{$_rs.is_float ? 'true' : 'false'}
 		,'autoHeightEnabled':true
 		,'imagePopup':false

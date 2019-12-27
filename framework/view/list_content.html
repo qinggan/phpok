@@ -1,7 +1,7 @@
 <!-- include tpl=head_lay title=$rs.title -->
 <script type="text/javascript" src="{func include_js list.js}"></script>
 <!-- if $project_list -->
-<div class="layui-card">
+<div class="layui-card" phpok-id="JS_PROJECT">
 	<div class="layui-card-header">{lang子项信息，请点击操作} <span class="red">{$rs.title}</span></div>
 	<div class="layui-card-body">
 		<ul class="project" id="project">
@@ -18,11 +18,24 @@
 <!-- /if -->
 
 <!-- if $rs.module -->
-<div class="layui-card" id="search_html"{if !$keywords} style="display:none"{/if}>
+<div class="layui-card" id="search_html" phpok-id="JS_SEARCH">
 	<div class="layui-card-header">{lang搜索}</div>
 	<div class="layui-card-body">
 		<form method="post" class="layui-form" action="{url ctrl=list func=action id=$pid/}">
 		<div class="layui-form-item phpok-search">
+			<div class="layui-inline">
+				<label class="layui-form-label">{lang每页数量}</label>
+				<div class="layui-input-block">
+					<select name="psize">
+						<!-- if $rs && $rs.psize --><option value="{$rs.psize}">{$rs.psize}</option><!-- /if -->
+						<option value="30"{if $psize2 && $psize2 == 30} selected{/if}>30</option>
+						<option value="50"{if $psize2 && $psize2 == 50} selected{/if}>50</option>
+						<option value="70"{if $psize2 && $psize2 == 70} selected{/if}>70</option>
+						<option value="90"{if $psize2 && $psize2 == 90} selected{/if}>90</option>
+						<option value="100"{if $psize2 && $psize2 == 100} selected{/if}>100</option>
+					</select>
+				</div>
+			</div>
 			<div class="layui-inline">
 				<label class="layui-form-label">{lang状态}</label>
 				<div class="layui-input-block">
@@ -30,6 +43,16 @@
 						<option value=""></option>
 						<option value="1"{if $keywords && $keywords.status==1} selected{/if}>已审核</option>
 						<option value="2"{if $keywords && $keywords.status==2} selected{/if}>未审核</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">{lang是否隐藏}</label>
+				<div class="layui-input-block">
+					<select name="keywords[hidden]">
+						<option value="">{lang不限}</option>
+						<option value="1"{if $keywords && $keywords.hidden==1} selected{/if}>隐藏</option>
+						<option value="2"{if $keywords && $keywords.hidden==2} selected{/if}>显示</option>
 					</select>
 				</div>
 			</div>
@@ -111,9 +134,9 @@
 			<!-- /if -->
 			<!-- if $rs.is_userid -->
 			<div class="layui-inline">
-				<label class="layui-form-label">{lang会员}</label>
+				<label class="layui-form-label"><i class="layui-icon layui-tips" lay-tips="{lang支持包括会员账号、手机号及Email的模糊搜索}">&#xe702;</i> {lang会员}</label>
 				<div class="layui-input-block">
-					<input type="text" name="keywords[user]" class="layui-input"{if $keywords} value="{$keywords.user}"{/if} placeholder="{lang会员账号、手机号及Email}" />
+					<input type="text" name="keywords[user]" class="layui-input"{if $keywords} value="{$keywords.user}"{/if} />
 				</div>
 			</div>
 			<!-- /if -->
@@ -127,25 +150,24 @@
 				<label class="layui-form-label">ID</label>
 				<div class="layui-input-block">
 					<ul class="layout">
-						<li class="layui-form-mid">
-							<select name="keywords[_id]" lay-ignore>
+						<li style="width:47%">
+							<select name="keywords[_id]">
 								<option value="0">{lang等于} =</option>
 								<option value="1">{lang大于} &gt;</option>
 								<option value="2">{lang小于} &lt;</option>
 							</select>
 						</li>
-						<li><input type="text" name="keywords[id]" value="{$keywords[id]}" /></li>
+						<li style="width:43%"><input type="text" name="keywords[id]" value="{$keywords[id]}" class="layui-input" /></li>
 					</ul>
-					
-					
 				</div>
 			</div>
 			
 			<div class="layui-inline">
-				<label class="layui-form-label">&nbsp;</label>
 				<div class="layui-input-block">
-					<input type="submit" value="{lang提交搜索}" class="layui-btn layui-btn-normal" />
+					<input type="submit" value="{lang提交搜索}" class="layui-btn" />
+					<!-- if $keywords -->
 					<input type="button" value="{lang取消搜索}" onclick="$.phpok.go('{url ctrl=list func=action id=$rs.id/}')" class="layui-btn layui-btn-primary" />
+					<!-- /if -->
 				</div>
 			</div>
 		</div>
@@ -162,7 +184,7 @@
 
 
 
-<div class="layui-card">
+<div class="layui-card" phpok-id="JS_LIST">
 	<div class="layui-card-header">
 		{lang列表}
 		<span id="AP_ACTION_HTML"></span>
@@ -170,7 +192,6 @@
 			<!-- if $popedom.add -->
 			<button class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.win('{$rs.title}_{lang添加内容}','{url ctrl=list func=edit pid=$pid/}')"><span class="layui-icon">&#xe654;</span>{lang添加内容}</button>
 			<!-- /if -->
-			<button class="layui-btn layui-btn-sm" onclick="$.admin.hide_show('search_html')"><span class="layui-icon">&#xe615;</span>{lang搜索}</button>
 			<!-- if $popedom.set || $session.admin_rs.if_system -->
 			<button class="layui-btn layui-btn-sm" onclick="$.phpok_list.set({$pid})"><span class="layui-icon">&#xe642;</span>{lang编辑项目}</button>
 			<!-- /if -->
@@ -183,7 +204,7 @@
 		<tr>
 			<th width="20px">&nbsp;</th>
 			<th width="20px">&nbsp;</th>
-			<th>&nbsp;</th>
+			<th class="center">ID</th>
 			<th>{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}</th>
 			<!-- if $rs.cate -->
 			<th class="center">{lang主分类}</th>
@@ -380,6 +401,7 @@
 			<!-- /loop -->
 		<!-- /loop -->
 		</table>
+		<div phpok-id="JS_BATCH">
 		<ul class="layout">
 			<li>
 				<div class="layui-btn-group">
@@ -439,6 +461,7 @@
 			<!-- /if -->
 			<li id="plugin_button"><input type="button" value="{lang执行操作}" onclick="list_action_exec()" class="layui-btn layui-btn-sm" /></li>
 		</ul>
+		</div>
 		<div class="center"><!-- include tpl=pagelist --></div>		
 	</div>
 	<!-- /if -->

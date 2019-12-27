@@ -118,18 +118,18 @@ class usercp_control extends phpok_control
 		}
 		$data = $this->get('data');
 		if(!$data){
-			$this->json(P_Lang('头像图片地址不能为空'));
+			$this->error(P_Lang('头像图片地址不能为空'));
 		}
 		$pInfo = pathinfo($data);
 		$fileType = strtolower($pInfo['extension']);
 		if(!$fileType || !in_array($fileType,array('jpg','gif','png','jpeg'))){
-			$this->json(P_Lang('头像图片仅支持jpg,gif,png,jpeg'));
+			$this->error(P_Lang('头像图片仅支持jpg,gif,png,jpeg'));
 		}
 		if(!file_exists($this->dir_root.$data)){
-			$this->json(P_Lang('头像文件不存在'));
+			$this->error(P_Lang('头像文件不存在'));
 		}
 		$this->model('user')->update_avatar($data,$this->u_id);
-		$this->json(true);
+		$this->success();
 	}
 
 	/**
@@ -253,240 +253,6 @@ class usercp_control extends phpok_control
 		$this->success();
 	}
 
-
-	//更新发票信息
-	public function invoice_f()
-	{
-		$invoice_type = $this->get("invoice_type");
-		if(!$invoice_type)
-		{
-			$this->json(P_Lang('发票类型不能为空'));
-		}
-		$this->model('user')->update_invoice_type($invoice_type,$this->u_id);
-		$invoice_title = $this->get("invoice_title");
-		if(!$invoice_title)
-		{
-			$this->json(P_Lang('发票抬头不能为空'));
-		}
-		$this->model('user')->update_invoice_title($invoice_title,$this->u_id);
-		$this->model('user')->update_session($this->u_id);
-		$this->json(true);
-	}
-
-	/**
-	 * 获取会员的收货地址信息
-	**/
-	public function address_f()
-	{
-		$rslist = $this->model('user')->address_all($this->session->val('user_id'));
-		if(!$rslist){
-			$this->error(P_Lang('会员暂无收货地址信息'));
-		}
-		$total = count($rslist);
-		$default = $first = array();
-		foreach($rslist as $key=>$value){
-			if($key<1){
-				$first = $value;
-			}
-			if($value['is_default']){
-				$default = $value;
-			}
-		}
-		if(!$default){
-			$default = $first;
-		}
-		$array = array('total'=>$total,'rs'=>$default,'rslist'=>$rslist);
-		$this->success($array);
-	}
-
-	public function address_default_f()
-	{
-		$id = $this->get('id','int');
-		if(!$id){
-			$this->json(P_Lang('未指定ID'));
-		}
-		$rs = $this->model('user')->address_one($id);
-		if($rs['user_id'] != $this->u_id){
-			$this->json(P_Lang('您没有权限操作此地址信息'));
-		}
-		$this->model('user')->address_default($id);
-		$this->json(true);
-	}
-
-	public function address_setting_f()
-	{
-		$id = $this->get('id','int');
-		$array = array();
-		if($id){
-			$chk = $this->model('user')->address_one($id);
-			if(!$chk || $chk['user_id'] != $this->u_id){
-				$this->json(P_Lang('您没有权限执行此操作'));
-			}
-		}else{
-			$array['user_id'] = $this->u_id;
-		}
-		$country = $this->get('country');
-		if(!$country){
-			$country = '中国';
-		}
-		$array['country'] = $country;
-		$array['province'] = $this->get('pca_p');
-		$array['city'] = $this->get('pca_c');
-		$array['county'] = $this->get('pca_a');
-		$array['fullname'] = $this->get('fullname');
-		if(!$array['fullname']){
-			$this->json(P_Lang('收件人姓名不能为空'));
-		}
-		$array['address'] = $this->get('address');
-		$array['mobile'] = $this->get('mobile');
-		$array['tel'] = $this->get('tel');
-		if(!$array['mobile'] && !$array['tel']){
-			$this->json(P_Lang('手机或固定电话必须有填写一项'));
-		}
-		if($array['mobile']){
-			if(!$this->lib('common')->tel_check($array['mobile'],'mobile')){
-				$this->json(P_Lang('手机号格式不对，请填写11位数字'));
-			}
-		}
-		if($array['tel']){
-			if(!$this->lib('common')->tel_check($array['tel'],'tel')){
-				$this->json(P_Lang('电话格式不对'));
-			}
-		}
-		$array['email'] = $this->get('email');
-		if($array['email']){
-			if(!$this->lib('common')->email_check($array['email'])){
-				$this->json(P_Lang('邮箱格式不对'));
-			}
-		}
-		$this->model('user')->address_save($array,$id);
-		$this->json(true);
-	}
-
-	/**
-	 * PHPOK5版会员收货地址保存
-	**/
-	public function address_save_f()
-	{
-		$id = $this->get('id','int');
-		$array = array();
-		if($id){
-			$chk = $this->model('user')->address_one($id);
-			if(!$chk || $chk['user_id'] != $this->u_id){
-				$this->error(P_Lang('您没有权限执行此操作'));
-			}
-		}else{
-			$array['user_id'] = $this->u_id;
-		}
-		$country = $this->get('country');
-		if(!$country){
-			$country = '中国';
-		}
-		$array['country'] = $country;
-		$array['province'] = $this->get('pca_p');
-		$array['city'] = $this->get('pca_c');
-		$array['county'] = $this->get('pca_a');
-		$array['fullname'] = $this->get('fullname');
-		if(!$array['fullname']){
-			$this->json(P_Lang('收件人姓名不能为空'));
-		}
-		$array['address'] = $this->get('address');
-		$array['mobile'] = $this->get('mobile');
-		$array['tel'] = $this->get('tel');
-		if(!$array['mobile'] && !$array['tel']){
-			$this->error(P_Lang('手机或固定电话必须有填写一项'));
-		}
-		if($array['mobile']){
-			if(!$this->lib('common')->tel_check($array['mobile'],'mobile')){
-				$this->error(P_Lang('手机号格式不对，请填写11位数字'));
-			}
-		}
-		if($array['tel']){
-			if(!$this->lib('common')->tel_check($array['tel'],'tel')){
-				$this->error(P_Lang('电话格式不对'));
-			}
-		}
-		$array['email'] = $this->get('email');
-		if($array['email']){
-			if(!$this->lib('common')->email_check($array['email'])){
-				$this->error(P_Lang('邮箱格式不对'));
-			}
-		}
-		if($id){
-			$this->model('user')->address_save($array,$id);
-		}else{
-			$id = $this->model('user')->address_save($array);
-			if(!$id){
-				$this->error(P_Lang('地址添加失败'));
-			}
-		}
-		$is_default = $this->get('is_default','checkbox');
-		if($is_default){
-			$this->model('user')->address_default($id);
-		}
-		$this->success($id);
-	}
-
-	public function address_delete_f()
-	{
-		$id = $this->get('id','int');
-		if(!$id){
-			$this->json(P_Lang('未指定ID'));
-		}
-		$rs = $this->model('user')->address_one($id);
-		if($rs['user_id'] != $this->u_id){
-			$this->json(P_Lang('您没有权限操作此地址信息'));
-		}
-		$this->model('user')->address_delete($id);
-		$this->json(true);
-	}
-
-	public function invoice_setting_f()
-	{
-		$id = $this->get('id','int');
-		$type = $this->get('type');
-		$title = $this->get('title');
-		if(!$title){
-			$title = P_Lang('个人发票');
-		}
-		$content = $this->get('content');
-		if(!$content){
-			$content = P_Lang('明细');
-		}
-		$note = $this->get('note');
-		$array = array('user_id'=>$this->u_id,'type'=>$type,'title'=>$title,'content'=>$content,'note'=>$note);
-		$this->model('user')->invoice_save($array,$id);
-		$this->json(true);
-	}
-
-	public function invoice_default_f()
-	{
-		$id = $this->get('id','int');
-		if(!$id){
-			$this->json(P_Lang('未指定ID'));
-		}
-		$rs = $this->model('user')->invoice_one($id);
-		if($rs['user_id'] != $this->u_id){
-			$this->json(P_Lang('您没有权限操作此信息'));
-		}
-		$this->model('user')->invoice_default($id);
-		$this->json(true);
-	}
-
-	public function invoice_delete_f()
-	{
-		$id = $this->get('id','int');
-		if(!$id){
-			$this->json(P_Lang('未指定ID'));
-		}
-		$rs = $this->model('user')->invoice_one($id);
-		if($rs['user_id'] != $this->u_id){
-			$this->json(P_Lang('您没有权限操作此地址信息'));
-		}
-		$this->model('user')->invoice_delete($id);
-		$this->json(true);
-	}
-
 	/**
 	 * 变更个人信息，通过fields获取要变更的扩展参数信息，仅用于保存会员扩展表里字符类型
 	 * @参数 fields 要更新的变量
@@ -539,10 +305,15 @@ class usercp_control extends phpok_control
 			$psize = $this->config['psize'] ? $this->config['psize'] : 20;
 		}
 		$offset = ($pageid-1) * $psize;
-		$rslist = $this->model('user')->list_relation($this->session->val('user_id'),$offset,$psize);
-		if(!$rslist){
-			$this->error(P_Lang('没有找到推荐人信息'));
+		$total = $this->model('user')->count_relation($this->session->val('user_id'));
+		if(!$total){
+			$this->error(P_Lang('没有推荐人'));
 		}
-		$this->success($rslist);
+		$data = array('total'=>$total,'pageid'=>$pageid,'psize'=>$psize);
+		$rslist = $this->model('user')->list_relation($this->session->val('user_id'),$offset,$psize);		
+		if($rslist){
+			$data['rslist'] = $rslist;
+		}
+		$this->success($data);
 	}
 }

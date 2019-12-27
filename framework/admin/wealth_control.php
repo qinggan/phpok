@@ -361,15 +361,51 @@ class wealth_control extends phpok_control
 		$rs = $this->model('wealth')->get_one($id);
 		$this->assign('rs',$rs);
 		$rslist = $this->model('wealth')->rule_all("wid='".$id."'");
-		$this->assign('rslist',$rslist);
-		$alist = array('register'=>P_Lang('会员注册'),'login'=>P_Lang('会员登录'),'payment'=>P_Lang('购物付款'));
-		$alist['comment'] = P_Lang('评论文章');
-		$alist['post'] = P_Lang('发布文章');
-		$alist['content'] = P_Lang('阅读文章');
-		$this->assign('alist',$alist);
+		$alist = $this->model('wealth')->act_list();
 		$agentlist = $this->model('wealth')->goal_userlist();
+		$usergroup = $this->model('usergroup')->get_all("is_guest!=1",'id');
+		$projectlist = $this->model('project')->project_all($this->session->val('admin_site_id'),'id',"module!=0");
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				$value['action_title'] = ($alist && $alist[$value['action']]) ? $alist[$value['action']] :P_Lang('未知');
+				$value['goal_title'] = ($agentlist && $agentlist[$value['goal']]) ? $agentlist[$value['goal']] :P_Lang('未知');
+				$value['group_title'] = ($usergroup && $usergroup[$value['group_id']]) ? $usergroup[$value['group_id']]['title'] : P_Lang('未知');
+				$value['project_title'] = ($projectlist && $projectlist[$value['project_id']]) ? $projectlist[$value['project_id']]['title'] : P_Lang('未知');
+				$value['goal_group_title'] = ($usergroup && $usergroup[$value['goal_group_id']]) ? $usergroup[$value['goal_group_id']]['title'] : P_Lang('未知');
+				$rslist[$key] = $value;
+			}
+		}
+		$this->assign('rslist',$rslist);
+		$this->assign('alist',$alist);
 		$this->assign('agentlist',$agentlist);
 		$this->view('wealth_rule');
+	}
+
+	public function rule_set_f()
+	{
+		$alist = $this->model('wealth')->act_list();
+		$agentlist = $this->model('wealth')->goal_userlist();
+		$usergroup = $this->model('usergroup')->get_all("is_guest!=1");
+		$projectlist = $this->model('project')->project_all($this->session->val('admin_site_id'),'id',"module!=0");
+		$this->assign('alist',$alist);
+		$this->assign('agentlist',$agentlist);
+		$this->assign('usergroup',$usergroup);
+		$this->assign('projectlist',$projectlist);
+		$id = $this->get('id','int');
+		if($id){
+			$rs = $this->model('wealth')->rule_one($id);
+			$this->assign('rs',$rs);
+			$this->assign('id',$id);
+		}else{
+			$wid = $this->get('wid','int');
+			if(!$wid){
+				$this->error(P_Lang('未指定财富ID'));
+			}
+			$wrs = $this->model('wealth')->get_one($wid);
+			$this->assign('wrs',$wrs);
+			$this->assign('wid',$wid);
+		}
+		$this->view('wealth_rule_set');
 	}
 
 	public function delete_rule_f()
@@ -417,17 +453,21 @@ class wealth_control extends phpok_control
 		}
 		$taxis = $this->get('taxis','int');
 		$data = array('action'=>$action,'val'=>$val,'goal'=>$goal,'taxis'=>$taxis);
+		$data['project_id'] = $this->get('project_id','int');
+		$data['title_id'] = $this->get('title_id');
+		$data['qty_type'] = $this->get('qty_type');
+		$data['qty'] = $this->get('qty','int');
+		$data['price_type'] = $this->get('price_type');
+		$data['price'] = $this->get('price','float');
+		$data['group_id'] = $this->get('group_id','int');
+		$data['uids'] = $this->get('uids');
+		$data['goal_group_id'] = $this->get('goal_group_id','int');
+		$data['goal_uids'] = $this->get('goal_uids');
+		$data['if_stop'] = $this->get('if_stop','int');
 		if($wid){
-			if($this->model('wealth')->check($action,$goal,$wid)){
-				$this->error(P_Lang('执行动作及对象已存在，不能重复创建'));
-			}
 			$data['wid'] = $wid;
 			$this->model('wealth')->save_rule($data);
 		}else{
-			$old = $this->model('wealth')->rule_one($id);
-			if($this->model('wealth')->check($action,$goal,$old['wid'],$id)){
-				$this->error(P_Lang('执行动作及对象已存在，不能重复更新'));
-			}
 			$this->model('wealth')->save_rule($data,$id);
 		}
 		$this->success();

@@ -18,8 +18,7 @@ class comment_control extends phpok_control
 		parent::control();
 		$this->model('popedom')->siteid($this->site['id']);
 		$groupid = $this->model('usergroup')->group_id($_SESSION['user_id']);
-		if(!$groupid)
-		{
+		if(!$groupid){
 			$this->json(P_Lang('无法获取前端用户组信息'));
 		}
 		$this->user_groupid = $groupid;
@@ -30,17 +29,22 @@ class comment_control extends phpok_control
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定主题'));
+			$this->error(P_Lang('未指定主题'));
 		}
 		$condition = "tid='".$id."' AND parent_id='0' ";
-		$condition .= " AND (status=1 OR (status=0 AND (uid=".$_SESSION['user_id']." OR session_id='".session_id()."'))) ";
+		if($this->session->val('user_id')){
+			$condition .= " AND (status=1 OR (status=0 AND (uid=".$this->session->val('user_id')." OR session_id='".$this->session->sessid()."'))) ";
+		}else{
+			$condition .= " AND (status=1 OR (status=0 AND session_id='".session_id()."')) ";
+		}
+		
 		$vouch = $this->get('vouch','int');
 		if($vouch){
 			$condition .= " AND vouch=1 ";
 		}
 		$total = $this->model('reply')->get_total($condition);
 		if(!$total){
-			$this->json(P_Lang('暂无评论信息'));
+			$this->error(P_Lang('暂无评论信息'));
 		}
 		$pageid = $this->get($this->config['pageid'],'int');
 		if(!$pageid){
@@ -53,7 +57,7 @@ class comment_control extends phpok_control
 		$start = ($pageid-1) * $psize;
 		$rslist = $this->model('reply')->get_list($condition,$start,$psize,"","id ASC");
 		$idlist = $userlist = array();
-		foreach($rslist AS $key=>$value){
+		foreach($rslist as $key=>$value){
 			if($value["uid"]){
 				$userlist[] = $value["uid"];
 			}
@@ -62,11 +66,16 @@ class comment_control extends phpok_control
 		//读取回复的回复
 		$idstring = implode(",",$idlist);
 		$condition  = " parent_id IN(".$idstring.") ";
-		$condition .= " AND (status=1 OR (status=0 AND (uid=".$_SESSION['user_id']." OR session_id='".session_id()."'))) ";
+		if($this->session->val('user_id')){
+			$condition .= " AND (status=1 OR (status=0 AND (uid=".$this->session->val('user_id')." OR session_id='".$this->session->sessid()."'))) ";
+		}else{
+			$condition .= " AND (status=1 OR (status=0 AND session_id='".session_id()."')) ";
+		}
+		
 		$sublist = $this->model('reply')->get_list($condition,0,0);
 		if($sublist){
 			$mylist = array();
-			foreach($sublist AS $key=>$value){
+			foreach($sublist as $key=>$value){
 				if($value["uid"]){
 					$userlist[] = $value["uid"];
 				}
@@ -82,36 +91,31 @@ class comment_control extends phpok_control
 			$tmplist = $this->model('user')->get_list($condition,0,0);
 			if($tmplist){
 				$userlist = array();
-				foreach($tmplist AS $key=>$value){
-					$userlist[$value["id"]] = $value;
+				foreach($tmplist as $key=>$value){
+					$tmp = array('id'=>$value['id'],'avatar'=>$value['avatar'],'user'=>$value['user']);
+					$userlist[$value["id"]] = $tmp;
 				}
-				$tmplist = "";
+				unset($tmplist);
 			}
 		}
 		//整理回复列表
 		foreach($rslist as $key=>$value){
 			if($mylist && $mylist[$value["id"]]){
-				foreach($mylist[$value["id"]] AS $k=>$v){
-					if($v["uid"] && $userlist){
-						$v["uid"] = $userlist[$v["uid"]];
+				foreach($mylist[$value["id"]] as $k=>$v){
+					if($v["uid"] && $userlist && $userlist[$v['uid']]){
+						$v['user'] = $userlist[$v['uid']];
 					}
 					$mylist[$value["id"]][$k] = $v;
 				}
 				$value["sonlist"] = $mylist[$value["id"]];
 			}
-			if($value["uid"] && $userlist){
-				$value["uid"] = $userlist[$value["uid"]];
+			if($value["uid"] && $userlist && $userlist[$value['uid']]){
+				$value["user"] = $userlist[$value["uid"]];
 			}
 			$rslist[$key] = $value;
 		}
-		$pageurl = $this->url($id);
-		$this->assign("rslist",$rslist);
-		$this->assign("pageurl",$pageurl);
-		$this->assign("pageid",$start);
-		$this->assign("psize",$psize);
-		$this->assign("total",$total);
-		$html = $this->fetch("api_comment");
-		$this->json($html,true,true,false);
+		$data = array('total'=>$total,'pageid'=>$pageid,'psize'=>$psize,'rslist'=>$rslist);
+		$this->success($data);
 	}
 
 	/**
@@ -127,6 +131,8 @@ class comment_control extends phpok_control
 	**/
 	public function save_f()
 	{
+		$this->config('is_ajax',true);
+		$this->node('PHPOK_post_ok');
 		$type = $this->get('vtype');
 		if(!$type){
 			$type = 'title';
@@ -211,27 +217,26 @@ class comment_control extends phpok_control
 			}
 			$data['order_id'] = $order_id;
 			$tid = $this->get('tid','int');
-			if($tid){
-				$plist = $this->model('order')->product_list($order_id);
-				if(!$plist){
-					$this->error(P_Lang('订单中没有指定的产品'));
-				}
-				$check = false;
-				$rs = array();
-				foreach($plist as $key=>$value){
-					if($value['tid'] == $tid){
-						$check = true;
-						$rs = $value;
-						break;
-					}
-				}
-				if(!$check){
-					$this->error(P_Lang('订单中没有此产品'));
-				}
-				$data['title'] = '#'.$order['sn'].'_'.$rs['title'];
-			}else{
-				$data['title'] = P_Lang('订单编号').'#'.$order['sn'];
+			if(!$tid){
+				$this->error(P_Lang('需要指定订单中的产品ID'));
 			}
+			$plist = $this->model('order')->product_list($order_id);
+			if(!$plist){
+				$this->error(P_Lang('订单中没有指定的产品'));
+			}
+			$check = false;
+			$rs = array();
+			foreach($plist as $key=>$value){
+				if($value['tid'] == $tid){
+					$check = true;
+					$rs = $value;
+					break;
+				}
+			}
+			if(!$check){
+				$this->error(P_Lang('订单中没有此产品'));
+			}
+			$data['title'] = '#'.$order['sn'].'_'.$rs['title'];
 			$data["status"] = 0;
 		}elseif($type == 'project'){
 			if(!$uid){
@@ -302,6 +307,54 @@ class comment_control extends phpok_control
 			$param = 'id='.$insert_id;
 			$this->model('task')->add_once('comment',$param);
 		}
+		$this->success();
+	}
+
+	/**
+	 * 删除评论信息
+	 * @参数 $id 要删除的评论ID
+	**/
+	public function delete_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定要删除的回复ID'));
+		}
+		$rs = $this->model('reply')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('回复信息不存在'));
+		}
+		if(!$rs['uid'] || $rs['uid'] != $this->session->val('user_id')){
+			$this->error(P_Lang('您没有权限删除此数据'));
+		}
+		$this->model('reply')->delete($id);
+		$this->model('log')->save(P_Lang('删除回复操作'));
+		$this->success();
+	}
+
+	public function admin_delete_f()
+	{
+		if(!$this->session->val('admin_id')){
+			$this->error(P_Lang('您不是管理员，不能执行此操作'));
+		}
+		if(!$this->session->val('admin_rs.if_system')){
+			if(!$this->model('popedom')->admin_check($this->session->val('admin_id'),'reply','delete')){
+				$this->error(P_Lang('您没有权限删除'));
+			}
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定要删除的回复ID'));
+		}
+		$rs = $this->model('reply')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('回复信息不存在'));
+		}
+		$this->model('reply')->delete($id);
+		$this->model('log')->save(P_Lang('删除回复信息，ID是[id]，主题ID是 #[tid]',array('id'=>$id,'tid'=>$rs['tid'])));
 		$this->success();
 	}
 }

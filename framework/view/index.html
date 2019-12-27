@@ -42,8 +42,12 @@
 						<a href="javascript:;" layadmin-event="refresh" title="{lang刷新}"><i class="layui-icon layui-icon-refresh-3"></i> {lang刷新}</a>
 					</li>
 					<li class="layui-nav-item" lay-unselect>
+						<a href="javascript:$.admin_index.layui_refresh();void(0);" title="{lang修正渲染}"><i class="layui-icon layui-icon-face-smile-b"></i> {lang修正渲染}</a>
+					</li>
+					<li class="layui-nav-item" lay-unselect>
 						<a href="javascript:$.admin_index.clear();void(0);" title="{lang清空缓存}"><i class="layui-icon layui-icon-fonts-clear"></i> {lang清空缓存}</a>
 					</li>
+					
 				</ul>
 				<ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
 					<li class="layui-nav-item layui-hide-xs" lay-unselect>
@@ -54,7 +58,7 @@
 					</li>
 					<!-- if $sitelist && count($sitelist)>1 -->
 					<li class="layui-nav-item layui-hide-xs" lay-unselect>
-						<a href="javascript:;"> <cite>{$config.title}</cite></a>
+						<a href="javascript:;" style="padding-right:20px;"> <cite>{$config.title}</cite></a>
 						<dl class="layui-nav-child">
 							<!-- loop from=$sitelist key=$key value=$value id=$tmpid -->
 							<dd><a href="{url ctrl=index func=site id=$value.id/}">{$value.id} - {$value.title}</a></dd>
@@ -62,14 +66,9 @@
 						</dl>
 					</li>
 					<!-- /loop -->
-					<!-- if $session.admin_rs.if_system && $session.adm_develop -->
-					<li class="layui-nav-item layui-hide-xs" lay-unselect>
-						<a href="javascript:$.admin_index.site();void(0);" title="{lang添加新站点}"><i class="layui-icon layui-icon-add-1"></i> {lang添加站点}</a>
-					</li>
-					<!-- /if -->
 					<!-- if $sys.multiple_language && $langlist -->
 					<li class="layui-nav-item" lay-unselect>
-						<a href="javascript:;"><cite id="lang_title">{$language}</cite></a>
+						<a href="javascript:;" style="padding-right:20px;"><cite id="lang_title">{$language}</cite></a>
 						<dl class="layui-nav-child multiple_language">
 							<!-- loop from=$langlist key=$key value=$value id=$tmpid -->
 							<dd{if $key == $session.admin_lang_id} class="language_selected"{/if}><a href="{url ctrl=index _langid=$key/}">{$value}</a></dd>
@@ -78,7 +77,7 @@
 					</li>
 					<!-- /if -->
 					<li class="layui-nav-item" lay-unselect>
-						<a href="javascript:;"> <cite><!-- if $session.admin_rs && $session.admin_rs.fullname -->{$session.admin_rs.fullname}<!-- else -->{$session.admin_account}<!-- /if --></cite></a>
+						<a href="javascript:;" style="padding-right:20px;"> <cite><!-- if $session.admin_rs && $session.admin_rs.fullname -->{$session.admin_rs.fullname}<!-- else -->{$session.admin_account}<!-- /if --></cite></a>
 						<dl class="layui-nav-child">
 							<dd><a href="javascript:$.admin_index.me();void(0);">基本资料</a></dd>
 							<dd><a href="javascript:$.admin_index.pass();void(0);">修改密码</a></dd>
@@ -120,7 +119,7 @@
 			              </a>
 			              <dl class="layui-nav-child">
 								<!-- loop from=$list_rslist key=$key value=$value id=$idx -->
-								<dd pid="{$value.id}" data-name="project_{$value.id}"> <a lay-href="{$value.url}" lay-text="{$value.title}">{$value.nick_title ? $value.nick_title : $value.title}</a></dd>
+								<dd pid="{$value.id}" data-name="project_{$value.id}"> <a lay-href="{$value.url}" lay-text="{$value.nick_title ? $value.nick_title : $value.title}">{$value.nick_title ? $value.nick_title : $value.title}</a></dd>
 								<!-- /loop -->
 						  </dl>
 			            </li>

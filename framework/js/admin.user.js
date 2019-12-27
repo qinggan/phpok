@@ -127,11 +127,6 @@
 		**/
 		field_save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			var opener = $.dialog.opener;
 			var obj = $.dialog.tips(p_lang('正在保存数据…'),100);
 			$("#post_save").ajaxSubmit({
@@ -153,11 +148,6 @@
 
 		save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			$("#post_save").ajaxSubmit({
 				'url':get_url('user','setok'),
 				'type':'post',
@@ -175,6 +165,44 @@
 				}
 			});
 			return false;
+		},
+		vouch:function(id)
+		{
+			var url =get_url('user','vouch','id='+id);
+			$.dialog.open(url,{
+				'title':p_lang('推荐的会员')+"_#"+id,
+				'lock':true,
+				'width':'700px',
+				'height':'500px',
+				'cancel':true,
+				'cancelVal':'关闭'
+			})
+		},
+		wealth_action:function(title,wid,uid,unit)
+		{
+			var url = get_url('wealth','action_user','wid='+wid+"&uid="+uid);
+			$.dialog.open(url,{
+				'title':p_lang('会员{title}操作',{'title':title}),
+				'lock':true,
+				'width':'700px',
+				'height':'500px',
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.save();
+					return false;
+				},
+				'okVal':'提交保存',
+				'cancel':true
+			});
+		},
+		wealth_log:function(title,wid,uid)
+		{
+			var url = get_url('wealth','log','wid='+wid+"&uid="+uid);
+			$.win(p_lang('会员')+title+p_lang('日志')+"_#"+uid,url);
 		}
 	}
 })(jQuery);

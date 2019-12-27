@@ -1,0 +1,122 @@
+<!-- include tpl=head_lay -->
+<script type="text/javascript" src="js/masonry-docs.min.js"></script>
+<div class="layui-row layui-col-space15">
+	<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 prd">
+		<div class="layui-card ">
+			<div class="layui-card-header layui-bg-black">
+				{lang标签信息}
+				<div class="fr">
+					<button type="button" onclick="$.admin_tag.node_set('{$rs.id}','add')" class="layui-btn layui-btn-sm">
+						<i class="layui-icon layui-icon-add-1"></i> {lang添加节点}
+					</button>
+				</div>
+			</div>
+			<div class="layui-card-body">
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang标签名}
+					</label>
+					<div class="layui-form-mid red">
+						{$rs.title}
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang主题数}
+					</label>
+					<div class="layui-form-mid">
+						{$rs.total}
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang节点数}
+					</label>
+					<div class="layui-input-inline default-auto">
+						
+					</div>
+					<div class="layui-form-mid">
+						<!-- if $total -->{$total}<!-- else --><span class="red">{lang暂无}</span><!-- /if -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 prd">
+		<div class="layui-card">
+			<div class="layui-card-header">
+				#{$value.id}_{$value.title}
+				<div class="layui-btn-group fr">
+					<input type="button" value="{lang编辑}" onclick="$.admin_tag.node_set('{$value.id}','edit')" class="layui-btn layui-btn-sm" />
+					<!-- if !$value.pid -->
+					<input type="button" value="{lang绑定}" onclick="$.admin_tag.node_title('{$value.id}')" class="layui-btn layui-btn-sm" />
+					<!-- /if -->
+					<input type="button" value="{lang删除}" onclick="$.admin_tag.node_delete('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</div>
+			<div class="layui-card-body">
+				<!-- if !$value.ids -->
+				<div style="padding:30px 5px;">
+					<!-- if $value.pid -->
+					<span>{lang已绑定项目}</span>
+					<!-- /if -->
+					<!-- if $value.pid && $value.cid --> / <!-- /if -->
+					<!-- if $value.cid -->
+					<span>{lang已绑定分类}</span>
+					<!-- /if -->
+					<!-- if !$value.psize && !$value.pid && !$value.cid -->
+					<span class="red">{lang未绑定主题，未指定数量，此节点无效}</span>
+					<!-- /if -->
+				</div>
+				<!-- /if -->
+				<!-- if $value.tlist -->
+				<table class="layui-table">
+				<thead>
+				<tr>
+					<th>ID</th>
+					<th>{lang标题}</th>
+					<th>{lang删除}</th>
+				</tr>
+				</thead>
+				<!-- loop from=$value.tlist key=$k value=$v id=$idxx -->
+				<tr id="t{$value.id}_{$v.id}">
+					<td>{$v.id}</td>
+					<td{if !$v.status} class="red"{/if}>{$v.title}<small class="gray i">_{$v.type}</small></td>
+					<td>
+						<input type="button" value="{lang删除}" onclick="$.admin_tag.node_delete_ids('{$v.id}','{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+					</td>
+				</tr>
+				<!-- /loop -->
+				</table>
+				
+				<!-- /if -->
+				<div class="gray">
+					<span class="darkblue">{</span><span class="darkblue">$rs.{$value.identifier}</span><span class="darkblue">}</span>
+					<!-- if !$value.type -->
+					<small>
+						{lang仅读取一篇内容信息}
+					</small>
+					<!-- /if -->
+					<!-- if !$value.status -->
+					<small class="red fr">{lang未启用}</small>
+					<!-- /if -->
+					<div class="clear"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /loop -->
+	<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 prd">
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('.layui-row').masonry({
+		itemSelector: '.prd',
+		columnWidth: '.prd',
+		percentPosition: true
+	})
+});
+</script>
+<!-- include tpl=foot_lay -->

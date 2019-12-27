@@ -1,12 +1,14 @@
 <?php
-/*****************************************************************************************
-	文件： task/order.php
-	备注： 订单通知
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年09月29日 23时17分
-*****************************************************************************************/
+/**
+ * 订单变更通知
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2019年12月6日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 if(!$param['id'] || !$param['status']){
 	return false;
@@ -20,7 +22,6 @@ $this->assign('order',$order);
 //订单产品信息
 $rslist = $this->model('order')->product_list($order['id']);
 $this->assign('rslist',$rslist);
-
 
 $sql = "SELECT tid FROM ".$this->db->prefix."order_product WHERE order_id='".$order['id']."' AND tid>0 LIMIT 1";
 $tmpchk = $this->db->get_one($sql);

@@ -22,7 +22,7 @@ class radio_form extends _init_auto
 		$rslist = $this->model('project')->get_all_project($this->session->val('admin_site_id'));
 		if($rslist){
 			$p_list = $m_list = array();
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				if(!$value["parent_id"]){
 					$p_list[] = $value;
 				}
@@ -146,15 +146,19 @@ class radio_form extends _init_auto
 		if($type == 'default' && $info){
 			$list = explode("\n",$info);
 			$rslist = array();
-			$i=0;
-			foreach($list AS $key=>$value){
+			foreach($list as $key=>$value){
 				if(!$value || !trim($value)){
 					continue;
 				}
-				$value = trim($value);
-				$rslist[$i]['val'] = $value;
-				$rslist[$i]['title'] = $value;
-				$i++;
+				if(strpos($value,':') !== false){
+					$tmp2 = explode(":",$value);
+					if(!$tmp2[1]){
+						$tmp2[1] = $tmp2[0];
+					}
+					$rslist[] = array('val'=>$tmp2[0],'title'=>$tmp2[1]);
+				}else{
+					$rslist[] = array('val'=>trim($value),'title'=>trim($value));
+				}
 			}
 			return $rslist;
 		}
@@ -169,7 +173,7 @@ class radio_form extends _init_auto
 			$tmplist = $this->model('project')->project_sonlist($group_id);
 			if(!$tmplist) return false;
 			$rslist = array();
-			foreach($tmplist AS $key=>$value){
+			foreach($tmplist as $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;
 			}
@@ -180,7 +184,7 @@ class radio_form extends _init_auto
 			$tmplist = $this->model("list")->title_list($group_id);
 			if(!$tmplist) return false;
 			$rslist = array();
-			foreach($tmplist AS $key=>$value){
+			foreach($tmplist as $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;
 			}
@@ -191,7 +195,7 @@ class radio_form extends _init_auto
 			$tmplist = $this->model('cate')->catelist_sonlist($group_id,false,0);
 			if(!$tmplist) return false;
 			$rslist = array();
-			foreach($tmplist AS $key=>$value){
+			foreach($tmplist as $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;
 			}

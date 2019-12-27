@@ -18,6 +18,7 @@ class login_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		$this->config('is_ajax',true);
 	}
 
 	/**
@@ -73,7 +74,11 @@ class login_control extends phpok_control
 		}
 		$this->model('user')->update_session($user_rs['id']);
 		$this->model('wealth')->login($user_rs['id'],P_Lang('会员登录'));
-		$this->success($this->session->sessid());
+		$_back = $this->get('_back');
+		if(!$_back){
+			$_back = $this->url('usercp','','www',true);
+		}
+		$this->success(array('user_id'=>$user_rs['id'],'user_name'=>$user_rs['user'],'user_gid'=>$user_rs['group_id']),$_back);
 	}
 
 	/**
@@ -198,7 +203,8 @@ class login_control extends phpok_control
 		}
 		$this->model('user')->update_session($rs['id']);
 		$this->model('wealth')->login($rs['id'],P_Lang('会员登录'));
-		$this->success($this->session->sessid());
+		$array = array('user_id'=>$rs['id'],'user_name'=>$rs['user'],'user_gid'=>$rs['group_id']);
+		$this->success($array);
 	}
 
 	/**
@@ -232,6 +238,7 @@ class login_control extends phpok_control
 		}
 		$this->model('user')->update_session($rs['id']);
 		$this->model('wealth')->login($rs['id'],P_Lang('会员登录'));
-		$this->success();
+		$array = array('user_id'=>$rs['id'],'user_name'=>$rs['user'],'user_gid'=>$rs['group_id']);
+		$this->success($array);
 	}
 }

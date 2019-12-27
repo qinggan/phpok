@@ -37,14 +37,13 @@
 					}
 					if(data.info.y){
 						var y = data.info.y;
-						var yhtml = '<ul class="layout">';
-						//var yhtml = '<select name="x"><option value="">'+p_lang('请选择统计项目…')+'</option>';
-						for(var i in y){
-							yhtml += '<li><label><input type="checkbox" name="y[]" lay-ignore value="'+i+'"/> '+y[i]+'</label></li>';
+						var html = template('line-y-html', {
+						    ylist: data.info.y
+						});
+						$("div[data-id=line-y]").html(html).removeClass('hide');
+						if(layui && layui.form){
+							layui.form.render();
 						}
-						yhtml += '</ul>';
-						$("div[data-id=line-y]").html(yhtml);
-						$("div[data-id=line-y]").removeClass('hide');
 					}
 					if(data.info.z){
 						$("div[data-id=line-z]").removeClass('hide');

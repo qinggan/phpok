@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>短信宝</title>
+	<note>官网是：http://www.smsbao.com/</note>
+	<code>
+		<account>
+			<title>帐号</title>
+			<note>短信宝提供的接口帐号</note>
+			<type>text</type>
+			<required>true</required>
+		</account>
+		<password>
+			<title>密码</title>
+			<note>帐号登录密码，在传输过程中执行32位加密</note>
+			<type>text</type>
+			<required>true</required>
+		</password>
+		<server>
+			<title>发短信地址</title>
+			<note>即短信发送地址，如：http://www.smsbao.com/sms</note>
+			<type>text</type>
+			<required>true</required>
+		</server>
+		<query>
+			<title>查询地址</title>
+			<note>即余额查询地址，如：http://www.smsbao.com/query</note>
+			<type>text</type>
+			<required>true</required>
+		</query>
+	</code>
+	<manage>
+		<balance>
+			<title>查余额</title>
+			<exec>balance</exec>
+			<type>ajax</type>
+		</balance>
+		<send>
+			<title>发短信</title>
+			<exec>sendsms</exec>
+			<type>page</type>
+		</send>
+	</manage>
+</root>

@@ -3,7 +3,7 @@
 	<div class="layui-card-header">
 		{lang风格方案管理}
 		<div class="fr">
-		<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加规则}','{url ctrl=tpl func=set/}')">
+		<button class="layui-btn layui-btn-sm" onclick="$.admin_tpl.add()">
 			<i class="layui-icon">&#xe608;</i> {lang添加风格}
 		</button>
 		</div>
@@ -32,7 +32,7 @@
 			<td>
 				<div class="layui-btn-group">
 					<!-- if $popedom.filelist -->
-					<input type="button" value="{lang文件管理}" onclick="$.admin_tpl.tpl_filelist({$value.id})" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang文件管理}" onclick="$.admin_tpl.tpl_filelist('tpl/{$value.folder}/')" class="layui-btn layui-btn-sm" />
 					<!-- /if -->
 					<!-- if $popedom.set -->
 					<input type="button" value="{lang编辑}" onclick="$.admin_tpl.tpl_set({$value.id})" class="layui-btn layui-btn-sm" />

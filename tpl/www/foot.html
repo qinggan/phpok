@@ -1,52 +1,23 @@
-<div class="foot">
-	<div class="copyright">
-		<!-- php:$list = phpok('footnav') -->
-		<!-- loop from=$list.rslist key=$key value=$value id=$list_id -->
-		<a href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a>
-		<!-- if $list_id.num == $list_id.total --><br /><!-- else --> | <!-- /if -->
-		<!-- /loop -->
-		{$config.copyright.content}
-	</div>
-</div>
-<!-- php:$list = phpok('kefu') -->
-<!-- if $list.project && $list.rslist -->
-<!-- if $list.project.isbottom -->
-<div class="floatbar">
-	<div class="am-g" style="max-width:1200px;">
-		<!-- loop from=$list.rslist key=$key value=$value -->
-		<!-- if $value.qtype == 'qq' -->
-		<div class="am-u-sm-3 am-u-xx-centered"><a target="_blank" href="//wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes" title="点击这里给我发消息">{$value.title}（QQ：{$value.qq}） <img border="0" src="images/qq.png" alt="点击这里给我发消息" style="width:32px;"/></a></div>
-		<!-- else -->
-		<div class="am-u-sm-3 am-u-xx-centered weixin">
-			<a href="javascript:void(0);">{$value.title}（微信：{$value.weixin}） <img border="0" src="images/weixin.png" alt="鼠标移到这里查看二维码" style="width:32px;"/></a>
-			<div class="wxpic" data-filename="{$value.qrcode.filename}"></div>
-		</div>
-		<!-- /if -->
-		<!-- /loop -->
-	</div>
-</div>
-<div style="height:50px;clear:both;">&nbsp;</div>
-<!-- else -->
-<div class="im_floatonline">
-	<div class="am-panel am-panel-primary">
-		<div class="am-panel-hd center">{$list.project.title}</div>
-		<div class="am-panel-bd">
-			<ul class="am-list">
-				<!-- loop from=$list.rslist key=$key value=$value -->
-				<!-- if $value.qtype == 'qq' -->
-				<li class="kf"><a target="_blank" href="//wpa.qq.com/msgrd?v=3&uin={$value.qq}&site=qq&menu=yes" title="点击这里给我发消息"><img border="0" src="images/qq.png" alt="点击这里给我发消息" style="width:32px;"/> {$value.title} </a></li>
-				<!-- else -->
-				<li class="kf">
-					<a href="javascript:void(0);" title="微信号：{$value.weixin}"><img border="0" src="images/weixin.png" style="width:32px;"/> {$value.title}</a>
-					<div align="center" style="padding-bottom:1em;"><img src="{$value.qrcode.filename}" style="width:80%;"/></div>
-				</li>
-				<!-- /if -->
-				<!-- /loop -->
-			</ul>
-		</div>
-	</div>
-</div>
+{func phpok_head_css}
+{func phpok_head_js}
+<!-- if $config.code && $config.code.statjs -->
+<div style="display:none">{$config.code.statjs}</div>
 <!-- /if -->
-<!-- /if -->
-
-<!-- include tpl=footer -->
+<!-- if $sys.debug --><div style="text-align:center;padding:1em;">{func debug_time}</div><!-- /if -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?d6ceebbfea56af954e58ccea336c10d8";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script type="text/javascript">
+$(document).ready(function(){
+	var wow = new WOW();
+	wow.init();
+});
+</script>
+</body>
+</html>

@@ -72,6 +72,7 @@ class project_control extends phpok_control
 		if(!$this->tpl->check_exists($tpl)){
 			$this->error(P_Lang('模板文件缺少'));
 		}
+		$this->phpok_seo();
 		$this->view($tpl);
 	}
 
@@ -114,6 +115,7 @@ class project_control extends phpok_control
 		}
 		//判断该项目是否启用封面
 		if($rs["tpl_index"] && !$cateid && !$keywords && !$ext && !$tag && !$uid && !$attr && !$price && !$sort && $this->tpl->check_exists($rs['tpl_index'])){
+			$this->phpok_seo();
 			$this->view($rs["tpl_index"]);
 		}
 		//读取列表信息
@@ -269,6 +271,7 @@ class project_control extends phpok_control
 			$this->error(P_Lang('未配置模板 {tplfile}，请配置相应的模板',array('tplfile'=>$tplfile)));
 		}
 		unset($rslist,$total,$pageurl,$psize,$pageid,$rs,$parent_rs);
+		$this->phpok_seo();
 		$this->view($tplfile);
 	}
 }

@@ -152,6 +152,22 @@
 				$.dialog.alert(data.info);
 				return false;
 			})
+		},
+		copy:function(from,to)
+		{
+			$("#"+to+"-fullname").val($("#"+from+"-fullname").val());
+			$("#"+to+"-firstname").val($("#"+from+"-firstname").val());
+			$("#"+to+"-lastname").val($("#"+from+"-lastname").val());
+			$("#"+to+"-country").val($("#"+from+"-country").val());
+			$("#"+to+"-province").val($("#"+from+"-province").val());
+			$("#"+to+"-city").val($("#"+from+"-city").val());
+			$("#"+to+"-county").val($("#"+from+"-county").val());
+			$("#"+to+"-address").val($("#"+from+"-address").val());
+			$("#"+to+"-address2").val($("#"+from+"-address2").val());
+			$("#"+to+"-zipcode").val($("#"+from+"-zipcode").val());
+			$("#"+to+"-tel").val($("#"+from+"-tel").val());
+			$("#"+to+"-mobile").val($("#"+from+"-mobile").val());
+			$("#"+to+"-email").val($("#"+from+"-email").val());
 		}
 	}
 })(jQuery);

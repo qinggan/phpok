@@ -47,6 +47,11 @@ class address_control extends phpok_control
 		if(!$status){
 			$this->tip(P_Lang('该会员还没有设置地址信息'));
 		}
+		$types = $this->get('types');
+		if(!$types){
+			$types = 'shipping';
+		}
+		$this->assign('types',$types);
 		$this->view($tpl);
 	}
 

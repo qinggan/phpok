@@ -230,24 +230,18 @@ class trans_lib
 	
 
 	#[编码转换，使用PHP里的iconv功能]
-	function charset($msg, $s_code="UTF-8", $e_code="GBK")
+	public function charset($msg, $s_code="UTF-8", $e_code="GBK")
 	{
-		if(!$msg)
-		{
+		if(!$msg){
 			return false;
 		}
-		if(is_array($msg))
-		{
-			foreach($msg AS $key=>$value)
-			{
+		if(is_array($msg)){
+			foreach($msg as $key=>$value){
 				$msg[$key] = $this->charset($value,$s_code,$e_code);
 			}
-		}
-		else
-		{
-			if(function_exists("iconv"))
-			{
-				$msg = iconv($s_code,$e_code,$msg);
+		}else{
+			if(function_exists("iconv")){
+				$msg = iconv($s_code,$e_code.'//IGNORE',$msg);
 			}
 		}
 		return $msg;
@@ -302,9 +296,12 @@ class trans_lib
 		return $myurl;
 	}
 
-	function is_utf8($string)
+	public function is_utf8($string)
 	{
-		return preg_match('/^(?:[x09x0Ax0Dx20-x7E]|[xC2-xDF][x80-xBF]|xE0[xA0-xBF][x80-xBF]|[xE1-xECxEExEF][x80-xBF]{2}|xED[x80-x9F][x80-xBF]|xF0[x90-xBF][x80-xBF]{2}|[xF1-xF3][x80-xBF]{3}| xF4[x80-x8F][x80-xBF]{2})*$/xs',$string);
+		if(function_exists('mb_detect_encoding')){
+			return mb_detect_encoding($string,'UTF-8') === 'UTF-8';
+		}
+		return preg_match('%^(?:[\x09\x0A\x0D\x20-\x7E]|[\xC2-\xDF][\x80-\xBF]|\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})*$%xs', $string);
 	}
 
 	function html_edit($content)

@@ -23,7 +23,8 @@ class cate_model_base extends phpok_model
 
 	public function get_root_id(&$rootid,$id)
 	{
-		$rs = $this->get_one($id);
+		$sql = "SELECT parent_id FROM ".$this->db->prefix."cate WHERE id='".$id."'";
+		$rs = $this->db->get_one($sql);
 		if($rs){
 			if(!$rs['parent_id']){
 				$rootid = $id;
@@ -50,49 +51,97 @@ class cate_model_base extends phpok_model
 		if(!$rs){
 			return false;
 		}
-		if($ext){
-			//绑定了模块的操作
-			if($rs['parent_id']){
-				$rootid = $rs['parent_id'];
-				$this->get_root_id($rootid,$rs['parent_id']);
-				$info = $this->get_one($rootid);
-				if($info && $info['module_id']){
-					$flist = $this->model('module')->fields_all($info['module_id']);
-					if($flist){
-						$fields = array();
-						foreach($flist as $key=>$value){
-							$fields[] = $value['identifier'];
-						}
-						$sql = "SELECT ".implode(",",$fields)." FROM ".$this->db->prefix."cate_".$info['module_id']." WHERE id='".$rs['id']."'";
-						$ext = $this->db->get_one($sql);
-						if($ext){
-							if($is_edit){
-								$rs = array_merge($ext,$rs);
-							}else{
-								foreach($flist as $key=>$value){
-									$rs[$value['identifier']] = $this->lib('form')->show($value,$ext[$value['identifier']]);
-								}
-							}
-						}
-					}
-				}
-			}
-			$tmplist = $this->model('ext')->ext_all('cate-'.$rs['id'],true);
-			if($tmplist){
-				$ext_rs = array();
-				foreach($tmplist as $key=>$value){
-					if($is_edit){
-						$ext_rs[$value['identifier']] = $value['content'];
-					}else{
-						$ext_rs[$value['identifier']] = $this->lib('form')->show($value);
-					}
-				}
-				if($ext_rs){
-					$rs = array_merge($rs,$ext_rs);
-				}
+		if(!$ext){
+			return $rs;
+		}
+		$ext_rs = $this->cate_module($rs['id'],$is_edit);
+		if($ext_rs){
+			$rs = array_merge($ext_rs,$rs);
+		}
+		$tmplist = $this->model('ext')->ext_all('cate-'.$rs['id'],true);
+		if(!$tmplist){
+			return $rs;
+		}
+		$ext_rs = array();
+		foreach($tmplist as $key=>$value){
+			$ext_rs[$value['identifier']] = $value['content'];
+			if(!$is_edit){
+				$ext_rs[$value['identifier']] = $this->lib('form')->show($value);
 			}
 		}
+		$rs = array_merge($ext_rs,$rs);
 		return $rs;
+	}
+
+	//取得分类下的模块扩展
+	protected function cate_module($id,$is_edit=false)
+	{
+		$sql = "SELECT parent_id,module_id FROM ".$this->db->prefix."cate WHERE id='".$id."'";
+		$tmp = $this->db->get_one($sql);
+		if(!$tmp){
+			return false;
+		}
+		if(!$tmp['parent_id']){
+			$rootid = $id;
+		}else{
+			$rootid = $tmp['parent_id'];
+			$this->get_root_id($rootid,$tmp['parent_id']);
+		}
+		if(!$rootid){
+			return false;
+		}
+		$sql = "SELECT module_id FROM ".$this->db->prefix."cate WHERE id='".$rootid."'";
+		$info = $this->db->get_one($sql);
+		if(!$info){
+			return false;
+		}
+		$flist = $this->model('module')->fields_all($info['module_id']);
+		if(!$flist){
+			return false;
+		}
+		$fields = array();
+		foreach($flist as $key=>$value){
+			$fields[] = $value['identifier'];
+		}
+		$sql = "SELECT ".implode(",",$fields)." FROM ".$this->db->prefix."cate_".$info['module_id']." WHERE id='".$id."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		if($is_edit){
+			return $rs;
+		}
+		foreach($flist as $key=>$value){
+			$rs[$value['identifier']] = $this->lib('form')->show($value,$rs[$value['identifier']]);
+		}
+		return $rs;
+	}
+
+	//取得分类下的模块扩展
+	protected function catelist_module($mid)
+	{
+		$flist = $this->model('module')->fields_all($mid);
+		if(!$flist){
+			return false;
+		}
+		$fields = array();
+		$fields[] = 'id';
+		foreach($flist as $key=>$value){
+			$fields[] = $value['identifier'];
+		}
+		$sql = "SELECT ".implode(",",$fields)." FROM ".$this->db->prefix."cate_".$mid;
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			foreach($flist as $k=>$v){
+				$value[$v['identifier']] = $this->lib('form')->show($v,$value[$v['identifier']]);
+			}
+			$rslist[$value['id']] = $value;
+		}
+		return $rslist;
 	}
 
 	/**
@@ -147,18 +196,95 @@ class cate_model_base extends phpok_model
 	}
 
 	/**
+	 * 读取分类列表
+	 * @参数 $condition 查询条件
+	 * @参数 $offset 开始页数
+	 * @参数 $psize 每页显示数量
+	 * @参数 $orderby 排序
+	**/
+	public function cate_list($condition='',$offset=0,$psize=0,$orderby="")
+	{
+		$sql = " SELECT * FROM ".$this->db->prefix."cate ";
+		if($condition){
+			$sql .= " WHERE ".$condition." ";
+		}
+		if(!$orderby){
+			$orderby = "taxis ASC,id DESC";
+		}
+		$sql .= " ORDER BY ".$orderby." ";
+		if($psize && intval($psize)>0){
+			$sql .= " LIMIT ".intval($offset).",".intval($psize);
+		}
+		$rslist = $this->db->get_all($sql,'id');
+		if(!$rslist){
+			return false;
+		}
+		$extlist = array();
+		$idlist = array_keys($rslist);
+		foreach($rslist as $key=>$value){
+			if($value['parent_id'] || !$value['module_id']){
+				continue;
+			}
+			$tmplist = $this->catelist_module($value['module_id']);
+			if($tmplist){
+				$extlist = array($tmplist,$extlist);
+			}
+		}
+		if($extlist){
+			foreach($rslist as $key=>$value){
+				if(!$extlist[$value['id']]){
+					continue;
+				}
+				$value = array_merge($extlist[$value['id']],$value);
+				$rslist[$key] = $value;
+			}
+		}
+		return $this->cate_ext($rslist);
+	}
+
+	/**
 	 * 取得全部的分类信息（不格式化）
 	 * @参数 $site_id 站点ID
 	 * @参数 $status 状态，为1时表示仅读已审核数据
 	**/
-	public function cate_all($site_id=0,$status=0)
+	public function cate_all($site_id=0,$status=0,$orderby='')
 	{
 		$sql = " SELECT * FROM ".$this->db->prefix."cate WHERE site_id='".$site_id."'";
 		if($status){
 			$sql .= " AND status='1' ";
 		}
-		$sql .= " ORDER BY taxis ASC,id DESC ";
-		return $this->db->get_all($sql,'id');
+		if(!$orderby){
+			$orderby = "taxis ASC,id DESC";
+		}
+		$sql .= " ORDER BY ".$orderby." ";
+		$rslist = $this->db->get_all($sql,'id');
+		if(!$rslist){
+			return false;
+		}
+		$extlist = array();
+		$idlist = array_keys($rslist);
+		foreach($rslist as $key=>$value){
+			if($value['parent_id']){
+				continue;
+			}
+			if(!$value['module_id']){
+				continue;
+			}
+			$tmplist = $this->catelist_module($value['module_id']);
+			if($tmplist){
+				$extlist = array($tmplist,$extlist);
+			}
+		}
+		if($extlist){
+			foreach($rslist as $key=>$value){
+				if(!$extlist[$value['id']]){
+					continue;
+				}
+				$value = array_merge($extlist[$value['id']],$value);
+				$rslist[$key] = $value;
+			}
+		}
+		return $this->cate_ext($rslist);
 	}
 
 	/**
@@ -439,6 +565,9 @@ class cate_model_base extends phpok_model
 	{
 		if(!$cid){
 			return false;
+		}
+		if(is_array($cid)){
+			$cid = implode(",",$cid);
 		}
 		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE id IN(".$cid.") AND status=1 ORDER BY SUBSTRING_INDEX('".$cid."',id,1) ";
 		$rslist = $this->db->get_all($sql,"id");

@@ -31,11 +31,6 @@
 		**/
 		edit_local_save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			var opener = $.dialog.opener;
 			$("#post_save").ajaxSubmit({
 				'url':get_url('res','setting_remote_to_local_save'),

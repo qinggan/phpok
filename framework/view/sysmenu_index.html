@@ -22,13 +22,13 @@
 					<tr class="list">
 						<td>&nbsp;{$value.title}</td>
 						<td>&nbsp;</td>
-						<td class="center">
+						<td>
 							<input type="button" value="{$value.status ? '启用' : '禁用'}" class="layui-btn  layui-btn-sm"{if $popedom.status} onclick="$.admin_system.set_status({$value.id},this)"{else} onclick="$.dialog.alert('{lang您没有权限执行此功能}')"{/if} />
 						</td>
 						<td>&nbsp;</td>
 						<td class="center"><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 						<td>
-							<div class="button-group">
+							<div class="layui-btn-group">
 							<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=system func=set id=$value.id/}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
 							<!-- if $popedom.add --><input type="button" value="{lang添加子项}"  onclick="$.phpok.go('{url ctrl=system func=set pid=$value.id/}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
 							</div>
@@ -39,13 +39,13 @@
 				<tr class="sub">
 					<td><div class="pleft">{$v.title}</div></td>
 					<td>&nbsp;{$v._ctrlfile}</td>
-					<td class="center"><input type="button" value="{if $v.status}{lang启用}{else}{lang禁用}{/if}" class="layui-btn  layui-btn-sm"{if $popedom.status} onclick="$.admin_system.set_status({$v.id},this)"{else} onclick="$.dialog.alert('{lang您没有权限执行此功能}')"{/if} /></td>
+					<td><input type="button" value="{if $v.status}{lang启用}{else}{lang禁用}{/if}" class="layui-btn layui-btn-sm{if !$v.status} layui-btn-danger{/if}"{if $popedom.status} onclick="$.admin_system.set_status({$v.id},this)"{else} onclick="$.dialog.alert('{lang您没有权限执行此功能}')"{/if} /></td>
 					<td><input type="button" class="layui-btn  layui-btn-sm" id="icon_status_{$v.id}" value="{if $v.icon}{lang显示}{else}{lang隐藏}{/if}" data-icon="{$v.icon}" onclick="$.admin_system.icon_hs('{$v.id}')" /> <i{if $v.icon} class="icon-{$v.icon}"{/if} id="icon_{$v.id}" style="font-size:16px;" onclick="$.admin_system.set_icon('{$v.id}')"></i></td>
 					<td class="center"><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$v.id}">{$v.taxis}</div></td>
 					<td>
-						<div class="button-group">
+						<div class="layui-btn-group">
 							<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=system func=set id=$v.id/}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
-							<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_system.delete_sysmenu('{$v.id}','{$v.title}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
+							<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_system.delete_sysmenu('{$v.id}','{$v.title}')" class="layui-btn  layui-btn-sm layui-btn-danger" /><!-- /if -->
 						</div>
 					</td>
 				</tr>

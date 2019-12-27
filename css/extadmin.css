@@ -12,19 +12,24 @@
 * html .clearfix{zoom: 1;}
 *:first-child + html .clearfix{zoom: 1;}
 body{overflow-x: hidden;}
-select{padding:3px;}
-select {
-  border: solid 1px #D2D2D2;
-  appearance:none;
-  -moz-appearance:none;
-  -webkit-appearance:none;
-  background:url("../images/arrow-select.png") no-repeat scroll right center transparent;
-  background-color:#fff;
-  padding-right: 14px !important;
+select{
+	padding:2px 30px 2px 3px;
+	line-height:30px;
+	border: solid 1px #D2D2D2;
+	appearance:none;
+	-moz-appearance:none;
+	-webkit-appearance:none;
+	background:#fff url("../images/arrow-select.png") no-repeat scroll right center transparent;
+}
+select:focus{
+	outline:none;
 }
 
 input[type="number"] {
     -moz-appearance: textfield;
+}
+img{
+	max-width:100%;
 }
 
 /* LayUI 后台框架样式改写-开始 */
@@ -60,6 +65,12 @@ input[type="number"] {
 	right:auto;
 	vertical-align: middle;
 }
+.layui-card-header.auto{
+	height:auto;
+	padding-bottom:5px;
+}
+
+
 .layui-form .layui-form-item .long{
 	width: 500px;
 }

@@ -16,20 +16,27 @@ class search_model_base extends phpok_model
 	}
 
 	//取得查询结果数量
-	function get_total($condition="")
+	function get_total($condition="",$mid=0)
 	{
-		$sql = "SELECT count(l.id) FROM ".$this->db->prefix."list l WHERE l.status=1 AND l.hidden=0 ";
-		if($condition)
-		{
+		$sql  = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
+		if($mid){
+			$sql .= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id) ";
+		}
+		$sql .= " WHERE l.status=1 AND l.hidden=0 ";
+		if($condition){
 			$sql.= " AND ".$condition;
 		}
 		return $this->db->count($sql);
 	}
 
 	//查询ID数量
-	function id_list($condition="",$offset=0,$psize=30)
+	function id_list($condition="",$offset=0,$psize=30,$mid=0)
 	{
-		$sql .= "SELECT l.id FROM ".$this->db->prefix."list l WHERE l.status=1 AND l.hidden=0 ";
+		$sql  = "SELECT l.id FROM ".$this->db->prefix."list l ";
+		if($mid){
+			$sql .= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id) ";
+		}
+		$sql .= " WHERE l.status=1 AND l.hidden=0 ";
 		if($condition){
 			$sql.= " AND ".$condition;
 		}

@@ -1,33 +1,60 @@
 <!-- include tpl=head_lay -->
 <script type="text/javascript" src="{func add_js user.js}"></script>
-<div class="layui-card"{if !$group_id && !$keywords} style="display:none"{/if} id="search_html">
+<div class="layui-card" id="search_html">
 	<div class="layui-card-header">{lang搜索}</div>
 	<div class="layui-card-body">
 		<form method="post" action="{url ctrl=user/}" class="layui-form">
-		<div class="layui-form-item">
+		<div class="layui-form-item phpok-search">
+			<div class="layui-inline">
+				<label class="layui-form-label">{lang每页数量}</label>
+				<div class="layui-input-block">
+					<select name="psize">
+						<option value="20">20</option>
+						<option value="30"{if $psize == 30} selected{/if}>30</option>
+						<option value="50"{if $psize == 50} selected{/if}>50</option>
+						<option value="70"{if $psize == 70} selected{/if}>70</option>
+						<option value="80"{if $psize == 80} selected{/if}>80</option>
+						<option value="90"{if $psize == 90} selected{/if}>90</option>
+						<option value="100"{if $psize == 100} selected{/if}>100</option>
+					</select>
+				</div>
+			</div>
 			<div class="layui-inline">
 				<label class="layui-form-label">{lang会员组}</label>
-				<div class="layui-input-inline">
+				<div class="layui-input-block">
 					<select name="group_id">
-						<option value="">{lang全部}</option>
+						<option value="">{lang不限}</option>
 						<!-- loop from=$grouplist key=$key value=$value id=$tmpid -->
 						<option value="{$value.id}"{if $group_id == $value.id} selected{/if}>{$value.title}</option>
 						<!-- /loop -->
 					</select>
 				</div>
 			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">{lang状态}</label>
+				<div class="layui-input-block">
+					<select name="keywords[status]">
+						<option value="">{lang不限}</option>
+						<option value="1"{if $keywords.status == 1} selected{/if}>{lang正常}</option>
+						<option value="3"{if $keywords.status == 3} selected{/if}>{lang未审核}</option>
+						<option value="2"{if $keywords.status == 2} selected{/if}>{lang锁定}</option>
+					</select>
+				</div>
+			</div>
 			<!-- loop from=$flist key=$key value=$value id=$tmpid -->
 			<div class="layui-inline">
 				<label class="layui-form-label">{$value}</label>
-				<div class="layui-input-inline">
+				<div class="layui-input-block">
 					<input type="text" name="keywords[{$key}]" class="layui-input" value="{$keywords[$key]}" />
 				</div>
 			</div>
 			<!-- /loop -->
 			<div class="layui-inline">
-				<div class="layui-input-inline">
-					<input type="submit" value="{lang搜索}" class="layui-btn layui-btn-normal" />
-					<input type="button" value="{lang取消搜索}" onclick="$.phpok.go('{url ctrl=user/}')" class="layui-btn" />
+				<div class="layui-input-block">
+					<input type="submit" value="{lang搜索}" class="layui-btn" />
+					<!-- if $keywords || $group_id -->
+					<a href="{url ctrl=user/}" class="layui-btn layui-btn-primary">{lang取消搜索}</a>
+					<!-- /if -->
 				</div>
 			</div>
 		</div>
@@ -39,10 +66,6 @@
 		{lang列表}
 		<div class="fr"><div class="action"></div></div>	
 		<div class="layui-btn-group fr" id="user_card_top">
-			<button class="layui-btn layui-btn-sm" onclick="$.admin.hide_show('search_html')">
-				<i class="layui-icon">&#xe615;</i>
-				搜索
-			</button>
 			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加会员}','{url ctrl=user func=set/}')">
 				<i class="layui-icon">&#xe654;</i>
 				{lang添加会员}
@@ -56,18 +79,16 @@
 		</div>
 	</div>
 	<div class="layui-card-body">
-		<table width="100%" class="layui-table" lay-size="sm">
+		<table width="100%" class="layui-table">
 		<thead>
 		<tr>
-			<th align="center">ID</th>
+			<th style="text-align:center;">ID</th>
 			<th width="20px">&nbsp;</th>
 			<th width="35px"></th>
 			<!-- loop from=$arealist key=$key value=$value -->
 			<th class="lft">{func P_Lang $value}</th>
 			<!-- /loop -->
-			<!-- loop from=$wlist key=$key value=$value id=$tmpid -->
-			<th class="lft" style="min-width:100px;">{$value.title}</th>
-			<!-- /loop -->
+			<!-- if $wlist --><th class="lft" style="min-width:100px;">{lang财富}</th><!-- /if -->
 			<th width="120px">{lang注册时间}</th>
 			<th style="min-width:104px;"></th>
 		</tr>
@@ -82,11 +103,15 @@
 				<!-- if is_array($value[$k]) -->
 					<!-- if $value[$k]['_admin']['type'] == 'pic' -->
 					<img src='{$value[$k]["_admin"]["info"]}' border="0" width="28px" height="28px" />
+					<!-- elseif $value[$k]['_admin'] -->
+					{$value[$k]['_admin']['info']}
 					<!-- else -->
-					{$value[$k]['_admin']['info']}			
+					{$value[$k]['user']}
 					<!-- /if -->
 				<!-- else -->
-					<!-- if $k == 'group_id' -->
+					<!-- if $k == 'order' -->
+					<a href="javascript:$.win('{lang会员订单}_{$value.user}','{url ctrl=order keywords=$value.user keytype=user/}');void(0)">{$value[$k]}</a>
+					<!-- elseif $k == 'group_id' -->
 					{$grouplist[$value[$k]][title]}
 					<!-- else -->
 					{$value[$k]}
@@ -94,23 +119,27 @@
 				<!-- /if -->
 			</td>
 			<!-- /loop -->
-			<!-- loop from=$wlist key=$k value=$v -->
+			<!-- if $wlist -->
+			
+			
 			<td class="lft">
-				<div>{$value.wealth[$k] ? $value.wealth[$k] : 0} {$v.unit}</div>
-				<div class="layui-btn-group">
-					<input type="button" value="{lang调整}" onclick="action_wealth('{$v.title}','{$v.id}','{$value.id}','{$v.unit}')" class="layui-btn layui-btn-xs" />
-					<input type="button" value="{lang日志}" onclick="show_wealth_log('{$v.title}','{$v.id}','{$value.id}')" class="layui-btn layui-btn-xs" />
+				<!-- loop from=$wlist key=$k value=$v id=$idxx -->
+				<div style="display:block;">
+					{$v.title}：{$value.wealth[$k] ? $value.wealth[$k] : 0} {$v.unit}
 				</div>
+				<!-- /loop -->
 			</td>
-			<!-- /loop -->
+			<!-- /if -->
+			
 			<td>{func date 'Y-m-d H:i' $value.regtime}</td>
 			<td>
 				<div class="layui-btn-group">
-					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑会员}_#{$value.id}','{url ctrl=user func=set id=$value.id/}')" class="layui-btn layui-btn-xs" />
-					<!-- if $config.biz_status -->
-					<input type="button" value="{lang地址}" onclick="$.admin_user.address({$value.id})" class="layui-btn layui-btn-xs" />
+					<input type="button" value="{lang查看}" onclick="$.win('{lang查看会员}_#{$value.id}','{url ctrl=user func=show id=$value.id/}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑会员}_#{$value.id}','{url ctrl=user func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
+					<!-- if $popedom.delete -->
+					<input type="button" value="{lang删除}" onclick="del({$value.id},'{$value.user}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 					<!-- /if -->
-					<input type="button" value="{lang删除}" onclick="del({$value.id},'{$value.user}')" class="layui-btn layui-btn-xs layui-btn-danger" />
+					
 				</div>
 			</td>
 		</tr>

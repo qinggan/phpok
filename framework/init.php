@@ -20,7 +20,7 @@ if(!defined("PHPOK_SET")){
  * 强制使用UTF-8编码
 **/
 header("Content-type: text/html; charset=utf-8");
-header("Cache-control: no-cache,no-store,must-revalidate");
+header("Cache-control: no-cache,no-store,must-revalidate,max-age=3");
 header("Pramga: no-cache"); 
 header("Expires: -1");
 
@@ -396,7 +396,6 @@ class _init_phpok
 		$this->config['time'] = $this->time;
 		$this->config['webroot'] = $this->dir_webroot;	
 		$this->assign("sys",$this->config);
-		$this->phpok_seo($this->site);
 		$this->assign("config",$this->site);
 		$langid = $this->get("_langid");
 		if($this->app_id == 'admin'){
@@ -536,6 +535,9 @@ class _init_phpok
 	public function init_site()
 	{
 		$site_id = $this->get("siteId","int");
+		if(!$site_id){
+			$site_id = $this->session->val('siteId');
+		}
 		$this->url = $this->root_url($site_id);
 		if($this->app_id == "admin"){
 			if($this->session->val('admin_site_id')){
@@ -724,15 +726,15 @@ class _init_phpok
 			$config = $this->_libs[$class];
 		}else{
 			$config = array('param'=>'','include'=>'','auto'=>'','classname'=>$class.'_lib');
-			if(file_exists($this->dir_root.'extension/'.$class.'/config.inc.php')){
-				include($this->dir_root.'extension/'.$class.'/config.inc.php');
+			if(file_exists($this->dir_extension.$class.'/config.inc.php')){
+				include($this->dir_extension.$class.'/config.inc.php');
 				$list = $config['include'] ? explode(",",$config['include']) : array();
 				foreach($list as $key=>$value){
 					if(substr(strtolower($value),-4) != '.php'){
 						$value .= '.php';
 					}
-					if(file_exists($this->dir_root.'extension/'.$class.'/'.$value)){
-						include_once($this->dir_root.'extension/'.$class.'/'.$value);
+					if(file_exists($this->dir_extension.$class.'/'.$value)){
+						include_once($this->dir_extension.$class.'/'.$value);
 					}
 				}
 			}
@@ -744,10 +746,10 @@ class _init_phpok
 		}
 		$vfile = array($this->dir_phpok.'libs/'.$class.'.php');
 		$vfile[] = $this->dir_phpok.'libs/'.$class.'.phar';
-		$vfile[] = $this->dir_root.'extension/'.$class.'.phar';
-		$vfile[] = $this->dir_root.'extension/'.$class.'/phpok.php';
-		$vfile[] = $this->dir_root.'extension/'.$class.'/index.php';
-		$vfile[] = $this->dir_root.'extension/'.$class.'.php';
+		$vfile[] = $this->dir_extension.$class.'.phar';
+		$vfile[] = $this->dir_extension.$class.'/phpok.php';
+		$vfile[] = $this->dir_extension.$class.'/index.php';
+		$vfile[] = $this->dir_extension.$class.'.php';
 		$chkstatus = false;
 		foreach($vfile as $key=>$value){
 			if(file_exists($value)){
@@ -1475,13 +1477,6 @@ class _init_phpok
 				file_put_contents($this->dir_cache.'async_interval_times.php',$this->time);
 			}
 		}
-
-		header("Content-type: text/html; charset=utf-8");
-		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-		header("Last-Modified: Mon, 26 Jul 1997 05:00:00  GMT");
-		header("Cache-control: no-cache,no-store,must-revalidate,max-age=3");
-		header("Pramga: no-cache");
-		$this->phpok_seo();
 		$this->tpl->display($file,$type,$path_format);
 	}
 
@@ -1726,27 +1721,6 @@ class _init_phpok
 					$uri = substr($uri,0,-(strlen($basename)));
 				}
 			}
-			//解决当图片不存在，尝试通过PHP自动创建
-			$tmp = strtolower(substr($uri,-4));
-			if(in_array($tmp,array('.jpg','.gif','.png','jpeg')) && substr($uri,0,11) == 'res/_cache/'){
-				$tmp = substr($uri,11);
-				$tmp = explode("/",$tmp);
-				$gdinfo = $this->model('gd')->get_one($tmp[0],'identifier');
-				if($gdinfo){
-					$tmp = explode('.',$tmp[2]);
-					$res = $this->model('res')->get_one($tmp[0]);
-					if($res){
-						$gdinfo['url'] = $res['filename'];
-						$gdinfo['_id'] = $res['id'];
-						$gdinfo['ext'] = $res['ext'];
-						$gdinfo['folder'] = 'res/_cache/'.$gdinfo['identifier'].'/'.substr($res['id'],0,2).'/';
-						$this->model('res')->img_create($gdinfo);
-						header("Content-type: image/".$res['ext']);
-						echo file_get_contents($this->dir_root.$uri);
-						exit;
-					}
-				}
-			}
 			if($uri && $uri != '/' && $folder && $uri != $folder && !$exit){
 				$this->error_404(P_Lang('您的请求信息不正确，请检查（无效路由）'));
 			}
@@ -1970,11 +1944,11 @@ class _init_phpok
 	 * @参数 $status 布尔值，为true时输出status=>ok，false输出status=>error，并附带相应的内容content=>$content
 	 * @参数 $exit 布尔值，为false时，不中止运行，会继续执行下面的PHP文件，一般不需要用到
 	 * @返回 格式化后json数据
-	 * @更新时间 2016年06月05日
+	 * @更新时间 2019年10月5日
 	**/
 	final public function json($content,$status=false,$exit=true)
 	{
-		if($content && !is_bool($content) && is_string($content) && strlen($content) < 61440 && $exit && $this->config['debug']){
+		if($content && !is_bool($content) && !$status){
 			$this->model('log')->save($content);
 		}
 		if($exit){
@@ -2114,9 +2088,6 @@ class _init_phpok
 		if($url && $ajax === false && !$this->is_ajax){
 			$ajax = 2;
 		}
-		if($info && is_string($info) && $this->config['debug']){
-			$this->model('log')->save($info);
-		}
 		$this->_tip($info,0,$url,$ajax);
 	}
 
@@ -2131,9 +2102,6 @@ class _init_phpok
 	{
 		if($url && $ajax === false && !$this->is_ajax){
 			$ajax = 2;
-		}
-		if($info && is_string($info) && $this->config['debug']){
-			$this->model('log')->save($info);
 		}
 		$this->_tip($info,1,$url,$ajax);
 	}
@@ -2150,9 +2118,6 @@ class _init_phpok
 		if($url && $ajax === false && !$this->is_ajax){
 			$ajax = 2;
 		}
-		if($info && is_string($info) && $this->config['debug']){
-			$this->model('log')->save($info);
-		}
 		$this->_tip($info,2,$url,$ajax);
 	}
 
@@ -2166,6 +2131,10 @@ class _init_phpok
 	**/
 	protected function _tip($info='',$status=0,$url='',$ajax=false)
 	{
+		//将所有的非正确日志写到后台
+		if(!$status && $info){
+			$this->model('log')->save($info);
+		}
 		if(true === $ajax || $this->is_ajax){
 			$data = is_array($ajax) ? $ajax : array();
 			$data['info'] = $info;
@@ -2173,6 +2142,8 @@ class _init_phpok
 			if($url){
 				$data['url'] = $url;
 			}
+			$data['session_name'] = $this->session->sid();
+			$data['session_val'] = $this->session->sessid();
 			header('Content-Type:application/json; charset=utf-8');
             exit($this->lib('json')->encode($data));
         }
@@ -2220,78 +2191,85 @@ class _init_phpok
 		$this->tpl->display($tplfile);
 	}
 
+	private function _phpok_seo($rs)
+	{
+		return array('title'=>$rs['seo_title'],'keywords'=>$rs['seo_keywords'],'desc'=>$rs['seo_desc']);
+	}
+
 	/**
 	 * 针对PHPOK前台执行SEO优化
 	**/
-	final public function phpok_seo($rs='')
+	final public function phpok_seo()
 	{
-		if(!$rs && $this->config['ctrl'] == 'content'){
+		$inherit = $this->config['seo']['inherit'];
+		$seo = array('title'=>'','keywords'=>'','desc'=>'');
+		if($this->config['ctrl'] == 'index'){
+			$seo = $this->_phpok_seo($this->site);
+		}
+		if($this->config['ctrl'] == 'project'){
+			$page = $this->tpl->val('page_rs');
+			$cate = $this->tpl->val('cate_rs');
+			$seo = $cate ? $this->_phpok_seo($cate) : $this->_phpok_seo($page);
+			if($inherit && !$seo['title'] && $page['seo_title']){
+				$seo['title'] = $page['seo_title'];
+			}
+			if($inherit && !$seo['keywords'] && $page['seo_keywords']){
+				$seo['keywords'] = $page['seo_keywords'];
+			}
+			if($inherit && !$seo['desc'] && $page['seo_desc']){
+				$seo['desc'] = $page['seo_desc'];
+			}
+			$title = $this->tpl->val('title');
+			if(!$title){
+				$title = $cate ? $cate['title'].$this->config['seo']['line'].$page['title'] : $page['title'];
+				$this->assign('title',$title);
+			}
+		}
+		if($this->config['ctrl'] == 'content'){
 			$rs = $this->tpl->val('rs');
-			if($rs['seo_title']){
-				$this->assign('title',false);
-			}else{
+			$title = $this->tpl->val('title');
+			$seo = $this->_phpok_seo($rs);
+			$page = $this->tpl->val('page_rs');
+			$cate = $this->tpl->val('cate_rs');
+			if(!$title){
 				$title = $rs['title'];
-				if($rs['cate_id']){
-					$cate_rs = $this->tpl->val('cate_rs');
-					if($cate_rs){
-						$title .= "-".$cate_rs['title'];
-					}
-					$cate_parent_rs = $this->tpl->val('cate_parent_rs');
-					if($cate_parent_rs){
-						$title .= "-".$cate_parent_rs['title'];
-					}
+				if($cate){
+					$title .= $this->config['seo']['line'].$cate['title'];
 				}
-				$page_rs = $this->tpl->val('page_rs');
-				$title .= "-".$page_rs['title'];
-				$this->assign('title',str_replace('-',$this->config['seo']['line'],$title));
+				$title .= $this->config['seo']['line'].$page['title'];
+				$title = $this->assign('title',$title);
+			}
+			if($inherit && !$seo['title']){
+				$seo['title'] = ($cate && $cate['seo_title']) ? $cate['seo_title'] : $page['seo_title'];
+			}
+			if($inherit && !$seo['keywords']){
+				$seo['keywords'] = ($cate && $cate['seo_keywords']) ? $cate['seo_keywords'] : $page['seo_keywords'];
+			}
+			if($inherit && !$seo['desc']){
+				$seo['desc'] = ($cate && $cate['seo_desc']) ? $cate['seo_desc'] : $page['seo_desc'];
 			}
 		}
-		if(!$rs && $this->config['ctrl'] == 'project'){
-			$page_rs = $this->tpl->val('page_rs');
-			$cate_rs = $this->tpl->val('cate_rs');				
-			if($cate_rs){
-				$rs = $cate_rs;
-				if($cate_rs['seo_title']){
-					$this->assign('title',false);
-				}else{
-					$title = $cate_rs['title'];
-					$cate_parent_rs = $this->tpl->val('cate_parent_rs');
-					if($cate_parent_rs){
-						$title .= '-'.$cate_parent_rs['title'];
-					}
-					$title .= "-".$page_rs['title'];
-					$this->assign('title',str_replace('-',$this->config['seo']['line'],$title));
-				}
-			}else{
-				$rs = $page_rs;
-				if($page_rs['seo_title']){
-					$this->assign('title',false);
-				}else{
-					$title .= $page_rs['title'];
-					$parent_rs = $this->tpl->val('parent_rs');
-					if($parent_rs){
-						$title.= '-'.$parent_rs['title'];
-					}
-					$this->assign('title',str_replace('-',$this->config['seo']['line'],$title));
-				}
+		if($this->config['ctrl'] == 'tag'){
+			$rs = $this->tpl->val('rs');
+			$title = $this->tpl->val('title');
+			if(!$title){
+				$title = $this->assign('title',$rs['title']);
 			}
+			$seo = $this->_phpok_seo($rs);
 		}
-		if(!$rs || !is_array($rs)){
-			return false;
+		if($inherit && !$seo['title']){
+			$seo['title'] = $this->site['seo_title'];
 		}
-		$old = $this->tpl->val('seo');
-		$seo = array();
-		
-		$seo['title'] = $rs['seo_title'];
-		if($this->config['seo'] && $this->config['seo']['inherit'] && !$rs['seo_keywords']){
-			$rs['seo_keywords'] = $old['keywords'];
+		if($inherit && !$seo['keywords']){
+			$seo['keywords'] = $this->site['seo_keywords'];
 		}
-		if($this->config['seo'] && $this->config['seo']['inherit'] && !$rs['seo_desc']){
-			$rs['seo_desc'] = $old['description'];
+		if($inherit && !$seo['desc']){
+			$seo['desc'] = $this->site['seo_desc'];
 		}
-		$seo['keywords'] = $rs['seo_keywords'];
-		$seo['description'] = $rs['seo_desc'];
-		$this->site['seo'] = $seo;
+		if($seo['title'] && !$this->config['in_title']){
+			$this->assign('title',false);
+		}
+		$seo['description'] = $seo['desc'];
 		$this->assign("seo",$seo);
 		return $seo;
 	}
@@ -2793,6 +2771,10 @@ class phpok_plugin extends _init_auto
  * 安全注销全局变量
 **/
 unset($_ENV, $_SERVER['MIBDIRS'],$_SERVER['MYSQL_HOME'],$_SERVER['OPENSSL_CONF'],$_SERVER['PHP_PEAR_SYSCONF_DIR'],$_SERVER['PHPRC'],$_SERVER['SystemRoot'],$_SERVER['COMSPEC'],$_SERVER['PATHEXT'], $_SERVER['WINDIR'],$_SERVER['PATH']);
+
+if(function_exists('mb_internal_encoding')){
+	mb_internal_encoding("UTF-8");
+}
 
 $app = new _init_phpok();
 include_once($app->dir_phpok."phpok_helper.php");

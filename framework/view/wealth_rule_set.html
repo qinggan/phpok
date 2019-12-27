@@ -1,0 +1,201 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	$("#post_save").ajaxSubmit({
+		'url':get_url('wealth','save_rule'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.tips('操作成功');
+				opener.$.phpok.reload();
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+<form method="post" class="layui-form" id="post_save" onsubmit="return save()">
+<!-- if $id -->
+<input type="hidden" name="id" id="id" value="{$id}" />
+<!-- else -->
+<input type="hidden" name="wid" id="wid" value="{$wid}" />
+<!-- /if -->
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang执行动作}
+			</label>
+			<div class="layui-input-block">
+				<select name="action">
+					<!-- loop from=$alist key=$k value=$v id=$tmpid -->
+					<option value="{$k}"{if $rs.action == $k} selected{/if}>{$v}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang会员组}
+			</label>
+			<div class="layui-input-block">
+				<select name="group_id">
+					<option value="">请选择…</option>
+					<!-- loop from=$usergroup key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $rs.group_id == $value.id} selected{/if}>{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang会员ID}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" id="uids" name="uids" class="layui-input" value="{$rs.uids}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang多个会员ID用英文逗号隔开}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang项目}
+			</label>
+			<div class="layui-input-block">
+				<select name="project_id">
+					<option value="">请选择…</option>
+					<!-- loop from=$projectlist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}" {if $rs.project_id==$value.id} selected{/if}>{$value.title} </option>
+						<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang主题ID}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" id="title_id" name="title_id" class="layui-input" value="{$rs.title_id}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang多个主题ID用英文逗号隔开}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang最小数量}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" id="qty" name="qty" class="layui-input" value="{$rs.qty}" />
+			</div>
+			<div class="layui-input-inline short">
+				<select name="qty_type">
+					<option value="order"{if $rs.qty_type == 'order'} selected{/if}>{lang订单}</option>
+					<option value="product"{if $rs.qty_type == 'product'} selected{/if}>{lang产品}</option>
+					<option value="order2"{if $rs.qty_type == 'order2'} selected{/if}>{lang目标订单}</option>
+					<option value="product2"{if $rs.qty_type == 'product2'} selected{/if}>{lang目标产品}</option>
+					<option value="order3"{if $rs.qty_type == 'order3'} selected{/if}>{lang目标下线订单}</option>
+					<option value="product3"{if $rs.qty_type == 'product3'} selected{/if}>{lang目标下线产品}</option>
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang请根据实际情况选择}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang最小金额}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" id="price" name="price" class="layui-input" value="{$rs.price}" />
+			</div>
+			<div class="layui-input-inline short">
+				<select name="price_type">
+					<option value="order"{if $rs.price_type == 'order'} selected{/if}>{lang订单}</option>
+					<option value="product"{if $rs.price_type == 'product'} selected{/if}>{lang产品}</option>
+					<option value="order2"{if $rs.price_type == 'order2'} selected{/if}>{lang目标订单}</option>
+					<option value="product2"{if $rs.price_type == 'product2'} selected{/if}>{lang目标产品}</option>
+					<option value="order3"{if $rs.price_type == 'order3'} selected{/if}>{lang目标下线订单}</option>
+					<option value="product3"{if $rs.price_type == 'product3'} selected{/if}>{lang目标下线产品}</option>
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang请根据实际情况选择}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang目标}
+			</label>
+			<div class="layui-input-block">
+				<select name="goal">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$agentlist key=$key value=$value id=$tmpid -->
+					<option value="{$key}" {if $key==$rs.goal} selected{/if}>{$value} </option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang目标会员组}
+			</label>
+			<div class="layui-input-block">
+				<select name="goal_group_id">
+					<option value="">请选择…</option>
+					<!-- loop from=$usergroup key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $rs.goal_group_id == $value.id} selected{/if}>{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang目标会员ID}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" id="goal_uids" name="goal_uids" class="layui-input" value="{$rs.goal_uids}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang多个会员ID用英文逗号隔开}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang值}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" id="val" name="val" class="layui-input" value="{$rs.val}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang是否中止}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="if_stop" value="0" title="继续执行下一条"{if !$rs.if_stop} checked{/if} />
+				<input type="radio" name="if_stop" value="1" title="中止退出"{if $rs.if_stop} checked{/if} />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang排序}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" id="taxis" name="taxis" class="layui-input" value="{$rs.taxis}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang值越小越往前靠，优先级越高，只要一条规则符合，后续无效}
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_lay is_open=true -->

@@ -164,6 +164,35 @@ class payment_control extends phpok_control
 	}
 
 	/**
+	 * 更新付款方式
+	**/
+	public function update_f()
+	{
+		$id = $this->get('id','int');
+		$rs = $this->model('payment')->log_one($id);
+		if(!$rs){
+			$this->error(P_Lang('没有找到支付记录'));
+		}
+		$payment = $this->get('payment');
+		if(!$payment){
+			$this->error(P_Lang('未指定支付方式'));
+		}
+		$array = array('payment_id'=>$payment);
+		$this->model('payment')->log_update($array,$id);
+		$url = $this->url('payment','submit','id='.$id);
+		if($rs['type'] == 'order'){
+			$order = $this->model('order')->get_one_from_sn($rs['sn']);
+			$payment_info = $this->model('payment')->get_one($payment);
+			$payinfo = $this->model('order')->order_payment_notend($order['id']);
+			if($payinfo){
+				$data = array('payment_id'=>$payment,'title'=>$payment_info['title']);
+				$this->model('order')->save_payment($data,$payinfo['id']);
+			}
+		}
+		$this->_location($url);
+	}
+
+	/**
 	 * 创建订单的支付链
 	 * @参数 id 订单ID，仅限会员登录时有效
 	 * @参数 sn 订单编号，游客购买有效
@@ -175,15 +204,8 @@ class payment_control extends phpok_control
 	private function _create_order()
 	{
 		$userid = $this->session->val('user_id');
-		if($userid){
-			$id = $this->get('id','int');
-			if(!$id){
-				$this->error(P_Lang('未指定订单号ID'));
-			}
-			$rs = $this->model('order')->get_one($id);
-			$order_url = $this->url('order','info','id='.$id);
-			$error_url = $this->url('order');
-		}else{
+		$id = $this->get('id','int');
+		if(!$id){
 			$sn = $this->get('sn');
 			if(!$sn){
 				$this->error(P_Lang('未指定定单编号'));
@@ -201,6 +223,10 @@ class payment_control extends phpok_control
 			}
 			$order_url = $this->url('order','info','sn='.$sn.'&passwd='.$passwd);
 			$error_url = $this->config['url'];
+		}else{
+			$rs = $this->model('order')->get_one($id);
+			$order_url = $this->url('order','info','id='.$id);
+			$error_url = $this->url('order');
 		}
 		if($this->model('order')->check_payment_is_end($rs['id'])){
 			$this->error(P_Lang('订单已支付过，不能重复操作'),$order_url);
@@ -237,7 +263,6 @@ class payment_control extends phpok_control
 		}
 		if($userid){
 			$this->integral_minus($rs);
-			$rs = $this->model('order')->get_one($id);
 		}
 		$payment = $this->get('payment');
 		if(!$payment){
@@ -516,13 +541,31 @@ class payment_control extends phpok_control
 		if($rs['type'] == 'order'){
 			$order = $this->model('order')->get_one_from_sn($rs['sn']);
 			$url = $this->url('order','info','sn='.$rs['sn'].'&passwd='.$order['passwd']);
+			$addressconfig = $this->config['order']['address'] ? explode(",",$this->config['order']['address']) : array('shipping');
+			if($addressconfig){
+				$address = array();
+				foreach($addressconfig as $key=>$value){
+					if(!$value || !trim($value)){
+						continue;
+					}
+					$address[trim($value)] = $this->model('order')->address($order['id'],trim($value));
+				}
+				$this->assign('address',$address);
+			}
 		}elseif($rs['type'] == 'recharge'){
 			$url = $this->url('usercp','wealth','sn='.$rs['sn']);
 		}else{
 			$url = $this->url('payment','show','id='.$id);
 		}
+		$this->assign('payinfo',$rs);
+		$this->assign('order',$order);
 		//同步通知
 		if($rs['status']){
+			$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func.'-success');
+			if($this->tpl->check_exists($tplfile)){
+				$this->view($tplfile);
+				exit;
+			}
 			$this->success(P_Lang('您的订单付款成功，请稍候…'),$url);
 		}
 		$payment_rs = $this->model('payment')->get_one($rs['payment_id']);
@@ -534,7 +577,20 @@ class payment_control extends phpok_control
 		include($file);
 		$name = $payment_rs['code'].'_notice';
 		$cls = new $name($rs,$payment_rs);
-		$cls->submit();
+		$obj = $cls->submit();
+		if(!$obj){
+			$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func.'-error');
+			if($this->tpl->check_exists($tplfile)){
+				$this->view($tplfile);
+				exit;
+			}
+			$this->error(P_Lang('付款失败，请检查…'));
+		}
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func.'-success');
+		if($this->tpl->check_exists($tplfile)){
+			$this->view($tplfile);
+			exit;
+		}
 		$this->success(P_Lang('您的订单付款成功，请稍候…'),$url);
 	}
 

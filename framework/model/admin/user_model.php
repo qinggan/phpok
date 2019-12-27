@@ -23,25 +23,6 @@ class user_model extends user_model_base
 		parent::__construct();
 	}
 
-	/**
-	 * 删除会员操作
-	 * @参数 $id 会员ID
-	**/
-	public function del($id)
-	{
-		$sql = "DELETE FROM ".$this->db->prefix."user WHERE id='".$id."'";
-		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."user_ext WHERE id='".$id."'";
-		$this->db->query($sql);
-		//删除相应的积分
-		$sql = "DELETE FROM ".$this->db->prefix."wealth_info WHERE uid='".$id."'";
-		$this->db->query($sql);
-		//删除积分日志
-		$sql = "DELETE FROM ".$this->db->prefix."wealth_log WHERE goal_id='".$id."'";
-		$this->db->query($sql);
-		return true;
-	}
-
 	public function identifier_chk($identifier='')
 	{
 		if(!$identifier){

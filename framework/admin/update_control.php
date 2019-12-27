@@ -24,7 +24,7 @@ class update_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$update = array('online'=>true,'zip'=>true);
 		$setfile = $this->dir_data.'update.php';
@@ -46,6 +46,9 @@ class update_control extends phpok_control
 
 	public function set_f()
 	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$setfile = $this->dir_data.'update.php';
 		$uconfig = array();
 		if(file_exists($setfile)){
@@ -58,6 +61,9 @@ class update_control extends phpok_control
 	//存储配置
 	public function save_f()
 	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$setfile = $this->dir_data.'update.php';
 		$uconfig = array();
 		if(file_exists($setfile)){
@@ -71,7 +77,7 @@ class update_control extends phpok_control
 			$uconfig['onlyid'] = $this->_onlyid();
 		}
 		$this->lib('file')->vi($uconfig,$this->dir_data.'update.php','uconfig');
-		error(P_Lang('升级环境配置成功'),$this->url('update'),'ok');
+		$this->success();
 	}
 
 

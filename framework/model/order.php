@@ -65,6 +65,41 @@ class order_model_base extends phpok_model
 	}
 
 	/**
+	 * 查询订单总金额
+	 * @参数 $condition 查询条件，仅限主表中使用
+	**/
+	public function get_price($condition='')
+	{
+		$sql = "SELECT SUM(o.price) FROM ".$this->db->prefix."order o ";
+		if($condition){
+			$sql .= " WHERE ".$condition;
+		}
+		return $this->db->count($sql);
+	}
+
+	public function product_count($condition="")
+	{
+		$sql = "SELECT SUM(op.qty) FROM ".$this->db->prefix."order_product op ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."order o ON(op.order_id=o.id) ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."list l ON(op.tid=l.id) ";
+		if($condition){
+			$sql.= "WHERE ".$condition;
+		}
+		return $this->db->count($sql);
+	}
+
+	public function product_price($condition='')
+	{
+		$sql = "SELECT SUM(op.price*op.qty) FROM ".$this->db->prefix."order_product op ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."order o ON(op.order_id=o.id) ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."list l ON(op.tid=l.id) ";
+		if($condition){
+			$sql.= "WHERE ".$condition;
+		}
+		return $this->db->count($sql);
+	}
+
+	/**
 	 * 取得订单的最大ID号，再此基础上+1
 	**/
 	public function maxid()
@@ -185,14 +220,22 @@ class order_model_base extends phpok_model
 	/**
 	 * 取得订单中的地址信息
 	 * @参数 $id 订单号ID
+	 * @参数 $type 地址类型
 	**/
-	public function address($id)
+	public function address($id,$type='shipping')
 	{
 		if(!$id){
 			return false;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."order_address WHERE order_id='".$id."'";
-		return $this->db->get_one($sql);
+		$sql = "SELECT * FROM ".$this->db->prefix."order_address WHERE order_id='".$id."' AND type='".$type."'";
+		$info = $this->db->get_one($sql);
+		if(!$info){
+			return false;
+		}
+		if(!trim($info['fullname']) && ($info['firstname'] || $info['lastname'])){
+			$info['fullname'] = $info['firstname'].' '.$info['lastname'];
+		}
+		return $info;
 	}
 
 	/**
@@ -435,7 +478,7 @@ class order_model_base extends phpok_model
 	**/
 	public function payment_all($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."order_payment WHERE order_id='".intval($id)."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."order_payment WHERE order_id='".intval($id)."' ORDER BY id ASC";
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist){
 			return false;
@@ -749,5 +792,37 @@ class order_model_base extends phpok_model
 	public function log_all($order_id)
 	{
 		return $this->log_list($order_id);
+	}
+
+	public function express_all($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."order_express WHERE order_id='".$id."' AND express_id!=0 ";
+		$sql.= "ORDER BY addtime ASC";
+		return $this->db->get_all($sql);
+	}
+
+
+	/**
+	 * 取得订单下的统计数
+	 * @参数 $uids 会员ID，多个ID用英文逗号隔开
+	**/
+	public function stat_count($uids)
+	{
+		if(!$uids){
+			return false;
+		}
+		if(is_array($uids)){
+			$uids = implode(",",$uids);
+		}
+		$sql = "SELECT count(id) as total,user_id FROM ".$this->db->prefix."order WHERE user_id IN(".$uids.") GROUP BY user_id";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$rslist[$value['user_id']] = $value['total'];
+		}
+		return $rslist;
 	}
 }

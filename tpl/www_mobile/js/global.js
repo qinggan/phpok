@@ -126,10 +126,10 @@ function logout(t)
 						alert('iframe还没加载完毕呢');
 						return false;
 					};
-					iframe.save();
+					iframe.$.address.save();
 					return false;
 				},
-				'okVal':'提交保存',
+				'okVal':p_lang('提交保存'),
 				'cancel':true
 			})
 		},
@@ -153,7 +153,7 @@ function logout(t)
 						alert('iframe还没加载完毕呢');
 						return false;
 					};
-					iframe.save();
+					iframe.$.address.save(id);
 					return false;
 				},
 				'okVal':'保存数据',
@@ -161,21 +161,60 @@ function logout(t)
 			});
 		},
 
+		save:function(id)
+		{
+			var url = api_url('address','save');
+			var tip = p_lang('地址信息添加成功');
+			if(id && id != 'undefined'){
+				tip = p_lang('地址信息修改成功');
+				url += "&id="+id;
+			}
+			$("#setsubmit").ajaxSubmit({
+				'url':url,
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					if(rs.status){
+						$.dialog.tips(tip,function(){
+							top.$.phpok.reload();
+						}).lock();
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
+			return false;
+		},
+
 		del:function(id)
 		{
-			$.dialog.confirm(p_lang('确定要删除这个地址吗？地址ID {id}',"#"+id),function(){
-				var url = api_url('usercp','address_delete','id='+id);
-				$.phpok.json(url,function(){
-					$.phpok.reload();
+			$.dialog.confirm(p_lang('确定要删除这个地址吗？地址ID #{id}',id),function(){
+				var url = api_url('address','delete','id='+id);
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.alert(rs.info,true,'error');
+						return false;
+					}
+					$.dialog.tips(p_lang('地址删除成功'),function(){
+						$.phpok.reload();
+					}).lock().time(1);
+					return false;
 				})
 			});
 		},
 		set_default:function(id)
 		{
 			$.dialog.confirm(p_lang('确定要设置这个地址为默认地址吗？地址ID {id}',"#"+id),function(){
-				var url = api_url('usercp','address_default','id='+id);
-				$.phpok.json(url,function(){
-					$.phpok.reload();
+				var url = api_url('address','default','id='+id);
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.alert(rs.info);
+						return false;
+					}
+					$.dialog.tips(p_lang('已设置了默认地址'),function(){
+						$.phpok.reload();
+					}).lock().time(1);
 				})
 			});
 		},
@@ -194,7 +233,7 @@ $(document).ready(function(){
     	$("#toTop").css({
     		width: '50px',
     		height: '50px',
-    		bottom: '10px',
+    		bottom: '60px',
     		right: '15px',
     		position: 'fixed',
     		cursor: 'pointer',
@@ -232,5 +271,4 @@ $(document).ready(function(){
 			}
 		});
 	}
-
 });

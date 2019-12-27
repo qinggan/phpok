@@ -139,12 +139,13 @@
             </colgroup>
             <thead>
             <tr>
-                <th class="lft" width="100">标识</th>
-                <th class="lft">名称</th>
-                <th>金额动作</th>
-                <th>状态</th>
-                <th>排序</th>
-                <th>操作</th>
+                <th width="100">标识</th>
+                <th align="center">名称</th>
+                <th align="center">默认值</th>
+                <th align="center">金额动作</th>
+                <th align="center">状态</th>
+                <th align="center">排序</th>
+                <th align="center">操作</th>
             </tr>
             </thead>
             <tbody>
@@ -152,6 +153,9 @@
             <tr>
                 <td>{$value.identifier}</td>
                 <td>{$value.title}</td>
+                <td class="center">
+	                {$value.default}
+                </td>
                 <td class="center">
 	                <!-- if $value.action == 'add' -->+<!-- else -->-<!-- /if -->
                 </td>

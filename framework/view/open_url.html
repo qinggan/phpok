@@ -1,4 +1,4 @@
-<!-- inc:head_open -->
+<!-- include tpl=head_lay nopadding=true -->
 <script type="text/javascript">
 function select_input(val,title)
 {
@@ -32,42 +32,39 @@ function select_post(val,title)
 	$.dialog.close();
 }
 </script>
-<div class="list">
-<table width="100%" cellpadding="0" cellspacing="0" class="list">
-<tr>
-	<th class="id" height="30px">ID</th>
-	<th class="title">项目名称</th>
-	<th class="w60">分类</th>
-	<th class="w60">内容</th>
-	<th class='w60'>操作</th>
-	<th class='w60'>表单</th>
-</tr>
-<!-- foreach($rslist AS $key=>$value) -->
-<tr>
-	<td class="center">{$value.id}</td>
-	<td style="text-align: left;height:33px;">&nbsp;{$value.space}{$value.title}<span class="gray"> / {$value.identifier}</span></td>
-	<td class="center">
-		<!-- if $value.cate -->
-		<a href="{echo admin_url('open','url')}&pid={$value.id}&type=cate&id={$id}">进入</a>
-		<!-- else -->
-		-
-		<!-- /if -->
-	</td>
-	<td class="center">
-		<!-- if $value.module -->
-		<a href="{echo admin_url('open','url')}&pid={$value.id}&type=list&id={$id}">进入</a>
-		<!-- else -->
-		-
-		<!-- /if -->
-	</td>
-	<td>
-		<input type="button" value="提交" class="btn" onclick="select_input('{$value.identifier}','{$value.title}')" />
-	</td>
-	<td>
-		<input type="button" value="表单" class="btn" onclick="select_post('{$value.identifier}','{$value.title}')" />
-	</td>
-</tr>
-<!-- /foreach -->
-</table>
+<div class="layui-card">
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th class="id" height="30px">ID</th>
+			<th class="title">{lang项目名称}</th>
+			<th>{lang获取链接}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.id}</td>
+			<td>{$value.space}{$value.title}<span class="gray"> / {$value.identifier}</span></td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang项目网址}" onclick="select_input('{$value.identifier}','{$value.title}')" class="layui-btn layui-btn-sm" />
+					<!-- if $value.cate -->
+					<a class="layui-btn layui-btn-sm" href="{url ctrl=open func=url pid=$value.id type=cate id=$id/}">分类</a>
+					<!-- /if -->
+					<!-- if $value.module -->
+					<a class="layui-btn layui-btn-sm" href="{url ctrl=open func=url pid=$value.id type=list id=$id/}">内容</a>
+					<!-- /if -->
+					<!-- if $value.post_status -->
+					<input type="button" value="{lang发布网址}" onclick="select_post('{$value.identifier}','{$value.title}')" class="layui-btn layui-btn-sm" />
+					<!-- /if -->
+					
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		
+	</div>
 </div>
-<!-- inc:foot_open -->
+<!-- include tpl=foot_lay is_open=true -->

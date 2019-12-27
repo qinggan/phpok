@@ -21,6 +21,7 @@ class call_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		$this->config('is_ajax',true);
 	}
 
 	public function index_f()
@@ -31,6 +32,9 @@ class call_control extends phpok_control
 		}
 		if(substr($data,0,1) == '{'){
 			$data = $this->lib('json')->decode(stripslashes($data));
+			if($data){
+				$data = $this->format($data);
+			}
 		}else{
 			$tmplist = explode(",",$data);
 			$data = array();

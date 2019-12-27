@@ -70,6 +70,7 @@ class wealth_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
+
 	/**
 	 * 保存财富日志
 	 * @参数 $data 一维数组
@@ -212,27 +213,189 @@ class wealth_model_base extends phpok_model
 		if(!$id){
 			return false;
 		}
+		$rulelist = $this->_rule_list('payment');
+		if(!$rulelist){
+			return false;
+		}
 		$order = $this->model('order')->get_one($id);
-		if(!$order){
+		if(!$order || !$order['user_id'] || $order['status'] != 'end'){
 			return false;
 		}
-		if(!$order['user_id']){
-			return false;
-		}
-		$uid = $order['user_id'];
-		$tmplist = $this->_rule_list('payment');
-		if(!$tmplist){
+		$prolist = $this->model('order')->product_list($order['id']);
+		$user = $this->model('user')->get_one($order['user_id'],'id',false,false);
+		if(!$user || !$user['status']){
 			return false;
 		}
 		$data = $this->_data($note);
 		$integral = $this->model('order')->integral($id);
-		foreach($tmplist as $key=>$value){
+		
+		
+		foreach($rulelist as $key=>$value){
+			$goal_id = $this->_goal($user['id'],$value['goal']);
+			if(!$goal_id){
+				continue;
+			}
+			if($value['goal_group_id']){
+				$tmp = $this->model('user')->get_one($goal_id,'id',false,false);
+				if(!$tmp || !$tmp['group_id'] || $tmp['group_id'] != $value['goal_group_id']){
+					continue;
+				}
+			}
+			if($value['goal_uids']){
+				$tmp = explode(",",$value['goal_uids']);
+				if(!in_array($goal_id,$tmp)){
+					continue;
+				}
+			}
+			if($value['group_id'] && $value['group_id'] != $user['group_id']){
+				continue;
+			}
+			if($value['uids']){
+				$tmp = explode(",",$value['uids']);
+				if(!in_array($user['id'],$tmp)){
+					continue;
+				}
+			}
+			if($value['qty'] && $value['qty_type'] == 'order'){
+				$qty = $this->model('order')->get_count("o.user_id='".$user['id']."' AND o.status='end' AND o.id!='".$order['id']."'");
+				if($value['qty'] >= $qty){
+					continue;
+				}
+			}
+			if($value['qty'] && $value['qty_type'] == 'order2'){
+				$qty = $this->model('order')->get_count("o.user_id='".$goal_id."' AND o.status='end' AND o.id!='".$order['id']."'");
+				if($value['qty'] >= $qty){
+					continue;
+				}
+			}
+			if($value['qty'] && $value['qty_type'] == 'order3'){
+				$tmpchk = $this->model('user')->count_relation($goal_id);
+				if(!$tmpchk){
+					continue;
+				}
+				$tmpsql = "SELECT uid FROM ".$this->db->prefix."user_relation WHERE introducer='".$goal_id."'";
+				$qty = $this->model('order')->get_count("o.user_id IN(".$tmpsql.") AND o.status='end' AND o.id!='".$order['id']."'");
+				if($value['qty'] >= $qty){
+					continue;
+				}
+			}
+			if($value['qty'] && $value['qty_type'] == 'product'){
+				$condition = "o.user_id='".$user['id']."' AND o.status='end' AND o.id!='".$order['id']."' ";
+				if($value['project_id']){
+					$condition .= " AND l.project_id='".$value['project_id']."' ";
+				}
+				if($value['title_id']){
+					$condition .= " AND l.id IN(".$value['title_id'].") ";
+				}
+				$produt_qty = $this->model('order')->product_count($condition);
+				if($value['qty'] > $produt_qty){
+					continue;
+				}
+			}
+			if($value['qty'] && $value['qty_type'] == 'product2'){
+				$condition = "o.user_id='".$goal_id."' AND o.status='end' AND o.id!='".$order['id']."' ";
+				if($value['project_id']){
+					$condition .= " AND l.project_id='".$value['project_id']."' ";
+				}
+				if($value['title_id']){
+					$condition .= " AND l.id IN(".$value['title_id'].") ";
+				}
+				$produt_qty = $this->model('order')->product_count($condition);
+				if($value['qty'] > $produt_qty){
+					continue;
+				}
+			}
+			if($value['qty'] && $value['qty_type'] == 'product3'){
+				$tmpchk = $this->model('user')->count_relation($goal_id);
+				if(!$tmpchk){
+					continue;
+				}
+				$tmpsql = "SELECT uid FROM ".$this->db->prefix."user_relation WHERE introducer='".$goal_id."'";
+				$condition = "o.user_id IN(".$tmpsql.") AND o.status='end' AND o.id!='".$order['id']."' ";
+				if($value['project_id']){
+					$condition .= " AND l.project_id='".$value['project_id']."' ";
+				}
+				if($value['title_id']){
+					$condition .= " AND l.id IN(".$value['title_id'].") ";
+				}
+				$produt_qty = $this->model('order')->product_count($condition);
+				if($value['qty'] > $produt_qty){
+					continue;
+				}
+			}
+			if($value['price'] && $value['price_type'] == 'order'){
+				$total_price = $this->model('order')->get_price("o.user_id='".$user['id']."' AND o.status='end' AND o.id!='".$order['id']."'");
+				if($value['price'] >= $total_price){
+					continue;
+				}
+			}
+			if($value['price'] && $value['price_type'] == 'order2'){
+				$total_price = $this->model('order')->get_price("o.user_id='".$goal_id."' AND o.status='end' AND o.id!='".$order['id']."'");
+				if($value['price'] >= $total_price){
+					continue;
+				}
+			}
+			if($value['price'] && $value['price_type'] == 'order3'){
+				$tmpchk = $this->model('user')->count_relation($goal_id);
+				if(!$tmpchk){
+					continue;
+				}
+				$tmpsql = "SELECT uid FROM ".$this->db->prefix."user_relation WHERE introducer='".$goal_id."'";
+				$total_price = $this->model('order')->get_price("o.user_id IN(".$tmpsql.") AND o.status='end' AND o.id!='".$order['id']."'");
+				if($value['price'] >= $total_price){
+					continue;
+				}
+			}
+			if($value['price'] && $value['price_type'] == 'product'){
+				$condition = "o.user_id='".$user['id']."' AND o.status='end' AND o.id!='".$order['id']."' ";
+				if($value['project_id']){
+					$condition .= " AND l.project_id='".$value['project_id']."' ";
+				}
+				if($value['title_id']){
+					$condition .= " AND l.id IN(".$value['title_id'].") ";
+				}
+				$produt_price = $this->model('order')->product_price($condition);
+				if($value['price'] > $produt_price){
+					continue;
+				}
+			}
+			if($value['price'] && $value['price_type'] == 'product2'){
+				$condition = "o.user_id='".$goal_id."' AND o.status='end' AND o.id!='".$order['id']."' ";
+				if($value['project_id']){
+					$condition .= " AND l.project_id='".$value['project_id']."' AND o.id!='".$order['id']."' ";
+				}
+				if($value['title_id']){
+					$condition .= " AND l.id IN(".$value['title_id'].") ";
+				}
+				$produt_price = $this->model('order')->product_price($condition);
+				if($value['price'] > $produt_price){
+					continue;
+				}
+			}
+			if($value['price'] && $value['price_type'] == 'product3'){
+				$tmpchk = $this->model('user')->count_relation($goal_id);
+				if(!$tmpchk){
+					continue;
+				}
+				$tmpsql = "SELECT uid FROM ".$this->db->prefix."user_relation WHERE introducer='".$goal_id."'";
+				$condition = "o.user_id IN(".$tmpsql.") AND o.status='end' AND o.id!='".$order['id']."' ";
+				if($value['project_id']){
+					$condition .= " AND l.project_id='".$value['project_id']."' ";
+				}
+				if($value['title_id']){
+					$condition .= " AND l.id IN(".$value['title_id'].") ";
+				}
+				$produt_price = $this->model('order')->product_price($condition);
+				if($value['price'] > $produt_price){
+					continue;
+				}
+			}
 			$log = $data;
 			$log['status'] = $value['ifcheck'] ? 0 : 1;
 			$log['rule_id'] = $value['id'];
 			$log['wid'] = $value['wid'];
-			$log['goal_id'] = $this->_goal($uid,$value['goal']);
-			$log['user_id'] = $uid;
+			$log['goal_id'] = $goal_id;
+			$log['user_id'] = $user['id'];
 			$tmpprice = str_replace('price',$order['price'],$value['val']);
 			$tmpprice = str_replace('integral',$integral,$tmpprice);
 			eval('$value[\'val\'] = '.$tmpprice.';');
@@ -252,6 +415,9 @@ class wealth_model_base extends phpok_model
 				}
 				$array = array('wid'=>$log['wid'],'lasttime'=>$this->time,'uid'=>$log['goal_id'],'val'=>$val2);
 				$this->save_info($array);
+			}
+			if($value['if_stop']){
+				break;
 			}
 		}
 		return true;
@@ -337,6 +503,7 @@ class wealth_model_base extends phpok_model
 				return false;
 			}
 		}
+		$user = $this->model('user')->get_one($uid,'id',false,false);
 		$tmplist = $this->_rule_list($type);
 		if(!$tmplist){
 			return false;
@@ -344,11 +511,45 @@ class wealth_model_base extends phpok_model
 		$data = $this->_data($note);
 		$integral = $this->model('list')->integral($id);
 		foreach($tmplist as $key=>$value){
+			if($value['group_id'] && $value['group_id'] != $user['group_id']){
+				continue;
+			}
+			if($value['uids']){
+				$tmp = explode(",",$value['uids']);
+				if(!in_array($user['id'],$tmp)){
+					continue;
+				}
+			}
+			if($value['project_id'] && $value['project_id'] != $rs['project_id']){
+				continue;
+			}
+			if($value['title_id']){
+				$tmp = explode(",",$value['title_id']);
+				if(!in_array($id,$tmp)){
+					continue;
+				}
+			}
+			$goal_id = $this->_goal($user['id'],$value['goal']);
+			if(!$goal_id){
+				return false;
+			}
+			if($value['goal_group_id']){
+				$tmp = $this->model('user')->get_one($goal_id,'id',false,false);
+				if(!$tmp || !$tmp['group_id'] || $tmp['group_id'] != $value['goal_group_id']){
+					continue;
+				}
+			}
+			if($value['goal_uids']){
+				$tmp = explode(",",$value['goal_uids']);
+				if(!in_array($goal_id,$tmp)){
+					continue;
+				}
+			}
 			$log = $data;
 			$log['status'] = $value['ifcheck'] ? 0 : 1;
 			$log['rule_id'] = $value['id'];
 			$log['wid'] = $value['wid'];
-			$log['goal_id'] = $this->_goal($uid,$value['goal']);
+			$log['goal_id'] = $goal_id;
 			$tmpprice = str_replace('integral',$integral,$value['val']);
 			eval('$value[\'val\'] = '.$tmpprice.';');
 			$val = round($value['val'],$value['dnum']);
@@ -385,13 +586,39 @@ class wealth_model_base extends phpok_model
 		if(!$tmplist){
 			return false;
 		}
+		$user = $this->model('user')->get_one($uid,'id',false,false);
 		$data = $this->_data($note);
 		foreach($tmplist as $key=>$value){
+			if($value['group_id'] && $value['group_id'] != $user['group_id']){
+				continue;
+			}
+			if($value['uids']){
+				$tmp = explode(",",$value['uids']);
+				if(!in_array($user['id'],$tmp)){
+					continue;
+				}
+			}
+			$goal_id = $this->_goal($user['id'],$value['goal']);
+			if(!$goal_id){
+				return false;
+			}
+			if($value['goal_group_id']){
+				$tmp = $this->model('user')->get_one($goal_id,'id',false,false);
+				if(!$tmp || !$tmp['group_id'] || $tmp['group_id'] != $value['goal_group_id']){
+					continue;
+				}
+			}
+			if($value['goal_uids']){
+				$tmp = explode(",",$value['goal_uids']);
+				if(!in_array($goal_id,$tmp)){
+					continue;
+				}
+			}
 			$log = $data;
 			$log['status'] = $value['ifcheck'] ? 0 : 1;
 			$log['rule_id'] = $value['id'];
 			$log['wid'] = $value['wid'];
-			$log['goal_id'] = $this->_goal($uid,$value['goal']);
+			$log['goal_id'] = $goal_id;
 			$val = round($value['val'],$value['dnum']);
 			$log['val'] = $val;
 			$this->save_log($log);
@@ -421,13 +648,39 @@ class wealth_model_base extends phpok_model
 		if(!$tmplist){
 			return false;
 		}
+		$user = $this->model('user')->get_one($uid,'id',false,false);
 		$data = $this->_data($note);
 		foreach($tmplist as $key=>$value){
+			if($value['group_id'] && $value['group_id'] != $user['group_id']){
+				continue;
+			}
+			if($value['uids']){
+				$tmp = explode(",",$value['uids']);
+				if(!in_array($user['id'],$tmp)){
+					continue;
+				}
+			}
+			$goal_id = $this->_goal($user['id'],$value['goal']);
+			if(!$goal_id){
+				return false;
+			}
+			if($value['goal_group_id']){
+				$tmp = $this->model('user')->get_one($goal_id,'id',false,false);
+				if(!$tmp || !$tmp['group_id'] || $tmp['group_id'] != $value['goal_group_id']){
+					continue;
+				}
+			}
+			if($value['goal_uids']){
+				$tmp = explode(",",$value['goal_uids']);
+				if(!in_array($goal_id,$tmp)){
+					continue;
+				}
+			}
 			$log = $data;
 			$log['status'] = $value['ifcheck'] ? 0 : 1;
 			$log['rule_id'] = $value['id'];
 			$log['wid'] = $value['wid'];
-			$log['goal_id'] = $this->_goal($uid,$value['goal']);
+			$log['goal_id'] = $goal_id;
 			$chk = $this->chk_log($log);
 			if(!$chk){
 				continue;

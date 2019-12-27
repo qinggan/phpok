@@ -258,6 +258,7 @@ class db
 			$info = P_Lang('SQL执行错误【ID：{errid}，错误信息是：{error}】',array('errid'=>$errid,'error'=>$error));
 		}else{
 			$info = P_Lang('SQL执行错误，请检查');
+			phpok_log('SQL错误，'.$errid.': '.$error,false);
 		}
 		if($this->error_type == 'json'){
 			$array = array('status'=>false,'info'=>$info);

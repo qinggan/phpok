@@ -9,134 +9,28 @@
 **/
 ;(function($){
 	$.admin_tpl = {
-		rename:function(id,folder,title,notice)
+
+		add:function()
 		{
-			$.dialog.prompt(notice,function(val){
-				if(!val || val == undefined){
-					val = title;
-				}
-				if(val == title){
-					$.dialog.alert("新旧名称一样");
+			var url = get_url('tpl','set');
+			$.dialog.open(url,{
+				'title':p_lang('添加新风格'),
+				'width':'800px',
+				'height':'472px',
+				'lock':true,
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.$.admin_tpl.save();
 					return false;
-				}
-				var url = get_url("tpl","rename","id="+id+"&folder="+$.str.encode(folder)+"&old="+$.str.encode(title)+"&title="+$.str.encode(val));
-				$.phpok.json(url,function(rs){
-					if(rs.status){
-						$.phpok.reload();
-						return true;
-					}
-					$.dialog.alert(rs.info);
-					return false;
-				})
-			},title);
+				},
+				'okVal':p_lang('提交保存风格'),
+				'cancel':true
+			})
 		},
-		
-		del:function(id,folder,title)
-		{
-			$.dialog.confirm(p_lang('确定要删除文件（夹）{title}吗？<br>删除后是不能恢复的！','<span class="red">'+title+'</span> '),function(){
-				if(!title){
-					$.dialog.alert("操作异常！");
-					return false;
-				}
-				var url = get_url("tpl","delfile","id="+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title));
-				$.phpok.json(url,function(rs){
-					if(rs.status){
-						$.phpok.reload();
-						return true;
-					}
-					$.dialog.alert(rs.info);
-					return false;
-				})
-			});
-		},
-		
-		download:function(id,folder,title)
-		{
-			var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title);
-			var url = get_url("tpl","download",url_ext);
-			$.phpok.go(url);
-		},
-		
-		folder_rename:function(id,folder,title)
-		{
-			var notice = p_lang('将文件夹{title}改名为：（仅支持字母、数字、下划线）',' <span class="red">'+title+'</span> ');
-			this.rename(id,folder,title,notice);
-		},
-		
-		file_rename:function(id,folder,title)
-		{
-			var notice = p_lang('将文件{title}改名为：<br><span class="red">仅支持字母、数字、下划线和点，注意扩展名必须填写</span>',' <span class="red">'+title+'</span> ');
-			this.rename(id,folder,title,notice);
-		},
-		
-		add_folder:function(id,folder)
-		{
-			$.dialog.prompt(p_lang('请填写要创建的文件夹名称，<span class="red">仅支持数字，字母及下划线</span>：'),function(val){
-				if(!val || val == "undefined"){
-					$.dialog.alert("文件夹名称不能为空");
-					return false;
-				}
-				var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&type=folder&title="+$.str.encode(val);
-				var url = get_url("tpl","create",url_ext);
-				$.phpok.json(url,function(rs){
-					if(rs.status){
-						$.phpok.reload();
-						return true;
-					}
-					$.dialog.alert(rs.info);
-					return false;
-				});
-			});
-		},
-		
-		add_file:function(id,folder,ext)
-		{
-			if(!ext || ext == 'undefined'){
-				ext = 'html';
-			}
-			var tip = p_lang('填写要创建的文件名，<span class="red">仅持数字，字母，下划线及点</span>：');
-			$.dialog.prompt(tip,function(val){
-				if(!val || val == "undefined"){
-					$.dialog.alert("文件名称不能为空");
-					return false;
-				}
-				var extlen = -(ext.length + 1);
-				var val_t = val.substr(extlen);
-				if(val_t != '.'+ext){
-					val += '.'+ext;
-				}
-				var url_ext = "id="+id+"&folder="+$.str.encode(folder)+"&type=file&title="+$.str.encode(val);
-				var url = get_url("tpl","create",url_ext);
-				$.phpok.json(url,function(rs){
-					if(rs.status){
-						$.phpok.reload();
-						return true;
-					}
-					$.dialog.alert(rs.info);
-					return false;
-				});
-			});
-		},
-		
-		view:function(url)
-		{
-			var html = '<img src="'+url+'" border="0" />';
-			$.dialog.through({
-				title: p_lang('预览图片'),
-				lock: true,
-				content:html,
-				width: '400px',
-				height: '300px',
-				resize: true
-			});
-		},
-		
-		edit:function(id,folder,title)
-		{
-			var url = get_url('tpl','edit','id='+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title));
-			$.win(p_lang('编辑')+"_"+title,url);
-		},
-		
 		open_select:function(id,val)
 		{
 			var url = get_url('tpl','open','tpl_id='+val+"&id="+id);
@@ -169,15 +63,30 @@
 		},
 		tpl_set:function(id)
 		{
-			$.win(p_lang('风格编辑 #'+id),get_url('tpl','set','id='+id));
+			var url = get_url('tpl','set','id='+id);
+			$.dialog.open(url,{
+				'title':p_lang('风格编辑')+"_#"+id,
+				'width':'800px',
+				'height':'472px',
+				'lock':true,
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.$.admin_tpl.save();
+					return false;
+				},
+				'okVal':p_lang('提交保存风格'),
+				'cancel':true
+			})
 		},
 		
-		tpl_filelist:function(id)
+		tpl_filelist:function(folder)
 		{
-			let url = get_url('tpl','list','id='+id);
-			$.win(p_lang('文件管理 #'+id),get_url('tpl','list','id='+id));
+			$.win(p_lang('文件管理'),get_url('filemanage','','folder='+$.str.encode(folder)));
 		},
-		
 		set_folder:function(val)
 		{
 			var str = $("#folder_change").val();
@@ -209,6 +118,7 @@
 		},
 		save:function()
 		{
+			var opener = $.dialog.opener;
 			var title = $("#title").val();
 			if(!title){
 				$.dialog.alert(p_lang('名称不能为空'));
@@ -230,9 +140,10 @@
 				'dataType':'json',
 				'success':function(rs){
 					if(rs.status){
-						$.dialog.alert('操作成功',function(){
-							$.admin.reload(get_url('tpl'));
-							$.admin.close(get_url('tpl'));
+						var id = $("#id").val();
+						var tip = (id && id>0) ? p_lang('模板风格编辑成功') : p_lang('风格添加成功');
+						$.dialog.alert(tip,function(){
+							opener.$.phpok.reload();
 						},'succeed');
 						return true;
 					}

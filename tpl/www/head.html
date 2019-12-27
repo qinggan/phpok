@@ -1,55 +1,40 @@
-<!-- include tpl=header title=$title -->
-<header>
-	<div class="top">
-		<div class="logo"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" width="300px" /></a></div>
-		<div class="right">
-			<nav class="top">
-				<!-- php:$sitelist = phpok_sitelist(true) -->
-				<!-- loop from=$sitelist key=$key value=$value id=$tmpid -->
-				<a href="{$sys.url}?siteId={$value.id}" title="{$value.title}">{$value.lang_title ? $value.lang_title : $value.title}</a> |
-				<!-- /loop -->
-				<!-- if $config.biz_status -->
-				<a href="{url ctrl=cart/}" title="购物车">购物车 <span id="head_cart_num" style="display:none;">0</span></a> | 
-				<!-- /if -->
-				
-				<!-- if $session.user_id -->
-				<a href="{url ctrl=usercp/}">个人中心</a> | <a href="javascript:$.user.logout('{$session.user_name}');void(0)">退出</a>
-				<!-- else -->
-					<!-- if $config.login_status -->
-					<a href="{url ctrl=login/}">登录</a> | 
-					<!-- /if -->
-					<!-- if $config.register_status -->
-					<a href="{url ctrl=register/}">注册</a>
-					<!-- /if -->
-				<!-- /if -->
-				<span id="top_html_user_login"></span>
-			</nav>
-			<form class="am-form-inline" id="top-search-form" method="post" action="{url ctrl=search/}" onsubmit="return top_search()">
-				<div class="am-form-group">
-					<input name="keywords" value="{$keywords}" id="top-keywords" type="text" class="am-form-field" placeholder="请输入关键字" />
-				</div>
-				<button type="submit" class="am-btn am-btn-primary">
-					<i class="am-icon-search"></i>
-					搜索
-				</button>
-			</form>
-		</div>
-	</div>
-	<nav class="menu">
-		<div class="menu">
-		<ul>
-			<!-- php:$list = phpok('menu') -->
-			<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
-			<li{if $highlight == $tmpid.num || $menutitle == $value.title} class="current"{/if}>
-				<dl>
-					<dt><a href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a><!-- if $value.sonlist --> <span class="am-icon-angle-down"></span><!-- /if --></dt>
-					<!-- loop from=$value.sonlist key=$k value=$v -->
-					<dd><a href="{$v.url}" title="{$v.title}" target="{$v.target}">{$v.title}</a></dd>
-					<!-- /loop -->
-				</dl>
-			</li>
-			<!-- /loop -->
-		</ul>
-		</div>
-	</nav>
-</header>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta name="renderer" content="webkit">
+	<title><!-- if $title -->{$title}_<!-- /if --><!-- if $seo.title -->{$seo.title}_<!-- /if -->{$config.title}</title>
+	<!-- if $seo.keywords --><meta name="keywords" content="{$seo.keywords}" /><!-- /if -->
+	<!-- if $seo.description --><meta name="description" content="{$seo.description}" /><!-- /if -->
+	<meta name="toTop" content="true" />
+	{$config.meta}
+	<base href="{$sys.url}" />
+	<link rel="stylesheet" type="text/css" href="//cdn.phpok.com/amazeui/2.7.2/amazeui.min.css" />
+	<link rel="stylesheet" type="text/css" href="//cdn.phpok.com/wow/1.1.0/animate.css" />
+	<link rel="stylesheet" type="text/css" href="{#css#}/artdialog.css" />
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
+	<!-- if $css -->
+	<!-- php:$csslist = explode(",",$css) -->
+	<!-- loop from=$csslist key=$key value=$value id=$tmpid -->
+	<link rel="stylesheet" type="text/css" href="{$value}" />
+	<!-- /loop -->
+	<!-- /if -->
+	<script type="text/javascript" src="{url ctrl=js ext=jquery.artdialog/}" charset="utf-8"></script>
+	<script type="text/javascript" src="//cdn.phpok.com/amazeui/2.7.2/amazeui.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="//cdn.phpok.com/wow/1.1.0/wow.js"></script>
+	<script type="text/javascript" src="js/global.js" charset="utf-8"></script>
+	<!-- if $js -->
+	<!-- php:$jslist = explode(",",$js) -->
+	<!-- loop from=$jslist key=$key value=$value id=$tmpid -->
+	<script type="text/javascript" src="{$value}" charset="utf-8"></script>
+	<!-- /loop -->
+	<!-- /if -->
+</head>
+<body>

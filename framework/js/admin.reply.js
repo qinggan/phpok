@@ -32,11 +32,6 @@
 		},
 		adm_save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			var opener = $.dialog.opener;
 			var lock_status = $.dialog.tips(p_lang('正在保存数据，请稍候…')).lock();
 			$("#post_save").ajaxSubmit({
@@ -143,11 +138,6 @@
 		},
 		edit_ok:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			var opener = $.dialog.opener;
 			$("#post_save").ajaxSubmit({
 				'url':get_url('reply','edit_save'),

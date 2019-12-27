@@ -1,8 +1,20 @@
 <!-- if $_rs.is_multiple -->
-<select name="{$_rs.identifier}[]" id="{$_rs.identifier}" lay-ignore multiple="true" style="{$_rs.style};width:300px;">
-	<!-- foreach($_rslist AS $key=>$value) -->
-	<option value="{$value.val}"{if in_array($value["val"],$_rs["content"])} selected{/if}>{$value.title}</option>	
-	<!-- /foreach -->
+<select name="{$_rs.identifier}[]" id="{$_rs.identifier}" lay-ignore multiple="true" style="{$_rs.form_style}">
+	<!-- if $_grouplist -->
+		<!-- loop from=$_grouplist key=$key value=$value id=$tmpid -->
+		<optgroup label="{$value}">
+			<!-- loop from=$_rslist key=$k value=$v id=$idxx -->
+			<!-- if $v.cate_id == $key -->
+			<option value="{$v.val}"{if $_rs.content && in_array($v.val,$_rs.content)} selected{/if}>{$v.title}</option>	
+			<!-- /if -->
+			<!-- /loop -->
+		</optgroup>
+		<!-- /loop -->
+	<!-- else -->
+		<!-- loop from=$_rslist key=$key value=$value id=$tmpid -->
+		<option value="{$value.val}"{if in_array($value.val,$_rs.content)} selected{/if}>{$value.title}</option>
+		<!-- /loop -->
+	<!-- /if -->
 </select>
 <!-- else -->
 	<!-- if $_is_step -->

@@ -33,6 +33,19 @@ class task_control extends phpok_control
 		$this->json(true);
 	}
 
+	public function exec_f()
+	{
+		$file = $this->get('file');
+		if(!$file){
+			$this->json(P_Lang('未指定计划文件'));
+		}
+		if(!is_file($this->dir_root.'task/'.$file.'.php')){
+			$this->json(P_Lang('计划文件不存在'));
+		}
+		$status = include $this->dir_root.'task/'.$file.'.php';
+		$this->json(true);
+	}
+
 	private function exec_action($rs)
 	{
 		//锁定计划任务执行
@@ -49,10 +62,10 @@ class task_control extends phpok_control
 		$time = $rs['year'].'-'.$rs['month'].'-'.$rs['day'].' '.$rs['hour'].':'.$rs['minute'].':'.$rs['second'];
 		$time = strtotime($time) - 5;
 		//五分钟内只执行一次
-		if($rs['exec_time'] && ($rs['exec_time'] + 300)>$this->time){
-			$this->model('task')->unlock($_id);
-			return true;
-		}
+		//if($rs['exec_time'] && ($rs['exec_time'] + 300)>$this->time){
+		//	$this->model('task')->unlock($_id);
+		//	return true;
+		//}
 		//只执行一天内的计划任务，超过一天的不再执行
 		$if_delete = false;
 		if($time <= $this->time && (($time+24*3600)>$this->time || $rs['only_once'])){

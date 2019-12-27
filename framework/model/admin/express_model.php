@@ -32,6 +32,8 @@ class express_model extends express_model_base
 					$tmp = array('title'=>$myfile,'code'=>'');
 				}
 				$list[$myfile]['title'] = $tmp['title'];
+				$list[$myfile]['note'] = $tmp['note'];
+				$list[$myfile]['content'] = $tmp['content'];
 				$list[$myfile]['code'] = $tmp['code'];
 			}
 		}
@@ -68,5 +70,3 @@ class express_model extends express_model_base
 		return $this->db->query($sql);
 	}
 }
-
-?>

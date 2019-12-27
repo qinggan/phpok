@@ -55,11 +55,6 @@ var autosave_handle;
 			window.clearTimeout(count_down);
 			var that = this;
 			var id = $("#id").val();
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			//忽略标题
 			var title = $("#title").val();
 			if(!title){
@@ -109,11 +104,6 @@ var autosave_handle;
 			var id = $("#id").val();
 			var pcate = $("#_root_cate").val();
 			var pcate_multiple = $("#_root_cate_multiple").val();
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			$("#_listedit").ajaxSubmit({
 				'url':get_url('list','ok'),
 				'type':'post',

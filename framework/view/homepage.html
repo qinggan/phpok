@@ -72,7 +72,7 @@
 			<div class="box_item">
 				<ul>
 					<!-- loop from=$list_rslist key=$key value=$value -->
-					<li pid="{$value.id}"><a title="{$value.title}" href="javascript:$.win('{$value.title}','{$value.url}');void(0);">
+					<li pid="{$value.id}"><a title="{$value.title}" href="javascript:$.win('{$value.nick_title ? $value.nick_title : $value.title}','{$value.url}');void(0);">
 							<div class="top_img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
 							<div class="name">{$value.nick_title ? $value.nick_title : $value.title}</div>
 						</a>
@@ -133,6 +133,7 @@
 		white-space: nowrap
 	}
 </style>
+<!-- if $sys.show_env -->
 <div class="layui-card">
 	<div class="layui-card-header">
 		{lang主机环境}
@@ -153,19 +154,20 @@
 			<br />
 		</div>
 	</div>
-	<!-- plugin body -->
-	<div class="foot">
-		<div class="foot_left">
-			<!-- if $app->license_powered -->
-			Powered by <a href="http://www.phpok.com" target="_blank">phpok.com</a>,
-			<!-- /if -->
-			CopyRight &copy; {$license_site} {func license_date}, All Right Reserved.
-			<!-- if $sys.debug --><br />{func debug_time}
-			<!-- /if -->
-		</div>
-		<div class="foot_right">{$license} Version {$version}</div>
-		<div class="clear"></div>
+</div>
+<!-- /if -->
+<!-- plugin body -->
+<div class="foot">
+	<div class="foot_left">
+		<!-- if $app->license_powered -->
+		Powered by <a href="http://www.phpok.com" target="_blank">phpok.com</a>,
+		<!-- /if -->
+		CopyRight &copy; {$license_site} {func license_date}, All Right Reserved.
+		<!-- if $sys.debug --><br />{func debug_time}
+		<!-- /if -->
 	</div>
+	<div class="foot_right">{$license} Version {$version}</div>
+	<div class="clear"></div>
 </div>
 <!-- plugin foot -->
 </body>

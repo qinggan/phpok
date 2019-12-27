@@ -13,3 +13,4 @@
 	line-height: 150%;
 }
 .view * p{text-indent:0;margin:0;}
+.view img{max-width:100%}

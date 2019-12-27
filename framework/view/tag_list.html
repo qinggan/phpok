@@ -1,0 +1,61 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang列表}
+		<div class="layui-btn-group fr">
+			<button type="button" onclick="$.admin_tag.add_title('{$rs.id}','{$rs.title}')" class="layui-btn layui-btn-sm">
+				<i class="layui-icon layui-icon-add-1"></i> {lang添加主题}
+			</button>
+			<button type="button" onclick="$.admin_tag.add_cate('{$rs.id}','{$rs.title}')" class="layui-btn layui-btn-sm">
+				<i class="layui-icon layui-icon-add-1"></i> {lang添加分类}
+			</button>
+			<button type="button" onclick="$.admin_tag.add_project('{$rs.id}','{$rs.title}')" class="layui-btn layui-btn-sm">
+				<i class="layui-icon layui-icon-add-1"></i> {lang添加项目}
+			</button>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>&nbsp;</th>
+			<th>ID</th>
+			<th>{lang类型}</th>
+			<th>{lang状态}</th>
+			<th>{lang标题}</th>
+			<th>{lang操作}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr id="tag_{$value.id}">
+			<td class="center"><input type="checkbox" name="id[]" value="{$value.id}" /></td>
+			<td>{$value.id}</td>
+			<td>{$value.type}</td>
+			<td><!-- if $value.status -->{lang正常}<!-- else --><span class="red">{lang异常}</span><!-- /if --></td>
+			<td>{$value.title}</td>
+			<td>
+				<input type="button" value="{lang删除}" onclick="$.admin_tag.delete_title('{$rs.id}','{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				<!-- if $value.manage -->
+				<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑}_#{$value.id}','{$value.manage}')" class="layui-btn layui-btn-sm" />
+				<!-- /if -->
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<ul class="layout">
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_all()" />
+					<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_none()" />
+					<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_anti()" />
+				</div>
+			</li>
+			<li id="plugin_button">
+				<input type="button" value="{lang删除}" onclick="$.admin_tag.delete_title2('{$rs.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+			</li>
+		</ul>
+		<div align="center"><!-- include tpl=pagelist --></div>
+	</div>
+</div>
+
+<!-- include tpl=foot_lay -->

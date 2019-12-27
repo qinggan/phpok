@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>容联易通</title>
+	<note>北京容联易通信息技术有限公司，官网：https://www.yuntongxun.com/</note>
+	<code>
+		<account>
+			<title>帐户ID</title>
+			<note><![CDATA[即 ACCOUNT SID]]></note>
+			<type>text</type>
+			<required>true</required>
+		</account>
+		<password>
+			<title>密码</title>
+			<note><![CDATA[即 AUTH TOKEN]]></note>
+			<type>text</type>
+			<required>true</required>
+		</password>
+		<appId>
+			<title>应用ID</title>
+			<note><![CDATA[即 App ID]]></note>
+			<type>text</type>
+			<required>true</required>
+		</appId>
+		<server>
+			<title>请求地址</title>
+			<note>即接口请求地址，注意端口，如：https://app.cloopen.com:8883</note>
+			<type>text</type>
+			<required>true</required>
+		</server>
+		<softVersion>
+			<title>接口版本号</title>
+			<note>填写接口的版本号，默认是：2013-12-26</note>
+			<type>text</type>
+			<required>true</required>
+			<default>2013-12-26</default>
+		</softVersion>
+	</code>
+	<manage>
+		<send>
+			<title>发短信</title>
+			<exec>sendsms</exec>
+			<type>page</type>
+		</send>
+	</manage>
+</root>

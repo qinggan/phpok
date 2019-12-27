@@ -49,20 +49,35 @@ class report_control extends phpok_control
 			$this->assign('type',$type);
 		}
 		$x = $this->get('x');
-		$y = $this->get('y');
+		$data_mode = $this->get('data_mode');
+		if($data_mode && is_array($data_mode)){
+			$y = array();
+			foreach($data_mode as $key=>$value){
+				if($value){
+					$y[] = $key;
+				}
+			}
+		}
 		$startdate = $this->get('startdate');
 		$stopdate = $this->get('stopdate');
+		$sqlext = $this->get('sqlext');
+		if($sqlext){
+			$this->assign('sqlext',$sqlext);
+			$sqlext = str_replace(array('&lt;','&gt;','&quot;','&apos;','&#39;'),array('<','>','"',"'","'"),$sqlext);
+			//$sqlext = stripslashes($sqlext);
+		}
 		$this->assign('x',$x);
 		$this->assign('y',$y);
+		$this->assign('data_mode',$data_mode);
 		$this->assign('startdate',$startdate);
 		$this->assign('stopdate',$stopdate);
 		if($type == 'user'){
 			$xy = $this->_user_type();
-			$rslist = $this->model('report')->user_data($x,$startdate,$stopdate);
+			$rslist = $this->model('report')->user_data($x,$y,$data_mode,$startdate,$stopdate,$sqlext);
 		}
 		if($type == 'order'){
 			$xy = $this->_order_type();
-			$rslist = $this->model('report')->order_data($x,$startdate,$stopdate);		
+			$rslist = $this->model('report')->order_data($x,$y,$data_mode,$startdate,$stopdate,$sqlext);		
 		}
 		if($type == 'title'){
 			$xy = $this->_title_type();
@@ -74,7 +89,7 @@ class report_control extends phpok_control
 		}
 		if($type && is_numeric($type)){
 			$xy = $this->_list_type($type);
-			$data_mode = $this->get('data_mode');
+			
 			$rslist = $this->model('report')->list_data($type,$x,$y,$data_mode,$startdate,$stopdate);		
 		}
 		if($rslist && $x){
@@ -96,7 +111,6 @@ class report_control extends phpok_control
 		}
 		$chart = $this->get('chart');
 		$this->assign('chart',$chart);
-		$this->addjs('js/laydate/laydate.js');
 		$this->addjs('js/echarts.min.js');
 		$this->view('report_index');
 	}
@@ -162,12 +176,14 @@ class report_control extends phpok_control
 		$xlist = array();
 		if(!$module['mtype']){
 			$ylist['hits'] = P_Lang('点击');
+			$ylist['title'] = $project['alias_title'] ? $project['alias_title'] : P_Lang('主题');
 			$xlist = array('date'=>P_Lang('日期'),'week'=>P_Lang('周'),'month'=>P_Lang('月份'),'year'=>P_Lang('年度'));
+			$xlist['title'] = $project['alias_title'] ? $project['alias_title'] : P_Lang('主题');
 		}
 		$zlist = false;
 		$flist = $this->model('module')->fields_all($project['module']);
 		if($flist){
-			$forbid = array('longtext','longblob','text','blob','tinytext','tinyblob','mediumtext','mediumblob');
+			$forbid = array('longblob','blob','tinyblob','mediumblob');
 			foreach($flist as $key=>$value){
 				if(in_array($value['field_type'],$forbid)){
 					continue;
@@ -197,9 +213,12 @@ class report_control extends phpok_control
 
 	private function _order_type()
 	{
-		$ylist = array('count'=>P_Lang('订单数量'),'price'=>P_Lang('订单价格'),'user'=>P_Lang('会员数'));
+		$ylist = array('id'=>P_Lang('订单数量'),'price'=>P_Lang('订单价格'),'user_id'=>P_Lang('会员数'));
+		$ylist['qty'] = P_Lang('产品数量');
 		$xlist = array('date'=>P_Lang('日期'),'week'=>P_Lang('周'),'month'=>P_Lang('月份'),'year'=>P_Lang('年度'),'order'=>P_Lang('订单状态'));
-		$xlist['user'] = P_Lang('会员');
+		$xlist['title'] = P_Lang('产品名称');
+		$xlist['tid'] = P_Lang('产品ID');
+		$xlist['user_id'] = P_Lang('会员');
 		$this->assign('xlist',$xlist);
 		$this->assign('ylist',$ylist);
 		return array('x'=>$xlist,'y'=>$ylist);
@@ -207,14 +226,15 @@ class report_control extends phpok_control
 
 	private function _user_type()
 	{
-		$ylist = array('count'=>P_Lang('注册数量'));
-		$flist = $this->model('user')->fields_all('field_type NOT IN("longtext","longblob","text")');
+		$ylist = array('id'=>P_Lang('注册数量'));
+		$xlist = array('date'=>P_Lang('日期'),'week'=>P_Lang('周'),'month'=>P_Lang('月份'),'year'=>P_Lang('年度'),'group_id'=>P_Lang('会员组'));
+		$flist = $this->model('user')->fields_all('field_type NOT IN("longblob")');
 		if($flist){
 			foreach($flist as $key=>$value){
 				$ylist[$value['identifier']] = $value['title'];
+				$xlist[$value['identifier']] = $value['title'];
 			}
 		}
-		$xlist = array('date'=>P_Lang('日期'),'week'=>P_Lang('周'),'month'=>P_Lang('月份'),'year'=>P_Lang('年度'),'group_id'=>P_Lang('会员组'));
 		$this->assign('xlist',$xlist);
 		$this->assign('ylist',$ylist);
 		return array('x'=>$xlist,'y'=>$ylist);

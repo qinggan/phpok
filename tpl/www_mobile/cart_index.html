@@ -34,7 +34,7 @@ function cart_checkout()
 					<div>单价：{func price_format $value.price $value.currency_id}</div>
 					<ul class="cart_price_setting clearfix">
 						<li class="minus" onclick="$.cart.minus({$value.id})"><i class="am-icon-minus am-icon-sm"></i></li>
-						<li><input type="number" class="qty am-text-center" min="1" name="qty_{$value.id}" id="qty_{$value.id}" value="{$value.qty}" onchange="$.cart.update('{$value.id}')" /></li>
+						<li><input type="text" class="qty am-text-center" min="1" name="qty_{$value.id}" id="qty_{$value.id}" value="{$value.qty}" onchange="$.cart.update('{$value.id}')" /></li>
 						<li class="plus" onclick="$.cart.plus({$value.id})"><i class="am-icon-plus am-icon-sm"></i></li>
 					</ul>
 					<div>价格：<span class="am-text-danger">{func price_format $value.price*$value.qty $value.currency_id}</span></div>
@@ -64,4 +64,4 @@ function cart_checkout()
 	</div>
 	</form>
 </div>
-<!-- include tpl=footer -->
+<!-- include tpl=foot -->

@@ -17,34 +17,14 @@ class tag_model extends tag_model_base
 
 	public function get_one($id,$field='id',$site_id=0)
 	{
-		if($site_id)
-		{
-			$this->site_id($site_id);
+		$me = parent::get_one($id,$field,$site_id);
+		if($me){
+			return $me;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."tag WHERE ".$field."='".$id."' AND site_id='".$this->site_id."'";
-		return $this->db->get_one($sql);
-	}
-
-	public function get_total($tag_id)
-	{
-		$sql = "SELECT count(s.title_id) FROM ".$this->db->prefix."tag_stat s ";
-		$sql.= "JOIN ".$this->db->prefix."list l ON(s.title_id=l.id) WHERE l.status=1 AND s.tag_id='".$tag_id."'";
-		return $this->db->count($sql);
-	}
-
-	public function id_list($tag_id,$offset=0,$psize=30)
-	{
-		$sql = "SELECT title_id as id FROM ".$this->db->prefix."tag_stat WHERE tag_id='".$tag_id."' ";
-		//$sql.= "JOIN ".$this->db->prefix."list l ON(s.title_id=l.id) WHERE l.status=1 AND s.tag_id='".$tag_id."' ";
-		$sql.= " ORDER BY title_id DESC LIMIT ".intval($offset).",".intval($psize);
-		return $this->db->get_all($sql);
-	}
-
-	public function add_hits($tag_id)
-	{
-		$sql = "UPDATE ".$this->db->prefix."tag SET hits=hits+1 WHERE id='".$tag_id."'";
-		return $this->db->query($sql);
+		if(strpos($id,'-') !== false){
+			$id = str_replace('-',' ',$id);
+			return parent::get_one($id,$field,$site_id);
+		}
+		return false;
 	}
 }
-
-?>

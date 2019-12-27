@@ -6,10 +6,10 @@ function action_{$_rs.identifier}_show()
 	if(!tmp_id || tmp_id == '0' || tmp_id == 'undefined'){
 		return true;
 	}
-	var url = get_url("inp")+"&type=title&content="+$.str.encode(tmp_id);
+	var url = get_url("inp","","type=title&content="+$.str.encode(tmp_id));
 	$.phpok.json(url,function(rs){
-		if(rs.status == 'ok'){
-			var lst = rs.content;
+		if(rs.status){
+			var lst = rs.info;
 			var c = '<table>';
 			for(var i in lst){
 				c += '<tr id="{$_rs.identifier}_div_'+lst[i]['id']+'">';
@@ -48,8 +48,8 @@ function action_{$_rs.identifier}_show()
 	}
 	var url = get_url("inp","",'type=title&content='+$.str.encode(tmp_id));
 	$.phpok.json(url,function(rs){
-		if(rs.status == 'ok'){
-			var lst = rs.content;
+		if(rs.status){
+			var lst = rs.info;
 			for(var i in lst){
 				$("#title_{$_rs.identifier}").html(lst[i]['title']).show();
 				$("#layui-btn-{$_rs.identifier}-delete").show();

@@ -51,7 +51,6 @@
 			});
 		},
 		pass: function () {
-
 			$.dialog.open(get_url("me", "pass"), {
 				"title": p_lang('管理员密码修改'),
 				"width": 600,
@@ -112,7 +111,8 @@
 				$.cookie.del('badge');
 				if (rs.status && rs.info) {
 					var list = rs.info;
-					var html = '<span class="layui-badge">{total}</span>';
+					//var html = '<span class="layui-badge">{total}</span>';
+					var html = '<span class="layui-badge-dot" style="margin-left:2px;"></span>'
 					var total = 0;
 					var pid_info = '';
 					for (var key in list) {
@@ -149,7 +149,7 @@
 						title: '友情提示',
 						width: 220, // 必须指定一个像素宽度值或者百分比，否则浏览器窗口改变可能导致artDialog收缩
 						content: '您的程序有新的更新，为了保证系统安全，建议您及时更新程序',
-						icon: 'face-smile',
+						icon: 'update',
 						time: 10
 					});
 				}
@@ -244,6 +244,16 @@
 		editor_resinfo:function()
 		{
 			$.win(p_lang('批量更新编辑框附件'),get_url('res','editor_update_all'));
+		},
+		layui_refresh:function()
+		{
+			var layid = $("#LAY_app_tabsheader li.layui-this").attr("lay-id");
+			var obj = $(".layui-body").find('.layui-show').find('iframe');
+			obj[0].contentWindow.layui.use('form',function(){
+				var form = obj[0].contentWindow.layui.form;
+				form.render();
+				$.dialog.tips('刷新渲染成功');
+			})
 		}
 	}
 })(jQuery);

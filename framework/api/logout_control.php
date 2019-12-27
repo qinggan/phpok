@@ -19,6 +19,7 @@ class logout_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		$this->config('is_ajax',true);
 	}
 
 	/**
@@ -29,7 +30,6 @@ class logout_control extends phpok_control
 		$this->session->unassign('user_id');
 		$this->session->unassign('user_gid');
 		$this->session->unassign('user_name');
-		$this->json(true);
+		$this->success();
 	}
 }
-?>

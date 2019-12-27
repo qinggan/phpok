@@ -20,9 +20,15 @@
     <link rel="stylesheet" href="static/admin/style/admin.css" media="all" />
     <link rel="stylesheet" href="{#css#}/extadmin.css" media="all" />
     {func phpok_head_css}
-    <script type="text/javascript" src="static/admin/layui/layui.js"></script>
+    <script type="text/javascript" src="static/admin/layui/layui.all.js"></script>
     <!-- php:$js_ext = 'admin.'.$sys.ctrl.'.js,admin.'.$sys.ctrl.'-'.$sys.func.'.js' -->
     <script type="text/javascript" src="{url ctrl=js _ctrl=$sys.ctrl _func=$sys.func ext=$js_ext/}"></script>
+    <!-- if $js -->
+    <!-- php:$tmp = explode(",",$js) -->
+    <!-- loop from=$tmp key=$key value=$value id=$tmpid -->
+    <script type="text/javascript" src="{$value}"></script>
+    <!-- /loop -->
+    <!-- /if -->
 	{func phpok_head_js}
     <!-- plugin head -->
 </head>

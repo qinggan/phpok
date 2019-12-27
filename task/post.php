@@ -1,7 +1,6 @@
 <?php
 /**
- * 提交表单时启动的通知功能
- * @package phpok\task
+ * 发布通知管理员
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com

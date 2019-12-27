@@ -79,6 +79,13 @@ class order_model extends order_model_base
 			return false;
 		}
 		$ids = implode(",",array_keys($rslist));
+		$sql = "SELECT SUM(qty) as total,order_id FROM ".$this->db->prefix."order_product WHERE order_id IN(".$ids.") GROUP BY order_id";
+		$tmplist = $this->db->get_all($sql);
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$rslist[$value['order_id']]['qty'] = $value['total'];
+			}
+		}
 		$sql = "SELECT id,order_id,title FROM ".$this->db->prefix."order_payment WHERE order_id IN(".$ids.")";
 		$tmplist = $this->db->get_all($sql);
 		if($tmplist){
@@ -129,13 +136,6 @@ class order_model extends order_model_base
 			$sql .= " WHERE ".$condition;
 		}
 		return $this->db->count($sql);
-	}
-
-	public function express_all($id)
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."order_express WHERE order_id='".$id."' AND express_id!=0 ";
-		$sql.= "ORDER BY addtime ASC";
-		return $this->db->get_all($sql);
 	}
 
 	public function express_save($data)

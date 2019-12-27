@@ -63,12 +63,11 @@ class select_form extends _init_auto
 		}
 		$opt_list = explode(":",$rs["option_list"]);
 		$rslist = opt_rslist($opt_list[0],$opt_list[1],$rs['ext_select']);
-		$opt_list = explode(":",$rs["option_list"]);
 		$group_id = $opt_list[1];
 		if($rs["is_multiple"] && $rs['content']){
 			$content = array();
 			if($rs["content"]['info'] && is_array($rs['content']['info'])){
-				foreach($rs['content']['info'] AS $key=>$value){
+				foreach($rs['content']['info'] as $key=>$value){
 					$content[] = $value['val'];
 				}
 				$rs["content"] = $content;
@@ -97,6 +96,23 @@ class select_form extends _init_auto
 			$opt_rs = $this->model('opt')->group_one($opt_list[1]);
 			$symbol = $opt_rs['link_symbol'] ? $opt_rs['link_symbol'] : ',';
 			$rs['content'] = implode($symbol,$rs['content']);
+		}
+		if($rs['is_multiple'] && $opt_list[0] == 'title'){
+			$grouplist = array();
+			foreach($rslist as $key=>$value){
+				if(!$value['cate_id'] && !$grouplist[0]){
+					$grouplist[0] = P_Lang('未知分组');
+				}
+				if($value['cate_id'] && !$grouplist[$value['cate_id']]){
+					$grouplist[$value['cate_id']] = $value['catename'];
+				}
+			}
+			if($grouplist && count($grouplist)>1){
+				$this->assign("_grouplist",$grouplist);
+			}
+		}
+		if($rs['width']){
+			$rs['form_style'] = $rs['form_style'] ? $rs['form_style'].';width:'.$rs['width'].'px' : 'width:'.$rs['width'].'px';
 		}
 		$this->assign("_is_step",$is_step);
 		$this->assign('_group_id',$group_id);
@@ -248,14 +264,19 @@ class select_form extends _init_auto
 		//当类型为默认时
 		if($type == 'default' && $info){
 			$list = explode("\n",$info);
-			$rslist = "";
-			$i=0;
-			foreach($list AS $key=>$value){
-				if($value && trim($value)){
-					$value = trim($value);
-					$rslist[$i]['val'] = $value;
-					$rslist[$i]['title'] = $value;
-					$i++;
+			$rslist = array();
+			foreach($list as $key=>$value){
+				if(!$value || !trim($value)){
+					continue;
+				}
+				if(strpos($value,':') !== false){
+					$tmp2 = explode(":",$value);
+					if(!$tmp2[1]){
+						$tmp2[1] = $tmp2[0];
+					}
+					$rslist[] = array('val'=>$tmp2[0],'title'=>$tmp2[1]);
+				}else{
+					$rslist[] = array('val'=>trim($value),'title'=>trim($value));
 				}
 			}
 			return $rslist;
@@ -271,7 +292,7 @@ class select_form extends _init_auto
 			$tmplist = $this->model('project')->project_sonlist($group_id);
 			if(!$tmplist) return false;
 			$rslist = '';
-			foreach($tmplist AS $key=>$value){
+			foreach($tmplist as $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;
 			}
@@ -283,7 +304,7 @@ class select_form extends _init_auto
 			$tmplist = $this->model("list")->title_list($group_id);
 			if(!$tmplist) return false;
 			$rslist = '';
-			foreach($tmplist AS $key=>$value){
+			foreach($tmplist as $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;
 			}
@@ -295,7 +316,7 @@ class select_form extends _init_auto
 			$tmplist = $this->model('cate')->catelist_sonlist($group_id,false,0);
 			if(!$tmplist) return false;
 			$rslist = '';
-			foreach($tmplist AS $key=>$value){
+			foreach($tmplist as $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;
 			}

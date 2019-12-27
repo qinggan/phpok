@@ -1,0 +1,45 @@
+<!-- include tpl=head_lay nopadding=true -->
+<script type="text/javascript">
+function select_it(id,title)
+{
+	var opener = $.dialog.opener;
+	opener.$("#list_id").val(id);
+	opener.$("#list_id_title").val(title);
+	$.dialog.close();
+}
+</script>
+<div class="layui-card">
+	<div class="layui-card-header auto">
+		<form method="post" action="{url ctrl=menu func=titles pid=$pid/}" class="layui-form" id="post_save">
+		<div class="layui-inline">
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="keywords" value="{$keywords}" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<input type="submit" value="{lang搜索}" class="layui-btn layui-btn-sm" />
+			</div>
+		</div>
+		</form>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th><!-- if $project.alias_title -->{$project.alias_title}<!-- else -->{lang主题}<!-- /if --></th>
+			<th></th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.id}</td>
+			<td>{$value.title}<br /><small>{lang发布时间} {func time_format $value.dateline}<!-- if $value.lastdate --> &nbsp; &nbsp; {lang最后修改时间} {func time_format $value.lastdate}<!-- /if --></small></td>
+			<td><input type="button" value="{lang选择}" class="layui-btn layui-btn-sm" onclick="select_it('{$value.id}','{$value.title}')" /></td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- include tpl=pagelist -->
+	</div>
+</div>
+
+<!-- include tpl=foot_lay -->

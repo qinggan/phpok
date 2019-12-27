@@ -31,10 +31,10 @@ class tpl_model_base extends phpok_model
 	/**
 	 * 取得全部风格列表，不限站点
 	**/
-	public function get_all()
+	public function get_all($pri='')
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."tpl ORDER BY id DESC";
-		return $this->db->get_all($sql);
+		return $this->db->get_all($sql,$pri);
 	}
 
 	/**

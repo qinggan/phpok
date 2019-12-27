@@ -112,19 +112,25 @@ class tag_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
-	private function tag_array_html($rslist)
+	public function tag_array_html($rslist)
 	{
 		foreach($rslist as $key=>$value){
 			$value['target'] = $value['target'] ? '_blank' : '_self';
-			$url = $value['url'] ? $value['url'] : $this->url('tag','','title='.rawurlencode($value['title']),'www');
+			$url = $this->url('tag','','title='.rawurlencode($value['title']),'www');
+			if($value['id']){
+				$url = $this->url('tag','','title='.$value['id']);
+			}
+			if($value['identifier']){
+				$url = $this->url('tag','','title='.$value['identifier']);
+			}
+			if($value['url']){
+				$url =  $value['url'];
+			}
 			$alt = $value['alt'] ? $value['alt'] : $value['title'];
-			$rslist[$key]['html'] = '<a href="'.$url.'" title="'.$alt.'" target="'.$value['target'].'" class="tag">'.$value['title'].'</a>';
-			$rslist[$key]['target'] = $value['target'];
-			$rslist[$key]['url'] = $url;
-			$rslist[$key]['alt'] = $alt;
-			$rslist[$key]['replace_count'] = $value['replace_count'];
-			$rslist[$key]['title_id'] = $value['title_id'];
-			$rslist[$key]['id'] = $value['id'];
+			$value['html'] = '<a href="'.$url.'" title="'.$alt.'" target="'.$value['target'].'" class="tag">'.$value['title'].'</a>';
+			$value['url'] = $url;
+			$value['alt'] = $alt;
+			$rslist[$key] = $value;
 		}
 		return $rslist;
 	}
@@ -151,6 +157,56 @@ class tag_model_base extends phpok_model
 			$rslist[] = $tmp;
 		}
 		return $rslist;
+	}
+
+	public function get_one($id,$field='id',$site_id=0)
+	{
+		if($site_id){
+			$this->site_id($site_id);
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."tag WHERE ".$field."='".$id."' AND site_id='".$this->site_id."'";
+		return $this->db->get_one($sql);
+	}
+
+	public function get_list($condition="",$offset=0,$psize=30,$site_id=0)
+	{
+		if($site_id){
+			$this->site_id($site_id);
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."tag WHERE site_id='".$this->site_id."' ";
+		if($condition){
+			$sql .= " AND ".$condition;
+		}
+		$sql.= " ORDER BY is_global DESC,id DESC LIMIT ".$offset.",".$psize;
+		$rslist = $this->db->get_all($sql,'id');
+		if(!$rslist){
+			return false;
+		}
+		$ids = array_keys($rslist);
+		$sql = "SELECT count(title_id) as count,tag_id FROM ".$this->db->prefix."tag_stat WHERE tag_id IN(".implode(",",$ids).") GROUP BY tag_id";
+		$count_list = $this->db->get_all($sql,'tag_id');
+		if($count_list){
+			foreach($rslist as $key=>$value){
+				$rslist[$key]['count'] = $count_list[$key]['count'] ? $count_list[$key]['count'] : 0;
+			}
+		}
+		return $rslist;
+	}
+
+	public function get_all($condition='',$offset=0,$psize=30,$orderby='')
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."tag";
+		if($condition){
+			$sql .= " WHERE ".$condition." ";
+		}
+		if(!$orderby){
+			$orderby = 'id DESC';
+		}
+		$sql .= " ORDER BY ".$orderby." ";
+		if($psize && intval($psize)>0){
+			$sql .= " LIMIT ".intval($offset).",".intval($psize);
+		}
+		return $this->db->get_all($sql);
 	}
 
 	private function get_global_tag($site_id)
@@ -249,9 +305,10 @@ class tag_model_base extends phpok_model
 					$content = str_replace($v,$string,$content);
 				}
 			}
-			$replace_count = $value['replace_count'] ? $value['replace_count'] : 3;
-			$content = preg_replace('`'.preg_quote($value['title'],'`').'`isU',$value['html'],$content,$replace_count);
-			//
+			$replace_count = intval($value['replace_count']);
+			if($replace_count){
+				$content = preg_replace("/".preg_quote($value['title'],'/')."/isU",$value['html'],$content,$replace_count);
+			}
 			if($matches && $matches[0]){
 				foreach($matches[0] as $k=>$v){
 					$string = '~/~/~'.md5($v).'~\~\~';
@@ -317,7 +374,7 @@ class tag_model_base extends phpok_model
 		if(file_exists($this->dir_data.'xml/tag_config.xml')){
 			return $this->lib('xml')->read($this->dir_data.'xml/tag_config.xml');
 		}
-		return array('separator'=>',','count'=>10);
+		return array('separator'=>',','count'=>10,'psize'=>20,'urlformat'=>'');
 	}
 
 	/**
@@ -341,5 +398,255 @@ class tag_model_base extends phpok_model
 		$config = $this->config();
 		$separator = $config['separator'] ? $config['separator'] : ',';
 		return implode($separator,$list);
+	}
+
+	/**
+	 * 增加TagID的点击率
+	 * @参数 $tag_id 指定的TagID
+	**/
+	public function add_hits($tag_id)
+	{
+		$sql = "UPDATE ".$this->db->prefix."tag SET hits=hits+1 WHERE id='".intval($tag_id)."'";
+		return $this->db->query($sql);
+	}
+
+	/**
+	 * 取得标签下的总数量
+	 * @参数 $tag_id 指定标签ID
+	**/
+	public function tag_total($tag_id)
+	{
+		$sql = " SELECT count(title_id) FROM ".$this->db->prefix."tag_stat ";
+		$sql.= " WHERE tag_id='".$tag_id."' ";
+		return $this->db->count($sql);
+	}
+
+	/**
+	 * 取得Tag标签下的列表
+	 * @参数 $tag_id 标签ID
+	 * @参数 $offset 开启页码
+	 * @参数 $psize 每页取数
+	**/
+	public function id_list($tag_id,$offset=0,$psize=30,$condition="")
+	{
+		$sql = " SELECT title_id as id FROM ".$this->db->prefix."tag_stat WHERE tag_id='".$tag_id."' ";
+		if($condition){
+			$sql .= " AND ".$condition." ";
+		}
+		$sql.= " ORDER BY title_id DESC LIMIT ".intval($offset).",".intval($psize);
+		return $this->db->get_all($sql);
+	}
+
+	public function add_title($tag_id,$title_id)
+	{
+		$rs = $this->get_one($tag_id);
+		if(!$rs){
+			return false;
+		}
+		$config = $this->config();
+		$separator = ($config && $config['separator']) ? $config['separator'] : ',';
+		$data = array('tag_id'=>$tag_id,'title_id'=>$title_id);
+		$this->db->insert_array($data,'tag_stat','replace');
+		if(substr($title_id,0,1) == 'p'){
+			$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id='".substr($title_id,1)."'";
+			return $this->_add_tag_stat($sql,$rs,$separator,'project');
+		}
+		if(substr($title_id,0,1) == 'c'){
+			$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE id='".substr($title_id,1)."'";
+			return $this->_add_tag_stat($sql,$rs,$separator,'cate');
+		}
+		if(is_numeric($title_id)){
+			$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id='".$title_id."'";
+			return $this->_add_tag_stat($sql,$rs,$separator,'list');
+		}
+		return true;
+	}
+
+	private function _add_tag_stat($sql,$tag,$separator=',',$type="list")
+	{
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return true;
+		}
+		if(!$rs['tag']){
+			$sql = "UPDATE ".$this->db->prefix.$type." SET tag='".$tag['title']."' WHERE id='".$rs['id']."'";
+			$this->db->query($sql);
+			return true;
+		}
+		$list = explode($separator,$rs['tag']);
+		$is_add = true;
+		foreach($list as $key=>$value){
+			$value = trim($value);
+			if($value == $tag['title']){
+				$is_add = false;
+				break;
+			}
+		}
+		if(!$is_add){
+			return true;
+		}
+		$tag = $rs['tag'].$separator.$tag['title'];
+		$sql = "UPDATE ".$this->db->prefix.$type." SET tag='".$tag."' WHERE id='".$rs['id']."'";
+		$this->db->query($sql);
+		return true;
+	}
+
+	public function save($data,$id=0)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		if($id){
+			return $this->db->update_array($data,'tag',array('id'=>$id));
+		}
+		return $this->db->insert_array($data,"tag");
+	}
+
+	/**
+	 * 批量更新标签及标签统计
+	 * @参数 $data 标签数据，可以是数组也可以是字符串
+	 * @参数 $list_id 主题ID（项目ID，p前缀）（分类ID，c前缀）
+	**/
+	public function update_tag($data='',$list_id=0)
+	{
+		if(!$list_id){
+			return false;
+		}
+		//没有要更新的tag标签时，删除原有记录
+		if(!$data){
+			return $this->stat_delete($list_id,'title_id');
+		}
+		$data = $this->string_to_array($data);
+		$site_id = $this->_tag_site_id($list_id);
+		$this->stat_delete($list_id,'title_id');
+		foreach($data as $key=>$value){
+			if(!$value || !trim($value)){
+				continue;
+			}
+			$value = trim($value);
+			$chk_rs = $this->chk_title($value);
+			if($chk_rs){
+				$id = $chk_rs['id'];
+			}else{
+				$array = array('site_id'=>$site_id,'title'=>$value,'url'=>'','target'=>'0');
+				$id = $this->save($array);
+			}
+			if($id){
+				$this->stat_save($id,$list_id);
+			}
+		}
+		return true;
+	}
+
+	public function update_tag_title($old,$title,$tag_id)
+	{
+		if(!$old || !$title || !$tag_id){
+			return false;
+		}
+		$idlist = $this->id_list($tag_id,0,999);
+		if(!$idlist){
+			return false;
+		}
+		$plist = $clist = $ilist = array();
+		foreach($idlist as $key=>$value){
+			if(is_numeric($value['id'])){
+				$ilist[] = $value['id'];
+			}
+			if(substr($value['id'],0,1) == 'p'){
+				$plist[] = substr($value['id'],1);
+			}
+			if(substr($value['id'],0,1) == 'c'){
+				$clist[] = substr($value['id'],1);
+			}
+		}
+		if($ilist){
+			$sql = "UPDATE ".$this->db->prefix."list SET tag=REPLACE(tag,'".$old."','".$title."') WHERE id IN(".implode(",",$ilist).")";
+			$this->db->query($sql);
+		}
+		if($plist){
+			$sql = "UPDATE ".$this->db->prefix."project SET tag=REPLACE(tag,'".$old."','".$title."') WHERE id IN(".implode(",",$plist).")";
+			$this->db->query($sql);
+		}
+		if($clist){
+			$sql = "UPDATE ".$this->db->prefix."cate SET tag=REPLACE(tag,'".$old."','".$title."') WHERE id IN(".implode(",",$clist).")";
+			$this->db->query($sql);
+		}
+		return true;
+	}
+
+	public function chk_title($title,$id=0)
+	{
+		$sql  = "SELECT id FROM ".$this->db->prefix."tag WHERE ";
+		$sql .= "title='".$title."' AND site_id='".$this->site_id."'";
+		if($id){
+			$sql .= " AND id!='".$id."'";
+		}
+		return $this->db->get_one($sql);
+	}
+
+	public function stat_delete($id,$field='tag_id')
+	{
+		$sql = "DELETE FROM ".$this->db->prefix."tag_stat WHERE ".$field."='".$id."'";
+		return $this->db->query($sql);
+	}
+
+	/**
+	 * 通过标签中的记录，获取相应的站点ID
+	 * @参数 $id 标签ID
+	**/
+	private function _tag_site_id($id)
+	{
+		$sql = "";
+		if(substr($id,0,1) == 'p'){
+			$sql = "SELECT site_id FROM ".$this->db->prefix."project WHERE id='".substr($id,1)."'";
+		}
+		if(substr($id,0,1) == 'c'){
+			$sql = "SELECT site_id FROM ".$this->db->prefix."cate WHERE id='".substr($id,1)."'";
+		}
+		if(is_numeric($id)){
+			$sql = "SELECT site_id FROM ".$this->db->prefix."list WHERE id='".$id."'";
+		}
+		if(!$sql){
+			return $this->site_id;
+		}
+		$rs = $this->db->get_one($sql);
+		if(!$rs || !$rs['site_id']){
+			return $this->site_id;
+		}
+		return $rs['site_id'];
+	}
+	
+	/**
+	 * 字符串转数组
+	 * @参数 $string 要转化的字符串
+	 * @返回 数组
+	**/
+	private function string_to_array($string)
+	{
+		if(!$string || !trim($string)){
+			return false;
+		}
+		if(is_array($string)){
+			return $string;
+		}
+		$config = $this->config();
+		$separator = $config['separator'] ? $config['separator'] : ',';
+		return explode($separator,$string);
+	}
+
+	public function node_list($tag_id,$status=0)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."tag_node WHERE tag_id='".$tag_id."' ";
+		if($status){
+			$sql .= " AND status=1 ";
+		}
+		$sql .= " ORDER BY taxis ASC,identifier ASC,id ASC LIMIT 999";
+		return $this->db->get_all($sql);
+	}
+
+	public function node_one($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."tag_node WHERE id='".$id."'";
+		return $this->db->get_one($sql);
 	}
 }

@@ -1,7 +1,6 @@
 <?php
 /**
  * 评论信息维护
- * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -48,7 +47,7 @@ class reply_model_base extends phpok_model
 		$sql = "SELECT tid,count(id) total FROM ".$this->db->prefix."reply WHERE status=1 AND tid IN(".$id.") GROUP BY tid";
 		$rslist = $this->db->get_all($sql);
 		if($rslist){
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				$list[$value["tid"]]["checked"] = $value["total"];
 				$list[$value["tid"]]["uncheck"] = 0;
 			}
@@ -56,7 +55,7 @@ class reply_model_base extends phpok_model
 		$sql = "SELECT tid,count(id) total FROM ".$this->db->prefix."reply WHERE status=0 AND tid IN(".$id.") GROUP BY tid";
 		$tmplist = $this->db->get_all($sql);
 		if($tmplist){
-			foreach($tmplist AS $key=>$value){
+			foreach($tmplist as $key=>$value){
 				if(!$list[$value["tid"]]){
 					$list[$value["tid"]]["checked"] = 0;
 				}
@@ -71,10 +70,9 @@ class reply_model_base extends phpok_model
 	 * @参数 $condition 查询条件
 	 * @参数 $offset 开始位置
 	 * @参数 $psize 每页查询数
-	 * @参数 $pri 主键
 	 * @参数 $orderby 排序
 	**/
-	public function get_list($condition="",$offset=0,$psize=30,$pri="",$orderby="")
+	public function get_list($condition="",$offset=0,$psize=30,$orderby="")
 	{
 		if(!$orderby){
 			$orderby = 'addtime ASC,id DESC';
@@ -261,5 +259,30 @@ class reply_model_base extends phpok_model
 		$id = intval($id);
 		$sql = "SELECT id,addtime,content,admin_id FROM ".$this->db->prefix."reply WHERE parent_id=".$id." AND admin_id!=0 ORDER BY addtime ASC,id ASC";
 		return $this->db->get_all($sql);
+	}
+
+	/**
+	 * 检测上一次发布评论的时间
+	**/
+	public function check_time($tid,$uid='',$sessid='')
+	{
+		if(!$uid && !$sessid){
+			return false;
+		}
+		$sql = "SELECT addtime FROM ".$this->db->prefix."reply WHERE tid='".$tid."'";
+		if($uid){
+			$sql .= " AND uid='".$uid."'";
+		}else{
+			$sessid  .= " AND session_id='".$sessid."'";
+		}
+		$sql .= " ORDER BY addtime DESC LIMIT 1";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return true;
+		}
+		if(($rs['addtime'] + 30) > $this->time){
+			return false;
+		}
+		return true;
 	}
 }

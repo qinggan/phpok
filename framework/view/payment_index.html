@@ -26,8 +26,8 @@
 			<td>
 				<div class="layui-btn-group">
 					<!-- if $popedom.groupedit --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=payment func=groupset id=$value.id/}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
-					<!-- if $popedom.groupdelete --><input type="button" value="{lang删除}" onclick="$.admin_payment.group_delete('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
-					<!-- if $popedom.add --><input type="button" value="添加支付方案" onclick="$.admin_payment.add('{$value.id}')" class="layui-btn  layui-btn-sm layui-btn-danger" /><!-- /if -->
+					<!-- if $popedom.groupdelete --><input type="button" value="{lang删除}" onclick="$.admin_payment.group_delete('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm layui-btn-danger" /><!-- /if -->
+					<!-- if $popedom.add --><input type="button" value="添加支付方案" onclick="$.admin_payment.add('{$value.id}')" class="layui-btn  layui-btn-sm layui-btn-normal" /><!-- /if -->
 				</div>
 			</td>
 		</tr>
@@ -46,7 +46,7 @@
 			<td>
 				<div class="layui-btn-group">
 					<!-- if $popedom.edit --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=payment func=set id=$v.id/}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
-					<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_payment.del('{$v.id}','{$v.title}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
+					<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_payment.del('{$v.id}','{$v.title}')" class="layui-btn  layui-btn-sm layui-btn-danger" /><!-- /if -->
 				</div>
 			</td>
 		</tr>	

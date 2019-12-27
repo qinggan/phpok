@@ -46,7 +46,7 @@
 					<input type="button" value="{lang设为默认站点}" onclick="$.phpok_site.set_default('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
 					<!-- /if -->
 					<!-- if $popedom.delete && !$value.is_default -->
-					<input type="button" value="{lang删除}" onclick="$.phpok_site.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.phpok_site.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 					<!-- /if -->
 					<input type="button" value="{lang复制链接}" onclick="" class="layui-btn layui-btn-sm site-url-copy"  data-clipboard-text="{#{#}$sys.url{#}#}?siteId={$value.id}" />
 				</div>

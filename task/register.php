@@ -1,6 +1,6 @@
 <?php
 /**
- * 注册邮件会员涉及到的通知信息
+ * 注册通知信息
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -53,5 +53,4 @@ if($param['act'] == 'active'){
 		$this->gateway('exec',array('mobile'=>$user['mobile'],'content'=>$content,'title'=>$title,'identifier'=>$tpl['identifier']));
 	}
 }
-
 return true;

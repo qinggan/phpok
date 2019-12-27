@@ -14,11 +14,11 @@
 			<tr>
 				<th>ID</th>
 				<th>{lang名称}</th>
-				<th>{lang目录}</th>
+				<th>{lang根目录}</th>
+				<th>{lang子目录}</th>
 				<th>{lang附件类型}</th>
 				<th>{lang是否默认}</th>
-				<th>{langGD方案}</th>
-				<th width="120">{lang操作}</th>
+				<th>{lang操作}</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -26,16 +26,10 @@
 			<tr>
 				<td>{$value.id}</td>
 				<td>{$value.title}</td>
-				<td>{$value.root}{$rs.folder}</td>
+				<td>{$value.root}</td>
+				<td>{$value.folder}</td>
 				<td>{$value.filetypes}</td>
 				<td><!-- if $value.is_default --><span class="darkblue">{lang是}</span><!-- else -->{lang否}<!-- /if --></td>
-				<td>
-					<!-- if $value.gdall -->
-					<span class="darkblue">{lang全部}</span>
-					<!-- else -->
-					{$value.gdtypes}<!-- if !$value.gdtypes --><span class="red">{lang空}</span><!-- /if -->
-					<!-- /if -->
-				</td>
 				<td>
 					<div class="layui-btn-group">
 						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.win('{lang编辑附件分类}_#{$value.id}','{url ctrl=rescate func=set id=$value.id/}')" class="layui-btn layui-btn-sm" /><!-- /if -->

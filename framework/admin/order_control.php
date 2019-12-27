@@ -165,6 +165,7 @@ class order_control extends phpok_control
 		$statuslist = $this->model('order')->status_list();
 		$this->model('order')->update_order_status($id,'end',$statuslist['end']);
 		$this->model('wealth')->order($id,P_Lang('订单完成赚送积分'));
+		$this->plugin('plugin-order-status',$id,'end');
 		$this->success();
 	}
 
@@ -192,6 +193,7 @@ class order_control extends phpok_control
 		}
 		$statuslist = $this->model('order')->status_list();
 		$this->model('order')->update_order_status($id,'stop',$statuslist['stop']);
+		$this->plugin('plugin-order-status',$id,'stop');
 		$this->success();
 	}
 
@@ -227,6 +229,7 @@ class order_control extends phpok_control
 			$note = $statuslist['cancel'];
 		}
 		$this->model('order')->update_order_status($id,'cancel',$note);
+		$this->plugin('plugin-order-status',$id,'cancel');
 		$this->success();
 	}
 
@@ -279,6 +282,7 @@ class order_control extends phpok_control
 		if(!$code){
 			$this->error(P_Lang('未填写物流单号'));
 		}
+		$code = str_replace(array(" ","&nbsp;"),"",$code);
 		$express = $this->model('express')->get_one($express_id);
 		$array = array('order_id'=>$id,'express_id'=>$express_id,'code'=>$code,'addtime'=>$this->time);
 		$array['title'] = $express['title'];
@@ -345,8 +349,19 @@ class order_control extends phpok_control
 		$this->assign('rs',$rs);
 		$this->assign('statuslist',$statuslist);
 		//取得订单的地址
-		$address = $this->model('order')->address($id);
-		$this->assign('shipping',$address);
+		$addressconfig = $this->config['order']['address'] ? explode(",",$this->config['order']['address']) : array('shipping');
+		if($addressconfig){
+			$address = array();
+			foreach($addressconfig as $key=>$value){
+				if(!$value || !trim($value)){
+					continue;
+				}
+				$address[trim($value)] = $this->model('order')->address($id,trim($value));
+			}
+			$this->assign('address',$address);
+		}
+		//$address = $this->model('order')->address($id);
+		//$this->assign('shipping',$address);
 		//订单下的产品列表
 		$rslist = $this->model('order')->product_list($id);
 		$this->assign('rslist',$rslist);
@@ -363,7 +378,6 @@ class order_control extends phpok_control
 		}
 		$loglist = $this->model('order')->log_list($id);
 		$this->assign('loglist',$loglist);
-
 		$this->view("order_info");
 	}
 
@@ -382,9 +396,20 @@ class order_control extends phpok_control
 			$this->assign('id',$id);
 			$rs = $this->model('order')->get_one($id);
 			$rs['price'] = price_format_val($rs['price'],$rs['currency_id']);
-			$address = $this->model('order')->address($id);
-			$this->assign('shipping',$address);
 		}
+		//取得订单的地址
+		$addressconfig = $this->config['order']['address'] ? explode(",",$this->config['order']['address']) : array('shipping');
+		if($addressconfig){
+			$address = array();
+			foreach($addressconfig as $key=>$value){
+				if(!$value || !trim($value)){
+					continue;
+				}
+				$address[trim($value)] = $id ? $this->model('order')->address($id,trim($value)) : array();
+			}
+			$this->assign('address',$address);
+		}
+
 		$this->assign('rs',$rs);
 		$site_rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
 		$this->assign("site_rs",$site_rs);
@@ -629,7 +654,7 @@ class order_control extends phpok_control
 		$main['user_id'] = $this->get('user_id','int');
 		$main['price'] = $this->get('price','float');
 		$main['currency_id'] = $this->get('currency_id','int');
-		if($main['currency_id']){
+		if($main['currency_id'] && !$id){
 			$main['currency_rate'] = $this->model('currency')->rate($main['currency_id']);
 		}
 		$main['status'] = $id ? $this->get('status') : 'create';
@@ -721,6 +746,10 @@ class order_control extends phpok_control
 		$main['status_title'] = $statuslist[$main['status']] ? $statuslist[$main['status']] : '';
 		$this->model('order')->save($main,$id);
 		$this->model('order')->update_order_status($id,$main['status'],$main['status_title']);
+		if($status == 'end'){
+			$this->model('wealth')->order($id,P_Lang('订单完成结算'));
+		}
+		$this->plugin('plugin-order-status',$id,$status);
 		$this->success();
 	}
 
@@ -766,19 +795,33 @@ class order_control extends phpok_control
 	**/
 	private function _save_address($order_id)
 	{
-		$array = array();
-		$array['country'] = $this->get("s-country");
-		$array['province'] = $this->get("s-province");
-		$array['city'] = $this->get("s-city");
-		$array['county'] = $this->get("s-county");
-		$array['address'] = $this->get("s-address");
-		$array['mobile'] = $this->get("s-mobile");
-		$array['tel'] = $this->get("s-tel");
-		$array['email'] = $this->get("s-email");
-		$array['fullname'] = $this->get("s-fullname");
-		$array['order_id'] = $order_id;
-		$sid = $this->get('s-id','int');
-		$this->model('order')->save_address($array,$sid);
+		$addressconfig = $this->config['order']['address'] ? explode(",",$this->config['order']['address']) : array('shipping');
+		foreach($addressconfig as $key=>$value){
+			$value = trim($value);
+			if(!$value){
+				continue;
+			}
+			$array = array();
+			$array['type'] = $value;
+			$array['country'] = $this->get($value."-country");
+			$array['province'] = $this->get($value."-province");
+			$array['city'] = $this->get($value."-city");
+			$array['county'] = $this->get($value."-county");
+			$array['address'] = $this->get($value."-address");
+			$array['address2'] = $this->get($value."-address2");
+			$array['mobile'] = $this->get($value."-mobile");
+			$array['tel'] = $this->get($value."-tel");
+			$array['email'] = $this->get($value."-email");
+			$array['fullname'] = $this->get($value."-fullname");
+			$array['firstname'] = $this->get($value."-firstname");
+			$array['lastname'] = $this->get($value."-lastname");
+			$array['zipcode'] = $this->get($value."-zipcode");
+			$array['order_id'] = $order_id;
+			if($array['fullname'] || $array['firstname']){
+				$id = $this->get($value.'-id','int');
+				$this->model('order')->save_address($array,$id);
+			}
+		}
 		return true;
 	}
 

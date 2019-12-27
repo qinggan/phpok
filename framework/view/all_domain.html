@@ -25,7 +25,7 @@
 						<td>
 							<div class="layui-btn-group">
 								<input type="button" value="{lang更新}" id="domain_{$value.id}_submit" onclick="$.admin_all.domain_update({$value.id})" class="layui-btn" />
-								<input type="button" value="{lang删除}" class="layui-btn" onclick="$.admin_all.domain_delete({$value.id})" />
+								<input type="button" value="{lang删除}" class="layui-btn layui-btn-danger" onclick="$.admin_all.domain_delete({$value.id})" />
 								<!-- if $value.id != $rs.domain_id -->
 								<input type="button" value="{lang设主域名}" class="layui-btn" onclick="$.admin_all.domain_default({$value.id})" />
 									<!-- if $value.is_mobile -->

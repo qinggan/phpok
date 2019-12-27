@@ -991,14 +991,6 @@ if($step == 'save'){
 	$content = preg_replace('/pass\s*=.*/i','pass = "'.$dbconfig['pass'].'"',$content);
 	$content = preg_replace('/data\s*=.*/i','data = "'.$dbconfig['data'].'"',$content);
 	$content = preg_replace('/prefix\s*=.*/i','prefix = "'.$dbconfig['prefix'].'"',$content);
-	//echo "<pre>".print_r($content,true)."</pre>";
-	//exit;
-	//$content = preg_replace('/\$config\["db"\]\["host"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["host"] = "'.$dbconfig['host'].'";',$content);
-	//$content = preg_replace('/\$config\["db"\]\["port"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["port"] = "'.$dbconfig['port'].'";',$content);
-	//$content = preg_replace('/\$config\["db"\]\["user"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["user"] = "'.$dbconfig['user'].'";',$content);
-	//$content = preg_replace('/\$config\["db"\]\["pass"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["pass"] = "'.$dbconfig['pass'].'";',$content);
-	//$content = preg_replace('/\$config\["db"\]\["data"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["data"] = "'.$dbconfig['data'].'";',$content);
-	//$content = preg_replace('/\$config\["db"\]\["prefix"\]\s*=\s*[\'|"][a-zA-Z0-9\-\_\.]*[\'|"];/isU','$config["db"]["prefix"] = "'.$dbconfig['prefix'].'";',$content);
 	file_put_contents(DIR_CONFIG."db.ini.php",$content);
 	$info = array('title'=>$install->get('title',false));
 	$info['domain'] = $install->get('domain',false);
@@ -1085,11 +1077,17 @@ if($step == 'ajax_initdata'){
 					$sql = "DROP TABLE `".$table."`";
 					$db->query($sql);
 				}
+				//删除独立模块
+				$table = $db->prefix.$value['id'];
+				if(in_array($table,$tblist)){
+					$sql = "DROP TABLE `".$table."`";
+					$db->query($sql);
+				}
 			}
 		}
 		$string  = 'module,fields,list,list_cate,list_biz,list_attr,reply,project,plugins,res,tag,tag_stat,phpok,ext,extc,all,cate,user,user_ext,user_relation,';
 		$string .= 'wealth_info,wealth_log,session,payment_log,order_product,order_price,order_payment,order_log,order_invoice,order_express,order_address,order,log,fav,express,';
-		$string .= 'cart,cart_product';
+		$string .= 'cart,cart_product,menu';
 		$tmplist = explode(",",$string);
 		foreach($tmplist as $key=>$value){
 			$table = $db->prefix."".$value;

@@ -174,7 +174,18 @@ class url_model_base extends phpok_model
 					if($this->clear_params && in_array($key,$this->clear_params)){
 						continue;
 					}
-					$url .= $key."=".rawurlencode($value)."&";
+					if($value != ''){
+						if(is_array($value)){
+							foreach($value as $k=>$v){
+								if($v != ''){
+									$url .= $key.'['.$k.']='.rawurlencode($v).'&';
+								}
+								
+							}
+						}else{
+							$url .= $key."=".rawurlencode($value)."&";
+						}
+					}
 				}
 			}
 		}
@@ -303,8 +314,43 @@ class url_model_base extends phpok_model
 		$url = $rs['format'];
 		$extlist = array();
 		$forbid = array('ctrl','func','cate','cateid','cate_id','cid','module','mid','project');
+		if($data['ctrl'] == 'content'){
+			$mytmp = is_numeric($data['id']) ? $this->get_from_id($data['id'],'list') : $this->get_from_identifier($data['id'],'list');
+			$project_rs = $this->get_from_id($mytmp['project_id'],'project');
+			if(!$project_rs){
+				return false;
+			}
+			$data['project'] = $project_rs['identifier'];
+			if($project_rs['parent_id']){
+				$parent_rs = $this->get_from_id($project_rs['parent_id'],'project');
+				if($parent_rs){
+					$data['project_root'] = $parent_rs['identifier'];
+				}
+			}
+			if($project_rs['cate']){
+				$tmp = $this->get_from_id($project_rs['cate'],'cate');
+				if($tmp){
+					$data['cate_root'] = $tmp['identifier'];
+				}
+			}
+			if($data['cate_id']){
+				$tmp = $this->get_from_id($data['cate_id'],'cate');
+				if($tmp){
+					$data['cate'] = $tmp['identifier'];
+				}
+			}
+			if($data['cateid']){
+				$tmp = $this->get_from_id($data['cateid'],'cate');
+				if($tmp){
+					$data['cate'] = $tmp['identifier'];
+				}
+			}
+		}
 		foreach($data as $key=>$value){
 			if(strpos($url,'['.$key.']') !== false){
+				if($data['ctrl'] == 'tag' && $key == 'title'){
+					$value = str_replace(' ','-',$value);
+				}
 				$url = str_replace('['.$key.']',rawurlencode($value),$url);
 			}else{
 				if(!in_array($key,$forbid)){

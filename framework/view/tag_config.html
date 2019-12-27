@@ -2,11 +2,6 @@
 <script type="text/javascript">
 function save()
 {
-	if(typeof(CKEDITOR) != "undefined"){
-		for(var i in CKEDITOR.instances){
-			CKEDITOR.instances[i].updateElement();
-		}
-	}
 	var opener = $.dialog.opener;
 	$("#post_save").ajaxSubmit({
 		'url':get_url('tag','config_save'),
@@ -44,5 +39,14 @@ function save()
 		<input type="text" name="count" id="count" value="{$rs.count}" />
 	</div>
 </div>
+<div class="table">
+	<div class="title">
+		{lang列表每页数量}<span class="note">{lang应用于前台列表时每页显示数量，留空使空系统默认}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="psize" id="psize" value="{$rs.psize}" />
+	</div>
+</div>
+<input type="hidden" name="urlformat" id="urlformat" value="-" />
 </form>
 <!-- include tpl=foot_open -->

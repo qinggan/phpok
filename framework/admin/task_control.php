@@ -62,11 +62,17 @@ class task_control extends phpok_control
 			foreach($filelist as $key=>$value){
 				$tmp = $this->lib('file')->cat($value,1024);
 				$info = '';
-				preg_match_all("/.*备注(：|:)([^\n]+)\n.*/isU",$tmp,$matchs);
-				if($matchs && $matchs[2]){
-					$info = $matchs[2][0];
+				preg_match_all("/.*备注(：|:)([^\n]+)\n.*/isU",$tmp,$matches);
+				if($matches && $matches[2]){
+					$info = $matches[2][0];
 					if($info){
 						$info = trim($info);
+					}
+				}
+				if(!$info){
+					preg_match_all('/\/\*.*\s+\*\s*([^\n]+)\s+.*\*\//isU',$tmp,$matches);
+					if($matches && $matches[1]){
+						$info = $matches[1][0];
 					}
 				}
 				$value = basename($value);

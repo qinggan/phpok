@@ -10,23 +10,30 @@
 
 ;(function($){
 	$.admin_address = {
-		order:function(id)
+		order:function(id,type)
 		{
 			var opener = $.dialog.opener;
 			var url = get_url('address','one','id='+id);
 			$.phpok.json(url,function(rs){
+				console.log(rs);
 				if(rs.status){
 					var data = rs.info;
-					opener.$("#s-fullname").val(data.fullname);
-					opener.$("#s-country").val(data.country);
-					opener.$("#s-province").val(data.province);
-					opener.$("#s-city").val(data.city);
-					opener.$("#s-county").val(data.county);
-					opener.$("#s-address").val(data.address);
-					opener.$("#s-zipcode").val(data.zipcode);
-					opener.$("#s-email").val(data.email);
-					opener.$("#s-mobile").val(data.mobile);
-					opener.$("#s-tel").val(data.tel);
+					opener.$("#"+type+"-fullname").val(data.fullname);
+					if(data.firstname && data.firstname != 'undefined'){
+						opener.$("#"+type+"-firstname").val(data.firstname);
+					}
+					if(data.lastname && data.lastname != 'undefined'){
+						opener.$("#"+type+"-lastname").val(data.lastname);
+					}
+					opener.$("#"+type+"-country").val(data.country);
+					opener.$("#"+type+"-province").val(data.province);
+					opener.$("#"+type+"-city").val(data.city);
+					opener.$("#"+type+"-county").val(data.county);
+					opener.$("#"+type+"-address").val(data.address);
+					opener.$("#"+type+"-zipcode").val(data.zipcode);
+					opener.$("#"+type+"-email").val(data.email);
+					opener.$("#"+type+"-mobile").val(data.mobile);
+					opener.$("#"+type+"-tel").val(data.tel);
 					$.dialog.close();
 				}else{
 					$.dialog.alert(rs.info);
@@ -93,11 +100,6 @@
 		},
 		save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			var opener = $.dialog.opener;
 			$("#post_save").ajaxSubmit({
 				'url':get_url('address','save'),

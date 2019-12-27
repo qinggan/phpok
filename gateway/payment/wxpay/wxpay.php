@@ -430,23 +430,8 @@ class wxpay_lib
 		curl_setopt($ch,CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		if($useCert){
-			if($this->pem_ca){
-				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true); // 只信任CA颁布的证书 
-				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); // 检查证书中是否设置域名，并且是否与提供的主机名匹配
-				curl_setopt($ch, CURLOPT_CAINFO, $this->pem_ca); // CA根证书（用来验证的网站证书是否是CA颁布）
-			}else{
-				curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
-				curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,false);
-			}
-			curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
-			curl_setopt($ch,CURLOPT_SSLCERT, $this->pem_cert);
-			curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
-			curl_setopt($ch,CURLOPT_SSLKEY, $this->pem_key);
-		}else{
-			curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
-			curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,false);
-		}
+		curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
+		curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,false);
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
 		$data = curl_exec($ch);

@@ -1,4 +1,4 @@
-<!-- include tpl=head menutitle=$page_rs.title -->
+<!-- include tpl=header menutitle=$page_rs.title -->
 <!-- if $cate_rs.banner || $page_rs.banner -->
 <div class="banner" style="background-image:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}');"><img src="{#images#}/blank.gif" alt="{$cate_rs.title}" /></div>
 <!-- /if -->
@@ -8,6 +8,7 @@
 		<!-- include tpl=block/catelist cid=$cate_rs.id pid=$page_rs.id title=$page_rs.title -->
 		<!-- include tpl=block/contact -->
 		<!-- include tpl=block/hot_products -->
+		<!-- include tpl=block/taglist -->
 	</div>
 	<div class="right">
 		<div data-am-widget="list_news" class="am-list-news am-list-news-default" style="margin:0;">
@@ -65,4 +66,4 @@
 	</div>
 </div>
 
-<!-- include tpl=foot -->
+<!-- include tpl=footer -->

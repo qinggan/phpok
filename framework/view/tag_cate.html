@@ -1,0 +1,29 @@
+<!-- include tpl=head_lay nopadding=true -->
+<div class="layui-card">
+	<div class="layui-card-header red">
+		{lang关闭窗口后，请手动刷新页面，才能看到已添加的主题}
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>{lang分类名称}</th>
+			<th>&nbsp;</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr id="t_c{$value.id}">
+			<td>{$value.id}</td>
+			<td>{$value._space}{$value.title}<!-- if !$value.parent_id --><small class="gray"> _{lang根分类禁止添加}</small><!-- /if --></td>
+			<td>
+				<!-- if $value.parent_id -->
+				<input type="button" value="{lang添加}" class="btn" onclick="$.admin_tag.add_this('{$rs.id}','c{$value.id}')" />
+				<!-- /if -->
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+</div>
+<!-- include tpl=foot_lay is_open=true -->

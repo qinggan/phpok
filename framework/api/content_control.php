@@ -17,6 +17,7 @@ class content_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		$this->config('is_ajax',true);
 		$this->model('popedom')->siteid($this->site['id']);
 		$groupid = $this->model('usergroup')->group_id($this->session->val('user_id'));
 		if(!$groupid){
@@ -45,9 +46,14 @@ class content_control extends phpok_control
 		if(!$rs['module_id']){
 			$this->error(P_Lang('未绑定相应的模块'));
 		}
+		
+		
 		$project = $this->call->phpok('_project',array('pid'=>$rs['project_id']));
 		if(!$project || !$project['status']){
 			$this->error(P_Lang('项目不存在或未启用'));
+		}
+		if(!$project['is_api'] && !$project['is_front']){
+			$this->error(P_Lang('未启用API或前台可访问'));
 		}
 		if(!$this->model('popedom')->check($project['id'],$this->user_groupid,'read')){
 			$this->error(P_Lang('您没有阅读此文章权限'));
@@ -79,7 +85,6 @@ class content_control extends phpok_control
 			}
 		}
 		$data_info['page_rs'] = $project;
-		$this->phpok_seo($project);
 		
 		if($rs['cate_id'] && $project['cate']){
 			$cate_root_rs = $this->call->phpok('_cate',array('pid'=>$project['id'],'cateid'=>$project['cate']));
@@ -87,7 +92,6 @@ class content_control extends phpok_control
 				$this->error(P_Lang('根分类信息不存在或未启用'),$this->url,5);
 			}
 			$data_info['cate_root_rs'] = $cate_root_rs;
-			$this->phpok_seo($cate_root_rs);
 			$cate_rs = $this->call->phpok('_cate',array("pid"=>$project['id'],'cateid'=>$rs['cate_id']));
 			if(!$cate_rs || !$cate_rs['status']){
 				$this->error(P_Lang('分类信息不存在或未启用'),$this->url,5);
@@ -98,13 +102,10 @@ class content_control extends phpok_control
 					$this->error(P_Lang('父级分类信息不存在或未启用'),$this->url,5);
 				}
 				$data_info['cate_parent_rs'] = $cate_parent_rs;
-				$this->phpok_seo($cate_parent_rs);
 			}
 			$data_info['cate_rs'] = $cate_rs;
-			$this->phpok_seo($cate_rs);
 		}
 		$this->model('list')->add_hits($rs["id"]);
-		$this->phpok_seo($rs);
 		//判断是否有属性
 		if($rs['attrlist']){
 			

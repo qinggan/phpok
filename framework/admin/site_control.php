@@ -63,10 +63,10 @@ class site_control extends phpok_control
 		if(strpos($domain,'/') !== false){
 			$this->error(P_Lang('域名填写不规范，不能带有http://或https://或/'));
 		}
-		$domain_rs = $this->model("site")->domain_check($domain);
+		/*$domain_rs = $this->model("site")->domain_check($domain);
 		if($domain_rs){
 			$this->error(P_Lang('域名已被使用，请更换'));
-		}
+		}*/
 		$array = array();
 		$array["title"] = $title;
 		$array["dir"] = '/';
@@ -252,6 +252,7 @@ class site_control extends phpok_control
 		$array['status'] = $this->get('status','int');
 		$array['action'] = $this->get('action');
 		$array['taxis'] = $this->get('taxis','int');
+		$array['default'] = $this->get('default');
 		$this->model('site')->price_status_update($array,$id);
 		$this->success();
 	}

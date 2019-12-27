@@ -1,0 +1,298 @@
+<!-- include tpl=head_lay -->
+<script type="text/javascript" src="js/masonry-docs.min.js"></script>
+<div class="layui-row layui-col-space15">
+	<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 prd">
+		<div class="layui-card">
+			<div class="layui-card-header">
+				{lang会员基本信息}
+			</div>
+			<div class="layui-card-body">
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang会员ID}
+					</label>
+					<div class="layui-form-mid">
+						{$rs.id}
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang账号}
+					</label>
+					<div class="layui-form-mid">
+						{$rs.user}
+					</div>
+				</div>
+				<!-- if $rs.avatar -->
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang头像}
+					</label>
+					<div class="layui-form-mid">
+						<img src="{$rs.avatar}" style="width:50px;max-height:50px;" />
+					</div>
+				</div>
+				<!-- /if -->
+				<!-- if $rs.mobile -->
+				
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang手机号}
+					</label>
+					<div class="layui-form-mid">
+						{$rs.mobile}
+					</div>
+				</div>
+				<!-- /if -->
+				<!-- if $rs.email -->
+				
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang邮箱}
+					</label>
+					<div class="layui-form-mid">
+						{$rs.email}
+					</div>
+				</div>
+				<!-- /if -->
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang状态}
+					</label>
+					<div class="layui-form-mid">
+						<!-- if $rs.status == 1 -->
+						<span class="layui-bg-green"> {lang正常} </span>
+						<!-- elseif $rs.status == 2 -->
+						<span class="layui-bg-red"> {lang锁定} </span>
+						<!-- else -->
+						<span class="layui-bg-orange"> {lang等待审核} </span>
+						<!-- /if -->
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang注册时间}
+					</label>
+					<div class="layui-form-mid">
+						{func date 'Y-m-d H:i:s' $rs.regtime}
+					</div>
+				</div>
+				<!-- if $rs.code -->
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang邀请码}
+					</label>
+					<div class="layui-form-mid">
+						{$rs.code}
+					</div>
+				</div>
+				<!-- /if -->
+				<!-- if $relation -->
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang推荐人}
+					</label>
+					<div class="layui-form-mid">
+						{$relation.user}
+						<input type="button" value="{lang查看}" onclick="$.win('{lang会员信息}_#{$relation.id}','{url ctrl=user func=show id=$relation.id/}')" class="layui-btn layui-btn-xs" />
+					</div>
+				</div>
+				<!-- /if -->
+				<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
+				<!-- if $value.content != '' -->
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{$value.title}
+					</label>
+					<div class="layui-form-mid">
+						{$value.content}
+					</div>
+				</div>
+				<!-- /if -->
+				<!-- /loop -->
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						&nbsp;
+					</label>
+					<div class="layui-input-inline default-auto">
+						<input type="button" value="{lang前台登录访问}" onclick="$.phpok.open('{url ctrl=user f=autologin id=$rs.id/}')" class="layui-btn layui-btn-sm" />
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	<!-- if $wealth -->
+	
+	
+	<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 prd">
+		<div class="layui-card">
+			<div class="layui-card-header">
+				{lang会员财富}
+			</div>
+			<div class="layui-card-body">
+				<!-- loop from=$wealth key=$key value=$value id=$tmpid -->
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{$value.title}
+					</label>
+					<div class="layui-form-mid">
+						{$value.val} {$value.unit}
+					</div>
+					<div class="layui-input-inline auto gray lh38">
+						<div class="layui-btn-group">
+							<input type="button" value="编辑" onclick="$.admin_user.wealth_action('{$value.title}','{$value.id}','{$rs.id}','{$value.unit}')" class="layui-btn layui-btn-sm" />
+							<input type="button" value="日志" onclick="$.admin_user.wealth_log('{$value.title}','{$value.id}','{$rs.id}')" class="layui-btn layui-btn-sm" />
+						</div>
+					</div>
+				</div>
+
+				<!-- /loop -->
+			</div>
+		</div>
+	</div>
+	<!-- /if -->
+	<!-- if $relation_count -->
+	<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 prd">
+		<div class="layui-card">
+			<div class="layui-card-header">
+				{lang我推荐的会员，共推荐了 [total] 人|total:$relation_count}
+			</div>
+			<div class="layui-card-body">
+				<table width="100%" class="layui-table" lay-size="sm">
+				<thead>
+				<tr>
+					<th style="text-align:center;">ID</th>
+					<th class="lft">{lang会员账号}</th>
+					<th class="lft">{lang会员组}</th>
+					<th width="120px">{lang注册时间}</th>
+				</tr>
+				</thead>
+				<!-- loop from=$rlist key=$key value=$value id=$tmpid -->
+				<tr>
+					<td align="center">{$value.id}</td>
+					<td align="left">{$value.user}</td>
+					<td align="left">{$value.group_title}</td>
+					<td>{func date 'Y-m-d H:i' $value.regtime}</td>
+				</tr>
+				<!-- /if -->
+				</table>
+				<div align="center"><input type="button" class="layui-btn layui-btn-sm" value="{lang查看更多}" onclick="$.win('{lang推荐会员}_#{$rs.user}','{url ctrl=user func=vouch id=$rs.id/}')" /></div>
+			</div>
+		</div>
+	</div>
+	<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 prd">
+		<div class="layui-card">
+			<div class="layui-card-header">
+				{lang推荐人订单统计}
+			</div>
+			<div class="layui-card-body">
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang订单数量}
+					</label>
+					<div class="layui-form-mid red">
+						{$relation_order_count ? $relation_order_count : '0'}
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang订单产品数}
+					</label>
+					<div class="layui-form-mid red">
+						{$relation_product_count ? $relation_product_count : '0'}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /if -->
+	<!-- if $order_count -->
+	<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 prd">
+		<div class="layui-card">
+			<div class="layui-card-header">
+				{lang订单信息，订单数量：[total]，产品数量：[qty]|total:$order_count,qty:$product_count}
+			</div>
+			<div class="layui-card-body">
+				<table width="100%" class="layui-table" lay-size="sm">
+				<thead>
+				<tr>
+					<th style="text-align:center;">ID</th>
+					<th class="lft">{lang编号}</th>
+					<th>{lang金额}</th>
+					<th width="120px">{lang下单时间}</th>
+				</tr>
+				</thead>
+				<!-- loop from=$olist key=$key value=$value id=$tmpid -->
+				<tr>
+					<td align="center">{$value.id}</td>
+					<td align="left">{$value.sn}</td>
+					<td align="left">{func price_format $value.price $value.currency_id $value.currency_id}</td>
+					<td>{func date 'Y-m-d H:i' $value.addtime}</td>
+				</tr>
+				<!-- /if -->
+				</table>
+				<div align="center"><input type="button" class="layui-btn layui-btn-sm" value="{lang查看更多}" onclick="$.win('{lang会员订单}_#{$rs.user}','{url ctrl=order keytype=user keywords=$rs.user/}')" /></div>
+			</div>
+		</div>
+	</div>
+	<!-- /if -->
+	<!-- if $address_total -->
+	
+	
+	<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 prd">
+		<div class="layui-card">
+			<div class="layui-card-header">
+				{lang会员地址库}
+			</div>
+			<div class="layui-card-body">
+				<table class="layui-table">
+				<thead>
+				<tr>
+					<th>{langID}</th>
+					<th>{lang收件人}</th>
+					<th>{lang联系方式}</th>
+				</tr>
+				</thead>
+				<tbody>
+				<!-- loop from=$address_list key=$key value=$value id=$tmpid -->
+				<tr>
+					<td rowspan="2">{$value.id}</td>
+					<td>
+						{$value.fullname}
+					<td>
+						<!-- if $value.mobile --><div>{lang手机号} {$value.mobile}</div><!-- /if -->
+						<!-- if $value.tel --><div style="margin-top:7px">{lang电话} {$value.tel}</div><!-- /if -->
+						<!-- if $value.email --><div style="margin-top:7px">{lang邮箱} {$value.email}</div><!-- /if -->
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						{$value.country}
+						<!-- if $value.province != $value.city -->/ {$value.province}<!-- /if -->
+						<!-- if $value.city != $value.county && $value.city -->/ {$value.city}<!-- /if -->
+						<!-- if $value.county -->/ {$value.county}<!-- /if -->
+						/ {$value.address}
+						<!-- if $value.is_default --><span class="layui-badge-rim">{lang默认}</span><!-- /if -->
+					</td>
+				</tr>
+				<!-- /loop -->
+				</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<!-- /if -->
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('.layui-row').masonry({
+		itemSelector: '.prd',
+		columnWidth: '.prd',
+		percentPosition: true
+	})
+});
+</script>
+<!-- include tpl=foot_lay -->

@@ -54,7 +54,7 @@
 			var lst = old.split(cut_identifier);
 			var total = lst.length;
 			if(total>=10){
-				$.dialog.alert(p_lang('超出系统限制，请删除一些不常用的标签'));
+				$.dialog.tips(p_lang('超出系统限制，请删除一些不常用的标签'));
 				return false;
 			}
 			var status = true;
@@ -64,7 +64,7 @@
 				}
 			}
 			if(!status){
-				$.dialog.alert(p_lang('标签已经存在，不支持重复添加'));
+				$.dialog.tips(p_lang('标签已经存在，不支持重复添加'));
 				return false;
 			}
 			$("input[name=tag]").val(old+""+cut_identifier+""+val);
@@ -89,11 +89,6 @@
 		single_save:function()
 		{
 			var loading_action;
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			$("#_listedit").ajaxSubmit({
 				'url':get_url('list','single_save'),
 				'type':'post',

@@ -16,11 +16,6 @@
 		**/
 		save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			$("#post_save").ajaxSubmit({
 				'url':get_url('cate','save'),
 				'type':'post',

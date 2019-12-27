@@ -11,8 +11,8 @@
 			{lang要启用【邀请码注册】和【邮箱验证注册】功能，您需要}
 			<ol style="margin-left:2em">
 				<li>{lang创建一个项目（假设为regcheck）}</li>
-				<li>{lang项目必须绑定一个模块【假设为注册验证】}</li>
-				<li>{lang绑定的模块里必须有字段} <span class="red">account</span> {lang即会员账号字段}
+				<li>{lang项目必须绑定一个独立模块【假设为注册验证】}</li>
+				<li>{lang绑定的模块里必须有字段} <span class="red">code</span> <span class="red">user_id</span> <span class="red">active_time</span>
 			</ol>
 		</blockquote>
 		<!-- /if -->
@@ -32,14 +32,33 @@
 				{lang注册审核}
 			</label>
 			<div class="layui-input-inline auto">
-				<input type="radio" name="register_status" title="{lang自动审核}" value="1" {if $rs.register_status == '1'} checked{/if} />
-				<!-- if $reglist -->
-				<input type="radio" name="register_status" title="{lang邮箱验证注册}" value="email" {if $rs.register_status == 'email'} checked{/if} />
-				<input type="radio" name="register_status" title="{lang邀请码验证}" value="code" {if $rs.register_status == 'code'} checked{/if} />
-				<!-- /if -->
-				<input type="radio" name="register_status" title="{lang人工审核}" value="0" {if !$rs.register_status} checked{/if} />
+				<input type="radio" name="register_status" lay-filter="register_status" title="{lang免审核}" value="1" {if $rs.register_status == '1'} checked{/if} />
+				<input type="radio" name="register_status" lay-filter="register_status" title="{lang邮箱验证}" value="email" {if $rs.register_status == 'email'} checked{/if} />
+				<input type="radio" name="register_status" lay-filter="register_status" title="{lang手机号验证}" value="mobile" {if $rs.register_status == 'mobile'} checked{/if} />
+				<input type="radio" name="register_status" lay-filter="register_status" title="{lang邀请码}" value="code" {if $rs.register_status == 'code'} checked{/if} />
+				<input type="radio" name="register_status" lay-filter="register_status" title="{lang人工审核}" value="0" {if !$rs.register_status} checked{/if} />
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang系统管理员是最高级别管理也是开发管理员，可管理整个平台所有功能}</div>
+			<div class="layui-input-inline auto gray lh38">{lang请根据您的业务需求实现不同注册方式}</div>
+		</div>
+		<div class="layui-form-item{if $rs.register_status != 'email' && $rs.register_status != 'mobile'} hide{/if}" id="register_status_notice">
+			<label class="layui-form-label">
+				{lang通知模板}
+			</label>
+			<div class="layui-input-block">
+				<select name="tpl_id">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$notice_list key=$k value=$v id=$idx -->
+					<optgroup label="{$v.title}">
+						<!-- loop from=$v.rslist key=$key value=$value id=$tmpid -->
+						<option value="{$value.id}" {if $rs.tpl_id==$value.id} selected{/if}>{$value.title} <!-- if $value.note -->_{$value.note}<!-- /if --> / {$v.title}</option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-input-block mtop">
+				{lang选择通知模板，注意邮件模板和短信模板的区别}
+			</div>
 		</div>
 
 		<!-- if $reglist -->
@@ -55,6 +74,7 @@
 			</div>
 			<div class="layui-input-block mtop">{lang仅限启用验证后才有效}</div>
 		</div>
+		
 		<!-- /if -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -68,7 +88,7 @@
 				{lang设置是否开放此组供用户选择（启用后允许用户自行选择会员组）}
 			</div>
 		</div>
-		<!-- if $id && !$rs.is_guest -->
+		<!-- if $id && !$rs.is_guest && $all_fields_list -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang字段}
@@ -80,9 +100,9 @@
 			</div>
 			<div class="layui-input-block mtop">
 				<div class="layui-btn-group">
-					<input type="button" class="layui-btn layui-btn-sm" value="全选" onclick="$.input.checkbox_all('user_fields_ul')"/>
-					<input type="button" class="layui-btn layui-btn-sm" value="全不选" onclick="$.input.checkbox_none('user_fields_ul')"/>
-					<input type="button" class="layui-btn layui-btn-sm" value="反选" onclick="$.input.checkbox_anti('user_fields_ul')"/>
+					<input type="button" class="layui-btn layui-btn-sm" value="全选" onclick="$.input.checkbox_all('user_fields_ul');layui.form.render('checkbox')"/>
+					<input type="button" class="layui-btn layui-btn-sm" value="全不选" onclick="$.input.checkbox_none('user_fields_ul');layui.form.render('checkbox')"/>
+					<input type="button" class="layui-btn layui-btn-sm" value="反选" onclick="$.input.checkbox_anti('user_fields_ul');layui.form.render('checkbox')"/>
 				</div>
 			</div>
 		</div>
@@ -110,13 +130,13 @@
 	</div>
 	<div class="layui-card-body">
 		<!-- loop from=$project_list key=$key value=$value -->
-		<div class="layui-form-item" id="site_p_{$v.id}">
+		<div class="layui-form-item" id="project_{$value.id}">
 			<label class="layui-form-label" style="width:auto;min-width:150px;text-align: left;">{$value.space}{$value.title}</label>
 			<div class="layui-input-inline default-auto">
 				<div class="layui-btn-group">
-					<input type="button" class="layui-btn layui-btn-sm" value="{lang全选}" onclick="$.input.checkbox_all('project_{$value.id}')" />
-					<input type="button" class="layui-btn layui-btn-sm" value="{lang全不选}" onclick="$.input.checkbox_none('project_{$value.id}')" />
-					<input type="button" class="layui-btn layui-btn-sm" value="{lang反选}" onclick="$.input.checkbox_anti('project_{$value.id}')" />
+					<input type="button" class="layui-btn layui-btn-sm" value="{lang全选}" onclick="$.input.checkbox_all('project_{$value.id}');layui.form.render('checkbox')" />
+					<input type="button" class="layui-btn layui-btn-sm" value="{lang全不选}" onclick="$.input.checkbox_none('project_{$value.id}');layui.form.render('checkbox')" />
+					<input type="button" class="layui-btn layui-btn-sm" value="{lang反选}" onclick="$.input.checkbox_anti('project_{$value.id}');layui.form.render('checkbox')" />
 				</div>
 				<input type="checkbox" name="popedom[]" data="read" title="阅读"  value="read:{$value.id}"{if $popedom_users && in_array('read:'.$value.id,$popedom_users)} checked{/if} />
 				<!-- if $value.module -->

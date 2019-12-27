@@ -1,9 +1,9 @@
 <!-- include tpl=head_lay -->
 <div class="layui-card">
-	<div class="layui-card-header">
+	<div class="layui-card-header" phpok-id="JS_TITLE">
 		{lang项目}
 		<!-- if $popedom.set -->
-		<div class="layui-btn-group fr">
+		<div class="layui-btn-group fr" phpok-id="JS_SET">
 			<input type="button" value="{lang添加项目}" onclick="$.win('{lang添加项目}','{url ctrl=project func=set/}')" class="layui-btn layui-btn-sm" />
 			<!-- if $session.adm_develop -->
 			<input type="button" onclick="$.admin_project.import_xml()" value="{lang项目导入}" class="layui-btn layui-btn-sm" />
@@ -11,7 +11,7 @@
 		</div>
 		<!-- /if -->
 	</div>
-	<div class="layui-card-body">
+	<div class="layui-card-body" phpok-id="JS_BODY">
 		<table class="layui-table" lay-size="sm">
 		<thead>
 		<tr>
@@ -25,7 +25,7 @@
 			<th>{lang模块}</th>
 			<th width="65" class="center">{lang排序}</th>
 			<!-- if $popedom.set -->
-			<th width="228px">&nbsp;</th>
+			<th width="245px">&nbsp;</th>
 			<!-- /if -->
 		</tr>
 		</thead>
@@ -56,6 +56,7 @@
 		<!-- /loop -->
 		</table>
 		<!-- if $popedom.set -->
+		<div phpok-id="JS_BATCH">
 		<ul class="layout">
 			<li>
 				<div class="layui-btn-group">
@@ -82,6 +83,7 @@
 			</li>
 			<!-- /if -->
 		</ul>
+		</div>
 		<!-- /if -->
 	</div>
 </div>

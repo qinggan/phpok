@@ -520,10 +520,6 @@ class all_control extends phpok_control
 		$identifier = $this->get("identifier");
 		$ico = $this->get("ico");
 		$chk = $this->all_check($identifier,$id);
-		$error_url = $this->url("all","gset");
-		if($id){
-			$error_url .= "&id=".$id;
-		}
 		if($chk != "ok"){
 			$this->error(P_Lang($chk));
 		}
@@ -532,7 +528,8 @@ class all_control extends phpok_control
 		$array["status"] = $status;
 		$array["ico"] = $ico;
 		$array["identifier"] = $identifier;
-		$array["site_id"] = $_SESSION["admin_site_id"];
+		$array['is_api'] = $this->get('is_api','int');
+		$array["site_id"] = $this->session->val('admin_site_id');
 		$this->model('site')->all_save($array,$id);
 		$this->success();
 	}

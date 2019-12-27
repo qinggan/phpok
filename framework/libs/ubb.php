@@ -125,22 +125,18 @@ class ubb_lib
 		return $Text;
 	}
 
+	//格式化视频，将 embed 插入的视频统一用 iframe 访问
 	private function _video($Text)
 	{
 		//格式化视频链接地址，主要是格式化FLV格式的转换
 		$list = false;
-		preg_match_all("/<embed(.+)src=[\"|'](.+\.flv)[\"|'](.*)>/isU",$Text,$list);
-		if($list && $list[2] && $list[0])
-		{
-			foreach($list[2] as $key=>$value)
-			{
-				$tmpurl = 'js/vcastr.swf?xml={vcastr}{channel}{item}{source}../'.$value.'{/source}{duration}{/duration}{title}{/title}{/item}{/channel}{config}{isAutoPlay}false{/isAutoPlay}{isLoadBegin}false{/isLoadBegin}{/config}{plugIns}{beginEndImagePlugIn}{url}js/image.swf{/url}{source}{/source}{type}beginend{/type}{scaletype}exactFil{/scaletype}{/beginEndImagePlugIn}{/plugIns}{/vcastr}';
-				$string = '<embed'.$list[1][$key].' src="'.$tmpurl.'"'.$list[3][$key].'>';
+		preg_match_all("/<embed(.+)src=[\"|'](.+)[\"|'](.*)>/isU",$Text,$list);
+		if($list && $list[2] && $list[0]){
+			foreach($list[2] as $key=>$value){
+				$string = '<iframe'.$list[1][$key].' src="'.$value.'"'.$list[3][$key].' frameborder=0 allowfullscreen></iframe>';
 				$Text = str_replace($list[0][$key],$string,$Text);
 			}
 		}
 		return $Text;
 	}
 }
-
-?>

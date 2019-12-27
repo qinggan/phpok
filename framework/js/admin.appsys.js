@@ -30,11 +30,6 @@
 		},
 		setting_save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			var opener = $.dialog.opener;
 			var url = get_url('appsys','setting_save');
 			$("#post_save").ajaxSubmit({
@@ -228,14 +223,6 @@
 					return false;
 				})
 			})
-		},
-		filelist:function(id,title)
-		{
-			$.win(p_lang('文件列表')+"_"+title,get_url('appsys','filelist','id='+id));
-		},
-		file_edit:function(id,folder,title)
-		{
-			$.win(p_lang('编辑')+"_"+title,get_url('appsys','file_edit','id='+id+"&folder="+$.str.encode(folder)+"&title="+$.str.encode(title)));
 		}
 	}
 })(jQuery);

@@ -1,0 +1,41 @@
+<!-- include tpl=head_lay nopadding=true -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<div class="layui-card" id="menu_{$key}">
+	<div class="layui-card-header">
+		{lang菜单}{$tmpid.num}
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<span class="red">{$key}</span>
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="nameid[{$key}]" class="layui-input" value="{$value}" placeholder="{lang名称}" />
+			</div>
+			<!-- if $key != 'top' && $key != 'bottom' -->
+			<div class="layui-input-inline auto gray lh38">
+				<input type="button" value="删除" onclick="$.admin_menu.group_del('{$key}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+			</div>
+			<!-- /if -->
+		</div>
+	</div>
+</div>
+<!-- /loop -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang新菜单}
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-input-inline">
+				<input type="text" class="layui-input" name="keyid_add" id="keyid_add" placeholder="{lang标识}" />
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="nameid_add" class="layui-input" id="nameid_add" placeholder="{lang名称}" />
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_lay -->

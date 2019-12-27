@@ -133,11 +133,6 @@
 		},
 		save:function(id)
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			$("#"+id).ajaxSubmit({
 				'url':get_url('call','save'),
 				'type':'post',

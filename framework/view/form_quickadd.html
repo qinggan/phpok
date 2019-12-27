@@ -2,11 +2,6 @@
 <script type="text/javascript">
 function save()
 {
-	if(typeof(CKEDITOR) != "undefined"){
-		for(var i in CKEDITOR.instances){
-			CKEDITOR.instances[i].updateElement();
-		}
-	}
 	var opener = $.dialog.opener;
 	var obj = opener.$("#{$identifier}");
 	var tip = $.dialog.tips(p_lang('正在保存数据…'),100);

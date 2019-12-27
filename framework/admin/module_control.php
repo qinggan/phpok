@@ -720,26 +720,24 @@ class module_control extends phpok_control
 		$tmp = $rs;
 		if(isset($tmp['_fields'])){
 			unset($tmp['_fields']);
-		}
-		
+		}		
 		$insert_id = $this->model('module')->save($tmp);
 		if(!$insert_id){
 			$this->error(P_Lang('模块导入失败，保存模块基本信息错误'));
 		}
 		$this->model('module')->create_tbl($insert_id);
-		$tbl_exists = $this->model('module')->chk_tbl_exists($insert_id,$tmp['mtype']);
+		$tbl_exists = $this->model('module')->chk_tbl_exists($insert_id,$tmp['mtype'],$tmp['tbl']);
 		if(!$tbl_exists){
 			$this->model('module')->delete($insert_id);
 			$this->error(P_Lang('创建模块表失败'));
 		}
-		if(isset($rs['_fields']) && $rs['_fields']){
+		if(isset($rs['_fields']) && $rs['_fields'] && is_array($rs['_fields'])){
 			foreach($rs['_fields'] as $key=>$value){
-				if($value['ext'] && is_array($value['ext'])){
-					$value['ext'] = serialize($value['ext']);
+				$value['ftype'] = $insert_id;
+				$tmpid = $this->model('module')->fields_save($value);
+				if($tmpid){
+					$this->model('module')->create_fields($tmpid);
 				}
-				$value['module_id'] = $insert_id;
-				$this->model('module')->fields_save($value);
-				$this->model('module')->create_fields($value['id']);
 			}
 		}
 		$this->lib('file')->rm($this->dir_cache.'module.xml');

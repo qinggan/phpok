@@ -19,8 +19,10 @@
 				var oldvalue = $(obj).val();
 				if(oldvalue == '禁用'){
 					$(obj).val('启用');
+					$(obj).removeClass('layui-btn-danger');
 				}else{
 					$(obj).val('禁用');
+					$(obj).addClass('layui-btn-danger');
 				}
 			});
 		},

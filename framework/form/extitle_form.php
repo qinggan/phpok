@@ -130,6 +130,14 @@ class extitle_form extends _init_auto
 		if(!$rs['content']){
 			return false;
 		}
+		$flist = $this->model('module')->fields_all($project['module'],'identifier');
+		if($flist){
+			foreach($flist as $key=>$value){
+				$tmp = ($value['ext'] && is_string($value['ext'])) ? unserialize($value['ext']) : $value['ext'];
+				$value = array_merge($tmp,$value);
+				$flist[$key] = $value;
+			}
+		}
 		$list = explode(",",$rs['content']);
 		$list = array_unique($list);
 		if($module['mtype']){
@@ -137,9 +145,9 @@ class extitle_form extends _init_auto
 			$orderby = "SUBSTRING_INDEX('".implode(",",$list)."',id,1)";
 			$list = $this->model('list')->single_list($module['id'],$condition,0,0,$orderby);
 		}else{
-			$this->model('list')->is_biz(false);
+			$this->model('list')->is_biz(($project['is_biz'] ? true : false));
 			$this->model('list')->multiple_cate(false);
-			$this->model('list')->is_user(false);
+			$this->model('list')->is_user(($project['is_userid'] ? true : false));
 			$condition = "l.id IN(".implode(",",$list).")";
 			$orderby = "SUBSTRING_INDEX('".implode(",",$list)."',l.id,1)";
 			$list = $this->model('list')->get_list($module['id'],$condition,0,0,$orderby);
@@ -160,11 +168,12 @@ class extitle_form extends _init_auto
 		}
 		$rslist = array();
 		foreach($list as $key=>$value){
-			$tmp = array('id'=>$value['id'],'project_id'=>$value['project_id']);
+			$tmp = $value;
+			//$tmp = array('id'=>$value['id'],'project_id'=>$value['project_id']);
 			foreach($fields as $k=>$v){
-				$tmp[$v] = $value[$v];
+				$tmp[$v] = $flist[$v] ? $this->lib('form')->show($flist[$v],$value[$v]) : $value[$v];
 			}
-			$rslist[$key] = $value;
+			$rslist[$key] = $tmp;
 		}
 		return $rslist;
 	}

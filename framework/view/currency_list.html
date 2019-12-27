@@ -17,6 +17,7 @@
 		<table class="layui-table">
 		<thead>
 		<tr>
+			<th>ID</th>
 			<th>{lang货币代号}</th>
 			<th>{lang数字代码}</th>
 			<th>{lang状态}</th>
@@ -30,6 +31,7 @@
 		<tbody>
 		<!-- loop from=$rslist key=$key value=$value -->
 		<tr>
+			<td>{$value.id}</td>
 			<td>{$value.code}</td>
 			<td>{$value.code_num}</td>
 			<td>

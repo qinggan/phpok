@@ -81,7 +81,10 @@ class log_control extends phpok_control
 			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 			$this->assign('pagelist',$pagelist);
 		}
-		$this->addjs('js/laydate/laydate.js');
+		$date30=date('Y-m-d',($this->time - 30*24*3600));
+		$date7=date('Y-m-d',($this->time - 7*24*3600));
+		$this->assign('date30',$date30);
+		$this->assign('date7',$date7);
 		$this->view('log_index');
 	}
 

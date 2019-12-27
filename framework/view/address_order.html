@@ -1,37 +1,44 @@
-<!-- include tpl=head_lay -->
-<table class="layui-table">
-<thead>
-<tr>
-	<th width="30px">{langID}</th>
-	<th>{lang收件人}</th>
-	<th>{lang联系方式}</th>
-	<th>{lang地址}</th>
-	<td>{lang操作}</td>
-</tr>
-</thead>
-<tbody>
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<tr>
-	<td>{$value.id}</td>
-	<td>
-		{$value.fullname}
-	<td>
-		<!-- if $value.mobile --><div class="layui-icon icon-mobile"> {$value.mobile}</div><!-- /if -->
-		<!-- if $value.email --><div class="layui-icon icon-envelope" style="margin-top:7px"> {$value.email}</div><!-- /if -->
-		<!-- if $value.tel --><div class="layui-icon icon-phone" style="margin-top:7px"> {$value.tel}</div><!-- /if -->
-	</td>
-	<td>
-		{$value.country}
-		<!-- if $value.province != $value.city -->/ {$value.province}<!-- /if -->
-		<!-- if $value.city != $value.county && $value.city -->/ {$value.city}<!-- /if -->
-		<!-- if $value.county -->/ {$value.county}<!-- /if -->
-		/ {$value.address}
-		<!-- if $value.is_default --><span class="layui-badge-rim">{lang默认}</span><!-- /if -->
-	</td>
-	<td><input type="button" class="layui-btn layui-btn-sm" value="{lang使用此地址}" onclick="$.admin_address.order('{$value.id}')" /></td>
-</tr>
-<!-- /loop -->
-</tbody>
-</table>
-<!-- if $pagelist && $total > $psize --><!-- include tpl=pagelist --><!-- /if -->
+<!-- include tpl=head_lay nopadding=true -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th width="30px">{langID}</th>
+			<th>{lang收件人}</th>
+			<th>{lang联系方式}</th>
+			<th>{lang地址}</th>
+			<td>{lang操作}</td>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.id}</td>
+			<td>
+				{$value.fullname}
+			<td>
+				<!-- if $value.mobile --><div class="layui-icon icon-mobile"> {$value.mobile}</div><!-- /if -->
+				<!-- if $value.email --><div class="layui-icon icon-envelope" style="margin-top:7px"> {$value.email}</div><!-- /if -->
+				<!-- if $value.tel --><div class="layui-icon icon-phone" style="margin-top:7px"> {$value.tel}</div><!-- /if -->
+			</td>
+			<td>
+				{$value.country}
+				<!-- if $value.province != $value.city -->/ {$value.province}<!-- /if -->
+				<!-- if $value.city != $value.county && $value.city -->/ {$value.city}<!-- /if -->
+				<!-- if $value.county -->/ {$value.county}<!-- /if -->
+				/ {$value.address}
+				<!-- if $value.is_default --><span class="layui-badge-rim">{lang默认}</span><!-- /if -->
+			</td>
+			<td><input type="button" class="layui-btn layui-btn-sm" value="{lang使用此地址}" onclick="$.admin_address.order('{$value.id}','{$types}')" /></td>
+		</tr>
+		<!-- /loop -->
+		</tbody>
+		</table>
+		<!-- if $pagelist && $total > $psize --><!-- include tpl=pagelist --><!-- /if -->
+	</div>
+</div>
 <!-- include tpl=foot_lay -->

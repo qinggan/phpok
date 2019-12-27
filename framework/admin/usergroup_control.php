@@ -60,17 +60,6 @@ class usergroup_control extends phpok_control
 		//项目列表
 		$rslist = $this->model('project')->get_all_project($_SESSION["admin_site_id"]);
 		$this->assign("project_list",$rslist);
-		//取得模块中带有account字段
-		$reglist = false;
-		if($rslist){
-			foreach($rslist as $key=>$value){
-				if(!$value['module']) continue;
-				$tmplist = $this->model('module')->f_all("identifier='account' AND ftype=".$value['module']);
-				if(!$tmplist) continue;
-				$reglist[] = $value;
-			}
-			$this->assign('reglist',$reglist);
-		}
 		
 		//判断是否启用
 		//自定义扩展字段
@@ -89,6 +78,19 @@ class usergroup_control extends phpok_control
 				$fields_list = explode(",",$rs["fields"]);
 			}
 			$this->assign("fields_list",$fields_list);
+		}
+
+		$emailtpl = $this->model('email')->simple_list($this->session->val('admin_site_id'));
+		if($emailtpl){
+			$_etpl = array('sms'=>array('title'=>P_Lang('短信模板'),'rslist'=>array()),'email'=>array('title'=>P_Lang('邮件模板'),'rslist'=>array()));
+			foreach($emailtpl as $key=>$value){
+				if(substr($value['identifier'],0,4) == 'sms_'){
+					$_etpl['sms']['rslist'][$key] = $value;
+				}else{
+					$_etpl['email']['rslist'][$key] = $value;
+				}
+			}
+			$this->assign('notice_list',$_etpl);
 		}
 		
 		$this->view("usergroup_set");
@@ -131,7 +133,7 @@ class usergroup_control extends phpok_control
 		$array["is_open"] = $this->get("is_open","int");
 		$array["taxis"] = $this->get("taxis","int");
 		$array["register_status"] = $this->get("register_status");
-		$array["tbl_id"] = $this->get("tbl_id","int");
+		$array['tpl_id'] = $this->get('tpl_id','int');
 		$fields_list = $this->get("fields_list");
 		if($fields_list && is_array($fields_list)){
 			if(in_array("all",$fields_list)){

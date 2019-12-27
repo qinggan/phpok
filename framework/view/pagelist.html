@@ -18,7 +18,7 @@
 			</select>
 		<!-- /if -->
 	<!-- /loop -->
-	<input type="number" name="go_to_page" id="go_to_page" value="{func G pageid}" class="short" min="0" max="{$total_page}"  />
+	<input type="number" name="go_to_page" id="go_to_page" value="{$get.pageid}" class="short" min="0" max="{$total_page}"  />
 	<button type="button" onclick="go_to_page_action()" class="layui-btn layui-btn-xs" style="background-color:#1E9FFF;border:0;">GO</button>
 </div>
 <!-- /if -->

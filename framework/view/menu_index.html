@@ -1,0 +1,83 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		<div class="layui-btn-group">
+			<!-- loop from=$menulist key=$key value=$value id=$tmpid -->
+			<input type="button" value="{$value}" onclick="$.admin_menu.tolist('{$key}')" class="layui-btn layui-btn-sm{if $key == $id} layui-btn-normal{/if}" />
+			<!-- /loop -->
+		</div>
+		<div class="layui-btn-group fr">
+			<!-- if $popedom.group -->
+			<input type="button" value="{lang组管理}" onclick="$.admin_menu.group()" class="layui-btn layui-btn-sm" />
+			<!-- /if -->
+			<input type="button" value="{lang添加菜单}" onclick="$.admin_menu.add('{$id}')" class="layui-btn layui-btn-sm" />
+		</div>
+		
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th class="w33">{lang状态}</th>
+			<th>{lang菜单名称}</th>
+			<th>{lang目标链接}</th>
+			<th>{lang打开方式}</th>
+			<th>{lang限制}</th>
+			<th class="w50">{lang排序}</th>
+			<th>{lang操作}</th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- loop from=$rslist key=$key value=$value id=$idxx -->
+		<tr id="menu_{$value.id}">
+			<td>{$value.id}</td>
+			<td>
+				<input type="button" id="status_{$value.id}" value="{if $value.status}{lang启用}{else}{lang停用}{/if}" {if $popedom.status} onclick="phpok_status('{$value.id}','{url ctrl=menu func=status/}')"{else} disabled{/if} class="layui-btn layui-btn-sm {if !$value.status} layui-btn-danger{/if}" />
+			</td>
+			<td>
+				<div>
+					<!-- for($i=1;$i<$value[_layer];$i++) -->
+					<span class="cate_line"></span>
+					<!-- /for -->
+					<!-- if $value[_layer]>0 -->
+					<span class="cate_middle">&nbsp;</span>
+					<!-- /if -->
+					<span class="cate_txt">{$value.title}</span>
+				</div>
+			</td>
+			<td>
+				<!-- if $value.type == 'project' -->
+				{lang项目}_{$value.project.title}
+				<!-- elseif $value.type == 'cate' -->
+				{lang分类}_{$value.project.title} / {$value.cate.title}
+				<!-- elseif $value.type == 'content' -->
+				{lang主题}_{$value.project.title} / {$value.info.title}
+				<!-- else -->
+				{lang自定义链接}_{$value.link}
+				<!-- /if -->
+			</td>
+			<td><!-- if $value.target -->{lang新窗口}<!-- else -->{lang当前窗口}<!-- /if --></td>
+			<td><!-- if $value.is_userid -->{lang会员可看}<!-- else -->{lang不限}<!-- /if --></td>
+			<td><input type="text" id="taxis_{$value.id}" class="layui-input" value="{$value.taxis}" tabindex="{$idxx.num}" onblur="phpok_taxis(this,'{url ctrl=menu func=taxis id=$value.id/}')" /></td>
+			<td>
+				<div class="layui-btn-group">
+					<!-- if $popedom.add -->
+					<input type="button" value="{lang添加子菜单}" onclick="$.admin_menu.add('{$id}','{$value.id}')" class="layui-btn layui-btn-sm" />
+					<!-- /if -->
+					<!-- if $popedom.modify -->
+					<input type="button" value="{lang修改}" onclick="$.admin_menu.edit('{$value.id}')" class="layui-btn layui-btn-sm" />
+					<!-- /if -->
+					<!-- if $popedom.delete -->
+					<input type="button" value="{lang删除}" onclick="$.admin_menu.del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+					<!-- /if -->
+				</div>
+
+			</td>
+		</tr>
+		<!-- /loop -->
+		</tbody>
+		</table>
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

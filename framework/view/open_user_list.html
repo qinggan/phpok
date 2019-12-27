@@ -1,4 +1,4 @@
-<!-- include tpl=head -->
+<!-- include tpl=head_lay nopadding=true -->
 <script type="text/javascript">
 var input_id = "#{$id}";
 var multi = {$multi ? "1" : "0"};
@@ -10,14 +10,16 @@ function show_list()
 		return false;
 	}
 	$("li[name=list]").show();
-	var url = get_url("inp")+"&type=user&content="+$.str.encode(cid);
+	var url = get_url("inp","","type=user&content="+$.str.encode(cid));
 	$.phpok.json(url,function(data){
-		if(data.status == 'ok'){
-			var lst = data.content;
+		if(data.status){
+			var lst = data.info;
 			var c = "";
 			for(var i in lst){
 				c += '<li id="user_{$id}_'+lst[i]['id']+'">';
-				c += '<div>'+lst[i]['user']+' <a href="javascript:delete_input(\''+lst[i]['id']+'\');void(0);" title="删除"><img src="images/page_delete.png" border="0" alt="" /></a></div>';
+				c += '<div class="layui-btn-group">';
+				c += '<input type="button" value="'+lst[i]['user']+'" class="layui-btn layui-btn-xs" />';
+				c += '<input type="button" value="×" title="删除会员：'+lst[i]['user']+'" onclick="delete_input(\''+lst[i]['id']+'\')" class="layui-btn layui-btn-xs layui-btn-danger" /></div>';
 				c += '</li>';
 				$("#user_"+lst[i]['id']).hide();
 			}
@@ -82,42 +84,49 @@ $(document).ready(function(){
 	}
 });
 </script>
-<!-- if $multi -->
-<div class="list">
-	<ul class="layout">
-		<li>已选择：</li>
-		<div id="selected_list"></div>
-		<div class="clear"></div>
-	</ul>
+
+<div class="layui-card">
+	<div class="layui-card-header">
+		<form method="post" action="{url ctrl=open func=user id=$id/}">
+		<ul class="layout" style="padding-top:2px;">
+			<li><input type="text" class="layui-input" name="keywords" id="keywords" value="{$keywords}" /></li>
+			<li><input type="submit" value="搜索" class="layui-btn" /></li>
+		</ul>
+		</form>
+	</div>
+	<div class="layui-card-body">
+		<!-- if $multi -->
+		<div class="list">
+			<ul class="layout">
+				<li>已选择：</li>
+				<div id="selected_list"></div>
+				<div class="clear"></div>
+			</ul>
+		</div>
+		<!-- /if -->
+		<table width="100%" class="layui-table" lay-size="sm">
+		<thead>
+		<tr>
+			<th style="text-align:center;">ID</th>
+			<th width="20px">&nbsp;</th>
+			<th width="35px"></th>
+			<th class="lft">{lang会员账号}</th>
+			<th width="120px">{lang注册时间}</th>
+			<th></th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td align="center">{$value.id}</td>
+			<td><span class="status{$value.status}" value="{$value.status}"></span></td>
+			<td align="center"><img src="{$value.avatar ? $value.avatar : 'images/user_default.png'}" border="0" width="24px" height="24px" /></td>
+			<td align="left">{$value.user}</td>
+			<td>{func date 'Y-m-d H:i' $value.regtime}</td>
+			<td><input type="button" value="选择" onclick="add_input('{$value.id}')" class="layui-btn layui-btn-xs" /></td>
+		</tr>
+		<!-- /if -->
+		</table>
+		<!-- include tpl=pagelist -->
+	</div>
 </div>
-<!-- /if -->
-<div class="tips">
-	<form method="post" action="{url ctrl=open func=user id=$id/}">
-	<table align="center">
-	<tr>
-		<td><input type="text" name="keywords" id="keywords" value="{$keywords}" /></td>
-		<td><input type="submit" value="搜索" class="submit" /></td>
-	</tr>
-	</table>
-	</form>
-</div>
-<table width="100%" cellpadding="0" cellspacing="0" class="list">
-<tr>
-	<th>会员ID</th>
-	<th class="lft">账号</th>
-	<th class="lft">Email</th>
-	<th class="lft">手机</th>
-	<th>&nbsp;</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value -->
-<tr>
-	<td class="center">{$value.id}</td>
-	<td>{$value.user}</td>
-	<td id="email_{$value.id}">{$value.email}</td>
-	<td id="mobile_{$value.id}">{$value.mobile}</td>
-	<td><input type="button" value="选择" onclick="add_input('{$value.id}')" class="layui-btn" /></td>
-</tr>
-<!-- /loop -->
-</table>
-<!-- include tpl=pagelist -->
-<!-- inc:foot_open -->
+<!-- include tpl=foot_lay is_open=true -->

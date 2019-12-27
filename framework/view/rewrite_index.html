@@ -1,59 +1,53 @@
 <!-- include tpl=head_lay title=伪静态页规则管理 -->
-
 <div class="layui-card">
-	<div class="layui-card-header " style="visibility: visible;">
-		<div>伪静态页规则管理</div>
-	</div>
-
-	<div class="layui-card-body">
-
-		<blockquote class="layui-elem-quote">
-			伪静态页规则顺序很重要，读伪静态页规则顺序从小到大依次读取，只要一符合条件即刻中止匹配<br>
-			标题是为了方便管理而设置，在伪静态页中无其他意义<br>
-			使用伪静态页功能，需要您的WEB服务器支持，同时您必须对此有所了解	<div class="clear"></div>
-		</blockquote>
-
-		<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
-			<button class="layui-btn" onclick="parent.layui.index.openTabsPage('{url ctrl=rewrite func=set/}','添加规则')">
-				<i class="layui-icon">&#xe608;</i> {lang添加规则}
-			</button>
+	<div class="layui-card-header">
+		{lang伪静态页规则管理}
+		<div class="fr">
+			<input type="button" value="{lang添加规则}" onclick="$.win('{lang添加规则}','{url ctrl=rewrite func=set/}')" class="layui-btn layui-btn-sm" />
 		</div>
-
+	</div>
+	<div class="layui-card-body">
+		<blockquote class="layui-elem-quote">
+			{lang伪静态页规则顺序很重要，读伪静态页规则顺序从小到大依次读取，只要一符合条件即刻中止匹配}<br>
+			{lang标题是为了方便管理而设置，在伪静态页中无其他意义}<br>
+			{lang使用伪静态页功能，需要您的WEB服务器支持，同时您必须对此有所了解}
+			<div class="clear"></div>
+		</blockquote>
 		<table class="layui-table">
-			<!--<colgroup>  .<col width="150"> <col width="200"> <col> </colgroup>-->
-			<thead>
-			<tr>
-				<th>主题</th>
-				<th>正则</th>
-				<th>目标网址</th>
-				<th>格式化</th>
-				<th>排序</th>
-				<th>操作</th>
-			</tr>
-			</thead>
-			<tbody>
-			<!-- loop from=$rslist key=$key value=$value -->
-			<tr id="edit_{$value.id}">
-				<td>{$value.title}</td>
-				<td>{$value.rule}</td>
-				<td>{$value.val}</td>
-				<td>{$value.format}</td>
-				<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.sort}</div></td>
-				<td>
-					<div class="layui-btn-group">
-						<!-- if $popedom.set -->
-						<input type="button" value="{lang编辑}" onclick="parent.layui.index.openTabsPage('{url ctrl=rewrite func=set id=$value.id/}','编辑规则');" class="layui-btn  layui-btn-sm" />
-						<input type="button" value="{lang复制}" onclick="$.admin_rewrite.copy('{$value.id}')" class="layui-btn  layui-btn-sm" />
-						<!-- /if -->
-						<!-- if $popedom.delete -->
-						<input type="button" value="{lang删除}" onclick="$.admin_rewrite.del('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm" />
-						<!-- /if -->
-					</div>
-				</td>
-			</tr>
-			<!-- /loop -->
-			</tbody>
+		<thead>
+		<tr>
+			<th>{lang主题}</th>
+			<th>{lang正则}</th>
+			<th>{lang目标网址}</th>
+			<th>{lang格式化}</th>
+			<th>{lang排序}</th>
+			<th>{lang操作}</th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr id="edit_{$value.id}">
+			<td>{$value.title}</td>
+			<td>{$value.rule}</td>
+			<td>{$value.val}</td>
+			<td>{$value.format}</td>
+			<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.sort}</div></td>
+			<td>
+				<div class="layui-btn-group">
+					<!-- if $popedom.set -->
+					<input type="button" value="{lang编辑}" onclick="parent.layui.index.openTabsPage('{url ctrl=rewrite func=set id=$value.id/}','编辑规则');" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang复制}" onclick="$.admin_rewrite.copy('{$value.id}')" class="layui-btn  layui-btn-sm" />
+					<!-- /if -->
+					<!-- if $popedom.delete -->
+					<input type="button" value="{lang删除}" onclick="$.admin_rewrite.del('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm layui-btn-danger" />
+					<!-- /if -->
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</tbody>
 		</table>
 	</div>
 </div>
+
 <!-- include tpl=foot_lay -->

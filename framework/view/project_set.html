@@ -155,6 +155,10 @@
 							<td>{lang前台访问}</td>
 							<td>{lang启用后，可直接在后台里点击进入前台，使用动态地址}</td>
 						</tr>
+						<tr>
+							<td>{langAPI访问}</td>
+							<td>{lang启用后，可通过接口获取数据}</td>
+						</tr>
 					</table>
 					
 				</div>
@@ -170,6 +174,7 @@
 						<li><input type="checkbox" name="is_biz" title="{lang电子商务}" id="is_biz"{if $rs.is_biz} checked{/if} /></li>
 						<!-- /if -->
 						<li><input type="checkbox" name="is_front" title="{lang前台访问}" id="is_front"{if $rs.is_front} checked{/if} /></li>
+						<li><input type="checkbox" name="is_api" title="{langAPI访问}" id="is_api"{if $rs.is_api} checked{/if} /></li>
 					</ul>
 					<div class="clear"></div>
 				</div>

@@ -1,4 +1,4 @@
-<!-- include tpl=head title="结算信息 - 购物车" -->
+<!-- include tpl=head title="结算订单" -->
 <script type="text/javascript">
 var user_id = '{$session.user_id ? $session.user_id : 0}';
 function check_it()
@@ -185,7 +185,7 @@ function load_freight()
 			<div class="am-panel-bd">
 				<div class="am-tabs" data-am-tabs>
 					<ul class="am-tabs-nav am-nav am-nav-tabs">
-						<li style="line-height:1.6;padding:0.4rem 1rem;">请选择支付方式：</li>
+						<li style="line-height:1.6;padding:0.4rem 1rem;">支付方式：</li>
 						<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
 						<li{if !$tmpid.index} class="am-active"{/if}><a href="javascript:void(0);">{$value.title}</a></li>
 						<!-- /loop -->

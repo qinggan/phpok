@@ -44,10 +44,7 @@ class common_lib
 			$x = explode(',', $ip);
 			$ip = end($x);
 		}
-		if(filter_var($ip,FILTER_VALIDATE_IP)){
-			return $ip;
-		}
-		return false;
+		return $ip;
 	}
 
 	/**

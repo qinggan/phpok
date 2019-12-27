@@ -14,9 +14,8 @@ class phpexcel_lib
 {
 	public function __construct()
 	{
-		require_once 'phar://' . ROOT . 'extension/phpexcel/phpexcel.phar';
 		//PHP版
-		//require_once ROOT . 'extension/phpexcel/phpexcel/PHPExcel.php';
+		require_once EXTENSION . 'phpexcel/phpexcel/PHPExcel.php';
 	}
 
 	public function excelTime($date, $time = false)

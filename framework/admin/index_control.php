@@ -462,22 +462,30 @@ class index_control extends phpok_control
 		}
 		//清理更新后自定义扩展异常Bug
 		if($type == 'u_error'){
-			$sql = "SELECT * FROM ".$this->db->prefix."fields";
+			$sql = "SELECT * FROM ".$this->db->prefix."fields ORDER BY id ASC";
 			$tmplist = $this->db->get_all($sql);
 			if(!$tmplist){
 				$this->success();
 			}
-			$sql = "SELECT id FROM ".$this->db->prefix."extc";
-			$idlist = $this->db->get_all($sql,'id');
-			$ids = $idlist ? array_keys($idlist) : array();
+			$mlist = array();
+			$ids = array();
 			foreach($tmplist as $key=>$value){
 				if(is_numeric($value['ftype'])){
 					continue;
 				}
-				if(!in_array($value['id'],$ids)){
+				$tmpid = $value['ftype'].'-'.$value['identifier'];
+				if($mlist[$tmpid]){
 					$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$value['id']."'";
 					$this->db->query($sql);
+					unset($tmplist[$key]);
+				}else{
+					$mlist[$tmpid] = $value;
+					$ids[] = $value['id'];
 				}
+			}
+			if($ids && count($ids)>0){
+				$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id NOT IN(".implode(",",$ids).")";
+				$this->db->query($sql);
 			}
 		}
 		if($type == 'other' || $type == 'all'){

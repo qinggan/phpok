@@ -26,12 +26,13 @@
 			'auto':false,
 			'accept':{'title':p_lang('图片(*.jpg, *.gif, *.png)'),'extensions':'jpg,png,gif'}
 		};
-		this.opts = $.extend({},defaults,options);
+    var opts = $.extend({},defaults,options);
+    this.opts = opts;
 		if(!this.opts.pick.innerHTML){
 			this.opts.pick.innerHTML = p_lang('选择本地文件');
 		}
-		this.id = "#"+this.opts.id;
-		uploader = WebUploader.create(this.opts);
+		this.id = "#"+opts.id;
+		uploader = WebUploader.create(opts);
 		this.uploader = uploader;
 		this.upload_state = 'ready';
 		uploader.on('beforeFileQueued',function(file){

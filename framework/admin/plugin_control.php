@@ -61,9 +61,12 @@ class plugin_control extends phpok_control
 		if(!$this->popedom["config"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$id = $this->get("id");
+		$id = $this->get("_phpokid");
 		if(!$id){
-			$this->error(P_Lang('未指定ID'),$this->url('plugin'));
+			$id = $this->get('id');
+			if(!$id){
+				$this->error(P_Lang('未指定ID'));
+			}
 		}
 		$this->assign("id",$id);
 		$rs = $this->model('plugin')->get_one($id);
@@ -89,9 +92,12 @@ class plugin_control extends phpok_control
 	**/
 	public function extconfig_f()
 	{
-		$id = $this->get("id");
+		$id = $this->get("_phpokid");
 		if(!$id){
-			$this->error(P_Lang('未指定ID'));
+			$id = $this->get('id');
+			if(!$id){
+				$this->error(P_Lang('未指定ID'));
+			}
 		}
 		$this->assign("id",$id);
 		$rs = $this->model('plugin')->get_one($id);
@@ -121,9 +127,12 @@ class plugin_control extends phpok_control
 		if(!$this->popedom["config"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$id = $this->get("id");
+		$id = $this->get("_phpokid");
 		if(!$id){
-			$this->error(P_Lang('未指定ID'));
+			$id = $this->get('id');
+			if(!$id){
+				$this->error(P_Lang('未指定ID'));
+			}
 		}
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs){
@@ -149,9 +158,12 @@ class plugin_control extends phpok_control
 		if(!$this->popedom["config"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$id = $this->get("id");
+		$id = $this->get("_phpokid");
 		if(!$id){
-			$this->error(P_Lang('未指定ID'),$this->url('plugin'));
+			$id = $this->get('id');
+			if(!$id){
+				$this->error(P_Lang('未指定ID'));
+			}
 		}
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs){
@@ -246,9 +258,12 @@ class plugin_control extends phpok_control
 		if(!$this->popedom["install"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$id = $this->get("id");
+		$id = $this->get("_phpokid");
 		if(!$id){
-			$this->error(P_Lang('未指定ID'),$this->url('plugin'));
+			$id = $this->get('id');
+			if(!$id){
+				$this->error(P_Lang('未指定ID'));
+			}
 		}
 		$this->assign("id",$id);
 		$rs = $this->model('plugin')->get_xml($id);
@@ -275,9 +290,12 @@ class plugin_control extends phpok_control
 		if(!$this->popedom["install"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$id = $this->get("id");
+		$id = $this->get("_phpokid");
 		if(!$id){
-			$this->error(P_Lang('未指定ID'),$this->url('plugin'));
+			$id = $this->get('id');
+			if(!$id){
+				$this->error(P_Lang('未指定ID'));
+			}
 		}
 		$title = $this->get('title');
 		if(!$title){
@@ -313,9 +331,12 @@ class plugin_control extends phpok_control
 		if(!$this->popedom["install"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$id = $this->get("id");
+		$id = $this->get("_phpokid");
 		if(!$id){
-			$this->error(P_Lang('未指定ID'));
+			$id = $this->get('id');
+			if(!$id){
+				$this->error(P_Lang('未指定ID'));
+			}
 		}
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs){
@@ -342,9 +363,12 @@ class plugin_control extends phpok_control
 		if(!$this->popedom["install"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$id = $this->get("id");
+		$id = $this->get("_phpokid");
 		if(!$id){
-			$this->error(P_Lang('未指定ID'));
+			$id = $this->get('id');
+			if(!$id){
+				$this->error(P_Lang('未指定ID'));
+			}
 		}
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs){
@@ -370,9 +394,12 @@ class plugin_control extends phpok_control
 	**/
 	public function exec_f()
 	{
-		$id = $this->get("id");
+		$id = $this->get("_phpokid");
 		if(!$id){
-			$this->error(P_Lang('未指定ID'));
+			$id = $this->get('id');
+			if(!$id){
+				$this->error(P_Lang('未指定ID'));
+			}
 		}
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs){

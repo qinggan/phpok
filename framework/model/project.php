@@ -41,7 +41,7 @@ class project_model_base extends phpok_model
 			$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".intval($id);
 		}else{
 			$condition = "site_id='".$this->site_id."' AND identifier='".$id."'";
-			$sql = "SELET * FROM ".$this->db->prefix."project WHERE ".$condition;
+			$sql = "SELECT * FROM ".$this->db->prefix."project WHERE ".$condition;
 		}
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
@@ -62,10 +62,16 @@ class project_model_base extends phpok_model
 		$site_id = $site_id ? '0,'.intval($site_id) : '0';
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE identifier='".$id."' AND site_id IN(".$site_id.")";
 		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
-		if(!$ext) return $rs;
-		$ext_rs = $GLOBALS['app']->model("ext")->get_all("project-".$rs['id']);
-		if($ext_rs) $rs = array_merge($ext_rs,$rs);
+		if(!$rs){
+			return false;
+		}
+		if(!$ext){
+			return $rs;
+		}
+		$ext_rs = $this->model("ext")->get_all("project-".$rs['id']);
+		if($ext_rs){
+			$rs = array_merge($ext_rs,$rs);
+		}
 		return $rs;
 	}
 
@@ -232,38 +238,35 @@ class project_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
-	function chk_cate($cate_id)
+	public function chk_cate($cate_id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE cate='".$cate_id."'";
 		return $this->db->get_one($sql);
 	}
 
 	//取得子项目信息
-	function project_sonlist($pid=0)
+	public function project_sonlist($pid=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE parent_id=".intval($pid)." AND status=1 ";
 		$sql.= "ORDER BY taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql,"id");
 		if(!$rslist) return false;
 		$idlist = array_keys($rslist);
-		foreach($idlist AS $key=>$value)
-		{
+		foreach($idlist as $key=>$value){
 			$idlist[$key] = "project-".$value;
 		}
 		$id = implode(",",$idlist);
-		$extlist = $GLOBALS['app']->model('ext')->get_all($id,true);
-		foreach($rslist AS $key=>$value)
-		{
+		$extlist = $this->model('ext')->get_all($id,true);
+		foreach($rslist as $key=>$value){
 			$tk = "project-".$key;
-			if($extlist[$tk])
-			{
+			if($extlist[$tk]){
 				$rslist[$key] = array_merge($extlist[$tk],$rslist[$key]);
 			}
 		}
 		return $rslist;
 	}
 
-	function title_list($pid=0)
+	public function title_list($pid=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id IN(".$pid.") ORDER BY parent_id ASC,taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql);
@@ -276,14 +279,34 @@ class project_model_base extends phpok_model
 		return $list;
 	}
 
-	//取得项目信息
-	function plist($id,$status=0)
+	/**
+	 * 取得项目信息
+	 * @参数 $id 多个ID用英文逗号隔开，支持数组
+	 * @参数 $status 是否只读启用状态的
+	 * @参数 $pri 绑定主键，默认不绑定
+	 * @返回 数组或false 
+	**/
+	public function plist($id,$status=0,$pri='')
 	{
+		if(!$id){
+			return false;
+		}
+		if(is_string($id)){
+			$id = explode(",",$id);
+		}
+		foreach($id as $key=>$value){
+			if(!$value || !intval($value)){
+				unset($id[$key]);
+				continue;
+			}
+			$id[$key] = intval($value);
+		}
+		$id = implode(",",$id);
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id IN(".$id.") AND hidden=0 ";
 		if($status){
 			$sql.= "AND status=1 ";
 		}
-		$sql.= "ORDER BY taxis ASC,id DESC";
-		return $this->db->get_all($sql);
+		$sql.= " ORDER BY taxis ASC,id DESC";
+		return $this->db->get_all($sql,$pri);
 	}
 }

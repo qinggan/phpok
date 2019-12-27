@@ -1,15 +1,15 @@
-<!-- include tpl=head menutitle=$page_rs.title css="css/product.css" -->
+<!-- include tpl=header menutitle=$page_rs.title css="css/product.css" -->
 <!-- if $cate_rs.banner || $page_rs.banner -->
-<div class="banner" style="background-image:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}');"><img src="{#images#}/blank.gif" alt="{$cate_rs.title}" /></div>
+<div class="banner wow slideInLeft" style="background-image:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}');"><img src="{#images#}/blank.gif" alt="{$cate_rs.title}" /></div>
 <!-- /if -->
 <div class="main">
 	<!-- include tpl=block/breadcrumb -->
-	<div class="left am-panel-group">
+	<div class="left  wow slideInLeft am-panel-group">
 		<!-- include tpl=block/catelist pid=$page_rs.id cid=$cate_rs.id title=$page_rs.title -->
 		<!-- include tpl=block/contact -->
 		<!-- include tpl=block/hot_article -->
 	</div>
-	<div class="right">
+	<div class="right wow slideInRight">
 		<style type="text/css">
 		ul.demo{list-style:none;margin:5px 0;padding:3px 3px 3px 120px;border:1px solid #ccc;}
 		ul.demo:after{clear:both;height:0;line-height:0;content:'.';display: block;visibility: hidden;}
@@ -82,4 +82,4 @@
 		<!-- include tpl=block/pagelist -->
 	</div>
 </div>
-<!-- include tpl=foot -->
+<!-- include tpl=footer -->

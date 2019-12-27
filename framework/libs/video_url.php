@@ -25,14 +25,14 @@ class video_url_lib
 		return $this->show_type;
 	}
 	
-	public function format($url,$return_type='')
+	public function format($url,$return_type='',$bgimg="")
 	{
 		if(!$url){
 			return false;
 		}
 		$this->show_type($return_type);
 		if(substr($url,0,7) != 'http://' && substr($url,0,8) != 'https://'){
-			return $this->_show($url,'h5');
+			return $this->_show($url,'h5',$bgimg);
 		}
 		$tmp = parse_url($url);
 		if(strpos($tmp['host'],'youku.com') !== false){
@@ -74,7 +74,7 @@ class video_url_lib
 		return $video;
 	}
 
-	public function _show($url,$type='h5')
+	public function _show($url,$type='h5',$bgimg="")
 	{
 		if($this->show_type == 'array'){
 			return array('type'=>$type,'url'=>$url);
@@ -83,7 +83,11 @@ class video_url_lib
 			$html = '<iframe style="width:100%;height:100%;border:0;" frameborder="0" src="'.$url.'" allowFullScreen="true"></iframe>';
 			return $html;
 		}
-		$html = '<video type="video/mp4" src="'.$url.'" controls="controls" style="width:100%;height:100%;border:0;"></video>';
+		$html  = '<video type="video/mp4" src="'.$url.'" controls="controls" style="width:100%;height:100%;border:0;"';
+		if($bgimg){
+			$html .= " poster='".$bgimg."'";
+		}
+		$html .= '></video>';
 		return $html;
 	}
 }

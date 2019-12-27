@@ -2,11 +2,6 @@
 <script type="text/javascript">
 function save()
 {
-	if(typeof(CKEDITOR) != "undefined"){
-		for(var i in CKEDITOR.instances){
-			CKEDITOR.instances[i].updateElement();
-		}
-	}
 	var opener = $.dialog.opener;
 	$("#post_save").ajaxSubmit({
 		'url':get_url('tag','save'),
@@ -27,10 +22,10 @@ function save()
 }
 </script>
 <form method="post" id="post_save" onsubmit="return false">
-	<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
+<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
 <div class="table">
 	<div class="title">
-		{lang标签} <span class="note">请设置好相应的标签</span>
+		{lang标签} <span class="note">{lang请设置好相应的标签}</span>
 	</div>
 	<div class="content">
 		<input type="text" name="title" id="title" value="{$rs.title}" class="long" />
@@ -38,7 +33,7 @@ function save()
 </div>
 <div class="table">
 	<div class="title">
-		提示文字 <span class="note">自定义链接的提示文字，有助于SEO优化</span>
+		{lang提示文字} <span class="note">{lang自定义链接的提示文字，有助于SEO优化}</span>
 	</div>
 	<div class="content">
 		<input type="text" name="alt" id="alt" value="{$rs.alt}" class="long" />
@@ -46,7 +41,15 @@ function save()
 </div>
 <div class="table">
 	<div class="title">
-		目标网址 <span class="note">这里主要是填写外部网址，如不需要，请留空</span>
+		{lang自定义标签网址} <span class="note">{lang仅限字母，数字及中划线}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="identifier" id="identifier" value="{$rs.identifier}" class="long" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang目标网址} <span class="note">{lang这里主要是填写外部网址，如不需要，请留空}</span>
 	</div>
 	<div class="content">
 		<input type="text" name="url" id="url" value="{$rs.url}" class="long" />
@@ -54,37 +57,78 @@ function save()
 </div>
 <div class="table">
 	<div class="title">
-		打开方式 <span class="note">链接打开方式</span>
+		{langSEO标题} <span class="note">{lang用于替代系统原有的标题，仅限目标网址为空有效}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="seo_title" id="seo_title" value="{$rs.seo_title}" class="long" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{langSEO关键字} <span class="note">{lang多个关键字建议用英文逗号隔开，仅限目标网址为空有效}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="seo_keywords" id="seo_keywords" value="{$rs.seo_keywords}" class="long" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{langSEO描述} <span class="note">{lang建议不超过80个汉字，仅限目标网址为空有效}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="seo_desc" id="seo_desc" value="{$rs.seo_desc}" class="long" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang自定义模板} <span class="note">{lang自定义标签模板，仅列表有效}</span>
 	</div>
 	<div class="content">
 		<ul class="layout">
-			<li><label><input type="radio" name="target" value="1"{if $rs.target} checked{/if} />新窗口</label></li>
-			<li><label><input type="radio" name="target" value="0"{if !$rs.target} checked{/if} />当前窗口</label></li>
+			<li><input type="text" name="tpl" id="tpl" value="{$rs.tpl}" class="default" /></li>
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang清空}" onclick="$('#tpl').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+				</div>
+			</li>
 		</ul>
 	</div>
 </div>
 <div class="table">
 	<div class="title">
-		替换次数 <span class="note">请选择要替换的次数，默认为3次</span>
+		{lang打开方式} <span class="note">{lang链接打开方式}</span>
 	</div>
 	<div class="content">
 		<ul class="layout">
-			<li><label><input type="radio" name="replace_count" value="1"{if $rs.replace_count == 1} checked{/if} />1次</label></li>
-			<li><label><input type="radio" name="replace_count" value="3"{if $rs.replace_count == 3 || !$rs.replace_count} checked{/if} />3次</label></li>
-			<li><label><input type="radio" name="replace_count" value="5"{if $rs.replace_count == 5} checked{/if} />5次</label></li>
-			<li><label><input type="radio" name="replace_count" value="7"{if $rs.replace_count == 7} checked{/if} />7次</label></li>
-			<li><label><input type="radio" name="replace_count" value="9"{if $rs.replace_count == 9} checked{/if} />9次</label></li>
+			<li><label><input type="radio" name="target" value="1"{if $rs.target} checked{/if} />{lang新窗口}</label></li>
+			<li><label><input type="radio" name="target" value="0"{if !$rs.target} checked{/if} />{lang当前窗口}</label></li>
 		</ul>
 	</div>
 </div>
 <div class="table">
 	<div class="title">
-		全局属性 <span class="note">设置为是，表示系统为空时，会尝试以这些标签作为文章标签来使用</span>
+		{lang替换次数} <span class="note">{lang请选择要替换的次数，默认为3次}</span>
 	</div>
 	<div class="content">
 		<ul class="layout">
-			<li><label><input type="radio" name="is_global" value="1"{if $rs.is_global} checked{/if} />是</label></li>
-			<li><label><input type="radio" name="is_global" value="0"{if !$rs.is_global} checked{/if} />否</label></li>
+			<li><label><input type="radio" name="replace_count" value="1"{if $rs.replace_count == 1} checked{/if} />{lang1次}</label></li>
+			<li><label><input type="radio" name="replace_count" value="3"{if $rs.replace_count == 3 || !$rs.replace_count} checked{/if} />{lang3次}</label></li>
+			<li><label><input type="radio" name="replace_count" value="5"{if $rs.replace_count == 5} checked{/if} />{lang5次}</label></li>
+			<li><label><input type="radio" name="replace_count" value="7"{if $rs.replace_count == 7} checked{/if} />{lang7次}</label></li>
+			<li><label><input type="radio" name="replace_count" value="9"{if $rs.replace_count == 9} checked{/if} />{lang9次}</label></li>
+			<li><label><input type="radio" name="replace_count" value="0"{if !$rs.replace_count} checked{/if} />{lang不替换}</label></li>
+		</ul>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang全局属性} <span class="note">{lang设置为是，表示系统为空时，会尝试以这些标签作为文章标签来使用}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="is_global" value="1"{if $rs.is_global} checked{/if} />{lang是}</label></li>
+			<li><label><input type="radio" name="is_global" value="0"{if !$rs.is_global} checked{/if} />{lang否}</label></li>
 		</ul>
 	</div>
 </div>

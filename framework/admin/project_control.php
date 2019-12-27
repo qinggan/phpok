@@ -323,6 +323,7 @@ class project_control extends phpok_control
 		$array['post_status'] = $this->get('post_status','checkbox');
 		$array['comment_status'] = $this->get('comment_status','checkbox');
 		$array['is_front'] = $this->get('is_front','checkbox');
+		$array['is_api'] = $this->get('is_api','checkbox');
 		$array['post_tpl'] = $this->get('post_tpl');
 		$array['etpl_admin'] = $this->get('etpl_admin');
 		$array['etpl_user'] = $this->get('etpl_user');
@@ -811,7 +812,7 @@ class project_control extends phpok_control
 				$this->error(P_Lang('项目导入失败：模块创建失败'));
 			}
 			$this->model('module')->create_tbl($mid);
-			$tbl_exists = $this->model('module')->chk_tbl_exists($mid,$tmp2['mtype']);
+			$tbl_exists = $this->model('module')->chk_tbl_exists($mid,$tmp2['mtype'],$tmp2['tbl']);
 			if(!$tbl_exists){
 				$this->model('module')->delete($mid);
 				$this->model('project')->delete_project($insert_id);
@@ -819,12 +820,11 @@ class project_control extends phpok_control
 			}
 			if(isset($rs['_module']['_fields']) && $rs['_module']['_fields']){
 				foreach($rs['_module']['_fields'] as $key=>$value){
-					if($value['ext'] && is_array($value['ext'])){
-						$value['ext'] = serialize($value['ext']);
+					$value['ftype'] = $mid;
+					$tmpid = $this->model('module')->fields_save($value);
+					if($tmpid){
+						$this->model('module')->create_fields($tmpid);
 					}
-					$value['module_id'] = $mid;
-					$this->model('module')->fields_save($value);
-					$this->model('module')->create_fields($value['id']);
 				}
 			}
 			//更新项目和模块之间的关系

@@ -49,6 +49,25 @@ class js_control extends phpok_control
 				}
 			}
 		}
+		if($this->is_mobile){
+			if($this->config['mobile']['includejs']){
+				$tmp = explode(",",$this->config['mobile']['includejs']);
+				foreach($tmp as $key=>$value){
+					if($value && trim($value)){
+						$list[] = $value;
+					}
+				}
+			}
+		}else{
+			if($this->config['pc']['includejs']){
+				$tmp = explode(",",$this->config['pc']['includejs']);
+				foreach($tmp as $key=>$value){
+					if($value && trim($value)){
+						$list[] = $value;
+					}
+				}
+			}
+		}
 		$myctrl = $this->get('_ctrl');
 		$myfunc = $this->get('_func');
 		if($myctrl && is_file($this->dir_phpok.'js/'.$this->app_id.'.'.$myctrl.'.js')){
@@ -76,6 +95,15 @@ class js_control extends phpok_control
 		}
 		$list = array_unique($list);
 		$_ext = $this->get('_ext');
+		if($this->is_mobile){
+			if($this->config['mobile']['excludejs']){
+				$_ext = $_ext ? $_ext.",".$this->config['mobile']['excludejs'] : $this->config['mobile']['excludejs'];
+			}
+		}else{
+			if($this->config['pc']['excludejs']){
+				$_ext = $_ext ? $_ext.",".$this->config['pc']['excludejs'] : $this->config['pc']['excludejs'];
+			}
+		}
 		if($_ext){
 			$forbid_ext = is_string($_ext) ? explode(",",$_ext) : $_ext;
 			$list = array_diff($list,$forbid_ext);

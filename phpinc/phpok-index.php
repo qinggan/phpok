@@ -19,6 +19,7 @@ if(!defined("PHPOK_SET")){
 //图片轮播
 $slider = phpok('picplayer');
 
+
 //产品列表
 $products = phpok('new_products');
 

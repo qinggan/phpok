@@ -86,11 +86,11 @@ class cart_model_base extends phpok_model
 				return false;
 			}
 		}
-		if($condition && is_numeric($condition)){
-			$condition = "id='".$condition."'";
-		}
-		if($condition && is_array($condition)){
-			if($condition){
+		if($condition){
+			if(is_numeric($condition)){
+				$condition = "id='".$condition."'";
+			}
+			if(is_array($condition)){
 				$condition = "id IN(".implode(",",$condition).")";
 			}
 		}
@@ -102,11 +102,44 @@ class cart_model_base extends phpok_model
 		if(!$rslist){
 			return false;
 		}
+		$sublist = $parentlist = array();
 		foreach($rslist as $key=>$value){
 			if($value['ext']){
 				$value['_attrlist'] = $this->product_ext_to_array($value['ext'],$value['tid']);
-				$rslist[$key] = $value;
 			}
+			//$rslist[$key] = $value;
+			if($value['parent_id']){
+				$sublist[$value['parent_id']][] = $value;
+			}else{
+				$parentlist[] = $value;
+			}
+		}
+		$rslist = array();
+		foreach($parentlist as $key=>$value){
+			if($sublist[$value['id']]){
+				$value['sublist'] = $sublist[$value['id']];
+			}
+			$rslist[$key] = $value;
+		}
+		return $rslist;
+	}
+
+	/**
+	 * 产品下的所有捆绑产品
+	 * @参数 $id 购物车产品ID
+	**/
+	public function sub_all($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."cart_product WHERE parent_id='".$id."'";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			if($value['ext']){
+				$value['_attrlist'] = $this->product_ext_to_array($value['ext'],$value['tid']);
+			}
+			$rslist[$key] = $value;
 		}
 		return $rslist;
 	}

@@ -1,58 +1,79 @@
-<!-- include tpl=head_open -->
-<form method="post" id="post_save" onsubmit="return false">
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<script type="text/javascript" src="{url ctrl=js func=ext js=admin.project/}"></script>
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
 <input type="hidden" id="id" name="id" value="{$id}" />
-<div class="table">
-	<div class="title">
-		{lang名称}
-		<span class="note">{lang用于后台阅读，尽量简短，建议不超过5个汉字}</span></span>
-	</div>
-	<div class="content">
-		<input type="text" id="title" name="title" class="w99" value="{$rs.title}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang标识}
-		<span class="note">{lang限字母、数字、下划线或中划线，且必须是字母开头}</span>
-	</div>
-	<div class="content"><input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" /></div>
-</div>
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang名称}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang用于后台阅读，尽量简短，建议不超过5个汉字}
+			</div>
+		</div>
+		
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang标识}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" id="identifier" name="identifier" class="layui-input" value="{$rs.identifier}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang限字母、数字、下划线或中划线，且必须是字母开头}
+			</div>
+		</div>
 
-<div class="table">
-	<div class="title">
-		{lang图标}
-		<span class="note">{lang必填，需要确认一个图标}</span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<!-- loop from=$icolist key=$key value=$value -->
-			<li><label title="{func basename $value}">
-				<table>
-				<tr>
-					<td><input type="radio" name="ico" value="{$value}"{if $rs.ico == $value} checked{/if} /></td>
-					<td><img src="{$value}" alt="{func basename $value}" /></td>
-				</tr>
-				</table>
-			</label></li>
-			<!-- /loop -->
-			<div class="clear"></div>
-		</ul>
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		{lang状态}
-		<span class="note">{lang是否在前台网页启用}</span>
-	</div>
-	<div class="content">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><label for="status_0"><input type="radio" name="status" id="status_0" value="0"{if $id && !$rs[status]} checked{/if} />{lang不启用}</label></td>
-			<td><label for="status_1"><input type="radio" name="status" id="status_1" value="1"{if !$id || $rs[status]} checked{/if} />{lang启用}</label></td>
-		</tr>
-		</table>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang图标}
+			</label>
+			<div class="layui-input-block">
+				<ul class="layout">
+					<li><input type="text" name="ico" id="ico" value="{$rs.ico}" class="layui-input" style="width:350px" /></li>
+					<li>
+						<div class="layui-btn-group">
+							<input type="button" value="{lang选择图标}" onclick="$.admin_project.icolist()" class="layui-btn layui-btn-sm" />
+							<input type="button" value="{lang预览}" onclick="$.phpokform.text_button_image_preview('ico')" class="layui-btn layui-btn-sm" />
+							<input type="button" value="{lang清空}" onclick="$('#ico').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+						</div>
+					</li>
+				</ul>
+				<div class="clear"></div>
+			</div>
+			<div class="layui-input-block mtop">
+				{lang请选择一个直观的图标，大小为：48x48，建议使用PNG格式}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang接口}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="is_api" value="0" title="{lang不开放}"{if !$rs || !$rs[is_api]} checked{/if}/>
+				<input type="radio" name="is_api" value="1" title="{lang开放}"{if $rs && $rs.is_api} checked{/if}/>
+			</div>
+			<div class="layui-form-mid">
+				{lang接口是否开放调用}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang状态}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="status" value="0" title="{lang不启用}"{if $id && !$rs[status]} checked{/if}/>
+				<input type="radio" name="status" value="1" title="{lang启用}"{if !$id || $rs[status]} checked{/if}/>
+			</div>
+			<div class="layui-form-mid">
+				{lang是否在前台网页启用}
+			</div>
+		</div>
 	</div>
 </div>
 </form>
-<!-- include tpl=foot_open -->
+<!-- include tpl=foot_lay is_open=true -->

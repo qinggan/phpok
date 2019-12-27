@@ -210,9 +210,6 @@ class res_model_base extends phpok_model
 			}
 			foreach($rslist as $key=>$value){
 				$value["attr"] = $value["attr"] ? unserialize($value["attr"]) : "";
-				if(in_array($value['ext'],$extlist)){
-					$value['ico'] = $this->get_ico($value);
-				}
 				$rslist[$key] = $value;
 			}
 			return $rslist;
@@ -227,9 +224,6 @@ class res_model_base extends phpok_model
 		foreach($rslist as $key=>$value){
 			$value["gd"] = $extlist[$value["id"]];
 			$value["attr"] = $value["attr"] ? unserialize($value["attr"]) : "";
-			if(in_array($value['ext'],$extlist)){
-				$value['ico'] = $this->get_ico($value);
-			}
 			$tmplist[] = $value;
 		}
 		return $tmplist;
@@ -723,14 +717,12 @@ class res_model_base extends phpok_model
 			return true;
 		}
 		if($this->is_local($rs['filename'])){
-			$this->get_ico($rs);
+			$this->update_ico($rs);
 			if($this->gdlist){
 				foreach($this->gdlist as $key=>$value){
-					$this->local_url($rs,$value);
+					$this->local_url($rs,$value,true);
 				}
 			}
-			$sql = "UPDATE ".$this->db->prefix."res SET ico='".$ico."' WHERE id='".$id."'";
-			$this->db->query($sql);
 			return true;
 		}
 		$ico = $this->control('gateway','api')->exec_file($rs['etype'],'ico',array('filename'=>$rs['filename'],'filext'=>$rs['ext']));
@@ -748,7 +740,7 @@ class res_model_base extends phpok_model
 	public function get_ico($rs,$width=200,$height=200,$cutype=1,$qty=80)
 	{
 		if(!$this->is_local($rs['filename'])){
-			return false;
+			return $rs['ico'];
 		}
 		if($rs['ico']){
 			return $rs['ico'];
@@ -759,6 +751,29 @@ class res_model_base extends phpok_model
 			$sql = "UPDATE ".$this->db->prefix."res SET ico='".$ico."' WHERE id='".$rs['id']."'";
 			$this->db->query($sql);
 			return $ico;
+		}
+		$tmp = array('url'=>$rs['filename']);
+		$tmp['width'] = $width;
+		$tmp['height'] = $height;
+		$tmp['cut_type'] = $cutype;
+		$tmp['quality'] =$qty;
+		$tmp['bgcolor'] = 'FFFFFF';
+		$tmp['_id'] = $rs['id'];
+		$tmp['folder'] = $folder;
+		$tmp['ext'] = $rs['ext'];
+		$ico = $this->img_create($tmp);
+		$sql = "UPDATE ".$this->db->prefix."res SET ico='".$ico."' WHERE id='".$rs['id']."'";
+		$this->db->query($sql);
+		return $ico;
+	}
+
+	public function update_ico($rs,$width=200,$height=200,$cutype=1,$qty=80)
+	{
+		if(!$this->is_local($rs['filename'])){
+			return false;
+		}
+		if($rs['ico'] && strpos($rs['ico'],'_cache') !== true){
+			return true;
 		}
 		$tmp = array('url'=>$rs['filename']);
 		$tmp['width'] = $width;
@@ -837,7 +852,7 @@ class res_model_base extends phpok_model
 		return $this->lib('xml')->read($file);
 	}
 
-	private function local_url($rs,$gdinfo)
+	private function local_url($rs,$gdinfo,$is_update=false)
 	{
 		if(!$this->is_local($rs['filename'])){
 			return false;
@@ -846,10 +861,13 @@ class res_model_base extends phpok_model
 		$gdinfo['_id'] = $rs['id'];
 		$gdinfo['ext'] = $rs['ext'];
 		$gdinfo['folder'] = 'res/_cache/'.$gdinfo['identifier'].'/'.substr($rs['id'],0,2).'/';
-		if(is_file($this->dir_root.$gdinfo['folder'].$rs['id'].'.'.$rs['ext'])){
-			return $gdinfo['folder'].$rs['id'].'.'.$rs['ext'];
+		if($is_update){
+			return $this->img_create($gdinfo);
 		}
-		return $this->img_create($gdinfo);
+		if(is_file($this->dir_root.$gdinfo['folder'].$gdinfo['_id'].'.'.$rs['ext'])){
+			return $gdinfo['folder'].$gdinfo['_id'].'.'.$rs['ext'];
+		}
+		return false;
 	}
 
 	public function img_create($gdinfo)

@@ -204,14 +204,12 @@ class data_model_base extends phpok_model
 		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE id='".$rs['cateid']."' AND status=1";
 		$cate_rs = $this->db->get_one($sql);
 		if(!$cate_rs) return false;
-		if($rs['cate_ext'])
-		{
+		if($rs['cate_ext']){
 			$ext = $this->ext_all('cate-'.$cate_rs['id'],$cate_rs);
 			if($ext) $cate_rs = array_merge($ext,$cate_rs);
 		}
-		if(!$cate_rs['url'])
-		{
-			$cate_rs['url'] = $GLOBALS['app']->url($project_rs['identifier'],$cate_rs['identifier']);
+		if(!$cate_rs['url']){
+			$cate_rs['url'] = $this->url($project_rs['identifier'],$cate_rs['identifier']);
 		}
 		return $cate_rs;
 	}
@@ -249,19 +247,30 @@ class data_model_base extends phpok_model
 			$rs['cateid'] = $tmp['id'];
 		}
 		$list = array();
-		$cate_all = $GLOBALS['app']->model('cate')->cate_all($rs['site_id']);
+		$cate_all = $this->model('cate')->cate_all($rs['site_id']);
 		$this->cate_sublist($list,$rs['cateid'],$cate_all,$rs['project']);
 		return $list;
 	}
 
-	public function _tree(&$list,$catelist,$parent_id=0)
+	public function _tree(&$list,$catelist,$parent_id=0,$offset=0,$psize=0)
 	{
-		foreach($catelist as $key=>$value)
-		{
-			if($value['parent_id'] == $parent_id)
-			{
-				$list[$value['id']] = $value;
-				$this->_tree($list[$value['id']]['sublist'],$catelist,$value['id']);
+		$i=-1;
+		$start = $offset ? intval($offset) : 0;
+		$psize = $psize ? intval($psize) : 0;
+		foreach($catelist as $key=>$value){
+			if($value['parent_id'] == $parent_id){
+				$i++;
+				if($i >= $start){
+					if($psize){
+						if($i<$psize){
+							$list[$value['id']] = $value;
+							$this->_tree($list[$value['id']]['sublist'],$catelist,$value['id'],$offset,$psize);
+						}
+					}else{
+						$list[$value['id']] = $value;
+						$this->_tree($list[$value['id']]['sublist'],$catelist,$value['id'],$offset,$psize);
+					}
+				}
 			}
 		}
 	}
@@ -278,18 +287,23 @@ class data_model_base extends phpok_model
 		}
 		if(!$rs['pid']) return false;
 		$rs = $this->_project($rs['pid'],$rs['project_ext']);
-		if(!$rs) return false;
+		if(!$rs){
+			return false;
+		}
 		//绑定链接
-		if(!$rs['url']) $rs['url'] = $GLOBALS['app']->url($rs['identifier']);
+		if(!$rs['url']){
+			$rs['url'] = $this->url($rs['identifier']);
+		}
 		return $rs;
 	}
 
 	//取得父级项目信息
 	public function _project_parent($rs)
 	{
-		if(!$rs['pid'] && !$rs['phpok']) return false;
-		if(!$rs['pid'])
-		{
+		if(!$rs['pid'] && !$rs['phpok']){
+			return false;
+		}
+		if(!$rs['pid']){
 			$tmp = $this->_id($rs['phpok'],$this->site['id']);
 			if(!$tmp || $tmp['type'] != 'project') return false;
 			$rs['pid'] = $tmp['id'];
@@ -298,9 +312,13 @@ class data_model_base extends phpok_model
 		$project_rs = $this->_project($rs['pid'],false);
 		if(!$project_rs || !$project_rs['parent_id']) return false;
 		$rs = $this->_project($project_rs['parent_id'],$rs['parent_ext']);
-		if(!$rs) return false;
+		if(!$rs){
+			return false;
+		}
 		//绑定链接
-		if(!$rs['url']) $rs['url'] = $GLOBALS['app']->url($rs['identifier']);
+		if(!$rs['url']){
+			$rs['url'] = $this->url($rs['identifier']);
+		}
 		return $rs;
 	}
 	
@@ -320,18 +338,17 @@ class data_model_base extends phpok_model
 		$sql.= "ORDER BY taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist) return false;
-		if($rs['sublist_ext'])
-		{
-			foreach($rslist AS $key=>$value)
-			{
+		if($rs['sublist_ext']){
+			foreach($rslist as $key=>$value){
 				$ext_rs = $this->ext_all('project-'.$value['id'],$value);
 				if($ext_rs) $value = array_merge($ext_rs,$value);
 				$rslist[$key] = $value;
 			}
 		}
-		foreach($rslist AS $key=>$value)
-		{
-			if(!$value['url']) $value['url'] = $GLOBALS['app']->url($value['identifier']);
+		foreach($rslist as $key=>$value){
+			if(!$value['url']){
+				$value['url'] = $this->url($value['identifier']);
+			}
 			$rslist[$key] = $value;
  		}
  		return $rslist;
@@ -340,18 +357,13 @@ class data_model_base extends phpok_model
 	//读取当前分类的子分类
 	public function cate_sublist(&$list,$parent_id=0,$rslist='',$identifier='')
 	{
-		if($rslist)
-		{
-			foreach($rslist as $key=>$value)
-			{
-				if($value['parent_id'] == $parent_id)
-				{
-					if($identifier)
-					{
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				if($value['parent_id'] == $parent_id){
+					if($identifier){
 						$value['url'] = $this->url($identifier,$value['identifier']);
 					}
-					if($value['_url'])
-					{
+					if($value['_url']){
 						$value['url'] = $value['_url'];
 						unset($value['_url']);
 					}
@@ -365,63 +377,57 @@ class data_model_base extends phpok_model
 	//取得自定义字段信息
 	public function fields($rs)
 	{
-		if(!$rs['pid'] && !$rs['phpok']) return false;
-		if(!$rs['pid'])
-		{
+		if(!$rs['pid'] && !$rs['phpok']){
+			return false;
+		}
+		if(!$rs['pid']){
 			$tmp = $this->_id($rs['phpok'],$this->site['id']);
 			if(!$tmp || $tmp['type'] != 'project') return false;
 			$rs['pid'] = $tmp['id'];
 		}
-		if(!$rs['pid']) return false;
+		if(!$rs['pid']){
+			return false;
+		}
 		$project_rs = $this->_project($rs['pid'],false);
-		if(!$project_rs || !$project_rs['module']) return false;
+		if(!$project_rs || !$project_rs['module']){
+			return false;
+		}
 		//自定义字段
 		$array = array();
 		$flist = $this->module_field($project_rs['module']);
 		//如果存在扩展字段，对扩展字段进行处理，标前识加前缀等
-		if($flist)
-		{
-			foreach($flist AS $key=>$value)
-			{
-				if(!$value['is_front'])
-				{
+		if($flist){
+			foreach($flist as $key=>$value){
+				if(!$value['is_front'])	{
 					unset($flist[$key]);
 					continue;
 				}
-				if($rs['prefix'])
-				{
+				if($rs['prefix']){
 					$value["identifier"] = $rs['prefix'].$value['identifier'];
 				}
-				if($rs['info'][$value['identifier']])
-				{
+				if($rs['info'][$value['identifier']]){
 					$value['content'] = $rs['info'][$value['identifier']];
 				}
 				$flist[$key] = $value;
 			}
 			//如果包含主题
-			if($rs['in_title'])
-			{
+			if($rs['in_title']){
 				$tmp_id = $rs['prefix'].'title';
 				$array['title'] = array('id'=>0,"module_id"=>$project_rs['module'],'title'=>($project_rs['alias_title'] ? $project_rs['alias_title'] : '主题'),'identifier'=>$tmp_id,'field_type'=>'varchar','form_type'=>'text','format'=>'safe','taxis'=>1,'width'=>'300','content'=>$rs['info']['title']);
 				$array = array_merge($array,$flist);
-			}
-			else
-			{
+			}else{
 				$array = $flist;
 			}
 		}
 		//判断是否格式化
-		if($rs['fields_format'])
-		{
-			foreach($array AS $key=>$value)
-			{
-				if($value['ext'])
-				{
+		if($rs['fields_format']){
+			foreach($array as $key=>$value){
+				if($value['ext']){
 					$ext = is_string($value['ext']) ? unserialize($value['ext']) : $value['ext'];
 					unset($value['ext']);
 					$value = array_merge($ext,$value);
 				}
-				$array[$key] = $GLOBALS['app']->lib('form')->format($value);
+				$array[$key] = $this->lib('form')->format($value);
 			}
 		}
 		return $array;

@@ -247,6 +247,9 @@ class module_model extends module_model_base
 		if(isset($data['module_id'])){
 			unset($data['module_id']);
 		}
+		if($data['ext'] && is_array($data['ext'])){
+			$data['ext'] = serialize($data['ext']);
+		}
 		if($id){
 			return $this->db->update_array($data,"fields",array("id"=>$id));
 		}

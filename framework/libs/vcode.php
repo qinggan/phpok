@@ -43,7 +43,10 @@ class vcode_lib
 
 	public function count($count=4)
 	{
-		$this->count = $count;
+		if($count){
+			$this->count = $count;
+		}
+		return $this->count;
 	}
 
 	public function font($font='')
@@ -59,8 +62,11 @@ class vcode_lib
 		return $this->font;
 	}
 
-	public function word()
+	public function word($count='')
 	{
+		if($count){
+			$this->count($count);
+		}
 		$txt = "1234567890";
 		$length = strlen($txt);
 		$thetxt = '';

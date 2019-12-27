@@ -1,0 +1,86 @@
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs.content}" />
+<input type="hidden" id="{$_rs.identifier}_status" value="" />
+<style type="text/css">
+.{$_rs.identifier}_thumb{float:left;width:144px;margin:3px 5px;padding:1px;border:1px solid #ccc;border-radius:3px;position:relative;}
+.{$_rs.identifier}_thumb img{padding:2px;}
+.{$_rs.identifier}_thumb .sort{position:absolute;right:5px;top:5px;}
+.{$_rs.identifier}_thumb .sort input.taxis{width:40px;border:1px solid #ccc;border-radius:3px;height:22px;text-align:center;padding:3px;}
+</style>
+
+<div class="_e_upload">
+	<div class="_select">
+		<div id="{$_rs.identifier}_picker"></div>
+		<div class="clear"></div>
+	</div>
+	<div class="_progress" id="{$_rs.identifier}_progress"></div>
+	<div class="_list" id="{$_rs.identifier}_list"></div>
+	<div class="clear"></div>
+</div>
+
+<script type="text/javascript">
+var obj_{$_rs.identifier};
+var map_{$_rs.identifier} = new Map();
+$(document).ready(function(){
+	//清空本地存储，防止异常删除
+	$.phpok.undata('upload-{$_rs.identifier}');
+	obj_{$_rs.identifier} = new $.www_upload({
+		'id':'{$_rs.identifier}',
+		'server':'{$qiniu_server_url}',
+		'cateid':'{$_rs.cate_id}',
+		'pick':{'id':'#{$_rs.identifier}_picker','multiple':{$_rs.is_multiple ? 'true' : 'false'},'innerHTML':'{lang选择本地文件}'},
+		'resize':false,
+		'multiple':"{$_rs.is_multiple ? 'true' : 'false'}",
+		'formData':{'token':'{$_token}'},
+		'fileVal':'file',
+		'disableGlobalDnd':true,
+		'compress':{$_rs.upload_compress},
+		'auto':true,
+		'sendAsBinary':false,
+		'chunkSize':4*1024*1024,
+		'accept':{'title':'{$_rs.upload_type.title}({$_rs.upload_type.swfupload})','extensions':'{$_rs.upload_type.ext}'},
+		'fileSingleSizeLimit':'{$_rs.upload_type.maxsize*100}',
+		'success':function(file,data){
+			if(parseInt(file.size) <= parseInt(uploader.options.chunkSize)) {
+				$.phpok_qiniu_gateway.www_complete(file,data,obj_{$_rs.identifier});
+			} else {
+				$.phpok_qiniu_gateway.www_makefile(map_{$_rs.identifier}.get(file.name),file,true,obj_{$_rs.identifier});
+			}
+		},
+		'before_send':function(block,data,headers){
+			var opts = {
+				'server':'{$qiniu_server_url}',
+				'token':'{$_token}',
+				'gateway_id':'{$gateway_rs.id}',
+				'cate_id':'{$_rs.cate_id}',
+				'multiple':{$_rs.is_multiple ? 'true' : 'false'},
+				'fid':'{$_rs.identifier}',
+				'link':'{$qiniu_view_url}'
+			}
+			$.phpok_qiniu_gateway.config(opts);
+			if (parseInt(block.file.size) <= parseInt(uploader.options.chunkSize)) {
+	            uploader.options.chunked = false;
+	            uploader.options.sendAsBinary = false;
+			} else {
+				headers['Authorization'] = 'UpToken ' + '{$_token}';
+				headers['Content-Type'] = 'application/octet-stream';
+				uploader.options.chunked = true;
+				uploader.options.server = uploader.options.server + "/mkblk/" + (block.end - block.start);
+				uploader.options.sendAsBinary = true;
+				uploader.options.formData = false;
+			}
+		},
+		'file_queued':function(file)
+		{
+			
+			var ctx = new Array();
+			map_{$_rs.identifier}.set(file.name, ctx);
+		},
+		'upload_accept':function(block,ret)
+		{
+			console.log(ret);
+			map_{$_rs.identifier}.get(block.file.name)[block.chunk] = ret.ctx;
+		}
+	});
+	obj_{$_rs.identifier}.showhtml();
+});
+</script>

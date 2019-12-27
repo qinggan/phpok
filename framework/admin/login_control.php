@@ -122,8 +122,11 @@ class login_control extends phpok_control
 		//检查 2 小时内该账户是否有系统锁定
 		$check = $this->model('admin')->account_lock_check($user);
 		if($check){
-			$time = date("Y-m-d H:i:s",$check['unlock_time']);
-			$this->error(P_Lang('管理员账户系统锁定，解锁时间是 {time}',array('time'=>$time)));
+			if($check['unlock_time'] > $this->time){
+				$time = date("Y-m-d H:i:s",$check['unlock_time']);
+				$this->error(P_Lang('管理员账户系统锁定，解锁时间是-1 {time}',array('time'=>$time)));
+			}
+			$this->model('admin')->lock_delete($user);			
 		}
 		
 		$pass = $this->get('pass');

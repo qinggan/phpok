@@ -36,6 +36,11 @@ class server_lib
 			return false;
 		}
 		$domain = $_SERVER[strtoupper($name)];
+		//使用HTTP_HOST，会把端口号一起包含进来，这时候需要手动把端口号清除掉
+		if(strpos($domain,":") !== false){
+			$tmp = explode(":",$domain);
+			$domain = $tmp[0];
+		}
 		//检测domain是否符合要求
 		if(!preg_match('/^[0-9a-zA-Z][\w\-\.]*[0-9a-zA-Z]$/isU',$domain)){
 			return false;

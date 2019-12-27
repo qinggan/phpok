@@ -22,7 +22,7 @@ class checkbox_form extends _init_auto
 		$rslist = $this->model('project')->get_all_project($_SESSION['admin_site_id']);
 		if($rslist){
 			$p_list = $m_list = array();
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				if(!$value["parent_id"]){
 					$p_list[] = $value;
 				}
@@ -68,7 +68,7 @@ class checkbox_form extends _init_auto
 		}
 		//返回HTML内容
 		$html = '<ul class="ext_checkbox clearfix">';
-		foreach($rslist AS $key=>$value){
+		foreach($rslist as $key=>$value){
 			$html .= '<li><label>';
 			$html .= '<input type="checkbox" lay-ignore name="'.$rs['identifier'].'[]" value="'.$value['val'].'"';
 			if($value && $rs['content'] && in_array($value['val'],$rs['content']))
@@ -191,14 +191,19 @@ class checkbox_form extends _init_auto
 		//当类型为默认时
 		if($type == 'default' && $info){
 			$list = explode("\n",$info);
-			$rslist = "";
-			$i=0;
-			foreach($list AS $key=>$value){
-				if($value && trim($value)){
-					$value = trim($value);
-					$rslist[$i]['val'] = $value;
-					$rslist[$i]['title'] = $value;
-					$i++;
+			$rslist = array();
+			foreach($list as $key=>$value){
+				if(!$value || !trim($value)){
+					continue;
+				}
+				if(strpos($value,':') !== false){
+					$tmp2 = explode(":",$value);
+					if(!$tmp2[1]){
+						$tmp2[1] = $tmp2[0];
+					}
+					$rslist[] = array('val'=>$tmp2[0],'title'=>$tmp2[1]);
+				}else{
+					$rslist[] = array('val'=>trim($value),'title'=>trim($value));
 				}
 			}
 			return $rslist;
@@ -219,7 +224,7 @@ class checkbox_form extends _init_auto
 			$tmplist = $this->model("list")->title_list($group_id);
 			if(!$tmplist) return false;
 			$rslist = '';
-			foreach($tmplist AS $key=>$value){
+			foreach($tmplist as $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;
 			}
@@ -231,7 +236,7 @@ class checkbox_form extends _init_auto
 			$tmplist = $this->model('cate')->catelist_sonlist($group_id,false,0);
 			if(!$tmplist) return false;
 			$rslist = '';
-			foreach($tmplist AS $key=>$value){
+			foreach($tmplist as $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;
 			}

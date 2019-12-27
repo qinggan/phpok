@@ -1,10 +1,30 @@
 <!-- include tpl=head_lay nopadding=true -->
+<script type="text/javascript">
+function save()
+{
+	$("#post_save").ajaxSubmit({
+		'url':get_url('sql','replace'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.alert(p_lang('文本替换成功'));
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+}
+</script>
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<input type="hidden" name="table" id="table" value="{$tbl}" />
 <div class="layui-card">
 	<div class="layui-card-body">
 		<table class="layui-table">
 			<thead>
 			<tr>
-				<th >&nbsp;{lang字段}</th>
+				<th><input type="radio" name="field" value="" checked title="{lang字段}"/></th>
 				<th>{lang类型}</th>
 				<th>{lang空}</th>
 				<th width="30px">{lang默认}</th>
@@ -14,7 +34,7 @@
 			<tbody>
 			<!-- loop from=$rslist key=$key value=$value -->
 			<tr>
-				<td>{$value.field}</td>
+				<td><input type="radio" name="field" value="{$value.field}" title="{$value.field}" /></td>
 				<td>{$value.type}</td>
 				<td><!-- if $value.null -->{lang是}<!-- else -->{lang否}<!-- /if --></td>
 				<td class="center"><!-- if $value.default == '' -->无<!-- else -->{$value.default}<!-- /if --></td>
@@ -23,5 +43,29 @@
 			<!-- /loop -->
 			</tbody>
 		</table>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang替换前}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="val1" id="val1" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang不支持正则，仅文本替换}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang替换后}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="val2" id="val2" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang删除替换前文本请留空}
+			</div>
+		</div>	
 	</div>
 </div>
+</form>
+<!-- include tpl=foot_lay is_open=true -->

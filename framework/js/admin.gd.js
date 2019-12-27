@@ -65,11 +65,6 @@
 		**/
 		save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			$("#gdsetting").ajaxSubmit({
 				'url':get_url('gd','save'),
 				'type':'post',
@@ -77,9 +72,7 @@
 				'success':function(rs){
 					if(rs.status){
 						var info = $("#id").val() ? p_lang('方案编辑成功') : p_lang('方案添加成功');
-						$.dialog.alert(info,function(){
-							$.phpok.go(get_url('gd'));
-						},'succeed');
+						$.dialog.tips(info);
 						return true;
 					}
 					$.dialog.alert(rs.info);

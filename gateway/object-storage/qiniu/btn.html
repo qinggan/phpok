@@ -84,6 +84,7 @@ $(document).ready(function(){
 		},
 		'upload_accept':function(block,ret)
 		{
+			console.log(ret);
 			map_{$_rs.identifier}.get(block.file.name)[block.chunk] = ret.ctx;
 		}
 	});

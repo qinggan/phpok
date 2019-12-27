@@ -1,139 +1,114 @@
 <!-- include tpl=head_lay -->
-<script type="text/javascript">
-function delete_it(id)
-{
-	$.dialog.confirm('{lang确定要删除当前规则吗？}',function(){
-		var url = get_url('wealth','delete_rule','id='+id);
-		var rs = $.phpok.json(url);
-		if(rs.status == 'ok'){
-			$.dialog.alert('{lang删除成功}',function(){
-				$.phpok.reload();
-			},'succeed');
-		}else{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	});
-}
-function update_it(id)
-{
-	var url = get_url('wealth','save_rule','id='+id);
-	$("#set_rule_"+id).ajaxSubmit({
-		'url':get_url('wealth','save_rule','id='+id),
-		'type':'post',
-		'dataType':'json',
-		'success':function(rs){
-			if(rs.status){
-				$.dialog.alert('{lang规则编辑成功}',function(){
-					$.phpok.reload();
-				},'succeed');
-			}else{
-				$.dialog.alert(rs.info);
-				return false;
-			}
-		}
-	});
-	return false;
-}
-$(document).ready(function(){
-	$("#add_rule").submit(function(){
-		$(this).ajaxSubmit({
-			'url':"{url ctrl=wealth func=save_rule wid=$rs.id/}",
-			'type':'post',
-			'dataType':'json',
-			'success':function(rs){
-				if(rs.status){
-					$.dialog.alert('{lang规则创建成功}',function(){
-						$.phpok.reload();
-					},'succeed');
-				}else{
-					$.dialog.alert(rs.info);
-					return false;
-				}
-			}
-		});
-		return false;
-	});
-});
-</script>
+<div style="display:none" id="help_info">
+	<ol>
+		<li>值框支持填写负数，正数，负数表示扣除，当值为0时，不能再执行扣除操作</li>
+		<li>登录获取财富同一天仅限第一次有效</li>
+		<li>仅在订单中支持变量price支持数学计算，如-(price/10+10)</li>
+		<li>对象：所有财富在未指定规则时，都计算到用户，除非您指定了介绍人（也就是推荐人）</li>
+		<li>目前用户级别请到：<span class="red">data/xml/user_agent.xml</span> 修改</li>
+		<li>主题支持变量integral，支持数学计算，如-(integral/10+10)，此参数也支持在订单中使用（仅限订单中有关联的产品）</li>
+		<li class="red" style="font-size:2em;">注意，每一行都得单独提交！不然系统是不会保存数据的</li>
+	</ol>
+</div>
 <div class="layui-card">
-	<div class="layui-card-header layuiadmin-card-header-auto">
-		<ol>
-			<li>值：此框支持填写负数，正数，负数表示扣除，当{$rs.title}为0时，不能再执行扣除操作</li>
-			<li>登录获取财富同一天仅限第一次有效</li>
-			<li>仅在订单中支持变量price支持数学计算，如-(price/10+10)</li>
-			<li>对象：所有财富在未指定规则时，都计算到用户，除非您指定了介绍人（也就是推荐人）</li>
-			<li>目前用户级别请到：<span class="red">data/xml/user_agent.xml</span> 修改</li>
-			<li>主题支持变量integral，支持数学计算，如-(integral/10+10)，此参数也支持在订单中使用（仅限订单中有关联的产品）</li>
-			<li class="red" style="font-size:2em;">注意，每一行都得单独提交！不然系统是不会保存数据的</li>
-		</ol>
+	<div class="layui-card-header">
+		{$rs.title}
+		<div class="layui-btn-group fr">
+			<input type="button" value="添加新规则" onclick="$.admin_wealth.rule_add('{$rs.id}')" class="layui-btn layui-btn-sm" />
+			<input type="button" value="帮助说明" onclick="$.admin_wealth.rule_help()" class="layui-btn layui-btn-sm layui-btn-normal" />
+		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="layui-card-body">
 		<table class="layui-table">
 		<thead>
 		<tr>
 			<th width="75">ID</th>
-			<th width="220">{lang执行动作}</th>
-			<th width="220">{lang值}</th>
-			<th width="220">{lang对象}</th>
+			<th>{lang执行动作}</th>
+			<th>{lang限制}</th>
+			<th>{lang值}</th>
+			<th>{lang对象}</th>
 			<th width="75">{lang排序}</th>
 			<th>{lang操作}</th>
 		</tr>
 		</thead>
 		<!-- loop from=$rslist key=$key value=$value -->
-		<form method="post" id="set_rule_{$value.id}" onsubmit="return update_it('{$value.id}')">
 		<tr>
 			<td>{$value.id}</td>
+			<td>{$value.action_title}</td>
 			<td>
-				<select name="action">
-					<!-- loop from=$alist key=$k value=$v id=$tmpid -->
-					<option value="{$k}"{if $value.action == $k} selected{/if}>{$v}</option>
-					<!-- /loop -->
-				</select>
+				<!-- if $value.group_id -->
+				<div>{lang会员组}_{$value.group_title}</div>
+				<!-- /if -->
+				<!-- if $value.uids -->
+				<div>{lang会员ID}_{$value.uids}</div>
+				<!-- /if -->
+				<!-- if $value.project_id -->
+				<div>{lang项目}_{$value.project_title}</div>
+				<!-- /if -->
+				<!-- if $value.title_id -->
+				<div>{lang主题ID}_{$value.title_id}</div>
+				<!-- /if -->
+				<!-- if $value.qty && $value.qty_type == 'order' -->
+				<div>{lang会员订单数量最小限制}_{$value.qty}</div>
+				<!-- /if -->
+				<!-- if $value.qty && $value.qty_type == 'order2' -->
+				<div>{lang目标会员订单数量最小限制}_{$value.qty}</div>
+				<!-- /if -->
+				<!-- if $value.qty && $value.qty_type == 'order3' -->
+				<div>{lang目标会员下线订单数量最小限制}_{$value.qty}</div>
+				<!-- /if -->
+				<!-- if $value.qty && $value.qty_type == 'product' -->
+				<div>{lang会员订单产品数量最小限制}_{$value.qty}</div>
+				<!-- /if -->
+				<!-- if $value.qty && $value.qty_type == 'product2' -->
+				<div>{lang目标会员订单产品数量最小限制}_{$value.qty}</div>
+				<!-- /if -->
+				<!-- if $value.qty && $value.qty_type == 'product3' -->
+				<div>{lang目标会员下线订单产品数量最小限制}_{$value.qty}</div>
+				<!-- /if -->
+				<!-- if $value.price && $value.price_type == 'order' -->
+				<div>{lang会员订单金额最小限制}_{$value.price}</div>
+				<!-- /if -->
+				<!-- if $value.price && $value.price_type == 'order2' -->
+				<div>{lang目标会员订单金额最小限制}_{$value.price}</div>
+				<!-- /if -->
+				<!-- if $value.price && $value.price_type == 'order3' -->
+				<div>{lang目标会员下线订单金额最小限制}_{$value.price}</div>
+				<!-- /if -->
+				<!-- if $value.price && $value.price_type == 'product' -->
+				<div>{lang会员产品金额最小限制}_{$value.price}</div>
+				<!-- /if -->
+				<!-- if $value.price && $value.price_type == 'product2' -->
+				<div>{lang目标会员产品金额最小限制}_{$value.price}</div>
+				<!-- /if -->
+				<!-- if $value.price && $value.price_type == 'product3' -->
+				<div>{lang目标会员下线产品金额最小限制}_{$value.price}</div>
+				<!-- /if -->
+				<!-- if !$value.group_id && !$value.project_id && !$value.qty && !$value.price -->
+				<div>{lang暂无限制}</div>
+				<!-- /if -->
 			</td>
-			<td><input type="text" name="val"  value="{$value.val}"/></td>
+			<td>{$value.val}</td>
 			<td>
-				<select name="goal" id="goal_{$value.id}">
-					<!-- loop from=$agentlist key=$k value=$v id=$tmpid -->
-					<option value="{$k}"{if $value.goal == $k} selected{/if}>{$v}</option>
-					<!-- /loop -->
-				</select>
+				{$value.goal_title}
+				<!-- if $value.goal_group_id && $value.goal_group_title -->
+				<div>{lang限制会员组}_{$value.goal_group_title}</div>
+				<!-- /if -->
+				<!-- if $value.goal_uids -->
+				<div>{lang限制会员ID}_{$value.goal_uids}</div>
+				<!-- /if -->
 			</td>
-			<td><input type="text" name="taxis" id="taxis_{$value.id}" value="{$value.taxis}" class="short center" /></td>
+			<td>{$value.taxis}</td>
 			<td>
 				<div class="layui-btn-group">
-					<input type="submit" value="{lang提供}" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang删除}" onclick="delete_it('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+					<input type="button" value="{lang编辑}" class="layui-btn layui-btn-sm" onclick="$.admin_wealth.rule_edit('{$value.id}')" />
+					<input type="button" value="{lang删除}" onclick="$.admin_wealth.rule_delete('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 				</div>
 			</td>
 		</tr>
-		</form>
 		<!-- /loop -->
-		<form method="post" id="add_rule">
-		<tr>
-			<td>添加</td>
-			<td>
-				<select name="action">
-					<option value="">{lang动作…}</option>
-					<!-- loop from=$alist key=$key value=$value id=$tmpid -->
-					<option value="{$key}">{$value}</option>
-					<!-- /loop -->
-				</select>
-			</td>
-			<td><input type="text" name="val" /></td>
-			<td>
-				<select name="goal">
-					<!-- loop from=$agentlist key=$key value=$value id=$tmpid -->
-					<option value="{$key}">{$value}</option>
-					<!-- /loop -->
-				</select>
-			</td>
-			<td><input type="text" name="taxis" value="255" class="short center" /></td>
-			<td><input type="submit" value="{lang添加}" class="layui-btn layui-btn-sm" /></td>
-		</tr>
-		</form>
 		</table>
-		
 	</div>
 </div>
 <!-- include tpl=foot_lay -->

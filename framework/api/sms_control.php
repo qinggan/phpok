@@ -84,7 +84,11 @@ class sms_control extends phpok_control
 		if(!$tplcontent){
 			$this->error(P_Lang('短信模板内容是空的，请联系管理员'));
 		}
-		$info = $this->lib("vcode")->word();
+		$data = $this->model('vcode')->create('sms',4);
+		if(!$data){
+			$this->error($this->model('vcode')->error_info());
+		}
+		$info = $data['code'];
 		$this->assign('code',$info);
 		$this->assign('mobile',$mobile);
 		$content = $this->fetch($tplcontent,'msg');

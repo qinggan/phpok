@@ -19,11 +19,6 @@
 		},
 		add:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			$("#postsave").ajaxSubmit({
 				'url':get_url('order','payment_save','id={$rs.id}'),
 				'type':'post',

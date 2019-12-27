@@ -491,8 +491,11 @@ function price_format($val='',$currency_id='',$show_id=0,$show_rate=0,$currency_
 	if($show_id != $currency_id && $currency_rate>0){
 		$val = ($val/$currency_rate) * $show_rate;
 	}
-	$val = number_format($val,2,".","");
-	$string = $show['symbol_left'].$val.$show['symbol_right'];
+	$tmp = number_format(abs($val),2,'.',',');
+	$string = $show['symbol_left'].$tmp.$show['symbol_right'];
+	if($val<0){
+		$string = '- '.$string;
+	}
 	return $string;
 }
 
@@ -747,7 +750,7 @@ function tpl_head($array=array())
 		$html .= '<meta name="author" content="phpok,admin@phpok.com" />'."\n\t";
 	}
 	$html .= '<meta name="license" content="'.$app->license.'" />'."\n\t";
-	$seo = $app->site['seo'];
+	$seo = $app->tpl->val('seo');
 	if($array['seo_title']){
 		$seo['title'] = $array['seo_title'];
 	}
@@ -973,7 +976,7 @@ function license_date()
 
 
 //PHPOK日志存储，可用于调试
-function phpok_log($info='')
+function phpok_log($info='',$in_db=true)
 {
 	global $app;
 	if(!$info){
@@ -997,6 +1000,10 @@ function phpok_log($info='')
 	$info2.= '---end---'."\n";
 	fwrite($handle,$info2);
 	fclose($handle);
+	if($in_db){
+		$app->model('log')->save($info,true);
+	}
+	return true;
 }
 
 //邮箱合法性验证
@@ -1026,16 +1033,20 @@ function opt_rslist($type='default',$group_id=0,$info='')
 	//当类型为默认时
 	if($type == 'default' && $info){
 		$list = explode("\n",$info);
-		$rslist = "";
-		$i=0;
+		$rslist = array();
 		foreach($list as $key=>$value){
 			if(!$value || !trim($value)){
 				continue;
 			}
-			$value = trim($value);
-			$rslist[$i]['val'] = $value;
-			$rslist[$i]['title'] = $value;
-			$i++;
+			if(strpos($value,':') !== false){
+				$tmp2 = explode(":",$value);
+				if(!$tmp2[1]){
+					$tmp2[1] = $tmp2[0];
+				}
+				$rslist[] = array('val'=>$tmp2[0],'title'=>$tmp2[1]);
+			}else{
+				$rslist[] = array('val'=>trim($value),'title'=>trim($value));
+			}
 		}
 		return $rslist;
 	}
@@ -1055,10 +1066,12 @@ function opt_rslist($type='default',$group_id=0,$info='')
 	//读主题列表信息
 	if($type == 'title'){
 		$tmplist = $GLOBALS['app']->model("list")->title_list($group_id);
-		if(!$tmplist) return false;
+		if(!$tmplist){
+			return false;
+		}
 		$rslist = array();
 		foreach($tmplist as $key=>$value){
-			$tmp = array("val"=>$value['id'],"title"=>$value['title']);
+			$tmp = array("val"=>$value['id'],"title"=>$value['title'],'cate_id'=>$value['cate_id'],'catename'=>$value['catename']);
 			$rslist[] = $tmp;
 		}
 		return $rslist;

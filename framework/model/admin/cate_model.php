@@ -56,7 +56,7 @@ class cate_model extends cate_model_base
 		return $this->return_next_taxis($rs);
 	}
 
-	public function cate_include_modules($mids)
+	public function cates_include_modules($mids)
 	{
 		if(!$mids){
 			return false;

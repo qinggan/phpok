@@ -32,7 +32,7 @@ class list_model_base extends phpok_model
 	**/
 	public function is_biz($is_biz='')
 	{
-		if(isset($is_biz) && is_bool($is_biz)){
+		if(isset($is_biz) && (is_bool($is_biz) || is_int($is_biz))){
 			$this->is_biz = $is_biz;
 		}
 		return $this->is_biz;
@@ -455,9 +455,8 @@ class list_model_base extends phpok_model
 		}
 		if($id){
 			return $this->db->update_array($data,"list",array("id"=>$id));
-		}else{
-			return $this->db->insert_array($data,"list");
 		}
+		return $this->db->insert_array($data,"list");
 	}
 
 	public function update_field($ids,$field,$val=0)
@@ -718,18 +717,26 @@ class list_model_base extends phpok_model
 		}
 		$orderby = $project['orderby'] ? $project['orderby'] : 'l.id DESC';
 		$orderby_list = $this->_project_format_orderby($orderby);
-		$sql = $this->_np_sql($rs,$project,$orderby_list);
-		$sql .= " AND l.id>".$id;
+		$sql = $this->_np_sql($rs,$project,$orderby_list,'l.id');
+		$is_dateline = false;
 		$orderby = '';
 		foreach($orderby_list as $key=>$value){
+			if($value['field'] == 'dateline'){
+				$is_dateline = true;
+			}
 			if($orderby){
 				$orderby .= ",";
 			}
 			$orderby .= $value['id']." ".($value['type'] == 'DESC' ? 'ASC' : 'DESC');
 		}
+		if($is_dateline){
+			$sql .= " AND l.dateline>=".$rs['dateline']." AND l.id!='".$rs['id']."'";
+		}else{
+			$sql .= " AND l.id>".$id;
+		}
 		$sql .= " ORDER BY ".$orderby." LIMIT 1";
 		$tmp = $this->db->get_one($sql);
-		if(!$tmp || ($tmp && $tmp['id'] == $id)){
+		if(!$tmp){
 			return false;
 		}
 		return $tmp['id'];
@@ -761,20 +768,43 @@ class list_model_base extends phpok_model
 		}
 		$orderby = $project['orderby'] ? $project['orderby'] : 'l.id DESC';
 		$orderby_list = $this->_project_format_orderby($orderby);
-		$sql = $this->_np_sql($rs,$project,$orderby_list);
-		$sql .= " AND l.id<".$id;
+		$sql = $this->_np_sql($rs,$project,$orderby_list,'l.id');
+		$orderby = '';
+		foreach($orderby_list as $key=>$value){
+			if($value['field'] == 'dateline'){
+				$is_dateline = true;
+			}
+			if($orderby){
+				$orderby .= ",";
+			}
+			$orderby .= $value['id']." ".$value['type'];
+		}
+		if($is_dateline){
+			$sql .= " AND l.dateline<=".$rs['dateline']." AND l.id!='".$rs['id']."'";
+		}else{
+			$sql .= " AND l.id<".$id;
+		}
 		$sql .= " ORDER BY ".$orderby." LIMIT 1";
 		$tmp = $this->db->get_one($sql);
-		if(!$tmp || ($tmp && $tmp['id'] == $id)){
+		if(!$tmp){
 			return false;
 		}
 		return $tmp['id'];
 	}
 
-	private function _np_sql($rs,$project,$orderby_list)
+	private function _np_sql($rs,$project,$orderby_list,$field='*')
 	{
-		$sql = "SELECT l.id FROM ".$this->db->prefix."list l ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."list_".$project['module']." ext ON(l.id=ext.id) ";
+		$sql = "SELECT ".$field." FROM ".$this->db->prefix."list l ";
+		$is_ext = false;
+		foreach($orderby_list as $key=>$value){
+			if(strpos($value['id'],'ext.') !== false){
+				$is_ext = true;
+				break;
+			}
+		}
+		if($is_ext){
+			$sql.= " LEFT JOIN ".$this->db->prefix."list_".$project['module']." ext ON(l.id=ext.id) ";
+		}
 		if($rs['cate_id'] && $project['cate_multiple']){
 			$sql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
 		}
@@ -818,14 +848,19 @@ class list_model_base extends phpok_model
 		return $this->lib('xml')->read($xmlfile);
 	}
 
-	function title_list($pid=0)
+	public function title_list($pid=0)
 	{
-		if(!$pid) return false;
-		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE project_id IN(".$pid.") AND status='1' ORDER BY sort ASC,dateline DESC,id DESC";
+		if(!$pid){
+			return false;
+		}
+		$sql = " SELECT l.*,c.title catename FROM ".$this->db->prefix."list l ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."cate c ON(l.cate_id=c.id) ";
+		$sql.= " WHERE l.project_id IN(".$pid.") AND l.status='1' ";
+		$sql.= " ORDER BY l.sort ASC,l.dateline DESC,l.id DESC";
 		return $this->db->get_all($sql);
 	}
 
-	function get_all($condition="",$offset=0,$psize=30,$pri="")
+	public function get_all($condition="",$offset=0,$psize=30,$pri="")
 	{
 		$sql = "SELECT l.* FROM ".$this->db->prefix."list l ";
 		if($condition){
@@ -851,25 +886,51 @@ class list_model_base extends phpok_model
 
 	
 
-	function get_mid($id)
+	public function get_mid($id)
 	{
 		$sql = "SELECT module_id FROM ".$this->db->prefix."list WHERE id='".$id."'";
 		$rs = $this->db->get_one($sql);
-		if(!$rs || !$rs["module_id"])
-		{
+		if(!$rs || !$rs["module_id"]){
 			return false;
 		}
 		return $rs["module_id"];
 	}
 
 	//
-	function simple_one($id)
+	public function simple_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
 
-	function get_one_condition($condition="",$mid=0)
+	/**
+	 * 简单读取主题信息
+	 * @参数 $ids，多个主题用英文逗号隔开，支持数组
+	 * @参数 $status 是否仅读已审核的
+	**/
+	public function simple_all($ids,$status=0)
+	{
+		if(!$ids){
+			return false;
+		}
+		if(is_string($ids)){
+			$ids = explode(",",$ids);
+		}
+		foreach($ids as $key=>$value){
+			if(!$value || !intval($value)){
+				unset($ids[$key]);
+				continue;
+			}
+			$ids[$key] = intval($value);
+		}
+		if(!$ids){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id IN(".implode(",",$ids).")";
+		return $this->db->get_all($sql,"id");
+	}
+
+	public function get_one_condition($condition="",$mid=0)
 	{
 		if(!$condition || !$mid) return false;
 		$sql = "SELECT l.*,ext.id _id FROM ".$this->db->prefix."list l ";
@@ -1241,5 +1302,28 @@ class list_model_base extends phpok_model
 	{
 		$sql = "UPDATE ".$this->db->prefix."list SET hits=hits+1 WHERE id='".$id."'";
 		return $this->db->query($sql,false);
-	}	
+	}
+
+	public function all_list($condition='',$offset=0,$psize=30)
+	{
+		$sql  = "SELECT l.*,p.title project_title FROM ".$this->db->prefix."list l ";
+		$sql .= "LEFT JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
+		$sql .= "WHERE l.site_id='".$this->site_id."' AND l.status=1 ";
+		if($condition){
+			$sql .= " AND ".$condition." ";
+		}
+		$sql .= " ORDER BY id DESC LIMIT ".intval($offset).",".intval($psize);
+		return $this->db->get_all($sql);
+	}
+
+	public function all_total($condition='')
+	{
+		$sql  = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
+		$sql .= "LEFT JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
+		$sql .= "WHERE l.site_id='".$this->site_id."' AND l.status=1 ";
+		if($condition){
+			$sql .= " AND ".$condition." ";
+		}
+		return $this->db->count($sql);
+	}
 }

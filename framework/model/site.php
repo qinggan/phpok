@@ -26,6 +26,7 @@ class site_model_base extends phpok_model
 	**/
 	public function get_one($id)
 	{
+		$id = intval($id);
 		$sql = "SELECT * FROM ".$this->db->prefix."site WHERE id='".$id."'";
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
@@ -47,6 +48,10 @@ class site_model_base extends phpok_model
 					$rs['domain'] = $value['domain'];
 				}
 			}
+		}
+		//检测是否启用商务
+		if($rs['biz_status'] && $rs['currency_id']){
+			$rs['currency'] = $this->model('currency')->get_one($rs['currency_id']);
 		}
 		return $rs;
 	}
@@ -72,10 +77,10 @@ class site_model_base extends phpok_model
 		return $this->get_one($tmp['site_id']);
 	}
 
-	public function get_all_site()
+	public function get_all_site($pri='')
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."site ";
-		return $this->db->get_all($sql);
+		return $this->db->get_all($sql,$pri);
 	}
 
 	public function domain_list($site_id=0,$pri='')
@@ -267,6 +272,10 @@ class site_model_base extends phpok_model
 				$rs = array_merge($tmp,$rs);
 			}
 		}
+		//检测是否启用商务
+		if($rs['biz_status'] && $rs['currency_id']){
+			$rs['currency'] = $this->model('currency')->get_one($rs['currency_id']);
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."site_domain WHERE site_id='".$id."'";
 		$dlist = $this->db->get_all($sql);
 		if($dlist){
@@ -301,7 +310,7 @@ class site_model_base extends phpok_model
 			return $rs;
 		}
 		$info = false;
-		foreach($rslist AS $key=>$value){
+		foreach($rslist as $key=>$value){
 			if(!$tmp2[$value["ftype"]]){
 				continue;
 			}

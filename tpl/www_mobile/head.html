@@ -23,15 +23,15 @@
 	<div class="am-offcanvas">
 		<div class="am-offcanvas-bar">
 			<ul class="am-menu-nav am-avg-sm-1">
-				<!-- php:$list = phpok('menu') -->
-				<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
-				<li{if $value.sonlist} class="am-parent"{/if}>
-					<a href="{if !$value.sonlist}{$value.url}{else}javascript:void(0);{/if}"{if $value.title == $menutitle} class="am-active"{/if}>{$value.title}</a>
-					<!-- if $value.sonlist -->
+				<!-- php:$list = menu('top') -->
+				<!-- loop from=$list key=$key value=$value id=$tmpid -->
+				<li{if $value.sublist} class="am-parent"{/if}>
+					<a href="{if !$value.sublist}{$value.url}{else}javascript:void(0);{/if}"{if $value.highlight} class="am-active"{/if}>{$value.title}</a>
+					<!-- if $value.sublist -->
 					<ul class="am-menu-sub am-collapse">
-						<!-- if $value.link --><li><a href="{$value.url}">{$value.title}</a></li><!-- /if -->
-						<!-- loop from=$value.sonlist key=$k value=$v -->
-						<li{if $v.title == $menutitle} class="am-active"{/if}><a href="{$v.url}" title="{$v.title}" target="{$v.target}">{$v.title}</a></li>
+						<!-- if $value.url --><li><a href="{$value.url}">{$value.title}</a></li><!-- /if -->
+						<!-- loop from=$value.sublist key=$k value=$v -->
+						<li{if $v.highlight} class="am-active"{/if}><a href="{$v.url}" title="{$v.title}" target="{$v.target}">{$v.title}</a></li>
 						<!-- /loop -->
 					</ul>
 					<!-- /if -->

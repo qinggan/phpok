@@ -3,7 +3,7 @@
 <select id="code">
 	<option value="">{lang请选择…}</option>
 	<!-- loop from=$codelist key=$key value=$value -->
-	<option value="{$value.id}">{$value.title}</option>
+	<option value="{$value.id}">{$value.title}<!-- if $value.note --> / {$value.note}<!-- /if --></option>
 	<!-- /loop -->
 </select>
 </div>

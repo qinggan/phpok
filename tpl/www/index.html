@@ -1,17 +1,53 @@
-<!-- include tpl=head highlight=1 -->
+<!-- include tpl=header highlight=1 -->
 <!-- if $slider -->
-<div data-am-widget="slider" class="am-slider am-slider-a1 index-banner" data-am-slider='{&quot;directionNav&quot;:false}'>
-	<ul class="am-slides">
+<div class="index-banner">
+	<ul class="bd">
 		<!-- loop from=$slider.rslist key=$key value=$value -->
-		<li style="background-image: url('{$value.pic.filename}');"><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{#images#}/blank.gif" alt="{$value.title}"/></a></li>
+		<!-- if $value.subani -->
+		<li style="background-image: url({$value.pic.filename});"{if $value.effect && $value.effect.val} class="wow {$value.effect.val}"{/if}>
+			<!-- loop from=$value.subani key=$k value=$v id=$idxx -->
+			<img src="{#images#}/blank.gif" alt="{$value.title}"/>
+			<!-- if $v.etype == 2 -->
+			<div {if $v.effect && $v.effect.val} class="wow {$v.effect.val}"{/if} style="position:absolute;{if $v.pleft}left:{$v.pleft};{/if}{if $v.ptop}top:{$v.ptop};{/if}text-align:center;"{if $v.delaytime} data-wow-delay="{$v.delaytime}"{/if}{if $v.duration} data-wow-duration="{$v.duration}"{/if}{if $v.woffset} data-wow-offset="{$v.woffset}"{/if}>
+				<input type="button" value="{$v.title}"{if $value.linkurl} onclick="{if $v.target}$.phpok.open('{$v.linkurl}');{else}$.phpok.go('{$v.linkurl}');{/if}"{/if} style="{if $v.fontsize}font-size:{$v.fontsize};{/if}{if $v.color}color:{$v.color};{/if}{if $v.fontweight}font-weight:{$v.fontweight};{/if}{$v.style}" />
+			</div>
+			<!-- elseif $v.etype == 1 -->
+			<div {if $v.effect && $v.effect.val} class="wow {$v.effect.val}"{/if} style="position:absolute;left:{$v.pleft};top:{$v.ptop};"{if $v.delaytime} data-wow-delay="{$v.delaytime}"{/if}{if $v.duration} data-wow-duration="{$v.duration}"{/if}{if $v.woffset} data-wow-offset="{$v.woffset}"{/if}><!-- if $v.linkurl --><a href="{$v.linkurl}" target="{$v.target}" title="{$v.title}"><!-- /if --><img src="{$v.picture.filename}" style="border:0;{$v.style}" alt="{$v.title}" /><!-- if $v.linkurl --></a><!-- /if --></div>
+			<!-- else -->
+			<div {if $v.effect && $v.effect.val} class="wow {$v.effect.val}"{/if} style="position:absolute;{if $v.pleft}left:{$v.pleft};{/if}{if $v.ptop}top:{$v.ptop};{/if}text-align:center;"{if $v.delaytime} data-wow-delay="{$v.delaytime}"{/if}{if $v.duration} data-wow-duration="{$v.duration}"{/if}{if $v.woffset} data-wow-offset="{$v.woffset}"{/if}><!-- if $v.linkurl --><a href="{$v.linkurl}" target="{$v.target}" title="{$v.title}"><!-- /if --><span style="{if $v.fontsize}font-size:{$v.fontsize};{/if}{if $v.color}color:{$v.color};{/if}{if $v.fontweight}font-weight:{$v.fontweight};{/if}{$v.style}">{$v.title}</span><!-- if $v.linkurl --></a><!-- /if --></div>
+			<!-- /if -->
+			<!-- /loop -->
+		</li>
+		<!-- else -->
+		<li style="background-image: url({$value.pic.filename});"{if $value.effect && $value.effect.val} class="wow {$value.effect.val}"{/if}><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{#images#}/blank.gif" alt="{$value.title}"/></a></li>
+		<!-- /if -->
 		<!-- /loop -->
 	</ul>
+	<div align="center">
+	<ul class="hd">
+		<!-- loop from=$slider.rslist key=$key value=$value id=$tmpid -->
+		<li></li>
+		<!-- /loop -->
+	</ul>
+	</div>
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$(".index-banner").slide({
+		'mainCell':'.bd',
+		'titCell':'.hd li',
+		'autoPlay': true,
+		'pnLoop':{$slider.project.pnloop ? 'true' : 'false'},
+		'interTime':{$slider.project.intertime ? $slider.project.intertime : 2500},
+		'delayTime':{$slider.project.delaytime ? $slider.project.delaytime : 500}
+	});
+});
+</script>
 <!-- /if -->
 <section class="main" style="margin:10px auto;">
 	<!-- if $products -->
-	<h2 class="title"{if $products.project.style} style="{$products.project.style}"{/if}>{$products.project.title}<!-- if $products.project.entitle --><small>{$products.project.entitle}</small><!-- /if --></h2>
-	<ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails products">
+	<h2 class="title wow slideInLeft"{if $products.project.style} style="{$products.project.style}"{/if}>{$products.project.title}<!-- if $products.project.entitle --><small>{$products.project.entitle}</small><!-- /if --></h2>
+	<ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails products wow slideInLeft">
 		<!-- loop from=$products.rslist key=$key value=$value -->
 		<li class="am-padding ">
 			<a href="{$value.url}" title="{$value.title}">
@@ -25,7 +61,7 @@
 	</ul>
 	<!-- /if -->
 	<!-- if $about -->
-	<div class="am-g am-margin-top">
+	<div class="am-g am-margin-top wow slideInRight">
 		<div data-am-widget="titlebar" class="am-titlebar am-titlebar-default" >
 			<h2 class="am-titlebar-title ">
 				{$about.title}<!-- if $about.entitle --><small>{$about.entitle}</small><!-- /if -->
@@ -43,7 +79,7 @@
 	</div>
 	<!-- /if -->
 
-	<div class="am-g am-margin-top">
+	<div class="am-g am-margin-top wow slideInLeft">
 		<h2 class="title"{if $arclist.project.style} style="{$arclist.project.style}"{/if}>{$arclist.project.title}<!-- if $arclist.project.entitle --><small>{$arclist.project.entitle}</small><!-- /if --></h2>
 		<div class="am-u-sm-4">
 			<div data-am-widget="slider" class="am-slider am-slider-c2" data-am-slider='{"directionNav":false}'>
@@ -57,7 +93,7 @@
 				</ul>
 			</div>
 		</div>
-		<div class="am-u-sm-8">
+		<div class="am-u-sm-8 wow slideInRight">
 			<div data-am-widget="list_news" class="am-list-news am-list-news-default">
 				<div class="am-list-news-bd" id="arclist_news">
 					<ul class="am-list">
@@ -84,7 +120,7 @@
 	</div>
 	
 	<!-- if $contactus -->
-	<div class="am-g am-margin-top">
+	<div class="am-g am-margin-top wow slideInLeft">
 		<div data-am-widget="titlebar" class="am-titlebar am-titlebar-default" >
 			<h2 class="am-titlebar-title ">
 				{$contactus.title}<!-- if $contactus.entitle --><small>{$contactus.entitle}</small><!-- /if -->
@@ -107,7 +143,7 @@
 	</div>
 	<!-- /if -->
 	<!-- if $link -->
-	<div class="am-panel am-panel-default am-margin">
+	<div class="am-panel am-panel-default am-margin wow slideInRight">
 		<div class="am-panel-hd">
 			<h3 class="am-panel-title"{if $link.project.style} style="{$link.project.style}"{/if}>{$link.project.title}</h3>
 		</div>
@@ -119,11 +155,6 @@
 		</div>
 	</div>
 	<!-- /if -->
-
-	
-
-
-	
 </section>
 
-<!-- include tpl=foot -->
+<!-- include tpl=footer -->

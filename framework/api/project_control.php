@@ -20,8 +20,8 @@ class project_control extends phpok_control
 	{
 		parent::control();
 		$this->config('is_ajax',true);
-		if($this->session->val('user_id')){
-			$group_rs = $this->model('usergroup')->get_one($this->session->val('user_id'));
+		if($this->session->val('user_gid')){
+			$group_rs = $this->model('usergroup')->get_one($this->session->val('user_gid'));
 		}else{
 			$group_rs = $this->model('usergroup')->get_default(true);
 		}
@@ -50,6 +50,9 @@ class project_control extends phpok_control
 		$project = $this->call->phpok('_project',array('pid'=>$pid));
 		if(!$project || !$project['status']){
 			$this->error(P_Lang('项目不存在或未启用'));
+		}
+		if($project["module"] && !$project['is_api']){
+			$this->error(P_Lang('此项目接口不可用'));
 		}
 		$this->rlist['page_rs'] = $project;
 		if($project['parent_id']){
@@ -93,12 +96,10 @@ class project_control extends phpok_control
 		//价格，支持价格区间
 		$price = $this->get('price','float');
 		$sort = $this->get('sort');
-		//判断该项目是否启用封面
-		if($rs["tpl_index"] && !$cateid && !$keywords && !$ext && !$tag && !$uid && !$attr && !$price && !$sort){
-			$this->success($this->rlist);
+		if($sort && !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-,\s\.]*[a-zA-Z]$/u",$sort)){
+			$this->error(P_Lang('参数格式不正确'));
 		}
 		//读取列表信息
-		$tplfile = $rs["tpl_list"];
 		$psize = $rs["psize"] ? $rs['psize'] : $this->config['psize'];
 		$pageurl = $this->url($rs['identifier']);
 		if($cate_root){

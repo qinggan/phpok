@@ -62,3 +62,14 @@
 		}
 	}
 })(jQuery);
+
+$(document).ready(function(){
+	var laydate = layui.laydate;
+	//执行一个laydate实例
+	laydate.render({
+		elem: '#start_date',
+	});
+	laydate.render({
+		elem: '#stop_date',
+	});
+});

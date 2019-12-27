@@ -139,6 +139,73 @@
 				'okVal':p_lang('提交'),
 				'cancel':true
 			});
+		},
+		rule_help:function()
+		{
+			top.$.dialog({
+				'content':document.getElementById("help_info"),
+				'width':'500px',
+				'height':'350px',
+				'lock':true,
+				'cancel':true,
+				'cancelVal':'关闭'
+			});
+		},
+		rule_add:function(wid)
+		{
+			var url = get_url('wealth','rule_set','wid='+wid);
+			$.dialog.open(url,{
+				'title':p_lang('添加新规则'),
+				'width':'700px',
+				'height':'700px',
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.save();
+					return false;
+				},
+				'okVal':p_lang('提交保存'),
+				'cancel':true,
+				'lock':true
+			});
+		},
+		rule_edit:function(id)
+		{
+			var url = get_url('wealth','rule_set','id='+id);
+			$.dialog.open(url,{
+				'title':p_lang('编辑规则')+"_#"+id,
+				'width':'700px',
+				'height':'700px',
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.save();
+					return false;
+				},
+				'okVal':p_lang('提交保存'),
+				'lock':true
+			});
+		},
+		rule_delete:function(id)
+		{
+			$.dialog.confirm(p_lang('确定要删除当前规则吗？'), function () {
+				var url = get_url('wealth', 'delete_rule', 'id=' + id);
+				$.phpok.json(url,function(rs){
+					if(rs.status){
+						$.dialog.tips(p_lang('删除成功'));
+						$.phpok.reload();
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				});
+			});
 		}
 	}
 })(jQuery);

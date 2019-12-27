@@ -192,7 +192,7 @@ function phpok_title_delete(id,val)
 //选择主题关联
 function phpok_title_select(project_id,is_multi,title,input)
 {
-	var url = get_url("inp","title")+"&project_id="+$.str.encode(project_id);
+	var url = get_url("inp","title","project_id="+$.str.encode(project_id));
 	if(is_multi && is_multi != 'undefined'){
 		url += "&multi=1";
 		url += "&identifier="+$.str.encode(input);

@@ -25,6 +25,7 @@ class editor_form extends _init_auto
 		$this->addjs('js/ueditor/ueditor.config.js');
 		$this->addjs('js/ueditor/ueditor.all.min.js');
 		$this->addjs('js/ueditor/lang/zh-cn/zh-cn.js');
+		$this->addjs('js/ueditor/extension/quickformat/button.js?v=3');
 	}
 
 	public function phpok_format($rs,$appid="admin")
@@ -104,7 +105,7 @@ class editor_form extends _init_auto
 			return false;
 		}
 		if($appid == 'admin'){
-			return $this->lib('string')->cut($rs['content'],100);
+			return $this->lib('string')->cut($rs['content'],10000);
 		}else{
 			if(!$rs['pageid']) $rs['pageid'] = 1;
 			$rs['content'] = $this->lib('ubb')->to_html($rs['content'],false);

@@ -19,11 +19,6 @@ function field_form_opt(val,eid)
 
 function save()
 {
-	if(typeof(CKEDITOR) != "undefined"){
-		for(var i in CKEDITOR.instances){
-			CKEDITOR.instances[i].updateElement();
-		}
-	}
 	return $.admin_module.field_addok('{$mid}');
 }
 </script>

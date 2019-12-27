@@ -53,30 +53,19 @@ class cate_model extends cate_model_base
 	}
 
 	//前端中涉及到的缓存
-	public function cate_all($site_id=0,$status=0)
+	public function cate_all($site_id=0,$status=0,$orderby='')
 	{
+		$cache_id = $this->cache->id('www'.$site_id.'1'.$orderby);
+		if($this->tmpdata && $this->tmpdata[$cache_id]){
+			return $this->tmpdata[$cache_id];
+		}
 		$siteid = intval($site_id);
 		if(!$siteid){
 			$siteid = $this->site_id;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."cate WHERE site_id='".$siteid."' AND status=1 ORDER BY taxis ASC,id DESC";
-		$cache_id = $this->cache->id('www'.$sql);
-		if($this->tmpdata && $this->tmpdata[$cache_id]){
-			return $this->tmpdata[$cache_id];
-		}
-		$rslist = $this->db->get_all($sql,'id');
+		$rslist = parent::cate_all($siteid,true,$orderby);
 		if(!$rslist){
 			return false;
-		}
-		$extlist = $GLOBALS['app']->model('ext')->cate();
-		if($extlist){
-			foreach($rslist as $key=>$value){
-				$tmpid = 'cate-'.$value['id'];
-				if($extlist[$tmpid]){
-					$value = array_merge($value,$extlist[$tmpid]);
-				}
-				$rslist[$key] = $value;
-			}
 		}
 		$this->tmpdata[$cache_id] = $rslist;
 		return $rslist;

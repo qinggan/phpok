@@ -112,7 +112,7 @@
 						<!-- if !$tmpid.index -->
 						<li><input type="button" value=" + " onclick="$.admin_order.ext_create()" class="layui-btn" /></li>
 						<!-- else -->
-						<li><input type="button" value=" - " onclick="$.admin_order.ext_delete(this)" class="layui-btn" /></li>
+						<li><input type="button" value=" - " onclick="$.admin_order.ext_delete(this)" class="layui-btn layui-btn-danger" /></li>
 						<!-- /if -->
 					</ul>
 				</div>
@@ -170,105 +170,156 @@
 	</div>
 </div>
 
-<div class="layui-card">
-	<div class="layui-card-header hand" onclick="$.admin.card(this)">
-		{lang收件人信息}
-		<i class="layui-icon layui-icon-right"></i>
+
+<div class="layui-row"{if $address} style="margin-bottom:15px"{/if}>
+	<!-- loop from=$address key=$key value=$value id=$tmpid -->
+	<div class="layui-col-md{echo 12/count($address)}">
+		<div class="layui-card">
+			<div class="layui-card-header">
+				<!-- if $key == 'shipping' -->
+				{lang收货信息}
+				<div class="fr">
+					<div class="layui-btn-group">
+						<!-- if count($address) > 1 -->
+						<input type="button" value="{lang复制到账单地址}" onclick="$.admin_order_set.copy('shipping','billing')" class="layui-btn layui-btn-sm layui-btn-normal" />
+						<!-- /if -->
+						<input type="button" value="{lang选择地址}" onclick="$.admin_order.address('{$key}')" class="layui-btn layui-btn-sm" />
+					</div>
+				</div>
+				<!-- /if -->
+				<!-- if $key == 'billing' -->
+				{lang账单地址}
+				<div class="fr">
+					<div class="layui-btn-group">
+						<!-- if count($address) > 1 -->
+						<input type="button" value="{lang复制到收货信息}" onclick="$.admin_order_set.copy('billing','shipping')" class="layui-btn layui-btn-sm layui-btn-normal" />
+						<!-- /if -->
+						<input type="button" value="{lang选择地址}" onclick="$.admin_order.address('{$key}')" class="layui-btn layui-btn-sm" />
+					</div>
+				</div>
+				<!-- /if -->
+				
+			</div>
+			<div class="layui-card-body">
+				<input type="hidden" name="{$key}-id" value="{$value.id}" />
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang姓名全称}
+					</label>
+					<div class="layui-input-block">
+						<input type="text" name="{$key}-fullname" id="{$key}-fullname" class="layui-input" placeholder="{lang全名}" value="{$value.fullname}" />
+					</div>
+					<div class="layui-input-inline auto"></div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						<i class="layui-icon layui-tips" lay-tips="{lang部分网站可能更喜欢姓与名分开写}">&#xe702;</i>
+						{lang名/姓}
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" name="{$key}-firstname" id="{$key}-firstname" class="layui-input" placeholder="{lang名字}" value="{$value.firstname}" />
+					</div>
+					<div class="layui-input-inline">
+						<input type="text" name="{$key}-lastname" id="{$key}-lastname" class="layui-input" placeholder="{lang姓氏}" value="{$value.lastname}" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang国家}
+					</label>
+					<div class="layui-input-inline default-auto">
+						<input type="text" id="{$key}-country" class="layui-input" name="{$key}-country" value="{$value.country}" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang省、州}
+					</label>
+					<div class="layui-input-inline default-auto">
+						<input type="text" id="{$key}-province" class="layui-input" name="{$key}-province" value="{$value.province}" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang城市}
+					</label>
+					<div class="layui-input-inline default-auto">
+						<input type="text" id="{$key}-city" class="layui-input" name="{$key}-city" value="{$value.city}" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang县、镇、区}
+					</label>
+					<div class="layui-input-inline default-auto">
+						<input type="text" id="{$key}-county" class="layui-input" name="{$key}-county" value="{$value.county}" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang地址1}
+					</label>
+					<div class="layui-input-block">
+						<input type="text" id="{$key}-address" class="layui-input" name="{$key}-address" value="{$value.address}" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang地址2}
+					</label>
+					<div class="layui-input-block">
+						<input type="text" id="{$key}-address2" class="layui-input" name="{$key}-address2" value="{$value.address2}" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						<i class="layui-icon layui-tips" lay-tips="{lang请填写有效的邮编号码，不清楚请留空}">&#xe702;</i>
+						{lang邮编}
+					</label>
+					<div class="layui-input-inline default-auto">
+						<input type="text" id="{$key}-zipcode" name="{$key}-zipcode" value="{$value.zipcode}" class="layui-input" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						<i class="layui-icon layui-tips" lay-tips="{lang此处请填写固定电话号码，格式：0755-12345678}">&#xe702;</i>
+						{lang联系电话}
+					</label>
+					<div class="layui-input-inline default-auto">
+						<input type="text" name="{$key}-tel" id="{$key}-tel" value="{$value.tel}" class="layui-input" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						<i class="layui-icon layui-tips" lay-tips="{lang此处请手机号，格式：13xxxxxxxxx，长度是11位}">&#xe702;</i>
+						{lang手机号}
+					</label>
+					<div class="layui-input-inline default-auto">
+						<input type="text" id="{$key}-mobile" name="{$key}-mobile" value="{$value.mobile}" class="layui-input" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						<i class="layui-icon layui-tips" lay-tips="{lang此处填写的邮箱用于接收收货提醒，格式为：admin@admin.com}">&#xe702;</i>
+						{lang邮箱}
+					</label>
+					<div class="layui-input-inline default-auto">
+						<input type="text" id="{$key}-email" name="{$key}-email" value="{$value.email}" class="layui-input" />
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div class="layui-card-body hide">
-		<input type="hidden" name="s-id" value="{$shipping.id}" />
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang收件人姓名}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" name="s-fullname" id="s-fullname" class="layui-input" value="{$shipping.fullname}" />
-			</div>
-			<div class="layui-input-inline auto"><input type="button" value="{lang选择地址}" onclick="$.admin_order.address()" class="layui-btn" /></div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang国家}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" id="s-country" class="layui-input" name="s-country" value="{$shipping.country ? $shipping.country : '中国'}" />
-			</div>
-			<label class="layui-form-label">
-				{lang省、州}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" id="s-province" class="layui-input" name="s-province" value="{$shipping.province}" />
-			</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang城市}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" id="s-city" class="layui-input" name="s-city" value="{$shipping.city}" />
-			</div>
-			<label class="layui-form-label">
-				{lang县、镇、区}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" id="s-county" class="layui-input" name="s-county" value="{$shipping.county}" />
-			</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang地址}
-			</label>
-			<div class="layui-input-block">
-				<input type="text" id="s-address" name="s-address" class="layui-input" value="{$shipping.address}" />
-			</div>
-			<div class="layui-input-block mtop">{lang填写详细的收货地址信息，不含国家省市县等信息}</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang邮编}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" id="s-zipcode" name="s-zipcode" value="{$shipping.zipcode}" class="layui-input" />
-			</div>
-			<div class="layui-input-inline auto gray lh38">{lang请填写有效的邮编号码，不清楚请留空}</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang联系电话}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" name="s-tel" id="s-tel" value="{$shipping.tel}" class="layui-input" />
-			</div>
-			<div class="layui-input-inline auto gray lh38">{lang此处请填写固定电话号码，格式：0755-12345678}</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang手机号}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" id="s-mobile" name="s-mobile" value="{$shipping.mobile}" class="layui-input" />
-			</div>
-			<div class="layui-input-inline auto gray lh38">{lang此处请手机号，格式：13xxxxxxxxx，长度是11位}</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang邮箱Email}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" id="s-email" name="s-email" value="{$shipping.email}" class="layui-input" />
-			</div>
-			<div class="layui-input-inline auto gray lh38">{lang此处填写的邮箱用于接收收货提醒，格式为：admin@admin.com}</div>
-		</div>
-		
-	</div>
+	<!-- /loop -->
 </div>
+
 <!-- if $loglist -->
 <div class="layui-card">
-	<div class="layui-card-header hand" onclick="$.admin.card(this)">
+	<div class="layui-card-header">
 		{lang操作日志}
-		<i class="layui-icon layui-icon-right"></i>
 	</div>
-	<div class="layui-card-body hide">
+	<div class="layui-card-body">
 		<table class="layui-table">
 			<thead>
 			<tr>
@@ -288,10 +339,14 @@
 	</div>
 </div>
 <!-- /if -->
-<div class="layui-card">
-	<div class="layui-container layui-card-body">
-		<div style="margin-left:120px"><input type="submit" value="{lang提交}" class="submit2" /></div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交保存}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+		<span style="padding-left:2em;color:#ccc;">保存不会关闭页面，请手动关闭</span>
 	</div>
 </div>
+
 </form>
 <!-- include tpl=foot_lay -->

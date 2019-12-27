@@ -1,9 +1,12 @@
-<!-- include tpl=head_open -->
-<ul class="layout">
-	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-	<li><input type="button" value="{$value.title}" class="layui-btn" onclick="$.phpok_tag.selected(this.value,'{$rs.separator}')" /></li>
-	<!-- /loop -->
-</ul>
-<!-- include tpl=pagelist -->
+<!-- include tpl=head_lay nopadding=true -->
+<div class="layui-card">
+	<div class="layui-card-body">
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<input type="button" value="{$value.title}" class="layui-btn layui-btn-sm" onclick="$.admin_tag.selected(this.value,'{$rs.separator}')" />
+		<!-- /loop -->
+		<div class="clear"></div>
+		<!-- include tpl=pagelist -->
+	</div>
+</div>
 
-<!-- include tpl=foot_open -->
+<!-- include tpl=foot_lay -->

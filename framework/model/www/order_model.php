@@ -19,8 +19,7 @@ class order_model extends order_model_base
 	function get_list($condition='',$offset=0,$psize=20)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."order ";
-		if($condition)
-		{
+		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
 		$offset = intval($offset);

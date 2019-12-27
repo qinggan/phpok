@@ -88,6 +88,29 @@
 			</div>
 			<div class="layui-input-inline auto gray lh38">{lang人工设置会员的注册时间，默认使用当前时间}</div>
 		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang邀请码}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="code" name="code" class="layui-input" value="{$rs.code}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<input type="button" value="{lang随机生成}" onclick="$('#code').val($.phpok.rand(3,'letter')+$.phpok.rand(5,'fixed'))" class="layui-btn layui-btn-sm" />
+			</div>
+			<div class="layui-form-mid">
+				{lang用于邀请会员注册的识别码，字母+数字组成}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang推荐人}
+			</label>
+			<div class="layui-input-inline auto">
+				{func form_edit relation_id $relation_id user}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang无推荐人请留空}</div>
+		</div>
 		<!-- loop from=$extlist key=$key value=$value id=extlist_id -->
 		<div class="layui-form-item" id="userext_{$value.identifier}" name="userext_html">
 			<label class="layui-form-label">

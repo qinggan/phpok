@@ -375,6 +375,12 @@ class list_control extends phpok_control
 		if($project_rs['psize'] && $project_rs['psize'] > $psize){
 			$psize = $project_rs['psize'];
 		}
+		$psize2 = $this->get('psize');
+		if($psize2){
+			$psize = $psize2;
+			$this->assign('psize2',$psize2);
+		}
+		$this->assign('psize',$psize);
 		if(!$this->config["pageid"]){
 			$this->config["pageid"] = "pageid";
 		}
@@ -385,6 +391,9 @@ class list_control extends phpok_control
 		$offset = ($pageid-1) * $psize;
 		$condition = "l.site_id='".$site_id."' AND l.project_id='".$pid."' AND l.parent_id='0' ";
 		$pageurl = $this->url("list","action","id=".$pid);
+		if($psize2){
+			$pageurl .= "&psize=".$psize2;
+		}
 		$keywords = $this->get('keywords');
 		if($keywords){
 			$this->assign('keywords',$keywords);
@@ -487,6 +496,14 @@ class list_control extends phpok_control
 				$condition .= ' AND l.status=0 ';
 			}
 			$pageurl .= "&keywords[status]=".$keywords['status'];
+		}
+		if($keywords && $keywords['hidden']){
+			if($keywords['hidden'] == 1){
+				$condition .= ' AND l.hidden=1 ';
+			}else{
+				$condition .= ' AND l.hidden=0 ';
+			}
+			$pageurl .= "&keywords[hidden]=".$keywords['hidden'];
 		}
 
 		$orderby_search = $this->get('orderby_search');
@@ -946,6 +963,7 @@ class list_control extends phpok_control
 		$array["seo_title"] = $this->get("seo_title");
 		$array["seo_keywords"] = $this->get("seo_keywords");
 		$array["seo_desc"] = $this->get("seo_desc");
+		$array['lastdate'] = $this->time;//最后修改时间
 		if(!$array["seo_title"] && $p_rs['is_seo'] == 3 && !$_autosave){
 			$this->json(P_Lang('SEO标题不能为空'));
 		}

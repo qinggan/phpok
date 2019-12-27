@@ -1,33 +1,36 @@
-<div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default " id="">
+<div data-am-widget="navbar" class="am-navbar am-cf am-navbar-gray " id="">
 	<ul class="am-navbar-nav am-cf am-avg-sm-4">
-		<li>
-			<a href="{$sys.url}"> <span class="am-icon-home"></span> <span class="am-navbar-label">首页</span>
+		<li{if $sys.ctrl == 'index'} class='am-active'{/if}>
+			<a href="{$sys.url}"> <span class="ok-icon ok-icon-home"></span> <span class="am-navbar-label">首页</span>
 			</a>
 		</li>
-		<!-- php:$contactus = phpok('contactus') -->
-		<!-- if $contactus.tel -->
-		<li>
-			<a href="tel:{$contactus.tel}"> <span class="am-icon-phone"></span> <span class="am-navbar-label">电话</span>
+		<li{if $page_rs.identifier == 'product'} class="am-active"{/if}>
+			<a href="{url id=product/}"> <i class="ok-icon ok-icon-all"></i> <span class="am-navbar-label">产品</span>
 			</a>
 		</li>
-		<!-- /if -->
-		<li>
+
+		<li{if $sys.ctrl == 'cart'} class='am-active'{/if}>
 			<div class="cart">
-			<a href="{url ctrl=cart/}"> <i class="am-icon-shopping-cart"></i> <span class="am-navbar-label">购物车 <span id="head_cart_num">0</span></span></a>
+			<a href="{url ctrl=cart/}">
+				<i class="ok-icon ok-icon-cart"></i>
+				<span class="am-navbar-label">购物车</span>
+				<span id="head_cart_num" class="am-badge am-badge-danger hide">0</span>
+			</a>
 			</div>
 		</li>
+		<li{if $page_rs.identifier == 'contactus' || $rs.identifier == 'contactus'} class="am-active"{/if}>
+			<a href="{url id=contactus/}"> <i class="ok-icon ok-icon-service"></i> <span class="am-navbar-label">服务</span>
+			</a>
+		</li>
 		<!-- if $session.user_id -->
-		<li>
-			<a href="{url ctrl=usercp/}"> <i class="am-icon-user"></i> <span class="am-navbar-label">会员</span></a>
+		<li{if $sys.ctrl == 'usercp'} class='am-active'{/if}>
+			<a href="{url ctrl=usercp/}"> <i class="ok-icon ok-icon-account"></i> <span class="am-navbar-label">我</span></a>
 		</li>
 		<!-- else -->
-		<li>
-			<a href="{url ctrl=login/}"> <i class="am-icon-paper-plane"></i> <span class="am-navbar-label">登录</span></a>
+		<li{if $sys.ctrl == 'login' || $sys.ctrl == 'register'} class='am-active'{/if}>
+			<a href="{url ctrl=login/}"> <i class="ok-icon ok-icon-account"></i> <span class="am-navbar-label">我</span></a>
 		</li>
 		<!-- /if -->
-		<li>
-			<a href="{url ctrl=search/}"> <i class="am-icon-search"></i> <span class="am-navbar-label">搜索</span></a>
-		</li>
 	</ul>
 </div>
 

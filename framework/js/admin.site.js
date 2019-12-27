@@ -110,11 +110,6 @@
 		},
 		order_save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			var obj = $.dialog.opener;
 			$("#postsave").ajaxSubmit({
 				'url':get_url("site",'order_status_save'),

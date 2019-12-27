@@ -1,7 +1,6 @@
 <?php
 /**
  * 管理评论
- * @package phpok\model\admin
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com

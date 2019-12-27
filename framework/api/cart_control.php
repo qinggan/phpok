@@ -24,6 +24,7 @@ class cart_control extends phpok_control
 	{
 		parent::control();
 		$this->cart_id = $this->model('cart')->cart_id($this->session->sessid(),$this->session->val('user_id'));
+		$this->config('is_ajax',true);
 	}
 
 	/**
@@ -40,10 +41,14 @@ class cart_control extends phpok_control
 		foreach($rslist as $key=>$value){
 			$totalprice += price_format_val($value['price'] * $value['qty'],$this->site['currency_id']);
 			$value['_checked'] = ($value['dateline'] && date("Ymd",$value['dateline']) == $_date) ? true : false;
+			$value['price_val'] = price_format_val($value['price']);
+			$value['price_txt'] = price_format($value['price']);
+			$value['price_total'] = price_format($value['price']*$value['qty']);
 			$rslist[$key] = $value;
 		}
 		$price = price_format_val($totalprice,$this->site['currency_id']);
-		$data = array('rslist'=>$rslist,'price'=>$price);
+		$price_txt = price_format($totalprice,$this->site['currency_id']);
+		$data = array('rslist'=>$rslist,'price'=>$price,'price_txt'=>$price_txt);
 		$this->success($data);
 	}
 
@@ -100,7 +105,47 @@ class cart_control extends phpok_control
 			$array['qty'] = $qty;
 			$insert_id = $this->model('cart')->add($array);
 		}
+		//判断是否有捆绑销售的产品ID
+		$bundle = $this->get('bundle');
+		if($bundle){
+			$this->bundle_save($id,$bundle,$qty);
+		}
 		$this->success($insert_id);
+	}
+
+	/**
+	 * 保存捆绑销售
+	**/
+	private function bundle_save($id,$bundle,$qty=0)
+	{
+		$sublist = $this->model('cart')->sub_all($id);
+		$list = explode(",",$bundle);
+		foreach($list as $key=>$value){
+			if(!$value || !trim($value) || !intval($value)){
+				continue;
+			}
+			$bundle_qty = $this->get('qty'.$value);
+			if(!$bundle_qty){
+				$bundle_qty = $qty;
+			}
+			$tmparray = $this->product_from_tid($value,$bundle_qty,true);
+			if(!$tmparray){
+				continue;
+			}
+			$tmparray['parent_id'] = $id;
+			$tmparray['qty'] = $bundle_qty;
+			if($sublist){
+				foreach($sublist as $k=>$v){
+					if($v['tid'] == $value){
+						$this->model('cart')->update($v['id'],($v['qty']+$bundle_qty));
+					}else{
+						$this->model('cart')->add($tmparray);
+					}
+				}
+			}else{
+				$this->model('cart')->add($tmparray);
+			}
+		}
 	}
 
 	private function product_from_title()
@@ -129,8 +174,9 @@ class cart_control extends phpok_control
 	 * 产品数据从id传过来的值生成
 	 * @参数 $id 产品ID
 	 * @参数 $qty 数量
+	 * @参数 $bundle 捆绑商品ID
 	**/
-	private function product_from_tid($id,$qty=0)
+	private function product_from_tid($id,$qty=0,$bundle=false)
 	{
 		$array = array('tid'=>$id,'cart_id'=>$this->cart_id);
 		$rs = $this->call->phpok('_arc',array('site'=>$this->site['id'],'title_id'=>$id));		
@@ -150,6 +196,9 @@ class cart_control extends phpok_control
 		$array['is_virtual'] = $rs['is_virtual'];
 		$array['unit'] = $rs['unit'];
 		$ext = $this->get('ext');
+		if($bundle){
+			$ext = $this->get('ext'.$id);
+		}
 		$int = false;
 		if($ext && (is_string($ext) || is_int($ext))){
 			$int = true;
@@ -352,14 +401,7 @@ class cart_control extends phpok_control
 			$this->error(P_Lang('未指定要计算的产品ID'));
 		}
 		if(is_string($id)){
-			$list = explode(",",$id);
-			unset($id);
-			$id = array();
-			foreach($list as $key=>$value){
-				if($value && intval($value)){
-					$id[] = intval($value);
-				}
-			}
+			$id = explode(",",$id);
 		}
 		if($id && is_array($id)){
 			foreach($id as $key=>$value){
@@ -430,18 +472,18 @@ class cart_control extends phpok_control
 		$freight_price = 0;
 		$discount = 0;
 		$is_virtual = true;
-		if($province && $city){
-			$tmp = array('number'=>0,'weight'=>0,'volume'=>0,'price'=>0);
-			$totalprice = 0;
-			foreach($rslist as $key=>$value){
-				$totalprice += price_format_val($value['price'] * $value['qty']);
-				if(!$value['is_virtual']){
-					$is_virtual = false;
-					$tmp['number'] += intval($value['qty']);
-					$tmp['weight'] += floatval($value['weight']) * intval($value['qty']);
-					$tmp['volume'] += floatval($value['volume']) * intval($value['qty']);
-				}
+		$totalprice = 0;
+		$tmp = array('number'=>0,'weight'=>0,'volume'=>0,'price'=>0);
+		foreach($rslist as $key=>$value){
+			$totalprice += price_format_val($value['price'] * $value['qty']);
+			if(!$value['is_virtual']){
+				$is_virtual = false;
+				$tmp['number'] += intval($value['qty']);
+				$tmp['weight'] += floatval($value['weight']) * intval($value['qty']);
+				$tmp['volume'] += floatval($value['volume']) * intval($value['qty']);
 			}
+		}
+		if($province && $city){
 			$tmp['price'] = $totalprice;
 			$freight_price = $this->model('cart')->freight_price($tmp,$province,$city);
 		}
@@ -449,75 +491,76 @@ class cart_control extends phpok_control
 		if(!$pricelist){
 			$this->error(P_Lang('未实现价格组功能'));
 		}
-		if($pricelist){
-			foreach($pricelist as $key=>$value){
-				if(!$value['status']){
+		foreach($pricelist as $key=>$value){
+			if(!$value['status']){
+				unset($pricelist[$key]);
+				continue;
+			}
+			$value['price_val'] = '0.00';
+			if($value['default']){
+				$value['price'] = price_format($value['default'],$this->site['currency_id']);
+				$value['price_val'] = $value['default'];
+			}
+			if($value['identifier'] == 'product'){
+				$value['price'] = price_format($totalprice,$this->site['currency_id']);
+				$value['price_val'] = $totalprice;
+				$pricelist[$key] = $value;
+				continue;
+			}
+			if($value['identifier'] == 'shipping'){
+				if($is_virtual || (!$freight_price && !$value['default'])){
 					unset($pricelist[$key]);
 					continue;
 				}
-				if($value['identifier'] == 'product'){
-					$value['price'] = price_format($totalprice,$this->site['currency_id']);
-					$value['price_val'] = $totalprice;
-					$pricelist[$key] = $value;
-					continue;
-				}
-				if($value['identifier'] == 'shipping'){
-					if($is_virtual || !$freight_price || !$province || !$city){
-						unset($pricelist[$key]);
-						continue;
-					}
+				if($freight_price){
 					$value['price'] = price_format($freight_price,$this->site['currency_id']);
 					$value['price_val'] = $freight_price;
-					$pricelist[$key] = $value;
-					continue;
 				}
-				if($value['identifier'] == 'discount'){
-					//增加优惠码的节点
-					$this->data("cart_id",$this->cart_id);
-					$this->node('PHPOK_cart_coupon');
-					$tmp = $this->data('cart_coupon');
-					if(!$tmp){
-						unset($pricelist[$key]);
-						continue;
-					}
-					if($tmp['min_price'] > $totalprice){
-						unset($pricelist[$key]);
-						continue;
-					}
-					if(!$tmp['discount_type']){
-						$tmp_price = round($totalprice * $tmp['discount_val'] / 100,2);
-					}else{
-						$tmp_price = $tmp['discount_val'];
-					}
-					$value['price'] = price_format(-$tmp_price,$this->site['currency_id']);
-					$value['price_val'] = -$tmp_price;
-					$pricelist[$key] = $value;
-					continue;
-				}
+				$pricelist[$key] = $value;
+				continue;
 			}
-			$this->success($pricelist);
+			if($value['identifier'] == 'discount'){
+				//增加优惠码的节点
+				$this->data("cart_id",$this->cart_id);
+				$this->node('PHPOK_cart_coupon');
+				$tmp = $this->data('cart_coupon');
+				if(!$tmp){
+					unset($pricelist[$key]);
+					continue;
+				}
+				if($tmp['min_price'] > $totalprice){
+					unset($pricelist[$key]);
+					continue;
+				}
+				if(!$tmp['discount_type']){
+					$tmp_price = round($totalprice * $tmp['discount_val'] / 100,2);
+				}else{
+					$tmp_price = $tmp['discount_val'];
+				}
+				$value['price'] = price_format(-$tmp_price,$this->site['currency_id']);
+				$value['price_val'] = -$tmp_price;
+				$pricelist[$key] = $value;
+				continue;
+			}
+			$pricelist[$key] = $value;
 		}
-
-		
-		$this->success($price);
-		$list = array('all'=>price_format($total,$this->site['currency_id']));
-		$list['shipping'] = price_format($shipping,$this->site['currency_id']);
-		$this->success($list);
+		$this->success($pricelist);
 	}
 	
 	public function checkout_f()
 	{
 		$r = array();
 		$id = $this->get('id');
-		if(!$id){
-			$this->error(P_Lang('未指定要结算的产品ID'));
-		}
-		if($id && !is_array($id)){
-			$id = explode(",",$id);
-		}
-		foreach($id as $key=>$value){
-			if(!$value || !trim($value) || !intval($value)){
-				unset($id[$key]);
+		if($id){
+			if($id && !is_array($id)){
+				$id = explode(",",$id);
+			}
+			foreach($id as $key=>$value){
+				if(!$value || !trim($value) || !intval($value)){
+					unset($id[$key]);
+					continue;
+				}
+				$id[$key] = intval($value);
 			}
 		}
 		//定义要结算的产品ID
@@ -578,26 +621,36 @@ class cart_control extends phpok_control
 		$r['shipping'] = $freight_price;
 		
 		$pricelist = $this->model('site')->price_status_all(true);
-		$discount = 0;
+		$discount = $tax = 0;
 		if($pricelist){
 			foreach($pricelist as $key=>$value){
 				if(!$value['status']){
 					unset($pricelist[$key]);
 					continue;
 				}
+				if($value['default']){
+					$value['price'] = price_format($value['default'],$this->site['currency_id']);
+					$value['price_val'] = $value['default'];
+				}
 				if($value['identifier'] == 'product'){
 					$value['price'] = price_format($totalprice,$this->site['currency_id']);
 					$value['price_val'] = $totalprice;
-					$pricelist[$key] = $value;
+				}
+				//税收计算
+				if($value['identifier'] == 'tax' && $this->session->val('tax')){
+					$value['price'] = price_format($this->session->val('tax'),$this->site['currency_id']);
+					$value['price_val'] = $this->session->val('tax');
+					$tax = $this->session->val('tax');
 				}
 				if($value['identifier'] == 'shipping'){
-					if($is_virtual || !$freight_price || !$r['address']){
+					if($is_virtual || (!$freight_price && !$value['default'])){
 						unset($pricelist[$key]);
 						continue;
 					}
-					$value['price'] = price_format($freight_price,$this->site['currency_id']);
-					$value['price_val'] = $freight_price;
-					$pricelist[$key] = $value;
+					if($freight_price){
+						$value['price'] = price_format($freight_price,$this->site['currency_id']);
+						$value['price_val'] = $freight_price;
+					}
 				}
 				if($value['identifier'] == 'discount'){
 					$this->data("cart_id",$this->cart_id);
@@ -616,7 +669,6 @@ class cart_control extends phpok_control
 					}else{
 						$tmp_price = $tmp['discount_val'];
 					}
-						
 					$value['price'] = price_format(-$tmp_price,$this->site['currency_id']);
 					$value['price_val'] = -$tmp_price;
 					$discount = -$tmp_price;
@@ -626,15 +678,16 @@ class cart_control extends phpok_control
 					$r['discount'] = $tmp;
 					unset($tmp);
 				}
+				$pricelist[$key] = $value;
 			}
 		}
 		$r['pricelist'] = $pricelist;
 		if($freight_price){
-			$price = price_format(($totalprice+$freight_price+$discount),$this->site['currency_id']);
-			$price_val = price_format_val(($totalprice+$freight_price+$discount),$this->site['currency_id']);
+			$price = price_format(($totalprice+$freight_price+$discount+$tax),$this->site['currency_id']);
+			$price_val = price_format_val(($totalprice+$freight_price+$discount+$tax),$this->site['currency_id']);
 		}else{
-			$price = price_format($totalprice+$discount,$this->site['currency_id']);
-			$price_val = price_format_val($totalprice+$discount,$this->site['currency_id']);
+			$price = price_format($totalprice+$discount+$tax,$this->site['currency_id']);
+			$price_val = price_format_val($totalprice+$discount+$tax,$this->site['currency_id']);
 		}
 		$r['price'] = $price;
 		$r['price_val'] = $price_val;

@@ -2,11 +2,6 @@
 <script type="text/javascript">
 function save()
 {
-	if(typeof(CKEDITOR) != "undefined"){
-		for(var i in CKEDITOR.instances){
-			CKEDITOR.instances[i].updateElement();
-		}
-	}
 	var $parent = $.dialog.opener;
 	var url = get_url("site",'addok');
 	var title = $("#title").val();

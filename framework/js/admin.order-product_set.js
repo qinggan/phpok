@@ -9,11 +9,6 @@
 **/
 function save()
 {
-	if(typeof(CKEDITOR) != "undefined"){
-		for(var i in CKEDITOR.instances){
-			CKEDITOR.instances[i].updateElement();
-		}
-	}
 	var opener = $.dialog.opener;
 	$("#post_save").ajaxSubmit({
 		'url':get_url('order','product_save'),

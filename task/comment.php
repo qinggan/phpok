@@ -1,6 +1,6 @@
 <?php
 /**
- * 评论时通知管理员或会员的邮件或短信计划任务
+ * 评论通知管理员或会员（邮件或短信）
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -48,7 +48,6 @@ if($rs['order_id']){
 if($title_rs){
 	$project = $this->model('project')->get_one($title_rs['project_id'],false);
 	if(!$project){
-		echo '99999';
 		return false;
 	}
 	if($project['etpl_comment_admin']){

@@ -145,6 +145,7 @@ class content_control extends phpok_control
 		if($this->session->val('user_id')){
 			$this->model('wealth')->add_integral($rs['id'],$this->session->val('user_id'),'content',P_Lang('阅读#{id}',array('id'=>$rs['id'])));
 		}
+		$this->phpok_seo();
 		$this->view($tpl);
 	}
 

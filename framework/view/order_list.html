@@ -1,5 +1,5 @@
 <!-- include tpl=head_lay -->
-<div class="layui-card{if !$keywords && !$status && !$date_start && !$date_stop && !$price_min && !$price_max && !$paytype} hide{/if}" id="search_html">
+<div class="layui-card" id="search_html">
 	<div class="layui-card-header">
 		{lang搜索}
 	</div>
@@ -7,7 +7,6 @@
 		<form method="post" class="layui-form" action="{func admin_url order}">
 		<div class="layui-form-item">
 			<div class="layui-inline">
-				<label class="layui-form-label">{lang订单状态}</label>
 				<div class="layui-input-inline" id="statuslist">
 					<select name="status">
 						<option value="">{lang订单状态…}</option>
@@ -18,7 +17,6 @@
 				</div>
 			</div>
 			<div class="layui-inline">
-				<label class="layui-form-label">{lang时间}</label>
 				<div class="layui-input-inline" style="width: 120px;">
 					<input type="text" name="date_start" value="{$date_start}" id="date_start" placeholder="{lang开始时间}" autocomplete="off" class="layui-input">
 				</div>
@@ -28,7 +26,6 @@
 				</div>
 			</div>
 			<div class="layui-inline">
-				<label class="layui-form-label">{lang价格}</label>
 				<div class="layui-input-inline" style="width: 90px;">
 					<input type="text" name="price_min" value="{$price_min}" id="price_min" placeholder="{lang最低价格}" autocomplete="off" class="layui-input">
 				</div>
@@ -39,7 +36,6 @@
 			</div>
 			<!-- if $paylist -->
 			<div class="layui-inline">
-				<label class="layui-form-label">{lang支付方式}</label>
 				<div class="layui-input-inline">
 					<select name="paytype" >
 						<option value="">{lang支付方式…}</option>
@@ -55,7 +51,6 @@
 			</div>
 			<!-- /if -->
 			<div class="layui-inline">
-				<label class="layui-form-label">{lang检索类型}</label>
 				<div class="layui-input-inline">
 					<select name="keytype" onchange="update_keywords(this.value)">
 						<option value="">{lang检索类型…}</option>
@@ -67,9 +62,8 @@
 				</div>
 			</div>
 			<div class="layui-inline">
-				<label class="layui-form-label">{lang关键字}</label>
 				<div class="layui-input-inline" style="width: 300px;">
-					<input type="text" id="keywords" name="keywords" class="layui-input" value="{$keywords}"{if $keytype == 'time'} onfocus="laydate()"{/if} />
+					<input type="text" id="keywords" name="keywords" class="layui-input" placeholder="{lang关键字}" value="{$keywords}"{if $keytype == 'time'} onfocus="laydate()"{/if} />
 				</div>
 			</div>
 			<div class="layui-inline">
@@ -89,7 +83,6 @@
 	<div class="layui-card-header">
 		{lang列表}
 		<div class="layui-btn-group fr">
-			<input type="button" value="{lang搜索}" onclick="$.admin.hide_show('search_html')" class="layui-btn layui-btn-sm" />
 			<input type="button" value="{lang创建新订单}" onclick="$.win('{lang创建新订单}','{url ctrl=order func=set/}')" class="layui-btn layui-btn-sm" />
 		</div>
 	</div>
@@ -97,12 +90,12 @@
 		<table class="layui-table">
 		<thead>
 		<tr>
-			<th></th>
-			<th colspan="2">{lang订单ID/订单号}</th>
+			<th>ID / {lang订单号}</th>
 			<th>{lang会员}</th>
 			<th>{lang金额}</th>
 			<th>{lang已付}</th>
 			<th>{lang未付}</th>
+			<th>{lang产品数}</th>
 			<th>{lang状态}</th>
 			<th>{lang支付方式}</th>
 			<th>{lang下单时间}</th>
@@ -111,13 +104,12 @@
 		</thead>
 		<!-- loop from=$rslist key=$key value=$value -->
 		<tr id="edit_{$value.id}">
-			<td align="center" data-id="{$value.id}" data-sn="{$value.sn}" data-unpaid="{$value.unpaid}" data-status="{$value.status}"><input type="checkbox" value="{$value.id}" id="order_id_{$value.id}" lay-ignore /></td>
-			<td><label for="order_id_{$value.id}">{$value.id}</label></td>
-			<td><label for="order_id_{$value.id}">{$value.sn}</label></td>
+			<td data-id="{$value.id}" data-sn="{$value.sn}" data-unpaid="{$value.unpaid}" data-status="{$value.status}">{$value.id} / {$value.sn}</td>
 			<td><!-- if $value.user -->{$value.user}<!-- else --><span class="red">{lang访客}</span><!-- /if --></td>
 			<td>{func price_format $value.price $value.currency_id $value.currency_id}</td>
 			<td>{func price_format $value.paid $value.currency_id $value.currency_id}</td>
 			<td{if $value.unpaid} class="red"{/if} data-unpaid-text="{$value.id}"><!-- if $value.unpaid -->{func price_format $value.unpaid $value.currency_id $value.currency_id}<!-- /if --></td>
+			<td>{$value.qty}</td>
 			<td class="status">
 				<input type="button" value="{$value.status_title}" onclick="$.admin_order.set_order('{$value.id}','{$value.status}')" class="layui-btn  layui-btn-xs" />
 			</td>
@@ -125,9 +117,11 @@
 			<td>{func time_format $value.addtime}</td>
 			<td>
 				<div class="layui-btn-group">
-					<input type="button" value="{lang查看}" onclick="$.admin_order.show('{$value.id}')" class="layui-btn  layui-btn-xs" />
+					<input type="button" value="{lang查看}" onclick="$.admin_order.show('{$value.id}')" class="layui-btn layui-btn-xs" />
+					<input type="button" value="{lang付款}" onclick="$.admin_order.payment({$value.id})" class="layui-btn layui-btn-xs" />
+					<input type="button" value="{lang物流}" onclick="$.admin_order.express({$value.id})" class="layui-btn layui-btn-xs" />
 					<!-- if $popedom.modify -->
-					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑订单}_#{$value.id}','{url ctrl=order func=set id=$value.id/}')" class="layui-btn  layui-btn-xs" />	
+					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑订单}_#{$value.id}','{url ctrl=order func=set id=$value.id/}')" class="layui-btn  layui-btn-xs" />
 					<!-- /if -->
 					<!-- if $popedom.delete -->
 					<input type="button" value="{lang删除}" onclick="$.admin_order.del({$value.id},'{$value.sn}')" class="layui-btn  layui-btn-xs layui-btn-danger" />
@@ -137,24 +131,6 @@
 		</tr>
 		<!-- /loop -->
 		</table>
-		<ul class="layout">
-			<li>
-				<div class="layui-btn-group">
-					<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_all()" />
-					<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_none()" />
-					<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_anti()" />
-				</div>
-			</li>
-			<li>
-				<div class="layui-btn-group">
-					<input type="button" value="{lang付款}" onclick="$.admin_order.payment()" class="layui-btn  layui-btn-sm" />
-					<input type="button" value="{lang物流}" onclick="$.admin_order.express()" class="layui-btn  layui-btn-sm" />
-					<input type="button" value="{lang取消}" onclick="$.admin_order.cancel()" class="layui-btn  layui-btn-sm" />
-					<input type="button" value="{lang结束}" onclick="$.admin_order.stop()" class="layui-btn  layui-btn-sm" />
-					<input type="button" value="{lang完成}" onclick="$.admin_order.finish()" class="layui-btn  layui-btn-sm" />
-				</div>
-			</li>
-		</ul>
 		<div align="center"><!-- include tpl=pagelist --></div>
 	</div>
 </div>

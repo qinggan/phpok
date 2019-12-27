@@ -57,11 +57,6 @@
 		//保存全局信息
 		save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			$("#setting").ajaxSubmit({
 				'url':get_url('all','save'),
 				'type':'post',
@@ -87,11 +82,6 @@
 		},
 		ext_save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			$("#post_save").ajaxSubmit({
 				'url':get_url('all','ext_save'),
 				'type':'post',
@@ -111,7 +101,7 @@
 		{
 			if(id && id != 'undefined'){
 				var url = get_url('all','gset','id='+id);
-				var title = p_lang('编护设置');
+				var title = p_lang('维护设置');
 			}else{
 				var url = get_url('all','gset');
 				var title = p_lang('添加全局组');
@@ -119,7 +109,7 @@
 			$.dialog.open(url,{
 				'title':title,
 				'width':'70%',
-				'height':'80%',
+				'height':'331px',
 				'lock':true,
 				'ok':function(){
 					var iframe = this.iframe.contentWindow;
@@ -136,11 +126,6 @@
 		},
 		group_set:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			var opener = $.dialog.opener;
 			$("#post_save").ajaxSubmit({
 				'url':get_url('all','gset_save'),
@@ -186,7 +171,7 @@
 			$.dialog.confirm(p_lang('确定要删除此组信息吗？删除后相关数据都会一起被删除'),function(){
 				$.phpok.json(url,function(data){
 					if(data.status){
-						$.dialog.tips(p_lang('组删除成功'),function(){							
+						$.dialog.tips(p_lang('组删除成功'),function(){
 							var all_seturl = get_url('all')+'&_noCache';
 							var home_url = get_url('index','homepage');
 							var delete_url = get_url('all','set','id='+id);
@@ -318,7 +303,7 @@
 			}
 			return true;
 		}
-	};	
+	};
 	$(document).ready(function(){
 		if($("form.layui-form").length>0){
 			layui.use('form',function(){

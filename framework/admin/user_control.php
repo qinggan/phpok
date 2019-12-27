@@ -36,7 +36,9 @@ class user_control extends phpok_control
 			$keys = array_keys($list);
 			$this->assign('keys',$keys);
 		}
-		$rslist = array('user'=>P_Lang('账号'),'group_id'=>P_Lang('会员组'),'email'=>P_Lang('邮箱'),'mobile'=>P_Lang('手机号'));
+		$rslist = array('user'=>P_Lang('账号'),'group_id'=>P_Lang('会员组'),'email'=>P_Lang('邮箱'),'mobile'=>P_Lang('手机号'),'code'=>P_Lang('邀请码'));
+		$rslist['introducer'] = P_Lang('推荐人');
+		$rslist['order'] = P_Lang('订单');
 		$flist = $this->model('user')->fields_all();
 		if($flist){
 			foreach($flist as $key=>$value){
@@ -57,7 +59,9 @@ class user_control extends phpok_control
 		if(!$array){
 			$array = array('user');
 		}
-		$rslist = array('user'=>P_Lang('账号'),'group_id'=>P_Lang('会员组'),'email'=>P_Lang('邮箱'),'mobile'=>P_Lang('手机号'));
+		$rslist = array('user'=>P_Lang('账号'),'group_id'=>P_Lang('会员组'),'email'=>P_Lang('邮箱'),'mobile'=>P_Lang('手机号'),'code'=>P_Lang('邀请码'));
+		$rslist['introducer'] = P_Lang('推荐人');
+		$rslist['order'] = P_Lang('订单');
 		$flist = $this->model('user')->fields_all();
 		if($flist){
 			foreach($flist as $key=>$value){
@@ -81,8 +85,8 @@ class user_control extends phpok_control
 		if(!$this->popedom["list"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$flist = array('user'=>P_Lang('账号'),'mobile'=>P_Lang('手机号'),'email'=>P_Lang('邮箱'));
-		$tmplist = $this->model('user')->fields_all("field_type NOT IN('longtext','text','longblob','blog') AND form_type='text'");
+		$flist = array('user'=>P_Lang('账号'),'mobile'=>P_Lang('手机号'),'email'=>P_Lang('邮箱'),'code'=>P_Lang('邀请码'),'introducer'=>P_Lang('推荐人'));
+		$tmplist = $this->model('user')->fields_all("form_type='text'");
 		if($tmplist){
 			foreach($tmplist as $key=>$value){
 				$flist[$value['identifier']] = $value['title'];
@@ -93,22 +97,43 @@ class user_control extends phpok_control
 		if(!$pageid){
 			$pageid = 1;
 		}
-		$psize = $this->config["psize"];
+		$psize = $this->get('psize','int');
 		if(!$psize){
-			$psize = 30;
+			$psize = $this->config["psize"];
+			if(!$psize){
+				$psize = 30;
+			}
 		}
-		$page_url = $this->url("user");
+		$this->assign('psize',$psize);
+		$page_url = $this->url("user",'','psize='.$psize);
 		$condition = "1=1";
 		$keywords = $this->get('keywords');
 		if($keywords && is_array($keywords)){
-			$tmparray = array('email','user','mobile');
+			$tmparray = array('email','user','mobile','code');
 			foreach($keywords as $key=>$value){
 				if(!$value || !trim($value)){
 					continue;
 				}
-				$tmpe = in_array($key,$tmparray) ? 'u' : 'e';
-				$condition .= " AND ".$tmpe.".".$key." LIKE '%".$key."%' ";
 				$page_url .= "&keywords[".$key."]=".rawurlencode($value);
+				if($key == 'introducer'){
+					$tmp = $this->model('user')->get_one($value,'user',false,false);
+					if(!$tmp){
+						$this->error(P_Lang('没有搜索到会员信息'),$this->url('user'));
+					}
+					$condition .= " AND u.id IN(SELECT uid FROM ".$this->db->prefix."user_relation WHERE introducer=".$tmp['id'].") ";
+					continue;
+				}
+				if($key == 'status'){
+					$value = intval($value);
+					if($value>2){
+						$condition .= " AND u.status=0 ";
+					}else{
+						$condition .= " AND u.status='".$value."' ";
+					}
+					continue;
+				}
+				$tmpe = in_array($key,$tmparray) ? 'u' : 'e';
+				$condition .= " AND ".$tmpe.".".$key." LIKE '%".$value."%' ";
 			}
 			$this->assign("keywords",$keywords);
 		}
@@ -119,17 +144,31 @@ class user_control extends phpok_control
 			$page_url .= "&group_id=".$group_id;
 		}
 		$offset = ($pageid-1) * $psize;
-		$rslist = $this->model('user')->get_list($condition,$offset,$psize);
+		
 		$count = $this->model('user')->get_count($condition);
-		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
-		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-		$pagelist = phpok_page($page_url,$count,$pageid,$psize,$string);
+		if($count){
+			$rslist = $this->model('user')->get_list($condition,$offset,$psize);
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($page_url,$count,$pageid,$psize,$string);
+			//取得订单统计
+			if($this->site['biz_status']){
+				$ids = array_keys($rslist);
+				$olist = $this->model('order')->stat_count($ids);
+				
+				if($olist){
+					foreach($olist as $key=>$value){
+						$rslist[$key]['order'] = $value;
+					}
+				}
+			}
+			$this->assign("rslist",$rslist);
+			$this->assign("pagelist",$pagelist);
+		}
 		$this->assign("total",$count);
-		$this->assign("rslist",$rslist);
-		$this->assign("pagelist",$pagelist);
 		$list = $this->lib('xml')->read($this->dir_data.'xml/admin_user.xml');
 		$this->assign("arealist",$list);
-
+		
 		$grouplist = $this->model('usergroup')->get_all("","id");
 		$this->assign("grouplist",$grouplist);
 
@@ -150,13 +189,13 @@ class user_control extends phpok_control
 		$group_id = 0;
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$rs = $this->model('user')->get_one($id);
 			$group_id = $rs['group_id'];
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		//创建扩展字段的表单
@@ -164,7 +203,7 @@ class user_control extends phpok_control
 		$this->lib("form")->cssjs();
 		$ext_list = $this->model('user')->fields_all();
 		$extlist = array();
-		foreach(($ext_list ? $ext_list : array()) AS $key=>$value){
+		foreach(($ext_list ? $ext_list : array()) as $key=>$value){
 			if($value["ext"]){
 				$ext = unserialize($value["ext"]);
 				foreach($ext AS $k=>$v){
@@ -192,6 +231,10 @@ class user_control extends phpok_control
 		$this->assign("grouplist",$grouplist);
 		$this->assign("rs",$rs);
 		$this->assign("id",$id);
+		$relation = $this->model('user')->get_relation($rs['id']);
+		if($relation){
+			$this->assign('relation_id',$relation);
+		}
 		$this->view("user_add");
 	}
 
@@ -309,6 +352,13 @@ class user_control extends phpok_control
 			$regtime = $this->time;
 		}
 		$array["regtime"] = $regtime;
+		$array['code'] = $this->get('code');
+		if($array['code']){
+			$tmpcheck = $this->model('user')->chk_code($array['code'],$id);
+			if($tmpcheck){
+				$this->error(P_Lang('邀请码已存在，请更换'));
+			}
+		}
 		if($id){
 			$this->model('user')->save($array,$id);
 			$insert_id = $id;
@@ -335,6 +385,9 @@ class user_control extends phpok_control
 	 		}
  		}
 		$this->model('user')->save_ext($tmplist);
+		//推荐人功能
+		$relation_id = $this->get('relation_id');
+		$this->model('user')->save_relation($insert_id,$relation_id);
 		$note = $id ? P_Lang('会员编辑成功') : P_Lang('新会员添加成功');
 		$this->success($note,$this->url('user'));
 	}
@@ -566,6 +619,79 @@ class user_control extends phpok_control
 		$this->success();
 	}
 
+	public function show_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定会员ID'));
+		}
+		$rs = $this->model('user')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('会员信息不存在'));
+		}
+		$this->assign('rs',$rs);
+		$relation = $this->model('user')->get_relation($rs['id']);
+		if($relation){
+			$relation = $this->model('user')->get_one($relation);
+			$this->assign('relation',$relation);
+		}
+		$ext_list = $this->model('user')->fields_all();
+		if($ext_list){
+			$extlist = array();
+			foreach($ext_list as $key=>$value){
+				if($value["ext"]){
+					$ext = unserialize($value["ext"]);
+					foreach($ext as $k=>$v){
+						$value[$k] = $v;
+					}
+				}
+				$idlist[] = strtolower($value["identifier"]);
+				if($rs[$value["identifier"]]){
+					$value["content"] = $rs[$value["identifier"]];
+				}
+				$extlist[] = $this->lib('form')->format($value);
+			}
+			$this->assign("extlist",$extlist);
+		}
+		$wealth = $this->model('user')->wealth($id);
+		$this->assign('wealth',$wealth);
+
+		//查看推荐人
+		$count = $this->model('user')->count_relation($id);
+		if($count){
+			$this->assign('relation_count',$count);
+			$rlist = $this->model('user')->list_relation($id,0,15);
+			$this->assign('rlist',$rlist);
+			//查看下线的订单数及订单产品数量
+			$count = $this->model('user')->relation_order_count($id);
+			if($count){
+				$this->assign('relation_order_count',$count);
+			}
+			$count = $this->model('user')->relation_product_count($id);
+			if($count){
+				$this->assign('relation_product_count',$count);
+			}
+			//$sql = "SELECT uid FROM ".$this->db->prefix.""
+		}
+		//查看我的订单
+		$condition = "o.user_id='".$id."'";
+		$count = $this->model('order')->get_count($condition);
+		if($count){
+			$this->assign('order_count',$count);
+			$rlist = $this->model('order')->get_list($condition,0,15);
+			$this->assign('olist',$rlist);
+			//取得产品数量
+			$count = $this->model('order')->product_count($condition);
+			$this->assign('product_count',$count);
+		}
+		$alist = $this->model('user')->address_all($id);
+		if($alist){
+			$this->assign('address_list',$alist);
+			$this->assign('address_total',count($alist));
+		}
+		$this->view("user_show");
+	}
+
 	public function info_f()
 	{
 		$uid = $this->get('uid');
@@ -635,5 +761,61 @@ class user_control extends phpok_control
 			$this->assign('total',count($rslist));
 		}
 		$this->view('user_address');
+	}
+
+	public function autologin_f()
+	{
+		$uid = $this->get('id','int');
+		if(!$uid){
+			$this->error(P_Lang('未指定要登录的会员'));
+		}
+		$user = $this->model('user')->get_one($uid);
+		if(!$user){
+			$this->error(P_Lang('会员信息不存在'));
+		}
+		$this->session->assign('user_id',$user['id']);
+		$this->session->assign('user_name',$user['user']);
+		$this->session->assign('user_gid',$user['group_id']);
+		$this->success(P_Lang('会员登录成功，正在跳转，请稍候…'),$this->config['url']);
+	}
+
+	//推荐会员
+	public function vouch_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定会员ID'));
+		}
+		$pageid = $this->get($this->config['pageid'],'int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
+		$offset = ($pageid-1) * $psize;
+		$pageurl = $this->url('user','vouch','id='.$id);
+		$total = $this->model('user')->count_relation($id);
+		if($total){
+			$rslist = $this->model('user')->list_relation($id,$offset,$psize);
+			$this->assign('rslist',$rslist);
+			$this->assign('pageid',$pageid);
+			$this->assign('offset',$offset);
+			$this->assign('psize',$psize);
+			$this->assign('total',$total);
+			$this->assign('pageurl',$pageurl);
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+			$this->assign("pagelist",$pagelist);
+			//查看下线的订单数及订单产品数量
+			$count = $this->model('user')->relation_order_count($id);
+			if($count){
+				$this->assign('relation_order_count',$count);
+			}
+			$count = $this->model('user')->relation_product_count($id);
+			if($count){
+				$this->assign('relation_product_count',$count);
+			}
+		}
+		$this->view('user_relation');
 	}
 }

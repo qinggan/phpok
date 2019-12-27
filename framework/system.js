@@ -17,7 +17,9 @@ var func_id = "{$sys.func_id}";
 var webroot = "{$sys.url}";
 var apifile = "{$sys.api_file}";
 var wwwfile = "{$sys.www_file}";
+<!-- if APP_ID == 'admin' -->
 var adminfile = "{$sys.admin_file}";
+<!-- /if -->
 var phpok_site_id = "{$phpok_site_id}";
 var site_id = "{$site_id}";
 var session_name = '{func session_name}';
@@ -86,7 +88,7 @@ lang["{$key}"] = "{$value}";
 		{
 			var url = webroot+""+file+"?"+ctrl_id+"=plugin&"+func_id+"=exec";
 			if(id){
-				url += "&id="+id;
+				url += "&_phpokid="+id;
 			}
 			if(efunc){
 				url += "&exec="+efunc;
@@ -112,6 +114,7 @@ function get_plugin_url(id,efunc,ext)
 	return $.phpokurl.plugin(id,efunc,ext,basefile);
 }
 
+<!-- if APP_ID == 'admin' -->
 function admin_url(ctrl,func,ext)
 {
 	return $.phpokurl.base(ctrl,func,ext,adminfile);
@@ -121,6 +124,8 @@ function admin_plugin_url(id,efunc,ext)
 {
 	return $.phpokurl.plugin(id,efunc,ext,adminfile);
 }
+
+<!-- /if -->
 
 function www_url(ctrl,func,ext)
 {

@@ -405,7 +405,7 @@ class site_model extends site_model_base
 		$this->lib('xml')->save($rslist,$file);
 	}
 
-	public function get_all_site()
+	public function get_all_site($pri="")
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."site";
 		$rslist = $this->db->get_all($sql,'id');

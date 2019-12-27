@@ -37,6 +37,96 @@ function phpok($id='',$ext="")
 	return $GLOBALS['app']->call->phpok($id,$param);
 }
 
+function menu($id)
+{
+	$rslist = phpok('_menu','phpok='.$id);
+	if(!$rslist){
+		return false;
+	}
+	global $app;
+	$ctrl = $app->config['ctrl'];
+	$func = $app->config['func'];
+	$project = $project_parent = $cate = $cate_parent = $rs = false;
+	if($ctrl == 'project' || $ctrl == 'content'){
+		$project = $app->tpl->val('page_rs');
+		$project_parent = $app->tpl->val('parent_rs');
+		if($project['cate']){
+			$cate = $app->tpl->val('cate_rs');
+			$cate_parent = $app->tpl->val('cate_parent_rs');
+		}
+		if($ctrl == 'content'){
+			$rs = $app->tpl->val('rs');
+		}
+	}
+	$highlight = false;
+	if($ctrl == 'index'){
+		foreach($rslist as $key=>$value){
+			$tmp = array('/','index.html','index.php','index.htm');
+			if(in_array($value['link'],$tmp)){
+				$value['highlight'] = true;
+				$highlight = true;
+				$rslist[$key] = $value;
+				break;
+			}
+		}
+	}
+
+	if($ctrl == 'content' && $rs){
+		foreach($rslist as $key=>$value){
+			if($value['list_id'] == $rs['id']){
+				$value['highlight'] = true;
+				$highlight = true;
+				$rslist[$key] = $value;
+				break;
+			}
+		}
+	}
+	if($ctrl != 'content' && $ctrl != 'project'){
+		return $rslist;
+	}
+	if(!$highlight && $project && $cate){
+		foreach($rslist as $key=>$value){
+			if($value['cate_id'] == $cate['id'] && $value['project_id'] == $project['id']){
+				$value['highlight'] = true;
+				$highlight = true;
+				$rslist[$key] = $value;
+				break;
+			}
+		}
+	}
+	if(!$highlight && $project && $cate_parent){
+		foreach($rslist as $key=>$value){
+			if($value['cate_id'] == $cate_parent['id'] && $value['project_id'] == $project['id']){
+				$value['highlight'] = true;
+				$highlight = true;
+				$rslist[$key] = $value;
+				break;
+			}
+		}
+	}
+	if(!$highlight && $project){
+		foreach($rslist as $key=>$value){
+			if($value['project_id'] == $project['id']){
+				$value['highlight'] = true;
+				$highlight = true;
+				$rslist[$key] = $value;
+				break;
+			}
+		}
+	}
+	if(!$highlight && $parent_rs){
+		foreach($rslist as $key=>$value){
+			if($value['project_id'] == $parent_rs['id']){
+				$value['highlight'] = true;
+				$highlight = true;
+				$rslist[$key] = $value;
+				break;
+			}
+		}
+	}
+	return $rslist;
+}
+
 function token($data)
 {
 	if(!$data){
@@ -257,7 +347,11 @@ function phpok_url($rs)
 		}
 	}
 	if($ctrl && $id && $id != $ctrl){
-		$tmp[] = "id=".rawurlencode($rs["id"]);
+		if($ctrl == 'plugin'){
+			$tmp[] = '_phpokid='.rawurlencode($rs['id']);
+		}else{
+			$tmp[] = "id=".rawurlencode($rs["id"]);
+		}
 	}
 	$string = ($tmp && count($tmp)>0) ? implode("&",$tmp) : "";
 	return $GLOBALS['app']->url($ctrl,$func,$string,$appid);
@@ -273,7 +367,7 @@ if(!function_exists('www_url')){
 if(!function_exists('www_plugin_url')){
 	function www_plugin_url($id='index',$exec='index',$ext='',$baseurl=true)
 	{
-		$string = "id=".$id;
+		$string = "_phpokid=".$id;
 		if($exec && $exec != 'index'){
 			$string .= "&exec=".$exec;
 		}
@@ -294,7 +388,7 @@ if(!function_exists('api_url')){
 if(!function_exists('api_plugin_url')){
 	function api_plugin_url($id='index',$exec='index',$ext='',$baseurl=true)
 	{
-		$string = "id=".$id;
+		$string = "_phpokid=".$id;
 		if($exec && $exec != 'index'){
 			$string .= "&exec=".$exec;
 		}
@@ -302,6 +396,20 @@ if(!function_exists('api_plugin_url')){
 			$string .= "&".$ext;
 		}
 		return $GLOBALS['app']->url('plugin','exec',$string,'api',$baseurl);
+	}
+}
+
+if(!function_exists('get_plugin_url')){
+	function get_plugin_url($id='index',$exec='index',$ext='',$baseurl=true)
+	{
+		$string = "_phpokid=".$id;
+		if($exec && $exec != 'index'){
+			$string .= "&exec=".$exec;
+		}
+		if($ext){
+			$string .= "&".$ext;
+		}
+		return $GLOBALS['app']->url('plugin','exec',$string,$GLOBALS['app']->app_id,$baseurl);
 	}
 }
 
@@ -315,7 +423,7 @@ if(!function_exists('admin_url')){
 if(!function_exists('admin_plugin_url')){
 	function admin_plugin_url($id='index',$exec='index',$ext='',$baseurl=false)
 	{
-		$string = "id=".$id;
+		$string = "_phpokid=".$id;
 		if($exec && $exec != 'index'){
 			$string .= "&exec=".$exec;
 		}

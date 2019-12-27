@@ -75,6 +75,7 @@ class upload_control extends phpok_control
 		$array["filename"] = $upload['filename'];
 		$array["addtime"] = $this->time;
 		$array['title'] = $upload['title'];
+		$array["mime_type"] = $upload['mime_type'];
 		$arraylist = array("jpg","gif","png","jpeg");
 		if(in_array($upload['ext'],$arraylist)){
 			$img_ext = getimagesize($this->dir_root.$upload['filename']);

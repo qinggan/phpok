@@ -1,4 +1,4 @@
-<!-- inc:head_open -->
+<!-- include tpl=head_lay nopadding=true -->
 <script type="text/javascript">
 function select_input(val,val2,title)
 {
@@ -21,41 +21,36 @@ function go_back()
 	$.phpok.go('{url ctrl=open func=url id=$id /}');
 }
 </script>
-<div class="list">
-<table width="100%" cellpadding="0" cellspacing="0" class="list">
-<tr>
-	<th class="id">ID</th>
-	<th class="title">分类名称</th>
-	<th style='width:80px;'>操作</th>
-</tr>
-<!-- foreach($rslist AS $key=>$value) -->
-<tr>
-	<td class="center" height="25px">{$value.id}</td>
-	<td style="text-align: left;padding-left:10px;">
-		<table cellpadding="0" cellspacing="0" class="bdnone">
+<div class="layui-card">
+	<div class="layui-card-body">
+		<table width="100%" class="layui-table">
 		<tr>
-			<!-- for($i=1;$i<$value[_layer];$i++) -->
-			<td class="cate_line">&nbsp;</td>
-			<!-- /for -->
-			<!-- if $value[_layer]>0 -->
-				<td class="cate_middle">&nbsp;</td>
-			<!-- /if -->
-			<td><label for="id_{$value.id}">{$value.title}<span class="gray i">（{$value.identifier}）</span></label></td>
-			<!-- if !$value[status] -->
-			<td><span class="red i">未审核</span></td>			
-			<!-- /if -->
-			<!-- if($value[note]) -->
-			<td class="cate_note">（{$value.note}）</td>
-			<!-- /if -->
+			<th class="id">ID</th>
+			<th class="title">{lang分类名称}</th>
+			<th style='width:80px;'>&nbsp;</th>
 		</tr>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td class="center" height="25px">{$value.id}</td>
+			<td>
+				<!-- for($i=1;$i<$value[_layer];$i++) -->
+				&nbsp;
+				<!-- /for -->
+				<!-- if $value[_layer]>0 -->
+					├─
+				<!-- /if -->
+				{$value.title}<small class="gray i"> / {$value.identifier}</small>
+				<!-- if !$value.status --><small class="red i"> / {lang未审核}</small><!-- /if -->
+			</td>
+			<td>
+				<input type="button" value="{lang网址}" onclick="select_input('{$p_rs.identifier}','{$value.identifier}','{$value.title}')" class="layui-btn layui-btn-xs" />
+			</td>
+		</tr>
+		<!-- /loop -->
 		</table>
-	</td>
-	<td>
-		<a href="javascript:select_input('{$p_rs.identifier}','{$value.identifier}','{$value.title}');void(0)">提交</a>
-	</td>
-</tr>
-<!-- /foreach -->
-</table>
+		<div align="center" style="margin:10px;"><input type="button" value="{lang返回}" class="layui-btn" onclick="go_back()" /></div>
+	</div>
 </div>
-<div align="center" style="margin:10px;"><input type="button" value="返回" class="btn" onclick="go_back()" /></div>
-<!-- inc:foot_open -->
+
+
+<!-- include tpl=foot_lay -->

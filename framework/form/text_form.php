@@ -160,6 +160,26 @@ class text_form extends _init_auto
 			$time = $rs['content'] ? $rs['content'] : $this->time;
 			$rs['content'] = date($format,$time);
 		}
+		if($rs['ext_quick_words'] && trim($rs['ext_quick_words'])){
+			$tmp = explode("\n",trim($rs['ext_quick_words']));
+			foreach($tmp as $key=>$value){
+				if(!$value || !trim($value)){
+					unset($tmp[$key]);
+					continue;
+				}
+				if(strpos($value,':') !== false){
+					$tmp2 = explode(":",$value);
+					if(!$tmp2[1]){
+						$tmp2[1] = $tmp2[0];
+					}
+					$tmp[$key] = array('id'=>$tmp2[0],'show'=>$tmp2[1]);
+				}else{
+					$tmp[$key] = array('id'=>trim($value),'show'=>trim($value));
+				}
+				
+			}
+			$rs['ext_quick_words'] = $tmp;
+		}
 		$this->assign("_rs",$rs);
 		$this->assign('_laydate',$_laydate);
 		return $this->fetch($this->dir_phpok."form/html/text_www_tpl.html",'abs-file');

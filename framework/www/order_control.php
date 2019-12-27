@@ -106,22 +106,28 @@ class order_control extends phpok_control
 		$paid_price = $this->model('order')->paid_price($rs['id']);
 		if($unpaid_price > 0){
 			if($paid_price>0){
-				$rs['pay_info'] = '部分支付';
+				$rs['pay_info'] = P_Lang('部分支付');
 			}else{
-				$rs['pay_info'] = '未支付';
+				$rs['pay_info'] = P_Lang('未支付');
 			}
 		}else{
-			$rs['pay_info'] = '已支付';
+			$rs['pay_info'] = P_Lang('已支付');
 		}
 		$rs['status_info'] = ($status_list && $status_list[$rs['status']]) ? $status_list[$rs['status']] : $rs['status'];
 		$this->assign('rs',$rs);
-		$address = $this->model('order')->address($rs['id']);
-		$this->assign('address',$address);
+		$addressconfig = $this->config['order']['address'] ? explode(",",$this->config['order']['address']) : array('shipping');
+		if($addressconfig){
+			$address = array();
+			foreach($addressconfig as $key=>$value){
+				if(!$value || !trim($value)){
+					continue;
+				}
+				$address[trim($value)] = $this->model('order')->address($rs['id'],trim($value));
+			}
+			$this->assign('address',$address);
+		}
 		$rslist = $this->model('order')->product_list($rs['id']);
 		$this->assign('rslist',$rslist);
-		//获取发票信息
-		$invoice = $this->model('order')->invoice($rs['id']);
-		$this->assign('invoice',$invoice);
 		//获取价格
 		$price_tpl_list = $this->model('site')->price_status_all();
 		$order_price = $this->model('order')->order_price($rs['id']);
@@ -129,7 +135,7 @@ class order_control extends phpok_control
 			$pricelist = array();
 			foreach($price_tpl_list as $key=>$value){
 				$tmpval = floatval($order_price[$key]);
-				if(!$value['status'] || !$tmpval){
+				if(!$value['status']){
 					continue;
 				}
 				$tmp = array('val'=>$tmpval);
@@ -144,6 +150,21 @@ class order_control extends phpok_control
 		}
 		$loglist = $this->model('order')->log_list($rs['id']);
 		$this->assign('loglist',$loglist);
+
+		//查找物流
+		$express_all = $this->model('order')->express_all($rs['id']);
+		if($express_all){
+			$shipping = current($express_all);
+			$this->assign('shipping',$shipping);
+		}
+
+		//付款记录
+		$paylist = $this->model('order')->payment_all($rs['id']);
+		if($paylist){
+			$payinfo = end($paylist);
+			$this->assign('payinfo',$payinfo);
+			$this->assign('paylist',$paylist);
+		}
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
 			$tplfile = 'order_info';
@@ -169,24 +190,80 @@ class order_control extends phpok_control
 		}
 		$rs = $order['info'];
 		$this->assign('rs',$rs);
+		$price_paid = $this->model('order')->paid_price($rs['id']);
+		$this->assign('price_paid',$price_paid);
+		$price_unpaid = $this->model('order')->unpaid_price($rs['id']);
+		$this->assign('price_unpaid',$price_unpaid);
 		unset($order);
-		if($this->model('order')->check_payment_is_end($rs['id'])){
+		if($price_unpaid && $price_unpaid<0.01){
 			$url = $this->session->val('user_id') ? $this->url('order','info','id='.$rs['id']) : $this->url('order','info','sn='.$rs['sn'].'&passwd='.$rs['passwd']);
 			$this->success(P_Lang('您的订单 {sn} 已经支付完成，无需再支付',array('sn'=>$rs['sn'])),$url);
 		}
 		$mobile = $this->is_mobile ? 1 : 0;
 		$paylist = $this->model('payment')->get_all($this->site['id'],1,$mobile);
+		if(!$paylist){
+			$this->error(P_Lang('系统未配置支付方式，请检查'));
+		}
+		//增加order_payment
+		$array = array('order_id'=>$rs['id'],'payment_id'=>0);
+		$array['price'] = price_format_val($price_unpaid,$rs['currency_id']);
+		$array['currency_id'] = $rs['currency_id'];
+		$array['startdate'] = $this->time;
+		$array['currency_rate'] = $rs['currency_rate'];
+		$this->model('order')->delete_not_end_order($rs['id']);
+		$this->model('order')->save_payment($array);
+		
+		$array = array('type'=>'order','price'=>price_format_val($price_unpaid,$rs['currency_id'],$rs['currency_id']),'currency_id'=>$rs['currency_id'],'sn'=>$rs['sn']);
+		$array['content'] = $array['title'] = P_Lang('订单：{sn}',array('sn'=>$rs['sn']));
+		$array['dateline'] = $this->time;
+		$array['user_id'] = $this->session->val('user_id');
+		$this->model('payment')->log_delete_notstatus($rs['sn'],'order');
+		$insert_id = $this->model('payment')->log_create($array);
+		$log = $array;
+		$log['id'] = $insert_id;
+		$this->assign('log',$log);
+		foreach($paylist as $key=>$value){
+			if(!$value['paylist']){
+				unset($paylist[$key]);
+				continue;
+			}
+		}
 		$this->assign("paylist",$paylist);
+		$addressconfig = $this->config['order']['address'] ? explode(",",$this->config['order']['address']) : array('shipping');
+		if($addressconfig){
+			$address = array();
+			foreach($addressconfig as $key=>$value){
+				if(!$value || !trim($value)){
+					continue;
+				}
+				$address[trim($value)] = $this->model('order')->address($rs['id'],trim($value));
+			}
+			$this->assign('address',$address);
+		}
+		$rslist = $this->model('order')->product_list($rs['id']);
+		$this->assign('rslist',$rslist);
+		$price_tpl_list = $this->model('site')->price_status_all();
+		$order_price = $this->model('order')->order_price($rs['id']);
+		if($price_tpl_list && $order_price){
+			$pricelist = array();
+			foreach($price_tpl_list as $key=>$value){
+				$tmpval = floatval($order_price[$key]);
+				if(!$value['status']){
+					continue;
+				}
+				$tmp = array('val'=>$tmpval);
+				$tmp['price'] = price_format($order_price[$key],$rs['currency_id']);
+				$tmp['price_val'] = price_format_val($order_price[$key],$rs['currency_id']);
+				$tmp['title'] = $value['title'];
+				$pricelist[$key] = $tmp;
+			}
+			$this->assign('pricelist',$pricelist);
+		}
 		$this->balance();
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
 			$tplfile = 'order_payment';
 		}
-		$price_paid = $this->model('order')->paid_price($rs['id']);
-		$this->assign('price_paid',$price_paid);
-		$price_unpaid = $this->model('order')->unpaid_price($rs['id']);
-		$this->assign('price_unpaid',$price_unpaid);
-		$this->assign('rs',$rs);
 		$this->view($tplfile);
 	}
 

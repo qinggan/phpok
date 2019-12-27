@@ -22,10 +22,10 @@
                     </select>
                 </div>
                 <div class="layui-inline">
-                    <select id="filetype" name="filetype">
+                    <select id="myext" name="myext">
                         <option value="">{lang请选择附件类型}</option>
                         <!-- loop from=$filetypes key=$key value=$value id=$tmpid -->
-                        <option value="{$value}" {if $filetype == $value} selected{
+                        <option value="{$value}" {if $myext == $value} selected{
                         /if}>{func strtoupper $value}</option>
                         <!-- /loop -->
                     </select>

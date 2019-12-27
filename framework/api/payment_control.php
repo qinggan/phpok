@@ -187,6 +187,31 @@ class payment_control extends phpok_control
 		$this->json($insert_id,true);
 	}
 
+	public function update_f()
+	{
+		$id = $this->get('id','int');
+		$rs = $this->model('payment')->log_one($id);
+		if(!$rs){
+			$this->error(P_Lang('没有找到支付记录'));
+		}
+		$payment = $this->get('payment');
+		if(!$payment){
+			$this->error(P_Lang('未指定支付方式'));
+		}
+		$array = array('payment_id'=>$payment);
+		$this->model('payment')->log_update($array,$id);
+		if($rs['type'] == 'order'){
+			$order = $this->model('order')->get_one_from_sn($rs['sn']);
+			$payment_info = $this->model('payment')->get_one($payment);
+			$payinfo = $this->model('order')->order_payment_notend($order['id']);
+			if($payinfo){
+				$data = array('payment_id'=>$payment,'title'=>$payment_info['title']);
+				$this->model('order')->save_payment($data,$payinfo['id']);
+			}
+		}
+		$this->success();
+	}
+
 	private function _create_sn()
 	{
 		$a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';

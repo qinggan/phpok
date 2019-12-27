@@ -98,41 +98,4 @@ function action_wealth_select(val)
 		$("#a_type").val("-");
 	}
 }
-function action_wealth(title,wid,uid,unit)
-{
-	var url = get_url('wealth','action_user','wid='+wid+"&uid="+uid);
-	$.dialog.open(url,{
-		'title':p_lang('会员{title}操作',{'title':title}),
-		'lock':true,
-		'width':'500px',
-		'height':'200px',
-		'ok':function(){
-			var iframe = this.iframe.contentWindow;
-			if (!iframe.document.body) {
-				alert('iframe还没加载完毕呢');
-				return false;
-			};
-			iframe.save();
-			return false;
-		},
-		'okVal':'提交保存',
-		'cancel':true
-	})
-}
-
-
-function show_wealth_log(title,wid,uid)
-{
-	var url = get_url('wealth','log','wid='+wid+"&uid="+uid);
-	$.dialog.open(url,{
-		'title':title+p_lang('日志'),
-		'lock':true,
-		'width':'500px',
-		'height':'400px',
-		'ok':function(){
-			return true;
-		},
-		'okVal':'关闭'
-	});
-}
 

@@ -12,10 +12,14 @@ function show_list()
 		$.dialog.data("title_data_{$input}","");
 	}
 	$("tr[name=list]").show();
-	var url = get_url("inp")+"&type=title&content="+$.str.encode(cid);
-	var rs = json_ajax(url);
-	if(rs.status == "ok"){
-		var lst = rs.content;
+	var url = get_url("inp","","type=title&content="+$.str.encode(cid));
+	$.phpok.json(url,function(rs){
+		if(!rs.status){
+			$("#selected_list").hide();
+			$.dialog.data("title_data_{$input}","");
+			return true;
+		}
+		var lst = rs.info;
 		var c = '<table width="100%" cellpadding="0" cellspacing="0" class="list">';
 		c += '<tr>';
 		c += '<th>已选择主题</th>';
@@ -36,10 +40,7 @@ function show_list()
 		c += "</table>";
 		$("#selected_list").html(c).show();
 		$.dialog.data("title_data_{$input}",cid);
-	}else{
-		$("#selected_list").hide();
-		$.dialog.data("title_data_{$input}","");
-	}
+	});
 }
 function add_input(val)
 {

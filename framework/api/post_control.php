@@ -42,6 +42,8 @@ class post_control extends phpok_control
 
 	public function save_f()
 	{
+		$this->config('is_ajax',true);
+		$this->node('PHPOK_post_save');
 		$id = $this->get('id','system');
 		if(!$id){
 			$this->json(P_Lang('未绑定相应的项目'));
@@ -65,8 +67,8 @@ class post_control extends phpok_control
 		$tid = $this->get('tid','int');
 		$vcode_act = 'add';
 		if($tid){
-			$chk = $this->model('list')->call_one($tid);
-			if($chk['user_id'] != $this->session->val('user_id')){
+			$rs = $this->model('list')->get_one($tid,false);
+			if($rs['user_id'] != $this->session->val('user_id')){
 				$this->json(P_Lang('您没有权限编辑此内容'));
 			}
 			$vcode_act = 'edit';
@@ -90,7 +92,18 @@ class post_control extends phpok_control
 		$array["project_id"] = $project_rs["id"];
 		$array["site_id"] = $project_rs["site_id"];
 		$array["cate_id"] = $this->get("cate_id","int");
-		$array['user_id'] = $_SESSION['user_id'] ? $_SESSION['user_id'] : 0;
+		$array['user_id'] = 0;
+		if($this->session->val('user_id')){
+			$array['user_id'] = $this->session->val('user_id');
+		}
+		if($project_rs['is_tag']){
+			$array['tag'] = $this->get('tag');
+			if($array["tag"]){
+				$array["tag"] = preg_replace("/(\x20{2,})/"," ",$array["tag"]);
+			}
+		}else{
+			$array['tag'] = '';
+		}
 		if($tid){
 			$get_result = $this->model('list')->save($array,$tid);
 			if(!$get_result){
@@ -104,6 +117,7 @@ class post_control extends phpok_control
 		 		}
 		 		$this->model('list')->save_ext_cate($tid,$ext_cate);
 	 		}
+	 		$title_id = $tid;
 		}else{
 			$array["dateline"] = $this->time;
 			$insert_id = $this->model('list')->save($array);
@@ -117,6 +131,7 @@ class post_control extends phpok_control
 		 		}
 		 		$this->model('list')->save_ext_cate($insert_id,$ext_cate);
 	 		}
+	 		$title_id = $insert_id;
 		}
 		//电商模块扩展
 		if($project_rs['is_biz']){
@@ -124,10 +139,13 @@ class post_control extends phpok_control
 	 		$biz['weight'] = $this->get('weight','float');
 	 		$biz['volume'] = $this->get('volume','float');
 	 		$biz['unit'] = $this->get('unit');
-	 		$biz['id'] = $tid ? $tid : $insert_id;
+	 		$biz['id'] = $title_id;
 	 		$biz['is_virtual'] = $this->get('is_virtual','int');
 	 		$this->model('list')->biz_save($biz);
 		}
+		//Tag标签的同步
+		$this->model('tag')->update_tag($array['tag'],$title_id);
+		//存储扩展字段
 		$ext_list = $this->model('module')->fields_all($project_rs["module"]);
 		if(!$ext_list){
 			$ext_list = array();
@@ -154,9 +172,7 @@ class post_control extends phpok_control
 				$content = $rs[$value["identifier"]] ? $rs[$value["identifier"]] : $value["content"];
 				$val = ext_password_format($val,$content,$value["password_type"]);
 			}
-			if($val){
-				$tmplist[$value["identifier"]] = $val;
-			}
+			$tmplist[$value["identifier"]] = $val;
 		}
 		if($tid){
 			$this->model('list')->update_ext($tmplist,$project_rs['module'],$tid);
@@ -185,6 +201,7 @@ class post_control extends phpok_control
 	public function ok_f()
 	{
 		$this->config('is_ajax',true);
+		$this->node('PHPOK_post_ok');
 		$id = $this->get('id','system');
 		if(!$id){
 			$this->error(P_Lang('未绑定相应的项目'));
@@ -195,6 +212,13 @@ class post_control extends phpok_control
 		}
 		if(!$project_rs['module']){
 			$this->error(P_Lang('此项目没有表单功能'));
+		}
+		$module = $this->model('module')->get_one($project_rs['module']);
+		if(!$module || !$module['status']){
+			$this->error(P_Lang('模块未启用'));
+		}
+		if($module['mtype']){
+			$this->save_single($project_rs,$module);
 		}
 		if(!$this->model('popedom')->check($project_rs['id'],$this->user_groupid,'post')){
 			$this->error(P_Lang('您没有权限执行此操作'));
@@ -208,8 +232,8 @@ class post_control extends phpok_control
 		$tid = $this->get('tid','int');
 		$vcode_act = 'add';
 		if($tid){
-			$chk = $this->model('list')->call_one($tid);
-			if($chk['user_id'] != $this->session->val('user_id')){
+			$rs = $this->model('list')->get_one($tid,false);
+			if($rs['user_id'] != $this->session->val('user_id')){
 				$this->error(P_Lang('您没有权限编辑此内容'));
 			}
 			$vcode_act = 'edit';
@@ -232,7 +256,18 @@ class post_control extends phpok_control
 		$array["project_id"] = $project_rs["id"];
 		$array["site_id"] = $project_rs["site_id"];
 		$array["cate_id"] = $this->get("cate_id","int");
-		$array['user_id'] = $_SESSION['user_id'] ? $_SESSION['user_id'] : 0;
+		$array['user_id'] = 0;
+		if($this->session->val('user_id')){
+			$array['user_id'] = $this->session->val('user_id');
+		}
+		if($project_rs['is_tag']){
+			$array['tag'] = $this->get('tag');
+			if($array["tag"]){
+				$array["tag"] = preg_replace("/(\x20{2,})/"," ",$array["tag"]);
+			}
+		}else{
+			$array['tag'] = '';
+		}
 		if($tid){
 			$dateline = $this->get('dateline');
 			if($dateline){
@@ -250,6 +285,7 @@ class post_control extends phpok_control
 		 		}
 		 		$this->model('list')->save_ext_cate($tid,$ext_cate);
 	 		}
+	 		$title_id = $tid;
 		}else{
 			$dateline = $this->get('dateline');
 			if($dateline){
@@ -268,6 +304,7 @@ class post_control extends phpok_control
 		 		}
 		 		$this->model('list')->save_ext_cate($insert_id,$ext_cate);
 	 		}
+	 		$title_id = $insert_id;
 		}
 		//电商模块扩展
 		if($project_rs['is_biz']){
@@ -279,10 +316,13 @@ class post_control extends phpok_control
 	 		$biz['weight'] = $this->get('weight','float');
 	 		$biz['volume'] = $this->get('volume','float');
 	 		$biz['unit'] = $this->get('unit');
-	 		$biz['id'] = $tid ? $tid : $insert_id;
+	 		$biz['id'] = $title_id;
 	 		$biz['is_virtual'] = $this->get('is_virtual','int');
 	 		$this->model('list')->biz_save($biz);
 		}
+		//Tag标签的同步
+		$this->model('tag')->update_tag($array['tag'],$title_id);
+		//存储扩展字段
 		$ext_list = $this->model('module')->fields_all($project_rs["module"]);
 		if(!$ext_list){
 			$ext_list = array();
@@ -299,17 +339,11 @@ class post_control extends phpok_control
 				continue;
 			}
 			$val = ext_value($value);
-			if($value["ext"]){
-				$ext = unserialize($value["ext"]);
-				foreach($ext as $k=>$v){
-					$value[$k] = $v;
-				}
-			}
 			if($value["form_type"] == "password"){
 				$content = $rs[$value["identifier"]] ? $rs[$value["identifier"]] : $value["content"];
 				$val = ext_password_format($val,$content,$value["password_type"]);
 			}
-			if($val){
+			if($val != ''){
 				$tmplist[$value["identifier"]] = $val;
 			}
 		}
@@ -334,12 +368,52 @@ class post_control extends phpok_control
 		$this->success($insert_id);
 	}
 
+	private function save_single($project,$module)
+	{
+		$data = array('site_id'=>$project['site_id']);
+		$tid = $this->get('tid','int');
+		if($tid){
+			$rs = $this->model('list')->single_one($tid,$project['module']);
+			$data['id'] = $rs['id'];
+		}
+		$data['project_id'] = $project['id'];
+		$data['cate_id'] = $project['cate'] ? $this->get('cate_id','int') : 0;
+		$flist = $this->model('module')->fields_all($module['id']);
+		if($flist){
+			foreach($flist as $key=>$value){
+				if(!$value['is_front']){
+					continue;
+				}
+				$val = ext_value($value);
+				if($value["form_type"] == "password"){
+					$content = $rs[$value["identifier"]] ? $rs[$value["identifier"]] : $value["content"];
+					$val = ext_password_format($val,$content,$value["password_type"]);
+				}
+				if($val != ''){
+					$data[$value["identifier"]] = $val;
+				}
+			}
+		}
+		//保存数据
+		$insert_id = $this->model("list")->single_save($data,$project['module']);
+		if(!$insert_id){
+			$this->error(P_Lang('数据保存失败，请检查'));
+		}
+		if(!is_numeric($insert_id) && $tid){
+			$insert_id = $tid;
+		}
+		$this->success($insert_id);
+	}
+
 	/**
 	 * 删除主题
 	 * @参数 id 主题ID
 	**/
 	public function del_f()
 	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
+		}
 		$id = $this->get('id','int');
 		if(!$id){
 			$this->error(P_Lang('未指定主题ID'));

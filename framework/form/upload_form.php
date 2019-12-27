@@ -105,7 +105,11 @@ class upload_form extends _init_auto
 		if($rs['ext'] && is_string($rs['ext'])){
 			$rs['ext'] = unserialize($rs['ext']);
 		}
-		$tmp = explode(",",$rs['content']);
+		if(is_array($rs['content'])){
+			return $rs['content'];
+		}else{
+			$tmp = explode(",",$rs['content']);
+		}
 		foreach($tmp as $key=>$value){
 			if(!$value || !intval($value)){
 				unset($tmp[$key]);
@@ -275,6 +279,7 @@ class upload_form extends _init_auto
 			}
 			$upload_type['maxsize'] = $cateinfo['filemax'] * 1024;
 			$upload_type['id'] = $ext['cate_id'];
+			$upload_type['etype'] = $cateinfo['etype'];
 			$rs['cate_id'] = $cateinfo['id'];
 		}else{
 			$upload_type = array('title'=>($ext['upload_name'] ? $ext['upload_name'] : P_Lang('附件')));
@@ -288,6 +293,12 @@ class upload_form extends _init_auto
 			$tmp[] = "*.".$value;
 		}
 		$upload_type['swfupload'] = implode(", ",$tmp);
+		if($upload_type['etype']){
+			$etype_info = $this->model('gateway')->get_one($upload_type['etype']);
+			if(!$etype_info){
+				$upload_type['etype'] = 0;
+			}
+		}
 		$rs['upload_type'] = $upload_type;
 
 		//二进制上传设置
@@ -305,7 +316,14 @@ class upload_form extends _init_auto
 		}
 		$rs['upload_compress'] = $compress;
 		$rs['upload_ios'] = $this->lib('mobile')->is_ios();
+		$rs['upload_etype_info'] = $upload_type['etype'] ? $etype_info : array();
 		$this->assign("_rs",$rs);
+		if($etype_info){
+			$this->gateway('type',$etype_info['type']);
+			$this->gateway('param',$etype_info['id']);
+			$this->gateway('extinfo',$etype_info['ext']);
+			return $this->gateway('exec_www.php');
+		}
 		return $this->fetch($this->dir_phpok.'form/html/upload_www_tpl.html','abs-file',false);
 	}
 

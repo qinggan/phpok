@@ -20,10 +20,25 @@ function check_input()
 			return false;
 		}
 	}
-	return true;
+	$("#login_save").ajaxSubmit({
+		'url':api_url('login','save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.tips('会员登录成功',function(){
+					$.phpok.go(get_url('usercp'));
+				}).lock();
+				return false;
+			}
+			$.dialog.alert(rs.info,false,'error');
+			return false;
+		}
+	});
+	return false;
 }
 </script>
-<form class="am-form" onsubmit="return check_input()" method="post" action="{url ctrl=login func=ok/}">
+<form class="am-form" id="login_save" onsubmit="return check_input()" method="post" action="{url ctrl=login func=ok/}">
 <input type="hidden" name="_back" id="_back" value="{$_back}" />
 <fieldset>
 	<legend>会员登录</legend>
@@ -61,4 +76,4 @@ function check_input()
 	
 </fieldset>
 </form>
-<!-- include tpl=footer -->
+<!-- include tpl=foot -->

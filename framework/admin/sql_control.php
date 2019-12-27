@@ -450,6 +450,7 @@ class sql_control extends phpok_control
 		}
 		$rslist = $this->model('sql')->table_info($tbl);
 		$this->assign('rslist',$rslist);
+		$this->assign('tbl',$tbl);
 		$this->view('sql_show');
 	}
 
@@ -467,6 +468,26 @@ class sql_control extends phpok_control
 			$this->error(P_Lang('官网前缀的系统表不支持删除'));
 		}
 		$this->model('sql')->table_delete($tbl);
+		$this->success();
+	}
+
+	public function replace_f()
+	{
+		$tbl = $this->get('table');
+		if(!$tbl){
+			$this->error(P_Lang('未指定表名'));
+		}
+		$field = $this->get('field');
+		if(!$field){
+			$this->error(P_Lang('未指定字段名'));
+		}
+		$val1 = $this->get('val1','html');
+		if(!$val1){
+			$this->error(P_Lang('未指定替换前的文本'));
+		}
+		$val2 = $this->get('val2');
+		$sql = "UPDATE ".$tbl." SET ".$field."=REPLACE(".$field.",'".$val1."','".$val2."')";
+		$this->db->query($sql);
 		$this->success();
 	}
 }

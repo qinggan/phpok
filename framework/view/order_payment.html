@@ -1,8 +1,13 @@
-<!-- include tpl=head_lay nopadding=true -->
+<!-- include tpl=head_lay -->
 <div class="layui-card">
 	<div class="layui-card-header" style="padding:5px 5px 0 5px;">
 		<form method="post" id="postsave" class="layui-form" onsubmit="return $.admin_order_payment.add()">
-		<ul class="layout fr">
+		<ul class="layout">
+			<li>
+				<div class="layui-form-item">
+					<div class="layui-input-inline auto gray lh38">&nbsp; {lang添加支付记录}</div>
+				</div>
+			</li>
 			<li>
 				<select name="payment_id" lay-filter="payment">
 				<option value="">{lang支付方式…}</option>
@@ -31,7 +36,11 @@
 			</li>
 			<li><input type="text" name="dateline" id="dateline" placeholder='{lang支付时间}' class="layui-input" readonly /></li>
 			<li><input type="text" name="note" placeholder="{lang备注}" class="layui-input" /></li>
-			<li><input type="submit" value="{lang添加}" class="layui-btn" /></li>
+			<li>
+				<div class="layui-form-item">
+					<input type="submit" value="{lang添加}" class="layui-btn layui-btn-sm" />
+				</div>
+			</li>
 		</ul>
 		</form>
 	</div>

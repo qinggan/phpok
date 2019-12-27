@@ -45,9 +45,7 @@ class search_control extends phpok_control
 		$condition = "l.project_id IN(".implode(",",$pids).") AND l.module_id IN(".implode(",",$mids).") ";
 		$klist = explode(" ",$keywords);
 		$kc = array();
-		$kwlist = array();
 		foreach($klist as $key=>$value){
-			$kwlist[] = '<i>'.$value.'</i>';
 			$kc[] = " l.seo_title LIKE '%".$value."%'";
 			$kc[] = " l.seo_keywords LIKE '%".$value."%'";
 			$kc[] = " l.seo_desc LIKE '%".$value."%'";

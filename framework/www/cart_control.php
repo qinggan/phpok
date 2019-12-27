@@ -84,19 +84,20 @@ class cart_control extends phpok_control
 	public function checkout_f()
 	{
 		$id = $this->get('id');
-		if(!$id){
-			$this->error(P_Lang('未指定要结算的产品ID'),$this->url('cart'));
-		}
-		if($id && !is_array($id)){
-			$id = explode(",",$id);
-		}
-		foreach($id as $key=>$value){
-			if(!$value || !trim($value) || !intval($value)){
-				unset($id[$key]);
+		if($id){
+			if(!is_array($id)){
+				$id = explode(",",$id);
 			}
+			foreach($id as $key=>$value){
+				if(!$value || !trim($value) || !intval($value)){
+					unset($id[$key]);
+					continue;
+				}
+				$id[$key] = intval($value);
+			}
+			$this->assign('id',implode(",",$id));
 		}
 		//定义要结算的产品ID
-		$this->assign('id',implode(",",$id));
 		$rslist = $this->model('cart')->get_all($this->cart_id,$id);
 		if(!$rslist){
 			$this->error(P_Lang('您的购物车里没有任何产品'),$this->url);
@@ -135,10 +136,13 @@ class cart_control extends phpok_control
 					unset($pricelist[$key]);
 					continue;
 				}
+				if($value['default']){
+					$value['price'] = price_format($value['default'],$this->site['currency_id']);
+					$value['price_val'] = $value['default'];
+				}
 				if($value['identifier'] == 'product'){
 					$value['price'] = price_format($totalprice,$this->site['currency_id']);
 					$value['price_val'] = $totalprice;
-					$pricelist[$key] = $value;
 				}
 				if($value['identifier'] == 'shipping'){
 					if($is_virtual){
@@ -147,13 +151,19 @@ class cart_control extends phpok_control
 					}
 					if($this->tpl->val('address')){
 						$freight_price = $this->_freight();
-						if(!$freight_price){
+						if(!$freight_price && !$value['default']){
 							unset($pricelist[$key]);
 							continue;
 						}
-						$value['price'] = price_format($freight_price,$this->site['currency_id']);
-						$value['price_val'] = $freight_price;
-						$pricelist[$key] = $value;
+						if($freight_price){
+							$value['price'] = price_format($freight_price,$this->site['currency_id']);
+							$value['price_val'] = $freight_price;
+						}
+					}else{
+						if(!$value['default']){
+							unset($pricelist[$key]);
+							continue;
+						}
 					}
 				}
 				if($value['identifier'] == 'discount'){
@@ -176,9 +186,9 @@ class cart_control extends phpok_control
 					$value['price'] = price_format(-$tmp_price,$this->site['currency_id']);
 					$value['price_val'] = -$tmp_price;
 					$discount = -$tmp_price;
-					$pricelist[$key] = $value;
 					$this->assign('coupon_code',$tmp['code']);
 				}
+				$pricelist[$key] = $value;
 			}
 		}
 		$this->assign('pricelist',$pricelist);
@@ -211,6 +221,390 @@ class cart_control extends phpok_control
 			$tplfile = 'cart_checkout';
 		}
 		$this->view($tplfile);
+	}
+
+	public function review_f()
+	{
+		$id = $this->get('id');
+		if($id){
+			if(!is_array($id)){
+				$id = explode(",",$id);
+			}
+			foreach($id as $key=>$value){
+				if(!$value || !trim($value) || !intval($value)){
+					unset($id[$key]);
+				}
+				$id[$key] = intval($value);
+			}
+			$this->assign('id',implode(",",$id));
+		}
+		//定义要结算的产品ID
+		$rslist = $this->model('cart')->get_all($this->cart_id,$id);
+		if(!$rslist){
+			$this->error(P_Lang('您的购物车里没有任何产品'),$this->url);
+		}
+		if($this->session->val('user_id')){
+			$user_rs = $this->model('user')->get_one($this->session->val('user_id'));
+			$this->assign('user',$user_rs);
+		}
+		$totalprice = 0;
+		$qty = 0;
+		foreach($rslist as $key=>$value){
+			$totalprice += price_format_val($value['price'] * $value['qty']);
+			$qty += $value['qty'];
+		}
+		$this->assign('product_price',price_format($totalprice,$this->site['currency_id']));
+		$this->assign("rslist",$rslist);
+		$this->assign('qty',$qty);
+		//检测购物车是否需要使用地址
+		$is_virtual = true;
+		foreach($rslist as $key=>$value){
+			if(!$value['is_virtual']){
+				$is_virtual = false;
+			}
+		}
+		$this->assign('is_virtual',$is_virtual);
+		
+		if($is_virtual && $user_rs){
+			$address = array('mobile'=>$user_rs['mobile'],'email'=>$user_rs['email']);
+			$this->assign('address',$address);
+		}
+		if(!$is_virtual){
+			$this->_address();
+		}
+		$pricelist = $this->model('site')->price_status_all(true);
+		$discount = 0;
+		if($pricelist){
+			foreach($pricelist as $key=>$value){
+				if(!$value['status']){
+					unset($pricelist[$key]);
+					continue;
+				}
+				if($value['default']){
+					$value['price'] = price_format($value['default'],$this->site['currency_id']);
+					$value['price_val'] = $value['default'];
+				}
+				if($value['identifier'] == 'product'){
+					$value['price'] = price_format($totalprice,$this->site['currency_id']);
+					$value['price_val'] = $totalprice;
+					$pricelist[$key] = $value;
+				}
+				if($value['identifier'] == 'shipping'){
+					if($is_virtual){
+						unset($pricelist[$key]);
+						continue;
+					}
+					if($this->tpl->val('address')){
+						$freight_price = $this->_freight();
+						if(!$freight_price && !$value['default']){
+							unset($pricelist[$key]);
+							continue;
+						}
+						if($freight_price){
+							$value['price'] = price_format($freight_price,$this->site['currency_id']);
+							$value['price_val'] = $freight_price;
+						}
+					}else{
+						if(!$value['default']){
+							unset($pricelist[$key]);
+							continue;
+						}
+					}
+				}
+				if($value['identifier'] == 'discount'){
+					$this->data("cart_id",$this->cart_id);
+					$this->node('PHPOK_cart_coupon');
+					$tmp = $this->data('cart_coupon');
+					if(!$tmp){
+						unset($pricelist[$key]);
+						continue;
+					}
+					if($tmp['min_price'] > $totalprice){
+						unset($pricelist[$key]);
+						continue;
+					}
+					if(!$tmp['discount_type']){
+						$tmp_price = round($totalprice * $tmp['discount_val'] / 100,2);
+					}else{
+						$tmp_price = $tmp['discount_val'];
+					}
+					$value['price'] = price_format(-$tmp_price,$this->site['currency_id']);
+					$value['price_val'] = -$tmp_price;
+					$discount = -$tmp_price;
+					$pricelist[$key] = $value;
+					$this->assign('coupon_code',$tmp['code']);
+				}
+				$pricelist[$key] = $value;
+			}
+		}
+		$this->assign('pricelist',$pricelist);
+		if($freight_price){
+			$price = price_format(($totalprice+$freight_price+$discount),$this->site['currency_id']);
+			$price_val = price_format_val(($totalprice+$freight_price+$discount),$this->site['currency_id']);
+		}else{
+			$price = price_format($totalprice+$discount,$this->site['currency_id']);
+			$price_val = price_format_val($totalprice+$discount,$this->site['currency_id']);
+		}
+		$this->assign('price',$price);
+		$this->assign('price_val',$price_val);
+		//支付方式
+		$paylist = $this->model('payment')->get_all($this->site['id'],1,($this->is_mobile ? 1 : 0));
+		$this->assign("paylist",$paylist);
+		if($this->session->val('user_id')){
+			$wlist = $this->model('order')->balance($this->session->val('user_id'));
+			if($wlist){
+				if($wlist['balance']){
+					$this->assign('balance',$wlist['balance']);
+				}
+				if($wlist['integral']){
+					$this->assign('integral',$wlist['integral']);
+				}
+			}
+		}
+
+		$email = $this->get('email');
+		if($email){
+			$this->session->assign('cart_email',$email);
+			$this->assign('email',$email);
+		}
+		$address = $this->addr_info();
+		if($address){
+			$this->session->assign('cart_address',$address);
+		}
+		if(count($address)>1){
+			$same_as_shipping = $this->get('same_as_shipping','int');
+			$this->session->assign('cart_same_as_shipping',$same_as_shipping);
+			$this->assign('cart_same_as_shipping',$same_as_shipping);
+		}
+		$this->assign('address',$address);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'cart_review';
+		}
+		$this->view($tplfile);
+	}
+
+	public function confirm_f()
+	{
+		$id = $this->get('id');
+		if($id){
+			if(!is_array($id)){
+				$id = explode(",",$id);
+			}
+			foreach($id as $key=>$value){
+				if(!$value || !trim($value) || !intval($value)){
+					unset($id[$key]);
+				}
+				$id[$key] = intval($value);
+			}
+			$this->assign('id',implode(",",$id));
+		}
+		//定义要结算的产品ID
+		$rslist = $this->model('cart')->get_all($this->cart_id,$id);
+		if(!$rslist){
+			$this->error(P_Lang('您的购物车里没有任何产品'),$this->url);
+		}
+		if($this->session->val('user_id')){
+			$user_rs = $this->model('user')->get_one($this->session->val('user_id'));
+			$this->assign('user',$user_rs);
+		}
+		$totalprice = 0;
+		$qty = 0;
+		foreach($rslist as $key=>$value){
+			$totalprice += price_format_val($value['price'] * $value['qty']);
+			$qty += $value['qty'];
+		}
+		$this->assign('product_price',price_format($totalprice,$this->site['currency_id']));
+		$this->assign("rslist",$rslist);
+		$this->assign('qty',$qty);
+		//检测购物车是否需要使用地址
+		$is_virtual = true;
+		foreach($rslist as $key=>$value){
+			if(!$value['is_virtual']){
+				$is_virtual = false;
+			}
+		}
+		$this->assign('is_virtual',$is_virtual);
+		
+		if($is_virtual && $user_rs){
+			$address = array('mobile'=>$user_rs['mobile'],'email'=>$user_rs['email']);
+			$this->assign('address',$address);
+		}
+		if(!$is_virtual){
+			$this->_address();
+		}
+		$pricelist = $this->model('site')->price_status_all(true);
+		$discount = 0;
+		if($pricelist){
+			foreach($pricelist as $key=>$value){
+				if(!$value['status']){
+					unset($pricelist[$key]);
+					continue;
+				}
+				if($value['default']){
+					$value['price'] = price_format($value['default'],$this->site['currency_id']);
+					$value['price_val'] = $value['default'];
+				}
+				if($value['identifier'] == 'product'){
+					$value['price'] = price_format($totalprice,$this->site['currency_id']);
+					$value['price_val'] = $totalprice;
+				}
+				if($value['identifier'] == 'shipping'){
+					if($is_virtual){
+						unset($pricelist[$key]);
+						continue;
+					}
+					if($this->tpl->val('address')){
+						$freight_price = $this->_freight();
+						if(!$freight_price && !$value['default']){
+							unset($pricelist[$key]);
+							continue;
+						}
+						if($freight_price){
+							$value['price'] = price_format($freight_price,$this->site['currency_id']);
+							$value['price_val'] = $freight_price;
+						}
+					}else{
+						if(!$value['default']){
+							unset($pricelist[$key]);
+							continue;
+						}
+					}
+				}
+				if($value['identifier'] == 'discount'){
+					$this->data("cart_id",$this->cart_id);
+					$this->node('PHPOK_cart_coupon');
+					$tmp = $this->data('cart_coupon');
+					if(!$tmp){
+						unset($pricelist[$key]);
+						continue;
+					}
+					if($tmp['min_price'] > $totalprice){
+						unset($pricelist[$key]);
+						continue;
+					}
+					if(!$tmp['discount_type']){
+						$tmp_price = round($totalprice * $tmp['discount_val'] / 100,2);
+					}else{
+						$tmp_price = $tmp['discount_val'];
+					}
+					$value['price'] = price_format(-$tmp_price,$this->site['currency_id']);
+					$value['price_val'] = -$tmp_price;
+					$discount = -$tmp_price;
+					$this->assign('coupon_code',$tmp['code']);
+				}
+				$pricelist[$key] = $value;
+			}
+		}
+		$this->assign('pricelist',$pricelist);
+		if($freight_price){
+			$price = price_format(($totalprice+$freight_price+$discount),$this->site['currency_id']);
+			$price_val = price_format_val(($totalprice+$freight_price+$discount),$this->site['currency_id']);
+		}else{
+			$price = price_format($totalprice+$discount,$this->site['currency_id']);
+			$price_val = price_format_val($totalprice+$discount,$this->site['currency_id']);
+		}
+		$this->assign('price',$price);
+		$this->assign('price_val',$price_val);
+		//支付方式
+		$paylist = $this->model('payment')->get_all($this->site['id'],1,($this->is_mobile ? 1 : 0));
+		$array = array('type'=>'order','price'=>price_format_val($price_unpaid,$rs['currency_id'],$rs['currency_id']),'currency_id'=>$rs['currency_id'],'sn'=>$rs['sn']);
+		$array['content'] = $array['title'] = P_Lang('订单：{sn}',array('sn'=>$rs['sn']));
+		$array['dateline'] = $this->time;
+		$array['user_id'] = $this->session->val('user_id');
+		$this->model('payment')->log_delete_notstatus($rs['sn'],'order');
+		$insert_id = $this->model('payment')->log_create($array);
+		$log = $array;
+		$log['id'] = $insert_id;
+		$this->assign('log',$log);
+		foreach($paylist as $key=>$value){
+			if(!$value['paylist']){
+				unset($paylist[$key]);
+				continue;
+			}
+			foreach($value['paylist'] as $k=>$v){
+				if($v['param'] && is_string($v['param'])){
+					$v['param'] = unserialize($v['param']);
+				}
+				if(!file_exists($this->dir_gateway.'payment/'.$v['code'].'/submit.php')){
+					unset($value['paylist'][$k]);
+					continue;
+				}
+				$this->assign('payment',$v);
+				include_once($this->dir_gateway.'payment/'.$v['code'].'/submit.php');
+				$name = $v['code'].'_submit';
+				$obj = new $name($log,$v);
+				$tmp = $obj->select();
+				$v['html'] = $tmp;
+				$value['paylist'][$k] = $v;
+			}
+			$paylist[$key] = $value;
+		}
+		$this->assign("paylist",$paylist);
+		if($this->session->val('user_id')){
+			$wlist = $this->model('order')->balance($this->session->val('user_id'));
+			if($wlist){
+				if($wlist['balance']){
+					$this->assign('balance',$wlist['balance']);
+				}
+				if($wlist['integral']){
+					$this->assign('integral',$wlist['integral']);
+				}
+			}
+		}
+
+		$email = $this->get('email');
+		if($email){
+			$this->session->assign('cart_email',$email);
+			$this->assign('email',$email);
+		}
+		$address = $this->addr_info();
+		if($address){
+			$this->session->assign('cart_address',$address);
+		}
+		if(count($address)>1){
+			$same_as_shipping = $this->get('same_as_shipping','int');
+			$this->session->assign('cart_same_as_shipping',$same_as_shipping);
+			$this->assign('cart_same_as_shipping',$same_as_shipping);
+		}
+		$this->assign('address',$address);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'cart_confirm';
+		}
+		$this->view($tplfile);
+	}
+	
+	private function addr_info()
+	{
+		$addressconfig = $this->config['order']['address'] ? explode(",",$this->config['order']['address']) : array('shipping');
+		$address = array();
+		foreach($addressconfig as $key=>$value){
+			$value = trim($value);
+			if(!$value){
+				continue;
+			}
+			$array = array();
+			$array['type'] = $value;
+			$array['country'] = $this->get($value."-country");
+			$array['province'] = $this->get($value."-province");
+			$array['city'] = $this->get($value."-city");
+			$array['county'] = $this->get($value."-county");
+			$array['address'] = $this->get($value."-address");
+			$array['address2'] = $this->get($value."-address2");
+			$array['mobile'] = $this->get($value."-mobile");
+			$array['tel'] = $this->get($value."-tel");
+			$array['email'] = $this->get($value."-email");
+			$array['fullname'] = $this->get($value."-fullname");
+			$array['firstname'] = $this->get($value."-firstname");
+			$array['lastname'] = $this->get($value."-lastname");
+			$array['zipcode'] = $this->get($value."-zipcode");
+			$array['order_id'] = $order_id;
+			if($array['fullname'] || $array['firstname']){
+				$address[$value] = $array;
+			}
+		}
+		return $address;
 	}
 
 	/**
@@ -307,10 +701,13 @@ class cart_control extends phpok_control
 					unset($pricelist[$key]);
 					continue;
 				}
+				if($value['default']){
+					$value['price'] = price_format($value['default'],$this->site['currency_id']);
+					$value['price_val'] = $value['default'];
+				}
 				if($key == 'product'){
 					$value['price'] = price_format($product_price);
 					$value['price_val'] = $product_price;
-					$pricelist[$key] = $value;
 				}
 				if($key == 'shipping'){
 					if($is_virtual){
@@ -320,10 +717,14 @@ class cart_control extends phpok_control
 					if($freight_price){
 						$value['price'] = price_format($freight_price,$this->site['currency_id']);
 						$value['price_val'] = $freight_price;
-						$pricelist[$key] = $value;
 						$price += $freight_price;
+					}else{
+						if($value['default']){
+							$price += $value['default'];
+						}
 					}
 				}
+				$pricelist[$key] = $value;
 			}
 		}
 		$data = array('pricelist'=>$pricelist,'price'=>price_format($price));
@@ -410,5 +811,4 @@ class cart_control extends phpok_control
 		}
 		$this->json(price_format($price,$this->site['currency_id']),true);
 	}
-
 }

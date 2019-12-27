@@ -62,7 +62,29 @@ function taxis(baseurl,default_value)
 	}
 }
 
-/* 通用状态更新 */
+/**
+ * 通用排序
+**/
+function phpok_taxis(obj,url)
+{
+	if(!url || url == 'undefined' || !obj || obj == 'undefined'){
+		return false;
+	}
+	var taxis = $(obj).val();
+	url += "&taxis="+taxis;
+	$.phpok.json(url,function(rs){
+		if(rs.status){
+			$.dialog.tips(p_lang('排序更新成功')).follow($(obj)[0]);
+			return false;
+		}
+		$.dialog.alert(rs.info);
+		return false;
+	});
+}
+
+/**
+ * 通用状态更新
+**/
 function phpok_status(id,url)
 {
 	if(!url || url == "undefined" || !id) return false;
@@ -222,14 +244,14 @@ function ext_add(module)
 
 function ext_add2(id,module)
 {
-	var url = get_url("ext","add") + "&module="+module+"&id="+id;
+	var url = get_url("ext","add","module="+module+"&id="+id);
 	$.phpok.json(url,function(rs){
-		if(rs.status == 'ok'){
+		if(rs.status){
 			$.phpok.reload();
-		}else{
-			$.dialog.alert(rs.content);
-			return false;
+			return true;
 		}
+		$.dialog.alert(rs.info);
+		return false;
 	});
 }
 
@@ -244,12 +266,12 @@ function ext_delete(id,module,title)
 	$.dialog.confirm(p_lang('确定要删除扩展字段：{title} 吗？<br>删除后是不能恢复的！','<span class="red">'+title+'</span>'),function(){
 		var url = get_url('ext','delete','module='+$.str.encode(module)+"&id="+id);
 		$.phpok.json(url,function(data){
-			if(data.status == 'ok'){
+			if(data.status){
 				$.phpok.reload();
-			}else{
-				$.dialog.alert(rs.content);
-				return false;
+				return true;
 			}
+			$.dialog.alert(rs.info);
+			return false;
 		})
 	})
 }
@@ -455,6 +477,12 @@ function ext_edit(id,module)
 })(jQuery);
 
 $(document).ready(function(){
+	//计划任务自动执行
+	window.setTimeout(function(){
+		$.phpok.json(api_url('task'),function(rs){
+			return true;
+		});
+	}, 600);
 	var clipboard = new Clipboard('.phpok-copy');
 	clipboard.on('success', function(e){
 		$.dialog.tips(p_lang('复制成功'));
@@ -577,6 +605,21 @@ $(document).ready(function(){
 			}
 		}
 	});
+	//如果有加载layui，执行这个
+	if(typeof layui != 'undefined'){
+		layui.config({
+			base: webroot+'static/admin/' //静态资源所在路径
+		}).extend({
+		    index: 'lib/index' //主入口模块
+		}).use(['layer','form','laydate','index'],function(){
+			layui.form.on('radio',function(data){
+				$(data.elem).click();
+			});
+			window.setTimeout(function(){
+				layui.form.render();
+			}, 500);
+		});
+	}
 });
 $(document).keydown(function(e){
 	window.history.forward(1);
@@ -586,15 +629,4 @@ $(document).keydown(function(e){
 	});
 });
 
-//如果有加载layui，执行这个
-if(typeof layui != 'undefined'){
-	layui.config({
-		base: webroot+'static/admin/' //静态资源所在路径
-	}).extend({
-	    index: 'lib/index' //主入口模块
-	}).use(['layer','form','laydate','index'],function(){
-		layui.form.on('radio',function(data){
-			$(data.elem).click();
-		});
-	});
-}
+

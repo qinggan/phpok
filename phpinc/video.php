@@ -12,7 +12,6 @@ $video = '';
 if($rs['video'] && (substr($rs['video'],0,7) == 'http://' || substr($rs['video'],0,8) == 'https://')){
 	$tmp = parse_url($rs['video']);
 	if(strpos($tmp['host'],'youku.com') !== false){
-		
 		$filename = basename($tmp['path']);
 		$filename = substr($filename,3,-5);
 		$video = '//player.youku.com/embed/'.$filename;

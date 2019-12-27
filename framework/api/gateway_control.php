@@ -13,11 +13,11 @@ class gateway_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		$this->config('is_ajax',true);
 	}
 
 	public function index_f()
 	{
-		$this->config('is_ajax',true);
 		$id = $this->get('id','int');
 		if(!$id){
 			$this->error(P_Lang('未指定网关路由ID'));

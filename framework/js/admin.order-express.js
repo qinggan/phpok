@@ -11,11 +11,6 @@
 	$.admin_order_express = {
 		save:function()
 		{
-			if(typeof(CKEDITOR) != "undefined"){
-				for(var i in CKEDITOR.instances){
-					CKEDITOR.instances[i].updateElement();
-				}
-			}
 			$("#postsave").ajaxSubmit({
 				'url':get_url('order','express_save'),
 				'type':'post',

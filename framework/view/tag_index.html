@@ -1,11 +1,18 @@
 <!-- include tpl=head_lay title=标签管理 -->
 <div class="layui-card">
 	<div class="layui-card-header">
-		{lang列表}
+		<div class="fl">
+		<ul class="layout" style="margin:2px 0;">
+			<form method="post" action="{url ctrl=tag/}">
+			<li><input type="text" name="keywords" class="layui-input" id="keywords" value="{$keywords}" /></li>
+			<li><input type="submit" value="提交" class="layui-btn layui-btn-sm" /></li>
+			</form>
+		</ul>
+		</div>
 		<!-- if $session.admin_rs.if_system || $popedom.add -->
 		<div class="layui-btn-group fr">
-			<!-- if $session.admin_rs.if_system --><button class="layui-btn layui-btn-sm" onclick="$.phpok_tag.config();void(0);">{lang配置标签}</button><!-- /if -->
-			<!-- if $popedom.add --><button class="layui-btn layui-btn-sm" onclick="$.phpok_tag.add();void(0);">{lang添加标签}</button><!-- /if -->
+			<!-- if $session.admin_rs.if_system --><button class="layui-btn layui-btn-sm" onclick="$.admin_tag.config();void(0);">{lang配置标签}</button><!-- /if -->
+			<!-- if $popedom.add --><button class="layui-btn layui-btn-sm" onclick="$.admin_tag.add();void(0);">{lang添加标签}</button><!-- /if -->
 		</div>
 		<!-- /if -->
 	</div>
@@ -36,12 +43,13 @@
 				<!-- if $value.is_global --><span class="darkblue">{lang全局可用}</span><!-- else -->-<!-- /if -->
 			</td>
 			<td class="center">{$value.replace_count}</td>
-			<td class="center">{$value.count ? $value.count : 0}</td>
+			<td class="center hand" title="{lang点击可以查看关联的主题}" onclick="$.admin_tag.titles('{$value.id}','{$value.title}')">{$value.count ? $value.count : 0}</td>
 			<td class="center">{$value.hits ? $value.hits : 0}</td>
 			<td>
 				<div class="layui-btn-group">
-					<input type="button" value="{lang编辑}" onclick="$.phpok_tag.edit('{$value.id}')" class="layui-btn  layui-btn-sm" />
-					<input type="button" value="{lang删除}" onclick="$.phpok_tag.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+					<input type="button" value="{lang编辑}" onclick="$.admin_tag.edit('{$value.id}')" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang节点管理器}" onclick="$.admin_tag.nodelist('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.admin_tag.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 				</div>
 			</td>
 		</tr>

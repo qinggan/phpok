@@ -12,18 +12,13 @@
 
 class json_lib
 {
-	public function __construct()
-	{
-		
-	}
-
 	/**
 	 * 将数组转成JSON数据
 	 * @参数 $var 要转换的数据
 	 * @参数 $unicode 是否转换中文等非字母数据
 	 * @参数 $pretty 设置为true时表示优雅输出，可视效果
 	**/
-	public function encode($var,$unicode=true,$pretty=false)
+	public function encode($var,$unicode=false,$pretty=false)
 	{
 		if(!$unicode){
 			if($pretty){
@@ -48,6 +43,17 @@ class json_lib
 		if(!$str){
 			return false;
 		}
-		return json_decode($str,$is_array);
+		if($this->json_validate($str)){
+			return json_decode($str,$is_array);
+		}
+		return false;
 	}
+
+	public function json_validate($string) {
+        if (is_string($string)) {
+            @json_decode($string);
+            return (json_last_error() === JSON_ERROR_NONE);
+        }
+        return false;
+    }
 }

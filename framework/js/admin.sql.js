@@ -114,6 +114,16 @@
 				'lock':true,
 				'width':'750px',
 				'height':'500px',
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.save();
+					return false;
+				},
+				'okVal':p_lang('文本替换'),
 				'cancel':true
 			});
 		},
@@ -139,6 +149,3 @@
 		}
 	}
 })(jQuery);
-$(document).ready(function(){
-	top.$.desktop.title(p_lang('数据库管理'));
-});

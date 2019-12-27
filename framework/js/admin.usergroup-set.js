@@ -8,7 +8,14 @@
  * @时间 2019年1月11日
 **/
 $(document).ready(function(){
-	window.setTimeout(function(){
-		layui.form.render();
-	}, 1000);
+	layui.use('form', function () {
+		var form = layui.form;
+		form.on('radio(register_status)',function(e){
+			if(e.value == 'email' || e.value == 'mobile'){
+				$("#register_status_notice").show();
+			}else{
+				$("#register_status_notice").hide();
+			}
+		});
+	});
 });

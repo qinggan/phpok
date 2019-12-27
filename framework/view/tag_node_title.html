@@ -1,0 +1,28 @@
+<!-- include tpl=head_lay nopadding=true -->
+<div class="layui-card">
+	<div class="layui-card-header red">
+		{lang关闭窗口后，请手动刷新页面，才能看到已添加的主题}
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>{lang类型}</th>
+			<th>{lang主题}</th>
+			<th>&nbsp;</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr id="t_{$value.id}">
+			<td>{$value.id}</td>
+			<td>{$value.type}</td>
+			<td>{$value.title}</td>
+			<td><input type="button" value="添加" class="btn" onclick="$.admin_tag.add_node_title('{$rs.id}','{$value.id}')" /></td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<div align="center"><!-- include tpl=pagelist --></div>
+	</div>
+</div>
+<!-- include tpl=foot_lay is_open=true -->

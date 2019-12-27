@@ -1,0 +1,107 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<input type="hidden" name="tag_id" id="tag_id" value="{$tag.id}" />
+<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang项目}
+			</label>
+			<div class="layui-input-block">
+				<select id="pid" name="pid" lay-ignore onchange="update_catelist(this)" style="border:1px solid #D2D2D2;line-height:32px;width:100%;">
+					<option value="">{lang不关联项目}</option>
+					<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $rs && $rs.pid && $rs.pid == $value.id} selected{/if}>
+						<!-- if $value.parent_id -->├ <!-- /if -->
+						{$value.title}
+					</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang分类}
+			</label>
+			<div class="layui-input-block" id="cid_html">
+				<select id="cid" name="cid" lay-ignore style="border:1px solid #D2D2D2;line-height:32px;width:100%;">
+					<option value=""><!-- if !$clist -->{lang无分类}<!-- else -->{lang不关联分类}<!-- /if --></option>
+					<!-- loop from=$clist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $rs && $rs.cid && $rs.cid == $value.id} selected{/if}>
+						{$value._space}
+						{$value.title}
+					</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang名称}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="title" value="{$rs.title}" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang标识}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="identifier" id="identifier" value="{$rs.identifier}" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group" id="HTML_NODE_BUTTONS_INDENTIFIER">
+					<input type="button" value="{lang随机}" onclick="$.admin.rand('identifier')" class="layui-btn layui-btn-sm" />
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang数量}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="psize" value="{$rs.psize}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang设置默认要读取标签下的文章数，仅在未指定文章时有效}
+			</div>
+		</div>
+		
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang类型}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="type" value="0"{if !$rs.type} checked{/if} title="{lang内容}" />
+				<input type="radio" name="type" value="1"{if $rs.type} checked{/if} title="{lang列表}" />
+			</div>
+			<div class="layui-input-block mtop">
+				{lang内容即只读一条信息，有绑定主题随机读绑定的，无绑定读随机一条}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang状态}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="status" value="0"{if !$rs.status} checked{/if} title="{lang未启用}" />
+				<input type="radio" name="status" value="1"{if $rs.status} checked{/if} title="{lang已启用}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang排序}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="taxis" value="{$rs.taxis ? $rs.taxis : 255}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang值越小越往前排}
+			</div>
+		</div>	
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_lay is_open=true -->

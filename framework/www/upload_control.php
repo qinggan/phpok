@@ -74,6 +74,7 @@ class upload_control extends phpok_control
 		$array["title"] = $rs['title'];
 		$array['session_id'] = $this->session->sessid();
 		$array['user_id'] = $this->session->val('user_id');
+		$array["mime_type"] = $rs['mime_type'];
 		$arraylist = array("jpg","gif","png","jpeg");
 		if(in_array($rs["ext"],$arraylist)){
 			$img_ext = getimagesize($this->dir_root.$rs['filename']);

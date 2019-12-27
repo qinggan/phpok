@@ -1,0 +1,188 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true js=js/art-template.js -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<input type="hidden" name="group_id" value="{$group_id}" />
+<input type="hidden" name="parent_id" value="{$parent_id}" />
+<!-- if $id --><input type="hidden" name="id" value="{$id}" /><!-- /if -->
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang类型}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="type" lay-filter="type" value="project"{if !$id || $rs.type == 'project'} checked{/if} title="{lang项目}" />
+				<input type="radio" name="type" lay-filter="type" value="cate"{if $rs.type == 'cate'} checked{/if} title="{lang分类}" />
+				<input type="radio" name="type" lay-filter="type" value="content"{if $rs.type == 'content'} checked{/if} title="{lang主题}" />
+				<input type="radio" name="type" lay-filter="type" value="link"{if $rs.type == 'link'} checked{/if} title="{lang自定义链接}" />
+			</div>
+		</div>
+		<div class="layui-form-item{if $id && $rs.type != 'project'} hide{/if}" id="type-project" data-value="{$rs.project_id}">
+			<label class="layui-form-label">
+				{lang项目}
+			</label>
+			<div class="layui-input-block">
+				<select name="pid-project">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $rs && $rs.project_id == $value.id} selected{/if}>{if $value.parent_id} ├ {/if}{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item{if $rs.type != 'cate'} hide{/if}" id="type-cate" data-value="{$rs.cate_id}">
+			<label class="layui-form-label">
+				{lang分类}
+			</label>
+			<div class="layui-input-inline">
+				<select name="pid-cate" lay-filter="pid-cate">
+					<option value="">{lang请选择项目…}</option>
+					<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+					<!-- if $value.cate -->
+					<option value="{$value.id}"{if $rs && $rs.project_id == $value.id} selected{/if}>{if $value.parent_id} ├ {/if}{$value.title}</option>
+					<!-- /if -->
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-input-inline" id="pid-catelist">
+				<!-- if $id && $rs.type == 'cate' -->
+				<select name="cate_id">
+					<option value="">{lang请选择分类…}</option>
+					<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $rs.cate_id == $value.id} selected{/if}>{$value._space}{$value.title}</option>
+					<!-- /loop -->
+				</select>
+				<!-- /if -->
+			</div>
+		</div>
+		<div class="{if $rs.type != 'content'} hide{/if}" id="type-content" data-value="{$rs.list_id}">
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang项目}
+				</label>
+				<div class="layui-input-block">
+					<select name="pid-content" id="pid-content" lay-filter="pid-content">
+						<option value="">{lang请选择…}</option>
+						<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+						<!-- if $value.module -->
+						<option value="{$value.id}"{if $rs && $rs.project_id == $value.id} selected{/if}>{$value.title}<!-- if $value.parent_id -->_{lang子项目}<!-- /if --></option>
+						<!-- /if -->
+						<!-- /loop -->
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang主题}
+				</label>
+				<div class="layui-input-inline default-auto">
+					<input type="hidden" name="list_id" id="list_id" value="{$rs.list_id}" />
+					<input type="text" value="{$list.title}" id="list_id_title" class="layui-input" disabled />
+				</div>
+				<div class="layui-input-inline auto gray lh38">
+					<div class="layui-btn-group">
+						<input type="button" value="{lang选择}" onclick="$.admin_menu.title()" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang删除}" onclick="$.admin_menu.list_id_delete()" class="layui-btn layui-btn-sm layui-btn-danger" />
+					</div>
+				</div>
+				<div class="layui-form-mid">
+					
+				</div>
+			</div>
+			
+		</div>
+		<div class="layui-form-item {if $rs.type != 'link'} hide{/if}" id="type-link">
+			<label class="layui-form-label">
+				{lang网址}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="link" value="{$rs.link}" class="layui-input" />
+			</div>
+			<div class="layui-input-block mtop">{lang填写完整的地网址支持相对地址和绝对地址}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang标题}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="title" value="{$rs.title}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang留空使用系统调用}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang打开方式}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="radio" name="target" value="0"{if !$rs || !$rs.target} checked{/if} title="{lang当前窗口}" />
+				<input type="radio" name="target" value="1"{if $rs && $rs.target} checked{/if} title="{lang新窗口}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang会员}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="is_userid" value="0"{if !$rs || !$rs.is_userid} checked{/if} title="{lang不限制}" />
+				<input type="radio" name="is_userid" value="1"{if $rs && $rs.is_userid} checked{/if} title="{lang是}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang开启会员限制仅支持会员登录后才能显示}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang状态}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="radio" name="status" value="0"{if $rs && !$rs.status} checked{/if} title="{lang禁用}" />
+				<input type="radio" name="status" value="1"{if !$rs || $rs.status} checked{/if} title="{lang启用}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang排序}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="taxis" class="layui-input" value="{$rs.taxis}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang值越小越往前靠，范围是0-255}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				
+			</label>
+			<div class="layui-input-inline default-auto">
+				
+			</div>
+			<div class="layui-form-mid">
+				
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				
+			</label>
+			<div class="layui-input-inline default-auto">
+				
+			</div>
+			<div class="layui-form-mid">
+				
+			</div>
+		</div>
+		
+	</div>
+</div>
+</form>
+<script id="pid-cate-catelist" type="text/html">
+<select name="cate_id">
+	<option value="">{lang请选择分类…}</option>
+	<% for(var i in catelist){ %>
+	<option value="<%= catelist[i].id %>"><%= catelist[i]._space %><%= catelist[i].title %></option>
+	<% } %>
+</select>
+</script>
+<!-- include tpl=foot_lay -->

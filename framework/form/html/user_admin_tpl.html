@@ -7,10 +7,10 @@ function action_{$_rs.identifier}_show()
 		$("#{$_rs.identifier}_div").html('');
 		return true;
 	}
-	var url = get_url('inp','','type=user&content='+$.str.encode(tmp_id));
+	var url = get_url("inp",'','type=user&content='+$.str.encode(tmp_id));
 	$.phpok.json(url,function(rs){
-		if(rs.status == 'ok'){
-			var lst = rs.content;
+		if(rs.status){
+			var lst = rs.info;
 			var c = '';
 			var m = 1;
 			for(var i in lst){
@@ -26,7 +26,7 @@ function action_{$_rs.identifier}_show()
 			$("#{$_rs.identifier}_div").html(c);
 			return true;
 		}
-		$.dialog.alert(rs.content);
+		$.dialog.alert(rs.info);
 		return false;
 	});
 }
@@ -61,23 +61,23 @@ $(document).ready(function(){
 function action_{$_rs.identifier}_show()
 {
 	var tmp_id = $("#{$_rs.identifier}").val();
-	if(tmp_id)
-	{
-		var url = get_url("inp")+"&type=user&content="+$.str.encode(tmp_id);
-		var rs = json_ajax(url);
-		if(rs.status == "ok")
-		{
-			var lst = rs.content;
-			for(var i in lst)
-			{
+	if(tmp_id){
+		var url = get_url("inp",'','type=user&content='+$.str.encode(tmp_id));
+		$.phpok.json(url,function(rs){
+			if(!rs.status){
+				$.dialog.tips(rs.info);
+				return false;
+			}
+			var lst = rs.info;
+			for(var i in lst){
 				$("#title_{$_rs.identifier}").val(lst[i]['user']);
 			}
-		}
+		});
 	}
 }
 $(document).ready(function(){
 	$("#_phpok_button_user_{$_rs.identifier}").click(function(){
-		var url = get_url("open","user") + "&id={$_rs.identifier}";
+		var url = get_url("open","user","id={$_rs.identifier}");
 		$.dialog.open(url,{
 			title: "{lang会员管理器}",
 			lock : true,
@@ -97,7 +97,7 @@ $(document).ready(function(){
 	<td>
 		<div class="layui-btn-group">
 			<input type="button" value="{lang选择会员}" id="_phpok_button_user_{$_rs.identifier}" class="layui-btn layui-btn-sm" />
-			<input type="button" value="{lang删除}" onclick="$('#{$_rs.identifier}').val('');$('#title_{$_rs.identifier}').val('')" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang删除}" onclick="$('#{$_rs.identifier}').val('');$('#title_{$_rs.identifier}').val('')" class="layui-btn layui-btn-sm layui-btn-danger" />
 		</div>
 	</td>
 </tr>

@@ -7,6 +7,7 @@
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
  * @日期 2018年03月17日
 **/
+
 function top_search()
 {
 	var title = $("#top-keywords").val();

@@ -13,6 +13,7 @@ class index_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		$this->config('is_ajax',true);
 	}
 
 	public function index_f()
@@ -25,21 +26,12 @@ class index_control extends phpok_control
 		$data['site_id'] = $this->site['id'];
 		$data['session_name'] = $this->session->sid();
 		$data['session_val'] = $this->session->sessid();
+		$data['_note'] = '历史原因，会话名称及值将会上移到与info同级，此项将在OK5.4后取消使用，请使用接口开发的注意同步更新';
 		$wxAppConfig = $this->get('wxAppConfig');
 		$clear_url = $this->config['url'].'wxapp/';
 		if($wxAppConfig && is_file($this->dir_data.'wxappconfig.php')){
 			include_once($this->dir_data.'wxappconfig.php');
-			if($wxconfig && $wxconfig['rslist']){
-				foreach($wxconfig['rslist'] as $key=>$value){
-					if($value['thumb']){
-						$value['thumb'] = str_replace($clear_url,'',$value['thumb']);
-					}
-					if($value['thumb_selected']){
-						$value['thumb_selected'] = str_replace($clear_url,'',$value['thumb_selected']);
-					}
-					$wxconfig['rslist'][$key] = $value;
-				}
-			}
+			unset($wxconfig['wxapp_secret']);
 			$data['wxconfig'] = $wxconfig;
 		}
 		$tmpinfo = $this->site;
@@ -210,6 +202,9 @@ class index_control extends phpok_control
 		if(!$data){
 			$this->error(P_Lang('未指定生成的二维码数据'));
 		}
+		header("Pragma:no-cache");
+		header("Cache-Control: no-cache, no-store, must-revalidate"); 
+		header("Content-type: image/png");
 		$this->lib('qrcode')->png($data);
 	}
 	
@@ -231,5 +226,47 @@ class index_control extends phpok_control
 		}
 		$this->session->assign('introducer',$uid);
 		$this->success();
+	}
+
+	/**
+	 * 价格格式化
+	 * @参数 price 价格数值
+	 * @参数 from 数值对应的货币
+	 * @参数 to 要显示的货币
+	 * @参数 symbol 是否有符号
+	**/
+	public function price_f()
+	{
+		$price = $this->get('price','float');
+		if(!$price){
+			$price = '0';
+		}
+		$from = $this->get('from','int');//当前货币ID（系统自动生成的ID）
+		if(!$from){
+			$from = $this->site['currency_id'];
+		}
+		$to = $this->get('to','int');
+		if(!$to){
+			$to = $this->site['currency_id'];
+		}
+		$symbol = $this->get('symbol','int');
+		if($symbol){
+			if(is_array($price)){
+				$list = array();
+				foreach($price as $key=>$value){
+					$list[$key] = price_format($value,$from,$to);
+				}
+				$this->success($list);
+			}
+			$this->success(price_format($price,$from,$to));
+		}
+		if(is_array($price)){
+			$list = array();
+			foreach($price as $key=>$value){
+				$list[$key] = price_format_val($value,$from,$to);
+			}
+			$this->success($list);
+		}
+		$this->success(price_format_val($price,$from,$to));
 	}
 }

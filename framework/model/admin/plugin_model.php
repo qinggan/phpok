@@ -187,7 +187,7 @@ class plugin_model extends plugin_model_base
 			return false;
 		}
 		$list = array();
-		preg_match_all('/\/\*.*\s+\*\s*([^\n]+)\s+.*\*\/\s+[public]*\s*function\s+(.+)\(\)/isU',$info,$matches);
+		preg_match_all('/\/\*.*\s+\*\s*([^\n]+)\s+.*\*\/\s+[public]*\s*function\s+([a-zA-Z0-9\_\-]+)\(\)/isU',$info,$matches);
 		if($matches && $matches[1] && $matches[2] && $matches[2]){
 			foreach($matches[2] as $key=>$value){
 				$tmp = array('id'=>$value);
@@ -200,7 +200,7 @@ class plugin_model extends plugin_model_base
 		if($matches){
 			unset($matches);
 		}
-		preg_match_all('/\s+(#|\/\/)+\s*([^\n]+)\s+[public]*\s*function\s+(.+)\(\)/isU',$info,$matches);
+		preg_match_all('/\s+(#|\/\/)+\s*([^\n]+)\s+[public]*\s*function\s+([a-zA-Z0-9\_\-]+)\(\)/isU',$info,$matches);
 		if($matches && $matches[2] && $matches[3]){
 			foreach($matches[3] as $key=>$value){
 				$tmp = array('id'=>$value);
@@ -215,7 +215,7 @@ class plugin_model extends plugin_model_base
 		if($matches){
 			unset($matches);
 		}
-		preg_match_all('/\s+[public]*\s+function\s+(.+)\(\)/isU',$info,$matches);
+		preg_match_all('/\s+[public]*\s+function\s+([a-zA-Z0-9\_\-]+)\(\)/isU',$info,$matches);
 		if($matches && $matches[1]){
 			foreach($matches[1] as $key=>$value){
 				if(substr($value,0,2) == '__' || substr($value,0,5) == 'html_' || substr($value,0,3) == 'ap_'){

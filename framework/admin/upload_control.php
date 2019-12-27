@@ -89,7 +89,8 @@ class upload_control extends phpok_control
 		$array["filename"] = $rs['filename'];
 		$array["addtime"] = $this->time;
 		$array["title"] = $rs['title'];
-		$array['admin_id'] = $_SESSION['admin_id'];
+		$array['admin_id'] = $this->session->val('admin_id');
+		$array["mime_type"] = $rs['mime_type'];
 		$arraylist = array("jpg","gif","png","jpeg");
 		if(in_array($rs["ext"],$arraylist)){
 			$img_ext = getimagesize($this->dir_root.$rs['filename']);
@@ -154,7 +155,7 @@ class upload_control extends phpok_control
 		}
 		$list = explode(",",$id);
 		$newlist = array();
-		foreach($list AS $key=>$value){
+		foreach($list as $key=>$value){
 			$value = intval($value);
 			if($value){
 				$newlist[] = $value;
@@ -249,4 +250,3 @@ class upload_control extends phpok_control
 		$this->json(true);
 	}
 }
-?>

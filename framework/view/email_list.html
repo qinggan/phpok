@@ -29,7 +29,7 @@
 			<tr title="{$value.note}">
 				<td>{$value.id}</td>
 				<td>{$value.title}<!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></td>
-				<td align="center"><!-- if substr($value.identifier,0,4) == 'sms_' -->{lang短信}<!-- else -->{lang邮件}<!-- /if --></td>
+				<td><!-- if substr($value.identifier,0,4) == 'sms_' -->{lang短信}<!-- else -->{lang邮件}<!-- /if --></td>
 				<td>{$value.identifier}</td>
 				<!-- if $popedom.modify || $popedom.delete -->
 				<td>
@@ -38,7 +38,7 @@
 						<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=email func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
 						<!-- /if -->
 						<!-- if $popedom.delete -->
-						<input type="button" value="{lang删除}" onclick="mail_delete('{$value.id}','{$value.identifier}')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang删除}" onclick="mail_delete('{$value.id}','{$value.identifier}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 						<!-- /if -->
 					</div>
 				</td>

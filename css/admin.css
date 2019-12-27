@@ -22,7 +22,7 @@ select {
   -webkit-appearance:none;
   background:url("../images/arrow-select.png") no-repeat scroll right center transparent;
   background-color:#fff;
-  padding-right: 14px !important;
+  padding-right: 26px !important;
 }
 select::-ms-expand { display: none; }
 textarea{border:1px solid #E5E5E5;}

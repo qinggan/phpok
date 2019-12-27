@@ -2,11 +2,6 @@
 <script type="text/javascript">
 function save()
 {
-	if(typeof(CKEDITOR) != "undefined"){
-		for(var i in CKEDITOR.instances){
-			CKEDITOR.instances[i].updateElement();
-		}
-	}
 	var obj = art.dialog.opener;
 	var url = get_url('system','icon_save','id={$id}');
 	var icon = $("input[name=icon]:checked").val();

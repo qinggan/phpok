@@ -1,10 +1,10 @@
-<!-- include tpl=head highlight=1 -->
-<!-- php:$list = phpok('picplayer') -->
+<!-- include tpl=head -->
+<!-- php:$list = phpok('m_picplayer') -->
 <!-- if $list.total -->
 <div data-am-widget="slider" class="am-slider am-slider-a5" data-am-slider='{"directionNav":false}'>
 	<ul class="am-slides">
 		<!-- loop from=$list.rslist key=$key value=$value -->
-		<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{$value.pic.filename}" alt="{$value.title}" /></a></li>
+		<li><a href="{$value.link}" target="{$value.target}" title="{$value.title}"><img src="{$value.picmobile.filename}" alt="{$value.title}" /></a></li>
 		<!-- /loop -->
 	</ul>
 </div>

@@ -156,6 +156,15 @@ class user_model_base extends phpok_model
 			return false;
 		}
 		$idlist = array_keys($rslist);
+		//读取推荐人信息
+		$vlist = $this->get_relation_all($idlist);
+		if($vlist){
+			foreach($vlist as $key=>$value){
+				if($rslist[$value['uid']]){
+					$rslist[$value['uid']]['introducer'] = $value;
+				}
+			}
+		}
 		//读取会员积分信息
 		$wlist = $this->model('wealth')->get_all(1,'id');
 		if($wlist){
@@ -225,6 +234,20 @@ class user_model_base extends phpok_model
 	}
 
 	/**
+	 * 邀请码验证，必须是唯一的
+	 * @参数 $code 邀请码
+	 * @参数 $id 会员ID，表示不包含这个会员ID
+	**/
+	public function chk_code($code,$id=0)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE code='".$code."' ";
+		if($id){
+			$sql.= " AND id!='".$id."' ";
+		}
+		return $this->db->get_one($sql);
+	}
+
+	/**
 	 * 取得扩展字段的所有扩展信息
 	 * @参数 $condition 取得会员扩展字段配置
 	 * @参数 $pri_id 主键ID
@@ -269,13 +292,19 @@ class user_model_base extends phpok_model
 		if(!$uid){
 			return false;
 		}
-		$tmp = explode(",",$uid);
-		foreach($tmp as $key=>$value){
-			if(!$value || !trim($value) || !intval($value)){
-				unset($tmp[$key]);
+		if(is_string($uid)){
+			$tmp = explode(",",$uid);
+			foreach($tmp as $key=>$value){
+				if(!$value || !trim($value) || !intval($value)){
+					unset($tmp[$key]);
+				}
+			}
+			$uid = implode(",",$tmp);
+		}else{
+			if(is_array($uid)){
+				$uid = implode(",",$uid);
 			}
 		}
-		$uid = implode(",",$tmp);
 		$condition = "u.id IN(".$uid.")";
 		$rslist = $this->get_list($condition,0,0);
 		if(!$rslist){
@@ -359,6 +388,9 @@ class user_model_base extends phpok_model
 			}
 			return false;
 		}else{
+			if(!$data['regtime']){
+				$data['regtime'] = $this->time;
+			}
 			return $this->db->insert_array($data,"user");
 		}
 	}
@@ -416,6 +448,20 @@ class user_model_base extends phpok_model
 		return $rs['introducer'];
 	}
 
+	public function get_relation_all($uid)
+	{
+		if(!$uid){
+			return false;
+		}
+		if(is_array($uid)){
+			$uid = implode(",",$uid);
+		}
+		$sql = "SELECT u.id,u.user,u.email,u.avatar,u.mobile,ur.uid FROM ".$this->db->prefix."user_relation ur ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."user u ON(ur.introducer=u.id) ";
+		$sql.= "WHERE u.id IN(".$uid.")";
+		return $this->db->get_all($sql,'uid');
+	}
+
 	/**
 	 * 保存会员与推荐人关系
 	 * @参数 $uid 会员ID
@@ -423,10 +469,24 @@ class user_model_base extends phpok_model
 	**/
 	public function save_relation($uid=0,$introducer=0)
 	{
-		if(!$uid || !$introducer){
+		if(!$uid){
 			return false;
 		}
-		$sql = "REPLACE INTO ".$this->db->prefix."user_relation(uid,introducer,dateline) VALUES('".$uid."','".$introducer."','".$this->time."')";
+		if(!$introducer){
+			$sql = "DELETE FROM ".$this->db->prefix."user_relation WHERE uid='".$uid."'";
+			$this->db->query($sql);
+			return true;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."user_relation WHERE uid='".$uid."'";
+		$chk = $this->db->get_one($sql);
+		if($chk){
+			if($chk['introducer'] != $introducer){
+				$sql = "UPDATE ".$this->db->prefix."user_relation SET introducer='".$introducer."',dateline='".$this->time."' WHERE uid='".$uid."'";
+				$this->db->query($sql);
+			}
+			return true;
+		}
+		$sql = "INSERT INTO ".$this->db->prefix."user_relation(uid,introducer,dateline) VALUES('".$uid."','".$introducer."','".$this->time."')";
 		return $this->db->query($sql);
 	}
 
@@ -439,18 +499,29 @@ class user_model_base extends phpok_model
 	**/
 	public function list_relation($uid,$offset=0,$psize=30,$condition='')
 	{
-		$sql = "SELECT uid FROM ".$this->db->prefix."user_relation WHERE introducer='".$uid."'";
+		$sql  = " SELECT u.id,u.group_id,u.user,u.mobile,u.email,u.avatar,u.regtime,u.status,ug.title group_title FROM ".$this->db->prefix."user_relation ur ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."user u ON(ur.uid=u.id) ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."user_group ug ON(u.group_id=ug.id) ";
+		$sql .= " WHERE ur.introducer='".$uid."' ";
 		if($condition){
 			$sql .= " AND ".$condition;
 		}
-		$sql .= " ORDER BY uid DESC LIMIT ".intval($offset).",".intval($psize);
-		$rslist = $this->db->get_all($sql,'uid');
+		$sql .= " ORDER BY u.regtime DESC LIMIT ".intval($offset).",".intval($psize);
+		$rslist = $this->db->get_all($sql);
 		if(!$rslist){
 			return false;
 		}
-		$ids = array_keys($rslist);
-		$condition = "u.id IN(".implode(",",$ids).")";
-		return $this->get_list($condition,0,0);
+		foreach($rslist as $key=>$value){
+			if(!$value['id']){
+				unset($rslist[$key]);
+				continue;
+			}
+		}
+		$list = array();
+		foreach($rslist as $key=>$value){
+			$list[$value['id']] = $value;
+		}
+		return $list;
 	}
 
 	/**
@@ -628,5 +699,54 @@ class user_model_base extends phpok_model
 			$sql .= " AND id != '".$uid."'";
 		}
 		return $this->db->get_one($sql);
+	}
+
+	/**
+	 * 删除会员操作
+	 * @参数 $id 会员ID
+	**/
+	public function del($id)
+	{
+		$sql = "DELETE FROM ".$this->db->prefix."user WHERE id='".$id."'";
+		$this->db->query($sql);
+		$sql = "DELETE FROM ".$this->db->prefix."user_ext WHERE id='".$id."'";
+		$this->db->query($sql);
+		//删除推荐人关系
+		$relation = $this->get_relation($id);
+		if($relation){
+			$sql = "UPDATE ".$this->db->prefix."user_relation SET introducer='".$relation."' WHERE introducer='".$id."'";
+		}else{
+			$sql = "DELETE FROM ".$this->db->prefix."user_relation WHERE introducer='".$id."'";
+		}
+		$this->db->query($sql);
+		$sql = "DELETE FROM ".$this->db->prefix."user_relation WHERE uid='".$id."'";
+		$this->db->query($sql);
+		//删除相应的积分
+		$sql = "DELETE FROM ".$this->db->prefix."wealth_info WHERE uid='".$id."'";
+		$this->db->query($sql);
+		//删除积分日志
+		$sql = "DELETE FROM ".$this->db->prefix."wealth_log WHERE goal_id='".$id."'";
+		$this->db->query($sql);
+		//会员订单变成游客订单
+		$sql = "UPDATE ".$this->db->prefix."order SET user_id=0 WHERE user_id='".$id."'";
+		$this->db->query($sql);
+		//删除会员的主题关联
+		$sql = "UPDATE ".$this->db->prefix."list SET user_id=0 WHERE user_id='".$id."'";
+		$this->db->query($sql);
+		return true;
+	}
+
+	public function relation_order_count($uid)
+	{
+		$condition = "SELECT uid FROM ".$this->db->prefix."user_relation WHERE introducer='".$uid."'";
+		$sql = "o.user_id IN(".$condition.")";
+		return $this->model('order')->get_count($sql);
+	}
+
+	public function relation_product_count($uid)
+	{
+		$condition = "SELECT uid FROM ".$this->db->prefix."user_relation WHERE introducer='".$uid."'";
+		$sql = "o.user_id IN(".$condition.")";
+		return $this->model('order')->product_count($sql);
 	}
 }

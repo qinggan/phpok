@@ -83,21 +83,22 @@
 		</div>
 		<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
 		<div class="layui-form-item">
-			<label class="layui-form-label title">
-				<!-- if $value.note -->
-				<i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i>
-				<!-- /if -->
-				{$value.title}<div class="darkblue"><small>[{$value.identifier}]</small></div>
-				<!-- if $popedom.ext && $session.adm_develop -->
-				<div class="layui-btn-group ext_edit">
+			<label class="layui-form-label">
+				{$value.title}
+				<div class="darkblue"><small>[{$value.identifier}]</small></div>
+			</label>
+			<!-- if $value.note --><div class="layui-input-block gray" style="line-height:38px;">{$value.note}</div><!-- /if -->
+			<div class="layui-input-block">{$value.html}</div>
+			<!-- if $popedom.ext && $session.adm_develop -->
+			<div class="layui-input-block mtop">
+				<div class="layui-btn-group">
 					<!-- if $ext_module != 'add-cate' -->
 					<input type="button" value="{lang编辑}" class="layui-btn layui-btn-xs" onclick="ext_edit('{$value.identifier}','{$ext_module}')" />
 					<!-- /if -->
 					<input type="button" value="{lang删除}" class="layui-btn layui-btn-xs layui-btn-danger" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')" />
 				</div>
-				<!-- /if -->
-			</label>
-			<div class="layui-input-block">{$value.html}</div>
+			</div>
+			<!-- /if -->
 		</div>
 		<!-- /loop -->
 		<!-- if $popedom.ext && $session.adm_develop -->

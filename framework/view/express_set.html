@@ -88,7 +88,7 @@ function submit_save()
 					<input type="radio" name="{$code}_{$key}" value="{$k}"{if $valinfo == $k} checked{/if} title="{$v}" />
 					<!-- /loop -->
 				<!-- elseif $value.type == 'select' -->
-				<select name="{$code}_{$key}" id="{$code}_{$key}">
+				<select name="{$code}_{$key}" id="{$code}_{$key}" lay-search>
 					<option value="">{lang请选择…}</option>
 					<!-- loop from=$value.option key=$k value=$v -->
 					<option value="{$k}"{if $valinfo == $k} selected{/if}>{$v}</option>

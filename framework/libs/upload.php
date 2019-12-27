@@ -101,7 +101,9 @@ class upload_lib
 		if(!$input){
 			return array('status'=>'error','content'=>P_Lang('未指定表单名称'));
 		}
-		$this->_cate($cateid);
+		if($cateid){
+			$this->_cate($cateid);
+		}
 		if(isset($_FILES[$input])){
 			$rs = $this->_upload($input);
 		}else{
@@ -199,7 +201,7 @@ class upload_lib
 		return $ext;
 	}
 
-	private function _upload($input)
+	private function _upload($input,$chk=true)
 	{
 		global $app;
 		$basename = substr(md5(time().uniqid()),9,16);
@@ -209,10 +211,14 @@ class upload_lib
 			$chunks = 1;
 		}
 		$tmpname = $_FILES[$input]["name"];
+		$mime_type = $_FILES[$input]["type"];
 	    $tmpname = $app->lib('string')->to_utf8($tmpname);
 	    $tmpname = $app->format($tmpname);
 		$tmpid = 'u_'.md5($tmpname);
-		$ext = $this->file_ext($tmpname);
+		$ext = $this->file_ext($tmpname,$chk);
+		if(!$ext){
+			return array('status'=>'error','error'=>P_Lang('附件类型不符合要求'));
+		}
 		$out_tmpfile = $this->dir_cache.$tmpid.'_'.$chunk;
 		if (!$out = @fopen($out_tmpfile.".parttmp", "wb")) {
 			return array('status'=>'error','error'=>P_Lang('无法打开输出流'));
@@ -235,14 +241,29 @@ class upload_lib
 		$app->lib('file')->mv($out_tmpfile.'.parttmp',$out_tmpfile.'.part');
 		$index = 0;
 		$done = true;
+		$bin = false;
 		for($index=0;$index<$chunks;$index++) {
 		    if (!file_exists($this->dir_cache.$tmpid.'_'.$index.".part") ) {
 		        $done = false;
 		        break;
 		    }
+		    if(!$index){
+			    $tmp_obj = @fopen($this->dir_cache.$tmpid.'_'.$index.".part", "rb");
+			    $bin = @fread($tmp_obj, 2); //只读2字节
+				@fclose($tmp_obj);
+		    }
 		}
 		if(!$done){
-			return array('status'=>'error','error'=>'上传的文件异常');
+			return array('status'=>'error','error'=>P_Lang('上传的文件异常'));
+		}
+		if($bin){
+			$check = $this->bin_filetype_check($bin,$ext);
+			if(!$check){
+				for($index=0;$index<$chunks;$index++) {
+		            $app->lib('file')->rm($this->dir_cache.$tmpid."_".$index.".part");
+		        }
+				return array('status'=>'error','error'=>P_Lang('附件类型不符合要求'));
+			}
 		}
 		$outfile = $this->folder.$basename.'.'.$ext;
 	    if(!$out = @fopen($this->dir_root.$outfile,"wb")) {
@@ -263,7 +284,7 @@ class upload_lib
 	    }
 	    @fclose($out);
 	    $title = str_replace(".".$ext,'',$tmpname);
-	    return array('title'=>$title,'ext'=>$ext,'filename'=>$outfile,'folder'=>$this->folder,'status'=>'ok');
+	    return array('title'=>$title,'ext'=>$ext,'mime_type'=>$mime_type,'filename'=>$outfile,'folder'=>$this->folder,'status'=>'ok');
 	}
 
 	private function _save($input,$chk=true)
@@ -282,6 +303,7 @@ class upload_lib
 		}
 		$chunk = $app->get('chunk','int');
 		$chunks = $app->get('chunks','int');
+		$mime_type = $app->get('type');
 		if(!$chunks){
 			$chunks = 1;
 		}
@@ -301,14 +323,29 @@ class upload_lib
 		$app->lib('file')->mv($out_tmpfile.'.parttmp',$out_tmpfile.'.part');
 		$index = 0;
 		$done = true;
+		$bin = false;
 		for($index=0;$index<$chunks;$index++) {
 		    if (!file_exists($this->dir_cache.$tmpid.'_'.$index.".part") ) {
 		        $done = false;
 		        break;
 		    }
+		    if(!$index){
+			    $tmp_obj = @fopen($this->dir_cache.$tmpid.'_'.$index.".part", "rb");
+			    $bin = @fread($tmp_obj, 2); //只读2字节
+				@fclose($tmp_obj);
+		    }
 		}
 		if(!$done){
-			return array('status'=>'error','error'=>'上传的文件异常');
+			return array('status'=>'error','error'=>P_Lang('上传的文件异常'));
+		}
+		if($bin){
+			$check = $this->bin_filetype_check($bin);
+			if(!$check){
+				for($index=0;$index<$chunks;$index++) {
+		            $app->lib('file')->rm($this->dir_cache.$tmpid."_".$index.".part");
+		        }
+				return array('status'=>'error','error'=>P_Lang('附件类型不符合要求'));
+			}
 		}
 		$outfile = $this->folder.$basename.'.'.$ext;
 	    if(!$out = @fopen($this->dir_root.$outfile,"wb")) {
@@ -329,7 +366,104 @@ class upload_lib
 	    }
 	    @fclose($out);
 	    $title = str_replace(".".$ext,'',$tmpname);
-	    return array('title'=>$title,'ext'=>$ext,'filename'=>$outfile,'folder'=>$this->folder,'status'=>'ok');
+	    return array('title'=>$title,'ext'=>$ext,'mime_type'=>$mime_type,'filename'=>$outfile,'folder'=>$this->folder,'status'=>'ok');
+	}
+
+	private function bin_filetype_check($bin,$ext='')
+	{
+		if(!$bin){
+			return true;
+		}
+		$strInfo = @unpack("C2chars", $bin);
+		if(!$strInfo || !is_array($strInfo)){
+			return true;
+		}
+		$typeCode = intval($strInfo['chars1']).''.intval($strInfo['chars2']);
+		if($ext){
+			$extCode = $this->ext2code($ext);
+			if(!$extCode){
+				return true;
+			}
+			if($extCode && $extCode != $typeCode){
+				return false;
+			}
+			return true;
+		}
+		return true;
+	}
+
+	public function code_list()
+	{
+		$t = array();
+		$t['txt'] = '239187';
+		$t['aspx'] = '239187';
+		$t['asp'] = '239187';
+		$t['sql'] = '239187';
+		$t['js'] = '4742';
+		$t['html'] = '6033';
+		$t['htm'] = '6033';
+		$t['xml'] = '6063';
+		$t['rdp'] = '255254';
+		$t['psd'] = '5666';
+		$t['pdf'] = '3780';
+		$t['docx'] = '8075';
+		$t['xlsx'] = '8075';
+		$t['pptx'] = '8075';
+		$t['potx'] = '8075';
+		$t['vsdx'] = '8075';
+		$t['odt'] = '8075';
+		$t['doc'] = '208207';
+		$t['xls'] = '208207';
+		$t['ppt'] = '208207';
+		$t['vsd'] = '208207';
+		$t['pot'] = '208207';
+		$t['wps'] = '208207';
+		$t['dps'] = '208207';
+		$t['et'] = '208207';
+		$t['exe'] = '7790';
+		$t['dll'] = '7790';
+		$t['midi'] = '7784';
+		$t['mdb'] = '01';
+		$t['mmap'] = '8075';
+		$t['accdb'] = '01';
+		$t['zip'] = '8075';
+		$t['rar'] = '8297';
+		$t['jpg'] = '255216';
+		$t['jpeg'] = '255216';
+		$t['gif'] = '7173';
+		$t['bmp'] = '6677';
+		$t['png'] = '13780';
+		$t['bat'] = '64101';
+		$t['torrent'] = '10056';
+		return $t;
+	}
+
+	public function ext2code($ext='')
+	{
+		if(!$ext){
+			return false;
+		}
+		$t = $this->code_list();
+		if(!$t[$ext]){
+			return false;
+		}
+		return $t[$ext];
+	}
+
+	private function _ext_to_code($filetypes)
+	{
+		$t = $this->code_list();
+		$list = array();
+		foreach($filetypes as $key=>$value){
+			$value = strtolower(trim($value));
+			if($t[$value]){
+				$list[$t[$value]] = $value;
+			}
+		}
+		if(!$list || count($list)<1){
+			return false;
+		}
+		return $list;
 	}
 
 	private function _cate($id=0)
@@ -392,27 +526,19 @@ class upload_lib
 	public function title_format($title)
 	{
 		$tmp = explode(".",$title);
-		if(count($tmp)<2)
-		{
+		if(count($tmp)<2){
 			return array('title'=>$title,'ext'=>'unknown');
-		}
-		elseif(count($tmp) == 2)
-		{
+		}elseif(count($tmp) == 2){
 			return array('title'=>$tmp[0],'ext'=>strtolower($tmp[1]));
-		}
-		else
-		{
+		}else{
 			$title = $ext = '';
 			$total = count($tmp);
-			foreach($tmp as $key=>$value)
-			{
-				if($key<1)
-				{
+			foreach($tmp as $key=>$value){
+				if($key<1){
 					$title = $value;
 					continue;
 				}
-				if($key==($total-1))
-				{
+				if($key==($total-1)){
 					$ext = strtolower($value);
 					break;
 				}
@@ -421,6 +547,4 @@ class upload_lib
 			return array('title'=>$title,'ext'=>$ext);
 		}
 	}
-	
 }
-?>

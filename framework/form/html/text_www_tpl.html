@@ -7,5 +7,13 @@
 		<input type="text" id="{$_rs.identifier}" class="jscolor {required:false{if $_rs.ext_include_3},hash:true{/if}}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" />
 	<!-- else -->
 		<input type="text" id="{$_rs.identifier}" class="inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" />
+		<!-- if $_rs.ext_quick_words -->
+		<div style="margin-top:3px;" id="ext_quick_btns_{$_rs.identifier}">
+			<!-- loop from=$_rs.ext_quick_words key=$key value=$value id=$tmpid -->
+			<input type="button" value="{$value.show}" onclick="$.phpokform.text_button_quickwords('{$_rs.identifier}','{$value.id}','{$_rs.ext_quick_type}')" />
+			<!-- /loop -->
+			<input type="button" value="{lang清除}" onclick="$.phpokform.clear('{$_rs.identifier}')" />
+		</div>
+		<!-- /if -->
 	<!-- /if -->
 <!-- /if -->

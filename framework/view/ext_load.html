@@ -1,4 +1,4 @@
-<!-- foreach($extlist AS $key=>$value) -->
+<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
 <div class="table">
 	<div class="title">
 		<table>
@@ -14,4 +14,4 @@
 	</div>
 	<div class="content">{$value.html}{if $value.form_type == "hidden"}<span class="gray i">隐藏字段，仅显示提示</span>{/if}</div>
 </div>
-<!-- /foreach -->
+<!-- /loop -->

@@ -1,0 +1,33 @@
+<!-- include tpl=head_lay -->
+<script type="text/javascript" src="{func add_js user.js}"></script>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang共有推荐 [total] 人，订单数 [count]，订单产品数 [qty]|total:$total,count:$relation_order_count,qty:$relation_product_count}
+	</div>
+	<div class="layui-card-body">
+		<table width="100%" class="layui-table" lay-size="sm">
+		<thead>
+		<tr>
+			<th style="text-align:center;width:30px;">ID</th>
+			<th width="20px">&nbsp;</th>
+			<th width="35px">{lang头像}</th>
+			<th class="lft">{lang会员账号}</th>
+			<th class="lft">{lang会员组}</th>
+			<th>{lang注册时间}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td align="center">{$value.id}</td>
+			<td><span class="status{$value.status}" value="{$value.status}" style="cursor: default;"></span></td>
+			<td align="center"><img src="{$value.avatar ? $value.avatar : 'images/user_default.png'}" border="0" width="24px" height="24px" /></td>
+			<td align="left">{$value.user}</td>
+			<td align="left">{$value.group_title}</td>
+			<td>{func date 'Y-m-d H:i' $value.regtime}</td>
+		</tr>
+		<!-- /if -->
+		</table>
+		<!-- if $pagelist --><div class="center"><!-- include tpl=pagelist --></div><!-- /if -->
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

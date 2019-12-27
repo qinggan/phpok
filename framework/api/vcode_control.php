@@ -44,11 +44,13 @@ class vcode_control extends phpok_control
 			$this->error(P_Lang('手机号不符合格式要求'));
 		}
 		$tplid = $this->get('tplid','int');
+		$tpl_type = 'number';
 		if(!$tplid){
 			$tplid = $this->site['login_type_sms'];
 			if(!$tplid){
 				$this->error(P_Lang('未配置短信验证码模板'));
 			}
+			$tpl_type = 'code';
 		}
 		$gateid = $this->get('gateid','int');
 		if($gateid){
@@ -59,6 +61,19 @@ class vcode_control extends phpok_control
 		}
 		if(!$rs){
 			$this->error(P_Lang('没有安装短信发送引挈，请先安装并设置默认'),$backurl);
+		}
+		$act = $this->get('act');
+		if(!$act){
+			$act = 'login';
+		}
+		if($act == 'login' || $act == 'register'){
+			$user = $this->model('user')->user_mobile($mobile);
+			if(!$user && $act == 'login'){
+				$this->error(P_Lang('手机号未注册'));
+			}
+			if($user && $act == 'register'){
+				$this->error(P_Lang('手机号已注册'));
+			}
 		}
 		$data = $this->model('vcode')->create('sms',4);
 		if(!$data){
@@ -85,7 +100,7 @@ class vcode_control extends phpok_control
 				$this->error(P_Lang('网关配置不完整，请联系工作人员'));
 			}
 		}
-		$tpl = $this->model('email')->tpl($tplid);
+		$tpl = $tpl_type == 'code' ? $this->model('email')->tpl($tplid) : $this->model('email')->get_one($tplid);
 		if(!$tpl){
 			$this->error(P_Lang('短信模板不存在'));
 		}
@@ -116,8 +131,10 @@ class vcode_control extends phpok_control
 			$this->error(P_Lang('Email地址不符合要求'));
 		}
 		$tplid = $this->get('tplid','int');
+		$tpl_type = 'number';
 		if(!$tplid){
 			$tplid = $this->site['login_type_email'];
+			$tpl_type = 'code';
 		}
 		$gateid = $this->get('gateid','int');
 		if($gateid){
@@ -128,6 +145,19 @@ class vcode_control extends phpok_control
 		}
 		if(!$rs){
 			$this->error(P_Lang('没有安装邮件发送引挈，请先安装并设置默认'),$backurl);
+		}
+		$act = $this->get('act');
+		if(!$act){
+			$act = 'login';
+		}
+		if($act == 'login' || $act == 'register'){
+			$user = $this->model('user')->user_email($email);
+			if(!$user && $act == 'login'){
+				$this->error(P_Lang('邮箱未注册'));
+			}
+			if($user && $act == 'register'){
+				$this->error(P_Lang('邮箱已注册'));
+			}
 		}
 		$this->gateway('type','email');
 		$this->gateway('param',$rs['id']);
@@ -157,7 +187,7 @@ class vcode_control extends phpok_control
 		$tpltitle = P_Lang('获取验证码');
 		$tplcontent = P_Lang('您的验证码是：').'{$code}';
 		if($tplid){
-			$tpl = $this->model('email')->tpl($tplid);
+			$tpl = $tpl_type == 'code' ? $this->model('email')->tpl($tplid) : $this->model('email')->get_one($tplid);
 			if($tpl && $tpl['content'] && strip_tags($tpl['content'])){
 				$tplcontent = $tpl['content'];
 			}
@@ -169,7 +199,10 @@ class vcode_control extends phpok_control
 		$this->assign('email',$email);
 		$title = $this->fetch($tpltitle,'msg');
 		$content = $this->fetch($tplcontent,'msg');
-		$this->gateway('exec',array('email'=>$email,'content'=>$content,'title'=>$title));
+		$info = $this->gateway('exec',array('email'=>$email,'content'=>$content,'title'=>$title));
+		if(!$info){
+			$this->error(P_Lang('邮件发送失败，请检查'));
+		}
 		$this->success();
 	}
 }

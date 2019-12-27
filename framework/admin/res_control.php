@@ -247,61 +247,57 @@ class res_control extends phpok_control
 		$this->view("res_list");
 	}
 
-	function condition($condition="",$pageurl="")
+	private function condition($condition="",$pageurl="")
 	{
 		$keywords = $this->get("keywords");
-		if($keywords)
-		{
+		if($keywords){
 			$condition .= " AND (title LIKE '%".$keywords."%' OR name LIKE '%".$keywords."%' OR id LIKE '%".$keywords."%') ";
 			$pageurl .= "&keywords=".rawurlencode($keywords);
 			$this->assign("keywords",$keywords);
 		}
 		$cate_id = $this->get("cate_id","int");
-		if($cate_id)
-		{
+		if($cate_id){
 			$condition .= " AND cate_id='".$cate_id."' ";
 			$pageurl .= "&cate_id=".$cate_id;
 			$this->assign("cate_id",$cate_id);
 		}
 		$start_date = $this->get("start_date");
-		if($start_date)
-		{
+		if($start_date){
 			$condition .= " AND addtime>=".strtotime($start_date)." ";
 			$pageurl .= "&start_date=".strtolower($start_date);
 			$this->assign("start_date",$start_date);
 		}
 		$stop_date = $this->get("stop_date");
-		if($stop_date)
-		{
+		if($stop_date){
 			$condition .= " AND addtime<=".strtotime($stop_date)." ";
 			$pageurl .= "&stop_date=".strtolower($stop_date);
 			$this->assign("stop_date",$stop_date);
 		}
 		$ext = $this->get("ext");
-		if(!$ext) $ext = array();
+		if(!$ext){
+			$ext = array();
+		}
 		$this->assign("ext",$ext);
 		$ext_array = array();
-		foreach($ext AS $key=>$value)
-		{
+		foreach($ext as $key=>$value){
 			$ext_array[] = $value;
 			$pageurl .= "&ext[]=".rawurlencode($value);
 		}
 		$myext = $this->get("myext");
-		if($myext)
-		{
+		if($myext){
 			$myext = str_replace("，",",",$myext);
 			$myext_list = explode(",",$myext);
-			foreach($myext_list AS $key=>$value)
-			{
+			foreach($myext_list AS $key=>$value){
 				$ext_array[] = $value;
 			}
 			$this->assign("myext",$myext);
 			$pageurl .= "&myext=".rawurlencode($myext);
 		}
-		if($ext_array && count($ext_array)>0 ) $ext_array = array_unique($ext_array);
+		if($ext_array && count($ext_array)>0 ){
+			$ext_array = array_unique($ext_array);
+		}
 		$ext_string = implode("','",$ext_array);
-		if($ext_string)
-		{
+		if($ext_string){
 			$condition .= " AND ext IN('".$ext_string."') ";
 		}
 		return array("condition"=>$condition,"pageurl"=>$pageurl);

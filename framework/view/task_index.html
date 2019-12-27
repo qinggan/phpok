@@ -1,8 +1,4 @@
-<!-- include tpl=head -->
-<div class="tips">
-	{lang当前位置：}计划任务
-	<div class="clear"></div>
-</div>
+<!-- include tpl=head_lay -->
 <script type="text/javascript">
 function edit_it(id)
 {
@@ -43,135 +39,142 @@ function delete_id(id)
 	})
 }
 </script>
-<table width="100%" cellpadding="0" cellspacing="0" class="list">
-<tr>
-	<th>年</th>
-	<th>月</th>
-	<th>日</th>
-	<th>时</th>
-	<th>分</th>
-	<th>动作</th>
-	<th>参数</th>
-	<th>操作</th>
-</tr>
-<!-- loop from=$rslist key=$key value=$value -->
-<tr>
-	<form method="post" id="update_{$value.id}" onsubmit="return false;">
-	<td class="center">
-		<select name="year">
-		<option value="*">每年</option>
-		<!-- loop from=$yearlist key=$k value=$v id=$tmpid -->
-		<option value="{$v}"{if $v == $value.year && $value.year != '*'} selected{/if}>{$v}年</option>
+<div class="layui-card">
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>{lang年}</th>
+			<th>{lang月}</th>
+			<th>{lang日}</th>
+			<th>{lang时}</th>
+			<th>{lang分}</th>
+			<th>{lang动作}</th>
+			<th>{lang参数}</th>
+			<th>{lang操作}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr>
+			<form method="post" class="layui-form" id="update_{$value.id}" onsubmit="return false;">
+			<td>
+				<select name="year">
+				<option value="*">每年</option>
+				<!-- loop from=$yearlist key=$k value=$v id=$tmpid -->
+				<option value="{$v}"{if $v == $value.year && $value.year != '*'} selected{/if}>{$v}年</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<select name="month">
+				<option value="*">每月</option>
+				<!-- loop from=$monthlist key=$k value=$v id=$tmpid -->
+				<option value="{$v}"{if $v == $value.month && $value.month != '*'} selected{/if}>{$v}月</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<select name="day">
+				<option value="*">每天</option>
+				<!-- loop from=$daylist key=$k value=$v id=$tmpid -->
+				<option value="{$v}"{if $v == $value.day && $value.day != '*'} selected{/if}>{$v}日</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<select name="hour">
+				<option value="*">每小时</option>
+				<!-- loop from=$hourlist key=$k value=$v id=$tmpid -->
+				<option value="{$v}"{if $v == $value.hour && $value.hour != '*'} selected{/if}>{$v}时</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<select name="minute">
+				<!-- loop from=$minutelist key=$k value=$v id=$tmpid -->
+				<option value="{$v}"{if $v == $value.minute && $value.minute != '*'} selected{/if}>{$v}分</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<select name="actionfile">
+				<option value="">{lang请选择…}</option>
+				<!-- loop from=$filelist key=$k value=$v id=$tmpid -->
+				<option value="{$v.id}"{if $v.id == $value.action} selected{/if}>{$v.txt} - {$v.id}</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<input type="text" name="param" value="{$value.param}" />
+			</td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang编辑}" onclick="edit_it('{$value.id}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="delete_id('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</td>
+			</form>
+		</tr>
 		<!-- /loop -->
-		</select>
-	</td>
-	<td class="center">
-		<select name="month">
-		<option value="*">每月</option>
-		<!-- loop from=$monthlist key=$k value=$v id=$tmpid -->
-		<option value="{$v}"{if $v == $value.month && $value.month != '*'} selected{/if}>{$v}月</option>
-		<!-- /loop -->
-		</select>
-	</td>
-	<td class="center">
-		<select name="day">
-		<option value="*">每天</option>
-		<!-- loop from=$daylist key=$k value=$v id=$tmpid -->
-		<option value="{$v}"{if $v == $value.day && $value.day != '*'} selected{/if}>{$v}日</option>
-		<!-- /loop -->
-		</select>
-	</td>
-	<td class="center">
-		<select name="hour">
-		<option value="*">每小时</option>
-		<!-- loop from=$hourlist key=$k value=$v id=$tmpid -->
-		<option value="{$v}"{if $v == $value.hour && $value.hour != '*'} selected{/if}>{$v}时</option>
-		<!-- /loop -->
-		</select>
-	</td>
-	<td class="center">
-		<select name="minute">
-		<!-- loop from=$minutelist key=$k value=$v id=$tmpid -->
-		<option value="{$v}"{if $v == $value.minute && $value.minute != '*'} selected{/if}>{$v}分</option>
-		<!-- /loop -->
-		</select>
-	</td>
-	<td class="center">
-		<select name="actionfile">
-		<option value="">请选择…</option>
-		<!-- loop from=$filelist key=$k value=$v id=$tmpid -->
-		<option value="{$v.id}"{if $v.id == $value.action} selected{/if}>{$v.txt} - {$v.id}</option>
-		<!-- /loop -->
-		</select>
-	</td>
-	<td class="center">
-		<input type="text" name="param" value="{$value.param}" />
-	</td>
-	<td class="center">
-		<div class="button-group">
-			<input type="button" value="{lang编辑}" onclick="edit_it('{$value.id}')" class="layui-btn" />
-			<input type="button" value="{lang删除}" onclick="delete_id('{$value.id}')" class="layui-btn" />
-		</div>
-	</td>
-	</form>
-</tr>
-<!-- /loop -->
-<tr>
-	<form method="post" id="update_0" onsubmit="return false;">
-	<td class="center">
-		<select name="year">
-		<option value="*">每年</option>
-		<!-- loop from=$yearlist key=$k value=$v id=$tmpid -->
-		<option value="{$v}">{$v}年</option>
-		<!-- /loop -->
-		</select>
-	</td>
-	<td class="center">
-		<select name="month">
-		<option value="*">每月</option>
-		<!-- loop from=$monthlist key=$k value=$v id=$tmpid -->
-		<option value="{$v}">{$v}月</option>
-		<!-- /loop -->
-		</select>
-	</td>
-	<td class="center">
-		<select name="day">
-		<option value="*">每天</option>
-		<!-- loop from=$daylist key=$k value=$v id=$tmpid -->
-		<option value="{$v}">{$v}日</option>
-		<!-- /loop -->
-		</select>
-	</td>
-	<td class="center">
-		<select name="hour">
-		<option value="*">每小时</option>
-		<!-- loop from=$hourlist key=$k value=$v id=$tmpid -->
-		<option value="{$v}">{$v}时</option>
-		<!-- /loop -->
-		</select>
-	</td>
-	<td class="center">
-		<select name="minute">
-		<!-- loop from=$minutelist key=$k value=$v id=$tmpid -->
-		<option value="{$v}">{$v}分</option>
-		<!-- /loop -->
-		</select>
-	</td>
-	<td class="center">
-		<select name="actionfile">
-		<option value="">请选择…</option>
-		<!-- loop from=$filelist key=$k value=$v id=$tmpid -->
-		<option value="{$v.id}">{$v.txt} - {$v.id}</option>
-		<!-- /loop -->
-		</select>
-	</td>
-	<td class="center">
-		<input type="text" name="param" value="{$value.param}" />
-	</td>
-	<td class="center">
-		<input type="button" value="{lang新增}" onclick="edit_it(0)" class="layui-btn" />
-	</td>
-	</form>
-</tr>
-</table>
-<!-- include tpl=foot -->
+		<tr>
+			<form method="post" class="layui-form" id="update_0" onsubmit="return false;">
+			<td>
+				<select name="year">
+				<option value="*">{lang每年}</option>
+				<!-- loop from=$yearlist key=$k value=$v id=$tmpid -->
+				<option value="{$v}">{$v}{lang年}</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<select name="month">
+				<option value="*">{lang每月}</option>
+				<!-- loop from=$monthlist key=$k value=$v id=$tmpid -->
+				<option value="{$v}">{$v}{lang月}</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<select name="day">
+				<option value="*">每天</option>
+				<!-- loop from=$daylist key=$k value=$v id=$tmpid -->
+				<option value="{$v}">{$v}日</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<select name="hour">
+				<option value="*">{lang每小时}</option>
+				<!-- loop from=$hourlist key=$k value=$v id=$tmpid -->
+				<option value="{$v}">{$v}{lang时}</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<select name="minute">
+				<!-- loop from=$minutelist key=$k value=$v id=$tmpid -->
+				<option value="{$v}">{$v}{lang分}</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<select name="actionfile">
+				<option value="">{lang请选择…}</option>
+				<!-- loop from=$filelist key=$k value=$v id=$tmpid -->
+				<option value="{$v.id}">{$v.txt}_{$v.id}</option>
+				<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<input type="text" name="param" value="{$value.param}" />
+			</td>
+			<td>
+				<input type="button" value="{lang新增}" onclick="edit_it(0)" class="layui-btn layui-btn-sm" />
+			</td>
+			</form>
+		</tr>
+		</table>
+		
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

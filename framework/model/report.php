@@ -20,24 +20,31 @@ class report_model_base extends phpok_model
 	/**
 	 * 会员统计数据
 	 * @参数 $x X轴数据
+	 * @参数 $y Y轴数据
+	 * @参数 $data_mode 数据统计模式
 	 * @参数 $start 开始时间，格式是：0000-00-00 00:00
 	 * @参数 $stop 结束时间，格式是：0000-00-00 00:00
+	 * @参数 $sqlext 扩展的SQL限制
 	**/
-	public function user_data($x='date',$start='',$stop='')
+	public function user_data($x='date',$y='',$data_mode='',$start='',$stop='',$sqlext='')
 	{
 		$field = array();
-		$tmp_array = $this->_user_data_x($x);
+		$flist = $this->model('user')->fields_all("","identifier");
+		$tmp_array = $this->_user_data_x($x,$flist);
 		$group_by = $tmp_array['group_by'];
 		$field[] = $tmp_array['field'];
-		$field[] = "count(u.id) as y_count";
-		$flist = $this->model('user')->fields_all('field_type NOT IN("longtext","longblob","text")');
-		if($flist){
-			foreach($flist as $key=>$value){
-				$field[] = 'count(DISTINCT ext.'.$value['identifier'].') as y_'.$value['identifier'];
+		if($y && is_array($y)){
+			foreach($y as $key=>$value){
+				if(!$value || !trim($value)){
+					continue;
+				}
+				$tmp = $data_mode[$value] ? strtoupper($data_mode[$value]) : 'COUNT';
+				$tmpext = $flist[$value] ? "ext" : "u";
+				$field[] = $tmp."(".$tmpext.".".$value.") as y_".$value;
 			}
 		}
-		$sql  = "SELECT ".implode(",",$field)." FROM ".$this->db->prefix."user u ";
-		$sql .= "LEFT JOIN ".$this->db->prefix."user_ext ext ON(u.id=ext.id) ";
+		$sql  = " SELECT ".implode(",",$field)." FROM ".$this->db->prefix."user u ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."user_ext ext ON(u.id=ext.id) ";
 		$condition = array();
 		if($start){
 			$condition[] = "u.regtime>=".strtotime($start);
@@ -48,40 +55,93 @@ class report_model_base extends phpok_model
 		$condition = implode(" AND ",$condition);
 		if($condition){
 			$sql .= " WHERE ".$condition;
+			if($sqlext){
+				$sql .= " AND ".$sqlext;
+			}
+		}else{
+			if($sqlext){
+				$sql .= " WHERE ".$sqlext;
+			}
 		}
 		$sql .= " GROUP BY ".$group_by;
-		return $this->db->get_all($sql);
+		$tmplist = $this->db->get_all($sql);
+		if($tmp_array['x']){
+			foreach($tmplist as $key=>$value){
+				if($value['x'] != '' && $tmp_array['x']){
+					foreach($tmp_array['x'] as $k=>$v){
+						if($v['val'] == $value['x'] || (!$v['val'] && !$value['x'])){
+							$value['x'] = $v['title'];
+							$tmplist[$key] = $value;
+							continue;
+						}
+					}
+				}
+			}
+		}
+		return $tmplist;
 	}
 
 	/**
 	 * 订单统计数据
 	 * @参数 $x X轴数据
+	 * @参数 $y Y轴数据
+	 * @参数 $data_mode 数据统计模式
 	 * @参数 $start 开始时间，格式是：0000-00-00 00:00
 	 * @参数 $stop 结束时间，格式是：0000-00-00 00:00
+	 * @参数 $sqlext 扩展的SQL限制
 	**/
-	public function order_data($x='date',$start='',$stop='')
+	public function order_data($x='date',$y='',$data_mode='',$start='',$stop='',$sqlext='')
 	{
 		$field = array();
 		$tmp_array = $this->_order_data_x($x);
 		$group_by = $tmp_array['group_by'];
+		$product_first = false;
+		if(strpos($tmp_array['field'],'op.') !== false){
+			$product_first = true;
+		}
 		$field[] = $tmp_array['field'];
-		$field[] = "SUM(price) as y_price";
-		$field[] = "count(id) as y_count";
-		$field[] = "count(DISTINCT user_id) as y_user";
-		$sql  = "SELECT ".implode(",",$field)." FROM ".$this->db->prefix."order ";
+		if($y && is_array($y)){
+			foreach($y as $key=>$value){
+				if(!$value || !trim($value)){
+					continue;
+				}
+				$tmp = $data_mode[$value] ? strtoupper($data_mode[$value]) : 'COUNT';
+				$tmpext = in_array($value,array('qty','title')) ? "op" : "o";
+				if($value == 'user_id'){
+					$tmpext = 'DISTINCT o';
+				}
+				if($tmpext == 'op'){
+					$product_first = true;
+				}
+				$field[] = $tmp."(".$tmpext.".".$value.") as y_".$value;
+			}
+		}
+		if($product_first){
+			$sql  = " SELECT ".implode(",",$field)." FROM ".$this->db->prefix."order_product op ";
+			$sql .= " JOIN ".$this->db->prefix."order o ON(op.order_id=o.id) ";
+		}else{
+			$sql  = "SELECT ".implode(",",$field)." FROM ".$this->db->prefix."order o ";
+		}
 		$condition = array();
 		if($tmp_array['condition']){
 			$condition[] = $tmp_array['condition'];
 		}
 		if($start){
-			$condition[] = "addtime>=".strtotime($start);
+			$condition[] = "o.addtime>=".strtotime($start);
 		}
 		if($stop){
-			$condition[] = "addtime<=".strtotime($stop);
+			$condition[] = "o.addtime<=".strtotime($stop);
 		}
 		$condition = implode(" AND ",$condition);
 		if($condition){
 			$sql .= " WHERE ".$condition;
+			if($sqlext){
+				$sql .= " AND ".$sqlext;
+			}
+		}else{
+			if($sqlext){
+				$sql .= " WHERE ".$sqlext;
+			}
 		}
 		$sql .= " GROUP BY ".$group_by;
 		return $this->db->get_all($sql);
@@ -331,58 +391,86 @@ class report_model_base extends phpok_model
 		$array = array();
 		switch ($x) {
 			case 'week':
-				$array['group_by'] = "FROM_UNIXTIME(addtime,'%X-%V')";
-				$array['field'] = "FROM_UNIXTIME(addtime,'%X-%V') as x";
+				$array['group_by'] = "FROM_UNIXTIME(o.addtime,'%X-%V')";
+				$array['field'] = "FROM_UNIXTIME(o.addtime,'%X-%V') as x";
 				break;
 			case 'month':
-				$array['group_by'] = "FROM_UNIXTIME(addtime,'%Y-%m')";
-				$array['field'] = "FROM_UNIXTIME(addtime,'%Y-%m') as x";
+				$array['group_by'] = "FROM_UNIXTIME(o.addtime,'%Y-%m')";
+				$array['field'] = "FROM_UNIXTIME(o.addtime,'%Y-%m') as x";
 				break;
 			case 'year':
-				$array['group_by'] = "FROM_UNIXTIME(addtime,'%Y')";
-				$array['field'] = "FROM_UNIXTIME(addtime,'%Y') as x";
+				$array['group_by'] = "FROM_UNIXTIME(o.addtime,'%Y')";
+				$array['field'] = "FROM_UNIXTIME(o.addtime,'%Y') as x";
 				break;
 			case 'order':
-				$array['group_by'] = "status";
-				$array['field'] = "status as x";
+				$array['group_by'] = "o.status";
+				$array['field'] = "o.status as x";
 				break;
 			case 'user':
-				$array['group_by'] = "user_id";
-				$array['field'] = "user_id as x";
-				$array['condition'] = "user_id>0";
+				$array['group_by'] = "o.user_id";
+				$array['field'] = "o.user_id as x";
+				$array['condition'] = "o.user_id>0";
+				break;
+			case 'title':
+				$array['group_by'] = "op.title";
+				$array['field'] = "op.title as x";
+				break;
+			case 'tid':
+				$array['group_by'] = "op.tid";
+				$array['field'] = "op.tid as x,op.title as x_title";
+				$array['condition'] = "op.tid>0";
 				break;
 			default:
-				$array['group_by'] = "FROM_UNIXTIME(addtime,'%Y-%m-%d')";
-				$array['field'] = "FROM_UNIXTIME(addtime,'%Y-%m-%d') as x";
+				$array['group_by'] = "FROM_UNIXTIME(o.addtime,'%Y-%m-%d')";
+				$array['field'] = "FROM_UNIXTIME(o.addtime,'%Y-%m-%d') as x";
 				break;
 		}
 		return $array;
 	}
 
-	private function _user_data_x($x='date')
+	private function _user_data_x($x='date',$flist='')
 	{
 		$array = array();
+		$is_ok = false;
 		switch ($x) {
 			case 'week':
 				$array['group_by'] = "FROM_UNIXTIME(u.regtime,'%X-%V')";
 				$array['field'] = "FROM_UNIXTIME(u.regtime,'%X-%V') as x";
+				$is_ok = true;
 				break;
 			case 'month':
 				$array['group_by'] = "FROM_UNIXTIME(u.regtime,'%Y-%m')";
 				$array['field'] = "FROM_UNIXTIME(u.regtime,'%Y-%m') as x";
+				$is_ok = true;
 				break;
 			case 'year':
 				$array['group_by'] = "FROM_UNIXTIME(u.regtime,'%Y')";
 				$array['field'] = "FROM_UNIXTIME(u.regtime,'%Y') as x";
+				$is_ok = true;
 				break;
 			case 'group_id':
 				$array['group_by'] = "u.group_id";
 				$array['field'] = "u.group_id as x";
+				$is_ok = true;
 				break;
 			default:
-				$array['group_by'] = "FROM_UNIXTIME(u.regtime,'%Y-%m-%d')";
-				$array['field'] = "FROM_UNIXTIME(u.regtime,'%Y-%m-%d') as x";
-				break;
+				$is_ok = false;
+		}
+		if(!$is_ok && $flist && is_array($flist) && $flist[$x]){
+			$array['group_by'] = "ext.".$x;
+			$array['field'] = "ext.".$x." as x";
+			$tmp = array('radio','checkbox','select');
+			if(in_array($flist[$x]['form_type'],$tmp)){
+				$ext = $flist[$x]['ext']  ? $flist[$x]['ext'] : array();
+				if(is_string($ext)){
+					$ext = unserialize($ext);
+				}
+				
+				if($ext['option_list']){
+					$opt_list = explode(":",$ext['option_list']);
+					$array['x']  = opt_rslist($opt_list[0],$opt_list[1]);
+				}
+			}
 		}
 		return $array;
 	}
