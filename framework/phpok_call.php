@@ -463,7 +463,9 @@ class phpok_call extends _init_auto
 			$list = explode(",",$rs['fields_need']);
 			$tmp_int = array('int','float','smallint','mediumint','bigint','tinyint','decimal','double');
 			foreach($list as $key=>$value){
-				if(in_array($fields[$value]['field_type'],$tmp_int)){
+				$tmp = explode(".",$value);
+				$f = $tmp[1] ? $tmp[1] : $tmp[0];
+				if(in_array($fields[$f]['field_type'],$tmp_int)){
 					$condition .= " AND ".$value." != 0";
 				}else{
 					$condition .= " AND ".$value." != ''";
@@ -640,7 +642,9 @@ class phpok_call extends _init_auto
 			$list = explode(",",$rs['fields_need']);
 			$tmp_int = array('int','float','smallint','mediumint','bigint','tinyint','decimal','double');
 			foreach($list as $key=>$value){
-				if(in_array($fields[$value]['field_type'],$tmp_int)){
+				$tmp = explode(".",$value);
+				$f = $tmp[1] ? $tmp[1] : $tmp[0];
+				if(in_array($fields[$f]['field_type'],$tmp_int)){
 					$condition .= " AND ".$value." != 0";
 				}else{
 					$condition .= " AND ".$value." != ''";
