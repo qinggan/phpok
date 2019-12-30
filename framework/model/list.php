@@ -1269,6 +1269,16 @@ class list_model_base extends phpok_model
 	**/
 	public function biz_save($data)
 	{
+		if(!$data || !is_array($data) || !$data['id']){
+			return false;
+		}
+		$sql = "SELECT id FROM ".$this->db->prefix."list_biz WHERE id='".$data['id']."'";
+		$tmp = $this->db->get_one($sql);
+		if($tmp){
+			$id = $data['id'];
+			unset($data['id']);
+			return $this->db->update_array($data,'list_biz',array('id'=>$id));
+		}
 		return $this->db->insert_array($data,'list_biz','replace');
 	}
 
