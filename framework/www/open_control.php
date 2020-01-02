@@ -29,8 +29,8 @@ class open_control extends phpok_control
 		}
 		$this->assign('id',$id);
 		$pageurl = $this->url('open','','id='.$id);
-		if($_SESSION['user_id']){
-			$condition = "user_id='".$_SESSION['user_id']."' ";
+		if($this->session->val('user_id')){
+			$condition = "user_id='".$this->session->val('user_id')."' ";
 		}else{
 			$condition = "session_id='".$this->session->sessid()."' ";
 		}
@@ -85,11 +85,11 @@ class open_control extends phpok_control
 	public function input_f()
 	{
 		$id = $this->get("id");
-		if(!$id) $id = "content";
-		# 附件分类
+		if(!$id){
+			$id = "content";
+		}
 		$catelist = $this->model('res')->cate_all();
 		$this->assign("catelist",$catelist);
-		# 取得附件类型
 		$config = $this->model('res')->type_list("type");
 		$this->assign("attr_list",$config);
 		$pageurl = $this->url('open','input','id='.$id);
@@ -136,8 +136,11 @@ class open_control extends phpok_control
 		if(!$pageid) $pageid = 1;
 		$psize = 28;
 		$offset = ($pageid - 1) * $psize;
-		# 关键字
-		$condition = "1=1";
+		if($this->session->val('user_id')){
+			$condition = "user_id='".$this->session->val('user_id')."' ";
+		}else{
+			$condition = "session_id='".$this->session->sessid()."' ";
+		}
 		$keywords = $this->get("keywords");
 		if($keywords){
 			$condition .= " AND (title LIKE '%".$keywords."%' OR name LIKE '%".$keywords."%') ";
@@ -176,122 +179,4 @@ class open_control extends phpok_control
 		$this->assign("pagelist",$pagelist);
 	}
 
-	//网址列表，这里读的是项目的网址列表
-	public function url_f()
-	{
-		$id = $this->get("id");
-		if(!$id) $id = "content";
-		$this->assign("id",$id);
-		$pid = $this->get("pid");
-		if($pid){
-			$p_rs = $this->model('project')->get_one($pid);
-			$type = $this->get("type");
-			if(!$p_rs){
-				$this->error(P_Lang('项目不存在'));
-			}
-			if($type == "cate" && $p_rs["cate"]){
-				$catelist = $this->model("cate")->get_all($p_rs['site_id'],1,$p_rs['cate']);
-				$this->assign("rslist",$catelist);
-				$this->assign("p_rs",$p_rs);
-				$this->view("open_url_cate");
-			}
-			$pageid = $this->get($this->config["pageid"],"int");
-			$psize = $this->config["psize"];
-			if(!$psize) $psize = 20;
-			if(!$pageid) $pageid = 1;
-			$offset = ($pageid - 1) * $psize;
-			$pageurl = $this->url("open","url","pid=".$pid."&type=list&id=".$id);
-			$condition = "l.site_id='".$p_rs["site_id"]."' AND l.project_id='".$pid."' AND l.parent_id='0' ";
-			$keywords = $this->get("keywords");
-			if($keywords){
-				$condition .= " AND l.title LIKE '%".$keywords."%' ";
-				$pageurl .= "&keywords=".rawurlencode($keywords);
-				$this->assign("keywords",$keywords);
-			}
-			$rslist = $this->model('list')->get_list($p_rs["module"],$condition,$offset,$psize,$p_rs["orderby"]);
-			if($rslist){
-				$sub_idlist = array_keys($rslist);
-				$sub_idstring = implode(",",$sub_idlist);
-				$con_sub = "l.site_id='".$p_rs["site_id"]."' AND l.project_id='".$pid."' AND l.parent_id IN(".$sub_idstring.") ";
-				$sublist = $this->model('list')->get_list($p_rs["module"],$con_sub,0,0,$p_rs["orderby"]);
-				if($sublist){
-					foreach($sublist AS $key=>$value){
-						$rslist[$value["parent_id"]]["sonlist"][$value["id"]] = $value;
-					}
-				}
-			}
-			//读子主题
-			$total = $this->model('list')->get_total($p_rs["module"],$condition);
-			$string = P_Lang('home=首页&prev=上一页&next=下一页&last=尾页&half={half}&add=数量：(total)/(psize)，页码：(num)/(total_page)&always=1',array('half'=>3));
-			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-			$this->assign("pagelist",$pagelist);
-			$this->assign("p_rs",$p_rs);
-			$this->assign("rslist",$rslist);
-			$this->view("open_url_list");				
-		}
-		$condition = " p.status='1' ";
-		$rslist = $this->model('project')->get_all_project($_SESSION["admin_site_id"],$condition);
-		$this->assign("rslist",$rslist);
-		$this->assign("id",$id);
-		$this->view($this->dir_phpok.'view/open_url.html','abs-file');
-	}
-
-	//读取会员列表
-	public function user_f()
-	{
-		$id = $this->get("id");
-		if(!$id) $id = "user";
-		$pageid = $this->get($this->config["pageid"],"int");
-		if(!$pageid) $pageid = 1;
-		$psize = $this->config["psize"];
-		if(!$psize) $psize = 30;
-		$keywords = $this->get("keywords");
-		$multi = $this->get("multi","int");
-		$this->assign("multi",$multi);
-		$page_url = $this->url("open","user","id=".$id."&multi=".$multi);
-		$condition = "1=1";
-		if($keywords){
-			$this->assign("keywords",$keywords);
-			$condition .= " AND u.user LIKE '%".$keywords."%'";
-			$page_url.="&keywords=".rawurlencode($keywords);
-		}
-		$offset = ($pageid - 1) * $psize;
-		$rslist = $this->model('user')->get_list($condition,$offset,$psize);
-		$count = $this->model('user')->get_count($condition);
-		$string = P_Lang('home=首页&prev=上一页&next=下一页&last=尾页&half={half}&add=数量：(total)/(psize)，页码：(num)/(total_page)&always=1',array('half'=>2));
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-		$this->assign("total",$count);
-		$this->assign("rslist",$rslist);
-		$this->assign("id",$id);
-		$this->assign("pagelist",$pagelist);
-		$this->view($this->dir_phpok.'view/open_user_list.html','abs-file');
-	}
-
-	public function user2_f()
-	{
-		$id = $this->get("id");
-		if(!$id) $id = "user";
-		$pageid = $this->get($this->config["pageid"],"int");
-		if(!$pageid) $pageid = 1;
-		$psize = $this->config["psize"];
-		if(!$psize) $psize = 30;
-		$keywords = $this->get("keywords");
-		$page_url = $this->url("open","user2","id=".$id);
-		$condition = "1=1";
-		if($keywords){
-			$this->assign("keywords",$keywords);
-			$condition .= " AND u.user LIKE '%".$keywords."%'";
-			$page_url.="&keywords=".rawurlencode($keywords);
-		}
-		$offset = ($pageid - 1) * $psize;
-		$rslist = $this->model('user')->get_list($condition,$offset,$psize);
-		$count = $this->model('user')->get_count($condition);
-		$string = P_Lang('home=首页&prev=上一页&next=下一页&last=尾页&half={half}&add=数量：(total)/(psize)，页码：(num)/(total_page)&always=1',array('half'=>3));
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-		$this->assign("total",$count);
-		$this->assign("rslist",$rslist);
-		$this->assign("id",$id);
-		$this->assign("pagelist",$pagelist);
-		$this->view($this->dir_phpok.'view/open_user_list2.html','abs-file');
-	}
 }
