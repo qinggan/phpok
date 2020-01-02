@@ -1,7 +1,6 @@
 <?php
 /**
  * 内容信息
- * @package phpok\framework\api
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -31,6 +30,17 @@ class content_control extends phpok_control
 	 */
 	public function index_f()
 	{
+		if(!$this->site['api_code']){
+			$this->error(P_Lang('未启用API接口'));
+		}
+		$this->model('apisafe')->code($this->site['api_code']);
+		if(!$this->model('apisafe')->check()){
+			$errInfo = $this->model('apisafe')->error_info();
+			if(!$errInfo){
+				$errInfo = P_Lang('未通过安全接口拼接');
+			}
+			$this->error($errInfo);
+		}
 		$data_info = array();
 		$id = $this->get("id");
 		if(!$id){
@@ -46,8 +56,6 @@ class content_control extends phpok_control
 		if(!$rs['module_id']){
 			$this->error(P_Lang('未绑定相应的模块'));
 		}
-		
-		
 		$project = $this->call->phpok('_project',array('pid'=>$rs['project_id']));
 		if(!$project || !$project['status']){
 			$this->error(P_Lang('项目不存在或未启用'));

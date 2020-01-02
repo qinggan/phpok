@@ -35,6 +35,17 @@ class project_control extends phpok_control
 	//栏目
 	public function index_f()
 	{
+		if(!$this->site['api_code']){
+			$this->error(P_Lang('未启用API接口'));
+		}
+		$this->model('apisafe')->code($this->site['api_code']);
+		if(!$this->model('apisafe')->check()){
+			$errInfo = $this->model('apisafe')->error_info();
+			if(!$errInfo){
+				$errInfo = P_Lang('未通过安全接口拼接');
+			}
+			$this->error($errInfo);
+		}
 		$id = $this->get("id");
 		if(!$id){
 			$this->error(P_Lang('未指ID'));

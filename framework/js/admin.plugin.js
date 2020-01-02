@@ -171,7 +171,7 @@
 						html += '<td><i class="icon-'+rs.info[i]+'" style="font-size:16px;"></i> '+rs.info[i]+'</td></tr></table></label></li>';
 					}else{
 						html += '<li><label title="'+rs.info[i]+'"><table><tr><td><input type="radio" name="icon" value="'+rs.info[i]+'" /></td>';
-						html += '<td><img src="images/ico/'+rs.info[i]+'" /></td></tr></table></label></li>';
+						html += '<td><img src="images/ico/'+rs.info[i]+'" style="max-width:36px;" /></td></tr></table></label></li>';
 					}
 				}
 				html += '</ul>';

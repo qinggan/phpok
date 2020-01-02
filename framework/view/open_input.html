@@ -65,6 +65,7 @@ $(document).ready(function(){
 	<form method="post" action="{$pageurl}" onsubmit="return check_search()">
 	<table>
 	<tr>
+		<!-- if $session.admin_id -->
 		<td>搜索：</td>
 		<td><select name="cate_id" id="top_cate_id">
 			<option value="">全部分类…</option>
@@ -79,6 +80,7 @@ $(document).ready(function(){
 		</select></td>
 		<td><input type="text" name="keywords" id="keywords" value="{$keywords}" class="keywords" /></td>
 		<td><input type="submit" value="{lang搜索}" /></td>
+		<!-- /if -->
 		<td><input type="button" value="{lang刷新页面}" onclick="$.phpok.reload()" /></td>
 	</tr>
 	</table>
@@ -109,6 +111,9 @@ $(document).ready(function(){
 </ul>
 </div>
 <!-- /if -->
+<!-- if $session.admin_id -->
+
+
 <div class="search">附件上传</div>
 <div style="padding:10px;margin:5px;">
 <div class="table">
@@ -171,5 +176,6 @@ function cate_change()
 	});
 }
 </script>
+<!-- /if -->
 </body>
 </html>

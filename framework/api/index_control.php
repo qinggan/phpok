@@ -61,6 +61,37 @@ class index_control extends phpok_control
 		$this->success($data);
 	}
 
+	/**
+	 * 安全码生成
+	 * @参数 data 要加密的字串
+	 * @参数 
+	 * @参数 
+	**/
+	public function safecode_f()
+	{
+		if(!$this->site['api_code']){
+			$this->error(P_Lang('未设置 API 密钥'));
+		}
+		$data = $this->get("data");
+		if(!$data){
+			$this->error(P_Lang('未找到要加密的字串'));
+		}
+		$list = explode(",",$data);
+		sort($list);
+		$isok = true;
+		foreach($list as $key=>$value){
+			if(!preg_match("/^[a-z0-9A-Z\_\-]+$/u",$value)){
+				$isok = false;
+				break;
+			}
+		}
+		if(!$isok){
+			$this->error(P_Lang('参数不合法'));
+		}
+		$code = md5($this->site['api_code'].",".implode(",",$list));
+		$this->success($code);
+	}
+
 	public function token_f()
 	{
 		$this->config('is_ajax',true);
