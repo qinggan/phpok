@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<plugin>
+		<title><![CDATA[采集器]]></title>
+		<efunc><![CDATA[manage]]></efunc>
+		<taxis><![CDATA[10]]></taxis>
+		<type><![CDATA[menu]]></type>
+		<icon><![CDATA[contract]]></icon>
+		<id><![CDATA[eacbcb2796c5b471082d3928cac5ac3c]]></id>
+	</plugin>
+</root>

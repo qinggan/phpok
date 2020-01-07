@@ -307,6 +307,7 @@ class cate_control extends phpok_control
 		$array['tpl_list'] = $this->get('tpl_list');
 		$array['tpl_content'] = $this->get('tpl_content');
 		$array['psize'] = $this->get('psize','int');
+		$array['psize_api'] = $this->get('psize_api','int');
 		$array['taxis'] = $this->get('taxis','int');
 		$array['seo_title'] = $this->get('seo_title');
 		$array['seo_keywords'] = $this->get('seo_keywords');

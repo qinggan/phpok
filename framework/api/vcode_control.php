@@ -22,9 +22,20 @@ class vcode_control extends phpok_control
 	**/
 	public function index_f()
 	{
+		$width = $this->get('width','int');
+		if(!$width || $width < 0){
+			$width = 76;
+		}
+		$height = $this->get('height','int');
+		if(!$height || $height < 0){
+			$height = 24;
+		}
 		$info = $this->lib("vcode")->word();
 		$code = md5(strtolower($info));
 		$this->session->assign('vcode',$code);
+		$this->lib('vcode')->width($width);
+		$this->lib('vcode')->height($height);
+		$this->lib('vcode')->font($this->dir_data.'font/roboto-black.ttf');
 		$this->lib("vcode")->create();
 	}
 

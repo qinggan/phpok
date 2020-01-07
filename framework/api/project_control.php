@@ -111,7 +111,7 @@ class project_control extends phpok_control
 			$this->error(P_Lang('参数格式不正确'));
 		}
 		//读取列表信息
-		$psize = $rs["psize"] ? $rs['psize'] : $this->config['psize'];
+		$psize = $rs["psize_api"] ? $rs['psize_api'] : ($rs['psize'] ? $rs['psize'] : $this->config['psize']);
 		$pageurl = $this->url($rs['identifier']);
 		if($cate_root){
 			if($cateid && $cateid != $cate_root){
@@ -120,8 +120,8 @@ class project_control extends phpok_control
 					$this->error(P_Lang('分类已停用，请联系管理员'));
 				}
 				$this->rlist['cate_rs'] = $cate_rs;
-				if($cate_rs['psize']){
-					$psize = $cate_rs['psize'];
+				if($cate_rs['psize_api']){
+					$psize = $cate_rs['psize_api'];
 				}
 				$pageurl = $this->url($rs['identifier'],$cate_rs['identifier']);
 				if($cate_rs['parent_id'] && $cate_rs['parent_id'] != $cate_root){

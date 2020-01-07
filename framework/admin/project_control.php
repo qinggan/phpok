@@ -290,9 +290,11 @@ class project_control extends phpok_control
 			if($m_rs['mtype']){
 				$array["orderby"] = $this->get("orderby2");
 				$array["psize"] = $this->get("psize2","int");
+				$array['psize_api'] = $this->get('psize2_api','int');
 			}else{
 				$array["orderby"] = $this->get("orderby");
 				$array["psize"] = $this->get("psize","int");
+				$array['psize_api'] = $this->get('psize_api','int');
 				$array["alias_title"] = $this->get("alias_title");
 				$array["alias_note"] = $this->get("alias_note");
 			}
@@ -339,6 +341,8 @@ class project_control extends phpok_control
 		$array['freight'] = $this->get('freight');
 		$array['list_fields'] = $this->get('list_fields');
 		$array['style'] = $this->get('style');
+		$array['limit_similar'] = $this->get('limit_similar','int');
+		$array['limit_times'] = $this->get('limit_times','int');
 		$ok_url = $this->url("project");
 		$c_rs = $this->model('sysmenu')->get_one_condition("appfile='list' AND parent_id>0");
 		$gid = $c_rs["id"];

@@ -223,8 +223,7 @@ function phpok_plugin()
 	$func = $GLOBALS['app']->func;
 	
 	//装载插件
-	foreach($rslist AS $key=>$value)
-	{
+	foreach($rslist as $key=>$value){
 		if(is_file($GLOBALS['app']->dir_root.'plugins/'.$key.'/'.$id.'.php')){
 			if($value['param']){
 				$value['param'] = unserialize($value['param']);
@@ -501,33 +500,21 @@ function time_format($timestamp)
 {
 	$current_time = $GLOBALS['app']->time;
     $since = abs($current_time-$timestamp);
-    if(floor($since/3600))
-	{
-        if(date('Y-m-d',$timestamp) == date('Y-m-d',$current_time))
-		{
+    if(floor($since/3600)){
+        if(date('Y-m-d',$timestamp) == date('Y-m-d',$current_time)){
             $output = '今天 ';
             $output.= date('H:i',$timestamp);
-        }
-		else
-		{
-            if(date('Y',$timestamp) == date('Y',$current_time))
-			{
+        }else{
+            if(date('Y',$timestamp) == date('Y',$current_time)){
                 $output = date('m月d日 H:i',$timestamp);
-            }
-			else
-			{
+            }else{
                 $output = date('Y年m月d日',$timestamp);
             }
         }
-    }
-	else
-	{
-        if(($output=floor($since/60)))
-		{
+    }else{
+        if(($output=floor($since/60))){
             $output = $output.'分钟前';
-        }
-		else
-		{
+        }else{
 			$output = '1分钟内';
 		}
     }
@@ -582,13 +569,10 @@ function phpok_txt($file,$pageid=0,$type='txt')
 	if(!$content) return false;
 	$rs = $GLOBALS['app']->model('data')->info_page($content,$pageid);
 	if(!$rs) return false;
-	if(is_string($rs))
-	{
+	if(is_string($rs)){
 		$rs = $type == 'txt' ? nl2br($rs) : $rs;
 		return array('content'=>$rs);
-	}
-	else
-	{
+	}else{
 		$rs['content'] = $type == 'txt' ? nl2br($rs['content']) : $rs;
 		return $rs;
 	}
@@ -618,4 +602,14 @@ function phpok_token($data='')
 		return false;
 	}
 	return $GLOBALS['app']->lib('token')->decode($token);	
+}
+
+/**
+ * 生成签名
+ * @参数 $string，要GET或POST的字段，多个字段用英文逗号隔开
+**/
+function phpok_sign($string='')
+{
+	$GLOBALS['app']->model('apisafe')->code($this->site['api_code']);
+	return $GLOBALS['app']->model('apisafe')->create($string);
 }

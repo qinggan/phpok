@@ -140,31 +140,7 @@ class register_control extends phpok_control
 				$this->error(P_Lang('手机号已注册'));
 			}
 		}
-		$user_status = $group_rs['register_status'] == 1 ? 1 : 0;
-		$relaction_id = 0;
-		$code = $this->get('_vcode');
-		if(!$code && in_array($group_rs['register_status'],array('mobile','email','code'))){
-			$this->error(P_Lang('验证码不能为空'));
-		}
-		if($code && in_array($group_rs['register_status'],array('mobile','email'))){
-			$tmp = $this->model('vcode')->check($code);
-			if(!$tmp){
-				$this->error($this->model('vcode')->error_info());
-			}
-			$user_status = 1;
-		}
-		if(!$code && $group_rs['register_status'] == 'code'){
-			$this->error(P_Lang('邀请码不能为空'));
-		}
-		//检测推荐码是否存在
-		if($code && $group_rs['register_status'] == 'code'){
-			$tmp = $this->model('user')->get_one($code,'code',false,false);
-			if(!$tmp){
-				$this->error(P_Lang('邀请码不存在，请检查'));
-			}
-			$user_status = 1;
-			$relaction_id = $tmp['id'];
-		}
+		
 		
 		$newpass = $this->get('newpass');
 		if(!$newpass){
@@ -189,6 +165,32 @@ class register_control extends phpok_control
 			}
 			$this->session->unassign('vcode');
 		}
+
+		$user_status = $group_rs['register_status'] == 1 ? 1 : 0;
+		$relaction_id = 0;
+		if(in_array($group_rs['register_status'],array('mobile','email'))){
+			$code = $this->get("_vcode");
+			if(!$code){
+				$this->error(P_Lang('验证码不能为空'));
+			}
+			$tmp = $this->model('vcode')->check($code);
+			if(!$tmp){
+				$this->error($this->model('vcode')->error_info());
+			}
+			$user_status = 1;
+		}
+		if($group_rs['register_status'] == 'code'){
+			$code = $this->get('_vcode');
+			if(!$code){
+				$this->error(P_Lang('邀请码不能为空'));
+			}
+			$tmp = $this->model('user')->get_one($code,'code',false,false);
+			if(!$tmp){
+				$this->error(P_Lang('邀请码不存在，请检查'));
+			}
+			$user_status = 1;
+			$relaction_id = $tmp['id'];
+		}
 		
 		$array = array();
 		$array["user"] = $user ? $user : ($mobile ? $mobile : $email);
@@ -201,6 +203,11 @@ class register_control extends phpok_control
 		$uid = $this->model('user')->save($array);
 		if(!$uid){
 			$this->error(P_Lang('注册失败，请联系管理员'));
+		}
+		//生成自己的邀请码
+		if($group_rs['register_status'] == 'code'){
+			$mycode = 'U'.$uid;
+			$this->model('user')->save(array('code'=>$mycode),$uid);
 		}
 		if(!$relaction_id && $this->session->val('introducer')){
 			$relaction_id = $this->session->val('introducer');

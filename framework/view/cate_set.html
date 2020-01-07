@@ -135,6 +135,13 @@
 			<div class="layui-input-inline auto">{lang启用此项将替换项目中的设置，设为0表示读取项目中的设置}</div>
 		</div>
 		<div class="layui-form-item">
+			<label class="layui-form-label">{lang API 默认数}</label>
+			<div class="layui-input-inline">
+				<input type="number" id="psize_api" min="0" max="999" name="psize_api" value="{$rs.psize_api}" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto">{lang启用此项将替换项目中的设置，设为0表示读取项目中的设置}</div>
+		</div>
+		<div class="layui-form-item">
 			<label class="layui-form-label">{lang列表模板}</label>
 			<div class="layui-input-inline default">
 				<input type="text" id="tpl_list" name="tpl_list" class="layui-input" value="{$rs.tpl_list}" />

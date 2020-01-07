@@ -34,6 +34,28 @@ class apisafe_model_base extends phpok_model
 		return $this->error_info;
 	}
 
+	public function create($string='')
+	{
+		if(!$string){
+			return false;
+		}
+		$list = explode(",",$string);
+		sort($list);
+		$isok = true;
+		foreach($list as $key=>$value){
+			if(!preg_match("/^[a-z0-9A-Z\_\-]+$/u",$value)){
+				$isok = false;
+				break;
+			}
+		}
+		if(!$isok){
+			return false;
+		}
+		$code = $this->code ? $this->code : $this->site['api_code'];
+		$sign = md5($code.",".implode(",",$list));
+		return $sign;
+	}
+
 	public function check()
 	{
 		$safecode = $this->get("_safecode");

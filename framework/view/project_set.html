@@ -83,6 +83,13 @@
 				<div class="layui-input-inline auto gray">{lang设置每页默认的主题数量}</div>
 			</div>
 			<div class="layui-form-item">
+				<label class="layui-form-label">{langAPI 默认数}</label>
+				<div class="layui-input-inline default-auto">
+					<input type="text" id="psize2_api" name="psize2_api" value="{$rs.psize_api ? $rs.psize_api : 10}" class="layui-input" />
+				</div>
+				<div class="layui-input-inline auto gray">{lang设置 API 默认数量}</div>
+			</div>
+			<div class="layui-form-item">
 				<label class="layui-form-label">
 					{lang数据排序}
 				</label>
@@ -234,7 +241,36 @@
 							<!-- /loop -->
 						</select>
 					</div>
-					<div class="layui-input-block gray">{lang通知管理员仅限启用【前台发布】后有效，通知会员仅限启用【前台发布】且已登录会员后有效}</div>
+					<div class="layui-input-block gray">{lang通知管理员仅限启用【发布】后有效，通知会员仅限启用【发布】且已登录会员后有效}</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang发布间隔}
+					</label>
+					<div class="layui-input-inline short">
+						<input type="text" name="limit_times" value="{$rs.limit_times}" class="layui-input" />
+					</div>
+					<div class="layui-form-mid">
+						{lang单位是秒，设置两篇文章发布的间隔时间，不限制请设置0，不能低于 10 秒}
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang相似度}
+					</label>
+					<div class="layui-input-inline short">
+						<select id="limit_similar" name="limit_similar">
+							<option value="0">{lang不限制}</option>
+							<option value="60"{if $rs.limit_similar == 60} selected{/if}>60%</option>
+							<option value="70"{if $rs.limit_similar == 70} selected{/if}>70%</option>
+							<option value="80"{if $rs.limit_similar == 80} selected{/if}>80%</option>
+							<option value="90"{if $rs.limit_similar == 90} selected{/if}>90%</option>
+							<option value="95"{if $rs.limit_similar == 95} selected{/if}>95%</option>
+						</select>
+					</div>
+					<div class="layui-form-mid">
+						{lang设置好一个相似度值，系统匹配最近10条内发送的信息，如果有一条符合即报警}
+					</div>
 				</div>
 			</div>
 
@@ -266,6 +302,13 @@
 					<input type="text" id="psize" name="psize" value="{$rs.psize ? $rs.psize : 30}" class="layui-input" />
 				</div>
 				<div class="layui-input-inline auto gray">{lang设置每页默认的主题数量}</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang接口默认数}</label>
+				<div class="layui-input-inline">
+					<input type="text" id="psize_api" name="psize_api" value="{$rs.psize_api ? $rs.psize_api : 10}" class="layui-input" />
+				</div>
+				<div class="layui-input-inline auto gray">{lang设置 API 接口读取的主题数量，仅限接口开启有效}</div>
 			</div>
 			<div class="layui-form-item">
 				<label class="layui-form-label">{lang数据排序}</label>

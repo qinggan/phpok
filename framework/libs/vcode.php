@@ -1,12 +1,14 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/libs/vcode.php
-	Note	: 图形验证码类，使用PNG透明图片
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2014年1月6日
-***********************************************************/
+/**
+ * 图形验证码类，使用PNG透明图片
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2020年1月3日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class vcode_lib
 {
@@ -26,9 +28,6 @@ class vcode_lib
 		$this->count = 4;
 		$rand = mt_rand(0,1);
 		$this->btype = $rand ? '_bg_line' : '_bg_imagesetpixel';
-		/*if(file_exists($this->root.'_data/font/airbus_special.ttf')){
-			$this->font = $this->root.'_data/font/airbus_special.ttf';
-		}*/
 	}
 
 	public function width($width=76)
@@ -54,8 +53,8 @@ class vcode_lib
 		if(!$font){
 			return $this->font;
 		}
-		if(file_exists($this->root.$font)){
-			$this->font = $this->root.$font;
+		if(file_exists($font)){
+			$this->font = $font;
 		}else{
 			$this->font = '';
 		}
@@ -87,10 +86,16 @@ class vcode_lib
 		imagecolortransparent($aimg,$white_color);
 		$color = $this->color();
 		$color_id = imagecolorallocate($aimg,$color[0], $color[1], $color[2]);
+		$rand = rand(0,1);
+		if($rand){
+			$this->_bg_line($aimg,$color_id);
+		}else{
+			$this->_bg_imagesetpixel($aimg,$color_id);
+		}
 		if($this->font && function_exists('imagettftext')){
 			$next = 7;
 			for($i=0;$i<$this->count;$i++){
-				$angle = rand(-10,10);
+				$angle = rand(-30,30);
 				$rndtxt = $this->word[$i];
 				$size = rand(12,18);
 				imagettftext($aimg, $size, $angle, $next, ($this->height - 5), $color_id, $this->font, $rndtxt);
@@ -106,9 +111,7 @@ class vcode_lib
 				$leftx = $i<1 ? 5 : $i*$bx+rand(1,5);
 				imagestring($aimg,5,$leftx,$hy,$rndtxt,$color_id);
 			}
-		}
-		$name= $this->btype;
-		$this->$name($aimg,$color_id);
+		}		
 		header("Pragma:no-cache");
 		header("Cache-Control: no-cache, no-store, must-revalidate"); 
 		header("Content-type: image/png");
@@ -121,14 +124,21 @@ class vcode_lib
 	{
 		$max_x = $this->width - 1;
 		$max_y = $this->height - 1;
-		for($i=0;$i<$this->count;$i++){
-	        imageline($aimg,rand(1,$max_x), rand(1,$max_y),rand(1,$max_x), rand(1,$max_y),$color_id);
+		for($i=0;$i<5;$i++){
+			$x1 = rand(1,intval($max_x/2));
+			$y1 = rand(1,intval($max_y/2));
+			$x2 = rand(intval($max_x/2),$max_x);
+			$y2 = rand(intval($max_y/2),$max_y);
+			for($t=0;$t<2;$t++){
+				imageline($aimg,$x1+$t, $y1+$t,$x2+$t, $y2+$t,$color_id);
+			}
 	    }
+
 	}
 
 	private function _bg_imagesetpixel($aimg,$color_id=0)
 	{
-		$pxsum = 27 * $this->count;
+		$pxsum = 36 * $this->count;
 		$max_x = $this->width-1;
 		$max_y = $this->height - 1;
 		for($i=0;$i<$pxsum;$i++){

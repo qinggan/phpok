@@ -1,7 +1,6 @@
 <?php
 /**
  * 会员数据增删查改
- * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
