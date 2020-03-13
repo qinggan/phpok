@@ -7,7 +7,6 @@
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
  * @日期 2016年09月01日
 **/
-
 ;(function($){
 	$.cart = {
 		//添加到购物车中
@@ -20,7 +19,7 @@
 			}
 			$.phpok.json(url,function(rs){
 				if(rs.status){
-					$.dialog.tips(p_lang('成功加入购物车'));
+					$.dialog.tips(p_lang('成功加入购物车')).lock().time(1);
 					self.total();
 					return true;
 				}
@@ -32,7 +31,7 @@
 		/**
 		 * 自定义产品加入购物车
 		 * @参数 title 产品名称
-		 * @参数 price 价格 
+		 * @参数 price 价格
 		 * @参数 qty 数量
 		 * @参数 thumb 缩略图
 		**/
@@ -44,7 +43,7 @@
 			var self = this;
 			$.phpok.json(url,function(rs){
 				if(rs.status){
-					$.dialog.tips(p_lang('成功加入购物车'));
+					$.dialog.tips(p_lang('成功加入购物车')).lock().time(1);
 					self.total();
 					return true;
 				}
@@ -53,10 +52,11 @@
 			});
 			return false;
 		},
+
 		/**
 		 * 自定义产品立即订购
 		 * @参数 title 产品名称
-		 * @参数 price 价格 
+		 * @参数 price 价格
 		 * @参数 qty 数量
 		 * @参数 thumb 缩略图
 		**/

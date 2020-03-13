@@ -48,14 +48,14 @@
 			}
 			var val = $("#ele_"+identifier).val();
 			var th = '<th>';
-			th += '<input type="text" name="'+identifier+'_title[]" class="layui-input short" style="width:'+width+'px;float:left;" value="'+val+'" />';
+			th += '<input type="text" name="'+identifier+'_title[]" class="layui-input" value="'+val+'" />';
 			th += '<div style="position: absolute;top:5px;right:5px;" title="'+p_lang('删除')+'" onclick="$.phpok_form_param.delete_one(\''+identifier+'\',this)"><i class="layui-icon layui-icon-close-fill"></i></div>'
 			th += '</th>';
 			$("#"+identifier+"_tbl tr:eq(0)").append(th);
 			//定制列
 			$("#"+identifier+"_tbl tr").each(function(i){
 				if(i>0){
-					var td = '<td><input type="text" name="'+identifier+'_body[]" class="layui-input short" style="width:'+width+'px;" value="" /></td>';
+					var td = '<td><input type="text" name="'+identifier+'_body[]" class="layui-input" value="" /></td>';
 					$(this).append(td);
 				}
 			});

@@ -160,7 +160,6 @@
                     id: '#filePickerReady',
                     label: lang.uploadSelectFile
                 },
-                swf: '../../../webuploader/uploader.swf',
                 server: actionUrl,
                 fileVal: editor.getOpt('fileFieldName'),
                 duplicate: true,
