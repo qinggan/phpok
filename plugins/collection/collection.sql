@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_collection` (
   `list_tags_start` text NOT NULL COMMENT '网址采集范围开始',
   `list_tags_end` text NOT NULL COMMENT '网址采集范围结束',
   `url_tags` varchar(255) NOT NULL COMMENT '目标网址必须包含哪些字段',
+  `url_not_tags` varchar(255) NOT NULL COMMENT '内容网址不能包含哪些字符',
   `is_gzip` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0不使用GZIP，1使用',
   `is_proxy` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0不使用代理，1使用',
   `proxy_service` varchar(255) NOT NULL COMMENT '代理服务器',

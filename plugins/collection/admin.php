@@ -113,6 +113,7 @@ class admin_collection extends phpok_plugin
 		$array['list_tags_start'] = $this->get('list_tags_start','html_js');
 		$array['list_tags_end'] = $this->get('list_tags_end','html_js');
 		$array['url_tags'] = $this->get('url_tags');
+		$array['url_not_tags'] = $this->get('url_not_tags');
 		$array['is_gzip'] = $this->get('is_gzip','int');
 		$array['is_proxy'] = $this->get('is_proxy','int');
 		if($array['is_proxy']){
@@ -156,7 +157,7 @@ class admin_collection extends phpok_plugin
 		foreach($rs as $key=>$value){
 			$rs[$key] = addslashes($value);
 		}
-		$sql = "INSERT INTO ".$this->db->prefix."collection(title,linkurl,url_charset,project_id,cateid,listurl,list_tags_start,list_tags_end,url_tags,is_gzip,is_proxy,proxy_service,proxy_user,proxy_pass) VALUES('".$rs['title']."','".$rs['linkurl']."','".$rs['url_charset']."','".$rs['project_id']."','".$rs['cateid']."','".$rs['listurl']."','".$rs['list_tags_start']."','".$rs['list_tags_end']."','".$rs['url_tags']."','".$rs['is_gzip']."','".$rs['is_proxy']."','".$rs['proxy_service']."','".$rs['proxy_user']."','".$rs['proxy_pass']."')";
+		$sql = "INSERT INTO ".$this->db->prefix."collection(title,linkurl,url_charset,project_id,cateid,listurl,list_tags_start,list_tags_end,url_tags,url_not_tags,is_gzip,is_proxy,proxy_service,proxy_user,proxy_pass) VALUES('".$rs['title']."','".$rs['linkurl']."','".$rs['url_charset']."','".$rs['project_id']."','".$rs['cateid']."','".$rs['listurl']."','".$rs['list_tags_start']."','".$rs['list_tags_end']."','".$rs['url_tags']."','".$rs['url_not_tags']."','".$rs['is_gzip']."','".$rs['is_proxy']."','".$rs['proxy_service']."','".$rs['proxy_user']."','".$rs['proxy_pass']."')";
 		$insert_id = $this->db->insert($sql);
 		if($insert_id){
 			if($old_project_id == $rs['project_id']){
@@ -365,7 +366,7 @@ class admin_collection extends phpok_plugin
 	{
 		$flist = $this->model('fields')->tbl_fields('list');
 		$notsave = array('id','site_id','parent_id','cate_id','project_id','module_id','tpl','attr','replydate','user_id','sort','identifier','style','integral');
-		$alias = array('dateline'=>'发布时间','status'=>'状态','hidden'=>'隐藏');
+		$alias = array('dateline'=>'发布时间','lastdate'=>'最后修改时间','status'=>'状态','hidden'=>'隐藏');
 		$alias["hits"] = "查看次数";
 		$alias["seo_title"] = "SEO标题";
 		$alias["seo_keywords"] = "SEO关键字";
@@ -596,10 +597,20 @@ class admin_collection extends phpok_plugin
 			$picurl[] = $mypic_url;
 		}
 		$picurl = array_unique($picurl);
+		phpok_log($picurl);
 		foreach($picurl as $key=>$value){
 			$value = strtolower($value);
+			if(strpos($value,'?') !== false){
+				if(version_compare(PHP_VERSION,'5.3.0', '<')){
+					$tmp = strstr($value,'?');
+					$value = str_replace($tmp,'',$value);
+				}else{
+					$value = strstr($value,'?',true);
+				}
+			}
 			$ext = substr($value,-3);
-			if(!in_array($ext,array('jpg','png','gif'))){
+			$ext2 = substr($value,-4);
+			if(!in_array($ext,array('jpg','png','gif')) && $ext2 != 'jpeg'){
 				unset($picurl[$key]);
 			}
 		}
@@ -621,12 +632,22 @@ class admin_collection extends phpok_plugin
 			if(strlen($img)<1){
 				continue;
 			}
+			$value2 = $value;
+			if(strpos($value,'?') !== false){
+				if(version_compare(PHP_VERSION,'5.3.0', '<')){
+					$tmp = strstr($value,'?');
+					$value2 = str_replace($tmp,'',$value);
+				}else{
+					$value2 = strstr($value,'?',true);
+				}
+			}
+			$ext = strtolower(substr($value2,-3)) == 'peg' ? 'jpg' : strtolower(substr($value2,-3));
 			$tmp_array = array();
 			$tmp_array["cid"] = $cid;
 			$tmp_array["lid"] = $lid;
 			$tmp_array["fid"] = $fid;
 			$tmp_array["srcurl"] = $value;
-			$tmp_array["ext"] = strtolower(substr($value,-3));
+			$tmp_array["ext"] = $ext;
 			$filename = $this->time."_".$key."_".rand(100,999).".".$ext;
 			$this->lib('file')->save_pic($img,$save_path.$filename);
 			$tmp_array["newurl"] = str_replace($this->dir_root,"",$save_path.$filename);
@@ -635,7 +656,6 @@ class admin_collection extends phpok_plugin
 			}else{
 				$this->db->insert_array($tmp_array,'collection_files');
 			}
-			//sleep(1);
 			usleep(500000);//沉睡500毫秒
 		}
 		return true;
@@ -929,7 +949,8 @@ class admin_collection extends phpok_plugin
 		$list_url = $matches[2] ? $matches[2] : array();
 		$domain_rs = parse_url($rs['linkurl']);
 		$tmplist = array();
-		foreach($list_url AS $key=>$value){
+		$http_type = parse_url($rs['linkurl'],PHP_URL_SCHEME);
+		foreach($list_url as $key=>$value){
 			if(!$value){
 				continue;
 			}
@@ -946,7 +967,7 @@ class admin_collection extends phpok_plugin
 			if($rs["url_tags"]){
 				$tmp_array = explode("|",$rs["url_tags"]);
 				$ok = false;
-				foreach($tmp_array As $k=>$v){
+				foreach($tmp_array as $k=>$v){
 					if(strpos($url,$v) !== false){
 						$ok = true;
 					}
@@ -955,12 +976,29 @@ class admin_collection extends phpok_plugin
 					continue;
 				}
 			}
-			$tmp_str = strtolower(substr($url,0,7));
-			if($tmp_str != "http://" && $tmp_str != "https:/"){
-				if(substr($url,0,1) == "/"){
-					$url = substr($url,1);
+			if($rs['url_not_tags']){
+				$tmp_array = explode("|",$rs["url_not_tags"]);
+				$ok = true;
+				foreach($tmp_array as $k=>$v){
+					if(strpos($url,$v) !== false){
+						$ok = false;
+					}
 				}
-				$url = $rs["linkurl"].$url;
+				if($ok == false){
+					continue;
+				}
+			}
+			$tmp_str = strtolower(substr($url,0,7));
+			
+			if($tmp_str != "http://" && $tmp_str != "https:/"){
+				if(substr($url,0,2) == '//'){
+					$url = $http_type.':'.$url;
+				}else{
+					if(substr($url,0,1) == "/"){
+						$url = substr($url,1);
+					}
+					$url = $rs["linkurl"].$url;
+				}
 			}
 			$url = str_replace("&amp;","&",$url);
 			$parse = parse_url($url);
@@ -981,7 +1019,7 @@ class admin_collection extends phpok_plugin
 		}
 		$content = str_replace(array("\r","\n","\t"),"",$content);
 		$tag = $this->safe_code($tag);
-		$tmp_array = preg_split("/".$tag."/isU",$content);
+		$tmp_array = preg_split("/".$tag."/is",$content);
 		if($type == "start"){
 			$tmp_count = count($tmp_array);
 			if($tmp_count>1){
@@ -1005,10 +1043,10 @@ class admin_collection extends phpok_plugin
 		}
 		$tag = str_replace("[&]","&",$tag);
 		$tag = str_replace('[space]',"\s+",$tag);
-		$old = array("\r","\n","\t","/","|","[","]",".","?","(",")");
-		$new = array("","","","\/","\|","\[","\]","\.","\?","\(","\)");
+		$old = array("\r","\n","\t","/","|","[","]",".","?",'"',"'");
+		$new = array("","","","\/","\|","\[","\]","\.","\?",'\"',"\'");
 		$tag = str_replace($old,$new,$tag);
-		$tag = str_replace("\(*\)","(.*?)",$tag);
+		$tag = str_replace('(*)',"(.*?)",$tag);
 		return $tag;
 	}
 
@@ -1197,7 +1235,7 @@ class admin_collection extends phpok_plugin
 			$sql = "SELECT id FROM ".$this->db->prefix."collection_list WHERE cid IN(".$cid.") AND status=1 ORDER BY id ASC LIMIT 0,1";
 			$tmp_rs = $this->db->get_one($sql);
 			if(!$tmp_rs){
-				$this->success('数据已发布完成，请到网站平台上检查数据是否发布完整',$this->url('plugin','exec','id=collection&exec=manage'));
+				$this->success('数据已发布完成，请到网站平台上检查数据是否发布完整');
 			}
 			$id = $tmp_rs['id'];
 		}else{
@@ -1211,7 +1249,7 @@ class admin_collection extends phpok_plugin
 			$pageurl .= "&lid=".rawurlencode($lid);
 			$list = explode(",",$lid);
 			if(!$list[$numid]){
-				$this->success('数据已发布完成，请到网站平台上检查数据是否发布完整',$this->url('plugin','exec','id=collection&exec=manage'));
+				$this->success('数据已发布完成，请到网站平台上检查数据是否发布完整');
 			}
 			$id = $list[$numid];
 		}
@@ -1260,6 +1298,11 @@ class admin_collection extends phpok_plugin
 		$main = $ext = $biz = array();
 		$sql = "SELECT * FROM ".$this->db->prefix."collection_format WHERE lid='".$id."'";
 		$clist = $this->db->get_all($sql,'fid');
+		//生
+		$tag2fid = array();
+		foreach($taglist as $key=>$value){
+			$tag2fid[$value['identifier']] = $value['id'];
+		}
 		foreach($taglist as $key=>$value){
 			if($value['tags_type'] == 'var'){
 				$content = $this->content_format_it($clist[$value['id']]['content'],$value,$id);
@@ -1267,6 +1310,17 @@ class admin_collection extends phpok_plugin
 				$content = $value['rules'];
 				if($content == '{time}'){
 					$content = $this->time;
+				}
+				if($content == '{url}'){
+					$content = $rs['url'];
+				}
+				if(strpos($content,'[') !== false){
+					$content = str_replace(array('[',']'),'',$content);
+					if($tag2fid[$content]){
+						$content = $this->content_format_it($clist[$tag2fid[$content]]['content'],$value,$id);
+					}else{
+						$content = '';
+					}
 				}
 			}
 			if(!$content){
@@ -1464,5 +1518,44 @@ class admin_collection extends phpok_plugin
 	        }
 	    }
 	    return $fantis;
+	}
+
+	public function preview()
+	{
+		$tid = $this->get('tid','int');
+		if(!$tid){
+			$this->error('未指定ID');
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."collection_list WHERE id='".$tid."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			$this->error('网址不存在');
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."collection WHERE id='".$rs['cid']."'";
+		$root = $this->db->get_one($sql);
+		$this->lib('curl')->referer($root['linkurl']);
+		$this->lib('curl')->is_gzip($root['is_gzip']);
+		$this->lib('curl')->is_proxy($root['is_proxy']);
+		if($root['is_proxy'] && $root['proxy_service']){
+			$tmp = explode(":",$root['proxy_service']);
+			if(!$tmp[1]){
+				$tmp[1] = 80;
+			}
+			$this->lib('curl')->set_proxy($tmp[0],$tmp[1],$root["proxy_user"],$root["proxy_pass"]);
+		}
+		$content = $this->lib('curl')->get_content($rs['url']);
+		//去除JS
+		$content = preg_replace("/<scrip(.*)>(.*)<\/script>/isU","",$content);
+		//增加baseurl
+		$tmp = parse_url($rs['url']);
+		$baseurl = $tmp['scheme']."://".$tmp['host'];
+		if($tmp['port'] && $tmp['port'] != '80' && $tmp['port'] != '443'){
+			$baseurl .= ':'.$tmp['port'];
+		}
+		$baseurl .= '/';
+		$this->assign('baseurl',$baseurl);
+		//$content = preg_replace("/<body(.*)>/isU","<base href=\"'.$root['linkurl'].'\" /><body\\1>",$content);
+		$this->assign('content',$content);
+		$this->_view("collection_preview.html");
 	}
 }

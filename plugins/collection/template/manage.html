@@ -129,12 +129,10 @@ function cj_post()
 		$.dialog.alert("请选择要执行的项目！");
 		return false;
 	}
-	var qc = confirm("确定要执行发布吗？在执行发布过程中，请不要关闭浏览器！");
-	if(qc == "0"){
-		return false;
-	}
-	var gourl = "{url ctrl=plugin func=exec id=collection exec=post_save/}&cid="+$.str.encode(id);
-	$.phpok.go(gourl);
+	$.dialog.confirm('确定要执行发布吗？在执行发布过程中，请不要关闭浏览器！',function(){
+		var gourl = "{url ctrl=plugin func=exec id=collection exec=post_save/}&cid="+$.str.encode(id);
+		$.win('发布内容',gourl);
+	});	
 }
 
 function collection_copy(id)
@@ -261,7 +259,7 @@ function update_cate(val)
 			<td>{$value.id}</td>
 			<td><label for="m_{$value.id}" id="project_title_{$value.id}">{$value.title}</label></td>
 			<td>{$value.p_title}<!-- if $value.c_title --> / {$value.c_title}<!-- /if --></td>
-			<td>{$value.linkurl}</td>
+			<td><a href="{$value.linkurl}" target="_blank">{$value.linkurl}</a></td>
 			<td>
 				<div class="layui-btn-group">
 					<input type="button" class="layui-btn layui-btn-sm" value="字段" onclick="collection_tags('{$value.id}')" />
@@ -282,7 +280,8 @@ function update_cate(val)
 			<input type="button" value="采网址" onclick="cj_url()" class="layui-btn layui-btn-sm"/>
 			<input type="button" value="采内容" onclick="cj_content()" class="layui-btn layui-btn-sm"/>
 			<input type="button" value="发布内容" onclick="cj_post()" class="layui-btn layui-btn-sm"/>
-			<input type="button" value="未采集内容" onclick="$.phpok.go('{url ctrl=plugin func=exec id=collection exec=collection_list status=3/}')" class="layui-btn layui-btn-sm"/>
+			<input type="button" value="未采集内容" onclick="$.win('未采集内容','{url ctrl=plugin func=exec id=collection exec=collection_list status=3/}')" class="layui-btn layui-btn-sm"/>
+			<input type="button" value="未发布内容" onclick="$.win('未发布内容','{url ctrl=plugin func=exec id=collection exec=collection_list status=1/}')" class="layui-btn layui-btn-sm"/>
 			<div class="layui-btn layui-btn-sm layui-btn-normal">执行进度：<span class="darkblue" id="collection_status"></span></div>
 		</div>
 		<div class="clear"></div>

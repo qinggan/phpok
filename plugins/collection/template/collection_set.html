@@ -282,6 +282,17 @@ $(document).ready(function(){
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
+				网址不包含
+			</label>
+			<div class="layui-input-block">
+				<input type="text" id="url_not_tags" name="url_not_tags" value="{$rs.url_not_tags}" class="layui-input" />
+			</div>
+			<div class="layui-input-block mtop">
+				设置内容网址不能包含哪些字符，多个字符用 “<span class="red">|</span>” 分隔，不限设置为空
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
 				压缩传输
 			</label>
 			<div class="layui-input-inline auto">

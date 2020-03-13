@@ -140,6 +140,11 @@ function cj_post()
 		$.phpok.go(url);
 	});
 }
+function cj_preview(id)
+{
+	var url = get_plugin_url('collection','preview','tid='+id);
+	$.win('预览_#'+id,url);
+}
 </script>
 <input type="hidden" id="start_count" value="0" />
 <div class="layui-card">
@@ -148,16 +153,18 @@ function cj_post()
 		<thead>
 		<tr>
 			<th width="20px">&nbsp;</th>
+			<th>ID</th>
 			<th width="60px">状态</th>
-			<th class="lft">网址</th>
+			<th>网址</th>
 			<th>&nbsp;</th>
 		</tr>
 		</thead>
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 		<tr id="title_{$value.id}">
 			<td align='center'><input type="checkbox" value="{$value.id}" /></td>
+			<td>{$value.id}</td>
 			<input type="hidden" id="cateid_{$value.id}" value="{$value.cid}" />
-			<td align='center' id="status_{$value.id}">
+			<td id="status_{$value.id}">
 				<!-- if $value.status == 2 -->
 				已发布
 				<!-- elseif $value.status == 1 -->
@@ -169,6 +176,7 @@ function cj_post()
 			<td><a href="{$value.url}" target="_blank">{$value.url}</a></td>
 			<td align="center">
 				<div class="layui-btn-group">
+					<input type="button" value="{lang预览}" onclick="cj_preview('{$value.id}')" class="layui-btn layui-btn-normal layui-btn-sm" />
 					<input type="button" value="{lang编辑}" onclick="to_view('{$value.id}')" class="layui-btn layui-btn-sm" />
 					<input type="button" value="{lang删除}" onclick="to_del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 				</div>
