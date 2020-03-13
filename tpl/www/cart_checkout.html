@@ -82,7 +82,9 @@ function update_coupon()
 			$.dialog.alert(rs.info);
 			return false;
 		}
-		$.phpok.reload();
+		$.dialog.tips('请稍候，正在刷新页面…',function(){
+			$.phpok.reload();
+		}).lock().time(2);
 		return true;
 	})
 }
@@ -171,7 +173,7 @@ function update_coupon()
 			<div class="am-panel-bd">
 				<div class="am-g am-g-collapse">
 					<div class="am-u-sm-2"><input type="text" name="coupon" id="coupon" value="{$coupon_code}" /></div>
-					<div class="am-u-sm-1"><input type="button" value="执行优惠" onclick="update_coupon()" class="am-btn am-btn-default" /></div>
+					<div class="am-u-sm-1"><input type="button" value="提交优惠码" onclick="update_coupon()" /></div>
 					<div class="am-u-sm-8" id="coupon_tips"></div>
 				</div>
 			</div>

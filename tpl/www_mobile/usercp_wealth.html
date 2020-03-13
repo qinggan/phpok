@@ -40,7 +40,9 @@ function payit(id,title)
 	<div class="am-panel am-panel-default">
 		<div class="am-panel-hd">
 			{$value.title}
-			
+			<div class="am-fr">
+				<a href="{url ctrl=usercp func=wealth_log id=$value.id/}"><i class="am-icon-angle-double-right am-icon-fw"></i></a>
+			</div>
 		</div>
 		<div class="am-panel-bd">
 			<div>您当前有 <span class="red"><!-- if $value.val -->{$value.val}<!-- else -->0<!-- /if --></span> {$value.unit}</div>

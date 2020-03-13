@@ -31,6 +31,23 @@ function logout(t)
 
 
 ;(function($){
+	var timeout_obj = null;
+	var time = 60;
+	var time_lock = false;
+
+	function countdown(obj)
+	{
+		time--;
+		if(time < 1){
+			$(obj).val('发送验证码');
+			time_lock = false;
+			time = 60;
+			window.clearInterval(timeout_obj);
+			return true;
+		}
+		var tips = "已发送("+time+")";
+		$(obj).val(tips);
+	}
 
 	/**
 	 * 会员相关操作
@@ -77,6 +94,93 @@ function logout(t)
 			});
 		}
 	};
+
+	$.register = {
+		email_code:function(email_id,tpl_id,obj)
+		{
+			if(time_lock){
+				$.dialog.tips('验证码已发送，请稍候…');
+				return false;
+			}
+			var url = api_url('vcode','email','act=register');
+			if(tpl_id && tpl_id != 'undefined'){
+				url += '&tplid='+tpl_id;
+			}
+			var email = $("#"+email_id).val();
+			if(email){
+				url += "&email="+$.str.encode(email);
+			}
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				time = 60;
+				time_lock = true;
+				timeout_obj = window.setInterval(function(){
+					countdown(obj);
+				},1000);
+				return true;
+			});
+		},
+		sms_code:function(mobile_id,tpl_id,obj)
+		{
+			if(time_lock){
+				$.dialog.tips('验证码已发送，请稍候…');
+				return false;
+			}
+			var url = api_url('vcode','sms','act=register');
+			if(tpl_id && tpl_id != 'undefined'){
+				url += '&tplid='+tpl_id;
+			}
+			var mobile = $("#"+mobile_id).val();
+			if(mobile){
+				url += "&mobile="+$.str.encode(mobile);
+			}
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				time = 60;
+				time_lock = true;
+				timeout_obj = window.setInterval(function(){
+					countdown(obj);
+				},1000);
+				return true;
+			});
+		},
+		save:function(id)
+		{
+			if(!$('#is_ok').prop('checked')){
+				$.dialog.alert('注册前请先同意本站协议');
+				return false;
+			}
+			$("#"+id).ajaxSubmit({
+				'url':api_url('register','save'),
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					if(rs.status){
+						$.dialog.tips('会员注册成功').lock();
+						var url = $("#_back").val();
+						if(!url){
+							url = webroot;
+						}
+						$.phpok.go(url);
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
+			return false;
+		},
+		group:function(id)
+		{
+			$.phpok.go(get_url('register','','group_id='+id));
+		}
+	}
 
 	/**
 	 * 评论相关操作

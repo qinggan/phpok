@@ -35,6 +35,9 @@ function payit(id,title)
 						<td class="am-text-center">
 							<!-- if $value.ifpay --><input type="button" value="充值" class="am-btn am-btn-primary am-btn-sm" onclick="payit('{$value.id}','{$value.title}')" /><!-- /if -->
 						</td>
+						<td class="am-text-center">
+							<a href="{url ctrl=usercp func=wealth_log id=$value.id/}" class="am-btn am-btn-primary am-btn-sm">日志</a>
+						</td>
 					</tr>
 					<!-- /loop -->
 				</tbody>

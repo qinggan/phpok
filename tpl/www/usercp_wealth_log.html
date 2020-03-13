@@ -1,0 +1,38 @@
+<!-- include tpl=header title=$rs.title isback=true -->
+<div class="main">
+	<!-- include tpl=block/breadcrumb -->
+	<div class="left"><!-- include tpl=block/usercp_nav --></div>
+	<div class="right">
+
+		<!-- if $rslist -->
+		<div class="am-panel am-panel-default">
+			<table class="am-table am-table-centered am-table-hover">
+				<thead>
+				<tr>
+					<th>说明</th>
+					<th>收益</th>
+					<th>时间</th>
+				</tr>
+				</thead>
+				<tbody>
+					<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+					<tr>
+						<td class="am-text-left">{$value.note}</td>
+						<td>{$value.val}</td>
+						<td>{func date 'Y-m-d H:i' $value.dateline}</td>
+					</tr>
+					<!-- /loop -->
+				</tbody>
+			</table>
+		</div>
+		<!-- else -->
+		<div style="height:100px" class="am-vertical-align">
+			<div style="width:100%" class="am-vertical-align-middle am-text-center am-text-gray">暂无收益</div>
+		</div>
+		<!-- /if -->
+		<!-- include tpl=block/pagelist -->
+	</div>
+	<div class="clear"></div>
+</div>
+
+<!-- include tpl=foot -->

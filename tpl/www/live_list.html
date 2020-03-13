@@ -1,0 +1,22 @@
+<!-- include tpl=header menutitle=$page_rs.title -->
+<!-- if $cate_rs.banner || $page_rs.banner -->
+<div class="banner" style="background-image:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}');"><img src="{#images#}/blank.gif" alt="{$cate_rs.title}" /></div>
+<!-- /if -->
+<div class="main">
+	<!-- include tpl=block/breadcrumb -->
+	<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered" data-am-gallery="{  }">
+		<!-- loop from=$rslist key=$key value=$value -->
+		<li>
+			<div class="am-gallery-item">
+				<a href="{$value.url}" title="{$value.title}">
+					<img src="{$value.thumb.gd.thumb}" alt="{$value.title}" />
+					 <h3 class="am-gallery-title">{$value.title}</h3>
+					<div class="am-gallery-desc">{func time_format $value.dateline}</div>
+				</a>
+			</div>
+		</li>
+		<!-- /loop -->
+	</ul>
+	<!-- include tpl=block/pagelist -->
+</div>
+<!-- include tpl=footer -->

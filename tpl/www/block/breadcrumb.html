@@ -48,6 +48,9 @@
 		<li class="am-active"><a href="{url ctrl=usercp func=email/}">修改邮箱</a></li>
 		<!-- elseif $sys.func == 'wealth' -->
 		<li class="am-active"><a href="{url ctrl=usercp func=wealth/}">我的财富</a></li>
+		<!-- elseif $sys.func == 'wealth_log' -->
+		<li><a href="{url ctrl=usercp func=wealth/}">我的财富</a></li>
+		<li class="am-active"><a href="{url ctrl=usercp func=wealth_log id=$rs.id/}">{$rs.title}</a></li>
 		<!-- elseif $sys.func == 'introducer' -->
 		<li class="am-active"><a href="{url ctrl=usercp func=introducer/}">推荐分享</a></li>
 		<!-- elseif $sys.func == 'list' && $page_rs -->
