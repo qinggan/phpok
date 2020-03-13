@@ -1,0 +1,37 @@
+<script type="text/javascript">
+function copy_id()
+{
+	var url = get_plugin_url('copy','copy_id');
+	var ids = $.input.checkbox_join();
+	if(!ids){
+		$.dialog.alert("请选择要复制的主题");
+		return false;
+	}
+	var list = ids.split(",");
+	url += "&ids="+$.str.encode(ids);
+	$.dialog.prompt("请设置要将选中的主题复制数量（范围：1－10）：",function(val){
+		if(!val || parseInt(val)<1){
+			$.dialog.alert("复制的数量不能小于1");
+			return false;
+		}
+		if(val && parseInt(val) > 10){
+			$.dialog.alert("复制的数量不能大于10");
+			return false;
+		}
+		url += "&count="+val;
+		$.phpok.json(url,function(rs){
+			if(!rs.status){
+				$.dialog.alert(rs.info);
+				return false;
+			}
+			$.dialog.tips('主题复制成功',function(){
+				$.phpok.reload();
+			}).lock();
+		});
+	},"{$plugin_rs.param.max_count}");
+}
+$(document).ready(function(){
+	//执行HTML
+	$("#plugin_button").after('<li><input type="button" value="复制" class="layui-btn layui-btn-sm" onclick="copy_id()" /></li>');
+});
+</script>
