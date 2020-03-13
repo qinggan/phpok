@@ -173,3 +173,81 @@ ALTER TABLE `qinggan_wealth_rule` ADD `if_stop` TINYINT( 1 ) UNSIGNED NOT NULL D
 
 -- 2019年10月06日
 ALTER TABLE `qinggan_all` ADD `is_api` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0禁用API，1启用API';
+
+-- 2019年10月30日
+ALTER TABLE `qinggan_tag` ADD `seo_title` VARCHAR( 255 ) NOT NULL COMMENT 'SEO标题';
+ALTER TABLE `qinggan_tag` ADD `seo_keywords` VARCHAR( 255 ) NOT NULL COMMENT 'SEO关键字';
+ALTER TABLE `qinggan_tag` ADD `seo_desc` VARCHAR( 255 ) NOT NULL COMMENT 'SEO描述';
+
+-- 2019年11月5日
+ALTER TABLE `qinggan_tag` ADD `tpl` VARCHAR( 255 ) NOT NULL COMMENT '模板名称';
+
+-- 2019年11月5日
+ALTER TABLE `qinggan_tag` CHANGE `replace_count` `replace_count` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '替换次数';
+
+-- 2019年11月9日
+CREATE TABLE `qinggan_tag_node` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `tag_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '关联的TagID',
+  `identifier` varchar(255) NOT NULL COMMENT '标识变量名，在同一个标签里不能重复',
+  `title` varchar(255) NOT NULL COMMENT '节点名称',
+  `psize` int(11) NOT NULL DEFAULT '0' COMMENT '默认文章数，用于未指定时自动读取的数量',
+  `ids` text NOT NULL COMMENT '文章ID，多个ID用英文逗号隔开',
+  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '为1表示读列表，为0表示随机从ids里选择一篇读取（如果有多个）',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0未启用，1启用',
+  `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '值越小越往前排，最大不超过255',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='标签节点管理器';
+
+-- 2019年11月16日
+ALTER TABLE `qinggan_list` ADD `lastdate` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后修改时间' AFTER `dateline`;
+ALTER TABLE `qinggan_tag` ADD `identifier` VARCHAR(255) NOT NULL COMMENT '标识' AFTER `site_id`;
+UPDATE `qinggan_list` SET lastdate=dateline;
+
+-- 2019年11月20日
+CREATE TABLE IF NOT EXISTS `qinggan_menu` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID，主键',
+  `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
+  `group_id` varchar(255) NOT NULL COMMENT '菜单组ID',
+  `parent_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID，支持无限级菜单',
+  `title` varchar(255) NOT NULL COMMENT '菜单名称',
+  `type` varchar(255) NOT NULL COMMENT '类型，project指项目，cate指分类，content指内容，link自定义',
+  `project_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `list_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `link` varchar(255) NOT NULL COMMENT '自定义链接，最长不能超过255',
+  `target` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0当前页，1新窗口',
+  `is_userid` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0游客，1仅限会员',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，最大255，值越小越往前靠',
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未审，1正常',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='菜单管理';
+
+-- 2020年1月3日
+ALTER TABLE `qinggan_project` ADD `psize_api` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT 'API接口读取的数量';
+
+ALTER TABLE `qinggan_cate` ADD `psize_api` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT 'API接口读取的数量';
+
+-- 2020年1月7日
+ALTER TABLE `qinggan_project` ADD `limit_times` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '发布时间间隔限制，0表示不限制';
+ALTER TABLE `qinggan_project` ADD `limit_similar` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '相似度值限制，0表示不限制';
+
+-- 2020年3月10日
+ALTER TABLE `qinggan_order_product`  ADD `parent_tid` INT NOT NULL DEFAULT '0' COMMENT '父级产品ID，用于区分购买的产品是主产品ID还是配件产品，捆绑销售用于区分是从哪个主产品进入的'  AFTER `tid`;
+
+CREATE TABLE IF NOT EXISTS `qinggan_item_merge` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `type` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0表示组合价格模式，1表示单独价格模式',
+  `price` decimal(16,4) NOT NULL COMMENT '产品价格，仅在组合模式下有效',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='产品组合销售';
+
+CREATE TABLE IF NOT EXISTS `qinggan_item_merge_list` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `item_id` int(11) NOT NULL COMMENT '组合产品ID',
+  `tid` int(11) NOT NULL COMMENT '产品ID',
+  `price` decimal(16,4) NOT NULL COMMENT '产品价格，仅在组合ID的类型为独立价格时有效',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='组合产品明细';
