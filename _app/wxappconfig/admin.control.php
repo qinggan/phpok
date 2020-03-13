@@ -68,6 +68,11 @@ class admin_control extends \phpok_control
 		$this->assign('tab_bgcolor',$tab_bgcolor);
 		$top_bgcolor = form_edit('top_bgcolor',$rs['top_bgcolor'],'text','form_btn=color&ext_include_3=1');
 		$this->assign('top_bgcolor',$top_bgcolor);
+		$usercp_bgcolor = form_edit('usercp_bgcolor',$rs['usercp_bgcolor'],'text','form_btn=color&ext_include_3=1');
+		$this->assign('usercp_bgcolor',$usercp_bgcolor);
+		//usercp_txtcolor
+		$usercp_txtcolor = form_edit('usercp_txtcolor',$rs['usercp_txtcolor'],'text','form_btn=color&ext_include_3=1');
+		$this->assign('usercp_txtcolor',$usercp_txtcolor);
 
 		if($load_app_json){
 			$tmplist = $info['pages'];
@@ -104,31 +109,10 @@ class admin_control extends \phpok_control
 		if(!$data['text_color']){
 			$this->error(P_Lang('文本颜色代码不能为空'));
 		}
-		$tmplist = array();
-		$clear_url = $this->config['url'].'wxapp/';
-		for($i=0;$i<5;$i++){
-			$tmp = array();
-			$tmp['title'] = $this->get('title_'.$i);
-			$tmp['thumb'] = $this->get('thumb_'.$i);
-			if($tmp['thumb']){
-				$tmp['thumb'] = str_replace($clear_url,'',$tmp['thumb']);
-			}
-			$tmp['thumb_selected'] = $this->get('thumb_selected_'.$i);
-			if($tmp['thumb_selected']){
-				$tmp['thumb_selected'] = str_replace($clear_url,'',$tmp['thumb_selected']);
-			}
-			$tmp['param'] = $this->get('param_'.$i);
-			$tmp['page'] = $this->get('page_'.$i);
-			$tmplist[$i] = $tmp;
-		}
-		$data['rslist'] = $tmplist;
+		$data['usercp_bgcolor'] = $this->get('usercp_bgcolor');
+		$data['usercp_bgimg'] = $this->get('usercp_bgimg');
+		$data['usercp_txtcolor'] = $this->get('usercp_txtcolor');
 		$this->model('wxappconfig')->save($data);
-		if(file_exists($this->dir_root.'wxapp/app.json')){
-			$write_app_json = $this->get('write_app_json','int');
-			if($write_app_json){
-				$this->update_wxapp_json($data);
-			}
-		}
 		$this->success();
 	}
 

@@ -42,4 +42,25 @@ class nodes_phpok extends \_init_auto
 		return true;
 	}
 
+	/**
+	 * 内容节点格式化
+	 */
+	public function PHPOK_arc()
+	{
+		$arc = $this->data('arc');
+		if(!$arc){
+			return false;
+		}
+		$info = $this->model('dirtywords')->read();
+		if(!$info){
+			return false;
+		}
+		$list = explode("\n",trim($info));
+		$arc['title'] = str_replace($list,'[**]',$arc['title']);
+		if($arc['content']){
+			$arc['content'] = str_replace($list,'[**]',$arc['content']);
+		}
+		$this->data('arc',$arc);
+		return true;
+	}
 }

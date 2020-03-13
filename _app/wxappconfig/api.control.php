@@ -24,6 +24,16 @@ class api_control extends \phpok_control
 		parent::control();
 	}
 
+	public function config_f()
+	{
+		if(!file_exists($this->dir_data.'wxappconfig.php')){
+			$this->error(P_Lang('未配置服务端小程序'));
+		}
+		include_once($this->dir_data.'wxappconfig.php');
+		unset($wxconfig['wxapp_secret']);//安全考虑，去除密钥
+		$this->success($wxconfig);
+	}
+
 	public function code_f()
 	{
 		$code = $this->get('code');
@@ -39,7 +49,22 @@ class api_control extends \phpok_control
 		}
 		$this->success();
 	}
-	
+
+	/**
+	 * 会员登录（非会员自动注册）
+	 * @参数 code 通过 wx.login 获取到的 code 信息，用于获取 session_key 和 openid
+	 * @参数 enData 获取手机号密文【包括敏感数据在内的完整用户信息的加密数据】
+	 * @参数 iv 获取手机号【加密算法的初始向量】
+	 * @参数 share_uid 推荐人ID
+	 * @参数 share_code 推荐码
+	 * @参数 nickname 微信昵称，如果昵称未被使用，则为会员账号
+	 * @参数 headimg 微信头像
+	 * @参数 gender 性别
+	 * @参数 country 国家
+	 * @参数 province 省份
+	 * @参数 city 城市
+	 * @参数 language 语言标识
+	**/
 	public function login_f()
 	{
 		$code = $this->get('code');
@@ -72,26 +97,92 @@ class api_control extends \phpok_control
 		if($info['unionid']){
 			$unionid = $info['unionid'];
 		}
-		$wx_user = $this->model('wxappconfig')->get_user($openid,$unionid);
-		if(!$wx_user){
-			$user_id = $this->_account_create($openid,$unionid);
-		}else{
-			$user_id = $this->_account_update($wx_user,$openid,$unionid);
+		//判断是否有手机号
+		$enData = $this->get('enData');
+		$iv = $this->get('iv');
+		$mobile = '';
+		if($enData && $iv && $info['session_key']){
+			$this->lib('weixin')->app_id($rs['wxapp_id']);
+			$this->lib('weixin')->session_key($info['session_key']);
+			$tmp = $this->lib('weixin')->decode($enData,$iv);
+			$mobile = $tmp['phoneNumber'];
 		}
-		if(!$user_id){
-			$this->error(P_Lang('会员登录失败，请联系管理员'));
+		//检测会员是否存在
+		if($mobile){
+			$user = $this->model('user')->get_one($mobile,'mobile',false,false);
+			if($user){
+				if(!$user['status']){
+					$this->error(P_Lang('您账号未审核，请联系管理员'));
+				}
+				if($user['status'] == 2){
+					$this->error(P_Lang('您的账号已锁定，请联系管理员'));
+				}
+				$this->_account($openid,$unionid,$user['id']);
+				$this->session->assign('user_id',$user['id']);
+				$this->session->assign('user_name',$user['user']);
+				$this->session->assign('user_gid',$user['group_id']);
+				$this->session->assign('wx_openid',$openid);
+				$this->session->assign('is_miniprogram',true);
+				$this->success();
+			}
 		}
-		$user = $this->model('user')->get_one($user_id);
+		$wx_user = $this->model('wxappconfig')->get_user($openid);
+		if($wx_user && $wx_user['uid']){
+			$user = $this->model('user')->get_one($wx_user['uid'],'id',false,false);
+			if($user){
+				if(!$user['status']){
+					$this->error(P_Lang('您账号未审核，请联系管理员'));
+				}
+				if($user['status'] == 2){
+					$this->error(P_Lang('您的账号已锁定，请联系管理员'));
+				}
+				$this->_account($openid,$unionid,$user['id']);
+				$this->session->assign('user_id',$user['id']);
+				$this->session->assign('user_name',$user['user']);
+				$this->session->assign('user_gid',$user['group_id']);
+				$this->session->assign('wx_openid',$openid);
+				$this->session->assign('is_miniprogram',true);
+				$this->success();
+			}
+			$wx_user['uid'] = 0;
+		}
+		$nickname = $this->get('nickname');
+		$tmp = $this->model('user')->get_one($nickname,'user',false,false);
+		$account = $tmp ? uniqid("WX-") : $nickname;
+		$group = $this->model('usergroup')->get_default(true);
+		$data = array('user'=>$account,'group_id'=>$group['id'],'mobile'=>$mobile,'status'=>1);
+		$data['regtime'] = $this->time;
+		$data['avatar'] = $this->get('headimg');
+		$insert_id = $this->model('user')->save($data);
+		if(!$insert_id){
+			$this->error(P_Lang('会员注册失败，请联系管理员'));
+		}
+		$ext = array('id'=>$insert_id);
+		$this->model('user')->save_ext($ext);
+		//获取推荐人
+		$relaction_id = $this->get('share_uid','int');
+		if(!$relaction_id){
+			$code = $this->get('share_code');
+			if($code){
+				$chk = $this->model('user')->get_one($code,'code',false,false);
+				if($chk){
+					$relaction_id = $chk['id'];
+				}
+			}
+		}
+		if(!$relaction_id && $this->session->val('introducer')){
+			$relaction_id = $this->session->val('introducer');
+		}
+		if($relaction_id){
+			$this->model('user')->save_relation($insert_id,$relaction_id);
+		}
+		$user = $this->model('user')->get_one($insert_id);
 		$this->session->assign('user_id',$user['id']);
 		$this->session->assign('user_name',$user['user']);
 		$this->session->assign('user_gid',$user['group_id']);
-		$array = array();
-		$array['session_name'] = $this->session->sid();
-		$array['session_val'] = $this->session->sessid();
 		$this->session->assign('wx_openid',$openid);
 		$this->session->assign('is_miniprogram',true);
-		$array['login_status'] = true;
-		$this->success($array);
+		$this->success();
 	}
 
 	public function openid_f()
@@ -126,93 +217,84 @@ class api_control extends \phpok_control
 		$this->success($info['openid']);
 	}
 	
-	private function _account_create($openid,$unionid='')
+	private function _account($openid='',$unionid='',$userid=0)
 	{
-		$data = array('openid'=>$openid);
+		$data = array();
+		$data['openid'] = $openid;
 		$data['unionid'] = $unionid;
-		$data['lastlogin'] = $this->time;
 		$data['headimg'] = $this->get('headimg');
 		$data['nickname'] = $this->get('nickname');
 		$data['sex'] = $this->get('gender');
 		$data['country'] = $this->get('country');
 		$data['province'] = $this->get('province');
 		$data['city'] = $this->get('city');
-		//检测昵称在账号中是否启用
-		
-		$tmp = $this->model('user')->get_one($data['nickname'],'user',false,false);
-		$account = $tmp ? ($data['nickname'].'-'.$this->time) : $data['nickname'];
-		$group = $this->model('usergroup')->get_default(true);
-		$user = array('user'=>$account);
-		if($group){
-			$user['group_id'] = $group['id'];
+		$data['uid'] = $userid;
+		$wxuser = $this->model('wxappconfig')->get_user($openid);
+		if($wxuser){
+			return $this->model('wxappconfig')->update_save($data,$wxuser['id']);
 		}
-		$user['status'] = 1;
-		$user['regtime'] = $this->time;
-		$user['avatar'] = $data['headimg'];
-		$insert_id = $this->model('user')->save($user);
-		if(!$insert_id){
-			return false;
+		return $this->model('wxappconfig')->insert_save($data);
+	}
+
+	/**
+	 * 修改背景色
+	 * @参数 color 背景颜色代码值，格式是 #FFFFFF
+	**/
+	public function bgcolor_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
 		}
-		$ext = array('id'=>$insert_id);
-		$this->model('user')->save_ext($ext);
-		//获取推荐人
-		if($this->session->val('introducer')){
-			$relaction_id = $this->session->val('introducer');
+		//检测字段
+		$flist = $this->model('user')->fields_all('','identifier');
+		if(!$flist){
+			$this->error(P_Lang('无扩展字段'));
 		}
-		$code = $this->get('code');//推荐码
-		if($code){
-			$tmp = $this->model('user')->get_one($code,'code',false,false);
-			if($tmp){
-				$relaction_id = $tmp[id];
-			}
+		$keys = array_keys($flist);
+		if(!in_array('bgcolor',$keys)){
+			$this->error(P_Lang('未配置存储背景颜色的字段：bgcolor，请联系管理员设置'));
 		}
-		if($relaction_id){
-			$this->model('user')->save_relation($insert_id,$relaction_id);
+		$flist = $this->model('user')->tbl_fields_list('user_ext');
+		if(!in_array('bgcolor',$flist)){
+			$this->error(P_Lang('会员表里缺少 bgcolor 字段，请检查'));
 		}
-		$data['uid'] = $insert_id;
-		$this->model('wxappconfig')->save_user($data);
-		return $insert_id;
+		$color = $this->get('color');
+		if(!$color){
+			$color = '#FFFFFF';
+		}
+		if(substr($color,0,1) != '#'){
+			$color = '#'.$color;
+		}
+		$array = array('bgcolor'=>$color);
+		$this->model('user')->update_ext($array,$this->session->val('user_id'));
+		$this->success();
 	}
 	
-	private function _account_update($wxuser,$openid='',$unionid='')
+	/**
+	 * 修改背景图片
+	 * @参数 bgimg 格式是字段串，背景图片地址
+	**/
+	public function bgimg_f()
 	{
-		if(!$wxuser || !is_array($wxuser)){
-			return false;
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
 		}
-		$data = array();
-		$data['openid'] = $openid ? $openid : $wxuser['openid'];
-		$data['unionid'] = $unionid ? $unionid : $wxuser['unionid'];
-		$data['headimg'] = $this->get('headimg');
-		$data['nickname'] = $this->get('nickname');
-		$data['sex'] = $this->get('gender');
-		$data['country'] = $this->get('country');
-		$data['province'] = $this->get('province');
-		$data['city'] = $this->get('city');
-		if(!$wxuser['uid']){
-			//登记会员信息
-			$tmp = $this->model('user')->get_one($data['nickname'],'user',false,false);
-			$account = $tmp ? ($data['nickname'].'-'.$this->time) : $data['nickname'];
-			$group = $this->model('usergroup')->get_default(true);
-			$user = array('user'=>$account);
-			if($group){
-				$user['group_id'] = $group['id'];
-			}
-			$user['status'] = 1;
-			$user['regtime'] = $this->time;
-			$user['avatar'] = $data['headimg'];
-			$insert_id = $this->model('user')->save($user);
-			if(!$insert_id){
-				return false;
-			}
-			$ext = array('id'=>$insert_id);
-			$this->model('user')->save_ext($ext);
-			$data['uid'] = $insert_id;
-		}else{
-			$user = array('avatar'=>$data['headimg']);
-			$this->model('user')->save($user,$wxuser['uid']);
-			$data['uid'] = $wxuser['uid'];
+		//检测字段
+		$flist = $this->model('user')->fields_all('','identifier');
+		if(!$flist){
+			$this->error(P_Lang('无扩展字段'));
 		}
-		$this->model('wxappconfig')->save_user($data);
-		return $data['uid'];
+		$keys = array_keys($flist);
+		if(!in_array('bgimg',$keys)){
+			$this->error(P_Lang('未配置存储背景颜色的字段：bgimg，请联系管理员设置'));
+		}
+		$flist = $this->model('user')->tbl_fields_list('user_ext');
+		if(!in_array('bgimg',$flist)){
+			$this->error(P_Lang('会员表里缺少 bgimg 字段，请检查'));
+		}
+		$bgimg = $this->get('bgimg');
+		$array = array('bgimg'=>$bgimg);
+		$this->model('user')->update_ext($array,$this->session->val('user_id'));
+		$this->success();
 	}
 }

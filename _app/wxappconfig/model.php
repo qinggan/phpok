@@ -33,39 +33,29 @@ class model extends \phpok_model
 	}
 	
 	//取得微信用户信息
-	public function get_user($openid,$unionid='')
+	public function get_user($openid)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."weixin_user WHERE openid='".$openid."'";
 		$rs = $this->db->get_one($sql);
 		if($rs){
 			return $rs;
 		}
-		if($unionid){
-			$sql = "SELECT * FROM ".$this->db->prefix."weixin_user WHERE unionid='".$unionid."'";
-			return $this->db->get_one($sql);
-		}
 		return false;
 	}
-	
-	public function save_user($data)
+
+	public function user_delete($id)
 	{
-		if($data['unionid']){
-			$sql = "SELECT * FROM ".$this->db->prefix."weixin_user WHERE unionid='".$data['unionid']."'";
-			$list = $this->db->get_all($sql);
-			if($list){
-				foreach($list as $key=>$value){
-					$tmpdata = $data;
-					unset($data['openid']);
-					$this->db->update_array($tmpdata,'weixin_user',array('id'=>$value['id']));
-				}
-			}
-		}
-		//--检查OpenID
-		$sql = "SELECT * FROM ".$this->db->prefix."weixin_user WHERE openid='".$data['openid']."'";
-		$rs = $this->db->get_one($sql);
-		if($rs){
-			return $this->db->update_array($data,'weixin_user',array('id'=>$rs['id']));
-		}
-		$this->db->insert_array($data,'weixin_user');
+		$sql = "DELETE FROM ".$this->db->prefix."weixin_user WHERE id='".$id."'";
+		return $this->db->query($sql);
+	}
+
+	public function update_save($data,$id)
+	{
+		return $this->db->update_array($data,'weixin_user',array('id'=>$id));
+	}
+
+	public function insert_save($data)
+	{
+		return $this->db->insert_array($data,'weixin_user');
 	}
 }

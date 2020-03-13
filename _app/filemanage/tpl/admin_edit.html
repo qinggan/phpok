@@ -38,6 +38,14 @@ $(document).ready(function(){
 	});
 });
 </script>
+<style type="text/css">
+.icon-layout i{
+	vertical-align:middle;
+}
+.layui-btn .layui-icon{
+	margin-right:0;
+}
+</style>
 <form method="post" id="post_save">
 <input type="hidden" name="folder" value="{$folder}" />
 <input type="hidden" name="title" value="{$title}" />
@@ -46,6 +54,84 @@ $(document).ready(function(){
 	<div class="layui-card-header red center">
 		<b>{$tips}</b>
 	</div>
+	<!-- else -->
+	<div class="layui-card-edit" style="position:fixed;width:100%;top:0;z-index:9999;height:34px;line-height:34px;background:#F7F7F7;border-bottom:1px solid #DDDDDD;color:#999;padding-left:30px;">
+		<ul class="layout icon-layout" style="margin-top:3px;">
+			<li>
+				<div class="layui-btn-group">
+					<button type="button" class="layui-btn layui-btn-sm" title="{lang撤消}" onclick="code_editor.undo()">
+						<i class="icon-undo"></i> 撤消
+					</button>
+					<button type="button" class="layui-btn layui-btn-sm" title="{lang恢复}" onclick="code_editor.redo()">
+						<i class="icon-redo"></i> 恢复
+					</button>
+				</div>
+			</li>
+			<li>
+				<div class="layui-btn-group">
+					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('<b>$1</b>',code_editor)">
+						<i class="layui-icon layui-icon-fonts-strong"></i>
+					</button>
+					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('<i>$1</i>',code_editor)">
+						<i class="layui-icon layui-icon-fonts-i"></i>
+					</button>
+					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('<u>$1</u>',code_editor)">
+						<i class="layui-icon layui-icon-fonts-u"></i>
+					</button>
+					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('<del>$1</del>',code_editor)">
+						<i class="layui-icon layui-icon-fonts-del"></i>
+					</button>
+				</div>
+			</li>
+			<li>
+				<div class="layui-btn-group">
+					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('left',code_editor)">
+						<i class="layui-icon layui-icon-align-left"></i>
+					</button>
+					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('center',code_editor)">
+						<i class="layui-icon layui-icon-align-center"></i>
+					</button>
+					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('right',code_editor)">
+						<i class="layui-icon layui-icon-align-right"></i>
+					</button>
+				</div>
+			</li>
+			<li>
+				<div class="layui-btn-group">
+					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('list',code_editor)">
+						<i class="icon-list"></i>
+					</button>
+					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('numberlist',code_editor)">
+						<i class="icon-numbered-list"></i>
+					</button>
+				</div>
+			</li>
+			<li>
+				<select onchange="$.admin_filemanage.edit_config_info(this,code_editor)">
+					<option value="">站点信息</option>
+					<option value="$config.title">站点名称</option>
+					<option value="$sys.url">站点域名</option>
+					<option value="$config.id">站点ID</option>
+					<option value="$config.logo">Logo图片（PC）</option>
+					<option value="$config.logo_mobile">Logo图片（手机）</option>
+					<option value="$config.meta">Meta内容</option>
+					<option value="$seo.title">SEO标题</option>
+					<option value="$seo.keywords">SEO关键字</option>
+					<option value="$seo.description">SEO描述</option>
+				</select>
+			</li>
+			<li>
+				<select onchange="$.admin_filemanage.edit_datalist(this,code_editor)">
+					<option value="">数据调用</option>
+					<!-- loop from=$oklist key=$key value=$value id=$tmpid -->
+					<option value="{$value.identifier}:{$value.type_id}">{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+	<div style="height:36px;">&nbsp;</div>
 	<!-- /if -->
 	<div class="layui-card-body" style="padding:0;">
 		<textarea id="content" name="content">{$content}</textarea>

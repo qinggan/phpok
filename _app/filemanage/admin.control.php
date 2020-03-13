@@ -149,6 +149,10 @@ class admin_control extends \phpok_control
 		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/htmlmixed/htmlmixed.js?response-content-type=application/x-javascript');
 		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/php/php.js?response-content-type=application/x-javascript');
 		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/xml/xml.js?response-content-type=application/x-javascript');
+		//数据调用
+		$oklist = $this->model('call')->get_list("ok.status=1",0,999);
+		$this->assign('oklist',$oklist);
+		//
 		$this->display("admin_edit");
 	}
 

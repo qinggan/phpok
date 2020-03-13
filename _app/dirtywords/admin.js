@@ -39,7 +39,5 @@
 $(document).ready(function(){
 	$('textarea#content').each(function() {
 		$.admin_dirtywords.autoHeight(this);
-	}).on('input', function() {
-		$.admin_dirtywords.autoHeight(this);
 	});
 });
