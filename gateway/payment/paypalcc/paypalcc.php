@@ -208,7 +208,6 @@ class paypalcc_payment
 		foreach($post as $key=>$value){
 			$app->lib('curl')->post_data($key,$value);
 		}
-		phpok_log($post);
 		$info = $app->lib('curl')->get_content($this->server_url);
 		if(!$info){
 			return false;

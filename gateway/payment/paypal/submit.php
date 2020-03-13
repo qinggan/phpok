@@ -26,7 +26,7 @@ class paypal_submit
 	//执行提交按钮
 	public function submit()
 	{
-		echo '<!DOCTYPE html><html><head><title>Paypal</title></head><body>'
+		echo '<!DOCTYPE html><html><head><title>Paypal</title></head><body>';
         $htmlbutton  = $this->get_html();
 		$htmlbutton .= "\n";
 		$htmlbutton .= '<script type="text/javascript">'."\n";
