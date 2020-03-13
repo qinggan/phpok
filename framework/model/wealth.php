@@ -795,4 +795,13 @@ class wealth_model_base extends phpok_model
 		$sql = "SELECT * FROM ".$this->db->prefix."wealth_log WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
+
+	public function log_total($condition='')
+	{
+		$sql = "SELECT count(id) FROM ".$this->db->prefix."wealth_log";
+		if($condition){
+			$sql .= " WHERE ".$condition;
+		}
+		return $this->db->count($sql);
+	}	
 }

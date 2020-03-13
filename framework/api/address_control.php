@@ -226,5 +226,72 @@ class address_control extends phpok_control
 		$this->model('user')->address_default($id);
 		$this->success();
 	}
+
+	public function check_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('您没有权限执行此操作，请先登录'));
+		}
+		$condition = "a.user_id='".$this->session->val('user_id')."'";
+		$fullname = $this->get('fullname');
+		if($fullname){
+			$condition .= " AND a.fullname='".$fullname."'";
+		}
+		$pca = $this->get('pca');
+		if(!$pca){
+			$province = $this->get('province');
+			$city = $this->get('city');
+			$county = $this->get('county');
+			if(!$province){
+				$province = $this->get('pca_p');
+			}
+			if(!$city){
+				$city = $this->get('pca_c');
+			}
+			if(!$county){
+				$county = $this->get('pca_a');
+			}
+		}else{
+			$tmp = explode("/",$pca);
+			$province = $tmp[0];
+			$city = $tmp[1];
+			$county = $tmp[2];
+		}
+		if($province){
+			$condition .= " AND a.province='".$province."'";
+		}
+		if($city){
+			$condition .= " AND a.city='".$city."'";
+		}
+		if($county){
+			$condition .= " AND a.county='".$county."'";
+		}
+		$address = $this->get('address');
+		if($address){
+			$condition .= " AND a.address='".$address."'";
+		}
+		$address2 = $this->get('address2');
+		if($address2){
+			$condition .= " AND a.address2='".$address2."'";
+		}
+		$mobile = $this->get('mobile');
+		if($mobile){
+			$condition .= " AND a.mobile='".$mobile."'";
+		}
+		$mobile = $this->get('email');
+		if($email){
+			$condition .= " AND a.email='".$email."'";
+		}
+		$zipcode = $this->get('zipcode');
+		if($zipcode){
+			$condition .= " AND a.zipcode='".$zipcode."'";
+		}
+		$rslist = $this->model('address')->get_list($condition);
+		if($rslist){
+			$info = current($rslist);
+			$this->success($info['id']);
+		}
+		$this->success();
+	}
 }
 

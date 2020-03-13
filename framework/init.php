@@ -24,6 +24,7 @@ header("Cache-control: no-cache,no-store,must-revalidate,max-age=3");
 header("Pramga: no-cache"); 
 header("Expires: -1");
 
+
 /**
  * 计算执行的时间
  * @参数 $is_end 布尔值
@@ -75,6 +76,12 @@ function run_memory($is_end=false)
 
 run_time();
 run_memory();
+
+//定义PHP的版本
+if (!defined('PHP_VERSION_ID')) {
+    $php_version = explode('.', PHP_VERSION);
+    define('PHP_VERSION_ID', ($php_version[0] * 10000 + $php_version[1] * 100 + $php_version[2]));
+}
 
 /**
  * 用于调试统计时间，无参数，启用数据库调试的结果会在这里输出，需要在模板适当位置写上：{func debug_time} 
@@ -377,45 +384,6 @@ class _init_phpok
 	}
 
 	/**
-	 * 初始化网址要输出的一些全局信息，如网站信息，初始化后的SEO信息
-	**/
-	private function init_assign()
-	{
-		$url = $this->url;
-		$afile = $this->config[$this->app_id.'_file'];
-		if(!$afile){
-			$afile = 'index.php';
-		}
-		$url .= $afile;
-		if($this->lib('server')->query()){
-			$url .= "?".$this->lib('server')->query();
-		}
-		$this->site["url"] = $url;
-		$this->config["url"] = $this->url;
-		$this->config['app_id'] = $this->app_id;
-		$this->config['time'] = $this->time;
-		$this->config['webroot'] = $this->dir_webroot;	
-		$this->assign("sys",$this->config);
-		$this->assign("config",$this->site);
-		$langid = $this->get("_langid");
-		if($this->app_id == 'admin'){
-			if(!$langid){
-				$langid = (isset($_SESSION['admin_lang_id']) && $_SESSION['admin_lang_id']) ? $_SESSION['admin_lang_id'] : 'default';
-			}
-			$_SESSION['admin_lang_id'] = $langid;
-		}else{
-			if(!$langid){
-				$langid = isset($this->site['lang']) ? $this->site['lang'] : 'default';
-			}
-		}
-		$this->langid = $langid;
-		
-		if($multiple_language){
-			$this->language($this->langid);
-		}
-	}
-
-	/**
 	 * 加载语言包
 	 * @参数 $langid 字符串，留空加载default，中文不需要加载语言包
 	 * @更新时间 2016年06月05日
@@ -468,57 +436,6 @@ class _init_phpok
 	}
 
 	/**
-	 * 加载视图引挈，后台加载framework/view/下的模板文件，css，js，images路径不会修改。前端加载tpl/下的模板文件
-	**/
-	public function init_view()
-	{
-		include_once($this->dir_phpok."phpok_tpl.php");
-		$this->model('url')->ctrl_id($this->config['ctrl_id']);
-		$this->model('url')->func_id($this->config['func_id']);
-		if($this->app_id == "admin"){
-			$tpl_rs = array();
-			$tpl_rs["id"] = "1";
-			$tpl_rs["dir_tpl"] = substr($this->dir_phpok,strlen($this->dir_root))."/view/";
-			$tpl_rs["dir_cache"] = $this->dir_data."tpl_admin/";
-			$tpl_rs["dir_php"] = $this->dir_root;
-			$tpl_rs["dir_root"] = $this->dir_root;
-			$tpl_rs["refresh_auto"] = true;
-			$tpl_rs["tpl_ext"] = "html";
-			//定制语言模板ID
-			$tpl_rs['langid'] = 'default';
-			if($this->session->val('admin_lang_id')){
-				$tpl_rs['langid'] = $this->session->val('admin_lang_id');
-			}
-			$this->tpl = new phpok_template($tpl_rs);
-		}else{
-			if($this->app_id == 'www'){
-				if(!$this->site["tpl_id"] || ($this->site["tpl_id"] && !is_array($this->site["tpl_id"]))){
-					$this->_error("未指定模板文件");
-				}
-			}
-			$this->model('site')->site_id($this->site['id']);
-			$this->model('url')->base_url($this->url);
-			$this->model('url')->set_type($this->site['url_type']);
-			$this->model('url')->protected_ctrl($this->model('site')->reserved());
-			//初始化伪静态中需要的东西
-			if($this->site['url_type'] == 'rewrite'){
-				$this->model('url')->site_id($this->site['id']);
-				$this->model('rewrite')->site_id($this->site['id']);
-				$this->model('url')->rules($this->model('rewrite')->get_all());
-				$this->model('url')->page_id($this->config['pageid']);
-			}
-			$this->tpl = new phpok_template($this->site["tpl_id"]);
-			include($this->dir_phpok."phpok_call.php");
-			$this->call = new phpok_call();
-		}
-		include_once($this->dir_phpok."phpok_tpl_helper.php");
-		if($this->app_id == 'www' && !$this->site['status']){
-			$close = $this->site['content'] ? $this->site['content'] : P_Lang('网站暂停关闭');
-			$this->_tip($close,2);
-		}
-	}
-
-	/**
 	 * 手机判断，使用了第三方扩展extension里的mobile类
 	**/
 	public function is_mobile()
@@ -527,6 +444,239 @@ class _init_phpok
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * 判断是否启用https
+	**/
+	protected function is_https()
+	{
+		if($this->config['force_https']){
+			return true;
+		}
+		return $this->lib('server')->https();
+	}
+
+	/**
+	 * 初始化网址要输出的一些全局信息，如网站信息，初始化后的SEO信息
+	**/
+	private function init_assign()
+	{
+		$url = $this->url;
+		$afile = $this->config[$this->app_id.'_file'];
+		if(!$afile){
+			$afile = 'index.php';
+		}
+		$url .= $afile;
+		if($this->lib('server')->query()){
+			$url .= "?".$this->lib('server')->query();
+		}
+		$this->site["url"] = $url;
+		$this->config["url"] = $this->url;
+		$this->config['app_id'] = $this->app_id;
+		$this->config['time'] = $this->time;
+		$this->config['webroot'] = $this->dir_webroot;	
+		$this->assign("sys",$this->config);
+		$this->assign("config",$this->site);
+		$langid = $this->get("_langid");
+		if($this->app_id == 'admin'){
+			if(!$langid){
+				$langid = (isset($_SESSION['admin_lang_id']) && $_SESSION['admin_lang_id']) ? $_SESSION['admin_lang_id'] : 'default';
+			}
+			$_SESSION['admin_lang_id'] = $langid;
+		}else{
+			if(!$langid){
+				$langid = isset($this->site['lang']) ? $this->site['lang'] : 'default';
+			}
+		}
+		$this->langid = $langid;
+		
+		if($multiple_language){
+			$this->language($this->langid);
+		}
+	}
+
+	/**
+	 * 读取网站参数配置
+	 * @更新时间 2016年02月05日
+	 */
+	private function init_config()
+	{
+		$config = array();
+		if(file_exists($this->dir_config.'global.ini.php')){
+			$config = parse_ini_file($this->dir_config.'global.ini.php',true);
+		}
+		//装载引挈参数
+		if(file_exists($this->dir_config.'engine.ini.php')){
+			$ext = parse_ini_file($this->dir_config.'engine.ini.php',true);
+			if($ext && is_array($ext)){
+				$config['engine'] = $ext;
+				unset($ext);
+			}
+		}
+		//连接数据库
+		if(file_exists($this->dir_config.'db.ini.php')){
+			$ext = parse_ini_file($this->dir_config.'db.ini.php',true);
+			if($ext && is_array($ext)){
+				$config['engine']['db'] = $ext;
+				unset($ext);
+			}
+		}
+		if(file_exists($this->dir_config.$this->app_id.'.ini.php')){
+			$ext = parse_ini_file($this->dir_config.$this->app_id.'.ini.php',true);
+			if($ext && is_array($ext)){
+				$config = array_merge($config,$ext);
+				unset($ext);
+			}
+		}
+
+		//兼容旧版本操作，继续读取 config.php 文件
+		//将在下一版本更新取消
+		if(file_exists($this->dir_root.'config.php')){
+			include_once($this->dir_root.'config.php');
+		}
+		if($config['debug']){
+			if(function_exists('opcache_reset')){
+				ini_set('opcache.enable',false);
+			}
+			ini_set('display_errors','on');
+			error_reporting(E_ALL ^ E_NOTICE);
+		}else{
+			error_reporting(0);
+			if(isset($config['opcache']) && function_exists('opcache_reset')){
+				ini_set('opcache.enable',$config['opcache']);
+			}
+		}
+		if(ini_get('zlib.output_compression')){
+			ob_start();
+		}else{
+			($config["gzip"] && function_exists("ob_gzhandler")) ? ob_start("ob_gzhandler") : ob_start();
+		}
+		if($config["timezone"] && function_exists("date_default_timezone_set")){
+			date_default_timezone_set($config["timezone"]);
+		}
+		$this->time = time();
+		if($config["timetuning"]){
+			$this->time = $this->time + $config["timetuning"];
+		}
+		if(!$config['get_domain_method']){
+			$config['get_domain_method'] = 'SERVER_NAME';
+		}
+		//定义是否允许嵌套
+		if($config['iframe_options']){
+			$tmp = array('DENY','SAMEORIGIN');
+			if(in_array(strtoupper($config['iframe_options']),$tmp)){
+				header("X-Frame-Options: ".strtolower($config['iframe_options']));
+			}
+			if(substr(strtoupper($config['iframe_options']),0,10) == 'ALLOW-FROM'){
+				header("X-Frame-Options: ".strtolower($config['iframe_options']));
+			}
+		}
+		if($config['cross_domain']){
+			$tmp = $config['cross_domain_origin'] ? $config['cross_domain_origin'] : '*';
+			header("Access-Control-Allow-Origin: ".$tmp);
+			header("Access-Control-Allow-Headers: *");
+		}
+		$this->config = $config;
+		unset($config);
+	}
+	
+	/**
+	 * 装载资源引挈，默认引挈加载将在config里配置
+	**/
+	private function init_engine()
+	{
+		if(!$this->config["db"] && !$this->config["engine"]){
+			$this->_error("资源引挈装载失败，请检查您的资源引挈配置，如数据库连接配置等");
+		}
+		if($this->config["db"] && !$this->config["engine"]["db"]){
+			$this->config["engine"]["db"] = $this->config["db"];
+			$this->config["db"] = "";
+		}
+		include($this->dir_phpok.'engine/db.php');
+		include($this->dir_phpok.'engine/db/'.$this->config['engine']['db']['file'].'.php');
+		$var = 'db_'.$this->config['engine']['db']['file'];
+		$this->db = new $var($this->config['engine']['db']);
+		if($this->app_id == 'api'){
+			$this->db->error_type = 'json';
+		}
+		
+		foreach($this->config["engine"] as $key=>$value){
+			if($key == 'db'){
+				continue;
+			}
+			foreach($value as $k=>$v){
+				$v = preg_replace_callback('/\{(.+)\}/isU',array($this,'_config_ini_format'),$v);
+				$value[$k] = $v;
+			}
+			$basefile = $this->dir_phpok.'engine/'.$key.'.php';
+			if(file_exists($basefile)){
+				include($basefile);
+			}
+			$file = $this->dir_phpok."engine/".$key."/".$value["file"].".php";
+			if(file_exists($file)){
+				include($file);
+				$var = $key."_".$value["file"];
+				$obj = new $var($value);
+			}else{
+				$obj = new $key($value);
+			}
+			if($value['auto_methods']){
+				$tmp = explode(",",$value['auto_methods']);
+				foreach($tmp as $k=>$v){
+					$v = trim($v);
+					if(!$v){
+						continue;
+					}
+					$temp = explode(":",$v);
+					if(!$temp[0]){
+						continue;
+					}
+					$funclist = get_class_methods($obj);
+					if(!$funclist || !in_array($temp[0],$funclist)){
+						continue;
+					}
+					if($temp[1]){
+						$var = $temp[1];
+						$param = $this->config['engine'][$var] ? $this->config['engine'][$var] : ($this->$var ? $this->$var : $this->lib($var));
+						$var = $temp[0];
+						$obj->$var($param);
+					}else{
+						$var = $temp[0];
+						$obj->$var();
+					}
+				}
+			}
+			$this->$key = $obj;
+		}
+		$info = $this->lib('debug')->stop('config');
+	}
+
+	/**
+	 * 装载插件，程序在初始化时就执行插件加载，一次性加载但未运行，
+	 * 如果插件编写有问题，会直接无法运行。因此加载插件时请仔细检查。
+	**/
+	public function init_plugin()
+	{
+		$rslist = $this->model('plugin')->get_all(1);
+		if(!$rslist){
+			return false;
+		}
+		$param = array();
+		foreach($rslist as $key=>$value){
+			if($value['param']){
+				$value['param'] = unserialize($value['param']);
+			}
+			if(file_exists($this->dir_root.'plugins/'.$key.'/'.$this->app_id.'.php')){
+				include_once($this->dir_root.'plugins/'.$key.'/'.$this->app_id.'.php');
+				$name = $this->app_id."_".$key;
+				$cls = new $name();
+				$mlist = get_class_methods($cls);
+				$this->plugin[$key] = array("method"=>$mlist,"obj"=>$cls,'id'=>$key);
+				$param[$key] = $value;
+			}
+		}
+		$this->assign('plugin',$param);
 	}
 
 	/**
@@ -671,42 +821,56 @@ class _init_phpok
 		$this->site = $site_rs;
 	}
 
-	/**
-	 * 判断是否启用https
-	**/
-	protected function is_https()
-	{
-		if($this->config['force_https']){
-			return true;
-		}
-		return $this->lib('server')->https();
-	}
 
 	/**
-	 * 装载插件，程序在初始化时就执行插件加载，一次性加载但未运行，
-	 * 如果插件编写有问题，会直接无法运行。因此加载插件时请仔细检查。
+	 * 加载视图引挈，后台加载framework/view/下的模板文件，css，js，images路径不会修改。前端加载tpl/下的模板文件
 	**/
-	public function init_plugin()
+	public function init_view()
 	{
-		$rslist = $this->model('plugin')->get_all(1);
-		if(!$rslist){
-			return false;
-		}
-		$param = array();
-		foreach($rslist as $key=>$value){
-			if($value['param']){
-				$value['param'] = unserialize($value['param']);
+		include_once($this->dir_phpok."phpok_tpl.php");
+		$this->model('url')->ctrl_id($this->config['ctrl_id']);
+		$this->model('url')->func_id($this->config['func_id']);
+		if($this->app_id == "admin"){
+			$tpl_rs = array();
+			$tpl_rs["id"] = "1";
+			$tpl_rs["dir_tpl"] = substr($this->dir_phpok,strlen($this->dir_root))."/view/";
+			$tpl_rs["dir_cache"] = $this->dir_data."tpl_admin/";
+			$tpl_rs["dir_php"] = $this->dir_root;
+			$tpl_rs["dir_root"] = $this->dir_root;
+			$tpl_rs["refresh_auto"] = true;
+			$tpl_rs["tpl_ext"] = "html";
+			//定制语言模板ID
+			$tpl_rs['langid'] = 'default';
+			if($this->session->val('admin_lang_id')){
+				$tpl_rs['langid'] = $this->session->val('admin_lang_id');
 			}
-			if(file_exists($this->dir_root.'plugins/'.$key.'/'.$this->app_id.'.php')){
-				include_once($this->dir_root.'plugins/'.$key.'/'.$this->app_id.'.php');
-				$name = $this->app_id."_".$key;
-				$cls = new $name();
-				$mlist = get_class_methods($cls);
-				$this->plugin[$key] = array("method"=>$mlist,"obj"=>$cls,'id'=>$key);
-				$param[$key] = $value;
+			$this->tpl = new phpok_template($tpl_rs);
+		}else{
+			if($this->app_id == 'www'){
+				if(!$this->site["tpl_id"] || ($this->site["tpl_id"] && !is_array($this->site["tpl_id"]))){
+					$this->_error("未指定模板文件");
+				}
 			}
+			$this->model('site')->site_id($this->site['id']);
+			$this->model('url')->base_url($this->url);
+			$this->model('url')->set_type($this->site['url_type']);
+			$this->model('url')->protected_ctrl($this->model('site')->reserved());
+			//初始化伪静态中需要的东西
+			if($this->site['url_type'] == 'rewrite'){
+				$this->model('url')->site_id($this->site['id']);
+				$this->model('rewrite')->site_id($this->site['id']);
+				$this->model('url')->rules($this->model('rewrite')->get_all());
+				$this->model('url')->page_id($this->config['pageid']);
+			}
+			$this->tpl = new phpok_template($this->site["tpl_id"]);
+			include($this->dir_phpok."phpok_call.php");
+			$this->call = new phpok_call();
 		}
-		$this->assign('plugin',$param);
+		include_once($this->dir_phpok."phpok_tpl_helper.php");
+		if($this->app_id == 'www' && !$this->site['status']){
+			$close = $this->site['content'] ? $this->site['content'] : P_Lang('网站暂停关闭');
+			$this->_tip($close,2);
+		}
 	}
 
 	/**
@@ -974,162 +1138,6 @@ class _init_phpok
 	}
 
 	/**
-	 * 装载资源引挈，默认引挈加载将在config里配置
-	**/
-	private function init_engine()
-	{
-		if(!$this->config["db"] && !$this->config["engine"]){
-			$this->_error("资源引挈装载失败，请检查您的资源引挈配置，如数据库连接配置等");
-		}
-		if($this->config["db"] && !$this->config["engine"]["db"]){
-			$this->config["engine"]["db"] = $this->config["db"];
-			$this->config["db"] = "";
-		}
-		include($this->dir_phpok.'engine/db.php');
-		include($this->dir_phpok.'engine/db/'.$this->config['engine']['db']['file'].'.php');
-		$var = 'db_'.$this->config['engine']['db']['file'];
-		$this->db = new $var($this->config['engine']['db']);
-		if($this->app_id == 'api'){
-			$this->db->error_type = 'json';
-		}
-		
-		foreach($this->config["engine"] as $key=>$value){
-			if($key == 'db'){
-				continue;
-			}
-			foreach($value as $k=>$v){
-				$v = preg_replace_callback('/\{(.+)\}/isU',array($this,'_config_ini_format'),$v);
-				$value[$k] = $v;
-			}
-			$basefile = $this->dir_phpok.'engine/'.$key.'.php';
-			if(file_exists($basefile)){
-				include($basefile);
-			}
-			$file = $this->dir_phpok."engine/".$key."/".$value["file"].".php";
-			if(file_exists($file)){
-				include($file);
-				$var = $key."_".$value["file"];
-				$obj = new $var($value);
-			}else{
-				$obj = new $key($value);
-			}
-			if($value['auto_methods']){
-				$tmp = explode(",",$value['auto_methods']);
-				foreach($tmp as $k=>$v){
-					$v = trim($v);
-					if(!$v){
-						continue;
-					}
-					$temp = explode(":",$v);
-					if(!$temp[0]){
-						continue;
-					}
-					$funclist = get_class_methods($obj);
-					if(!$funclist || !in_array($temp[0],$funclist)){
-						continue;
-					}
-					if($temp[1]){
-						$var = $temp[1];
-						$param = $this->config['engine'][$var] ? $this->config['engine'][$var] : ($this->$var ? $this->$var : $this->lib($var));
-						$var = $temp[0];
-						$obj->$var($param);
-					}else{
-						$var = $temp[0];
-						$obj->$var();
-					}
-				}
-			}
-			$this->$key = $obj;
-		}
-		$info = $this->lib('debug')->stop('config');
-	}
-
-	/**
-	 * 读取网站参数配置
-	 * @更新时间 2016年02月05日
-	 */
-	private function init_config()
-	{
-		$config = array();
-		if(file_exists($this->dir_config.'global.ini.php')){
-			$config = parse_ini_file($this->dir_config.'global.ini.php',true);
-		}
-		//装载引挈参数
-		if(file_exists($this->dir_config.'engine.ini.php')){
-			$ext = parse_ini_file($this->dir_config.'engine.ini.php',true);
-			if($ext && is_array($ext)){
-				$config['engine'] = $ext;
-				unset($ext);
-			}
-		}
-		//连接数据库
-		if(file_exists($this->dir_config.'db.ini.php')){
-			$ext = parse_ini_file($this->dir_config.'db.ini.php',true);
-			if($ext && is_array($ext)){
-				$config['engine']['db'] = $ext;
-				unset($ext);
-			}
-		}
-		if(file_exists($this->dir_config.$this->app_id.'.ini.php')){
-			$ext = parse_ini_file($this->dir_config.$this->app_id.'.ini.php',true);
-			if($ext && is_array($ext)){
-				$config = array_merge($config,$ext);
-				unset($ext);
-			}
-		}
-
-		//兼容旧版本操作，继续读取 config.php 文件
-		//将在下一版本更新取消
-		if(file_exists($this->dir_root.'config.php')){
-			include_once($this->dir_root.'config.php');
-		}
-		if($config['debug']){
-			if(function_exists('opcache_reset')){
-				ini_set('opcache.enable',false);
-			}
-			ini_set('display_errors','on');
-			error_reporting(E_ALL ^ E_NOTICE);
-		}else{
-			error_reporting(0);
-			if(isset($config['opcache']) && function_exists('opcache_reset')){
-				ini_set('opcache.enable',$config['opcache']);
-			}
-		}
-		if(ini_get('zlib.output_compression')){
-			ob_start();
-		}else{
-			($config["gzip"] && function_exists("ob_gzhandler")) ? ob_start("ob_gzhandler") : ob_start();
-		}
-		if($config["timezone"] && function_exists("date_default_timezone_set")){
-			date_default_timezone_set($config["timezone"]);
-		}
-		$this->time = time();
-		if($config["timetuning"]){
-			$this->time = $this->time + $config["timetuning"];
-		}
-		if(!$config['get_domain_method']){
-			$config['get_domain_method'] = 'SERVER_NAME';
-		}
-		//定义是否允许嵌套
-		if($config['iframe_options']){
-			$tmp = array('DENY','SAMEORIGIN');
-			if(in_array(strtoupper($config['iframe_options']),$tmp)){
-				header("X-Frame-Options: ".strtolower($config['iframe_options']));
-			}
-			if(substr(strtoupper($config['iframe_options']),0,10) == 'ALLOW-FROM'){
-				header("X-Frame-Options: ".strtolower($config['iframe_options']));
-			}
-		}
-		if($config['cross_domain']){
-			$tmp = $config['cross_domain_origin'] ? $config['cross_domain_origin'] : '*';
-			header("Access-Control-Allow-Origin: ".$tmp);
-			header("Access-Control-Allow-Headers: *");
-		}
-		$this->config = $config;
-		unset($config);
-	}
-
-	/**
 	 * 网址生成，在模板中通过{url ctrl=控制器 func=方法 id=标识 …/}生成网址
 	 * @参数 $ctrl 字符串或数字，系统保留字串（$config[reserved]）为系统，非保留字符自动移成标识符或ID
 	 * @参数 $func 字符串，当ctrl为标识或ID是，该参数对应cate里的标识
@@ -1297,8 +1305,11 @@ class _init_phpok
 		}
 		//判断内容是否有转义，所有未转义的数据都直接转义
 		$addslashes = false;
-		if(function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()){
-			$addslashes = true;
+		//修正5.4版本以上对是否转义的判断
+		if(PHP_VERSION_ID<50400 && function_exists("get_magic_quotes_gpc")){
+			if(get_magic_quotes_gpc()){
+				$addslashes = true;
+			}
 		}
 		if(!$addslashes){
 			$val = $this->_addslashes($val);
@@ -1346,7 +1357,7 @@ class _init_phpok
 		switch ($type){
 			case 'safe_text':
 				$msg = strip_tags($msg);
-				$msg = str_replace(array("\\","'",'"',"<",">"),'',$msg);
+				$msg = str_replace(array("\\","'",'"',"<",">","&",";"),'',$msg);
 			break;
 			case 'system':
 				$msg = !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u",$msg) ? false : $msg;
@@ -1693,6 +1704,9 @@ class _init_phpok
 		//针对乱七八糟的网址，或是路径进行清理
 		if($ctrl == 'index' && $func == 'index'){
 			$uri = $this->data('uri.url');
+			if(substr($uri,-1) == '?'){
+				$uri = substr($uri,0,-1);
+			}
 			$query = $this->data('uri.query');
 			if($query && $this->config['safe_homepage'] && $this->config['get_params']){
 				$params = explode(",",$this->config['get_params']);
@@ -1716,7 +1730,8 @@ class _init_phpok
 			$basename = basename($docu);
 			$folder = $docu;
 			if($basename){
-				$folder = substr($docu,0,-(strlen($basename)));
+				$length = substr($docu,-1) == '/' ? strlen($basename)+1 : strlen($basename);
+				$folder = substr($docu,0,-$length);
 				if($uri && substr($uri,-(strlen($basename))) == $basename){
 					$uri = substr($uri,0,-(strlen($basename)));
 				}
@@ -1903,6 +1918,7 @@ class _init_phpok
 		$this->config['func'] = $func;
 		$this->config['time'] = $this->time;
 		$this->config['webroot'] = $this->dir_webroot;
+		$this->config['is_mobile'] = $this->is_mobile;
 		$this->assign('sys',$this->config);
 		$this->plugin('phpok-before');
 		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-before');
@@ -1948,8 +1964,21 @@ class _init_phpok
 	**/
 	final public function json($content,$status=false,$exit=true)
 	{
-		if($content && !is_bool($content) && !$status){
-			$this->model('log')->save($content);
+		//判断是否写入日志
+		if($this->config['log']['status']){
+			$_savelog = false;
+			if($this->config['log']['type'] && $content && !is_bool($content)){
+				$_savelog = true;
+			}
+			if(!$this->config['log']['type'] && !$status && $content && !is_bool($content)){
+				$_savelog = true;
+			}
+			if($this->config['log']['forbid'] && in_array($this->ctrl,explode(",",$this->config['log']['forbid']))){
+				$_savelog = false;
+			}
+			if($_savelog){
+				$this->model('log')->save($content);
+			}
 		}
 		if($exit){
 			header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
@@ -2131,9 +2160,20 @@ class _init_phpok
 	**/
 	protected function _tip($info='',$status=0,$url='',$ajax=false)
 	{
-		//将所有的非正确日志写到后台
-		if(!$status && $info){
-			$this->model('log')->save($info);
+		if($this->config['log']['status']){
+			$_savelog = false;
+			if($this->config['log']['type'] && $info && !is_bool($info)){
+				$_savelog = true;
+			}
+			if(!$this->config['log']['type'] && !$status && $info && !is_bool($info)){
+				$_savelog = true;
+			}
+			if($this->config['log']['forbid'] && in_array($this->ctrl,explode(",",$this->config['log']['forbid']))){
+				$_savelog = false;
+			}
+			if($_savelog){
+				$this->model('log')->save($info);
+			}
 		}
 		if(true === $ajax || $this->is_ajax){
 			$data = is_array($ajax) ? $ajax : array();

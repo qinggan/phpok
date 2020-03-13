@@ -76,7 +76,7 @@ class cart_control extends phpok_control
 		}
 		$id = $this->get('id','int');
 		$qty = $this->get('qty','int');
-		if(!$qty){
+		if(!$qty || $qty<0){
 			$qty = 1;
 		}
 		$array = $id ? $this->product_from_tid($id) : $this->product_from_title();
@@ -304,7 +304,7 @@ class cart_control extends phpok_control
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$qty = $this->get('qty');
-		if(!$qty){
+		if(!$qty || $qty<0){
 			$qty = $rs['qty'];
 		}
 		$this->model('cart')->update($id,$qty);
@@ -790,7 +790,6 @@ class cart_control extends phpok_control
 			if($value['is_default']){
 				$address_id = $value['id'];
 				$address = $value;
-				break;
 			}
 		}
 		if(!$address_id && $first){

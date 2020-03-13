@@ -107,7 +107,7 @@ class vcode_model_base extends phpok_model
 			$this->error_info(P_Lang('验证码错误次数超过5次，请重新获取验证码'));
 			return false;
 		}
-		$longtime = $this->type == 'sms' ? 300 : 1800;
+		$longtime = $this->type == 'sms' ? 600 : 1800;
 		if(($data['time'] + $longtime) < $this->time){
 			$this->error_info(P_Lang('验证码已过期，请重新获取验证码'));
 			return false;

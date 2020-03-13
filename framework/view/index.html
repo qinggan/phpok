@@ -76,19 +76,20 @@
 						</dl>
 					</li>
 					<!-- /if -->
+					
 					<li class="layui-nav-item" lay-unselect>
 						<a href="javascript:;" style="padding-right:20px;"> <cite><!-- if $session.admin_rs && $session.admin_rs.fullname -->{$session.admin_rs.fullname}<!-- else -->{$session.admin_account}<!-- /if --></cite></a>
 						<dl class="layui-nav-child">
-							<dd><a href="javascript:$.admin_index.me();void(0);">基本资料</a></dd>
-							<dd><a href="javascript:$.admin_index.pass();void(0);">修改密码</a></dd>
+							<dd><a href="javascript:$.admin_index.me();void(0);">{lang基本资料}</a></dd>
+							<dd><a href="javascript:$.admin_index.pass();void(0);">{lang修改密码}</a></dd>
 							<!-- if !$sys.develop && $session.admin_rs.if_system -->
 								<!-- if $session.adm_develop -->
-								<dd><a href="javascript:$.admin_index.develop(0);void(0);">应用模式</a></dd>
+								<dd><a href="javascript:$.admin_index.develop(0);void(0);">{lang应用模式}</a></dd>
 								<!-- else -->
-								<dd><a href="javascript:$.admin_index.develop(1);void(0);">开发模式</a></dd>
+								<dd><a href="javascript:$.admin_index.develop(1);void(0);">{lang开发模式}</a></dd>
 								<!-- /if -->
 							<!-- /if -->
-							<dd><a href="javascript:$.admin_index.logout();void(0);">退出</a></dd>
+							<dd><a href="javascript:$.admin_index.logout();void(0);">{lang退出}</a></dd>
 						</dl>
 					</li>
 					<li class="layui-nav-item layui-hide-xs" lay-unselect> <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
@@ -176,7 +177,7 @@
 			              </a>
 			            </li>
 			            <!-- /loop -->
-
+			            <!-- if $session.adm_develop && $session.admin_rs.if_system -->
 						<!-- loop from=$menulist key=$key value=$value id=$tmpid -->
 						<li data-name="group-{$value.id}" class="layui-nav-item">
 							<a href="javascript:;" lay-tips="{func P_Lang $value.title}" lay-direction="2"> <i class="layui-icon layui-icon-component"></i><cite>{func P_Lang $value.title}</cite>
@@ -188,6 +189,7 @@
 							</dl>
 						</li>
 						<!-- /loop -->
+						<!-- /if -->
 					</ul>
 				</div>
 			</div>

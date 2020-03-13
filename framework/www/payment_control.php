@@ -160,7 +160,7 @@ class payment_control extends phpok_control
 		if(!$insert_id){
 			$this->error(P_Lang('支付记录创建失败，请联系管理员'),$backurl);
 		}
-		$this->success(P_Lang('成功创建支付链，请稍候，即将为您跳转支付页面…'),$this->url('payment','submit','id='.$insert_id));
+		$this->_location($this->url('payment','submit','id='.$insert_id));
 	}
 
 	/**
@@ -313,7 +313,7 @@ class payment_control extends phpok_control
 		$array['startdate'] = $this->time;
 		$this->model('order')->delete_not_end_order($rs['id']);
 		$this->model('order')->save_payment($array);
-		$this->success(P_Lang('成功创建支付链，请稍候，即将为您跳转支付页面…'),$this->url('payment','submit','id='.$insert_id));
+		$this->_location($this->url('payment','submit','id='.$insert_id));
 	}
 
 	/**

@@ -171,7 +171,7 @@ class order_control extends phpok_control
 			$shipping = $this->model('cart')->freight_price($tmp,$address['province'],$address['city']);
 		}
 		$allprice = floatval($price) + floatval($shipping) + $tax;
-		$coupon = $this->_coupon($price);
+		$coupon = $this->_coupon($price,$id);
 		if($coupon){
 			$allprice = floatval($price) + floatval($shipping) + $tax - floatval($coupon);
 		}
@@ -328,12 +328,13 @@ class order_control extends phpok_control
 	/**
 	 * 优惠码功能
 	**/
-	private function _coupon($totalprice)
+	private function _coupon($totalprice,$id)
 	{
 		if(!$totalprice){
 			return false;
 		}
 		$this->data("cart_id",$this->cart_id);
+		$this->data('cart_ids',$id);
 		$this->node('PHPOK_cart_coupon');
 		$tmp = $this->data('cart_coupon');
 		if(!$tmp){

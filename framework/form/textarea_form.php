@@ -28,7 +28,7 @@ class textarea_form extends _init_auto
 			$height = intval($rs['height']) ? intval($rs['height']) : '100';
 			$html .= '<textarea name="'.$rs["identifier"].'" id="'.$rs["identifier"].'" phpok_id="textarea" class="layui-textarea" ';
 			$html .= 'style="'.$rs["form_style"].';width:'.$width.';height:'.$height.'px"';
-			$html .= ' placeholder="'.$rs['note'].'">'.$rs["content"].'</textarea>';
+			$html .= '>'.$rs["content"].'</textarea>';
 			return $html;
 		}else{
 			$width = intval($rs['width']) ? intval($rs['width']).'px' : '100%';

@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="p_name,p_type,p_width,p_add" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="p_name,p_val,p_type,p_width,p_add,p_line,lock_row" />
 <div class="table">
 	<div class="title">
 		{lang参数列表：}
@@ -6,6 +6,17 @@
 	</div>
 	<div class="content">
 		<textarea name="p_name" id="p_name" class="long" style="height:80px;">{$rs.p_name}</textarea>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang参数扩展：}<span class="note">{lang启用后允许自行添加扩展属性名称（默认为支持）}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="p_add" value="yes"{if !$rs.p_add || $rs.p_add != 'no'} checked{/if} />{lang支持}</label></li>
+			<li><label><input type="radio" name="p_add" value="no"{if $rs.p_add && $rs.p_add == 'no'} checked{/if} />{lang不支持}</label></li>
+		</ul>
 	</div>
 </div>
 <div class="table">
@@ -22,23 +33,37 @@
 		</table>
 	</div>
 </div>
+<div id="p_val_type_html"{if !$rs.p_type} style="display:none"{/if}>
 <div class="table">
 	<div class="title">
-		{lang文本框宽度：}
-		<span class="note">{lang不设置时，内容项将以300作为宽度，列表项将以80作为宽度，只要填写数字}</span>
+		{lang参数值：}
+		<span class="note">{lang一行一组参数值，列表模式的参数值有多个，用英文逗号隔开}</span>
 	</div>
 	<div class="content">
-		<input type="text" id="p_width" name="p_width" class="default" value="{$rs.p_width}" />
+		<textarea name="p_val" id="p_val" class="long" style="height:80px;">{$rs.p_val}</textarea>
 	</div>
 </div>
 <div class="table">
 	<div class="title">
-		{lang参数扩展：}<span class="note">{lang启用后允许自行添加扩展属性名称（默认为支持）}</span>
+		{lang行操作：}
+		<span class="note">{lang是否支持行删除或添加}</span>
 	</div>
 	<div class="content">
-		<ul class="layout">
-			<li><label><input type="radio" name="p_add" value="yes"{if !$rs.p_add || $rs.p_add != 'no'} checked{/if} />{lang支持}</label></li>
-			<li><label><input type="radio" name="p_add" value="no"{if $rs.p_add && $rs.p_add == 'no'} checked{/if} />{lang不支持}</label></li>
-		</ul>
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label><input type="radio" name="p_line" id="p_line" value="0"{if !$rs.p_line} checked{/if} />禁止</label></td>
+			<td><label><input type="radio" name="p_line" id="p_line" value="1"{if $rs.p_line} checked{/if} />允许</label></td>
+		</tr>
+		</table>
 	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang列锁定：}
+		<span class="note">{lang不锁定请输入0，要锁定请输入指定的列序，如第一列写1，第二列写2}</span>
+	</div>
+	<div class="content">
+		<input type="text" name="lock_row" id="lock_row" value="{$rs.lock_row}" class="short" />
+	</div>
+</div>
 </div>

@@ -66,20 +66,13 @@ class checkbox_form extends _init_auto
 				}
 			}
 		}
-		//返回HTML内容
-		$html = '<ul class="ext_checkbox clearfix">';
-		foreach($rslist as $key=>$value){
-			$html .= '<li><label>';
-			$html .= '<input type="checkbox" lay-ignore name="'.$rs['identifier'].'[]" value="'.$value['val'].'"';
-			if($value && $rs['content'] && in_array($value['val'],$rs['content']))
-			{
-				$html .= ' checked';
-			}
-			$html .= '> '.$value['title'];
-			$html .= '</label></li>';
+		$this->assign('_rs',$rs);
+		$this->assign('_rslist',$rslist);
+		if($appid == 'admin'){
+			return $this->fetch($this->dir_phpok.'form/html/checkbox_admin_tpl.html','abs-file');
+		}else{
+			return $this->fetch($this->dir_phpok.'form/html/checkbox_www_tpl.html','abs-file');
 		}
-		$html .= '</ul><div class="clear"></div>';
-		return $html;
 	}
 
 	public function phpok_get($rs,$appid="admin")

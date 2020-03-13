@@ -37,9 +37,17 @@ class param_form extends _init_auto
 		}
 		$this->cssjs();
 		$pname = false;
+		$pval = false;
 		if($rs['p_name']){
 			$pname = explode("\n",$rs['p_name']);
 			$this->assign('_pname',$pname);
+		}
+		if($rs['p_val'] && $rs['p_type']){
+			$tmp = explode("\n",$rs['p_val']);
+			$pval = array();
+			foreach($tmp as $key=>$value){
+				$pval[$key] = explode(",",$value);
+			}
 		}
 		if($rs['content']){
 			$list = unserialize($rs['content']);
@@ -49,6 +57,12 @@ class param_form extends _init_auto
 				foreach($pname as $key=>$value){
 					$tmp = array($value);
 					$list['title'][] = $value;
+				}
+				if($pval){
+					$list['content'] = $pval;
+				}
+				if($list['title']){
+					$list['count'] = count($list['title']);
 				}
 			}else{
 				$list = array('title'=>array(),'content'=>array());

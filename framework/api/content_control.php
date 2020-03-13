@@ -114,24 +114,7 @@ class content_control extends phpok_control
 			$data_info['cate_rs'] = $cate_rs;
 		}
 		$this->model('list')->add_hits($rs["id"]);
-		//判断是否有属性
-		if($rs['attrlist']){
-			
-			foreach($rs['attrlist'] as $key=>$value){
-				if(!$value['rslist']){
-					unset($rs['attrlist'][$key]);
-					continue;
-				}
-				$tmplist = array();
-				$tmplist[] = array('id'=>0,'title'=>P_Lang('请选择…'));
-				$value['index'] = 0;
-				foreach($value['rslist'] as $k=>$v){
-					$tmplist[] = array('id'=>$v['id'],'title'=>$v['title']);
-				}
-				$value['rslist'] = $tmplist;
-				$rs['attrlist'][$key] = $value;
-			}
-		}
+
 		$this->data('arc',$rs);
 		$this->node('PHPOK_arc');
 		$rs = $this->data('arc');
@@ -174,13 +157,13 @@ class content_control extends phpok_control
 					$rs[$value['identifier'].'_pagelist'] = $rs[$value['identifier']]['pagelist'];
 					$rs[$value['identifier']] = $rs[$value['identifier']]['content'];
 				}
-				if($value['ext'] && $rs['tag']){
+				/*if($value['ext'] && $rs['tag']){
 					$ext = unserialize($value['ext']);
 					if($ext['inc_tag']){
 						$taglist['list'][$value['identifier']] = $rs[$value['identifier']];
 						$rs[$value['identifier']] = $this->model('tag')->tag_format($rs['tag'],$rs[$value['identifier']]);
 					}
-				}
+				}*/
 			}
 		}
 		return $rs;

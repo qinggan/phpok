@@ -19,8 +19,11 @@
 
 <!-- if $rs.module -->
 <div class="layui-card" id="search_html" phpok-id="JS_SEARCH">
-	<div class="layui-card-header">{lang搜索}</div>
-	<div class="layui-card-body">
+	<div class="layui-card-header hand" onclick="$.admin.card(this)">
+		{lang搜索}
+		<i class="layui-icon {if $keywords || $psize2}layui-icon-down{else}layui-icon-right{/if}"></i>
+	</div>
+	<div class="layui-card-body{if !$keywords && !$psize2} hide{/if}">
 		<form method="post" class="layui-form" action="{url ctrl=list func=action id=$pid/}">
 		<div class="layui-form-item phpok-search">
 			<div class="layui-inline">

@@ -89,6 +89,54 @@
 				return false;
 			});
 		},
+		pl_status:function(val)
+		{
+			var ids = $.input.checkbox_join();
+			if(!ids){
+				$.dialog.alert(p_lang('未指定要操作的分类'));
+				return false;
+			}
+			var url = get_url('cate','pl_status','ids='+$.str.encode(ids)+"&status="+val);
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.alert(rs.info);
+					return false;
+				}
+				var list = ids.split(",");
+				for(var i in list){
+					if(val == 1){
+						$("#status_"+list[i]).removeClass("status0").addClass("status1");
+					}else{
+						$("#status_"+list[i]).removeClass("status1").addClass("status0");
+					}
+				}
+				return true;
+			})
+		},
+
+		/**
+		 * 批量删除处理
+		**/
+		pl_delete:function()
+		{
+			var ids = $.input.checkbox_join();
+			if(!ids){
+				$.dialog.alert(p_lang('未指定要操作的分类'));
+				return false;
+			}
+			$.dialog.confirm(p_lang('确定要批量删除选中的分类吗？如果存在子分类，删除操作将无效的！'),function(){
+				var url = get_url('cate','pl_delete','ids='+$.str.encode(ids));
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.alert(rs.info);
+						return false;
+					}
+					$.dialog.tips(p_lang('删除操作成功'),function(){
+						$.phpok.reload();
+					}).lock();
+				})
+			});
+		},
 
 		/**
 		 * 设置样式

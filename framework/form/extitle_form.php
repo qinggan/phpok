@@ -169,11 +169,13 @@ class extitle_form extends _init_auto
 		$rslist = array();
 		foreach($list as $key=>$value){
 			$tmp = $value;
-			//$tmp = array('id'=>$value['id'],'project_id'=>$value['project_id']);
 			foreach($fields as $k=>$v){
 				$tmp[$v] = $flist[$v] ? $this->lib('form')->show($flist[$v],$value[$v]) : $value[$v];
 			}
 			$rslist[$key] = $tmp;
+		}
+		if($rs['form_is_single']){
+			return current($rslist);
 		}
 		return $rslist;
 	}

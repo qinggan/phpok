@@ -321,8 +321,6 @@ class list_control extends phpok_control
 		if($total > 0){
 			$rslist = $this->model('list')->single_list($mid,$condition,$offset,$psize,$project['orderby']);
 			$string = P_Lang("home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=数量：(total)/(psize)，页码：(num)/(total_page)&always=1");
-			//$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
-			//$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
 			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 			$this->assign("pagelist",$pagelist);
 			$this->assign("rslist",$rslist);

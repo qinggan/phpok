@@ -38,8 +38,8 @@ var edit_config_{$_rs.id} = {
 	,'sourceEditorFirst':{$_rs.is_code ? 'true' :'false'}
 	,'readonly':{$_rs.is_read ? 'true' :'false'}
 	,'pasteplain':{$_rs.paste_text ? 'true' : 'false'}
-	,'autoFloatEnabled':{$_rs.is_float ? 'true' : 'false'}
-	,'autoHeightEnabled':{$_rs.auto_height ? 'true' : 'false'}
+	,'autoFloatEnabled':true
+	,'autoHeightEnabled':true
 	,'zIndex':99
 	{if $_rs.btns.page},'pageBreakTag':'[:page:]'{/if}
 	,'textarea':'{$_rs.identifier}'

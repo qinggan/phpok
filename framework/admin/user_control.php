@@ -389,6 +389,7 @@ class user_control extends phpok_control
 		$relation_id = $this->get('relation_id');
 		$this->model('user')->save_relation($insert_id,$relation_id);
 		$note = $id ? P_Lang('会员编辑成功') : P_Lang('新会员添加成功');
+		$this->plugin('ap_user_setok',$insert_id);
 		$this->success($note,$this->url('user'));
 	}
 

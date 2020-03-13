@@ -1,0 +1,20 @@
+<style type="text/css">
+ul.checkbox_{$_rs.identifier}{list-style:none;margin:0;padding:0;line-height:23px;}
+ul.checkbox_{$_rs.identifier} label{vertical-align:middle;display:inline-block;}
+ul.checkbox_{$_rs.identifier} input{margin:-3px 5px 0 0;padding:0;border:0;vertical-align:middle;}
+</style>
+<!-- if $_rs.put_order -->
+<style type="text/css">
+ul.checkbox_{$_rs.identifier} li{display:block;}
+</style>
+<!-- else -->
+<style type="text/css">
+ul.checkbox_{$_rs.identifier}:after{content:'&nbsp;';display: block;visibility:hidden;height:0;line-height:0;clear:both;overflow:hidden;}
+ul.checkbox_{$_rs.identifier} li{float:left;margin-right:15px;}
+</style>
+<!-- /if -->
+<ul class="checkbox checkbox_{$_rs.identifier}">
+	<!-- loop from=$_rslist key=$key value=$value -->
+	<li><label><input type="checkbox" name="{$_rs.identifier}[]" title="{$value.title}" value="{$value.val}"{if($value && $_rs.content && in_array($value.val,$_rs.content))} checked{/if} /> {$value.title}</label></li>
+	<!-- /loop -->
+</ul>

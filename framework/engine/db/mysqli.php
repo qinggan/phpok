@@ -28,17 +28,14 @@ class db_mysqli extends db
 	}
 
 	/**
-	 * 类型设置
-	 * @参数 $type ，为 num 时使用 MYSQLI_NUM ，返之为 MYSQLI_ASSOC
+	 * 析构函数，结束链接
 	**/
-	public function type($type='')
+	public function __destruct()
 	{
-		if($type && ($type == 'num' || $type == MYSQLI_NUM)){
-			$this->type = MYSQLI_NUM;
-		}else{
-			$this->type = MYSQLI_ASSOC;
+		parent::__destruct();
+		if($this->conn && is_object($this->conn)){
+			mysqli_close($this->conn);
 		}
-		return $this->type;
 	}
 
 	/**
@@ -80,50 +77,85 @@ class db_mysqli extends db
 	}
 
 	/**
-	 * 析构函数，结束链接
+	 * 创建主表操作
+	 * @参数 $tblname 表名称
+	 * @参数 $pri_id 主键ID
+	 * @参数 $note 表摘要
+	 * @参数 $engine 引挈，默认是 InnoDB
 	**/
-	public function __destruct()
+	public function create_table_main($tblname,$pri_id='',$note='',$engine='')
 	{
-		parent::__destruct();
-		if($this->conn && is_object($this->conn)){
-			mysqli_close($this->conn);
+		if(!$engine){
+			$engine = 'InnoDB';
 		}
+		if(!$pri_id){
+			$pri_id = 'id';
+		}
+		$sql  = "CREATE TABLE IF NOT EXISTS `".$tblname."`(`".$pri_id."` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',";
+		$sql .= "PRIMARY KEY (`".$pri_id."`) ) ";
+		$sql .= "ENGINE=".$engine." DEFAULT CHARACTER SET utf8 COMMENT='".$note."' AUTO_INCREMENT=1";
+		return $this->query($sql);
 	}
 
 	/**
-	 * 设置参数
+	 * 返回行数
+	 * @参数 $sql 要执行的SQL语句
+	 * @参数 $is_count 是否计算数量，仅限 sql 中使用 count() 时有效
 	**/
-	public function set($name,$value)
+	public function count($sql="",$is_count=true)
 	{
-		if($name == "rs_type" || $name == 'type'){
-			$value = strtolower($value) == "num" ? MYSQLI_NUM : MYSQLI_ASSOC;
-			$this->type = $value;
+		if($sql && is_string($sql) && $is_count){
+			$this->set('type','num');
+			$rs = $this->get_one($sql);
+			$this->set('type','assoc');
+			return $rs[0];
 		}else{
-			$this->$name = $value;
+			if($sql && is_string($sql)){
+				$this->query($sql);
+			}
+			if($this->query){
+				return mysqli_num_rows($this->query);
+			}
 		}
+		return false;
 	}
 
 	/**
-	 * 执行SQL
+	 * 删除表操作
+	 * @参数 $table 表名称，要求带前缀
+	 * @参数 $check_prefix 是否加前缀
 	**/
-	public function query($sql,$loadcache=true)
+	public function delete_table($table,$check_prefix=true)
 	{
-		if($loadcache){
-			$this->cache_sql($sql);
+		if($check_prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
+			$table = $this->prefix.$table;
+		}
+		$sql = "DROP TABLE IF EXISTS `".$table."`";
+		return $this->query($sql);
+	}
+
+	/**
+	 * 删除表字段
+	 * @参数 $tblname 表名称
+	 * @参数 $id 要删除的字段
+	**/
+	public function delete_table_fields($tblname,$id)
+	{
+		$sql = "ALTER TABLE ".$tblname." DROP `".$id."`";
+		return $this->query($sql);
+	}
+
+	/**
+	 * 字符转义
+	 * @参数 $char 要转义的字符
+	**/
+	public function escape_string($char)
+	{
+		if(!$char){
+			return false;
 		}
 		$this->check_connect();
-		$this->_time();
-		$this->query = mysqli_query($this->conn,$sql);
-		if($loadcache){
-			$this->cache_update($sql);
-		}
-		$tmptime = $this->_time();
-		$this->_count();
-		$this->debug($sql,$tmptime);
-		if(mysqli_error($this->conn)){
-			$this->error(mysqli_error($this->conn).', '.$sql,mysqli_errno($this->conn));
-		}
-		return $this->query;
+		return mysqli_escape_string($this->conn,$char);
 	}
 
 	/**
@@ -211,44 +243,6 @@ class db_mysqli extends db
 	}
 
 	/**
-	 * 返回行数
-	 * @参数 $sql 要执行的SQL语句
-	 * @参数 $is_count 是否计算数量，仅限 sql 中使用 count() 时有效
-	**/
-	public function count($sql="",$is_count=true)
-	{
-		if($sql && is_string($sql) && $is_count){
-			$this->set('type','num');
-			$rs = $this->get_one($sql);
-			$this->set('type','assoc');
-			return $rs[0];
-		}else{
-			if($sql && is_string($sql)){
-				$this->query($sql);
-			}
-			if($this->query){
-				return mysqli_num_rows($this->query);
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * 返回被筛选出来的字段数目
-	 * @参数 $sql 要执行的SQL语句
-	**/
-	public function num_fields($sql="")
-	{
-		if($sql){
-			$this->query($sql);
-		}
-		if($this->query){
-			return mysqli_num_fields($this->query);
-		}
-		return false;
-	}
-
-	/**
 	 * 显示表字段，仅限字段名，没有字段属性
 	 * @参数 $table 表名
 	 * @参数 $prefix 是否检查数据表前缀
@@ -327,6 +321,57 @@ class db_mysqli extends db
 	}
 
 	/**
+	 * 返回被筛选出来的字段数目
+	 * @参数 $sql 要执行的SQL语句
+	**/
+	public function num_fields($sql="")
+	{
+		if($sql){
+			$this->query($sql);
+		}
+		if($this->query){
+			return mysqli_num_fields($this->query);
+		}
+		return false;
+	}
+
+	/**
+	 * 执行SQL
+	**/
+	public function query($sql,$loadcache=true)
+	{
+		if($loadcache){
+			$this->cache_sql($sql);
+		}
+		$this->check_connect();
+		$this->_time();
+		$this->query = mysqli_query($this->conn,$sql);
+		if($loadcache){
+			$this->cache_update($sql);
+		}
+		$tmptime = $this->_time();
+		$this->_count();
+		$this->debug($sql,$tmptime);
+		if(mysqli_error($this->conn)){
+			$this->error(mysqli_error($this->conn).', '.$sql,mysqli_errno($this->conn));
+		}
+		return $this->query;
+	}
+
+	/**
+	 * 设置参数
+	**/
+	public function set($name,$value)
+	{
+		if($name == "rs_type" || $name == 'type'){
+			$value = strtolower($value) == "num" ? MYSQLI_NUM : MYSQLI_ASSOC;
+			$this->type = $value;
+		}else{
+			$this->$name = $value;
+		}
+	}
+
+	/**
 	 * 显示表名
 	 * @参数 $table_list 数组，整个数据库中的表
 	 * @参数 $i 顺序ID
@@ -337,51 +382,88 @@ class db_mysqli extends db
 	}
 
 	/**
-	 * 字符转义
-	 * @参数 $char 要转义的字符
+	 * 事务提交
 	**/
-	public function escape_string($char)
+	public function t_commit()
 	{
-		if(!$char){
+		return $this->transaction('commit');
+	}
+
+	/**
+	 * 事务回滚
+	**/
+	public function t_rollback()
+	{
+		return $this->transaction('rollback');
+	}
+	
+	/**
+	 * 事务开始
+	**/
+	public function t_start()
+	{
+		return $this->transaction('start');
+	}
+
+	/**
+	 * 启用事物
+	 * @参数 $type  当值为【start,begin,1,open,init】，表示开启事务
+	 *             当值为【finish,end,ok,true,2,commit,right,success】表示提交事务
+	 *             当值为【cacel,stop,fail,false,0,wrong,error,rollback】表示回滚事务
+	 * @参数 
+	 * @参数 
+	**/
+	public function transaction($type='')
+	{
+		$act = false;
+		if($type == ''){
+			$act = 'start';
+		}
+		if(is_numeric($type)){
+			$act = $type == 1 ? 'start' : ($type == 2 ? 'commit' : 'rollback');
+		}elseif(is_bool($type)){
+			$act = $type ? 'commit' : 'rollback';
+		}else{
+			$type = strtolower($type);
+			$a = array('start','begin','open','init');
+			$b = array('finish','end','ok','true','commit','right','success');
+			$c = array('cacel','stop','fail','false','wrong','error','rollback');
+			if(in_array($type,$a)){
+				$act = 'start';
+			}elseif(in_array($type,$b)){
+				$act = 'commit';
+			}elseif(in_array($type,$c)){
+				$act = 'rollback';
+			}
+		}
+		if(!$act){
 			return false;
 		}
-		$this->check_connect();
-		return mysqli_escape_string($this->conn,$char);
+		if($act == 'start'){
+			mysqli_query($this->conn,'BEGIN');
+		}elseif($act == 'commit'){
+			mysqli_query($this->conn,'COMMIT');
+			mysqli_query($this->conn,'END');
+		}elseif($act == 'rollback'){
+			mysqli_query($this->conn,'ROLLBACK');
+			mysqli_query($this->conn,'END');
+		}
+		return true;
 	}
 
 	/**
-	 * 取得数据库服务版本
-	 * @参数 $type 支持server和client两种类型
+	 * 类型设置
+	 * @参数 $type ，为 num 时使用 MYSQLI_NUM ，返之为 MYSQLI_ASSOC
 	**/
-	public function version($type="server")
+	public function type($type='')
 	{
-		if($type == 'server'){
-			return mysqli_get_server_info($this->conn);
+		if($type && ($type == 'num' || $type == MYSQLI_NUM)){
+			$this->type = MYSQLI_NUM;
 		}else{
-			return mysqli_get_client_info($this->conn);
+			$this->type = MYSQLI_ASSOC;
 		}
-	}
-
-	/**
-	 * 创建主表操作
-	 * @参数 $tblname 表名称
-	 * @参数 $pri_id 主键ID
-	 * @参数 $note 表摘要
-	 * @参数 $engine 引挈，默认是 InnoDB
-	**/
-	public function create_table_main($tblname,$pri_id='',$note='',$engine='')
-	{
-		if(!$engine){
-			$engine = 'InnoDB';
-		}
-		if(!$pri_id){
-			$pri_id = 'id';
-		}
-		$sql  = "CREATE TABLE IF NOT EXISTS `".$tblname."`(`".$pri_id."` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',";
-		$sql .= "PRIMARY KEY (`".$pri_id."`) ) ";
-		$sql .= "ENGINE=".$engine." DEFAULT CHARACTER SET utf8 COMMENT='".$note."' AUTO_INCREMENT=1;";
-		return $this->query($sql);
-	}
+		return $this->type;
+	}	
 
 	/**
 	 * 增加或修改表字段
@@ -465,27 +547,16 @@ class db_mysqli extends db
 	}
 
 	/**
-	 * 删除表字段
-	 * @参数 $tblname 表名称
-	 * @参数 $id 要删除的字段
+	 * 取得数据库服务版本
+	 * @参数 $type 支持server和client两种类型
 	**/
-	public function delete_table_fields($tblname,$id)
+	public function version($type="server")
 	{
-		$sql = "ALTER TABLE ".$tblname." DROP `".$id."`";
-		return $this->query($sql);
-	}
-
-	/**
-	 * 删除表操作
-	 * @参数 $table 表名称，要求带前缀
-	 * @参数 $check_prefix 是否加前缀
-	**/
-	public function delete_table($table,$check_prefix=true)
-	{
-		if($check_prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
-			$table = $this->prefix.$table;
+		if($type == 'server'){
+			return mysqli_get_server_info($this->conn);
+		}else{
+			return mysqli_get_client_info($this->conn);
 		}
-		$sql = "DROP TABLE IF EXISTS `".$table."`";
-		return $this->query($sql);
 	}
+	
 }

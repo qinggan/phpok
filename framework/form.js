@@ -581,9 +581,9 @@ function go_to_page_action()
 		},
 		param_type_set:function(v){
 			if(v == 1){
-				$("#p_name_type_html").show();
+				$("#p_val_type_html").show();
 			}else{
-				$("#p_name_type_html").hide();
+				$("#p_val_type_html").hide();
 			}
 		},
 

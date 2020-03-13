@@ -7,7 +7,6 @@
 			<!-- loop from=$navlist key=$key value=$value id=$tmpid -->
 			/ <a href="{url ctrl=cate func=index parent_id=$value.id/}">
 				{$value.title}
-				<span class="gray i">{$value.id}</span>
 			</a>
 			<!-- /loop -->
 		<!-- else -->
@@ -29,6 +28,9 @@
 		<table class="layui-table" lay-size="sm">
 			<thead>
 			<tr>
+				<!-- if $rs -->
+				<th width="20">&nbsp;</th>
+				<!-- /if -->
 				<th width="40">ID</th>
 				<th width="20"></th>
 				<th>{lang分类名称}</th>
@@ -41,13 +43,16 @@
 			<tbody>
 			<!-- loop from=$rslist key=$key value=$value -->
 			<tr>
+				<!-- if $rs -->
+				<td><input type="checkbox" name="ids[]" id="c_{$value.id}" value="{$value.id}" /></td>
+				<!-- /if -->
 				<td>{$value.id}</td>
 				<td>
 					<span id="status_{$value.id}" onclick="$.admin_cate.status({$value.id})" class="status{$value.status}" value="{$value.status}"></span>
 				</td>
-				<td style="{$value.style}">{$value.title}</td>
+				<td style="{$value.style}"><label for="c_{$value.id}">{$value.title}</label></td>
 				<td>{$value.identifier}</td>
-				<td><!-- if $value.total -->{$value.total}<!-- else --><span class="red">0</span><!-- /if --></td>
+				<td id="total_{$value.id}"><!-- if $value.total -->{$value.total}<!-- else --><span class="red">0</span><!-- /if --></td>
 				<td><input type="text" id="taxis_{$value.id}" class="layui-input" value="{$value.taxis}" tabindex="{$tab_i}" onblur="update_taxis('{$value.id}')" /></td>
 				<td>
 					<div class="layui-btn-group">
@@ -66,6 +71,24 @@
 			<!-- /loop -->
 			</tbody>
 		</table>
+		<!-- if $rs -->
+		<ul class="layout">
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_all()" />
+					<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_none()" />
+					<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_anti()" />
+				</div>
+			</li>
+			<li id="plugin_button">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang启用}" class="layui-btn layui-btn-sm" onclick="$.admin_cate.pl_status(1)" />
+					<input type="button" value="{lang禁用}" class="layui-btn layui-btn-warm layui-btn-sm" onclick="$.admin_cate.pl_status(0)" />
+					<input type="button" value="{lang删除}" class="layui-btn layui-btn-danger layui-btn-sm" onclick="$.admin_cate.pl_delete(0)" />
+				</div>
+			</li>
+		</ul>
+		<!-- /if -->
 	</div>
 
 </div>

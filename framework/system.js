@@ -114,7 +114,6 @@ function get_plugin_url(id,efunc,ext)
 	return $.phpokurl.plugin(id,efunc,ext,basefile);
 }
 
-<!-- if APP_ID == 'admin' -->
 function admin_url(ctrl,func,ext)
 {
 	return $.phpokurl.base(ctrl,func,ext,adminfile);
@@ -124,8 +123,6 @@ function admin_plugin_url(id,efunc,ext)
 {
 	return $.phpokurl.plugin(id,efunc,ext,adminfile);
 }
-
-<!-- /if -->
 
 function www_url(ctrl,func,ext)
 {

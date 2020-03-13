@@ -457,7 +457,7 @@ class user_model_base extends phpok_model
 		}
 		$sql = "SELECT u.id,u.user,u.email,u.avatar,u.mobile,ur.uid FROM ".$this->db->prefix."user_relation ur ";
 		$sql.= "LEFT JOIN ".$this->db->prefix."user u ON(ur.introducer=u.id) ";
-		$sql.= "WHERE u.id IN(".$uid.")";
+		$sql.= "WHERE ur.uid IN(".$uid.")";
 		return $this->db->get_all($sql,'uid');
 	}
 

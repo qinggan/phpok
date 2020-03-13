@@ -527,6 +527,8 @@ class cate_model_base extends phpok_model
 		$this->db->query($sql);
 		$sql = "UPDATE ".$this->db->prefix."list SET cate_id=0 WHERE cate_id='".$id."'";
 		$this->db->query($sql);
+		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE cate_id='".$id."'";
+		$this->db->query($sql);
 		$sql = "SELECT id FROM ".$this->db->prefix."fields WHERE ftype='cate-".$id."'";
 		$rslist = $this->db->get_all($sql,'id');
 		if($rslist){
@@ -537,6 +539,8 @@ class cate_model_base extends phpok_model
 			$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id IN(".implode(',',$idlist).")";
 			$this->db->query($sql);
 		}
+		//删除标签下与分类有关的
+		$this->model('tag')->stat_delete('c'.$id,"title_id");
 		return true;
 	}
 

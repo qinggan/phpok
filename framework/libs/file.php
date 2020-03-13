@@ -258,7 +258,6 @@ class file_lib
 		return true;
 	}
 
-	#[]
 	/**
 	 * 文件移动操作
 	 * @参数 $old 旧文件（夹）
@@ -453,14 +452,18 @@ class file_lib
 		    header("Content-Range: bytes 0-".$size2."/".$filesize); //Content-Range: bytes 0-4988927/4988928
 		    header("Content-Length: ".$filesize);
 		}
+		$read_buffer=4096;
+		$sum_buffer = 0;
 		$handle = fopen($file, "rb");
 		fseek($handle, $range);
-		set_time_limit(0);
-		while (!feof($handle)) {
-			print (fread($handle, 1024 * 8));
-			flush();
+		ob_start();
+		while (!feof($handle) && $sum_buffer<$filesize) {
+			echo fread($handle,$read_buffer);
+			$sum_buffer+=$read_buffer;
 			ob_flush();
+			flush();
 		}
+		ob_end_clean();
 		fclose($handle);
 	}
 }

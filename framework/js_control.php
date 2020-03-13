@@ -124,6 +124,7 @@ class js_control extends phpok_control
 	**/
 	public function ext_f()
 	{
+		ob_start();
 		header("Content-type: application/x-javascript; charset=UTF-8");
 		$js = $this->get("js");
 		if(!$js){
@@ -202,6 +203,7 @@ class js_control extends phpok_control
 	**/
 	private function js_base()
 	{
+		ob_start();
 		header("Content-type: text/javascript; charset=utf-8");
 		$file = $this->app_id == 'admin' ? $this->config['admin_file'] : $this->config['www_file'];
 		$this->assign('basefile',$file);

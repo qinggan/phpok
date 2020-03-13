@@ -20,14 +20,12 @@ function load_js(url)
 		var src = $(this).attr("src");
 		if(src && src != 'undefined'){
 			elist[tm] = src;
-			tm++; 
+			tm++;
 		}
 	});
 	var html = '';
-	for(var i=0;i<lst_count;i++)
-	{
-		if($.inArray(lst[i],elist) < 0)
-		{
+	for(var i=0;i<lst_count;i++){
+		if($.inArray(lst[i],elist) < 0){
 			html += '<script type="text/javascript" src="'+lst[i]+'"></script>';
 		}
 	}
@@ -51,7 +49,7 @@ function json_ajax(turl)
  * @参数 str 要替换的语言包，支持使用{}包起来的变量
  * @参数 info 支持字符串，对数数据，要替换的变量，为空表示没有变量信息
  * @返回 替换后的数据
- * @更新时间 
+ * @更新时间
 **/
 function p_lang(str,info)
 {

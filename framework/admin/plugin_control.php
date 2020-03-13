@@ -712,7 +712,6 @@ class plugin_control extends phpok_control
 		}
 		$string = "/**\n";
 		$string.= " * ".$title.($note ? '<'.$note.'>': '')."\n";
-		$string.= " * @package phpok\\\plugins\n";
 		if($author){
 			$string.= " * @作者 ".$author."\n";
 		}

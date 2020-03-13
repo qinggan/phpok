@@ -213,7 +213,7 @@ class upload_lib
 		$tmpname = $_FILES[$input]["name"];
 		$mime_type = $_FILES[$input]["type"];
 	    $tmpname = $app->lib('string')->to_utf8($tmpname);
-	    $tmpname = $app->format($tmpname);
+	    $tmpname = $app->format($tmpname,"safe_text");
 		$tmpid = 'u_'.md5($tmpname);
 		$ext = $this->file_ext($tmpname,$chk);
 		if(!$ext){
@@ -291,9 +291,8 @@ class upload_lib
 	{
 		global $app;
 		$basename = substr(md5(time().uniqid()),9,16);
-		$tmpname = $app->get('name');
+		$tmpname = $app->get('name','safe_text');
 	    $tmpname = $app->lib('string')->to_utf8($tmpname);
-	    $tmpname = $app->format($tmpname); //安全格式化数据
 		if(!$tmpname){
 			$tmpname = uniqid($input.'_');
 		}

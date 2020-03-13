@@ -120,15 +120,6 @@ class wealth_model extends wealth_model_base
 		return $this->db->get_all($sql);
 	}
 
-	public function log_total($condition='')
-	{
-		$sql = "SELECT count(id) FROM ".$this->db->prefix."wealth_log";
-		if($condition){
-			$sql .= " WHERE ".$condition;
-		}
-		return $this->db->count($sql);
-	}
-
 	public function log_list($condition='',$offset=0,$psize=30)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."wealth_log ";

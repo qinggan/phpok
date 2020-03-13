@@ -262,6 +262,59 @@
 				//更新Message
 				$.phpok.message('pendding');
 			})
+		},
+		cate:function(id)
+		{
+			$.dialog.prompt(p_lang('请填写分类名称'),function(val){
+				var url = get_url('cate','qsave','root_id='+id+"&title="+$.str.encode(val));
+				$.phpok.json(url,function(rs){
+					if(rs.status){
+						var html = '<option value="'+rs.info+'">'+val+'</option>';
+						$("#cate_id,#ext_cate_id").append(html);
+						layui.form.render();
+						$.dialog.tips(p_lang('分类添加成功'));
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				});
+			});
+		},
+		subcate:function()
+		{
+			var id = $("#cate_id").val();
+			if(!id){
+				$.dialog.alert(p_lang('请选择分类'));
+				return false;
+			}
+			var layer = $("select[name=cate_id]").find("option[value="+id+"]").attr("data-layer");
+			layer = parseInt(layer);
+			var is_end = $("select[name=cate_id]").find("option[value="+id+"]").attr("data-isend");
+			var space = '';
+			if(layer>0){
+				for(var i=0;i<layer;i++){
+					space += '&nbsp; &nbsp;│';
+				}
+			}
+			if(layer>0 && is_end){
+				space += '&nbsp; &nbsp;│';
+			}
+			space += '&nbsp; &nbsp;├';
+			$.dialog.prompt(p_lang('请填写分类名称'),function(val){
+				var url = get_url('cate','qsave','root_id='+id+"&title="+$.str.encode(val));
+				$.phpok.json(url,function(rs){
+					if(rs.status){
+						var html = '<option value="'+rs.info+'" data-layer="'+(layer+1).toString()+'" data-isend="0">'+space+''+val+'</option>';
+						$("select[name=cate_id]").find("option[value="+id+"]").after(html);
+						$("#ext_cate_id").find("option[value="+id+"]").after(html);
+						layui.form.render();
+						$.dialog.tips(p_lang('分类添加成功'));
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				});
+			});
 		}
 	};
 

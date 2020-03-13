@@ -444,4 +444,42 @@ class usercp_control extends phpok_control
 		}
 		$this->view($tplfile);
 	}
+
+	/**
+	 * 积分日志
+	**/
+	public function wealth_log_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定财富规则'));
+		}
+		$rs = $this->model('wealth')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('财富信息不存在'));
+		}
+		$this->assign('id',$id);
+		$this->assign('rs',$rs);
+		$pageid = $this->get('pageid','int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
+		$offset = ($pageid-1)*$psize;
+		$pageurl = $this->url('usercp','wealth_log','id='.$id);
+		$condition = "wid='".$id."' AND goal_id='".$this->session->val('user_id')."' AND status=1";
+		$total = $this->model('wealth')->log_total($condition);
+		if($total){
+			$rslist = $this->model('wealth')->log_list($condition,$offset,$psize);
+			$this->assign('rslist',$rslist);
+			$this->assign('offset',$offset);
+			$this->assign('psize',$psize);
+			$this->assign('pageurl',$pageurl);
+		}
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_wealth_log';
+		}
+		$this->view($tplfile);
+	}
 }

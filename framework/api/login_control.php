@@ -78,6 +78,8 @@ class login_control extends phpok_control
 		if(!$_back){
 			$_back = $this->url('usercp','','www',true);
 		}
+		//增加节点
+		$this->plugin('plugin-login-save',$user_rs['id']);
 		$this->success(array('user_id'=>$user_rs['id'],'user_name'=>$user_rs['user'],'user_gid'=>$user_rs['group_id']),$_back);
 	}
 

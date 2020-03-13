@@ -29,8 +29,7 @@ class email_model_base extends phpok_model
 	public function get_list($condition="",$offset=0,$psize=20)
 	{
 		$sql = " SELECT * FROM ".$this->db->prefix."email ";
-		if($condition)
-		{
+		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
 		$sql.= " ORDER BY id DESC LIMIT ".$offset.",".$psize;

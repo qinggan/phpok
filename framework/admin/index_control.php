@@ -130,9 +130,7 @@ class index_control extends phpok_control
 			}
 			$menulist[$key] = $value;
 		}
-		if($this->session->val('admin_rs.if_system') && $this->session->val('adm_develop')){
-			$this->assign('menulist',$menulist);
-		}
+		$this->assign('menulist',$menulist);
 		//检测插件列表有没有快捷图标
 		$plugin_mlist = $plugin_alist = $plugin_glist = array();
 		if($this->plugin && is_array($this->plugin)){

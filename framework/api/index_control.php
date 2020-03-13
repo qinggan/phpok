@@ -24,9 +24,6 @@ class index_control extends phpok_control
 		$data = array('ctrl_id'=>$this->config['ctrl_id']);
 		$data['func_id'] = $this->config['func_id'];
 		$data['site_id'] = $this->site['id'];
-		$data['session_name'] = $this->session->sid();
-		$data['session_val'] = $this->session->sessid();
-		$data['_note'] = '历史原因，会话名称及值将会上移到与info同级，此项将在OK5.4后取消使用，请使用接口开发的注意同步更新';
 		$wxAppConfig = $this->get('wxAppConfig');
 		$clear_url = $this->config['url'].'wxapp/';
 		if($wxAppConfig && is_file($this->dir_data.'wxappconfig.php')){

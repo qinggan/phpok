@@ -4,8 +4,8 @@
 		{lang通知内容管理}
 		<!-- if $popedom.add -->
 		<div class="layui-btn-group fr">
-			<button class="layui-btn layui-btn-sm" onclick="$.phpok.go('{url ctrl=email func=set type=email/}')"> <i class="layui-icon">&#xe608;</i>{lang邮件模版}</button>
-			<button class="layui-btn layui-btn-sm" onclick="$.phpok.go('{url ctrl=email func=set type=sms/}')"> <i class="layui-icon">&#xe608;</i>{lang短信模版}</button>
+			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加邮件模版}','{url ctrl=email func=set type=email/}')"> <i class="layui-icon">&#xe608;</i>{lang邮件模版}</button>
+			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加短信模版}','{url ctrl=email func=set type=sms/}')"> <i class="layui-icon">&#xe608;</i>{lang短信模版}</button>
 		</div>
 		<!-- /if -->
 	</div>
@@ -34,8 +34,11 @@
 				<!-- if $popedom.modify || $popedom.delete -->
 				<td>
 					<div class="layui-btn-group">
+						<!-- if $popedom.add -->
+						<input type="button" value="{lang复制}" onclick="$.win('{lang添加通知模板}','{url ctrl=email func=set tid=$value.id/}')" class="layui-btn layui-btn-sm" />
+						<!-- /if -->
 						<!-- if $popedom.modify -->
-						<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=email func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑通知模板}_{$value.id}','{url ctrl=email func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
 						<!-- /if -->
 						<!-- if $popedom.delete -->
 						<input type="button" value="{lang删除}" onclick="mail_delete('{$value.id}','{$value.identifier}')" class="layui-btn layui-btn-sm layui-btn-danger" />

@@ -238,6 +238,31 @@ class cate_control extends phpok_control
 	}
 
 	/**
+	 * 分类状态批量设置
+	**/
+	public function pl_status_f()
+	{
+		if(!$this->popedom['status']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$ids = $this->get('ids');
+		if(!$ids){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$status = $this->get('status','int');
+		
+		$list = explode(",",$ids);
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				continue;
+			}
+			$this->model('cate')->save(array('status'=>$status),$value);
+		}
+		$this->success();
+	}
+
+	/**
 	 * 弹窗分类信息保存
 	**/
 	public function open_save_f()
@@ -272,6 +297,32 @@ class cate_control extends phpok_control
 			$this->json(P_Lang('分类添加失败，请检查！'));
 		}
 		$this->json(P_Lang('分类添加成功'),true);
+	}
+
+	/**
+	 * 快速添加分类操作
+	**/
+	public function qsave_f()
+	{
+		if(!$this->popedom['add']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$title = $this->get("title");
+		if(!$title){
+			$this->error(P_Lang('分类名称不能为空'));
+		}
+		$array = array();
+		$array["site_id"] = $this->session->val('admin_site_id');
+		$array["parent_id"] = $this->get('root_id','int');
+		$array["title"] = $title;
+		$array["taxis"] = $this->model('cate')->cate_next_taxis(0);
+		$array["status"] = 1;
+		$array["identifier"] = uniqid('cate-');
+		$id = $this->model('cate')->save($array);
+		if(!$id){
+			$this->error(P_Lang('分类添加失败，请检查！'));
+		}
+		$this->success($id);
 	}
 
 	/**
@@ -425,7 +476,37 @@ class cate_control extends phpok_control
 			$this->error(P_Lang('分类使用中，请先删除'));
 		}
 		$this->model('cate')->cate_delete($id);
-		$this->model('tag')->stat_delete('c'.$id,"title_id");
+		$this->success();
+	}
+
+	/**
+	 * 批量删除分类
+	**/
+	public function pl_delete_f()
+	{
+		if(!$this->popedom['delete']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$ids = $this->get("ids");
+		if(!$ids){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$list = explode(",",$ids);
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				continue;
+			}
+			$idlist = $this->model('cate')->get_son_id_list($value);
+			if($idlist){
+				continue;
+			}
+			$check_rs = $this->model('project')->chk_cate($value);
+			if($check_rs){
+				continue;
+			}
+			$this->model('cate')->cate_delete($value);
+		}
 		$this->success();
 	}
 

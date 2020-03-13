@@ -168,24 +168,16 @@ class cart_control extends phpok_control
 				}
 				if($value['identifier'] == 'discount'){
 					$this->data("cart_id",$this->cart_id);
+					$this->data('cart_ids',$id);
 					$this->node('PHPOK_cart_coupon');
 					$tmp = $this->data('cart_coupon');
 					if(!$tmp){
 						unset($pricelist[$key]);
 						continue;
 					}
-					if($tmp['min_price'] > $totalprice){
-						unset($pricelist[$key]);
-						continue;
-					}
-					if(!$tmp['discount_type']){
-						$tmp_price = round($totalprice * $tmp['discount_val'] / 100,2);
-					}else{
-						$tmp_price = $tmp['discount_val'];
-					}
-					$value['price'] = price_format(-$tmp_price,$this->site['currency_id']);
-					$value['price_val'] = -$tmp_price;
-					$discount = -$tmp_price;
+					$value['price'] = price_format(-$tmp['price'],$this->site['currency_id']);
+					$value['price_val'] = -$tmp['price'];
+					$discount = -$tmp['price'];
 					$this->assign('coupon_code',$tmp['code']);
 				}
 				$pricelist[$key] = $value;

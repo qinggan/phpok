@@ -72,17 +72,24 @@ class email_control extends phpok_control
 			if(!$this->popedom["add"]){
 				$this->error(P_Lang('您没有权限执行此操作'),$this->url('email'));
 			}
-			$type = $this->get('type');
+			$tid = $this->get('tid','int');
+			if($tid){
+				$rs = $this->model('email')->get_one($tid);
+				$type = substr($rs['identifier'],0,4) == 'sms_' ? 'sms' : 'email';
+				unset($rs['identifier'],$rs['id']);
+				$this->assign("rs",$rs);
+			}else{
+				$type = $this->get('type');
+			}
 			if(!$type){
 				$type = 'email';
 			}
-			$rs = array("content"=>'');
 		}
 		$this->assign('type',$type);
 		if($type == 'sms'){
 			$edit_content = form_edit('content',$rs['content'],'textarea','height=300&width=500');
 		}else{
-			$edit_content = form_edit('content',$rs['content'],'editor','height=300&btn_image=1&is_code=1');
+			$edit_content = form_edit('content',$rs['content'],'editor','height=300&btn_image=1&is_code=1&auto_height=1&is_float=1');
 		}
 		$this->assign('edit_content',$edit_content);
 		$this->view("email_set");
