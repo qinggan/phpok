@@ -40,22 +40,18 @@ var call = {
 			return false;
 		}
 		var tmp = {}
-		if(!param_val || param_val == 'undefined'){
-			if(!param_id || param_id == 'undefined'){
-				tmp[name] = {};
-				this.name = name;
-			}else{
-				if(this.data[this.name]){
-					tmp = this.data;
-				}
-				tmp[this.name][name] = param_id;
-			}
-		}else{
-			if(!tmp[name] || tmp[name] == 'undefined'){
-				tmp[name] = {};
-				this.name = name;
-			}
+		if(param_id && param_id != 'undefined' && (!param_val || param_val == 'undefined')){
+			tmp[this.name] = {};
+			tmp[this.name][name] = param_id;
+			this.name = name;
+		}
+		if((!param_id || param_id == 'undefined') && (!param_val || param_val == 'undefined')){
+			tmp[name] = {};
+			this.name = name;
+		}
+		if (param_id && param_id != 'undefined' && param_val && param_val != 'undefined'){
 			tmp[name][param_id] = param_val;
+			this.name = name;
 		}
 		var all = this.extend(this.data,tmp,true);
 		this.data = all;
@@ -98,10 +94,6 @@ var call = {
 			return this.data;
 		}
 		return false;
-	},
-	reset:function()
-	{
-		this.data = {};
 	}
 }
 
@@ -109,9 +101,10 @@ var call = {
 var dialog = {
 	tips:function(info,obj)
 	{
-		wx.showToast({
+		wx.showToast({  
             'title':info,
             'icon': 'none',
+            'mask':true,
             'success':function(){
 	            if(obj && obj != 'undefined' && typeof obj == 'function'){
 		            (obj)();
@@ -179,7 +172,7 @@ var dialog = {
 			ok_func = time;
 			cancel_func = success_func;
 		}
-
+		
 		wx.showLoading({
 			'title':title,
 			'mask':true,
@@ -208,17 +201,6 @@ var dialog = {
 			return true;
 		}
 		return false;
-	}
-}
-
-var str = {
-	encode:function(info)
-	{
-		return encodeURIComponent(info);
-	},
-	decode:function(info)
-	{
-		return decodeURIComponent(info);
 	}
 }
 
@@ -280,16 +262,11 @@ var format = {
 			return '0'+val.toString();
 		}
 		return val.toString();
-	},
-	price:function(val)
-	{
-		return parseFloat(val).toFixed(2);
 	}
 }
 module.exports = {
 	cookie:cookie,
 	call:call,
 	dialog:dialog,
-	format:format,
-	str:str
+	format:format
 }

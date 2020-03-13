@@ -12,6 +12,8 @@
 	"appid": "wxcc4d79b75843fe21",
 	"projectname": "PHPOK",
 	"isGameTourist": false,
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
 			"current": -1,

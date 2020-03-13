@@ -47,6 +47,7 @@ Page({
 				var banner_url = [];
 				var m = 0;
 				var tmplist = info.picplayer.rslist;
+				console.log(tmplist);
 				for(var i in tmplist){
 					banner_url[m] = app.okConfig.host + tmplist[i].picmobile.gd.auto;
 					m++;
