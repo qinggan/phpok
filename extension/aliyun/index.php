@@ -34,6 +34,16 @@ use vod\Request\V20170321 as vod;
 **/
 use Aliyun\DySDKLite as sms;
 
+/**
+ * 直播平台
+**/
+use live\Request\V20161101 as live;
+
+/**
+ * CDN 应用
+**/
+use Cdn\Request\V20180510 as cdn;
+
 class aliyun_lib
 {
 	/**
@@ -367,6 +377,31 @@ class aliyun_lib
 		$request->setAcceptFormat('JSON');
 		$request->setRegionId($this->regoin_id);
 		$request->setVideoId($videoid);
+		try {
+			$response = $this->client->getAcsResponse($request);
+			return $this->success($response);
+		}
+		catch (ClientException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+		catch (ServerException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+	}
+
+	/**
+	 * 取得视频信息
+	 * @参数 $videoid 视频ID
+	**/
+	public function video_delete($videoid)
+	{
+		if(!$videoid){
+			return false;
+		}
+		$request = new vod\DeleteVideoRequest();
+		$request->setAcceptFormat('JSON');
+		$request->setRegionId($this->regoin_id);
+		$request->setVideoIds($videoid);
 		try {
 			$response = $this->client->getAcsResponse($request);
 			return $this->success($response);

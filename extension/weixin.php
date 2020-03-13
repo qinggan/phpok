@@ -14,6 +14,7 @@ class weixin_lib
 	private $obj;
 	private $app_id; //微信开放平台申请到的APP ID
 	private $app_secret = ''; // 微信开放平台申请到的APP Secret
+	private $session_key = '';
 	private $expire_time = 0;
 	private $token = '';
 	private $debug = false;
@@ -51,6 +52,14 @@ class weixin_lib
 			$this->app_secret = $app_secret;
 		}
 		return $this->app_secret;
+	}
+
+	public function session_key($session_key='')
+	{
+		if($session_key){
+			$this->session_key = $session_key;
+		}
+		return $this->session_key;
 	}
 
 
@@ -830,4 +839,29 @@ EOT;
     }
 
 
+    public function decode($encryptedData,$iv)
+    {
+	    if (!$this->session_key || strlen($this->session_key) != 24) {
+		    phpok_log('encodingAesKey 非法');
+			return false;
+		}
+		$aesKey=base64_decode($this->session_key);
+		if (strlen($iv) != 24) {
+			phpok_log('初始向量非法');
+			return false;
+		}
+		$aesIV=base64_decode($iv);
+		$aesCipher=base64_decode($encryptedData);
+		$result=openssl_decrypt( $aesCipher, "AES-128-CBC", $aesKey, 1, $aesIV);
+		$dataObj=json_decode($result,true);
+		if(!$dataObj){
+			phpok_log('aes 解密失败');
+			return false;
+		}
+		if(!$dataObj['watermark'] || $dataObj['watermark']['appid'] != $this->app_id ){
+			phpok_log('aes 解密失败,APP_ID不致');
+			return false;
+		}
+		return $dataObj;
+    }
 }

@@ -1,173 +1,283 @@
 <?php
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+
 namespace vod\Request\V20170321;
 
+/**
+ * @deprecated Please use https://github.com/aliyun/openapi-sdk-php
+ *
+ * Request of CreateUploadVideo
+ *
+ * @method string getResourceOwnerId()
+ * @method string getTranscodeMode()
+ * @method string getDescription()
+ * @method string getFileSize()
+ * @method string getTitle()
+ * @method string getStorageLocation()
+ * @method string getCoverURL()
+ * @method string getUserData()
+ * @method string getCateId()
+ * @method string getWorkflowId()
+ * @method string getCustomMediaInfo()
+ * @method string getResourceOwnerAccount()
+ * @method string getIP()
+ * @method string getOwnerId()
+ * @method string getTags()
+ * @method string getFileName()
+ * @method string getTemplateGroupId()
+ * @method string getAppId()
+ */
 class CreateUploadVideoRequest extends \RpcAcsRequest
 {
-	function  __construct()
-	{
-		parent::__construct("vod", "2017-03-21", "CreateUploadVideo", "vod", "openAPI");
-		$this->setMethod("POST");
-	}
 
-	private  $resourceOwnerId;
+    /**
+     * @var string
+     */
+    protected $method = 'POST';
 
-	private  $resourceOwnerAccount;
+    /**
+     * Class constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct(
+            'vod',
+            '2017-03-21',
+            'CreateUploadVideo',
+            'vod'
+        );
+    }
 
-	private  $transcodeMode;
+    /**
+     * @param string $resourceOwnerId
+     *
+     * @return $this
+     */
+    public function setResourceOwnerId($resourceOwnerId)
+    {
+        $this->requestParameters['ResourceOwnerId'] = $resourceOwnerId;
+        $this->queryParameters['ResourceOwnerId'] = $resourceOwnerId;
 
-	private  $iP;
+        return $this;
+    }
 
-	private  $description;
+    /**
+     * @param string $transcodeMode
+     *
+     * @return $this
+     */
+    public function setTranscodeMode($transcodeMode)
+    {
+        $this->requestParameters['TranscodeMode'] = $transcodeMode;
+        $this->queryParameters['TranscodeMode'] = $transcodeMode;
 
-	private  $fileSize;
+        return $this;
+    }
 
-	private  $ownerId;
+    /**
+     * @param string $description
+     *
+     * @return $this
+     */
+    public function setDescription($description)
+    {
+        $this->requestParameters['Description'] = $description;
+        $this->queryParameters['Description'] = $description;
 
-	private  $title;
+        return $this;
+    }
 
-	private  $tags;
+    /**
+     * @param string $fileSize
+     *
+     * @return $this
+     */
+    public function setFileSize($fileSize)
+    {
+        $this->requestParameters['FileSize'] = $fileSize;
+        $this->queryParameters['FileSize'] = $fileSize;
 
-	private  $coverURL;
+        return $this;
+    }
 
-	private  $userData;
+    /**
+     * @param string $title
+     *
+     * @return $this
+     */
+    public function setTitle($title)
+    {
+        $this->requestParameters['Title'] = $title;
+        $this->queryParameters['Title'] = $title;
 
-	private  $fileName;
+        return $this;
+    }
 
-	private  $cateId;
+    /**
+     * @param string $storageLocation
+     *
+     * @return $this
+     */
+    public function setStorageLocation($storageLocation)
+    {
+        $this->requestParameters['StorageLocation'] = $storageLocation;
+        $this->queryParameters['StorageLocation'] = $storageLocation;
 
-	public function getResourceOwnerId() {
-		return $this->resourceOwnerId;
-	}
+        return $this;
+    }
 
-	public function setResourceOwnerId($resourceOwnerId) {
-		$this->resourceOwnerId = $resourceOwnerId;
-		$this->queryParameters["ResourceOwnerId"]=$resourceOwnerId;
-	}
+    /**
+     * @param string $coverURL
+     *
+     * @return $this
+     */
+    public function setCoverURL($coverURL)
+    {
+        $this->requestParameters['CoverURL'] = $coverURL;
+        $this->queryParameters['CoverURL'] = $coverURL;
 
-	public function getResourceOwnerAccount() {
-		return $this->resourceOwnerAccount;
-	}
+        return $this;
+    }
 
-	public function setResourceOwnerAccount($resourceOwnerAccount) {
-		$this->resourceOwnerAccount = $resourceOwnerAccount;
-		$this->queryParameters["ResourceOwnerAccount"]=$resourceOwnerAccount;
-	}
+    /**
+     * @param string $userData
+     *
+     * @return $this
+     */
+    public function setUserData($userData)
+    {
+        $this->requestParameters['UserData'] = $userData;
+        $this->queryParameters['UserData'] = $userData;
 
-	public function getTranscodeMode() {
-		return $this->transcodeMode;
-	}
+        return $this;
+    }
 
-	public function setTranscodeMode($transcodeMode) {
-		$this->transcodeMode = $transcodeMode;
-		$this->queryParameters["TranscodeMode"]=$transcodeMode;
-	}
+    /**
+     * @param string $cateId
+     *
+     * @return $this
+     */
+    public function setCateId($cateId)
+    {
+        $this->requestParameters['CateId'] = $cateId;
+        $this->queryParameters['CateId'] = $cateId;
 
-	public function getIP() {
-		return $this->iP;
-	}
+        return $this;
+    }
 
-	public function setIP($iP) {
-		$this->iP = $iP;
-		$this->queryParameters["IP"]=$iP;
-	}
+    /**
+     * @param string $workflowId
+     *
+     * @return $this
+     */
+    public function setWorkflowId($workflowId)
+    {
+        $this->requestParameters['WorkflowId'] = $workflowId;
+        $this->queryParameters['WorkflowId'] = $workflowId;
 
-	public function getDescription() {
-		return $this->description;
-	}
+        return $this;
+    }
 
-	public function setDescription($description) {
-		$this->description = $description;
-		$this->queryParameters["Description"]=$description;
-	}
+    /**
+     * @param string $customMediaInfo
+     *
+     * @return $this
+     */
+    public function setCustomMediaInfo($customMediaInfo)
+    {
+        $this->requestParameters['CustomMediaInfo'] = $customMediaInfo;
+        $this->queryParameters['CustomMediaInfo'] = $customMediaInfo;
 
-	public function getFileSize() {
-		return $this->fileSize;
-	}
+        return $this;
+    }
 
-	public function setFileSize($fileSize) {
-		$this->fileSize = $fileSize;
-		$this->queryParameters["FileSize"]=$fileSize;
-	}
+    /**
+     * @param string $resourceOwnerAccount
+     *
+     * @return $this
+     */
+    public function setResourceOwnerAccount($resourceOwnerAccount)
+    {
+        $this->requestParameters['ResourceOwnerAccount'] = $resourceOwnerAccount;
+        $this->queryParameters['ResourceOwnerAccount'] = $resourceOwnerAccount;
 
-	public function getOwnerId() {
-		return $this->ownerId;
-	}
+        return $this;
+    }
 
-	public function setOwnerId($ownerId) {
-		$this->ownerId = $ownerId;
-		$this->queryParameters["OwnerId"]=$ownerId;
-	}
+    /**
+     * @param string $iP
+     *
+     * @return $this
+     */
+    public function setIP($iP)
+    {
+        $this->requestParameters['IP'] = $iP;
+        $this->queryParameters['IP'] = $iP;
 
-	public function getTitle() {
-		return $this->title;
-	}
+        return $this;
+    }
 
-	public function setTitle($title) {
-		$this->title = $title;
-		$this->queryParameters["Title"]=$title;
-	}
+    /**
+     * @param string $ownerId
+     *
+     * @return $this
+     */
+    public function setOwnerId($ownerId)
+    {
+        $this->requestParameters['OwnerId'] = $ownerId;
+        $this->queryParameters['OwnerId'] = $ownerId;
 
-	public function getTags() {
-		return $this->tags;
-	}
+        return $this;
+    }
 
-	public function setTags($tags) {
-		$this->tags = $tags;
-		$this->queryParameters["Tags"]=$tags;
-	}
+    /**
+     * @param string $tags
+     *
+     * @return $this
+     */
+    public function setTags($tags)
+    {
+        $this->requestParameters['Tags'] = $tags;
+        $this->queryParameters['Tags'] = $tags;
 
-	public function getCoverURL() {
-		return $this->coverURL;
-	}
+        return $this;
+    }
 
-	public function setCoverURL($coverURL) {
-		$this->coverURL = $coverURL;
-		$this->queryParameters["CoverURL"]=$coverURL;
-	}
+    /**
+     * @param string $fileName
+     *
+     * @return $this
+     */
+    public function setFileName($fileName)
+    {
+        $this->requestParameters['FileName'] = $fileName;
+        $this->queryParameters['FileName'] = $fileName;
 
-	public function getUserData() {
-		return $this->userData;
-	}
+        return $this;
+    }
 
-	public function setUserData($userData) {
-		$this->userData = $userData;
-		$this->queryParameters["UserData"]=$userData;
-	}
+    /**
+     * @param string $templateGroupId
+     *
+     * @return $this
+     */
+    public function setTemplateGroupId($templateGroupId)
+    {
+        $this->requestParameters['TemplateGroupId'] = $templateGroupId;
+        $this->queryParameters['TemplateGroupId'] = $templateGroupId;
 
-	public function getFileName() {
-		return $this->fileName;
-	}
+        return $this;
+    }
 
-	public function setFileName($fileName) {
-		$this->fileName = $fileName;
-		$this->queryParameters["FileName"]=$fileName;
-	}
+    /**
+     * @param string $appId
+     *
+     * @return $this
+     */
+    public function setAppId($appId)
+    {
+        $this->requestParameters['AppId'] = $appId;
+        $this->queryParameters['AppId'] = $appId;
 
-	public function getCateId() {
-		return $this->cateId;
-	}
-
-	public function setCateId($cateId) {
-		$this->cateId = $cateId;
-		$this->queryParameters["CateId"]=$cateId;
-	}
-	
+        return $this;
+    }
 }
