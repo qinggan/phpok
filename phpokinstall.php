@@ -162,11 +162,13 @@ class install
 		echo '<div class="tips_txt">';
 		echo '<p>本系统采用PHP+MySQL编写，这里对系统环境进行简单测试，请保证下列文件或目录可读写(Unix和Linux服务器请设置以下文件夹的属性为777，文件属性为666）：星号 <span style="color:red">*</span> 表示任意值</p></div></div>';
 		$status = true;
-		if(!function_exists('mysqli_connect')){
+		$obj = PDO::ATTR_DRIVER_NAME;
+		echo "<pre>".print_r($obj,true)."</pre>";
+		if(function_exists('mysqli_connect') || (class_exists("pdo") && extension_loaded('pdo_mysql'))){
+			$mysql_status = '<span class="darkblue">支持</span>';
+		}else{
 			$mysql_status = '<span class="red">不支持</span>';
 			$status = false;
-		}else{
-			$mysql_status = '<span class="darkblue">支持</span>';
 		}
 		echo '<table width="980" border="0" cellspacing="0" cellpadding="0" class="tablebox">';
 		echo '<tr class="head_bg"><td>&nbsp;</td><td>PHPOK最低要求</td><td>PHPOK最佳配置</td><td>当前环境检测</td></tr>';
@@ -416,7 +418,10 @@ class install
 		$site['title'] = "PHPOK企业站";
 		$optlist = '<select name="file" id="file">';
 		if(function_exists("mysqli_close")){
-			$optlist .= '<option value="mysqli" selected>使用MySQLi连接数据库</option>';
+			$optlist .= '<option value="mysqli" selected>使用 MySQLi 连接数据库</option>';
+		}
+		if(class_exists('pdo') && extension_loaded('pdo_mysql')){
+			$optlist .= '<option value="pdo_mysql" selected>使用 PDO-MySQL 连接数据库</option>';
 		}
 		$optlist .= '</select>';
 		echo <<<EOT
