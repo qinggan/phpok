@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>Citcon 支付</title>
+	<code>
+		<server_url>
+			<title>接口网址</title>
+			<note><![CDATA[测试平台请填写：https://uat.citconpay.com/，正式平台：https://citconpay.com/]]></note>
+			<type>text</type>
+		</server_url>
+		<token_id>
+			<title>令牌</title>
+			<note>即平台令牌 Token</note>
+			<type>text</type>
+		</token_id>
+		<platform>
+			<title>平台</title>
+			<note>请选择当前接口要调用哪个平台，接受支付宝，微信等多种支付平台，【扫码支付】同时支持支付宝及微信</note>
+			<type>radio</type>
+			<option>
+				<alipay>支付宝</alipay>
+				<wechatpay>微信支付</wechatpay>
+				<cc>信用卡支付</cc>
+				<generic>扫码支付</generic>
+			</option>
+			<default>generic</default>
+		</platform>
+	</code>
+</root>
