@@ -320,7 +320,12 @@ class form_model_base extends phpok_model
 				$condition = " ".implode(" OR ",$tmp_condition);
 				return $condition;
 			}
-			$tmp = $rs['ext']['option_list'];
+			// $tmp = $rs['ext']['option_list'];
+			if(strpos($rs['ext']['option_list'],":")) {
+                		$tmp = explode(":",$rs['ext']['option_list']);
+            		} else {
+                		$tmp = $rs['ext']['option_list'];
+            		}
 			if(!$tmp[1]){
 				return false;
 			}
