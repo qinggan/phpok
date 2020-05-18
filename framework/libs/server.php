@@ -1,7 +1,6 @@
 <?php
 /**
  * 对$_SERVER进行封装操作
- * @package phpok\libs
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -190,6 +189,10 @@ class server_lib
 
 	public function referer()
 	{
-		return isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false;
+		$info = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false;
+		if(!$info){
+			return false;
+		}
+		$info = str_replace(array('<','>','"',"'"),'',$info);
 	}
 }

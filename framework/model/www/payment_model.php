@@ -23,8 +23,7 @@ class payment_model extends payment_model_base
 		$sql.= $mobile ? "AND is_wap=1 " : "AND is_wap=0 ";
 		$sql.= "ORDER BY is_default DESC,taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql,"id");
-		if(!$rslist)
-		{
+		if(!$rslist){
 			return false;
 		}
 		$ids = array_keys($rslist);
@@ -35,7 +34,7 @@ class payment_model extends payment_model_base
 		if(!$tmplist){
 			return false;
 		}
-		foreach($tmplist AS $key=>$value){
+		foreach($tmplist as $key=>$value){
 			$rslist[$value['gid']]['paylist'][$value['id']] = $value;
 		}
 		return $rslist;

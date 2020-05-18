@@ -22,12 +22,71 @@ class wealth_control extends phpok_control
 	{
 		parent::control();
 	}
+
+	/**
+	 * 获取财富列表（不分页）
+	**/
+	public function index_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
+		}
+		$rslist = $this->model('wealth')->get_all(1);
+		if(!$rslist){
+			$this->error(P_Lang('系统没有启用任何财富功能'));
+		}
+		$me = $this->model('user')->get_one($this->session->val('user_id'));
+		if(!$me || !$me['status'] || $me['status'] == 2){
+			$this->error('会员信息不存在或未审核或已锁定');
+		}
+		$wealth = $me['wealth'];
+		foreach($rslist as $key=>$value){
+			$value['val'] = $wealth[$value['identifier']]['val'];
+			$rslist[$key] = $value;
+		}
+		$this->success($rslist);
+	}
+
+	/**
+	 * 获取某个财富的日志
+	**/
+	public function log_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定财富规则'));
+		}
+		$rs = $this->model('wealth')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('财富信息不存在'));
+		}
+		$data = array('id'=>$id,'rs'=>$rs);
+		$pageid = $this->get('pageid','int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
+		$offset = ($pageid-1)*$psize;
+		$condition = "wid='".$id."' AND goal_id='".$this->session->val('user_id')."' AND status=1";
+		$total = $this->model('wealth')->log_total($condition);
+		if($total){
+			$rslist = $this->model('wealth')->log_list($condition,$offset,$psize);
+			$data['psize'] = $psize;
+			$data['offset'] = $offset;
+			$data['pageid'] = $pageid;
+			$data['rslist'] = $rslist;
+		}
+		$this->success($data);
+	}
 	
 	//财富充值（仅限启用了充值功能的财富才有效）
 	public function recharge_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('未会员不能执行充值操作'));
+			$this->error(P_Lang('非会员不能执行此操作'));
 		}
 		$id = $this->get('id');
 		if(!$id){

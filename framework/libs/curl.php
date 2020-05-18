@@ -452,16 +452,14 @@ class curl_lib
 			$port = $info['port'] ? $info['port'] : ($info['scheme'] == 'https' ? '443' : '80');
 			$this->set_header('Host',$info['host'].':'.$port);
 		}
-		
+		$headers = array();
+		$headers[] = 'Expect:';
 		if($this->headers && is_array($this->headers)){
-			$headers = array();
 			foreach($this->headers as $key=>$value){
 				$headers[] = $key.": ".$value;
 			}
-			if($headers && count($headers)>0){
-				curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-			}
 		}
+		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt($curl, CURLOPT_URL, $url);
 		if($this->is_ssl){
 			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);

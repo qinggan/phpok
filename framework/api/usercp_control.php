@@ -15,20 +15,15 @@ if(!defined("PHPOK_SET")){
 
 class usercp_control extends phpok_control
 {
-	private $u_id; //会员ID
 	public function __construct()
 	{
 		parent::control();
-		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('您还没有登录，请先登录或注册'));
-		}
-		$this->u_id = $this->session->val('user_id');
 	}
 	
 	public function index_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能获取个人信息'));
+			$this->error(P_Lang('非会员不能执行此操作'));
 		}
 		$user = $this->model('user')->get_one($this->session->val('user_id'));
 		if(!$user){
@@ -51,7 +46,10 @@ class usercp_control extends phpok_control
 	**/
 	public function info_f()
 	{
-		$group_rs = $this->model('usergroup')->group_rs($this->u_id);
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
+		}
+		$group_rs = $this->model('usergroup')->group_rs($this->session->val('user_id'));
 		if(!$group_rs){
 			$this->error(P_Lang('会员组不存在'));
 		}
@@ -67,7 +65,7 @@ class usercp_control extends phpok_control
 				$ext[$value['identifier']] = $this->lib('form')->get($value);
 			}
 			if($ext && count($ext)>0){
-				$this->model('user')->update_ext($ext,$this->u_id);
+				$this->model('user')->update_ext($ext,$this->session->val('user_id'));
 			}
 		}
 		$this->success();
@@ -78,6 +76,9 @@ class usercp_control extends phpok_control
 	**/
 	public function avatar_f()
 	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
+		}
 		$type = $this->get('type');
 		if($type == 'base64'){
 			$data = $this->get('data');
@@ -107,13 +108,13 @@ class usercp_control extends phpok_control
 			if($ext == 'jpeg'){
 				$ext = 'jpg';
 			}
-			$save_pic = 'res/user/'.$this->u_id.'.'.$ext;
+			$save_pic = 'res/user/'.$this->session->val('user_id').'.'.$ext;
 			$this->lib('file')->rm($this->dir_root.$save_pic);
 			$this->lib('file')->save_pic($content,$this->dir_root.$save_pic);
 			//生成正方式
-			$this->lib('gd')->thumb($this->dir_root.$save_pic,$this->u_id,100,100);
-			$this->lib('file')->mv('res/user/_'.$this->u_id.'.'.$ext,$save_pic);
-			$this->model('user')->update_avatar($save_pic,$this->u_id);
+			$this->lib('gd')->thumb($this->dir_root.$save_pic,$this->session->val('user_id'),100,100);
+			$this->lib('file')->mv('res/user/_'.$this->session->val('user_id').'.'.$ext,$save_pic);
+			$this->model('user')->update_avatar($save_pic,$this->session->val('user_id'));
 			$this->success();
 		}
 		$data = $this->get('data');
@@ -128,7 +129,7 @@ class usercp_control extends phpok_control
 		if(!file_exists($this->dir_root.$data)){
 			$this->error(P_Lang('头像文件不存在'));
 		}
-		$this->model('user')->update_avatar($data,$this->u_id);
+		$this->model('user')->update_avatar($data,$this->session->val('user_id'));
 		$this->success();
 	}
 
@@ -137,7 +138,10 @@ class usercp_control extends phpok_control
 	**/
 	public function passwd_f()
 	{
-		$user = $this->model('user')->get_one($this->u_id);
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
+		}
+		$user = $this->model('user')->get_one($this->session->val('user_id'));
 		if($user['pass']){
 			$oldpass = $this->get("oldpass");
 			if(!$oldpass){
@@ -165,8 +169,7 @@ class usercp_control extends phpok_control
 			$this->error(P_Lang('新旧密码不能一样'));
 		}
 		$password = password_create($newpass);
-		$this->model('user')->update_password($password,$this->u_id);
-		$this->model('user')->update_session($this->u_id);
+		$this->model('user')->update_password($password,$this->session->val('user_id'));
 		$this->success();
 	}
 
@@ -175,22 +178,34 @@ class usercp_control extends phpok_control
 	**/
 	public function mobile_f()
 	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
+		}
 		$pass = $this->get('pass');
 		if(!$pass){
 			$this->error(P_Lang('密码不能为空'));
+		}
+		$me = $this->model('user')->get_one($this->session->val('user_id'));
+		if(!$me){
+			$this->error(P_Lang('会员信息不存在'));
+		}
+		if(!$me['status'] || $me['status'] == 2){
+			$this->error(P_Lang('会员未审核或已销定，请联系管理员'));
+		}
+		if(!$me['pass']){
+			$this->error(P_Lang('您还未设置密码，请先设置密码'));
+		}
+		if(!password_check($pass,$me["pass"])){
+			$this->error(P_Lang('密码输入错误'));
 		}
 		$newmobile = $this->get("mobile");
 		if(!$newmobile){
 			$this->error(P_Lang('新手机号码不能为空'));
 		}
-		$user = $this->model('user')->get_one($this->u_id);
-		if(!password_check($pass,$user['pass'])){
-			$this->error(P_Lang('密码填写错误'));
-		}
 		if($user['mobile'] == $newmobile){
 			$this->error(P_Lang('新旧手机号码不能一样'));
 		}
-		$uid = $this->model('user')->uid_from_mobile($newmobile,$this->u_id);
+		$uid = $this->model('user')->uid_from_mobile($newmobile,$this->session->val('user_id'));
 		if($uid){
 			$this->error(P_Lang('手机号码已被使用'));
 		}
@@ -206,7 +221,7 @@ class usercp_control extends phpok_control
 			}
 			$this->model('vcode')->delete();
 		}
-		$this->model('user')->update_mobile($newmobile,$this->u_id);
+		$this->model('user')->update_mobile($newmobile,$this->session->val('user_id'));
 		$this->success();
 	}
 
@@ -215,6 +230,9 @@ class usercp_control extends phpok_control
 	**/
 	public function email_f()
 	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
+		}
 		$pass = $this->get('pass');
 		if(!$pass){
 			$this->error(P_Lang('密码不能为空'));
@@ -228,11 +246,11 @@ class usercp_control extends phpok_control
 		if(!$chk){
 			$this->error(P_Lang('邮箱格式不正确，请重新填写'));
 		}
-		$user = $this->model('user')->get_one($this->u_id);
+		$user = $this->model('user')->get_one($this->session->val('user_id'));
 		if($user['email'] == $email){
 			$this->error(P_Lang('新旧邮箱不能一样'));
 		}
-		$chk = $this->model('user')->uid_from_email($email,$this->u_id);
+		$chk = $this->model('user')->uid_from_email($email,$this->session->val('user_id'));
 		if($chk){
 			$this->error(P_Lang('邮箱已被使用，请更换其他邮箱'));
 		}
@@ -248,8 +266,7 @@ class usercp_control extends phpok_control
 			}
 			$this->model('vcode')->delete();
 		}
-		$this->model('user')->save(array('email'=>$email),$this->u_id);
-		$this->model('user')->update_session($this->u_id);
+		$this->model('user')->save(array('email'=>$email),$this->session->val('user_id'));
 		$this->success();
 	}
 

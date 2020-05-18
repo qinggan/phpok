@@ -111,7 +111,6 @@
 				$.cookie.del('badge');
 				if (rs.status && rs.info) {
 					var list = rs.info;
-					//var html = '<span class="layui-badge">{total}</span>';
 					var html = '<span class="layui-badge-dot" style="margin-left:2px;"></span>'
 					var total = 0;
 					var pid_info = '';
@@ -140,6 +139,9 @@
 					}
 				}
 				$.phpok.message('badge', true);
+				window.setTimeout(function(){
+					$.admin_index.pendding();
+				}, 300000);
 			});
 		},
 		update: function () {

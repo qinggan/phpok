@@ -1756,7 +1756,7 @@ class _init_phpok
 		if(!$func){
 			$func = "index";
 		}
-		if($ctrl != 'login' && !$this->config['develop']){
+		if($ctrl != 'login' && $ctrl != 'js' && !$this->config['develop']){
 			$referer = $this->lib('server')->referer();
 			if(!$referer && !$this->session->val('admin_id')){
 				$ctrl='login';

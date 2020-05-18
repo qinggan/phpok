@@ -51,11 +51,14 @@ class payment_model_base extends phpok_model
 		return $this->db->query($sql);
 	}
 
-	public function log_check($sn,$type='')
+	public function log_check($sn,$type='',$user_id=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."payment_log WHERE sn='".$sn."'";
 		if($type){
 			$sql .= " AND type='".$type."'";
+		}
+		if($user_id){
+			$sql .= " AND user_id='".$user_id."'";
 		}
 		return $this->db->get_one($sql);
 	}

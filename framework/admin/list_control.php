@@ -569,6 +569,9 @@ class list_control extends phpok_control
 			unset($sublist,$sub_idstring,$sub_idlist);
 			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
 			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			if(isset($_POST) && count($_POST)>0){
+				$this->_location($pageurl);
+			}
 			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 			$this->assign("pagelist",$pagelist);
 			$this->assign("rslist",$rslist);

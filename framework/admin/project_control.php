@@ -790,7 +790,6 @@ class project_control extends phpok_control
 		}
 		$tmp['site_id'] = $this->session->val('admin_site_id');
 		$tmp['identifier'] = 'i'.$this->time;
-		
 		$insert_id = $this->model('project')->save($tmp);
 		if(!$insert_id){
 			$this->error(P_Lang('项目导入失败，保存项目基本信息错误'));

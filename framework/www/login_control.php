@@ -18,10 +18,10 @@ class login_control extends phpok_control
 		parent::control();
 		$backurl = $this->get('_back');
 		if(!$backurl){
-			$backurl = $this->config['url'];
+			$backurl = $this->url('usercp');
 		}
 		if($this->session->val('user_id')){
-			$this->success(P_Lang('您已是本站会员，不需要再次登录'),$backurl);
+			$this->_location($backurl);
 		}
 	}
 

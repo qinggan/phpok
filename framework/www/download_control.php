@@ -33,10 +33,13 @@ class download_control extends phpok_control
 		$id = $this->get('id','int');
 		$back = $this->get('back');
 		if(!$back){
-			$back = $_SERVER['HTTP_REFERER'];
+			$back = $this->lib('server')->referer();
 		}
 		if(!$back){
 			$back = $this->config['url'];
+		}
+		if($back){
+			$back = $this->format($back);
 		}
 		if(!$id && !$file){
 			$this->error(P_Lang('未指定附件ID或附件文件'),$back);
@@ -59,4 +62,3 @@ class download_control extends phpok_control
 		exit;
 	}
 }
-?>

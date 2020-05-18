@@ -180,7 +180,7 @@ class user_model_base extends phpok_model
 		if(!$flist){
 			return $rslist;
 		}
-		foreach($rslist AS $key=>$value){
+		foreach($rslist as $key=>$value){
 			foreach($flist AS $k=>$v){
 				$value[$v['identifier']] = $this->lib('form')->show($v,$value[$v['identifier']]);
 			}
@@ -747,5 +747,54 @@ class user_model_base extends phpok_model
 		$condition = "SELECT uid FROM ".$this->db->prefix."user_relation WHERE introducer='".$uid."'";
 		$sql = "o.user_id IN(".$condition.")";
 		return $this->model('order')->product_count($sql);
+	}
+
+	public function show_info($user)
+	{
+		$guest = array("id"=>0,'link'=>'javascript:void(0);','avatar'=>$this->url.'images/avatar.gif','user'=>P_Lang('游客'));
+		if(!$user){
+			return $guest;
+		}
+		if(is_numeric($user)){
+			$type = (strlen($user) == 11 && substr($user,0,1) == 1) ? 'mobile' : 'id';
+			$user = $this->get_one($user,$type,false,false);
+			if(!$user){
+				return $guest;
+			}
+		}
+		if(is_string($user) && $this->lib('common')->email_check($user)){
+			$user = $this->get_one($user,'email',false,false);
+			if(!$user){
+				return $guest;
+			}
+		}
+		if(!is_array($user)){
+			$user = $this->get_one($user,'user',false,false);
+			if(!$user){
+				return $guest;
+			}
+		}
+		$data = array('id'=>$user['id']);
+		$name = $user['user'];
+		if(is_numeric($name) && strlen($name) == 11){
+			$name = substr($name,0,3).'*****'.substr($name,0,-3);
+		}
+		if(is_string($name) && $this->lib('common')->email_check($name)){
+			$tmp = explode("@",$name);
+			$name = substr($tmp[0],0,2).'****@'.strtolower($tmp[1]);
+		}
+		$data['user'] = $name;
+		$avatar = $user['avatar'];
+		if(!$avatar){
+			$avatar = 'images/avatar.gif';
+		}
+		$tmp1 = strtolower(substr($avatar,0,7));
+		$tmp2 = strtolower(substr($avatar,0,8));
+		if($tmp1 != 'http://' && $tmp2 != 'https://'){
+			$avatar = $this->url.$avatar;
+		}
+		$data['avatar'] = $avatar;
+		$data['link'] = $this->url.'?'.$this->config['ctrl_id'].'=user&id='.$user['id'];
+		return $data;
 	}
 }

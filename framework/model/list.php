@@ -678,6 +678,9 @@ class list_model_base extends phpok_model
 				continue;
 			}
 			$tmp2 = explode(" ",$value);
+			if(!$tmp2[1]){
+				$tmp2[1] = 'ASC';
+			}
 			$type = end($tmp2);
 			if(!$type){
 				$type = "ASC";
@@ -719,22 +722,22 @@ class list_model_base extends phpok_model
 		$orderby_list = $this->_project_format_orderby($orderby);
 		$sql = $this->_np_sql($rs,$project,$orderby_list,'l.id');
 		$is_dateline = false;
-		$orderby = '';
+		$orderby = array();
 		foreach($orderby_list as $key=>$value){
 			if($value['field'] == 'dateline'){
 				$is_dateline = true;
 			}
-			if($orderby){
-				$orderby .= ",";
-			}
-			$orderby .= $value['id']." ".($value['type'] == 'DESC' ? 'ASC' : 'DESC');
+			$tmp = "IF(".$value['id']."='0',0,1) ".$value['type'];
+			$orderby[] = $tmp;
+			$tmp = $value['id']." ".($value['type'] == 'DESC' ? 'ASC' : 'DESC');
+			$orderby[] = $tmp;
 		}
 		if($is_dateline){
 			$sql .= " AND l.dateline>=".$rs['dateline']." AND l.id!='".$rs['id']."'";
 		}else{
 			$sql .= " AND l.id>".$id;
 		}
-		$sql .= " ORDER BY ".$orderby." LIMIT 1";
+		$sql .= " ORDER BY ".implode(",",$orderby)." LIMIT 1";
 		$tmp = $this->db->get_one($sql);
 		if(!$tmp){
 			return false;
@@ -769,22 +772,22 @@ class list_model_base extends phpok_model
 		$orderby = $project['orderby'] ? $project['orderby'] : 'l.id DESC';
 		$orderby_list = $this->_project_format_orderby($orderby);
 		$sql = $this->_np_sql($rs,$project,$orderby_list,'l.id');
-		$orderby = '';
+		$orderby = array();
 		foreach($orderby_list as $key=>$value){
 			if($value['field'] == 'dateline'){
 				$is_dateline = true;
 			}
-			if($orderby){
-				$orderby .= ",";
-			}
-			$orderby .= $value['id']." ".$value['type'];
+			$tmp = "IF(".$value['id']."='0',0,1) ".$value['type'];
+			$orderby[] = $tmp;
+			$tmp = $value['id']." ".($value['type'] == 'DESC' ? 'ASC' : 'DESC');
+			$orderby[] = $tmp;
 		}
 		if($is_dateline){
 			$sql .= " AND l.dateline<=".$rs['dateline']." AND l.id!='".$rs['id']."'";
 		}else{
 			$sql .= " AND l.id<".$id;
 		}
-		$sql .= " ORDER BY ".$orderby." LIMIT 1";
+		$sql .= " ORDER BY ".implode(",",$orderby)." LIMIT 1";
 		$tmp = $this->db->get_one($sql);
 		if(!$tmp){
 			return false;
@@ -1100,6 +1103,9 @@ class list_model_base extends phpok_model
 	public function arc_count($mid,$condition='')
 	{
 		$sql = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
+		if(strpos($condition,'lc.') !== false){
+			$sql = "SELECT count(DISTINCT l.id) FROM ".$this->db->prefix."list l ";
+		}
 		if($condition && strpos($condition,'ext.') !== false){
 			$sql .= " JOIN ".$this->db->prefix."list_".$mid." ext ";
 			$sql .= " ON(l.id=ext.id AND l.site_id=ext.site_id AND l.project_id=ext.project_id) ";

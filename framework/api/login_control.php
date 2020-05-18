@@ -22,65 +22,40 @@ class login_control extends phpok_control
 	}
 
 	/**
-	 * 会员登录接口
+	 * 邮件验证码登录模式
+	 * @参数 type 执行方式，当为getcode表示取得验证码，其他为登录验证
+	 * @参数 email 邮箱
 	 * @参数 _chkcode 验证码
-	 * @参数 user 会员账号/邮箱/手机号
-	 * @参数 pass 会员密码
+	 * @返回 JSON数据
 	**/
-	public function save_f()
+	public function email_f()
 	{
-		if($this->session->val('user_id')){
-			$this->error(P_Lang('您已是本站会员，不需要再次登录'));
+		$email = $this->get('email');
+		if(!$email){
+			$this->error(P_Lang('Email不能为空'));
 		}
-		if($this->model('site')->vcode('system','login')){
-			$code = $this->get('_chkcode');
-			if(!$code){
-				$this->error(P_Lang('验证码不能为空'));
-			}
-			$code = md5(strtolower($code));
-			if($code != $this->session->val('vcode')){
-				$this->error(P_Lang('验证码填写不正确'));
-			}
-			$this->session->unassign('vcode');
+		if(!$this->lib('common')->email_check($email)){
+			$this->error(P_Lang('Email地址不符合要求'));
 		}
-		$user = $this->get("user");
-		if(!$user){
-			$this->error(P_Lang('账号/邮箱/手机号不能为空'));
+		$rs = $this->model('user')->get_one($email,'email',false,false);
+		if(!$rs){
+			$this->error(P_Lang('Email地址不存在'));
 		}
-		$pass = $this->get("pass");
-		if(!$pass){
-			$this->error(P_Lang('密码不能为空'));
+		$code = $this->get('_chkcode');
+		if(!$code){
+			$this->error(P_Lang('验证码不能为空'));
 		}
-		if($this->lib('common')->email_check($user)){
-			$user_rs = $this->model('user')->get_one($user,'email');
+		$this->model('vcode')->type('email');
+		$data = $this->model('vcode')->check($code);
+		if(!$data){
+			$this->error($this->model('vcode')->error_info());
 		}
-		if(!$user_rs && $this->lib('common')->tel_check($user,'mobile')){
-			$user_rs = $this->model('user')->get_one($user,'mobile');
-		}
-		if(!$user_rs){
-			$user_rs = $this->model('user')->get_one($user,'user');
-		}
-		if(!$user_rs){
-			$this->error(P_Lang('会员信息不存在'));
-		}
-		if(!$user_rs['status']){
-			$this->error(P_Lang('会员审核中，暂时不能登录'));
-		}
-		if($user_rs['status'] == '2'){
-			$this->error(P_Lang('会员被管理员锁定，请联系管理员解锁'));
-		}
-		if(!password_check($pass,$user_rs["pass"])){
-			$this->error(P_Lang('登录密码不正确'));
-		}
-		$this->model('user')->update_session($user_rs['id']);
-		$this->model('wealth')->login($user_rs['id'],P_Lang('会员登录'));
-		$_back = $this->get('_back');
-		if(!$_back){
-			$_back = $this->url('usercp','','www',true);
-		}
-		//增加节点
-		$this->plugin('plugin-login-save',$user_rs['id']);
-		$this->success(array('user_id'=>$user_rs['id'],'user_name'=>$user_rs['user'],'user_gid'=>$user_rs['group_id']),$_back);
+		$this->session->assign('user_id',$user_rs['id']);
+		$this->session->assign('user_gid',$user_rs['group_id']);
+		$this->session->assign('user_name',$user_rs['user']);
+		$this->model('wealth')->login($rs['id'],P_Lang('会员登录'));
+		$array = array('user_id'=>$rs['id'],'user_name'=>$rs['user'],'user_gid'=>$rs['group_id']);
+		$this->success($array);
 	}
 
 	/**
@@ -161,17 +136,67 @@ class login_control extends phpok_control
 	}
 
 	/**
-	 * 登录状态判断
+	 * 会员登录接口
+	 * @参数 _chkcode 验证码
+	 * @参数 user 会员账号/邮箱/手机号
+	 * @参数 pass 会员密码
 	**/
-	public function status_f()
+	public function save_f()
 	{
 		if($this->session->val('user_id')){
-			$array = array('user_id'=>$this->session->val('user_id'));
-			$array['user_name'] = $this->session->val('user_name');
-			$array['user_gid'] = $this->session->val('user_gid');
-			$this->success($array);
+			$this->error(P_Lang('您已是本站会员，不需要再次登录'));
 		}
-		$this->error(P_Lang('会员未登录'));
+		if($this->model('site')->vcode('system','login')){
+			$code = $this->get('_chkcode');
+			if(!$code){
+				$this->error(P_Lang('验证码不能为空'));
+			}
+			$code = md5(strtolower($code));
+			if($code != $this->session->val('vcode')){
+				$this->error(P_Lang('验证码填写不正确'));
+			}
+			$this->session->unassign('vcode');
+		}
+		$user = $this->get("user");
+		if(!$user){
+			$this->error(P_Lang('账号/邮箱/手机号不能为空'));
+		}
+		$pass = $this->get("pass");
+		if(!$pass){
+			$this->error(P_Lang('密码不能为空'));
+		}
+		if($this->lib('common')->email_check($user)){
+			$user_rs = $this->model('user')->get_one($user,'email');
+		}
+		if(!$user_rs && $this->lib('common')->tel_check($user,'mobile')){
+			$user_rs = $this->model('user')->get_one($user,'mobile');
+		}
+		if(!$user_rs){
+			$user_rs = $this->model('user')->get_one($user,'user');
+		}
+		if(!$user_rs){
+			$this->error(P_Lang('会员信息不存在'));
+		}
+		if(!$user_rs['status']){
+			$this->error(P_Lang('会员审核中，暂时不能登录'));
+		}
+		if($user_rs['status'] == '2'){
+			$this->error(P_Lang('会员被管理员锁定，请联系管理员解锁'));
+		}
+		if(!password_check($pass,$user_rs["pass"])){
+			$this->error(P_Lang('登录密码不正确'));
+		}
+		$this->session->assign('user_id',$user_rs['id']);
+		$this->session->assign('user_gid',$user_rs['group_id']);
+		$this->session->assign('user_name',$user_rs['user']);
+		$this->model('wealth')->login($user_rs['id'],P_Lang('会员登录'));
+		$_back = $this->get('_back');
+		if(!$_back){
+			$_back = $this->url('usercp','','www',true);
+		}
+		//增加节点
+		$this->plugin('plugin-login-save',$user_rs['id']);
+		$this->success(array('user_id'=>$user_rs['id'],'user_name'=>$user_rs['user'],'user_gid'=>$user_rs['group_id']),$_back);
 	}
 
 	/**
@@ -203,44 +228,25 @@ class login_control extends phpok_control
 		if(!$data){
 			$this->error($this->model('vcode')->error_info());
 		}
-		$this->model('user')->update_session($rs['id']);
+		$this->session->assign('user_id',$user_rs['id']);
+		$this->session->assign('user_gid',$user_rs['group_id']);
+		$this->session->assign('user_name',$user_rs['user']);
 		$this->model('wealth')->login($rs['id'],P_Lang('会员登录'));
 		$array = array('user_id'=>$rs['id'],'user_name'=>$rs['user'],'user_gid'=>$rs['group_id']);
 		$this->success($array);
 	}
 
 	/**
-	 * 邮件验证码登录模式
-	 * @参数 type 执行方式，当为getcode表示取得验证码，其他为登录验证
-	 * @参数 email 邮箱
-	 * @参数 _chkcode 验证码
-	 * @返回 JSON数据
+	 * 登录状态判断
 	**/
-	public function email_f()
+	public function status_f()
 	{
-		$email = $this->get('email');
-		if(!$email){
-			$this->error(P_Lang('Email不能为空'));
+		if($this->session->val('user_id')){
+			$array = array('user_id'=>$this->session->val('user_id'));
+			$array['user_name'] = $this->session->val('user_name');
+			$array['user_gid'] = $this->session->val('user_gid');
+			$this->success($array);
 		}
-		if(!$this->lib('common')->email_check($email)){
-			$this->error(P_Lang('Email地址不符合要求'));
-		}
-		$rs = $this->model('user')->get_one($email,'email',false,false);
-		if(!$rs){
-			$this->error(P_Lang('Email地址不存在'));
-		}
-		$code = $this->get('_chkcode');
-		if(!$code){
-			$this->error(P_Lang('验证码不能为空'));
-		}
-		$this->model('vcode')->type('email');
-		$data = $this->model('vcode')->check($code);
-		if(!$data){
-			$this->error($this->model('vcode')->error_info());
-		}
-		$this->model('user')->update_session($rs['id']);
-		$this->model('wealth')->login($rs['id'],P_Lang('会员登录'));
-		$array = array('user_id'=>$rs['id'],'user_name'=>$rs['user'],'user_gid'=>$rs['group_id']);
-		$this->success($array);
+		$this->error(P_Lang('会员未登录'));
 	}
 }

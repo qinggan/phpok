@@ -208,7 +208,7 @@
 			<th width="20px">&nbsp;</th>
 			<th width="20px">&nbsp;</th>
 			<th class="center">ID</th>
-			<th>{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}</th>
+			<th style="min-width:150px;">{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}</th>
 			<!-- if $rs.cate -->
 			<th class="center">{lang主分类}</th>
 			<!-- /if -->
@@ -223,8 +223,6 @@
 				<th class="lft">{$value}</th>
 				<!-- /if -->
 			<!-- /loop -->
-			
-			<th>&nbsp;</th>
 		</tr>
 		</thead>
 		<!-- php:$tmp_m = 0 -->
@@ -259,6 +257,24 @@
 					<!-- /loop -->
 				</div>
 				<!-- /if -->
+				<div class="layui-btn-group" style="display: block;">
+					<!-- if $rs.is_front -->
+					<input type="button" value="{lang查看}" onclick="$.phpok.open('{$sys.www_file}?id={$value.id}')" class="layui-btn layui-btn-xs layui-btn-normal" />
+					<!-- /if -->
+					<!-- if $popedom.modify -->
+					<input type="button" value="{lang编辑}" onclick="top.$.win('{$rs.title}_{lang编辑}_#{$value.id}','{url ctrl=list func=edit id=$value.id/}')" class="layui-btn layui-btn-xs" />
+					<!-- /if -->
+					<!-- if $popedom.delete -->
+					<input type="button" value="{lang删除}" onclick="content_del('{$value.id}')" class="layui-btn layui-btn-xs layui-btn-danger" />
+					<!-- /if -->
+					<!-- if $popedom.comment && ($rs.comment_status || $comments[$value.id]) -->
+					<button type="button"class="layui-btn layui-btn-xs" onclick="$.admin_list.reply_it('{$value.id}')">
+						{lang评论}
+						<!-- if $comments[$value.id][uncheck] --><span class="layui-badge layui-bg-orange">{$comments[$value.id][uncheck]}</span><!-- /if -->
+					</button>
+					<!-- /if -->
+					<!-- if $rs.subtopics && !$value.parent_id && $popedom.add --><input type="button" value="{lang加子主题}" onclick="$.win('{lang加子主题}_{$rs.title}','{url ctrl=list func=edit parent_id=$value.id pid=$value.project_id/}')" class="layui-btn layui-btn-xs" /><!-- /if -->
+				</div>
 			</label>
 			</td>
 			<!-- if $rs.cate -->
@@ -297,26 +313,6 @@
 					<!-- /if -->
 				<!-- /if -->
 			<!-- /loop -->
-			<td>
-				<div class="layui-btn-group">
-					<!-- if $rs.is_front -->
-					<input type="button" value="{lang查看}" onclick="$.phpok.open('{$sys.www_file}?id={$value.id}')" class="layui-btn layui-btn-sm layui-btn-normal" />
-					<!-- /if -->
-					<!-- if $popedom.modify -->
-					<input type="button" value="{lang编辑}" onclick="top.$.win('{$rs.title}_{lang编辑}_#{$value.id}','{url ctrl=list func=edit id=$value.id/}')" class="layui-btn layui-btn-sm" />
-					<!-- /if -->
-					<!-- if $popedom.delete -->
-					<input type="button" value="{lang删除}" onclick="content_del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
-					<!-- /if -->
-					<!-- if $popedom.comment && ($rs.comment_status || $comments[$value.id]) -->
-					<button type="button"class="layui-btn layui-btn-sm" onclick="$.admin_list.reply_it('{$value.id}')">
-						{lang评论}
-						<!-- if $comments[$value.id][uncheck] --><span class="layui-badge layui-bg-orange">{$comments[$value.id][uncheck]}</span><!-- /if -->
-					</button>
-					<!-- /if -->
-					<!-- if $rs.subtopics && !$value.parent_id && $popedom.add --><input type="button" value="{lang加子主题}" onclick="$.win('{lang加子主题}_{$rs.title}','{url ctrl=list func=edit parent_id=$value.id pid=$value.project_id/}')" class="layui-btn layui-btn-sm" /><!-- /if -->
-				</div>
-			</td>
 		</tr>
 			<!-- loop from=$value.sonlist key=$kk value=$vv -->
 			<!-- php:$tmp_m++ -->
@@ -349,6 +345,19 @@
 						<!-- /loop -->
 					</div>
 					<!-- /if -->
+					<div class="layui-btn-group" style="display: block;">
+						<!-- if $rs.is_front -->
+						<input type="button" value="{lang查看}" onclick="$.phpok.open('{$sys.www_file}?id={$vv.id}')" class="layui-btn layui-btn-xs layui-btn-normal" />
+						<!-- /if -->
+						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="top.$.win('{$rs.title}_{lang编辑}_#{$vv.id}','{url ctrl=list func=edit id=$vv.id/}')" class="layui-btn layui-btn-xs" /><!-- /if -->
+						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="content_del('{$vv.id}')" class="layui-btn layui-btn-xs layui-btn-danger" /><!-- /if -->
+						<!-- if $popedom.comment && ($rs.comment_status || $comments[$vv.id]) -->
+						<button type="button"class="layui-btn layui-btn-xs" onclick="$.admin_list.reply_it('{$vv.id}')">
+							{lang评论}
+							<!-- if $comments[$vv.id][uncheck] --><span class="layui-badge layui-bg-orange">{$comments[$vv.id][uncheck]}</span><!-- /if -->
+						</button>
+						<!-- /if -->
+					</div>
 				</label>
 				</td>
 				<!-- if $rs.cate -->
@@ -385,21 +394,6 @@
 						<!-- /if -->
 					<!-- /if -->
 				<!-- /loop -->
-				<td>
-					<div class="layui-btn-group">
-						<!-- if $rs.is_front -->
-						<input type="button" value="{lang查看}" onclick="$.phpok.open('{$sys.www_file}?id={$vv.id}')" class="layui-btn layui-btn-sm layui-btn-normal" />
-						<!-- /if -->
-						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="top.$.win('{$rs.title}_{lang编辑}_#{$vv.id}','{url ctrl=list func=edit id=$vv.id/}')" class="layui-btn layui-btn-sm" /><!-- /if -->
-						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="content_del('{$vv.id}')" class="layui-btn layui-btn-sm layui-btn-danger" /><!-- /if -->
-						<!-- if $popedom.comment && ($rs.comment_status || $comments[$vv.id]) -->
-						<button type="button"class="layui-btn layui-btn-sm" onclick="$.admin_list.reply_it('{$vv.id}')">
-							{lang评论}
-							<!-- if $comments[$vv.id][uncheck] --><span class="layui-badge layui-bg-orange">{$comments[$vv.id][uncheck]}</span><!-- /if -->
-						</button>
-						<!-- /if -->
-					</div>
-				</td>
 			</tr>
 			<!-- /loop -->
 		<!-- /loop -->

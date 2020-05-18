@@ -95,16 +95,6 @@ class sql_model extends sql_model_base
 		}
 	}
 
-	//更新SESSION
-	public function update_session($sid,$data)
-	{
-		$sql = "TRUNCATE TABLE `".$this->db->prefix."session`";
-		$this->db->query($sql);
-		$sql = "INSERT INTO ".$this->db->prefix."session(id,data,lasttime) VALUES('".$sid."','".$data."','".$this->time."')";
-		$this->db->query($sql);
-		return true;
-	}
-
 	public function table_delete($tbl)
 	{
 		$sql = "DROP TABLE IF EXISTS ".$tbl;

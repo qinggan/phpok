@@ -26,7 +26,6 @@ class order_control extends phpok_control
 			$this->error(P_Lang('您还未登录，请先登录'));
 		}
 		$psize = $this->config['psize'] ? $this->config['psize'] : 20;
-		$psize = 100;
 		$pageid = $this->get($this->config['pageid'],'int');
 		if(!$pageid){
 			$pageid = 1;
@@ -44,13 +43,15 @@ class order_control extends phpok_control
 		if(!$total){
 			$this->error(P_Lang('暂无订单信息'));
 		}
+		$status_list = $this->model('order')->status_list();
 		$rslist = $this->model('order')->get_list($condition,$offset,$psize);
 		foreach ($rslist as $key => $value){
 		    $product = $this->model('order')->product_list($value['id']);
 			$qty = 0;
 			if($product){
 				foreach($product as $k=>$v){
-					$v['price_val'] = price_format_val($v['price'],$value['currency_id'],$value['currency_id']);
+					$v['price_val'] = price_format_val($v['price'],$value['currency_id'],$value['currency_id'],$value['currency_rate'],$value['currency_rate']);
+					$v['price_show'] = price_format($v['price'],$value['currency_id'],$value['currency_id'],$value['currency_rate'],$value['currency_rate']);
 					$product[$k] = $v;
 					$qty += intval($v['qty']);
 				}
@@ -68,7 +69,11 @@ class order_control extends phpok_control
 	        }else{
 		        $rslist[$key]['pay_info'] = P_Lang('已支付');
 	        }
-			$rslist[$key]['price_val'] = price_format_val($value['price'],$value['currency_id'],$value['currency_id']);
+	        if(!$value['status_title'] && $status_list && $status_list[$value['status']]){
+		        $rslist[$key]['status_title'] = $status_list[$value['status']];
+	        }
+			$rslist[$key]['price_val'] = price_format_val($value['price'],$value['currency_id'],$value['currency_id'],$value['currency_rate'],$value['currency_rate']);
+			$rslist[$key]['price_show'] = price_format($value['price'],$value['currency_id'],$value['currency_id'],$value['currency_rate'],$value['currency_rate']);
         }
 		$data['total'] = $total;
 		$data['rslist'] = $rslist;
@@ -109,40 +114,86 @@ class order_control extends phpok_control
 				break;
 			}
 		}
-		$email = $mobile = '';
+		$email = $this->get('email');
+		$mobile = $this->get('mobile');
+		if($email && !$this->lib('common')->email_check($email)){
+			$this->error(P_Lang('邮箱不合法'));
+		}
+		if($mobile && !$this->lib('common')->tel_check($mobile)){
+			$this->error(P_Lang('手机号不合法'));
+		}
+		$address = array();
+		$address_id = 0;
 		if(!$is_virtual){
-			$addressconfig = $this->config['order']['address'] ? explode(",",$this->config['order']['address']) : array('shipping');
-			foreach($addressconfig as $key=>$value){
-				$tmp = $this->form_address($value);
+			$address_id = $this->get('shipping_address_id','int');
+			if(!$address_id){
+				$address_id = $this->get('address_id','int');
+			}
+			if($address_id){
+				$tmp = $this->model('address')->get_one($address_id);
+				if(!$tmp){
+					$this->error(P_Lang('地址信息不存在'));
+				}
+				if(!$this->session->val('user_id') || $tmp['user_id'] != $this->session->val("user_id")){
+					$this->error(P_Lang('您没有当前地址权限'));
+				}
+				$address['shipping'] = $tmp;
+			}else{
+				$tmp = $this->form_address('shipping');
 				if(!$tmp['status']){
 					$this->error($tmp['info']);
-					break;
+					exit;
 				}
-				$address[$value] = $tmp['info'];
-				if(!$email && $tmp['info']['email']){
-					$email = $tmp['info']['email'];
+				$address['shipping'] = $tmp['info'];
+			}
+			$billing_address_id = $this->get("billing_address_id","int");
+			if($billing_address_id){
+				$tmp = $this->model('address')->get_one($billing_address_id);
+				if(!$tmp){
+					$this->error(P_Lang('账单地址信息不存在'));
 				}
-				if(!$mobile && $tmp['info']['mobile']){
-					$mobile = $tmp['info']['mobile'];
+				if(!$this->session->val('user_id') || $tmp['user_id'] != $this->session->val("user_id")){
+					$this->error(P_Lang('您没有当前地址权限'));
+				}
+				$address['billing'] = $tmp;
+			}else{
+				if(strpos($this->config['order']['address'],'billing') !== false){
+					$tmp = $this->form_address('billing');
+					if(!$tmp['status']){
+						$this->error($tmp['info']);
+						exit;
+					}
+					$address['billing'] = $tmp['info'];
 				}
 			}
-		}
-		//通过 Get/Post 传过来的
-		$tmp_email = $this->get('email');
-		$tmp_mobile = $this->get('mobile');
-		if($tmp_email){
-			if(!$this->lib('common')->email_check($tmp_email)){
-				$this->error(P_Lang('邮箱不合法'));
+			//检测
+			if($address['shipping']){
+				if(!$email && $address['shipping']['email']){
+					$email = $address['shipping']['email'];
+				}
+				if(!$mobile && $address['shipping']['mobile']){
+					$mobile = $address['shipping']['mobile'];
+				}
 			}
-			$email = $tmp_email;
-			unset($tmp_email);
-		}
-		if($tmp_mobile){
-			if(!$this->lib('common')->tel_check($tmp_mobile,'mobile')){
-				$this->error(P_Lang('手机号不合法'));
+			if($address['billing']){
+				if(!$email && $address['billing']['email']){
+					$email = $address['billing']['email'];
+				}
+				if(!$mobile && $address['billing']['mobile']){
+					$mobile = $address['billing']['mobile'];
+				}
 			}
-			$mobile = $tmp_mobile;
-			unset($tmp_mobile);
+			//检测Billing地址齐全，不齐全则合并shipping的
+			if(strpos($this->config['order']['address'],'billing') !== false){
+				if(!$address['billing']){
+					$address['billing'] = $address['shipping'];
+				}
+				foreach($address['billing'] as $key=>$value){
+					if(!$value && $key != 'address2'){
+						$address['billing'][$key] = $address['shipping'][$key];
+					}
+				}
+			}
 		}
 		if(!$mobile && !$email){
 			$this->error(P_Lang('手机号或邮箱必须有一个不为空'));
@@ -157,7 +208,7 @@ class order_control extends phpok_control
 		$tmp_is_virtual = true;
 		foreach($rslist as $key=>$value){
 			$price += floatval($value['price']) * intval($value['qty']);
-			if(!$value['is_virtual'] && $address && $address['province'] && $address['city']){
+			if(!$value['is_virtual'] && $address && $address['shipping']['province'] && $address['shipping']['city']){
 				$tmp_is_virtual = false;
 				$tmp['number'] += intval($value['qty']);
 				$tmp['weight'] += floatval($value['weight']) * intval($value['qty']);
@@ -166,9 +217,9 @@ class order_control extends phpok_control
 		}
 		
 		//计算运费
-		if(!$tmp_is_virtual && $address && $address['province'] && $address['city']){
+		if(!$tmp_is_virtual && $address && $address['shipping']['province'] && $address['shipping']['city']){
 			$tmp['price'] = $price;
-			$shipping = $this->model('cart')->freight_price($tmp,$address['province'],$address['city']);
+			$shipping = $this->model('cart')->freight_price($tmp,$address['shipping']['province'],$address['shipping']['city']);
 		}
 		$allprice = floatval($price) + floatval($shipping) + $tax;
 		$coupon = $this->_coupon($price,$id);
@@ -177,6 +228,7 @@ class order_control extends phpok_control
 		}
 
 		$sn = $this->model('order')->create_sn();
+		$status_list = $this->model('order')->status_list();
 		$main = array('sn'=>$sn);
 		$main['user_id'] = $user ? $user['id'] : 0;
 		$main['addtime'] = $this->time;
@@ -184,6 +236,7 @@ class order_control extends phpok_control
 		$main['currency_id'] = $this->site['currency_id'];
 		$main['currency_rate'] = $this->site['currency']['val'];
 		$main['status'] = 'create';
+		$main['status_title'] = $status_list['create'];
 		$main['passwd'] = md5(str_rand(10));
 		$main['email'] = $email;
 		$main['mobile'] = $mobile;
@@ -237,6 +290,11 @@ class order_control extends phpok_control
 				$tmp['lastname'] = $value['lastname'];
 				$tmp['type'] = $key;
 				$this->model('order')->save_address($tmp);
+				if(!$value['id'] && !$address_id && $this->session->val('user_id')){
+					unset($tmp['type'],$tmp['order_id']);
+					$tmp['user_id'] = $this->session->val('user_id');
+					$this->model('address')->save($tmp);
+				}
 			}
 		}
 		$pricelist = $this->model('site')->price_status_all();
@@ -384,20 +442,6 @@ class order_control extends phpok_control
 			}
 		}
 		$array['zipcode'] = $this->get($type.'-zipcode');
-		$address_id = $this->get($type.'_address_id','int');
-		if(!$address_id && $type == 'shipping'){
-			$address_id = $this->get('address_id','int');
-		}
-		if($address_id && $this->session->val('user_id')){
-			$tmp = $this->model('address')->get_one($address_id);
-			if($tmp && $tmp['user_id'] == $this->session->val('user_id')){
-				foreach($array as $k=>$v){
-					if($tmp[$k]){
-						$array[$k] = $tmp[$k];
-					}
-				}
-			}
-		}
 		return array('status'=>true,'info'=>$array);
 	}
 
@@ -446,8 +490,10 @@ class order_control extends phpok_control
 			$rs['pay_info'] = P_Lang('已支付');
 		}
 		$rs['status_info'] = ($status_list && $status_list[$rs['status']]) ? $status_list[$rs['status']] : $rs['status'];
-		$rs['price_paid'] = price_format_val($paid_price);
-		$rs['price_unpaid'] = price_format_val($unpaid_price);
+		$rs['price_paid'] = price_format_val($paid_price,$rs['currency_id'],$rs['currency_id'],$rs['currency_rate'],$rs['currency_rate']);
+		$rs['price_paid_show'] = price_format($paid_price,$rs['currency_id'],$rs['currency_id'],$rs['currency_rate'],$rs['currency_rate']);
+		$rs['price_unpaid'] = price_format_val($unpaid_price,$rs['currency_id'],$rs['currency_id'],$rs['currency_rate'],$rs['currency_rate']);
+		$rs['price_unpaid_show'] = price_format($unpaid_price,$rs['currency_id'],$rs['currency_id'],$rs['currency_rate'],$rs['currency_rate']);
 		$data = array('rs'=>$rs);
 		$address = $this->model('order')->address($rs['id']);
 		if($address){
@@ -455,14 +501,17 @@ class order_control extends phpok_control
 		}
 		$rslist = $this->model('order')->product_list($rs['id']);
 		if($rslist){
-			$data['rslist'] = $rslist;
 			$qty = 0;
 			foreach($rslist as $key=>$value){
 				$qty += intval($value['qty']);
+				$value['price_show'] = price_format($value['price'],$rs['currency_id'],$rs['currency_id'],$rs['currency_rate'],$rs['currency_rate']);
+				$rslist[$key] = $value;
 			}
+			$data['rslist'] = $rslist;
 			$rs['qty'] = $qty;
 		}
-		$rs['price_val'] = price_format($rs['price'],$rs['currency_id'],$rs['currency_id']);
+		$rs['price_val'] = price_format_val($rs['price'],$rs['currency_id'],$rs['currency_id'],$rs['currency_rate'],$rs['currency_rate']);
+		$rs['price_show'] = price_format($rs['price'],$rs['currency_id'],$rs['currency_id'],$rs['currency_rate'],$rs['currency_rate']);
 		$rs['addtime_format'] = date("Y-m-d H:i:s",$rs['addtime']);
 		$data['rs'] = $rs;
 		//获取价格
@@ -605,6 +654,23 @@ class order_control extends phpok_control
 		$this->model('order')->log_save($log);
 		$this->plugin('plugin-order-status',$id,'received');
 		$this->success();
+	}
+
+	public function log_f()
+	{
+		$rs = $this->_get_order();
+		if(!$rs['status']){
+			$this->error(P_Lang('订单状态异常，请联系客服'));
+		}
+		$loglist = $this->model('order')->log_list($rs['id']);
+		if(!$loglist){
+			$this->error(P_Lang('日志信息不存在'));
+		}
+		foreach($loglist as $key=>$value){
+			$value['addtime_format'] = date("Y-m-d H:i",$value['addtime']);
+			$loglist[$key] = $value;
+		}
+		$this->success($loglist);
 	}
 
 	/**

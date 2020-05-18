@@ -13,6 +13,22 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class order_model_base extends phpok_model
 {
+	protected function _order_payment($id,$condition="")
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."order_payment WHERE order_id='".$id."'";
+		if($condition){
+			$sql .= " AND ".$condition;
+		}
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		if($rs['ext']){
+			$rs['ext'] = unserialize($rs['ext']);
+		}
+		return $rs;
+	}
+
 	/**
 	 * 构造函数
 	**/
@@ -454,21 +470,6 @@ class order_model_base extends phpok_model
 		return $this->_order_payment($order_id,$condition);
 	}
 
-	protected function _order_payment($id,$condition="")
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."order_payment WHERE order_id='".$id."'";
-		if($condition){
-			$sql .= " AND ".$condition;
-		}
-		$rs = $this->db->get_one($sql);
-		if(!$rs){
-			return false;
-		}
-		if($rs['ext']){
-			$rs['ext'] = unserialize($rs['ext']);
-		}
-		return $rs;
-	}
 
 	/**
 	 * 订单全部支付记录
@@ -746,7 +747,10 @@ class order_model_base extends phpok_model
 			}
 		}
 		$sql = "UPDATE ".$this->db->prefix."order_price SET price=price-".$price." WHERE code='discount' AND order_id='".$order_id."'";
-		return $this->db->query($sql);
+		$this->db->query($sql);
+		$sql = "UPDATE ".$this->db->prefix."order SET price=price-".$price." WHERE id='".$order_id."'";
+		$this->db->query($sql);
+		return true;
 	}
 
 	/**

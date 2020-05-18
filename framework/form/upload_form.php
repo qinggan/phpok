@@ -136,7 +136,7 @@ class upload_form extends _init_auto
 				if(!$value || ($value && !$tmplist[$value])){
 					continue;
 				}
-				$rslist[$value] = $tmplist[$value];
+				$rslist[] = $tmplist[$value];
 			}
 			return $rslist;
 		}

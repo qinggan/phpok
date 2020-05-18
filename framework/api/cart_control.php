@@ -184,12 +184,24 @@ class cart_control extends phpok_control
 			$this->error(P_Lang('产品信息不存在或未启用'));
 		}
 		$thumb_id = $this->config['cart']['thumb_id'] ? $this->config['cart']['thumb_id'] : 'thumb';
-		if($rs[$thumb_id]){
-			if(is_string($rs[$thumb_id])){
-				$array['thumb'] = $rs[$thumb_id];
+		$gd_id = $this->config['cart']['gd_id'];
+		$tmp = explode(",",$thumb_id);
+		foreach($tmp as $key=>$value){
+			$value = trim($value);
+			if(!$value || !$rs[$value]){
+				continue;
 			}
-			if(is_array($rs[$thumb_id])){
-				$array['thumb'] = $rs[$thumb_id]['filename'];
+			if(is_string($rs[$value])){
+				$array['thumb'] = $rs[$value];
+				break;
+			}
+			if(is_array($rs[$value])){
+				if($gd_id && $rs[$value]['gd'] && $rs[$value]['gd'][$gd_id]){
+					$array['thumb'] = $rs[$value]['gd'][$gd_id];
+				}else{
+					$array['thumb'] = $rs[$value]['filename'];
+				}
+				break;
 			}
 		}
 		$array['title'] = $rs['title'];
@@ -597,7 +609,8 @@ class cart_control extends phpok_control
 			$r['address'] = $address;
 		}
 		if(!$is_virtual){
-			$tmp = $this->_address();
+			$address_id = $this->get("address_id","int");
+			$tmp = $this->_address($address_id);
 			if($tmp){
 				$r['address'] = $tmp['address'];
 			}
@@ -772,7 +785,7 @@ class cart_control extends phpok_control
 	}
 	
 
-	private function _address()
+	private function _address($address_id=0)
 	{
 		$condition = "a.user_id='".$this->session->val('user_id')."'";
 		$addresslist = $this->model('address')->get_list($condition,0,30);
@@ -780,16 +793,22 @@ class cart_control extends phpok_control
 			return false;
 		}
 
-		$first = $address_id = 0;
+		$first = 0;
 		$first_address = $address = array();
 		foreach($addresslist as $key=>$value){
 			if($key<1){
 				$first = $value['id'];
 				$first_address = $value;
 			}
-			if($value['is_default']){
-				$address_id = $value['id'];
-				$address = $value;
+			if($address_id){
+				if($value['id'] == $address_id){
+					$address = $value;
+				}
+			}else{
+				if($value['is_default']){
+					$address_id = $value['id'];
+					$address = $value;
+				}
 			}
 		}
 		if(!$address_id && $first){

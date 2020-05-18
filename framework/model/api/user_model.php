@@ -116,23 +116,9 @@ class user_model extends user_model_base
 		return $this->db->query($sql);
 	}
 
-	//更新会员登录操作
-	public function update_session($uid)
-	{
-		$rs = $this->get_one($uid);
-		if(!$rs || $rs['status'] != 1){
-			return false;
-		}
-		$this->session->assign('user_id',$rs['id']);
-		$this->session->assign('user_gid',$rs['group_id']);
-		$this->session->assign('user_name',$rs['user']);
-		return true;
-	}
-
 	public function set_status($id,$status=0)
 	{
 		$sql = "UPDATE ".$this->db->prefix."user SET status='".$status."' WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
 }
-?>

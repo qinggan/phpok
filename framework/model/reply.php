@@ -158,7 +158,7 @@ class reply_model_base extends phpok_model
 		$sql = "SELECT count(id) FROM ".$this->db->prefix."reply";
 		if($condition){
 			$sql .= " WHERE ".$condition;
-		} 
+		}
 		return $this->db->count($sql);
 	}
 

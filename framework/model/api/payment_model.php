@@ -19,25 +19,19 @@ class payment_model extends payment_model_base
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."payment WHERE id=".intval($id);
 		$rs = $this->db->get_one($sql);
-		if(!$rs)
-		{
+		if(!$rs){
 			return false;
 		}
-		if($rs['param'])
-		{
+		if($rs['param']){
 			$rs['param'] = unserialize($rs['param']);
 		}
 		//货币类型
-		if($rs['currency'])
-		{
+		if($rs['currency']){
 			$sql = "SELECT * FROM ".$this->db->prefix."currency WHERE code='".$rs['currency']."'";
 			$tmp = $this->db->get_one($sql);
-			if($tmp)
-			{
+			if($tmp){
 				$rs['currency'] = $tmp;
-			}
-			else
-			{
+			}else{
 				unset($rs['currency']);
 			}
 		}
@@ -48,7 +42,9 @@ class payment_model extends payment_model_base
 	{
 		$condition = $site_id ? "site_id IN(0,".$site_id.")" : "site_id=0";
 		$sql = "SELECT * FROM ".$this->db->prefix."payment_group WHERE ".$condition." ";
-		$sql.= "AND status=1 ";
+		if($status){
+			$sql .= " AND status=1 "; 
+		}
 		$sql.= $mobile ? "AND is_wap=1 " : "AND is_wap=0 ";
 		$sql.= "ORDER BY is_default DESC,taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql,"id");
@@ -57,7 +53,7 @@ class payment_model extends payment_model_base
 		}
 		$ids = array_keys($rslist);
 		$condition = "status=1 AND gid IN(".implode(",",$ids).") ";
-		$condition.= $mobile ? "AND wap=1 " : "AND wap=0 ";
+		$condition.= $mobile ? " AND wap=1 " : " AND wap=0 ";
 		$sql = "SELECT * FROM ".$this->db->prefix."payment WHERE ".$condition." ORDER BY taxis ASC,id DESC";
 		$tmplist = $this->db->get_all($sql);
 		if(!$tmplist){
