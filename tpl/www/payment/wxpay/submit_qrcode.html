@@ -58,7 +58,6 @@ $(document).ready(function(){
 });
 
 //禁止后退
-window.history.forward(1);   
 history.pushState(null, null, document.URL);
 window.addEventListener('popstate', function () {
     history.pushState(null, null, document.URL);
