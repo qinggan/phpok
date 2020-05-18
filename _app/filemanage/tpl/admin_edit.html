@@ -27,7 +27,7 @@ $(document).ready(function(){
 			'dataType':'json',
 			'success':function(rs){
 				if(rs.status){
-					$.dialog.tips(p_lang('代码保存成功')).follow($("#save_button")[0]);
+					$.dialog.tips(p_lang('代码保存成功')).lock();
 					return true;
 				}
 				$.dialog.alert(rs.info);
