@@ -75,8 +75,17 @@ function action_tags_type(val)
 <div id="collection_string"{if !$rs || $rs.tags_type != 'string'} class="hide"{/if}>
 	<div class="table">
 		<div class="title">固定值：<span class="note">当标签为固定值时，需要在这里设置内容</span></div>
-		<div class="content"><input type="text" name="rules" id="rules" value="{$rs.rules}" class="long"/></div>
-		
+		<div class="content">
+			<input type="text" name="rules" id="rules" value="{$rs.rules}" class="long"/>
+			<div style="margin-top:10px;">
+				<div class="layui-btn-group">
+					<input type="button" value="当前网址" onclick="$('#rules').val('{url}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="当前时间" onclick="$('#rules').val('{time}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="1" onclick="$('#rules').val('1')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="0" onclick="$('#rules').val('0')" class="layui-btn layui-btn-sm" />
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 <script type="text/javascript">
