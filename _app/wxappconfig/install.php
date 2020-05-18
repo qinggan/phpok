@@ -16,7 +16,7 @@ if(!defined("PHPOK_SET")){
 }
 
 //安装SQL
-phpok_loadsql($this->db,$this->dir_app.'wxappconfig/install.sql',true);
+//phpok_loadsql($this->db,$this->dir_app.'wxappconfig/install.sql',true);
 
 //增加导航菜单
 $menu = array('parent_id'=>5,'title'=>'微信小程序','status'=>1);

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<title><![CDATA[微信小程序]]></title>
+	<title><![CDATA[微信会员]]></title>
 	<status>
 		<admin><![CDATA[1]]></admin>
+		<www><![CDATA[1]]></www>
 		<api><![CDATA[1]]></api>
-		<www><![CDATA[0]]></www>
 	</status>
+	<install><![CDATA[install.php]]></install>
+	<uninstall><![CDATA[uninstall.php]]></uninstall>
 	<installed><![CDATA[1]]></installed>
 </root>

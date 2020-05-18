@@ -30,7 +30,6 @@ class api_control extends \phpok_control
 			$this->error(P_Lang('未配置服务端小程序'));
 		}
 		include_once($this->dir_data.'wxappconfig.php');
-		unset($wxconfig['wxapp_secret']);//安全考虑，去除密钥
 		$this->success($wxconfig);
 	}
 
