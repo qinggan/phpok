@@ -251,3 +251,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_item_merge_list` (
   `price` decimal(16,4) NOT NULL COMMENT '产品价格，仅在组合ID的类型为独立价格时有效',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='组合产品明细';
+
+
+-- 2020年5月4日
+ALTER TABLE `qinggan_coupon_history` ADD `title` VARCHAR( 255 ) NOT NULL COMMENT '优惠券名称' AFTER `id`;
