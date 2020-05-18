@@ -33,6 +33,12 @@ img{
 }
 
 /* LayUI 后台框架样式改写-开始 */
+.layui-nav-tree .layui-nav-bar{
+	background-color:#E77717 !important;
+}
+.layui-nav-tree .layui-this, .layui-nav-tree .layui-this>a, .layui-nav-tree .layui-nav-child dd.layui-this, .layui-nav-tree .layui-nav-child dd.layui-this a{
+	background-color:#1D5595 !important;
+}
 .layui-layout-admin .layui-body {
 	background:#fff;
 }
@@ -140,7 +146,17 @@ img{
 	border-radius:0;
 }
 
+.layui-btn-group .layui-btn{
+	border-left:1px solid #fff;
+}
 
+.layui-btn-normal{
+	background-color:#2872C8;
+}
+
+.layui-btn-primary:hover{
+	border-color:#1D5595
+}
 
 
 /* LayUI 后台样式框架改写-结束*/
