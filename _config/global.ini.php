@@ -1,7 +1,7 @@
 ;<?php exit("<h1>Access Denied</h1>");?>
 
 ;是否调试，1/true启用，0/false禁用
-debug = false
+debug = true
 
 ;压缩传缩，1/true启用，0/false禁用
 gzip = true
@@ -134,7 +134,7 @@ price = "product,shipping,discount-shipping,fee,discount,tax"
 
 ;地址，国内用户一般只需要使用shipping地址，即收货地址
 ;海外用户还会用到billing地址，即账单地址(正常情况默认账单地址和收货地址是一样的)
-address = "shipping,billing"
+address = "shipping"
 
 [cart]
 ;购物车里的图片来字系统中哪个字段
@@ -170,10 +170,10 @@ default = callback
 status = true
 
 ;CDN服务器地址
-server = 'cdn.phpok.com'
+server = "cdn.phpok.com"
 
 ;IP地址，用于检测CDN时响应过长造成
-ip = "124.225.167.225"
+ip = ""
 
 ;是否启用https
 https = true
@@ -183,3 +183,15 @@ time = 3600
 
 ;连接失败，指向目录地址
 folder = "static/cdn"
+
+[log]
+;日志状态，设为1或true时表示开启，设为0或false时，表示关闭
+status = true
+
+;记录级别，目前仅支持 1 和 0
+;1 表示所有的都记录
+;0 仅记录报错信息
+type = 1
+
+;禁止记录的控制器，多个控制器用英文逗号隔开
+forbid = "index,log"

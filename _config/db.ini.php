@@ -34,7 +34,7 @@ prefix = "qinggan_"
 socket = ""
 
 ; 是否调试，配合系统的debug为true时，会打印出整个页面执行的SQL语句
-debug = false
+debug = true
 
 ; 即时缓存，适应用大量的小查询（重复查询，一般不用开启）
 cache = false
