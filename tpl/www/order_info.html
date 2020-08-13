@@ -82,7 +82,6 @@ function order_payment(orderid,passwd)
 				<!-- /if -->
 			</ul>
 		</div>
-		
 		<!-- if $address -->
 		<div class="am-panel am-panel-default">
 			<div class="am-panel-hd">收件人信息</div>
@@ -90,7 +89,7 @@ function order_payment(orderid,passwd)
 				<li>
 					<div class="am-g">
 						<div class="am-u-sm-4">姓名</div>
-						<div class="am-u-sm-8">{$address.fullname}</div>
+						<div class="am-u-sm-8"><!-- if $address.fullname -->{$address.fullname}<!-- else -->{$address.lastname}{$address.firstname}<!-- /if --></div>
 					</div>
 				</li>
 				<li>
@@ -102,7 +101,9 @@ function order_payment(orderid,passwd)
 							{$address.city}
 							<!-- /if -->
 							{$address.county}
-							{$address.address}<!-- if $address.zipcode --><i>（邮编：{$address.zipcode}）</i><!-- /if -->
+							{$address.address}
+							<!-- if $address.address2 -->{$address.address2}<!-- /if -->
+							<!-- if $address.zipcode --><i>（邮编：{$address.zipcode}）</i><!-- /if -->
 						</div>
 					</div>
 				</li>
@@ -117,6 +118,48 @@ function order_payment(orderid,passwd)
 					<div class="am-g">
 						<div class="am-u-sm-4">邮箱 Email</div>
 						<div class="am-u-sm-8">{$address.email}</div>
+					</div>
+				</li>
+				<!-- /if -->
+			</ul>
+		</div>
+		<!-- /if -->
+		<!-- if $billing -->
+		<div class="am-panel am-panel-default">
+			<div class="am-panel-hd">账单信息</div>
+			<ul class="am-list am-list-static">
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">姓名</div>
+						<div class="am-u-sm-8"><!-- if $billing.fullname -->{$billing.fullname}<!-- else -->{$billing.lastname}{$billing.firstname}<!-- /if --></div>
+					</div>
+				</li>
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">地址</div>
+						<div class="am-u-sm-8">
+							{$billing.province}
+							<!-- if $billing.province != $billing.city -->
+							{$billing.city}
+							<!-- /if -->
+							{$billing.county}
+							{$billing.address}
+							<!-- if $billing.address2 -->{$billing.address2}<!-- /if -->
+							<!-- if $billing.zipcode --><i>（邮编：{$billing.zipcode}）</i><!-- /if -->
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">联系方式</div>
+						<div class="am-u-sm-8">{$billing.tel}<!-- if $billing.tel && $billing.mobile --> / <!-- /if -->{$billing.mobile}</div>
+					</div>
+				</li>
+				<!-- if $billing.email -->
+				<li>
+					<div class="am-g">
+						<div class="am-u-sm-4">邮箱 Email</div>
+						<div class="am-u-sm-8">{$billing.email}</div>
 					</div>
 				</li>
 				<!-- /if -->

@@ -44,6 +44,28 @@ $(document).ready(function(){
 });
 </script>
 <!-- /if -->
+<section class="search">
+	<div class="am-container">
+		<form method="post" class="am-form" action="{url ctrl=search/}" onsubmit="return top_search(this)">
+			<div class="am-u-sm-10"><input name="keywords" value="{$keywords}" id="keywords" type="text" class="am-form-field" placeholder="输入搜索的关键字" /></div>
+			<div class="am-u-sm-2">
+				<button type="submit" class="am-btn am-btn-warning">
+					<i class="am-icon-search"></i>
+					搜索
+				</button>
+			</div>
+		</form>
+		<!-- php:$list = phpok('_keywords','type=hot','psize=5','sign=1') -->
+		<!-- if $list -->
+		<div class="am-u-sm-2 am-text-right am-margin-top am-padding-right-0"><b>热门搜索：</b></div>
+		<div class="am-u-sm-10 am-margin-top am-padding-left-0">
+			<!-- loop from=$list key=$key value=$value id=$tmpid -->
+			<a href="{url ctrl=search keywords=$value.title/}">{$value.title}</a>
+			<!-- /loop -->
+		</div>
+		<!-- /if -->
+	</div>
+</section>
 <section class="main" style="margin:10px auto;">
 	<!-- if $products -->
 	<h2 class="title wow slideInLeft"{if $products.project.style} style="{$products.project.style}"{/if}>{$products.project.title}<!-- if $products.project.entitle --><small>{$products.project.entitle}</small><!-- /if --></h2>

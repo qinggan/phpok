@@ -52,7 +52,14 @@ function checkmoney()
 								<div class="am-tab-panel am-fade{if !$tmpid.index} am-in am-active{/if}">
 									<!-- loop from=$value.paylist key=$k value=$v id=$idxx -->
 									<div class="am-radio">
-										<label><input type="radio" name="payment" value="{$v.id}"{if !$tmpid.index && !$idxx.index} checked{/if}/>{$v.title}</label>
+										<label>
+											<input type="radio" name="payment" value="{$v.id}"{if !$tmpid.index && !$idxx.index} checked{/if}/>
+											<!-- if $v.logo1 -->
+											<img src="{$v.logo1}" style="max-height:80px;" />
+											<!-- else -->
+											{$v.title}
+											<!-- /if -->
+										</label>
 									</div>
 									<!-- /loop -->
 								</div>

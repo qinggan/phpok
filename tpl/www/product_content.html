@@ -174,7 +174,7 @@ $(document).ready(function(){
 						<div class="am-g">
 							<div class="am-u-sm-4"><b>购买数量：</b></div>
 							<div class="am-u-sm-8 am-form">
-								<input name="buycount" id="buycount" value="1" type="number" min="1" />
+								<input name="buycount" id="buycount" value="1" type="number" min="1" onkeyup="value=value.replace(/[^\d]/g,'')" onblur="value=value.replace(/[^\d]/g,'')" />
 							</div>
 						</div>
 					</li>

@@ -39,7 +39,6 @@ function check_it()
 }
 function load_freight()
 {
-	$("#shipping_price").html('0.00');
 	var id = new Array();
 	$("input[data-name=product]").each(function(i){
 		id.push($(this).val());
@@ -53,16 +52,34 @@ function load_freight()
 	}else{
 		var province = $("#pca_p").val();
 		var city = $("#pca_c").val();
-		if(province && !city){
+		if(province && city){
 			url += "&province="+$.str.encode(province)+"&city="+$.str.encode(city);
 		}
 	}
 	$.phpok.json(url,function(rs){
 		if(rs.status){
-			$("#shipping_price").html(rs.info.shipping);
-			$("#all_price").html(rs.info.all);
+			var list = rs.info;
+			var html = '<table class="am-table am-table-centered">';
+			var total = 0;
+			for(var i in list){
+				html += '<tr>';
+				html += '<td class="am-text-right">';
+				html += '<input type="hidden" name="ext_price['+list[i].identifier+']" id="ext_price_'+list[i].identifier+'" value="'+list[i].price_val+'" />';
+				html += list[i].title+'：</td>';
+				html += '<td id="'+list[i].identifier+'_price" class="am-text-danger am-text-left">'+list[i].price+'</td>';
+				html += '</tr>';
+				total += parseFloat(list[i].price_val);
+			}
+			html += '<tr>';
+			html += '<td class="am-text-right">总价：</td>';
+			html += '<td id="all_price" class="am-text-danger am-text-left" style="width:150px;">'+total.toFixed(2)+'元</td>';
+			html += '</tr>';
+			html += '</table>';
+			$("#price_info").html(html);
+			$("#price_info_panel").show();
 			return true;
 		}
+		$("#price_info_panel").hide();
 		$.dialog.alert(rs.info);
 		return false;
 	})
@@ -134,7 +151,7 @@ function update_coupon()
 						<th>图片</th>
 						<th class="am-text-left">名称</th>
 						<th width="80px">数量</th>
-						<th>售价</th>
+						<th width="150px" class="am-text-left">售价</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -149,22 +166,9 @@ function update_coupon()
 							<div>单价：{func price_format $value.price $value.currency_id}</div>
 						</td>
 						<td>{$value.qty}</td>
-						<td class="am-text-danger">{func price_format $value.price*$value.qty $value.currency_id}</td>
+						<td class="am-text-danger am-text-left">{func price_format $value.price*$value.qty $value.currency_id}</td>
 					</tr>
 					<!-- /loop -->
-					<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
-					<tr>
-						<td colspan="3" class="am-text-right">
-							<input type="hidden" name="ext_price[{$value.identifier}]" id="ext_price_{$value.identifier}" value="" />
-							{$value.title}：</td>
-						<td id="{$value.identifier}_price" class="am-text-danger am-text-left">{$value.price}</td>
-					</tr>
-					<!-- /loop -->
-					<tr>
-						<td colspan="3" class="am-text-right">
-							总价：</td>
-						<td id="all_price" class="am-text-danger am-text-left">{$price}</td>
-					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -173,7 +177,7 @@ function update_coupon()
 			<div class="am-panel-bd">
 				<div class="am-g am-g-collapse">
 					<div class="am-u-sm-2"><input type="text" name="coupon" id="coupon" value="{$coupon_code}" /></div>
-					<div class="am-u-sm-1"><input type="button" value="提交优惠码" onclick="update_coupon()" /></div>
+					<div class="am-u-sm-1"><input type="button" value="提交优惠码" onclick="update_coupon()" class="am-btn am-btn-primary" /></div>
 					<div class="am-u-sm-8" id="coupon_tips"></div>
 				</div>
 			</div>
@@ -182,6 +186,27 @@ function update_coupon()
 			<div class="am-panel-hd">留言，填写您对购买的商品特别要求，不能超过80字</div>
 			<div class="am-panel-bd">
 				<textarea name="note" id="note" style="resize:none;"></textarea>
+			</div>
+		</div>
+		<div class="am-panel am-panel-default" id="price_info_panel">
+			<div class="am-panel-hd">信息汇总</div>
+			<div class="am-panel-bd" id="price_info">
+				<table class="am-table am-table-centered">
+					<tbody>
+						<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
+						<tr>
+							<td class="am-text-right">
+								<input type="hidden" name="ext_price[{$value.identifier}]" id="ext_price_{$value.identifier}" value="" />
+								{$value.title}：</td>
+							<td id="{$value.identifier}_price" class="am-text-danger am-text-left">{$value.price}</td>
+						</tr>
+						<!-- /loop -->
+						<tr>
+							<td class="am-text-right">总价：</td>
+							<td id="all_price" class="am-text-danger am-text-left" width="150px">{$price}</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 		</div>
 		<!-- if $integral -->

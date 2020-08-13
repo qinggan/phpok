@@ -8,9 +8,9 @@
  * @日期 2018年03月17日
 **/
 
-function top_search()
+function top_search(obj)
 {
-	var title = $("#top-keywords").val();
+	var title = $(obj).find("input[name=keywords]").val();
 	if(!title){
 		$.dialog.alert('请输入要搜索的关键字');
 		return false;

@@ -24,21 +24,12 @@
 				<!-- /if -->
 				<span id="top_html_user_login"></span>
 			</nav>
-			<form class="am-form-inline" id="top-search-form" method="post" action="{url ctrl=search/}" onsubmit="return top_search()">
-				<div class="am-form-group">
-					<input name="keywords" value="{$keywords}" id="top-keywords" type="text" class="am-form-field" placeholder="请输入关键字" />
-				</div>
-				<button type="submit" class="am-btn am-btn-primary">
-					<i class="am-icon-search"></i>
-					搜索
-				</button>
-			</form>
 		</div>
 	</div>
 	<nav class="menu">
 		<div class="menu">
 		<ul>
-			<!-- php:$list = menu('top') -->
+			<!-- php:$list = phpok("_menu","phpok=top") -->
 			<!-- loop from=$list key=$key value=$value id=$tmpid -->
 			<li{if $value.highlight} class="current"{/if}>
 				<dl>

@@ -26,6 +26,7 @@
 				<input type="button" value="{if fav_check($rs.id) }已收藏{else}加入收藏{/if}" class="am-btn am-btn-primary" onclick="$.phpok_app_fav.act('{$rs.id}',this)" />
 			</div>
 			<!-- /if -->
+			{debug $rs}
 		</div>
 	</article>
 	<!-- include tpl=block/next_prev -->

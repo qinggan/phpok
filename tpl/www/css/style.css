@@ -314,4 +314,14 @@ ul.products li .am-title{margin-top:0;height:2em;}
 .discount{width:60px;height:60px;overflow:hidden;position: absolute;right:0;top:0}
 .discount img{width:100%;}
 
-/* 资讯 */
+/* 搜索 */
+section.search{
+	background:#1f5796;
+	padding:20px 0;
+	color:#fff;
+}
+
+section.search a{
+	color:#fff;
+	padding-right:10px;
+}
