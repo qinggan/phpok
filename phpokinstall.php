@@ -411,7 +411,7 @@ class install
 	public function config()
 	{
 		$config = array();
-		$config['db'] = parse_ini_file(DIR_CONFIG.'db.ini.php');
+		$config['db'] = parse_ini_string(file_get_contents(DIR_CONFIG.'db.ini.php'));
 		$dbconfig = $config['db'];
 		unset($config);
 		$site = root_url();
@@ -1016,7 +1016,7 @@ if($step == 'save'){
 }
 if($step == 'ajax_importsql'){
 	$config = array();
-	$config['db'] = parse_ini_file(DIR_CONFIG.'db.ini.php');
+	$config['db'] = parse_ini_string(file_get_contents(DIR_CONFIG.'db.ini.php'));
 	$config['db']['debug'] = true;
 	$file = $config['db']['file'];
 	include(ROOT.'framework/engine/db/'.$file.'.php');
@@ -1053,7 +1053,7 @@ if($step == 'ajax_importsql'){
 }
 if($step == 'ajax_initdata'){
 	$config = array();
-	$config['db'] = parse_ini_file(DIR_CONFIG.'db.ini.php');
+	$config['db'] = parse_ini_string(file_get_contents(DIR_CONFIG.'db.ini.php'));
 	$config['db']['debug'] = true;
 	$file = $config['db']['file'];
 	include(ROOT.'framework/engine/db/'.$file.'.php');
@@ -1112,7 +1112,7 @@ if($step == 'ajax_initdata'){
 }
 if($step == 'ajax_iadmin'){
 	$config = array();
-	$config['db'] = parse_ini_file(DIR_CONFIG.'db.ini.php');
+	$config['db'] = parse_ini_string(file_get_contents(DIR_CONFIG.'db.ini.php'));
 	$config['db']['debug'] = true;
 	$file = $config['db']['file'];
 	include(ROOT.'framework/engine/db/'.$file.'.php');
