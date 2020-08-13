@@ -16,6 +16,7 @@ class phpexcel_lib
 	{
 		//PHP版
 		require_once EXTENSION . 'phpexcel/phpexcel/PHPExcel.php';
+		require_once EXTENSION . 'phpexcel/phpexcel/PHPExcel/IOFactory.php';
 	}
 
 	public function excelTime($date, $time = false)

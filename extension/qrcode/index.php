@@ -59,7 +59,7 @@ class qrcode_lib extends _init_lib
 			return false;
 		}
 		$tmpfile = $this->dir_cache.md5($filename).'.png';
-		$errorCorrectionLevel = 'L';
+		$errorCorrectionLevel = 'Q';
 		$matrixPointSize = 10;
 		QRcode::png($string, $tmpfile, $errorCorrectionLevel, $matrixPointSize, 2);
 		if(!file_exists($tmpfile)){
@@ -101,5 +101,162 @@ class qrcode_lib extends _init_lib
 		imagepng($QR,$filename);
 		//@unlink($tmpfile);
 		return true;
+	}
+
+	public function read($file='',$width='')
+	{
+		if(!$file){
+			return false;
+		}
+		if(!$width){
+			include_once($this->dir_extension.'qrcode/lib/QrReader.php');
+			$obj = new QrReader($file,'file',false);
+			return $obj->text();
+		}
+		$img_info = $this->_img_info($file);
+		if(!$img_info){
+			return false;
+		}
+		
+		if($img_info['width'] <= ($width*2) || $info['height'] < ($width*2)){
+			include_once($this->dir_extension.'qrcode/lib/QrReader.php');
+			$obj = new QrReader($file,'file',false);
+			return $obj->text();
+		}
+		
+		//如果图片宽度超过800，将图片宽度调成800
+		$tmpfile = $this->dir_cache.md5(time()).'.png';
+		if($img_info['width']>800){
+			$this->_to800($file,$tmpfile);
+			$file = $tmpfile;
+			$img_info = $this->_img_info($file);
+		}
+		//切成小块
+		$w_count = intval($img_info['width']/$width);
+		$h_count = intval($img_info['height']/$width);
+		$list = array();
+		for($i=0;$i<$w_count;$i++){
+			$t = $i+1;
+			if($t==$w_count){
+				$w = $img_info['width'] - ($width*$i);
+				$x = $width * $i;
+			}else{
+				$w = $width;
+				$x = $width * $i;
+			}
+			for($j=0;$j<$h_count;$j++){
+				$o = $j+1;
+				if($o == $h_count){
+					$h = $img_info['height'] - ($width * $j);
+					$y = $width * $j;
+				}else{
+					$h = $width;
+					$y = $width * $j;
+				}
+				$list[] = array("width"=>$w,"height"=>$h,'x'=>$x,'y'=>$y);
+			}
+		}
+		if($img_info["type"] == 1 && function_exists("imagecreatefromgif")){
+			$img = imagecreatefromgif($file);
+		}elseif($img_info["type"] == 2 && function_exists("imagecreatefromjpeg")){
+			$img = imagecreatefromjpeg($file);
+		}else{
+			$img = @imagecreatefrompng($file);
+		}
+		imagealphablending($img,true);
+		$tmplist = array();
+		$tmpid = time();
+		foreach($list as $key=>$value){
+			$tmp = imagecreate($value['width'],$value['height']);
+			imagecolorallocate($tmp,255,255,255);
+			imagefill($tmp,0,0,$bgfill);
+			imagecopyresized($tmp,$img,0,0,$value['x'],$value['y'],$value['width'],$value['height'],$value['width'],$value['height']);
+			$tmpfile = $this->dir_cache.$tmpid.'-'.$key.'.'.$img_info['ext'];
+			if(file_exists($tmpfile)){
+				@unlink($tmpfile);
+			}
+			if($img_info['type'] == 1){
+				imagegif($tmp,$tmpfile);
+			}elseif($img_info['type'] == 2){
+				imagejpeg($tmp,$tmpfile,100);
+			}else{
+				imagepng($tmp,$tmpfile);
+			}
+			imagedestroy($tmp);
+			$value['file'] = $tmpfile;
+			$list[$key] = $value;
+		}
+		imagedestroy($img);
+		include_once($this->dir_extension.'qrcode/lib/QrReader.php');
+		$text = false;
+		foreach($list as $key=>$value){
+			if($text){
+				break;
+			}
+			$obj = new QrReader($value['file'],'file',false);
+			$text = $obj->text();
+		}
+		return $text;
+	}
+
+	private function _to800($file,$newfile)
+	{
+		$img_info = $this->_img_info($file);
+		$width = 800;
+		$height = round($width*$img_info['height']/$img_info['width'],2);
+		$truecolor = function_exists("imagecreatetruecolor") ? true : false;
+		$img_create = $truecolor ? "imagecreatetruecolor" : "imagecreate";
+		$img = $img_create($width,$height);
+		if($img_info["ext"] == 'png'){
+			$bgfill = imagecolorallocatealpha($img,255,255,255,127);
+		} else {
+			$bgfill = imagecolorallocate($img,255,255,255);
+		}
+		imagefill($img,0,0,$bgfill);
+		if($img_info["type"] == 1 && function_exists("imagecreatefromgif")){
+			$tmpImg = imagecreatefromgif($file);
+		}elseif($img_info["type"] == 2 && function_exists("imagecreatefromjpeg")){
+			$tmpImg = imagecreatefromjpeg($file);
+		}else{
+			$tmpImg = @imagecreatefrompng($file);
+		}
+		if(!$tmpImg){
+			return false;
+		}
+		imagealphablending($tmpImg,true);
+		$img_create = $truecolor ? "imagecopyresampled" : "imagecopyresized";
+		$img_create($img,$tmpImg,0,0,0,0,$width,$height,$img_info["width"],$img_info["height"]);
+		if($truecolor){
+			imagesavealpha($img,true);
+		}
+		if(file_exists($newfile)){
+			@unlink($newfile);
+		}
+		if($img_info['type'] == 1){
+			imagegif($img,$newfile);
+		}elseif($img_info['type'] == 2){
+			imagejpeg($img,$newfile,100);
+		}else{
+			imagepng($img,$newfile);
+		}
+		imagedestroy($tmpImg);
+		imagedestroy($img);
+		return true;
+	}
+
+	private function _img_info($picture="")
+	{
+		if(!$picture || !file_exists($picture)){
+			return false;
+		}
+		$tmp = strtolower(basename($picture));
+		$ext = substr($tmp,-3);
+		$infos = getimagesize($picture);
+		$info["width"] = $infos[0];
+		$info["height"] = $infos[1];
+		$info["type"] = $infos[2];
+		$info["ext"] = $infos[2] == 1 ? "gif" : ($infos[2] == 2 ? "jpg" : "png");
+		$info["name"] = substr(basename($picture),0,strrpos(basename($picture),"."));
+		return $info;
 	}
 }

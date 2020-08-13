@@ -496,6 +496,30 @@ class aliyun_lib
 		}
 	}
 
+	public function play_url($videoid)
+	{
+		if(!$videoid){
+			return false;
+		}
+		//$client = initVodClient($this->access_key, $this->access_secret);
+		//$playInfo = getPlayInfo($client, 'videoId');
+    	//print_r($playInfo->PlayInfoList->PlayInfo);
+		$request = new vod\GetPlayInfoRequest();
+		$request->setAcceptFormat('JSON');
+		$request->setAuthTimeout(3600*24);
+		$request->setVideoId($videoid);
+		try {
+			$response = $this->client->getAcsResponse($request);
+			return $this->success($response);
+		}
+		catch (ClientException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+		catch (ServerException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+	}
+
 	/**
 	 * 错误返回
 	 * @参数 $error 错误内容
