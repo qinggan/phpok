@@ -22,8 +22,8 @@
 			<required>true</required>
 		</bucket>
 		<server_url>
-			<title>上传服务器地址</title>
-			<note><![CDATA[上传空间对应的上传地址，建议使用客户端上传地址，<a href="https://developer.qiniu.com/kodo/manual/1671/region-endpoint">点此查看</a>]]></note>
+			<title>客户端上传地址</title>
+			<note><![CDATA[上传空间对应的客户端上传地址，<a href="https://developer.qiniu.com/kodo/manual/1671/region-endpoint" target="_blank">点此查看</a>]]></note>
 			<type>text</type>
 			<required>true</required>
 		</server_url>
