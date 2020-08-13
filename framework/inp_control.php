@@ -109,6 +109,9 @@ class inp_control extends phpok_control
 	**/
 	public function title_f()
 	{
+		if(!$this->session->val('admin_id')){
+			$this->error(P_Lang('仅限后台管理员有此功能'));
+		}
 		$psize = $this->config["psize"];
 		if(!$psize){
 			$psize = 30;
@@ -144,13 +147,26 @@ class inp_control extends phpok_control
 			}
 		}
 		$lst = array_unique($lst);
+		$project_list = array();
+		foreach($lst as $key=>$value){
+			$tmp = $this->model('project')->get_one($value);
+			$project_list[] = $tmp;
+		}
+		$this->assign('project_list',$project_list);
 		$project_id = implode(",",$lst);
 		if(!$project_id){
 			$this->error("指定项目异常");
 		}
 		$pageurl .="&project_id=".rawurlencode($project_id);
 		$formurl = $pageurl;
-		$condition = "l.project_id IN(".$project_id.")";
+		$pid = $this->get('pid','int');
+		if($pid){
+			$pageurl .= "&pid=".$pid;
+			$this->assign('pid',$pid);
+			$condition = "l.project_id='".$pid."'";
+		}else{
+			$condition = "l.project_id IN(".$project_id.")";
+		}
 		if(!$this->session->val('admin_id')){
 			$condition .= " AND l.user_id='".$this->session->val('user_id')."'";
 		}
@@ -172,7 +188,6 @@ class inp_control extends phpok_control
 		$this->assign("multi",$multi);
 		$this->assign("input",$input);
 		$this->assign('formurl',$formurl);
-		$this->tpl->path_change("");
-		$this->view($this->dir_phpok."view/inp_title.html","abs-file");
+		$this->view("inp_title");
 	}
 }

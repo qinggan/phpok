@@ -38,16 +38,12 @@
 						<a href="javascript:;" layadmin-event="flexible" title="{lang侧边伸缩}"> <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
 						</a>
 					</li>
-					<li class="layui-nav-item" lay-unselect>
+					<li class="layui-nav-item layui-hide-xs" lay-unselect>
 						<a href="javascript:;" layadmin-event="refresh" title="{lang刷新}"><i class="layui-icon layui-icon-refresh-3"></i> {lang刷新}</a>
-					</li>
-					<li class="layui-nav-item" lay-unselect>
-						<a href="javascript:$.admin_index.layui_refresh();void(0);" title="{lang修正渲染}"><i class="layui-icon layui-icon-face-smile-b"></i> {lang修正渲染}</a>
 					</li>
 					<li class="layui-nav-item" lay-unselect>
 						<a href="javascript:$.admin_index.clear();void(0);" title="{lang清空缓存}"><i class="layui-icon layui-icon-fonts-clear"></i> {lang清空缓存}</a>
 					</li>
-					
 				</ul>
 				<ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
 					<li class="layui-nav-item layui-hide-xs" lay-unselect>
@@ -58,10 +54,10 @@
 					</li>
 					<!-- if $sitelist && count($sitelist)>1 -->
 					<li class="layui-nav-item layui-hide-xs" lay-unselect>
-						<a href="javascript:;" style="padding-right:20px;"> <cite>{$config.title}</cite></a>
+						<a href="javascript:;" style="padding-right:20px;"> <cite>{$site_rs.alias ? $site_rs.alias : $site_rs.title}</cite></a>
 						<dl class="layui-nav-child">
 							<!-- loop from=$sitelist key=$key value=$value id=$tmpid -->
-							<dd><a href="{url ctrl=index func=site id=$value.id/}">{$value.id} - {$value.title}</a></dd>
+							<dd><a href="{url ctrl=index func=site id=$value.id/}">{$value.id} - <!-- if $value.alias -->{$value.alias}<!-- else -->{$value.title}<!-- /if --></a></dd>
 							<!-- /loop -->
 						</dl>
 					</li>
@@ -92,10 +88,7 @@
 							<dd><a href="javascript:$.admin_index.logout();void(0);">{lang退出}</a></dd>
 						</dl>
 					</li>
-					<li class="layui-nav-item layui-hide-xs" lay-unselect> <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
-					</li>
-					<li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect>
-						<a href="javascript:;" layadmin-event="more"><i class="layui-icon layui-icon-more-vertical"></i></a>
+					<li class="layui-nav-item" lay-unselect> <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
 					</li>
 				</ul>
 			</div>

@@ -495,9 +495,13 @@ class order_control extends phpok_control
 		$rs['price_unpaid'] = price_format_val($unpaid_price,$rs['currency_id'],$rs['currency_id'],$rs['currency_rate'],$rs['currency_rate']);
 		$rs['price_unpaid_show'] = price_format($unpaid_price,$rs['currency_id'],$rs['currency_id'],$rs['currency_rate'],$rs['currency_rate']);
 		$data = array('rs'=>$rs);
-		$address = $this->model('order')->address($rs['id']);
+		$address = $this->model('order')->address($rs['id'],'shipping');
 		if($address){
 			$data['address'] = $address;
+		}
+		$billing = $this->model('order')->address($rs['id'],'billing');
+		if($billing){
+			$data['billing'] = $billing;
 		}
 		$rslist = $this->model('order')->product_list($rs['id']);
 		if($rslist){

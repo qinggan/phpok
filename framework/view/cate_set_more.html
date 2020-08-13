@@ -1,0 +1,46 @@
+<!-- include tpl=head_lay -->
+<script type="text/javascript" src="{func include_js cate.js}"></script>
+<form method="post" id="post_save" class="layui-form" onsubmit="return $.admin_cate.save_more()">
+<div class="layui-card">
+	<div class="layui-card-header">{lang基本设置}</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang分类名称}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">每行一个分类名称</div>
+			<div class="layui-input-block">
+				<textarea name="title" class="layui-textarea" style="height:300px;"></textarea>
+			</div>
+		</div>
+		<!-- if $parent_id -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang父级分类}</label>
+			<div class="layui-input-block">
+				<select name="parent_id" id="parent_id">
+					<!-- loop from=$parentlist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $value.id == $parent_id} selected{/if}>{$value._space} {$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang状态}</label>
+			<div class="layui-input-block">
+				<input type="radio" name="status" value="0" title="{lang禁用}"{if $id && !$rs.status} checked{/if} />
+      			<input type="radio" name="status" value="1" title="{lang使用}" {if !$id || $rs.status} checked{/if} />
+			</div>
+		</div>
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot_lay -->

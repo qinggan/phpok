@@ -50,9 +50,9 @@ class login_control extends phpok_control
 		if(!$data){
 			$this->error($this->model('vcode')->error_info());
 		}
-		$this->session->assign('user_id',$user_rs['id']);
-		$this->session->assign('user_gid',$user_rs['group_id']);
-		$this->session->assign('user_name',$user_rs['user']);
+		$this->session->assign('user_id',$rs['id']);
+		$this->session->assign('user_gid',$rs['group_id']);
+		$this->session->assign('user_name',$rs['user']);
 		$this->model('wealth')->login($rs['id'],P_Lang('会员登录'));
 		$array = array('user_id'=>$rs['id'],'user_name'=>$rs['user'],'user_gid'=>$rs['group_id']);
 		$this->success($array);
@@ -228,9 +228,9 @@ class login_control extends phpok_control
 		if(!$data){
 			$this->error($this->model('vcode')->error_info());
 		}
-		$this->session->assign('user_id',$user_rs['id']);
-		$this->session->assign('user_gid',$user_rs['group_id']);
-		$this->session->assign('user_name',$user_rs['user']);
+		$this->session->assign('user_id',$rs['id']);
+		$this->session->assign('user_gid',$rs['group_id']);
+		$this->session->assign('user_name',$rs['user']);
 		$this->model('wealth')->login($rs['id'],P_Lang('会员登录'));
 		$array = array('user_id'=>$rs['id'],'user_name'=>$rs['user'],'user_gid'=>$rs['group_id']);
 		$this->success($array);

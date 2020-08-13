@@ -69,7 +69,7 @@ class gateway_control extends phpok_control
 		$this->gateway('extinfo',$rs['ext']);
 		if($post && is_array($post)){
 			foreach($post as $key=>$value){
-				$_POST[$key] = $value;
+				$_GET[$key] = $value;
 			}
 		}
 		return $this->gateway($file.'.php');

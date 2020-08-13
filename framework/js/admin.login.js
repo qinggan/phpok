@@ -66,20 +66,12 @@ function cLanguage() {
 	})
 }
 
+
+
 $(document).ready(function(){
 	if (self.location != top.location){
 		top.location = self.location;
 	}
-	$('.c-banner').slick({
-		dots: false,
-		slidesToShow: 1,
-		slidesToScroll: 1,
-		fade:true,
-		speed:1500,
-		autoplay: true,
-		arrows: false,
-		autoplaySpeed: 3000
-	});
 	cLanguage();
 	if($("#c-language").length>0){
 		var langid = $("#c-language").attr("data-lang");

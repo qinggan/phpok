@@ -24,14 +24,15 @@ class index_control extends phpok_control
 		$data = array('ctrl_id'=>$this->config['ctrl_id']);
 		$data['func_id'] = $this->config['func_id'];
 		$data['site_id'] = $this->site['id'];
-		$wxAppConfig = $this->get('wxAppConfig');
-		$clear_url = $this->config['url'].'wxapp/';
-		if($wxAppConfig && is_file($this->dir_data.'wxappconfig.php')){
-			include_once($this->dir_data.'wxappconfig.php');
-			unset($wxconfig['wxapp_secret']);
-			$data['wxconfig'] = $wxconfig;
-		}
 		$tmpinfo = $this->site;
+		$list = $this->model('site')->all_list($this->site['id']);
+		if($list){
+			foreach($list as $key=>$value){
+				if(!$value['is_api'] && $tmpinfo[$value['identifier']]){
+					unset($tmpinfo[$value['identifier']]);
+				}
+			}
+		}
 		unset($tmpinfo['api_code']);
 		$data['site'] = $tmpinfo;
 		$this->success($data);

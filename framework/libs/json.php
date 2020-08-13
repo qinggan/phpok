@@ -56,4 +56,9 @@ class json_lib
         }
         return false;
     }
+
+    public function is_json($string)
+    {
+	    return $this->json_validate($string);
+    }
 }

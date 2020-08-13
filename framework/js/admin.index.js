@@ -79,7 +79,7 @@
 			if(!type || type == 'undefined'){
 				$.phpok.json(get_url('index','clear','type=all'),function(rs){
 					if(rs.status){
-						$.dialog.alert('缓存清空完成',true,'succeed');
+						$.dialog.tips('缓存清空完成');
 						return true;
 					}
 					$.dialog.alert(rs.info);

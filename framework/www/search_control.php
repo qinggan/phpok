@@ -1,12 +1,14 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/www/search_control.php
-	Note	: 搜索
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-04-20 23:51
-***********************************************************/
+/**
+ * 搜索，支持自定义扩展字段
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2020年7月4日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class search_control extends phpok_control
 {
@@ -26,7 +28,6 @@ class search_control extends phpok_control
 		if($keywords){
 			$keywords = str_replace(array("　","，",",","｜","|","、","/","\\","／","＼","+","＋")," ",$keywords);
 			$keywords = trim($keywords);
-			
 		}
 		$project = array();
 		if($id){
@@ -59,7 +60,8 @@ class search_control extends phpok_control
 			$pageurl .= "&";
 		}
 		$kc = array();
-		$my_mid = 0;
+		$kc_ext = array();
+		$my_mids = array();
 		if($project && is_array($project)){
 			$condition .= "l.project_id='".$project['id']."' AND l.module_id='".$project['module']."'";
 			$pageurl .= "id=".$project['identifier']."&";
@@ -71,6 +73,13 @@ class search_control extends phpok_control
 				$pageurl .= "cateid=".$cate_rs['id']."&";
 				$this->assign('cateid',$cateid);
 				$this->assign('cate_rs',$cate_rs);
+				if($cate_rs['parent_id'] && $cate_rs['parent_id'] != $project['cate']){
+					$cate_parent_rs = $this->call->phpok('_cate',array('pid'=>$project['id'],'cateid'=>$cate_rs['parent_id']));
+					if(!$cate_parent_rs || !$cate_parent_rs['status']){
+						$this->error(P_Lang('父级分类已停用，请联系管理员'));
+					}
+					$this->assign('cate_parent_rs',$cate_parent_rs);
+				}
 			}
 			if($ext){
 				$sql = "SELECT id FROM ".$this->db->prefix."list_".$project['module']." WHERE project_id='".$project['id']."' ";
@@ -96,18 +105,19 @@ class search_control extends phpok_control
 			}
 			$mids = array_unique($mids);
 			$condition = "l.project_id IN(".implode(",",$pids).") AND l.module_id IN(".implode(",",$mids).") ";
-			if(count($mids) == 1 && $keywords){
-				$my_mid = implode(",",$mids);
-				$module = $this->model('module')->get_one($my_mid);
-				if($module && !$module['mtype'] && $module['tbl'] == 'list'){
-					$flist = $this->model('fields')->flist($module['id']);
-					if($flist){
-						foreach($flist as $key=>$value){
-							if($value['search'] == 1){
-								$kc[] = " ext.".$value['identifier']."='".$keywords."' ";
-							}
-							if($value['search'] == 2){
-								$kc[] = " ext.".$value['identifier']." LIKE '%".str_replace(' ','%',$keywords)."%' ";
+			if($keywords){
+				foreach($mids as $key=>$value){
+					$module = $this->model('module')->get_one($value);
+					if($module && !$module['mtype'] && $module['tbl'] == 'list'){
+						$my_mids[] = $module['id'];
+						$flist = $this->model('fields')->flist($module['id']);
+						if($flist){
+							foreach($flist as $k=>$v){
+								if($v['search'] == 1){
+									$kc_ext[$value][] = " ext.".$v['identifier']."='".$keywords."' ";
+								}elseif($v['search'] == 2){
+									$kc_ext[$value][] = " ext.".$v['identifier']." LIKE '%".str_replace(' ','%',$keywords)."%' ";
+								}
 							}
 						}
 					}
@@ -120,23 +130,35 @@ class search_control extends phpok_control
 			$kwlist = array();
 			foreach($klist as $key=>$value){
 				$kwlist[] = '<i>'.$value.'</i>';
-				$kc[] = " l.seo_title LIKE '%".$value."%'";
-				$kc[] = " l.seo_keywords LIKE '%".$value."%'";
-				$kc[] = " l.seo_desc LIKE '%".$value."%'";
-				$kc[] = " l.title LIKE '%".$value."%'";
-				$kc[] = " l.tag LIKE '%".$value."%'";
+				if($my_mids && is_array($my_mids)){
+					foreach($my_mids as $k=>$v){
+						$kc_ext[$v][] = " l.seo_title LIKE '%".$value."%'";
+						$kc_ext[$v][] = " l.seo_keywords LIKE '%".$value."%'";
+						$kc_ext[$v][] = " l.seo_desc LIKE '%".$value."%'";
+						$kc_ext[$v][] = " l.title LIKE '%".$value."%'";
+						$kc_ext[$v][] = " l.tag LIKE '%".$value."%'";
+					}
+				}else{
+					$kc[] = " l.seo_title LIKE '%".$value."%'";
+					$kc[] = " l.seo_keywords LIKE '%".$value."%'";
+					$kc[] = " l.seo_desc LIKE '%".$value."%'";
+					$kc[] = " l.title LIKE '%".$value."%'";
+					$kc[] = " l.tag LIKE '%".$value."%'";
+				}
 			}
-			$condition.= "AND (".implode(" OR ",$kc).") ";
+			if($kc && is_array($kc)){
+				$condition.= " AND (".implode(" OR ",$kc).") ";
+			}
 			$pageurl .= "keywords=".rawurlencode($keywords)."&";
 		}
-		$total = $this->model('search')->get_total($condition,$my_mid);
+		$total = $this->model('search')->get_total($condition,$my_mids,$kc_ext);
 		$pageid = $this->get($this->config['pageid'],'int');
 		if(!$pageid){
 			$pageid = 1;
 		}
 		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
 		$offset = ($pageid-1) * $psize;
-		$idlist = $this->model('search')->id_list($condition,$offset,$psize,$my_mid);
+		$idlist = $this->model('search')->id_list($condition,$offset,$psize,$my_mids,$kc_ext);
 		if($idlist){
 			$rslist = array();
 			foreach($idlist as $key=>$value){
@@ -156,6 +178,10 @@ class search_control extends phpok_control
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,'list');
 		if(!$tplfile){
 			$tplfile = 'search_list';
+		}
+		//保留搜索的关键字
+		if(!$pageid || $pageid<2){
+			$this->model('search')->save($keywords);
 		}
 		$this->plugin('ap-load-search');
 		$this->view($tplfile);

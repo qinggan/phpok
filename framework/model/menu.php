@@ -121,12 +121,21 @@ class menu_model_base extends phpok_model
 		foreach($rslist as $key=>$value){
 			if($value['project_id'] && $plist && $plist[$value['project_id']]){
 				$value['project'] = $plist[$value['project_id']];
+				if(!$value['title'] && $value['type'] == 'project'){
+					$value['title'] = $value['project']['title'];
+				}
 			}
 			if($value['cate_id'] && $clist && $clist[$value['cate_id']]){
 				$value['cate'] = $clist[$value['cate_id']];
+				if(!$value['title'] && $value['type'] == 'cate'){
+					$value['title'] = $value['cate']['title'];
+				}
 			}
 			if($value['list_id'] && $tlist && $tlist[$value['list_id']]){
 				$value['info'] = $tlist[$value['list_id']];
+				if(!$value['title'] && $value['type'] == 'content'){
+					$value['title'] = $value['info']['title'];
+				}
 			}
 			$rslist[$key] = $value;
 		}
@@ -174,17 +183,30 @@ class menu_model_base extends phpok_model
 			$tlist = array_unique($tlist);
 			$tlist = $this->model('list')->simple_all($tlist);
 		}
+		$subids = array();
 		foreach($tmplist as $key=>$value){
 			if($value['project_id'] && $plist && $plist[$value['project_id']]){
 				$value['project'] = $plist[$value['project_id']];
 				if($value['type'] == 'project'){
 					$value['link'] = $this->url($value['project']['identifier'],'','','www');
+					if(!$value['title']){
+						$value['title'] = $value['project']['title'];
+					}
+					if($value['submenu']){
+						$subids[] = array("parent_id"=>$value['id'],"pid"=>$value['project_id'],'project'=>$value['project'],'submenu'=>$value['submenu'],'type'=>$value['type']);
+					}
 				}
 			}
 			if($value['cate_id'] && $clist && $clist[$value['cate_id']]){
 				$value['cate'] = $clist[$value['cate_id']];
 				if($value['project'] && $value['type'] == 'cate'){
 					$value['link'] = $this->url($value['project']['identifier'],$value['cate']['identifier'],'','www');
+					if(!$value['title']){
+						$value['title'] = $value['cate']['title'];
+					}
+					if($value['submenu']){
+						$subids[] = array("parent_id"=>$value['id'],"pid"=>$value['project_id'],'project'=>$value['project'],'submenu'=>$value['submenu'],'cate_id'=>$value['cate_id'],'cate'=>$value['cate'],'type'=>$value['type']);
+					}
 				}
 			}
 			if($value['list_id'] && $tlist && $tlist[$value['list_id']]){
@@ -192,21 +214,191 @@ class menu_model_base extends phpok_model
 				if($value['type'] == 'content'){
 					$tmpid = $value['info']['identifier'] ? $value['info']['identifier'] : $value['info']['id'];
 					$value['link'] = $this->url($tmpid,'','','www');
+					if(!$value['title']){
+						$value['title'] = $value['info']['title'];
+					}
 				}
 			}
 			$value['target'] = $value['target'] ? '_blank' : '_top';
 			$value['url'] = $value['link'];
 			$tmplist[$key] = $value;
 		}
+		$this->_sublist($subids,$tmplist);
 		$list = array();
 		$this->_treelist($list,$tmplist,0);
 		return $list;
 	}
 
+	private function _sublist($idlist,&$rslist)
+	{
+		foreach($idlist as $key=>$value){
+			if($value['submenu'] == 'cate1'){
+				$cate_id = $value['cate_id'] ? $value['cate_id'] : $value['project']['cate'];
+				$condition = "site_id='".$value['project']['site_id']."' AND status=1 AND parent_id='".$cate_id."'";
+				$cate_all = $this->model('cate')->cate_list($condition,0,999);
+				if($cate_all){
+					foreach($cate_all as $k=>$v){
+						$tmp = array('id'=>'cate_'.$v['id']);
+						$tmp['parent_id'] = $value['parent_id'];
+						$tmp['title'] = $v['title'];
+						$tmp['url'] = $this->url($value['project']['identifier'],$v['identifier']);
+						$tmp['target'] = '_self';
+						$tmp = array_merge($v,$tmp);
+						$rslist[] = $tmp;
+					}
+				}
+			}
+			if($value['submenu'] == 'cate2'){
+				$cate_id = $value['cate_id'] ? $value['cate_id'] : $value['project']['cate'];
+				$condition = "site_id='".$value['project']['site_id']."' AND status=1 AND parent_id='".$cate_id."'";
+				$cate_all = $this->model('cate')->cate_list($condition,0,999);
+				if($cate_all){
+					foreach($cate_all as $k=>$v){
+						$tmp = array('id'=>'cate_'.$v['id']);
+						$tmp['parent_id'] = $value['parent_id'];
+						$tmp['title'] = $v['title'];
+						$tmp['url'] = $this->url($value['project']['identifier'],$v['identifier']);
+						$tmp['target'] = '_self';
+						$tmp['link'] = $tmp['url'];
+						$tmp = array_merge($v,$tmp);
+						$rslist[] = $tmp;
+						$condition = "site_id='".$value['project']['site_id']."' AND status=1 AND parent_id='".$v['id']."'";
+						$sub_cate_all = $this->model('cate')->cate_list($condition,0,999);
+						if($sub_cate_all){
+							foreach($sub_cate_all as $kk=>$vv){
+								$tmp2 = array('id'=>'cate_'.$vv['id']);
+								$tmp2['parent_id'] = $tmp['id'];
+								$tmp2['title'] = $vv['title'];
+								$tmp2['url'] = $this->url($value['project']['identifier'],$vv['identifier']);
+								$tmp2['target'] = '_self';
+								$tmp2['link'] = $tmp2['url'];
+								$tmp2 = array_merge($vv,$tmp2);
+								$rslist[] = $tmp2;
+							}
+						}
+					}
+				}
+			}
+			if($value['submenu'] == 'title1'){
+				$tmplist = $this->_titles($value['project'],$value['cate_id']);
+				if($tmplist){
+					foreach($tmplist as $k=>$v){
+						$tmp = array('id'=>'title_'.$v['id']);
+						$tmp['parent_id'] = $value['parent_id'];
+						$tmp['title'] = $v['title'];
+						$tmp['url'] = $this->url($v['identifier'] ? $v['identifier'] : $v['id']);
+						$tmp['target'] = '_self';
+						$tmp['link'] = $tmp['url'];
+						$tmp = array_merge($v,$tmp);
+						$rslist[] = $tmp;
+					}
+				}
+			}
+			if($value['submenu'] == 'title2'){
+				$tmplist = $this->_titles($value['project'],$value['cate_id']);
+				if($tmplist){
+					foreach($tmplist as $k=>$v){
+						$tmp = array('id'=>'title_'.$v['id']);
+						$tmp['parent_id'] = $value['parent_id'];
+						$tmp['title'] = $v['title'];
+						$tmp['url'] = $this->url($v['identifier'] ? $v['identifier'] : $v['id']);
+						$tmp['target'] = '_self';
+						$tmp['link'] = $tmp['url'];
+						$tmp = array_merge($v,$tmp);
+						$rslist[] = $tmp;
+						$tmplist2 = $this->_titles($value['project'],0,$v['id']);
+						if($tmplist2){
+							foreach($tmplist2 as $kk=>$vv){
+								$tmp2 = array('id'=>'title_'.$vv['id']);
+								$tmp2['parent_id'] = $tmp['id'];
+								$tmp2['title'] = $vv['title'];
+								$tmp2['url'] = $this->url($vv['identifier'] ? $vv['identifier'] : $vv['id']);
+								$tmp2['target'] = '_self';
+								$tmp2['link'] = $tmp2['url'];
+								$tmp2 = array_merge($vv,$tmp2);
+								$rslist[] = $tmp2;
+							}
+						}
+					}
+				}
+			}
+			if($value['submenu'] == 'cate_title'){
+				$cate_id = $value['cate_id'] ? $value['cate_id'] : $value['project']['cate'];
+				$condition = "site_id='".$value['project']['site_id']."' AND status=1 AND parent_id='".$cate_id."'";
+				$cate_all = $this->model('cate')->cate_list($condition,0,999,$orderby,'taxis ASC,id DESC');
+				if($cate_all){
+					foreach($cate_all as $k=>$v){
+						$tmp = array('id'=>'cate_'.$v['id']);
+						$tmp['parent_id'] = $value['parent_id'];
+						$tmp['title'] = $v['title'];
+						$tmp['url'] = $this->url($value['project']['identifier'],$v['identifier']);
+						$tmp['target'] = '_self';
+						$tmp['link'] = $tmp['url'];
+						$tmp = array_merge($v,$tmp);
+						$rslist[] = $tmp;
+						$tmplist2 = $this->_titles($value['project'],$v['id']);
+						if($tmplist2){
+							foreach($tmplist2 as $kk=>$vv){
+								$tmp2 = array('id'=>'title_'.$vv['id']);
+								$tmp2['parent_id'] = $tmp['id'];
+								$tmp2['title'] = $vv['title'];
+								$tmp2['url'] = $this->url($vv['identifier'] ? $vv['identifier'] : $vv['id']);
+								$tmp2['target'] = '_self';
+								$tmp2['link'] = $tmp2['url'];
+								$tmp2 = array_merge($vv,$tmp2);
+								$rslist[] = $tmp2;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private function _titles($project,$cate_id=0,$parent_id=0)
+	{
+		$condition  = " l.site_id='".$project['site_id']."' ";
+		$condition .= "AND l.hidden=0 ";
+		$condition .= " AND l.project_id=".intval($project['id'])." ";
+		$condition .= " AND l.status=1 ";
+		$condition .= " AND l.parent_id=".$parent_id." ";
+		if($project['cate'] && $cate_id){
+			$condition .= " AND l.cate_id='".$cate_id."'";
+		}
+		$flist = $this->model('module')->fields_all($project['module']);
+		$fields = "l.*";
+		$nlist = array();
+		if($flist){
+			foreach($flist as $k=>$v){
+				$fields .= ",ext.".$v['identifier'];
+				$nlist[$v['identifier']] = $v;
+			}
+		}
+		$rslist = $this->model('list')->arc_all($project,$condition,$fields,0,999,$project['orderby']);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			if(!$nlist || count($nlist)<1){
+				continue;
+			}
+			foreach($nlist as $k=>$v){
+				$myval = $this->lib('form')->show($v,$value[$k]);
+				$value[$k] = $myval;
+			}
+			$rslist[$key] = $value;
+		}
+		return $rslist;
+	}
+
 	private function _treelist(&$list,$rslist,$parent_id=0)
 	{
 		foreach($rslist as $key=>$value){
-			if($value['parent_id'] == $parent_id){
+			if(!$parent_id && !$value['parent_id']){
+				$list[$value['id']] = $value;
+				$this->_treelist($list[$value['id']]['sublist'],$rslist,$value['id']);
+			}
+			if($parent_id && $value['parent_id'] == $parent_id){
 				$list[$value['id']] = $value;
 				$this->_treelist($list[$value['id']]['sublist'],$rslist,$value['id']);
 			}

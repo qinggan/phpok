@@ -51,6 +51,7 @@ class phpok_call extends _init_auto
 		$array[] = 'condition';
 		$array[] = 'taglist';
 		$array[] = 'menu';
+		$array[] = 'keywords';
 		return $array;
 	}
 
@@ -1603,5 +1604,43 @@ class phpok_call extends _init_auto
 		$this->model('menu')->site_id($rs['site']);
 		$rslist = $this->model('menu')->treelist($groupId,$is_userid);
 		return $rslist;
+	}
+
+	private function _keywords($rs)
+	{
+		$site_id = $rs['site'] ? $rs['site'] : $this->site_id;
+		$condition = " site_id='".$site_id."' ";
+		if($rs['sign'] && $rs['sign'] != 'false'){
+			$condition .= " AND sign=1 ";
+		}
+		$orderby = '';
+		if($rs['type'] == 'hot'){
+			$orderby = 'hits DESC,id DESC';
+		}
+		if($rs['type'] == 'cold'){
+			$orderby = 'hits ASC,id DESC';
+		}
+		if($rs['type'] == 'new'){
+			$orderby = 'dateline DESC,id DESC';
+		}
+		if($rs['type'] == 'old'){
+			$orderby = 'dateline ASC,id ASC';
+		}
+		$psize = $rs['psize'] ? $rs['psize'] : 10;
+		$rslist = $this->model('search')->keywords($condition,$psize,$orderby);
+		if(!$rslist){
+			return false;
+		}
+		$list = array();
+		foreach($rslist as $key=>$value){
+			if(!$value['title']){
+				continue;
+			}
+			$tmp = array('title'=>$value['title']);
+			$tmp['hits'] = $value['hits'];
+			$tmp['url'] = $this->url('search','','keywords='.rawurlencode($value['title']));
+			$list[] = $tmp;
+		}
+		return $list;
 	}
 }

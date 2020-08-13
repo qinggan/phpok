@@ -17,6 +17,19 @@ $(document).ready(function(){
 				$("#type-"+list[i]).hide();
 			}
 		}
+		if(data.value == 'content' || data.value == 'link'){
+			$("#submenu_html").hide();
+		}else{
+			$("#submenu_html").show();
+		}
+	});
+	layui.form.on("select(pid-project)",function(data){
+		if(!data.value){
+			$("#submenu").html("<option value=''>自定义…</option>");
+			layui.form.render("select");
+			return true;
+		}
+		$.admin_menu.update_submenu(data.value);
 	});
 	layui.form.on("select(pid-cate)",function(data){
 		if(!data.value){
@@ -33,6 +46,7 @@ $(document).ready(function(){
 				catelist: rs.info
 			});
 			$("#pid-catelist").html(html).show();
+			$.admin_menu.update_submenu(data.value);
 			layui.form.render('select');
 		});
 	});

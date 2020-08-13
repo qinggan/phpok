@@ -1,7 +1,6 @@
 <?php
 /**
  * 常用函数
- * @package phpok\framework
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -188,7 +187,7 @@ function ext_value($rs)
 {
 	global $app;
 	$val = $app->lib('form')->get($rs);
-	if($val){
+	if($val != ''){
 		return $val;
 	}
 	$tmp = array('int','float','html','html_js','time','text');
@@ -1166,8 +1165,8 @@ function phpok_cdn()
 	if(!$app->config['cdn']){
 		return 'static/cdn/';
 	}
-	$time = $config['time'] ? $config['time'] : 3600;
 	$config = $app->config['cdn'];
+	$time = $config['time'] ? $config['time'] : 3600;
 	if(!$config['status'] || !$config['server']){
 		$folder = $config['folder'] ? $config['folder'] : 'static/cdn/';
 		if(substr($folder,-1) != '/'){
@@ -1180,6 +1179,7 @@ function phpok_cdn()
 	if(!$info){
 		$remote_check_status = true;
 	}
+	$use_cdn = false;
 	if($info && !$remote_check_status){
 		$tmp = explode("|",$info);
 		if($tmp[1] == 'false'){
@@ -1191,9 +1191,10 @@ function phpok_cdn()
 		}
 		if(($tmp[0] + $time) > $app->time){
 			$remote_check_status = true;
+		}else{
+			$use_cdn = true;
 		}
 	}
-	$use_cdn = false;
 	if($remote_check_status){
 		$url = $config['https'] ? 'https://' : 'http://';
 		$url.= $config['server'];

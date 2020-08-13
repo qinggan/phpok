@@ -16,7 +16,6 @@ class vcode_lib
 	private $height = 24;
 	private $count = 4;
 	private $word = '';
-	private $btype = '_bg_line';
 	private $font = '';
 	private $root = '';
 	
@@ -26,8 +25,6 @@ class vcode_lib
 		$this->width = 76;
 		$this->height = 24;
 		$this->count = 4;
-		$rand = mt_rand(0,1);
-		$this->btype = $rand ? '_bg_line' : '_bg_imagesetpixel';
 	}
 
 	public function width($width=76)
@@ -86,12 +83,11 @@ class vcode_lib
 		imagecolortransparent($aimg,$white_color);
 		$color = $this->color();
 		$color_id = imagecolorallocate($aimg,$color[0], $color[1], $color[2]);
-		$rand = rand(0,1);
-		if($rand){
-			$this->_bg_line($aimg,$color_id);
-		}else{
-			$this->_bg_imagesetpixel($aimg,$color_id);
-		}
+		$bg0 = $color[0]<200 ? ($color[0]+rand(1,20)) : ($color[0] - rand(1,50));
+		$bg1 = $color[1]<200 ? ($color[1]+rand(1,20)) : ($color[1] - rand(1,50));
+		$bg2 = $color[2]<200 ? ($color[2]+rand(1,20)) : ($color[2] - rand(1,50));
+		$color_bg_id = imagecolorallocate($aimg,$bg0, $bg1, $bg2);
+		$this->_bg_line($aimg,$color_bg_id);
 		if($this->font && function_exists('imagettftext')){
 			$next = 7;
 			for($i=0;$i<$this->count;$i++){
@@ -124,16 +120,27 @@ class vcode_lib
 	{
 		$max_x = $this->width - 1;
 		$max_y = $this->height - 1;
-		for($i=0;$i<5;$i++){
-			$x1 = rand(1,intval($max_x/2));
-			$y1 = rand(1,intval($max_y/2));
-			$x2 = rand(intval($max_x/2),$max_x);
-			$y2 = rand(intval($max_y/2),$max_y);
-			for($t=0;$t<2;$t++){
-				imageline($aimg,$x1+$t, $y1+$t,$x2+$t, $y2+$t,$color_id);
+		$cy_count = rand(2,7);
+		$t = rand(1,($cy_count-1));
+		$count = intval(($max_y+$max_x)/$cy_count);
+		$type = rand(0,1);
+		for($i=0;$i<$count;$i++){
+			if($type == 1){
+				$x1 = ($i+1)*$cy_count - $max_y;
+				$y1 = 0;
+				$x2 = $x1 + $max_y;
+				$y2 = $max_y;
+			}else{
+				$x1 = ($i+1)*$cy_count - $max_y;
+				$y1 = $max_y;
+				$x2 = $x1 + $max_y;
+				$y2 = 0;
 			}
+			for($m=0;$m<$t;$m++){
+				imageline($aimg,$x1+$m, $y1+$m,$x2+$m, $y2+$m,$color_id);
+			}
+			
 	    }
-
 	}
 
 	private function _bg_imagesetpixel($aimg,$color_id=0)

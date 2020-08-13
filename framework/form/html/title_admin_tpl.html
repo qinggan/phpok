@@ -1,79 +1,67 @@
 <!-- if $_rs.is_multiple -->
-<script type="text/javascript">
-function action_{$_rs.identifier}_show()
-{
-	var tmp_id = $("#{$_rs.identifier}").val();
-	if(!tmp_id || tmp_id == '0' || tmp_id == 'undefined'){
-		return true;
-	}
-	var url = get_url("inp","","type=title&content="+$.str.encode(tmp_id));
-	$.phpok.json(url,function(rs){
-		if(rs.status){
-			var lst = rs.info;
-			var c = '<table>';
-			for(var i in lst){
-				c += '<tr id="{$_rs.identifier}_div_'+lst[i]['id']+'">';
-				c += '<td><input type="checkbox" value="'+lst[i]['id']+'" id="title_{$_rs.identifier}_'+i+'"></td>';
-				c += '<td><label for="title_{$_rs.identifier}_'+i+'">'+lst[i]['title']+'</label></td>';
-				c += '<td style="width:80px;"><input type="button" value="删除" class="layui-btn" onclick="phpok_title_delete(\'{$_rs.identifier}\',\''+lst[i]['id']+'\')" /></td>';
-				c += '</tr>';
-			}
-			c += '</table>';
-			$("#{$_rs.identifier}_div").html(c).show();
-			$("#{$_rs.identifier}_button_checkbox").show();
-		}
-	});
-}
+<script id="art-tpl" type="text/html">
+<table class="layui-table" id="{$_rs.identifier}_preview">
+<thead>
+<tr>
+	<th width="20"></th>
+	<th width="60">ID</th>
+	<th>{lang标题}</th>
+	<th width="120">{lang日期}</th>
+	<th width="60">{lang排序}</th>
+	<th width="60">{lang操作}</th>
+</tr>
+</thead>
+<tbody>
+<% for(var i in rslist){ %>
+<tr id="{$_rs.identifier}_div_<%= rslist[i].id %>" data-id="<%= rslist[i].id %>">
+	<td><input type="checkbox" value="<%= rslist[i].id %>" id="title_{$_rs.identifier}_<%= i %>" lay-ignore></td>
+	<td><%= rslist[i].id %></td>
+	<td><label for="title_{$_rs.identifier}_<%= i %>"><%= rslist[i].title %></label></td>
+	<td><%= dateFormat(rslist[i].dateline,'Y-m-d H:i') %></td>
+	<td>
+		<div class="button-group">
+			<input type="button" value="↑" class="phpok-btn" title="{lang向前移一位}" onclick="$.phpokform.title_sortup(this,'{$_rs.identifier}')" />
+			<input type="button" value="↓" class="phpok-btn" title="{lang向后移一位}" onclick="$.phpokform.title_sortdown(this,'{$_rs.identifier}')" />
+		</div>
+	</td>
+	<td><input type="button" value="{lang删除}" class="layui-btn layui-btn-xs layui-btn-danger" onclick="phpok_title_delete('{$_rs.identifier}','<%= rslist[i].id %>')" /></td>
+</tr>
+<% } %>
+</tbody>
+</table>
 </script>
 <input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{if $_rs.content && is_array($_rs.content)}{func implode , $_rs.content}{/if}" />
 <div class="button-group">
-	<input type="button" value="{lang请选择}" onclick="phpok_title_select('{$_project_id_btn}',true,'{$_open_title}','{$_rs.identifier}')" class="layui-btn" />
+	<input type="button" value="{lang请选择}" onclick="$.phpokform.title_select('{$_project_id_btn}',true,'{$_open_title}','{$_rs.identifier}')" class="layui-btn layui-btn-sm" />
 	<span class="hide" id="{$_rs.identifier}_button_checkbox">
-		<input type="button" class="layui-btn" value="全选" onclick="$.input.checkbox_all('{$_rs.identifier}_div')" />
-		<input type="button" class="layui-btn" value="全不选" onclick="$.input.checkbox_none('{$_rs.identifier}_div')" />
-		<input type="button" class="layui-btn" value="反选" onclick="$.input.checkbox_anti('{$_rs.identifier}_div')" />
-		<input type="button" class="layui-btn" value="删除选中" onclick="phpok_title_delete('{$_rs.identifier}')" />
+		<div class="layui-btn-group">
+			<input type="button" class="layui-btn layui-btn-sm" value="全选" onclick="$.input.checkbox_all('{$_rs.identifier}_div')" />
+			<input type="button" class="layui-btn layui-btn-sm" value="全不选" onclick="$.input.checkbox_none('{$_rs.identifier}_div')" />
+			<input type="button" class="layui-btn layui-btn-sm" value="反选" onclick="$.input.checkbox_anti('{$_rs.identifier}_div')" />
+			<input type="button" class="layui-btn layui-btn-sm layui-btn-danger" value="删除选中" onclick="phpok_title_delete('{$_rs.identifier}')" />
+		</div>
 	</span>
 </div>
 <div id="{$_rs.identifier}_div" class="hide"></div>
-<!-- else -->
-<script type="text/javascript">
-function action_{$_rs.identifier}_show()
-{
-	var tmp_id = $("#{$_rs.identifier}").val();
-	if(!tmp_id || tmp_id == '0' || tmp_id == 'undefined'){
-		$("#layui-btn-{$_rs.identifier}-delete").hide();
-		$("#title_{$_rs.identifier}").html('').hide();
-		return true;
-	}
-	var url = get_url("inp","",'type=title&content='+$.str.encode(tmp_id));
-	$.phpok.json(url,function(rs){
-		if(rs.status){
-			var lst = rs.info;
-			for(var i in lst){
-				$("#title_{$_rs.identifier}").html(lst[i]['title']).show();
-				$("#layui-btn-{$_rs.identifier}-delete").show();
-			}
-		}
-	})
-}
-</script>
-<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{if $_rs.content && is_array($_rs.content)}{func implode , $_rs.content}{else}{$_rs.content}{/if}" />
-<table>
-<tr>
-	<td id="title_{$_rs.identifier}"></td>
-	<td width="200px">
-		<div class="button-group">
-			<input type="button" value="请选择" class="layui-btn" onclick="phpok_title_select('{$_project_id_btn}',false,'{$_open_title}','{$_rs.identifier}')" />
-			<input type="button" value="删除" onclick="phpok_title_delete_single('{$_rs.identifier}')" id="layui-btn-{$_rs.identifier}-delete" class="layui-btn" />
-		</div>
-	</td>
-</tr>
-</table>
-<!-- /if -->
 <script type="text/javascript">
 $(document).ready(function(){
-	action_{$_rs.identifier}_show();
-	$.dialog.data("title_data_{$_rs.identifier}",$("#{$_rs.identifier}").val());
+	$.phpokform.title_show_multi('{$_rs.identifier}');
 });
 </script>
+<!-- else -->
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{if $_rs.content && is_array($_rs.content)}{func implode , $_rs.content}{else}{$_rs.content}{/if}" />
+<ul class="layout" style="padding-top:9px">
+	<li id="title_{$_rs.identifier}"></li>
+	<li>
+		<div class="layui-btn-group">
+			<input type="button" value="请选择" class="layui-btn layui-btn-sm" onclick="$.phpokform.title_select('{$_project_id_btn}',false,'{$_open_title}','{$_rs.identifier}')" />
+			<input type="button" value="删除" onclick="phpok_title_delete_single('{$_rs.identifier}')" id="layui-btn-{$_rs.identifier}-delete" class="layui-btn layui-btn-sm layui-btn-danger" />
+		</div>
+	</li>
+</ul>
+<script type="text/javascript">
+$(document).ready(function(){
+	$.phpokfrom.title_show_single('{$_rs.identifier}');
+});
+</script>
+<!-- /if -->

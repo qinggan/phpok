@@ -34,7 +34,7 @@ class res_model_base extends phpok_model
 			return false;
 		}
 		$sql  = "SELECT res.*,cate.etype FROM ".$this->db->prefix."res res ";
-		$sql .= "LEFT JOIN ".$this->db->prefix."res_cate cate ON(res.cate_id=cate.etype) ";
+		$sql .= "LEFT JOIN ".$this->db->prefix."res_cate cate ON(res.cate_id=cate.id) ";
 		$sql .= "WHERE res.id='".$id."' ";
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
@@ -327,6 +327,7 @@ class res_model_base extends phpok_model
 		if(!$rs){
 			return false;
 		}
+		
 		if($this->is_local($rs['filename'])){
 			$this->lib('file')->rm($this->dir_root.$rs['filename']);
 			$folder = 'res/_cache/_ico/'.substr($rs['id'],0,2).'/';
@@ -742,7 +743,7 @@ class res_model_base extends phpok_model
 		if(!$this->is_local($rs['filename'])){
 			return $rs['ico'];
 		}
-		if($rs['ico']){
+		if($rs['ico'] && is_file($this->dir_root.$rs['ico'])){
 			return $rs['ico'];
 		}
 		$folder = 'res/_cache/_ico/'.substr($rs['id'],0,2).'/';
@@ -755,7 +756,7 @@ class res_model_base extends phpok_model
 		$tmp = array('url'=>$rs['filename']);
 		$tmp['width'] = $width;
 		$tmp['height'] = $height;
-		$tmp['cut_type'] = $cutype;
+		$tmp['cut_type'] = false;
 		$tmp['quality'] =$qty;
 		$tmp['bgcolor'] = 'FFFFFF';
 		$tmp['_id'] = $rs['id'];
@@ -767,7 +768,7 @@ class res_model_base extends phpok_model
 		return $ico;
 	}
 
-	public function update_ico($rs,$width=200,$height=200,$cutype=1,$qty=80)
+	public function update_ico($rs,$width=200,$height=200,$cutype=1,$qty=100)
 	{
 		if(!$this->is_local($rs['filename'])){
 			return false;

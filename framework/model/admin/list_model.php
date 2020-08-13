@@ -333,10 +333,14 @@ class list_model extends list_model_base
 		$rslist = $this->db->get_all($sql,'id');
 		if($rslist){
 			$ids = array_keys($rslist);
-			$sql = "SELECT id,title FROM ".$this->db->prefix."project WHERE id IN(".implode(",",$ids).")";
+			$sql = "SELECT id,title FROM ".$this->db->prefix."project WHERE id IN(".implode(",",$ids).") AND status=1";
 			$tmplist = $this->db->get_all($sql,'id');
 			if($tmplist){
 				foreach($rslist as $key=>$value){
+					if(!$tmplist[$value['id']]){
+						unset($rslist[$key]);
+						continue;
+					}
 					$value['title'] = $tmplist[$value['id']]['title'];
 					$rslist[$key] = $value;
 				}

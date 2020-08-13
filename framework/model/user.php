@@ -777,7 +777,7 @@ class user_model_base extends phpok_model
 		$data = array('id'=>$user['id']);
 		$name = $user['user'];
 		if(is_numeric($name) && strlen($name) == 11){
-			$name = substr($name,0,3).'*****'.substr($name,0,-3);
+			$name = substr($name,0,3).'*****'.substr($name,-3);
 		}
 		if(is_string($name) && $this->lib('common')->email_check($name)){
 			$tmp = explode("@",$name);

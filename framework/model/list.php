@@ -777,10 +777,15 @@ class list_model_base extends phpok_model
 			if($value['field'] == 'dateline'){
 				$is_dateline = true;
 			}
-			$tmp = "IF(".$value['id']."='0',0,1) ".$value['type'];
-			$orderby[] = $tmp;
-			$tmp = $value['id']." ".($value['type'] == 'DESC' ? 'ASC' : 'DESC');
-			$orderby[] = $tmp;
+			if($value['id'] == 'l.dateline' || $value['id'] == 'l.id'){
+				$tmp = $value['id']." ".$value['type'];
+				$orderby[] = $tmp;
+			}else{
+				$tmp = "IF(".$value['id']."='0',0,1) ".$value['type'];
+				$orderby[] = $tmp;
+				$tmp = $value['id']." ".($value['type'] == 'DESC' ? 'ASC' : 'DESC');
+				$orderby[] = $tmp;
+			}
 		}
 		if($is_dateline){
 			$sql .= " AND l.dateline<=".$rs['dateline']." AND l.id!='".$rs['id']."'";
@@ -1316,7 +1321,21 @@ class list_model_base extends phpok_model
 
 	public function add_hits($id)
 	{
-		$sql = "UPDATE ".$this->db->prefix."list SET hits=hits+1 WHERE id='".$id."'";
+		return $this->hits_update($id);
+	}
+
+	/**
+	 * 执行点击事件
+	 * @参数 $id 主题ID
+	 * @参数 $reduce 是否减少，为false或0时表示加，为true或1时表示减
+	**/
+	public function hits_update($id,$reduce=false)
+	{
+		if($reduce){
+			$sql = "UPDATE ".$this->db->prefix."list SET hits=hits-1 WHERE id='".$id."'";
+		}else{
+			$sql = "UPDATE ".$this->db->prefix."list SET hits=hits+1 WHERE id='".$id."'";
+		}
 		return $this->db->query($sql,false);
 	}
 

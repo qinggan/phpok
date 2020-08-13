@@ -224,7 +224,7 @@ class upload_form extends _init_auto
 		//上传压缩属性
 		$compress = 'false';
 		if($upload_type['compress']){
-			$compress = "{width:".$upload_type['compress'].",height:".$upload_type['compress'].",quality:100,allowMagnify:false,crop:false}";
+			$compress = "{width:".$upload_type['compress'].",quality:100,allowMagnify:false,crop:false}";
 		}
 		$rs['upload_compress'] = $compress;
 		$rs['upload_etype_info'] = $upload_type['etype'] ? $etype_info : array();

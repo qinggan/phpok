@@ -31,7 +31,28 @@
 						$.dialog.tips(tip,function(){
 							$.admin.reload(get_url('cate'));
 							$.admin.close();
-						});
+						}).lock();
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
+			return false;
+		},
+
+		save_more:function()
+		{
+			$("#post_save").ajaxSubmit({
+				'url':get_url('cate','save_more'),
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					if(rs.status){
+						$.dialog.tips(p_lang('分类信息添加成功'),function(){
+							$.admin.reload(get_url('cate'));
+							$.admin.close();
+						}).lock();
 						return true;
 					}
 					$.dialog.alert(rs.info);

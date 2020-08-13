@@ -8,7 +8,7 @@
 		<table>
 		<tr>
 			<td><select name="option_list" id="option_list">
-					<option value="">请选择……</option>
+					<option value="">请选择…</option>
 					<optgroup label="表单">
 						<!-- foreach($opt_list AS $key=>$value) -->
 						<option value="opt:{$value.id}"{if $rs.option_list == "opt:".$value.id} selected{/if}>{$value.title}</option>
@@ -35,6 +35,9 @@
 						<!-- /loop -->
 					</optgroup>
 					<!-- /if -->
+					<optgroup label="{lang会员相关}">
+						<option value="user:grouplist"{if $rs.option_list == "user:grouplist"} selected{/if}>{lang会员组}</option>
+					</optgroup>
 				</select>
 			</td>
 		</tr>

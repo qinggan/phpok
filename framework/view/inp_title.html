@@ -1,50 +1,37 @@
-<!-- inc:head_open -->
+<!-- include tpl=head_lay nopadding=true js=js/art-template.js -->
 <input type="hidden" name="val" id="val" value="" />
 <script type="text/javascript">
 var input_id = "#{$input}";
 var multi = {$multi ? "1" : "0"};
 function show_list()
 {
-	var cid = $("#val").val();
+	var obj = $.dialog.opener;
+	var cid = obj.$(input_id).val();
 	if(cid == "undefined" || cid == "0" || cid == ""){
-		$("#val").val("");
 		$("#selected_list").hide();
-		$.dialog.data("title_data_{$input}","");
+		return true;
 	}
 	$("tr[name=list]").show();
+	var tlist = cid.split(",");
+	for(var i in tlist){
+		$("#id_"+tlist[i]).hide();
+	}
 	var url = get_url("inp","","type=title&content="+$.str.encode(cid));
 	$.phpok.json(url,function(rs){
 		if(!rs.status){
 			$("#selected_list").hide();
-			$.dialog.data("title_data_{$input}","");
 			return true;
 		}
 		var lst = rs.info;
-		var c = '<table width="100%" cellpadding="0" cellspacing="0" class="list">';
-		c += '<tr>';
-		c += '<th>已选择主题</th>';
-		if(multi == 1){
-			c += '<th class="w60">删除</th>';
-		}
-		c += '</tr>';
-		for(var i in lst){
-			c += '<tr>';
-			c += '<td>['+lst[i]['id']+']'+lst[i]['title']+'</td>';
-			if(multi == 1){
-				c += '<td class="center"><input type="button" value="删除" onclick="delete_input(\''+lst[i]['id']+'\')" class="layui-btn" /></td>'
-			}
-			c += '</tr>';
-			var t = "#list_"+lst[i]['id'];
-			$(t).hide();
-		}
-		c += "</table>";
-		$("#selected_list").html(c).show();
-		$.dialog.data("title_data_{$input}",cid);
+		template.defaults.imports.dateFormat = $.phpok.date;
+		var html = template("art-tpl", {'rslist':rs.info});
+		$("#selected_list").html(html).show();
 	});
 }
 function add_input(val)
 {
-	var old_c = $("#val").val();
+	var obj = $.dialog.opener;
+	var old_c = obj.$(input_id).val();
 	if(old_c){
 		var c = old_c + ","+val;
 	}else{
@@ -53,20 +40,21 @@ function add_input(val)
 	var lst = c.split(",");
 	lst = $.unique(lst);
 	var c = lst.join(",");
-	$("#val").val(c);
+	obj.$(input_id).val(c);
 	show_list();
 }
 function single_input(val)
 {
 	var obj = $.dialog.opener;
 	obj.$(input_id).val(val);
-	obj.window.eval("action_{$input}_show()");
+	obj.$.phpokform.title_show_single('{$input}');
 	$.dialog.close();
 }
 function delete_input(val)
 {
+	var obj = $.dialog.opener;
 	if(multi){
-		var old_c = $("#val").val();
+		var old_c = obj.$(input_id).val();
 		if(!old_c){
 			return true;
 		}
@@ -81,58 +69,99 @@ function delete_input(val)
 			}
 		}
 		if(n_list.length<1){
-			$("#val").val("");
+			obj.$(input_id).val("");
 		}else{
 			var str = n_list.join(",");
-			$("#val").val(str);
+			obj.$(input_id).val(str);
 		}
 	}else{
-		$("#val").val("");
+		obj.$(input_id).val("");
 	}
 	show_list();
 }
 $(document).ready(function(){
-	var new_c = $.dialog.data("title_data_{$input}");
-	$("#val").val(new_c);
 	show_list();
 });
 function check_search()
 {
 	var k = $("input[name=keywords]").val();
-	if(!k){
-		$.dialog.alert('请输入要搜索的关键字');
+	var t = $("select[name=pid]").val();
+	if(!k && !$t){
+		$.dialog.alert('请输入要搜索的关键字或指定项目');
 		return false;
 	}
 	return true;
 }
 </script>
-<div align="center">
-	<form method="post" action="{$formurl}" onsubmit="return check_search()">
-		搜索关键字：
-		<input type="text" name="keywords" value="{$keywords}" />
-		<input type="submit" value="搜索" class="layui-btn" />
-	</form>
-</div>
-<div id="selected_list" class="list hide"></div>
-<div class="list">
-<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<script id="art-tpl" type="text/html">
+<table class="layui-table">
+<thead>
 <tr>
-	<th>主题</th>
-	<th class='w60'>操作</th>
+	<th width="20"></th>
+	<th width="60">ID</th>
+	<th>{lang标题}</th>
+	<th width="120">{lang日期}</th>
+	<th width="60">{lang操作}</th>
 </tr>
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<tr id="list_{$value.id}" name="list">
-	<td>[{$value.id}]{$value.title}</td>
-	<td class="center">
-		<!-- if $multi -->
-		<input type="button" value="添加" onclick="add_input('{$value.id}')" class="layui-btn" />
-		<!-- else -->
-		<input type="button" value="选择" onclick="single_input('{$value.id}')" class="layui-btn" />
-		<!-- /if -->
-	</td>
+</thead>
+<% for(var i in rslist){ %>
+<tr id="{$_rs.identifier}_div_<%= rslist[i].id %>">
+	<td><input type="checkbox" value="<%= rslist[i].id %>" id="title_{$_rs.identifier}_<%= i %>" lay-ignore></td>
+	<td><%= rslist[i].id %></td>
+	<td><label for="title_{$_rs.identifier}_<%= i %>"><%= rslist[i].title %></label></td>
+	<td><%= dateFormat(rslist[i].dateline,'Y-m-d H:i') %></td>
+	<td><input type="button" value="{lang删除}" class="layui-btn layui-btn-xs layui-btn-danger" onclick="delete_input('<%= rslist[i].id %>')" /></td>
 </tr>
-<!-- /loop -->
+<% } %>
 </table>
+</script>
+<div class="layui-card">
+	<div class="layui-card-header" style="padding:5px;">
+		<form method="post" class="layui-form" action="{$formurl}" onsubmit="return check_search()">
+		<ul class="layout">
+			<li{if !$project_list || count($project_list)<2} style="display:none"{/if}>
+				<select name="pid">
+					<option value="">{lang全部项目}</option>
+					<!-- loop from=$project_list key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $pid == $value.id} selected{/if}>{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</li>
+			<li><input type="text" name="keywords" value="{$keywords}" class='layui-input' /></li>
+			<li><input type="submit" value="搜索" class="layui-btn" /></li>
+			<!-- if $pid || $keywords -->
+			<li><input type="button" value="取消搜索" class="layui-btn layui-btn-warm" onclick="$.phpok.go('{$formurl}')" /></li>
+			<!-- /if -->
+		</ul>
+		</form>
+	</div>
+	<div class="layui-card-body">
+		<div id="selected_list" class="hide"></div>
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th width="60">ID</th>
+			<th>{lang主题}</th>
+			<th width="120">{lang时间}</th>
+			<th width="60">{lang操作}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr name="list" id="id_{$value.id}">
+			<td>{$value.id}</td>
+			<td>{$value.title}</td>
+			<td>{func date 'Y-m-d H:i' $value.dateline}</td>
+			<td>
+				<!-- if $multi -->
+				<input type="button" value="添加" onclick="add_input('{$value.id}')" class="layui-btn layui-btn-xs" />
+				<!-- else -->
+				<input type="button" value="选择" onclick="single_input('{$value.id}')" class="layui-btn layui-btn-xs" />
+				<!-- /if -->
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- include tpl=pagelist -->
+	</div>
 </div>
-<div class="table"><!-- include tpl=pagelist --></div>
-<!-- inc:foot_open -->
+<!-- include tpl=foot_lay is_open=true -->

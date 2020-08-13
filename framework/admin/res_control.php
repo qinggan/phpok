@@ -74,8 +74,12 @@ class res_control extends phpok_control
 	public function add_f()
 	{
 		$catelist = $this->model('res')->cate_all();
+		$cateid = $this->get('cateid','int');
 		if($catelist){
 			foreach($catelist as $key=>$value){
+				if(!$cateid && $value['is_default']){
+					$cateid = $value['id'];
+				}
 				$types = explode(",",$value['filetypes']);
 				$tmp = array();
 				foreach($types as $k=>$v){
@@ -85,9 +89,12 @@ class res_control extends phpok_control
 				$catelist[$key] = $value;
 			}
 		}
+		$this->assign('cateid',$cateid);
 		$this->assign("catelist",$catelist);
 		$this->lib('form')->cssjs(array('form_type'=>'upload'));
 		$this->addjs('js/webuploader/admin.upload.js');
+		$btns = form_edit('upload','','upload','cate_id='.$cateid.'&manage_forbid=1&auto_forbid=1');
+		$this->assign('html',$btns);
 		$this->view("res_add");
 	}
 
@@ -379,7 +386,7 @@ class res_control extends phpok_control
 		}
 		$list = explode(",",$id);
 		$tmplist = array();
-		foreach($list AS $key=>$value){
+		foreach($list as $key=>$value){
 			$tmp = intval($value);
 			if($tmp){
 				$this->model('res')->delete($tmp);

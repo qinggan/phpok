@@ -138,6 +138,25 @@ class menu_control extends phpok_control
 					$this->assign('catelist',$catelist);
 				}
 			}
+			if($rs['type'] == 'content' && $rs['list_id']){
+				$project = $this->model('project')->get_one($rs['project_id']);
+				if($project && $project['module']){
+					$module = $this->model('module')->get_one($project['module']);
+					if($module){
+						if($module['mtype']){
+							$list = $this->model('list')->single_one($rs['list_id'],$module['id']);
+						}else{
+							if($module['tbl'] == 'list'){
+								$list = $this->model('list')->simple_one($rs['list_id']);
+							}
+						}
+						if($list){
+							$this->assign('list',$list);
+						}
+					}
+				}
+				$list = $this->model('list')->simple_one($rs['list_id']);
+			}
 		}else{
 			if(!$this->popedom['add']){
 				$this->error(P_Lang('您没有权限执行导航添加操作'));
@@ -256,10 +275,8 @@ class menu_control extends phpok_control
 			if(!$project){
 				$this->error(P_Lang('项目不存在'));
 			}
-			if(!$title){
-				$title = $project['title'];
-			}
 			$data['project_id'] = $project['id'];
+			$data['submenu'] = $this->get('submenu');
 		}elseif($type == 'cate'){
 			$pid = $this->get('pid-cate','int');
 			if(!$pid){
@@ -277,11 +294,9 @@ class menu_control extends phpok_control
 			if(!$cate){
 				$this->error(P_Lang('分类信息不存在'));
 			}
-			if(!$title){
-				$title = $cate['title'];
-			}
 			$data['project_id'] = $project['id'];
 			$data['cate_id'] = $cate['id'];
+			$data['submenu'] = $this->get('submenu');
 		}elseif($type == 'content'){
 			$pid = $this->get('pid-content','int');
 			if(!$pid){
@@ -299,9 +314,6 @@ class menu_control extends phpok_control
 			$msg = $this->model('list')->simple_one($list_id);
 			if(!$msg){
 				$this->error(P_Lang('主题信息不存在'));
-			}
-			if(!$title){
-				$title = $msg['title'];
 			}
 			$data['list_id'] = $list_id;
 		}else{
@@ -321,6 +333,31 @@ class menu_control extends phpok_control
 		$this->success();
 	}
 
+	public function submenu_f()
+	{
+		$pid = $this->get("pid",'int');
+		if(!$pid){
+			$this->error('未指定项目ID');
+		}
+		$data = array();
+		$data[] = array("value"=>'','title'=>P_Lang('自定义'));
+		$project = $this->model('project')->get_one($pid);
+		if($project && $project['cate']){
+			$data[] = array('value'=>'cate1','title'=>P_Lang('读一级子分类'));
+			$data[] = array('value'=>'cate2','title'=>P_Lang('读二级子分类'));
+		}
+		if($project['module']){
+			$data[] = array('value'=>'title1','title'=>P_Lang('读主题'));
+			if($project['subtopics']){
+				$data[] = array('value'=>'title2','title'=>P_Lang('读主题及子主题'));
+			}
+			if($project['cate']){
+				$data[] = array('value'=>'cate_title','title'=>P_Lang('读子分类及主题'));
+			}
+		}
+		$this->success($data);
+	}
+	
 	public function delete_f()
 	{
 		$id = $this->get('id','int');

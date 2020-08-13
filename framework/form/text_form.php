@@ -114,7 +114,13 @@ class text_form extends _init_auto
 					unset($tmp[$key]);
 					continue;
 				}
-				if(strpos($value,':') !== false){
+				if(strpos($value,'|') !== false){
+					$tmp2 = explode("|",$value);
+					if(!$tmp2[1]){
+						$tmp2[1] = $tmp2[0];
+					}
+					$tmp[$key] = array('id'=>$tmp2[0],'show'=>$tmp2[1]);
+				}elseif(strpos($value,':') !== false){
 					$tmp2 = explode(":",$value);
 					if(!$tmp2[1]){
 						$tmp2[1] = $tmp2[0];
@@ -167,7 +173,13 @@ class text_form extends _init_auto
 					unset($tmp[$key]);
 					continue;
 				}
-				if(strpos($value,':') !== false){
+				if(strpos($value,'|') !== false){
+					$tmp2 = explode("|",$value);
+					if(!$tmp2[1]){
+						$tmp2[1] = $tmp2[0];
+					}
+					$tmp[$key] = array('id'=>$tmp2[0],'show'=>$tmp2[1]);
+				}elseif(strpos($value,':') !== false){
 					$tmp2 = explode(":",$value);
 					if(!$tmp2[1]){
 						$tmp2[1] = $tmp2[0];

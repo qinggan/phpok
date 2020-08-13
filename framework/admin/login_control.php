@@ -39,6 +39,8 @@ class login_control extends phpok_control
 		$this->assign('multiple_language',$multiple_language);
 		$logo = $this->site['adm_logo180'] ? $this->site['adm_logo180'] : 'images/login.svg';
 		$this->assign('logo',$logo);
+		$cdnUrl = phpok_cdn();
+		$this->assign('phpok_cdn_link',$cdnUrl);
 		$this->view('login');
 	}
 

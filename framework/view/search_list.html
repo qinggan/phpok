@@ -1,0 +1,82 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header" style="height:auto;padding:10px 15px;">
+		<form method="post" class="layui-form" id="post_save" action="{url ctrl=search/}" onsubmit="return $.admin_search.topcheck()">
+		<ul class="layout">
+			<li>
+				<select name="psize">
+					<option value="">{lang默认页码}</option>
+					<option value="50"{if $psize == 50} selected{/if}>50</option>
+					<option value="70"{if $psize == 70} selected{/if}>70</option>
+					<option value="90"{if $psize == 90} selected{/if}>90</option>
+					<option value="100"{if $psize == 100} selected{/if}>100</option>
+					<option value="150"{if $psize == 150} selected{/if}>150</option>
+					<option value="200"{if $psize == 200} selected{/if}>200</option>
+				</select>
+			</li>
+			<li>
+				<select name="type">
+					<option value="">{lang默认排序，最新排前}</option>
+					<option value="hot"{if $type == 'hot'} selected{/if}>搜索次数多的排前</option>
+					<option value="cold"{if $type == 'cold'} selected{/if}>搜索次数少的排前</option>
+					<option value="old"{if $type == 'old'} selected{/if}>旧数据的排前</option>
+				</select>
+			</li>
+			<li>
+				<select name="sign">
+				<option value="">{lang标记，默认全部}</option>
+				<option value="1"{if $sign == 1} selected{/if}>{lang已标记}</option>
+				<option value="2"{if $sign == 2} selected{/if}>{lang未标记}</option>
+				</select>
+			</li>
+			<li><input type="text" name="keywords" value="{$keywords}" placeholder="{lang输入要搜索的关键字}" class="layui-input" /></li>
+			<li><div style="padding-top:3px;"><input type="submit" value="{lang搜索}" class="layui-btn layui-btn-sm" /></div></li>
+			<!-- if $keywords || $sign || $type -->
+			<li><div style="padding-top:3px;"><input type="button" value="{lang取消搜索}" onclick="$.phpok.go('{url ctrl=search/}')" class="layui-btn layui-btn-sm layui-btn-danger" /></div></li>
+			<!-- /if -->
+		</ul>
+		</form>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th></th>
+			<th>{lang关键字}</th>
+			<th>{lang搜索时间}</th>
+			<th>{lang搜索次数}</th>
+			<th>{lang是否标记}</th>
+			<th>{lang操作}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td><input type="checkbox" name="ids[]" id="ids_{$value.id}" value="{$value.id}" /> {$value.id}</td>
+			<td>{$value.title}</td>
+			<td>{func date 'Y-m-d H:i:s' $value.dateline}</td>
+			<td>{$value.hits}</td>
+			<td><!-- if $value.sign -->{lang已标记}<!-- else --><span class="gray i">无</span><!-- /if --></td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang编辑}" onclick="$.admin_search.edit('{$value.id}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.admin_search.del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<ul class="layout">
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang全选}" onclick="$.checkbox.all()" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang全不选}" onclick="$.checkbox.none()" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang反选}" onclick="$.checkbox.anti()" class="layui-btn layui-btn-sm" />
+				</div>
+			</li>
+			<li><input type="button" value="{lang删除}" onclick="$.admin_search.del()" class="layui-btn layui-btn-sm layui-btn-danger" /></li>
+		</ul>
+		<div align="center"><!-- include tpl=pagelist --></div>
+	</div>
+</div>
+
+<!-- include tpl=foot_lay -->

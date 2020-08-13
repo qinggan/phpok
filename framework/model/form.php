@@ -98,7 +98,7 @@ class form_model_base extends phpok_model
 		}
 		if(is_array($fid)){
 			$rs = $fid;
-			$fid = $r['id'];
+			$fid = $rs['id'];
 		}else{
 			$rs = $this->model('fields')->one($fid);
 		}
@@ -320,7 +320,7 @@ class form_model_base extends phpok_model
 				$condition = " ".implode(" OR ",$tmp_condition);
 				return $condition;
 			}
-			$tmp = $rs['ext']['option_list'];
+			$tmp = explode(":",$rs['ext']['option_list']);
 			if(!$tmp[1]){
 				return false;
 			}

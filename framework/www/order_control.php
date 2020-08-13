@@ -115,7 +115,7 @@ class order_control extends phpok_control
 		}
 		$rs['status_info'] = ($status_list && $status_list[$rs['status']]) ? $status_list[$rs['status']] : $rs['status'];
 		$this->assign('rs',$rs);
-		$addressconfig = $this->config['order']['address'] ? explode(",",$this->config['order']['address']) : array('shipping');
+		$addressconfig = $this->config['order']['address'] ? explode(",",strtolower($this->config['order']['address'])) : array('shipping');
 		if($addressconfig){
 			$address = array();
 			foreach($addressconfig as $key=>$value){
@@ -124,7 +124,33 @@ class order_control extends phpok_control
 				}
 				$address[trim($value)] = $this->model('order')->address($rs['id'],trim($value));
 			}
-			$this->assign('address',$address);
+			if(!$address['shipping'] && $address['billing']){
+				$address['shipping'] = $address['billing'];
+			}
+			$this->assign('address',$address['shipping']);
+			if($address['billing'] && $address['shipping']){
+				$is_same = true;
+				foreach($address['shipping'] as $key=>$value){
+					if($key == 'type' || $key == 'id'){
+						continue;
+					}
+					if($value && $address['billing'][$key] && $value != $address['billing'][$key]){
+						$is_same = false;
+						break;
+					}
+					if(!$value && $address['billing'][$key]){
+						$is_same = false;
+						break;
+					}
+					if($value && !$address['billing'][$key]){
+						$is_same = false;
+						break;
+					}
+				}
+				if(!$is_same){
+					$this->assign('billing',$address['billing']);
+				}
+			}
 		}
 		$rslist = $this->model('order')->product_list($rs['id']);
 		$this->assign('rslist',$rslist);

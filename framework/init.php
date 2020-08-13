@@ -250,14 +250,17 @@ class _init_phpok
 
 	private $_dataParams = array();
 
+	private $_iscmd = false;
+
 	/**
 	 * 构造函数，用于初化一些数据
 	**/
-	public function __construct()
+	public function __construct($iscmd=false)
 	{
 		if(version_compare(PHP_VERSION, '5.3.0', '<') && function_exists('set_magic_quotes_runtime')){
 			ini_set("magic_quotes_runtime",0);
 		}
+		$this->_iscmd = $iscmd;
 		$this->init_constant();
 		$this->init_config();
 		$this->init_engine();
@@ -435,6 +438,11 @@ class _init_phpok
 		return $info;
 	}
 
+	public function is_cmd()
+	{
+		return $this->_iscmd;
+	}
+
 	/**
 	 * 手机判断，使用了第三方扩展extension里的mobile类
 	**/
@@ -504,11 +512,11 @@ class _init_phpok
 	{
 		$config = array();
 		if(file_exists($this->dir_config.'global.ini.php')){
-			$config = parse_ini_file($this->dir_config.'global.ini.php',true);
+			$config = parse_ini_string(file_get_contents($this->dir_config.'global.ini.php'),true);
 		}
 		//装载引挈参数
 		if(file_exists($this->dir_config.'engine.ini.php')){
-			$ext = parse_ini_file($this->dir_config.'engine.ini.php',true);
+			$ext = parse_ini_string(file_get_contents($this->dir_config.'engine.ini.php'),true);
 			if($ext && is_array($ext)){
 				$config['engine'] = $ext;
 				unset($ext);
@@ -516,14 +524,14 @@ class _init_phpok
 		}
 		//连接数据库
 		if(file_exists($this->dir_config.'db.ini.php')){
-			$ext = parse_ini_file($this->dir_config.'db.ini.php',true);
+			$ext = parse_ini_string(file_get_contents($this->dir_config.'db.ini.php'),true);
 			if($ext && is_array($ext)){
 				$config['engine']['db'] = $ext;
 				unset($ext);
 			}
 		}
 		if(file_exists($this->dir_config.$this->app_id.'.ini.php')){
-			$ext = parse_ini_file($this->dir_config.$this->app_id.'.ini.php',true);
+			$ext = parse_ini_string(file_get_contents($this->dir_config.$this->app_id.'.ini.php'),true);
 			if($ext && is_array($ext)){
 				$config = array_merge($config,$ext);
 				unset($ext);
@@ -596,7 +604,9 @@ class _init_phpok
 		include($this->dir_phpok.'engine/db.php');
 		include($this->dir_phpok.'engine/db/'.$this->config['engine']['db']['file'].'.php');
 		$var = 'db_'.$this->config['engine']['db']['file'];
-		$this->db = new $var($this->config['engine']['db']);
+		if(!$this->db){
+			$this->db = new $var($this->config['engine']['db']);
+		}
 		if($this->app_id == 'api'){
 			$this->db->error_type = 'json';
 		}
@@ -608,6 +618,9 @@ class _init_phpok
 			foreach($value as $k=>$v){
 				$v = preg_replace_callback('/\{(.+)\}/isU',array($this,'_config_ini_format'),$v);
 				$value[$k] = $v;
+			}
+			if($this->$key){
+				continue;
 			}
 			$basefile = $this->dir_phpok.'engine/'.$key.'.php';
 			if(file_exists($basefile)){
@@ -667,8 +680,8 @@ class _init_phpok
 			if($value['param']){
 				$value['param'] = unserialize($value['param']);
 			}
-			if(file_exists($this->dir_root.'plugins/'.$key.'/'.$this->app_id.'.php')){
-				include_once($this->dir_root.'plugins/'.$key.'/'.$this->app_id.'.php');
+			if(file_exists($this->dir_plugin.$key.'/'.$this->app_id.'.php')){
+				include_once($this->dir_plugin.$key.'/'.$this->app_id.'.php');
 				$name = $this->app_id."_".$key;
 				$cls = new $name();
 				$mlist = get_class_methods($cls);
@@ -1851,6 +1864,15 @@ class _init_phpok
 			}
 		}
 
+		//针对各个插件下的 global.func.php 文件加载
+		if($this->plugin && is_array($this->plugin)){
+			foreach($this->plugin as $key=>$value){
+				if(file_exists($this->dir_plugin.$key.'/global.func.php')){
+					include_once($this->dir_plugin.$key.'/global.func.php');
+				}
+			}
+		}
+
 		//--- 增加 phpok5 写法
 		if(file_exists($this->dir_app.'global.func.php')){
 			include($this->dir_app."global.func.php");
@@ -2096,7 +2118,7 @@ class _init_phpok
 			$this->tpl->display('404');
 			exit;
 		}
-		echo '<h1>404错误</h1>';
+		echo '<h1>404 错误</h1>';
 		if($ajax && is_string($ajax)){
 			echo "<p>".$ajax.'</p>';
 		}else{
@@ -2815,10 +2837,22 @@ unset($_ENV, $_SERVER['MIBDIRS'],$_SERVER['MYSQL_HOME'],$_SERVER['OPENSSL_CONF']
 if(function_exists('mb_internal_encoding')){
 	mb_internal_encoding("UTF-8");
 }
-
-$app = new _init_phpok();
+$sapi_type = php_sapi_name();
+if(isset($sapi_type) && substr($sapi_type, 0, 3) == 'cli'){
+	$app = new _init_phpok(true);
+	$tmp = $argv;
+	unset($tmp[0]);
+	if(!$tmp){
+		echo 'no control'.PHP_EOL;
+		exit;
+	}
+	$string = implode("&",$tmp);
+	parse_str($string,$_POST);
+}else{
+	$app = new _init_phpok(false);
+	$app->init_site();
+}
 include_once($app->dir_phpok."phpok_helper.php");
-$app->init_site();
 $app->init_view();
 
 /**

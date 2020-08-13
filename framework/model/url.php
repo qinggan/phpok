@@ -313,7 +313,7 @@ class url_model_base extends phpok_model
 		}
 		$url = $rs['format'];
 		$extlist = array();
-		$forbid = array('ctrl','func','cate','cateid','cate_id','cid','module','mid','project');
+		$forbid = array('ctrl','func','cate','cateid','cate_id','cid','module','mid','project','project_root');
 		if($data['ctrl'] == 'content'){
 			$mytmp = is_numeric($data['id']) ? $this->get_from_id($data['id'],'list') : $this->get_from_identifier($data['id'],'list');
 			$project_rs = $this->get_from_id($mytmp['project_id'],'project');

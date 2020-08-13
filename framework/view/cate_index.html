@@ -14,9 +14,14 @@
 		<!-- /if -->
 		<div class="fr">
 			<!-- if $rs -->
-			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加子分类}_#{$value.id}','{url ctrl=cate func=set parent_id=$rs.id/}')">
-				<i class="layui-icon">&#xe608;</i> {lang添加子分类}
-			</button>
+			<div class="layui-btn-group">
+				<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加子分类}_#{$value.id}','{url ctrl=cate func=set parent_id=$rs.id/}')">
+					<i class="layui-icon">&#xe608;</i> {lang添加子分类}
+				</button>
+				<button class="layui-btn layui-btn-sm" onclick="$.win('{lang批量添加}_#{$value.id}','{url ctrl=cate func=set_more parent_id=$rs.id/}')">
+					<i class="layui-icon">&#xe608;</i> {lang批量添加}
+				</button>
+			</div>
 			<!-- else -->
 			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加根分类}','{url ctrl=cate func=set/}')">
 				<i class="layui-icon">&#xe608;</i> {lang添加根分类}

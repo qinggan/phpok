@@ -257,7 +257,7 @@
 					<!-- /loop -->
 				</div>
 				<!-- /if -->
-				<div class="layui-btn-group" style="display: block;">
+				<div class="layui-btn-group" style="display: block;" name="list-content-btns" id="id_{$value.id}" data-id="{$value.id}">
 					<!-- if $rs.is_front -->
 					<input type="button" value="{lang查看}" onclick="$.phpok.open('{$sys.www_file}?id={$value.id}')" class="layui-btn layui-btn-xs layui-btn-normal" />
 					<!-- /if -->
@@ -345,7 +345,7 @@
 						<!-- /loop -->
 					</div>
 					<!-- /if -->
-					<div class="layui-btn-group" style="display: block;">
+					<div class="layui-btn-group" style="display: block;" name="list-content-btns" id="id_{$vv.id}" data-id="{$vv.id}">
 						<!-- if $rs.is_front -->
 						<input type="button" value="{lang查看}" onclick="$.phpok.open('{$sys.www_file}?id={$vv.id}')" class="layui-btn layui-btn-xs layui-btn-normal" />
 						<!-- /if -->

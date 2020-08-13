@@ -138,6 +138,11 @@ class checkbox_form extends _init_auto
 				if($opt[0] == 'opt'){
 					$tmp = $this->model('opt')->opt_val($opt[1],$value);
 				}
+				if($opt[0] == 'user'){
+					if($opt[1] == 'grouplist'){
+						$tmp = $this->model('usergroup')->get_one($value);
+					}
+				}
 				$list[$value] = $tmp;
 			}
 			return $list;
@@ -174,6 +179,14 @@ class checkbox_form extends _init_auto
 				return false;
 			}
 			$rs['title'] = $tmp['title'];
+		}
+		if($type == 'user'){
+			if($group_id == 'grouplist'){
+				$tmp = $this->model('usergroup')->get_one($val);
+				if($tmp){
+					$rs['title'] = $tmp['title'];
+				}
+			}
 		}
 		$rs['type'] = $type;
 		return $rs;
@@ -227,16 +240,30 @@ class checkbox_form extends _init_auto
 		if($type == 'cate')
 		{
 			$tmplist = $this->model('cate')->catelist_sonlist($group_id,false,0);
-			if(!$tmplist) return false;
-			$rslist = '';
+			if(!$tmplist){
+				return false;
+			}
+			$rslist = array();
 			foreach($tmplist as $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;
 			}
 			return $rslist;
 		}
+		if($type == 'user'){
+			if($group_id == 'grouplist'){
+				$tmplist = $this->model('usergroup')->get_all('status=1');
+				if(!$tmplist){
+					return false;
+				}
+				$rslist = array();
+				foreach($tmplist as $key=>$value){
+					$tmp = array("val"=>$value['id'],"title"=>$value['title']);
+					$rslist[] = $tmp;
+				}
+				return $rslist;
+			}
+		}
 		return false;
 	}
-
 }
-?>

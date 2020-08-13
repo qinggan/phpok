@@ -59,10 +59,11 @@ function save()
 			<label class="layui-form-label">
 				{$value.title}
 			</label>
+			<!-- if $value.note --><div class="layui-input-block gray" style="line-height:38px;">{$value.note}</div><!-- /if -->
 			<div class="layui-input-block">
 				{$value.html}
 			</div>
-			<!-- if $value.note --><div class="layui-input-block mtop">{$value.note}</div><!-- /if -->
+			
 		</div>
 		<!-- /loop -->
 	</div>

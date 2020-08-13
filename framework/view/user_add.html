@@ -114,14 +114,13 @@
 		<!-- loop from=$extlist key=$key value=$value id=extlist_id -->
 		<div class="layui-form-item" id="userext_{$value.identifier}" name="userext_html">
 			<label class="layui-form-label">
-				<!-- if $value.note --><i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i><!-- /if -->
 				{$value.title}
 			</label>
-			<div class="layui-input-inline default-auto">
+			<!-- if $value.note --><div class="layui-input-block gray" style="line-height:38px;">{$value.note}</div><!-- /if -->
+			<div class="layui-input-block">
 				{$value.html}
 			</div>
-		</div>
-		
+		</div>		
 		<!-- /loop -->	
 	</div>
 </div>

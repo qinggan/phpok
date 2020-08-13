@@ -249,6 +249,13 @@ class project_control extends phpok_control
 			$dt = array_merge($dt,$dt_ext);
 		}
 		$info = $this->call->phpok('_arclist',$dt);
+		$total_page = intval($info['total']/$dt['psize']);
+		if($info['total']%$dt['psize']){
+			$total_page++;
+		}
+		if($total_page && $total_page<$pageid){
+			$this->error_404(P_Lang('内容信息不存在'));
+		}
 		$this->assign('dt',$dt);
 		$this->assign("pageid",$pageid);
 		$this->assign("psize",$dt['psize']);

@@ -2,40 +2,15 @@
 <script type="text/javascript">
 var obj_upload = {};
 var obj = art.dialog.opener;
-$(document).ready(function(){
-	cate_change();
-});
 function cate_change()
 {
-	val = $("#cate_id").val();
+	val = $("#cateid").val();
 	if(!val){
 		$.dialog.alert('请选择要存储的目标分类');
 		return false;
 	}
-	var data = $("#cate_id option[value="+val+"]").attr('data');
-	var catename = $("#cate_id option[value="+val+"]").attr('catename');
-	obj_upload = new $.admin_upload({
-		"multiple"	: 'true',
-		"id" : "upload",
-		'pick':{'id':'#upload_picker','multiple':true},
-		'resize':false,
-		"swf" : "js/webuploader/uploader.swf",
-		"server": "{url ctrl=upload func=save/}",
-		"filetypes" : "{$rs.ext}",
-		'accept' : {'title':catename,'extensions':data},
-		"formData" :{'{func session_name}':'{func session_id}','cateid':val},
-		'fileVal':'upfile',
-		'sendAsBinary':true,
-		'auto':false,
-		"success":function(){
-			return true;
-		}
-	});
-	obj_upload.uploader.on('uploadFinished',function(){
-		$.dialog.alert('附件上传成功',function(){
-			obj.$.phpok.reload();
-		});
-	});
+	var url = get_url('res','add','cateid='+val);
+	$.phpok.go(url);
 }
 function save()
 {
@@ -44,6 +19,11 @@ function save()
 		$.dialog.alert('请选择要上传的文件');
 		return false;
 	}
+	obj_upload.uploader.on('uploadFinished',function(){
+		$.dialog.alert('附件上传成功',function(){
+			obj.$.phpok.reload();
+		});
+	});
 	obj_upload.uploader.upload();
 	return false;
 }
@@ -59,9 +39,9 @@ function cancel()
 				{lang附件分类}
 			</label>
 			<div class="layui-input-block">
-				<select id="cate_id" lay-ignore name="cate_id" onchange="cate_change()">
+				<select id="cateid" lay-ignore name="cateid" onchange="cate_change()">
 					<!-- loop from=$catelist key=$key value=$value -->
-					<option value="{$value.id}"{if $value.is_default} selected{/if} data="{$value.filetypes}" catename="{$value.title}">
+					<option value="{$value.id}"{if $cateid == $value.id} selected{/if} data="{$value.filetypes}" catename="{$value.title}">
 					{$value.title}<!-- if $value.typeinfos --> / {lang支持上传格式：}{$value.typeinfos}<!-- /if --></option>
 					<!-- /loop -->
 				</select>
@@ -73,8 +53,7 @@ function cancel()
 				{lang选择文件}
 			</label>
 			<div class="layui-input-block">
-				<div id="upload_picker"></div>
-				<div id="upload_progress"></div>
+				{$html}
 			</div>
 			<div class="layui-input-block mtop"></div>
 		</div>

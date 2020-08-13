@@ -263,9 +263,7 @@ class post_control extends phpok_control
 				$content = $rs[$value["identifier"]] ? $rs[$value["identifier"]] : $value["content"];
 				$val = ext_password_format($val,$content,$value["password_type"]);
 			}
-			if($val != ''){
-				$tmplist[$value["identifier"]] = $val;
-			}
+			$tmplist[$value["identifier"]] = $val;
 		}
 		if($tid){
 			$this->model('list')->update_ext($tmplist,$project_rs['module'],$tid);

@@ -254,6 +254,14 @@ class select_form extends _init_auto
 			}
 			$rs['title'] = $tmp['title'];
 		}
+		if($type == 'user'){
+			if($group_id == 'grouplist'){
+				$tmp = $this->model('usergroup')->get_one($val);
+				if($tmp){
+					$rs['title'] = $tmp['title'];
+				}
+			}
+		}
 		$rs['type'] = $type;
 		return $rs;
 	}
@@ -321,6 +329,20 @@ class select_form extends _init_auto
 				$rslist[] = $tmp;
 			}
 			return $rslist;
+		}
+		if($type == 'user'){
+			if($group_id == 'grouplist'){
+				$tmplist = $this->model('usergroup')->get_all('status=1');
+				if(!$tmplist){
+					return false;
+				}
+				$rslist = array();
+				foreach($tmplist as $key=>$value){
+					$tmp = array("val"=>$value['id'],"title"=>$value['title']);
+					$rslist[] = $tmp;
+				}
+				return $rslist;
+			}
 		}
 		return false;
 	}

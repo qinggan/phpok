@@ -15,6 +15,11 @@ class title_form extends _init_auto
 		parent::__construct();
 	}
 
+	public function cssjs()
+	{
+		$this->addjs('js/art-template.js');
+	}
+
 	public function phpok_config()
 	{
 		$opt_list = $this->model("project")->get_all_project($site_id,"p.module>0 AND m.mtype!=1");

@@ -532,6 +532,11 @@ $(document).ready(function(){
 			top.$.win(p_lang('清空缓存'),get_url('index','cache'));
 		}
 	},{
+		'text':p_lang('修正渲染'),
+		'func': function() {
+			top.$.admin_index.layui_refresh();
+		}
+	},{
 		'text':p_lang('访问网站首页'),
 		'func':function(){
 			var url = top.$(".layui-icon-website").parent().attr("href");

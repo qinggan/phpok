@@ -1,7 +1,6 @@
 <?php
 /**
  * 后台首页控制台
- * @package phpok\admin
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -55,6 +54,12 @@ class index_control extends phpok_control
 				$this->error(P_Lang('没有找到相关权限，请联系管理员'));
 			}
 		}
+		$site_rs = $this->model('site')->get_one($this->session->val('admin_site_id'));
+		foreach($sitelist as $key=>$value){
+			if($value['id'] == $this->session->val('admin_site_id')){
+				break;
+			}
+		}
 		$this->assign('sitelist',$sitelist);
 		$plist = $this->model('popedom')->get_all('',false,false);
 		if(!$plist){
@@ -72,8 +77,7 @@ class index_control extends phpok_control
 		if(!$popedom){
 			$popedom = array();
 		}
-		
-		$site_rs = $this->model('site')->get_one($this->session->val('admin_site_id'));
+		$this->assign('site_rs',$site_rs);
 		$condition = '';
 		if(!$site_rs['biz_status']){
 			$biz_ctrl = array('order','options','payment','currency','express','freight');

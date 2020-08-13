@@ -208,6 +208,16 @@ class cate_control extends phpok_control
 		$this->view("cate_set");
 	}
 
+	public function set_more_f()
+	{
+		$parent_id = $this->get("parent_id","int");
+		$this->assign("parent_id",$parent_id);
+		$parentlist = $this->model('cate')->get_all($this->session->val('admin_site_id'));
+		$parentlist = $this->model('cate')->cate_option_list($parentlist);
+		$this->assign("parentlist",$parentlist);
+		$this->view("cate_set_more");
+	}
+
 	/**
 	 * 添加根分类
 	**/
@@ -435,6 +445,39 @@ class cate_control extends phpok_control
 			}
 		}
 		$this->success(P_Lang('分类信息配置成功'),$this->url("cate"));
+	}
+
+	public function save_more_f()
+	{
+		if(!$this->popedom['add']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$title = $this->get("title");
+		if(!$title){
+			$this->error(P_Lang('分类名称不能为空'));
+		}
+		$parent_id = $this->get('parent_id','int');
+		if(!$parent_id){
+			$this->error('未指定父级分类');
+		}
+		$array = array('parent_id'=>$parent_id);
+		$array['status'] = $this->get('status','int');
+		$array["site_id"] = $this->session->val('admin_site_id');
+		$list = explode("\n",$title);
+		foreach($list as $key=>$value){
+			if(!$value || !trim($value)){
+				continue;
+			}
+			$m = $maxid + $key + 1;
+			$data = $array;
+			$data['title'] = trim($value);
+			$insert_id = $this->model('cate')->save($data);
+			if($insert_id){
+				$tmp = array("identifier"=>'cate-'.$insert_id);
+				$this->model('cate')->save($tmp,$insert_id);
+			}
+		}
+		$this->success(P_Lang('分类信息配置成功'));
 	}
 
 	private function _save_tag($id)

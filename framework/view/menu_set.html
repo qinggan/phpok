@@ -21,7 +21,7 @@
 				{lang项目}
 			</label>
 			<div class="layui-input-block">
-				<select name="pid-project">
+				<select name="pid-project" lay-filter="pid-project">
 					<option value="">{lang请选择…}</option>
 					<!-- loop from=$plist key=$key value=$value id=$tmpid -->
 					<option value="{$value.id}"{if $rs && $rs.project_id == $value.id} selected{/if}>{if $value.parent_id} ├ {/if}{$value.title}</option>
@@ -108,6 +108,21 @@
 			</div>
 			<div class="layui-form-mid">
 				{lang留空使用系统调用}
+			</div>
+		</div>
+		<div class="layui-form-item{if $rs && ($rs.type == 'content' || $rs.type == 'list')} hidden{/if}" id="submenu_html">
+			<label class="layui-form-label">
+				{lang下级菜单}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select name="submenu" id="submenu" lay-filter="submenu">
+					<option value="">{lang自定义…}</option>
+					<option value="cate1"{if $rs && $rs.submenu == 'cate1'} selected{/if}>{lang读一级子分类}</option>
+					<option value="cate2"{if $rs && $rs.submenu == 'cate2'} selected{/if}>{lang读二级子分类}</option>
+					<option value="title1"{if $rs && $rs.submenu == 'title1'} selected{/if}>{lang读主题}</option>
+					<option value="title2"{if $rs && $rs.submenu == 'title2'} selected{/if}>{lang读主题及子主题}</option>
+					<option value="cate_title"{if $rs && $rs.submenu == 'cate_title'} selected{/if}>{lang读子分类及主题}</option>
+				</select>
 			</div>
 		</div>
 		<div class="layui-form-item">

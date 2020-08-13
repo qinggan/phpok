@@ -165,6 +165,28 @@
 					$("#menu_"+id).remove();
 				})
 			});
+		},
+		update_submenu:function(pid)
+		{
+			var old = $("#submenu").val();
+			var url = get_url('menu','submenu',"pid="+pid);
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.alert(rs.info);
+					return false;
+				}
+				var html = '';
+				for(var i in rs.info){
+					html += '<option value="'+rs.info[i].value+'"';
+					if(rs.info[i].value == old){
+						html += ' selected';
+					}
+					html += '>'+rs.info[i].title+'</option>';
+				}
+				$("#submenu").html(html);
+				layui.form.render("select");
+				return true;
+			});
 		}
 	}
 })(jQuery);

@@ -442,6 +442,23 @@ class site_model extends site_model_base
 		return $rslist;
 	}
 
+	public function get_one($id)
+	{
+		$rs = parent::get_one($id);
+		if(!$rs){
+			return false;
+		}
+		$file = $this->dir_data.'xml/site_alias.xml';
+		if(!file_exists($file)){
+			return $rs;
+		}
+		$tmplist = $this->lib('xml')->read($file,true);
+		if($tmplist['a'.$rs['id']]){
+			$rs['alias'] = $tmplist['a'.$rs['id']];
+		}
+		return $rs;
+	}
+
 	public function alias_save($title,$id)
 	{
 		$sql = "SELECT id FROM ".$this->db->prefix."site";

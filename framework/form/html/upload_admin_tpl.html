@@ -10,7 +10,7 @@
 		<table>
 		<tr>
 			<td><div id="{$_rs.identifier}_picker"></div></td>
-			<td><div><input type="button" class="layui-btn layui-btn-sm" value="{lang选择}{$_rs.upload_type.title}" onclick="$.phpokform.upload_select('{$_rs.identifier}','{$_rs.cate_id}',{$_rs.is_multiple ? 'true' : 'false'})" class="layui-btn layui-btn-sm button" /></div></td>
+			<!-- if !$_rs.manage_forbid --><td><div><input type="button" class="layui-btn layui-btn-sm" value="{lang选择}{$_rs.upload_type.title}" onclick="$.phpokform.upload_select('{$_rs.identifier}','{$_rs.cate_id}',{$_rs.is_multiple ? 'true' : 'false'})" class="layui-btn layui-btn-sm button" /></div></td><!-- /if -->
 			<td id="{$_rs.identifier}_sort" style="display:none">
 				<div class="layui-btn-group">
 					<input type="button" value="{lang排序}" class="layui-btn layui-btn-sm" onclick="$.phpokform.upload_sort('{$_rs.identifier}')" />

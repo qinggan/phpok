@@ -158,6 +158,12 @@ class cate_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
+	public function max_cateid()
+	{
+		$sql = "SELECT max(id) FROM ".$this->db->prefix."cate";
+		return $this->db->count($sql);
+	}
+
 	/**
 	 * 取得当前分类
 	 * @参数 $id 分类ID
@@ -225,18 +231,24 @@ class cate_model_base extends phpok_model
 			if($value['parent_id'] || !$value['module_id']){
 				continue;
 			}
-			$tmplist = $this->catelist_module($value['module_id']);
-			if($tmplist){
-				$extlist = array($tmplist,$extlist);
+			$flist = $this->model('module')->fields_all($value['module_id']);
+			if(!$flist){
+				continue;
 			}
-		}
-		if($extlist){
-			foreach($rslist as $key=>$value){
-				if(!$extlist[$value['id']]){
+			$tmplist = $this->catelist_module($value['module_id']);
+			if(!$tmplist){
+				continue;
+			}
+			foreach($tmplist as $k=>$v){
+				if(!$v['id'] || !$rslist[$v['id']]){
 					continue;
 				}
-				$value = array_merge($extlist[$value['id']],$value);
-				$rslist[$key] = $value;
+				foreach($flist as $kk=>$vv){
+					if(!$v[$vv['identifier']]){
+						continue;
+					}
+					$rslist[$v['id']][$vv['identifier']] = $v[$vv['identifier']];
+				}
 			}
 		}
 		return $this->cate_ext($rslist);
@@ -270,18 +282,24 @@ class cate_model_base extends phpok_model
 			if(!$value['module_id']){
 				continue;
 			}
-			$tmplist = $this->catelist_module($value['module_id']);
-			if($tmplist){
-				$extlist = array($tmplist,$extlist);
+			$flist = $this->model('module')->fields_all($value['module_id']);
+			if(!$flist){
+				continue;
 			}
-		}
-		if($extlist){
-			foreach($rslist as $key=>$value){
-				if(!$extlist[$value['id']]){
+			$tmplist = $this->catelist_module($value['module_id']);
+			if(!$tmplist){
+				continue;
+			}
+			foreach($tmplist as $k=>$v){
+				if(!$v['id'] || !$rslist[$v['id']]){
 					continue;
 				}
-				$value = array_merge($extlist[$value['id']],$value);
-				$rslist[$key] = $value;
+				foreach($flist as $kk=>$vv){
+					if(!$v[$vv['identifier']]){
+						continue;
+					}
+					$rslist[$v['id']][$vv['identifier']] = $v[$vv['identifier']];
+				}
 			}
 		}
 		return $this->cate_ext($rslist);

@@ -39,7 +39,7 @@
 		</upload>
 		<title>
 			<title><![CDATA[主题]]></title>
-			<note><![CDATA[所选择的主题必须预先设定好，建议使用【扩展模型】取代]]></note>
+			<note><![CDATA[支持绑定多个项目，输出的内容未格式化，需要自行格式化]]></note>
 		</title>
 		<extitle>
 			<title><![CDATA[扩展模型]]></title>

@@ -1,4 +1,4 @@
-<!-- include tpl=head_open -->
+<!-- include tpl=head_lay nopadding=true -->
 <script type="text/javascript">
 function phpok_input(val)
 {
@@ -82,8 +82,34 @@ function add_select(id){
 	return true;
 }
 </script>
-</head>
-<body>
+<div class="layui-card">
+	<div class="layui-card-header" style="padding-top:5px;">
+		<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+		<ul class="layout">
+			<li>
+				<select name="cate_id" id="top_cate_id">
+					<option value="">全部分类…</option>
+					<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $value.id == $cate_id} selected{/if}>{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</li>
+			<li>
+				<select name="keytype" id="keytype" onchange="update_select(this.value)">
+					<!-- loop from=$keytype_list key=$key value=$value id=$tmpid -->
+					<option value="{$key}"{if $key == $keytype} selected{/if}>{$value}</option>
+					<!-- /loop -->
+				</select>
+			</li>
+			<li></li>
+			<li></li>
+		</ul>
+		</form>
+	</div>
+	<div class="layui-card-body">
+		
+	</div>
+</div>
 <div class="search">
 	<form method="post" action="{$pageurl}" onsubmit="return check_search()">
 	<table>

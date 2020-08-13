@@ -25,26 +25,15 @@ class rescate_model_base extends phpok_model
 		if(!$rslist){
 			return false;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."gd ORDER BY id ASC";
-		$gdlist = $this->db->get_all($sql,'id');
-		if(!$gdlist){
-			$gdlist = array();
+		$tmplist = $this->model('gateway')->all('object-storage');
+		$oss = array();
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$oss[$value['id']] = $value['title'];
+			}
 		}
 		foreach($rslist as $key=>$value){
-			$gds = false;
-			if($value['gdall']){
-				foreach($gdlist as $k=>$v){
-					$gds[] = $v['identifier'];
-				}
-			}else{
-				$types = $value['gdtypes'] ? explode(',',$value['gdtypes']) : array();
-				foreach($types as $k=>$v){
-					if($gdlist[$v]){
-						$gds[] = $gdlist[$v]['identifier'];
-					}
-				}
-			}
-			$value['gdtypes'] = $gds ? implode('/',$gds) : '';
+			$value['etype_title'] = ($value['etype'] && $oss && $oss[$value['etype']]) ? $oss[$value['etype']] : P_Lang('本地存储');
 			$rslist[$key] = $value;
 		}
 		return $rslist;
