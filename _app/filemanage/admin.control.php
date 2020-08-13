@@ -149,10 +149,19 @@ class admin_control extends \phpok_control
 		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/htmlmixed/htmlmixed.js?response-content-type=application/x-javascript');
 		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/php/php.js?response-content-type=application/x-javascript');
 		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/xml/xml.js?response-content-type=application/x-javascript');
-		//数据调用
-		$oklist = $this->model('call')->get_list("ok.status=1",0,999);
-		$this->assign('oklist',$oklist);
-		//
+		$istpl = strpos($folder,'tpl/') !== false ? true : false;
+		$this->assign('istpl',$istpl);
+		if($istpl){
+			$oklist = $this->model('call')->get_list("ok.status=1",0,999);
+			$this->assign('oklist',$oklist);
+			$this->assign('ishtml',true);
+		}else{
+			$tmp = strtolower($title);
+			$ishtml = strpos($tmp,'.htm') !== false ? true : false;
+			$this->assign('ishtml',$ishtml);
+			$isphp = strpos($tmp,'.php') !== false ? true : false;
+			$this->assign('isphp',$isphp);
+		}
 		$this->display("admin_edit");
 	}
 

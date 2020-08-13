@@ -156,6 +156,7 @@ class api_control extends \phpok_control
 		$data['city'] = $this->get('city');
 		$data['language'] = $this->get('language');
 		$data['unionid'] = $info['unionid'];
+		$data['source'] = '微信小程序';
 		if($data['unionid']){
 			$user_id = $this->model('wxuser')->unionid2uid($data['unionid']);
 			if($user_id){

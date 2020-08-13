@@ -59,53 +59,56 @@ $(document).ready(function(){
 		<ul class="layout icon-layout" style="margin-top:3px;">
 			<li>
 				<div class="layui-btn-group">
-					<button type="button" class="layui-btn layui-btn-sm" title="{lang撤消}" onclick="code_editor.undo()">
+					<button type="button" class="layui-btn layui-btn-xs" title="{lang撤消}" onclick="code_editor.undo()">
 						<i class="icon-undo"></i> 撤消
 					</button>
-					<button type="button" class="layui-btn layui-btn-sm" title="{lang恢复}" onclick="code_editor.redo()">
+					<button type="button" class="layui-btn layui-btn-xs" title="{lang恢复}" onclick="code_editor.redo()">
 						<i class="icon-redo"></i> 恢复
 					</button>
 				</div>
 			</li>
+			<!-- if $ishtml -->
 			<li>
 				<div class="layui-btn-group">
-					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('<b>$1</b>',code_editor)">
+					<button type="button" class="layui-btn layui-btn-xs" onclick="$.admin_filemanage.edit_btn('<b>$1</b>',code_editor)">
 						<i class="layui-icon layui-icon-fonts-strong"></i>
 					</button>
-					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('<i>$1</i>',code_editor)">
+					<button type="button" class="layui-btn layui-btn-xs" onclick="$.admin_filemanage.edit_btn('<i>$1</i>',code_editor)">
 						<i class="layui-icon layui-icon-fonts-i"></i>
 					</button>
-					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('<u>$1</u>',code_editor)">
+					<button type="button" class="layui-btn layui-btn-xs" onclick="$.admin_filemanage.edit_btn('<u>$1</u>',code_editor)">
 						<i class="layui-icon layui-icon-fonts-u"></i>
 					</button>
-					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('<del>$1</del>',code_editor)">
+					<button type="button" class="layui-btn layui-btn-xs" onclick="$.admin_filemanage.edit_btn('<del>$1</del>',code_editor)">
 						<i class="layui-icon layui-icon-fonts-del"></i>
 					</button>
 				</div>
 			</li>
 			<li>
 				<div class="layui-btn-group">
-					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('left',code_editor)">
+					<button type="button" class="layui-btn layui-btn-xs" onclick="$.admin_filemanage.edit_btn('left',code_editor)">
 						<i class="layui-icon layui-icon-align-left"></i>
 					</button>
-					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('center',code_editor)">
+					<button type="button" class="layui-btn layui-btn-xs" onclick="$.admin_filemanage.edit_btn('center',code_editor)">
 						<i class="layui-icon layui-icon-align-center"></i>
 					</button>
-					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('right',code_editor)">
+					<button type="button" class="layui-btn layui-btn-xs" onclick="$.admin_filemanage.edit_btn('right',code_editor)">
 						<i class="layui-icon layui-icon-align-right"></i>
 					</button>
 				</div>
 			</li>
 			<li>
 				<div class="layui-btn-group">
-					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('list',code_editor)">
+					<button type="button" class="layui-btn layui-btn-xs" onclick="$.admin_filemanage.edit_btn('list',code_editor)">
 						<i class="icon-list"></i>
 					</button>
-					<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_filemanage.edit_btn('numberlist',code_editor)">
+					<button type="button" class="layui-btn layui-btn-xs" onclick="$.admin_filemanage.edit_btn('numberlist',code_editor)">
 						<i class="icon-numbered-list"></i>
 					</button>
 				</div>
 			</li>
+			<!-- /if -->
+			<!-- if $istpl -->
 			<li>
 				<select onchange="$.admin_filemanage.edit_config_info(this,code_editor)">
 					<option value="">站点信息</option>
@@ -128,6 +131,7 @@ $(document).ready(function(){
 					<!-- /loop -->
 				</select>
 			</li>
+			<!-- /if -->
 		</ul>
 		<div class="clear"></div>
 	</div>

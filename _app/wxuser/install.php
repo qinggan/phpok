@@ -25,6 +25,10 @@ $insert_id = $this->model('sysmenu')->save($menu);
 if($insert_id){
 	$tmparray = array('gid'=>$insert_id,'title'=>'查看','identifier'=>'list','taxis'=>10);
 	$this->model('popedom')->save($tmparray);
+	$tmparray = array('gid'=>$insert_id,'title'=>'绑定','identifier'=>'lock','taxis'=>20);
+	$this->model('popedom')->save($tmparray);
+	$tmparray = array('gid'=>$insert_id,'title'=>'解除','identifier'=>'unlock','taxis'=>30);
+	$this->model('popedom')->save($tmparray);
 	$tmparray = array('gid'=>$insert_id,'title'=>'删除','identifier'=>'delete','taxis'=>10);
 	$this->model('popedom')->save($tmparray);
 }
