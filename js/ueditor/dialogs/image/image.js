@@ -368,7 +368,6 @@
                     extensions: acceptExtensions,
                     mimeTypes: 'image/*'
                 },
-                swf: '../../../webuploader/uploader.swf',
                 server: actionUrl,
                 threads:1,
                 fileVal: editor.getOpt('imageFieldName'),
@@ -919,10 +918,10 @@
                     img = document.createElement('img');
                     icon = document.createElement('span');
                     icon.setAttribute('title',list[i].title);
-                    var css = 'background-color:rgba(255,255,255,0.8);color:#000;margin:3px;padding:3px;text-overflow:clip;overflow:hidden;white-space:nowrap';
+                    var css = 'background-color:rgba(255,255,255,0.5);color:#000;margin:3px;padding:3px;text-overflow:clip;overflow:hidden;white-space:nowrap';
                     var html = '<div style="'+css+'">';
                     //添加隐藏的排序
-                    html += '<input type="text" id="taxis_'+i+'" style="width:30px;text-align:center;display:none;" /> ';
+                    html += '<input type="text" id="taxis_'+i+'" style="width:20px;text-align:center;display:none;border:1px solid #ccc;outline:0;border-radius:0;" /> ';
                     html += list[i].title+'</div>';
                     icon.innerHTML = html;
 
@@ -933,7 +932,11 @@
                         }
                     })(img));
                     img.width = 113;
-                    img.setAttribute('src', urlPrefix + list[i].ico + (list[i].ico.indexOf('?') == -1 ? '?noCache=':'&noCache=') + (+new Date()).toString(36) );
+                    var ico = list[i].ico;
+                    if(ico.indexOf("http://") == -1 && ico.indexOf("https://") == -1 && ico.indexOf("//") == -1){
+	                    ico = urlPrefix + ico + (ico.indexOf('?') == -1 ? '?noCache=':'&noCache=') + (+new Date()).toString(36);
+                    }
+                    img.setAttribute('src', ico);
                     img.setAttribute('_src', list[i].url);
                     img.setAttribute('alt', list[i].title);
                     img.setAttribute('title', list[i].title);

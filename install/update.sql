@@ -255,3 +255,18 @@ CREATE TABLE IF NOT EXISTS `qinggan_item_merge_list` (
 
 -- 2020年5月4日
 ALTER TABLE `qinggan_coupon_history` ADD `title` VARCHAR( 255 ) NOT NULL COMMENT '优惠券名称' AFTER `id`;
+
+-- 2020年7月19日
+ALTER TABLE `qinggan_menu` ADD `submenu` VARCHAR( 255 ) NOT NULL COMMENT '二级菜单类型';
+
+-- 2020年7月21日
+CREATE TABLE IF NOT EXISTS `qinggan_search` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '站点ID',
+  `title` varchar(255) NOT NULL COMMENT '关键字',
+  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '最后一次执行时间',
+  `hits` int(11) NOT NULL DEFAULT '0' COMMENT '搜索次数',
+  `sign` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0未标记，1已标记',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`title`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='搜索数据统计' AUTO_INCREMENT=1 ;

@@ -12,6 +12,9 @@
 		//添加到购物车中
 		//id为产品ID
 		add: function(id,qty){
+			if(qty <1){
+				$.dialog.alert(p_lang('产品数量不能为空'));
+			}
 			var self = this;
 			var url = this._addurl(id,qty);
 			if(!url){
@@ -36,6 +39,9 @@
 		 * @参数 thumb 缩略图
 		**/
 		add2: function(title,price,qty,thumb){
+			if(qty <1){
+				$.dialog.alert(p_lang('产品数量不能为空'));
+			}
 			var url = this._addurl2(title,price,qty,thumb);
 			if(!url){
 				return false;

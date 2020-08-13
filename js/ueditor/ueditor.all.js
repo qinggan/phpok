@@ -12116,7 +12116,7 @@ UE.plugins['paragraph'] = function() {
                         } );
                     }
                     tmpRange.setEndAfter( tmpNode );
-                    
+
                     para = range.document.createElement( style );
                     if(attrs){
                         domUtils.setAttributes(para,attrs);
@@ -12128,7 +12128,7 @@ UE.plugins['paragraph'] = function() {
                     //需要内容占位
                     if(domUtils.isEmptyNode(para)){
                         domUtils.fillChar(range.document,para);
-                        
+
                     }
 
                     tmpRange.insertNode( para );
@@ -12252,7 +12252,7 @@ UE.plugins['paragraph'] = function() {
 
         },
         doDirectionality = function(range,editor,forward){
-            
+
             var bookmark,
                 filterFn = function( node ) {
                     return   node.nodeType == 1 ? !domUtils.isBookmarkNode(node) : !domUtils.isWhitespace(node);
@@ -16016,12 +16016,19 @@ UE.plugins['fiximgclick'] = (function () {
             },
             updateTargetElement: function () {
                 var me = this;
+                var newWidth = parseInt(me.resizer.style.width);
+                var oldHeight = parseInt(me.target.naturalHeight);
+                var oldWidth = parseInt(me.target.naturalWidth);
+                var c =(oldHeight*newWidth)/oldWidth;
                 domUtils.setStyles(me.target, {
                     'width': me.resizer.style.width,
-                    'height': me.resizer.style.height
+                    'height': c+"px"
                 });
+                var scale = parseInt(me.target.height)/parseInt(me.target.width);
                 me.target.width = parseInt(me.resizer.style.width);
-                me.target.height = parseInt(me.resizer.style.height);
+                me.target.height = parseInt(me.target.width)*scale;
+                //me.target.width = parseInt(me.resizer.style.width);
+                //me.target.height = parseInt(me.resizer.style.height);
                 me.attachTo(me.target);
             },
             updateContainerStyle: function (dir, offset) {
@@ -16068,7 +16075,7 @@ UE.plugins['fiximgclick'] = (function () {
             },
             hideCover: function () {
 	            var me = this;
-	            
+
 	            domUtils.setStyles(me.cover,{
 		            'width':"0px",
 		            'height':'0px',
@@ -16131,7 +16138,7 @@ UE.plugins['fiximgclick'] = (function () {
                     'width': target.width + 'px',
                     'height': target.height + 'px',
                     'left': iframePos.x + imgPos.x - me.editor.document.body.scrollLeft - editorPos.x - parseInt(resizer.style.borderLeftWidth) + 'px',
-                    'top': iframePos.y + imgPos.y - me.editor.document.body.scrollTop - editorPos.y - parseInt(resizer.style.borderTopWidth) + 'px'
+                    'top': iframePos.y + imgPos.y -  me.editor.window.scrollY - editorPos.y - parseInt(resizer.style.borderTopWidth) + 'px'
                 });
             }
         }
@@ -21687,181 +21694,6 @@ UE.plugin.register('autoupload', function (){
     }
 });
 
-// plugins/simpleupload.js
-/**
- * @description
- * 简单上传:点击按钮,直接选择文件上传
- * @author Jinqn
- * @date 2014-03-31
- */
-UE.plugin.register('simpleupload', function (){
-    var me = this,
-        isLoaded = false,
-        containerBtn;
-
-    function initUploadBtn(){
-        var w = containerBtn.offsetWidth || 20,
-            h = containerBtn.offsetHeight || 20,
-            btnIframe = document.createElement('iframe'),
-            btnStyle = 'display:block;width:' + w + 'px;height:' + h + 'px;overflow:hidden;border:0;margin:0;padding:0;position:absolute;top:0;left:0;filter:alpha(opacity=0);-moz-opacity:0;-khtml-opacity: 0;opacity: 0;cursor:pointer;';
-
-        domUtils.on(btnIframe, 'load', function(){
-
-            var timestrap = (+new Date()).toString(36),
-                wrapper,
-                btnIframeDoc,
-                btnIframeBody;
-
-            btnIframeDoc = (btnIframe.contentDocument || btnIframe.contentWindow.document);
-            btnIframeBody = btnIframeDoc.body;
-            wrapper = btnIframeDoc.createElement('div');
-
-            wrapper.innerHTML = '<form id="edui_form_' + timestrap + '" target="edui_iframe_' + timestrap + '" method="POST" enctype="multipart/form-data" action="' + me.getOpt('serverUrl') + '" ' +
-            'style="' + btnStyle + '">' +
-            '<input id="edui_input_' + timestrap + '" type="file" accept="image/*" name="' + me.options.imageFieldName + '" ' +
-            'style="' + btnStyle + '">' +
-            '</form>' +
-            '<iframe id="edui_iframe_' + timestrap + '" name="edui_iframe_' + timestrap + '" style="display:none;width:0;height:0;border:0;margin:0;padding:0;position:absolute;"></iframe>';
-
-            wrapper.className = 'edui-' + me.options.theme;
-            wrapper.id = me.ui.id + '_iframeupload';
-            btnIframeBody.style.cssText = btnStyle;
-            btnIframeBody.style.width = w + 'px';
-            btnIframeBody.style.height = h + 'px';
-            btnIframeBody.appendChild(wrapper);
-
-            if (btnIframeBody.parentNode) {
-                btnIframeBody.parentNode.style.width = w + 'px';
-                btnIframeBody.parentNode.style.height = w + 'px';
-            }
-
-            var form = btnIframeDoc.getElementById('edui_form_' + timestrap);
-            var input = btnIframeDoc.getElementById('edui_input_' + timestrap);
-            var iframe = btnIframeDoc.getElementById('edui_iframe_' + timestrap);
-
-            domUtils.on(input, 'change', function(){
-                if(!input.value) return;
-                var loadingId = 'loading_' + (+new Date()).toString(36);
-                var params = utils.serializeParam(me.queryCommandValue('serverparam')) || '';
-
-                var imageActionUrl = me.getActionUrl(me.getOpt('imageActionName'));
-                var allowFiles = me.getOpt('imageAllowFiles');
-
-                me.focus();
-                me.execCommand('inserthtml', '<img class="loadingclass" id="' + loadingId + '" src="' + me.options.themePath + me.options.theme +'/images/spacer.gif" title="' + (me.getLang('simpleupload.loading') || '') + '" >');
-
-                function callback(){
-                    try{
-                        var link, json, loader,
-                            body = (iframe.contentDocument || iframe.contentWindow.document).body,
-                            result = body.innerText || body.textContent || '';
-                        json = (new Function("return " + result))();
-                        link = me.options.imageUrlPrefix + json.url;
-                        if(json.state == 'SUCCESS' && json.url) {
-                            loader = me.document.getElementById(loadingId);
-                            loader.setAttribute('src', link);
-                            loader.setAttribute('_src', link);
-                            loader.setAttribute('title', json.title || '');
-                            loader.setAttribute('alt', json.original || '');
-                            loader.removeAttribute('id');
-                            domUtils.removeClasses(loader, 'loadingclass');
-                        } else {
-                            showErrorLoader && showErrorLoader(json.state);
-                        }
-                    }catch(er){
-                        showErrorLoader && showErrorLoader(me.getLang('simpleupload.loadError'));
-                    }
-                    form.reset();
-                    domUtils.un(iframe, 'load', callback);
-                }
-                function showErrorLoader(title){
-                    if(loadingId) {
-                        var loader = me.document.getElementById(loadingId);
-                        loader && domUtils.remove(loader);
-                        me.fireEvent('showmessage', {
-                            'id': loadingId,
-                            'content': title,
-                            'type': 'error',
-                            'timeout': 4000
-                        });
-                    }
-                }
-
-                /* 判断后端配置是否没有加载成功 */
-                if (!me.getOpt('imageActionName')) {
-                    errorHandler(me.getLang('autoupload.errorLoadConfig'));
-                    return;
-                }
-                // 判断文件格式是否错误
-                var filename = input.value,
-                    fileext = filename ? filename.substr(filename.lastIndexOf('.')):'';
-                if (!fileext || (allowFiles && (allowFiles.join('') + '.').indexOf(fileext.toLowerCase() + '.') == -1)) {
-                    showErrorLoader(me.getLang('simpleupload.exceedTypeError'));
-                    return;
-                }
-
-                domUtils.on(iframe, 'load', callback);
-                form.action = utils.formatUrl(imageActionUrl + (imageActionUrl.indexOf('?') == -1 ? '?':'&') + params);
-                form.submit();
-            });
-
-            var stateTimer;
-            me.addListener('selectionchange', function () {
-                clearTimeout(stateTimer);
-                stateTimer = setTimeout(function() {
-                    var state = me.queryCommandState('simpleupload');
-                    if (state == -1) {
-                        input.disabled = 'disabled';
-                    } else {
-                        input.disabled = false;
-                    }
-                }, 400);
-            });
-            isLoaded = true;
-        });
-
-        btnIframe.style.cssText = btnStyle;
-        containerBtn.appendChild(btnIframe);
-    }
-
-    return {
-        bindEvents:{
-            'ready': function() {
-                //设置loading的样式
-                utils.cssRule('loading',
-                    '.loadingclass{display:inline-block;cursor:default;background: url(\''
-                    + this.options.themePath
-                    + this.options.theme +'/images/loading.gif\') no-repeat center center transparent;border:1px solid #cccccc;margin-right:1px;height: 22px;width: 22px;}\n' +
-                    '.loaderrorclass{display:inline-block;cursor:default;background: url(\''
-                    + this.options.themePath
-                    + this.options.theme +'/images/loaderror.png\') no-repeat center center transparent;border:1px solid #cccccc;margin-right:1px;height: 22px;width: 22px;' +
-                    '}',
-                    this.document);
-            },
-            /* 初始化简单上传按钮 */
-            'simpleuploadbtnready': function(type, container) {
-                containerBtn = container;
-                me.afterConfigReady(initUploadBtn);
-            }
-        },
-        outputRule: function(root){
-            utils.each(root.getNodesByTagName('img'),function(n){
-                if (/\b(loaderrorclass)|(bloaderrorclass)\b/.test(n.getAttr('class'))) {
-                    n.parentNode.removeChild(n);
-                }
-            });
-        },
-        commands: {
-            'simpleupload': {
-                queryCommandState: function () {
-                    return isLoaded ? 0:-1;
-                }
-            }
-        }
-    }
-});
-
-
 // plugins/serverparam.js
 /**
  * 服务器提交的额外参数列表设置插件
@@ -22466,7 +22298,7 @@ UE.ui = baidu.editor.ui = {};
         domUtils = baidu.editor.dom.domUtils,
         UIBase = baidu.editor.ui.UIBase,
         uiUtils = baidu.editor.ui.uiUtils;
-    
+
     var Mask = baidu.editor.ui.Mask = function (options){
         this.initOptions(options);
         this.initUIBase();
@@ -22762,7 +22594,7 @@ UE.ui = baidu.editor.ui = {};
         }
     };
     utils.inherits(Popup, UIBase);
-    
+
     domUtils.on( document, 'mousedown', function ( evt ) {
         var el = evt.target || evt.srcElement;
         closeAllPopup( evt,el );
@@ -22858,7 +22690,7 @@ UE.ui = baidu.editor.ui = {};
     var utils = baidu.editor.utils,
         uiUtils = baidu.editor.ui.uiUtils,
         UIBase = baidu.editor.ui.UIBase;
-    
+
     var TablePicker = baidu.editor.ui.TablePicker = function (options){
         this.initOptions(options);
         this.initTablePicker();
@@ -22942,7 +22774,7 @@ UE.ui = baidu.editor.ui = {};
     var browser = baidu.editor.browser,
         domUtils = baidu.editor.dom.domUtils,
         uiUtils = baidu.editor.ui.uiUtils;
-    
+
     var TPL_STATEFUL = 'onmousedown="$$.Stateful_onMouseDown(event, this);"' +
         ' onmouseup="$$.Stateful_onMouseUp(event, this);"' +
         ( browser.ie ? (
@@ -22951,7 +22783,7 @@ UE.ui = baidu.editor.ui = {};
         : (
         ' onmouseover="$$.Stateful_onMouseOver(event, this);"' +
         ' onmouseout="$$.Stateful_onMouseOut(event, this);"' ));
-    
+
     baidu.editor.ui.Stateful = {
         alwalysHoverable: false,
         target:null,//目标元素和this指向dom不一样
@@ -24366,7 +24198,7 @@ UE.ui = baidu.editor.ui = {};
         setValue : function(value){
             this._value = value;
         }
-        
+
     };
     utils.inherits(MenuButton, SplitButton);
 })();
@@ -24672,7 +24504,7 @@ UE.ui = baidu.editor.ui = {};
 
     var dialogBtns = {
         noOk:['help', 'spechars','preview'],
-        ok:['attachment', 'anchor', 'link', 'insertimage', 'map', 'insertframe', 
+        ok:['attachment', 'anchor', 'link', 'insertimage', 'map', 'insertframe',
             'insertvideo', 'insertframe', 'edittip', 'edittable', 'edittd', 'background','phpokinfo']
     };
 
@@ -25224,37 +25056,6 @@ UE.ui = baidu.editor.ui = {};
 
         editor.addListener('selectionchange', function () {
             ui.setDisabled(editor.queryCommandState(cmd) == -1)
-        });
-        return ui;
-    };
-
-    /* 简单上传插件 */
-    editorui["simpleupload"] = function (editor) {
-        var name = 'simpleupload',
-            ui = new editorui.Button({
-                className:'edui-for-' + name,
-                title:editor.options.labelMap[name] || editor.getLang("labelMap." + name) || '',
-                onclick:function () {},
-                theme:editor.options.theme,
-                showText:false
-            });
-        editorui.buttons[name] = ui;
-        editor.addListener('ready', function() {
-            var b = ui.getDom('body'),
-                iconSpan = b.children[0];
-            editor.fireEvent('simpleuploadbtnready', iconSpan);
-        });
-        editor.addListener('selectionchange', function (type, causeByUi, uiReady) {
-            var state = editor.queryCommandState(name);
-            if (state == -1) {
-                ui.setDisabled(true);
-                ui.setChecked(false);
-            } else {
-                if (!uiReady) {
-                    ui.setDisabled(false);
-                    ui.setChecked(state);
-                }
-            }
         });
         return ui;
     };
