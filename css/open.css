@@ -60,7 +60,9 @@ select {
   padding-right: 26px !important;
 }
 select::-ms-expand { display: none; }
-
+select[multiple=true]{
+	background:none;
+}
 
 textarea.long{width:100%;height:100px;}
 textarea.default{width:350px;height:40px;}

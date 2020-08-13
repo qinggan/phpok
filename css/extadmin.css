@@ -24,6 +24,9 @@ select{
 select:focus{
 	outline:none;
 }
+select[multiple=true]{
+	background:none;
+}
 
 input[type="number"] {
     -moz-appearance: textfield;
@@ -75,7 +78,6 @@ img{
 	height:auto;
 	padding-bottom:5px;
 }
-
 
 .layui-form .layui-form-item .long{
 	width: 500px;
@@ -158,6 +160,23 @@ img{
 	border-color:#1D5595
 }
 
+.layui-elem-quote{
+	border-left-color:#1D5595;
+}
+
+
+/* 兼容手机版的一些设置 */
+@media screen and (max-width: 375px){
+	.layui-card-header{
+		height:auto;
+	}
+	.layui-fluid{
+		width:640px;
+	}
+	body{
+		overflow-x:auto;
+	}
+}
 
 /* LayUI 后台样式框架改写-结束*/
 

@@ -20,7 +20,9 @@ select {
   padding-right: 14px !important;
 }
 select::-ms-expand { display: none; }
-
+select[multiple=true]{
+	background:none;
+}
 
 .fl{ float:left;}
 .fr{ float:right;}
