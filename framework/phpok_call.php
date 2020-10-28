@@ -265,7 +265,7 @@ class phpok_call extends _init_auto
 			$rs['psize'] = 1;
 		}
 		$offset = $rs['offset'] ? intval($rs['offset']) : 0;
-		$psize = $rs['is_list'] ? intval($rs['psize']) : 1;
+		$psize = $rs['is_list'] ? intval($project['psize']) : 1;
 		$rslist = $this->model('list')->arc_all($project,$condition,$field,$offset,$psize,$orderby);
 		if(!$rslist){
 			if($cache_id){
