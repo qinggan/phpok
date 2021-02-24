@@ -1,26 +1,42 @@
 <!-- include tpl=header menutitle=$page_rs.title -->
-<!-- if $page_rs.banner -->
-<div class="banner" style="background-image:url('{$page_rs.banner.filename}');"><img src="{#images#}/blank.gif" alt="{$page_rs.title}" /></div>
-<!-- /if -->
-<div class="main">
-	<!-- include tpl=block/breadcrumb -->
-	<div class="left am-panel-group">
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">
-				<h3 class="am-panel-title">{$page_rs.title}</h3>
-			</div>
-			<ul class="am-list">
-				<!-- arclist pid=$page_rs.id psize=100 fields=id -->
-				<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
-				<li><a href="{$value.url}" title="{$value.title}"{if $rs.id == $value.id} class="am-active"{/if}><i class='am-icon-angle-right'></i> {$value.title}</a></li>
-				<!-- /loop -->
-			</ul>
-		</div>
-		<!-- include tpl=block/contact -->
+<section class="bg-light p-5"{if $page_rs.banner} style="background:url('{$page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+	<div class="p-4">
+		<h1 class="text-center">{$rs.title}</h1>
 	</div>
-	<div class="right">
-		<div class="content">{$rs.content}</div>
-		<div style="width:100%;height:600px"><iframe src="index.php?c=plugin&f=exec&id=bmap&exec=map" style="width:100%;height:100%;overflow:hidden;" frameborder="0" scrolling="no"></iframe></div>
+	<div class="container">
+		<!-- include tpl=block/breadcrumb -->
+		<!-- if $rs.tag -->
+		<div class="text-center m-3">
+			<span class="p-2 bg-light-50 rounded-lg">
+			标签：
+			<!-- loop from=$rs.tag key=$k value=$v id=$idxx -->
+			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+			<!-- /loop -->
+			</span>
+		</div>
+		<!-- /if -->
+	</div>
+</section>
+<div class="container">
+	<div class="row">
+		<div class="col-sm-3 mt-3">
+			<div class="card mb-3">
+				<div class="card-header">
+					{$page_rs.title}
+				</div>
+				<ul class="list-group list-group-flush">
+					<!-- arclist pid=$page_rs.id psize=100 fields=id -->
+					<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+					<li class="list-group-item{if $rs.id == $value.id} active{/if}"><a href="{$value.url}" title="{$value.title}"><i class='am-icon-angle-right'></i> {$value.title}</a></li>
+					<!-- /loop -->
+				</ul>
+			</div>
+			<!-- include tpl=block/contact -->
+		</div>
+		<div class="col-sm-9 mt-3">
+			<div class="content">{$rs.content}</div>
+			<div style="width:100%;height:600px"><iframe src="index.php?c=plugin&f=exec&id=bmap&exec=map" style="width:100%;height:100%;overflow:hidden;" frameborder="0" scrolling="no"></iframe></div>
+		</div>
 	</div>
 </div>
 

@@ -1,10 +1,8 @@
 <?php
 /**
  * PHPOK企业站系统，使用PHP语言及MySQL数据库编写的企业网站建设系统，基于LGPL协议开源授权
- * @package phpok
  * @author phpok.com
- * @copyright 2015-2016 深圳市锟铻科技有限公司
- * @version 4.x
+ * @version 5.x
  * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
  */
 
@@ -15,7 +13,7 @@ if(!defined("PHPOK_SET")){
 /**
 * 授权方式，支持LGPL，PBIZ，CBIZ，三种模式，PBIZ，表示个人商业授权，CBIZ表示企业商业授权
 */
-define("LICENSE","PBIZ");
+define("LICENSE","LGPL");
 
 /**
 * 授权时间

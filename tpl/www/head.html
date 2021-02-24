@@ -6,17 +6,20 @@
 	<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate" />
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="-1" />
-	<meta name="renderer" content="webkit">
+	<meta name="renderer" content="webkit" />
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 	<title><!-- if $title -->{$title}_<!-- /if --><!-- if $seo.title -->{$seo.title}_<!-- /if -->{$config.title}</title>
 	<!-- if $seo.keywords --><meta name="keywords" content="{$seo.keywords}" /><!-- /if -->
 	<!-- if $seo.description --><meta name="description" content="{$seo.description}" /><!-- /if -->
 	<meta name="toTop" content="true" />
 	{$config.meta}
 	<base href="{$sys.url}" />
-	<link rel="stylesheet" type="text/css" href="//cdn.phpok.com/amazeui/2.7.2/amazeui.min.css" />
-	<link rel="stylesheet" type="text/css" href="//cdn.phpok.com/wow/1.1.0/animate.css" />
+	<link rel="stylesheet" type="text/css" href="static/bootstrap/{#css#}/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="static/fontawesome/{#css#}/font-awesome.min.css" />
 	<link rel="stylesheet" type="text/css" href="{#css#}/artdialog.css" />
-	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<link rel="stylesheet" type="text/css" href="static/bootstrap/www/common.css" />
+	<link rel="stylesheet" type="text/css" href="static/wow/animate.css" />
+	<link rel="stylesheet" type="text/css" href="css/common.css" />
 	<link rel="stylesheet" type="text/css" href="{#js#}/highlighter/shcore.css" />
 	<link rel="stylesheet" type="text/css" href="{#js#}/highlighter/midnight.css" />
 	<!-- if $config.favicon -->
@@ -29,10 +32,6 @@
 	<!-- /loop -->
 	<!-- /if -->
 	<script type="text/javascript" src="{url ctrl=js ext=jquery.artdialog/}" charset="utf-8"></script>
-	<script type="text/javascript" src="//cdn.phpok.com/amazeui/2.7.2/amazeui.min.js" charset="utf-8"></script>
-	<script type="text/javascript" src="//cdn.phpok.com/wow/1.1.0/wow.js"></script>
-	<script type="text/javascript" src="js/global.js" charset="utf-8"></script>
-	<script type="text/javascript" src="{#js#}/highlighter/shcore.js" charset="utf-8"></script>
 	<!-- if $js -->
 	<!-- php:$jslist = explode(",",$js) -->
 	<!-- loop from=$jslist key=$key value=$value id=$tmpid -->

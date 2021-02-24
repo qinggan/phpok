@@ -28,102 +28,100 @@ function check_register()
 	return false;
 }
 </script>
-<div class="main main-single am-animation-scale-up">
-	<div class="am-g">
-		<div class="am-u-sm-6">
-			<form class="am-form am-form-horizontal" method="post" id="register-form" onsubmit="return check_register()">
-			<fieldset>
-				<legend>会员注册</legend>
-				<!-- if $grouplist && count($grouplist) > 1 -->
-				<div class="am-form-group">
-					<label for="group_id" class="am-u-sm-3 am-form-label">会员组</label>
-					<div class="am-u-sm-9">
-						<select name="group_id" id="group_id" onchange="update_group(this.value)">
-						<!-- loop from=$grouplist key=$key value=$value -->
-						<option value="{$value.id}"{if $group_id == $value.id} selected{/if}>{$value.title}</option>
-						<!-- /loop -->
-						</select>
-					</div>
+
+<section class="container">
+	<div class="p-4 m-4">
+		<form class="p-4 m-4" method="post" id="register-form" onsubmit="return check_register()">
+			<h3 class="text-center p-4">会员注册</h3>
+			<!-- if $grouplist && count($grouplist) > 1 -->
+			<div class="row form-group">
+				<label for="group_id" class="col-sm-3 text-right">会员组</label>
+				<div class="col-sm-9">
+					<select name="group_id" class="form-control" id="group_id" onchange="update_group(this.value)">
+					<!-- loop from=$grouplist key=$key value=$value -->
+					<option value="{$value.id}"{if $group_id == $value.id} selected{/if}>{$value.title}</option>
+					<!-- /loop -->
+					</select>
 				</div>
-				<!-- /if -->
-				<!-- if $group_rs.register_status && $group_rs.register_status != 1 -->
-				<div class="am-form-group">
-					<label for="_code" class="am-u-sm-3 am-form-label">验证串：</label>
-					<div class="am-u-sm-9">
-						<input class="input" type="text" name="_code" id="_code" value="{$code}" readonly />
-					</div>
+			</div>
+			<!-- /if -->
+			<!-- if $group_rs.register_status && $group_rs.register_status != 1 -->
+			<div class="row form-group">
+				<label for="_code" class="col-sm-3 text-right">验证串：</label>
+				<div class="col-sm-9">
+					<input class="form-control" type="text" name="_code" id="_code" value="{$code}" readonly />
 				</div>
-				<!-- /if -->
-				<div class="am-form-group">
-					<label for="user" class="am-u-sm-3 am-form-label">账号：</label>
-					<div class="am-u-sm-9">
-						<input class="input" type="text" name="user" id="user" value="{$account}" placeholder="设置登录账号，支持中文" />
-					</div>
+			</div>
+			<!-- /if -->
+			<div class="row form-group">
+				<label for="user" class="col-sm-3 text-right">账号：</label>
+				<div class="col-sm-9">
+					<input class="form-control" type="text" name="user" id="user" value="{$account}" placeholder="设置登录账号，支持中文" />
 				</div>
-				<div class="am-form-group">
-					<label for="newpass" class="am-u-sm-3 am-form-label">密码：</label>
-					<div class="am-u-sm-9">
-						<input class="input" type="password" name="newpass" id="newpass" placeholder="设置密码，要求不少于6位，建议数字 + 字母" />
-					</div>
+			</div>
+			<div class="row form-group">
+				<label for="newpass" class="col-sm-3 text-right">密码：</label>
+				<div class="col-sm-9">
+					<input class="form-control" type="password" name="newpass" id="newpass" placeholder="设置密码，要求不少于6位，建议数字 + 字母" />
 				</div>
-				<div class="am-form-group">
-					<label for="chkpass" class="am-u-sm-3 am-form-label">确认密码：</label>
-					<div class="am-u-sm-9">
-						<input class="input" type="password" name="chkpass" id="chkpass" placeholder="再次输入上面的密码" />
-					</div>
+			</div>
+			<div class="row form-group">
+				<label for="chkpass" class="col-sm-3 text-right">确认密码：</label>
+				<div class="col-sm-9">
+					<input class="form-control" type="password" name="chkpass" id="chkpass" placeholder="再次输入上面的密码" />
 				</div>
-				<div class="am-form-group">
-					<label for="email" class="am-u-sm-3 am-form-label">Email：</label>
-					<div class="am-u-sm-9">
-						<input type="email" name="email" id="email" placeholder="填写电子邮件">
-					</div>
+			</div>
+			<div class="row form-group">
+				<label for="email" class="col-sm-3 text-right">Email：</label>
+				<div class="col-sm-9">
+					<input type="email" name="email" class="form-control" id="email" placeholder="填写电子邮件">
 				</div>
-				<div class="am-form-group">
-					<label for="mobile" class="am-u-sm-3 am-form-label">手机号：</label>
-					<div class="am-u-sm-9">
-						<input type="tel" name="mobile" id="mobile" placeholder="填写要注册的手机号码">
-					</div>
+			</div>
+			<div class="row form-group">
+				<label for="mobile" class="col-sm-3 text-right">手机号：</label>
+				<div class="col-sm-9">
+					<input type="tel" name="mobile" class="form-control" id="mobile" placeholder="填写要注册的手机号码">
 				</div>
-				<!-- if $is_vcode -->
-				<div class="am-form-group">
-					<label for="_chkcode" class="am-u-sm-3 am-form-label">验证码：</label>
-					<div class="am-u-sm-5">
-						<input type="text" name="_chkcode" id="_chkcode" placeholder="填写右边图片上的数字" />
-					</div>	
-					<div class="am-u-sm-3" style="margin-top:5px;text-align:left;"><img src="" border="0" align="absmiddle" id="vcode" class="hand" /></div>
-					<div class="am-u-sm-2"></div>
+			</div>
+			<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
+			<div class="row form-group">
+				<label for="mobile" class="col-sm-3 text-right">{$value.title}：</label>
+				<div class="col-sm-9">
+					{$value.html}
 				</div>
-				<script type="text/javascript">
-				$(document).ready(function(){
-					$("#vcode").phpok_vcode();
-					$("#vcode").click(function(){
-						$(this).phpok_vcode();
-					});
+			</div>
+			<!-- /loop -->
+			<!-- if $is_vcode -->
+			<div class="row form-group">
+				<label for="_chkcode" class="col-sm-3 text-right">验证码：</label>
+				<div class="col-sm-3">
+					<input type="text" name="_chkcode" class="form-control" id="_chkcode" placeholder="填写右边图片上的数字" />
+				</div>	
+				<div class="col-sm-3" style="margin-top:5px;text-align:left;"><img src="" border="0" align="absmiddle" id="vcode" class="hand" /></div>
+				<div class="col-sm-4"></div>
+			</div>
+			<script type="text/javascript">
+			$(document).ready(function(){
+				$("#vcode").phpok_vcode();
+				$("#vcode").click(function(){
+					$(this).phpok_vcode();
 				});
-				</script>
-				<!-- /if -->
-				<div class="am-form-group">
-					<div class="am-u-sm-3"></div>
-					<label class="am-u-sm-9"><input type="checkbox" id="is_ok" name="is_ok"> 我已阅读并完全同意阅读注册协议</label>
-			    </div>
-			    <div class="am-form-group">
-					<div class="am-u-sm-3"></div>
-					<div class="am-u-sm-9">
-						<button type="submit" class="am-btn am-btn-primary">注册会员</button>
-						<a href="{$sys.url}" class="am-btn am-btn-default am-fr">返回首页</a>
-					</div>
+			});
+			</script>
+			<!-- /if -->
+			<div class="row form-group">
+				<div class="col-sm-3"></div>
+				<label class="col-sm-9"><input type="checkbox" id="is_ok" name="is_ok"> 我已阅读并完全同意阅读<a target="_blank" href="{url id=user-registration-agreement/}">注册协议</a></label>
+		    </div>
+		    <div class="row form-group">
+				<div class="col-sm-3"></div>
+				<div class="col-sm-6">
+					<button type="submit" class="btn btn-primary">注册会员</button>
+					
 				</div>
-			</fieldset>
-			</form>
-		</div>
-		<div class="am-u-sm-6">
-			<!-- include tpl=block/protocol -->
-		</div>
+				<div class="col-sm-3 text-right"><a href="{$sys.url}">返回首页</a></div>
+			</div>
+		</form>
 	</div>
-</div>
-<script type="text/javascript">
-$(document).ready(function(){
-	$("body").css('background-color','#EFEFEF');
-});
-</script>
+</section>
 <!-- include tpl=foot -->

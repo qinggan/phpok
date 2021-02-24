@@ -1,4 +1,5 @@
-<!-- php:$title = "修改个人资料 - 会员中心" --><!-- include tpl=header title=$title -->
+<!-- php:$title = "修改个人资料_会员中心" -->
+<!-- include tpl=header title=$title -->
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#userinfo_submit").submit(function(){
@@ -21,32 +22,33 @@ $(document).ready(function(){
 	});
 });
 </script>
-<style type="text/css">
-.cp-gender{margin-top:10px;}
-</style>
-<div class="main">
-	<!-- include tpl=block/breadcrumb -->
-	<div class="left"><!-- include tpl=block/usercp_nav --></div>
-	<div class="right">
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">修改个人资料</div>
-			<div class="am-panel-bd">
-				<form method="post" id="userinfo_submit" class="am-form am-form-horizontal">
-					<input type="hidden" name="avatar" id="avatar" value="{$rs.avatar}" />
-					<!-- loop from=$extlist key=$key value=$value -->
-					<div class="am-form-group">
-						<label class="am-u-sm-2 am-form-label">{$value.title}</label>
-						<div class="am-u-sm-10 cp-{$value.identifier}">{$value.html}</div>
-					</div>
-					<!-- /loop -->
-					<div class="am-form-group">
-						<label class="am-u-sm-2 am-form-label"></label>
-						<div class="am-u-sm-10"><input type="submit" value="提交修改" class="am-btn am-btn-primary" /></div>
-					</div>
-				</form>
+<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb --></div></section>
+<section class="container">
+	<div class="row">
+		<div class="col-sm-3">
+			<!-- include tpl=block/usercp_nav -->
+		</div>
+		<div class="col-sm-9">
+			<div class="card">
+				<div class="card-header">修改个人资料</div>
+				<div class="card-body">
+					<form method="post" id="userinfo_submit">
+						<input type="hidden" name="avatar" id="avatar" value="{$rs.avatar}" />
+						<!-- loop from=$extlist key=$key value=$value -->
+						<div class="row form-group">
+							<label class="col-sm-2 am-form-label">{$value.title}</label>
+							<div class="col-sm-10 cp-{$value.identifier}">{$value.html}</div>
+						</div>
+						<!-- /loop -->
+						<div class="row form-group">
+							<label class="col-sm-2 am-form-label"></label>
+							<div class="col-sm-10"><input type="submit" value="提交修改" class="btn btn-primary" /></div>
+						</div>
+					</form>
+				</div>
 			</div>
-		</div>		
+		</div>
 	</div>
-	<div class="clear"></div>
 </div>
+</section>
 <!-- include tpl=footer -->

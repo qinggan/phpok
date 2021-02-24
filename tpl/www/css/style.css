@@ -256,8 +256,9 @@ input[type=text] + input[type=button] + input[type=button]{padding:0.415em 1em;}
 
 
 /* 产品详细页 开始 */
-.proimg{height:330px;border:1px solid #dedede;box-shadow:1px 1px 1px #dedede;}
-.proimg .product_img{position:relative; width:320px;height:320px;overflow:hidden;margin:5px;overflow:hidden;}
+.proimg{height:470px;border:1px solid #dedede;box-shadow:1px 1px 1px #dedede;}
+.proimg .product_img{position:relative; width:450px;height:450px;overflow:hidden;margin:10px;overflow:hidden;}
+.proimg .product_img img{width:100%;}
 .proimg .product_img ul{list-style:none;margin:0;padding:0;}
 .proimg .product_img ul.hd{right:10px;bottom:10px;height:12px;overflow:hidden;z-index:3;position:absolute;}
 .proimg .product_img ul.hd li{float:left;width:20px;height:10px;margin-left:5px;cursor:pointer;background:#ccc;}
@@ -324,4 +325,8 @@ section.search{
 section.search a{
 	color:#fff;
 	padding-right:10px;
+}
+
+.am-container{
+	min-width:1200px;
 }

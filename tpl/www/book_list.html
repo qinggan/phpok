@@ -1,7 +1,20 @@
 <!-- include tpl=header menutitle=$page_rs.title -->
-<!-- if $page_rs.banner -->
-<div class="banner" style="background-image:url('{$page_rs.banner.filename}');"><img src="{#images#}/blank.gif" alt="{$page_rs.title}" /></div>
-<!-- /if -->
+<section class="bg-light p-5"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+	<h1 class="p-4 text-center">{$cate_rs ? $cate_rs.title : $page_rs.title}</h1>
+	<!-- php:$taglist = $cate_rs.tag ? $cate_rs.tag : $page_rs.tag -->
+	<!-- if $taglist -->
+	<div class="container">
+		<div class="text-center m-3">
+			<span class="p-2 bg-light-50 rounded-lg">
+			标签：
+			<!-- loop from=$taglist key=$k value=$v id=$idxx -->
+			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+			<!-- /loop -->
+			</span>
+		</div>
+	</div>
+	<!-- /if -->
+</section>
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#book_post").submit(function(){
@@ -45,67 +58,76 @@ $(document).ready(function(){
 	});
 });
 </script>
-<div class="main">
-	<!-- include tpl=block/breadcrumb -->
-	<div class="am-panel-group">
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">发布新留言</div>
-			<div class="am-panel-bd">
-				<form method="post" id="book_post" class="am-form">
-				<input type="hidden" name="id" id="id" value="{$page_rs.identifier}" />
-				<!-- fields pid=$page_rs.id fields_format=1 in_title=1 -->
-				<!-- loop from=$list key=$key value=$value -->
-				<div class="am-g am-form-group">
-					<label class="am-u-sm-2" for="{$value.identifier}">{$value.title}</label>
-					<div class="am-u-sm-10">{$value.html}</div>
-				</div>
-				<!-- /loop -->
-				<!-- if $sys.is_vcode && function_exists("imagecreate") -->
-				<div class="am-g am-form-group">
-					<label class="am-u-sm-2" for="_chkcode">验证码</label>
-					<div class="am-u-sm-4"><input type="text" name="_chkcode" id="_chkcode" class="vcode" /></div>
-					<div class="am-u-sm-6"><img src="" border="0" align="absmiddle" id="update_vcode" class="hand"></div>
-					<script type="text/javascript">
-					$(document).ready(function(){
-						$("#update_vcode").phpok_vcode();
-						//更新点击时操作
-						$("#update_vcode").click(function(){
-							$(this).phpok_vcode();
-						});
-					});
-					</script>
-				</div>
-				<!-- /if -->
-				<div class="am-g am-form-group">
-					<div class="am-u-sm-2">&nbsp;</div>
-					<div class="am-u-sm-10"><input type="submit" value=" 提交 " class="am-btn am-btn-primary" /></div>
-				</div>
-				
-				</form>
-			</div>
+<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb --></div></section>
+<section class="container">
+	<div class="card">
+		<div class="card-header">
+			发布新留言
 		</div>
-
-		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">{$value.title}<small class="am-fr gray">发布时间：{func time_format $value.dateline}</small></div>
-			<div class="am-panel-bd">
-				<div class="content">
-					{$value.content}
-					<!-- if $value.pic -->
-					<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered" data-am-gallery="{  }">
-						<!-- loop from=$value.pic key=$k value=$v id=$idxx -->
-						<li><div class="am-gallery-item"><a href="{$v.gd.auto}" target="_blank"><img src="{$v.gd.thumb}" /></a></div></li>
-						<!-- /loop -->
-					</ul>
-					<!-- /if -->
-				</div>
-				<!-- if $value.adm_reply -->
-				<div class="adm_reply"><div class="adminer">管理员回复：</div>{$value.adm_reply}</div>
-				<!-- /if -->
+		<div class="card-body">
+			<form method="post" id="book_post">
+			<input type="hidden" name="id" id="id" value="{$page_rs.identifier}" />
+			<!-- fields pid=$page_rs.id fields_format=1 in_title=1 -->
+			<!-- loop from=$list key=$key value=$value -->
+			<div class="form-group clearfix">
+				<label for="{$value.identifier}">{$value.title}</label>
+				{$value.html}
 			</div>
+			<!-- if $value.form_type == 'text' -->
+			<script type="text/javascript">
+			$(document).ready(function(){
+				$("#{$value.identifier}").addClass("form-control");
+			});
+			</script>
+			<!-- /if -->
+			<!-- /loop -->
+			<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+			<div class="form-group">
+				<div class="row">
+				<div class="col-sm-3"><input class="form-control"  type="text" name="_chkcode" id="_chkcode" placeholder="请填写验证码" /></div>
+				<div class="col-sm-2"><img src="" border="0" align="absmiddle" id="vcode" class="hand" /></div>
+				</div>
+			</div>
+			<script type="text/javascript">
+			$(document).ready(function(){
+				$("#vcode").phpok_vcode();
+				$("#vcode").click(function(){
+					$(this).phpok_vcode();
+				});
+			});
+			</script>
+			<!-- /if -->
+			<div class="form-group d-block mt-4">
+				<input name="" type="submit" class="btn btn-primary" value="提交" />
+			</div>
+			</form>
 		</div>
-		<!-- /loop -->
-		<!-- include tpl=block/pagelist -->
 	</div>
-</div>
+</section>
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<section class="container">
+	<div class="card mt-3">
+		<div class="card-header">
+			{$value.title}<small class="float-right">发布时间：{func time_format $value.dateline}</small>
+		</div>
+		<div class="card-body">
+			<p class="card-text">{$value.content}</p>
+			<!-- if $value.pic -->
+			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+				<!-- loop from=$value.pic key=$k value=$v id=$idxx -->
+				<div class="col p-2"><a href="{$v.gd.auto}" target="_blank"><img src="{$v.gd.thumb}" alt="{$v.title}" class="rounded" style="max-width:100%" /></a></div>
+				<!-- /loop -->
+			</div>
+			<!-- /if -->
+			<!-- if $value.adm_reply -->
+			<fieldset class="admin-reply">
+				<legend>管理员回复</legend>
+				<div class="content">{$value.adm_reply}</div>
+			</fieldset>
+			<!-- /loop -->
+		</div>
+	</div>
+</section>
+<!-- /loop -->
+<div class="mt-2"><!-- include tpl=block/pagelist --></div>
 <!-- include tpl=footer -->

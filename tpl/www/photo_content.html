@@ -1,62 +1,60 @@
 <!-- include tpl=header menutitle=$page_rs.title -->
-<!-- if $cate_rs.banner || $page_rs.banner -->
-<div class="banner" style="background-image:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}');"><img src="{#images#}/blank.gif" alt="{$cate_rs.title}" /></div>
-<!-- /if -->
-<div class="main">
-	<!-- include tpl=block/breadcrumb -->
-	<article class="am-article">
-		<div class="am-article-hd">
-			<h1 class="am-article-title">{$rs.title}</h1>
-			<p class="am-article-meta">
-				发布日期：<span>{func time_format $rs.dateline}</span>&nbsp; &nbsp;
-				浏览次数：<span id="lblVisits">{$rs.hits}</span>
-				<!-- if $rs.tag -->
-				&nbsp; &nbsp; 关键字：
-					<!-- loop from=$rs.tag key=$key value=$value -->
-					<a href="{$value.url}" title="{$value.alt}" target="{$value.target}" style="color:#999;">{$value.title}</a>
-					<!-- /loop -->
-				<!-- /if -->
-			</p>
+<section class="bg-light p-5"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+	<h1 class="p-4 text-center">{$rs.title}</h1>
+	<!-- if $rs.note -->
+	<h6 class="text-center">{$rs.note}</h6>
+	<!-- /if -->
+	<div class="container">
+		<div class="text-center d-block m-4">
+			<span class="p-2 bg-light-50 rounded-lg ">
+				发布日期：{func time_format $rs.dateline} &nbsp; &nbsp;
+				浏览次数：{$rs.hits}
+			</span>
 		</div>
-		<div class="am-article-bd">
-			<!-- if $rs.note --><p class="am-article-lead">{func nl2br $rs.note}</p><!-- /if -->
-			<!-- if $rs.pictures -->
-			<div data-am-widget="slider" class="am-slider am-slider-c3" data-am-slider='{"controlNav":false}'>
-				<ul class="am-slides">
-					<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
-					<li>
-						<img src="{$value.gd.auto}" />
-						<div class="am-slider-desc"><div class="am-slider-counter"><span class="am-active">{$tmpid.num}</span>/{$tmpid.total}</div>{$value.title}</div>
-					</li>
-					<!-- /loop -->
-				</ul>
+		<!-- if $rs.tag -->
+		<div class="text-center m-3">
+			<span class="p-2 bg-light-50 rounded-lg">
+			标签：
+			<!-- loop from=$rs.tag key=$k value=$v id=$idxx -->
+			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+			<!-- /loop -->
+			</span>
+		</div>
+		<!-- /if -->
+	</div>
+</section>
+<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb --></div></section>
+<section class="container">
+	<div id="slider_{$page_rs.id}" class="carousel slide" data-ride="carousel">
+		<ol class="carousel-indicators">
+			<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
+			<li data-target="#slider_{$page_rs.id}" data-slide-to="{$tmpid.index}"{if !$tmpid.index} class="active"{/if}></li>
+			<!-- /loop -->
+		</ol>
+		<div class="carousel-inner">
+			<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
+			<div class="carousel-item{if !$tmpid.index} active{/if}">
+				<img src="{$value.gd.auto}" class="d-block w-100" alt="{$value.title}" />
 			</div>
-
-			<!-- /if -->
-			<!-- if $rs.content -->
-			<div class="content">{$rs.content}</div>
-			<!-- /if -->
+			<!-- /loop -->
 		</div>
-	</article>
-	<hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
-	<ul class="am-avg-sm-2">
-		<li>上一主题：
-			<!-- php:$prev = phpok_prev($rs) -->
-			<!-- if $prev -->
-			<a href="{$prev.url}" title="{$prev.title}">{$prev.title}</a>
-			<!-- else -->
-			没有了
-			<!-- /if -->
-		</li>
-		<li style="text-align:right;">下一主题：
-			<!-- php:$next = phpok_next($rs) -->
-			<!-- if $next -->
-			<a href="{$next.url}" title="{$next.title}">{$next.title}</a>
-			<!-- else -->
-			没有了
-			<!-- /if -->
-		</li>
-	</ul>
-	<!-- if $page_rs.comment_status --><!-- include tpl=block/comment tid=$rs.id --><!-- /if -->
-</div>
+		<a class="carousel-control-prev" href="#slider_{$page_rs.id}" role="button" data-slide="prev">
+			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			<span class="sr-only">下一张</span>
+		</a>
+		<a class="carousel-control-next" href="#slider_{$page_rs.id}" role="button" data-slide="next">
+			<span class="carousel-control-next-icon" aria-hidden="true"></span>
+			<span class="sr-only">下一张</span>
+		</a>
+	</div>
+	<!-- if $rs.content -->
+	<div class="p-4">
+		<div class="content">{$rs.content}</div>
+	</div>
+	<!-- /if -->
+	<!-- include tpl=block/next_prev -->
+	<!-- if $page_rs.comment_status -->
+		<!-- include tpl=block/comment tid=$rs.id -->
+	<!-- /if -->
+</section>
 <!-- include tpl=footer -->

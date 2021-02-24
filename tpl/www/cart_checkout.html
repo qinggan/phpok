@@ -106,178 +106,179 @@ function update_coupon()
 	})
 }
 </script>
-<div class="main">
-	<!-- include tpl=block/breadcrumb -->
+<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb --></div></section>
+<section class="container">
 	<form method="post" id="saveorder" onsubmit="return check_it()" class="am-form am-form-horizontal">
 	<input type="hidden" name="is_virtual" id="is_virtual" value="{$is_virtual ? 1 : 0}" />
-	<div class="am-panel-group">
-		<!-- if !$session.user_id -->
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-bd am-text am-text-center" style="padding:20px;">
-				<strong class="red">友情提示：</strong>我们强烈建议成为我们的会员再下单<br /><br />
-				<div class="am-g">
-					<input type="button" value="您还未登录，请先登录" onclick="$.user.login()" class="am-btn am-btn-secondary am-btn-xs" />
-					<a href="{url ctrl=register/}" target="_blank" class="am-btn am-btn-default am-btn-xs">还没有注册，请先注册</a>
-				</div>
+	<!-- if !$session.user_id -->
+	<div class="card mb-3">
+		<div class="card-header">
+			友情提示：我们强烈建议成为我们的会员再下单
+		</div>
+		<div class="card-body">
+			<div class="p-4 m-4 text-center">
+				<input type="button" value="您还未登录，请先登录" onclick="$.user.login()" class="btn btn-secondary" />
+				<a href="{url ctrl=register/}" target="_blank" class="btn btn-primary">还没有注册，请先注册</a>
 			</div>
 		</div>
-		<!-- /if -->
-		<!-- if $is_virtual -->
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">收件人信息</div>
-			<div class="am-panel-bd">
-				<div class="am-form-group">
-					<label for="email" class="am-u-sm-2 am-form-label">Email</label>
-					<div class="am-u-sm-10">
-						<input type="email" id="email" name="email" placeholder="输入你的电子邮件" value="{$address.email}"/>
-					</div>
-				</div>
-				<div class="am-form-group">
-					<label for="mobile" class="am-u-sm-2 am-form-label">手机号</label>
-					<div class="am-u-sm-10">
-						<input type="tel" id="mobile" name="mobile" placeholder="填写手机号" value="{$address.mobile}"/>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- else -->
-			<!-- include tpl=block/cart_checkout_address -->
-		<!-- /if -->
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">产品信息</div>
-			<table class="am-table am-table-centered">
-				<thead>
-					<tr>
-						<th>图片</th>
-						<th class="am-text-left">名称</th>
-						<th width="80px">数量</th>
-						<th width="150px" class="am-text-left">售价</th>
-					</tr>
-				</thead>
-				<tbody>
-					<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-					<tr>
-						<td><input type="hidden" name="id[]" data-name="product" value="{$value.id}" /><img src="{$value.thumb ? $value.thumb : 'images/nopic.png'}" width="80px" border="0" alt="{$value.title}" /></td>
-						<td class="am-text-left">
-							<div><b>{$value.title}</b></div>
-							<!-- loop from=$value._attrlist key=$k value=$v id=$tmpid -->
-							<div>{$v.title}：{$v.content}</div>
-							<!-- /loop -->
-							<div>单价：{func price_format $value.price $value.currency_id}</div>
-						</td>
-						<td>{$value.qty}</td>
-						<td class="am-text-danger am-text-left">{func price_format $value.price*$value.qty $value.currency_id}</td>
-					</tr>
-					<!-- /loop -->
-				</tbody>
-			</table>
-		</div>
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">优惠码</div>
-			<div class="am-panel-bd">
-				<div class="am-g am-g-collapse">
-					<div class="am-u-sm-2"><input type="text" name="coupon" id="coupon" value="{$coupon_code}" /></div>
-					<div class="am-u-sm-1"><input type="button" value="提交优惠码" onclick="update_coupon()" class="am-btn am-btn-primary" /></div>
-					<div class="am-u-sm-8" id="coupon_tips"></div>
-				</div>
-			</div>
-		</div>
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">留言，填写您对购买的商品特别要求，不能超过80字</div>
-			<div class="am-panel-bd">
-				<textarea name="note" id="note" style="resize:none;"></textarea>
-			</div>
-		</div>
-		<div class="am-panel am-panel-default" id="price_info_panel">
-			<div class="am-panel-hd">信息汇总</div>
-			<div class="am-panel-bd" id="price_info">
-				<table class="am-table am-table-centered">
-					<tbody>
-						<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
-						<tr>
-							<td class="am-text-right">
-								<input type="hidden" name="ext_price[{$value.identifier}]" id="ext_price_{$value.identifier}" value="" />
-								{$value.title}：</td>
-							<td id="{$value.identifier}_price" class="am-text-danger am-text-left">{$value.price}</td>
-						</tr>
-						<!-- /loop -->
-						<tr>
-							<td class="am-text-right">总价：</td>
-							<td id="all_price" class="am-text-danger am-text-left" width="150px">{$price}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<!-- if $integral -->
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">积分抵扣，仅支持100的整数倍，不支持小数</div>
-			<ul class="am-list am-list-static">
-				<!-- loop from=$integral key=$key value=$value -->
-			    <li>
-				    <div class="am-g">
-					    <div class="am-u-sm-9" style="margin-top:9px;">您当前的 <span class="am-text-danger">{$value.title}</span> 有 <span class="am-text-danger">{$value.val}</span>{$value.unit}，最多可抵现金<span class="red">{func price_format $value.price}</span></div>
-					    <div class="am-u-sm-2">
-						    <table>
-						    	<tr>
-						    		<td style="width:50px;text-align:right;">支出：</td>
-						    		<td><input type="text" name="integral_val[{$key}]" data-name="integral" data-key="{$key}" /></td>
-						    		<td>&nbsp;{$value.unit}</td>
-						    	</tr>
-						    </table>
-						    
-						    
-					    </div>
-				    </div>
-			    </li>
-			    <!-- /loop -->
-			</ul>
-		</div>
-		<!-- /if -->
-		<!-- if $paylist || $balance -->
-		<div class="am-panel">
-			<div class="am-panel-bd">
-				<div class="am-tabs" data-am-tabs>
-					<ul class="am-tabs-nav am-nav am-nav-tabs">
-						<li style="line-height:1.6;padding:0.4rem 1rem;">请选择支付方式：</li>
-						<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
-						<li{if !$tmpid.index} class="am-active"{/if}><a href="javascript:void(0);">{$value.title}</a></li>
-						<!-- /loop -->
-						<!-- if $balance -->
-						<li{if !$paylist} class="am-active"{/if}><a href="javascript:void(0);">余额支付</a></li>
-						<!-- /if -->
-					</ul>
-					<div class="am-tabs-bd">
-						<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
-						<div class="am-tab-panel am-fade{if !$tmpid.index} am-in am-active{/if}">
-							<!-- loop from=$value.paylist key=$k value=$v id=$idxx -->
-							<div class="am-radio">
-								<label><input type="radio" name="payment" value="{$v.id}"{if !$tmpid.index && !$idxx.index} checked{/if}/>{$v.title}</label>
-							</div>
-							<!-- /loop -->
-						</div>
-						<!-- /loop -->
-						<div class="am-tab-panel am-fade">
-							<!-- loop from=$balance key=$key value=$value -->
-							<div class="am-radio">
-								<label><input name="payment" type="radio" value="{$value.identifier}" data-price="{$price_val}" data-balance="{$value.price}" />您当前的{$value.title}有<span class="red">{$value.val}</span>{$value.unit}
-								<!-- if $price_val > $value.price -->
-								，您的余额不够，请 <a href="{url ctrl=payment id=$value.id/}" target="_blank"><b>在线充值</b></a>
-								<!-- /if -->
-								</label>
-							</div>
-							<!-- /loop -->
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- /if -->
 	</div>
-	<div class="am-g am-g-collapse">
-		<div class="am-u-sm-6"></div>
-		<div class="am-u-sm-6"><input type="submit" value="提交订单" class="am-btn am-btn-primary am-fr" /></div>
+	<!-- /if -->
+	<!-- if $is_virtual -->
+	<div class="card">
+		<div class="card-header">
+			收件人信息
+		</div>
+		<div class="card-body">
+			<div class="form-group">
+				<label for="email">Email</label>
+				<input type="email" class="form-control" id="email" name="email" placeholder="输入你的电子邮件" value="{$address.email}"/>
+			</div>
+			<div class="form-group">
+				<label for="mobile">手机号</label>
+				<input type="tel" class="form-control" id="mobile" name="mobile" placeholder="填写手机号" value="{$address.mobile}"/>
+			</div>
+		</div>
+	</div>
+	<!-- else -->
+		<!-- include tpl=block/cart_checkout_address -->
+	<!-- /if -->
+	<div class="card mt-3">
+		<div class="card-header">
+			产品信息
+		</div>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>图片</th>
+					<th>名称</th>
+					<th width="80px">数量</th>
+					<th width="150px">售价</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+				<tr>
+					<td><input type="hidden" name="id[]" data-name="product" value="{$value.id}" /><img src="{$value.thumb ? $value.thumb : 'images/nopic.png'}" width="80px" border="0" alt="{$value.title}" /></td>
+					<td>
+						<div><b>{$value.title}</b></div>
+						<!-- loop from=$value._attrlist key=$k value=$v id=$tmpid -->
+						<div>{$v.title}：{$v.content}</div>
+						<!-- /loop -->
+						<div>单价：{func price_format $value.price $value.currency_id}</div>
+					</td>
+					<td>{$value.qty}</td>
+					<td class="text-danger">{func price_format $value.price*$value.qty $value.currency_id}</td>
+				</tr>
+				<!-- /loop -->
+			</tbody>
+		</table>
+	</div>
+	<div class="card mt-3">
+		<div class="card-header">
+			优惠码
+		</div>
+		<div class="card-body">
+			<div class="row">
+				<div class="col-sm-3"><input type="text" name="coupon" class="form-control" id="coupon" value="{$coupon_code}" /></div>
+				<div class="col-sm-1"><input type="button" value="提交优惠码" onclick="update_coupon()" class="btn btn-primary" /></div>
+				<div class="col-sm-8" id="coupon_tips"></div>
+			</div>
+		</div>
+	</div>
+	<div class="card mt-3">
+		<div class="card-header">
+			留言，填写您对购买的商品特别要求，不能超过80字
+		</div>
+		<div class="card-body">
+			
+			<textarea name="note" id="note" class="form-control" style="resize:none;"></textarea>
+		</div>
+	</div>
+	<div class="card mt-3">
+		<div class="card-header">
+			信息汇总
+		</div>
+		<table class="table am-table-centered">
+			<tbody>
+				<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
+				<tr>
+					<td class="text-right">
+						<input type="hidden" name="ext_price[{$value.identifier}]" id="ext_price_{$value.identifier}" value="" />
+						{$value.title}：</td>
+					<td id="{$value.identifier}_price" class="text-danger">{$value.price}</td>
+				</tr>
+				<!-- /loop -->
+				<tr>
+					<td class="text-right">总价：</td>
+					<td id="all_price" class="text-danger" width="150px">{$price}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<!-- if $integral -->
+	<div class="card mt-3">
+		<div class="card-header">积分抵扣，仅支持100的整数倍，不支持小数</div>
+		<ul class="list-group list-group-flush">
+			<!-- loop from=$integral key=$key value=$value -->
+		    <li class="list-group-item">
+			    <div class="row">
+				    <div class="col-sm-8">您当前的<span class="am-text-danger">{$value.title}</span>有 <span class="am-text-danger">{$value.val}</span>{$value.unit}，最多可抵现金<span class="red">{func price_format $value.price}</span></div>
+				    <div class="col-sm-4">
+					    <table>
+					    	<tr>
+					    		<td style="width:60px;text-align:right;">支出：</td>
+					    		<td><input type="text" name="integral_val[{$key}]" class="form-control" data-name="integral" data-key="{$key}" /></td>
+					    		<td>&nbsp;{$value.unit}</td>
+					    	</tr>
+					    </table>
+				    </div>
+			    </div>
+		    </li>
+		    <!-- /loop -->
+		</ul>
+	</div>
+	<!-- /if -->
+	<!-- if $balance -->
+	<div class="card mt-3">
+		<div class="card-header">余额支付</div>
+		<div class="card-body">
+			<!-- loop from=$balance key=$key value=$value -->
+			<div class="form-check">
+				<label class="form-check-label mb-2">
+			    	<input type="radio" class="form-check-input" name="payment" value="{$value.identifier}" data-price="{$price_val}" data-balance="{$value.price}" />
+			    	您当前的{$value.title}有<span class="red">{$value.val}</span>{$value.unit}
+			    	<!-- if $price_val > $value.price -->
+					，您的{$value.title}不够，请 <a href="{url ctrl=payment id=$value.id/}" target="_blank"><b>在线充值</b></a>
+					<!-- /if -->
+				</label>
+			</div>
+			<!-- /loop -->
+		</div>
+	</div>
+	<!-- /if -->
+	<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+	
+	
+	<div class="card mt-3">
+		<div class="card-header">{$value.title}</div>
+		<div class="card-body">
+			<!-- loop from=$value.paylist key=$k value=$v id=$idxx -->
+			<div class="form-check">
+				<label class="form-check-label mb-2">
+			    	<input type="radio" class="form-check-input" name="payment" value="{$v.id}"{if !$tmpid.index && !$idxx.index} checked{/if} />
+			    	<!-- if $v.logo1 -->
+			    	<img src="{$v.logo1}" style="width:40px;"  />
+			    	<!-- /if -->
+			    	{$v.title}
+				</label>
+			</div>
+			<!-- /loop -->
+		</div>
+	</div>
+	<!-- /loop -->
+	<div class="m-3 text-center">
+		<input type="submit" value="提交订单" class="btn btn-primary btn-lg" />
 	</div>
 	</form>
-</div>
+</section>
 <!-- include tpl=footer -->

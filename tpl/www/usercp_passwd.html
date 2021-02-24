@@ -1,4 +1,4 @@
-<!-- php:$title = "修改个人密码 - 会员中心" --><!-- include tpl=header title=$title -->
+<!-- php:$title = "修改个人密码_会员中心" --><!-- include tpl=header title=$title -->
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#userinfo_password").submit(function(){
@@ -21,46 +21,47 @@ $(document).ready(function(){
 	});
 });
 </script>
-<div class="main">
-	<!-- include tpl=block/breadcrumb -->
-	<div class="left"><!-- include tpl=block/usercp_nav --></div>
-	<div class="right am-panel-group">
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">密码修改</div>
-			<div class="am-panel-bd">
-				<form method="post" id="userinfo_password" class="am-form am-form-horizontal">
-				<!-- if $rs.pass -->
-				<div class="am-form-group">
-					<label for="oldpass" class="am-u-sm-2 am-form-label">旧密码</label>
-					<div class="am-u-sm-10"><input type="password" name="oldpass" id="oldpass" /></div>
-				</div>
-				<!-- /if -->
-				<div class="am-form-group">
-					<label for="newpass" class="am-u-sm-2 am-form-label"> 新密码</label>
-					<div class="am-u-sm-10"><input type="password" name="newpass" id="newpass" /></div>
-				</div>
-				<div class="am-form-group">
-					<label for="chkpass" class="am-u-sm-2 am-form-label">确认新密码</label>
-					<div class="am-u-sm-10"><input type="password" name="chkpass" id="chkpass" /></div>
-				</div>
-				<div class="am-form-group">
-					<label class="am-u-sm-2 am-form-label"></label>
-					<div class="am-u-sm-10"><input type="submit" id="phpok_submit" value="提 交" class="am-btn am-btn-primary"></div>
-				</div>
-				</form>
-			</div>
+<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb --></div></section>
+<section class="container">
+	<div class="row">
+		<div class="col-sm-3">
+			<!-- include tpl=block/usercp_nav -->
 		</div>
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">友情说明</div>
-			<div class="am-panel-bd">
-				<ul>
-					<li>密码长度不能小于6位数</li>
-					<li>为保证您数据的安全，密码建议您使用：字母+数字+大小写混合</li>
+		<div class="col-sm-9">
+			<div class="card">
+				<div class="card-header">密码修改</div>
+				<div class="card-body">
+					<form method="post" id="userinfo_password">
+					<!-- if $rs.pass -->
+					<div class="row form-group">
+						<label for="oldpass" class="col-sm-2 text-right">旧密码</label>
+						<div class="col-sm-10"><input type="password" name="oldpass" id="oldpass" /></div>
+					</div>
+					<!-- /if -->
+					<div class="row form-group">
+						<label for="newpass" class="col-sm-2 text-right"> 新密码</label>
+						<div class="col-sm-10"><input type="password" name="newpass" id="newpass" /></div>
+					</div>
+					<div class="row form-group">
+						<label for="chkpass" class="col-sm-2 text-right">确认新密码</label>
+						<div class="col-sm-10"><input type="password" name="chkpass" id="chkpass" /></div>
+					</div>
+					<div class="row form-group">
+						<label class="col-sm-2 text-right"></label>
+						<div class="col-sm-10"><input type="submit" id="phpok_submit" value="提 交" class="btn btn-primary"></div>
+					</div>
+					</form>
+				</div>
+			</div>
+			<div class="card mt-3">
+				<div class="card-header">友情说明</div>
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item">密码长度不能小于6位数</li>
+					<li class="list-group-item">为保证您数据的安全，密码建议您使用：字母+数字+大小写混合</li>
 				</ul>
 			</div>
 		</div>
 	</div>
-	<div class="clear"></div>
 </div>
-
+</section>
 <!-- include tpl=footer -->

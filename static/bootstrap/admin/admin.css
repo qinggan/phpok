@@ -1,0 +1,91 @@
+/**
+ * 后台默认样式
+ * @作者 苏相锟 <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
+ * @时间 2021年1月2日
+**/
+.design_parent{
+	border:1px solid #efefef;
+	padding:3px;
+	position: relative;
+	height:auto;
+}
+.design_preview{
+	width:100%;
+	position:relative;
+	height:auto;
+}
+
+div[pre-type=layer]{
+	min-height:30px;
+}
+
+div[pre-type=content]{
+	min-height:30px;
+}
+
+div[pre-type=data]{
+	min-height:30px;
+	cursor: pointer;
+	position: relative;
+	background:#fefefe;
+}
+
+div[pre-type=data]:hover{
+	background:#eee;
+}
+
+div[pre-type=data] > div[pre-type=content]{
+	border:1px dashed #ccc;
+	height:100%;
+	display:block;
+}
+
+div[pre-type=data]:hover > div[pre-type=content]{
+	border-color:#1d5595;
+}
+
+div.active[pre-type=data] > div[pre-type=content]{
+	border-color:darkred;
+}
+
+div[pre-type=toolbar]{
+	position: absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	text-align:center;
+	display:none;
+	z-index:999;
+}
+
+div[pre-type=data]:hover div[pre-type=toolbar]{
+	display:block;
+}
+div.active[pre-type=data] div[pre-type=toolbar]{
+	display:block;
+}
+
+div[pre-type=content]{ line-height:170%;font-size:1.2em;font-weight:500;}
+.list-paddingleft-2{
+	padding-left:3em;
+}
+.list-paddingleft-2 li{
+	list-style-type:inherit;
+}
+div[pre-type=content] h3{
+	font-size:1.4em;
+	margin:0.5em auto;
+}
+
+div[pre-type=content] h4{
+	font-size:1.2em;
+	margin:0.5em auto;
+}
+div[pre-type=content] p{ margin:0 auto 1em auto;}
+div[pre-type=content] table {border: 1px solid #ddd;border-collapse: collapse;display: table;}
+div[pre-type=content] table td {border: 1px solid #ddd;padding: 5px 10px;}
+div[pre-type=content] table th {border: 1px solid #ddd;background-color: #f7f7f7;padding: 5px 10px;}

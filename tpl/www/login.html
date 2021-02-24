@@ -1,50 +1,47 @@
 <!-- include tpl=head title=会员登录 -->
-<div class="main main-single main-login am-animation-scale-up">
-	<form class="am-form" onsubmit="return $.user.login_ok()" method="post" id="login-submit">
+<section class="container">
+<div class="p-4 m-4">
+	<form class="p-4 m-4" onsubmit="return $.user.login_ok()" method="post" id="login-submit">
 		<input type="hidden" name="_back" id="_back" value="{$_back}" />
-		<fieldset>
-			<legend>会员登录</legend>
-			<div class="am-form-group">
-				<label for="doc-ipt-email-1">账号</label>
-				<input type="text" class="" id="doc-ipt-email-1" name="user" placeholder="请输入账号/邮箱/手机号" />
-			</div>
-			<div class="am-form-group">
-				<label for="doc-ipt-pwd-1">密码</label>
-				<input type="password" id="doc-ipt-pwd-1" name="pass" placeholder="请输入密码" />
-			</div>
-			<!-- if $is_vcode -->
-			<div class="am-form-group">
-				<label for="_chkcode">验证码 <img src="" border="0" align="absmiddle" id="vcode" class="hand" /></label>
-				<input type="text" name="_chkcode" id="_chkcode" placeholder="请输入图片上的数字" />
-				
-			</div>
-			<script type="text/javascript">
-			$(document).ready(function(){
-				$("#vcode").phpok_vcode();
-				$("#vcode").click(function(){
-					$(this).phpok_vcode();
-				});
+		<h3>会员登录</h3>
+		<div class="form-group">
+			<label for="doc-ipt-email-1">账号</label>
+			<input type="text" class="form-control" id="doc-ipt-email-1" name="user" placeholder="请输入账号/邮箱/手机号" />
+		</div>
+		<div class="form-group">
+			<label for="doc-ipt-pwd-1">密码</label>
+			<input type="password" class="form-control" id="doc-ipt-pwd-1" name="pass" placeholder="请输入密码" />
+		</div>
+		<!-- if $is_vcode -->
+		<div class="form-group">
+			<label for="_chkcode">验证码 <img src="" border="0" align="absmiddle" id="vcode" class="hand" /></label>
+			<input type="text" class="form-control" name="_chkcode" id="_chkcode" placeholder="请输入图片上的数字" />
+			
+		</div>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#vcode").phpok_vcode();
+			$("#vcode").click(function(){
+				$(this).phpok_vcode();
 			});
-			</script>
-			<!-- /if -->
-			<div class="am-form-group">
-				<button type="submit" class="am-btn am-btn-primary">登录</button>
-				<div class="am-fr">
-					<a href="{$sys.url}" class="am-btn am-btn-default am-btn-xs">返回首页</a>
-				</div>
+		});
+		</script>
+		<!-- /if -->
+		<div class="row">
+			<div class="col">
+				<button type="submit" class="btn btn-primary">登录</button>
 			</div>
-			<div class="am-form-group">
-				<a href="{url ctrl=register/}" class="am-btn am-btn-warning am-btn-xs"><i class="am-icon-user"></i> 新会员注册</a>
-				<!-- if $login_sms --><a href="{url ctrl=login func=sms/}" class="am-btn am-btn-default am-btn-xs"><i class="am-icon-mobile"></i> 短信登录</a><!-- /if -->
-				<!-- if $login_email --><a href="{url ctrl=login func=email/}" class="am-btn am-btn-default am-btn-xs"><i class="am-icon-envelope-o"></i> 邮件登录</a><!-- /if -->
-				<!-- if $login_sms || $login_email --><a href="{url ctrl=login func=getpass/}" class="am-btn am-btn-default am-btn-xs"><i class="am-icon-refresh"></i> 找回密码</a><!-- /if -->
+			<div class="col text-right">
+				<a href="{$sys.url}" class="btn btn-primary">返回首页</a>
 			</div>
-		</fieldset>
+		</div>
+		<div class="p-4 text-center">
+			<a href="{url ctrl=register/}"><i class="am-icon-user"></i> 新会员注册</a>
+			<!-- if $login_sms --><a href="{url ctrl=login func=sms/}"><i class="am-icon-mobile"></i> 短信登录</a><!-- /if -->
+			<!-- if $login_email --><a href="{url ctrl=login func=email/}"><i class="am-icon-envelope-o"></i> 邮件登录</a><!-- /if -->
+			<!-- if $login_sms || $login_email --><a href="{url ctrl=login func=getpass/}"><i class="am-icon-refresh"></i> 找回密码</a><!-- /if -->
+		</div>
 	</form>
 </div>
-<script type="text/javascript">
-$(document).ready(function(){
-	$("body").css('background-color','#EFEFEF');
-});
-</script>
+</section>
 <!-- include tpl=foot -->

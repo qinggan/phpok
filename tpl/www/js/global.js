@@ -29,7 +29,28 @@ function logout(t)
 	$.phpok.go(get_url('logout'));
 }
 
+function country_change(id)
+{
+	var url = api_url('worlds','change','country_id='+id);
+	var obj = $.dialog.tips('正在切换国家，请稍候…',100).lock();
+	$.phpok.json(url,function(rs){
+		obj.close();
+		if(!rs.status){
+			$.dialog.alert(rs.info);
+			return false;
+		}
+		$.phpok.reload();
+	})
+}
 
+function scroll_act()
+{
+	if ($(window).scrollTop() < 30) {
+		$(".headnav").css("position","relative");
+	}else{
+		$(".headnav").css("position","fixed").css('top','0').css("z-index",9999);
+	}
+}
 
 ;(function($){
 	var timeout_obj = null;
@@ -70,8 +91,8 @@ function logout(t)
 			$.dialog.open(url,{
 				'title':title,
 				'lock':true,
-				'width':'300px',
-				'height':'180px',
+				'width':'420px',
+				'height':'200px',
 				'ok':function(){
 					var iframe = this.iframe.contentWindow;
 					if (!iframe.document.body) {
@@ -287,7 +308,7 @@ function logout(t)
 		del:function(id)
 		{
 			$.dialog.confirm(p_lang('确定要删除这个地址吗？地址ID {id}',"#"+id),function(){
-				var url = api_url('usercp','address_delete','id='+id);
+				var url = api_url('address','delete','id='+id);
 				$.phpok.json(url,function(){
 					$.phpok.reload();
 				})
@@ -296,7 +317,7 @@ function logout(t)
 		set_default:function(id)
 		{
 			$.dialog.confirm(p_lang('确定要设置这个地址为默认地址吗？地址ID {id}',"#"+id),function(){
-				var url = api_url('usercp','address_default','id='+id);
+				var url = api_url('address','default','id='+id);
 				$.phpok.json(url,function(){
 					$.phpok.reload();
 				})
@@ -305,6 +326,14 @@ function logout(t)
 	}
 })(jQuery);
 
+function dropdownOpen() {
+    var $dropdownLi = $('li.dropdown');
+    $dropdownLi.mouseover(function() {
+        $(this).addClass('show').find(".dropdown-menu").addClass('show');
+    }).mouseout(function() {
+        $(this).removeClass('show').find(".dropdown-menu").removeClass('show');
+    });
+}
 
 $(document).ready(function(){
     //返回顶部
@@ -337,7 +366,7 @@ $(document).ready(function(){
 		});
 	}
 
-
+	//评论操作
 	if($("#comment-post").length > 0){
 	    //提交评论
 	    $("#comment-post").submit(function(){
@@ -352,6 +381,7 @@ $(document).ready(function(){
 		});
 	}
 
+	//客服操作
 	$(".floatbar .weixin").hover(function(){
 		var src = $(this).find(".wxpic").attr("data-filename");
 		var html = '<img src="'+src+'" border="0" />';
@@ -365,7 +395,15 @@ $(document).ready(function(){
 		$.phpok.json(api_url('task'),true);
 	}, 800);
 
+	//电商操作
 	if(biz_status && biz_status != 'undefined' && biz_status == '1'){
 		$.cart.total();
 	}
+
+	scroll_act();
+	$(window).scroll(function(event) {
+		scroll_act();
+	});
+	$(document).off('click.bs.dropdown.data-api');
+	dropdownOpen();//调用
 });

@@ -1,4 +1,4 @@
-<!-- php:$title = ($cate_rs && $cate_rs.id != $page_rs.cate) ? '发布主题 - '.$cate_rs.title.' - '.$page_rs.title : '发布主题 - '.$page_rs.title -->
+<!-- php:$title = ($cate_rs && $cate_rs.id != $page_rs.cate) ? '发布主题_'.$cate_rs.title.'_'.$page_rs.title : '发布主题_'.$page_rs.title -->
 <!-- include tpl=header title=$title menutitle=$page_rs.title -->
 <!-- include file=bbs_post -->
 <script type="text/javascript">
@@ -30,46 +30,45 @@ $(document).ready(function(){
 			return false;
 		}
 		$(this).ajaxSubmit({
-			'url':api_url('post','save'),
+			'url':api_url('post','ok'),
 			'type':'post',
 			'dataType':'json',
 			'success':function(rs){
-				if(rs.status == 'ok'){
-					$.dialog.alert('您的信息已发布，感谢您的提交',function(){
-						$.phpok.go("{$_back}");
-					});
-				}else{
-					$.dialog.alert(rs.content,function(){
+				if(!rs.status){
+					$.dialog.alert(rs.info,function(){
 						$("#_vcode").phpok_vcode();
 						$("#_chkcode").val('');
 					});
 					return false;
 				}
+				$.dialog.alert('您的信息已发布，感谢您的提交',function(){
+					$.phpok.go("{$_back}");
+				});
 			}
 		});
 		return false;
 	});
 });
 </script>
-<div class="main">
-	
-	<!-- include tpl=block/breadcrumb leader=$leader -->
-	<div class="am-panel am-panel-default">
-		<div class="am-panel-hd">发新贴</div>
-		<div class="am-panel-bd">
+<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb leader=$leader --></div></section>
+
+<section class="container">
+	<div class="card">
+		<div class="card-header">发新贴</div>
+		<div class="card-body">
 			<form method="post" id="post_submit" class="am-form">
 			<input type="hidden" name="id" id="id" value="{$page_rs.identifier}" />
 			<!-- if $cate_rs -->
 			<input type="hidden" name="cate_id" id="cate_id" value="{$cate_rs.id}" />
 			<!-- /if -->
-			<div class="am-g am-form-group">
-				<label class="am-u-sm-2" for="title">主题名称</label>
-				<div class="am-u-sm-10"><input type="text" name="title" id="title" /></div>
+			<div class="row form-group">
+				<label class="col-sm-2" for="title">主题名称</label>
+				<div class="col-sm-10"><input type="text" name="title" id="title" /></div>
 			</div>
 			<!-- if $catelist && !$cate_rs -->
-			<div class="am-g am-form-group">
-				<label class="am-u-sm-2" for="title">分类</label>
-				<div class="am-u-sm-10">
+			<div class="row form-group">
+				<label class="col-sm-2" for="title">分类</label>
+				<div class="col-sm-10">
 					<select name="cate_id" id="cate_id">
 						<option value="">请选择分类……</option>
 						<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
@@ -81,16 +80,16 @@ $(document).ready(function(){
 			<!-- /if -->
 			<!-- fields pid=$page_rs.id fields_format=1 -->
 			<!-- loop from=$list key=$key value=$value -->
-			<div class="am-g am-form-group">
-				<label class="am-u-sm-2" for="{$value.identifier}">{$value.title}</label>
-				<div class="am-u-sm-10">{$value.html}</div>
+			<div class="row form-group">
+				<label class="col-sm-2" for="{$value.identifier}">{$value.title}</label>
+				<div class="col-sm-10">{$value.html}</div>
 			</div>
 			<!-- /loop -->
 			<!-- if $is_vcode -->
-			<div class="am-g am-form-group">
-				<label class="am-u-sm-2" for="_chkcode">验证码：</label>
-				<div class="am-u-sm-4"><input type="text" name="_chkcode" id="_chkcode" class="vcode" /></div>
-				<div class="am-u-sm-6"><img src="" border="0" align="absmiddle" id="update_vcode" class="hand"></div>
+			<div class="row form-group">
+				<label class="col-sm-2" for="_chkcode">验证码：</label>
+				<div class="col-sm-4"><input type="text" name="_chkcode" id="_chkcode" class="vcode" /></div>
+				<div class="col-sm-6"><img src="" border="0" align="absmiddle" id="update_vcode" class="hand"></div>
 				<script type="text/javascript">
 				$(document).ready(function(){
 					$("#update_vcode").phpok_vcode();
@@ -102,14 +101,17 @@ $(document).ready(function(){
 				</script>
 			</div>
 			<!-- /if -->
-			<div class="am-g am-form-group">
-				<div class="am-u-sm-2">&nbsp;</div>
-				<div class="am-u-sm-10"><input type="submit" value=" 提交 " class="am-btn am-btn-primary" /><a href="{url ctrl=$page_rs.identifier func=$cate_rs.identifier/}" class="am-fr am-btn am-btn-default" title="返回列表">返回列表</a></div>
+			<div class="row form-group">
+				<div class="col-sm-2">&nbsp;</div>
+				<div class="col-sm-5"><input type="submit" value=" 提交 " class="btn btn-primary btn-lg" /></div>
+				<div class="col-sm-5 text-right">
+					<a href="{url ctrl=$page_rs.identifier func=$cate_rs.identifier/}" title="返回列表">返回列表</a>
+				</div>
 			</div>
 			
 			</form>
 		</div>
 	</div>
-</div>
+</section>
 
 <!-- include tpl=footer -->

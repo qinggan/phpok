@@ -1,117 +1,109 @@
-<!-- php:$title = "在线付款（".$rs.sn."） - 我的订单 - 会员中心" -->
+<!-- php:$title = "在线付款（".$rs.sn."）_我的订单_会员中心" -->
 <!-- include tpl=header title=$title -->
-<div class="main">
-	<!-- include tpl=block/breadcrumb -->
-	<div class="am-panel-group">
-		<form method="post" class="am-form" action="{if $session.user_id}{url ctrl=payment func=create id=$rs.id/}{else}{url ctrl=payment func=create sn=$rs.sn passwd=$rs.passwd/}{/if}">
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">订单信息</div>
-			<ul class="am-list am-list-static">
-				<li>
-					<div class="am-g">
-						<div class="am-u-sm-4">订单编号</div>
-						<div class="am-u-sm-8">{$rs.sn}</div>
-					</div>
-				</li>
-				<li>
-					<div class="am-g">
-						<div class="am-u-sm-4">订单金额</div>
-						<div class="am-u-sm-8 am-text-primary">{func price_format $rs.price $rs.currency_id}</div>
-					</div>
-				</li>
-				<!-- if $price_paid -->
-				<li>
-					<div class="am-g">
-						<div class="am-u-sm-4">已付款</div>
-						<div class="am-u-sm-8 am-text-primary">{func price_format $price_paid $rs.currency_id}</div>
-					</div>
-				</li>
-				<!-- /if -->
-				<!-- if $price_unpaid -->
-				<li>
-					<div class="am-g">
-						<div class="am-u-sm-4">还需付款</div>
-						<div class="am-u-sm-8 am-text-danger">{func price_format $price_unpaid $rs.currency_id}</div>
-					</div>
-				</li>
-				<!-- /if -->
-			</ul>
-		</div>
-		<!-- if $integral -->
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">积分抵扣，仅支持100的整数倍，不支持小数</div>
-			<ul class="am-list am-list-static">
-				<!-- loop from=$integral key=$key value=$value -->
-			    <li>
-				    <div class="am-g">
-					    <div class="am-u-sm-9" style="margin-top:9px;">您当前的 <span class="am-text-danger">{$value.title}</span> 有 <span class="am-text-danger">{$value.val}</span>{$value.unit}，最多可抵现金<span class="red">{func price_format $value.price}</span></div>
-					    <div class="am-u-sm-2">
-						    <table>
-						    	<tr>
-						    		<td style="width:50px;text-align:right;">支出：</td>
-						    		<td><input type="text" name="integral_val[{$key}]" /></td>
-						    		<td>&nbsp;{$value.unit}</td>
-						    	</tr>
-						    </table>
-					    </div>
-				    </div>
-			    </li>
-			    <!-- /loop -->
-			</ul>
-		</div>
-		<!-- /if -->
-		<!-- if $paylist || $balance -->
-		<div class="am-panel">
-			<div class="am-panel-bd">
-				<div class="am-tabs" data-am-tabs>
-					<ul class="am-tabs-nav am-nav am-nav-tabs">
-						<li style="line-height:1.6;padding:0.4rem 1rem;">请选择支付方式：</li>
-						<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
-						<li{if !$tmpid.index} class="am-active"{/if}><a href="javascript:void(0);">{$value.title}</a></li>
-						<!-- /loop -->
-						<!-- if $balance -->
-						<li{if !$paylist} class="am-active"{/if}><a href="javascript:void(0);">余额支付</a></li>
-						<!-- /if -->
-					</ul>
-					<div class="am-tabs-bd">
-						<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
-						<div class="am-tab-panel am-fade{if !$tmpid.index} am-in am-active{/if}">
-							<!-- loop from=$value.paylist key=$k value=$v id=$idxx -->
-							<div class="am-radio">
-								<label><input type="radio" name="payment" value="{$v.id}"{if !$tmpid.index && !$idxx.index} checked{/if}/>{$v.title}</label>
-							</div>
-							<!-- /loop -->
-						</div>
-						<!-- /loop -->
-						<div class="am-tab-panel am-fade">
-							<!-- loop from=$balance key=$key value=$value -->
-							<div class="am-radio">
-								<label><input name="payment" type="radio" value="{$value.identifier}" data-price="{$price_val}" data-balance="{$value.price}" />您当前的{$value.title}有<span class="red">{$value.val}</span>{$value.unit}
-								<!-- if $price_val > $value.price -->
-								，您的余额不够，请 <a href="{url ctrl=payment id=$value.id/}" target="_blank"><b>在线充值</b></a>
-								<!-- /if -->
-								</label>
-							</div>
-							<!-- /loop -->
-						</div>
-					</div>
+<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb leader=$leader --></div></section>
+
+<section class="container">
+	<form method="post" target="_blank" action="{if $session.user_id}{url ctrl=payment func=create id=$rs.id/}{else}{url ctrl=payment func=create sn=$rs.sn passwd=$rs.passwd/}{/if}">
+	<div class="card">
+		<div class="card-header">订单信息</div>
+		<ul class="list-group list-group-flush">
+			<li class="list-group-item">
+				<div class="row">
+					<div class="col-sm-4 text-right">订单编号</div>
+					<div class="col-sm-8">{$rs.sn}</div>
 				</div>
-			</div>
-		</div>
-		<!-- /if -->
-		<div style="margin-top:10px;">
-			<div class="am-g">
-				<div class="am-u-sm-4">
-					<a href="{url ctrl=order func=info sn=$rs.sn passwd=$rs.passwd/}" class="am-btn am-btn-default">返回订单列表</a>
-					
+			</li>
+			<li class="list-group-item">
+				<div class="row">
+					<div class="col-sm-4 text-right">订单金额</div>
+					<div class="col-sm-8 am-text-primary">{func price_format $rs.price $rs.currency_id}</div>
 				</div>
-				<div class="am-u-sm-4">
-					<input type="submit" value="确认付款" class="am-btn am-btn-primary am-fr" />
+			</li>
+			<!-- if $price_paid -->
+			<li class="list-group-item">
+				<div class="row">
+					<div class="col-sm-4 text-right">已付款</div>
+					<div class="col-sm-8 am-text-primary">{func price_format $price_paid $rs.currency_id}</div>
 				</div>
-			</div>
-			
-		</div>
-		</form>
+			</li>
+			<!-- /if -->
+			<!-- if $price_unpaid -->
+			<li class="list-group-item">
+				<div class="row">
+					<div class="col-sm-4 text-right">还需付款</div>
+					<div class="col-sm-8 am-text-danger">{func price_format $price_unpaid $rs.currency_id}</div>
+				</div>
+			</li>
+			<!-- /if -->
+		</ul>
 	</div>
-</div>
+	<!-- if $integral -->
+	<div class="card mt-3">
+		<div class="card-header">积分抵扣，仅支持100的整数倍，不支持小数</div>
+		<ul class="list-group list-group-flush">
+			<!-- loop from=$integral key=$key value=$value -->
+		    <li class="list-group-item">
+			    <div class="row">
+				    <div class="col-sm-8">您当前的 <span class="am-text-danger">{$value.title}</span> 有 <span class="am-text-danger">{$value.val}</span>{$value.unit}，最多可抵现金<span class="red">{func price_format $value.price}</span></div>
+				    <div class="col-sm-4">
+					    <table>
+					    	<tr>
+					    		<td style="width:60px;text-align:right;">支出：</td>
+					    		<td><input type="text" name="integral_val[{$key}]" class="form-control" data-name="integral" data-key="{$key}" /></td>
+					    		<td>&nbsp;{$value.unit}</td>
+					    	</tr>
+					    </table>
+				    </div>
+			    </div>
+		    </li>
+		    <!-- /loop -->
+		</ul>
+	</div>
+	<!-- /if -->
+	<!-- if $balance -->
+	<div class="card mt-3">
+		<div class="card-header">余额支付</div>
+		<div class="card-body">
+			<!-- loop from=$balance key=$key value=$value -->
+			<div class="form-check">
+				<label class="form-check-label mb-2">
+			    	<input type="radio" class="form-check-input" name="payment" value="{$value.identifier}" data-price="{$price_val}" data-balance="{$value.price}" />
+			    	您当前的{$value.title}有<span class="red">{$value.val}</span>{$value.unit}
+			    	<!-- if $price_val > $value.price -->
+					，您的{$value.title}不够，请 <a href="{url ctrl=payment id=$value.id/}" target="_blank"><b>在线充值</b></a>
+					<!-- /if -->
+				</label>
+			</div>
+			<!-- /loop -->
+		</div>
+	</div>
+	<!-- /if -->
+	<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+	<div class="card mt-3">
+		<div class="card-header">{$value.title}</div>
+		<div class="card-body">
+			<!-- loop from=$value.paylist key=$k value=$v id=$idxx -->
+			<div class="form-check">
+				<label class="form-check-label mb-2">
+			    	<input type="radio" class="form-check-input" name="payment" value="{$v.id}"{if !$tmpid.index && !$idxx.index} checked{/if} />
+			    	<!-- if $v.logo1 -->
+			    	<img src="{$v.logo1}" style="width:40px;"  />
+			    	<!-- /if -->
+			    	{$v.title}
+				</label>
+			</div>
+			<!-- /loop -->
+		</div>
+	</div>
+	<!-- /loop -->
+	<div class="row p-4">
+		<div class="col">
+			<a href="{url ctrl=order func=info sn=$rs.sn passwd=$rs.passwd/}" class="btn btn-link">返回订单列表</a>
+		</div>
+		<div class="col text-right">
+			<input type="submit" value="确认付款" class="btn btn-primary" />
+		</div>
+	</div>
+	</form>
+</section>
 <!-- include tpl=footer -->

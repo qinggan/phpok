@@ -1,14 +1,16 @@
 <!-- php:$contactus = phpok('contactus') -->
-<div class="am-panel am-panel-default">
-	<div class="am-panel-hd">
-		<h3 class="am-panel-title">{$contactus.title}<!-- if $showmore --><a href="{$contactus.url}" class="more">更多 <span class="am-icon-angle-right"></span></a><!-- /if --></h3>
+<!-- if $contactus -->
+<div class="card">
+	<div class="card-header">
+		{$contactus.title}<!-- if $showmore --><a href="{$contactus.url}" class="more">更多 <i class="fa fa-angle-right"></i></a><!-- /if -->
 	</div>
-	<ul class="am-list am-list-static">
-		<!-- if $contactus.company --><li><i class="am-icon-home am-icon-fw"></i> {$contactus.company}</li><!-- /if -->
-		<!-- if $contactus.address --><li><i class="am-icon-location-arrow am-icon-fw"></i> {$contactus.address}</li><!-- /if -->
-		<!-- if $contactus.email --><li><i class="am-icon-at am-icon-fw"></i> {$contactus.email}</li><!-- /if -->
-		<!-- if $contactus.zipcode --><li><i class="am-icon-envelope-o am-icon-fw"></i> {$contactus.zipcode}</li><!-- /if -->
-		<!-- if $contactus.tel --><li><i class="am-icon-mobile am-icon-fw"></i> {$contactus.tel}</li><!-- /if -->
-		<!-- if $contactus.fullname --><li><i class="am-icon-user am-icon-fw"></i> {$contactus.fullname}</li><!-- /if -->
+	<ul class="list-group list-group-flush">
+		<!-- if $contactus.company --><li class="list-group-item"><i class="fa fa-home"></i> {$contactus.company}</li><!-- /if -->
+		<!-- if $contactus.address --><li class="list-group-item"><i class="fa fa-map-marker"></i> {$contactus.address}</li><!-- /if -->
+		<!-- if $contactus.email --><li class="list-group-item"><i class="fa fa-envelope-o"></i> {$contactus.email}</li><!-- /if -->
+		<!-- if $contactus.zipcode --><li class="list-group-item"><i class="fa fa-envira"></i> {$contactus.zipcode}</li><!-- /if -->
+		<!-- if $contactus.tel --><li class="list-group-item"><i class="fa fa-phone"></i> {$contactus.tel}</li><!-- /if -->
+		<!-- if $contactus.fullname --><li class="list-group-item"><i class="fa fa-user"></i> {$contactus.fullname}</li><!-- /if -->
 	</ul>
 </div>
+<!-- /if -->

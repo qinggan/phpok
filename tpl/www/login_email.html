@@ -74,35 +74,33 @@ function send_email()
 	})
 }
 </script>
-<div class="main main-single main-login am-animation-scale-up">
-	<form class="am-form" onsubmit="return check_input()" method="post">
+<section class="container">
+<div class="p-4 m-4">
+	<form class="p-4 m-4" onsubmit="return check_input()" method="post">
 		<input type="hidden" name="_back" id="_back" value="{$_back}" />
-		<fieldset>
-			<legend>邮件验证登录</legend>
-			<div class="am-form-group">
-				<label for="mobile">邮箱 Email</label>
-				<div class="am-g am-g-collapse">
-					<div class="am-u-sm-6"><input type="text" id="email" name="email" placeholder="请输入邮箱" /></div>
-					<div class="am-u-sm-1"></div>
-					<div class="am-u-sm-5"><input type="button" value="发送邮件验证码" onclick="send_email()" class="am-btn am-btn-default" id="email_send_status" /></div>
-				</div>
+		<h3>邮件验证登录</h3>
+		<div class="form-group">
+			<label for="mobile">邮箱 Email</label>
+			<div class="row">
+				<div class="col"><input type="text" class="form-control" id="email" name="email" placeholder="请输入邮箱" /></div>
+				<div class="col"><input type="button" value="发送邮件验证码" onclick="send_email()" class="btn btn-primary" id="email_send_status" /></div>
 			</div>
-			<div class="am-form-group">
-				<label for="_chkcode">邮件验证码</label>
-				<input type="text" name="_chkcode" id="_chkcode" placeholder="请输入邮箱收到的验证码" />
-			</div>
-			<div class="am-form-group">
-				<button type="submit" class="am-btn am-btn-primary" id="login_submit">登录</button>
-			</div>
-			<div class="am-form-group">
-				<a href="{$sys.url}" class="am-btn am-btn-default am-btn-xs">返回首页</a>
-				<a href="{url ctrl=login/}" class="am-btn am-btn-default am-btn-xs"><i class="am-icon-user"></i> 账号密码登录</a>
-				<!-- if $login_sms --><a href="{url ctrl=login func=sms/}" class="am-btn am-btn-default am-btn-xs"><i class="am-icon-mobile"></i> 短信登录</a><!-- /if -->
-			</div>
-		</fieldset>
+		</div>
+		<div class="form-group">
+			<label for="_chkcode">邮件验证码</label>
+			<input type="text" class="form-control" name="_chkcode" id="_chkcode" placeholder="请输入邮箱收到的验证码" />
+		</div>
+		<div class="form-group">
+			<button type="submit" class="btn btn-primary" id="login_submit">登录</button>
+		</div>
+		<div class="form-group">
+			<a href="{$sys.url}" class="mr-3"><i class="fa fa-home"></i> 返回首页</a>
+			<a href="{url ctrl=login/}"><i class="fa fa-user"></i> 账号密码登录</a>
+			<!-- if $login_sms --><a href="{url ctrl=login func=sms/}" class="btn btn-default btn-xs"><i class="am-icon-mobile"></i> 短信登录</a><!-- /if -->
+		</div>
 	</form>
 </div>
-
+</section>
 <script type="text/javascript">
 $(document).ready(function(){
 	$("body").css('background-color','#EFEFEF');

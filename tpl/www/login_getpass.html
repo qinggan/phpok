@@ -125,63 +125,61 @@ function send_sms()
 }
 </script>
 <!-- /if -->
-<div class="main main-single main-login am-animation-scale-up">
+<section class="container">
+<div class="p-4 m-4">
 	<form class="am-form" id="getpass-form" method="post" onsubmit="return login_reset_pass()">
-		<fieldset>
-			<legend>取回密码操作</legend>
-			<div class="am-form-group">
-				<label for="mobile">选择密码取回方式</label>
-				<select id="type_id" name="type_id" onchange="update_type(this.value)">
-					<!-- if $check_email --><option value="email"{if $type_id == 'email'} selected{/if}>邮件验证码</option><!-- /if -->
-					<!-- if $check_sms --><option value="sms"{if $type_id == 'sms'} selected{/if}>短信验证码</option><!-- /if -->
-				</select>
+		<h3>取回密码操作</h3>
+		<div class="form-group">
+			<label for="mobile">选择密码取回方式</label>
+			<select id="type_id" name="type_id" class="form-control" onchange="update_type(this.value)">
+				<!-- if $check_email --><option value="email"{if $type_id == 'email'} selected{/if}>邮件验证码</option><!-- /if -->
+				<!-- if $check_sms --><option value="sms"{if $type_id == 'sms'} selected{/if}>短信验证码</option><!-- /if -->
+			</select>
+		</div>
+		<!-- if $type_id == 'email' -->
+		<div class="form-group">
+			<label for="mobile">邮箱 Email</label>
+			<div class="row">
+				<div class="col-sm-6"><input type="text" id="email" class="form-control" name="email" placeholder="请输入邮箱" /></div>
+				<div class="col-sm-5"><input type="button" value="发送邮件验证码" onclick="send_email()" class="btn btn-primary" id="email_send_status" /></div>
 			</div>
-			<!-- if $type_id == 'email' -->
-			<div class="am-form-group">
-				<label for="mobile">邮箱 Email</label>
-				<div class="am-g am-g-collapse">
-					<div class="am-u-sm-6"><input type="text" id="email" name="email" placeholder="请输入邮箱" /></div>
-					<div class="am-u-sm-1"></div>
-					<div class="am-u-sm-5"><input type="button" value="发送邮件验证码" onclick="send_email()" class="am-btn am-btn-default" id="email_send_status" /></div>
-				</div>
+		</div>
+		<div class="form-group">
+			<label for="_chkcode">邮件验证码</label>
+			<input type="text" name="_chkcode" class="form-control" id="_chkcode" placeholder="请输入邮箱收到的验证码" />
+		</div>
+		<!-- /if -->
+		<!-- if $type_id == 'sms' -->
+		<div class="form-group">
+			<label for="mobile">手机号</label>
+			<div class="am-g am-g-collapse">
+				<div class="col-sm-6"><input type="text" id="mobile" class="form-control" name="mobile" placeholder="请输入手机号" /></div>
+				<div class="col-sm-1"></div>
+				<div class="col-sm-5"><input type="button" class="form-control" value="发送手机验证码" onclick="send_sms()" class="btn btn-primary" id="mobile_send_status" /></div>
 			</div>
-			<div class="am-form-group">
-				<label for="_chkcode">邮件验证码</label>
-				<input type="text" name="_chkcode" id="_chkcode" placeholder="请输入邮箱收到的验证码" />
+		</div>
+		<div class="form-group">
+			<label for="_chkcode">手机验证码</label>
+			<input type="text" name="_chkcode" id="_chkcode" class="form-control" placeholder="请输入手机上收到的验证码" />
+		</div>
+		<!-- /if -->
+		<div class="form-group">
+			<label for="_chkcode">新密码</label>
+			<input type="password" name="newpass" id="newpass" class="form-control" placeholder="请输入新密码" />
+		</div>
+		<div class="form-group">
+			<label for="_chkcode">确认密码</label>
+			<input type="password" name="chkpass" id="chkpass" class="form-control" placeholder="请再次输入新密码" />
+		</div>
+		<div class="row">
+			<div class="col">
+				<button type="submit" class="btn btn-primary" id="login_submit">修改密码</button>
 			</div>
-			<!-- /if -->
-			<!-- if $type_id == 'sms' -->
-			<div class="am-form-group">
-				<label for="mobile">手机号</label>
-				<div class="am-g am-g-collapse">
-					<div class="am-u-sm-6"><input type="text" id="mobile" name="mobile" placeholder="请输入手机号" /></div>
-					<div class="am-u-sm-1"></div>
-					<div class="am-u-sm-5"><input type="button" value="发送手机验证码" onclick="send_sms()" class="am-btn am-btn-primary" id="mobile_send_status" /></div>
-				</div>
+			<div class="col text-right">
+				<a href="{$sys.url}">返回首页</a>
 			</div>
-			<div class="am-form-group">
-				<label for="_chkcode">手机验证码</label>
-				<input type="text" name="_chkcode" id="_chkcode" placeholder="请输入手机上收到的验证码" />
-			</div>
-			<!-- /if -->
-			<div class="am-form-group">
-				<label for="_chkcode">新密码</label>
-				<input type="password" name="newpass" id="newpass" placeholder="请输入新密码" />
-			</div>
-			<div class="am-form-group">
-				<label for="_chkcode">确认密码</label>
-				<input type="password" name="chkpass" id="chkpass" placeholder="请再次输入新密码" />
-			</div>
-			<div class="am-form-group">
-				<button type="submit" class="am-btn am-btn-primary" id="login_submit">修改密码</button>
-				<a href="{$sys.url}" class="am-btn am-btn-default am-fr">返回首页</a>
-			</div>
-		</fieldset>
+		</div>
 	</form>
 </div>
-<script type="text/javascript">
-$(document).ready(function(){
-	$("body").css('background-color','#EFEFEF');
-});
-</script>
+</section>
 <!-- include tpl=foot -->

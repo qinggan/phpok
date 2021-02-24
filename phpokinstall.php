@@ -1,12 +1,13 @@
 <?php
 /**
  * PHPOK企业站系统，使用PHP语言及MySQL数据库编写的企业网站建设系统，基于LGPL协议开源授权
- * @package phpok
- * @author phpok.com
- * @copyright 2015-2017 深圳市锟铻科技有限公司
- * @version 4.x
- * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- */
+ * @作者 苏相锟 <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司 / 苏相锟
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
+ * @时间 2020年9月2日
+**/
 
 error_reporting(E_ALL ^ E_NOTICE);
 define('PHPOK_SET',true);
@@ -163,7 +164,6 @@ class install
 		echo '<p>本系统采用PHP+MySQL编写，这里对系统环境进行简单测试，请保证下列文件或目录可读写(Unix和Linux服务器请设置以下文件夹的属性为777，文件属性为666）：星号 <span style="color:red">*</span> 表示任意值</p></div></div>';
 		$status = true;
 		$obj = PDO::ATTR_DRIVER_NAME;
-		echo "<pre>".print_r($obj,true)."</pre>";
 		if(function_exists('mysqli_connect') || (class_exists("pdo") && extension_loaded('pdo_mysql'))){
 			$mysql_status = '<span class="darkblue">支持</span>';
 		}else{
@@ -172,7 +172,7 @@ class install
 		}
 		echo '<table width="980" border="0" cellspacing="0" cellpadding="0" class="tablebox">';
 		echo '<tr class="head_bg"><td>&nbsp;</td><td>PHPOK最低要求</td><td>PHPOK最佳配置</td><td>当前环境检测</td></tr>';
-		echo '<tr><td class="lft">PHP版本</td><td>5.3.x</td><td>5.6.x</td><td>'.PHP_VERSION.'</td></tr>';
+		echo '<tr><td class="lft">PHP版本</td><td>5.5.x</td><td>7,1.x</td><td>'.PHP_VERSION.'</td></tr>';
 		echo '<tr><td class="lft">附件上传</td><td>2M+</td><td>10M+</td><td>'.get_cfg_var('upload_max_filesize').'</td></tr>';
 		echo '<tr><td class="lft">MYSQL支持</td><td>5.1.x</td><td>5.5.x</td><td>'.$mysql_status.'</td></tr>';
 		$curl = $this->func_check('curl_close');
@@ -418,10 +418,10 @@ class install
 		$site['title'] = "PHPOK企业站";
 		$optlist = '<select name="file" id="file">';
 		if(function_exists("mysqli_close")){
-			$optlist .= '<option value="mysqli" selected>使用 MySQLi 连接数据库</option>';
+			$optlist .= '<option value="mysqli">使用 MySQLi 连接数据库</option>';
 		}
 		if(class_exists('pdo') && extension_loaded('pdo_mysql')){
-			$optlist .= '<option value="pdo_mysql" selected>使用 PDO-MySQL 连接数据库</option>';
+			$optlist .= '<option value="pdo_mysql">使用 PDO-MySQL 连接数据库</option>';
 		}
 		$optlist .= '</select>';
 		echo <<<EOT
@@ -845,9 +845,12 @@ EOT;
 			$array['scheme'] = "https";
 		}
 		$array['port'] = $_SERVER["SERVER_PORT"] ? $_SERVER["SERVER_PORT"] : 80;
-        if(!isset($array['path'])){
+		if(!isset($array['path'])){
 			$array['path'] = "/";
-		}elseif(($array['path']{0} != '/') && ($_SERVER["PHP_SELF"]{0} == '/')){
+		}
+		$tmp1 = substr($array['path'],0,1);
+		$tmp2 = substr($_SERVER["PHP_SELF"],0,1);
+		if($tmp1 != '/' && $tmp2 == '/'){
 			$array['path'] = substr($_SERVER["PHP_SELF"], 0, strrpos($_SERVER["PHP_SELF"], '/') + 1) . $array['path'];
 		}
 		return $array;

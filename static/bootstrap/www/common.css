@@ -1,0 +1,12 @@
+/**
+ * 设计器在前端的效果，主要是解决前台后不一致
+ * @作者 苏相锟 <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
+ * @时间 2021年1月6日
+**/
+
+div[data-type=content] img{
+	display:inline-block;
+}

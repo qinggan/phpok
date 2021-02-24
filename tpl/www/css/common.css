@@ -1,0 +1,239 @@
+/**
+ * 站点公共CSS
+ * @作者 苏相锟 <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
+ * @时间 2021年1月8日
+**/
+
+:root {
+  --blue: #1D5595;
+  --darkblue:#093361;
+  --indigo: #6610f2;
+  --purple: #6f42c1;
+  --pink: #e83e8c;
+  --red: #dc3545;
+  --orange: #E77717;
+  --yellow: #ffc107;
+  --green: #28a745;
+  --teal: #20c997;
+  --cyan: #17a2b8;
+  --white: #fff;
+  --gray: #6c757d;
+  --gray-dark: #343a40;
+  --primary: #1D5595;
+  --secondary: #6c757d;
+  --success: #28a745;
+  --info: #17a2b8;
+  --warning: #E77717;
+  --danger: #dc3545;
+  --light: #f8f9fa;
+  --dark: #343a40;
+  --breakpoint-xs: 0;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+a{
+	color:var(--blue);
+}
+
+.logo{
+	max-width:300px;
+	width:100%;
+}
+.btn-primary{
+	background-color:var(--blue);
+	border:0;
+}
+.btn-primary:hover{
+	background-color:var(--darkblue);
+}
+
+.bg-nav{
+	background-color:var(--blue) !important;
+	height:10px;
+}
+
+.border-primary{
+	border-color:var(--blue) !important;
+}
+
+.border-dotted{
+	border-style:dashed;
+}
+
+.text-warning{
+	color:var(--warning) !important;
+}
+
+.list-group-item.active{
+	background-color:var(--orange);
+	border-color:var(--orange);
+	color:var(--light);
+}
+
+.list-group-item.active a{
+	color:var(--light);
+}
+
+/* 单行省略号 */
+.crop-text-1 {
+  -webkit-line-clamp: 1;
+  overflow : hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+/* 两行省略号 */
+.crop-text-2 {
+  -webkit-line-clamp: 2;
+  overflow : hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+
+.more{
+	font-size:1rem;
+	float:right;
+}
+
+.hand{
+	cursor:pointer;
+}
+
+.bg-light-50{
+	background-color:rgba(255,255,255,0.5);
+}
+.border-light-50{
+	border-color:rgba(255,255,255,0.5);
+}
+
+.page-link{
+	color:var(--blue);
+}
+.page-item.active .page-link{
+	background-color:var(--darkblue);
+	border-color:var(--darkblue);
+}
+
+footer{
+	border-top:2px solid #ccc;
+}
+
+footer ul,footer ol{
+	list-style:none;
+	margin-left:0;
+	padding-left:0;
+}
+
+footer ul li,footer ol li{
+	line-height:200%;
+}
+
+select + select{
+	margin-top:0.5em;
+}
+
+select + input{
+	margin-top:0.5em;
+}
+
+/* 独立页面样式 */
+.l-height{
+	line-height:170%;
+}
+
+
+/* 任意页返回头部 */
+.toTop{background:url('../images/to-top.png') center center no-repeat;width:48px;height:48px;border:0;}
+
+
+
+.content{ line-height:170%;font-size:1em;font-weight:500;}
+.content p{ margin-bottom:1em;}
+.content table {border: 1px solid #ddd;border-collapse: collapse;display: table;}
+.content table td {border: 1px solid #ddd;padding: 5px 10px;}
+.content table th {border: 1px solid #ddd;background-color: #f7f7f7;padding: 5px 10px;}
+.content blockquote{
+	margin:1em 0;border:1px solid #efefef;background:#fcfcfc;padding:0.5em 1em;
+}
+
+/* 管理员回复评论信息 */
+fieldset.admin-reply{
+	border:1px solid #ccc;
+	padding:0.5em;
+}
+fieldset.admin-reply legend{
+	width:auto;
+	padding:0 0.5em;
+	font-size:1em;
+}
+
+fieldset.admin-reply + fieldset.admin-reply{
+	margin-top:1em;
+}
+
+
+/* 产品属性 */
+div.attr{border:1px solid #ccc;margin-bottom:5px;line-height:26px;padding:3px 10px;cursor:pointer;}
+div.attr.selected{border:1px solid var(--orange);background-color:var(--orange);color:var(--white);}
+
+ul.radio li label{
+	padding:0.25em 1em;
+}
+
+ul.radio li label input[type=radio]{
+	margin-left:-1em;
+	margin-top:0.1em;
+}
+
+header .topnav{
+	line-height: 40px;
+	border-bottom:1px solid #eee;
+    background:#FEFEFE;
+    color:var(--dark);
+}
+header .topnav a{
+    color:var(--dark);
+}
+
+header .menu a{
+	font-size:1.2rem;
+	color:var(--dark);
+}
+
+.headnav{
+	background:#fff;
+	background:relative;
+	width:100%;
+	margin:0 auto;
+}
+
+.index-search{
+	background:var(--primary);
+	padding:1em 0;
+	color:var(--white);
+}
+
+.index-search a{
+	color:var(--white);
+}
+
+.index-search .bg-orange{
+	background-color:var(--orange);
+	border-color:var(--orange);
+}
+
+.index-search .bg-orange:hover,.index-search .bg-orange:active{
+	background-color:var(--orange);
+	border-color:var(--orange);
+}

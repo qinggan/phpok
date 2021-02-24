@@ -1,10 +1,9 @@
-<div class="am-panel am-panel-default">
-	<div class="am-panel-hd">
-		<h3 class="am-panel-title">TAG标签</h3>
-	</div>
-	<div class="am-panel-bd">
+<!-- php:$list = phpok("_taglist","psize=60") -->
+<!-- if $list -->
+<div class="card">
+	<div class="card-body">
+		<h5 class="card-title">TAG标签</h5>
 		<div class="tags">
-			<!-- php:$list = phpok("_taglist","psize=60") -->
 	        <!-- loop from=$list key=$key value=$value id=$tmpid -->
 	        <a href="{$value.url}" target="{$value.target}" alt="{$value.at}">{$value.title}</a>
 	        <!-- /loop -->
@@ -40,3 +39,4 @@ $(document).ready(function() {
 	});
 });
 </script>
+<!-- /if -->

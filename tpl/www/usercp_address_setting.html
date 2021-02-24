@@ -22,31 +22,33 @@ function save()
 	return false;
 }
 </script>
-<div class="main" style="padding:10px;width:auto;">
-	<form method="post" id="setsubmit" onsubmit="return false;" class="am-form">
+<section class="m-3 mt-1">
+	<form method="post" id="setsubmit" onsubmit="return false;">
 	<input type="hidden" name="id" id="id" value="{$id}" />
 	<input type="hidden" name="country" id="country" value="{$rs.country ? $rs.country : '中国'}" />
-	<div class="am-form-group">
+	<div class="form-group">
 	  <label for="fullname">收件人</label>
 	  <input type="text" id="fullname" name="fullname" value="{$rs.fullname}" placeholder="填写收件人姓名">
 	</div>
-	<div class="am-form-group address">
+	<div class="form-group address">
 		<label for="fullname">地址：</label>
 		<div class="pca">{$pca_rs}</div>
 		<input type="text" name="address" id="address" value="{$rs.address}" style="margin-top:3px;" />
 	</div>
-	<div class="am-form-group">
-	  <label for="mobile">手机号码</label>
-	  <input type="tel" id="mobile" name="mobile" value="{$rs.mobile}" placeholder="填写有效的手机号码"/>
+	<div class="row form-group">
+		<div class="col">
+			<label for="tel">手机号码</label>
+			<input type="tel" id="mobile" name="mobile" value="{$rs.mobile}" placeholder="填写有效的手机号码"/>
+		</div>
+		<div class="col">
+			<label for="tel">固定电话</label>
+			<input type="tel" id="tel" name="tel" value="{$rs.tel}" placeholder="填写有效的固定电话"/>
+		</div>
 	</div>
-	<div class="am-form-group">
-	  <label for="tel">固定电话</label>
-	  <input type="tel" id="tel" name="tel" value="{$rs.tel}" placeholder="填写有效的固定电话，带上区号，示例：0755-12345678"/>
-	</div>
-	<div class="am-form-group">
+	<div class="form-group">
 	  <label for="email">邮箱 Email</label>
 	  <input type="email" id="email" name="email" value="{$rs.email}" placeholder="用来接收订单提醒邮件，便于您及时了解订单状态" />
 	</div>
 	</form>
-</div>
+</section>
 <!-- include tpl=foot -->

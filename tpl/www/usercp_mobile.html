@@ -1,4 +1,4 @@
-<!-- php:$title = "修改手机号 - 会员中心" --><!-- include tpl=header title=$title -->
+<!-- php:$title = "修改手机号_会员中心" --><!-- include tpl=header title=$title -->
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#userinfo_mobile").submit(function(){
@@ -46,7 +46,7 @@ function send_sms()
 		$.dialog.alert('验证码已发送，请一分钟后再执行');
 		return false;
 	}
-	var url = api_url('vcode','sms');
+	var url = api_url('vcode','sms','act=register');
 	var mobile = $("#mobile").val();
 	if(!mobile){
 		$.dialog.alert('手机号不能为空');
@@ -68,63 +68,64 @@ function send_sms()
 }
 </script>
 <!-- /if -->
-
-<div class="main">
-	<!-- include tpl=block/breadcrumb -->
-	<div class="left"><!-- include tpl=block/usercp_nav --></div>
-	<div class="right am-panel-group">
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">手机号修改</div>
-			<div class="am-panel-bd">
-				<form class="am-form am-form-horizontal" id="userinfo_mobile" method="post">
-				<div class="am-form-group">
-					<label for="pass" class="am-u-sm-2 am-form-label">会员密码</label>
-					<div class="am-u-sm-10"><input type="password" name="pass" id="pass" /></div>
-				</div>
-				<!-- if $rs.mobile -->
-				<div class="am-form-group">
-					<label for="oldmobile" class="am-u-sm-2 am-form-label">原手机</label>
-					<div class="am-u-sm-10"><input type="text" name="oldmobile" id="oldmobile" value="{$rs.mobile}" class="input" disabled /></div>
-				</div>
-				<!-- /if -->
-				<div class="am-form-group">
-					<label for="mobile" class="am-u-sm-2 am-form-label">名称</label>
-					<div class="am-u-sm-{$sendsms ? 8 : 10}">
-						<input type="text" name="mobile" id="mobile" value="" class="input" />
+<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb --></div></section>
+<section class="container">
+	<div class="row">
+		<div class="col-sm-3">
+			<!-- include tpl=block/usercp_nav -->
+		</div>
+		<div class="col-sm-9">
+			<div class="card">
+				<div class="card-header">手机号修改</div>
+				<div class="card-body">
+					<form id="userinfo_mobile" method="post">
+					<div class="row form-group">
+						<label for="pass" class="col-sm-2 text-right">会员密码</label>
+						<div class="col-sm-10"><input type="password" name="pass" id="pass" /></div>
 					</div>
-					<!-- if $sendsms -->
-					<div class="am-u-sm-2">
-						<input type="button" value="发送验证码" onclick="send_sms()" class="am-btn am-btn-default" id="sms_send_status" />
+					<!-- if $rs.mobile -->
+					<div class="row form-group">
+						<label for="oldmobile" class="col-sm-2 text-right">原手机</label>
+						<div class="col-sm-10"><input type="text" name="oldmobile" id="oldmobile" value="{$rs.mobile}" class="input" disabled /></div>
 					</div>
 					<!-- /if -->
+					<div class="row form-group">
+						<label for="mobile" class="col-sm-2 text-right">新手机号</label>
+						<div class="col-sm-{$sendsms ? 6 : 10}">
+							<input type="text" name="mobile" id="mobile" value="" class="input" />
+						</div>
+						<!-- if $sendsms -->
+						<div class="col-sm-4">
+							<input type="button" value="发送验证码" onclick="send_sms()" class="btn btn-primary" id="sms_send_status" />
+						</div>
+						<!-- /if -->
+					</div>
+					<!-- if $sendsms -->
+					
+					
+					<div class="row form-group">
+						<label for="chkcode" class="col-sm-2 text-right"> 验证码</label>
+						<div class="col-sm-10"><input type="text" name="chkcode" id="chkcode" /></div>
+					</div>
+					<!-- /if -->
+					<div class="row form-group">
+						<label class="col-sm-2 text-right"></label>
+						<div class="col-sm-10"><input type="submit" id="phpok_submit" value="提 交" class="btn btn-primary"></div>
+					</div>
+					</form>
 				</div>
-				<!-- if $sendsms -->
-				
-				
-				<div class="am-form-group">
-					<label for="chkcode" class="am-u-sm-2 am-form-label"> 验证码</label>
-					<div class="am-u-sm-10"><input type="text" name="chkcode" id="chkcode" /></div>
-				</div>
-				<!-- /if -->
-				<div class="am-form-group">
-					<label class="am-u-sm-2 am-form-label"></label>
-					<div class="am-u-sm-10"><input type="submit" id="phpok_submit" value="提 交" class="am-btn am-btn-primary"></div>
-				</div>
-				</form>
 			</div>
-		</div>
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">友情说明</div>
-			<div class="am-panel-bd">
-				<ul>
-					<li>手机号修改需要您提供会员密码认证</li>
-					<li>请确填写的手机号是11位有效数字，暂不接受其他类型的手机号</li>
-					<li>我们推荐您使用插件来实现手机号变更验证</li>
+
+			<div class="card mt-3">
+				<div class="card-header">友情说明</div>
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item">手机号修改需要您提供会员密码认证</li>
+					<li class="list-group-item">请确填写的手机号是11位有效数字，暂不接受其他类型的手机号</li>
+					<li class="list-group-item">我们推荐您使用插件来实现手机号变更验证</li>
 				</ul>
 			</div>
 		</div>
 	</div>
-	<div class="clear"></div>
-</div>
+</section>
 
 <!-- include tpl=footer -->

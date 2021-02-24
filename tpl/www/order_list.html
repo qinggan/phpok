@@ -1,4 +1,4 @@
-<!-- php:$title = "订单中心 - 会员中心" -->
+<!-- php:$title = "订单中心_会员中心" -->
 <!-- include tpl=header title=$title -->
 <script type="text/javascript">
 $(document).ready(function(){
@@ -14,22 +14,14 @@ $(document).ready(function(){
 	});
 });
 </script>
-<div class="main">
-	<!-- include tpl=block/breadcrumb -->
-	<div class="left"><!-- include tpl=block/usercp_nav --></div>
-	<div class="right am-panel-group">
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">相关说明</div>
-			<div class="am-panel-bd">
-				<ul>
-					<li>如需要改单，请联系我们的管理员</li>
-					<li>本站订单系统还不够强大的，如果您需要更加强大的功能，请联系官网进行定制</li>
-				</ul>
-			</div>
+<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb --></div></section>
+<section class="container">
+	<div class="row">
+		<div class="col-sm-3">
+			<!-- include tpl=block/usercp_nav -->
 		</div>
-		<div class="am-panel am-panel-default">
-			<div class="am-panel-hd">订单列表</div>
-			<table class="am-table am-table-striped am-table-hover am-table-centered">
+		<div class="col-sm-9">
+			<table class="table table-striped table-hover">
 			<tr>
 				<th>下单时间</th>
 				<th>订单编号</th>
@@ -52,11 +44,11 @@ $(document).ready(function(){
 			</tr>
 			<!-- /loop -->
 			</table>
+			<div class="mt-3">
+				<!-- include tpl=block/pagelist -->
+			</div>
 		</div>
-		
-		<!-- include tpl=block/pagelist -->
 	</div>
-	<div class="clear"></div>
-</div>
+</section>
 
 <!-- include tpl=footer -->

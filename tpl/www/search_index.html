@@ -13,17 +13,17 @@ $(document).ready(function(){
 	$("#top-search-form").hide();
 });
 </script>
-<div class="main" style="margin:10% auto;">
-	<form class="am-form am-form-horizontal" method="post" action="{url ctrl=search/}" onsubmit="return checkseach()">
-	<div class="am-form-group">
-		<label for="keywords" class="am-u-sm-2 am-form-label">搜索关键字</label>
-		<div class="am-u-sm-6">
-			<input type="text" name="keywords" id="keywords" />
-		</div>
-		<div class="am-u-sm-4">
-			<input type="submit" value="提交搜索" class="am-btn am-btn-primary" />
-		</div>
+<section class="container p-4">
+	<form method="post" class="" id="post_save" onsubmit="return top_search(this)">
+	<div class="p-4 m-4">
+		<input type="text" name="keywords" class="form-control" id="keywords" placeholder="搜索关键字" />
+	</div>
+	<div class="text-center mb-4">
+		<button type="submit" class="btn btn-primary btn-lg">
+			<i class="fa fa-search"></i> 提交搜索
+		</button>
 	</div>
 	</form>
-</div>
+</section>
+
 <!-- include tpl=footer -->

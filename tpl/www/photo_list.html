@@ -1,29 +1,54 @@
 <!-- include tpl=header menutitle=$page_rs.title -->
-<!-- if $cate_rs.banner || $page_rs.banner -->
-<div class="banner" style="background-image:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}');"><img src="{#images#}/blank.gif" alt="{$cate_rs.title}" /></div>
-<!-- /if -->
-<div class="main">
-	<!-- include tpl=block/breadcrumb -->
-	<div class="left am-panel-group">
-		<!-- include tpl=block/catelist pid=$page_rs.id cid=$cate_rs.id title=$page_rs.title -->
-		<!-- include tpl=block/contact -->
-		<!-- include tpl=block/hot_article -->
-	</div>
-	<div class="right" style="margin-top:-8px;">
-		<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered" data-am-gallery="{  }">
-			<!-- loop from=$rslist key=$key value=$value -->
-			<li>
-				<div class="am-gallery-item">
-					<a href="{$value.url}" title="{$value.title}">
-						<img src="{$value.thumb.gd.thumb}" alt="{$value.title}" />
-						 <h3 class="am-gallery-title">{$value.title}</h3>
-						<div class="am-gallery-desc">{func time_format $value.dateline}</div>
-					</a>
-				</div>
-			</li>
+<section class="bg-light p-5"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+	<h1 class="p-4 text-center">{$cate_rs ? $cate_rs.title : $page_rs.title}</h1>
+	<!-- php:$taglist = $cate_rs.tag ? $cate_rs.tag : $page_rs.tag -->
+	<!-- if $taglist -->
+	<div class="container">
+		<div class="text-center m-3">
+			<span class="p-2 bg-light-50 rounded-lg">
+			标签：
+			<!-- loop from=$taglist key=$k value=$v id=$idxx -->
+			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
 			<!-- /loop -->
-		</ul>
-		<!-- include tpl=block/pagelist -->
+			</span>
+		</div>
 	</div>
-</div>
+	<!-- /if -->
+</section>
+<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb --></div></section>
+
+<section class="container">
+	<div class="row">
+		<div class="col-sm-4 col-md-3">
+			<div class="mb-3">
+				<!-- include tpl=block/catelist cid=$cate_rs.id pid=$page_rs.id title=$page_rs.title -->
+			</div>
+			<div class="mb-3">
+				<!-- include tpl=block/contact -->
+			</div>
+			<div class="mb-3">
+				<!-- include tpl=block/hot_products -->
+			</div>
+			<!-- include tpl=block/taglist -->
+		</div>
+		<div class="col-sm-8 col-md-9">
+			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 clearfix">
+				<!-- loop from=$rslist key=$key value=$value -->
+				<div class="col">
+					<div class="card">
+						<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="card-img-top" alt="{$value.title}" /></a>
+						<div class="card-body">
+							<h5 class="card-title crop-text-2 text-center" style="height:50px;">{$value.title}</h5>
+							<a href="{$value.url}" class="btn btn-primary d-block">查看更多</a>
+						</div>
+					</div>
+				</div>
+				<!-- /loop -->
+			</div>
+			<div class="mt-2">
+				<!-- include tpl=block/pagelist -->
+			</div>
+		</div>
+	</div>
+</section>
 <!-- include tpl=footer -->
