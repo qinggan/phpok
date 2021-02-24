@@ -24,10 +24,12 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 $hour = 6;
 if($rslist){
 	foreach($rslist as $key=>$value){
-		$icon = $value['toplevel'] ? 'am-icon-angle-double-up'.$value['toplevel'] : 'am-icon-angle-right';
-		$time = $value['replydate'] ? $value['replydate'] : $value['dateline'];
-		if(($time + $hour * 3600) > $sys['time']){
-			$icon = 'am-icon-angle-double-right am-primary';
+		$icon = "fa-angle-right";
+		if($value['toplevel'] == 2){
+			$icon = 'fa-angle-double-up';
+		}
+		if($value['toplevel'] == 1){
+			$icon = 'fa-angle-up';
 		}
 		$value['_icon'] = $icon;
 		$value['_user'] = $value['user'] ? $value['user'] : array('user'=>'佚名');

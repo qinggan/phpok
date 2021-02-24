@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-05-12 18:50+0800\n"
-"PO-Revision-Date: 2019-05-12 18:51+0800\n"
-"Last-Translator: phpok <admin@phpok.com>\n"
+"POT-Creation-Date: 2020-08-27 16:23+0800\n"
+"PO-Revision-Date: 2020-08-27 16:24+0800\n"
+"Last-Translator: qinggan <admin@phpok.com>\n"
 "Language-Team: \n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.2\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-Basepath: ../../..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -18,29 +18,31 @@ msgstr ""
 "X-Poedit-SearchPath-1: framework/www\n"
 "X-Poedit-SearchPath-2: langs/lang_www.php\n"
 
-#: framework/js_control.php:163
+#: framework/js_control.php:192
 msgid "消息"
 msgstr "Tips"
 
-#: framework/js_control.php:164
+#: framework/js_control.php:193
 msgid "确定"
 msgstr "Submit"
 
-#: framework/js_control.php:165
+#: framework/js_control.php:194
 msgid "取消"
 msgstr "Cancel"
 
-#: framework/www/cart_control.php:101 framework/www/cart_control.php:336
-#: framework/www/cart_control.php:345
+#: framework/www/cart_control.php:103 framework/www/cart_control.php:236 framework/www/cart_control.php:397 framework/www/cart_control.php:730 framework/www/cart_control.php:739
 msgid "您的购物车里没有任何产品"
 msgstr "No products in your shopping cart"
 
-#: framework/www/cart_control.php:286
+#: framework/www/cart_control.php:504 framework/www/order_control.php:243 framework/www/payment_control.php:247 framework/www/payment_control.php:294
+msgid "订单：{sn}"
+msgstr "Order: sn"
+
+#: framework/www/cart_control.php:673
 msgid "购物车是空的"
 msgstr "No products in the cart"
 
-#: framework/www/comment_control.php:20 framework/www/content_control.php:23
-#: framework/www/post_control.php:22 framework/www/project_control.php:22
+#: framework/www/comment_control.php:20 framework/www/content_control.php:23 framework/www/post_control.php:22 framework/www/project_control.php:22
 msgid "无法获取前端用户组信息"
 msgstr "Cannot get the usergroup information"
 
@@ -60,8 +62,7 @@ msgstr "Unbound project"
 msgid "未绑定相应的模块"
 msgstr "The module is not bound"
 
-#: framework/www/comment_control.php:43 framework/www/content_control.php:49
-#: framework/www/usercp_control.php:177
+#: framework/www/comment_control.php:43 framework/www/content_control.php:49 framework/www/usercp_control.php:177
 msgid "项目不存在或未启用"
 msgstr "Project does not exist or is not enabled"
 
@@ -69,11 +70,8 @@ msgstr "Project does not exist or is not enabled"
 msgid "您没有阅读此文章权限"
 msgstr "You do not have permission to read it"
 
-#: framework/www/content_control.php:35 framework/www/payment_control.php:581
-#: framework/www/plugin_control.php:50 framework/www/post_control.php:124
-#: framework/www/upload_control.php:142 framework/www/upload_control.php:173
-#: framework/www/upload_control.php:190 framework/www/upload_control.php:210
-#: framework/www/upload_control.php:240
+#: framework/www/content_control.php:35 framework/www/payment_control.php:637 framework/www/plugin_control.php:30 framework/www/plugin_control.php:56 framework/www/post_control.php:124 framework/www/upload_control.php:143 framework/www/upload_control.php:174 framework/www/upload_control.php:191
+#: framework/www/upload_control.php:211 framework/www/upload_control.php:241
 msgid "未指定ID"
 msgstr "ID is not specified"
 
@@ -101,59 +99,56 @@ msgstr "Do not configure the appropriate template"
 msgid "阅读#{id}"
 msgstr "Reading #{id}"
 
-#: framework/www/download_control.php:42
+#: framework/www/download_control.php:45
 msgid "未指定附件ID或附件文件"
 msgstr "Annex ID is not specified, or attachment file"
 
-#: framework/www/download_control.php:50 framework/www/download_control.php:53
+#: framework/www/download_control.php:53 framework/www/download_control.php:56
 msgid "附件不存在"
 msgstr "Attachment does not exist"
 
-#: framework/www/index_control.php:42
+#: framework/www/index_control.php:45
 msgid "友情提示"
 msgstr "Tips"
 
-#: framework/www/index_control.php:77
+#: framework/www/index_control.php:80
 msgid "未指定合法的 PHP 文件"
-msgstr ""
+msgstr "No legitimate PHP file is specified."
 
-#: framework/www/index_control.php:81
-#, fuzzy
+#: framework/www/index_control.php:84
 #| msgid "附件不存在"
 msgid "PHP 文件不存在"
 msgstr "Attachment does not exist"
 
-#: framework/www/login_control.php:24 framework/www/login_control.php:141
-#: framework/www/login_control.php:197
-msgid "您已是本站会员，不需要再次登录"
-msgstr "You are a member, you do not need to log in again"
-
-#: framework/www/login_control.php:41 framework/www/login_control.php:73
-#: framework/www/login_control.php:103 framework/www/login_control.php:200
+#: framework/www/login_control.php:41 framework/www/login_control.php:73 framework/www/login_control.php:103 framework/www/login_control.php:200
 msgid "网站关闭"
 msgstr "Site is down"
 
 #: framework/www/login_control.php:78
 msgid "没有安装默认短信发送引挈，请先安装并设置一个默认"
-msgstr ""
+msgstr "If you don't have a default sms 挈, install and set a default first."
 
 #: framework/www/login_control.php:81
 msgid "未设置短信模板"
-msgstr ""
+msgstr "The SMS template is not set up."
 
 #: framework/www/login_control.php:108
 msgid "没有安装默认邮件发送引挈，请先安装并设置一个默认"
-msgstr ""
+msgstr "If you do not have a default 挈 be installed, install and set a default first."
 
 #: framework/www/login_control.php:111
 msgid "未设置邮件模板"
-msgstr ""
+msgstr "The message template is not set."
 
-#: framework/www/login_control.php:146
+#: framework/www/login_control.php:141 framework/www/login_control.php:197
+msgid "您已是本站会员，不需要再次登录"
+msgstr "You are a member, you do not need to log in again"
+
+#: framework/www/login_control.php:146 framework/www/register_control.php:203 framework/www/register_control.php:240
 msgid "验证码不能为空"
 msgstr "Captcha can't be empty"
 
-#: framework/www/login_control.php:150
+#: framework/www/login_control.php:150 framework/www/register_control.php:244
 msgid "验证码填写不正确"
 msgstr "Captcha is not correctly"
 
@@ -165,7 +160,7 @@ msgstr "Account cannot be empty"
 msgid "会员密码不能为空"
 msgstr "Password can't be empty"
 
-#: framework/www/login_control.php:170
+#: framework/www/login_control.php:170 framework/www/login_control.php:262 framework/www/login_control.php:312 framework/www/register_control.php:296
 msgid "会员信息不存在"
 msgstr "Member information does not exist."
 
@@ -175,9 +170,7 @@ msgstr "Member of audit, temporarily unable to login"
 
 #: framework/www/login_control.php:178
 msgid "会员被管理员锁定，请联系管理员解锁"
-msgstr ""
-"Member is locked by administrator, please contact your administrator to "
-"unlock"
+msgstr "Member is locked by administrator, please contact your administrator to unlock"
 
 #: framework/www/login_control.php:181
 msgid "登录密码不正确"
@@ -195,6 +188,41 @@ msgstr "Login success"
 msgid "未配置好邮件/短信通知功能，请联系管理员"
 msgstr "not configured email, please contact your administrator"
 
+#: framework/www/login_control.php:258
+msgid "邮箱不能为空"
+msgstr "Email cannot be empty"
+
+#: framework/www/login_control.php:265 framework/www/login_control.php:315
+#| msgid "会员被管理员锁定，请联系管理员解锁"
+msgid "会员已被锁定，不能取回密码，请联系管理员"
+msgstr "Member is locked by administrator, please contact your administrator to unlock"
+
+#: framework/www/login_control.php:268 framework/www/login_control.php:318
+#| msgid "会员被管理员锁定，请联系管理员解锁"
+msgid "会员未审核，请联系管理员"
+msgstr "Member is locked by administrator, please contact your administrator to unlock"
+
+#: framework/www/login_control.php:282
+msgid "没有找到邮件通知模板email_getpass，请在后台设置"
+msgstr "No message notification templates email_getpass found, please set it up in the background."
+
+#: framework/www/login_control.php:297 framework/www/login_control.php:301 framework/www/login_control.php:308
+msgid "不合法的来源参数"
+msgstr "Illegal source parameters."
+
+#: framework/www/login_control.php:304
+msgid "链接已失效，请重新获取"
+msgstr "The link is no longer valid, please get it back."
+
+#: framework/www/login_control.php:321
+#| msgid "验证码超时过期，请重新获取"
+msgid "取回密码失效，请重新获取"
+msgstr "Timeout expired verification code, please get again."
+
+#: framework/www/login_control.php:324
+msgid "参数不匹配"
+msgstr "The parameters do not match."
+
 #: framework/www/logout_control.php:33
 msgid "会员{user}成功退出"
 msgstr "Members, {user} successful exits"
@@ -207,20 +235,13 @@ msgstr "Not found attachment ID"
 msgid "您没有上传过附件"
 msgstr "You did not upload attachments"
 
-#: framework/www/open_control.php:78 framework/www/open_control.php:174
-#: framework/www/open_control.php:225 framework/www/open_control.php:261
-#: framework/www/open_control.php:289 langs/lang_www.php:16
-msgid ""
-"home=首页&prev=上一页&next=下一页&last=尾页&half={half}&add=数量：(total)/"
-"(psize)，页码：(num)/(total_page)&always=1"
+#: framework/www/open_control.php:78 framework/www/open_control.php:177 langs/lang_www.php:16
+msgid "home=首页&prev=上一页&next=下一页&last=尾页&half={half}&add=数量：(total)/(psize)，页码：(num)/(total_page)&always=1"
 msgstr ""
-
-#: framework/www/open_control.php:190
-msgid "项目不存在"
-msgstr "Project does not exist"
+"Home, Home, Prev, Previous, Next, Next, Last, End, Half, and Add: (total) / (psize), page number: (num) / "
+"(total_page) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ."
 
 #: framework/www/order_control.php:37
-#, fuzzy
 #| msgid "您还不是会员，请先登录"
 msgid "您还未登录，请先登录"
 msgstr "You are not a member, please login"
@@ -237,305 +258,294 @@ msgstr "Waiting for the payment"
 msgid "已支付"
 msgstr "Paid"
 
-#: framework/www/order_control.php:190
+#: framework/www/order_control.php:226
 msgid "您的订单 {sn} 已经支付完成，无需再支付"
 msgstr "Your order {sn} has been paid"
 
-#: framework/www/order_control.php:222
+#: framework/www/order_control.php:231
+msgid "系统未配置支付方式，请检查"
+msgstr "The payment method is not configured, please check."
+
+#: framework/www/order_control.php:310
 msgid "未指定订单ID或订单号"
 msgstr "The order ID or order number is not specified"
 
-#: framework/www/order_control.php:229 framework/www/order_control.php:245
-#: framework/www/payment_control.php:197 framework/www/payment_control.php:415
-#: framework/www/payment_control.php:514
+#: framework/www/order_control.php:317 framework/www/order_control.php:333 framework/www/payment_control.php:219 framework/www/payment_control.php:440 framework/www/payment_control.php:539
 msgid "订单信息不存在"
 msgstr "Ordering information does not exist"
 
-#: framework/www/order_control.php:234 framework/www/order_control.php:248
+#: framework/www/order_control.php:322 framework/www/order_control.php:336
 msgid "您没有权限查看此订单"
 msgstr "You do not have permission to view this order"
 
-#: framework/www/order_control.php:241
+#: framework/www/order_control.php:329
 msgid "参数不完整"
 msgstr "Parameter is not complete"
 
-#: framework/www/order_control.php:284
+#: framework/www/order_control.php:372
 msgid "订单ID不能为空"
 msgstr "Order ID cannot be null"
 
-#: framework/www/order_control.php:288
+#: framework/www/order_control.php:376
 msgid "非会员账号不能执行此操作"
 msgstr "Non-member account cannot perform this operation"
 
-#: framework/www/order_control.php:296
+#: framework/www/order_control.php:384
 msgid "您没有权限评论此订单信息"
 msgstr "You do not have permission to comment this order information"
 
-#: framework/www/order_control.php:299
+#: framework/www/order_control.php:387
 msgid "订单未结束，暂不支持评论"
 msgstr "The order is not closed and comments are not yet supported"
 
-#: framework/www/order_control.php:302
+#: framework/www/order_control.php:390
 msgid "订单已取消，不支持评论"
-msgstr ""
+msgstr "The order has been cancelled and comments are not supported."
 
-#: framework/www/order_control.php:306
+#: framework/www/order_control.php:394
 msgid "订单中无法找到相关产品信息"
-msgstr ""
+msgstr "The relevant product information could not be found in the order."
 
-#: framework/www/order_control.php:324
+#: framework/www/order_control.php:412
 msgid "订单中没有找到可以关联的产品信息，所以不支持评论"
-msgstr ""
+msgstr "No product information was found in the order that could be associated, so comments are not supported."
 
-#: framework/www/order_control.php:347
-#, fuzzy
+#: framework/www/order_control.php:435
 #| msgid "非会员账号不能执行此操作"
 msgid "非会员不能执行此操作"
 msgstr "Non-member account cannot perform this operation"
 
-#: framework/www/order_control.php:351 framework/www/order_control.php:364
+#: framework/www/order_control.php:439 framework/www/order_control.php:452
 msgid "订单不存在"
-msgstr ""
+msgstr "The order does not exist."
 
-#: framework/www/order_control.php:354
-#, fuzzy
+#: framework/www/order_control.php:442
 #| msgid "您没有权限查看此订单"
 msgid "您没有权限操作此订单"
 msgstr "You do not have permission to view this order"
 
-#: framework/www/order_control.php:360
-#, fuzzy
+#: framework/www/order_control.php:448
 #| msgid "未登录会员不能执行此操作"
 msgid "参数不完整，不能执行此操作"
 msgstr "Not logged in members cannot perform this operation"
 
-#: framework/www/order_control.php:367
-#, fuzzy
+#: framework/www/order_control.php:455
 #| msgid "登录密码不正确"
 msgid "订单密码不正确"
 msgstr "Password is incorrect"
 
-#: framework/www/order_control.php:377
+#: framework/www/order_control.php:465
 msgid "订单状态异常，请联系客服"
-msgstr ""
+msgstr "If the status of the order is abnormal, please contact customer service."
 
-#: framework/www/order_control.php:381
+#: framework/www/order_control.php:469
 msgid "仅限已支付的订单才能查看物流"
-msgstr ""
+msgstr "Logistics can only be viewed for paid orders."
 
-#: framework/www/order_control.php:386
+#: framework/www/order_control.php:474
 msgid "这是一张空白订单，没有产品，无法获得物流信息"
-msgstr ""
+msgstr "This is a blank order, no product, no logistics information."
 
-#: framework/www/order_control.php:395
+#: framework/www/order_control.php:483
 msgid "服务类订单没有物流信息"
-msgstr ""
+msgstr "Service orders do not have logistics information."
 
-#: framework/www/order_control.php:399
+#: framework/www/order_control.php:487
 msgid "订单还未录入物流信息"
-msgstr ""
+msgstr "The order has not yet been entered for logistics information."
 
-#: framework/www/order_control.php:415
+#: framework/www/order_control.php:503
 msgid "订单中找不到相关物流信息，请联系客服"
-msgstr ""
+msgstr "No relevant logistics information can be found in the order, please contact customer service."
 
 #: framework/www/payment_control.php:37 framework/www/payment_control.php:92
-#, fuzzy
 #| msgid "非会员没有此功能权限"
 msgid "请先登录，非会员没有此权限"
 msgstr "Non-members do not have this permission"
 
 #: framework/www/payment_control.php:44
-#, fuzzy
 #| msgid "数据不存在，请检查"
 msgid "要支付的目标不存在，请检查"
 msgstr "Failed to store the data, please check"
 
 #: framework/www/payment_control.php:47
 msgid "财富：{title} 未启用"
-msgstr ""
+msgstr "Fortune: s title is not enabled."
 
 #: framework/www/payment_control.php:50
 msgid "{title}不支持在线充值"
-msgstr ""
+msgstr "Online top-up is not supported."
 
 #: framework/www/payment_control.php:57
 msgid "没有可以充值的财富方案"
-msgstr ""
+msgstr "There is no wealth scheme that can be recharged."
 
 #: framework/www/payment_control.php:97
 msgid "未指定要充值的财富ID"
-msgstr ""
+msgstr "The wealth ID to top up is not specified."
 
 #: framework/www/payment_control.php:101
 msgid "财富方案不存在"
-msgstr ""
+msgstr "The wealth scheme does not exist."
 
 #: framework/www/payment_control.php:104
 msgid "财富方案未启用"
-msgstr ""
+msgstr "The wealth scheme is not enabled."
 
 #: framework/www/payment_control.php:136
 msgid "未指定充值目标"
-msgstr ""
+msgstr "No top-up target is specified."
 
 #: framework/www/payment_control.php:140
 msgid "未指定充值金额"
-msgstr ""
+msgstr "The top-up amount is not specified."
 
 #: framework/www/payment_control.php:143
 msgid "充值金额不能少于1元"
-msgstr ""
+msgstr "The recharge amount must not be less than $1."
 
-#: framework/www/payment_control.php:147 framework/www/payment_control.php:244
+#: framework/www/payment_control.php:147 framework/www/payment_control.php:178 framework/www/payment_control.php:269
 msgid "未指定支付方式"
 msgstr "Does not specify a payment method"
 
 #: framework/www/payment_control.php:151
 msgid "在线充值"
-msgstr ""
+msgstr "Recharge online."
 
 #: framework/www/payment_control.php:152
 msgid "充值编号：{sn}"
-msgstr ""
+msgstr "Top-up number: sn"
 
-#: framework/www/payment_control.php:161 framework/www/payment_control.php:280
+#: framework/www/payment_control.php:161 framework/www/payment_control.php:305
 msgid "支付记录创建失败，请联系管理员"
 msgstr "Save error, please contact administrator"
 
-#: framework/www/payment_control.php:163 framework/www/payment_control.php:291
-msgid "成功创建支付链，请稍候，即将为您跳转支付页面…"
-msgstr ""
-"Successfully created the payment chain, please wait to be paid for you can "
-"jump to the page ..."
+#: framework/www/payment_control.php:174
+msgid "没有找到支付记录"
+msgstr "No payment records were found."
 
-#: framework/www/payment_control.php:181
-msgid "未指定订单号ID"
-msgstr ""
-
-#: framework/www/payment_control.php:189
+#: framework/www/payment_control.php:211
 msgid "未指定定单编号"
-msgstr ""
+msgstr "The order number is not specified."
 
-#: framework/www/payment_control.php:193
+#: framework/www/payment_control.php:215
 msgid "订单密码不能为空"
 msgstr "The order password can not be empty"
 
-#: framework/www/payment_control.php:200
+#: framework/www/payment_control.php:222
 msgid "订单权限验证不通过"
 msgstr "Order permission verification does not pass"
 
-#: framework/www/payment_control.php:206
+#: framework/www/payment_control.php:232
 msgid "订单已支付过，不能重复操作"
 msgstr "Orders have been paid, cannot be performed again"
 
-#: framework/www/payment_control.php:213
+#: framework/www/payment_control.php:239
 msgid "积分抵扣支付"
-msgstr ""
+msgstr "Points are paid with credits."
 
-#: framework/www/payment_control.php:221 framework/www/payment_control.php:269
-msgid "订单：{sn}"
-msgstr ""
-
-#: framework/www/payment_control.php:232
+#: framework/www/payment_control.php:258
 msgid "订单{sn}支付成功"
-msgstr ""
+msgstr "The payment of the order was successful."
 
-#: framework/www/payment_control.php:236
+#: framework/www/payment_control.php:262
 msgid "订单{rs}支付成功"
-msgstr ""
+msgstr "The payment of the order was successful."
 
-#: framework/www/payment_control.php:252
+#: framework/www/payment_control.php:277
 msgid "非会员不支持余额支付功能"
-msgstr ""
+msgstr "Balance payment is not supported by non-members."
 
-#: framework/www/payment_control.php:264
+#: framework/www/payment_control.php:289
 msgid "您的余额不足，请先充值或使用其他方式支付"
-msgstr ""
+msgstr "If your balance is insufficient, please top up or pay by other means first."
 
-#: framework/www/payment_control.php:380
+#: framework/www/payment_control.php:405
 msgid "财富（{title}）抵现"
-msgstr ""
+msgstr "Wealth is cashed in."
 
-#: framework/www/payment_control.php:395
+#: framework/www/payment_control.php:420
 msgid "使用{payment}抵扣{price}，共消耗{payment}{integral}{unit}"
-msgstr ""
+msgstr "A total of .payments, integrals, and units are consumed by using the \"payment\" deduction for the \"price\""
 
-#: framework/www/payment_control.php:411
+#: framework/www/payment_control.php:436
 msgid "未指定支付订单ID"
 msgstr "Do not specify a payment order ID"
 
-#: framework/www/payment_control.php:418
+#: framework/www/payment_control.php:443
 msgid "订单已支付过了，不能再次执行"
 msgstr "Orders have been paid cannot be performed again"
 
-#: framework/www/payment_control.php:432
+#: framework/www/payment_control.php:457
 msgid "支付方式不存在"
 msgstr "Payment does not exist"
 
-#: framework/www/payment_control.php:435
+#: framework/www/payment_control.php:460
 msgid "支付方式未启用"
 msgstr "Payment methods are not enabled"
 
-#: framework/www/payment_control.php:440 framework/www/payment_control.php:532
+#: framework/www/payment_control.php:465 framework/www/payment_control.php:575
 msgid "支付接口异常，文件{file}不存在"
 msgstr "Payment interface exception file {file} does not exist"
 
-#: framework/www/payment_control.php:449
+#: framework/www/payment_control.php:474
 msgid "非会员不支持余额支付，请登录再执行此操作"
-msgstr ""
+msgstr "Non-members do not support balance payment, please log in and do so again."
 
-#: framework/www/payment_control.php:454 framework/www/payment_control.php:459
+#: framework/www/payment_control.php:479 framework/www/payment_control.php:484
 msgid "支付信息异常，无法找到支付方法，请联系管理员"
-msgstr ""
+msgstr "Payment information is abnormal, can not find the payment method, please contact the administrator."
 
-#: framework/www/payment_control.php:467
+#: framework/www/payment_control.php:492
 msgid "您的余额为空，请先充值"
-msgstr ""
+msgstr "Your balance is empty, please top it up first."
 
-#: framework/www/payment_control.php:470
+#: framework/www/payment_control.php:495
 msgid "您的余额不足，请先充值"
-msgstr ""
+msgstr "If your balance is insufficient, please top it up first."
 
-#: framework/www/payment_control.php:480
+#: framework/www/payment_control.php:505
 msgid "支付订单：{sn}"
-msgstr ""
+msgstr "Pay for an order: sn"
 
-#: framework/www/payment_control.php:494
+#: framework/www/payment_control.php:519
 msgid "支付完成"
-msgstr ""
+msgstr "Payment complete"
 
-#: framework/www/payment_control.php:503
+#: framework/www/payment_control.php:528
 msgid "支付操作完成，您共支付：{price}"
-msgstr ""
+msgstr "Payment is complete and you pay for it in total:"
 
-#: framework/www/payment_control.php:510
+#: framework/www/payment_control.php:535
 msgid "执行异常，请检查，缺少参数ID"
 msgstr "Implementation of exception, check, missing parameter ID"
 
-#: framework/www/payment_control.php:526 framework/www/payment_control.php:538
+#: framework/www/payment_control.php:569 framework/www/payment_control.php:594
 msgid "您的订单付款成功，请稍候…"
 msgstr "Successful payment of your order, please wait ..."
 
-#: framework/www/payment_control.php:585
+#: framework/www/payment_control.php:587
+msgid "付款失败，请检查…"
+msgstr "Payment failed, please check..."
+
+#: framework/www/payment_control.php:641
 msgid "数据不存在，请检查"
 msgstr "Failed to store the data, please check"
 
-#: framework/www/payment_control.php:593
+#: framework/www/payment_control.php:649
 msgid "订单{sn}支付完成"
-msgstr ""
+msgstr "The payment of the order is complete."
 
-#: framework/www/plugin_control.php:57
-#, fuzzy
+#: framework/www/plugin_control.php:63
 #| msgid "模块不存在或未启用"
 msgid "插件不存在或未启用"
 msgstr "Module does not exist or is not enabled"
 
-#: framework/www/plugin_control.php:60
+#: framework/www/plugin_control.php:66
 msgid "插件应用{appid}.php不存在"
 msgstr "Plugin {appid}.php does not exist"
 
-#: framework/www/plugin_control.php:73
+#: framework/www/plugin_control.php:79
 msgid "插件方法{method}不存在"
 msgstr "Method ({method}) Does not exist"
 
@@ -549,25 +559,21 @@ msgstr "Does not meet the requirements of the project"
 
 #: framework/www/post_control.php:43
 msgid "项目未启用发布功能，联系管理员启用此功能"
-msgstr ""
-"Project does not have the publishing feature enabled, contact your "
-"administrator to enable this feature"
+msgstr "Project does not have the publishing feature enabled, contact your administrator to enable this feature"
 
 #: framework/www/post_control.php:49
 msgid "您的级别（{grouptitle}）没有发布权限，请联系我们的客服"
-msgstr ""
+msgstr "You do not have permission to publish at your level , please contact our customer service."
 
 #: framework/www/post_control.php:90
 msgid "未配置发布模板，联系管理员进行配置"
-msgstr ""
-"Do not configure publishing templates, contact your administrator to "
-"configure"
+msgstr "Do not configure publishing templates, contact your administrator to configure"
 
 #: framework/www/post_control.php:113
 msgid "非会员不能操作此信息"
 msgstr "Non-members cannot manipulate this information"
 
-#: framework/www/post_control.php:129
+#: framework/www/post_control.php:129 framework/www/project_control.php:257 framework/www/search_control.php:170
 msgid "内容信息不存在"
 msgstr "Content does not exist"
 
@@ -595,33 +601,29 @@ msgstr "Parent project does not exist or is not enabled"
 msgid "模板文件缺少"
 msgstr "Template file is missing"
 
-#: framework/www/project_control.php:83
+#: framework/www/project_control.php:84
 msgid "模块不存在或未启用"
 msgstr "Module does not exist or is not enabled"
 
-#: framework/www/project_control.php:96 framework/www/project_control.php:130
+#: framework/www/project_control.php:97 framework/www/project_control.php:132
 msgid "分类已停用，请联系管理员"
 msgstr "Classification has been deactivated, please contact your administrator"
 
-#: framework/www/project_control.php:113
+#: framework/www/project_control.php:114
 msgid "参数格式不正确"
-msgstr ""
+msgstr "The parameters are not formatted correctly."
 
-#: framework/www/project_control.php:143
+#: framework/www/project_control.php:145 framework/www/search_control.php:79
 msgid "父级分类已停用，请联系管理员"
-msgstr ""
-"Parent category has been deactivated, please contact your administrator"
+msgstr "Parent category has been deactivated, please contact your administrator"
 
-#: framework/www/project_control.php:153
+#: framework/www/project_control.php:155
 msgid "项目所绑定的根分类已停用，请联系管理员"
-msgstr ""
-"Project binding root category has been deactivated, please contact your "
-"administrator"
+msgstr "Project binding root category has been deactivated, please contact your administrator"
 
-#: framework/www/project_control.php:269
+#: framework/www/project_control.php:278
 msgid "未配置模板 {tplfile}，请配置相应的模板"
-msgstr ""
-"Template {tplfile} is not configured, configure the appropriate template"
+msgstr "Template {tplfile} is not configured, configure the appropriate template"
 
 #: framework/www/register_control.php:37
 msgid "您已登录，不用注册"
@@ -635,19 +637,121 @@ msgstr "System suspend membership registration, contact the site administrator"
 msgid "未找到有效的会员组信息"
 msgstr "Unable to find a valid member of group information"
 
-#: framework/www/register_control.php:75
-msgid "未绑定验证项目"
-msgstr "Unbound project"
+#: framework/www/register_control.php:136
+msgid "您已是本站会员，不能执行这个操作"
+msgstr "You are a member, you cannot perform this operation"
 
-#: framework/www/register_control.php:128
-#, fuzzy
-#| msgid "未指定会员信息"
-msgid "未指定会员ID"
-msgstr "Do not specify a membership information"
+#: framework/www/register_control.php:145
+#| msgid "项目所绑定的根分类已停用，请联系管理员"
+msgid "指定的会员组没有开放申请，请联系管理员"
+msgstr "Project binding root category has been deactivated, please contact your administrator"
 
-#: framework/www/search_control.php:45
+#: framework/www/register_control.php:151 framework/www/register_control.php:156
+msgid "注册失败，网站未开放注册权限"
+msgstr "Failed to register, the site is not open registry permissions"
+
+#: framework/www/register_control.php:164
+#| msgid "手机号或联系电话至少要有一项不能为空"
+msgid "账号/手机号/邮箱至少要求一项不能为空"
+msgstr "Mobile or telphone at least one can not be empty"
+
+#: framework/www/register_control.php:171
+msgid "会员账号不允许包含字符串：{string}"
+msgstr "Member accounts are not allowed to contain strings:"
+
+#: framework/www/register_control.php:176
+msgid "会员账号已存用"
+msgstr "Member ID already exists"
+
+#: framework/www/register_control.php:182
+msgid "邮箱不合法"
+msgstr "Mailbox is not lawful"
+
+#: framework/www/register_control.php:186
+msgid "邮箱已注册"
+msgstr "The mailbox is registered."
+
+#: framework/www/register_control.php:192
+#| msgid "手机号不能为空"
+msgid "手机号不合法"
+msgstr "Phone number cannot be null"
+
+#: framework/www/register_control.php:196
+msgid "手机号已注册"
+msgstr "The phone number is registered."
+
+#: framework/www/register_control.php:213
+msgid "邀请码不能为空"
+msgstr "Invitation code cannot be empty"
+
+#: framework/www/register_control.php:219
+#| msgid "数据不存在，请检查"
+msgid "邀请码不存在，请检查"
+msgstr "Failed to store the data, please check"
+
+#: framework/www/register_control.php:227
+msgid "密码不能为空"
+msgstr "Password can not be empty"
+
+#: framework/www/register_control.php:231
+msgid "确认密码不能为空"
+msgstr "Confirmation password can not be empty"
+
+#: framework/www/register_control.php:234
+msgid "两次输入的密码不一致"
+msgstr "The two passwords do not match"
+
+#: framework/www/register_control.php:259
+msgid "注册失败，请联系管理员"
+msgstr "Save error, please contact administrator"
+
+#: framework/www/register_control.php:279
+msgid "会员注册"
+msgstr "Sign Up"
+
+#: framework/www/register_control.php:299
+#| msgid "会员被管理员锁定，请联系管理员解锁"
+msgid "账号已被管理员锁定，请联系客服"
+msgstr "Member is locked by administrator, please contact your administrator to unlock"
+
+#: framework/www/register_control.php:302
+#| msgid "订单已支付过，不能重复操作"
+msgid "账号已经激活，不能重复操作"
+msgstr "Orders have been paid, cannot be performed again"
+
+#: framework/www/register_control.php:305
+msgid "激活码不存在或已经失效，请联系客服"
+msgstr "The activation code does not exist or has expired, please contact customer service."
+
+#: framework/www/search_control.php:98
 msgid "您的网站没有允许可以搜索的信息"
 msgstr "Your site does not have permission to search for information"
+
+#: framework/www/search_control.php:156
+msgid "没有搜索到您需要的内容"
+msgstr "Didn't search for what you needed."
+
+#: framework/www/tag_control.php:28
+msgid "未指定标签"
+msgstr "The label is not specified."
+
+#: framework/www/tag_control.php:43
+#| msgid "注册失败，请联系管理员"
+msgid "标签异常，请联系管理员"
+msgstr "Save error, please contact administrator"
+
+#: framework/www/tag_control.php:49
+#| msgid "根分类信息不存在"
+msgid "标签信息不存在"
+msgstr "Classified information does not exist"
+
+#: framework/www/tag_control.php:62
+msgid "数据异常"
+msgstr "Data exception"
+
+#: framework/www/tag_control.php:71
+msgid "自定义链接不允许使用tag标签链"
+msgstr "Custom links do not allow the use of tag chains."
 
 #: framework/www/ueditor_control.php:100
 msgid "未指定请求方式"
@@ -659,8 +763,7 @@ msgstr "Request parameter is incorrect"
 
 #: framework/www/ueditor_control.php:107 framework/www/upload_control.php:46
 msgid "系统已禁止游客上传，请联系管理员"
-msgstr ""
-"System has banned visitors to upload, please contact your administrator"
+msgstr "System has banned visitors to upload, please contact your administrator"
 
 #: framework/www/ueditor_control.php:110 framework/www/upload_control.php:49
 msgid "系统已禁止会员上传，请联系管理员"
@@ -670,73 +773,76 @@ msgstr "System has banned Member upload, please contact your administrator"
 msgid "前端禁用图片本地化"
 msgstr "Front-end disable image localization"
 
-#: framework/www/ueditor_control.php:143
+#: framework/www/ueditor_control.php:140
 msgid "视频内容为空"
 msgstr "Video content is empty"
 
-#: framework/www/ueditor_control.php:171
+#: framework/www/ueditor_control.php:163
 msgid "附件内容为空"
 msgstr "Attachment content is empty"
 
-#: framework/www/ueditor_control.php:199
+#: framework/www/ueditor_control.php:187
 msgid "图片数据内容为空"
 msgstr "Picture data is empty"
 
-#: framework/www/ueditor_control.php:233
+#: framework/www/ueditor_control.php:206
+#| msgid "项目不符合要求"
+msgid "附件类型不符合要求"
+msgstr "Does not meet the requirements of the project"
+
+#: framework/www/ueditor_control.php:221
 msgid "视频上传失败"
 msgstr "Video upload failed"
 
-#: framework/www/ueditor_control.php:247
+#: framework/www/ueditor_control.php:235
 msgid "图片上传失败"
 msgstr "Image upload fails"
 
-#: framework/www/ueditor_control.php:300
+#: framework/www/ueditor_control.php:283
 msgid "图片迁移失败"
 msgstr "Image migration to fail"
 
-#: framework/www/ueditor_control.php:327 framework/www/upload_control.php:86
+#: framework/www/ueditor_control.php:309 framework/www/upload_control.php:87
 msgid "图片存储失败"
 msgstr "Picture storage failed"
 
-#: framework/www/upload_control.php:108
+#: framework/www/upload_control.php:109
 msgid "没有指定要替换的附件"
 msgstr "Do not specify replacement annex"
 
-#: framework/www/upload_control.php:112
+#: framework/www/upload_control.php:113
 msgid "资源不存在"
 msgstr "Resource does not exist"
 
-#: framework/www/upload_control.php:117
+#: framework/www/upload_control.php:118
 msgid "附件上传失败"
 msgstr "Attachment upload failed"
 
-#: framework/www/upload_control.php:154
+#: framework/www/upload_control.php:155
 msgid "请传递正确的附件ID"
 msgstr "Please pass the correct attachment ID"
 
-#: framework/www/upload_control.php:166
+#: framework/www/upload_control.php:167
 msgid "附件信息获取失败，可能已经删除"
 msgstr "Attachment failed to obtain information, it may have been deleted"
 
-#: framework/www/upload_control.php:177 framework/www/upload_control.php:194
-#: framework/www/upload_control.php:214
+#: framework/www/upload_control.php:178 framework/www/upload_control.php:195 framework/www/upload_control.php:215
 msgid "数据不存在"
 msgstr "Data does not exist"
 
-#: framework/www/upload_control.php:199
+#: framework/www/upload_control.php:200
 msgid "附件标题不能为空"
 msgstr "Title cannot be empty"
 
-#: framework/www/upload_control.php:218 framework/www/upload_control.php:222
-#: framework/www/upload_control.php:225
+#: framework/www/upload_control.php:219 framework/www/upload_control.php:223 framework/www/upload_control.php:226
 msgid "您没有权限查看此附件信息"
 msgstr "You don't have permissions to view this page"
 
-#: framework/www/upload_control.php:244
+#: framework/www/upload_control.php:245
 msgid "附件信息不存在"
 msgstr "Information does not exist"
 
-#: framework/www/upload_control.php:265
+#: framework/www/upload_control.php:266
 msgid "没有权限操作"
 msgstr "Do not have permission to operate"
 
@@ -746,7 +852,7 @@ msgstr "Do not specify a membership information"
 
 #: framework/www/user_control.php:28
 msgid "游客无法查看会员信息"
-msgstr ""
+msgstr "Visitors cannot view membership information."
 
 #: framework/www/usercp_control.php:23
 msgid "未登录会员不能执行此操作"
@@ -754,15 +860,11 @@ msgstr "Not logged in members cannot perform this operation"
 
 #: framework/www/usercp_control.php:28
 msgid "您的账号有异常：无法获取相应的会员组信息，请联系管理员"
-msgstr ""
-"Your account has an exception: failed to get the appropriate user groups "
-"information, please contact your administrator"
+msgstr "Your account has an exception: failed to get the appropriate user groups information, please contact your administrator"
 
 #: framework/www/usercp_control.php:151
 msgid "发票信息不存在或您没有权限修改此发票设置"
-msgstr ""
-"Invoice information does not exist or you do not have permission to modify "
-"the Invoice Setup"
+msgstr "Invoice information does not exist or you do not have permission to modify the Invoice Setup"
 
 #: framework/www/usercp_control.php:170
 msgid "项目信息不存在"
@@ -774,21 +876,24 @@ msgstr "You do not have this permission features, please contact webmaster"
 
 #: framework/www/usercp_control.php:284
 msgid "地址信息不存在或您没有权限修改此地址"
-msgstr ""
-"Address information does not exist or you do not have permission to modify "
-"this address"
+msgstr "Address information does not exist or you do not have permission to modify this address"
 
 #: framework/www/usercp_control.php:433
 msgid "系统没有启用任何财富功能，请联系管理员"
 msgstr "You do not have this permission features, please contact webmaster"
 
+#: framework/www/usercp_control.php:455
+msgid "未指定财富规则"
+msgstr "Wealth rules are not specified."
+
+#: framework/www/usercp_control.php:459
+#| msgid "订单信息不存在"
+msgid "财富信息不存在"
+msgstr "Ordering information does not exist"
+
 #: langs/lang_www.php:11
-msgid ""
-"运行{total}秒，内存使用{mem_total}，数据库执行{sql_count}次，用时{sql_time}"
-"秒，缓存执行{cache_count}次，用时{cache_time}秒"
-msgstr ""
-"Processed in {total} second(s), memory {mem_total}, {sql_count} queries in "
-"{sql_time} second(s), {cache_count} cache(s) in {cache_time} seconds"
+msgid "运行{total}秒，内存使用{mem_total}，数据库执行{sql_count}次，用时{sql_time}秒，缓存执行{cache_count}次，用时{cache_time}秒"
+msgstr "Processed in {total} second(s), memory {mem_total}, {sql_count} queries in {sql_time} second(s), {cache_count} cache(s) in {cache_time} seconds"
 
 #: langs/lang_www.php:12
 msgid "支持格式有："
@@ -806,11 +911,18 @@ msgstr "Date"
 msgid "清除"
 msgstr "Clear"
 
-#~ msgid "您已是本站会员，不能执行这个操作"
-#~ msgstr "You are a member, you cannot perform this operation"
+#~ msgid "项目不存在"
+#~ msgstr "Project does not exist"
 
-#~ msgid "验证码超时过期，请重新获取"
-#~ msgstr "Timeout expired verification code, please get again."
+#~ msgid "成功创建支付链，请稍候，即将为您跳转支付页面…"
+#~ msgstr "Successfully created the payment chain, please wait to be paid for you can jump to the page ..."
+
+#~ msgid "未绑定验证项目"
+#~ msgstr "Unbound project"
+
+#~| msgid "未指定会员信息"
+#~ msgid "未指定会员ID"
+#~ msgstr "Do not specify a membership information"
 
 #~ msgid "验证码不存在"
 #~ msgstr "The verification code does not exist"
@@ -830,20 +942,11 @@ msgstr "Clear"
 #~ msgid "地址不能为空"
 #~ msgstr "Address can not be empty"
 
-#~ msgid "手机号或联系电话至少要有一项不能为空"
-#~ msgstr "Mobile or telphone at least one can not be empty"
-
 #~ msgid "手机号格式不正确"
 #~ msgstr "Phone number is incorrect"
 
 #~ msgid "联系电话格式不正确"
 #~ msgstr "Telphone number is incorrect"
-
-#~ msgid "手机号不能为空"
-#~ msgstr "Phone number cannot be null"
-
-#~ msgid "邮箱不能为空"
-#~ msgstr "Email cannot be empty"
 
 #~ msgid "邮箱格式不正确"
 #~ msgstr "Mailbox format is incorrect"
@@ -870,8 +973,7 @@ msgstr "Clear"
 #~ msgstr "Save error, please contact administrator"
 
 #~ msgid "数据存储成功，请等待管理员审核"
-#~ msgstr ""
-#~ "Data storage is successful, please wait for an administrator to audit"
+#~ msgstr "Data storage is successful, please wait for an administrator to audit"
 
 #~ msgid "验证不通过，必填项目不能为空"
 #~ msgstr "Validation does not pass, required items cannot be empty"
@@ -906,24 +1008,11 @@ msgstr "Clear"
 #~ msgid "验证码已过期"
 #~ msgstr "The verification code has expired"
 
-#~ msgid "密码不能为空"
-#~ msgstr "Password can not be empty"
-
-#~ msgid "确认密码不能为空"
-#~ msgstr "Confirmation password can not be empty"
-
-#~ msgid "注册失败，请联系管理员"
-#~ msgstr "Save error, please contact administrator"
-
-#~ msgid "会员注册"
-#~ msgstr "Sign Up"
-
 #~ msgid "注册成功，已自动登录，请稍候…"
 #~ msgstr "Registration Successful…"
 
 #~ msgid "注册成功，等待管理员验证"
-#~ msgstr ""
-#~ "Data storage is successful, please wait for an administrator to audit"
+#~ msgstr "Data storage is successful, please wait for an administrator to audit"
 
 #~ msgid "首页"
 #~ msgstr "Home"
@@ -967,9 +1056,6 @@ msgstr "Clear"
 #~ msgid "无法获取订单信息"
 #~ msgstr "Unable to get order information."
 
-#~ msgid "根分类信息不存在"
-#~ msgstr "Classified information does not exist"
-
 #~ msgid "根分类未启用"
 #~ msgstr "Root category is not enabled"
 
@@ -989,9 +1075,7 @@ msgstr "Clear"
 #~ msgstr "Do not configure templates"
 
 #~ msgid "官网未配置好邮件通知功能，请联系管理员"
-#~ msgstr ""
-#~ "Official website is not configured email notification feature, please "
-#~ "contact your administrator"
+#~ msgstr "Official website is not configured email notification feature, please contact your administrator"
 
 #~ msgid "该订单已结束，不能再执行付款操作"
 #~ msgstr "The order is over, can't perform payment operations"

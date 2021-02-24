@@ -1,0 +1,43 @@
+<div class="table">
+    <div class="title">项目：<span class="note">请指定项目</span></div>
+    <div class="content">
+        <select id="pid" name="pid">
+            <option value="">请选择…</option>
+            <!-- loop from=$project_list key=$key value=$value id=$tmpid -->
+            <option value="{$value.id}" {if $rs.param && $rs.param.pid==$value.id} selected{/if}>{$value.space}{$value.title}</option>
+            <!-- /loop -->
+        </select>
+    </div>
+</div>
+<div class="table">
+	<div class="title">
+		应用ID<span class="note"></span>
+	</div>
+	<div class="content">
+		<input type="text" name="app_id" id="app_id" value="{$rs.param.app_id}" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		应用密钥<span class="note"></span>
+	</div>
+	<div class="content">
+		<input type="text" name="app_secret" id="app_secret" value="{$rs.param.app_secret}" class="long" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		Session Key<span class="note"></span>
+	</div>
+	<div class="content">
+		<input type="text" name="session_key" id="session_key" value="{$rs.param.session_key}" class="long" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		网址<span class="note"></span>
+	</div>
+	<div class="content">
+		<input type="text" name="url" id="url" value="{$rs.param.url}" class="long" />
+	</div>
+</div>

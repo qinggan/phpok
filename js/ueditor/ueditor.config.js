@@ -236,7 +236,7 @@
         //removeForamtTags标签
         //,removeFormatTags:'b,big,code,del,dfn,em,font,i,ins,kbd,q,samp,small,span,strike,strong,sub,sup,tt,u,var'
         //removeFormatAttributes属性
-        //,removeFormatAttributes:'class,style,lang,width,height,align,hspace,valign'
+        ,removeFormatAttributes:'class,style,lang,width,height,align,hspace,valign'
 
         //undo
         //可以最多回退的次数,默认20

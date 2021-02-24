@@ -139,12 +139,14 @@ class api_identifier extends phpok_plugin
 		$sign = $this->create_sign($data);
 		$url .= "&_sign=".rawurlencode($sign);
 		$url .= "&params[keywords]=".rawurlencode($title)."&params[first]=".$data['first'];
+		$this->lib('curl')->user_agent($this->lib('server')->agent());
 		$info = $this->lib('curl')->get_json($url);
 		if(!$info){
 			$this->error('获取内容失败');
 		}
 		if(!$info['status']){
-			$this->error($info['info']);
+			$tip = $info['error'] ? $info['error'] : $info['info'];
+			$this->error($tip);
 		}
 		$info = $info['info'];
 		$info = strtolower($info);

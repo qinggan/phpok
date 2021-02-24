@@ -23,6 +23,7 @@ UE.registerUI('quickformat',function(editor,uiName){
 			content = content.replace(/<th([^>]*?)>(.*?)<\[PHPOKBR\]>(.*?)<\/th>/ig,"<th$1>$2$3</th>");
 			content = content.replace(/<td([^>]*?)>(.*?)<\[PHPOKBR\]>(.*?)<\/td>/ig,"<td$1>$2$3</td>");
 			content = content.replace(/<li([^>]*?)>(.*?)<\[PHPOKBR\]>(.*?)<\/li>/ig,"<li$1>$2$3</li>");
+			content = content.replace(/<img([^>]*?)src=[\'|\"](.*?)[\'|\"]([^>]*?)>/ig,'<img src="$2" />'); //清理图片样式
 			content = content.replace(/　/g,'');
 			content = content.replace(/<table([^>]*?)>/g,'<table style="width:100%"$1>');
 			var list = content.split('<[PHPOKBR]>');
@@ -58,7 +59,7 @@ UE.registerUI('quickformat',function(editor,uiName){
         //按钮的名字
         name:'一键排版',
         //提示
-        title:'排版整个编辑框内容，去除多余空格，BR标签变成P标签',
+        title:'排版整个编辑框内容，去除多余空格，BR标签变成P标签，图片仅保留 src 样式',
         //需要添加的额外样式，指定icon图标，这里默认使用一个重复的icon
         cssRules :'background-position: -640px -40px;',
         //点击时执行的命令

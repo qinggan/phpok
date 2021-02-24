@@ -12458,6 +12458,107 @@ UE.plugins['horizontal'] = function(){
 };
 
 
+UE.commands['time'] = UE.commands["date"] = {
+    execCommand : function(cmd, format){
+        var date = new Date;
+
+        function formatTime(date, format) {
+            var hh = ('0' + date.getHours()).slice(-2),
+                ii = ('0' + date.getMinutes()).slice(-2),
+                ss = ('0' + date.getSeconds()).slice(-2);
+            format = format || 'hh:ii:ss';
+            return format.replace(/hh/ig, hh).replace(/ii/ig, ii).replace(/ss/ig, ss);
+        }
+        function formatDate(date, format) {
+            var yyyy = ('000' + date.getFullYear()).slice(-4),
+                yy = yyyy.slice(-2),
+                mm = ('0' + (date.getMonth()+1)).slice(-2),
+                dd = ('0' + date.getDate()).slice(-2);
+            format = format || 'yyyy-mm-dd';
+            return format.replace(/yyyy/ig, yyyy).replace(/yy/ig, yy).replace(/mm/ig, mm).replace(/dd/ig, dd);
+        }
+
+        this.execCommand('insertHtml',cmd == "time" ? formatTime(date, format):formatDate(date, format) );
+    }
+};
+
+
+
+UE.plugins['rowspacing'] = function(){
+    var me = this;
+    me.setOpt({
+        'rowspacingtop':['5', '10', '15', '20', '25'],
+        'rowspacingbottom':['5', '10', '15', '20', '25']
+
+    });
+    me.commands['rowspacing'] =  {
+        execCommand : function( cmdName,value,dir ) {
+            this.execCommand('paragraph','p',{style:'margin-'+dir+':'+value + 'px'});
+            return true;
+        },
+        queryCommandValue : function(cmdName,dir) {
+            var pN = domUtils.filterNodeList(this.selection.getStartElementPath(),function(node){return domUtils.isBlockElm(node) }),
+                value;
+            //trace:1026
+            if(pN){
+                value = domUtils.getComputedStyle(pN,'margin-'+dir).replace(/[^\d]/g,'');
+                return !value ? 0 : value;
+            }
+            return 0;
+
+        }
+    };
+};
+
+// plugins/lineheight.js
+/**
+ * 设置行内间距
+ * @file
+ * @since 1.2.6.1
+ */
+UE.plugins['lineheight'] = function(){
+    var me = this;
+    me.setOpt({'lineheight':['1', '1.5','1.75','2', '3', '4', '5']});
+
+    /**
+     * 行距
+     * @command lineheight
+     * @method execCommand
+     * @param { String } cmdName 命令字符串
+     * @param { String } value 传入的行高值， 该值是当前字体的倍数， 例如： 1.5, 1.75
+     * @example
+     * ```javascript
+     * editor.execCommand( 'lineheight', 1.5);
+     * ```
+     */
+    /**
+     * 查询当前选区内容的行高大小
+     * @command lineheight
+     * @method queryCommandValue
+     * @param { String } cmd 命令字符串
+     * @return { String } 返回当前行高大小
+     * @example
+     * ```javascript
+     * editor.queryCommandValue( 'lineheight' );
+     * ```
+     */
+
+    me.commands['lineheight'] =  {
+        execCommand : function( cmdName,value ) {
+            this.execCommand('paragraph','p',{style:'line-height:'+ (value == "1" ? "normal" : value + 'em') });
+            return true;
+        },
+        queryCommandValue : function() {
+            var pN = domUtils.filterNodeList(this.selection.getStartElementPath(),function(node){return domUtils.isBlockElm(node)});
+            if(pN){
+                var value = domUtils.getComputedStyle(pN,'line-height');
+                return value == 'normal' ? 1 : value.replace(/[^\d.]*/ig,"");
+            }
+        }
+    };
+};
+
+
 // plugins/insertcode.js
 /**
  * 插入代码插件
@@ -21389,6 +21490,7 @@ UE.plugins['catchremoteimage'] = function () {
                 }
                 return false;
             };
+            console.log(imgs);
 
         for (var i = 0, ci; ci = imgs[i++];) {
             if (ci.getAttribute("word_img")) {
@@ -21406,26 +21508,29 @@ UE.plugins['catchremoteimage'] = function () {
                 success: function (r) {
                     try {
                         var info = r.state !== undefined ? r:eval("(" + r.responseText + ")");
+                        if(!info.list){
+	                        return false;
+                        }
+	                    /* 获取源路径和新路径 */
+	                    var i, j, ci, cj, oldSrc, newSrc, list = info.list;
+
+	                    for (i = 0; ci = imgs[i++];) {
+	                        oldSrc = ci.getAttribute("_src") || ci.src || "";
+	                        for (j = 0; cj = list[j++];) {
+	                            if (oldSrc == cj.source && cj.state == "SUCCESS") {  //抓取失败时不做替换处理
+	                                newSrc = catcherUrlPrefix + cj.url;
+	                                domUtils.setAttributes(ci, {
+	                                    "src": newSrc,
+	                                    "_src": newSrc
+	                                });
+	                                break;
+	                            }
+	                        }
+	                    }
                     } catch (e) {
                         return;
                     }
 
-                    /* 获取源路径和新路径 */
-                    var i, j, ci, cj, oldSrc, newSrc, list = info.list;
-
-                    for (i = 0; ci = imgs[i++];) {
-                        oldSrc = ci.getAttribute("_src") || ci.src || "";
-                        for (j = 0; cj = list[j++];) {
-                            if (oldSrc == cj.source && cj.state == "SUCCESS") {  //抓取失败时不做替换处理
-                                newSrc = catcherUrlPrefix + cj.url;
-                                domUtils.setAttributes(ci, {
-                                    "src": newSrc,
-                                    "_src": newSrc
-                                });
-                                break;
-                            }
-                        }
-                    }
                     me.fireEvent('catchremotesuccess')
                 },
                 //回调失败，本次请求超时
@@ -21447,9 +21552,9 @@ UE.plugins['catchremoteimage'] = function () {
                     'onerror': callbacks["error"]
                 };
             opt[catcherFieldName] = imgs;
+            console.log(opt);
             ajax.request(url, opt);
         }
-
     });
 };
 
