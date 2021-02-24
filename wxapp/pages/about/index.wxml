@@ -1,5 +1,0 @@
-<!--pages/about/index.wxml-->
-<import src="../../wxParse/wxParse.wxml" />
-<view class="tui-content tui-p" style="padding-top:0;">
-	<template is="wxParse" data="{{wxParseData:article.nodes}}" />
-</view>
