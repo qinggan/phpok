@@ -346,7 +346,7 @@ class wxpay_lib
 		$response = $this->postXmlCurl($xml, $url, false, $this->timeout);
 		$rs = $this->FromXml($response);
 		if($rs['return_code'] != 'SUCCESS'){
-			$this->_log($rs);
+			$this->errmsg($rs['return_msg']);
 			return false;
 		}
 		$sign = $rs['sign'];

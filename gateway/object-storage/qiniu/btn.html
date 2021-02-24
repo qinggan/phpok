@@ -63,6 +63,8 @@ $(document).ready(function(){
 				'fid':'{$_rs.identifier}',
 				'link':'{$qiniu_view_url}'
 			}
+			var timestamp = new Date().getTime();
+			data['key'] = '{$_rs.folder}'+timestamp+"."+block.file.ext;
 			$.phpok_qiniu_gateway.config(opts);
 			if (parseInt(block.file.size) <= parseInt(uploader.options.chunkSize)) {
 	            uploader.options.chunked = false;
@@ -78,13 +80,11 @@ $(document).ready(function(){
 		},
 		'file_queued':function(file)
 		{
-			
 			var ctx = new Array();
 			map_{$_rs.identifier}.set(file.name, ctx);
 		},
 		'upload_accept':function(block,ret)
 		{
-			console.log(ret);
 			map_{$_rs.identifier}.get(block.file.name)[block.chunk] = ret.ctx;
 		}
 	});

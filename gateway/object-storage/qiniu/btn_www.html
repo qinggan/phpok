@@ -56,6 +56,8 @@ $(document).ready(function(){
 				'fid':'{$_rs.identifier}',
 				'link':'{$qiniu_view_url}'
 			}
+			var timestamp = new Date().getTime();
+			data['key'] = '{$_rs.folder}'+timestamp+"."+block.file.ext;
 			$.phpok_qiniu_gateway.config(opts);
 			if (parseInt(block.file.size) <= parseInt(uploader.options.chunkSize)) {
 	            uploader.options.chunked = false;

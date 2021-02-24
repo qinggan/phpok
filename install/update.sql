@@ -270,3 +270,55 @@ CREATE TABLE IF NOT EXISTS `qinggan_search` (
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`,`title`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='搜索数据统计' AUTO_INCREMENT=1 ;
+
+-- 2020年9月14日 增加运费/税费增减操作
+ALTER TABLE `qinggan_list_attr` ADD `tax` DECIMAL(15,4) UNSIGNED NOT NULL DEFAULT '0' COMMENT '税费';
+ALTER TABLE `qinggan_list_attr` ADD `freight` DECIMAL(15,4) UNSIGNED NOT NULL DEFAULT '0' COMMENT '运费';
+
+-- 2020年9月14日 增加库存管理
+CREATE TABLE IF NOT EXISTS `qinggan_stock` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `attrs` text NOT NULL COMMENT '主题属性，多个属性用英文逗号隔开，属性ID和值ID用冒号隔开',
+  `qty` varchar(255) NOT NULL COMMENT '库存数量',
+  `unit` varchar(255) NOT NULL COMMENT '计量单位',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='库存表' AUTO_INCREMENT=1;
+
+-- 2020年9月15日 税费及全球价格设置
+ALTER TABLE `qinggan_project` ADD `is_stock` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1启用库存，0禁用库存';
+ALTER TABLE `qinggan_project` ADD `world_location` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '产品全球价格设置';
+
+-- 产品扩展字段里的价格
+CREATE TABLE IF NOT EXISTS `qinggan_list_extprice` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主产品ID',
+  `fid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '字段ID',
+  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '关联的产品ID',
+  `price` decimal(15,4) NOT NULL DEFAULT '0.0000' COMMENT '价格',
+  `tax` decimal(15,4) NOT NULL DEFAULT '0.0000' COMMENT '税费',
+  `freight` decimal(15,4) NOT NULL DEFAULT '0.0000' COMMENT '运费',
+  PRIMARY KEY (`id`,`fid`,`tid`),
+  KEY `tid` (`tid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='扩展字段涉及到的价格属性';
+
+CREATE TABLE IF NOT EXISTS `qinggan_list_price` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `country_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '国家ID',
+  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '产品ID',
+  `price` decimal(15,4) unsigned NOT NULL DEFAULT '0.0000' COMMENT '价格',
+  `freight` decimal(15,4) NOT NULL DEFAULT '0.0000' COMMENT '运费',
+  `tax` decimal(15,4) NOT NULL DEFAULT '0.0000' COMMENT '税费',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='针对不同国家实现不同的价格' AUTO_INCREMENT=1 ;
+
+-- 运费增加国家
+ALTER TABLE `qinggan_freight` ADD `country_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '国家ID',ADD INDEX (`country_id`); 
+
+-- 2020年10月25日
+ALTER TABLE `qinggan_list` ADD INDEX `admin_project` (`parent_id`, `site_id`, `project_id`);
+
+-- 2020年11月24日
+ALTER TABLE `qinggan_fields` ADD `onlyone` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '唯一性检测，为1值时检测字段在当前项目是否唯一';
+
+-- 2021年1月4日
+ALTER TABLE `qinggan_gd` ADD `title` VARCHAR(255) NOT NULL COMMENT '类型名称，方便管理' AFTER `identifier`;

@@ -50,16 +50,41 @@ class wxpay_submit
 		$rs = $app->model('order')->get_one($this->order['sn'],'sn');
 		$app->assign('rs',$rs);
 		$price = price_format_val($this->order['price'],$this->order['currency_id'],$this->param['currency']['id']);
-		$data['body'] = '订单：'.$this->order['sn'].'-'.$this->order['id'];
+		$data['body'] = $app->site['title'].' - 订单：'.$this->order['sn'].'-'.$this->order['id'];
 		$data['out_trade_no'] = $this->order['sn'].'-'.$this->order['id'];
 		$data['total_fee'] = intval($price*100);
 		$data['notify_url'] = $this->baseurl."gateway/payment/wxpay/notify_url.php";
+		//针对APP支付
+		if($this->param['param']['trade_type'] == 'app'){
+			$wxpay->trade_type('app');
+			$info = $wxpay->create($data);
+			if(!$info){
+				$error = $wxpay->errmsg();
+				if(!$error){
+					$error = '支付出错，请联系管理员';
+				}
+				$app->error($error);
+			}
+			$data = array();
+			$data['appid'] = $info['appid'];
+			$data['partnerid'] = $info['mch_id'];
+			$data['prepayid'] = $info['prepay_id'];
+			$data['package'] = 'Sign=WXPay';
+			$data['noncestr'] = $info['nonce_str'];
+			$data['timestamp'] = $app->time;
+			$data['sign'] = $wxpay->create_sign($data);
+			$app->success(array('orderInfo'=>$data,'provider'=>'wxpay'));
+		}
 		//针对小程序的操作
 		if($wxpay->trade_type() == 'miniprogram'){
 			$wxpay->trade_type('jsapi');
 			$info = $wxpay->create($data);
 			if(!$info){
-				$app->error('支付出错，请联系管理员');
+				$error = $wxpay->errmsg();
+				if(!$error){
+					$error = '支付出错，请联系管理员';
+				}
+				$app->error($error);
 			}
 			$app->assign('info',$info);
 			$app->assign('data',$data);
@@ -85,7 +110,11 @@ class wxpay_submit
 		}
 		$info = $wxpay->create($data);
 		if(!$info){
-			$app->error('支付出错，请联系管理员');
+			$error = $wxpay->errmsg();
+			if(!$error){
+				$error = '支付出错，请联系管理员';
+			}
+			$app->error($error);
 		}
 		if(strtolower($info['result_code']) == 'fail'){
 			$app->error($info['err_code'].'：'.$info['err_code_des']);

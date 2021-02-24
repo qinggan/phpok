@@ -3,15 +3,25 @@
 	<title>支付宝接口引挈</title>
 	<code>
 		<pid>
-			<title>支付宝PID</title>
-			<note>设置支付的PID，您可以登录支付宝商家服务查询</note>
+			<title>APPID</title>
+			<note>设置支付的PID，您可以登录支付宝商家服务查询，APP支付请填写APPID</note>
 			<type>text</type>
 		</pid>
 		<key>
-			<title>支付宝KEY</title>
-			<note>设置支付的KEY，您可以登录支付宝商家服务查询</note>
+			<title>MD5密钥</title>
+			<note>设置支付的KEY，您可以登录支付宝商家服务查询 MD5 密钥</note>
 			<type>text</type>
 		</key>
+		<pubkey>
+			<title>支付宝公钥</title>
+			<note>新版支付，需要填写支付宝公钥【去头去尾去回车，一行字符串】</note>
+			<type>text</type>
+		</pubkey>
+		<prikey>
+			<title>支付宝私钥</title>
+			<note>新版支付，需要填写开发者私钥【去头去尾去回车，一行字符串】</note>
+			<type>text</type>
+		</prikey>
 		<email>
 			<title>支付宝账号</title>
 			<note>设置您的支付宝账号，以保证正常收款</note>
@@ -22,10 +32,9 @@
 			<type>radio</type>
 			<option>
 				<demo>测试环境</demo>
-				<product>生产环境</product>
-				<product_n>生产环境（新）</product_n>
+				<product>生产环境（人民币）</product>
+				<product_n>其他货币环境</product_n>
 			</option>
-			<note>新生成环境使用接口 https://intlmapi.alipay.com/gateway.do</note>
 			<default>product</default>
 		</envtype>
 		<ptype>
@@ -33,14 +42,14 @@
 			<note>设置支付的类型，我们推荐您使用即时到账</note>
 			<type>select</type>
 			<option>
-				<create_direct_pay_by_user>即时到账（中国大陆）</create_direct_pay_by_user>
-				<trade_create_by_buyer>标准双支付接口（中国大陆）</trade_create_by_buyer>
-				<create_partner_trade_by_buyer>担保交易接口（中国大陆）</create_partner_trade_by_buyer>
-				<alipay.wap.create.direct.pay.by.user>手机支付接口（中国大陆）</alipay.wap.create.direct.pay.by.user>
-				<create_forex_trade>其他电脑版支付（包括国外及港澳台支付）</create_forex_trade>
-				<create_forex_trade_wap>其他手机版支付（包括国外及港澳台支付）</create_forex_trade_wap>
+				<app>APP支付（新版）</app>
+				<pagepay>即时到账（新版）</pagepay>
+				<wappay>手机支付（新版）</wappay>
+				<create_direct_pay_by_user>即时到账</create_direct_pay_by_user>
+				<create_forex_trade>其他货币支付（包括海外及港澳台支付）</create_forex_trade>
+				<create_forex_trade_wap>其他货币手机支付（包括海外及港澳台支付）</create_forex_trade_wap>
 			</option>
-			<default>create_direct_pay_by_user</default>
+			<default>wappay</default>
 		</ptype>
 	</code>
 </root>

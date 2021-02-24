@@ -43,10 +43,13 @@ function root_url()
 	return $http_type.$myurl.'../../../';
 }
 include_once($root_dir.'framework/libs/html.php');
-$url = root_url()."index.php?c=payment&f=notify&sn=".rawurlencode($_POST['out_trade_no']);
-foreach($_POST AS $key=>$value){
+if($_POST['notify_type'] == 'batch_refund_notify'){
+	$url = root_url()."api.php?c=order&f=refund&sn=".$_POST['batch_no'];
+}else{
+	$url = root_url()."index.php?c=payment&f=notify&sn=".rawurlencode($_POST['out_trade_no']);
+}
+foreach($_POST as $key=>$value){
 	$url .= "&".$key."=".rawurlencode($value);
 }
 $cls = new html_lib();
 echo $cls->get_content($url);
-?>

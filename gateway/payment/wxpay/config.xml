@@ -36,6 +36,7 @@
 				<jsapi>公众号支付</jsapi>
 				<mweb>H5支付</mweb>
 				<miniprogram>小程序支付</miniprogram>
+				<app>APP支付</app>
 			</option>
 			<default>native</default>
 		</trade_type>

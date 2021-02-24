@@ -1,12 +1,13 @@
 <?php
-/*****************************************************************************************
-	文件： payment/paypal/notify.php
-	备注： 订单异步通知处理
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年03月25日 10时43分
-*****************************************************************************************/
+/**
+ * 订单异步通知处理
+ * @作者 苏相锟 <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
+ * @时间 2021年2月10日
+**/
+
 error_reporting(E_ALL ^ E_NOTICE);
 define('PHPOK_SET',true);
 $root_dir = str_replace("\\","/",dirname(__FILE__))."/../../../";
@@ -43,10 +44,13 @@ function root_url()
 	return $http_type.$myurl.'../../../';
 }
 include_once($root_dir.'framework/libs/html.php');
-$url = root_url()."index.php?c=payment&f=notify&sn=".rawurlencode($_POST['invoice']);
+if($_POST['notify_type'] == 'batch_refund_notify'){
+	$url = root_url()."api.php?c=order&f=refund&sn=".$_POST['batch_no'];
+}else{
+	$url = root_url()."index.php?c=payment&f=notify&sn=".rawurlencode($_POST['out_trade_no']);
+}
 foreach($_POST as $key=>$value){
 	$url .= "&".$key."=".rawurlencode($value);
 }
 $cls = new html_lib();
 echo $cls->get_content($url);
-?>

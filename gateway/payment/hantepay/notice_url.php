@@ -1,12 +1,13 @@
 <?php
-/*****************************************************************************************
-	文件： payment/paypal/notify.php
-	备注： 订单异步通知处理
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年03月25日 10时43分
-*****************************************************************************************/
+/**
+ * 订单同步通知处理
+ * @作者 苏相锟 <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
+ * @时间 2021年2月10日
+**/
+
 error_reporting(E_ALL ^ E_NOTICE);
 define('PHPOK_SET',true);
 $root_dir = str_replace("\\","/",dirname(__FILE__))."/../../../";
@@ -42,11 +43,16 @@ function root_url()
 	$myurl = str_replace("//","/",$myurl);
 	return $http_type.$myurl.'../../../';
 }
-include_once($root_dir.'framework/libs/html.php');
-$url = root_url()."index.php?c=payment&f=notify&sn=".rawurlencode($_POST['invoice']);
-foreach($_POST as $key=>$value){
+$string = $_SERVER['QUERY_STRING'];
+if(!$string){
+	header("Location:".root_url());
+	exit;
+}
+parse_str(rawurldecode($string),$post);
+$tmp = explode("-",$post['trade_no']);
+$id = $tmp[1];
+$url = root_url()."index.php?c=payment&f=notice&id=".$id;
+foreach($post as $key=>$value){
 	$url .= "&".$key."=".rawurlencode($value);
 }
-$cls = new html_lib();
-echo $cls->get_content($url);
-?>
+header("Location:".$url);

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>短信验证码</title>
+	<note>由PHPOK官方提供，仅用于短信验证码开发测试使用，会带上【锟铻科技】标签</note>
+	<code>
+		<server>
+			<title>接口地址</title>
+			<note><![CDATA[如 https://www.phpok.com/apix-31566]]></note>
+			<type>text</type>
+			<required>true</required>
+		</server>
+		<ip>
+			<title>接口IP</title>
+			<note>用于连接服务器无法正常识别时使用</note>
+			<type>text</type>
+		</ip>
+		<app_id>
+			<title>APPID</title>
+			<note>请会员登录官网平台查询</note>
+			<type>text</type>
+			<required>true</required>
+		</app_id>
+		<app_key>
+			<title>APPKey</title>
+			<note>请会员登录官网平台查询</note>
+			<type>text</type>
+			<required>true</required>
+		</app_key>
+	</code>
+	<manage>
+		<send>
+			<title>发短信</title>
+			<exec>sendsms</exec>
+			<type>page</type>
+		</send>
+	</manage>
+</root>

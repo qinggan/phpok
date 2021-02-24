@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>PHPOK官方提供的邮件发送器</title>
+	<note>主要用于验证码发送</note>
+	<code>
+		<server>
+			<title>接口地址</title>
+			<note><![CDATA[如 https://www.phpok.com/apix-31134]]></note>
+			<type>text</type>
+			<required>true</required>
+		</server>
+		<ip>
+			<title>接口IP</title>
+			<note>用于连接服务器无法正常识别时使用</note>
+			<type>text</type>
+		</ip>
+		<app_id>
+			<title>APPID</title>
+			<note>请会员登录官网平台查询</note>
+			<type>text</type>
+			<required>true</required>
+		</app_id>
+		<app_key>
+			<title>APPKey</title>
+			<note>请会员登录官网平台查询</note>
+			<type>text</type>
+			<required>true</required>
+		</app_key>
+		<reply>
+			<title>回复邮箱</title>
+			<note>设置平台需要用于回复的邮箱</note>
+			<type>text</type>
+		</reply>
+		<siteurl>
+			<title>网址</title>
+			<note>用于改写相对图片地址到完整的图片地址补全的网址</note>
+			<type>text</type>
+		</siteurl>
+	</code>
+	<manage>
+		<send>
+			<title>发邮件</title>
+			<exec>sendemail</exec>
+			<type>page</type>
+		</send>
+	</manage>
+</root>

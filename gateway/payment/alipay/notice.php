@@ -10,9 +10,10 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class alipay_notice
 {
-	var $paydir;
-	var $order;
-	var $payment;
+	private $paydir;
+	private $order;
+	private $payment;
+	private $alipay;
 	public function __construct($order,$param)
 	{
 		global $app;
@@ -20,7 +21,7 @@ class alipay_notice
 		$this->order = $order;
 		$this->paydir = $app->dir_root.'gateway/payment/alipay/';
 		$this->baseurl = $app->url;
-		include_once($this->paydir."lib/alipay_notify.class.php");
+		$this->alipay = $GLOBALS['app']->lib('alipay');
 	}
 
 	//获取订单信息
@@ -37,9 +38,9 @@ class alipay_notice
 		$alipay_config['input_charset']= 'utf-8';
 		$alipay_config['cacert']    = $this->paydir.'cacert.pem';
 		$alipay_config['transport']    = 'http';
-		$alipayNotify = new AlipayNotify($alipay_config);
-		$verify_result = $alipayNotify->verify($_GET);
-		if(!$verify_result){
+		$this->alipay->config($alipay_config);
+		$flag = $this->alipay->verify($_GET);
+		if(!$flag){
 			$app->error(P_Lang('订单验证不通过，请联系管理员确认'),$app->url);
 		}
 		$pay_date = $app->get('notify_time');
@@ -57,7 +58,6 @@ class alipay_notice
 		}
 		//更新扩展数据
 		$alipay = $this->order['ext'] ? unserialize($this->order['ext']) : array();
-		//$alipay = array();
 		$alipay['log_id'] = $this->order['id'];
 		$alipay['buyer_email'] = $app->get('buyer_email');
 		$alipay['buyer_id'] = $app->get('buyer_id');
