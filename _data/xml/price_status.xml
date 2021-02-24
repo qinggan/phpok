@@ -18,16 +18,28 @@
 		<action>add</action>
 		<taxis>3</taxis>
 	</fee>
-	<tax>
+	<excise>
 		<title>税费</title>
 		<status>0</status>
 		<action>add</action>
 		<taxis>3</taxis>
-	</tax>
+	</excise>
+	<tariff>
+		<title>关税</title>
+		<status>0</status>
+		<action>add</action>
+		<taxis>4</taxis>
+	</tariff>
 	<discount>
 		<title>优惠价格</title>
 		<status>1</status>
 		<action>less</action>
-		<taxis>4</taxis>
+		<taxis>5</taxis>
 	</discount>
+	<refund>
+		<title>退款</title>
+		<status>1</status>
+		<action>less</action>
+		<taxis>6</taxis>
+	</refund>
 </root>

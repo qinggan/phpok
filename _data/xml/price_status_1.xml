@@ -4,24 +4,62 @@
 		<title><![CDATA[产品售价]]></title>
 		<status><![CDATA[1]]></status>
 		<action><![CDATA[add]]></action>
-		<taxis><![CDATA[1]]></taxis>
+		<taxis><![CDATA[10]]></taxis>
+		<default><![CDATA[]]></default>
+		<currency_id><![CDATA[0]]></currency_id>
 	</product>
 	<shipping>
 		<title><![CDATA[运费]]></title>
 		<status><![CDATA[1]]></status>
 		<action><![CDATA[add]]></action>
-		<taxis><![CDATA[2]]></taxis>
+		<taxis><![CDATA[20]]></taxis>
+		<default><![CDATA[]]></default>
+		<currency_id><![CDATA[0]]></currency_id>
 	</shipping>
 	<fee>
 		<title><![CDATA[手续费]]></title>
 		<status><![CDATA[0]]></status>
 		<action><![CDATA[add]]></action>
-		<taxis><![CDATA[3]]></taxis>
+		<taxis><![CDATA[30]]></taxis>
+		<default><![CDATA[]]></default>
+		<currency_id><![CDATA[0]]></currency_id>
 	</fee>
 	<discount>
 		<title><![CDATA[优惠价格]]></title>
 		<status><![CDATA[1]]></status>
 		<action><![CDATA[less]]></action>
-		<taxis><![CDATA[4]]></taxis>
+		<taxis><![CDATA[40]]></taxis>
+		<default><![CDATA[]]></default>
+		<currency_id><![CDATA[0]]></currency_id>
 	</discount>
+	<discount-shipping>
+		<title><![CDATA[运费优惠]]></title>
+		<action><![CDATA[less]]></action>
+		<taxis><![CDATA[100]]></taxis>
+		<status><![CDATA[0]]></status>
+	</discount-shipping>
+	<excise>
+		<title><![CDATA[消费税]]></title>
+		<status><![CDATA[1]]></status>
+		<action><![CDATA[add]]></action>
+		<taxis><![CDATA[110]]></taxis>
+		<default><![CDATA[]]></default>
+		<currency_id><![CDATA[0]]></currency_id>
+	</excise>
+	<tariff>
+		<title><![CDATA[关税]]></title>
+		<status><![CDATA[1]]></status>
+		<action><![CDATA[add]]></action>
+		<taxis><![CDATA[120]]></taxis>
+		<default><![CDATA[]]></default>
+		<currency_id><![CDATA[0]]></currency_id>
+	</tariff>
+	<refund>
+		<title><![CDATA[退款]]></title>
+		<status><![CDATA[1]]></status>
+		<action><![CDATA[less]]></action>
+		<taxis><![CDATA[150]]></taxis>
+		<default><![CDATA[]]></default>
+		<currency_id><![CDATA[0]]></currency_id>
+	</refund>
 </root>

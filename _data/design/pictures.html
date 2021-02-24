@@ -1,0 +1,15 @@
+<section class="container">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 clearfix">
+	<!-- loop from=$info.rslist key=$key value=$value -->
+	<div class="col m-2">
+		<div class="card">
+			<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="card-img-top" alt="{$value.title}" /></a>
+			<div class="card-body">
+				<a href="{$value.url}" title="{$value.title}"><h5 class="card-title crop-text-2" style="height:50px;">{$value.title}</h5></a>
+				<!-- if $page_rs.is_biz && $value.price && $value.price>0 --><div class="card-text text-danger text-center p-2">{func price_format $value.price $value.currency_id $config.currency_id}</div><!-- /if -->
+			</div>
+		</div>
+	</div>
+	<!-- /loop -->
+</div>
+</section>

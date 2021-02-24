@@ -3,7 +3,5 @@
 	<user><![CDATA[账号]]></user>
 	<group_id><![CDATA[会员组]]></group_id>
 	<email><![CDATA[邮箱]]></email>
-	<mobile><![CDATA[手机号]]></mobile>
-	<introducer><![CDATA[推荐人]]></introducer>
-	<order><![CDATA[订单]]></order>
+	<fullname><![CDATA[姓名]]></fullname>
 </root>

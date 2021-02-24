@@ -1,0 +1,32 @@
+<ul class="list-group list-group-flush">
+	<!-- loop from=$info.rslist key=$key value=$value id=$tmpid -->
+	<li class="list-group-item">
+		<div class="media">
+			<!-- if $value.thumb -->
+			<a class="d-flex" href="{$value.url}" title="{$value.title}">
+				<img src="{$value.thumb.gd.thumb}" class="align-self-start mr-3" alt="{$value.title}" width="120" />
+			</a>
+			<!-- /if -->
+			<div class="media-body">
+				<a href="{$value.url}" title="{$value.title}"><h5>{$value.title}</h5></a>
+				<!-- if $value.note -->
+				<div class="text-muted">{func nl2br $value.note}</div>
+				<!-- /if -->
+				<div class="row mt-2">
+					<small class="col text-muted">
+						时间：{func time_format $value.dateline}
+					</small>
+					<!-- if $value.tag -->
+					<small class="col text-right">
+						标签：
+						<!-- loop from=$value.tag key=$k value=$v id=$idxx -->
+						{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+						<!-- /loop -->
+					</small>
+					<!-- /if -->
+				</div>
+			</div>
+		</div>
+	</li>
+	<!-- /loop -->
+</ul>

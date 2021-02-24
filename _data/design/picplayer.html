@@ -1,0 +1,23 @@
+<!-- php:$tmp_id = rand(1000,9999) -->
+<div id="slider_{$info.project.id}_{$tmp_id}" class="carousel slide" data-ride="carousel">
+	<ol class="carousel-indicators">
+		<!-- loop from=$info.rslist key=$key value=$value id=$tmpid -->
+		<li data-target="#slider_{$info.project.id}_{$tmp_id}" data-slide-to="{$tmpid.index}"{if !$tmpid.index} class="active"{/if}></li>
+		<!-- /loop -->
+	</ol>
+	<div class="carousel-inner">
+		<!-- loop from=$info.rslist key=$key value=$value id=$tmpid -->
+		<div class="carousel-item{if !$tmpid.index} active{/if}">
+			<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="d-block w-100" alt="{$value.title}" /></a>
+		</div>
+		<!-- /loop -->
+	</div>
+	<a class="carousel-control-prev" href="#slider_{$info.project.id}_{$tmp_id}" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="sr-only">下一张</span>
+	</a>
+	<a class="carousel-control-next" href="#slider_{$info.project.id}_{$tmp_id}" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="sr-only">下一张</span>
+	</a>
+</div>

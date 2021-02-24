@@ -9,7 +9,7 @@
 			</login>
 			<register>
 				<title><![CDATA[注册]]></title>
-				<status><![CDATA[]]></status>
+				<status><![CDATA[1]]></status>
 			</register>
 			<getpass>
 				<title><![CDATA[忘记密码]]></title>
@@ -20,7 +20,7 @@
 	<p-43>
 		<list>
 			<add>
-				<status><![CDATA[]]></status>
+				<status><![CDATA[1]]></status>
 			</add>
 			<edit>
 				<status><![CDATA[1]]></status>
@@ -33,7 +33,7 @@
 	<p-45>
 		<list>
 			<add>
-				<status><![CDATA[]]></status>
+				<status><![CDATA[1]]></status>
 			</add>
 			<edit>
 				<status><![CDATA[1]]></status>
@@ -95,17 +95,4 @@
 			</comment>
 		</list>
 	</p-152>
-	<p-386>
-		<list>
-			<add>
-				<status><![CDATA[]]></status>
-			</add>
-			<edit>
-				<status><![CDATA[1]]></status>
-			</edit>
-			<comment>
-				<status><![CDATA[1]]></status>
-			</comment>
-		</list>
-	</p-386>
 </root>
