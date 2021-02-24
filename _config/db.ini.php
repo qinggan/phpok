@@ -33,8 +33,11 @@ prefix = "qinggan_"
 ; 使用通道连接（即不走网卡，Mysql在Linux下一般是/tmp/mysql.sock，建议有独立主机的用户使用）
 socket = ""
 
+;语言编码，仅支持 utf8 和 utf8mb4，默认是 utf8
+charset = "utf8"
+
 ; 是否调试，配合系统的debug为true时，会打印出整个页面执行的SQL语句
-debug = true
+debug = false
 
 ; 即时缓存，适应用大量的小查询（重复查询，一般不用开启）
 cache = false

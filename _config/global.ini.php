@@ -66,10 +66,10 @@ autoload_js = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.min.js,jquery
 get_domain_method = HTTP_HOST
 
 ;是否多语言选择
-multiple_language = false
+multiple_language = true
 
 ;是否启用 opcache，仅限 debug 为 false 时有效
-opcache = true
+opcache = false
 
 ;是否强制启用 HTTPS，默认不强制，如果您使用 nginx+apache 多模式组合，可能检测 https 失败，可以在这里设置强制
 force_https = 0
@@ -127,10 +127,12 @@ in_title = false
 ;product 产品价格
 ;shipping 运费
 ;fee 手续费
-;tax 税费
 ;discount 打扰优惠
 ;discount-shipping 运费打折
-price = "product,shipping,discount-shipping,fee,discount,tax"
+;excise 税费
+;tariff 关税
+;refund 退款操作
+price = "product,shipping,discount-shipping,fee,discount,excise,tariff,refund"
 
 ;地址，国内用户一般只需要使用shipping地址，即收货地址
 ;海外用户还会用到billing地址，即账单地址(正常情况默认账单地址和收货地址是一样的)
@@ -148,14 +150,6 @@ thumb_id = "thumb"
 
 ;收藏夹中获取的摘要从文章中哪里获取
 note_id = "content"
-
-[async]
-;在PHP程序中执行异步计划任务
-;如果您的空间不支持此项或要禁用，请在相应的HTML模板里写入定时计划任务请求链接，并将此处设为 false
-status = false
-
-;检查频率，单位是分钟，不能小于1
-interval_times = 5
 
 [jsonp]
 ;远程跨域获取数据

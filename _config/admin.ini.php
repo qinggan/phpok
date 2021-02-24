@@ -7,3 +7,10 @@ hide_vcode_setting = false
 
 ;显示环境配置信息，设为 false 则隐藏
 show_env = false
+
+;扫码登录超时，单位是秒，默认是300秒（即5分钟）
+;值不大于120秒时，将使用系统默认的300秒
+admin_qrcode_expire_time = 300
+
+
+;debug = true

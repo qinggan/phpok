@@ -50,8 +50,14 @@ folder = "{dir_cache}"
 server = "127.0.0.1"
 
 ;缓存服务器使用的端口，仅在使用 mecache redis 时有效
-port = "6379"
+port = "11211"
+;port = "6379"
 
 ;缓存Key前缀，防止生成的Key重复
 prefix = "qinggan_"
 
+;数据库名，仅限 redis 有效，如果为空则使用0
+dbname = 0
+
+;数据库密码，仅限 redis 有效，没有请留空
+dbpass = 
