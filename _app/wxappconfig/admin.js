@@ -7,6 +7,21 @@
  * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
  * @时间 2018年11月16日
 **/
+function clear_user_data()
+{
+	$.dialog.confirm('确定要清理数据吗？请仅在测试时使用',function(){
+		var url = get_url('wxappconfig','clear');
+		$.phpok.json(url,function(rs){
+			if(rs.status){
+				$.dialog.alert('数据清理完成',true,'succeed');
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		});
+	});
+	
+}
 $(document).ready(function(){
 	$("#post_save").submit(function(){
 		$(this).ajaxSubmit({

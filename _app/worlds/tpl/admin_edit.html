@@ -1,0 +1,180 @@
+<!-- include tpl=head_lay -->
+<script type="text/javascript">
+function save()
+{
+	$("#post_save").ajaxSubmit({
+		'url':get_url('worlds','save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				var tip = $("#id").val() > 0 ? p_lang('编辑成功') : p_lang('添加成功');
+				$.dialog.alert(tip,function(){
+					$.admin.close(get_url('worlds'));
+				},'succeed');
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+<form method="post" class="layui-form" id="post_save" onsubmit="return save()">
+<!-- if $rs && $rs.id -->
+<input type="hidden" name="id" id="id" value="{$rs.id}" />
+<!-- else -->
+<input type="hidden" name="pid" id="pid" value="{$parent.id}" />
+<!-- /if -->
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang中文名}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="name" value="{$rs.name}" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang英文名}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="name_en" value="{$rs.name_en}" class="layui-input" />
+			</div>
+		</div>
+		<!-- if $type == 'country' -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang二字符编码}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="code2" value="{$rs.code2}" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang三字符编码}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="code" value="{$rs.code}" class="layui-input" />
+			</div>
+		</div>
+		<!-- /if -->
+		<!-- if $type == 'country' || $type == 'province' -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang消费税率}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="excise_rate" value="{$rs.excise_rate}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang国家及省/州可单独设置，留空或为0或大于1，表示使用国家默认税率，国家未设置，使用系统默认}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang关税率}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="tariff_rate" value="{$rs.tariff_rate}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang用于外贸交易，规则同上}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang说明}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang关于不包税的文本提醒，会在购物车中体现}</div>
+			<div class="layui-input-block">
+				<input type="text" name="note" id="note" value="{$rs.note}" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang属性}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang配置站点/语言/模板/货币/运费等方案，留空使用国家默认，国家未设使用系统默认}</div>
+			<div class="layui-input-block">
+				<ul class="layout">
+					<li>
+						<select id="site_id" name="site_id">
+							<option value="">{lang默认站点}</option>
+							<!-- loop from=$sitelist key=$key value=$value id=$tmpid -->
+							<option value="{$value.id}"{if $value.id == $rs.site_id} selected{/if}>{$value.title}</option>
+							<!-- /loop -->
+						</select>
+					</li>
+					<li>
+						<select id="tpl_id" name="tpl_id">
+							<option value="">{lang默认模板}</option>
+							<!-- loop from=$tplist key=$key value=$value id=$tmpid -->
+							<option value="{$value.id}"{if $value.id == $rs.tpl_id} selected{/if}>{$value.title}</option>
+							<!-- /loop -->
+						</select>
+					</li>
+					<li>
+						<select id="lang_code" name="lang_code">
+							<option value="">{lang默认语言}</option>
+							<!-- loop from=$langlist key=$key value=$value id=$tmpid -->
+							<option value="{$key}"{if $rs.lang_code && $key == $rs.lang_code} selected{/if}>{$value}</option>
+							<!-- /loop -->
+						</select>
+					</li>
+					<li>
+						<select id="currency_id" name="currency_id">
+							<option value="">{lang默认货币}</option>
+							<!-- loop from=$currency_list key=$key value=$value id=$tmpid -->
+							<option value="{$value.id}"{if $rs.currency_id && $value.id == $rs.currency_id} selected{/if}>{$value.title}</option>
+							<!-- /loop -->
+						</select>
+					</li>
+					<li>
+						<select id="freight_id" name="freight_id">
+							<option value="">{lang默认运费方式}</option>
+							<!-- loop from=$freight_list key=$key value=$value id=$tmpid -->
+							<option value="{$value.id}"{if $rs.freight_id && $value.id == $rs.freight_id} selected{/if}>{$value.title}</option>
+							<!-- /loop -->
+						</select>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang排序}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="taxis" value="{$rs.taxis}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang范围是0-255，越小越往前靠}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang状态}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="status" id="status0" value="0"{if !$rs.status} checked{/if} title="{lang禁用}" />
+				<input type="radio" name="status" id="status1" value="1"{if $rs.status} checked{/if} title="{lang使用}" />
+			</div>
+		</div>
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot_lay is_open=true -->

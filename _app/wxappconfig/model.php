@@ -25,6 +25,11 @@ class model extends \phpok_model
 		include_once($this->dir_data.'wxappconfig.php');
 		return $wxconfig;
 	}
+
+	public function mini_app_config()
+	{
+		//
+	}
 	
 	public function save($data)
 	{

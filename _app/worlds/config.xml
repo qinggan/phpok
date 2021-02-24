@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<title><![CDATA[文件管理]]></title>
+	<title><![CDATA[国家管理]]></title>
 	<status>
 		<admin><![CDATA[1]]></admin>
-		<www><![CDATA[]]></www>
+		<www><![CDATA[1]]></www>
 		<api><![CDATA[1]]></api>
 	</status>
 	<install><![CDATA[install.php]]></install>
 	<uninstall><![CDATA[uninstall.php]]></uninstall>
 	<installed><![CDATA[1]]></installed>
 	<system><![CDATA[1]]></system>
-	<note><![CDATA[管理整个平台的源码文件，使用 Codemirror 实现源码高亮，需要二次密码进行验证，请慎用]]></note>
-	<taxis><![CDATA[3]]></taxis>
+	<taxis><![CDATA[2]]></taxis>
+	<note><![CDATA[管理全球洲及国家基本信息，可实现全球价格，运费，消费税及关税自定义配置，同时可以绑定不同站点及货币结算]]></note>
 </root>

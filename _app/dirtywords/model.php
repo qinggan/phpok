@@ -23,16 +23,46 @@ class model extends \phpok_model
 		parent::model();
 	}
 
+	public function config($data='')
+	{
+		if(!$data || !is_array($data)){
+			$config = array();
+			if(file_exists($this->dir_data.'dirtywords_config.php')){
+				include($this->dir_data.'dirtywords_config.php');
+			}
+			if($data && isset($config[$data])){
+				return $config[$data];
+			}
+			return $config;
+		}
+		if($data && is_array($data)){
+			return $this->lib('file')->vi($data,$this->dir_data.'dirtywords_config.php','config');
+		}
+		return false;
+	}
+
 	public function save($content)
 	{
-		$this->lib('file')->vi($content,$this->dir_data.'dirtywords.php');
+		$content = str_replace(array("\t","\r"),"",$content);
+		$content = str_replace("\n","|",$content);
+		$this->lib('file')->vi(base64_encode($content),$this->dir_data.'dirtywords.php');
 		return true;
 	}
 
-	public function read()
+	public function read($islist=false)
 	{
 		if(file_exists($this->dir_data.'dirtywords.php')){
-			return $this->lib('file')->cat($this->dir_data.'dirtywords.php');
+			$content = $this->lib('file')->cat($this->dir_data.'dirtywords.php');
+			if(!$content){
+				return false;
+			}
+			$content = base64_decode($content);
+			$content = str_replace(array("\t","\r"),"",$content);
+			$content = str_replace("\n","|",$content);
+			if($islist){
+				$content = explode("|",$content);
+			}
+			return $content;
 		}
 		return false;
 	}
@@ -64,14 +94,13 @@ class model extends \phpok_model
 		if(!$info){
 			return true;
 		}
-		$content = $this->read();
-		if(!$content){
+		$list = $this->read(true);
+		if(!$list){
 			return true;
 		}
-		$list = explode("\n",$content);
 		$err = false;
 		foreach($list as $k=>$v){
-			if(strpos($info,$v) !== false){
+			if($v && trim($v) && strpos($info,trim($v)) !== false){
 				$err = $v;
 				break;
 			}

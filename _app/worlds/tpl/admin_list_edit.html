@@ -1,0 +1,322 @@
+<div style="display:none" id="world_html">
+	<div class="layui-form-item">
+		<label class="layui-form-label">
+			选择国家
+		</label>
+		<div class="layui-input-inline auto">
+			<select data-id="country_id" lay-filter="country">
+				<option value="">请选择…</option>
+				<!-- loop from=$countrylist key=$key value=$value id=$tmpid -->
+				<optgroup label="{$value.name}{if $value.name_en} / {$value.name_en}{/if}">
+					<!-- loop from=$value.rslist key=$k value=$v id=$idxx -->
+					<option value="{$v.id}" data-country="{$v.name}{if $v.name_en} / {$v.name_en}{/if}" data-currency-code="{$v.currency_code}" data-currency="{$v.currency_title}">{$v.name}<!-- if $v.name_en --> / {$v.name_en}<!-- /if --><!-- if $v.currency_title --> / {$v.currency_title}<!-- /if -->
+					</option>
+					<!-- /loop -->
+				</optgroup>
+				<!-- /loop -->
+			</select>
+		</div>
+		<div class="layui-input-inline auto">
+			<select data-id="area_id">
+				<option value="">请选择州/省…</option>
+			</select>
+		</div>
+		<div class="layui-input-inline auto lh38">
+			<div class="layui-btn-group">
+				<input type="button" value="添加价格" onclick="$.admin_nodes_worlds.add('price')" class="layui-btn layui-btn-sm" />
+				<input type="button" value="添加运费" onclick="$.admin_nodes_worlds.add('freight')" class="layui-btn layui-btn-sm" />
+				<input type="button" value="添加消费税" onclick="$.admin_nodes_worlds.add('excise')" class="layui-btn layui-btn-sm" />
+				<input type="button" value="添加关税" onclick="$.admin_nodes_worlds.add('tariff')" class="layui-btn layui-btn-sm" />
+				<input type="button" value="不包税提示" onclick="$.admin_nodes_worlds.add2()" class="layui-btn layui-btn-sm" />
+			</div>
+		</div>
+	</div>
+	<div class="layui-form-item" data-id="price-country" {if !$w_pricelist} style="display:none"{/if}>
+		<label class="layui-form-label">
+			全球价格
+		</label>
+		<div class="layui-input-block">
+			<ul class="layout" data-id="country_price">
+				<!-- loop from=$w_pricelist key=$key value=$value id=$tmpid -->
+				<li data-id="price_country_{$value.region_id}">
+					<table class="layui-table">
+					<thead>
+					<tr>
+						<th>
+							<!-- if $value.country -->
+							{$value.country.name}
+								<!-- if $value.country.name_en --> / {$value.country.name_en}<!-- /if -->
+							 / 
+							<!-- /if -->
+							{$value.name}
+							<!-- if $value.name_en --> / {$value.name_en}<!-- /if -->
+							<!-- if $value.currency_title --> / {$value.currency_title}<!-- /if -->
+							<input type="button" value="{lang删除}" onclick="$.admin_nodes_worlds.del('{$value.region_id}','price')" class="layui-btn layui-btn-xs layui-btn-danger" />
+						</th>
+					</tr>
+					</thead>
+					<tr>
+						<td>
+							<input type="text" name="_price[{$value.region_id}]" class="layui-input" value="{$value.val}" />
+						</td>
+					</tr>
+					</table>
+				</li>
+				<!-- /loop -->
+			</ul>
+		</div>
+	</div>
+	<div class="layui-form-item" data-id="freight-country" {if !$f_pricelist} style="display:none"{/if}>
+		<label class="layui-form-label">
+			全球运费
+		</label>
+		<div class="layui-input-block">
+			<ul class="layout" data-id="country_freight">
+				<!-- loop from=$f_pricelist key=$key value=$value id=$tmpid -->
+				<li data-id="freight_country_{$value.region_id}">
+					<table class="layui-table">
+					<thead>
+					<tr>
+						<th>
+							<!-- if $value.country -->
+							{$value.country.name}
+								<!-- if $value.country.name_en --> / {$value.country.name_en}<!-- /if -->
+							 / 
+							<!-- /if -->
+							{$value.name}
+							<!-- if $value.name_en --> / {$value.name_en}<!-- /if -->
+							<!-- if $value.currency_title --> / {$value.currency_title}<!-- /if -->
+							<input type="button" value="{lang删除}" onclick="$.admin_nodes_worlds.del('{$value.region_id}','freight')" class="layui-btn layui-btn-xs layui-btn-danger" />
+						</th>
+					</tr>
+					</thead>
+					<tr>
+						<td>
+							<input type="text" name="_freight[{$value.region_id}]" class="layui-input" value="{$value.val}" />
+						</td>
+					</tr>
+					</table>
+				</li>
+				<!-- /loop -->
+			</ul>
+		</div>
+	</div>
+	<div class="layui-form-item" data-id="excise-country" {if !$x_pricelist} style="display:none"{/if}>
+		<label class="layui-form-label">
+			消费税
+		</label>
+		<div class="layui-input-block">
+			<ul class="layout" data-id="country_excise">
+				<!-- loop from=$x_pricelist key=$key value=$value id=$tmpid -->
+				<li data-id="excise_country_{$value.region_id}">
+					<table class="layui-table">
+					<thead>
+					<tr>
+						<th>
+							<!-- if $value.country -->
+							{$value.country.name}
+								<!-- if $value.country.name_en --> / {$value.country.name_en}<!-- /if -->
+							 / 
+							<!-- /if -->
+							{$value.name}
+							<!-- if $value.name_en --> / {$value.name_en}<!-- /if -->
+							<!-- if $value.currency_title --> / {$value.currency_title}<!-- /if -->
+							<input type="button" value="{lang删除}" onclick="$.admin_nodes_worlds.del('{$value.region_id}','excise')" class="layui-btn layui-btn-xs layui-btn-danger" />
+						</th>
+					</tr>
+					</thead>
+					<tr>
+						<td>
+							<input type="text" name="_excise[{$value.region_id}]" class="layui-input" value="{$value.val}" />
+						</td>
+					</tr>
+					</table>
+				</li>
+				<!-- /loop -->
+			</ul>
+		</div>
+	</div>
+	<div class="layui-form-item" data-id="tariff-country" {if !$g_pricelist} style="display:none"{/if}>
+		<label class="layui-form-label">
+			关税
+		</label>
+		<div class="layui-input-block">
+			<ul class="layout" data-id="country_tariff">
+				<!-- loop from=$g_pricelist key=$key value=$value id=$tmpid -->
+				<li data-id="tariff_country_{$value.region_id}">
+					<table class="layui-table">
+					<thead>
+					<tr>
+						<th>
+							<!-- if $value.country -->
+							{$value.country.name}
+								<!-- if $value.country.name_en --> / {$value.country.name_en}<!-- /if -->
+							 / 
+							<!-- /if -->
+							{$value.name}
+							<!-- if $value.name_en --> / {$value.name_en}<!-- /if -->
+							<!-- if $value.currency_title --> / {$value.currency_title}<!-- /if -->
+							<input type="button" value="{lang删除}" onclick="$.admin_nodes_worlds.del('{$value.region_id}','tariff')" class="layui-btn layui-btn-xs layui-btn-danger" />
+						</th>
+					</tr>
+					</thead>
+					<tr>
+						<td>
+							<input type="text" name="_tariff[{$value.region_id}]" class="layui-input" value="{$value.val}" />
+						</td>
+					</tr>
+					</table>
+				</li>
+				<!-- /loop -->
+			</ul>
+		</div>
+	</div>
+	<div class="layui-form-item" data-id="note-country" {if !$g_notelist} style="display:none"{/if}>
+		<label class="layui-form-label">
+			<i class="layui-icon layui-tips" lay-tips="请将税费设置为-1（无论消费税或是关税，有一个为-1就显示）">&#xe702;</i>
+			不包税
+		</label>
+		<div class="layui-input-block">
+			<ul class="layout" data-id="country_note">
+				<!-- loop from=$g_notelist key=$key value=$value id=$tmpid -->
+				<li data-id="note_country_{$value.region_id}">
+					<table class="layui-table">
+					<thead>
+					<tr>
+						<th>
+							<!-- if $value.country -->
+							{$value.country.name}
+								<!-- if $value.country.name_en --> / {$value.country.name_en}<!-- /if -->
+							 / 
+							<!-- /if -->
+							{$value.name}
+							<!-- if $value.name_en --> / {$value.name_en}<!-- /if -->
+							<input type="button" value="{lang删除}" onclick="$.admin_nodes_worlds.del('{$value.region_id}','note')" class="layui-btn layui-btn-xs layui-btn-danger" />
+						</th>
+					</tr>
+					</thead>
+					<tr>
+						<td>
+							<input type="text" name="_note[{$value.region_id}]" class="layui-input" value="{$value.val}" />
+						</td>
+					</tr>
+					</table>
+				</li>
+				<!-- /loop -->
+			</ul>
+		</div>
+	</div>
+
+</div>
+<script id="country-tpl" type="text/html">
+<li data-id="<%= rs.type %>_country_<%= rs.country_id %>">
+	<table class="layui-table">
+	<thead>
+	<tr>
+		<th>
+			<%= rs.name %>
+			<% if (rs.currency_title) { %>
+			 / <%= rs.currency_title %>
+			<% } %>
+			<input type="button" value="{lang删除}" onclick="$.admin_nodes_worlds.del('<%= rs.country_id %>','<%= rs.type %>')" class="layui-btn layui-btn-xs layui-btn-danger" />
+		</th>
+	</tr>
+	</thead>
+	<tr>
+		<td>
+			<input type="text" name="_<%= rs.type %>[<%= rs.country_id %>]" class="layui-input" />
+		</td>
+	</tr>
+	</table>
+</li>
+</script>
+<script type="text/javascript">
+;(function($){
+	$.admin_nodes_worlds = {
+		add:function(type){
+			var obj = $("select[data-id=country_id]");
+			var country_id = obj.val();
+			if(!country_id){
+				$.dialog.alert('请选择国家');
+				return false;
+			}
+			var area_id = $("select[data-id=area_id]").val();
+			var rs = {};
+			rs['type'] = type;
+			rs['country_id'] = area_id ? area_id : country_id;
+			rs['currency_title'] = obj.find('option:selected').attr("data-currency");
+			rs['currency_code'] = obj.find('option:selected').attr("data-currency-code");
+			rs['name'] = obj.find('option:selected').attr("data-country");
+			if(area_id){
+				rs['name'] += ' / ' +$("select[data-id=area_id]").find('option:selected').attr("data-country")
+			}
+			if($("li[data-id="+type+"_country_"+rs['country_id']+"]").length>0){
+				$.dialog.alert('不支持重复添加');
+				return false;
+			}
+			var html = template("country-tpl", {'rs':rs});
+			$("ul[data-id=country_"+type+"]").append(html);
+			$("div[data-id="+type+"-country]").show();
+		},
+		add2:function(){
+			var type="note";
+			var obj = $("select[data-id=country_id]");
+			var country_id = obj.val();
+			if(!country_id){
+				$.dialog.alert('请选择国家');
+				return false;
+			}
+			var area_id = $("select[data-id=area_id]").val();
+			var rs = {};
+			rs['type'] = type;
+			rs['country_id'] = area_id ? area_id : country_id;
+			rs['name'] = obj.find('option:selected').attr("data-country");
+			if(area_id){
+				rs['name'] += ' / ' +$("select[data-id=area_id]").find('option:selected').attr("data-country")
+			}
+			if($("li[data-id="+type+"_country_"+rs['country_id']+"]").length>0){
+				$.dialog.alert('不支持重复添加');
+				return false;
+			}
+			var html = template("country-tpl", {'rs':rs});
+			$("ul[data-id=country_"+type+"]").append(html);
+			$("div[data-id="+type+"-country]").show();
+		},
+		del:function(id,type){
+			$("li[data-id="+type+"_country_"+id+"]").remove();
+			var len = $("ul[data-id=country_"+type+"] li").length;
+			if(len <1){
+				$("div[data-id="+type+"-country]").hide();
+			}
+		}
+	}
+})(jQuery);
+$(document).ready(function(){
+	$("#price").parents(".layui-card-body").append($("#world_html").html());
+	layui.form.on('select(country)', function(data){
+		if(data.value){
+			var url = api_url('worlds','province',"country_id="+data.value);
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.alert(rs.info);
+					return false;
+				}
+				if(!rs.info){
+					return false;
+				}
+				var html = '<option value="">请选择州/省…</option>';
+				for(var i in rs.info){
+					if(rs.info[i].name_en && rs.info[i].name_en != 'undefined' && rs.info[i].name_en != 'NaN'){
+						var title = rs.info[i].name+' / '+rs.info[i].name_en;
+					}else{
+						var title = rs.info[i].name;
+					}
+					html += '<option value="'+rs.info[i].id+'" data-country="'+title+'">'+title+'</option>';
+				}
+				$("select[data-id=area_id]").html(html);
+				layui.form.render("select");
+			})
+		}
+	});
+});
+</script>

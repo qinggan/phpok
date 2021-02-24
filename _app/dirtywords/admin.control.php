@@ -38,4 +38,31 @@ class admin_control extends \phpok_control
 		$this->model('dirtywords')->save($content);
 		$this->success();
 	}
+
+	public function setting_f()
+	{
+		$rs = $this->model('dirtywords')->config();
+		$this->assign('rs',$rs);
+		$this->display('admin_setting');
+	}
+
+	public function setting_save_f()
+	{
+		$data = array();
+		$data['aip_status'] = $this->get('aip_status','int');
+		$data['aip_appid'] = $this->get('aip_appid');
+		$data['aip_apikey'] = $this->get('aip_apikey');
+		$data['aip_secret'] = $this->get('aip_secret');
+		if(!$data['aip_appid']){
+			$this->error(P_Lang('百度应用 ID 不能为空'));
+		}
+		if(!$data['aip_apikey']){
+			$this->error(P_Lang('百度接口 Key 不能为空'));
+		}
+		if(!$data['aip_secret']){
+			$this->error(P_Lang('百度接口密钥不能为空'));
+		}
+		$this->model('dirtywords')->config($data);
+		$this->success();
+	}
 }

@@ -8,5 +8,4 @@
 	</status>
 	<install><![CDATA[install.php]]></install>
 	<uninstall><![CDATA[uninstall.php]]></uninstall>
-	<installed><![CDATA[1]]></installed>
 </root>

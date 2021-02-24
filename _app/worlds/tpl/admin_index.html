@@ -1,0 +1,142 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang搜索}
+		<div class="fr">
+			<input type="button" value="+ {lang添加}{$leadtitle}" data-title="{lang添加}{$leadtitle}" onclick="$.admin_worlds.add(this,{$parent_id})" class="layui-btn layui-btn-sm" />
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<form method="post" action="{url ctrl=worlds parent_id=$parent_id/}" class="layui-form" id="post_save" onsubmit="return $.admin_worlds.search('{$parent_id}')">
+		<ul class="layout">
+			<li>
+				<select name="keywords[status]" id="keywords_status">
+					<option value="">{lang状态}</option>
+					<option value="1"{if $keywords && $keywords.status==1} selected{/if}>已启用</option>
+					<option value="2"{if $keywords && $keywords.status==2} selected{/if}>未启用</option>
+				</select>
+			</li>
+			<li><input type="text" name="keywords[name]" id="keywords_name" value="{if $keywords}{$keywords.name}{/if}" class="layui-input" placeholder="{lang中文名称}" /></li>
+			<li><input type="text" name="keywords[name_en]" id="keywords_name_en" value="{if $keywords}{$keywords.name_en}{/if}" class="layui-input" placeholder="{lang英文名称}" /></li>
+			<li><input type="submit" value="{lang搜索}" class="layui-btn" /></li>
+			<!-- if $keywords -->
+			<li><input type="button" value="{lang取消搜索}" class="layui-btn layui-btn-normal" onclick="$.phpok.go('{url ctrl=worlds/}')" /></li>
+			<!-- /if -->
+		</ul>
+		</form>
+	</div>
+</div>
+<!-- if $rslist -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		<ul class="layout">
+			<!-- loop from=$leader key=$key value=$value id=$tmpid -->
+			<!-- if $tmpid.index -->
+			<li style="line-height:40px;"> / </li>
+			<!-- /if -->
+			<li style="line-height:40px;"><a href="{$value.url}">{$value.title}</a></li>
+			<!-- /loop -->
+			<li></li>
+		</ul>
+	</div>
+	<div class="layui-card-body layui-form">
+		<table class="layui-table" id="pl_action">
+		<thead>
+		<tr>
+			<th style="width:50px">ID</th>
+			<th>{lang状态}</th>
+			<th>{lang中文名}</th>
+			<th>{lang英文名}</th>
+			<!-- if $leadtype == 'country' -->
+			<th>{lang代码2位/3位}</th>
+			<!-- /if -->
+			<!-- if $leadtype == 'country' || $leadtype == 'province' -->
+			<th>{lang站点}</th>
+			<th>{lang语言}</th>
+			<th>{lang模板}</th>
+			<!-- /if -->
+			<!-- if $leadtype == 'country' || $leadtype == 'province' -->
+			<th>{lang货币}</th>
+			<th>{lang税率}</th>
+			<th>{lang运费}</th>
+			<!-- /if -->
+			<th>{lang排序}</th>
+			<th>{lang操作}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<!-- if $leadtype == 'continent' -->
+			<td>{$value.id}</td>
+			<!-- else -->
+			<td><input type="checkbox" value="{$value.id}" id="pri_{$value.id}" title="{$value.id}" lay-skin="primary" /></td>
+			<!-- /if -->
+			<th><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="$.admin_worlds.status({$value.id})"{else} style="cursor: default;"{/if} value="{$value.status}"></span></th>
+			<td>{$value.name}</td>
+			<td>{$value.name_en}</td>
+			
+			<!-- if $leadtype == 'country' -->
+			<td>{$value.code2}{if $value.code && $value.code2} / {/if}{$value.code}</td>
+			<!-- /if -->
+			
+			<!-- if $leadtype == 'country' || $leadtype == 'province' -->
+			<td><!-- if $value.site_id -->{$sitelist[$value[site_id]][title]}<!-- else -->{lang默认}<!-- /if --></td>
+			<td><!-- if $value.lang_code -->{$langlist[$value.lang_code]}<!-- else -->{lang默认}<!-- /if --></td>
+			<td><!-- if $value.tpl_id -->{$tplist[$value.tpl_id][title]}<!-- else -->{lang默认}<!-- /if --></td>
+			<!-- /if -->
+			
+			<!-- if $leadtype == 'country' || $leadtype == 'province' -->
+			<td><!-- if $value.currency_id -->{$currency_list[$value.currency_id][title]}<!-- else -->{lang默认}<!-- /if --></td>
+			<td><!-- if $value.tax_rate > 0.0001 -->{$value.tax_rate}<!-- else -->{lang默认}<!-- /if --></td>
+			<td><!-- if $value.freight_rate > 0.0001 -->{$value.freight_rate}<!-- else -->{lang默认}<!-- /if --></td>
+			<!-- /if -->
+			<td><input type="text" name="taxis[{$value.id}]" class="layui-input short" value="{$value.taxis}" onchange="$.admin_worlds.taxis(this,{$value.id})" /></td>
+			<td>
+				<div class="layui-btn-group">
+					<!-- if !$is_end -->
+					<input type="button" value="{lang进入}" onclick="$.win('{$value.name}/{$value.name_en}','{url ctrl=worlds parent_id=$value.id/}')" class="layui-btn layui-btn-sm" />
+					<!-- /if -->
+					<input type="button" value="{lang编辑}" onclick="$.admin_worlds.edit('{$value.id}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.admin_worlds.del('{$value.id}','{$value.name}','{$value.name_en}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- if $leadtype != 'continent' -->
+		<ul class="layout">
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.all()" />
+					<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.none()" />
+					<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.anti()" />
+				</div>
+			</li>
+			<!-- if $leadtype == 'country' -->
+			<li>
+				<select id="move_country" name="move_country">
+					<option value="">{lang迁移到洲…}</option>
+					<!-- loop from=$continent key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}">{$value.name}<!-- if $value.name_en --> / {$value.name_en}<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</li>
+			<li>
+				<input type="button" value="{lang确认执行}" onclick="$.admin_worlds.move()" class="layui-btn layui-btn-sm" />
+			</li>
+			<!-- else -->
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang审核}" onclick="$.admin_worlds.status_pl(1)" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang取消审核}" onclick="$.admin_worlds.status_pl(0)" class="layui-btn layui-btn-sm layui-btn-warm" />
+					<input type="button" value="{lang删除}" onclick="$.admin_worlds.del()" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+				
+			</li>
+			<!-- /if -->
+		</ul>
+		<!-- /if -->
+	</div>
+</div>
+<!-- /if -->
+<!-- include tpl=foot_lay -->

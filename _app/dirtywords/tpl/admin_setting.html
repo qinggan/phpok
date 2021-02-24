@@ -1,0 +1,64 @@
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_dirtywords.setting(this)">
+<div class="layui-card">
+	<div class="layui-card-header">
+		百度云安全审核参数配置
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				状态
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="aip_status" id="status_1" value="1" title="启用"{if $rs.aip_status} checked{/if} />
+				<input type="radio" name="aip_status" id="status_0" value="0" title="禁用"{if !$rs.aip_status} checked{/if} />
+			</div>
+			<div class="layui-form-mid">
+				不使用百度云服务进行内容审核，请设置禁用，反之请启用
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				应用 ID
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="aip_appid" id="aip_appid" value="{$rs.aip_appid}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				请登录百度云控制面板获取，一般是纯数字
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				接口
+			</label>
+			<div class="layui-input-inline long">
+				<input type="text" name="aip_apikey" id="aip_apikey" value="{$rs.aip_apikey}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				请登录百度云控制面板获取，一般是 24 位长度的字串
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				密钥
+			</label>
+			<div class="layui-input-inline long">
+				<input type="text" name="aip_secret" id="aip_secret" value="{$rs.aip_secret}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				即我们常说的密钥，即常用的是 32 位长度的字串
+			</div>
+		</div>
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存设置}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot_lay -->

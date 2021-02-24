@@ -1,0 +1,17 @@
+<div class="wrap clear">
+	<a href="javascript:$('.languageMask').stop().fadeOut();void(0)" class="btn fr"></a>
+	<h4 class="title">Choose your country or region</h4>
+	<p class="subtitle">Products may have different prices and availability based on country/region.</p>
+	<!-- loop from=$countrylist key=$key value=$value id=$tmpid -->
+	<!-- if $value.rslist -->
+	<div class="dBox">
+		<p class="zhou">{$value.name_en}</p>
+		<ul class="list clear">
+			<!-- loop from=$value.rslist key=$k value=$v id=$idxx -->
+			<li><a href="javascript:country_select('{$v.id}','{$v.name_en}');void(0)">{$v.name_en}</a></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+	<!-- /if -->
+	<!-- /loop -->
+</div>

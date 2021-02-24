@@ -1,27 +1,27 @@
-<!-- include tpl=head_lay nopadding=true -->
+<!-- include tpl=head_lay -->
 <form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_dirtywords.save()">
 <div class="layui-card">
-	<div class="layui-card-body">
-		
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang敏感词}
-			</label>
-			<div class="layui-input-block gray" style="line-height:38px;">一行一个词语，所有符合要求的词语将会弹出提示，主要是标题及内容框</div>
-			<div class="layui-input-block">
-				<textarea name="content" id="content" style="width:100%;min-height:500px;line-height:170%;">{$content}</textarea>
-			</div>
+	<div class="layui-card-header">
+		本地敏感词配置，多个敏感谢用英文竖线分开
+		<div class="fr">
+			<input type="button" value="{lang云服务配置}" onclick="$.win('{lang云服务配置}','{url ctrl=dirtywords func=setting/}')" class="layui-btn layui-btn-sm" />
 		</div>
-		<div class="submit-info-clear"></div>
-		<div class="submit-info">
-			<div class="layui-container center">
-				<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
-				<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
-			</div>
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			
+			<textarea name="content" id="content" class="layui-textarea" style="width:100%;min-height:500px;line-height:170%;">{$content}</textarea>
+			<div style="margin-top:5px;"><input type="button" value="分割线" onclick="$('#content').insertAt('|')" class="layui-btn layui-btn-sm layui-btn-warm" /></div>
 		</div>
 	</div>
 </div>
-
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存设置}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
 </form>
 
-<!-- include tpl=foot_lay is_open=true -->
+<!-- include tpl=foot_lay -->

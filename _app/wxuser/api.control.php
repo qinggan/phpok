@@ -187,6 +187,7 @@ class api_control extends \phpok_control
 				$this->model('wealth')->login($user['id'],P_Lang('会员登录'));
 				//登录节点
 				$this->plugin('plugin-login-save',$user['id']);
+				$this->session->assign('wx_openid',$info['openid']);
 				$this->success(array('user_id'=>$user['id']));
 			}
 			//更新会员ID
@@ -257,6 +258,7 @@ class api_control extends \phpok_control
 				$this->session->assign('user_id',$uid);
 				$this->session->assign('user_gid',$group['id']);
 				$this->session->assign('user_name',$data["user"]);
+				$this->session->assign('wx_openid',$wx['openid']);
 				$this->success(array('user_id'=>$uid));
 			}
 			if($user && !$user['status']){
@@ -270,6 +272,7 @@ class api_control extends \phpok_control
 			$this->session->assign('user_id',$user['id']);
 			$this->session->assign('user_gid',$user['group_id']);
 			$this->session->assign('user_name',$user["user"]);
+			$this->session->assign('wx_openid',$wx['openid']);
 			$this->success(array('user_id'=>$user['id']));
 		}
 		$this->session->assign('wx_openid',$wx['openid']);

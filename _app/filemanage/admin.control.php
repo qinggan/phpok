@@ -129,7 +129,7 @@ class admin_control extends \phpok_control
 		}
 		$is_edit = true;
 		if(!is_writable($file)){
-			$tips = P_Lang('文件无法写法，不支持在线编辑');
+			$tips = P_Lang('文件无法写入，不支持在线编辑');
 			$this->assign('tips',$tips);
 			$is_edit = false;
 		}
@@ -141,14 +141,13 @@ class admin_control extends \phpok_control
 		$this->assign("folder",$folder);
 		$this->assign("title",$title);
 		//加载编辑器
-		$cdnUrl = phpok_cdn();
-		$this->addcss($cdnUrl.'codemirror/5.42.2/lib/codemirror.css?response-content-type=text/css');
-		$this->addjs($cdnUrl.'codemirror/5.42.2/lib/codemirror.js?response-content-type=application/x-javascript');
-		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/css/css.js?response-content-type=application/x-javascript');
-		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/javascript/javascript.js?response-content-type=application/x-javascript');
-		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/htmlmixed/htmlmixed.js?response-content-type=application/x-javascript');
-		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/php/php.js?response-content-type=application/x-javascript');
-		$this->addjs($cdnUrl.'codemirror/5.42.2/mode/xml/xml.js?response-content-type=application/x-javascript');
+		$this->addcss("static/codemirror/lib/codemirror.css");
+		$this->addjs("static/codemirror/lib/codemirror.js");
+		$this->addjs('static/codemirror/mode/css/css.js');
+		$this->addjs('static/codemirror/mode/javascript/javascript.js');
+		$this->addjs('static/codemirror/mode/htmlmixed/htmlmixed.js');
+		$this->addjs('static/codemirror/mode/php/php.js');
+		$this->addjs('static/codemirror/mode/xml/xml.js');
 		$istpl = strpos($folder,'tpl/') !== false ? true : false;
 		$this->assign('istpl',$istpl);
 		if($istpl){
@@ -186,7 +185,7 @@ class admin_control extends \phpok_control
 			$this->error(P_Lang('文件不存在'));
 		}
 		if(!is_writable($file)){
-			$this->error(P_Lang('文件无法写法，不支持在线编辑'));
+			$this->error(P_Lang('文件无法写入，不支持在线编辑'));
 		}
 		$content = $this->get("content","html_js");
 		$this->lib('file')->vim($content,$file);

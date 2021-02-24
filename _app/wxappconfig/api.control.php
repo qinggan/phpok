@@ -30,6 +30,7 @@ class api_control extends \phpok_control
 			$this->error(P_Lang('未配置服务端小程序'));
 		}
 		include_once($this->dir_data.'wxappconfig.php');
+		unset($wxconfig['wxapp_secret']);//安全考虑，去除密钥
 		$this->success($wxconfig);
 	}
 
@@ -175,6 +176,8 @@ class api_control extends \phpok_control
 		if($relaction_id){
 			$this->model('user')->save_relation($insert_id,$relaction_id);
 		}
+		//保存
+		$this->_account($openid,$unionid,$insert_id);
 		$user = $this->model('user')->get_one($insert_id);
 		$this->session->assign('user_id',$user['id']);
 		$this->session->assign('user_name',$user['user']);
