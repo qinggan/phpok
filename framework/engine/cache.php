@@ -45,13 +45,31 @@ class cache
 
 	public function __destruct()
 	{
+		//echo "<pre>".print_r($this->key_list,true)."</pre>";
+		//echo "<pre>".print_r(count($this->key_list),true)."</pre>";
 		$this->save($this->key_id,$this->key_list);
 		$this->expired();
 	}
 
-	public function key_list($id,$value)
+	public function key_list($id,$value='',$is_add=false)
 	{
+		if(!$value && isset($this->key_list[$id])){
+			unset($this->key_list[$id]);
+			return true;
+		}
+		if($is_add){
+			$tmp = isset($this->key_list[$id]) ? $this->key_list[$id] : array();
+			if(!is_array($value)){
+				$value = array($value);
+			}
+			$tmp = array_merge($tmp,$value);
+			$tmp = array_unique($tmp);
+			$this->key_list[$id] = $tmp;
+			return true;
+		}
+		$value = array_unique($value);
 		$this->key_list[$id] = $value;
+		return true;
 	}
 
 	public function status($status='')
@@ -99,9 +117,6 @@ class cache
 		file_put_contents($file,'<?php exit();?>'.$content);
 		$this->_time();
 		$this->_count();
-		if($GLOBALS['app']->db){
-			$this->key_list($id,$GLOBALS['app']->db->cache_index($id));
-		}
 		return true;
 	}
 

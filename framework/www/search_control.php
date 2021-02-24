@@ -151,13 +151,29 @@ class search_control extends phpok_control
 			}
 			$pageurl .= "keywords=".rawurlencode($keywords)."&";
 		}
+		$this->plugin("system_search_condition");
+		$dt_ext = $this->tpl->val('dt');
+		if($dt_ext && $dt_ext['sqlext']){
+			$condition .= " AND ".$dt_ext['sqlext'];
+		}
 		$total = $this->model('search')->get_total($condition,$my_mids,$kc_ext);
+		if(!$total){
+			$this->error(P_Lang('没有搜索到您需要的内容'),$this->url('search'));
+		}
 		$pageid = $this->get($this->config['pageid'],'int');
 		if(!$pageid){
 			$pageid = 1;
 		}
 		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
 		$offset = ($pageid-1) * $psize;
+		//修正页码超过最多页时的友好提示
+		$total_page = intval($total/$psize);
+		if($total%$psize){
+			$total_page++;
+		}
+		if($total_page && $total_page<$pageid){
+			$this->error_404(P_Lang('内容信息不存在'));
+		}
 		$idlist = $this->model('search')->id_list($condition,$offset,$psize,$my_mids,$kc_ext);
 		if($idlist){
 			$rslist = array();

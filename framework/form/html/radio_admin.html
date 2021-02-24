@@ -1,47 +1,85 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="option_list,put_order,ext_select" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="option_list,put_order,ext_select,is_add" />
 <div class="table">
 	<div class="title">
 		{lang单选属性列表}
 		<span class="note">{lang请选择单选的来源}</span>
 	</div>
 	<div class="content">
+		<select name="option_list" id="option_list" style="width:100%;">
+			<option value="">{lang请选择…}</option>
+			<optgroup label="{lang表单}">
+				<!-- foreach($opt_list AS $key=>$value) -->
+				<option value="opt:{$value.id}"{if $rs.option_list == "opt:".$value.id} selected{/if}>{$value.title}</option>
+				<!-- /foreach -->
+			</optgroup>
+			<!-- if $project_list -->
+			<optgroup label="{lang子项}">
+				<!-- loop from=$project_list key=$key value=$value -->
+				<option value="project:{$value.id}"{if $rs.option_list == "project:".$value.id} selected{/if}>{$value.title}</option>
+				<!-- /loop -->
+			</optgroup>
+			<!-- /if -->
+			<!-- loop from=$ext_sitelist key=$key value=$value id=$tmpid -->
+			<!-- if $value.plist -->
+			<optgroup label="{lang子项}_{lang站点ID：}{$value.id}_{$value.title}">
+				<!-- loop from=$value.plist key=$k value=$v -->
+				<option value="project:{$v.id}"{if $rs.option_list == "project:".$v.id} selected{/if}>{$v.title}</option>
+				<!-- /loop -->
+			</optgroup>
+			<!-- /if -->
+			<!-- /loop -->
+			<!-- if $title_list -->
+			<optgroup label="{lang主题}">
+				<!-- loop from=$title_list key=$key value=$value -->
+				<option value="title:{$value.id}"{if $rs.option_list == "title:".$value.id} selected{/if}>{$value.title}</option>
+				<!-- /loop -->
+			</optgroup>
+			<!-- /if -->
+			<!-- loop from=$ext_sitelist key=$key value=$value id=$tmpid -->
+			<!-- if $value.mlist -->
+			<optgroup label="{lang主题}_{lang站点ID：}{$value.id}_{$value.title}">
+				<!-- loop from=$value.mlist key=$k value=$v -->
+				<option value="title:{$v.id}"{if $rs.option_list == "title:".$v.id} selected{/if}>{$v.title}</option>
+				<!-- /loop -->
+			</optgroup>
+			<!-- /if -->
+			<!-- /loop -->
+			<!-- if $catelist -->
+			<optgroup label="{lang分类}">
+				<!-- loop from=$catelist key=$key value=$value -->
+				<option value="cate:{$value.id}"{if $rs.option_list == "cate:".$value.id} selected{/if}>{$value.title}</option>
+				<!-- /loop -->
+			</optgroup>
+			<!-- /if -->
+			<!-- loop from=$ext_sitelist key=$key value=$value id=$tmpid -->
+			<!-- if $value.clist -->
+			<optgroup label="{lang分类}_{lang站点ID：}{$value.id}_{$value.title}">
+				<!-- loop from=$value.clist key=$k value=$v -->
+				<option value="cate:{$v.id}"{if $rs.option_list == "cate:".$v.id} selected{/if}>{$v.title}</option>
+				<!-- /loop -->
+			</optgroup>
+			<!-- /if -->
+			<!-- /loop -->
+			<optgroup label="{lang会员相关}">
+				<option value="user:grouplist"{if $rs.option_list == "user:grouplist"} selected{/if}>{lang会员组}</option>
+			</optgroup>
+		</select>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang自定义}
+		<span class="note">{lang即支持用户创建新的数据}</span>
+	</div>
+	<div class="content">
 		<table>
 		<tr>
-			<td><select name="option_list" id="option_list">
-					<option value="">{lang请选择…}</option>
-					<optgroup label="{lang表单}">
-						<!-- foreach($opt_list AS $key=>$value) -->
-						<option value="opt:{$value.id}"{if $rs.option_list == "opt:".$value.id} selected{/if}>{$value.title}</option>
-						<!-- /foreach -->
-					</optgroup>
-					<!-- if $project_list -->
-					<optgroup label="{lang子项}">
-						<!-- loop from=$project_list key=$key value=$value -->
-						<option value="project:{$value.id}"{if $rs.option_list == "project:".$value.id} selected{/if}>{$value.title}</option>
-						<!-- /loop -->
-					</optgroup>					
-					<!-- /if -->
-					<!-- if $title_list -->
-					<optgroup label="{lang主题}">
-						<!-- loop from=$title_list key=$key value=$value -->
-						<option value="title:{$value.id}"{if $rs.option_list == "title:".$value.id} selected{/if}>{$value.title}</option>
-						<!-- /loop -->
-					</optgroup>
-					<!-- /if -->
-					<!-- if $catelist -->
-					<optgroup label="{lang分类}">
-						<!-- loop from=$catelist key=$key value=$value -->
-						<option value="cate:{$value.id}"{if $rs.option_list == "cate:".$value.id} selected{/if}>{$value.title}</option>
-						<!-- /loop -->
-					</optgroup>
-					<!-- /if -->
-					<optgroup label="{lang会员相关}">
-						<option value="user:grouplist"{if $rs.option_list == "user:grouplist"} selected{/if}>{lang会员组}</option>
-					</optgroup>
-				</select>
-			</td>
+			<td><label><input type="radio" name="is_add" value="0"{if !$rs.is_add} checked {/if} /> {lang禁止}</label></td>
+			<td>&nbsp; &nbsp;</td>
+			<td><label><input type="radio" name="is_add" value="1"{if $rs.is_add} checked {/if} /> {lang允许}</label></td>
+			<td></td>
 		</tr>
-		</table>		
+		</table>
 	</div>
 </div>
 <div class="table">

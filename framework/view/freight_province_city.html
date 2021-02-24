@@ -1,0 +1,21 @@
+<table class="layui-table">
+<thead>
+<tr>
+	<th width="120px">{lang省份/州}</th>
+	<th>{lang城市}</th>
+</tr>
+</thead>
+<!-- loop from=$prolist key=$key value=$value id=$tmpid -->
+<tr id="pro_{$tmpid.num}">
+	<td><label><input type="checkbox" name="area[]" value="{$value.id}" data="pro{$value.id}"{if $area[$value.id]} checked{/if} onclick="update_pro('{$value.id}')" lay-ignore /> {$value.name}<!-- if $value.name_en --> / {$value.name_en}<!-- /if --></label></td>
+	<td>
+		<ul class="layout">
+			<!-- loop from=$value.citylist key=$k value=$v id=$tmpid2 -->
+			<li><label><input type="checkbox" lay-ignore name="city_{$value.id}[]" data="city{$value.id}" value="{$v.id}"{if $area[$value.id] && $area[$value.id][$v.id]} checked{/if} onclick="update_city('{$value.id}')" /> {$v.name}<!-- if $v.name_en --> / {$v.name_en}<!-- /if --></label></li>
+			<!-- /loop -->
+		</ul>
+		<div class="clear"></div>
+	</td>
+</tr>
+<!-- /loop -->
+</table>

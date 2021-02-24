@@ -183,6 +183,10 @@ class upload_form extends _init_auto
 		}
 		$cateinfo = $this->model('rescate')->cate_info($ext['cate_id']);
 		if($cateinfo){
+			$folder = $cateinfo["root"];
+			if($cateinfo["folder"] && $cateinfo["folder"] != "/"){
+				$folder .= date($cateinfo["folder"],$this->time);
+			}
 			$upload_type = array();
 			$upload_type['ext'] = $cateinfo['filetypes'] ? $cateinfo['filetypes'] : 'jpg,png,gif,rar,zip';
 			$upload_type['title'] = $cateinfo['typeinfo'] ? $cateinfo['typeinfo'] : $cateinfo['title'];
@@ -192,6 +196,7 @@ class upload_form extends _init_auto
 			$upload_type['upload_binary'] = $cateinfo['upload_binary'];
 			$rs['cate_id'] = $cateinfo['id'];
 		}else{
+			$folder = 'res/'.date("Ym/d/",$this->time);
 			$upload_type = array('title'=>P_Lang('附件'));
 			$upload_type['ext'] = 'jpg,gif,png,rar,zip';
 			$upload_type['maxsize'] = 1024*1024*100;
@@ -212,6 +217,7 @@ class upload_form extends _init_auto
 			}
 		}
 		$rs['upload_type'] = $upload_type;
+		$rs['folder'] = $folder;
 		unset($tmp);
 		//二进制上传设置
 		$rs['upload_binary'] = 'false';
@@ -269,6 +275,10 @@ class upload_form extends _init_auto
 		$ext = ($rs['ext'] && is_string($rs['ext'])) ? unserialize($rs['ext']) : ($rs['ext'] ? $rs['ext'] : array());
 		$cateinfo = $this->model('rescate')->cate_info($ext['cate_id']);
 		if($cateinfo){
+			$folder = $cateinfo["root"];
+			if($cateinfo["folder"] && $cateinfo["folder"] != "/"){
+				$folder .= date($cateinfo["folder"],$this->time);
+			}
 			$upload_type = array('title'=>($cateinfo['typeinfo'] ? $cateinfo['typeinfo'] : $cateinfo['title']));
 			$upload_type['ext'] = $cateinfo['filetypes'] ? $cateinfo['filetypes'] : 'jpg,png,gif,rar,zip';
 			if($ext['upload_type']){
@@ -282,6 +292,7 @@ class upload_form extends _init_auto
 			$upload_type['etype'] = $cateinfo['etype'];
 			$rs['cate_id'] = $cateinfo['id'];
 		}else{
+			$folder = 'res/'.date("Ym/d/",$this->time);
 			$upload_type = array('title'=>($ext['upload_name'] ? $ext['upload_name'] : P_Lang('附件')));
 			$upload_type['ext'] = $ext['upload_type'] ? $ext['upload_type'] : 'jpg,gif,png,rar,zip';
 			$upload_type['maxsize'] = 1024*1024*100;
@@ -300,7 +311,7 @@ class upload_form extends _init_auto
 			}
 		}
 		$rs['upload_type'] = $upload_type;
-
+		$rs['folder'] = $folder;
 		//二进制上传设置
 		$rs['upload_binary'] = 'false';
 		if($ext['upload_binary']){

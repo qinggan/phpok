@@ -99,7 +99,7 @@ class param_form extends _init_auto
 		if($ext && $ext['p_type']){
 			$list['title'] = $this->get($rs['identifier'].'_title');
 			if($list['title'] && count($list['title'])>0){
-				$tmp = $GLOBALS['app']->get($rs['identifier'].'_body');
+				$tmp = $this->get($rs['identifier'].'_body');
 				if($tmp){
 					$list['content'] = array_chunk($tmp,count($list['title']));
 				}
@@ -139,23 +139,24 @@ class param_form extends _init_auto
 						if($tmp){
 							$tmp .= " / ";
 						}
-						$tmp .= $v.': '.$value[$k];
+						$tmp .= trim($v).': '.trim($value[$k]);
 					}
 					$html .= '<div>'.$tmp.'</div>';
+					$html = str_replace(array("\n","\r"),"",$html);
 				}
 			}else{
 				if(!$info['title']){
 					$info['title'] = array();
 				}
 				foreach($info['title'] as $key=>$value){
-					$html .= '<div>'.$value.'：'.$info['content'][$key].'</div>';
+					$html .= '<div>'.trim($value).'：'.trim($info['content'][$key]).'</div>';
 				}
+				$html = str_replace(array("\n","\r"),"",$html);
 			}
 			if(!$html){
 				$html = '无 <b>'.implode("/",$info['title']).'</b> 内容';
 			}
-
-			$html = '<input type="button" value="'.implode("/",$info['title']).'" class="layui-btn" onclick="$.dialog.alert(\''.$html.'\');" />';
+			$html = '<input type="button" value="'.implode("/",$info['title']).'" class="layui-btn layui-btn-xs" onclick="$.dialog.alert(\''.$html.'\',true,\'question\')" />';
 			return $html;
 		}else{
 			

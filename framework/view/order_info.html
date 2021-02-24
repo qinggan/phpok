@@ -170,9 +170,9 @@
 		</table>
 		<!-- /if -->
 		<div>
-			<input id="order_url" class="layui-input" value="{$sys.url}{$sys.www_file}?{$sys.ctrl_id}=order&{$sys.func_id}=info&sn={$rs.sn}&passwd={$rs.passwd}" />
+			<input id="order_url" class="layui-input" value="{$sys.url}{$sys.www_file}?{$sys.ctrl_id}=order&{$sys.func_id}=info&sn={$rs.sn}&passwd={$rs.passwd}&siteId={$session.admin_site_id}" />
 			<div class="layui-btn-group" style="margin-top:10px;">
-				<input type="button" value="{lang复制}" data-clipboard-text="{$sys.url}{$sys.www_file}?{$sys.ctrl_id}=order&{$sys.func_id}=info&sn={$rs.sn}&passwd={$rs.passwd}" class="layui-btn phpok-copy" />
+				<input type="button" value="{lang复制}" data-clipboard-text="{$sys.url}{$sys.www_file}?{$sys.ctrl_id}=order&{$sys.func_id}=info&sn={$rs.sn}&passwd={$rs.passwd}&siteId={$session.admin_site_id}" class="layui-btn phpok-copy" />
 				<input type="button" value="{lang访问}" onclick="window.open($('#order_url').val())" class="layui-btn" />
 			</div>
 		</div>

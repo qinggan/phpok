@@ -125,7 +125,6 @@ var autosave_handle;
 							$.dialog.alert(p_lang('内容信息修改成功'),function(){
 								$.phpok.message('pendding');
 								$.admin.reload(url);
-								$.admin.close(url);
 							},'succeed');
 							return true;
 						}
@@ -388,6 +387,36 @@ var autosave_handle;
 					return false;
 				})
 			});
+		},
+
+		country_add:function()
+		{
+			var obj = $("#country_id");
+			var c = obj.val();
+			if(!c){
+				$.dialog.alert(p_lang('当前国家或组织不能为空'));
+				return false;
+			}
+			if($("#country_"+c).length>0){
+				$.dialog.alert(p_lang('国家已使用，请选择其他的'));
+				return false;
+			}
+			var currency = obj.find('option:selected').attr("data-name");
+			if(!currency){
+				currency = p_lang('默认');
+			}
+			var rs = {};
+			rs['id'] = 0;
+			rs['currency_title'] = currency;
+			rs['country_id'] = c;
+			rs['name'] = obj.find('option:selected').attr("data-country");
+			var html = template("world_location_price_tpl", {'rs':rs});
+			$("#world_location_price").append(html);
+		},
+		country_price_delete:function(country_id)
+		{
+			$("#country_"+country_id).remove();
+			return true;
 		}
 	}
 

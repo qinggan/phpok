@@ -1,0 +1,114 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<style type="text/css">
+.lanmu{
+	width:12%;cursor: pointer;border:1px solid #fff;
+}
+</style>
+<input type="hidden" id="select_value" value="" />
+<div class="layui-card">
+	<div class="layui-card-header">
+		网格（以12等分计）自定义等分多数字用英文逗号隔开
+	</div>
+	<div class="layui-card-body">
+		<ul class="layout">
+			<li class="lanmu" data-id="12" phpok-name="select">
+				<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H25V34H39ZM23 34H9V14H23V34Z"></path><rect id="svg_4" height="20" width="30" y="14" x="9" fill="#ffffff"/></svg></div>
+				<div align="center">独立区</div>
+			</li>
+			<li class="lanmu" data-id="6,6" phpok-name="select">
+				<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H25V34H39ZM23 34H9V14H23V34Z"></path></svg></div>
+				<div align="center">6 - 6</div>
+			</li>
+			<li class="lanmu" data-id="3,9" phpok-name="select">
+				<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H20V34H39ZM18 34H9V14H18V34Z"></path></svg></div>
+				<div align="center">3 - 9</div>
+			</li>
+			<li class="lanmu" data-id="9,3" phpok-name="select">
+				<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H30V34H39ZM28 34H9V14H28V34Z"></path></svg></div>
+				<div align="center">9 - 3</div>
+			</li>
+			<li class="lanmu" data-id="4,4,4" phpok-name="select">
+				<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M41 14a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h30a2 2 0 0 0 2-2V14zM28.5 34h-9V14h9v20zm2 0V14H39v20h-8.5zm-13 0H9V14h8.5v20z"></path></svg></div>
+				<div align="center">4 - 4 - 4</div>
+			</li>
+			<li class="lanmu" data-id="3,6,3" phpok-name="select">
+				<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M41 14a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h30a2 2 0 0 0 2-2V14zM31 34H17V14h14v20zm2 0V14h6v20h-6zm-18 0H9V14h6v20z"></path></svg></div>
+				<div align="center">3 - 6 - 3</div>
+			</li>
+			<li>
+				<input type="text" data-id="user" value="" class="layui-input" phpok-name="select" placeholder="自定义" style="width:110px" />
+			</li>
+		</ul>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		等分网格（基于百分比制作）
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-btn-group">
+			<input type="button" value="二等分" phpok-name="select" data-id="2" class="layui-btn layui-btn-sm" />
+			<input type="button" value="三等分" phpok-name="select" data-id="3" class="layui-btn layui-btn-sm" />
+			<input type="button" value="四等分" phpok-name="select" data-id="4" class="layui-btn layui-btn-sm" />
+			<input type="button" value="五等分" phpok-name="select" data-id="5" class="layui-btn layui-btn-sm" />
+			<input type="button" value="六等分" phpok-name="select" data-id="6" class="layui-btn layui-btn-sm" />
+			<input type="button" value="八等分" phpok-name="select" data-id="8" class="layui-btn layui-btn-sm" />
+			<input type="button" value="十等分" phpok-name="select" data-id="10" class="layui-btn layui-btn-sm" />
+			<input type="button" value="十二等分" phpok-name="select" data-id="12" class="layui-btn layui-btn-sm" />
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	var val = $('input[data-id=user]').val();
+	if(val && val != 'undefined'){
+		var t = val.split(",");
+		var num = 0;
+		for(var i in t){
+			num += parseInt(t[i]);
+		}
+		if(num != 12){
+			$.dialog.alert('您输入的数值相加不等于12，不符合要求');
+			return false;
+		}
+		var t = "row:"+val;
+	}else{
+		var t = $("#select_value").val();
+		if(!t || t == 'undefined'){
+			$.dialog.alert('未指定网格或是等分网格');
+			return false;
+		}
+	}
+	if(!t || t == 'undefined'){
+		$.dialog.alert('未设置');
+		return false;
+	}
+	opener.$.form_design.layer_add_save('{$id}',t);
+	$.dialog.close();
+	return true;
+}
+function update_data(obj)
+{
+	$("li[phpok-name=select]").css('border-color','#ffffff');
+	$('input[type=button][phpok-name=select]').removeClass('layui-btn-danger');
+	$('input[data-id=user],#select_value').val('');
+	if($(obj).is("li")){
+		$(obj).css("border-color",'red');
+		var val = $(obj).attr("data-id");
+		$("#select_value").val('row:'+val);
+	}
+	if($(obj).is('input') && $(obj).attr("type") == 'button'){
+		var val = $(obj).attr("data-id");
+		$(obj).addClass("layui-btn-danger");
+		$("#select_value").val('avg:'+val);
+	}
+}
+$(document).ready(function(){
+	$('[phpok-name=select]').click(function(){
+		update_data(this)
+	});
+});
+</script>
+<!-- include tpl=foot_lay is_open=true -->

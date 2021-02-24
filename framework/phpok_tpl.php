@@ -194,6 +194,7 @@ class phpok_template
 		if(!$this->tpl_value || !is_array($this->tpl_value)){
 			$this->tpl_value = array();
 		}
+		$___comp_id = $comp_id; //定义一个以三划线的变量名，以解决 $comp_id 变量冲突问题
 		$varlist = (is_array($GLOBALS))?array_merge($GLOBALS,$this->tpl_value):$this->tpl_value;
 		extract($varlist);
 		//自动加载 phpinc 下的一些文件
@@ -203,7 +204,7 @@ class phpok_template
 				include_once($phpincfile);
 			}
 		}		
-		include($this->dir_cache.$comp_id);
+		include($this->dir_cache.$___comp_id);
 	}
 
 	/**
@@ -296,7 +297,7 @@ class phpok_template
 			$this->error(P_Lang('不支持空内容是模板，请检查'));
 		}
 		$php_content = $this->html_to_php($html_content,$path_format);
-		$newarray = array('<?php echo $app->plugin_html_ap("phpokhead");?></head>','<?php echo $app->plugin_html_ap("phpokbody");?></body>');
+		$newarray = array('<?php echo $app->_node_html("before");$app->plugin_html_ap("phpokhead");?></head>','<?php echo $app->_node_html("after");$app->plugin_html_ap("phpokbody");?></body>');
 		$php_content = str_replace(array('</head>','</body>'),$newarray,$php_content);
 		file_put_contents($this->dir_cache.$compiling_id,$this->html_head.$php_content);
 		return true;
@@ -420,6 +421,8 @@ class phpok_template
 					continue;
 				}
 				$content = str_replace($value."/",$this->dir_tpl.$value."/",$content);
+				$t = array('{#'.$value.'#}','@'.$value.'@','{'.$value.'}','#'.$value.'#');
+				$content = str_replace($t,$value,$content);
 			}
 		}
 		//正则替换内容问题

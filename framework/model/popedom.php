@@ -72,7 +72,6 @@ class popedom_model_base extends phpok_model
 		if($rs){
 			return explode(",",$rs[$this->site_id]);
 		}
-		$this->db->cache_set($cache_id);
 		$rs = $this->db->get_one($sql);
 		if(!$rs || !$rs['popedom']){
 			return false;

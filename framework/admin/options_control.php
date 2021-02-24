@@ -52,18 +52,18 @@ class options_control extends phpok_control
 			if(!$this->popedom['add']){
 				$this->error(P_Lang('您没有权限执行此操作'));
 			}
+			$taxis = $this->get('taxis');
+			if(!$taxis){
+				$rslist = $this->model('options')->get_all();
+				$taxis = $rslist ? (count($rslist)+1) * 5 : 5;
+				if($taxis > 255){
+					$taxis = 255;
+				}
+			}
 		}
 		$title = $this->get('title');
 		if(!$title){
 			$this->error(P_Lang('名称不能为空'));
-		}
-		$taxis = $this->get('taxis');
-		if(!$taxis){
-			$rslist = $this->model('options')->get_all();
-			$taxis = $rslist ? (count($rslist)+1) * 5 : 5;
-			if($taxis > 255){
-				$taxis = 255;
-			}
 		}
 		if(!$id){
 			$insert_id = $this->model('options')->save(array('title'=>$title,'taxis'=>$taxis));
@@ -72,7 +72,19 @@ class options_control extends phpok_control
 			}
 			$this->success($insert_id);
 		}
-		$this->model('options')->save(array('title'=>$title,'taxis'=>$taxis),$id);
+		$this->model('options')->save(array('title'=>$title),$id);
+		$this->success();
+	}
+
+	public function taxis_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$taxis = $this->get('taxis','int');
+		$data = array('taxis'=>$taxis);
+		$this->model('options')->save($data,$id);
 		$this->success();
 	}
 

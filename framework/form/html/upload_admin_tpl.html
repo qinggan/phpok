@@ -45,7 +45,7 @@ $(document).ready(function(){
 		'accept':{'title':'{$_rs.upload_type.title}({$_rs.upload_type.swfupload})','extensions':'{$_rs.upload_type.ext}'},
 		'fileSingleSizeLimit':'{$_rs.upload_type.maxsize*100}'
 	});
-	$.phpokform.upload_showhtml('{$_rs.identifier}',{$_rs.is_multiple ? true : false});
+	$.phpokform.upload_showhtml('{$_rs.identifier}',{$_rs.is_multiple ? 'true' : 'false'});
 });
 </script>
 

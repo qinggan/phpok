@@ -100,9 +100,9 @@
 			</div>
 			<div class="layui-input-block mtop">
 				<div class="layui-btn-group">
-					<input type="button" class="layui-btn layui-btn-sm" value="全选" onclick="$.input.checkbox_all('user_fields_ul');layui.form.render('checkbox')"/>
-					<input type="button" class="layui-btn layui-btn-sm" value="全不选" onclick="$.input.checkbox_none('user_fields_ul');layui.form.render('checkbox')"/>
-					<input type="button" class="layui-btn layui-btn-sm" value="反选" onclick="$.input.checkbox_anti('user_fields_ul');layui.form.render('checkbox')"/>
+					<input type="button" class="layui-btn layui-btn-sm" value="全选" onclick="$.checkbox.all('user_fields_ul');layui.form.render('checkbox')"/>
+					<input type="button" class="layui-btn layui-btn-sm" value="全不选" onclick="$.checkbox.none('user_fields_ul');layui.form.render('checkbox')"/>
+					<input type="button" class="layui-btn layui-btn-sm" value="反选" onclick="$.checkbox.anti('user_fields_ul');layui.form.render('checkbox')"/>
 				</div>
 			</div>
 		</div>
@@ -134,9 +134,9 @@
 			<label class="layui-form-label" style="width:auto;min-width:150px;text-align: left;">{$value.space}{$value.title}</label>
 			<div class="layui-input-inline default-auto">
 				<div class="layui-btn-group">
-					<input type="button" class="layui-btn layui-btn-sm" value="{lang全选}" onclick="$.input.checkbox_all('project_{$value.id}');layui.form.render('checkbox')" />
-					<input type="button" class="layui-btn layui-btn-sm" value="{lang全不选}" onclick="$.input.checkbox_none('project_{$value.id}');layui.form.render('checkbox')" />
-					<input type="button" class="layui-btn layui-btn-sm" value="{lang反选}" onclick="$.input.checkbox_anti('project_{$value.id}');layui.form.render('checkbox')" />
+					<input type="button" class="layui-btn layui-btn-sm" value="{lang全选}" onclick="$.checkbox.all('project_{$value.id}');layui.form.render('checkbox')" />
+					<input type="button" class="layui-btn layui-btn-sm" value="{lang全不选}" onclick="$.checkbox.none('project_{$value.id}');layui.form.render('checkbox')" />
+					<input type="button" class="layui-btn layui-btn-sm" value="{lang反选}" onclick="$.checkbox.anti('project_{$value.id}');layui.form.render('checkbox')" />
 				</div>
 				<input type="checkbox" name="popedom[]" data="read" title="阅读"  value="read:{$value.id}"{if $popedom_users && in_array('read:'.$value.id,$popedom_users)} checked{/if} />
 				<!-- if $value.module -->

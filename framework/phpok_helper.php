@@ -256,6 +256,9 @@ function phpok_img_local($content)
 		if($tmp == "file://" && $tmp != "http://" && $tmp != "https:/"){
 			continue;
 		}
+		//将网址后面的@符号去掉
+		$old_url = $value;
+		$value = preg_replace("/\.(jpg|png|gif|jpeg)@.+?/isU",'.$1',$value);
 		$tmp = parse_url($value);
 		if(!$tmp["port"]){
 			$tmp["port"] = $tmp["scheme"] == "http" ? "80" : "443";
@@ -276,7 +279,7 @@ function phpok_img_local($content)
 					}
 				}
 			}
-			$url_list[] = array("old_url"=>$value,"new_url"=>$new_url);
+			$url_list[] = array("old_url"=>$old_url,"new_url"=>$new_url);
 		}else{
 			$tmp = explode(".",$value);
 			$ext_id = count($tmp) - 1;
@@ -322,7 +325,7 @@ function phpok_img_local($content)
 			$tmp = array();
 			$tmp["ico"] = $ico;
 			$app->model("res")->save($tmp,$insert_id);
-			$url_list[] = array("old_url"=>$value,"new_url"=>$folder.$filename);
+			$url_list[] = array("old_url"=>$old_url,"new_url"=>$folder.$filename);
 		}
 	}
 	foreach($url_list as $key=>$value){
@@ -907,24 +910,32 @@ function tpl_head($array=array())
 	return $html;	
 }
 
-//表单生成器
+/**
+ * 表单生成器
+**/
 function form_edit($id,$content="",$type="text",$attr="",$return='echo')
 {
 	if(!$id){
 		return false;
 	}
 	$array = array("id"=>$id,"identifier"=>$id,"form_type"=>$type,"content"=>$content);
-	if($attr){
+	if($attr && is_string($attr)){
 		parse_str($attr,$list);
-		if($list) $array = array_merge($list,$array);
+		if($list){
+			$attr = $list;
+		}
+	}
+	if($attr && is_array($attr)){
+		$array = array_merge($attr,$array);
 	}
 	$rs = $GLOBALS['app']->lib('form')->format($array);
 	if($return == 'array') return $rs;
 	return $rs['html'];
 }
 
-//基于字段管理生成表单项
-//
+/**
+ * 基于字段管理生成表单项
+**/
 function form_fields($identifer='',$id='',$content='',$return='')
 {
 	if(!$identifer){
@@ -939,18 +950,18 @@ function form_fields($identifer='',$id='',$content='',$return='')
 	}
 	$rs['identifier'] = $id;
 	$rs['content'] = $content;
-	
 	$rs = $GLOBALS['app']->lib('form')->format($rs);
 	if($return == 'array') return $rs;
 	return $rs['html'];
 }
 
-//生成HTML表单控制
-//此项机制与form_edit类似
-//type，HTML表单类型，具体支持请查看form里的配置
-//id，表单名称
-//attr，各种属性，多种属性连接模式为：type=1&ok=2&upload=1
-//content，表单默认值内容
+/**
+ * 生成HTML表单控制，此项机制与form_edit类似
+ * @参数 type，HTML表单类型，具体支持请查看form里的配置
+ * @参数 id，表单名称
+ * @参数 attr，各种属性，多种属性连接模式为：type=1&ok=2&upload=1
+ * @参数 content，表单默认值内容
+**/
 function form_html($type='text',$id='phpok',$attr='',$content='')
 {
 	$array = array("identifier"=>$id,"form_type"=>$type,"content"=>$content);
@@ -963,7 +974,9 @@ function form_html($type='text',$id='phpok',$attr='',$content='')
 	return $GLOBALS['app']->lib('form')->format($array);
 }
 
-//取得授权时间
+/**
+ * 取得授权时间
+**/
 function license_date()
 {
 	if($GLOBALS['app']->license_site == '.phpok.com') return '2005-'.date("Y",$GLOBALS['app']->time);
@@ -974,7 +987,9 @@ function license_date()
 }
 
 
-//PHPOK日志存储，可用于调试
+/**
+ * PHPOK日志存储，可用于调试
+**/
 function phpok_log($info='',$in_db=true)
 {
 	global $app;
@@ -986,10 +1001,10 @@ function phpok_log($info='',$in_db=true)
 	}
 	$info = trim($info);
 	$date = date("Ymd",$app->time);
-	if(!file_exists($app->dir_data.'log'.$date.'.php')){
-		file_put_contents($app->dir_data.'log'.$date.'.php',"<?php exit();?>\n");
+	if(!file_exists($app->dir_data.'log/log'.$date.'.php')){
+		file_put_contents($app->dir_data.'log/log'.$date.'.php',"<?php exit();?>\n");
 	}
-	$handle = fopen($app->dir_data.'log'.$date.'.php','ab');
+	$handle = fopen($app->dir_data.'log/log'.$date.'.php','ab');
 	$info2 = '---start---Time:'.date("H:i:s",$app->time).'---------------------'."\n";
 	$info2.= 'APP_ID: '.$app->app_id."\n";
 	$info2.= 'CTRL_ID: '.$app->ctrl."\n";
@@ -1005,18 +1020,25 @@ function phpok_log($info='',$in_db=true)
 	return true;
 }
 
-//邮箱合法性验证
+/**
+ * 邮箱合法性验证
+**/
 function phpok_check_email($email)
 {
 	return $GLOBALS['app']->lib('common')->email_check($email);
 }
 
+/**
+ * 获取会员组信息
+**/
 function user_group($gid)
 {
 	return $GLOBALS['app']->model('usergroup')->get_one($gid);
 }
 
-//详细页分页
+/**
+ * 详细页分页
+**/
 function pageurl($pageurl,$pageid=1)
 {
 	if($pageid < 2) return $pageurl;
@@ -1026,7 +1048,9 @@ function pageurl($pageurl,$pageid=1)
 }
 
 
-//自定义表单中涉及到的内容获取
+/**
+ * 自定义表单中涉及到的内容获取
+**/
 function opt_rslist($type='default',$group_id=0,$info='')
 {
 	//当类型为默认时
@@ -1082,6 +1106,36 @@ function opt_rslist($type='default',$group_id=0,$info='')
 		$rslist = array();
 		foreach($tmplist as $key=>$value){
 			$tmp = array("val"=>$value['id'],"title"=>$value['title'],'parent_id'=>$value['parent_id']);
+			$rslist[] = $tmp;
+		}
+		return $rslist;
+	}
+	if($type == 'user'){
+		if($group_id == 'grouplist'){
+			$tmplist = $GLOBALS['app']->model('usergroup')->get_all('status=1');
+			if(!$tmplist){
+				return false;
+			}
+			$rslist = array();
+			foreach($tmplist as $key=>$value){
+				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
+				$rslist[] = $tmp;
+			}
+			return $rslist;
+		}
+	}
+	if($type == 'gateway'){
+		if($group_id == 'express'){
+			$tmplist = $GLOBALS['app']->model('express')->get_all();
+		}else{
+			$tmplist = $GLOBALS['app']->model('gateway')->all($group_id);//其他网关参数
+		}
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$tmp = array('val'=>$value['id'],'title'=>$value['title']);
 			$rslist[] = $tmp;
 		}
 		return $rslist;
@@ -1158,7 +1212,9 @@ function phpok_sitelist($notin=false)
 	return $sitelist;
 }
 
-//智能使用CDN
+/**
+ * 智能使用CDN
+**/
 function phpok_cdn()
 {
 	global $app;
@@ -1225,4 +1281,112 @@ function phpok_cdn()
 		$folder .= '/';
 	}
 	return $folder;
+}
+
+function phpok_post_save($data,$pid=0)
+{
+	global $app;
+	if(!$data || !is_array($data) || !$pid){
+		return false;
+	}
+	if(is_numeric($pid)){
+		$project_rs = $app->model('project')->get_one($pid,false);
+		if(!$project_rs || !$project_rs['status'] || !$project_rs['module']){
+			return false;
+		}
+	}else{
+		$project_rs = $pid;
+	}
+	$module = $app->model('module')->get_one($project_rs['module']);
+	if(!$module || !$module['status']){
+		return false;
+	}
+	if($module['mtype']){
+		$array = array('site_id'=>$project_rs['site_id']);
+		$tid = $data['id'];
+		if($tid){
+			$rs = $app->model('list')->single_one($tid,$project_rs['module']);
+			$array['id'] = $rs['id'];
+		}
+		$array['project_id'] = $project_rs['id'];
+		$array['cate_id'] = $project_rs['cate'] ? $data['cate_id'] : 0;
+		$flist = $app->model('module')->fields_all($module['id']);
+		if($flist){
+			foreach($flist as $key=>$value){
+				if(isset($data[$value['identifier']])){
+					$array[$value['identifier']] = $data[$value['identifier']];
+				}
+			}
+		}
+		return $app->model("list")->single_save($array,$project_rs['module']);
+	}
+	$flist = $app->db->list_fields('list');
+	unset($flist['id']);
+	$array = array();
+	foreach($flist as $key=>$value){
+		if(isset($data[$value])){
+			$array[$value] = $data[$value];
+		}
+	}
+	$array['site_id'] = $project_rs['site_id'];
+	$array["project_id"] = $project_rs["id"];
+	$array["module_id"] = $project_rs["module"];
+	if(!$data['dateline']){
+		$array['dateline'] = $app->time;
+	}
+	$is_insert = true;
+	if($data['id']){
+		$app->model('list')->save($array,$data['id']);
+		$insert_id = $data['id'];
+		$app->model('list')->list_cate_clear($insert_id);
+		$is_insert = false;
+	}else{
+		$insert_id = $app->model('list')->save($array);
+		if(!$insert_id){
+			return false;
+		}
+	}
+	if($array['cate_id']){
+		$ext_cate = $data['_cate'] ? $data['_cate'] : array($array['cate_id']);
+		$app->model('list')->save_ext_cate($insert_id,$ext_cate);
+	}
+	if($project_rs['is_biz']){
+		$biz = array('price'=>$data['price']);
+		$biz['currency_id'] = $data['currency_id'];
+		if(!$biz['currency_id']){
+			$biz['currency_id'] = $project_rs['currency_id'];
+		}
+ 		$biz['weight'] = $data['weight'];
+ 		$biz['volume'] = $data['volume'];
+ 		$biz['unit'] = $data['unit'];
+ 		$biz['id'] = $insert_id;
+ 		$biz['is_virtual'] = $data['is_virtual'] ? $data['is_virtual'] : 0;
+ 		$app->model('list')->biz_save($biz);
+	}
+	//Tag标签的同步
+	$app->model('tag')->update_tag($array['tag'],$insert_id);
+	//存储扩展字段
+	$ext_list = $app->model('module')->fields_all($project_rs["module"]);
+	if(!$ext_list){
+		$ext_list = array();
+	}
+	$tmplist = array();
+	if($is_insert){
+		$tmplist["id"] = $insert_id;
+	}
+	$tmplist["site_id"] = $project_rs["site_id"];
+	$tmplist["project_id"] = $project_rs["id"];
+	$tmplist["cate_id"] = $array["cate_id"];
+	foreach($ext_list as $key=>$value){
+		if(isset($data[$value['identifier']])){
+			$val = $data[$value['identifier']];
+			$tmplist[$value["identifier"]] = $val;
+		}
+	}
+	if($is_insert){
+		$app->model('list')->save_ext($tmplist,$project_rs["module"]);
+	}else{
+		$app->model('list')->update_ext($tmplist,$project_rs['module'],$insert_id);
+	}
+	return $insert_id;
 }

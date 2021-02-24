@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="option_list,is_multiple,width,ext_select,empty_val" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="option_list,is_multiple,width,ext_select,empty_val,is_cate_group" />
 <div class="table">
 	<div class="title">
 		内容来源：
@@ -21,6 +21,15 @@
 						<!-- /loop -->
 					</optgroup>					
 					<!-- /if -->
+					<!-- loop from=$ext_sitelist key=$key value=$value id=$tmpid -->
+					<!-- if $value.plist -->
+					<optgroup label="{lang子项}_{lang站点ID：}{$value.id}_{$value.title}">
+						<!-- loop from=$value.plist key=$k value=$v -->
+						<option value="project:{$v.id}"{if $rs.option_list == "project:".$v.id} selected{/if}>{$v.title}</option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- /if -->
+					<!-- /loop -->
 					<!-- if $title_list -->
 					<optgroup label="{lang主题}">
 						<!-- loop from=$title_list key=$key value=$value -->
@@ -28,6 +37,15 @@
 						<!-- /loop -->
 					</optgroup>
 					<!-- /if -->
+					<!-- loop from=$ext_sitelist key=$key value=$value id=$tmpid -->
+					<!-- if $value.mlist -->
+					<optgroup label="{lang主题}_{lang站点ID：}{$value.id}_{$value.title}">
+						<!-- loop from=$value.mlist key=$k value=$v -->
+						<option value="title:{$v.id}"{if $rs.option_list == "title:".$v.id} selected{/if}>{$v.title}</option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- /if -->
+					<!-- /loop -->
 					<!-- if $catelist -->
 					<optgroup label="{lang分类}">
 						<!-- loop from=$catelist key=$key value=$value -->
@@ -35,8 +53,23 @@
 						<!-- /loop -->
 					</optgroup>
 					<!-- /if -->
-					<optgroup label="{lang会员相关}">
+					<!-- loop from=$ext_sitelist key=$key value=$value id=$tmpid -->
+					<!-- if $value.clist -->
+					<optgroup label="{lang分类}_{lang站点ID：}{$value.id}_{$value.title}">
+						<!-- loop from=$value.clist key=$k value=$v -->
+						<option value="cate:{$v.id}"{if $rs.option_list == "cate:".$v.id} selected{/if}>{$v.title}</option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- /if -->
+					<!-- /loop -->
+					<optgroup label="{lang网关路由}">
+						<!-- loop from=$gateway_list key=$key value=$value id=$tmpid -->
+						<option value="gateway:{$key}"{if $rs.option_list == "gateway:".$key} selected{/if}>{$value}</option>
+						<!-- /loop -->
+					</optgroup>
+					<optgroup label="{lang其他}">
 						<option value="user:grouplist"{if $rs.option_list == "user:grouplist"} selected{/if}>{lang会员组}</option>
+						<option value="gateway:express"{if $rs.option_list == "gateway:express"} selected{/if}>{lang物流快递}</option>
 					</optgroup>
 				</select>
 			</td>
@@ -63,6 +96,21 @@
 		<tr>
 			<td><label><input type="radio" name="is_multiple" value="0"{if !$rs.is_multiple} checked{/if} /> {lang单选}</label></td>
 			<td><label><input type="radio" name="is_multiple" value="1"{if $rs.is_multiple} checked{/if} /> {lang多选}</label></td>
+		</tr>
+		</table>
+	</div>
+</div>
+
+<div class="table">
+	<div class="title">
+		{lang分组：}
+		<span class="note">{lang设置下拉是否按分类来分组（仅限主题，并且绑定了分类）}</span>
+	</div>
+	<div class="content">
+		<table>
+		<tr>
+			<td><label><input type="radio" name="is_cate_group" value="0"{if !$rs.is_cate_group} checked{/if} /> {lang禁用}</label></td>
+			<td><label><input type="radio" name="is_cate_group" value="1"{if $rs.is_cate_group} checked{/if} /> {lang启用}</label></td>
 		</tr>
 		</table>
 	</div>

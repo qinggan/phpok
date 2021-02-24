@@ -167,7 +167,7 @@
 							<td>{lang启用后，可通过接口获取数据}</td>
 						</tr>
 					</table>
-					
+
 				</div>
 				<label class="layui-form-label"><i class="layui-icon hand" onclick="$.admin_project.ext_help()">&#xe702;</i> {lang扩展项}</label>
 				<div class="layui-input-inline" style="width:80%;">
@@ -186,7 +186,7 @@
 					<div class="clear"></div>
 				</div>
 			</div>
-		
+
 			<div id="use_biz_setting"{if !$rs.is_biz || !$config.biz_status} style="display:none"{/if}>
 				<div class="layui-form-item">
 					<label class="layui-form-label">{lang货币默认类型}</label>
@@ -214,11 +214,11 @@
 				</div>
 				<div class="layui-form-item">
 					<label class="layui-form-label">{lang电商属性}</label>
-					<div class="layui-input-inline default-auto">
+					<div class="layui-input-inline auto">
 						<input type="radio" name="biz_attr" value="0"{if !$rs.biz_attr} checked{/if} title="{lang不使用}" />
 						<input type="radio" name="biz_attr" value="1"{if $rs.biz_attr} checked{/if} title="{lang使用}" />
 					</div>
-					<div class="layui-input-inline auto gray">{lang启用此项后，将允许设定可选产品的一些属性，如颜色，款式，支持价格浮动}</div>
+					<div class="layui-form-mid">{lang启用此项后，将允许设定可选产品的一些属性，如颜色，款式，支持价格浮动}</div>
 				</div>
 			</div>
 
@@ -315,16 +315,16 @@
 				<div class="layui-input-block">
 					<input type="text" id="orderby" name="orderby" class="layui-input" value="{$rs.orderby ? $rs.orderby : 'l.sort ASC,l.dateline DESC,l.id DESC'}" />
 				</div>
-				<div class="layui-input-block" style="margin-top:10px;">
-					<div class="button-group">
-						<input type="button" value="{lang清空}" class="phpok-btn" onclick="$('#orderby').val('')" />
-						<input type="button" value="{lang点击}" onclick="phpok_admin_orderby('orderby','l.hits')" class="phpok-btn" />
-						<input type="button" value="{lang时间}" onclick="phpok_admin_orderby('orderby','l.dateline')" class="phpok-btn" />
-						<input type="button" value="{lang回复时间}" onclick="phpok_admin_orderby('orderby','l.replydate')" class="phpok-btn" />
-						<input type="button" value="ID" onclick="phpok_admin_orderby('orderby','l.id')" class="phpok-btn" />
-						<input type="button" value="{lang人工}" onclick="phpok_admin_orderby('orderby','l.sort')" class="phpok-btn" />
+				<div class="layui-input-block">
+					<div class="layui-btn-group" style="margin-top:10px;">
+						<input type="button" value="{lang清空}" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$('#orderby').val('')" />
+						<input type="button" value="{lang点击}" onclick="phpok_admin_orderby('orderby','l.hits')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang时间}" onclick="phpok_admin_orderby('orderby','l.dateline')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang回复时间}" onclick="phpok_admin_orderby('orderby','l.replydate')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="ID" onclick="phpok_admin_orderby('orderby','l.id')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang人工}" onclick="phpok_admin_orderby('orderby','l.sort')" class="layui-btn layui-btn-sm" />
 					</div>
-					<div id="tmp_orderby_btn" class="button-group" style="margin-left:10px;"></div>
+					<div id="tmp_orderby_btn" class="layui-btn-group" style="margin-top:10px;"></div>
 				</div>
 				<div class="layui-input-block auto">{lang设置好默认排序，有利于网站的管理/前后台一致}</div>
 			</div>
@@ -376,9 +376,9 @@
 			</div>
 			<div class="layui-input-block mtop">
 				<div class="layui-btn-group">
-					<input type="button" value="{lang全选}" onclick="$.input.checkbox_all('mylayout')" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang全不选}" onclick="$.input.checkbox_none('mylayout')" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang反选}" onclick="$.input.checkbox_anti('mylayout')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang全选}" onclick="$.checkbox.all('mylayout')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang全不选}" onclick="$.checkbox.none('mylayout')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang反选}" onclick="$.checkbox.anti('mylayout')" class="layui-btn layui-btn-sm" />
 				</div>
 			</div>
 		</div>
@@ -390,9 +390,9 @@
 					<li style="margin-top:5px;min-width:80px;overflow:hidden;text-align:right;">{$value.title}</li>
 					<li style="margin-top:5px;">
 						<div class="button-group">
-							<input type="button" value="{lang全选}" class="phpok-btn" onclick="$.input.checkbox_all('group_{$value.id}')" />
-							<input type="button" value="{lang全不选}" class="phpok-btn" onclick="$.input.checkbox_none('group_{$value.id}')" />
-							<input type="button" value="{lang反选}" class="phpok-btn" onclick="$.input.checkbox_anti('group_{$value.id}')" />
+							<input type="button" value="{lang全选}" class="phpok-btn" onclick="$.checkbox.all('group_{$value.id}')" />
+							<input type="button" value="{lang全不选}" class="phpok-btn" onclick="$.checkbox.none('group_{$value.id}')" />
+							<input type="button" value="{lang反选}" class="phpok-btn" onclick="$.checkbox.anti('group_{$value.id}')" />
 						</div>
 					</li>
 					<li><input type="checkbox" name="p_read_{$value.id}"{if $value.popedom.read} checked{/if} title="{lang阅读}" /></li>
@@ -417,7 +417,8 @@
 			<div class="layui-input-inline default-auto">
 				<select id="is_identifier" name="is_identifier">
 				<option value="0">{lang不使用}</option>
-				<option value="1"{if $rs.is_identifier == 1} selected{/if}>{lang启用非必填}</option>
+				<option value="1"{if $rs.is_identifier == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
+				<option value="3"{if $rs.is_identifier == 3} selected{/if}>{lang启用非必填，默认显示}</option>
 				<option value="2"{if $rs.is_identifier == 2} selected{/if}>{lang启用且必填}</option>
 				</select>
 			</div>
@@ -432,7 +433,8 @@
 			<div class="layui-input-inline default-auto">
 				<select id="is_tpl_content" name="is_tpl_content">
 				<option value="0">{lang不使用}</option>
-				<option value="1"{if $rs.is_tpl_content == 1} selected{/if}>{lang启用非必填}</option>
+				<option value="1"{if $rs.is_tpl_content == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
+				<option value="3"{if $rs.is_tpl_content == 3} selected{/if}>{lang启用非必填，默认显示}</option>
 				<option value="2"{if $rs.is_tpl_content == 2} selected{/if}>{lang启用且必填}</option>
 				</select>
 			</div>
@@ -447,7 +449,8 @@
 			<div class="layui-input-inline default-auto">
 				<select id="is_userid" name="is_userid">
 				<option value="0">{lang不使用}</option>
-				<option value="1"{if $rs.is_userid == 1} selected{/if}>{lang启用非必填}</option>
+				<option value="1"{if $rs.is_userid == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
+				<option value="3"{if $rs.is_userid == 3} selected{/if}>{lang启用非必填，默认显示}</option>
 				<option value="2"{if $rs.is_userid == 2} selected{/if}>{lang启用且必填}</option>
 				</select>
 			</div>
@@ -462,7 +465,8 @@
 			<div class="layui-input-inline default-auto">
 				<select id="is_tag" name="is_tag">
 				<option value="0">{lang不使用}</option>
-				<option value="1"{if $rs.is_tag == 1} selected{/if}>{lang启用非必填}</option>
+				<option value="1"{if $rs.is_tag == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
+				<option value="3"{if $rs.is_tag == 3} selected{/if}>{lang启用非必填，默认显示}</option>
 				<option value="2"{if $rs.is_tag == 2} selected{/if}>{lang启用且必填}</option>
 				</select>
 			</div>
@@ -486,7 +490,7 @@
 				{lang允许管理员针对主题自定义相关的SEO信息}
 			</div>
 		</div>
-			
+
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang封面模板}</label>
 			<div class="layui-input-inline default-auto">
@@ -539,7 +543,7 @@
 			</div>
 			<div class="layui-input-inline auto">{lang仅限于绑定模块且启用发布功能后有效}</div>
 		</div>
-		
+
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang图标}
@@ -558,7 +562,7 @@
 				{lang请选择一个直观的图标，大小为：48x48，建议使用PNG格式}
 			</div>
 		</div>
-		
+
 		<div class="layui-form-item">
 			<label class="layui-form-label layui-tips" lay-tips="{lang将显示在内容管理布局区那里，用于提示编辑人员注意事项}">{lang后台备注}</label>
 			<div class="layui-input-block">

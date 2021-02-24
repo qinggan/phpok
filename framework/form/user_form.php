@@ -59,6 +59,10 @@ class user_form extends _init_auto
 	private function _www_show($rs,$ext)
 	{
 		if($ext && is_array($ext) && $ext['is_multiple']){
+			if($rs['content'] && is_array($rs['content'])){
+				$rs['content'] = implode(",",$rs['content']);
+			}
+			$condition = "u.id IN(".$rs['content'].") AND u.status=1";
 			$rslist = $this->model('user')->get_list($condition,0,999);
 			if(!$rslist){
 				return false;

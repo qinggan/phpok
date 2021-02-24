@@ -97,9 +97,7 @@ class db_sqlite extends db
 
 	public function query($sql,$loadcache=true)
 	{
-		if($loadcache){
-			$this->cache_sql($sql);
-		}
+		$this->cache_update($sql);
 		$this->check_connect();
 		$this->_time();
 		$this->query = $this->conn->query($sql);
@@ -115,42 +113,82 @@ class db_sqlite extends db
 		return $this->query;
 	}
 
-	public function get_all($sql,$primary="")
+	public function get_all($sql='',$primary="",$is_cache=true)
 	{
-		$this->query($sql);
+		if($sql){
+			if((is_bool($primary) && $primary) || $is_cache){
+				$info = $this->cache_get($sql);
+				if($info){
+					if($info['_phpok_query_false']){
+						return false;
+					}
+					if(!is_bool($primary) && $primary){
+						$tlist = array();
+						foreach($info as $key=>$value){
+							$tlist[$value[$primary]] = $value;
+						}
+						$info = $tlist;
+						unset($tlist);
+					}
+					return $info;
+				}
+			}
+			$this->query($sql);
+		}
 		if(!$this->query || !is_object($this->query)){
 			return false;
 		}
 		$this->_time();
-		$rs = false;
+		$rs = array();
 		while($rows = $this->query->fetchArray($this->type)){
-			if($primary){
-				$rs[$rows[$primary]] = $rows;
-			}else{
-				$rs[] = $rows;
-			}
+			$rs[] = $rows;
 		}
 		$this->query->finalize();
-		if($rs){
-			$rs = $this->decode($rs);
-		}
 		$this->_time();
+		if(!$rs){
+			$this->cache_false($sql);
+			return false;
+		}
+		$rs = $this->decode($rs);
+		$this->cache_save($sql,$rs);
+		if($primary && !is_bool($primary)){
+			$tlist = array();
+			foreach($rs as $key=>$value){
+				$tlist[$value[$primary]] = $value;
+			}
+			$rs = $tlist;
+			unset($tlist);
+		}
 		return $rs;
 	}
 
-	public function get_one($sql="")
+	public function get_one($sql="",$is_cache=true)
 	{
-		$this->query($sql);
+		if($sql){
+			if($is_cache){
+				$info = $this->cache_get($sql);
+				if($info){
+					if($info['_phpok_query_false']){
+						return false;
+					}
+					return $info;
+				}
+			}
+			$this->query($sql);
+		}
 		if(!$this->query || !is_object($this->query)){
 			return false;
 		}
 		$this->_time();
 		$rs = $this->query->fetchArray($this->type);
 		$this->query->finalize();
-		if($rs){
-			$rs = $this->decode($rs);
-		}
 		$this->_time();
+		if(!$rs){
+			$this->cache_false($sql);
+			return false;
+		}
+		$rs = $this->decode($rs);
+		$this->cache_save($sql,$rs);
 		return $rs;
 	}
 

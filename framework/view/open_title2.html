@@ -1,0 +1,32 @@
+<!-- include tpl=head_lay nopadding=true -->
+<script type="text/javascript">
+function select_input(val)
+{
+	var opener = $.dialog.opener;
+	opener.$("#{$id}").val(val);
+	$.dialog.close();
+}
+</script>
+<div class="layui-card">
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>{$field_title}</th>
+			<th></th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.id}</td>
+			<td>{$value[$field]}</td>
+			<td><input type="button" value="{lang确认}" onclick="select_input('{$value[$field]}')" class="layui-btn layui-btn-sm" /></td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- include tpl=pagelist -->
+	</div>
+</div>
+
+<!-- include tpl=foot_lay is_open=true -->

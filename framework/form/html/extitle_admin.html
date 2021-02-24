@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_pid,form_field_used,form_show_editing,form_true_delete,form_is_single,form_maxcount,form_input_val" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_pid,form_field_used,form_show_editing,form_true_delete,form_is_single,form_maxcount,form_input_val,form_price" />
 <div class="table">
 	<div class="title">{lang选择关联的项目}：</div>
 	<div class="content">
@@ -63,5 +63,16 @@
 	</div>
 	<div class="content">
 		<input type="text" name="form_input_val" id="form_input_val" value="{$rs.form_input_val}" class="w99" />
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang电商属性}：<span class="note">{lang启用后允许主题自行设置价格，税费及运费的加减}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="form_price" value="1"{if $rs.form_price} checked{/if} />{lang启用}</label></li>
+			<li><label><input type="radio" name="form_price" value="0"{if !$rs.form_price} checked{/if} />{lang禁用}</label></li>
+		</ul>
 	</div>
 </div>

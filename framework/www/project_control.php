@@ -85,8 +85,8 @@ class project_control extends phpok_control
 		}
 		$this->assign("m_rs",$m_rs);
 		$cate_root = $rs["cate"];
-		$cateid = 0;
-		if($rs["cate"]){
+		$cateid = $this->get('cateid');
+		if($rs["cate"] && !$cateid){
 			$cate = $this->get("cate");
 			if($cate){
 				$cate_rs = $this->call->phpok('_cate',array('pid'=>$rs['id'],'cate'=>$cate));
@@ -101,6 +101,17 @@ class project_control extends phpok_control
 					$this->assign('cate_rs',$cate_rs);
 				}
 			}
+		}
+		if($rs['cate'] && !is_numeric($cateid)){
+			$tmp = explode(",",$cateid);
+			$tmp_ids = array();
+			foreach($tmp as $key=>$value){
+				$value = intval($value);
+				if($value){
+					$tmp_ids[] = $value;
+				}
+			}
+			$cateid = implode(",",$tmp_ids);
 		}
 		$keywords = $this->get("keywords");
 		$ext = $this->get("ext");
@@ -123,7 +134,7 @@ class project_control extends phpok_control
 		$psize = $rs["psize"] ? $rs['psize'] : $this->config['psize'];
 		$pageurl = $this->url($rs['identifier']);
 		if($cate_root){
-			if($cateid && $cateid != $cate_root){
+			if($cateid && is_numeric($cateid) && $cateid != $cate_root){
 				$cate_rs = $this->call->phpok('_cate',array('pid'=>$rs['id'],'cateid'=>$cateid));
 				if(!$cate_rs){
 					$this->error_404();
@@ -160,6 +171,7 @@ class project_control extends phpok_control
 		$dt = array('pid'=>$rs['id']);
 		if($cateid){
 			$dt['cateid'] = $cateid;
+			$this->assign('cateid',$cateid);
 		}
 		//读取列表信息
 		$condition = "l.project_id=".$rs["id"]." AND l.module_id=".$rs["module"];
@@ -279,6 +291,10 @@ class project_control extends phpok_control
 		}
 		unset($rslist,$total,$pageurl,$psize,$pageid,$rs,$parent_rs);
 		$this->phpok_seo();
+		$tpl = $this->get('tplfile');
+		if($tpl && $this->tpl->check_exists($tpl)){
+			$tplfile = $tpl;
+		}
 		$this->view($tplfile);
 	}
 }

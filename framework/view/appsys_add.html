@@ -1,4 +1,4 @@
-<!-- include tpl=head_lay nopadding=true -->
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
 <div class="layui-card">
 	<div class="layui-card-body">
 		<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_appsys.create()">
@@ -31,41 +31,12 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang执行范围}
-			</label>
-			<div class="layui-input-inline auto">
-				<input type="checkbox" lay-skin="primary" name="is_admin" title="{lang后台}" checked />
-				<input type="checkbox" lay-skin="primary" name="is_www" title="{lang前台}" />
-				<input type="checkbox" lay-skin="primary" name="is_api" title="{lang接口}" />
-			</div>
-			<div class="layui-input-inline auto gray lh38">{lang勾选即开启，至少选一个}</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang安装脚本}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" name="install" class="layui-input" />
-			</div>
-			<div class="layui-input-inline auto gray lh38">{lang安装时要运行的PHP文件}</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang卸载脚本}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" name="uninstall" class="layui-input" />
-			</div>
-			<div class="layui-input-inline auto gray lh38">{lang卸载时要执行的PHP文件}</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
 				{lang开发者}
 			</label>
-			<div class="layui-input-inline default-auto">
+			<div class="layui-input-block">
 				<input type="text" name="author" class="layui-input" />
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang填写团体名称或个人姓名}</div>
+			<div class="layui-input-block mtop">{lang填写团体名称或个人姓名}</div>
 		</div>
 		</form>
 	</div>

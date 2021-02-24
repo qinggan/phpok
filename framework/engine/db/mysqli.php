@@ -52,7 +52,7 @@ class db_mysqli extends db
 		if(mysqli_error($this->conn)){
 			$this->error(mysqli_error($this->conn),mysqli_errno($this->conn));
 		}
-		mysqli_query($this->conn,"SET NAMES 'utf8'");
+		mysqli_query($this->conn,"SET NAMES '".$this->charset."'");
 		mysqli_query($this->conn,"SET sql_mode=''");
 		$this->_time();
 		return $this->conn;
@@ -81,12 +81,12 @@ class db_mysqli extends db
 	 * @参数 $tblname 表名称
 	 * @参数 $pri_id 主键ID
 	 * @参数 $note 表摘要
-	 * @参数 $engine 引挈，默认是 InnoDB
+	 * @参数 $engine 引挈，默认是 MyISAM
 	**/
 	public function create_table_main($tblname,$pri_id='',$note='',$engine='')
 	{
 		if(!$engine){
-			$engine = 'InnoDB';
+			$engine = 'MyISAM';
 		}
 		if(!$pri_id){
 			$pri_id = 'id';
@@ -163,15 +163,25 @@ class db_mysqli extends db
 	 * @参数 $sql 要查询的SQL
 	 * @参数 $primary 绑定主键
 	**/
-	public function get_all($sql='',$primary="")
+	public function get_all($sql='',$primary="",$is_cache=true)
 	{
 		if($sql){
-			$false = $this->cache_false($primary.'-'.$sql);
-			if($false){
-				return false;
-			}
-			if($this->cache_get($primary.'-'.$sql)){
-				return $this->cache_get($primary.'-'.$sql);
+			if((is_bool($primary) && $primary) || $is_cache){
+				$info = $this->cache_get($sql);
+				if($info){
+					if($info['_phpok_query_false']){
+						return false;
+					}
+					if(!is_bool($primary) && $primary){
+						$tlist = array();
+						foreach($info as $key=>$value){
+							$tlist[$value[$primary]] = $value;
+						}
+						$info = $tlist;
+						unset($tlist);
+					}
+					return $info;
+				}
 			}
 			$this->query($sql);
 		}
@@ -181,22 +191,23 @@ class db_mysqli extends db
 		$this->_time();
 		$rs = array();
 		while($rows = mysqli_fetch_array($this->query,$this->type)){
-			if($primary){
-				$rs[$rows[$primary]] = $rows;
-			}else{
-				$rs[] = $rows;
-			}
+			$rs[] = $rows;
 		}
 		mysqli_free_result($this->query);
 		$this->_time();
 		if(!$rs || count($rs)<1){
-			$this->cache_false_save($primary.'-'.$sql);
+			$this->cache_false($sql);
 			return false;
 		}
-		if($this->cache_need($primary.'-'.$sql)){
-			$this->cache_save($primary.'-'.$sql,$rs);
+		$this->cache_save($sql,$rs);
+		if($primary && !is_bool($primary)){
+			$tlist = array();
+			foreach($rs as $key=>$value){
+				$tlist[$value[$primary]] = $value;
+			}
+			$rs = $tlist;
+			unset($tlist);
 		}
-		$this->cache_first($primary.'-'.$sql);
 		return $rs;
 	}
 
@@ -204,15 +215,17 @@ class db_mysqli extends db
 	 * 获取一条数据
 	 * @参数 $sql 要执行的SQL
 	**/
-	public function get_one($sql='')
+	public function get_one($sql='',$is_cache=true)
 	{
 		if($sql){
-			$false = $this->cache_false($sql);
-			if($false){
-				return false;
-			}
-			if($this->cache_get($sql)){
-				return $this->cache_get($sql);
+			if($is_cache){
+				$info = $this->cache_get($sql);
+				if($info){
+					if($info['_phpok_query_false']){
+						return false;
+					}
+					return $info;
+				}
 			}
 			$this->query($sql);
 		}
@@ -224,13 +237,10 @@ class db_mysqli extends db
 		mysqli_free_result($this->query);
 		$this->_time();
 		if(!$rs){
-			$this->cache_false_save($sql);
+			$this->cache_false($sql);
 			return false;
 		}
-		if($this->cache_need($sql)){
-			$this->cache_save($sql,$rs);
-		}
-		$this->cache_first($sql);
+		$this->cache_save($sql,$rs);
 		return $rs;
 	}
 
@@ -338,23 +348,18 @@ class db_mysqli extends db
 	/**
 	 * 执行SQL
 	**/
-	public function query($sql,$loadcache=true)
+	public function query($sql)
 	{
-		if($loadcache){
-			$this->cache_sql($sql);
-		}
 		$this->check_connect();
 		$this->_time();
 		$this->query = mysqli_query($this->conn,$sql);
-		if($loadcache){
-			$this->cache_update($sql);
-		}
 		$tmptime = $this->_time();
 		$this->_count();
 		$this->debug($sql,$tmptime);
 		if(mysqli_error($this->conn)){
 			$this->error(mysqli_error($this->conn).', '.$sql,mysqli_errno($this->conn));
 		}
+		$this->cache_update($sql);
 		return $this->query;
 	}
 
@@ -552,6 +557,7 @@ class db_mysqli extends db
 	**/
 	public function version($type="server")
 	{
+		$this->check_connect();
 		if($type == 'server'){
 			return mysqli_get_server_info($this->conn);
 		}else{

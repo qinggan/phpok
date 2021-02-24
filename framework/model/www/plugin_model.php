@@ -36,7 +36,6 @@ class plugin_model extends plugin_model_base
 		if($rslist){
 			return $rslist;
 		}
-		$this->db->cache_set($cache_id);
 		$rslist = $this->db->get_all($sql,'id');
 		if(!$rslist){
 			return false;

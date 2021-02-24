@@ -71,10 +71,33 @@ class inp_control extends phpok_control
 		}
 		$condition = "l.id IN(".$content.")";
 		$rslist = $this->model("list")->get_all($condition,0,0);
-		if($rslist){
-			$this->success($rslist);
+		if(!$rslist){
+			$this->error(P_Lang('没有主题信息'));
 		}
-		$this->error(P_Lang('没有主题信息'));
+		$extprice = $this->get('extprice','int');
+		$field = $this->get('field');
+		if($extprice && $field){
+			$fid = 0;
+			$tmp = $this->model('list')->call_one($extprice);
+			if($tmp && $tmp['module_id']){
+				$f = $this->model('module')->fields_all($tmp['module_id'],'identifier');
+				if($f && $f[$field]){
+					$fid = $f['id'];
+				}
+			}
+			if($extprice && $fid){
+				$extprice_list = $this->model('list')->extprice($extprice,$fid);
+				if($extprice_list){
+					foreach($rslist as $key=>$value){
+						if($extprice_list[$value['id']]){
+							$value = array_merge($value,$extprice_list[$value['id']]);
+							$rslist[$key] = $value;
+						}
+					}
+				}
+			}
+		}
+		$this->success($rslist);
 	}
 
 	private function get_user_list($content)
@@ -164,8 +187,12 @@ class inp_control extends phpok_control
 			$pageurl .= "&pid=".$pid;
 			$this->assign('pid',$pid);
 			$condition = "l.project_id='".$pid."'";
+			$project = $this->model('project')->get_one($pid,false);
 		}else{
 			$condition = "l.project_id IN(".$project_id.")";
+			if(is_numeric($project_id)){
+				$project = $this->model('project')->get_one($project_id,false);
+			}
 		}
 		if(!$this->session->val('admin_id')){
 			$condition .= " AND l.user_id='".$this->session->val('user_id')."'";
@@ -173,12 +200,63 @@ class inp_control extends phpok_control
 		$keywords = $this->get('keywords');
 		if($keywords){
 			$pageurl .= "&keywords=".rawurlencode($keywords);
-			$condition .= " AND l.title LIKE '%".$keywords."%'";
+			if($project && $project['module']){
+				$module = $this->model('module')->get_one($project['module']);
+				$flist = $this->model('fields')->flist($project['module'],'identifier');
+				if($flist){
+					$tbl = $module['mtype'] ? $this->db->prefix.$module['id'] : $this->db->prefix."list_".$module['id'];
+					$tmpsql = "SELECT id FROM ".$tbl." WHERE project_id='".$project['id']."' ";
+					$tmpsql_c = array();
+					foreach($flist as $k=>$v){
+						if($v['search'] == 1){
+							$tmpsql_c[] = " ".$v['identifier']."='".$keywords."' ";
+						}elseif($v['search'] == 2){
+							$tmpsql_c[] = " ".$v['identifier']." LIKE '%".str_replace(' ','%',$keywords)."%' ";
+						}
+					}
+					if($tmpsql_c && $tmpsql_c>0){
+						$tmpsql .= " AND (".implode(" OR ",$tmpsql_c).") ";
+						$condition .= " AND (l.id IN(".$tmpsql.") OR l.title LIKE '%".$keywords."%') ";
+					}else{
+						$condition .= " AND l.title LIKE '%".$keywords."%' ";
+					}
+				}else{
+					$condition .= " AND l.title LIKE '%".$keywords."%' ";
+				}
+			}else{
+				$condition .= " AND l.title LIKE '%".$keywords."%' ";
+			}
 			$this->assign('keywords',$keywords);
 		}
-		$total = $this->model('list')->get_all_total($condition);
+		if($flist && $keywords){
+			$total = $this->model('list')->arc_count($project['module'],$condition);
+		}else{
+			$total = $this->model('list')->get_all_total($condition);
+		}
 		if($total){
-			$rslist = $this->model('list')->get_all($condition,$offset,$psize);
+			if($flist && $keywords && $project){
+				$field = "l.*";
+				foreach($flist as $key=>$value){
+					$field .= ",ext.".$value['identifier'];
+				}
+				$rslist = $this->model('list')->arc_all($project,$condition,$field,$offset,$psize);
+				$layout = array();
+				if($rslist && $flist && $keywords){
+					$ks = array_keys($flist);
+					foreach($rslist as $key=>$value){
+						foreach($value as $k=>$v){
+							if($flist[$k]['search'] && $flist[$k]['field_type'] == 'varchar' && in_array($k,$ks) && strpos($v,$keywords) !== false){
+								$layout[$k] = $flist[$k]['title'];
+							}
+						}
+					}
+				}
+				if($layout){
+					$this->assign('layout',$layout);
+				}
+			}else{
+				$rslist = $this->model('list')->get_all($condition,$offset,$psize);
+			}
 			$this->assign("total",$total);
 			$this->assign("rslist",$rslist);
 			$string = "home=".P_Lang('首页')."&prev=".P_Lang('上一页')."&next=".P_Lang('下一页')."&last=".P_Lang('尾页')."&half=5&add=(total)/(psize)&always=1";

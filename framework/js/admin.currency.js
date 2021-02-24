@@ -32,7 +32,7 @@
 
 function set_sort()
 {
-	var ids = $.input.checkbox_join();
+	var ids = $.checkbox.join();
 	if(!ids)
 	{
 		$.dialog.alert("未指定要排序的ID");

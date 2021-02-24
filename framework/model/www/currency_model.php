@@ -23,7 +23,6 @@ class currency_model extends currency_model_base
 		if($rslist){
 			return $rslist;
 		}
-		$this->db->cache_set($cache_id);
 		$rslist = $this->db->get_all($sql,$pri);
 		if(!$rslist){
 			return false;

@@ -150,14 +150,19 @@ class ueditor_control extends phpok_control
 					array_push($rslist,array('state'=>'附件获取失败'));
 					continue;
 				}
+				$tmp_host = parse_url($imgUrl);
 				if($domains && is_array($domains)){
-					$tmp_host = parse_url($imgUrl,PHP_URL_HOST);
-					if(!in_array($tmp_host,$domains)){
+					if(!in_array($tmp_host['host'],$domains)){
 						array_push($rslist,array('state'=>'附件获取失败'));
 						continue;
 					}
 				}
-				$content = $this->lib('html')->get_content($imgUrl);
+				$referer_url = $tmp_host['scheme'].'://'.$tmp_host['host'];
+				if($tmp_host['port'] && !in_array($tmp_host['port'],array(80,443))){
+					$referer_url .= ":".$tmp_host['port'];
+				}
+				$this->lib('curl')->referer($referer_url);
+				$content = $this->lib('curl')->get_content($imgUrl);
 				$tmp_title = basename($imgUrl);
 				$new_filename = substr(md5($imgUrl),9,16)."_".rand(0,99)."_".$key;
 				$ext = strtolower(substr($imgUrl,-3));

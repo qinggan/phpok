@@ -55,6 +55,7 @@ function save()
 			<!-- if $value.note --><div class="layui-input-block mtop">{$value.note}</div><!-- /if -->
 		</div>
 		<!-- /loop -->
+		<!-- if $rs.is_seo -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{langSEO标题}
@@ -82,15 +83,18 @@ function save()
 			</div>
 			<div class="layui-input-block mtop">{lang简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字}</div>
 		</div>
+		<!-- /if -->
+		<!-- if $rs.is_tag -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang项目标签}
+				{lang标签}
 			</label>
 			<div class="layui-input-block">
 				<input type="text" id="tag" name="tag" class='layui-input' value='{$rs.tag}' />
 			</div>
 			<div class="layui-input-block mtop">{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}</div>
 		</div>
+		<!-- /if -->
 	</div>
 </div>
 </form>

@@ -55,10 +55,14 @@ class download_control extends phpok_control
 		if(!$rs['filename']){
 			$this->error(P_Lang('附件不存在'),$back);
 		}
+		$title = $this->get('title');
+		if(!$title){
+			$title = $rs['title'];
+		}
 		//更新下载次数
 		$download = $rs['download'] + 1;
 		$this->model('res')->save(array('download'=>$download),$rs['id']);
-		$this->lib('file')->download($rs['filename'],$rs['title']);
+		$this->lib('file')->download($rs['filename'],$title);
 		exit;
 	}
 }

@@ -83,7 +83,7 @@ class cate_control extends phpok_control
 			if(!$this->popedom["modify"]){
 				$this->error(P_Lang('您没有权限执行此操作'),$this->url('cate'));
 			}
-			$rs = $this->model('cate')->get_one($id);
+			$rs = $this->model('cate')->get_one($id,'id',true,true);
 			$this->assign("id",$id);
 			$this->assign("rs",$rs);
 			$parent_id = $rs["parent_id"];
@@ -181,7 +181,6 @@ class cate_control extends phpok_control
 		$this->assign("parentlist",$parentlist);
 		$extfields = $this->model('fields')->default_all();
 		$this->assign("extfields",$extfields);
-
 		$tag_config = $this->model('tag')->config();
 		$this->assign('tag_config',$tag_config);
 		if($parent_id){
@@ -202,6 +201,7 @@ class cate_control extends phpok_control
 					}
 					$clist[] = $this->lib('form')->format($value);
 				}
+				
 				$this->assign("clist",$clist);
 			}
 		}

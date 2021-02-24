@@ -81,7 +81,7 @@ class cart_model_base extends phpok_model
 	public function get_all($cart_id='',$condition='')
 	{
 		if(!$cart_id){
-			$cart_id = $this->_id;
+			$cart_id = $this->cart_id();
 			if(!$cart_id){
 				return false;
 			}
@@ -107,7 +107,6 @@ class cart_model_base extends phpok_model
 			if($value['ext']){
 				$value['_attrlist'] = $this->product_ext_to_array($value['ext'],$value['tid']);
 			}
-			//$rslist[$key] = $value;
 			if($value['parent_id']){
 				$sublist[$value['parent_id']][] = $value;
 			}else{
@@ -254,7 +253,7 @@ class cart_model_base extends phpok_model
 	**/
 	public function delete_product($id)
 	{
-		$sql = "DELETE FROM ".$this->db->prefix."cart_product WHERE id='".$id."'";
+		$sql = "DELETE FROM ".$this->db->prefix."cart_product WHERE id='".$id."' OR parent_id='".$id."'";
 		return $this->db->query($sql);
 	}
 
@@ -264,6 +263,9 @@ class cart_model_base extends phpok_model
 	**/
 	public function clear_cart($cart_id='')
 	{
+		if(!$cart_id){
+			$cart_id = $this->cart_id();
+		}
 		if(!$cart_id){
 			return false;
 		}
@@ -295,14 +297,15 @@ class cart_model_base extends phpok_model
 	/**
 	 * 计算运费
 	 * @参数 $data 数组，里面包含：number数量，weight重量，volume体积
+	 * @参数 $country 国家
 	 * @参数 $province 省份
 	 * @参数 $city 城市
 	 * @返回 false 或 实际运费
 	 * @更新时间 2016年09月11日
 	**/
-	public function freight_price($data,$province='',$city='')
+	public function freight_price($data,$province='',$city='',$country='中国')
 	{
-		if(!$data || !$province || !$city){
+		if(!$data || !$province){
 			return false;
 		}
 		if(!$this->site['biz_freight']){

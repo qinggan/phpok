@@ -118,7 +118,6 @@ class usergroup_model_base extends phpok_model
 		if($groupid){
 			return $groupid;
 		}
-		$this->db->cache_set($cache_id);
 		if($uid){
 			$sql = "SELECT group_id FROM ".$this->db->prefix."user WHERE id='".$uid."'";
 			$tmp = $this->db->get_one($sql);
@@ -151,6 +150,16 @@ class usergroup_model_base extends phpok_model
 		$this->cache->save($cache_id,$groupid);
 		return $groupid;
 	}
-	
+
+	/**
+	 * 取得开放的会员组列表
+	 * @参数 $pri 主键定义，留空使用系统自带（从0开始）
+	**/
+	public function opened_grouplist($pri='')
+	{
+		$sql = "SELECT id,title,register_status,tpl_id,fields,is_default FROM ".$this->db->prefix."user_group ";
+		$sql.= "WHERE status=1 AND (is_open=1 OR is_default=1) AND is_guest!=1 ";
+		$sql.= "ORDER BY taxis ASC,id DESC";
+		return $this->db->get_all($sql,$pri);
+	}
 }
-?>

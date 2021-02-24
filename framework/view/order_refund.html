@@ -1,0 +1,237 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang退款订单} {$rs.sn}
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<tr>
+			<td width="20%" align="right" height="25">订单编号：</td>
+			<td width="30%">{$rs.sn}</td>
+			<td width="20%" align="right">下单时间：</td>
+			<td>{func time_format $rs.addtime}</td>
+		</tr>
+		<tr>
+			<td align="right" height="25">总金额：</td>
+			<td class="red">{func price_format $rs.price $rs.currency_id $rs.currency_id}</td>
+			<td align="right">订单状态：</td>
+			<td class="darkblue">{$rs.status_title}</td>
+		</tr>
+		<tr>
+			<td align="right" height="25">已支付：</td>
+			<td class="darkblue">{func price_format $paid_price $rs.currency_id $rs.currency_id}</td>
+			<td align="right">未支付：</td>
+			<td class="red">{func price_format $unpaid_price $rs.currency_id $rs.currency_id}</td>
+		</tr>
+		<tr>
+			<td align="right" height="25">{lang邮箱：}</td>
+			<td class="darkblue"><span>{$rs.email}</span></td>
+			<td align="right">{lang手机：}</td>
+			<td class="darkblue"><span>{$rs.mobile}</span></td>
+		</tr>
+		<!-- if $rs.ext -->
+		<tr>
+			<!-- loop from=$rs.ext key=$key value=$value id=$tmpid -->
+			<td align="right" height="25">{$key}：</td>
+			<td{if $tmpid.total%2 != '' && $tmpid.num == $tmpid.total} colspan="3"{/if} style="line-height:25px;">{$value}</td>
+				<!-- if $tmpid.num%2 == '' && $tmpid.num != $tmpid.total -->
+				</tr><tr>
+				<!-- /if -->
+			<!-- /loop -->
+		</tr>
+		<!-- /if -->
+		<!-- if $user -->
+		<tr>
+			<td class="darkblue" style="line-height:25px;text-align:right;">会员：</td>
+			<td class="darkblue" colspan="3" style="line-height:25px;">{$user.user}
+				<!-- if $user.mobile -->{lang，}{lang手机号：}{$user.mobile}<!-- /if -->
+				<!-- if $user.email -->{lang，}{lang邮箱：}{$user.email}<!-- /if -->
+				，注册时间：{func time_format $user.regtime}
+			</td>
+		</tr>
+		<!-- /if -->
+		<!-- if $rs.note -->
+		<tr>
+			<td style="line-height:25px;text-align:right">备注：</td>
+			<td colspan="3">{$rs.note}</td>
+		</tr>
+		<!-- /if -->
+		</table>
+		<!-- if $shipping -->
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th colspan="3">{lang收件人信息}</th>
+		</tr>
+		</thead>
+		<tr>
+			<td>
+				{$shipping.fullname}
+				<!-- if $shipping.mobile -->
+				/ {lang手机号} {$shipping.mobile}
+				<!-- /if -->
+				<!-- if $shipping.tel -->
+				/ {lang电话} {$shipping.tel}
+				<!-- /if -->
+				<!-- if $shipping.email -->
+				/ {langEmail} {$shipping.email}
+				<!-- /if -->
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<!-- if $shipping.country != '中国' -->{$shipping.country} / <!-- /if -->
+				{$shipping.province}
+				<!-- if $shipping.city -->
+				{$shipping.city}
+				<!-- /if -->
+				<!-- if $shipping.county -->
+				{$shipping.county}
+				<!-- /if -->
+				{$shipping.address}
+				<!-- if $shipping.zipcode -->
+				/ {lang邮编} {$shipping.zipcode}
+				<!-- /if -->
+			</td>
+		</tr>
+		</table>
+		<!-- /if -->
+		
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th width="120">{lang产品图片}</th>
+			<th>{lang产品名称}</th>
+			<th>{lang产品价格}</th>
+			<th>{lang数量}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr>
+			<td class="center"><img src="{$value.thumb ? $value.thumb : 'images/picture_default.png'}" width="80px" height="80px" border="0" /></td>
+			<td>
+				<div style="font-size:14px;">{$value.title}</div>
+				<!-- loop from=$value.ext key=$k value=$v id=$tmpid2 -->
+				<div class="gray">{$v.title}：{$v.content}</div>
+				<!-- /loop -->
+				<!-- if $value.weight --><div class="gray">{lang重量：}{$value.weight}Kg</div><!-- /if -->
+				<!-- if $value.volume --><div class="gray">{lang体积：}{$value.volume}M<sup>3</sup></div><!-- /if -->
+				<!-- if $value.note --><div class="gray">{lang备注：}{$value.note}</div><!-- /if -->
+			</td>
+			<td>{func price_format $value.price $rs.currency_id $rs.currency_id}</td>
+			<td>{$value.qty} {$value.unit}</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- if $paylist -->
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th class="lft">支付方法</th>
+			<th class="lft">金额</th>
+			<th>时间</th>
+			<th>其他</th>
+			<th>操作</th>
+		</tr>
+		</thead>
+		<!-- loop from=$paylist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.title}</td>
+			<td>{func price_format $value.price $rs.currency_id $rs.currency_id}</td>
+			<td class="center">
+				<!-- if $value.startdate --><div>始：{func time_format $value.startdate}</div><!-- /if -->
+				<!-- if $value.dateline --><div>结：{func time_format $value.dateline}</div><!-- /if -->
+			</td>
+			<td>
+				<!-- if is_array($value.ext) -->
+				<!-- loop from=$value.ext key=$k value=$v id=$tmpid2 -->
+				<div>{$k}：{$v}</div>
+				<!-- /loop -->
+				<!-- else -->
+				{$value.ext}
+				<!-- /if -->
+			</td>
+			<td align="center">
+				<input type="button" value="退款" onclick="$.admin_order.refund('{$value.id}','{$value.price}',{=is_numeric($value.payment_id) ? 'true' : 'false'})" class="layui-btn layui-btn-sm layui-btn-danger" />
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- /if -->
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang退款记录}
+	</div>
+	<div class="layui-card-body">
+		<!-- if $refund_list -->
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th class="lft">{lang退款时间}</th>
+			<th class="lft">{lang退款理由}</th>
+			<th class="lft">{lang金额}</th>
+			<th>{lang管理员}</th>
+			<th>{lang其他}</th>
+			<th></th>
+		</tr>
+		</thead>
+		<!-- loop from=$refund_list key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{func date 'Y-m-d H:i:s' $value.dateline}</td>
+			<td>{$value.note}</td>
+			<td>{func price_format $value.price $value.currency_id $value.currency_id $value.currency_rate $value.currency_rate}</td>
+			<td>{$value.account}</td>
+			<td>
+				<!-- if is_array($value.ext) -->
+				<!-- loop from=$value.ext key=$k value=$v id=$tmpid2 -->
+				<div>{$k}：{$v}</div>
+				<!-- /loop -->
+				<!-- else -->
+				{$value.ext}
+				<!-- /if -->
+			</td>
+			<td>
+				<!-- if !$value.status -->
+				<input type="button" value="{lang删除}" onclick="$.admin_order.refund_delete('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				<!-- /if -->
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- /if -->
+	</div>
+</div>
+<div id="refund_html" style="display:none">
+	<div class="layui-form-item">
+		<label class="layui-form-label">
+			{lang退款金额}
+		</label>
+		<div class="layui-input-inline">
+			<input type="text" id="price" class="layui-input" />
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">
+			{lang退款理由}
+		</label>
+		<div class="layui-input-inline">
+			<input type="text" id="why" class="layui-input" />
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">
+			{lang退回方式}
+		</label>
+		<div class="layui-input-inline">
+			<select id="backtype" name="backtype">
+				<option value="_default">{lang原路退回}</option>
+				<!-- loop from=$wlist key=$key value=$value id=$tmpid -->
+				<option value="{$value.identifier}">退回到{$value.title}</option>
+				<!-- /loop -->
+			</select>
+		</div>
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

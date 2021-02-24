@@ -327,7 +327,6 @@ class res_model_base extends phpok_model
 		if(!$rs){
 			return false;
 		}
-		
 		if($this->is_local($rs['filename'])){
 			$this->lib('file')->rm($this->dir_root.$rs['filename']);
 			$folder = 'res/_cache/_ico/'.substr($rs['id'],0,2).'/';
@@ -717,11 +716,15 @@ class res_model_base extends phpok_model
 			$this->db->query($sql);
 			return true;
 		}
+		$gd_ids = $cate_rs['gdtypes'] ? explode(",",$cate_rs['gdtypes']) : false;
 		if($this->is_local($rs['filename'])){
 			$this->update_ico($rs);
+			//本地图片按需更新附件
 			if($this->gdlist){
 				foreach($this->gdlist as $key=>$value){
-					$this->local_url($rs,$value,true);
+					if($cate_rs['gdall'] || ($gd_ids && in_array($value['id'],$gd_ids))){
+						$this->local_url($rs,$value,true);
+					}
 				}
 			}
 			return true;
@@ -773,9 +776,7 @@ class res_model_base extends phpok_model
 		if(!$this->is_local($rs['filename'])){
 			return false;
 		}
-		if($rs['ico'] && strpos($rs['ico'],'_cache') !== true){
-			return true;
-		}
+		$folder = 'res/_cache/_ico/'.substr($rs['id'],0,2).'/';
 		$tmp = array('url'=>$rs['filename']);
 		$tmp['width'] = $width;
 		$tmp['height'] = $height;
@@ -868,6 +869,9 @@ class res_model_base extends phpok_model
 		if(is_file($this->dir_root.$gdinfo['folder'].$gdinfo['_id'].'.'.$rs['ext'])){
 			return $gdinfo['folder'].$gdinfo['_id'].'.'.$rs['ext'];
 		}
+		if($rs['ext'] == 'jpeg' && is_file($this->dir_root.$gdinfo['folder'].$gdinfo['_id'].'.jpg')){
+			return $gdinfo['folder'].$gdinfo['_id'].'.jpg';
+		}
 		return false;
 	}
 
@@ -896,6 +900,9 @@ class res_model_base extends phpok_model
 				return $gdinfo['url'];
 			}
 			$ext = str_replace('.','',$ext);
+		}
+		if($ext == 'jpeg'){
+			$ext = 'jpg';
 		}
 		$this->lib('gd')->Create($this->dir_root.$gdinfo['url'],$gdinfo['_id'].'.'.$ext,$this->dir_root.$gdinfo['folder']);
 		return $gdinfo['folder'].$gdinfo['_id'].'.'.$ext;

@@ -30,7 +30,7 @@ class user_control extends phpok_control
 		if(!$this->session->val('user_id')){
 			$this->error(P_Lang('游客无法查看会员信息'));
 		}
-		$user_rs = $this->model('user')->get_one($uid,'id',false,false);
+		$user_rs = $this->model('user')->get_one($uid);
 		unset($user_rs['pass'],$user_rs['email'],$user_rs['mobile'],$user_rs['code']);
 		$this->success($user_rs);
 	}

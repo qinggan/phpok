@@ -278,6 +278,7 @@ class comment_control extends phpok_control
 			}
 			$data['title'] = '#'.$order['sn'].'_'.$rs['title'];
 			$data["status"] = 0;
+			$data['tid'] = $tid;
 		}elseif($type == 'project'){
 			if(!$uid){
 				$this->error(P_Lang('非会员不能对项目进行评论'));
@@ -299,6 +300,7 @@ class comment_control extends phpok_control
 			}
 			$data['title'] = $project_rs['title'];
 			$data["status"] = 0;
+			$data['tid'] = $tid;
 		}elseif($type == 'cate'){
 			if(!$uid){
 				$this->error(P_Lang('非会员不能对分类进行评论'));
@@ -320,6 +322,7 @@ class comment_control extends phpok_control
 			}
 			$data['title'] = $cate_rs['title'];
 			$data["status"] = 0;
+			$data['tid'] = $tid;
 		}
 		$content = $uid ? $this->get('comment','html') : $this->get('comment');
 		if(!$content){

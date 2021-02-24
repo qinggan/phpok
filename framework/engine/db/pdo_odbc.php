@@ -91,9 +91,7 @@ class db_pdo_odbc extends db
 
 	public function query($sql,$loadcache=true)
 	{
-		if($loadcache){
-			$this->cache_sql($sql);
-		}
+		$this->cache_update($sql);
 		$this->check_connect();
 		$this->_time();
 		$this->query = $this->conn->query($sql);
@@ -111,15 +109,25 @@ class db_pdo_odbc extends db
 	 * @参数 $sql 要查询的SQL
 	 * @参数 $primary 绑定主键
 	**/
-	public function get_all($sql,$primary='')
+	public function get_all($sql,$primary='',$is_cache=true)
 	{
 		if($sql){
-			$false = $this->cache_false($primary.'-'.$sql);
-			if($false){
-				return false;
-			}
-			if($this->cache_get($primary.'-'.$sql)){
-				return $this->cache_get($primary.'-'.$sql);
+			if((is_bool($primary) && $primary) || $is_cache){
+				$info = $this->cache_get($sql);
+				if($info){
+					if($info['_phpok_query_false']){
+						return false;
+					}
+					if(!is_bool($primary) && $primary){
+						$tlist = array();
+						foreach($info as $key=>$value){
+							$tlist[$value[$primary]] = $value;
+						}
+						$info = $tlist;
+						unset($tlist);
+					}
+					return $info;
+				}
 			}
 			$this->query($sql);
 		}
@@ -128,24 +136,25 @@ class db_pdo_odbc extends db
 			return false;
 		}
 		$this->_time();
-		$rs = false;
+		$rs = array();
 		while($rows = $this->query->fetch($this->type)){
-			if($primary){
-				$rs[$rows[$primary]] = $rows;
-			}else{
-				$rs[] = $rows;
-			}
+			$rs[] = $rows;
 		}
 		$this->query->closeCursor();
 		$this->_time();
 		if(!$rs || count($rs)<1){
-			$this->cache_false_save($primary.'-'.$sql);
+			$this->cache_false($sql);
 			return false;
 		}
-		if($this->cache_need($primary.'-'.$sql)){
-			$this->cache_save($primary.'-'.$sql,$rs);
+		$this->cache_save($sql,$rs);
+		if($primary && !is_bool($primary)){
+			$tlist = array();
+			foreach($rs as $key=>$value){
+				$tlist[$value[$primary]] = $value;
+			}
+			$rs = $tlist;
+			unset($tlist);
 		}
-		$this->cache_first($primary.'-'.$sql);
 		return $rs;
 	}
 
@@ -153,15 +162,17 @@ class db_pdo_odbc extends db
 	 * 获取一条数据
 	 * @参数 $sql 要执行的SQL
 	**/
-	public function get_one($sql="")
+	public function get_one($sql="",$is_cache=true)
 	{
 		if($sql){
-			$false = $this->cache_false($sql);
-			if($false){
-				return false;
-			}
-			if($this->cache_get($sql)){
-				return $this->cache_get($sql);
+			if($is_cache){
+				$info = $this->cache_get($sql);
+				if($info){
+					if($info['_phpok_query_false']){
+						return false;
+					}
+					return $info;
+				}
 			}
 			$this->query($sql);
 		}
@@ -173,14 +184,10 @@ class db_pdo_odbc extends db
 		$this->query->closeCursor();
 		$this->_time();
 		if(!$rs){
-			$this->cache_false_save($sql);
+			$this->cache_false($sql);
 			return false;
 		}
-		//检测是否需要缓存
-		if($this->cache_need($sql)){
-			$this->cache_save($sql,$rs);
-		}
-		$this->cache_first($sql);
+		$this->cache_save($sql,$rs);
 		return $rs;
 	}
 

@@ -395,6 +395,26 @@ class res_control extends phpok_control
 		$this->json(true);
 	}
 
+	public function delete_f()
+	{
+		if(!$this->popedom['pl']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$list = explode(",",$id);
+		$tmplist = array();
+		foreach($list as $key=>$value){
+			$tmp = intval($value);
+			if($tmp){
+				$this->model('res')->delete($tmp);
+			}
+		}
+		$this->success();
+	}
+
 	public function movecate_f()
 	{
 		$id = $this->get('id');
@@ -566,5 +586,15 @@ class res_control extends phpok_control
 		$tmp['allpage'] = '<span style="color:red">'.$all_page.'</span>';
 		$url = $this->url('res','editor_update_all','pageid='.$pageid);
 		$this->success(P_Lang('正在更新编辑框附件，当前已更新第 {pageid} 页，共有 {allpage} 页',$tmp),$url,0.3);
+	}
+
+	public function info_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定附件ID'));
+		}
+		$rs = $this->model('res')->get_one($id,true);
+		$this->success($rs);
 	}
 }

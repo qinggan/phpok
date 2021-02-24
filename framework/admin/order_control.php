@@ -1,9 +1,7 @@
 <?php
 /**
  * 订单管理，编辑和删除等相关操作
- * @package phpok\admin
  * @作者 qinggan <admin@phpok.com>
- * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
@@ -65,6 +63,8 @@ class order_control extends phpok_control
 				$condition .= " AND u.user LIKE '%".$keywords."%'";
 			}elseif($keytype == 'protitle'){
 				$condition .= " AND o.id IN(SELECT order_id FROM ".$this->db->prefix."order_product WHERE title LIKE '%".$keywords."%')";
+			}elseif($keytype == 'paytitle'){
+				$condition .= " AND o.id IN(SELECT order_id FROM ".$this->db->prefix."order_payment WHERE title='".$keywords."')";
 			}
 			$pageurl .= "&keywords=".rawurlencode($keywords)."&keytype=".$keytype;
 			$this->assign('keytype',$keytype);
@@ -99,6 +99,17 @@ class order_control extends phpok_control
 			$condition .= " AND o.id IN(SELECT order_id FROM ".$this->db->prefix."order_payment WHERE payment_id='".$paytype."') ";
 			$pageurl .= "&paytype=".$paytype;
 			$this->assign('paytype',$paytype);
+		}
+		$ispaid = $this->get('ispaid');
+		if($ispaid && $ispaid == 1){
+			$condition .= " AND o.id IN(SELECT order_id FROM ".$this->db->prefix."order_payment WHERE dateline>0) ";
+			$pageurl .= "&ispaid=".$ispaid;
+			$this->assign('ispaid',$ispaid);
+		}
+		if($ispaid && $ispaid == 2){
+			$condition .= " AND o.id NOT IN(SELECT order_id FROM ".$this->db->prefix."order_payment WHERE dateline>0) ";
+			$pageurl .= "&ispaid=".$ispaid;
+			$this->assign('ispaid',$ispaid);
 		}
 		$total = $this->model('order')->get_count($condition);
 		if(!$total){
@@ -1158,6 +1169,163 @@ class order_control extends phpok_control
 			$tmplist[] = $data;
 		}
 		$this->session->assign('admin_order_productlist',$tmplist);
+		$this->success();
+	}
+
+	public function refund_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定订单'));
+		}
+		$rs = $this->model('order')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('订单信息不存在'));
+		}
+		//订单状态
+		$statuslist = $this->model('order')->status_list();
+		if(!$rs['status_title']){
+			$rs['status_title'] = $statuslist[$rs['status']] ? $statuslist[$rs['status']] : $rs['status'];
+		}
+		$this->assign('rs',$rs);
+		$this->assign('id',$id);
+		$rslist = $this->model('order')->product_list($id);
+		$this->assign('rslist',$rslist);
+		//取得支付记录
+		$paylist = $this->model('order')->payment_all($id);
+		$this->assign('paylist',$paylist);
+		$paid_price = $this->model('order')->paid_price($id);
+		$this->assign('paid_price',$paid_price);
+		$refund_list = $this->model('order')->refund_all($id);
+		if($refund_list){
+			foreach($refund_list as $key=>$value){
+				if(!$value['currency_rate']){
+					$value['currency_rate'] = $rs['currency_rate'];
+				}
+				if(!$value['currency_id']){
+					$value['currency_id'] = $rs['currency_id'];
+				}
+				if($value['ext'] && is_string($value['ext'])){
+					$value['ext'] = unserialize($value['ext']);
+				}
+				$refund_list[$key] = $value;
+			}
+		}
+		$this->assign('refund_list',$refund_list);
+		//财富记录
+		$wlist = $this->model('wealth')->get_all(1);
+		if($wlist){
+			foreach($wlist as $key=>$value){
+				if(!$value['ifpay'] || $value['cash_ratio'] != '100'){
+					unset($wlist[$key]);
+					continue;
+				}
+			}
+			if($wlist && count($wlist)>0){
+				
+				$this->assign('wlist',$wlist);
+			}
+		}
+		$this->view('order_refund');
+	}
+
+	public function refund_act_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$price = $this->get('price','float');
+		$info = $this->get('info');
+		if(!$price){
+			$this->error(P_Lang('退款金额不能为空'));
+		}
+		if($price<0.01){
+			$this->error(P_Lang('退款金额不能小于0.01'));
+		}
+		if(!$info){
+			$this->error(P_Lang('退款原因不能为空'));
+		}
+		$pinfo = $this->model('order')->order_payment_info($id);
+		if(!$pinfo){
+			$this->error(P_Lang('无付款记录信息'));
+		}
+		$order = $this->model('order')->get_one($pinfo['order_id']);
+		if(!$order){
+			$this->error(P_Lang('订单不存在'));
+		}
+		$rlist = $this->model('order')->refund_list('order_payment_id="'.$id.'" AND status=1');
+		if($rlist){
+			$refund_price = 0;
+			foreach($rlist as $key=>$value){
+				$refund_price += floatval($value['price']);
+			}
+			if($refund_price >= $pinfo['price']){
+				$this->error(P_Lang('不允许退款的金额超过付款的金额'));
+			}
+		}
+		$payment_id = $pinfo['payment_id'];
+		$backtype = $this->get('backtype');
+		if(!$backtype){
+			$backtype = '_default';
+		}
+		//登记退款
+		$data = array();
+		$data['order_id'] = $pinfo['order_id'];
+		$data['order_payment_id'] = $pinfo['id'];
+		$data['backtype'] = $backtype;
+		$data['sn'] = date("YmdHis",$this->time).''.$pinfo['order_id'].''.str_pad(rand(1,9999),4,'0',STR_PAD_LEFT);
+		$data['price'] = $price;
+		$data['currency_id'] = $pinfo['currency_id'];
+		$data['currency_rate'] = $pinfo['currency_rate'];
+		$data['note'] = $info;
+		$data['status'] = 0;
+		$data['dateline'] = $this->time;
+		$data['admin_id'] = $this->session->val('admin_id');
+		if(is_numeric($payment_id) && $backtype == '_default'){
+			$refund_id = $this->model('order')->refund_save($data);
+			$payment_rs = $this->model('payment')->get_one($payment_id);
+			if(!$payment_rs){
+				$this->error(P_Lang('未指定付款方式'));
+			}
+			if($payment_rs && $payment_rs['param'] && is_string($payment_rs['param'])){
+				$payment_rs['param'] = unserialize($payment_rs['param']);
+			}
+			$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/refund.php';
+			if(!file_exists($file)){
+				$this->error(P_Lang('当前支付未开发退款接口，请联系开发人员定制或扩展'));
+			}
+			include_once($file);
+			$name = $payment_rs['code']."_refund";
+			$data['id'] = $refund_id;
+			$payment = new $name($pinfo,$payment_rs,$data);
+			$payment->submit();
+			exit;
+		}
+		$data['status'] = 1;
+		$this->model('order')->refund_save($data);
+		//返还积分
+		$wealth = $this->model('wealth')->get_one($pinfo['payment_id'],'identifier');
+		if($wealth && $order['user_id'] && $pinfo['ext'] && $pinfo['ext'][$wealth['title']]){
+			$this->model('wealth')->save_val($wealth['id'],$order['user_id'],$pinfo['ext'][$wealth['title']],P_Lang('退款').' / '.$info);
+		}
+		$this->success(P_Lang('退款成功'),'javascript:window.close();void(0);');
+	}
+
+	public function refund_delete_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('order')->refund_one($id);
+		if(!$rs){
+			$this->error(P_Lang('退款记录不存在'));
+		}
+		if($rs['status']){
+			$this->error(P_Lang('已确认的退款记录不支持删除'));
+		}
+		$this->model('order')->refund_delete($id);
 		$this->success();
 	}
 }

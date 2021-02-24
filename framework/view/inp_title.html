@@ -142,15 +142,19 @@ function check_search()
 		<tr>
 			<th width="60">ID</th>
 			<th>{lang主题}</th>
-			<th width="120">{lang时间}</th>
+			<!-- loop from=$layout key=$key value=$value id=$tmpid -->
+			<th>{$value}</th>
+			<!-- /loop -->
 			<th width="60">{lang操作}</th>
 		</tr>
 		</thead>
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 		<tr name="list" id="id_{$value.id}">
 			<td>{$value.id}</td>
-			<td>{$value.title}</td>
-			<td>{func date 'Y-m-d H:i' $value.dateline}</td>
+			<td>{$value.title}<br /><span class="gray i">{func date 'Y-m-d H:i' $value.dateline}</span></td>
+			<!-- loop from=$layout key=$k value=$v id=$idxx -->
+			<td>{$value[$k]}</td>
+			<!-- /loop -->
 			<td>
 				<!-- if $multi -->
 				<input type="button" value="添加" onclick="add_input('{$value.id}')" class="layui-btn layui-btn-xs" />

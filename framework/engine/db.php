@@ -21,27 +21,28 @@ class db
 	protected $database;
 	protected $conn;
 	protected $query;
-	protected $preg_sql = '/^(UPDATE|DELETE|REPLACE|INSERT)/isU';
+	protected $preg_sql = '/^(UPDATE|DELETE|REPLACE|INSERT|TRUNCATE|DROP)/isU';
 	protected $escapes = '';
 	protected $special_replace;
 	protected $debug = false;
-	protected $cache = false;
-	protected $cache_false = array();
-	protected $cache_data = array();
-	protected $cache_first = array();
-	protected $tbl_list = array();
+	protected $cache; //接入外部缓存类
+	protected $cache_id = ''; //当前的缓存ID，主要用于即时缓存
+	protected $cache_status = false; //是否开启缓存
+	protected $cache_data = array(); //缓存内容
+	protected $tables = array();
 	protected $host = '127.0.0.1';
 	protected $user = 'root';
 	protected $pass = '';
 	protected $port = 3306;
 	protected $socket = '';
+	protected $charset = 'utf8';
 	//保留字转义符，用于转义数据库保留字的转义
 	protected $kec_left = '`';
 	protected $kec_right = '`';
+	
 
 	//使用远程链接
 	protected $client_url = '';
-	
 	private $time = 0;
 	private $count = 0;
 	private $time_tmp = 0;
@@ -56,25 +57,7 @@ class db
 	{
 		$this->config($config);
 	}
-
-	public function config($config)
-	{
-		$this->database($config['data']);
-		$this->prefix = $config['prefix'] ? $config['prefix'] : 'qinggan_';
-		$this->debug = $config['debug'] ? true : false;
-		$this->host = $config['host'] ? $config['host'] : '127.0.0.1';
-		$this->user = $config['user'] ? $config['user'] : 'root';
-		$this->pass = $config['pass'] ? $config['pass'] : '';
-		$this->port = $config['port'] ? $config['port'] : 3306;
-		$this->socket = $config['socket'] ? $config['socket'] : '';
-		$this->cache = $config['cache'] ? $config['cache'] : false;
-		$this->slow_status = $config['slow'] ? $config['slow'] : false;
-		$this->slow_time = $config['slow_time'] ? floatval($config['slow_time']) : 1;
-		if($config['client_url']){
-			$this->client_url = $config['client_url'];
-		}
-	}
-
+	
 	//写入调试日志
 	public function __destruct()
 	{
@@ -107,6 +90,28 @@ class db
 			file_put_contents($file,$info,FILE_APPEND);
 		}
 	}
+
+	public function config($config)
+	{
+		$this->database($config['data']);
+		$this->prefix = $config['prefix'] ? $config['prefix'] : 'qinggan_';
+		$this->debug = $config['debug'] ? true : false;
+		$this->host = $config['host'] ? $config['host'] : '127.0.0.1';
+		$this->user = $config['user'] ? $config['user'] : 'root';
+		$this->pass = $config['pass'] ? $config['pass'] : '';
+		$this->port = $config['port'] ? $config['port'] : 3306;
+		$this->socket = $config['socket'] ? $config['socket'] : '';
+		$this->cache_status = $config['cache'] ? $config['cache'] : false;
+		$this->slow_status = $config['slow'] ? $config['slow'] : false;
+		$this->slow_time = $config['slow_time'] ? floatval($config['slow_time']) : 1;
+		if($config['charset'] == 'utf8mb4'){
+			$this->charset = 'utf8mb4';
+		}
+		if($config['client_url']){
+			$this->client_url = $config['client_url'];
+		}
+	}
+
 
 	/**
 	 * 设定保留字的转义符
@@ -203,26 +208,6 @@ class db
 			return false;
 		}
 		return true;
-	}
-
-	//收集表名称
-	public function cache_index($id='')
-	{
-		if(!$id){
-			return false;
-		}
-		$info = $this->tbl_list[$id];
-		unset($this->tbl_list[$id]);
-		return $info;
-	}
-
-	//重置表名称收集
-	public function cache_set($id)
-	{
-		if(!$id){
-			return false;
-		}
-		$this->tbl_list[$id] = array();
 	}
 
 	public function sql_time()
@@ -342,87 +327,39 @@ class db
 		$this->count += $val;
 	}
 
-
-	//通过正则获取表
-	protected function cache_sql($sql)
+	public function cache_conn($obj)
 	{
-		preg_match_all('/(FROM|JOIN|UPDATE|INTO)\s+([a-zA-Z0-9\_\.\-]+)(\s|\()+/isU',$sql,$list);
-		$tbl = $list[2] ? $list[2] : false;
-		if(!$tbl){
-			return true;
-		}
-		foreach($this->tbl_list as $key=>$value){
-			if(!$value){
-				$value = $tbl;
-			}else{
-				foreach($tbl as $k=>$v){
-					$value[] = $v;
-				}
-			}
-			$value = array_unique($value);
-			$this->tbl_list[$key] = $value;
-		}
-	}
-
-	protected function cache_update($sql)
-	{
-		if(preg_match($this->preg_sql,$sql)){
-			preg_match_all('/(FROM|JOIN|UPDATE|INTO)\s+([a-zA-Z0-9\_\.\-]+)(\s|\()+/isU',$sql,$list);
-			$tbl = $list[2] ? $list[2] : false;
-			if($tbl && $GLOBALS['app']){
-				foreach($tbl as $key=>$value){
-					$GLOBALS['app']->cache->delete_index($value);
-				}
-			}
-		}
-	}
-
-	protected function cache_false_save($sql)
-	{
-		if(!$this->cache){
-			return true;
-		}
-		$id = 'sql'.md5($sql);
-		$this->cache_false[$id] = true;
+		$this->cache = $obj;
 		return true;
 	}
 
-	protected function cache_false($sql)
+	public function cache_delete($sql){
+		return $this->cache_update($sql);
+	}
+
+	public function cache_false($sql)
+	{
+		$obj = array();
+		$obj['_phpok_query_false'] = 1;
+		return $this->cache_save($sql,$obj);
+	}
+
+	public function cache_get($sql)
 	{
 		if(!$this->cache){
 			return false;
 		}
-		$id = 'sql'.md5($sql);
-		if(isset($this->cache_false[$id])){
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * 检测是否需要即时缓存
-	 * @参数 $sql 要检测的SQL语句
-	**/
-	protected function cache_need($sql)
-	{
-		if(!$this->cache){
+		$id = $this->cache_sqlid($sql);
+		if(!$id){
 			return false;
 		}
-		$id = 'sql'.md5($sql);
-		if($this->cache_first[$id]){
-			return true;
+		if($this->cache_status){
+			$info = $this->cache->get($id);
+			if($info){
+				return $info;
+			}
 		}
 		return false;
-	}
-
-	protected function cache_first($sql)
-	{
-		if(!$this->cache){
-			return true;
-		}
-		$id = 'sql'.md5($sql);
-		$this->cache_first[$id] = true;
-		return true;
 	}
 
 	/**
@@ -435,21 +372,65 @@ class db
 		if(!$this->cache){
 			return true;
 		}
-		$id = "sql".md5($sql);
-		$this->cache_data[$id] = $data;
+		$id = $this->cache_sqlid($sql);
+		if(!$id){
+			return true;
+		}
+		if($this->cache_status){
+			$this->cache->save($id,$data);
+		}
 		return true;
 	}
 
-	public function cache_get($sql)
+	//重置表名称收集
+	public function cache_set($id='')
+	{
+		if(!$id || !$this->cache){
+			return false;
+		}
+		$this->cache_id = $id;
+	}
+
+	public function cache_sqlid($sql)
 	{
 		if(!$this->cache){
 			return false;
 		}
-		$id = "sql".md5($sql);
-		if(isset($this->cache_data[$id])){
-			return $this->cache_data[$id];
+		$id = 'sql_'.md5($sql);
+		preg_match_all('/(FROM|JOIN|UPDATE|INTO|TRUNCATE|DROP)\s+([a-zA-Z0-9\_\.\-]+)(\s|\()+/isU',$sql,$list);
+		$tbl = $list[2] ? $list[2] : false;
+		if(!$tbl){
+			return false;
 		}
-		return false;
+		if($this->cache_status){
+			$this->cache->key_list($id,$tbl);
+		}
+		if($this->cache_id){
+			$this->cache->key_list($this->cache_id,$tbl,true);
+		}
+		return $id;
+	}
+
+	/**
+	 * 删除缓存
+	**/
+	public function cache_update($sql)
+	{
+		if(!$this->cache){
+			return false;
+		}
+		if(!preg_match($this->preg_sql,$sql)){
+			return false;
+		}
+		preg_match_all('/(FROM|JOIN|UPDATE|INTO|TRUNCATE|DROP)\s+([a-zA-Z0-9\_\.\-]+)(\s|\()+/isU',$sql,$list);
+		$tbl = $list[2] ? $list[2] : false;
+		if(!$tbl){
+			return false;
+		}
+		foreach($tbl as $key=>$value){
+			$this->cache->delete_index($value);
+		}
+		return true;
 	}
 
 	/**

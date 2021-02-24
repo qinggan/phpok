@@ -63,7 +63,7 @@ class vcode_lib
 		if($count){
 			$this->count($count);
 		}
-		$txt = "1234567890";
+		$txt = "234569ACDEFGHJKLMNPQRSTUXYZ";
 		$length = strlen($txt);
 		$thetxt = '';
 		for($i=0;$i<$this->count;$i++){

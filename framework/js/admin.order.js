@@ -164,16 +164,7 @@
 		},
 		show: function (id) {
 			var url = get_url('order', 'info', 'id=' + id);
-			$.dialog.open(url, {
-				'title': p_lang('查看订单') + "_#" + id,
-				'lock': true,
-				'width': '70%',
-				'height': '70%',
-				'cancel': function () {
-					return true;
-				},
-				'cancelVal': p_lang('关闭')
-			})
+			$.win(p_lang('查看订单') + "_#" + id,url);
 		},
 		payment: function (id) {
 			var url = get_url('order', 'payment', 'id=' + id);
@@ -351,6 +342,70 @@
 					}
 					$.dialog.alert(data.info);
 					return false;
+				});
+			});
+		},
+		refund:function(id,price,is_open)
+		{
+			if(is_open == 'undefined'){
+				is_open = true;
+			}
+			var old = parseFloat(price).toFixed(2);
+			$("#price").val(parseFloat(price).toFixed(2));
+			$.dialog({
+				'content':document.getElementById("refund_html"),
+				'lock':true,
+				'ok':function(){
+					var price = $("#price").val();
+					if(!price || price == 'undefined' || parseFloat(price)<0.01){
+						$.dialog.alert(p_lang('退款金额不能为空或0或小于0.01'));
+						return false;
+					}
+					price = parseFloat(price).toFixed(2);
+					if(price>old){
+						$.dialog.alert(p_lang('退款金额不能超出付款金额'));
+						return false;
+					}
+					var info = $("#why").val();
+					if(!info || info  == 'undefined'){
+						$.dialog.alert(p_lang('退款理由不能为空'));
+						return false;
+					}
+					var backtype = $("#backtype").val();
+					var url = get_url('order','refund_act','id='+id+"&info="+$.str.encode(info)+"&price="+$.str.encode(price));
+					url += "&backtype="+backtype;
+					if(backtype == '_default' && is_open){
+						$.phpok.open(url,false);
+						return true;
+					}
+					$.phpok.json(url,function(rs){
+						if(!rs.status){
+							$.dialog.alert(rs.info);
+							return false;
+						}
+						$.dialog.tips(p_lang('退款操作成功'),function(){
+							$.phpok.reload();
+						}).lock();
+						return false;
+					});
+					return true;
+				},
+				'okVal':p_lang('确认退款'),
+				'cancel':true
+			});
+		},
+		refund_delete:function(id)
+		{
+			$.dialog.confirm(p_lang('确定删除这条退款记录吗？'),function(){
+				var url = get_url('order','refund_delete','id='+id);
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.alert(rs.info);
+						return false;
+					}
+					$.dialog.tips(p_lang('退款记录删除成功'),function(){
+						$.phpok.reload();
+					}).lock();
 				});
 			});
 		}

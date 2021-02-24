@@ -1,0 +1,101 @@
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return save()">
+<div class="layui-card">
+	<div class="layui-card-header">
+		<!-- if $id -->{lang编辑运费模板}<!-- else -->{lang添加运费模板}<!-- /if -->
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang模板名称}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" placeholder="{lang用于后台管理}" name="title" id="title" value="{$rs.title}" class="layui-input" />
+			</div>
+		</div>
+		<!-- if $id -->
+		<input type="hidden" name="id" id="id" value="{$id}" />
+		<!-- /if -->
+		<!-- loop from=$countrylist key=$key value=$value id=$tmpid -->
+		<!-- loop from=$value.rslist key=$k value=$v id=$idxx -->
+		<input type="hidden" data-pid="{$v.pid}" data-id="{$v.id}" data-name="countrylist-{$v.pid}" value="{$v.name}{if $v.name_en} / {$v.name_en}{/if}" />
+		<!-- /loop -->
+		<!-- /loop -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang洲/国家}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select id="continent" name="continent" lay-filter="continent">
+					<option value="">{lang请选择洲或大陆}</option>
+					<!-- loop from=$countrylist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $z_id && $z_id == $value.id} selected{/if}>{$value.name}<!-- if $value.name_en --> / {$value.name_en}<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-input-inline default-auto">
+				<select id="country_id" name="country_id" lay-filter="country">
+					<option value="">{lang请选择国家…}</option>
+					<!-- loop from=$countrylist key=$key value=$value id=$tmpid -->
+						<!-- if $z_id && $z_id == $value.id -->
+							<!-- loop from=$value.rslist key=$k value=$v id=$idx -->
+							<option value="{$v.id}"{if $rs && $rs.country_id == $v.id} selected{/if}>{$v.name}<!-- if $v.name_en --> / {$v.name_en}<!-- /if --></option>
+							<!-- /loop -->
+						<!-- /if -->
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang计费方式}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select id="type_{$value.id}" name="type">
+					<!-- loop from=$typelist key=$k value=$v id=$tmp -->
+					<option value="{$k}"{if $k == $value.type} selected{/if}>{$v}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang请根据您的产品特性选择运费计算}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang货币}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select name="currency_id">
+					<option value="0">{lang默认}</option>
+					<!-- loop from=$currency_list key=$k value=$v id=$tmp -->
+					<option value="{$v.id}"{if $v.id == $value.currency_id} selected{/if}>{$v.title}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang指定货币后，在前台货币会通过汇率计算成平台运行的货币}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang排序}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="text" id="taxis" name="taxis" class="layui-input" value="{$rs.taxis}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang排序值只支持数字，不清楚请留空}</div>
+		</div>
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+
+</form>
+
+<!-- include tpl=foot_lay is_open=true -->

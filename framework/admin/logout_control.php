@@ -24,6 +24,8 @@ class logout_control extends phpok_control
 		$this->session->unassign('admin_account');
 		$this->session->unassign('admin_rs');
 		$this->session->unassign('adm_develop');
+		$this->session->unassign('admin_login_time');
+		$this->session->unassign('admin_long_time');
 		$this->success(P_Lang('管理员{admin_name}成功退出',array('admin_name'=>' <span class="red">'.$name.'</span> ')),$this->url('login'));
 	}
 }

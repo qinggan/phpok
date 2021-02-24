@@ -46,9 +46,13 @@ class content_control extends phpok_control
 		if(!$id){
 			$this->error(P_Lang('未指定ID'));
 		}
-		$rs = $this->model('content')->get_one($id,true);
+		$me = $this->get('me','int');
+		$rs = $this->model('content')->get_one($id,($me ? false : true));
 		if(!$rs){
 			$this->error(P_Lang('文章内容不存在'));
+		}
+		if($me && $rs['user_id'] != $this->session->val('user_id')){
+			$this->error(P_Lang('您没有权限'));
 		}
 		if(!$rs['project_id']){
 			$this->error(P_Lang('未绑定项目'));

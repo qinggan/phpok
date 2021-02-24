@@ -17,8 +17,9 @@ $(document).ready(function(){
 		'sendAsBinary':true,
 		'auto':false,
 		"success":function(file,data){
+			
 			if(data.status != 'ok'){
-				$.dialog.alert(data.info);
+				$.dialog.alert(data.content);
 				return false;
 			}else{
 				var zipfile = data.info;

@@ -540,6 +540,42 @@ function identifier(str)
 	return $.str.identifier(str);
 }
 
+;(function($){
+	$.form = {
+		input:function(obj,myValue)
+		{
+			if(obj && typeof obj == 'string'){
+				var tmp = (obj.substr(0,1) == '.' || obj.substr(0,1) == '#') ? obj : '#'+obj;
+				obj = $(tmp);
+			}
+			var $t=$(obj)[0];
+			if (document.selection) {
+				$(obj).focus();
+				sel = document.selection.createRange();
+				sel.text = myValue;
+				$(obj).focus();
+			} else if ($t.selectionStart || $t.selectionStart == '0') {
+				var startPos = $t.selectionStart;
+				var endPos = $t.selectionEnd;
+				var scrollTop = $t.scrollTop;
+				$t.value = $t.value.substring(0, startPos) + myValue + $t.value.substring(endPos, $t.value.length);
+				$t.value = $.trim($t.value);
+				$(obj).focus();
+				$t.selectionStart = startPos + myValue.length;
+				$t.selectionEnd = startPos + myValue.length;
+				$t.scrollTop = scrollTop;
+			} else {
+				if($t.value){
+					var v = $.trim($t.value+myValue);
+					$(obj).val(v);
+				}else{
+					$(obj).val(myValue);
+				}
+				$(obj).focus();
+			}
+		}
+	}
+})(jQuery);
 
 /**
  * 旧版 Input 操作类
@@ -576,7 +612,6 @@ function identifier(str)
 		{
 			return $.checkbox.join(id,type);
 		}
-
 	};
 
 })(jQuery);

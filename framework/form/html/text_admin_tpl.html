@@ -56,7 +56,7 @@
 </ul>
 <!-- elseif $_rs.form_btn == "user" -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} readonly value="{$_rs.content}" onclick="$.dialog.alert('{lang会员禁止手动输入}')" /></li>
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
 			<input type="button" value="{lang会员库}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_user_select('{$_rs.identifier}')" />
@@ -75,15 +75,24 @@
 		</div>
 	</li>
 </ul>
+<!-- elseif $_rs.form_btn && strpos($_rs.form_btn,'title:') !== false -->
+<ul class="layout">
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li style="margin-top:3px;">
+		<div class="layui-btn-group">
+			<input type="button" value="{$_rs.extitle}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_title_select('{$_rs.identifier}','{$_rs.form_btn_pid}','{$_rs.ext_field}')" />
+			<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+		</div>
+	</li>
+</ul>
 <!-- elseif !$_rs.form_btn -->
 	<input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" />
 	<!-- if $_rs.ext_quick_words -->
-			<div class="layui-btn-group" style="margin-top:3px;">
-				<!-- loop from=$_rs.ext_quick_words key=$key value=$value id=$tmpid -->
-				<input type="button" value="{$value.show}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_quickwords('{$_rs.identifier}','{$value.id}','{$_rs.ext_quick_type}')" />
-				<!-- /loop -->
-				<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}')" />
-			</div>
-	
+	<div class="layui-btn-group" style="margin-top:3px;">
+		<!-- loop from=$_rs.ext_quick_words key=$key value=$value id=$tmpid -->
+		<input type="button" value="{$value.show}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_quickwords('{$_rs.identifier}','{$value.id}','{$_rs.ext_quick_type}')" />
+		<!-- /loop -->
+		<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}')" />
+	</div>
 	<!-- /if -->
 <!-- /if -->

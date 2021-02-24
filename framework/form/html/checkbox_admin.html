@@ -21,6 +21,15 @@
 						<!-- /loop -->
 					</optgroup>					
 					<!-- /if -->
+					<!-- loop from=$ext_sitelist key=$key value=$value id=$tmpid -->
+					<!-- if $value.plist -->
+					<optgroup label="{lang子项}_{lang站点ID：}{$value.id}_{$value.title}">
+						<!-- loop from=$value.plist key=$k value=$v -->
+						<option value="project:{$v.id}"{if $rs.option_list == "project:".$v.id} selected{/if}>{$v.title}</option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- /if -->
+					<!-- /loop -->
 					<!-- if $title_list -->
 					<optgroup label="主题">
 						<!-- loop from=$title_list key=$key value=$value -->
@@ -28,6 +37,15 @@
 						<!-- /loop -->
 					</optgroup>
 					<!-- /if -->
+					<!-- loop from=$ext_sitelist key=$key value=$value id=$tmpid -->
+					<!-- if $value.mlist -->
+					<optgroup label="{lang主题}_{lang站点ID：}{$value.id}_{$value.title}">
+						<!-- loop from=$value.mlist key=$k value=$v -->
+						<option value="title:{$v.id}"{if $rs.option_list == "title:".$v.id} selected{/if}>{$v.title}</option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- /if -->
+					<!-- /loop -->
 					<!-- if $catelist -->
 					<optgroup label="分类">
 						<!-- loop from=$catelist key=$key value=$value -->
@@ -35,6 +53,15 @@
 						<!-- /loop -->
 					</optgroup>
 					<!-- /if -->
+					<!-- loop from=$ext_sitelist key=$key value=$value id=$tmpid -->
+					<!-- if $value.clist -->
+					<optgroup label="{lang分类}_{lang站点ID：}{$value.id}_{$value.title}">
+						<!-- loop from=$value.clist key=$k value=$v -->
+						<option value="cate:{$v.id}"{if $rs.option_list == "cate:".$v.id} selected{/if}>{$v.title}</option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- /if -->
+					<!-- /loop -->
 					<optgroup label="{lang会员相关}">
 						<option value="user:grouplist"{if $rs.option_list == "user:grouplist"} selected{/if}>{lang会员组}</option>
 					</optgroup>

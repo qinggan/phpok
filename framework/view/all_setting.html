@@ -52,18 +52,6 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				<i class="layui-icon layui-icon-tips" lay-tips="{lang用于数据加密通迅时使用，建议定期更改}"></i>
-				{langAPI验证串}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<ul class="layout">
-					<li><input type="text" id="api_code" name="api_code" value="{$rs.api_code}" placeholder="{lang用于数据加密通迅时使用，建议定期更改}" autocomplete="off" class="layui-input long"></li>
-					<li style="margin-top:3px;"><input type="button" class="layui-btn layui-btn-sm" onclick="$.admin_all.rand()" value="{lang随机生成}"/></li>
-				</ul>
-			</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
 				<i class="layui-icon layui-icon-tips" lay-tips="{lang添加页头信息，如添加google验证，百度验证等，支持HTML}"></i>
 				{lang网站扩展}
 			</label>
@@ -74,8 +62,8 @@
 	</div>
 </div>
 <div class="layui-card">
-	<div class="layui-card-header">{lang扩展信息}</div>
-	<div class="layui-card-body">
+	<div class="layui-card-header hand" onclick="$.admin.card(this)">{lang扩展信息}<i class="layui-icon layui-icon-right"></i></div>
+	<div class="layui-card-body hide">
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang网站状态}</label>
 			<div class="layui-input-inline auto">
@@ -209,18 +197,73 @@
 			<div class="layui-input-inline auto gray lh38">{lang请配置好短信验证码模板}</div>
 		</div>
 		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{langAPI验证串}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="api_code" name="api_code" value="{$rs.api_code}" placeholder="" autocomplete="off" class="layui-input">
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang随机生成}" onclick="$.admin_all.rand()" class="layui-btn layui-btn-sm" />
+					<input type="button" value="删除" onclick="$('#api_code').val('')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</div>
+			<div class="layui-form-mid">
+				{lang用于数据加密通迅时使用，建议设置复杂}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang公钥}
+			</label>
+			<div class="layui-input-inline long">
+				<textarea name="public_key" id="public_key" class="layui-textarea">{$rs.public_key}</textarea>
+			</div>
+			<div class="layui-form-mid">
+				{lang用于APP开发，数据传输前进行公钥加密}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang私钥}
+			</label>
+			<div class="layui-input-inline long">
+				<textarea name="private_key" id="private_key" class="layui-textarea">{$rs.private_key}</textarea>
+			</div>
+			<div class="layui-form-mid">
+				{lang用于APP开发，数据服务端数据进行解密}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang默认加密}</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="encode_type" value="api_code" title="{langAPI验证串}" {if $rs.biz_is_user} checked{/if}>
+				<input type="radio" name="encode_type" value="public_key" title="{lang公钥加密}" {if !$rs.biz_is_user} checked{/if}>
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang请选择电商是否对游客限制}</div>
+		</div>
 	</div>
 </div>
 
 <div class="layui-card">
-	<div class="layui-card-header">{lang电子商务}</div>
-	<div class="layui-card-body">
+	<div class="layui-card-header hand" onclick="$.admin.card(this)">{lang电子商务}<i class="layui-icon layui-icon-right"></i></div>
+	<div class="layui-card-body hide">
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang电子商务}</label>
 			<div class="layui-input-inline auto">
 				<input type="checkbox" name="biz_status" lay-skin="switch" value="1" lay-text="{lang启用}|{lang禁用}" {if $rs.biz_status} checked{/if}>
 			</div>
 			<div class="layui-input-inline auto gray lh38">{lang仅限这里启用电商后，整个平台才支持电商化}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang游客限制}</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="biz_is_user" value="1" title="{lang不可购买}" {if $rs.biz_is_user} checked{/if}>
+				<input type="radio" name="biz_is_user" value="0" title="{lang可购买}" {if !$rs.biz_is_user} checked{/if}>
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang请选择电商是否对游客限制}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang电商特点}</label>
@@ -292,8 +335,8 @@
 	</div>
 </div>
 <div class="layui-card">
-	<div class="layui-card-header">{langSEO优化}</div>
-	<div class="layui-card-body">
+	<div class="layui-card-header hand" onclick="$.admin.card(this)">{langSEO优化}<i class="layui-icon layui-icon-right"></i></div>
+	<div class="layui-card-body hide">
 		<div id="seo_setting">
 			
 			<div class="layui-form-item">
@@ -333,8 +376,8 @@
 	</div>
 </div>
 <div class="layui-card">
-	<div class="layui-card-header">{lang上传配置}</div>
-	<div class="layui-card-body">
+	<div class="layui-card-header hand" onclick="$.admin.card(this)">{lang上传配置}<i class="layui-icon layui-icon-right"></i></div>
+	<div class="layui-card-body hide">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang游客上传}
@@ -356,11 +399,9 @@
 	</div>
 </div>
 <!-- if LICENSE != 'LGPL' -->
-
-
 <div class="layui-card">
-	<div class="layui-card-header">{lang后台自定义Logo}</div>
-	<div class="layui-card-body">
+	<div class="layui-card-header hand" onclick="$.admin.card(this)">{lang后台自定义Logo}<i class="layui-icon layui-icon-right"></i></div>
+	<div class="layui-card-body hide">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang左侧栏大图}

@@ -163,7 +163,6 @@ class id_model_base extends phpok_model
 		if($rslist){
 			return $rslist;
 		}
-		$this->db->cache_set($cache_id);
 		$rslist = array();
 		$sql = "SELECT id,identifier FROM ".$this->db->prefix."project WHERE site_id='".$site_id."'";
 		if($status){

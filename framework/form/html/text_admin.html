@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_btn,ext_format,ext_quick_words,ext_quick_type,ext_include_3" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_btn,ext_format,ext_quick_words,ext_quick_type,ext_include_3,ext_field,ext_onlyone" />
 <div class="table">
 	<div class="title">
 		{lang扩展按钮：}
@@ -8,26 +8,50 @@
 		<table>
 		<tr>
 			<td>
-				<select name="form_btn" id="form_btn" onchange="$._configForm.text('form_btn',this.value)">
+				<select name="form_btn" id="form_btn" onchange="$._configForm.text('form_btn',this.value,'{$rs.ext_field}')">
 					<option value="">{lang默认}</option>
-					<option value="date"{if $rs.form_btn == "date"} selected{/if}>{lang日期选择器}</option>
-					<option value="datetime"{if $rs.form_btn == "datetime"} selected{/if}>{lang日期时间选择器}</option>
-					<option value="year"{if $rs.form_btn == "year"} selected{/if}>{lang年份选择器}</option>
-					<option value="month"{if $rs.form_btn == "month"} selected{/if}>{lang年月选择器}</option>
-					<option value="time"{if $rs.form_btn == "time"} selected{/if}>{lang时间选择器}</option>
-					<option value="file"{if $rs.form_btn == "file"} selected{/if}>{lang附件选择}</option>
-					<option value="image"{if $rs.form_btn == "image"} selected{/if}>{lang图片库}</option>
-					<option value="video"{if $rs.form_btn == "video"} selected{/if}>{lang影音列表}</option>
-					<option value="url"{if $rs.form_btn == "url"} selected{/if}>{lang网址}</option>
-					<option value="user"{if $rs.form_btn == "user"} selected{/if}>{lang会员}</option>
-					<option value="color"{if $rs.form_btn == "color"} selected{/if}>{lang颜色选择器}</option>
+					<optgroup label="{lang系统}">
+						<option value="date"{if $rs.form_btn == "date"} selected{/if}>{lang日期选择器}</option>
+						<option value="datetime"{if $rs.form_btn == "datetime"} selected{/if}>{lang日期时间选择器}</option>
+						<option value="year"{if $rs.form_btn == "year"} selected{/if}>{lang年份选择器}</option>
+						<option value="month"{if $rs.form_btn == "month"} selected{/if}>{lang年月选择器}</option>
+						<option value="time"{if $rs.form_btn == "time"} selected{/if}>{lang时间选择器}</option>
+						<option value="file"{if $rs.form_btn == "file"} selected{/if}>{lang附件选择}</option>
+						<option value="image"{if $rs.form_btn == "image"} selected{/if}>{lang图片库}</option>
+						<option value="video"{if $rs.form_btn == "video"} selected{/if}>{lang影音列表}</option>
+						<option value="url"{if $rs.form_btn == "url"} selected{/if}>{lang网址}</option>
+						<option value="user"{if $rs.form_btn == "user"} selected{/if}>{lang会员}</option>
+						<option value="color"{if $rs.form_btn == "color"} selected{/if}>{lang颜色选择器}</option>
+					</optgroup>
+					<!-- if $title_list -->
+					<optgroup label="{lang主题}">
+						<!-- loop from=$title_list key=$key value=$value -->
+						<option value="title:{$value.id}"{if $rs.form_btn == "title:".$value.id} selected{/if}>{$value.title}</option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- /if -->
 				</select>
 			</td>
 		</tr>
 		</table>
 	</div>
 </div>
-
+<div id="ext_title_html"{if !$rs.form_btn || strpos($rs.form_btn,'title:') === false} class="hide"{/if}>
+	<div class="table">
+		<div class="title">
+			{lang字段}
+			<span class="note">{lang请选择文本框内容的字段}</span>
+		</div>
+		<div class="content">
+			<select name="ext_field" id="ext_field">
+				<option value="">{lang请选择…}</option>
+				<!-- loop from=$fields key=$key value=$value id=$tmpid -->
+				<option value="{$key}"{if $key == $rs.ext_field} selected{/if}>{$value}</option>
+				<!-- /loop -->
+			</select>
+		</div>
+	</div>
+</div>
 <div id="ext_quick_words_html"{if $rs.form_btn} class="hide"{/if}>
 	<div class="table">
 		<div class="title">
@@ -72,3 +96,11 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+	var tmp = "{if $rs.form_btn && strpos($rs.form_btn,'title:') !== false}1{else}0{/if}";
+	if(tmp == 1){
+		$._configForm.text('form_btn','{$rs.form_btn}','{$rs.ext_field}');
+	}
+});
+</script>

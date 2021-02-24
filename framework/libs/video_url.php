@@ -47,7 +47,18 @@ class video_url_lib
 			$url = $this->_qq($tmp);
 			return $this->_show($url,'iframe');
 		}
+		if(strpos($tmp['host'],'bilibili.com') != false){
+			$url = $this->_bilibili($tmp);
+			return $this->_show($url,'iframe');
+		}
 		return $this->_show($url,'iframe');
+	}
+
+	private function _bilibili($rs)
+	{
+		$filename = basename($rs['path']);
+		$video = '//player.bilibili.com/player.html?bvid='.$filename;
+		return $video;
 	}
 
 	private function _youku($rs)
@@ -70,7 +81,7 @@ class video_url_lib
 	{
 		$filename = basename($rs['path']);
 		$filename = substr($filename,0,-5);
-		$video = '//'.$rs['host'].'/iframe/player.html?vid='.$filename.'&tiny=0&auto=0';
+		$video = '//'.$rs['host'].'/txp/iframe/player.html?vid='.$filename;
 		return $video;
 	}
 

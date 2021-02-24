@@ -20,6 +20,7 @@ class rescate_model_base extends phpok_model
 
 	public function get_all()
 	{
+		$gdall = $this->model('gd')->get_all('id');
 		$sql = "SELECT * FROM ".$this->db->prefix."res_cate ORDER BY id ASC";
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist){
@@ -34,6 +35,16 @@ class rescate_model_base extends phpok_model
 		}
 		foreach($rslist as $key=>$value){
 			$value['etype_title'] = ($value['etype'] && $oss && $oss[$value['etype']]) ? $oss[$value['etype']] : P_Lang('本地存储');
+			if(!$value['gdall'] && $value['gdtypes']){
+				$tmp = explode(",",$value['gdtypes']);
+				$tmplist = array();
+				foreach($tmp as $k=>$v){
+					if($v && trim($v) && $gdall[trim($v)]){
+						$tmplist[] = $gdall[trim($v)]['title'] ? $gdall[trim($v)]['title'] : $gdall[trim($v)]['title']['identifier'];
+					}
+				}
+				$value['gdtypes_title'] = implode(" / ",$tmplist);
+			}
 			$rslist[$key] = $value;
 		}
 		return $rslist;

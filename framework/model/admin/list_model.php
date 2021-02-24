@@ -118,7 +118,7 @@ class list_model extends list_model_base
 	}
 
 	//复制一个主题
-	public function copy_id($id)
+	public function copy_id($id,$clear_identifier=false)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id='".$id."'";
 		$rs = $this->db->get_one($sql);
@@ -126,6 +126,9 @@ class list_model extends list_model_base
 			return false;
 		}
 		unset($rs["id"]);
+		if($clear_identifier && $rs['identifier']){
+			unset($rs['identifier']);
+		}
 		$rs['dateline'] = $this->time;
 		$insert_id = $this->db->insert_array($rs,"list");
 		if(!$insert_id){

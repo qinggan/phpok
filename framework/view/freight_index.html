@@ -1,5 +1,12 @@
 <!-- include tpl=head_lay -->
 <div class="layui-card">
+	<div class="layui-card-header">
+		<span class="red">{lang请注意，设置货币后，系统会和当前站点使用货币进行汇率换率，使用系统货币请选择默认}</span>
+		<div class="layui-btn-group fr">
+			<input type="button" value="{lang添加}" onclick="$.admin_freight.add()" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang体积重参数}" onclick="$.admin_freight.vweight(this)" data-value="{$vweight}" class="layui-btn layui-btn-sm layui-btn-warm" />
+		</div>
+	</div>
 	<div class="layui-card-body">
 		<table class="layui-table">
 		<thead>
@@ -8,6 +15,7 @@
 			<th>{lang名称}</th>
 			<th>{lang计费方式}</th>
 			<th>{lang货币}</th>
+			<th>{lang国家}</th>
 			<th width="60">{lang排序}</th>
 			<th>{lang操作}</th>
 		</tr>
@@ -16,25 +24,14 @@
 		<!-- loop from=$rslist key=$key value=$value -->
 		<tr>
 			<td class="center">{$value.id}</td>
-			<td><input type="text" id="title_{$value.id}" value="{$value.title}" class="layui-input" /></td>
-			<td>
-				<select id="type_{$value.id}">
-					<!-- loop from=$typelist key=$k value=$v id=$tmp -->
-					<option value="{$k}"{if $k == $value.type} selected{/if}>{$v}</option>
-					<!-- /loop -->
-				</select>
-			</td>
-			<td>
-				<select id="currency_{$value.id}">
-					<!-- loop from=$currency_list key=$k value=$v id=$tmp -->
-					<option value="{$v.id}"{if $v.id == $value.currency_id} selected{/if}>{$v.title}</option>
-					<!-- /loop -->
-				</select>
-			</td>
-			<td><input type="text" id="taxis_{$value.id}" value="{$value.taxis}" class="layui-input" /></td>
+			<td>{$value.title}</td>
+			<td>{$value.type_name}</td>
+			<td><!-- if $value.currency_title -->{$value.currency_title}<!-- else -->{lang默认}<!-- /if --></td>
+			<td>{$value.country_name}<!-- if $value.country_name_en --> / {$value.country_name_en}<!-- /if --></td>
+			<td>{$value.taxis}</td>
 			<td>
 				<div class="layui-btn-group">
-					<input type="button" value="{lang提交修改}" onclick="$.admin_freight.update('{$value.id}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang编辑}" onclick="$.admin_freight.update('{$value.id}')" class="layui-btn layui-btn-sm" />
 					<input type="button" value="{lang区域设置}" onclick="$.win('{lang区域设置}_#{$value.id}','{url ctrl=freight func=zone fid=$value.id/}')" class="layui-btn layui-btn-sm" />
 					<input type="button" value="{lang价格设置}" onclick="$.admin_freight.price('{$value.id}')" class="layui-btn layui-btn-sm" />
 					<input type="button" value="{lang删除}" onclick="$.admin_freight.del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
@@ -42,28 +39,35 @@
 			</td>
 		</tr>
 		<!-- /loop -->
-		<tr>
-			<td class="center">{lang添加}</td>
-			<td><input type="text" id="title_0" class="layui-input" /></td>
-			<td>
-				<select id="type_0">
-					<!-- loop from=$typelist key=$key value=$value id=$tmpid -->
-					<option value="{$key}">{$value}</option>
-					<!-- /loop -->
-				</select>
-			</td>
-			<td>
-				<select id="currency_0">
-					<!-- loop from=$currency_list key=$k value=$v id=$tmp -->
-					<option value="{$v.id}">{$v.title}</option>
-					<!-- /loop -->
-				</select>
-			</td>
-			<td class="center"><input type="text" id="taxis_0" value="{$taxis}" class="layui-input" /></td>
-			<td><input type="button" value="{lang添加}" onclick="$.admin_freight.add()" class="layui-btn layui-btn-sm" /></td>
-		</tr>
 		</tbody>
 		</table>
+	</div>
+</div>
+<style type="text/css">
+.readme p{
+	text-indent:2em;
+	line-height:170%;
+	margin:5px auto;
+}
+.readme h3{
+	margin:10px auto;
+	color:#4B4B4B
+}
+</style>
+<div class="layui-card">
+	<div class="layui-card-header">
+		<h2>体积重参数说明</h2>
+	</div>
+	<div class="layui-card-body readme">
+		<p>积重主要体物流的货运环节中，当一件物品的体积太大而重量太轻时，这样在运输中就会把它的体积折算成重量来收取费用，核算整体的运输成本。其实体积和重量在现实中是没法互算的，只是在运输中的一种特殊情况一种特殊成本销售比例。</p>
+		<p>对于轻抛货，计算运费应用“体积重量”而不是物理重量！</p>
+		<p>航空货运的运费计算是由单公斤运价乘以货物的“公斤”数来确定的，但这里“公斤”数是指货物的计费重量公斤数，计费重量公斤数并不一定等于普通人理解的货物通过磅秤称出来的公斤数，有的时候，这个公斤数是用米尺“量”出来的。</p>
+		<p>由于飞机载运货物的货舱容积有限，航空公司在收取货运费用时，为了平衡货物实际重量与货物所占容积的关系，由国际航空运输协会（IATA）统一确定了“体积重量”的标准公式。</p>
+		<h3>国内航空快递统一标准</h3>
+		<p>国内航空货运货物的体积重量（公斤）=货物的体积（长（cm）× 宽（cm）× 高（cm））/ 6000,也就是说，6000 立方厘米体积的货物相当于1公斤重来计算运费，换算过来，1立方米体积的货物要按照167公斤计算运费。</p>
+		<h3>国际航空快递统一标准</h3>
+		<p>国际航空快递货物的体积重量（公斤）=货物的体积（长（cm）× 宽（cm）× 高（cm））/ 5000,也就是说，5000 立方厘米体积的货物相当于1公斤重来计算运费，换算过来，1立方米体积的货物要按照200公斤计算运费。</p>
+		<p>按照物理重量与体积重量择大计费的原则，如果货物的比重小而单位体积偏大，比如棉花，编织工艺品等，那么应当测量货物的体积，根据以上公式计算出体积重量，然后，将货物的实际重量与体积重量做比较，择其大者作为计费重量，乘以单公斤费率就得出了应收运费。</p>
 	</div>
 </div>
 <!-- include tpl=foot_lay -->

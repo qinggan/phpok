@@ -182,7 +182,7 @@ class update_control extends phpok_control
 			if($tmp == 'run.php'){
 				continue;
 			}
-			if(substr($tmp,-3) == 'sql' && $tmp != 'table.sql'){
+			if(substr($tmp,-3) == 'sql' && $tmp != 'table.sql' && strpos($tmp,'/') !== true){
 				$sqlfile[] = $value;
 				continue;
 			}
@@ -400,6 +400,9 @@ class update_control extends phpok_control
 
 	private function sql_run($sql='')
 	{
+		if($this->db->prefix != 'qinggan_'){
+			$sql = str_replace("qinggan_",$this->db->prefix,$sql);
+		}
 		$sql = str_replace("\r","\n",$sql);
 		$ret = array();
 		$num = 0;

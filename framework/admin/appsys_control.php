@@ -34,9 +34,44 @@ class appsys_control extends phpok_control
 		if(!$this->popedom['list']){
 			$this->error(P_Lang('您没有查看权限'));
 		}
-		$rslist = $this->model('appsys')->get_all();
+		$rslist = $this->model('appsys')->installed();
 		$this->assign('rslist',$rslist);
 		$this->view('appsys_index');
+	}
+
+	public function all_f()
+	{
+		if(!$this->popedom['list']){
+			$this->error(P_Lang('您没有查看权限'));
+		}
+		$psize = 24;
+		$pageid = $this->get('pageid');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$offset = ($pageid-1) * $psize;
+		$keywords = $this->get('keywords');
+		$pageurl = $this->url('appsys','all');
+		if($keywords){
+			$pageurl .= "&keywords=".rawurlencode($keywords);
+		}
+		$rslist = $this->model('appsys')->get_uninstall($keywords,$offset,$psize);
+		if($rslist){
+			$total = $this->model('appsys')->get_total();
+			
+			$installed = $this->model('appsys')->installed();
+			if($installed){
+				$total = $total - count($installed);
+			}
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+			$this->assign("rslist",$rslist);
+			$this->assign("total",$total);
+			$this->assign("pagelist",$pagelist);
+			$this->assign("pageurl",$pageurl);
+		}
+		$this->view('appsys_list');
 	}
 
 	public function setting_f()
@@ -62,6 +97,20 @@ class appsys_control extends phpok_control
 		$data['folder'] = $this->get('folder');
 		$data['https'] = $this->get('https','int');
 		$this->model('appsys')->server($data);
+		$this->success();
+	}
+
+	public function taxis_f()
+	{
+		if(!$this->popedom['setting']){
+			$this->error(P_Lang('您没有配置环境权限'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定应用'));
+		}
+		$taxis = $this->get('taxis','int');
+		$this->model('appsys')->taxis($id,$taxis);
 		$this->success();
 	}
 
@@ -370,14 +419,14 @@ class appsys_control extends phpok_control
 		if($elist && in_array($identifier,$elist)){
 			$this->error(P_Lang('标识已存在'));
 		}
-		$is_admin = $this->get('is_admin','checkbox');
-		$is_api = $this->get('is_api','checkbox');
-		$is_www = $this->get('is_www','checkbox');
+		$is_admin = 1;
+		$is_api = 1;
+		$is_www = 1;
 		if(!$is_admin && !$is_api && !$is_www){
 			$this->error(P_Lang('至少选择一个执行范围'));
 		}
-		$install = $this->get('install');
-		$uninstall = $this->get('uninstall');
+		$install = 'install.php';
+		$uninstall = 'uninstall.php';
 		$note = $this->get('note');
 		$author = $this->get('author');
 		$this->lib('file')->make($this->dir_app.$identifier,'dir');
@@ -402,6 +451,7 @@ class appsys_control extends phpok_control
 			$data['uninstall'] = $uninstall;
 		}
 		$data['installed'] = false;
+		$data['note'] = $note;
 		$this->lib('xml')->save($data,$this->dir_app.$identifier.'/config.xml');
 		if(!is_file($this->dir_app.$identifier.'/config.xml')){
 			$this->error(P_Lang('配置文件写入失败'));
@@ -464,6 +514,8 @@ class appsys_control extends phpok_control
 			$content .= $this->_php_control('api',$identifier);
 			$this->lib('file')->vim($content,$this->dir_app.$identifier.'/api.control.php');
 		}
+		$content = '<script type="text/javascript">'."\n".'</script>';
+		$this->lib('file')->vim($content,$this->dir_app.$identifier.'/tpl/public.html');
 		//公共Model
 		$content  = $this->_php_head();
 		$content .= $this->_php_notes(P_Lang('模型内容信息'),$note,$author);
@@ -483,6 +535,13 @@ class appsys_control extends phpok_control
 		$content .= $this->_php_safe();
 		$content .= $this->_php_nodes($identifier);
 		$this->lib('file')->vim($content,$this->dir_app.$identifier.'/nodes.php');
+		//创建HTML节点接入文件，此文件用于改写HTML节点使用，和插件的html节点原理一致
+		$content  = $this->_php_head();
+		$content .= $this->_php_notes(P_Lang('HTML节点'),$note,$author);
+		$content .= $this->_php_namespace_nodes($identifier);
+		$content .= $this->_php_safe();
+		$content .= $this->_php_html($identifier);
+		$this->lib('file')->vim($content,$this->dir_app.$identifier.'/html.php');
 		$this->success();
 	}
 
@@ -618,6 +677,84 @@ class appsys_control extends phpok_control
 		$info .= '	public function PHPOK_cate()'."\n";
 		$info .= '	{'."\n";
 		$info .= '		//这里开始编写PHP代码'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	/**'."\n";
+		$info .= '	 * 删除主题时触发删除这个应用事件'."\n";
+		$info .= '	 * @参数 $id 主题ID'."\n";
+		$info .= '	 * @返回 true '."\n";
+		$info .= '	**/'."\n";
+		$info .= '	public function system_admin_title_delete($id)'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//这里开始编写PHP代码'."\n";
+		$info .= '		return true;'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	/**'."\n";
+		$info .= '	 * 更新或添加保存完主题后触发动作'."\n";
+		$info .= '	 * @参数 $id 主题ID'."\n";
+		$info .= '	 * @参数 $project 项目信息，数组'."\n";
+		$info .= '	 * @返回 true '."\n";
+		$info .= '	**/'."\n";
+		$info .= '	public function system_admin_title_success($id,$project)'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//这里开始编写PHP代码'."\n";
+		$info .= '		return true;'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	/**'."\n";
+		$info .= '	 * 初始化站点信息接口，无参数，需要通过data来获取信息'."\n";
+		$info .= '	**/'."\n";
+		$info .= '	public function system_init_site()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		$site_rs = $this->data("site_rs");'."\n";
+		$info .= '		//这里开始编写PHP代码'."\n";
+		$info .= '		$this->data("site_rs",$site_rs);'."\n";
+		$info .= '		return true;'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '}'."\n";
+		return $info;
+	}
+
+	private function _php_html($identifier='')
+	{
+		$info  = 'class html_phpok extends \\\_init_node_html'."\n";
+		$info .= '{'."\n";
+		$info .= '	public function __construct()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		parent::__construct();'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function admin_before()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//这是后台页头公共页的地方'."\n";
+		$info .= '		//$this->_show("public");'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function admin_after()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//这是后台页脚公共页的地方'."\n";
+		$info .= '		//$this->_show("public");'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function admin_list_edit_after()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//这是后台内容编辑页的页脚的地方'."\n";
+		$info .= '		//$this->_show("public");'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function www_before()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//这是前台页头公共页的地方'."\n";
+		$info .= '		//$this->_show("public");'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function www_after()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//这是前台页脚公共页的地方'."\n";
+		$info .= '		//$this->_show("public");'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function www_project_index_after()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//项目页里页脚改写模板的地方'."\n";
+		$info .= '		//$this->_show("public");'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function www_content_index_after()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//内容页里页脚改写模板的地方'."\n";
+		$info .= '		//$this->_show("public");'."\n";
 		$info .= '	}'."\n\n";
 		$info .= '}'."\n";
 		return $info;

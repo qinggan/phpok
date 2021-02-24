@@ -1,11 +1,9 @@
-<!-- include tpl=head_lay nopadding=true -->
-<form method="post" id="post_save" class="layui-form" onsubmit="return false">
+<!-- include tpl=head_lay -->
+<form method="post" id="post_save" class="layui-form" onsubmit="return save()">
 <!-- if $id -->
 <input type="hidden" name="id" id="id" value="{$id}" />
-<!-- else -->
-<input type="hidden" name="fid" id="fid" value="{$fid}" />
 <!-- /if -->
-<input type="hidden" name="country" id="country" value="中国" />
+<input type="hidden" name="fid" id="fid" value="{$fid}" />
 <div class="layui-card">
 	<div class="layui-card-body">
 		<div class="layui-form-item">
@@ -37,12 +35,13 @@
 				{lang自定义区域排序}
 			</div>
 		</div>
+
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				<i class="layui-icon layui-tips" lay-tips="{lang注意，要勾选城市，相应的省份也应当勾选上}">&#xe702;</i>
 				{lang省市}
 			</label>
-			<div class="layui-input-block">
+			<div class="layui-input-block gray" style="line-height:38px;">{lang注意，要勾选城市，相应的省份也应当勾选上}</div>
+			<div class="layui-input-block" id="province_city">
 				<table class="layui-table">
 				<thead>
 				<tr>
@@ -52,11 +51,11 @@
 				</thead>
 				<!-- loop from=$prolist key=$key value=$value id=$tmpid -->
 				<tr id="pro_{$tmpid.num}">
-					<td><label><input type="checkbox" name="area[]" value="{$key}" data="pro{$key}"{if $area[$key]} checked{/if} onclick="update_pro('{$key}')" lay-ignore /> {$key}</label></td>
+					<td><label><input type="checkbox" name="area[]" value="{$value.id}" data="pro{$value.id}"{if $area[$value.id]} checked{/if} onclick="update_pro('{$value.id}')" lay-ignore /> {$value.name}<!-- if $value.name_ne --> / {$value.name_en}<!-- /if --></label></td>
 					<td>
 						<ul class="layout">
-							<!-- loop from=$value key=$k value=$v id=$tmpid2 -->
-							<li><label><input type="checkbox" lay-ignore name="city_{$key}[]" data="city{$key}" value="{$k}"{if $area[$key][$k]} checked{/if} onclick="update_city('{$key}')" /> {$k}</label></label></li>
+							<!-- loop from=$value.citylist key=$k value=$v id=$tmpid2 -->
+							<li><label><input type="checkbox" lay-ignore name="city_{$value.id}[]" data="city{$value.id}" value="{$v.id}"{if $area[$value.id][$v.id]} checked{/if} onclick="update_city('{$value.id}')" /> {$v.name}<!-- if $v.name_ne --> / {$v.name_en}<!-- /if --></label></label></li>
 							<!-- /loop -->
 						</ul>
 						<div class="clear"></div>
@@ -68,5 +67,12 @@
 		</div>
 	</div>
 </div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
 </form>
-<!-- include tpl=foot_lay is_open=true -->
+<!-- include tpl=foot_lay -->

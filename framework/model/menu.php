@@ -169,7 +169,6 @@ class menu_model_base extends phpok_model
 			if($value['list_id']){
 				$tlist[] = $value['list_id'];
 			}
-			
 		}
 		if($plist && count($plist)>0){
 			$plist = array_unique($plist);
@@ -234,8 +233,7 @@ class menu_model_base extends phpok_model
 		foreach($idlist as $key=>$value){
 			if($value['submenu'] == 'cate1'){
 				$cate_id = $value['cate_id'] ? $value['cate_id'] : $value['project']['cate'];
-				$condition = "site_id='".$value['project']['site_id']."' AND status=1 AND parent_id='".$cate_id."'";
-				$cate_all = $this->model('cate')->cate_list($condition,0,999);
+				$cate_all = $this->_cates($value['project'],$cate_id);
 				if($cate_all){
 					foreach($cate_all as $k=>$v){
 						$tmp = array('id'=>'cate_'.$v['id']);
@@ -250,8 +248,7 @@ class menu_model_base extends phpok_model
 			}
 			if($value['submenu'] == 'cate2'){
 				$cate_id = $value['cate_id'] ? $value['cate_id'] : $value['project']['cate'];
-				$condition = "site_id='".$value['project']['site_id']."' AND status=1 AND parent_id='".$cate_id."'";
-				$cate_all = $this->model('cate')->cate_list($condition,0,999);
+				$cate_all = $this->_cates($value['project'],$cate_id);
 				if($cate_all){
 					foreach($cate_all as $k=>$v){
 						$tmp = array('id'=>'cate_'.$v['id']);
@@ -262,8 +259,7 @@ class menu_model_base extends phpok_model
 						$tmp['link'] = $tmp['url'];
 						$tmp = array_merge($v,$tmp);
 						$rslist[] = $tmp;
-						$condition = "site_id='".$value['project']['site_id']."' AND status=1 AND parent_id='".$v['id']."'";
-						$sub_cate_all = $this->model('cate')->cate_list($condition,0,999);
+						$sub_cate_all = $this->_cates($value['project'],$v['id']);
 						if($sub_cate_all){
 							foreach($sub_cate_all as $kk=>$vv){
 								$tmp2 = array('id'=>'cate_'.$vv['id']);
@@ -324,8 +320,7 @@ class menu_model_base extends phpok_model
 			}
 			if($value['submenu'] == 'cate_title'){
 				$cate_id = $value['cate_id'] ? $value['cate_id'] : $value['project']['cate'];
-				$condition = "site_id='".$value['project']['site_id']."' AND status=1 AND parent_id='".$cate_id."'";
-				$cate_all = $this->model('cate')->cate_list($condition,0,999,$orderby,'taxis ASC,id DESC');
+				$cate_all = $this->_cates($value['project'],$cate_id);
 				if($cate_all){
 					foreach($cate_all as $k=>$v){
 						$tmp = array('id'=>'cate_'.$v['id']);
@@ -355,38 +350,36 @@ class menu_model_base extends phpok_model
 		}
 	}
 
+	private function _cates($project,$cate_id=0)
+	{
+		$sql  = " SELECT * FROM ".$this->db->prefix."cate ";
+		$sql .= " WHERE site_id='".$project['site_id']."' AND status=1 AND parent_id='".$cate_id."' ";
+		$sql .= " ORDER BY taxis ASC,id DESC ";
+		return $this->db->get_all($sql);
+	}
+
 	private function _titles($project,$cate_id=0,$parent_id=0)
 	{
 		$condition  = " l.site_id='".$project['site_id']."' ";
-		$condition .= "AND l.hidden=0 ";
+		$condition .= " AND l.hidden=0 ";
 		$condition .= " AND l.project_id=".intval($project['id'])." ";
 		$condition .= " AND l.status=1 ";
 		$condition .= " AND l.parent_id=".$parent_id." ";
 		if($project['cate'] && $cate_id){
 			$condition .= " AND l.cate_id='".$cate_id."'";
 		}
-		$flist = $this->model('module')->fields_all($project['module']);
-		$fields = "l.*";
-		$nlist = array();
-		if($flist){
-			foreach($flist as $k=>$v){
-				$fields .= ",ext.".$v['identifier'];
-				$nlist[$v['identifier']] = $v;
-			}
+		$orderby = $project['orderby'] ? $project['orderby'] : 'l.sort ASC,l.id DESC';
+		$sql  = " SELECT l.* FROM ".$this->db->prefix."list l ";
+		if(strpos($orderby,'ext.') !== false){
+			$sql .= " LEFT JOIN ".$this->db->prefix."list_".$project['module']." ext ON(l.id=ext.id) ";
 		}
-		$rslist = $this->model('list')->arc_all($project,$condition,$fields,0,999,$project['orderby']);
+		if(strpos($orderby,'lc.') !== false){
+			$sql .= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
+		}
+		$sql .= " WHERE ".$condition." ORDER BY ".$orderby;
+		$rslist = $this->db->get_all($sql);
 		if(!$rslist){
 			return false;
-		}
-		foreach($rslist as $key=>$value){
-			if(!$nlist || count($nlist)<1){
-				continue;
-			}
-			foreach($nlist as $k=>$v){
-				$myval = $this->lib('form')->show($v,$value[$k]);
-				$value[$k] = $myval;
-			}
-			$rslist[$key] = $value;
 		}
 		return $rslist;
 	}

@@ -38,7 +38,7 @@ class user_model_base extends phpok_model
 			$field = 'id';
 		}
 		$flist = $this->fields_all();
-		$ufields = "u.*";
+		$ufields = "u.*,ug.title group_title";
 		$field_type = 'main';
 		$condition = "u.".$field."='".$id."'";
 		if($flist){
@@ -49,9 +49,10 @@ class user_model_base extends phpok_model
 				}
 			}
 		}
-		$sql = " SELECT ".$ufields." FROM ".$this->db->prefix."user u ";
-		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
-		$sql.= " WHERE ".$condition;
+		$sql  = " SELECT ".$ufields." FROM ".$this->db->prefix."user u ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."user_group ug ON(u.group_id=ug.id) ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
+		$sql .= " WHERE ".$condition;
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
@@ -60,7 +61,7 @@ class user_model_base extends phpok_model
 			$rs['wealth'] = $this->wealth($rs['id']);
 		}
 		if($ext && $flist){
-			foreach($flist AS $key=>$value){
+			foreach($flist as $key=>$value){
 				$rs[$value['identifier']] = $this->lib('form')->show($value,$rs[$value['identifier']]);
 			}
 		}

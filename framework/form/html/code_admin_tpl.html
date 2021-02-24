@@ -8,9 +8,10 @@
 </tr>
 </table>
 <script type="text/javascript">
+var code_editor_{$_rs.identifier};
 $(document).ready(function(){
 	var delay;
-	var code_editor_{$_rs.identifier} = CodeMirror.fromTextArea(document.getElementById("{$_rs.identifier}"),{
+	code_editor_{$_rs.identifier} = CodeMirror.fromTextArea(document.getElementById("{$_rs.identifier}"),{
 		lineNumbers		: true,
 		matchBrackets	: true,
 		lineWrapping	: true,

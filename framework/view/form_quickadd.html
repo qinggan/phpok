@@ -54,6 +54,20 @@ function save()
 			</div>
 		</div>
 		<!-- /if -->
+		<!-- if $p_rs.cate -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang分类}</label>
+			<div class="layui-input-inline default-auto">
+				<select name="cate_id" id="cate_id">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $value.id == $rs.cate_id} selected{/if} data-isend="{$value._is_end}" data-layer="{$value._layer}">{$value._space}{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">{lang分类不能为空}</div>
+		</div>
+		<!-- /if -->
 		<!-- loop from=$extlist key=$key value=$value id=extlist_id -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">

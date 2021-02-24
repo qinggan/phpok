@@ -39,7 +39,18 @@
 		<span class="note">{lang设置一个默认值，留空或为0表示忽略}</span>
 	</div>
 	<div class="content">
-		<input type="text" name="default" id="default" value="{$rs.default}" class="short" />
+		<ul class="layout">
+			<li><input type="text" name="default" id="default" value="{$rs.default}" class="short" /></li>
+			<li>
+				<select id="currency_id" name="currency_id">
+					<option value="">{lang请选择货币…}</option>
+					<!-- loop from=$currency_list key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $rs.currency_id == $value.id} selected{/if}>{$value.title} / {$value.code} / {$value.val}</option>
+					<!-- /loop -->
+				</select>
+			</li>
+		</ul>
+		
 	</div>
 </div>
 <div class="table">

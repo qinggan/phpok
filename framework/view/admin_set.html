@@ -82,9 +82,9 @@
 									<div class="layui-card-header">
 										{$value.title}
 										<div class="layui-btn-group fr">
-											<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全选}" onclick="$.input.checkbox_all('mlist_{$value.id}')" />
-											<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全不选}" onclick="$.input.checkbox_none('mlist_{$value.id}')" />
-											<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang反选}" onclick="$.input.checkbox_anti('mlist_{$value.id}')" />
+											<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全选}" onclick="$.checkbox.all('mlist_{$value.id}')" />
+											<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全不选}" onclick="$.checkbox.none('mlist_{$value.id}')" />
+											<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang反选}" onclick="$.checkbox.anti('mlist_{$value.id}')" />
 										</div>
 									</div>
 									<div class="layui-card-body">
@@ -94,9 +94,9 @@
 											<label class="layui-form-label">{$v.space}{$v.title}</label>
 											<div class="layui-input-inline" style="width: auto">
 												<div class="layui-btn-group">
-													<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全选}" onclick="$.input.checkbox_all('mlist_{$v.id}')" />
-													<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全不选}" onclick="$.input.checkbox_none('mlist_{$v.id}')" />
-													<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang反选}" onclick="$.input.checkbox_anti('mlist_{$v.id}')" />
+													<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全选}" onclick="$.checkbox.all('mlist_{$v.id}')" />
+													<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全不选}" onclick="$.checkbox.none('mlist_{$v.id}')" />
+													<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang反选}" onclick="$.checkbox.anti('mlist_{$v.id}')" />
 												</div>
 												<!-- if $glist[$v['id']] -->
 												<!-- loop from=$glist[$v['id']] key=$kk value=$vv -->
@@ -126,9 +126,9 @@
 									<div class="layui-card-header">
 										{$value.title}
 										<div class="layui-btn-group fr">
-											<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全选}" onclick="$.input.checkbox_all('site_{$value.id}')" />
-											<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全不选}" onclick="$.input.checkbox_none('site_{$value.id}')" />
-											<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang反选}" onclick="$.input.checkbox_anti('site_{$value.id}')" />
+											<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全选}" onclick="$.checkbox.all('site_{$value.id}')" />
+											<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全不选}" onclick="$.checkbox.none('site_{$value.id}')" />
+											<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang反选}" onclick="$.checkbox.anti('site_{$value.id}')" />
 										</div>
 									</div>
 									<div class="layui-card-body">
@@ -137,9 +137,9 @@
 											<label class="layui-form-label">{$v.space}{$v.title}</label>
 											<div class="layui-input-inline" style="width: auto">
 												<div class="layui-btn-group">
-													<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全选}" onclick="$.input.checkbox_all('site_p_{$v.id}')" />
-													<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全不选}" onclick="$.input.checkbox_none('site_p_{$v.id}')" />
-													<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang反选}" onclick="$.input.checkbox_anti('site_p_{$v.id}')" />
+													<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全选}" onclick="$.checkbox.all('site_p_{$v.id}')" />
+													<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang全不选}" onclick="$.checkbox.none('site_p_{$v.id}')" />
+													<input type="button" class="layui-btn layui-btn-primary layui-btn-sm" value="{lang反选}" onclick="$.checkbox.anti('site_p_{$v.id}')" />
 												</div>
 												<!-- loop from=$v._popedom key=$kk value=$vv -->
 												<input type="checkbox" name="popedom[]" value="{$vv.id}" {if $plist && in_array($vv.id,$plist)} checked{/if} title="{func P_Lang $vv.title}">

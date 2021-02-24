@@ -63,7 +63,7 @@ class search_model_base extends phpok_model
 			$sqlist = array();
 			foreach($mid as $key=>$value){
 				$mycondition = $condition;
-				$sql  = "SELECT l.id FROM ".$this->db->prefix."list l ";
+				$sql  = "SELECT l.id,l.dateline FROM ".$this->db->prefix."list l ";
 				$sql .= " LEFT JOIN ".$this->db->prefix."list_".$value." ext ON(l.id=ext.id) ";
 				if($ext && $ext[$value]){
 					$tmp = implode(" OR ",$ext[$value]);
@@ -80,6 +80,7 @@ class search_model_base extends phpok_model
 				$sqlist[] = $sql;
 			}
 			$sql = implode(" UNION ",$sqlist);
+			$sql .= " ORDER BY dateline DESC,id DESC ";
 			$sql .= " LIMIT ".$offset.",".$psize;
 			return $this->db->get_all($sql);
 		}
@@ -132,9 +133,17 @@ class search_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
-	public function get_one($id)
+	public function get_one($id,$field='id',$site_id=0)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."search WHERE id='".$id."'";
+		if(is_numeric($field)){
+			$site_id = $field;
+			$field = 'id';
+		}
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		$sql  = "SELECT * FROM ".$this->db->prefix."search WHERE ".$field."='".$id."'";
+		$sql .= " AND site_id='".$site_id."'";
 		return $this->db->get_one($sql);
 	}
 }

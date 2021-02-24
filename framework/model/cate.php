@@ -46,7 +46,7 @@ class cate_model_base extends phpok_model
 		if(!$id){
 			return false;
 		}
-		$sql = " SELECT * FROM ".$this->db->prefix."cate WHERE `".$field."`='".$id."' ";
+		$sql = " SELECT * FROM ".$this->db->prefix."cate WHERE `".$field."`='".$id."' AND site_id='".$this->site_id."'";
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
@@ -228,7 +228,16 @@ class cate_model_base extends phpok_model
 		$extlist = array();
 		$idlist = array_keys($rslist);
 		foreach($rslist as $key=>$value){
-			if($value['parent_id'] || !$value['module_id']){
+			if($value['parent_id']){
+				$rootid = 0;
+				$this->get_root_id($rootid,$value['parent_id']);
+				if(!$rootid){
+					continue;
+				}
+				$tmp = $this->get_one($rootid,'id',false,false);
+				$value['module_id'] = $tmp['module_id'];
+			}
+			if(!$value['module_id']){
 				continue;
 			}
 			$flist = $this->model('module')->fields_all($value['module_id']);

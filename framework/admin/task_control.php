@@ -54,7 +54,10 @@ class task_control extends phpok_control
 		for($i=1;$i<61;$i++){
 			$minutelist[] = $i;
 		}
+
 		$this->assign('minutelist',$minutelist);
+		$seclist = array(1,3,5,7,9,10,15,20,25,30,35,45,50,55);
+		$this->assign('seclist',$seclist);
 
 		//计划任务文件
 		$filelist = $this->lib('file')->ls($this->dir_root.'task/');
@@ -117,7 +120,7 @@ class task_control extends phpok_control
 		}
 		$main['hour'] = $this->get('hour');
 		$main['minute'] = $this->get('minute');
-		$main['second'] = '*';
+		$main['second'] = $this->get('second');
 		$main['action'] = $this->get('actionfile');
 		if(!$main['action']){
 			$this->json(P_Lang('未指定动作'));

@@ -52,7 +52,7 @@
 		**/
 		pl_update:function()
 		{
-			var id = $.input.checkbox_join(".checkbox input[type=checkbox]");
+			var id = $.checkbox.join(".checkbox input[type=checkbox]");
 			if(!id || id == "undefined"){
 				$.dialog.alert(p_lang('未指定要操作的附件'));
 				return true;
@@ -65,7 +65,7 @@
 		**/
 		pl_delete:function()
 		{
-			var id = $.input.checkbox_join(".checkbox input[type=checkbox]");
+			var id = $.checkbox.join(".checkbox input[type=checkbox]");
 			if(!id || id == "undefined"){
 				$.dialog.alert(p_lang('未指定要操作的附件'));
 				return false;
@@ -198,7 +198,7 @@
 		**/
 		move_cate:function()
 		{
-			var id = $.input.checkbox_join(".checkbox input[type=checkbox]");
+			var id = $.checkbox.join(".checkbox input[type=checkbox]");
 			if(!id || id == "undefined"){
 				$.dialog.alert(p_lang('未指定要操作的附件'));
 				return false;
@@ -216,7 +216,7 @@
 					var newcate = $("input[name=newcate]:checked").val();
 					var url = get_url('res','movecate')+"&tid="+$.str.encode(id)+"&newcate="+newcate;
 					$.phpok.json(url,function(){
-						$.input.checkbox_none('.checkbox input[type=checkbox]');
+						$.checkbox.none('.checkbox input[type=checkbox]');
 						$.dialog.tips(p_lang('分类移动成功'));
 						return true;
 					});

@@ -13,6 +13,7 @@
 		<thead>
 		<tr>
 			<th>ID</th>
+			<th>{lang名称}</th>
 			<th>{lang标识串}</th>
 			<th>{lang宽} &#215; {lang高}</th>
 			<th>{lang生成方式}</th>
@@ -26,6 +27,7 @@
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 		<tr>
 			<td>{$value.id}</td>
+			<td>{$value.title}</td>
 			<td>{$value.identifier}</td>
 			<td>
 				<!-- if !$value.width && !$value.height -->

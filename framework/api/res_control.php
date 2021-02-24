@@ -96,4 +96,3 @@ class res_control extends phpok_control
 		$this->json(P_Lang('附件信息更新成功'),true);
 	}
 }
-?>

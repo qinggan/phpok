@@ -1,0 +1,135 @@
+<!-- include tpl=head_lay -->
+<script type="text/javascript">
+function save()
+{
+	$("#post_save").ajaxSubmit({
+		'url':get_url('design','tplsave'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.tips('操作成功',function(){
+					$.phpok.reload();
+				}).lock();
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+<form method="post" class="layui-form" id="post_save" onsubmit="return save()">
+<div class="layui-card">
+	<div class="layui-card-header">
+		操作请谨慎，系统模板基于 bootstrap 4.5.x 制作
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				模板
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select id="id" name="id" lay-filter="tplfile">
+					<option value="">添加新模板</option>
+					<!-- loop from=$tplist key=$key value=$value id=$tmpid -->
+					<optgroup label="{$value.title}">
+						<!-- loop from=$value.rslist key=$k value=$v id=$idxx -->
+						<option value="{$k}"{if $id && $id == $k} selected{/if}>{$v.title}</option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				修改模板得确保相应的文件目录及文件有写入权限
+			</div>
+		</div>
+		<!-- if !$id -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				完整文件
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="tplfile" id="tplfile" value="{$rs.tplfile}" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="系统目录" onclick="$('#tplfile').val('_data/design/')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="模板目录" onclick="$('#tplfile').val('tpl/{$tpl_rs.folder}/design/')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="清空" onclick="$('#tplfile').val('')" class="layui-btn layui-btn-sm layui-btn-warm" />
+				</div>
+			</div>
+			<div class="layui-form-mid">
+				注意不要加后缀
+			</div>
+		</div>
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				名称
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="title" id="title" value="{$rs.title}" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				备注
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="note" id="note" value="{$rs.note}" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				效果图
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="img" id="img" value="{$rs.img}" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择图片}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_select('img')" />
+					<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_preview('img')" />
+					<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('img');" />
+				</div>
+			</div>
+		</div>
+		
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				代码
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">代码编写变量仅支持 <span class="red">{</span><span class="red">$info}</span></div>
+			<div class="layui-input-block">
+				{$content_html}
+			</div>
+		</div>
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+		<span style="padding-left:2em;color:#ccc;">保存不会关闭页面，请手动关闭</span>
+	</div>
+</div>
+</form>
+<script type="text/javascript">
+$(document).ready(function(){
+	layui.form.on('select(tplfile)',function(data){
+		var url = get_url('design','tpl');
+		if(data.value && data.value !='undefined'){
+			url += "&id="+$.str.encode(data.value);
+		}
+		var chk = '{$id}';
+		if(chk != data.value){
+			$.phpok.go(url);
+		}
+	})
+});
+</script>
+<!-- include tpl=foot_lay -->

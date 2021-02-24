@@ -112,6 +112,18 @@ function save()
 </div>
 <div class="table">
 	<div class="title">
+		{lang唯一性}
+		<span class="note">{lang是否开启唯一性限制}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="onlyone" value="0"{if !$rs.onlyone} checked{/if} />{lang禁用}</label></li>
+			<li><label><input type="radio" name="onlyone" value="1"{if $rs.onlyone} checked{/if} />{lang启用}</label></li>
+		</ul>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
 		{lang前端处理}：
 		<span class="note">{lang设置前端是否可用，如果需要前端加载相应属性请在这里操作}</span>
 	</div>

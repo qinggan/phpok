@@ -113,8 +113,41 @@
 			<div class="layui-form-mid layui-word-aux">
 				{lang仅限有图片时才执行，注意，这里压缩的是原图}
 			</div>
-		</div>	
-		<input type="hidden" name="gdall" value="1" />
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang图片方案}</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="gdall" title="{lang全部使用}" lay-filter="gdall" value="1"{if $rs.gdall} checked{/if} />
+				<input type="radio" name="gdall" title="{lang自定义使用}" lay-filter="gdall" value="0"{if !$rs.gdall} checked{/if} />
+			</div>
+			<div class="layui-form-mid layui-word-aux">{lang即上传到该分类下的图片，是否使用GD配置生成特定的图片规格}</div>
+		</div>
+		<div class="layui-form-item" id="gdsetting">
+			<label class="layui-form-label">{lang定制方案}</label>
+			<div class="layui-input-inline default-auto">
+				<table class="layui-table">
+					<colgroup>
+						<col width="150">
+						<col width="200">
+					</colgroup>
+					<thead>
+					<tr>
+						<th>{lang标识}</th>
+						<th>{lang规格}</th>
+					</tr>
+					</thead>
+					<tbody>
+					<!-- loop from=$gdlist key=$key value=$value id=$tmpid -->
+					<tr>
+						<td><input type="checkbox" name="gdtypes[]" id="gdtypes{$value.id}" title="{$value.title ? $value.title : $value.identifier}" value="{$value.id}"{if in_array($value.id,$rs.gdtypes)} checked{/if} lay-skin="primary" /> </td>
+						<td><label for="gdtypes{$value.id}">{$value.width ? $value.width : '自动判定'} x {$value.height ? $value.height : '自动判定'}</label></td>
+					</tr>
+					<!-- /loop -->
+					</tbody>
+				</table>
+			</div>
+			<div class="layui-form-mid layui-word-aux">{lang全部不选表示不使用GD方案}</div>
+		</div>
 		<input type="hidden" name="ico" value="1" />
 	</div>
 </div>

@@ -22,8 +22,13 @@ class code_editor_form extends _init_auto
 
 	public function phpok_format($rs,$appid="admin")
 	{
-		$this->addjs('js/codemirror/codemirror.js');
-		$this->addcss('js/codemirror/codemirror.css');
+		$this->addcss("static/codemirror/lib/codemirror.css");
+		$this->addjs("static/codemirror/lib/codemirror.js");
+		$this->addjs('static/codemirror/mode/css/css.js');
+		$this->addjs('static/codemirror/mode/javascript/javascript.js');
+		$this->addjs('static/codemirror/mode/htmlmixed/htmlmixed.js');
+		$this->addjs('static/codemirror/mode/php/php.js');
+		$this->addjs('static/codemirror/mode/xml/xml.js');
 		$this->assign("_rs",$rs);
 		return $this->fetch($this->dir_phpok.'form/html/code_admin_tpl.html','abs-file');
 	}

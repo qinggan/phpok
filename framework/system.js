@@ -51,7 +51,7 @@ lang["{$key}"] = "{$value}";
  * 开始加载Jquery，注意，系统会尝式智能检测加载的jquery版本
  */
 
-{$jquery}
+;{$jquery};
 
 /**
  * 结束加载Jquery

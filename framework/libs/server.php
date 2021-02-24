@@ -193,6 +193,12 @@ class server_lib
 		if(!$info){
 			return false;
 		}
+		$tlist = parse_url($info);
 		$info = str_replace(array('<','>','"',"'"),'',$info);
+	}
+
+	public function agent()
+	{
+		return $_SERVER['HTTP_USER_AGENT'];
 	}
 }

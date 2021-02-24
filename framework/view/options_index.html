@@ -10,20 +10,20 @@
 			<tr>
 				<th>ID</th>
 				<th>名称</th>
-				<th width="100">排序</th>
+				<th width="80">排序</th>
 				<th>操作</th>
 			</tr>
 			</thead>
 			<tbody>
-			<!-- loop from=$rslist key=$key value=$value -->
+			<!-- loop from=$rslist key=$key value=$value id=idx -->
 			<tr>
 				<td>{$value.id}</td>
-				<td><input type="text" id="title_{$value.id}" value="{$value.title}" class="layui-input" /></td>
-				<td><input type="text" id="taxis_{$value.id}" value="{$value.taxis}" class="layui-input" /></td>
+				<td>{$value.title}</td>
+				<td><input type="text" id="taxis_{$value.id}" value="{$value.taxis}" class="layui-input" data-id="{$value.id}" data-value="{$value.taxis}" name="taxis" onblur="$.admin_options.taxis(this)" onchange="$.admin_options.taxis(this)" onfocus="$.admin_options.taxis(this)" tabindex="{$idx.num}" /></td>
 				<td>
 					<div class="layui-btn-group">
-						<input type="button" value="{lang提交修改}" onclick="$.admin_options.update('{$value.id}')" class="layui-btn layui-btn-sm" />
-						<input type="button" value="{lang内容}" onclick="$.win('{lang属性内容维护}_#{$value.id}','{url ctrl=options func=list id=$value.id/}')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang编辑}" onclick="$.admin_options.set('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang内容维护}" onclick="$.win('{lang内容维护}_{$value.title}_#{$value.id}','{url ctrl=options func=list id=$value.id/}')" class="layui-btn layui-btn-sm" />
 						<input type="button" value="{lang删除}" onclick="$.admin_options.del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 					</div>
 				</td>

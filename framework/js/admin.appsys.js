@@ -133,7 +133,7 @@
 				'title':p_lang('创建新应用'),
 				'lock':true,
 				'width':'700px',
-				'height':'483px',
+				'height':'370px',
 				'ok':function(){
 					var iframe = this.iframe.contentWindow;
 					if (!iframe.document.body) {
@@ -223,6 +223,26 @@
 					return false;
 				})
 			})
+		},
+		taxis:function(obj,id)
+		{
+			var taxis = $(obj).text();
+			$.dialog.prompt(p_lang('修改排序，排序越前相应的HTML前点优先处理'),function(val){
+				if(!val || val<1){
+					$.dialog.alert('排序值不能小于1');
+					return false;
+				}
+				var url = get_url('appsys','taxis','id='+id+"&taxis="+val);
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.alert(rs.info);
+						return false;
+					}
+					$.dialog.tips('排序成功',function(){
+						$.phpok.reload();
+					}).time(1.5).lock();
+				})
+			},taxis);
 		}
 	}
 })(jQuery);

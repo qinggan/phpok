@@ -22,15 +22,80 @@ class freight_control extends phpok_control
 
 	public function index_f()
 	{
-		$rslist = $this->model('freight')->get_all();
+		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
+		$pageid = $this->get($this->config['pageid'],'int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$offset = ($pageid-1) * $psize;
+		$condition = "1=1";
+		$keywords = $this->get("keywords");
+		$pageurl = $this->url('freight');
+		if($keywords){
+			$this->assign('keywords',$keywords);
+			$pageurl .= "&keywords=".rawurlencode($keywords);
+			$condition .= " AND f.title LIKE '%".$keywords."%'";
+		}
+		$country_id = $this->get('country_id','int');
+		if($country_id){
+			$this->assign('country_id',$country_id);
+			$pageurl .= "&country_id=".$country_id;
+			$condition .= " AND f.country_id='".$country_id."'";
+		}
+		$total = $this->model('freight')->get_count($condition);
+		$rslist = $this->model('freight')->get_all($condition,$offset,$psize);
 		$this->assign('rslist',$rslist);
 		$taxis = $rslist ? (count($rslist)+1) * 10 : 10;
 		$this->assign('taxis',$taxis);
-		$typelist = array('weight'=>P_Lang('重量'),'volume'=>P_Lang('体积'),'number'=>P_Lang('数量'),'fixed'=>P_Lang('固定值'),'price'=>P_Lang('价格'));
+		$typelist = $this->model('freight')->typelist();
 		$this->assign('typelist',$typelist);
 		$currency_list = $this->model('currency')->get_list();
 		$this->assign('currency_list',$currency_list);
+		$vw = $this->model('freight')->vweight();
+		$this->assign('vweight',$vw);
 		$this->view('freight_index');
+	}
+
+	public function set_f()
+	{
+		$id = $this->get('id');
+		if($id){
+			if(!$this->popedom['modify']){
+				$this->error(P_Lang('您没有权限执行此操作'));
+			}
+			$rs = $this->model('freight')->get_one($id);
+			$this->assign('rs',$rs);
+			$this->assign('id',$id);
+		}else{
+			if(!$this->popedom['add']){
+				$this->error(P_Lang('您没有权限执行此操作'));
+			}
+		}
+		$z_id = 0;
+		//读洲，国家
+		$zonelist = $this->model('worlds')->get_all("pid=0");
+		$countrylist = array();
+		foreach($zonelist as $key=>$value){
+			$tmplist = $this->model('worlds')->get_all("pid=".$value['id']);
+			if($tmplist){
+				if($rs && $rs['country_id'] && !$z_id){
+					foreach($tmplist as $k=>$v){
+						if($v['id'] == $rs['country_id']){
+							$z_id = $value['id'];
+							break;
+						}
+					}
+				}
+				$countrylist[] = array("id"=>$value['id'],"name"=>$value['name'],'name_en'=>$value['name_en'],'rslist'=>$tmplist);
+			}
+		}
+		$this->assign('z_id',$z_id);
+		$this->assign('countrylist',$countrylist);
+		$typelist = $this->model('freight')->typelist();
+		$this->assign('typelist',$typelist);
+		$currency_list = $this->model('currency')->get_list();
+		$this->assign('currency_list',$currency_list);
+		$this->view("freight_set");
 	}
 
 	public function save_f()
@@ -55,7 +120,13 @@ class freight_control extends phpok_control
 		}
 		$currency_id = $this->get('currency_id');
 		$type = $this->get('type');
-		$this->model('freight')->save(array('title'=>$title,'taxis'=>$taxis,'type'=>$type,'currency_id'=>$currency_id),$id);
+		$data = array('title'=>$title,'taxis'=>$taxis,'type'=>$type);
+		$data['country_id'] = $this->get('country_id');
+		if(!$data['country_id']){
+			$this->error(P_Lang('未指定国家'));
+		}
+		$data['currency_id'] = $currency_id;
+		$this->model('freight')->save($data,$id);
 		$this->success();
 	}
 
@@ -69,6 +140,16 @@ class freight_control extends phpok_control
 			$this->error(P_Lang('未指定ID'));
 		}
 		$this->model('freight')->delete($id);
+		$this->success();
+	}
+
+	public function vweight_f()
+	{
+		$val = $this->get("val");
+		if(!$val){
+			$this->error(P_Lang('体积重不能为空'));
+		}
+		$this->model('freight')->vweight($val);
 		$this->success();
 	}
 
@@ -100,10 +181,11 @@ class freight_control extends phpok_control
 			if(!$rs){
 				$this->error(P_Lang('数据不存在，请检查'));
 			}
+			$this->assign('rs',$rs);
 			if($rs['area']){
 				$area = unserialize($rs['area']);
+				$this->assign('area',$area);
 			}
-			$this->assign('rs',$rs);
 			$this->assign('id',$id);
 			$fid = $rs['fid'];
 		}else{
@@ -113,56 +195,37 @@ class freight_control extends phpok_control
 		}
 		$fs = $this->model('freight')->get_one($fid);
 		$this->assign('fs',$fs);
-		$all = $this->model('freight')->zone_all($fid,'*');
-		if($all){
-			foreach($all as $key=>$value){
-				if($id && $value['id'] == $id){
+		$country = $this->model('worlds')->get_one($fs['country_id']);
+		$this->assign('country',$country);
+		$this->assign('fid',$fid);
+		//读取
+		$forbid = $this->model('freight')->area_ids_used($fid,$id);
+		$province = $this->model('worlds')->get_all("pid='".$country['id']."'");
+		if(!$province){
+			$this->error(P_Lang('国家下未配置省/州信息'));
+		}
+		$prolist = array();
+		$is_city = false;
+		foreach($province as $key=>$value){
+			$citylist = $this->model('worlds')->get_all("pid='".$value['id']."'");
+			if($citylist){
+				$is_city = true;
+				foreach($citylist as $k=>$v){
+					if($v['id'] && $forbid && in_array($v['id'],$forbid)){
+						unset($citylist[$k]);
+						continue;
+					}
+				}
+				//如果检测到省下面的城市都被禁用了！直接跳过省选择
+				if(count($citylist)<1){
 					continue;
 				}
-				$tmp = $value['area'] ? unserialize($value['area']) : array();
-				foreach($tmp as $k=>$v){
-					if($v && is_array($v)){
-						foreach($v as $kk=>$vv){
-							$forbid[$k][$kk] = true;
-						}
-					}
-				}
 			}
-		}
-		$this->assign('area',$area);
-		$this->assign('fid',$fid);
-		//读取当前省市表信息
-		$prolist = $this->lib('xml')->read($this->dir_data.'xml/provinces.xml');
-		$citylist = $this->lib('xml')->read($this->dir_data.'xml/cities.xml');
-		if(!$prolist && !$citylist){
-			$this->error(P_Lang('数据异常，省市表信息不存在'));
-		}
-		$province = array();
-		foreach($prolist['province'] as $key=>$value){
-			$province[$value['attr']['id']] = $value['val'];
-		}
-		unset($prolist);
-		foreach($citylist['city'] as $key=>$value){
-			$prolist[$province[$value['attr']['pid']]][$value['val']] = true;
-		}
-		foreach($prolist as $key=>$value){
-			if($value){
-				foreach($value as $k=>$v){
-					if($forbid[$key][$k]){
-						unset($prolist[$key][$k]);
-					}
-				}
-			}
-		}
-		foreach($prolist as $key=>$value){
-			if(!$value){
-				unset($prolist[$key]);
-			}
-		}
-		if(!$prolist || count($prolist)<1){
-			$this->error(P_Lang('所有省市地址已分配完成，请点编辑进行调节'));
+			$prolist[] = array('id'=>$value['id'],'name'=>$value['name'],'name_en'=>$value['name_en'],'citylist'=>$citylist);
 		}
 		$this->assign('prolist',$prolist);
+		$this->assign('is_city',$is_city);
+		$this->assign('forbid',$forbid);
 		$this->view('freight_zone_setting');
 	}
 
@@ -178,9 +241,10 @@ class freight_control extends phpok_control
 			$fid = $rs['fid'];
 		}
 		$array = array('title'=>$this->get('title'),'note'=>$this->get('note'),'taxis'=>$this->get('taxis','int'));
+		//$array['country_id'] = $country_id;
 		$area = $this->get('area');
 		if(!$area){
-			$this->error(P_Lang('未选定所在省份'));
+			$this->error(P_Lang('未选定所在省份/州'));
 		}
 		$data = array();
 		foreach($area as $key=>$value){
@@ -309,6 +373,32 @@ class freight_control extends phpok_control
 		$this->model('freight')->price_delete($fid,$val);
 		$this->json(true);
 	}
-}
 
-?>
+	public function province_city_f()
+	{
+		$id = $this->get('id');
+		$country_id = $this->get('country_id');
+		if(!$country_id){
+			$this->error(P_Lang('未指定国家ID'));
+		}
+		if($id){
+			$rs = $this->model('freight')->zone_one($id);
+			if($rs && $rs['area']){
+				$area = unserialize($rs['area']);
+				$this->assign('area',$area);
+			}
+		}
+		$province = $this->model('worlds')->get_all("pid='".$country_id."'");
+		if(!$province){
+			$this->error(P_Lang('国家下未配置省/州信息'));
+		}
+		$prolist = array();
+		foreach($province as $key=>$value){
+			$citylist = $this->model('worlds')->get_all("pid='".$value['id']."'");
+			$prolist[] = array('id'=>$value['id'],'name'=>$value['name'],'name_en'=>$value['name_en'],'citylist'=>$citylist);
+		}
+		$this->assign('prolist',$prolist);
+		$content = $this->fetch('freight_province_city');
+		$this->success($content);
+	}
+}

@@ -17,6 +17,15 @@
 				</div>
 			</div>
 			<div class="layui-inline">
+				<div class="layui-input-inline">
+					<select name="ispaid">
+						<option value="">{lang付款状态不限}</option>
+						<option value="1"{if $ispaid == 1} selected{/if}>{lang有付款}</option>
+						<option value="2"{if $ispaid == 2} selected{/if}>{lang未付款}</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-inline">
 				<div class="layui-input-inline" style="width: 120px;">
 					<input type="text" name="date_start" value="{$date_start}" id="date_start" placeholder="{lang开始时间}" autocomplete="off" class="layui-input">
 				</div>
@@ -58,6 +67,7 @@
 						<option value="user"{if $keytype == 'user'} selected{/if}>{lang会员账号}</option>
 						<option value="email"{if $keytype == 'email'} selected{/if}>{lang订单邮箱}</option>
 						<option value="protitle"{if $keytype == 'protitle'} selected{/if}>{lang产品名称}</option>
+						<option value="paytitle"{if $keytype == 'paytitle'} selected{/if}>{lang付款方式名称}</option>
 					</select>
 				</div>
 			</div>
@@ -122,6 +132,9 @@
 					<input type="button" value="{lang物流}" onclick="$.admin_order.express({$value.id})" class="layui-btn layui-btn-xs" />
 					<!-- if $popedom.modify -->
 					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑订单}_#{$value.id}','{url ctrl=order func=set id=$value.id/}')" class="layui-btn  layui-btn-xs" />
+						<!-- if $value.paid>0 -->
+						<input type="button" value="{lang退款}" onclick="$.win('{lang订单退款}_#{$value.id}','{url ctrl=order func=refund id=$value.id/}')" class="layui-btn  layui-btn-xs layui-btn-warm" />
+						<!-- /if -->
 					<!-- /if -->
 					<!-- if $popedom.delete -->
 					<input type="button" value="{lang删除}" onclick="$.admin_order.del({$value.id},'{$value.sn}')" class="layui-btn  layui-btn-xs layui-btn-danger" />

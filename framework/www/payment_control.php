@@ -110,6 +110,30 @@ class payment_control extends phpok_control
 		$this->view($tplfile);
 	}
 
+	public function cancel_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('执行异常，请检查，缺少参数ID'));
+		}
+		$rs = $this->model('payment')->log_one($id);
+		if(!$rs){
+			$this->error(P_Lang('订单信息不存在'),$this->url('index'));
+		}
+		$url = $this->url;
+		if($rs['type'] == 'order'){
+			if($this->session->val('user_id')){
+				$order = $this->model('order')->get_one_from_sn($rs['sn']);
+				$url = $this->url('order','info','id='.$order['id']);
+			}
+			$this->tip(P_Lang('您取消在线支付'),$url);
+		}
+		if($this->session->val('user_id')){
+			$url = $this->url('usercp','wealth');
+		}
+		$this->tip(P_Lang('您取消在线支付'),$url);
+	}
+
 	/**
 	 * 创建支付链接
 	 * @参数 id 订单ID，仅限会员登录时有效

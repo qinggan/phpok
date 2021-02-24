@@ -18,6 +18,7 @@
 				<th>{lang子目录}</th>
 				<th>{lang附件类型}</th>
 				<th>{lang存储方式}</th>
+				<th>{lang图片方案}</th>
 				<th>{lang是否默认}</th>
 				<th>{lang操作}</th>
 			</tr>
@@ -31,6 +32,13 @@
 				<td>{$value.folder}</td>
 				<td>{$value.filetypes}</td>
 				<td>{$value.etype_title}</td>
+				<td>
+					<!-- if $value.gdall -->
+					<span class="darkblue">{lang全部}</span>
+					<!-- else -->
+					{$value.gdtypes_title}<!-- if !$value.gdtypes --><span class="red">{lang空}</span><!-- /if -->
+					<!-- /if -->
+				</td>
 				<td><!-- if $value.is_default --><span class="darkblue">{lang是}</span><!-- else -->{lang否}<!-- /if --></td>
 				<td>
 					<div class="layui-btn-group">

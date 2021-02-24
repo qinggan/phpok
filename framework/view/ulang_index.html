@@ -1,0 +1,30 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header" style="height:auto;">
+		<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_ulang.search()">
+		<ul class="layout" style="padding:5px 0;">
+			<li>
+				<select id="id" name="id">
+					<option value="admin">{lang后台}</option>
+					<option value="api"{if $id == 'api'} selected{/if}>{lang接口}</option>
+					<option value="www"{if $id == 'www'} selected{/if}>{lang前台}</option>
+				</select>
+			</li>
+			<li>
+				<select id="langid" name="langid">
+					<!-- loop from=$langlist key=$key value=$value id=$tmpid -->
+					<option value="api"{if $key == $langid} selected{/if}>{$value}</option>
+					<!-- /loop -->
+				</select>
+			</li>
+			<li><input type="button" value="{lang添加语言}" onclick="$.admin_ulang.add()" class="layui-btn layui-btn-sm" /></li>
+		</ul>
+		</form>
+
+	</div>
+	<div class="layui-card-body">
+		
+	</div>
+</div>
+
+<!-- include tpl=foot_lay -->

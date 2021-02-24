@@ -12,8 +12,8 @@
 	<link rel="shortcut icon" href="{$config.favicon}" />
 	<!-- /if -->
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-	<meta name="phpok-copyright" content="{$license}" />
-	<meta name="phpok-version" content="{$version}" />
+	<meta name="system-copyright" content="{$license}" />
+	<meta name="system-version" content="{$version}" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
 	<link rel="stylesheet" type="text/css" href="{#css#}/css.php?type=admin" />
 	<link rel="stylesheet" href="{$sys.webroot}static/admin/layui/css/layui.css" media="all">
@@ -88,7 +88,7 @@
 							<dd><a href="javascript:$.admin_index.logout();void(0);">{lang退出}</a></dd>
 						</dl>
 					</li>
-					<li class="layui-nav-item" lay-unselect> <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
+					<li class="layui-nav-item" lay-unselect> <a href="javascript:$.admin_index.copyright();"><i class="layui-icon layui-icon-tips"></i></a>
 					</li>
 				</ul>
 			</div>

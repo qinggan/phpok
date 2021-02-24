@@ -7,6 +7,11 @@
 	<th width="60">ID</th>
 	<th>{lang标题}</th>
 	<th width="120">{lang日期}</th>
+	{if $_rs.form_price}
+	<th>{lang价格}</th>
+	<th>{lang运费}</th>
+	<th>{lang税费}</th>
+	{/if}
 	<th width="60">{lang排序}</th>
 	<th width="60">{lang操作}</th>
 </tr>
@@ -16,8 +21,20 @@
 <tr id="{$_rs.identifier}_div_<%= rslist[i].id %>" data-id="<%= rslist[i].id %>">
 	<td><input type="checkbox" value="<%= rslist[i].id %>" id="title_{$_rs.identifier}_<%= i %>" lay-ignore></td>
 	<td><%= rslist[i].id %></td>
-	<td><label for="title_{$_rs.identifier}_<%= i %>"><%= rslist[i].title %></label></td>
+	<td>
+		<label for="title_{$_rs.identifier}_<%= i %>">
+			<%= rslist[i].title %>
+			<% if (rslist[i].cate_title) { %>
+			<small><i>(<%= rslist[i].cate_title %>)</i></small>
+			<% } %>
+		</label>
+	</td>
 	<td><%= dateFormat(rslist[i].dateline,'Y-m-d H:i') %></td>
+	{if $_rs.form_price}
+	<td><input type="text" name="_price_{$_rs.identifier}[<%= rslist[i].id %>]" id="_price_{$_rs.identifier}_<%= rslist[i].id %>" value="<%= rslist[i].price %>" class="layui-input" /></td>
+	<td><input type="text" name="_freight_{$_rs.identifier}[<%= rslist[i].id %>]" id="_price_{$_rs.identifier}_<%= rslist[i].id %>" value="<%= rslist[i].freight %>" class="layui-input" /></td>
+	<td><input type="text" name="_tax_{$_rs.identifier}[<%= rslist[i].id %>]" id="_price_{$_rs.identifier}_<%= rslist[i].id %>" value="<%= rslist[i].tax %>" class="layui-input" /></td>
+	{/if}
 	<td>
 		<div class="button-group">
 			<input type="button" value="↑" class="phpok-btn" title="{lang向前移一位}" onclick="$.phpokform.title_sortup(this,'{$_rs.identifier}')" />
@@ -35,9 +52,9 @@
 	<input type="button" value="{lang请选择}" onclick="$.phpokform.title_select('{$_project_id_btn}',true,'{$_open_title}','{$_rs.identifier}')" class="layui-btn layui-btn-sm" />
 	<span class="hide" id="{$_rs.identifier}_button_checkbox">
 		<div class="layui-btn-group">
-			<input type="button" class="layui-btn layui-btn-sm" value="全选" onclick="$.input.checkbox_all('{$_rs.identifier}_div')" />
-			<input type="button" class="layui-btn layui-btn-sm" value="全不选" onclick="$.input.checkbox_none('{$_rs.identifier}_div')" />
-			<input type="button" class="layui-btn layui-btn-sm" value="反选" onclick="$.input.checkbox_anti('{$_rs.identifier}_div')" />
+			<input type="button" class="layui-btn layui-btn-sm" value="全选" onclick="$.checkbox.all('{$_rs.identifier}_div')" />
+			<input type="button" class="layui-btn layui-btn-sm" value="全不选" onclick="$.checkbox.none('{$_rs.identifier}_div')" />
+			<input type="button" class="layui-btn layui-btn-sm" value="反选" onclick="$.checkbox.anti('{$_rs.identifier}_div')" />
 			<input type="button" class="layui-btn layui-btn-sm layui-btn-danger" value="删除选中" onclick="phpok_title_delete('{$_rs.identifier}')" />
 		</div>
 	</span>
@@ -61,7 +78,7 @@ $(document).ready(function(){
 </ul>
 <script type="text/javascript">
 $(document).ready(function(){
-	$.phpokfrom.title_show_single('{$_rs.identifier}');
+	$.phpokform.title_show_single('{$_rs.identifier}');
 });
 </script>
 <!-- /if -->

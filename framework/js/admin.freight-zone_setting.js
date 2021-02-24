@@ -14,12 +14,12 @@ function save()
 		$.dialog.alert('名称不能为空');
 		return false;
 	}
-	var info = $.input.checkbox_join();
+	var info = $.checkbox.join();
 	if(!info){
 		$.dialog.alert('请选择相应的省市');
 		return false;
 	}
-	var opener = $.dialog.opener;
+	var fid = $("#fid").val();
 	$("#post_save").ajaxSubmit({
 		'url':get_url('freight','zone_save'),
 		'type':'post',
@@ -27,7 +27,7 @@ function save()
 		'success':function(rs){
 			if(rs.status){
 				$.dialog.alert('操作成功',function(){
-					opener.$.phpok.reload();
+					$.admin.close(get_url('freight','zone','fid='+fid));
 				},'succeed');
 				return true;
 			}
@@ -35,7 +35,7 @@ function save()
 			return false;
 		}
 	});
-	return true;
+	return false;
 }
 function update_city(pro)
 {
@@ -60,3 +60,41 @@ function update_pro(pro)
 		$('input[data=city'+pro+']').prop('checked',false);
 	}
 }
+function update_province_city()
+{
+	var url = get_url('freight','province_city');
+	var tid = $("#id").val();
+	if(tid && tid != 'undefined'){
+		url += "&id="+tid;
+	}
+	var country_id = $("#country_id").val();
+	if(!country_id){
+		$.dialog.alert(p_lang('请选择国家'));
+		return false;
+	}
+	url += "&country_id="+country_id;
+	$.phpok.json(url,function(rs){
+		$("#province_city").html(rs.info);
+		return true;
+	});
+}
+$(document).ready(function(){
+	layui.form.on('select(continent)', function(data){
+		var name = "countrylist-"+data.value;
+		var html = '<option value="">'+p_lang('请选择国家…')+'</option>';
+		$("input[data-name="+name+"]").each(function(i){
+			html += '<option value="'+$(this).attr("data-id")+'">'+$(this).val()+'</option>';
+		});
+		$("#country_id").html(html);
+		layui.form.render("select");
+	}); 
+	layui.form.on("select(country)",function(data){
+		if(data.value){
+			update_province_city();
+		}
+	});
+	var country_id = $("#country_id").val();
+	if(country_id && country_id != 'undefined'){
+		update_province_city();
+	}
+});

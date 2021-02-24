@@ -112,7 +112,7 @@
 		},
 		pl_status:function(val)
 		{
-			var ids = $.input.checkbox_join();
+			var ids = $.checkbox.join();
 			if(!ids){
 				$.dialog.alert(p_lang('未指定要操作的分类'));
 				return false;
@@ -140,7 +140,7 @@
 		**/
 		pl_delete:function()
 		{
-			var ids = $.input.checkbox_join();
+			var ids = $.checkbox.join();
 			if(!ids){
 				$.dialog.alert(p_lang('未指定要操作的分类'));
 				return false;

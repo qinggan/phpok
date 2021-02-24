@@ -91,8 +91,16 @@ class project_control extends phpok_control
 		$cateid = 0;
 		if($rs["cate"]){
 			$cate = $this->get("cate");
-			if($cate){
-				$cate_rs = $this->call->phpok('_cate',array('pid'=>$rs['id'],'cate'=>$cate));
+			$cateid = $this->get('cateid');
+			if($cate || $cateid){
+				$array = array('pid'=>$rs['id']);
+				if($cate){
+					$array['cate'] = $cate;
+				}
+				if($cateid){
+					$array['cateid'] = $cateid;
+				}
+				$cate_rs = $this->call->phpok('_cate',$array);
 				if($cate_rs && $cate_rs['id'] != $rs['cate']){
 					$cateid = $cate_rs['id'];
 					$this->rlist['cate_rs'] = $cate_rs;
@@ -158,7 +166,7 @@ class project_control extends phpok_control
 			unset($keywords);
 		}
 		if($ext && is_array($ext)){
-			foreach($ext AS $key=>$value){
+			foreach($ext as $key=>$value){
 				if($key && $value){
 					$dt['e_'.$key] = $value;
 					$pageurl .= "ext[".$key."]=".rawurlencode($value)."&";

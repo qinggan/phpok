@@ -14,6 +14,7 @@ class appsys_model_base extends phpok_model
 	private $iList;
 	private $local_all;
 	private $cacheid = '';
+	private $_total = 0; //总应用数
 	public function __construct()
 	{
 		parent::model();
@@ -66,6 +67,45 @@ class appsys_model_base extends phpok_model
 			}
 		}
 		return $rslist;
+	}
+
+	public function get_uninstall($keywords='',$offset=0,$psize=24)
+	{
+		$list = $this->get_all();
+		$this->get_total(count($list));
+		$rslist = array();
+		$m=0;
+		foreach($list as $key=>$value){
+			if($value['installed']){
+				continue;
+			}
+			if($keywords != ''){
+				$tmp = $value['title'];
+				if($value['note']){
+					$tmp .= ' '.$value['note'];
+				}
+				$tmp .= ' '.$key;
+				if(strpos($keywords,$tmp) !== true){
+					continue;
+				}
+			}
+			if($m>=$offset){
+				$rslist[$key] = $value;
+			}
+			$m++;
+			if($m == ($offset+$psize)){
+				break;
+			}
+		}
+		return $rslist;
+	}
+
+	public function get_total($total=0)
+	{
+		if($total){
+			$this->_total = $total;
+		}
+		return $this->_total;
 	}
 
 	public function local_list()
@@ -121,8 +161,28 @@ class appsys_model_base extends phpok_model
 				continue;
 			}
 		}
+		$list = $this->_sort($list);
 		$this->iList = $list;
 		return $this->iList;
+	}
+
+	private function _sort($list)
+	{
+		foreach($list as $key=>$value){
+			if(!isset($value['taxis'])){
+				$value['taxis'] = 255;
+			}
+			$list[$key] = $value;
+		}
+		return $this->_array_multisort($list);
+	}
+
+	private function _array_multisort($data){
+		foreach($data as $val){
+			$key_arrays[]=$val['taxis'];
+		}
+		array_multisort($key_arrays,SORT_ASC,SORT_NUMERIC,$data);
+		return $data;
 	}
 
 	public function get_one($id)
@@ -174,6 +234,20 @@ class appsys_model_base extends phpok_model
 			$info = $this->lib('xml')->read($this->dir_app.$id.'/config.xml',true);
 		}
 		$info['installed'] = true;
+		$this->lib('xml')->save($info,$this->dir_app.$id.'/config.xml');
+		if($this->cacheid){
+			$this->cache->delete($this->cacheid);
+		}
+		return true;
+	}
+
+	public function taxis($id,$taxis=0)
+	{
+		$info = array();
+		if(is_file($this->dir_app.$id.'/config.xml')){
+			$info = $this->lib('xml')->read($this->dir_app.$id.'/config.xml',true);
+		}
+		$info['taxis'] = $taxis;
 		$this->lib('xml')->save($info,$this->dir_app.$id.'/config.xml');
 		if($this->cacheid){
 			$this->cache->delete($this->cacheid);

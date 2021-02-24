@@ -232,6 +232,8 @@ class site_control extends phpok_control
 		}
 		$this->assign('rs',$list[$id]);
 		$this->assign('id',$id);
+		$currency_list = $this->model('currency')->get_list();
+		$this->assign('currency_list',$currency_list);
 		$this->view("site_price_status");
 	}
 
@@ -253,6 +255,7 @@ class site_control extends phpok_control
 		$array['action'] = $this->get('action');
 		$array['taxis'] = $this->get('taxis','int');
 		$array['default'] = $this->get('default');
+		$array['currency_id'] = $this->get('currency_id','int');
 		$this->model('site')->price_status_update($array,$id);
 		$this->success();
 	}

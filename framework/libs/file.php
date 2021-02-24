@@ -312,11 +312,13 @@ class file_lib
 	{
 		$this->read_count++;
 		$tmplist = $this->_dir_list($folder);
-		foreach($tmplist AS $key=>$value){
-			if(is_dir($value)){
-				$this->deep_ls($value,$list);
-			}else{
-				$list[] = $value;
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				if(is_dir($value)){
+					$this->deep_ls($value,$list);
+				}else{
+					$list[] = $value;
+				}
 			}
 		}
 	}

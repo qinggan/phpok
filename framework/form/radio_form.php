@@ -26,7 +26,7 @@ class radio_form extends _init_auto
 				if(!$value["parent_id"]){
 					$p_list[] = $value;
 				}
-				if($value["module"] && !$value['mtype']){
+				if($value["module"]){
 					$m_list[] = $value;
 				}
 			}
@@ -39,6 +39,37 @@ class radio_form extends _init_auto
 		}
 		$catelist = $this->model('cate')->root_catelist($_SESSION['admin_site_id']);
 		$this->assign("catelist",$catelist);
+		//读取另一个站点
+		$sitelist = $this->model('site')->get_all_site('id');
+		if($sitelist && count($sitelist)>1){
+			unset($sitelist[$this->session->val('admin_site_id')]);
+			//读取其他站点的项目及模块
+			foreach($sitelist as $key=>$value){
+				$rslist = $this->model("project")->get_all_project($value['id']);
+				if($rslist){
+					$m_list = array();
+					foreach($rslist as $k=>$v){
+						if(!$v["parent_id"]){
+							$p_list[] = $v;
+						}
+						if($v['module']){
+							$m_list[] = $v;
+						}
+					}
+					if($m_list && count($m_list)>0){
+						$sitelist[$key]['mlist'] = $m_list;
+					}
+					if($p_list && count($p_list)>0){
+						$sitelist[$key]['plist'] = $p_list;
+					}
+				}
+				$catelist = $this->model("cate")->root_catelist($value['id']);
+				if($catelist){
+					$sitelist[$key]['clist'] = $catelist;
+				}
+			}
+			$this->assign('ext_sitelist',$sitelist);
+		}
 		$html = $this->dir_phpok."form/html/radio_admin.html";
 		$this->view($html,"abs-file",false);
 	}
@@ -70,6 +101,26 @@ class radio_form extends _init_auto
 		}
 	}
 
+	public function phpok_get($rs,$appid="admin")
+	{
+		$ext = array();
+		if($rs['ext']){
+			if(is_string($rs['ext'])){
+				$ext = unserialize($rs['ext']);
+			}else{
+				$ext = $rs['ext'];
+			}
+		}
+		$info = $this->get($rs['identifier'],$rs['format']);
+		if(!$info){
+			return false;
+		}
+		if($ext['is_add'] && $info == '_'){
+			$info = $this->get($rs['identifier'].'_extadd',$rs['format']);
+		}
+		return $info;
+	}
+
 	//输出内容
 	public function phpok_show($rs,$appid='admin')
 	{
@@ -99,7 +150,17 @@ class radio_form extends _init_auto
 				return $this->call->phpok('_cate',array('cateid'=>$rs['content']));
 			}
 			if($opt[0] == 'title'){
-				return $this->call->phpok('_arc',array('title_id'=>$rs['content']));
+				$project = $this->model('project')->get_one($opt[1],false);
+				if(!$project || !$project['module']){
+					return false;
+				}
+				$module = $this->model('module')->get_one($project['module']);
+				$ext = array('title_id'=>$rs['content']);
+				if($module['mtype']){
+					$ext['pid'] = $project['id'];
+					$ext['is_single'] = 1;
+				}
+				return $this->call->phpok('_arc',$ext);
 			}
 			return $rs['content'];
 		}
@@ -123,11 +184,22 @@ class radio_form extends _init_auto
 			$rs['title'] = $tmp['title'];
 		}
 		if($type == 'title'){
-			$tmp = $this->model('list')->call_one($val);
-			if(!$tmp || !$tmp['status']){
-				return false;
+			$project = $this->model('project')->get_one($group_id,false);
+			if(!$project || !$project['module']){
+				$rs['title'] = '未知';
+			}else{
+				$module = $this->model('module')->get_one($project['module']);
+				if($module['mtype']){
+					$tmp = $this->model('list')->single_one($val,$project['module']);
+				}else{
+					$tmp = $this->model('list')->call_one($val);
+				}
+				if(!$tmp){
+					$rs['title'] = '无';
+				}else{
+					$rs['title'] = $tmp['title'] ? $tmp['title'] : $tmp;
+				}
 			}
-			$rs['title'] = $tmp['title'];
 		}
 		if($type == 'cate'){
 			$tmp = $this->model('cate')->cate_info($val,false);
@@ -158,7 +230,13 @@ class radio_form extends _init_auto
 				if(!$value || !trim($value)){
 					continue;
 				}
-				if(strpos($value,':') !== false){
+				if(strpos($value,'|') !== false){
+					$tmp2 = explode("|",$value);
+					if(!$tmp2[1]){
+						$tmp2[1] = $tmp2[0];
+					}
+					$rslist[] = array('val'=>$tmp2[0],'title'=>$tmp2[1]);
+				}elseif(strpos($value,':') !== false){
 					$tmp2 = explode(":",$value);
 					if(!$tmp2[1]){
 						$tmp2[1] = $tmp2[0];
@@ -189,8 +267,22 @@ class radio_form extends _init_auto
 		}
 		//读主题列表信息
 		if($type == 'title'){
-			$tmplist = $this->model("list")->title_list($group_id);
-			if(!$tmplist) return false;
+			$project = $this->model('project')->get_one($group_id,false);
+			if(!$project || !$project['module']){
+				return false;
+			}
+			$module = $this->model('module')->get_one($project['module']);
+			if(!$module){
+				return false;
+			}
+			if($module['mtype']){
+				$tmplist = $this->model('list')->single_list($project['module'],'',0,999);
+			}else{
+				$tmplist = $this->model("list")->title_list($group_id);
+			}
+			if(!$tmplist){
+				return false;
+			}
 			$rslist = array();
 			foreach($tmplist as $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);

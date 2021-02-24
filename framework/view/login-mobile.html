@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="Expires" content="wed, 26 feb 1997 08:21:57 gmt" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<title>{lang管理员登录}</title>
+	<meta name="author" content="phpok.com" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<link rel="stylesheet" href="css/artdialog.css" />
+	<link rel="stylesheet" href="{$sys.webroot}static/admin/layui/css/layui.css" media="all">
+	<link rel="stylesheet" href="{$sys.webroot}static/admin/style/admin.css" media="all">
+	<link rel="stylesheet" href="{$sys.webroot}static/admin/style/login.css" media="all">
+	<script src="{$sys.webroot}static/admin/layui/layui.js"></script>
+	<script type="text/javascript" src="{url ctrl=js ext=admin.login-mobile,jquery.artdialog /}"></script>
+</head>
+<body>
+	<div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="display: none;">
+		<div class="layadmin-user-login-main">
+			<div class="layadmin-user-login-box layadmin-user-login-header">
+				<!-- if $config.adm_logo180 -->
+				<p>
+					<img src="{$config.adm_logo180 ? $config.adm_logo180 : 'images/login.svg'}" border="0" alt="{$config.title}" height="50px" />
+				</p>
+				<!-- else -->
+				<h2>{$config.title}</h2>
+				<!-- /if -->
+			</div>
+			<div class="layadmin-user-login-box layadmin-user-login-body layui-form" style="padding:0;">
+				<form method="post" id="post_save" onsubmit="return admin_login()">
+					<div class="layui-form-item">
+						<label class="layadmin-user-login-icon layui-icon layui-icon-username" for="LAY-user-login-username"></label>
+						<input type="text" name="user" id="LAY-user-login-username" lay-verify="required" placeholder="{lang管理员账号}" class="layui-input">
+					</div>
+					<div class="layui-form-item">
+						<label class="layadmin-user-login-icon layui-icon layui-icon-password" for="LAY-user-login-password"></label>
+						<input type="password" name="pass" id="LAY-user-login-password" lay-verify="required" placeholder="{lang管理员密码}" class="layui-input">
+					</div>
+					<div class="layui-form-item">
+						<input type="radio" name="login_time" value="1440" title="24小时" />
+						<input type="radio" name="login_time" value="60" title="1小时" />
+						<input type="radio" name="login_time" value="30" title="30分钟" checked />
+					</div>
+					<input type="hidden" name="fid" id="fid" value="{$fid}" />
+					<input type="hidden" name="fcode" id="fcode" value="{$fcode}" />
+					<div class="layui-form-item">
+						<button class="layui-btn layui-btn-fluid" type="submit">管理员登录</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		<input type="hidden" name="quickcode" id="quickcode" value="" />
+		<div class="layui-row" id="quicklogin" style="display:none;">
+			<div class="layui-col-sm12">
+		    	<h3 align="center" style="padding:10px 0;">管理员快速登录</h3>
+			</div>
+			<div class="layui-col-sm12" align="center">
+				<div class="layui-btn-group">
+					<input type="button" value="30分钟" onclick="q_adm_login(30)" class="layui-btn layui-btn-danger" />
+					<input type="button" value="1小时" onclick="q_adm_login(60)" class="layui-btn layui-btn-danger" />
+					<input type="button" value="24小时" onclick="q_adm_login(1440)" class="layui-btn" />
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

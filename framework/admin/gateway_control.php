@@ -21,7 +21,7 @@ class gateway_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rslist = $this->model('gateway')->get_all();
 		if($rslist){
@@ -68,7 +68,7 @@ class gateway_control extends phpok_control
 		$id = $this->get('id');
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$rs = $this->model('gateway')->get_one($id);
 			$this->assign('rs',$rs);
@@ -77,12 +77,12 @@ class gateway_control extends phpok_control
 			$code = $rs['code'];
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$type = $this->get('type');
 			$code = $this->get('code');
 			if(!$type || !$code){
-				error(P_Lang('未指网关类型或接口引挈'),$this->url('gateway'),'error');
+				$this->error(P_Lang('未指网关类型或接口引挈'),$this->url('gateway'));
 			}
 			$taxis = $this->model('gateway')->next_taxis($type,$code);
 			$this->assign('rs',array('taxis'=>$taxis));
@@ -103,19 +103,19 @@ class gateway_control extends phpok_control
 		$array = array('site_id'=>$_SESSION['admin_site_id']);
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$rs = $this->model('gateway')->get_one($id);
 			$type = $rs['type'];
 			$code = $rs['code'];
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$type = $this->get('type');
 			$code = $this->get('code');
 			if(!$type || !$code){
-				error(P_Lang('未指网关类型或引挈类型'),$this->url('gateway'),'error');
+				$this->error(P_Lang('未指网关类型或引挈类型'),$this->url('gateway'));
 			}
 			$array['type'] = $type;
 			$array['code'] = $code;

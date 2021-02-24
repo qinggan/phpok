@@ -1,11 +1,9 @@
 <?php
 /**
  * GD方案管理
- * @package phpok\admin
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
- * @版本 4.x
+ * @版本 5.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
  * @时间 2017年10月04日
 **/
@@ -87,6 +85,7 @@ class gd_control extends phpok_control
 				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}
+		$array['title'] = $this->get('title');
 		$array["width"] = $this->get("width","int");
 		$array["height"] = $this->get("height","int");
 		$array["mark_picture"] = $this->get("mark_picture");

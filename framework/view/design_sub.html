@@ -1,0 +1,165 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	var id = $("#id").val();
+	var t = $("input[name=datatype]:checked").val();
+	if(!t){
+		$.dialog.alert('请选择类型');
+		return false;
+	}
+	if(t != 'oneline' && t != 't' && t != 'f' && t != 'f2'){
+		$.dialog.alert('不符合要求，请检查');
+		return false;
+	}
+	var obj = opener.$("div[pre-id="+id+"]");
+	
+	if(t == 'oneline'){
+		var c = $("#linecount").val();
+		c = parseInt(c);
+		if(!c || c == 'undefined' || c<2){
+			$.dialog.alert('请填写行数，只有一行不需要内嵌');
+			return false;
+		}
+		var html = '';
+		for(var i=0;i<c;i++){
+			html += '<div pre-id="'+id+'-'+i+'" pre-type="data"><div pre-type="content"></div></div>';
+		}
+	}
+	if(t == 't'){
+		var c = $("#t-data").val();
+		c = parseInt(c);
+		if(!c || c == 'undefined' || c<1 || c>11){
+			$.dialog.alert('左区占比设置不对，不能小于只能填写1-11范围的数字');
+			return false;
+		}
+		var html = '<div pre-id="'+id+'-0" pre-type="data"><div pre-type="content"></div></div>';
+		html += '<div class="row no-gutters" pre-id="'+id+'-1">';
+		html += '<div class="col-'+c+'" pre-type="data" pre-id="'+id+'-2"><div pre-type="content"></div></div>'
+		html += '<div class="col" pre-type="data" pre-id="'+id+'-3"><div pre-type="content"></div></div>';
+		html += '</div>';
+	}
+	if(t == 'f'){
+		var c = $("#t-data2").val();
+		c = parseInt(c);
+		if(!c || c == 'undefined' || c<1 || c>11){
+			$.dialog.alert('左区占比设置不对，不能小于只能填写1-11范围的数字');
+			return false;
+		}
+		var html = '<div class="row no-gutters" pre-id="'+id+'-1">';
+		html += '<div class="col-'+c+'" pre-type="data" pre-id="'+id+'-2"><div pre-type="content"></div></div>'
+		html += '<div class="col" pre-id="'+id+'-3">';
+		html += '<div pre-id="'+id+'-4" pre-type="data"><div pre-type="content"></div></div>';
+		html += '<div pre-id="'+id+'-5" pre-type="data"><div pre-type="content"></div></div>';
+		html += '</div>';
+		html += '</div>';
+	}
+	if(t == 'f2'){
+		var c = $("#t-data2").val();
+		c = parseInt(c);
+		if(!c || c == 'undefined' || c<1 || c>11){
+			$.dialog.alert('左区占比设置不对，不能小于只能填写1-11范围的数字');
+			return false;
+		}
+		var html = '<div class="row no-gutters" pre-id="'+id+'-1">';
+		html += '<div class="col-'+c+'" pre-id="'+id+'-3">';
+		html += '<div pre-id="'+id+'-4" pre-type="data"><div pre-type="content"></div></div>';
+		html += '<div pre-id="'+id+'-5" pre-type="data"><div pre-type="content"></div></div>';
+		html += '</div>';
+		html += '<div class="col" pre-type="data" pre-id="'+id+'-2"><div pre-type="content"></div></div>'
+		html += '</div>';
+	}
+	
+	obj.html(html);
+	obj.attr("pre-type","sublayer");
+	$.dialog.close();
+	opener.$.form_design.reload_act();
+	return false;
+}
+</script>
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<div class="layui-card">
+	<div class="layui-card-header">
+		设定当前属新布局后，当前框内的内容会清空，请慎用
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				单行类型
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="datatype" value="oneline" title="单行" />
+			</div>
+			
+			<div class="layui-form-mid">
+				行数：
+			</div>
+			<div class="layui-input-inline short">
+				<input type="num" name="linecount" id="linecount" value="2" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				行
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				T型
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="datatype" value="t" title="T类型" />
+			</div>
+			
+			<div class="layui-form-mid">
+				左分区：
+			</div>
+			<div class="layui-input-inline short">
+				<input type="text" name="t-data" id="t-data" value="6" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				不超过11
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				F型
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="datatype" value="f" title="F类型" />
+			</div>
+			
+			<div class="layui-form-mid">
+				左分区：
+			</div>
+			<div class="layui-input-inline short">
+				<input type="text" name="t-data2" id="t-data2" value="6" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				不超过11
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				反向F型
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="datatype" value="f2" title="反F类型" />
+			</div>
+			
+			<div class="layui-form-mid">
+				左分区：
+			</div>
+			<div class="layui-input-inline short">
+				<input type="text" name="t-data3" id="t-data3" value="6" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				不超过11
+			</div>
+		</div>
+	</div>
+</div>
+
+</form>
+
+<!-- include tpl=foot_lay is_open=true -->

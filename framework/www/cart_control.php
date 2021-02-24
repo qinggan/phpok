@@ -136,9 +136,9 @@ class cart_control extends phpok_control
 					unset($pricelist[$key]);
 					continue;
 				}
-				if($value['default']){
-					$value['price'] = price_format($value['default'],$this->site['currency_id']);
-					$value['price_val'] = $value['default'];
+				if($value['default'] && $value['currency_id']){
+					$value['price'] = price_format($value['default'],$value['currency_id'],$this->site['currency_id']);
+					$value['price_val'] = price_format_val($value['default'],$value['currency_id'],$this->site['currency_id']);
 				}
 				if($value['identifier'] == 'product'){
 					$value['price'] = price_format($totalprice,$this->site['currency_id']);
@@ -151,18 +151,9 @@ class cart_control extends phpok_control
 					}
 					if($this->tpl->val('address')){
 						$freight_price = $this->_freight();
-						if(!$freight_price && !$value['default']){
-							unset($pricelist[$key]);
-							continue;
-						}
 						if($freight_price){
 							$value['price'] = price_format($freight_price,$this->site['currency_id']);
 							$value['price_val'] = $freight_price;
-						}
-					}else{
-						if(!$value['default']){
-							unset($pricelist[$key]);
-							continue;
 						}
 					}
 				}
@@ -171,14 +162,16 @@ class cart_control extends phpok_control
 					$this->data('cart_ids',$id);
 					$this->node('PHPOK_cart_coupon');
 					$tmp = $this->data('cart_coupon');
-					if(!$tmp){
-						unset($pricelist[$key]);
-						continue;
+					if($tmp){
+						$value['price'] = price_format(-$tmp['price'],$this->site['currency_id']);
+						$value['price_val'] = -$tmp['price'];	
+					}else{
+						$value['price'] = price_format('0',$this->site['currency_id']);
+						$vlaue['price_val'] = '0.00';
 					}
-					$value['price'] = price_format(-$tmp['price'],$this->site['currency_id']);
-					$value['price_val'] = -$tmp['price'];
 					$discount = -$tmp['price'];
 					$this->assign('coupon_code',$tmp['code']);
+					$this->assign('coupon_title',$tmp['title']);
 				}
 				$pricelist[$key] = $value;
 			}
@@ -272,9 +265,9 @@ class cart_control extends phpok_control
 					unset($pricelist[$key]);
 					continue;
 				}
-				if($value['default']){
-					$value['price'] = price_format($value['default'],$this->site['currency_id']);
-					$value['price_val'] = $value['default'];
+				if($value['default'] && $value['currency_id']){
+					$value['price'] = price_format($value['default'],$value['currency_id'],$this->site['currency_id']);
+					$value['price_val'] = price_format_val($value['default'],$value['currency_id'],$this->site['currency_id']);
 				}
 				if($value['identifier'] == 'product'){
 					$value['price'] = price_format($totalprice,$this->site['currency_id']);
@@ -288,18 +281,9 @@ class cart_control extends phpok_control
 					}
 					if($this->tpl->val('address')){
 						$freight_price = $this->_freight();
-						if(!$freight_price && !$value['default']){
-							unset($pricelist[$key]);
-							continue;
-						}
 						if($freight_price){
 							$value['price'] = price_format($freight_price,$this->site['currency_id']);
 							$value['price_val'] = $freight_price;
-						}
-					}else{
-						if(!$value['default']){
-							unset($pricelist[$key]);
-							continue;
 						}
 					}
 				}
@@ -311,18 +295,9 @@ class cart_control extends phpok_control
 						unset($pricelist[$key]);
 						continue;
 					}
-					if($tmp['min_price'] > $totalprice){
-						unset($pricelist[$key]);
-						continue;
-					}
-					if(!$tmp['discount_type']){
-						$tmp_price = round($totalprice * $tmp['discount_val'] / 100,2);
-					}else{
-						$tmp_price = $tmp['discount_val'];
-					}
-					$value['price'] = price_format(-$tmp_price,$this->site['currency_id']);
-					$value['price_val'] = -$tmp_price;
-					$discount = -$tmp_price;
+					$value['price'] = price_format(-$tmp['price'],$this->site['currency_id']);
+					$value['price_val'] = -$tmp['price'];
+					$discount = -$tmp['price'];
 					$pricelist[$key] = $value;
 					$this->assign('coupon_code',$tmp['code']);
 				}

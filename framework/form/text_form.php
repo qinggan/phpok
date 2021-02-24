@@ -22,6 +22,24 @@ class text_form extends _init_auto
 	**/
 	public function phpok_config()
 	{
+		$rslist = $this->model("project")->get_all_project($this->session->val('admin_site_id'));
+		if($rslist){
+			$p_list = $m_list = array();
+			foreach($rslist as $key=>$value){
+				if(!$value["parent_id"]){
+					$p_list[] = $value;
+				}
+				if($value["module"]){
+					$m_list[] = $value;
+				}
+			}
+			if($p_list && count($p_list)>0){
+				$this->assign("project_list",$p_list);
+			}
+			if($m_list && count($m_list)>0){
+				$this->assign("title_list",$m_list);
+			}
+		}
 		$this->view($this->dir_phpok.'form/html/text_admin.html','abs-file');
 	}
 
@@ -107,6 +125,14 @@ class text_form extends _init_auto
 			$css = $rs['form_style'] ? $rs['form_style'].';background:#EFEFEF;cursor:default;' : 'background:#EFEFEF;cursor:default;';
 			$rs['form_style'] = $this->lib('common')->css_format($css);
 		}
+		if($rs['form_btn'] && strpos($rs['form_btn'],'title:') !== false){
+			$tmp = explode(":",$rs['form_btn']);
+			if($tmp[0] == 'title' && $tmp[1]){
+				$rs['form_btn_pid'] = $tmp[1];
+				$t = $this->model('project')->get_one($tmp[1],false);
+				$rs['extitle'] = $t['title'];
+			}
+		}
 		if($rs['ext_quick_words'] && trim($rs['ext_quick_words'])){
 			$tmp = explode("\n",trim($rs['ext_quick_words']));
 			foreach($tmp as $key=>$value){
@@ -129,7 +155,6 @@ class text_form extends _init_auto
 				}else{
 					$tmp[$key] = array('id'=>trim($value),'show'=>trim($value));
 				}
-				
 			}
 			$rs['ext_quick_words'] = $tmp;
 		}

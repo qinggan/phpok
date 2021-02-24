@@ -138,7 +138,7 @@ function set_status(id)
 //批量排序
 function set_sort()
 {
-	var ids = $.input.checkbox_join();
+	var ids = $.checkbox.join();
 	if(!ids)
 	{
 		$.dialog.alert("未指定要排序的ID");
@@ -166,7 +166,7 @@ function set_sort()
 //批量删除
 function set_delete()
 {
-	var ids = $.input.checkbox_join();
+	var ids = $.checkbox.join();
 	if(!ids)
 	{
 		$.dialog.alert("未指定要删除的主题");
@@ -203,7 +203,7 @@ function show_order()
 
 function page_sort()
 {
-	var ids = $.input.checkbox_join();
+	var ids = $.checkbox.join();
 	if(!ids)
 	{
 		$.dialog.alert("未指定要排序的ID");
@@ -290,7 +290,7 @@ function set_admin_id(id)
 
 function set_parent()
 {
-	var ids = $.input.checkbox_join();
+	var ids = $.checkbox.join();
 	if(!ids){
 		$.dialog.alert(p_lang('未指定要操作的主题'));
 		return false;
@@ -324,7 +324,7 @@ function set_parent()
 
 function unset_parent()
 {
-	var ids = $.input.checkbox_join();
+	var ids = $.checkbox.join();
 	if(!ids){
 		$.dialog.alert(p_lang('未指定要操作的主题'));
 		return false;
@@ -344,7 +344,7 @@ function unset_parent()
 
 function list_action_exec()
 {
-	var ids = $.input.checkbox_join();
+	var ids = $.checkbox.join();
 	if(!ids){
 		$.dialog.alert(p_lang('未指定要操作的主题'));
 		return false;

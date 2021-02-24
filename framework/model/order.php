@@ -443,6 +443,23 @@ class order_model_base extends phpok_model
 		return $this->_order_payment($order_id,$condition);
 	}
 
+	/**
+	 * 获取某一条付款记录信息
+	 * @参数 $id order_payment里的自增ID
+	**/
+	public function order_payment_info($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."order_payment WHERE id='".$id."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		if($rs['ext']){
+			$rs['ext'] = unserialize($rs['ext']);
+		}
+		return $rs;
+	}
+
 	public function delete_not_end_order($order_id)
 	{
 		if(!$order_id){
@@ -787,9 +804,14 @@ class order_model_base extends phpok_model
 	}
 
 
-	public function log_list($order_id)
+	public function log_list($order_id,$sort='ASC')
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."order_log WHERE order_id='".$order_id."' ORDER BY addtime ASC,id ASC";
+		if(!$sort){
+			$sort = 'ASC';
+		}
+		$sort = strtoupper($sort);
+		$orderby = $sort == 'DESC' ? 'addtime DESC,id DESC' : 'addtime ASC,id ASC';
+		$sql = "SELECT * FROM ".$this->db->prefix."order_log WHERE order_id='".$order_id."' ORDER BY ".$orderby;
 		return $this->db->get_all($sql);
 	}
 
@@ -828,5 +850,59 @@ class order_model_base extends phpok_model
 			$rslist[$value['user_id']] = $value['total'];
 		}
 		return $rslist;
+	}
+
+	public function refund_all($order_id=0)
+	{
+		$sql  = " SELECT r.*,a.account FROM ".$this->db->prefix."order_refund r LEFT JOIN ".$this->db->prefix."adm a ON(r.admin_id=a.id) ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."order_payment p ON(r.order_payment_id=p.id) LEFT JOIN ".$this->db->prefix."order o ON(p.order_id=o.id) ";
+		$sql .= " WHERE o.id='".$order_id."' ORDER BY r.id DESC";
+		return $this->db->get_all($sql);
+	}
+
+	public function refund_delete($id)
+	{
+		$sql = "DELETE FROM ".$this->db->prefix."order_refund WHERE id='".$id."'";
+		return $this->db->query($sql);
+	}
+
+	public function refund_list($condition='',$offset=0,$psize=30)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."order_refund ";
+		if($condition){
+			$sql .= "WHERE ".$condition." ";
+		}
+		$sql .= " LIMIT ".intval($offset).",".intval($psize);
+		return $this->db->get_all($sql);
+	}
+
+	public function refund_one($id,$type_id='id')
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."order_refund WHERE ".$type_id."='".$id."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		if($rs['ext']){
+			$rs['ext'] = unserialize($rs['ext']);
+		}
+		return $rs;
+	}
+
+	public function refund_save($data,$id=0)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		if($id){
+			return $this->db->update($data,"order_refund",array('id'=>$id));
+		}
+		return $this->db->insert($data,'order_refund');
+	}
+
+	public function refund_price($order_id=0)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."order_refund WHERE order_id='".$order_id."'";
+		return $this->db->get_all($sql);
 	}
 }

@@ -1,12 +1,14 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/admin/ulang_control.php
-	备注： 提取后台模板语言包
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年06月12日 11时02分
-*****************************************************************************************/
+/**
+ * 语言包提取工具
+ * @作者 苏相锟 <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司 / 苏相锟
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
+ * @时间 2020年8月26日
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class ulang_control extends phpok_control
 {
@@ -16,6 +18,87 @@ class ulang_control extends phpok_control
 	}
 
 	public function index_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$id = 'admin';
+		}
+		$this->assign('id',$id);
+		$langid = $this->get('langid');
+		if(!$langid){
+			$langid = 'en_US';
+		}
+		$this->assign('langid',$langid);
+		//语言包
+		$langlist = $this->model('lang')->get_list();
+		if($langlist){
+			foreach($langlist as $key=>$value){
+				if($key == 'zh_CN' || $key == 'cn' || $key == 'default'){
+					unset($langlist[$key]);
+				}
+			}
+		}
+		$this->assign('langlist',$langlist);
+		$list = array();
+		$file = $this->dir_data.'json/language_'.$id.'.json';
+		if(file_exists($file)){
+			$list = $this->lib('json')->decode($this->lib('file')->cat($file));
+		}
+		$this->assign('rslist',$list);
+		$this->view('ulang_index');
+	}
+
+	//加载语言本地库
+	public function reload_f()
+	{
+		$tmp = array('admin','www','api');
+		foreach($tmp as $key=>$value){
+			$list = $this->file2content($value);
+			$tmplist = array();
+			foreach($list as $k=>$v){
+				if(substr($v,-4) == 'html'){
+					preg_match_all("/\{lang([^\\)\(}]+)[\}|\|]/isU",$v,$matches);
+				}else{
+					preg_match_all("/P_Lang\([\"']{1}(.+)[\"']/isU",$v,$matches);
+				}
+				if(!$matches || !$matches[1]){
+					continue;
+				}
+				foreach($matches[1] as $kk=>$vv){
+					if(strpos($vv,'.$') !== false){
+						continue;
+					}
+					$code = md5($vv);
+					$tmplist[$code] = $vv;
+				}
+			}
+			$tmp = $this->lib("json")->encode($tmplist,false,true);
+			$file = $this->dir_data."/json/language_".$value.".json";
+			$this->lib('file')->vim($tmp,$file);
+		}
+		$this->success('语言包文件更新成功');
+	}
+
+	private function file2content($type="admin")
+	{
+		if($type == 'admin'){
+			$list = $this->lib('file')->ls($this->dir_phpok.'admin/');
+			$list2 = $this->lib('file')->ls($this->dir_phpok.'view/');
+			$list = array_merge($list,$list2);
+			foreach($list as $key=>$value){
+				$tmp = $this->lib('file')->cat($value);
+				yield $tmp;
+			}
+		}else{
+			$list = $this->lib('file')->ls($this->dir_phpok.$type.'/');
+			foreach($list as $key=>$value){
+				$tmp = $this->lib('file')->cat($value);
+				yield $tmp;
+			}
+		}
+	}
+
+	public function tophp_f()
 	{
 		$list = $this->lib('file')->ls($this->dir_phpok.'view/');
 		$fopen = fopen($this->dir_root.'langs/lang2.php','wb');

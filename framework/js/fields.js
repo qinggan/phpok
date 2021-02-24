@@ -233,7 +233,7 @@ function field_add_check(tbl_prefix,id)
 function update_taxis()
 {
 	var url = get_url("fields","taxis");
-	var id_string = $.input.checkbox_join();
+	var id_string = $.checkbox.join();
 	if(!id_string || id_string == "undefined")
 	{
 		alert("没有指定要更新的排序ID！");

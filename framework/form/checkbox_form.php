@@ -39,6 +39,37 @@ class checkbox_form extends _init_auto
 		}
 		$catelist = $this->model('cate')->root_catelist($site_id);
 		$this->assign("catelist",$catelist);
+		//读取另一个站点
+		$sitelist = $this->model('site')->get_all_site('id');
+		if($sitelist && count($sitelist)>1){
+			unset($sitelist[$this->session->val('admin_site_id')]);
+			//读取其他站点的项目及模块
+			foreach($sitelist as $key=>$value){
+				$rslist = $this->model("project")->get_all_project($value['id']);
+				if($rslist){
+					$m_list = array();
+					foreach($rslist as $k=>$v){
+						if(!$v["parent_id"]){
+							$p_list[] = $v;
+						}
+						if($v['module']){
+							$m_list[] = $v;
+						}
+					}
+					if($m_list && count($m_list)>0){
+						$sitelist[$key]['mlist'] = $m_list;
+					}
+					if($p_list && count($p_list)>0){
+						$sitelist[$key]['plist'] = $p_list;
+					}
+				}
+				$catelist = $this->model("cate")->root_catelist($value['id']);
+				if($catelist){
+					$sitelist[$key]['clist'] = $catelist;
+				}
+			}
+			$this->assign('ext_sitelist',$sitelist);
+		}
 		$this->view($this->dir_phpok.'form/html/checkbox_admin.html','abs-file');
 	}
 
@@ -109,7 +140,11 @@ class checkbox_form extends _init_auto
 			$ext['option_list'] = 'default:0';
 		}
 		$opt = explode(":",$ext['option_list']);
-		$info = unserialize($rs['content']);
+		if($rs['content'] && is_string($rs['content']) && strpos($rs['content'],'{') !== false){
+			$info = unserialize($rs['content']);
+		}else{
+			$info = $rs['content'];
+		}
 		if(!$info || !is_array($info)){
 			return false;
 		}
@@ -143,7 +178,11 @@ class checkbox_form extends _init_auto
 						$tmp = $this->model('usergroup')->get_one($value);
 					}
 				}
-				$list[$value] = $tmp;
+				if(is_array($value)){
+					$list[$value['val']] = $tmp;
+				}else{
+					$list[$value] = $tmp;
+				}
 			}
 			return $list;
 		}
@@ -202,7 +241,13 @@ class checkbox_form extends _init_auto
 				if(!$value || !trim($value)){
 					continue;
 				}
-				if(strpos($value,':') !== false){
+				if(strpos($value,'|') !== false){
+					$tmp2 = explode("|",$value);
+					if(!$tmp2[1]){
+						$tmp2[1] = $tmp2[0];
+					}
+					$rslist[] = array('val'=>$tmp2[0],'title'=>$tmp2[1]);
+				}elseif(strpos($value,':') !== false){
 					$tmp2 = explode(":",$value);
 					if(!$tmp2[1]){
 						$tmp2[1] = $tmp2[0];

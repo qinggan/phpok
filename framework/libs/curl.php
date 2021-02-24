@@ -28,7 +28,7 @@ class curl_lib
 	private $proxy_user = ''; // 代理账号
 	private $proxy_pass = ''; // 代理密码
 	private $proxy_type = 'http'; // 代理方式
-	private $post_data = array(); // POST 表单数据，数组
+	private $post_data; // POST 表单数据，数组 或 字串
 	private $http_body = ''; // 返回的内容信息
 	private $http_header = ''; // 返回的头部信息
 	private $http_code = 200; // 返回的状态
@@ -73,6 +73,10 @@ class curl_lib
 			return $this->cookie;
 		}
 		if($value == ''){
+			if(strpos($key,'=') !== false){
+				$this->cookie = $key;
+				return $this->cookie;
+			}
 			if(isset($this->cookie[$key])){
 				return $this->cookie[$key];
 			}
@@ -390,15 +394,19 @@ class curl_lib
 		return $this->host_ip;
 	}
 
-	public function exec($url='')
+	public function exec($url='',$is_binary=false)
 	{
 		if(!$url){
 			return false;
 		}
+		$this->http_body = '';
+		$this->http_header = '';
 		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_FORBID_REUSE, true);
 		curl_setopt($curl, CURLOPT_HEADER,true);
+		curl_setopt($curl, CURLOPT_FORBID_REUSE, true);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_BINARYTRANSFER, $is_binary);
+		
 		if($this->is_post && $this->post_data){
 			curl_setopt($curl,CURLOPT_POST,true);
 			if(is_array($this->post_data)){
@@ -421,6 +429,9 @@ class curl_lib
 		}
 		if($this->cookie && is_array($this->cookie)){
 			curl_setopt($curl,CURLOPT_COOKIE,implode("; ",$this->cookie));
+		}
+		if($this->cookie && is_string($this->cookie)){
+			curl_setopt($curl,CURLOPT_COOKIE,$this->cookie);
 		}
 		if($this->cookie_file){
 			if(file_exists($this->cookie_file)){
@@ -485,13 +496,16 @@ class curl_lib
 				curl_setopt($curl,CURLOPT_SSLKEYPASSWD,$this->ssl_key_pass);
 			}
 		}
+		if($this->user_agent){
+			curl_setopt($curl,CURLOPT_USERAGENT, $this->user_agent);
+		}
 		$content = curl_exec($curl);
 		if (curl_errno($curl) != 0){
 			return false;
 		}
 		$separator = '/\r\n\r\n|\n\n|\r\r/';
 		list($this->http_header, $this->http_body) = preg_split($separator, $content, 2);
-		if($this->http_body){
+		if($this->http_body && !$is_binary){
 			$this->http_body = $this->_bom($this->http_body);
 		}
 		$this->http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -506,7 +520,7 @@ class curl_lib
 			$new_url = $url['scheme'] . '://' . $url['host'] . $url['path']
 			. (isset($url['query']) ? '?' . $url['query'] : '');
 			$new_url = stripslashes($new_url);
-			return $this->exec($new_url);
+			return $this->exec($new_url,$is_binary);
 		}
 		if($this->http_code != '200'){
 			return false;
@@ -514,23 +528,23 @@ class curl_lib
 		return true;
 	}
 
-	public function get_content($url='')
+	public function get_content($url='',$is_binary=false)
 	{
-		return $this->get_body($url);
+		return $this->get_body($url,$is_binary);
 	}
 
-	public function get_body($url='')
+	public function get_body($url='',$is_binary=false)
 	{
 		if($url){
-			$this->exec($url);
+			$this->exec($url,$is_binary);
 		}
 		return $this->http_body;
 	}
 
-	public function get_header($url='')
+	public function get_header($url='',$is_binary=false)
 	{
 		if($url && is_string($url)){
-			$this->exec($url);
+			$this->exec($url,$is_binary);
 		}
 		if($url && is_bool($url)){
 			$info = trim($this->http_header);
@@ -553,13 +567,13 @@ class curl_lib
 		return $this->http_header;
 	}
 
-	public function get_json($url='')
+	public function get_json($url='',$is_binary=false)
 	{
 		if(!$this->is_post && !$this->post_data){
 			$this->set_header('Content-Type','application/json; charset=utf-8');
 		}
 		if($url){
-			$this->exec($url);
+			$this->exec($url,$is_binary);
 		}
 		if($this->http_code != 200){
 			$info = $this->error('错误，HTTP 返回代码'.$this->http_code,'json');

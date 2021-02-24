@@ -99,8 +99,7 @@ class register_control extends phpok_control
 		if(!$group_id){
 			$this->error(P_Lang('注册失败，网站未开放注册权限'));
 		}
-		
-		
+
 		$user = $this->get("user");
 		$email = $this->get('email');
 		$mobile = $this->get('mobile');

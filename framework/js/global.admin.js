@@ -37,8 +37,10 @@ function alt_close()
 function taxis(baseurl,default_value)
 {
 	var url = baseurl;
-	if(!default_value || default_value == "undefined") default_value = "0";
-	var id_string = $.input.checkbox_join();
+	if(!default_value || default_value == "undefined"){
+		default_value = "0";
+	}
+	var id_string = $.checkbox.join();
 	if(!id_string || id_string == "undefined"){
 		$.dialog.alert("没有指定要更新的排序ID！");
 		return false;
@@ -51,15 +53,17 @@ function taxis(baseurl,default_value)
 		if(!taxis) taxis = default_value;
 		url += "&taxis["+id_list[i]+"]="+$.str.encode(taxis);
 	}
-	var rs = $.phpok.json(url);
-	if(rs.status == "ok"){
-		$.dialog.alert("排序更新完成！",function(){
-			$.phpok.reload();
-		});
-	}else{
-		alert(rs.content);
+	$.phpok.json(url,function(rs){
+		if(rs.status && rs.status != 'error'){
+			$.dialog.tips(p_lang('排序更新完成'),function(){
+				$.phpok.reload();
+			}).lock();
+			return true;
+		}
+		var t = (rs.info && rs.info != 'undefined') ? rs.info : (rs.content ? rs.content : p_lang('排序出错'));
+		$.dialog.alert(t);
 		return false;
-	}
+	});
 }
 
 /**

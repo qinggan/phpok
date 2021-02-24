@@ -138,7 +138,7 @@
 			});
 		},
 		delete_title2:function(tag_id){
-			var ids = $.input.checkbox_join();
+			var ids = $.checkbox.join();
 			if(!ids){
 				$.dialog.alert('未指定要操作的主题');
 				return false;

@@ -34,7 +34,7 @@ function create_html(id)
 	for(var i in list)
 	{
 		var t = list[i];
-		var types = $.input.checkbox_join('types_'+t);
+		var types = $.checkbox.join('types_'+t);
 		if(types)
 		{
 			url += "&types_"+t+"="+$.str.encode(types);

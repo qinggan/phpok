@@ -32,7 +32,7 @@ class list_control extends phpok_control
 	**/
 	public function index_f()
 	{
-		$site_id = $_SESSION["admin_site_id"];
+		$site_id = $this->session->val('admin_site_id');
 		$rslist = $this->model('project')->get_all($this->session->val('admin_site_id'),0,"p.status=1 AND p.hidden=0");
 		if(!$rslist){
 			$rslist = array();
@@ -219,14 +219,19 @@ class list_control extends phpok_control
 		if(!$title){
 			$this->error(P_Lang('名称不能为空'));
 		}
+		$project = $this->model('project')->get_one($id,false);
 		$array = array("title"=>$title);
 		$array['style'] = $this->get('style');
-		$array["seo_title"] = $this->get("seo_title");
-		$array["seo_keywords"] = $this->get("seo_keywords");
-		$array["seo_desc"] = $this->get("seo_desc");
-		$array['tag'] = $this->get('tag');
+		if($project['is_seo']){
+			$array["seo_title"] = $this->get("seo_title");
+			$array["seo_keywords"] = $this->get("seo_keywords");
+			$array["seo_desc"] = $this->get("seo_desc");
+		}
+		if($project['is_tag']){
+			$array['tag'] = $this->get('tag');
+			$this->model('tag')->update_tag($array['tag'],'p'.$id);
+		}
 		$this->model('project')->save($array,$id);
-		$this->model('tag')->update_tag($array['tag'],'p'.$id);
 		ext_save("project-".$id);
 		$this->model('temp')->clean("project-".$id,$_SESSION["admin_id"]);
 		$this->success();
@@ -748,7 +753,7 @@ class list_control extends phpok_control
 			$this->assign("catelist",$catelist);
 		}
 		if($p_rs['is_biz']){
-			$currency_list = $this->model('currency')->get_list();
+			$currency_list = $this->model('currency')->get_list('id');
 			if(!$rs['currency_id']){
 				$rs['currency_id'] = $p_rs['currency_id'];
 			}
@@ -818,8 +823,7 @@ class list_control extends phpok_control
 			}
 			
 		}
-	
-
+		
 		// 扩展字段管理
 		if($this->popedom['ext']){
 			$ext_module = $id ? 'list-'.$id : 'add-list';
@@ -974,6 +978,30 @@ class list_control extends phpok_control
 		if(!$array["seo_desc"] && $p_rs['is_seo'] == 3 && !$_autosave){
 			$this->json(P_Lang('SEO描述不能为空'));
 		}
+
+		//自定义字段信息
+		if($p_rs["module"]){
+	 		$ext_list = $this->model('module')->fields_all($p_rs["module"]);
+	 		$ext_data = array();
+	 		$ext_data["site_id"] = $p_rs["site_id"];
+	 		$ext_data["project_id"] = $p_rs['id'];
+	 		$ext_data["cate_id"] = $cate_id;
+	 		if(!$ext_list){
+		 		$ext_list = array();
+	 		}
+			foreach($ext_list as $key=>$value){
+				if($rs[$value['identifier']]){
+					$value['content'] = $rs[$value['identifier']];
+				}
+				$ext_data[$value["identifier"]] = $this->lib('form')->get($value);
+				if($value['onlyone'] && $ext_data[$value["identifier"]] != ''){
+					$check = $this->model('list')->ext_only_check($value['identifier'],$ext_data[$value["identifier"]],$p_rs["id"],$p_rs["module"],false,$id);
+					if($check){
+						$this->json(P_Lang('字段 [title] 内容重复，请重新设置',array('title'=>$value['title'])));
+					}
+				}
+			}
+		}
 		
 		$array["project_id"] = $p_rs['id'];
 		$array["module_id"] = $p_rs["module"];
@@ -1062,21 +1090,10 @@ class list_control extends phpok_control
  		}
  		//更新Tag标签
  		$this->model('tag')->update_tag($array['tag'],$id);
- 		if($p_rs["module"]){
-	 		$ext_list = $this->model('module')->fields_all($p_rs["module"]);
-	 		$tmplist = array();
-	 		$tmplist["id"] = $id;
-	 		$tmplist["site_id"] = $p_rs["site_id"];
-	 		$tmplist["project_id"] = $pid;
-	 		$tmplist["cate_id"] = $cate_id;
-	 		if(!$ext_list) $ext_list = array();
-			foreach($ext_list as $key=>$value){
-				if($rs[$value['identifier']]){
-					$value['content'] = $rs[$value['identifier']];
-				}
-				$tmplist[$value["identifier"]] = $this->lib('form')->get($value);
-			}
-			$this->model('list')->save_ext($tmplist,$p_rs["module"]);
+ 		//保存模块里的扩展字段信息
+ 		if($p_rs["module"] && $ext_data){
+	 		$ext_data['id'] = $id;
+	 		$this->model('list')->save_ext($ext_data,$p_rs["module"]);
 		}
 		//保存内容扩展字段
 		if($tmpadd){
@@ -1087,6 +1104,7 @@ class list_control extends phpok_control
 		if($array['status'] && $array['user_id']){
 			$this->model('wealth')->add_integral($id,$array['user_id'],'post',P_Lang('管理员编辑主题发布#{id}',array('id'=>$id)));
 		}
+		$this->node('system_admin_title_success',$id,$p_rs);
 		$this->plugin('system_admin_title_success',$id,$p_rs);
  		$this->json($id,true);
 	}
@@ -1114,6 +1132,12 @@ class list_control extends phpok_control
 		if($extlist){
 			foreach($extlist as $key=>$value){
 				$array[$value['identifier']] = $this->lib('form')->get($value);
+				if($value['onlyone'] && $array[$value["identifier"]] != ''){
+					$check = $this->model('list')->ext_only_check($value['identifier'],$array[$value["identifier"]],$project["id"],$project["module"],true,$id);
+					if($check){
+						$this->error(P_Lang('字段 [title] 内容重复，请重新设置',array('title'=>$value['title'])));
+					}
+				}
 			}
 		}
 		//保存数据
@@ -1129,6 +1153,7 @@ class list_control extends phpok_control
 				$this->error(P_Lang('保存数据失败，请检查'));
 			}
 		}
+		$this->node('system_admin_title_success',$id,$project);
 		$this->plugin('system_admin_title_success',$id,$project);
 		$this->success();
 	}

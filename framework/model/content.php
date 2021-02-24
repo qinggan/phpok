@@ -1,7 +1,6 @@
 <?php
 /**
  * 读取主题内容
- * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -27,9 +26,12 @@ class content_model_base extends phpok_model
 	 * @参数 $id 主题ID或标识
 	 * @参数 $status 是否已审核
 	**/
-	public function get_one($id,$status=true)
+	public function get_one($id,$status=true,$site_id=0)
 	{
-		$sql  = "SELECT * FROM ".$this->db->prefix."list WHERE site_id='".$this->site_id."' AND ";
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		$sql  = "SELECT * FROM ".$this->db->prefix."list WHERE site_id='".$site_id."' AND ";
 		$sql .= is_numeric($id) ? " id='".$id."' " : " identifier='".$id."' ";
 		if($status){
 			$sql.= " AND status=1 ";
@@ -54,37 +56,25 @@ class content_model_base extends phpok_model
 			}
 		}
 		//读取属性
-		$sql = "SELECT * FROM ".$this->db->prefix."list_attr WHERE tid='".$rs['id']."' ORDER BY taxis ASC,id DESC";
+		$sql  = " SELECT la.*,a.title group_title,av.title,av.pic,av.val FROM ".$this->db->prefix."list_attr la ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."attr a ON(la.aid=a.id) ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."attr_values av ON(la.vid=av.id) ";
+		$sql .= " WHERE la.tid='".$rs['id']."' ORDER BY a.taxis ASC,la.taxis ASC,la.id DESC";
 		$attrlist = $this->db->get_all($sql);
 		if($attrlist){
-			$vids = array();
 			$attrs = array();
 			foreach($attrlist as $key=>$value){
-				$vids[] = $value['vid'];
 				if(!$attrs[$value['aid']]){
-					$attrs[$value['aid']] = array('id'=>$value['aid']);
-					$attrs[$value['aid']]['rslist'][$value['vid']] = $value;
-				}else{
-					$attrs[$value['aid']]['rslist'][$value['vid']] = $value;
+					$attrs[$value['aid']] = array();
+					$attrs[$value['aid']]['title'] = $value['group_title'];
+					$attrs[$value['aid']]['id'] = $value['aid'];
+					$attrs[$value['aid']]['rslist'] = array();
 				}
-			}
-			unset($attrlist);
-			$vids = array_unique($vids);
-			$alist = $this->model('options')->get_all('id');
-			$vlist = $this->model('options')->values_list("id IN(".implode(",",$vids).")",0,999,'id');
-			foreach($attrs as $key=>$value){
-				$value['title'] = $alist[$key]['title'];
-				foreach($value['rslist'] as $k=>$v){
-					$v['title'] = $vlist[$k]['title'];
-					$v['val'] = $vlist[$k]['val'];
-					$v['pic'] = $vlist[$k]['pic'];
-					$value['rslist'][$k] = $v;
-				}
-				$attrs[$key] = $value;
+				$attrs[$value['aid']]['rslist'][] = $value;
 			}
 			$rs['attrlist'] = $attrs;
 		}
-
+		
 		$ext = $this->model('ext')->get_all('list-'.$rs['id'],false);
 		if($ext){
 			$rs = array_merge($rs,$ext);

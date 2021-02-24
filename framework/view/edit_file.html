@@ -5,7 +5,7 @@
 //提交多个附件
 function save_files()
 {
-	var vals = $.input.checkbox_join("filelist");
+	var vals = $.checkbox.join("filelist");
 	if(!vals)
 	{
 		alert("请选择要插入附件");
@@ -83,9 +83,9 @@ dialog.onok = save_files;
 	<td>
 		<table>
 		<tr>
-			<td><input type="button" value="全选" class="btn" onclick="$.input.checkbox_all('filelist')" /></td>
-			<td><input type="button" value="全不选" class="btn" onclick="$.input.checkbox_none('filelist')" /></td>
-			<td><input type="button" value="反选" class="btn" onclick="$.input.checkbox_anti('filelist')" /></td>
+			<td><input type="button" value="全选" class="btn" onclick="$.checkbox.all('filelist')" /></td>
+			<td><input type="button" value="全不选" class="btn" onclick="$.checkbox.none('filelist')" /></td>
+			<td><input type="button" value="反选" class="btn" onclick="$.checkbox.anti('filelist')" /></td>
 		</tr>
 		</table>
 	</td>

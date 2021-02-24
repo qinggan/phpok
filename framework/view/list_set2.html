@@ -91,12 +91,14 @@ function save()
 		
 	</div>
 </div>
+<!-- if $rs.is_seo || $rs.is_tag -->
 <div class="layui-card">
 	<div class="layui-card-header hand" onclick="$.admin.card(this)">
-		{langSEO优化}
+		{lang扩展}
 		<i class="layui-icon layui-icon-right"></i>
 	</div>
 	<div class="layui-card-body hide">
+		<!-- if $rs.is_seo -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{langSEO标题}
@@ -124,6 +126,8 @@ function save()
 			</div>
 			<div class="layui-input-block mtop">{lang简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字}</div>
 		</div>
+		<!-- /if -->
+		<!-- if $rs.is_tag -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang标签}
@@ -133,8 +137,11 @@ function save()
 			</div>
 			<div class="layui-input-block mtop">{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}</div>
 		</div>
+		<!-- /if -->
 	</div>
 </div>
+<!-- /if -->
+
 <div class="clear"></div>
 <div class="submit-info">
 	<div class="layui-container center">

@@ -49,5 +49,3 @@ class rescate_model extends rescate_model_base
 		return true;
 	}
 }
-
-?>

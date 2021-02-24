@@ -34,6 +34,61 @@ class content_control extends phpok_control
 		if(!$id){
 			$this->error(P_Lang('未指定ID'),"","error");
 		}
+		$pid = $this->get('pid');
+		if($pid){
+			if(is_numeric($pid)){
+				$project = $this->model('project')->get_one($pid,false);
+			}else{
+				$project = $this->model('project')->simple_project_from_identifier($pid);
+			}
+			if($project && $project['module']){
+				if(!$this->model('popedom')->check($project['id'],$this->user_groupid,'read')){
+					$this->error(P_Lang('您没有阅读此文章权限'));
+				}
+				$module = $this->model('module')->get_one($project['module']);
+				if($module && $module['mtype']){
+					$arc = $this->model('list')->single_one($id,$module['id']);
+					if(!$arc){
+						$this->error_404(P_Lang('没有找到内容'));
+					}
+					$flist = $this->model('module')->fields_all($module['id']);
+					if($flist){
+						foreach($flist as $key=>$value){
+							$arc[$value['identifier']] = $this->lib('form')->show($value,$arc[$value['identifier']]);
+						}
+					}
+					$this->data('arc',$arc);
+					$this->node('PHPOK_arc');
+					$arc = $this->data('arc');
+					$this->assign('rs',$arc);
+					$this->assign('page_rs',$page_rs);
+					$tplfile = array();
+					if($arc['tpl']){
+						$tplfile[0] = $arc['tpl'];
+					}
+					if($project['tpl_content']){
+						$tplfile[7] = $project['tpl_content'];
+					}
+					$tplfile[9] = $project['identifier'].'_content';
+					ksort($tplfile);
+					$tpl = '';
+					foreach($tplfile as $key=>$value){
+						if($this->tpl->check_exists($value)){
+							$tpl = $value;
+							break;
+						}
+					}
+					if(!$tpl){
+						$this->error(P_Lang('未配置相应的模板'));
+					}
+					$tplfile = $this->get('tplfile');
+					if($tplfile && $this->tpl->check_exists($tplfile)){
+						$tpl = $tplfile;
+					}
+					$this->view($tpl);
+				}
+			}
+		}
 		$rs = $this->model('content')->get_one($id,true);
 		if(!$rs){
 			$this->error_404();
@@ -94,7 +149,7 @@ class content_control extends phpok_control
 			if(!$cate_root_rs || !$cate_root_rs['status']){
 				$this->error(P_Lang('根分类信息不存在或未启用'),$this->url,5);
 			}
-			$this->assign('cate_root_rs',$cate_root_rs);
+			$this->assign('cate_root',$cate_root_rs);
 			if($cate_root_rs['tpl_content']){
 				$tplfile[6] = $cate_root_rs['tpl_content'];
 			}
@@ -146,6 +201,10 @@ class content_control extends phpok_control
 			$this->model('wealth')->add_integral($rs['id'],$this->session->val('user_id'),'content',P_Lang('阅读#{id}',array('id'=>$rs['id'])));
 		}
 		$this->phpok_seo();
+		$tplfile = $this->get('tplfile');
+		if($tplfile && $this->tpl->check_exists($tplfile)){
+			$tpl = $tplfile;
+		}
 		$this->view($tpl);
 	}
 

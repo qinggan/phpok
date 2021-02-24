@@ -49,12 +49,17 @@ class order_control extends phpok_control
 		    $product = $this->model('order')->product_list($value['id']);
 			$qty = 0;
 			if($product){
+				$is_virtual = 1;
 				foreach($product as $k=>$v){
 					$v['price_val'] = price_format_val($v['price'],$value['currency_id'],$value['currency_id'],$value['currency_rate'],$value['currency_rate']);
 					$v['price_show'] = price_format($v['price'],$value['currency_id'],$value['currency_id'],$value['currency_rate'],$value['currency_rate']);
+					if(!$v['is_virtual']){
+						$is_virtual = 0;
+					}
 					$product[$k] = $v;
 					$qty += intval($v['qty']);
 				}
+				$rslist[$key]['is_virtual'] = $is_virtual; //判断是否是虚拟产品
 			}
 		    $rslist[$key]['product'] = $product;
 			$rslist[$key]['qty'] = $qty;
@@ -74,6 +79,13 @@ class order_control extends phpok_control
 	        }
 			$rslist[$key]['price_val'] = price_format_val($value['price'],$value['currency_id'],$value['currency_id'],$value['currency_rate'],$value['currency_rate']);
 			$rslist[$key]['price_show'] = price_format($value['price'],$value['currency_id'],$value['currency_id'],$value['currency_rate'],$value['currency_rate']);
+			//付款记录
+			$paylist = $this->model('order')->payment_all($value['id']);
+			if($paylist){
+				$payinfo = end($paylist);
+				$rslist[$key]['payment'] = $payinfo;
+				$rslist[$key]['paylist'] = $paylist;
+			}
         }
 		$data['total'] = $total;
 		$data['rslist'] = $rslist;
@@ -201,9 +213,6 @@ class order_control extends phpok_control
 		$shipping = 0;
 		$price = 0;
 		$tax = 0;
-		if($this->session->val('tax')){
-			$tax = floatval($this->session->val('tax'));
-		}
 		$tmp = array('number'=>0,'weight'=>0,'volume'=>0,'price'=>0);
 		$tmp_is_virtual = true;
 		foreach($rslist as $key=>$value){
@@ -215,16 +224,62 @@ class order_control extends phpok_control
 				$tmp['volume'] += floatval($value['volume']) * intval($value['qty']);
 			}
 		}
-		
-		//计算运费
-		if(!$tmp_is_virtual && $address && $address['shipping']['province'] && $address['shipping']['city']){
-			$tmp['price'] = $price;
-			$shipping = $this->model('cart')->freight_price($tmp,$address['shipping']['province'],$address['shipping']['city']);
-		}
-		$allprice = floatval($price) + floatval($shipping) + $tax;
-		$coupon = $this->_coupon($price,$id);
-		if($coupon){
-			$allprice = floatval($price) + floatval($shipping) + $tax - floatval($coupon);
+		$pricelist = $this->model('site')->price_status_all(true);
+		$discount = 0;
+		if($pricelist){
+			foreach($pricelist as $key=>$value){
+				if(!$value['status']){
+					unset($pricelist[$key]);
+					continue;
+				}
+				if($value['default'] && $value['currency_id']){
+					$value['price'] = price_format($value['default'],$value['currency_id'],$this->site['currency_id']);
+					$value['price_val'] = price_format_val($value['default'],$value['currency_id'],$this->site['currency_id']);
+				}
+				if($value['identifier'] == 'product'){
+					$value['price'] = price_format($price,$this->site['currency_id']);
+					$value['price_val'] = $price;
+					$pricelist[$key] = $value;
+				}
+				if($value['identifier'] == 'shipping'){
+					if($address){
+						$freight_price = $this->_freight($rslist,$address);
+						if($freight_price){
+							$value['price'] = price_format($freight_price,$this->site['currency_id']);
+							$value['price_val'] = $freight_price;
+						}
+					}
+				}
+				if($value['identifier'] == 'discount'){
+					$this->data("cart_id",$this->cart_id);
+					$this->node('PHPOK_cart_coupon');
+					$tmp = $this->data('cart_coupon');
+					if(!$tmp){
+						unset($pricelist[$key]);
+						continue;
+					}
+					$value['price'] = price_format(-$tmp['price'],$this->site['currency_id']);
+					$value['price_val'] = -$tmp['price'];
+					$discount = -$tmp['price'];
+					$pricelist[$key] = $value;
+					$this->assign('coupon_code',$tmp['code']);
+				}
+				$pricelist[$key] = $value;
+			}
+			$this->data('pricelist',$pricelist);
+			$this->data('rslist',$rslist);
+			$this->data('address',$address);
+			$this->node("system_pricelist");
+			$pricelist = $this->data('pricelist');
+			$this->undata('pricelist');
+			$allprice = 0;
+			foreach($pricelist as $key=>$value){
+				if($value['action'] == 'add'){
+					$allprice += $value['price_val'];
+				}else{
+					$allprice -= abs($value['price_val']);
+				}
+			}
 		}
 
 		$sn = $this->model('order')->create_sn();
@@ -270,6 +325,7 @@ class order_control extends phpok_control
 			$tmp['thumb'] = $value['thumb'] ? $value['thumb'] : '';
 			$tmp['ext'] = $value['_attrlist'] ? serialize($value['_attrlist']) : '';
 			$tmp['is_virtual'] = $value['is_virtual'];
+			$tmp['note'] = $value['note'];
 			$this->model('order')->save_product($tmp);
 		}
 		if($address){
@@ -297,20 +353,9 @@ class order_control extends phpok_control
 				}
 			}
 		}
-		$pricelist = $this->model('site')->price_status_all();
 		if($pricelist){
 			foreach($pricelist as $key=>$value){
-				$tmp_price = $value['default'] ? $value['default'] : '0.00';
-				if($key == 'product'){
-					$tmp_price = $price;
-				}elseif($key == 'shipping' && $shipping){
-					$tmp_price = $shipping;
-				}elseif($key == 'discount' && $coupon){
-					$tmp_price = -$coupon;
-				}elseif($key == 'tax' && $this->session->val('tax')){
-					$tmp_price = $this->session->val('tax');
-				}
-				$tmp = array('order_id'=>$order_id,'code'=>$key,'price'=>$tmp_price);
+				$tmp = array('order_id'=>$order_id,'code'=>$value['identifier'],'price'=>$value['price_val']);
 				$this->model('order')->save_order_price($tmp);
 			}
 		}
@@ -545,6 +590,12 @@ class order_control extends phpok_control
 		if($loglist){
 			$data['loglist'] = $loglist;
 		}
+		//付款记录
+		$paylist = $this->model('order')->payment_all($rs['id']);
+		if($paylist){
+			$data['payinfo'] = end($paylist);
+			$data['paylist'] = $paylist;
+		}
 		$this->success($data);
 	}
 
@@ -712,32 +763,91 @@ class order_control extends phpok_control
 		if(!$express_list){
 			$this->error(P_Lang('订单还未录入物流信息'));
 		}
-		foreach($express_list as $key=>$value){
-			$url = $this->url('express','remote','id='.$value['id'],'api',true);
-			if($this->config['self_connect_ip']){
-				$this->lib('curl')->host_ip($this->config['self_connect_ip']);
-			}
-			$this->lib('curl')->connect_timeout(5);
-			$this->lib('curl')->get_content($url);
-		}
-		$loglist = $this->model('order')->log_list($rs['id']);
-		if(!$loglist){
-			$this->error(P_Lang('订单中找不到相关物流信息，请联系客服'),$error_url);
-		}
-		foreach($loglist as $key=>$value){
-			if(!$value['order_express_id']){
-				continue;
-			}
-			$rslist[$value['order_express_id']]['rslist'][] = $value;
-		}
 		$sort = $this->get('sort');
-		if($sort && strtoupper($sort) == 'DESC'){
-			foreach($rslist as $key=>$value){
-				krsort($value['rslist']);
-				$rslist[$key] = $value;
+		if(!$sort){
+			$sort = 'asc';
+		}
+		$sort = strtoupper($sort);
+		$loglist = $this->model('order')->log_list($rs['id'],$sort);
+		if(!$loglist){
+			$this->error(P_Lang('订单中找不到相关物流信息，请联系客服'));
+		}
+		$rslist = array();
+		foreach($express_list as $key=>$value){
+			$tmp = $value;
+			$tmplist = array();
+			foreach($loglist as $k=>$v){
+				if(!$v['order_express_id'] || $v['order_express_id'] != $value['id']){
+					continue;
+				}
+				$tmplist[] = $v;
 			}
+			$tmp['rslist'] = $tmplist;
+			$rslist[] = $tmp;
 		}
 		$this->success($rslist);
+	}
+
+	/**
+	 * 异步退款通知
+	 * @参数 sn 退单号
+	 * @参数 其他参数（POST或是GET进来，原生读取执行传给支付通知文件）
+	**/
+	public function refund_f()
+	{
+		$sn = $this->get('sn');
+		if(!$sn){
+			$this->error(P_Lang('未指定退单号'));
+		}
+		$rs = $this->model('order')->refund_one($sn,'sn');
+		if(!$rs){
+			$this->error(P_Lang('退单号不存在'));
+		}
+		if($rs['backtype'] != '_default'){
+			$this->error(P_Lang('非原路返回退单，不支持此操作'));
+		}
+		$pinfo = $this->model('order')->order_payment_info($rs['order_payment_id']);
+		if(!$pinfo){
+			$this->error(P_Lang('付款信息不存在'));
+		}
+		if(!is_numeric($pinfo['payment_id'])){
+			$this->error(P_Lang('内置财富，不支持此操作'));
+		}
+		$payment_rs = $this->model('payment')->get_one($pinfo['payment_id']);
+		if(!$payment_rs){
+			$this->error(P_Lang('未指定付款方式'));
+		}
+		if($payment_rs && $payment_rs['param'] && is_string($payment_rs['param'])){
+			$payment_rs['param'] = unserialize($payment_rs['param']);
+		}
+		$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/refund.php';
+		if(!file_exists($file)){
+			$this->error(P_Lang('当前支付未开发退款接口，请联系开发人员定制或扩展'));
+		}
+		include_once($file);
+		$name = $payment_rs['code']."_refund";
+		$payment = new $name($pinfo,$payment_rs,$rs);
+		$payment->notify();
+		exit;
+	}
+
+	public function status_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
+		}
+		$uid = $this->session->val('user_id');
+		$sql  = "SELECT count(id) as total,status FROM ".$this->db->prefix."order ";
+		$sql .= "WHERE user_id='".$uid."' GROUP BY status";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			$this->error(P_Lang('没有找到订单信息'));
+		}
+		$rs = array();
+		foreach($rslist as $key=>$value){
+			$rs[$value['status']] = $value['total'];
+		}
+		$this->success($rs);
 	}
 
 	private function _get_order()
@@ -769,5 +879,35 @@ class order_control extends phpok_control
 			}
 		}
 		return $rs;
+	}
+
+	private function _freight($rslist='',$address='')
+	{
+		if(!$rslist){
+			$rslist = $this->tpl->val('rslist');
+			if(!$rslist){
+				return false;
+			}
+		}
+		if(!$rslist || !is_array($rslist)){
+			return false;
+		}
+		if(!$address){
+			$address = $this->tpl->val('address');
+			if(!$address){
+				return false;
+			}
+		}
+		if(!$address || !is_array($address)){
+			return false;
+		}
+		$weight = $volume = $total = 0;
+		foreach($rslist as $key=>$value){
+			$weight += floatval($value['weight'] * $value['qty']);
+			$volume += floatval($value['volume'] * $value['qty']);
+			$total += $value['qty'];
+		}
+		$data = array('weight'=>$weight,'number'=>$total,'volume'=>$volume);
+		return $this->model('cart')->freight_price($data,$address['province'],$address['city'],$address['country']);
 	}
 }

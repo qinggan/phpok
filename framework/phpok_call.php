@@ -130,7 +130,7 @@ class phpok_call extends _init_auto
 		if($info){
 			return $info;
 		}
-		$this->db->cache_set($cache_id);
+		$this->db->cache_set($cache_id); //初始化缓存ID
 		return $this->$func($call_rs,$cache_id);
 	}
 
@@ -335,7 +335,13 @@ class phpok_call extends _init_auto
 		if(!$rs['is_list']){
 			$array['rs'] = current($rslist);
 		}else{
-			$array['rslist'] = $rslist;
+			$tmplist = array();
+			foreach($rslist as $key=>$value){
+				$tmplist[] = $value;
+			}
+			$array['rslist'] = $tmplist;
+			$array['ids'] = $ids;
+			unset($tmplist);
 		}
 		unset($rslist,$project);
 		if($cache_id){
@@ -410,7 +416,12 @@ class phpok_call extends _init_auto
 		if(!$rs['is_list']){
 			$array['rs'] = current($rslist);
 		}else{
-			$array['rslist'] = $rslist;
+			$tmplist = array();
+			foreach($rslist as $key=>$value){
+				$tmplist[] = $value;
+			}
+			$array['rslist'] = $tmplist;
+			unset($tmplist);
 		}
 		unset($rslist,$project);
 		if($cache_id){
@@ -451,7 +462,10 @@ class phpok_call extends _init_auto
 			foreach($fields as $k=>$v){
 				if($v['search'] && ($v['search'] == 1 || $v['search'] == 2)){
 					if($v['search'] == 1){
-						$k_condition[] = " ".$v['identifier']."='".$keywords."' ";
+						if(!in_array($v['field_type'],array('int','float'))){
+							$k_condition[] = " ".$v['identifier']."='".$keywords."' ";
+						}
+						//$k_condition[] = " ".$v['identifier']."='".$keywords."' ";
 					}else{
 						$k_condition[] = " ".$v['identifier']." LIKE '%".$keywords."%' ";
 					}
@@ -629,7 +643,9 @@ class phpok_call extends _init_auto
 				foreach($fields as $k=>$v){
 					if($v['search'] && ($v['search'] == 1 || $v['search'] == 2)){
 						if($v['search'] == 1){
-							$k_condition[] = " ext.".$v['identifier']."='".$keywords."' ";
+							if(!in_array($v['field_type'],array('int','float'))){
+								$k_condition[] = " ext.".$v['identifier']."='".$keywords."' ";
+							}
 						}else{
 							$k_condition[] = " ext.".$v['identifier']." LIKE '%".$keywords."%' ";
 						}
@@ -802,8 +818,30 @@ class phpok_call extends _init_auto
 		if(!$tmpid){
 			return false;
 		}
+		if($param['pid'] && $param['is_single'] == 1 || $param['is_single'] == 'true' || $param['is_single'] == true){
+			$project = $this->model('project')->get_one($param['pid'],false);
+			if($project && $project['module']){
+				$module = $this->model('module')->get_one($project['module']);
+				if($module && $module['mtype']){
+					$arc = $this->model('list')->single_one($tmpid,$module['id']);
+					if(!$arc){
+						return false;
+					}
+					$flist = $this->model('module')->fields_all($module['id']);
+					if($flist){
+						foreach($flist as $key=>$value){
+							$arc[$value['identifier']] = $this->lib('form')->show($value,$arc[$value['identifier']]);
+						}
+					}
+					$this->data('arc',$arc);
+					$this->node('PHPOK_arc');
+					$arc = $this->data('arc');
+					return $arc;
+				}
+			}
+		}
 		$need_status = $param['not_status'] ? false : true;
-		$arc = $this->model('content')->get_one($tmpid,$need_status);
+		$arc = $this->model('content')->get_one($tmpid,$need_status,$param['site']);
 		if(!$arc){
 			return false;
 		}
@@ -1280,6 +1318,19 @@ class phpok_call extends _init_auto
 	//读取当前分类下的子分类
 	private function _subcate($rs,$cache_id='')
 	{
+		if(!$rs['cateid'] && !$rs['phpok'] && !$rs['cate'] && !$rs['pid']){
+			return false;
+		}
+		$project = false;
+		if($rs['pid']){
+			$project_rs = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
+			if($project_rs && $project_rs['status'] && $project_rs['cate']){
+				$project = $project_rs;
+				if(!$rs['cateid'] && !$rs['cate'] && !$rs['phpok']){
+					$rs['cateid'] = $project['cate'];
+				}
+			}
+		}
 		if(!$rs['cateid'] && !$rs['phpok'] && !$rs['cate']){
 			return false;
 		}
@@ -1291,13 +1342,6 @@ class phpok_call extends _init_auto
 			}
 			$rs['cateid'] = $tmp['id'];
 			unset($tmp,$identifier);
-		}
-		$project = false;
-		if($rs['pid']){
-			$project_rs = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
-			if($project_rs && $project_rs['status'] && $project_rs['cate']){
-				$project = $project_rs;
-			}
 		}
 		$orderby = '';
 		if($rs['orderby']){

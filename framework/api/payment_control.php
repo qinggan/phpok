@@ -113,7 +113,7 @@ class payment_control extends phpok_control
 		if(!$payment_rs['status']){
 			$this->error(P_Lang('支付方式未启用'));
 		}
-		$chk = $this->model('payment')->log_check($rs['sn'],'order',$this->session->val('user_id'));
+		$chk = $this->model('payment')->log_check($rs['sn'],'order',$payment);
 		if($chk){
 			if($chk['status']){
 				$this->error(P_Lang('订单{sn}已支付完成，不能重复执行',array('sn'=>$rs['sn'])));
@@ -206,19 +206,19 @@ class payment_control extends phpok_control
 		if(!$id){
 			$token = $this->get('token');
 			if(!$token){
-				$this->json(P_Lang('数据传参不完整，请检查'));
+				$this->error(P_Lang('数据传参不完整，请检查'));
 			}
 			if(!$this->site){
-				$this->json(P_Lang('数据异常，无法获取站点信息'));
+				$this->error(P_Lang('数据异常，无法获取站点信息'));
 			}
 			$info = $this->lib('token')->decode($token);
 			if(!$info || !$info['price']){
-				$this->json(P_Lang('数据不完整，请检查'));
+				$this->error(P_Lang('数据不完整，请检查'));
 			}
 		}else{
 			$rs = $this->model('order')->get_one($id);
 			if(!$rs){
-				$this->json(P_Lang('订单信息不存在'));
+				$this->error(P_Lang('订单信息不存在'));
 			}
 			$info = $rs;
 			$info['type'] = 'order';
@@ -234,18 +234,18 @@ class payment_control extends phpok_control
 			$info['currency_id'] = $this->site['currency_id'];
 		}
 		if($info['type'] == 'order'){
-			$title = P_Lang('订单：{sn}',array('sn'=>$sn));
+			$title = P_Lang('订单：{sn}',array('sn'=>$info['sn']));
 		}elseif($info['type'] == 'recharge'){
-			$title = P_Lang('充值：{sn}',array('sn'=>$sn));
+			$title = P_Lang('充值：{sn}',array('sn'=>$info['sn']));
 		}else{
 			$title = $this->get('title');
 			if(!$title){
-				$title = P_Lang('其他：{sn}',array('sn'=>$sn));
+				$title = P_Lang('其他：{sn}',array('sn'=>$info['sn']));
 			}
 		}
 		$payment = $this->get('payment');
 		if(!$payment){
-			$this->json(P_Lang('未指定付款方式'));
+			$this->error(P_Lang('未指定付款方式'));
 		}
 		if(!is_numeric($payment) && $this->session->val('user_id')){
 			//如果积分超出
@@ -318,22 +318,22 @@ class payment_control extends phpok_control
 		}
 		$payment_rs = $this->model('payment')->get_one($payment);
 		if(!$payment_rs){
-			$this->json(P_Lang('支付方式不存在'));
+			$this->error(P_Lang('支付方式不存在'));
 		}
 		if(!$payment_rs['status']){
-			$this->json(P_Lang('支付方式未启用'));
+			$this->error(P_Lang('支付方式未启用'));
 		}
-		$chk = $this->model('payment')->log_check($info['sn']);
+		$chk = $this->model('payment')->log_check($info['sn'],'',$payment);
 		if($chk){
 			if($chk['status']){
-				$this->json(P_Lang('订单{sn}已支付完成，不能重复执行',array('sn'=>$info['sn'])));
+				$this->error(P_Lang('订单{sn}已支付完成，不能重复执行',array('sn'=>$info['sn'])));
 			}
 			$array = array('type'=>$info['type'],'payment_id'=>$payment,'title'=>$title,'content'=>$title);
 			$array['dateline'] = $this->time;
 			$array['price'] = $info['price'];
 			$array['currency_id'] = $info['currency_id'];
 			$this->model('payment')->log_update($array,$chk['id']);
-			$this->json($chk['id'],true);
+			$this->success($chk['id']);
 		}
 		$array = array('sn'=>$info['sn'],'type'=>$info['type'],'payment_id'=>$payment,'title'=>$title,'content'=>$title);
 		$array['dateline'] = $this->time;
@@ -342,14 +342,14 @@ class payment_control extends phpok_control
 		$array['currency_id'] = $info['currency_id'];
 		$insert_id = $this->model('payment')->log_create($array);
 		if(!$insert_id){
-			$this->json(P_Lang('支付记录创建失败'));
+			$this->error(P_Lang('支付记录创建失败'));
 		}
 		//更新订单状态
 		if($info['type'] == 'order'){
 			$order = $this->model('order')->get_one_from_sn($info['sn']);
 			if(!$order){
 				$this->model('payment')->log_delete($insert_id);
-				$this->json(P_Lang('订单信息不存在'));
+				$this->error(P_Lang('订单信息不存在'));
 			}
 			//更新支付状态
 			$this->model('order')->update_order_status($order['id'],'unpaid');
@@ -369,8 +369,9 @@ class payment_control extends phpok_control
 				$this->model('order')->save_payment($array,$order_payment['id']);
 			}
 		}
-		$this->json($insert_id,true);
+		$this->success($insert_id);
 	}
+
 
 	/**
 	 * 获取付款方式
@@ -442,6 +443,20 @@ class payment_control extends phpok_control
 		$this->success($data);
 	}
 
+	public function info_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error('未指定附款方式');
+		}
+		$rs = $this->model('payment')->get_one($id);
+		if(!$rs){
+			$this->error('付款方式不存在');
+		}
+		$data = array('id'=>$id,'title'=>$rs['title'],'code'=>$rs['code']);
+		$this->success($data);
+	}
+
 	public function update_f()
 	{
 		$id = $this->get('id','int');
@@ -509,16 +524,16 @@ class payment_control extends phpok_control
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('payment')->log_one($id);
 		if(!$rs){
-			$this->json(P_Lang('支付信息不存在'));
+			$this->error(P_Lang('支付信息不存在'));
 		}
 		if($rs['status']){
-			$this->json(true);
+			$this->success();
 		}else{
-			$this->json(P_Lang('等待支付完成'));
+			$this->error(P_Lang('等待支付完成'));
 		}
 	}
 
@@ -527,7 +542,7 @@ class payment_control extends phpok_control
 	{
 		$sn = $this->get('sn');
 		if(!$sn){
-			$this->json(P_Lang('未指定订单编号'));
+			$this->error(P_Lang('未指定订单编号'));
 		}
 		if(strpos($sn,'-') !== false){
 			$tmp = explode("-",$sn);
@@ -537,15 +552,15 @@ class payment_control extends phpok_control
 			$rs = $this->model('payment')->log_check_notstatus($sn);
 		}
 		if(!$rs){
-			$this->json(P_Lang('订单不存在'));
+			$this->error(P_Lang('订单不存在'));
 		}
 		$payment_rs = $this->model('payment')->get_one($rs['payment_id']);
 		if(!$payment_rs){
-			$this->json(P_Lang('支付方式不存在'));
+			$this->error(P_Lang('支付方式不存在'));
 		}
 		$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/query.php';
 		if(!file_exists($file)){
-			$this->json(P_Lang('查询接口不存在'));
+			$this->error(P_Lang('查询接口不存在'));
 		}
 		include_once($file);
 		$name = $payment_rs['code'].'_query';
@@ -580,6 +595,43 @@ class payment_control extends phpok_control
 			if($passwd != $rs['passwd']) error('您没有权限维护此订单：'.$rs['sn'],$back,'error');
 		}
 		return $rs;
+	}
+
+	/**
+	 * 退单处理
+	**/
+	public function refund_f()
+	{
+		$sn = $this->get('sn');
+		if(!$sn){
+			exit('error');
+		}
+		if(strpos($sn,'-') !== false){
+			$tmp = explode("-",$sn);
+			$sn = $tmp[0];
+			$rs = $this->model('payment')->log_one($tmp[1]);
+		}else{
+			$rs = $this->model('payment')->log_check_notstatus($sn);
+		}
+		if(!$rs){
+			exit('error');
+		}
+		$payment_rs = $this->model('payment')->get_one($rs['payment_id']);
+		if(!$payment_rs){
+			exit('error');
+		}
+		if(!$payment_rs['status']){
+			exit('error');
+		}
+		$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/notify.php';
+		if(!file_exists($file)){
+			exit('error');
+		}
+		include($file);
+		$name = $payment_rs['code'].'_notify';
+		$cls = new $name($rs,$payment_rs);
+		$cls->submit();
+		exit('success');
 	}
 	
 	public function submit_f()
@@ -625,5 +677,47 @@ class payment_control extends phpok_control
 		}
 	}
 
-
+	public function select_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定支付订单ID'));
+		}
+		$log = $this->model('payment')->log_one($id);
+		if(!$log){
+			$this->error(P_Lang('订单信息不存在'));
+		}
+		if($log['status']){
+			$this->error(P_Lang('订单已支付过了，不能再次执行'));
+		}
+		if($log['type'] == 'order'){
+			$orderinfo = $this->model('order')->get_one($log['sn'],'sn');
+			$paid_price = $this->model('order')->paid_price($orderinfo['id']);
+			$unpaid_price = $this->model('order')->unpaid_price($orderinfo['id']);
+			$this->assign('paid_price',$paid_price);
+			$this->assign('unpaid_price',$unpaid_price);
+			$this->assign('orderinfo',$orderinfo);
+		}
+		
+		if($log['payment_id'] && is_numeric($log['payment_id'])){
+			$payment_rs = $this->model('payment')->get_one($log['payment_id']);
+			if(!$payment_rs){
+				$this->error(P_Lang('支付方式不存在'));
+			}
+			if(!$payment_rs['status']){
+				$this->error(P_Lang('支付方式未启用'));
+			}
+			$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/submit.php';
+			if(!file_exists($file)){
+				$tmpfile = str_replace($this->dir_root,'',$file);
+				$this->error(P_Lang('支付接口异常，文件{file}不存在',array('file'=>$tmpfile)));
+			}
+			include($file);
+			$name = $payment_rs['code']."_submit";
+			$payment = new $name($log,$payment_rs);
+			$html = $payment->select();
+			$this->success($html);
+		}
+		$this->error('未知错误');
+	}
 }

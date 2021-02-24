@@ -46,7 +46,7 @@ class post_control extends phpok_control
 		if(!$tmp['status']){
 			$this->error($tmp['info']);
 		}
-		$this->success($tmp['id']);
+		$this->success($tmp['info']);
 	}
 
 	/**

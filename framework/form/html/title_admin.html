@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="optlist_id,is_multiple" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="optlist_id,is_multiple,form_price" />
 <!-- php:$optlist_id = ($rs['optlist_id'] && is_array($rs['optlist_id'])) ? $rs['optlist_id'] : array() -->
 <div class="table">
 	<div class="title">
@@ -25,5 +25,16 @@
 			<li><label><input type="radio" name="is_multiple"{if !$rs.is_multiple} checked{/if} value="0" /> 单选</label></li>
 		</ul>
 		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		{lang电商属性}：<span class="note">{lang启用后允许主题设置价格，税费及运费的加减}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="form_price" value="1"{if $rs.form_price} checked{/if} />{lang启用}</label></li>
+			<li><label><input type="radio" name="form_price" value="0"{if !$rs.form_price} checked{/if} />{lang禁用}</label></li>
+		</ul>
 	</div>
 </div>

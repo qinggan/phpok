@@ -333,4 +333,95 @@ class usercp_control extends phpok_control
 		}
 		$this->success($data);
 	}
+
+	//获取项目列表
+	public function list_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行此操作'));
+		}
+		$group_id = $this->model('usergroup')->group_id($this->session->val('user_id'));
+		$id = $this->get("id");
+		if(!$id){
+			$this->error(P_Lang('未指定项目'));
+		}
+		$this->assign('id',$id);
+		$pid = $this->model('id')->project_id($id,$this->site['id']);
+		if(!$pid){
+			$this->error(P_Lang('项目信息不存在'));
+		}
+		if(!$this->model('popedom')->check($pid,$group_id,'post')){
+			$this->error(P_Lang('您没有这个权限功能，请联系网站管理员'));
+		}
+		$project_rs = $this->model('project')->get_one($pid);
+		if(!$project_rs || !$project_rs['status']){
+			$this->error(P_Lang('项目不存在或未启用'));
+		}
+		//非列表项目直接指定
+		$data = array();
+		$data['page_rs'] = $project_rs;
+		if(!$project_rs['module']){
+			$this->error(P_Lang('项目异常，请联系管理员'));
+		}
+		$dt = array('pid'=>$project_rs['id'],'user_id'=>$this->session->val('user_id'));
+		if($project_rs['cate']){
+			$cate = $this->get('cate');
+			$cateid = $this->get('cateid','int');
+			if($cate){
+				$dt['cate'] = $cate;
+			}
+			if($cateid){
+				$dt['cateid'] = $cateid;
+			}
+		}
+		//读取符合要求的内容
+		$pageid = $this->get($this->config['pageid'],'int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $project_rs["psize_api"] ? $project_rs['psize_api'] : ($project_rs['psize'] ? $project_rs['psize'] : $this->config['psize']);
+		if(!$psize){
+			$psize = 20;
+		}
+		$offset = ($pageid-1) * $psize;
+		$dt['psize'] = $psize;
+		$dt['offset'] = $offset;
+		$keywords = $this->get('keywords');
+		if($keywords){
+			$dt['keywords'] = $keywords;
+			$data['keywords'] = $keywords;
+		}
+		$dt['not_status'] = true;
+		$dt['is_usercp'] = true;
+		$status = $this->get('status');
+		if($status){
+			if($status == 1){
+				$dt['sqlext'] = "l.status=1";
+			}else{
+				$dt['sqlext'] = "l.status=0";
+			}
+			$data['status'] = $status;
+		}
+		
+		$dt['is_list'] = true;
+		$dt['cache'] = false;
+		$ext = $this->get('ext');
+		if($ext && is_array($ext)){
+			foreach($ext AS $key=>$value){
+				if($key && $value){
+					$dt['e_'.$key] = $value;
+					$pageurl .= "&ext[".$key."]=".rawurlencode($value);
+				}
+			}
+			$data['ext'] = $ext;
+		}
+		$list = $this->call->phpok('_arclist',$dt);
+		if($list['total']){
+			$data['pageid'] = $pageid;
+			$data['psize'] = $psize;
+			$data['total'] = $list['total'];
+			$data['rslist'] = $list['rslist'];
+		}
+		$this->success($data);
+	}
 }

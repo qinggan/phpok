@@ -41,12 +41,28 @@ class login_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('Email地址不存在'));
 		}
-		$code = $this->get('_chkcode');
-		if(!$code){
-			$this->error(P_Lang('验证码不能为空'));
+		if($this->model('site')->vcode('system','login')){
+			$code = $this->get('_chkcode');
+			if(!$code){
+				$this->error(P_Lang('图片验证码不能为空'));
+			}
+			$code = md5(strtolower($code));
+			if($code != $this->session->val('vcode')){
+				$this->error(P_Lang('图片验证码填写不正确'));
+			}
+			$this->session->unassign('vcode');
+			$vcode = $this->get('_vcode');
+		}else{
+			$vcode = $this->get('_vcode');
+			if(!$vcode){
+				$vcode = $this->get('_chkcode');
+			}
+		}
+		if(!$vcode){
+			$this->error(P_Lang('邮箱验证码不能为空'));
 		}
 		$this->model('vcode')->type('email');
-		$data = $this->model('vcode')->check($code);
+		$data = $this->model('vcode')->check($vcode);
 		if(!$data){
 			$this->error($this->model('vcode')->error_info());
 		}
@@ -80,6 +96,23 @@ class login_control extends phpok_control
 		if(!$type_id || !in_array($type_id,array('email','sms'))){
 			$this->error(P_Lang('仅支持邮件或短信重设密码'));
 		}
+		if($this->model('site')->vcode('system','getpass')){
+			$code = $this->get('_chkcode');
+			if(!$code){
+				$this->error(P_Lang('图片验证码不能为空'));
+			}
+			$code = md5(strtolower($code));
+			if($code != $this->session->val('vcode')){
+				$this->error(P_Lang('图片验证码填写不正确'));
+			}
+			$this->session->unassign('vcode');
+			$vcode = $this->get('_vcode');
+		}else{
+			$vcode = $this->get('_vcode');
+			if(!$vcode){
+				$vcode = $this->get('_chkcode');
+			}
+		}
 		if($type_id == 'email'){
 			$email = $this->get('email');
 			if(!$email){
@@ -111,11 +144,10 @@ class login_control extends phpok_control
 		if($user_rs['status'] == '2'){
 			$this->error(P_Lang('会员账号被管理员锁定，不能使用取回密码功能，请联系管理员'));
 		}
-		$code = $this->get('_chkcode');
-		if(!$code){
+		if(!$vcode){
 			$this->error(P_Lang('验证码不能为空'));
 		}
-		$data = $this->model('vcode')->check($code);
+		$data = $this->model('vcode')->check($vcode);
 		if(!$data){
 			$this->error($this->model('vcode')->error_info());
 		}
@@ -132,6 +164,7 @@ class login_control extends phpok_control
 		}
 		$pass = password_create($newpass);
 		$this->model('user')->update_password($pass,$user_rs['id']);
+		$this->model('vcode')->delete();
 		$this->success();
 	}
 
@@ -219,12 +252,28 @@ class login_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('手机号不存在'));
 		}
-		$code = $this->get('_chkcode');
-		if(!$code){
-			$this->error(P_Lang('验证码不能为空'));
+		if($this->model('site')->vcode('system','login')){
+			$code = $this->get('_chkcode');
+			if(!$code){
+				$this->error(P_Lang('图片验证码不能为空'));
+			}
+			$code = md5(strtolower($code));
+			if($code != $this->session->val('vcode')){
+				$this->error(P_Lang('图片验证码填写不正确'));
+			}
+			$this->session->unassign('vcode');
+			$vcode = $this->get('_vcode');
+		}else{
+			$vcode = $this->get('_vcode');
+			if(!$vcode){
+				$vcode = $this->get('_chkcode');
+			}
+		}
+		if(!$vcode){
+			$this->error(P_Lang('手机验证码不能为空'));
 		}
 		$this->model('vcode')->type('sms');
-		$data = $this->model('vcode')->check($code);
+		$data = $this->model('vcode')->check($vcode);
 		if(!$data){
 			$this->error($this->model('vcode')->error_info());
 		}
@@ -233,6 +282,7 @@ class login_control extends phpok_control
 		$this->session->assign('user_name',$rs['user']);
 		$this->model('wealth')->login($rs['id'],P_Lang('会员登录'));
 		$array = array('user_id'=>$rs['id'],'user_name'=>$rs['user'],'user_gid'=>$rs['group_id']);
+		$this->model('vcode')->delete();
 		$this->success($array);
 	}
 
@@ -248,5 +298,37 @@ class login_control extends phpok_control
 			$this->success($array);
 		}
 		$this->error(P_Lang('会员未登录'));
+	}
+
+	//基于 Token 实现用户登录
+	public function token_f()
+	{
+		$token = $this->get('data');
+		if(!$token){
+			if($this->session->val('user_id') && $this->site['api_code']){
+				$this->lib('token')->keyid($this->site['api_code']);
+				$user = $this->model('user')->get_one($this->session->val('user_id'));
+				$data = array('user_id'=>$user['id'],'user_name'=>$user['user'],'user_regtime'=>$user['regtime']);
+				$token = $this->lib('token')->encode($data);
+				$this->success($token);
+			}
+			$this->error('参数不完整');
+		}
+		if(!$this->site['api_code']){
+			$this->error('站点未配置密钥');
+		}
+		$this->lib('token')->keyid($this->site['api_code']);
+		$info = $this->lib('token')->decode($token);
+		if(!$info || !$info['user_id'] || !$info['user_name'] || !$info['user_regtime']){
+			$this->error('验证失败');
+		}
+		$user = $this->model('user')->get_one($info['user_id']);
+		$this->session->assign('user_id',$user['id']);
+		$this->session->assign('user_name',$user['user']);
+		$this->session->assign('user_gid',$user['group_id']);
+		$this->lib('token')->expiry(2592000);//超时处理
+		$data = array('user_id'=>$user['id'],'user_name'=>$user['user'],'user_regtime'=>$user['regtime']);
+		$token = $this->lib('token')->encode($data);
+		$this->success($token);
 	}
 }

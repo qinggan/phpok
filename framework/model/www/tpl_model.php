@@ -23,7 +23,6 @@ class tpl_model extends tpl_model_base
 		if($rs){
 			return $rs;
 		}
-		$this->db->cache_set($cache_id);
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;

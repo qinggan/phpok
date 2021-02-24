@@ -101,9 +101,7 @@ class upload_lib
 		if(!$input){
 			return array('status'=>'error','content'=>P_Lang('未指定表单名称'));
 		}
-		if($cateid){
-			$this->_cate($cateid);
-		}
+		$this->_cate($cateid);
 		if(isset($_FILES[$input])){
 			$rs = $this->_upload($input);
 		}else{
@@ -211,9 +209,14 @@ class upload_lib
 			$chunks = 1;
 		}
 		$tmpname = $_FILES[$input]["name"];
+		if($tmpname){
+			$tmpname = $app->lib('string')->to_utf8($tmpname);
+	    	$tmpname = $app->format($tmpname,"safe_text");
+		}
 		$mime_type = $_FILES[$input]["type"];
-	    $tmpname = $app->lib('string')->to_utf8($tmpname);
-	    $tmpname = $app->format($tmpname,"safe_text");
+		if($mime_type){
+			$mime_type = $app->format($mime_type,'safe_text');
+		}
 		$tmpid = 'u_'.md5($tmpname);
 		$ext = $this->file_ext($tmpname,$chk);
 		if(!$ext){
@@ -296,13 +299,13 @@ class upload_lib
 		if(!$tmpname){
 			$tmpname = uniqid($input.'_');
 		}
-		$ext = $this->file_ext($tmpname,$chk);
+		$ext = $this->file_ext($tmpname,true);
 		if(!$ext){
 			return array('status'=>'error','error'=>P_Lang('附件类型不符合要求'));
 		}
 		$chunk = $app->get('chunk','int');
 		$chunks = $app->get('chunks','int');
-		$mime_type = $app->get('type');
+		$mime_type = $app->get('type','safe_text');
 		if(!$chunks){
 			$chunks = 1;
 		}
@@ -468,13 +471,7 @@ class upload_lib
 	private function _cate($id=0)
 	{
 		global $app;
-		$cate_rs = '';
-		if($id){
-			$cate_rs = $app->model('rescate')->get_one($id);
-		}
-		if(!$cate_rs){
-			$cate_rs = $app->model('rescate')->get_default();
-		}
+		$cate_rs = $app->model('rescate')->get_one($id);
 		if(!$cate_rs){
 			$cate_rs = array('id'=>0,'filemax'=>50000,'root'=>'res/','folder'=>'Ym/d/','filetypes'=>'jpg,gif,png,zip,rar','gdall'=>1,'ico'=>1);
 		}
@@ -507,7 +504,7 @@ class upload_lib
 			$this->set_dir($folder);
 		}
 		if(isset($_FILES[$inputname])){
-			return $this->_upload($inputname);
+			return $this->_upload($inputname,true);
 		}
 		return $this->_save($inputname,false);
 	}

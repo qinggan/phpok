@@ -15,7 +15,7 @@
 		**/
 		select_free:function()
 		{
-			$.input.checkbox_none();
+			$.checkbox.none();
 			$("input[sign='free']").prop("checked",true);
 			return true;
 		},
@@ -25,7 +25,7 @@
 		**/
 		optimize:function()
 		{
-			var id = $.input.checkbox_join();
+			var id = $.checkbox.join();
 			if(!id){
 				$.dialog.alert(p_lang('请选择数据表'));
 				return false;
@@ -48,7 +48,7 @@
 		**/
 		repair:function()
 		{
-			var id = $.input.checkbox_join();
+			var id = $.checkbox.join();
 			if(!id){
 				$.dialog.alert(p_lang('请选择数据表'));
 				return false;
@@ -72,7 +72,7 @@
 		backup:function()
 		{
 			$.dialog.confirm(p_lang('确定要执行备份操作吗？未选定表将备份全部！'),function(){
-				var id = $.input.checkbox_join();
+				var id = $.checkbox.join();
 				if(!id){
 					id = 'all';
 				}

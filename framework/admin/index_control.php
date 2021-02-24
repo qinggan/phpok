@@ -519,6 +519,18 @@ class index_control extends phpok_control
 	**/
 	public function pendding_f()
 	{
+		if($this->session->val('admin_login_time') && $this->session->val('admin_long_time')){
+			$etime = $this->time - $this->session->val('admin_login_time');
+			if($etime > ($this->session->val('admin_long_time') * 60)){
+				$this->session->unassign('admin_id');
+				$this->session->unassign('admin_account');
+				$this->session->unassign('admin_rs');
+				$this->session->unassign('adm_develop');
+				$this->session->unassign('admin_login_time');
+				$this->session->unassign('admin_long_time');
+				$this->error('系统超时，强制退出');
+			}
+		}
 		$this->config('is_ajax',true);
 		$list = false;
 		//读取未操作的主题

@@ -34,9 +34,21 @@
 		<option value="">{$_rs.empty_val}</option>
 		<!-- /if -->
 		<!-- php:$_rs.content = is_array($_rs.content) ? $_rs.content.id : $_rs.content -->
-		<!-- loop from=$_rslist key=$key value=$value id=$tmpid -->
-		<option value="{$value.val}"{if $value.val == $_rs.content} selected{/if}>{$value.title}</option>
-		<!-- /loop -->
+		<!-- if $_grouplist -->
+			<!-- loop from=$_grouplist key=$key value=$value id=$tmpid -->
+			<optgroup label="{$value}">
+				<!-- loop from=$_rslist key=$k value=$v id=$idxx -->
+				<!-- if $v.cate_id == $key -->
+				<option value="{$v.val}"{if $_rs.content && in_array($v.val,$_rs.content)} selected{/if}>{$v.title}</option>	
+				<!-- /if -->
+				<!-- /loop -->
+			</optgroup>
+			<!-- /loop -->
+		<!-- else -->
+			<!-- loop from=$_rslist key=$key value=$value id=$tmpid -->
+			<option value="{$value.val}"{if $value.val == $_rs.content} selected{/if}>{$value.title}</option>
+			<!-- /loop -->
+		<!-- /if -->
 	</select>
 	<!-- /if -->
 <!-- /if -->

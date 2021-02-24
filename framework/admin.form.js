@@ -9,21 +9,40 @@
 **/
 ;(function($){
 	$._configForm = {
-		text:function(id,val)
+		text:function(id,val,ext_field)
 		{
 			if(id == 'form_btn'){
+				$("#ext_quick_words_html,#ext_color_html,#ext_title_html").hide();
 				if(val == '' || val == 'undefined'){
 					$("#ext_quick_words_html").show();
-					$("#ext_color_html").hide();
 					return true;
 				}
 				if(val == 'color'){
-					$("#ext_quick_words_html").hide();
 					$("#ext_color_html").show();
 					return true;
 				}
-				$("#ext_quick_words_html").hide();
-				$("#ext_color_html").hide();
+				var tmp = val.split(":");
+				if(tmp[0] == 'title' && tmp[1]){
+					var url = get_url('form','fields','pid='+tmp[1]);
+					$.phpok.json(url,function(rs){
+						if(!rs.status){
+							var opt = '<option value="">'+rs.info+'</option>';
+							$("#ext_field").html(opt);
+							return true;
+						}
+						var html = '<option value="">请选择…</option>';
+						for(var i in rs.info){
+							html += '<option value="'+i+'"';
+							if(i == ext_field){
+								html += ' selected';
+							}
+							html += '>'+rs.info[i]+'</option>';
+						}
+						$("#ext_field").html(html);
+						return true;
+					});
+					$("#ext_title_html").show();
+				}
 				return true;
 			}
 			if(id == 'eqt'){

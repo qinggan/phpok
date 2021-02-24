@@ -1,4 +1,4 @@
-<div class="list">
+<div class="list" id="{$_rs.identifier}_preview">
 <table class="layui-table">
 <thead>
 <tr>
@@ -6,6 +6,11 @@
 	<!-- loop from=$layout key=$key value=$value id=$tmpid -->
 	<th class="lft">{$value}</th>
 	<!-- /loop -->
+	<!-- if $_rs.form_price -->
+	<th>{lang价格}</th>
+	<th>{lang运费}</th>
+	<th>{lang税费}</th>
+	<!-- /if -->
 	<th width="60px">{lang排序}</th>
 	<th id="{$_rs.identifier}_action_buttons" width="120" style="text-align:center;">
 		<!-- if !$_true_delete -->
@@ -19,20 +24,22 @@
 	</th>
 </tr>
 </thead>
+<tbody>
 <!-- loop from=$rslist key=$key value=$value id=$idx -->
-<tr>
+<tr data-id="{$value.id}" id="tr_{$_rs.identifier}_{$value.id}">
 	<td class="center">{$value.id}</td>
 	<!-- loop from=$layout key=$k value=$v id=$idxx -->
 	<td>{$value[$k]}</td>
 	<!-- /loop -->
+	<!-- if $_rs.form_price -->
+	<td><input type="text" name="_price[{$value.id}]" id="_price_{$value.id}" value="{$value.price}" class="layui-input" /></td>
+	<td><input type="text" name="_freight[{$value.id}]" id="_freight_{$value.id}" value="{$value.freight}" class="layui-input" /></td>
+	<td><input type="text" name="_tax[{$value.id}]" id="_tax_{$value.id}" value="{$value.tax}" class="layui-input" /></td>
+	<!-- /if -->
 	<td align="center" data-value="{$idx.num}" data-total="{$idx.total}" data-id="{$value.id}" data-name="taxis-{$_rs.identifier}-{$_rs.id}">
 		<div class="button-group">
-			<!-- if $idx.index -->
 			<input type="button" value="↑" class="phpok-btn" title="{lang向前移一位}" onclick="$.phpokform.extitle_sortup(this,'{$_rs.id}','{$_rs.identifier}')" />
-			<!-- /if -->
-			<!-- if $idx.num != $idx.total -->
 			<input type="button" value="↓" class="phpok-btn" title="{lang向后移一位}" onclick="$.phpokform.extitle_sortdown(this,'{$_rs.id}','{$_rs.identifier}')" />
-			<!-- /if -->
 		</div>
 	</td>
 	<td class="center">
@@ -43,5 +50,6 @@
 	</td>
 </tr>
 <!-- /loop -->
+</tbody>
 </table>
 </div>

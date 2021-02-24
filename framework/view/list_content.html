@@ -259,7 +259,7 @@
 				<!-- /if -->
 				<div class="layui-btn-group" style="display: block;" name="list-content-btns" id="id_{$value.id}" data-id="{$value.id}">
 					<!-- if $rs.is_front -->
-					<input type="button" value="{lang查看}" onclick="$.phpok.open('{$sys.www_file}?id={$value.id}')" class="layui-btn layui-btn-xs layui-btn-normal" />
+					<input type="button" value="{lang查看}" onclick="$.phpok.open('{$sys.www_file}?id={$value.identifier ? $value.identifier : $value.id}')" class="layui-btn layui-btn-xs layui-btn-normal" />
 					<!-- /if -->
 					<!-- if $popedom.modify -->
 					<input type="button" value="{lang编辑}" onclick="top.$.win('{$rs.title}_{lang编辑}_#{$value.id}','{url ctrl=list func=edit id=$value.id/}')" class="layui-btn layui-btn-xs" />
@@ -321,7 +321,7 @@
 				<td><span class="status{$vv.status}" id="status_{$vv.id}" {if $popedom.status}onclick="$.admin_list.status({$vv.id})"{else} style="cursor: default;"{/if} value="{$vv.status}"></span></td>
 				<td class="center">{$vv.id}</td>
 				<td><label for="id_{$vv.id}">
-					&nbsp; &nbsp; ├─ <a href="{$sys.url}?id={$vv.id}" target="_blank" title="{lang前台访问}" style="{$vv.style}">{$vv.title}</a>
+					&nbsp; &nbsp; ├─ <a href="{$sys.url}?id={$vv.identifier ? $vv.identifier : vv.id}" target="_blank" title="{lang前台访问}" style="{$vv.style}">{$vv.title}</a>
 					<!-- if $vv.attr -->
 						<!-- php:$attr = explode(",",$vv['attr']) -->
 						<!-- loop from=$attr key=$attr_k value=$attr_v -->
@@ -402,9 +402,9 @@
 		<ul class="layout">
 			<li>
 				<div class="layui-btn-group">
-					<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_all()" />
-					<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_none()" />
-					<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.input.checkbox_anti()" />
+					<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.all()" />
+					<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.none()" />
+					<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.anti()" />
 				</div>
 			</li>
 			<li><select id="list_action_val" onchange="update_select()">

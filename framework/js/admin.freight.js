@@ -11,65 +11,12 @@
 	$.admin_freight = {
 		update:function(id)
 		{
-			var url = get_url('freight','save','id='+id);
-			var title = $("#title_"+id).val();
-			if(!title){
-				$.dialog.alert(p_lang('名称不能为空'));
-				return false
-			}
-			url += "&title="+$.str.encode(title);
-			var type = $("#type_"+id).val();
-			if(type){
-				url += "&type="+type;
-			}
-			var currency_id = $("#currency_"+id).val();
-			if(currency_id){
-				url += "&currency_id="+currency_id;
-			}
-			var taxis = $("#taxis_"+id).val();
-			if(taxis){
-				url += "&taxis="+taxis;
-			}
-			$.phpok.json(url,function(rs){
-				if(rs.status){
-					$.dialog.tips(p_lang('运费模板修改成功')).lock();
-					return true;
-				}
-				$.dialog.alert(rs.info);
-				return false;
-			});
+			var url = get_url('freight','set','id='+id);
+			$.win(p_lang('编辑运费模板')+"_#"+id,url);
 		},
 		add:function()
 		{
-			var url = get_url('freight','save');
-			var title = $("#title_0").val();
-			if(!title){
-				$.dialog.alert('名称不能为空');
-				return false
-			}
-			url += "&title="+$.str.encode(title);
-			var type = $("#type_0").val();
-			if(type){
-				url += "&type="+type;
-			}
-			var currency_id = $("#currency_0").val();
-			if(currency_id){
-				url += "&currency_id="+currency_id;
-			}
-			var taxis = $("#taxis_0").val();
-			if(taxis){
-				url += "&taxis="+taxis;
-			}
-			$.phpok.json(url,function(rs){
-				if(rs.status){
-					$.dialog.tips(p_lang('运费模板修改成功'),function(){
-						$.phpok.reload();
-					}).lock();
-					return true;
-				}
-				$.dialog.alert(rs.info);
-				return false;
-			});
+			$.win(p_lang('创建运费模板'),get_url('freight','set'));
 		},
 		del:function(id)
 		{
@@ -109,49 +56,38 @@
 				'cancelVal':p_lang('取消')
 			});
 		},
+		vweight:function(obj)
+		{
+			var o = $(obj).attr("data-value");
+			$.dialog.prompt(p_lang('请设置系统体积与重量的换算关系，<a href="//baike.baidu.com/item/%E4%BD%93%E7%A7%AF%E9%87%8D/10675205" target="_blank">关于体积重请点此了解详情</a>'),function(val){
+				if(!val || val == ''){
+					$.dialog.alert(p_lang('体积重值不能为空'));
+					return false;
+				}
+				if(val == o){
+					$.dialog.alert(p_lang('体积重没有变化，不需要修改'));
+					return false;
+				}
+				var url = get_url('freight','vweight','val='+val);
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.alert(rs.info);
+						return false;
+					}
+					$(obj).attr("data-value",val);
+					$.dialog.tips(p_lang('体积重设置成功'));
+				});
+			},o);
+		},
 		zone_add:function(fid)
 		{
 			var url = get_url('freight','zone_setting','fid='+fid);
-			$.dialog.open(url,{
-				'title':p_lang('添加新区域'),
-				'lock':true,
-				'width':'700px',
-				'height':'500px',
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert('iframe还没加载完毕呢');
-						return false;
-					};
-					iframe.save();
-					return false;
-				},
-				'okVal':p_lang('保存添加'),
-				'cancel':true,
-				'cancelVal':p_lang('取消')
-			});
+			$.win(p_lang('添加新区域'),url);
 		},
 		zone_edit:function(id)
 		{
 			var url = get_url('freight','zone_setting','id='+id);
-			$.dialog.open(url,{
-				'title':p_lang('编辑区域')+"_#"+id,
-				'lock':true,
-				'width':'700px',
-				'height':'500px',
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert('iframe还没加载完毕呢');
-						return false;
-					};
-					iframe.save();
-					return false;
-				},
-				'okVal':p_lang('保存修改'),
-				'cancel':true,
-				'cancelVal':p_lang('取消')
-			});
+			$.win(p_lang('编辑区域')+"_#"+id,url);
 		},
 		zone_del:function(id)
 		{

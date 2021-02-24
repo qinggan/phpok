@@ -1,0 +1,147 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				排列
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="text-align" value="" title="默认（继承）" checked />
+				<input type="radio" name="text-align" value="left" title="左对齐" />
+				<input type="radio" name="text-align" value="center" title="居中" />
+				<input type="radio" name="text-align" value="right" title="右对齐" />
+				<input type="radio" name="text-align" value="justify" title="两端对齐" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				动画
+			</label>
+			<div class="layui-input-inline auto">
+				<select id="style_in" name="style_in" lay-ignore>
+					<!-- loop from=$inlist key=$key value=$value id=$tmpid -->
+					<!-- if is_array($value) -->
+					<optgroup label="{$value.title}">
+						<!-- loop from=$value.list key=$k value=$v id=$idxx -->
+						<option value="{$k}">{$v}</option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- else -->
+					<option value="{$key}">{$value}</option>
+					<!-- /if -->
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-input-inline auto" style="display:none;">
+				<select id="style_out" name="style_out" lay-ignore>
+					<option value="">离场动画</option>
+					<!-- loop from=$outlist key=$key value=$value id=$tmpid -->
+					<option value="{$key}">{$value}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="持续时间和延迟时间单位是秒。<br />可视距离和执行次数只能填写数字">&#xe702;</i>
+				动画属性
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="data-wow-duration" id="data-wow-duration" placeholder="持续时间" class="layui-input" />
+			</div>
+			<div class="layui-input-inline short">
+				<input type="text" name="data-wow-delay" id="data-wow-delay" placeholder="延迟时间" class="layui-input" />
+			</div>
+			<div class="layui-input-inline short">
+				<input type="text" name="data-wow-offset" id="data-wow-offset" placeholder="可视距离" class="layui-input" />
+			</div>
+			<div class="layui-input-inline short">
+				<input type="text" name="data-wow-iteration" id="data-wow-iteration" placeholder="执行次数" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				背景图片
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="background-image" id="background-image" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择图片}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_select('background-image')" />
+					<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_preview('background-image')" />
+					<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('background-image');" />
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				背景位置
+			</label>
+			<div class="layui-input-inline default-auto">
+				<table>
+				<tr>
+					<td><input type="radio" name="bg_position" id="bg_position_1" value="left top" title="{lang左上}" /></td>
+					<td><input type="radio" name="bg_position" id="bg_position_2" value="center top" title="{lang中上}" /></td>
+					<td><input type="radio" name="bg_position" id="bg_position_3" value="right top" title="{lang右上}" /></td>
+				</tr>
+				<tr>
+					<td><input type="radio" name="bg_position" id="bg_position_4" value="left center" title="{lang左中}" /></td>
+					<td><input type="radio" name="bg_position" id="bg_position_5" value="center center" title="{lang中间}" /></td>
+					<td><input type="radio" name="bg_position" id="bg_position_6" value="right center" title="{lang右中}" /></td>
+				</tr>
+				<tr>
+					<td><input type="radio" name="bg_position" id="bg_position_7" value="left bottom" title="{lang左下}" /></td>
+					<td><input type="radio" name="bg_position" id="bg_position_8" value="center bottom" title="{lang中下}" /></td>
+					<td><input type="radio" name="bg_position" id="bg_position_9" value="right bottom" title="{lang右下}" /></td>
+				</tr>
+				</table>
+			</div>
+			<div class="layui-form-mid">
+				
+			</div>
+		</div>
+		
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				背景色
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="bgcolor" id="bgcolor" value="" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang颜色选择}" class="layui-btn layui-btn-sm jscolor {valueElement:'bgcolor',styleElement:'bgcolor',required:false,hash:true}" />
+					<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('bgcolor')" />
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="额外的 CSS 类，多个类请用空格分开，这里使用 Bootstrap 框架">&#xe702;</i> CSS类
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="ext-class" id="ext-class" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="内边距" onclick="paddingSetting('#ext-class',this)" class="layui-btn layui-btn-sm" />
+					<input type="button" value="外边距" onclick="marginSetting('#ext-class',this)" class="layui-btn layui-btn-sm" />
+					<input type="button" value="清空" onclick="$('#ext-class').val('')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="自定义的CSS样式代码，不熟悉请留空">&#xe702;</i> 样式
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="ext-css" id="ext-css" class="layui-input" />
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_lay is_open=true -->

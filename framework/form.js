@@ -175,7 +175,7 @@ function phpok_title_delete(id,val)
 		}
 		return true;
 	}
-	val = $.input.checkbox_join(id+"_div");
+	val = $.checkbox.join(id+"_div");
 	if(!val || val == "undefined")
 	{
 		$.dialog.alert("请选择要删除的信息");
@@ -364,7 +364,7 @@ function go_to_page_action()
 					'callback': function () {
 						$.phpok.open(get_url('res','download','id='+id));
 						return false;
-					},
+					}
 				}],
 				'okVal':p_lang('关闭'),
 				'ok':true
@@ -641,6 +641,16 @@ function go_to_page_action()
 			return $(id).val('');
 		},
 
+		radio_extadd:function(id)
+		{
+			var t = $("input[name="+id+"]:checked").val();
+			if(t == '_'){
+				$('#'+id+"_extadd").removeAttr("disabled");
+			}else{
+				$('#'+id+"_extadd").attr("disabled",true);
+			}
+		},
+
 		/**
 		 * 文件选择器
 		**/
@@ -710,6 +720,20 @@ function go_to_page_action()
 			});
 		},
 
+		/**
+		 * 主题选择器
+		**/
+		text_button_title_select:function(id,pid,field)
+		{
+			$.dialog.open(get_url("open","title","id="+id+"&pid="+pid+"&field="+field),{
+				title: p_lang('主题选择器'),
+				lock : true,
+				width: "700px",
+				height: "70%",
+				resize: false
+			});
+		},
+		
 		/**
 		 * 视频选择器
 		**/
@@ -846,6 +870,10 @@ function go_to_page_action()
 				return true;
 			}
 			var url = get_url("inp","","type=title&content="+$.str.encode(tmp_id));
+			var tid = $("#id").val();
+			if(tid && tid != '0'){
+				url += "&extprice="+tid+"&field="+identifier;
+			}
 			$.phpok.json(url,function(rs){
 				if(rs.status){
 					var lst = rs.info;
@@ -866,6 +894,10 @@ function go_to_page_action()
 				return true;
 			}
 			var url = get_url("inp","",'type=title&content='+$.str.encode(tmp_id));
+			var tid = $("#id").val();
+			if(tid && tid != '0'){
+				url += "&extprice="+tid+"&field="+identifier;
+			}
 			$.phpok.json(url,function(rs){
 				if(rs.status){
 					var lst = rs.info;
@@ -880,9 +912,9 @@ function go_to_page_action()
 		title_sortup:function(obj,identifier)
 		{
 			var $tr = $(obj).parents("tr");
-			if ($tr.index() != 0) { 
-				$tr.fadeOut().fadeIn(); 
-				$tr.prev().before($tr);   
+			if ($tr.index() != 0) {
+				$tr.fadeOut().fadeIn();
+				$tr.prev().before($tr);
 			}
 			var list = new Array();
 			$("#"+identifier+"_preview tbody tr").each(function(i){
@@ -894,12 +926,11 @@ function go_to_page_action()
 
 		title_sortdown:function(obj,identifier)
 		{
-			//下移 
 			var len = $("#"+identifier+"_preview tbody tr").length;
-			var $tr = $(obj).parents("tr"); 
-			if ($tr.index() != len - 1) { 
-				$tr.fadeOut().fadeIn(); 
-				$tr.next().after($tr); 
+			var $tr = $(obj).parents("tr");
+			if ($tr.index() != len - 1) {
+				$tr.fadeOut().fadeIn();
+				$tr.next().after($tr);
 			}
 			var list = new Array();
 			$("#"+identifier+"_preview tbody tr").each(function(i){
@@ -1094,32 +1125,7 @@ function go_to_page_action()
 		**/
 		extitle_sortup:function(obj,id,identifier)
 		{
-			var t = [];
-			var old = $(obj).parent().parent().attr("data-id");
-			var total = $(obj).parent().parent().attr('data-total');
-			var string = "td[data-name=taxis-"+identifier+"-"+id+"]";
-			var chk = $(string).eq(0).attr('data-id');
-			$(string).each(function(i){
-				var id = $(this).attr("data-id");
-				if($(string).eq(i+1).attr('data-id') == old){
-					var val = $(string).eq(i+1).attr("data-value");
-				}else{
-					if(id == old){
-						var val = $(string).eq(i-1).attr('data-value');
-					}else{
-						var val = $(this).attr("data-value");
-					}
-				}
-				t.push({"id":id,"sort":val});
-			});
-			t = t.sort(function(a,b){return parseInt(a['sort'])>parseInt(b['sort']) ? 1 : -1});
-			var list = new Array();
-			for(var i in t){
-				list[i] = t[i]['id'];
-			}
-			var data = list.join(",");
-			$("#"+identifier).val(data);
-			this.extitle_reload(id,identifier);
+			this.title_sortup(obj,identifier);
 		},
 
 		/**
@@ -1127,35 +1133,7 @@ function go_to_page_action()
 		**/
 		extitle_sortdown:function(obj,id,identifier)
 		{
-			var t = [];
-			var old = $(obj).parent().parent().attr("data-id");
-			var string = "td[data-name=taxis-"+identifier+"-"+id+"]";
-			var chk = $(string).eq(0).attr('data-id');
-			var num = 0;
-			var old_value = 0;
-			$(string).each(function(i){
-				var id = $(this).attr("data-id");
-				if(id == old){
-					var val = $(string).eq(i+1).attr('data-value');
-					num = i+1;
-					old_value = $(this).attr('data-value');
-				}else{
-					if(id == $(string).eq(num).attr('data-id')){
-						var val = old_value;
-					}else{
-						var val = $(this).attr('data-value');
-					}
-				}
-				t.push({"id":id,"sort":val});
-			});
-			t = t.sort(function(a,b){return parseInt(a['sort'])>parseInt(b['sort']) ? 1 : -1});
-			var list = new Array();
-			for(var i in t){
-				list[i] = t[i]['id'];
-			}
-			var data = list.join(",");
-			$("#"+identifier).val(data);
-			this.extitle_reload(id,identifier);
+			this.title_sortdown(obj,identifier);
 		},
 
 		/**
@@ -1172,26 +1150,13 @@ function go_to_page_action()
 				this.extitle_reload(id,identifier);
 				return true;
 			}
-			var list = content.split(',');
-			var nlist = new Array();
-			var m = 0;
-			for(var i in list){
-				if(list[i] != val){
-					nlist[m] = list[i];
-					m++;
-				}
-			}
-			content = nlist.join(',');
-			$("#"+identifier).val(content);
-			var _self = this;
-			$.phpok.json(get_url('form','quickdelete','fid='+id+"&id="+val),function(rs){
-				if(rs.status){
-					_self.extitle_reload(id,identifier);
-					return true;
-				}
-				$.dialog.alert(rs.info);
-				return false;
+			$("#tr_"+identifier+"_"+val).remove();
+			var list = new Array();
+			$("#"+identifier+"_preview tbody tr").each(function(i){
+				list[i] = $(this).attr("data-id");
 			});
+			var str = list.join(",");
+			$("#"+identifier).val(str);
 		}
 	};
 })(jQuery);

@@ -35,6 +35,23 @@ class upload_control extends phpok_control
 		$this->json($rs,true);
 	}
 
+	public function md_editor_f()
+	{
+		$rs = $this->upload_base('editormd-image-file');
+		if(!$rs || $rs['status'] != 'ok'){
+			$array = array(
+                'success' => 0
+            );
+			$tip = $rs['error'] ? $rs['error'] : $rs['content'];
+            $array['message'] = $tip;
+            echo $this->lib('json')->encode($array);
+            exit;
+		}
+		$array = array('success'=>1,'url'=>$rs['filename']);
+		echo $this->lib('json')->encode($array);
+        exit;
+	}
+
 	/**
 	 * 接收ZIP包上传，主要用于更新及数据导入，上传的表单ID固定用upfile
 	**/

@@ -1,14 +1,14 @@
 <?php
 /**
- * 第三方控件，检测是否手机浏览器
- * @package phpok\libs
- * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
- * @主页 http://www.phpok.com
- * @版本 4.x
- * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @时间 2017年06月20日
+ * 检测是否手机浏览器
+ * @作者 苏相锟 <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司 / 苏相锟
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
+ * @时间 2020年8月28日
 **/
+
 
 if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
@@ -19,10 +19,6 @@ class mobile_lib extends _init_lib
 	public function __construct()
 	{
 		parent::__construct();
-		$file = $this->dir_extension().'mobile/Mobile_Detect.php';
-		if(file_exists($file)){
-			include_once($file);
-		}
 		$this->obj = new Mobile_Detect();
 	}
 

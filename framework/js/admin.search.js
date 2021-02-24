@@ -9,6 +9,25 @@
 **/
 ;(function($){
 	$.admin_search = {
+		add:function()
+		{
+			$.dialog.prompt(p_lang('请填写要增加的关键字，多个关键字用英文逗号隔开'),function(val){
+				if(!val || val == ''){
+					$.dialog.alert(p_lang('关键字不能为空'));
+					return false;
+				}
+				var url = get_url('search','add','content='+$.str.encode(val));
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.alert(rs.info);
+						return false;
+					}
+					$.dialog.tips(p_lang('关键字添加成功'),function(){
+						$.phpok.reload();
+					}).lock();
+				})
+			});
+		},
 		edit:function(id)
 		{
 			var url = get_url('search','edit','id='+id);

@@ -243,7 +243,6 @@ class site_model_base extends phpok_model
 		if($rs){
 			return $rs;
 		}
-		$this->db->cache_set($cache_id);
 		if(!is_numeric($id)){
 			$sql = "SELECT site_id FROM ".$this->db->prefix."site_domain WHERE domain='".$id."'";
 			$tmp = $this->db->get_one($sql);

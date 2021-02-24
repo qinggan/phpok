@@ -26,6 +26,13 @@ class list_model_base extends phpok_model
 		parent::model();
 	}
 
+
+	public function biz_info($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."list_biz WHERE id='".$id."'";
+		return $this->db->get_one($sql);
+	}
+
 	/**
 	 * 是否启用电商
 	 * @参数 $is_biz true 或 false
@@ -87,6 +94,23 @@ class list_model_base extends phpok_model
 			$list[] = 'ext.'.$value['identifier'];
 		}
 		return implode(",",$list);
+	}
+
+	public function extprice($id,$fid=0)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."list_extprice WHERE id='".$id."' AND fid='".$fid."' ORDER BY tid ASC";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$tmp = array('price'=>$value['price']);
+			$tmp['freight'] = $value['freight'];
+			$tmp['tax'] = $value['tax'];
+			$rslist[$value['tid']] = $tmp;
+		}
+		return $rslist;
 	}
 
 	/**
@@ -167,7 +191,8 @@ class list_model_base extends phpok_model
 		if($cid_string){
 			$catelist = $this->lib('ext')->cate_list($cid_string);
 			foreach($rslist as $key=>$value){
-				if($value["cate_id"]){
+				if($value["cate_id"] && $catelist[$value['cate_id']]){
+					$value['catename'] = $catelist[$value['cate_id']]['title'];
 					$value["cate_id"] = $catelist[$value["cate_id"]];
 					$rslist[$key] = $value;
 				}
@@ -642,24 +667,35 @@ class list_model_base extends phpok_model
 	 * @参数 $val 字段内容
 	 * @参数 $pid 项目ID
 	 * @参数 $mid 模块ID
+	 * @参数 $id 主题ID
 	**/
-	public function ext_only_check($field,$val,$pid=0,$mid=0)
+	public function ext_only_check($field,$val,$pid=0,$mid=0,$mtype=false,$id=0)
 	{
-		if(!$field || !$val || !$mid){
+		if(!$field || $val == '' || !$mid){
 			return true;
 		}
-		//检查表字段
-		$flist = $this->db->list_fields('list_'.$mid);
+		if($mtype){
+			$flist = $this->db->list_fields($mid);
+		}else{
+			$flist = $this->db->list_fields('list_'.$mid);
+		}		
 		if(!$flist){
 			return false;
 		}
 		if(!in_array($field,$flist)){
 			return false;
 		}
-		$sql = "SELECT id FROM ".$this->db->prefix."list_".$mid." WHERE `".$field."`='".$val."'";
+		if($mtype){
+			$sql = "SELECT id FROM ".$this->db->prefix.$mid." WHERE ".$field."='".$val."'";
+		}else{
+			$sql = "SELECT id FROM ".$this->db->prefix."list_".$mid." WHERE ".$field."='".$val."'";
+		}
 		$sql .= " AND site_id='".$this->site_id."'";
 		if($pid){
 			$sql .= " AND project_id='".$pid."'";
+		}
+		if($id){
+			$sql .= " AND id!='".$id."'";
 		}
 		return $this->db->get_one($sql);
 		
@@ -879,7 +915,34 @@ class list_model_base extends phpok_model
 			$offset = intval($offset);
 			$sql.= " LIMIT ".$offset.",".$psize;
 		}
-		return $this->db->get_all($sql,$pri);
+		$tmplist = $this->db->get_all($sql,$pri);
+		if(!$tmplist){
+			return false;
+		}
+		$cate_ids = array();
+		$is_true = false;
+		foreach($tmplist as $key=>$value){
+			if($value['cate_id']){
+				$cate_ids[] = $value['cate_id'];
+				$is_true = true;
+			}
+		}
+		if(!$is_true){
+			return $tmplist;
+		}
+		$cate_ids = array_unique($cate_ids);
+		$sql = "SELECT id,title FROM ".$this->db->prefix."cate WHERE id IN(".implode(",",$cate_ids).")";
+		$catelist = $this->db->get_all($sql,'id');
+		if(!$catelist){
+			return $tmplist;
+		}
+		foreach($tmplist as $key=>$value){
+			if($value['cate_id'] && $catelist[$value['cate_id']]){
+				$value['cate_title'] = $catelist[$value['cate_id']]['title'];
+				$tmplist[$key] = $value;
+			}
+		}
+		return $tmplist;
 	}
 
 	function get_all_total($condition="")
@@ -935,6 +998,9 @@ class list_model_base extends phpok_model
 			return false;
 		}
 		$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id IN(".implode(",",$ids).")";
+		if($status){
+			$sql .= " AND status=1 ";
+		}
 		return $this->db->get_all($sql,"id");
 	}
 
@@ -1137,8 +1203,6 @@ class list_model_base extends phpok_model
 		}
 		//删除扩展主题信息
 		if($mid){
-			//删除附件
-			$this->delete_res($id,$mid);
 			$sql = "DELETE FROM ".$this->db->prefix."list_".$mid." WHERE id='".$id."'";
 			$this->db->query($sql);
 		}
@@ -1164,6 +1228,7 @@ class list_model_base extends phpok_model
 			$sql = "DELETE FROM ".$this->db->prefix."fields WHERE ftype='list-".$id."'";
 			$this->db->query($sql);
 		}
+		$this->node("system_admin_title_delete",$id);
 		return true;
 	}
 
@@ -1343,11 +1408,11 @@ class list_model_base extends phpok_model
 	{
 		$sql  = "SELECT l.*,p.title project_title FROM ".$this->db->prefix."list l ";
 		$sql .= "LEFT JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
-		$sql .= "WHERE l.site_id='".$this->site_id."' AND l.status=1 ";
+		$sql .= "WHERE l.site_id='".$this->site_id."' ";
 		if($condition){
 			$sql .= " AND ".$condition." ";
 		}
-		$sql .= " ORDER BY id DESC LIMIT ".intval($offset).",".intval($psize);
+		$sql .= " ORDER BY l.id DESC LIMIT ".intval($offset).",".intval($psize);
 		return $this->db->get_all($sql);
 	}
 

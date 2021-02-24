@@ -1,11 +1,16 @@
 <?php
-/***********************************************************
-	Filename: libs/system/email.php
-	Note	: 发送邮件类
-	Version : 3.0
-	Author  : qinggan
-	Update  : 2010-05-10
-***********************************************************/
+/**
+ * 邮件发送类
+ * @作者 苏相锟 <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司 / 苏相锟
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
+ * @时间 2020年8月28日
+**/
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception; 
+
 //引入phpmail控件发送邮件
 class email_lib
 {
@@ -30,7 +35,6 @@ class email_lib
 	public function __construct()
 	{
 		global $app;
-		include_once($app->dir_root."gateway/email/class.phpmailer.php");
 		$app->gateway('type','email');
 		$app->gateway('param','default');
 		$info = $app->gateway['param'];
@@ -42,7 +46,7 @@ class email_lib
 			return false;
 		}
 		//初始化邮件服务器参数
-		$this->smtp_charset = $info['charset'] ? str_replace('-','',$info['charset']) : 'utf8';
+		$this->smtp_charset = $info['charset'] && $info['charset'] == 'gbk' ? 'gbk' : 'utf-8';
 		$this->smtp_server = $info["server"];
 		$this->smtp_port = $info["port"] ? $info["port"] : 25;
 		$this->smtp_ssl = ($info['ssl'] && $info["ssl"] == 'yes') ? true : false;
@@ -87,7 +91,6 @@ class email_lib
 		$this->obj->Subject = $title;
 		$this->obj->MsgHTML(stripslashes($content));
 		foreach($account as $key=>$value){
-			//如果管理员邮箱和要发送的邮箱是一样的
 			if($this->smtp_admin == $value['email']){
 				continue;
 			}
@@ -119,7 +122,6 @@ class email_lib
 		if($this->smtp_ssl){
 			$this->obj->SMTPSecure = 'ssl';
 		}
-		$this->obj->LE = "\r\n";
 		$this->obj->Timeout = 15;
 		//发件人
 		$this->obj->From = $this->smtp_admin;

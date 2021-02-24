@@ -16,6 +16,36 @@ class index_control extends phpok_control
 		$this->config('is_ajax',true);
 	}
 
+	public function copyright_f()
+	{
+		if($this->license == 'LGPL'){
+			$tip = '授权模式：<span style="color:blue;font-weight:bold">LGPL 免费商用授权</span><br/>请放心使用，有问题可登录官网：<a href="https://www.phpok.com/" target="_blank">WWW.PHPOK.COM</a>';
+			$this->success($tip);
+		}
+		if($this->license == 'PBIZ' || $this->license == 'CBIZ'){
+			$url = 'http://license.phpok.com?code='.rawurlencode($this->license_code).'&domain='.rawurlencode($this->license_site);
+			$this->lib('curl')->user_agent($this->lib('server')->agent());
+			$t = $this->lib('curl')->get_json($url);
+			if(!$t){
+				$this->error('授权认证失败，请检查');
+			}
+			if(!$t['status']){
+				$info = $t['info'] ? $t['info'] : '授权审核失败';
+				$this->error($info);
+			}
+			if($this->license == 'PBIZ'){
+				$tip  = '<span style="color:blue;font-weight:bold">个人商用授权</span>';
+				$tip .= '<br/>申请时间：'.$this->license_date;
+			}else{
+				$tip  = '<span style="color:blue;font-weight:bold">企业商用授权（'.$this->license_name.'）</span>';
+				$tip .= '<br/>申请时间：'.$this->license_date;
+			}
+			$tip .= '<br/>有效时间：永久';
+			$this->success($tip);
+		}
+		$this->error('授权异常，请联系管理员');
+	}
+
 	public function index_f()
 	{
 		if(!$this->site['api_code']){

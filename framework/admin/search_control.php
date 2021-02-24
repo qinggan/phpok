@@ -26,6 +26,23 @@ class search_control extends phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
+	public function add_f()
+	{
+		$content = $this->get('content');
+		if(!$content){
+			$this->error(P_Lang('未指定要添加的内容'));
+		}
+		$list = explode(",",$content);
+		foreach($list as $key=>$value){
+			$value = trim($value);
+			if(!$value){
+				continue;
+			}
+			$this->model('search')->save($value);
+		}
+		$this->success();
+	}
+
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){

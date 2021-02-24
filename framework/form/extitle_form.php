@@ -138,6 +138,19 @@ class extitle_form extends _init_auto
 				$flist[$key] = $value;
 			}
 		}
+		if(is_array($rs['content'])){
+			if(isset($rs['content']['id'])){
+				$tmp = $rs['content']['id'];
+				$rs['content'] = array($tmp);
+			}else{
+				$tmp = array();
+				foreach($rs['content'] as $key=>$value){
+					$tmp[] = $value['id'];
+				}
+				$rs['content'] = $tmp;
+			}
+			$rs['content'] = $rs['content']['id'];
+		}
 		$list = explode(",",$rs['content']);
 		$list = array_unique($list);
 		if($module['mtype']){
@@ -241,6 +254,9 @@ class extitle_form extends _init_auto
 			}
 		}
 		$layout = array();
+		if($project['cate']){
+			$layout['catename'] = P_Lang('分类');
+		}
 		foreach($showids as $key=>$value){
 			if($value == 'title'){
 				$layout[$value] = $project['alias_title'] ? $project['alias_title'] : P_Lang('主题');
@@ -255,6 +271,9 @@ class extitle_form extends _init_auto
 		if($list){
 			foreach($list as $key=>$value){
 				$tmp = array('id'=>$value['id'],'project_id'=>$value['project_id']);
+				if($project['cate'] && $value['catename']){
+					$tmp['catename'] = $value['catename'];
+				}
 				foreach($showids as $k=>$v){
 					$tmp[$v] = $value[$v];
 				}

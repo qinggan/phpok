@@ -14,7 +14,12 @@ ul.radio_{$_rs.identifier} li{float:left;margin-right:15px;}
 </style>
 <!-- /if -->
 <ul class="radio_{$_rs.identifier}">
+	<!-- php:$tmp_checked = false -->
 	<!-- loop from=$_rslist key=$key value=$value -->
-	<li><input type="radio" name="{$_rs.identifier}" title="{$value.title}" value="{$value.val}"{if $_rs.content == $value.val} checked{/if} /></li>
+	<li style="margin-top:7px;"><label><input type="radio" name="{$_rs.identifier}" value="{$value.val}"{if $_rs.content == $value.val}{php:$tmp_checked=true} checked{/if} onclick="$.phpokform.radio_extadd('{$_rs.identifier}')" lay-ignore /> {$value.title}</label></li>
 	<!-- /loop -->
+	<!-- if $_rs.is_add -->
+	<li style="margin-top:9px;margin-right:0;"><input type="radio" id="{$_rs.identifier}_extadd_radio" name="{$_rs.identifier}" lay-ignore value="_"{if !$tmp_checked} checked{/if} onclick="$.phpokform.radio_extadd('{$_rs.identifier}')" /></li>
+	<li id="{$_rs.identifier}_extadd_html"><label for="{$_rs.identifier}_extadd_radio"><input type="text" name="{$_rs.identifier}_extadd"{if !$tmp_checked} value="{$_rs.content}"{/if} id="{$_rs.identifier}_extadd" class="layui-input inp inp_{$_rs.identifier}" style="border-bottom:1px solid #ccc;margin-top:2px;"{if $tmp_checked} disabled{/if} /></label></li>
+	<!-- /if -->
 </ul>

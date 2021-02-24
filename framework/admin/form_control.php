@@ -35,6 +35,33 @@ class form_control extends phpok_control
 		$this->lib('form')->config($id);
 	}
 
+	public function fields_f()
+	{
+		$pid = $this->get('pid','int');
+		if(!$pid){
+			$this->error(P_Lang('未指定项目'));
+		}
+		$project = $this->model('project')->get_one($pid,false);
+		if(!$project['module']){
+			$this->error(P_Lang('未张定模块'));
+		}
+		$module = $this->model('module')->get_one($project['module']);
+		if(!$module){
+			$this->error(P_Lang('模块不存在'));
+		}
+		$list = array();
+		if(!$module['mtype']){
+			$list['title'] = $project['alias_title'] ? $project['alias_title'] : P_Lang('主题');
+		}
+		$fields = $this->model('fields')->flist($project['module']);
+		if($fields){
+			foreach($fields as $key=>$value){
+				$list[$value['identifier']] = $value['title'];
+			}
+		}
+		$this->success($list);
+	}
+
 	private function _getinfo($eid=0,$etype='ext')
 	{
 		if(!$eid){
@@ -161,6 +188,11 @@ class form_control extends phpok_control
 		if(!$project){
 			$this->error(P_Lang('项目不存在'));
 		}
+		if($project['cate']){
+			$catelist = $this->model('cate')->get_all($project["site_id"],1,$project["cate"]);
+			$catelist = $this->model('cate')->cate_option_list($catelist);
+			$this->assign("catelist",$catelist);
+		}
 		if(!$project['module']){
 			$this->error(P_Lang('项目没有绑定模块'));
 		}
@@ -254,7 +286,15 @@ class form_control extends phpok_control
 			$tmptitle = $project['alias_title'] ? $project['alias_title'] : P_Lang('主题');
 			$this->error(P_Lang('{title}不能为空',array('title'=>$tmptitle)));
 		}
+		$cate_id = 0;
+		if($project['cate']){
+			$cate_id = $this->get('cate_id','int');
+			if(!$cate_id){
+				$this->error(P_Lang('分类不能为空'));
+			}
+		}
 		$array = array('title'=>$title);
+		$array['cate_id'] = $cate_id;
 		if(!$id){
 			$array["dateline"] = $this->time;
 			$array['project_id'] = $project['id'];
@@ -413,6 +453,9 @@ class form_control extends phpok_control
 			}
 			if($mlist){
 				$layout = array();
+				if($project['cate']){
+					$layout['catename'] = P_Lang('分类');
+				}
 				foreach($mlist as $key=>$value){
 					if($value['identifier'] && in_array($value['identifier'],$layoutids)){
 						$layout[$value['identifier']] = $value['title'];
@@ -457,6 +500,9 @@ class form_control extends phpok_control
 			$layout = array();
 			if(in_array('title',$layoutids)){
 				$layout['title'] = $tmptitle;
+			}
+			if($project['cate']){
+				$layout['catename'] = P_Lang('分类');
 			}
 			foreach($mlist as $key=>$value){
 				if($value['identifier'] && in_array($value['identifier'],$layoutids)){

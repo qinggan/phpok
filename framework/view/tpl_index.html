@@ -3,9 +3,14 @@
 	<div class="layui-card-header">
 		{lang风格方案管理}
 		<div class="fr">
-		<button class="layui-btn layui-btn-sm" onclick="$.admin_tpl.add()">
-			<i class="layui-icon">&#xe608;</i> {lang添加风格}
-		</button>
+			<button class="layui-btn layui-btn-sm" onclick="$.admin_tpl.add()">
+				<i class="layui-icon">&#xe608;</i> {lang添加风格}
+			</button>
+			<!-- if $session.admin_rs.if_system -->
+			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang模板维护}','{url ctrl=design func=tpl/}')">
+				<i class="layui-icon">&#xe630;</i> {lang模板维护}
+			</button>
+			<!-- /if -->
 		</div>
 	</div>
 	<div class="layui-card-body">

@@ -101,4 +101,3 @@ class title_form extends _init_auto
 		return $this->model('list')->simple_one($rs['content']);
 	}
 }
-?>

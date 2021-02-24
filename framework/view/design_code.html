@@ -1,0 +1,34 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<script type="text/javascript">
+function save()
+{
+	var id = $("#id").val();
+	var opener = $.dialog.opener;
+	var c = $("#content").val();
+	if(!c){
+		$.dialog.alert('内容不能为空');
+		return false;
+	}
+	opener.$("#"+id+"_preview").html(c);
+	$.dialog.close();
+	return true;
+}
+</script>
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			{$content_html}
+		</div>
+	</div>
+</div>
+</form>
+<script type="text/javascript">
+$(document).ready(function(){
+	var opener = $.dialog.opener;
+	var c = opener.$("#{$id}_preview").html();
+	code_editor_content.setValue(c);
+});
+</script>
+<!-- include tpl=foot_lay is_open=true -->

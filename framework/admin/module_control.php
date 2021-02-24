@@ -354,6 +354,7 @@ class module_control extends phpok_control
 		$tmp_array["format"] = $f_rs["format"];
 		$tmp_array["content"] = $f_rs["content"];
 		$tmp_array["taxis"] = $taxis;
+		$tmp_array['onlyone'] = $this->get('onlyone','int');
 		$tmp_array["ext"] = "";
 		if($f_rs["ext"]){
 			$tmp_array["ext"] = serialize($f_rs['ext']);
@@ -559,6 +560,7 @@ class module_control extends phpok_control
 		$array["ext"] = ($ext && count($ext)>0) ? serialize($ext) : "";
 		$array['search'] = $this->get('search','int');
 		$array['search_separator'] = $this->get('search_separator');
+		$array['onlyone'] = $this->get('onlyone','int');
 		$this->model('module')->fields_save($array,$id);
 		$this->model('module')->update_fields($id);
 		$this->json(true);
@@ -616,6 +618,7 @@ class module_control extends phpok_control
 		$array['is_front'] = $this->get('is_front','int');
 		$array['search'] = $this->get('search','int');
 		$array['search_separator'] = $this->get('search_separator');
+		$array['onlyone'] = $this->get('onlyone','int');
 		$ext_form_id = $this->get("ext_form_id");
 		$ext = array();
 		if($ext_form_id){
@@ -720,7 +723,7 @@ class module_control extends phpok_control
 		$tmp = $rs;
 		if(isset($tmp['_fields'])){
 			unset($tmp['_fields']);
-		}		
+		}
 		$insert_id = $this->model('module')->save($tmp);
 		if(!$insert_id){
 			$this->error(P_Lang('模块导入失败，保存模块基本信息错误'));

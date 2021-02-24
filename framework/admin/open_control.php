@@ -245,6 +245,83 @@ class open_control extends phpok_control
 		$this->assign("pagelist",$pagelist);
 	}
 
+	public function title_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error('未指定标识');
+		}
+		$pid = $this->get('pid');
+		if(!$pid){
+			$this->error('未指定项目');
+		}
+		$field = $this->get('field');
+		if(!$field){
+			$this->error('未指定字段');
+		}
+		$url = $this->url('open','title','id='.$id.'&pid='.$pid.'&field='.$field);
+		$project = $this->model('project')->get_one($pid);
+		if(!$project){
+			$this->error('项目不存在');
+		}
+		if(!$project['module']){
+			$this->error('项目未绑定模块');
+		}
+		$module = $this->model('module')->get_one($project['module']);
+		if(!$module){
+			$this->error('模块信息不存在');
+		}
+		$flist = $this->model('fields')->flist($module['id']);
+		$list = array();
+		if($flist){
+			foreach($flist as $key=>$value){
+				$list[$value['identifier']] = $value['title'];
+			}
+		}
+		if(!$module['mtype']){
+			$list['title'] = $project['alias_title'] ? $project['alias_title'] : P_Lang('主题');
+		}
+		if(!$list[$field]){
+			$this->error('字段不存在');
+		}
+		$pageid = $this->get($this->config['pageid'],'int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
+		$offset = ($pageid-1) * $psize;
+		if($module['mtype']){
+			$condition = "project_id='".$project['id']."'";
+			$total = $this->model('list')->single_count($module['id'],$condition);
+			if($total>0){
+				$rslist = $this->model('list')->single_list($module['id'],$condition,$offset,$psize,$project['orderby'],'id,'.$field);
+				if($rslist){
+					$this->assign('rslist',$rslist);
+				}
+			}
+		}else{
+			$condition = "l.project_id='".$project['id']."'";
+			$total = $this->model('list')->get_total($module['id'],$condition);
+			if($total>0){
+				$rslist = $this->model('list')->get_list($module['id'],$condition,$offset,$psize,$project['orderby']);
+				if($rslist){
+					$this->assign('rslist',$rslist);
+				}
+			}
+		}
+		$this->assign("total",$total);
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
+		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+		$pagelist = phpok_page($url,$total,$pageid,$psize,$string);
+		$this->assign("pagelist",$pagelist);
+		$this->assign("pageurl",$url);
+		$this->assign('field',$field);
+		$this->assign('pid',$pid);
+		$this->assign('id',$id);
+		$this->assign('field_title',$list[$field]);
+		$this->view('open_title2');
+	}
+
 	/**
 	 * 网址列表，这里读的是项目的网址列表
 	**/

@@ -252,6 +252,8 @@ class _init_phpok
 
 	private $_iscmd = false;
 
+	private $_counter_node_plugin = false;
+
 	/**
 	 * 构造函数，用于初化一些数据
 	**/
@@ -264,6 +266,9 @@ class _init_phpok
 		$this->init_constant();
 		$this->init_config();
 		$this->init_engine();
+		//引入 Composer，系统改写了 verdor 为 extension
+		//在将来版本会慢慢将 extension 里标准化
+		require_once $this->dir_extension.'autoload.php';
 	}
 
 	/**
@@ -391,7 +396,7 @@ class _init_phpok
 	 * @参数 $langid 字符串，留空加载default，中文不需要加载语言包
 	 * @更新时间 2016年06月05日
 	**/
-	public function language($langid='default')
+	public function language($langid='cn')
 	{
 		$multiple_language = isset($this->config['multiple_language']) ? $this->config['multiple_language'] : false;
 		if($multiple_language){
@@ -489,12 +494,15 @@ class _init_phpok
 		$langid = $this->get("_langid");
 		if($this->app_id == 'admin'){
 			if(!$langid){
-				$langid = (isset($_SESSION['admin_lang_id']) && $_SESSION['admin_lang_id']) ? $_SESSION['admin_lang_id'] : 'default';
+				$langid = $this->session->val('admin_lang_id');
 			}
-			$_SESSION['admin_lang_id'] = $langid;
+			if(!$langid || $langid == 'default'){
+				$langid = 'cn';
+			}
+			$this->session->assign('admin_lang_id',$langid);
 		}else{
 			if(!$langid){
-				$langid = isset($this->site['lang']) ? $this->site['lang'] : 'default';
+				$langid = isset($this->site['lang']) ? $this->site['lang'] : 'cn';
 			}
 		}
 		$this->langid = $langid;
@@ -663,6 +671,9 @@ class _init_phpok
 			$this->$key = $obj;
 		}
 		$info = $this->lib('debug')->stop('config');
+		if($this->cache){
+			$this->db->cache_conn($this->cache);
+		}
 	}
 
 	/**
@@ -704,7 +715,7 @@ class _init_phpok
 		$this->url = $this->root_url($site_id);
 		if($this->app_id == "admin"){
 			if($this->session->val('admin_site_id')){
-				$site_rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
+				$site_rs = $this->model('site')->get_one($this->session->val('admin_site_id'));
 			}else{
 				$site_rs = $this->model("site")->get_one_default();
 			}
@@ -777,22 +788,24 @@ class _init_phpok
 				exit;
 			}
 		}
-		$tplid = $site_rs['tpl_id'];
-		if($this->session->val('tpl_id')){
-			$tplid = $this->session->val('tpl_id');
-		}
-		if($this->get('_tpl','int')){
-			$tplid = $this->get('_tpl','int');
-			$this->session->assign('tpl_id',$tplid);
-		}
-		$rs = $this->model('tpl')->get_one($tplid);
-		if(!$rs){
-			$rs = $this->model('tpl')->get_one($site_rs['tpl_id']);
-			if(!$rs){
-				$this->site = $site_rs;
-				return true;
+		$this->data('site_rs',$site_rs);
+		$this->node('system_init_site');
+		$site_rs = $this->data('site_rs');
+		//语言ID
+		$langid = $this->get("_langid");
+		if(!$langid){
+			$langid = $this->session->val($this->app_id.'_lang_id') ? $this->session->val($this->app_id.'_lang_id') : $site_rs['lang'];
+			if(!$langid){
+				$lagnid = 'cn';
 			}
 		}
+		$this->session->assign($this->app_id.'_lang_id',$langid);
+		//自定义模板
+		$tpl_id = $this->get("_tpl","int");
+		if(!$tpl_id){
+			$tpl_id = $site_rs['tpl_id'];
+		}
+		$rs = $this->model('tpl')->get_one($tpl_id);
 		if($site_rs && $rs){
 			$tpl_rs = array('id'=>$rs['id'],'dir_root'=>$this->dir_root);
 			$tpl_rs['dir_tplroot'] = 'tpl/';
@@ -820,16 +833,25 @@ class _init_phpok
 				}
 				$tpl_rs["dir_tpl"] = "tpl/".$tplfolder;
 			}
-			$langid = $site_rs['lang'] ? $site_rs['lang'] : 'default';
-			if($this->session->val($this->app_id.'_lang_id')){
-				$langid = $this->session->val($this->app_id.'_lang_id');
-			}
-			if($this->get('_langid')){
-				$langid = $this->get('_langid');
-				$this->session->assign($this->app_id.'_lang_id',$langid);
-			}
 			$tpl_rs['langid'] = $langid;
 			$site_rs["tpl_id"] = $tpl_rs;
+		}
+		//货币检测
+		$currency_id = $site_rs['currency_id'];
+		if($this->session->val('currency')){
+			$currency_id = $this->session->val('currency.id');
+		}
+		$currency_code = $this->get("_currency");
+		if($currency_code && !is_numeric($currency_code)){
+			$currency_rs = $this->model('currency')->get_one($currency_code,'code');
+			if($currency_rs){
+				$currency_id = $currency_rs['id'];
+			}
+		}
+		$currency_rs = $this->model('currency')->get_one($currency_id,'id');
+		if($currency_rs){
+			$this->session->assign('currency',$currency_rs);
+			$site_rs['currency'] = $currency_rs;
 		}
 		$this->site = $site_rs;
 	}
@@ -853,7 +875,7 @@ class _init_phpok
 			$tpl_rs["refresh_auto"] = true;
 			$tpl_rs["tpl_ext"] = "html";
 			//定制语言模板ID
-			$tpl_rs['langid'] = 'default';
+			$tpl_rs['langid'] = 'cn';
 			if($this->session->val('admin_lang_id')){
 				$tpl_rs['langid'] = $this->session->val('admin_lang_id');
 			}
@@ -998,13 +1020,29 @@ class _init_phpok
 		return $this->$class_name;
 	}
 
+	private function _node2html($name)
+	{
+		$class_name = $name.'_nodes_html';
+		if($this->$class_name && is_object($this->$class_name)){
+			return $this->$class_name;
+		}
+		if(!is_file($this->dir_app.$name.'/html.php')){
+			return false;
+		}
+		include_once($this->dir_app.$name.'/html.php');
+		$tmp = '\phpok\app\\'.$name.'\\html_phpok';
+		$this->$class_name = new $tmp();
+		return $this->$class_name;
+	}
+
 	/**
 	 * 按需加载Model信息，所有的文件均放在framework/model/目录下。会根据**app_id**自动加载同名但不同入口的文件
 	 * @参数 $name，字符串
+	 * @参数 $check 是否用于检测，如果设为true检测异常只返回 false 并不报错
 	 * @返回 实例化后的类，出错则中止运行报错
 	 * @更新时间 2016年06月05日
 	**/
-	public function model($name)
+	public function model($name,$check=false)
 	{
 		$class_name = $name."_model";
 		$class_base = $name."_model_base";
@@ -1023,6 +1061,9 @@ class _init_phpok
 		}
 		$basefile = $this->dir_phpok.'model/'.$name.'.php';
 		if(!file_exists($basefile)){
+			if($check){
+				return false;
+			}
 			$this->error_404("Model基础类：".$name." 不存在，请检查");
 		}
 		include($basefile);
@@ -1131,6 +1172,47 @@ class _init_phpok
 			}
 		}
 		return true;
+	}
+
+	private function _node4html($ap,$param='')
+	{
+		if(!$ap){
+			return false;
+		}
+		$ap = str_replace("-","_",$ap);//替换节点的中划线为下划线
+		$applist = $this->model('appsys')->installed();
+		if(!$applist){
+			return false;
+		}
+		$count = func_num_args();
+		if($count>2){
+			$tmp = array(0=>$param);
+			for($i=2;$i<$count;$i++){
+				$val = func_get_arg($i);
+				$tmp[($i-1)] = $val;
+			}
+			foreach($applist as $key=>$value){
+				$obj = $this->_node2html($key);
+				if($obj && method_exists($obj,$ap)){
+					call_user_func_array(array($obj, $ap),$tmp);
+				}
+			}
+			return true;
+		}
+		foreach($applist as $key=>$value){
+			$obj = $this->_node2html($key);
+			if($obj && method_exists($obj,$ap)){
+				$obj->$ap($param);
+			}
+		}
+		return true;
+	}
+
+	final public function _node_html($name)
+	{
+		$ap = $this->app_id.'-'.$this->ctrl.'-'.$this->func.'-'.$name;
+		$this->_node4html($ap);
+		$this->_node4html($this->app_id.'-'.$name);
 	}
 
 	/**
@@ -1319,10 +1401,8 @@ class _init_phpok
 		//判断内容是否有转义，所有未转义的数据都直接转义
 		$addslashes = false;
 		//修正5.4版本以上对是否转义的判断
-		if(PHP_VERSION_ID<50400 && function_exists("get_magic_quotes_gpc")){
-			if(get_magic_quotes_gpc()){
-				$addslashes = true;
-			}
+		if(PHP_VERSION_ID<50400 && function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()){
+			$addslashes = true;
 		}
 		if(!$addslashes){
 			$val = $this->_addslashes($val);
@@ -1461,11 +1541,17 @@ class _init_phpok
 	 * 视图输出，这是针对 phpok5 版写的，实现不同的路径的模板文件识别，不适合插件
 	 * @参数 $file 相对文件
 	**/
-	final public function display($file)
+	final public function display($file,$return=false)
 	{
 		$tplfile = $this->dir_app.$this->ctrl.'/tpl/'.$file.'.html';
 		if(file_exists($tplfile)){
+			if($return){
+				return $this->fetch($tplfile,'abs-file');
+			}
 			$this->view($tplfile,'abs-file');
+		}
+		if($return){
+			return $this->fetch($file);
 		}
 		$this->view($file);
 	}
@@ -1480,27 +1566,7 @@ class _init_phpok
 	**/
 	final public function view($file,$type="file",$path_format=true)
 	{
-		$this->plugin('phpok-after');
-		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-after');
-		
-		//是否启用异步通知
-		if($this->config['async']['status'] && $this->config['async']['interval_times']){
-			$check = false;
-			if(!file_exists($this->dir_cache.'async_interval_times.php')){
-				$check = true;
-			}
-			if(!$check){
-				$time = file_get_contents($this->dir_cache.'async_interval_times.php');
-				if(($time + $this->config['async_interval_times'] * 60) < $this->time){
-					$check = true;
-				}
-			}
-			if($check){
-				$taskurl = api_url('task','index',$this->session->sid()."=".$this->session->sessid(),true);
-				$this->lib('async')->start($taskurl);
-				file_put_contents($this->dir_cache.'async_interval_times.php',$this->time);
-			}
-		}
+		$this->_counter_node_plugin_code();
 		$this->tpl->display($file,$type,$path_format);
 	}
 
@@ -1514,8 +1580,6 @@ class _init_phpok
 	**/
 	final public function fetch($file,$type="file",$path_format=true)
 	{
-		$this->plugin('phpok-after');
-		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-after');
 		return $this->tpl->fetch($file,$type,$path_format);
 	}
 
@@ -1942,6 +2006,8 @@ class _init_phpok
 		$this->config['webroot'] = $this->dir_webroot;
 		$this->config['is_mobile'] = $this->is_mobile;
 		$this->assign('sys',$this->config);
+		$this->node($this->app_id.'-before');
+		$this->node($this->app_id.'-'.$this->ctrl.'-'.$this->func.'-before');
 		$this->plugin('phpok-before');
 		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-before');
 		if($this->app_id == 'www' && !$this->site['status'] && !$this->session->val('admin_id')){
@@ -1967,6 +2033,8 @@ class _init_phpok
 		$this->config['time'] = $this->time;
 		$this->config['webroot'] = $this->dir_webroot;
 		$this->assign('sys',$this->config);
+		$this->node($this->app_id.'-before');
+		$this->node($this->app_id.'-'.$this->ctrl.'-'.$this->func.'-before');
 		$this->plugin('phpok-before');
 		$this->plugin('ap-'.$ctrl.'-'.$func.'-before');
 		if($this->app_id == 'www' && !$this->site['status'] && !$this->session->val('admin_id')){
@@ -1987,7 +2055,7 @@ class _init_phpok
 	final public function json($content,$status=false,$exit=true)
 	{
 		//判断是否写入日志
-		if($this->config['log']['status']){
+		if($this->config['log']['status'] && !$status){
 			$_savelog = false;
 			if($this->config['log']['type'] && $content && !is_bool($content)){
 				$_savelog = true;
@@ -2015,17 +2083,17 @@ class _init_phpok
 		//当content内容为true 且为布尔类型，直接返回正确通知结果
 		if($content && is_bool($content)){
 			$rs = array('status'=>'ok');
-			$this->plugin('phpok-after');
-			$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-after');
+			$this->_counter_node_plugin_code();
 			exit($this->lib('json')->encode($rs));
 		}
 		$status_info = $status ? 'ok' : 'error';
 		if($status_info == 'ok'){
-			$this->plugin('phpok-after');
-			$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-after');
+			$this->_counter_node_plugin_code($content);
 		}
 		$rs = array('status'=>$status_info);
-		if($content != '') $rs['content'] = $content;
+		if($content != ''){
+			$rs['content'] = $content;
+		}
 		$info = $this->lib('json')->encode($rs);
 		unset($rs);
 		if($exit){
@@ -2068,8 +2136,7 @@ class _init_phpok
 			if($status && is_string($status)){
 				$rs['url'] = $status;
 			}
-			$this->plugin('phpok-after');
-			$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-after');
+			$this->_counter_node_plugin_code();
 			exit($callback.'('.$this->lib('json')->encode($rs).')');
 		}
 		if($status){
@@ -2079,14 +2146,12 @@ class _init_phpok
 				if($url){
 					$rs['url'] = $url;
 				}
-				$this->plugin('phpok-after');
-				$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-after');
+				$this->_counter_node_plugin_code($content);
 			}else{
 				$rs = array('info'=>$content,'url'=>$status);
 				if($url && is_bool($url)){
 					$rs['status'] = 1;
-					$this->plugin('phpok-after');
-					$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-after');
+					$this->_counter_node_plugin_code($content);
 				}
 			}
 			exit($callback.'('.$this->lib('json')->encode($rs).')');
@@ -2097,6 +2162,18 @@ class _init_phpok
 			$rs['url'] = $url;
 		}
 		exit($callback.'('.$this->lib('json')->encode($rs).')');
+	}
+
+	private function _counter_node_plugin_code($content='')
+	{
+		if($this->_counter_node_plugin){
+			return true;
+		}
+		$this->_counter_node_plugin = true;
+		$this->node($this->app_id.'-after');
+		$this->node($this->app_id.'-'.$this->ctrl.'-'.$this->func.'-after',$content);
+		$this->plugin('phpok-after');
+		$this->plugin('ap-'.$this->ctrl.'-'.$this->func.'-after',$content);
 	}
 
 	/**
@@ -2206,6 +2283,9 @@ class _init_phpok
 			}
 			$data['session_name'] = $this->session->sid();
 			$data['session_val'] = $this->session->sessid();
+			if($status){
+				$this->_counter_node_plugin_code($info);
+			}
 			header('Content-Type:application/json; charset=utf-8');
             exit($this->lib('json')->encode($data));
         }
@@ -2571,8 +2651,9 @@ class phpok_model extends _init_auto
 	/**
 	 * 动态加载Model
 	 * @参数 $id 为空用于继承父构造函数，不为空时动态加载其他model类，即实现了多个model的互相调用
+	 * @参数 $check 用于检测Model是否存在
 	**/
-	public function model($id='')
+	public function model($id='',$check=false)
 	{
 		if(!$id){
 			parent::__construct();
@@ -2583,7 +2664,7 @@ class phpok_model extends _init_auto
 				$this->site_id = $this->site['id'];
 			}
 		}else{
-			return $GLOBALS['app']->model($id);
+			return $GLOBALS['app']->model($id,$check);
 		}
 	}
 
@@ -2634,6 +2715,118 @@ class phpok_model extends _init_auto
 		return false;
 	}
 }
+
+/**
+ * 初始化应用HTML接口类，即在插件中，也可以使用$this->model或是$this->lib等方法来获取相应的核心信息
+**/
+class _init_node_html extends _init_auto
+{
+	public function __construct()
+	{
+		parent::__construct();
+	}
+
+	/**
+	 * 返回应用标识
+	**/
+	final public function _id()
+	{
+		$name = get_class($this);
+		$lst = explode("\\",$name);
+		return $lst[2];
+	}
+
+	/**
+	 * 返回应用信息
+	 * @参数 $id 应用标识，为空时尝试读取当前应用标识
+	 * @返回 数组 应用基本信息
+	 * @更新时间 
+	**/
+	final public function _info($id='')
+	{
+		if(!$id){
+			$id = $this->_id();
+		}
+		$rs = $this->model('appsys')->get_one($id);
+		if(!$rs){
+			$rs = array('id'=>$id);
+		}
+		$rs['path'] = $this->dir_app.''.$id.'/';
+		return $rs;
+	}
+
+	/**
+	 * 返回插件输出的HTML数据，请注意，这里并没有输出，只是返回
+	 * @参数 $name 模板名称，带后缀的模板名称，相对路径，系统会依次检查，具体请看：<b>private function _tplfile()</b>
+	 * @参数 $id 字符串，指定的插件ID，为空尝试获取当前插件ID
+	 * @返回 正确时返回模板内容，错误时返回false 
+	**/
+	final public function _tpl($name,$id='')
+	{
+		$file = $this->_tplfile($name,$id);
+		if(!$file){
+			return false;
+		}
+		return $this->tpl->fetch($file,'abs-file');
+	}
+
+	/**
+	 * 输出的HTML数据到设备上，请注意，这里是输出，不是返回，同时也要注意，这里没有中止
+	 * @参数 $name 模板名称，带后缀的模板名称，相对路径，系统会依次检查，具体请看：<b>private function _tplfile()</b>
+	 * @参数 $id 字符串，指定的插件ID，为空尝试获取当前插件ID
+	 * @返回 正确时输出HTML，错误时跳过没有任何输出
+	**/
+	final public function _show($name,$id='')
+	{
+		$info = $this->_tpl($name,$id);
+		if($info){
+			echo $info;
+		}
+	}
+
+	/**
+	 * 输出的HTML数据到设备上并中断后续操作，请注意，这里是输出，有中断
+	 * @参数 $name 模板名称，带后缀的模板名称，相对路径，系统会依次检查，具体请看：<b>private function _tplfile()</b>
+	 * @参数 $id 字符串，指定的插件ID，为空尝试获取当前插件ID
+	 * @返回 正确时输出HTML，错误时跳过没有任何输出
+	**/
+	final public function _view($name,$id='')
+	{
+		$file = $this->_tplfile($name,$id);
+		if($file){
+			$this->tpl->display($file,'abs-file');
+			exit;
+		}
+	}
+
+	/**
+	 * 按顺序读取挑出最近的一个模板
+	 * @参数 $name 模板名称，不带后缀的模板名称，相对路径，系统会依次检查这些文件是否存在，只要有一个符合要求即可<br />
+	 * 1. APP应用根目录/应用标识/tpl/$name<br />
+	 * @参数 $id 字符串，指定的插件ID，为空尝试获取当前插件ID
+	 * @返回 正确时输出HTML，错误时跳过没有任何输出
+	**/
+	private function _tplfile($name,$id='')
+	{
+		if(!$id){
+			$id = $this->_id();
+		}
+		if(substr($name,0,-5) != '.html'){
+			$name .= '.html';
+		}
+		$list = array();
+		$list[0] = $this->dir_app.''.$id.'/tpl/'.$name;
+		$file = false;
+		foreach($list as $key=>$value){
+			if(file_exists($value)){
+				$file = $value;
+				break;
+			}
+		}
+		return $file;
+	}
+}
+
 
 /**
  * 初始化插件类，即在插件中，也可以使用$this->model或是$this->lib等方法来获取相应的核心信息
@@ -2837,6 +3030,7 @@ unset($_ENV, $_SERVER['MIBDIRS'],$_SERVER['MYSQL_HOME'],$_SERVER['OPENSSL_CONF']
 if(function_exists('mb_internal_encoding')){
 	mb_internal_encoding("UTF-8");
 }
+
 $sapi_type = php_sapi_name();
 if(isset($sapi_type) && substr($sapi_type, 0, 3) == 'cli'){
 	$app = new _init_phpok(true);

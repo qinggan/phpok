@@ -374,8 +374,6 @@ class plugin_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('数据记录不存在'));
 		}
-		$status = $rs["status"] ? 0 : 1;
-		$this->model('plugin')->update_status($id,$status);
 		//执行插件运行
 		if(file_exists($this->dir_root.'plugins/'.$id.'/setting.php')){
 			include_once($this->dir_root.'plugins/'.$id.'/setting.php');
@@ -383,9 +381,18 @@ class plugin_control extends phpok_control
 			$cls = new $name();
 			$methods = get_class_methods($cls);
 			if($methods && in_array('status',$methods)){
-				$cls->status();
+				$t = $cls->status();
+				if(!$t && is_bool($t)){
+					$this->error(P_Lang('执行失败'));
+				}
+				if($t && is_array($t) && !$t['status']){
+					$tip = $t['info'] ? $t['info'] : P_Lang('执行失败');
+					$this->error($tip);
+				}
 			}
 		}
+		$status = $rs["status"] ? 0 : 1;
+		$this->model('plugin')->update_status($id,$status);
 		$this->success($status);
 	}
 

@@ -256,6 +256,19 @@
 				form.render();
 				$.dialog.tips('刷新渲染成功');
 			})
+		},
+		copyright:function()
+		{
+			var t = $.dialog.tips('正在检测中，请稍候…',100).lock();
+			$.phpok.json(api_url('index','copyright'),function(rs){
+				t.close();
+				if(!rs.status){
+					$.dialog.alert(rs.info,true,'error').title('友情提示');
+					return false;
+				}
+				$.dialog.alert(rs.info,true,'succeed').title('商业授权');
+				return true;
+			})
 		}
 	}
 })(jQuery);

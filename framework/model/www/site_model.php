@@ -23,7 +23,6 @@ class site_model extends site_model_base
 		if($rs){
 			return $rs;
 		}
-		$this->db->cache_set($cache_id);
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
@@ -75,7 +74,6 @@ class site_model extends site_model_base
 		$cache_id = $this->cache->id($sql);
 		$tmp = $this->cache->get($cache_id);
 		if(!$tmp){
-			$this->db->cache_set($cache_id);
 			$tmp = $this->db->get_one($sql);
 			if(!$tmp){
 				return false;

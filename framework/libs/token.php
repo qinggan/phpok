@@ -1,14 +1,14 @@
 <?php
 /**
- * Token加密解密
- * @package phpok\libs
- * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
- * @主页 http://www.phpok.com
- * @版本 4.x
- * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @时间 2017年09月28日
+ * 加密及解密（支持两种模式，RSA 和 Token 模式）
+ * @作者 苏相锟 <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司 / 苏相锟
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
+ * @时间 2020年12月21日
 **/
+
 
 /**
  * 安全限制，防止直接访问
@@ -25,10 +25,38 @@ class token_lib
 	private $keyb;
 	private $time;
 	private $expiry = 3600;
+	private $encode_type = 'api_code'; //仅支持 api_code 和 public_key
+	private $public_key = '';
+	private $private_key = '';
 	
 	public function __construct()
 	{
 		$this->time = time();
+	}
+
+
+	public function etype($type="")
+	{
+		if($type && in_array($type,array('api_code','public_key'))){
+			$this->encode_type = $type;
+		}
+		return $this->encode_type;
+	}
+
+	public function public_key($key='')
+	{
+		if($key){
+			$this->public_key = $key;
+		}
+		return $this->public_key;
+	}
+
+	public function private_key($key='')
+	{
+		if($key){
+			$this->private_key = $key;
+		}
+		return $this->private_key;
 	}
 
 	/**
@@ -72,6 +100,9 @@ class token_lib
 	**/
 	public function encode($string)
 	{
+		if($this->encode_type == 'public_key'){
+			return $this->encode_rsa($string);
+		}
 		if(!$this->keyid){
 			return false;
 		}
@@ -82,7 +113,24 @@ class token_lib
 		$cryptkey = $this->keya.md5($this->keya.$keyc);
 		$rs = $this->core($string,$cryptkey);
 		return $keyc.str_replace('=', '', base64_encode($rs));
-		//return $keyc.base64_encode($rs);
+	}
+
+	/**
+	 * 基于公钥加密
+	**/
+	private function encode_rsa($string)
+	{
+		if(!$this->public_key){
+			return false;
+		}
+		$string = serialize($string);
+		$crypto = '';
+		$tlist = str_split($string,117);
+		foreach($tlist as $key=>$value){
+			openssl_public_encrypt($value,$data,$this->public_key);
+			$crypto .= $data;
+		}
+		return base64_encode($crypto);
 	}
 
 	/**
@@ -91,6 +139,9 @@ class token_lib
 	**/
 	public function decode($string)
 	{
+		if($this->encode_type == 'public_key'){
+			return $this->decode_rsa($string);
+		}
 		if(!$this->keyid){
 			return false;
 		}
@@ -103,6 +154,26 @@ class token_lib
 		if((substr($rs, 0, 10) - $this->time > 0) && substr($rs, 10, 16) == $chkb){
 			$info = substr($rs, 26);
 			return unserialize($info);
+		}
+		return false;
+	}
+
+	/**
+	 * 基于私钥解密
+	**/
+	public function decode_rsa($string)
+	{
+		if(!$this->private_key){
+			return false;
+		}
+		$crypto = '';
+		$tlist = str_split(base64_decode($string),128);
+		foreach($tlist as $key=>$value){
+			openssl_private_decrypt($value,$data,$this->private_key);
+			$crypto .= $data;
+		}
+		if($crypto){
+			return unserialize($crypto);
 		}
 		return false;
 	}

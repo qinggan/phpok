@@ -36,7 +36,7 @@
 			</div>
 		</div>
 		<!-- /if -->
-		<!-- if $p_rs.is_identifier == 2 -->
+		<!-- if $p_rs.is_identifier == 2 || $p_rs.is_identifier == 3 -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang自定义标识}</label>
 			<div class="layui-input-inline default-auto">
@@ -62,17 +62,9 @@
 					<!-- /loop -->
 				</select>
 			</div>
-			<div class="layui-input-inline auto gray lh38">
-				<div class="layui-btn-group">
-					<input type="button" value="{lang添加分类}" onclick="$.admin_list.cate('{$p_rs.cate}')" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang添加子分类}" onclick="$.admin_list.subcate()" class="layui-btn layui-btn-sm" />
-				</div>
-				
-			</div>
 			<div class="layui-form-mid">{lang主分类不能为空}</div>
 		</div>
 		<!-- /if -->
-		
 		<!-- if $p_rs.cate && $p_rs.cate_multiple -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang扩展分类}</label>
@@ -105,7 +97,7 @@
 			</div>
 		</div>
 		<!-- /loop -->
-		<!-- if $p_rs.is_tag == 2 -->
+		<!-- if $p_rs.is_tag == 2 || $p_rs.is_tag == 3 -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang标签}</label>
 			<div class="layui-input-block">
@@ -125,7 +117,7 @@
 			<div class="layui-input-block mtop">{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}</div>
 		</div>
 		<!-- /if -->
-		<!-- if $p_rs.is_userid == 2 -->
+		<!-- if $p_rs.is_userid == 2 || $p_rs.is_userid == 3 -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang会员}
@@ -136,7 +128,7 @@
 			<div class="layui-input-inline auto gray lh38">{lang绑定会员功能，允许会员对主题进行修改或删除，需要开放发布权限}</div>
 		</div>
 		<!-- /if -->
-		<!-- if $p_rs.is_tpl_content == 2 -->
+		<!-- if $p_rs.is_tpl_content == 2 || $p_rs.is_tpl_content == 3 -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang内容模板}
@@ -274,7 +266,6 @@
 				</div>
 				<ul id="biz_attr_options"></ul>
 			</div>
-			
 		</div>
 		<!-- /if -->
 	</div>
@@ -456,7 +447,13 @@
 <div class="submit-info">
 	<div class="layui-container center">
 		<input type="submit" value="{lang保存}" class="layui-btn layui-btn-lg layui-btn-danger" />
-		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+		<!-- if $id && $p_rs.is_front -->
+		<input type="button" value="{lang预览}" title="需要先点击保存" class="layui-btn layui-btn-lg layui-btn-warm" onclick="$.phpok.open('{$sys.www_file}?id={$id}')" />
+		<!-- /if -->
+		<input type="button" value="{lang取消并关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+		<!-- if $id -->
+		<span class="gray i">编辑操作不会关闭窗口，请手动关闭<!-- if $p_rs.is_front -->，预览前需要先保存数据<!-- /if --></span>
+		<!-- /if -->
 	</div>
 </div>
 <div class="submit-info-clear"></div>

@@ -228,10 +228,14 @@ class all_control extends phpok_control
 		$array['login_type_email'] = $this->get('login_type_email');
 		$array['login_type_sms'] = $this->get('login_type_sms');
 		$array["adm_logo29"] = $this->get("adm_logo29");
+		$array['adm_logo50'] = $this->get('adm_logo50');
 		$array["adm_logo180"] = $this->get("adm_logo180");
 		$array["lang"] = $this->get("lang");
 		$array['api'] = $this->get('api','int');
 		$array['api_code'] = $this->get("api_code");
+		$array['encode_type'] = $this->get('encode_type');
+		$array['public_key'] = $this->get('public_key');
+		$array['private_key'] = $this->get('private_key');
 		$array["seo_title"] = $this->get("seo_title");
 		$array["seo_keywords"] = $this->get("seo_keywords");
 		$array["seo_desc"] = $this->get("seo_desc");
@@ -240,14 +244,11 @@ class all_control extends phpok_control
 		$array["biz_payment"] = $this->get("biz_payment","int");
 		$array['upload_guest'] = $this->get('upload_guest','int');
 		$array['upload_user'] = $this->get('upload_user','int');
-		//2016年09月08日
 		$array['biz_status'] = $this->get('biz_status','int');
 		$array['biz_freight'] = $this->get('biz_freight');
 		$array['biz_main_service'] = $this->get('biz_main_service','int');
-		//2018年10月25日
+		$array['biz_is_user'] = $this->get('biz_is_user');
 		$array['favicon'] = $this->get('favicon');
-		//2019年4月10日
-		$array['adm_logo50'] = $this->get('adm_logo50');
 
 		$this->model('site')->save($array,$this->session->val('admin_site_id'));
 		$this->success(P_Lang('网站信息更新完成'),$this->url("all","setting"));
@@ -404,16 +405,16 @@ class all_control extends phpok_control
 		}
 		$id = $this->get("id","int");
 		$rs = $this->model('site')->get_one($this->session->val('admin_site_id'));
-		$domain_rs = $this->model('site')->domain_check($domain);
+		//$domain_rs = $this->model('site')->domain_check($domain);
 		if($id){
-			if($domain_rs && $domain_rs["id"] != $id){
-				$this->error(P_Lang('域名已存在，请检查'));
-			}
+			//if($domain_rs && $domain_rs["id"] != $id){
+			//	$this->error(P_Lang('域名已存在，请检查'));
+			//}
 			$this->model('site')->domain_update($domain,$id);
 		}else{
-			if($domain_rs){
-				$this->error(P_Lang('域名已存在，请检查'));
-			}
+			//if($domain_rs){
+			//	$this->error(P_Lang('域名已存在，请检查'));
+			//}
 			$this->model('site')->domain_add($domain,$_SESSION["admin_site_id"]);
 		}
 		$this->success();
