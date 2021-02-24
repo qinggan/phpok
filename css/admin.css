@@ -16,13 +16,13 @@ a{text-decoration:none;color:#000;outline:none;}
 a:hover{color:darkblue;}
 select{padding:3px;}
 select {
-  border: solid 1px #acacac;
-  appearance:none;
-  -moz-appearance:none;
-  -webkit-appearance:none;
-  background:url("../images/arrow-select.png") no-repeat scroll right center transparent;
-  background-color:#fff;
-  padding-right: 26px !important;
+	border: solid 1px #acacac;
+	appearance:none;
+	-moz-appearance:none;
+	-webkit-appearance:none;
+	background:url("../images/arrow-select.png") no-repeat scroll right center transparent;
+	background-color:#fff;
+	padding-right: 26px !important;
 }
 select::-ms-expand { display: none; }
 select[multiple=true]{
@@ -370,7 +370,7 @@ div.error{height:30px;line-height:30px;background:url("../images/error_24.png") 
 .pagelist ul li a.current{background:#E4E4E4;border:1px solid #ccc;text-decoration:none;}
 
 ul.layout{list-style:none;margin:0;padding:0;}
-ul.layout li{float:left;margin-right:10px;line-height:24px;}
+ul.layout li{float:left;margin-right:10px;line-height:24px;margin-bottom:3px;}
 ul.layout li label{vertical-align:middle;}
 ul.layout li label input{margin-top:-1px;vertical-align:middle;}
 ul.layout:after{clear:both;content:'.';display:block;visibility:hidden;height:0;overflow:hidden;}

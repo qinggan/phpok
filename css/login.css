@@ -16,12 +16,26 @@ li { list-style: none; }
 .clear:after { content:''; display: block; clear: both; }
 .fl { float: left; }
 .fr { float: right; }
+.hide{
+	display:none;
+}
+
+.qrcode-img,.qrcode-img2{
+	position: absolute;
+	right:2px;
+	top:2px;
+	width:40px;
+	cursor: pointer;
+}
+
+.qrcode-img img,.qrcode-img2 img{
+	width:100%;
+}
 
 
 /*表单*/
 #c-content {
     position: fixed;
-    z-index: 11;
     top: 0;
     left:0;
     width: 100%;
@@ -31,9 +45,8 @@ li { list-style: none; }
     position: absolute;
     top: 50%;
     left:50%;
-    padding: 0 50px;
     width: 100%;
-    max-width: 1300px;
+    max-width: 980px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -50,6 +63,7 @@ li { list-style: none; }
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    position: relative;
 }
 #c-content .c-wrap .c-form .c-title {
     padding-bottom: 40px;
@@ -114,6 +128,7 @@ li { list-style: none; }
     -moz-transition: all 0.3s;
     -o-transition: all 0.3s;
     transition: all 0.3s;
+    text-transform:uppercase;
 }
 #c-content .c-wrap .c-form .c-code .c-img {
     position: absolute;

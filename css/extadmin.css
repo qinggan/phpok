@@ -66,7 +66,10 @@ img{
 	overflow:hidden;
 }
 
-
+.layui-card-header.layuiadmin-card-header-auto{
+	padding-top:8px;
+	padding-bottom:5px;
+}
 
 .layui-card-header .fr .layui-icon{
 	line-height:180%;
@@ -163,6 +166,166 @@ img{
 .layui-elem-quote{
 	border-left-color:#1D5595;
 }
+
+.layadmin-backlog-body p cite{
+	color:#1D5595;
+}
+
+.layui-form-checked span, .layui-form-checked:hover span{
+	background:#1d5595;
+}
+.layui-form-checked[lay-skin=primary] span,.layui-form-checked[lay-skin=primary]:hover span{
+	background:none;
+}
+
+/* 通过 layui.newphper.com 在线生成的代码 */
+
+.layui-layout-admin .layui-logo {
+	color: #1d5595
+}
+.layui-elem-quote {
+	border-left-color: #1d5595
+}
+.layui-btn {
+	background-color: #1d5595
+}
+.layui-btn-primary {
+	background-color: #fff
+}
+.layui-btn-primary:hover {
+	border-color: #1d5595
+}
+.layui-btn-group .layui-btn-primary:hover {
+	color: #1d5595
+}
+.layui-laypage a:hover {
+	color: #1d5595
+}
+.layui-laypage .layui-laypage-curr .layui-laypage-em {
+	background-color: #1d5595
+}
+.layui-laypage select:focus {
+	border-color: #1d5595 !important
+}
+.layui-upload-drag .layui-icon {
+	font-size: 50px;
+	color: #1d5595
+}
+.layui-upload-drag[lay-over] {
+	border-color: #1d5595
+}
+.layui-nav-tree .layui-nav-child dd.layui-this a {
+	background-color: #1d5595
+}
+.layui-nav-tree .layui-nav-bar {
+	background-color: #1d5595
+}
+.layui-tab-brief > .layui-tab-title .layui-this {
+	color: #1d5595
+}
+.layui-slider-input-btn i:hover {
+	color: #1d5595
+}
+.layui-slider-wrap-btn {
+	border-color: #1d5595 !important
+}
+.layui-slider-bar {
+	background: #1d5595 !important
+}
+html .layui-laydate .layui-this {
+	background-color: #1d5595 !important
+}
+.laydate-theme-molv .layui-laydate-header {
+	background-color: #1d5595
+}
+.laydate-theme-grid .laydate-selected, .laydate-theme-grid .laydate-selected:hover {
+	color: #1d5595 !important
+}
+.layui-progress-bar {
+	background-color: #508aca
+}
+.layui-form-select dl dd.layui-this {
+	background-color: #508aca
+}
+.layui-form-checked, .layui-form-checked:hover {
+	border-color: #508aca
+}
+
+.layui-form-checked i, .layui-form-checked:hover i {
+	color: #508aca
+}
+.layui-form-checkbox[lay-skin=primary]:hover i {
+	border-color: #508aca
+}
+.layui-form-checked[lay-skin=primary] i {
+	border-color: #508aca;
+	background-color: #508aca
+}
+.layui-form-onswitch {
+	border-color: #508aca;
+	background-color: #508aca
+}
+.layui-form-radio > i:hover, .layui-form-radioed > i {
+	color: #508aca
+}
+.layui-table-edit:focus {
+	border-color: #508aca !important
+}
+.layui-nav-tree .layui-nav-itemed:after {
+	background-color: #508aca
+}
+.layui-nav-child dd.layui-this {
+	background-color: #508aca
+}
+.layui-nav .layui-nav-child dd.layui-this a {
+	background-color: #508aca
+}
+.layui-breadcrumb a:hover {
+	color: #508aca !important
+}
+.layui-tab-brief > .layui-tab-more li.layui-this:after, .layui-tab-brief > .layui-tab-title .layui-this:after {
+	border-bottom: 2px solid #508aca
+}
+.layui-tab-card > .layui-tab-more .layui-this {
+	color: #508aca
+}
+.layui-timeline-axis {
+	color: #508aca
+}
+.laydate-day-mark::after {
+	background-color: #508aca !important
+}
+.layui-laydate-header i:hover, .layui-laydate-header span:hover {
+	color: #508aca !important
+}
+.layui-laydate-footer span:hover {
+	color: #508aca !important
+}
+.layui-nav .layui-this:after, .layui-nav-bar, .layui-nav-tree .layui-nav-itemed:after {
+	background-color: #508aca !important
+}
+.layui-transfer-active .layui-btn {
+	background-color: #508aca;
+	border-color: #508aca;
+}
+.layui-form-checked[lay-skin=primary] i {
+	border-color: #508aca!important;
+	background-color: #508aca;
+}
+.layui-btn-normal {
+	background-color: #2872c8;
+}
+.layui-btn-warm {
+	background-color: #ff5722;
+}
+.layui-btn-danger {
+	background-color: #ff0000;
+}
+.layui-btn-disabled, .layui-btn-disabled:hover, .layui-btn-disabled:active {
+	background-color: #FBFBFB;
+}
+
+/* 通过 layui.newphper.com 在线生成的代码 */
 
 
 /* 兼容手机版的一些设置 */
