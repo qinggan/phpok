@@ -1,0 +1,41 @@
+<!-- include tpl=usercp/head title=我的收藏 -->
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">
+					我的收藏
+				</div>
+				<div class="card-body">
+					<table class="table">
+						<thead>
+							<tr>
+								<th class="am-text-left">主题</th>
+								<th>收藏时间</th>
+								<th width="150">&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+							<tr>
+								<td>{$value.title}</td>
+								<td>{func time_format $value.addtime}</td>
+								<td>
+									<div class="btn-group">
+										<button type="button" onclick="$.phpok.open('{url id=$value.lid/}')" class="btn btn-primary">访问</button>
+										<button type="button" onclick="$.phpok_app_fav.del('{$value.id}')" class="btn btn-danger">删除</button>
+									</div>
+								</td>
+							</tr>
+							<!-- /loop -->
+						</tbody>
+					</table>
+					<!-- include tpl=usercp/pagelist -->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

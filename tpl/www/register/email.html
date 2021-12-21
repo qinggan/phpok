@@ -1,0 +1,71 @@
+<!-- include tpl=register/header title=用户注册 -->
+<section class="container">
+<div class="row justify-content-center">
+	<div class="col col-lg-6 m-4 p-4 bg-white border shadow">
+		<form method="post" id="register-form" onsubmit="return $.register.save(this)">
+			<!-- if $grouplist && count($grouplist) > 1 -->
+			<div class="row form-group">
+				<label for="group_id" class="col-sm-3 text-sm-right">用户组</label>
+				<div class="col-sm-9">
+					<select name="group_id" class="form-control" id="group_id" onchange="$.register.group(this.value)">
+					<!-- loop from=$grouplist key=$key value=$value -->
+					<option value="{$value.id}"{if $group_id == $value.id} selected{/if}>{$value.title}</option>
+					<!-- /loop -->
+					</select>
+				</div>
+			</div>
+			<!-- else -->
+			<input type="hidden" name="group_id" id="group_id" value="{$group_id}" />
+			<!-- /if -->
+			<input type="hidden" name="_login" id="_login" value="1" title="注册成功后自动登录" />
+			<input type="hidden" name="_back" id="_back" value="{$_back}" title="注册成功后跳转网址" />
+			<div class="row form-group">
+				<label for="email" class="col-sm-3 text-sm-right">Email：</label>
+				<div class="col-sm-9">
+					<input type="email" class="form-control" name="email" id="email" placeholder="填写电子邮件">
+				</div>
+			</div>
+			<div class="row form-group">
+				<label for="_chkcode" class="col-sm-3 text-sm-right">验证码：</label>
+				<div class="col-sm-5">
+					<input type="text" class="form-control" name="_vcode" id="_vcode" />
+				</div>	
+				<div class="col-sm-4"><input type="button" value="获取邮件验证码" onclick="$.vcode.email(this,'email','register')" class="btn btn-primary btn-sm mt-1" id="email_send_status" /></div>
+			</div>
+			<div class="row form-group">
+				<label for="newpass" class="col-sm-3 text-sm-right">密码：</label>
+				<div class="col-sm-9">
+					<input class="form-control" type="password" name="newpass" id="newpass" placeholder="设置密码，要求不少于6位，建议数字 + 字母" />
+				</div>
+			</div>
+			<div class="row form-group">
+				<label for="chkpass" class="col-sm-3 text-sm-right">确认密码：</label>
+				<div class="col-sm-9">
+					<input class="form-control" type="password" name="chkpass" id="chkpass" placeholder="再次输入上面的密码" />
+				</div>
+			</div>
+			<!-- if $is_vcode -->
+			<div class="row form-group">
+				<label for="_chkcode" class="col-sm-3 text-sm-right">验证码：</label>
+				<div class="col-sm-5">
+					<input type="text" name="_chkcode" class="form-control" id="_chkcode" placeholder="填写右边图片上的数字" />
+				</div>	
+				<div class="col-sm-3" style="margin-top:5px;text-align:left;"><img src="{#images#}/blank.gif" border="0" align="absmiddle" id="vcode" class="hand" /></div>
+			</div>
+			<!-- /if -->
+			<div class="row form-group">
+				<div class="col-sm-3"></div>
+				<label class="col-sm-9"><div class="pl-4"><input type="checkbox" id="is_ok" name="is_ok" /> 我已阅读并完全同意阅读<a target="_blank" href="{url ctrl=register func=readme/}">注册协议</a></div></label>
+		    </div>
+		    <div class="row form-group">
+				<div class="col-sm-3"></div>
+				<div class="col-sm-6">
+					<button type="submit" class="btn btn-primary">提交注册</button>
+					
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+</section>
+<!-- include tpl=register/footer -->

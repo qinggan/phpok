@@ -21,8 +21,17 @@
 					<div class="media">
 						<!-- if $value.thumb --><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="mr-3" alt="{$value.title}" style="width:80px;" /></a><!-- /if -->
 						<div class="media-body">
-							<a href="{$value.url}" title="{$value.title}"><h5 class="mt-0">{$value.title}</h5></a>
-							<div class="text-body mt-1">{$value.note ? phpok_cut($value.note,120,'…') : phpok_cut($value.content,120,'…')}</div>
+							
+							<a href="{$value.url}" title="{$value.title}">
+								<h5 class="mt-0">
+									
+									{$value.title}
+								</h5>
+							</a>
+							<div class="text-body mt-1">
+								<a href="{$value.cate.url}" title="{$value.cate.title}"><span class="badge badge-light">{$value.cate.title}</span></a>
+								{$value.note ? phpok_cut($value.note,120,'…') : phpok_cut($value.content,120,'…')}
+							</div>
 							<!-- if $value.tag -->
 							<div class="mt-1">
 								标签：

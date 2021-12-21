@@ -1,7 +1,7 @@
 <div class="card">
 	<div class="card-header">个人中心</div>
 	<ul class="list-group list-group-flush">
-		<li class="list-group-item{if $sys.ctrl == 'usercp' && $sys.func == 'index'} active{/if}"><a href="{url ctrl=usercp/}"><i class="fa fa-home"></i> 会员首页</a></li>
+		<li class="list-group-item{if $sys.ctrl == 'usercp' && $sys.func == 'index'} active{/if}"><a href="{url ctrl=usercp/}"><i class="fa fa-home"></i> 用户首页</a></li>
 		<li class="list-group-item{if $sys.func == 'info'} active{/if}"><a href="{url ctrl=usercp func=info/}"><i class="fa fa-user"></i> 个人资料</a></li>
 		<li class="list-group-item{if $sys.func == 'avatar'} active{/if}"><a href="{url ctrl=usercp func=avatar/}"><i class="fa fa-smile-o"></i> 修改头像</a></li>
 		<li class="list-group-item{if $sys.func == 'address'} active{/if}"><a href="{url ctrl=usercp func=address/}"><i class="fa fa-map-marker"></i> 收货地址</a></li>

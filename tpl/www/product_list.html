@@ -1,49 +1,5 @@
 <!-- include tpl=header menutitle=$page_rs.title -->
-<style type="text/css">
-ul.demo{list-style:none;margin:5px 0;padding:3px 3px 3px 120px;border:1px solid #ccc;}
-ul.demo:after{clear:both;height:0;line-height:0;content:'.';display: block;visibility: hidden;}
-ul.demo li{float:left;padding:1px 10px;line-height:200%;}
-ul.demo li:first-child{width:100px;text-align:right;margin-left:-120px;}
-ul.demo li.on{color:darkred;}
-ul.demo li.on a{color:darkred;}
-</style>
-<script type="text/javascript">
-function filter_submit(url,id,val,cutype)
-{
-	if(!url || !id || url == 'undefined' || id == 'undefined' || !val || val == 'undefined'){
-		return false;
-	}
-	if(!cutype || cutype == 'undefined'){
-		cutype = ',';
-	}
-	url += (url.indexOf('?') > -1) ? '&' : '?';
-	var str = '';
-	var is_delete = false;
-	$("#filter_"+id+" li.on").each(function(i){
-		var info = $(this).attr('data-val');
-		if(info && info != val){
-			if(str != ''){
-				str += cutype+""+info;
-			}else{
-				str = info;
-			}
-		}
-		if(info && info == val){
-			is_delete = true;
-		}
-	});
-	if(str != '' && !is_delete){
-		str += cutype+""+val;
-	}
-	if(str == '' && !is_delete){
-		str = val;
-	}
-	if(str != ''){
-		url += "ext["+id+"]="+$.str.encode(str);
-	}
-	$.phpok.go(url);
-}
-</script>
+
 <section class="bg-light p-5"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
 	<h1 class="p-4 text-center">{$cate_rs ? $cate_rs.title : $page_rs.title}</h1>
 	<!-- php:$taglist = $cate_rs.tag ? $cate_rs.tag : $page_rs.tag -->
@@ -61,6 +17,84 @@ function filter_submit(url,id,val,cutype)
 	<!-- /if -->
 </section>
 <section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb --></div></section>
+<!-- if $filter -->
+<script type="text/javascript">
+function filter_submit(url,id,val,cutype)
+{
+	if(!url || !id || url == 'undefined' || id == 'undefined' || !val || val == 'undefined'){
+		return false;
+	}
+	url += (url.indexOf('?') > -1) ? '&' : '?';
+	if(id == 'cate'){
+		url += "cate="+val;
+		$.phpok.go(url);
+		return true;
+	}
+	if(id == 'price'){
+		var t = val.split('-');
+		if(t[0] && t[0] != 'undefined'){
+			url += "price[min]="+t[0]+"&";
+		}
+		if(t[1] && t[1] != 'undefined'){
+			url += "price[max]="+t[1];
+		}
+		$.phpok.go(url);
+		return true;
+	}
+	var str = '';
+	var is_delete = false;
+	if(cutype != ''){
+		$("#filter_"+id+" .active").each(function(i){
+			var info = $(this).attr('data-val');
+			if(info && info != val){
+				if(str != ''){
+					str += cutype+""+info;
+				}else{
+					str = info;
+				}
+			}
+			if(info && info == val){
+				is_delete = true;
+			}
+		});
+		if(str != '' && !is_delete){
+			str += cutype+""+val;
+		}
+		if(str == '' && !is_delete){
+			str = val;
+		}
+		if(str != ''){
+			url += "ext["+id+"]="+$.str.encode(str);
+		}
+	}else{
+		url += "ext["+id+"]="+$.str.encode(val);
+	}
+	$.phpok.go(url);
+}
+</script>
+<style type="text/css">
+.filter .active{
+	font-weight:bold;
+	color:darkred;
+}
+</style>
+<section class="container filter">
+	<!-- loop from=$filter key=$key value=$value id=$tmpid -->
+	<div class="row mb-2 p-1 border-bottom">
+		<div class="col-2 text-blue text-right">
+			{$value.title}：
+		</div>
+		<div class="col-10" id="filter_{$value.identifier}">
+			<a href="{$value.url}" class="pr-2 {if $value.highlight} active{/if}">不限</a>
+		    <!-- loop from=$value.list key=$k value=$v id=$tmpid2 -->
+		    <a class="pr-2 {if $v.highlight} active{/if}" data-val="{$v.val}" href="javascript:filter_submit('{$value.url}','{$value.identifier}','{$v.val}','{$value.join}');void(0);">{$v.title}</a>
+		    <!-- /loop -->
+		</div>
+	</div>
+	<!-- /loop -->
+</section>
+<!-- /if -->
+
 <section class="container">
 	<div class="row">
 		<div class="col-sm-4 col-md-3">
@@ -73,15 +107,7 @@ function filter_submit(url,id,val,cutype)
 			<!-- include tpl=block/taglist -->
 		</div>
 		<div class="col-sm-8 col-md-9">
-			<!-- loop from=$filter key=$key value=$value id=$tmpid -->
-			<ul class="demo" id="filter_{$value.identifier}">
-			    <li>{$value.title}：</li>
-			    <li{if $value.highlight} class="on"{/if}><a href="{$value.url}">不限</a></li>
-			    <!-- loop from=$value.list key=$k value=$v id=$tmpid2 -->
-			    <li{if $v.highlight} class="on"{/if} data-val="{$v.val}"><a href="{if $value.multiple}javascript:filter_submit('{$value.url}','{$value.identifier}','{$v.val}','{$value.cutype}');void(0);{else}{$v.url}{/if}">{$v.title}</a></li>
-			    <!-- /loop -->
-			</ul>
-			<!-- /loop -->
+			
 			<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 clearfix">
 				<!-- loop from=$rslist key=$key value=$value -->
 				<div class="col">

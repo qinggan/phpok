@@ -49,7 +49,7 @@
 			<!-- if $session.user_id -->
 			<a class="btn btn-primary" href="{url ctrl=post id=$page_rs.identifier cateid=$cate_rs.id/}">发布新主题</a>
 			<!-- else -->
-			<a class="btn btn-danger"  href="{url ctrl=login _back=$cate_rs.url/}" class="red">仅限会员才有发布权限</a>
+			<a class="btn btn-danger"  href="{url ctrl=login _back=$cate_rs.url/}" class="red">仅限用户才有发布权限</a>
 			<!-- /if -->
 		</div>
 		<div class="col"><!-- include tpl=block/pagelist --></div>

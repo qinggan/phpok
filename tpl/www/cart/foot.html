@@ -1,0 +1,13 @@
+{func phpok_head_css}
+{func phpok_head_js}
+<script type="text/javascript" src="static/bootstrap/{#js#}/bootstrap.bundle.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="static/www/global.js" charset="utf-8" charset="utf-8"></script>
+<script type="text/javascript" src="{$config.tpl_id.dir_tpl}cart/{#js#}/global.js"></script>
+<!-- if $js -->
+<!-- php:$jslist = explode(",",$js) -->
+<!-- loop from=$jslist key=$key value=$value id=$tmpid -->
+<script type="text/javascript" src="{$value}" charset="utf-8"></script>
+<!-- /loop -->
+<!-- /if -->
+</body>
+</html>

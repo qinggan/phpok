@@ -1,0 +1,77 @@
+<!-- include tpl=usercp/head title=分享推荐 -->
+<script type="text/javascript">
+function relation_reload(val)
+{
+	var url = get_url('usercp','introducer');
+	if(val){
+		url = get_url('usercp','introducer','month='+val);
+	}
+	$.phpok.go(url);
+}
+</script>
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">推广链接</div>
+				<div class="card-body">
+					{$vlink}
+				</div>
+			</div>
+			<div class="card mt-3">
+				<div class="card-header">
+					邀请码
+					<button type="button" class="btn btn-primary btn-sm float-right" onclick="$.user.vcode()">更新邀请码</button>
+				</div>
+				<div class="card-body">
+					{$me.code}
+				</div>
+				<div class="card-footer">
+					仅限平台开启邀请注册时才有效
+				</div>
+			</div>
+			<!-- if $monthlist -->
+			<div class="card mt-3">
+				<div class="card-header">月统计</div>
+				<div class="card-body">
+					<select class="form-control" onchange="relation_reload(this.value)">
+					<option value="">请选择</option>
+					<!-- loop from=$monthlist key=$key value=$value id=$tmpid -->
+					<option value="{$value.month}"{if $month == $value.month} selected{/if}>{func substr $value.month 0 4}年{func substr $value.month -2}月 ({$value.total}人)</option>
+					<!-- /loop -->
+					</select>
+				</div>
+			</div>
+			<!-- /if -->
+			<!-- if $rslist -->
+			<div class="card mt-3">
+				<div class="card-header">我推荐的用户</div>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>用户账号</th>
+							<th>注册时间</th>
+							<th>姓名</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+						<tr>
+							<td>{$value.user}</td>
+							<td>{func time_format $value.regtime}</td>
+							<td>{$value.fullname}</td>
+						</tr>
+						<!-- /loop -->
+					</tbody>
+				</table>
+			</div>
+			<!-- /if -->
+			<div class="mt-3">
+				<!-- include tpl=usercp/pagelist -->
+			</div>
+		</div>
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

@@ -32,7 +32,7 @@
 			<li class="breadcrumb-item active">标签：{$rs.title}</li>
 		<!-- /if -->
 		<!-- if $session.user_id && $sys.ctrl == 'usercp' -->
-			<li class="breadcrumb-item{if $sys.func == 'index'} active{/if}"><a href="{url ctrl=usercp/}">会员中心</a></li>
+			<li class="breadcrumb-item{if $sys.func == 'index'} active{/if}"><a href="{url ctrl=usercp/}">用户中心</a></li>
 			<!-- if $sys.func == 'info' -->
 			<li class="breadcrumb-item active"><a href="{url ctrl=usercp func=info/}">个人资料</a></li>
 			<!-- elseif $sys.func == 'avatar' -->
@@ -59,13 +59,13 @@
 			<!-- /if -->
 		<!-- /if -->
 		<!-- if $session.user_id && $sys.ctrl == 'payment' -->
-			<li class="breadcrumb-item"><a href="{url ctrl=usercp/}">会员中心</a></li>
+			<li class="breadcrumb-item"><a href="{url ctrl=usercp/}">用户中心</a></li>
 			<!-- if $sys.func == 'index' -->
 			<li class="breadcrumb-item active"><a href="{url ctrl=payment/}">在线充值</a></li>
 			<!-- /if -->
 		<!-- /if -->
 		<!-- if $session.user_id && $sys.ctrl == 'order' -->
-			<li class="breadcrumb-item"><a href="{url ctrl=usercp/}">会员中心</a></li>
+			<li class="breadcrumb-item"><a href="{url ctrl=usercp/}">用户中心</a></li>
 			<!-- if $sys.func == 'index' -->
 			<li class="breadcrumb-item active"><a href="{url ctrl=order/}">我的订单</a></li>
 			<!-- elseif $sys.func == 'info' -->
@@ -79,18 +79,18 @@
 		<!-- /if -->
 		<!-- if !$session.user_id && $sys.ctrl == 'order' -->
 			<!-- if $sys.func == 'info' -->
-			<li class="breadcrumb-item">会员中心</li>
+			<li class="breadcrumb-item">用户中心</li>
 			<li class="breadcrumb-item">我的订单</li>
 			<li class="breadcrumb-item active"><a href="{url ctrl=order func=info sn=$rs.sn passwd=$rs.passwd/}">订单明细（{$rs.sn}）</a></li>
 			<!-- elseif $sys.func == 'payment' -->
-			<li class="breadcrumb-item">会员中心</li>
+			<li class="breadcrumb-item">用户中心</li>
 			<li class="breadcrumb-item">我的订单</li>
 			<li class="breadcrumb-item"><a href="{url ctrl=order func=info sn=$rs.sn passwd=$rs.passwd/}">订单明细（{$rs.sn}）</a></li>
 			<li class="breadcrumb-item active">在线付款</li>
 			<!-- /if -->
 		<!-- /if -->
 		<!-- if $session.user_id && $sys.ctrl == 'post' -->
-			<li class="breadcrumb-item"><a href="{url ctrl=usercp/}">会员中心</a></li>
+			<li class="breadcrumb-item"><a href="{url ctrl=usercp/}">用户中心</a></li>
 			<li class="breadcrumb-item"><a href="{url ctrl=usercp func=list id=$page_rs.identifier/}">{$page_rs.title}</a></li>
 			<li class="breadcrumb-item active"><!-- if $sys.func == 'edit' -->编辑<!-- else -->发布<!-- /if --></li>
 		<!-- /if -->

@@ -1,0 +1,39 @@
+<!-- include tpl=usercp/head title=密码修改 -->
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">
+					密码修改
+				</div>
+				<div class="card-body">
+					<form method="post" onsubmit="return $.user.pass(this)">
+						<!-- if $me.pass -->
+						<div class="row form-group">
+							<label class="col col-12 col-sm-4 am-form-label text-sm-right">旧密码</label>
+							<div class="col col-12 col-sm-4"><input type="password" class="form-control" name="oldpass" placeholder="输入旧密码" /></div>
+							<div class="col col-12 col-sm-4"><a href="javascript:$.dialog.alert('如果您也忘记了旧密码，请退出后通过手机号变更密码');void(0);">忘记密码</a></div>
+						</div>
+						<!-- /if -->
+						<div class="row form-group">
+							<label class="col col-12 col-sm-4 am-form-label text-sm-right">新密码</label>
+							<div class="col col-12 col-sm-4"><input type="password" class="form-control" name="newpass" placeholder="输入新密码" /></div>
+						</div>
+						<div class="row form-group">
+							<label class="col col-12 col-sm-4 am-form-label text-sm-right">确认密码</label>
+							<div class="col col-12 col-sm-4"><input type="password" class="form-control" name="chkpass" placeholder="再次输入新密码" /></div>
+						</div>
+						<div class="row justify-content-center">
+							<div class="col col-sm-4 ">
+								<button class="btn btn-primary">确认修改</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

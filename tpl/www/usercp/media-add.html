@@ -1,0 +1,73 @@
+<!-- include tpl=usercp/head -->
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">
+					添加新媒体
+				</div>
+				<div class="card-body">
+					<div style="margin:10px;">
+						{$button}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+/*
+$(document).ready(function(){
+	var uploader = WebUploader.create({
+		auto: true,
+		server: api_url('upload','save'),
+		pick: {'id':'#btn_picture','innerHTML':'选择本地文件'},
+		fileVal: 'upfile',
+		formdata:{
+			'{func session_name}':'{func session_id}'
+		},
+		resize: false,
+		sendAsBinary:true,
+		'chunked':true,
+		'chunkSize':102400,
+		'threads':3,
+		fileSingleSizeLimit:'10000000000'
+	});
+	uploader.on('fileQueued',function(file){
+		$("#upload_progress").append('<div id="phpok-upfile-' + file.id + '" class="phpok-upfile-list">' +
+			'<div class="title">' + file.name + ' <span class="status">等待上传…</span></div>' +
+			'<div class="progress"><span>&nbsp;</span></div>' +
+			'<div class="cancel" id="phpok-upfile-cancel-'+file.id+'"></div>' + 
+		'</div>' );
+		$("#phpok-upfile-"+file.id+" .cancel").click(function(){
+			uploader.removeFile(file,true);
+			$("#phpok-upfile-"+file.id).remove();
+		});
+	});
+	uploader.on('uploadProgress',function(file,percent){
+		var $li = $('#phpok-upfile-'+file.id),
+		$percent = $li.find('.progress span');
+		var width = $li.find('.progress').width();
+		$percent.css( 'width', parseInt(width * percent, 10) + 'px' );
+		$li.find('span.status').html('正在上传…');
+		self.upload_state = 'running';
+	});
+	uploader.on('uploadComplete',function(file){
+		$("#phpok-upfile-"+file.id).fadeOut();
+	});
+	uploader.on('uploadSuccess',function(file,data){
+		console.log(data);
+		if(data.status == 'ok'){
+			$.dialog.alert('上传成功，请到媒体库里查看',function(){
+				$.phpok.reload();
+			},'succeed');
+			return true;
+		}
+		$.dialog.alert(data.content);
+		return false;
+	});
+});*/
+</script>
+<!-- include tpl=usercp/foot -->

@@ -1,0 +1,46 @@
+<!-- include tpl=usercp/head title=更换邮箱 -->
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">
+					更换邮箱
+				</div>
+				<div class="card-body">
+					<form method="post" class="form-" onsubmit="return $.user.email(this)">
+						<!-- if $me.email -->
+						<div class="row form-group">
+							<label class="col col-12 col-sm-4 am-form-label text-sm-right">原邮箱</label>
+							<div class="col col-12 col-sm-4"><input type="text" class="form-control" disabled value="{$me.email}" /></div>
+						</div>
+						<!-- /if -->
+						<div class="row form-group">
+							<label class="col col-12 col-sm-4 am-form-label text-sm-right">登录密码</label>
+							<div class="col col-12 col-sm-4"><input type="password" name="pass" class="form-control" placeholder="请输入登录密码" /></div>
+						</div>
+						<div class="row form-group">
+							<label class="col col-12 col-sm-4 am-form-label text-sm-right">新邮箱</label>
+							<div class="col col-12 col-sm-4"><input type="text" name="email" id="email" class="form-control" placeholder="请输入新邮箱" /></div>
+						</div>
+						<!-- if $sendemail -->
+						<div class="row form-group">
+							<label class="col col-12 col-sm-4 am-form-label text-sm-right">邮箱验证码</label>
+							<div class="col col-6 col-sm-3"><input type="text" name="chkcode" id="chkcode" class="form-control" placeholder="邮箱验证码" /></div>
+							<div class="col col-6 col-sm-3"><button type="button" class="btn btn-primary" onclick="$.vcode.email(this,'email','register')">获取验证码</button></div>
+						</div>
+						<!-- /if -->
+						<div class="row justify-content-center">
+							<div class="col col-sm-4 ">
+								<button class="btn btn-primary">保存</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- include tpl=usercp/foot -->

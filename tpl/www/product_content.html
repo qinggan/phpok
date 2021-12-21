@@ -1,5 +1,5 @@
 <!-- include tpl=header menutitle=$page_rs.title js="js/jquery.zoombie.js" -->
-<section class="bg-light p-5"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+<section class="bg-light p-5"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;"{/if}>
 	<h1 class="p-4 text-center">{$rs.title}</h1>
 	<!-- if $rs.subtitle -->
 	<h6 class="text-center">{$rs.subtitle}</h6>
@@ -222,15 +222,16 @@ $(document).ready(function(){
 						<!-- if $rs.pictures -->
 						<li><a href="#product-pictures" class="nav-link mr-2 ml-2" role="tab" data-toggle="tab">产品图集</a></li>
 						<!-- /if -->
+						<!-- if $rs.params -->
+						<li><a href="#product-params" class="nav-link mr-2 ml-2" role="tab" data-toggle="tab">规格参数</a></li>
+						<!-- /if -->
 						<!-- if $rs.package && $rs.package.content -->
 						<li><a href="#product-package" class="nav-link mr-2 ml-2" role="tab" data-toggle="tab">包装清单</a></li>
 						<!-- /if -->
 						<li><a href="#product-service" class="nav-link mr-2 ml-2" role="tab" data-toggle="tab">售后信息</a></li>
-						<!-- if $page_rs.comment_status -->
-						<li><a href="#product-comment" class="nav-link mr-2 ml-2" role="tab" data-toggle="tab">产品评价</a></li>
-						<!-- /if -->
 					</ul>
 				</div>
+				
 				<div class="card-body">
 					<div class="tab-content">
 						<div role="tabpanel" class="tab-pane active" id="product-content">
@@ -242,13 +243,33 @@ $(document).ready(function(){
 						<!-- if $rs.pictures -->
 						<div role="tabpanel" class="tab-pane" id="product-pictures">
 							<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
-							<p align="center"><img src="{$value.gd.auto}" border="0" /></p>
+							<p align="center"><img src="{$value.gd.auto}" class="w-100" border="0" /></p>
+							<!-- /loop -->
+						</div>
+						<!-- /if -->
+						<!-- if $rs.params -->
+						<div role="tabpanel" class="tab-pane" id="product-params">
+							<!-- loop from=$rs.params key=$key value=$value id=$tmpid -->
+							<h4>{$value.name}</h4>
+							<hr />
+							<!-- if $value.info && $value.info.title && $value.info.content -->
+							<div class="row">
+							<!-- loop from=$value.info.content key=$k value=$v id=$idx -->
+								<!-- loop from=$value.info.title key=$kk value=$vv id=$idxx -->
+								<div class="col{if $kk==0}-3{elseif $kk == 1}-5{else}-4 text-muted{/if} mt-2">{if $kk == 2 && $v[$kk]}备注：{/if}{$v[$kk]}</div>
+								<!-- /loop -->
+							<!-- /loop -->
+							</div>
+							<!-- /if -->
+							<!-- if $value.note -->
+							<div class="content">{$value.note}</div>
+							<!-- /if -->
+							<!-- if $tmpid.num != $tmpid.total --><hr /><!-- /if -->
 							<!-- /loop -->
 						</div>
 						<!-- /if -->
 						<!-- if $rs.package && $rs.package.content -->
 						<div role="tabpanel" class="tab-pane" id="product-package">
-							
 							<table class="table">
 								<thead class="thead-light">
 									<tr>
@@ -272,18 +293,16 @@ $(document).ready(function(){
 							<!-- php:$t = phpok('after-sale-protection') -->
 							{$t.content}
 						</div>
-						<!-- if $page_rs.comment_status -->
-						<div role="tabpanel" class="tab-pane" id="product-comment">
-							<!-- include tpl=block/comment tid=$rs.id -->
-						</div>
-						<!-- /if -->
+						
 					</div>
-				</div>
-				
-					<!-- 面板区 -->
 					
-				
+				</div>
 			</div>
+			<!-- if $page_rs.comment_status -->
+			<div class="mt-2">
+				<!-- include tpl=block/comment tid=$rs.id -->
+			</div>
+			<!-- /if -->
 		</div>
 	</div>
 </section>

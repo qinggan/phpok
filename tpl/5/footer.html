@@ -1,0 +1,90 @@
+<footer class="pt-5 mt-2 bg-light">
+	<div class="container">
+		<!-- php:$about = phpok('aboutus') -->
+		<div class="row footer-theme partition-f">
+			<div class="col-lg-4 col-md-6">
+				<h4>{$config.title}</h4>
+				<div class="footer-contant">
+					<p>{$about.footnote}</p>
+					<div class="payment-card-bottom">
+						<i class="fa fa-cc-visa text-warning" aria-hidden="true"></i>
+						<i class="fa fa-cc-mastercard text-warning" aria-hidden="true"></i>
+						<i class="fa fa-cc-paypal text-warning" aria-hidden="true"></i>
+						<i class="fa fa-cc-discover text-warning" aria-hidden="true"></i>
+						<i class="fa fa-cc-amex text-warning" aria-hidden="true"></i>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-6 col-xl-2 offset-xl-1">
+				<div class="sub-title">
+					<div class="footer-title">
+						<h4>相关信息</h4>
+						<div class="divider-line"></div>
+					</div>
+					<div class="footer-contant">
+						<ul>
+							<!-- php:$list = menu('footnav') -->
+							<!-- loop from=$list key=$key value=$value id=$list_id -->
+							<li><a href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a></li>
+							<!-- /loop -->
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-2 col-md-6">
+				<div class="sub-title">
+					<div class="footer-title">
+						<h4>快速导航</h4>
+						<div class="divider-line"></div>
+					</div>
+					<div class="footer-contant">
+						<ul>
+							<!-- php:$list = menu('bottom') -->
+							<!-- loop from=$list key=$key value=$value id=$list_id -->
+							<li><a href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a></li>
+							<!-- /loop -->
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!-- php:$contactus = phpok('contactus') -->
+			<div class="col-lg-3 col-md-6">
+				<div class="sub-title">
+					<div class="footer-title">
+						<h4>{$contactus.title}</h4>
+						<div class="divider-line"></div>
+					</div>
+					<div class="footer-contant">
+						<ul class="contact-list">
+							<!-- if $contactus.address --><li><i class="fa fa-map-marker"></i> 地址：{$contactus.address}</li><!-- /if -->
+							<!-- if $contactus.tel --><li><i class="fa fa-phone"></i> 电话：{$contactus.tel}</li><!-- /if -->
+							<!-- if $contactus.email --><li><i class="fa fa-envelope-o"></i> 邮箱：{$contactus.email}</li><!-- /if -->
+							<!-- if $contactus.fullname --><li><i class="fa fa-user"></i> 联系人：{$contactus.fullname}</li><!-- /if -->
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row social-space-b">
+			<div class="col-md-4">
+				<hr class="social-line">
+			</div>
+			<div class="col-md-4 text-center">
+				<div class="footer-social">
+					{$config.code.share}
+				</div>
+			</div>
+			<div class="col-md-4">
+				<hr class="social-line">
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row ">
+			<div class="col-md-12">
+				{$config.copyright.content}
+			</div>
+		</div>
+	</div>
+</footer>
+<!-- include tpl=foot -->

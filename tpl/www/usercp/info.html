@@ -1,0 +1,32 @@
+<!-- include tpl=usercp/head -->
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">
+					个人信息
+				</div>
+				<div class="card-body">
+					<form method="post" id="userinfo_submit" onsubmit="return $.user.info(this)">
+						<input type="hidden" name="avatar" id="avatar" value="{$rs.avatar}" />
+						<!-- loop from=$extlist key=$key value=$value -->
+						<div class="row form-group">
+							<label class="col col-12 col-sm-4 am-form-label text-right">{$value.title}</label>
+							<div class="col col-12 col-sm-4 cp-{$value.identifier}">{$value.html}</div>
+						</div>
+						<!-- /loop -->
+						<div class="row justify-content-center">
+							<div class="col col-sm-4 ">
+								<button class="btn btn-primary">确认修改</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- include tpl=usercp/foot -->

@@ -1,12 +1,20 @@
 /**
- * 公共页面JS执行，需要加工 artdialog.css
+ * 公共页脚本
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
- * @网站 http://www.phpok.com
- * @版本 4.x
- * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @日期 2018年03月17日
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2021年5月14日
 **/
+function dropdownOpen() {
+    var $dropdownLi = $('li.dropdown');
+    $dropdownLi.mouseover(function() {
+        $(this).addClass('show').find(".dropdown-menu").addClass('show');
+    }).mouseout(function() {
+        $(this).removeClass('show').find(".dropdown-menu").removeClass('show');
+    });
+}
+
 
 function top_search(obj)
 {
@@ -41,298 +49,6 @@ function country_change(id)
 		}
 		$.phpok.reload();
 	})
-}
-
-function scroll_act()
-{
-	if ($(window).scrollTop() < 30) {
-		$(".headnav").css("position","relative");
-	}else{
-		$(".headnav").css("position","fixed").css('top','0').css("z-index",9999);
-	}
-}
-
-;(function($){
-	var timeout_obj = null;
-	var time = 60;
-	var time_lock = false;
-
-	function countdown(obj)
-	{
-		time--;
-		if(time < 1){
-			$(obj).val('发送验证码');
-			time_lock = false;
-			time = 60;
-			window.clearInterval(timeout_obj);
-			return true;
-		}
-		var tips = "已发送("+time+")";
-		$(obj).val(tips);
-	}
-
-	/**
-	 * 会员相关操作
-	**/
-	$.user = {
-		login: function(title){
-			if(!title || title == 'undefined'){
-				title = p_lang('会员登录');
-			}
-			var email = $("#email").val();
-			var mobile = $("#mobile").val();
-			var url = get_url('login','open');
-			if(email){
-				url += "&email="+$.str.encode(email);
-			}
-			if(mobile){
-				url += "&mobile="+$.str.encode(mobile);
-			}
-			$.dialog.open(url,{
-				'title':title,
-				'lock':true,
-				'width':'420px',
-				'height':'200px',
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert('iframe还没加载完毕呢');
-						return false;
-					};
-					iframe.save();
-					return false;
-				},
-				'okVal':p_lang('会员登录'),
-				'cancel':true
-			});
-		},
-		login_ok:function(formid){
-			if(!formid || formid == 'undefined'){
-				formid = 'login-submit';
-			}
-			$("#"+formid).ajaxSubmit({
-				'url':api_url('login','save'),
-				'type':'post',
-				'dataType':'json',
-				'success':function(rs){
-					if(rs.status){
-						$.dialog.tips('会员登录成功');
-						if(!rs.url || rs.url == 'undefined'){
-							rs.url = $("#_back").val();
-							if(!rs.url){
-								rs.url = webroot;
-							}
-						}
-						$.phpok.go(rs.url);
-						return false;
-					}
-					$.dialog.alert(rs.info,false,'error');
-					return false;
-				}
-			});
-			return false;
-		},
-		register:function(reg_type)
-		{
-			//
-		},
-		logout: function(title){
-			$.dialog.confirm('您好，<span class="red">'+title+'</span>，您确定要退出吗？',function(){
-				$.phpok.json(api_url('logout'),function(rs){
-					$.phpok.go(webroot);
-				});
-			});
-		}
-	};
-
-	$.register = {
-		email_code:function(email_id,tpl_id,obj)
-		{
-			if(time_lock){
-				$.dialog.tips('验证码已发送，请稍候…');
-				return false;
-			}
-			var url = api_url('vcode','email','act=register');
-			if(tpl_id && tpl_id != 'undefined'){
-				url += '&tplid='+tpl_id;
-			}
-			var email = $("#"+email_id).val();
-			if(email){
-				url += "&email="+$.str.encode(email);
-			}
-			$.phpok.json(url,function(rs){
-				if(!rs.status){
-					$.dialog.tips(rs.info);
-					return false;
-				}
-				time = 60;
-				time_lock = true;
-				timeout_obj = window.setInterval(function(){
-					countdown(obj);
-				},1000);
-				return true;
-			});
-		},
-		sms_code:function(mobile_id,tpl_id,obj)
-		{
-			if(time_lock){
-				$.dialog.tips('验证码已发送，请稍候…');
-				return false;
-			}
-			var url = api_url('vcode','sms','act=register');
-			if(tpl_id && tpl_id != 'undefined'){
-				url += '&tplid='+tpl_id;
-			}
-			var mobile = $("#"+mobile_id).val();
-			if(mobile){
-				url += "&mobile="+$.str.encode(mobile);
-			}
-			$.phpok.json(url,function(rs){
-				if(!rs.status){
-					$.dialog.tips(rs.info);
-					return false;
-				}
-				time = 60;
-				time_lock = true;
-				timeout_obj = window.setInterval(function(){
-					countdown(obj);
-				},1000);
-				return true;
-			});
-		},
-		save:function(id)
-		{
-			if(!$('#is_ok').prop('checked')){
-				$.dialog.alert('注册前请先同意本站协议');
-				return false;
-			}
-			$("#"+id).ajaxSubmit({
-				'url':api_url('register','save'),
-				'type':'post',
-				'dataType':'json',
-				'success':function(rs){
-					if(rs.status){
-						$.dialog.tips('会员注册成功').lock();
-						var url = $("#_back").val();
-						if(!url){
-							url = webroot;
-						}
-						$.phpok.go(url);
-						return true;
-					}
-					$.dialog.alert(rs.info);
-					return false;
-				}
-			});
-			return false;
-		},
-		group:function(id)
-		{
-			$.phpok.go(get_url('register','','group_id='+id));
-		}
-	}
-
-	/**
-	 * 评论相关操作
-	**/
-	$.comment = {
-		post:function()
-		{
-			$("#comment-post").ajaxSubmit({
-				'url':api_url('comment','save'),
-				'type':'post',
-				'dataType':'json',
-				'success':function(rs){
-					if(rs.status){
-						$.dialog.alert('感谢您提交的评论',function(){
-							$.phpok.reload();
-						},'succeed');
-						return true;
-					}
-					$.dialog.alert(rs.info);
-					return false;
-				}
-			});
-			return false;
-		}
-	};
-
-	/**
-	 * 地址薄增删改管理
-	**/
-	$.address = {
-		add:function()
-		{
-			var url = get_url('usercp','address_setting');
-			$.dialog.open(url,{
-				'title':p_lang('添加新地址'),
-				'lock':true,
-				'width':'500px',
-				'height':'500px',
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert('iframe还没加载完毕呢');
-						return false;
-					};
-					iframe.save();
-					return false;
-				},
-				'okVal':'提交保存',
-				'cancel':true
-			})
-		},
-
-		edit:function(id)
-		{
-			var url = get_url('usercp','address_setting','id='+id);
-			$.dialog.open(url,{
-				'title':p_lang('编辑地址 {id}',"#"+id),
-				'lock':true,
-				'width':'500px',
-				'height':'500px',
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert('iframe还没加载完毕呢');
-						return false;
-					};
-					iframe.save();
-					return false;
-				},
-				'okVal':'保存数据',
-				'cancel':true
-			});
-		},
-
-		del:function(id)
-		{
-			$.dialog.confirm(p_lang('确定要删除这个地址吗？地址ID {id}',"#"+id),function(){
-				var url = api_url('address','delete','id='+id);
-				$.phpok.json(url,function(){
-					$.phpok.reload();
-				})
-			});
-		},
-		set_default:function(id)
-		{
-			$.dialog.confirm(p_lang('确定要设置这个地址为默认地址吗？地址ID {id}',"#"+id),function(){
-				var url = api_url('address','default','id='+id);
-				$.phpok.json(url,function(){
-					$.phpok.reload();
-				})
-			});
-		}
-	}
-})(jQuery);
-
-function dropdownOpen() {
-    var $dropdownLi = $('li.dropdown');
-    $dropdownLi.mouseover(function() {
-        $(this).addClass('show').find(".dropdown-menu").addClass('show');
-    }).mouseout(function() {
-        $(this).removeClass('show').find(".dropdown-menu").removeClass('show');
-    });
 }
 
 $(document).ready(function(){
@@ -370,12 +86,22 @@ $(document).ready(function(){
 	if($("#comment-post").length > 0){
 	    //提交评论
 	    $("#comment-post").submit(function(){
-			$.comment.post();
+			$.comment.post($("#comment-post")[0]);
 			return false;
 		});
+		if(typeof CKEDITOR != 'undefined'){
+			CKEDITOR.on('instanceReady', function(evt) {
+				evt.editor.setKeystroke(CKEDITOR.CTRL + 13, 'save');
+			});
+			CKEDITOR.instances['comment'].on('save', function(event) {
+				window.onbeforeunload = null;
+				$.comment.post($("#comment-post")[0]);
+				return false;
+			});
+		}
 		$(document).keypress(function(e){
 			if(e.ctrlKey && e.which == 13 || e.which == 10) {
-				$.comment.post();
+				$.comment.post($("#comment-post")[0]);
 				return false;
 			}
 		});
@@ -390,20 +116,17 @@ $(document).ready(function(){
 		$(this).find('.wxpic').hide();
 	});
 
-	//异步定时通知
-	window.setTimeout(function(){
-		$.phpok.json(api_url('task'),true);
-	}, 800);
-
 	//电商操作
 	if(biz_status && biz_status != 'undefined' && biz_status == '1'){
 		$.cart.total();
 	}
 
-	scroll_act();
-	$(window).scroll(function(event) {
-		scroll_act();
-	});
 	$(document).off('click.bs.dropdown.data-api');
 	dropdownOpen();//调用
+
+	SyntaxHighlighter.config['space'] = "&nbsp;";
+	SyntaxHighlighter.config['quick-code'] = false
+	SyntaxHighlighter.all();
+	$("input[type=text],input[type=password],input[type=email],input[type=tel],select").addClass("form-control");
+	$("input[type=checkbox],input[type=radio]").addClass("form-check-input");
 });

@@ -15,6 +15,10 @@
 					<!-- if $session.user_id -->
 					<a class="p-1" href="{url ctrl=usercp/}">个人中心</a>
 					<span class="p-1">|</span>
+					<!-- if $pm -->
+					<a class="p-1" href="{url ctrl=pm/}">短消息<!-- if $pm.total --><sup class="text-danger">●</sup><!-- /if --></a>
+					<span class="p-1">|</span>
+					<!-- /if -->
 					<a class="p-1" href="javascript:$.user.logout('{$session.user_name}');void(0);">退出</a>
 					<!-- else -->
 						<!-- if $config.login_status -->
@@ -36,7 +40,7 @@
 					<span class="p-1">|</span>
 					<a class="p-1" href="{url ctrl=cart/}">
 						购物车 <i class="fa fa-shopping-cart"></i>
-						<span id="head_cart_num" class="d-none">0</span>
+						<span id="head_cart_num" class="badge text-light badge-danger" style="display:none;">0</span>
 					</a>
 					<!-- /if -->
 				</div>
@@ -54,9 +58,9 @@
 						<!-- php:$list = menu("top") -->
 						<!-- loop from=$list key=$key value=$value id=$tmpid -->
 						<!-- if $value.sublist -->
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="javascript:void(0)" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{$value.title}</a>
-							<div class="dropdown-menu">
+						<li class="nav-item dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="javascript:void(0)" role="button">{$value.title}</a>
+							<div class="dropdown-menu" style="top:36px;">
 								<!-- loop from=$value.sublist key=$k value=$v id=$idxx -->
 								<a class="dropdown-item" href="{$v.url}" target="{$v.target}">{$v.title}</a>
 								<!-- /loop -->

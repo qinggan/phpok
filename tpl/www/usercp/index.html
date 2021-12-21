@@ -1,0 +1,73 @@
+<!-- include tpl=usercp/head -->
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="row">
+				<div class="col col-12 col-lg-6 mt-1">
+					<div class="card">
+						<div class="card-header">
+							个人信息
+							<div class="float-right">
+								<a href="{url ctrl=user uid=$me.id/}" target="_blank">个人主页</a>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="text-center"><img src="{$me.avatar ? $me.avatar : $config.tpl_id.dir_tpl.'usercp/'.'img'.'/avatar.png'}" style="width:80px;border-radius:100%" /></div>
+							<div class="user-name text-center pt-2">{$me.user}</div>
+							<div class="user-name text-center pt-2">注册时间：{func date Y-m-d $me.regtime}</div>
+						</div>
+					</div>
+				</div>
+				<div class="col col-12 col-lg-6 mt-1">
+					<div class="card">
+						<div class="card-header">
+							财富信息
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<!-- loop from=$me.wealth key=$key value=$value id=$tmpid -->
+								<div class="col col-4">
+									<span>我的{$value.title}</span>
+									<hr />
+									<a href="{url ctrl=usercp func=wealth_log id=$value.id/}">
+										<!-- if $key == 'money' -->
+										查看
+										<!-- else -->
+										{$value.val} {$value.unit}
+										<!-- /if -->
+									</a>
+								</div>
+								<!-- /loop -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col col-12 col-lg-6 mt-1">
+					<div class="card">
+						<div class="card-header">
+							互动统计
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col col-4">
+									<span>我的粉丝</span>
+									<hr />
+									<p>{$fans}</p>
+								</div>
+								<div class="col col-4">
+									<span>我的关注</span>
+									<hr />
+									<p>{$idol}</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- include tpl=usercp/foot -->

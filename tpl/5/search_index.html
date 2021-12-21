@@ -1,0 +1,29 @@
+<!-- include tpl=header title=站内搜索 -->
+<script type="text/javascript">
+function checkseach()
+{
+	var keywords = $("#keywords").val();
+	if(!keywords){
+		$.dialog.alert('请输入要搜索的关键字');
+		return false;
+	}
+	return true;
+}
+$(document).ready(function(){
+	$("#top-search-form").hide();
+});
+</script>
+<section class="container p-4">
+	<form method="post" class="" id="post_save" onsubmit="return top_search(this)">
+	<div class="p-4 m-4">
+		<input type="text" name="keywords" class="form-control" id="keywords" placeholder="搜索关键字" />
+	</div>
+	<div class="text-center mb-4">
+		<button type="submit" class="btn btn-primary btn-lg">
+			<i class="fa fa-search"></i> 提交搜索
+		</button>
+	</div>
+	</form>
+</section>
+
+<!-- include tpl=footer -->

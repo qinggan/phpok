@@ -1,0 +1,109 @@
+<!-- include tpl=usercp/head -->
+<script type="text/javascript">
+function save_comment(tid)
+{
+	var url = api_url('comment','save','tid='+tid+"&order_id={$rs.id}&vtype=order");
+	var comment = $("#comment_"+tid).val();
+	if(!comment){
+		$.dialog.alert('评论内容不能为空',true,'error');
+		return false;
+	}
+	url += '&comment='+$.str.encode(comment);
+	var pic = $("#pic_"+tid).val();
+	if(pic){
+		url += "&pictures="+$.str.encode(pic);
+	}
+	$.phpok.json(url,function(rs){
+		if(!rs.status){
+			$.dialog.alert(rs.info);
+			return false;
+		}
+		$.dialog.tips('评论提交成功',function(){
+			$("#comment_"+tid+",#pic_"+tid).val('');
+			$("#pic_"+tid+"_list").html('');
+		}).lock();
+	});
+	return false;
+}
+</script>
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<!-- include tpl=usercp/order-baseinfo -->
+			<!-- loop from=$tip_info key=$key value=$value id=$tmpid -->
+			<div class="card mt-2"><div class="card-body">{$value}</div></div>
+			<!-- /loop -->
+			<!-- if $is_comment -->
+				<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+				<div class="card mt-2">
+					<div class="card-body">
+						<h4>评论产品：#{$tmpid.num}</h4>									
+						<table class="table">
+						<tr>
+							<th width="100">图片</th>
+							<th>基本信息</th>
+						</tr>
+						<tr>
+							<td>
+								<!-- if $value.thumb && file_exists($value.thumb) -->
+								<img src="{$value.thumb}" width="70" height="70" border="0" />
+								<!-- else -->
+								<img src="{#images#}/blank.gif" width="70" height="70" border="0" />
+								<!-- /if -->
+							</td>
+							<td>
+								<div>{$value.title}</div>
+								<!-- loop from=$value.ext key=$k value=$v id=$tmpid3 -->
+								<div>{$v.title}：{$v.content}</div>
+								<!-- /loop -->
+								<div>数量：{$value.qty}</div>
+								<div>售价：{func price_format $value.price $rs.currency_id $rs.currency_id}</div>
+							</td>
+						</tr>
+							<!-- loop from=$value.comment key=$k value=$v id=$tmpid2 -->
+							<tr>
+								<td>评论#{$tmpid2.num}<br />{func time_format $v.addtime}</td>
+								<td>
+									<div class="content">{$v.content}</div>
+									<!-- if $v.res -->
+									<div class="row row-cols-2 row-cols-sm-3 row-cols-md-6">
+										<!-- loop from=$v.res key=$kk value=$vv id=$idxx -->
+										<div class="col p-1"><a href="{$vv.gd.auto}" target="_blank"><img src="{$vv.ico}" alt="{$v.title}" class="rounded" style="width:100px;max-width:100%;" /></a></div>
+										<!-- /loop -->
+									</div>
+									<!-- /if -->
+									<!-- loop from=$v.adm_reply key=$kk value=$vv id=$idxx -->
+									<fieldset style="border:1px solid #ccc;padding:1em;margin-top:1rem;">
+										<legend style="font-size:0.6rem;padding:0.6rem;width:auto;">管理员于 <time>{func time_format $vv.addtime}</time> 回复</legend>
+										<div class="content">{$vv.content}</div>
+									</fieldset>
+									<!-- /loop -->
+								</td>
+							</tr>
+							<!-- /loop -->
+							<tr>
+								<form method="post" onsubmit="return save_comment('{$value.tid}')">
+								<td>发表评论</td>
+								<td>
+									<div><textarea name="comment" id="comment_{$value.tid}" class="form-control"></textarea></div>
+									<div class="mt-1">
+										<!-- php:$field = 'pic_'.$value.tid -->
+										<!-- php:$tmp = '' -->
+										{func form_edit $field $tmp upload is_multiple=1}
+										<div style="clear:both;height:0;line-height:0;overflow:hidden;"></div>
+									</div>
+									<div class="mt-1"><input type="submit" value="提交评论" class="btn btn-primary" /></div>
+								</td>
+								</form>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<!-- /loop -->
+				<!-- /if -->
+		</div>
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

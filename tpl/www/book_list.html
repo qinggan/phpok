@@ -31,7 +31,7 @@ $(document).ready(function(){
 			$.dialog.alert('邮箱不能为空');
 			return false;
 		}
-		var content = UE.getEditor('content').getContentTxt();
+		var content = $("#content").val();
 		if(!content){
 			$.dialog.alert('留言内容不能为空');
 			return false;

@@ -1,0 +1,27 @@
+<!-- include tpl=usercp/head title=我的财富 -->
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">
+					财富信息
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<!-- loop from=$me.wealth key=$key value=$value id=$tmpid -->
+						<a href="{url ctrl=usercp func=wealth_log id=$value.id/}">
+						<div class="col p-4 m-4">
+							<h4>{$value.title}</h4>
+							{$value.val} {$value.unit}
+						</div>
+						</a>
+						<!-- /loop -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

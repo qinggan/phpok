@@ -1,0 +1,37 @@
+<div class="card">
+	<div class="card-header">个人中心</div>
+	<ul class="list-group list-group-flush">
+		<li class="list-group-item{if $sys.ctrl == 'usercp' && $sys.func == 'index'} active{/if}"><a href="{url ctrl=usercp/}"><i class="fa fa-home"></i> 会员首页</a></li>
+		<li class="list-group-item{if $sys.func == 'info'} active{/if}"><a href="{url ctrl=usercp func=info/}"><i class="fa fa-user"></i> 个人资料</a></li>
+		<li class="list-group-item{if $sys.func == 'avatar'} active{/if}"><a href="{url ctrl=usercp func=avatar/}"><i class="fa fa-smile-o"></i> 修改头像</a></li>
+		<li class="list-group-item{if $sys.func == 'address'} active{/if}"><a href="{url ctrl=usercp func=address/}"><i class="fa fa-map-marker"></i> 收货地址</a></li>
+		<li class="list-group-item{if $sys.ctrl == 'fav'} active{/if}"><a href="{url ctrl=fav/}"><i class="fa fa-star-o"></i> 收藏夹</a></li>
+	</ul>
+</div>
+<div class="card mt-3">
+	<div class="card-header">安全设置</div>
+	<ul class="list-group list-group-flush">
+		<li class="list-group-item{if $sys.func == 'passwd'} active{/if}"><a href="{url ctrl=usercp func=passwd/}"><i class="fa fa-lock"></i> 修改密码</a></li>
+		<li class="list-group-item{if $sys.func == 'mobile'} active{/if}"><a href="{url ctrl=usercp func=mobile/}"><i class="fa fa-phone"></i> 修改手机</a></li>
+		<li class="list-group-item{if $sys.func == 'email'} active{/if}"><a href="{url ctrl=usercp func=email/}"><i class="fa fa-envelope-o"></i> 修改邮箱</a></li>
+	</ul>
+</div>
+<div class="card mt-3">
+	<div class="card-header">交易及财富</div>
+	<ul class="list-group list-group-flush">
+		<li class="list-group-item{if $sys.func == 'wealth'} active{/if}"><a href="{url ctrl=usercp func=wealth/}"><i class="fa fa-money"></i> 我的财富</a></li>
+		<li class="list-group-item{if $sys.ctrl == 'payment' && $sys.func == 'index'} active{/if}"><a href="{url ctrl=payment/}"><i class="fa fa-cc"></i> 在线充值</a></li>
+		<li class="list-group-item{if $sys.ctrl == 'order'} active{/if}"><a href="{url ctrl=order/}"><i class="fa fa-gift"></i> 我的订单</a></li>
+	</ul>
+</div>
+<div class="card mt-3">
+	<div class="card-header">营销及其他</div>
+	<ul class="list-group list-group-flush">
+		<li class="list-group-item{if $sys.func == 'introducer'} active{/if}"><a href="{url ctrl=usercp func=introducer/}"><i class="fa fa-share-alt"></i> 推荐链接</a></li>
+		<!-- php:$list = usercp_project() -->
+		<!-- loop from=$list key=$key value=$value -->
+		<li class="list-group-item{if $sys.func == 'list' && $id == $value.identifier} active{/if}"><a href="{url ctrl=usercp func=list id=$value.identifier/}"><i class="fa fa-angle-right"></i> {$value.title}</a></li>
+		<!-- /loop -->
+	</ul>
+</div>
+

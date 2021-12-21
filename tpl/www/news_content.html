@@ -20,23 +20,39 @@
 		<!-- /if -->
 	</div>
 </section>
-<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb --></div></section>
+<section class="container-fluid p-2"><!-- include tpl=block/breadcrumb --></section>
 <section class="container">
-	<article class="content m-3">
-		<!-- if $rs.note --><blockquote><b>导语</b>：{func nl2br $rs.note}</blockquote><!-- /if -->
-		{$rs.content}
-		<!-- if $session.user_id -->
-		<div class="p-4 text-center">
-			<input type="button" value="{if fav_check($rs.id) }已收藏{else}加入收藏{/if}" class="btn btn-primary btn-lg" onclick="$.phpok_app_fav.act('{$rs.id}',this)" />
+	<div class="row">
+		<div class="col col-sm-3">
+			<div class="mb-3">
+				<!-- include tpl=block/catelist cid=$cate_rs.id pid=$page_rs.id title=$page_rs.title -->
+			</div>
+			<div class="mb-3">
+				<!-- include tpl=block/contact -->
+			</div>
+			<div class="mb-3">
+				<!-- include tpl=block/hot_products -->
+			</div>
+			<!-- include tpl=block/taglist -->
 		</div>
-		<!-- /if -->
-	</article>
-	<!-- include tpl=block/next_prev -->
+		<div class="col col-sm-9">
+			<article class="content p-3 shadow bg-light">
+				<!-- if $rs.note --><blockquote><b>导语</b>：{func nl2br $rs.note}</blockquote><!-- /if -->
+				{$rs.content}
+				<!-- if $session.user_id -->
+				<div class="p-4 text-center">
+					<input type="button" value="{if fav_check($rs.id) }已收藏{else}加入收藏{/if}" class="btn btn-primary btn-lg" onclick="$.phpok_app_fav.act('{$rs.id}',this)" />
+				</div>
+				<!-- /if -->
+			</article>
+			<!-- include tpl=block/next_prev -->
+			
+		</div>
+	</div>
 </section>
 <!-- if $page_rs.comment_status -->
 <section class="container">
-	<hr />
-	<div class="m-2"><!-- include tpl=block/comment tid=$rs.id --></div>
+	<div class="mt-4"><!-- include tpl=block/comment tid=$rs.id --></div>
 </section>
 <!-- /if -->
 <!-- include tpl=footer -->

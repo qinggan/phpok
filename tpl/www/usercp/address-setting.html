@@ -1,0 +1,108 @@
+<!-- php:$tip_title = $id ? '修改地址' : '添加地址' -->
+<!-- include tpl=usercp/head title=$tip_title -->
+<script type="text/javascript">
+function save()
+{
+	var id = $("#id").val();
+	$("#setsubmit").ajaxSubmit({
+		'url':api_url('address','save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				var tip = id ? '{lang地址信息修改成功}' : '{lang地址信息添加成功}';
+				$.dialog.alert(tip,function(){
+					$.phpok.go('{url ctrl=usercp func=address/}');
+				},'succeed');
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">
+					{$id ? '修改地址' : '添加地址'}
+				</div>
+				<div class="card-body">
+					<form method="post" id="setsubmit" onsubmit="return save()">
+					<input type="hidden" name="id" id="id" value="{$id}" />
+					<div class="row form-group">
+						<label class="col col-12 col-sm-4 am-form-label text-sm-right" for="fullname">收件人</label>
+						<div class="col col-12 col-sm-4"><input type="text" class="form-control" id="fullname" name="fullname" value="{$rs.fullname}" placeholder="填写收件人姓名" /></div>
+					</div>
+					<div class="row form-group address">
+						<label class="col col-12 col-sm-4 am-form-label text-sm-right" for="fullname">地址：</label>
+						<div class="col col-12 col-sm-4 pca">
+							<select name="country" id="country" class="form-control" onchange="$.address.glist()">
+								<!-- if $rs.country -->
+								<option value="{$rs.country}">{$rs.country}</option>
+								<!-- else -->
+								<option value="中国">中国</option>
+								<!-- /if -->
+							</select>
+							<select name="province" id="province" class="form-control mt-1" onchange="$.address.glist()">
+								<!-- if $rs.province -->
+								<option value="{$rs.province}">{$rs.province}</option>
+								<!-- else -->
+								<option value="">请选择…</option>
+								<!-- /if -->
+							</select>
+							<select name="city" id="city" class="form-control mt-1" onchange="$.address.glist()">
+								<!-- if $rs.city -->
+								<option value="{$rs.city}">{$rs.city}</option>
+								<!-- else -->
+								<option value="">请选择…</option>
+								<!-- /if -->
+							</select>
+							<select name="county" class="form-control mt-1" id="county">
+								<!-- if $rs.county -->
+								<option value="{$rs.county}">{$rs.county}</option>
+								<!-- else -->
+								<option value="">请选择…</option>
+								<!-- /if -->
+							</select>
+							<div class="mt-1">
+								<input type="text" name="address" id="address" value="{$rs.address}" class="form-control" />
+							</div>
+						</div>
+					</div>
+					<div class="row form-group">
+						<label class="col col-12 col-sm-4 am-form-label text-sm-right" for="mobile">手机号码</label>
+						<div class="col col-12 col-sm-4"><input type="tel" id="mobile" name="mobile" value="{$rs.mobile}" placeholder="填写有效的手机号码" class="form-control"/></div>
+					</div>
+					<div class="row form-group">
+						<label for="tel" class="col col-12 col-sm-4 am-form-label text-sm-right">固定电话</label>
+						<div class="col col-12 col-sm-4"><input type="tel" id="tel" name="tel" value="{$rs.tel}" placeholder="填写有效的固定电话" class="form-control"/></div>
+					</div>
+
+					<div class="row form-group">
+						<label class="col col-12 col-sm-4 am-form-label text-sm-right" for="email">邮箱 Email</label>
+						<div class="col col-12 col-sm-4"><input type="email" id="email" name="email" value="{$rs.email}" placeholder="用来接收订单提醒邮件，便于您及时了解订单状态" class="form-control"/></div>
+					</div>
+					<div class="row justify-content-center">
+						<div class="col col-sm-4 ">
+							<button class="btn btn-primary">提交保存</button>
+						</div>
+					</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	//异步加载国家，省，市，县信息
+	$.address.glist();
+});
+</script>
+<!-- include tpl=usercp/foot -->

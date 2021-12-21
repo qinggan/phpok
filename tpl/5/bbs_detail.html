@@ -1,0 +1,136 @@
+<!-- include tpl=header menutitle=$page_rs.title -->
+<section class="bg-light p-5"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+	<h1 class="p-4 text-center">{$rs.title}</h1>
+	<div class="container">
+		<div class="text-center d-block m-4">
+			<span class="p-2 bg-light-50 rounded-lg ">
+				发布日期：{func time_format $rs.dateline} &nbsp; &nbsp;
+				浏览次数：{$rs.hits}
+			</span>
+		</div>
+		<!-- if $rs.tag -->
+		<div class="text-center m-3">
+			<span class="p-2 bg-light-50 rounded-lg">
+			标签：
+			<!-- loop from=$rs.tag key=$k value=$v id=$idxx -->
+			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+			<!-- /loop -->
+			</span>
+		</div>
+		<!-- /if -->
+	</div>
+</section>
+<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb --></div></section>
+
+
+<!-- include file=bbs_content -->
+<section class="container">
+	<!-- if $pageid == 1 -->
+	<div class="card">
+		<div class="card-header">
+			<a href="{url ctrl=user uid=$rs.user.id/}" target="_blank"><img class="mr-1" alt="{$rs.user.nickname ? $rs.user.nickname : $rs.user.user}" src="{$rs.user.avatar ? $rs.user.avatar : 'images/avatar.gif'}" style="width:30px;" /></a> {$rs.title}
+			<div class="float-right">
+				<a href="{url ctrl=user id=$rs.user.id/}" target="_blank">{$rs.user.nickname ? $rs.user.nickname : $rs.user.user}</a> 于 <time>{func time_format $rs.dateline}</time> 发布
+			</div>
+		</div>
+		<div class="card-body">
+			<p class="card-text content">{$rs.content}</p>
+			<!-- if $rs.pictures -->
+			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+				<!-- loop from=$rs.pictures key=$k value=$v id=$idxx -->
+				<div class="col p-2"><a href="{$v.gd.auto}" target="_blank"><img src="{$v.gd.thumb}" alt="{$v.title}" class="rounded" style="max-width:100%" /></a></div>
+				<!-- /loop -->
+			</div>
+			<!-- /if -->
+		</div>
+		<div class="card-footer text-right">
+			楼主
+		</div>
+	</div>
+	<!-- /if -->
+	<!-- loop from=$comment.rslist key=$key value=$value id=tmpid -->
+	<div class="card mt-3">
+		<div class="card-header">
+			<a href="{url ctrl=user uid=$value.uid.id/}" target="_blank"><img class="mr-1" alt="{$value.uid.nickname ? $value.uid.nickname : $value.uid.user}" src="{$value.uid.avatar ? $value.uid.avatar : 'images/avatar.gif'}" style="width:30px;" /></a>
+			<a href="{url ctrl=user id=$value.uid.id/}" target="_blank">{$value.uid.user}</a> 于 <time>{func time_format $value.addtime}</time> 回复
+		</div>
+		<div class="card-body">
+			<p class="card-text content">{$value.content}</p>
+			<!-- if $value.res -->
+			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+				<!-- loop from=$value.res key=$k value=$v id=$idxx -->
+				<div class="col p-2"><a href="{$v.gd.auto}" target="_blank"><img src="{$v.gd.thumb}" alt="{$v.title}" class="rounded" style="max-width:100%" /></a></div>
+				<!-- /loop -->
+			</div>
+			<!-- /if -->
+			<!-- loop from=$value.adm_reply key=$k value=$v id=$idxx -->
+			<fieldset class="admin-reply">
+				<legend>管理员于 <time>{func time_format $v.addtime}</time> 回复</legend>
+				<div class="content">{$v.content}</div>
+			</fieldset>
+			<!-- /loop -->
+		</div>
+		<div class="card-footer text-right">
+			{$value._layer}
+		</div>
+	</div>
+	<!-- /loop -->
+
+	<!-- if $session.user_id -->
+	
+	
+	<div class="card mt-3">
+		<div class="card-header">
+			回复
+		</div>
+		<div class="card-body">
+			<form method="post" id="comment-post" class="am-form">
+				<input type="hidden" name="tid" value="{$rs.id}" />
+				<input type="hidden" name="vtype" value="title" />
+				<!-- if $comment.uid -->
+				<div class="form-group">{func form_edit comment $comment.content editor width=100%&height=150&btns[image]=1}</div>
+				<!-- else -->
+				<div class="form-group">
+					<textarea class="form-control" rows="5" name="comment" id="comment" placeholder="填写评论信息" style="resize: none;"></textarea>
+				</div>
+				<!-- /if -->
+				<div class="form-group clearfix">
+					{func form_edit pictures $comment.res upload is_multiple=1}
+				</div>
+				<!-- if $is_vcode -->
+				<div class="form-group">
+					<div class="row">
+					<div class="col-sm-3"><input class="form-control"  type="text" name="_chkcode" id="_chkcode" placeholder="请填写验证码" /></div>
+					<div class="col-sm-2"><img src="" border="0" align="absmiddle" id="vcode" class="hand" /></div>
+					</div>
+				</div>
+				<script type="text/javascript">
+				$(document).ready(function(){
+					$("#vcode").phpok_vcode();
+					$("#vcode").click(function(){
+						$(this).phpok_vcode();
+					});
+				});
+				</script>
+				<!-- /if -->
+				<div class="form-group d-block mt-4">
+					<input name="" type="submit" class="btn btn-primary" value="提交" />
+				</div>
+			</form>
+		</div>
+	</div>
+	<!-- else -->
+	<div class="card mt-3">
+		<div class="card-header">
+			请登录或注册
+		</div>
+		<div class="card-body">
+			<div class="p-4 m-4 text-center">请先 <a href="{url ctrl=login _back=$rs.url/}" title="会员登录">登录</a> 或 <a href="{url ctrl=register _back=$rs.url/}" title="新会员注册">注册</a></div>
+		</div>
+	</div>
+	<!-- /if -->
+	<div class="m-3">
+		<!-- include tpl=block/pagelist pageurl=$rs.url total=$comment.total pageid=$comment.pageid psize=$comment.psize -->
+	</div>
+</section>
+<!-- include tpl=footer -->

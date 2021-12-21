@@ -1,0 +1,68 @@
+<!-- include tpl=usercp/head title=$page_rs.title -->
+<script type="text/javascript">
+function post_del(id)
+{
+	$.dialog.confirm('确定要删除 #'+id+' 的{$page_rs.alias_title ? $page_rs.alias_title : "主题"}吗？删除后是不能恢复的！',function(){
+		var url = api_url('post','del','id='+id);
+		$.phpok.json(url,function(rs){
+			if(!rs.status){
+				$.dialog.alert(rs.info);
+				return false;
+			}
+			$.dialog.tips('删除成功');
+			$("#list_"+id).remove();
+			return false;
+		});
+	});
+}
+</script>
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">
+					{$page_rs.title}
+					<!-- if $page_rs.post_status -->
+					<a href="{url ctrl=post id=$page_rs.identifier/}" class="btn btn-primary btn-sm float-right">添加</a>
+					<!-- /if -->
+				</div>
+				<div class="card-body">
+					<table class="table">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>{$page_rs.alias_title ? $page_rs.alias_title : '主题'}</th>
+							<th>状态</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+						<tr id="list_{$value.id}">
+							<td>{$value.id}</td>
+							<td>
+								<a href="{$value.url}" target="_blank">{$value.title}</a><br />
+								<small class="text-muted">发布时间：{func time_format $value.dateline}，查看次数：{$value.hits}</small>
+							</td>
+							<td><!-- if $value.status -->正常<!-- else --><span class="text-danger">审核中</span><!-- /if --></td>
+							<td>
+								<div class="btn-group">
+									<a href="{url ctrl=post func=edit id=$value.id/}" class="btn btn-primary btn-sm">编辑</a>
+									<!-- if !$value.status -->
+									<button type="button" onclick="post_del('{$value.id}')" class="btn btn-danger btn-sm">删除</button>
+									<!-- /if -->
+								</div>
+							</td>
+						</tr>
+						<!-- /loop -->
+					</tbody>
+					</table>
+					<!-- include tpl=usercp/pagelist -->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

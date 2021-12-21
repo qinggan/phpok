@@ -1,0 +1,82 @@
+<div class="table">
+	<div class="title">
+		收件人：
+		<span class="note">请填写收件人姓名</span>
+	</div>
+	<div class="content"><input type="text" id="fullname" name="fullname" class="long" value="{$address.fullname}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		所在地址及详细地址：
+		<span class="note">请选择相应的省市县及填写地址明细信息</span>
+	</div>
+	<input type="hidden" name="country" id="country" value="中国" />
+	<div class="content">
+		<!-- php:$form_edit_content = array('p'=>$address.province,'c'=>$address.city,'a'=>$address.county) -->
+		<table width="100%" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><div style="margin-bottom:3px;">{func form_edit pca $form_edit_content pca}</div></td>
+		</tr>
+		<tr>
+			<td><input type="text" name="address" id="address" class="long" value="{$address.address}" /></td>
+		</tr>
+		</table>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		邮编：
+		<span class="note">请填写邮编，不清楚请留空</span>
+	</div>
+	<div class="content"><input type="text" id="zipcode" name="zipcode" class="long" value="{$address.zipcode}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		手机号码：
+		<span class="note">请填写有效的手机号码</span>
+	</div>
+	<div class="content"><input type="text" id="mobile" name="mobile" class="long" value="{$address.mobile}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		固定电话：
+		<span class="note">固定电话或手机号码必须有一个不能为空</span>
+	</div>
+	<div class="content"><input type="text" id="tel" name="tel" class="long" value="{$address.tel}" /></div>
+</div>
+<div class="table">
+	<div class="title">
+		邮箱：
+		<span class="note">用来接收订单提醒邮件，便于您及时了解订单状态</span>
+	</div>
+	<div class="content"><input type="text" id="email" name="email" class="long" value="{$address.email}" /></div>
+</div>
+<script type="text/javascript">
+var old_province = "{$address.province}";
+var old_city = "{$address.city}";
+function monitor_address()
+{
+	var p = $("#pca_p").val();
+	var c = $("#pca_c").val();
+	if(p && c && (p != old_province || c != old_city)){
+		var url = get_url('cart','price');
+		url += "&province="+$.str.encode(p)+"&city="+$.str.encode(c);
+		$.phpok.json(url,function(rs){
+			if(rs.status){
+				$("#all_price").html(rs.info.price);
+				var lst = rs.info.pricelist;
+				for(var i in lst){
+					$("#"+i+"_price").html(lst[i]['price']);
+				}
+			}
+			old_province = p;
+			old_city = c;
+		})
+	}
+	//每三秒检测一次
+	window.setTimeout(function(){monitor_address()},3000);
+}
+$(document).ready(function(){
+	monitor_address();
+});
+</script>

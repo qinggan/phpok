@@ -1,0 +1,19 @@
+<!-- include tpl=login/head title=$title css=$css js=$js -->
+<header class="container-fluid no-gutters header d-flex bg-light border-bottom shadow">
+	<section class="container p-3">
+		<div class="row">
+			<div class="col">
+				<a href="{url ctrl=login/}" class="h5">
+					<i class="fa fa-sign-in"></i>
+					<!-- if $title -->{$title}<!-- else -->用户登录<!-- /if -->
+				</a>
+			</div>
+			<div class="col text-right">
+				<a href="{$sys.url}">
+					<i class="fa fa-reply"></i>
+					返回网站
+				</a>
+			</div>
+		</div>
+	</section>
+</header>

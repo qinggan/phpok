@@ -1,0 +1,126 @@
+<!-- include tpl=usercp/head -->
+<script type="text/javascript">
+function user_destory(obj,type)
+{
+	$.dialog.confirm("您确定要注销账户吗？注销后系统会退出，您将不能再登账",function(){
+		var url = api_url('usercp','destory','type='+type);
+		$(obj).ajaxSubmit({
+			'url':url,
+			'type':'post',
+			'dataType':'json',
+			'success':function(rs){
+				if(rs.status){
+					$.dialog.tips('用户信息注销成功').lock();
+					setTimeout(function(){
+						$.phpok.go(get_url('index'));
+					}, 800);
+					return true;
+				}
+				$.dialog.alert(rs.info);
+				return false;
+			}
+		});
+	})
+	return false;
+}
+</script>
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">
+					用户注销申请说明
+				</div>
+				<div class="card-body">
+					<p>平台尊重用户的使用习惯，如您决定不再使用我们的产品及服务，可以自主要求注销平台账号。在注销您的账号之前，为保护账户安全，确保此次注销账号行为为您本人操作，平台将验证您的个人身份、安全状态、常用设备等信息。</p>
+					<p><b>特别提示：</b>您注销账号的行为是不可逆的行为，一旦您注销您的账号，平台将即刻删除或匿名化有关您账户的一切信息。同时，您也无法通过已注销的账户获得平台的服务。</p>
+					<p>以下是平台会在您注销后就立刻执行，请慎重考虑：</p>
+					<ul>
+						<li>自动更名为：Guest*****（星号表示随机数字）</li>
+						<li>系统生成新的随机密码且不通知用户</li>
+						<li>手机号自动删除</li>
+						<li>邮箱自动删除</li>
+						<li>用户账号自动变更为【系统管理员锁定】且不能登录</li>
+						<li>账号中的个人信息都会被清空</li>
+						<li>用户上传的照片会自动解除绑定，我们建议您删除相应的媒体资源</li>
+						<li>您在平台上购买的订单与账号关联将直接解除，请确保订单相关服务均已结束</li>
+					</ul>
+					<p>平台注销过程需要【验证码+密码】双重验证，请确保您在平台里有绑定手机号或邮箱</p>
+				</div>
+			</div>
+			<!-- if $is_email && $me.email -->
+			<div class="card mt-3">
+				<div class="card-header">
+					通过邮件验证码+密码方式注销
+				</div>
+				<div class="card-body">
+					<form method="post" id="post_save" onsubmit="return user_destory(this,'email')">
+					<div class="row">
+						<div class="col col-md-6">
+							<div class="form-group">
+								<label for="email-email">邮箱：</label>
+								<input type="text" name="email" id="email-email" value="{$me.email}" class="form-control" />
+							</div>
+						</div>
+						<div class="col col-md-6">
+							<div class="form-group">
+								<label for="email-vcode">验证码：</label>
+								<div class="float-right"><input type="button" class="btn btn-primary btn-sm" onclick="$.vcode.email(this,'email-email','login')" value="获取验证码" /></div>
+								<input type="text" name="_vcode" id="email-vcode" class="form-control"/>
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="form-group">
+								<label for="email-pass">用户登录密码：</label>
+								<input type="password" name="pass" id="email-pass" class="form-control"/>
+							</div>
+						</div>
+						<div class="col">
+							<button type="submit" class="btn btn-danger">确认注销</button>
+						</div>
+					</div>
+					</form>
+				</div>
+			</div>
+			<!-- /if -->
+			<!-- if $is_sms && $me.mobile -->
+			<div class="card mt-3">
+				<div class="card-header">
+					通过手机验证码+密码方式注销
+				</div>
+				<div class="card-body">
+					<form method="post" id="post_save" onsubmit="return user_destory(this,'mobile')">
+					<div class="row">
+						<div class="col col-md-6">
+							<div class="form-group">
+								<label for="mobile-mobile">手机号：</label>
+								<input type="text" name="mobile" id="mobile-mobile" value="{$me.mobile}" class="form-control" />
+							</div>
+						</div>
+						<div class="col col-md-6">
+							<div class="form-group">
+								<label for="mobile-vcode">验证码：</label>
+								<div class="float-right"><input type="button" class="btn btn-primary btn-sm" onclick="$.vcode.sms(this,'mobile-mobile','login')" value="获取验证码" /></div>
+								<input type="text" name="_vcode" id="mobile-vcode" class="form-control"/>
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="form-group">
+								<label for="mobile-pass">用户登录密码：</label>
+								<input type="password" name="pass" id="mobile-pass" class="form-control"/>
+							</div>
+						</div>
+						<div class="col">
+							<button type="submit" class="btn btn-danger">确认注销</button>
+						</div>
+					</div>
+					</form>
+				</div>
+			</div>
+			<!-- /if -->
+		</div>
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

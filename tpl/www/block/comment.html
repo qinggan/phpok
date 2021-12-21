@@ -13,10 +13,10 @@
 			<div class="form-group">
 				<textarea class="form-control" rows="5" name="comment" id="comment" placeholder="填写评论信息" style="resize: none;"></textarea>
 			</div>
-			<!-- /if -->
 			<div class="form-group clearfix">
 				{func form_edit pictures $comment.res upload is_multiple=1}
 			</div>
+			<!-- /if -->
 			<!-- if $is_vcode -->
 			<div class="form-group">
 				<div class="row">
@@ -40,7 +40,7 @@
 	</div>
 </div>
 <!-- loop from=$comment.rslist key=$key value=$value id=tmpid -->
-<div class="card mt-3">
+<div class="card mt-2">
 	<div class="card-header">
 		<a href="{url ctrl=user id=$value.uid.id/}" target="_blank" class="am-comment-author">{$value.uid.user}</a>评论于<time>{func time_format $value.addtime}</time>
 	</div>

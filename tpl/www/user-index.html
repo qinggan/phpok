@@ -1,0 +1,81 @@
+<!-- include tpl=header title=$user_rs.user -->
+<style type="text/css">
+.heart{
+	padding:3px 10px;
+	background:rgba(0,0,0,0.4);
+	border-radius:10px;
+	border:2px solid #fff;
+	color:#fff;
+}
+.avatar{
+	width:100px;
+	height:100px;
+	border-radius:100%;
+	border:2px solid #ccc;
+	padding:2px;
+	background:#fff;
+	op
+}
+</style>
+<section class="bg-light p-5"{if $homepage.banner} style="background:url('{$homepage.banner}') center center no-repeat;background-size:cover;height:450px;"{/if}>
+	<h1 class="p-4 text-center" style="margin-top:50px;"><span class="heart">{$homepage.heart ? $homepage.heart : '这家伙很懒，什么都没有写'}</span></h1>
+	<!-- if $taglist -->
+	<div class="container">
+		<div class="text-center m-3">
+			<!-- loop from=$taglist key=$k value=$v id=$idxx -->
+			<span class="badge badge-primary">{$v}</span>
+			<!-- /loop -->
+		</div>
+	</div>
+	<!-- /if -->
+</section>
+<section class="container" style="margin-top:-60px;">
+	<div class="d-flex flex-row">
+		<div style="width:120px;" class="text-center">
+			<img src="{$user_rs.avatar ? $user_rs.avatar : 'images/avatar.gif'}" class="avatar" />
+		</div>
+		<div class="flex-fill">
+			<div class="rounded p-1 pl-2 text-light shadow" style="margin-top:20px;background:rgba(0,0,0,0.5)">
+				用户账号：{$user_rs.user}，注册时间：{func time_format $user_rs.regtime}
+			</div>
+			<div class="shadow p-3 mb-3 bg-white rounded">
+				<button type="button" class="btn btn-success">
+					关注 <span class="badge badge-light">{$social.idol}</span>
+				</button>
+				<button type="button" class="btn btn-success">
+					粉丝 <span class="badge badge-light">{$social.fans}</span>
+				</button>
+				<!-- if $session.user_id && $user_rs.id && $user_rs.id != $session.user_id -->
+				<div class="float-right">
+					<!-- if $social.is_idol -->
+					<button type="button" class="btn btn-primary" onclick="$.phpok_app_social.idol_del('{$user_rs.id}')">
+						<!-- if $social.is_fans -->互相关注<!-- else -->已关注<!-- /if -->
+					</button>
+					<!-- else -->
+					<button type="button" class="btn btn-primary" onclick="$.phpok_app_social.idol_add('{$user_rs.id}')">
+						<!-- if $social.is_fans -->被关注<!-- else -->关注<!-- /if -->
+					</button>
+					<!-- /if -->
+					<button type="button" class="btn btn-danger" onclick="$.phpok_app_social.black_add('{$user_rs.id}')">
+						拉黑
+					</button>
+				</div>
+				<!-- /if -->
+			</div>
+		</div>
+	</div>
+</section>
+<section class="container mt-2">
+	<div class="card">
+		<div class="card-header">
+			暂未想好内容
+		</div>
+		<div class="card-body" style="min-height:500px;">
+			
+		</div>
+		<div class="card-footer">
+			请网友群策群力
+		</div>
+	</div>
+</section>
+<!-- include tpl=footer -->

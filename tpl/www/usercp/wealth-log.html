@@ -1,0 +1,66 @@
+<!-- include tpl=usercp/head title=$rs.title -->
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">
+					{$rs.title}
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="m-2 p-2">
+							当前共有{$rs.title} {$rs.val} {$rs.unit}
+							<!-- if $rs.ifpay -->
+							<a href="{url ctrl=payment id=$rs.id/}" class="btn btn-primary btn-sm">在线充值</a>
+							<!-- /if -->
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- if $rslist -->
+			<div class="card mt-2">
+				<div class="card-header">
+					操作日志
+				</div>
+				<div class="card-body">
+					<!-- if $rslist -->
+					<table class="table">
+						<thead>
+						<tr>
+							<th>收益/说明</th>
+							<th>时间</th>
+						</tr>
+						</thead>
+						<tbody>
+							<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+							<tr>
+								<td class="am-text-left">
+									<!-- if $value.val>0 && substr($value.val,0,1) != '+' -->
+									+
+									<!-- /if -->
+									<!-- if $value.val <0 -->
+									-
+									<!-- /if -->
+									{func abs $value.val} {$rs.unit}
+									<br />{$value.note}
+								</td>
+								<td>{func date 'Y-m-d H:i' $value.dateline}</td>
+							</tr>
+							<!-- /loop -->
+						</tbody>
+					</table>
+					<!-- else -->
+					<div class="p-4 m-4">
+						<div class="text-body m-4 p-4">暂无收益</div>
+					</div>
+					<!-- /if -->
+					<!-- include tpl=usercp/pagelist -->
+				</div>
+			</div>
+			<!-- /if -->
+		</div>
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

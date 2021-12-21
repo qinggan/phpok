@@ -1,0 +1,27 @@
+<!-- php:$list = phpok('hot_products') -->
+<!-- if $list.total -->
+<div class="card">
+	<div class="card-body">
+		<div id="code_hot_products" class="carousel slide" data-ride="carousel">
+			<div class="carousel-inner">
+				<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+				<div class="carousel-item{if !$tmpid.index} active{/if}">
+					<a href="{$value.url}"><img src="{$value.thumb.gd.thumb}" class="d-block w-100" alt="{$value.title}" /></a>
+					<div class="carousel-caption d-none d-md-block">
+						<a href="{$value.url}"><h5 class="p-2 text-dark bg-light-50">{$value.title}</h5></a>
+					</div>
+				</div>
+				<!-- /loop -->
+			</div>
+			<a class="carousel-control-prev" href="#code_hot_products" role="button" data-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="sr-only">上一页</span>
+			</a>
+			<a class="carousel-control-next" href="#code_hot_products" role="button" data-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="sr-only">下一页</span>
+			</a>
+		</div>
+	</div>
+</div>
+<!-- /if -->

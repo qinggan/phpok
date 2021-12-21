@@ -44,8 +44,7 @@ a{
 }
 
 .logo{
-	max-width:300px;
-	width:100%;
+	max-width:100%;
 }
 .btn-primary{
 	background-color:var(--blue);
@@ -236,4 +235,9 @@ header .menu a{
 .index-search .bg-orange:hover,.index-search .bg-orange:active{
 	background-color:var(--orange);
 	border-color:var(--orange);
+}
+
+.tab-pane img{
+	max-width:100%;
+	height:auto !important;
 }
