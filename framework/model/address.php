@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员地址库
+ * 用户地址库
  * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
@@ -24,7 +24,7 @@ class address_model_base extends phpok_model
 	}
 
 	/**
-	 * 按条件取得会员地址库数量
+	 * 按条件取得用户地址库数量
 	 * @参数 $condition 查询条件
 	**/
 	public function count($condition='')
@@ -37,7 +37,7 @@ class address_model_base extends phpok_model
 	}
 
 	/**
-	 * 取得会员地址库
+	 * 取得用户地址库
 	 * @参数 $condition 查询条件
 	 * @参数 $offset 定位
 	 * @参数 $psize 读取数量

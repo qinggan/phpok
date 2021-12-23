@@ -12,7 +12,9 @@
 	<link rel="shortcut icon" href="{$config.favicon}" />
 	<!-- /if -->
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-	<meta name="system-copyright" content="{$license}" />
+	<meta name="system-copyright" content="{$license_site}" />
+	<meta name="system-code" content="{$license_code}" />
+	<meta name="system-domain" content="{$license_domain}" />
 	<meta name="system-version" content="{$version}" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
 	<link rel="stylesheet" type="text/css" href="{#css#}/css.php?type=admin" />
@@ -78,18 +80,24 @@
 						<dl class="layui-nav-child">
 							<dd><a href="javascript:$.admin_index.me();void(0);">{lang基本资料}</a></dd>
 							<dd><a href="javascript:$.admin_index.pass();void(0);">{lang修改密码}</a></dd>
-							<!-- if !$sys.develop && $session.admin_rs.if_system -->
-								<!-- if $session.adm_develop -->
-								<dd><a href="javascript:$.admin_index.develop(0);void(0);">{lang应用模式}</a></dd>
-								<!-- else -->
-								<dd><a href="javascript:$.admin_index.develop(1);void(0);">{lang开发模式}</a></dd>
+							<!-- if $sys.develop_status -->
+								<!-- if !$sys.develop && $session.admin_rs.if_system -->
+									<!-- if $session.adm_develop -->
+									<dd><a href="javascript:$.admin_index.develop(0);void(0);">{lang应用模式}</a></dd>
+									<!-- else -->
+									<dd><a href="javascript:$.admin_index.develop(1);void(0);">{lang开发模式}</a></dd>
+									<!-- /if -->
 								<!-- /if -->
+							<!-- /if -->
+							<!-- if $session.admin_rs.if_system -->
+							<dd><a href="javascript:$.win('{lang系统参数}','{url ctrl=all func=system/}');void(0);">{lang系统参数}</a></dd>
 							<!-- /if -->
 							<dd><a href="javascript:$.admin_index.logout();void(0);">{lang退出}</a></dd>
 						</dl>
 					</li>
 					<li class="layui-nav-item" lay-unselect> <a href="javascript:$.admin_index.copyright();"><i class="layui-icon layui-icon-tips"></i></a>
 					</li>
+					<li class="layui-nav-item layui-hide" lay-unselect> <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a></li>
 				</ul>
 			</div>
 			<!-- 侧边菜单 -->
@@ -207,20 +215,84 @@
 				</div>
 				<div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
 					<ul class="layui-tab-title" id="LAY_app_tabsheader">
-						<li lay-id="{url ctrl=index func=homepage/}" lay-attr="{url ctrl=index func=homepage/}" class="layui-this"><i class="layui-icon layui-icon-home"></i>
+						<li lay-id="{url ctrl=index func=homepage/}" lay-attr="{url ctrl=index func=homepage/}"{if !$first_login} class="layui-this"{/if}><i class="layui-icon layui-icon-home"></i>
 						</li>
+						<!-- if $first_login -->
+						<li lay-id="{url ctrl=res func=update_pl id=all/}" lay-attr="{url ctrl=res func=update_pl id=all/}" class="layui-this">附件批量更新</li>
+						<!-- /if -->
 					</ul>
 				</div>
 			</div>
 			<!-- 主体内容 -->
 			<div class="layui-body" id="LAY_app_body">
-				<div class="layadmin-tabsbody-item layui-show">
+				<div class="layadmin-tabsbody-item{if !$first_login} layui-show{/if}">
 					<iframe src="{url ctrl=index func=homepage/}" frameborder="0" class="layadmin-iframe"></iframe>
+					
 				</div>
+				<!-- if $first_login -->
+				<div class="layadmin-tabsbody-item layui-show">
+					<iframe src="{url ctrl=res func=update_pl id=all/}" frameborder="0" class="layadmin-iframe"></iframe>
+					
+				</div>
+				<!-- /if -->
 			</div>
 			<!-- 辅助元素，一般用于移动设备下遮罩 -->
 			<div class="layadmin-body-shade" layadmin-event="shade"></div>
+			
 		</div>
+	</div>
+	<!-- if $first_login -->
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$.dialog.tips('首次登录，正在更新附件信息…').lock();
+	});
+	</script>
+	<!-- /if -->
+	<div id="copyright-license-change" style="display:none">
+		<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				授权类型：
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="radio" name="v-type" value="LGPL" title="LGPL开源授权" checked />
+				<input type="radio" name="v-type" value="PBIZ" title="个人授权" />
+				<input type="radio" name="v-type" value="CBIZ" title="企业授权" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				授权企业：
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="v-company" id="v-company" placeholder="企业授权请填写企业名称，个人授权填写个人姓名" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				授权域名：
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="v-domain" id="v-domain" value="" placeholder="只需填写一级域名" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				授权代码：
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="v-code" id="v-code" value="" placeholder="由官方提供的授权字串" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				授权时间：
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="v-date" id="v-date" placeholder="留空使用当天，格式：{func date Y-m-d $sys.time}" class="layui-input" />
+			</div>
+		</div>
+		</form>
 	</div>
 	<!-- plugin body -->
 	<!-- plugin foot -->

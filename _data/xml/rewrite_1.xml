@@ -24,7 +24,7 @@
 	</url>
 	<url>
 		<id><![CDATA[0cdbd0e4ea8c13e6a1c9f5309561cdb6]]></id>
-		<title><![CDATA[会员订单明细]]></title>
+		<title><![CDATA[用户订单明细]]></title>
 		<rule><![CDATA[order\/info\/([a-zA-Z][a-z0-9A-Z\_\-]+)\.html$]]></rule>
 		<val><![CDATA[index.php?c=order&f=info&sn=$1]]></val>
 		<format><![CDATA[order/info/[sn].html]]></format>
@@ -35,7 +35,7 @@
 	</url>
 	<url>
 		<id><![CDATA[79362eb38b905593922280e6e5b59b22]]></id>
-		<title><![CDATA[会员订单明细]]></title>
+		<title><![CDATA[用户订单明细]]></title>
 		<rule><![CDATA[order\/info\/([0-9]+)\.html$]]></rule>
 		<val><![CDATA[index.php?c=order&f=info&id=$1]]></val>
 		<format><![CDATA[order/info/[id].html]]></format>
@@ -43,17 +43,6 @@
 		<func><![CDATA[info]]></func>
 		<var><![CDATA[id]]></var>
 		<sort><![CDATA[115]]></sort>
-	</url>
-	<url>
-		<id><![CDATA[3d9ab8f26ed0d9251e5e90ffa921d81b]]></id>
-		<title><![CDATA[订单付款]]></title>
-		<rule><![CDATA[order\/payment\.html$]]></rule>
-		<val><![CDATA[index.php?c=order&f=payment]]></val>
-		<format><![CDATA[order/payment.html]]></format>
-		<ctrl><![CDATA[order]]></ctrl>
-		<func><![CDATA[payment]]></func>
-		<var><![CDATA[]]></var>
-		<sort><![CDATA[116]]></sort>
 	</url>
 	<url>
 		<id><![CDATA[a16013fa422cd9e4a3dca5073c2e030a]]></id>
@@ -67,8 +56,19 @@
 		<sort><![CDATA[116]]></sort>
 	</url>
 	<url>
+		<id><![CDATA[3d9ab8f26ed0d9251e5e90ffa921d81b]]></id>
+		<title><![CDATA[订单付款]]></title>
+		<rule><![CDATA[order\/payment\.html$]]></rule>
+		<val><![CDATA[index.php?c=order&f=payment]]></val>
+		<format><![CDATA[order/payment.html]]></format>
+		<ctrl><![CDATA[order]]></ctrl>
+		<func><![CDATA[payment]]></func>
+		<var><![CDATA[]]></var>
+		<sort><![CDATA[116]]></sort>
+	</url>
+	<url>
 		<id><![CDATA[79362eb38b905593922280e6e5b59b22]]></id>
-		<title><![CDATA[会员评论]]></title>
+		<title><![CDATA[用户评论]]></title>
 		<rule><![CDATA[order\/comment\/([0-9]+)\.html$]]></rule>
 		<val><![CDATA[index.php?c=order&f=comment&id=$1]]></val>
 		<format><![CDATA[order/comment/[id].html]]></format>
@@ -105,37 +105,6 @@
 		<ctrl><![CDATA[order]]></ctrl>
 		<title><![CDATA[订单列表]]></title>
 		<id><![CDATA[341bb7c7b61ca2512b98bef4bff45e3e]]></id>
-	</url>
-	<url>
-		<sort><![CDATA[135]]></sort>
-		<rule><![CDATA[usercp\/list\/([a-zA-Z][a-zA-Z0-9]+)\.html$]]></rule>
-		<val><![CDATA[index.php?c=usercp&f=list&id=$1]]></val>
-		<format><![CDATA[usercp/list/[id].html]]></format>
-		<ctrl><![CDATA[usercp]]></ctrl>
-		<func><![CDATA[list]]></func>
-		<var><![CDATA[id]]></var>
-		<title><![CDATA[会员中心]]></title>
-		<id><![CDATA[faccb056d7623007f85cc60f698bf936]]></id>
-	</url>
-	<url>
-		<id><![CDATA[30e8a9a43ac877ea6a4fe76f0e8fa9ec]]></id>
-		<title><![CDATA[会员中心]]></title>
-		<rule><![CDATA[usercp\/([a-zA-Z][a-zA-Z0-9]+)\.html$]]></rule>
-		<val><![CDATA[index.php?c=usercp&f=$1]]></val>
-		<format><![CDATA[usercp/[func].html]]></format>
-		<ctrl><![CDATA[usercp]]></ctrl>
-		<func><![CDATA[avatar|info|passwd|mobile|email|address|invoice|fav|introducer|wealth]]></func>
-		<var><![CDATA[func]]></var>
-		<sort><![CDATA[140]]></sort>
-	</url>
-	<url>
-		<sort><![CDATA[145]]></sort>
-		<rule><![CDATA[usercp\.html$]]></rule>
-		<val><![CDATA[index.php?c=usercp]]></val>
-		<format><![CDATA[usercp.html]]></format>
-		<ctrl><![CDATA[usercp]]></ctrl>
-		<title><![CDATA[会员个人中心]]></title>
-		<id><![CDATA[d47975051aa37036a372650820d95c7e]]></id>
 	</url>
 	<url>
 		<id><![CDATA[dd542220b8ca8da9a3881c44fd97cb62]]></id>
@@ -259,6 +228,17 @@
 		<sort><![CDATA[205]]></sort>
 	</url>
 	<url>
+		<id><![CDATA[faa4df0e7a6a9d65f71b231189d359c4]]></id>
+		<title><![CDATA[项目及内容]]></title>
+		<rule><![CDATA[([a-zA-Z0-9\_\-]+)\.html$]]></rule>
+		<val><![CDATA[index.php?id=$1]]></val>
+		<format><![CDATA[[id].html]]></format>
+		<ctrl><![CDATA[content|project]]></ctrl>
+		<func><![CDATA[]]></func>
+		<var><![CDATA[id]]></var>
+		<sort><![CDATA[205]]></sort>
+	</url>
+	<url>
 		<id><![CDATA[ecc377057403566e1a81465025a5d864]]></id>
 		<title><![CDATA[项目及内容]]></title>
 		<rule><![CDATA[([a-zA-Z0-9\_\-]+)\.html$]]></rule>
@@ -270,14 +250,14 @@
 		<sort><![CDATA[205]]></sort>
 	</url>
 	<url>
-		<id><![CDATA[faa4df0e7a6a9d65f71b231189d359c4]]></id>
-		<title><![CDATA[项目及内容]]></title>
-		<rule><![CDATA[([a-zA-Z0-9\_\-]+)\.html$]]></rule>
-		<val><![CDATA[index.php?id=$1]]></val>
-		<format><![CDATA[[id].html]]></format>
-		<ctrl><![CDATA[content|project]]></ctrl>
-		<func><![CDATA[]]></func>
-		<var><![CDATA[id]]></var>
-		<sort><![CDATA[205]]></sort>
+		<title><![CDATA[会员个人主页]]></title>
+		<rule><![CDATA[user\/([0-9]+)\.html$]]></rule>
+		<val><![CDATA[index.php?c=user&uid=$1]]></val>
+		<format><![CDATA[user/[uid].html]]></format>
+		<ctrl><![CDATA[user]]></ctrl>
+		<func><![CDATA[index]]></func>
+		<var><![CDATA[uid]]></var>
+		<sort><![CDATA[105]]></sort>
+		<id><![CDATA[34f7f165440e58e451ca9e92ba57ab13]]></id>
 	</url>
 </root>

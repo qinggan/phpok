@@ -153,6 +153,7 @@ class alipay_refund
 			);
 			$params = $this->alipay->params($parameter);
 			$this->alipay->submit($params,$form_url);
+			echo "<pre>".print_r(1233,true)."</pre>";
 		}
 		//订单退款
 		if($this->param['param']['prikey'] && $this->param['param']['pubkey']){

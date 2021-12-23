@@ -1,50 +1,52 @@
-<script id="{$_rs.identifier}" type="text/plain" style="{$_rs.form_style}">{$_rs.content}</script>
+<textarea id="{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}">{$_rs.content}</textarea>
 <script type="text/javascript">
-var toolbars_{$_rs.id} = [[
-	'fullscreen','source','removeformat', 'pasteplain','|',
-	'bold', 'italic', 'underline', 'strikethrough','|',
-	'superscript', 'subscript','|',
-	'justifyleft', 'justifycenter', 'justifyright','justifyjustify', '|',
-	'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
-	'insertorderedlist', 'insertunorderedlist','forecolor', 'backcolor',  '|',
-	'indent', 'horizontal','blockquote','|',
-	'link', 'unlink', 'anchor','|',
-	{if $_rs.btns.image}'insertimage',{/if}
-	{if $_rs.btns.video}'insertvideo',{/if}
-	{if $_rs.btns.file}'attachment',{/if}
-	{if $_rs.btns.info}'phpokinfo',{/if}
-	{if $_rs.btns.map}'map',{/if}
-	{if $_rs.btns.page}'pagebreak',{/if}
-	{if $_rs.btns.image || $_rs.btns.video || $_rs.btns.file || $_rs.btns.info || $_rs.btns.map || $_rs.btns.page}'|',{/if}
-	{if $_rs.btns.spechars}'spechars',{/if}
-	{if $_rs.btns.emotion}'emotion',{/if}
-	'insertpbefore','insertpafter','|',
-	{if $_rs.btns.fontfamily}'fontfamily',{/if}
-	{if $_rs.btns.fontsize}'fontsize',{/if}
-	{if $_rs.btns.paragraph}'paragraph',{/if}
-	{if $_rs.btns.insertcode}'insertcode',{/if}
-	{if $_rs.btns.table}
-	'inserttable','deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols','|',
-	{/if}
-	'help'
-]];
-var edit_config_{$_rs.id} = {
-	 'UEDITOR_HOME_URL':webroot+'js/ueditor/'
-	,'serverUrl':get_url('ueditor')
-	,'toolbars':toolbars_{$_rs.id}
-	{if $_rs.btns.info},'labelMap':{'phpokinfo':'主题库'}{/if}
-    ,'initialFrameWidth':'100%'
-    ,'allowDivTransToP': false
-    ,'initialFrameHeight':'{$_rs.height}'
-	,'sourceEditorFirst':{$_rs.is_code ? 'true' :'false'}
-	,'readonly':{$_rs.is_read ? 'true' :'false'}
-	,'pasteplain':{$_rs.paste_text ? 'true' : 'false'}
-	,'autoFloatEnabled':{$_rs.is_float ? 'true' : 'false'}
-	,'autoHeightEnabled':{$_rs.auto_height ? 'true' : 'false'}
-	,'zIndex':99
-	{if $_rs.btns.page},'pageBreakTag':'[:page:]'{/if}
-	,'textarea':'{$_rs.identifier}'
-	{if $_rs.btns.info},'iframeUrlMap':{'phpokinfo':get_url('ueditor','info')}{/if}
-};
-var edit_{$_rs.id} = UE.getEditor('{$_rs.identifier}',edit_config_{$_rs.id});
+$(document).ready(function(){
+	CKEDITOR.replace( '{$_rs.identifier}', {  
+		language:'{$_rs.config.langid}',
+		height : '{$_rs.height}px',
+		readOnly:{$_rs.is_read ? 'true' : 'false'},
+		startupMode:'{$_rs.is_code ? "source" : "wysiwyg"}',
+		toolbar: [
+			{ name: 'clipboard', items: ['Undo', 'Redo' ] },
+			{ name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', 'Strike','kbd','-', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat','quickformat' ] },
+			{ name: 'colors', items: [ 'TextColor', 'BGColor' ] },
+			{ name: 'paragraph', items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock' ] },
+			{ name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
+			{ name: 'insert', items: [
+				{if $_rs.btns.image}'images',{/if}
+				{if $_rs.btns.info}'arclist',{/if}
+				{if $_rs.btns.video}'Html5video',{/if}
+				{if $_rs.btns.audio}'Html5audio',{/if}
+				{if $_rs.btns.file}'filelist',{/if}
+				{if $_rs.btns.map}'BaiduMap',{/if}
+				{if $_rs.btns.table}'Table',{/if}
+				{if $_rs.btns.emotion}'Smiley',{/if}
+				{if $_rs.btns.spechars}'SpecialChar',{/if}
+				{if $_rs.btns.insertcode}'Syntaxhighlight',{/if}
+				{if $_rs.btns.page}'PageBreak',{/if}
+				'Iframe',
+				'HorizontalRule'
+			] },
+			{if $_rs.btns.fontfamily || $_rs.btns.fontsize || $_rs.btns.paragraph}
+			{ name: 'styles', items: [{if $_rs.btns.paragraph}'Format',{/if} {if $_rs.btns.fontfamily}'Font',{/if} {if $_rs.btns.fontsize}'FontSize',{/if} ] },
+			{/if}
+			{ name: 'tools', items: [ 'Maximize', 'ShowBlocks' ] },
+			{ name: 'document', items: [ 'Source','Preview'] }
+		],
+		{if $_removePlugins}removePlugins:'{$_removePlugins}',{/if}
+		filebrowserImageBrowseUrl:'{url ctrl=ckeditor func=images /}',
+		filebrowserImageBrowseUrlSingle:'{url ctrl=ckeditor func=image /}',
+		filebrowserHtml5videoBrowseUrl: '{url ctrl=ckeditor func=videolist /}',
+		filebrowserHtml5audioBrowseUrl: '{url ctrl=ckeditor func=audiolist /}',
+		filebrowserArticlelist:'{url ctrl=ckeditor func=arclist /}',
+		filebrowserFilelist:'{url ctrl=ckeditor func=filelist /}',
+		filebrowserUpload:'{url ctrl=ckeditor func=upload /}',
+		imgToLocalRemoteDomain:'{$_remoteDomain}',
+		imgToLocalIgnoreDomain:'{$_ignoreDomain}',
+		imgToLocalUpload:'{url ctrl=ckeditor func=remote /}'
+	});
+	CKEDITOR.instances['{$_rs.identifier}'].on('change',function() {
+		CKEDITOR.instances['{$_rs.identifier}'].updateElement();
+	});
+});
 </script>

@@ -1,0 +1,151 @@
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_all.system(this);">
+
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang系统参数设置}
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{langAPI验证串}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="api_code" name="api_code" value="{$rs.api_code}" placeholder="" autocomplete="off" class="layui-input">
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang随机生成}" onclick="$.admin_all.rand()" class="layui-btn layui-btn-sm" />
+					<input type="button" value="删除" onclick="$('#api_code').val('')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</div>
+			<div class="layui-form-mid">
+				{lang用于数据加密通迅时使用，建议设置复杂}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang公钥}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang可用于APP或小程序开发，数据传输前进行公钥加密}</div>
+			<div class="layui-input-block">
+				<textarea name="public_key" id="public_key" class="layui-textarea">{$rs.public_key}</textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang私钥}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang可用于用于APP或小程序开发，数据服务端数据进行解密}</div>
+			<div class="layui-input-block">
+				<textarea name="private_key" id="private_key" class="layui-textarea">{$rs.private_key}</textarea>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		阿里云系统参数（主要用于各类云服务的账号接口，如果使用子账号，需要注意子账号的权限配置）
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				账号 ID
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="aliyun_account_id" id="aliyun_account_id" value="{$rs.aliyun_account_id}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				填写阿里云的账号ID，线数字
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{langAK 账号}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="aliyun_ak_id" id="aliyun_ak_id" value="{$rs.aliyun_ak_id}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				即 AccessKey ID
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{langAK 密钥}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="aliyun_ak_secret" id="aliyun_ak_secret" value="{$rs.aliyun_ak_secret}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				即 AccessKey Secret 
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="layui-card">
+	<div class="layui-card-header">
+		腾迅云系统参数（主要用于各类云服务的账号接口，如果使用子账号，需要注意子账号的权限配置）
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				APPID
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="tencent_appid" id="tencent_appid" value="{$rs.tencent_appid}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				填写腾迅云API管理里的APPID
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{langSecretId}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="tencent_ak_id" id="tencent_ak_id" value="{$rs.tencent_ak_id}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				即 AccessKey ID
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{langSecretKey}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="tencent_ak_secret" id="tencent_ak_secret" value="{$rs.tencent_ak_secret}" class="layui-input" />
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="layui-card">
+	<div class="layui-card-header">
+		后台布局
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				显示项
+			</label>
+			<div class="layui-input-block">
+				<input type="checkbox" name="admin_homepage_setting[]" value="stat" title="统计报表" lay-skin="primary"{if in_array('stat',$rs.admin_homepage_setting)} checked{/if} />
+				<input type="checkbox" name="admin_homepage_setting[]" value="content" title="内容统计" lay-skin="primary"{if in_array('content',$rs.admin_homepage_setting)} checked{/if} />
+				<input type="checkbox" name="admin_homepage_setting[]" value="safecheck" title="安全检查" lay-skin="primary"{if in_array('safecheck',$rs.admin_homepage_setting)} checked{/if} />
+				<input type="checkbox" name="admin_homepage_setting[]" value="env" title="主机环境" lay-skin="primary"{if in_array('env',$rs.admin_homepage_setting)} checked{/if} />
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存设置}" class="layui-btn layui-btn-danger" id="save_button" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_lay -->

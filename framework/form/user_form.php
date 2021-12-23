@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
 	文件： {phpok}/form/user_form.php
-	备注： 会员选项
+	备注： 用户选项
 	版本： 4.x
 	网站： www.phpok.com
 	作者： qinggan <qinggan@188.com>
@@ -33,7 +33,10 @@ class user_form extends _init_auto
 		}
 		$this->assign('_rs_content',$content);
 		$this->assign('_rs',$rs);
-		return $this->fetch($this->dir_phpok.'form/html/user_admin_tpl.html','abs-file');
+		if($appid == 'admin'){
+			return $this->fetch($this->dir_phpok.'form/html/user_admin_tpl.html','abs-file');
+		}
+		return $this->fetch($this->dir_phpok.'form/html/user_www_tpl.html','abs-file');
 	}
 
 	public function phpok_get($rs,$appid="admin")
@@ -53,7 +56,19 @@ class user_form extends _init_auto
 		if($appid == 'admin'){
 			return $this->_admin_show($rs,$ext);
 		}
-		return $this->_www_show($rs,$ext);
+		$info = $this->_www_show($rs,$ext);
+		//API 接口返回的数据中，不含手机号及密码
+		if($appid == 'api'){
+			if(isset($info['id'])){
+				unset($info['pass'],$info['mobile']);
+			}else{
+				foreach($info as $key=>$value){
+					unset($value['pass'],$value['mobile']);
+					$info[$key] = $value;
+				}
+			}
+		}
+		return $info;
 	}
 
 	private function _www_show($rs,$ext)
@@ -79,7 +94,7 @@ class user_form extends _init_auto
 	private function _admin_show($rs,$ext)
 	{
 		if($ext && is_array($ext) && $ext['is_multiple']){
-			$condition = "u.id IN(".$rs['content'].") AND status=1";
+			$condition = "u.id IN(".$rs['content'].") AND u.status=1";
 			$rslist = $this->model('user')->get_list($condition,0,999);
 			if(!$rslist){
 				return false;

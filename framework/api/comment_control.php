@@ -58,7 +58,7 @@ class comment_control extends phpok_control
 	public function delete_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
@@ -135,7 +135,7 @@ class comment_control extends phpok_control
 			}
 		}
 		
-		//获取会员信息
+		//获取用户信息
 		if($userlist && count($userlist)>0){
 			$userlist = array_unique($userlist);
 			$user_idstring = implode(",",$userlist);
@@ -162,10 +162,10 @@ class comment_control extends phpok_control
 	 * 存储评论信息
 	 * @参数 vtype 评论类型，仅支持：title 主题，project 项目，cate 分类，order 订单，留空或是没有获取成功则读取主题
 	 * @参数 tid 主题ID，当type为title时此项必填，当为order时， tid指为订单中的具体某个产品
-	 * @参数 _chkcode 验证码，仅限评论为主题时有效，其他的评论必须是会员
+	 * @参数 _chkcode 验证码，仅限评论为主题时有效，其他的评论必须是用户
 	 * @参数 parent_id 父级评论ID
 	 * @参数 star 评论等级，留空默认为3
-	 * @参数 comment 评论内容，会员评论时支持HTML，游客仅支持文本
+	 * @参数 comment 评论内容，用户评论时支持HTML，游客仅支持文本
 	 * @参数 pictures 评论的时候上传的一些图片，或附件
 	 * @参数 order_id 订单ID
 	**/
@@ -242,7 +242,7 @@ class comment_control extends phpok_control
 			}
 		}elseif($type == 'order'){
 			if(!$uid){
-				$this->error(P_Lang('非会员不能对订单进行评论'));
+				$this->error(P_Lang('非用户不能对订单进行评论'));
 			}
 			$order_id = $this->get('order_id','int');
 			if(!$order_id){
@@ -281,7 +281,7 @@ class comment_control extends phpok_control
 			$data['tid'] = $tid;
 		}elseif($type == 'project'){
 			if(!$uid){
-				$this->error(P_Lang('非会员不能对项目进行评论'));
+				$this->error(P_Lang('非用户不能对项目进行评论'));
 			}
 			$tid = $this->get('tid','int');
 			if(!$tid && !$parent_id){
@@ -303,7 +303,7 @@ class comment_control extends phpok_control
 			$data['tid'] = $tid;
 		}elseif($type == 'cate'){
 			if(!$uid){
-				$this->error(P_Lang('非会员不能对分类进行评论'));
+				$this->error(P_Lang('非用户不能对分类进行评论'));
 			}
 			$tid = $this->get('tid','int');
 			if(!$tid && !$parent_id){

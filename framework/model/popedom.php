@@ -87,7 +87,7 @@ class popedom_model_base extends phpok_model
 
 	//判断是否有阅读权限
 	//pid，为项目ID
-	//groupid，为会员组ID
+	//groupid，为用户组ID
 	public function check($pid,$groupid=0,$type='read')
 	{
 		$popedom = $this->_popedom_list($groupid);

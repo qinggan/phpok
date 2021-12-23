@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="expires" content="wed, 26 feb 1997 08:21:57 gmt"> 
+	<title>图片库</title>
+	<meta name="author" content="phpok.com" />
+	<link rel="stylesheet" type="text/css" href="{#css#}/artdialog.css" />
+	<link rel="stylesheet" type="text/css" href="static/admin/layui/{#css#}/layui.css" />
+	<link rel="stylesheet" type="text/css" href="static/bootstrap/{#css#}/bootstrap.min.css" />
+	{func phpok_head_css}
+	<script type="text/javascript" src="{url ctrl=js ext=jquery.phpok,jquery.artdialog _ext=global.admin.js /}"></script>
+	{func phpok_head_js}
+	<script type="text/javascript">
+	function check_search(obj)
+	{
+		var k = $("#keywords").val();
+		if(!k){
+			$.dialog.alert('请输入要搜索的关键字');
+			return false;
+		}
+		var url = $(obj).attr("action");
+		url += "&keywords="+$.str.encode(k);
+		$.phpok.go(url);
+		return false;
+	}
+	function update_cate(val)
+	{
+		var old = "{$cate.id}";
+		if(old != val){
+			var url = "{url ctrl=ckeditor func=image CKEditor=$CKEditor CKEditorFuncNum=$CKEditorFuncNum langCode=$langCode /}&cateid="+val;
+			$.phpok.go(url);
+		}
+	}
+	function save(id)
+	{
+		var url = get_url('ckeditor','insert','callback={$CKEditorFuncNum}&id='+id);
+		$.phpok.go(url);
+	}
+	</script>
+</head>
+<body>
+<div class="container-fluid mt-1 mb-1">
+	<form method="post" action="{url ctrl=ckeditor func=image CKEditor=$CKEditor CKEditorFuncNum=$CKEditorFuncNum langCode=$langCode /}" onsubmit="return check_search(this)">
+	<div class="row">
+		<div class="col">
+			{$button}
+		</div>
+		<!-- if $catelist -->		
+		<div class="col">
+			<select class="form-control form-control-sm" name="cateid" id="cateid" onchange="update_cate(this.value)">
+				<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+				<option value="{$value.id}"{if $cate && $value.id == $cate.id} selected{/if}>{$value.title}</option>
+				<!-- /loop -->
+			</select>
+		</div>
+		<!-- /if -->
+		<div class="col">
+			<input type="text" name="keywords" id="keywords" value="{$keywords}" placeholder="{lang请输入要搜索的关键字}" class="form-control form-control-sm" />
+		</div>
+		<div class="col">
+			<div class="btn-group" role="group" aria-label="">
+				<button type="submit" class="btn btn-primary btn-sm">{lang搜索}</button>
+				<a href="{url ctrl=ckeditor func=image CKEditor=$CKEditor CKEditorFuncNum=$CKEditorFuncNum langCode=$langCode /}" class="btn btn-warning btn-sm">{lang取消搜索}</a>
+			</div>
+		</div>
+		<div class="col text-right">
+			<button type="button" class="btn btn-danger btn-sm" onclick="$.phpok.reload()">{lang刷新}</button>
+		</div>
+	</div>
+	</form>
+</div>
+<div class="container-fluid">
+	<div class="row">
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<div class="col col-3 col-sm-2" id="li_{$value.id}" data="{$value.id}" onclick="save('{$value.id}')" title="名称：{$value.title}&#10;时间：{func date 'Y-m-d H:i' $value.mtime}{if $value.width}&#10;宽高：{$value.width}x{$value.height}{/if}">
+			<label class="position-relative" style="cursor: pointer;">
+				<figure class="figure">
+					<img src="{$value.ico}" class="figure-img img-thumbnail" />
+					<figcaption class="figure-caption text-nowrap text-truncate">{$value.title}</figcaption>
+				</figure>
+			</label>
+		</div>
+		<!-- /loop -->
+	</div>
+</div>
+<!-- if $pagelist -->
+<div class="container-fluid">
+	<nav aria-label="Page navigation">
+		<ul class="pagination">
+			<!-- loop from=$pagelist key=$key value=$value id=$tmpid -->
+			<li class="page-item{if $value.status} active{/if}"><a class="page-link" href="{$value.url}">{$value.title}</a></li>
+			<!-- /loop -->
+		</ul>
+	</nav>
+</div>
+<!-- /if -->
+<script type="text/javascript" src="static/bootstrap/{#js#}/bootstrap.min.js"></script>
+<script type="text/javascript">
+function stop(){
+	return false;
+}
+document.oncontextmenu=stop;
+</script>
+</body>
+</html>

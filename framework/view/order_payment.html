@@ -1,7 +1,7 @@
 <!-- include tpl=head_lay -->
 <div class="layui-card">
 	<div class="layui-card-header" style="padding:5px 5px 0 5px;">
-		<form method="post" id="postsave" class="layui-form" onsubmit="return $.admin_order_payment.add()">
+		<form method="post" id="postsave" class="layui-form" onsubmit="return $.admin_order_payment.add({$rs.id})">
 		<ul class="layout">
 			<li>
 				<div class="layui-form-item">

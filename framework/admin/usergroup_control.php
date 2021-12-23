@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员组管理
+ * 用户组管理
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -69,7 +69,7 @@ class usergroup_control extends phpok_control
 		$extlist = get_phpok_ext($ext_module,implode(",",$forbid));
 		$this->assign("extlist",$extlist);
 
-		//会员字段列表
+		//用户字段列表
 		$all_fields_list = $this->model('user')->fields_all();
 		if($all_fields_list){
 			$this->assign("all_fields_list",$all_fields_list);
@@ -147,14 +147,14 @@ class usergroup_control extends phpok_control
 			//存储扩展字段
 			ext_save("usergroup-".$id);
 			$this->model('temp')->clean("usergroup-".$id,$this->session->val('admin_id'));
-			$tip = P_Lang('会员组编辑成功');
+			$tip = P_Lang('用户组编辑成功');
 		}else{
 			$id = $this->model('usergroup')->save($array);
 			if($id){
 				ext_save("add-usergroup-ext-id",true,"usergroup-".$id);
 				$this->model('temp')->clean("add-usergroup-ext-id",$this->session->val('admin_id'));
 			}
-			$tip = P_Lang('会员组添加成功');
+			$tip = P_Lang('用户组添加成功');
 		}
 		$this->success($tip,$this->url('usergroup'));
 	}
@@ -173,7 +173,7 @@ class usergroup_control extends phpok_control
 			$this->error(P_Lang('数据记录不存在'));
 		}
 		if($rs["is_default"]){
-			$this->error(P_Lang('默认会员组不能删除'));
+			$this->error(P_Lang('默认用户组不能删除'));
 		}
 		if($rs["is_guest"]){
 			$this->error(P_Lang('默认游客组不能删除'));
@@ -210,7 +210,7 @@ class usergroup_control extends phpok_control
 			$this->error(P_Lang('数据记录不存在'));
 		}
 		if($rs["is_default"]){
-			$this->error(P_Lang('默认会员组不能设为游客组'));
+			$this->error(P_Lang('默认用户组不能设为游客组'));
 		}
 		$this->model('usergroup')->set_guest($id);
 		$this->success();
@@ -228,7 +228,7 @@ class usergroup_control extends phpok_control
 		$rs = $this->model('usergroup')->get_one($id);
 		if(!$rs)
 		{
-			exit(P_Lang('会员组信息不存在'));
+			exit(P_Lang('用户组信息不存在'));
 		}
 		$status = $this->get("status","int");
 		$this->model('usergroup')->set_status($id,$status);

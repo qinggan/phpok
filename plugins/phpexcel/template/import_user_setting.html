@@ -1,0 +1,62 @@
+<!-- include tpl=head_lay nopadding=true -->
+<script type="text/javascript">
+function import_save()
+{
+	$("#post_save").ajaxSubmit({
+		'url':api_plugin_url('phpexcel','import_user'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.alert('导入成功',function(){
+					top.$.dialog.close();
+				},'succeed');
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+<div class="layui-card">
+	<div class="layui-card-header">
+		匹配字段信息，所有导入均不导入第一行，第一行为标识行
+		<div class="fr">
+			<input type="button" value="重新选择" onclick="$.phpok.go('{url ctrl=plugin func=exec _phpokid=phpexcel exec=import_user/}')" class="layui-btn layui-btn-sm" />
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<form method="post" class="layui-form" id="post_save" onsubmit="return import_save()">
+		<input type="hidden" name="file" id="file" value="{$file}" />
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>Excel字段</th>
+			<th>内容字段</th>
+			<th>唯一性</th>
+		</tr>
+		</thead>
+		<!-- loop from=$idlist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$key} &raquo; {$value}</td>
+			<td>
+				<select name="link[{$key}]" id="link_{$key}">
+					<option value="">请选择</option>
+					<!-- loop from=$flist key=$k value=$v -->
+					<option value="{$k}"{if $v == $value} selected{/if}>{$v}</option>
+					<!-- /loop -->
+				</select>
+			</td>
+			<td>
+				<input type="checkbox" name="is_only[]" value="{$key}" lay-skin="primary" />
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<input type="submit" value="开始导入" class="layui-btn" />
+		</form>
+	</div>
+</div>
+<!-- include tpl=foot_lay is_open=true -->

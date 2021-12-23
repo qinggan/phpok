@@ -1,0 +1,92 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header" style="padding-top:5px;">
+		<ul class="layout">
+			<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+			<li><input type="text" name="keywords" value="{$keywords}" class="layui-input" placeholder="{lang关键字}" /></li>
+			<li>
+				<select id="gender" name="gender">
+					<option value="">微信性别不限</option>
+					<option value="1"{if $gender == 1} selected{/if}>男</option>
+					<option value="2"{if $gender == 2} selected{/if}>女</option>
+				</select>
+			</li>
+			<li>
+				<select id="status" name="status">
+					<option value="">状态</option>
+					<option value="1"{if $status == 1} selected{/if}>已审</option>
+					<option value="2"{if $status == 2} selected{/if}>未审</option>
+				</select>
+			</li>
+			<li><input type="submit" value="搜索" class="layui-btn" /></li>
+			</form>
+		</ul>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table layui-form">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>Open ID</th>
+			<th>{lang昵称}</th>
+			<th>{lang用户账号}</th>
+			<th>{lang性别}</th>
+			<th>{lang状态}</th>
+			<th>{lang来源}</th>
+			<th>{lang最后登录}</th>
+			<th>{lang操作}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td><input type="checkbox" name="id[]" value="{$value.id}" lay-skin="primary" class="layui-checkbox" title="{$value.id}" /></td>
+			<td>{$value.openid}</td>
+			<td>{$value.nickname}</td>
+			<td>{$value.user}</td>
+			<td><!-- if $value.gender == 2 -->{lang女}<!-- elseif $value.gender == 1 -->{lang男}<!-- else -->{lang未知}<!-- /if --></td>
+			<td>
+				<!-- if $value.user -->
+					<!-- if $value.status -->{lang已审}<!-- else --><span class="red">{lang未审}</span><!-- /if -->
+				<!-- else -->
+				<span class="red">未绑定</span>
+				<!-- /if -->
+			</td>
+			<td>{$value.source}</td>
+			<td>{func date 'Y-m-d H:i:s' $value.lastlogin}</td>
+			<td>
+				<div class="layui-btn-group">
+					<!-- if $value.user_id -->
+					<input type="button" value="{lang解除绑定}" class="layui-btn layui-btn-sm" onclick="$.admin_weixin.user_unlock('{$value.id}')" />
+					<!-- else -->
+					<input type="button" value="{lang绑定用户}" class="layui-btn layui-btn-sm" onclick="$.admin_weixin.user_lock('{$value.id}')" />
+					<!-- /if -->
+					<input type="button" value="{lang删除}" onclick="$.admin_weixin.user_del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+				
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- if $rslist -->
+		
+		
+		<ul class="layout">
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang全选}" onclick="$.checkbox.all()" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang全不选}" onclick="$.checkbox.none()" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang反选}" onclick="$.checkbox.anti()" class="layui-btn layui-btn-sm" />
+				</div>
+			</li>
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="解除绑定" onclick="$.admin_weixin.user_unlock()" class="layui-btn layui-btn-sm" />
+					<input type="button" value="删除" onclick="$.admin_weixin.user_del()" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</li>
+		</ul>
+		<!-- /if -->
+		<div align="center"><!-- include tpl=pagelist --></div>
+	</div>
+</div>
+<!-- include tpl=foot_lay is_open=true -->

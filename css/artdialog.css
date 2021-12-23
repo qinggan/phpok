@@ -44,7 +44,6 @@ table.aui_border, table.aui_dialog {
 }
 .aui_main {
 	text-align:center;
-	min-width:9em;
 	background:#fff;
 }
 .aui_content {
@@ -67,7 +66,7 @@ table.aui_border, table.aui_dialog {
 	text-align:left;
 	text-indent:-999em;
 	overflow:hidden;
-	background:url("../images/loading.gif") no-repeat center center;
+	background:#fff url("../images/loading.gif") no-repeat center center;
 }
 .aui_icon {
 	vertical-align: middle;
@@ -133,7 +132,7 @@ button.aui_state_highlight:hover {
 
 /* common end */
  .aui_inner {
-	/*background:#FFF;*/
+	background:none;
 }
 .aui_nw, .aui_ne, .aui_sw, .aui_se {
 	width:8px;

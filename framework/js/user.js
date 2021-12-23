@@ -1,6 +1,6 @@
 /***********************************************************
 	Filename: {phpok}/js/user.js
-	Note	: 会员管理中涉及到的JS
+	Note	: 用户管理中涉及到的JS
 	Version : 4.0
 	Web		: www.phpok.com
 	Author  : qinggan <qinggan@188.com>
@@ -16,7 +16,7 @@ function check_add()
 	}
 	var user = $("#user").val();
 	if(!user || user == "undefined"){
-		$.dialog.alert("会员账号不能为空");
+		$.dialog.alert("用户账号不能为空");
 		return false;
 	}
 	url += "&user="+$.str.encode(user);
@@ -42,14 +42,14 @@ function del(id)
 		$.dialog.alert("操作非法");
 		return false;
 	}
-	$.dialog.confirm(p_lang('确定要删除会员号ID为 {id} 的会员信息吗？<br>删除后数据将被清空且不能恢复','<span class="red">#'+id+'</span>'),function(){
+	$.dialog.confirm(p_lang('确定要删除用户号ID为 {id} 的用户信息吗？<br>删除后数据将被清空且不能恢复','<span class="red">#'+id+'</span>'),function(){
 		var url = get_url('user','ajax_del','id='+id);
 		$.phpok.ajax(url,function(data){
 			if(data == 'ok'){
 				$.phpok.reload();
 			}else{
 				if(!data){
-					data = p_lang('删除会员操作异常');
+					data = p_lang('删除用户操作异常');
 					$.dialog.alert(data);
 				}
 			}
@@ -69,7 +69,7 @@ function set_status(id)
 	var t = $("#status_"+id).attr("value");
 	if(t == 2)
 	{
-		$.dialog.alert("此会员已被锁定，请点编辑后进行解除锁定");
+		$.dialog.alert("此用户已被锁定，请点编辑后进行解除锁定");
 		return false;
 	}
 	var url = get_url("user","ajax_status") + "&id="+id;

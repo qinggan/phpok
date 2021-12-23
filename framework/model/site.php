@@ -319,6 +319,63 @@ class site_model_base extends phpok_model
 		return $rs;
 	}
 
+	public function system($data='',$site_id=0)
+	{
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		if($data && is_array($data)){
+			$keys = array_keys($data);
+			$sql  = " DELETE FROM ".$this->db->prefix."config WHERE site_id='".$site_id."'";
+			$sql .= " AND identifier NOT IN('".implode("','",$keys)."')";
+			$this->db->query($sql);
+			$sql  = " SELECT * FROM ".$this->db->prefix."config WHERE site_id='".$site_id."'";
+			$sql .= " AND identifier IN('".implode("','",$keys)."')";
+			$tmplist = $this->db->get_all($sql);
+			$e = array();
+			if($tmplist){
+				foreach($tmplist as $key=>$value){
+					$sql = "UPDATE ".$this->db->prefix."config SET content='".$data[$value['identifier']]."' WHERE id='".$value['id']."'";
+					$e[] = $value['identifier'];
+					$this->db->query($sql);
+				}
+			}
+			if($e && count($e)>0){
+				$d = array_diff($keys,$e);
+			}else{
+				$d = $keys;
+			}
+			if($d){
+				foreach($d as $key=>$value){
+					$tmp = array('site_id'=>$site_id);
+					$tmp['identifier'] = $value;
+					$tmp['content'] = $data[$value];
+					$this->db->insert($tmp,'config');
+				}
+			}
+			return true;
+		}
+		if($data && is_string($data)){
+			$sql  = " SELECT * FROM ".$this->db->prefix."config WHERE site_id='".$site_id."' ";
+			$sql .= " AND identifier='".$data."'";
+			$tmp = $this->db->get_one($sql);
+			if(!$tmp){
+				return false;
+			}
+			return $tmp['content'];
+		}
+		$sql  = " SELECT * FROM ".$this->db->prefix."config WHERE site_id='".$site_id."' ";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rs = array();
+		foreach($tmplist as $key=>$value){
+			$rs[$value['identifier']] = $value['content'];
+		}
+		return $rs;
+	}
+
 	/**
 	 * 默认模板配置文件
 	**/
@@ -333,6 +390,16 @@ class site_model_base extends phpok_model
 
 	public function tpl_file($ctrl='',$func='')
 	{
+		if(!$ctrl){
+			$ctrl = 'index';
+		}
+		if(!$func){
+			$func = 'index';
+		}
+		$ctrl = str_replace("_","-",$ctrl);
+		$func = str_replace("_","-",$func);
+		$ctrl = strtolower($ctrl);
+		$func = strtolower($func);
 		$id = $ctrl.'-'.$func;
 		if(file_exists($this->dir_data.'xml/site_tpl_'.$this->site_id.'.xml')){
 			$info = $this->lib('xml')->read($this->dir_data.'xml/site_tpl_'.$this->site_id.'.xml');
@@ -341,7 +408,7 @@ class site_model_base extends phpok_model
 			}
 		}
 		$list = $this->tpl_default();
-		if($list && $list[$id] && $list[$id]['default']){
+		if($list && $list[$id] && $list[$id]['default'] && $this->tpl->check_exists($list[$id]['default'])){
 			return $list[$id]['default'];
 		}
 		return false;

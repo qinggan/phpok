@@ -34,7 +34,7 @@ class payment_control extends phpok_control
 			$back = $this->lib('server')->referer();
 		}
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('请先登录，非会员没有此权限'),$this->url('login','','_back='.rawurlencode($this->url('payment'))));
+			$this->error(P_Lang('请先登录，非用户没有此权限'),$this->url('login','','_back='.rawurlencode($this->url('payment'))));
 		}
 		$id = $this->get('id');
 		if($id){
@@ -89,7 +89,7 @@ class payment_control extends phpok_control
 	public function wealth_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('请先登录，非会员没有此权限'),$this->url('login','','_back='.rawurlencode($this->url('payment'))));
+			$this->error(P_Lang('请先登录，非用户没有此权限'),$this->url('login','','_back='.rawurlencode($this->url('payment'))));
 		}
 		//创建充值页面
 		$id = $this->get('id','int');
@@ -136,11 +136,11 @@ class payment_control extends phpok_control
 
 	/**
 	 * 创建支付链接
-	 * @参数 id 订单ID，仅限会员登录时有效
+	 * @参数 id 订单ID，仅限用户登录时有效
 	 * @参数 sn 订单编号，游客购买有效
 	 * @参数 type 支付链类型
 	 * @参数 passwd 订单密码，游客购买有效
-	 * @参数 balance 财富支付，仅限会员登录时有效
+	 * @参数 balance 财富支付，仅限用户登录时有效
 	 * @参数 payment 支付方式 仅限财富支付不能完全抵消或是游客购买时有效
 	 * @更新时间 2016年08月16日
 	**/
@@ -163,8 +163,8 @@ class payment_control extends phpok_control
 		if(!$price){
 			$this->error(P_Lang('未指定充值金额'),$backurl);
 		}
-		if($price < 1){
-			$this->error(P_Lang('充值金额不能少于1元'),$backurl);
+		if($price < 0.01){
+			$this->error(P_Lang('充值金额不能少于0.01元'),$backurl);
 		}
 		$payment = $this->get('payment','int');
 		if(!$payment){
@@ -184,7 +184,35 @@ class payment_control extends phpok_control
 		if(!$insert_id){
 			$this->error(P_Lang('支付记录创建失败，请联系管理员'),$backurl);
 		}
-		$this->_location($this->url('payment','submit','id='.$insert_id));
+		$this->_location($this->url('payment','action','id='.$insert_id));
+	}
+
+	public function action_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定支付订单ID'));
+		}
+		$log = $this->model('payment')->log_one($id);
+		if(!$log){
+			$this->error(P_Lang('订单信息不存在'));
+		}
+		if($log['status']){
+			$this->error(P_Lang('订单已支付过了，不能再次执行'));
+		}
+		if($log['payment_id'] && is_numeric($log['payment_id'])){
+			$payment_rs = $this->model('payment')->get_one($log['payment_id']);
+			if(!$payment_rs){
+				$this->error(P_Lang('支付方式不存在'));
+			}
+			if(!$payment_rs['status']){
+				$this->error(P_Lang('支付方式未启用'));
+			}
+			if($payment_rs['iframe']){
+				$this->_location($this->url('payment','qrcode','id='.$id));
+			}
+		}
+		$this->_location($this->url('payment','submit','id='.$id));
 	}
 
 	/**
@@ -218,7 +246,7 @@ class payment_control extends phpok_control
 
 	/**
 	 * 创建订单的支付链
-	 * @参数 id 订单ID，仅限会员登录时有效
+	 * @参数 id 订单ID，仅限用户登录时有效
 	 * @参数 sn 订单编号，游客购买有效
 	 * @参数 passwd 订单密码，游客购买有效
 	 * @参数 payment 支付方式 仅限财富支付不能完全抵消或是游客购买时有效
@@ -278,11 +306,11 @@ class payment_control extends phpok_control
 				if(!$chk['status']){
 					$this->model('payment')->log_update($array,$chk['id']);
 				}
-				$this->model('order')->update_order_status($rs['id'],'paid');
+				$this->model('order')->update_order_status($rs['id'],'paid',P_Lang('订单已付款'));
 				$this->success(P_Lang('订单{sn}支付成功',array('sn'=>$rs['sn'])),$order_url);
 			}
 			$this->model('payment')->log_create($array);
-			$this->model('order')->update_order_status($rs['id'],'paid');
+			$this->model('order')->update_order_status($rs['id'],'paid',P_Lang('订单已付款'));
 			$this->success(P_Lang('订单{rs}支付成功',array('sn'=>$rs['sn'])),$order_url);
 		}
 		if($userid){
@@ -298,7 +326,7 @@ class payment_control extends phpok_control
 			$currency_id = $payment_rs['currency'] ? $payment_rs['currency']['id'] : $rs['currency_id'];
 		}else{
 			if(!$userid){
-				$this->error(P_Lang('非会员不支持余额支付功能'));
+				$this->error(P_Lang('非用户不支持余额支付功能'));
 			}
 			$payment_rs = $this->model('wealth')->get_one($payment,'identifier');
 		}
@@ -328,7 +356,7 @@ class payment_control extends phpok_control
 		if(!$insert_id){
 			$this->error(P_Lang('支付记录创建失败，请联系管理员'),$order_url);
 		}
-		$this->model('order')->update_order_status($rs['id'],'unpaid');
+		$this->model('order')->update_order_status($rs['id'],'unpaid',P_Lang('订单等待支付'));
 		//增加order_payment
 		$array = array('order_id'=>$rs['id'],'payment_id'=>$payment);
 		$array['title'] = $payment_rs['title'];
@@ -418,7 +446,7 @@ class payment_control extends phpok_control
 		$price = round($integral*$info['cash_ratio']/100,$info['dnum']);
 		$balance = price_format_val($price,$order['currency_id'],$order['currency_id']);
 		$surplus = $balance >= $totalprice ? 0 : floatval($totalprice - $balance);
-		//扣除会员积分
+		//扣除用户积分
 		$savelogs = array('wid'=>$info['id'],'goal_id'=>$this->session->val('user_id'),'mid'=>0,'val'=>'-'.$integral);
 		$savelogs['appid'] = $this->app_id;
 		$savelogs['dateline'] = $this->time;
@@ -495,7 +523,7 @@ class payment_control extends phpok_control
 			exit;
 		}
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不支持余额支付，请登录再执行此操作'));
+			$this->error(P_Lang('非用户不支持余额支付，请登录再执行此操作'));
 		}
 		if(!$log['payment_id']){
 			$ext = $log['ext'] ? unserialize($log['ext']) : false;
@@ -518,7 +546,7 @@ class payment_control extends phpok_control
 		if(floatval($my_integral) < floatval($integral)){
 			$this->error(P_Lang('您的余额不足，请先充值'),$this->url('payment','index','id='.$wealth['id']));
 		}
-		//扣除会员积分
+		//扣除用户积分
 		$savelogs = array('wid'=>$wealth['id'],'goal_id'=>$this->session->val('user_id'),'mid'=>0,'val'=>'-'.$integral);
 		$savelogs['appid'] = $this->app_id;
 		$savelogs['dateline'] = $this->time;
@@ -562,6 +590,9 @@ class payment_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('订单信息不存在'),$this->url('index'));
 		}
+		if($rs['ext'] && is_string($rs['ext'])){
+			$rs['ext'] = unserialize($rs['ext']);
+		}
 		if($rs['type'] == 'order'){
 			$order = $this->model('order')->get_one_from_sn($rs['sn']);
 			$url = $this->url('order','info','sn='.$rs['sn'].'&passwd='.$order['passwd']);
@@ -577,7 +608,7 @@ class payment_control extends phpok_control
 				$this->assign('address',$address);
 			}
 		}elseif($rs['type'] == 'recharge'){
-			$url = $this->url('usercp','wealth','sn='.$rs['sn']);
+			$url = $this->url('usercp','wealth_log','id='.$rs['ext']['goal']);
 		}else{
 			$url = $this->url('payment','show','id='.$id);
 		}
@@ -585,12 +616,7 @@ class payment_control extends phpok_control
 		$this->assign('order',$order);
 		//同步通知
 		if($rs['status']){
-			$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func.'-success');
-			if($this->tpl->check_exists($tplfile)){
-				$this->view($tplfile);
-				exit;
-			}
-			$this->success(P_Lang('您的订单付款成功，请稍候…'),$url);
+			$this->success(P_Lang('付款成功，请稍候…'),$url);
 		}
 		$payment_rs = $this->model('payment')->get_one($rs['payment_id']);
 		$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/notice.php';
@@ -603,19 +629,9 @@ class payment_control extends phpok_control
 		$cls = new $name($rs,$payment_rs);
 		$obj = $cls->submit();
 		if(!$obj){
-			$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func.'-error');
-			if($this->tpl->check_exists($tplfile)){
-				$this->view($tplfile);
-				exit;
-			}
 			$this->error(P_Lang('付款失败，请检查…'));
 		}
-		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func.'-success');
-		if($this->tpl->check_exists($tplfile)){
-			$this->view($tplfile);
-			exit;
-		}
-		$this->success(P_Lang('您的订单付款成功，请稍候…'),$url);
+		$this->success(P_Lang('付款成功，请稍候…'),$url);
 	}
 
 	//异步通知方案
@@ -656,7 +672,7 @@ class payment_control extends phpok_control
 
 	public function show_f()
 	{
-		$id = $this->get('id');
+		$id = $this->get('id','int');
 		if(!$id){
 			$this->error(P_Lang('未指定ID'));
 		}
@@ -678,5 +694,28 @@ class payment_control extends phpok_control
 		}else{
 			$this->_location($this->url);
 		}
+	}
+
+	//适用于扫码支付的链接
+	public function qrcode_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error('未指定ID');
+		}
+		$rs = $this->model('payment')->log_one($id);
+		if(!$rs){
+			$this->error('订单不存在');
+		}
+		if($rs['type'] == 'order'){
+			$order = $this->model('order')->get_one($rs['sn'],'sn');
+			$this->assign('order',$order);
+		}
+		$this->assign('rs',$rs);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'payment_qrcode';
+		}
+		$this->view($tplfile);
 	}
 }

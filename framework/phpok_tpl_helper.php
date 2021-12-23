@@ -273,7 +273,7 @@ function phpok_reply($id,$psize=10,$orderby="ASC",$vouch=false)
 		$idlist[] = $value["id"];
 	}
 	
-	//获取会员信息
+	//获取用户信息
 	if($userlist && count($userlist)>0){
 		$userlist = array_unique($userlist);
 		$user_idstring = implode(",",$userlist);
@@ -433,7 +433,50 @@ if(!function_exists('admin_plugin_url')){
 	}
 }
 
-//读取会员拥有发布的权限信息
+function project_groups()
+{
+	global $app;
+	$uid = $app->session->val('user_id');
+	if(!$uid){
+		return false;
+	}
+	$user = $app->model('user')->get_one($uid,'id',false,false);
+	if(!$user['group_id']){
+		return false;
+	}
+	$grouplist = $app->model('project')->group();
+	$list = $app->model('project')->group_projects();
+	if(!$list){
+		return false;
+	}
+	foreach($list as $key=>$value){
+		if(!$app->model('popedom')->check($value['id'],$user['group_id'],'usercp')){
+			unset($list[$key]);
+			continue;
+		}
+	}
+	if(!$list){
+		return false;
+	}
+	$rslist = array();
+	foreach($grouplist as $key=>$value){
+		$tmp = array('title'=>$value,'rslist'=>array());
+		foreach($list as $k=>$v){
+			if($v['group_id'] == $key){
+				$tmp['rslist'][] = $v;
+			}
+		}
+		if($tmp['rslist'] && count($tmp['rslist'])>0){
+			$rslist[$key] = $tmp;
+		}
+	}
+	if(count($rslist)>0){
+		return $rslist;
+	}
+	return false;
+}
+
+//读取用户拥有发布的权限信息
 function usercp_project()
 {
 	if(!$_SESSION['user_id'] || !$_SESSION['user_gid']){
@@ -462,7 +505,12 @@ function usercp_project()
 	return $GLOBALS['app']->model('project')->plist($pids,true);
 }
 
-//读取会员信息，如果有ID，则读取该ID数组信息
+function usercp_typelist()
+{
+	return $GLOBALS['app']->model('res')->user_typelist();
+}
+
+//读取用户信息，如果有ID，则读取该ID数组信息
 function usercp_info($field="")
 {
 	if(!$_SESSION['user_id'] || !$_SESSION['user_rs']['group_id']) return false;
@@ -495,7 +543,6 @@ function usercp_new_reslist($offset=0,$psize=10)
 	return $GLOBALS['app']->model('res')->get_list($condition,$offset,$psize);
 }
 
-
 function time_format($timestamp)
 {
 	$current_time = $GLOBALS['app']->time;
@@ -521,20 +568,57 @@ function time_format($timestamp)
     return $output;
 }
 
+function time_ago($time='')
+{
+	if(!$time){
+		return false;
+	}
+	if(!is_numeric($time)){
+		$time = strtotime($time);
+	}
+	$t=$GLOBALS['app']->time - $time;
+	$f=array(
+		'31536000'=>'年',
+		'2592000'=>'个月',
+		'604800'=>'星期',
+		'86400'=>'天',
+		'3600'=>'小时',
+		'60'=>'分钟',
+		'1'=>'秒'
+	);
+	foreach ($f as $k=>$v){
+		if (0 !=$c=floor($t/(int)$k)) {
+			return $c.$v.'前';
+		}
+	}
+}
+
+function hits_format($hits='')
+{
+    if($hits >= 100000){
+        $hits = round($hits / 10000) .'w+';
+    }else if($hits >= 10000){
+        $hits = round($hits / 10000, 1) .'w+';
+    }else if($hits >= 1000){
+        $hits = round($hits / 1000, 1) . 'k+';
+    }
+    return $hits;
+}
+
 //前台取得地址表单
 function phpok_address($format=false)
 {
 	$shipping = $GLOBALS['app']->site['biz_shipping'];
 	$billing = $GLOBALS['app']->site['biz_billing'];
-	if(!$shipping && !$billing) return false;
+	if(!$shipping && !$billing){
+		return false;
+	}
 	$rs = array();
-	if($shipping)
-	{
+	if($shipping){
 		$flist = $GLOBALS['app']->call->phpok('_fields',array("pid"=>$shipping,'fields_format'=>$format,'prefix'=>"s_"));
 		$rs['shipping'] = $flist;
 	}
-	if($billing)
-	{
+	if($billing){
 		$flist = $GLOBALS['app']->call->phpok('_fields',array("pid"=>$billing,'fields_format'=>$format,'prefix'=>'b_'));
 		$rs['billing'] = $flist;
 	}
@@ -544,15 +628,19 @@ function phpok_address($format=false)
 //判断属性是否存在
 function in_attr($str="",$info="")
 {
-	if(!$str || !$info) return false;
+	if(!$str || !$info){
+		return false;
+	}
 	$info = explode(",",$info);
 	$str = explode(",",$str);
 	$rs = array_intersect($str,$info);
-	if($rs && count($rs)>0) return true;
+	if($rs && count($rs)>0){
+		return true;
+	}
 	return false;
 }
 
-//读取会员信息
+//读取用户信息
 function phpok_user($id)
 {
 	return $GLOBALS['app']->model('user')->get_one($id);

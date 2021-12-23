@@ -1,0 +1,115 @@
+<!-- include tpl=head_lay -->
+<link rel="stylesheet" type="text/css" href="js/webuploader/webuploader.css" charset="utf-8" />
+<script type="text/javascript" src="js/webuploader/webuploader.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/webuploader/admin.upload.js" charset="utf-8"></script>
+<div class="layui-card">
+	<div class="layui-card-body">
+		<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				附件上传
+			</label>
+			<div class="layui-input-inline auto">
+				<select id="add_cate_id" onchange="cate_change()" lay-ignore>
+					<!-- loop from=$catelist key=$key value=$value -->
+					<option value="{$value.id}"{if $value.is_default} selected{/if} data="{$value.filetypes}" catename="{$value.title}">
+					{$value.title}<!-- if $value.filetypes --> / {lang支持上传格式：}{$value.filetypes}<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-input-inline">
+				<div id="upload_picker"></div>
+			</div>
+			<div class="clear"></div>
+			<div class="layui-input-block" id="upload_progress" style="min-height:5px;margin-left:5px;"></div>
+		</div>
+		</form>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		已上传文件管理
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>附件名称</th>
+			<th>上传时间</th>
+			<th>操作</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.title}</td>
+			<td>{func date "Y-m-d H:i:s" $value.addtime}</td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="选择" onclick="select_file('{$value.id}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="删除" onclick="delete_file('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+var obj_upload = {};
+$(document).ready(function(){
+	cate_change();
+});
+function cate_change()
+{
+	val = $("#add_cate_id").val();
+	if(!val){
+		$.dialog.alert('请选择要存储的目标分类');
+		return false;
+	}
+	var data = $("#add_cate_id option[value="+val+"]").attr('data');
+	var catename = $("#add_cate_id option[value="+val+"]").attr('catename');
+	obj_upload = new $.admin_upload({
+		"multiple"	: 'false',
+		"id" : "upload",
+		'pick':{'id':'#upload_picker','multiple':false},
+		'resize':false,
+		"swf" : "js/webuploader/uploader.swf",
+		"server": "{url ctrl=upload func=save/}",
+		"filetypes" : "{$rs.ext}",
+		'accept' : {'title':catename,'extensions':data},
+		"formData" :{'{func session_name}':'{func session_id}','cateid':val},
+		'fileVal':'upfile',
+		'auto':true,
+		"success":function(){
+			$.dialog.alert('附件上传成功',function(){
+				$.phpok.reload();
+			});
+		}
+	});
+}
+function select_file(file_id)
+{
+	var url = get_plugin_url('phpexcel','data_import','pid={$pid}');
+	if(!file_id || file_id == 'undefined'){
+		$.dialog.alert('未指定要导入的附件');
+		return false;
+	}
+	url += "&file="+file_id;
+	$.phpok.go(url);
+}
+function delete_file(id)
+{
+	$.dialog.confirm('确定要删除这个文件吗？',function(){
+		var url = get_url('res','delete','id='+id);
+		$.phpok.json(url,function(rs){
+			if(!rs.status){
+				$.dialog.alert(rs.info);
+				return false;
+			}
+			$.dialog.tips('文件删除成功');
+			$.phpok.reload();
+		});
+	});
+}
+</script>
+<!-- include tpl=foot_lay -->

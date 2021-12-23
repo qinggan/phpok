@@ -224,7 +224,7 @@
         </div>
         <div class="layui-form-item hide" ext="param" name="ext_user_ext">
         	<label class="layui-form-label">
-        		{lang会员扩展}
+        		{lang用户扩展}
         	</label>
         	<div class="layui-input-inline auto">
         		<input name="user_ext" value="0" title="{lang禁用}" {if !$rs.user_ext} checked{/if} type="radio">
@@ -235,7 +235,7 @@
         <div class="layui-form-item hide" ext="param" name="ext_user">
         	<label class="layui-form-label">
 	        	<i class="layui-icon layui-tips" lay-tips="{lang多个账号用英文逗号隔开}">&#xe702;</i>
-        		{lang会员账号}
+        		{lang用户账号}
         	</label>
         	<div class="layui-input-block">
         		<div class="w99">
@@ -250,7 +250,7 @@
         </div>
         <div class="layui-form-item hide" ext="param" name="ext_usergroup">
         	<label class="layui-form-label">
-        		{lang会员组}
+        		{lang用户组}
         	</label>
         	<div class="layui-input-inline default-auto">
         		<select name="usergroup" id="usergroup">
@@ -260,7 +260,7 @@
                     <!-- /loop -->
                 </select>
         	</div>
-        	<div class="layui-input-inline auto gray lh38">{lang指定多个会员账号后，会员组选项将无效}</div>
+        	<div class="layui-input-inline auto gray lh38">{lang指定多个用户账号后，用户组选项将无效}</div>
         </div>
         <div class="layui-form-item hide" ext="param" name="ext_sqlinfo">
         	<label class="layui-form-label">
@@ -283,7 +283,7 @@
         </div>
         <div class="layui-form-item">
         	<label class="layui-form-label">
-	        	<i class="layui-icon layui-tips" lay-tips="{lang是否启用API接口调用数据，此项很重要，敏感数据（如会员请禁用）请不要启用，为安全考虑，自定义SQL需要在配置文件中启用才有效}">&#xe702;</i>
+	        	<i class="layui-icon layui-tips" lay-tips="{lang是否启用API接口调用数据，此项很重要，敏感数据（如用户请禁用）请不要启用，为安全考虑，自定义SQL需要在配置文件中启用才有效}">&#xe702;</i>
         		{langAPI调用}
         	</label>
         	<div class="layui-input-inline default-auto">
@@ -292,14 +292,13 @@
         	</div>
         	<div class="layui-input-inline auto gray lh38"></div>
         </div>
-        <div class="layui-form-item">
-        	<label class="layui-form-label">
-        		&nbsp;
-        	</label>
-        	<div class="layui-input-inline default-auto">
-	        	<input type="submit" value="{lang提交保存}" class="layui-btn layui-btn-lg layui-btn-normal" />
-        	</div>
-        </div>
+		<div class="submit-info">
+			<div class="layui-container center">
+				<input type="submit" value="{lang提交保存}" class="layui-btn layui-btn-lg layui-btn-danger" />
+				<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+			</div>
+		</div>
+		<div class="submit-info-clear"></div>
 		</form>
 	</div>
 </div>
@@ -314,7 +313,7 @@
 	<input type="button" value="{lang随机，慎用}" onclick="$('#orderby').val('RAND()')" class="layui-btn layui-btn-sm" />
 </div>
 <div class="hide" id="fields_need_default">
-	<input type="button" value="{lang会员}" onclick="fields_click('l.user_id')" class="layui-btn layui-btn-sm" />
+	<input type="button" value="{lang用户}" onclick="fields_click('l.user_id')" class="layui-btn layui-btn-sm" />
 </div>
 
 <!-- include tpl=foot_lay -->

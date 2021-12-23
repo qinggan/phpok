@@ -147,26 +147,13 @@
 				'width':'700px',
 				'height':'400px',
 				'lock':true,
+				'okVal':'关闭并刷新',
 				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert(p_lang('iframe还没加载完毕呢'));
-						return false;
-					};
-					iframe.save();
-					return false;
-				},
-				'okVal':p_lang('执行附件上传'),
-				'cancelVal':p_lang('取消上传并关闭'),
-				'cancel':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert(p_lang('iframe还没加载完毕呢'));
-						return false;
-					};
-					iframe.cancel();
+					$.phpok.reload();
 					return true;
-				}
+				},
+				'cancelVal':p_lang('关闭'),
+				'cancel':true
 			});
 		},
 		/**

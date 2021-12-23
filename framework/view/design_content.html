@@ -26,9 +26,7 @@
 				c = $.trim(c);
 			}
 			if(c && c != 'undefined'){
-				UE.getEditor('content').addListener("ready", function () {
-		        	UE.getEditor('content').setContent(c);
-		        });
+				CKEDITOR.instances['content'].setData(c);
 			}
 		});
 		</script>
@@ -199,7 +197,6 @@
 		});
 		</script>
 		<!-- elseif $type == 'iframe' -->
-
 		<div class="layui-form-item">
 			<label class="layui-form-label">宽高</label>
 			<div class="layui-input-inline" style="width: 100px;">
@@ -229,7 +226,7 @@
 			<label class="layui-form-label">
 				调用中心
 			</label>
-			<div class="layui-input-inline default-auto">
+			<div class="layui-input-block">
 				<select id="code" name="code" lay-filter="code">
 					<option value="">请选择…</option>
 					<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
@@ -246,6 +243,15 @@
 			<div class="layui-input-block gray" style="line-height:38px;">一行一个参数，参数写法如：keywords=关键字，或 ext[扩展字段]=值，具体请上官网论坛查询</div>
 			<div class="layui-input-block">
 				<textarea name="param" id="param" class="layui-textarea" style="resize:none;"></textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				变量替换
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">请写完整的变量替换，如 $value.thumb=$value.picture，一行一个</div>
+			<div class="layui-input-block">
+				<textarea name="param-replace" id="param-replace" class="layui-textarea" style="resize:none;"></textarea>
 			</div>
 		</div>
 		<div class="layui-form-item">

@@ -35,27 +35,8 @@
 		field_edit:function(id)
 		{
 			var url = get_url("module","field_edit") + "&id="+id;
-			$.dialog.open(url,{
-				'title':p_lang('编辑字段 #{id}',id),
-				'lock':true,
-				'width':'600px',
-				'height':'70%',
-				'resize':false,
-				'drag':false,
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert(p_lang('iframe还没加载完毕呢'));
-						return false;
-					};
-					iframe.save();
-					return false;
-				},
-				'okVal':p_lang('保存编辑信息'),
-				'cancel':function(){
-					return true;
-				}
-			});
+			$.win(p_lang('编辑字段 #{id}',id),url);
+			return true;
 		},
 
 		/**
@@ -79,17 +60,16 @@
 		**/
 		field_addok:function(mid)
 		{
-			var obj = art.dialog.opener;
 			$("#form_save").ajaxSubmit({
 				'url':get_url('module','field_addok','mid='+mid),
 				'type':'post',
 				'dataType':'json',
 				'success':function(rs){
 					if(rs.status){
-						$.dialog.alert(p_lang('字段创建成功'),function(){
-							obj.$.dialog.close();
-							obj.$.phpok.reload();
-						});
+						$.dialog.tips(p_lang('字段创建成功'));
+						var tourl = get_url('module','fields','id='+mid);
+						$.admin.reload(tourl);
+						$.admin.close(tourl);
 						return false;
 					}
 					$.dialog.alert(rs.info);
@@ -102,27 +82,10 @@
 		/**
 		 * 添加模块字段弹出操作
 		**/
-		field_create:function(id)
+		field_create:function(id,title)
 		{
-			$.dialog.open(get_url("module","field_create","mid="+id),{
-				'title':p_lang('添加字段'),
-				'lock':true,
-				'width':'650px',
-				'height':'70%',
-				'resize':false,
-				'drag':false,
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert(p_lang('iframe还没加载完毕呢'));
-						return false;
-					};
-					iframe.save();
-					return false;
-				},
-				'okVal':p_lang('提交保存'),
-				'cancel':true
-			})
+			$.win(p_lang('模块')+'_'+title+'_'+p_lang('添加字段'),get_url("module","field_create","mid="+id));
+			return true;
 		},
 
 		/**
@@ -365,4 +328,16 @@
 			},taxis);
 		}
 	}
+	$(document).ready(function(){
+		layui.use('form',function(){
+			var form = layui.form;
+			form.on('radio(search)',function(data){
+					if(data.value == 3){
+						$("#search_separator_html").show();
+					}else{
+						$("#search_separator_html").hide();
+					}
+			});
+		})
+	});
 })(jQuery);

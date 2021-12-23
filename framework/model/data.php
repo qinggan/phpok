@@ -43,7 +43,7 @@ class data_model_base extends phpok_model
 			return false;
 		}
 		$rs['project_id']['url'] = $this->url($rs['project_id']['identifier']);
-		//读取会员信息及扩展
+		//读取用户信息及扩展
 		if($rs['user_id'])
 		{
 			$rs['user_id'] = $this->_user_info($rs['user_id']);
@@ -143,13 +143,13 @@ class data_model_base extends phpok_model
 		return $list;
 	}
 	
-	//取得会员内容及未格式化的扩展信息
+	//取得用户内容及未格式化的扩展信息
 	private function _user_info($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE id='".$id."' AND status=1";
 		$rs = $this->db->get_one($sql);
 		if(!$rs) return false;
-		//读取会员扩展
+		//读取用户扩展
 		$sql = "SELECT * FROM ".$this->db->prefix."user_ext WHERE id='".$id."'";
 		$ext_rs = $this->db->get_one($sql);
 		if($ext_rs)
@@ -163,6 +163,8 @@ class data_model_base extends phpok_model
 	{
 		if(!$content) return false;
 		if(!$pageid) $pageid = 1;
+		$content = preg_replace("/<div[^>]*page-break-after:always[^>]*>\s*<span[^>]*>\s*\[:page:\]\s*<\/span>\s*<\/div>/isU",'[:page:]',$content);
+		//$content = str_replace('<span style="display:none">[:page:]</span>',"[:page:]",$content);
 		$lst = explode('[:page:]',$content);
 		$t = $pageid-1;
 		if($lst[$t])
@@ -617,7 +619,7 @@ class data_model_base extends phpok_model
 		}
 		//格式化分类信息
 		if($rs['cate_id'] && $catelist && $catelist[$rs['cate_id']]) $rs['cate_id'] = $catelist[$rs['cate_id']];
-		//格式化会员信息
+		//格式化用户信息
 		if($rs['user_id'] && $userlist && $userlist[$rs['user_id']]) $rs['user_id'] = $userlist[$rs['user_id']];
 		return $rs;
 	}
@@ -633,7 +635,7 @@ class data_model_base extends phpok_model
 		return $this->db->get_all($sql,"id");
 	}
 
-	//读取会员基础信息
+	//读取用户基础信息
 	private function _user_info2($id)
 	{
 		if(!$id) return false;

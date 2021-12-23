@@ -1,0 +1,73 @@
+<!-- include tpl=head_lay nopadding=true -->
+<script type="text/javascript">
+var project_id = "{$project_id}";
+function update_cate2(val)
+{
+	$("#cate_id").val(val);
+}
+
+function dialogOK()
+{
+	var vals = $.checkbox.join('#filelist');
+	if(!vals){
+		alert("请选择要插入的附件");
+		return false;
+	}
+	var list = vals.split(",");
+	if(list.length < 2)
+	{
+		var title = $("#title_"+list[0]).text();
+		if(!title){
+			alert('附件选择异常，请检查');
+			return false;
+		}
+		var htm = '[download:'+list[0]+']'+title+'[/download]';
+	}else{
+		var htm = "";
+		for(var i in list){
+			var title = $("#title_"+list[i]).text();
+			if(!title){
+				continue;
+			}
+			htm += '<p>[download:'+list[i]+']'+title+'[/download]</p>'+"\n";
+		}
+	}
+	return htm;
+}
+
+</script>
+<div class="layui-card" style="margin-bottom:0;">
+	<div class="layui-card-header" style="padding-top:5px;">
+		<form method="post" class="layui-form" action="{url ctrl=ckeditor func=filelist/}">
+		<ul class="layout">
+			<li><input type="text" id="file_ext" name="file_ext" value="{$file_ext}" placeholder="{lang输入文件后缀}" /></li>
+			<li><input type="text" id="keywords" name="keywords" value="{$keywords}" placeholder="{lang输入要搜索的关键字}" /></li>
+			<li><input type="submit" value="搜索" class="layui-btn layui-btn-sm" /></li>
+		</ul>
+		</form>
+	</div>
+	<div class="layui-card-body layui-form">
+		<table class="layui-table" id="filelist">
+		<thead>
+		<tr>
+			<th width="30px" height="30px">
+				<input type="button" value="全选" onclick="$.checkbox.all()" class="layui-btn layui-btn-xs" />
+			</th>
+			<th>{lang名称}</th>
+			<th>{lang时间}</th>
+			<th>{lang文件名}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td><input type="checkbox" id="t_{$value.id}" value="{$value.id}" lay-skin="primary" title="{$value.id}" /></td>
+			<td id="title_{$value.id}">{$value.title}</td>
+			<td>{func date "Y-m-d H:i" $value.addtime}</td>
+			<td>{$value.name}</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<div align="center"><!-- include tpl=pagelist --></div>
+	</div>
+</div>
+<!-- include tpl=foot_lay is_open=true -->

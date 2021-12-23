@@ -83,7 +83,7 @@ class cart_control extends phpok_control
 	**/
 	public function checkout_f()
 	{
-		$id = $this->get('id');
+		$id = $this->get('id','int');
 		if($id){
 			if(!is_array($id)){
 				$id = explode(",",$id);
@@ -176,6 +176,11 @@ class cart_control extends phpok_control
 				$pricelist[$key] = $value;
 			}
 		}
+		foreach($pricelist as $key=>$value){
+			if($value['hidden'] && (!$value['price_val'] || $value['price_val'] == '0.00')){
+				unset($pricelist[$key]);
+			}
+		}
 		$this->assign('pricelist',$pricelist);
 		if($freight_price){
 			$price = price_format(($totalprice+$freight_price+$discount),$this->site['currency_id']);
@@ -210,7 +215,7 @@ class cart_control extends phpok_control
 
 	public function review_f()
 	{
-		$id = $this->get('id');
+		$id = $this->get('id','int');
 		if($id){
 			if(!is_array($id)){
 				$id = explode(",",$id);
@@ -304,6 +309,11 @@ class cart_control extends phpok_control
 				$pricelist[$key] = $value;
 			}
 		}
+		foreach($pricelist as $key=>$value){
+			if($value['hidden'] && (!$value['price_val'] || $value['price_val'] == '0.00')){
+				unset($pricelist[$key]);
+			}
+		}
 		$this->assign('pricelist',$pricelist);
 		if($freight_price){
 			$price = price_format(($totalprice+$freight_price+$discount),$this->site['currency_id']);
@@ -353,7 +363,7 @@ class cart_control extends phpok_control
 
 	public function confirm_f()
 	{
-		$id = $this->get('id');
+		$id = $this->get('id','int');
 		if($id){
 			if(!is_array($id)){
 				$id = explode(",",$id);
@@ -461,6 +471,11 @@ class cart_control extends phpok_control
 					$this->assign('coupon_code',$tmp['code']);
 				}
 				$pricelist[$key] = $value;
+			}
+		}
+		foreach($pricelist as $key=>$value){
+			if($value['hidden'] && (!$value['price_val'] || $value['price_val'] == '0.00')){
+				unset($pricelist[$key]);
 			}
 		}
 		$this->assign('pricelist',$pricelist);
@@ -575,7 +590,7 @@ class cart_control extends phpok_control
 	}
 
 	/**
-	 * 会员购买商品最后填写的地址
+	 * 用户购买商品最后填写的地址
 	**/
 	private function _address()
 	{
@@ -694,6 +709,11 @@ class cart_control extends phpok_control
 				$pricelist[$key] = $value;
 			}
 		}
+		foreach($pricelist as $key=>$value){
+			if($value['hidden'] && (!$value['price_val'] || $value['price_val'] == '0.00')){
+				unset($pricelist[$key]);
+			}
+		}
 		$data = array('pricelist'=>$pricelist,'price'=>price_format($price));
 		$this->success($data);
 	}
@@ -777,5 +797,28 @@ class cart_control extends phpok_control
 			$price += $_SESSION['cart']['freight_price'];
 		}
 		$this->json(price_format($price,$this->site['currency_id']),true);
+	}
+
+	public function address_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非用户不能执行此功能'));
+		}
+		$id = $this->get('id','int');
+		if($id){
+			$rs = $this->model('user')->address_one($id);
+			if(!$rs || $rs['user_id'] != $_SESSION['user_id']){
+				$this->error(P_Lang('地址信息不存在或您没有权限修改此地址'));
+			}
+			$this->assign('id',$id);
+			$this->assign('rs',$rs);
+		}else{
+			$rs = array();
+		}
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'cart_address';
+		}
+		$this->view($tplfile);
 	}
 }

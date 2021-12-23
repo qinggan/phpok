@@ -1,0 +1,100 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header layuiadmin-card-header-auto">
+		<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_coupon_user.search()">
+		<ul class="layout">
+			<li style="width:200px"><input type="text" name="keywords[title]" id="keywords_title" data-name="keywords" value="{$keywords.title}" placeholder="{lang优惠券名称}" class="layui-input" /></li>
+			<li style="width:200px"><input type="text" name="keywords[code]" id="keywords_code" data-name="keywords" value="{$keywords.code}" placeholder="{lang优惠码}" class="layui-input" /></li>
+			<li style="width:180px">
+				<select name="keywords[type]">
+					<option value="dateline">优惠券领取时间</option>
+					<option value="startdate"{if $keywords && $keywords.type == 'startdate'} selected{/if}>活动开始时间</option>
+					<option value="stopdate"{if $keywords && $keywords.type == 'stopdate'} selected{/if}>活动结束时间</option>
+				</select>
+			</li>
+			<li style="width:150px"><input type="text" name="keywords[startdate]" id="keywords_startdate" data-name="keywords" value="{$keywords.startdate}" placeholder="{lang开始时间}" class="layui-input" /></li>
+			<li style="width:150px"><input type="text" name="keywords[stopdate]" id="keywords_stopdate" data-name="keywords" value="{$keywords.stopdate}" placeholder="{lang结束时间}" class="layui-input" /></li>
+			<li><input type="submit" value="搜索" class="layui-btn" /></li>
+			<!-- if $keywords -->
+			<li><a href="{url ctrl=coupon func=users/}" class="layui-btn layui-btn-danger">取消</a></li>
+			<!-- /if -->
+		</ul>
+		</form>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>状态</th>
+			<th>用户</th>
+			<th>优惠码</th>
+			<th>优惠方案</th>
+			<th>开始时间</th>
+			<th>结束时间</th>
+			<th>领取时间</th>
+			<th>操作</th>
+		</tr>
+		</thead>
+		<tbody class="layui-form">
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td><input type="checkbox" value="{$value.id}" title="{$value.id}" lay-skin="primary" /></td>
+			<td>
+				<!-- if $value.stopdate < $sys.time -->
+				<input type="button" value="已结束" class="layui-btn layui-btn-xs layui-btn-warm" />
+				<!-- else -->
+					<!-- if $value.startdate > $sys.time -->
+					<input type="button" value="未开始" class="layui-btn layui-btn-xs layui-btn-disabled" disabled />
+					<!-- else -->
+					<input type="button" value="进行中" class="layui-btn layui-btn-xs" />
+					<!-- /if -->
+				<!-- /if -->
+			</td>
+			<td>
+				{$value.user}
+			</td>
+			<td>
+				{$value.discount_code}
+			</td>
+			<td>
+				{$value.title}
+				<!-- if $value.discount_val -->
+				/ {$value.discount_val}<!-- if $value.discount_type --> 元<!-- else -->%<!-- /if -->
+				<!-- /if -->
+			</td>
+			<td>
+				{func date Y-m-d $value.startdate}
+			</td>
+			<td>
+				{func date Y-m-d $value.stopdate}
+			</td>
+			<td>
+				{func date 'Y-m-d H:i:s' $value.dateline}
+			</td>
+			<td>
+				<input type="button" value="{lang删除}" onclick="$.admin_coupon_user.del({$value.id})" class="layui-btn layui-btn-sm layui-btn-danger" />
+			</td>
+		</tr>
+		<!-- /loop -->
+		</tbody>
+		</table>
+		<ul class="layout">
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.all()" />
+					<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.none()" />
+					<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.anti()" />
+				</div>
+			</li>
+			<li>
+				<input type="button" value="{lang删除}" class="layui-btn layui-btn-danger layui-btn-sm" onclick="$.admin_coupon_user.del()" />
+			</li>
+			<li><input type="button" value="清除失效的优惠券" onclick="$.admin_coupon_user.clear_users_expire()" class="layui-btn layui-btn-sm layui-btn-danger" /></li>
+		</ul>
+		<!-- include tpl=pagelist -->
+	</div>
+	
+</div>
+
+<!-- include tpl=foot_lay -->

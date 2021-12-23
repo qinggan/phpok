@@ -1,0 +1,72 @@
+<!-- include tpl=usercp/head -->
+<script type="text/javascript">
+function img_preview(id)
+{
+	var u = $("#"+id).val();
+	if(!u){
+		$.dialog.alert('图片不能为空');
+		return false;
+	}
+	$.phpok.open(u);
+}
+</script>
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">
+					个人主页装扮
+					<small class="float-right">
+						<a href="{url ctrl=user uid=$me.id/}" target="_blank">访问个人主页</a>
+					</small>
+				</div>
+				<div class="card-body">
+					<form method="post" id="post_save" onsubmit="return $.phpok_app_social.homepage(this)">
+					<div class="form-group">
+						<label for="banner">个人主页背景，建议宽高：1920x450</label>
+						<div class="d-flex flex-row bd-highlight mb-3">
+							<div class="pr-2 flex-fill"><input type="text" name="banner" id="banner" value="{$rs.banner}" class="form-control" /></div>
+							<div role="group" aria-label="">
+								<button type="button" class="btn btn-primary" onclick="$.phpokform.text_button_image_select('banner')">选择图片</button>
+								<button type="button" class="btn btn-primary" onclick="img_preview('banner')">预览</button>
+								<button type="button" class="btn btn-danger" onclick="$.phpokform.clear('banner')">清空</button>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="banner">手机版背景，建议宽高：750x450</label>
+						<div class="d-flex flex-row bd-highlight mb-3">
+							<div class="pr-2 flex-fill"><input type="text" name="mbanner" id="mbanner" value="{$rs.mbanner}" class="form-control" /></div>
+							<div role="group" aria-label="">
+								<button type="button" class="btn btn-primary" onclick="$.phpokform.text_button_image_select('mbanner')">选择图片</button>
+								<button type="button" class="btn btn-primary" onclick="img_preview('mbanner')">预览</button>
+								<button type="button" class="btn btn-danger" onclick="$.phpokform.clear('mbanner')">清空</button>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="banner">签名</label>
+						<small class="float-right">要求不能超过总字数80字</small>
+						<div class="d-flex flex-row bd-highlight mb-3">
+							<div class="flex-fill"><input type="text" name="heart" id="heart" value="{$rs.heart}" class="form-control" /></div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="banner">标签</label>
+						<small class="float-right">多个标签用英文逗号隔开，总字数不能超过80字</small>
+						<div class="d-flex flex-row bd-highlight mb-3">
+							<div class="flex-fill"><input type="text" name="tags" id="tags" value="{$rs.tags}" class="form-control" /></div>
+						</div>
+					</div>
+					<div class="mt-4 text-center">
+						<button type="submit" class="btn btn-primary">保存数据</button>
+					</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

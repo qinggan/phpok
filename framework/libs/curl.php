@@ -50,6 +50,7 @@ class curl_lib
 	private $cookie = array(); // COOKIE 信息，数组
 	private $cookie_file = '';
 	private $error = false;
+	private $async = false;
 
 	/**
 	 * 超时设置
@@ -60,6 +61,18 @@ class curl_lib
 			$this->timeout = $val;
 		}
 		return $this->timeout;
+	}
+
+	public function async($val='')
+	{
+		if(is_bool($val)){
+			$this->async = $val;
+		}
+		if($this->async){
+			ignore_user_abort(true);
+			set_time_limit(0);
+		}
+		return true;
 	}
 
 	public function set_cookie($key,$value='')
@@ -584,7 +597,7 @@ class curl_lib
 			return json_decode($info,true);
 		}
 		if(substr($this->http_body,0,1) != '{'){
-			$info = $this->error('非 JSON 数据','json');
+			$info = $this->error('非 JSON 数据：'.$this->http_body,'json');
 			return json_decode($info,true);
 		}
 		return json_decode($this->http_body,true);

@@ -149,7 +149,7 @@ class ext_lib
 		return $GLOBALS['app']->model('res')->get_one($id,true);
 	}
 
-	//取得会员列表
+	//取得用户列表
 	function user_list($id)
 	{
 		$id = $this->safe_format($id);
@@ -182,7 +182,7 @@ class ext_lib
 		if($ext_rs)
 		{
 			unset($ext_rs["id"]);
-			//读取扩展会员表信息
+			//读取扩展用户表信息
 			$flist = $this->user_fields();
 			if($flist)
 			{
@@ -523,7 +523,7 @@ class ext_lib
 		return $list;
 	}
 	
-	//格式化会员信息
+	//格式化用户信息
 	function _format_user($rs)
 	{
 		if(!$rs || !$rs["content"]) return false;
@@ -621,7 +621,7 @@ class ext_lib
 		return false;
 	}
 
-	//读取会员扩展模板字段内容信息
+	//读取用户扩展模板字段内容信息
 	function user_fields()
 	{
 		$sql = "SELECT * FROM ".$GLOBALS['app']->db->prefix."fields WHERE ftype='user' ORDER BY taxis ASC,id DESC";

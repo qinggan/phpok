@@ -142,6 +142,7 @@ class fields_control extends phpok_control
 		$array["form_style"] = $form_style;
 		$array["format"] = $format;
 		$array["content"] = $content;
+		$array['group_id'] = 'main';
 		$array["ext"] = $ext;
 		$this->model('fields')->default_save($array);
 		$this->success();

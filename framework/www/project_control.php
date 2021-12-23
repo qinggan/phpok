@@ -166,7 +166,6 @@ class project_control extends phpok_control
 				$this->error(P_Lang('项目所绑定的根分类已停用，请联系管理员'));
 			}
 			$this->assign('cate_root',$cate_root_rs);
-			unset($cate_root_rs);
 		}
 		$dt = array('pid'=>$rs['id']);
 		if($cateid){
@@ -190,11 +189,27 @@ class project_control extends phpok_control
 			unset($keywords);
 		}
 		if($ext && is_array($ext)){
+			$flist = $this->model('module')->fields_all($rs['module'],'identifier');
 			foreach($ext as $key=>$value){
-				if($key && $value){
-					$dt['e_'.$key] = $value;
-					$pageurl .= "ext[".$key."]=".rawurlencode($value)."&";
+				if(!$key || !$value){
+					continue;
 				}
+				if($flist[$key] && $flist[$key]['filter'] == 2 && $flist[$key]['filter_join'] && strpos($value,$flist[$key]['filter_join']) !== false){
+					$tmp = explode($flist[$key]['filter_join'],$value);
+					$tmplist = array();
+					foreach($tmp as $k=>$v){
+						$tmplist[] = "ext.".$key." LIKE '%".$v."%'";
+					}
+					$condition = "(".implode(" OR ",$tmplist).") ";
+					if($dt['sqlext']){
+						$dt['sqlext'] .= " AND ".$condition;
+					}else{
+						$dt['sqlext'] = $condition;
+					}
+				}else{
+					$dt['e_'.$key] = $value;
+				}
+				$pageurl .= "ext[".$key."]=".rawurlencode($value)."&";
 			}
 			$this->assign('ext',$ext);
 		}
@@ -259,7 +274,7 @@ class project_control extends phpok_control
 				unset($dt_ext['sqlext']);
 			}
 			$dt = array_merge($dt,$dt_ext);
-		}
+		}		
 		$info = $this->call->phpok('_arclist',$dt);
 		$total_page = intval($info['total']/$dt['psize']);
 		if($info['total']%$dt['psize']){
@@ -289,6 +304,14 @@ class project_control extends phpok_control
 			}
 			$this->error(P_Lang('未配置模板 {tplfile}，请配置相应的模板',array('tplfile'=>$tplfile)));
 		}
+		//加载筛选器
+		$tmpdata = array('page_rs'=>$rs,'cate_rs'=>$cate_rs,'parent_rs'=>$parent_rs,'cate_parent_rs'=>$cate_parent_rs,'rslist'=>$rslist,'total'=>$total,'url'=>$pageurl,'dt'=>$dt,'ext'=>$ext);
+		$tmpdata['cate_root'] = $cate_root_rs;
+		$tmpdata['module'] = $m_rs;
+		$tmpdata['price'] = $price;
+		if($rs['filter_status']){
+			$this->_filter($tmpdata);
+		}
 		unset($rslist,$total,$pageurl,$psize,$pageid,$rs,$parent_rs);
 		$this->phpok_seo();
 		$tpl = $this->get('tplfile');
@@ -296,5 +319,364 @@ class project_control extends phpok_control
 			$tplfile = $tpl;
 		}
 		$this->view($tplfile);
+	}
+
+	private function _filter($data)
+	{
+		$filter = array();
+		$urlist = $this->_url2list($data['url'],$data['page_rs'],$data['cate_rs']);
+		if($data['page_rs'] && $data['page_rs']['cate'] && $data['page_rs']['filter_cate_status']){
+			$this->filter_cate($filter,$data,$urlist);
+		}
+		$flist = $this->model('module')->fields_all($data['page_rs']['module']);
+		if($flist){
+			foreach($flist as $key=>$value){
+				if(!$value['search'] || !$value['filter']){
+					continue;
+				}
+				if($value['ext'] && is_string($value['ext'])){
+					$value['ext'] = unserialize($value['ext']);
+				}
+				if($value['filter_content'] && trim($value['filter_content'])){
+					$this->filter_content($filter,$data,$urlist,$value);
+				}else{
+					if($value['form_type'] == 'text'){
+						$this->filter_text($filter,$data,$urlist,$value);
+					}
+					if($value['form_type'] == 'radio' || $value['form_type'] == 'checkbox' || $value['form_type'] == 'select'){
+						$this->filter_options($filter,$data,$urlist,$value);
+					}
+				}
+			}
+		}
+		if($data['page_rs'] && $data['page_rs']['is_biz'] && $data['page_rs']['filter_price']){
+			$this->filter_price($filter,$data,$urlist);
+		}
+		$this->assign('filter',$filter);
+	}
+
+	/**
+	 * 价格筛选器
+	**/
+	private function filter_price(&$filter,$data,$urlist)
+	{
+		$highlight = true;
+		$tmplist = array();
+		if($data['page_rs']['filter_price_info']){
+			$tmp = explode("\n",$data['page_rs']['filter_price_info']);
+			$rslist = array();
+			foreach($tmp as $key=>$value){
+				$value = trim($value);
+				if(!$value){
+					continue;
+				}
+				$e = explode(":",$value);
+				if(!$e[0]){
+					continue;
+				}
+				$p = explode("-",$e[0]);
+				$t = array('val'=>$e[0],"min"=>$p[0],'max'=>$p[1],"title"=>($e[1] ? $e[1] : $e[0]));
+				$rslist[] = $t;
+			}
+			foreach($rslist as $key=>$value){
+				$urldata = $urlist;
+				$tmp = array();
+				$tmp['title'] = $value['title'];
+				if($value['val']){
+					$urldata['price'] = array('min'=>$value['min'],'max'=>$value['max']);
+				}
+				
+				$tmp['url'] = $this->_array2url($urldata);
+				$tmp['identifier'] = 'price';
+				$tmp['val'] = $value['val'];
+				$tmp['urlext'] = "price[min]=".$value['min'].'&price[max]='.$value['max'];
+				$tmp['highlight'] = false;
+				if($data['price'] && $data['price']['min'] == $value['min'] && $data['price']['max'] == $value['max']){
+					$tmp['highlight'] = true;
+					$highlight = false;
+				}
+				$tmplist[] = $tmp;
+			}
+		}
+
+		$title = $data['page_rs']['filter_price_title'] ? $data['page_rs']['filter_price_title'] : P_Lang('价格');
+		$rootData = $urlist;
+		if(isset($rootData['price'])){
+			unset($rootData['price']);
+		}
+		$tmpdata = array('title'=>$title,'highlight'=>$highlight,'identifier'=>'price',"join"=>false,"user"=>true,'url'=>$this->_array2url($rootData),'list'=>$tmplist);
+		$filter['price'] = $tmpdata;
+	}
+
+	/**
+	 * 自定义内容筛选器
+	**/
+	private function filter_content(&$filter,$data,$urlist,$fields)
+	{
+		$tmp = explode("\n",$fields['filter_content']);
+		$rslist = array();
+		foreach($tmp as $key=>$value){
+			$value = trim($value);
+			if(!$value){
+				continue;
+			}
+			$e = explode(":",$value);
+			$t = array("val"=>$e[0],"title"=>($e[1] ? $e[1] : $e[0]));
+			$rslist[] = $t;
+		}
+		$highlight = true;
+		$tmplist = array();
+		foreach($rslist as $key=>$value){
+			$urldata = $urlist;
+			$tmp = array();
+			$tmp['title'] = $value['title'] ? $value['title'] : $value['val'];
+			$urldata['ext'][$fields['identifier']] = $value['val'];
+			$tmp['url'] = $this->_array2url($urldata);
+			$tmp['identifier'] = 'ext['.$fields['identifier'].']';
+			$tmp['val'] = $value['val'];
+			$tmp['urlext'] = "ext[".$fields['identifier']."]=".rawurlencode($value['val']);
+			$tmp['highlight'] = false;
+			if($data['ext'] && $data['ext'][$fields['identifier']]){
+				if($fields['filter'] == 2 && $fields['filter_join']){
+					$m = explode($fields['filter_join'],$data['ext'][$fields['identifier']]);
+					if(in_array($value['val'],$m)){
+						$tmp['highlight'] = true;
+						$highlight = false;
+					}
+				}else{
+					if($data['ext'][$fields['identifier']] == $value['val']){
+						$tmp['highlight'] = true;
+						$highlight = false;
+					}
+				}
+			}
+			$tmplist[] = $tmp;
+		}
+		$rootData = $urlist;
+		if(isset($rootData['ext']) && isset($rootData['ext'][$fields['identifier']])){
+			unset($rootData['ext'][$fields['identifier']]);
+		}
+		$join = ($fields['filter_join'] && $fields['filter'] == 2) ? $fields['filter_join'] : false;
+		$title = $fields['filter_title'] ? $fields['filter_title'] : $fields['title'];
+		$tmpdata = array('title'=>$title,'highlight'=>$highlight,'identifier'=>$fields['identifier'],"join"=>$join,"user"=>false,'url'=>$this->_array2url($rootData),'list'=>$tmplist);
+		$filter[$fields['identifier']] = $tmpdata;
+	}
+
+	/**
+	 * 单选，多选，下拉筛选器
+	**/
+	private function filter_options(&$filter,$data,$urlist,$fields)
+	{
+		if(!$fields['ext']){
+			return false;
+		}
+		$opt_list = $fields['ext']["option_list"] ? explode(":",$fields['ext']["option_list"]) : array('default','');
+		$rslist = opt_rslist($opt_list[0],$opt_list[1],$fields['ext']['ext_select']);
+		if(!$rslist){
+			return false;
+		}
+		$highlight = true;
+		$tmplist = array();
+		foreach($rslist as $key=>$value){
+			$urldata = $urlist;
+			$tmp = array();
+			$tmp['title'] = $value['title'] ? $value['title'] : $value['val'];
+			$urldata['ext'][$fields['identifier']] = $value['val'];
+			$tmp['url'] = $this->_array2url($urldata);
+			$tmp['identifier'] = 'ext['.$fields['identifier'].']';
+			$tmp['val'] = $value['val'];
+			$tmp['urlext'] = "ext[".$fields['identifier']."]=".rawurlencode($value['val']);
+			$tmp['highlight'] = false;
+			if($data['ext'] && $data['ext'][$fields['identifier']]){
+				if($fields['filter'] == 2 && $fields['filter_join']){
+					$m = explode($fields['filter_join'],$data['ext'][$fields['identifier']]);
+					if(in_array($value['val'],$m)){
+						$tmp['highlight'] = true;
+						$highlight = false;
+					}
+				}else{
+					if($data['ext'][$fields['identifier']] == $value['val']){
+						$tmp['highlight'] = true;
+						$highlight = false;
+					}
+				}
+			}
+			$tmplist[] = $tmp;
+		}
+		$rootData = $urlist;
+		if(isset($rootData['ext']) && isset($rootData['ext'][$fields['identifier']])){
+			unset($rootData['ext'][$fields['identifier']]);
+		}
+		$join = ($fields['filter_join'] && $fields['filter'] == 2) ? $fields['filter_join'] : false;
+		$title = $fields['filter_title'] ? $fields['filter_title'] : $fields['title'];
+		$tmpdata = array('title'=>$title,'highlight'=>$highlight,'identifier'=>$fields['identifier'],"join"=>$join,"user"=>false,'url'=>$this->_array2url($rootData),'list'=>$tmplist);
+		$filter[$fields['identifier']] = $tmpdata;
+	}
+
+	/**
+	 * 文本框筛选值
+	**/
+	private function filter_text(&$filter,$data,$urlist,$fields)
+	{
+		$tbl = $this->db->prefix;
+		if($data['module'] && $data['module']['mtype']){
+			$tbl .= $data['module']['id'];
+			$sql = "SELECT count(id) as total,".$fields['identifier']." as title FROM ".$tbl." WHERE project_id='".$data['page_rs']['id']."' GROUP BY ".$fields['identifier'];
+		}else{
+			$tbl .= 'list_'.$data['module']['id'];
+			$sql  = " SELECT count(l.id) as total,e.".$fields['identifier']." as title FROM ".$this->db->prefix."list l ";
+			$sql .= " LEFT JOIN ".$tbl." e ON(l.id=e.id) ";
+			$sql .= " WHERE l.project_id='".$data['page_rs']['id']."' AND l.site_id='".$data['page_rs']['site_id']."' AND l.status=1 AND l.hidden=0 ";
+			$sql .= " AND e.".$fields['identifier']."!='' AND e.".$fields['identifier']." IS NOT NULL";
+			$sql .= " GROUP BY e.".$fields['identifier'];
+		}
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		$highlight = true;
+		$tmplist = array();
+		foreach($rslist as $key=>$value){
+			$urldata = $urlist;
+			$tmp = array();
+			$tmp['title'] = $value['title'];
+			$urldata['ext'][$fields['identifier']] = $value['title'];
+			$tmp['url'] = $this->_array2url($urldata);
+			$tmp['identifier'] = 'ext['.$fields['identifier'].']';
+			$tmp['val'] = $value['title'];
+			$tmp['urlext'] = "ext[".$fields['identifier']."]=".rawurlencode($value['title']);
+			$tmp['highlight'] = false;
+			$tmp['count'] = $value['total'];
+			if($data['ext'] && $data['ext'][$fields['identifier']]){
+				if($fields['filter'] == 2 && $fields['filter_join']){
+					$m = explode($fields['filter_join'],$data['ext'][$fields['identifier']]);
+					if(in_array($value['title'],$m)){
+						$tmp['highlight'] = true;
+						$highlight = false;
+					}
+				}else{
+					if($data['ext'][$fields['identifier']] == $value['title']){
+						$tmp['highlight'] = true;
+						$highlight = false;
+					}
+				}
+			}
+			$tmplist[] = $tmp;
+		}
+		$rootData = $urlist;
+		if(isset($rootData['ext']) && isset($rootData['ext'][$fields['identifier']])){
+			unset($rootData['ext'][$fields['identifier']]);
+		}
+		$join = ($fields['filter_join'] && $fields['filter'] == 2) ? $fields['filter_join'] : false;
+		$title = $fields['filter_title'] ? $fields['filter_title'] : $fields['title'];
+		$tmpdata = array('title'=>$title,'identifier'=>$fields['identifier'],'highlight'=>$highlight,"join"=>$join,"user"=>false,'url'=>$this->_array2url($rootData),'list'=>$tmplist);
+		$filter[$fields['identifier']] = $tmpdata;
+	}
+
+	/**
+	 * 分类筛选器
+	**/
+	private function filter_cate(&$filter,$data,$urlist)
+	{
+		$subcatelist = phpok("_subcate","cateid=".$data['page_rs']['cate']);
+		if(!$subcatelist){
+			return false;
+		}
+		$highlight = true;
+		$title = $data['page_rs']['filter_cate'] ? $data['page_rs']['filter_cate'] : $data['cate_root']['title'];
+		$tmplist = array();
+		foreach($subcatelist as $key=>$value){
+			$urldata = $urlist;
+			$tmp = array();
+			$tmp['title'] = $value['title'];
+			$urldata['cate'] = $value['identifier'];
+			$tmp['url'] = $this->_array2url($urldata);
+			$tmp['identifier'] = 'cate';
+			$tmp['val'] = $value['identifier'];
+			$tmp['urlext'] = "cate=".$value['identifier'];
+			$tmp['highlight'] = false;
+			if(($data['cate_rs'] && $data['cate_rs']['id'] == $value['id']) || ($data['cate_parent_rs'] && $data['cate_parent_rs']['id'] == $value['id'])){
+				$tmp['highlight'] = true;
+				$highlight = false;
+			}
+			$tmplist[] = $tmp;
+		}
+		$rootData = $urlist;
+		if(isset($rootData['cate'])){
+			unset($rootData['cate']);
+		}
+		$tmpdata = array("title"=>$title,"highlight"=>$highlight,'identifier'=>'cate',"join"=>false,"user"=>false,"url"=>$this->_array2url($rootData),"list"=>$tmplist);
+		$filter['catelist'] = $tmpdata;
+		if($data['cate_rs']){
+			$subcatelist = phpok("_subcate","cateid=".$data['cate_rs']['id']);
+			if(!$subcatelist){
+				return false;
+			}
+			$highlight = true;
+			$title = $data['cate_rs']['title'];
+			$tmplist = array();
+			foreach($subcatelist as $key=>$value){
+				$urldata = $urlist;
+				$tmp = array();
+				$tmp['title'] = $value['title'];
+				$urldata['cate'] = $value['identifier'];
+				$tmp['url'] = $this->_array2url($urldata);
+				$tmp['identifier'] = 'cate';
+				$tmp['val'] = $value['identifier'];
+				$tmp['urlext'] = "cate=".$value['identifier'];
+				$tmp['highlight'] = false;
+				if($data['cate_rs'] && $data['cate_rs']['id'] == $value['id']){
+					$tmp['highlight'] = true;
+					$highlight = false;
+				}
+				$tmplist[] = $tmp;
+			}
+			$tmpdata = array("title"=>$title,"highlight"=>$highlight,'identifier'=>'cate',"join"=>false,"user"=>false,"url"=>$this->_array2url($urlist),"list"=>$tmplist);
+			$filter['subcatelist'] = $tmpdata;
+		}
+	}
+
+	/**
+	 * 将网址格式化为数组
+	**/
+	private function _url2list($url,$page_rs=array(),$cate_rs=array())
+	{
+		$tmp = parse_url($url);
+		$data = array();
+		$data['id'] = $page_rs['identifier'];
+		if($cate_rs){
+			$data['cate'] = $cate_rs['identifier'];
+		}
+		if($tmp['query']){
+			parse_str($tmp['query'], $output);
+			foreach($output as $key=>$value){
+				$data[$key] = $value;
+			}
+		}
+		return $data;
+	}
+
+	/**
+	 * 数组转成URL
+	**/
+	private function _array2url($urlist)
+	{
+		$urlext = array();
+		foreach($urlist as $key=>$value){
+			if($key == 'id' || $key == 'cate'){
+				continue;
+			}
+			if(is_array($value)){
+				foreach($value as $k=>$v){
+					if($v != ''){
+						$urlext[] = $key.'['.$k.']='.rawurlencode($v);
+					}
+				}
+			}else{
+				$urlext[] = $key.'='.rawurlencode($value);
+			}
+		}
+		$tmp = implode('&',$urlext);
+		return $this->url($urlist['id'],$urlist['cate'],$tmp);
 	}
 }

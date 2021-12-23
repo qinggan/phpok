@@ -68,10 +68,10 @@ class me_control extends phpok_control
 		$vpass = $this->get('vpass');
 		if($vpass){
 			if($vpass == $oldpass){
-				$this->error(P_Lang('二次密码不能和旧密码一样'));
+				$this->error(P_Lang('二次密码不能和登录密码一样'));
 			}
 			if($newpass && $vpass == $newpass){
-				$this->error(P_Lang('二次密码不能和新密码一样'));
+				$this->error(P_Lang('二次密码不能和登录密码一样'));
 			}
 			$array['vpass'] = md5(md5($vpass));
 		}

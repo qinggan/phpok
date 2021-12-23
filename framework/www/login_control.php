@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员登录操作，基于WEB模式
+ * 用户登录操作，基于WEB模式
  * @package phpok\www
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
@@ -39,7 +39,7 @@ class login_control extends phpok_control
 		}
 		if(!$this->site['login_status']){
 			$tips = $this->site["login_close"] ? $this->site["login_close"] : P_Lang('网站关闭');
-			$this->error($tips,$backurl);
+			$this->error($tips);
 		}
 		$check_sms = $this->model('gateway')->get_default('sms');
 		if($this->site['login_type'] && $this->site['login_type'] == 'sms' && $check_sms){
@@ -71,7 +71,7 @@ class login_control extends phpok_control
 		}
 		if(!$this->site['login_status']){
 			$tips = $this->site["login_close"] ? $this->site["login_close"] : P_Lang('网站关闭');
-			$this->error($tips,$backurl,10);
+			$this->error($tips);
 		}
 		$chk = $this->model('gateway')->get_default('sms');
 		if(!$chk){
@@ -101,7 +101,7 @@ class login_control extends phpok_control
 		}
 		if(!$this->site['login_status']){
 			$tips = $this->site["login_close"] ? $this->site["login_close"] : P_Lang('网站关闭');
-			$this->error($tips,$backurl,10);
+			$this->error($tips);
 		}
 		$chk = $this->model('gateway')->get_default('email');
 		if(!$chk){
@@ -125,7 +125,7 @@ class login_control extends phpok_control
 	 * 基于WEB的登录模式，有返回有跳转，适用于需要嵌入第三方HTML代码使用
 	 * @参数 _back 返回之前登录后的页面
 	 * @参数 _chkcode 验证码，根据实际情况判断是否启用此项
-	 * @参数 user 会员账号/邮箱/手机号
+	 * @参数 user 用户账号/邮箱/手机号
 	 * @参数 pass 密码
 	**/
 	public function ok_f()
@@ -138,7 +138,7 @@ class login_control extends phpok_control
 			$error_url = $this->url('login','','_back='.rawurlencode($_back));
 		}
 		if($this->session->val('user_id')){
-			$this->success(P_Lang('您已是本站会员，不需要再次登录'),$_back);
+			$this->success(P_Lang('您已是本站用户，不需要再次登录'),$_back);
 		}
 		if($this->model('site')->vcode('system','login')){
 			$code = $this->get('_chkcode');
@@ -158,7 +158,7 @@ class login_control extends phpok_control
 		}
 		$pass = $this->get("pass");
 		if(!$pass){
-			$this->error(P_Lang('会员密码不能为空'),$error_url);
+			$this->error(P_Lang('用户密码不能为空'),$error_url);
 		}
 		//多种登录方式
 		$user_rs = $this->model('user')->get_one($user,'user');
@@ -167,15 +167,15 @@ class login_control extends phpok_control
 			if(!$user_rs){
 				$user_rs = $this->model('user')->get_one($user,'mobile');
 				if(!$user_rs){
-					$this->error(P_Lang('会员信息不存在'),$error_url);
+					$this->error(P_Lang('用户信息不存在'),$error_url);
 				}
 			}
 		}
 		if(!$user_rs['status']){
-			$this->error(P_Lang('会员审核中，暂时不能登录'),$error_url);
+			$this->error(P_Lang('用户审核中，暂时不能登录'),$error_url);
 		}
 		if($user_rs['status'] == '2'){
-			$this->error(P_Lang('会员被管理员锁定，请联系管理员解锁'),$error_url);
+			$this->error(P_Lang('用户被管理员锁定，请联系管理员解锁'),$error_url);
 		}
 		if(!password_check($pass,$user_rs["pass"])){
 			$this->error(P_Lang('登录密码不正确'),$error_url);
@@ -184,8 +184,8 @@ class login_control extends phpok_control
 		$this->session->assign('user_gid',$user_rs['group_id']);
 		$this->session->assign('user_name',$user_rs['user']);
 		//接入财富
-		$this->model('wealth')->login($user_rs['id'],P_Lang('会员登录'));
-		$this->success(P_Lang('会员登录成功'),$_back);
+		$this->model('wealth')->login($user_rs['id'],P_Lang('用户登录'));
+		$this->success(P_Lang('用户登录成功'),$_back);
 	}
 
 	/**
@@ -194,7 +194,7 @@ class login_control extends phpok_control
 	public function open_f()
 	{
 		if($this->session->val('user_id')){
-			$this->error(P_Lang('您已是本站会员，不需要再次登录'));
+			$this->error(P_Lang('您已是本站用户，不需要再次登录'));
 		}
 		if(!$this->site['login_status']){
 			$tips = $this->site["login_close"] ? $this->site["login_close"] : P_Lang('网站关闭');

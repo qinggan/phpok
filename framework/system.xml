@@ -54,7 +54,7 @@
 			<note><![CDATA[仅能单选一个项目，项目要求绑定模块]]></note>
 		</extitle>
 		<user>
-			<title><![CDATA[会员]]></title>
+			<title><![CDATA[用户]]></title>
 			<note><![CDATA[支持单选和多选，仅限后台使用]]></note>
 		</user>
 		<url>

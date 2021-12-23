@@ -1,7 +1,6 @@
 <?php
 /**
  * 报表及统计相关
- * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -17,8 +16,13 @@ class report_model_base extends phpok_model
 		parent::model();
 	}
 
+	public function all()
+	{
+		//
+	}
+
 	/**
-	 * 会员统计数据
+	 * 用户统计数据
 	 * @参数 $x X轴数据
 	 * @参数 $y Y轴数据
 	 * @参数 $data_mode 数据统计模式
@@ -38,7 +42,11 @@ class report_model_base extends phpok_model
 				if(!$value || !trim($value)){
 					continue;
 				}
-				$tmp = $data_mode[$value] ? strtoupper($data_mode[$value]) : 'COUNT';
+				if(is_string($data_mode)){
+					$tmp = $data_mode;
+				}else{
+					$tmp = $data_mode[$value] ? strtoupper($data_mode[$value]) : 'COUNT';
+				}
 				$tmpext = $flist[$value] ? "ext" : "u";
 				$field[] = $tmp."(".$tmpext.".".$value.") as y_".$value;
 			}
@@ -47,10 +55,10 @@ class report_model_base extends phpok_model
 		$sql .= " LEFT JOIN ".$this->db->prefix."user_ext ext ON(u.id=ext.id) ";
 		$condition = array();
 		if($start){
-			$condition[] = "u.regtime>=".strtotime($start);
+			$condition[] = "u.regtime>=".(is_numeric($start) ? $start : strtotime($start));
 		}
 		if($stop){
-			$condition[] = "u.regtime<=".strtotime($stop);
+			$condition[] = "u.regtime<=".(is_numeric($stop) ? $stop : strtotime($stop));
 		}
 		$condition = implode(" AND ",$condition);
 		if($condition){
@@ -105,7 +113,11 @@ class report_model_base extends phpok_model
 				if(!$value || !trim($value)){
 					continue;
 				}
-				$tmp = $data_mode[$value] ? strtoupper($data_mode[$value]) : 'COUNT';
+				if(is_string($data_mode)){
+					$tmp = $data_mode;
+				}else{
+					$tmp = $data_mode[$value] ? strtoupper($data_mode[$value]) : 'COUNT';
+				}
 				$tmpext = in_array($value,array('qty','title')) ? "op" : "o";
 				if($value == 'user_id'){
 					$tmpext = 'DISTINCT o';
@@ -127,10 +139,10 @@ class report_model_base extends phpok_model
 			$condition[] = $tmp_array['condition'];
 		}
 		if($start){
-			$condition[] = "o.addtime>=".strtotime($start);
+			$condition[] = "o.addtime>=".(is_numeric($start) ? $start : strtotime($start));
 		}
 		if($stop){
-			$condition[] = "o.addtime<=".strtotime($stop);
+			$condition[] = "o.addtime<=".(is_numeric($stop) ? $stop : strtotime($stop));
 		}
 		$condition = implode(" AND ",$condition);
 		if($condition){
@@ -146,6 +158,8 @@ class report_model_base extends phpok_model
 		$sql .= " GROUP BY ".$group_by;
 		return $this->db->get_all($sql);
 	}
+
+	//public function title_stat($x='date',$)
 
 	/**
 	 * 主题统计数据
@@ -169,10 +183,10 @@ class report_model_base extends phpok_model
 			$condition[] = $tmp_array['condition'];
 		}
 		if($start){
-			$condition[] = "l.dateline>=".strtotime($start);
+			$condition[] = "l.dateline>=".(is_numeric($start) ? $start : strtotime($start));
 		}
 		if($stop){
-			$condition[] = "l.dateline<=".strtotime($stop);
+			$condition[] = "l.dateline<=".(is_numeric($stop) ? $stop : strtotime($stop));
 		}
 		$condition = implode(" AND ",$condition);
 		if($condition){
@@ -368,11 +382,15 @@ class report_model_base extends phpok_model
 		switch ($x) {
 			case 'week':
 				$array['group_by'] = "FROM_UNIXTIME(l.dateline,'%X-%V')";
-				$array['field'] = "FROM_UNIXTIME(l.dateline,'%X-%V') as x";
+				$array['field'] = "FROM_UNIXTIME(l.dateline,'%X第%V周') as x";
 				break;
 			case 'month':
 				$array['group_by'] = "FROM_UNIXTIME(l.dateline,'%Y-%m')";
 				$array['field'] = "FROM_UNIXTIME(l.dateline,'%Y-%m') as x";
+				break;
+			case 'quarter':
+				$array['group_by'] = "CONCAT(FROM_UNIXTIME(l.dateline,'%Y'),'-',QUARTER(FROM_UNIXTIME(l.dateline,'%Y-%m-%d')))";
+				$array['field'] = "CONCAT(FROM_UNIXTIME(l.dateline,'%Y'),'第',QUARTER(FROM_UNIXTIME(l.dateline,'%Y-%m-%d')),'季') as x";
 				break;
 			case 'year':
 				$array['group_by'] = "FROM_UNIXTIME(l.dateline,'%Y')";
@@ -392,11 +410,15 @@ class report_model_base extends phpok_model
 		switch ($x) {
 			case 'week':
 				$array['group_by'] = "FROM_UNIXTIME(o.addtime,'%X-%V')";
-				$array['field'] = "FROM_UNIXTIME(o.addtime,'%X-%V') as x";
+				$array['field'] = "FROM_UNIXTIME(o.addtime,'%X第%V周') as x";
 				break;
 			case 'month':
 				$array['group_by'] = "FROM_UNIXTIME(o.addtime,'%Y-%m')";
 				$array['field'] = "FROM_UNIXTIME(o.addtime,'%Y-%m') as x";
+				break;
+			case 'quarter':
+				$array['group_by'] = "CONCAT(FROM_UNIXTIME(o.addtime,'%Y'),'-',QUARTER(FROM_UNIXTIME(o.addtime,'%Y-%m-%d')))";
+				$array['field'] = "CONCAT(FROM_UNIXTIME(o.addtime,'%Y'),'第',QUARTER(FROM_UNIXTIME(o.addtime,'%Y-%m-%d')),'季') as x";
 				break;
 			case 'year':
 				$array['group_by'] = "FROM_UNIXTIME(o.addtime,'%Y')";
@@ -435,13 +457,22 @@ class report_model_base extends phpok_model
 		switch ($x) {
 			case 'week':
 				$array['group_by'] = "FROM_UNIXTIME(u.regtime,'%X-%V')";
-				$array['field'] = "FROM_UNIXTIME(u.regtime,'%X-%V') as x";
+				$array['field'] = "FROM_UNIXTIME(u.regtime,'%X第%V周') as x";
+				$is_ok = true;
+				break;
+			case 'date':
+				$array['group_by'] = "FROM_UNIXTIME(u.regtime,'%Y-%m-%d')";
+				$array['field'] = "FROM_UNIXTIME(u.regtime,'%Y-%m-%d') as x";
 				$is_ok = true;
 				break;
 			case 'month':
 				$array['group_by'] = "FROM_UNIXTIME(u.regtime,'%Y-%m')";
 				$array['field'] = "FROM_UNIXTIME(u.regtime,'%Y-%m') as x";
 				$is_ok = true;
+				break;
+			case 'quarter':
+				$array['group_by'] = "CONCAT(FROM_UNIXTIME(u.regtime,'%Y'),'-',QUARTER(FROM_UNIXTIME(u.regtime,'%Y-%m-%d')))";
+				$array['field'] = "CONCAT(FROM_UNIXTIME(u.regtime,'%Y'),'第',QUARTER(FROM_UNIXTIME(u.regtime,'%Y-%m-%d')),'季') as x";
 				break;
 			case 'year':
 				$array['group_by'] = "FROM_UNIXTIME(u.regtime,'%Y')";

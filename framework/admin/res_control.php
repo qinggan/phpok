@@ -93,7 +93,7 @@ class res_control extends phpok_control
 		$this->assign("catelist",$catelist);
 		$this->lib('form')->cssjs(array('form_type'=>'upload'));
 		$this->addjs('js/webuploader/admin.upload.js');
-		$btns = form_edit('upload','','upload','cate_id='.$cateid.'&manage_forbid=1&auto_forbid=1');
+		$btns = form_edit('upload','','upload','cate_id='.$cateid.'&manage_forbid=1&auto_forbid=1&is_multiple=1');
 		$this->assign('html',$btns);
 		$this->view("res_add");
 	}
@@ -145,6 +145,67 @@ class res_control extends phpok_control
 		$note = $this->get('note','html');
 		$this->model('res')->save(array('title'=>$title,'note'=>$note),$id);
 		$this->success();
+	}
+
+	/**
+	 * 批量压缩附件大小
+	**/
+	public function compress_f()
+	{
+		$maxwidth = $this->get('maxwidth','int');
+		if(!$maxwidth){
+			$this->error(P_Lang('未设置最大宽度限制'));
+		}
+		$condition  = "ext IN('jpg','gif','png','jpeg','bmp','webp') ";
+		$condition .= "AND filename NOT LIKE 'https://%' AND filename NOT LIKE 'http://%' AND filename NOT LIKE '//%'";
+		$id = $this->get('id','int');
+		if($id){
+			$condition .= " AND id<".$id." ";
+		}
+		$rslist = $this->model('res')->get_list($condition,0,100);
+		if(!$rslist){
+			$this->success(P_Lang('批量压缩操作完成，请关闭窗口'));
+		}
+		$rs = array();
+		foreach($rslist as $key=>$value){
+			$imginfo = getimagesize($this->dir_root.$value['filename']);
+			$img_x = $imginfo[0];
+			$img_y = $imginfo[1];
+			if($img_x > $maxwidth){
+				$rs = $value;
+				break;
+			}
+		}
+		if(!$rs || count($rs)<1){
+			$next_rs = end($rslist);
+			$next_id = $next_rs['id'];
+		}else{
+			$next_id = $rs['id'];
+			$this->compress_pic($rs,$maxwidth);
+		}
+		$linkurl = $this->url('res','compress','id='.$next_id.'&maxwidth='.$maxwidth);
+		$this->success(P_Lang('已更新图片ID #{id}，正在执行下一张图片处理',array('id'=>$next_id)),$linkurl);
+	}
+
+	private function compress_pic($rs,$width=0){
+		if(!$rs || !$width){
+			return false;
+		}
+		$imginfo = getimagesize($this->dir_root.$rs['filename']);
+		$img_x = $imginfo[0];
+		$img_y = $imginfo[1];
+		$height = intval(($width * $img_y) / $img_x);
+		$this->lib('gd')->isgd(true);
+		$this->lib('gd')->filename($this->dir_root.$rs['filename']);
+		$this->lib('gd')->SetCut(false);
+		$this->lib('gd')->SetWH($width,$height);
+		$this->lib('gd')->Set('quality',100);
+		$picfile = $this->lib('gd')->Create($rs['filename'],$rs['id']);
+		$this->lib('file')->mv($this->dir_root.$rs['folder'].$picfile,$this->dir_root.$rs['filename']);
+		$array = array('width'=>$width,'height'=>$height);
+		$data = array('attr'=>serialize($array));
+		$this->model('res')->save($data,$rs['id']);
+		return true;
 	}
 
 	public function resize_f()

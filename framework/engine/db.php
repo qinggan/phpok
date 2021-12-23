@@ -243,7 +243,7 @@ class db
 			$info = P_Lang('SQL执行错误【ID：{errid}，错误信息是：{error}】',array('errid'=>$errid,'error'=>$error));
 		}else{
 			$info = P_Lang('SQL执行错误，请检查');
-			phpok_log('SQL错误，'.$errid.': '.$error,false);
+			$this->_log('SQL错误，'.$errid.': '.$error);
 		}
 		if($this->error_type == 'json'){
 			$array = array('status'=>false,'info'=>$info);
@@ -252,6 +252,33 @@ class db
 			echo $info;
 			exit;
 		}
+	}
+
+	private function _log($info='')
+	{
+		global $app;
+		if(!$info){
+			$info = '没有提示内容';
+		}
+		if(is_array($info) || is_object($info)){
+			$info = print_r($info,true);
+		}
+		$info = trim($info);
+		$date = date("Ymd",$app->time);
+		if(!file_exists($app->dir_data.'log/log'.$date.'.php')){
+			file_put_contents($app->dir_data.'log/log'.$date.'.php',"<?php exit();?>\n");
+		}
+		$handle = fopen($app->dir_data.'log/log'.$date.'.php','ab');
+		$info2 = '---start---Time:'.date("H:i:s",$app->time).'---------------------'."\n";
+		$info2.= 'APP_ID: '.$app->app_id."\n";
+		$info2.= 'CTRL_ID: '.$app->ctrl."\n";
+		$info2.= 'FUNC_ID: '.$app->func."\n";
+		$info2.= 'INFO:'."\n";
+		$info2.= $info."\n";
+		$info2.= '---end---'."\n";
+		fwrite($handle,$info2);
+		fclose($handle);
+		return true;
 	}
 
 	/**
@@ -517,6 +544,28 @@ class db
 		}
 		$sql = "DELETE FROM ".$table." WHERE ".$condition;
 		return $this->query($sql);
+	}
+
+	public function one($table,$condition="",$prefix=true)
+	{
+		if(!$table){
+			return false;
+		}
+		if($prefix && substr($table,0,strlen($this->prefix)) != $this->prefix){
+			$table = $this->prefix.$table;
+		}
+		$sql = "SELECT * FROM ".$table." ";
+		if($condition && is_array($condition)){
+			$sql_fields = array();
+			foreach($condition as $key=>$value){
+				$sql_fields[] = $this->kec_left.$key.$this->kec_right."='".$value."' ";
+			}
+			$condition = implode(" AND ",$sql_fields);
+		}
+		if($condition){
+			$sql .= " WHERE ".$condition;
+		}
+		return $this->get_one($sql);
 	}
 
 	/**

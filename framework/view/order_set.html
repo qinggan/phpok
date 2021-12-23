@@ -49,9 +49,9 @@
 		</div>
 		<!-- /if -->
 		<div class="layui-form-item">
-			<label class="layui-form-label">{lang会员}</label>
+			<label class="layui-form-label">{lang用户}</label>
 			<div class="layui-input-inline auto">{func form_edit user_id $rs.user_id user}</div>
-			<div class="layui-input-inline auto gray lh38">{lang指定会员ID，为空表示游客下单}</div>
+			<div class="layui-input-inline auto gray lh38">{lang指定用户ID，为空表示游客下单}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -60,7 +60,7 @@
 			<div class="layui-input-inline default-auto">
 				<input type="text" name="email" id="email" value="{$rs.email}" class="layui-input" />
 			</div>
-			<div class="layui-input-inline auto"><input type="button" value="{lang会员邮箱}" onclick="$.admin_order.user('email')" class="layui-btn" /></div>
+			<div class="layui-input-inline auto"><input type="button" value="{lang用户邮箱}" onclick="$.admin_order.user('email')" class="layui-btn" /></div>
 			<div class="layui-input-inline auto gray lh38">{lang用于接收邮件通知，为空不发送通知}</div>
 		</div>
 		<div class="layui-form-item">
@@ -70,7 +70,7 @@
 			<div class="layui-input-inline default-auto">
 				<input type="text" name="mobile" value="{$rs.mobile}" id="mobile" class="layui-input" />
 			</div>
-			<div class="layui-input-inline auto"><input type="button" value="{lang会员手机号}" onclick="$.admin_order.user('mobile')" class="layui-btn" /></div>
+			<div class="layui-input-inline auto"><input type="button" value="{lang用户手机号}" onclick="$.admin_order.user('mobile')" class="layui-btn" /></div>
 			<div class="layui-input-inline auto gray lh38">{lang用于接收短信通知，为空不发送通知}</div>
 		</div>
 		<div class="layui-form-item">

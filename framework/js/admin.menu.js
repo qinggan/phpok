@@ -77,7 +77,7 @@
 			$.dialog.open(url,{
 				'title':t,
 				'width':'700px',
-				'height':'450px',
+				'height':'600px',
 				'ok':function(){
 					var iframe = this.iframe.contentWindow;
 					if (!iframe.document.body) {
@@ -98,7 +98,7 @@
 			$.dialog.open(url,{
 				'title':p_lang('编辑菜单')+"_#"+id,
 				'width':'700px',
-				'height':'450px',
+				'height':'600px',
 				'ok':function(){
 					var iframe = this.iframe.contentWindow;
 					if (!iframe.document.body) {
@@ -144,7 +144,7 @@
 			$.dialog.open(url,{
 				'title':p_lang('选择主题_#'+pid),
 				'width':'700px',
-				'height':'500px',
+				'height':'600px',
 				'lock':true
 			});
 		},

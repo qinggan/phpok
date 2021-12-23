@@ -139,10 +139,15 @@
 					}
 				}
 				$.phpok.message('badge', true);
-				window.setTimeout(function(){
-					$.admin_index.pendding();
-				}, 300000);
 			});
+			var chk = $.cookie.get("notout");
+			//每五分钟执行一次
+			if(chk && chk != 'undefined'){
+				var that = this;
+				setTimeout(function(){
+					that.pendding();
+				}, 300000);
+			}
 		},
 		update: function () {
 			$.phpok.json(get_url('update', 'check'), function (data) {
@@ -192,7 +197,7 @@
 				'title': tit,
 				'lock': true,
 				'width': '750px',
-				'height': '272px',
+				'height': '370px',
 				'ok': function () {
 					var iframe = this.iframe.contentWindow;
 					if (!iframe.document.body) {
@@ -269,6 +274,158 @@
 				$.dialog.alert(rs.info,true,'succeed').title('商业授权');
 				return true;
 			})
+		},
+		set_copyright:function()
+		{
+			$.dialog({
+				'title':p_lang('授权变更，仅支持一次修改'),
+				'content':document.getElementById("copyright-license-change"),
+				'lock':true,
+				'cancel':true,
+				'okVal':'提交保存',
+				'ok':function(){
+					var vtype = $("input[name=v-type]:checked").val();
+					if(vtype == 'LGPL'){
+						$.dialog.alert('LGPL授权不需要修改');
+						return false;
+					}
+					var vcompany = $("input[name=v-company]").val();
+					if(!vcompany){
+						$.dialog.alert('授权企业不能为空');
+						return false;
+					}
+					var vdomain = $("input[name=v-domain]").val();
+					if(!vdomain){
+						$.dialog.alert('授权域名不能为空');
+						return false;
+					}
+					var vcode = $("input[name=v-code]").val();
+					if(!vcode){
+						$.dialog.alert('授权码不能为空');
+						return false;
+					}
+					var date = $("input[name=v-date]").val();
+					var t = vtype == 'PBIZ' ? '个人授权' : '企业授权';
+					$.dialog.confirm('您的授权信息是：<br/>授权企业：<span style="color:red">'+vcompany+'</span><br/>授权类型：<span style="color:red">'+t+'</span><br/>授权域名：<span style="color:red">'+vdomain+'</span><br/>授权代码：<span style="color:red">'+vcode+'</span><br/>请检查是否正确，一经确认不支持再修改',function(){
+						$.phpok.json(get_url('index','copyright'),function(rs){
+							if(!rs.status){
+								$.dialog.alert(rs.info);
+								return false;
+							}
+							$.dialog.tips(p_lang('授权变更成功'),function(){
+								top.$.phpok.reload();
+							}).lock();
+						},{
+							'type':vtype,
+							'domain':vdomain,
+							'code':vcode,
+							'company':vcompany,
+							'date':date
+						});
+					});
+					return false;
+				}
+			})
+		},
+		checking:function()
+		{
+			var self = this;
+			var t = $("#rslist").html();
+			if(t.length>10){
+				var title = "确定要重新开始检测吗？系统会清除当前检测结果";
+			}else{
+				var title = "确定开始检测吗？检测过程中请不要关闭浏览器";
+			}
+			$.dialog.confirm(title,function(){
+				$("#folderlist").html("");
+				$("#total_html").hide();
+				$("#rslist").html('');
+				obj = $.dialog.tips("正在检测中，请稍候…",10000000).lock();
+				self.loading();
+			});
+		},
+		loading:function()
+		{
+			var self = this;
+			var url = get_url("index","getlist");
+			var t = $("#folderlist").html();
+			if(t){
+				var list = t.split(",");
+				var folder = list[0];
+				url += "&folder="+$.str.encode(folder);
+				obj.content("正在检查文件夹："+folder);
+				list.shift();
+			}else{
+				var list = new Array();
+				obj.content("正在检查根目录");
+			}
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					obj.content(rs.info).time(2);
+					return false;
+				}
+				var info = rs.info;
+				var total = $("#total").html();
+				if(!total || total == 'undefined'){
+					total = 0;
+				}
+				total = parseInt(total);
+				var ntotal = total + parseInt(info.total);
+				$("#total").html(ntotal);
+				$("#total_html").show();
+				if(info.dirlist){
+					list = list.concat(info.dirlist);
+				}
+				$("#folderlist").html(list.join(","));
+				//文件列表
+				if(info.rslist){
+					var html = template('art-tpl', {rslist: info.rslist});
+					$("#rslist").append(html);
+				}
+				if(list.length>0){
+					self.loading();
+				}else{
+					obj.content("检测完成，请查阅").time(2);
+				}
+				return true;
+			});
+		},
+		clear_ignore:function()
+		{
+			$.dialog.confirm("确定要清除手工忽略的文件吗？",function(){
+				$.phpok.json(get_url('index','clear_ignore'),function(rs){
+					if(rs.status){
+						$.dialog.tips("已删除忽略文件").lock();
+						return false;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				})
+			});
+		},
+		ignore:function(id)
+		{
+			var url = get_url("index",'ignore','id='+id);
+			$.phpok.json(url,function(rs){
+				if(rs.status){
+					$("#id-"+id).remove();
+					return true;
+				}
+				$.dialog.alert(rs.info);
+				return false;
+			});
+		},
+		notin:function(type)
+		{
+			if(!type){
+				$.dialog.alert('未指定要忽略的类型');
+				return false;
+			}
+			var list = type.split(",");
+			for(var i in list){
+				$("tr[data-ext="+list[i]+"]").remove();
+			}
+			return true;
 		}
 	}
 })(jQuery);

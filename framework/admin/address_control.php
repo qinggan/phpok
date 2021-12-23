@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员地址库
+ * 用户地址库
  * @package phpok\admin
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
@@ -21,7 +21,7 @@ class address_control extends phpok_control
 	}
 
 	/**
-	 * 弹窗查看会员的地址库信息
+	 * 弹窗查看用户的地址库信息
 	 * @参数 type 查询类型
 	 * @参数 keywords 关键字
 	**/
@@ -45,7 +45,7 @@ class address_control extends phpok_control
 		}
 		$status = $this->_index($pageurl,$keywords);
 		if(!$status){
-			$this->tip(P_Lang('该会员还没有设置地址信息'));
+			$this->tip(P_Lang('该用户还没有设置地址信息'));
 		}
 		$types = $this->get('types');
 		if(!$types){
@@ -56,7 +56,7 @@ class address_control extends phpok_control
 	}
 
 	/**
-	 * 会员地址库
+	 * 用户地址库
 	 * @参数 type 查询类型
 	 * @参数 keywords 关键字
 	**/
@@ -185,7 +185,7 @@ class address_control extends phpok_control
 		$array = array();
 		$array['user_id'] = $this->get('user_id','int');
 		if(!$array['user_id']){
-			$this->error(P_Lang('未绑定会员'));
+			$this->error(P_Lang('未绑定用户'));
 		}
 		$array['fullname'] = $this->get('fullname');
 		if(!$array['fullname']){

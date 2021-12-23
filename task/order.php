@@ -45,7 +45,7 @@ $this->assign('status',$status);
 $express_list = $this->model('order')->express_info_all($order['id']);
 $this->assign('express_list',$express_list);
 
-//通知会员
+//通知用户
 if($status['email_tpl_user']){
 	$tpl = $this->model('email')->tpl($status['email_tpl_user']);
 	if($tpl){

@@ -48,8 +48,9 @@ if($_POST['notify_type'] == 'batch_refund_notify'){
 }else{
 	$url = root_url()."index.php?c=payment&f=notify&sn=".rawurlencode($_POST['out_trade_no']);
 }
-foreach($_POST as $key=>$value){
+foreach($_POST AS $key=>$value){
 	$url .= "&".$key."=".rawurlencode($value);
 }
 $cls = new html_lib();
 echo $cls->get_content($url);
+?>

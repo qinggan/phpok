@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<title>PHPOK-VIP插件扩展</title>
+	<desc>让PHPOK用起来更便捷，支持数据迁移，合并等</desc>
+	<author>phpok.com</author>
+	<version>1.0</version>
+</root>

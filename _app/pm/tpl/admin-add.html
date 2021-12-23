@@ -1,0 +1,38 @@
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_pm.save()">
+<div class="layui-card">
+	<div class="layui-card-header">
+		发布新通知
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				通知会员
+			</label>
+			<div class="layui-input-inline default-auto">
+				{$who}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				通知内容
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="content" id="content" value="" class="layui-input" />
+			</div>
+			<div class="layui-input-block mtop">不能超过80个汉字或240个字符（含标点符合）</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				&nbsp;
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="submit" value="{lang发布}" class="layui-btn layui-btn-danger" id="save_button" />
+			</div>
+		</div>
+		
+	</div>
+</div>
+
+</form>
+<!-- include tpl=foot_lay -->

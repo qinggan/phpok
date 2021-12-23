@@ -103,7 +103,7 @@ class order_control extends phpok_control
 		if($this->session->val('user_id')){
 			$user = $this->model('user')->get_one($this->session->val('user_id'));
 		}
-		$id = $this->get('id');
+		$id = $this->get('id','int');
 		if($id && is_string($id)){
 			$id = explode(",",$id);
 			foreach($id as $key=>$value){
@@ -266,6 +266,11 @@ class order_control extends phpok_control
 				}
 				$pricelist[$key] = $value;
 			}
+			foreach($pricelist as $key=>$value){
+				if($value['hidden'] && (!$value['price_val'] || $value['price_val'] == '0.00')){
+					unset($pricelist[$key]);
+				}
+			}
 			$this->data('pricelist',$pricelist);
 			$this->data('rslist',$rslist);
 			$this->data('address',$address);
@@ -380,7 +385,7 @@ class order_control extends phpok_control
 			$log = array('order_id'=>$order_id,'addtime'=>$this->time,'who'=>$user['user'],'note'=>$note);
 			$this->model('order')->log_save($log);
 		}
-		//会员注册，如果手机号或是邮箱在系统中找不到
+		//用户注册，如果手机号或是邮箱在系统中找不到
 		if(!$this->session->val('user_id')){
 			$mobile_exit = $email_exit = false;
 			if($mobile){
@@ -399,7 +404,7 @@ class order_control extends phpok_control
 					$email_exit = true;
 				}
 			}
-			//当手机及邮箱都不存在时，自动注册会员
+			//当手机及邮箱都不存在时，自动注册用户
 			if(!$email_exit && !$mobile_exit && ($mobile || $email)){
 				$username = $mobile ? $mobile : $email;
 				$passwd = $this->lib('common')->str_rand(10);
@@ -416,7 +421,7 @@ class order_control extends phpok_control
 				//发送激活邮件
 				$param = 'id='.$user_id.'&act=active';
 				$this->model('task')->add_once('register',$param);
-				//订单改成会员
+				//订单改成用户
 				$tmparray = array('user_id'=>$user_id);
 				$this->model('order')->save($tmparray,$order_id);
 			}
@@ -512,7 +517,7 @@ class order_control extends phpok_control
 			}
 		}else{
 			if(!$user || !$user['id']){
-				$this->error(P_Lang('非会员不能通过ID获取订单信息'));
+				$this->error(P_Lang('非用户不能通过ID获取订单信息'));
 			}
 			$rs = $this->model('order')->get_one($id);
 			if(!$rs){
@@ -616,26 +621,7 @@ class order_control extends phpok_control
 			$this->error(P_Lang('仅限订单未支付才能取消订单'));
 		}
 		//更新订单日志
-		$this->model('order')->update_order_status($rs['id'],'cancel');
-		
-		$who = '';
-		if($rs['user_id']){
-			$user = $this->model('user')->get_one($rs['user_id']);
-			$who = $user['user'];
-		}else{
-			$address = $this->model('order')->address($rs['id']);
-			if($address){
-				$who = $address['fullname'];
-			}
-		}
-		$log = array('order_id'=>$rs['id']);
-		$log['addtime'] = $this->time;
-		if($who){
-			$log['who'] = $who;
-		}
-		$log['note'] = P_Lang('会员取消订单');
-		$log['user_id'] = $rs['user_id'];
-		$this->model('order')->log_save($log);
+		$this->model('order')->update_order_status($rs['id'],'cancel',P_Lang('用户取消订单'));		
 		$this->plugin('plugin-order-status',$id,'cancel');
 		$this->success();
 	}
@@ -647,26 +633,7 @@ class order_control extends phpok_control
 			$this->error(P_Lang('订单状态异常，请联系客服'));
 		}
 		//更新订单日志
-		$this->model('order')->update_order_status($rs['id'],'end');
-		
-		$who = '';
-		if($rs['user_id']){
-			$user = $this->model('user')->get_one($rs['user_id']);
-			$who = $user['user'];
-		}else{
-			$address = $this->model('order')->address($rs['id']);
-			if($address){
-				$who = $address['fullname'];
-			}
-		}
-		$log = array('order_id'=>$rs['id']);
-		$log['addtime'] = $this->time;
-		if($who){
-			$log['who'] = $who;
-		}
-		$log['note'] = P_Lang('订单完成');
-		$log['user_id'] = $rs['user_id'];
-		$this->model('order')->log_save($log);
+		$this->model('order')->update_order_status($rs['id'],'end',P_Lang('订单完成'));
 		$this->model('wealth')->order($rs['id'],P_Lang('订单完成赚送积分'));
 		$this->plugin('plugin-order-status',$id,'end');
 		$this->success();
@@ -688,25 +655,7 @@ class order_control extends phpok_control
 		if(!in_array($rs['status'],$array)){
 			$this->error(P_Lang('订单仅限已付款或已发货状态下能确认收货'));
 		}
-		$this->model('order')->update_order_status($rs['id'],'received');
-		$who = '';
-		if($rs['user_id']){
-			$user = $this->model('user')->get_one($rs['user_id']);
-			$who = $user['user'];
-		}else{
-			$address = $this->model('order')->address($rs['id']);
-			if($address){
-				$who = $address['fullname'];
-			}
-		}
-		$log = array('order_id'=>$rs['id']);
-		$log['addtime'] = $this->time;
-		if($who){
-			$log['who'] = $who;
-		}
-		$log['note'] = P_Lang('会员确认订单已收');
-		$log['user_id'] = $rs['user_id'];
-		$this->model('order')->log_save($log);
+		$this->model('order')->update_order_status($rs['id'],'received',P_Lang('用户确认订单已收'));
 		$this->plugin('plugin-order-status',$id,'received');
 		$this->success();
 	}
@@ -834,7 +783,7 @@ class order_control extends phpok_control
 	public function status_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$uid = $this->session->val('user_id');
 		$sql  = "SELECT count(id) as total,status FROM ".$this->db->prefix."order ";
@@ -855,7 +804,7 @@ class order_control extends phpok_control
 		$id = $this->get('id','int');
 		if($id){
 			if(!$this->session->val('user_id')){
-				$this->error(P_Lang('非会员不能执行此操作'));
+				$this->error(P_Lang('非用户不能执行此操作'));
 			}
 			$rs = $this->model('order')->get_one($id);
 			if(!$rs){

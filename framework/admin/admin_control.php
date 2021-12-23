@@ -27,7 +27,7 @@ class admin_control extends phpok_control
 	}
 
 	/**
-	 * 管理员列表，普通管理员要有查看权限（admin:list）
+	 * 管理员列表，权限管理员要有查看权限（admin:list）
 	**/
 	public function index_f()
 	{
@@ -160,8 +160,8 @@ class admin_control extends phpok_control
 	}
 
 	/**
-	 * 删除管理员，普通管理员要有删除权限（admin:delete），普通管理员不能删除系统管理员
-	 * @参数 id 要删除的管理员，不能删除自己，普通管理员
+	 * 删除管理员，权限管理员要有删除权限（admin:delete），权限管理员不能删除系统管理员
+	 * @参数 id 要删除的管理员，不能删除自己，权限管理员
 	 * @返回 
 	 * @更新时间 
 	**/
@@ -234,8 +234,9 @@ class admin_control extends phpok_control
 	 * @参数 account 管理员账号，不能为空
 	 * @参数 pass 管理员密码，id有值时pass可以为空
 	 * @参数 email 管理员邮箱，系统管理员此邮箱为接收通知使用
+	 * @参数 note 管理员角色，用于区分和提示权限管理员职责
 	 * @参数 status 管理员状态
-	 * @参数 popedom 普通管理员权限（系统管理员没有此参数传递）
+	 * @参数 popedom 权限管理员权限（系统管理员没有此参数传递）
 	**/
 	public function save_f()
 	{
@@ -273,6 +274,7 @@ class admin_control extends phpok_control
 			$array["pass"] = password_create($pass);
 		}
 		$array['email'] = $this->get("email");
+		$array['note'] = $this->get("note");
 		if($this->popedom["status"]){
 			$array["status"] = $this->get("status","int");
 		}
@@ -326,5 +328,30 @@ class admin_control extends phpok_control
 			$this->error(P_Lang('更新状态失败'));
 		}
 		$this->success($status);
+	}
+
+	public function vcode_f()
+	{
+		if(!$this->session->val('admin_id')){
+			$this->error(P_Lang('非管理员不能执行此操作'));
+		}
+		$code = $this->get('code');
+		if(!$code){
+			$this->error(P_Lang('二次密码不能为空'));
+		}
+		$admin = $this->model('admin')->get_one($this->session->val('admin_id'));
+		if(!$admin){
+			$this->error(P_Lang('管理员不存在'));
+		}
+		if(!$admin['status']){
+			$this->error(P_Lang('管理员不存在或未审核'));
+		}
+		$vcode = md5(md5($code));
+		
+		if($vcode != $admin['vpass']){
+			$this->error(P_Lang('二次验证不通过，请检查'));
+		}
+		$this->session->assign('admin2verify',true);
+		$this->success();
 	}
 }

@@ -1,13 +1,11 @@
 <?php
 /**
  * JS 控制器
- * @package phpok\framework
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
- * @版本 4.x
+ * @版本 5.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @时间 2017年11月13日
+ * @时间 2021年8月20日
 **/
 
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
@@ -23,7 +21,9 @@ class js_control extends phpok_control
 	**/
 	public function index_f()
 	{
-		$this->js_base();
+		$exjquery = $this->get('exjquery','int');
+		$ex = $exjquery == 1 ? false : true;
+		$this->js_base($ex);
 		echo $this->lib('file')->cat($this->dir_phpok."form.js");
 		echo "\n";
 		if($this->app_id == 'admin'){
@@ -201,25 +201,29 @@ class js_control extends phpok_control
 	/**
 	 * 加载基本的JS
 	**/
-	private function js_base()
+	private function js_base($include_jquery=true)
 	{
 		ob_start();
 		header("Content-type: text/javascript; charset=utf-8");
 		$file = $this->app_id == 'admin' ? $this->config['admin_file'] : $this->config['www_file'];
 		$this->assign('basefile',$file);
 		$this->load_language_js();
-		$file = $this->dir_root.'js/jquery.js';
-		//实现jQuery.js文件的自定义
-		if($this->app_id != 'admin'){
-			if(is_file($this->dir_root.$this->tpl->dir_tpl.'js/jquery.js')){
-				$file = $this->dir_root.$this->tpl->dir_tpl.'js/jquery.js';
+		if($include_jquery){
+			$file = $this->dir_root.'js/jquery.js';
+			//实现jQuery.js文件的自定义
+			if($this->app_id != 'admin'){
+				if(is_file($this->dir_root.$this->tpl->dir_tpl.'js/jquery.js')){
+					$file = $this->dir_root.$this->tpl->dir_tpl.'js/jquery.js';
+				}
+				if(is_file($this->dir_root.$this->tpl->dir_tpl.'js/jquery.min.js')){
+					$file = $this->dir_root.$this->tpl->dir_tpl.'js/jquery.min.js';
+				}
 			}
-			if(is_file($this->dir_root.$this->tpl->dir_tpl.'js/jquery.min.js')){
-				$file = $this->dir_root.$this->tpl->dir_tpl.'js/jquery.min.js';
-			}
+			$jquery = $this->lib('file')->cat($file);
+			$this->assign('jquery',$jquery);
+		}else{
+			$this->assign('jquery','');
 		}
-		$jquery = $this->lib('file')->cat($file);
-		$this->assign('jquery',$jquery);
 		if($this->app_id == 'www'){
 			if(defined('PHPOK_SITE_ID')){
 				$this->assign('phpok_site_id',PHPOK_SITE_ID);

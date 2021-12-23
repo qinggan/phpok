@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="expires" content="wed, 26 feb 1997 08:21:57 gmt"> 
+	<title>图片上传</title>
+	<meta name="author" content="phpok.com" />
+	<link rel="stylesheet" href="static/admin/layui/{#css#}/layui.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="{#css#}/extadmin.css" />
+	<link rel="stylesheet" type="text/css" href="{#css#}/artdialog.css" />
+	<link rel="stylesheet" type="text/css" href="{#css#}/smartmenu.css" />
+	<style type="text/css">
+	html{font-size:14px;font-family:"Microsoft Yahei","宋体","Arial","Tahoma";margin:0;padding:0;background:#FFFFFF;}
+	body{margin:3px;padding:0;overflow-y:scroll;_margin:0; _height:100%;}
+	a{color:#000;text-decoration: none;}
+	ul.filelist{list-style:none;padding:0;margin:0}
+	ul.filelist li{float:left;margin:3px 5px;height:75px;width:296px;padding:1px;border:1px solid #ccc;cursor:pointer;position: relative;z-index:1}
+	ul.filelist li:hover{background:#FCFCFC;}
+	ul.filelist li .checkbox{position: absolute;left:1px;top:1px;z-index:2;}
+	ul.filelist li .ico{float:left;width:75px;height:75px;text-align:center;position:relative;margin-right:5px;}
+	ul.filelist li .note{float:left;width:210px;overflow:hidden;}
+	ul.filelist li .note .info{line-height:22px;overflow:hidden;height:22px;}
+	ul.filelist li img.img{width:73px;height:73px;text-align:center;padding:1px;}
+	.pagelist{text-align:center;height:30px;overflow:hidden;margin-top:7px;}
+	.pagelist ul{list-style:none;margin:0;padding:0;text-align:center;}
+	.pagelist ul li{display:inline;height:22px;line-height:24px;margin:0 5px 0 0;}
+	.pagelist ul li a{display:inline;padding:1px 5px;border:1px solid #ddd;cursor:pointer;}
+	.pagelist ul li a:hover{background:#efefef;border:1px solid #ccc;text-decoration:none;}
+	.pagelist ul li a.current{background:#E4E4E4;border:1px solid #ccc;text-decoration:none;}
+	div.clear{clear:both;height:0;line-height:0;overflow:hidden;display:block;visibility:hidden;}
+	.search{border:1px solid #E5E5E5;background:#F5F5F5;padding-left:12px;line-height:25px;margin-top:3px;}
+	select{padding:3px;}
+	input.keywords{width:150px;padding:3px;border:1px solid #ABADB3;}
+	</style>
+	{func phpok_head_css}
+	<script type="text/javascript" src="{url ctrl=js ext=jquery.artdialog.js /}"></script>
+	{func phpok_head_js}
+	<!-- plugin head -->
+	<script type="text/javascript">
+	function dialogOK()
+	{
+		var val = $("#values").val();
+		if(!val){
+			alert('没有要插入的数据');
+			return false;
+		}
+		var vtype = $("input[name=vtype]:checked").val();
+		var url = api_url('res','idlist','id='+$.str.encode(val));
+		var info = $.phpok.json(url);
+		if(!info || !info.status){
+			alert('数据获取失败');
+			return false;
+		}
+		if(info.status != 'ok'){
+			var tip = info.content ? info.content : '数据获取失败';
+			alert(tip);
+			return false;
+		}
+		var htm = "";
+		if(vtype == 1){
+			for(var i in info.content){
+				htm += '<p>[download:'+info.content[i].id+']'+info.content[i].title+'[/download]</p>'+"\n";
+			}
+		}else{
+			for(var i in info.content){
+				var t = info.content[i].ext;
+				if(t == 'jpg' || t == 'gif' || t == 'png' || t == 'jpeg' || t == 'webp'){
+					var tmpurl = info.content[i].editor ? info.content[i].editor : info.content[i].filename;
+					htm += '<p><img src="'+tmpurl+'" style="max-width:100%;" /></p>'+"\n";
+				}
+			}
+		}
+		return htm;
+	}
+	</script>
+</head>
+<body>
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+
+<div class="layui-row" style="margin-top:10px;">
+	<div class="layui-col-sm6">
+    	<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang分类}
+			</label>
+			<div class="layui-input-inline">
+				<select id="cateid" name="cateid" lay-filter="cateid" old="{$cate.id}">
+				<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+				<option value="{$value.id}"{if $cate && $value.id == $cate.id} selected{/if}>{$value.title}</option>
+				<!-- /loop -->
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="layui-col-sm6">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang方式}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="vtype" value="0" title="图片模式" checked />
+				<input type="radio" name="vtype" value="1" title="文件模式" />
+			</div>
+		</div>
+	</div>
+	<div class="layui-col-sm12">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang上传}
+			</label>
+			<div class="layui-input-block">
+				{$button}
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+
+<script type="text/javascript" src="static/admin/layui/layui.all.js"></script>
+<script type="text/javascript">
+function stop(){
+	return false;
+}
+document.oncontextmenu=stop;
+$(document).ready(function(){
+	layui.form.on('select(cateid)', function(data){
+		var old = $("#cateid").attr("old");
+		if(old != data.value){
+			$.phpok.go(get_url('ckeditor','images','cateid='+data.value));
+			return false;
+		}
+	});
+});
+</script>
+</body>
+</html>

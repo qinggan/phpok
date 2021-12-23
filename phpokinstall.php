@@ -120,6 +120,30 @@ function format_sql($sql)
 	}
 }
 
+function checkdir_rw($dir='',&$status)
+{
+	if(substr($dir,-1) != '/'){
+		$dir .= "/";
+	}
+	$tmpfile = time().".txt";
+	$file = $dir.$tmpfile;
+	touch($dir.$tmpfile);
+	$dir_info = '<span class="darkblue">读写</span>';
+	if(!file_exists($file)){
+		$dir_info = '<span class="red">不可写</span>';
+		$status = false;
+	}else{
+		if(!is_readable($file)){
+			$dir_info = '<span class="red">不可读</span>';
+			$status = false;
+		}
+		unlink($file);
+	}
+	$showDir = str_replace(ROOT,'',$dir);
+	$info = '<tr><td class="lft">目录：'.$showDir.'</td><td>读写</td><td>'.$dir_info.'</td></tr>';
+	echo $info;
+}
+
 class install
 {
 	public function head($num=1)
@@ -172,7 +196,7 @@ class install
 		}
 		echo '<table width="980" border="0" cellspacing="0" cellpadding="0" class="tablebox">';
 		echo '<tr class="head_bg"><td>&nbsp;</td><td>PHPOK最低要求</td><td>PHPOK最佳配置</td><td>当前环境检测</td></tr>';
-		echo '<tr><td class="lft">PHP版本</td><td>5.5.x</td><td>7,1.x</td><td>'.PHP_VERSION.'</td></tr>';
+		echo '<tr><td class="lft">PHP版本</td><td>5.5.x</td><td>7.1.x</td><td>'.PHP_VERSION.'</td></tr>';
 		echo '<tr><td class="lft">附件上传</td><td>2M+</td><td>10M+</td><td>'.get_cfg_var('upload_max_filesize').'</td></tr>';
 		echo '<tr><td class="lft">MYSQL支持</td><td>5.1.x</td><td>5.5.x</td><td>'.$mysql_status.'</td></tr>';
 		$curl = $this->func_check('curl_close');
@@ -259,102 +283,20 @@ class install
 			$status = false;
 		}
 		echo '<tr><td class="lft">文件：_config/db.ini.php</td><td>写入</td><td>'.$info.'</td></tr>';
-		//_data/
-		touch(DIR_DATA.$tmpfile);
-		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(DIR_DATA.$tmpfile)){
-			$dir_info = '<span class="red">不可写</span>';
-			$status = false;
-		}else{
-			if(!is_readable(DIR_DATA.$tmpfile)){
-				$dir_info = '<span class="red">不可读</span>';
-				$status = false;
-			}
-			unlink(DIR_DATA.$tmpfile);
-		}
-		echo '<tr><td class="lft">目录：_data/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		touch(DIR_CACHE.$tmpfile);
-		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(DIR_CACHE.$tmpfile)){
-			$dir_info = '<span class="red">不可写</span>';
-			$status = false;
-		}else{
-			if(!is_readable(DIR_CACHE.$tmpfile)){
-				$dir_info = '<span class="red">不可读</span>';
-				$status = false;
-			}
-			unlink(DIR_CACHE.$tmpfile);
-		}
-		echo '<tr><td class="lft">目录：_cache/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		//_data/session/
-		touch(DIR_DATA.'session/'.$tmpfile);
-		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(DIR_DATA.'session/'.$tmpfile)){
-			$dir_info = '<span class="red">不可写</span>';
-			$status = false;
-		}else{
-			if(!is_readable(DIR_DATA.'session/'.$tmpfile)){
-				$dir_info = '<span class="red">不可读</span>';
-				$status = false;
-			}
-			unlink(DIR_DATA.'session/'.$tmpfile);
-		}
-		echo '<tr><td class="lft">目录：_data/session/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		//_data/tpl_admin/
-		touch(DIR_DATA.'tpl_admin/'.$tmpfile);
-		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(DIR_DATA.'tpl_admin/'.$tmpfile)){
-			$dir_info = '<span class="red">不可写</span>';
-			$status = false;
-		}else{
-			if(!is_readable(DIR_DATA.'tpl_admin/'.$tmpfile)){
-				$dir_info = '<span class="red">不可读</span>';
-				$status = false;
-			}
-			unlink(DIR_DATA.'tpl_admin/'.$tmpfile);
-		}
-		echo '<tr><td class="lft">目录：_data/tpl_admin/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		//_data/tpl_www/
-		touch(DIR_DATA.'tpl_www/'.$tmpfile);
-		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(DIR_DATA.'tpl_www/'.$tmpfile)){
-			$dir_info = '<span class="red">不可写</span>';
-			$status = false;
-		}else{
-			if(!is_readable(DIR_DATA.'tpl_www/'.$tmpfile)){
-				$dir_info = '<span class="red">不可读</span>';
-				$status = false;
-			}
-			unlink(DIR_DATA.'tpl_www/'.$tmpfile);
-		}
-		echo '<tr><td class="lft">目录：_data/tpl_www/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		//_data/update/
-		touch(DIR_DATA.'update/'.$tmpfile);
-		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(DIR_DATA.'update/'.$tmpfile)){
-			$dir_info = '<span class="red">不可写</span>';
-			$status = false;
-		}else{
-			if(!is_readable(DIR_DATA.'update/'.$tmpfile)){
-				$dir_info = '<span class="red">不可读</span>';
-				$status = false;
-			}
-			unlink(DIR_DATA.'update/'.$tmpfile);
-		}
-		echo '<tr><td class="lft">目录：_data/update/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
-		touch(ROOT.'res/'.$tmpfile);
-		$dir_info = '<span class="darkblue">读写</span>';
-		if(!file_exists(ROOT.'res/'.$tmpfile)){
-			$dir_info = '<span class="red">不可写</span>';
-			$status = false;
-		}else{
-			if(!is_readable(ROOT.'res/'.$tmpfile)){
-				$dir_info = '<span class="red">不可读</span>';
-				$status = false;
-			}
-			unlink(ROOT.'res/'.$tmpfile);
-		}
-		echo '<tr><td class="lft">目录：res/</td><td>读写</td><td>'.$dir_info.'</td></tr>';
+		checkdir_rw(ROOT.'_cache/',$status);
+		checkdir_rw(DIR_DATA,$status);
+		checkdir_rw(DIR_DATA.'crontab/',$status);
+		checkdir_rw(DIR_DATA.'design/',$status);
+		checkdir_rw(DIR_DATA.'json/',$status);
+		checkdir_rw(DIR_DATA.'log/',$status);
+		checkdir_rw(DIR_DATA.'session/',$status);
+		checkdir_rw(DIR_DATA.'tpl_admin/',$status);
+		checkdir_rw(DIR_DATA.'tpl_www/',$status);
+		checkdir_rw(DIR_DATA.'update/',$status);
+		checkdir_rw(DIR_DATA.'xml/',$status);
+		checkdir_rw(DIR_DATA.'xml/fields/',$status);
+		checkdir_rw(DIR_DATA.'zip/',$status);
+		checkdir_rw(ROOT.'res/',$status);
 		echo '</table>';
 		if($status){
 			echo '<div class="btn_wrap">';
@@ -436,11 +378,6 @@ function submit_next()
 {
 	var chk = check_connect(true);
 	if(!chk){
-		return false;
-	}
-	var sitename = jQuery("#title").val();
-	if(!sitename){
-		jQuery.dialog.alert('网站名称不能为空');
 		return false;
 	}
 	var domain = jQuery("#domain").val();
@@ -578,12 +515,7 @@ function check_connect(isin)
 <div class="tips_box">
 	<div class="tips_title">站点信息设置</div>
 	<div class="input_box">
-		<ul>
-			<li><span class="l_name">网站名称：</span>
-				<input type="text" class="infor_input" name="title" id="title" value="{$site['title']}" />
-				<p class="tips_p">设置网站的名称</p>
-			</li>
-			
+		<ul>			
 			<li><span class="l_name">网站域名：</span>
 				<input type="text" class="infor_input" name="domain" id="domain" value="{$site['domain']}" />
 				<p class="tips_p">设置网站绑定的域名，不能有/和http://</p>
@@ -592,13 +524,9 @@ function check_connect(isin)
 				<input type="text" class="infor_input" name="dir" id="dir" value="{$site['dir']}" />
 				<p class="tips_p">根目录请设为/</p>
 			</li>
-			<li><span class="l_name">演示数据：</span>
-				<label style="margin-right:10px;float:left;"><input type="radio" name="demo" value="1" checked/> 有</label>
-				<label style="margin-right:10px;float:left;"><input type="radio" name="demo" value="0"/> 无</label>
-				<p class="tips_p">不熟悉的用户建议安装演示数据</p>
-			</li>
+			<input type="hidden" name="demo" value="1"/>
         </ul>
-    </div>   
+    </div>
 </div>
 <div class="tips_box">
 	<div class="tips_title">管理员设置</div>
@@ -1000,13 +928,13 @@ if($step == 'save'){
 	$content = preg_replace('/data\s*=.*/i','data = "'.$dbconfig['data'].'"',$content);
 	$content = preg_replace('/prefix\s*=.*/i','prefix = "'.$dbconfig['prefix'].'"',$content);
 	file_put_contents(DIR_CONFIG."db.ini.php",$content);
-	$info = array('title'=>$install->get('title',false));
+	$info = array();
 	$info['domain'] = $install->get('domain',false);
 	$info['dir'] = $install->get('dir',false);
 	$info['user'] = $install->get('admin_user',false);
 	$info['email'] = $install->get('admin_email',false);
 	$info['pass'] = $install->get('admin_newpass',false);
-	$info['demo'] = $install->get('demo','int');
+	$info['demo'] = 1;
 	$handle = fopen(DIR_DATA.'install.lock.php','wb');
 	fwrite($handle,'<?php'."\n");
 	foreach($info as $key=>$value){
@@ -1071,7 +999,7 @@ if($step == 'ajax_initdata'){
 	//更新站点信息
 	$sql = "UPDATE ".$db->prefix."site_domain SET domain='".$adminer['domain']."'";
 	$db->query($sql);
-	$sql = "UPDATE ".$db->prefix."site SET title='".$adminer['title']."',dir='".$adminer['dir']."',api_code=''";
+	$sql = "UPDATE ".$db->prefix."site SET dir='".$adminer['dir']."',api_code=''";
 	$db->query($sql);
 
 	if(!$adminer['demo']){
@@ -1110,6 +1038,8 @@ if($step == 'ajax_initdata'){
 				$install->lib('file')->rm($value,'folder');
 			}
 		}
+	}else{
+		touch(DIR_DATA."first.lock");
 	}
 	exit('ok');
 }
@@ -1143,4 +1073,3 @@ if($step == 'ajax_endok'){
 	touch(DIR_DATA."install.lock");
 	exit('ok');
 }
-?>

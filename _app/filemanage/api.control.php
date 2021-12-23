@@ -27,7 +27,7 @@ class api_control extends \phpok_control
 		if(!$this->session->val('admin_id')){
 			$this->error(P_Lang('非管理员不能执行此操作'));
 		}
-		if(!$this->session->val('admin_id_checked')){
+		if(!$this->session->val('admin2verify')){
 			$this->error(P_Lang('未经过二次密码确认，不能执行此操作'));
 		}
 	}
@@ -42,31 +42,6 @@ class api_control extends \phpok_control
 			$folder .= "/";
 		}
 		return $folder;
-	}
-
-	public function check_f()
-	{
-		if(!$this->session->val('admin_id')){
-			$this->error(P_Lang('非管理员不能执行此操作'));
-		}
-		$code = $this->get('code');
-		if(!$code){
-			$this->error('二次密码不能为空');
-		}
-		$admin = $this->model('admin')->get_one($this->session->val('admin_id'));
-		if(!$admin){
-			$this->error('管理员不存在');
-		}
-		if(!$admin['status']){
-			$this->error('管理员不存在或未审核');
-		}
-		$vcode = md5(md5($code));
-		
-		if($vcode != $admin['vpass']){
-			$this->error('二次验证不通过，请检查');
-		}
-		$this->session->assign('admin_id_checked',true);
-		$this->success();
 	}
 
 	public function rename_f()

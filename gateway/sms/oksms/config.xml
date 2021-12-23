@@ -16,16 +16,28 @@
 		</ip>
 		<app_id>
 			<title>APPID</title>
-			<note>请会员登录官网平台查询</note>
+			<note>请用户登录官网平台查询</note>
 			<type>text</type>
 			<required>true</required>
 		</app_id>
 		<app_key>
 			<title>APPKey</title>
-			<note>请会员登录官网平台查询</note>
+			<note>请用户登录官网平台查询</note>
 			<type>text</type>
 			<required>true</required>
 		</app_key>
+		<signame>
+			<title>短信签名</title>
+			<note>填写您在阿里云申请的签名，留空使用【锟铻科技】</note>
+			<type>text</type>
+			<required>false</required>
+		</signame>
+		<tplcode>
+			<title>短信模板</title>
+			<note>填写验证码短信模板，留空使用系统默认</note>
+			<type>text</type>
+			<required>false</required>
+		</tplcode>
 	</code>
 	<manage>
 		<send>

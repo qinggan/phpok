@@ -29,6 +29,15 @@ class code_editor_form extends _init_auto
 		$this->addjs('static/codemirror/mode/htmlmixed/htmlmixed.js');
 		$this->addjs('static/codemirror/mode/php/php.js');
 		$this->addjs('static/codemirror/mode/xml/xml.js');
+		if($appid == 'admin'){
+			$width = '100%';
+			$height = ($rs['height'] && intval($rs['height']) == $rs['height']) ? intval($rs['height']).'px' : ($rs['height'] ? $rs['height'] : '100px');
+		}else{
+			$height = ($rs['height'] && intval($rs['height']) == $rs['height']) ? intval($rs['height']).'px' : ($rs['height'] ? $rs['height'] : '100px');
+			$width = ($rs['width'] && intval($rs['width']) == $rs['width']) ? intval($rs['width']).'px' : ($rs['width'] ? $rs['width'] : '99%');
+		}
+		$rs["width"] = $width;
+		$rs['height'] = $height;
 		$this->assign("_rs",$rs);
 		return $this->fetch($this->dir_phpok.'form/html/code_admin_tpl.html','abs-file');
 	}

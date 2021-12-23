@@ -37,11 +37,11 @@
 			<default>utf8</default>
 		</charset>
 		<ssl>
-			<title>是否使用SSL</title>
-			<note>一般不需要使用</note>
+			<title>邮件证书</title>
+			<note>一般不需要使用，支持 SSL 和 TLS 两种</note>
 			<type>radio</type>
 			<option>
-				<yes>启用</yes>
+				<yes>启用SSL</yes>
 				<no>不使用</no>
 			</option>
 			<default>no</default>

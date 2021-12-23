@@ -205,4 +205,12 @@ class fields_model_base extends phpok_model
 		}
 		return $this->db->get_all($sql,$pri);
 	}
+
+	public function groups()
+	{
+		if(file_exists($this->dir_data.'xml/fields-group.xml')){
+			return $this->lib('xml')->read($this->dir_data.'xml/fields-group.xml',true);
+		}
+		return array('main'=>'主层','ext'=>'扩展层');
+	}
 }

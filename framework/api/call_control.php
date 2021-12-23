@@ -126,7 +126,30 @@ class call_control extends phpok_control
 		}
 		$list = phpok($code,$param);
 		$this->assign('info',$list);
-		$content = $this->fetch($tplfile,'abs-file');
+		$replace = $this->get('param_replace','html');
+		if($replace){
+			$tpl_content = $this->lib('file')->cat($this->dir_root.$tplfile);
+			$tmplist = explode("\n",$replace);
+			foreach($tmplist as $key=>$value){
+				$value = trim($value);
+				if(!$value){
+					continue;
+				}
+				$tmp = explode("=",$value);
+				if(!$tmp[0] || !$tmp[1]){
+					continue;
+				}
+				$tmp[0] = trim($tmp[0]);
+				$tmp[1] = trim($tmp[1]);
+				if(!$tmp[0] || !$tmp[1]){
+					continue;
+				}
+				$tpl_content = str_replace($tmp[0],$tmp[1],$tpl_content);
+			}
+			$content = $this->fetch($tpl_content,'content');
+		}else{
+			$content = $this->fetch($tplfile,'abs-file');
+		}
 		$tmp = explode("/",$tplfile);
 		$preview_file = $tmp[0] == '_data' ? $this->dir_data.'design/preview.html' : $this->dir_root.'tpl/'.$tmp[1].'/design/preview.html';
 		$tplcontent = $this->lib('file')->cat($preview_file);

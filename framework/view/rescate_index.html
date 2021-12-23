@@ -20,6 +20,7 @@
 				<th>{lang存储方式}</th>
 				<th>{lang图片方案}</th>
 				<th>{lang是否默认}</th>
+				<th>{lang前台}</th>
 				<th>{lang操作}</th>
 			</tr>
 			</thead>
@@ -40,6 +41,7 @@
 					<!-- /if -->
 				</td>
 				<td><!-- if $value.is_default --><span class="darkblue">{lang是}</span><!-- else -->{lang否}<!-- /if --></td>
+				<td><!-- if $value.is_front || $value.is_default --><span class="darkblue">{lang可用}</span><!-- else -->{lang禁用}<!-- /if --></td>
 				<td>
 					<div class="layui-btn-group">
 						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.win('{lang编辑附件分类}_#{$value.id}','{url ctrl=rescate func=set id=$value.id/}')" class="layui-btn layui-btn-sm" /><!-- /if -->

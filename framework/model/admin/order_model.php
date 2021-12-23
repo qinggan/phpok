@@ -86,12 +86,21 @@ class order_model extends order_model_base
 				$rslist[$value['order_id']]['qty'] = $value['total'];
 			}
 		}
-		$sql = "SELECT id,order_id,title FROM ".$this->db->prefix."order_payment WHERE order_id IN(".$ids.")";
+		$sql = "SELECT * FROM ".$this->db->prefix."order_payment WHERE order_id IN(".$ids.") AND dateline>0";
 		$tmplist = $this->db->get_all($sql);
 		if($tmplist){
-			$payments = array();
+			$payments = $paid_list = array();
 			foreach($tmplist as $key=>$value){
 				$payments[$value['order_id']][] = $value['title'];
+				$currency_id = $value['currency_id'] ? $value['currency_id'] : $rslist[$value['order_id']]['currency_id'];
+				$currency_rate = $value['currency_rate'] ? $value['currency_rate'] : $rslist[$value['order_id']]['currency_rate'];
+				$order_currency_id = $rslist[$value['order_id']]['currency_id'];
+				$order_currency_rate = $rslist[$value['order_id']]['currency_rate'];
+				if(!isset($paid_list[$value['order_id']])){
+					$paid_list[$value['order_id']] = 0;
+				}
+				$tmp = price_format_val($value['price'],$currency_id,$order_currency_id,$currency_rate,$order_currency_rate);
+				$paid_list[$value['order_id']] += floatval($tmp);
 			}
 			foreach($rslist as $key=>$value){
 				$value['pay_title'] = '';
@@ -102,23 +111,6 @@ class order_model extends order_model_base
 						$value['pay_title'] = implode("/",$payments[$value['id']]);
 					}
 				}
-				$rslist[$key] = $value;
-			}
-			unset($tmplist);
-		}
-		$sql = "SELECT * FROM ".$this->db->prefix."order_payment WHERE order_id IN(".$ids.") AND dateline>0";
-		$tmplist = $this->db->get_all($sql);
-		if($tmplist){
-			$paid_list = array();
-			foreach($tmplist as $key=>$value){
-				$currency_id = (isset($value['currency_id']) && $value['currency_id']) ? $value['currency_id'] : $rslist[$value['order_id']]['currency_id'];
-				if(!isset($paid_list[$value['order_id']])){
-					$paid_list[$value['order_id']] = 0;
-				}
-				$tmp = price_format_val($value['price'],$currency_id,$rslist[$value['order_id']]['currency_id']);
-				$paid_list[$value['order_id']] += floatval($tmp);
-			}
-			foreach($rslist as $key=>$value){
 				$value['paid'] = $paid_list[$value['id']] ? $paid_list[$value['id']] : 0;
 				$value['unpaid'] = round(($value['price'] - $value['paid']),4);
 				$rslist[$key] = $value;
@@ -136,11 +128,6 @@ class order_model extends order_model_base
 			$sql .= " WHERE ".$condition;
 		}
 		return $this->db->count($sql);
-	}
-
-	public function express_save($data)
-	{
-		return $this->db->insert_array($data,'order_express');
 	}
 
 	public function express_one($id)

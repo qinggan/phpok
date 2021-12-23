@@ -1,59 +1,50 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="height,is_code:checkbox,is_read:checkbox,inc_tag:checkbox,paste_text,btns,is_float:checkbox,auto_height:checkbox" />
-<div class="table">
-	<div class="title">
-		{lang编辑器最小高度设置}：
-		<span class="note">{lang只需要填写数字，宽度强制为百分百}</span>
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="height,is_code:checkbox,is_read:checkbox,inc_tag:checkbox,btns,is_float:checkbox,auto_height:checkbox" />
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang高度：}
+	</label>
+	<div class="layui-input-inline short">
+		<input type="text" name="height" id="height" value="{$rs.height}" class="layui-input" />
 	</div>
-	<div class="content"><input type="text" name="height" id="height" value="{$rs.height}" class="short" /> px</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang编辑器扩展按钮}：
-		<span class="note">{lang请根据实际情况需要设置编辑器扩展按钮，前台不支持地图}</span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<li style="width:17%"><label><input type="checkbox" name="btns[image]"{if $rs.btns && $rs.btns.image} checked{/if}>{lang图片}</label></li>
-			<li style="width:17%"><label><input type="checkbox" name="btns[info]"{if $rs.btns && $rs.btns.info} checked{/if}>{lang资料}</label></li>
-			<li style="width:17%"><label><input type="checkbox" name="btns[video]"{if $rs.btns && $rs.btns.video} checked{/if}>{lang视频}</label></li>
-			<li style="width:17%"><label><input type="checkbox" name="btns[file]"{if $rs.btns && $rs.btns.file} checked{/if}>{lang文件}</label></li>
-			<li style="width:17%"><label><input type="checkbox" name="btns[page]"{if $rs.btns && $rs.btns.page} checked{/if}>{lang分页}</label></li>
-			<li style="width:17%"><label><input type="checkbox" name="btns[table]"{if $rs.btns && $rs.btns.table} checked{/if}>{lang表格}</label></li>
-			<li style="width:17%"><label><input type="checkbox" name="btns[emotion]"{if $rs.btns && $rs.btns.emotion} checked{/if}>{lang表情}</label></li>
-			<li style="width:17%"><label><input type="checkbox" name="btns[map]"{if $rs.btns && $rs.btns.map} checked{/if}>{lang地图}</label></li>
-			<li style="width:17%"><label><input type="checkbox" name="btns[spechars]"{if $rs.btns && $rs.btns.spechars} checked{/if}>{lang符号}</label></li>
-			<li style="width:17%"><label><input type="checkbox" name="btns[insertcode]"{if $rs.btns && $rs.btns.insertcode} checked{/if}>{lang代码}</label></li>
-			<li style="width:17%"><label><input type="checkbox" name="btns[paragraph]"{if $rs.btns && $rs.btns.paragraph} checked{/if}>{lang段落}</label></li>
-			<li style="width:17%"><label><input type="checkbox" name="btns[fontsize]"{if $rs.btns && $rs.btns.fontsize} checked{/if}>{lang字号}</label></li>
-			<li style="width:17%"><label><input type="checkbox" name="btns[fontfamily]"{if $rs.btns && $rs.btns.fontfamily} checked{/if}>{lang字体}</label></li>
-		</ul>
-		<div class="clear"></div>
+	<div class="layui-form-mid">
+		{lang只需要填写数字，宽度强制为百分百}
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		{lang默认粘贴方式}：<span class="note">{lang前台使用默认都是纯文本粘贴}</span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<li><label><input type="radio" name="paste_text" value="0"{if !$rs.paste_text} checked{/if}>{lang带格式粘贴}</label></li>
-			<li><label><input type="radio" name="paste_text" value="1"{if $rs.paste_text} checked{/if}>{lang纯文本粘贴}</label></li>
-		</ul>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang编辑器属性}：
-		<span class="note">{lang设置编辑器常用属性}</span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<li><label><input type="checkbox" name="is_code"{if $rs.is_code} checked{/if}>{lang显示源码}</label></li>
-			<li><label><input type="checkbox" name="is_read"{if $rs.is_read} checked{/if}>{lang只读}</label></li>
-			<li><label><input type="checkbox" name="is_float"{if $rs.is_float} checked{/if}>{lang浮动}</label></li>
-			<li><label><input type="checkbox" name="auto_height"{if $rs.auto_height} checked{/if}>{lang自动高度}</label></li>
-			<li><label><input type="checkbox" name="inc_tag"{if $rs.inc_tag} checked{/if}>{lang标签格式化到内容}</label></li>
-		</ul>
-		<div class="clear"></div>
+
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang按钮：}
+	</label>
+	<div class="layui-input-block gray" style="line-height:38px;">{lang请根据实际情况需要设置编辑器扩展按钮，前台不支持地图}</div>
+	<div class="layui-input-block">
+		<input type="checkbox" name="btns[image]"{if $rs.btns && $rs.btns.image} checked{/if} title="{lang图片}" />
+		<input type="checkbox" name="btns[info]"{if $rs.btns && $rs.btns.info} checked{/if} title="{lang资料}" />
+		<input type="checkbox" name="btns[video]"{if $rs.btns && $rs.btns.video} checked{/if} title="{lang视频}" />
+		<input type="checkbox" name="btns[audio]"{if $rs.btns && $rs.btns.audio} checked{/if} title="{lang音频}" />
+		<input type="checkbox" name="btns[file]"{if $rs.btns && $rs.btns.file} checked{/if} title="{lang文件}" />
+		<input type="checkbox" name="btns[page]"{if $rs.btns && $rs.btns.page} checked{/if} title="{lang分页}" />
+		<input type="checkbox" name="btns[table]"{if $rs.btns && $rs.btns.table} checked{/if} title="{lang表格}" />
+		<input type="checkbox" name="btns[emotion]"{if $rs.btns && $rs.btns.emotion} checked{/if} title="{lang表情}" />
+		<input type="checkbox" name="btns[map]"{if $rs.btns && $rs.btns.map} checked{/if} title="{lang地图}" />
+		<input type="checkbox" name="btns[spechars]"{if $rs.btns && $rs.btns.spechars} checked{/if} title="{lang符号}" />
+		<input type="checkbox" name="btns[insertcode]"{if $rs.btns && $rs.btns.insertcode} checked{/if} title="{lang代码}" />
+		<input type="checkbox" name="btns[paragraph]"{if $rs.btns && $rs.btns.paragraph} checked{/if} title="{lang段落}" />
+		<input type="checkbox" name="btns[fontsize]"{if $rs.btns && $rs.btns.fontsize} checked{/if} title="{lang字号}" />
+		<input type="checkbox" name="btns[fontfamily]"{if $rs.btns && $rs.btns.fontfamily} checked{/if} title="{lang字体}" />
 	</div>
 </div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang属性：}
+	</label>
+	<div class="layui-input-block gray" style="line-height:38px;">{lang设置编辑器常用属性，默认源码模式则自动高度和浮动无效}</div>
+	<div class="layui-input-block">
+		<input type="checkbox" name="is_code"{if $rs.is_code} checked{/if} title="{lang显示源码}" />
+		<input type="checkbox" name="is_read"{if $rs.is_read} checked{/if} title="{lang只读}" />
+		<input type="checkbox" name="is_float"{if $rs.is_float} checked{/if} title="{lang浮动}" />
+		<input type="checkbox" name="auto_height"{if $rs.auto_height} checked{/if} title="{lang自动高度}" />
+		<input type="checkbox" name="inc_tag"{if $rs.inc_tag} checked{/if} title="{lang标签格式化到内容}" />
+	</div>
+</div>
+
+

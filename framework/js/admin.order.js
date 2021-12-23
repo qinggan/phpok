@@ -73,7 +73,7 @@
 			}
 			var uid = $("#user_id").val();
 			if (!uid) {
-				$.dialog.alert(p_lang('未绑定会员账号'));
+				$.dialog.alert(p_lang('未绑定用户账号'));
 				return false;
 			}
 			$.phpok.json(get_url('order', 'user', 'id=' + uid + "&type=" + type), function (rs) {
@@ -93,7 +93,7 @@
 			html += '<ul class="layout">';
 			html += '<li><input type="text" name="extkey[]" class="layui-input" /></li>';
 			html += '<li>：</li>';
-			html += '<li><input type="text" name="extval[]" class="layui-input default" /></li>';
+			html += '<li><input type="text" name="extval[]" class="layui-input" /></li>';
 			html += '<li><input type="button" value=" - " onclick="$.admin_order.ext_delete(this)" class="layui-btn" /></li>';
 			html += '</ul></div>';
 			$("#ext_html").append(html);

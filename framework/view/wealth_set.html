@@ -18,7 +18,7 @@ $(document).ready(function(){
 				<input type="text" name="title" id="title" value="{$rs.title}" class="layui-input" />
 			</div>
 			<div class="layui-form-mid">
-				{lang给会员的财富取一个名称，如积分，收益，威望等}
+				{lang给用户的财富取一个名称，如积分，收益，威望等}
 			</div>
 		</div>
 		<div class="layui-form-item">
@@ -36,6 +36,24 @@ $(document).ready(function(){
 			</div>
 			<div class="layui-form-mid">
 				{lang仅限字母、数字及下划线，且必须是字母开头}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-icon-tips" lay-tips="{lang建议图片尺寸1080x768，非必填}"></i>
+				{lang图片图标}
+			</label>
+			<div class="layui-input-inline width100">
+				{func form_edit thumb $rs.thumb text form_btn=image}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-icon-tips" lay-tips="{lang输入字体Unicode代码，非必填}"></i>
+				{lang字体图标}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="iconfont" value="{$rs.iconfont}" class="layui-input" />
 			</div>
 		</div>
 		<div class="layui-form-item">

@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员数据增删查改
+ * 用户数据增删查改
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -18,8 +18,8 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 取得单条会员数组
-	 * @参数 $id 会员ID或其他唯一标识
+	 * 取得单条用户数组
+	 * @参数 $id 用户ID或其他唯一标识
 	 * @参数 $field 指定的标识，当为布尔值时表示是否格式化扩展数据
 	 * @参数 $ext 布尔值或1或0，当$field为布尔值时这里表示是否显示财富
 	 * @参数 $wealth 布尔值或1或0，表示财富
@@ -69,9 +69,9 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 取得会员的财富信息
-	 * @参数 $uid 会员ID
-	 * @参数 $wid 指定的财富ID，为0或空时返回会员下的所有财富信息
+	 * 取得用户的财富信息
+	 * @参数 $uid 用户ID
+	 * @参数 $wid 指定的财富ID，为0或空时返回用户下的所有财富信息
 	 * @参数 $return 返回，仅在$wid大于0时有效，支持两个参数，一个是value，返回值，一个是array，返回数组
 	**/
 	public function wealth($uid,$wid=0,$return='value')
@@ -83,7 +83,7 @@ class user_model_base extends phpok_model
 		$wealth = array();
 		foreach($wlist as $key=>$value){
 			$val = number_format(0,$value['dnum']);
-			$wealth[$value['identifier']] = array('id'=>$value['id'],'title'=>$value['title'],'val'=>$val,'unit'=>$value['unit']);
+			$wealth[$value['identifier']] = array('id'=>$value['id'],'title'=>$value['title'],'val'=>$val,'unit'=>$value['unit'],'thumb'=>$value['thumb'],'iconfont'=>$value['iconfont']);
 		}
 		$condition = "uid='".$uid."'";
 		$tlist = $this->model('wealth')->vals($condition);
@@ -124,7 +124,7 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 根据条件取得会员列表数据
+	 * 根据条件取得用户列表数据
 	 * @参数 $condition 查询条件，主表使用关键字 u，扩展表使用关键字 e
 	 * @参数 $offset 起始位置
 	 * @参数 $psize 查询数量
@@ -133,7 +133,7 @@ class user_model_base extends phpok_model
 	public function get_list($condition="",$offset=0,$psize=30)
 	{
 		$flist = $this->fields_all();
-		$ufields = "u.*";
+		$ufields = "u.*,g.title group_title";
 		if($flist){
 			foreach($flist as $key=>$value){
 				$ufields .= ",e.".$value['identifier'];
@@ -141,6 +141,7 @@ class user_model_base extends phpok_model
 		}
 		$sql = " SELECT ".$ufields." FROM ".$this->db->prefix."user u ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."user_ext e ON(u.id=e.id) ";
+		$sql.= " LEFT JOIN ".$this->db->prefix."user_group g ON(u.group_id=g.id) ";
 		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
@@ -165,7 +166,7 @@ class user_model_base extends phpok_model
 				}
 			}
 		}
-		//读取会员积分信息
+		//读取用户积分信息
 		$wlist = $this->model('wealth')->get_all(1,'id');
 		if($wlist){
 			$condition = "uid IN(".implode(",",$idlist).")";
@@ -192,7 +193,7 @@ class user_model_base extends phpok_model
 
 
 	/**
-	 * 取得指定条件下的会员数量
+	 * 取得指定条件下的用户数量
 	 * @参数 $condition 查询条件，主表使用关键字 u，扩展表使用关键字 e
 	**/
 	public function get_count($condition="")
@@ -208,7 +209,7 @@ class user_model_base extends phpok_model
 	/**
 	 * 检测账号是否冲突
 	 * @参数 $name 账号名称
-	 * @参数 $id 会员ID，表示不包含这个会员ID
+	 * @参数 $id 用户ID，表示不包含这个用户ID
 	**/
 	public function chk_email($email,$id=0)
 	{
@@ -222,7 +223,7 @@ class user_model_base extends phpok_model
 	/**
 	 * 检测账号是否冲突
 	 * @参数 $name 账号名称
-	 * @参数 $id 会员ID，表示不包含这个会员ID
+	 * @参数 $id 用户ID，表示不包含这个用户ID
 	**/
 	public function chk_name($name,$id=0)
 	{
@@ -236,7 +237,7 @@ class user_model_base extends phpok_model
 	/**
 	 * 邀请码验证，必须是唯一的
 	 * @参数 $code 邀请码
-	 * @参数 $id 会员ID，表示不包含这个会员ID
+	 * @参数 $id 用户ID，表示不包含这个用户ID
 	**/
 	public function chk_code($code,$id=0)
 	{
@@ -249,7 +250,7 @@ class user_model_base extends phpok_model
 
 	/**
 	 * 取得扩展字段的所有扩展信息
-	 * @参数 $condition 取得会员扩展字段配置
+	 * @参数 $condition 取得用户扩展字段配置
 	 * @参数 $pri_id 主键ID
 	**/
 	public function fields_all($condition="",$pri_id="")
@@ -282,8 +283,8 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 取得指定会员ID下的全部会员主表信息
-	 * @参数 $uid 会员ID，多个ID用英文逗号隔开
+	 * 取得指定用户ID下的全部用户主表信息
+	 * @参数 $uid 用户ID，多个ID用英文逗号隔开
 	 * @参数 $pri 绑定的主键
 	 * @参数 
 	**/
@@ -329,7 +330,7 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 取得会员主表字段
+	 * 取得用户主表字段
 	**/
 	public function fields()
 	{
@@ -337,9 +338,9 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 通过邮箱取得会员的ID
+	 * 通过邮箱取得用户的ID
 	 * @参数 $email 指定的邮箱
-	 * @参数 $id 不包括会员ID
+	 * @参数 $id 不包括用户ID
 	**/
 	public function uid_from_email($email,$id="")
 	{
@@ -358,7 +359,7 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 通过验证串获取会员ID，注意，此项及有可能获得到的会员ID是不准确的，适用于忘记密码
+	 * 通过验证串获取用户ID，注意，此项及有可能获得到的用户ID是不准确的，适用于忘记密码
 	 * @参数 $code 验证串
 	**/
 	public function uid_from_chkcode($code)
@@ -375,9 +376,9 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 保存会员主要资料
-	 * @参数 $data 一维数组，会员内容
-	 * @参数 $id 会员ID，为空或0时表示新增
+	 * 保存用户主要资料
+	 * @参数 $data 一维数组，用户内容
+	 * @参数 $id 用户ID，为空或0时表示新增
 	**/
 	public function save($data,$id=0)
 	{
@@ -396,7 +397,7 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 写入会员扩展数据，适用于新注册会员
+	 * 写入用户扩展数据，适用于新注册用户
 	 * @参数 $data 一维数组
 	**/
 	public function save_ext($data)
@@ -416,9 +417,9 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 更新会员扩展表数据
-	 * @参数 $data 一维数组，要更新的会员数据内容
-	 * @参数 $id 会员ID
+	 * 更新用户扩展表数据
+	 * @参数 $data 一维数组，要更新的用户数据内容
+	 * @参数 $id 用户ID
 	**/
 	public function update_ext($data,$id)
 	{
@@ -435,8 +436,8 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 取得会员的推荐人会员ID
-	 * @参数 $uid 当前会员ID
+	 * 取得用户的推荐人用户ID
+	 * @参数 $uid 当前用户ID
 	**/
 	public function get_relation($uid)
 	{
@@ -463,8 +464,8 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 保存会员与推荐人关系
-	 * @参数 $uid 会员ID
+	 * 保存用户与推荐人关系
+	 * @参数 $uid 用户ID
 	 * @参数 $introducer 推荐人ID
 	**/
 	public function save_relation($uid=0,$introducer=0)
@@ -491,8 +492,8 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 取得会员推荐列表
-	 * @参数 $uid 当前会员ID
+	 * 取得用户推荐列表
+	 * @参数 $uid 当前用户ID
 	 * @参数 $offset 初始位置
 	 * @参数 $psize 查询数量
 	 * @参数 $condition 其他查询条件
@@ -526,7 +527,7 @@ class user_model_base extends phpok_model
 
 	/**
 	 * 取得总数量
-	 * @参数 $uid 当前会员ID
+	 * @参数 $uid 当前用户ID
 	 * @参数 $condition 其他查询条件
 	**/
 	public function count_relation($uid,$condition="")
@@ -540,7 +541,7 @@ class user_model_base extends phpok_model
 
 	/**
 	 * 取得最大时间和最小时间
-	 * @参数 $uid 会员ID
+	 * @参数 $uid 用户ID
 	**/
 	public function time_relation($uid)
 	{
@@ -556,8 +557,8 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 取得会员有验证串是否一致，一致则自动登录
-	 * @参数 $uid 会员ID
+	 * 取得用户有验证串是否一致，一致则自动登录
+	 * @参数 $uid 用户ID
 	 * @参数 $chk 验证串
 	**/
 	public function token_check($uid,$sign)
@@ -572,9 +573,7 @@ class user_model_base extends phpok_model
 		}
 		$code = md5($uid.'-'.$rs['user'].'-'.$rs['pass']);
 		if(strtolower($code) == strtolower($sign)){
-			$this->session->assign('user_id',$uid);
-			$this->session->assign('user_name',$rs['user']);
-			$this->session->assign('user_gid',$rs['group_id']);
+			$this->login($rs);
 			return true;
 		}
 		return false;
@@ -582,7 +581,7 @@ class user_model_base extends phpok_model
 
 	/**
 	 * 生成验证串
-	 * @参数 $uid 会员ID
+	 * @参数 $uid 用户ID
 	**/
 	public function token_create($uid,$keyid='')
 	{
@@ -601,9 +600,9 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 更新会员验证串
+	 * 更新用户验证串
 	 * @参数 $code 验证码，为空表示清空验证码
-	 * @参数 $id 会员ID
+	 * @参数 $id 用户ID
 	**/
 	public function update_code($code,$id)
 	{
@@ -612,7 +611,7 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 会员地址库保存
+	 * 用户地址库保存
 	 * @参数 $data 要保存的数组
 	 * @参数 $id 地址ID
 	**/
@@ -628,8 +627,8 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 会员下的地址信息
-	 * @参数 $uid 会员ID号
+	 * 用户下的地址信息
+	 * @参数 $uid 用户ID号
 	**/
 	public function address_all($uid=0)
 	{
@@ -663,7 +662,7 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 删除一条会员地址库
+	 * 删除一条用户地址库
 	 * @参数 $id 指定的地址ID
 	**/
 	public function address_delete($id)
@@ -674,7 +673,7 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 设置会员状态
+	 * 设置用户状态
 	**/
 	public function set_status($id,$status=0)
 	{
@@ -683,7 +682,7 @@ class user_model_base extends phpok_model
 	}
 
 	//邮箱登录
-	function user_email($email,$uid=0)
+	public function user_email($email,$uid=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE email='".$email."'";
 		if($uid){
@@ -702,8 +701,8 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 删除会员操作
-	 * @参数 $id 会员ID
+	 * 删除用户操作
+	 * @参数 $id 用户ID
 	**/
 	public function del($id)
 	{
@@ -727,12 +726,29 @@ class user_model_base extends phpok_model
 		//删除积分日志
 		$sql = "DELETE FROM ".$this->db->prefix."wealth_log WHERE goal_id='".$id."'";
 		$this->db->query($sql);
-		//会员订单变成游客订单
+		//用户订单变成游客订单
 		$sql = "UPDATE ".$this->db->prefix."order SET user_id=0 WHERE user_id='".$id."'";
 		$this->db->query($sql);
-		//删除会员的主题关联
+		//删除用户的主题关联
 		$sql = "UPDATE ".$this->db->prefix."list SET user_id=0 WHERE user_id='".$id."'";
 		$this->db->query($sql);
+		return true;
+	}
+
+	public function destory($id)
+	{
+		//清除账号信息
+		$data = array('user'=>'Guest'.$this->time.rand(1000,9999));
+		$data['mobile'] = '';
+		$data['email'] = '';
+		$data['avatar'] = '';
+		$data['status'] = 2;
+		$data['pass'] = password_create($this->lib('common')->str_rand(10));
+		$this->save($data,$id);
+		//删除扩展用户信息
+		$sql = "DELETE FROM ".$this->db->prefix."user_ext WHERE id='".$id."'";
+		$this->db->query($sql);
+		$this->save_ext(array('id'=>$id));
 		return true;
 	}
 
@@ -797,5 +813,53 @@ class user_model_base extends phpok_model
 		$data['avatar'] = $avatar;
 		$data['link'] = $this->url.'?'.$this->config['ctrl_id'].'=user&id='.$user['id'];
 		return $data;
+	}
+
+	public function autologin_info($id,$device='')
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."user_autologin WHERE id='".$id."' AND device='".$device."'";
+		return $this->db->get_one($sql);
+	}
+
+	public function autologin_save($code='',$id=0,$device='')
+	{
+		if(!$code || !$id){
+			return false;
+		}
+		$data = array("id"=>$id,"code"=>$code,"logintime"=>$this->time,'device'=>$device);
+		return $this->db->insert($data,"user_autologin",'replace');
+	}
+
+	public function login($user,$wealth_add=false,$device='web')
+	{
+		if(is_numeric($user)){
+			$user = $this->get_one($user,'id',false,false);
+			if(!$user){
+				return false;
+			}
+		}
+		if($wealth_add){
+			$this->model('wealth')->login($user['id'],P_Lang('用户登录'));
+		}
+		$code = $this->lib('common')->str_rand(10,'all');
+		$this->autologin_save($code,$user['id'],$device);
+		$new = md5($user['user'].$user['pass'].$code);
+		$this->session->assign('user_id',$user['id']);
+		$this->session->assign('user_gid',$user['group_id']);
+		$this->session->assign('user_name',$user['user']);
+		$data = array();
+		$data['user_id'] = $user['id'];
+		$data['user_gid'] = $user['group_id'];
+		$data['user_name'] = $user['user'];
+		$data['user_code'] = $new;
+		return $data;
+	}
+
+	public function logout()
+	{
+		$this->session->unassign('user_id');
+		$this->session->unassign('user_gid');
+		$this->session->unassign('user_name');
+		return true;
 	}
 }

@@ -66,6 +66,8 @@ class url_model_base extends phpok_model
 	{
 		if($act){
 			$this->nocache = '0.'.$this->time;
+		}else{
+			$this->nocache = '';
 		}
 		return $this->nocache;
 	}

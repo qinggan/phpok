@@ -51,6 +51,7 @@ class param_form extends _init_auto
 		}
 		if($rs['content']){
 			$list = unserialize($rs['content']);
+			$list['count'] = count($list['title']);
 		}else{
 			$list = array();
 			if($pname){
@@ -132,31 +133,50 @@ class param_form extends _init_auto
 		}
 		if($appid == 'admin'){
 			$html = '';
+			$tmptitle = '';
 			if($ext && $ext['p_type']){
-				foreach(($info['content'] ? $info['content'] : array()) as $key=>$value){
-					$tmp = '';
-					foreach($info['title'] as $k=>$v){
-						if($tmp){
-							$tmp .= " / ";
-						}
-						$tmp .= trim($v).': '.trim($value[$k]);
-					}
-					$html .= '<div>'.$tmp.'</div>';
-					$html = str_replace(array("\n","\r"),"",$html);
+				$html = '<table class="layui-table" style="margin:0"><thead><tr>';
+				foreach($info['title'] as $key=>$value){
+					$html .= '<th>'.$value.'</th>';
 				}
+				$html .= '</tr></thead>';
+				$tmptitle = '';
+				$i=0;
+				foreach(($info['content'] ? $info['content'] : array()) as $key=>$value){
+					$html .= '<tr>';
+					foreach($info['title'] as $k=>$v){
+						$html .= '<td>'.trim($value[$k]).'</td>';
+						if($i<4){
+							$tmptitle .= trim($value[$k]);
+						}
+					}
+					$html .= '</tr>';
+					$i++;
+				}
+				$html .= "</table>";
+				$html = str_replace(array("\n","\r"),"",$html);
 			}else{
+				$tmptitle = '';
 				if(!$info['title']){
 					$info['title'] = array();
 				}
+				$i=0;
 				foreach($info['title'] as $key=>$value){
 					$html .= '<div>'.trim($value).'：'.trim($info['content'][$key]).'</div>';
+					if($i<4){
+						$tmptitle .= '<div>'.trim($value).'：'.trim($info['content'][$key]).'</div>';
+					}
+					$i++;
 				}
 				$html = str_replace(array("\n","\r"),"",$html);
 			}
 			if(!$html){
 				$html = '无 <b>'.implode("/",$info['title']).'</b> 内容';
 			}
-			$html = '<input type="button" value="'.implode("/",$info['title']).'" class="layui-btn layui-btn-xs" onclick="$.dialog.alert(\''.$html.'\',true,\'question\')" />';
+			$rand_id = uniqid($rs['identifier'].'-');
+			$html  = '<div style="display:none" id="'.$rand_id.'"><div style="width:500px;height:400px;overflow:auto;">'.$html.'</div></div>';
+			$html .= '<a href="javascript:$.dialog({\'content\':document.getElementById(\''.$rand_id.'\'),\'cancel\':true,\'cancelVal\':\'关闭\',\'width\':500,\'height\':\'400\',\'resize\':false,\'padding\':\'0\',\'title\':\'预览\',\'drag\':false});void(0);">'.($tmptitle ? phpok_cut($tmptitle,80,'…') : implode("/",$info['title'])).'</a>';
+			//$html = '<input type="button" value="'.implode("/",$info['title']).'" />';
 			return $html;
 		}else{
 			

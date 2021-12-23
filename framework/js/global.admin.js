@@ -229,7 +229,7 @@ function ext_add(module)
 	$.dialog.open(url,{
 		'title':'创建扩展字段',
 		'width':'750px',
-		'height':'580px',
+		'height':'560px',
 		'resize':false,
 		'lock':true,
 		'ok':function(){
@@ -288,7 +288,7 @@ function ext_edit(id,module)
 	$.dialog.open(url,{
 		"title" : "编辑扩展字段属性",
 		"width" : "700px",
-		"height" : "95%",
+		"height" : "560px",
 		"win_min":false,
 		"win_max":false,
 		"resize" : false,
@@ -306,7 +306,7 @@ function ext_edit(id,module)
 	});
 }
 
-//前台常用JS函数封装
+//后台常用JS函数封装
 ;(function($){
 	$.admin = {
 		//更换Tab设置
@@ -383,6 +383,9 @@ function ext_edit(id,module)
 					if(layid){
 						layid = layid.replace(/\&\_noCache=[0-9\.]+/g,'');
 					}
+					if(layid){
+						layid = layid.replace(webroot,'');
+					}
 					var chk = webroot+layid;
 					if(chk.indexOf(url) != -1){
 						top.$('.layadmin-iframe').eq(i)[0].contentWindow.location.reload(true);
@@ -404,7 +407,7 @@ function ext_edit(id,module)
 					if(layid){
 						layid = layid.replace(/\&\_noCache=[0-9\.]+/g,'');
 					}
-					var chk = webroot+layid;
+					var chk = layid;
 					if(chk.indexOf(url) != -1 && li_num<1){
 						li_num = i;
 					}
@@ -431,6 +434,7 @@ function ext_edit(id,module)
 
 		title:function(title,url)
 		{
+			var s = '';
 			top.$("#LAY_app_tabsheader li").each(function(i){
 				if(url && url != 'undefined'){
 					var layid = $(this).attr('lay-id');
@@ -439,14 +443,21 @@ function ext_edit(id,module)
 					}
 					var chk = webroot+layid;
 					if(chk.indexOf(url) != -1){
-						$(this).find("span").html(title);
+						s = $(this).find("span").html();
+						if(title && title != 'undefined'){
+							$(this).find("span").html(title);
+						}
 					}
 				}else{
 					if($(this).hasClass('layui-this')){
-						$(this).find("span").html(title);
+						s = $(this).find("span").html();
+						if(title && title != 'undefined'){
+							$(this).find("span").html(title);
+						}
 					}
 				}
 			});
+			return s;
 		},
 
 		/**
@@ -476,17 +487,31 @@ function ext_edit(id,module)
 					$(obj).find("i.layui-icon").removeClass('layui-icon-down').addClass('layui-icon-right');
 				});
 			}
+		},
+		vcode:function(obj)
+		{
+			var url = get_url('admin','vcode');
+			var code = $(obj).find("input[type=password]").val();
+			if(!code){
+				$.dialog.alert(p_lang('二次密码不能为空'));
+				return false;
+			}
+			url += '&code='+$.str.encode(code);
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.alert(rs.info);
+					return false;
+				}
+				$.dialog.tips(p_lang('验证通过'),function(){
+					$.phpok.reload();
+				}).lock();
+			});
+			return false;
 		}
 	};
 })(jQuery);
 
 $(document).ready(function(){
-	//计划任务自动执行
-	window.setTimeout(function(){
-		$.phpok.json(api_url('task'),function(rs){
-			return true;
-		});
-	}, 600);
 	var clipboard = new Clipboard('.phpok-copy');
 	clipboard.on('success', function(e){
 		$.dialog.tips(p_lang('复制成功'));
@@ -495,36 +520,6 @@ $(document).ready(function(){
 	clipboard.on('error', function(e){
 		$.dialog.tips(p_lang('复制失败'));
 	});
-	var r_menu_in_copy = [{
-		'text':p_lang('复制'),
-		'func':function(){
-			var info = $("#smart-phpok-copy-html").val();
-			if(window.clipboardData && info != ''){
-				window.clipboardData.setData("Text", info);
-				$.dialog.tips(p_lang('文本复制成功，请按 CTRL+V 粘贴'));
-				return true;
-			}
-			if(document.execCommand && info != ''){
-				$("#smart-phpok-copy-html").focus().select();
-				document.execCommand("copy",false,null);
-				$.dialog.tips(p_lang('文本复制成功，请按 CTRL+V 粘贴'));
-				return true;
-			}
-			$.dialog.tips(p_lang('复制失败，请按 CTRL+C 进行复制操作'));
-			return true;
-		}
-	},{
-		'text':p_lang('刷新'),
-		'func':function(){
-			$.phpok.reload();
-		}
-	}];
-	var r_menu_not_copy = [{
-		'text':p_lang('刷新'),
-		'func':function(){
-			$.phpok.reload();
-		}
-	}];
 	var r_menu = [[{
 		'text':p_lang('刷新'),
 		'func':function(){
@@ -587,30 +582,74 @@ $(document).ready(function(){
 	}]];
 	$(window).smartMenu(r_menu,{
 		'name':'smart',
+		'textLimit':8
+	});
+	$("li[menu-right=true],div[menu-right=true],body").smartMenu(r_menu,{
+		'name':'smart',
 		'textLimit':8,
 		'beforeShow':function(){
 			$.smartMenu.remove();
-			r_menu[0] = r_menu_not_copy;
-			if(!document.queryCommandSupported('copy')){
-				return true;
+			r_menu[0] = [{
+				'text':p_lang('刷新'),
+				'func':function(){
+					$.phpok.reload();
+				}
+			}];
+			if(document.queryCommandSupported('copy')){
+				var info = window.getSelection ?  (window.getSelection()).toString() : (document.selection.createRange ? document.selection.createRange().text : '');
+				if(info == '' && $("input[type=text]:focus").length>0){
+					obj = $("input[type=text]:focus")[0];
+					info = obj.value.substring(obj.selectionStart,obj.selectionEnd);
+				}
+				if(info == '' && $("textarea:focus").length>0){
+					obj = $("textarea:focus")[0];
+					info = obj.value.substring(obj.selectionStart,obj.selectionEnd);
+				}
+				if(info){
+					info = info.replace(/<.+>/g,'');
+				}
+				if(info != ''){
+					$("#smart-phpok-copy-html").remove();
+					var html = '<input type="text" id="smart-phpok-copy-html" value="'+info+'" style="position:absolute;left:-9999px;top:-9999px;" />'
+					$('body').append(html);
+					r_menu[0].unshift({
+						'text':p_lang('复制'),
+						'func':function(){
+							var info = $("#smart-phpok-copy-html").val();
+							if(window.clipboardData && info != ''){
+								window.clipboardData.setData("Text", info);
+								$.dialog.tips(p_lang('文本复制成功，请按 CTRL+V 粘贴'));
+								return true;
+							}
+							if(document.execCommand && info != ''){
+								$("#smart-phpok-copy-html").focus().select();
+								document.execCommand("copy",false,null);
+								$.dialog.tips(p_lang('文本复制成功，请按 CTRL+V 粘贴'));
+								return true;
+							}
+							$.dialog.tips(p_lang('复制失败，请按 CTRL+C 进行复制操作'));
+							return true;
+						}
+					});
+				}
 			}
-			var info = window.getSelection ?  (window.getSelection()).toString() : (document.selection.createRange ? document.selection.createRange().text : '');
-			if(info == '' && $("input[type=text]:focus").length>0){
-				obj = $("input[type=text]:focus")[0];
-				info = obj.value.substring(obj.selectionStart,obj.selectionEnd);
-			}
-			if(info == '' && $("textarea:focus").length>0){
-				obj = $("textarea:focus")[0];
-				info = obj.value.substring(obj.selectionStart,obj.selectionEnd);
-			}
-			if(info){
-				info = info.replace(/<.+>/g,'');
-			}
-			if(info != ''){
-				$("#smart-phpok-copy-html").remove();
-				var html = '<input type="text" id="smart-phpok-copy-html" value="'+info+'" style="position:absolute;left:-9999px;top:-9999px;" />'
-				$('body').append(html);
-				r_menu[0] = r_menu_in_copy;
+			var list = new Array();
+			var self = this;
+			for(var i=1;i<10;i++){
+				(function(i){
+					var t = $(self).attr("menu-right-"+i);
+					if(t && t != 'undefined'){
+						var t_exec = $(self).attr("menu-right-"+i+"-exec");
+						if(t_exec && t_exec != 'undefined'){
+							r_menu[0].push({
+								"text":t,
+								"func":function(){
+									new Function(t_exec)();
+								}
+							});
+						}
+					}
+				})(i);
 			}
 		}
 	});

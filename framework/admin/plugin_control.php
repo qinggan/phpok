@@ -72,6 +72,8 @@ class plugin_control extends phpok_control
 		$rs = $this->model('plugin')->get_one($id);
 		if($rs['param']){
 			$rs['param'] = unserialize($rs['param']);
+		}else{
+			$rs['param'] = array();
 		}
 		$this->assign("rs",$rs);
 		if(file_exists($this->dir_root.'plugins/'.$id.'/setting.php')){
@@ -84,6 +86,8 @@ class plugin_control extends phpok_control
 				$this->assign('plugin_html',$plugin_html);
 			}
 		}
+		$project_list = $this->model('project')->get_all_project($this->session->val('admin_site_id'),'');
+		$this->assign('plist',$project_list);
 		$this->view("plugin_config");
 	}
 
@@ -103,6 +107,8 @@ class plugin_control extends phpok_control
 		$rs = $this->model('plugin')->get_one($id);
 		if($rs['param']){
 			$rs['param'] = unserialize($rs['param']);
+		}else{
+			$rs['param'] = array();
 		}
 		$this->assign("rs",$rs);
 		$plugin_html = '';
@@ -116,9 +122,8 @@ class plugin_control extends phpok_control
 				$this->assign('plugin_html',$plugin_html);
 			}
 		}
-		if(!$plugin_html){
-			$this->error(P_Lang('没有可配置的扩展参数'));
-		}
+		$project_list = $this->model('project')->get_all_project($this->session->val('admin_site_id'),'');
+		$this->assign('plist',$project_list);
 		$this->view('plugin_extconfig');
 	}
 
@@ -138,6 +143,10 @@ class plugin_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('数据记录不存在'));
 		}
+		$pid = $this->get('sys-pid','int');
+		$pids = $this->get('sys-pids','int');
+		$data = array('pid'=>$pid,'pids'=>$pids);
+		$this->model('plugin')->update_plugin($data,$id);
 		if(file_exists($this->dir_plugin.$id.'/setting.php')){
 			include_once($this->dir_plugin.$id.'/setting.php');
 			$name = 'setting_'.$id;
@@ -178,6 +187,8 @@ class plugin_control extends phpok_control
 		$author = $this->get('author');
 		$version = $this->get('version');
 		$array = array('title'=>$title,'note'=>$note,'taxis'=>$taxis,'author'=>$author,'version'=>$version);
+		$array['pid'] = $this->get('sys-pid','int');
+		$array['pids'] = $this->get('sys-pids','int');
 		$this->model('plugin')->update_plugin($array,$id);
 		if(file_exists($this->dir_root.'plugins/'.$id.'/setting.php')){
 			include_once($this->dir_root.'plugins/'.$id.'/setting.php');
@@ -279,6 +290,8 @@ class plugin_control extends phpok_control
 				$this->assign("plugin_html",$info);
 			}
 		}
+		$project_list = $this->model('project')->get_all_project($this->session->val('admin_site_id'),'');
+		$this->assign('plist',$project_list);
 		$this->view("plugin_install");
 	}
 
@@ -306,6 +319,8 @@ class plugin_control extends phpok_control
 		$author = $this->get('author');
 		$version = $this->get('version');
 		$array = array('id'=>$id,'title'=>$title,'note'=>$note,'status'=>0,'author'=>$author,'taxis'=>$taxis,'version'=>$version);
+		$array['pid'] = $this->get('sys-pid','int');
+		$array['pids'] = $this->get('sys-pids','int');
 		$id = $this->model('plugin')->install_save($array);
 		if(!$id){
 			$this->error(P_Lang('插件安装失败'),$this->url('plugin','install','id='.$id));
@@ -635,14 +650,12 @@ class plugin_control extends phpok_control
 		if(!$title){
 			$this->error(P_Lang('插件名称不能为空'));
 		}
-		$id = $this->get('id','system');
-		if($id){
-			if(strpos($id,'_') !== false){
-				$this->error(P_Lang('插件标识不支持下划线'));
-			}
-			$id = strtolower($id);
-		}else{
-			$id = md5($title.'-phpok.com-'.uniqid(rand(), true));
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定插件标识'));
+		}
+		if(!preg_match("/^[a-z0-9A-Z]+$/u",$id)){
+			$this->error(P_Lang('插件命名不符合要求'));
 		}
 		//检测插件文件夹是否存在
 		if(file_exists($this->dir_root.'plugins/'.$id)){
@@ -659,9 +672,9 @@ class plugin_control extends phpok_control
 		//创建XML文件
 		$content = '<?xml version="1.0" encoding="utf-8"?>'."\n";
 		$content.= '<root>'."\n\t";
-		$content.= '<title>'.$title.'</title>'."\n\t";
-		$content.= '<desc>'.$note.'</desc>'."\n\t";
-		$content.= '<author>'.$author.'</author>'."\n\t";
+		$content.= '<title><![CDATA['.$title.']]></title>'."\n\t";
+		$content.= '<desc><![CDATA['.$note.']]></desc>'."\n\t";
+		$content.= '<author><![CDATA['.$author.']]></author>'."\n\t";
 		$content.= '<version>1.0</version>'."\n";
 		$content.= '</root>';
 		$this->lib('file')->vim($content,$this->dir_root.'plugins/'.$id.'/config.xml');
@@ -671,6 +684,9 @@ class plugin_control extends phpok_control
 			$content = '<?php'."\n".$this->php_note_title($id,$value,$title,$author)."\n".$this->php_demo($id,$value);
 			$this->lib('file')->vim($content,$this->dir_root.'plugins/'.$id.'/'.$value.'.php');
 		}
+		//创建公共函数
+		$content = '<?php'."\n".$this->php_note_title($id,'global',$title,$author)."\n".$this->php_forbid()."\n";
+		$this->lib('file')->vim($content,$this->dir_root.'plugins/'.$id.'/global.func.php');
 		$this->success();
 	}
 
@@ -714,6 +730,9 @@ class plugin_control extends phpok_control
 			case 'setting':
 			    $note = P_Lang('插件配置');
 				break;
+			case 'global':
+			    $note = P_Lang('公共函数');
+				break;
 			default:
 				$note = P_Lang('未知');
 		}
@@ -729,6 +748,17 @@ class plugin_control extends phpok_control
 		return $string;
 	}
 
+	private function php_forbid()
+	{
+		$string  = '/**'."\n";
+		$string .= ' * 安全限制，防止直接访问'."\n";
+		$string .= '**/'."\n";
+		$string .= 'if(!defined("PHPOK_SET")){'."\n";
+		$string .= '	exit("<h1>Access Denied</h1>");'."\n";
+		$string .= '}'."\n";
+		return $string;
+	}
+
 	/**
 	 * 
 	 * @参数 
@@ -741,10 +771,22 @@ class plugin_control extends phpok_control
 		$string = 'class '.$fileid.'_'.$id.' extends phpok_plugin'."\n";
 		$string.= '{'."\n\t";
 		$string.= 'public $me;'."\n\t";
+		if($fileid == 'www' || $fileid == 'admin' || $fileid == 'api'){
+			$string.= 'private $pid = 0;'."\n\t";
+			$string.= 'private $pids = array();'."\n\t";
+		}
 		$string.= 'public function __construct()'."\n\t";
 		$string.= '{'."\n\t\t";
 		$string.= 'parent::plugin();'."\n\t\t";
 		$string.= '$this->me = $this->_info();'."\n\t";
+		if($fileid == 'www' || $fileid == 'admin' || $fileid == 'api'){
+			$string.= "\t";
+			$string.= '$this->pid = $this->me["pid"];'."\n\t\t";
+			$string.= '$this->pids = $this->me["pids"];'."\n\t\t";
+			$string.= 'if($this->me && $this->me["param"]){'."\n\t\t\t";
+			$string.= '//'."\n\t\t";
+			$string.= '}'."\n\t";
+		}
 		$string.= '}'."\n\t";
 		$string.= "\n\t";
 		//初始化全局应用
@@ -757,14 +799,34 @@ class plugin_control extends phpok_control
 			$string .= '//PHP代码;'."\n\t";
 			$string .= '}'."\n\t";
 			$string .= "\n\t";
-			$string .= '/**'."\n\t";
-			$string .= ' * 全局运行插件，在执行当前方法运行后，数据未输出前，如果不使用，请删除这个方法'."\n\t";
-			$string .= '**/'."\n\t";
-			$string .= 'public function phpok_after()'."\n\t";
-			$string .= '{'."\n\t\t";
-			$string .= '//PHP代码;'."\n\t";
-			$string .= '}'."\n\t";
-			$string .= "\n\t";
+			if($fileid == 'www' || $fileid == 'admin'){
+				$string .= '/**'."\n\t";
+				$string .= ' * 全局运行插件，在执行当前方法运行后，数据未输出前，如果不使用，请删除这个方法'."\n\t";
+				$string .= '**/'."\n\t";
+				$string .= 'public function phpok_after()'."\n\t";
+				$string .= '{'."\n\t\t";
+				$string .= '//PHP代码;'."\n\t";
+				$string .= '}'."\n\t";
+				$string .= "\n\t";
+			}
+			if($fileid == 'admin'){
+				$string .= '/**'."\n\t";
+				$string .= ' * 内容列表未输出前'."\n\t";
+				$string .= '**/'."\n\t";
+				$string .= 'public function ap_list_action_after()'."\n\t";
+				$string .= '{'."\n\t\t";
+				$string .= '//$rslist = $this->tpl->val("rslist");'."\n\t";
+				$string .= '}'."\n\t";
+				$string.= "\n\t";
+				$string .= '/**'."\n\t";
+				$string .= ' * 内容未输出前的执行'."\n\t";
+				$string .= '**/'."\n\t";
+				$string .= 'public function ap_list_edit_after()'."\n\t";
+				$string .= '{'."\n\t\t";
+				$string .= '//$rs = $this->tpl->val("rs");'."\n\t";
+				$string .= '}'."\n\t";
+				$string.= "\n\t";
+			}
 			if($fileid == 'www' || $fileid == 'admin'){
 				$string .= '/**'."\n\t";
 				$string .= ' * 系统内置在</head>节点前输出HTML内容，如果不使用，请删除这个方法'."\n\t";
@@ -785,6 +847,22 @@ class plugin_control extends phpok_control
 			}
 		}
 		if($fileid == 'admin'){
+			$string .= '/**'."\n\t";
+			$string .= ' * 内容添加或编辑时使用的HTML/JS改靠'."\n\t";
+			$string .= '**/'."\n\t";
+			$string .= 'public function html_list_edit_body()'."\n\t";
+			$string .= '{'."\n\t\t";
+			$string .= '//$this->_show("admin-list-edit-body.html");'."\n\t";
+			$string .= '}'."\n\t";
+			$string.= "\n\t";
+			$string .= '/**'."\n\t";
+			$string .= ' * 内容列表使用的HTML/JS改靠'."\n\t";
+			$string .= '**/'."\n\t";
+			$string .= 'public function html_list_action_body()'."\n\t";
+			$string .= '{'."\n\t\t";
+			$string .= '//$this->_show("admin-list-action-body.html");'."\n\t";
+			$string .= '}'."\n\t";
+			$string.= "\n\t";
 			$string .= '/**'."\n\t";
 			$string .= ' * 更新或添加保存完主题后触发动作，如果不使用，请删除这个方法'."\n\t";
 			$string .= ' * @参数 $id 主题ID'."\n\t";

@@ -89,7 +89,7 @@ class call_control extends phpok_control
 		$attrlist = $this->model('list')->attr_list();
 		$this->assign("attrlist",$attrlist);
 
-		//读取会员组
+		//读取用户组
 		$ugroup = $this->model('usergroup')->get_all("is_guest=0");
 		$this->assign("usergroup",$ugroup);
 		

@@ -96,7 +96,8 @@ class title_form extends _init_auto
 		}
 		if($ext['is_multiple']){
 			$condition = "l.id IN(".$rs['content'].") AND status=1";
-			return $this->model('list')->get_all($condition,0,999);
+			$orderby = "SUBSTRING_INDEX('".implode(",",$list)."',l.id,1)";
+			return $this->model('list')->get_all($condition,0,999,$orderby);
 		}
 		return $this->model('list')->simple_one($rs['content']);
 	}

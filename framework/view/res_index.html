@@ -69,7 +69,7 @@
 <div class="layui-row layui-col-space10 layui-form checkbox">
     <!-- loop from=$rslist key=$key value=$value id=$tmpid -->
     <div class="layui-col-sm6 layui-col-md4 layui-col-lg3" id="thumb_{$value.id}">
-        <div class="layui-card">
+        <div class="layui-card" style="height:165px;">
 	        <div class="layui-card-header">
 		        <input type="checkbox" name="attrid[]" title="{$value.title}" id="attrid_{$value.id}" value="{$value.id}" lay-skin="primary"/>
 		        <!-- if $value.download -->, {lang下载次数} {$value.download} {lang次}<!-- /if -->
@@ -84,9 +84,9 @@
 							<br>{lang上传时间} {func date "Y-m-d H:i:s" $value.addtime}
 						</div>
 						<div class="layui-btn-group">
-							<input type="button" value="{lang修改}" class="layui-btn layui-btn-sm" onclick="$.admin_res.modify('{$value.id}')"/>
-							<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.admin_res.preview_attr('{$value.id}')"/>
-							<input type="button" value="{lang删除}" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.admin_res.file_delete('{$value.id}')"/>
+							<input type="button" value="{lang修改}" class="layui-btn layui-btn-xs" onclick="$.admin_res.modify('{$value.id}')"/>
+							<input type="button" value="{lang预览}" class="layui-btn layui-btn-xs" onclick="$.admin_res.preview_attr('{$value.id}')"/>
+							<input type="button" value="{lang删除}" class="layui-btn layui-btn-xs layui-btn-danger" onclick="$.admin_res.file_delete('{$value.id}')"/>
 						</div>
                     </div>
                 </div>

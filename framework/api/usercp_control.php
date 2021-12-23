@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员中心数据存储
+ * 用户中心数据存储
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -23,17 +23,17 @@ class usercp_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$user = $this->model('user')->get_one($this->session->val('user_id'));
 		if(!$user){
-			$this->error(P_Lang('会员信息不存在'));
+			$this->error(P_Lang('用户信息不存在'));
 		}
 		if(!$user['status']){
-			$this->error(P_Lang('会员信息未审核通过'));
+			$this->error(P_Lang('用户信息未审核通过'));
 		}
 		if($user['status'] == 2){
-			$this->error(P_Lang('会员已被禁用，请联系管理员'));
+			$this->error(P_Lang('用户已被禁用，请联系管理员'));
 		}
 		if(isset($user['pass'])){
 			unset($user['pass']);
@@ -47,11 +47,11 @@ class usercp_control extends phpok_control
 	public function info_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$group_rs = $this->model('usergroup')->group_rs($this->session->val('user_id'));
 		if(!$group_rs){
-			$this->error(P_Lang('会员组不存在'));
+			$this->error(P_Lang('用户组不存在'));
 		}
 		$condition = 'is_front=1';
 		if($group_rs['fields']){
@@ -72,12 +72,12 @@ class usercp_control extends phpok_control
 	}
 
 	/**
-	 * 更新会员头像
+	 * 更新用户头像
 	**/
 	public function avatar_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$type = $this->get('type');
 		if($type == 'base64'){
@@ -134,12 +134,12 @@ class usercp_control extends phpok_control
 	}
 
 	/**
-	 * 更新会员密码功能
+	 * 更新用户密码功能
 	**/
 	public function passwd_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$user = $this->model('user')->get_one($this->session->val('user_id'));
 		if($user['pass']){
@@ -174,12 +174,12 @@ class usercp_control extends phpok_control
 	}
 
 	/**
-	 * 更新会员手机
+	 * 更新用户手机
 	**/
 	public function mobile_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$pass = $this->get('pass');
 		if(!$pass){
@@ -187,10 +187,10 @@ class usercp_control extends phpok_control
 		}
 		$me = $this->model('user')->get_one($this->session->val('user_id'));
 		if(!$me){
-			$this->error(P_Lang('会员信息不存在'));
+			$this->error(P_Lang('用户信息不存在'));
 		}
 		if(!$me['status'] || $me['status'] == 2){
-			$this->error(P_Lang('会员未审核或已销定，请联系管理员'));
+			$this->error(P_Lang('用户未审核或已销定，请联系管理员'));
 		}
 		if(!$me['pass']){
 			$this->error(P_Lang('您还未设置密码，请先设置密码'));
@@ -226,12 +226,12 @@ class usercp_control extends phpok_control
 	}
 
 	/**
-	 * 更新会员邮箱
+	 * 更新用户邮箱
 	**/
 	public function email_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$pass = $this->get('pass');
 		if(!$pass){
@@ -271,13 +271,13 @@ class usercp_control extends phpok_control
 	}
 
 	/**
-	 * 变更个人信息，通过fields获取要变更的扩展参数信息，仅用于保存会员扩展表里字符类型
+	 * 变更个人信息，通过fields获取要变更的扩展参数信息，仅用于保存用户扩展表里字符类型
 	 * @参数 fields 要更新的变量
 	**/
 	public function save_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$fields = $this->get('fields');
 		if(!$fields){
@@ -311,7 +311,7 @@ class usercp_control extends phpok_control
 	public function relation_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能查看我的推荐用户'));
+			$this->error(P_Lang('非用户不能查看我的推荐用户'));
 		}
 		$pageid = $this->get('pageid','int');
 		if(!$pageid){
@@ -338,7 +338,7 @@ class usercp_control extends phpok_control
 	public function list_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$group_id = $this->model('usergroup')->group_id($this->session->val('user_id'));
 		$id = $this->get("id");
@@ -423,5 +423,77 @@ class usercp_control extends phpok_control
 			$data['rslist'] = $list['rslist'];
 		}
 		$this->success($data);
+	}
+
+	public function vcode_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非用户不能执行此操作'));
+		}
+		$code = 'U'.$this->session->val('user_id').''.$this->lib('common')->str_rand(5,'number');
+		$array = array('code'=>$code);
+		$this->model('user')->save($array,$this->session->val('user_id'));
+		$this->success();
+	}
+
+	/**
+	 * 用户信息注销申请
+	**/
+	public function destory_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非用户不能执行此操作'));
+		}
+		$rs = $this->model('user')->get_one($this->session->val('user_id'),false,false);
+		if(!$rs){
+			$this->error(P_Lang('用户信息不存在'));
+		}
+		if(!$rs['status']){
+			$this->error(P_Lang('您的账号未激活，注销操作请联系客服'));
+		}
+		if($rs['status'] == 2){
+			$this->error(P_Lang('用户账号已锁定，注销操作请联系客服'));
+		}
+		$type = $this->get('type');
+		if(!$type || !in_array($type,array('email','mobile'))){
+			$type = 'email';
+		}
+		if($type == 'email'){
+			$email  = $this->get('email');
+			if(!$email){
+				$this->error(P_Lang('邮箱不能为空'));
+			}
+			if($email != $rs['email']){
+				$this->error(P_Lang('邮箱与账号绑定的邮箱不一致'));
+			}
+			$this->model('vcode')->type('email');
+		}else{
+			$mobile = $this->get('mobile');
+			if(!$mobile){
+				$this->error(P_Lang('手机号不能为空'));
+			}
+			if($mobile != $rs['mobile']){
+				$this->error(P_Lang('手机号与账号绑定的手机号不一致'));
+			}
+			$this->model('vcode')->type('sms');
+		}
+		$vcode = $this->get('_vcode');
+		if(!$vcode){
+			$this->error(P_Lang('验证码不能为空'));
+		}
+		$data = $this->model('vcode')->check($vcode);
+		if(!$data){
+			$this->error($this->model('vcode')->error_info());
+		}
+		$pass = $this->get('pass');
+		if(!$pass){
+			$this->error(P_Lang('登录密码不能为空'));
+		}
+		if(!password_check($pass,$rs['pass'])){
+			$this->error(P_Lang('密码输入不正确'));
+		}
+		$this->model('user')->destory($this->session->val('user_id'));
+		$this->model('user')->logout();
+		$this->success();
 	}
 }

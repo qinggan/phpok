@@ -17,7 +17,7 @@ $(document).ready(function(){
 		"server": get_url('upload','img'),
 		"filetypes" : "jpg,gif,png,jpeg",
 		'accept' : {'title':p_lang('图片'),'extensions':'jpg,gif,png,jpeg','mimeTypes': 'image/*'},
-		"formData" :{session_name:session_id,'folder':'res/ico/'},
+		"formData" :{session_name:$.cookie.get(session_name),'folder':'res/ico/'},
 		'fileVal':'upfile',
 		'sendAsBinary':true,
 		'auto':true,

@@ -19,7 +19,7 @@ function show_list()
 				c += '<li id="user_{$id}_'+lst[i]['id']+'">';
 				c += '<div class="layui-btn-group">';
 				c += '<input type="button" value="'+lst[i]['user']+'" class="layui-btn layui-btn-xs" />';
-				c += '<input type="button" value="×" title="删除会员：'+lst[i]['user']+'" onclick="delete_input(\''+lst[i]['id']+'\')" class="layui-btn layui-btn-xs layui-btn-danger" /></div>';
+				c += '<input type="button" value="×" title="删除用户：'+lst[i]['user']+'" onclick="delete_input(\''+lst[i]['id']+'\')" class="layui-btn layui-btn-xs layui-btn-danger" /></div>';
 				c += '</li>';
 				$("#user_"+lst[i]['id']).hide();
 			}
@@ -87,8 +87,16 @@ $(document).ready(function(){
 
 <div class="layui-card">
 	<div class="layui-card-header">
-		<form method="post" action="{url ctrl=open func=user id=$id/}">
+		<form method="post" class="layui-form" action="{url ctrl=open func=user id=$id multi=$multi/}">
 		<ul class="layout" style="padding-top:2px;">
+			<li>
+				<select name="group_id">
+					<option value="0">{lang全部用户组}</option>
+					<!-- loop from=$grouplist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $group_id == $value.id} selected{/if}>{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</li>
 			<li><input type="text" class="layui-input" name="keywords" id="keywords" value="{$keywords}" /></li>
 			<li><input type="submit" value="搜索" class="layui-btn" /></li>
 		</ul>
@@ -110,7 +118,8 @@ $(document).ready(function(){
 			<th style="text-align:center;">ID</th>
 			<th width="20px">&nbsp;</th>
 			<th width="35px"></th>
-			<th class="lft">{lang会员账号}</th>
+			<th class="lft">{lang用户账号}</th>
+			<th class="lft">{lang用户组}</th>
 			<th width="120px">{lang注册时间}</th>
 			<th></th>
 		</tr>
@@ -121,6 +130,7 @@ $(document).ready(function(){
 			<td><span class="status{$value.status}" value="{$value.status}"></span></td>
 			<td align="center"><img src="{$value.avatar ? $value.avatar : 'images/user_default.png'}" border="0" width="24px" height="24px" /></td>
 			<td align="left">{$value.user}</td>
+			<td>{$value.group_title}</td>
 			<td>{func date 'Y-m-d H:i' $value.regtime}</td>
 			<td><input type="button" value="选择" onclick="add_input('{$value.id}')" class="layui-btn layui-btn-xs" /></td>
 		</tr>

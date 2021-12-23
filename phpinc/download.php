@@ -1,6 +1,6 @@
 <?php
 /**
- * 限制仅限会员才能下载
+ * 限制仅限用户才能下载
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com

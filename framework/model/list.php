@@ -46,7 +46,7 @@ class list_model_base extends phpok_model
 	}
 
 	/**
-	 * 是否有绑定会员
+	 * 是否有绑定用户
 	 * @参数 $is_user true 或 false
 	**/
 	public function is_user($is_user='')
@@ -132,6 +132,9 @@ class list_model_base extends phpok_model
 		}
 		$fields_list = $this->db->list_fields('list');
 		$field = "l.id,u.user _user";
+		if($this->multiple_cate || ($condition && strpos($condition,'lc.') !== false) || strpos($orderby,'lc.') !== false){
+			$field = "DISTINCT l.id,u.user _user";
+		}
 		foreach($fields_list as $key=>$value){
 			if($value == 'id' || !$value){
 				continue;
@@ -204,6 +207,9 @@ class list_model_base extends phpok_model
 	private function _get_list($mid,$condition='',$offset=0,$psize=20,$orderby='')
 	{
 		$sql = "SELECT l.id FROM ".$this->db->prefix."list l ";
+		if($this->multiple_cate || ($condition && strpos($condition,'lc.') !== false) || strpos($orderby,'lc.') !== false){
+			$sql = "SELECT DISTINCT l.id FROM ".$this->db->prefix."list l ";
+		}
 		if($condition){
 			if(strpos($condition,'ext.') !== false){
 				$sql.= " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ";
@@ -882,12 +888,29 @@ class list_model_base extends phpok_model
 		return $sql;
 	}
 
-	public function attr_list()
+	public function attr_list($pid=0,$site_id=0)
 	{
-		$xmlfile = $this->dir_data."xml/attr.xml";
-		if(!file_exists($xmlfile)){
-			$array = array("h"=>"头条","c"=>"推荐","a"=>"特荐");
-			return $array;
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		$xlist = array();
+		$i=0;
+		if($pid){
+			$xlist[$i] = $this->dir_data.'xml/attr-'.$site_id.'-'.$pid.'.xml';
+			$i++;
+		}
+		$xlist[$i] = $this->dir_data.'xml/attr-'.$site_id.'.xml';
+		$i++;
+		$xlist[$i] = $this->dir_data."xml/attr.xml";
+		$xmlfile = '';
+		foreach($xlist as $key=>$value){
+			if(file_exists($value)){
+				$xmlfile = $value;
+				break;
+			}
+		}
+		if(!$xmlfile){
+			return false;
 		}
 		return $this->lib('xml')->read($xmlfile);
 	}
@@ -904,13 +927,17 @@ class list_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
-	public function get_all($condition="",$offset=0,$psize=30,$pri="")
+	public function get_all($condition="",$offset=0,$psize=30,$pri="",$orderby="")
 	{
 		$sql = "SELECT l.* FROM ".$this->db->prefix."list l ";
 		if($condition){
 			$sql.= " WHERE ".$condition;
 		}
-		$sql .= " ORDER BY l.dateline DESC,l.id DESC ";
+		if($orderby){
+			$sql .= " ORDER BY ".$orderby." ";
+		}else{
+			$sql .= " ORDER BY l.dateline DESC,l.id DESC ";
+		}
 		if($psize && $psize>0){
 			$offset = intval($offset);
 			$sql.= " LIMIT ".$offset.",".$psize;
@@ -1107,7 +1134,7 @@ class list_model_base extends phpok_model
 
 	private function _arc_list_format($rslist,$project)
 	{
-		//ulist，会员信息
+		//ulist，用户信息
 		//clist，分类信息
 		//elist，扩展主题信息
 		$user_id_list = $idlist = $ulist = $elist = array();
@@ -1119,12 +1146,19 @@ class list_model_base extends phpok_model
 			}
 			$elist[] = 'list-'.$value['id'];
 		}
-		//读取会员信息
+		//读取用户信息
 		if($project['is_userid']){
 			$user_ids = implode(",",array_unique($ulist));
 			if($user_ids){
 				$condition = "u.id IN(".$user_ids.") AND u.status=1";
 				$ulist = $this->model('user')->get_list($condition,0,0);
+				if($this->app_id == 'api'){
+					foreach($ulist as $key=>$value){
+						//去除敏感信息
+						unset($value['pass'],$value['mobile']);
+						$ulist[$key] = $value;
+					}
+				}
 				if($ulist){
 					foreach($user_id_list as $key=>$value){
 						if($ulist[$value]){

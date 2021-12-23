@@ -106,20 +106,22 @@ class phpok_lib
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,15);//等待时间，超时退出
 		curl_setopt($curl,CURLOPT_ENCODING ,'gzip');//GZIP压缩
 		curl_setopt($curl,CURLOPT_USERAGENT,$_SERVER['HTTP_USER_AGENT']);
+		$info = parse_url($this->_server);
+		$url = $this->_server;
 		if($this->_ip){
-			$info = parse_url($this->_server);
-			$string = $info['scheme'].'://'.$info['host'];
-			$url = $info['scheme'].'://'.$this->_ip.substr($url,strlen($string));
 			$port = $info['port'] ? $info['port'] : ($info['scheme'] == 'https' ? '443' : '80');
 			$headers[] = "Host: ".$info['host'].':'.$port;
-		}else{
-			$url = $this->_server;
+			if($info['scheme'] == 'http'){
+				$string = $info['scheme'].'://'.$info['host'];
+				$url = $info['scheme'].'://'.$this->_ip.substr($this->_server,strlen($string));
+			}
 		}
 		$headers[] = 'Expect: ';
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+		curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 		$content = curl_exec($curl);
 		if (curl_errno($curl) != 0){
 			return false;

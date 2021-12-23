@@ -38,7 +38,7 @@
                 <th>{lang排序}</th>
                 <th class="lft">{lang名称}</th>
                 <th>{lang状态}</th>
-                <th class="lft">{lang通知会员}</th>
+                <th class="lft">{lang通知用户}</th>
                 <th class="lft">{lang通知管理员}</th>
                 <th>&nbsp;</th>
             </tr>
@@ -47,9 +47,9 @@
             <!-- loop from=$rslist key=$key value=$value -->
             <tr>
                 <td>{$value.identifier}</td>
-                <td class="center">{$value.taxis}</td>
+                <td>{$value.taxis}</td>
                 <td>{$value.title}</td>
-                <td class="center">
+                <td>
 	                <!-- if $value.status -->
 	                {lang启用}
 	                <!-- else -->
@@ -79,7 +79,7 @@
                     <!-- /if -->
                 </td>
                 <td>
-	                <input type="button" value="{lang编辑}" onclick="$.admin_site.order_edit('{$value.identifier}')" class="layui-btn"/>
+	                <input type="button" value="{lang编辑}" onclick="$.admin_site.order_edit('{$value.identifier}')" class="layui-btn layui-btn-sm"/>
 	            </td>
             </tr>
             <!-- /loop -->
@@ -98,26 +98,29 @@
                 <th class="lft">{lang名称}</th>
                 <th class="lft">{lang前台订单状态}</th>
                 <th>{lang状态}</th>
-                <th><input type="button" value="{lang添加}" onclick="$.admin_site.adm_add_it()" class="layui-btn"/></th>
+                <th><input type="button" value="{lang添加}" onclick="$.admin_site.adm_add_it()" class="layui-btn layui-btn-sm"/></th>
             </tr>
             </thead>
             <tbody>
             <!-- loop from=$admin_statuslist key=$key value=$value -->
             <tr>
                 <td>{$value.identifier}</td>
-                <td class="center">{$value.taxis}</td>
+                <td>{$value.taxis}</td>
                 <td>{$value.title}</td>
                 <td>{$value.ostatus}</td>
-                <td class="center">
+                <td>
 	                <!-- if $value.status -->
 	                {lang启用}
 	                <!-- else -->
 	                <span class="red">{lang禁用}</span>
                     <!-- /if -->
                 </td>
-                <td class="center">
-	                <input type="button" value="{lang编辑}" onclick="$.admin_site.adm_edit_it('{$value.identifier}')" class="layui-btn"/>
-	                <input type="button" value="{lang删除}" onclick="$.admin_site.delete_it('{$value.identifier}',this)" class="layui-btn"/>
+                <td>
+	                <div class="layui-btn-group">
+	                
+	                <input type="button" value="{lang编辑}" onclick="$.admin_site.adm_edit_it('{$value.identifier}')" class="layui-btn layui-btn-sm"/>
+	                <input type="button" value="{lang删除}" onclick="$.admin_site.delete_it('{$value.identifier}',this)" class="layui-btn layui-btn-sm layui-btn-danger"/>
+	                </div>
                 </td>
             </tr>
             <!-- /loop -->
@@ -140,12 +143,13 @@
             <thead>
             <tr>
                 <th width="100">标识</th>
-                <th align="center">名称</th>
-                <th align="center">默认值</th>
-                <th align="center">金额动作</th>
-                <th align="center">状态</th>
-                <th align="center">排序</th>
-                <th align="center">操作</th>
+                <th>名称</th>
+                <th>默认值</th>
+                <th>金额动作</th>
+                <th>状态</th>
+                <th>0或空隐藏</th>
+                <th>排序</th>
+                <th>操作</th>
             </tr>
             </thead>
             <tbody>
@@ -153,23 +157,30 @@
             <tr>
                 <td>{$value.identifier}</td>
                 <td>{$value.title}</td>
-                <td class="center">
+                <td>
 	                {$value.default}
                 </td>
-                <td class="center">
+                <td>
 	                <!-- if $value.action == 'add' -->+<!-- else -->-<!-- /if -->
                 </td>
-                <td class="center">
+                <td>
 	                <!-- if $value.status -->
 	                {lang启用}
 	                <!-- else -->
 	                <span class="red">{lang禁用}</span>
                     <!-- /if -->
                 </td>
-                <td class="center">
+                <td>
+	                <!-- if $value.hidden -->
+	                <span class="red">{lang隐藏}</span>
+	                <!-- else -->
+	                {lang显示}
+                    <!-- /if -->
+                </td>
+                <td>
 	                {$value.taxis}
                 </td>
-                <td><input type="button" value="{lang编辑}" onclick="$.admin_site.edit_price('{$value.identifier}')" class="layui-btn"/></td>
+                <td><input type="button" value="{lang编辑}" onclick="$.admin_site.edit_price('{$value.identifier}')" class="layui-btn layui-btn-sm"/></td>
             </tr>
             <!-- /loop -->
             </tbody>

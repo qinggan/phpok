@@ -1,0 +1,14 @@
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-row">
+			<div class="layui-col-xs12" style="font-weight:bold;{$value.style}">
+		    	{$value.title}：<i style="color:darkred;">&#123$rs.{$value.field}&#125</i>
+			</div>
+			<div class="layui-col-xs12">
+				<div style="width:100%;overflow:auto;max-height:200px;">{$value.content}</div>
+			</div>
+		</div>		
+	</div>
+</div>
+<!-- /loop -->

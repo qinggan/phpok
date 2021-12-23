@@ -8,13 +8,65 @@
  * @时间 2016年12月30日
 **/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+require_once 'phar://'.EXTENSION . 'phpexcel/phpexcel.phar';
+require_once 'phar://'.EXTENSION . 'phpexcel/phpexcel.phar/PHPExcel/IOFactory.php';
+class MyReadFilter implements PHPExcel_Reader_IReadFilter
+{
+    public function readCell($column, $row, $worksheetName = '') {
+        // Read title row and rows 20 - 30
+        if ($row == 1 || ($row >= 20 && $row <= 30)) {
+            return true;
+        }
+
+        return false;
+    }
+}
 class phpexcel_lib
 {
 	public function __construct()
 	{
 		//PHP版
-		require_once EXTENSION . 'phpexcel/phpexcel.phar';
-		require_once EXTENSION . 'phpexcel/phpexcel.phar/IOFactory.php';
+		//require_once 'phar://'.EXTENSION . 'phpexcel/phpexcel.phar';
+		//require_once 'phar://'.EXTENSION . 'phpexcel/phpexcel.phar/PHPExcel/IOFactory.php';
+	}
+
+	public function getTitle($file)
+	{
+		$basefile = basename($file);
+		$tmp = explode(".",$basefile);
+		$ext = $tmp[count($tmp)-1];
+		$filetype = $ext == "xlsx" ? "Excel2007" : "Excel5";
+		$cacheMethod = \PHPExcel_CachedObjectStorageFactory:: cache_to_phpTemp;
+		$cacheSettings = array( ' memoryCacheSize ' => '8MB');
+		\PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+		$objReader = \PHPExcel_IOFactory::createReader($filetype);
+		$objReader->setReadDataOnly(true);
+		$objReader->setReadFilter(new MyReadFilter());
+		$objPHPExcel = $objReader->load($file);
+		$currentSheet = $objPHPExcel->getSheet(0);
+		$allColumn = $currentSheet->getHighestColumn();
+		$allRow = $currentSheet->getHighestRow();
+		$m = 0;
+		$idlist = array();
+		$t_i = \PHPExcel_Cell::columnIndexFromString($allColumn);
+		for($i = 0;$i<$t_i;$i++){
+			$str = "";
+			$m = $i+65;
+			$tmp_i = intval($m/91);
+			if($tmp_i){
+				$tm = chr($tmp_i+64);
+				$str .= $tm;
+				$str .= chr($m%91+65);
+			}else{
+				$str = chr($m);
+			}
+			$t = $str."1";
+			$idlist[$str] = $currentSheet->getCell($t)->getValue();
+		}
+		if(!$idlist || count($idlist)<1){
+			return false;
+		}
+		return $idlist;
 	}
 
 	public function excelTime($date, $time = false)

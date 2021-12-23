@@ -1,0 +1,87 @@
+<!-- include tpl=head_lay -->
+<script type="text/javascript" src="{func add_js user.js}"></script>
+<div class="layui-card" id="search_html">
+	<div class="layui-card-header">{lang搜索}</div>
+	<div class="layui-card-body">
+		<form method="post" action="{url ctrl=user/}" class="layui-form">
+		<div class="layui-form-item phpok-search">
+			<div class="layui-inline">
+				<label class="layui-form-label">关键字</label>
+				<div class="layui-input-block">
+					<input type="text" name="keywords" class="layui-input" value="{$keywords}" />
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">开始时间</label>
+				<div class="layui-input-block">
+					<input type="text" name="startdate" id="startdate" class="layui-input" value="{$startdate}" />
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">结束时间</label>
+				<div class="layui-input-block">
+					<input type="text" name="stopdate" id="stopdate" class="layui-input" value="{$stopdate}" />
+				</div>
+			</div>
+			<div class="layui-inline">
+				<div class="layui-input-block">
+					<input type="submit" value="{lang搜索}" class="layui-btn" />
+					<a href="{url ctrl=pm/}" class="layui-btn layui-btn-primary">{lang取消搜索}</a>
+				</div>
+			</div>
+		</div>
+		</form>
+	</div>
+</div>
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang列表}
+		<div class="fr"><div class="action"></div></div>	
+		<div class="fr">
+			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加通知}','{url ctrl=pm func=add/}')">
+				{lang添加通知}
+			</button>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<table width="100%" class="layui-table">
+		<thead>
+		<tr>
+			<th style="text-align:center;">ID</th>
+			<td align="center">状态</td>
+			<td align="center">发布人</td>
+			<td align="center">通知目标</td>
+			<th width="120px">{lang发布时间}</th>
+			<th class="lft">{func P_Lang $value}</th>
+			<!-- if $popedom.delete -->
+			<th style="width:60px"></th>
+			<!-- /if -->
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td align="center">
+				<input type="checkbox" name="id[]" id="id-{$value.id}" value="{$value.id}" title="{$value.id}" lay-skin="primary" />
+			</td>
+			<td align="center"><!-- if $value.isread && $value.readtime -->{lang已读}<!-- else -->{lang未读}<!-- /if --></td>
+			<td align="center"><!-- if $value.admin_id && $value.account -->{$value.account}<!-- else --><span class="layui-text-gray">{lang系统}</span><!-- /if --></td>
+			<td align="center"><!-- if $value.user -->{$value.user}<!-- else -->-<!-- /if --></td>
+			<td>{func date 'Y-m-d H:i' $value.addtime}</td>
+			<td align="left">
+				{$value.content}
+			</td>
+			<!-- if $popedom.delete -->
+			<td>
+				<input type="button" value="{lang删除}" onclick="$.admin_pm.del({$value.id})" class="layui-btn layui-btn-sm layui-btn-danger" />
+			</td>
+			<!-- /if -->
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- if $pagelist --><div class="center"><!-- include tpl=pagelist --></div><!-- /if -->
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_lay -->

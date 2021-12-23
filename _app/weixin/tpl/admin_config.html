@@ -1,0 +1,159 @@
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_weixin.config_save()">
+<div class="layui-card">
+	<div class="layui-card-header">
+		公众号参数，适用于微信公众号平台
+	</div>
+	<div class="layui-card-body">
+		
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				服务器地址
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" value="{$sys.url}?{$sys.ctrl_id}=weixin&{$sys.func_id}=post" class="layui-input" disabled />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<input type="button" value="复制" data-clipboard-text="{$sys.url}?{$sys.ctrl_id}=weixin&{$sys.func_id}=post" class="layui-btn layui-btn-sm phpok-copy" />
+			</div>
+			<div class="layui-form-mid">
+				即公众号的服务器地址(URL)，用于数据转发
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				开发者ID
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="mp[app_id]" value="{$rs.mp.app_id}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang即公众号的AppId，请从微信服务号后台【基本配置】里获取}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				开发者密码
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="mp[app_secret]" value="{$rs.mp.app_secret}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang即公众号的AppSecret，请从微信服务号后台【基本配置】里获取}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				令牌
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="mp[token]" value="{$rs.mp.token}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang仅限已启用服务器配置，实现数据接收及推送使用}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				消息密钥
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="mp[message_key]" value="{$rs.mp.message_key}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang仅限已启用服务器配置，实现消息的加密及解密，即EncodingAESKey}
+			</div>
+		</div>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang开放平台参数，一般用于扫码登录}
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				开发者ID
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="op[app_id]" value="{$rs.op.app_id}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang即开放平台的AppId，请从微信开放平台里的应用详情获取}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				开发者密码
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="op[app_secret]" value="{$rs.op.app_secret}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang即开放平台的AppSecret，请从微信开放平台里的应用详情获取}
+			</div>
+		</div>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang小程序参数}
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				小程序ID
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="ap[app_id]" value="{$rs.ap.app_id}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang即小程序的AppId，请从微信小程序平台里【开发】【开发设置】获取}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				小程序密钥
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="ap[app_secret]" value="{$rs.ap.app_secret}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang即小程序的AppSecret，请从微信小程序平台里【开发】【开发设置】获取}
+			</div>
+		</div>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang域名与IP，用于解决域名无法解析到IP的问题}
+	</div>
+	<div class="layui-card-body">
+		<!-- loop from=$iplist key=$key value=$value id=$tmpid -->
+		
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang域名}_{$tmpid.num}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{$value.domain}</div>
+			<div class="layui-input-block">
+				<input type="text" name="ip[{$key}]" value="{$value.ip}" class="layui-input" />
+			</div>
+		</div>
+		<!-- /loop -->
+	</div>
+</div>
+<!-- if $popedom.config -->
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+		<span style="padding-left:2em;color:#ccc;">保存不会关闭页面，请手动关闭</span>
+	</div>
+</div>
+<!-- /if -->
+
+</form>
+
+<!-- include tpl=foot_lay -->

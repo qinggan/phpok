@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员接口
+ * 用户接口
  * @package phpok\www
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
@@ -19,19 +19,28 @@ class user_control extends phpok_control
 	}
 
 	/**
-	 * 查看会员基本信息
+	 * 查看用户基本信息
 	**/
 	public function index_f()
 	{
 		$uid = $this->get("uid");
+		$id = $this->get('id','int');
+		if(!$uid && !$id){
+			$this->error(P_Lang('未指定用户信息'));
+		}
 		if(!$uid){
-			$this->error(P_Lang('未指定会员信息'));
+			$uid = $id;
 		}
-		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('游客无法查看会员信息'));
-		}
+		$data = array();
 		$user_rs = $this->model('user')->get_one($uid);
-		unset($user_rs['pass'],$user_rs['email'],$user_rs['mobile'],$user_rs['code']);
-		$this->success($user_rs);
+		if(!$user_rs || !$user_rs['status'] || $user_rs['status'] == 2){
+			$this->error(P_Lang('用户不存在或不被显示'));
+		}
+		$data['user'] = array('id'=>$user_rs['id'],'user'=>$user_rs['user'],'avatar'=>$user_rs['avatar'],'regtime'=>$user_rs['regtime']);
+		if($this->session->val('user_id')){
+			unset($user_rs['pass'],$user_rs['email'],$user_rs['mobile'],$user_rs['code']);
+			$data['user'] = $user_rs;
+		}
+		$this->success($data);
 	}
 }

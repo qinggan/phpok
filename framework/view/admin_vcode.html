@@ -1,0 +1,25 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang您需要进行二次验证才能操作}
+	</div>
+	<div class="layui-card-body">
+		<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin.vcode(this)">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang二次密码}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="password" value="" class="layui-input" required autocomplete='new-password' />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<input type="submit" value="认证执行" onclick="" class="layui-btn layui-btn-sm" />
+			</div>
+			<div class="layui-form-mid">
+				
+			</div>
+		</div>
+		</form>
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

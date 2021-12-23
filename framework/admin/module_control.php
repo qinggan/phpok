@@ -282,10 +282,12 @@ class module_control extends phpok_control
 		$this->assign("rs",$rs);
 		$condition = "area LIKE '%module%'";
 		$fields_list = $this->model('fields')->default_all();
+		$groups = $this->model('fields')->groups();
 		if($fields_list){
 			foreach($fields_list as $key=>$value){
 				$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
 				$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
+				$value['group_title'] = ($value['group_id'] && $groups[$value['group_id']]) ? $groups[$value['group_id']] : P_Lang('主层');
 				$fields_list[$key] = $value;
 			}
 		}
@@ -295,6 +297,7 @@ class module_control extends phpok_control
 				$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
 				$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
 				$value['format_type_name'] = $this->format_list[$value['format']]['title'];
+				$value['group_title'] = ($value['group_id'] && $groups[$value['group_id']]) ? $groups[$value['group_id']] : P_Lang('主层');
 				$used_list[$key] = $value;
 			}
 		}
@@ -355,6 +358,7 @@ class module_control extends phpok_control
 		$tmp_array["content"] = $f_rs["content"];
 		$tmp_array["taxis"] = $taxis;
 		$tmp_array['onlyone'] = $this->get('onlyone','int');
+		$tmp_array['group_id'] = $this->get('group_id');
 		$tmp_array["ext"] = "";
 		if($f_rs["ext"]){
 			$tmp_array["ext"] = serialize($f_rs['ext']);
@@ -395,7 +399,17 @@ class module_control extends phpok_control
 		$this->assign('m_rs',$m_rs);
 		$this->assign('mid',$mid);
 		$taxis = $this->model('module')->fields_next_taxis($mid);
-		$this->assign('rs',array('taxis'=>$taxis));
+		$glist = $this->model('fields')->groups();
+		$this->assign('groups',$glist);
+		$flist = $this->model('module')->fields_all($mid);
+		$rs = array('taxis'=>$taxis);
+		if($flist){
+			$identifier = 'ext'.str_pad((count($flist)+1),3,'0',STR_PAD_LEFT);
+		}else{
+			$identifier = 'ext001';
+		}
+		$rs['identifier'] = $identifier;
+		$this->assign('rs',$rs);
 		$this->view('module_field_create');
 	}
 	
@@ -495,6 +509,8 @@ class module_control extends phpok_control
 		$m_rs = $this->model('module')->get_one($rs['module_id']);
 		$this->assign('m_rs',$m_rs);
 		$this->assign("id",$id);
+		$glist = $this->model('fields')->groups();
+		$this->assign('groups',$glist);
 		$this->view("module_field_set");
 	}
 
@@ -520,17 +536,17 @@ class module_control extends phpok_control
 	public function field_edit_save_f()
 	{
 		if(!$this->popedom['set']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('module')->field_one($id);
 		$module_id = $rs['module_id'];
 		$title = $this->get("title");
 		if(!$title){
-			$this->json(P_Lang('字段名称不能为空'));
+			$this->error(P_Lang('字段名称不能为空'));
 		}
 		$ext_form_id = $this->get("ext_form_id");
 		$ext = array();
@@ -561,9 +577,14 @@ class module_control extends phpok_control
 		$array['search'] = $this->get('search','int');
 		$array['search_separator'] = $this->get('search_separator');
 		$array['onlyone'] = $this->get('onlyone','int');
+		$array['group_id'] = $this->get('group_id');
+		$array['filter'] = $this->get('filter','int');
+		$array['filter_join'] = $this->get('filter_join');
+		$array['filter_content'] = $this->get('filter_content');
+		$array['filter_title'] = $this->get('filter_title');
 		$this->model('module')->fields_save($array,$id);
 		$this->model('module')->update_fields($id);
-		$this->json(true);
+		$this->success();
 	}
 
 	public function field_addok_f()
@@ -619,6 +640,11 @@ class module_control extends phpok_control
 		$array['search'] = $this->get('search','int');
 		$array['search_separator'] = $this->get('search_separator');
 		$array['onlyone'] = $this->get('onlyone','int');
+		$array['group_id'] = $this->get('group_id');
+		$array['filter'] = $this->get('filter','int');
+		$array['filter_join'] = $this->get('filter_join');
+		$array['filter_content'] = $this->get('filter_content');
+		$array['filter_title'] = $this->get('filter_title');
 		$ext_form_id = $this->get("ext_form_id");
 		$ext = array();
 		if($ext_form_id){

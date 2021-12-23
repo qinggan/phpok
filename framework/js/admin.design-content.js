@@ -107,7 +107,7 @@ function save()
 	var opener = $.dialog.opener;
 	var type = $("#type").val();
 	if(type == 'editor'){
-		var c = UE.getEditor('content').getContent();
+		var c = CKEDITOR.instances['content'].getData();
 		if(!c){
 			$.dialog.alert('内容不能为空');
 			return false;
@@ -226,7 +226,7 @@ function save()
 			if(gdtype && rs.info.gd && rs.info.gd[gdtype]){
 				img = rs.info.gd[gdtype];
 			}
-			
+
 			html += '<img src="'+img+'" style="'+css+'" alt="'+alt+'" />';
 			if(link && link != 'undefined'){
 				html += '</a>';
@@ -298,15 +298,20 @@ function save()
 			$.dialog.alert('模板不能为空');
 			return false;
 		}
+		var param_replace = $("#param-replace").val();
 		obj.attr('pre-code',code);
 		obj.attr("pre-param",param);
 		obj.attr("pre-tplfile",tplfile);
+		obj.attr("pre-replace",param_replace);
 		var iframe_url = api_url('call','admin_preview','id='+id+"&code="+$.str.encode(code));
 		if(param){
 			iframe_url += "&param="+$.str.encode(param);
 		}
+		if(param_replace){
+			iframe_url += "&param_replace="+$.str.encode(param_replace);
+		}
 		iframe_url += "&tplfile="+$.str.encode(tplfile);
-		
+
 		var html = '<!-- content-'+id+' --><div style="background:none;z-index:2;position:absolute;left:0;top:0;width:100%;height:100%;"></div>';
 		html += '<iframe src="'+iframe_url+'" style="border:0;margin:0;padding:0;background-color:transparent;z-index:1"';
 		html += 'id="iframe_'+id+'" name="iframe_'+id+'" scrolling="0" width="100%" allowtransparency="true"';
@@ -490,6 +495,14 @@ function design_update_calldata()
 		param = param.replace(/&quot;/g,'"');
 		param = param.replace(/&apos;/g,"'");
 		$("#param").val(param);
+	}
+	var paramReplace = obj.attr("pre-replace");
+	if(paramReplace){
+		paramReplace = paramReplace.replace(/&gt;/g,'>');
+		paramReplace = paramReplace.replace(/&lt;/g,'<');
+		paramReplace = paramReplace.replace(/&quot;/g,'"');
+		paramReplace = paramReplace.replace(/&apos;/g,"'");
+		$("#param-replace").val(paramReplace);
 	}
 	var tplfile = obj.attr('pre-tplfile');
 	if(tplfile){

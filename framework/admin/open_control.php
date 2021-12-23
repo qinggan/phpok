@@ -111,7 +111,10 @@ class open_control extends phpok_control
 		$this->assign("total",$total);
 		$this->assign("pagelist",$pagelist);
 		$this->assign("pageurl",$pageurl);
-		$this->assign('sendAsBinary',(ini_get('upload_tmp_dir') ? false : true));
+		$this->lib('form')->cssjs(array('form_type'=>'upload'));
+		$this->addjs('js/webuploader/admin.upload.js');
+		$btns = form_edit('upload','','upload','cate_id='.$cate_id.'&manage_forbid=1&auto_forbid=0&is_multiple=1&is_refresh=1');
+		$this->assign('upload_buttons',$btns);
 		$this->view('open_upload');
 	}
 	
@@ -144,6 +147,7 @@ class open_control extends phpok_control
 		if(!$pageid){
 			$pageid = 1;
 		}
+		$this->assign('formurl',$pageurl);
 		$psize = $this->config['psize'];
 		$offset = ($pageid - 1) * $psize;
 		$condition = "1=1";
@@ -189,6 +193,8 @@ class open_control extends phpok_control
 		$this->assign("pageurl",$pageurl);
 		$this->lib('form')->cssjs(array('form_type'=>'upload'));
 		$this->addjs('js/webuploader/admin.upload.js');
+		$btns = form_edit('upload','','upload','cate_id='.$cate_id.'&manage_forbid=1&auto_forbid=0&is_refresh=1&is_multiple=1');
+		$this->assign('upload_buttons',$btns);
 		$this->view('open_input');
 	}
 
@@ -259,7 +265,13 @@ class open_control extends phpok_control
 		if(!$field){
 			$this->error('未指定字段');
 		}
-		$url = $this->url('open','title','id='.$id.'&pid='.$pid.'&field='.$field);
+		$showid = $this->get('showid');
+		if(!$showid || $showid == 'undefined'){
+			$showid = $field;
+		}
+		//
+		
+		$url = $this->url('open','title','id='.$id.'&pid='.$pid.'&field='.$field.'&showid='.$showid);
 		$project = $this->model('project')->get_one($pid);
 		if(!$project){
 			$this->error('项目不存在');
@@ -294,7 +306,11 @@ class open_control extends phpok_control
 			$condition = "project_id='".$project['id']."'";
 			$total = $this->model('list')->single_count($module['id'],$condition);
 			if($total>0){
-				$rslist = $this->model('list')->single_list($module['id'],$condition,$offset,$psize,$project['orderby'],'id,'.$field);
+				$tmp = array($field);
+				$tmp2 = explode(",",$showid);
+				$tmp = array_merge($tmp,$tmp2);
+				$tmp = array_unique($tmp);
+				$rslist = $this->model('list')->single_list($module['id'],$condition,$offset,$psize,$project['orderby'],'id,'.implode(",",$tmp));
 				if($rslist){
 					$this->assign('rslist',$rslist);
 				}
@@ -318,6 +334,14 @@ class open_control extends phpok_control
 		$this->assign('field',$field);
 		$this->assign('pid',$pid);
 		$this->assign('id',$id);
+		$tmp = explode(",",$showid);
+		$showlist = explode(",",$showid);
+		$showlist = array_unique($showlist);
+		$tmplist = array();
+		foreach($showlist as $key=>$value){
+			$tmplist[$value] = $list[$value];
+		}
+		$this->assign('showlist',$tmplist);
 		$this->assign('field_title',$list[$field]);
 		$this->view('open_title2');
 	}
@@ -390,7 +414,7 @@ class open_control extends phpok_control
 	}
 
 	/**
-	 * 读取会员列表
+	 * 读取用户列表
 	**/
 	public function user_f()
 	{
@@ -410,27 +434,37 @@ class open_control extends phpok_control
 			$page_url .= "&multi=1";
 			$this->assign("multi",$multi);
 		}
+		$grouplist = $this->model('usergroup')->get_all("is_guest !=1");
+		$this->assign('grouplist',$grouplist);
 		$condition = "1=1";
 		if($keywords){
 			$this->assign("keywords",$keywords);
 			$condition .= " AND u.user LIKE '%".$keywords."%'";
 			$page_url.="&keywords=".rawurlencode($keywords);
 		}
+		$group_id = $this->get('group_id','int');
+		if($group_id){
+			$this->assign("group_id",$group_id);
+			$condition .= " AND u.group_id='".$group_id."'";
+			$page_url.="&group_id=".rawurlencode($group_id);
+		}
 		$offset = ($pageid - 1) * $psize;
-		$rslist = $this->model('user')->get_list($condition,$offset,$psize);
 		$count = $this->model('user')->get_count($condition);
-		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=2';
-		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-		$pagelist = phpok_page($page_url,$count,$pageid,$psize,$string);
-		$this->assign("total",$count);
-		$this->assign("rslist",$rslist);
-		$this->assign("id",$id);
-		$this->assign("pagelist",$pagelist);
+		if($count){
+			$rslist = $this->model('user')->get_list($condition,$offset,$psize);
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=2';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($page_url,$count,$pageid,$psize,$string);
+			$this->assign("total",$count);
+			$this->assign("rslist",$rslist);
+			$this->assign("id",$id);
+			$this->assign("pagelist",$pagelist);
+		}
 		$this->view("open_user_list");
 	}
 
 	/**
-	 * 会员选择
+	 * 用户选择
 	**/
 	public function user2_f()
 	{

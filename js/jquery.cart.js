@@ -291,6 +291,33 @@
 					return false;
 				});
 			});
+		},
+		address:function(id)
+		{
+			if(!id || id == 'undefined' || id == '0'){
+				var title = p_lang('添加新地址');
+				var url = get_url('cart','address');
+			}else{
+				var title = p_lang('编辑地址')+"_#"+id;
+				var url = get_url('cart','address','id='+id);
+			}
+			$.dialog.open(url,{
+				'title':title,
+				'lock':true,
+				'width':'500px',
+				'height':'550px',
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.save();
+					return false;
+				},
+				'okVal':'提交保存',
+				'cancel':true
+			})
 		}
 	};
 })(jQuery);

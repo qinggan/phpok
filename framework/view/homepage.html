@@ -1,9 +1,16 @@
-<!-- include tpl=head_lay csstype=default -->
+<!-- include tpl=head_lay csstype=default js=js/art-template.js -->
 <script type="text/javascript" src="{url ctrl=js func=ext js=admin.all.js /}"></script>
 <!-- if $all_info -->
 <div class="layui-card">
 	<div class="layui-card-header">
 		{lang全局信息}
+		<!-- if $session.admin_rs.if_system && $session.adm_develop -->
+		<div class="fr">
+			<a href="javascript:$.admin_all.group();void(0)">
+				<i class="layui-icon">&#xe654;</i> 添加
+			</a>
+		</div>
+		<!-- /if -->
 	</div>
 	<div class="layui-card-body">
 		<div class="sub_box" id="all_setting">
@@ -46,15 +53,13 @@
 					</li>
 					<!-- /loop -->
 					<!-- if $all_popedom.gset || $all_popedom.set -->
-					<!-- foreach($all_rslist AS $key=>$value) -->
-					<li><a title="{$value.title}" href="javascript:$.win('{$value.title}','{url ctrl=all func=set id=$value.id/}');void(0);">
+					<!-- loop from=$all_rslist key=$key value=$value id=$tmpid -->
+					<li{if $session.admin_rs.if_system} menu-right="true" menu-right-1="{lang管理}" menu-right-1-exec="$.admin_all.group({$value.id})"{/if}><a title="{$value.title}" href="javascript:$.win('{$value.title}','{url ctrl=all func=set id=$value.id/}');void(0);">
 							<div class="top_img"><img src="{$value.ico}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
 							<div class="name">{$value.title}</div>
 						</a>
 					</li>
-					<!-- /foreach -->
-					<!-- if $session.admin_rs.if_system && $session.adm_develop -->
-					<li class="plus" onclick="$.admin_all.group()"></li><!-- /if -->
+					<!-- /loop -->
 					<!-- /if -->
 				</ul>
 			</div>
@@ -65,36 +70,35 @@
 <!-- if $list_rslist || $qlink -->
 <div class="layui-card">
 	<div class="layui-card-header">
-		<h3>{lang内容管理}</h3>
+		{lang内容管理}
+		<!-- if $session.admin_rs.if_system && $session.adm_develop -->
+		<div class="fr">
+			<a href="javascript:$.admin_index.quick_link();void(0)">
+				<i class="layui-icon">&#xe654;</i> 添加
+			</a>
+		</div>
+		<!-- /if -->
 	</div>
 	<div class="layui-card-body">
 		<div class="sub_box" id="list_setting">
 			<div class="box_item">
 				<ul>
 					<!-- loop from=$list_rslist key=$key value=$value -->
-					<li pid="{$value.id}"><a title="{$value.title}" href="javascript:$.win('{$value.nick_title ? $value.nick_title : $value.title}','{$value.url}');void(0);">
+					<li pid="{$value.id}"{if $session.admin_rs.if_system} menu-right="true" menu-right-1="{lang管理}" menu-right-1-exec="$.win('{lang项目管理}_#{$value.id}','{url ctrl=project func=set id=$value.id/}')" menu-right-2="{lang编辑}" menu-right-2-exec="$.win('{lang项目扩展编辑}_#{$value.id}','{url ctrl=project func=content id=$value.id/}')"{/if}><a title="{$value.title}" href="javascript:$.win('{$value.nick_title ? $value.nick_title : $value.title}','{$value.url}');void(0);">
 							<div class="top_img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
 							<div class="name">{$value.nick_title ? $value.nick_title : $value.title}</div>
 						</a>
 					</li>
 					<!-- /loop -->
 					<!-- loop from=$qlink key=$key value=$value id=$tmpid -->
-					<li pid="{$value.id}">
-						<!-- if $session.admin_rs.if_system && $session.adm_develop -->
-						<div class="layui-btn-group qlink_edit_btn">
-							<input type="button" value="编辑" onclick="$.admin_index.quick_link('{$value.id}')" class="layui-btn layui-btn-xs" />
-							<input type="button" value="删除" onclick="$.admin_index.quick_link_delete('{$value.id}')" class="layui-btn layui-btn-xs layui-btn-danger" />
-						</div>
-						<!-- /if -->
-						<a title="{$value.title}" href="javascript:$.win('{$value.title}','{$value.link}');void(0);">
+					<li pid="{$value.id}"{if $session.admin_rs.if_system} menu-right="true" menu-right-1="管理" menu-right-1-exec="$.admin_index.quick_link('{$value.id}')" menu-right-2="删除" menu-right-2-exec="$.admin_index.quick_link_delete('{$value.id}')"{/if}>
+						<a title="{$value.title}" href="{if $value.islink}{$value.link}{else}javascript:$.win('{$value.intitle ? $value.intitle : $value.title}','{$value.link}');void(0);{/if}"{if $value.islink} target="_blank"{/if}>
 							<div class="top_img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
 							<div class="name">{$value.title}</div>
 						</a>
 					</li>
 					<!-- /loop -->
-					<!-- if $session.admin_rs.if_system && $session.adm_develop -->
-					<li class="plus" onclick="$.admin_index.quick_link()"></li>
-					<!-- /if -->
+					
 				</ul>
 			</div>
 		</div>
@@ -120,20 +124,114 @@
 	</div>
 </div>
 <!-- /if -->
-<style type="text/css">
-	.server_left {
-		text-align: right;
-		height: 30px;
-	}
 
-	.server_right {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		height: 30px;
-		white-space: nowrap
+<!-- if $report -->
+
+<script type="text/javascript">
+var myChart;
+function update_stat(obj){
+	var count = 0;
+	$("input[data-name=stat_type]").each(function(i){
+		var t = $(this).is(":checked");
+		if(t){
+			count++;
+		}
+	});
+	if(count<1){
+		$.dialog.alert('报表统计数量不能小于1');
+		$(obj).prop("checked",true);
+		return false;
 	}
+	loadStat();
+}
+function update_vtype(val){
+	loadStat();
+}
+function loadStat(){
+	var url = get_url('report','site');
+	var tmp = new Array();
+	$("input[data-name=stat_type]").each(function(i){
+		var t = $(this).is(":checked");
+		if(t){
+			tmp.push($(this).val());
+		}
+	});
+	url += "&ids="+$.str.encode(tmp.join(','));
+	url += "&type="+$("select[name=vtype]").val();
+	myChart.showLoading();  // 开启 loading 效果
+	$.phpok.json(url,function(rs){
+		myChart.hideLoading();  // 隐藏 loading 效果
+		if(!rs.status){
+			myChart.clear();
+			$("#stat_site").hide();
+			return false;
+		}
+		var t = rs.info.x;
+		if(t.length<2){
+			myChart.clear();
+			$("#stat_site").hide();
+			return false;
+		}
+        var option = {
+            legend: {data:rs.info.y},
+            xAxis: {data: rs.info.x},
+            yAxis: {},
+            series: rs.info.rslist
+        };
+        myChart.clear();
+        myChart.setOption(option);
+	});
+}
+</script>
+<div class="layui-card" id="stat_site">
+	<div class="layui-card-header">
+		<div class="layui-row">
+			<div class="layui-col-md2">
+		    	{lang报表统计}
+			</div>
+			<div class="layui-col-md10 layui-form" style="text-align:right;">
+				<div class="fr">
+					<label style="margin-right:10px;"><input type="checkbox" data-name="stat_type" value="title"{if in_array('title',$report.ids)} checked{/if} onchange="update_stat(this)" lay-ignore /> {lang主题数量}</label>
+					<label style="margin-right:10px;"><input type="checkbox" data-name="stat_type" value="hits"{if in_array('hits',$report.ids)} checked{/if} onchange="update_stat(this)" lay-ignore /> {lang阅读率}</label>
+					<label style="margin-right:10px;"><input type="checkbox" data-name="stat_type" value="reply"{if in_array('reply',$report.ids)} checked{/if} onchange="update_stat(this)" lay-ignore /> {lang评论数量}</label>
+					<!-- if $site_popedom.order && $config.biz_status -->
+					<label style="margin-right:10px;"><input type="checkbox" data-name="stat_type" value="order"{if in_array('order',$report.ids)} checked{/if} onchange="update_stat(this)" lay-ignore /> {lang订单数量}</label>
+					<label style="margin-right:10px;"><input type="checkbox" data-name="stat_type" value="price"{if in_array('price',$report.ids)} checked{/if} onchange="update_stat(this)" lay-ignore /> {lang订单价格}</label>
+					<!-- /if -->
+					<label style="margin-right:10px;"><input type="checkbox" data-name="stat_type" value="user"{if in_array('user',$report.ids)} checked{/if} onchange="update_stat(this)" lay-ignore /> {lang用户数量}</label>
+				</div>
+				<div class="fr" style="margin-right:20px;">
+					<select name="vtype" style="width:80px" onchange="update_vtype(this)" lay-ignore>
+						<option value="date"{if $report.type == 'date'} selected{/if}>{lang每天}</option>
+						<option value="week"{if $report.type == 'week'} selected{/if}>{lang每周}</option>
+						<option value="month"{if $report.type == 'month'} selected{/if}>{lang每月}</option>
+						<option value="quarter"{if $report.type == 'quarter'} selected{/if}>{lang季度}</option>
+						<option value="year"{if $report.type == 'year'} selected{/if}>{lang每年}</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	<div class="layui-card-body">
+		<div id="chart_main" class="layui-carousel" data-anim="fade" lay-filter="LAY-index-normcol" lay-anim="fade" style="width: 100%; height:550px;text-align:center;">数据加载中，请稍候…</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	myChart = echarts.init(document.getElementById('chart_main'));
+	loadStat();
+});
+</script>
+<!-- /if -->
+
+
+
+<!-- if $serverlist -->
+<style type="text/css">
+.server_left{text-align:right;height:30px;}
+.server_right{overflow:hidden;text-overflow:ellipsis;height:30px;white-space:nowrap}
 </style>
-<!-- if $sys.show_env -->
 <div class="layui-card">
 	<div class="layui-card-header">
 		{lang主机环境}
@@ -150,12 +248,61 @@
 			</div>
 			<div class="layui-col-sm6 layui-col-md3 server_right" {if $value[2]} style="{$value[2]}" {/if}> {$value[1]} </div>
 			 <!-- /loop -->
-			</div>
-			<br />
 		</div>
 	</div>
 </div>
 <!-- /if -->
+
+<!-- if $safecheck -->
+<div id="folderlist" style="display:none"></div>
+<script id="art-tpl" type="text/html">
+<% for(var i in rslist){ %>
+<tr id="id-<%= rslist[i].hash %>" data-ext="<%= rslist[i].ext %>">
+	<td><%= rslist[i].filename %></td>
+	<td><%= rslist[i].size %></td>
+	<td><%= rslist[i].mdate_format %></td>
+	<td><%= rslist[i].error %></td>
+	<td>
+		<div class="layui-btn-group">
+		<input type="button" value="查看" onclick="$.win('文件管理','{url ctrl=filemanage/}&folder=<%= rslist[i].folder %>')" class="layui-btn layui-btn-sm" />
+		<input type="button" value="标记" onclick="$.admin_index.ignore('<%= rslist[i].hash %>')" class="layui-btn layui-btn-sm layui-btn-danger" />
+		</div>
+	</td>
+</tr>
+<% } %>
+</script>
+<div class="layui-card">
+	<div class="layui-card-header">
+		安全检测 <span id="total_html" style="display:none">检测文件（夹）数量：<span id="total" class="layui-text-danger"></span></span>
+		<div class="fr">
+			<div class="layui-btn-group">
+				<input type="button" value="开始检测" id="buttonAction" class="layui-btn layui-btn-sm" onclick="$.admin_index.checking()" />
+				<input type="button" value="忽略图片" class="layui-btn layui-btn-sm" onclick="$.admin_index.notin('jpg,png,gif,jpeg,webp,bmp,tiff,svg')" />
+				<input type="button" value="忽略前端" class="layui-btn layui-btn-sm" onclick="$.admin_index.notin('js,css,xml,scss')" />
+				<input type="button" value="忽略文档" class="layui-btn layui-btn-sm" onclick="$.admin_index.notin('doc,docx,xls,xlsx,pdf,ppt,pptx,rtf')" />
+			</div>
+			<input type="button" value="清空标记" id="buttonAction" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.admin_index.clear_ignore()" />
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>文件</th>
+			<th>大小</th>
+			<th>修改时间</th>
+			<th>建议</th>
+			<th>操作</th>
+		</tr>
+		</thead>
+		<tbody id="rslist">
+		</tbody>
+		</table>
+		<div id="loading"></div>
+	</div>
+</div>
+<!-- /if -->
+
 <!-- plugin body -->
 <div class="foot">
 	<div class="foot_left">
@@ -171,5 +318,4 @@
 </div>
 <!-- plugin foot -->
 </body>
-
 </html>

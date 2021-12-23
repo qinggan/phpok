@@ -9,12 +9,12 @@
 </div>
 <div class="table">
 	<div class="title">
-		{lang通知会员}
+		{lang通知用户}
 		<span class="note">{lang选择模板，订单状态更新后，会以邮件或短信通知客户}</span>
 	</div>
 	<div class="content">
 		<select name="email_tpl_user" style="width:475px">
-			<option value="">{lang邮件模板：}{lang不通知会员}</option>
+			<option value="">{lang邮件模板：}{lang不通知用户}</option>
 			<!-- loop from=$emailtpl key=$key value=$value -->
 			<!-- if substr($value.identifier,0,4) != 'sms_' -->
 			<option value="{$value.identifier}"{if $rs.email_tpl_user == $value.identifier} selected{/if}>{lang邮件模板：}{$value.title}<!-- if $value.note --> / {$value.note}<!-- /if --></option>
@@ -23,7 +23,7 @@
 		</select>
 		<div style="padding-top:5px">
 			<select name="sms_tpl_user" style="width:475px">
-				<option value="">{lang短信模板：}{lang不通知会员}</option>
+				<option value="">{lang短信模板：}{lang不通知用户}</option>
 				<!-- loop from=$emailtpl key=$key value=$value -->
 				<!-- if substr($value.identifier,0,4) == 'sms_' -->
 				<option value="{$value.identifier}"{if $rs.sms_tpl_user == $value.identifier} selected{/if}>{lang短信模板：}{$value.title}<!-- if $value.note --> / {$value.note}<!-- /if --></option>
@@ -63,7 +63,7 @@
 <div class="table">
 	<div class="title">
 		{lang前台可操作的下一步}
-		<span class="note">{lang设置前台会员可操作的下一步}</span>
+		<span class="note">{lang设置前台用户可操作的下一步}</span>
 	</div>
 	<div class="content">
 		<ul class="layout">

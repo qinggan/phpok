@@ -2,11 +2,11 @@
 <div class="layui-card">
 	<div class="layui-card-body">
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-		<input type="button" value="{$value.title}" class="layui-btn layui-btn-sm" onclick="$.admin_tag.selected(this.value,'{$rs.separator}')" />
+		<input type="button" value="{$value.title}" class="layui-btn layui-btn-xs" style="margin:5px 0;" onclick="$.admin_tag.selected(this.value,'{$rs.separator}')" />
 		<!-- /loop -->
 		<div class="clear"></div>
 		<!-- include tpl=pagelist -->
 	</div>
 </div>
 
-<!-- include tpl=foot_lay -->
+<!-- include tpl=foot_lay is_open=true -->

@@ -21,7 +21,6 @@ class sql_model extends sql_model_base
 	//读取全部表信息
 	public function tbl_all()
 	{
-		//$this->db->cache_clear();
 		$sql = "SHOW TABLE STATUS FROM ".$this->db->database();
 		return $this->db->get_all($sql);
 	}

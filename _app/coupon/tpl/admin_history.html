@@ -1,0 +1,59 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header layuiadmin-card-header-auto">
+		<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_coupon_history.search()">
+		
+		
+		<ul class="layout">
+			<li><input type="text" name="keywords[title]" id="keywords_title" data-name="keywords" value="{$keywords.title}" placeholder="{lang优惠券名称}" class="layui-input" /></li>
+			<li><input type="text" name="keywords[code]" id="keywords_code" data-name="keywords" value="{$keywords.code}" placeholder="{lang优惠码}" class="layui-input" /></li>
+			<li><input type="text" name="keywords[startdate]" id="keywords_startdate" data-name="keywords" value="{$keywords.startdate}" placeholder="{lang开始时间}" class="layui-input" /></li>
+			<li><input type="text" name="keywords[stopdate]" id="keywords_stopdate" data-name="keywords" value="{$keywords.stopdate}" placeholder="{lang结束时间}" class="layui-input" /></li>
+			<li><input type="submit" value="开始搜索" class="layui-btn" /></li>
+			<!-- if $keywords -->
+			<li><a href="{url ctrl=coupon func=used/}" class="layui-btn layui-btn-danger">取消搜索</a></li>
+			<!-- /if -->
+		</ul>
+		</form>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>{lang优惠码}</th>
+			<th>{lang使用日期}</th>
+			<th>{lang订单编号}</th>
+			<th>{lang用户}</th>
+			<th>{lang优惠金额}</th>
+			<th></th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td><input type="checkbox" value="{$value.id}" title="{$value.id}" lay-skin="primary" /></td>
+			<td>{$value.code}</td>
+			<td>{func date 'Y-m-d H:i:s' $value.dateline}</td>
+			<td>{$value.sn}</td>
+			<td>{$value.user}</td>
+			<td>{func price_format $value.price $value.currency_id $value.currency_id $value.currency_rate $value.currency_rate}</td>
+			<td><input type="button" value="{lang删除}" onclick="$.admin_coupon_history.del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" /></td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<ul class="layout">
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.all()" />
+					<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.none()" />
+					<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.anti()" />
+				</div>
+			</li>
+			<li>
+				<input type="button" value="{lang删除}" class="layui-btn layui-btn-danger layui-btn-sm" onclick="$.admin_coupon_history.del()" />
+			</li>
+		</ul>
+		<!-- include tpl=pagelist -->
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

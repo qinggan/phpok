@@ -107,7 +107,7 @@ class ueditor_control extends phpok_control
 			$this->_stop(P_Lang(P_Lang('系统已禁止游客上传，请联系管理员')));
 		}
 		if(!$this->site['upload_user'] && !$this->session->val('user_id')){
-			$this->_stop(P_Lang(P_Lang('系统已禁止会员上传，请联系管理员')));
+			$this->_stop(P_Lang(P_Lang('系统已禁止用户上传，请联系管理员')));
 		}
 		$action_name = 'u_'.$action;
 		$this->$action_name();
@@ -175,11 +175,15 @@ class ueditor_control extends phpok_control
 	{
 		$offset = $this->get('start','int');
 		$psize = $this->get('size','int');
-		$condition = "res.ext IN ('gif','jpg','png','jpeg') ";
+		$condition = " res.ext IN ('gif','jpg','png','jpeg') ";
 		if($this->session->val('user_id')){
-			$condition = " res.user_id='".$this->session->val('user_id')."' ";
+			$condition .= " AND res.user_id='".$this->session->val('user_id')."' ";
 		}else{
-			$condition = " session_id='".$this->session->sessid()."' ";
+			$condition .= " AND res.session_id='".$this->session->sessid()."' ";
+		}
+		$keywords = $this->get('keywords');
+		if($keywords){
+			$condition .= " AND (res.filename LIKE '%".$keywords."%' OR res.title LIKE '%".$keywords."%') ";
 		}
 		$gd_rs = $this->model('gd')->get_editor_default();
 		$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize,$gd_rs);
@@ -188,7 +192,7 @@ class ueditor_control extends phpok_control
 		}
 		$piclist = array();
 		foreach($rslist as $key=>$value){
-			$tmp = array('url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime']);
+			$tmp = array('url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime'],'title'=>$value['title'],'original'=>$value['title']);
 			$piclist[] = $tmp;
 		}
 		$data = array('list'=>$piclist,'start'=>$offset,'size'=>$psize);

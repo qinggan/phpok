@@ -57,6 +57,16 @@ function set_comment_status()
 	}
 }
 
+function set_attr()
+{
+	var status = $("#is_attr").is(':checked');
+	if(status){
+		$("#is_attr_status").show();
+	}else{
+		$("#is_attr_status").hide();
+	}
+}
+
 function refresh_catelist()
 {
 	$.phpok.json(get_url("project","rootcate"),function(rs){
@@ -100,6 +110,12 @@ $(document).ready(function(){
 			if(data.elem.id == 'is_biz'){
 				set_biz();
 			}
+			if(data.elem.id == 'is_attr'){
+				set_attr()
+			}
+		});
+		form.on('select(module)',function(data){
+			$.admin_project.module_change(data.elem);
 		});
 	})
 });

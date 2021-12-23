@@ -64,7 +64,7 @@ class paypal_payment
 		$this->$var = $value;
 	}
 
-	function create_button()
+	function create_button($address='')
 	{
 		$data = array('price'=>$this->amount,'sn'=>$this->ordersn);
 		$md5sign = $this->md5sign($data);
@@ -85,7 +85,25 @@ class paypal_payment
 		$html .= "<input type='hidden' name='notify_url' value='".$this->notify_url."'>";
 		$html .= "<input type='hidden' name='rm' value='2'>";
 		$html .= "<input type='hidden' name='currency_code' value='".$this->currency."'>";
-		$html .= "<input type='hidden' name='no_shipping' value='1'>";
+		//境内不支持地址付款
+		if($address && is_array($address) && $address['country'] != '中国' && $address['country'] != 'China'){
+			//$fullname = ($address['first_name'] && $address['last_name']) ? $address['first_name'].' '.$address['last_name'] : $address['fullname'];
+			//$html .= "<input type='hidden' name='addroverride' value='1'>";		
+			$html .= "<input type='hidden' name='address_override' value='1'>";
+			$html .= "<input type='hidden' name='first_name' value='".$address['first_name']."'>";
+			$html .= "<input type='hidden' name='last_name' value='".$address['last_name']."'>";
+			$html .= "<input type='hidden' name='address1' value='".$address['address']."'>";
+			$html .= "<input type='hidden' name='address2' value='".$address['address2']."'>";
+			$html .= "<input type='hidden' name='city' value='".$address['city']."'>";
+			$html .= "<input type='hidden' name='email' value='".$address['email']."'>";
+			$html .= "<input type='hidden' name='zip' value='".$address['zipcode']."'>";
+			$html .= "<input type='hidden' name='country' value='".$address['country_code2']."'>";
+			$html .= "<input type='hidden' name='state' value='".$address['province']."'>";
+			$html .= "<input type='hidden' name='no_shipping' value='0'>";
+		}else{
+			$html .= "<input type='hidden' name='no_shipping' value='1'>";
+		}
+		
 		$html .= "</form>";
 		return $html;
 	}

@@ -35,6 +35,19 @@
 </div>
 <div class="table">
 	<div class="title">
+		{lang隐藏}
+		<span class="note">{lang当状态使用后，可单独设置为0或空时隐藏不体现，设为禁用刚不隐藏}</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="radio" name="hidden" value="1"{if $rs.hidden} checked{/if} />{lang启用}</label></li>
+			<li><label><input type="radio" name="hidden" value="0"{if !$rs.hidden} checked{/if} />{lang禁用}</label></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
 		{lang默认值}
 		<span class="note">{lang设置一个默认值，留空或为0表示忽略}</span>
 	</div>

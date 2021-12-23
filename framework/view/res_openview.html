@@ -41,6 +41,8 @@
 .img{max-width:100%}
 </style>
 <div style="margin-top:3px;"><img src="{$rs.filename}" class="img"/></div>
+<!-- elseif $isvideo -->
+<div style="margin:10px"><video type="video/mp4" src="{$rs.filename}" width="100%" height="100%" controls="controls"></video></div>
 <!-- else -->
 <div class="list">
 <table>

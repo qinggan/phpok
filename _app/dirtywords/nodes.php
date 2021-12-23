@@ -27,7 +27,9 @@ class nodes_phpok extends \_init_auto
 		$act = $this->model('dirtywords')->check();
 		if(!$act){
 			$word = $this->model('dirtywords')->error_word();
-			$this->json(P_Lang('系统限字符：{dirtywords}',array('dirtywords'=>$word)));
+			if($word){
+				$this->json(P_Lang('系统限字符：{dirtywords}',array('dirtywords'=>$word)));
+			}
 		}
 		$yunconfig = $this->model('dirtywords')->config();
 		if($yunconfig['aip_status'] && $yunconfig['aip_appid'] && $yunconfig['aip_apikey'] && $yunconfig['aip_secret']){
@@ -35,7 +37,9 @@ class nodes_phpok extends \_init_auto
 			$chk = $this->lib('baidu_aip')->check($_POST);
 			if(!$chk){
 				$tip = $this->lib('baidu_aip')->error();
-				$this->json(P_Lang('检测不通过，疑似有以下词不符合要求<br>{dirtywords}',array('dirtywords'=>$tip)));
+				if($tip){
+					$this->json(P_Lang('检测不通过，疑似有以下词不符合要求<br>{dirtywords}',array('dirtywords'=>$tip)));
+				}
 			}
 		}
 		return true;
@@ -46,7 +50,9 @@ class nodes_phpok extends \_init_auto
 		$act = $this->model('dirtywords')->check();
 		if(!$act){
 			$word = $this->model('dirtywords')->error_word();
-			$this->error(P_Lang('系统限字符：{dirtywords}',array('dirtywords'=>$word)));
+			if($word){
+				$this->error(P_Lang('系统限字符：{dirtywords}',array('dirtywords'=>$word)));
+			}
 		}
 		$yunconfig = $this->model('dirtywords')->config();
 		if($yunconfig['aip_status']){
@@ -54,7 +60,9 @@ class nodes_phpok extends \_init_auto
 			$chk = $this->lib('baidu_aip')->check($_POST);
 			if(!$chk){
 				$tip = $this->lib('baidu_aip')->error();
-				$this->error(P_Lang('检测不通过，疑似有以下词不符合要求<br>{dirtywords}',array('dirtywords'=>$tip)));
+				if($tip){
+					$this->error(P_Lang('检测不通过，疑似有以下词不符合要求<br>{dirtywords}-1',array('dirtywords'=>$tip)));
+				}
 			}
 		}
 		return true;

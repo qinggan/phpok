@@ -7,18 +7,13 @@
 			<note>设置支付的PID，您可以登录支付宝商家服务查询，APP支付请填写APPID</note>
 			<type>text</type>
 		</pid>
-		<key>
-			<title>MD5密钥</title>
-			<note>设置支付的KEY，您可以登录支付宝商家服务查询 MD5 密钥</note>
-			<type>text</type>
-		</key>
 		<pubkey>
 			<title>支付宝公钥</title>
 			<note>新版支付，需要填写支付宝公钥【去头去尾去回车，一行字符串】</note>
 			<type>text</type>
 		</pubkey>
 		<prikey>
-			<title>支付宝私钥</title>
+			<title>开发者私钥</title>
 			<note>新版支付，需要填写开发者私钥【去头去尾去回车，一行字符串】</note>
 			<type>text</type>
 		</prikey>
@@ -42,10 +37,11 @@
 			<note>设置支付的类型，我们推荐您使用即时到账</note>
 			<type>select</type>
 			<option>
-				<app>APP支付（新版）</app>
-				<pagepay>即时到账（新版）</pagepay>
-				<wappay>手机支付（新版）</wappay>
-				<create_direct_pay_by_user>即时到账</create_direct_pay_by_user>
+				<app>APP支付</app>
+				<pagepay_qrcode>电脑端网页扫码支付</pagepay_qrcode>
+				<pagepay_link>电脑端网页跳转支付</pagepay_link>
+				<wappay>手机网页支付</wappay>
+				<create_direct_pay_by_user>即时到账（老版本）</create_direct_pay_by_user>
 				<create_forex_trade>其他货币支付（包括海外及港澳台支付）</create_forex_trade>
 				<create_forex_trade_wap>其他货币手机支付（包括海外及港澳台支付）</create_forex_trade_wap>
 			</option>

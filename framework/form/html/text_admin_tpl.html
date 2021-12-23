@@ -59,7 +59,7 @@
 	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
-			<input type="button" value="{lang会员库}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_user_select('{$_rs.identifier}')" />
+			<input type="button" value="{lang用户库}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_user_select('{$_rs.identifier}')" />
 			<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
 		</div>
 	</li>
@@ -80,7 +80,7 @@
 	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
-			<input type="button" value="{$_rs.extitle}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_title_select('{$_rs.identifier}','{$_rs.form_btn_pid}','{$_rs.ext_field}')" />
+			<input type="button" value="{$_rs.extitle}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_title_select('{$_rs.identifier}','{$_rs.form_btn_pid}','{$_rs.ext_field}','{if $_rs.ext_layout}{func implode , $_rs.ext_layout}{/if}')" />
 			<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
 		</div>
 	</li>

@@ -98,17 +98,17 @@ class open_control extends phpok_control
 		if($type == "image" || $type == "picture"){
 			$type_s = "picture";
 			$ext = strtolower($config["picture"]["ext"]);
-			$tplfile = "open_image";
+			$tplfile = "open-image";
 		}elseif($type == "video"){
 			$ext = strtolower($config["video"]["ext"]);
-			$tplfile = "open_input";
+			$tplfile = "open-input";
 		}else{
 			if($config[$type]){
 				$ext = $config[$type]["ext"];
 			}else{
 				$ext = $this->get("ext");
 			}
-			$tplfile = "open_input";
+			$tplfile = "open-input";
 		}
 		$tpl = $this->get("tpl");
 		if($tpl){
@@ -126,7 +126,7 @@ class open_control extends phpok_control
 		$this->assign("type_s",$type_s);	
 		$this->get_list($pageurl,$ext);
 		$this->assign("id",$id);
-		$this->view($this->dir_phpok.'view/'.$tplfile.'.html','abs-file');
+		$this->view($this->dir_phpok.'open/'.$tplfile.'.html','abs-file');
 	}
 
 	private function get_list($pageurl,$ext="")
@@ -170,7 +170,7 @@ class open_control extends phpok_control
 			$ext_string = implode("','",$extlist);
 			$condition .= " AND ext IN('".$ext_string."') ";
 		}
-		$rslist = $this->model('res')->get_list($condition,$offset,$psize);
+		$rslist = $this->model('res')->get_list($condition,$offset,$psize,false,false);
 		$this->assign("rslist",$rslist);
 		$total = $this->model('res')->get_count($condition);
 		$this->assign("total",$total);
@@ -179,4 +179,46 @@ class open_control extends phpok_control
 		$this->assign("pagelist",$pagelist);
 	}
 
+	/**
+	 * 读取用户列表
+	**/
+	public function user_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非用户不允执行此操作'));
+		}
+		$id = $this->get("id");
+		if(!$id){
+			$id = "user";
+		}
+		$pageid = $this->get($this->config["pageid"],"int");
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->config["psize"] ? $this->config['psize'] : 30;
+		$keywords = $this->get("keywords");
+		$multi = $this->get("multi","int");
+		$page_url = $this->url("open","user","id=".$id);
+		if($multi){
+			$page_url .= "&multi=1";
+			$this->assign("multi",$multi);
+		}
+		$condition = "1=1";
+		if($keywords){
+			$this->assign("keywords",$keywords);
+			$condition .= " AND u.user LIKE '%".$keywords."%'";
+			$page_url.="&keywords=".rawurlencode($keywords);
+		}
+		$offset = ($pageid - 1) * $psize;
+		$rslist = $this->model('user')->get_list($condition,$offset,$psize);
+		$count = $this->model('user')->get_count($condition);
+		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=2';
+		$string.= '&add=(num)/(total_page)&always=1';
+		$pagelist = phpok_page($page_url,$count,$pageid,$psize,$string);
+		$this->assign("total",$count);
+		$this->assign("rslist",$rslist);
+		$this->assign("id",$id);
+		$this->assign("pagelist",$pagelist);
+		$this->view($this->dir_phpok.'open/user-list.html','abs-file');
+	}
 }

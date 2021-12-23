@@ -1,6 +1,6 @@
 <?php
 /**
- * 显示会员组
+ * 显示用户组
  * @package phpok\phpinc
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司

@@ -25,7 +25,7 @@ class res_control extends phpok_control
 		}
 		$list = explode(",",$id);
 		$newlist = array();
-		foreach($list AS $key=>$value){
+		foreach($list as $key=>$value){
 			$value = intval($value);
 			if($value){
 				$newlist[] = $value;
@@ -37,7 +37,11 @@ class res_control extends phpok_control
 		}
 		$rslist = $this->model("res")->get_list_from_id($id,true);
 		if($rslist){
-			$this->json($rslist,true);
+			$tmplist = array();
+			foreach($rslist as $key=>$value){
+				$tmplist[] = $value;
+			}
+			$this->json($tmplist,true);
 		}
 		$this->json("附件信息获取失败");
 	}
@@ -46,23 +50,23 @@ class res_control extends phpok_control
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$rs = $this->model('res')->get_one($id);
 		if(!$rs){
-			$this->json(P_Lang('附件不存在'));
+			$this->error(P_Lang('附件不存在'));
 		}
-		if($_SESSION['user_id']){
-			if($rs['user_id'] != $_SESSION['user_id']){
-				$this->json('您没有权限执行此操作');
-			}
-		}else{
-			if($_SESSION['session_id'] != $this->session->sessid()){
-				$this->json('您没有权限执行此操作');
-			}
+		if(!$rs['user_id'] && !$rs['session_id']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		if($this->session->val('user_id') && $rs['user_id'] != $this->session->val('user_id')){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		if(!$this->session->val('user_id') && $rs['session_id'] != $this->session->sessid()){
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$this->model('res')->delete($id);
-		$this->json(P_Lang('删除成功'),true);
+		$this->success();
 	}
 
 	public function update_title_note_f()

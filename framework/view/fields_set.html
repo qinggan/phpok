@@ -1,137 +1,150 @@
-<!-- include tpl=head_open -->
+<!-- include tpl=head_lay -->
 <script type="text/javascript">
-function save()
+function save(obj)
 {
-	var opener = $.dialog.opener;
-	$("#post_save").ajaxSubmit({
+	$(obj).ajaxSubmit({
 		'url':get_url('fields','save'),
 		'type':'post',
 		'dataType':'json',
 		'success':function(rs){
 			if(rs.status){
-				$.dialog.alert('操作成功',function(){
-					opener.$.phpok.reload();
-				},'succeed');
-			}else{
-				$.dialog.alert(rs.info);
+				$.dialog.tips(p_lang('操作成功'));
+				var url = get_url('fields');
+				$.admin.reload(url);
+				$.admin.close(url);
 				return false;
 			}
+			$.dialog.alert(rs.info);
+			return false;
 		}
 	});
+	return false;
 }
 </script>
-<form method="post" id="post_save">
-<!-- if $id -->
-<input type="hidden" id="id" name="id" value="{$id}" />
-<!-- else -->
-<div class="table">
-	<div class="title">
-		{lang字段标识}：
-		<span class="note">{lang仅限} <span class="darkblue b">{lang字母、数字及下划线，且必须以字母开头}</span></span>
+<form method="post" class="layui-form" id="post_save" onsubmit="return save(this)">
+<div class="layui-card">
+	<div class="layui-card-header">
+		<!-- if $id -->{lang编辑常用字段}<!-- else -->{lang添加常用字段}<!-- /if -->
 	</div>
-	<div class="content">
-		<ul class="layout">
-			<li><input type="text" id="identifier" name="identifier" class="default" value="{$rs.identifier}" /></li>
-			<li>
-				<div class="button-group">
-					<input type="button" value="{lang随机生成}" onclick="$('#identifier').val($.phpok.rand(10,'letter'))" class="layui-btn" />
-				</div>
-			</li>
-		</ul>	
+	<div class="layui-card-body">
+		<!-- if $id -->
+		<input type="hidden" id="id" name="id" value="{$id}" />
+		<!-- else -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang字段标识：}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="text" id="identifier" name="identifier" class="layui-input" value="{$rs.identifier}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38" data-id="identifier">
+				<input type="button" value="{lang随机生成}" onclick="$('#identifier').val($.phpok.rand(10,'letter'))" class="layui-btn layui-btn-sm" />
+			</div>
+			<div class="layui-form-mid">
+				{lang要求}<span class="darkblue">{lang字母、数字及下划线，且必须以字母开头}</span>
+			</div>
+		</div>
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang字段名称：}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang设置一个名称，该名称在表单的头部信息显示}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang字段备注}：
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="note" name="note" class="layui-input" value="{$rs.note}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang填写表单时，指定这个注意事项}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang字段类型：}
+			</label>
+			<div class="layui-input-block">
+				<select name="field_type" id="field_type">
+					<option value="">{lang请选择字段类型…}</option>
+					<!-- loop from=$field_list key=$key value=$value -->
+					<option value="{$key}"{if $rs.field_type == $key} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang表单类型：}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select id="form_type" name="form_type" lay-ignore onchange="$._configForm.option(this.value,'form_type_ext','{$id}','user')">
+					<option value="">{lang请选择表单…}</option>
+					<!-- loop from=$form_list key=$key value=$value id=$tmpid -->
+					<option value="{$key}"{if $key == $rs.form_type} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang请选择字段要使用的表单}
+			</div>
+		</div>
+		<div id="form_type_ext" style="display:none;"></div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang样式：}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang不能超过250个字符，不熟悉CSS，请查相关手册，不支持引号}</div>
+			<div class="layui-input-block">
+				<input type="text" id="form_style" name="form_style" class="layui-input" value="{$rs.form_style}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang默认值：}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang设置表单默认值，如果表单中有多个值，请用英文逗号隔开}</div>
+			<div class="layui-input-block">
+				<input type="text" id="content" name="content" class="layui-input" value="{$rs.content}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang格式化：}
+			</label>
+			<div class="layui-input-block">
+				<select name="format" id="format">
+					<!-- loop from=$format_list key=$key value=$value id=$tmpid -->
+					<option value="{$key}"{if $rs.format == $key} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
 	</div>
 </div>
-<!-- /if -->
-<div class="table">
-	<div class="title">
-		{lang字段名称}：
-		<span class="note">{lang设置一个名称，该名称在表单的头部信息显示}</span></span>
-	</div>
-	<div class="content">
-		<input type="text" id="title" name="title" class="w99" value="{$rs.title}" />
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
 	</div>
 </div>
 
-<div class="table">
-	<div class="title">
-		{lang字段备注}：
-		<span class="note">{lang仅限后台管理使用，用于查看这个字段主要做什么}</span></span>
-	</div>
-	<div class="content"><input type="text" id="note" name="note" class="w99" value="{$rs.note}" /></div>
-</div>
 
-<div class="table">
-	<div class="title">
-		{lang字段类型}：
-		<span class="note">{lang设置存储的类型，一经创建不允许修改}</span>
-	</div>
-	<div class="content">
-		<select name="field_type" id="field_type" class="w99">
-			<option value="">{lang请选择字段类型…}</option>
-			<!-- loop from=$field_list key=$key value=$value -->
-			<option value="{$key}"{if $rs.field_type == $key} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		表单类型：
-		<span class="note">请选择字段要使用的表单</span>
-	</div>
-	<div class="content">
-		<select id="form_type" name="form_type" class="w99" onchange="$._configForm.option(this.value,'form_type_ext','{$id}','user')">
-			<option value="">{lang请选择表单…}</option>
-			<!-- loop from=$form_list key=$key value=$value id=$tmpid -->
-			<option value="{$key}"{if $key == $rs.form_type} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
-
-<div id="form_type_ext" style="display:none;"></div>
-
-<div class="table">
-	<div class="title">
-		<span class="edit">
-			{lang表单样式：}
-			<span class="note">{lang不能超过250个字符，不熟悉CSS，请查相关手册}</span>
-		</span>
-	</div>
-	<div class="content"><input type="text" id="form_style" name="form_style" class="w99" value="{$rs.form_style}" /></div>
-</div>
-
-<div class="table">
-	<div class="title">
-		{lang表单默认值：}
-		<span class="note">{lang设置表单默认值，如果表单中有多个值，请用英文逗号隔开}</span>
-	</div>
-	<div class="content"><input type="text" id="content" name="content" class="w99" value="{$rs.content}" /></div>
-</div>
-
-
-<div class="table">
-	<div class="title">
-		{lang接收数据格式化：}
-		<span class="note">{lang设置文本常见格式，如HTML，整型，浮点型等}</span>
-	</div>
-	<div class="content">
-		<select name="format" id="format" class="w99">
-			<!-- loop from=$format_list key=$key value=$value id=$tmpid -->
-			<option value="{$key}"{if $rs.format == $key} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
 </form>
 
 <!-- if $rs -->
 <script type="text/javascript">
 $(document).ready(function(){
 	$._configForm.option("{$rs.form_type}","form_type_ext",'{$id}');
-	//$.admin_fields.loading('{$rs.form_type}','{$id}');
 });
 </script>
 <!-- /if -->
 
-<!-- include tpl=foot_open -->
+<!-- include tpl=foot_lay -->

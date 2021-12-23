@@ -1,0 +1,42 @@
+<div class="table">
+	<div class="title">
+		PC版分享 <span class="note">电脑端的微信分享是链接生成二维码</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="checkbox" name="share-pc-status[weixin]"{if $rs.param && $rs.param.share-pc-status && $rs.param.share-pc-status.weixin} checked{/if} />微信</label></li>
+			<li><label><input type="checkbox" name="share-pc-status[weibo]"{if $rs.param && $rs.param.share-pc-status && $rs.param.share-pc-status.weibo} checked{/if} />微博</label></li>
+			<li><label><input type="checkbox" name="share-pc-status[qzone]"{if $rs.param && $rs.param.share-pc-status && $rs.param.share-pc-status.qzone} checked{/if} />Q空间</label></li>
+			<li><label><input type="checkbox" name="share-pc-status[facebook]"{if $rs.param && $rs.param.share-pc-status && $rs.param.share-pc-status.facebook} checked{/if} />Facebook</label></li>
+			<li><label><input type="checkbox" name="share-pc-status[linkedin]"{if $rs.param && $rs.param.share-pc-status && $rs.param.share-pc-status.linkedin} checked{/if} />Linkedin</label></li>
+			<li><label><input type="checkbox" name="share-pc-status[twitter]"{if $rs.param && $rs.param.share-pc-status && $rs.param.share-pc-status.twitter} checked{/if} />Twitter</label></li>
+			<li><label><input type="checkbox" name="share-pc-status[pinterest]"{if $rs.param && $rs.param.share-pc-status && $rs.param.share-pc-status.pinterest} checked{/if} />Pinterest</label></li>
+			<li><label><input type="checkbox" name="share-pc-status[google]"{if $rs.param && $rs.param.share-pc-status && $rs.param.share-pc-status.google} checked{/if} />Google</label></li>
+		</ul>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		手机版分享 <span class="note">微信分享仅限公众号，手机版的微信分享仅发送链接</span>
+	</div>
+	<div class="content">
+		<ul class="layout">
+			<li><label><input type="checkbox" name="share-mobile-status[weixin]"{if $rs.param && $rs.param.share-mobile-status && $rs.param.share-mobile-status.weixin} checked{/if} />微信</label></li>
+			<li><label><input type="checkbox" name="share-mobile-status[weibo]"{if $rs.param && $rs.param.share-mobile-status && $rs.param.share-mobile-status.weibo} checked{/if} />微博</label></li>
+			<li><label><input type="checkbox" name="share-mobile-status[qzone]"{if $rs.param && $rs.param.share-mobile-status && $rs.param.share-mobile-status.qzone} checked{/if} />Q空间</label></li>
+			<li><label><input type="checkbox" name="share-mobile-status[facebook]"{if $rs.param && $rs.param.share-mobile-status && $rs.param.share-mobile-status.facebook} checked{/if} />Facebook</label></li>
+			<li><label><input type="checkbox" name="share-mobile-status[instagram]"{if $rs.param && $rs.param.share-mobile-status && $rs.param.share-mobile-status.instagram} checked{/if} />Instagram</label></li>
+			<li><label><input type="checkbox" name="share-mobile-status[twitter]"{if $rs.param && $rs.param.share-mobile-status && $rs.param.share-mobile-status.twitter} checked{/if} />Twitter</label></li>
+			<li><label><input type="checkbox" name="share-mobile-status[pinterest]"{if $rs.param && $rs.param.share-mobile-status && $rs.param.share-mobile-status.pinterest} checked{/if} />Pinterest</label></li>
+			<li><label><input type="checkbox" name="share-mobile-status[google]"{if $rs.param && $rs.param.share-mobile-status && $rs.param.share-mobile-status.google} checked{/if} />Google</label></li>
+		</ul>
+	</div>
+</div>
+<div class="table">
+	<div class="title">
+		微信公众号AppID <span class="note">仅限微信公众号，需要配置好域名白名单</span>
+	</div>
+	<div class="content">
+		<input type="text" name="weixin-appid" id="weixin-appid" value="{$rs.param.weixin-appid}" class="long" />
+	</div>
+</div>

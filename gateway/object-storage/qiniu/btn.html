@@ -27,6 +27,7 @@
 <script type="text/javascript">
 var obj_{$_rs.identifier};
 var map_{$_rs.identifier} = new Map();
+var key_{$_rs.identifier};
 $(document).ready(function(){
 	//清空本地存储，防止异常删除
 	$.phpok.undata('upload-{$_rs.identifier}');
@@ -34,7 +35,7 @@ $(document).ready(function(){
 		'id':'{$_rs.identifier}',
 		'server':'{$qiniu_server_url}',
 		'cateid':'{$_rs.cate_id}',
-		'pick':{'id':'#{$_rs.identifier}_picker','multiple':{$_rs.is_multiple ? 'true' : 'false'},'innerHTML':'<span class="layui-icon">&#xe67c;</span> {lang选择本地文件}'},
+		'pick':{'id':'#{$_rs.identifier}_picker','multiple':{$_rs.is_multiple ? 'true' : 'false'},'innerHTML':'{$_rs.innerHTML}'},
 		'resize':false,
 		'multiple':"{$_rs.is_multiple ? 'true' : 'false'}",
 		'formData':{'token':'{$_token}'},
@@ -43,14 +44,15 @@ $(document).ready(function(){
 		'compress':{$_rs.upload_compress},
 		'auto':{$_rs.auto_forbid ? 'false' : 'true'},
 		'sendAsBinary':false,
+		'is_refresh':{$_rs.is_refresh ? 'true' : 'false'},
 		'chunkSize':4*1024*1024,
 		'accept':{'title':'{$_rs.upload_type.title}({$_rs.upload_type.swfupload})','extensions':'{$_rs.upload_type.ext}'},
-		'fileSingleSizeLimit':'{$_rs.upload_type.maxsize*100}',
+		'duplicate':false,
 		'success':function(file,data){
 			if(parseInt(file.size) <= parseInt(uploader.options.chunkSize)) {
-				$.phpok_qiniu_gateway.upload_complete(file,data);
+				$.phpok_qiniu_gateway.upload_complete(file,data,{$_rs.is_refresh ? 'true' : 'false'});
 			} else {
-				$.phpok_qiniu_gateway.makefile(map_{$_rs.identifier}.get(file.name),file,true);
+				$.phpok_qiniu_gateway.makefile(map_{$_rs.identifier}.get(file.name),file,key_{$_rs.identifier});
 			}
 		},
 		'before_send':function(block,data,headers){
@@ -64,7 +66,7 @@ $(document).ready(function(){
 				'link':'{$qiniu_view_url}'
 			}
 			var timestamp = new Date().getTime();
-			data['key'] = '{$_rs.folder}'+timestamp+"."+block.file.ext;
+			key_{$_rs.identifier} = data['key'] = '{$_rs.folder}'+timestamp+"."+block.file.ext;
 			$.phpok_qiniu_gateway.config(opts);
 			if (parseInt(block.file.size) <= parseInt(uploader.options.chunkSize)) {
 	            uploader.options.chunked = false;
@@ -73,9 +75,9 @@ $(document).ready(function(){
 				headers['Authorization'] = 'UpToken ' + '{$_token}';
 				headers['Content-Type'] = 'application/octet-stream';
 				uploader.options.chunked = true;
-				uploader.options.server = uploader.options.server + "/mkblk/" + (block.end - block.start);
-				uploader.options.sendAsBinary = true;
-				uploader.options.formData = false;
+				block.transport.options.server = opts.server + "/mkblk/" + (block.end - block.start);
+				block.transport.options.sendAsBinary = true;
+            	block.transport.options.formData = false;
 			}
 		},
 		'file_queued':function(file)

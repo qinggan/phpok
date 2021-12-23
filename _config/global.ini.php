@@ -1,7 +1,7 @@
 ;<?php exit("<h1>Access Denied</h1>");?>
 
 ;是否调试，1/true启用，0/false禁用
-debug = true
+debug = false
 
 ;压缩传缩，1/true启用，0/false禁用
 gzip = true
@@ -10,6 +10,9 @@ gzip = true
 ;设置为 false 后，后台如果需要自定义字段，需要到管理员那里临时打开
 ;当 debug 为 false 时，此项即为 false
 develop = false
+
+;设置为true，系统管理员可以切换开发者模式，设置为false时，无法切换模式
+develop_status = true
 
 ;取得控制器的ID
 ctrl_id = c
@@ -41,7 +44,7 @@ timezone = Asia/Shanghai
 ;时间调节，单位是秒
 timetuning = 0
 
-;会员 Token 标识，不在使用 session 的时候可以使用此项替代，任何接口返回，只要是会员登录后都会传输一个变量userToken
+;用户 Token 标识，不在使用 session 的时候可以使用此项替代，任何接口返回，只要是用户登录后都会传输一个变量userToken
 ;注意，由于历史原因，请慎用 token 这个变量
 ;启用此项需要后台开始密钥
 token_id = userToken
@@ -55,21 +58,21 @@ lock_time = 2
 ;错误次数达到多少次后执行锁定登录
 lock_error_count = 6
 
-;会员登录验证，1/true启用，0/false禁用，如果要实现会员登录才能查看，请将此值设为 true 或 1
+;用户登录验证，1/true启用，0/false禁用，如果要实现用户登录才能查看，请将此值设为 true 或 1
 is_login = false
 
 ;公共JS加载类，多个 js 用英文逗号隔开，不考虑路径，优先读取 framework/js/ 目录，其次读取 js/ 目录
 ;在模板中，需要增加 {url ctrl=js /}，不然此项无效，默认加 js/ 目录下的 jquery.js 文件，可以在指定模板 js 目录中放 jquery.js 文件覆盖读取
-autoload_js = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.min.js,jquery.json.min.js"
+autoload_js = "jquery.md5.js,jquery.phpok.js,global.js,jquery.form.min.js,jquery.json.min.js,jquery.browser.js"
 
 ;获取域名方式，Apache 用户建议使用 SERVER_NAME，Nginx 用户建议使用 HTTP_HOST
 get_domain_method = HTTP_HOST
 
 ;是否多语言选择
-multiple_language = true
+multiple_language = false
 
 ;是否启用 opcache，仅限 debug 为 false 时有效
-opcache = false
+opcache = true
 
 ;是否强制启用 HTTPS，默认不强制，如果您使用 nginx+apache 多模式组合，可能检测 https 失败，可以在这里设置强制
 force_https = 0
@@ -81,7 +84,7 @@ force_https = 0
 iframe_options = 'SAMEORIGIN'
 
 ;跨域请求数据，设为 false 表示禁止跨域数据请求，设为 true 表示允许跨域
-cross_domain = false
+cross_domain = true
 
 ;允许跨域的域名，为 * 号表示允许所有，单独域名：www.phpok.com 写法
 cross_domain_origin = '*';
@@ -185,7 +188,7 @@ status = true
 ;记录级别，目前仅支持 1 和 0
 ;1 表示所有的都记录
 ;0 仅记录报错信息
-type = 1
+type = 0
 
 ;禁止记录的控制器，多个控制器用英文逗号隔开
 forbid = "index,log"

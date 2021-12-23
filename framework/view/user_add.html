@@ -5,21 +5,21 @@
 	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang会员组}
+				{lang用户组}
 			</label>
 			<div class="layui-input-inline default-auto">
 				<select id="group_id" name="group_id"  lay-filter="usergroup">
-				<option value="0">{lang请选择会员组…}</option>
+				<option value="0">{lang请选择用户组…}</option>
 				<!-- loop from=$grouplist key=$key value=$value -->
 				<option value="{$value.id}"{if $value.id == $group_id} selected{/if} data-fields="{$value.fields}">{$value.title}</option>
 				<!-- /loop -->
 				</select>
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang请选择会员所属主要身份}</div>
+			<div class="layui-input-inline auto gray lh38">{lang请选择用户所属主要身份}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang会员账号}
+				{lang用户账号}
 			</label>
 			<div class="layui-input-inline default-auto">
 				<input type="text" id="user" name="user" class="layui-input" value="{$rs.user}" />
@@ -27,11 +27,11 @@
 			<div class="layui-input-inline auto gray lh38">
 				<input type="button" value="{lang随机生成}" onclick="$('#user').val($.phpok.rand(6,'letter'))" class="layui-btn layui-btn-sm" />
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang请填写会员账号，必须保证唯一，建议使用邮箱作为账号}</div>
+			<div class="layui-input-inline auto gray lh38">{lang请填写用户账号，必须保证唯一，建议使用邮箱作为账号}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang会员密码}
+				{lang用户密码}
 			</label>
 			<div class="layui-input-inline default-auto">
 				<input type="text" id="pass" name="pass" class="layui-input" value="" />
@@ -40,7 +40,7 @@
 				<input type="button" value="{lang随机生成}" onclick="$('#pass').val($.phpok.rand(10,'fixed'))" class="layui-btn layui-btn-sm" />
 			</div>
 			<div class="layui-form-mid">
-				{lang设置会员的密码，此项不能为空}
+				{lang设置用户的密码，此项不能为空}
 			</div>
 		</div>
 		<div class="layui-form-item">
@@ -62,7 +62,7 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang会员头像}
+				{lang用户头像}
 			</label>
 			<div class="layui-input-block">
 				{func form_edit avatar $rs.avatar text form_btn=image&width=500}
@@ -77,7 +77,7 @@
 				<input type="radio" name="status" id="status_1" value="1"{if $rs.status == 1} checked{/if} title="{lang正常}" />
 				<input type="radio" name="status" id="status_2" value="2"{if $rs.status == 2} checked{/if} title="{lang锁定}" />
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang设置会员状态，未审核及锁定会员不能登录}</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置用户状态，未审核及锁定用户不能登录}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -86,7 +86,7 @@
 			<div class="layui-input-inline default-auto">
 				<input type="text" id="regtime" name="regtime" class="layui-input"{if $rs.regtime} value="{func date 'Y-m-d H:i:s' $rs.regtime}"{/if} />
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang人工设置会员的注册时间，默认使用当前时间}</div>
+			<div class="layui-input-inline auto gray lh38">{lang人工设置用户的注册时间，默认使用当前时间}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -99,7 +99,7 @@
 				<input type="button" value="{lang随机生成}" onclick="$('#code').val($.phpok.rand(3,'letter')+$.phpok.rand(5,'fixed'))" class="layui-btn layui-btn-sm" />
 			</div>
 			<div class="layui-form-mid">
-				{lang用于邀请会员注册的识别码，字母+数字组成}
+				{lang用于邀请用户注册的识别码，字母+数字组成}
 			</div>
 		</div>
 		<div class="layui-form-item">

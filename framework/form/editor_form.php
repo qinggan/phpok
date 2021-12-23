@@ -1,15 +1,16 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/form/editor_form.php
-	备注： 可视化编辑器配置
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年03月12日 22时37分
-*****************************************************************************************/
+/**
+ * HTML编辑器配置
+ * @作者 苏相锟 <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License https://www.phpok.com/lgpl.html 
+ * @时间 2021年5月11日
+**/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class editor_form extends _init_auto
 {
+	private $langcode = 'zh-cn';
 	public function __construct()
 	{
 		parent::__construct();
@@ -22,10 +23,13 @@ class editor_form extends _init_auto
 
 	public function cssjs()
 	{
-		$this->addjs('js/ueditor/ueditor.config.js');
-		$this->addjs('js/ueditor/ueditor.all.min.js');
-		$this->addjs('js/ueditor/lang/zh-cn/zh-cn.js');
-		$this->addjs('js/ueditor/extension/quickformat/button.js?v=3');
+		$this->addjs('static/ckeditor/ckeditor.js');
+		if($this->langid == 'en_US' || $this->langid == 'en'){
+			$this->langcode = 'en';
+		}
+		if($this->langid == 'big5' || $this->langid == 'zh'){
+			$this->langcode = 'zh';
+		}
 	}
 
 	public function phpok_format($rs,$appid="admin")
@@ -46,19 +50,20 @@ class editor_form extends _init_auto
 			$style["height"] = $rs['height'].'px';
 		}
 		$rs['form_style'] = '';
-		foreach($style AS $key=>$value){
+		foreach($style as $key=>$value){
 			if($rs['form_style']) $rs['form_style'] .= ';';
 			$rs['form_style'] .= $key.':'.$value;
 		}
 		$btns = array();
 		$btns["image"] = true;
 		$btns["info"] = true;
-		$btns["video"] = true;
-		$btns["file"] = true;
-		$btns["page"] = true;
+		$btns["video"] = false;
+		$btns["audio"] = false;
+		$btns["file"] = false;
+		$btns["page"] = false;
 		$btns["table"] = true;
 		$btns["emotion"] = true;
-		$btns["map"] = true;
+		$btns["map"] = false;
 		$btns["spechars"] = true;
 		$btns["insertcode"] = true;
 		$btns["paragraph"] = true;
@@ -69,6 +74,22 @@ class editor_form extends _init_auto
 		}
 		if(!$rs['btns']){
 			$rs['btns'] = array();
+		}
+		$rs['config'] = array();
+		$rs['config']['langid'] = $this->langcode;
+		$rs['config']['height'] = $rs['height'];
+		//修正高亮插件代码被改写Bug，主要是针对尖括号
+		if($rs['content'] && strpos($rs['content'],'<pre') !== false){
+			preg_match_all("/<pre(.*)>(.*)<\/pre>/isU",$rs['content'],$matches);
+			if($matches && $matches[0] && $matches[1] && $matches[2]){
+				$old = array("&lt;","&gt;");
+				$new = array("&amp;lt;","&amp;gt;");
+				foreach($matches[0] as $key=>$value){
+					$tmp = str_replace($old,$new,$value);
+					$rs['content'] = str_replace($value,$tmp,$rs['content']);
+				}
+			}
+			//echo "<pre>".print_r($matches,true)."</pre>";
 		}
 		$this->assign("_rs",$rs);
 		if($appid == 'admin'){
@@ -87,6 +108,53 @@ class editor_form extends _init_auto
 		}else{
 			$file = $this->dir_phpok.'form/html/editor_www_tpl.html';
 		}
+		//移除插件
+		$removePlugins = array();
+		if(!$rs['auto_height']){
+			$removePlugins[] = 'autogrow';
+		}
+		if(!$rs['is_float']){
+			$removePlugins[] = 'fixed';
+		}
+		if($rs['is_code']){
+			$removePlugins[] = 'autogrow';
+			$removePlugins[] = 'fixed';
+		}
+		$removePlugins = array_unique($removePlugins);
+		$this->assign('_removePlugins',implode(",",$removePlugins));
+		//本地化的域名
+		$domain = $this->lib('server')->domain($this->config['get_domain_method']);
+		$tmp = array('localhost','127.0.0.1','::1');
+		if($domain && !in_array($domain,$tmp)){
+			$tmp[] = $domain;
+		}
+		$tmp_xml = $this->model('res')->remote_config();
+		$domainlist = '*';
+		if($tmp_xml && $tmp_xml['domain1']){
+			$tmp = explode("\n",$tmp_xml['domain1']);
+			if($domain){
+				$tmp[] = $domain;
+			}
+		}
+		if($tmp_xml && $tmp_xml['domain2']){
+			$tmplist = explode("\n",$tmp_xml['domain2']);
+			$dlist = array();
+			$is_all = false;
+			foreach($tmplist as $key=>$value){
+				if($value && trim($value) =='*'){
+					$is_all = true;
+					break;
+				}
+				if($value && trim($value) && trim($value) != '*'){
+					$dlist[] = trim($value);
+				}
+			}
+			if(!$is_all && $dlist){
+				$domainlist = implode(",",$dlist);
+			}
+		}
+		$this->assign('_remoteDomain',$domainlist);
+		$this->assign('_ignoreDomain',implode(",",$tmp));
 		return $this->fetch($file,'abs-file');
 	}
 
@@ -109,6 +177,8 @@ class editor_form extends _init_auto
 		}else{
 			if(!$rs['pageid']) $rs['pageid'] = 1;
 			$rs['content'] = $this->lib('ubb')->to_html($rs['content'],false);
+			$rs['content'] = preg_replace("/<div[^>]*page-break-after:always[^>]*>\s*<span[^>]*>\s*\[:page:\]\s*<\/span>\s*<\/div>/isU",'[:page:]',$rs['content']);
+			//$rs['content'] = str_replace('<span style="display:none">[:page:]</span>',"[:page:]",$rs['content']);
 			$lst = explode('[:page:]',$rs['content']);
 			$total = count($lst);
 			if($total<=1){

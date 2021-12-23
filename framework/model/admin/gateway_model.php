@@ -18,8 +18,10 @@ class gateway_model extends gateway_model_base
 	public function get_all($status=0)
 	{
 		$grouplist = $this->group_all();
-		foreach($grouplist as $key=>$value){
-			$grouplist[$key] = array('title'=>$value);
+		if($grouplist){
+			foreach($grouplist as $key=>$value){
+				$grouplist[$key] = array('title'=>$value);
+			}		
 		}
 		$sql = "SELECT * FROM ".$this->db->prefix."gateway WHERE site_id='".$this->site_id."'";
 		if($status){
@@ -35,9 +37,10 @@ class gateway_model extends gateway_model_base
 		return $grouplist;
 	}
 
+
 	public function group_all()
 	{
-		$file = $this->dir_root.'gateway/config.xml';
+		$file = $this->dir_gateway.'config.xml';
 		if(!file_exists($file)){
 			$tmplist = array('sms'=>P_Lang('短信'));
 			$tmplist['email'] = P_Lang('Email邮件');
@@ -46,19 +49,19 @@ class gateway_model extends gateway_model_base
 		}
 		return $this->lib('xml')->read($file);
 	}
-
+	
 	public function code_all($type='')
 	{
 		if(!$type){
 			return false;
 		}
 		//读取目录下的
-		$handle = opendir($this->dir_root.'gateway/'.$type);
+		$handle = opendir($this->dir_gateway.$type);
 		$list = array();
 		while(false !== ($myfile = readdir($handle))){
-			if(substr($myfile,0,1) != '.' && is_dir($this->dir_root.'gateway/'.$type.'/'.$myfile)){
-				$list[$myfile] = array('id'=>$myfile,'dir'=>$this->dir_root.'gateway/'.$type.'/'.$myfile);
-				$tmpfile = $this->dir_root.'gateway/'.$type.'/'.$myfile.'/config.xml';
+			if(substr($myfile,0,1) != '.' && is_dir($this->dir_gateway.$type.'/'.$myfile)){
+				$list[$myfile] = array('id'=>$myfile,'dir'=>$this->dir_gateway.$type.'/'.$myfile);
+				$tmpfile = $this->dir_gateway.$type.'/'.$myfile.'/config.xml';
 				if(file_exists($tmpfile)){
 					$tmp = $this->lib('xml')->read($tmpfile);
 				}else{

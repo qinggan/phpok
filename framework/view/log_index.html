@@ -1,164 +1,58 @@
 <!-- include tpl=head_lay -->
 <div class="layui-card">
 	<div class="layui-card-header">
-		{lang日志清单}
-		<div class="layui-btn-group fr">
-			<button class="layui-btn layui-btn-sm"  onclick="$.admin_log.search('start_time','{$date30}')">{lang最近30天内日志}</button>
-			<button class="layui-btn layui-btn-sm "  onclick="$.admin_log.search('start_time','{$date7}')">{lang最近7天内日志}</button>
-			<!-- if $session.admin_rs.if_system -->
-			<button class="layui-btn layui-btn-sm layui-btn-danger"  onclick="$.admin_log.delete30()" >{lang删除30天之前的日志}</button>
-			<!-- /if -->
-		</div>
-	</div>
-	<div class="layui-card-body">
 		<form method="post" class="layui-form" action="{url ctrl=log/}">
 		<div class="layui-form-item">
 			<div class="layui-inline">
-				<select name="psize" >
-					<option value="20"{if $psize==20} selected{/if}>{lang每页[total]条|total:20}</option>
-					<option value="30"{if $psize==30} selected{/if}>{lang每页[total]条|total:30}</option>
-					<option value="40"{if $psize==40} selected{/if}>{lang每页[total]条|total:40}</option>
-					<option value="50"{if $psize==50} selected{/if}>{lang每页[total]条|total:50}</option>
-					<option value="60"{if $psize==60} selected{/if}>{lang每页[total]条|total:60}</option>
-					<option value="70"{if $psize==70} selected{/if}>{lang每页[total]条|total:70}</option>
-					<option value="90"{if $psize==90} selected{/if}>{lang每页[total]条|total:90}</option>
-					<option value="100"{if $psize==100} selected{/if}>{lang每页[total]条|total:100}</option>
-					<option value="150"{if $psize==150} selected{/if}>{lang每页[total]条|total:150}</option>
-				</select>
-			</div>
-			<div class="layui-inline">
-				<select name="position">
-					<option value="admin"{if $position == 'admin'} selected{/if}>后台</option>
-					<option value="www"{if $position == 'www'} selected{/if}>前台</option>
-					<option value="api"{if $position == 'api'} selected{/if}>接口</option>
-				</select>
-			</div>
-			<div class="layui-inline">
-                <input type="text" id="start_date" class="layui-input" name="start_time" value="{$start_time}"  placeholder="{lang开始时间}">
+                <input type="text" id="start_date" class="layui-input" name="start_time" value="{$start_time}"  placeholder="{lang日期}">
             </div>
-            <div class="layui-inline">
-                <input type="text" id="stop_date" class="layui-input" name="stop_time" value="{$stop_time}"  placeholder="{lang结束时间}">
-            </div>
-			<div class="layui-inline">
-				<input type="text" id="keywords" name="keywords" value="{$keywords}" placeholder="{lang请输入要搜索的关键字}" class="layui-input">
-			</div>
-			<div class="layui-inline">
-				<input type="text" name="adminer" value="{$adminer}" placeholder="{lang管理员账号}" class="layui-input">
-			</div>
-			<div class="layui-inline">
-				<input type="text" name="user" value="{$user}" placeholder="{lang会员账号}" class="layui-input">
-			</div>
-			
 			<div class="layui-inline">
 				<input type="submit" value="提交搜索" class="layui-btn layui-btn-sm" />
+				<input type="button" value="下载日志" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.admin_log.download()"/>
 			</div>
+			<div class="layui-inline">只读取1000条最新日志，如需更多请下载到本地查看</div>
 		</div>
 		</form>
+	</div>
+	<div class="layui-card-body">
 		<table class="layui-table layui-form">
-			<thead>
-			<tr>
-				<th>	
-				</th>
-				<th >
-					<div class="layui-table-cell laytable-cell-1-id">
-						<span>备注/网址</span>
-					</div>
-				</th>
-				<th data-field="label" data-minwidth="100">
-					<div class="layui-table-cell laytable-cell-1-label">
-						<span>IP</span>
-					</div>
-				</th>
-				<th data-field="title">
+		<thead>
+		<tr>
+			<th></th>
+			<th>备注/网址</th>
+			<th>IP</th>
+			<th>操作人</th>
+			<th>应用端</th>
+			<th>文件</th>
+			<th>时间</th>
+		</tr>
+		</thead>
+		<tbody>
+			<!-- loop from=$rslist key=$key value=$value id=$tmpid  -->
+			<tr data-index="0" id="list_{$value.id}">
+				<td>{$tmpid.num}</td>
+				<td style="max-width:500px;word-wrap:break-word;word-break:break-all;">
+					<!-- if $value.note --><div>{$value.note}</div><!-- /if -->
+					<div class="gray">{$value.url}</div>
+				</td>
+				<td>{$value.ip}</td>
+				<td data-field="title">
 					<div class="layui-table-cell laytable-cell-1-title">
-						<span>操作人</span>
+						<!-- if $value.account --><span class="red">{$value.account}</span><!-- /if -->
+						<!-- if $value.account && $value.user --> / <!-- /if -->
+						<!-- if $value.user --><span class="blue">{$value.user}</span><!-- /if -->
+						<!-- if !$value.admin_id && !$value.user_id -->{lang访客/系统}<!-- /if -->
 					</div>
-				</th>
-				<th data-field="author">
-					<div class="layui-table-cell laytable-cell-1-author">
-						<span>文件</span>
-					</div>
-				</th>
-				<th data-field="uploadtime">
-					<div class="layui-table-cell laytable-cell-1-uploadtime">
-						<span>时间</span>
-					</div>
-				</th>
-				<!-- if $session.admin_rs.if_system -->
-				<th data-field="7" data-minwidth="150">
-					<div class="layui-table-cell laytable-cell-1-7" align="center">
-						<span>操作</span>
-					</div>
-				</th>
-				<!-- /if -->
+				</td>
+				<td>
+					<!-- if $value.appid == 'admin' -->后台<!-- elseif $value.appid == 'api' -->接口<!-- else -->前台<!-- /if -->
+				</td>
+				<td>{$value.ctrl}_control.php &raquo; {$value.func}_f</td>
+				<td>{$value.dateline}</td>
 			</tr>
-			</thead>
-		
-				<tbody>
-				<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-				<tr data-index="0" id="list_{$value.id}">
-					<td data-field="0">
-						<div class="layui-table-cell laytable-cell-1-0 laytable-cell-checkbox">
-							<input type="checkbox" name="ids[]" id="id_{$value.id}" value="{$value.id}" lay-skin="primary">
-							<div class="layui-unselect layui-form-checkbox" lay-skin="primary">
-								<i class="layui-icon layui-icon-ok"></i>
-							</div>
-						</div>
-					</td>
-					<td data-field="label" >
-						<div class="laytable-cell-1-id">
-							<label for="id_{$value.id}" lay-tips="{$value.url}">
-								<!-- if $value.note --><div>{$value.note}</div><!-- /if -->
-							</label>
-							<style type="text/css">
-								.layui-layer-tips{
-									word-break:break-all;
-
-								}
-							</style>
-						</div>
-					</td>
-					<td data-field="label" data-minwidth="100">
-						<div class="layui-table-cell laytable-cell-1-label">{$value.ip}</div>
-					</td>
-					<td data-field="title">
-						<div class="layui-table-cell laytable-cell-1-title">
-							<!-- if $value.account --><span class="red">{$value.account}</span><!-- /if -->
-							<!-- if $value.account && $value.user --> / <!-- /if -->
-							<!-- if $value.user --><span class="blue">{$value.user}</span><!-- /if -->
-							<!-- if !$value.admin_id && !$value.user_id -->{lang访客}<!-- /if -->
-						</div>
-					</td>
-					<td data-field="author">
-						<div class="layui-table-cell laytable-cell-1-author">
-							{$value.ctrl}_control.php &raquo; {$value.func}_f
-						</div>
-					</td>
-					<td data-field="uploadtime">
-						<div class="layui-table-cell laytable-cell-1-uploadtime">{func time_format $value.dateline}</div>
-					</td>
-					<!-- if $session.admin_rs.if_system -->
-					<td data-field="7" align="center" data-off="true" data-minwidth="150">
-						<div class="layui-table-cell laytable-cell-1-7">
-							<a class="layui-btn layui-btn-danger layui-btn-xs" onclick="$.admin_log.del('{$value.id}')">
-								<i class="layui-icon layui-icon-delete"></i>删除
-							</a>
-						</div>
-					</td>
-					<!-- /if -->
-				</tr>
-				<!-- /loop -->
-				</tbody>
+			<!-- /loop -->
+		</tbody>
 		</table>
-		<div style="margin-top:10px;">
-			<div class="layui-btn-group test-table-operate-btn">
-				<input type="button" value="{lang全选}" onclick="$.checkbox.all()" class="layui-btn  layui-btn-sm" />
-				<input type="button" value="{lang全不选}" onclick="$.checkbox.none()" class="layui-btn  layui-btn-sm" />
-				<input type="button" value="{lang反选}" onclick="$.checkbox.anti()" class="layui-btn  layui-btn-sm" />
-				<input type="button" value="{lang删除选中日志}" onclick="$.admin_log.delete_selected()" class="layui-btn  layui-btn-sm layui-btn-danger" />
-			</div>
-		</div>
-		<!-- include tpl=pagelist -->
 	</div>
 </div>
 <!-- include tpl=foot_lay -->

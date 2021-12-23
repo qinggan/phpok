@@ -186,15 +186,32 @@ class gd_lib
 		}
 		$imginfo = $this->GetImgInfo($this->filename);
 		if(!$width && !$height){
-			$width = $imginfo["width"];
-			$height = $imginfo["height"];
+			$this->width = $imginfo["width"];
+			$this->height = $imginfo["height"];
 			$this->iscut = false;
-		}elseif(!$width && $height && $imginfo['height']){
-			$width =  ( $height * $imginfo["width"] ) / $imginfo["height"];
+			return true;
+		}
+		if(!$height){
+			if($imginfo['width']>$width){
+				$this->width = $width;
+				$this->height = ($width * $imginfo["height"]) / $imginfo["width"];
+			}else{
+				$this->width = $imginfo['width'];
+				$this->height = $imginfo['height'];
+			}
 			$this->iscut = false;
-		}elseif($width && !$height && $imginfo['width']){
-			$height = ($width * $imginfo["height"]) / $imginfo["width"];
+			return true;
+		}
+		if(!$width){
+			if($height>$imginfo['height']){
+				$this->height = $height;
+				$this->width = ( $height * $imginfo["width"] ) / $imginfo["height"];
+			}else{
+				$this->width = $imginfo['width'];
+				$this->height = $imginfo['height'];
+			}
 			$this->iscut = false;
+			return true;
 		}
 		$this->width = $width;
 		$this->height = $height;

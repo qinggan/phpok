@@ -1,48 +1,63 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_btn,ext_format,ext_quick_words,ext_quick_type,ext_include_3,ext_field,ext_onlyone" />
-<div class="table">
-	<div class="title">
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_btn,ext_format,ext_quick_words,ext_quick_type,ext_include_3,ext_field,ext_onlyone,ext_layout" />
+<div class="layui-form-item">
+	<label class="layui-form-label">
 		{lang扩展按钮：}
-		<span class="note">{lang设置文本框后跟随的按钮}</span>
+	</label>
+	<div class="layui-input-inline auto">
+		<select name="form_btn" id="form_btn" lay-filter="form_btn">
+			<option value="">{lang默认}</option>
+			<optgroup label="{lang系统}">
+				<option value="date"{if $rs.form_btn == "date"} selected{/if}>{lang日期选择器}</option>
+				<option value="datetime"{if $rs.form_btn == "datetime"} selected{/if}>{lang日期时间选择器}</option>
+				<option value="year"{if $rs.form_btn == "year"} selected{/if}>{lang年份选择器}</option>
+				<option value="month"{if $rs.form_btn == "month"} selected{/if}>{lang年月选择器}</option>
+				<option value="time"{if $rs.form_btn == "time"} selected{/if}>{lang时间选择器}</option>
+				<option value="file"{if $rs.form_btn == "file"} selected{/if}>{lang附件选择}</option>
+				<option value="image"{if $rs.form_btn == "image"} selected{/if}>{lang图片库}</option>
+				<option value="video"{if $rs.form_btn == "video"} selected{/if}>{lang影音列表}</option>
+				<option value="url"{if $rs.form_btn == "url"} selected{/if}>{lang网址}</option>
+				<option value="user"{if $rs.form_btn == "user"} selected{/if}>{lang用户}</option>
+				<option value="color"{if $rs.form_btn == "color"} selected{/if}>{lang颜色选择器}</option>
+			</optgroup>
+			<!-- if $title_list -->
+			<optgroup label="{lang主题}">
+				<!-- loop from=$title_list key=$key value=$value -->
+				<option value="title:{$value.id}"{if $rs.form_btn == "title:".$value.id} selected{/if}>{$value.title}</option>
+				<!-- /loop -->
+			</optgroup>
+			<!-- /if -->
+		</select>
 	</div>
-	<div class="content">
-		<table>
-		<tr>
-			<td>
-				<select name="form_btn" id="form_btn" onchange="$._configForm.text('form_btn',this.value,'{$rs.ext_field}')">
-					<option value="">{lang默认}</option>
-					<optgroup label="{lang系统}">
-						<option value="date"{if $rs.form_btn == "date"} selected{/if}>{lang日期选择器}</option>
-						<option value="datetime"{if $rs.form_btn == "datetime"} selected{/if}>{lang日期时间选择器}</option>
-						<option value="year"{if $rs.form_btn == "year"} selected{/if}>{lang年份选择器}</option>
-						<option value="month"{if $rs.form_btn == "month"} selected{/if}>{lang年月选择器}</option>
-						<option value="time"{if $rs.form_btn == "time"} selected{/if}>{lang时间选择器}</option>
-						<option value="file"{if $rs.form_btn == "file"} selected{/if}>{lang附件选择}</option>
-						<option value="image"{if $rs.form_btn == "image"} selected{/if}>{lang图片库}</option>
-						<option value="video"{if $rs.form_btn == "video"} selected{/if}>{lang影音列表}</option>
-						<option value="url"{if $rs.form_btn == "url"} selected{/if}>{lang网址}</option>
-						<option value="user"{if $rs.form_btn == "user"} selected{/if}>{lang会员}</option>
-						<option value="color"{if $rs.form_btn == "color"} selected{/if}>{lang颜色选择器}</option>
-					</optgroup>
-					<!-- if $title_list -->
-					<optgroup label="{lang主题}">
-						<!-- loop from=$title_list key=$key value=$value -->
-						<option value="title:{$value.id}"{if $rs.form_btn == "title:".$value.id} selected{/if}>{$value.title}</option>
-						<!-- /loop -->
-					</optgroup>
-					<!-- /if -->
-				</select>
-			</td>
-		</tr>
-		</table>
+	<div class="layui-form-mid">
+		{lang设置文本框后跟随的按钮}
 	</div>
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+	layui.form.on('select(form_btn)', function(data){
+		$._configForm.text('form_btn',data.value,'{$rs.ext_field}','{if $rs.ext_layout}{func implode , $rs.ext_layout}{/if}');
+	});
+});
+</script>
 <div id="ext_title_html"{if !$rs.form_btn || strpos($rs.form_btn,'title:') === false} class="hide"{/if}>
-	<div class="table">
-		<div class="title">
-			{lang字段}
-			<span class="note">{lang请选择文本框内容的字段}</span>
+	<div class="layui-form-item">
+		<label class="layui-form-label">
+			{lang弹窗布局}
+		</label>
+		<div class="layui-input-block gray" style="line-height:38px;">{lang设置弹出窗口要显示的主要字段}</div>
+		<div class="layui-input-block">
+			<ul class="layout" id="ext_layout">
+				<!-- loop from=$fields key=$key value=$value id=$tmpid -->
+				<li><label><input type="checkbox" lay-skin="primary" name="ext_layout[]" value="{$key}"{if $rs.ext_layout && in_array($key,$rs.ext_layout)} checked{/if} title="{$value}"/> {$value}</label></li>
+				<!-- /loop -->
+			</ul>
 		</div>
-		<div class="content">
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">
+			{lang字段}
+		</label>
+		<div class="layui-input-inline default-auto">
 			<select name="ext_field" id="ext_field">
 				<option value="">{lang请选择…}</option>
 				<!-- loop from=$fields key=$key value=$value id=$tmpid -->
@@ -50,49 +65,55 @@
 				<!-- /loop -->
 			</select>
 		</div>
+		<div class="layui-form-mid">
+			{lang请选择文本框内容的字段}
+		</div>
 	</div>
+
 </div>
 <div id="ext_quick_words_html"{if $rs.form_btn} class="hide"{/if}>
-	<div class="table">
-		<div class="title">
+	<div class="layui-form-item">
+		<label class="layui-form-label">
 			{lang快捷内容：}
-			<span class="note">{lang一行一个值，使用此项可以通过点击来实现快速输入}</span>
+		</label>
+		<div class="layui-input-block gray" style="line-height:38px;">{lang一行一个值，使用此项可以通过点击来实现快速输入}</div>
+		<div class="layui-input-block">
+			<textarea name="ext_quick_words" class="layui-textarea" style="height:180px;">{$rs.ext_quick_words}</textarea>
 		</div>
-		<div class="content"><textarea name="ext_quick_words" style="width:99%;height:180px;">{$rs.ext_quick_words}</textarea></div>
 	</div>
-	<div class="table">
-		<div class="title">
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">
 			{lang分割符号：}
-			<span class="note">{lang确认使用哪种分割，不清楚请使用覆盖}</span>
-		</div>
-		<div class="content">
-			<ul class="layout">
-				<li><input type="text" name="ext_quick_type" id="ext_quick_type" value="{$rs.ext_quick_type}" /></li>
-				<li>
-					<div class="button-group">
-						<input type="button" value="{lang覆盖}" onclick="$._configForm.text('eqt','none')" class="layui-btn" />
-						<input type="button" value="{lang逗号}" onclick="$._configForm.text('eqt',',')" class="layui-btn" />
-						<input type="button" value="{lang斜杠}" onclick="$._configForm.text('eqt','/')" class="layui-btn" />
-						<input type="button" value="{lang竖线}" onclick="$._configForm.text('eqt','|')" class="layui-btn" />
-						<input type="button" value="{lang冒号}" onclick="$._configForm.text('eqt',':')" class="layui-btn" />
-					</div>
-				</li>
-			</ul>
-			
+		</label>
+		<div class="layui-input-block gray" style="line-height:38px;">{lang确认使用哪种分割，不清楚请使用覆盖}</div>
+		<div class="layui-input-block">
+			<div class="layui-input-inline">
+				<input type="text" name="ext_quick_type" id="ext_quick_type" class="layui-input" value="{$rs.ext_quick_type}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang覆盖}" onclick="$._configForm.text('eqt','none')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang逗号}" onclick="$._configForm.text('eqt',',')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang斜杠}" onclick="$._configForm.text('eqt','/')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang竖线}" onclick="$._configForm.text('eqt','|')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang冒号}" onclick="$._configForm.text('eqt',':')" class="layui-btn layui-btn-sm" />
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
 <div id="ext_color_html"{if !$rs.form_btn || $rs.form_btn != 'color'} class="hide"{/if}>
-	<div class="table">
-		<div class="title">
-			{lang颜色值加井号}
-			<span class="note">{lang请选择颜色值是否加 # 符号}</span>
+	<div class="layui-form-item">
+		<label class="layui-form-label">
+			{lang加井号：}
+		</label>
+		<div class="layui-input-inline auto">
+			<input type="radio" name="ext_include_3" value="0"{if !$rs.ext_include_3} checked{/if} title="{lang不包含}" />
+			<input type="radio" name="ext_include_3" value="1"{if $rs.ext_include_3} checked{/if} title="{lang包含}" />
 		</div>
-		<div class="content">
-			<ul class="layout">
-				<li><label><input type="radio" name="ext_include_3" value="0"{if !$rs.ext_include_3} checked{/if} />{lang不包含}</label></li>
-				<li><label><input type="radio" name="ext_include_3" value="1"{if $rs.ext_include_3} checked{/if} />{lang包含}</label></li>
-			</ul>
+		<div class="layui-form-mid">
+			{lang请选择颜色值是否加 # 符号}
 		</div>
 	</div>
 </div>
@@ -100,7 +121,7 @@
 $(document).ready(function(){
 	var tmp = "{if $rs.form_btn && strpos($rs.form_btn,'title:') !== false}1{else}0{/if}";
 	if(tmp == 1){
-		$._configForm.text('form_btn','{$rs.form_btn}','{$rs.ext_field}');
+		$._configForm.text('form_btn','{$rs.form_btn}','{$rs.ext_field}','{if $rs.ext_layout}{func implode , $rs.ext_layout}{/if}');
 	}
 });
 </script>

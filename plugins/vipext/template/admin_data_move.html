@@ -1,0 +1,58 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	$("#post_save").ajaxSubmit({
+		'url':get_plugin_url('vipext','start_move'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.tips('操作成功',function(){
+					$.dialog.close();
+				}).lock();
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+}
+</script>
+<div class="layui-card">
+	<div class="layui-card-header">
+		数据迁移，合并等操作，需要指定要迁移项目及目标项目，注意字段名必须一致
+	</div>
+	<div class="layui-card-body">
+		<form method="post" id="post_save" onsubmit="return false">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				迁出项目
+			</label>
+			<div class="layui-input-block">
+				<select id="output_id" name="output_id">
+				<option value="">请选择…</option>
+				<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+				<option value="{$value.id}">{$value.space}{$value.title}</option>
+				<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				迁入项目
+			</label>
+			<div class="layui-input-block">
+				<select id="input_id" name="input_id">
+				<option value="">请选择…</option>
+				<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+				<option value="{$value.id}">{$value.space}{$value.title}</option>
+				<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		</form>
+	</div>
+</div>
+<!-- include tpl=foot_lay is_open=true -->

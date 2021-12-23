@@ -1,44 +1,42 @@
-<script id="{$_rs.identifier}" type="text/plain" style="{$_rs.form_style}">{$_rs.content}</script>
+<textarea id="{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}">{$_rs.content}</textarea>
 <script type="text/javascript">
 $(document).ready(function(){
-	var toolbars_{$_rs.id} = [[
-		'removeformat','source', '|',
-		'bold', 'italic', 'underline', 'strikethrough','|',
-		'superscript', 'subscript','|',
-		'justifyleft', 'justifycenter', 'justifyright', '|',
-		'insertorderedlist', 'insertunorderedlist','forecolor',  '|',
-		'indent', 'horizontal','blockquote','|',
-		'link', 'unlink','|',
-		{if $_rs.btns.image}'insertimage','|',{/if}
-		{if $_rs.btns.video}'insertvideo',{/if}
-		{if $_rs.btns.file}'attachment',{/if}
-		{if $_rs.btns.spechars}'spechars',{/if}
-		{if $_rs.btns.emotion}'emotion',{/if}
-		{if $_rs.btns.fontfamily}'fontfamily',{/if}
-		{if $_rs.btns.fontsize}'fontsize',{/if}
-		{if $_rs.btns.paragraph}'paragraph',{/if}
-		{if $_rs.btns.insertcode}'insertcode',{/if}
-		{if $_rs.btns.table}
-		'inserttable','deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols','|',
-		{/if}
-		'help'
-	]];
-	var edit_config_{$_rs.id} = {
-		 'UEDITOR_HOME_URL':webroot+'{#js#}/ueditor/'
-		,'serverUrl':get_url('ueditor')
-		,'toolbars':toolbars_{$_rs.id}
-	    ,'initialFrameWidth':'100%'
-	    ,'allowDivTransToP': false
-	    ,'initialFrameHeight':'{$_rs.height}'
-		,'sourceEditorFirst':false
-		,'readonly':false
-		,'pasteplain':{if $_rs.btns.image}false{else}true{/if}
-		,'autoFloatEnabled':{$_rs.is_float ? 'true' : 'false'}
-		,'autoHeightEnabled':true
-		,'imagePopup':false
-		{if $_rs.btns.page},'pageBreakTag':'[:page:]'{/if}
-		,'textarea':'{$_rs.identifier}'
-	};
-	var edit_{$_rs.id} = UE.getEditor('{$_rs.identifier}',edit_config_{$_rs.id});
+	CKEDITOR.replace( '{$_rs.identifier}', {  
+		language:'{$_rs.config.langid}',
+		height : '{$_rs.height}px',
+		readOnly:{$_rs.is_read ? 'true' : 'false'},
+		startupMode:'{$_rs.is_code ? "source" : "wysiwyg"}',
+		toolbar: [
+			{ name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', 'Strike','kbd','-', 'Subscript', 'Superscript', '-', 'RemoveFormat','quickformat' ] },
+			{ name: 'colors', items: [ 'TextColor', 'BGColor' ] },
+			{ name: 'paragraph', items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 'Blockquote', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock' ] },
+			{ name: 'links', items: [ 'Link', 'Unlink' ] },
+			{ name: 'insert', items: [
+				{if $_rs.btns.image && $session.user_id}'images',{/if}
+				{if $_rs.btns.video && $session.user_id}'Html5video',{/if}
+				{if $_rs.btns.audio && $session.user_id}'Html5audio',{/if}
+				{if $_rs.btns.file && $session.user_id}'filelist',{/if}
+				{if $_rs.btns.table}'Table',{/if}
+				{if $_rs.btns.emotion}'Smiley',{/if}
+				{if $_rs.btns.spechars}'SpecialChar',{/if}
+				{if $_rs.btns.insertcode}'Syntaxhighlight',{/if}
+				'HorizontalRule'
+			] }
+			{if $_rs.btns.fontfamily || $_rs.btns.fontsize}
+			,{ name: 'styles', items: [{if $_rs.btns.fontfamily}'Font',{/if} {if $_rs.btns.fontsize}'FontSize',{/if} ] }
+			{/if}
+		],
+		removePlugins:'autogrow,fixed',
+		filebrowserImageBrowseUrl:'{url ctrl=ckeditor func=images /}',
+		filebrowserUpload:'{url ctrl=ckeditor func=upload /}',
+		filebrowserHtml5videoBrowseUrl: '{url ctrl=ckeditor func=videolist /}',
+		filebrowserHtml5audioBrowseUrl: '{url ctrl=ckeditor func=audiolist /}',
+		filebrowserImageBrowseUrlSingle:'{url ctrl=ckeditor func=image /}',
+		filebrowserFilelist:'{url ctrl=ckeditor func=filelist /}',
+		imgToLocalUpload:'{url ctrl=ckeditor func=remote /}'
+	});
+	CKEDITOR.instances['{$_rs.identifier}'].on('change',function() {
+		CKEDITOR.instances['{$_rs.identifier}'].updateElement();
+	});
 });
 </script>

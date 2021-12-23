@@ -1,0 +1,74 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return save()">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				背景图片
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="background-image" id="background-image" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择图片}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_select('background-image')" />
+					<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_preview('background-image')" />
+					<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('background-image');" />
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				背景位置
+			</label>
+			<div class="layui-input-inline default-auto">
+				<table>
+				<tr>
+					<td><input type="radio" name="bg_position" id="bg_position_1" value="left top" title="{lang左上}" /></td>
+					<td><input type="radio" name="bg_position" id="bg_position_2" value="center top" title="{lang中上}" /></td>
+					<td><input type="radio" name="bg_position" id="bg_position_3" value="right top" title="{lang右上}" /></td>
+				</tr>
+				<tr>
+					<td><input type="radio" name="bg_position" id="bg_position_4" value="left center" title="{lang左中}" /></td>
+					<td><input type="radio" name="bg_position" id="bg_position_5" value="center center" title="{lang中间}" /></td>
+					<td><input type="radio" name="bg_position" id="bg_position_6" value="right center" title="{lang右中}" /></td>
+				</tr>
+				<tr>
+					<td><input type="radio" name="bg_position" id="bg_position_7" value="left bottom" title="{lang左下}" /></td>
+					<td><input type="radio" name="bg_position" id="bg_position_8" value="center bottom" title="{lang中下}" /></td>
+					<td><input type="radio" name="bg_position" id="bg_position_9" value="right bottom" title="{lang右下}" /></td>
+				</tr>
+				</table>
+			</div>
+			<div class="layui-form-mid">
+				
+			</div>
+		</div>
+		
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				背景色
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="bgcolor" id="bgcolor" value="" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang颜色选择}" class="layui-btn layui-btn-sm jscolor {valueElement:'bgcolor',styleElement:'bgcolor',required:false,hash:true}" />
+					<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('bgcolor')" />
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="自定义的CSS样式代码，不熟悉请留空">&#xe702;</i> 样式
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="ext-css" id="ext-css" class="layui-input" />
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_lay is_open=true -->

@@ -89,6 +89,23 @@ class opt_control extends phpok_control
 		exit($html);
 	}
 
+	public function list_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID信息'));
+		}
+		$list = explode(",",$id);
+		$rslist = array();
+		foreach($list as $key=>$value){
+			$rootlist = $this->model('opt')->opt_all('group_id='.$value.' AND parent_id=0');
+			if($rootlist){
+				$rslist[$value] = $rootlist;
+			}
+		}
+		$this->success($rslist);
+	}
+
 	public function cate_f()
 	{
 		$this->symbol = ",";

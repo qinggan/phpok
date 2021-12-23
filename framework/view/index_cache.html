@@ -116,6 +116,49 @@
 		</div>
 	</div>
 </div>
-
+<script type="text/javascript">
+function res_compress_act()
+{
+	var maxwidth = $("#maxwidth").val();
+	if(!maxwidth){
+		$.dialog.alert('请设置最小宽度');
+	}
+	if(maxwidth<1000){
+		$.dialog.alert('图片小于1000px宽度不支持压缩');
+		return false;
+	}
+	$.dialog.confirm('确定要批量压缩图片吗？压缩后请记得批量更新附件',function(){
+		$.win("批量压缩图片",get_url('res','compress','maxwidth='+maxwidth));
+		return true;
+	});
+	return false;
+}
+</script>
+<div class="layui-card">
+	<div class="layui-card-header">
+		压缩大图，主要压缩一些超大图，造成页面显示出问题
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				图片宽度
+			</label>
+			<div class="layui-input-inline short">
+				<input type="number" name="maxwidth" id="maxwidth" value="1920" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				px，单位是像素，设置最大的图片宽度，只有超过这个宽度的才执行处理，不超过不处理
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				&nbsp;
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="button" value="开始批量更新" class="layui-btn" onclick="res_compress_act()" />
+			</div>
+		</div>		
+	</div>
+</div>
 </form>
 <!-- include tpl=foot_lay -->

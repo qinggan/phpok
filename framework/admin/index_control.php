@@ -20,6 +20,11 @@ class index_control extends phpok_control
 	public function index_f()
 	{
 		$this->_index();
+		//检测是否需要打开自动更新附件功能
+		if(file_exists($this->dir_data.'first.lock')){
+			$this->assign('first_login',true);
+			$this->lib('file')->rm($this->dir_data.'first.lock');
+		}
 		$this->view('index');
 	}
 
@@ -39,8 +44,9 @@ class index_control extends phpok_control
 		if(substr($license_site,0,1) == '.'){
 			$license_site = substr($license_site,1);
 		}
-		$this->assign('license_site',$license_site);
-		$this->assign("license",$code);
+		$this->assign('license_domain',$license_site);
+		$this->assign("license_site",$code);
+		$this->assign('license_code',$license);
 		$this->assign("version",$this->version);
 		$sitelist = $this->model('site')->get_all_site();
 		if(!$this->session->val('admin_rs.if_system')){
@@ -220,28 +226,270 @@ class index_control extends phpok_control
 	public function homepage_f()
 	{
 		$this->_index();
-		//读取统计
-		$all = $this->model('list')->status_all($this->session->val('admin_site_id'));
-		$this->assign('all_status',$all);
-		//读取服务器信息
-		$list = $this->_serverInfo();
-		if($list && count($list)>10){
-			$serverlist = array();
-			foreach($list as $key=>$value){
-				if($key<10){
-					$serverlist[] = $value;
+		$adminsys = $this->model('site')->system();
+		if($adminsys && $adminsys['admin_homepage_setting']){
+			$setting = explode(",",$adminsys['admin_homepage_setting']);
+			if(in_array('stat',$setting)){
+				$this->addjs('js/echarts.min.js');
+				$tmpfile = $this->dir_data.'json/index-report.json';
+				$tmpdata = array('type'=>'year','ids'=>'title');
+				if(file_exists($tmpfile)){
+					$tmp = $this->lib('file')->cat($tmpfile);
+					$tmpdata = $this->lib('json')->decode($tmp);
+				}
+				$tmpdata['ids'] = explode(",",$tmpdata['ids']);
+				$this->assign('report',$tmpdata);
+			}
+			//读取服务器信息
+			if(in_array('env',$setting)){
+				$list = $this->_serverInfo();
+				if($list && count($list)>10){
+					$serverlist = array();
+					foreach($list as $key=>$value){
+						if($key<10){
+							$serverlist[] = $value;
+						}else{
+							break;
+						}
+					}
+					$this->assign('serverlist',$serverlist);
 				}else{
-					break;
+					$this->assign('serverlist',$list);
 				}
 			}
-			$this->assign('serverlist',$serverlist);
-		}else{
-			$this->assign('serverlist',$list);
+
+			if(in_array('content',$setting)){
+				$all = $this->model('list')->status_all($this->session->val('admin_site_id'));
+				$this->assign('all_status',$all);
+			}
+
+			if(in_array('safecheck',$setting)){
+				$this->assign('safecheck',true);
+				
+			}
 		}
+		
+		
+		
 		//读取快捷链接
 		$qlink = $this->model('qlink')->get_all();
 		$this->assign('qlink',$qlink);
 		$this->view('homepage');
+	}
+
+	public function clear_ignore_f()
+	{
+		$this->lib('file')->rm($this->dir_data."ignore.txt");
+		$this->success();
+	}
+
+	public function ignore_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error('未指定要忽略的文件');
+		}
+		$info = $this->lib('file')->cat($this->dir_data.'ignore.txt');
+		$ignore = $info ? explode("\n",$info) : array();
+		if(!in_array($id,$ignore)){
+			$ignore[] = $id;
+		}
+		$content = implode("\n",$ignore);
+		$this->lib('file')->vi($content,$this->dir_data.'ignore.txt');
+		$this->success();
+	}
+
+	public function getlist_f()
+	{
+		$this->config('is_ajax',true);
+		$folder = $this->get('folder');
+		$dir = $this->dir_root;
+		if($folder && substr($folder,-1) == '/'){
+			$folder = substr($folder,0,-1);
+		}
+		if($folder){
+			$dir .= $folder;
+		}
+		$list = $this->lib('file')->ls($dir);
+		if(!$list){
+			$this->success(array("total"=>0));
+		}
+		$total = count($list);
+		$dirlist = array();
+		$rslist = array();
+		$length = strlen($this->dir_root);
+		$info = $this->lib('file')->cat($this->dir_data.'ignore.txt');
+		$ignore = $info ? explode("\n",$info) : array();
+		foreach($list as $key=>$value){
+			if(is_dir($value)){
+				$dirlist[] = substr($value,$length);
+			}
+			if(is_file($value)){
+				$tmp = $this->file_safe_checking($value,$ignore);
+				if($tmp){
+					$rslist[] = $tmp;
+				}
+			}
+		}
+		$info = array("total"=>$total);
+		if($dirlist && count($dirlist)>0){
+			$info['dirlist'] = $dirlist;
+		}
+		if($rslist && count($rslist)>0){
+			usort($rslist,array($this,"_sort"));
+			$info['rslist'] = $rslist;
+		}
+		$this->success($info);
+	}
+
+	private function _sort($a,$b)
+	{
+		if($a['filesize'] == $b['filesize']){
+			return 0;
+		}
+		return ($a['filesize'] > $b['filesize']) ? -1 : 1;
+	}
+
+	/**
+	 * 文件安全检测
+	 * 检测深度方法：
+	 *		1、空字符文件返回删除提示
+	 *		2、文件头与后缀不一致检测
+	 *		3、图片超过1M返回报错
+	 *		4、脚本文件超过200K返回报错
+	 *		5、含敏感字符的脚本谁的返回报错
+	 *		6、忽略所有 txt，md，tiff，mp4，mpeg，mp3，wav，wmv，mpg 等附件
+	**/
+	private function file_safe_checking($file,$ignore=array())
+	{
+		$t = 'passthru,exec,system,putenv,chroot,chgrp,chown,popen,proc_open,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wifcontinued,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_getpriority,pcntl_setpriority,imap_open,apache_setenv';
+		$tmp = explode(",",$t);
+		$codes = array();
+		foreach($tmp as $key=>$value){
+			$codes[] = $value."(";
+		}
+		$codes[] = "pack(";
+		$codes[] = "dechex(";
+		$codes[] = "hexdec(";
+		$codes[] = "chr(";
+		$codes[] = "str_rot13(";
+		$codes = array_unique($codes);
+		$rs = $this->file2array($file);
+		if(!$rs){
+			return false;
+		}
+		if($ignore && in_array($rs['hash'],$ignore)){
+			return false;
+		}
+		$piclist = array("jpg",'png','jpeg','jpe','gif','ico','css','xml','svg','scss');
+		$exelist = array('php','asp','aspx','jsp','py','phar','js','html');
+		$outlist = array('txt','md','mp4','mp3','rm','wav','wmv','mpg','mpeg','tiff','json','config','conf','lock','ini','htaccess','zh_cn','tpl','time','sql','ttf','zip','rar','woff','eot','woff2','po','mo','map','otf');
+		if($rs['ext'] && in_array($rs['ext'],$outlist)){
+			return false;
+		}
+		if($rs['ext'] && in_array($rs['ext'],$piclist)){
+			$handle = fopen($file,'rb');
+			$bin = @fread($handle,128); //只读128字节
+			fclose($handle);
+			if(!$bin){
+				$rs['error'] = '空字节文件，建议删除';
+				$rs['status'] = false;
+				$rs['act'] = "delete";
+				return $rs;
+			}
+			$chk = $this->lib('upload')->bin2ext($bin,$rs['ext']);
+			if(!$chk){
+				$rs['error'] = '系统检测文件类型与文件头不一致';
+				$rs['act'] = "delete";
+				$rs['status'] = false;
+				return $rs;
+			}
+			if($rs['filesize']>=(1024*1024)){
+				$rs['error'] = '图片文件超过1M，影响网络使用，建议压缩';
+				$rs['act'] = "compress";
+				$rs['status'] = false;
+				return $rs;
+			}
+			return false;
+		}
+		//脚本类型检测，超过100K，提示编辑
+		if(in_array($rs['ext'],$exelist)){
+			if($rs['filesize']<10){
+				return false;
+			}
+			if($rs['filesize']>=(1024*100)){
+				$rs['error'] = '脚本文件超过100K，请人工检查是否异常';
+				$rs['act'] = "edit";
+				$rs['status'] = false;
+				return $rs;
+			}
+			$tmp = file_get_contents($file);
+			$tmp = str_replace(array(" ","\t","\n","\r"),"",$tmp);
+			$tmp = strtolower($tmp);
+			foreach($codes as $key=>$value){
+				if(strpos($tmp,$value) !== false){
+					$rs['error'] = '脚本文件含有敏感变量 '.$value.'，请人工检查';
+					$rs['act'] = "edit";
+					$rs['status'] = false;
+					$isbreak = true;
+					break;
+				}
+			}
+			if($isbreak){
+				return $rs;
+			}
+			return false;
+		}
+		$rs['error'] = '未知文件，请人工核检';
+		$rs['act'] = 'view';
+		$rs['status'] = false;
+		return $rs;
+	}
+
+	private function file2array($file)
+	{
+		$f2 = substr($file,strlen($this->dir_root));
+		$filesize = filesize($file);
+		$mdate = filemtime($file);
+		$rs = array();
+		$rs['name'] = basename($file);
+		$rs['filesize'] = $filesize;
+		$rs['filename'] = $f2;
+		$rs['filesize'].$rs['mdate'];
+		$rs['hash'] = ($filesize >= 1024*300) ? md5($f2.'-'.$mdate.'-'.$filesize) : md5_file($file);
+		$rs['md5'] = md5($f2); //文件路径MD5
+		$rs['cdate'] = filectime($file);
+		$rs['mdate'] = $mdate;
+		$rs['adate'] = fileatime($file);
+		$rs['size'] = $this->lib('common')->num_format($rs['filesize'],2,false);
+		$rs['ext'] = $this->file_ext($file);
+		$rs['folder'] = $f2 ? substr($f2,0,-(strlen($rs['name']))) : '';
+		$rs['mdate_format'] = date("Y-m-d H:i:s",$rs['mdate']);
+		$rs['cdate_format'] = date("Y-m-d H:i:s",$rs['cdate']);
+		$rs['adate_format'] = date("Y-m-d H:i:s",$rs['adate']);
+		return $rs;
+	}
+
+	/**
+	 * 取得文件类型
+	 * @参数 $file 文件（含路径）
+	**/
+	private function file_ext($file)
+	{
+		if(function_exists('pathinfo')){
+			$t = pathinfo($file,PATHINFO_EXTENSION);
+			if($t){
+				return $t;
+			}
+		}
+		$file = basename($file);
+		$e = explode(".",$file);
+		if(!$e[1]){
+			return '未知';
+		}
+		$len = count($e);
+		$ext = $e[($len-1)];
+		return $ext;
 	}
 
 	private function _serverInfo()
@@ -439,7 +687,7 @@ class index_control extends phpok_control
 			$this->lib('file')->rm($this->dir_data."tpl_www/");
 			$this->lib('file')->rm($this->dir_data."tpl_admin/");
 		}
-		if($type == 'log' || $type == 'all'){
+		if($type == 'log'){
 			$this->lib('file')->rm($this->dir_data."log/");
 			$list = $this->lib('file')->ls($this->dir_data);
 			if($list){
@@ -544,12 +792,12 @@ class index_control extends phpok_control
 				$list['project_'.$value['pid']] = array("title"=>$value["title"],"total"=>$value["total"],"url"=>$url,'id'=>$value['pid']);
 			}
 		}
-		//读取未审核的会员信息
+		//读取未审核的用户信息
 		$condition = "u.status=0";
 		$user_total = $this->model('user')->get_count($condition);
 		if($user_total > 0){
 			$url = $this->url("user","","status=3");
-			$list['ctrl_user'] = array("title"=>P_Lang('会员列表'),"total"=>$user_total,"url"=>$url,'id'=>'user');
+			$list['ctrl_user'] = array("title"=>P_Lang('用户列表'),"total"=>$user_total,"url"=>$url,'id'=>'user');
 		}
 		//读取未审核的回复信息
 		$condition = "status=0";
@@ -693,6 +941,8 @@ class index_control extends phpok_control
 		$data['title'] = $this->get('title');
 		$data['link'] = $this->get('link');
 		$data['ico'] = $this->get('ico');
+		$data['islink'] = $this->get('islink');
+		$data['intitle'] = $this->get('intitle');
 		$this->model('qlink')->save($data);
 		$this->success();
 	}
@@ -707,6 +957,53 @@ class index_control extends phpok_control
 			$this->error(P_Lang('未指定ID'));
 		}
 		$this->model('qlink')->delete($id);
+		$this->success();
+	}
+
+	public function copyright_f()
+	{
+		$type = $this->get('type');
+		if($type == 'LGPL'){
+			$this->error(P_Lang('LGPL授权不需要修改'));
+		}
+		$company = $this->get('company');
+		if(!$company){
+			$this->error('授权企业不能为空');
+		}
+		$domain = $this->get('domain');
+		if(!$domain){
+			$this->error(P_Lang('授权域名不能为空'));
+		}
+		$code = $this->get('code');
+		if(!$code){
+			$this->error(P_Lang('授权代码不能为空'));
+		}
+		$date = $this->get('date');
+		if(!$date){
+			$date = date("Y-m-d",$this->time);
+		}
+		$content = '<?php'."\n";
+		$content.= "/*****************************************************************************************\n";
+		$content.= "	文件： license.php\n";
+		$content.= "	说明： PHPOK-VIP 许可证书\n";
+		$content.= "	版本： PHPOK ".VERSION."\n";
+		$content.= "	作者： phpok.com<admin@phpok.com>\n";
+		$content.= "	更新： ".date("Y-m-d H:i",$this->time)."\n";
+		$content.= "*****************************************************************************************/\n";
+		$content.= 'if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}'."\n";
+		//授权类型
+		$content.= 'define("LICENSE","'.$type.'");'."\n";
+		//授权时间
+		$content.= 'define("LICENSE_DATE","'.$date.'");'."\n";
+		//授权域名
+		$content.= 'define("LICENSE_SITE","'.$domain.'");'."\n";
+		//授权码
+		$content.= 'define("LICENSE_CODE","'.strtoupper($code).'");'."\n";
+		//授权人信息
+		$content.= 'define("LICENSE_NAME","'.$company.'");'."\n";
+		//是否显示版权
+		$content.= 'define("LICENSE_POWERED",false);'."\n";
+		$this->lib("file")->vim($content,$this->dir_root.'license.php');
 		$this->success();
 	}
 }

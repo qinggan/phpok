@@ -17,9 +17,8 @@ function save()
 		'success':function(rs){
 			if(rs.status){
 				$.dialog.close();
-				$.dialog.tips(p_lang('产品信息操作成功'),function(){
-					opener.$.admin_order_set.product_reload();
-				}).lock();
+				$.dialog.tips(p_lang('产品信息操作成功')).lock();
+				opener.$.admin_order_set.product_reload();
 				return true;
 			}
 			$.dialog.alert(rs.info);

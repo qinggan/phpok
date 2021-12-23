@@ -1,37 +1,46 @@
 <div style="display:none">
 	<div id="{$_rs.identifier}_toolbar_data">
 		<div class="layui-btn-group" pre-name="toolbar" pre-field="{$_rs.identifier}">
-			<button type="button" onclick="$.form_design.set_content(this)" title="内容设置" class="layui-btn layui-btn-xs">
+			<button type="button" onclick="$.form_design.set_content(this)" title="内容" class="layui-btn layui-btn-xs">
 				<i class="layui-icon layui-icon-edit"></i>
 			</button>
-			<button type="button" onclick="$.form_design.set_style(this)" title="当前层设置" class="layui-btn layui-btn-xs">
+			<button type="button" onclick="$.form_design.set_style(this)" title="设置" class="layui-btn layui-btn-xs">
 				<i class="layui-icon layui-icon-theme"></i>
 			</button>
-			<button type="button" onclick="$.form_design.layer_sub(this)" title="添加子层布局" toolbar-btn-name="set-sublayer" class="layui-btn layui-btn-xs">
-				<i class="layui-icon layui-icon-add-1"></i>
-			</button>
-			<button type="button" onclick="$.form_design.layer_set(this)" title="父层属性设置" class="layui-btn layui-btn-xs layui-btn-normal">
-				<i class="layui-icon layui-icon-set"></i>
-			</button>
-			<button type="button" onclick="$.form_design.to_font(this)" title="层前移" class="layui-btn layui-btn-xs layui-btn-normal">
-				<i class="layui-icon layui-icon-up"></i>
-			</button>
-			<button type="button" onclick="$.form_design.to_back(this)" title="层后移" class="layui-btn layui-btn-xs layui-btn-normal">
-				<i class="layui-icon layui-icon-down"></i>
-			</button>
-			<button type="button" onclick="$.form_design.set_delete(this)" title="删除" class="layui-btn layui-btn-xs layui-btn-danger">
-				<i class="layui-icon layui-icon-close"></i>
-			</button>
+		</div>
+	</div>
+	<div id="{$_rs.identifier}_toolbar_layer">
+		<div pre-name="toolbar-layer" pre-field="{$_rs.identifier}">
+			<ul style="list-style:none;margin:0;padding:0;">
+				<li>
+					<button type="button" onclick="$.form_design.layer_set(this)" title="属性" class="layui-btn layui-btn-xs layui-btn-normal">
+						<i class="layui-icon layui-icon-set"></i>
+					</button>
+				</li>
+				<li>
+					<button type="button" onclick="$.form_design.set_delete_all(this)" title="删除层" class="layui-btn layui-btn-xs layui-btn-danger">
+						<i class="layui-icon layui-icon-close"></i>
+					</button>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div id="{$_rs.identifier}_toolbar_updown">
+		<div pre-name="toolbar-updown" pre-field="{$_rs.identifier}">
+			<div class="layui-btn-group">
+				<button type="button" onclick="$.form_design.to_font(this)" title="前移" class="layui-btn layui-btn-xs layui-btn-normal"><i class="layui-icon layui-icon-up"></i></button>
+				<button type="button" onclick="$.form_design.to_back(this)" title="后移" class="layui-btn layui-btn-xs layui-btn-normal"><i class="layui-icon layui-icon-down"></i></button>
+			</div>
 		</div>
 	</div>
 	<textarea name="{$_rs.identifier}" id="{$_rs.identifier}">{$_rs.content}</textarea>
 </div>
 <input type="hidden" id="{$_rs.identifier}_param" value="" />
-<div class="design_parent" style="min-height:{$_rs.height}px;{$_rs.form_style};">
+<div class="design_parent" style="min-height:80px;{$_rs.form_style};max-width:100%;">
 	<div id="{$_rs.identifier}_preview" class="design_preview">{$_rs.content}</div>
-	<div style="clear:both;height:0;line-height:0;overflow:hidden;display: block;visibility: hidden;"></div>
+	<div style="clear:both;height:0;line-height:0;overflow:hidden;display:block;visibility: hidden;"></div>
 </div>
-<div style="margin:10px;display:block;text-align:center;">
+<div style="margin-top:10px;display:block;text-align:center;">
 	<div class="layui-btn-group">
 		<button type="button" onclick="$.form_design.layer_add('{$_rs.identifier}')" class="layui-btn layui-btn-sm">
 			<i class="layui-icon layui-icon-addition"></i>添加层
@@ -43,7 +52,7 @@
 			<i class="layui-icon layui-icon-fonts-clear"></i>清空
 		</button>
 	</div>
-	<div style="clear:both;height:0;line-height:0;overflow:hidden;display: block;visibility: hidden;"></div>
+	<div style="clear:both;height:0;line-height:0;overflow:hidden;display:block;visibility: hidden;"></div>
 </div>
 <script type="text/javascript">
 function div2textarea_{$_rs.identifier}()

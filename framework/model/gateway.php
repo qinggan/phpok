@@ -111,6 +111,9 @@ class gateway_model_base extends phpok_model
 		if($tmp['manage']){
 			$rs['manage'] = $tmp['manage'];
 		}
+		if($tmp['error']){
+			$rs['error'] = $tmp['error'];
+		}
 		return $rs;
 	}
 
@@ -122,12 +125,22 @@ class gateway_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
-
+	/**
+	 * 执行动作
+	 * @参数 $server 表 gateway 中的ID或是内容信息
+	 * @参数 $data 传递的参数，必须是数组
+	**/
 	public function action($server,$data)
 	{
+		if($server && is_numeric($server)){
+			$server = $this->get_one($server,true);
+		}
+		if(!$server || !is_array($server)){
+			return false;
+		}
 		$rs = $server;
 		$extinfo = $data;
-		$file = $this->dir_root.'gateway/'.$rs['type'].'/'.$rs['code'].'/exec.php';
+		$file = $this->dir_gateway.''.$rs['type'].'/'.$rs['code'].'/exec.php';
 		if(!file_exists($file)){
 			return false;
 		}

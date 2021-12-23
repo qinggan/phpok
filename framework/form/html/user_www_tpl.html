@@ -1,0 +1,112 @@
+<!-- if $_rs.is_multiple -->
+<style type="text/css">
+ul.layout{list-style:none;margin:0;padding:0;}
+ul.layout li{float:left;margin-right:10px;line-height:24px;margin-bottom:3px;}
+ul.layout li label{vertical-align:middle;}
+ul.layout li label input{margin-top:-1px;vertical-align:middle;}
+ul.layout:after{clear:both;content:'.';display:block;visibility:hidden;height:0;overflow:hidden;}
+</style>
+<script type="text/javascript">
+function action_{$_rs.identifier}_show()
+{
+	var tmp_id = $("#{$_rs.identifier}").val();
+	if(!tmp_id){
+		$("#{$_rs.identifier}_div").html('');
+		return true;
+	}
+	var url = get_url("inp",'','type=user&content='+$.str.encode(tmp_id));
+	$.phpok.json(url,function(rs){
+		if(rs.status){
+			var lst = rs.info;
+			var c = '';
+			var m = 1;
+			for(var i in lst){
+				var class_cate_id = "cate_"+(m%9).toString();
+				c += '<li id="{$_rs.identifier}_div_'+lst[i]['id']+'">';
+				c += '<div class="btn-group">';
+				c += '<input type="button" value="'+lst[i]['user']+'" onclick="phpok_user_preview(\''+lst[i]['id']+'\')" class="btn btn-primary btn-sm" />';
+				c += '<input type="button" value="'+p_lang('删除')+'" onclick="phpok_user_delete(\'{$_rs.identifier}\',\''+lst[i]['id']+'\')" class="btn btn-danger btn-sm" />';
+				c += '</div>';
+				c += '</li>';
+				m++;
+			}
+			$("#{$_rs.identifier}_div").html(c);
+			return true;
+		}
+		$.dialog.alert(rs.info);
+		return false;
+	});
+}
+$(document).ready(function(){
+	$("#_phpok_button_user_{$_rs.identifier}").click(function(){
+		var url = get_url("open","user") + "&id={$_rs.identifier}&multi=1";
+		$.dialog.data("phpok_user_{$_rs.identifier}",$("#{$_rs.identifier}").val());
+		$.dialog.open(url,{
+			title: "用户管理器",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			resize: false
+			,"ok":function(){
+				var data = $.dialog.data("phpok_user_{$_rs.identifier}");
+				$("#{$_rs.identifier}").val(data);
+				action_{$_rs.identifier}_show();
+				$.dialog.data("phpok_user_{$_rs.identifier}","");
+			}
+			,"okVal":"确定"
+		});
+	});
+	action_{$_rs.identifier}_show();
+});
+</script>
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs_content}" />
+<input id="_phpok_button_user_{$_rs.identifier}" type="button" value="{lang请选择用户}" class="btn btn-primary" />
+<ul class="layout" id="{$_rs.identifier}_div" style="margin-top:5px;"></ul>
+<div class="clear"></div>
+<!-- else -->
+<script type="text/javascript">
+function action_{$_rs.identifier}_show()
+{
+	var tmp_id = $("#{$_rs.identifier}").val();
+	if(tmp_id){
+		var url = get_url("inp",'','type=user&content='+$.str.encode(tmp_id));
+		$.phpok.json(url,function(rs){
+			if(!rs.status){
+				$.dialog.tips(rs.info);
+				return false;
+			}
+			var lst = rs.info;
+			for(var i in lst){
+				$("#title_{$_rs.identifier}").val(lst[i]['user']);
+			}
+		});
+	}
+}
+$(document).ready(function(){
+	$("#_phpok_button_user_{$_rs.identifier}").click(function(){
+		var url = get_url("open","user","id={$_rs.identifier}");
+		$.dialog.open(url,{
+			title: "{lang用户管理器}",
+			lock : true,
+			width: "700px",
+			height: "70%",
+			resize: false
+		});
+	});
+	action_{$_rs.identifier}_show();
+});
+</script>
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs_content}" />
+<table cellpadding="0" cellspacing="0" border="0">
+<tr>
+	<td><input type="text" id="title_{$_rs.identifier}" class="layui-input" name="title_{$_rs.identifier}" disabled /></td>
+	<td>&nbsp;</td>
+	<td>
+		<div class="btn-group">
+			<input type="button" value="{lang选择用户}" id="_phpok_button_user_{$_rs.identifier}" class="btn btn-primary btn-sm" />
+			<input type="button" value="{lang删除}" onclick="$('#{$_rs.identifier}').val('');$('#title_{$_rs.identifier}').val('')" class="btn btn-danger btn-sm" />
+		</div>
+	</td>
+</tr>
+</table>
+<!-- /if -->

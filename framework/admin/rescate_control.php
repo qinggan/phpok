@@ -120,6 +120,7 @@ class rescate_control extends phpok_control
 		}
 		$data['ico'] = $this->get('ico','int');
 		$data['is_default'] = $this->get('is_default','int');
+		$data['is_front'] = $this->get('is_front','int');
 		$data['etype'] = $this->get('etype','int');
 		$data['compress'] = $this->get('compress','int');
 		$data['upload_binary'] = $this->get('upload_binary','int');

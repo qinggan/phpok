@@ -28,7 +28,7 @@ class res_model_base extends phpok_model
 	 * @参数 $is_ext 是否读取扩展
 	 * @返回 数组
 	**/
-	public function get_one($id,$is_ext=false)
+	public function get_one($id,$is_ext=false,$isurl=false)
 	{
 		if(!$id){
 			return false;
@@ -37,6 +37,10 @@ class res_model_base extends phpok_model
 		$sql .= "LEFT JOIN ".$this->db->prefix."res_cate cate ON(res.cate_id=cate.id) ";
 		$sql .= "WHERE res.id='".$id."' ";
 		$rs = $this->db->get_one($sql);
+		$islocal = false;
+		if($this->is_local($rs['filename'])){
+			$islocal = true;
+		}
 		if(!$rs){
 			return false;
 		}
@@ -44,18 +48,29 @@ class res_model_base extends phpok_model
 			$attr = unserialize($rs["attr"]);
 			$rs["attr"] = $attr;
 		}
-		//判断附件方案
-		$list = array("jpg","gif","png","jpeg");
-		if(in_array($rs['ext'],$list)){
-			$rs['ico'] = $this->get_ico($rs);
+		if($this->is_local($rs['filename']) && $this->app_id != 'admin' && $isurl){
+			$rs['filename'] = $this->config['url'].$rs['filename'];
 		}
+		if($rs['ico'] && $this->is_local($rs['ico']) && $this->app_id != 'admin' && $isurl){
+			$rs['ico'] = $this->config['url'].$rs['ico'];
+		}
+		$list = array('jpg','jpeg','png','gif','bmp','svg','webp');
 		if(!in_array($rs["ext"],$list) || !$is_ext || !$this->gdlist || count($this->gdlist)<1){
 			return $rs;
 		}
-		if($this->is_local($rs['filename'])){
-			foreach($this->gdlist as $key=>$value){
-				$rs['gd'][$value['identifier']] = $this->local_url($rs,$value);
+		$gd = $this->get_gd_pic($rs['id']);
+		if($gd && $islocal){
+			if($gd['_editor']){
+				$rs['editor'] = $gd['_editor'];
+				unset($gd['_editor']);
 			}
+			foreach($gd as $key=>$value){
+				$gd[$key] = $value;
+				if($this->app_id != 'admin' && $isurl){
+					$gd[$key] = $this->config['url'].$value;
+				}
+			}
+			$rs['gd'] = $gd;
 			return $rs;
 		}
 		if(!$rs['cate_id'] || !$rs['etype']){
@@ -79,8 +94,10 @@ class res_model_base extends phpok_model
 		if(strpos($file,'?') !== false){
 			return false;
 		}
-		$tmp = substr($file,0,7);
-		if($tmp == 'http://' || $tmp == 'https:/'){
+		$t1 = substr($file,0,7);
+		$t2 = substr($file,0,8);
+		$t3 = substr($file,0,2);
+		if($t1 == 'http://' || $t2 == 'https://' || $t3 == '//'){
 			return false;
 		}
 		return true;
@@ -112,6 +129,10 @@ class res_model_base extends phpok_model
 			if($this->is_local($value['filename'])){
 				foreach($this->gdlist as $k=>$v){
 					$list[$value['id']][$v['identifier']] = $this->local_url($value,$v);
+					if($v['editor']){
+						$list[$value['id']]['_editor'] = $list[$value['id']][$v['identifier']];
+						$rslist[$key]['_editor'] = $list[$value['id']][$v['identifier']];
+					}
 				}
 			}else{
 				if($value['etype']){
@@ -119,8 +140,15 @@ class res_model_base extends phpok_model
 					if($tmp){
 						$list[$value['id']] = $tmp;
 					}
+					foreach($this->gdlist as $k=>$v){
+						if($v['editor'] && $tmp[$v['identifier']]){
+							$list[$value['id']]['_editor'] = $tmp[$v['identifier']];
+							$rslist[$key]['_editor'] = $tmp[$v['identifier']];
+						}
+					}
 				}
 			}
+			$rslist[$key]['gd'] = $list[$value['id']];
 		}
 		if($is_list){
 			return $list;
@@ -143,7 +171,7 @@ class res_model_base extends phpok_model
 		if(!$this->gdlist || !$this->gdlist[$gd_id]){
 			return false;
 		}
-		$rs = $this->get_one($res_id,false);
+		$rs = $this->get_one($res_id,false,false);
 		if(!$rs || !$rs['cate_id']){
 			return false;
 		}
@@ -195,38 +223,51 @@ class res_model_base extends phpok_model
 	 * @参数 $is_ext 是否包含扩展
 	 * @返回 多维数组
 	**/
-	public function get_list($condition="",$offset=0,$psize=20,$is_ext=false)
+	public function get_list($condition="",$offset=0,$psize=20,$is_ext=false,$isurl=false)
 	{
-		$extlist = array("jpg","gif","png","jpeg");
+		$extlist = array("jpg","gif","png","jpeg","webp");
 		$sql = "SELECT * FROM ".$this->db->prefix."res ";
 		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
 		$sql .= " ORDER BY addtime DESC,id DESC LIMIT ".$offset.",".$psize;
-		if(!$is_ext){
-			$rslist = $this->db->get_all($sql);			
-			if(!$rslist){
-				return false;
-			}
-			foreach($rslist as $key=>$value){
-				$value["attr"] = $value["attr"] ? unserialize($value["attr"]) : "";
-				$rslist[$key] = $value;
-			}
-			return $rslist;
-		}
-		$rslist = $this->db->get_all($sql,"id");
+		$rslist = $this->db->get_all($sql);
 		if(!$rslist){
 			return false;
 		}
-		$id = implode(",",array_keys($rslist));
-		$extlist = $this->get_gd_pic($id,true);
-		$tmplist = array();
+		$idlist = array();
 		foreach($rslist as $key=>$value){
-			$value["gd"] = $extlist[$value["id"]];
+			$idlist[] = $value['id'];
+			if($this->is_local($value['filename']) && $this->app_id != 'admin' && $isurl){
+				$value['filename'] = $this->config['url'].$value['filename'];
+			}
+			if($value['ico'] && $this->is_local($value['ico']) && $this->app_id != 'admin' && $isurl){
+				$value['ico'] = $this->config['url'].$value['ico'];
+			}
 			$value["attr"] = $value["attr"] ? unserialize($value["attr"]) : "";
-			$tmplist[] = $value;
+			$rslist[$key] = $value;
 		}
-		return $tmplist;
+		if(!$is_ext){
+			return $rslist;
+		}
+		$extlist = $this->get_gd_pic(implode(",",$idlist),true);
+		foreach($rslist as $key=>$value){
+			$tmp = $extlist[$value['id']];
+			if($tmp){
+				if($tmp["_editor"]){
+					$rslist[$key]['editor'] = $tmp['_editor'];
+					unset($tmp['_editor']);
+				}
+				foreach($tmp as $k=>$v){
+					if($this->is_local($v) && $this->app_id != 'admin' && $isurl){
+						$tmp[$k] = $this->config['url'].$v;
+					}
+				}
+				$value['gd'] = $tmp;
+			}
+			$rslist[$key] = $value;
+		}
+		return $rslist;
 	}
 
 	/**
@@ -236,7 +277,7 @@ class res_model_base extends phpok_model
 	 * @返回 
 	 * @更新时间 
 	**/
-	public function get_list_from_id($id,$is_ext=false)
+	public function get_list_from_id($id,$is_ext=false,$isurl=false)
 	{
 		$id = $this->ids_safe($id);
 		if(!$id){
@@ -244,43 +285,43 @@ class res_model_base extends phpok_model
 		}
 		$extlist = array("jpg","gif","png","jpeg");
 		$sql = "SELECT * FROM ".$this->db->prefix."res WHERE id IN(".$id.") ORDER BY SUBSTRING_INDEX('".$id."',id,1)";
-		$rslist = $this->db->get_all($sql,"id");
+		$rslist = $this->db->get_all($sql,'id');
 		if(!$rslist){
 			return false;
 		}
-		if(!$is_ext){
-			foreach($rslist as $key=>$value){
-				$value["attr"] = $value["attr"] ? unserialize($value["attr"]) : "";
-				if(in_array($value['ext'],$extlist)){
-					$value['ico'] = $this->get_ico($value);
-				}
-				$rslist[$key] = $value;
+		$idlist = array();
+		foreach($rslist as $key=>$value){
+			$idlist[] = $value['id'];
+			$value["attr"] = $value["attr"] ? unserialize($value["attr"]) : "";
+			if($this->is_local($value['filename']) && $this->app_id != 'admin' && $isurl){
+				$value['filename'] = $this->config['url'].$value['filename'];
 			}
+			if($value['ico'] && $this->is_local($value['ico']) && $this->app_id != 'admin' && $isurl){
+				$value['ico'] = $this->config['url'].$value['ico'];
+			}
+			$rslist[$key] = $value;
+		}
+		if(!$is_ext){
 			return $rslist;
 		}
-		$id = implode(",",array_keys($rslist));
-		$extlist = $this->get_gd_pic($id,true);
+		$extlist = $this->get_gd_pic(implode(",",$idlist),true);
 		foreach($rslist as $key=>$value){
-			$value["gd"] = $extlist[$value["id"]];
-			$value["attr"] = $value["attr"] ? unserialize($value["attr"]) : "";
-			if(in_array($value['ext'],$extlist)){
-				$value['ico'] = $this->get_ico($value);
+			$tmp = $extlist[$value['id']];
+			if($tmp){
+				if($tmp['_editor']){
+					$rslist[$key]['editor'] = $tmp['_editor'];
+					unset($tmp['_editor']);
+				}
+				foreach($tmp as $k=>$v){
+					if($this->is_local($v) && $this->app_id != 'admin' && $isurl){
+						$tmp[$k] = $this->config['url'].$v;
+					}
+				}
+				$value['gd'] = $tmp;
 			}
 			$rslist[$key] = $value;
 		}
 		return $rslist;
-	}
-
-	/**
-	 * 删除GD库对应的附件信息
-	 * @参数 $id GD库记录的ID
-	 * @参数 $root_dir 根目录ID
-	 * @返回 
-	 * @更新时间 
-	**/
-	public function delete_gd_id($id,$root_dir="")
-	{
-		return true;
 	}
 
 	/**
@@ -304,7 +345,7 @@ class res_model_base extends phpok_model
 	 * @参数 $is_ext 是否读取扩展信息
 	 * @返回 false / 数组
 	**/
-	public function get_one_filename($filename,$is_ext=true)
+	public function get_one_filename($filename,$is_ext=true,$isurl=false)
 	{
 		if(!$filename){
 			return false;
@@ -314,7 +355,7 @@ class res_model_base extends phpok_model
 		if(!$rs){
 			return false;
 		}
-		return $this->get_one($rs["id"],$is_ext);
+		return $this->get_one($rs["id"],$is_ext,$isurl);
 	}
 
 	/**
@@ -323,11 +364,11 @@ class res_model_base extends phpok_model
 	**/
 	public function delete($id)
 	{
-		$rs = $this->get_one($id);
+		$rs = $this->get_one($id,true,false);
 		if(!$rs){
 			return false;
 		}
-		if($this->is_local($rs['filename'])){
+		if($rs['filename'] && $this->is_local($rs['filename']) && is_file($this->dir_root.$rs['filename'])){
 			$this->lib('file')->rm($this->dir_root.$rs['filename']);
 			$folder = 'res/_cache/_ico/'.substr($rs['id'],0,2).'/';
 			if(is_file($this->dir_root.$folder.$rs['id'].'.'.$rs['ext'])){
@@ -523,9 +564,26 @@ class res_model_base extends phpok_model
 			}
 			$value['swfupload'] = implode(";",$swflist);
 			$value['name'] = $value['typeinfo'] ? $value['typeinfo'] : $value['title'];
-			$array[$value['id']] = array('name'=>$value['name'],'swfupload'=>$value['swfupload'],'ext'=>implode(",",$types),'gd'=>1);
+			$tmp = array('name'=>$value['name'],'swfupload'=>$value['swfupload'],'ext'=>implode(",",$types),'gd'=>1);
+			$tmp['is_default'] = $value['is_default'];
+			$tmp['is_front'] = $value['is_front'];
+			$tmp['id'] = $value['id'];
+			$tmp['title'] = $value['title'];
+			$array[$value['id']] = $tmp;
 		}
 		return $array;
+	}
+
+	public function user_typelist()
+	{
+		$typelist = $this->type_list();
+		$rslist = array();
+		foreach($typelist as $key=>$value){
+			if($value['is_front'] || $value['is_default']){
+				$rslist[$key] = $value;
+			}
+		}
+		return $rslist;
 	}
 
 	/**
@@ -556,15 +614,16 @@ class res_model_base extends phpok_model
 		$rslist = $this->db->get_all($sql);
 		if($rslist){
 			foreach($rslist as $key=>$value){
-				if($value['filename'] && strpos($value['filename'],'://') === false && file_exists($this->dir_root.$value['filename'])){
+				$tmp = trim($value['filename']);
+				if($tmp && strpos($tmp,'://') === false && is_file($this->dir_root.$value['filename'])){
 					$this->lib('file')->rm($this->dir_root.$value['filename']);
 				}
-				if($value['ico'] && substr($value["ico"],0,7) != "images/" && $this->is_local($value['ico']) && file_exists($this->dir_root.$value["ico"])){
+				if($value['ico'] && substr($value["ico"],0,7) != "images/" && $this->is_local($value['ico']) && is_file($this->dir_root.$value["ico"])){
 					$this->lib('file')->rm($this->dir_root.$value['ico']);
 				}
 				//批量删除云端数据
 				if($value['etype'] && !$this->is_local($value['filename'])){
-					$this->control('gateway','api')->exec_file($value['etype'],'delete',array('filename'=>$value['name']));
+					$this->control('gateway','api')->exec_file($value['etype'],'delete',array('filename'=>$value['name'],'id'=>$value['id']));
 				}
 			}
 		}
@@ -624,7 +683,7 @@ class res_model_base extends phpok_model
 	public function edit_pic_total($condition="",$gd=false)
 	{
 		
-		$sql = "SELECT id FROM ".$this->db->prefix."res ";
+		$sql = "SELECT count(id) FROM ".$this->db->prefix."res ";
 		if($condition){
 			$sql.= " WHERE ".$condition." ";
 		}
@@ -691,7 +750,7 @@ class res_model_base extends phpok_model
 		if(!$id){
 			return false;
 		}
-		$rs = $this->get_one($id);
+		$rs = $this->get_one($id,true,false);
 		if(!$rs){
 			return false;
 		}

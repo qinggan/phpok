@@ -6,6 +6,6 @@
 		<efunc><![CDATA[set_config]]></efunc>
 		<taxis><![CDATA[10]]></taxis>
 		<type><![CDATA[all]]></type>
-		<icon><![CDATA[nva.png]]></icon>
+		<icon><![CDATA[map.png]]></icon>
 	</plugin>
 </root>

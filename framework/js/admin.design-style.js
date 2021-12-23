@@ -40,6 +40,8 @@ function save()
 			}
 		}
 		obj.attr("pre-class",ext_class);
+	}else{
+		obj.attr("pre-class",'');
 	}
 	//清除旧版样式
 	var old = obj.attr("pre-style");
@@ -64,6 +66,8 @@ function save()
 			}
 		}
 		obj.attr("pre-style",ext_style);
+	}else{
+		obj.attr("pre-style",'');
 	}
 	var bgcolor = $("#bgcolor").val();
 	if(bgcolor && bgcolor != 'undefined'){
@@ -127,7 +131,7 @@ function design_update_col_style()
 	$("#data-wow-delay").val(obj.attr("data-wow-delay"));
 	$("#data-wow-offset").val(obj.attr("data-wow-offset"));
 	$("#data-wow-iteration").val(obj.attr("data-wow-iteration"));
-	
+
 	var bgcolor = obj.css("background-color");
 	if(bgcolor && bgcolor != 'undefined' && bgcolor != 'rgba(0, 0, 0, 0)'){
 		$("#bgcolor").val(bgcolor);

@@ -33,7 +33,7 @@ ALTER TABLE `qinggan_order_payment`  ADD `currency_id` INT UNSIGNED NOT NULL DEF
 
 
 -- 2018年05月01日
-ALTER TABLE `qinggan_order_log` ADD `user_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID' AFTER `note`, ADD `admin_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '管理员ID' AFTER `user_id`;
+ALTER TABLE `qinggan_order_log` ADD `user_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '用户ID' AFTER `note`, ADD `admin_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '管理员ID' AFTER `user_id`;
 
 
 -- 2018年05月18日
@@ -50,7 +50,7 @@ ALTER TABLE `qinggan_fields` CHANGE `module_id` `ftype` VARCHAR(255) NOT NULL CO
 -- 2018年05月18日 删除 qinggan_ext 表
 DROP TABLE IF EXISTS `qinggan_ext`;
 
--- 2018年05月18日 删除会员扩展字段表
+-- 2018年05月18日 删除用户扩展字段表
 DROP TABLE IF EXISTS `qinggan_user_fields`;
 
 -- 2018年10月19日
@@ -141,8 +141,8 @@ ALTER TABLE `qinggan_order_product` CHANGE `price` `price` DECIMAL( 15, 4 ) NOT 
 ALTER TABLE `qinggan_payment_log` CHANGE `price` `price` DECIMAL( 15, 4 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '价格';
 
 -- 2019年9月1日
-ALTER TABLE `qinggan_wealth_rule` ADD `group_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限制，其他限制这条规则仅在此会员组下的会员有效';
-ALTER TABLE `qinggan_wealth_rule` ADD `uids` VARCHAR(255) NOT NULL COMMENT '多个会员ID用英文逗号隔开';
+ALTER TABLE `qinggan_wealth_rule` ADD `group_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限制，其他限制这条规则仅在此用户组下的用户有效';
+ALTER TABLE `qinggan_wealth_rule` ADD `uids` VARCHAR(255) NOT NULL COMMENT '多个用户ID用英文逗号隔开';
 ALTER TABLE `qinggan_wealth_rule` ADD `qty_type` VARCHAR(255) NOT NULL DEFAULT 'order' COMMENT 'order指订单数，product指产品数';
 ALTER TABLE `qinggan_wealth_rule` ADD `qty` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限，其他值是在订单数量或产品数量值';
 ALTER TABLE `qinggan_wealth_rule` ADD `price_type` VARCHAR(255) NOT NULL DEFAULT 'order' COMMENT 'order指订单价格，product指产品价格';
@@ -151,8 +151,8 @@ ALTER TABLE `qinggan_wealth_rule` ADD `project_id` INT UNSIGNED NOT NULL DEFAULT
 ALTER TABLE `qinggan_wealth_rule` ADD `title_id` VARCHAR( 255 ) NOT NULL COMMENT '主题限制，多个主题用英文逗号隔开，建议不超过30个主题';
 
 -- 2019年9月2日
-ALTER TABLE `qinggan_wealth_rule` ADD `goal_group_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限，其他限制目标会员组ID';
-ALTER TABLE `qinggan_wealth_rule` ADD `goal_uids` VARCHAR(255) NOT NULL COMMENT '目标会员ID，多个会员ID用英文逗号隔开';
+ALTER TABLE `qinggan_wealth_rule` ADD `goal_group_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限，其他限制目标用户组ID';
+ALTER TABLE `qinggan_wealth_rule` ADD `goal_uids` VARCHAR(255) NOT NULL COMMENT '目标用户ID，多个用户ID用英文逗号隔开';
 
 -- 2019年9月3日
 ALTER TABLE `qinggan_project` ADD `is_api` INT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0接口不可访问，1可访问';
@@ -219,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_menu` (
   `list_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `link` varchar(255) NOT NULL COMMENT '自定义链接，最长不能超过255',
   `target` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0当前页，1新窗口',
-  `is_userid` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0游客，1仅限会员',
+  `is_userid` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0游客，1仅限用户',
   `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，最大255，值越小越往前靠',
   `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未审，1正常',
   PRIMARY KEY (`id`)
@@ -322,3 +322,79 @@ ALTER TABLE `qinggan_fields` ADD `onlyone` TINYINT(1) UNSIGNED NOT NULL DEFAULT 
 
 -- 2021年1月4日
 ALTER TABLE `qinggan_gd` ADD `title` VARCHAR(255) NOT NULL COMMENT '类型名称，方便管理' AFTER `identifier`;
+
+-- 2021年3月8日
+ALTER TABLE `qinggan_project` ADD `biz_service` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1服务0实物' AFTER `world_location`;
+
+-- 2021年4月13日
+ALTER TABLE `qinggan_fields` ADD `group_id` VARCHAR(255) NOT NULL DEFAULT 'main' COMMENT '字段所在组，默认是main';
+
+-- 2021年5月14日
+ALTER TABLE `qinggan_res_cate` ADD `is_front` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0前台不可用，1前台可用';
+
+-- 2021年5月15日
+ALTER TABLE `qinggan_payment` ADD `iframe` TINYINT(1) UNSIGNED NOT NULL COMMENT '0表示跳转支付1表示嵌入支付';
+
+-- 2021年5月18日
+ALTER TABLE `qinggan_adm` ADD `note` VARCHAR(50) NOT NULL COMMENT '管理员角色' AFTER `email`;
+
+-- 2021年6月4日
+ALTER TABLE `qinggan_project`  ADD `group_id` VARCHAR(255) NOT NULL COMMENT '项目在前台显示的组标识';
+
+
+-- 2021年6月19日
+ALTER TABLE `qinggan_menu` ADD `thumb` VARCHAR(255) NOT NULL COMMENT '图片图标' AFTER `list_id`;
+ALTER TABLE `qinggan_menu` ADD `iconfont` VARCHAR(255) NOT NULL COMMENT '字体图标' AFTER `thumb`;
+
+-- 2021年6月28日
+-- 增加插件绑定项目或是多项目
+ALTER TABLE `qinggan_plugins` ADD `pid` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID' AFTER `id`;
+ALTER TABLE `qinggan_plugins` ADD `pids` VARCHAR(255) NOT NULL COMMENT '关联多个项目，用英文逗号隔开' AFTER `pid`;
+ALTER TABLE `qinggan_plugins` ADD INDEX (`pid`);
+
+
+-- 2021年6月29日
+ALTER TABLE `qinggan_wealth` ADD `thumb` VARCHAR(255) NOT NULL COMMENT '背景图片' AFTER `identifier`, ADD `iconfont` VARCHAR(255) NOT NULL COMMENT '字体图标' AFTER `thumb`;
+
+
+-- 2021年7月15日
+DROP TABLE IF EXISTS `qinggan_user_autologin`;
+CREATE TABLE IF NOT EXISTS `qinggan_user_autologin` (
+  `id` int(10) unsigned NOT NULL COMMENT '会员ID',
+  `code` varchar(255) NOT NULL COMMENT '随机码，用于生成验签，以确保单点登录模式',
+  `logintime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '登录时间',
+  `device` varchar(255) NOT NULL COMMENT '设备标识',
+  PRIMARY KEY (`id`,`device`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统自动登录验签模式';
+
+-- 2021年7月23日
+CREATE TABLE IF NOT EXISTS `qinggan_config` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `identifier` varchar(50) NOT NULL COMMENT '变量标识',
+  `langid` varchar(10) NOT NULL COMMENT '语言ID',
+  `content` text NOT NULL COMMENT '变量内容',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `identifier` (`identifier`,`langid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统变量参数';
+
+ALTER TABLE `qinggan_exam_topic` ADD `level` INT(10) UNSIGNED NOT NULL DEFAULT '1' COMMENT '等级，最小为1级' AFTER `is_require`;
+ALTER TABLE `qinggan_exam_info` ADD `level` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '题目等级' AFTER `is_require`;
+ALTER TABLE `qinggan_exam` ADD `level` INT(10) UNSIGNED NOT NULL DEFAULT '1' COMMENT '试卷级别' AFTER `timetype`;
+
+-- 2021年11月30日
+ALTER TABLE `qinggan_fields` ADD `filter` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不启用1单选2可多选';
+ALTER TABLE `qinggan_fields` ADD `filter_title` VARCHAR(255) NOT NULL COMMENT '筛选器名称';
+ALTER TABLE `qinggan_fields` ADD `filter_join` VARCHAR(20) NOT NULL COMMENT '连接符';
+ALTER TABLE `qinggan_fields` ADD `filter_content` TEXT NOT NULL COMMENT '自定义筛选列表'; 
+
+-- 2021年12月2日
+ALTER TABLE `qinggan_project` ADD `filter_status` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不使用筛选1使用';
+ALTER TABLE `qinggan_project` ADD `filter_cate_status` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不启用筛选分类，1启用';
+ALTER TABLE `qinggan_project` ADD `filter_cate` VARCHAR(255) NOT NULL COMMENT '筛选分类名称，留空使用分类自身';
+ALTER TABLE `qinggan_project` ADD `filter_price` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不使用，1使用';
+ALTER TABLE `qinggan_project` ADD `filter_price_title` VARCHAR(255) NOT NULL COMMENT '价格标题，留空使用价格';
+ALTER TABLE `qinggan_project` ADD `filter_price_info` TEXT NOT NULL COMMENT '筛选价格内容设定';
+
+-- 2021年12月17日
+ALTER TABLE `qinggan_project` ADD `user_alias` VARCHAR( 100 ) NOT NULL COMMENT '用户别名';
+ALTER TABLE `qinggan_project` ADD `user_note` VARCHAR( 255 ) NOT NULL COMMENT '用户备注';

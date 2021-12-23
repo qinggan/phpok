@@ -17,21 +17,8 @@
 				url = get_url('fields','set','id='+id);
 				title = p_lang('编辑字段：#{id}',id);
 			}
-			$.dialog.open(url,{
-				'title':title,
-				'lock':true,
-				'width':'700px',
-				'height':'500px',
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert('iframe还没加载完毕呢');
-						return false;
-					};
-					iframe.save();
-					return false;
-				},'okVal':p_lang('提交保存')
-			})
+			$.win(title,url);
+			return true;
 		},
 		loading:function(id,eid)
 		{

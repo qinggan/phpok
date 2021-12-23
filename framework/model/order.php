@@ -37,6 +37,11 @@ class order_model_base extends phpok_model
 		parent::model();
 	}
 
+	public function express_save($data)
+	{
+		return $this->db->insert_array($data,'order_express');
+	}
+
 	/**
 	 * 取得订单列表
 	 * @参数 $condition 查询条件，仅限主表查询
@@ -196,7 +201,7 @@ class order_model_base extends phpok_model
 	/**
 	 * 通过订单号取得单个订单信息
 	 * @参数 $sn 订单编号
-	 * @参数 $user 会员ID
+	 * @参数 $user 用户ID
 	 * @返回 数组
 	**/
 	public function get_one_from_sn($sn,$user='')
@@ -208,7 +213,7 @@ class order_model_base extends phpok_model
 	 * 取得订单信息
 	 * @参数 $id 订单ID号或订单SN号
 	 * @参数 $type 默认是id，支持sn和id
-	 * @参数 $user 会员ID
+	 * @参数 $user 用户ID
 	 * @返回 数组
 	**/
 	public function get_one($id,$type='id',$user='')
@@ -255,8 +260,8 @@ class order_model_base extends phpok_model
 	}
 
 	/**
-	 * 取得会员最后一次订单的地址
-	 * @参数 $user_id 会员ID
+	 * 取得用户最后一次订单的地址
+	 * @参数 $user_id 用户ID
 	 * @参数 $is_virtual 是否使用虚拟服务里的地址，true不读地址，
 	 * @返回 地址信息或false
 	 * @更新时间 2016年09月08日
@@ -523,12 +528,15 @@ class order_model_base extends phpok_model
 	**/
 	public function check_payment_is_end($order_id)
 	{
-		$paid_price = $this->paid_price($order_id);
-		if(!$paid_price){
-			return false;
-		}
 		$rs = $this->get_one($order_id);
 		if(!$rs){
+			return false;
+		}
+		if($rs['status'] == 'cancel' || $rs['status'] == 'stop' || $rs['status'] == 'end'){
+			return true;
+		}
+		$paid_price = $this->paid_price($order_id);
+		if(!$paid_price){
 			return false;
 		}
 		$price = $rs['price'];
@@ -629,8 +637,8 @@ class order_model_base extends phpok_model
 	}
 
 	/**
-	 * 取得指定会员下的余额及积分
-	 * @参数 $user_id 会员ID
+	 * 取得指定用户下的余额及积分
+	 * @参数 $user_id 用户ID
 	 * @返回 false 或 余额多维数组列表
 	 * @更新时间 2016年11月26日
 	**/
@@ -725,7 +733,7 @@ class order_model_base extends phpok_model
 				$maxid++;
 				$sn .= str_pad($maxid,5,'0',STR_PAD_LEFT);
 			}
-			//包含会员信息
+			//包含用户信息
 			if($value == 'user'){
 				$sn .= $this->session->val('user_id') ? 'U'.str_pad($this->session->val('user_id'),5,'0',STR_PAD_LEFT) : 'G';
 			}
@@ -830,7 +838,7 @@ class order_model_base extends phpok_model
 
 	/**
 	 * 取得订单下的统计数
-	 * @参数 $uids 会员ID，多个ID用英文逗号隔开
+	 * @参数 $uids 用户ID，多个ID用英文逗号隔开
 	**/
 	public function stat_count($uids)
 	{
@@ -904,5 +912,42 @@ class order_model_base extends phpok_model
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."order_refund WHERE order_id='".$order_id."'";
 		return $this->db->get_all($sql);
+	}
+
+	public function integral_order_payment($order,$info,$integral=0)
+	{
+		if(!$order || !$info || !$integral){
+			return false;
+		}
+		$unpaid_price = $this->unpaid_price($order['id']);
+		if(!$unpaid_price || $unpaid_price<0.01){
+			return false;
+		}
+		$price = round($integral*$info['cash_ratio']/100,$info['dnum']);//相当于抵扣多少小钱钱
+		$note = P_Lang('财富（{title}）抵现',array('title'=>$info['title']));
+		$this->model('wealth')->save_val($info['id'],$order['user_id'],-$integral,$note);//扣除积分
+		if($price>$unpaid_price){
+			$price = $unpaid_price;
+		}
+
+		$tmparray = array('price'=>$price,'payment'=>$info['title'],'integral'=>$integral,'unit'=>$info['unit']);
+		$note = P_Lang('使用{payment}抵扣{price}，共消耗{payment}{integral}{unit}',$tmparray);
+
+		//添加一条支付信息
+		$array = array('order_id'=>$order['id'],'payment_id'=>$info['identifier']);
+		$array['title'] = P_Lang('积分抵扣支付');
+		$array['price'] = $price;
+		$array['currency_id'] = $order['currency_id'];
+		$array['currency_rate'] = $order['currency_rate'];
+		$array['startdate'] = $this->time;
+		$array['dateline'] = $this->time;
+		$array['ext'] = serialize(array('备注'=>$note));
+		$this->save_payment($array);
+
+		//创建订单日志，记录支付信息
+		$who = $this->session->val('user_name');
+		$log = array('order_id'=>$order['id'],'addtime'=>$this->time,'who'=>$who,'note'=>$note);
+		$this->log_save($log);
+		return true;
 	}
 }

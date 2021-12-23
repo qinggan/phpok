@@ -1,15 +1,14 @@
 <?php
 /**
  * 日志相关
- * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @许可 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @时间 2017年05月05日
+ * @时间 2021年5月31日
 **/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+
 class log_model_base extends phpok_model
 {
 	public function __construct()
@@ -26,31 +25,32 @@ class log_model_base extends phpok_model
 	{
 		if(!$note){
 			$tmpfile = $this->app_id.'/'.$this->ctrl.'_control.php';
-			$note = P_Lang('执行文件{ctrl}方法：{func}',array('ctrl'=>$tmpfile,'func'=>$this->func.'_f'));
-		}
-		if(is_string($note) && strpos($note,'<') !== false){
-			$note = htmlentities($note);
-			$note = phpok_cut($note,255,'…');
+			$note = P_Lang('执行文件 {ctrl} 方法：{func}',array('ctrl'=>$tmpfile,'func'=>$this->func.'_f'));
 		}
 		//传过来的日志说明为数组或对像都是手动标志
 		if(is_array($note) || is_object($note)){
-			$note = '<pre>'.print_r($note,true).'</pre>';
+			$note = print_r($note,true);
+			$note = str_replace(array("'",'"',"\r"," ","\t","\n"),'',$note);
 			$mask = true;
 		}
 		$note = addslashes(trim($note));
 		$ip = $this->lib('common')->ip();
-		$data = array('note'=>$note,'dateline'=>$this->time,'app_id'=>$this->app_id,'admin_id'=>0,'user_id'=>0,'ip'=>$ip);
-		if($this->app_id == 'admin'){
-			if($this->session->val('admin_id')){
-				$data['admin_id'] = $this->session->val('admin_id');
-			}
+		$data = array('note'=>$note,'dateline'=>$this->time,'app_id'=>$this->app_id,'ip'=>$ip);
+		if($this->session->val('admin_id') && $this->app_id == 'admin'){
+			$data['admin_id'] = $this->session->val('admin_id');
+			$data['account'] = $this->session->val('admin_account');
 		}else{
-			if($this->session->val('user_id')){
-				$data['user_id'] = $this->session->val('user_id');
-			}
+			$data['admin_id'] = 0;
+		}
+		if($this->session->val('user_id') && $this->app_id != 'admin'){
+			$data['user_id'] = $this->session->val('user_id');
+			$data['user'] = $this->session->val('user_name');
+		}else{
+			$data['user_id'] = 0;
 		}
 		$data['ctrl'] = $this->ctrl;
 		$data['func'] = $this->func;
+		$data['appid'] = $this->app_id;
 		$data['mask'] = $mask ? 1 : 0;
 		$url = $this->lib('server')->https() ? 'https://' : 'http://';
 		$url.= $this->lib('server')->domain($this->config['get_domain_method']);
@@ -63,44 +63,175 @@ class log_model_base extends phpok_model
 		$data['url'] = $this->format($url);
 		$data['referer'] = $this->format($referer);
 		$data['session_id'] = $this->session->sessid();
-		
-		//1分钟内同样的错误不再重复写入
-		$time = $this->time - 60;
-		$sql = "SELECT id FROM ".$this->db->prefix."log WHERE note='".$note."' AND app_id='".$this->app_id."' AND ctrl='".$data['ctrl']."'";
-		$sql.= " AND func='".$data['func']."' AND dateline>=".$time." LIMIT 1";
-		$chk = $this->db->get_one($sql);
-		if($chk){
+		return $this->_save($data);
+	}
+
+	private function _save($data)
+	{
+		if(!$data){
 			return false;
 		}
-
-		//登录页防止刷库，仅允许10秒写入一条数据
-		if($data['ctrl'] == 'login'){
-			$time = $this->time - 10;
-			$sql = "SELECT id FROM ".$this->db->prefix."log WHERE app_id='".$this->app_id."' AND ctrl='login' AND dateline>=".$time." LIMIT 1";
-			$chk = $this->db->get_one($sql);
-			if($chk){
-				return false;
-			}
+		ksort($data);
+		$html  = "<?php exit('--------- START ---------');?>\n";
+		$html .= "时间：".date("Y-m-d H:i:s",$data['dateline'])."\n";
+		$html .= "网址：".$data['url']."\n";
+		$html .= "来源：".($data['referer'] ? $data['referer'] : '未知')."\n";
+		$html .= "应用ID：".$data['appid']."\n";
+		$html .= "控制器：".$data['ctrl']."\n";
+		$html .= "方法：".$data['func']."\n";
+		$html .= "用户：".$data['user']."\n";
+		$html .= "用户ID：".$data['user_id']."\n";
+		$html .= "管理员：".$data['account']."\n";
+		$html .= "管理员ID：".$data['admin_id']."\n";
+		$html .= "IP：".$data['ip']."\n";
+		if($data['note']){
+			$html .= "内容：\n".$data['note']."\n-----END\n";
 		}
-		$this->db->insert_array($data,'log');
+		$html .= "<?php exit('--------- END ---------');?>\n";
+		$file = $this->dir_data."log/".date("Ymd",$this->time).'.php';
+		$handle = fopen($file,'ab');
+		flock($handle,LOCK_EX | LOCK_NB);
+		fwrite($handle,$html);
+		flock($handle,LOCK_UN);
+		fclose($handle);
+	}
+
+	private function id2name($id,$iskey=true)
+	{
+		$data = array();
+		$data['ip'] = "IP";
+		$data['admin_id'] = '管理员ID';
+		$data['account'] = '管理员';
+		$data['user_id'] = '用户ID';
+		$data['user'] = '用户';
+		$data['func'] = '方法';
+		$data['ctrl'] = '控制器';
+		$data['appid'] = '应用ID';
+		$data['referer'] = '来源';
+		$data['url'] = '网址';
+		$data['dateline'] = '时间';
+		$data['note'] = '内容';
+		if($iskey && $data[$id]){
+			return $data[$id];
+		}
+		if(!$iskey){
+			$name = '';
+			foreach($data as $key=>$value){
+				if($value == $id){
+					$name = $key;
+					break;
+				}
+			}
+			return $name;
+		}
+		return false;
 	}
 
 	/**
 	 * 取得日志列表
-	 * @参数 $condition 查询条件
-	 * @参数 $offset 开始位置，首位从0计起
-	 * @参数 $psize 每次读取数量
+	 * @参数 $date 查询日期
 	**/
-	public function get_list($condition='',$offset=0,$psize=30)
+	public function get_list($date='',$num=1000)
 	{
-		$sql  = "SELECT l.*,a.account,u.user FROM ".$this->db->prefix."log l ";
-		$sql .= "LEFT JOIN ".$this->db->prefix."adm a ON(l.admin_id=a.id) ";
-		$sql .= "LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id) ";
-		if($condition){
-			$sql.= "WHERE ".$condition." ";
+		$file = $this->dir_data.'log/'.$date.'.php';
+		if(!file_exists($file)){
+			return false;
 		}
-		$sql.= "ORDER BY l.dateline DESC,l.id DESC LIMIT ".$offset.",".$psize;
-		return $this->db->get_all($sql);
+		$handle = fopen($file,'rb');
+		$pos = -2;
+		$eof = "";
+		$list = array();
+		while($num>0){
+			while ($eof != "\n") {//这里控制从文件的最后一行开始读
+				if (!fseek($handle, $pos, SEEK_END)) {
+					$eof = fgetc($handle);
+					$pos--;
+				} else {
+					break;
+				}
+			}
+			$num--;
+			$eof = "";
+			if(ftell($handle) < 2){
+				$num = 0;
+			}
+			$tmp = fgets($handle);
+			if($tmp === false){
+				$pos -= 2;
+				continue;
+			}
+			if($tmp == ''){
+				$pos -= 2;
+				continue;
+			}
+			$tmp2 = trim($tmp);
+			if($tmp2 == ''){
+				$l = strlen($tmp);
+				$pos -= $l;
+				$pos -= 2;
+				continue;
+			}
+			$tmp = trim($tmp);
+			if($tmp == "<?php exit('--------- END ---------');?>"){
+				$data = array();
+				continue;
+			}
+			if($tmp == "<?php exit('--------- START ---------');?>"){
+				$list[] = $data;
+				$num--;
+				continue;
+			}
+			if($tmp == "-----END"){
+				$data['content'] = array();
+				continue;
+			}
+			if($tmp == "内容："){
+				krsort($data['content']);
+				$data['note'] = implode("\n",$data['content']);
+				if(strpos($data['note'],'Array') !== false){
+					$data['note'] = '<pre>'.$data['note'].'</pre>';
+				}
+				unset($data['content']);
+				continue;
+			}
+			if(isset($data['content'])){
+				$data['content'][] = $tmp;
+				continue;
+			}
+			$t = explode("：",$tmp);
+			$id = $this->id2name($t[0],false);
+			if($id){
+				$data[$id] = $t[1];
+			}
+		}
+		return $list;
+	}
+	
+
+	public function string2array($string)
+	{
+		if($string == '<?php exit();?>'){
+			return false;
+		}
+		$tmp = explode("[:[:]:]",$string);
+		if(isset($tmp[0]) && isset($tmp[1])){
+			$code = explode(",",$tmp[0]);
+			$rs = array();
+			foreach($tmp as $key=>$value){
+				if($key <1){
+					continue;
+				}
+				$id = $code[($key-1)];
+				if($id == 'dateline' && $value){
+					$rs[$id] = date("Y-m-d H:i:s",$value);
+				}else{
+					$rs[$id] = $value;
+				}
+				
+			}
+			return $rs;
+		}
+		return false;
 	}
 
 	/**

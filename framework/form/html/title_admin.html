@@ -1,40 +1,36 @@
 <input type="hidden" name="ext_form_id" id="ext_form_id" value="optlist_id,is_multiple,form_price" />
 <!-- php:$optlist_id = ($rs['optlist_id'] && is_array($rs['optlist_id'])) ? $rs['optlist_id'] : array() -->
-<div class="table">
-	<div class="title">
-		选择关联的主题项目：
-		<span class="note"></span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<!-- loop from=$opt_list key=$key value=$value -->
-			<li><label><input type="checkbox" name="optlist_id[]"{if in_array($value.id,$optlist_id)} checked{/if} value="{$value.id}" />{$value.title}</label></li>
-			<!-- /loop -->
-		</ul>
-		<div class="clear"></div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang项目：}
+	</label>
+	<div class="layui-input-block">
+		<!-- loop from=$opt_list key=$key value=$value -->
+		<input type="checkbox" name="optlist_id[]"{if in_array($value.id,$optlist_id)} checked{/if} value="{$value.id}" title="{$value.title}" />
+		<!-- /loop -->
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		主题属性：
-		<span class="note"></span>
-	</div>
-	<div class="content">
-		<ul class="layout clearfix">
-			<li><label><input type="radio" name="is_multiple"{if $rs.is_multiple} checked{/if} value="1" /> 多选</label></li>
-			<li><label><input type="radio" name="is_multiple"{if !$rs.is_multiple} checked{/if} value="0" /> 单选</label></li>
-		</ul>
-		<div class="clear"></div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang属性：}
+	</label>
+	<div class="layui-input-inline default-auto">
+		<input type="radio" name="is_multiple" value="0"{if !$rs.is_multiple} checked{/if} title="{lang单选}" />
+		<input type="radio" name="is_multiple" value="1"{if $rs.is_multiple} checked{/if} title="{lang多选}" />
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		{lang电商属性}：<span class="note">{lang启用后允许主题设置价格，税费及运费的加减}</span>
+
+<!-- if $site_popedom.order && $config.biz_status -->
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang电商：}
+	</label>
+	<div class="layui-input-inline auto">
+		<input type="radio" name="form_price" value="1"{if $rs.form_price} checked{/if} title="{lang启用}" />
+		<input type="radio" name="form_price" value="0"{if !$rs.form_price} checked{/if} title="{lang禁用}" />
 	</div>
-	<div class="content">
-		<ul class="layout">
-			<li><label><input type="radio" name="form_price" value="1"{if $rs.form_price} checked{/if} />{lang启用}</label></li>
-			<li><label><input type="radio" name="form_price" value="0"{if !$rs.form_price} checked{/if} />{lang禁用}</label></li>
-		</ul>
+	<div class="layui-form-mid">
+		{lang启用后允许主题设置价格，税费及运费的加减，仅限有启用电商的项目}
 	</div>
 </div>
+<!-- /if -->

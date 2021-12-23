@@ -20,16 +20,124 @@ class usercp_control extends phpok_control
 		$user_id = $this->session->val('user_id');
 		if(!$user_id){
 			$errurl = $this->url('login','',$this->url('usercp'));
-			$this->error(P_Lang('未登录会员不能执行此操作'),$errurl);
+			$this->error(P_Lang('请登录或注册账号'),$errurl);
 		}
 		$this->user = $this->model('user')->get_one($user_id);
 		$this->group_rs = $this->model('usergroup')->group_rs($user_id);
 		if(!$this->group_rs){
-			$this->error(P_Lang('您的账号有异常：无法获取相应的会员组信息，请联系管理员'));
+			$this->error(P_Lang('您的账号显示异常，请联系管理员'));
 		}
 	}
 
-	//会员个人中心
+	//收货地址管理
+	public function address_f()
+	{
+		$rslist = $this->model('user')->address_all($this->session->val('user_id'));
+		if($rslist){
+			$this->assign('rslist',$rslist);
+			$this->assign('total',count($rslist));
+		}
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_address';
+		}
+		$this->view($tplfile);
+	}
+
+	/**
+	 * 添加或是修改地址信息
+	**/
+	public function address_setting_f()
+	{
+		$id = $this->get('id','int');
+		if($id){
+			$rs = $this->model('user')->address_one($id);
+			if(!$rs || $rs['user_id'] != $_SESSION['user_id']){
+				$this->error(P_Lang('地址信息不存在或您没有权限修改此地址'));
+			}
+			$this->assign('id',$id);
+			$this->assign('rs',$rs);
+		}else{
+			$rs = array();
+		}
+		$info = form_edit('pca',array('p'=>$rs['province'],'c'=>$rs['city'],'a'=>$rs['county']),'pca');
+		$this->assign('pca_rs',$info);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_address_setting';
+		}
+		$this->view($tplfile);
+	}
+
+	public function avatar_f()
+	{
+		$this->assign('rs',$this->user);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_avatar';
+		}
+		$this->view($tplfile);
+	}
+
+	public function avatar_cut_f()
+	{
+		$id = $this->get('thumb_id','int');
+		$x1 = $this->get("x1");
+		$y1 = $this->get("y1");
+		$x2 = $this->get("x2");
+		$y2 = $this->get("y2");
+		$w = $this->get("w");
+		$h = $this->get("h");
+		$rs = $this->model('res')->get_one($id,true,false);
+		$new = $rs["folder"]."_tmp_".$id."_.".$rs["ext"];
+		if($rs['attr']['width'] > 500){
+			$beis = round($rs['attr']['width']/500,2);
+			$w = round($w * $beis);
+			$h = round($h * $beis);
+			$x1 = round($x1 * $beis);
+			$y1 = round($y1 * $beis);
+			$x2 = round($x2 * $beis);
+			$y2 = round($y2 * $beis);
+		}
+		$rs['filename'] = str_replace($this->config['url'],'',$rs['filename']);
+		$cropped = $this->create_img($new,$this->dir_root.$rs["filename"],$w,$h,$x1,$y1,1);
+		$this->lib('file')->mv($this->dir_root.$new,$this->dir_root.$rs['filename']);
+		$this->model('user')->update_avatar($rs['filename'],$_SESSION['user_id']);
+		$this->json(true);
+	}
+
+	//用户注销页
+	public function destory_f()
+	{
+		$check_sms = $this->model('gateway')->get_default('sms');
+		$check_email = $this->model('gateway')->get_default('email');
+		$this->assign('is_email',$check_email);
+		$this->assign('is_sms',$check_sms);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp-destroy';
+		}
+		$this->view($tplfile);
+	}
+
+	//修改邮箱
+	public function email_f()
+	{
+		$this->assign('rs',$this->user);
+		//判断后台是否配置好第三方网关
+		$sendemail = $this->model('gateway')->get_default('email') ? true : false;
+		$this->assign('sendemail',$sendemail);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_email';
+		}
+		$this->view($tplfile);
+	}
+
+
+	
+
+	//用户个人中心
 	public function index_f()
 	{
 		$user = $this->model('user')->get_one($this->session->val('user_id'));
@@ -40,10 +148,16 @@ class usercp_control extends phpok_control
 		$condition = "user_id='".$this->session->val('user_id')."'";
 		$rslist = $this->model('order')->get_list($condition,0,10);
 		$this->assign('rslist',$rslist);
-		//读取会员上传的最新附件
+		//读取用户上传的最新附件
 		$reslist = $this->model('res')->get_list($condition,0,10);
 		$this->assign('reslist',$reslist);
-		//
+		//粉丝数
+		$fans = $this->model('user')->fans_count($this->session->val('user_id'));
+		$this->assign('fans',$fans);
+		//关注数
+		$idol = $this->model('user')->idol_count($this->session->val('user_id'));
+		$this->assign('idol',$idol);
+
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
 			$tplfile = 'usercp';
@@ -92,41 +206,53 @@ class usercp_control extends phpok_control
 		$this->view($tplfile);
 	}
 
-	//修改密码
-	public function passwd_f()
+	/**
+	 * 查看用户的推广链及推广统计
+	**/
+	public function introducer_f()
 	{
-		$rs = $this->model('user')->get_one($this->session->val('user_id'));
-		$this->assign('rs',$rs);
-		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
-		if(!$tplfile){
-			$tplfile = 'usercp_passwd';
+		$me = $this->model('user')->get_one($this->session->val('user_id'));
+		if(!$me['code']){
+			$code = 'U'.$this->session->val('user_id').''.$this->lib('common')->str_rand(5,'number');
+			$data = array('code'=>$code);
+			$this->model('user')->save($data,$me['id']);
+			$me['code'] = $code;
 		}
-		$this->view($tplfile);
-	}
-
-	//修改邮箱
-	public function email_f()
-	{
-		$this->assign('rs',$this->user);
-		//判断后台是否配置好第三方网关
-		$sendemail = $this->model('gateway')->get_default('email') ? true : false;
-		$this->assign('sendemail',$sendemail);
-		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
-		if(!$tplfile){
-			$tplfile = 'usercp_email';
+		$this->assign('me',$me);
+		$this->model('url')->nocache();
+		$vlink = $this->url("index","link","uid=".$this->session->val('user_id'));
+		$this->assign('vlink',$vlink);
+		//取得推荐人列表
+		$pageid = $this->get($this->config['pageid'],'int');
+		if(!$pageid){
+			$pageid = 1;
 		}
-		$this->view($tplfile);
-	}
-
-	//修改手机
-	public function mobile_f()
-	{
-		$this->assign('rs',$this->user);
-		$sendsms = $this->model('gateway')->get_default('sms') ? true : false;
-		$this->assign('sendsms',$sendsms);
+		$monthlist = $this->model('user')->stat_relation($this->session->val('user_id'));
+		if($monthlist){
+			$this->assign('monthlist',$monthlist);
+		}
+		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
+		$month = $this->get('month');
+		$pageurl = $this->url('usercp','introducer');
+		$condition = '';
+		if($month && strlen($month) == 6 && is_numeric($month)){
+			$condition = "FROM_UNIXTIME(dateline,'%Y%m')='".$month."'";
+			$this->assign('month',$month);
+			$pageurl .= "&month=".$month;
+		}
+		$total = $this->model('user')->count_relation($this->session->val('user_id'),$condition);
+		if($total && $total>0){
+			$rslist = $this->model('user')->list_relation($this->session->val('user_id'),$offset,$psize,$condition);
+			$this->assign('psize',$psize);
+			$this->assign('offset',$offset);
+			$this->assign('pageid',$pageid);
+			$this->assign('total',$total);
+			$this->assign('pageurl',$pageurl);
+			$this->assign('rslist',$rslist);
+		}
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
-			$tplfile = 'usercp_mobile';
+			$tplfile = 'usercp_introducer';
 		}
 		$this->view($tplfile);
 	}
@@ -156,25 +282,22 @@ class usercp_control extends phpok_control
 		$this->view("usercp_invoice_setting");
 	}
 
+
 	//获取项目列表
 	public function list_f()
 	{
-		//$this->cache->close();
 		$id = $this->get("id");
 		if(!$id){
-			error(P_Lang('未指定项目'),$this->url('usercp'),'notice',10);
+			$this->error(P_Lang('未指定项目'),$this->url('usercp'));
 		}
 		$this->assign('id',$id);
 		$pid = $this->model('id')->project_id($id,$this->site['id']);
 		if(!$pid){
-			error(P_Lang('项目信息不存在'),$this->url('usercp'),'error');
-		}
-		if(!$this->model('popedom')->check($pid,$this->group_rs['id'],'post')){
-			error(P_Lang('您没有这个权限功能，请联系网站管理员'),$this->url('usercp'),'error');
+			$this->error(P_Lang('项目信息不存在'),$this->url('usercp'));
 		}
 		$project_rs = $this->model('project')->get_one($pid);
 		if(!$project_rs || !$project_rs['status']){
-			error(P_Lang('项目不存在或未启用'),$this->url('usercp'),'error');
+			$this->error(P_Lang('项目不存在或未启用'),$this->url('usercp'));
 		}
 		$tplfile = 'usercp_'.$id;
 		$tplfile.= $project_rs['module'] ? '_list' : '_page';
@@ -218,7 +341,7 @@ class usercp_control extends phpok_control
 			$this->assign("keywords",$keywords);
 		}
 		$dt['not_status'] = true;
-		$dt['is_usercp'] = true;
+		$dt['is_usercp'] = 1;
 		$status = $this->get('status');
 		if($status){
 			if($status == 1){
@@ -228,7 +351,6 @@ class usercp_control extends phpok_control
 			}
 		}
 		
-		$dt['is_list'] = true;
 		$dt['cache'] = false;
 		$ext = $this->get('ext');
 		if($ext && is_array($ext)){
@@ -257,81 +379,167 @@ class usercp_control extends phpok_control
 		$this->view($tplfile);
 	}
 
-	//收货地址管理
-	public function address_f()
+	public function media_f()
 	{
-		$rslist = $this->model('user')->address_all($this->session->val('user_id'));
-		if($rslist){
-			$this->assign('rslist',$rslist);
-			$this->assign('total',count($rslist));
+		$typelist = $this->model('res')->user_typelist();
+		if(!$typelist){
+			$this->error(P_Lang('异常，请联系管理员检查'));
 		}
+		$this->assign('typelist',$typelist);
+		$type = $this->get('type','int');
+		if(!$type){
+			foreach($typelist as $key=>$value){
+				if($value['is_default']){
+					$type = $value['id'];
+					break;
+				}
+			}
+		}
+		if(!$type){
+			$this->error(P_Lang('异常，没有找到媒体库'));
+		}
+		$this->assign('type',$type);
+		$this->assign('rs',$typelist[$type]);
+		$ext = explode(",",$typelist[$type]['ext']);
+		$condition  = " user_id='".$this->session->val('user_id')."'";
+		$condition .= " AND cate_id='".$type."' ";
+		$pageid = $this->get("pageid",'int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = 24;
+		$offset = ($pageid-1) * $psize;
+		$total = $this->model('res')->get_count($condition);
+		if($total){
+			$rslist = $this->model('res')->get_list($condition,$offset,$psize,false);
+			$this->assign('pageid',$pageid);
+			$this->assign('offset',$offset);
+			$this->assign('psize',$psize);
+			$this->assign('rslist',$rslist);
+			$this->assign('pageurl',$this->url('usercp','media','type='.$type));
+			$this->assign('total',$total);
+		}
+		
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
-			$tplfile = 'usercp_address';
+			$tplfile = 'usercp_media';
+		}
+		$this->view($tplfile);
+	}
+
+	public function media_add_f()
+	{
+		$type = $this->get('type','int');
+		if(!$type){
+			$tmp = $this->model('rescate')->get_default();
+			if($tmp){
+				$type = $tmp['id'];
+			}
+		}
+		if(!$type){
+			$this->error(P_Lang('未指定类型'));
+		}
+		$this->assign('type',$type);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_media_add';
+		}
+		$btn = form_edit('picture','','upload','ext[cate_id]='.$type);
+		$this->assign('button',$btn);
+		$this->view($tplfile);
+	}
+
+	//修改手机
+	public function mobile_f()
+	{
+		$this->assign('rs',$this->user);
+		$sendsms = $this->model('gateway')->get_default('sms') ? true : false;
+		$this->assign('sendsms',$sendsms);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_mobile';
+		}
+		$this->view($tplfile);
+	}
+
+
+	//修改密码
+	public function passwd_f()
+	{
+		$rs = $this->model('user')->get_one($this->session->val('user_id'));
+		$this->assign('rs',$rs);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_passwd';
+		}
+		$this->view($tplfile);
+	}
+
+
+
+
+
+	public function wealth_f()
+	{
+		$rslist = $this->model('wealth')->get_all(1);
+		if(!$rslist){
+			$this->error(P_Lang('系统没有启用任何财富功能，请联系管理员'));
+		}
+		$wealth = $this->user['wealth'];
+		foreach($rslist as $key=>$value){
+			$value['val'] = $wealth[$value['identifier']]['val'];
+			$rslist[$key] = $value;
+		}
+		$this->assign('rslist',$rslist);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp_wealth';
 		}
 		$this->view($tplfile);
 	}
 
 	/**
-	 * 添加或是修改地址信息
+	 * 积分日志
 	**/
-	public function address_setting_f()
+	public function wealth_log_f()
 	{
 		$id = $this->get('id','int');
-		if($id){
-			$rs = $this->model('user')->address_one($id);
-			if(!$rs || $rs['user_id'] != $_SESSION['user_id']){
-				$this->error(P_Lang('地址信息不存在或您没有权限修改此地址'));
-			}
-			$this->assign('id',$id);
-			$this->assign('rs',$rs);
-		}else{
-			$rs = array();
+		if(!$id){
+			$this->error(P_Lang('未指定财富规则'));
 		}
-		$info = form_edit('pca',array('p'=>$rs['province'],'c'=>$rs['city'],'a'=>$rs['county']),'pca');
-		$this->assign('pca_rs',$info);
-		$tplfile = $this->model('site')->tpl_file($this->ctrl,'address2');
-		if(!$tplfile){
-			$tplfile = 'usercp_address_setting';
+		$rs = $this->model('wealth')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('财富信息不存在'));
 		}
-		$this->view($tplfile);
-	}
-
-	public function avatar_f()
-	{
-		$this->assign('rs',$this->user);
+		$mywealth = $this->model('wealth')->get_val($this->session->val('user_id'),$rs['id']);
+		$rs['val'] = $mywealth;
+		$this->assign('id',$id);
+		$this->assign('rs',$rs);
+		$pageid = $this->get('pageid','int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
+		$offset = ($pageid-1)*$psize;
+		$pageurl = $this->url('usercp','wealth_log','id='.$id);
+		$condition = "wid='".$id."' AND goal_id='".$this->session->val('user_id')."' AND status=1";
+		$total = $this->model('wealth')->log_total($condition);
+		if($total){
+			$rslist = $this->model('wealth')->log_list($condition,$offset,$psize);
+			$this->assign('rslist',$rslist);
+			$this->assign('offset',$offset);
+			$this->assign('psize',$psize);
+			$this->assign('total',$total);
+			$this->assign('pageid',$pageid);
+			$this->assign('pageurl',$pageurl);
+		}
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
-			$tplfile = 'usercp_avatar';
+			$tplfile = 'usercp_wealth_log';
 		}
 		$this->view($tplfile);
 	}
 
-	public function avatar_cut_f()
-	{
-		$id = $this->get('thumb_id','int');
-		$x1 = $this->get("x1");
-		$y1 = $this->get("y1");
-		$x2 = $this->get("x2");
-		$y2 = $this->get("y2");
-		$w = $this->get("w");
-		$h = $this->get("h");
-		$rs = $this->model('res')->get_one($id);
-		$new = $rs["folder"]."_tmp_".$id."_.".$rs["ext"];
-		if($rs['attr']['width'] > 500){
-			$beis = round($rs['attr']['width']/500,2);
-			$w = round($w * $beis);
-			$h = round($h * $beis);
-			$x1 = round($x1 * $beis);
-			$y1 = round($y1 * $beis);
-			$x2 = round($x2 * $beis);
-			$y2 = round($y2 * $beis);
-		}
-		$cropped = $this->create_img($new,$this->dir_root.$rs["filename"],$w,$h,$x1,$y1,1);
-		$this->lib('file')->mv($this->dir_root.$new,$this->dir_root.$rs['filename']);
-		$this->model('user')->update_avatar($rs['filename'],$_SESSION['user_id']);
-		$this->json(true);
-	}
 
 	private function create_img($thumb_image_name, $image, $width, $height, $x1, $y1,$scale=1)
 	{
@@ -384,102 +592,4 @@ class usercp_control extends phpok_control
 		return $thumb_image_name;
 	}
 
-	/**
-	 * 查看会员的推广链及推广统计
-	**/
-	public function introducer_f()
-	{
-		$vlink = $this->url("index","link","uid=".$this->session->val('user_id'));
-		$this->assign('vlink',$vlink);
-		//取得推荐人列表
-		$pageid = $this->get($this->config['pageid'],'int');
-		if(!$pageid){
-			$pageid = 1;
-		}
-		$monthlist = $this->model('user')->stat_relation($this->session->val('user_id'));
-		if($monthlist){
-			$this->assign('monthlist',$monthlist);
-		}
-		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
-		$month = $this->get('month');
-		$pageurl = $this->url('usercp','introducer');
-		$condition = '';
-		if($month && strlen($month) == 6 && is_numeric($month)){
-			$condition = "FROM_UNIXTIME(dateline,'%Y%m')='".$month."'";
-			$this->assign('month',$month);
-			$pageurl .= "&month=".$month;
-		}
-		$total = $this->model('user')->count_relation($this->session->val('user_id'),$condition);
-		if($total && $total>0){
-			$rslist = $this->model('user')->list_relation($this->session->val('user_id'),$offset,$psize,$condition);
-			$this->assign('psize',$psize);
-			$this->assign('offset',$offset);
-			$this->assign('pageid',$pageid);
-			$this->assign('total',$total);
-			$this->assign('pageurl',$pageurl);
-			$this->assign('rslist',$rslist);
-		}
-		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
-		if(!$tplfile){
-			$tplfile = 'usercp_introducer';
-		}
-		$this->view($tplfile);
-	}
-
-	public function wealth_f()
-	{
-		$rslist = $this->model('wealth')->get_all(1);
-		if(!$rslist){
-			$this->error(P_Lang('系统没有启用任何财富功能，请联系管理员'));
-		}
-		$wealth = $this->user['wealth'];
-		foreach($rslist as $key=>$value){
-			$value['val'] = $wealth[$value['identifier']]['val'];
-			$rslist[$key] = $value;
-		}
-		$this->assign('rslist',$rslist);
-		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
-		if(!$tplfile){
-			$tplfile = 'usercp_wealth';
-		}
-		$this->view($tplfile);
-	}
-
-	/**
-	 * 积分日志
-	**/
-	public function wealth_log_f()
-	{
-		$id = $this->get('id','int');
-		if(!$id){
-			$this->error(P_Lang('未指定财富规则'));
-		}
-		$rs = $this->model('wealth')->get_one($id);
-		if(!$rs){
-			$this->error(P_Lang('财富信息不存在'));
-		}
-		$this->assign('id',$id);
-		$this->assign('rs',$rs);
-		$pageid = $this->get('pageid','int');
-		if(!$pageid){
-			$pageid = 1;
-		}
-		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
-		$offset = ($pageid-1)*$psize;
-		$pageurl = $this->url('usercp','wealth_log','id='.$id);
-		$condition = "wid='".$id."' AND goal_id='".$this->session->val('user_id')."' AND status=1";
-		$total = $this->model('wealth')->log_total($condition);
-		if($total){
-			$rslist = $this->model('wealth')->log_list($condition,$offset,$psize);
-			$this->assign('rslist',$rslist);
-			$this->assign('offset',$offset);
-			$this->assign('psize',$psize);
-			$this->assign('pageurl',$pageurl);
-		}
-		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
-		if(!$tplfile){
-			$tplfile = 'usercp_wealth_log';
-		}
-		$this->view($tplfile);
-	}
 }

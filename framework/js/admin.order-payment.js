@@ -17,10 +17,10 @@
 				$("input[name=title]").parent().hide();
 			}
 		},
-		add:function()
+		add:function(id)
 		{
 			$("#postsave").ajaxSubmit({
-				'url':get_url('order','payment_save','id={$rs.id}'),
+				'url':get_url('order','payment_save','id='+id),
 				'type':'post',
 				'dataType':'json',
 				'success':function(rs){

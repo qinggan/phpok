@@ -988,15 +988,15 @@ class order_control extends phpok_control
 	}
 
 	/**
-	 * 获取会员邮箱或手机号或账号等
-	 * @参数 id 会员ID
+	 * 获取用户邮箱或手机号或账号等
+	 * @参数 id 用户ID
 	 * @参数 type 要取得的类型
 	**/
 	public function user_f()
 	{
 		$id = $this->get("id",'int');
 		if(!$id){
-			$this->error(P_Lang('未指定会员ID'));
+			$this->error(P_Lang('未指定用户ID'));
 		}
 		$type = $this->get('type','system');
 		if(!$type){
@@ -1004,10 +1004,10 @@ class order_control extends phpok_control
 		}
 		$rs = $this->model('user')->get_one($id);
 		if(!$rs){
-			$this->error(P_Lang('会员不存在'));
+			$this->error(P_Lang('用户不存在'));
 		}
 		if(!$rs[$type]){
-			$this->error(P_Lang('会员信息无此字段不存在'));
+			$this->error(P_Lang('用户信息无此字段不存在'));
 		}
 		$this->success($rs[$type]);
 	}

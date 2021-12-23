@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<title><![CDATA[优惠平台]]></title>
+	<status>
+		<admin><![CDATA[1]]></admin>
+		<www><![CDATA[1]]></www>
+		<api><![CDATA[1]]></api>
+	</status>
+	<install><![CDATA[install.php]]></install>
+	<uninstall><![CDATA[uninstall.php]]></uninstall>
+	<note><![CDATA[实现商城优惠码功能，支持产品促销优惠活罢，秒杀活动，支持用户领取优惠券抵扣]]></note>
+	<installed><![CDATA[1]]></installed>
+</root>

@@ -2,11 +2,10 @@
 /**
  * 存储发布的项目信息
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
- * @时间 2018年01月28日
+ * @时间 2021年5月10日
 **/
 
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
@@ -56,7 +55,7 @@ class post_control extends phpok_control
 	public function del_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
@@ -65,6 +64,9 @@ class post_control extends phpok_control
 		$rs = $this->model('list')->get_one($id,false);
 		if(!$rs){
 			$this->error(P_Lang('主题信息不存在'));
+		}
+		if($rs['status']){
+			$this->error(P_Lang('已审核的信息不允许删除'));
 		}
 		if($rs['user_id'] != $this->session->val('user_id')){
 			$this->error(P_Lang('您没有权限执行此操作'));
@@ -82,6 +84,9 @@ class post_control extends phpok_control
 		$rs = $this->model('list')->get_one($id,false);
 		if(!$rs){
 			$this->json(P_Lang('主题信息不存在'));
+		}
+		if($rs['status']){
+			$this->json(P_Lang('已审核的信息不允许删除'));
 		}
 		if($rs['user_id'] != $this->session->val('user_id')){
 			$this->json(P_Lang('您没有权限执行此操作'));
@@ -160,7 +165,7 @@ class post_control extends phpok_control
 		if($this->session->val('user_id')){
 			$user = $this->model('user')->get_one($this->session->val('user_id'),'id',false,false);
 			if(!$user){
-				return $this->_e(P_Lang('会员信息不存在'));
+				return $this->_e(P_Lang('用户信息不存在'));
 			}
 			if(!$user['status']){
 				return $this->_e(P_Lang('您的账号未审核'));

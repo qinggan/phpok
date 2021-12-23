@@ -1,7 +1,6 @@
 <?php
 /**
  * 内容信息
- * @package phpok\framework\www
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -32,7 +31,7 @@ class content_control extends phpok_control
 	{
 		$id = $this->get("id");
 		if(!$id){
-			$this->error(P_Lang('未指定ID'),"","error");
+			$this->error(P_Lang('未指定ID'));
 		}
 		$pid = $this->get('pid');
 		if($pid){
@@ -89,9 +88,15 @@ class content_control extends phpok_control
 				}
 			}
 		}
-		$rs = $this->model('content')->get_one($id,true);
+		$me = $this->get('me','int');
+		$rs = $this->model('content')->get_one($id,($me ? false : true));
 		if(!$rs){
 			$this->error_404();
+		}
+		if(!$rs['status'] && $me){
+			if(!$this->session->val('user_id') || !$rs['user_id'] || $rs['user_id'] != $this->session->val('user_id')){
+				$this->error_404();
+			}
 		}
 		if(!$rs['project_id']){
 			$this->error(P_Lang('未绑定项目'),$this->url,5);
@@ -116,6 +121,9 @@ class content_control extends phpok_control
 			if($parent_rs['tpl_content']){
 				$tplfile[8] = $parent_rs['tpl_content'];
 			}
+		}
+		if($rs['user_id']){
+			$rs['user'] = $this->model('user')->get_one($rs['user_id']);
 		}
 		$rs['tag'] = $this->model('tag')->tag_list($rs['id'],'list');
 		$rs = $this->content_format($rs);

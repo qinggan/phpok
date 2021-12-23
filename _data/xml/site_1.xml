@@ -3,7 +3,7 @@
 	<logo_mobile><![CDATA[]]></logo_mobile>
 	<login_type><![CDATA[0]]></login_type>
 	<login_type_email><![CDATA[email_code]]></login_type_email>
-	<login_type_sms><![CDATA[]]></login_type_sms>
+	<login_type_sms><![CDATA[sms_code]]></login_type_sms>
 	<adm_logo50><![CDATA[]]></adm_logo50>
 	<encode_type><![CDATA[public_key]]></encode_type>
 	<public_key><![CDATA[]]></public_key>
@@ -12,5 +12,5 @@
 	<biz_freight><![CDATA[0]]></biz_freight>
 	<biz_main_service><![CDATA[1]]></biz_main_service>
 	<biz_is_user><![CDATA[0]]></biz_is_user>
-	<favicon><![CDATA[res/202101/08/1af887bfb2b0f7dc.png]]></favicon>
+	<favicon><![CDATA[res/202111/29/73262b8dbac46c75.png]]></favicon>
 </root>

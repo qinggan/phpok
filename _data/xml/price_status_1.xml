@@ -15,6 +15,7 @@
 		<taxis><![CDATA[20]]></taxis>
 		<default><![CDATA[]]></default>
 		<currency_id><![CDATA[0]]></currency_id>
+		<hidden><![CDATA[1]]></hidden>
 	</shipping>
 	<fee>
 		<title><![CDATA[手续费]]></title>
@@ -31,6 +32,7 @@
 		<taxis><![CDATA[40]]></taxis>
 		<default><![CDATA[]]></default>
 		<currency_id><![CDATA[0]]></currency_id>
+		<hidden><![CDATA[0]]></hidden>
 	</discount>
 	<discount-shipping>
 		<title><![CDATA[运费优惠]]></title>
@@ -45,6 +47,7 @@
 		<taxis><![CDATA[110]]></taxis>
 		<default><![CDATA[]]></default>
 		<currency_id><![CDATA[0]]></currency_id>
+		<hidden><![CDATA[1]]></hidden>
 	</excise>
 	<tariff>
 		<title><![CDATA[关税]]></title>
@@ -53,6 +56,7 @@
 		<taxis><![CDATA[120]]></taxis>
 		<default><![CDATA[]]></default>
 		<currency_id><![CDATA[0]]></currency_id>
+		<hidden><![CDATA[1]]></hidden>
 	</tariff>
 	<refund>
 		<title><![CDATA[退款]]></title>
@@ -61,5 +65,6 @@
 		<taxis><![CDATA[150]]></taxis>
 		<default><![CDATA[]]></default>
 		<currency_id><![CDATA[0]]></currency_id>
+		<hidden><![CDATA[1]]></hidden>
 	</refund>
 </root>

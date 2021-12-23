@@ -203,7 +203,7 @@ class phpok_template
 			if(is_file($phpincfile)){
 				include_once($phpincfile);
 			}
-		}		
+		}
 		include($this->dir_cache.$___comp_id);
 	}
 
@@ -900,11 +900,13 @@ class phpok_template
 		if(substr($id,0,1) == '$'){
 			$id = substr($id,1);
 		}
-		$php  = '<?php $'.$id.'["num"] = 0;';
-		$php .= $rs["from"].'=is_array('.$rs["from"].') ? '.$rs["from"].' : array();';
-		$php .= '$'.$id.' = array();';
-		$php .= '$'.$id.'["total"] = count('.$rs["from"].');';
-		if(!$rs["index"]){
+		$php  = '<?php $'.$id.' = array();';
+		$php .= '$'.$id.'["num"] = 0;';
+		if(substr($rs['from'],0,1) == '$'){
+			$php .= $rs["from"].'=is_array('.$rs["from"].') || is_object('.$rs["from"].') ? '.$rs["from"].' : array();';
+			$php .= 'if(is_array('.$rs["from"].')){ $'.$id.'["total"] = count('.$rs["from"].');};';
+		}
+		if(!isset($rs["index"])){
 			$rs["index"] = 0;
 		}
 		$index_id = $rs["index"] - 1;
@@ -941,7 +943,7 @@ class phpok_template
 			return '0';
 		}
 		$string = stripslashes(trim($string));
-		if($del_mark){
+		if($del_mark && strpos($string,'(') === false){
 			if(substr($string,0,1) == '"' || substr($string,0,1) == "'"){
 				$string = substr($string,1);
 			}
@@ -950,7 +952,7 @@ class phpok_template
 			}
 		}
 		$string = $this->points_to_array($string);
-		if($auto_dollar && substr($string,0,1) != '$'){
+		if($auto_dollar && substr($string,0,1) != '$' && strpos($string,'(') === false){
 			$string = '$'.$string;
 		}
 		return $string;
@@ -1011,7 +1013,13 @@ class phpok_template
 			return false;
 		}
 		$string = stripslashes(trim($string));
-		$string = preg_replace_callback("/[\"|']{1}(.+)[\"|']{1}/isU",array($this,'url_encode'),$string);
+		//针对Gen进行处理
+		if(strpos($string,'Gen(') === false){
+			$string = preg_replace_callback("/[\"|']{1}(.+)[\"|']{1}/isU",array($this,'url_encode'),$string);
+		}
+		//$string = preg_replace_callback("/Gen\((.+)\){1}/isU",array($this,'url_encode'),$string);
+		
+		//echo "<pre>".print_r($string,true)."</pre>////";
 		$string = preg_replace("/(\x20{2,})/"," ",$string);
 		$string = str_replace(" ","&",$string);
 		parse_str($string,$list);
@@ -1128,11 +1136,19 @@ class phpok_template
 		if(!$isext){
 			$tplfile .= ".".$this->tpl_ext;
 		}
+		$file = $tplfile;
 		if(!$ifabs){
-			$tplfile = $this->dir_root.$this->dir_tpl.$tplfile;
+			$file = $this->dir_root.$this->dir_tpl.$tplfile;
 		}
-		if(file_exists($tplfile)){
+		if(file_exists($file)){
 			return true;
+		}
+		if($this->is_mobile){
+			$tmp = substr($this->dir_tpl,0,-7);
+			$file = $this->dir_root.$tmp.$tplfile;
+			if(file_exists($file)){
+				return true;
+			}
 		}
 		return false;
 	}

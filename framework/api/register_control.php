@@ -40,12 +40,12 @@ class register_control extends phpok_control
 			$safelist = array("'",'"','/','\\',';','&',')','(');
 			foreach($safelist as $key=>$value){
 				if($user && strpos($user,$value) !== false){
-					$this->error(P_Lang('会员账号不允许包含字符串：{string}',array('string'=>$value)));
+					$this->error(P_Lang('用户账号不允许包含字符串：{string}',array('string'=>$value)));
 				}
 			}
 			$chk = $this->model('user')->chk_name($user);
 			if($chk){
-				$this->error(P_Lang('会员账号已存用'));
+				$this->error(P_Lang('用户账号已存用'));
 			}
 		}
 		if($email){
@@ -77,7 +77,7 @@ class register_control extends phpok_control
 	public function save_f()
 	{
 		if($this->session->val('user_id')){
-			$this->error(P_Lang('您已是本站会员，不能执行这个操作'));
+			$this->error(P_Lang('您已是本站用户，不能执行这个操作'));
 		}
 		$group_id = $this->get("group_id","int");
 		if($group_id){
@@ -86,7 +86,7 @@ class register_control extends phpok_control
 				$group_id = 0;
 			}
 			if(!$group_rs['is_open'] && !$group_rs['is_default']){
-				$this->error(P_Lang('指定的会员组没有开放申请，请联系管理员'));
+				$this->error(P_Lang('指定的用户组没有开放申请，请联系管理员'));
 			}
 		}
 		if(!$group_id){
@@ -111,12 +111,12 @@ class register_control extends phpok_control
 			$safelist = array("'",'"','/','\\',';','&',')','(');
 			foreach($safelist as $key=>$value){
 				if($user && strpos($user,$value) !== false){
-					$this->error(P_Lang('会员账号不允许包含字符串：{string}',array('string'=>$value)));
+					$this->error(P_Lang('用户账号不允许包含字符串：{string}',array('string'=>$value)));
 				}
 			}
 			$chk = $this->model('user')->chk_name($user);
 			if($chk){
-				$this->error(P_Lang('会员账号已存用'));
+				$this->error(P_Lang('用户账号已存用'));
 			}
 		}
 		if($email){
@@ -167,8 +167,8 @@ class register_control extends phpok_control
 
 		$user_status = $group_rs['register_status'] == 1 ? 1 : 0;
 		$relaction_id = 0;
+		$code = $this->get("_vcode");
 		if(in_array($group_rs['register_status'],array('mobile','email'))){
-			$code = $this->get("_vcode");
 			if(!$code){
 				$this->error(P_Lang('验证码不能为空'));
 			}
@@ -177,9 +177,8 @@ class register_control extends phpok_control
 				$this->error($this->model('vcode')->error_info());
 			}
 			$user_status = 1;
-		}
-		if($group_rs['register_status'] == 'code'){
-			$code = $this->get('_vcode');
+		}elseif($group_rs['register_status'] == 'code'){
+			
 			if(!$code){
 				$this->error(P_Lang('邀请码不能为空'));
 			}
@@ -189,6 +188,13 @@ class register_control extends phpok_control
 			}
 			$user_status = 1;
 			$relaction_id = $tmp['id'];
+		}else{
+			if($code){
+				$tmp = $this->model('user')->get_one($code,'code',false,false);
+				if($tmp){
+					$relaction_id = $tmp['id'];
+				}
+			}
 		}
 		
 		$array = array();
@@ -233,8 +239,8 @@ class register_control extends phpok_control
 		if(!$user_status){
 			$this->success($uid);
 		}
-		$this->model('wealth')->register($uid,P_Lang('会员注册'));
-		//会员自动登录
+		$this->model('wealth')->register($uid,P_Lang('用户注册'));
+		//用户自动登录
 		$autologin = $this->get('_login','int');
 		if($autologin){
 			$this->session->assign('user_id',$uid);
@@ -245,7 +251,7 @@ class register_control extends phpok_control
 	}
 
 	/**
-	 * 会员账号激活
+	 * 用户账号激活
 	**/
 	public function active_f()
 	{
@@ -258,19 +264,19 @@ class register_control extends phpok_control
 		if($user){
 			$rs = $this->model('user')->get_one($user,'user',false,false);
 			if(!$rs){
-				$this->error(P_Lang('会员信息不存在'));
+				$this->error(P_Lang('用户信息不存在'));
 			}
 		}
 		if(!$user && $mobile){
 			$rs = $this->model('user')->get_one($mobile,'mobile',false,false);
 			if(!$rs){
-				$this->error(P_Lang('会员信息不存在'));
+				$this->error(P_Lang('用户信息不存在'));
 			}
 		}
 		if(!$user && !$mobile && $email){
 			$rs = $this->model('user')->get_one($mobile,'email',false,false);
 			if(!$rs){
-				$this->error(P_Lang('会员信息不存在'));
+				$this->error(P_Lang('用户信息不存在'));
 			}
 		}
 		if($rs['status'] == 2){
@@ -280,7 +286,7 @@ class register_control extends phpok_control
 			$this->error(P_Lang('账号已经激活，不能重复操作'));
 		}
 		if(!$rs['code']){
-			$this->error(P_Lang('会员激活码已经失效，请联系客服'));
+			$this->error(P_Lang('用户激活码已经失效，请联系客服'));
 		}
 		$code = $this->get('code');
 		if(!$code){

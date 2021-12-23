@@ -36,6 +36,12 @@ if($rs['ext'] && $rs['ext']['ip']){
 $this->lib('phpok')->app_id($rs['ext']['app_id']);
 $this->lib('phpok')->app_key($rs['ext']['app_key']);
 $data = array('code'=>$extinfo['content'],'mobile'=>$extinfo['mobile']);
+if($rs['ext']['signame']){
+	$data['sign'] = $rs['ext']['signame'];
+}
+if($rs['ext']['tplcode']){
+	$data['tpl_id'] = $rs['ext']['tplcode'];
+}
 $t = $this->lib('phpok')->content($data);
 if(!$t){
 	$this->error('发送失败');

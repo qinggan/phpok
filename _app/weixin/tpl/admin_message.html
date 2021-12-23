@@ -1,0 +1,66 @@
+<!-- include tpl=head_lay overflowy=true -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		消息及用户都是通过Ajax异步执行获取，每隔30秒执行一次
+	</div>
+</div>
+<div class="layui-row layui-col-space10">
+	<div class="layui-col-xs6 layui-col-sm3 layui-col-md3 layui-col-lg2">
+    	<div class="layui-card">
+    		<div class="layui-card-header">
+    			微信用户
+    		</div>
+    		<div class="layui-card-body" id="userlist" style="overflow-x:hidden;overflow-y:auto;">
+    			
+    		</div>
+    	</div>
+	</div>
+	<div class="layui-col-xs6 layui-col-sm9 layui-col-md9 layui-col-lg10">
+		<div class="layui-card">
+			<div class="layui-card-header" id="userinfo">
+				消息内容
+			</div>
+			<div class="layui-card-body" id="message" style="overflow-x:hidden;overflow-y:auto;">
+				
+			</div>
+			<div class="layui-card-footer">
+				<div class="layui-row" style="padding:10px;">
+					<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+					<div class="layui-col-xs10 layui-col-sm6">
+				    	<input type="text" name="text" id="text" value="" class="layui-input" />
+					</div>
+					<div class="layui-col-xs2 layui-col-sm1">
+						<input type="submit" value="文本发送" onclick="" class="layui-btn" />
+					</div>
+					<div class="layui-col-xs12 layui-col-sm5" style="text-align:right;">
+						<div class="layui-btn-group">
+							<input type="button" value="图片" onclick="" class="layui-btn" />
+							<input type="button" value="语音" onclick="" class="layui-btn" />
+							<input type="button" value="视频" onclick="" class="layui-btn" />
+							<input type="button" value="位置" onclick="" class="layui-btn" />
+							<input type="button" value="链接" onclick="" class="layui-btn" />
+						</div>
+					</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function r_height()
+{
+	var h = $(window).height();
+	var h_message = h - 210;
+	var h_userlist = h-153;
+	$("#message").height(h_message+'px');
+	$("#userlist").height(h_userlist+'px');
+}
+$(document).ready(function(){
+	r_height();
+	$(window).resize(function(){
+		r_height();
+	})
+});
+</script>
+<!-- include tpl=foot_lay is_open=true -->

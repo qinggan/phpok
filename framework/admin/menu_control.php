@@ -266,6 +266,8 @@ class menu_control extends phpok_control
 		$data = array('site_id'=>$site_id,'group_id'=>$group_id,'parent_id'=>$parent_id);
 		$title = $this->get('title');
 		$type = $this->get('type');
+		$thumb = $this->get('thumb');
+		$iconfont = $this->get('iconfont');
 		if($type == 'project'){
 			$pid = $this->get('pid-project','int');
 			if(!$pid){
@@ -325,6 +327,8 @@ class menu_control extends phpok_control
 		}
 		$data['title'] = $title;
 		$data['type'] = $type;
+		$data['thumb'] = $thumb;
+		$data['iconfont'] = $iconfont;
 		$data['target'] = $this->get('target','int');
 		$data['is_userid'] = $this->get('is_userid','int');
 		$data['status'] = $this->get('status','int');

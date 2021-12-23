@@ -19,7 +19,8 @@ if(!defined("PHPOK_SET")){
 class db_sqlite extends db
 {
 	private $type = SQLITE3_ASSOC;
-	
+	protected $kec_left = '[';
+	protected $kec_right = ']';
 	public function __construct($config=array())
 	{
 		parent::__construct($config);
@@ -29,6 +30,7 @@ class db_sqlite extends db
 	public function __destruct()
 	{
 		$this->close();
+		parent::__destruct();
 	}
 
 	public function config($config)
@@ -49,10 +51,11 @@ class db_sqlite extends db
 		}
 		$this->_time();
 		$this->conn = new SQLite3($this->database,SQLITE3_OPEN_READWRITE);
+		$t = get_class_methods($this->conn);
 		if(!$this->conn){
 			$this->error('数据库连接失败');
 		}
-		$this->conn->busyTimeout(100);
+		$this->conn->busyTimeout(1000);
 		$this->_time();
 		$this->query("PRAGMA encoding = 'UTF-8'");
 		return $this->conn;
@@ -174,15 +177,15 @@ class db_sqlite extends db
 					return $info;
 				}
 			}
-			$this->query($sql);
+			$rs = $this->query($sql);
 		}
 		if(!$this->query || !is_object($this->query)){
 			return false;
 		}
 		$this->_time();
 		$rs = $this->query->fetchArray($this->type);
-		$this->query->finalize();
 		$this->_time();
+		$this->query->finalize();
 		if(!$rs){
 			$this->cache_false($sql);
 			return false;
@@ -196,88 +199,6 @@ class db_sqlite extends db
 	{
 		$this->check_connect();
 		return $this->conn->lastInsertRowID();
-	}
-
-	public function insert($sql,$tbl='',$type='insert')
-	{
-		if(is_array($sql) && $tbl){
-			return $this->insert_array($sql,$tbl,$type);
-		}
-		$this->query($sql);
-		return $this->insert_id();
-	}
-
-	public function insert_array($data,$tbl,$type="insert")
-	{
-		if(!$tbl || !$data || !is_array($data)){
-			return false;
-		}
-		if(substr($tbl,0,strlen($this->prefix)) != $this->prefix){
-			$tbl = $this->prefix.$tbl;
-		}
-		$type = strtolower($type);
-		$sql = $type == 'insert' ? "INSERT" : "REPLACE";
-		$sql.= " INTO [".$tbl."] ";
-		$sql_fields = array();
-		$sql_val = array();
-		foreach($data as $key=>$value){
-			$sql_fields[] = "[".$key."]";
-			$sql_val[] = "'".$value."'";
-		}
-		$sql.= "(".(implode(",",$sql_fields)).") VALUES(".(implode(",",$sql_val)).")";
-		return $this->insert($sql);
-	}
-
-	public function update($data,$tbl='',$condition='')
-	{
-		if(is_array($data) && $tbl && $condition){
-			return $this->update_array($data,$tbl,$condition);
-		}
-		return $this->query($data);
-	}
-
-	public function update_array($data='',$table='',$condition='')
-	{
-		if(!$data || !$table || !$condition || !is_array($data) || !is_array($condition)){
-			return false;
-		}
-		if(substr($table,0,strlen($this->prefix)) != $this->prefix){
-			$table = $this->prefix.$table;
-		}
-		$sql = "UPDATE [".$table."] SET ";
-		$sql_fields = array();
-		foreach($data as $key=>$value){
-			$sql_fields[] = "[".$key."]='".$value."'";
-		}
-		$sql.= implode(",",$sql_fields);
-		$sql_fields = array();
-		foreach($condition as $key=>$value){
-			$sql_fields[] = "[".$key."]='".$value."' ";
-		}
-		$sql .= " WHERE ".implode(" AND ",$sql_fields);
-		return $this->query($sql);
-	}
-
-	public function delete($table,$condition='')
-	{
-		if(!$condition || !$table){
-			return false;
-		}
-		if(is_array($condition)){
-			$sql_fields = array();
-			foreach($condition as $key=>$value){
-				$sql_fields[] = "[".$key."]='".$value."' ";
-			}
-			$condition = implode(" AND ",$sql_fields);
-			if(!$condition){
-				return false;
-			}
-		}
-		if(substr($table,0,strlen($this->prefix)) != $this->prefix){
-			$table = $this->prefix.$table;
-		}
-		$sql = "DELETE FROM ".$table." WHERE ".$condition;
-		return $this->query($sql);
 	}
 
 	/**

@@ -63,13 +63,16 @@ class alipay_submit
         }
 
         //新版PC即时到账支付 - 基于公钥+私钥
-        if($this->param['param']['ptype'] == 'pagepay'){
-	        $this->alipay->gateway_url($form_url);
+        if($this->param['param']['ptype'] == 'pagepay_link' || $this->param['param']['ptype'] == 'pagepay_qrcode'){
+	        $this->alipay->gateway_url("https://openapi.alipay.com/gateway.do");
 	        $this->alipay->app_id($this->param['param']['pid']);
 			$this->alipay->private_key($this->param['param']['prikey']);
 			$this->alipay->public_key($this->param['param']['pubkey']);
 			$this->alipay->notify_url($notify_url);
-			$this->alipay->return_url($cancel_url);
+			if($this->param['param']['ptype'] == 'pagepay_link'){
+				$this->alipay->return_url($return_url);
+			}
+	        $this->alipay->qr_pay_mode($this->param['param']['ptype'] == 'pagepay_link' ? 2 : 1);
 			$info = $this->alipay->pagepay_create($this->order['sn'].'-'.$this->order['id'],floatval($total_fee));
 			exit;
         }

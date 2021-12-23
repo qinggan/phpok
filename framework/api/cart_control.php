@@ -100,7 +100,7 @@ class cart_control extends phpok_control
 			$this->error(P_Lang('购物车编号异常'));
 		}
 		if($this->site['biz_is_user'] && !$this->session->val('user_id')){
-			$this->error(P_Lang('您还不是我们的会员，请先登录'));
+			$this->error(P_Lang('您还不是我们的用户，请先登录'));
 		}
 		$clear = $this->get('_clear','int');
 		if($clear){
@@ -146,6 +146,190 @@ class cart_control extends phpok_control
 			$this->bundle_save($id,$bundle,$qty);
 		}
 		$this->success($insert_id);
+	}
+
+	/**
+	 * 一键购买，直接返回 payment_log 里的主键 ID，适用于手机扫码快速支付，仅限用户+虚拟服务
+	 * @参数 $id 产品ID
+	 * @参数 $payment 付款方式
+	**/
+	public function buy_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('未登录用户不支持此操作'));
+		}
+		$me = $this->model('user')->get_one($this->session->val('user_id'),'id',false,false);
+		if(!$me){
+			$this->error(P_Lang('用户信息不存在'));
+		}
+		if(!$me['email'] && !$me['mobile']){
+			$this->error(P_Lang('用户信息不完整，请补充邮箱和手机号'));
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = phpok("_arc","title_id=".$id);
+		if(!$rs){
+			$this->error(P_Lang('产品信息不存在'));
+		}
+		if(!$rs['is_virtual']){
+			$this->error(P_Lang('仅限服务类产品'));
+		}
+		$payment = $this->get('payment');
+		if(!$payment){
+			$this->error(P_Lang('未指定付款方式'));
+		}
+
+		$sn = $this->model('order')->create_sn();
+		$status_list = $this->model('order')->status_list();
+		$price = price_format_val($rs['price'],$rs['currency_id'],$this->site['currency_id']);
+		$main = array('sn'=>$sn);
+		$main['user_id'] = $me['id'];
+		$main['addtime'] = $this->time;
+		$main['price'] = $price;
+		$main['currency_id'] = $this->site['currency_id'];
+		$main['currency_rate'] = $this->site['currency']['val'];
+		$main['status'] = 'create';
+		$main['status_title'] = $status_list['create'];
+		$main['passwd'] = md5(str_rand(10));
+		$main['email'] = $me['email'];
+		$main['mobile'] = $me['mobile'];
+		$order_id = $this->model('order')->save($main);
+		if(!$order_id){
+			$this->error(P_Lang('订单创建失败，请联系管理员'));
+		}
+		$tmp = array('order_id'=>$order_id,'tid'=>$rs['id']);
+		$tmp['title'] = $rs['title'];
+		$tmp['price'] = $price;
+		$tmp['qty'] = 1;
+		$tmp['is_virtual'] = 1;
+		$this->model('order')->save_product($tmp);
+		
+		$pricelist = $this->model('site')->price_status_all(true);
+		if($pricelist){
+			foreach($pricelist as $key=>$value){
+				if(!$value['status']){
+					unset($pricelist[$key]);
+					continue;
+				}
+				if($value['default'] && $value['currency_id']){
+					$value['price_val'] = price_format_val($value['default'],$value['currency_id'],$this->site['currency_id']);
+				}
+				if($value['identifier'] == 'product'){
+					$value['price_val'] = price_format_val($rs['price'],$rs['currency_id'],$this->site['currency_id']);
+				}
+				if($value['hidden'] && (!$value['price_val'] || $value['price_val'] == '0.00')){
+					unset($pricelist[$key]);
+					continue;
+				}
+				$tmp = array('order_id'=>$order_id,'code'=>$value['identifier'],'price'=>$value['price_val']);
+				$this->model('order')->save_order_price($tmp);
+			}
+		}
+
+		$note = P_Lang('订单创建成功，订单编号：{sn}',array('sn'=>$sn));
+		$log = array('order_id'=>$order_id,'addtime'=>$this->time,'who'=>$me['user'],'note'=>$note);
+		$this->model('order')->log_save($log);
+
+		$param = 'id='.$order_id."&status=create";
+		$this->model('task')->add_once('order',$param);
+
+		$order = $main;
+		$order['id'] = $order_id;
+		//基于财富付款
+		if(!is_numeric($payment)){
+			$this->payment_wealth($payment,$order,$me);
+		}
+		$payment_rs = $this->model('payment')->get_one($payment);
+		if(!$payment_rs){
+			$this->error(P_Lang('支付方式不存在'));
+		}
+		if(!$payment_rs['status']){
+			$this->error(P_Lang('支付方式未启用'));
+		}
+		//更新支付状态
+		$this->model('order')->update_order_status($order['id'],'unpaid',P_Lang('订单等待支付'));
+		$title = P_Lang('订单：{sn}',array('sn'=>$order['sn']));
+		$array = array('sn'=>$order['sn'],'type'=>'order','payment_id'=>$payment,'title'=>$title,'content'=>$title);
+		$array['dateline'] = $this->time;
+		$array['user_id'] = $me['id'];
+		$array['price'] = $order['price'];
+		$array['currency_id'] = $order['currency_id'];
+		$array['currency_rate'] = $order['currency_rate'];
+		$insert_id = $this->model('payment')->log_create($array);
+		if(!$insert_id){
+			$this->error(P_Lang('支付创建失败'));
+		}
+		$this->success($insert_id);
+	}
+
+	/**
+	 * 基于财富的付款
+	 * @参数 $payment 付款标识
+	 * @参数 $order 订单信息
+	 * @参数 $me 用户
+	**/
+	private function payment_wealth($payment,$order,$user)
+	{
+		$wealth = $this->model('wealth')->get_one($payment,'identifier');
+		if(!$wealth){
+			$this->error(P_Lang('支付方式无效，请检查'));
+		}
+		$me_val = $this->model('wealth')->get_val($user['id'],$wealth['id']);
+		if(!$me_val){
+			$this->error(P_Lang('{title}余额不足，请先充值',array('title'=>$wealth['title'])));
+		}
+		$myprice = round($me_val*$wealth['cash_ratio']/100,$wealth['dnum']);
+		$unpaid_price = $this->model('order')->unpaid_price($order['id']);
+		if(!$unpaid_price){
+			$this->error(P_Lang('订单没有存在未付订单'));
+		}
+		if($unpaid_price > $myprice){
+			$this->error(P_Lang('{title}余额不足，请先充值',array('title'=>$wealth['title'])));
+		}
+		$surplus = floatval($myprice - $unpaid_price);
+
+		//扣除用户积分
+		$savelogs = array('wid'=>$wealth['id'],'goal_id'=>$user['id'],'mid'=>0,'val'=>'-'.$unpaid_price);
+		$savelogs['appid'] = $this->app_id;
+		$savelogs['dateline'] = $this->time;
+		$savelogs['user_id'] = $user['id'];
+		$savelogs['ctrlid'] = 'payment';
+		$savelogs['funcid'] = 'create';
+		$savelogs['url'] = 'index.php';
+		$savelogs['note'] = P_Lang('{title}支付',array('title'=>$wealth['title']));
+		$savelogs['status'] = 1;
+		$savelogs['val'] = -$unpaid_price;
+		$this->model('wealth')->save_log($savelogs);
+		$data = array('wid'=>$wealth['id'],'uid'=>$user['id'],'lasttime'=>$this->time,'val'=>$surplus);
+		$this->model('wealth')->save_info($data);
+		//创建订单日志，记录支付信息
+		$tmparray = array('price'=>$unpaid_price,'payment'=>$wealth['title'],'integral'=>$unpaid_price,'unit'=>$wealth['unit']);
+		$note = P_Lang('使用{payment}支付{price}，共消耗{payment}{integral}{unit}',$tmparray);
+		$log = array('order_id'=>$order['id'],'addtime'=>$this->time,'who'=>$user['user'],'note'=>$note);
+		$this->model('order')->log_save($log);
+
+		$array = array('order_id'=>$order['id'],'payment_id'=>$payment);
+		$array['title'] = P_Lang('余额支付');
+		$array['price'] = $unpaid_price;
+		$array['currency_id'] = $order['currency_id'];
+		$array['currency_rate'] = $order['currency_rate'];
+		$array['startdate'] = $this->time;
+		$array['dateline'] = $this->time;
+		$array['ext'] = serialize(array('备注'=>'余额支付'));
+		$this->model('order')->save_payment($array);
+		//登记支付记录
+		$array = array('type'=>'order','price'=>$unpaid_price,'currency_id'=>$order['currency_id'],'sn'=>$order['sn']);
+		$array['currency_rate'] = $order['currency_rate'];
+		$array['content'] = $array['title'] = P_Lang('订单：{sn}',array('sn'=>$rs['sn']));
+		$array['payment_id'] = $payment;
+		$array['dateline'] = $this->time;
+		$array['user_id'] = $user['id'];
+		$array['status'] = 1;
+		$this->model('payment')->log_create($array);	
+		$this->model('order')->update_order_status($rs['id'],'paid',P_Lang('订单已付款'));
+		$this->success();
 	}
 
 	/**
@@ -196,9 +380,6 @@ class cart_control extends phpok_control
 		$array['weight'] = $this->get('weight','float');
 		$array['volume'] = $this->get('volume','float');
 		$ext = $this->get('ext');
-		if($ext && is_array($ext)){
-			sort($ext);
-		}
 		$array['ext'] = $ext;
 		$array['thumb'] = $this->get('thumb');
 		$array['is_virtual'] = $this->get('is_virtual','int');
@@ -258,9 +439,6 @@ class cart_control extends phpok_control
 				}
 				$ext[$key] = $value;
 			}
-		}
-		if($ext && is_array($ext)){
-			sort($ext);
 		}
 		$price = $rs['price'];
 		//基于Apps扩展的
@@ -374,7 +552,7 @@ class cart_control extends phpok_control
 	**/
 	public function delete_f()
 	{
-		$id = $this->get('id');
+		$id = $this->get('id','int');
 		if(!$id){
 			$this->error(P_Lang('未指定产品ID'));
 		}
@@ -393,6 +571,7 @@ class cart_control extends phpok_control
 				if(!$value || !intval($value)){
 					unset($id[$key]);
 				}
+				$id[$key] = intval($value);
 			}
 		}
 		if(!$id || count($id)<1){
@@ -451,7 +630,7 @@ class cart_control extends phpok_control
 
 	public function price_f()
 	{
-		$id = $this->get('id');
+		$id = $this->get('id','int');
 		if(!$id){
 			$this->error(P_Lang('未指定要计算的产品ID'));
 		}
@@ -460,8 +639,10 @@ class cart_control extends phpok_control
 		}
 		if($id && is_array($id)){
 			foreach($id as $key=>$value){
-				if(!$value || !intval($value)){
+				$id[$key] = intval($value);
+				if(!$value){
 					unset($id[$key]);
+					continue;
 				}
 			}
 		}
@@ -485,7 +666,7 @@ class cart_control extends phpok_control
 
 	public function pricelist_f()
 	{
-		$id = $this->get('id');
+		$id = $this->get('id','int');
 		if(!$id){
 			$id = $this->get('ids');
 			if($id && !is_array($id)){
@@ -497,8 +678,10 @@ class cart_control extends phpok_control
 		}
 		if($id){
 			foreach($id as $key=>$value){
-				if(!$value || !trim($value) || !intval($value)){
+				$id[$key] = intval($value);
+				if(!$value){
 					unset($id[$key]);
+					continue;
 				}
 			}
 		}
@@ -516,7 +699,7 @@ class cart_control extends phpok_control
 				$this->error(P_Lang('地址信息不存在'));
 			}
 			if(!$this->session->val('user_id')){
-				$this->error(P_Lang('非会员没有地址库功能'));
+				$this->error(P_Lang('非用户没有地址库功能'));
 			}
 			if($address['user_id'] != $this->session->val('user_id')){
 				$this->error(P_Lang('这不是您的地址，没有权限查阅及调用'));
@@ -597,7 +780,7 @@ class cart_control extends phpok_control
 	public function checkout_f()
 	{
 		$r = array();
-		$id = $this->get('id');
+		$id = $this->get('id','int');
 		if($id){
 			if($id && !is_array($id)){
 				$id = explode(",",$id);
@@ -733,6 +916,11 @@ class cart_control extends phpok_control
 				$pricelist[$key] = $value;
 			}
 		}
+		foreach($pricelist as $key=>$value){
+			if($value['hidden'] && (!$value['price_val'] || $value['price_val'] == '0.00')){
+				unset($pricelist[$key]);
+			}
+		}
 		$r['pricelist'] = $pricelist;
 		$this->assign('pricelist',$pricelist);
 		if($freight_price){
@@ -772,14 +960,16 @@ class cart_control extends phpok_control
 	**/
 	public function freight_f()
 	{
-		$id = $this->get('id');
+		$id = $this->get('id','int');
 		if($id){
 			if(!is_array($id)){
 				$id = explode(",",$id);
 			}
 			foreach($id as $key=>$value){
+				$id[$key] = intval($value);
 				if(!$value || !trim($value) || !intval($value)){
 					unset($id[$key]);
+					continue;
 				}
 			}
 			$rslist = $this->model('cart')->get_all($this->cart_id,$id);
@@ -799,7 +989,7 @@ class cart_control extends phpok_control
 				$this->error(P_Lang('地址信息不存在'));
 			}
 			if(!$this->session->val('user_id')){
-				$this->error(P_Lang('非会员没有地址库功能'));
+				$this->error(P_Lang('非用户没有地址库功能'));
 			}
 			if($address['user_id'] != $this->session->val('user_id')){
 				$this->error(P_Lang('这不是您的地址，没有权限查阅及调用'));

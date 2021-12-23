@@ -1,78 +1,110 @@
 <input type="hidden" name="ext_form_id" id="ext_form_id" value="form_pid,form_field_used,form_show_editing,form_true_delete,form_is_single,form_maxcount,form_input_val,form_price" />
-<div class="table">
-	<div class="title">{lang选择关联的项目}：</div>
-	<div class="content">
-		<select id="form_pid" name="form_pid" onchange="$._configForm.extitle('form_pid',this.value,'{$eid}','{$etype}')">
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang项目：}
+	</label>
+	<div class="layui-input-inline auto">
+		<select id="form_pid" name="form_pid" lay-filter="form_btn">
 			<option value="">{lang请选择…}</option>
 			<!-- loop from=$opt_list key=$key value=$value id=$tmpid -->
 			<option value="{$value.id}"{if $value.id == $rs.form_pid} selected{/if}>{$value.title}</option>
 			<!-- /loop -->
 		</select>
 	</div>
-</div>
-<div class="table{if !$rs || !$rs.form_pid} hide{/if}" id="true_delete_html">
-	<div class="title">
-		{lang真实删除}：<span class="note">{lang启用此项，将不提供选择功能，请将绑定的项目隐藏}</span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<li><label><input type="radio" name="form_true_delete" value="1"{if $rs.form_true_delete} checked{/if} />启用</label></li>
-			<li><label><input type="radio" name="form_true_delete" value="0"{if !$rs.form_true_delete} checked{/if} />禁用</label></li>
-		</ul>
+	<div class="layui-form-mid">
+		{lang请选择关联的项目}
 	</div>
 </div>
-<div class="table{if !$rs || !$rs.form_pid} hide{/if}" id="fields_show_html">
-	<div class="title">
-		{lang后台显示字段}：<span class="note">{lang建议不超过5个字段}</span>
+<script type="text/javascript">
+$(document).ready(function(){
+	layui.form.on('select(form_btn)', function(data){
+		$._configForm.extitle('form_pid',data.value,'{$eid}','{$etype}')
+	});
+});
+</script>
+<div{if !$rs || !$rs.form_pid} class="hide"{/if} id="true_delete_html">
+	<div class="layui-form-item">
+		<label class="layui-form-label">
+			{lang真实删除：}
+		</label>
+		<div class="layui-input-inline auto">
+			<input type="radio" name="form_true_delete" value="0"{if !$rs.form_true_delete} checked{/if} title="{lang禁用}" />
+			<input type="radio" name="form_true_delete" value="1"{if $rs.form_true_delete} checked{/if} title="{lang启用}" />
+		</div>
+		<div class="layui-form-mid">
+			{lang启用此项，将不提供选择功能，请将绑定的项目隐藏}
+		</div>
 	</div>
-	<div class="content" id="fields_show">
-		<ul class="layout">
+</div>
+<div{if !$rs || !$rs.form_pid} class="hide"{/if} id="fields_show_html">
+	<div class="layui-form-item">
+		<label class="layui-form-label">
+			{lang后台显示：}
+		</label>
+		<div class="layui-input-block gray" style="line-height:38px;">{lang建议不超过5个}</div>
+		<div class="layui-input-block" id="fields_show">
 			<!-- loop from=$fields_list key=$key value=$value id=$tmpid -->
-			<li><label><input type="checkbox" name="form_show_editing[]" value="{$key}"{if $form_show_editing && in_array($key,$form_show_editing)} checked{/if} />{$value.title}</label></li>
+			<input type="checkbox" name="form_show_editing[]" value="{$key}"{if $form_show_editing && in_array($key,$form_show_editing)} checked{/if} title="{$value.title}" />
 			<!-- /loop -->
-		</ul>
+		</div>
 	</div>
 </div>
-<div class="table{if !$rs || !$rs.form_pid} hide{/if}" id="fields_used_html">
-	<div class="title">
-		{lang有效数据字段}：<span class="note">{lang请注意选择，以防止出现死循环（您需要懂一点点PHPOK，嘿嘿）}</span>
-	</div>
-	<div class="content" id="fields_used">
-		<ul class="layout">
+<div{if !$rs || !$rs.form_pid} class="hide"{/if} id="fields_used_html">
+	<div class="layui-form-item">
+		<label class="layui-form-label">
+			{lang前台数据}
+		</label>
+		<div class="layui-input-block gray" style="line-height:38px;">{lang请注意选择，为防止出现死循环（您需要懂一点点程序开发）}</div>
+		<div class="layui-input-block" id="fields_used">
 			<!-- loop from=$fields_list key=$key value=$value id=$tmpid -->
-			<li><label><input type="checkbox" name="form_field_used[]" value="{$key}"{if $form_field_used && in_array($key,$form_field_used)} checked{/if} />{$value.title}</label></li>
+			<input type="checkbox" name="form_field_used[]" value="{$key}"{if $form_field_used && in_array($key,$form_field_used)} checked{/if} title="{$value.title}" />
 			<!-- /loop -->
-		</ul>
+		</div>
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		{lang主题模式}：<span class="note">{lang单选模式仅支持一条且不用循环读取，列表模式需要设置数量且只能循环读取}</span>
-	</div>
-	<div class="content">
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang模式：}
+	</label>
+	<div class="layui-input-block gray" style="line-height:38px;">{lang单选模式仅支持一条且不用循环读取，列表模式需要设置数量且只能循环读取}</div>
+	<div class="layui-input-block">
 		<ul class="layout">
-			<li><label><input type="radio" name="form_is_single" value="1"{if $rs.form_is_single} checked{/if} onclick="$._configForm.extitle('form_is_single',this.value,'{$eid}','{$etype}')" />{lang单选模式}</label></li>
-			<li><label><input type="radio" name="form_is_single" value="0"{if !$rs.form_is_single} checked{/if} onclick="$._configForm.extitle('form_is_single',this.value,'{$eid}','{$etype}')" />{lang列表模式}</label></li>
-			<li id="form_maxcount_li"{if $rs.form_is_single} class="hide"{/if}><input type="text" name="form_maxcount" id="form_maxcount" value="{$rs.form_maxcount ? $rs.form_maxcount : 20}" class="short center" /></li>
+			<li><input type="radio" lay-filter="form_is_single" name="form_is_single" value="1"{if $rs.form_is_single} checked{/if} title="{lang单选模式}" /></li>
+			<li><input type="radio" lay-filter="form_is_single" name="form_is_single" value="0"{if !$rs.form_is_single} checked{/if} title="{lang列表模式}" /></li>
+			<li id="form_maxcount_li"{if $rs.form_is_single} class="hide"{/if} style="width:80px;margin-left:10px;"><input type="text" name="form_maxcount" id="form_maxcount" value="{$rs.form_maxcount ? $rs.form_maxcount : 20}" class="layui-input" /></li>
 		</ul>
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		{lang筛选参数字段}：<span class="note">{lang仅限单选及单选下拉，不支持模糊搜索，多个字段用英文逗号隔开}</span>
+<script type="text/javascript">
+$(document).ready(function(){
+	layui.form.on('radio(form_is_single)', function(data){
+		$._configForm.extitle('form_is_single',data.value,'{$eid}','{$etype}')
+	});
+});
+</script>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang小搜索}
+	</label>
+	<div class="layui-input-inline">
+		<input type="text" name="form_input_val" id="form_input_val" value="{$rs.form_input_val}" class="layui-input" />
 	</div>
-	<div class="content">
-		<input type="text" name="form_input_val" id="form_input_val" value="{$rs.form_input_val}" class="w99" />
+	<div class="layui-form-mid">
+		{lang仅限单选及下拉，多个字段用英文逗号隔开}
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		{lang电商属性}：<span class="note">{lang启用后允许主题自行设置价格，税费及运费的加减}</span>
+
+<!-- if $site_popedom.order && $config.biz_status -->
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang电商：}
+	</label>
+	<div class="layui-input-inline auto">
+		<input type="radio" name="form_price" value="1"{if $rs.form_price} checked{/if} title="{lang启用}" />
+		<input type="radio" name="form_price" value="0"{if !$rs.form_price} checked{/if} title="{lang禁用}" />
 	</div>
-	<div class="content">
-		<ul class="layout">
-			<li><label><input type="radio" name="form_price" value="1"{if $rs.form_price} checked{/if} />{lang启用}</label></li>
-			<li><label><input type="radio" name="form_price" value="0"{if !$rs.form_price} checked{/if} />{lang禁用}</label></li>
-		</ul>
+	<div class="layui-form-mid">
+		{lang启用后允许主题设置价格，税费及运费的加减，仅限有启用电商的项目}
 	</div>
 </div>
+<!-- /if -->

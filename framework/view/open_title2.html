@@ -13,14 +13,24 @@ function select_input(val)
 		<thead>
 		<tr>
 			<th>ID</th>
-			<th>{$field_title}</th>
+			<!-- loop from=$showlist key=$key value=$value id=$tmpid -->
+			<th>{$value}</th>
+			<!-- /loop -->
 			<th></th>
 		</tr>
 		</thead>
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 		<tr>
 			<td>{$value.id}</td>
-			<td>{$value[$field]}</td>
+			<!-- loop from=$showlist key=$k value=$v id=$idxx -->
+			<td>
+				<!-- if $value[$k] && is_array($value[$k]) -->
+				{func current $value[$k]}
+				<!-- else -->
+				{$value[$k]}
+				<!-- /if -->
+			</td>
+			<!-- /loop -->
 			<td><input type="button" value="{lang确认}" onclick="select_input('{$value[$field]}')" class="layui-btn layui-btn-sm" /></td>
 		</tr>
 		<!-- /loop -->

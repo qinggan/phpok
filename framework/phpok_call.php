@@ -106,9 +106,8 @@ class phpok_call extends _init_auto
 			$list = $this->_phpok_sys_func();
 			$id = substr($id,1);
 			if($id == "arclist"){
-				if(($rs['is_list'] && $rs['is_list'] != 'false') || $rs['is_list'] == true || $rs['is_list'] == 1 || !$rs['is_list']){
-					$rs['is_list'] = true;
-				}else{
+				$rs['is_list'] = true;
+				if((isset($rs['is_list']) && !$rs['is_list']) || $rs['is_list'] === 'false'){
 					$rs['is_list'] = false;
 				}
 			}
@@ -598,7 +597,7 @@ class phpok_call extends _init_auto
 			}
 			unset($cate_all,$array);
 		}
-		//绑定某个会员
+		//绑定某个用户
 		if($rs['user_id']){
 			if(is_array($rs['user_id'])){
 				$rs['user_id'] = implode(",",$rs['user_id']);
@@ -845,6 +844,9 @@ class phpok_call extends _init_auto
 		if(!$arc){
 			return false;
 		}
+		if($arc['user_id']){
+			$arc['user'] = $this->model('user')->get_one($arc['user_id']);
+		}
 		$project = $this->model('project')->project_one($arc['site_id'],$arc['project_id']);
 		if(!$project){
 			return false;
@@ -856,6 +858,10 @@ class phpok_call extends _init_auto
 			$this->node('PHPOK_arc');
 			$arc = $this->data('arc');
 			return $arc;
+		}
+		$cate = array();
+		if($arc['cate_id']){
+			$cate = $this->call->phpok('_cate',array('pid'=>$arc['project_id'],'cateid'=>$arc['cate_id']));
 		}
 		//读取这个主题可能涉及到的Tag
 		$arc['tag'] = $this->model('tag')->tag_list($arc['id'],'list');
@@ -915,6 +921,7 @@ class phpok_call extends _init_auto
 			return $arc;
 		}
 		$cate['url'] = $this->url($project['identifier'],$cate['identifier'],'','www');
+		$arc['cate'] = $cate;
 		$tmplist = array();
 		foreach($arc['_catelist'] as $key=>$value){
 			$tmplist[] = 'cate-'.$value['id'];
@@ -1204,7 +1211,7 @@ class phpok_call extends _init_auto
 				if($value['form_type'] == 'upload' && !$this->site['upload_guest'] && !$_SESSION['user_id']){
 					continue;
 				}
-				//禁止会员上传时
+				//禁止用户上传时
 				if($value['form_type'] == 'upload' && !$this->site['upload_user'] && $_SESSION['user_id']){
 					continue;
 				}
@@ -1399,9 +1406,9 @@ class phpok_call extends _init_auto
 	}
 
 	/**
-	 * 获取会员数据
+	 * 获取用户数据
 	 * @参数 $rs 数组，数组参数分别是：
-	 *       phpok：会员 field 对应的字段值，默认为会员ID
+	 *       phpok：用户 field 对应的字段值，默认为用户ID
 	 *       user_id：等同于 phpok
 	 *       field：要查询的字段ID，默认是id，支持mobile,email
 	 *       ext：是否显示扩展，默认为true，当参数字符为false时，不查询扩展数据
@@ -1427,12 +1434,12 @@ class phpok_call extends _init_auto
 	}
 
 	/**
-	 * 会员列表
+	 * 用户列表
 	 * @参数 $rs 数组，数组参数分别是：
-	 *       phpok：会员 field 对应的字段值，默认为会员ID
-	 *       status：未设置时，默认为true，已设置参数，为false时表示未审核会员数据也读取
-	 *       group_id：会员组ID
-	 *       sqlext：SQL扩展查询，会员主表使用字段u，扩展表用ext
+	 *       phpok：用户 field 对应的字段值，默认为用户ID
+	 *       status：未设置时，默认为true，已设置参数，为false时表示未审核用户数据也读取
+	 *       group_id：用户组ID
+	 *       sqlext：SQL扩展查询，用户主表使用字段u，扩展表用ext
 	 * @返回 多维数组
 	**/
 	private function _userlist($rs,$cache_id='')

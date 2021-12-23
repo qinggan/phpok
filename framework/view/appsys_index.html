@@ -29,6 +29,10 @@
 						<input type="button" value="{lang备份}" onclick="$.admin_appsys.backup_zip('{$key}')" class="layui-btn layui-btn-xs" />
 						<input type="button" value="{lang导出}" onclick="$.admin_appsys.export_zip('{$key}')" class="layui-btn layui-btn-xs" />
 					</div>
+					<div class="layui-btn-group">
+						<input type="button" value="{lang帮助}" onclick="$.admin_appsys.help('{$value.title}','{$key}')" class="layui-btn layui-btn-xs layui-btn-primary" />
+						<input type="button" value="{lang前台}" onclick="$.admin_appsys.www_help('{$value.title}','{$key}')" class="layui-btn layui-btn-xs layui-btn-primary" />
+					</div>
 					<!-- if !$value.system -->
 					<input type="button" value="{lang卸载}" onclick="$.admin_appsys.uninstall('{$key}')" class="layui-btn layui-btn-xs layui-btn-danger fr" />
 					<!-- else -->

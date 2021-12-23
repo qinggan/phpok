@@ -78,7 +78,7 @@ class address_control extends phpok_control
 		}
 		$rslist = $this->model('user')->address_all($this->session->val('user_id'));
 		if(!$rslist){
-			$this->error(P_Lang('会员暂无收货地址信息'));
+			$this->error(P_Lang('用户暂无收货地址信息'));
 		}
 		$total = count($rslist);
 		$default = $first = array();

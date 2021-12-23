@@ -101,7 +101,7 @@
 	<index-site-1>请选择要维护的站点</index-site-1>
 	<index-site-2>站点信息不存在</index-site-2>
 	<index-site-go>您正在切换到网站：{sitename}，请稍候…</index-site-go>
-	<index-site-tip1>会员列表</index-site-tip1>
+	<index-site-tip1>用户列表</index-site-tip1>
 	<index-site-pl>评论管理</index-site-pl>
 	<index-site-no-message>没有消息</index-site-no-message>
 	<index-title>后台管理</index-title>

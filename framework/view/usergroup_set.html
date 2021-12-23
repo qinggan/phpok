@@ -3,7 +3,7 @@
 <!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
 <div class="layui-card">
 	<div class="layui-card-header">
-		{lang会员组基本信息}
+		{lang用户组基本信息}
 	</div>
 	<div class="layui-card-body">
 		<!-- if $reglist -->
@@ -24,7 +24,7 @@
 				<input type="text" id="title" required lay-verify="required" name="title" value="{$rs.title}" autocomplete="off" class="layui-input" />
 			</div>
 			<div class="layui-input-inline auto gray lh38">
-				{lang设置会员组的名称}
+				{lang设置用户组的名称}
 			</div>
 		</div>
 		<div class="layui-form-item">
@@ -85,7 +85,7 @@
 				<input type="radio" name="is_open" title="{lang启用}" value="1"{if $rs.is_open} checked{/if}>
 			</div>
 			<div class="layui-input-inline auto gray lh38">
-				{lang设置是否开放此组供用户选择（启用后允许用户自行选择会员组）}
+				{lang设置是否开放此组供用户选择（启用后允许用户自行选择用户组）}
 			</div>
 		</div>
 		<!-- if $id && !$rs.is_guest && $all_fields_list -->

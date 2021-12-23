@@ -349,7 +349,7 @@ class list_control extends phpok_control
 		$this->model('list')->is_biz(($project_rs['is_biz'] ? true : false));
 		//读取多级分类
 		$this->model('list')->multiple_cate(($project_rs['cate_multiple'] ? true : false));
-		//绑定会员
+		//绑定用户
 		$this->model('list')->is_user(($project_rs['is_userid'] ? true : false));
 		//内容布局维护
 		$layout = $m_list = array();
@@ -364,9 +364,9 @@ class list_control extends phpok_control
 			if($value == "hits"){
 				$layout_list[$value] = P_Lang('查看次数');
 			}elseif($value == "dateline"){
-				$layout_list[$value] = P_Lang('发布时间');
+				$layout_list[$value] = P_Lang('日期');
 			}elseif($value == 'user_id'){
-				$layout_list['user_id'] = P_Lang('会员账号');
+				$layout_list['user_id'] = $project_rs['user_alias'] ? $project_rs['user_alias'] : P_Lang('用户账号');
 			}else{
 				$layout_list[$value] = $m_list[$value]["title"];
 			}
@@ -582,7 +582,7 @@ class list_control extends phpok_control
 			$this->assign("rslist",$rslist);
 		}
 		if($project_rs['is_attr']){
-			$attrlist = $this->model('list')->attr_list();
+			$attrlist = $this->model('list')->attr_list($project_rs['id'],$project_rs['site_id']);
 			$this->assign("attrlist",$attrlist);
 		}
 		return true;
@@ -679,9 +679,7 @@ class list_control extends phpok_control
 				$rs["cate_id"] = $cateid;
 				$extcate = array($cateid);
 			}
-			if($this->site['biz_main_service']){
-				$rs['is_virtual'] = 1;
-			}
+			$rs['is_virtual'] = $this->site['biz_main_service'];
 		}
 		if(!$pid){
 			$this->error(P_Lang('操作异常'),$this->url("list"));
@@ -695,10 +693,15 @@ class list_control extends phpok_control
 		if(!$p_rs){
 			$this->error(P_Lang('项目不存在'));
 		}
+		//针对项目里设置的电商属性
+		if(!$id){
+			$rs['is_virtual'] = ($p_rs['biz_service'] == 1 || $p_rs['biz_service'] == 2) ? 1 : 0;
+		}
 		$m_rs = $this->model('module')->get_one($p_rs["module"]);
 		//读取扩展属性
 		$ext_list = $this->model('module')->fields_all($p_rs["module"]);
 		$extlist = array();
+		$e_sublist = array();
 		foreach(($ext_list ? $ext_list : array()) as $key=>$value){
 			if($value["ext"] && is_string($value['ext'])){
 				$ext = unserialize($value["ext"]);
@@ -708,7 +711,14 @@ class list_control extends phpok_control
 			if($rs[$value["identifier"]] != ''){
 				$value["content"] = $rs[$value["identifier"]];
 			}
-			$extlist[] = $this->lib('form')->format($value);
+			if(!$value['group_id'] || $value['group_id'] == 'main'){
+				$extlist[] = $this->lib('form')->format($value);
+			}else{
+				$e_sublist[] =  $this->lib('form')->format($value);
+			}
+		}
+		if($e_sublist && count($e_sublist)>0){
+			$this->assign('e_sublist',$e_sublist);
 		}
 		if($id){
 			$tmplist = $this->model('ext')->ext_all('list-'.$id,true);
@@ -808,7 +818,7 @@ class list_control extends phpok_control
 		$this->assign("rs",$rs);
 		$this->model("list");
 		if($p_rs['is_attr']){
-			$attrlist = $this->model('list')->attr_list();
+			$attrlist = $this->model('list')->attr_list($p_rs['id'],$p_rs['site_id']);
 			if($attrlist){
 				$attr = $rs['attr'] ? explode(",",$rs['attr']) : array();
 				foreach($attrlist as $key=>$value){
@@ -930,7 +940,7 @@ class list_control extends phpok_control
 		if($p_rs['is_userid']){
 			$array['user_id'] = $this->get('user_id','int');
 			if(!$array['user_id'] && $p_rs['is_userid'] == 2 && !$_autosave){
-				$this->json(P_Lang('会员账号不能为空'));
+				$this->json(P_Lang('用户账号不能为空'));
 			}
 		}
 		if($p_rs['is_tpl_content']){
@@ -1606,5 +1616,109 @@ class list_control extends phpok_control
 			}
 		}
 		$this->success();
+	}
+
+	public function preview_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定主题ID'));
+		}
+		$rs = $this->model('list')->get_one($id,false);
+		if(!$rs){
+			$this->error(P_Lang('暂无内容'));
+		}
+		$project = $this->model('project')->get_one($rs['project_id'],false);
+		if(!$project || !$project['module']){
+			$this->error(P_Lang('项目不存在或未绑定模块'));
+		}
+		$module = $this->model('module')->get_one($project['module']);
+		$data = array('id'=>P_Lang('主键ID'),'site_id'=>P_Lang('站点ID'),'project_id'=>P_Lang('项目ID'),'cate_id'=>P_Lang('分类ID'));
+		if(!$module['mtype']){
+			$data = $this->mainlist($project);
+		}
+		$flist = $this->model('module')->fields_all($module['id'],'identifier');
+		if($flist){
+			foreach($flist as $key=>$value){
+				$data[$value['identifier']] = $value['title'];
+			}
+		}
+		$rslist = array();
+		$auto_hide = array('user_id','integral','replydate','parent_id','seo_title','seo_keywords','seo_desc','tpl'); //空值隐藏
+		$auto_hide[] = 'style';
+		$auto_hide[] = 'identifier';
+		$auto_hide[] = 'attr';
+		$auto_hide[] = 'tag';
+		$auto_hide[] = 'hits';
+		$forbid = array('hidden'); // 强制隐藏
+		if(!$project['cate']){
+			$forbid[] = 'cate_id';
+		}
+		if(!$project['is_seo']){
+			$forbid[] = 'seo_title';
+			$forbid[] = 'seo_keywords';
+			$forbid[] = 'seo_desc';
+		}
+		if(!$project['is_userid']){
+			$forbid[] = 'user_id';
+		}
+		if(!$project['is_tpl_content'] || !$project['is_front']){
+			$forbid[] = 'tpl';
+		}
+		foreach($rs as $key=>$value){
+			if(in_array($key,$forbid) || (in_array($key,$auto_hide) && !$value)){
+				continue;
+			}
+			$tmp = array();
+			$tmp['field'] = $key;
+			$tmp['content'] = is_array($value) ? print_r($value,true) : $value;
+			if($data[$key]){
+				$tmp['title'] = $data[$key];
+				$tmp['style'] = '';
+			}else{
+				$tmp['title'] = $key;
+				$tmp['style'] = "color:red;";
+			}
+			$rslist[] = $tmp;
+		}
+		$this->assign('rslist',$rslist);
+		$content = $this->fetch('list_preview');
+		$this->success($content);
+	}
+
+	private function mainlist($project)
+	{
+		$data = array();
+		$data['title'] = $project['alias_title'] ? $project['alias_title'] : P_Lang('主题');
+		$data['id'] = P_Lang('主键ID');
+		$data['site_id'] = P_Lang('站点ID');
+		$data['parent_id'] = P_Lang('父主题ID');
+		$data['cate_id'] = P_Lang('分类ID');
+		$data['project_id'] = P_Lang('项目ID');
+		$data['module_id'] = P_Lang('模块ID');
+		$data['dateline'] = P_Lang('日期');
+		$data['lastdate'] = P_Lang('最后修改时间');
+		$data['sort'] = P_Lang('排序');
+		$data['status'] = P_Lang('审核状态');
+		$data['hidden'] = P_Lang('隐藏状态');
+		$data['hits'] = P_Lang('点击数');
+		$data['tpl'] = P_Lang('模板');
+		$data['seo_title'] = P_Lang('SEO标题');
+		$data['seo_keywords'] = P_Lang('SEO关键字');
+		$data['seo_desc'] = P_Lang('SEO描述');
+		$data['tag'] = P_Lang('标签');
+		$data['attr'] = P_Lang('属性');
+		$data['replydate'] = P_Lang('最后回复时间');
+		$data['user_id'] = P_Lang('用户ID');
+		$data['identifier'] = P_Lang('标识');
+		$data['integral'] =  P_Lang('财富基数');
+		$data['style'] = P_Lang('样式');
+		$data['price'] = P_Lang('价格');
+		$data['currency_id'] = P_Lang('货币ID');
+		$data['weight'] = P_Lang('重量');
+		$data['volume'] = P_Lang('体积');
+		$data['unit'] = P_Lang('单位');
+		$data['is_virtual'] = P_Lang('是否虚拟');
+		return $data;
 	}
 }

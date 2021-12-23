@@ -1,0 +1,35 @@
+<!-- include tpl=head_open -->
+<script type="text/javascript">
+function select_input(val,title)
+{
+	var opener = $.dialog.opener;
+	opener.$("#videoid").val(val);
+	if(title){
+		opener.$("#title").val(title);
+	}
+	opener.plugin_aliyunvod_time_thumb();
+	$.dialog.close();
+}
+</script>
+<div class="list">
+<table width="100%" cellpadding="0" cellspacing="0" class="list">
+<tr>
+	<th>视频名称</th>
+	<th>播放时间</th>
+	<th>上传时间</th>
+	<th class='w60'>操作</th>
+</tr>
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<tr>
+	<td style="line-height:33px;">&nbsp;{$value.title}</td>
+	<td class="center">{$value.time}</td>
+	<td class="center">{func time_format $value.dateline}</td>
+	<td><input type="button" value="选择" class="layui-btn" onclick="select_input('{$value.videoid}','{$value.title}')" /></td>
+</tr>
+<!-- /loop -->
+</table>
+</div>
+<div class="table"><!-- include tpl=pagelist --></div>
+
+
+<!-- include tpl=foot_open -->

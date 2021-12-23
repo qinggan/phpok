@@ -212,7 +212,7 @@
 				'title': p_lang('编辑状态') + " #" + id,
 				'lock': true,
 				'width':'550px',
-				'height':'300px',
+				'height':'320px',
 				'ok': function () {
 	                var iframe = this.iframe.contentWindow;
 	                if (!iframe.document.body) {

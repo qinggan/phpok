@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员退出操作
+ * 用户退出操作
  * @package phpok\www
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
@@ -30,7 +30,7 @@ class logout_control extends phpok_control
 		$this->session->unassign('user_id');
 		$this->session->unassign('user_gid');
 		$this->session->unassign('user_name');
-		$tip = P_Lang('会员{user}成功退出',array('user'=>'<span class="red"> '.$nickname.' </span>'));
+		$tip = P_Lang('用户{user}成功退出',array('user'=>'<span class="red"> '.$nickname.' </span>'));
 		$this->success($tip,$this->url);
 	}
 }

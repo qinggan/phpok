@@ -20,26 +20,6 @@ function project_check()
 }
 
 
-
-function content_del(id)
-{
-	$.dialog.confirm("确定要删除主题ID：<span class='red'>"+id+"</span> 的信息吗？<br />删除后是不能恢复的？",function(){
-		var url = get_url("list","del") +"&id="+id;
-		var rs = json_ajax(url);
-		if(rs.status == "ok")
-		{
-			$.dialog.alert("主题删除成功",function(){
-				window.location.reload();
-			});
-		}
-		else
-		{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	});
-}
-
 function tab_id(id)
 {
 	$("#float_tab li").each(function(i){

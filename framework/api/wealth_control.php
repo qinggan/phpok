@@ -29,7 +29,7 @@ class wealth_control extends phpok_control
 	public function index_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$rslist = $this->model('wealth')->get_all(1);
 		if(!$rslist){
@@ -37,7 +37,7 @@ class wealth_control extends phpok_control
 		}
 		$me = $this->model('user')->get_one($this->session->val('user_id'));
 		if(!$me || !$me['status'] || $me['status'] == 2){
-			$this->error('会员信息不存在或未审核或已锁定');
+			$this->error('用户信息不存在或未审核或已锁定');
 		}
 		$wealth = $me['wealth'];
 		foreach($rslist as $key=>$value){
@@ -53,7 +53,7 @@ class wealth_control extends phpok_control
 	public function log_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
@@ -86,7 +86,7 @@ class wealth_control extends phpok_control
 	public function recharge_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行此操作'));
+			$this->error(P_Lang('非用户不能执行此操作'));
 		}
 		$id = $this->get('id');
 		if(!$id){

@@ -1,0 +1,37 @@
+<!-- include tpl=head_lay -->
+<script type="text/javascript">
+$(document).ready(function(){
+	document.addEventListener('keydown', function(e) {
+		if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)){
+			e.preventDefault();
+			$.admin_appsys.help_save($("#post_save")[0]);
+		}
+	});
+});
+</script>
+<form method="post" id="post_save" onsubmit="return $.admin_appsys.help_save(this)">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<input type="hidden" name="type" id="type" value="{$type}" />
+<div class="layui-card">
+	<div class="layui-card-header">
+		编辑帮助手册
+		<div class="fr">
+			<a href="{url ctrl=appsys func=help id=$id type=admin/}" class="layui-btn layui-btn-sm{if $type == 'admin'} layui-btn-disabled{/if}">编辑后台帮助</a>
+			<a href="{url ctrl=appsys func=help id=$id type=www/}" class="layui-btn layui-btn-sm{if $type == 'www'} layui-btn-disabled{/if}">编辑前台帮助</a>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		{$edit}
+	</div>
+</div>
+
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+		<span style="padding-left:2em;color:#ccc;">保存不会关闭页面，请手动关闭</span>
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_lay -->

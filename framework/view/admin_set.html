@@ -35,6 +35,15 @@
 					{lang此邮箱可用于接收网站通知信息，请不要和SMTP配置的邮箱一致}
 				</div>
 			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">{lang管理员角色}</label>
+				<div class="layui-input-inline" style="width: 450px">
+					<input type="text" id="note" name="note" value="{$rs.note}" autocomplete="off" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					{lang提示权限管理员的后台角色，用于区分和提示权限管理员职责，如：图文编辑，系统管理员不用设置}
+				</div>
+			</div>
 			<!-- if $popedom.status -->
 			<div class="layui-form-item">
 				<label class="layui-form-label">{lang状态}</label>
@@ -52,7 +61,7 @@
 				<label class="layui-form-label">{lang管理员级别}</label>
 				<div class="layui-input-inline" style="min-width: 300px;">
 					<input type="radio" name="if_system" id="if_system_1" title="{lang系统管理员}" value="1"{if $rs.if_system} checked{/if} onclick="$.admin_admin.if_system(1)" />
-					<input type="radio" name="if_system" id="if_system_0" title="{lang普通管理员}" value="0"{if !$rs.if_system} checked{/if} onclick="$.admin_admin.if_system(0)" />
+					<input type="radio" name="if_system" id="if_system_0" title="{lang权限管理员}" value="0"{if !$rs.if_system} checked{/if} onclick="$.admin_admin.if_system(0)" />
 				</div>
 				<div class="layui-form-mid layui-word-aux">
 					{lang系统管理员是最高级别管理也是开发管理员，可管理整个平台所有功能}
@@ -62,10 +71,10 @@
 			<div class="layui-form-item">
 				<label class="layui-form-label">{lang管理员级别}</label>
 				<div class="layui-input-inline" style="width: 300px;">
-					<input type="radio" name="if_system" id="if_system_0" title="{lang普通管理员}" value="0"{if !$rs.if_system} checked{/if} onclick="admin_system(0)" />
+					<input type="radio" name="if_system" id="if_system_0" title="{lang权限管理员}" value="0"{if !$rs.if_system} checked{/if} onclick="admin_system(0)" />
 				</div>
 				<div class="layui-form-mid layui-word-aux">
-					{lang您只能添加普通管理员信息}
+					{lang您只能添加权限管理员信息}
 				</div>
 			</div>
 			<!-- /if -->

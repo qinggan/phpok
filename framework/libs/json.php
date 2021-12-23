@@ -1,9 +1,7 @@
 <?php
 /**
  * JSON 编码解码操作
- * @package phpok\framework\libs
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK 开源授权协议：GNU Lesser General Public License
@@ -20,6 +18,9 @@ class json_lib
 	**/
 	public function encode($var,$unicode=false,$pretty=false)
 	{
+		if(version_compare(PHP_VERSION, '5.4.0', '<')){
+			return json_encode($var);
+		}
 		if(!$unicode){
 			if($pretty){
 				return json_encode($var,JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);

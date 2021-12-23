@@ -1,13 +1,11 @@
 ;<?php exit("<h1>Access Denied</h1>");?>
 
-; 支持 mysqli pdo_mysql，PHP大于5.3版的用户建议使用mysqli或pdo_mysql
-; http 模式需要调用 libs/curl.php 和 libs/token.php 文件，此模式需要 Server 端配合，功能比较弱
-; 请注意 http 模式还在试验阶段
+; 支持 mysqli pdo_mysql sqlite，PHP大于5.3版的用户建议使用mysqli或pdo_mysql
 file = "mysqli"
 
 ; 数据库服务器，本地请填写localhost或127.0.0.1
 ; 当使用 http 时，这里填写服务器的 IP，可用于解决无法认别域名问题
-host = "127.0.0.1"
+;host = "127.0.0.1"
 
 ; 数据库服务器的端口号，默认是3306
 ; 使用 http 模式此项无效
@@ -40,6 +38,7 @@ charset = "utf8"
 debug = false
 
 ; 即时缓存，适应用大量的小查询（重复查询，一般不用开启）
+; 注意，此项仅在使用了 memcache 或 redis 缓存时才有效，如果使用文件缓存，速度反而会下降
 cache = false
 
 ;慢查询记录

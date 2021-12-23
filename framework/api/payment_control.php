@@ -62,7 +62,7 @@ class payment_control extends phpok_control
 				$this->error(P_Lang('{title}余额不足，请先充值',array('title'=>$wealth['title'])));
 			}
 			$surplus = floatval($myprice - $unpaid_price);
-			//扣除会员积分
+			//扣除用户积分
 			$savelogs = array('wid'=>$wealth['id'],'goal_id'=>$rs['user_id'],'mid'=>0,'val'=>'-'.$unpaid_price);
 			$savelogs['appid'] = $this->app_id;
 			$savelogs['dateline'] = $this->time;
@@ -100,7 +100,7 @@ class payment_control extends phpok_control
 			$array['status'] = 1;
 			$array['currency_rate'] = $rs['currency_rate'];
 			$this->model('payment')->log_create($array);
-			$this->model('order')->update_order_status($rs['id'],'paid');
+			$this->model('order')->update_order_status($rs['id'],'paid',P_Lang('订单已付款'));
 			//插件接口
 			$this->plugin('payment-notify',$insert_id);
 			$this->success();
@@ -136,10 +136,7 @@ class payment_control extends phpok_control
 		if(!$insert_id){
 			$this->error(P_Lang('支付记录创建失败'));
 		}
-		$this->model('order')->update_order_status($rs['id'],'unpaid');
-		$note = P_Lang('订单进入待支付状态，编号：{sn}',array('sn'=>$rs['sn']));
-		$log = array('order_id'=>$rs['id'],'addtime'=>$this->time,'who'=>$user['user'],'note'=>$note);
-		$this->model('order')->log_save($log);
+		$this->model('order')->update_order_status($rs['id'],'unpaid',P_Lang('订单等待支付'));
 		//增加order_payment
 		$array = array('order_id'=>$rs['id'],'payment_id'=>$payment_rs['id']);
 		$array['title'] = $payment_rs['title'];
@@ -176,7 +173,7 @@ class payment_control extends phpok_control
 		}
 		$myprice = round($me_val*$wealth['cash_ratio']/100,$wealth['dnum']);
 		$unpaid_price = $this->model('order')->unpaid_price($order['id']);
-		//扣除会员积分
+		//扣除用户积分
 		$savelogs = array('wid'=>$wealth['id'],'goal_id'=>$order['user_id'],'mid'=>0);
 		$savelogs['appid'] = $this->app_id;
 		$savelogs['dateline'] = $this->time;
@@ -202,6 +199,10 @@ class payment_control extends phpok_control
 
 	public function create_f()
 	{
+		$type = $this->get('type');
+		if($type == 'recharge'){
+			$this->_create_recharge();
+		}
 		$id = $this->get('id','int');
 		if(!$id){
 			$token = $this->get('token');
@@ -215,6 +216,7 @@ class payment_control extends phpok_control
 			if(!$info || !$info['price']){
 				$this->error(P_Lang('数据不完整，请检查'));
 			}
+			$rs = $info;
 		}else{
 			$rs = $this->model('order')->get_one($id);
 			if(!$rs){
@@ -247,10 +249,38 @@ class payment_control extends phpok_control
 		if(!$payment){
 			$this->error(P_Lang('未指定付款方式'));
 		}
+		//用户积分抵扣检测
+		$integral_val = $this->get("integral_val",'int');
+		if($this->session->val('user_id') && $integral_val && is_array($integral_val)){
+			$unpaid_price = $this->model('order')->unpaid_price($rs['id']);
+			$wlist = $this->model('order')->balance($this->session->val('user_id'));
+			if($wlist && $wlist['integral']){
+				foreach($integral_val as $key=>$value){
+					if(!$value || !intval($value) || !$key || !intval($key) || !$wlist['integral'][$key]){
+						continue;
+					}
+					if($value > $wlist['integral'][$key]['val']){
+						continue;
+					}
+					$useprice = round($value*$wlist['integral'][$key]['cash_ratio']/100,$wlist['integral'][$key]['dnum']);
+					$this->model('order')->integral_order_payment($info,$wlist['integral'][$key],$value);
+					$unpaid_price = $this->model('order')->unpaid_price($rs['id']);
+					if(!$unpaid_price || $unpaid_price<0.01){
+						break;
+					}
+				}
+			}
+			$unpaid_price = $this->model('order')->unpaid_price($rs['id']);
+			if(!$unpaid_price || $unpaid_price<0.01){
+				$this->model('order')->update_order_status($rs['id'],'paid',P_Lang('订单已付款'));
+				$this->success();
+			}
+		}
+
 		if(!is_numeric($payment) && $this->session->val('user_id')){
 			//如果积分超出
 			$wealth = $this->model('wealth')->get_one($payment,'identifier');
-			if(!$rs){
+			if(!$wealth){
 				$this->error(P_Lang('支付方式无效，请检查'));
 			}
 			$me_val = $this->model('wealth')->get_val($this->session->val('user_id'),$wealth['id']);
@@ -266,54 +296,29 @@ class payment_control extends phpok_control
 				$this->error(P_Lang('{title}余额不足，请先充值',array('title'=>$wealth['title'])));
 			}
 			$surplus = floatval($myprice - $unpaid_price);
+			//计算这个值多少积分
+			$minus_val = round($unpaid_price*100/$wealth['cash_ratio'],$wealth['dnum']);
 
-			//扣除会员积分
-			$savelogs = array('wid'=>$wealth['id'],'goal_id'=>$this->session->val('user_id'),'mid'=>0,'val'=>'-'.$unpaid_price);
-			$savelogs['appid'] = $this->app_id;
-			$savelogs['dateline'] = $this->time;
-			$savelogs['user_id'] = $this->session->val('user_id');
-			$savelogs['ctrlid'] = 'payment';
-			$savelogs['funcid'] = 'create';
-			$savelogs['url'] = 'index.php';
-			$savelogs['note'] = P_Lang('财富（{title}）抵现',array('title'=>$wealth['title']));
-			$savelogs['status'] = 1;
-			$savelogs['val'] = -$unpaid_price;
-			$data = array('wid'=>$wealth['id'],'uid'=>$this->session->val('user_id'),'lasttime'=>$this->time);
-			$data['val'] = $surplus;
-			$this->model('wealth')->save_log($savelogs);
-			$this->model('wealth')->save_info($data);
+			$note = P_Lang('财富（{title}）抵现',array('title'=>$wealth['title']));
+			$this->model('wealth')->save_val($wealth['id'],$this->session->val('user_id'),-$minus_val,$note);//扣除积分
+
 			//创建订单日志，记录支付信息
-			$tmparray = array('price'=>$unpaid_price,'payment'=>$wealth['title'],'integral'=>$unpaid_price,'unit'=>$wealth['unit']);
+			$tmparray = array('price'=>$unpaid_price,'payment'=>$wealth['title'],'integral'=>$minus_val,'unit'=>$wealth['unit']);
 			$note = P_Lang('使用{payment}抵扣{price}，共消耗{payment}{integral}{unit}',$tmparray);
 			$who = $this->session->val('user_name');
 			$log = array('order_id'=>$rs['id'],'addtime'=>$this->time,'who'=>$who,'note'=>$note);
 			$this->model('order')->log_save($log);
-			$this->model('order')->integral_discount($order['id'],$unpaid_price);
 
-			$array = array('order_id'=>$rs['id'],'payment_id'=>0);
-			$array['title'] = P_Lang('余额支付');
-			$array['price'] = 0;
+			$array = array('order_id'=>$rs['id'],'payment_id'=>$wealth['identifier']);
+			$array['title'] = $wealth['title'] == P_Lang('余额') ? P_Lang('余额支付') : P_Lang('余额支付').'_'.$wealth['title'];
+			$array['price'] = $unpaid_price;
+			$array['currency_id'] = $info['currency_id'];
+			$array['currency_rate'] = $info['currency_rate'];
 			$array['startdate'] = $this->time;
 			$array['dateline'] = $this->time;
-			$array['ext'] = serialize(array('备注'=>'余额支付'));
+			$array['ext'] = serialize(array('备注'=>$note));
 			$this->model('order')->save_payment($array);
-			//登记支付链
-			$array = array('type'=>'order','price'=>'0.00','currency_id'=>$rs['currency_id'],'sn'=>$rs['sn']);
-			$array['content'] = $array['title'] = P_Lang('订单：{sn}',array('sn'=>$rs['sn']));
-			$array['payment_id'] = 0;
-			$array['dateline'] = $this->time;
-			$array['user_id'] = $this->session->val('user_id');
-			$array['status'] = 1;
-			$chk = $this->model('payment')->log_check($rs['sn'],'order');
-			if($chk){
-				if(!$chk['status']){
-					$this->model('payment')->log_update($array,$chk['id']);
-				}
-				$this->model('order')->update_order_status($rs['id'],'paid');
-				$this->success();
-			}
-			$this->model('payment')->log_create($array);
-			$this->model('order')->update_order_status($rs['id'],'paid');
+			$this->model('order')->update_order_status($rs['id'],'paid',P_Lang('订单已付款'));
 			$this->success();
 		}
 		$payment_rs = $this->model('payment')->get_one($payment);
@@ -323,51 +328,60 @@ class payment_control extends phpok_control
 		if(!$payment_rs['status']){
 			$this->error(P_Lang('支付方式未启用'));
 		}
-		$chk = $this->model('payment')->log_check($info['sn'],'',$payment);
-		if($chk){
-			if($chk['status']){
-				$this->error(P_Lang('订单{sn}已支付完成，不能重复执行',array('sn'=>$info['sn'])));
-			}
-			$array = array('type'=>$info['type'],'payment_id'=>$payment,'title'=>$title,'content'=>$title);
-			$array['dateline'] = $this->time;
-			$array['price'] = $info['price'];
-			$array['currency_id'] = $info['currency_id'];
-			$this->model('payment')->log_update($array,$chk['id']);
-			$this->success($chk['id']);
-		}
-		$array = array('sn'=>$info['sn'],'type'=>$info['type'],'payment_id'=>$payment,'title'=>$title,'content'=>$title);
-		$array['dateline'] = $this->time;
-		$array['user_id'] = $info['user_id'] ? $info['user_id'] : $this->user['id'];
-		$array['price'] = $info['price'];
-		$array['currency_id'] = $info['currency_id'];
-		$insert_id = $this->model('payment')->log_create($array);
-		if(!$insert_id){
-			$this->error(P_Lang('支付记录创建失败'));
-		}
 		//更新订单状态
 		if($info['type'] == 'order'){
-			$order = $this->model('order')->get_one_from_sn($info['sn']);
+			$order = $this->model('order')->get_one($info['sn'],'sn');
 			if(!$order){
 				$this->model('payment')->log_delete($insert_id);
 				$this->error(P_Lang('订单信息不存在'));
 			}
 			//更新支付状态
-			$this->model('order')->update_order_status($order['id'],'unpaid');
-			//写入日志
-			$note = P_Lang('订单进入等待支付状态，编号：{sn}',array('sn'=>$sn));
-			$log = array('order_id'=>$order['id'],'addtime'=>$this->time,'who'=>$this->user['user'],'note'=>$note);
-			$this->model('order')->log_save($log);
-			//增加order_payment
-			$array = array('order_id'=>$order['id'],'payment_id'=>$payment_rs['id']);
-			$array['title'] = $payment_rs['title'];
-			$array['price'] = $info['price'];
-			$array['startdate'] = $this->time;
-			$order_payment = $this->model('order')->order_payment($order['id']);
-			if(!$order_payment){
-				$this->model('order')->save_payment($array);
-			}else{
-				$this->model('order')->save_payment($array,$order_payment['id']);
-			}
+			$this->model('order')->update_order_status($order['id'],'unpaid',P_Lang('订单等待支付'));
+		}
+		$unpaid_price = $this->model('order')->unpaid_price($rs['id']);
+		$array = array('sn'=>$info['sn'],'type'=>$info['type'],'payment_id'=>$payment_rs['id'],'title'=>$title,'content'=>$title);
+		$array['dateline'] = $this->time;
+		$array['user_id'] = $info['user_id'] ? $info['user_id'] : $this->user['id'];
+		$array['price'] = $unpaid_price;
+		$array['currency_id'] = $info['currency_id'];
+		$insert_id = $this->model('payment')->log_create($array);
+		if(!$insert_id){
+			$this->error(P_Lang('支付记录创建失败'));
+		}
+		$this->success($insert_id);
+	}
+
+	private function _create_recharge()
+	{
+		$wealth = $this->get('wealth','int');
+		if(!$wealth){
+			$this->error(P_Lang('未指定充值目标'));
+		}
+		$price = $this->get('price','float');
+		if(!$price){
+			$this->error(P_Lang('未指定充值金额'));
+		}
+		if($price < 0.01){
+			$this->error(P_Lang('充值金额不能少于0.01元'));
+		}
+		$payment = $this->get('payment','int');
+		if(!$payment){
+			$this->error(P_Lang('未指定支付方式'));
+		}
+		$sn = uniqid('CZ'.date("YmdHis",$this->time));
+		$sn = strtoupper($sn);
+		$array = array('type'=>'recharge','price'=>$price,'currency_id'=>$this->site['currency_id'],'sn'=>$sn);
+		$array['title'] = P_Lang('在线充值');
+		$array['content'] = P_Lang('充值编号：{sn}',array('sn'=>$sn));
+		$array['payment_id'] = $payment;
+		$array['dateline'] = $this->time;
+		$array['user_id'] = $this->session->val('user_id');
+		$array['status'] = 0;
+		$tmp = array('goal'=>$wealth);
+		$array['ext'] = serialize($tmp);
+		$insert_id = $this->model('payment')->log_create($array);
+		if(!$insert_id){
+			$this->error(P_Lang('支付记录创建失败，请联系管理员'));
 		}
 		$this->success($insert_id);
 	}

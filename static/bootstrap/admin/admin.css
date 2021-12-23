@@ -20,6 +20,7 @@
 
 div[pre-type=layer]{
 	min-height:30px;
+	position: relative;
 }
 
 div[pre-type=content]{
@@ -30,16 +31,14 @@ div[pre-type=data]{
 	min-height:30px;
 	cursor: pointer;
 	position: relative;
-	background:#fefefe;
 }
 
 div[pre-type=data]:hover{
-	background:#eee;
+	background:rgba(0,0,0,0.1);
 }
 
 div[pre-type=data] > div[pre-type=content]{
 	border:1px dashed #ccc;
-	height:100%;
 	display:block;
 }
 
@@ -53,7 +52,7 @@ div.active[pre-type=data] > div[pre-type=content]{
 
 div[pre-type=toolbar]{
 	position: absolute;
-	top:0;
+	top:-24px;
 	left:0;
 	width:100%;
 	height:100%;
@@ -62,14 +61,43 @@ div[pre-type=toolbar]{
 	z-index:999;
 }
 
-div[pre-type=data]:hover div[pre-type=toolbar]{
+div[pre-type=toolbar-layer]{
+	position: absolute;
+	left:-26px;
+	top:0;
+	width:26px;
+	height:100%;
+	text-align:center;
+	display:none;
+	z-index:999;
+}
+
+div[pre-type=toolbar-updown]{
+	position: absolute;
+	right:0px;
+	bottom:0;
+	height:26px;
+	text-align:center;
+	display:none;
+	z-index:999;
+}
+div[pre-type=toolbar-updown] button{
+	width:20px;
+}
+
+div[pre-type=data]:hover div[pre-type=toolbar],div[pre-type=layer]:hover div[pre-type=toolbar-layer],div[pre-type=layer]:hover div[pre-type=toolbar-updown]{
 	display:block;
 }
-div.active[pre-type=data] div[pre-type=toolbar]{
+div.active[pre-type=data] div[pre-type=toolbar],div.active[pre-type=layer] div[pre-type=toolbar-layer],div.active[pre-type=layer] div[pre-type=toolbar-updown]{
 	display:block;
 }
 
-div[pre-type=content]{ line-height:170%;font-size:1.2em;font-weight:500;}
+div[pre-type=content]{
+	line-height:170%;
+	font-size:1.2em;
+	font-weight:500;
+	min-height:100px;
+}
 .list-paddingleft-2{
 	padding-left:3em;
 }

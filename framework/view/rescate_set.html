@@ -96,18 +96,18 @@
 			<div class="layui-input-inline default-auto">
 				<select id="compress" name="compress">
 					<option value="0">{lang不压缩}</option>
-					<option value="500">{lang压缩图片宽度不小于} 500px</option>
-					<option value="700">{lang压缩图片宽度不小于} 700px</option>
-					<option value="800">{lang压缩图片宽度不小于} 800px</option>
-					<option value="900">{lang压缩图片宽度不小于} 900px</option>
-					<option value="1000">{lang压缩图片宽度不小于} 1000px</option>
-					<option value="1200">{lang压缩图片宽度不小于} 1200px</option>
-					<option value="1500">{lang压缩图片宽度不小于} 1500px</option>
-					<option value="1700">{lang压缩图片宽度不小于} 1700px</option>
-					<option value="1800">{lang压缩图片宽度不小于} 1800px</option>
-					<option value="1920">{lang压缩图片宽度不小于} 1920px</option>
-					<option value="2560">{lang压缩图片宽度不小于} 2560px</option>
-					<option value="4000">{lang压缩图片宽度不小于} 4000px</option>
+					<option value="500"{if $rs.compress == 500} selected{/if}>{lang压缩图片宽度不小于} 500px</option>
+					<option value="700"{if $rs.compress == 700} selected{/if}>{lang压缩图片宽度不小于} 700px</option>
+					<option value="800"{if $rs.compress == 800} selected{/if}>{lang压缩图片宽度不小于} 800px</option>
+					<option value="900"{if $rs.compress == 900} selected{/if}>{lang压缩图片宽度不小于} 900px</option>
+					<option value="1000"{if $rs.compress == 1000} selected{/if}>{lang压缩图片宽度不小于} 1000px</option>
+					<option value="1200"{if $rs.compress == 1200} selected{/if}>{lang压缩图片宽度不小于} 1200px</option>
+					<option value="1500"{if $rs.compress == 1500} selected{/if}>{lang压缩图片宽度不小于} 1500px</option>
+					<option value="1700"{if $rs.compress == 1700} selected{/if}>{lang压缩图片宽度不小于} 1700px</option>
+					<option value="1800"{if $rs.compress == 1800} selected{/if}>{lang压缩图片宽度不小于} 1800px</option>
+					<option value="1920"{if $rs.compress == 1920} selected{/if}>{lang压缩图片宽度不小于} 1920px</option>
+					<option value="2560"{if $rs.compress == 2560} selected{/if}>{lang压缩图片宽度不小于} 2560px</option>
+					<option value="4000"{if $rs.compress == 4000} selected{/if}>{lang压缩图片宽度不小于} 4000px</option>
 				</select>
 			</div>
 			<div class="layui-form-mid layui-word-aux">
@@ -149,6 +149,13 @@
 			<div class="layui-form-mid layui-word-aux">{lang全部不选表示不使用GD方案}</div>
 		</div>
 		<input type="hidden" name="ico" value="1" />
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang前台可用}</label>
+			<div class="layui-input-inline auto">
+				<input type="checkbox" name="is_front" id="is_front" lay-skin="switch" value="1" {if $rs.is_front} checked{/if}>
+			</div>
+			<div class="layui-form-mid layui-word-aux">{lang设为前台可用时，在用户中心会显示相应的媒体库}</div>
+		</div>
 	</div>
 </div>
 <div class="submit-info-clear"></div>

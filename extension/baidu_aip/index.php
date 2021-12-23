@@ -25,7 +25,8 @@ class baidu_aip_lib extends _init_lib
 	public function __construct()
 	{
 		parent::__construct();
-		include_once $this->dir_extension.'baidu_aip/AipContentCensor.php';
+		$pharfile = 'phar://'.$this->dir_extension.'baidu_aip/baidu_aip.phar';
+		include_once $pharfile.'/AipContentCensor.php';
 	}
 
 	public function config($app_id='',$app_key='',$app_secret='')

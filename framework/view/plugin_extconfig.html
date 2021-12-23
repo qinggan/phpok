@@ -1,4 +1,4 @@
-<!-- include tpl=head_open -->
+<!-- include tpl=head_lay nopadding=true -->
 <script type="text/javascript">
 function save()
 {
@@ -20,7 +20,50 @@ function save()
 	});
 }
 </script>
-<form method="post" id="post_save" onsubmit="return false">
-{$plugin_html}
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<div class="layui-card">
+	<div class="layui-card-header">
+		插件系统参数
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				单选项目
+			</label>
+			<div class="layui-input-inline">
+				<select id="sys-pid" name="sys-pid">
+					<option value="">请选择…</option>
+					<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}" {if $rs.pid && $rs.pid==$value.id} selected{/if}>{$value.space}{$value.title}<!-- if !$value.status -->/已禁用<!-- /if --><!-- if !$value.module -->/未绑定模块<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				指定项目，在 PHP 代码里可以直接用 <kbd>$this->pid</kbd> 来使用
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				多选项目
+			</label>
+			<div class="layui-input-block">
+				<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+				<input type="checkbox" name="sys-pids[]" id="sys-pids-{$value.id}" value="{$value.id}" title="{$value.title}" {if $rs.pids && in_array($value.id,$rs.pids)} selected{/if} />
+				<!-- /loop -->
+			</div>
+			<div class="layui-input-block mtop">数组模式，适用于多个项目，程序中可以直接使用 <kbd>$this->pids</kbd> </div>
+		</div>
+	</div>
+</div>
+<!-- if $plugin_html -->
+<div class="layui-card">
+	<div class="layui-card-header layuiadmin-card-header-auto">
+		扩展参数
+	</div>
+	<div class="layui-card-body">
+		{$plugin_html}
+	</div>
+</div>
+<!-- /if -->
 </form>
-<!-- include tpl=foot_open -->
+<!-- include tpl=foot_lay is_open=true -->

@@ -1,0 +1,154 @@
+<!-- include tpl=head_lay -->
+<script type="text/javascript">
+function save()
+{
+	$("#post_save").ajaxSubmit({
+		'url':get_url('weixin','mini_app_save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.tips(p_lang('参数保存成功操作成功')).lock();
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+<form method="post" class="layui-form" id="post_save" onsubmit="return save()">
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang参数配置}
+	</div>
+	<div class="layui-container layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang小程序名称}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="title" value="{$rs.title}" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang填写不超过八个字的小程序名称}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang标题颜色}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="top_txtcolor" value="black"{if !$rs.top_txtcolor || $rs.top_txtcolor == 'black'} checked{/if} title="{lang黑色}" />
+				<input type="radio" name="top_txtcolor" value="white"{if $rs.top_txtcolor == 'white'} checked{/if} title="{lang白色}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang头部背景色}
+			</label>
+			<div class="layui-input-inline auto">
+				{$top_bgcolor}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang请注意背景色不要和标题颜色一样}</div>
+		</div>
+		
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang标签栏参数，即tabBar基本参数}
+	</div>
+	<div class="layui-container layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang文字颜色}
+			</label>
+			<div class="layui-input-inline default-auto">
+				{$text_color}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置标签栏上的默认文字颜色}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang高亮颜色}
+			</label>
+			<div class="layui-input-inline default-auto">
+				{$text_color_highlight}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置标签栏上的文字颜色}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang背景色}
+			</label>
+			<div class="layui-input-inline default-auto">
+				{$tab_bgcolor}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置标签栏背景色}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang边框}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="tab_bordercolor" value="black"{if !$rs.tab_bordercolor || $rs.tab_bordercolor == 'black'} checked{/if} title="{lang黑色}" />
+				<input type="radio" name="tab_bordercolor" value="white"{if $rs.tab_bordercolor == 'white'} checked{/if} title="{lang白色}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置标签边框，仅支持黑和白}</div>
+		</div>
+	</div>
+</div>
+
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang用户中心}
+	</div>
+	<div class="layui-container layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang文字颜色}
+			</label>
+			<div class="layui-input-inline auto">
+				{$usercp_txtcolor}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang请注意文字颜色不要和背景色一样}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang名片背景色}
+			</label>
+			<div class="layui-input-inline default-auto">
+				{$usercp_bgcolor}
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang设置用户名片上的背景色}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang背景图片}
+			</label>
+			<div class="layui-input-inline default-auto">
+				{func form_edit usercp_bgimg $rs.usercp_bgimg text}
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择图片}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_select('usercp_bgimg')" />
+					<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_preview('usercp_bgimg')" />
+					<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('usercp_bgimg');" />
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+		<span style="padding-left:2em;color:#ccc;">保存不会关闭页面，请手动关闭</span>
+	</div>
+</div>
+
+</form>
+
+<!-- include tpl=foot_lay -->

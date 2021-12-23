@@ -1,0 +1,130 @@
+<script type="text/javascript">
+function share_to(type)
+{
+	var title = "{$rs ? $rs.title : ($cate_rs ? $cate_rs.title : ($page_rs ? $page_rs.title : $config.title))}";
+	if(!title){
+		title = document.title;
+	}
+	var link = "{$rs ? $rs.url : ($cate_rs ? $cate_rs.url : ($page_rs ? $page_rs.url : $sys.url))}";
+	if(!link){
+		link = document.location.href;
+	}
+	var pic = "{$rs && $rs.thumb ? $rs.thumb.filename : ($cate_rs && $cate_rs.thumb ? $cate_rs.thumb.filename :($page_rs && $page_rs.thumb ? $page_rs.thumb.filename : $config.logo))}";
+	if(pic && pic.substr(0,7) != 'http://' && pic.substr(0,8) != 'https://'){
+		pic = '{$sys.url}'+pic;
+	}
+	if(type == 'weibo'){
+		var url = 'http://service.weibo.com/share/share.php?title='+$.str.encode(title)+'&url='+$.str.encode(link);
+		if(pic){
+			url += "&pic="+$.str.encode(pic);
+		}
+		$.phpok.open(url);
+		return true;
+	}
+	if(type == 'weixin'){
+		$.dialog.open(api_url('index','qrcode','data='+$.str.encode(link)),{
+			'title':'微信分享',
+			'lock':true,
+			'resize':true
+		});		
+	}
+	if(type == 'qzone'){
+		var url = 'https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?title='+$.str.encode(title)+'&url='+$.str.encode(link);
+		if(pic){
+			url += "&pics="+$.str.encode(pic);
+		}
+		$.phpok.open(url);
+		return true;
+	}
+	if(type == 'facebook'){
+		var url = 'https://www.facebook.com/sharer.php?u='+$.str.encode(link)+"&t="+$.str.encode(title);
+		$.phpok.open(url);
+		return true;
+	}
+	if(type == 'twitter'){
+		var url = 'https://twitter.com/share?u='+$.str.encode(link)+' '+$.str.encode(title);
+		$.phpok.open(url);
+		return true;
+	}
+	if(type == 'pinterest'){
+		var url = 'https://www.pinterest.com/pin/create/button/?url='+$.str.encode(link);
+		$.phpok.open(url);
+		return true;
+	}
+	if(type == 'linkedin'){
+		var url = 'http://www.linkedin.com/shareArticle?mini=true&url='+$.str.encode(link)+"&title="+$.str.encode(title)+"&source="+$.str.encode(link);
+		$.phpok.open(url);
+		return true;
+	}
+}
+</script>
+<!-- if $plugin.shareto.param.share-pc-status.weibo -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("[data-name=weibo]").click(function(e){
+		share_to('weibo');
+		e.preventDefault();
+	})
+});
+</script>
+<!-- /if -->
+<!-- if $plugin.shareto.param.share-pc-status.weixin -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("[data-name=weixin]").click(function(e){
+		share_to('weixin');
+		e.preventDefault();
+	})
+});
+</script>
+<!-- /if -->
+<!-- if $plugin.shareto.param.share-pc-status.qzone -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("[data-name=qzone]").click(function(e){
+		share_to('qzone');
+		e.preventDefault();
+	})
+});
+</script>
+<!-- /if -->
+<!-- if $plugin.shareto.param.share-pc-status.facebook -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("[data-name=facebook]").click(function(e){
+		share_to('facebook');
+		e.preventDefault();
+	})
+});
+</script>
+<!-- /if -->
+<!-- if $plugin.shareto.param.share-pc-status.twitter -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("[data-name=twitter]").click(function(e){
+		share_to('twitter');
+		e.preventDefault();
+	})
+});
+</script>
+<!-- /if -->
+<!-- if $plugin.shareto.param.share-pc-status.pinterest -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("[data-name=pinterest]").click(function(e){
+		share_to('pinterest');
+		e.preventDefault();
+	})
+});
+</script>
+<!-- /if -->
+<!-- if $plugin.shareto.param.share-pc-status.linkedin -->
+<script type="text/javascript">
+$(document).ready(function(){
+	$("[data-name=linkedin]").click(function(e){
+		share_to('linkedin');
+		e.preventDefault();
+	})
+});
+</script>
+<!-- /if -->

@@ -1,13 +1,11 @@
 <?php
 /**
- * 附件下载管理
- * @package phpok\www
- * @author qinggan <admin@phpok.com>
- * @copyright 2015-2016 深圳市锟铻科技有限公司
- * @homepage http://www.phpok.com
- * @version 4.x
- * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @update 2016年07月18日
+ * 下载页
+ * @作者 苏相锟 <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License https://www.phpok.com/lgpl.html 
+ * @时间 2021年7月24日
 **/
 
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
@@ -45,9 +43,9 @@ class download_control extends phpok_control
 			$this->error(P_Lang('未指定附件ID或附件文件'),$back);
 		}
 		if($file){
-			$rs = $this->model('res')->get_one_filename($file,false);
+			$rs = $this->model('res')->get_one_filename($file,false,false);
 		}else{
-			$rs = $this->model('res')->get_one($id);
+			$rs = $this->model('res')->get_one($id,false,false);
 		}
 		if(!$rs){
 			$this->error(P_Lang('附件不存在'),$back);

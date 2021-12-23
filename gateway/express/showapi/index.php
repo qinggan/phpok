@@ -18,26 +18,33 @@ $showapi_sign = trim($ext['app_secret']);  //替换此值。
 $showapi_com = trim($ext['app_com']); 
 $showapi_timestamp = date('YmdHis',$this->time);
 $paramArr = array('showapi_appid'=>$showapi_appid,'showapi_timestamp' =>$showapi_timestamp,'com'=>$showapi_com,'nu'=>$rs['code']);
-function showapi_createSign ($paramArr,$showapi_sign='') {
-     $sign = "";
-     ksort($paramArr);
-     foreach ($paramArr as $key => $val) {
-         if ($key != '' && $val != '') {
-             $sign .= $key.$val;
-         }
-     }
-     $sign.=$showapi_sign;
-     $sign = strtoupper(md5($sign));
-     return $sign;
+if($rs['mobile']){
+	$paramArr['phone'] = $rs['mobile'];
 }
-function showapi_createStrParam ($paramArr) {
-     $strParam = '';
-     foreach ($paramArr as $key => $val) {
-     if ($key != '' && $val != '') {
-             $strParam .= $key.'='.urlencode($val).'&';
-         }
-     }
-     return $strParam;
+if(!function_exists('showapi_createSign')){
+	function showapi_createSign ($paramArr,$showapi_sign='') {
+	     $sign = "";
+	     ksort($paramArr);
+	     foreach ($paramArr as $key => $val) {
+	         if ($key != '' && $val != '') {
+	             $sign .= $key.$val;
+	         }
+	     }
+	     $sign.=$showapi_sign;
+	     $sign = strtoupper(md5($sign));
+	     return $sign;
+	}	
+}
+if(!function_exists('showapi_createStrParam')){
+	function showapi_createStrParam ($paramArr) {
+		 $strParam = '';
+		 foreach ($paramArr as $key => $val) {
+		 if ($key != '' && $val != '') {
+				 $strParam .= $key.'='.urlencode($val).'&';
+			 }
+		 }
+		 return $strParam;
+	}
 }
 
 $sign = showapi_createSign($paramArr,$showapi_sign);

@@ -23,9 +23,9 @@ class plugin_control extends phpok_control
 	**/
 	public function index_f()
 	{
-		$id = $this->get('_phpokid','system');
+		$id = $this->get('_phpokid','id');
 		if(!$id){
-			$id = $this->get('id');
+			$id = $this->get('id','id');
 			if(!$id){
 				$this->error(P_Lang('未指定ID'));
 			}

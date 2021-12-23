@@ -4,8 +4,8 @@
 	<cate>分类</cate>
 	<module>模块</module>
 	<project>项目</project>
-	<user>会员</user>
-	<usergroup>会员组</usergroup>
+	<user>用户</user>
+	<usergroup>用户组</usergroup>
 	<cart>购物车</cart>
 	<order>订单</order>
 	<pay>付款</pay>

@@ -19,7 +19,7 @@ function save()
 	if(from_uid == 'other'){
 		var username = $("input[name=username]").val();
 		if(!username){
-			$.dialog.alert('请填写会员账号');
+			$.dialog.alert('请填写用户账号');
 			return false;
 		}
 	}
@@ -96,7 +96,7 @@ function update_from_uid(val)
 <div class="table">
 	<div class="content">
 		<ul class="layout">
-			<li style="width:60px;text-align:right">会员：</li>
+			<li style="width:60px;text-align:right">用户：</li>
 			<li>
 				<select name="from_uid" onchange="update_from_uid(this.value)">
 					<option value="admin">平台</option>
@@ -106,14 +106,14 @@ function update_from_uid(val)
 			</li>
 			<li id="from_uid_vouch" class="hide">
 				<select name="vouch">
-					<option value="">请选择会员…</option>
+					<option value="">请选择用户…</option>
 					<!-- loop from=$vlist key=$key value=$value id=$tmpid -->
 					<option value="{$value.id}">{$value.user}<!-- if $value.mobile -->_{$value.mobile}<!-- /if --></option>
 					<!-- /loop -->
 				</select>
 			</li>
 			<li id="from_uid_other" class="hide">
-				<input type="text" name="username" id="username" placeholder="请填写会员账号" />
+				<input type="text" name="username" id="username" placeholder="请填写用户账号" />
 			</li>
 		</ul>
 	</div>

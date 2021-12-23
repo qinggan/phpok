@@ -108,7 +108,7 @@ class menu_model_base extends phpok_model
 		}
 		if($plist && count($plist)>0){
 			$plist = array_unique($plist);
-			$plist = $this->model('project')->plist($plist,false,'id');
+			$plist = $this->model('project')->plist($plist,false,'id',false);
 		}
 		if($clist && count($clist)>0){
 			$clist = array_unique($clist);
@@ -144,6 +144,12 @@ class menu_model_base extends phpok_model
 		return $tmplist;
 	}
 
+	private function _all()
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."menu WHERE site_id='".$this->site_id."' AND status=1";
+		return $this->db->get_all($sql);
+	}
+
 	public function treelist($group_id,$is_userid=0)
 	{
 		$sql  = "SELECT * FROM ".$this->db->prefix."menu WHERE group_id='".$group_id."' AND status=1";
@@ -155,7 +161,7 @@ class menu_model_base extends phpok_model
 		$sql .= " AND site_id='".$this->site_id."'";
 		$sql .= " ORDER BY taxis ASC,id DESC";
 		$tmplist = $this->db->get_all($sql);
-		if(!$tmplist){
+		if(!$tmplist || count($tmplist)<1){
 			return false;
 		}
 		$plist = $clist = $tlist = array();
@@ -172,7 +178,7 @@ class menu_model_base extends phpok_model
 		}
 		if($plist && count($plist)>0){
 			$plist = array_unique($plist);
-			$plist = $this->model('project')->plist($plist,false,'id');
+			$plist = $this->model('project')->plist($plist,false,'id',false);
 		}
 		if($clist && count($clist)>0){
 			$clist = array_unique($clist);
@@ -218,6 +224,8 @@ class menu_model_base extends phpok_model
 					}
 				}
 			}
+			$value['thumb'] = $value['thumb'];
+			$value['iconfont'] = $value['iconfont'];
 			$value['target'] = $value['target'] ? '_blank' : '_top';
 			$value['url'] = $value['link'];
 			$tmplist[$key] = $value;
@@ -240,6 +248,8 @@ class menu_model_base extends phpok_model
 						$tmp['parent_id'] = $value['parent_id'];
 						$tmp['title'] = $v['title'];
 						$tmp['url'] = $this->url($value['project']['identifier'],$v['identifier']);
+						$tmp['thumb'] = $v['thumb'];
+						$tmp['iconfont'] = $v['iconfont'];
 						$tmp['target'] = '_self';
 						$tmp = array_merge($v,$tmp);
 						$rslist[] = $tmp;
@@ -255,6 +265,8 @@ class menu_model_base extends phpok_model
 						$tmp['parent_id'] = $value['parent_id'];
 						$tmp['title'] = $v['title'];
 						$tmp['url'] = $this->url($value['project']['identifier'],$v['identifier']);
+						$tmp['thumb'] = $v['thumb'];
+						$tmp['iconfont'] = $v['iconfont'];
 						$tmp['target'] = '_self';
 						$tmp['link'] = $tmp['url'];
 						$tmp = array_merge($v,$tmp);
@@ -266,6 +278,8 @@ class menu_model_base extends phpok_model
 								$tmp2['parent_id'] = $tmp['id'];
 								$tmp2['title'] = $vv['title'];
 								$tmp2['url'] = $this->url($value['project']['identifier'],$vv['identifier']);
+								$tmp2['thumb'] = $vv['thumb'];
+								$tmp2['iconfont'] = $vv['iconfont'];
 								$tmp2['target'] = '_self';
 								$tmp2['link'] = $tmp2['url'];
 								$tmp2 = array_merge($vv,$tmp2);
@@ -283,6 +297,8 @@ class menu_model_base extends phpok_model
 						$tmp['parent_id'] = $value['parent_id'];
 						$tmp['title'] = $v['title'];
 						$tmp['url'] = $this->url($v['identifier'] ? $v['identifier'] : $v['id']);
+						$tmp['thumb'] = $v['thumb'];
+						$tmp['iconfont'] = $v['iconfont'];
 						$tmp['target'] = '_self';
 						$tmp['link'] = $tmp['url'];
 						$tmp = array_merge($v,$tmp);
@@ -298,6 +314,8 @@ class menu_model_base extends phpok_model
 						$tmp['parent_id'] = $value['parent_id'];
 						$tmp['title'] = $v['title'];
 						$tmp['url'] = $this->url($v['identifier'] ? $v['identifier'] : $v['id']);
+						$tmp['thumb'] = $v['thumb'];
+						$tmp['iconfont'] = $v['iconfont'];
 						$tmp['target'] = '_self';
 						$tmp['link'] = $tmp['url'];
 						$tmp = array_merge($v,$tmp);
@@ -309,6 +327,8 @@ class menu_model_base extends phpok_model
 								$tmp2['parent_id'] = $tmp['id'];
 								$tmp2['title'] = $vv['title'];
 								$tmp2['url'] = $this->url($vv['identifier'] ? $vv['identifier'] : $vv['id']);
+								$tmp2['thumb'] = $vv['thumb'];
+								$tmp2['iconfont'] = $vv['iconfont'];
 								$tmp2['target'] = '_self';
 								$tmp2['link'] = $tmp2['url'];
 								$tmp2 = array_merge($vv,$tmp2);
@@ -327,6 +347,8 @@ class menu_model_base extends phpok_model
 						$tmp['parent_id'] = $value['parent_id'];
 						$tmp['title'] = $v['title'];
 						$tmp['url'] = $this->url($value['project']['identifier'],$v['identifier']);
+						$tmp['thumb'] = $v['thumb'];
+						$tmp['iconfont'] = $v['iconfont'];
 						$tmp['target'] = '_self';
 						$tmp['link'] = $tmp['url'];
 						$tmp = array_merge($v,$tmp);
@@ -338,6 +360,8 @@ class menu_model_base extends phpok_model
 								$tmp2['parent_id'] = $tmp['id'];
 								$tmp2['title'] = $vv['title'];
 								$tmp2['url'] = $this->url($vv['identifier'] ? $vv['identifier'] : $vv['id']);
+								$tmp2['thumb'] = $vv['thumb'];
+								$tmp2['iconfont'] = $vv['iconfont'];
 								$tmp2['target'] = '_self';
 								$tmp2['link'] = $tmp2['url'];
 								$tmp2 = array_merge($vv,$tmp2);
@@ -360,6 +384,13 @@ class menu_model_base extends phpok_model
 
 	private function _titles($project,$cate_id=0,$parent_id=0)
 	{
+		$module = $this->model('module')->get_one($project['module']);
+		if($module['mtype']){
+			$condition .= "site_id='".$project['site_id']."' AND project_id='".$project['id']."'";
+			$orderby = $project['orderby'] ? $project['orderby'] : 'id DESC';
+			$sql = "SELECT * FROM ".$this->db->prefix.$module['id']." WHERE ".$condition." ORDER BY ".$orderby;
+			return $this->db->get_all($sql);
+		}
 		$condition  = " l.site_id='".$project['site_id']."' ";
 		$condition .= " AND l.hidden=0 ";
 		$condition .= " AND l.project_id=".intval($project['id'])." ";

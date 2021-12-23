@@ -1,0 +1,42 @@
+<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs.content}" />
+<input type="hidden" id="{$_rs.identifier}_status" />
+<style type="text/css">
+.{$_rs.identifier}_thumb{float:left;width:144px;margin:3px 5px;padding:1px;border:1px solid #ccc;border-radius:3px;position:relative;}
+.{$_rs.identifier}_thumb .sort{position:absolute;right:5px;top:5px;}
+.{$_rs.identifier}_thumb .sort input.taxis{width:40px;border:1px solid #ccc;border-radius:3px;height:22px;text-align:center;padding:3px;}
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+	$.phpok_tencentvod_gateway.file_id('{$_rs.identifier}');
+	$.phpok_tencentvod_gateway.cate_id('{$_rs.cate_id}');
+	$.phpok_tencentvod_gateway.multi({$_rs.is_multiple ? 'true' : 'false'});
+	$.phpok_tencentvod_gateway.gateway('{$_rs.upload_etype_info.id}');
+	$.phpok_tencentvod_gateway.vtype('{$_rs.upload_etype_info.ext.vtype}');
+	$.phpok_tencentvod_gateway.ext('{$_rs.upload_type.ext}');
+	$.phpok_tencentvod_gateway.refresh({$_rs.is_refresh ? 'true' : 'false'});
+});
+</script>
+<div class="_e_upload">
+	<div class="_select">
+		<table>
+		<tr>
+			<td><a href="javascript:void(0);" class="btn btn-sm btn-primary" style="position: relative;z-index:2;overflow:hidden;">上传{$_rs.upload_type.title}<input type="file" name="file_{$_rs.identifier}" id="file_{$_rs.identifier}" style="z-index:3;position: absolute;left:0;top:0;width:100%;height:100%;opacity:0;" onchange="$.phpok_tencentvod_gateway.act(this,'{$_rs.identifier}')"/></a></td>
+			<td id="{$_rs.identifier}_sort" style="display:none">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang排序}" class="layui-btn layui-btn-sm" onclick="$.phpokform.upload_sort('{$_rs.identifier}')" />
+					<input type="button" value="{lang自然排序}" class="layui-btn layui-btn-sm" onclick="$.phpokform.upload_sort('{$_rs.identifier}','title')" />
+				</div>
+			</td>
+		</tr>
+		</table>
+	</div>
+	<div class="_progress" id="{$_rs.identifier}_progress"></div>
+	<div class="_list" id="{$_rs.identifier}_list"></div>
+	<div class="clear"></div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$.phpok.undata("upload-{$_rs.identifier}");
+	$.phpokform.upload_showhtml('{$_rs.identifier}',{$_rs.is_multiple ? true : false});
+});
+</script>

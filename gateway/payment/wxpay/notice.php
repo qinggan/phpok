@@ -73,16 +73,24 @@ class wxpay_notice
 		if($rs['type'] == 'order'){
 			$order = $app->model('order')->get_one_from_sn($rs['sn']);
 			if($order){
-				$payinfo = $app->model('order')->order_payment_notend($order['id']);
-				if($payinfo){
-					$payment_data = array('dateline'=>$mytime,'ext'=>serialize($ext));
-					$app->model('order')->save_payment($payment_data,$payinfo['id']);
-					//更新订单日志
-					$app->model('order')->update_order_status($order['id'],'paid');
-					$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
-					$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
-					$app->model('order')->log_save($log);
-				}
+				$ext['log_id'] = $this->order['id'];
+				//登记订单
+				$payment_data = array();
+				$payment_data['order_id'] = $order['id'];
+				$payment_data['payment_id'] = $this->param['id'];
+				$payment_data['title'] = $this->param['title'];
+				$payment_data['price'] = $this->order['price']; //登记实付金额
+				$payment_data['currency_id'] = $this->param['currency']['id']; //登记实付货币
+				$payment_data['currency_rate'] = $this->param['currency']['val']; //登记的汇率
+				$payment_data['startdate'] = $app->time; //登记时间
+				$payment_data['dateline'] = $app->time; //付款时间
+				$payment_data['ext'] = serialize($ext);
+				$app->model('order')->save_payment($payment_data);
+				//更新订单日志
+				$app->model('order')->update_order_status($order['id'],'paid');
+				$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
+				$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
+				$app->model('order')->log_save($log);
 			}
 		}
 		if($this->order['type'] == 'recharge'){

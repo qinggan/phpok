@@ -27,8 +27,8 @@ class admin_control extends \phpok_control
 
 	public function index_f()
 	{
-		if(!$this->session->val('admin_id_checked')){
-			$this->display('admin_vcode');
+		if(!$this->session->val('admin2verify')){
+			$this->view('admin_vcode');
 		}
 		if(!$this->popedom["list"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
@@ -108,8 +108,8 @@ class admin_control extends \phpok_control
 	**/
 	public function edit_f()
 	{
-		if(!$this->session->val('admin_id_checked')){
-			$this->display('admin_vcode');
+		if(!$this->session->val('admin2verify')){
+			$this->view('admin_vcode');
 		}
 		if(!$this->popedom["edit"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
@@ -166,7 +166,7 @@ class admin_control extends \phpok_control
 
 	public function save_f()
 	{
-		if(!$this->session->val('admin_id_checked')){
+		if(!$this->session->val('admin2verify')){
 			$this->error(P_Lang('未经过二次密码确认，不能执行此操作'));
 		}
 		if(!$this->popedom["edit"]){
@@ -197,7 +197,7 @@ class admin_control extends \phpok_control
 	**/
 	public function import_f()
 	{
-		if(!$this->session->val('admin_id_checked')){
+		if(!$this->session->val('admin2verify')){
 			$this->error(P_Lang('未经过二次密码确认，不能执行此操作'));
 		}
 		if(!$this->popedom["edit"]){
@@ -233,7 +233,7 @@ class admin_control extends \phpok_control
 	public function upload_f()
 	{
 		$this->config('is_ajax',true);
-		if(!$this->session->val('admin_id_checked')){
+		if(!$this->session->val('admin2verify')){
 			$this->error(P_Lang('未经过二次密码确认，不能执行此操作'));
 		}
 		if(!$this->popedom["edit"]){

@@ -88,6 +88,7 @@ function _phpok_form_opt(val,id,eid,etype)
 	$.phpok.ajax(url,function(rs){
 		if(rs && rs != 'exit'){
 			$("#"+id).html(rs).show();
+			layui.form.render();
 		}
 	});
 }
@@ -723,9 +724,9 @@ function go_to_page_action()
 		/**
 		 * 主题选择器
 		**/
-		text_button_title_select:function(id,pid,field)
+		text_button_title_select:function(id,pid,field,showid)
 		{
-			$.dialog.open(get_url("open","title","id="+id+"&pid="+pid+"&field="+field),{
+			$.dialog.open(get_url("open","title","id="+id+"&pid="+pid+"&field="+field+"&showid="+showid),{
 				title: p_lang('主题选择器'),
 				lock : true,
 				width: "700px",
@@ -802,13 +803,13 @@ function go_to_page_action()
 		},
 
 		/**
-		 * 会员选择库
+		 * 用户选择库
 		**/
 		text_button_user_select:function(id)
 		{
 			var url = get_url("open","user2","id="+id);
 			$.dialog.open(url,{
-				title: p_lang('会员列表'),
+				title: p_lang('用户列表'),
 				lock : true,
 				width: "700px",
 				height: "70%",

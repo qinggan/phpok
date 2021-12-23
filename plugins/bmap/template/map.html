@@ -5,8 +5,7 @@
 	<meta http-equiv="expires" content="wed, 26 feb 1997 08:21:57 gmt"> 
 	<title>百度地图</title>
 	<script type="text/javascript" src="{url ctrl=js /}" charset="utf-8"></script>
-	<script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak={$plugin.bmap.param.apikey}"></script>
-	<script type="text/javascript" src="plugins/bmap/jquery.baidu_map.js" ></script>
+	<script type="text/javascript" src="//api.map.baidu.com/api?type=webgl&v=1.0&ak={$plugin.bmap.param.apikey}&services=false"></script>
 	<style type="text/css">
 	.map-content{font-size:12px;}
 	</style>
@@ -14,29 +13,32 @@
 <body style="margin:0;padding:0;height:100%;overflow:hidden;">
 <div id="Bmap" style="width:100%;height:100%;"></div>
 <script type="text/javascript">
-new BaiduMap({
-    id: "Bmap",
-    title: {
-        text: "{$plugin.bmap.param.company}",
-        className: "map-title"
-    },
-    content: {
-        className: "map-content",
-        text: ["地址：{$plugin.bmap.param.address}", "电话：{$plugin.bmap.param.tel}"]
-    },
-    point: {
-        lng: "{$plugin.bmap.param.lng}",
-        lat: "{$plugin.bmap.param.lat}"
-    },
-    level: 18,
-    zoom: false,
-    type: ["地图", "卫星", "三维"],
-    width: 320,
-    height: 70,
-    icon: {
-        url: "plugins/bmap/ps.png",
-        width: 19,
-        height: 25
-    }
+// GL版命名空间为BMapGL
+// 按住鼠标右键，修改倾斜角和角度
+var map = new BMapGL.Map("Bmap");    // 创建Map实例
+var point = new BMapGL.Point({$plugin.bmap.param.lng},{$plugin.bmap.param.lat});
+map.centerAndZoom(point, 18);  // 初始化地图,设置中心点坐标和地图级别
+
+map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+map.setMapStyleV2({     
+	//styleId: 'd3a3c28be2a0969c11e1f37e96f88689'
 });
+// 添加比例尺控件
+map.addControl(new BMapGL.ScaleControl());
+// 添加缩放控件
+//map.addControl(new BMapGL.ZoomControl());
+
+//添加标注
+var marker = new BMapGL.Marker(point);
+map.addOverlay(marker);
+
+//添加文本信息
+var opts = {
+    width: 320,     // 信息窗口宽度
+    height: 90,    // 信息窗口高度
+    title: "<div class='map-title'>{$plugin.bmap.param.company}</div>"  // 信息窗口标题
+}
+var infoWindow = new BMapGL.InfoWindow("<div class='map-content'>地址：{$plugin.bmap.param.address}</div><div class='map-content'>电话：{$plugin.bmap.param.tel}</div>", opts);  // 创建信息窗口对象
+map.openInfoWindow(infoWindow, map.getCenter());        // 打开信息窗口
+
 </script>

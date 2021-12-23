@@ -26,7 +26,7 @@ class project_control extends phpok_control
 			$group_rs = $this->model('usergroup')->get_default(true);
 		}
 		if(!$group_rs){
-			$this->error(P_Lang('会员组获取异常，请检查'));
+			$this->error(P_Lang('用户组获取异常，请检查'));
 		}
 		$this->user_groupid = $group_rs['id'];
 		$this->user_group = $group_rs;

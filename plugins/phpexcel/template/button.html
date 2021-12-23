@@ -1,0 +1,20 @@
+<script type="text/javascript">
+function phpexcel_in(pid)
+{
+	var url = get_plugin_url('phpexcel','in_data','pid='+pid);
+	$.win('导入数据_#'+pid,url);
+}
+function phpexcel_out(pid)
+{
+	var url = get_plugin_url('phpexcel','out_data','pid='+pid);
+	$.win('数据导出_#'+pid,url);
+}
+$(document).ready(function(){
+	//执行HTML
+	var htm = '<div class="layui-btn-group fr" style="margin-left:1px;">';
+	htm += ' <button class="layui-btn layui-btn-sm" onclick="phpexcel_in({$pid})"><i class="layui-icon">&#xe608;</i>导入</button>';
+	htm += '<button class="layui-btn layui-btn-sm" onclick="phpexcel_out({$pid})"><i class="layui-icon">&#xe60a;</i>导出</button>'
+	htm += '</div>'
+	$("#AP_ACTION_HTML").after(htm);
+});
+</script>

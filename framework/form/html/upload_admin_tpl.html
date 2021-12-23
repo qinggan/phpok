@@ -4,19 +4,22 @@
 .{$_rs.identifier}_thumb{float:left;width:144px;margin:3px 5px;padding:1px;border:1px solid #ccc;border-radius:3px;position:relative;}
 .{$_rs.identifier}_thumb .sort{position:absolute;right:5px;top:5px;}
 .{$_rs.identifier}_thumb .sort input.taxis{width:40px;border:1px solid #ccc;border-radius:3px;height:22px;text-align:center;padding:3px;}
+._select .upload td>div{margin-right:10px;}
 </style>
 <div class="_e_upload">
 	<div class="_select">
-		<table>
+		<table class="upload">
 		<tr>
 			<td><div id="{$_rs.identifier}_picker"></div></td>
 			<!-- if !$_rs.manage_forbid --><td><div><input type="button" class="layui-btn layui-btn-sm" value="{lang选择}{$_rs.upload_type.title}" onclick="$.phpokform.upload_select('{$_rs.identifier}','{$_rs.cate_id}',{$_rs.is_multiple ? 'true' : 'false'})" class="layui-btn layui-btn-sm button" /></div></td><!-- /if -->
-			<td id="{$_rs.identifier}_sort" style="display:none">
+			<!-- if !$_rs.is_refresh -->
+			<td id="{$_rs.identifier}_sort" style="display:none;">
 				<div class="layui-btn-group">
 					<input type="button" value="{lang排序}" class="layui-btn layui-btn-sm" onclick="$.phpokform.upload_sort('{$_rs.identifier}')" />
 					<input type="button" value="{lang自然排序}" class="layui-btn layui-btn-sm" onclick="$.phpokform.upload_sort('{$_rs.identifier}','title')" />
 				</div>
 			</td>
+			<!-- /if -->
 		</tr>
 		</table>
 	</div>
@@ -33,7 +36,7 @@ $(document).ready(function(){
 		'id':'{$_rs.identifier}',
 		'server':'{$sys.url}{url ctrl=upload func=save/}',
 		'cateid':'{$_rs.cate_id}',
-		'pick':{'id':'#{$_rs.identifier}_picker','multiple':{$_rs.is_multiple ? 'true' : 'false'},'innerHTML':'<span class="layui-icon">&#xe67c;</span> {lang选择本地文件}'},
+		'pick':{'id':'#{$_rs.identifier}_picker','multiple':{$_rs.is_multiple ? 'true' : 'false'},'innerHTML':'{$_rs.innerHTML}'},
 		'resize':false,
 		'multiple':"{$_rs.is_multiple ? 'true' : 'false'}",
 		"formData":{'{func session_name}':'{func session_id}'},
@@ -42,8 +45,9 @@ $(document).ready(function(){
 		'compress':{$_rs.upload_compress},
 		'auto':true,
 		'sendAsBinary':{$_rs.upload_binary},
+		'is_refresh':{$_rs.is_refresh ? 'true' :'false'},
 		'accept':{'title':'{$_rs.upload_type.title}({$_rs.upload_type.swfupload})','extensions':'{$_rs.upload_type.ext}'},
-		'fileSingleSizeLimit':'{$_rs.upload_type.maxsize*100}'
+		'fileSingleSizeLimit':'{$_rs.upload_type.maxsize*10000000000}'
 	});
 	$.phpokform.upload_showhtml('{$_rs.identifier}',{$_rs.is_multiple ? 'true' : 'false'});
 });

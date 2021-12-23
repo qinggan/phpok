@@ -15,8 +15,8 @@
 if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
-$this->addjs($this->dir_webroot.'js/qiniu/qiniu.min.js');
-$this->addjs($this->dir_webroot.'js/qiniu/upload.func.js');
+$this->addjs($this->dir_webroot.'static/qiniu/qiniu.min.js');
+$this->addjs($this->dir_webroot.'static/qiniu/upload.func.js');
 $this->lib('qiniu')->ak($extinfo['appkey']);
 $this->lib('qiniu')->sk($extinfo['appsecret']);
 $this->lib('qiniu')->bucket($extinfo['bucket']);

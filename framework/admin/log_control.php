@@ -19,72 +19,17 @@ class log_control extends phpok_control
 
 	public function index_f()
 	{
-		$keywords = $this->get('keywords');
-		$pageurl = $this->url('log');
-		$condition = '1=1';
-		if($keywords){
-			$pageurl .= "&keywords=".rawurlencode($keywords);
-			$this->assign('keywords',$keywords);
-			$condition .= " AND l.note LIKE '%".$keywords."%'";
-		}
-		$adminer = $this->get('adminer');
-		if($adminer){
-			$pageurl .= "&adminer=".rawurlencode($adminer);
-			$this->assign('adminer',$adminer);
-			$condition .= " AND a.account='".$adminer."'";
-		}
-		$user = $this->get('user');
-		if($user){
-			$pageurl .= "&user=".rawurlencode($user);
-			$this->assign('user',$user);
-			$condition .= " AND a.user='".$user."'";
-		}
-		$position = $this->get('position');
-		if(!$position){
-			$position = 'admin';
-		}
-		$pageurl .= "&position=".$position;
-		$this->assign('position',$position);
-		$condition .= " AND l.app_id='".$position."'";
+		$condition = date("Ymd",$this->time);
 		$start_time = $this->get('start_time');
 		if($start_time){
-			$pageurl .= "&start_time=".rawurlencode($start_time);
+			$condition = str_replace("-",'',$start_time);
 			$this->assign('start_time',$start_time);
-			$condition .= " AND l.dateline>=".strtotime($start_time);
+		}else{
+			$this->assign('start_time',date("Y-m-d",$this->time));
 		}
-		$stop_time = $this->get('stop_time');
-		if($stop_time){
-			$pageurl .= "&stop_time=".rawurlencode($stop_time);
-			$this->assign('stop_time',$stop_time);
-			$condition .= " AND l.dateline<=".(strtotime($stop_time) + 24 * 3600);
-		}
-		$psize = $this->get('psize','int');
-		if(!$psize){
-			$psize = $this->config['psize'] ? $this->config['psize'] : 20;
-		}
-		$pageurl .= "&psize=".rawurlencode($psize);
-		$this->assign('psize',$psize);
-		$pageid = $this->get($this->config['pageid'],'int');
-		if(!$pageid){
-			$pageid = 1;
-		}
-		$offset = ($pageid-1) * $psize;
-		$total = $this->model('log')->get_count($condition);
-		if($total>0){
-			$rslist = $this->model('log')->get_list($condition,$offset,$psize);
-			$this->assign('rslist',$rslist);
-			$this->assign('pageid',$pageid);
-			$this->assign('offset',$offset);
-			$this->assign('psize',$psize);
-			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
-			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-			$this->assign('pagelist',$pagelist);
-		}
-		$date30=date('Y-m-d',($this->time - 30*24*3600));
-		$date7=date('Y-m-d',($this->time - 7*24*3600));
-		$this->assign('date30',$date30);
-		$this->assign('date7',$date7);
+		$this->assign('condition',$condition);
+		$rslist = $this->model('log')->get_list($condition);
+		$this->assign('rslist',$rslist);
 		$this->view('log_index');
 	}
 
@@ -127,5 +72,19 @@ class log_control extends phpok_control
 		$this->model('log')->delete($condition);
 		$this->model('log')->save($tip);
 		$this->success();
+	}
+
+	public function download_f()
+	{
+		$date = date("Ymd",$this->time);
+		$start_time = $this->get('start_time');
+		if($start_time){
+			$date = str_replace("-",'',$start_time);
+		}
+		$file = $this->dir_data."log/".$date.".php";
+		if(!file_exists($file)){
+			$this->error(P_Lang('日志文件不存在'));
+		}
+		$this->lib('file')->download($file,$date.".log");
 	}
 }

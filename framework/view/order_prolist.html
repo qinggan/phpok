@@ -32,7 +32,7 @@ function add_pro(id)
 			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 			<tr>
 				<td>{$value.title}</td>
-				<td>{func price_format $value.price $value.currency_id $currency_id}</td>
+				<td>{func price_format $value.price $value.currency_id $value.currency_id}</td>
 				<td>{func date "Y-m-d H:i" $value.dateline}</td>
 				<td><input type="button" class="layui-btn layui-btn-sm" value="{lang添加}" onclick="add_pro({$value.id})" /></td>
 			</tr>
@@ -42,6 +42,4 @@ function add_pro(id)
 	</div>
 </div>
 
-
-
-<!-- include tpl=foot_lay -->
+<!-- include tpl=foot_lay is_open=true -->

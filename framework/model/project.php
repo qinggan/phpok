@@ -48,7 +48,7 @@ class project_model_base extends phpok_model
 			return false;
 		}
 		if($ext && is_bool($ext)){
-			$ext_rs = $this->model("ext")->get_all("project-".$id);
+			$ext_rs = $this->model("ext")->get_all("project-".$rs['id']);
 			if($ext_rs){
 				$rs = array_merge($ext_rs,$rs);
 			}
@@ -286,7 +286,7 @@ class project_model_base extends phpok_model
 	 * @参数 $pri 绑定主键，默认不绑定
 	 * @返回 数组或false 
 	**/
-	public function plist($id,$status=0,$pri='')
+	public function plist($id,$status=0,$pri='',$hidden=true)
 	{
 		if(!$id){
 			return false;
@@ -302,11 +302,78 @@ class project_model_base extends phpok_model
 			$id[$key] = intval($value);
 		}
 		$id = implode(",",$id);
-		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id IN(".$id.") AND hidden=0 ";
+		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id IN(".$id.") ";
+		if($hidden){
+			$sql .= " AND hidden=0 ";
+		}
 		if($status){
 			$sql.= "AND status=1 ";
 		}
 		$sql.= " ORDER BY taxis ASC,id DESC";
 		return $this->db->get_all($sql,$pri);
+	}
+
+	/**
+	 * 读写项目组
+	**/
+	public function group($data = array())
+	{
+		if($data && count($data)>0){
+			$tmp = $this->lib('json')->encode($data,false,true);
+			$this->lib('file')->save($tmp,$this->dir_data.'json/project_group.json');
+			return true;
+		}
+		$tmp = $this->lib('file')->cat($this->dir_data.'json/project_group.json');
+		if($tmp){
+			return $this->lib('json')->decode($tmp);
+		}
+		return array('default'=>P_Lang('我的应用'));
+	}
+
+	public function group_projects($site_id=0)
+	{
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		$sql  = "SELECT * FROM ".$this->db->prefix."project WHERE status=1 AND group_id !='' ";
+		if($site_id){
+			$sql.= " AND site_id='".$site_id."' ";
+		}
+		$sql .= " ORDER BY taxis ASC,id DESC";
+		return $this->db->get_all($sql);
+	}
+
+	public function attr_all($site_id=0){
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		$xmlfile = $this->dir_data."xml/attr-".$site_id.".xml";
+		if(!file_exists($xmlfile)){
+			$xmlfile = $this->dir_data."xml/attr.xml";
+			if(!$xmlfile){
+				$array = array("h"=>"头条","c"=>"推荐","a"=>"特荐");
+				return $array;
+			}
+		}
+		return $this->lib('xml')->read($xmlfile);
+	}
+
+	public function attr_project($pid=0,$iskey=false,$site_id=0)
+	{
+		if(!$pid){
+			return false;
+		}
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		$xmlfile = $this->dir_data."xml/attr-".$site_id."-".$pid.".xml";
+		if(!file_exists($xmlfile)){
+			return false;
+		}
+		$t = $this->lib('xml')->read($xmlfile);
+		if($iskey){
+			return array_keys($t);
+		}
+		return $t;
 	}
 }

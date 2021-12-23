@@ -124,6 +124,10 @@ class options_control extends phpok_control
 			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
 			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
 			$this->assign("pagelist",$pagelist);
+			$this->assign('offset',$offset);
+			$this->assign('psize',$psize);
+			$this->assign('pageid',$pageid);
+			$this->assign('total',$total);
 			$this->assign('rslist',$rslist);
 		}
 		$taxis = $rslist ? (count($rslist)+1) * 5 : 5;

@@ -39,6 +39,7 @@ class paypal_submit
 
 	private function get_html()
 	{
+		global $app;
 		$notify_url = $this->baseurl."gateway/payment/paypal/notify_url.php";
         $return_url = $GLOBALS['app']->url('payment','notice','id='.$this->order['id'],'www',true);
         $cancel_url = $GLOBALS['app']->url('payment','show','id='.$this->order['id'],'www',true);
@@ -52,7 +53,24 @@ class paypal_submit
 		$paypal->set_value("return_url",$return_url);//成功返回
 		$paypal->set_value("cancel_return",$cancel_url);//取消退出
 		$paypal->set_value("notify_url",$notify_url);//订单成功后发送给网站的信息
-		$html = $paypal->create_button();
+		$address = false;
+		if($this->order['type'] == 'order'){
+			$order = $app->model('order')->get_one($this->order['sn'],'sn');
+			$address = $app->model('order')->address($order['id'],'shipping');
+			//读City
+			$check = $app->model('worlds',true);
+			if($check){
+				$country = $app->model('worlds')->get_one($address['country'],'name_en');
+				if(!$country){
+					$country = $app->model('worlds')->get_one($address['country'],'name');
+				}
+				if($country){
+					$address['country_code2'] = $country['code2'];
+					$address['country_code3'] = $country['code3'];
+				}
+			}
+		}
+		$html = $paypal->create_button($address);
 		return $html;
 	}
 

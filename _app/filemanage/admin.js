@@ -187,27 +187,6 @@
 				'cancel':true
 			})
 		},
-		vcode_act:function()
-		{
-			var url = api_url('filemanage','check');
-			var vcode = $("#vcode").val();
-			if(!vcode){
-				$.dialog.alert(p_lang('请输入管理员二次密码认证'));
-				return false;
-			}
-			url += "&code="+$.str.encode(vcode);
-			$.phpok.json(url,function(rs){
-				if(rs.status){
-					$.dialog.tips(p_lang('验证通过，请稍候…'),function(){
-						$.phpok.reload();
-					}).lock();
-					return false;
-				}
-				$.dialog.alert(rs.info);
-				return false;
-			});
-			return false;
-		},
 		view:function(url)
 		{
 			var html = '<img src="'+url+'" border="0" style="max-width:100%" />';

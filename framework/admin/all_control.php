@@ -642,4 +642,51 @@ class all_control extends phpok_control
 		$this->assign('content',$content);
 		$this->view("all_email");
 	}
+
+	public function system_f()
+	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		if(!$this->session->val('admin2verify')){
+			$this->view('admin_vcode');
+		}
+		$rs = $this->model('site')->system();
+		if($rs['admin_homepage_setting']){
+			$rs['admin_homepage_setting'] = explode(",",$rs['admin_homepage_setting']);
+		}else{
+			$rs['admin_homepage_setting'] = array();
+		}
+		$this->assign('rs',$rs);
+		$this->view("all_system");
+	}
+
+	public function system_save_f()
+	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		if(!$this->session->val('admin2verify')){
+			$this->error(P_Lang('未通过二次验证'));
+		}
+		$data = array();
+		$data['api_code'] = $this->get('api_code','html');
+		$data['public_key'] = $this->get('public_key','html');
+		$data['private_key'] = $this->get('private_key','html');
+		$data['aliyun_account_id'] = $this->get('aliyun_account_id','html');
+		$data['aliyun_ak_id'] = $this->get('aliyun_ak_id','html');
+		$data['aliyun_ak_secret'] = $this->get('aliyun_ak_secret','html');
+		$data['tencent_appid'] = $this->get('tencent_appid','html');
+		$data['tencent_ak_id'] = $this->get('tencent_ak_id','html');
+		$data['tencent_ak_secret'] = $this->get('tencent_ak_secret','html');
+		//
+		$tmp = $this->get("admin_homepage_setting");
+		if($tmp){
+			$data['admin_homepage_setting'] = implode(",",$tmp);
+		}else{
+			$data['admin_homepage_setting'] = '';
+		}
+		$this->model('site')->system($data);
+		$this->success();
+	}
 }

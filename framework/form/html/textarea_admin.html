@@ -1,19 +1,31 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="width,height" />
-<div class="table">
-	<div class="title">
-		表单宽度：
-		<span class="note">设置表单的宽度，这是只需要<span class="red">填写数字</span></span>
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="width,height,resize" />
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang宽高：}
+	</label>
+	<div class="layui-input-inline short">
+		<input type="text" name="width" id="width" class="layui-input" value="{$rs.width}" placeholder="{lang宽度}" />
 	</div>
-	<div class="content">
-		<input type="text" name="width" id="width" value="{$rs.width}" /> px
+	<div class="layui-form-mid">
+		x
+	</div>
+	<div class="layui-input-inline short">
+		<input type="text" name="height" id="height" class="layui-input" value="{$rs.height}" placeholder="{lang高度}" />
+	</div>
+	<div class="layui-form-mid">
+		{lang支持填写 px em % 等单位符号}
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		表单高度：
-		<span class="note">设置表单的高度，这是只需要<span class="red">填写数字</span>，单位是px</span>
-	</div>
-	<div class="content">
-		<input type="text" name="height" id="height" value="{$rs.height}" /> px
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang调节}
+	</label>
+	<div class="layui-input-block">
+		<input type="radio" name="resize" value="none"{if $rs.resize == 'none'} checked{/if} title="{lang禁止}" />
+		<input type="radio" name="resize" value="both"{if $rs.resize == 'both' || !$rs.resize} checked{/if} title="{lang不限}" />
+		<input type="radio" name="resize" value="horizontal"{if $rs.resize == 'horizontal'} checked{/if} title="{lang可调节宽度}" />
+		<input type="radio" name="resize" value="vertical"{if $rs.resize == 'vertical'} checked{/if} title="{lang可调节高度}" />
 	</div>
 </div>
+
+

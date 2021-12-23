@@ -1,114 +1,184 @@
 <!-- include tpl=head_lay nopadding=true overflowy=true -->
 <style type="text/css">
 .lanmu{
-	width:12%;cursor: pointer;border:1px solid #fff;
+	width:9.5%;
+	cursor: pointer;
+	border:1px solid #fff;
+	margin-right:0 !important;
+}
+.lanmu2{
+	width:12%;
+	cursor: pointer;
+	border:1px solid #fff;
 }
 </style>
-<input type="hidden" id="select_value" value="" />
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<input type="hidden" id="select_pc" value="" />
+<input type="hidden" id="select_mobile" value="" />
 <div class="layui-card">
-	<div class="layui-card-header">
-		网格（以12等分计）自定义等分多数字用英文逗号隔开
-	</div>
 	<div class="layui-card-body">
-		<ul class="layout">
-			<li class="lanmu" data-id="12" phpok-name="select">
-				<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H25V34H39ZM23 34H9V14H23V34Z"></path><rect id="svg_4" height="20" width="30" y="14" x="9" fill="#ffffff"/></svg></div>
-				<div align="center">独立区</div>
-			</li>
-			<li class="lanmu" data-id="6,6" phpok-name="select">
-				<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H25V34H39ZM23 34H9V14H23V34Z"></path></svg></div>
-				<div align="center">6 - 6</div>
-			</li>
-			<li class="lanmu" data-id="3,9" phpok-name="select">
-				<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H20V34H39ZM18 34H9V14H18V34Z"></path></svg></div>
-				<div align="center">3 - 9</div>
-			</li>
-			<li class="lanmu" data-id="9,3" phpok-name="select">
-				<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H30V34H39ZM28 34H9V14H28V34Z"></path></svg></div>
-				<div align="center">9 - 3</div>
-			</li>
-			<li class="lanmu" data-id="4,4,4" phpok-name="select">
-				<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M41 14a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h30a2 2 0 0 0 2-2V14zM28.5 34h-9V14h9v20zm2 0V14H39v20h-8.5zm-13 0H9V14h8.5v20z"></path></svg></div>
-				<div align="center">4 - 4 - 4</div>
-			</li>
-			<li class="lanmu" data-id="3,6,3" phpok-name="select">
-				<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M41 14a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h30a2 2 0 0 0 2-2V14zM31 34H17V14h14v20zm2 0V14h6v20h-6zm-18 0H9V14h6v20z"></path></svg></div>
-				<div align="center">3 - 6 - 3</div>
-			</li>
-			<li>
-				<input type="text" data-id="user" value="" class="layui-input" phpok-name="select" placeholder="自定义" style="width:110px" />
-			</li>
-		</ul>
-	</div>
-</div>
-<div class="layui-card">
-	<div class="layui-card-header">
-		等分网格（基于百分比制作）
-	</div>
-	<div class="layui-card-body">
-		<div class="layui-btn-group">
-			<input type="button" value="二等分" phpok-name="select" data-id="2" class="layui-btn layui-btn-sm" />
-			<input type="button" value="三等分" phpok-name="select" data-id="3" class="layui-btn layui-btn-sm" />
-			<input type="button" value="四等分" phpok-name="select" data-id="4" class="layui-btn layui-btn-sm" />
-			<input type="button" value="五等分" phpok-name="select" data-id="5" class="layui-btn layui-btn-sm" />
-			<input type="button" value="六等分" phpok-name="select" data-id="6" class="layui-btn layui-btn-sm" />
-			<input type="button" value="八等分" phpok-name="select" data-id="8" class="layui-btn layui-btn-sm" />
-			<input type="button" value="十等分" phpok-name="select" data-id="10" class="layui-btn layui-btn-sm" />
-			<input type="button" value="十二等分" phpok-name="select" data-id="12" class="layui-btn layui-btn-sm" />
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				列模式
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="radio" name="mode" value="avg" title="等分" lay-filter="mode" />
+				<input type="radio" name="mode" value="row" title="自定义" lay-filter="mode" checked />
+			</div>
 		</div>
+		<div id="avg-html" style="display:none">
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					电脑端
+				</label>
+				<div class="layui-input-block">
+					<ul class="layout">
+						<li class="lanmu2" data-id="1" phpok-name="select_pc">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H25V34H39ZM23 34H9V14H23V34Z"></path><rect id="svg_4" height="20" width="30" y="14" x="9" fill="#ffffff"/></svg></div>
+							<div align="center">独立</div>
+						</li>
+						<li class="lanmu2" data-id="2" phpok-name="select_pc">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H25V34H39ZM23 34H9V14H23V34Z"></path></svg></div>
+							<div align="center">二等分</div>
+						</li>
+						<li class="lanmu2" data-id="3" phpok-name="select_pc">
+							<div align="center"><svg width="48" height="48" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="m39,12c1.1046,0 2,0.8954 2,2l0,20c0,1.1046 -0.8954,2 -2,2l-30,0c-1.10457,0 -2,-0.8954 -2,-2l0,-20c0,-1.1046 0.89543,-2 2,-2l30,0zm0,22l0,-20l-14,0l0,20l14,0zm-16,0l-14,0l0,-20l14,0l0,20z" id="svg_1"/><rect id="svg_4" height="20" width="30" y="14" x="9" fill="#ffffff"/><line id="svg_2" y2="34" x2="18" y1="13" x1="18" stroke-width="1.5" stroke="#000" fill="none"/><line id="svg_3" y2="34" x2="29" y1="13" x1="29" stroke-width="1.5" stroke="#000" fill="none"/></svg></div>
+							<div align="center">三等分</div>
+						</li>
+						<li class="lanmu2" data-id="4" phpok-name="select_pc">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="m41,14a2,2 0 0 0 -2,-2l-30,0a2,2 0 0 0 -2,2l0,20a2,2 0 0 0 2,2l30,0a2,2 0 0 0 2,-2l0,-20zm-10,20l-14,0l0,-20l14,0.25l0,19.75zm2,0l0,-20l6,0l0,20l-6,0zm-18,0l-6,0l0,-20l6,0l0,20z"/><line fill="none" stroke-width="2" x1="23.812503" y1="14" x2="23.937502" y2="34" id="svg_3" stroke-linejoin="undefined" stroke-linecap="undefined" stroke="#000" /></svg></div>
+							<div align="center">四等分</div>
+						</li>
+						<li class="lanmu2" data-id="6" phpok-name="select_pc">
+							<div align="center"><svg width="48" height="48" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="m39,12c1.1046,0 2,0.8954 2,2l0,20c0,1.1046 -0.8954,2 -2,2l-30,0c-1.10457,0 -2,-0.8954 -2,-2l0,-20c0,-1.1046 0.89543,-2 2,-2l30,0zm0,22l0,-20l-14,0l0,20l14,0zm-16,0l-14,0l0,-20l14,0l0,20z" id="svg_1"/><rect id="svg_4" height="20" width="30" y="14" x="9" fill="#ffffff"/><line id="svg_2" y2="34" x2="13" y1="13" x1="13" stroke-width="1.5" stroke="#000" fill="none"/><line id="svg_3" y2="34" x2="24" y1="13" x1="24" stroke-width="1.5" stroke="#000" fill="none"/><line id="svg_5" y2="34" x2="18" y1="13" x1="18" stroke-width="1.5" stroke="#000" fill="none"/><line id="svg_6" y2="34" x2="35" y1="13" x1="35" stroke-width="1.5" stroke="#000" fill="none"/><line id="svg_7" y2="34" x2="29" y1="13" x1="29" stroke-width="1.5" stroke="#000" fill="none"/></svg></div>
+							<div align="center">六等分</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					移动端
+				</label>
+				<div class="layui-input-block">
+					<ul class="layout">
+						<li class="lanmu2" data-id="1" phpok-name="select_mobile">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H25V34H39ZM23 34H9V14H23V34Z"></path><rect id="svg_4" height="20" width="30" y="14" x="9" fill="#ffffff"/></svg></div>
+							<div align="center">独立</div>
+						</li>
+						<li class="lanmu2" data-id="2" phpok-name="select_mobile">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H25V34H39ZM23 34H9V14H23V34Z"></path></svg></div>
+							<div align="center">二等分</div>
+						</li>
+						<li class="lanmu2" data-id="none" phpok-name="select_mobile">
+							<div align="center"><svg width="48" height="48" xmlns="http://www.w3.org/2000/svg"><path opacity="0.4" fill-rule="evenodd" clip-rule="evenodd" d="m39,12c1.1046,0 2,0.8954 2,2l0,20c0,1.1046 -0.8954,2 -2,2l-30,0c-1.10457,0 -2,-0.8954 -2,-2l0,-20c0,-1.1046 0.89543,-2 2,-2l30,0zm0,22l0,-20l-14,0l0,20l14,0zm-16,0l-14,0l0,-20l14,0l0,20z" id="svg_1"/><rect id="svg_4" height="20" width="30" y="14" x="9" fill="#ffffff"/><text transform="rotate(24.794048309326172 24.56250190734867,24.367187499999993) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="14" id="svg_15" y="29.18164" x="3.56251" fill-opacity="null" stroke-opacity="null" stroke-width="0" stroke="null" fill="#000000">不可见</text></svg></div>
+							<div align="center">隐藏</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="row-html">
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					电脑端
+				</label>
+				<div class="layui-input-block">
+					<ul class="layout">
+						<li class="lanmu" data-id="12" phpok-name="select_pc">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H25V34H39ZM23 34H9V14H23V34Z"></path><rect id="svg_4" height="20" width="30" y="14" x="9" fill="#ffffff"/></svg></div>
+							<div align="center">12</div>
+						</li>
+						<li class="lanmu" data-id="3,9" phpok-name="select_pc">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H20V34H39ZM18 34H9V14H18V34Z"></path></svg></div>
+							<div align="center">3-9</div>
+						</li>
+						<li class="lanmu" data-id="4,8" phpok-name="select_pc">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H20V34H39ZM18 34H9V14H18V34Z"></path></svg></div>
+							<div align="center">4-8</div>
+						</li>
+						<li class="lanmu" data-id="6,6" phpok-name="select_pc">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H25V34H39ZM23 34H9V14H23V34Z"></path></svg></div>
+							<div align="center">6-6</div>
+						</li>
+						<li class="lanmu" data-id="8,4" phpok-name="select_pc">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H30V34H39ZM28 34H9V14H28V34Z"></path></svg></div>
+							<div align="center">8-4</div>
+						</li>
+						<li class="lanmu" data-id="9,3" phpok-name="select_pc">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H30V34H39ZM28 34H9V14H28V34Z"></path></svg></div>
+							<div align="center">9-3</div>
+						</li>
+						<li class="lanmu" data-id="3,6,3" phpok-name="select_pc">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M41 14a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h30a2 2 0 0 0 2-2V14zM31 34H17V14h14v20zm2 0V14h6v20h-6zm-18 0H9V14h6v20z"></path></svg></div>
+							<div align="center">3-6-3</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					手机端
+				</label>
+				<div class="layui-input-block">
+					<ul class="layout">
+						<li class="lanmu" data-id="12" phpok-name="select_mobile">
+							<div align="center"><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M39 12C40.1046 12 41 12.8954 41 14V34C41 35.1046 40.1046 36 39 36H9C7.89543 36 7 35.1046 7 34V14C7 12.8954 7.89543 12 9 12H39ZM39 34V14H25V34H39ZM23 34H9V14H23V34Z"></path><rect id="svg_4" height="20" width="30" y="14" x="9" fill="#ffffff"/></svg></div>
+							<div align="center">12</div>
+						</li>
+						<li class="lanmu" data-id="none" phpok-name="select_mobile">
+							<div align="center"><svg width="48" height="48" xmlns="http://www.w3.org/2000/svg"><path opacity="0.4" fill-rule="evenodd" clip-rule="evenodd" d="m39,12c1.1046,0 2,0.8954 2,2l0,20c0,1.1046 -0.8954,2 -2,2l-30,0c-1.10457,0 -2,-0.8954 -2,-2l0,-20c0,-1.1046 0.89543,-2 2,-2l30,0zm0,22l0,-20l-14,0l0,20l14,0zm-16,0l-14,0l0,-20l14,0l0,20z" id="svg_1"/><rect id="svg_4" height="20" width="30" y="14" x="9" fill="#ffffff"/><text transform="rotate(24.794048309326172 24.56250190734867,24.367187499999993) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="14" id="svg_15" y="29.18164" x="3.56251" fill-opacity="null" stroke-opacity="null" stroke-width="0" stroke="null" fill="#000000">不可见</text></svg></div>
+							<div align="center">隐藏</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
 	</div>
 </div>
+</form>
 <script type="text/javascript">
 function save()
 {
 	var opener = $.dialog.opener;
-	var val = $('input[data-id=user]').val();
-	if(val && val != 'undefined'){
-		var t = val.split(",");
-		var num = 0;
-		for(var i in t){
-			num += parseInt(t[i]);
-		}
-		if(num != 12){
-			$.dialog.alert('您输入的数值相加不等于12，不符合要求');
-			return false;
-		}
-		var t = "row:"+val;
-	}else{
-		var t = $("#select_value").val();
-		if(!t || t == 'undefined'){
-			$.dialog.alert('未指定网格或是等分网格');
-			return false;
-		}
+	var type = $("input[name=mode]:checked").val();
+	var val_pc = $("#select_pc").val();
+	var val_mobile = $("#select_mobile").val();
+	if(!val_mobile || val_mobile == 'undefined'){
+		val_mobile = type == 'avg' ? 1 : 12;
 	}
-	if(!t || t == 'undefined'){
-		$.dialog.alert('未设置');
+	if(!val_pc || !val_mobile){
+		$.dialog.alert('请配置好相应的网格');
 		return false;
 	}
-	opener.$.form_design.layer_add_save('{$id}',t);
+	opener.$.form_design.layer_add_save('{$id}',type,val_pc,val_mobile);
 	$.dialog.close();
 	return true;
 }
 function update_data(obj)
 {
-	$("li[phpok-name=select]").css('border-color','#ffffff');
-	$('input[type=button][phpok-name=select]').removeClass('layui-btn-danger');
-	$('input[data-id=user],#select_value').val('');
-	if($(obj).is("li")){
-		$(obj).css("border-color",'red');
-		var val = $(obj).attr("data-id");
-		$("#select_value").val('row:'+val);
-	}
-	if($(obj).is('input') && $(obj).attr("type") == 'button'){
-		var val = $(obj).attr("data-id");
-		$(obj).addClass("layui-btn-danger");
-		$("#select_value").val('avg:'+val);
-	}
+	var name = $(obj).attr('phpok-name');
+	$(obj).siblings().css("border-color","#ffffff");
+	$(obj).css("border-color",'red');
+	var val = $(obj).attr("data-id");
+	$("#"+name).val(val);
 }
 $(document).ready(function(){
-	$('[phpok-name=select]').click(function(){
+	$('[phpok-name=select_pc],[phpok-name=select_mobile]').click(function(){
 		update_data(this)
 	});
+	layui.form.on("radio(mode)",function(e){
+		if(e.value == 'avg'){
+			$("#avg-html").show();
+			$("#row-html").hide();
+		}else{
+			$("#avg-html").hide();
+			$("#row-html").show();
+		}
+		$("li[phpok-name=select_pc],li[phpok-name=select_mobile]").css('border-color','#ffffff');
+		$("#select_pc,#select_mobile").val('');
+	})
 });
 </script>
 <!-- include tpl=foot_lay is_open=true -->

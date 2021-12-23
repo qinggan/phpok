@@ -18,7 +18,7 @@ function check_save()
             layui.alert('不能使用sms_做标识');
             return false;
         }
-        var content = UE.getEditor('content').getContentTxt();
+        var content = CKEDITOR.instances['content'].getData();
         if(!content){
             layui.alert("内容不能空");
             return false;

@@ -92,7 +92,7 @@
 			var old = opener.$("input[name=tag]").val();
 			if(!old){
 				opener.$("input[name=tag]").val(val);
-				$.dialog.tips(p_lang('添加成功')).position('50%','1%');
+				$.dialog.tips(p_lang('添加成功')).position('100%','1%');
 				return true;
 			}
 			if(!cut_identifier || cut_identifier == 'undefined'){
@@ -101,7 +101,7 @@
 			var lst = old.split(cut_identifier);
 			var total = lst.length;
 			if(total>=10){
-				$.dialog.alert(p_lang('超出系统限制，请删除一些不常用的标签'));
+				$.dialog.alert(p_lang('超出系统限制，请删除一些不常用的标签')).position('100%','1%');
 				return false;
 			}
 			var status = true;
@@ -111,11 +111,11 @@
 				}
 			}
 			if(!status){
-				$.dialog.tips(p_lang('标签已经存在，不支持重复添加'));
+				$.dialog.tips(p_lang('标签已经存在，不支持重复添加')).position('100%','1%');
 				return false;
 			}
 			opener.$("input[name=tag]").val(old+""+cut_identifier+""+val);
-			$.dialog.tips(p_lang('添加成功')).position('50%','1%');
+			$.dialog.tips(p_lang('添加成功')).position('100%','1%');
 			return true;
 		},
 		titles:function(id,title)

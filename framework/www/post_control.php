@@ -70,27 +70,39 @@ class post_control extends phpok_control
 		//扩展字段
 		$ext_list = $this->model('module')->fields_all($project_rs["module"],"identifier");
 		$extlist = array();
-		foreach(($ext_list ? $ext_list : array()) AS $key=>$value){
+		foreach(($ext_list ? $ext_list : array()) as $key=>$value){
 			if(!$value['is_front']){
 				continue;
 			}
 			if($value["ext"]){
 				$ext = unserialize($value["ext"]);
-				foreach($ext AS $k=>$v){
+				foreach($ext as $k=>$v){
 					$value[$k] = $v;
 				}
 			}
 			$extlist[] = $this->lib('form')->format($value);
 		}
 		$this->assign("extlist",$extlist);
-		$tpl = $project_rs['post_tpl'] ? $project_rs['post_tpl'] : $project_rs['identifier'].'_post';
-		if(!$this->tpl->check_exists($tpl)){
-			$tpl = 'post_add';
-			if(!$this->tpl->check_exists($tpl)){
-				error(P_Lang('未配置发布模板，联系管理员进行配置'));
+		//检测发布模板是否存在
+		$vfile = array();
+		if($project_rs['post_tpl']){
+			$vfile[] = $project_rs['post_tpl'];
+		}
+		$vfile[] = 'usercp/post-add-'.$project_rs['identifier'];
+		$vfile[] = 'usercp/post-add';
+		$vfile[] = $project_rs['identifier'].'_post';
+		$vfile[] = 'post-add';
+		$vfile[] = 'post_add';
+		$tpl = '';
+		foreach($vfile as $key=>$value){
+			if($this->tpl->check_exists($value)){
+				$tpl = $value;
+				break;
 			}
 		}
-
+		if(!$tpl){
+			$this->error(P_Lang('未配置发布模板，联系管理员进行配置'));
+		}
 		$_back = $this->get("_back");
 		if(!$_back){
 			$_back = $this->lib('server')->referer();
@@ -99,7 +111,6 @@ class post_control extends phpok_control
 			$_back = $this->url($project_rs['identifier'],$cate_rs['identifier']);
 		}
 		$this->assign('_back',$_back);
-		//判断是否加验证码
 		$this->assign('is_vcode',$this->model('site')->vcode($project_rs['id'],'add'));
 		$this->view($tpl);
 	}
@@ -110,7 +121,7 @@ class post_control extends phpok_control
 	public function edit_f()
 	{
 		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能操作此信息'),$this->url,10);
+			$this->error(P_Lang('非用户不能操作此信息'),$this->url,10);
 		}
 		$_back = $this->get("_back");
 		if(!$_back){
@@ -169,12 +180,24 @@ class post_control extends phpok_control
 		}
 		$this->assign("extlist",$extlist);
 		$this->assign('rs',$rs);
-		$tpl = $project_rs['post_tpl'] ? $project_rs['post_tpl'].'_edit' : $project_rs['identifier'].'_post_edit';
-		if(!$this->tpl->check_exists($tpl)){
-			$tpl = 'post_edit';
-			if(!$this->tpl->check_exists($tpl)){
-				$this->error(P_Lang('缺少编辑模板'));
+		$vfile = array();
+		if($project_rs['post_tpl']){
+			$vfile[] = $project_rs['post_tpl'].'_edit';
+		}
+		$vfile[] = 'usercp/post-edit-'.$project_rs['identifier'];
+		$vfile[] = 'usercp/post-edit';
+		$vfile[] = $project_rs['identifier'].'_post_edit';
+		$vfile[] = 'post-edit';
+		$vfile[] = 'post_edit';
+		$tpl = '';
+		foreach($vfile as $key=>$value){
+			if($this->tpl->check_exists($value)){
+				$tpl = $value;
+				break;
 			}
+		}
+		if(!$tpl){
+			$this->error(P_Lang('未配置编辑模板，联系管理员进行配置'));
 		}
 		$this->assign('is_vcode',$this->model('site')->vcode($project_rs['id'],'edit'));
 		$this->view($tpl);

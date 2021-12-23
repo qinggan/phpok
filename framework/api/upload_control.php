@@ -10,8 +10,8 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class upload_control extends phpok_control
 {
-	private $u_id = 0; //会员ID
-	private $u_name = 'guest'; //会员名字，游客使用guest
+	private $u_id = 0; //用户ID
+	private $u_name = 'guest'; //用户名字，游客使用guest
 	private $is_client = false;//判断是否客户端
 	function __construct()
 	{
@@ -35,7 +35,7 @@ class upload_control extends phpok_control
 	}
 
 	//存储上传的数据，游客仅能上传jpg,png,gif,jpeg附件
-	//普通会员能上传的附件有：jpg,png,gif,jpeg,zip,rar,doc,xls,docx,xlsx,txt,ppt,pptx
+	//普通用户能上传的附件有：jpg,png,gif,jpeg,zip,rar,doc,xls,docx,xlsx,txt,ppt,pptx
 	public function save_f()
 	{
 		if($this->u_id){

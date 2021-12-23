@@ -17,6 +17,7 @@ class alipay_lib extends _init_lib
 	private $public_key; // 公钥信息
 	private $quit_url; // 取消支付跳回网页
 	private $return_url; // 同步返回跳转通知网址
+	private $qr_pay_mode = 2; //支付方式
 	private $config = array();
 	private $https_verify_url = 'https://mapi.alipay.com/gateway.do?service=notify_verify&'; // HTTPS形式消息验证地址
 	private $http_verify_url = 'http://notify.alipay.com/trade/notify_query.do?'; // HTTP形式消息验证地址
@@ -201,6 +202,14 @@ class alipay_lib extends _init_lib
 		return $this->notify_url;
 	}
 
+	public function qr_pay_mode($val='')
+	{
+		if($val){
+			$this->qr_pay_mode = $val;
+		}
+		return $this->qr_pay_mode;
+	}
+
 	/**
 	 * 即时到账支付接口
 	 * @参数 $sn 订单编号
@@ -223,6 +232,9 @@ class alipay_lib extends _init_lib
 		$tmpdata['total_amount'] = $price;
 		$tmpdata['product_code'] = 'FAST_INSTANT_TRADE_PAY';
 		$tmpdata['timeout_express'] = '1h';
+		if($this->qr_pay_mode){
+			$tmpdata['qr_pay_mode'] = $this->qr_pay_mode;
+		}
 		$bizcontent = json_encode($tmpdata);
 		$request->setBizContent($bizcontent);
 		$form = $aop->pageExecute($request);
@@ -284,6 +296,21 @@ class alipay_lib extends _init_lib
 			$this->public_key = trim($val);
 		}
 		return $this->public_key;
+	}
+
+	/**
+	 * 订单查询
+	**/
+	public function query($sn='')
+	{
+		global $app;
+		$aop = $this->aop();
+		$request = new \AlipayTradeQueryRequest();
+		$tmpdata = array();
+		$tmpdata['out_trade_no'] = $sn;
+		$request->setBizContent($app->lib('json')->encode($tmpdata));
+		$rs = $aop->execute($request);
+		return $rs;
 	}
 
 	public function quit_url($val='')

@@ -1,164 +1,236 @@
-<!-- include tpl=head_open -->
+<!-- include tpl=head_lay -->
 <script type="text/javascript">
-function save()
+function save(obj)
 {
-	var obj = art.dialog.opener;
-	$("#form_save").ajaxSubmit({
+	$(obj).ajaxSubmit({
 		'url':get_url('module','field_edit_save'),
 		'type':'post',
 		'dataType':'json',
 		'success':function(rs){
-			if(rs.status == 'ok'){
-				$.dialog.alert('{lang字段编辑成功}',function(){
-					obj.$.phpok.reload();
-				},'succeed');
-			}else{
-				$.dialog.alert(rs.content);
+			if(rs.status){
+				$.dialog.tips(p_lang('字段编辑成功'));
+				var url = get_url('module','fields','id={$rs.ftype}');
+				$.admin.reload(url);
+				$.admin.close(url);
 				return false;
 			}
+			$.dialog.alert(rs.info);
+			return false;
 		}
 	});
+	return false;
 }
 </script>
-
-<form method="post" id="form_save" onsubmit="return false">
+<form method="post" id="form_save" class="layui-form" onsubmit="return save(this)">
 <input type="hidden" id="id" name="id" value="{$id}" />
-<div class="table">
-	<div class="title">
-		{lang字段名称：}
-		<span class="note">{lang设置一个名称，该名称在表单的头部信息显示}</span></span>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang字段编辑}
 	</div>
-	<div class="content">
-		<input type="text" id="title" name="title" class="w99" value="{$rs.title}" />
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang字段名称：}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang设置一个名称，该名称在表单的头部信息显示}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang字段备注}：
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="note" name="note" class="layui-input" value="{$rs.note}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang填写表单时，指定这个注意事项}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang字段类型：}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select name="field_type" id="field_type">
+					<option value="">{lang请选择字段类型…}</option>
+					<!-- loop from=$field_list key=$key value=$value -->
+					<option value="{$key}"{if $rs.field_type == $key} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang请慎重选择，不建议经常修改}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang表单类型：}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select id="form_type" name="form_type" lay-ignore onchange="$._configForm.option(this.value,'form_type_ext','{$id}','module')">
+					<option value="">{lang请选择表单…}</option>
+					<!-- loop from=$form_list key=$key value=$value id=$tmpid -->
+					<option value="{$key}"{if $key == $rs.form_type} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				{lang请选择字段要使用的表单}
+			</div>
+		</div>
+		<div id="form_type_ext" style="display:none;"></div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang样式：}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang不能超过250个字符，不熟悉CSS，请查相关手册，不支持引号}</div>
+			<div class="layui-input-block">
+				<input type="text" id="form_style" name="form_style" class="layui-input" value="{$rs.form_style}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang默认值：}
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang设置表单默认值，如果表单中有多个值，请用英文逗号隔开}</div>
+			<div class="layui-input-block">
+				<input type="text" id="content" name="content" class="layui-input" value="{$rs.content}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang格式化：}
+			</label>
+			<div class="layui-input-block">
+				<select name="format" id="format">
+					<!-- loop from=$format_list key=$key value=$value id=$tmpid -->
+					<option value="{$key}"{if $rs.format == $key} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang排序}：
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="taxis" id="taxis" class="layui-input" value="{$rs.taxis ? $rs.taxis : 255}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang值越小越往前靠，可选范围：1-255}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang显示组：}
+			</label>
+			<div class="layui-input-inline auto">
+				<!-- loop from=$groups key=$key value=$value id=$tmpid -->
+				<input type="radio" name="group_id" value="{$key}"{if $rs.group_id == $key} checked{/if} title="{$value}" />
+				<!-- /loop -->
+			</div>
+			<div class="layui-form-mid">
+				{lang设置该字段要显示在哪个栏里，扩展栏默认是隐藏的，适用于不常使用的字段}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang唯一性：}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="onlyone" value="0"{if !$rs.onlyone} checked{/if} title="{lang禁用}" />
+				<input type="radio" name="onlyone" value="1"{if $rs.onlyone} checked{/if} title="{lang启用}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang是否开启唯一性限制}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang前端处理}：
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="is_front" value="0"{if !$rs.is_front} checked{/if} title="{lang禁用}" />
+				<input type="radio" name="is_front" value="1"{if $rs.is_front} checked{/if} title="{lang启用}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang设置前端是否可用，如果需要前端加载相应属性请在这里操作}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang搜索}：
+			</label>
+			<div class="layui-input-block gray" style="line-height:38px;">{lang指定该字段的搜索类型，使用区间搜索需要设置分隔符}</div>
+			<div class="layui-input-block">
+				<ul class="layout">
+					<li><input type="radio" lay-filter="search" name="search" value="0"{if !$rs.search} checked{/if} title="{lang不支持搜索}" /></li>
+					<li><input type="radio" lay-filter="search" name="search" value="1"{if $rs.search == 1} checked{/if} title="{lang完全匹配搜索}" /></li>
+					<li><input type="radio" lay-filter="search" name="search" value="2"{if $rs.search == 2} checked{/if} title="{lang部分匹配搜索}" /></li>
+					<li><input type="radio" lay-filter="search" name="search" value="3"{if $rs.search == 3} checked{/if} title="{lang区间搜索}" /></li>
+					<li id="search_separator_html" {if !$rs.search || $rs.search != 3}style="display:none"{/if}>
+						<input type="text" name="search_separator" id="search_separator" value="{$rs.search_separator}" class="layui-input" placeholder="{lang分隔符}" />
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang筛选}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="filter" value="0"{if !$rs.filter} checked{/if} title="{lang不开启}" />
+				<input type="radio" name="filter" value="1"{if $rs.filter && $rs.filter == 1} checked{/if} title="{lang仅单选}" />
+				<input type="radio" name="filter" value="2"{if $rs.filter && $rs.filter == 2} checked{/if} title="{lang可多选}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang多选模式需要自定义连接符，需要同时开启搜索}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang筛选名称}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="filter_title" id="filter_title" value="{$rs.filter_title}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang设置筛选器的名称，留空使用字段名称}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang连接符}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="filter_join" id="filter_join" value="{$rs.filter_join}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang仅用于筛选为多选模式时有效，留空使用英文逗号}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang筛选值}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<textarea name="filter_content" id="filter_content" class="layui-textarea">{$rs.filter_content}</textarea>
+			</div>
+			<div class="layui-form-mid">
+				{lang一行一个，值与显示中间用冒号隔开}<br />
+				示例：10-100:10元-100元
+			</div>
+		</div>
 	</div>
 </div>
-
-<div class="table">
-	<div class="title">
-		{lang字段备注}：
-		<span class="note">{lang填写表单时，指定这个项目的注意事项}</span></span>
-	</div>
-	<div class="content"><input type="text" id="note" name="note" class="w99" value="{$rs.note}" /></div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang字段类型：}<span class="note">{lang请慎重选择，不建议修改}</span>
-	</div>
-	<div class="content">
-		<select name="field_type" id="field_type" class="w99">
-			<!-- loop from=$field_list key=$key value=$value -->
-			<option value="{$key}"{if $rs.field_type == $key} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang表单类型：}
-		<span class="note">{lang请选择字段要使用的表单}</span>
-	</div>
-	<div class="content">
-		<select id="form_type" name="form_type" class="w99" onchange="$._configForm.option(this.value,'form_type_ext','{$id}','module')">
-			<option value="">{lang请选择表单…}</option>
-			<!-- loop from=$form_list key=$key value=$value id=$tmpid -->
-			<option value="{$key}"{if $key == $rs.form_type} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
-
-<div id="form_type_ext" style="display:none;"></div>
-
-<div class="table">
-	<div class="title">
-		<span class="edit">
-			{lang表单样式：}
-			<span class="note">{lang不能超过250个字符，不熟悉CSS，请查相关手册}</span>
-		</span>
-	</div>
-	<div class="content"><input type="text" id="form_style" name="form_style" class="w99" value="{$rs.form_style}" /></div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang表单默认值：}
-		<span class="note">{lang设置表单默认值，如果表单中有多个值，请用英文逗号隔开}</span>
-	</div>
-	<div class="content"><input type="text" id="content" name="content" class="w99" value="{$rs.content}" /></div>
-</div>
-
-
-<div class="table">
-	<div class="title">
-		{lang接收数据格式化：}
-		<span class="note">{lang设置文本常见格式，如HTML，整型，浮点型等}</span>
-	</div>
-	<div class="content">
-		<select name="format" id="format" class="w99">
-			<!-- loop from=$format_list key=$key value=$value id=$tmpid -->
-			<option value="{$key}"{if $rs.format == $key} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
-			<!-- /loop -->
-		</select>
-	</div>
-</div>
-
-<div class="table">
-	<div class="title">
-		{lang排序}：
-		<span class="note">{lang值越小越往前靠，可选范围：1-255}</span>
-	</div>
-	<div class="content">
-		<input type="text" name="taxis" id="taxis" value="{$rs.taxis ? $rs.taxis : 255}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang唯一性}
-		<span class="note">{lang是否开启唯一性限制}</span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<li><label><input type="radio" name="onlyone" value="0"{if !$rs.onlyone} checked{/if} />{lang禁用}</label></li>
-			<li><label><input type="radio" name="onlyone" value="1"{if $rs.onlyone} checked{/if} />{lang启用}</label></li>
-		</ul>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang前端处理}：
-		<span class="note">{lang设置前端是否可用，如果需要前端加载相应属性请在这里操作}</span>
-	</div>
-	<div class="content">
-		<table>
-		<tr>
-			<td><label><input type="radio" name="is_front" value="0"{if !$rs.is_front} checked{/if} />{lang禁用}</label></td>
-			<td><label><input type="radio" name="is_front" value="1"{if $rs.is_front} checked{/if} />{lang使用}</label></td>
-		</tr>
-		</table>
-	</div>
-</div>
-<script type="text/javascript">
-function search_set(val){
-	if(val == 3){
-		$("#search_separator_html").show();
-	}else{
-		$("#search_separator_html").hide();
-	}
-}
-</script>
-<div class="table">
-	<div class="title">
-		{lang搜索}：
-		<span class="note">{lang指定该字段的搜索类型，使用区间搜索需要设置分隔符}</span>
-	</div>
-	<div class="content">
-		<ul class="layout">
-			<li><label><input type="radio" name="search" value="0"{if !$rs.search} checked{/if} onclick="search_set(0)" />{lang不支持搜索}</label></li>
-			<li><label><input type="radio" name="search" value="1"{if $rs.search == 1} checked{/if} onclick="search_set(1)" />{lang完全匹配搜索}</label></li>
-			<li><label><input type="radio" name="search" value="2"{if $rs.search == 2} checked{/if} onclick="search_set(2)" />{lang部分匹配搜索}</label></li>
-			<li><label><input type="radio" name="search" value="3"{if $rs.search == 3} checked{/if} onclick="search_set(3)" />{lang区间搜索}</label></li>
-			<li id="search_separator_html" {if !$rs.search || $rs.search != 3}style="display:none"{/if}><input type="text" name="search_separator" id="search_separator" class="short" value="{$rs.search_separator}" placeholder="{lang分隔符}" /></li>
-		</ul>
-		<div class="clear"></div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
 	</div>
 </div>
 </form>

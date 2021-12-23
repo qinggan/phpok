@@ -1,0 +1,45 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	$("#post_save").ajaxSubmit({
+		'url':get_plugin_url('vipext','start_clear'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.tips('操作成功',function(){
+					$.dialog.close();
+				}).lock();
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+}
+</script>
+<div class="layui-card">
+	<div class="layui-card-header">
+		数据清零请慎用
+	</div>
+	<div class="layui-card-body">
+		<form method="post" id="post_save" onsubmit="return false">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				清零项目
+			</label>
+			<div class="layui-input-block">
+				<select id="clear_id" name="clear_id">
+				<option value="">请选择…</option>
+				<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+				<option value="{$value.id}">{$value.space}{$value.title}</option>
+				<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		</form>
+	</div>
+</div>
+<!-- include tpl=foot_lay is_open=true -->

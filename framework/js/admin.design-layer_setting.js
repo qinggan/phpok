@@ -59,6 +59,8 @@ function save()
 			}
 		}
 		obj.attr("pre-style",ext_style);
+	}else{
+		obj.attr("pre-style",'');
 	}
 	var bgcolor = $("#bgcolor").val();
 	if(bgcolor && bgcolor != 'undefined'){

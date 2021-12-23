@@ -1,0 +1,113 @@
+<!-- include tpl=head_lay nopadding=true -->
+<script type="text/javascript">
+var project_id = "{$project_id}";
+function update_cate2(val)
+{
+	$("#cate_id").val(val);
+}
+function update_cate()
+{
+	var project_id = $("#project_id").val();
+	var url = get_url('uedit','info_cate');
+	if(project_id && project_id != '0'){
+		url += "&project_id="+project_id;
+	}
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			var cate_id = $("#cate_id").val();
+			var lst = rs.content;
+			var html = '<select id="cate_id2" onchange="update_cate2(this.value)">';
+			html += '<option value="">不限</option>';
+			for(var i in lst){
+				html+='<option value="'+lst[i]['id']+'"';
+				if(lst[i]['id'] == cate_id){
+					html += " selected";
+				}
+				html+='>'+lst[i]['title']+'</option>';
+			}
+			html += '</select>';
+			$("#show_cate").html(html).show().css("padding-left","5px");
+		}else{
+			$("#show_cate").html('').hide();
+		}
+	});
+}
+function dialogOK()
+{
+	var vals = $.checkbox.join('#filelist');
+	if(!vals){
+		alert("请选择要插入的主题");
+		return false;
+	}
+	var list = vals.split(",");
+	if(list.length < 2)
+	{
+		var title = $("#title_"+list[0]).text();
+		if(!title){
+			alert('主题选择异常，请检查');
+			return false;
+		}
+		var htm = '[title:'+list[0]+']'+title+'[/title]';
+	}else{
+		var htm = "";
+		for(var i in list){
+			var title = $("#title_"+list[i]).text();
+			if(!title){
+				continue;
+			}
+			htm += '<p>[title:'+list[i]+']'+title+'[/title]</p>'+"\n";
+		}
+	}
+	return htm;
+}
+
+</script>
+<div class="layui-card" style="margin-bottom:0;">
+	<div class="layui-card-header" style="padding-top:5px;">
+		<form method="post" class="layui-form" action="{url ctrl=ckeditor func=arclist/}">
+		<input type="hidden" name="cate_id" id="cate_id" value="{$cate_id}" />
+		<ul class="layout">
+			<li><input type="text" id="keywords" name="keywords" value="{$keywords}" placeholder="{lang输入要搜索的关键字}" /></li>
+			<li>
+				<select id="project_id" name="project_id" onchange="update_cate()">
+					<option value="0">{lang不限}</option>
+					<!-- loop from=$projectlist key=$key value=$value -->
+					<option value="{$value.id}"{if $value.id == $project_id} selected="selected"{/if}>{$value.space}{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</li>
+			<li id="show_cate" style="display:none;"></li>
+			<li><input type="submit" value="搜索" class="layui-btn layui-btn-sm" /></li>
+		</ul>
+		</form>
+	</div>
+	<div class="layui-card-body layui-form">
+		<table class="layui-table" id="filelist">
+		<thead>
+		<tr>
+			<th width="30px" height="30px">ID</th>
+			<th>{lang主题}</th>
+			<th>{lang时间}</th>
+			<th>{lang次数}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td><input type="checkbox" id="t_{$value.id}" value="{$value.id}" lay-skin="primary" title="{$value.id}" /></td>
+			<td id="title_{$value.id}">{$value.title}</td>
+			<td>{func date "Y-m-d H:i" $value.dateline}</td>
+			<td>{$value.hits}</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<div align="center"><!-- include tpl=pagelist --></div>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	if(project_id){
+		update_cate();
+	}
+});
+</script>
+<!-- include tpl=foot_lay is_open=true -->

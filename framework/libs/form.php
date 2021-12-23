@@ -158,6 +158,22 @@ class form_lib
 		return $value;
 	}
 
+	public function ajax($id,$type)
+	{
+		$obj = $this->cls($type);
+		if(!$obj){
+			return $value;
+		}
+		$mlist = get_class_methods($obj);
+		if(in_array('phpok_ajax',$mlist)){
+			return $obj->phpok_ajax($id,$this->appid);
+		}
+		if(in_array('ajax',$mlist)){
+			return $obj->ajax($id,$this->appid);
+		}
+		return false;
+	}
+
 
 	//弹出窗口，用于创建字段
 	function open_form_setting($saveurl)
@@ -178,32 +194,31 @@ class form_lib
 	//格式化值，对应的表单内容
 	function info($val,$rs)
 	{
-		if($val == '' || !$rs || !is_array($rs)) return $val;
+		if($val == '' || !$rs || !is_array($rs)){
+			return $val;
+		}
 		//如果只是普通的文本框
-		if($rs['form_type'] == 'text' || $rs['form_type'] == 'password')
-		{
+		if($rs['form_type'] == 'text' || $rs['form_type'] == 'password'){
 			return $val;
 		}
 		//如果是代码编辑器 或是 文本区
-		if($rs['form_type'] == 'code_editor' || $rs['form_type'] == 'textarea')
-		{
+		if($rs['form_type'] == 'code_editor' || $rs['form_type'] == 'textarea'){
 			return $val;
 		}
 		//如果是编辑器
-		if($rs['form_type'] == 'editor')
-		{
+		if($rs['form_type'] == 'editor'){
 			return $GLOBALS['app']->lib('ubb')->to_html($val);
 		}
 		//如果是单选框
-		if($rs['form_type'] == 'radio')
-		{
+		if($rs['form_type'] == 'radio'){
 			if(!$rs["option_list"]) $rs['option_list'] = 'default:0';
 			$opt_list = explode(":",$rs["option_list"]);
 			$rslist = opt_rslist($opt_list[0],$opt_list[1],$rs['ext_select']);
 			//如果内容为空，则返回空信息
-			if(!$rslist) return false;
-			foreach($rslist AS $key=>$value)
-			{
+			if(!$rslist){
+				return false;
+			}
+			foreach($rslist as $key=>$value){
 				//
 			}
 		}

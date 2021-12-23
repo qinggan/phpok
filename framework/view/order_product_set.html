@@ -94,7 +94,7 @@
 					<ul class="layout">
 						<li><input type="text" name="extkey[]" class="layui-input" /></li>
 						<li class="layui-form-mid">：</li>
-						<li><input type="text" name="extval[]" class="layui-input default" /></li>
+						<li><input type="text" name="extval[]" class="layui-input" /></li>
 						<li><input type="button" value=" + " onclick="$.admin_order.ext_create()" class="layui-btn" /></li>
 					</ul>
 				</div>
@@ -104,11 +104,10 @@
 					<ul class="layout">
 						<li><input type="text" name="extkey[]" value="{$value.title}" class="layui-input" /></li>
 						<li class="layui-form-mid">：</li>
-						<li><input type="text" name="extval[]" value="{$value.content}" class="layui-input default" /></li>
+						<li><input type="text" name="extval[]" value="{$value.content}" class="layui-input" /></li>
 						<!-- if !$tmpid.index -->
 						<li><input type="button" value=" + " onclick="$.admin_order.ext_create()" class="layui-btn" /></li>
 						<!-- else -->
-						
 						<li><input type="button" value=" - " onclick="$.admin_order.ext_delete(this)" class="layui-btn" /></li>
 						<!-- /if -->
 					</ul>
@@ -125,4 +124,4 @@
 </div>
 
 
-<!-- include tpl=foot_lay -->
+<!-- include tpl=foot_lay is_open=true -->

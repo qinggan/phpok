@@ -1,0 +1,49 @@
+<!-- include tpl=usercp/head -->
+<div class="container-fluid no-gutters main layout-main">
+	<!-- include tpl=usercp/sidebar -->
+	<div class="layout-right">
+		<!-- include tpl=usercp/header -->
+		<div class="layout-body">
+			<div class="card">
+				<div class="card-header">
+					我关注的
+				</div>
+				<div class="card-body">
+					<table class="table">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>头像</th>
+							<th>账号/关注时间</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+						<tr id="list_{$value.id}">
+							<td>{$value.id}</td>
+							<td>
+								<!-- if $value.avatar -->
+								<div><img src="{$value.avatar}" style="width:80px;height:80px;" /></div>
+								<!-- else -->
+								<div><img src="images/avatar.gif" style="width:80px;height:80px;" /></div>
+								<!-- /if -->
+							</td>
+							<td>
+								<a href="{url ctrl=user id=$value.id/}" target="_blank">{$value.user}</a><br />
+								<small class="text-muted">关注时间：{func time_format $value.addtime}</small>
+							</td>
+							<td>
+								<button type="button" onclick="$.phpok_app_social.idol_del('{$value.id}')" class="btn btn-danger btn-sm">取消关注</button>
+							</td>
+						</tr>
+						<!-- /loop -->
+					</tbody>
+					</table>
+					<!-- include tpl=usercp/pagelist -->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

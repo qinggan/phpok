@@ -37,7 +37,7 @@ class ubb_lib
 		$info=preg_replace("/\[center\](.+?)\[\/center\]/is","<div style='text-align:center'>\\1</div>",$info);
 		$info=preg_replace("/\[url\](.+?)\[\/url\]/is","<a href=\"\\1\" target='_blank'>\\1</a>",$info);
 		$info=preg_replace("/\[url=(http:\/\/.+?)\](.+?)\[\/url\]/is","<a href='\\1' target='_blank' title='\\2'>\\2</a>",$info);
-		$info=preg_replace("/\[url=(.+?)\](.+?)\[\/url\]/is","<a href='\\1' title='\\2'>\\2</a>",$info);
+		$info=preg_replace("/\[url=(.+?)\](.+?)\[\/url\]/is","<a href='\\1' target='_blank' title='\\2'>\\2</a>",$info);
 		$info=preg_replace("/\[img\](.+?)\[\/img\]/is","<img src='\\1'>",$info);
 		$info=preg_replace("/\[img\s(.+?)\](.+?)\[\/img\]/is","<img \\1 src='\\2'>",$info);
 		$info=preg_replace("/\[color=(.+?)\](.+?)\[\/color\]/is","<span style='color:\\1'>\\2</span>",$info);

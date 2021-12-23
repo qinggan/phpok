@@ -16,49 +16,14 @@
 				$("input[type=submit][class=submit2]").click();
 			}
 		},
-		del:function(id)
+		download:function()
 		{
-			$.dialog.confirm(p_lang('确定要删除这条日志吗？'),function(){
-				var url = get_url('log','delete','id='+id);
-				$.phpok.json(url,function(rs){
-					if(rs.status){
-						$.phpok.reload();
-						return true;
-					}
-					$.dialog.alert(rs.info,true,'error');
-				})
-			})
-		},
-		delete30:function()
-		{
-			$.dialog.confirm(p_lang('确定要删除30天之前日志吗？'),function(){
-				var url = get_url('log','delete','date=30');
-				$.phpok.json(url,function(rs){
-					if(rs.status){
-						$.phpok.reload();
-						return true;
-					}
-					$.dialog.alert(rs.info,true,'error');
-				})
-			})
-		},
-		delete_selected:function()
-		{
-			var ids = $.checkbox.join();
-			if(!ids){
-				$.dialog.alert(p_lang('未选择要删除的日志'));
-				return false;
+			var start_time = $("input[name=start_time]").val();
+			var url = get_url("log","download");
+			if(start_time){
+				url += "&start_time="+$.str.encode(start_time);
 			}
-			$.dialog.confirm(p_lang('确定要删除选中的日志吗？'),function(){
-				var url = get_url('log','delete','ids='+$.str.encode(ids));
-				$.phpok.json(url,function(rs){
-					if(rs.status){
-						$.phpok.reload();
-						return true;
-					}
-					$.dialog.alert(rs.info,true,'error');
-				})
-			})
+			$.phpok.go(url);
 		}
 	}
 })(jQuery);
@@ -68,8 +33,5 @@ $(document).ready(function(){
 	//执行一个laydate实例
 	laydate.render({
 		elem: '#start_date',
-	});
-	laydate.render({
-		elem: '#stop_date',
 	});
 });

@@ -22,6 +22,29 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
+				{lang内标题}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="intitle" class="layui-input" value="{$rs.intitle}" />
+			</div>
+			<div class="layui-form-mid layui-word-aux">
+				{lang建议不超过十个汉字，留空使用名称}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang外链}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="islink" id="islink" value="0"{if !$rs.islink} checked{/if} title="否" />
+				<input type="radio" name="islink" id="islink" value="1"{if $rs.islink} checked{/if} title="是" />
+			</div>
+			<div class="layui-form-mid layui-word-aux">
+				{lang外链会在新窗口打开}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
 				{lang链接}
 			</label>
 			<div class="layui-input-block">

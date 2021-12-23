@@ -57,7 +57,13 @@ class plugin_model_base extends phpok_model
 	public function get_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."plugins WHERE id='".$id."'";
-		return $this->db->get_one($sql);
+		$rs = $this->db->get_one($sql);
+		if($rs['pids']){
+			$rs['pids'] = explode(",",$rs['pids']);
+		}else{
+			$rs['pids'] = array();
+		}
+		return $rs;
 	}
 
 	/**
@@ -76,6 +82,9 @@ class plugin_model_base extends phpok_model
 		}
 		$rs["id"] = $id;
 		$rs["path"] = $folder;
+		if($rs['pids'] && !is_array($rs['pids'])){
+			$rs['pids'] = explode(",",$rs['pids']);
+		}
 		return $rs;
 	}
 
@@ -87,6 +96,9 @@ class plugin_model_base extends phpok_model
 	{
 		if(!$data || !is_array($data)){
 			return false;
+		}
+		if($rs['pids'] && is_array($rs['pids'])){
+			$rs['pids'] = implode(',',$rs['pids']);
 		}
 		$this->db->insert_array($data,'plugins','replace');
 		$sql = "SELECT id FROM ".$this->db->prefix."plugins WHERE id='".$data['id']."'";
@@ -120,6 +132,9 @@ class plugin_model_base extends phpok_model
 	{
 		if(!$data || !$id || !is_array($data)){
 			return false;
+		}
+		if($rs['pids'] && is_array($rs['pids'])){
+			$rs['pids'] = implode(',',$rs['pids']);
 		}
 		$this->db->update_array($data,'plugins',array('id'=>$id));
 	}

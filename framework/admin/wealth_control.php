@@ -36,7 +36,7 @@ class wealth_control extends phpok_control
 	}
 
 	/**
-	 * 财富明细，会员下的财宣清单
+	 * 财富明细，用户下的财宣清单
 	 * @参数 id 财富ID
 	**/
 	public function info_f()
@@ -75,9 +75,9 @@ class wealth_control extends phpok_control
 	}
 
 	/**
-	 * 每个会员的财富日志
+	 * 每个用户的财富日志
 	 * @参数 wid 财富ID
-	 * @参数 uid 会员ID
+	 * @参数 uid 用户ID
 	**/
 	public function log_f()
 	{
@@ -87,7 +87,7 @@ class wealth_control extends phpok_control
 			$this->error(P_Lang('未指定财富ID'));
 		}
 		if(!$uid){
-			$this->error(P_Lang('未指定会员ID'));
+			$this->error(P_Lang('未指定用户ID'));
 		}
 		$rs = $this->model('wealth')->get_one($wid);
 		$this->assign('rs',$rs);
@@ -115,7 +115,7 @@ class wealth_control extends phpok_control
 	/**
 	 * 新增或扣除财富
 	 * @参数 wid 财富ID
-	 * @参数 uid 会员ID
+	 * @参数 uid 用户ID
 	 * @参数 note 备注
 	 * @参数 val 财富值
 	 * @参数 type 为-号时表示扣除
@@ -128,7 +128,7 @@ class wealth_control extends phpok_control
 			$this->json(P_Lang('未指定财富ID'));
 		}
 		if(!$uid){
-			$this->json(P_Lang('未指定会员ID'));
+			$this->json(P_Lang('未指定用户ID'));
 		}
 		$note = $this->get('note');
 		$val = $this->get('val');
@@ -148,11 +148,11 @@ class wealth_control extends phpok_control
 		if($from_uid == 'other'){
 			$tmp = $this->get('username');
 			if(!$tmp){
-				$this->json('请填写会员账号');
+				$this->json('请填写用户账号');
 			}
 			$tmp_rs = $this->model('user')->chk_name($tmp);
 			if(!$tmp_rs){
-				$this->json('会员不存在');
+				$this->json('用户不存在');
 			}
 			$vouch_user_id = $tmp_rs['id'];
 		}
@@ -279,6 +279,8 @@ class wealth_control extends phpok_control
 		if($chk){
 			$this->error(P_Lang('标识已被使用'));
 		}
+		$array['thumb'] = $this->get('thumb');
+		$array['iconfont'] = $this->get('iconfont');
 		$array['unit'] = $this->get('unit');
 		if(!$array['unit']){
 			$this->error(P_Lang('计量单位不能为空'));
@@ -524,7 +526,7 @@ class wealth_control extends phpok_control
 		}
 		$uid = $this->get('uid','int');
 		if(!$uid){
-			$this->error(P_Lang('未指定会员ID'));
+			$this->error(P_Lang('未指定用户ID'));
 		}
 		$rs = $this->model('wealth')->get_one($id);
 		$this->assign('rs',$rs);

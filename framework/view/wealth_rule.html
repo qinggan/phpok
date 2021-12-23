@@ -38,10 +38,10 @@
 			<td>{$value.action_title}</td>
 			<td>
 				<!-- if $value.group_id -->
-				<div>{lang会员组}_{$value.group_title}</div>
+				<div>{lang用户组}_{$value.group_title}</div>
 				<!-- /if -->
 				<!-- if $value.uids -->
-				<div>{lang会员ID}_{$value.uids}</div>
+				<div>{lang用户ID}_{$value.uids}</div>
 				<!-- /if -->
 				<!-- if $value.project_id -->
 				<div>{lang项目}_{$value.project_title}</div>
@@ -50,40 +50,40 @@
 				<div>{lang主题ID}_{$value.title_id}</div>
 				<!-- /if -->
 				<!-- if $value.qty && $value.qty_type == 'order' -->
-				<div>{lang会员订单数量最小限制}_{$value.qty}</div>
+				<div>{lang用户订单数量最小限制}_{$value.qty}</div>
 				<!-- /if -->
 				<!-- if $value.qty && $value.qty_type == 'order2' -->
-				<div>{lang目标会员订单数量最小限制}_{$value.qty}</div>
+				<div>{lang目标用户订单数量最小限制}_{$value.qty}</div>
 				<!-- /if -->
 				<!-- if $value.qty && $value.qty_type == 'order3' -->
-				<div>{lang目标会员下线订单数量最小限制}_{$value.qty}</div>
+				<div>{lang目标用户下线订单数量最小限制}_{$value.qty}</div>
 				<!-- /if -->
 				<!-- if $value.qty && $value.qty_type == 'product' -->
-				<div>{lang会员订单产品数量最小限制}_{$value.qty}</div>
+				<div>{lang用户订单产品数量最小限制}_{$value.qty}</div>
 				<!-- /if -->
 				<!-- if $value.qty && $value.qty_type == 'product2' -->
-				<div>{lang目标会员订单产品数量最小限制}_{$value.qty}</div>
+				<div>{lang目标用户订单产品数量最小限制}_{$value.qty}</div>
 				<!-- /if -->
 				<!-- if $value.qty && $value.qty_type == 'product3' -->
-				<div>{lang目标会员下线订单产品数量最小限制}_{$value.qty}</div>
+				<div>{lang目标用户下线订单产品数量最小限制}_{$value.qty}</div>
 				<!-- /if -->
 				<!-- if $value.price && $value.price_type == 'order' -->
-				<div>{lang会员订单金额最小限制}_{$value.price}</div>
+				<div>{lang用户订单金额最小限制}_{$value.price}</div>
 				<!-- /if -->
 				<!-- if $value.price && $value.price_type == 'order2' -->
-				<div>{lang目标会员订单金额最小限制}_{$value.price}</div>
+				<div>{lang目标用户订单金额最小限制}_{$value.price}</div>
 				<!-- /if -->
 				<!-- if $value.price && $value.price_type == 'order3' -->
-				<div>{lang目标会员下线订单金额最小限制}_{$value.price}</div>
+				<div>{lang目标用户下线订单金额最小限制}_{$value.price}</div>
 				<!-- /if -->
 				<!-- if $value.price && $value.price_type == 'product' -->
-				<div>{lang会员产品金额最小限制}_{$value.price}</div>
+				<div>{lang用户产品金额最小限制}_{$value.price}</div>
 				<!-- /if -->
 				<!-- if $value.price && $value.price_type == 'product2' -->
-				<div>{lang目标会员产品金额最小限制}_{$value.price}</div>
+				<div>{lang目标用户产品金额最小限制}_{$value.price}</div>
 				<!-- /if -->
 				<!-- if $value.price && $value.price_type == 'product3' -->
-				<div>{lang目标会员下线产品金额最小限制}_{$value.price}</div>
+				<div>{lang目标用户下线产品金额最小限制}_{$value.price}</div>
 				<!-- /if -->
 				<!-- if !$value.group_id && !$value.project_id && !$value.qty && !$value.price -->
 				<div>{lang暂无限制}</div>
@@ -93,10 +93,10 @@
 			<td>
 				{$value.goal_title}
 				<!-- if $value.goal_group_id && $value.goal_group_title -->
-				<div>{lang限制会员组}_{$value.goal_group_title}</div>
+				<div>{lang限制用户组}_{$value.goal_group_title}</div>
 				<!-- /if -->
 				<!-- if $value.goal_uids -->
-				<div>{lang限制会员ID}_{$value.goal_uids}</div>
+				<div>{lang限制用户ID}_{$value.goal_uids}</div>
 				<!-- /if -->
 			</td>
 			<td>{$value.taxis}</td>

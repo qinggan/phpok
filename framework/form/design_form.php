@@ -35,7 +35,7 @@ class design_form extends _init_auto
 	public function phpok_format($rs,$appid="admin")
 	{
 		$this->addjs('static/bootstrap/admin/admin.js');
-		$this->addcss('static/bootstrap/css/bootstrap-grid.min.css');
+		$this->addcss('static/bootstrap/grid.css');
 		$this->addcss('static/bootstrap/admin/admin.css'); //后台设计器效果
 		if(!$rs['height']){
 			$rs['height'] = 150;
@@ -96,6 +96,12 @@ class design_form extends _init_auto
 					continue;
 				}
 				$info = $this->lib('file')->cat($this->dir_root.$tplfile);
+				//变量替换
+				if($tmp['replace'] && is_array($tmp['replace'])){
+					foreach($tmp['replace'] as $key=>$value){
+						$info = str_replace($value['old'],$value['new'],$info);
+					}
+				}
 				$info = str_replace('$info','$'.$id,$info);//更换变量				
 				$list = phpok($tmp['code'],$tmp['param']);
 				if($list){
@@ -153,6 +159,26 @@ class design_form extends _init_auto
 				unset($dt['ext']);
 			}
 			$rs['param'] = $dt;
+		}
+		//变量替换
+		if($rs['replace']){
+			$dt = array();
+			$old = array('&amp;lt;','&amp;gt;','&amp;quot;','&amp;apos;','&lt;','&gt;','&quot;','&apos;');
+			$new = array('<','>','"',"'",'<','>','"',"'");
+			$param = str_replace($old,$new,$rs['replace']);
+			$list = explode("\n",$param);
+			foreach($list as $key=>$value){
+				$tmp = explode("=",$value);
+				if(!$tmp[0] || !$tmp[1]){
+					continue;
+				}
+				$tmp[0] = trim($tmp[0]);
+				$tmp[1] = trim($tmp[1]);
+				if($tmp[0] && $tmp[1]){
+					$dt[] = array('old'=>$tmp[0],'new'=>$tmp[1]);
+				}
+			}
+			$rs['replace'] = $dt;
 		}
 		return $rs;
 	}

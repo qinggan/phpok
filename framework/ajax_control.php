@@ -2,7 +2,6 @@
 /**
  * 公共操作，不限前台，后台
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
@@ -45,5 +44,28 @@ class ajax_control extends phpok_control
 			$this->error(P_Lang("文件 {file} 不存在",array('file'=>$filename)));
 		}
 		include $ajax_file;
+	}
+
+	/**
+	 * 加载表单参数
+	 * @参数 id 表单标识
+	 * @参数 type 表单类型
+	 * @参数 其他参数根据实际需要，在 form 文件中体现
+	**/
+	public function form_f()
+	{
+		$id = $this->get('id');
+		$type = $this->get('type');
+		if(!$id && !$type){
+			$this->error(P_Lang('未指定标识或类型'));
+		}
+		$info = $this->lib('form')->ajax($id,$type);
+		if(!$info){
+			$this->error(P_Lang('没有找到内容'));
+		}
+		if(!$info['status']){
+			$this->error($info['info']);
+		}
+		$this->success($info['info']);
 	}
 }

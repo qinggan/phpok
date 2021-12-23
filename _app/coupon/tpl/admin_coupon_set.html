@@ -1,0 +1,322 @@
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return save();">
+	<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
+	<div class="layui-card">
+		<div class="layui-container layui-card-body">
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang优惠名称}
+				</label>
+				<div class="layui-input-inline default-auto">
+					<input type="text" name="title" value="{$rs.title}" class="layui-input" />
+				</div>
+				<div class="layui-form-mid">
+					{lang用于优惠调用}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang优惠码}
+				</label>
+				<div class="layui-input-inline default-auto">
+					<input type="text" name="code" id="code" value="{$rs.code}" class="layui-input" />
+				</div>
+				<div class="layui-input-inline auto gray lh38">
+					<div class="layui-btn-group">
+						<input type="button" value="{lang随机}" onclick="$.admin_coupon.rand()" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang检测}" onclick="$.admin_coupon.check(this)" class="layui-btn layui-btn-sm" />
+					</div>
+				</div>
+				<div class="layui-form-mid">
+					{lang建议不超过10位数，必须是唯一的}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang优惠图片1}
+				</label>
+				<div class="layui-input-block">
+					{func form_edit pic1 $rs.pic1 text form_btn=image&width=350}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang优惠图片2}
+				</label>
+				<div class="layui-input-block">
+					{func form_edit pic2 $rs.pic2 text form_btn=image&width=350}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang优惠图片3}
+				</label>
+				<div class="layui-input-block">
+					{func form_edit pic3 $rs.pic3 text form_btn=image&width=350}
+				</div>
+			</div>
+			<!-- loop from=$countrylist key=$key value=$value id=$tmpid -->
+			<!-- loop from=$value.rslist key=$k value=$v id=$idxx -->
+			<input type="hidden" data-pid="{$v.pid}" data-id="{$v.id}" data-name="countrylist-{$v.pid}" value="{$v.name}{if $v.name_en} / {$v.name_en}{/if}" />
+			<!-- /loop -->
+			<!-- /loop -->
+			<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang洲/国家}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select id="continent" name="continent" lay-filter="continent">
+					<option value="">{lang请选择洲或大陆}</option>
+					<!-- loop from=$countrylist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $country && $country.pid == $value.id} selected{/if}>{$value.name}<!-- if $value.name_en --> / {$value.name_en}<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-input-inline default-auto">
+				<select id="country_id" name="country_id" lay-filter="country">
+					<option value="">{lang请选择国家…}</option>
+					<!-- loop from=$countrylist key=$key value=$value id=$tmpid -->
+						<!-- if $country && $country.pid == $value.id -->
+							<!-- loop from=$value.rslist key=$k value=$v id=$idx -->
+							<option value="{$v.id}"{if $country && $country.id == $v.id} selected{/if}>{$v.name}<!-- if $v.name_en --> / {$v.name_en}<!-- /if --></option>
+							<!-- /loop -->
+						<!-- /if -->
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				
+			</div>
+		</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang优惠次数}
+				</label>
+				<div class="layui-input-inline">
+					<input type="text" name="times" id="times" value="{$rs.times}" class="layui-input" />
+				</div>
+				<div class="layui-input-inline auto gray lh38">
+					<div class="layui-btn-group">
+						<input type="button" value="{lang不限次数}" onclick="$('#times').val('-1')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang10次}" onclick="$('#times').val('10')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang99次}" onclick="$('#times').val('99')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang999次}" onclick="$('#times').val('999')" class="layui-btn layui-btn-sm" />
+						<input type="button" value="{lang清空}" onclick="$('#times').val('')" class="layui-btn layui-btn-sm layui-btn-danger" />
+					</div>
+				</div>
+				<div class="layui-form-mid">
+					{lang优惠码的使用次数限制，不限制请设置为-1}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang开始日期}
+				</label>
+				<div class="layui-input-inline auto">
+					{func form_edit startdate $rs.startdate text form_btn=date&form_style=width:170px}
+				</div>
+				<div class="layui-form-mid">
+					{lang填写优惠码开始执行时间}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang结束日期}
+				</label>
+				<div class="layui-input-inline auto">
+					{func form_edit stopdate $rs.stopdate text form_btn=date&form_style=width:170px}
+				</div>
+				<div class="layui-form-mid">
+					{lang填写优惠码结束日期，必须大于开始日期}
+				</div>
+			</div>
+			
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang计算规则}
+				</label>
+				<div class="layui-input-inline auto">
+					<input type="radio" name="types" lay-filter="types"  value="user" {if !$rs.types || $rs.types=='user' } checked{/if} title="{lang基于人}" />
+					<input type="radio" name="types" lay-filter="types" value="list" {if $rs.types=='list' } checked{/if} title="{lang基于产品}" />
+				</div>
+				<div class="layui-form-mid">
+					{lang基于用户请选择用户组或指定用户，基于产品请选择项目及分类或产品ID}
+				</div>
+			</div>
+			<div id="types_list"{if !$rs.types || $rs.types == 'user'} class="hide"{/if}>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang活动时间}
+					</label>
+					<div class="layui-input-inline auto">
+						{func form_edit time_start $rs.time_start text form_btn=time&form_style=width:170px}
+					</div>
+					<div class="layui-form-mid">
+						{lang至}
+					</div>
+					<div class="layui-input-inline auto">
+						{func form_edit time_stop $rs.time_stop text form_btn=time&form_style=width:170px}
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						{lang频次}
+					</label>
+					<div class="layui-input-inline default-auto">
+						<select id="freq" name="freq">
+							<option value="">{lang请选择频率，留空使用每天}</option>
+							<!-- loop from=$freq_list key=$key value=$value id=$tmpid -->
+							<option value="{$key}"{if $rs.freq == $key} selected{/if}>{$value}</option>
+							<!-- /loop -->
+						</select>
+					</div>
+				</div>
+				
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang优惠}
+				</label>
+				<div class="layui-input-inline">
+					<input type="text" name="discount_val" value="{$rs.discount_val}" class="layui-input" />
+				</div>
+				<div class="layui-input-inline">
+					<select id="discount_type" name="discount_type">
+						<option value="0">{lang百分比}</option>
+						<option value="1" {if $rs.discount_type} selected{/if}>{lang金额} </option>
+					</select>
+				</div>
+				<div class="layui-form-mid">
+							{lang优惠的金额货币使用站点默认货币计算}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang最低金额}
+				</label>
+				<div class="layui-input-inline">
+					<input type="text" name="min_price" value="{$rs.min_price}" class="layui-input" />
+				</div>
+				<div class="layui-form-mid">
+					{lang低于此价格，优惠无效}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang项目}
+				</label>
+				<div class="layui-input-inline default-auto">
+					<select id="pid" name="pid" lay-filter="pid">
+						<option value="">{lang请选择…}</option>
+						<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+						<option value="{$value.id}" {if $rs.pid==$value.id} selected{/if}>{$value.title} </option> <!-- /loop -->
+					</select>
+				</div>
+				<div class="layui-form-mid">
+					{lang如果一个站点有多个项目启用电商，请指定一个项目执行优惠}
+				</div>
+			</div>
+			<div class="layui-form-item" id="cateid_html" {if !$rs || !$rs.pid || !$catelist} style="display:none" {/if}> <label
+			 class="layui-form-label">
+				{lang分类}
+				</label>
+				<div class="layui-input-inline default-auto">
+					<select id="cateid" name="cateid">
+						<option value="">{lang请选择…}</option>
+						<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+						<option value="{$value.id}" {if $rs.cateid==$value.id} selected{/if}>{$value._space}{$value.title} </option> <!--
+						 /loop -->
+					</select>
+				</div>
+				<div class="layui-form-mid">
+					{lang如果项目绑定了分类，可以针对分类进行限制}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang产品ID}
+				</label>
+				<div class="layui-input-block gray" style="line-height:38px;">{lang指定产品拥有使用优惠券，多个产品用英文逗号隔开}</div>
+				<div class="layui-input-block">
+					<input type="text" name="tids" value="{$rs.tids}" class="layui-input" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang用户组}
+				</label>
+				<div class="layui-input-inline default-auto">
+					<select id="user_groupid" name="user_groupid">
+						<option value="">{lang请选择…}</option>
+						<!-- loop from=$grouplist key=$key value=$value id=$tmpid -->
+						<option value="{$value.id}" {if $rs.user_groupid==$value.id} selected{/if}>{$value.title}</option>
+						<!-- /loop -->
+					</select>
+				</div>
+				<div class="layui-form-mid">
+					{lang针对用户组有效}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang指定用户}
+				</label>
+				<div class="layui-input-block">
+					{$users_html}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang状态}
+				</label>
+				<div class="layui-input-inline auto">
+					<input type="radio" name="status" value="0" {if !$rs.status} checked{/if} title="{lang禁用}" />
+					<input type="radio" name="status" value="1" {if $rs.status} checked{/if} title="{lang启用}" />
+				</div>
+				<div class="layui-form-mid">
+					{lang仅在启用状态下，优惠码才有效}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang推荐}
+				</label>
+				<div class="layui-input-inline auto">
+					<input type="radio" name="is_vouch" value="0" {if !$rs.is_vouch} checked{/if} title="{lang否}" />
+					<input type="radio" name="is_vouch" value="1" {if $rs.is_vouch} checked{/if} title="{lang是}" />
+				</div>
+				<div class="layui-form-mid">
+					{lang推荐状态可以在指定页呈现，反之仅在产品列表页或详细页中体现}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{lang排序}
+				</label>
+				<div class="layui-input-inline">
+					<input type="text" name="taxis" value="{$rs.taxis ? $rs.taxis :255}" class="layui-input" />
+				</div>
+				<div class="layui-form-mid">
+					{lang前台会优先使用排序低的优惠方案，值范围是0-255}
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					说明
+				</label>
+				<div class="layui-input-block gray" style="line-height:38px;">针对此次优惠或福利的相关说明</div>
+				<div class="layui-input-block">
+					{$edit_content}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="submit-info-clear"></div>
+	<div class="submit-info">
+		<div class="layui-container center">
+			<input type="submit" value="{lang提交}" class="layui-btn layui-btn-lg layui-btn-danger" />
+			<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+		</div>
+	</div>
+</form>
+<!-- include tpl=foot_lay is_open=true -->

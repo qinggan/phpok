@@ -37,7 +37,7 @@
 			<!-- /loop -->
 		</tr>
 		</thead>
-		<!-- loop from=$_rslist.content key=$key value=$value -->
+		<!-- loop from=$_rslist.content key=$key value=$value id=idx -->
 		<tr>
 			<!-- if $_rs.p_line --><td><input type="button" value="{lang删除}" onclick="$.phpok_form_param.delete_line(this)" class="layui-btn layui-btn-sm layui-btn-danger" /></td><!-- /if -->
 			<!-- loop from=$value key=$k value=$v id=idxx -->
@@ -51,7 +51,7 @@
 			<!-- /loop -->
 			<!-- for($i=$idxx.total;$i<$_rslist.count;$i++) -->
 			<td>
-				<!-- if $_rs.lock_row && ($i+1) != $_rs.lock_row -->
+				<!-- if !$_rs.lock_row || ($_rs.lock_row && ($i+1) != $_rs.lock_row) -->
 				<input type="text" name="{$_rs.identifier}_body[]" class="layui-input" value="" />
 				<!-- /if -->
 			</td>
@@ -77,6 +77,9 @@
 		<input type="hidden" name="ele_{$_rs.identifier}" id="ele_{$_rs.identifier}" value="" />
 		<!-- /if -->
 		<input type="button" value="{lang添加属性}" class="layui-btn layui-btn-sm" onclick="$.phpok_form_param.add_ele_single('{$_rs.identifier}','{$_rs.width}')" />
+		<!-- if $_rs.note -->
+		<span style="color:gray;font-style:italic">{$_rs.note}</span>
+		<!-- /if -->
 	</div>
 	<!-- /if -->
 	<div id="list_{$_rs.identifier}">

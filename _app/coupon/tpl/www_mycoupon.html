@@ -1,0 +1,29 @@
+<!-- include tpl=header title=我的福利券 -->
+<script type="text/javascript">
+function to_checkout_coupon(obj)
+{
+	alert('正在制作中，请稍候…');
+}
+</script>
+<div class="am-container">
+	<div class="am-g am-margin">
+		<div class="am-u-sm-3">
+			<!-- include tpl=block/usercp_nav -->
+		</div>
+		<div class="am-u-sm-9">
+			<ul class="am-list am-margin">
+				<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+				<li class="am-padding">
+					<div class="am-btn-group am-fr">
+						<button type="button" class="am-btn am-btn-primary am-btn-xs">查看</button>
+						<button type="button" class="am-btn am-btn-secondary am-btn-xs">使用</button>
+					</div>
+					{$value.title}
+					<div style="color:gray">有效时间：{func date Y-m-d $value.startdate} 至 {func date Y-m-d $value.stopdate}</div>
+				</li>
+				<!-- /loop -->
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- include tpl=footer -->

@@ -36,7 +36,7 @@ $(document).ready(function(){
 	<div class="layui-card-header">
 		{lang列表}
 		<div class="fr">
-			<input type="button" value="{lang添加字段}" onclick="$.admin_module.field_create('{$id}')" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang添加字段}" onclick="$.admin_module.field_create('{$id}','{$rs.title}')" class="layui-btn layui-btn-sm" />
 		</div>
 	</div>
 	<div class="layui-card-body">
@@ -46,6 +46,7 @@ $(document).ready(function(){
 				<th class="id">ID</th>
 				<th>{lang字段名}</th>
 				<th>{lang名称}</th>
+				<th>{lang组}</th>
 				<th>{lang备注}</th>
 				<th>{lang字段类型}</th>
 				<th>{lang表单}</th>
@@ -59,6 +60,7 @@ $(document).ready(function(){
 			<td class="center">{$value.id}</td>
 			<td>{$value.identifier}</td>
 			<td>{$value.title}</td>
+			<td>{$value.group_title}</td>
 			<td>{$value.note}</td>
 			<td>{$value.field_type_name}</td>
 			<td>{$value.form_type_name}</td>

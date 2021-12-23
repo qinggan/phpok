@@ -123,7 +123,7 @@ class opt_control extends phpok_control
 		}
 		$this->assign("group_id",$group_id);
 		$rs = $this->model('opt')->group_one($group_id);
-		$psize = 50;
+		$psize = 999;
 		$pageid = $this->get($this->config["pageid"],"int");
 		$offset = $pageid ? ($pageid-1) * $psize : 0;
 		$pageurl = $this->url("opt","list");

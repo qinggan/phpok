@@ -1,8 +1,13 @@
 <input type="hidden" name="ext_form_id" id="ext_form_id" value="height" />
-<div class="table">
-	<div class="title">
-		{lang编辑器最小高度设置}：
-		<span class="note">{lang只需要填写数字，宽度强制为百分百}</span>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang高度：}
+	</label>
+	<div class="layui-input-inline short">
+		<input type="text" name="height" id="height" value="{$rs.height}" class="layui-input" />
 	</div>
-	<div class="content"><input type="text" name="height" id="height" value="{$rs.height}" class="short" /> px</div>
+	<div class="layui-form-mid">
+		{lang只需要填写数字，宽度强制为百分百}
+	</div>
 </div>
+

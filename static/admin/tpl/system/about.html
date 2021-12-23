@@ -28,7 +28,10 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function(){
-	$("#phpok-version").html($("meta[name=phpok-version]").attr('content'));
-	$("#phpok-copyright").html($("meta[name=phpok-copyright]").attr('content'));
+	$("#phpok-version").html($("meta[name=system-version]").attr('content'));
+	$("#phpok-copyright").html($("meta[name=system-copyright]").attr('content'));
+	if($("meta[name=system-code]").attr("content") == 'LGPL'){
+		$("#phpok-copyright").after(' <input type="button" style="margin-left:20px;" class="layui-btn layui-btn-xs layui-btn-danger" value="变更授权" onclick="$.admin_index.set_copyright()" />');
+	}
 });
 </script>

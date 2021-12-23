@@ -16,9 +16,9 @@ class ext_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
-		$this->assign("form_list",$this->model('form')->form_all());
-		$this->assign("field_list",$this->model('form')->field_all());
-		$this->assign("format_list",$this->model('form')->format_all());
+		$this->assign("form_list",$this->model('form')->form_all(true));
+		$this->assign("field_list",$this->model('form')->field_all(true));
+		$this->assign("format_list",$this->model('form')->format_all(true));
 	}
 
 	//创建扩展字段

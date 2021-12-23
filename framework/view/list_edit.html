@@ -1,6 +1,6 @@
 <!-- include tpl=head_lay -->
 <script type="text/javascript" src="{func include_js list.js}"></script>
-<form method="post" id="_listedit" class="layui-form" onsubmit="return $.admin_list_edit.save()">
+<form method="post" id="_listedit" class="layui-form" onsubmit="return $.admin_list_edit.save_not_close()">
 <input type="hidden" name="id" id="id" value="{$id}" />
 <input type="hidden" name="pid" id="pid" value="{$pid}" />
 <input type="hidden" name="parent_id" id="parent_id" value="{$parent_id}" />
@@ -79,9 +79,10 @@
 		</div>
 		<!-- /if -->
 		<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
-		<div class="layui-form-item">
+		<div class="layui-form-item" data-id="{$value.identifier}">
 			<label class="layui-form-label">
 				{$value.title}
+				<small style="color:#ccc;display:block;">{$value.identifier}</small>
 			</label>
 			<!-- if $value.note --><div class="layui-input-block gray" style="line-height:38px;">{$value.note}</div><!-- /if -->
 			<div class="layui-input-block">
@@ -110,7 +111,8 @@
 					<input type="button" value="{$value.title}" onclick="$.phpok_list.tag_append(this.value,'{$tag_config.separator}')" class="layui-btn layui-btn-sm" />
 					<!-- /loop -->
 					<!-- /if -->
-					<input type="button" value="{lang更多选择}" onclick="$.phpok_list.tag()" class="layui-btn layui-btn-sm layui-btn-warm" />
+					<input type="button" value="{lang更多选择}" onclick="$.phpok_list.tag()" class="layui-btn layui-btn-sm layui-btn-normal" />
+					<input type="button" value="{lang分割符}" onclick="$.form.input('tag',',')" class="layui-btn layui-btn-sm layui-btn-warm" />
 					<input type="button" value="{lang清空}" onclick="$('input[name=tag]').val('')" class="layui-btn layui-btn-sm layui-btn-danger" />
 				</div>
 			</div>
@@ -120,12 +122,19 @@
 		<!-- if $p_rs.is_userid == 2 || $p_rs.is_userid == 3 -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang会员}
+				<!-- if $p_rs.user_alias -->{$p_rs.user_alias}<!-- else -->{lang用户}<!-- /if -->
 			</label>
 			<div class="layui-input-inline auto">
 				{func form_edit user_id $rs.user_id user}
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang绑定会员功能，允许会员对主题进行修改或删除，需要开放发布权限}</div>
+			<div class="layui-input-inline auto gray lh38">
+				<!-- if $p_rs.user_note -->
+				{$p_rs.user_note}
+				<!-- else -->
+				{lang绑定用户功能，允许用户对主题进行修改或删除，需要开放发布权限}
+				<!-- /if -->
+				
+			</div>
 		</div>
 		<!-- /if -->
 		<!-- if $p_rs.is_tpl_content == 2 || $p_rs.is_tpl_content == 3 -->
@@ -172,6 +181,9 @@
 <div class="layui-card">
 	<div class="layui-card-header">{lang电子商务}</div>
 	<div class="layui-card-body">
+		<!-- if $p_rs.biz_service == 2 || $p_rs.biz_service == 3 -->
+		<input type="hidden" name="is_virtual" id="is_virtual" value="{$rs.is_virtual}" />
+		<!-- else -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang产品类型}
@@ -182,6 +194,7 @@
 			</div>
 			<div class="layui-input-inline auto gray lh38">{lang实物产品加入购物车后需要填写收件地址，服务不需要}</div>
 		</div>
+		<!-- /if -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang销售价格}
@@ -318,6 +331,17 @@
 		<i class="layui-icon layui-icon-right"></i>
 	</div>
 	<div class="layui-card-body hide">
+		<!-- loop from=$e_sublist key=$key value=$value id=$tmpid -->
+		<div class="layui-form-item" data-id="{$value.identifier}">
+			<label class="layui-form-label">
+				{$value.title}
+			</label>
+			<!-- if $value.note --><div class="layui-input-block gray" style="line-height:38px;">{$value.note}</div><!-- /if -->
+			<div class="layui-input-block">
+				{$value.html}
+			</div>
+		</div>
+		<!-- /loop -->
 		<!-- if $p_rs.is_identifier == 1 -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang自定义标识}</label>
@@ -333,12 +357,19 @@
 		<!-- if $p_rs.is_userid == 1 -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang会员}
+				<!-- if $p_rs.user_alias -->{$p_rs.user_alias}<!-- else -->{lang用户}<!-- /if -->
 			</label>
 			<div class="layui-input-inline auto">
 				{func form_edit user_id $rs.user_id user}
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang绑定会员功能，允许会员对主题进行修改或删除，需要开放发布权限}</div>
+			<div class="layui-input-inline auto gray lh38">
+				<!-- if $p_rs.user_note -->
+				{$p_rs.user_note}
+				<!-- else -->
+				{lang绑定用户功能，允许用户对主题进行修改或删除，需要开放发布权限}
+				<!-- /if -->
+				
+			</div>
 		</div>
 		<!-- /if -->
 		<!-- if $p_rs.is_tag == 1 -->
@@ -354,7 +385,8 @@
 					<input type="button" value="{$value.title}" onclick="$.phpok_list.tag_append(this.value,'{$tag_config.separator}')" class="layui-btn layui-btn-sm" />
 					<!-- /loop -->
 					<!-- /if -->
-					<input type="button" value="{lang更多选择}" onclick="$.phpok_list.tag()" class="layui-btn layui-btn-sm layui-btn-warm" />
+					<input type="button" value="{lang更多选择}" onclick="$.phpok_list.tag()" class="layui-btn layui-btn-sm layui-btn-normal" />
+					<input type="button" value="{lang分割符}" onclick="$.form.input('tag',',')" class="layui-btn layui-btn-sm layui-btn-warm" />
 					<input type="button" value="{lang清空}" onclick="$('input[name=tag]').val('')" class="layui-btn layui-btn-sm layui-btn-danger" />
 				</div>
 			</div>
@@ -431,7 +463,7 @@
 			<div class="layui-input-inline auto">
 				<input type="text" id="integral" class="layui-input" name="integral" value="{$rs.integral}" />
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang只支持整数，用于计算会员虚拟财富增减}</div>
+			<div class="layui-input-inline auto gray lh38">{lang只支持整数，用于计算用户虚拟财富增减}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -445,15 +477,16 @@
 	</div>
 </div>
 <div class="submit-info">
-	<div class="layui-container center">
+	<div class="layui-container">
 		<input type="submit" value="{lang保存}" class="layui-btn layui-btn-lg layui-btn-danger" />
-		<!-- if $id && $p_rs.is_front -->
-		<input type="button" value="{lang预览}" title="需要先点击保存" class="layui-btn layui-btn-lg layui-btn-warm" onclick="$.phpok.open('{$sys.www_file}?id={$id}')" />
-		<!-- /if -->
-		<input type="button" value="{lang取消并关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
-		<!-- if $id -->
-		<span class="gray i">编辑操作不会关闭窗口，请手动关闭<!-- if $p_rs.is_front -->，预览前需要先保存数据<!-- /if --></span>
-		<!-- /if -->
+		<input type="button" value="{lang保存并关闭}" onclick="$.admin_list_edit.save2close()" class="layui-btn layui-btn-lg layui-btn-normal" />
+
+		<div class="fr">
+			<input type="button" value="{lang关闭}" title="此操作不会保存数据" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+			<!-- if $id && $p_rs.is_front -->
+			<input type="button" value="{lang预览}" title="需要先点击保存" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.phpok.open('{$sys.www_file}?id={$id}')" />
+			<!-- /if -->
+		</div>
 	</div>
 </div>
 <div class="submit-info-clear"></div>

@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员财富管理
+ * 用户财富管理
  * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
@@ -82,7 +82,7 @@ class wealth_model_base extends phpok_model
 	}
 
 	/**
-	 * 更新会员财富信息
+	 * 更新用户财富信息
 	 * @参数 $data 一维数组，替代式更新
 	 * @返回 插入的ID或false
 	**/
@@ -92,8 +92,8 @@ class wealth_model_base extends phpok_model
 	}
 
 	/**
-	 * 获取指定的会员及指定的财富方案对应的财富内容
-	 * @参数 $uid 会员ID
+	 * 获取指定的用户及指定的财富方案对应的财富内容
+	 * @参数 $uid 用户ID
 	 * @参数 $wid 财富ID
 	 * @返回 0 或 财富值（数字或浮点）
 	**/
@@ -174,7 +174,7 @@ class wealth_model_base extends phpok_model
 
 	/**
 	 * 目标ID
-	 * @参数 $id 当前会员ID号
+	 * @参数 $id 当前用户ID号
 	 * @参数 $goal 目标类型
 	 * @返回 
 	 * @更新时间 
@@ -473,7 +473,7 @@ class wealth_model_base extends phpok_model
 	/**
 	 * 阅读/发布/评论赠送财富
 	 * @参数 $id 主题ID
-	 * @参数 $uid 会员ID
+	 * @参数 $uid 用户ID
 	 * @参数 $type 类型，content读主题，comment评论主题，post发布主题
 	 * @参数 $note 备注
 	 * @返回 true 或 false
@@ -575,7 +575,7 @@ class wealth_model_base extends phpok_model
 
 	/**
 	 * 注册送财富（如果规则的值是负值，表示扣除）
-	 * @参数 $uid 会员ID
+	 * @参数 $uid 用户ID
 	 * @参数 $note 备注
 	 * @返回 true 或者 false
 	 * @更新时间 2016年07月30日
@@ -637,7 +637,7 @@ class wealth_model_base extends phpok_model
 
 	/**
 	 * 登录送财富，一天仅一次有效（如果规则的值是负值，表示扣除）
-	 * @参数 $uid 会员ID
+	 * @参数 $uid 用户ID
 	 * @参数 $note 备注
 	 * @返回 true 或 false
 	 * @更新时间 2016年07月25日
@@ -704,7 +704,7 @@ class wealth_model_base extends phpok_model
 	/**
 	 * 手动增加或减去财富
 	 * @参数 $wid 财富ID，支持数字ID或标识
-	 * @参数 $uid 目标会员ID，仅支持数字
+	 * @参数 $uid 目标用户ID，仅支持数字
 	 * @参数 $val 要增加多少，为负数时表示减去
 	 * @参数 $note 备注
 	**/

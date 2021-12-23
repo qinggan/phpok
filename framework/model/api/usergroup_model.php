@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
 	文件： {phpok}/model/api/usergroup_model.php
-	备注： API接口下的会员Model处理
+	备注： API接口下的用户Model处理
 	版本： 4.x
 	网站： www.phpok.com
 	作者： qinggan <qinggan@188.com>
@@ -15,7 +15,7 @@ class usergroup_model extends usergroup_model_base
 		parent::__construct();
 	}
 
-	//通过会员取得会员组信息
+	//通过用户取得用户组信息
 	function group_rs($uid=0)
 	{
 		$gid = $this->group_id($uid);
@@ -32,7 +32,7 @@ class usergroup_model extends usergroup_model_base
 		return $this->db->get_one($sql);
 	}
 
-	//读取单个会员组信息
+	//读取单个用户组信息
 	function one($id)
 	{
 		$rslist = $this->all();

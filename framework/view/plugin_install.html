@@ -1,62 +1,117 @@
-<!-- inc:head -->
-<script type="text/javascript" src="{func include_js plugin.js}"></script>
-<div class="tips">
-	您当前的位置：
-	<a href="{echo admin_url('plugin')}">插件中心</a>
-	&raquo; 安装插件
-</div>
-
-<form method="post" action="{echo admin_url('plugin','install_save')}">
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" action="{url ctrl=plugin func=install_save/}">
 <input type="hidden" id="id" name="id" value="{$id}" />
-<div class="table">
-	<div class="title">
-		插件名称：
-		<span class="note">设置插件的名称，您可以使用您熟悉的语言来设置！</span>
+<div class="layui-card">
+	<div class="layui-card-header">
+		插件安装
+		<a href="{url ctrl=plugin/}" class="fr">
+			<i class="layui-icon layui-icon-return"></i>
+			返回插件中心
+		</a>
 	</div>
-	<div class="content"><input type="text" id="title" name="title" class="long" value="{$rs.title}" /></div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang插件名称}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="title" id="title" value="{$rs.title}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang设置插件的名称，建议使用您熟悉的语言来设置}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang备注}
+			</label>
+			<div class="layui-input-inline long-auto">
+				<input type="text" name="note" id="note" value="{$rs.note ? $rs.note : $rs.desc}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang简要说明此插件是做什么的}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				开发者
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="author" id="author" value="{$rs.author}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				填写插件开发者信息，可以是姓名或邮箱或官方网站
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				版本
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="version" id="version" value="{$rs.version ? $rs.version : '1.0'}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				填写产品版本，不清楚请留空
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				排序
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="taxis" id="taxis" value="{$rs.taxis}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				填写插件顺序，值越小越往前靠，值范围是 0-255
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				单选项目
+			</label>
+			<div class="layui-input-inline">
+				<select id="sys-pid" name="sys-pid">
+					<option value="">请选择…</option>
+					<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}" {if $rs.pid && $rs.pid==$value.id} selected{/if}>{$value.space}{$value.title}<!-- if !$value.status -->/已禁用<!-- /if --><!-- if !$value.module -->/未绑定模块<!-- /if --></option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">
+				指定项目，在 PHP 代码里可以直接用 <kbd>$this->pid</kbd> 来使用
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				多选项目
+			</label>
+			<div class="layui-input-block">
+				<!-- loop from=$plist key=$key value=$value id=$tmpid -->
+				<input type="checkbox" name="sys-pids[]" id="sys-pids-{$value.id}" value="{$value.id}" title="{$value.title}" {if $rs.pids && in_array($value.id,$rs.pids)} selected{/if} />
+				<!-- /loop -->
+			</div>
+			<div class="layui-input-block mtop">数组模式，适用于多个项目，程序中可以直接使用 <kbd>$this->pids</kbd> </div>
+		</div>
+	</div>
+</div>
+<!-- if $plugin_html -->
+<div class="layui-card">
+	<div class="layui-card-header layuiadmin-card-header-auto">
+		扩展信息
+	</div>
+	<div class="layui-card-body">
+		{$plugin_html}
+	</div>
+</div>
+<!-- /if -->
+
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交安装}" class="layui-btn layui-btn-danger" id="save_button" />
+	</div>
 </div>
 
-<div class="table">
-	<div class="title">
-		备注：
-		<span class="note">简要说明此插件是做什么的！</span>
-	</div>
-	<div class="content"><input type="text" id="note" name="note" class="long" value="{$rs.note ? $rs.note : $rs.desc}" /></div>
-</div>
-
-<div class="table">
-	<div class="title">
-		开发者：
-		<span class="note">填写插件开发者信息，可以是姓名或邮箱或官方网站</span>
-	</div>
-	<div class="content">
-		<input type="text" id="author" name="author" class="long" value="{$rs.author}" />
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		插件版本：
-		<span class="note">设置插件版本，此项请尽量不要手工修改此版本信息，用于检测插件是否需要升级</span>
-	</div>
-	<div class="content">
-		<input type="text" id="version" name="version" class="default" value="{$rs.version}" />
-	</div>
-</div>
-
-
-{$plugin_html}
-
-<div class="table">
-	<div class="title">
-		排序：
-		<span class="note">自定义插件排序，值越小越往前靠，最大不超过255</span>
-	</div>
-	<div class="content">
-		<input type="text" id="taxis" name="taxis" class="short" value="{$rs.taxis ? $rs.taxis : 255}" />
-	</div>
-</div>
-
-<div class="submit-info"><input type="submit" value="{lang提交}" class="submit2" /></div>
 </form>
 
-<!-- inc:foot -->
+<!-- include tpl=foot -->

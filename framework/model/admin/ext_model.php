@@ -1,12 +1,13 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/model/admin/ext_model.php
-	备注： 扩展字段管理
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年02月20日 12时42分
-*****************************************************************************************/
+/**
+ * 扩展字段管理
+ * @作者 苏相锟 <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
+ * @时间 2015年02月20日 12时42分
+**/
+
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class ext_model extends ext_model_base
 {
@@ -42,7 +43,9 @@ class ext_model extends ext_model_base
 
 	public function extc_save($content,$id)
 	{
-		if(!$id) return false;
+		if(!$id){
+			return false;
+		}
 		$sql = "REPLACE INTO ".$this->db->prefix."extc(id,content) VALUES('".$id."','".$content."')";
 		return $this->db->query($sql);
 	}

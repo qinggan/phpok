@@ -131,7 +131,7 @@
 		<div class="layui-form-item layui-form-text" id="register_close" {if $rs.register_status} style="display: none" {/if}>
 			<label class="layui-form-label">{lang关闭原因}</label>
 			<div class="layui-input-block">
-				<textarea name="register_close" placeholder="{lang请输入关闭注册的原因}" class="layui-textarea">{$rs.content}</textarea>
+				<textarea name="register_close" placeholder="{lang请输入关闭注册的原因}" class="layui-textarea">{$rs.register_close}</textarea>
 			</div>
 			<div class="layui-input-block mtop">{lang简单说明关闭注册的通知信息}</div>
 		</div>
@@ -145,13 +145,13 @@
 		<div class="layui-form-item layui-form-text" id="login_close" {if $rs.login_status} style="display: none" {/if}>
 			<label class="layui-form-label">{lang关闭原因}</label>
 			<div class="layui-input-block">
-				<textarea name="login_close" placeholder="{lang请输入关闭登录的原因}" class="layui-textarea">{$rs.content}</textarea>
+				<textarea name="login_close" placeholder="{lang请输入关闭登录的原因}" class="layui-textarea">{$rs.login_close}</textarea>
 			</div>
 			<div class="layui-input-block mtop">{lang简单说明关闭登录的通知信息}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				<i class="layui-icon layui-tips" lay-tips="{lang设置会员登录的默认方式}">&#xe702;</i>
+				<i class="layui-icon layui-tips" lay-tips="{lang设置用户登录的默认方式}">&#xe702;</i>
 				{lang登录方式}
 			</label>
 			<div class="layui-input-inline auto">
@@ -292,7 +292,7 @@
 					<input type="button" value="{lang时间戳}" onclick="insert_input('time','biz_sn','-')" class="layui-btn layui-btn-sm"/>
 					<input type="button" value="{lang序号}" onclick="insert_input('number','biz_sn','-')" class="layui-btn layui-btn-sm"/>
 					<input type="button" value="{lang订单ID}" onclick="insert_input('id','biz_sn','-')" class="layui-btn layui-btn-sm"/>
-					<input type="button" value="{lang会员ID}" onclick="insert_input('user','biz_sn','-')" class="layui-btn layui-btn-sm"/>
+					<input type="button" value="{lang用户ID}" onclick="insert_input('user','biz_sn','-')" class="layui-btn layui-btn-sm"/>
 				</div>
 			</div>
 		</div>
@@ -389,12 +389,12 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang会员上传}
+				{lang用户上传}
 			</label>
 			<div class="layui-input-inline auto">
 				<input type="checkbox" name="upload_user" lay-skin="switch" value="1" lay-text="{lang启用}|{lang禁用}" {if $rs.upload_user} checked{/if}>
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang启用后，会员可以上传后台开放的附件类型上传}</div>
+			<div class="layui-input-inline auto gray lh38">{lang启用后，用户可以上传后台开放的附件类型上传}</div>
 		</div>
 	</div>
 </div>

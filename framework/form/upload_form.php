@@ -154,7 +154,7 @@ class upload_form extends _init_auto
 				$is_list = $rs["content"]["id"] ? false : true;
 				$res = array();
 				if($is_list){
-					foreach($rs["content"]["info"] AS $key=>$value){
+					foreach($rs["content"]["info"] as $key=>$value){
 						$res[$value["id"]] = $value;
 					}
 				}else{
@@ -234,6 +234,10 @@ class upload_form extends _init_auto
 		}
 		$rs['upload_compress'] = $compress;
 		$rs['upload_etype_info'] = $upload_type['etype'] ? $etype_info : array();
+		if(!$rs['innerHTML']){
+			$rs['innerHTML'] = '<span class="layui-icon">&#xe67c;</span> '.P_Lang('选择本地文件');
+		}
+		
 		$this->assign("_rs",$rs);
 		if($etype_info){
 			$this->gateway('type',$etype_info['type']);

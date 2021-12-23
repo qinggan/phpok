@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员列表
+ * 用户列表
  * @package phpok\www
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司

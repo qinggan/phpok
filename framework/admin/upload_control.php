@@ -183,15 +183,13 @@ class upload_control extends phpok_control
 			$this->json(P_Lang('请传递正确的附件ID'));
 		}
 		$rslist = $this->model("res")->get_list_from_id($id);
+		
 		if($rslist){
-			//排序
-			$reslist = array();
-			foreach($newlist as $key=>$value){
-				if($rslist[$value]){
-					$reslist[] = $rslist[$value];
-				}
+			$tmplist = array();
+			foreach($rslist as $key=>$value){
+				$tmplist[] = $value;
 			}
-			$this->json($reslist,true);
+			$this->json($tmplist,true);
 		}
 		$this->json(P_Lang('附件信息获取失败，可能已经删除，请检查'));
 	}
@@ -241,6 +239,8 @@ class upload_control extends phpok_control
 		$arraylist = array('jpg','png','gif','jpeg');
 		if($rs['ext'] && in_array($rs['ext'],$arraylist)){
 			$this->assign('ispic',true);
+		}elseif($rs['ext'] && $rs['ext'] == 'mp4'){
+			$this->assign('isvideo',true);
 		}
 		$this->assign('rs',$rs);
 		$this->view('res_openview');

@@ -167,13 +167,13 @@ class index_control extends phpok_control
 				}
 			}
 		}
-		//判断是否有指定sqlinfo
+		//判断是否有指定 sqlinfo
 		$sqlinfo = $this->get('sql');
 		if($sqlinfo){
 			$sqlinfo = str_replace(array('&#39;','&quot;','&apos;','&#34;'),array("'",'"',"'",'"'),$sqlinfo);
 			$param['sqlinfo'] = $sqlinfo;
 		}
-		//判断是否要指定会员ID
+		//判断是否要指定用户ID
 		$uid = $this->get('uid','int');
 		if($uid){
 			$param['user_id'] = $uid;
@@ -274,11 +274,11 @@ class index_control extends phpok_control
 	{
 		$uid = $this->get('uid','int');
 		if(!$uid){
-			$this->error(P_Lang('未指定会员'));
+			$this->error(P_Lang('未指定用户'));
 		}
 		$rs = $this->model('user')->get_one($uid,'id',false,false);
 		if(!$rs){
-			$this->error(P_Lang('会员信息不存在'));
+			$this->error(P_Lang('用户信息不存在'));
 		}
 		if($this->session->val('user_id') == $rs['id']){
 			$this->error(P_Lang('不能给自己推荐'));

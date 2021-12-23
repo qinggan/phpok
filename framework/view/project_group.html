@@ -1,0 +1,59 @@
+<!-- include tpl=head_lay -->
+
+<div class="layui-row layui-col-space10">
+	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	<div class="layui-col-md4">
+		<div class="layui-card" id="menu_{$key}">
+			<div class="layui-card-header">
+				{lang项目组} - {$tmpid.num}
+			</div>
+			<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_project_group.set(this)">
+			<div class="layui-card-body">
+				<div class="layui-form-item">
+					<div class="layui-form-mid">
+						<span class="red">{$key}</span>
+					</div>
+					<input type="hidden" name="key" value="{$key}" />
+					<div class="layui-input-inline">
+						<input type="text" name="name" id="name_{$key}" class="layui-input" value="{$value}" placeholder="{lang名称}" />
+					</div>
+					<div class="layui-input-inline auto lh38">
+						<div class="layui-btn-group">
+							<input type="submit" value="提交修改" class="layui-btn layui-btn-sm" />
+							<!-- if $key != 'default' -->
+							<input type="button" value="删除" onclick="$.admin_project_group.del('{$key}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+							<!-- /if -->
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			</form>
+		</div>
+	</div>
+	<!-- /loop -->
+	<div class="layui-col-md4">
+		<div class="layui-card">
+			<div class="layui-card-header">
+				{lang新项目组}
+			</div>
+			<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_project_group.add(this)">
+			<div class="layui-card-body">
+				<div class="layui-form-item">
+					<div class="layui-input-inline short">
+						<input type="text" class="layui-input" name="key" value="{$addkey}" placeholder="{lang标识}" />
+					</div>
+					<div class="layui-input-inline">
+						<input type="text" name="name" class="layui-input" placeholder="{lang名称}" />
+					</div>
+					<div class="layui-input-inline auto lh38">
+						<input type="submit" value="保存添加" class="layui-btn layui-btn-sm" />
+					</div>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- include tpl=foot_lay is_open=true -->

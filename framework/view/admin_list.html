@@ -32,7 +32,7 @@
 				<td>
 					<input type="button" id="status_{$value.id}" value="{if $value.status}{lang启用}{else}{lang停用}{/if}" onclick="$.admin_admin.status({$value.id})" class="layui-btn layui-btn-sm {if !$value.status} layui-btn-danger{/if}" />
 				</td>
-				<td><div style="padding-left:7px">{$value.account}<!-- if $value.if_system --><span class="red i">{lang（系统管理员）}</span><!-- /if --></div></td>
+				<td><div style="padding-left:7px">{$value.account}<!-- if $value.if_system --><span class="red i">{lang（系统管理员）}</span><!-- else --><span class="gray i">{lang（权限管理员）} - {$value.note}</span><!-- /if --></div></td>
 				<td><div style="padding-left:7px">{$value.email}</div></td>
 				<td width="50">
 					<!-- if $popedom.modify -->

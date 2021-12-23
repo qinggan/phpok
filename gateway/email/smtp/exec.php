@@ -41,9 +41,17 @@ $email->Username = trim($rs['ext']['account']);
 $email->Password = trim($rs['ext']['password']);
 $email->Host = trim($rs['ext']['server']);
 $email->Port = $rs['ext']['port'] ? $rs['ext']['port'] : 25;
+$email->SMTPOptions = array(
+	'ssl' => array(
+		'verify_peer' => false,
+		'verify_peer_name' => false,
+		'allow_self_signed' => true
+	)
+);
 if($rs['ext']['ssl'] == 'yes'){
 	$email->SMTPSecure = 'ssl';
 }
+
 $email->Timeout = 15;
 //发件人
 $email->From = $rs['ext']['email'];

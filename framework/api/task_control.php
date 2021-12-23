@@ -22,28 +22,29 @@ class task_control extends phpok_control
 		$this->model('task')->unlock();
 		//指定未来时间发布，自动写入到计划任务上来
 		$this->crontab_title();
+		$this->crontab_apps();
 		//获取计划任务
 		$rslist = $this->model('task')->get_all();
 		if(!$rslist){
-			$this->json(true);
+			$this->success();
 		}
 		foreach($rslist as $key=>$value){
 			$this->exec_action($value);
 		}
-		$this->json(true);
+		$this->success();
 	}
 
 	public function exec_f()
 	{
 		$file = $this->get('file');
 		if(!$file){
-			$this->json(P_Lang('未指定计划文件'));
+			$this->error(P_Lang('未指定计划文件'));
 		}
 		if(!is_file($this->dir_root.'task/'.$file.'.php')){
-			$this->json(P_Lang('计划文件不存在'));
+			$this->error(P_Lang('计划文件不存在'));
 		}
 		$status = include $this->dir_root.'task/'.$file.'.php';
-		$this->json(true);
+		$this->success();
 	}
 
 	private function exec_action($rs)
@@ -61,17 +62,14 @@ class task_control extends phpok_control
 		$rs['second'] = $rs['second'] == '*' ? date('s',$this->time) : $rs['second'];
 		$time = $rs['year'].'-'.$rs['month'].'-'.$rs['day'].' '.$rs['hour'].':'.$rs['minute'].':'.$rs['second'];
 		$time = strtotime($time) - 5;
-		//五分钟内只执行一次
-		//if($rs['exec_time'] && ($rs['exec_time'] + 300)>$this->time){
-		//	$this->model('task')->unlock($_id);
-		//	return true;
-		//}
 		//只执行一天内的计划任务，超过一天的不再执行
 		$if_delete = false;
 		if($time <= $this->time && (($time+24*3600)>$this->time || $rs['only_once'])){
 			$this->model('task')->exec_start($_id);
 			$file = $this->dir_root.'task/'.$rs['action'].'.php';
 			if(file_exists($file)){
+				echo "<pre>".print_r($file,true)."</pre>";
+				exit;
 				if($rs['param']){
 					parse_str($rs['param'],$param);
 				}
@@ -87,6 +85,22 @@ class task_control extends phpok_control
 			$this->model('task')->unlock($_id);
 		}
 		return true;
+	}
+
+	/**
+	 * 增加 app 应用的计划功能
+	**/
+	private function crontab_apps()
+	{
+		$apps = $this->model('appsys')->installed();
+		if(!$apps){
+			return true;
+		}
+		foreach($apps as $key=>$value){
+			if(file_exists($this->dir_app.$key.'/task.php')){
+				include($this->dir_app.$key.'/task.php');
+			}
+		}
 	}
 
 	/**

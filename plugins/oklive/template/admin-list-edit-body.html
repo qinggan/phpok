@@ -1,0 +1,26 @@
+<script type="text/javascript">
+function videoTypeAction(t){
+	if(t == 'vod'){
+		$("div[data-id=link],div[data-id=livetime],div[data-id=tovod]").hide();
+		$("div[data-id=ismove],div[data-id=video],div[data-id=bg],div[data-id=longtime]").show();
+	}
+	if(t == 'live'){
+		$("div[data-id=link],div[data-id=video],div[data-id=longtime],div[data-id=ismove]").hide();
+		$("div[data-id=tovod],div[data-id=livetime],div[data-id=bg]").show();
+	}
+	if(t == 'vlive'){
+		$("div[data-id=tovod],div[data-id=livetime],div[data-id=bg],div[data-id=video]").show();
+		$("div[data-id=ismove],div[data-id=link],div[data-id=longtime]").hide();
+	}
+	if(t == 'link'){
+		$("div[data-id=link],div[data-id=longtime]").show();
+		$("div[data-id=video],div[data-id=ismove],div[data-id=tovod],div[data-id=livetime],div[data-id=bg]").hide();
+	}
+}
+$(document).ready(function(){
+	$("input[name=vtype]").on("click",function(obj){
+		videoTypeAction($(this).val());
+	});
+	videoTypeAction($("input[name=vtype]:checked").val());
+});
+</script>

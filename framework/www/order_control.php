@@ -47,6 +47,13 @@ class order_control extends phpok_control
 		$status = $this->get('status');
 		if($status){
 			$tmp = explode(",",$status);
+			foreach($tmp as $key=>$value){
+				$value = $this->format($value,'id');
+				if(!$value){
+					unset($tmp[$key]);
+					continue;
+				}
+			}
 			$condition .= " AND status IN('".implode("','",$tmp)."')";
 			$pageurl = $this->url('order','','status='.rawurlencode($status));
 			$this->assign('status',$status);
@@ -84,8 +91,8 @@ class order_control extends phpok_control
 
 	/**
 	 * 查看订单信息
-	 * @参数 back 返回上一级，未指定时，会员返回HTTP_REFERER或订单列表，游客返回HTTP_REFERER或首页
-	 * @参数 id 订单ID号，仅限已登录会员使用
+	 * @参数 back 返回上一级，未指定时，用户返回HTTP_REFERER或订单列表，游客返回HTTP_REFERER或首页
+	 * @参数 id 订单ID号，仅限已登录用户使用
 	 * @参数 sn 订单编号，如果订单ID为空时，使用SN来查询
 	 * @参数 passwd 订单密码，仅限游客查阅时需要使用
 	**/
@@ -113,6 +120,8 @@ class order_control extends phpok_control
 		}else{
 			$rs['pay_info'] = P_Lang('已支付');
 		}
+		$this->assign('paid_price',$paid_price);
+		$this->assign('unpaid_price',$unpaid_price);
 		$rs['status_info'] = ($status_list && $status_list[$rs['status']]) ? $status_list[$rs['status']] : $rs['status'];
 		$this->assign('rs',$rs);
 		$addressconfig = $this->config['order']['address'] ? explode(",",strtolower($this->config['order']['address'])) : array('shipping');
@@ -162,6 +171,9 @@ class order_control extends phpok_control
 			foreach($price_tpl_list as $key=>$value){
 				$tmpval = floatval($order_price[$key]);
 				if(!$value['status']){
+					continue;
+				}
+				if($value['hidden'] && (!$order_price[$key] || $order_price[$key] == '0.00')){
 					continue;
 				}
 				$tmp = array('val'=>$tmpval);
@@ -223,31 +235,13 @@ class order_control extends phpok_control
 		unset($order);
 		if($price_unpaid && $price_unpaid<0.01){
 			$url = $this->session->val('user_id') ? $this->url('order','info','id='.$rs['id']) : $this->url('order','info','sn='.$rs['sn'].'&passwd='.$rs['passwd']);
-			$this->success(P_Lang('您的订单 {sn} 已经支付完成，无需再支付',array('sn'=>$rs['sn'])),$url);
+			$this->success(P_Lang('您的订单 {sn} 已经支付完成',array('sn'=>$rs['sn'])),$url);
 		}
 		$mobile = $this->is_mobile ? 1 : 0;
 		$paylist = $this->model('payment')->get_all($this->site['id'],1,$mobile);
 		if(!$paylist){
 			$this->error(P_Lang('系统未配置支付方式，请检查'));
-		}
-		//增加order_payment
-		$array = array('order_id'=>$rs['id'],'payment_id'=>0);
-		$array['price'] = price_format_val($price_unpaid,$rs['currency_id']);
-		$array['currency_id'] = $rs['currency_id'];
-		$array['startdate'] = $this->time;
-		$array['currency_rate'] = $rs['currency_rate'];
-		$this->model('order')->delete_not_end_order($rs['id']);
-		$this->model('order')->save_payment($array);
-		
-		$array = array('type'=>'order','price'=>price_format_val($price_unpaid,$rs['currency_id'],$rs['currency_id']),'currency_id'=>$rs['currency_id'],'sn'=>$rs['sn']);
-		$array['content'] = $array['title'] = P_Lang('订单：{sn}',array('sn'=>$rs['sn']));
-		$array['dateline'] = $this->time;
-		$array['user_id'] = $this->session->val('user_id');
-		$this->model('payment')->log_delete_notstatus($rs['sn'],'order');
-		$insert_id = $this->model('payment')->log_create($array);
-		$log = $array;
-		$log['id'] = $insert_id;
-		$this->assign('log',$log);
+		}	
 		foreach($paylist as $key=>$value){
 			if(!$value['paylist']){
 				unset($paylist[$key]);
@@ -282,6 +276,11 @@ class order_control extends phpok_control
 				$tmp['price_val'] = price_format_val($order_price[$key],$rs['currency_id']);
 				$tmp['title'] = $value['title'];
 				$pricelist[$key] = $tmp;
+			}
+			foreach($pricelist as $key=>$value){
+				if($value['hidden'] && (!$value['price_val'] || $value['price_val'] == '0.00')){
+					unset($pricelist[$key]);
+				}
 			}
 			$this->assign('pricelist',$pricelist);
 		}
@@ -373,7 +372,7 @@ class order_control extends phpok_control
 		}
 		$userid = $this->session->val('user_id');
 		if(!$userid){
-			$this->error(P_Lang('非会员账号不能执行此操作'),$this->url('login','index','_back='.rawurlencode($this->url('order','comment','id='.$id))));
+			$this->error(P_Lang('非用户账号不能执行此操作'),$this->url('login','index','_back='.rawurlencode($this->url('order','comment','id='.$id))));
 		}
 		$backurl = $this->lib('server')->referer();
 		if(!$backurl){
@@ -383,39 +382,96 @@ class order_control extends phpok_control
 		if($rs['user_id'] != $userid){
 			$this->error(P_Lang('您没有权限评论此订单信息'),$backurl);
 		}
-		if(!$rs['endtime']){
-			$this->error(P_Lang('订单未结束，暂不支持评论'),$backurl);
+		$status_list = $this->model('order')->status_list();
+		$unpaid_price = $this->model('order')->unpaid_price($rs['id']);
+		$paid_price = $this->model('order')->paid_price($rs['id']);
+		if($unpaid_price > 0){
+			if($paid_price>0){
+				$rs['pay_info'] = P_Lang('部分支付');
+			}else{
+				$rs['pay_info'] = P_Lang('未支付');
+			}
+		}else{
+			$rs['pay_info'] = P_Lang('已支付');
+		}
+		$rs['status_info'] = ($status_list && $status_list[$rs['status']]) ? $status_list[$rs['status']] : $rs['status'];
+		$plist = $this->model('order')->product_list($id);
+		$is_comment = true;
+		$tip_info = array();
+		if($rs['endtime'] && $rs['status'] != 'cancel' && $plist){
+			$rslist = array();
+			foreach($plist as $key=>$value){
+				if(!$value['tid']){
+					continue;
+				}
+				$condition = "tid='".$value['tid']."' AND uid='".$userid."' AND order_id='".$id."'";
+				$commentlist = $this->model('reply')->get_list($condition,0,100,"","addtime ASC,id ASC");
+				if($commentlist){
+					$value['comment'] = $commentlist;
+				}
+				$rslist[] = $value;
+			}
+			if(!$rslist || count($rslist)<1){
+				$tip_info[] = P_Lang('订单中没有找到可以关联的产品信息，不支持评论');
+				$is_comment = false;
+			}
+		}
+		if(!$rs['endtime'] || !in_array($rs['status'],array('received','stop','end'))){
+			$tip_info[] = P_Lang('订单未结束，暂不支持评论');
+			$is_comment = false;
 		}
 		if($rs['status'] == 'cancel'){
-			$this->error(P_Lang('订单已取消，不支持评论'),$backurl);
+			$tip_info[] = P_Lang('订单已取消，不支持评论');
+			$is_comment = false;
 		}
-		$plist = $this->model('order')->product_list($id);
 		if(!$plist){
-			$this->error(P_Lang('订单中无法找到相关产品信息'),$backurl);
+			$tip_info[] = P_Lang('订单中无法找到相关产品信息');
+			$is_comment = false;
 		}
-		$rslist = false;
-		foreach($plist as $key=>$value){
-			if(!$value['tid']){
-				continue;
-			}
-			if(!$rslist){
-				$rslist = array();
-			}
-			$condition = "tid='".$value['tid']."' AND uid='".$userid."' AND order_id='".$id."'";
-			$commentlist = $this->model('reply')->get_list($condition,0,100,"","addtime ASC,id ASC");
-			if($commentlist){
-				$value['comment'] = $commentlist;
-			}
-			$rslist[] = $value;
+		
+		if($rslist && count($rslist)>0){
+			$this->assign('rslist',$rslist);
 		}
-		if(!$rslist){
-			$this->error(P_Lang('订单中没有找到可以关联的产品信息，所以不支持评论'),$backurl);
-		}
-		$this->assign('rslist',$rslist);
 		$this->assign('rs',$rs);
+		$this->assign('is_comment',$is_comment);
+		$this->assign('tip_info',$tip_info);
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
 			$tplfile = 'order_comment';
+		}
+		$this->view($tplfile);
+	}
+
+	public function log_f()
+	{
+		$back = $this->get('back');
+		if(!$back){
+			$back = $_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : ($this->session->val('user_id') ? $this->url('order') : $this->url);
+		}
+		$order = $this->_order();
+		if(!$order['status']){
+			$this->error($order['error'],$back);
+		}
+		$rs = $order['info'];
+		$status_list = $this->model('order')->status_list();
+		$unpaid_price = $this->model('order')->unpaid_price($rs['id']);
+		$paid_price = $this->model('order')->paid_price($rs['id']);
+		if($unpaid_price > 0){
+			if($paid_price>0){
+				$rs['pay_info'] = P_Lang('部分支付');
+			}else{
+				$rs['pay_info'] = P_Lang('未支付');
+			}
+		}else{
+			$rs['pay_info'] = P_Lang('已支付');
+		}
+		$rs['status_info'] = ($status_list && $status_list[$rs['status']]) ? $status_list[$rs['status']] : $rs['status'];
+		$this->assign('rs',$rs);
+		$loglist = $this->model('order')->log_list($rs['id']);
+		$this->assign('loglist',$loglist);
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'order_log';
 		}
 		$this->view($tplfile);
 	}
@@ -432,7 +488,7 @@ class order_control extends phpok_control
 		$id = $this->get('id','int');
 		if($id){
 			if(!$this->session->val('user_id')){
-				$this->error(P_Lang('非会员不能执行此操作'));
+				$this->error(P_Lang('非用户不能执行此操作'));
 			}
 			$rs = $this->model('order')->get_one($id);
 			if(!$rs){

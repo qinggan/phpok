@@ -19,11 +19,14 @@ var apifile = "{$sys.api_file}";
 var wwwfile = "{$sys.www_file}";
 <!-- if APP_ID == 'admin' -->
 var adminfile = "{$sys.admin_file}";
+var lang_code = "{$session.admin_lang_id ? $session.admin_lang_id : ($config.lang ? $config.lang : 'cn')}";
 <!-- /if -->
 var phpok_site_id = "{$phpok_site_id}";
 var site_id = "{$site_id}";
+<!-- if APP_ID == 'www' -->
+var lang_code = "{$session.www_lang_id ? $session.www_lang_id : ($config.lang ? $config.lang : 'cn')}";
+<!-- /if -->
 var session_name = '{func session_name}';
-var session_id = '{func session_id}';
 
 //是否启用电调
 var biz_status = '{$config.biz_status}';

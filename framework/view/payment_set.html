@@ -53,6 +53,16 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
+				{lang支付模式}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" name="iframe" value="1"{if $rs.iframe} checked{/if} title="{lang嵌入}" />
+				<input type="radio" name="iframe" value="0"{if !$rs.iframe} checked{/if} title="{lang跳转}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang嵌入模式主要用于不离开当前网站使用}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
 				{lang货币类型}
 			</label>
 			<div class="layui-input-inline default-auto">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
 	<title>七牛云存储</title>
-	<note>直接上传文件到七牛云，并现实增删查改操作</note>
+	<note>直接上传文件到七牛云，支持增删操作</note>
 	<code>
 		<appkey>
 			<title>密钥AK</title>

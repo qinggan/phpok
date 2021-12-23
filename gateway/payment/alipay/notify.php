@@ -61,7 +61,6 @@ class alipay_notify
 		$alipay = $this->order['ext'] ? unserialize($this->order['ext']) : array();
 		//$alipay = array();
 		//更新扩展数据
-		$alipay['log_id'] = $this->order['id'];
 		$alipay['buyer_email'] = $app->get('buyer_email') ? $app->get('buyer_email') : $app->get('buyer_logon_id');
 		$alipay['buyer_id'] = $app->get('buyer_id');
 		$alipay['out_trade _no'] = $app->get('out_trade _no');
@@ -81,21 +80,26 @@ class alipay_notify
 		$app->db->update_array($array,'payment_log',array('id'=>$this->order['id']));
 		//如果当前支付操作是订单
 		if($this->order['type'] == 'order'){
-			$order = $app->model('order')->get_one_from_sn($this->order['sn']);
+			$order = $app->model('order')->get_one($this->order['sn'],'sn');
 			if($order){
-				$payinfo = $app->model('order')->order_payment_notend($order['id']);
-				if($payinfo){
-					$payment_data = array('dateline'=>$app->time,'ext'=>serialize($alipay));
-					$payment_data['price'] = $price; //登记实付金额
-					$payment_data['currency_id'] = $this->param['currency']['id']; //登记实付货币
-					$payment_data['currency_rate'] = $this->param['currency']['val']; //登记实付汇率
-					$app->model('order')->save_payment($payment_data,$payinfo['id']);
-					//更新订单日志
-					$app->model('order')->update_order_status($order['id'],'paid');
-					$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
-					$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
-					$app->model('order')->log_save($log);
-				}
+				$alipay['log_id'] = $this->order['id'];
+				//登记订单
+				$payment_data = array();
+				$payment_data['order_id'] = $order['id'];
+				$payment_data['payment_id'] = $this->param['id'];
+				$payment_data['title'] = $this->param['title'];
+				$payment_data['price'] = $this->order['price']; //登记实付金额
+				$payment_data['currency_id'] = $this->param['currency']['id']; //登记实付货币
+				$payment_data['currency_rate'] = $this->param['currency']['val']; //登记的汇率
+				$payment_data['startdate'] = $app->time; //登记时间
+				$payment_data['dateline'] = $app->time; //付款时间
+				$payment_data['ext'] = serialize($alipay);
+				$app->model('order')->save_payment($payment_data);
+				//更新订单日志
+				$app->model('order')->update_order_status($order['id'],'paid');
+				$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
+				$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
+				$app->model('order')->log_save($log);
 			}
 		}
 		//充值操作

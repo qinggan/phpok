@@ -1,47 +1,45 @@
 <!-- include tpl=head_lay -->
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 <div class="layui-card">
 	<div class="layui-card-header">
-		{lang支付管理}
-		<div class="fr">
+		{$value.title}
+		<!-- if !$value.status --> <span class="gray i">{lang停用}</span><!-- /if -->
+		<!-- if $value.is_wap --><span class="red">{lang手机端}</span><!-- /if -->
+		<div class="layui-btn-group fr">
+			<span class="layui-btn layui-btn-sm" title="{lang点击调整排序}" name="taxis" data="{$value.id}" onclick="$.admin_payment.taxis(this)" type="group">{$value.taxis}</span>
+			<!-- if $popedom.groupedit --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=payment func=groupset id=$value.id/}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
+			<!-- if $popedom.groupdelete --><input type="button" value="{lang删除}" onclick="$.admin_payment.group_delete('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm layui-btn-danger" /><!-- /if -->
+			<!-- if $popedom.add --><input type="button" value="添加支付方案" onclick="$.admin_payment.add('{$value.id}')" class="layui-btn  layui-btn-sm layui-btn-normal" /><!-- /if -->
+			<!-- if !$tmpid.index -->
 			<a href="{url ctrl=payment func=groupset /}" class="layui-btn layui-btn-sm" >{lang创建组}</a>
+			<!-- /if -->
+			
 		</div>
 	</div>
 	<div class="layui-card-body">
 		<table class="layui-table">
+		
 		<thead>
 		<tr>
 			<th>{lang名称}</th>
+			<th>{lang状态}</th>
+			<th>{lang终端}</th>
+			<th colspan="2">{lang接口}</th>
+			<td>{lang货币}</td>
 			<th>{lang排序}</th>
 			<th>{lang操作}</th>
 		</tr>
 		</thead>
-		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-		<thead>
-		<tr>
-			<td>{$value.title}
-				<!-- if !$value.status --> <span class="gray i">{lang停用}</span><!-- /if -->
-				<!-- if $value.is_wap --><span class="red">{lang手机端}</span><!-- /if -->
-			</td>
-			<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}" onclick="$.admin_payment.taxis(this)" type="group">{$value.taxis}</div></td>
-			<td>
-				<div class="layui-btn-group">
-					<!-- if $popedom.groupedit --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=payment func=groupset id=$value.id/}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
-					<!-- if $popedom.groupdelete --><input type="button" value="{lang删除}" onclick="$.admin_payment.group_delete('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm layui-btn-danger" /><!-- /if -->
-					<!-- if $popedom.add --><input type="button" value="添加支付方案" onclick="$.admin_payment.add('{$value.id}')" class="layui-btn  layui-btn-sm layui-btn-normal" /><!-- /if -->
-				</div>
-			</td>
-		</tr>
-		</thead>
 		<!-- loop from=$value.paylist key=$k value=$v -->
 		<tr>
+			<td>{$v.title}</td>
+			<td><!-- if $v.status -->{lang启用}<!-- else --><span class="gray i">{lang停用}</span><!-- /if --></td>
+			<td><!-- if $v.wap --><span class="red">{lang手机端}</span><!-- else -->{langPC端}<!-- /if --></td>
+			<td>{$v.code}</td>
+			<td><!-- if $v.code && $codelist[$v.code] -->{$codelist[$v[code]][title]}<!-- /if --></td>
+			<td>{$v.currency}</td>
 			<td>
-				<div style="padding-left:2em;">{$v.title}
-					<!-- if !$v.status --><span class="gray i">{lang停用}</span><!-- /if -->
-					<!-- if $v.wap --><span class="red">{lang手机端}</span><!-- /if -->
-				</div>
-			</td>
-			<td>
-				<div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$v.id}" onclick="$.admin_payment.taxis(this)" type="payment">{$v.taxis}</div>
+				<div class="gray i hand" title="{lang点击调整排序}" name="taxis" data="{$v.id}" onclick="$.admin_payment.taxis(this)" type="payment">{$v.taxis}</div>
 			</td>
 			<td>
 				<div class="layui-btn-group">
@@ -51,10 +49,13 @@
 			</td>
 		</tr>	
 		<!-- /loop -->
-		<!-- /loop -->
 		</table>
 	</div>
 </div>
+<!-- /loop -->
+<!-- if !$rslist -->
+<div style="margin:30px;text-align:center"><a href="{url ctrl=payment func=groupset /}" class="layui-btn" >{lang创建组}</a></div>
+<!-- /if -->
 
 <div class="hide" id="payment_select_info">
 <select id="code">

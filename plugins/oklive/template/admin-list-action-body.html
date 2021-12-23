@@ -1,0 +1,15 @@
+<script type="text/javascript">
+function oklive_ctrl(id)
+{
+	var url = get_plugin_url('oklive','live_ctrl','tid='+id);
+	$.win('控制台_#'+id,url);
+	return false;
+}
+$(document).ready(function(){
+	$("div[name=list-content-btns]").each(function(i){
+		var t = $(this).attr("data-id");
+		var html = '<input type="button" value="控制台" onclick="oklive_ctrl('+t+')" class="layui-btn layui-btn-xs" />';
+		$(this).prepend(html);
+	});
+});
+</script>

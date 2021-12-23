@@ -1,6 +1,6 @@
 <?php
 /**
- * 评论通知管理员或会员（邮件或短信）
+ * 评论通知管理员或用户（邮件或短信）
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -26,7 +26,7 @@ if(!$rs){
 }
 $this->assign('rs',$rs);
 
-//会员信息
+//用户信息
 if($rs['uid']){
 	$user_rs = $this->model('user')->get_one($rs['uid']);
 	$this->assign('user_rs',$user_rs);

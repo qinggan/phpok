@@ -64,7 +64,7 @@
 					<select name="keytype" onchange="update_keywords(this.value)">
 						<option value="">{lang检索类型…}</option>
 						<option value="sn"{if $keytype == 'sn'} selected{/if}>{lang订单编号}</option>
-						<option value="user"{if $keytype == 'user'} selected{/if}>{lang会员账号}</option>
+						<option value="user"{if $keytype == 'user'} selected{/if}>{lang用户账号}</option>
 						<option value="email"{if $keytype == 'email'} selected{/if}>{lang订单邮箱}</option>
 						<option value="protitle"{if $keytype == 'protitle'} selected{/if}>{lang产品名称}</option>
 						<option value="paytitle"{if $keytype == 'paytitle'} selected{/if}>{lang付款方式名称}</option>
@@ -101,7 +101,7 @@
 		<thead>
 		<tr>
 			<th>ID / {lang订单号}</th>
-			<th>{lang会员}</th>
+			<th>{lang用户}</th>
 			<th>{lang金额}</th>
 			<th>{lang已付}</th>
 			<th>{lang未付}</th>

@@ -12,7 +12,6 @@
 		var self = this;
 		var defaults = {
 			'id':'upload',
-			'swf':'js/webuploader/uploader.swf',
 			'server':'index.php',
 			'pick':'#picker',
 			'resize': false,
@@ -22,8 +21,8 @@
 			'sendAsBinary':false,
 			'duplicate':false,
 			'chunked':true,
-			'chunkSize':102400,
-			'threads':3,
+			'chunkSize':1048576,
+			'threads':1,
 			'auto':false,
 			'accept':{'title':p_lang('图片(*.jpg, *.gif, *.png)'),'extensions':'jpg,png,gif'}
 		};
@@ -145,13 +144,19 @@
 				$(self.id).val(data.content.id);
 			}
 			$.phpok.data('upload-'+self.opts.id,tmp);
-			self.showhtml();
+			if(!self.opts.is_refresh){
+				self.showhtml();
+			}
 		});
 		uploader.on('uploadError',function(file,reason){
 			$('#phpok-upfile-'+file.id).find('span.status').html(p_lang('上传错误：')+'<span style="color:red">'+reason+'</span> ');
 		});
 		uploader.on('uploadFinished',function(){
 			self.upload_state = 'ready';
+			if(self.opts.is_refresh && self.opts.is_refresh != 'undefined'){
+				$.phpok.reload();
+				return true;
+			}
 			if(self.opts.upload_finished && self.opts.upload_finished != 'undefined'){
 				(self.opts.upload_finished)();
 				return true;

@@ -1,10 +1,12 @@
 <input type="hidden" name="ext_form_id" id="ext_form_id" value="height" />
-<div class="table">
-	<div class="title">
-		最小高度：
-		<span class="note">设置块区的最小高度，这是只需要<span class="red">填写数字</span>，单位是px</span>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang高度：}
+	</label>
+	<div class="layui-input-inline short">
+		<input type="text" name="height" id="height" class="layui-input" value="{$rs.height}" />
 	</div>
-	<div class="content">
-		<input type="text" name="height" id="height" value="{$rs.height}" /> px
+	<div class="layui-form-mid">
+		设置块区的最小高度，这是只需要<span class="red">填写数字</span>，单位是px
 	</div>
 </div>

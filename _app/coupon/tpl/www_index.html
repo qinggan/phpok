@@ -1,0 +1,29 @@
+<!-- include tpl=header -->
+<script type="text/javascript">
+function to_my_coupon(obj)
+{
+	$.dialog.confirm('确定要领取：<span style="color:red">'+$(obj).attr("data-title")+'</span> 吗？',function(){
+		var url = api_url('coupon','receive','code='+$(obj).attr('data-code'));
+		$.phpok.json(url,function(rs){
+			if(!rs.status){
+				$.dialog.alert(rs.info);
+				return false;
+			}
+			$.dialog.tips('领取成功，请到个人中心查看').lock();
+		})
+	});
+}
+</script>
+<div class="am-container">
+	<ul class="am-list am-margin">
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<li class="am-padding">
+			<button type="button" data-id="{$value.id}" data-code="{$value.code}" data-title="{$value.title}" class="am-btn am-btn-primary am-btn-xs am-fr" onclick="to_my_coupon(this)">领取</button>
+			{$value.title}
+			<div style="color:gray">有效时间：{func date Y-m-d $value.startdate} 至 {func date Y-m-d $value.stopdate}</div>
+		</li>
+		<!-- /loop -->
+	</ul>
+</div>
+
+<!-- include tpl=footer -->

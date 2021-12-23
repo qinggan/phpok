@@ -35,7 +35,7 @@ $(document).ready(function(){
 		var url = get_url("open","user") + "&id={$_rs.identifier}&multi=1";
 		$.dialog.data("phpok_user_{$_rs.identifier}",$("#{$_rs.identifier}").val());
 		$.dialog.open(url,{
-			title: "会员管理器",
+			title: "用户管理器",
 			lock : true,
 			width: "700px",
 			height: "70%",
@@ -53,7 +53,7 @@ $(document).ready(function(){
 });
 </script>
 <input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}" value="{$_rs_content}" />
-<input id="_phpok_button_user_{$_rs.identifier}" type="button" value="{lang请选择会员}" class="layui-btn layui-btn-sm" />
+<input id="_phpok_button_user_{$_rs.identifier}" type="button" value="{lang请选择用户}" class="layui-btn layui-btn-sm" />
 <ul class="layout" id="{$_rs.identifier}_div" style="margin-top:5px;"></ul>
 <div class="clear"></div>
 <!-- else -->
@@ -79,7 +79,7 @@ $(document).ready(function(){
 	$("#_phpok_button_user_{$_rs.identifier}").click(function(){
 		var url = get_url("open","user","id={$_rs.identifier}");
 		$.dialog.open(url,{
-			title: "{lang会员管理器}",
+			title: "{lang用户管理器}",
 			lock : true,
 			width: "700px",
 			height: "70%",
@@ -96,7 +96,7 @@ $(document).ready(function(){
 	<td>&nbsp;</td>
 	<td>
 		<div class="layui-btn-group">
-			<input type="button" value="{lang选择会员}" id="_phpok_button_user_{$_rs.identifier}" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang选择}" id="_phpok_button_user_{$_rs.identifier}" class="layui-btn layui-btn-sm" />
 			<input type="button" value="{lang删除}" onclick="$('#{$_rs.identifier}').val('');$('#title_{$_rs.identifier}').val('')" class="layui-btn layui-btn-sm layui-btn-danger" />
 		</div>
 	</td>

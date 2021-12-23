@@ -1,5 +1,5 @@
 /**
- * 后台会员涉及到的地址
+ * 后台用户涉及到的地址
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @网站 http://www.phpok.com
@@ -13,7 +13,7 @@
 		{
 			var url = get_url('address','open','type=user_id&keywords='+id);
 			$.dialog.open(url,{
-				'title':p_lang('会员地址'),
+				'title':p_lang('用户地址'),
 				'width':'800px',
 				'height':'500px',
 				'lock':true
@@ -23,7 +23,7 @@
 		{
 			var url = get_url('user','show_setting');
 			$.dialog.open(url,{
-				'title':p_lang('会员字段显示设置'),
+				'title':p_lang('用户字段显示设置'),
 				'width':'600px',
 				'height':'400px',
 				'lock':true,
@@ -40,7 +40,7 @@
 		},
 
 		/**
-		 * 会员字段快速添加
+		 * 用户字段快速添加
 		**/
 		field_quick_add:function(id)
 		{
@@ -56,7 +56,7 @@
 		},
 
 		/**
-		 * 会员字段删除
+		 * 用户字段删除
 		**/
 		field_delete:function(id,title)
 		{
@@ -73,7 +73,7 @@
 		},
 
 		/**
-		 * 会员字段编辑
+		 * 用户字段编辑
 		**/
 		field_edit:function(id)
 		{
@@ -98,12 +98,12 @@
 		},
 
 		/**
-		 * 会员字段添加
+		 * 用户字段添加
 		**/
 		field_add:function()
 		{
 			$.dialog.open(get_url("user","field_edit"),{
-				"title" : p_lang('添加会员字段'),
+				"title" : p_lang('添加用户字段'),
 				"width" : "700px",
 				"height" : "80%",
 				"resize" : false,
@@ -170,7 +170,7 @@
 		{
 			var url =get_url('user','vouch','id='+id);
 			$.dialog.open(url,{
-				'title':p_lang('推荐的会员')+"_#"+id,
+				'title':p_lang('推荐的用户')+"_#"+id,
 				'lock':true,
 				'width':'700px',
 				'height':'500px',
@@ -182,7 +182,7 @@
 		{
 			var url = get_url('wealth','action_user','wid='+wid+"&uid="+uid);
 			$.dialog.open(url,{
-				'title':p_lang('会员{title}操作',{'title':title}),
+				'title':p_lang('用户{title}操作',{'title':title}),
 				'lock':true,
 				'width':'700px',
 				'height':'500px',
@@ -202,7 +202,7 @@
 		wealth_log:function(title,wid,uid)
 		{
 			var url = get_url('wealth','log','wid='+wid+"&uid="+uid);
-			$.win(p_lang('会员')+title+p_lang('日志')+"_#"+uid,url);
+			$.win(p_lang('用户')+title+p_lang('日志')+"_#"+uid,url);
 		}
 	}
 })(jQuery);

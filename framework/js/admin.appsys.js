@@ -48,6 +48,23 @@
 			});
 			return true;
 		},
+		help_save:function(obj)
+		{
+			$(obj).ajaxSubmit({
+				'url':get_url('appsys','help_save'),
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					if(rs.status){
+						$.dialog.tips('编写成功');
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
+			return false;
+		},
 		remote:function()
 		{
 			var tip = $.dialog.tips(p_lang('正在更新远程数据，请稍候…'),30)
@@ -243,6 +260,14 @@
 					}).time(1.5).lock();
 				})
 			},taxis);
+		},
+		help:function(title,id)
+		{
+			$.win(p_lang('开发帮助 - {title}',title),get_url('appsys','showhelp','id='+id+'&type=admin'));
+		},
+		www_help:function(title,id)
+		{
+			$.win(p_lang('使用帮助 - {title}',title),get_url('appsys','showhelp','id='+id+'&type=www'));
 		}
 	}
 })(jQuery);

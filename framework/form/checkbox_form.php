@@ -270,11 +270,12 @@ class checkbox_form extends _init_auto
 			return $this->model('form')->project_sublist($group_id);
 		}
 		//读主题列表信息
-		if($type == 'title')
-		{
+		if($type == 'title'){
 			$tmplist = $this->model("list")->title_list($group_id);
-			if(!$tmplist) return false;
-			$rslist = '';
+			if(!$tmplist){
+				return false;
+			}
+			$rslist = array();
 			foreach($tmplist as $key=>$value){
 				$tmp = array("val"=>$value['id'],"title"=>$value['title']);
 				$rslist[] = $tmp;

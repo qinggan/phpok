@@ -208,12 +208,12 @@ function show_pending_info()
 			}
 		}
 	}
-	//读取未审核的会员信息
+	//读取未审核的用户信息
 	$condition = "u.status=0";
 	$user_total = $GLOBALS['app']->model('user')->get_count($condition);
 	if($user_total > 0){
 		$url = $GLOBALS['app']->url("user","","status=3");
-		$list[] = array("title"=>"待审核会员","total"=>$user_total,"url"=>$url);
+		$list[] = array("title"=>"待审核用户","total"=>$user_total,"url"=>$url);
 	}
 	//读取未审核的回复信息
 	$condition = "status=0";

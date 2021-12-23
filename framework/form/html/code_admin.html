@@ -1,19 +1,18 @@
 <input type="hidden" name="ext_form_id" id="ext_form_id" value="width,height" />
-<div class="table">
-	<div class="title">
-		编辑器宽度设置：
-		<span class="note">只需要填写数字</span>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang宽高：}
+	</label>
+	<div class="layui-input-inline short">
+		<input type="text" name="width" id="width" class="layui-input" value="{$rs.width}" placeholder="{lang宽度}" />
 	</div>
-	<div class="content">
-		<input type="text" name="width" id="width" value="{$rs.width}" class="short" /> px
+	<div class="layui-form-mid">
+		x
 	</div>
-</div>
-<div class="table">
-	<div class="title">
-		编辑器高度设置：
-		<span class="note">只需要填写数字</span>
+	<div class="layui-input-inline short">
+		<input type="text" name="height" id="height" class="layui-input" value="{$rs.height}" placeholder="{lang高度}" />
 	</div>
-	<div class="content">
-		<input type="text" name="height" id="height" value="{$rs.height}" class="short" /> px
+	<div class="layui-form-mid">
+		{lang支持填写 px em % 等单位符号}
 	</div>
 </div>

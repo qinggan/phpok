@@ -35,202 +35,212 @@ li { list-style: none; }
 
 /*表单*/
 #c-content {
-    position: fixed;
-    top: 0;
-    left:0;
-    width: 100%;
-    height: 100%;
+	position: fixed;
+	top: 0;
+	left:0;
+	width: 100%;
+	height: 100%;
 }
 #c-content .c-wrap {
-    position: absolute;
-    top: 50%;
-    left:50%;
-    width: 100%;
-    max-width: 980px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-transform: translate(-50%,-50%);
-    -moz-transform: translate(-50%,-50%);
-    -o-transform: translate(-50%,-50%);
-    transform: translate(-50%,-50%);
+	position: absolute;
+	top: 50%;
+	left:50%;
+	width: 100%;
+	max-width: 980px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-transform: translate(-50%,-50%);
+	-moz-transform: translate(-50%,-50%);
+	-o-transform: translate(-50%,-50%);
+	transform: translate(-50%,-50%);
 }
 #c-content .c-wrap .c-form {
-    width: 380px;
-    padding: 55px 50px;
-    background:#fff;
-    box-shadow: 0 0 30px rgba(0,0,0,.1);
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    position: relative;
+	width: 380px;
+	padding: 55px 50px;
+	background:#fff;
+	box-shadow: 0 0 30px rgba(0,0,0,.1);
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	position: relative;
 }
 #c-content .c-wrap .c-form .c-title {
-    padding-bottom: 40px;
-    font-weight:bold;
-    font-size: 30px;
-    line-height: 30px;
-    text-align: center;
-    color: #383838;
+	padding-bottom: 40px;
+	font-weight:bold;
+	font-size: 30px;
+	line-height: 30px;
+	text-align: center;
+	color: #383838;
 }
 #c-content .c-wrap .c-form .c-user,#c-content .c-wrap .c-form .c-password {
-    position: relative;
-    padding-bottom: 30px;
+	position: relative;
+	padding-bottom: 30px;
 }
 #c-content .c-wrap .c-form .c-code {
-    position: relative;
-    padding-bottom: 40px;
+	position: relative;
+	padding-bottom: 20px;
 }
 #c-content .c-wrap .c-form .c-user span,#c-content .c-wrap .c-form .c-password span,#c-content .c-wrap .c-form .c-code span{
-    position: absolute;
-    top: 0;
-    left:0;
-    width: 58px;
-    height: 48px;
+	position: absolute;
+	top: 0;
+	left:0;
+	width: 58px;
+	height: 48px;
 }
 #c-content .c-wrap .c-form .c-user span {
-    background:url(images/user.png) no-repeat center center;
+	background:url(images/user.png) no-repeat center center;
 }
 #c-content .c-wrap .c-form .c-password span {
-    background:url(images/password.png) no-repeat center center;
+	background:url(images/password.png) no-repeat center center;
 }
 #c-content .c-wrap .c-form .c-code span {
-    background:url(images/code.png) no-repeat center center;
+	background:url(images/code.png) no-repeat center center;
 }
 #c-content .c-wrap .c-form .c-user input,#c-content .c-wrap .c-form .c-password input {
-    padding-left: 58px;
-    width: 100%;
-    height: 50px;
-    line-height: 48px;
-    font-size: 15px;
-    color: #333;
-    border: 1px solid #e1e1e1;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    transition: all 0.3s;
+	padding-left: 58px;
+	width: 100%;
+	height: 50px;
+	line-height: 48px;
+	font-size: 15px;
+	color: #333;
+	border: 1px solid #e1e1e1;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	-o-transition: all 0.3s;
+	transition: all 0.3s;
 }
 #c-content .c-wrap .c-form .c-code input {
-    padding: 0 96px 0 58px;
-    width: 100%;
-    height: 50px;
-    line-height: 48px;
-    font-size: 15px;
-    color: #000;
-    border: 1px solid #e1e1e1;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    transition: all 0.3s;
-    text-transform:uppercase;
+	padding: 0 96px 0 58px;
+	width: 100%;
+	height: 50px;
+	line-height: 48px;
+	font-size: 15px;
+	color: #000;
+	border: 1px solid #e1e1e1;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	-o-transition: all 0.3s;
+	transition: all 0.3s;
+	text-transform:uppercase;
 }
 #c-content .c-wrap .c-form .c-code .c-img {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 96px;
-    height: 50px;
-    line-height: 50px;
-    text-align: center;
-    cursor: pointer;
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 96px;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	cursor: pointer;
 }
 #c-content .c-wrap .c-form .c-code .c-img img {
-    vertical-align: middle;
+	vertical-align: middle;
 }
 #c-content .c-wrap .c-form .c-code .c-img:before {
-    content:"";
-    display: block;
-    position: absolute;
-    top: 14px;
-    left:0;
-    height: 22px;
-    width: 1px;
-    background:#e1e1e1;
+	content:"";
+	display: block;
+	position: absolute;
+	top: 14px;
+	left:0;
+	height: 22px;
+	width: 1px;
+	background:#e1e1e1;
 }
 #c-content .c-wrap .c-form .c-btn button{
-    width: 100%;
-    height: 50px;
-    line-height: 50px;
-    text-align: center;
-    font-size: 15px;
-    color: #fff;
-    background:#383838;
-    cursor: pointer;
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    transition: all 0.3s;
+	width: 100%;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	font-size: 15px;
+	color: #fff;
+	background:#383838;
+	cursor: pointer;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	-o-transition: all 0.3s;
+	transition: all 0.3s;
 }
 #c-content .c-wrap .c-form .c-btn button:hover {
-    background: #222;
+	background: #222;
 }
 #c-content .c-wrap .c-form .c-user input:focus,#c-content .c-wrap .c-form .c-password input:focus,
 #c-content .c-wrap .c-form .c-code input:focus {
-    border-color: #383838;
+	border-color: #383838;
 }
 
 /*语言*/
 #c-language {
-    position: fixed;
-    z-index: 3;
-    top: 35px;
-    right: 50px;
-    height: 32px;
-    line-height: 32px;
-    font-size: 15px;
-    color: #383838;
-    background: #fff;
-    border-radius: 5px;
+	position: fixed;
+	z-index: 3;
+	top: 35px;
+	right: 50px;
+	height: 32px;
+	line-height: 32px;
+	font-size: 15px;
+	color: #383838;
+	background: #fff;
+	border-radius: 5px;
 }
 #c-language .c-select {
-    cursor: pointer;
-    box-shadow: 0 0 30px rgba(0,0,0,.1);
+	cursor: pointer;
+	box-shadow: 0 0 30px rgba(0,0,0,.1);
 }
 #c-language .c-select .c-text {
-    display: inline-block;
-    padding-left: 10px;
+	display: inline-block;
+	padding-left: 10px;
 }
 #c-language .c-select .c-triangle {
-    display: inline-block;
-    width: 32px;
-    height: 32px;
-    background: url(images/triangle.png) no-repeat center center;
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    transition: all 0.3s;
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	background: url(images/triangle.png) no-repeat center center;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	-o-transition: all 0.3s;
+	transition: all 0.3s;
 }
 #c-language .c-option {
-    display: none;
-    position: absolute;
-    top: 34px;
-    right: 0;
-    width: 100%;
-    background: #fff;
-    border-radius: 5px;
-    overflow: hidden;
-    box-shadow: 0 0 30px rgba(0,0,0,.1);
+	display: none;
+	position: absolute;
+	top: 34px;
+	right: 0;
+	width: 100%;
+	background: #fff;
+	border-radius: 5px;
+	overflow: hidden;
+	box-shadow: 0 0 30px rgba(0,0,0,.1);
 }
 #c-language .c-option a {
-    display: block;
-    padding: 0 10px;
-    color: #383838;
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    transition: all 0.3s;
+	display: block;
+	padding: 0 10px;
+	color: #383838;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	-o-transition: all 0.3s;
+	transition: all 0.3s;
 }
 #c-language .c-option a:hover {
-    background: #383838;
-    color: #fff;
+	background: #383838;
+	color: #fff;
 }
 #c-language.open .c-select .c-triangle {
-    -webkit-transform: rotate(180deg);
-    transform: rotate(180deg);
+	-webkit-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+
+.c-notout {
+	position: relative;
+	padding-bottom: 40px;
+}
+.c-notout input{
+	appearance:button;
+	width:20px;
+	height:20px;
 }

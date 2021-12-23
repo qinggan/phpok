@@ -8,6 +8,7 @@
  * @日期 2017年04月21日
 **/
 ;(function($){
+	var notice_obj;
 	$.phpok_list = {
 		set:function(id)
 		{
@@ -280,6 +281,21 @@
 				});
 			});
 		},
+		content_del:function(id)
+		{
+			$.dialog.confirm("确定要删除主题ID：<span class='red'>"+id+"</span> 的信息吗？<br />删除后是不能恢复的？",function(){
+				var url = get_url("list","del","id="+id);
+				$.phpok.json(url,function(rs){
+					if(rs.status == 'ok'){
+						$.dialog.tips(p_lang('主题删除成功'));
+						$("#list_"+id).remove();
+						return true;
+					}
+					$.dialog.alert(rs.content);
+					return false;
+				});
+			});
+		},
 		subcate:function()
 		{
 			var id = $("#cate_id").val();
@@ -315,6 +331,31 @@
 					return false;
 				});
 			});
+		},
+		preview:function(id,is_front)
+		{
+			if(is_front && is_front == 1){
+				$.phpok.open(webroot+"?id="+id);
+				return false;
+			}
+			var h = $(window).height() - 80;
+			$.phpok.json(get_url('list','preview','id='+id),function(rs){
+				if(!rs.status){
+					$.dialog.alert(rs.info);
+					return false;
+				}
+				if(notice_obj && typeof notice_obj == 'object'){
+					notice_obj.close();
+				}
+				notice_obj = $.dialog({
+					title: '主题_#'+id,
+					width: '300px', // 必须指定一个像素宽度值或者百分比，否则浏览器窗口改变可能导致artDialog收缩
+					left:'100%',
+					top:'100%',
+					padding:0,
+					content: '<div style="overflow:auto;height:'+h+'px;">'+rs.info+'</div>'
+				});
+			});
 		}
 	};
 
@@ -347,6 +388,11 @@
 		}).on('focus',function(){
 			$(this).select();
 		});
+		$("div[phpok-id=JS_LIST] tr").hover(function(){
+			$(this).find("div[name=list-content-btns]").show();
+		},function(){
+			$(this).find("div[name=list-content-btns]").hide();
+		})
 	});
 
 })(jQuery);

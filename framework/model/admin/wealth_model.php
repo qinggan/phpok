@@ -183,7 +183,7 @@ class wealth_model extends wealth_model_base
 
 	public function act_list($id='')
 	{
-		$alist = array('register'=>P_Lang('会员注册'),'login'=>P_Lang('会员登录'),'payment'=>P_Lang('购物付款'));
+		$alist = array('register'=>P_Lang('用户注册'),'login'=>P_Lang('用户登录'),'payment'=>P_Lang('购物付款'));
 		$alist['comment'] = P_Lang('评论文章');
 		$alist['post'] = P_Lang('发布文章');
 		$alist['content'] = P_Lang('阅读文章');

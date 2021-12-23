@@ -24,7 +24,7 @@ class email_control extends phpok_control
 	/**
 	 * 邮件发送
 	 * @参数 email 仅限管理员登录后可直接通过email来发送邮件
-	 * @参数 token 限前台使用，用于普通会员使用PHPOK服务器来发送邮件
+	 * @参数 token 限前台使用，用于普通用户使用PHPOK服务器来发送邮件
 	 * @参数 title 邮件标题
 	 * @参数 content 邮件内容，支持HTML
 	 * @参数 fullname 收件人姓名，留空使用Email中@的前半部分做名称

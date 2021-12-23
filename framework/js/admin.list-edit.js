@@ -95,10 +95,20 @@ var autosave_handle;
 			});
 		},
 
+		save_not_close:function(obj)
+		{
+			return this.save(false);
+		},
+
+		save2close:function(obj)
+		{
+			return this.save(true);
+		},
+
 		/**
 		 * 保存数据
 		**/
-		save:function()
+		save:function(close)
 		{
 			var loading_action;
 			var id = $("#id").val();
@@ -109,46 +119,40 @@ var autosave_handle;
 				'type':'post',
 				'dataType':'json',
 				'beforeSubmit':function(){
-					loading_action = $.dialog.tips('<img src="images/loading.gif" border="0" align="absmiddle" /> '+p_lang('正在保存数据，请稍候…')).time(30).lock();
+					loading_action = $.dialog.tips('<img src="images/loading.gif" border="0" align="absmiddle" /> '+p_lang('正在保存数据，请稍候…')).time(3000).lock();
 				},
 				'success':function(rs){
 					if(loading_action){
 						loading_action.close();
 					}
-					if(rs.status == 'ok'){
-						var url = get_url('list','action','id='+$("#pid").val());
-						if(pcate>0){
-							var cateid = $("#cate_id").val();
-							url += "&keywords[cateid]="+cateid;
-						}
-						if(id){
-							$.dialog.alert(p_lang('内容信息修改成功'),function(){
-								$.phpok.message('pendding');
-								$.admin.reload(url);
-							},'succeed');
-							return true;
-						}
-						$.dialog.through({
-							'icon':'succeed',
-							'content':p_lang('内容添加操作成功，请选择继续添加或返回列表'),
-							'ok':function(){
-								$.phpok.message('pendding');
-								$.admin.reload(url);
-								$.phpok.reload();
-							},
-							'okVal':p_lang('继续添加'),
-							'cancel':function(){
-								$.phpok.message('pendding');
-								$.admin.reload(url);
-								$.admin.close(url);
-							},
-							'cancelVal':p_lang('关闭窗口'),
-							'lock':true
-						});
-						return true;
-
+					if(rs.status != 'ok'){
+						$.dialog.alert(rs.content);
+						return false;
 					}
-					$.dialog.alert(rs.content);
+					var url = get_url('list','action','id='+$("#pid").val());
+					if(pcate>0){
+						var cateid = $("#cate_id").val();
+						url += "&keywords[cateid]="+cateid;
+					}
+					if(id){
+						$.dialog.tips(p_lang('内容信息修改成功'));
+						if(close){
+							$.admin.reload(url);
+							$.admin.close(url);
+						}
+						return true;
+					}
+					$.dialog.tips(p_lang('内容信息添加成功'));
+					if(close){
+						$.admin.reload(url);
+						$.admin.close(url);
+						return true;
+					}
+					$.admin.reload(url);
+					var old_title = $.admin.title();
+					var tmp = old_title.split("_");
+					$.admin.title(tmp[0]+"_编辑_#"+rs.content);
+					$.phpok.go(get_url('list','edit','id='+rs.content));
 					return true;
 				}
 			});

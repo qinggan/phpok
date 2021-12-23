@@ -1,11 +1,10 @@
 <input type="hidden" name="ext_form_id" id="ext_form_id" value="option_list,put_order,ext_select,is_add" />
-<div class="table">
-	<div class="title">
-		{lang单选属性列表}
-		<span class="note">{lang请选择单选的来源}</span>
-	</div>
-	<div class="content">
-		<select name="option_list" id="option_list" style="width:100%;">
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang数据来源：}
+	</label>
+	<div class="layui-input-inline default-auto">
+		<select name="option_list" id="option_list">
 			<option value="">{lang请选择…}</option>
 			<optgroup label="{lang表单}">
 				<!-- foreach($opt_list AS $key=>$value) -->
@@ -60,50 +59,45 @@
 			</optgroup>
 			<!-- /if -->
 			<!-- /loop -->
-			<optgroup label="{lang会员相关}">
-				<option value="user:grouplist"{if $rs.option_list == "user:grouplist"} selected{/if}>{lang会员组}</option>
+			<optgroup label="{lang用户相关}">
+				<option value="user:grouplist"{if $rs.option_list == "user:grouplist"} selected{/if}>{lang用户组}</option>
 			</optgroup>
 		</select>
 	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang自定义}
-		<span class="note">{lang即支持用户创建新的数据}</span>
-	</div>
-	<div class="content">
-		<table>
-		<tr>
-			<td><label><input type="radio" name="is_add" value="0"{if !$rs.is_add} checked {/if} /> {lang禁止}</label></td>
-			<td>&nbsp; &nbsp;</td>
-			<td><label><input type="radio" name="is_add" value="1"{if $rs.is_add} checked {/if} /> {lang允许}</label></td>
-			<td></td>
-		</tr>
-		</table>
+	<div class="layui-form-mid">
+		{lang请选择单选的来源}
 	</div>
 </div>
-<div class="table">
-	<div class="title">
-		{lang单选内容}
-		<span class="note">{lang仅限于单选属性列表为空的情况下有效，这里一行一个值，复杂操作请到表单选项里维护}</span>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang是否新建：}
+	</label>
+	<div class="layui-input-inline auto">
+		<input type="radio" name="is_add" value="0"{if !$rs.is_add} checked {/if} title="{lang禁止}" />
+		<input type="radio" name="is_add" value="1"{if $rs.is_add} checked {/if} title="{lang允许}" /> 
 	</div>
-	<div class="content">
-		<textarea name="ext_select" style="width:99%;height:180px;">{$rs.ext_select}</textarea>
-	</div>
-</div>
-<div class="table">
-	<div class="title">
-		{lang排列方式}
-		<span class="note"></span>
-	</div>
-	<div class="content">
-		<table>
-		<tr>
-			<td><label><input type="radio" name="put_order" value="0"{if !$rs.put_order} checked {/if} /> {lang横向排列}</label></td>
-			<td>&nbsp; &nbsp;</td>
-			<td><label><input type="radio" name="put_order" value="1"{if $rs.put_order} checked {/if} /> {lang纵向排列}</label></td>
-			<td></td>
-		</tr>
-		</table>
+	<div class="layui-form-mid">
+		{lang即支持用户创建新的数据}
 	</div>
 </div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang自定义：}
+	</label>
+	<div class="layui-input-block gray" style="line-height:38px;">{lang仅限于单选属性列表为空的情况下有效，一行一值，复杂请到表单选项里维护}</div>
+	<div class="layui-input-block">
+		<textarea name="ext_select" class="layui-textarea" style="height:180px;">{$rs.ext_select}</textarea>
+	</div>
+</div>
+
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang排列方式：}
+	</label>
+	<div class="layui-input-inline default-auto">
+		<input type="radio" name="put_order" value="0"{if !$rs.put_order} checked {/if} title="{lang横向排列}" />
+		<input type="radio" name="put_order" value="1"{if $rs.put_order} checked {/if} title="{lang纵向排列}" /> 
+	</div>
+</div>
+
+

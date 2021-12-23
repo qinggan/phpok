@@ -21,9 +21,38 @@ function G($id,$type='safe')
 	return $GLOBALS['app']->get($id,$type);
 }
 
+//调用生成器
+function Gen($string = '')
+{
+	if(!$string){
+		return array();
+	}
+	$list = explode("/",$string);
+	if(!isset($list[1]) || !isset($list[2])){
+		return array();
+	}
+	global $app;
+	$tmp = array('model','lib');
+	if(!in_array($list[0],$tmp)){
+		return array();
+	}
+	if(isset($list[5])){
+		return $app->$list[0]($list[1])->$list[2]($list[3],$list[4],$list[5]);
+	}
+	if(isset($list[4])){
+		return $app->$list[0]($list[1])->$list[2]($list[3],$list[4]);
+	}
+	if(isset($list[3])){
+		return $app->$list[0]($list[1])->$list[2]($list[3]);
+	}
+	return $app->$list[0]($list[1])->$list[2]();
+}
+
 function str_rand($length=10)//随机字符，参数是长度
 {
-	if(!$length) return false;
+	if(!$length){
+		return false;
+	}
 	return $GLOBALS['app']->lib('common')->str_rand($length);
 }
 
@@ -361,7 +390,7 @@ function ext_save($myid,$is_add=false,$save_id="")
 		if(!$tmplist){
 			return false;
 		}
-		foreach($tmplist AS $key=>$value){
+		foreach($tmplist as $key=>$value){
 			$val = ext_value($value);
 			$array = array();
 			$array["module"] = $save_id ? $save_id : $myid;
@@ -391,8 +420,7 @@ function ext_save($myid,$is_add=false,$save_id="")
 		if(!$tmplist){
 			return false;
 		}
-		foreach($tmplist AS $key=>$value)
-		{
+		foreach($tmplist as $key=>$value){
 			$val = ext_value($value);
 			if($value["form_type"] == "password"){
 				$tmp = $value["ext"] ? unserialize($value["ext"]) : "";
@@ -590,7 +618,7 @@ function content_format($value,$type="ext")
 				$tmp = $value["content"]["id"];
 			}else{
 				$tmp = array();
-				foreach($value["content"] AS $k=>$v){
+				foreach($value["content"] as $k=>$v){
 					$tmp[] = $v["id"];
 				}
 				$tmp = implode(",",$tmp);
@@ -626,20 +654,20 @@ function phpok_filesize($size,$is_file=true)
 function phpok_user_login($id,$pass="",$field='id')
 {
 	if(!$id){
-		return P_Lang('未指定会员账号或Email或手机号或ID号');
+		return P_Lang('未指定用户账号或Email或手机号或ID号');
 	}
 	$rs = $GLOBALS['app']->model('user')->get_one($id,$field);
 	if(!$rs){
-		return P_Lang('会员信息不存在');
+		return P_Lang('用户信息不存在');
 	}
 	if(!$rs["status"]){
-		return P_Lang('会员账号未审核');
+		return P_Lang('用户账号未审核');
 	}
 	if($rs['status'] == '2'){
-		return P_Lang('会员账号被锁定，请联系管理员');
+		return P_Lang('用户账号被锁定，请联系管理员');
 	}
 	if($pass && !password_check($pass,$rs["pass"])){
-		return P_Lang('会员账号验证不通过，密码不正确');
+		return P_Lang('用户账号验证不通过，密码不正确');
 	}
 	$_SESSION["user_id"] = $id;
 	$_SESSION["user_gid"] = $rs['group_id'];
@@ -653,8 +681,7 @@ function phpok_ext_info($module,$extc=true)
 	$rslist = $GLOBALS['app']->model('ext')->ext_all($module,true);
 	if(!$rslist) return false;
 	$rs = array();
-	foreach($rslist AS $key=>$value)
-	{
+	foreach($rslist as $key=>$value){
 		$rs[$value["identifier"]] = content_format($value);
 	}
 	return $rs;
@@ -671,10 +698,8 @@ function phpok_ext_list($mid,$tid=0)
 	$GLOBALS['app']->model("list");
 	$infolist = $GLOBALS['app']->model('list')->get_ext_list($mid,$tid);
 	if(!$infolist) $infolist = array();
-	foreach($idlist AS $key=>$value)
-	{
-		foreach($infolist AS $k=>$v)
-		{
+	foreach($idlist as $key=>$value){
+		foreach($infolist as $k=>$v){
 			unset($v["site_id"],$v["project_id"],$v["cate_id"],$v["id"]);
 			if($v[$value])
 			{
@@ -733,6 +758,12 @@ function phpok_decode($string,$id="")
 	return $t[$id];
 }
 
+function phpok_config($id='')
+{
+	global $app;
+	return $app->model('site')->system($id);
+}
+
 //WEB前台通用模板，如果您的程序比较复杂，请自己写Head
 function tpl_head($array=array())
 {
@@ -747,7 +778,7 @@ function tpl_head($array=array())
 	$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate" />'."\n\t";
 	$html .= '<meta http-equiv="Pragma" content="no-cache" />'."\n\t";
 	$html .= '<meta http-equiv="Expires" content="-1" />'."\n\t";
-	$html .= '<meta name="renderer" content="webkit">'."\n\t";
+	$html .= '<meta name="renderer" content="webkit" />'."\n\t";
 	if($app->license == 'LGPL'){
 		$html .= '<meta name="author" content="phpok,admin@phpok.com" />'."\n\t";
 	}
@@ -761,7 +792,7 @@ function tpl_head($array=array())
 		$app->site['meta'] = trim(str_replace(array("\t","\r"),"",$app->site['meta']));
 		if($app->site['meta']){
 			$t = explode("\n",$app->site['meta']);
-			foreach($t AS $key=>$value){
+			foreach($t as $key=>$value){
 				$html .= $value."\n\t";
 			}
 		}
@@ -843,7 +874,7 @@ function tpl_head($array=array())
 	}
 	if($array["css"]){
 		$tmp = explode(",",$array['css']);
-		foreach($tmp AS $key=>$value){
+		foreach($tmp as $key=>$value){
 			$value = trim($value);
 			if(!$value){
 				continue;
@@ -882,7 +913,7 @@ function tpl_head($array=array())
 		$tmp = explode(",",$array['js']);
 		$tpldir = $app->tpl->dir_tpl;
 		$tpldir_length = strlen($tpldir);
-		foreach($tmp AS $key=>$value){
+		foreach($tmp as $key=>$value){
 			$value = trim($value);
 			if(!$value){
 				continue;
@@ -1000,23 +1031,7 @@ function phpok_log($info='',$in_db=true)
 		$info = print_r($info,true);
 	}
 	$info = trim($info);
-	$date = date("Ymd",$app->time);
-	if(!file_exists($app->dir_data.'log/log'.$date.'.php')){
-		file_put_contents($app->dir_data.'log/log'.$date.'.php',"<?php exit();?>\n");
-	}
-	$handle = fopen($app->dir_data.'log/log'.$date.'.php','ab');
-	$info2 = '---start---Time:'.date("H:i:s",$app->time).'---------------------'."\n";
-	$info2.= 'APP_ID: '.$app->app_id."\n";
-	$info2.= 'CTRL_ID: '.$app->ctrl."\n";
-	$info2.= 'FUNC_ID: '.$app->func."\n";
-	$info2.= 'INFO:'."\n";
-	$info2.= $info."\n";
-	$info2.= '---end---'."\n";
-	fwrite($handle,$info2);
-	fclose($handle);
-	if($in_db){
-		$app->model('log')->save($info,true);
-	}
+	$app->model('log')->save($info,true);
 	return true;
 }
 
@@ -1029,7 +1044,7 @@ function phpok_check_email($email)
 }
 
 /**
- * 获取会员组信息
+ * 获取用户组信息
 **/
 function user_group($gid)
 {

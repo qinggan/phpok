@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员登录，基于API请求
+ * 用户登录，基于API请求
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -66,16 +66,17 @@ class login_control extends phpok_control
 		if(!$data){
 			$this->error($this->model('vcode')->error_info());
 		}
-		$this->session->assign('user_id',$rs['id']);
-		$this->session->assign('user_gid',$rs['group_id']);
-		$this->session->assign('user_name',$rs['user']);
-		$this->model('wealth')->login($rs['id'],P_Lang('会员登录'));
-		$array = array('user_id'=>$rs['id'],'user_name'=>$rs['user'],'user_gid'=>$rs['group_id']);
+		$array = $this->model('user')->login($rs,true);
+		if(!$array){
+			$this->error(P_Lang('登录失败'));
+		}
+		$this->plugin('plugin-login-email',$user_rs['id']);
+		$this->model('vcode')->delete();
 		$this->success($array);
 	}
 
 	/**
-	 * 会员登录别名
+	 * 用户登录别名
 	**/
 	public function index_f()
 	{
@@ -139,10 +140,10 @@ class login_control extends phpok_control
 			$this->error(P_Lang('用户信息不存在'));
 		}
 		if(!$user_rs['status']){
-			$this->error(P_Lang('会员账号审核中，暂时不能使用取回密码功能'));
+			$this->error(P_Lang('用户账号审核中，暂时不能使用取回密码功能'));
 		}
 		if($user_rs['status'] == '2'){
-			$this->error(P_Lang('会员账号被管理员锁定，不能使用取回密码功能，请联系管理员'));
+			$this->error(P_Lang('用户账号被管理员锁定，不能使用取回密码功能，请联系管理员'));
 		}
 		if(!$vcode){
 			$this->error(P_Lang('验证码不能为空'));
@@ -169,15 +170,15 @@ class login_control extends phpok_control
 	}
 
 	/**
-	 * 会员登录接口
+	 * 用户登录接口
 	 * @参数 _chkcode 验证码
-	 * @参数 user 会员账号/邮箱/手机号
-	 * @参数 pass 会员密码
+	 * @参数 user 用户账号/邮箱/手机号
+	 * @参数 pass 用户密码
 	**/
 	public function save_f()
 	{
 		if($this->session->val('user_id')){
-			$this->error(P_Lang('您已是本站会员，不需要再次登录'));
+			$this->error(P_Lang('您已是本站用户，不需要再次登录'));
 		}
 		if($this->model('site')->vcode('system','login')){
 			$code = $this->get('_chkcode');
@@ -208,28 +209,31 @@ class login_control extends phpok_control
 			$user_rs = $this->model('user')->get_one($user,'user');
 		}
 		if(!$user_rs){
-			$this->error(P_Lang('会员信息不存在'));
+			$this->error(P_Lang('用户信息不存在'));
 		}
 		if(!$user_rs['status']){
-			$this->error(P_Lang('会员审核中，暂时不能登录'));
+			$this->error(P_Lang('用户审核中，暂时不能登录'));
 		}
 		if($user_rs['status'] == '2'){
-			$this->error(P_Lang('会员被管理员锁定，请联系管理员解锁'));
+			$this->error(P_Lang('用户被管理员锁定，请联系管理员解锁'));
 		}
 		if(!password_check($pass,$user_rs["pass"])){
 			$this->error(P_Lang('登录密码不正确'));
 		}
-		$this->session->assign('user_id',$user_rs['id']);
-		$this->session->assign('user_gid',$user_rs['group_id']);
-		$this->session->assign('user_name',$user_rs['user']);
-		$this->model('wealth')->login($user_rs['id'],P_Lang('会员登录'));
+		$device = $this->get('device');
+		if(!$device){
+			$device = 'web';
+		}
+		$array = $this->model('user')->login($user_rs,true,$device);
+		if(!$array){
+			$this->error(P_Lang('登录失败'));
+		}
 		$_back = $this->get('_back');
 		if(!$_back){
 			$_back = $this->url('usercp','','www',true);
 		}
-		//增加节点
 		$this->plugin('plugin-login-save',$user_rs['id']);
-		$this->success(array('user_id'=>$user_rs['id'],'user_name'=>$user_rs['user'],'user_gid'=>$user_rs['group_id']),$_back);
+		$this->success($array,$_back);
 	}
 
 	/**
@@ -277,11 +281,10 @@ class login_control extends phpok_control
 		if(!$data){
 			$this->error($this->model('vcode')->error_info());
 		}
-		$this->session->assign('user_id',$rs['id']);
-		$this->session->assign('user_gid',$rs['group_id']);
-		$this->session->assign('user_name',$rs['user']);
-		$this->model('wealth')->login($rs['id'],P_Lang('会员登录'));
-		$array = array('user_id'=>$rs['id'],'user_name'=>$rs['user'],'user_gid'=>$rs['group_id']);
+		$array = $this->model('user')->login($rs,true);
+		if(!$array){
+			$this->error(P_Lang('用户登录失败'));
+		}
 		$this->model('vcode')->delete();
 		$this->success($array);
 	}
@@ -291,44 +294,80 @@ class login_control extends phpok_control
 	**/
 	public function status_f()
 	{
-		if($this->session->val('user_id')){
-			$array = array('user_id'=>$this->session->val('user_id'));
-			$array['user_name'] = $this->session->val('user_name');
-			$array['user_gid'] = $this->session->val('user_gid');
-			$this->success($array);
+		$device = $this->get('device');
+		if(!$device){
+			$device = 'web';
 		}
-		$this->error(P_Lang('会员未登录'));
+		if($this->session->val('user_id')){
+			$data = $this->model('user')->login($this->session->val('user_id'),true,$device);
+			$this->success($data);
+		}
+		$this->error(P_Lang('用户未登录'));
 	}
 
 	//基于 Token 实现用户登录
 	public function token_f()
 	{
-		$token = $this->get('data');
-		if(!$token){
-			if($this->session->val('user_id') && $this->site['api_code']){
-				$this->lib('token')->keyid($this->site['api_code']);
-				$user = $this->model('user')->get_one($this->session->val('user_id'));
-				$data = array('user_id'=>$user['id'],'user_name'=>$user['user'],'user_regtime'=>$user['regtime']);
-				$token = $this->lib('token')->encode($data);
-				$this->success($token);
+		$this->error(P_Lang('该功能已下线'));
+	}
+
+	/**
+	 * 用户自动登录，主要是通过验签码，实现单点登录
+	 * @参数 user 用户账号
+	 * @参数 id 用户ID号，账号或ID号必须有一个值不能为空
+	 * @参数 code 验签码，当验签码不一致时，该账号该用户自动退出
+	**/
+	public function auto_f()
+	{
+		$code = $this->get('code');
+		if(!$code){
+			$this->error('验证码不能为空');
+		}
+		$device = $this->get('device');
+		if(!$device){
+			$device = 'web';
+		}
+		if($this->session->val('user_id')){
+			$user = $this->model('user')->get_one($this->session->val('user_id'),'id',false,false);
+			if(!$user){
+				$this->model('user')->logout();
+				$this->error(P_Lang('未找到用户信息，用户退出'));
 			}
-			$this->error('参数不完整');
+			$auto = $this->model('user')->autologin_info($user['id'],$device);
+			if(!$auto){
+				$this->model('user')->logout();
+				$this->error(P_Lang('未找到密钥信息，用户退出'));
+			}
+			$md5 = md5($user['user'].$user['pass'].$auto['code']);
+			if($code != $md5){
+				$this->model('user')->logout();
+				$this->error(P_Lang('您已经在其他平台登录，用户退出'));
+			}
+			$data = $this->model('user')->login($user);
+			$this->success($data);
 		}
-		if(!$this->site['api_code']){
-			$this->error('站点未配置密钥');
+		$user = $this->get('user');
+		$id = $this->get('id','int');
+		if(!$user && !$id && !$device){
+			$this->error(P_Lang('未指定账号或用户ID'));
 		}
-		$this->lib('token')->keyid($this->site['api_code']);
-		$info = $this->lib('token')->decode($token);
-		if(!$info || !$info['user_id'] || !$info['user_name'] || !$info['user_regtime']){
-			$this->error('验证失败');
+		if($id){
+			$rs = $this->model('user')->get_one($id,'id',false,false);
+		}else{
+			$rs = $this->model('user')->get_one($user,'user',false,false);
 		}
-		$user = $this->model('user')->get_one($info['user_id']);
-		$this->session->assign('user_id',$user['id']);
-		$this->session->assign('user_name',$user['user']);
-		$this->session->assign('user_gid',$user['group_id']);
-		$this->lib('token')->expiry(2592000);//超时处理
-		$data = array('user_id'=>$user['id'],'user_name'=>$user['user'],'user_regtime'=>$user['regtime']);
-		$token = $this->lib('token')->encode($data);
-		$this->success($token);
+		if(!$rs){
+			$this->error(P_Lang('用户信息不存在'));
+		}
+		$auto = $this->model('user')->autologin_info($rs['id'],$device);
+		if(!$auto){
+			$this->error(P_Lang('未找到登录信息'));
+		}
+		$md5 = md5($user['user'].$user['pass'].$auto['code']);
+		if($code != $md5){
+			$this->error(P_Lang('密钥不匹配'));
+		}
+		$data = $this->model('user')->login($user,true,$device);
+		$this->success($data);//生成新的密串，需要客户端将密串保留
 	}
 }

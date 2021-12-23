@@ -302,6 +302,23 @@
 				return false;
 			}
 			return true;
+		},
+		system:function(obj)
+		{
+			$(obj).ajaxSubmit({
+				'url':get_url('all','system_save'),
+				'type':'post',
+				'dataType':'json',
+				'success':function(rs){
+					if(rs.status){
+						$.dialog.tips('数据保存成功');
+						return true;
+					}
+					$.dialog.alert(rs.info);
+					return false;
+				}
+			});
+			return false;
 		}
 	};
 	$(document).ready(function(){

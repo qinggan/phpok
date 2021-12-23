@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员退出接口
+ * 用户退出接口
  * @package phpok\api
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司

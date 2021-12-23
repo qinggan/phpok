@@ -1,7 +1,6 @@
 <?php
 /**
  * 文件操作类
- * @package phpok\libs
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com

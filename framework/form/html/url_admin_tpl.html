@@ -17,6 +17,6 @@ $(document).ready(function(){
 <div class="layui-btn-group" style="margin-top:10px;">
     <input type="button" value="首页" class="layui-btn layui-btn-sm" onclick="$('#{$_rs.identifier}_default').val('index.php');$('#{$_rs.identifier}_rewrite').val('index.html');" />
 	<input type="button" value="网址库" class="layui-btn layui-btn-sm" id="_phpok_button_url_{$_rs.identifier}" />
-	<input type="button" value="无链接" class="layui-btn layui-btn-sm" onclick="$('#{$_rs.identifier}_default').val('javascript:;void(0)');$('#{$_rs.identifier}_rewrite').val('javascript:;void(0)');" />
+	<input type="button" value="无链接" class="layui-btn layui-btn-sm" onclick="$('#{$_rs.identifier}_default').val('javascript:void(0);');$('#{$_rs.identifier}_rewrite').val('javascript:void(0);');" />
 	<input type="button" value="清除" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$('#{$_rs.identifier}_default').val('');$('#{$_rs.identifier}_rewrite').val('');" />
 </div>

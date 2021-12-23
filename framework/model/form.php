@@ -172,7 +172,7 @@ class form_model_base extends phpok_model
 		$keywords = str_replace($this->space_array(),'|',$keywords);
 		$tmplist = explode("|",$keywords);
 		$tmp_condition = array();
-		//会员信息检索
+		//用户信息检索
 		if($rs['form_type'] == 'user'){
 			foreach($tmplist as $key=>$value){
 				if(!$value || !trim($value)){
@@ -339,7 +339,12 @@ class form_model_base extends phpok_model
 					}
 				}
 				$sql = "SELECT val FROM ".$this->db->prefix."opt WHERE group_id='".$tmp[1]."' AND (".implode(" OR ",$tmp_condition).")";
-				$condition = $ext.$rs['identifier']." IN(".$sql.")";
+				$condition = $ext.$rs['identifier']." IN(".$sql.") ";
+				if($jz_search){
+					$condition .= " OR ".$ext.$rs['identifier']."='".$value."'";
+				}else{
+					$condition .= " OR ".$ext.$rs['identifier']." LIKE '%".$value."%'";
+				}
 				if($rs['form_type'] == 'checkbox' || ($rs['form_type'] == 'select' && $rs['is_multiple'])){
 					$condition = $ext.$rs['identifier']." LIKE CONCAT('%',".($sql).",'%')";
 				}

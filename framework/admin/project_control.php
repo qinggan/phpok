@@ -1,7 +1,6 @@
 <?php
 /**
  * 项目管理
- * @package phpok\admin
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -49,7 +48,7 @@ class project_control extends phpok_control
 	public function set_f()
 	{
 		if(!$this->popedom["set"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		$idstring = "";
@@ -61,6 +60,8 @@ class project_control extends phpok_control
 			}
 			$this->assign("rs",$rs);
 			$ext_module = "project-".$id;
+			$attrs = $this->model('project')->attr_project($id,true,$this->session->val('admin_site_id'));
+			$this->assign('attrs',$attrs);
 		}else{
 			$rs = array();
 			$ext_module = "add-project";
@@ -108,13 +109,13 @@ class project_control extends phpok_control
 				$this->assign("popedom_list2",$m_plist);
 			}
 		}
-		$note_content = form_edit('admin_note',$rs['admin_note'],"editor","btn[image]=1&height=180");
+		$note_content = form_edit('admin_note',$rs['admin_note'],"editor","btns[image]=1&height=180");
 		$this->assign('note_content',$note_content);
 		
 		$grouplist = $this->model('usergroup')->get_all("status=1");
 		if($grouplist){
 			foreach($grouplist as $key=>$value){
-				$tmp_popedom = array('read'=>false,'post'=>false,'reply'=>false,'post1'=>false,'reply1'=>false);
+				$tmp_popedom = array('read'=>false,'usercp'=>false,'post'=>false,'reply'=>false,'post1'=>false,'reply1'=>false);
 				$tmp = $value['popedom'] ? unserialize($value['popedom']) : false;
 				if($tmp && $tmp[$this->session->val('admin_site_id')]){
 					$tmp = $tmp[$this->session->val('admin_site_id')];
@@ -139,6 +140,12 @@ class project_control extends phpok_control
 
 		$tag_config = $this->model('tag')->config();
 		$this->assign('tag_config',$tag_config);
+		$groups = $this->model('project')->group();
+		$this->assign('groups',$groups);
+		$attrlist = $this->model('project')->attr_all($this->session->val('admin_site_id'));
+		$this->assign('attrlist',$attrlist);
+		
+		
 		$this->view("project_set");
 	}
 
@@ -241,11 +248,11 @@ class project_control extends phpok_control
 	 * @参数 comment_status 是否启用评论，启用后需要配置前台权限
 	 * @参数 post_tpl 发布模板，未定义将使用 标识_post 来替代，如果找不到，将会报错
 	 * @参数 etpl_admin 发布通知管理员的邮件模板
-	 * @参数 etpl_user 发布通知会员的邮件模板
+	 * @参数 etpl_user 发布通知用户的邮件模板
 	 * @参数 etpl_comment_admin 评论通知管理员
-	 * @参数 etpl_comment_user 评论通知会员
+	 * @参数 etpl_comment_user 评论通知用户
 	 * @参数 is_attr 是否启用主题属性，主题属性配置在 _data/xml/attr.xml 里
-	 * @参数 is_userid 主题是否绑定会员
+	 * @参数 is_userid 主题是否绑定用户
 	 * @参数 is_tpl_content 是否允许主题单独绑定模板
 	 * @参数 is_seo 是否启用主题自定义SEO，未启用将使用 分类SEO > 项目SEO > 全局SEO
 	 * @参数 is_identifier 是否启用自定义标识
@@ -338,11 +345,22 @@ class project_control extends phpok_control
 		$array['is_identifier'] = $this->get('is_identifier','int');
 		$array['tag'] = $this->get('tag');
 		$array['biz_attr'] = $this->get('biz_attr');
+		$array['biz_service'] = $this->get('biz_service','int');
+		$array['world_location'] = $this->get('world_location','int');
 		$array['freight'] = $this->get('freight');
 		$array['list_fields'] = $this->get('list_fields');
 		$array['style'] = $this->get('style');
 		$array['limit_similar'] = $this->get('limit_similar','int');
 		$array['limit_times'] = $this->get('limit_times','int');
+		$array['group_id'] = $this->get('group_id');//前台用户组
+		$array['filter_status'] = $this->get('filter_status','int');
+		$array['filter_cate_status'] = $this->get('filter_cate_status','int');
+		$array['filter_cate'] = $this->get('filter_cate');
+		$array['filter_price'] = $this->get('filter_price','int');
+		$array['filter_price_title'] = $this->get('filter_price_title');
+		$array['filter_price_info'] = $this->get('filter_price_info');
+		$array['user_alias'] = $this->get('user_alias');
+		$array['user_note'] = $this->get('user_note');
 		$ok_url = $this->url("project");
 		$c_rs = $this->model('sysmenu')->get_one_condition("appfile='list' AND parent_id>0");
 		$gid = $c_rs["id"];
@@ -359,7 +377,7 @@ class project_control extends phpok_control
 				$tlist = array();
 				$newlist = $this->model('popedom')->get_all("id IN(".$str.")",false,false);
 				if($newlist){
-					foreach($newlist AS $key=>$value){
+					foreach($newlist as $key=>$value){
 						$tmp_condition = "pid='".$id."' AND gid='".$gid."' AND identifier='".$value["identifier"]."'";
 						$tmp = $this->model('popedom')->get_one_condition($tmp_condition);
 						if(!$tmp){
@@ -372,7 +390,7 @@ class project_control extends phpok_control
 					}
 					$alist = $this->model('popedom')->get_all("gid='".$gid."' AND pid='".$id."'",false,false);
 					if($alist){
-						foreach($alist AS $key=>$value){
+						foreach($alist as $key=>$value){
 							if(!in_array($value["identifier"],$tlist)){
 								$this->model('popedom')->delete($value["id"]);
 							}
@@ -405,7 +423,37 @@ class project_control extends phpok_control
 		}
 		$this->_save_user_group($id);
 		$this->_save_tag($id);
+		$this->_save_attr($id,$array['is_attr']);
 		$this->success();
+	}
+
+	private function _save_attr($id,$attr=true)
+	{
+		$xmlfile = $this->dir_data.'xml/attr-'.$this->session->val('admin_site_id').'-'.$id.'.xml';
+		if(!$attr && file_exists($xmlfile)){
+			$this->lib('file')->rm($xmlfile);
+			return true;
+		}
+		if(!$attr){
+			return true;
+		}
+		$attrs = $this->get('attrs');
+		if(!$attrs && file_exists($xmlfile)){
+			$this->lib('file')->rm($xmlfile);
+			return true;
+		}
+		if(!$attrs){
+			return true;
+		}
+		$attrlist = $this->model('project')->attr_all($this->session->val('admin_site_id'));
+		$alist = array();
+		foreach($attrlist as $key=>$value){
+			if(in_array($key,$attrs)){
+				$alist[$key] = $value;
+			}
+		}
+		$this->lib('xml')->save($alist,$xmlfile);
+		return true;
 	}
 
 	/**
@@ -421,7 +469,7 @@ class project_control extends phpok_control
 	}
 
 	/**
-	 * 更新前台会员及游客权限，更新每个项目对应的前台会员或游客的权限
+	 * 更新前台用户及游客权限，更新每个项目对应的前台用户或游客的权限
 	 * @参数 $id，项目ID
 	 * @返回 true或false
 	**/
@@ -431,7 +479,7 @@ class project_control extends phpok_control
 		if(!$grouplist){
 			return false;
 		}
-		$tmp_popedom = array('read','post','reply','post1','reply1');
+		$tmp_popedom = array('read','usercp','post','reply','post1','reply1');
 		foreach($grouplist as $key=>$value){
 			$tmp = false;
 			$plist = $value['popedom'] ? unserialize($value['popedom']) : false;
@@ -879,5 +927,68 @@ class project_control extends phpok_control
 		$this->lib('form')->cssjs(array('form_type'=>'upload'));
 		$this->addjs('js/webuploader/admin.upload.js');
 		$this->view('project_icolist');
+	}
+
+	public function group_f()
+	{
+		if(!$this->popedom['set']){
+			$this->error(P_Lang('您没有权限执行导航组编辑操作'));
+		}
+		$rslist = $this->model('project')->group();
+		$this->assign('rslist',$rslist);
+		$this->assign('addkey','ext'.rand(1,9).str_pad(''.count($rslist),3,'0',STR_PAD_LEFT));
+		$this->view('project_group');
+	}
+
+	public function group_save_f()
+	{
+		if(!$this->popedom['set']){
+			$this->error(P_Lang('您没有权限执行导航组编辑操作'));
+		}
+		$rslist = $this->model('project')->group();
+		$id = $this->get('id','system');
+		if(!$id){
+			$this->error(P_Lang('标识不符合系统要求，仅限字母，数字及中划线，且必须字段开头'));
+		}
+		$title = $this->get('title');
+		if(!$title){
+			$this->error(P_Lang('名称不能为空'));
+		}
+		$act = $this->get('act');
+		if($act == 'add' && $rslist[$id]){
+			$this->error(P_Lang('异常，标识已存在'));
+		}
+		$rslist[$id] = $title;
+		$this->model('project')->group($rslist);
+		$this->success();
+	}
+
+	public function group_del_f()
+	{
+		if(!$this->popedom['set']){
+			$this->error(P_Lang('您没有权限执行导航组编辑操作'));
+		}
+		$rslist = $this->model('project')->group();
+		$id = $this->get('id','system');
+		if(!$id){
+			$this->error(P_Lang('标识不符合系统要求，仅限字母，数字及中划线，且必须字段开头'));
+		}
+		if($id == 'default'){
+			$this->error(P_Lang('默认标识 default 不支持删除'));
+		}
+		if(isset($rslist[$id])){
+			unset($rslist[$id]);
+		}
+		$list = $this->model('project')->group_projects($this->session->val('admin_site_id'));
+		if($list){
+			foreach($list as $key=>$value){
+				if($value['group_id'] == $id){
+					$data = array('group_id'=>'default');
+					$this->model('project')->update($data,$value['id']);
+				}
+			}
+		}
+		$this->model('project')->group($rslist);
+		$this->success();
 	}
 }

@@ -22,6 +22,8 @@
 			<th class="w33">{lang状态}</th>
 			<th>{lang菜单名称}</th>
 			<th>{lang目标链接}</th>
+			<th>{lang图片图标}</th>
+			<th>{lang字体图标}</th>
 			<th>{lang打开方式}</th>
 			<th>{lang限制}</th>
 			<th class="w50">{lang排序}</th>
@@ -57,8 +59,10 @@
 				{lang自定义链接}_{$value.link}
 				<!-- /if -->
 			</td>
+			<td><!-- if $value.thumb -->{$value.thumb}<!-- else -->-<!-- /if --></td>
+			<td><!-- if $value.iconfont -->{$value.iconfont}<!-- else -->-<!-- /if --></td>
 			<td><!-- if $value.target -->{lang新窗口}<!-- else -->{lang当前窗口}<!-- /if --></td>
-			<td><!-- if $value.is_userid -->{lang会员可看}<!-- else -->{lang不限}<!-- /if --></td>
+			<td><!-- if $value.is_userid -->{lang用户可看}<!-- else -->{lang不限}<!-- /if --></td>
 			<td><input type="text" id="taxis_{$value.id}" class="layui-input" value="{$value.taxis}" tabindex="{$idxx.num}" onblur="phpok_taxis(this,'{url ctrl=menu func=taxis id=$value.id/}')" /></td>
 			<td>
 				<div class="layui-btn-group">

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<title><![CDATA[社交服务]]></title>
+	<status>
+		<admin><![CDATA[1]]></admin>
+		<www><![CDATA[1]]></www>
+		<api><![CDATA[1]]></api>
+	</status>
+	<install><![CDATA[install.php]]></install>
+	<uninstall><![CDATA[uninstall.php]]></uninstall>
+	<note><![CDATA[针对社交信息增加的一些服务，如关注，粉丝，黑名单等功能]]></note>
+	<installed><![CDATA[1]]></installed>
+</root>

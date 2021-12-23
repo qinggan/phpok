@@ -6,84 +6,140 @@
 	</index-index>
 	<cart-index>
 		<title><![CDATA[购物车页]]></title>
-		<default><![CDATA[cart_index]]></default>
+		<default><![CDATA[cart/index]]></default>
 	</cart-index>
 	<cart-tip>
 		<title><![CDATA[购物车为空提示页]]></title>
-		<default><![CDATA[cart_tip]]></default>
+		<default><![CDATA[cart/tip]]></default>
 	</cart-tip>
 	<cart-checkout>
 		<title><![CDATA[购物车结算页]]></title>
-		<default><![CDATA[cart_checkout]]></default>
+		<default><![CDATA[cart/checkout]]></default>
 	</cart-checkout>
+	<cart-address>
+		<title><![CDATA[购物车地址库]]></title>
+		<default><![CDATA[cart/address]]></default>
+	</cart-address>
 	<comment-index>
 		<title><![CDATA[评论页]]></title>
 		<default><![CDATA[comment]]></default>
 	</comment-index>
 	<login-sms>
-		<title><![CDATA[会员短信登录页]]></title>
-		<default><![CDATA[login_sms]]></default>
+		<title><![CDATA[用户短信登录页]]></title>
+		<default><![CDATA[login/sms]]></default>
 	</login-sms>
 	<login-email>
-		<title><![CDATA[会员邮件验证码登录]]></title>
-		<default><![CDATA[login_email]]></default>
+		<title><![CDATA[用户邮件验证码登录]]></title>
+		<default><![CDATA[login/email]]></default>
 	</login-email>
 	<login-index>
-		<title><![CDATA[会员登录]]></title>
-		<default><![CDATA[login]]></default>
+		<title><![CDATA[用户登录]]></title>
+		<default><![CDATA[login/index]]></default>
 	</login-index>
 	<login-open>
 		<title><![CDATA[弹出窗口登录]]></title>
-		<default><![CDATA[login_open]]></default>
+		<default><![CDATA[login/open]]></default>
 	</login-open>
 	<login-smspass>
 		<title><![CDATA[短信取回密码]]></title>
-		<default><![CDATA[login_smspass]]></default>
+		<default><![CDATA[login/smspass]]></default>
 	</login-smspass>
 	<login-getpass>
 		<title><![CDATA[邮件取回密码]]></title>
-		<default><![CDATA[login_getpass]]></default>
+		<default><![CDATA[login/getpass]]></default>
 	</login-getpass>
 	<login-repass>
 		<title><![CDATA[邮件重置密码]]></title>
-		<default><![CDATA[login_repass]]></default>
+		<default><![CDATA[login/repass]]></default>
 	</login-repass>
 	<order-index>
 		<title><![CDATA[订单列表页]]></title>
-		<default><![CDATA[order_list]]></default>
+		<default><![CDATA[usercp/order-list]]></default>
 	</order-index>
 	<order-info>
 		<title><![CDATA[订单明细页]]></title>
-		<default><![CDATA[order_info]]></default>
+		<default><![CDATA[usercp/order-info]]></default>
 	</order-info>
 	<order-payment>
 		<title><![CDATA[订单支付页]]></title>
-		<default><![CDATA[order_payment]]></default>
+		<default><![CDATA[usercp/order-payment]]></default>
 	</order-payment>
 	<order-comment>
 		<title><![CDATA[订单评论页]]></title>
-		<default><![CDATA[order_comment]]></default>
+		<default><![CDATA[usercp/order-comment]]></default>
 	</order-comment>
+	<order-log>
+		<title><![CDATA[订单日志]]></title>
+		<default><![CDATA[usercp/order-log]]></default>
+	</order-log>
+	<order-logistics>
+		<title><![CDATA[订单物流]]></title>
+		<default><![CDATA[usercp/order-express]]></default>
+	</order-logistics>
+	<usercp-media>
+		<title><![CDATA[媒体库]]></title>
+		<default><![CDATA[usercp/media]]></default>
+	</usercp-media>
+	<usercp-media-add>
+		<title><![CDATA[添加新媒体]]></title>
+		<default><![CDATA[usercp/media-add]]></default>
+	</usercp-media-add>
 	<payment-index>
 		<title><![CDATA[在线充值页]]></title>
-		<default><![CDATA[payment_index]]></default>
+		<default><![CDATA[usercp/payment]]></default>
 	</payment-index>
-	<payment-notice-success>
+	<usercp-introducer>
 		<title><![CDATA[付款成功提示]]></title>
-		<default><![CDATA[payment_notice_success]]></default>
-	</payment-notice-success>
-	<payment-notice-error>
-		<title><![CDATA[付款失败提示]]></title>
-		<default><![CDATA[payment_notice_error]]></default>
-	</payment-notice-error>
-	<payment-index>
-		<title><![CDATA[在线充值页]]></title>
-		<default><![CDATA[payment_index]]></default>
-	</payment-index>
+		<default><![CDATA[usercp/introducer]]></default>
+	</usercp-introducer>
+	<usercp-destory>
+		<title><![CDATA[用户信息注销页]]></title>
+		<default><![CDATA[usercp/destory]]></default>
+	</usercp-destory>
+	<usercp-idol>
+		<title><![CDATA[我关注的]]></title>
+		<default><![CDATA[usercp/idol]]></default>
+	</usercp-idol>
+	<usercp-fans>
+		<title><![CDATA[粉丝]]></title>
+		<default><![CDATA[usercp/fans]]></default>
+	</usercp-fans>
+	<usercp-blacklist>
+		<title><![CDATA[黑名单]]></title>
+		<default><![CDATA[usercp/blacklist]]></default>
+	</usercp-blacklist>
+	<payment-qrcode>
+		<title><![CDATA[二维码充值]]></title>
+		<default><![CDATA[usercp/payment-qrcode]]></default>
+	</payment-qrcode>
 	<register-index>
-		<title><![CDATA[会员注册页]]></title>
-		<default><![CDATA[register]]></default>
+		<title><![CDATA[用户注册页]]></title>
+		<default><![CDATA[register/index]]></default>
 	</register-index>
+	<register-email>
+		<title><![CDATA[用户邮件验证码注册]]></title>
+		<default><![CDATA[register/email]]></default>
+	</register-email>
+	<register-mobile>
+		<title><![CDATA[用户短信验证码注册]]></title>
+		<default><![CDATA[register/mobile]]></default>
+	</register-mobile>
+	<register-code>
+		<title><![CDATA[邀请码注册]]></title>
+		<default><![CDATA[register/code]]></default>
+	</register-code>
+	<register-readme>
+		<title><![CDATA[注册协议]]></title>
+		<default><![CDATA[register/readme]]></default>
+	</register-readme>
+	<register-success>
+		<title><![CDATA[注册成功]]></title>
+		<default><![CDATA[register/success]]></default>
+	</register-success>
+	<register-tip>
+		<title><![CDATA[注册提示]]></title>
+		<default><![CDATA[register/tip]]></default>
+	</register-tip>
 	<search-index>
 		<title><![CDATA[搜索页]]></title>
 		<default><![CDATA[search_index]]></default>
@@ -97,59 +153,71 @@
 		<default><![CDATA[tag]]></default>
 	</tag-index>
 	<usercp-index>
-		<title><![CDATA[会员中心]]></title>
-		<default><![CDATA[usercp]]></default>
+		<title><![CDATA[用户中心]]></title>
+		<default><![CDATA[usercp/index]]></default>
 	</usercp-index>
 	<usercp-info>
-		<title><![CDATA[会员信息]]></title>
-		<default><![CDATA[usercp_info]]></default>
+		<title><![CDATA[用户信息]]></title>
+		<default><![CDATA[usercp/info]]></default>
 	</usercp-info>
 	<usercp-passwd>
-		<title><![CDATA[会员密码修改]]></title>
-		<default><![CDATA[usercp_passwd]]></default>
+		<title><![CDATA[用户密码修改]]></title>
+		<default><![CDATA[usercp/passwd]]></default>
 	</usercp-passwd>
 	<usercp-email>
-		<title><![CDATA[会员邮箱修改]]></title>
-		<default><![CDATA[usercp_email]]></default>
+		<title><![CDATA[用户邮箱修改]]></title>
+		<default><![CDATA[usercp/email]]></default>
 	</usercp-email>
 	<usercp-mobile>
-		<title><![CDATA[会员手机号修改]]></title>
-		<default><![CDATA[usercp_mobile]]></default>
+		<title><![CDATA[用户手机号修改]]></title>
+		<default><![CDATA[usercp/mobile]]></default>
 	</usercp-mobile>
 	<usercp-list>
-		<title><![CDATA[会员默认列表]]></title>
-		<default><![CDATA[usercp_list]]></default>
+		<title><![CDATA[用户默认列表]]></title>
+		<default><![CDATA[usercp/list]]></default>
 	</usercp-list>
 	<usercp-address>
-		<title><![CDATA[会员地址列表]]></title>
-		<default><![CDATA[usercp_address]]></default>
+		<title><![CDATA[用户地址列表]]></title>
+		<default><![CDATA[usercp/address]]></default>
 	</usercp-address>
-	<usercp-address2>
-		<title><![CDATA[会员地址设置]]></title>
-		<default><![CDATA[usercp_address_setting]]></default>
-	</usercp-address2>
-	<usercp-fav>
-		<title><![CDATA[会员收藏夹]]></title>
-		<default><![CDATA[usercp_fav]]></default>
-	</usercp-fav>
+	<usercp-address-setting>
+		<title><![CDATA[用户地址设置]]></title>
+		<default><![CDATA[usercp/address-setting]]></default>
+	</usercp-address-setting>
+	<fav-index>
+		<title><![CDATA[用户收藏夹]]></title>
+		<default><![CDATA[usercp/fav]]></default>
+	</fav-index>
 	<usercp-avatar>
-		<title><![CDATA[会员头像修改]]></title>
-		<default><![CDATA[usercp_avatar]]></default>
+		<title><![CDATA[用户头像修改]]></title>
+		<default><![CDATA[usercp/avatar]]></default>
 	</usercp-avatar>
 	<usercp-introducer>
-		<title><![CDATA[会员推广页]]></title>
-		<default><![CDATA[usercp_introducer]]></default>
+		<title><![CDATA[用户推广页]]></title>
+		<default><![CDATA[usercp/introducer]]></default>
 	</usercp-introducer>
 	<usercp-wealth>
-		<title><![CDATA[会员财富页]]></title>
-		<default><![CDATA[usercp_wealth]]></default>
+		<title><![CDATA[用户财富页]]></title>
+		<default><![CDATA[usercp/wealth]]></default>
 	</usercp-wealth>
+	<usercp-wealth-log>
+		<title><![CDATA[用户财富明细页]]></title>
+		<default><![CDATA[usercp/wealth-log]]></default>
+	</usercp-wealth-log>
+	<usercp-homepage>
+		<title><![CDATA[主页装扮]]></title>
+		<default><![CDATA[usercp/homepage]]></default>
+	</usercp-homepage>
 	<userlist-index>
-		<title><![CDATA[会员列表显示]]></title>
+		<title><![CDATA[用户列表显示]]></title>
 		<default><![CDATA[userlist]]></default>
 	</userlist-index>
 	<user-index>
-		<title><![CDATA[会员显示页]]></title>
-		<default><![CDATA[user]]></default>
+		<title><![CDATA[用户显示页]]></title>
+		<default><![CDATA[user-index]]></default>
 	</user-index>
+	<post-index>
+		<title><![CDATA[发布页]]></title>
+		<default><![CDATA[usercp/post-add]]></default>
+	</post-index>
 </root>

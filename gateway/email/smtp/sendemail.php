@@ -50,9 +50,17 @@ if($update){
 	$mail->Password = trim($rs['ext']['password']);
 	$mail->Host = trim($rs['ext']['server']);
 	$mail->Port = $rs['ext']['port'] ? $rs['ext']['port'] : 25;
+	$mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
 	if($rs['ext']['ssl'] == 'yes'){
 		$mail->SMTPSecure = 'ssl';
 	}
+
 	$mail->Timeout = 15;
 	if($rs['ext']['reply']){
 		$mail->AddReplyTo($rs['ext']["reply"],$rs['ext']['reply_name']);

@@ -167,7 +167,7 @@ class res_model extends res_model_base
 		if($is_used){
 			return true;
 		}
-		//第四步，检查会员头像是否使用了图片
+		//第四步，检查用户头像是否使用了图片
 		$sql = "SELECT avatar FROM ".$this->db->prefix."user WHERE avatar='".$rs['filename']."'";
 		$tmp = $this->db->get_one($sql);
 		if($tmp){

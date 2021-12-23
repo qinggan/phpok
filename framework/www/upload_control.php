@@ -46,7 +46,7 @@ class upload_control extends phpok_control
 			$this->json(P_Lang('系统已禁止游客上传，请联系管理员'));
 		}
 		if(!$this->site['upload_user'] && $this->session->val('user_id')){
-			$this->json(P_Lang('系统已禁止会员上传，请联系管理员'));
+			$this->json(P_Lang('系统已禁止用户上传，请联系管理员'));
 		}
 		return true;
 	}

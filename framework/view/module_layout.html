@@ -11,7 +11,7 @@
 			<!-- if !$rs.mtype -->
 			<li><label><input type="checkbox" name="layout[]" value="hits"{if in_array("hits",$layout)} checked{/if} />{lang查看次数}</label></li>
 			<li><label><input type="checkbox" name="layout[]" value="dateline"{if in_array("dateline",$layout)} checked{/if} />{lang发布时间}</label></li>
-			<li><label><input type="checkbox" name="layout[]" value="user_id"{if in_array("user_id",$layout)} checked{/if} />{lang会员账号}</label></li>
+			<li><label><input type="checkbox" name="layout[]" value="user_id"{if in_array("user_id",$layout)} checked{/if} />{lang用户账号}</label></li>
 			<!-- /if -->
 			<!-- loop from=$used_list key=$key value=$value -->
 			<li><label><input type="checkbox" name="layout[]" id="layout_{$value.identifier}" value="{$value.identifier}"{if in_array($value[identifier],$layout)} checked{/if} />{$value.title}</label></li>

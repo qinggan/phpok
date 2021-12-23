@@ -337,9 +337,7 @@ class aliyun_lib
 		$request->setAcceptFormat('JSON');
 		$request->setRegionId($this->regoin_id);
 		$request->setTitle($title);
-		//视频源文件名称(必须包含扩展名)
 		$request->setFileName($filename);
-		//视频源文件字节数
 		$request->setFileSize(0);
 		if($note){
 			$request->setDescription($note);
@@ -347,11 +345,36 @@ class aliyun_lib
 		if($thumb){
 			$request->setCoverURL($thumb);
 		}
-		//$request->setIP("127.0.0.1");
 		if($tag){
 			$request->setTags($tag);
 		}
 		$request->setCateId(0);
+		try {
+			$response = $this->client->getAcsResponse($request);
+			return $this->success($response);
+		}
+		catch (ClientException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+		catch (ServerException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+	}
+
+	public function create_upload_image($filename)
+	{
+		if(!$filename){
+			return false;
+		}
+		$tmp = explode(".",$filename);
+		$total = count($tmp);
+		$ext = $tmp[($total-1)];
+		$title = str_replace('.'.$ext,'',$filename);
+		$request = new vod\CreateUploadImageRequest();
+		$request->setImageType('default');
+		$request->setImageExt($ext);
+		$request->setAcceptFormat('JSON');
+		$request->setTitle($title);
 		try {
 			$response = $this->client->getAcsResponse($request);
 			return $this->success($response);
@@ -387,6 +410,58 @@ class aliyun_lib
 		catch (ServerException  $e) {
 			return $this->error($e->getErrorMessage(),$e->getErrorCode());
 		}
+	}
+
+	public function image_info($imageid)
+	{
+		if(!$imageid){
+			return false;
+		}
+		$request = new vod\GetImageInfoRequest();
+		$request->setAcceptFormat('JSON');
+		$request->setImageId($imageid);
+		try {
+			$response = $this->client->getAcsResponse($request);
+			return $this->success($response);
+		}
+		catch (ClientException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+		catch (ServerException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+	}
+
+	public function image_delete($imageid,$type="ImageId")
+	{
+		$request = new vod\DeleteImageRequest();
+		//根据ImageURL删除图片文件
+		if(!in_array($type,array('VideoId','ImageId','ImageURL'))){
+			$type = 'ImageId';
+		}
+		$request->setDeleteImageType($type);
+		if($type == 'VideoId'){
+			$request->setVideoId($imageid);
+		}elseif($type == 'ImageURL'){
+			$request->setImageURLs($imageid);
+		}else{
+			$request->setImageIds($imageid);
+		}
+		try {
+			$response = $this->client->getAcsResponse($request);
+			return $this->success($response);
+		}
+		catch (ClientException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+		catch (ServerException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+	}
+
+	public function live_push_forbid($stream)
+	{
+		//
 	}
 
 	/**
@@ -426,6 +501,30 @@ class aliyun_lib
 		$request = new vod\GetVideoInfoRequest();
 		$request->setAcceptFormat('JSON');
 		$request->setRegionId($this->regoin_id);
+		$request->setVideoId($videoid);
+		try {
+			$response = $this->client->getAcsResponse($request);
+			return $this->success($response);
+		}
+		catch (ClientException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+		catch (ServerException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+	}
+
+	/**
+	 * 获取源片信息
+	**/
+	public function video_base($videoid)
+	{
+		if(!$videoid){
+			return false;
+		}
+		$request = new vod\GetMezzanineInfoRequest();
+		$request->setAcceptFormat('JSON');
+		$request->setAuthTimeout(3600*10);
 		$request->setVideoId($videoid);
 		try {
 			$response = $this->client->getAcsResponse($request);

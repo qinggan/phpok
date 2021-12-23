@@ -127,6 +127,24 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
+				<i class="layui-icon layui-icon-tips" lay-tips="{lang建议图片尺寸128x128，非必填}"></i>
+				{lang图片图标}
+			</label>
+			<div class="layui-input-inline width100">
+				{func form_edit thumb $rs.thumb text form_btn=image}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-icon-tips" lay-tips="{lang输入字体Unicode代码，非必填}"></i>
+				{lang字体图标}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="iconfont" value="{$rs.iconfont}" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
 				{lang打开方式}
 			</label>
 			<div class="layui-input-inline default-auto">
@@ -136,14 +154,14 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang会员}
+				{lang用户}
 			</label>
 			<div class="layui-input-inline auto">
 				<input type="radio" name="is_userid" value="0"{if !$rs || !$rs.is_userid} checked{/if} title="{lang不限制}" />
 				<input type="radio" name="is_userid" value="1"{if $rs && $rs.is_userid} checked{/if} title="{lang是}" />
 			</div>
 			<div class="layui-form-mid">
-				{lang开启会员限制仅支持会员登录后才能显示}
+				{lang开启用户限制仅支持用户登录后才能显示}
 			</div>
 		</div>
 		<div class="layui-form-item">

@@ -50,11 +50,11 @@
 		<ajax>load_project2</ajax>
 	</fields>
 	<user>
-		<title>会员</title>
+		<title>用户</title>
 		<showid>user_ext</showid>
 	</user>
 	<userlist>
-		<title>会员列表</title>
+		<title>用户列表</title>
 		<showid>usergroup,user_ext,user,offset,psize</showid>
 	</userlist>
 	<sql>

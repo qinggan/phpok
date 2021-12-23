@@ -2,11 +2,10 @@
 /**
  * 搜索，支持自定义扩展字段
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 5.x
  * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
- * @时间 2020年7月4日
+ * @时间 2021年8月27日
 **/
 
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
@@ -76,7 +75,8 @@ class search_control extends phpok_control
 				if($cate_rs['parent_id'] && $cate_rs['parent_id'] != $project['cate']){
 					$cate_parent_rs = $this->call->phpok('_cate',array('pid'=>$project['id'],'cateid'=>$cate_rs['parent_id']));
 					if(!$cate_parent_rs || !$cate_parent_rs['status']){
-						$this->error(P_Lang('父级分类已停用，请联系管理员'));
+						//$this->error(P_Lang('父级分类已停用，请联系管理员'));
+						$this->url('search');
 					}
 					$this->assign('cate_parent_rs',$cate_parent_rs);
 				}
@@ -158,7 +158,15 @@ class search_control extends phpok_control
 		}
 		$total = $this->model('search')->get_total($condition,$my_mids,$kc_ext);
 		if(!$total){
-			$this->error(P_Lang('没有搜索到您需要的内容'),$this->url('search'));
+			$tplfile = $this->model('site')->tpl_file($this->ctrl,'empty');
+			if(!$tplfile){
+				$tplfile = 'search-empty';
+			}
+			if(!$this->tpl->check_exists($tplfile)){
+				$this->error(P_Lang('没有搜索到您需要的内容'),$this->url('search'));
+			}
+			$this->plugin('ap-load-search');
+			$this->view($tplfile);
 		}
 		$pageid = $this->get($this->config['pageid'],'int');
 		if(!$pageid){
@@ -201,6 +209,5 @@ class search_control extends phpok_control
 		}
 		$this->plugin('ap-load-search');
 		$this->view($tplfile);
-		exit;
 	}
 }

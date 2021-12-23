@@ -183,6 +183,7 @@ class payment_control extends phpok_control
 		$data['taxis'] = $this->get('taxis','int');
 		$data['status'] = $this->get('status','int');
 		$data['wap'] = $this->get('wap','int');
+		$data['iframe'] = $this->get('iframe','int');
 		$data['note'] = $this->get('note','html');
 		//读取扩展信息
 		if($codeinfo['code'] && is_array($codeinfo['code'])){

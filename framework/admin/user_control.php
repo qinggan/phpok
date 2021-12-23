@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员相关处理
+ * 用户相关处理
  * @package phpok\admin
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
@@ -23,7 +23,7 @@ class user_control extends phpok_control
 	}
 
 	/**
-	 * 配置要显示的会员字段，仅在后台有效
+	 * 配置要显示的用户字段，仅在后台有效
 	**/
 	public function show_setting_f()
 	{
@@ -36,9 +36,11 @@ class user_control extends phpok_control
 			$keys = array_keys($list);
 			$this->assign('keys',$keys);
 		}
-		$rslist = array('user'=>P_Lang('账号'),'group_id'=>P_Lang('会员组'),'email'=>P_Lang('邮箱'),'mobile'=>P_Lang('手机号'),'code'=>P_Lang('邀请码'));
+		$rslist = array('user'=>P_Lang('账号'),'group_id'=>P_Lang('用户组'),'email'=>P_Lang('邮箱'),'mobile'=>P_Lang('手机号'),'code'=>P_Lang('邀请码'));
 		$rslist['introducer'] = P_Lang('推荐人');
 		$rslist['order'] = P_Lang('订单');
+		$rslist['snss'] = P_Lang('社交属性');
+		$rslist['wealth'] = P_Lang('财富');
 		$flist = $this->model('user')->fields_all();
 		if($flist){
 			foreach($flist as $key=>$value){
@@ -59,9 +61,11 @@ class user_control extends phpok_control
 		if(!$array){
 			$array = array('user');
 		}
-		$rslist = array('user'=>P_Lang('账号'),'group_id'=>P_Lang('会员组'),'email'=>P_Lang('邮箱'),'mobile'=>P_Lang('手机号'),'code'=>P_Lang('邀请码'));
+		$rslist = array('user'=>P_Lang('账号'),'group_id'=>P_Lang('用户组'),'email'=>P_Lang('邮箱'),'mobile'=>P_Lang('手机号'),'code'=>P_Lang('邀请码'));
 		$rslist['introducer'] = P_Lang('推荐人');
 		$rslist['order'] = P_Lang('订单');
+		$rslist['snss'] = P_Lang('社交属性');
+		$rslist['wealth'] = P_Lang('财富');
 		$flist = $this->model('user')->fields_all();
 		if($flist){
 			foreach($flist as $key=>$value){
@@ -79,7 +83,7 @@ class user_control extends phpok_control
 	}
 
 
-	//会员列表
+	//用户列表
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
@@ -118,7 +122,7 @@ class user_control extends phpok_control
 				if($key == 'introducer'){
 					$tmp = $this->model('user')->get_one($value,'user',false,false);
 					if(!$tmp){
-						$this->error(P_Lang('没有搜索到会员信息'),$this->url('user'));
+						$this->error(P_Lang('没有搜索到用户信息'),$this->url('user'));
 					}
 					$condition .= " AND u.id IN(SELECT uid FROM ".$this->db->prefix."user_relation WHERE introducer=".$tmp['id'].") ";
 					continue;
@@ -144,7 +148,11 @@ class user_control extends phpok_control
 			$page_url .= "&group_id=".$group_id;
 		}
 		$offset = ($pageid-1) * $psize;
-		
+		$arealist = $this->lib('xml')->read($this->dir_data.'xml/admin_user.xml');
+		if(!$arealist){
+			$arealist = array();
+		}
+		$this->assign("arealist",$arealist);
 		$count = $this->model('user')->get_count($condition);
 		if($count){
 			$rslist = $this->model('user')->get_list($condition,$offset,$psize);
@@ -152,22 +160,32 @@ class user_control extends phpok_control
 			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
 			$pagelist = phpok_page($page_url,$count,$pageid,$psize,$string);
 			//取得订单统计
-			if($this->site['biz_status']){
+			if($this->site['biz_status'] && isset($arealist['order']) && $rslist){
 				$ids = array_keys($rslist);
 				$olist = $this->model('order')->stat_count($ids);
-				
 				if($olist){
 					foreach($olist as $key=>$value){
 						$rslist[$key]['order'] = $value;
 					}
 				}
 			}
+			if(isset($arealist['snss']) && $rslist){
+				$ids = array_keys($rslist);
+				$idol_rslist = $this->model('user')->idol_count($ids);
+				$fans_rslist = $this->model('user')->fans_count($ids);
+				$black_rslist = $this->model('user')->black_count($ids);
+				foreach($rslist as $key=>$value){
+					$value['snss'] = array();
+					$value['snss']['idol'] = ($idol_rslist && $idol_rslist[$value['id']]) ? $idol_rslist[$value['id']]['total'] : 0;
+					$value['snss']['fans'] = ($fans_rslist && $fans_rslist[$value['id']]) ? $fans_rslist[$value['id']]['total'] : 0;
+					$value['snss']['black'] = ($black_rslist && $black_rslist[$value['id']]) ? $black_rslist[$value['id']]['total'] : 0;
+					$rslist[$key] = $value;
+				}
+			}
 			$this->assign("rslist",$rslist);
 			$this->assign("pagelist",$pagelist);
 		}
 		$this->assign("total",$count);
-		$list = $this->lib('xml')->read($this->dir_data.'xml/admin_user.xml');
-		$this->assign("arealist",$list);
 		
 		$grouplist = $this->model('usergroup')->get_all("","id");
 		$this->assign("grouplist",$grouplist);
@@ -217,7 +235,7 @@ class user_control extends phpok_control
 			$extlist[] = $this->lib('form')->format($value);
 		}
 		$this->assign("extlist",$extlist);
-		//会员组
+		//用户组
 		$grouplist = $this->model('usergroup')->get_all("is_guest=0 AND status=1");
 		if(!$group_id){
 			foreach($grouplist as $key=>$value){
@@ -243,11 +261,11 @@ class user_control extends phpok_control
 		$id = $this->get("id","int");
 		$user = $this->get("user");
 		if(!$user){
-			$this->json(P_Lang('会员账号不允许为空'));
+			$this->json(P_Lang('用户账号不允许为空'));
 		}
 		$rs_name = $this->model('user')->chk_name($user,$id);
 		if($rs_name){
-			$this->json(P_Lang('会员账号已经存在'));
+			$this->json(P_Lang('用户账号已经存在'));
 		}
 		$mobile = $this->get('mobile');
 		if($mobile){
@@ -295,11 +313,11 @@ class user_control extends phpok_control
 		$array = array();
 		$array["user"] = $this->get("user");
 		if(!$array["user"]){
-			$this->error(P_Lang('会员账号不允许为空'));
+			$this->error(P_Lang('用户账号不允许为空'));
 		}
 		$rs_name = $this->model('user')->chk_name($array["user"],$id);
 		if($rs_name){
-			$this->error(P_Lang('会员账号已经存在'));
+			$this->error(P_Lang('用户账号已经存在'));
 		}
 		$array['avatar'] = $this->get('avatar');
 		$array['email'] = $this->get('email');
@@ -388,7 +406,7 @@ class user_control extends phpok_control
 		//推荐人功能
 		$relation_id = $this->get('relation_id');
 		$this->model('user')->save_relation($insert_id,$relation_id);
-		$note = $id ? P_Lang('会员编辑成功') : P_Lang('新会员添加成功');
+		$note = $id ? P_Lang('用户编辑成功') : P_Lang('新用户添加成功');
 		$this->plugin('ap_user_setok',$insert_id);
 		$this->success($note,$this->url('user'));
 	}
@@ -418,7 +436,7 @@ class user_control extends phpok_control
 	}
 
 	/**
-	 * 会员字段管理器中涉及到的字段
+	 * 用户字段管理器中涉及到的字段
 	**/
 	private function fields_auto()
 	{
@@ -508,7 +526,7 @@ class user_control extends phpok_control
 	}
 
 	/**
-	 * 会员字段添加修改操作
+	 * 用户字段添加修改操作
 	**/
 	public function field_edit_f()
 	{
@@ -526,7 +544,7 @@ class user_control extends phpok_control
 	}
 
 	/**
-	 * 保存会员字段
+	 * 保存用户字段
 	**/
 	public function field_edit_save_f()
 	{
@@ -624,11 +642,11 @@ class user_control extends phpok_control
 	{
 		$id = $this->get('id');
 		if(!$id){
-			$this->error(P_Lang('未指定会员ID'));
+			$this->error(P_Lang('未指定用户ID'));
 		}
 		$rs = $this->model('user')->get_one($id);
 		if(!$rs){
-			$this->error(P_Lang('会员信息不存在'));
+			$this->error(P_Lang('用户信息不存在'));
 		}
 		$this->assign('rs',$rs);
 		$relation = $this->model('user')->get_relation($rs['id']);
@@ -690,6 +708,12 @@ class user_control extends phpok_control
 			$this->assign('address_list',$alist);
 			$this->assign('address_total',count($alist));
 		}
+
+		$idol = $this->model('user')->idol_count($id);
+		$fans = $this->model('user')->fans_count($id);
+		$black = $this->model('user')->black_count($id);
+		$snss = array('idol'=>$idol,'fans'=>$fans,'black'=>$black);
+		$this->assign('snss',$snss);
 		$this->view("user_show");
 	}
 
@@ -697,13 +721,13 @@ class user_control extends phpok_control
 	{
 		$uid = $this->get('uid');
 		if(!$uid){
-			$this->json(P_Lang('未指定会员ID'));
+			$this->json(P_Lang('未指定用户ID'));
 		}
 		$type = $this->get('type');
 		if($type == 'invoice'){
 			$rslist = $this->model('user')->invoice($uid);
 			if(!$rslist){
-				$this->json(P_Lang('该会员未设置发票信息'));
+				$this->json(P_Lang('该用户未设置发票信息'));
 			}
 			$first = $default = false;
 			foreach($rslist as $key=>$value){
@@ -722,7 +746,7 @@ class user_control extends phpok_control
 		}elseif($type == 'address'){
 			$rslist = $this->model('user')->address($uid);
 			if(!$rslist){
-				$this->json(P_Lang('该会员未设置收件人信息'));
+				$this->json(P_Lang('该用户未设置收件人信息'));
 			}
 			$first = $default = false;
 			foreach($rslist as $key=>$value){
@@ -741,7 +765,7 @@ class user_control extends phpok_control
 		}else{
 			$info = $this->model('user')->get_one($uid);
 			if(!$info){
-				$this->json(P_Lang('会员信息不存在'));
+				$this->json(P_Lang('用户信息不存在'));
 			}
 		}
 		$this->json($info,true);
@@ -750,11 +774,11 @@ class user_control extends phpok_control
 	public function address_list_f()
 	{
 		if(!$this->popedom['list']){
-			$this->error(P_Lang('您没有权限查看会员地址信息'));
+			$this->error(P_Lang('您没有权限查看用户地址信息'));
 		}
 		$uid = $this->get('uid','int');
 		if(!$uid){
-			$this->error(P_Lang('未指定会员ID'));
+			$this->error(P_Lang('未指定用户ID'));
 		}
 		$rslist = $this->model('user')->address_all($uid);
 		if($rslist){
@@ -768,24 +792,24 @@ class user_control extends phpok_control
 	{
 		$uid = $this->get('id','int');
 		if(!$uid){
-			$this->error(P_Lang('未指定要登录的会员'));
+			$this->error(P_Lang('未指定要登录的用户'));
 		}
 		$user = $this->model('user')->get_one($uid);
 		if(!$user){
-			$this->error(P_Lang('会员信息不存在'));
+			$this->error(P_Lang('用户信息不存在'));
 		}
 		$this->session->assign('user_id',$user['id']);
 		$this->session->assign('user_name',$user['user']);
 		$this->session->assign('user_gid',$user['group_id']);
-		$this->success(P_Lang('会员登录成功，正在跳转，请稍候…'),$this->config['url']);
+		$this->success(P_Lang('用户登录成功，正在跳转，请稍候…'),$this->config['url']);
 	}
 
-	//推荐会员
+	//推荐用户
 	public function vouch_f()
 	{
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->error(P_Lang('未指定会员ID'));
+			$this->error(P_Lang('未指定用户ID'));
 		}
 		$pageid = $this->get($this->config['pageid'],'int');
 		if(!$pageid){

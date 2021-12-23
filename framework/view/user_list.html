@@ -20,7 +20,7 @@
 				</div>
 			</div>
 			<div class="layui-inline">
-				<label class="layui-form-label">{lang会员组}</label>
+				<label class="layui-form-label">{lang用户组}</label>
 				<div class="layui-input-block">
 					<select name="group_id">
 						<option value="">{lang不限}</option>
@@ -66,9 +66,9 @@
 		{lang列表}
 		<div class="fr"><div class="action"></div></div>	
 		<div class="layui-btn-group fr" id="user_card_top">
-			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加会员}','{url ctrl=user func=set/}')">
+			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加用户}','{url ctrl=user func=set/}')">
 				<i class="layui-icon">&#xe654;</i>
-				{lang添加会员}
+				{lang添加用户}
 			</button>
 			<!-- if $session.admin_rs.if_system -->
 			<button class="layui-btn layui-btn-sm" onclick="$.admin_user.show_setting()">
@@ -88,12 +88,11 @@
 			<!-- loop from=$arealist key=$key value=$value -->
 			<th class="lft">{func P_Lang $value}</th>
 			<!-- /loop -->
-			<!-- if $wlist --><th class="lft" style="min-width:100px;">{lang财富}</th><!-- /if -->
 			<th width="120px">{lang注册时间}</th>
 			<th style="min-width:104px;"></th>
 		</tr>
 		</thead>
-		<!-- $rslist AS $key=>$value -->
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 		<tr>
 			<td align="center">{$value.id}</td>
 			<td><span id="status_{$value.id}" onclick="set_status({$value.id})" class="status{$value.status}" value="{$value.status}"></span></td>
@@ -105,12 +104,20 @@
 					<img src='{$value[$k]["_admin"]["info"]}' border="0" width="28px" height="28px" />
 					<!-- elseif $value[$k]['_admin'] -->
 					{$value[$k]['_admin']['info']}
+					<!-- elseif $k == 'wealth' -->
+						<!-- loop from=$wlist key=$k value=$v id=$idxx -->
+						<div>{$v.title}：{$value.wealth[$k] ? $value.wealth[$k] : 0} {$v.unit}</div>
+						<!-- /loop -->
+					<!-- elseif $k == 'snss' -->
+					<button class="layui-btn layui-btn-sm">关注 <span class="layui-badge">{$value.snss.idol}</span></button>
+					<button class="layui-btn layui-btn-sm">粉丝 <span class="layui-badge">{$value.snss.fans}</span></button>
+					<button class="layui-btn layui-btn-sm">黑名单 <span class="layui-badge">{$value.snss.black}</span></button>
 					<!-- else -->
 					{$value[$k]['user']}
 					<!-- /if -->
 				<!-- else -->
 					<!-- if $k == 'order' -->
-					<a href="javascript:$.win('{lang会员订单}_{$value.user}','{url ctrl=order keywords=$value.user keytype=user/}');void(0)">{$value[$k]}</a>
+					<a href="javascript:$.win('{lang用户订单}_{$value.user}','{url ctrl=order keywords=$value.user keytype=user/}');void(0)">{$value[$k]}</a>
 					<!-- elseif $k == 'group_id' -->
 					{$grouplist[$value[$k]][title]}
 					<!-- else -->
@@ -118,24 +125,12 @@
 					<!-- /if -->
 				<!-- /if -->
 			</td>
-			<!-- /loop -->
-			<!-- if $wlist -->
-			
-			
-			<td class="lft">
-				<!-- loop from=$wlist key=$k value=$v id=$idxx -->
-				<div style="display:block;">
-					{$v.title}：{$value.wealth[$k] ? $value.wealth[$k] : 0} {$v.unit}
-				</div>
-				<!-- /loop -->
-			</td>
-			<!-- /if -->
-			
+			<!-- /loop -->			
 			<td>{func date 'Y-m-d H:i' $value.regtime}</td>
 			<td>
 				<div class="layui-btn-group">
-					<input type="button" value="{lang查看}" onclick="$.win('{lang查看会员}_#{$value.id}','{url ctrl=user func=show id=$value.id/}')" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑会员}_#{$value.id}','{url ctrl=user func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang查看}" onclick="$.win('{lang查看用户}_#{$value.id}','{url ctrl=user func=show id=$value.id/}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑用户}_#{$value.id}','{url ctrl=user func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
 					<!-- if $popedom.delete -->
 					<input type="button" value="{lang删除}" onclick="del({$value.id},'{$value.user}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 					<!-- /if -->
@@ -143,7 +138,7 @@
 				</div>
 			</td>
 		</tr>
-		<!-- end -->
+		<!-- /loop -->
 		</table>
 		<!-- if $pagelist --><div class="center"><!-- include tpl=pagelist --></div><!-- /if -->
 	</div>

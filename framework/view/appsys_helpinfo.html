@@ -1,0 +1,19 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		帮助手册
+		<div class="fr">
+			<input type="button" value="编辑" onclick="$.win('编辑帮助_#{$id}','{url ctrl=appsys func=help id=$id type=$type/}')" class="layui-btn layui-btn-sm " />
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<div id="doc-content-help"><textarea style="display: none;">{$content}</textarea></div>
+	</div>
+</div>
+<script type="text/javascript">
+var mkEditor_help;
+$(document).ready(function(){
+	mkEditor_help = editormd.markdownToHTML("doc-content-help",{htmlDecode:"style,script,iframe",emoji:true,taskList:true,tex:true,flowChart:true,sequenceDiagram:true,codeFold:true});
+});
+</script>
+<!-- include tpl=foot_lay -->

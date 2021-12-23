@@ -37,7 +37,7 @@ class html_phpok extends \_init_node_html
 	public function admin_list_edit_after()
 	{
 		$p_rs = $this->tpl->val('p_rs');
-		if($p_rs['is_biz']){
+		if($p_rs['is_biz'] && $p_rs['world_location']){
 			$this->pri_worlds_price($p_rs);
 		}		
 	}

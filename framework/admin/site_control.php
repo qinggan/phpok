@@ -256,6 +256,7 @@ class site_control extends phpok_control
 		$array['taxis'] = $this->get('taxis','int');
 		$array['default'] = $this->get('default');
 		$array['currency_id'] = $this->get('currency_id','int');
+		$array['hidden'] = $this->get('hidden','int');
 		$this->model('site')->price_status_update($array,$id);
 		$this->success();
 	}

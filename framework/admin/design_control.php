@@ -102,7 +102,7 @@ class design_control extends phpok_control
 		if(!$this->session->val('admin_rs.if_system')){
 			$this->error('仅限超级管理员有权限操作');
 		}
-		$id = $this->get('id');
+		$id = $this->get('id','html');
 		$rs = array();
 		$glist = array();
 		//读取模板记录
@@ -135,6 +135,7 @@ class design_control extends phpok_control
 		}else{
 			$content_html = form_edit('content','','code_editor','height=420&width=720');
 		}
+		
 		$this->assign('content_html',$content_html);
 		$this->assign('id',$id);
 		$this->assign('tplist',$glist);
@@ -227,6 +228,17 @@ class design_control extends phpok_control
 			$this->error('文件不存在');
 		}
 		$this->success($data);
+	}
+
+	public function layer_top_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error('未指定ID');
+		}
+		$this->assign('id',$id);
+		$this->addjs('js/jscolor/jscolor.js');
+		$this->view('design_win');
 	}
 
 	public function layer_setting_f()

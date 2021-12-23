@@ -29,7 +29,7 @@ class cart_model_base extends phpok_model
 	/**
 	 * 获取购物车ID，如果不存在，系统会尝试创建
 	 * @参数 $sessid 用户Session ID
-	 * @参数 $uid 会员ID，为0表示游客下单
+	 * @参数 $uid 用户ID，为0表示游客下单
 	 * @返回 数字ID
 	**/
 	public function cart_id($sessid='',$uid=0)

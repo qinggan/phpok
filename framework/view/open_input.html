@@ -30,8 +30,11 @@ div.clear{clear:both;height:0;line-height:0;overflow:hidden;display:block;visibi
 select{padding:3px;}
 input.keywords{width:150px;padding:3px;border:1px solid #ABADB3;}
 </style>
+<link rel="stylesheet" href="static/admin/layui/{#css#}/layui.css" media="all" />
+<link rel="stylesheet" href="{#css#}/extadmin.css" media="all" />
 <link rel="stylesheet" type="text/css" href="{#css#}/artdialog.css" />
 <link rel="stylesheet" type="text/css" href="{#css#}/form.css" />
+<link rel="stylesheet" type="text/css" href="{#css#}/smartmenu.css" />
 {func phpok_head_css}
 <script type="text/javascript" src="{url ctrl=js ext=jquery.artdialog.js /}"></script>
 <script type="text/javascript" src="{#js#}/laydate/laydate.js"></script>
@@ -61,25 +64,25 @@ $(document).ready(function(){
 </script>
 </head>
 <body>
-<div class="search">
-	<form method="post" action="{$pageurl}" onsubmit="return check_search()">
+<div class="search" style="padding:3px 5px;">
+	<form method="post" class="layui-form" action="{$formurl}" onsubmit="return check_search()">
 	<table>
 	<tr>
 		<!-- if $session.admin_id -->
 		<td>搜索：</td>
-		<td><select name="cate_id" id="top_cate_id">
+		<td><div style="margin-right:10px;"><select name="cate_id" id="top_cate_id" lay-ignore>
 			<option value="">全部分类…</option>
 			<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
 			<option value="{$value.id}"{if $value.id == $cate_id} selected{/if}>{$value.title}</option>
 			<!-- /loop -->
-		</select></td>
-		<td><select name="keytype" id="keytype" onchange="update_select(this.value)">
+		</select></div></td>
+		<td><div style="margin-right:10px;"><select name="keytype" id="keytype" onchange="update_select(this.value)" lay-ignore>
 			<!-- loop from=$keytype_list key=$key value=$value id=$tmpid -->
 			<option value="{$key}"{if $key == $keytype} selected{/if}>{$value}</option>
 			<!-- /loop -->
-		</select></td>
-		<td><input type="text" name="keywords" id="keywords" value="{$keywords}" class="keywords" /></td>
-		<td><input type="submit" value="{lang搜索}" /></td>
+		</select></div></td>
+		<td><div style="margin-right:10px;"><input type="text" name="keywords" id="keywords" value="{$keywords}" class="keywords" /></div></td>
+		<td><div style="margin-right:10px;"><input type="submit" value="{lang搜索}" /></div></td>
 		<!-- /if -->
 		<td><input type="button" value="{lang刷新页面}" onclick="$.phpok.reload()" /></td>
 	</tr>
@@ -94,7 +97,9 @@ $(document).ready(function(){
 		<div class="note">
 			<div class="info">名称：{$value.title}</div>
 			<div class="info">添加：{func date "Y-m-d H:i:s" $value.addtime}</div>
+			<!-- if $value.attr && $value.attr.width && $value.attr.height -->
 			<div class="info">属性：{$value.attr ? $value.attr.width.' x '.$value.attr.height : '-'}</div>
+			<!-- /if -->
 		</div>
 		<div class="clear"></div>
 		</div>
@@ -127,26 +132,20 @@ $(document).ready(function(){
 			<td>
 				<select id="add_cate_id" onchange="cate_change()">
 					<!-- loop from=$catelist key=$key value=$value -->
-					<option value="{$value.id}"{if $value.is_default} selected{/if} data="{$value.filetypes}" catename="{$value.title}">
+					<option value="{$value.id}"{if $cate_id == $value.id} selected{/if} data="{$value.filetypes}" catename="{$value.title}">
 					{$value.title}<!-- if $value.typeinfos --> / {lang支持上传格式：}{$value.typeinfos}<!-- /if --></option>
 					<!-- /loop -->
 				</select>
 			</td>
-			<td><div id="upload_picker" class=""></div></td>
+		</tr>
+		<tr>
+			<td><div style="margin-top:10px;">{$upload_buttons}</div></td>
 		</tr>
 		</table>
 	</div>
 </div>
-
-<div class="table">
-	<div class="content" id="upload_progress"></div>
-</div>
 </div>
 <script type="text/javascript">
-var obj_upload = {};
-$(document).ready(function(){
-	cate_change();
-});
 function cate_change()
 {
 	val = $("#add_cate_id").val();
@@ -154,26 +153,8 @@ function cate_change()
 		$.dialog.alert('请选择要存储的目标分类');
 		return false;
 	}
-	var data = $("#add_cate_id option[value="+val+"]").attr('data');
-	var catename = $("#add_cate_id option[value="+val+"]").attr('catename');
-	obj_upload = new $.admin_upload({
-		"multiple"	: 'false',
-		"id" : "upload",
-		'pick':{'id':'#upload_picker','multiple':false},
-		'resize':false,
-		"swf" : "js/webuploader/uploader.swf",
-		"server": "{url ctrl=upload func=save/}",
-		"filetypes" : "{$rs.ext}",
-		'accept' : {'title':catename,'extensions':data},
-		"formData" :{'{func session_name}':'{func session_id}','cateid':val},
-		'fileVal':'upfile',
-		'auto':true,
-		"success":function(){
-			$.dialog.alert('附件上传成功',function(){
-				$.phpok.reload();
-			});
-		}
-	});
+	$.phpok.go('{$formurl}&cate_id='+val);
+	return false;
 }
 </script>
 <!-- /if -->

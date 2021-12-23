@@ -129,15 +129,14 @@ class tpl_control extends phpok_control
 		$this->assign("rs",$rs);
 		//绑定目录
 		$tpl_dir = $this->dir_root."tpl/".$rs["folder"].'/';
-		$tpl_list = $this->lib('file')->ls($tpl_dir);
+		$tpl_list = array();
+		$this->lib('file')->deep_ls($tpl_dir,$tpl_list);
 		$ext_length = strlen($rs["ext"]);
-		if(!$tpl_list){
-			$tpl_list = array();
-		}
 		$myurl = $this->url("tpl","open",'tpl_id='.$tpl_id);
 		$rslist = false;
-		foreach($tpl_list AS $key=>$value){
-			$bname = $this->lib('string')->to_utf8(basename($value));
+		foreach($tpl_list as $key=>$value){
+			$tmp = str_replace($tpl_dir,'',$value);
+			$bname = $this->lib('string')->to_utf8($tmp);
 			if(is_dir($value) || substr($bname,-$ext_length) != $rs["ext"]){
 				continue;
 			}

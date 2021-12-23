@@ -178,6 +178,7 @@ class text_form extends _init_auto
 			$this->addjs('js/jscolor/jscolor.js');
 		}
 		if($rs['form_btn'] && in_array($rs['form_btn'],array('date','datetime','time','year','month'))){
+			$this->addjs('static/admin/layui/layui.all.js');
 			$this->addjs('js/laydate/laydate.js');
 			$_laydate = true;
 			$tmp = array('date'=>P_Lang('日期'),'datetime'=>P_Lang('日期时间'),'time'=>P_Lang('时间'),'year'=>P_Lang('年份'),'month'=>P_Lang('年月'));

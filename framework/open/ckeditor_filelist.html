@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="expires" content="wed, 26 feb 1997 08:21:57 gmt"> 
+	<title>文件库</title>
+	<meta name="author" content="phpok.com" />
+	<link rel="stylesheet" type="text/css" href="{#css#}/artdialog.css" />
+	<link rel="stylesheet" type="text/css" href="static/admin/layui/{#css#}/layui.css" />
+	<link rel="stylesheet" type="text/css" href="static/bootstrap/{#css#}/bootstrap.min.css" />
+	{func phpok_head_css}
+	<script type="text/javascript" src="{url ctrl=js ext=jquery.phpok,jquery.artdialog _ext=global.admin.js /}"></script>
+	{func phpok_head_js}
+	<script type="text/javascript">
+	function check_search(obj)
+	{
+		var k = $("#keywords").val();
+		if(!k){
+			$.dialog.alert('请输入要搜索的关键字');
+			return false;
+		}
+		var url = $(obj).attr("action");
+		url += "&keywords="+$.str.encode(k);
+		$.phpok.go(url);
+		return false;
+	}
+	function update_cate(val)
+	{
+		var old = "{$cate.id}";
+		if(old != val){
+			var url = "{url ctrl=ckeditor func=filelist /}&cateid="+val;
+			$.phpok.go(url);
+		}
+	}
+	function dialogOK()
+	{
+		var vals = $.checkbox.join('#filelist');
+		if(!vals){
+			$.dialog.alert("请选择要插入的附件");
+			return false;
+		}
+		var list = vals.split(",");
+		if(list.length < 2)
+		{
+			var title = $("#title_"+list[0]).text();
+			if(!title){
+				$.dialog.alert('附件选择异常，请检查');
+				return false;
+			}
+			var htm = '[download:'+list[0]+']'+title+'[/download]';
+		}else{
+			var htm = "";
+			for(var i in list){
+				var title = $("#title_"+list[i]).text();
+				if(!title){
+					continue;
+				}
+				htm += '<p>[download:'+list[i]+']'+title+'[/download]</p>'+"\n";
+			}
+		}
+		return htm;
+	}
+	</script>
+</head>
+<body>
+<div class="container-fluid mt-1 mb-1">
+	<form method="post" action="{url ctrl=ckeditor func=filelist cateid=$cate.id /}" onsubmit="return check_search(this)">
+	<div class="row">
+		<div class="col">
+			{$button}
+		</div>
+		<!-- if $catelist -->		
+		<div class="col">
+			<select class="form-control form-control-sm" name="cateid" id="cateid" onchange="update_cate(this.value)">
+				<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+				<option value="{$value.id}"{if $cate && $value.id == $cate.id} selected{/if}>{$value.title}</option>
+				<!-- /loop -->
+			</select>
+		</div>
+		<!-- /if -->
+		<div class="col">
+			<input type="text" name="keywords" id="keywords" value="{$keywords}" placeholder="{lang请输入要搜索的关键字}" class="form-control form-control-sm" />
+		</div>
+		<div class="col">
+			<div class="btn-group" role="group" aria-label="">
+				<button type="submit" class="btn btn-primary btn-sm">{lang搜索}</button>
+				<a href="{url ctrl=ckeditor func=filelist cateid=$cate.id /}" class="btn btn-warning btn-sm">{lang取消搜索}</a>
+			</div>
+		</div>
+		<div class="col text-right">
+			<button type="button" class="btn btn-danger btn-sm" onclick="$.phpok.reload()">{lang刷新}</button>
+		</div>
+	</div>
+	</form>
+</div>
+<div class="container-fluid">
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col"><button type="button" class="btn btn-primary btn-sm" onclick="$.checkbox.all()">全选</button></th>
+				<th scope="col">ID</th>
+				<th scope="col">标题</th>
+				<th scope="col">时间</th>
+				<th scope="col">扩展</th>
+			</tr>
+		</thead>
+		<tbody id="filelist">
+			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+			<tr>
+				<td class="text-center">
+					<input id="t_{$value.id}" class="form-check-input" type="checkbox" value="{$value.id}" />
+				</td>
+				<td>{$value.id}</td>
+				<td><label for="t_{$value.id}" id="title_{$value.id}">{$value.title}</label></td>
+				<td>{func date 'Y-m-d H:i' $value.addtime}</td>
+				<td>
+					<!-- loop from=$value.attr key=$k value=$v id=$idxx -->
+					<!-- if $value.index --> / <!-- /if -->
+					{$k}:{$v}
+					<!-- /loop -->
+				</td>
+			</tr>
+			<!-- /loop -->
+		</tbody>
+	</table>
+</div>
+
+<!-- if $pagelist -->
+<div class="container-fluid ">
+	<nav aria-label="Page navigation" class="">
+		<ul class="pagination pagination-sm justify-content-center">
+			<!-- loop from=$pagelist key=$key value=$value id=$tmpid -->
+			<li class="page-item{if $value.status} active{/if}"><a class="page-link" href="{$value.url}">{$value.title}</a></li>
+			<!-- /loop -->
+		</ul>
+	</nav>
+</div>
+<!-- /if -->
+<script type="text/javascript" src="static/bootstrap/{#js#}/bootstrap.min.js"></script>
+<script type="text/javascript">
+function stop(){
+	return false;
+}
+document.oncontextmenu=stop;
+</script>
+</body>
+</html>

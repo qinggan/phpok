@@ -25,6 +25,13 @@ function admlogin()
 		'dataType':'json',
 		'success':function(rs){
 			if(rs.status){
+				//检测是否长时间登录
+				var chk = $("input[name=notout]:checked").val();
+				if(chk && chk != 'undefined'){
+					$.cookie.set("notout",chk,1);
+				}else{
+					$.cookie.del('notout');
+				}
 				$.phpok.go(get_url('index'));
 				return true;
 			}

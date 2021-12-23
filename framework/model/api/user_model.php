@@ -1,7 +1,7 @@
 <?php
 /***********************************************************
 	Filename: {$phpok}/model/user.php
-	Note	: 会员模块
+	Note	: 用户模块
 	Version : 3.0
 	Author  : qinggan
 	Update  : 2013年5月4日
@@ -33,35 +33,35 @@ class user_model extends user_model_base
 		return $this->db->get_one($sql);
 	}
 
-	//更新会员密码
+	//更新用户密码
 	function update_password($pass,$id)
 	{
 		$sql = "UPDATE ".$this->db->prefix."user SET pass='".$pass."' WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
 
-	//短信更新会员密码
+	//短信更新用户密码
 	function update_smspass($pass,$mobile)
 	{
 		$sql = "UPDATE ".$this->db->prefix."user SET pass='".$pass."' WHERE mobile='".$mobile."'";
 		return $this->db->query($sql);
 	}
 
-	//更新会员手机
+	//更新用户手机
 	function update_mobile($mobile,$id)
 	{
 		$sql = "UPDATE ".$this->db->prefix."user SET mobile='".$mobile."' WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
 
-	//更新会员邮箱
+	//更新用户邮箱
 	function update_email($email,$id=0,$chk=0)
 	{
 		$sql = "UPDATE ".$this->db->prefix."user SET email='".$email."',email_chk='".$chk."' WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
 
-	//取得全部会员ID
+	//取得全部用户ID
 	function get_all_from_uid($uid,$pri="")
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."user WHERE id IN(".$uid.")";
@@ -109,7 +109,7 @@ class user_model extends user_model_base
 		return $rs['id'];
 	}
 
-	//更新会员头像
+	//更新用户头像
 	function update_avatar($file,$uid)
 	{
 		$sql = "UPDATE ".$this->db->prefix."user SET avatar='".$file."' WHERE id='".$uid."'";

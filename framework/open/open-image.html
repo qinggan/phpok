@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="author" content="phpok.com" />
+	<meta http-equiv="expires" content="wed, 26 feb 1997 08:21:57 gmt"> 
+	<title>{$config.title}</title>
+	<!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
+	<link rel="stylesheet" type="text/css" href="{#css#}/css.php?type=open&version={:VERSION}" />
+	{func phpok_head_css}
+	<!-- php:$js_ext = 'admin.'.$sys.ctrl.'.js' -->
+	<script type="text/javascript" src="{#js#}/laydate/laydate.js"></script>
+	<script type="text/javascript" src="{url ctrl=js ext=$js_ext/}"></script>
+	{func phpok_head_js}
+	<!-- plugin head -->
+</head>
+<body ondragstart="return false;">
+<script type="text/javascript">
+function phpok_input(val)
+{
+	var obj = $.dialog.opener;
+	obj.$("#{$id}").val(val);
+	$.dialog.close();
+}
+</script>
+
+<ul class="piclist">
+	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	<li id="attr_{$value.id}" onclick="phpok_input('{$value.filename}')">
+		<div class="pic"><img src="{$value.ico}" width="80px" height="80px" border="0" alt="{$value.title}" /></div>
+	</li>
+	<!-- /loop -->
+</ul>
+<div class="clear"></div>
+<div class="table">
+	<!-- if $pagelist -->
+	<div class="layui-box layui-laypage layui-laypage-default">
+		<!-- loop from=$pagelist key=$key value=$value id=$idx -->
+			<!-- if $value.type != 'opt' -->
+				<!-- if $value.type == 'add' -->
+				<span>{$value.title}</span>
+				<!-- else -->
+				<a{if $value.url} href="{$value.url}"{/if} {if $value.status} class="current"{/if}>{$value.title}</a>
+				<!-- /if -->
+
+			<!-- /if -->
+			<!-- if $value.type == 'opt' -->
+				<select onchange="$.phpok.go('{$value.url}'+this.value)">
+					<!-- loop from=$value.title key=$k value=$v id=$idxx -->
+					<option value="{$v.value}"{if $v.status} selected{/if}>{$v.title}</option>
+					<!-- /loop -->
+				</select>
+			<!-- /if -->
+		<!-- /loop -->
+		<input type="number" name="go_to_page" id="go_to_page" value="{$get.pageid}" class="short" min="0" max="{$total_page}"  />
+		<button type="button" onclick="go_to_page_action()" class="layui-btn layui-btn-xs" style="background-color:#1E9FFF;border:0;">GO</button>
+	</div>
+	<!-- /if -->
+</div>
+
+<!-- plugin body -->
+<!-- plugin foot -->
+<script type="text/javascript">
+$(document).ready(function(){
+	var r_menu = [[{
+		'text':'{lang刷新}',
+		'func':function(){
+			$.phpok.reload();
+		}
+	}]];
+	$(window).smartMenu(r_menu,{
+		'name':'smart',
+		'textLimit':8
+	});
+});
+</script>
+</body>
+</html>

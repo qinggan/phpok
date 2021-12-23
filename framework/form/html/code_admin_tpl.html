@@ -1,8 +1,8 @@
 <style type="text/css">
 .CodeMirror{border:1px solid #ccc;{$_rs.form_style};}
-.CodeMirror-scroll{width:{$_rs.width}px;height:{$_rs.height}px;}
+.CodeMirror-scroll{width:{$_rs.width};height:{$_rs.height};}
 </style>
-<table cellpadding="0" cellspacing="0" style="width:auto;height:auto;border:0;" border="0">
+<table cellpadding="0" cellspacing="0" style="width:100%;height:auto;border:0;" border="0">
 <tr>
 	<td><textarea id="{$_rs.identifier}" name="{$_rs.identifier}">{$_rs.content}</textarea></td>
 </tr>
@@ -16,10 +16,10 @@ $(document).ready(function(){
 		matchBrackets	: true,
 		lineWrapping	: true,
 		indentWithTabs	: true,
-		indentUnit		: 4,
-		onChange		: function(n){
-			$("#{$_rs.identifier}").val(code_editor_{$_rs.identifier}.getValue());
-		}
+		indentUnit		: 4
+	});
+	code_editor_{$_rs.identifier}.on("change",function(obj){
+		$("#{$_rs.identifier}").val(obj.getValue());
 	});
 });
 </script>

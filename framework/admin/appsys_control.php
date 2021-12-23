@@ -74,6 +74,73 @@ class appsys_control extends phpok_control
 		$this->view('appsys_list');
 	}
 
+	public function showhelp_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定应用ID'));
+		}
+		$type = $this->get('type');
+		if(!$type){
+			$type = 'admin';
+		}
+		$file = $this->dir_app.$id.'/'.$type.'-help.md';
+		$this->addcss('static/md-editor/editormd.css');
+		$this->addjs('static/md-editor/lib/marked.min.js');
+		$this->addjs('static/md-editor/lib/prettify.min.js');
+		$this->addjs('static/md-editor/lib/raphael.min.js');
+		$this->addjs('static/md-editor/lib/underscore.min.js');
+		$this->addjs('static/md-editor/lib/sequence-diagram.min.js');
+		$this->addjs('static/md-editor/lib/flowchart.min.js');
+		$this->addjs('static/md-editor/lib/jquery.flowchart.min.js');
+		$this->addjs('static/md-editor/editormd.min.js');
+		if(file_exists($file)){
+			$content = file_get_contents($file);
+			$this->assign('content',$content);
+		}
+		$this->assign('id',$id);
+		$this->assign('type',$type);
+		$this->view('appsys_helpinfo');
+	}
+
+	public function help_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定应用ID'));
+		}
+		$type = $this->get('type');
+		if(!$type){
+			$type = 'admin';
+		}
+		$file = $this->dir_app.$id.'/'.$type.'-help.md';
+		$content = '';
+		if(file_exists($file)){
+			$content = $this->lib('file')->cat($file);
+		}
+		$edit = form_edit('content',$content,'md_editor','height=720');
+		$this->assign('edit',$edit);
+		$this->assign('id',$id);
+		$this->assign('type',$type);
+		$this->view('appsys_help');
+	}
+
+	public function help_save_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定应用ID'));
+		}
+		$type = $this->get('type');
+		if(!$type){
+			$type = 'admin';
+		}
+		$file = $this->dir_app.$id.'/'.$type.'-help.md';
+		$content = $this->get('content','html_js');
+		$this->lib('file')->vim($content,$file);
+		$this->success();
+	}
+
 	public function setting_f()
 	{
 		if(!$this->popedom['setting']){
@@ -486,9 +553,9 @@ class appsys_control extends phpok_control
 			$content .= $this->_php_control('admin',$identifier);
 			$this->lib('file')->vim($content,$this->dir_app.$identifier.'/admin.control.php');
 			$content = "<!-- include tpl=head_lay nopadding=true -->\n//\n<!-- include tpl=foot_lay is_open=true -->";
-			$this->lib('file')->vim($content,$this->dir_app.$identifier.'/tpl/admin_index.html');
-			//创建JS
-			$content  = $this->_php_notes(P_Lang('后面页面脚本'),$note,$author);
+			$this->lib('file')->vim($content,$this->dir_app.$identifier.'/tpl/admin-index.html');
+			$this->lib('file')->vim('## '.$title,$this->dir_app.$identifier.'/admin-help.md');//
+			$content  = $this->_php_notes(P_Lang('后台脚本'),$note,$author);
 			$content .= $this->_js_config('admin',$identifier);
 			$this->lib('file')->vim($content,$this->dir_app.$identifier.'/admin.js');
 		}
@@ -500,9 +567,10 @@ class appsys_control extends phpok_control
 			$content .= $this->_php_control('www',$identifier);
 			$this->lib('file')->vim($content,$this->dir_app.$identifier.'/www.control.php');
 			$content = "<!-- include tpl=head -->\n//\n<!-- include tpl=foot -->";
-			$this->lib('file')->vim($content,$this->dir_app.$identifier.'/tpl/www_index.html');
+			$this->lib('file')->vim($content,$this->dir_app.$identifier.'/tpl/www-index.html');
+			$this->lib('file')->vim('## '.$title,$this->dir_app.$identifier.'/www-help.md');//
 			//创建JS
-			$content  = $this->_php_notes(P_Lang('前台页面脚本'),$note,$author);
+			$content  = $this->_php_notes(P_Lang('前台脚本'),$note,$author);
 			$content .= $this->_js_config('www',$identifier);
 			$this->lib('file')->vim($content,$this->dir_app.$identifier.'/www.js');
 		}
@@ -528,6 +596,11 @@ class appsys_control extends phpok_control
 		$content .= $this->_php_notes(P_Lang('公共方法'),$note,$author);
 		$content .= $this->_php_safe();
 		$this->lib('file')->vim($content,$this->dir_app.$identifier.'/global.func.php');
+		//创建计划任务文件
+		$content  = $this->_php_head();
+		$content .= $this->_php_notes(P_Lang('计划执行任务'),$note,$author);
+		$content .= $this->_php_safe();
+		$this->lib('file')->vim($content,$this->dir_app.$identifier.'/task.php');
 		//创建节点接入文件，此文件用于数据的接入
 		$content  = $this->_php_head();
 		$content .= $this->_php_notes(P_Lang('接入节点'),$note,$author);
@@ -556,10 +629,9 @@ class appsys_control extends phpok_control
 		$info  = '/**'."\n";
 		$info .= ' * '.$title."\n";
 		$info .= ' * @作者 '.$author."\n";
-		$info .= ' * @版权 深圳市锟铻科技有限公司'."\n";
-		$info .= ' * @主页 http://www.phpok.com'."\n";
+		$info .= ' * @主页 www.phpok.com'."\n";
 		$info .= ' * @版本 5.x'."\n";
-		$info .= ' * @许可 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License'."\n";
+		$info .= ' * @许可 www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License'."\n";
 		$info .= ' * @时间 '.date("Y年m月d日 H时i分",$this->time)."\n";
 		$info .= '**/'."\n";
 		return $info;
@@ -643,7 +715,7 @@ class appsys_control extends phpok_control
 			$info .= '		//$this->error($info);'."\n";
 			$info .= '		$this->success();'."\n";
 		}else{
-			$info .= '		$this->display(\''.$type.'_index\');'."\n";
+			$info .= '		$this->display("'.$type.'-index");'."\n";
 		}
 		$info .= '	}'."\n";
 		$info .= '}'."\n";
@@ -657,6 +729,22 @@ class appsys_control extends phpok_control
 		$info .= '	public function __construct()'."\n";
 		$info .= '	{'."\n";
 		$info .= '		parent::__construct();'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function admin_before()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//公共管理后台数据未执行前操作'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function admin_after()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//公共管理后台数据执行后未输出前'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function www_before()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//前台未执行前'."\n";
+		$info .= '	}'."\n\n";
+		$info .= '	public function www_after()'."\n";
+		$info .= '	{'."\n";
+		$info .= '		//数据执行后未输出前'."\n";
 		$info .= '	}'."\n\n";
 		$info .= '	public function PHPOK_arclist()'."\n";
 		$info .= '	{'."\n";

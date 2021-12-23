@@ -1,6 +1,6 @@
 <?php
 /**
- * 会员增删改查
+ * 用户增删改查
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -46,7 +46,7 @@ class user_model extends user_model_base
 	}
 
 	/**
-	 * 创建会员字段
+	 * 创建用户字段
 	**/
 	public function create_fields($rs)
 	{
@@ -116,7 +116,7 @@ class user_model extends user_model_base
 	}
 
 	/**
-	 * 会员自定义字段排序
+	 * 用户自定义字段排序
 	**/
 	public function user_next_taxis()
 	{
@@ -148,8 +148,8 @@ class user_model extends user_model_base
 	}
 
 	/**
-	 * 简单通过会员ID获取会员的ID及账号
-	 * @参数 $ids 会员ID，支持数据及字串
+	 * 简单通过用户ID获取用户的ID及账号
+	 * @参数 $ids 用户ID，支持数据及字串
 	 * @参数 $field 字段，要查询的字段
 	**/
 	public function simple_user_list($ids,$field='user')
