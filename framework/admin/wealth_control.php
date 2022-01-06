@@ -279,6 +279,7 @@ class wealth_control extends phpok_control
 		if($chk){
 			$this->error(P_Lang('标识已被使用'));
 		}
+		$array['banner'] = $this->get('banner');
 		$array['thumb'] = $this->get('thumb');
 		$array['iconfont'] = $this->get('iconfont');
 		$array['unit'] = $this->get('unit');

@@ -40,20 +40,31 @@ $(document).ready(function(){
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				<i class="layui-icon layui-icon-tips" lay-tips="{lang建议图片尺寸1080x768，非必填}"></i>
-				{lang图片图标}
+				<i class="layui-icon layui-icon-tips" lay-tips="{lang建议尺寸1920x400，非必填}"></i>
+				{lang大图}
 			</label>
-			<div class="layui-input-inline width100">
+			<div class="layui-input-block">
+				{func form_edit banner $rs.banner text form_btn=image}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-icon-tips" lay-tips="{lang建议尺寸500x500，非必填}"></i>
+				{lang小图}
+			</label>
+			<div class="layui-input-block">
 				{func form_edit thumb $rs.thumb text form_btn=image}
 			</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				<i class="layui-icon layui-icon-tips" lay-tips="{lang输入字体Unicode代码，非必填}"></i>
 				{lang字体图标}
 			</label>
 			<div class="layui-input-inline short">
 				<input type="text" name="iconfont" value="{$rs.iconfont}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				<a href="//www.phpok.com/blog-fonticon-unicode.html" target="_blank">{lang输入字体 Unicode 代码，查看手册}</a>
 			</div>
 		</div>
 		<div class="layui-form-item">
