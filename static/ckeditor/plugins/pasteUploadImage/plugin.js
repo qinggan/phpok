@@ -11,6 +11,7 @@
 				CKEDITOR.error('您必须配置参数 imgToLocalUpload，全局参数是：config.imgToLocalUpload');
 				return;
 			}
+			var path = this.path;
 			editor.on('paste', function(event) {
 				var dataTransfer = event.data.dataTransfer;
 				var filesCount = dataTransfer.getFilesCount();
@@ -112,8 +113,8 @@
 			function modal(filename) {
 				var html =
 					'<div class="modal-editor-upload" filename="{{filename}}" style="margin-bottom: 5px;border-bottom: 1px solid #ddd;padding-bottom: 5px;">' +
-					'<img style="width:40px;height:40px;vertical-align: middle;" src="{{filename}}"/>' +
-					'<label style="color:green;"> uploading...</label>' +
+					'<img style="width:40px;height:40px;vertical-align: middle;" src="'+path + 'images/upload.png" />' +
+					'<label style="color:green;"> 上传中… </label>' +
 					'</div>';
 				html = html.replace(/\{\{(.+?)\}\}/g, filename);
 				var wrapper = document.querySelector('.modal-editor-upload-wrapper');
@@ -139,10 +140,10 @@
 					label.innerHTML = ' ' + result;
 					label.style.color = 'red';
 				} else if (result === true) {
-					label.innerHTML = ' success';
+					label.innerHTML = ' 上传成功 ';
 					label.style.color = 'green';
 				} else {
-					label.innerHTML = ' failure';
+					label.innerHTML = ' 上传失败 ';
 					label.style.color = 'red';
 				}
 				var time = result === true ? 3000 : 10000;
