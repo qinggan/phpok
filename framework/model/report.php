@@ -297,7 +297,8 @@ class report_model_base extends phpok_model
 					continue;
 				}
 				$tmp = substr($value,4);
-				$field[] = $mode == 'sum' ? "SUM(ext.".$tmp.") as y_".$value : "count(ext.".$tmp.") as y_".$value;
+				$t2 = ($mode && $mode[$value] && $mode[$value] == 'sum') ? 'sum' : $mode;
+				$field[] = $t2 == 'sum' ? "SUM(ext.".$tmp.") as y_".$value : "count(ext.".$tmp.") as y_".$value;
 			}
 		}
 		
@@ -331,7 +332,8 @@ class report_model_base extends phpok_model
 					continue;
 				}
 				$tmp = substr($value,4);
-				$field[] = $mode == 'sum' ? "SUM(".$tmp.") as y_".$value : "count(".$tmp.") as y_".$value;
+				$t2 = ($mode && $mode[$value] && $mode[$value] == 'sum') ? 'sum' : $mode;
+				$field[] = $t2 == 'sum' ? "SUM(".$tmp.") as y_".$value : "count(".$tmp.") as y_".$value;
 			}
 		}
 		if($x && substr($x,0,4) == 'ext_'){

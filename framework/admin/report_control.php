@@ -238,13 +238,13 @@ class report_control extends phpok_control
 		}
 		if($type && is_numeric($type)){
 			$xy = $this->_list_type($type);
-			
 			$rslist = $this->model('report')->list_data($type,$x,$y,$data_mode,$startdate,$stopdate);		
 		}
 		if($rslist && $x){
 			$rslist = $this->_format_rslist_x($x,$rslist);
 			$this->assign('rslist',$rslist);
 		}
+		
 		
 		if($y && $xy['y']){
 			$y_title = array();
@@ -254,6 +254,14 @@ class report_control extends phpok_control
 				}
 			}
 			$this->assign('y_title',$y_title);
+			$y2 = array('x'=>'统计');
+			foreach($rslist as $key=>$value){
+				$y2['y_count'] += $value['y_count'];
+				foreach($y_title as $k=>$v){
+					$y2['y_'.$k] += $value['y_'.$k];
+				}
+			}
+			$this->assign('totals',$y2);
 		}
 		if($x && $xy['x'] && $xy['x'][$x]){
 			$this->assign('x_title',$xy['x'][$x]);
