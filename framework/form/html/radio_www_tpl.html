@@ -15,7 +15,7 @@ ul.radio_{$_rs.identifier} li{float:left;margin-right:15px;}
 <!-- /if -->
 <ul class="radio radio_{$_rs.identifier}">
 	<!-- loop from=$_rslist key=$key value=$value -->
-	<li><label><input type="radio" class="radio radio_{$_rs.identifier}" name="{$_rs.identifier}" value="{$value.val}"{if $_rs.content == $value.val} checked{/if} />{$value.title}</label></li>
+	<li><label><input type="radio" class="radio radio_{$_rs.identifier}" name="{$_rs.identifier}" value="{$value.val}"{if $_rs.content == $value.val} checked{/if} /> {$value.title}</label></li>
 	<!-- /loop -->
 	<!-- if $_rs.note -->
 	<li style="line-height:24px;color:gray;font-style:italic;margin-left:-3px;">{$_rs.note}</li>
