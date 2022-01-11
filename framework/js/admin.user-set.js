@@ -1,5 +1,5 @@
 /**
- * 会员编辑动作
+ * 用户编辑动作
  * @作者 qinggan <admin@phpok.com>
  * @版权 2008-2018 深圳市锟铻科技有限公司
  * @网站 http://www.phpok.com

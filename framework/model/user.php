@@ -557,29 +557,6 @@ class user_model_base extends phpok_model
 	}
 
 	/**
-	 * 取得用户有验证串是否一致，一致则自动登录
-	 * @参数 $uid 用户ID
-	 * @参数 $chk 验证串
-	**/
-	public function token_check($uid,$sign)
-	{
-		if(!$uid || !$sign){
-			return false;
-		}
-		$sql = "SELECT id,group_id,user,pass FROM ".$this->db->prefix."user WHERE id='".$uid."'";
-		$rs = $this->db->get_one($sql);
-		if(!$rs){
-			return false;
-		}
-		$code = md5($uid.'-'.$rs['user'].'-'.$rs['pass']);
-		if(strtolower($code) == strtolower($sign)){
-			$this->login($rs);
-			return true;
-		}
-		return false;
-	}
-
-	/**
 	 * 生成验证串
 	 * @参数 $uid 用户ID
 	**/
@@ -815,21 +792,6 @@ class user_model_base extends phpok_model
 		return $data;
 	}
 
-	public function autologin_info($id,$device='')
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."user_autologin WHERE id='".$id."' AND device='".$device."'";
-		return $this->db->get_one($sql);
-	}
-
-	public function autologin_save($code='',$id=0,$device='')
-	{
-		if(!$code || !$id){
-			return false;
-		}
-		$data = array("id"=>$id,"code"=>$code,"logintime"=>$this->time,'device'=>$device);
-		return $this->db->insert($data,"user_autologin",'replace');
-	}
-
 	public function login($user,$wealth_add=false,$device='web')
 	{
 		if(is_numeric($user)){
@@ -841,9 +803,6 @@ class user_model_base extends phpok_model
 		if($wealth_add){
 			$this->model('wealth')->login($user['id'],P_Lang('用户登录'));
 		}
-		$code = $this->lib('common')->str_rand(10,'all');
-		$this->autologin_save($code,$user['id'],$device);
-		$new = md5($user['user'].$user['pass'].$code);
 		$this->session->assign('user_id',$user['id']);
 		$this->session->assign('user_gid',$user['group_id']);
 		$this->session->assign('user_name',$user['user']);
@@ -851,7 +810,6 @@ class user_model_base extends phpok_model
 		$data['user_id'] = $user['id'];
 		$data['user_gid'] = $user['group_id'];
 		$data['user_name'] = $user['user'];
-		$data['user_code'] = $new;
 		return $data;
 	}
 

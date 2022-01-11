@@ -1,5 +1,5 @@
 /**
- * 会员自定义字段管理器
+ * 用户自定义字段管理器
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @网站 http://www.phpok.com
