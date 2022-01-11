@@ -48,3 +48,13 @@ if(!in_array('iconfont',$fields)){
 	$this->db->query($sql);
 }
 
+/**
+ * 删除 user_autologin
+ * 时间：2022年1月10日
+**/
+$tblist = $this->db->list_tables();
+if(in_array($this->db->prefix."user_autologin",$tblist)){
+	$sql = "DROP TABLE IF EXISTS ".$this->db->prefix."user_autologin";
+	$this->db->query($sql);
+}
+

@@ -44,11 +44,6 @@ timezone = Asia/Shanghai
 ;时间调节，单位是秒
 timetuning = 0
 
-;用户 Token 标识，不在使用 session 的时候可以使用此项替代，任何接口返回，只要是用户登录后都会传输一个变量userToken
-;注意，由于历史原因，请慎用 token 这个变量
-;启用此项需要后台开始密钥
-token_id = userToken
-
 ;启用SQL远程执行，建议禁用，1/true启用，0/false禁用
 api_remote_sql = false
 

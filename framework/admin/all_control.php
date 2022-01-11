@@ -651,7 +651,7 @@ class all_control extends phpok_control
 		if(!$this->session->val('admin2verify')){
 			$this->view('admin_vcode');
 		}
-		$rs = $this->model('site')->system();
+		$rs = $this->model('config')->get_all();
 		if($rs['admin_homepage_setting']){
 			$rs['admin_homepage_setting'] = explode(",",$rs['admin_homepage_setting']);
 		}else{
@@ -679,14 +679,13 @@ class all_control extends phpok_control
 		$data['tencent_appid'] = $this->get('tencent_appid','html');
 		$data['tencent_ak_id'] = $this->get('tencent_ak_id','html');
 		$data['tencent_ak_secret'] = $this->get('tencent_ak_secret','html');
-		//
 		$tmp = $this->get("admin_homepage_setting");
 		if($tmp){
 			$data['admin_homepage_setting'] = implode(",",$tmp);
 		}else{
 			$data['admin_homepage_setting'] = '';
 		}
-		$this->model('site')->system($data);
+		$this->model('config')->save($data);
 		$this->success();
 	}
 }

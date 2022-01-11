@@ -1577,52 +1577,6 @@ class _init_phpok
 		exit($html);
 	}
 
-	private function _userToken()
-	{
-		$me = false;
-		if($this->session->val('user_id')){
-			$me = $this->model('user')->get_one($this->session->val('user_id'));
-			if($me){
-				$this->data('me',$me);
-				$this->assign('me',$me);
-			}
-		}
-		if(!$me && !$this->site['api_code']){
-			return false;
-		}
-		if($me && $this->site['api_code']){
-			$token = $this->model('user')->token_create($me['id'],$this->site['api_code']);
-			$this->data('meToken',$token);
-			return $me;
-		}
-		$tokenId = $this->config['token_id'] ? $this->config['token_id'] : 'userToken';
-		$token = $this->get($tokenId,'html');
-		if(!$token){
-			return false;
-		}
-		$this->lib('token')->keyid($this->site['api_code']);
-		$info = $this->lib('token')->decode($token);
-		if(!$info || !is_array($info)){
-			return false;
-		}
-		if(!$info['id'] || !$info['code']){
-			return false;
-		}
-		$chkstatus = $this->model('user')->token_check($info['id'],$info['code']);
-		if(!$chkstatus){
-			return false;
-		}
-		$me = $this->model('user')->get_one($this->session->val('user_id'));
-		if(!$me){
-			return false;
-		}
-		$newToken = $this->lib('token')->encode(array('id'=>$info['id'],'code'=>$info['code']));
-		$this->data('meToken',$newToken);
-		$this->data('me',$me);
-		$this->assign('me',$me);
-		return $me;
-	}
-
 	/**
 	 * 执行应用，三个入口（前端，接口，后台）都是从这里执行，进行初始化处理
 	 * token 及 user_id 在 phpok5.0 中将剥离，不会放在核心引挈里
@@ -1635,13 +1589,11 @@ class _init_phpok
 			$this->action_admin();
 			exit;
 		}
-		$this->_userToken();
 		if($this->app_id == 'api'){
 			$this->action_api();
 			exit;
 		}
 		$this->action_www();
-		exit;
 	}
 
 	/**
@@ -1649,6 +1601,9 @@ class _init_phpok
 	**/
 	private function action_api()
 	{
+		if(!$this->session->val('user_id')){
+			$this->model('token')->action();
+		}
 		$ctrl = $this->get($this->config["ctrl_id"],"system");
 		if(!$ctrl){
 			$ctrl = 'index';
@@ -1713,6 +1668,13 @@ class _init_phpok
 	**/
 	private function action_www()
 	{
+		if($this->session->val('user_id')){
+			$me = $this->model('user')->get_one($this->session->val('user_id'));
+			if($me){
+				$this->data('me',$me);
+				$this->assign('me',$me);
+			}
+		}
 		$this->model('site')->site_id($this->site['id']);
 		$this->_route();
 		$id = $this->get('id');

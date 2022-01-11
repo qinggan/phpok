@@ -226,7 +226,7 @@ class index_control extends phpok_control
 	public function homepage_f()
 	{
 		$this->_index();
-		$adminsys = $this->model('site')->system();
+		$adminsys = $this->model('config')->get_all();
 		if($adminsys && $adminsys['admin_homepage_setting']){
 			$setting = explode(",",$adminsys['admin_homepage_setting']);
 			if(in_array('stat',$setting)){

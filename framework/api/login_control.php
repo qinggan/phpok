@@ -70,6 +70,7 @@ class login_control extends phpok_control
 		if(!$array){
 			$this->error(P_Lang('登录失败'));
 		}
+		$array['token'] = $this->model('token')->create($rs);
 		$this->plugin('plugin-login-email',$user_rs['id']);
 		$this->model('vcode')->delete();
 		$this->success($array);
@@ -220,11 +221,7 @@ class login_control extends phpok_control
 		if(!password_check($pass,$user_rs["pass"])){
 			$this->error(P_Lang('登录密码不正确'));
 		}
-		$device = $this->get('device');
-		if(!$device){
-			$device = 'web';
-		}
-		$array = $this->model('user')->login($user_rs,true,$device);
+		$array = $this->model('user')->login($user_rs,true);
 		if(!$array){
 			$this->error(P_Lang('登录失败'));
 		}
@@ -232,6 +229,7 @@ class login_control extends phpok_control
 		if(!$_back){
 			$_back = $this->url('usercp','','www',true);
 		}
+		$array['token'] = $this->model('token')->create($user_rs);
 		$this->plugin('plugin-login-save',$user_rs['id']);
 		$this->success($array,$_back);
 	}
@@ -285,6 +283,7 @@ class login_control extends phpok_control
 		if(!$array){
 			$this->error(P_Lang('用户登录失败'));
 		}
+		$array['token'] = $this->model('token')->create($rs);
 		$this->model('vcode')->delete();
 		$this->success($array);
 	}
@@ -294,21 +293,10 @@ class login_control extends phpok_control
 	**/
 	public function status_f()
 	{
-		$device = $this->get('device');
-		if(!$device){
-			$device = 'web';
-		}
 		if($this->session->val('user_id')){
-			$data = $this->model('user')->login($this->session->val('user_id'),true,$device);
-			$this->success($data);
+			$this->success();
 		}
-		$this->error(P_Lang('用户未登录'));
-	}
-
-	//基于 Token 实现用户登录
-	public function token_f()
-	{
-		$this->error(P_Lang('该功能已下线'));
+		$this->error();
 	}
 
 	/**
@@ -319,55 +307,10 @@ class login_control extends phpok_control
 	**/
 	public function auto_f()
 	{
-		$code = $this->get('code');
-		if(!$code){
-			$this->error('验证码不能为空');
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非会员不能执行'));
 		}
-		$device = $this->get('device');
-		if(!$device){
-			$device = 'web';
-		}
-		if($this->session->val('user_id')){
-			$user = $this->model('user')->get_one($this->session->val('user_id'),'id',false,false);
-			if(!$user){
-				$this->model('user')->logout();
-				$this->error(P_Lang('未找到用户信息，用户退出'));
-			}
-			$auto = $this->model('user')->autologin_info($user['id'],$device);
-			if(!$auto){
-				$this->model('user')->logout();
-				$this->error(P_Lang('未找到密钥信息，用户退出'));
-			}
-			$md5 = md5($user['user'].$user['pass'].$auto['code']);
-			if($code != $md5){
-				$this->model('user')->logout();
-				$this->error(P_Lang('您已经在其他平台登录，用户退出'));
-			}
-			$data = $this->model('user')->login($user);
-			$this->success($data);
-		}
-		$user = $this->get('user');
-		$id = $this->get('id','int');
-		if(!$user && !$id && !$device){
-			$this->error(P_Lang('未指定账号或用户ID'));
-		}
-		if($id){
-			$rs = $this->model('user')->get_one($id,'id',false,false);
-		}else{
-			$rs = $this->model('user')->get_one($user,'user',false,false);
-		}
-		if(!$rs){
-			$this->error(P_Lang('用户信息不存在'));
-		}
-		$auto = $this->model('user')->autologin_info($rs['id'],$device);
-		if(!$auto){
-			$this->error(P_Lang('未找到登录信息'));
-		}
-		$md5 = md5($user['user'].$user['pass'].$auto['code']);
-		if($code != $md5){
-			$this->error(P_Lang('密钥不匹配'));
-		}
-		$data = $this->model('user')->login($user,true,$device);
-		$this->success($data);//生成新的密串，需要客户端将密串保留
+		$data = $this->model('user')->login($this->session->val('user_id'),true);
+		$this->success($data);
 	}
 }
