@@ -31,7 +31,7 @@ class token_model_base extends phpok_model
 			return false;
 		}
 		if(!$this->base64_check($token)){
-			return false
+			return false;
 		}
 		$info = base64_decode($token);
 		if(!$info){
