@@ -761,7 +761,10 @@ function phpok_decode($string,$id="")
 function phpok_config($id='')
 {
 	global $app;
-	return $app->model('site')->system($id);
+	if($id){
+		return $app->model('config')->get_one($id);
+	}
+	return $app->model('config')->get_all();
 }
 
 //WEB前台通用模板，如果您的程序比较复杂，请自己写Head
