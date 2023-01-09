@@ -576,10 +576,17 @@ class phpok_call extends _init_auto
 		}
 		if($rs['cateid']){
 			if(strpos($rs['cateid'],',') !== false){
+                $tmp = explode(",",$rs['cateid']);
+                foreach($tmp as $key=>$value){
+                    if(!$value || !trim($value) || !intval($value)){
+                        unset($tmp[$key]);
+                        continue;
+                    }
+                }
 				if($project['cate_multiple']){
-					$condition .= " AND lc.cate_id IN(".$rs['cateid'].") ";
-				}else{
-					$condition .= " AND l.cate_id IN(".$rs['cateid'].") ";
+                    $condition .= " AND lc.cate_id IN(".(implode(",",$tmp)).") ";
+                }else{
+                    $condition .= " AND l.cate_id IN(".(implode(",",$tmp)).") ";
 				}
 			}else{
 				$cate_all = $this->model('cate')->cate_all($rs['site']);
