@@ -32,6 +32,16 @@ class model extends \phpok_model
 	}
 
 	/**
+	 * 取得用户收藏主题数
+	 * @参数 $id 主题ID
+	**/
+	public function user_fav_count($uid)
+	{
+		$sql = "SELECT count(id) FROM ".$this->db->prefix."fav WHERE user_id='".$uid."'";
+		return $this->db->count($sql);
+	}
+
+	/**
 	 * 获取列表
 	 * @参数 $condition 查询条件
 	 * @参数 $offset 开始标识
@@ -39,7 +49,9 @@ class model extends \phpok_model
 	**/
 	public function get_all($condition='',$offset=0,$psize=30)
 	{
-		$sql = "SELECT f.*,u.user,p.title project_title,p.identifier project_identifier,c.title cate_title,c.identifier cate_identifier FROM ".$this->db->prefix."fav f ";
+		$sql = "SELECT f.*,e.*,el.*,u.user,p.title project_title,p.identifier project_identifier,c.title cate_title,c.identifier cate_identifier FROM ".$this->db->prefix."fav f ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."user e ON(f.uid=e.id) ";
+		$sql.= "LEFT JOIN ".$this->db->prefix."user_ext el ON(f.uid=el.id) ";
 		$sql.= "LEFT JOIN ".$this->db->prefix."user u ON(f.user_id=u.id) ";
 		$sql.= "LEFT JOIN ".$this->db->prefix."list l ON(f.lid=l.id) ";
 		$sql.= "LEFT JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
@@ -104,7 +116,7 @@ class model extends \phpok_model
 
 	/**
 	 * 删除收藏操作
-	 * @参数 $id 收藏夹主表 qinggan_nav 的主键ID
+	 * @参数 $id 收藏夹主表 qinggan_fav 的主键ID
 	**/
 	public function delete($id)
 	{
@@ -114,7 +126,7 @@ class model extends \phpok_model
 
 	/**
 	 * 取得一条收藏信息
-	 * @参数 $id 收藏夹主表 qinggan_nav 的主键ID
+	 * @参数 $id 收藏夹主表 qinggan_fav 的主键ID
 	**/
 	public function get_one($id)
 	{

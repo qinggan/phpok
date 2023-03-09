@@ -10,11 +10,11 @@
 			<label class="layui-form-label">
 				服务器地址
 			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" value="{$sys.url}?{$sys.ctrl_id}=weixin&{$sys.func_id}=post" class="layui-input" disabled />
+			<div class="layui-input-inline long-auto">
+				<input type="text" value="{$sys.url}{$sys.www_file}?{$sys.ctrl_id}=weixin&{$sys.func_id}=post" class="layui-input" disabled />
 			</div>
 			<div class="layui-input-inline auto gray lh38">
-				<input type="button" value="复制" data-clipboard-text="{$sys.url}?{$sys.ctrl_id}=weixin&{$sys.func_id}=post" class="layui-btn layui-btn-sm phpok-copy" />
+				<input type="button" value="复制" data-clipboard-text="{$sys.url}{$sys.www_file}?{$sys.ctrl_id}=weixin&{$sys.func_id}=post" class="layui-btn layui-btn-sm phpok-copy" />
 			</div>
 			<div class="layui-form-mid">
 				即公众号的服务器地址(URL)，用于数据转发

@@ -39,7 +39,7 @@ class api_control extends \phpok_control
 		}
 		$chk = $this->model('fav')->chk($id,$this->session->val('user_id'));
 		if($chk){
-			$this->error(P_Lang('主题已经收藏过，不能重复收藏'));
+			$this->error(P_Lang('主题已经收藏'));
 		}
 		$rs = $this->call->phpok('_arc','title_id='.$id);
 		if(!$rs){
@@ -61,6 +61,9 @@ class api_control extends \phpok_control
 		}
 		$data['addtime'] = $this->time;
 		$data['lid'] = $id;
+		$data['uid'] = $rs['user_id'];
+		$data['platform'] = $this->get('platform');
+		$data['url'] = $this->get('link');
 		$this->model('fav')->save($data);
 		$this->success();
 	}
@@ -185,7 +188,25 @@ class api_control extends \phpok_control
 		}
 		$data['addtime'] = $this->time;
 		$data['lid'] = $id;
+		$data['uid'] = $rs['user_id'];
+		$data['platform'] = $this->get('platform');
+		$data['url'] = $this->get('link');
 		$this->model('fav')->save($data);
 		$this->success('add');
+	}
+
+	public function hits_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('fav')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('收藏不存在'));
+		}
+		$data['hits'] = $rs['hits'] + 1;
+		$this->model('fav')->save($data,$id);
+		$this->success();
 	}
 }

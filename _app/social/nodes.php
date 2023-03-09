@@ -21,21 +21,6 @@ class nodes_phpok extends \_init_auto
 		parent::__construct();
 	}
 
-	public function admin_before()
-	{
-		//公共管理后台数据未执行前操作
-	}
-
-	public function admin_after()
-	{
-		//公共管理后台数据执行后未输出前
-	}
-
-	public function www_before()
-	{
-		//前台未执行前
-	}
-
 	public function www_after()
 	{
 		//数据执行后未输出前
@@ -47,6 +32,77 @@ class nodes_phpok extends \_init_auto
 			$this->assign('me',$me);
 			$this->data('me',$me);
 		}
+	}
+
+	public function admin_user_index_after()
+	{
+		$arealist = $this->tpl->val('arealist');
+		$rslist = $this->tpl->val('rslist');
+		if($arealist && isset($arealist['snss']) && $rslist){
+			$ids = array_keys($rslist);
+			$idol_rslist = $this->model('social')->idol_count($ids);
+			$fans_rslist = $this->model('social')->fans_count($ids);
+			$black_rslist = $this->model('social')->black_count($ids);
+			foreach($rslist as $key=>$value){
+				$value['snss'] = array();
+				$value['snss']['idol'] = ($idol_rslist && $idol_rslist[$value['id']]) ? $idol_rslist[$value['id']]['total'] : 0;
+				$value['snss']['fans'] = ($fans_rslist && $fans_rslist[$value['id']]) ? $fans_rslist[$value['id']]['total'] : 0;
+				$value['snss']['black'] = ($black_rslist && $black_rslist[$value['id']]) ? $black_rslist[$value['id']]['total'] : 0;
+				$rslist[$key] = $value;
+			}
+			$this->assign('rslist',$rslist);
+		}
+	}
+
+	public function admin_user_show_after()
+	{
+		$rs = $this->tpl->val('rs');
+		$id = $rs['id'];
+		$idol = $this->model('social')->idol_count($id);
+		$fans = $this->model('social')->fans_count($id);
+		$black = $this->model('social')->black_count($id);
+		$snss = array('idol'=>$idol,'fans'=>$fans,'black'=>$black);
+		$this->assign('snss',$snss);
+	}
+
+	/**
+	 * 获取社交信息，基于接口
+	**/
+	public function api_usercp_index_after($info)
+	{
+		if(!$info){
+			$info = array();
+		}
+		$uid = $this->session->val('user_id');
+		$idol = $this->model('social')->idol_count($uid);
+		$fans = $this->model('social')->fans_count($uid);
+		$social = array();
+		$social['idol'] = $idol;
+		$social['fans'] = $fans;
+		$info['social'] = $social;
+		$this->success($info);
+	}
+
+	/**
+	 * 自定义会员左侧菜单
+	**/
+	public function www_usercp_index_after()
+	{
+		$apps = $this->data("apps");
+		if(!$apps){
+			$apps = array();
+		}
+		$tmp = array();
+		$tmp['id'] = 'social';
+		$tmp['icon'] = 'user';
+		$tmp['title'] = '社交服务';
+		$tmp['rslist'] = array();
+		$tmp['rslist'][] = array('id'=>'homepage','url'=>$this->url('social','homepage'),'title'=>'主页装扮');
+		$tmp['rslist'][] = array('id'=>'idol','url'=>$this->url('social','idol'),'title'=>'我关注的');
+		$tmp['rslist'][] = array('id'=>'fans','url'=>$this->url('social','fans'),'title'=>'我的粉丝');
+		$tmp['rslist'][] = array('id'=>'blacklist','url'=>$this->url('social','blacklist'),'title'=>'黑名单');
+		$apps['social'] = $tmp;
+		$this->assign('apps',$apps);
 	}
 
 	public function www_user_index_after()

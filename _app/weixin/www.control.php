@@ -224,21 +224,21 @@ class www_control extends \phpok_control
 	private function _create_password()
 	{
 		$wxconfig = $this->model('weixin')->config_subscribe();
-		$password = 'WX[rand]';
+		$str = 'WX[rand]';
 		if($wxconfig['password']){
-			$password = $wxconfig['password'];
+			$str = $wxconfig['password'];
 		}
 		$list = array('[rand]','[time]');
 		foreach($list as $key=>$value){
-			if($value == '[rand]' && strpos($password,'[rand]') !== false){
-				$rand = rand(1000,9999);
-				$password = str_replace('[rand]',$rand,$password);
+			if($value == '[rand]' && strpos($str,'[rand]') !== false){
+				$rand = $this->lib('common')->str_rand(4,'number');
+				$str = str_replace('[rand]',$rand,$str);
 			}
-			if($value == '[time]' && strpos($password,'[time]') !== false){
-				$password = str_replace('[time]',$this->time,$password);
+			if($value == '[time]' && strpos($str,'[time]') !== false){
+				$str = str_replace('[time]',$this->time,$str);
 			}
 		}
-		return $password;
+		return $str;
 	}
 
 	private function _joinuser($main_uid=0,$ext_uid=0)

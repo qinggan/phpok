@@ -127,7 +127,8 @@ class model extends \phpok_model
 	**/
 	public function idol_list($uid,$offset=0,$psize=20,$condition='')
 	{
-		$sql  = " SELECT u.id,u.user,u.avatar,l.addtime FROM ".$this->db->prefix."social l ";
+		$sql  = " SELECT e.id,e.*,u.id,u.user,u.avatar,l.addtime FROM ".$this->db->prefix."social l ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."user_ext e ON(l.who_id=e.id) ";
 		$sql .= " LEFT JOIN ".$this->db->prefix."user u ON(l.who_id=u.id) WHERE l.user_id='".$uid."' ";
 		$sql .= " AND l.is_idol=1 AND l.is_black=0 ";
 		if($condition){
@@ -219,7 +220,8 @@ class model extends \phpok_model
 	**/
 	public function fans_list($uid,$offset=0,$psize=20,$condition='')
 	{
-		$sql  = " SELECT u.id,u.user,u.avatar,l.addtime FROM ".$this->db->prefix."social l ";
+		$sql  = " SELECT e.id,e.*,u.id,u.user,u.avatar,l.addtime FROM ".$this->db->prefix."social l ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."user_ext e ON(l.user_id=e.id) ";
 		$sql .= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id) WHERE l.who_id='".$uid."' ";
 		$sql .= " AND l.is_idol=1 AND l.is_black=0 ";
 		$sql .= " AND l.user_id NOT IN(SELECT who_id FROM ".$this->db->prefix."social WHERE user_id='".$uid."' AND is_black=1) ";
@@ -264,7 +266,8 @@ class model extends \phpok_model
 	**/
 	public function black_list($uid,$offset=0,$psize=20,$condition='')
 	{
-		$sql  = " SELECT u.id,u.user,u.avatar,l.addtime FROM ".$this->db->prefix."social l ";
+		$sql  = " SELECT e.id,e.*,u.id,u.user,u.avatar,l.addtime FROM ".$this->db->prefix."social l ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."user_ext e ON(l.who_id=e.id) ";
 		$sql .= " LEFT JOIN ".$this->db->prefix."user u ON(l.who_id=u.id) WHERE l.user_id='".$uid."' ";
 		$sql .= " AND l.is_black=1 ";
 		if($condition){

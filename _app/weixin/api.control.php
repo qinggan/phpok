@@ -97,8 +97,6 @@ class api_control extends \phpok_control
 
 	public function index_f()
 	{
-		//$info = "";
-		//$this->error($info);
 		$this->success();
 	}
 
@@ -109,12 +107,15 @@ class api_control extends \phpok_control
 			$this->error(P_Lang('未指定要登录的平台'));
 			$platform = "mp";
 		}
+		//公众号
 		if($platform == 'mp'){
 			$this->login_mp();
 		}
+		//开放平台
 		if($platform == 'op'){
 			$this->login_op();
 		}
+		//小程序
 		if($platform == 'ap'){
 			$this->login_ap();
 		}
@@ -131,6 +132,45 @@ class api_control extends \phpok_control
 			$this->error('获取参数信息失败');
 		}
 		$this->success($rs);
+	}
+
+	/**
+	 * 取得小程序微信的OpenID，主要用于免登录购买及支付
+	**/
+	public function ap_openid_f()
+	{
+		if($this->session->val('wx_openid')){
+			$this->success($this->session->val('wx_openid'));
+		}
+		$code = $this->get('code');
+		if(!$code){
+			$this->error(P_Lang('未绑定Code信息'));
+		}
+		$rs = $this->model('weixin')->config_one('ap');
+		if(!$rs){
+			$this->error(P_Lang('小程序参数未配置好，请联系管理员'));
+		}
+		$ip = $this->model('weixin')->ip('api.weixin.qq.com');
+		if($ip){
+			$this->lib('curl')->host_ip($ip);
+		}
+		$this->lib('curl')->user_agent($this->lib('server')->agent());
+		$url ='https://api.weixin.qq.com/sns/jscode2session?appid='.$rs['app_id'];
+		$url.= '&secret='.$rs['app_secret'];
+		$url.= '&js_code='.$code;
+		$url.= '&grant_type=authorization_code';
+		$info = $this->lib('curl')->get_json($url);
+		if(!$info){
+			$this->error(P_Lang('远程获取用户信息失败，请检查'));
+		}
+		if($info['errcode']){
+			$this->error($info['errcode'].': '.$info['errmsg']);
+		}
+		if(!$info['openid']){
+			$this->error(P_Lang('获取用户的OpenID为空'));
+		}
+		$this->session->assign('wx_openid',$info['openid']);
+		$this->success($info['openid']);
 	}
 
 	/**
@@ -165,7 +205,6 @@ class api_control extends \phpok_control
 		if(!$info['openid']){
 			$this->error(P_Lang('获取用户的OpenID为空'));
 		}
-		
 		$data = array('openid'=>$info['openid']);
 		$data['nickname'] = $this->get('nickname');
 		$data['headimg'] = $this->get('headimg');
@@ -212,11 +251,12 @@ class api_control extends \phpok_control
 			}
 		}
 		//检测是否有手机号
-		$enData = $this->get('enData');
-		$iv = $this->get('iv');
+		$enData = $this->get('enData','html');
+		$iv = $this->get('iv','html');
 		$mobile = '';
 		if($enData && $iv && $info['session_key']){
 			$this->lib('weixin')->app_id($rs['app_id']);
+			$this->lib('weixin')->app_secret($rs['app_secret']);
 			$this->lib('weixin')->session_key($info['session_key']);
 			$tmp = $this->lib('weixin')->decode($enData,$iv);
 			if($tmp && $tmp['phoneNumber']){
@@ -236,10 +276,8 @@ class api_control extends \phpok_control
 				$data['source'] = '微信小程序';
 				$this->model('weixin')->user_save($data);
 			}
-			$wx['openid'] = $tmp['openId'];
-			$wx['headimg'] = $tmp['avatarUrl'];
-			$wx['nickname'] = $tmp['nickName'];			
 		}
+		$this->session->assign('wx_openid',$wx['openid']);
 		if($mobile){
 			$user = $this->model('user')->get_one($mobile,'mobile',false,false);
 			if(!$user){
@@ -302,10 +340,8 @@ class api_control extends \phpok_control
 			}
 			$this->model('wxuser')->user_lock($wx['id'],$user['id']);
 			$data = $this->model('user')->login($user,true);
-			$this->session->assign('wx_openid',$wx['openid']);
 			$this->success($data);
 		}
-		$this->session->assign('wx_openid',$wx['openid']);
 		$data = array('openid'=>$wx['openid'],'mobile'=>$mobile);
 		$data['avatar'] = $wx['headimg'];
 		$data['nickname'] = $wx['nickname'];

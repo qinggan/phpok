@@ -10,5 +10,4 @@
 	<uninstall><![CDATA[uninstall.php]]></uninstall>
 	<note><![CDATA[主要由系统发出去的消息，也适合APP通知使用]]></note>
 	<taxis><![CDATA[5]]></taxis>
-	<installed><![CDATA[1]]></installed>
 </root>

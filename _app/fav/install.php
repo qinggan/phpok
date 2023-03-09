@@ -16,9 +16,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-$sql = "CREATE TABLE IF NOT EXISTS `".$this->db->prefix."fav` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',`user_id` int(10) unsigned NOT NULL COMMENT '用户ID',`thumb` varchar(255) NOT NULL COMMENT '缩略图',`title` varchar(255) NOT NULL COMMENT '标题',`note` varchar(255) NOT NULL COMMENT '摘要',`addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',`lid` int(11) NOT NULL COMMENT '关联主题',PRIMARY KEY (`id`),KEY `user_id` (`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户收藏夹' AUTO_INCREMENT=1";
-
-$this->db->query($sql);
+phpok_loadsql($this->db,$this->dir_app.'fav/install.sql',true);
 
 //增加导航菜单
 $menu = array('parent_id'=>5,'title'=>P_Lang('收藏夹管理'),'status'=>1);
